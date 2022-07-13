@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * scsi_scan.c
  *
@@ -34,6 +38,10 @@
 #include <linux/spinlock.h>
 #include <linux/async.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -42,6 +50,10 @@
 #include <scsi/scsi_devinfo.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport.h>
+<<<<<<< HEAD
+=======
+#include <scsi/scsi_dh.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_eh.h>
 
 #include "scsi_priv.h"
@@ -54,6 +66,10 @@
  * Default timeout
  */
 #define SCSI_TIMEOUT (2*HZ)
+<<<<<<< HEAD
+=======
+#define SCSI_REPORT_LUNS_TIMEOUT (30*HZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Prefix values for the SCSI id's (stored in sysfs name field)
@@ -81,6 +97,7 @@ static const char *scsi_null_device_strs = "nullnullnullnull";
 
 #define MAX_SCSI_LUNS	512
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_MULTI_LUN
 static unsigned int max_scsi_luns = MAX_SCSI_LUNS;
 #else
@@ -90,6 +107,13 @@ static unsigned int max_scsi_luns = 1;
 module_param_named(max_luns, max_scsi_luns, uint, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(max_luns,
 		 "last scsi LUN (should be between 1 and 2^32-1)");
+=======
+static u64 max_scsi_luns = MAX_SCSI_LUNS;
+
+module_param_named(max_luns, max_scsi_luns, ullong, S_IRUGO|S_IWUSR);
+MODULE_PARM_DESC(max_luns,
+		 "last scsi LUN (should be between 1 and 2^64-1)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SCSI_SCAN_ASYNC
 #define SCSI_SCAN_TYPE_DEFAULT "async"
@@ -97,6 +121,7 @@ MODULE_PARM_DESC(max_luns,
 #define SCSI_SCAN_TYPE_DEFAULT "sync"
 #endif
 
+<<<<<<< HEAD
 static char scsi_scan_type[6] = SCSI_SCAN_TYPE_DEFAULT;
 
 module_param_string(scan, scsi_scan_type, sizeof(scsi_scan_type), S_IRUGO);
@@ -115,6 +140,15 @@ module_param_named(max_report_luns, max_scsi_report_luns, uint, S_IRUGO|S_IWUSR)
 MODULE_PARM_DESC(max_report_luns,
 		 "REPORT LUNS maximum number of LUNS received (should be"
 		 " between 1 and 16384)");
+=======
+static char scsi_scan_type[7] = SCSI_SCAN_TYPE_DEFAULT;
+
+module_param_string(scan, scsi_scan_type, sizeof(scsi_scan_type),
+		    S_IRUGO|S_IWUSR);
+MODULE_PARM_DESC(scan, "sync, async, manual, or none. "
+		 "Setting to 'manual' disables automatic scanning, but allows "
+		 "for manual device scan via the 'scan' sysfs attribute.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int scsi_inq_timeout = SCSI_TIMEOUT/HZ + 18;
 
@@ -133,6 +167,25 @@ struct async_scan_data {
 	struct completion prev_finished;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * scsi_enable_async_suspend - Enable async suspend and resume
+ */
+void scsi_enable_async_suspend(struct device *dev)
+{
+	/*
+	 * If a user has disabled async probing a likely reason is due to a
+	 * storage enclosure that does not inject staggered spin-ups. For
+	 * safety, make resume synchronous as well in that case.
+	 */
+	if (strncmp(scsi_scan_type, "async", 5) != 0)
+		return;
+	/* Enable asynchronous suspend and resume. */
+	device_enable_async_suspend(dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_complete_async_scans - Wait for asynchronous scans to complete
  *
@@ -184,6 +237,7 @@ int scsi_complete_async_scans(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Only exported for the benefit of scsi_wait_scan */
 EXPORT_SYMBOL_GPL(scsi_complete_async_scans);
 
@@ -196,6 +250,8 @@ EXPORT_SYMBOL_GPL(scsi_complete_async_scans);
 late_initcall(scsi_complete_async_scans);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_unlock_floptical - unlock device via a special MODE SENSE command
  * @sdev:	scsi device to send command to
@@ -210,17 +266,75 @@ static void scsi_unlock_floptical(struct scsi_device *sdev,
 {
 	unsigned char scsi_cmd[MAX_COMMAND_SIZE];
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "scsi: unlocking floptical drive\n");
+=======
+	sdev_printk(KERN_NOTICE, sdev, "unlocking floptical drive\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_cmd[0] = MODE_SENSE;
 	scsi_cmd[1] = 0;
 	scsi_cmd[2] = 0x2e;
 	scsi_cmd[3] = 0;
 	scsi_cmd[4] = 0x2a;     /* size */
 	scsi_cmd[5] = 0;
+<<<<<<< HEAD
 	scsi_execute_req(sdev, scsi_cmd, DMA_FROM_DEVICE, result, 0x2a, NULL,
 			 SCSI_TIMEOUT, 3, NULL);
 }
 
+=======
+	scsi_execute_cmd(sdev, scsi_cmd, REQ_OP_DRV_IN, result, 0x2a,
+			 SCSI_TIMEOUT, 3, NULL);
+}
+
+static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+					unsigned int depth)
+{
+	int new_shift = sbitmap_calculate_shift(depth);
+	bool need_alloc = !sdev->budget_map.map;
+	bool need_free = false;
+	int ret;
+	struct sbitmap sb_backup;
+
+	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
+
+	/*
+	 * realloc if new shift is calculated, which is caused by setting
+	 * up one new default queue depth after calling ->slave_configure
+	 */
+	if (!need_alloc && new_shift != sdev->budget_map.shift)
+		need_alloc = need_free = true;
+
+	if (!need_alloc)
+		return 0;
+
+	/*
+	 * Request queue has to be frozen for reallocating budget map,
+	 * and here disk isn't added yet, so freezing is pretty fast
+	 */
+	if (need_free) {
+		blk_mq_freeze_queue(sdev->request_queue);
+		sb_backup = sdev->budget_map;
+	}
+	ret = sbitmap_init_node(&sdev->budget_map,
+				scsi_device_max_queue_depth(sdev),
+				new_shift, GFP_KERNEL,
+				sdev->request_queue->node, false, true);
+	if (!ret)
+		sbitmap_resize(&sdev->budget_map, depth);
+
+	if (need_free) {
+		if (ret)
+			sdev->budget_map = sb_backup;
+		else
+			sbitmap_free(&sb_backup);
+		ret = 0;
+		blk_mq_unfreeze_queue(sdev->request_queue);
+	}
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_alloc_sdev - allocate and setup a scsi_Device
  * @starget: which target to allocate a &scsi_device for
@@ -236,6 +350,7 @@ static void scsi_unlock_floptical(struct scsi_device *sdev,
  *     scsi_Device pointer, or NULL on failure.
  **/
 static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
+<<<<<<< HEAD
 					   unsigned int lun, void *hostdata)
 {
 	struct scsi_device *sdev;
@@ -246,6 +361,18 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
 
 	sdev = kzalloc(sizeof(*sdev) + shost->transportt->device_size,
 		       GFP_ATOMIC);
+=======
+					   u64 lun, void *hostdata)
+{
+	unsigned int depth;
+	struct scsi_device *sdev;
+	struct request_queue *q;
+	int display_failure_msg = 1, ret;
+	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
+
+	sdev = kzalloc(sizeof(*sdev) + shost->transportt->device_size,
+		       GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sdev)
 		goto out;
 
@@ -257,6 +384,7 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
 	sdev->id = starget->id;
 	sdev->lun = lun;
 	sdev->channel = starget->channel;
+<<<<<<< HEAD
 	sdev->sdev_state = SDEV_CREATED;
 	INIT_LIST_HEAD(&sdev->siblings);
 	INIT_LIST_HEAD(&sdev->same_target_siblings);
@@ -264,6 +392,16 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
 	INIT_LIST_HEAD(&sdev->starved_entry);
 	INIT_LIST_HEAD(&sdev->event_list);
 	spin_lock_init(&sdev->list_lock);
+=======
+	mutex_init(&sdev->state_mutex);
+	sdev->sdev_state = SDEV_CREATED;
+	INIT_LIST_HEAD(&sdev->siblings);
+	INIT_LIST_HEAD(&sdev->same_target_siblings);
+	INIT_LIST_HEAD(&sdev->starved_entry);
+	INIT_LIST_HEAD(&sdev->event_list);
+	spin_lock_init(&sdev->list_lock);
+	mutex_init(&sdev->inquiry_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&sdev->event_work, scsi_evt_thread);
 	INIT_WORK(&sdev->requeue_work, scsi_requeue_run_queue);
 
@@ -289,17 +427,47 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
 	 */
 	sdev->borken = 1;
 
+<<<<<<< HEAD
 	sdev->request_queue = scsi_alloc_queue(sdev);
 	if (!sdev->request_queue) {
+=======
+	sdev->sg_reserved_size = INT_MAX;
+
+	q = blk_mq_alloc_queue(&sdev->host->tag_set, NULL, NULL);
+	if (IS_ERR(q)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* release fn is set up in scsi_sysfs_device_initialise, so
 		 * have to free and put manually here */
 		put_device(&starget->dev);
 		kfree(sdev);
 		goto out;
 	}
+<<<<<<< HEAD
 	WARN_ON_ONCE(!blk_get_queue(sdev->request_queue));
 	sdev->request_queue->queuedata = sdev;
 	scsi_adjust_queue_depth(sdev, 0, sdev->host->cmd_per_lun);
+=======
+	kref_get(&sdev->host->tagset_refcnt);
+	sdev->request_queue = q;
+	q->queuedata = sdev;
+	__scsi_init_queue(sdev->host, q);
+
+	depth = sdev->host->cmd_per_lun ?: 1;
+
+	/*
+	 * Use .can_queue as budget map's depth because we have to
+	 * support adjusting queue depth from sysfs. Meantime use
+	 * default device queue depth to figure out sbitmap shift
+	 * since we use this queue depth most of times.
+	 */
+	if (scsi_realloc_sdev_budget_map(sdev, depth)) {
+		put_device(&starget->dev);
+		kfree(sdev);
+		goto out;
+	}
+
+	scsi_change_queue_depth(sdev, depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_sysfs_device_initialize(sdev);
 
@@ -332,6 +500,11 @@ static void scsi_target_destroy(struct scsi_target *starget)
 	struct Scsi_Host *shost = dev_to_shost(dev->parent);
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	BUG_ON(starget->state == STARGET_DEL);
+	starget->state = STARGET_DEL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_destroy_device(dev);
 	spin_lock_irqsave(shost->host_lock, flags);
 	if (shost->hostt->target_destroy)
@@ -350,7 +523,11 @@ static void scsi_target_dev_release(struct device *dev)
 	put_device(parent);
 }
 
+<<<<<<< HEAD
 static struct device_type scsi_target_type = {
+=======
+static const struct device_type scsi_target_type = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"scsi_target",
 	.release =	scsi_target_dev_release,
 };
@@ -383,6 +560,41 @@ static struct scsi_target *__scsi_find_target(struct device *parent,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * scsi_target_reap_ref_release - remove target from visibility
+ * @kref: the reap_ref in the target being released
+ *
+ * Called on last put of reap_ref, which is the indication that no device
+ * under this target is visible anymore, so render the target invisible in
+ * sysfs.  Note: we have to be in user context here because the target reaps
+ * should be done in places where the scsi device visibility is being removed.
+ */
+static void scsi_target_reap_ref_release(struct kref *kref)
+{
+	struct scsi_target *starget
+		= container_of(kref, struct scsi_target, reap_ref);
+
+	/*
+	 * if we get here and the target is still in a CREATED state that
+	 * means it was allocated but never made visible (because a scan
+	 * turned up no LUNs), so don't call device_del() on it.
+	 */
+	if ((starget->state != STARGET_CREATED) &&
+	    (starget->state != STARGET_CREATED_REMOVE)) {
+		transport_remove_device(&starget->dev);
+		device_del(&starget->dev);
+	}
+	scsi_target_destroy(starget);
+}
+
+static void scsi_target_reap_ref_put(struct scsi_target *starget)
+{
+	kref_put(&starget->reap_ref, scsi_target_reap_ref_release);
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scsi_alloc_target - allocate a new or find an existing target
  * @parent:	parent of the target (need not be a scsi host)
  * @channel:	target channel number (zero if no channels)
@@ -404,7 +616,11 @@ static struct scsi_target *scsi_alloc_target(struct device *parent,
 		+ shost->transportt->target_size;
 	struct scsi_target *starget;
 	struct scsi_target *found_target;
+<<<<<<< HEAD
 	int error;
+=======
+	int error, ref_got;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	starget = kzalloc(size, GFP_KERNEL);
 	if (!starget) {
@@ -413,11 +629,19 @@ static struct scsi_target *scsi_alloc_target(struct device *parent,
 	}
 	dev = &starget->dev;
 	device_initialize(dev);
+<<<<<<< HEAD
 	starget->reap_ref = 1;
+=======
+	kref_init(&starget->reap_ref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->parent = get_device(parent);
 	dev_set_name(dev, "target%d:%d:%d", shost->host_no, channel, id);
 	dev->bus = &scsi_bus_type;
 	dev->type = &scsi_target_type;
+<<<<<<< HEAD
+=======
+	scsi_enable_async_suspend(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	starget->id = id;
 	starget->channel = channel;
 	starget->can_queue = 0;
@@ -441,7 +665,12 @@ static struct scsi_target *scsi_alloc_target(struct device *parent,
 		error = shost->hostt->target_alloc(starget);
 
 		if(error) {
+<<<<<<< HEAD
 			dev_printk(KERN_ERR, dev, "target allocation failed, error %d\n", error);
+=======
+			if (error != -ENXIO)
+				dev_err(dev, "target allocation failed, error %d\n", error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* don't want scsi_target_reap to do the final
 			 * put because it will be under the host lock */
 			scsi_target_destroy(starget);
@@ -453,6 +682,7 @@ static struct scsi_target *scsi_alloc_target(struct device *parent,
 	return starget;
 
  found:
+<<<<<<< HEAD
 	found_target->reap_ref++;
 	spin_unlock_irqrestore(shost->host_lock, flags);
 	if (found_target->state != STARGET_DEL) {
@@ -476,6 +706,38 @@ static void scsi_target_reap_usercontext(struct work_struct *work)
 	scsi_target_destroy(starget);
 }
 
+=======
+	/*
+	 * release routine already fired if kref is zero, so if we can still
+	 * take the reference, the target must be alive.  If we can't, it must
+	 * be dying and we need to wait for a new target
+	 */
+	ref_got = kref_get_unless_zero(&found_target->reap_ref);
+
+	spin_unlock_irqrestore(shost->host_lock, flags);
+	if (ref_got) {
+		put_device(dev);
+		return found_target;
+	}
+	/*
+	 * Unfortunately, we found a dying target; need to wait until it's
+	 * dead before we can get a new one.  There is an anomaly here.  We
+	 * *should* call scsi_target_reap() to balance the kref_get() of the
+	 * reap_ref above.  However, since the target being released, it's
+	 * already invisible and the reap_ref is irrelevant.  If we call
+	 * scsi_target_reap() we might spuriously do another device_del() on
+	 * an already invisible target.
+	 */
+	put_device(&found_target->dev);
+	/*
+	 * length of time is irrelevant here, we just want to yield the CPU
+	 * for a tick to avoid busy waiting for the target to die.
+	 */
+	msleep(1);
+	goto retry;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_target_reap - check to see if target is in use and destroy if not
  * @starget: target to be checked
@@ -486,6 +748,7 @@ static void scsi_target_reap_usercontext(struct work_struct *work)
  */
 void scsi_target_reap(struct scsi_target *starget)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	unsigned long flags;
 	enum scsi_target_state state;
@@ -512,6 +775,20 @@ void scsi_target_reap(struct scsi_target *starget)
 
 /**
  * sanitize_inquiry_string - remove non-graphical chars from an INQUIRY result string
+=======
+	/*
+	 * serious problem if this triggers: STARGET_DEL is only set in the if
+	 * the reap_ref drops to zero, so we're trying to do another final put
+	 * on an already released kref
+	 */
+	BUG_ON(starget->state == STARGET_DEL);
+	scsi_target_reap_ref_put(starget);
+}
+
+/**
+ * scsi_sanitize_inquiry_string - remove non-graphical chars from an
+ *                                INQUIRY result string
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: INQUIRY result string to sanitize
  * @len: length of the string
  *
@@ -524,7 +801,11 @@ void scsi_target_reap(struct scsi_target *starget)
  *	string terminator, so all the following characters are set to
  *	spaces.
  **/
+<<<<<<< HEAD
 static void sanitize_inquiry_string(unsigned char *s, int len)
+=======
+void scsi_sanitize_inquiry_string(unsigned char *s, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int terminated = 0;
 
@@ -535,6 +816,11 @@ static void sanitize_inquiry_string(unsigned char *s, int len)
 			*s = ' ';
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(scsi_sanitize_inquiry_string);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * scsi_probe_lun - probe a single LUN using a SCSI INQUIRY
@@ -551,13 +837,52 @@ static void sanitize_inquiry_string(unsigned char *s, int len)
  *     are copied to the scsi_device any flags value is stored in *@bflags.
  **/
 static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
+<<<<<<< HEAD
 			  int result_len, int *bflags)
+=======
+			  int result_len, blist_flags_t *bflags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char scsi_cmd[MAX_COMMAND_SIZE];
 	int first_inquiry_len, try_inquiry_len, next_inquiry_len;
 	int response_len = 0;
+<<<<<<< HEAD
 	int pass, count, result;
 	struct scsi_sense_hdr sshdr;
+=======
+	int pass, count, result, resid;
+	struct scsi_failure failure_defs[] = {
+		/*
+		 * not-ready to ready transition [asc/ascq=0x28/0x0] or
+		 * power-on, reset [asc/ascq=0x29/0x0], continue. INQUIRY
+		 * should not yield UNIT_ATTENTION but many buggy devices do
+		 * so anyway.
+		 */
+		{
+			.sense = UNIT_ATTENTION,
+			.asc = 0x28,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{
+			.sense = UNIT_ATTENTION,
+			.asc = 0x29,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{
+			.allowed = 1,
+			.result = DID_TIME_OUT << 16,
+		},
+		{}
+	};
+	struct scsi_failures failures = {
+		.total_allowed = 3,
+		.failure_definitions = failure_defs,
+	};
+	const struct scsi_exec_args exec_args = {
+		.resid = &resid,
+		.failures = &failures,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*bflags = 0;
 
@@ -574,15 +899,22 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 				pass, try_inquiry_len));
 
 	/* Each pass gets up to three chances to ignore Unit Attention */
+<<<<<<< HEAD
 	for (count = 0; count < 3; ++count) {
 		int resid;
 
+=======
+	scsi_failures_reset_retries(&failures);
+
+	for (count = 0; count < 3; ++count) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(scsi_cmd, 0, 6);
 		scsi_cmd[0] = INQUIRY;
 		scsi_cmd[4] = (unsigned char) try_inquiry_len;
 
 		memset(inq_result, 0, try_inquiry_len);
 
+<<<<<<< HEAD
 		result = scsi_execute_req(sdev,  scsi_cmd, DMA_FROM_DEVICE,
 					  inq_result, try_inquiry_len, &sshdr,
 					  HZ / 2 + HZ * scsi_inq_timeout, 3,
@@ -608,6 +940,18 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 					continue;
 			}
 		} else {
+=======
+		result = scsi_execute_cmd(sdev,  scsi_cmd, REQ_OP_DRV_IN,
+					  inq_result, try_inquiry_len,
+					  HZ / 2 + HZ * scsi_inq_timeout, 3,
+					  &exec_args);
+
+		SCSI_LOG_SCAN_BUS(3, sdev_printk(KERN_INFO, sdev,
+				"scsi scan: INQUIRY %s with code 0x%x\n",
+				result ? "failed" : "successful", result));
+
+		if (result == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * if nothing was transferred, we try
 			 * again. It's a workaround for some USB
@@ -620,9 +964,15 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	}
 
 	if (result == 0) {
+<<<<<<< HEAD
 		sanitize_inquiry_string(&inq_result[8], 8);
 		sanitize_inquiry_string(&inq_result[16], 16);
 		sanitize_inquiry_string(&inq_result[32], 4);
+=======
+		scsi_sanitize_inquiry_string(&inq_result[8], 8);
+		scsi_sanitize_inquiry_string(&inq_result[16], 16);
+		scsi_sanitize_inquiry_string(&inq_result[32], 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		response_len = inq_result[4] + 5;
 		if (response_len > 255)
@@ -643,9 +993,23 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 		if (pass == 1) {
 			if (BLIST_INQUIRY_36 & *bflags)
 				next_inquiry_len = 36;
+<<<<<<< HEAD
 			else if (BLIST_INQUIRY_58 & *bflags)
 				next_inquiry_len = 58;
 			else if (sdev->inquiry_len)
+=======
+			/*
+			 * LLD specified a maximum sdev->inquiry_len
+			 * but device claims it has more data. Capping
+			 * the length only makes sense for legacy
+			 * devices. If a device supports SPC-4 (2014)
+			 * or newer, assume that it is safe to ask for
+			 * as much as the device says it supports.
+			 */
+			else if (sdev->inquiry_len &&
+				 response_len > sdev->inquiry_len &&
+				 (inq_result[2] & 0x7) < 6) /* SPC-4 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				next_inquiry_len = sdev->inquiry_len;
 			else
 				next_inquiry_len = response_len;
@@ -659,9 +1023,16 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 		}
 
 	} else if (pass == 2) {
+<<<<<<< HEAD
 		printk(KERN_INFO "scsi scan: %d byte inquiry failed.  "
 				"Consider BLIST_INQUIRY_36 for this device\n",
 				try_inquiry_len);
+=======
+		sdev_printk(KERN_INFO, sdev,
+			    "scsi scan: %d byte inquiry failed.  "
+			    "Consider BLIST_INQUIRY_36 for this device\n",
+			    try_inquiry_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If this pass failed, the third pass goes back and transfers
 		 * the same amount as we successfully got in the first pass. */
@@ -694,8 +1065,17 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	 * strings.
 	 */
 	if (sdev->inquiry_len < 36) {
+<<<<<<< HEAD
 		printk(KERN_INFO "scsi scan: INQUIRY result too short (%d),"
 				" using 36\n", sdev->inquiry_len);
+=======
+		if (!sdev->host->short_inquiry) {
+			shost_printk(KERN_INFO, sdev->host,
+				    "scsi scan: INQUIRY result too short (%d),"
+				    " using 36\n", sdev->inquiry_len);
+			sdev->host->short_inquiry = 1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sdev->inquiry_len = 36;
 	}
 
@@ -717,12 +1097,29 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	 * device is attached at LUN 0 (SCSI_SCAN_TARGET_PRESENT) so
 	 * non-zero LUNs can be scanned.
 	 */
+<<<<<<< HEAD
 	sdev->scsi_level = inq_result[2] & 0x07;
+=======
+	sdev->scsi_level = inq_result[2] & 0x0f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdev->scsi_level >= 2 ||
 	    (sdev->scsi_level == 1 && (inq_result[3] & 0x0f) == 1))
 		sdev->scsi_level++;
 	sdev->sdev_target->scsi_level = sdev->scsi_level;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If SCSI-2 or lower, and if the transport requires it,
+	 * store the LUN value in CDB[1].
+	 */
+	sdev->lun_in_cdb = 0;
+	if (sdev->scsi_level <= SCSI_2 &&
+	    sdev->scsi_level != SCSI_UNKNOWN &&
+	    !sdev->host->no_scsi2_lun_in_cdb)
+		sdev->lun_in_cdb = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -742,7 +1139,11 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
  *     SCSI_SCAN_LUN_PRESENT: a new scsi_device was allocated and initialized
  **/
 static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
+<<<<<<< HEAD
 		int *bflags, int async)
+=======
+		blist_flags_t *bflags, int async)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -768,7 +1169,11 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	 */
 	sdev->inquiry = kmemdup(inq_result,
 				max_t(size_t, sdev->inquiry_len, 36),
+<<<<<<< HEAD
 				GFP_ATOMIC);
+=======
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdev->inquiry == NULL)
 		return SCSI_SCAN_NO_RESPONSE;
 
@@ -792,6 +1197,7 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	} else {
 		sdev->type = (inq_result[0] & 0x1f);
 		sdev->removable = (inq_result[1] & 0x80) >> 7;
+<<<<<<< HEAD
 	}
 
 	switch (sdev->type) {
@@ -815,6 +1221,21 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 		break;
 	default:
 		printk(KERN_INFO "scsi: unknown device type %d\n", sdev->type);
+=======
+
+		/*
+		 * some devices may respond with wrong type for
+		 * well-known logical units. Force well-known type
+		 * to enumerate them correctly.
+		 */
+		if (scsi_is_wlun(sdev->lun) && sdev->type != TYPE_WLUN) {
+			sdev_printk(KERN_WARNING, sdev,
+				"%s: correcting incorrect peripheral device type 0x%x for W-LUN 0x%16xhN\n",
+				__func__, sdev->type, (unsigned int)sdev->lun);
+			sdev->type = TYPE_WLUN;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (sdev->type == TYPE_RBC || sdev->type == TYPE_ROM) {
@@ -861,8 +1282,15 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 			(inq_result[3] & 0x0f) == 1 ? " CCS" : "");
 
 	if ((sdev->scsi_level >= SCSI_2) && (inq_result[7] & 2) &&
+<<<<<<< HEAD
 	    !(*bflags & BLIST_NOTQ))
 		sdev->tagged_supported = 1;
+=======
+	    !(*bflags & BLIST_NOTQ)) {
+		sdev->tagged_supported = 1;
+		sdev->simple_tags = 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some devices (Texel CD ROM drives) have handshaking problems
@@ -907,6 +1335,7 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 
 	sdev->use_10_for_rw = 1;
 
+<<<<<<< HEAD
 	if (*bflags & BLIST_MS_SKIP_PAGE_08)
 		sdev->skip_ms_page_8 = 1;
 
@@ -933,17 +1362,63 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	if (*bflags & BLIST_MS_192_BYTES_FOR_3F)
 		sdev->use_192_bytes_for_3f = 1;
 
+=======
+	/* some devices don't like REPORT SUPPORTED OPERATION CODES
+	 * and will simply timeout causing sd_mod init to take a very
+	 * very long time */
+	if (*bflags & BLIST_NO_RSOC)
+		sdev->no_report_opcodes = 1;
+
+	/* set the device running here so that slave configure
+	 * may do I/O */
+	mutex_lock(&sdev->state_mutex);
+	ret = scsi_device_set_state(sdev, SDEV_RUNNING);
+	if (ret)
+		ret = scsi_device_set_state(sdev, SDEV_BLOCK);
+	mutex_unlock(&sdev->state_mutex);
+
+	if (ret) {
+		sdev_printk(KERN_ERR, sdev,
+			    "in wrong state %s to complete scan\n",
+			    scsi_device_state_name(sdev->sdev_state));
+		return SCSI_SCAN_NO_RESPONSE;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*bflags & BLIST_NOT_LOCKABLE)
 		sdev->lockable = 0;
 
 	if (*bflags & BLIST_RETRY_HWERROR)
 		sdev->retry_hwerror = 1;
 
+<<<<<<< HEAD
 	transport_configure_device(&sdev->sdev_gendev);
 
 	/* The LLD can override auto suspend tunables in ->slave_configure() */
 	sdev->use_rpm_auto = 0;
 	sdev->autosuspend_delay = SCSI_DEFAULT_AUTOSUSPEND_DELAY;
+=======
+	if (*bflags & BLIST_NO_DIF)
+		sdev->no_dif = 1;
+
+	if (*bflags & BLIST_UNMAP_LIMIT_WS)
+		sdev->unmap_limit_for_ws = 1;
+
+	if (*bflags & BLIST_IGN_MEDIA_CHANGE)
+		sdev->ignore_media_change = 1;
+
+	sdev->eh_timeout = SCSI_DEFAULT_EH_TIMEOUT;
+
+	if (*bflags & BLIST_TRY_VPD_PAGES)
+		sdev->try_vpd_pages = 1;
+	else if (*bflags & BLIST_SKIP_VPD_PAGES)
+		sdev->skip_vpd_pages = 1;
+
+	if (*bflags & BLIST_NO_VPD_SIZE)
+		sdev->no_vpd_size = 1;
+
+	transport_configure_device(&sdev->sdev_gendev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sdev->host->hostt->slave_configure) {
 		ret = sdev->host->hostt->slave_configure(sdev);
@@ -958,9 +1433,29 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 			}
 			return SCSI_SCAN_NO_RESPONSE;
 		}
+<<<<<<< HEAD
 	}
 
 	sdev->max_queue_depth = sdev->queue_depth;
+=======
+
+		/*
+		 * The queue_depth is often changed in ->slave_configure.
+		 * Set up budget map again since memory consumption of
+		 * the map depends on actual queue depth.
+		 */
+		scsi_realloc_sdev_budget_map(sdev, sdev->queue_depth);
+	}
+
+	if (sdev->scsi_level >= SCSI_3)
+		scsi_attach_vpd(sdev);
+
+	scsi_cdl_check(sdev);
+
+	sdev->max_queue_depth = sdev->queue_depth;
+	WARN_ON_ONCE(sdev->max_queue_depth > sdev->budget_map.depth);
+	sdev->sdev_bflags = *bflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ok, the device is now all set up, we can
@@ -1005,7 +1500,12 @@ static unsigned char *scsi_inq_str(unsigned char *buf, unsigned char *inq,
  * @lun:	LUN of target device
  * @bflagsp:	store bflags here if not NULL
  * @sdevp:	probe the LUN corresponding to this scsi_device
+<<<<<<< HEAD
  * @rescan:     if nonzero skip some code only needed on first scan
+=======
+ * @rescan:     if not equal to SCSI_SCAN_INITIAL skip some code only
+ *              needed on first scan
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @hostdata:	passed to scsi_alloc_sdev()
  *
  * Description:
@@ -1013,6 +1513,7 @@ static unsigned char *scsi_inq_str(unsigned char *buf, unsigned char *inq,
  *     allocate and set it up by calling scsi_add_lun.
  *
  * Return:
+<<<<<<< HEAD
  *     SCSI_SCAN_NO_RESPONSE: could not allocate or setup a scsi_device
  *     SCSI_SCAN_TARGET_PRESENT: target responded, but no device is
  *         attached at the LUN
@@ -1021,11 +1522,28 @@ static unsigned char *scsi_inq_str(unsigned char *buf, unsigned char *inq,
 static int scsi_probe_and_add_lun(struct scsi_target *starget,
 				  uint lun, int *bflagsp,
 				  struct scsi_device **sdevp, int rescan,
+=======
+ *
+ *   - SCSI_SCAN_NO_RESPONSE: could not allocate or setup a scsi_device
+ *   - SCSI_SCAN_TARGET_PRESENT: target responded, but no device is
+ *         attached at the LUN
+ *   - SCSI_SCAN_LUN_PRESENT: a new scsi_device was allocated and initialized
+ **/
+static int scsi_probe_and_add_lun(struct scsi_target *starget,
+				  u64 lun, blist_flags_t *bflagsp,
+				  struct scsi_device **sdevp,
+				  enum scsi_scan_mode rescan,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  void *hostdata)
 {
 	struct scsi_device *sdev;
 	unsigned char *result;
+<<<<<<< HEAD
 	int bflags, res = SCSI_SCAN_NO_RESPONSE, result_len = 256;
+=======
+	blist_flags_t bflags;
+	int res = SCSI_SCAN_NO_RESPONSE, result_len = 256;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 
 	/*
@@ -1034,8 +1552,13 @@ static int scsi_probe_and_add_lun(struct scsi_target *starget,
 	 */
 	sdev = scsi_device_lookup_by_target(starget, lun);
 	if (sdev) {
+<<<<<<< HEAD
 		if (rescan || !scsi_device_created(sdev)) {
 			SCSI_LOG_SCAN_BUS(3, printk(KERN_INFO
+=======
+		if (rescan != SCSI_SCAN_INITIAL || !scsi_device_created(sdev)) {
+			SCSI_LOG_SCAN_BUS(3, sdev_printk(KERN_INFO, sdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"scsi scan: device exists on %s\n",
 				dev_name(&sdev->sdev_gendev)));
 			if (sdevp)
@@ -1055,8 +1578,12 @@ static int scsi_probe_and_add_lun(struct scsi_target *starget,
 	if (!sdev)
 		goto out;
 
+<<<<<<< HEAD
 	result = kmalloc(result_len, GFP_ATOMIC |
 			((shost->unchecked_isa_dma) ? __GFP_DMA : 0));
+=======
+	result = kmalloc(result_len, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!result)
 		goto out_free_sdev;
 
@@ -1068,7 +1595,11 @@ static int scsi_probe_and_add_lun(struct scsi_target *starget,
 	/*
 	 * result contains valid SCSI INQUIRY data.
 	 */
+<<<<<<< HEAD
 	if (((result[0] >> 5) == 3) && !(bflags & BLIST_ATTACH_PQ3)) {
+=======
+	if ((result[0] >> 5) == 3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * For a Peripheral qualifier 3 (011b), the SCSI
 		 * spec says: The device server is not capable of
@@ -1122,7 +1653,11 @@ static int scsi_probe_and_add_lun(struct scsi_target *starget,
 	if (((result[0] >> 5) == 1 || starget->pdt_1f_for_no_lun) &&
 	    (result[0] & 0x1f) == 0x1f &&
 	    !scsi_is_wlun(lun)) {
+<<<<<<< HEAD
 		SCSI_LOG_SCAN_BUS(3, printk(KERN_INFO
+=======
+		SCSI_LOG_SCAN_BUS(3, sdev_printk(KERN_INFO, sdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"scsi scan: peripheral device type"
 					" of 31, no device added\n"));
 		res = SCSI_SCAN_TARGET_PRESENT;
@@ -1170,6 +1705,7 @@ static int scsi_probe_and_add_lun(struct scsi_target *starget,
  *     Modifies sdevscan->lun.
  **/
 static void scsi_sequential_lun_scan(struct scsi_target *starget,
+<<<<<<< HEAD
 				     int bflags, int scsi_level, int rescan)
 {
 	unsigned int sparse_lun, lun, max_dev_lun;
@@ -1177,6 +1713,17 @@ static void scsi_sequential_lun_scan(struct scsi_target *starget,
 
 	SCSI_LOG_SCAN_BUS(3, printk(KERN_INFO "scsi scan: Sequential scan of"
 				    "%s\n", dev_name(&starget->dev)));
+=======
+				     blist_flags_t bflags, int scsi_level,
+				     enum scsi_scan_mode rescan)
+{
+	uint max_dev_lun;
+	u64 sparse_lun, lun;
+	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
+
+	SCSI_LOG_SCAN_BUS(3, starget_printk(KERN_INFO, starget,
+		"scsi scan: Sequential scan\n"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_dev_lun = min(max_scsi_luns, shost->max_lun);
 	/*
@@ -1191,9 +1738,15 @@ static void scsi_sequential_lun_scan(struct scsi_target *starget,
 		sparse_lun = 0;
 
 	/*
+<<<<<<< HEAD
 	 * If less than SCSI_1_CSS, and no special lun scaning, stop
 	 * scanning; this matches 2.4 behaviour, but could just be a bug
 	 * (to continue scanning a SCSI_1_CSS device).
+=======
+	 * If less than SCSI_1_CCS, and no special lun scanning, stop
+	 * scanning; this matches 2.4 behaviour, but could just be a bug
+	 * (to continue scanning a SCSI_1_CCS device).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * This test is broken.  We might not have any device on lun0 for
 	 * a sparselun device, and if that's the case then how would we
@@ -1224,6 +1777,11 @@ static void scsi_sequential_lun_scan(struct scsi_target *starget,
 	 */
 	if (scsi_level < SCSI_3 && !(bflags & BLIST_LARGELUN))
 		max_dev_lun = min(8U, max_dev_lun);
+<<<<<<< HEAD
+=======
+	else
+		max_dev_lun = min(256U, max_dev_lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We have already scanned LUN 0, so start at LUN 1. Keep scanning
@@ -1238,6 +1796,7 @@ static void scsi_sequential_lun_scan(struct scsi_target *starget,
 }
 
 /**
+<<<<<<< HEAD
  * scsilun_to_int - convert a scsi_lun to an int
  * @scsilun:	struct scsi_lun to be converted.
  *
@@ -1302,6 +1861,8 @@ void int_to_scsilun(unsigned int lun, struct scsi_lun *scsilun)
 EXPORT_SYMBOL(int_to_scsilun);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scsi_report_lun_scan - Scan using SCSI REPORT LUN results
  * @starget: which target
  * @bflags: Zero or a mix of BLIST_NOLUN, BLIST_REPORTLUN2, or BLIST_NOREPORTLUN
@@ -1321,6 +1882,7 @@ EXPORT_SYMBOL(int_to_scsilun);
  *     0: scan completed (or no memory, so further scanning is futile)
  *     1: could not scan with REPORT LUN
  **/
+<<<<<<< HEAD
 static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 				int rescan)
 {
@@ -1336,6 +1898,44 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	struct scsi_sense_hdr sshdr;
 	struct scsi_device *sdev;
 	struct Scsi_Host *shost = dev_to_shost(&starget->dev);
+=======
+static int scsi_report_lun_scan(struct scsi_target *starget, blist_flags_t bflags,
+				enum scsi_scan_mode rescan)
+{
+	unsigned char scsi_cmd[MAX_COMMAND_SIZE];
+	unsigned int length;
+	u64 lun;
+	unsigned int num_luns;
+	int result;
+	struct scsi_lun *lunp, *lun_data;
+	struct scsi_device *sdev;
+	struct Scsi_Host *shost = dev_to_shost(&starget->dev);
+	struct scsi_failure failure_defs[] = {
+		{
+			.sense = UNIT_ATTENTION,
+			.asc = SCMD_FAILURE_ASC_ANY,
+			.ascq = SCMD_FAILURE_ASCQ_ANY,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		/* Fail all CCs except the UA above */
+		{
+			.sense = SCMD_FAILURE_SENSE_ANY,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		/* Retry any other errors not listed above */
+		{
+			.result = SCMD_FAILURE_RESULT_ANY,
+		},
+		{}
+	};
+	struct scsi_failures failures = {
+		.total_allowed = 3,
+		.failure_definitions = failure_defs,
+	};
+	const struct scsi_exec_args exec_args = {
+		.failures = &failures,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	/*
@@ -1367,6 +1967,7 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 		}
 	}
 
+<<<<<<< HEAD
 	sprintf(devname, "host %d channel %d id %d",
 		shost->host_no, sdev->channel, sdev->id);
 
@@ -1383,6 +1984,16 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	length = (max_scsi_report_luns + 1) * sizeof(struct scsi_lun);
 	lun_data = kmalloc(length, GFP_ATOMIC |
 			   (sdev->host->unchecked_isa_dma ? __GFP_DMA : 0));
+=======
+	/*
+	 * Allocate enough to hold the header (the same size as one scsi_lun)
+	 * plus the number of luns we are requesting.  511 was the default
+	 * value of the now removed max_report_luns parameter.
+	 */
+	length = (511 + 1) * sizeof(struct scsi_lun);
+retry:
+	lun_data = kmalloc(length, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lun_data) {
 		printk(ALLOC_FAILURE_MSG, __func__);
 		goto out;
@@ -1398,10 +2009,14 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	/*
 	 * bytes 6 - 9: length of the command.
 	 */
+<<<<<<< HEAD
 	scsi_cmd[6] = (unsigned char) (length >> 24) & 0xff;
 	scsi_cmd[7] = (unsigned char) (length >> 16) & 0xff;
 	scsi_cmd[8] = (unsigned char) (length >> 8) & 0xff;
 	scsi_cmd[9] = (unsigned char) length & 0xff;
+=======
+	put_unaligned_be32(length, &scsi_cmd[6]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_cmd[10] = 0;	/* reserved */
 	scsi_cmd[11] = 0;	/* control */
@@ -1416,6 +2031,7 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	 * should come through as a check condition, and will not generate
 	 * a retry.
 	 */
+<<<<<<< HEAD
 	for (retries = 0; retries < 3; retries++) {
 		SCSI_LOG_SCAN_BUS(3, printk (KERN_INFO "scsi scan: Sending"
 				" REPORT LUNS to %s (try %d)\n", devname,
@@ -1436,6 +2052,20 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 		}
 	}
 
+=======
+	scsi_failures_reset_retries(&failures);
+
+	SCSI_LOG_SCAN_BUS(3, sdev_printk (KERN_INFO, sdev,
+			  "scsi scan: Sending REPORT LUNS\n"));
+
+	result = scsi_execute_cmd(sdev, scsi_cmd, REQ_OP_DRV_IN, lun_data,
+				  length, SCSI_REPORT_LUNS_TIMEOUT, 3,
+				  &exec_args);
+
+	SCSI_LOG_SCAN_BUS(3, sdev_printk (KERN_INFO, sdev,
+			  "scsi scan: REPORT LUNS  %s result 0x%x\n",
+			  result ?  "failed" : "successful", result));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result) {
 		/*
 		 * The device probably does not support a REPORT LUN command
@@ -1447,6 +2077,7 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	/*
 	 * Get the length from the first four bytes of lun_data.
 	 */
+<<<<<<< HEAD
 	data = (u8 *) lun_data->scsi_lun;
 	length = ((data[0] << 24) | (data[1] << 16) |
 		  (data[2] << 8) | (data[3] << 0));
@@ -1459,6 +2090,18 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 		       max_scsi_report_luns, num_luns);
 		num_luns = max_scsi_report_luns;
 	}
+=======
+	if (get_unaligned_be32(lun_data->scsi_lun) +
+	    sizeof(struct scsi_lun) > length) {
+		length = get_unaligned_be32(lun_data->scsi_lun) +
+			 sizeof(struct scsi_lun);
+		kfree(lun_data);
+		goto retry;
+	}
+	length = get_unaligned_be32(lun_data->scsi_lun);
+
+	num_luns = (length / sizeof(struct scsi_lun));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCSI_LOG_SCAN_BUS(3, sdev_printk (KERN_INFO, sdev,
 		"scsi scan: REPORT LUN scan\n"));
@@ -1470,6 +2113,7 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 	for (lunp = &lun_data[1]; lunp <= &lun_data[num_luns]; lunp++) {
 		lun = scsilun_to_int(lunp);
 
+<<<<<<< HEAD
 		/*
 		 * Check if the unused part of lunp is non-zero, and so
 		 * does not fit in lun.
@@ -1491,6 +2135,12 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 			printk(KERN_WARNING "scsi: %s lun%d has a LUN larger"
 			       " than allowed by the host adapter\n",
 			       devname, lun);
+=======
+		if (lun > sdev->host->max_lun) {
+			sdev_printk(KERN_WARNING, sdev,
+				    "lun%llu has a LUN larger than"
+				    " allowed by the host adapter\n", lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			int res;
 
@@ -1502,8 +2152,13 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
 				 */
 				sdev_printk(KERN_ERR, sdev,
 					"Unexpected response"
+<<<<<<< HEAD
 				        " from lun %d while scanning, scan"
 				        " aborted\n", lun);
+=======
+					" from lun %llu while scanning, scan"
+					" aborted\n", (unsigned long long)lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -1512,17 +2167,28 @@ static int scsi_report_lun_scan(struct scsi_target *starget, int bflags,
  out_err:
 	kfree(lun_data);
  out:
+<<<<<<< HEAD
 	scsi_device_put(sdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (scsi_device_created(sdev))
 		/*
 		 * the sdev we used didn't appear in the report luns scan
 		 */
 		__scsi_remove_device(sdev);
+<<<<<<< HEAD
+=======
+	scsi_device_put(sdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 struct scsi_device *__scsi_add_device(struct Scsi_Host *shost, uint channel,
+<<<<<<< HEAD
 				      uint id, uint lun, void *hostdata)
+=======
+				      uint id, u64 lun, void *hostdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_device *sdev = ERR_PTR(-ENODEV);
 	struct device *parent = &shost->shost_gendev;
@@ -1541,11 +2207,23 @@ struct scsi_device *__scsi_add_device(struct Scsi_Host *shost, uint channel,
 		scsi_complete_async_scans();
 
 	if (scsi_host_scan_allowed(shost) && scsi_autopm_get_host(shost) == 0) {
+<<<<<<< HEAD
 		scsi_probe_and_add_lun(starget, lun, NULL, &sdev, 1, hostdata);
+=======
+		scsi_probe_and_add_lun(starget, lun, NULL, &sdev,
+				       SCSI_SCAN_RESCAN, hostdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scsi_autopm_put_host(shost);
 	}
 	mutex_unlock(&shost->scan_mutex);
 	scsi_autopm_put_target(starget);
+<<<<<<< HEAD
+=======
+	/*
+	 * paired with scsi_alloc_target().  Target will be destroyed unless
+	 * scsi_probe_and_add_lun made an underlying device visible
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_target_reap(starget);
 	put_device(&starget->dev);
 
@@ -1554,7 +2232,11 @@ struct scsi_device *__scsi_add_device(struct Scsi_Host *shost, uint channel,
 EXPORT_SYMBOL(__scsi_add_device);
 
 int scsi_add_device(struct Scsi_Host *host, uint channel,
+<<<<<<< HEAD
 		    uint target, uint lun)
+=======
+		    uint target, u64 lun)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_device *sdev = 
 		__scsi_add_device(host, channel, target, lun, NULL);
@@ -1566,6 +2248,7 @@ int scsi_add_device(struct Scsi_Host *host, uint channel,
 }
 EXPORT_SYMBOL(scsi_add_device);
 
+<<<<<<< HEAD
 void scsi_rescan_device(struct device *dev)
 {
 	struct scsi_driver *drv;
@@ -1579,14 +2262,94 @@ void scsi_rescan_device(struct device *dev)
 			drv->rescan(dev);
 		module_put(drv->owner);
 	}
+=======
+int scsi_resume_device(struct scsi_device *sdev)
+{
+	struct device *dev = &sdev->sdev_gendev;
+	int ret = 0;
+
+	device_lock(dev);
+
+	/*
+	 * Bail out if the device or its queue are not running. Otherwise,
+	 * the rescan may block waiting for commands to be executed, with us
+	 * holding the device lock. This can result in a potential deadlock
+	 * in the power management core code when system resume is on-going.
+	 */
+	if (sdev->sdev_state != SDEV_RUNNING ||
+	    blk_queue_pm_only(sdev->request_queue)) {
+		ret = -EWOULDBLOCK;
+		goto unlock;
+	}
+
+	if (dev->driver && try_module_get(dev->driver->owner)) {
+		struct scsi_driver *drv = to_scsi_driver(dev->driver);
+
+		if (drv->resume)
+			ret = drv->resume(dev);
+		module_put(dev->driver->owner);
+	}
+
+unlock:
+	device_unlock(dev);
+
+	return ret;
+}
+EXPORT_SYMBOL(scsi_resume_device);
+
+int scsi_rescan_device(struct scsi_device *sdev)
+{
+	struct device *dev = &sdev->sdev_gendev;
+	int ret = 0;
+
+	device_lock(dev);
+
+	/*
+	 * Bail out if the device or its queue are not running. Otherwise,
+	 * the rescan may block waiting for commands to be executed, with us
+	 * holding the device lock. This can result in a potential deadlock
+	 * in the power management core code when system resume is on-going.
+	 */
+	if (sdev->sdev_state != SDEV_RUNNING ||
+	    blk_queue_pm_only(sdev->request_queue)) {
+		ret = -EWOULDBLOCK;
+		goto unlock;
+	}
+
+	scsi_attach_vpd(sdev);
+	scsi_cdl_check(sdev);
+
+	if (sdev->handler && sdev->handler->rescan)
+		sdev->handler->rescan(sdev);
+
+	if (dev->driver && try_module_get(dev->driver->owner)) {
+		struct scsi_driver *drv = to_scsi_driver(dev->driver);
+
+		if (drv->rescan)
+			drv->rescan(dev);
+		module_put(dev->driver->owner);
+	}
+
+unlock:
+	device_unlock(dev);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(scsi_rescan_device);
 
 static void __scsi_scan_target(struct device *parent, unsigned int channel,
+<<<<<<< HEAD
 		unsigned int id, unsigned int lun, int rescan)
 {
 	struct Scsi_Host *shost = dev_to_shost(parent);
 	int bflags = 0;
+=======
+		unsigned int id, u64 lun, enum scsi_scan_mode rescan)
+{
+	struct Scsi_Host *shost = dev_to_shost(parent);
+	blist_flags_t bflags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 	struct scsi_target *starget;
 
@@ -1626,8 +2389,15 @@ static void __scsi_scan_target(struct device *parent, unsigned int channel,
 
  out_reap:
 	scsi_autopm_put_target(starget);
+<<<<<<< HEAD
 	/* now determine if the target has any children at all
 	 * and if not, nuke it */
+=======
+	/*
+	 * paired with scsi_alloc_target(): determine if the target has
+	 * any children at all and if not, nuke it
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_target_reap(starget);
 
 	put_device(&starget->dev);
@@ -1639,7 +2409,14 @@ static void __scsi_scan_target(struct device *parent, unsigned int channel,
  * @channel:	channel to scan
  * @id:		target id to scan
  * @lun:	Specific LUN to scan or SCAN_WILD_CARD
+<<<<<<< HEAD
  * @rescan:	passed to LUN scanning routines
+=======
+ * @rescan:	passed to LUN scanning routines; SCSI_SCAN_INITIAL for
+ *              no rescan, SCSI_SCAN_RESCAN to rescan existing LUNs,
+ *              and SCSI_SCAN_MANUAL to force scanning even if
+ *              'scan=manual' is set.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *     Scan the target id on @parent, @channel, and @id. Scan at least LUN 0,
@@ -1649,13 +2426,24 @@ static void __scsi_scan_target(struct device *parent, unsigned int channel,
  *     sequential scan of LUNs on the target id.
  **/
 void scsi_scan_target(struct device *parent, unsigned int channel,
+<<<<<<< HEAD
 		      unsigned int id, unsigned int lun, int rescan)
+=======
+		      unsigned int id, u64 lun, enum scsi_scan_mode rescan)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost = dev_to_shost(parent);
 
 	if (strncmp(scsi_scan_type, "none", 4) == 0)
 		return;
 
+<<<<<<< HEAD
+=======
+	if (rescan != SCSI_SCAN_MANUAL &&
+	    strncmp(scsi_scan_type, "manual", 6) == 0)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&shost->scan_mutex);
 	if (!shost->async_scan)
 		scsi_complete_async_scans();
@@ -1669,7 +2457,12 @@ void scsi_scan_target(struct device *parent, unsigned int channel,
 EXPORT_SYMBOL(scsi_scan_target);
 
 static void scsi_scan_channel(struct Scsi_Host *shost, unsigned int channel,
+<<<<<<< HEAD
 			      unsigned int id, unsigned int lun, int rescan)
+=======
+			      unsigned int id, u64 lun,
+			      enum scsi_scan_mode rescan)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint order_id;
 
@@ -1700,15 +2493,27 @@ static void scsi_scan_channel(struct Scsi_Host *shost, unsigned int channel,
 }
 
 int scsi_scan_host_selected(struct Scsi_Host *shost, unsigned int channel,
+<<<<<<< HEAD
 			    unsigned int id, unsigned int lun, int rescan)
 {
 	SCSI_LOG_SCAN_BUS(3, shost_printk (KERN_INFO, shost,
 		"%s: <%u:%u:%u>\n",
+=======
+			    unsigned int id, u64 lun,
+			    enum scsi_scan_mode rescan)
+{
+	SCSI_LOG_SCAN_BUS(3, shost_printk (KERN_INFO, shost,
+		"%s: <%u:%u:%llu>\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__, channel, id, lun));
 
 	if (((channel != SCAN_WILD_CARD) && (channel > shost->max_channel)) ||
 	    ((id != SCAN_WILD_CARD) && (id >= shost->max_id)) ||
+<<<<<<< HEAD
 	    ((lun != SCAN_WILD_CARD) && (lun > shost->max_lun)))
+=======
+	    ((lun != SCAN_WILD_CARD) && (lun >= shost->max_lun)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	mutex_lock(&shost->scan_mutex);
@@ -1737,6 +2542,12 @@ static void scsi_sysfs_add_devices(struct Scsi_Host *shost)
 		/* target removed before the device could be added */
 		if (sdev->sdev_state == SDEV_DEL)
 			continue;
+<<<<<<< HEAD
+=======
+		/* If device is already visible, skip adding it to sysfs */
+		if (sdev->is_visible)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!scsi_host_scan_allowed(shost) ||
 		    scsi_sysfs_add_sdev(sdev) != 0)
 			__scsi_remove_device(sdev);
@@ -1755,17 +2566,28 @@ static void scsi_sysfs_add_devices(struct Scsi_Host *shost)
  */
 static struct async_scan_data *scsi_prep_async_scan(struct Scsi_Host *shost)
 {
+<<<<<<< HEAD
 	struct async_scan_data *data;
+=======
+	struct async_scan_data *data = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (strncmp(scsi_scan_type, "sync", 4) == 0)
 		return NULL;
 
+<<<<<<< HEAD
 	if (shost->async_scan) {
 		printk("%s called twice for host %d", __func__,
 				shost->host_no);
 		dump_stack();
 		return NULL;
+=======
+	mutex_lock(&shost->scan_mutex);
+	if (shost->async_scan) {
+		shost_printk(KERN_DEBUG, shost, "%s called twice\n", __func__);
+		goto err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	data = kmalloc(sizeof(*data), GFP_KERNEL);
@@ -1776,7 +2598,10 @@ static struct async_scan_data *scsi_prep_async_scan(struct Scsi_Host *shost)
 		goto err;
 	init_completion(&data->prev_finished);
 
+<<<<<<< HEAD
 	mutex_lock(&shost->scan_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(shost->host_lock, flags);
 	shost->async_scan = 1;
 	spin_unlock_irqrestore(shost->host_lock, flags);
@@ -1791,6 +2616,10 @@ static struct async_scan_data *scsi_prep_async_scan(struct Scsi_Host *shost)
 	return data;
 
  err:
+<<<<<<< HEAD
+=======
+	mutex_unlock(&shost->scan_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data);
 	return NULL;
 }
@@ -1816,8 +2645,12 @@ static void scsi_finish_async_scan(struct async_scan_data *data)
 	mutex_lock(&shost->scan_mutex);
 
 	if (!shost->async_scan) {
+<<<<<<< HEAD
 		printk("%s called twice for host %d", __func__,
 				shost->host_no);
+=======
+		shost_printk(KERN_INFO, shost, "%s called twice\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_stack();
 		mutex_unlock(&shost->scan_mutex);
 		return;
@@ -1858,18 +2691,29 @@ static void do_scsi_scan_host(struct Scsi_Host *shost)
 			msleep(10);
 	} else {
 		scsi_scan_host_selected(shost, SCAN_WILD_CARD, SCAN_WILD_CARD,
+<<<<<<< HEAD
 				SCAN_WILD_CARD, 0);
 	}
 }
 
 static int do_scan_async(void *_data)
+=======
+				SCAN_WILD_CARD, SCSI_SCAN_INITIAL);
+	}
+}
+
+static void do_scan_async(void *_data, async_cookie_t c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct async_scan_data *data = _data;
 	struct Scsi_Host *shost = data->shost;
 
 	do_scsi_scan_host(shost);
 	scsi_finish_async_scan(data);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1878,10 +2722,17 @@ static int do_scan_async(void *_data)
  **/
 void scsi_scan_host(struct Scsi_Host *shost)
 {
+<<<<<<< HEAD
 	struct task_struct *p;
 	struct async_scan_data *data;
 
 	if (strncmp(scsi_scan_type, "none", 4) == 0)
+=======
+	struct async_scan_data *data;
+
+	if (strncmp(scsi_scan_type, "none", 4) == 0 ||
+	    strncmp(scsi_scan_type, "manual", 6) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (scsi_autopm_get_host(shost) < 0)
 		return;
@@ -1893,9 +2744,17 @@ void scsi_scan_host(struct Scsi_Host *shost)
 		return;
 	}
 
+<<<<<<< HEAD
 	p = kthread_run(do_scan_async, data, "scsi_scan_%d", shost->host_no);
 	if (IS_ERR(p))
 		do_scan_async(data);
+=======
+	/* register with the async subsystem so wait_for_device_probe()
+	 * will flush this work
+	 */
+	async_schedule(do_scan_async, data);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* scsi_autopm_put_host(shost) is called in scsi_finish_async_scan() */
 }
 EXPORT_SYMBOL(scsi_scan_host);
@@ -1917,6 +2776,7 @@ void scsi_forget_host(struct Scsi_Host *shost)
 	spin_unlock_irqrestore(shost->host_lock, flags);
 }
 
+<<<<<<< HEAD
 /**
  * scsi_get_host_dev - Create a scsi_device that points to the host adapter itself
  * @shost: Host that needs a scsi_device
@@ -1974,3 +2834,5 @@ void scsi_free_host_dev(struct scsi_device *sdev)
 }
 EXPORT_SYMBOL(scsi_free_host_dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

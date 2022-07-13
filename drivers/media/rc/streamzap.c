@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Streamzap Remote Control driver
  *
@@ -15,6 +19,7 @@
  *
  * This driver is based on the USB skeleton driver packaged with the
  * kernel; copyright (C) 2001-2003 Greg Kroah-Hartman (greg@kroah.com)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +34,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -38,6 +45,7 @@
 #include <linux/usb/input.h>
 #include <media/rc-core.h>
 
+<<<<<<< HEAD
 #define DRIVER_VERSION	"1.61"
 #define DRIVER_NAME	"streamzap"
 #define DRIVER_DESC	"Streamzap Remote Control driver"
@@ -48,11 +56,20 @@ static bool debug = 1;
 static bool debug;
 #endif
 
+=======
+#define DRIVER_NAME	"streamzap"
+#define DRIVER_DESC	"Streamzap Remote Control driver"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USB_STREAMZAP_VENDOR_ID		0x0e9c
 #define USB_STREAMZAP_PRODUCT_ID	0x0000
 
 /* table of devices that work with this driver */
+<<<<<<< HEAD
 static struct usb_device_id streamzap_table[] = {
+=======
+static const struct usb_device_id streamzap_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Streamzap Remote Control */
 	{ USB_DEVICE(USB_STREAMZAP_VENDOR_ID, USB_STREAMZAP_PRODUCT_ID) },
 	/* Terminating entry */
@@ -69,6 +86,7 @@ MODULE_DEVICE_TABLE(usb, streamzap_table);
 /* number of samples buffered */
 #define SZ_BUF_LEN 128
 
+<<<<<<< HEAD
 /* from ir-rc5-sz-decoder.c */
 #ifdef CONFIG_IR_RC5_SZ_DECODER_MODULE
 #define load_rc5_sz_decode()    request_module("ir-rc5-sz-decoder")
@@ -76,6 +94,8 @@ MODULE_DEVICE_TABLE(usb, streamzap_table);
 #define load_rc5_sz_decode()    {}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum StreamzapDecoderState {
 	PulseSpace,
 	FullPulse,
@@ -92,9 +112,12 @@ struct streamzap_ir {
 	struct device *dev;
 
 	/* usb */
+<<<<<<< HEAD
 	struct usb_device	*usbdev;
 	struct usb_interface	*interface;
 	struct usb_endpoint_descriptor *endpoint;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb		*urb_in;
 
 	/* buffer & dma */
@@ -104,6 +127,7 @@ struct streamzap_ir {
 
 	/* track what state we're in */
 	enum StreamzapDecoderState decoder_state;
+<<<<<<< HEAD
 	/* tracks whether we are currently receiving some signal */
 	bool			idle;
 	/* sum of signal lengths received since signal start */
@@ -114,6 +138,9 @@ struct streamzap_ir {
 	bool			timeout_enabled;
 
 	char			name[128];
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			phys[64];
 };
 
@@ -146,6 +173,7 @@ static void sz_push(struct streamzap_ir *sz, struct ir_raw_event rawir)
 static void sz_push_full_pulse(struct streamzap_ir *sz,
 			       unsigned char value)
 {
+<<<<<<< HEAD
 	DEFINE_IR_RAW_EVENT(rawir);
 
 	if (sz->idle) {
@@ -179,6 +207,13 @@ static void sz_push_full_pulse(struct streamzap_ir *sz,
 	sz->sum += rawir.duration;
 	rawir.duration = US_TO_NS(rawir.duration);
 	rawir.duration &= IR_MAX_DURATION;
+=======
+	struct ir_raw_event rawir = {
+		.pulse = true,
+		.duration = value * SZ_RESOLUTION + SZ_RESOLUTION / 2,
+	};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sz_push(sz, rawir);
 }
 
@@ -191,6 +226,7 @@ static void sz_push_half_pulse(struct streamzap_ir *sz,
 static void sz_push_full_space(struct streamzap_ir *sz,
 			       unsigned char value)
 {
+<<<<<<< HEAD
 	DEFINE_IR_RAW_EVENT(rawir);
 
 	rawir.pulse = false;
@@ -198,6 +234,13 @@ static void sz_push_full_space(struct streamzap_ir *sz,
 	rawir.duration += SZ_RESOLUTION / 2;
 	sz->sum += rawir.duration;
 	rawir.duration = US_TO_NS(rawir.duration);
+=======
+	struct ir_raw_event rawir = {
+		.pulse = false,
+		.duration = value * SZ_RESOLUTION + SZ_RESOLUTION / 2,
+	};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sz_push(sz, rawir);
 }
 
@@ -207,7 +250,11 @@ static void sz_push_half_space(struct streamzap_ir *sz,
 	sz_push_full_space(sz, value & SZ_SPACE_MASK);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * streamzap_callback - usb IRQ handler callback
  *
  * This procedure is invoked on reception of data from
@@ -265,6 +312,7 @@ static void streamzap_callback(struct urb *urb)
 			break;
 		case FullSpace:
 			if (sz->buf_in[i] == SZ_TIMEOUT) {
+<<<<<<< HEAD
 				DEFINE_IR_RAW_EVENT(rawir);
 
 				rawir.pulse = false;
@@ -274,6 +322,13 @@ static void streamzap_callback(struct urb *urb)
 					sz_push(sz, rawir);
 				ir_raw_event_handle(sz->rdev);
 				ir_raw_event_reset(sz->rdev);
+=======
+				struct ir_raw_event rawir = {
+					.pulse = false,
+					.duration = sz->rdev->timeout
+				};
+				sz_push(sz, rawir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				sz_push_full_space(sz, sz->buf_in[i]);
 			}
@@ -293,16 +348,24 @@ static void streamzap_callback(struct urb *urb)
 
 	ir_raw_event_handle(sz->rdev);
 	usb_submit_urb(urb, GFP_ATOMIC);
+<<<<<<< HEAD
 
 	return;
 }
 
 static struct rc_dev *streamzap_init_rc_dev(struct streamzap_ir *sz)
+=======
+}
+
+static struct rc_dev *streamzap_init_rc_dev(struct streamzap_ir *sz,
+					    struct usb_device *usbdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rc_dev *rdev;
 	struct device *dev = sz->dev;
 	int ret;
 
+<<<<<<< HEAD
 	rdev = rc_allocate_device();
 	if (!rdev) {
 		dev_err(dev, "remote dev allocation failed\n");
@@ -325,6 +388,24 @@ static struct rc_dev *streamzap_init_rc_dev(struct streamzap_ir *sz)
 	rdev->allowed_protos = RC_TYPE_ALL;
 	rdev->driver_name = DRIVER_NAME;
 	rdev->map_name = RC_MAP_STREAMZAP;
+=======
+	rdev = rc_allocate_device(RC_DRIVER_IR_RAW);
+	if (!rdev)
+		goto out;
+
+	usb_make_path(usbdev, sz->phys, sizeof(sz->phys));
+	strlcat(sz->phys, "/input0", sizeof(sz->phys));
+
+	rdev->device_name = "Streamzap PC Remote Infrared Receiver";
+	rdev->input_phys = sz->phys;
+	usb_to_input_id(usbdev, &rdev->input_id);
+	rdev->dev.parent = dev;
+	rdev->priv = sz;
+	rdev->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
+	rdev->driver_name = DRIVER_NAME;
+	rdev->map_name = RC_MAP_STREAMZAP;
+	rdev->rx_resolution = SZ_RESOLUTION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = rc_register_device(rdev);
 	if (ret < 0) {
@@ -339,13 +420,18 @@ out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	streamzap_probe
  *
  *	Called by usb-core to associated with a candidate device
  *	On any failure the return value is the ERROR
  *	On success return 0
  */
+<<<<<<< HEAD
 static int __devinit streamzap_probe(struct usb_interface *intf,
 				     const struct usb_device_id *id)
 {
@@ -353,6 +439,15 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 	struct usb_host_interface *iface_host;
 	struct streamzap_ir *sz = NULL;
 	char buf[63], name[128] = "";
+=======
+static int streamzap_probe(struct usb_interface *intf,
+			   const struct usb_device_id *id)
+{
+	struct usb_device *usbdev = interface_to_usbdev(intf);
+	struct usb_endpoint_descriptor *endpoint;
+	struct usb_host_interface *iface_host;
+	struct streamzap_ir *sz = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = -ENOMEM;
 	int pipe, maxp;
 
@@ -361,9 +456,12 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 	if (!sz)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sz->usbdev = usbdev;
 	sz->interface = intf;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check to ensure endpoint information matches requirements */
 	iface_host = intf->cur_altsetting;
 
@@ -374,25 +472,43 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 		goto free_sz;
 	}
 
+<<<<<<< HEAD
 	sz->endpoint = &(iface_host->endpoint[0].desc);
 	if ((sz->endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
 	    != USB_DIR_IN) {
 		dev_err(&intf->dev, "%s: endpoint doesn't match input device "
 			"02%02x\n", __func__, sz->endpoint->bEndpointAddress);
+=======
+	endpoint = &iface_host->endpoint[0].desc;
+	if (!usb_endpoint_dir_in(endpoint)) {
+		dev_err(&intf->dev, "%s: endpoint doesn't match input device 02%02x\n",
+			__func__, endpoint->bEndpointAddress);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto free_sz;
 	}
 
+<<<<<<< HEAD
 	if ((sz->endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
 	    != USB_ENDPOINT_XFER_INT) {
 		dev_err(&intf->dev, "%s: endpoint attributes don't match xfer "
 			"02%02x\n", __func__, sz->endpoint->bmAttributes);
+=======
+	if (!usb_endpoint_xfer_int(endpoint)) {
+		dev_err(&intf->dev, "%s: endpoint attributes don't match xfer 02%02x\n",
+			__func__, endpoint->bmAttributes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto free_sz;
 	}
 
+<<<<<<< HEAD
 	pipe = usb_rcvintpipe(usbdev, sz->endpoint->bEndpointAddress);
 	maxp = usb_maxpacket(usbdev, pipe, usb_pipeout(pipe));
+=======
+	pipe = usb_rcvintpipe(usbdev, endpoint->bEndpointAddress);
+	maxp = usb_maxpacket(usbdev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (maxp == 0) {
 		dev_err(&intf->dev, "%s: endpoint Max Packet Size is 0!?!\n",
@@ -413,6 +529,7 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 	sz->dev = &intf->dev;
 	sz->buf_in_len = maxp;
 
+<<<<<<< HEAD
 	if (usbdev->descriptor.iManufacturer
 	    && usb_string(usbdev, usbdev->descriptor.iManufacturer,
 			  buf, sizeof(buf)) > 0)
@@ -447,6 +564,25 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 	usb_fill_int_urb(sz->urb_in, usbdev, pipe, sz->buf_in,
 			 maxp, (usb_complete_t)streamzap_callback,
 			 sz, sz->endpoint->bInterval);
+=======
+	sz->rdev = streamzap_init_rc_dev(sz, usbdev);
+	if (!sz->rdev)
+		goto rc_dev_fail;
+
+	sz->decoder_state = PulseSpace;
+	/* FIXME: don't yet have a way to set this */
+	sz->rdev->timeout = SZ_TIMEOUT * SZ_RESOLUTION;
+	#if 0
+	/* not yet supported, depends on patches from maxim */
+	/* see also: LIRC_GET_REC_RESOLUTION and LIRC_SET_REC_TIMEOUT */
+	sz->min_timeout = SZ_TIMEOUT * SZ_RESOLUTION;
+	sz->max_timeout = SZ_TIMEOUT * SZ_RESOLUTION;
+	#endif
+
+	/* Complete final initialisations */
+	usb_fill_int_urb(sz->urb_in, usbdev, pipe, sz->buf_in,
+			 maxp, streamzap_callback, sz, endpoint->bInterval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sz->urb_in->transfer_dma = sz->dma_in;
 	sz->urb_in->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
@@ -455,12 +591,15 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 	if (usb_submit_urb(sz->urb_in, GFP_ATOMIC))
 		dev_err(sz->dev, "urb submit failed\n");
 
+<<<<<<< HEAD
 	dev_info(sz->dev, "Registered %s on usb%d:%d\n", name,
 		 usbdev->bus->busnum, usbdev->devnum);
 
 	/* Load the streamzap not-quite-rc5 decoder too */
 	load_rc5_sz_decode();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 rc_dev_fail:
@@ -473,7 +612,11 @@ free_sz:
 	return retval;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * streamzap_disconnect
  *
  * Called by the usb core when the device is removed from the system.
@@ -493,7 +636,10 @@ static void streamzap_disconnect(struct usb_interface *interface)
 	if (!sz)
 		return;
 
+<<<<<<< HEAD
 	sz->usbdev = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc_unregister_device(sz->rdev);
 	usb_kill_urb(sz->urb_in);
 	usb_free_urb(sz->urb_in);
@@ -515,8 +661,13 @@ static int streamzap_resume(struct usb_interface *intf)
 {
 	struct streamzap_ir *sz = usb_get_intfdata(intf);
 
+<<<<<<< HEAD
 	if (usb_submit_urb(sz->urb_in, GFP_ATOMIC)) {
 		dev_err(sz->dev, "Error sumbiting urb\n");
+=======
+	if (usb_submit_urb(sz->urb_in, GFP_NOIO)) {
+		dev_err(sz->dev, "Error submitting urb\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -528,6 +679,9 @@ module_usb_driver(streamzap_driver);
 MODULE_AUTHOR("Jarod Wilson <jarod@wilsonet.com>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging messages");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

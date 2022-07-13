@@ -1,15 +1,23 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Au12x0/Au1550 PSC ALSA ASoC audio support.
  *
  * (c) 2007-2009 MSC Vertriebsges.m.b.H.,
  *	Manuel Lauss <manuel.lauss@gmail.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
  * Au1xxx-PSC AC97 glue.
  *
+=======
+ * Au1xxx-PSC AC97 glue.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -62,7 +70,11 @@ static struct au1xpsc_audio_data *au1xpsc_ac97_workdata;
 static inline struct au1xpsc_audio_data *ac97_to_pscdata(struct snd_ac97 *x)
 {
 	struct snd_soc_card *c = x->bus->card->private_data;
+<<<<<<< HEAD
 	return snd_soc_dai_get_drvdata(c->rtd->cpu_dai);
+=======
+	return snd_soc_dai_get_drvdata(c->snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -79,20 +91,32 @@ static unsigned short au1xpsc_ac97_read(struct snd_ac97 *ac97,
 	unsigned short retry, tmo;
 	unsigned long data;
 
+<<<<<<< HEAD
 	au_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
 	au_sync();
+=======
+	__raw_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retry = AC97_RW_RETRIES;
 	do {
 		mutex_lock(&pscdata->lock);
 
+<<<<<<< HEAD
 		au_writel(PSC_AC97CDC_RD | PSC_AC97CDC_INDX(reg),
 			  AC97_CDC(pscdata));
 		au_sync();
+=======
+		__raw_writel(PSC_AC97CDC_RD | PSC_AC97CDC_INDX(reg),
+			  AC97_CDC(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tmo = 20;
 		do {
 			udelay(21);
+<<<<<<< HEAD
 			if (au_readl(AC97_EVNT(pscdata)) & PSC_AC97EVNT_CD)
 				break;
 		} while (--tmo);
@@ -101,6 +125,16 @@ static unsigned short au1xpsc_ac97_read(struct snd_ac97 *ac97,
 
 		au_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
 		au_sync();
+=======
+			if (__raw_readl(AC97_EVNT(pscdata)) & PSC_AC97EVNT_CD)
+				break;
+		} while (--tmo);
+
+		data = __raw_readl(AC97_CDC(pscdata));
+
+		__raw_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&pscdata->lock);
 
@@ -119,26 +153,46 @@ static void au1xpsc_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
 	struct au1xpsc_audio_data *pscdata = ac97_to_pscdata(ac97);
 	unsigned int tmo, retry;
 
+<<<<<<< HEAD
 	au_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
 	au_sync();
+=======
+	__raw_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retry = AC97_RW_RETRIES;
 	do {
 		mutex_lock(&pscdata->lock);
 
+<<<<<<< HEAD
 		au_writel(PSC_AC97CDC_INDX(reg) | (val & 0xffff),
 			  AC97_CDC(pscdata));
 		au_sync();
+=======
+		__raw_writel(PSC_AC97CDC_INDX(reg) | (val & 0xffff),
+			  AC97_CDC(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tmo = 20;
 		do {
 			udelay(21);
+<<<<<<< HEAD
 			if (au_readl(AC97_EVNT(pscdata)) & PSC_AC97EVNT_CD)
 				break;
 		} while (--tmo);
 
 		au_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
 		au_sync();
+=======
+			if (__raw_readl(AC97_EVNT(pscdata)) & PSC_AC97EVNT_CD)
+				break;
+		} while (--tmo);
+
+		__raw_writel(PSC_AC97EVNT_CD, AC97_EVNT(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&pscdata->lock);
 	} while (--retry && !tmo);
@@ -149,11 +203,19 @@ static void au1xpsc_ac97_warm_reset(struct snd_ac97 *ac97)
 {
 	struct au1xpsc_audio_data *pscdata = ac97_to_pscdata(ac97);
 
+<<<<<<< HEAD
 	au_writel(PSC_AC97RST_SNC, AC97_RST(pscdata));
 	au_sync();
 	msleep(10);
 	au_writel(0, AC97_RST(pscdata));
 	au_sync();
+=======
+	__raw_writel(PSC_AC97RST_SNC, AC97_RST(pscdata));
+	wmb(); /* drain writebuffer */
+	msleep(10);
+	__raw_writel(0, AC97_RST(pscdata));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void au1xpsc_ac97_cold_reset(struct snd_ac97 *ac97)
@@ -162,6 +224,7 @@ static void au1xpsc_ac97_cold_reset(struct snd_ac97 *ac97)
 	int i;
 
 	/* disable PSC during cold reset */
+<<<<<<< HEAD
 	au_writel(0, AC97_CFG(au1xpsc_ac97_workdata));
 	au_sync();
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(pscdata));
@@ -181,6 +244,27 @@ static void au1xpsc_ac97_cold_reset(struct snd_ac97 *ac97)
 	/* wait for PSC to indicate it's ready */
 	i = 1000;
 	while (!((au_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_SR)) && (--i))
+=======
+	__raw_writel(0, AC97_CFG(au1xpsc_ac97_workdata));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* issue cold reset */
+	__raw_writel(PSC_AC97RST_RST, AC97_RST(pscdata));
+	wmb(); /* drain writebuffer */
+	msleep(500);
+	__raw_writel(0, AC97_RST(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* enable PSC */
+	__raw_writel(PSC_CTRL_ENABLE, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for PSC to indicate it's ready */
+	i = 1000;
+	while (!((__raw_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_SR)) && (--i))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(1);
 
 	if (i == 0) {
@@ -189,25 +273,41 @@ static void au1xpsc_ac97_cold_reset(struct snd_ac97 *ac97)
 	}
 
 	/* enable the ac97 function */
+<<<<<<< HEAD
 	au_writel(pscdata->cfg | PSC_AC97CFG_DE_ENABLE, AC97_CFG(pscdata));
 	au_sync();
 
 	/* wait for AC97 core to become ready */
 	i = 1000;
 	while (!((au_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR)) && (--i))
+=======
+	__raw_writel(pscdata->cfg | PSC_AC97CFG_DE_ENABLE, AC97_CFG(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for AC97 core to become ready */
+	i = 1000;
+	while (!((__raw_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR)) && (--i))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(1);
 	if (i == 0)
 		printk(KERN_ERR "au1xpsc-ac97: AC97 ctrl not ready\n");
 }
 
 /* AC97 controller operations */
+<<<<<<< HEAD
 struct snd_ac97_bus_ops soc_ac97_ops = {
+=======
+static struct snd_ac97_bus_ops psc_ac97_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read		= au1xpsc_ac97_read,
 	.write		= au1xpsc_ac97_write,
 	.reset		= au1xpsc_ac97_cold_reset,
 	.warm_reset	= au1xpsc_ac97_warm_reset,
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(soc_ac97_ops);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int au1xpsc_ac97_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
@@ -219,8 +319,13 @@ static int au1xpsc_ac97_hw_params(struct snd_pcm_substream *substream,
 
 	chans = params_channels(params);
 
+<<<<<<< HEAD
 	r = ro = au_readl(AC97_CFG(pscdata));
 	stat = au_readl(AC97_STAT(pscdata));
+=======
+	r = ro = __raw_readl(AC97_CFG(pscdata));
+	stat = __raw_readl(AC97_STAT(pscdata));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* already active? */
 	if (stat & (PSC_AC97STAT_TB | PSC_AC97STAT_RB)) {
@@ -253,18 +358,28 @@ static int au1xpsc_ac97_hw_params(struct snd_pcm_substream *substream,
 		mutex_lock(&pscdata->lock);
 
 		/* disable AC97 device controller first... */
+<<<<<<< HEAD
 		au_writel(r & ~PSC_AC97CFG_DE_ENABLE, AC97_CFG(pscdata));
 		au_sync();
 
 		/* ...wait for it... */
 		t = 100;
 		while ((au_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR) && --t)
+=======
+		__raw_writel(r & ~PSC_AC97CFG_DE_ENABLE, AC97_CFG(pscdata));
+		wmb(); /* drain writebuffer */
+
+		/* ...wait for it... */
+		t = 100;
+		while ((__raw_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR) && --t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msleep(1);
 
 		if (!t)
 			printk(KERN_ERR "PSC-AC97: can't disable!\n");
 
 		/* ...write config... */
+<<<<<<< HEAD
 		au_writel(r, AC97_CFG(pscdata));
 		au_sync();
 
@@ -275,6 +390,18 @@ static int au1xpsc_ac97_hw_params(struct snd_pcm_substream *substream,
 		/* ...and wait for ready bit */
 		t = 100;
 		while ((!(au_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR)) && --t)
+=======
+		__raw_writel(r, AC97_CFG(pscdata));
+		wmb(); /* drain writebuffer */
+
+		/* ...enable the AC97 controller again... */
+		__raw_writel(r | PSC_AC97CFG_DE_ENABLE, AC97_CFG(pscdata));
+		wmb(); /* drain writebuffer */
+
+		/* ...and wait for ready bit */
+		t = 100;
+		while ((!(__raw_readl(AC97_STAT(pscdata)) & PSC_AC97STAT_DR)) && --t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msleep(1);
 
 		if (!t)
@@ -301,6 +428,7 @@ static int au1xpsc_ac97_trigger(struct snd_pcm_substream *substream,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
+<<<<<<< HEAD
 		au_writel(AC97PCR_CLRFIFO(stype), AC97_PCR(pscdata));
 		au_sync();
 		au_writel(AC97PCR_START(stype), AC97_PCR(pscdata));
@@ -316,6 +444,23 @@ static int au1xpsc_ac97_trigger(struct snd_pcm_substream *substream,
 
 		au_writel(AC97PCR_CLRFIFO(stype), AC97_PCR(pscdata));
 		au_sync();
+=======
+		__raw_writel(AC97PCR_CLRFIFO(stype), AC97_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+		__raw_writel(AC97PCR_START(stype), AC97_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+		break;
+	case SNDRV_PCM_TRIGGER_STOP:
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+		__raw_writel(AC97PCR_STOP(stype), AC97_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+
+		while (__raw_readl(AC97_STAT(pscdata)) & AC97STAT_BUSY(stype))
+			asm volatile ("nop");
+
+		__raw_writel(AC97PCR_CLRFIFO(stype), AC97_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	default:
@@ -338,14 +483,21 @@ static int au1xpsc_ac97_probe(struct snd_soc_dai *dai)
 }
 
 static const struct snd_soc_dai_ops au1xpsc_ac97_dai_ops = {
+<<<<<<< HEAD
+=======
+	.probe		= au1xpsc_ac97_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.startup	= au1xpsc_ac97_startup,
 	.trigger	= au1xpsc_ac97_trigger,
 	.hw_params	= au1xpsc_ac97_hw_params,
 };
 
 static const struct snd_soc_dai_driver au1xpsc_ac97_dai_template = {
+<<<<<<< HEAD
 	.ac97_control		= 1,
 	.probe			= au1xpsc_ac97_probe,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.playback = {
 		.rates		= AC97_RATES,
 		.formats	= AC97_FMTS,
@@ -361,10 +513,22 @@ static const struct snd_soc_dai_driver au1xpsc_ac97_dai_template = {
 	.ops = &au1xpsc_ac97_dai_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 {
 	int ret;
 	struct resource *iores, *dmares;
+=======
+static const struct snd_soc_component_driver au1xpsc_ac97_component = {
+	.name			= "au1xpsc-ac97",
+	.legacy_dai_naming	= 1,
+};
+
+static int au1xpsc_ac97_drvprobe(struct platform_device *pdev)
+{
+	int ret;
+	struct resource *dmares;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long sel;
 	struct au1xpsc_audio_data *wd;
 
@@ -375,6 +539,7 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 
 	mutex_init(&wd->lock);
 
+<<<<<<< HEAD
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!iores)
 		return -ENODEV;
@@ -388,6 +553,11 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 				resource_size(iores));
 	if (!wd->mmio)
 		return -EBUSY;
+=======
+	wd->mmio = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(wd->mmio))
+		return PTR_ERR(wd->mmio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dmares = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dmares)
@@ -404,6 +574,7 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 		  PSC_AC97CFG_DE_ENABLE;
 
 	/* preserve PSC clock source set up by platform	 */
+<<<<<<< HEAD
 	sel = au_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
@@ -411,6 +582,15 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 	au_sync();
 	au_writel(PSC_SEL_PS_AC97MODE | sel, PSC_SEL(wd));
 	au_sync();
+=======
+	sel = __raw_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(0, PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_SEL_PS_AC97MODE | sel, PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* name the DAI like this device instance ("au1xpsc-ac97.PSCINDEX") */
 	memcpy(&wd->dai_drv, &au1xpsc_ac97_dai_template,
@@ -419,7 +599,16 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, wd);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_dai(&pdev->dev, &wd->dai_drv);
+=======
+	ret = snd_soc_set_ac97_ops(&psc_ac97_ops);
+	if (ret)
+		return ret;
+
+	ret = snd_soc_register_component(&pdev->dev, &au1xpsc_ac97_component,
+					 &wd->dai_drv, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -427,6 +616,7 @@ static int __devinit au1xpsc_ac97_drvprobe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit au1xpsc_ac97_drvremove(struct platform_device *pdev)
 {
 	struct au1xpsc_audio_data *wd = platform_get_drvdata(pdev);
@@ -442,6 +632,21 @@ static int __devexit au1xpsc_ac97_drvremove(struct platform_device *pdev)
 	au1xpsc_ac97_workdata = NULL;	/* MDEV */
 
 	return 0;
+=======
+static void au1xpsc_ac97_drvremove(struct platform_device *pdev)
+{
+	struct au1xpsc_audio_data *wd = platform_get_drvdata(pdev);
+
+	snd_soc_unregister_component(&pdev->dev);
+
+	/* disable PSC completely */
+	__raw_writel(0, AC97_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+
+	au1xpsc_ac97_workdata = NULL;	/* MDEV */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -450,12 +655,21 @@ static int au1xpsc_ac97_drvsuspend(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* save interesting registers and disable PSC */
+<<<<<<< HEAD
 	wd->pm[0] = au_readl(PSC_SEL(wd));
 
 	au_writel(0, AC97_CFG(wd));
 	au_sync();
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
+=======
+	wd->pm[0] = __raw_readl(PSC_SEL(wd));
+
+	__raw_writel(0, AC97_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -465,8 +679,13 @@ static int au1xpsc_ac97_drvresume(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* restore PSC clock config */
+<<<<<<< HEAD
 	au_writel(wd->pm[0] | PSC_SEL_PS_AC97MODE, PSC_SEL(wd));
 	au_sync();
+=======
+	__raw_writel(wd->pm[0] | PSC_SEL_PS_AC97MODE, PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* after this point the ac97 core will cold-reset the codec.
 	 * During cold-reset the PSC is reinitialized and the last
@@ -475,7 +694,11 @@ static int au1xpsc_ac97_drvresume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dev_pm_ops au1xpscac97_pmops = {
+=======
+static const struct dev_pm_ops au1xpscac97_pmops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= au1xpsc_ac97_drvsuspend,
 	.resume		= au1xpsc_ac97_drvresume,
 };
@@ -491,6 +714,7 @@ static struct dev_pm_ops au1xpscac97_pmops = {
 static struct platform_driver au1xpsc_ac97_driver = {
 	.driver	= {
 		.name	= "au1xpsc_ac97",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= AU1XPSCAC97_PMOPS,
 	},
@@ -511,6 +735,15 @@ static void __exit au1xpsc_ac97_unload(void)
 
 module_init(au1xpsc_ac97_load);
 module_exit(au1xpsc_ac97_unload);
+=======
+		.pm	= AU1XPSCAC97_PMOPS,
+	},
+	.probe		= au1xpsc_ac97_drvprobe,
+	.remove_new	= au1xpsc_ac97_drvremove,
+};
+
+module_platform_driver(au1xpsc_ac97_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Au12x0/Au1550 PSC AC97 ALSA ASoC audio driver");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  BSD Process Accounting for Linux - Definitions
  *
@@ -11,6 +15,7 @@
  *  Copyright (C) 1995 - 1997 Marco van Wieringen - ELM Consultancy B.V.
  *
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_ACCT_H
 #define _LINUX_ACCT_H
@@ -124,12 +129,26 @@ struct pid_namespace;
 extern int acct_parm[]; /* for sysctl */
 extern void acct_auto_close_mnt(struct vfsmount *m);
 extern void acct_auto_close(struct super_block *sb);
+=======
+#ifndef _LINUX_ACCT_H
+#define _LINUX_ACCT_H
+
+#include <uapi/linux/acct.h>
+
+
+
+#ifdef CONFIG_BSD_PROCESS_ACCT
+struct pid_namespace;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void acct_collect(long exitcode, int group_dead);
 extern void acct_process(void);
 extern void acct_exit_ns(struct pid_namespace *);
 #else
+<<<<<<< HEAD
 #define acct_auto_close_mnt(x)	do { } while (0)
 #define acct_auto_close(x)	do { } while (0)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define acct_collect(x,y)	do { } while (0)
 #define acct_process()		do { } while (0)
 #define acct_exit_ns(ns)	do { } while (0)
@@ -163,12 +182,15 @@ typedef struct acct_v3 acct_t;
 typedef struct acct acct_t;
 #endif
 
+<<<<<<< HEAD
 #else
 #define ACCT_VERSION	2
 #define AHZ		(HZ)
 #endif	/* __KERNEL */
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jiffies.h>
 /*
  * Yet another set of HZ to *HZ helper functions.
@@ -210,6 +232,9 @@ static inline u64 nsec_to_AHZ(u64 x)
 	return x;
 }
 
+<<<<<<< HEAD
 #endif  /* __KERNEL */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_ACCT_H */

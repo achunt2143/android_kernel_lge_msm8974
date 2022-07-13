@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Adaptec network device configuration
 #
@@ -6,10 +10,15 @@ config NET_VENDOR_ADAPTEC
 	bool "Adaptec devices"
 	default y
 	depends on PCI
+<<<<<<< HEAD
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -22,9 +31,14 @@ config ADAPTEC_STARFIRE
 	tristate "Adaptec Starfire/DuraLAN support"
 	depends on PCI
 	select CRC32
+<<<<<<< HEAD
 	select NET_CORE
 	select MII
 	---help---
+=======
+	select MII
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you have an Adaptec Starfire (or DuraLAN) PCI network
 	  adapter. The DuraLAN chip is used on the 64 bit PCI boards from
 	  Adaptec e.g. the ANA-6922A. The older 32 bit boards use the tulip

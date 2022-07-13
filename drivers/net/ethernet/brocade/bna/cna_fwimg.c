@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,6 +15,17 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/firmware.h>
 #include "bnad.h"
@@ -29,9 +41,16 @@ cna_read_firmware(struct pci_dev *pdev, u32 **bfi_image,
 			u32 *bfi_image_size, char *fw_name)
 {
 	const struct firmware *fw;
+<<<<<<< HEAD
 
 	if (request_firmware(&fw, fw_name, &pdev->dev)) {
 		pr_alert("Can't locate firmware %s\n", fw_name);
+=======
+	u32 n;
+
+	if (request_firmware(&fw, fw_name, &pdev->dev)) {
+		dev_alert(&pdev->dev, "can't load firmware %s\n", fw_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -39,6 +58,15 @@ cna_read_firmware(struct pci_dev *pdev, u32 **bfi_image,
 	*bfi_image_size = fw->size/sizeof(u32);
 	bfi_fw = fw;
 
+<<<<<<< HEAD
+=======
+	/* Convert loaded firmware to host order as it is stored in file
+	 * as sequence of LE32 integers.
+	 */
+	for (n = 0; n < *bfi_image_size; n++)
+		le32_to_cpus(*bfi_image + n);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return *bfi_image;
 error:
 	return NULL;
@@ -67,11 +95,17 @@ bfa_cb_image_get_chunk(enum bfi_asic_gen asic_gen, u32 off)
 {
 	switch (asic_gen) {
 	case BFI_ASIC_GEN_CT:
+<<<<<<< HEAD
 		return (u32 *)(bfi_image_ct_cna + off);
 		break;
 	case BFI_ASIC_GEN_CT2:
 		return (u32 *)(bfi_image_ct2_cna + off);
 		break;
+=======
+		return (bfi_image_ct_cna + off);
+	case BFI_ASIC_GEN_CT2:
+		return (bfi_image_ct2_cna + off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return NULL;
 	}
@@ -83,10 +117,15 @@ bfa_cb_image_get_size(enum bfi_asic_gen asic_gen)
 	switch (asic_gen) {
 	case BFI_ASIC_GEN_CT:
 		return bfi_image_ct_cna_size;
+<<<<<<< HEAD
 		break;
 	case BFI_ASIC_GEN_CT2:
 		return bfi_image_ct2_cna_size;
 		break;
+=======
+	case BFI_ASIC_GEN_CT2:
+		return bfi_image_ct2_cna_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return 0;
 	}

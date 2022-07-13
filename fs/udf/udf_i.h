@@ -1,6 +1,26 @@
+<<<<<<< HEAD
 #ifndef _UDF_I_H
 #define _UDF_I_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _UDF_I_H
+#define _UDF_I_H
+
+struct extent_position {
+	struct buffer_head *bh;
+	uint32_t offset;
+	struct kernel_lb_addr block;
+};
+
+struct udf_ext_cache {
+	/* Extent position */
+	struct extent_position epos;
+	/* Start logical offset in bytes */
+	loff_t lstart;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The i_data_sem and i_mutex serve for protection of allocation information
  * of a regular files and symlinks. This includes all extents belonging to
@@ -14,7 +34,11 @@
  */
 
 struct udf_inode_info {
+<<<<<<< HEAD
 	struct timespec		i_crtime;
+=======
+	struct timespec64	i_crtime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Physical address of inode */
 	struct kernel_lb_addr		i_location;
 	__u64			i_unique;
@@ -24,10 +48,15 @@ struct udf_inode_info {
 	__u32			i_next_alloc_block;
 	__u32			i_next_alloc_goal;
 	__u32			i_checkpoint;
+<<<<<<< HEAD
+=======
+	__u32			i_extraPerms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		i_alloc_type : 3;
 	unsigned		i_efe : 1;	/* extendedFileEntry */
 	unsigned		i_use : 1;	/* unallocSpaceEntry */
 	unsigned		i_strat4096 : 1;
+<<<<<<< HEAD
 	unsigned		reserved : 26;
 	union {
 		struct short_ad	*i_sad;
@@ -35,12 +64,28 @@ struct udf_inode_info {
 		__u8		*i_data;
 	} i_ext;
 	struct rw_semaphore	i_data_sem;
+=======
+	unsigned		i_streamdir : 1;
+	unsigned		i_hidden : 1;	/* hidden system inode */
+	unsigned		reserved : 24;
+	__u8			*i_data;
+	struct kernel_lb_addr	i_locStreamdir;
+	__u64			i_lenStreams;
+	struct rw_semaphore	i_data_sem;
+	struct udf_ext_cache cached_extent;
+	/* Spinlock for protecting extent cache */
+	spinlock_t i_extent_cache_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode vfs_inode;
 };
 
 static inline struct udf_inode_info *UDF_I(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct udf_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct udf_inode_info, vfs_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _UDF_I_H) */

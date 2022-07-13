@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 config SND_KIRKWOOD_SOC
 	tristate "SoC Audio for the Marvell Kirkwood chip"
 	depends on ARCH_KIRKWOOD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config SND_KIRKWOOD_SOC
+	tristate "SoC Audio for the Marvell Kirkwood and Dove chips"
+	depends on ARCH_DOVE || ARCH_MVEBU || COMPILE_TEST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y or M if you want to add support for codecs attached to
 	  the Kirkwood I2S interface. You will also need to select the
 	  audio interfaces to support below.
 
+<<<<<<< HEAD
 config SND_KIRKWOOD_SOC_I2S
 	tristate
 
@@ -27,4 +35,14 @@ config SND_KIRKWOOD_SOC_T5325
 	help
 	  Say Y if you want to add support for SoC audio on
 	  the HP t5325 thin client.
+=======
+config SND_KIRKWOOD_SOC_ARMADA370_DB
+	tristate "SoC Audio support for Armada 370 DB"
+	depends on SND_KIRKWOOD_SOC && (ARCH_MVEBU || COMPILE_TEST) && I2C
+	select SND_SOC_CS42L51
+	select SND_SOC_SPDIF
+	help
+	  Say Y if you want to add support for SoC audio on
+	  the Armada 370 Development Board.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

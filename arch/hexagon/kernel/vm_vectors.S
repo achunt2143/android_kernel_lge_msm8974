@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Event jump tables
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Event jump tables
+ *
+ * Copyright (c) 2010-2012,2013, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/hexagon_vm.h>
@@ -41,7 +49,11 @@ _K_VM_event_vector:
 	jump 1b;  /*  Reset  */
 	jump _K_enter_machcheck;
 	jump _K_enter_genex;
+<<<<<<< HEAD
 	jump 1b;  /*  3 Rsvd  */
+=======
+	jump _K_enter_debug;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jump 1b;  /*  4 Rsvd  */
 	jump _K_enter_trap0;
 	jump 1b;  /*  6 Rsvd  */

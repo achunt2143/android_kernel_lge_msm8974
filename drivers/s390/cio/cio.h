@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef S390_CIO_H
 #define S390_CIO_H
 
@@ -8,6 +12,10 @@
 #include <asm/cio.h>
 #include <asm/fcx.h>
 #include <asm/schid.h>
+<<<<<<< HEAD
+=======
+#include <asm/tpi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "chsc.h"
 
 /*
@@ -81,7 +89,11 @@ enum sch_todo {
 /* subchannel data structure used by I/O subroutines */
 struct subchannel {
 	struct subchannel_id schid;
+<<<<<<< HEAD
 	spinlock_t *lock;	/* subchannel lock */
+=======
+	spinlock_t lock;	/* subchannel lock */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex reg_mutex;
 	enum {
 		SUBCHANNEL_TYPE_IO = 0,
@@ -100,20 +112,42 @@ struct subchannel {
 	enum sch_todo todo;
 	struct work_struct todo_work;
 	struct schib_config config;
+<<<<<<< HEAD
 } __attribute__ ((aligned(8)));
 
 #define to_subchannel(n) container_of(n, struct subchannel, dev)
 
 extern int cio_validate_subchannel (struct subchannel *, struct subchannel_id);
+=======
+	u64 dma_mask;
+	/*
+	 * Driver name to force a match.  Do not set directly, because core
+	 * frees it.  Use driver_set_override() to set or clear it.
+	 */
+	const char *driver_override;
+} __attribute__ ((aligned(8)));
+
+DECLARE_PER_CPU_ALIGNED(struct irb, cio_irb);
+
+#define to_subchannel(n) container_of(n, struct subchannel, dev)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int cio_enable_subchannel(struct subchannel *, u32);
 extern int cio_disable_subchannel (struct subchannel *);
 extern int cio_cancel (struct subchannel *);
 extern int cio_clear (struct subchannel *);
+<<<<<<< HEAD
+=======
+extern int cio_cancel_halt_clear(struct subchannel *, int *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int cio_resume (struct subchannel *);
 extern int cio_halt (struct subchannel *);
 extern int cio_start (struct subchannel *, struct ccw1 *, __u8);
 extern int cio_start_key (struct subchannel *, struct ccw1 *, __u8, __u8);
+<<<<<<< HEAD
 extern int cio_cancel (struct subchannel *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int cio_set_options (struct subchannel *, int);
 extern int cio_update_schib(struct subchannel *sch);
 extern int cio_commit_config(struct subchannel *sch);
@@ -121,13 +155,18 @@ extern int cio_commit_config(struct subchannel *sch);
 int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key);
 int cio_tm_intrg(struct subchannel *sch);
 
+<<<<<<< HEAD
 int cio_create_sch_lock(struct subchannel *);
 void do_adapter_IO(u8 isc);
 void do_IRQ(struct pt_regs *);
+=======
+extern int __init airq_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Use with care. */
 #ifdef CONFIG_CCW_CONSOLE
 extern struct subchannel *cio_probe_console(void);
+<<<<<<< HEAD
 extern void cio_release_console(void);
 extern int cio_is_console(struct subchannel_id);
 extern struct subchannel *cio_get_console_subchannel(void);
@@ -138,6 +177,14 @@ extern void *cio_get_console_priv(void);
 #define cio_get_console_subchannel() NULL
 #define cio_get_console_lock() NULL
 #define cio_get_console_priv() NULL
+=======
+extern int cio_is_console(struct subchannel_id);
+extern void cio_register_early_subchannels(void);
+extern void cio_tsch(struct subchannel *sch);
+#else
+#define cio_is_console(schid) 0
+static inline void cio_register_early_subchannels(void) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

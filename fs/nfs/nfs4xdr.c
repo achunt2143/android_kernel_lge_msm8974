@@ -52,17 +52,38 @@
 #include <linux/nfs.h>
 #include <linux/nfs4.h>
 #include <linux/nfs_fs.h>
+<<<<<<< HEAD
 #include <linux/nfs_idmap.h>
 #include "nfs4_fs.h"
 #include "internal.h"
 #include "pnfs.h"
+=======
+
+#include "nfs4_fs.h"
+#include "nfs4trace.h"
+#include "internal.h"
+#include "nfs4idmap.h"
+#include "nfs4session.h"
+#include "pnfs.h"
+#include "netns.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSDBG_FACILITY		NFSDBG_XDR
 
 /* Mapping from NFS error code to "errno" error code. */
 #define errno_NFSERR_IO		EIO
 
+<<<<<<< HEAD
 static int nfs4_stat_to_errno(int);
+=======
+struct compound_hdr;
+static int nfs4_stat_to_errno(int);
+static void encode_layoutget(struct xdr_stream *xdr,
+			     const struct nfs4_layoutget_args *args,
+			     struct compound_hdr *hdr);
+static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
+			     struct nfs4_layoutget_res *res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NFSv4 COMPOUND tags are only wanted for debugging purposes */
 #ifdef DEBUG
@@ -74,6 +95,10 @@ static int nfs4_stat_to_errno(int);
 /* lock,open owner id:
  * we currently use size 2 (u64) out of (NFS4_OPAQUE_LIMIT  >> 2)
  */
+<<<<<<< HEAD
+=======
+#define pagepad_maxsz		(1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define open_owner_id_maxsz	(1 + 2 + 1 + 1 + 2)
 #define lock_owner_id_maxsz	(1 + 1 + 4)
 #define decode_lockowner_maxsz	(1 + XDR_QUADLEN(IDMAP_NAMESZ))
@@ -95,13 +120,34 @@ static int nfs4_stat_to_errno(int);
 				((3+NFS4_FHSIZE) >> 2))
 #define nfs4_fattr_bitmap_maxsz 4
 #define encode_getattr_maxsz    (op_encode_hdr_maxsz + nfs4_fattr_bitmap_maxsz)
+<<<<<<< HEAD
+=======
+#define nfstime4_maxsz		(3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define nfs4_name_maxsz		(1 + ((3 + NFS4_MAXNAMLEN) >> 2))
 #define nfs4_path_maxsz		(1 + ((3 + NFS4_MAXPATHLEN) >> 2))
 #define nfs4_owner_maxsz	(1 + XDR_QUADLEN(IDMAP_NAMESZ))
 #define nfs4_group_maxsz	(1 + XDR_QUADLEN(IDMAP_NAMESZ))
+<<<<<<< HEAD
 /* This is based on getfattr, which uses the most attributes: */
 #define nfs4_fattr_value_maxsz	(1 + (1 + 2 + 2 + 4 + 2 + 1 + 1 + 2 + 2 + \
 				3 + 3 + 3 + nfs4_owner_maxsz + nfs4_group_maxsz))
+=======
+#ifdef CONFIG_NFS_V4_SECURITY_LABEL
+/* PI(4 bytes) + LFS(4 bytes) + 1(for null terminator?) + MAXLABELLEN */
+#define	nfs4_label_maxsz	(4 + 4 + 1 + XDR_QUADLEN(NFS4_MAXLABELLEN))
+#else
+#define	nfs4_label_maxsz	0
+#endif
+/* We support only one layout type per file system */
+#define decode_mdsthreshold_maxsz (1 + 1 + nfs4_fattr_bitmap_maxsz + 1 + 8)
+/* This is based on getfattr, which uses the most attributes: */
+#define nfs4_fattr_value_maxsz	(1 + (1 + 2 + 2 + 4 + 2 + 1 + 1 + 2 + 2 + \
+				3*nfstime4_maxsz + \
+				nfs4_owner_maxsz + \
+				nfs4_group_maxsz + nfs4_label_maxsz + \
+				 decode_mdsthreshold_maxsz))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define nfs4_fattr_maxsz	(nfs4_fattr_bitmap_maxsz + \
 				nfs4_fattr_value_maxsz)
 #define decode_getattr_maxsz    (op_decode_hdr_maxsz + nfs4_fattr_maxsz)
@@ -109,7 +155,13 @@ static int nfs4_stat_to_errno(int);
 				 1 + 2 + 1 + \
 				nfs4_owner_maxsz + \
 				nfs4_group_maxsz + \
+<<<<<<< HEAD
 				4 + 4)
+=======
+				nfs4_label_maxsz + \
+				1 + nfstime4_maxsz + \
+				1 + nfstime4_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_savefh_maxsz     (op_encode_hdr_maxsz)
 #define decode_savefh_maxsz     (op_decode_hdr_maxsz)
 #define encode_restorefh_maxsz  (op_encode_hdr_maxsz)
@@ -119,12 +171,27 @@ static int nfs4_stat_to_errno(int);
  * layout types will be returned.
  */
 #define decode_fsinfo_maxsz	(op_decode_hdr_maxsz + \
+<<<<<<< HEAD
 				 nfs4_fattr_bitmap_maxsz + 4 + 8 + 5)
+=======
+				 nfs4_fattr_bitmap_maxsz + 1 + \
+				 1 /* lease time */ + \
+				 2 /* max filesize */ + \
+				 2 /* max read */ + \
+				 2 /* max write */ + \
+				 nfstime4_maxsz /* time delta */ + \
+				 5 /* fs layout types */ + \
+				 1 /* layout blksize */ + \
+				 1 /* clone blksize */ + \
+				 1 /* change attr type */ + \
+				 1 /* xattr support */)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_renew_maxsz	(op_encode_hdr_maxsz + 3)
 #define decode_renew_maxsz	(op_decode_hdr_maxsz)
 #define encode_setclientid_maxsz \
 				(op_encode_hdr_maxsz + \
 				XDR_QUADLEN(NFS4_VERIFIER_SIZE) + \
+<<<<<<< HEAD
 				XDR_QUADLEN(NFS4_SETCLIENTID_NAMELEN) + \
 				1 /* sc_prog */ + \
 				XDR_QUADLEN(RPCBIND_MAXNETIDLEN) + \
@@ -134,6 +201,20 @@ static int nfs4_stat_to_errno(int);
 				(op_decode_hdr_maxsz + \
 				2 + \
 				1024) /* large value for CLID_INUSE */
+=======
+				/* client name */ \
+				1 + XDR_QUADLEN(NFS4_OPAQUE_LIMIT) + \
+				1 /* sc_prog */ + \
+				1 + XDR_QUADLEN(RPCBIND_MAXNETIDLEN) + \
+				1 + XDR_QUADLEN(RPCBIND_MAXUADDRLEN) + \
+				1) /* sc_cb_ident */
+#define decode_setclientid_maxsz \
+				(op_decode_hdr_maxsz + \
+				2 /* clientid */ + \
+				XDR_QUADLEN(NFS4_VERIFIER_SIZE) + \
+				1 + XDR_QUADLEN(RPCBIND_MAXNETIDLEN) + \
+				1 + XDR_QUADLEN(RPCBIND_MAXUADDRLEN))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_setclientid_confirm_maxsz \
 				(op_encode_hdr_maxsz + \
 				3 + (NFS4_VERIFIER_SIZE >> 2))
@@ -141,6 +222,11 @@ static int nfs4_stat_to_errno(int);
 				(op_decode_hdr_maxsz)
 #define encode_lookup_maxsz	(op_encode_hdr_maxsz + nfs4_name_maxsz)
 #define decode_lookup_maxsz	(op_decode_hdr_maxsz)
+<<<<<<< HEAD
+=======
+#define encode_lookupp_maxsz	(op_encode_hdr_maxsz)
+#define decode_lookupp_maxsz	(op_decode_hdr_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_share_access_maxsz \
 				(2)
 #define encode_createmode_maxsz	(1 + encode_attrs_maxsz + encode_verifier_maxsz)
@@ -151,8 +237,15 @@ static int nfs4_stat_to_errno(int);
 				open_owner_id_maxsz + \
 				encode_opentype_maxsz + \
 				encode_claim_null_maxsz)
+<<<<<<< HEAD
 #define decode_ace_maxsz	(3 + nfs4_owner_maxsz)
 #define decode_delegation_maxsz	(1 + decode_stateid_maxsz + 1 + \
+=======
+#define decode_space_limit_maxsz	(3)
+#define decode_ace_maxsz	(3 + nfs4_owner_maxsz)
+#define decode_delegation_maxsz	(1 + decode_stateid_maxsz + 1 + \
+				decode_space_limit_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				decode_ace_maxsz)
 #define decode_change_info_maxsz	(5)
 #define decode_open_maxsz	(op_decode_hdr_maxsz + \
@@ -184,6 +277,7 @@ static int nfs4_stat_to_errno(int);
 				 nfs4_fattr_bitmap_maxsz)
 #define encode_read_maxsz	(op_encode_hdr_maxsz + \
 				 encode_stateid_maxsz + 3)
+<<<<<<< HEAD
 #define decode_read_maxsz	(op_decode_hdr_maxsz + 2)
 #define encode_readdir_maxsz	(op_encode_hdr_maxsz + \
 				 2 + encode_verifier_maxsz + 5)
@@ -191,6 +285,16 @@ static int nfs4_stat_to_errno(int);
 				 decode_verifier_maxsz)
 #define encode_readlink_maxsz	(op_encode_hdr_maxsz)
 #define decode_readlink_maxsz	(op_decode_hdr_maxsz + 1)
+=======
+#define decode_read_maxsz	(op_decode_hdr_maxsz + 2 + pagepad_maxsz)
+#define encode_readdir_maxsz	(op_encode_hdr_maxsz + \
+				 2 + encode_verifier_maxsz + 5 + \
+				nfs4_label_maxsz)
+#define decode_readdir_maxsz	(op_decode_hdr_maxsz + \
+				 decode_verifier_maxsz + pagepad_maxsz)
+#define encode_readlink_maxsz	(op_encode_hdr_maxsz)
+#define decode_readlink_maxsz	(op_decode_hdr_maxsz + 1 + pagepad_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_write_maxsz	(op_encode_hdr_maxsz + \
 				 encode_stateid_maxsz + 4)
 #define decode_write_maxsz	(op_decode_hdr_maxsz + \
@@ -252,39 +356,72 @@ static int nfs4_stat_to_errno(int);
 #define decode_delegreturn_maxsz (op_decode_hdr_maxsz)
 #define encode_getacl_maxsz	(encode_getattr_maxsz)
 #define decode_getacl_maxsz	(op_decode_hdr_maxsz + \
+<<<<<<< HEAD
 				 nfs4_fattr_bitmap_maxsz + 1)
+=======
+				 nfs4_fattr_bitmap_maxsz + 1 + pagepad_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_setacl_maxsz	(op_encode_hdr_maxsz + \
 				 encode_stateid_maxsz + 3)
 #define decode_setacl_maxsz	(decode_setattr_maxsz)
 #define encode_fs_locations_maxsz \
 				(encode_getattr_maxsz)
 #define decode_fs_locations_maxsz \
+<<<<<<< HEAD
 				(0)
+=======
+				(pagepad_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_secinfo_maxsz	(op_encode_hdr_maxsz + nfs4_name_maxsz)
 #define decode_secinfo_maxsz	(op_decode_hdr_maxsz + 1 + ((NFS_MAX_SECFLAVORS * (16 + GSS_OID_MAX_LEN)) / 4))
 
 #if defined(CONFIG_NFS_V4_1)
 #define NFS4_MAX_MACHINE_NAME_LEN (64)
+<<<<<<< HEAD
+=======
+#define IMPL_NAME_LIMIT (sizeof(utsname()->sysname) + sizeof(utsname()->release) + \
+			 sizeof(utsname()->version) + sizeof(utsname()->machine) + 8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define encode_exchange_id_maxsz (op_encode_hdr_maxsz + \
 				encode_verifier_maxsz + \
 				1 /* co_ownerid.len */ + \
+<<<<<<< HEAD
 				XDR_QUADLEN(NFS4_EXCHANGE_ID_LEN) + \
 				1 /* flags */ + \
 				1 /* spa_how */ + \
 				0 /* SP4_NONE (for now) */ + \
+=======
+				/* eia_clientowner */ \
+				1 + XDR_QUADLEN(NFS4_OPAQUE_LIMIT) + \
+				1 /* flags */ + \
+				1 /* spa_how */ + \
+				/* max is SP4_MACH_CRED (for now) */ + \
+				1 + NFS4_OP_MAP_NUM_WORDS + \
+				1 + NFS4_OP_MAP_NUM_WORDS + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				1 /* implementation id array of size 1 */ + \
 				1 /* nii_domain */ + \
 				XDR_QUADLEN(NFS4_OPAQUE_LIMIT) + \
 				1 /* nii_name */ + \
+<<<<<<< HEAD
 				XDR_QUADLEN(NFS4_OPAQUE_LIMIT) + \
+=======
+				XDR_QUADLEN(IMPL_NAME_LIMIT) + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				3 /* nii_date */)
 #define decode_exchange_id_maxsz (op_decode_hdr_maxsz + \
 				2 /* eir_clientid */ + \
 				1 /* eir_sequenceid */ + \
 				1 /* eir_flags */ + \
 				1 /* spr_how */ + \
+<<<<<<< HEAD
 				0 /* SP4_NONE (for now) */ + \
+=======
+				  /* max is SP4_MACH_CRED (for now) */ + \
+				1 + NFS4_OP_MAP_NUM_WORDS + \
+				1 + NFS4_OP_MAP_NUM_WORDS + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				2 /* eir_server_owner.so_minor_id */ + \
 				/* eir_server_owner.so_major_id<> */ \
 				XDR_QUADLEN(NFS4_OPAQUE_LIMIT) + 1 + \
@@ -321,14 +458,32 @@ static int nfs4_stat_to_errno(int);
 				     1 /* csr_flags */ + \
 				     decode_channel_attrs_maxsz + \
 				     decode_channel_attrs_maxsz)
+<<<<<<< HEAD
 #define encode_destroy_session_maxsz    (op_encode_hdr_maxsz + 4)
 #define decode_destroy_session_maxsz    (op_decode_hdr_maxsz)
+=======
+#define encode_bind_conn_to_session_maxsz  (op_encode_hdr_maxsz + \
+				     /* bctsa_sessid */ \
+				     XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + \
+				     1 /* bctsa_dir */ + \
+				     1 /* bctsa_use_conn_in_rdma_mode */)
+#define decode_bind_conn_to_session_maxsz  (op_decode_hdr_maxsz +	\
+				     /* bctsr_sessid */ \
+				     XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + \
+				     1 /* bctsr_dir */ + \
+				     1 /* bctsr_use_conn_in_rdma_mode */)
+#define encode_destroy_session_maxsz    (op_encode_hdr_maxsz + 4)
+#define decode_destroy_session_maxsz    (op_decode_hdr_maxsz)
+#define encode_destroy_clientid_maxsz   (op_encode_hdr_maxsz + 2)
+#define decode_destroy_clientid_maxsz   (op_decode_hdr_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_sequence_maxsz	(op_encode_hdr_maxsz + \
 				XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + 4)
 #define decode_sequence_maxsz	(op_decode_hdr_maxsz + \
 				XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + 5)
 #define encode_reclaim_complete_maxsz	(op_encode_hdr_maxsz + 4)
 #define decode_reclaim_complete_maxsz	(op_decode_hdr_maxsz + 4)
+<<<<<<< HEAD
 #define encode_getdevicelist_maxsz (op_encode_hdr_maxsz + 4 + \
 				encode_verifier_maxsz)
 #define decode_getdevicelist_maxsz (op_decode_hdr_maxsz + \
@@ -342,17 +497,36 @@ static int nfs4_stat_to_errno(int);
 				1 /* bool gdlr_eof */)
 #define encode_getdeviceinfo_maxsz (op_encode_hdr_maxsz + 4 + \
 				XDR_QUADLEN(NFS4_DEVICEID4_SIZE))
+=======
+#define encode_getdeviceinfo_maxsz (op_encode_hdr_maxsz + \
+				XDR_QUADLEN(NFS4_DEVICEID4_SIZE) + \
+				1 /* layout type */ + \
+				1 /* maxcount */ + \
+				1 /* bitmap size */ + \
+				1 /* notification bitmap length */ + \
+				1 /* notification bitmap, word 0 */)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define decode_getdeviceinfo_maxsz (op_decode_hdr_maxsz + \
 				1 /* layout type */ + \
 				1 /* opaque devaddr4 length */ + \
 				  /* devaddr4 payload is read into page */ \
 				1 /* notification bitmap length */ + \
+<<<<<<< HEAD
 				1 /* notification bitmap */)
+=======
+				1 /* notification bitmap, word 0 */ + \
+				pagepad_maxsz /* possible XDR padding */)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_layoutget_maxsz	(op_encode_hdr_maxsz + 10 + \
 				encode_stateid_maxsz)
 #define decode_layoutget_maxsz	(op_decode_hdr_maxsz + 8 + \
 				decode_stateid_maxsz + \
+<<<<<<< HEAD
 				XDR_QUADLEN(PNFS_LAYOUT_MAXSIZE))
+=======
+				XDR_QUADLEN(PNFS_LAYOUT_MAXSIZE) + \
+				pagepad_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define encode_layoutcommit_maxsz (op_encode_hdr_maxsz +          \
 				2 /* offset */ + \
 				2 /* length */ + \
@@ -362,11 +536,23 @@ static int nfs4_stat_to_errno(int);
 				2 /* last byte written */ + \
 				1 /* nt_timechanged (false) */ + \
 				1 /* layoutupdate4 layout type */ + \
+<<<<<<< HEAD
 				1 /* NULL filelayout layoutupdate4 payload */)
 #define decode_layoutcommit_maxsz (op_decode_hdr_maxsz + 3)
 #define encode_layoutreturn_maxsz (8 + op_encode_hdr_maxsz + \
 				encode_stateid_maxsz + \
 				1 /* FIXME: opaque lrf_body always empty at the moment */)
+=======
+				1 /* layoutupdate4 opaqueue len */)
+				  /* the actual content of layoutupdate4 should
+				     be allocated by drivers and spliced in
+				     using xdr_write_pages */
+#define decode_layoutcommit_maxsz (op_decode_hdr_maxsz + 3)
+#define encode_layoutreturn_maxsz (8 + op_encode_hdr_maxsz + \
+				encode_stateid_maxsz + \
+				1 + \
+				XDR_QUADLEN(NFS4_OPAQUE_LIMIT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define decode_layoutreturn_maxsz (op_decode_hdr_maxsz + \
 				1 + decode_stateid_maxsz)
 #define encode_secinfo_no_name_maxsz (op_encode_hdr_maxsz + 1)
@@ -376,10 +562,21 @@ static int nfs4_stat_to_errno(int);
 #define decode_test_stateid_maxsz	(op_decode_hdr_maxsz + 2 + 1)
 #define encode_free_stateid_maxsz	(op_encode_hdr_maxsz + 1 + \
 					 XDR_QUADLEN(NFS4_STATEID_SIZE))
+<<<<<<< HEAD
 #define decode_free_stateid_maxsz	(op_decode_hdr_maxsz + 1)
 #else /* CONFIG_NFS_V4_1 */
 #define encode_sequence_maxsz	0
 #define decode_sequence_maxsz	0
+=======
+#define decode_free_stateid_maxsz	(op_decode_hdr_maxsz)
+#else /* CONFIG_NFS_V4_1 */
+#define encode_sequence_maxsz	0
+#define decode_sequence_maxsz	0
+#define encode_layoutreturn_maxsz 0
+#define decode_layoutreturn_maxsz 0
+#define encode_layoutget_maxsz	0
+#define decode_layoutget_maxsz	0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NFS_V4_1 */
 
 #define NFS4_enc_compound_sz	(1024)  /* XXX: large enough? */
@@ -421,6 +618,7 @@ static int nfs4_stat_to_errno(int);
 #define NFS4_enc_commit_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
 				encode_commit_maxsz + \
 				encode_getattr_maxsz)
 #define NFS4_dec_commit_sz	(compound_decode_hdr_maxsz + \
@@ -446,6 +644,29 @@ static int nfs4_stat_to_errno(int);
 				decode_getattr_maxsz + \
 				decode_restorefh_maxsz + \
 				decode_getattr_maxsz)
+=======
+				encode_commit_maxsz)
+#define NFS4_dec_commit_sz	(compound_decode_hdr_maxsz + \
+				decode_sequence_maxsz + \
+				decode_putfh_maxsz + \
+				decode_commit_maxsz)
+#define NFS4_enc_open_sz        (compound_encode_hdr_maxsz + \
+				encode_sequence_maxsz + \
+				encode_putfh_maxsz + \
+				encode_open_maxsz + \
+				encode_access_maxsz + \
+				encode_getfh_maxsz + \
+				encode_getattr_maxsz + \
+				encode_layoutget_maxsz)
+#define NFS4_dec_open_sz        (compound_decode_hdr_maxsz + \
+				decode_sequence_maxsz + \
+				decode_putfh_maxsz + \
+				decode_open_maxsz + \
+				decode_access_maxsz + \
+				decode_getfh_maxsz + \
+				decode_getattr_maxsz + \
+				decode_layoutget_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_open_confirm_sz \
 				(compound_encode_hdr_maxsz + \
 				 encode_putfh_maxsz + \
@@ -458,32 +679,62 @@ static int nfs4_stat_to_errno(int);
 					encode_sequence_maxsz + \
 					encode_putfh_maxsz + \
 					encode_open_maxsz + \
+<<<<<<< HEAD
 					encode_getattr_maxsz)
+=======
+					encode_access_maxsz + \
+					encode_getattr_maxsz + \
+					encode_layoutget_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_dec_open_noattr_sz	(compound_decode_hdr_maxsz + \
 					decode_sequence_maxsz + \
 					decode_putfh_maxsz + \
 					decode_open_maxsz + \
+<<<<<<< HEAD
 					decode_getattr_maxsz)
+=======
+					decode_access_maxsz + \
+					decode_getattr_maxsz + \
+					decode_layoutget_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_open_downgrade_sz \
 				(compound_encode_hdr_maxsz + \
 				 encode_sequence_maxsz + \
 				 encode_putfh_maxsz + \
+<<<<<<< HEAD
 				 encode_open_downgrade_maxsz + \
 				 encode_getattr_maxsz)
+=======
+				 encode_layoutreturn_maxsz + \
+				 encode_open_downgrade_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_dec_open_downgrade_sz \
 				(compound_decode_hdr_maxsz + \
 				 decode_sequence_maxsz + \
 				 decode_putfh_maxsz + \
+<<<<<<< HEAD
 				 decode_open_downgrade_maxsz + \
 				 decode_getattr_maxsz)
 #define NFS4_enc_close_sz	(compound_encode_hdr_maxsz + \
 				 encode_sequence_maxsz + \
 				 encode_putfh_maxsz + \
+=======
+				 decode_layoutreturn_maxsz + \
+				 decode_open_downgrade_maxsz)
+#define NFS4_enc_close_sz	(compound_encode_hdr_maxsz + \
+				 encode_sequence_maxsz + \
+				 encode_putfh_maxsz + \
+				 encode_layoutreturn_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 encode_close_maxsz + \
 				 encode_getattr_maxsz)
 #define NFS4_dec_close_sz	(compound_decode_hdr_maxsz + \
 				 decode_sequence_maxsz + \
 				 decode_putfh_maxsz + \
+<<<<<<< HEAD
+=======
+				 decode_layoutreturn_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 decode_close_maxsz + \
 				 decode_getattr_maxsz)
 #define NFS4_enc_setattr_sz	(compound_encode_hdr_maxsz + \
@@ -514,6 +765,7 @@ static int nfs4_stat_to_errno(int);
 				decode_setclientid_maxsz)
 #define NFS4_enc_setclientid_confirm_sz \
 				(compound_encode_hdr_maxsz + \
+<<<<<<< HEAD
 				encode_setclientid_confirm_maxsz + \
 				encode_putrootfh_maxsz + \
 				encode_fsinfo_maxsz)
@@ -522,6 +774,12 @@ static int nfs4_stat_to_errno(int);
 				decode_setclientid_confirm_maxsz + \
 				decode_putrootfh_maxsz + \
 				decode_fsinfo_maxsz)
+=======
+				encode_setclientid_confirm_maxsz)
+#define NFS4_dec_setclientid_confirm_sz \
+				(compound_decode_hdr_maxsz + \
+				decode_setclientid_confirm_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_lock_sz        (compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
@@ -565,11 +823,21 @@ static int nfs4_stat_to_errno(int);
 #define NFS4_enc_getattr_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
 				encode_getattr_maxsz)
 #define NFS4_dec_getattr_sz	(compound_decode_hdr_maxsz + \
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
 				decode_getattr_maxsz)
+=======
+				encode_getattr_maxsz + \
+				encode_renew_maxsz)
+#define NFS4_dec_getattr_sz	(compound_decode_hdr_maxsz + \
+				decode_sequence_maxsz + \
+				decode_putfh_maxsz + \
+				decode_getattr_maxsz + \
+				decode_renew_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_lookup_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
@@ -582,6 +850,21 @@ static int nfs4_stat_to_errno(int);
 				decode_lookup_maxsz + \
 				decode_getattr_maxsz + \
 				decode_getfh_maxsz)
+<<<<<<< HEAD
+=======
+#define NFS4_enc_lookupp_sz	(compound_encode_hdr_maxsz + \
+				encode_sequence_maxsz + \
+				encode_putfh_maxsz + \
+				encode_lookupp_maxsz + \
+				encode_getattr_maxsz + \
+				encode_getfh_maxsz)
+#define NFS4_dec_lookupp_sz	(compound_decode_hdr_maxsz + \
+				decode_sequence_maxsz + \
+				decode_putfh_maxsz + \
+				decode_lookupp_maxsz + \
+				decode_getattr_maxsz + \
+				decode_getfh_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_lookup_root_sz (compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putrootfh_maxsz + \
@@ -595,6 +878,7 @@ static int nfs4_stat_to_errno(int);
 #define NFS4_enc_remove_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
 				encode_remove_maxsz + \
 				encode_getattr_maxsz)
 #define NFS4_dec_remove_sz	(compound_decode_hdr_maxsz + \
@@ -602,40 +886,63 @@ static int nfs4_stat_to_errno(int);
 				decode_putfh_maxsz + \
 				decode_remove_maxsz + \
 				decode_getattr_maxsz)
+=======
+				encode_remove_maxsz)
+#define NFS4_dec_remove_sz	(compound_decode_hdr_maxsz + \
+				decode_sequence_maxsz + \
+				decode_putfh_maxsz + \
+				decode_remove_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_rename_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
 				encode_savefh_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
 				encode_rename_maxsz + \
 				encode_getattr_maxsz + \
 				encode_restorefh_maxsz + \
 				encode_getattr_maxsz)
+=======
+				encode_rename_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_dec_rename_sz	(compound_decode_hdr_maxsz + \
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
 				decode_savefh_maxsz + \
 				decode_putfh_maxsz + \
+<<<<<<< HEAD
 				decode_rename_maxsz + \
 				decode_getattr_maxsz + \
 				decode_restorefh_maxsz + \
 				decode_getattr_maxsz)
+=======
+				decode_rename_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_link_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
 				encode_savefh_maxsz + \
 				encode_putfh_maxsz + \
 				encode_link_maxsz + \
+<<<<<<< HEAD
 				decode_getattr_maxsz + \
 				encode_restorefh_maxsz + \
 				decode_getattr_maxsz)
+=======
+				encode_restorefh_maxsz + \
+				encode_getattr_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_dec_link_sz	(compound_decode_hdr_maxsz + \
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
 				decode_savefh_maxsz + \
 				decode_putfh_maxsz + \
 				decode_link_maxsz + \
+<<<<<<< HEAD
 				decode_getattr_maxsz + \
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				decode_restorefh_maxsz + \
 				decode_getattr_maxsz)
 #define NFS4_enc_symlink_sz	(compound_encode_hdr_maxsz + \
@@ -653,20 +960,30 @@ static int nfs4_stat_to_errno(int);
 #define NFS4_enc_create_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
 				encode_savefh_maxsz + \
 				encode_create_maxsz + \
 				encode_getfh_maxsz + \
 				encode_getattr_maxsz + \
 				encode_restorefh_maxsz + \
+=======
+				encode_create_maxsz + \
+				encode_getfh_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				encode_getattr_maxsz)
 #define NFS4_dec_create_sz	(compound_decode_hdr_maxsz + \
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
+<<<<<<< HEAD
 				decode_savefh_maxsz + \
 				decode_create_maxsz + \
 				decode_getfh_maxsz + \
 				decode_getattr_maxsz + \
 				decode_restorefh_maxsz + \
+=======
+				decode_create_maxsz + \
+				decode_getfh_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				decode_getattr_maxsz)
 #define NFS4_enc_pathconf_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
@@ -695,10 +1012,19 @@ static int nfs4_stat_to_errno(int);
 #define NFS4_enc_delegreturn_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
+<<<<<<< HEAD
+=======
+				encode_layoutreturn_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				encode_delegreturn_maxsz + \
 				encode_getattr_maxsz)
 #define NFS4_dec_delegreturn_sz (compound_decode_hdr_maxsz + \
 				decode_sequence_maxsz + \
+<<<<<<< HEAD
+=======
+				decode_putfh_maxsz + \
+				decode_layoutreturn_maxsz + \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				decode_delegreturn_maxsz + \
 				decode_getattr_maxsz)
 #define NFS4_enc_getacl_sz	(compound_encode_hdr_maxsz + \
@@ -722,13 +1048,23 @@ static int nfs4_stat_to_errno(int);
 				 encode_sequence_maxsz + \
 				 encode_putfh_maxsz + \
 				 encode_lookup_maxsz + \
+<<<<<<< HEAD
 				 encode_fs_locations_maxsz)
+=======
+				 encode_fs_locations_maxsz + \
+				 encode_renew_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_dec_fs_locations_sz \
 				(compound_decode_hdr_maxsz + \
 				 decode_sequence_maxsz + \
 				 decode_putfh_maxsz + \
 				 decode_lookup_maxsz + \
+<<<<<<< HEAD
 				 decode_fs_locations_maxsz)
+=======
+				 decode_fs_locations_maxsz + \
+				 decode_renew_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_secinfo_sz 	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
@@ -737,7 +1073,29 @@ static int nfs4_stat_to_errno(int);
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
 				decode_secinfo_maxsz)
+<<<<<<< HEAD
 #if defined(CONFIG_NFS_V4_1)
+=======
+#define NFS4_enc_fsid_present_sz \
+				(compound_encode_hdr_maxsz + \
+				 encode_sequence_maxsz + \
+				 encode_putfh_maxsz + \
+				 encode_getfh_maxsz + \
+				 encode_renew_maxsz)
+#define NFS4_dec_fsid_present_sz \
+				(compound_decode_hdr_maxsz + \
+				 decode_sequence_maxsz + \
+				 decode_putfh_maxsz + \
+				 decode_getfh_maxsz + \
+				 decode_renew_maxsz)
+#if defined(CONFIG_NFS_V4_1)
+#define NFS4_enc_bind_conn_to_session_sz \
+				(compound_encode_hdr_maxsz + \
+				 encode_bind_conn_to_session_maxsz)
+#define NFS4_dec_bind_conn_to_session_sz \
+				(compound_decode_hdr_maxsz + \
+				 decode_bind_conn_to_session_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_exchange_id_sz \
 				(compound_encode_hdr_maxsz + \
 				 encode_exchange_id_maxsz)
@@ -754,12 +1112,23 @@ static int nfs4_stat_to_errno(int);
 					 encode_destroy_session_maxsz)
 #define NFS4_dec_destroy_session_sz	(compound_decode_hdr_maxsz + \
 					 decode_destroy_session_maxsz)
+<<<<<<< HEAD
+=======
+#define NFS4_enc_destroy_clientid_sz	(compound_encode_hdr_maxsz + \
+					 encode_destroy_clientid_maxsz)
+#define NFS4_dec_destroy_clientid_sz	(compound_decode_hdr_maxsz + \
+					 decode_destroy_clientid_maxsz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_sequence_sz \
 				(compound_decode_hdr_maxsz + \
 				 encode_sequence_maxsz)
 #define NFS4_dec_sequence_sz \
 				(compound_decode_hdr_maxsz + \
 				 decode_sequence_maxsz)
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_get_lease_time_sz	(compound_encode_hdr_maxsz + \
 					 encode_sequence_maxsz + \
 					 encode_putrootfh_maxsz + \
@@ -768,12 +1137,17 @@ static int nfs4_stat_to_errno(int);
 					 decode_sequence_maxsz + \
 					 decode_putrootfh_maxsz + \
 					 decode_fsinfo_maxsz)
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_NFS_V4_1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_reclaim_complete_sz	(compound_encode_hdr_maxsz + \
 					 encode_sequence_maxsz + \
 					 encode_reclaim_complete_maxsz)
 #define NFS4_dec_reclaim_complete_sz	(compound_decode_hdr_maxsz + \
 					 decode_sequence_maxsz + \
 					 decode_reclaim_complete_maxsz)
+<<<<<<< HEAD
 #define NFS4_enc_getdevicelist_sz (compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
@@ -782,6 +1156,8 @@ static int nfs4_stat_to_errno(int);
 				decode_sequence_maxsz + \
 				decode_putfh_maxsz + \
 				decode_getdevicelist_maxsz)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFS4_enc_getdeviceinfo_sz (compound_encode_hdr_maxsz +    \
 				encode_sequence_maxsz +\
 				encode_getdeviceinfo_maxsz)
@@ -847,6 +1223,7 @@ const u32 nfs41_maxread_overhead = ((RPC_MAX_HEADER_WITH_AUTH +
 				     decode_sequence_maxsz +
 				     decode_putfh_maxsz) *
 				    XDR_UNIT);
+<<<<<<< HEAD
 #endif /* CONFIG_NFS_V4_1 */
 
 static unsigned short send_implementation_id = 1;
@@ -855,6 +1232,16 @@ module_param(send_implementation_id, ushort, 0644);
 MODULE_PARM_DESC(send_implementation_id,
 		"Send implementation ID with NFSv4.1 exchange_id");
 
+=======
+
+const u32 nfs41_maxgetdevinfo_overhead = ((RPC_MAX_REPHEADER_WITH_AUTH +
+					   compound_decode_hdr_maxsz +
+					   decode_sequence_maxsz) *
+					  XDR_UNIT);
+EXPORT_SYMBOL_GPL(nfs41_maxgetdevinfo_overhead);
+#endif /* CONFIG_NFS_V4_1 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const umode_t nfs_type2fmt[] = {
 	[NF4BAD] = 0,
 	[NF4REG] = S_IFREG,
@@ -887,40 +1274,92 @@ static __be32 *reserve_space(struct xdr_stream *xdr, size_t nbytes)
 
 static void encode_opaque_fixed(struct xdr_stream *xdr, const void *buf, size_t len)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = xdr_reserve_space(xdr, len);
 	xdr_encode_opaque_fixed(p, buf, len);
+=======
+	WARN_ON_ONCE(xdr_stream_encode_opaque_fixed(xdr, buf, len) < 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_string(struct xdr_stream *xdr, unsigned int len, const char *str)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = reserve_space(xdr, 4 + len);
 	xdr_encode_opaque(p, str, len);
+=======
+	WARN_ON_ONCE(xdr_stream_encode_opaque(xdr, str, len) < 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_uint32(struct xdr_stream *xdr, u32 n)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = reserve_space(xdr, 4);
 	*p = cpu_to_be32(n);
+=======
+	WARN_ON_ONCE(xdr_stream_encode_u32(xdr, n) < 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_uint64(struct xdr_stream *xdr, u64 n)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = reserve_space(xdr, 8);
 	xdr_encode_hyper(p, n);
+=======
+	WARN_ON_ONCE(xdr_stream_encode_u64(xdr, n) < 0);
+}
+
+static ssize_t xdr_encode_bitmap4(struct xdr_stream *xdr,
+		const __u32 *bitmap, size_t len)
+{
+	ssize_t ret;
+
+	/* Trim empty words */
+	while (len > 0 && bitmap[len-1] == 0)
+		len--;
+	ret = xdr_stream_encode_uint32_array(xdr, bitmap, len);
+	if (WARN_ON_ONCE(ret < 0))
+		return ret;
+	return len;
+}
+
+static size_t mask_bitmap4(const __u32 *bitmap, const __u32 *mask,
+		__u32 *res, size_t len)
+{
+	size_t i;
+	__u32 tmp;
+
+	while (len > 0 && (bitmap[len-1] == 0 || mask[len-1] == 0))
+		len--;
+	for (i = len; i-- > 0;) {
+		tmp = bitmap[i] & mask[i];
+		res[i] = tmp;
+	}
+	return len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_nfs4_seqid(struct xdr_stream *xdr,
 		const struct nfs_seqid *seqid)
 {
+<<<<<<< HEAD
 	encode_uint32(xdr, seqid->sequence->counter);
+=======
+	if (seqid != NULL)
+		encode_uint32(xdr, seqid->sequence->counter);
+	else
+		encode_uint32(xdr, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_compound_hdr(struct xdr_stream *xdr,
@@ -928,14 +1367,23 @@ static void encode_compound_hdr(struct xdr_stream *xdr,
 				struct compound_hdr *hdr)
 {
 	__be32 *p;
+<<<<<<< HEAD
 	struct rpc_auth *auth = req->rq_cred->cr_auth;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize running count of expected bytes in reply.
 	 * NOTE: the replied tag SHOULD be the same is the one sent,
 	 * but this is not required as a MUST for the server to do so. */
+<<<<<<< HEAD
 	hdr->replen = RPC_REPHDRSIZE + auth->au_rslack + 3 + hdr->taglen;
 
 	BUG_ON(hdr->taglen > NFS4_MAXTAGLEN);
+=======
+	hdr->replen = 3 + hdr->taglen;
+
+	WARN_ON_ONCE(hdr->taglen > NFS4_MAXTAGLEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_string(xdr, hdr->taglen, hdr->tag);
 	p = reserve_space(xdr, 8);
 	*p++ = cpu_to_be32(hdr->minorversion);
@@ -954,7 +1402,11 @@ static void encode_op_hdr(struct xdr_stream *xdr, enum nfs_opnum4 op,
 
 static void encode_nops(struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	BUG_ON(hdr->nops > NFS4_MAX_OPS);
+=======
+	WARN_ON_ONCE(hdr->nops > NFS4_MAX_OPS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*hdr->nops_p = htonl(hdr->nops);
 }
 
@@ -968,13 +1420,30 @@ static void encode_nfs4_verifier(struct xdr_stream *xdr, const nfs4_verifier *ve
 	encode_opaque_fixed(xdr, verf->data, NFS4_VERIFIER_SIZE);
 }
 
+<<<<<<< HEAD
 static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap, const struct nfs_server *server)
+=======
+static __be32 *
+xdr_encode_nfstime4(__be32 *p, const struct timespec64 *t)
+{
+	p = xdr_encode_hyper(p, t->tv_sec);
+	*p++ = cpu_to_be32(t->tv_nsec);
+	return p;
+}
+
+static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap,
+				const struct nfs4_label *label,
+				const umode_t *umask,
+				const struct nfs_server *server,
+				const uint32_t attrmask[])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char owner_name[IDMAP_NAMESZ];
 	char owner_group[IDMAP_NAMESZ];
 	int owner_namelen = 0;
 	int owner_grouplen = 0;
 	__be32 *p;
+<<<<<<< HEAD
 	__be32 *q;
 	int len;
 	uint32_t bmval0 = 0;
@@ -999,11 +1468,38 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap, const 
 		if (owner_namelen < 0) {
 			dprintk("nfs: couldn't resolve uid %d to string\n",
 					iap->ia_uid);
+=======
+	uint32_t len = 0;
+	uint32_t bmval[3] = { 0 };
+
+	/*
+	 * We reserve enough space to write the entire attribute buffer at once.
+	 */
+	if ((iap->ia_valid & ATTR_SIZE) && (attrmask[0] & FATTR4_WORD0_SIZE)) {
+		bmval[0] |= FATTR4_WORD0_SIZE;
+		len += 8;
+	}
+	if (iap->ia_valid & ATTR_MODE) {
+		if (umask && (attrmask[2] & FATTR4_WORD2_MODE_UMASK)) {
+			bmval[2] |= FATTR4_WORD2_MODE_UMASK;
+			len += 8;
+		} else if (attrmask[1] & FATTR4_WORD1_MODE) {
+			bmval[1] |= FATTR4_WORD1_MODE;
+			len += 4;
+		}
+	}
+	if ((iap->ia_valid & ATTR_UID) && (attrmask[1] & FATTR4_WORD1_OWNER)) {
+		owner_namelen = nfs_map_uid_to_name(server, iap->ia_uid, owner_name, IDMAP_NAMESZ);
+		if (owner_namelen < 0) {
+			dprintk("nfs: couldn't resolve uid %d to string\n",
+					from_kuid(&init_user_ns, iap->ia_uid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* XXX */
 			strcpy(owner_name, "nobody");
 			owner_namelen = sizeof("nobody") - 1;
 			/* goto out; */
 		}
+<<<<<<< HEAD
 		len += 4 + (XDR_QUADLEN(owner_namelen) << 2);
 	}
 	if (iap->ia_valid & ATTR_GID) {
@@ -1011,10 +1507,22 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap, const 
 		if (owner_grouplen < 0) {
 			dprintk("nfs: couldn't resolve gid %d to string\n",
 					iap->ia_gid);
+=======
+		bmval[1] |= FATTR4_WORD1_OWNER;
+		len += 4 + (XDR_QUADLEN(owner_namelen) << 2);
+	}
+	if ((iap->ia_valid & ATTR_GID) &&
+	   (attrmask[1] & FATTR4_WORD1_OWNER_GROUP)) {
+		owner_grouplen = nfs_map_gid_to_group(server, iap->ia_gid, owner_group, IDMAP_NAMESZ);
+		if (owner_grouplen < 0) {
+			dprintk("nfs: couldn't resolve gid %d to string\n",
+					from_kgid(&init_user_ns, iap->ia_gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(owner_group, "nobody");
 			owner_grouplen = sizeof("nobody") - 1;
 			/* goto out; */
 		}
+<<<<<<< HEAD
 		len += 4 + (XDR_QUADLEN(owner_grouplen) << 2);
 	}
 	if (iap->ia_valid & ATTR_ATIME_SET)
@@ -1086,6 +1594,70 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap, const 
 	*q++ = htonl(bmval0);
 	*q++ = htonl(bmval1);
 	*q = htonl(len);
+=======
+		bmval[1] |= FATTR4_WORD1_OWNER_GROUP;
+		len += 4 + (XDR_QUADLEN(owner_grouplen) << 2);
+	}
+	if (attrmask[1] & FATTR4_WORD1_TIME_ACCESS_SET) {
+		if (iap->ia_valid & ATTR_ATIME_SET) {
+			bmval[1] |= FATTR4_WORD1_TIME_ACCESS_SET;
+			len += 4 + (nfstime4_maxsz << 2);
+		} else if (iap->ia_valid & ATTR_ATIME) {
+			bmval[1] |= FATTR4_WORD1_TIME_ACCESS_SET;
+			len += 4;
+		}
+	}
+	if (attrmask[1] & FATTR4_WORD1_TIME_MODIFY_SET) {
+		if (iap->ia_valid & ATTR_MTIME_SET) {
+			bmval[1] |= FATTR4_WORD1_TIME_MODIFY_SET;
+			len += 4 + (nfstime4_maxsz << 2);
+		} else if (iap->ia_valid & ATTR_MTIME) {
+			bmval[1] |= FATTR4_WORD1_TIME_MODIFY_SET;
+			len += 4;
+		}
+	}
+
+	if (label && (attrmask[2] & FATTR4_WORD2_SECURITY_LABEL)) {
+		len += 4 + 4 + 4 + (XDR_QUADLEN(label->len) << 2);
+		bmval[2] |= FATTR4_WORD2_SECURITY_LABEL;
+	}
+
+	xdr_encode_bitmap4(xdr, bmval, ARRAY_SIZE(bmval));
+	xdr_stream_encode_opaque_inline(xdr, (void **)&p, len);
+
+	if (bmval[0] & FATTR4_WORD0_SIZE)
+		p = xdr_encode_hyper(p, iap->ia_size);
+	if (bmval[1] & FATTR4_WORD1_MODE)
+		*p++ = cpu_to_be32(iap->ia_mode & S_IALLUGO);
+	if (bmval[1] & FATTR4_WORD1_OWNER)
+		p = xdr_encode_opaque(p, owner_name, owner_namelen);
+	if (bmval[1] & FATTR4_WORD1_OWNER_GROUP)
+		p = xdr_encode_opaque(p, owner_group, owner_grouplen);
+	if (bmval[1] & FATTR4_WORD1_TIME_ACCESS_SET) {
+		if (iap->ia_valid & ATTR_ATIME_SET) {
+			*p++ = cpu_to_be32(NFS4_SET_TO_CLIENT_TIME);
+			p = xdr_encode_nfstime4(p, &iap->ia_atime);
+		} else
+			*p++ = cpu_to_be32(NFS4_SET_TO_SERVER_TIME);
+	}
+	if (bmval[1] & FATTR4_WORD1_TIME_MODIFY_SET) {
+		if (iap->ia_valid & ATTR_MTIME_SET) {
+			*p++ = cpu_to_be32(NFS4_SET_TO_CLIENT_TIME);
+			p = xdr_encode_nfstime4(p, &iap->ia_mtime);
+		} else
+			*p++ = cpu_to_be32(NFS4_SET_TO_SERVER_TIME);
+	}
+	if (label && (bmval[2] & FATTR4_WORD2_SECURITY_LABEL)) {
+		*p++ = cpu_to_be32(label->lfs);
+		*p++ = cpu_to_be32(label->pi);
+		*p++ = cpu_to_be32(label->len);
+		p = xdr_encode_opaque_fixed(p, label->label, label->len);
+	}
+	if (bmval[2] & FATTR4_WORD2_MODE_UMASK) {
+		*p++ = cpu_to_be32(iap->ia_mode & S_IALLUGO);
+		*p++ = cpu_to_be32(*umask);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* out: */
 }
@@ -1100,10 +1672,17 @@ static void encode_close(struct xdr_stream *xdr, const struct nfs_closeargs *arg
 {
 	encode_op_hdr(xdr, OP_CLOSE, decode_close_maxsz, hdr);
 	encode_nfs4_seqid(xdr, arg->seqid);
+<<<<<<< HEAD
 	encode_nfs4_stateid(xdr, arg->stateid);
 }
 
 static void encode_commit(struct xdr_stream *xdr, const struct nfs_writeargs *args, struct compound_hdr *hdr)
+=======
+	encode_nfs4_stateid(xdr, &arg->stateid);
+}
+
+static void encode_commit(struct xdr_stream *xdr, const struct nfs_commitargs *args, struct compound_hdr *hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
@@ -1124,7 +1703,13 @@ static void encode_create(struct xdr_stream *xdr, const struct nfs4_create_arg *
 	case NF4LNK:
 		p = reserve_space(xdr, 4);
 		*p = cpu_to_be32(create->u.symlink.len);
+<<<<<<< HEAD
 		xdr_write_pages(xdr, create->u.symlink.pages, 0, create->u.symlink.len);
+=======
+		xdr_write_pages(xdr, create->u.symlink.pages, 0,
+				create->u.symlink.len);
+		xdr->buf->flags |= XDRBUF_WRITE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NF4BLK: case NF4CHR:
@@ -1138,6 +1723,7 @@ static void encode_create(struct xdr_stream *xdr, const struct nfs4_create_arg *
 	}
 
 	encode_string(xdr, create->name->len, create->name->name);
+<<<<<<< HEAD
 	encode_attrs(xdr, create->attrs, create->server);
 }
 
@@ -1186,27 +1772,69 @@ encode_getattr_three(struct xdr_stream *xdr,
 		*p++ = cpu_to_be32(1);
 		*p = cpu_to_be32(bm0);
 	}
+=======
+	encode_attrs(xdr, create->attrs, create->label, &create->umask,
+			create->server, create->server->attr_bitmask);
+}
+
+static void encode_getattr(struct xdr_stream *xdr,
+		const __u32 *bitmap, const __u32 *mask, size_t len,
+		struct compound_hdr *hdr)
+{
+	__u32 masked_bitmap[nfs4_fattr_bitmap_maxsz];
+
+	encode_op_hdr(xdr, OP_GETATTR, decode_getattr_maxsz, hdr);
+	if (mask) {
+		if (WARN_ON_ONCE(len > ARRAY_SIZE(masked_bitmap)))
+			len = ARRAY_SIZE(masked_bitmap);
+		len = mask_bitmap4(bitmap, mask, masked_bitmap, len);
+		bitmap = masked_bitmap;
+	}
+	xdr_encode_bitmap4(xdr, bitmap, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_getfattr(struct xdr_stream *xdr, const u32* bitmask, struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	encode_getattr_two(xdr, bitmask[0] & nfs4_fattr_bitmap[0],
 			   bitmask[1] & nfs4_fattr_bitmap[1], hdr);
+=======
+	encode_getattr(xdr, nfs4_fattr_bitmap, bitmask,
+			ARRAY_SIZE(nfs4_fattr_bitmap), hdr);
+}
+
+static void encode_getfattr_open(struct xdr_stream *xdr, const u32 *bitmask,
+				 const u32 *open_bitmap,
+				 struct compound_hdr *hdr)
+{
+	encode_getattr(xdr, open_bitmap, bitmask, 3, hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_fsinfo(struct xdr_stream *xdr, const u32* bitmask, struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	encode_getattr_three(xdr,
 			     bitmask[0] & nfs4_fsinfo_bitmap[0],
 			     bitmask[1] & nfs4_fsinfo_bitmap[1],
 			     bitmask[2] & nfs4_fsinfo_bitmap[2],
 			     hdr);
+=======
+	encode_getattr(xdr, nfs4_fsinfo_bitmap, bitmask,
+			ARRAY_SIZE(nfs4_fsinfo_bitmap), hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_fs_locations(struct xdr_stream *xdr, const u32* bitmask, struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	encode_getattr_two(xdr, bitmask[0] & nfs4_fs_locations_bitmap[0],
 			   bitmask[1] & nfs4_fs_locations_bitmap[1], hdr);
+=======
+	encode_getattr(xdr, nfs4_fs_locations_bitmap, bitmask,
+			ARRAY_SIZE(nfs4_fs_locations_bitmap), hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_getfh(struct xdr_stream *xdr, struct compound_hdr *hdr)
@@ -1222,7 +1850,11 @@ static void encode_link(struct xdr_stream *xdr, const struct qstr *name, struct 
 
 static inline int nfs4_lock_type(struct file_lock *fl, int block)
 {
+<<<<<<< HEAD
 	if ((fl->fl_type & (F_RDLCK|F_WRLCK|F_UNLCK)) == F_RDLCK)
+=======
+	if (lock_is_read(fl))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return block ? NFS4_READW_LT : NFS4_READ_LT;
 	return block ? NFS4_WRITEW_LT : NFS4_WRITE_LT;
 }
@@ -1263,12 +1895,20 @@ static void encode_lock(struct xdr_stream *xdr, const struct nfs_lock_args *args
 	*p = cpu_to_be32(args->new_lock_owner);
 	if (args->new_lock_owner){
 		encode_nfs4_seqid(xdr, args->open_seqid);
+<<<<<<< HEAD
 		encode_nfs4_stateid(xdr, args->open_stateid);
+=======
+		encode_nfs4_stateid(xdr, &args->open_stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		encode_nfs4_seqid(xdr, args->lock_seqid);
 		encode_lockowner(xdr, &args->lock_owner);
 	}
 	else {
+<<<<<<< HEAD
 		encode_nfs4_stateid(xdr, args->lock_stateid);
+=======
+		encode_nfs4_stateid(xdr, &args->lock_stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		encode_nfs4_seqid(xdr, args->lock_seqid);
 	}
 }
@@ -1292,7 +1932,11 @@ static void encode_locku(struct xdr_stream *xdr, const struct nfs_locku_args *ar
 	encode_op_hdr(xdr, OP_LOCKU, decode_locku_maxsz, hdr);
 	encode_uint32(xdr, nfs4_lock_type(args->fl, 0));
 	encode_nfs4_seqid(xdr, args->seqid);
+<<<<<<< HEAD
 	encode_nfs4_stateid(xdr, args->stateid);
+=======
+	encode_nfs4_stateid(xdr, &args->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = reserve_space(xdr, 16);
 	p = xdr_encode_hyper(p, args->fl->fl_start);
 	xdr_encode_hyper(p, nfs4_lock_length(args->fl));
@@ -1310,11 +1954,21 @@ static void encode_lookup(struct xdr_stream *xdr, const struct qstr *name, struc
 	encode_string(xdr, name->len, name->name);
 }
 
+<<<<<<< HEAD
 static void encode_share_access(struct xdr_stream *xdr, fmode_t fmode)
+=======
+static void encode_lookupp(struct xdr_stream *xdr, struct compound_hdr *hdr)
+{
+	encode_op_hdr(xdr, OP_LOOKUPP, decode_lookupp_maxsz, hdr);
+}
+
+static void encode_share_access(struct xdr_stream *xdr, u32 share_access)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
 	p = reserve_space(xdr, 8);
+<<<<<<< HEAD
 	switch (fmode & (FMODE_READ|FMODE_WRITE)) {
 	case FMODE_READ:
 		*p++ = cpu_to_be32(NFS4_SHARE_ACCESS_READ);
@@ -1328,6 +1982,9 @@ static void encode_share_access(struct xdr_stream *xdr, fmode_t fmode)
 	default:
 		*p++ = cpu_to_be32(0);
 	}
+=======
+	*p++ = cpu_to_be32(share_access);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p = cpu_to_be32(0);		/* for linux, share_deny = 0 always */
 }
 
@@ -1339,7 +1996,11 @@ static inline void encode_openhdr(struct xdr_stream *xdr, const struct nfs_opena
  * owner 4 = 32
  */
 	encode_nfs4_seqid(xdr, arg->seqid);
+<<<<<<< HEAD
 	encode_share_access(xdr, arg->fmode);
+=======
+	encode_share_access(xdr, arg->share_access);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = reserve_space(xdr, 36);
 	p = xdr_encode_hyper(p, arg->clientid);
 	*p++ = cpu_to_be32(24);
@@ -1352,6 +2013,7 @@ static inline void encode_openhdr(struct xdr_stream *xdr, const struct nfs_opena
 static inline void encode_createmode(struct xdr_stream *xdr, const struct nfs_openargs *arg)
 {
 	__be32 *p;
+<<<<<<< HEAD
 	struct nfs_client *clp;
 
 	p = reserve_space(xdr, 4);
@@ -1378,6 +2040,30 @@ static inline void encode_createmode(struct xdr_stream *xdr, const struct nfs_op
 			*p = cpu_to_be32(NFS4_CREATE_EXCLUSIVE);
 			encode_nfs4_verifier(xdr, &arg->u.verifier);
 		}
+=======
+
+	p = reserve_space(xdr, 4);
+	switch(arg->createmode) {
+	case NFS4_CREATE_UNCHECKED:
+		*p = cpu_to_be32(NFS4_CREATE_UNCHECKED);
+		encode_attrs(xdr, arg->u.attrs, arg->label, &arg->umask,
+				arg->server, arg->server->attr_bitmask);
+		break;
+	case NFS4_CREATE_GUARDED:
+		*p = cpu_to_be32(NFS4_CREATE_GUARDED);
+		encode_attrs(xdr, arg->u.attrs, arg->label, &arg->umask,
+				arg->server, arg->server->attr_bitmask);
+		break;
+	case NFS4_CREATE_EXCLUSIVE:
+		*p = cpu_to_be32(NFS4_CREATE_EXCLUSIVE);
+		encode_nfs4_verifier(xdr, &arg->u.verifier);
+		break;
+	case NFS4_CREATE_EXCLUSIVE4_1:
+		*p = cpu_to_be32(NFS4_CREATE_EXCLUSIVE4_1);
+		encode_nfs4_verifier(xdr, &arg->u.verifier);
+		encode_attrs(xdr, arg->u.attrs, arg->label, &arg->umask,
+				arg->server, arg->server->exclcreat_bitmask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1391,7 +2077,10 @@ static void encode_opentype(struct xdr_stream *xdr, const struct nfs_openargs *a
 		*p = cpu_to_be32(NFS4_OPEN_NOCREATE);
 		break;
 	default:
+<<<<<<< HEAD
 		BUG_ON(arg->claim != NFS4_OPEN_CLAIM_NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*p = cpu_to_be32(NFS4_OPEN_CREATE);
 		encode_createmode(xdr, arg);
 	}
@@ -1445,6 +2134,26 @@ static inline void encode_claim_delegate_cur(struct xdr_stream *xdr, const struc
 	encode_string(xdr, name->len, name->name);
 }
 
+<<<<<<< HEAD
+=======
+static inline void encode_claim_fh(struct xdr_stream *xdr)
+{
+	__be32 *p;
+
+	p = reserve_space(xdr, 4);
+	*p = cpu_to_be32(NFS4_OPEN_CLAIM_FH);
+}
+
+static inline void encode_claim_delegate_cur_fh(struct xdr_stream *xdr, const nfs4_stateid *stateid)
+{
+	__be32 *p;
+
+	p = reserve_space(xdr, 4);
+	*p = cpu_to_be32(NFS4_OPEN_CLAIM_DELEG_CUR_FH);
+	encode_nfs4_stateid(xdr, stateid);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void encode_open(struct xdr_stream *xdr, const struct nfs_openargs *arg, struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_OPEN, decode_open_maxsz, hdr);
@@ -1460,6 +2169,15 @@ static void encode_open(struct xdr_stream *xdr, const struct nfs_openargs *arg, 
 	case NFS4_OPEN_CLAIM_DELEGATE_CUR:
 		encode_claim_delegate_cur(xdr, arg->name, &arg->u.delegation);
 		break;
+<<<<<<< HEAD
+=======
+	case NFS4_OPEN_CLAIM_FH:
+		encode_claim_fh(xdr);
+		break;
+	case NFS4_OPEN_CLAIM_DELEG_CUR_FH:
+		encode_claim_delegate_cur_fh(xdr, &arg->u.delegation);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
@@ -1475,9 +2193,15 @@ static void encode_open_confirm(struct xdr_stream *xdr, const struct nfs_open_co
 static void encode_open_downgrade(struct xdr_stream *xdr, const struct nfs_closeargs *arg, struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_OPEN_DOWNGRADE, decode_open_downgrade_maxsz, hdr);
+<<<<<<< HEAD
 	encode_nfs4_stateid(xdr, arg->stateid);
 	encode_nfs4_seqid(xdr, arg->seqid);
 	encode_share_access(xdr, arg->fmode);
+=======
+	encode_nfs4_stateid(xdr, &arg->stateid);
+	encode_nfs4_seqid(xdr, arg->seqid);
+	encode_share_access(xdr, arg->share_access);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1492,6 +2216,7 @@ static void encode_putrootfh(struct xdr_stream *xdr, struct compound_hdr *hdr)
 	encode_op_hdr(xdr, OP_PUTROOTFH, decode_putrootfh_maxsz, hdr);
 }
 
+<<<<<<< HEAD
 static void encode_open_stateid(struct xdr_stream *xdr,
 		const struct nfs_open_context *ctx,
 		const struct nfs_lock_context *l_ctx,
@@ -1511,12 +2236,20 @@ static void encode_open_stateid(struct xdr_stream *xdr,
 }
 
 static void encode_read(struct xdr_stream *xdr, const struct nfs_readargs *args, struct compound_hdr *hdr)
+=======
+static void encode_read(struct xdr_stream *xdr, const struct nfs_pgio_args *args,
+			struct compound_hdr *hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
 	encode_op_hdr(xdr, OP_READ, decode_read_maxsz, hdr);
+<<<<<<< HEAD
 	encode_open_stateid(xdr, args->context, args->lock_context,
 			FMODE_READ, hdr->minorversion);
+=======
+	encode_nfs4_stateid(xdr, &args->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = reserve_space(xdr, 12);
 	p = xdr_encode_hyper(p, args->offset);
@@ -1525,6 +2258,7 @@ static void encode_read(struct xdr_stream *xdr, const struct nfs_readargs *args,
 
 static void encode_readdir(struct xdr_stream *xdr, const struct nfs4_readdir_arg *readdir, struct rpc_rqst *req, struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	uint32_t attrs[2] = {
 		FATTR4_WORD0_RDATTR_ERROR,
 		FATTR4_WORD1_MOUNTED_ON_FILEID,
@@ -1540,14 +2274,52 @@ static void encode_readdir(struct xdr_stream *xdr, const struct nfs4_readdir_arg
 			FATTR4_WORD1_SPACE_USED|FATTR4_WORD1_TIME_ACCESS|
 			FATTR4_WORD1_TIME_METADATA|FATTR4_WORD1_TIME_MODIFY;
 		dircount >>= 1;
+=======
+	uint32_t attrs[3] = {
+		FATTR4_WORD0_TYPE
+		| FATTR4_WORD0_RDATTR_ERROR,
+		FATTR4_WORD1_MOUNTED_ON_FILEID,
+	};
+	uint32_t dircount = readdir->count;
+	uint32_t maxcount = readdir->count;
+	__be32 *p, verf[2];
+	uint32_t attrlen = 0;
+	unsigned int i;
+
+	if (readdir->plus) {
+		attrs[0] |= FATTR4_WORD0_CHANGE
+			| FATTR4_WORD0_SIZE
+			| FATTR4_WORD0_FSID
+			| FATTR4_WORD0_FILEHANDLE
+			| FATTR4_WORD0_FILEID;
+		attrs[1] |= FATTR4_WORD1_MODE
+			| FATTR4_WORD1_NUMLINKS
+			| FATTR4_WORD1_OWNER
+			| FATTR4_WORD1_OWNER_GROUP
+			| FATTR4_WORD1_RAWDEV
+			| FATTR4_WORD1_SPACE_USED
+			| FATTR4_WORD1_TIME_ACCESS
+			| FATTR4_WORD1_TIME_METADATA
+			| FATTR4_WORD1_TIME_MODIFY;
+		attrs[2] |= FATTR4_WORD2_SECURITY_LABEL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Use mounted_on_fileid only if the server supports it */
 	if (!(readdir->bitmask[1] & FATTR4_WORD1_MOUNTED_ON_FILEID))
 		attrs[0] |= FATTR4_WORD0_FILEID;
+<<<<<<< HEAD
+=======
+	for (i = 0; i < ARRAY_SIZE(attrs); i++) {
+		attrs[i] &= readdir->bitmask[i];
+		if (attrs[i] != 0)
+			attrlen = i+1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	encode_op_hdr(xdr, OP_READDIR, decode_readdir_maxsz, hdr);
 	encode_uint64(xdr, readdir->cookie);
 	encode_nfs4_verifier(xdr, &readdir->verifier);
+<<<<<<< HEAD
 	p = reserve_space(xdr, 20);
 	*p++ = cpu_to_be32(dircount);
 	*p++ = cpu_to_be32(readdir->count);
@@ -1557,11 +2329,27 @@ static void encode_readdir(struct xdr_stream *xdr, const struct nfs4_readdir_arg
 	*p = cpu_to_be32(attrs[1] & readdir->bitmask[1]);
 	memcpy(verf, readdir->verifier.data, sizeof(verf));
 	dprintk("%s: cookie = %Lu, verifier = %08x:%08x, bitmap = %08x:%08x\n",
+=======
+	p = reserve_space(xdr, 12 + (attrlen << 2));
+	*p++ = cpu_to_be32(dircount);
+	*p++ = cpu_to_be32(maxcount);
+	*p++ = cpu_to_be32(attrlen);
+	for (i = 0; i < attrlen; i++)
+		*p++ = cpu_to_be32(attrs[i]);
+	memcpy(verf, readdir->verifier.data, sizeof(verf));
+
+	dprintk("%s: cookie = %llu, verifier = %08x:%08x, bitmap = %08x:%08x:%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__,
 			(unsigned long long)readdir->cookie,
 			verf[0], verf[1],
 			attrs[0] & readdir->bitmask[0],
+<<<<<<< HEAD
 			attrs[1] & readdir->bitmask[1]);
+=======
+			attrs[1] & readdir->bitmask[1],
+			attrs[2] & readdir->bitmask[2]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_readlink(struct xdr_stream *xdr, const struct nfs4_readlink *readlink, struct rpc_rqst *req, struct compound_hdr *hdr)
@@ -1595,6 +2383,7 @@ encode_restorefh(struct xdr_stream *xdr, struct compound_hdr *hdr)
 	encode_op_hdr(xdr, OP_RESTOREFH, decode_restorefh_maxsz, hdr);
 }
 
+<<<<<<< HEAD
 static void
 encode_setacl(struct xdr_stream *xdr, struct nfs_setaclargs *arg, struct compound_hdr *hdr)
 {
@@ -1609,6 +2398,38 @@ encode_setacl(struct xdr_stream *xdr, struct nfs_setaclargs *arg, struct compoun
 	p = reserve_space(xdr, 4);
 	*p = cpu_to_be32(arg->acl_len);
 	xdr_write_pages(xdr, arg->acl_pages, arg->acl_pgbase, arg->acl_len);
+=======
+static void nfs4_acltype_to_bitmap(enum nfs4_acl_type type, __u32 bitmap[2])
+{
+	switch (type) {
+	default:
+		bitmap[0] = FATTR4_WORD0_ACL;
+		bitmap[1] = 0;
+		break;
+	case NFS4ACL_DACL:
+		bitmap[0] = 0;
+		bitmap[1] = FATTR4_WORD1_DACL;
+		break;
+	case NFS4ACL_SACL:
+		bitmap[0] = 0;
+		bitmap[1] = FATTR4_WORD1_SACL;
+	}
+}
+
+static void encode_setacl(struct xdr_stream *xdr,
+			  const struct nfs_setaclargs *arg,
+			  struct compound_hdr *hdr)
+{
+	__u32 bitmap[2];
+
+	nfs4_acltype_to_bitmap(arg->acl_type, bitmap);
+
+	encode_op_hdr(xdr, OP_SETATTR, decode_setacl_maxsz, hdr);
+	encode_nfs4_stateid(xdr, &zero_stateid);
+	xdr_encode_bitmap4(xdr, bitmap, ARRAY_SIZE(bitmap));
+	encode_uint32(xdr, arg->acl_len);
+	xdr_write_pages(xdr, arg->acl_pages, 0, arg->acl_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1621,7 +2442,12 @@ static void encode_setattr(struct xdr_stream *xdr, const struct nfs_setattrargs 
 {
 	encode_op_hdr(xdr, OP_SETATTR, decode_setattr_maxsz, hdr);
 	encode_nfs4_stateid(xdr, &arg->stateid);
+<<<<<<< HEAD
 	encode_attrs(xdr, arg->iap, server);
+=======
+	encode_attrs(xdr, arg->iap, arg->label, NULL, server,
+			server->attr_bitmask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_setclientid(struct xdr_stream *xdr, const struct nfs4_setclientid *setclientid, struct compound_hdr *hdr)
@@ -1631,13 +2457,22 @@ static void encode_setclientid(struct xdr_stream *xdr, const struct nfs4_setclie
 	encode_op_hdr(xdr, OP_SETCLIENTID, decode_setclientid_maxsz, hdr);
 	encode_nfs4_verifier(xdr, setclientid->sc_verifier);
 
+<<<<<<< HEAD
 	encode_string(xdr, setclientid->sc_name_len, setclientid->sc_name);
+=======
+	encode_string(xdr, strlen(setclientid->sc_clnt->cl_owner_id),
+			setclientid->sc_clnt->cl_owner_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = reserve_space(xdr, 4);
 	*p = cpu_to_be32(setclientid->sc_prog);
 	encode_string(xdr, setclientid->sc_netid_len, setclientid->sc_netid);
 	encode_string(xdr, setclientid->sc_uaddr_len, setclientid->sc_uaddr);
 	p = reserve_space(xdr, 4);
+<<<<<<< HEAD
 	*p = cpu_to_be32(setclientid->sc_cb_ident);
+=======
+	*p = cpu_to_be32(setclientid->sc_clnt->cl_cb_ident);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void encode_setclientid_confirm(struct xdr_stream *xdr, const struct nfs4_setclientid_res *arg, struct compound_hdr *hdr)
@@ -1648,13 +2483,22 @@ static void encode_setclientid_confirm(struct xdr_stream *xdr, const struct nfs4
 	encode_nfs4_verifier(xdr, &arg->confirm);
 }
 
+<<<<<<< HEAD
 static void encode_write(struct xdr_stream *xdr, const struct nfs_writeargs *args, struct compound_hdr *hdr)
+=======
+static void encode_write(struct xdr_stream *xdr, const struct nfs_pgio_args *args,
+			 struct compound_hdr *hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
 	encode_op_hdr(xdr, OP_WRITE, decode_write_maxsz, hdr);
+<<<<<<< HEAD
 	encode_open_stateid(xdr, args->context, args->lock_context,
 			FMODE_WRITE, hdr->minorversion);
+=======
+	encode_nfs4_stateid(xdr, &args->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = reserve_space(xdr, 16);
 	p = xdr_encode_hyper(p, args->offset);
@@ -1678,6 +2522,7 @@ static void encode_secinfo(struct xdr_stream *xdr, const struct qstr *name, stru
 
 #if defined(CONFIG_NFS_V4_1)
 /* NFSv4.1 operations */
+<<<<<<< HEAD
 static void encode_exchange_id(struct xdr_stream *xdr,
 			       struct nfs41_exchange_id_args *args,
 			       struct compound_hdr *hdr)
@@ -1694,17 +2539,77 @@ static void encode_exchange_id(struct xdr_stream *xdr,
 	p = reserve_space(xdr, 12);
 	*p++ = cpu_to_be32(args->flags);
 	*p++ = cpu_to_be32(0);	/* zero length state_protect4_a */
+=======
+static void encode_bind_conn_to_session(struct xdr_stream *xdr,
+				   const struct nfs41_bind_conn_to_session_args *args,
+				   struct compound_hdr *hdr)
+{
+	__be32 *p;
+
+	encode_op_hdr(xdr, OP_BIND_CONN_TO_SESSION,
+		decode_bind_conn_to_session_maxsz, hdr);
+	encode_opaque_fixed(xdr, args->sessionid.data, NFS4_MAX_SESSIONID_LEN);
+	p = xdr_reserve_space(xdr, 8);
+	*p++ = cpu_to_be32(args->dir);
+	*p = (args->use_conn_in_rdma_mode) ? cpu_to_be32(1) : cpu_to_be32(0);
+}
+
+static void encode_op_map(struct xdr_stream *xdr, const struct nfs4_op_map *op_map)
+{
+	unsigned int i;
+	encode_uint32(xdr, NFS4_OP_MAP_NUM_WORDS);
+	for (i = 0; i < NFS4_OP_MAP_NUM_WORDS; i++)
+		encode_uint32(xdr, op_map->u.words[i]);
+}
+
+static void encode_exchange_id(struct xdr_stream *xdr,
+			       const struct nfs41_exchange_id_args *args,
+			       struct compound_hdr *hdr)
+{
+	__be32 *p;
+	char impl_name[IMPL_NAME_LIMIT];
+	int len = 0;
+
+	encode_op_hdr(xdr, OP_EXCHANGE_ID, decode_exchange_id_maxsz, hdr);
+	encode_nfs4_verifier(xdr, &args->verifier);
+
+	encode_string(xdr, strlen(args->client->cl_owner_id),
+			args->client->cl_owner_id);
+
+	encode_uint32(xdr, args->flags);
+	encode_uint32(xdr, args->state_protect.how);
+
+	switch (args->state_protect.how) {
+	case SP4_NONE:
+		break;
+	case SP4_MACH_CRED:
+		encode_op_map(xdr, &args->state_protect.enforce);
+		encode_op_map(xdr, &args->state_protect.allow);
+		break;
+	default:
+		WARN_ON_ONCE(1);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (send_implementation_id &&
 	    sizeof(CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN) > 1 &&
 	    sizeof(CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN)
+<<<<<<< HEAD
 		<= NFS4_OPAQUE_LIMIT + 1)
+=======
+		<= sizeof(impl_name) + 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = snprintf(impl_name, sizeof(impl_name), "%s %s %s %s",
 			       utsname()->sysname, utsname()->release,
 			       utsname()->version, utsname()->machine);
 
 	if (len > 0) {
+<<<<<<< HEAD
 		*p = cpu_to_be32(1);	/* implementation id array length=1 */
+=======
+		encode_uint32(xdr, 1);	/* implementation id array length=1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		encode_string(xdr,
 			sizeof(CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN) - 1,
@@ -1715,6 +2620,7 @@ static void encode_exchange_id(struct xdr_stream *xdr,
 		p = xdr_encode_hyper(p, 0);
 		*p = cpu_to_be32(0);
 	} else
+<<<<<<< HEAD
 		*p = cpu_to_be32(0);	/* implementation id array length=0 */
 }
 
@@ -1726,12 +2632,26 @@ static void encode_create_session(struct xdr_stream *xdr,
 	char machine_name[NFS4_MAX_MACHINE_NAME_LEN];
 	uint32_t len;
 	struct nfs_client *clp = args->client;
+=======
+		encode_uint32(xdr, 0);	/* implementation id array length=0 */
+}
+
+static void encode_create_session(struct xdr_stream *xdr,
+				  const struct nfs41_create_session_args *args,
+				  struct compound_hdr *hdr)
+{
+	__be32 *p;
+	struct nfs_client *clp = args->client;
+	struct rpc_clnt *clnt = clp->cl_rpcclient;
+	struct nfs_net *nn = net_generic(clp->cl_net, nfs_net_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 max_resp_sz_cached;
 
 	/*
 	 * Assumes OPEN is the biggest non-idempotent compound.
 	 * 2 is the verifier.
 	 */
+<<<<<<< HEAD
 	max_resp_sz_cached = (NFS4_dec_open_sz + RPC_REPHDRSIZE +
 			      RPC_MAX_AUTH_SIZE + 2) * XDR_UNIT;
 
@@ -1742,6 +2662,15 @@ static void encode_create_session(struct xdr_stream *xdr,
 	p = reserve_space(xdr, 16 + 2*28 + 20 + len + 12);
 	p = xdr_encode_hyper(p, clp->cl_clientid);
 	*p++ = cpu_to_be32(clp->cl_seqid);			/*Sequence id */
+=======
+	max_resp_sz_cached = (NFS4_dec_open_sz + RPC_REPHDRSIZE + 2)
+				* XDR_UNIT + RPC_MAX_AUTH_SIZE;
+
+	encode_op_hdr(xdr, OP_CREATE_SESSION, decode_create_session_maxsz, hdr);
+	p = reserve_space(xdr, 16 + 2*28 + 20 + clnt->cl_nodelen + 12);
+	p = xdr_encode_hyper(p, args->clientid);
+	*p++ = cpu_to_be32(args->seqid);			/*Sequence id */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p++ = cpu_to_be32(args->flags);			/*flags */
 
 	/* Fore Channel */
@@ -1767,23 +2696,45 @@ static void encode_create_session(struct xdr_stream *xdr,
 	*p++ = cpu_to_be32(RPC_AUTH_UNIX);			/* auth_sys */
 
 	/* authsys_parms rfc1831 */
+<<<<<<< HEAD
 	*p++ = cpu_to_be32((u32)clp->cl_boot_time.tv_nsec);	/* stamp */
 	p = xdr_encode_opaque(p, machine_name, len);
+=======
+	*p++ = cpu_to_be32(ktime_to_ns(nn->boot_time));	/* stamp */
+	p = xdr_encode_array(p, clnt->cl_nodename, clnt->cl_nodelen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p++ = cpu_to_be32(0);				/* UID */
 	*p++ = cpu_to_be32(0);				/* GID */
 	*p = cpu_to_be32(0);				/* No more gids */
 }
 
 static void encode_destroy_session(struct xdr_stream *xdr,
+<<<<<<< HEAD
 				   struct nfs4_session *session,
+=======
+				   const struct nfs4_session *session,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_DESTROY_SESSION, decode_destroy_session_maxsz, hdr);
 	encode_opaque_fixed(xdr, session->sess_id.data, NFS4_MAX_SESSIONID_LEN);
 }
 
+<<<<<<< HEAD
 static void encode_reclaim_complete(struct xdr_stream *xdr,
 				    struct nfs41_reclaim_complete_args *args,
+=======
+static void encode_destroy_clientid(struct xdr_stream *xdr,
+				   uint64_t clientid,
+				   struct compound_hdr *hdr)
+{
+	encode_op_hdr(xdr, OP_DESTROY_CLIENTID, decode_destroy_clientid_maxsz, hdr);
+	encode_uint64(xdr, clientid);
+}
+
+static void encode_reclaim_complete(struct xdr_stream *xdr,
+				    const struct nfs41_reclaim_complete_args *args,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_RECLAIM_COMPLETE, decode_reclaim_complete_maxsz, hdr);
@@ -1796,6 +2747,7 @@ static void encode_sequence(struct xdr_stream *xdr,
 			    struct compound_hdr *hdr)
 {
 #if defined(CONFIG_NFS_V4_1)
+<<<<<<< HEAD
 	struct nfs4_session *session = args->sa_session;
 	struct nfs4_slot_table *tp;
 	struct nfs4_slot *slot;
@@ -1809,6 +2761,18 @@ static void encode_sequence(struct xdr_stream *xdr,
 	WARN_ON(args->sa_slotid == NFS4_MAX_SLOT_TABLE);
 	slot = tp->slots + args->sa_slotid;
 
+=======
+	struct nfs4_session *session;
+	struct nfs4_slot_table *tp;
+	struct nfs4_slot *slot = args->sa_slot;
+	__be32 *p;
+
+	tp = slot->table;
+	session = tp->session;
+	if (!session)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_op_hdr(xdr, OP_SEQUENCE, decode_sequence_maxsz, hdr);
 
 	/*
@@ -1821,12 +2785,20 @@ static void encode_sequence(struct xdr_stream *xdr,
 		((u32 *)session->sess_id.data)[1],
 		((u32 *)session->sess_id.data)[2],
 		((u32 *)session->sess_id.data)[3],
+<<<<<<< HEAD
 		slot->seq_nr, args->sa_slotid,
+=======
+		slot->seq_nr, slot->slot_nr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp->highest_used_slotid, args->sa_cache_this);
 	p = reserve_space(xdr, NFS4_MAX_SESSIONID_LEN + 16);
 	p = xdr_encode_opaque_fixed(p, session->sess_id.data, NFS4_MAX_SESSIONID_LEN);
 	*p++ = cpu_to_be32(slot->seq_nr);
+<<<<<<< HEAD
 	*p++ = cpu_to_be32(args->sa_slotid);
+=======
+	*p++ = cpu_to_be32(slot->slot_nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p++ = cpu_to_be32(tp->highest_used_slotid);
 	*p = cpu_to_be32(args->sa_cache_this);
 #endif /* CONFIG_NFS_V4_1 */
@@ -1834,6 +2806,7 @@ static void encode_sequence(struct xdr_stream *xdr,
 
 #ifdef CONFIG_NFS_V4_1
 static void
+<<<<<<< HEAD
 encode_getdevicelist(struct xdr_stream *xdr,
 		     const struct nfs4_getdevicelist_args *args,
 		     struct compound_hdr *hdr)
@@ -1852,6 +2825,8 @@ encode_getdevicelist(struct xdr_stream *xdr,
 }
 
 static void
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 encode_getdeviceinfo(struct xdr_stream *xdr,
 		     const struct nfs4_getdeviceinfo_args *args,
 		     struct compound_hdr *hdr)
@@ -1859,12 +2834,24 @@ encode_getdeviceinfo(struct xdr_stream *xdr,
 	__be32 *p;
 
 	encode_op_hdr(xdr, OP_GETDEVICEINFO, decode_getdeviceinfo_maxsz, hdr);
+<<<<<<< HEAD
 	p = reserve_space(xdr, 12 + NFS4_DEVICEID4_SIZE);
 	p = xdr_encode_opaque_fixed(p, args->pdev->dev_id.data,
 				    NFS4_DEVICEID4_SIZE);
 	*p++ = cpu_to_be32(args->pdev->layout_type);
 	*p++ = cpu_to_be32(args->pdev->pglen);		/* gdia_maxcount */
 	*p++ = cpu_to_be32(0);				/* bitmap length 0 */
+=======
+	p = reserve_space(xdr, NFS4_DEVICEID4_SIZE + 4 + 4);
+	p = xdr_encode_opaque_fixed(p, args->pdev->dev_id.data,
+				    NFS4_DEVICEID4_SIZE);
+	*p++ = cpu_to_be32(args->pdev->layout_type);
+	*p++ = cpu_to_be32(args->pdev->maxcount);	/* gdia_maxcount */
+
+	p = reserve_space(xdr, 4 + 4);
+	*p++ = cpu_to_be32(1);			/* bitmap length */
+	*p++ = cpu_to_be32(args->notify_types);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1912,6 +2899,7 @@ encode_layoutcommit(struct xdr_stream *xdr,
 	p = xdr_encode_hyper(p, args->lastbytewritten + 1);	/* length */
 	*p = cpu_to_be32(0); /* reclaim */
 	encode_nfs4_stateid(xdr, &args->stateid);
+<<<<<<< HEAD
 	p = reserve_space(xdr, 20);
 	*p++ = cpu_to_be32(1); /* newoffset = TRUE */
 	p = xdr_encode_hyper(p, args->lastbytewritten);
@@ -1923,6 +2911,23 @@ encode_layoutcommit(struct xdr_stream *xdr,
 			NFS_I(inode)->layout, xdr, args);
 	else
 		encode_uint32(xdr, 0); /* no layout-type payload */
+=======
+	if (args->lastbytewritten != U64_MAX) {
+		p = reserve_space(xdr, 20);
+		*p++ = cpu_to_be32(1); /* newoffset = TRUE */
+		p = xdr_encode_hyper(p, args->lastbytewritten);
+	} else {
+		p = reserve_space(xdr, 12);
+		*p++ = cpu_to_be32(0); /* newoffset = FALSE */
+	}
+	*p++ = cpu_to_be32(0); /* Never send time_modify_changed */
+	*p++ = cpu_to_be32(NFS_SERVER(args->inode)->pnfs_curr_ld->id);/* type */
+
+	encode_uint32(xdr, args->layoutupdate_len);
+	if (args->layoutupdate_pages)
+		xdr_write_pages(xdr, args->layoutupdate_pages, 0,
+				args->layoutupdate_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1938,6 +2943,7 @@ encode_layoutreturn(struct xdr_stream *xdr,
 	p = reserve_space(xdr, 16);
 	*p++ = cpu_to_be32(0);		/* reclaim. always 0 for now */
 	*p++ = cpu_to_be32(args->layout_type);
+<<<<<<< HEAD
 	*p++ = cpu_to_be32(IOMODE_ANY);
 	*p = cpu_to_be32(RETURN_FILE);
 	p = reserve_space(xdr, 16);
@@ -1950,6 +2956,19 @@ encode_layoutreturn(struct xdr_stream *xdr,
 		NFS_SERVER(args->inode)->pnfs_curr_ld->encode_layoutreturn(
 			NFS_I(args->inode)->layout, xdr, args);
 	} else
+=======
+	*p++ = cpu_to_be32(args->range.iomode);
+	*p = cpu_to_be32(RETURN_FILE);
+	p = reserve_space(xdr, 16);
+	p = xdr_encode_hyper(p, args->range.offset);
+	p = xdr_encode_hyper(p, args->range.length);
+	spin_lock(&args->inode->i_lock);
+	encode_nfs4_stateid(xdr, &args->stateid);
+	spin_unlock(&args->inode->i_lock);
+	if (args->ld_private->ops && args->ld_private->ops->encode)
+		args->ld_private->ops->encode(xdr, args, args->ld_private);
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		encode_uint32(xdr, 0);
 }
 
@@ -1964,7 +2983,11 @@ encode_secinfo_no_name(struct xdr_stream *xdr,
 }
 
 static void encode_test_stateid(struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs41_test_stateid_args *args,
+=======
+				const struct nfs41_test_stateid_args *args,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_TEST_STATEID, decode_test_stateid_maxsz, hdr);
@@ -1973,11 +2996,33 @@ static void encode_test_stateid(struct xdr_stream *xdr,
 }
 
 static void encode_free_stateid(struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs41_free_stateid_args *args,
 				struct compound_hdr *hdr)
 {
 	encode_op_hdr(xdr, OP_FREE_STATEID, decode_free_stateid_maxsz, hdr);
 	encode_nfs4_stateid(xdr, args->stateid);
+=======
+				const struct nfs41_free_stateid_args *args,
+				struct compound_hdr *hdr)
+{
+	encode_op_hdr(xdr, OP_FREE_STATEID, decode_free_stateid_maxsz, hdr);
+	encode_nfs4_stateid(xdr, &args->stateid);
+}
+#else
+static inline void
+encode_layoutreturn(struct xdr_stream *xdr,
+		    const struct nfs4_layoutreturn_args *args,
+		    struct compound_hdr *hdr)
+{
+}
+
+static void
+encode_layoutget(struct xdr_stream *xdr,
+		      const struct nfs4_layoutget_args *args,
+		      struct compound_hdr *hdr)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_NFS_V4_1 */
 
@@ -1988,8 +3033,14 @@ static void encode_free_stateid(struct xdr_stream *xdr,
 static u32 nfs4_xdr_minorversion(const struct nfs4_sequence_args *args)
 {
 #if defined(CONFIG_NFS_V4_1)
+<<<<<<< HEAD
 	if (args->sa_session)
 		return args->sa_session->clp->cl_mvops->minor_version;
+=======
+	struct nfs4_session *session = args->sa_slot->table->session;
+	if (session)
+		return session->clp->cl_mvops->minor_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NFS_V4_1 */
 	return 0;
 }
@@ -1998,8 +3049,14 @@ static u32 nfs4_xdr_minorversion(const struct nfs4_sequence_args *args)
  * Encode an ACCESS request
  */
 static void nfs4_xdr_enc_access(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs4_accessargs *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_accessargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2008,7 +3065,12 @@ static void nfs4_xdr_enc_access(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_access(xdr, args->access, &hdr);
+<<<<<<< HEAD
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	if (args->bitmask)
+		encode_getfattr(xdr, args->bitmask, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2016,8 +3078,14 @@ static void nfs4_xdr_enc_access(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode LOOKUP request
  */
 static void nfs4_xdr_enc_lookup(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs4_lookup_arg *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_lookup_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2032,12 +3100,41 @@ static void nfs4_xdr_enc_lookup(struct rpc_rqst *req, struct xdr_stream *xdr,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Encode LOOKUPP request
+ */
+static void nfs4_xdr_enc_lookupp(struct rpc_rqst *req, struct xdr_stream *xdr,
+		const void *data)
+{
+	const struct nfs4_lookupp_arg *args = data;
+	struct compound_hdr hdr = {
+		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_sequence(xdr, &args->seq_args, &hdr);
+	encode_putfh(xdr, args->fh, &hdr);
+	encode_lookupp(xdr, &hdr);
+	encode_getfh(xdr, &hdr);
+	encode_getfattr(xdr, args->bitmask, &hdr);
+	encode_nops(&hdr);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Encode LOOKUP_ROOT request
  */
 static void nfs4_xdr_enc_lookup_root(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     const struct nfs4_lookup_root_arg *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs4_lookup_root_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2054,8 +3151,14 @@ static void nfs4_xdr_enc_lookup_root(struct rpc_rqst *req,
  * Encode REMOVE request
  */
 static void nfs4_xdr_enc_remove(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs_removeargs *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs_removeargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2064,7 +3167,10 @@ static void nfs4_xdr_enc_remove(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_remove(xdr, &args->name, &hdr);
+<<<<<<< HEAD
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2072,8 +3178,14 @@ static void nfs4_xdr_enc_remove(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode RENAME request
  */
 static void nfs4_xdr_enc_rename(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs_renameargs *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs_renameargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2084,9 +3196,12 @@ static void nfs4_xdr_enc_rename(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_savefh(xdr, &hdr);
 	encode_putfh(xdr, args->new_dir, &hdr);
 	encode_rename(xdr, args->old_name, args->new_name, &hdr);
+<<<<<<< HEAD
 	encode_getfattr(xdr, args->bitmask, &hdr);
 	encode_restorefh(xdr, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2094,8 +3209,14 @@ static void nfs4_xdr_enc_rename(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode LINK request
  */
 static void nfs4_xdr_enc_link(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			     const struct nfs4_link_arg *args)
 {
+=======
+			      const void *data)
+{
+	const struct nfs4_link_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2106,7 +3227,10 @@ static void nfs4_xdr_enc_link(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_savefh(xdr, &hdr);
 	encode_putfh(xdr, args->dir_fh, &hdr);
 	encode_link(xdr, args->name, &hdr);
+<<<<<<< HEAD
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_restorefh(xdr, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
 	encode_nops(&hdr);
@@ -2116,8 +3240,14 @@ static void nfs4_xdr_enc_link(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode CREATE request
  */
 static void nfs4_xdr_enc_create(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs4_create_arg *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_create_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2125,12 +3255,18 @@ static void nfs4_xdr_enc_create(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->dir_fh, &hdr);
+<<<<<<< HEAD
 	encode_savefh(xdr, &hdr);
 	encode_create(xdr, args, &hdr);
 	encode_getfh(xdr, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
 	encode_restorefh(xdr, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	encode_create(xdr, args, &hdr);
+	encode_getfh(xdr, &hdr);
+	encode_getfattr(xdr, args->bitmask, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2138,8 +3274,15 @@ static void nfs4_xdr_enc_create(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode SYMLINK request
  */
 static void nfs4_xdr_enc_symlink(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 const struct nfs4_create_arg *args)
 {
+=======
+				 const void *data)
+{
+	const struct nfs4_create_arg *args = data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs4_xdr_enc_create(req, xdr, args);
 }
 
@@ -2147,8 +3290,14 @@ static void nfs4_xdr_enc_symlink(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode GETATTR request
  */
 static void nfs4_xdr_enc_getattr(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 const struct nfs4_getattr_arg *args)
 {
+=======
+				 const void *data)
+{
+	const struct nfs4_getattr_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2164,8 +3313,14 @@ static void nfs4_xdr_enc_getattr(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a CLOSE request
  */
 static void nfs4_xdr_enc_close(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_closeargs *args)
 {
+=======
+			       const void *data)
+{
+	const struct nfs_closeargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2173,8 +3328,16 @@ static void nfs4_xdr_enc_close(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	encode_close(xdr, args, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	if (args->lr_args)
+		encode_layoutreturn(xdr, args->lr_args, &hdr);
+	if (args->bitmask != NULL)
+		encode_getfattr(xdr, args->bitmask, &hdr);
+	encode_close(xdr, args, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2182,8 +3345,14 @@ static void nfs4_xdr_enc_close(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode an OPEN request
  */
 static void nfs4_xdr_enc_open(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_openargs *args)
 {
+=======
+			      const void *data)
+{
+	const struct nfs_openargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2191,12 +3360,26 @@ static void nfs4_xdr_enc_open(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	encode_savefh(xdr, &hdr);
 	encode_open(xdr, args, &hdr);
 	encode_getfh(xdr, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
 	encode_restorefh(xdr, &hdr);
 	encode_getfattr(xdr, args->dir_bitmask, &hdr);
+=======
+	encode_open(xdr, args, &hdr);
+	encode_getfh(xdr, &hdr);
+	if (args->access)
+		encode_access(xdr, args->access, &hdr);
+	encode_getfattr_open(xdr, args->bitmask, args->open_bitmap, &hdr);
+	if (args->lg_args) {
+		encode_layoutget(xdr, args->lg_args, &hdr);
+		rpc_prepare_reply_pages(req, args->lg_args->layout.pages, 0,
+					args->lg_args->layout.pglen,
+					hdr.replen - pagepad_maxsz);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2205,8 +3388,14 @@ static void nfs4_xdr_enc_open(struct rpc_rqst *req, struct xdr_stream *xdr,
  */
 static void nfs4_xdr_enc_open_confirm(struct rpc_rqst *req,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs_open_confirmargs *args)
 {
+=======
+				      const void *data)
+{
+	const struct nfs_open_confirmargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.nops   = 0,
 	};
@@ -2222,8 +3411,14 @@ static void nfs4_xdr_enc_open_confirm(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_open_noattr(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs_openargs *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs_openargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2232,7 +3427,19 @@ static void nfs4_xdr_enc_open_noattr(struct rpc_rqst *req,
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_open(xdr, args, &hdr);
+<<<<<<< HEAD
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	if (args->access)
+		encode_access(xdr, args->access, &hdr);
+	encode_getfattr_open(xdr, args->bitmask, args->open_bitmap, &hdr);
+	if (args->lg_args) {
+		encode_layoutget(xdr, args->lg_args, &hdr);
+		rpc_prepare_reply_pages(req, args->lg_args->layout.pages, 0,
+					args->lg_args->layout.pglen,
+					hdr.replen - pagepad_maxsz);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2241,8 +3448,14 @@ static void nfs4_xdr_enc_open_noattr(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_open_downgrade(struct rpc_rqst *req,
 					struct xdr_stream *xdr,
+<<<<<<< HEAD
 					struct nfs_closeargs *args)
 {
+=======
+					const void *data)
+{
+	const struct nfs_closeargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2250,8 +3463,14 @@ static void nfs4_xdr_enc_open_downgrade(struct rpc_rqst *req,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	encode_open_downgrade(xdr, args, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	if (args->lr_args)
+		encode_layoutreturn(xdr, args->lr_args, &hdr);
+	encode_open_downgrade(xdr, args, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2259,8 +3478,14 @@ static void nfs4_xdr_enc_open_downgrade(struct rpc_rqst *req,
  * Encode a LOCK request
  */
 static void nfs4_xdr_enc_lock(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_lock_args *args)
 {
+=======
+			      const void *data)
+{
+	const struct nfs_lock_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2276,8 +3501,14 @@ static void nfs4_xdr_enc_lock(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a LOCKT request
  */
 static void nfs4_xdr_enc_lockt(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_lockt_args *args)
 {
+=======
+			       const void *data)
+{
+	const struct nfs_lockt_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2293,8 +3524,14 @@ static void nfs4_xdr_enc_lockt(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a LOCKU request
  */
 static void nfs4_xdr_enc_locku(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_locku_args *args)
 {
+=======
+			       const void *data)
+{
+	const struct nfs_locku_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2308,8 +3545,14 @@ static void nfs4_xdr_enc_locku(struct rpc_rqst *req, struct xdr_stream *xdr,
 
 static void nfs4_xdr_enc_release_lockowner(struct rpc_rqst *req,
 					   struct xdr_stream *xdr,
+<<<<<<< HEAD
 					struct nfs_release_lockowner_args *args)
 {
+=======
+					   const void *data)
+{
+	const struct nfs_release_lockowner_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = 0,
 	};
@@ -2323,8 +3566,14 @@ static void nfs4_xdr_enc_release_lockowner(struct rpc_rqst *req,
  * Encode a READLINK request
  */
 static void nfs4_xdr_enc_readlink(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				  const struct nfs4_readlink *args)
 {
+=======
+				  const void *data)
+{
+	const struct nfs4_readlink *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2334,8 +3583,13 @@ static void nfs4_xdr_enc_readlink(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_readlink(xdr, args, req, &hdr);
 
+<<<<<<< HEAD
 	xdr_inline_pages(&req->rq_rcv_buf, hdr.replen << 2, args->pages,
 			args->pgbase, args->pglen);
+=======
+	rpc_prepare_reply_pages(req, args->pages, args->pgbase,
+				args->pglen, hdr.replen - pagepad_maxsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2343,8 +3597,14 @@ static void nfs4_xdr_enc_readlink(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a READDIR request
  */
 static void nfs4_xdr_enc_readdir(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 const struct nfs4_readdir_arg *args)
 {
+=======
+				 const void *data)
+{
+	const struct nfs4_readdir_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2354,11 +3614,16 @@ static void nfs4_xdr_enc_readdir(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_readdir(xdr, args, req, &hdr);
 
+<<<<<<< HEAD
 	xdr_inline_pages(&req->rq_rcv_buf, hdr.replen << 2, args->pages,
 			 args->pgbase, args->count);
 	dprintk("%s: inlined page args = (%u, %p, %u, %u)\n",
 			__func__, hdr.replen << 2, args->pages,
 			args->pgbase, args->count);
+=======
+	rpc_prepare_reply_pages(req, args->pages, args->pgbase,
+				args->count, hdr.replen - pagepad_maxsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2366,8 +3631,14 @@ static void nfs4_xdr_enc_readdir(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a READ request
  */
 static void nfs4_xdr_enc_read(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_readargs *args)
 {
+=======
+			      const void *data)
+{
+	const struct nfs_pgio_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2377,8 +3648,13 @@ static void nfs4_xdr_enc_read(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_read(xdr, args, &hdr);
 
+<<<<<<< HEAD
 	xdr_inline_pages(&req->rq_rcv_buf, hdr.replen << 2,
 			 args->pages, args->pgbase, args->count);
+=======
+	rpc_prepare_reply_pages(req, args->pages, args->pgbase,
+				args->count, hdr.replen - pagepad_maxsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->rq_rcv_buf.flags |= XDRBUF_READ;
 	encode_nops(&hdr);
 }
@@ -2387,8 +3663,14 @@ static void nfs4_xdr_enc_read(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode an SETATTR request
  */
 static void nfs4_xdr_enc_setattr(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 struct nfs_setattrargs *args)
 {
+=======
+				 const void *data)
+{
+	const struct nfs_setattrargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2405,6 +3687,7 @@ static void nfs4_xdr_enc_setattr(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a GETACL request
  */
 static void nfs4_xdr_enc_getacl(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs_getaclargs *args)
 {
 	struct compound_hdr hdr = {
@@ -2421,6 +3704,28 @@ static void nfs4_xdr_enc_getacl(struct rpc_rqst *req, struct xdr_stream *xdr,
 	xdr_inline_pages(&req->rq_rcv_buf, replen << 2,
 		args->acl_pages, args->acl_pgbase, args->acl_len);
 
+=======
+				const void *data)
+{
+	const struct nfs_getaclargs *args = data;
+	struct compound_hdr hdr = {
+		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
+	};
+	__u32 nfs4_acl_bitmap[2];
+	uint32_t replen;
+
+	nfs4_acltype_to_bitmap(args->acl_type, nfs4_acl_bitmap);
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_sequence(xdr, &args->seq_args, &hdr);
+	encode_putfh(xdr, args->fh, &hdr);
+	replen = hdr.replen + op_decode_hdr_maxsz;
+	encode_getattr(xdr, nfs4_acl_bitmap, NULL,
+			ARRAY_SIZE(nfs4_acl_bitmap), &hdr);
+
+	rpc_prepare_reply_pages(req, args->acl_pages, 0,
+				args->acl_len, replen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2428,8 +3733,14 @@ static void nfs4_xdr_enc_getacl(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Encode a WRITE request
  */
 static void nfs4_xdr_enc_write(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_writeargs *args)
 {
+=======
+			       const void *data)
+{
+	const struct nfs_pgio_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2448,8 +3759,14 @@ static void nfs4_xdr_enc_write(struct rpc_rqst *req, struct xdr_stream *xdr,
  *  a COMMIT request
  */
 static void nfs4_xdr_enc_commit(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs_writeargs *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs_commitargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2458,8 +3775,11 @@ static void nfs4_xdr_enc_commit(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
 	encode_commit(xdr, args, &hdr);
+<<<<<<< HEAD
 	if (args->bitmask)
 		encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2467,8 +3787,14 @@ static void nfs4_xdr_enc_commit(struct rpc_rqst *req, struct xdr_stream *xdr,
  * FSINFO request
  */
 static void nfs4_xdr_enc_fsinfo(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_fsinfo_arg *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_fsinfo_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2484,8 +3810,14 @@ static void nfs4_xdr_enc_fsinfo(struct rpc_rqst *req, struct xdr_stream *xdr,
  * a PATHCONF request
  */
 static void nfs4_xdr_enc_pathconf(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				  const struct nfs4_pathconf_arg *args)
 {
+=======
+				  const void *data)
+{
+	const struct nfs4_pathconf_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2493,8 +3825,13 @@ static void nfs4_xdr_enc_pathconf(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	encode_getattr_one(xdr, args->bitmask[0] & nfs4_pathconf_bitmap[0],
 			   &hdr);
+=======
+	encode_getattr(xdr, nfs4_pathconf_bitmap, args->bitmask,
+			ARRAY_SIZE(nfs4_pathconf_bitmap), &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2502,8 +3839,14 @@ static void nfs4_xdr_enc_pathconf(struct rpc_rqst *req, struct xdr_stream *xdr,
  * a STATFS request
  */
 static void nfs4_xdr_enc_statfs(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				const struct nfs4_statfs_arg *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_statfs_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2511,8 +3854,13 @@ static void nfs4_xdr_enc_statfs(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	encode_getattr_two(xdr, args->bitmask[0] & nfs4_statfs_bitmap[0],
 			   args->bitmask[1] & nfs4_statfs_bitmap[1], &hdr);
+=======
+	encode_getattr(xdr, nfs4_statfs_bitmap, args->bitmask,
+			ARRAY_SIZE(nfs4_statfs_bitmap), &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2521,8 +3869,15 @@ static void nfs4_xdr_enc_statfs(struct rpc_rqst *req, struct xdr_stream *xdr,
  */
 static void nfs4_xdr_enc_server_caps(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs4_server_caps_arg *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs4_server_caps_arg *args = data;
+	const u32 *bitmask = args->bitmask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2530,11 +3885,15 @@ static void nfs4_xdr_enc_server_caps(struct rpc_rqst *req,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fhandle, &hdr);
+<<<<<<< HEAD
 	encode_getattr_one(xdr, FATTR4_WORD0_SUPPORTED_ATTRS|
 			   FATTR4_WORD0_FH_EXPIRE_TYPE|
 			   FATTR4_WORD0_LINK_SUPPORT|
 			   FATTR4_WORD0_SYMLINK_SUPPORT|
 			   FATTR4_WORD0_ACLSUPPORT, &hdr);
+=======
+	encode_getattr(xdr, bitmask, NULL, 3, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2542,8 +3901,15 @@ static void nfs4_xdr_enc_server_caps(struct rpc_rqst *req,
  * a RENEW request
  */
 static void nfs4_xdr_enc_renew(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_client *clp)
 {
+=======
+			       const void *data)
+
+{
+	const struct nfs_client *clp = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.nops	= 0,
 	};
@@ -2558,8 +3924,14 @@ static void nfs4_xdr_enc_renew(struct rpc_rqst *req, struct xdr_stream *xdr,
  */
 static void nfs4_xdr_enc_setclientid(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs4_setclientid *sc)
 {
+=======
+				     const void *data)
+{
+	const struct nfs4_setclientid *sc = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.nops	= 0,
 	};
@@ -2574,6 +3946,7 @@ static void nfs4_xdr_enc_setclientid(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_setclientid_confirm(struct rpc_rqst *req,
 					     struct xdr_stream *xdr,
+<<<<<<< HEAD
 					     struct nfs4_setclientid_res *arg)
 {
 	struct compound_hdr hdr = {
@@ -2585,6 +3958,17 @@ static void nfs4_xdr_enc_setclientid_confirm(struct rpc_rqst *req,
 	encode_setclientid_confirm(xdr, arg, &hdr);
 	encode_putrootfh(xdr, &hdr);
 	encode_fsinfo(xdr, lease_bitmap, &hdr);
+=======
+					     const void *data)
+{
+	const struct nfs4_setclientid_res *arg = data;
+	struct compound_hdr hdr = {
+		.nops	= 0,
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_setclientid_confirm(xdr, arg, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2593,8 +3977,14 @@ static void nfs4_xdr_enc_setclientid_confirm(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_delegreturn(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     const struct nfs4_delegreturnargs *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs4_delegreturnargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2602,8 +3992,16 @@ static void nfs4_xdr_enc_delegreturn(struct rpc_rqst *req,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fhandle, &hdr);
+<<<<<<< HEAD
 	encode_delegreturn(xdr, args->stateid, &hdr);
 	encode_getfattr(xdr, args->bitmask, &hdr);
+=======
+	if (args->lr_args)
+		encode_layoutreturn(xdr, args->lr_args, &hdr);
+	if (args->bitmask)
+		encode_getfattr(xdr, args->bitmask, &hdr);
+	encode_delegreturn(xdr, args->stateid, &hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2612,8 +4010,14 @@ static void nfs4_xdr_enc_delegreturn(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_fs_locations(struct rpc_rqst *req,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs4_fs_locations_arg *args)
 {
+=======
+				      const void *data)
+{
+	const struct nfs4_fs_locations_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2621,6 +4025,7 @@ static void nfs4_xdr_enc_fs_locations(struct rpc_rqst *req,
 
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
+<<<<<<< HEAD
 	encode_putfh(xdr, args->dir_fh, &hdr);
 	encode_lookup(xdr, args->name, &hdr);
 	replen = hdr.replen;	/* get the attribute into args->page */
@@ -2628,6 +4033,23 @@ static void nfs4_xdr_enc_fs_locations(struct rpc_rqst *req,
 
 	xdr_inline_pages(&req->rq_rcv_buf, replen << 2, &args->page,
 			0, PAGE_SIZE);
+=======
+	if (args->migration) {
+		encode_putfh(xdr, args->fh, &hdr);
+		replen = hdr.replen;
+		encode_fs_locations(xdr, args->bitmask, &hdr);
+		if (args->renew)
+			encode_renew(xdr, args->clientid, &hdr);
+	} else {
+		encode_putfh(xdr, args->dir_fh, &hdr);
+		encode_lookup(xdr, args->name, &hdr);
+		replen = hdr.replen;
+		encode_fs_locations(xdr, args->bitmask, &hdr);
+	}
+
+	rpc_prepare_reply_pages(req, (struct page **)&args->page, 0,
+				PAGE_SIZE, replen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2636,8 +4058,14 @@ static void nfs4_xdr_enc_fs_locations(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_secinfo(struct rpc_rqst *req,
 				struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_secinfo_arg *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs4_secinfo_arg *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2649,14 +4077,63 @@ static void nfs4_xdr_enc_secinfo(struct rpc_rqst *req,
 	encode_nops(&hdr);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_NFS_V4_1)
 /*
+=======
+/*
+ * Encode FSID_PRESENT request
+ */
+static void nfs4_xdr_enc_fsid_present(struct rpc_rqst *req,
+				      struct xdr_stream *xdr,
+				      const void *data)
+{
+	const struct nfs4_fsid_present_arg *args = data;
+	struct compound_hdr hdr = {
+		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_sequence(xdr, &args->seq_args, &hdr);
+	encode_putfh(xdr, args->fh, &hdr);
+	encode_getfh(xdr, &hdr);
+	if (args->renew)
+		encode_renew(xdr, args->clientid, &hdr);
+	encode_nops(&hdr);
+}
+
+#if defined(CONFIG_NFS_V4_1)
+/*
+ * BIND_CONN_TO_SESSION request
+ */
+static void nfs4_xdr_enc_bind_conn_to_session(struct rpc_rqst *req,
+				struct xdr_stream *xdr,
+				const void *data)
+{
+	const struct nfs41_bind_conn_to_session_args *args = data;
+	struct compound_hdr hdr = {
+		.minorversion = args->client->cl_mvops->minor_version,
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_bind_conn_to_session(xdr, args, &hdr);
+	encode_nops(&hdr);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * EXCHANGE_ID request
  */
 static void nfs4_xdr_enc_exchange_id(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs41_exchange_id_args *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs41_exchange_id_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = args->client->cl_mvops->minor_version,
 	};
@@ -2671,8 +4148,14 @@ static void nfs4_xdr_enc_exchange_id(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_create_session(struct rpc_rqst *req,
 					struct xdr_stream *xdr,
+<<<<<<< HEAD
 					struct nfs41_create_session_args *args)
 {
+=======
+					const void *data)
+{
+	const struct nfs41_create_session_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = args->client->cl_mvops->minor_version,
 	};
@@ -2687,8 +4170,14 @@ static void nfs4_xdr_enc_create_session(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_destroy_session(struct rpc_rqst *req,
 					 struct xdr_stream *xdr,
+<<<<<<< HEAD
 					 struct nfs4_session *session)
 {
+=======
+					 const void *data)
+{
+	const struct nfs4_session *session = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = session->clp->cl_mvops->minor_version,
 	};
@@ -2699,11 +4188,37 @@ static void nfs4_xdr_enc_destroy_session(struct rpc_rqst *req,
 }
 
 /*
+<<<<<<< HEAD
  * a SEQUENCE request
  */
 static void nfs4_xdr_enc_sequence(struct rpc_rqst *req, struct xdr_stream *xdr,
 				  struct nfs4_sequence_args *args)
 {
+=======
+ * a DESTROY_CLIENTID request
+ */
+static void nfs4_xdr_enc_destroy_clientid(struct rpc_rqst *req,
+					 struct xdr_stream *xdr,
+					 const void *data)
+{
+	const struct nfs_client *clp = data;
+	struct compound_hdr hdr = {
+		.minorversion = clp->cl_mvops->minor_version,
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_destroy_clientid(xdr, clp->cl_clientid, &hdr);
+	encode_nops(&hdr);
+}
+
+/*
+ * a SEQUENCE request
+ */
+static void nfs4_xdr_enc_sequence(struct rpc_rqst *req, struct xdr_stream *xdr,
+				  const void *data)
+{
+	const struct nfs4_sequence_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(args),
 	};
@@ -2713,13 +4228,24 @@ static void nfs4_xdr_enc_sequence(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_nops(&hdr);
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * a GET_LEASE_TIME request
  */
 static void nfs4_xdr_enc_get_lease_time(struct rpc_rqst *req,
 					struct xdr_stream *xdr,
+<<<<<<< HEAD
 					struct nfs4_get_lease_time_args *args)
 {
+=======
+					const void *data)
+{
+	const struct nfs4_get_lease_time_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->la_seq_args),
 	};
@@ -2732,13 +4258,24 @@ static void nfs4_xdr_enc_get_lease_time(struct rpc_rqst *req,
 	encode_nops(&hdr);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NFS_V4_1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * a RECLAIM_COMPLETE request
  */
 static void nfs4_xdr_enc_reclaim_complete(struct rpc_rqst *req,
 					  struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs41_reclaim_complete_args *args)
 {
+=======
+					  const void *data)
+{
+	const struct nfs41_reclaim_complete_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args)
 	};
@@ -2750,6 +4287,7 @@ static void nfs4_xdr_enc_reclaim_complete(struct rpc_rqst *req,
 }
 
 /*
+<<<<<<< HEAD
  * Encode GETDEVICELIST request
  */
 static void nfs4_xdr_enc_getdevicelist(struct rpc_rqst *req,
@@ -2768,10 +4306,13 @@ static void nfs4_xdr_enc_getdevicelist(struct rpc_rqst *req,
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Encode GETDEVICEINFO request
  */
 static void nfs4_xdr_enc_getdeviceinfo(struct rpc_rqst *req,
 				       struct xdr_stream *xdr,
+<<<<<<< HEAD
 				       struct nfs4_getdeviceinfo_args *args)
 {
 	struct compound_hdr hdr = {
@@ -2788,6 +4329,27 @@ static void nfs4_xdr_enc_getdeviceinfo(struct rpc_rqst *req,
 			 args->pdev->pages, args->pdev->pgbase,
 			 args->pdev->pglen);
 
+=======
+				       const void *data)
+{
+	const struct nfs4_getdeviceinfo_args *args = data;
+	struct compound_hdr hdr = {
+		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
+	};
+	uint32_t replen;
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_sequence(xdr, &args->seq_args, &hdr);
+
+	replen = hdr.replen + op_decode_hdr_maxsz + 2;
+
+	encode_getdeviceinfo(xdr, args, &hdr);
+
+	/* set up reply kvec. device_addr4 opaque data is read into the
+	 * pages */
+	rpc_prepare_reply_pages(req, args->pdev->pages, args->pdev->pgbase,
+				args->pdev->pglen, replen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2796,8 +4358,14 @@ static void nfs4_xdr_enc_getdeviceinfo(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_layoutget(struct rpc_rqst *req,
 				   struct xdr_stream *xdr,
+<<<<<<< HEAD
 				   struct nfs4_layoutget_args *args)
 {
+=======
+				   const void *data)
+{
+	const struct nfs4_layoutget_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2807,9 +4375,14 @@ static void nfs4_xdr_enc_layoutget(struct rpc_rqst *req,
 	encode_putfh(xdr, NFS_FH(args->inode), &hdr);
 	encode_layoutget(xdr, args, &hdr);
 
+<<<<<<< HEAD
 	xdr_inline_pages(&req->rq_rcv_buf, hdr.replen << 2,
 	    args->layout.pages, 0, args->layout.pglen);
 
+=======
+	rpc_prepare_reply_pages(req, args->layout.pages, 0,
+				args->layout.pglen, hdr.replen - pagepad_maxsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encode_nops(&hdr);
 }
 
@@ -2818,8 +4391,14 @@ static void nfs4_xdr_enc_layoutget(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_layoutcommit(struct rpc_rqst *req,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs4_layoutcommit_args *args)
 {
+=======
+				      const void *priv)
+{
+	const struct nfs4_layoutcommit_args *args = priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfs4_layoutcommit_data *data =
 		container_of(args, struct nfs4_layoutcommit_data, args);
 	struct compound_hdr hdr = {
@@ -2839,8 +4418,14 @@ static void nfs4_xdr_enc_layoutcommit(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_layoutreturn(struct rpc_rqst *req,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs4_layoutreturn_args *args)
 {
+=======
+				      const void *data)
+{
+	const struct nfs4_layoutreturn_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2855,10 +4440,18 @@ static void nfs4_xdr_enc_layoutreturn(struct rpc_rqst *req,
 /*
  * Encode SECINFO_NO_NAME request
  */
+<<<<<<< HEAD
 static int nfs4_xdr_enc_secinfo_no_name(struct rpc_rqst *req,
 					struct xdr_stream *xdr,
 					struct nfs41_secinfo_no_name_args *args)
 {
+=======
+static void nfs4_xdr_enc_secinfo_no_name(struct rpc_rqst *req,
+					struct xdr_stream *xdr,
+					const void *data)
+{
+	const struct nfs41_secinfo_no_name_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2868,7 +4461,10 @@ static int nfs4_xdr_enc_secinfo_no_name(struct rpc_rqst *req,
 	encode_putrootfh(xdr, &hdr);
 	encode_secinfo_no_name(xdr, args, &hdr);
 	encode_nops(&hdr);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2876,8 +4472,14 @@ static int nfs4_xdr_enc_secinfo_no_name(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_test_stateid(struct rpc_rqst *req,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs41_test_stateid_args *args)
 {
+=======
+				      const void *data)
+{
+	const struct nfs41_test_stateid_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2893,8 +4495,14 @@ static void nfs4_xdr_enc_test_stateid(struct rpc_rqst *req,
  */
 static void nfs4_xdr_enc_free_stateid(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs41_free_stateid_args *args)
 {
+=======
+				     const void *data)
+{
+	const struct nfs41_free_stateid_args *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -2906,6 +4514,7 @@ static void nfs4_xdr_enc_free_stateid(struct rpc_rqst *req,
 }
 #endif /* CONFIG_NFS_V4_1 */
 
+<<<<<<< HEAD
 static void print_overflow_msg(const char *func, const struct xdr_stream *xdr)
 {
 	dprintk("nfs: %s: prematurely hit end of receive buffer. "
@@ -2929,10 +4538,21 @@ static int decode_opaque_inline(struct xdr_stream *xdr, unsigned int *len, char 
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+static int decode_opaque_inline(struct xdr_stream *xdr, unsigned int *len, char **string)
+{
+	ssize_t ret = xdr_stream_decode_opaque_inline(xdr, (void **)string,
+			NFS4_OPAQUE_LIMIT);
+	if (unlikely(ret < 0))
+		return -EIO;
+	*len = ret;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_compound_hdr(struct xdr_stream *xdr, struct compound_hdr *hdr)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = xdr_inline_decode(xdr, 8);
@@ -2953,6 +4573,28 @@ static int decode_compound_hdr(struct xdr_stream *xdr, struct compound_hdr *hdr)
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	ssize_t ret;
+	void *ptr;
+	u32 tmp;
+
+	if (xdr_stream_decode_u32(xdr, &tmp) < 0)
+		return -EIO;
+	hdr->status = tmp;
+
+	ret = xdr_stream_decode_opaque_inline(xdr, &ptr, NFS4_OPAQUE_LIMIT);
+	if (ret < 0)
+		return -EIO;
+	hdr->taglen = ret;
+	hdr->tag = ptr;
+
+	if (xdr_stream_decode_u32(xdr, &tmp) < 0)
+		return -EIO;
+	hdr->nops = tmp;
+	if (unlikely(hdr->nops < 1))
+		return nfs4_stat_to_errno(hdr->status);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool __decode_op_hdr(struct xdr_stream *xdr, enum nfs_opnum4 expected,
@@ -2968,6 +4610,7 @@ static bool __decode_op_hdr(struct xdr_stream *xdr, enum nfs_opnum4 expected,
 	opnum = be32_to_cpup(p++);
 	if (unlikely(opnum != expected))
 		goto out_bad_operation;
+<<<<<<< HEAD
 	nfserr = be32_to_cpup(p);
 	if (nfserr == NFS_OK)
 		*nfs_retval = 0;
@@ -2982,6 +4625,22 @@ out_bad_operation:
 	return false;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+	if (unlikely(*p != cpu_to_be32(NFS_OK)))
+		goto out_status;
+	*nfs_retval = 0;
+	return true;
+out_status:
+	nfserr = be32_to_cpup(p);
+	trace_nfs4_xdr_status(xdr, opnum, nfserr);
+	*nfs_retval = nfs4_stat_to_errno(nfserr);
+	return true;
+out_bad_operation:
+	trace_nfs4_xdr_bad_operation(xdr, opnum, expected);
+	*nfs_retval = -EREMOTEIO;
+	return false;
+out_overflow:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*nfs_retval = -EIO;
 	return false;
 }
@@ -2995,21 +4654,45 @@ static int decode_op_hdr(struct xdr_stream *xdr, enum nfs_opnum4 expected)
 }
 
 /* Dummy routine */
+<<<<<<< HEAD
 static int decode_ace(struct xdr_stream *xdr, void *ace, struct nfs_client *clp)
+=======
+static int decode_ace(struct xdr_stream *xdr, void *ace)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 	unsigned int strlen;
 	char *str;
 
 	p = xdr_inline_decode(xdr, 12);
+<<<<<<< HEAD
 	if (likely(p))
 		return decode_opaque_inline(xdr, &strlen, &str);
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	if (unlikely(!p))
+		return -EIO;
+	return decode_opaque_inline(xdr, &strlen, &str);
+}
+
+static ssize_t
+decode_bitmap4(struct xdr_stream *xdr, uint32_t *bitmap, size_t sz)
+{
+	ssize_t ret;
+
+	ret = xdr_stream_decode_uint32_array(xdr, bitmap, sz);
+	if (likely(ret >= 0))
+		return ret;
+	if (ret != -EMSGSIZE)
+		return -EIO;
+	return sz;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_bitmap(struct xdr_stream *xdr, uint32_t *bitmap)
 {
+<<<<<<< HEAD
 	uint32_t bmlen;
 	__be32 *p;
 
@@ -3037,11 +4720,20 @@ out_overflow:
 }
 
 static inline int decode_attr_length(struct xdr_stream *xdr, uint32_t *attrlen, __be32 **savep)
+=======
+	ssize_t ret;
+	ret = decode_bitmap4(xdr, bitmap, 3);
+	return ret < 0 ? ret : 0;
+}
+
+static int decode_attr_length(struct xdr_stream *xdr, uint32_t *attrlen, unsigned int *savep)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	*attrlen = be32_to_cpup(p);
 	*savep = xdr->p;
@@ -3049,6 +4741,12 @@ static inline int decode_attr_length(struct xdr_stream *xdr, uint32_t *attrlen, 
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+		return -EIO;
+	*attrlen = be32_to_cpup(p);
+	*savep = xdr_stream_pos(xdr);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_supported(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *bitmask)
@@ -3077,7 +4775,11 @@ static int decode_attr_type(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *
 	if (likely(bitmap[0] & FATTR4_WORD0_TYPE)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*type = be32_to_cpup(p);
 		if (*type < NF4REG || *type > NF4NAMEDATTR) {
 			dprintk("%s: bad type %d\n", __func__, *type);
@@ -3088,9 +4790,12 @@ static int decode_attr_type(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *
 	}
 	dprintk("%s: type=0%o\n", __func__, nfs_type2fmt[*type]);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_fh_expire_type(struct xdr_stream *xdr,
@@ -3104,15 +4809,22 @@ static int decode_attr_fh_expire_type(struct xdr_stream *xdr,
 	if (likely(bitmap[0] & FATTR4_WORD0_FH_EXPIRE_TYPE)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*type = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_FH_EXPIRE_TYPE;
 	}
 	dprintk("%s: expire type=0x%x\n", __func__, *type);
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_change(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *change)
@@ -3126,7 +4838,11 @@ static int decode_attr_change(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t
 	if (likely(bitmap[0] & FATTR4_WORD0_CHANGE)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, change);
 		bitmap[0] &= ~FATTR4_WORD0_CHANGE;
 		ret = NFS_ATTR_FATTR_CHANGE;
@@ -3134,9 +4850,12 @@ static int decode_attr_change(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t
 	dprintk("%s: change attribute=%Lu\n", __func__,
 			(unsigned long long)*change);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_size(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *size)
@@ -3150,16 +4869,23 @@ static int decode_attr_size(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *
 	if (likely(bitmap[0] & FATTR4_WORD0_SIZE)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, size);
 		bitmap[0] &= ~FATTR4_WORD0_SIZE;
 		ret = NFS_ATTR_FATTR_SIZE;
 	}
 	dprintk("%s: file size=%Lu\n", __func__, (unsigned long long)*size);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_link_support(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
@@ -3172,15 +4898,22 @@ static int decode_attr_link_support(struct xdr_stream *xdr, uint32_t *bitmap, ui
 	if (likely(bitmap[0] & FATTR4_WORD0_LINK_SUPPORT)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*res = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_LINK_SUPPORT;
 	}
 	dprintk("%s: link support=%s\n", __func__, *res == 0 ? "false" : "true");
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_symlink_support(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
@@ -3193,15 +4926,22 @@ static int decode_attr_symlink_support(struct xdr_stream *xdr, uint32_t *bitmap,
 	if (likely(bitmap[0] & FATTR4_WORD0_SYMLINK_SUPPORT)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*res = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_SYMLINK_SUPPORT;
 	}
 	dprintk("%s: symlink support=%s\n", __func__, *res == 0 ? "false" : "true");
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_fsid(struct xdr_stream *xdr, uint32_t *bitmap, struct nfs_fsid *fsid)
@@ -3216,7 +4956,11 @@ static int decode_attr_fsid(struct xdr_stream *xdr, uint32_t *bitmap, struct nfs
 	if (likely(bitmap[0] & FATTR4_WORD0_FSID)) {
 		p = xdr_inline_decode(xdr, 16);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p = xdr_decode_hyper(p, &fsid->major);
 		xdr_decode_hyper(p, &fsid->minor);
 		bitmap[0] &= ~FATTR4_WORD0_FSID;
@@ -3226,9 +4970,12 @@ static int decode_attr_fsid(struct xdr_stream *xdr, uint32_t *bitmap, struct nfs
 			(unsigned long long)fsid->major,
 			(unsigned long long)fsid->minor);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_lease_time(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
@@ -3241,6 +4988,7 @@ static int decode_attr_lease_time(struct xdr_stream *xdr, uint32_t *bitmap, uint
 	if (likely(bitmap[0] & FATTR4_WORD0_LEASE_TIME)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 		*res = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_LEASE_TIME;
@@ -3250,6 +4998,14 @@ static int decode_attr_lease_time(struct xdr_stream *xdr, uint32_t *bitmap, uint
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+			return -EIO;
+		*res = be32_to_cpup(p);
+		bitmap[0] &= ~FATTR4_WORD0_LEASE_TIME;
+	}
+	dprintk("%s: lease time=%u\n", __func__, (unsigned int)*res);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_error(struct xdr_stream *xdr, uint32_t *bitmap, int32_t *res)
@@ -3261,20 +5017,47 @@ static int decode_attr_error(struct xdr_stream *xdr, uint32_t *bitmap, int32_t *
 	if (likely(bitmap[0] & FATTR4_WORD0_RDATTR_ERROR)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bitmap[0] &= ~FATTR4_WORD0_RDATTR_ERROR;
 		*res = -be32_to_cpup(p);
 	}
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+}
+
+static int decode_attr_exclcreat_supported(struct xdr_stream *xdr,
+				 uint32_t *bitmap, uint32_t *bitmask)
+{
+	if (likely(bitmap[2] & FATTR4_WORD2_SUPPATTR_EXCLCREAT)) {
+		int ret;
+		ret = decode_attr_bitmap(xdr, bitmask);
+		if (unlikely(ret < 0))
+			return ret;
+		bitmap[2] &= ~FATTR4_WORD2_SUPPATTR_EXCLCREAT;
+	} else
+		bitmask[0] = bitmask[1] = bitmask[2] = 0;
+	dprintk("%s: bitmask=%08x:%08x:%08x\n", __func__,
+		bitmask[0], bitmask[1], bitmask[2]);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_filehandle(struct xdr_stream *xdr, uint32_t *bitmap, struct nfs_fh *fh)
 {
 	__be32 *p;
+<<<<<<< HEAD
 	int len;
+=======
+	u32 len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fh != NULL)
 		memset(fh, 0, sizeof(*fh));
@@ -3284,6 +5067,7 @@ static int decode_attr_filehandle(struct xdr_stream *xdr, uint32_t *bitmap, stru
 	if (likely(bitmap[0] & FATTR4_WORD0_FILEHANDLE)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 		len = be32_to_cpup(p);
 		if (len > NFS4_FHSIZE)
@@ -3291,6 +5075,18 @@ static int decode_attr_filehandle(struct xdr_stream *xdr, uint32_t *bitmap, stru
 		p = xdr_inline_decode(xdr, len);
 		if (unlikely(!p))
 			goto out_overflow;
+=======
+			return -EIO;
+		len = be32_to_cpup(p);
+		if (len > NFS4_FHSIZE || len == 0) {
+			trace_nfs4_xdr_bad_filehandle(xdr, OP_READDIR,
+						      NFS4ERR_BADHANDLE);
+			return -EREMOTEIO;
+		}
+		p = xdr_inline_decode(xdr, len);
+		if (unlikely(!p))
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fh != NULL) {
 			memcpy(fh->data, p, len);
 			fh->size = len;
@@ -3298,30 +5094,80 @@ static int decode_attr_filehandle(struct xdr_stream *xdr, uint32_t *bitmap, stru
 		bitmap[0] &= ~FATTR4_WORD0_FILEHANDLE;
 	}
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_aclsupport(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
 {
 	__be32 *p;
 
+<<<<<<< HEAD
 	*res = ACL4_SUPPORT_ALLOW_ACL|ACL4_SUPPORT_DENY_ACL;
+=======
+	*res = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(bitmap[0] & (FATTR4_WORD0_ACLSUPPORT - 1U)))
 		return -EIO;
 	if (likely(bitmap[0] & FATTR4_WORD0_ACLSUPPORT)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*res = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_ACLSUPPORT;
 	}
 	dprintk("%s: ACLs supported=%u\n", __func__, (unsigned int)*res);
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+}
+
+static int decode_attr_case_insensitive(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
+{
+	__be32 *p;
+
+	*res = 0;
+	if (unlikely(bitmap[0] & (FATTR4_WORD0_CASE_INSENSITIVE - 1U)))
+		return -EIO;
+	if (likely(bitmap[0] & FATTR4_WORD0_CASE_INSENSITIVE)) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		*res = be32_to_cpup(p);
+		bitmap[0] &= ~FATTR4_WORD0_CASE_INSENSITIVE;
+	}
+	dprintk("%s: case_insensitive=%s\n", __func__, *res == 0 ? "false" : "true");
+	return 0;
+}
+
+static int decode_attr_case_preserving(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
+{
+	__be32 *p;
+
+	*res = 0;
+	if (unlikely(bitmap[0] & (FATTR4_WORD0_CASE_PRESERVING - 1U)))
+		return -EIO;
+	if (likely(bitmap[0] & FATTR4_WORD0_CASE_PRESERVING)) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		*res = be32_to_cpup(p);
+		bitmap[0] &= ~FATTR4_WORD0_CASE_PRESERVING;
+	}
+	dprintk("%s: case_preserving=%s\n", __func__, *res == 0 ? "false" : "true");
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_fileid(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *fileid)
@@ -3335,16 +5181,23 @@ static int decode_attr_fileid(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t
 	if (likely(bitmap[0] & FATTR4_WORD0_FILEID)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, fileid);
 		bitmap[0] &= ~FATTR4_WORD0_FILEID;
 		ret = NFS_ATTR_FATTR_FILEID;
 	}
 	dprintk("%s: fileid=%Lu\n", __func__, (unsigned long long)*fileid);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_mounted_on_fileid(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *fileid)
@@ -3358,16 +5211,23 @@ static int decode_attr_mounted_on_fileid(struct xdr_stream *xdr, uint32_t *bitma
 	if (likely(bitmap[1] & FATTR4_WORD1_MOUNTED_ON_FILEID)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, fileid);
 		bitmap[1] &= ~FATTR4_WORD1_MOUNTED_ON_FILEID;
 		ret = NFS_ATTR_FATTR_MOUNTED_ON_FILEID;
 	}
 	dprintk("%s: fileid=%Lu\n", __func__, (unsigned long long)*fileid);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_files_avail(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3381,15 +5241,22 @@ static int decode_attr_files_avail(struct xdr_stream *xdr, uint32_t *bitmap, uin
 	if (likely(bitmap[0] & FATTR4_WORD0_FILES_AVAIL)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[0] &= ~FATTR4_WORD0_FILES_AVAIL;
 	}
 	dprintk("%s: files avail=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_files_free(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3403,15 +5270,22 @@ static int decode_attr_files_free(struct xdr_stream *xdr, uint32_t *bitmap, uint
 	if (likely(bitmap[0] & FATTR4_WORD0_FILES_FREE)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[0] &= ~FATTR4_WORD0_FILES_FREE;
 	}
 	dprintk("%s: files free=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_files_total(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3425,15 +5299,22 @@ static int decode_attr_files_total(struct xdr_stream *xdr, uint32_t *bitmap, uin
 	if (likely(bitmap[0] & FATTR4_WORD0_FILES_TOTAL)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[0] &= ~FATTR4_WORD0_FILES_TOTAL;
 	}
 	dprintk("%s: files total=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_pathname(struct xdr_stream *xdr, struct nfs4_pathname *path)
@@ -3444,13 +5325,25 @@ static int decode_pathname(struct xdr_stream *xdr, struct nfs4_pathname *path)
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n = be32_to_cpup(p);
 	if (n == 0)
 		goto root_path;
 	dprintk("pathname4: ");
+<<<<<<< HEAD
 	path->ncomponents = 0;
 	while (path->ncomponents < n) {
+=======
+	if (n > NFS4_PATHNAME_MAXCOMPONENTS) {
+		dprintk("cannot parse %d components in path\n", n);
+		goto out_eio;
+	}
+	for (path->ncomponents = 0; path->ncomponents < n; path->ncomponents++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nfs4_string *component = &path->components[path->ncomponents];
 		status = decode_opaque_inline(xdr, &component->len, &component->data);
 		if (unlikely(status != 0))
@@ -3459,12 +5352,15 @@ static int decode_pathname(struct xdr_stream *xdr, struct nfs4_pathname *path)
 			pr_cont("%s%.*s ",
 				(path->ncomponents != n ? "/ " : ""),
 				component->len, component->data);
+<<<<<<< HEAD
 		if (path->ncomponents < NFS4_PATHNAME_MAXCOMPONENTS)
 			path->ncomponents++;
 		else {
 			dprintk("cannot parse %d components in path\n", n);
 			goto out_eio;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return status;
@@ -3479,9 +5375,12 @@ out_eio:
 	dprintk(" status %d", status);
 	status = -EIO;
 	goto out;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, struct nfs4_fs_locations *res)
@@ -3495,6 +5394,10 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
 	status = 0;
 	if (unlikely(!(bitmap[0] & FATTR4_WORD0_FS_LOCATIONS)))
 		goto out;
+<<<<<<< HEAD
+=======
+	bitmap[0] &= ~FATTR4_WORD0_FS_LOCATIONS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = -EIO;
 	/* Ignore borken servers that return unrequested attrs */
 	if (unlikely(res == NULL))
@@ -3505,6 +5408,7 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
 		goto out;
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	n = be32_to_cpup(p);
 	if (n <= 0)
@@ -3530,6 +5434,27 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
 			if (loc->nservers < NFS4_FS_LOCATION_MAXSERVERS)
 				loc->nservers++;
 			else {
+=======
+		goto out_eio;
+	n = be32_to_cpup(p);
+	for (res->nlocations = 0; res->nlocations < n; res->nlocations++) {
+		u32 m;
+		struct nfs4_fs_location *loc;
+
+		if (res->nlocations == NFS4_FS_LOCATIONS_MAXENTRIES)
+			break;
+		loc = &res->locations[res->nlocations];
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			goto out_eio;
+		m = be32_to_cpup(p);
+
+		dprintk("%s: servers:\n", __func__);
+		for (loc->nservers = 0; loc->nservers < m; loc->nservers++) {
+			struct nfs4_string *server;
+
+			if (loc->nservers == NFS4_FS_LOCATION_MAXSERVERS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unsigned int i;
 				dprintk("%s: using first %u of %u servers "
 					"returned for location %u\n",
@@ -3543,21 +5468,37 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
 					if (unlikely(status != 0))
 						goto out_eio;
 				}
+<<<<<<< HEAD
 			}
+=======
+				break;
+			}
+			server = &loc->servers[loc->nservers];
+			status = decode_opaque_inline(xdr, &server->len, &server->data);
+			if (unlikely(status != 0))
+				goto out_eio;
+			dprintk("%s ", server->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		status = decode_pathname(xdr, &loc->rootpath);
 		if (unlikely(status != 0))
 			goto out_eio;
+<<<<<<< HEAD
 		if (res->nlocations < NFS4_FS_LOCATIONS_MAXENTRIES)
 			res->nlocations++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (res->nlocations != 0)
 		status = NFS_ATTR_FATTR_V4_LOCATIONS;
 out:
 	dprintk("%s: fs_locations done, error = %d\n", __func__, status);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_eio:
 	status = -EIO;
 	goto out;
@@ -3574,15 +5515,22 @@ static int decode_attr_maxfilesize(struct xdr_stream *xdr, uint32_t *bitmap, uin
 	if (likely(bitmap[0] & FATTR4_WORD0_MAXFILESIZE)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[0] &= ~FATTR4_WORD0_MAXFILESIZE;
 	}
 	dprintk("%s: maxfilesize=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_maxlink(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *maxlink)
@@ -3596,15 +5544,22 @@ static int decode_attr_maxlink(struct xdr_stream *xdr, uint32_t *bitmap, uint32_
 	if (likely(bitmap[0] & FATTR4_WORD0_MAXLINK)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*maxlink = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_MAXLINK;
 	}
 	dprintk("%s: maxlink=%u\n", __func__, *maxlink);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_maxname(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *maxname)
@@ -3618,15 +5573,22 @@ static int decode_attr_maxname(struct xdr_stream *xdr, uint32_t *bitmap, uint32_
 	if (likely(bitmap[0] & FATTR4_WORD0_MAXNAME)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*maxname = be32_to_cpup(p);
 		bitmap[0] &= ~FATTR4_WORD0_MAXNAME;
 	}
 	dprintk("%s: maxname=%u\n", __func__, *maxname);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_maxread(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
@@ -3641,7 +5603,11 @@ static int decode_attr_maxread(struct xdr_stream *xdr, uint32_t *bitmap, uint32_
 		uint64_t maxread;
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, &maxread);
 		if (maxread > 0x7FFFFFFF)
 			maxread = 0x7FFFFFFF;
@@ -3650,9 +5616,12 @@ static int decode_attr_maxread(struct xdr_stream *xdr, uint32_t *bitmap, uint32_
 	}
 	dprintk("%s: maxread=%lu\n", __func__, (unsigned long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_maxwrite(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *res)
@@ -3667,7 +5636,11 @@ static int decode_attr_maxwrite(struct xdr_stream *xdr, uint32_t *bitmap, uint32
 		uint64_t maxwrite;
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, &maxwrite);
 		if (maxwrite > 0x7FFFFFFF)
 			maxwrite = 0x7FFFFFFF;
@@ -3676,9 +5649,12 @@ static int decode_attr_maxwrite(struct xdr_stream *xdr, uint32_t *bitmap, uint32
 	}
 	dprintk("%s: maxwrite=%lu\n", __func__, (unsigned long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_mode(struct xdr_stream *xdr, uint32_t *bitmap, umode_t *mode)
@@ -3693,7 +5669,11 @@ static int decode_attr_mode(struct xdr_stream *xdr, uint32_t *bitmap, umode_t *m
 	if (likely(bitmap[1] & FATTR4_WORD1_MODE)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = be32_to_cpup(p);
 		*mode = tmp & ~S_IFMT;
 		bitmap[1] &= ~FATTR4_WORD1_MODE;
@@ -3701,9 +5681,12 @@ static int decode_attr_mode(struct xdr_stream *xdr, uint32_t *bitmap, umode_t *m
 	}
 	dprintk("%s: file mode=0%o\n", __func__, (unsigned int)*mode);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_nlink(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t *nlink)
@@ -3717,13 +5700,18 @@ static int decode_attr_nlink(struct xdr_stream *xdr, uint32_t *bitmap, uint32_t 
 	if (likely(bitmap[1] & FATTR4_WORD1_NUMLINKS)) {
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*nlink = be32_to_cpup(p);
 		bitmap[1] &= ~FATTR4_WORD1_NUMLINKS;
 		ret = NFS_ATTR_FATTR_NLINK;
 	}
 	dprintk("%s: nlink=%u\n", __func__, (unsigned int)*nlink);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
@@ -3813,6 +5801,89 @@ static int decode_attr_group(struct xdr_stream *xdr, uint32_t *bitmap,
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+}
+
+static ssize_t decode_nfs4_string(struct xdr_stream *xdr,
+		struct nfs4_string *name, gfp_t gfp_flags)
+{
+	ssize_t ret;
+
+	ret = xdr_stream_decode_string_dup(xdr, &name->data,
+			XDR_MAX_NETOBJ, gfp_flags);
+	name->len = 0;
+	if (ret > 0)
+		name->len = ret;
+	return ret;
+}
+
+static int decode_attr_owner(struct xdr_stream *xdr, uint32_t *bitmap,
+		const struct nfs_server *server, kuid_t *uid,
+		struct nfs4_string *owner_name)
+{
+	ssize_t len;
+	char *p;
+
+	*uid = make_kuid(&init_user_ns, -2);
+	if (unlikely(bitmap[1] & (FATTR4_WORD1_OWNER - 1U)))
+		return -EIO;
+	if (!(bitmap[1] & FATTR4_WORD1_OWNER))
+		return 0;
+	bitmap[1] &= ~FATTR4_WORD1_OWNER;
+
+	if (owner_name != NULL) {
+		len = decode_nfs4_string(xdr, owner_name, GFP_NOIO);
+		if (len <= 0)
+			goto out;
+		dprintk("%s: name=%s\n", __func__, owner_name->data);
+		return NFS_ATTR_FATTR_OWNER_NAME;
+	} else {
+		len = xdr_stream_decode_opaque_inline(xdr, (void **)&p,
+				XDR_MAX_NETOBJ);
+		if (len <= 0 || nfs_map_name_to_uid(server, p, len, uid) != 0)
+			goto out;
+		dprintk("%s: uid=%d\n", __func__, (int)from_kuid(&init_user_ns, *uid));
+		return NFS_ATTR_FATTR_OWNER;
+	}
+out:
+	if (len == -EBADMSG)
+		return -EIO;
+	return 0;
+}
+
+static int decode_attr_group(struct xdr_stream *xdr, uint32_t *bitmap,
+		const struct nfs_server *server, kgid_t *gid,
+		struct nfs4_string *group_name)
+{
+	ssize_t len;
+	char *p;
+
+	*gid = make_kgid(&init_user_ns, -2);
+	if (unlikely(bitmap[1] & (FATTR4_WORD1_OWNER_GROUP - 1U)))
+		return -EIO;
+	if (!(bitmap[1] & FATTR4_WORD1_OWNER_GROUP))
+		return 0;
+	bitmap[1] &= ~FATTR4_WORD1_OWNER_GROUP;
+
+	if (group_name != NULL) {
+		len = decode_nfs4_string(xdr, group_name, GFP_NOIO);
+		if (len <= 0)
+			goto out;
+		dprintk("%s: name=%s\n", __func__, group_name->data);
+		return NFS_ATTR_FATTR_GROUP_NAME;
+	} else {
+		len = xdr_stream_decode_opaque_inline(xdr, (void **)&p,
+				XDR_MAX_NETOBJ);
+		if (len <= 0 || nfs_map_group_to_gid(server, p, len, gid) != 0)
+			goto out;
+		dprintk("%s: gid=%d\n", __func__, (int)from_kgid(&init_user_ns, *gid));
+		return NFS_ATTR_FATTR_GROUP;
+	}
+out:
+	if (len == -EBADMSG)
+		return -EIO;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_rdev(struct xdr_stream *xdr, uint32_t *bitmap, dev_t *rdev)
@@ -3829,7 +5900,11 @@ static int decode_attr_rdev(struct xdr_stream *xdr, uint32_t *bitmap, dev_t *rde
 
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		major = be32_to_cpup(p++);
 		minor = be32_to_cpup(p);
 		tmp = MKDEV(major, minor);
@@ -3840,9 +5915,12 @@ static int decode_attr_rdev(struct xdr_stream *xdr, uint32_t *bitmap, dev_t *rde
 	}
 	dprintk("%s: rdev=(0x%x:0x%x)\n", __func__, major, minor);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_space_avail(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3856,15 +5934,22 @@ static int decode_attr_space_avail(struct xdr_stream *xdr, uint32_t *bitmap, uin
 	if (likely(bitmap[1] & FATTR4_WORD1_SPACE_AVAIL)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[1] &= ~FATTR4_WORD1_SPACE_AVAIL;
 	}
 	dprintk("%s: space avail=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_space_free(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3878,15 +5963,22 @@ static int decode_attr_space_free(struct xdr_stream *xdr, uint32_t *bitmap, uint
 	if (likely(bitmap[1] & FATTR4_WORD1_SPACE_FREE)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[1] &= ~FATTR4_WORD1_SPACE_FREE;
 	}
 	dprintk("%s: space free=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_space_total(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *res)
@@ -3900,15 +5992,22 @@ static int decode_attr_space_total(struct xdr_stream *xdr, uint32_t *bitmap, uin
 	if (likely(bitmap[1] & FATTR4_WORD1_SPACE_TOTAL)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, res);
 		bitmap[1] &= ~FATTR4_WORD1_SPACE_TOTAL;
 	}
 	dprintk("%s: space total=%Lu\n", __func__, (unsigned long long)*res);
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_attr_space_used(struct xdr_stream *xdr, uint32_t *bitmap, uint64_t *used)
@@ -3922,7 +6021,11 @@ static int decode_attr_space_used(struct xdr_stream *xdr, uint32_t *bitmap, uint
 	if (likely(bitmap[1] & FATTR4_WORD1_SPACE_USED)) {
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdr_decode_hyper(p, used);
 		bitmap[1] &= ~FATTR4_WORD1_SPACE_USED;
 		ret = NFS_ATTR_FATTR_SPACE_USED;
@@ -3930,6 +6033,7 @@ static int decode_attr_space_used(struct xdr_stream *xdr, uint32_t *bitmap, uint
 	dprintk("%s: space used=%Lu\n", __func__,
 			(unsigned long long)*used);
 	return ret;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
@@ -3955,6 +6059,33 @@ out_overflow:
 }
 
 static int decode_attr_time_access(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec *time)
+=======
+}
+
+static __be32 *
+xdr_decode_nfstime4(__be32 *p, struct timespec64 *t)
+{
+	__u64 sec;
+
+	p = xdr_decode_hyper(p, &sec);
+	t-> tv_sec = sec;
+	t->tv_nsec = be32_to_cpup(p++);
+	return p;
+}
+
+static int decode_attr_time(struct xdr_stream *xdr, struct timespec64 *time)
+{
+	__be32 *p;
+
+	p = xdr_inline_decode(xdr, nfstime4_maxsz << 2);
+	if (unlikely(!p))
+		return -EIO;
+	xdr_decode_nfstime4(p, time);
+	return 0;
+}
+
+static int decode_attr_time_access(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec64 *time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 
@@ -3968,11 +6099,19 @@ static int decode_attr_time_access(struct xdr_stream *xdr, uint32_t *bitmap, str
 			status = NFS_ATTR_FATTR_ATIME;
 		bitmap[1] &= ~FATTR4_WORD1_TIME_ACCESS;
 	}
+<<<<<<< HEAD
 	dprintk("%s: atime=%ld\n", __func__, (long)time->tv_sec);
 	return status;
 }
 
 static int decode_attr_time_metadata(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec *time)
+=======
+	dprintk("%s: atime=%lld\n", __func__, time->tv_sec);
+	return status;
+}
+
+static int decode_attr_time_metadata(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec64 *time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 
@@ -3986,12 +6125,20 @@ static int decode_attr_time_metadata(struct xdr_stream *xdr, uint32_t *bitmap, s
 			status = NFS_ATTR_FATTR_CTIME;
 		bitmap[1] &= ~FATTR4_WORD1_TIME_METADATA;
 	}
+<<<<<<< HEAD
 	dprintk("%s: ctime=%ld\n", __func__, (long)time->tv_sec);
+=======
+	dprintk("%s: ctime=%lld\n", __func__, time->tv_sec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 static int decode_attr_time_delta(struct xdr_stream *xdr, uint32_t *bitmap,
+<<<<<<< HEAD
 				  struct timespec *time)
+=======
+				  struct timespec64 *time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 
@@ -4003,12 +6150,70 @@ static int decode_attr_time_delta(struct xdr_stream *xdr, uint32_t *bitmap,
 		status = decode_attr_time(xdr, time);
 		bitmap[1] &= ~FATTR4_WORD1_TIME_DELTA;
 	}
+<<<<<<< HEAD
 	dprintk("%s: time_delta=%ld %ld\n", __func__, (long)time->tv_sec,
 		(long)time->tv_nsec);
 	return status;
 }
 
 static int decode_attr_time_modify(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec *time)
+=======
+	dprintk("%s: time_delta=%lld %ld\n", __func__, time->tv_sec,
+		time->tv_nsec);
+	return status;
+}
+
+static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
+					struct nfs4_label *label)
+{
+	uint32_t pi = 0;
+	uint32_t lfs = 0;
+	__u32 len;
+	__be32 *p;
+	int status = 0;
+
+	if (unlikely(bitmap[2] & (FATTR4_WORD2_SECURITY_LABEL - 1U)))
+		return -EIO;
+	if (likely(bitmap[2] & FATTR4_WORD2_SECURITY_LABEL)) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		lfs = be32_to_cpup(p++);
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		pi = be32_to_cpup(p++);
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		len = be32_to_cpup(p++);
+		p = xdr_inline_decode(xdr, len);
+		if (unlikely(!p))
+			return -EIO;
+		bitmap[2] &= ~FATTR4_WORD2_SECURITY_LABEL;
+		if (len < NFS4_MAXLABELLEN) {
+			if (label && label->len) {
+				if (label->len < len)
+					return -ERANGE;
+				memcpy(label->label, p, len);
+				label->len = len;
+				label->pi = pi;
+				label->lfs = lfs;
+				status = NFS_ATTR_FATTR_V4_SECURITY_LABEL;
+			}
+		} else
+			printk(KERN_WARNING "%s: label too long (%u)!\n",
+					__func__, len);
+		if (label && label->label)
+			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
+				__func__, label->len, (char *)label->label,
+				label->len, label->pi, label->lfs);
+	}
+	return status;
+}
+
+static int decode_attr_time_modify(struct xdr_stream *xdr, uint32_t *bitmap, struct timespec64 *time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 
@@ -4022,6 +6227,7 @@ static int decode_attr_time_modify(struct xdr_stream *xdr, uint32_t *bitmap, str
 			status = NFS_ATTR_FATTR_MTIME;
 		bitmap[1] &= ~FATTR4_WORD1_TIME_MODIFY;
 	}
+<<<<<<< HEAD
 	dprintk("%s: mtime=%ld\n", __func__, (long)time->tv_sec);
 	return status;
 }
@@ -4030,6 +6236,36 @@ static int verify_attr_len(struct xdr_stream *xdr, __be32 *savep, uint32_t attrl
 {
 	unsigned int attrwords = XDR_QUADLEN(attrlen);
 	unsigned int nwords = xdr->p - savep;
+=======
+	dprintk("%s: mtime=%lld\n", __func__, time->tv_sec);
+	return status;
+}
+
+static int decode_attr_xattrsupport(struct xdr_stream *xdr, uint32_t *bitmap,
+				    uint32_t *res)
+{
+	__be32 *p;
+
+	*res = 0;
+	if (unlikely(bitmap[2] & (FATTR4_WORD2_XATTR_SUPPORT - 1U)))
+		return -EIO;
+	if (likely(bitmap[2] & FATTR4_WORD2_XATTR_SUPPORT)) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		*res = be32_to_cpup(p);
+		bitmap[2] &= ~FATTR4_WORD2_XATTR_SUPPORT;
+	}
+	dprintk("%s: XATTR support=%s\n", __func__,
+		*res == 0 ? "false" : "true");
+	return 0;
+}
+
+static int verify_attr_len(struct xdr_stream *xdr, unsigned int savep, uint32_t attrlen)
+{
+	unsigned int attrwords = XDR_QUADLEN(attrlen);
+	unsigned int nwords = (xdr_stream_pos(xdr) - savep) >> 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(attrwords != nwords)) {
 		dprintk("%s: server returned incorrect attribute length: "
@@ -4049,17 +6285,27 @@ static int decode_change_info(struct xdr_stream *xdr, struct nfs4_change_info *c
 
 	p = xdr_inline_decode(xdr, 20);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cinfo->atomic = be32_to_cpup(p++);
 	p = xdr_decode_hyper(p, &cinfo->before);
 	xdr_decode_hyper(p, &cinfo->after);
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
 }
 
 static int decode_access(struct xdr_stream *xdr, struct nfs4_accessres *access)
+=======
+}
+
+static int decode_access(struct xdr_stream *xdr, u32 *supported, u32 *access)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 	uint32_t supp, acc;
@@ -4070,6 +6316,7 @@ static int decode_access(struct xdr_stream *xdr, struct nfs4_accessres *access)
 		return status;
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	supp = be32_to_cpup(p++);
 	acc = be32_to_cpup(p);
@@ -4079,10 +6326,19 @@ static int decode_access(struct xdr_stream *xdr, struct nfs4_accessres *access)
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+		return -EIO;
+	supp = be32_to_cpup(p++);
+	acc = be32_to_cpup(p);
+	*supported = supp;
+	*access = acc;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_opaque_fixed(struct xdr_stream *xdr, void *buf, size_t len)
 {
+<<<<<<< HEAD
 	__be32 *p;
 
 	p = xdr_inline_decode(xdr, len);
@@ -4092,6 +6348,12 @@ static int decode_opaque_fixed(struct xdr_stream *xdr, void *buf, size_t len)
 	}
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	ssize_t ret = xdr_stream_decode_opaque_fixed(xdr, buf, len);
+	if (unlikely(ret < 0))
+		return -EIO;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
@@ -4099,6 +6361,35 @@ static int decode_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
 	return decode_opaque_fixed(xdr, stateid, NFS4_STATEID_SIZE);
 }
 
+<<<<<<< HEAD
+=======
+static int decode_open_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
+{
+	stateid->type = NFS4_OPEN_STATEID_TYPE;
+	return decode_stateid(xdr, stateid);
+}
+
+static int decode_lock_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
+{
+	stateid->type = NFS4_LOCK_STATEID_TYPE;
+	return decode_stateid(xdr, stateid);
+}
+
+static int decode_delegation_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
+{
+	stateid->type = NFS4_DELEGATION_STATEID_TYPE;
+	return decode_stateid(xdr, stateid);
+}
+
+static int decode_invalid_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
+{
+	nfs4_stateid dummy;
+
+	nfs4_stateid_copy(stateid, &invalid_stateid);
+	return decode_stateid(xdr, &dummy);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int decode_close(struct xdr_stream *xdr, struct nfs_closeres *res)
 {
 	int status;
@@ -4107,7 +6398,11 @@ static int decode_close(struct xdr_stream *xdr, struct nfs_closeres *res)
 	if (status != -EIO)
 		nfs_increment_open_seqid(status, res->seqid);
 	if (!status)
+<<<<<<< HEAD
 		status = decode_stateid(xdr, &res->stateid);
+=======
+		status = decode_invalid_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4116,13 +6411,30 @@ static int decode_verifier(struct xdr_stream *xdr, void *verifier)
 	return decode_opaque_fixed(xdr, verifier, NFS4_VERIFIER_SIZE);
 }
 
+<<<<<<< HEAD
 static int decode_commit(struct xdr_stream *xdr, struct nfs_writeres *res)
 {
+=======
+static int decode_write_verifier(struct xdr_stream *xdr, struct nfs_write_verifier *verifier)
+{
+	return decode_opaque_fixed(xdr, verifier->data, NFS4_VERIFIER_SIZE);
+}
+
+static int decode_commit(struct xdr_stream *xdr, struct nfs_commitres *res)
+{
+	struct nfs_writeverf *verf = res->verf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = decode_op_hdr(xdr, OP_COMMIT);
 	if (!status)
+<<<<<<< HEAD
 		status = decode_verifier(xdr, res->verf->verifier);
+=======
+		status = decode_write_verifier(xdr, &verf->verifier);
+	if (!status)
+		verf->committed = NFS_FILE_SYNC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4139,19 +6451,30 @@ static int decode_create(struct xdr_stream *xdr, struct nfs4_change_info *cinfo)
 		return status;
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bmlen = be32_to_cpup(p);
 	p = xdr_inline_decode(xdr, bmlen << 2);
 	if (likely(p))
 		return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
 static int decode_server_caps(struct xdr_stream *xdr, struct nfs4_server_caps_res *res)
 {
+<<<<<<< HEAD
 	__be32 *savep;
+=======
+	unsigned int savep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t attrlen, bitmap[3] = {0};
 	int status;
 
@@ -4172,6 +6495,16 @@ static int decode_server_caps(struct xdr_stream *xdr, struct nfs4_server_caps_re
 		goto xdr_error;
 	if ((status = decode_attr_aclsupport(xdr, bitmap, &res->acl_bitmask)) != 0)
 		goto xdr_error;
+<<<<<<< HEAD
+=======
+	if ((status = decode_attr_case_insensitive(xdr, bitmap, &res->case_insensitive)) != 0)
+		goto xdr_error;
+	if ((status = decode_attr_case_preserving(xdr, bitmap, &res->case_preserving)) != 0)
+		goto xdr_error;
+	if ((status = decode_attr_exclcreat_supported(xdr, bitmap,
+				res->exclcreat_bitmask)) != 0)
+		goto xdr_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = verify_attr_len(xdr, savep, attrlen);
 xdr_error:
 	dprintk("%s: xdr returned %d!\n", __func__, -status);
@@ -4180,7 +6513,11 @@ xdr_error:
 
 static int decode_statfs(struct xdr_stream *xdr, struct nfs_fsstat *fsstat)
 {
+<<<<<<< HEAD
 	__be32 *savep;
+=======
+	unsigned int savep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t attrlen, bitmap[3] = {0};
 	int status;
 
@@ -4197,6 +6534,14 @@ static int decode_statfs(struct xdr_stream *xdr, struct nfs_fsstat *fsstat)
 		goto xdr_error;
 	if ((status = decode_attr_files_total(xdr, bitmap, &fsstat->tfiles)) != 0)
 		goto xdr_error;
+<<<<<<< HEAD
+=======
+
+	status = -EIO;
+	if (unlikely(bitmap[0]))
+		goto xdr_error;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((status = decode_attr_space_avail(xdr, bitmap, &fsstat->abytes)) != 0)
 		goto xdr_error;
 	if ((status = decode_attr_space_free(xdr, bitmap, &fsstat->fbytes)) != 0)
@@ -4212,7 +6557,11 @@ xdr_error:
 
 static int decode_pathconf(struct xdr_stream *xdr, struct nfs_pathconf *pathconf)
 {
+<<<<<<< HEAD
 	__be32 *savep;
+=======
+	unsigned int savep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t attrlen, bitmap[3] = {0};
 	int status;
 
@@ -4234,10 +6583,117 @@ xdr_error:
 	return status;
 }
 
+<<<<<<< HEAD
 static int decode_getfattr_attrs(struct xdr_stream *xdr, uint32_t *bitmap,
 		struct nfs_fattr *fattr, struct nfs_fh *fh,
 		struct nfs4_fs_locations *fs_loc,
 		const struct nfs_server *server)
+=======
+static int decode_threshold_hint(struct xdr_stream *xdr,
+				  uint32_t *bitmap,
+				  uint64_t *res,
+				  uint32_t hint_bit)
+{
+	__be32 *p;
+
+	*res = 0;
+	if (likely(bitmap[0] & hint_bit)) {
+		p = xdr_inline_decode(xdr, 8);
+		if (unlikely(!p))
+			return -EIO;
+		xdr_decode_hyper(p, res);
+	}
+	return 0;
+}
+
+static int decode_first_threshold_item4(struct xdr_stream *xdr,
+					struct nfs4_threshold *res)
+{
+	__be32 *p;
+	unsigned int savep;
+	uint32_t bitmap[3] = {0,}, attrlen;
+	int status;
+
+	/* layout type */
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+	res->l_type = be32_to_cpup(p);
+
+	/* thi_hintset bitmap */
+	status = decode_attr_bitmap(xdr, bitmap);
+	if (status < 0)
+		goto xdr_error;
+
+	/* thi_hintlist length */
+	status = decode_attr_length(xdr, &attrlen, &savep);
+	if (status < 0)
+		goto xdr_error;
+	/* thi_hintlist */
+	status = decode_threshold_hint(xdr, bitmap, &res->rd_sz, THRESHOLD_RD);
+	if (status < 0)
+		goto xdr_error;
+	status = decode_threshold_hint(xdr, bitmap, &res->wr_sz, THRESHOLD_WR);
+	if (status < 0)
+		goto xdr_error;
+	status = decode_threshold_hint(xdr, bitmap, &res->rd_io_sz,
+				       THRESHOLD_RD_IO);
+	if (status < 0)
+		goto xdr_error;
+	status = decode_threshold_hint(xdr, bitmap, &res->wr_io_sz,
+				       THRESHOLD_WR_IO);
+	if (status < 0)
+		goto xdr_error;
+
+	status = verify_attr_len(xdr, savep, attrlen);
+	res->bm = bitmap[0];
+
+	dprintk("%s bm=0x%x rd_sz=%llu wr_sz=%llu rd_io=%llu wr_io=%llu\n",
+		 __func__, res->bm, res->rd_sz, res->wr_sz, res->rd_io_sz,
+		res->wr_io_sz);
+xdr_error:
+	dprintk("%s ret=%d!\n", __func__, status);
+	return status;
+}
+
+/*
+ * Thresholds on pNFS direct I/O vrs MDS I/O
+ */
+static int decode_attr_mdsthreshold(struct xdr_stream *xdr,
+				    uint32_t *bitmap,
+				    struct nfs4_threshold *res)
+{
+	__be32 *p;
+	int status = 0;
+	uint32_t num;
+
+	if (unlikely(bitmap[2] & (FATTR4_WORD2_MDSTHRESHOLD - 1U)))
+		return -EIO;
+	if (bitmap[2] & FATTR4_WORD2_MDSTHRESHOLD) {
+		/* Did the server return an unrequested attribute? */
+		if (unlikely(res == NULL))
+			return -EREMOTEIO;
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		num = be32_to_cpup(p);
+		if (num == 0)
+			return 0;
+		if (num > 1)
+			printk(KERN_INFO "%s: Warning: Multiple pNFS layout "
+				"drivers per filesystem not supported\n",
+				__func__);
+
+		status = decode_first_threshold_item4(xdr, res);
+		bitmap[2] &= ~FATTR4_WORD2_MDSTHRESHOLD;
+	}
+	return status;
+}
+
+static int decode_getfattr_attrs(struct xdr_stream *xdr, uint32_t *bitmap,
+		struct nfs_fattr *fattr, struct nfs_fh *fh,
+		struct nfs4_fs_locations *fs_loc, const struct nfs_server *server)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 	umode_t fmode = 0;
@@ -4287,6 +6743,13 @@ static int decode_getfattr_attrs(struct xdr_stream *xdr, uint32_t *bitmap,
 		goto xdr_error;
 	fattr->valid |= status;
 
+<<<<<<< HEAD
+=======
+	status = -EIO;
+	if (unlikely(bitmap[0]))
+		goto xdr_error;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = decode_attr_mode(xdr, bitmap, &fmode);
 	if (status < 0)
 		goto xdr_error;
@@ -4340,6 +6803,22 @@ static int decode_getfattr_attrs(struct xdr_stream *xdr, uint32_t *bitmap,
 		goto xdr_error;
 	fattr->valid |= status;
 
+<<<<<<< HEAD
+=======
+	status = -EIO;
+	if (unlikely(bitmap[1]))
+		goto xdr_error;
+
+	status = decode_attr_mdsthreshold(xdr, bitmap, fattr->mdsthreshold);
+	if (status < 0)
+		goto xdr_error;
+
+	status = decode_attr_security_label(xdr, bitmap, fattr->label);
+	if (status < 0)
+		goto xdr_error;
+	fattr->valid |= status;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xdr_error:
 	dprintk("%s: xdr returned %d\n", __func__, -status);
 	return status;
@@ -4349,7 +6828,11 @@ static int decode_getfattr_generic(struct xdr_stream *xdr, struct nfs_fattr *fat
 		struct nfs_fh *fh, struct nfs4_fs_locations *fs_loc,
 		const struct nfs_server *server)
 {
+<<<<<<< HEAD
 	__be32 *savep;
+=======
+	unsigned int savep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t attrlen,
 		 bitmap[3] = {0};
 	int status;
@@ -4383,6 +6866,7 @@ static int decode_getfattr(struct xdr_stream *xdr, struct nfs_fattr *fattr,
 }
 
 /*
+<<<<<<< HEAD
  * Decode potentially multiple layout types. Currently we only support
  * one layout driver per file system.
  */
@@ -4415,6 +6899,40 @@ static int decode_first_pnfs_layout_type(struct xdr_stream *xdr,
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+ * Decode potentially multiple layout types.
+ */
+static int decode_pnfs_layout_types(struct xdr_stream *xdr,
+				    struct nfs_fsinfo *fsinfo)
+{
+	__be32 *p;
+	uint32_t i;
+
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+	fsinfo->nlayouttypes = be32_to_cpup(p);
+
+	/* pNFS is not supported by the underlying file system */
+	if (fsinfo->nlayouttypes == 0)
+		return 0;
+
+	/* Decode and set first layout type, move xdr->p past unused types */
+	p = xdr_inline_decode(xdr, fsinfo->nlayouttypes * 4);
+	if (unlikely(!p))
+		return -EIO;
+
+	/* If we get too many, then just cap it at the max */
+	if (fsinfo->nlayouttypes > NFS_MAX_LAYOUT_TYPES) {
+		printk(KERN_INFO "NFS: %s: Warning: Too many (%u) pNFS layout types\n",
+			__func__, fsinfo->nlayouttypes);
+		fsinfo->nlayouttypes = NFS_MAX_LAYOUT_TYPES;
+	}
+
+	for(i = 0; i < fsinfo->nlayouttypes; ++i)
+		fsinfo->layouttype[i] = be32_to_cpup(p++);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4422,7 +6940,11 @@ out_overflow:
  * Note we must ensure that layouttype is set in any non-error case.
  */
 static int decode_attr_pnfstype(struct xdr_stream *xdr, uint32_t *bitmap,
+<<<<<<< HEAD
 				uint32_t *layouttype)
+=======
+				struct nfs_fsinfo *fsinfo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 
@@ -4430,10 +6952,16 @@ static int decode_attr_pnfstype(struct xdr_stream *xdr, uint32_t *bitmap,
 	if (unlikely(bitmap[1] & (FATTR4_WORD1_FS_LAYOUT_TYPES - 1U)))
 		return -EIO;
 	if (bitmap[1] & FATTR4_WORD1_FS_LAYOUT_TYPES) {
+<<<<<<< HEAD
 		status = decode_first_pnfs_layout_type(xdr, layouttype);
 		bitmap[1] &= ~FATTR4_WORD1_FS_LAYOUT_TYPES;
 	} else
 		*layouttype = 0;
+=======
+		status = decode_pnfs_layout_types(xdr, fsinfo);
+		bitmap[1] &= ~FATTR4_WORD1_FS_LAYOUT_TYPES;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4449,19 +6977,76 @@ static int decode_attr_layout_blksize(struct xdr_stream *xdr, uint32_t *bitmap,
 	*res = 0;
 	if (bitmap[2] & FATTR4_WORD2_LAYOUT_BLKSIZE) {
 		p = xdr_inline_decode(xdr, 4);
+<<<<<<< HEAD
 		if (unlikely(!p)) {
 			print_overflow_msg(__func__, xdr);
 			return -EIO;
 		}
+=======
+		if (unlikely(!p))
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*res = be32_to_cpup(p);
 		bitmap[2] &= ~FATTR4_WORD2_LAYOUT_BLKSIZE;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int decode_fsinfo(struct xdr_stream *xdr, struct nfs_fsinfo *fsinfo)
 {
 	__be32 *savep;
+=======
+/*
+ * The granularity of a CLONE operation.
+ */
+static int decode_attr_clone_blksize(struct xdr_stream *xdr, uint32_t *bitmap,
+				     uint32_t *res)
+{
+	__be32 *p;
+
+	dprintk("%s: bitmap is %x\n", __func__, bitmap[2]);
+	*res = 0;
+	if (bitmap[2] & FATTR4_WORD2_CLONE_BLKSIZE) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EIO;
+		*res = be32_to_cpup(p);
+		bitmap[2] &= ~FATTR4_WORD2_CLONE_BLKSIZE;
+	}
+	return 0;
+}
+
+static int decode_attr_change_attr_type(struct xdr_stream *xdr,
+					uint32_t *bitmap,
+					enum nfs4_change_attr_type *res)
+{
+	u32 tmp = NFS4_CHANGE_TYPE_IS_UNDEFINED;
+
+	dprintk("%s: bitmap is %x\n", __func__, bitmap[2]);
+	if (bitmap[2] & FATTR4_WORD2_CHANGE_ATTR_TYPE) {
+		if (xdr_stream_decode_u32(xdr, &tmp))
+			return -EIO;
+		bitmap[2] &= ~FATTR4_WORD2_CHANGE_ATTR_TYPE;
+	}
+
+	switch(tmp) {
+	case NFS4_CHANGE_TYPE_IS_MONOTONIC_INCR:
+	case NFS4_CHANGE_TYPE_IS_VERSION_COUNTER:
+	case NFS4_CHANGE_TYPE_IS_VERSION_COUNTER_NOPNFS:
+	case NFS4_CHANGE_TYPE_IS_TIME_METADATA:
+		*res = tmp;
+		break;
+	default:
+		*res = NFS4_CHANGE_TYPE_IS_UNDEFINED;
+	}
+	return 0;
+}
+
+static int decode_fsinfo(struct xdr_stream *xdr, struct nfs_fsinfo *fsinfo)
+{
+	unsigned int savep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t attrlen, bitmap[3];
 	int status;
 
@@ -4484,6 +7069,7 @@ static int decode_fsinfo(struct xdr_stream *xdr, struct nfs_fsinfo *fsinfo)
 	if ((status = decode_attr_maxwrite(xdr, bitmap, &fsinfo->wtmax)) != 0)
 		goto xdr_error;
 	fsinfo->wtpref = fsinfo->wtmax;
+<<<<<<< HEAD
 	status = decode_attr_time_delta(xdr, bitmap, &fsinfo->time_delta);
 	if (status != 0)
 		goto xdr_error;
@@ -4493,6 +7079,40 @@ static int decode_fsinfo(struct xdr_stream *xdr, struct nfs_fsinfo *fsinfo)
 	status = decode_attr_layout_blksize(xdr, bitmap, &fsinfo->blksize);
 	if (status)
 		goto xdr_error;
+=======
+
+	status = -EIO;
+	if (unlikely(bitmap[0]))
+		goto xdr_error;
+
+	status = decode_attr_time_delta(xdr, bitmap, &fsinfo->time_delta);
+	if (status != 0)
+		goto xdr_error;
+	status = decode_attr_pnfstype(xdr, bitmap, fsinfo);
+	if (status != 0)
+		goto xdr_error;
+
+	status = -EIO;
+	if (unlikely(bitmap[1]))
+		goto xdr_error;
+
+	status = decode_attr_layout_blksize(xdr, bitmap, &fsinfo->blksize);
+	if (status)
+		goto xdr_error;
+	status = decode_attr_clone_blksize(xdr, bitmap, &fsinfo->clone_blksize);
+	if (status)
+		goto xdr_error;
+
+	status = decode_attr_change_attr_type(xdr, bitmap,
+					      &fsinfo->change_attr_type);
+	if (status)
+		goto xdr_error;
+
+	status = decode_attr_xattrsupport(xdr, bitmap,
+					  &fsinfo->xattr_support);
+	if (status)
+		goto xdr_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = verify_attr_len(xdr, savep, attrlen);
 xdr_error:
@@ -4515,6 +7135,7 @@ static int decode_getfh(struct xdr_stream *xdr, struct nfs_fh *fh)
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	len = be32_to_cpup(p);
 	if (len > NFS4_FHSIZE)
@@ -4528,6 +7149,20 @@ static int decode_getfh(struct xdr_stream *xdr, struct nfs_fh *fh)
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+		return -EIO;
+	len = be32_to_cpup(p);
+	if (len > NFS4_FHSIZE || len == 0) {
+		trace_nfs4_xdr_bad_filehandle(xdr, OP_GETFH, NFS4ERR_BADHANDLE);
+		return -EREMOTEIO;
+	}
+	fh->size = len;
+	p = xdr_inline_decode(xdr, len);
+	if (unlikely(!p))
+		return -EIO;
+	memcpy(fh->data, p, len);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_link(struct xdr_stream *xdr, struct nfs4_change_info *cinfo)
@@ -4551,7 +7186,11 @@ static int decode_lock_denied (struct xdr_stream *xdr, struct file_lock *fl)
 
 	p = xdr_inline_decode(xdr, 32); /* read 32 bytes */
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_decode_hyper(p, &offset); /* read 2 8-byte long words */
 	p = xdr_decode_hyper(p, &length);
 	type = be32_to_cpup(p++); /* 4 byte read */
@@ -4560,19 +7199,32 @@ static int decode_lock_denied (struct xdr_stream *xdr, struct file_lock *fl)
 		fl->fl_end = fl->fl_start + (loff_t)length - 1;
 		if (length == ~(uint64_t)0)
 			fl->fl_end = OFFSET_MAX;
+<<<<<<< HEAD
 		fl->fl_type = F_WRLCK;
 		if (type & 1)
 			fl->fl_type = F_RDLCK;
 		fl->fl_pid = 0;
+=======
+		fl->c.flc_type = F_WRLCK;
+		if (type & 1)
+			fl->c.flc_type = F_RDLCK;
+		fl->c.flc_pid = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	p = xdr_decode_hyper(p, &clientid); /* read 8 bytes */
 	namelen = be32_to_cpup(p); /* read 4 bytes */  /* have read all 32 bytes now */
 	p = xdr_inline_decode(xdr, namelen); /* variable size field */
+<<<<<<< HEAD
 	if (likely(p))
 		return -NFS4ERR_DENIED;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	if (likely(!p))
+		return -EIO;
+	return -NFS4ERR_DENIED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_lock(struct xdr_stream *xdr, struct nfs_lock_res *res)
@@ -4583,7 +7235,11 @@ static int decode_lock(struct xdr_stream *xdr, struct nfs_lock_res *res)
 	if (status == -EIO)
 		goto out;
 	if (status == 0) {
+<<<<<<< HEAD
 		status = decode_stateid(xdr, &res->stateid);
+=======
+		status = decode_lock_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(status))
 			goto out;
 	} else if (status == -NFS4ERR_DENIED)
@@ -4612,7 +7268,11 @@ static int decode_locku(struct xdr_stream *xdr, struct nfs_locku_res *res)
 	if (status != -EIO)
 		nfs_increment_lock_seqid(status, res->seqid);
 	if (status == 0)
+<<<<<<< HEAD
 		status = decode_stateid(xdr, &res->stateid);
+=======
+		status = decode_lock_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4626,6 +7286,7 @@ static int decode_lookup(struct xdr_stream *xdr)
 	return decode_op_hdr(xdr, OP_LOOKUP);
 }
 
+<<<<<<< HEAD
 /* This is too sick! */
 static int decode_space_limit(struct xdr_stream *xdr, u64 *maxsize)
 {
@@ -4666,11 +7327,56 @@ static int decode_delegation(struct xdr_stream *xdr, struct nfs_openres *res)
 		return 0;
 	}
 	status = decode_stateid(xdr, &res->delegation);
+=======
+static int decode_lookupp(struct xdr_stream *xdr)
+{
+	return decode_op_hdr(xdr, OP_LOOKUPP);
+}
+
+/* This is too sick! */
+static int decode_space_limit(struct xdr_stream *xdr,
+		unsigned long *pagemod_limit)
+{
+	__be32 *p;
+	uint32_t limit_type, nblocks, blocksize;
+	u64 maxsize = 0;
+
+	p = xdr_inline_decode(xdr, 12);
+	if (unlikely(!p))
+		return -EIO;
+	limit_type = be32_to_cpup(p++);
+	switch (limit_type) {
+	case NFS4_LIMIT_SIZE:
+		xdr_decode_hyper(p, &maxsize);
+		break;
+	case NFS4_LIMIT_BLOCKS:
+		nblocks = be32_to_cpup(p++);
+		blocksize = be32_to_cpup(p);
+		maxsize = (uint64_t)nblocks * (uint64_t)blocksize;
+	}
+	maxsize >>= PAGE_SHIFT;
+	*pagemod_limit = min_t(u64, maxsize, ULONG_MAX);
+	return 0;
+}
+
+static int decode_rw_delegation(struct xdr_stream *xdr,
+		uint32_t delegation_type,
+		struct nfs_openres *res)
+{
+	__be32 *p;
+	int status;
+
+	status = decode_delegation_stateid(xdr, &res->delegation);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(status))
 		return status;
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res->do_recall = be32_to_cpup(p);
 
 	switch (delegation_type) {
@@ -4679,12 +7385,58 @@ static int decode_delegation(struct xdr_stream *xdr, struct nfs_openres *res)
 		break;
 	case NFS4_OPEN_DELEGATE_WRITE:
 		res->delegation_type = FMODE_WRITE|FMODE_READ;
+<<<<<<< HEAD
 		if (decode_space_limit(xdr, &res->maxsize) < 0)
 				return -EIO;
 	}
 	return decode_ace(xdr, NULL, res->server->nfs_client);
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+		if (decode_space_limit(xdr, &res->pagemod_limit) < 0)
+				return -EIO;
+	}
+	return decode_ace(xdr, NULL);
+}
+
+static int decode_no_delegation(struct xdr_stream *xdr, struct nfs_openres *res)
+{
+	__be32 *p;
+	uint32_t why_no_delegation;
+
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+	why_no_delegation = be32_to_cpup(p);
+	switch (why_no_delegation) {
+		case WND4_CONTENTION:
+		case WND4_RESOURCE:
+			xdr_inline_decode(xdr, 4);
+			/* Ignore for now */
+	}
+	return 0;
+}
+
+static int decode_delegation(struct xdr_stream *xdr, struct nfs_openres *res)
+{
+	__be32 *p;
+	uint32_t delegation_type;
+
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+	delegation_type = be32_to_cpup(p);
+	res->delegation_type = 0;
+	switch (delegation_type) {
+	case NFS4_OPEN_DELEGATE_NONE:
+		return 0;
+	case NFS4_OPEN_DELEGATE_READ:
+	case NFS4_OPEN_DELEGATE_WRITE:
+		return decode_rw_delegation(xdr, delegation_type, res);
+	case NFS4_OPEN_DELEGATE_NONE_EXT:
+		return decode_no_delegation(xdr, res);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -4699,7 +7451,11 @@ static int decode_open(struct xdr_stream *xdr, struct nfs_openres *res)
 	nfs_increment_open_seqid(status, res->seqid);
 	if (status)
 		return status;
+<<<<<<< HEAD
 	status = decode_stateid(xdr, &res->stateid);
+=======
+	status = decode_open_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(status))
 		return status;
 
@@ -4707,7 +7463,11 @@ static int decode_open(struct xdr_stream *xdr, struct nfs_openres *res)
 
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res->rflags = be32_to_cpup(p++);
 	bmlen = be32_to_cpup(p);
 	if (bmlen > 10)
@@ -4715,7 +7475,11 @@ static int decode_open(struct xdr_stream *xdr, struct nfs_openres *res)
 
 	p = xdr_inline_decode(xdr, bmlen << 2);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	savewords = min_t(uint32_t, bmlen, NFS4_BITMAP_SIZE);
 	for (i = 0; i < savewords; ++i)
 		res->attrset[i] = be32_to_cpup(p++);
@@ -4726,9 +7490,12 @@ static int decode_open(struct xdr_stream *xdr, struct nfs_openres *res)
 xdr_error:
 	dprintk("%s: Bitmap too large! Length = %u\n", __func__, bmlen);
 	return -EIO;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_open_confirm(struct xdr_stream *xdr, struct nfs_open_confirmres *res)
@@ -4739,7 +7506,11 @@ static int decode_open_confirm(struct xdr_stream *xdr, struct nfs_open_confirmre
 	if (status != -EIO)
 		nfs_increment_open_seqid(status, res->seqid);
 	if (!status)
+<<<<<<< HEAD
 		status = decode_stateid(xdr, &res->stateid);
+=======
+		status = decode_open_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4751,7 +7522,11 @@ static int decode_open_downgrade(struct xdr_stream *xdr, struct nfs_closeres *re
 	if (status != -EIO)
 		nfs_increment_open_seqid(status, res->seqid);
 	if (!status)
+<<<<<<< HEAD
 		status = decode_stateid(xdr, &res->stateid);
+=======
+		status = decode_open_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4765,11 +7540,19 @@ static int decode_putrootfh(struct xdr_stream *xdr)
 	return decode_op_hdr(xdr, OP_PUTROOTFH);
 }
 
+<<<<<<< HEAD
 static int decode_read(struct xdr_stream *xdr, struct rpc_rqst *req, struct nfs_readres *res)
 {
 	struct kvec *iov = req->rq_rcv_buf.head;
 	__be32 *p;
 	uint32_t count, eof, recvd, hdrlen;
+=======
+static int decode_read(struct xdr_stream *xdr, struct rpc_rqst *req,
+		       struct nfs_pgio_res *res)
+{
+	__be32 *p;
+	uint32_t count, eof, recvd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = decode_op_hdr(xdr, OP_READ);
@@ -4777,17 +7560,25 @@ static int decode_read(struct xdr_stream *xdr, struct rpc_rqst *req, struct nfs_
 		return status;
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	eof = be32_to_cpup(p++);
 	count = be32_to_cpup(p);
 	hdrlen = (u8 *) xdr->p - (u8 *) iov->iov_base;
 	recvd = req->rq_rcv_buf.len - hdrlen;
+=======
+		return -EIO;
+	eof = be32_to_cpup(p++);
+	count = be32_to_cpup(p);
+	recvd = xdr_read_pages(xdr, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count > recvd) {
 		dprintk("NFS: server cheating in read reply: "
 				"count %u > recvd %u\n", count, recvd);
 		count = recvd;
 		eof = 0;
 	}
+<<<<<<< HEAD
 	xdr_read_pages(xdr, count);
 	res->eof = eof;
 	res->count = count;
@@ -4795,14 +7586,22 @@ static int decode_read(struct xdr_stream *xdr, struct rpc_rqst *req, struct nfs_
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	res->eof = eof;
+	res->count = count;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_readdir(struct xdr_stream *xdr, struct rpc_rqst *req, struct nfs4_readdir_res *readdir)
 {
+<<<<<<< HEAD
 	struct xdr_buf	*rcvbuf = &req->rq_rcv_buf;
 	struct kvec	*iov = rcvbuf->head;
 	size_t		hdrlen;
 	u32		recvd, pglen = rcvbuf->page_len;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		status;
 	__be32		verf[2];
 
@@ -4814,6 +7613,7 @@ static int decode_readdir(struct xdr_stream *xdr, struct rpc_rqst *req, struct n
 	memcpy(verf, readdir->verifier.data, sizeof(verf));
 	dprintk("%s: verifier = %08x:%08x\n",
 			__func__, verf[0], verf[1]);
+<<<<<<< HEAD
 
 	hdrlen = (char *) xdr->p - (char *) iov->iov_base;
 	recvd = rcvbuf->len - hdrlen;
@@ -4823,13 +7623,19 @@ static int decode_readdir(struct xdr_stream *xdr, struct rpc_rqst *req, struct n
 
 
 	return pglen;
+=======
+	return xdr_read_pages(xdr, xdr->buf->page_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_readlink(struct xdr_stream *xdr, struct rpc_rqst *req)
 {
 	struct xdr_buf *rcvbuf = &req->rq_rcv_buf;
+<<<<<<< HEAD
 	struct kvec *iov = rcvbuf->head;
 	size_t hdrlen;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 len, recvd;
 	__be32 *p;
 	int status;
@@ -4841,32 +7647,50 @@ static int decode_readlink(struct xdr_stream *xdr, struct rpc_rqst *req)
 	/* Convert length of symlink */
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = be32_to_cpup(p);
 	if (len >= rcvbuf->page_len || len <= 0) {
 		dprintk("nfs: server returned giant symlink!\n");
 		return -ENAMETOOLONG;
 	}
+<<<<<<< HEAD
 	hdrlen = (char *) xdr->p - (char *) iov->iov_base;
 	recvd = req->rq_rcv_buf.len - hdrlen;
+=======
+	recvd = xdr_read_pages(xdr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (recvd < len) {
 		dprintk("NFS: server cheating in readlink reply: "
 				"count %u > recvd %u\n", len, recvd);
 		return -EIO;
 	}
+<<<<<<< HEAD
 	xdr_read_pages(xdr, len);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The XDR encode routine has set things up so that
 	 * the link text will be copied directly into the
 	 * buffer.  We just have to do overflow-checking,
+<<<<<<< HEAD
 	 * and and null-terminate the text (the VFS expects
+=======
+	 * and null-terminate the text (the VFS expects
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * null-termination).
 	 */
 	xdr_terminate_string(rcvbuf, len);
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_remove(struct xdr_stream *xdr, struct nfs4_change_info *cinfo)
@@ -4908,6 +7732,7 @@ decode_restorefh(struct xdr_stream *xdr)
 }
 
 static int decode_getacl(struct xdr_stream *xdr, struct rpc_rqst *req,
+<<<<<<< HEAD
 			 struct nfs_getaclres *res)
 {
 	__be32 *savep, *bm_p;
@@ -4916,23 +7741,36 @@ static int decode_getacl(struct xdr_stream *xdr, struct rpc_rqst *req,
 	struct kvec *iov = req->rq_rcv_buf.head;
 	int status;
 	size_t page_len = xdr->buf->page_len;
+=======
+			 struct nfs_getaclres *res, enum nfs4_acl_type type)
+{
+	unsigned int savep;
+	uint32_t attrlen,
+		 bitmap[3] = {0};
+	int status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res->acl_len = 0;
 	if ((status = decode_op_hdr(xdr, OP_GETATTR)) != 0)
 		goto out;
 
+<<<<<<< HEAD
 	bm_p = xdr->p;
 	res->acl_data_offset = be32_to_cpup(bm_p) + 2;
 	res->acl_data_offset <<= 2;
 	/* Check if the acl data starts beyond the allocated buffer */
 	if (res->acl_data_offset > page_len)
 		return -ERANGE;
+=======
+	xdr_enter_page(xdr, xdr->buf->page_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((status = decode_attr_bitmap(xdr, bitmap)) != 0)
 		goto out;
 	if ((status = decode_attr_length(xdr, &attrlen, &savep)) != 0)
 		goto out;
 
+<<<<<<< HEAD
 	if (unlikely(bitmap[0] & (FATTR4_WORD0_ACL - 1U)))
 		return -EIO;
 	if (likely(bitmap[0] & FATTR4_WORD0_ACL)) {
@@ -4962,6 +7800,41 @@ static int decode_getacl(struct xdr_stream *xdr, struct rpc_rqst *req,
 	} else
 		status = -EOPNOTSUPP;
 
+=======
+	switch (type) {
+	default:
+		if (unlikely(bitmap[0] & (FATTR4_WORD0_ACL - 1U)))
+			return -EIO;
+		if (!(bitmap[0] & FATTR4_WORD0_ACL))
+			return -EOPNOTSUPP;
+		break;
+	case NFS4ACL_DACL:
+		if (unlikely(bitmap[0] || bitmap[1] & (FATTR4_WORD1_DACL - 1U)))
+			return -EIO;
+		if (!(bitmap[1] & FATTR4_WORD1_DACL))
+			return -EOPNOTSUPP;
+		break;
+	case NFS4ACL_SACL:
+		if (unlikely(bitmap[0] || bitmap[1] & (FATTR4_WORD1_SACL - 1U)))
+			return -EIO;
+		if (!(bitmap[1] & FATTR4_WORD1_SACL))
+			return -EOPNOTSUPP;
+	}
+
+	/* The bitmap (xdr len + bitmaps) and the attr xdr len words
+	 * are stored with the acl data to handle the problem of
+	 * variable length bitmaps.*/
+	res->acl_data_offset = xdr_page_pos(xdr);
+	res->acl_len = attrlen;
+
+	/* Check for receive buffer overflow */
+	if (res->acl_len > xdr_stream_remaining(xdr) ||
+	    res->acl_len + res->acl_data_offset > xdr->buf->page_len) {
+		res->acl_flags |= NFS4_ACL_TRUNC;
+		dprintk("NFS: acl reply: attrlen %u > page_len %zu\n",
+			attrlen, xdr_stream_remaining(xdr));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -4974,13 +7847,17 @@ decode_savefh(struct xdr_stream *xdr)
 
 static int decode_setattr(struct xdr_stream *xdr)
 {
+<<<<<<< HEAD
 	__be32 *p;
 	uint32_t bmlen;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = decode_op_hdr(xdr, OP_SETATTR);
 	if (status)
 		return status;
+<<<<<<< HEAD
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out_overflow;
@@ -4990,6 +7867,10 @@ static int decode_setattr(struct xdr_stream *xdr)
 		return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+	if (decode_bitmap4(xdr, NULL, 0) >= 0)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -5001,7 +7882,11 @@ static int decode_setclientid(struct xdr_stream *xdr, struct nfs4_setclientid_re
 
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	opnum = be32_to_cpup(p++);
 	if (opnum != OP_SETCLIENTID) {
 		dprintk("nfs: decode_setclientid: Server returned operation"
@@ -5012,7 +7897,11 @@ static int decode_setclientid(struct xdr_stream *xdr, struct nfs4_setclientid_re
 	if (nfserr == NFS_OK) {
 		p = xdr_inline_decode(xdr, 8 + NFS4_VERIFIER_SIZE);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p = xdr_decode_hyper(p, &res->clientid);
 		memcpy(res->confirm.data, p, NFS4_VERIFIER_SIZE);
 	} else if (nfserr == NFSERR_CLID_INUSE) {
@@ -5021,28 +7910,47 @@ static int decode_setclientid(struct xdr_stream *xdr, struct nfs4_setclientid_re
 		/* skip netid string */
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 		len = be32_to_cpup(p);
 		p = xdr_inline_decode(xdr, len);
 		if (unlikely(!p))
 			goto out_overflow;
+=======
+			return -EIO;
+		len = be32_to_cpup(p);
+		p = xdr_inline_decode(xdr, len);
+		if (unlikely(!p))
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* skip uaddr string */
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 		len = be32_to_cpup(p);
 		p = xdr_inline_decode(xdr, len);
 		if (unlikely(!p))
 			goto out_overflow;
+=======
+			return -EIO;
+		len = be32_to_cpup(p);
+		p = xdr_inline_decode(xdr, len);
+		if (unlikely(!p))
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -NFSERR_CLID_INUSE;
 	} else
 		return nfs4_stat_to_errno(nfserr);
 
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_setclientid_confirm(struct xdr_stream *xdr)
@@ -5050,7 +7958,11 @@ static int decode_setclientid_confirm(struct xdr_stream *xdr)
 	return decode_op_hdr(xdr, OP_SETCLIENTID_CONFIRM);
 }
 
+<<<<<<< HEAD
 static int decode_write(struct xdr_stream *xdr, struct nfs_writeres *res)
+=======
+static int decode_write(struct xdr_stream *xdr, struct nfs_pgio_res *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 	int status;
@@ -5059,6 +7971,7 @@ static int decode_write(struct xdr_stream *xdr, struct nfs_writeres *res)
 	if (status)
 		return status;
 
+<<<<<<< HEAD
 	p = xdr_inline_decode(xdr, 16);
 	if (unlikely(!p))
 		goto out_overflow;
@@ -5069,6 +7982,14 @@ static int decode_write(struct xdr_stream *xdr, struct nfs_writeres *res)
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	p = xdr_inline_decode(xdr, 8);
+	if (unlikely(!p))
+		return -EIO;
+	res->count = be32_to_cpup(p++);
+	res->verf->committed = be32_to_cpup(p++);
+	return decode_write_verifier(xdr, &res->verf->verifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_delegreturn(struct xdr_stream *xdr)
@@ -5076,12 +7997,20 @@ static int decode_delegreturn(struct xdr_stream *xdr)
 	return decode_op_hdr(xdr, OP_DELEGRETURN);
 }
 
+<<<<<<< HEAD
 static int decode_secinfo_gss(struct xdr_stream *xdr, struct nfs4_secinfo_flavor *flavor)
 {
+=======
+static int decode_secinfo_gss(struct xdr_stream *xdr,
+			      struct nfs4_secinfo4 *flavor)
+{
+	u32 oid_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *p;
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	flavor->gss.sec_oid4.len = be32_to_cpup(p);
 	if (flavor->gss.sec_oid4.len > GSS_OID_MAX_LEN)
@@ -5105,10 +8034,31 @@ out_overflow:
 	return -EIO;
 out_err:
 	return -EINVAL;
+=======
+		return -EIO;
+	oid_len = be32_to_cpup(p);
+	if (oid_len > GSS_OID_MAX_LEN)
+		return -EINVAL;
+
+	p = xdr_inline_decode(xdr, oid_len);
+	if (unlikely(!p))
+		return -EIO;
+	memcpy(flavor->flavor_info.oid.data, p, oid_len);
+	flavor->flavor_info.oid.len = oid_len;
+
+	p = xdr_inline_decode(xdr, 8);
+	if (unlikely(!p))
+		return -EIO;
+	flavor->flavor_info.qop = be32_to_cpup(p++);
+	flavor->flavor_info.service = be32_to_cpup(p);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_secinfo_common(struct xdr_stream *xdr, struct nfs4_secinfo_res *res)
 {
+<<<<<<< HEAD
 	struct nfs4_secinfo_flavor *sec_flavor;
 	int status;
 	__be32 *p;
@@ -5117,6 +8067,16 @@ static int decode_secinfo_common(struct xdr_stream *xdr, struct nfs4_secinfo_res
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out_overflow;
+=======
+	struct nfs4_secinfo4 *sec_flavor;
+	unsigned int i, num_flavors;
+	int status;
+	__be32 *p;
+
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res->flavors->num_flavors = 0;
 	num_flavors = be32_to_cpup(p);
@@ -5128,7 +8088,11 @@ static int decode_secinfo_common(struct xdr_stream *xdr, struct nfs4_secinfo_res
 
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sec_flavor->flavor = be32_to_cpup(p);
 
 		if (sec_flavor->flavor == RPC_AUTH_GSS) {
@@ -5142,9 +8106,12 @@ static int decode_secinfo_common(struct xdr_stream *xdr, struct nfs4_secinfo_res
 	status = 0;
 out:
 	return status;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_secinfo(struct xdr_stream *xdr, struct nfs4_secinfo_res *res)
@@ -5164,6 +8131,17 @@ static int decode_secinfo_no_name(struct xdr_stream *xdr, struct nfs4_secinfo_re
 	return decode_secinfo_common(xdr, res);
 }
 
+<<<<<<< HEAD
+=======
+static int decode_op_map(struct xdr_stream *xdr, struct nfs4_op_map *op_map)
+{
+	if (xdr_stream_decode_uint32_array(xdr, op_map->u.words,
+					   ARRAY_SIZE(op_map->u.words)) < 0)
+		return -EIO;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int decode_exchange_id(struct xdr_stream *xdr,
 			      struct nfs41_exchange_id_res *res)
 {
@@ -5171,7 +8149,10 @@ static int decode_exchange_id(struct xdr_stream *xdr,
 	uint32_t dummy;
 	char *dummy_str;
 	int status;
+<<<<<<< HEAD
 	struct nfs_client *clp = res->client;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t impl_id_count;
 
 	status = decode_op_hdr(xdr, OP_EXCHANGE_ID);
@@ -5180,6 +8161,7 @@ static int decode_exchange_id(struct xdr_stream *xdr,
 
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	xdr_decode_hyper(p, &clp->cl_clientid);
 	p = xdr_inline_decode(xdr, 12);
@@ -5211,13 +8193,61 @@ static int decode_exchange_id(struct xdr_stream *xdr,
 	if (unlikely(dummy > NFS4_OPAQUE_LIMIT))
 		return -EIO;
 
+=======
+		return -EIO;
+	xdr_decode_hyper(p, &res->clientid);
+	p = xdr_inline_decode(xdr, 12);
+	if (unlikely(!p))
+		return -EIO;
+	res->seqid = be32_to_cpup(p++);
+	res->flags = be32_to_cpup(p++);
+
+	res->state_protect.how = be32_to_cpup(p);
+	switch (res->state_protect.how) {
+	case SP4_NONE:
+		break;
+	case SP4_MACH_CRED:
+		status = decode_op_map(xdr, &res->state_protect.enforce);
+		if (status)
+			return status;
+		status = decode_op_map(xdr, &res->state_protect.allow);
+		if (status)
+			return status;
+		break;
+	default:
+		WARN_ON_ONCE(1);
+		return -EIO;
+	}
+
+	/* server_owner4.so_minor_id */
+	p = xdr_inline_decode(xdr, 8);
+	if (unlikely(!p))
+		return -EIO;
+	p = xdr_decode_hyper(p, &res->server_owner->minor_id);
+
+	/* server_owner4.so_major_id */
+	status = decode_opaque_inline(xdr, &dummy, &dummy_str);
+	if (unlikely(status))
+		return status;
+	memcpy(res->server_owner->major_id, dummy_str, dummy);
+	res->server_owner->major_id_sz = dummy;
+
+	/* server_scope4 */
+	status = decode_opaque_inline(xdr, &dummy, &dummy_str);
+	if (unlikely(status))
+		return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(res->server_scope->server_scope, dummy_str, dummy);
 	res->server_scope->server_scope_sz = dummy;
 
 	/* Implementation Id */
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	impl_id_count = be32_to_cpup(p++);
 
 	if (impl_id_count) {
@@ -5225,31 +8255,44 @@ static int decode_exchange_id(struct xdr_stream *xdr,
 		status = decode_opaque_inline(xdr, &dummy, &dummy_str);
 		if (unlikely(status))
 			return status;
+<<<<<<< HEAD
 		if (unlikely(dummy > NFS4_OPAQUE_LIMIT))
 			return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(res->impl_id->domain, dummy_str, dummy);
 
 		/* nii_name */
 		status = decode_opaque_inline(xdr, &dummy, &dummy_str);
 		if (unlikely(status))
 			return status;
+<<<<<<< HEAD
 		if (unlikely(dummy > NFS4_OPAQUE_LIMIT))
 			return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(res->impl_id->name, dummy_str, dummy);
 
 		/* nii_date */
 		p = xdr_inline_decode(xdr, 12);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p = xdr_decode_hyper(p, &res->impl_id->date.seconds);
 		res->impl_id->date.nseconds = be32_to_cpup(p);
 
 		/* if there's more than one entry, ignore the rest */
 	}
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_chan_attrs(struct xdr_stream *xdr,
@@ -5260,7 +8303,11 @@ static int decode_chan_attrs(struct xdr_stream *xdr,
 
 	p = xdr_inline_decode(xdr, 28);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = be32_to_cpup(p++);	/* headerpadsz */
 	if (val)
 		return -EINVAL;		/* no support for header padding yet */
@@ -5278,12 +8325,18 @@ static int decode_chan_attrs(struct xdr_stream *xdr,
 	if (nr_attrs == 1) {
 		p = xdr_inline_decode(xdr, 4); /* skip rdma_attrs */
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 	}
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+			return -EIO;
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_sessionid(struct xdr_stream *xdr, struct nfs4_sessionid *sid)
@@ -5291,23 +8344,62 @@ static int decode_sessionid(struct xdr_stream *xdr, struct nfs4_sessionid *sid)
 	return decode_opaque_fixed(xdr, sid->data, NFS4_MAX_SESSIONID_LEN);
 }
 
+<<<<<<< HEAD
+=======
+static int decode_bind_conn_to_session(struct xdr_stream *xdr,
+				struct nfs41_bind_conn_to_session_res *res)
+{
+	__be32 *p;
+	int status;
+
+	status = decode_op_hdr(xdr, OP_BIND_CONN_TO_SESSION);
+	if (!status)
+		status = decode_sessionid(xdr, &res->sessionid);
+	if (unlikely(status))
+		return status;
+
+	/* dir flags, rdma mode bool */
+	p = xdr_inline_decode(xdr, 8);
+	if (unlikely(!p))
+		return -EIO;
+
+	res->dir = be32_to_cpup(p++);
+	if (res->dir == 0 || res->dir > NFS4_CDFS4_BOTH)
+		return -EIO;
+	if (be32_to_cpup(p) == 0)
+		res->use_conn_in_rdma_mode = false;
+	else
+		res->use_conn_in_rdma_mode = true;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int decode_create_session(struct xdr_stream *xdr,
 				 struct nfs41_create_session_res *res)
 {
 	__be32 *p;
 	int status;
+<<<<<<< HEAD
 	struct nfs_client *clp = res->client;
 	struct nfs4_session *session = clp->cl_session;
 
 	status = decode_op_hdr(xdr, OP_CREATE_SESSION);
 	if (!status)
 		status = decode_sessionid(xdr, &session->sess_id);
+=======
+
+	status = decode_op_hdr(xdr, OP_CREATE_SESSION);
+	if (!status)
+		status = decode_sessionid(xdr, &res->sessionid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(status))
 		return status;
 
 	/* seqid, flags */
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	clp->cl_seqid = be32_to_cpup(p++);
 	session->flags = be32_to_cpup(p);
@@ -5320,6 +8412,17 @@ static int decode_create_session(struct xdr_stream *xdr,
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+		return -EIO;
+	res->seqid = be32_to_cpup(p++);
+	res->flags = be32_to_cpup(p);
+
+	/* Channel attributes */
+	status = decode_chan_attrs(xdr, &res->fc_attrs);
+	if (!status)
+		status = decode_chan_attrs(xdr, &res->bc_attrs);
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_destroy_session(struct xdr_stream *xdr, void *dummy)
@@ -5327,6 +8430,14 @@ static int decode_destroy_session(struct xdr_stream *xdr, void *dummy)
 	return decode_op_hdr(xdr, OP_DESTROY_SESSION);
 }
 
+<<<<<<< HEAD
+=======
+static int decode_destroy_clientid(struct xdr_stream *xdr, void *dummy)
+{
+	return decode_op_hdr(xdr, OP_DESTROY_CLIENTID);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int decode_reclaim_complete(struct xdr_stream *xdr, void *dummy)
 {
 	return decode_op_hdr(xdr, OP_RECLAIM_COMPLETE);
@@ -5338,12 +8449,22 @@ static int decode_sequence(struct xdr_stream *xdr,
 			   struct rpc_rqst *rqstp)
 {
 #if defined(CONFIG_NFS_V4_1)
+<<<<<<< HEAD
+=======
+	struct nfs4_session *session;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfs4_sessionid id;
 	u32 dummy;
 	int status;
 	__be32 *p;
 
+<<<<<<< HEAD
 	if (!res->sr_session)
+=======
+	if (res->sr_slot == NULL)
+		return 0;
+	if (!res->sr_slot->table->session)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	status = decode_op_hdr(xdr, OP_SEQUENCE);
@@ -5357,8 +8478,14 @@ static int decode_sequence(struct xdr_stream *xdr,
 	 * sequence number, the server is looney tunes.
 	 */
 	status = -EREMOTEIO;
+<<<<<<< HEAD
 
 	if (memcmp(id.data, res->sr_session->sess_id.data,
+=======
+	session = res->sr_slot->table->session;
+
+	if (memcmp(id.data, session->sess_id.data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   NFS4_MAX_SESSIONID_LEN)) {
 		dprintk("%s Invalid session id\n", __func__);
 		goto out_err;
@@ -5376,6 +8503,7 @@ static int decode_sequence(struct xdr_stream *xdr,
 	}
 	/* slot id */
 	dummy = be32_to_cpup(p++);
+<<<<<<< HEAD
 	if (dummy != res->sr_slot - res->sr_session->fc_slot_table.slots) {
 		dprintk("%s Invalid slot id\n", __func__);
 		goto out_err;
@@ -5384,6 +8512,16 @@ static int decode_sequence(struct xdr_stream *xdr,
 	dummy = be32_to_cpup(p++);
 	/* target highest slot id - currently not processed */
 	dummy = be32_to_cpup(p++);
+=======
+	if (dummy != res->sr_slot->slot_nr) {
+		dprintk("%s Invalid slot id\n", __func__);
+		goto out_err;
+	}
+	/* highest slot id */
+	res->sr_highest_slotid = be32_to_cpup(p++);
+	/* target highest slot id */
+	res->sr_target_highest_slotid = be32_to_cpup(p++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* result flags */
 	res->sr_status_flags = be32_to_cpup(p);
 	status = 0;
@@ -5391,7 +8529,10 @@ out_err:
 	res->sr_status = status;
 	return status;
 out_overflow:
+<<<<<<< HEAD
 	print_overflow_msg(__func__, xdr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = -EIO;
 	goto out_err;
 #else  /* CONFIG_NFS_V4_1 */
@@ -5400,6 +8541,7 @@ out_overflow:
 }
 
 #if defined(CONFIG_NFS_V4_1)
+<<<<<<< HEAD
 /*
  * TODO: Need to handle case when EOF != true;
  */
@@ -5451,6 +8593,18 @@ out_overflow:
 static int decode_getdeviceinfo(struct xdr_stream *xdr,
 				struct pnfs_device *pdev)
 {
+=======
+static int decode_layout_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
+{
+	stateid->type = NFS4_LAYOUT_STATEID_TYPE;
+	return decode_stateid(xdr, stateid);
+}
+
+static int decode_getdeviceinfo(struct xdr_stream *xdr,
+				struct nfs4_getdeviceinfo_res *res)
+{
+	struct pnfs_device *pdev = res->pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *p;
 	uint32_t len, type;
 	int status;
@@ -5460,7 +8614,11 @@ static int decode_getdeviceinfo(struct xdr_stream *xdr,
 		if (status == -ETOOSMALL) {
 			p = xdr_inline_decode(xdr, 4);
 			if (unlikely(!p))
+<<<<<<< HEAD
 				goto out_overflow;
+=======
+				return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pdev->mincount = be32_to_cpup(p);
 			dprintk("%s: Min count too small. mincnt = %u\n",
 				__func__, pdev->mincount);
@@ -5470,7 +8628,11 @@ static int decode_getdeviceinfo(struct xdr_stream *xdr,
 
 	p = xdr_inline_decode(xdr, 8);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	type = be32_to_cpup(p++);
 	if (type != pdev->layout_type) {
 		dprintk("%s: layout mismatch req: %u pdev: %u\n",
@@ -5483,31 +8645,52 @@ static int decode_getdeviceinfo(struct xdr_stream *xdr,
 	 * and places the remaining xdr data in xdr_buf->tail
 	 */
 	pdev->mincount = be32_to_cpup(p);
+<<<<<<< HEAD
 	xdr_read_pages(xdr, pdev->mincount); /* include space for the length */
+=======
+	if (xdr_read_pages(xdr, pdev->mincount) != pdev->mincount)
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Parse notification bitmap, verifying that it is zero. */
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = be32_to_cpup(p);
 	if (len) {
 		uint32_t i;
 
 		p = xdr_inline_decode(xdr, 4 * len);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 		for (i = 0; i < len; i++, p++) {
 			if (be32_to_cpup(p)) {
 				dprintk("%s: notifications not supported\n",
+=======
+			return -EIO;
+
+		res->notification = be32_to_cpup(p++);
+		for (i = 1; i < len; i++) {
+			if (be32_to_cpup(p++)) {
+				dprintk("%s: unsupported notification\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__func__);
 				return -EIO;
 			}
 		}
 	}
 	return 0;
+<<<<<<< HEAD
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
@@ -5516,6 +8699,7 @@ static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
 	__be32 *p;
 	int status;
 	u32 layout_count;
+<<<<<<< HEAD
 	struct xdr_buf *rcvbuf = &req->rq_rcv_buf;
 	struct kvec *iov = rcvbuf->head;
 	u32 hdrlen, recvd;
@@ -5523,11 +8707,22 @@ static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
 	status = decode_op_hdr(xdr, OP_LAYOUTGET);
 	if (status)
 		return status;
+=======
+	u32 recvd;
+
+	status = decode_op_hdr(xdr, OP_LAYOUTGET);
+	if (status)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out_overflow;
 	res->return_on_close = be32_to_cpup(p);
+<<<<<<< HEAD
 	decode_stateid(xdr, &res->stateid);
+=======
+	decode_layout_stateid(xdr, &res->stateid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out_overflow;
@@ -5535,7 +8730,12 @@ static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
 	if (!layout_count) {
 		dprintk("%s: server responded with empty layout array\n",
 			__func__);
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		status = -EINVAL;
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	p = xdr_inline_decode(xdr, 28);
@@ -5555,17 +8755,28 @@ static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
 		res->type,
 		res->layoutp->len);
 
+<<<<<<< HEAD
 	hdrlen = (u8 *) xdr->p - (u8 *) iov->iov_base;
 	recvd = req->rq_rcv_buf.len - hdrlen;
+=======
+	recvd = xdr_read_pages(xdr, res->layoutp->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res->layoutp->len > recvd) {
 		dprintk("NFS: server cheating in layoutget reply: "
 				"layout len %u > recvd %u\n",
 				res->layoutp->len, recvd);
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
 	xdr_read_pages(xdr, res->layoutp->len);
 
+=======
+		status = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (layout_count > 1) {
 		/* We only handle a length one array at the moment.  Any
 		 * further entries are just ignored.  Note that this means
@@ -5576,10 +8787,19 @@ static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
 			__func__, layout_count);
 	}
 
+<<<<<<< HEAD
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+out:
+	res->status = status;
+	return status;
+out_overflow:
+	status = -EIO;
+	goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_layoutreturn(struct xdr_stream *xdr,
@@ -5593,6 +8813,7 @@ static int decode_layoutreturn(struct xdr_stream *xdr,
 		return status;
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	res->lrs_present = be32_to_cpup(p);
 	if (res->lrs_present)
@@ -5601,6 +8822,15 @@ static int decode_layoutreturn(struct xdr_stream *xdr,
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+		return -EIO;
+	res->lrs_present = be32_to_cpup(p);
+	if (res->lrs_present)
+		status = decode_layout_stateid(xdr, &res->stateid);
+	else
+		nfs4_stateid_copy(&res->stateid, &invalid_stateid);
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_layoutcommit(struct xdr_stream *xdr,
@@ -5618,19 +8848,29 @@ static int decode_layoutcommit(struct xdr_stream *xdr,
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sizechanged = be32_to_cpup(p);
 
 	if (sizechanged) {
 		/* throw away new size */
 		p = xdr_inline_decode(xdr, 8);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_overflow;
 	}
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+			return -EIO;
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_test_stateid(struct xdr_stream *xdr,
@@ -5646,6 +8886,7 @@ static int decode_test_stateid(struct xdr_stream *xdr,
 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	num_res = be32_to_cpup(p++);
 	if (num_res != 1)
@@ -5661,11 +8902,25 @@ out_overflow:
 	print_overflow_msg(__func__, xdr);
 out:
 	return -EIO;
+=======
+		return -EIO;
+	num_res = be32_to_cpup(p++);
+	if (num_res != 1)
+		return -EIO;
+
+	p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EIO;
+	res->status = be32_to_cpup(p++);
+
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_free_stateid(struct xdr_stream *xdr,
 			       struct nfs41_free_stateid_res *res)
 {
+<<<<<<< HEAD
 	__be32 *p;
 	int status;
 
@@ -5682,6 +8937,25 @@ out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
 }
+=======
+	res->status = decode_op_hdr(xdr, OP_FREE_STATEID);
+	return res->status;
+}
+#else
+static inline
+int decode_layoutreturn(struct xdr_stream *xdr,
+			       struct nfs4_layoutreturn_res *res)
+{
+	return 0;
+}
+
+static int decode_layoutget(struct xdr_stream *xdr, struct rpc_rqst *req,
+			    struct nfs4_layoutget_res *res)
+{
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_NFS_V4_1 */
 
 /*
@@ -5693,8 +8967,14 @@ out_overflow:
  */
 static int nfs4_xdr_dec_open_downgrade(struct rpc_rqst *rqstp,
 				       struct xdr_stream *xdr,
+<<<<<<< HEAD
 				       struct nfs_closeres *res)
 {
+=======
+				       void *data)
+{
+	struct nfs_closeres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5707,10 +8987,20 @@ static int nfs4_xdr_dec_open_downgrade(struct rpc_rqst *rqstp,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_open_downgrade(xdr, res);
 	if (status != 0)
 		goto out;
 	decode_getfattr(xdr, res->fattr, res->server);
+=======
+	if (res->lr_res) {
+		status = decode_layoutreturn(xdr, res->lr_res);
+		res->lr_ret = status;
+		if (status)
+			goto out;
+	}
+	status = decode_open_downgrade(xdr, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -5719,8 +9009,14 @@ out:
  * Decode ACCESS response
  */
 static int nfs4_xdr_dec_access(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs4_accessres *res)
 {
+=======
+			       void *data)
+{
+	struct nfs4_accessres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5733,10 +9029,18 @@ static int nfs4_xdr_dec_access(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	status = decode_putfh(xdr);
 	if (status != 0)
 		goto out;
+<<<<<<< HEAD
 	status = decode_access(xdr, res);
 	if (status != 0)
 		goto out;
 	decode_getfattr(xdr, res->fattr, res->server);
+=======
+	status = decode_access(xdr, &res->supported, &res->access);
+	if (status != 0)
+		goto out;
+	if (res->fattr)
+		decode_getfattr(xdr, res->fattr, res->server);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -5745,8 +9049,14 @@ out:
  * Decode LOOKUP response
  */
 static int nfs4_xdr_dec_lookup(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs4_lookup_res *res)
 {
+=======
+			       void *data)
+{
+	struct nfs4_lookup_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5771,12 +9081,51 @@ out:
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Decode LOOKUPP response
+ */
+static int nfs4_xdr_dec_lookupp(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+		void *data)
+{
+	struct nfs4_lookupp_res *res = data;
+	struct compound_hdr hdr;
+	int status;
+
+	status = decode_compound_hdr(xdr, &hdr);
+	if (status)
+		goto out;
+	status = decode_sequence(xdr, &res->seq_res, rqstp);
+	if (status)
+		goto out;
+	status = decode_putfh(xdr);
+	if (status)
+		goto out;
+	status = decode_lookupp(xdr);
+	if (status)
+		goto out;
+	status = decode_getfh(xdr, res->fh);
+	if (status)
+		goto out;
+	status = decode_getfattr(xdr, res->fattr, res->server);
+out:
+	return status;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Decode LOOKUP_ROOT response
  */
 static int nfs4_xdr_dec_lookup_root(struct rpc_rqst *rqstp,
 				    struct xdr_stream *xdr,
+<<<<<<< HEAD
 				    struct nfs4_lookup_res *res)
 {
+=======
+				    void *data)
+{
+	struct nfs4_lookup_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5800,8 +9149,14 @@ out:
  * Decode REMOVE response
  */
 static int nfs4_xdr_dec_remove(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_removeres *res)
 {
+=======
+			       void *data)
+{
+	struct nfs_removeres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5815,9 +9170,12 @@ static int nfs4_xdr_dec_remove(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	if (status)
 		goto out;
 	status = decode_remove(xdr, &res->cinfo);
+<<<<<<< HEAD
 	if (status)
 		goto out;
 	decode_getfattr(xdr, res->dir_attr, res->server);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -5826,8 +9184,14 @@ out:
  * Decode RENAME response
  */
 static int nfs4_xdr_dec_rename(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_renameres *res)
 {
+=======
+			       void *data)
+{
+	struct nfs_renameres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5847,6 +9211,7 @@ static int nfs4_xdr_dec_rename(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	if (status)
 		goto out;
 	status = decode_rename(xdr, &res->old_cinfo, &res->new_cinfo);
+<<<<<<< HEAD
 	if (status)
 		goto out;
 	/* Current FH is target directory */
@@ -5856,6 +9221,8 @@ static int nfs4_xdr_dec_rename(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	if (status)
 		goto out;
 	decode_getfattr(xdr, res->old_fattr, res->server);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -5864,8 +9231,14 @@ out:
  * Decode LINK response
  */
 static int nfs4_xdr_dec_link(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			     struct nfs4_link_res *res)
 {
+=======
+			     void *data)
+{
+	struct nfs4_link_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5891,8 +9264,11 @@ static int nfs4_xdr_dec_link(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	 * Note order: OP_LINK leaves the directory as the current
 	 *             filehandle.
 	 */
+<<<<<<< HEAD
 	if (decode_getfattr(xdr, res->dir_attr, res->server))
 		goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = decode_restorefh(xdr);
 	if (status)
 		goto out;
@@ -5905,8 +9281,14 @@ out:
  * Decode CREATE response
  */
 static int nfs4_xdr_dec_create(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs4_create_res *res)
 {
+=======
+			       void *data)
+{
+	struct nfs4_create_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5919,21 +9301,28 @@ static int nfs4_xdr_dec_create(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_savefh(xdr);
 	if (status)
 		goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = decode_create(xdr, &res->dir_cinfo);
 	if (status)
 		goto out;
 	status = decode_getfh(xdr, res->fh);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	if (decode_getfattr(xdr, res->fattr, res->server))
 		goto out;
 	status = decode_restorefh(xdr);
 	if (status)
 		goto out;
 	decode_getfattr(xdr, res->dir_fattr, res->server);
+=======
+	decode_getfattr(xdr, res->fattr, res->server);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -5942,7 +9331,11 @@ out:
  * Decode SYMLINK response
  */
 static int nfs4_xdr_dec_symlink(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_create_res *res)
+=======
+				void *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return nfs4_xdr_dec_create(rqstp, xdr, res);
 }
@@ -5951,8 +9344,14 @@ static int nfs4_xdr_dec_symlink(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
  * Decode GETATTR response
  */
 static int nfs4_xdr_dec_getattr(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_getattr_res *res)
 {
+=======
+				void *data)
+{
+	struct nfs4_getattr_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -5974,8 +9373,14 @@ out:
  * Encode an SETACL request
  */
 static void nfs4_xdr_enc_setacl(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs_setaclargs *args)
 {
+=======
+				const void *data)
+{
+	const struct nfs_setaclargs *args = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr = {
 		.minorversion = nfs4_xdr_minorversion(&args->seq_args),
 	};
@@ -5992,8 +9397,14 @@ static void nfs4_xdr_enc_setacl(struct rpc_rqst *req, struct xdr_stream *xdr,
  */
 static int
 nfs4_xdr_dec_setacl(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 		    struct nfs_setaclres *res)
 {
+=======
+		    void *data)
+{
+	struct nfs_setaclres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6016,6 +9427,7 @@ out:
  */
 static int
 nfs4_xdr_dec_getacl(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 		    struct nfs_getaclres *res)
 {
 	struct compound_hdr hdr;
@@ -6025,6 +9437,16 @@ nfs4_xdr_dec_getacl(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 		void *p = page_address(res->acl_scratch);
 		xdr_set_scratch_buffer(xdr, p, PAGE_SIZE);
 	}
+=======
+		    void *data)
+{
+	struct nfs_getaclres *res = data;
+	struct compound_hdr hdr;
+	int status;
+
+	if (res->acl_scratch != NULL)
+		xdr_set_scratch_page(xdr, res->acl_scratch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = decode_compound_hdr(xdr, &hdr);
 	if (status)
 		goto out;
@@ -6034,7 +9456,11 @@ nfs4_xdr_dec_getacl(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_getacl(xdr, rqstp, res);
+=======
+	status = decode_getacl(xdr, rqstp, res, res->acl_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return status;
@@ -6044,8 +9470,14 @@ out:
  * Decode CLOSE response
  */
 static int nfs4_xdr_dec_close(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_closeres *res)
 {
+=======
+			      void *data)
+{
+	struct nfs_closeres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6058,6 +9490,7 @@ static int nfs4_xdr_dec_close(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_close(xdr, res);
 	if (status != 0)
 		goto out;
@@ -6068,6 +9501,20 @@ static int nfs4_xdr_dec_close(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	 * 	though, since fattr->valid will remain unset.
 	 */
 	decode_getfattr(xdr, res->fattr, res->server);
+=======
+	if (res->lr_res) {
+		status = decode_layoutreturn(xdr, res->lr_res);
+		res->lr_ret = status;
+		if (status)
+			goto out;
+	}
+	if (res->fattr != NULL) {
+		status = decode_getfattr(xdr, res->fattr, res->server);
+		if (status != 0)
+			goto out;
+	}
+	status = decode_close(xdr, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6076,8 +9523,14 @@ out:
  * Decode OPEN response
  */
 static int nfs4_xdr_dec_open(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			     struct nfs_openres *res)
 {
+=======
+			     void *data)
+{
+	struct nfs_openres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6090,20 +9543,31 @@ static int nfs4_xdr_dec_open(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_savefh(xdr);
 	if (status)
 		goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = decode_open(xdr, res);
 	if (status)
 		goto out;
 	status = decode_getfh(xdr, &res->fh);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	if (decode_getfattr(xdr, res->f_attr, res->server) != 0)
 		goto out;
 	if (decode_restorefh(xdr) != 0)
 		goto out;
 	decode_getfattr(xdr, res->dir_attr, res->server);
+=======
+	if (res->access_request)
+		decode_access(xdr, &res->access_supported, &res->access_result);
+	decode_getfattr(xdr, res->f_attr, res->server);
+	if (res->lg_res)
+		decode_layoutget(xdr, rqstp, res->lg_res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6113,8 +9577,14 @@ out:
  */
 static int nfs4_xdr_dec_open_confirm(struct rpc_rqst *rqstp,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs_open_confirmres *res)
 {
+=======
+				     void *data)
+{
+	struct nfs_open_confirmres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6134,8 +9604,14 @@ out:
  */
 static int nfs4_xdr_dec_open_noattr(struct rpc_rqst *rqstp,
 				    struct xdr_stream *xdr,
+<<<<<<< HEAD
 				    struct nfs_openres *res)
 {
+=======
+				    void *data)
+{
+	struct nfs_openres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6151,7 +9627,15 @@ static int nfs4_xdr_dec_open_noattr(struct rpc_rqst *rqstp,
 	status = decode_open(xdr, res);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	decode_getfattr(xdr, res->f_attr, res->server);
+=======
+	if (res->access_request)
+		decode_access(xdr, &res->access_supported, &res->access_result);
+	decode_getfattr(xdr, res->f_attr, res->server);
+	if (res->lg_res)
+		decode_layoutget(xdr, rqstp, res->lg_res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6161,8 +9645,14 @@ out:
  */
 static int nfs4_xdr_dec_setattr(struct rpc_rqst *rqstp,
 				struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs_setattrres *res)
 {
+=======
+				void *data)
+{
+	struct nfs_setattrres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6187,8 +9677,14 @@ out:
  * Decode LOCK response
  */
 static int nfs4_xdr_dec_lock(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			     struct nfs_lock_res *res)
 {
+=======
+			     void *data)
+{
+	struct nfs_lock_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6210,8 +9706,14 @@ out:
  * Decode LOCKT response
  */
 static int nfs4_xdr_dec_lockt(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_lockt_res *res)
 {
+=======
+			      void *data)
+{
+	struct nfs_lockt_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6233,8 +9735,14 @@ out:
  * Decode LOCKU response
  */
 static int nfs4_xdr_dec_locku(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_locku_res *res)
 {
+=======
+			      void *data)
+{
+	struct nfs_locku_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6269,8 +9777,14 @@ static int nfs4_xdr_dec_release_lockowner(struct rpc_rqst *rqstp,
  */
 static int nfs4_xdr_dec_readlink(struct rpc_rqst *rqstp,
 				 struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 struct nfs4_readlink_res *res)
 {
+=======
+				 void *data)
+{
+	struct nfs4_readlink_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6292,8 +9806,14 @@ out:
  * Decode READDIR response
  */
 static int nfs4_xdr_dec_readdir(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_readdir_res *res)
 {
+=======
+				void *data)
+{
+	struct nfs4_readdir_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6315,12 +9835,22 @@ out:
  * Decode Read response
  */
 static int nfs4_xdr_dec_read(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			     struct nfs_readres *res)
 {
+=======
+			     void *data)
+{
+	struct nfs_pgio_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
 	status = decode_compound_hdr(xdr, &hdr);
+<<<<<<< HEAD
+=======
+	res->op_status = hdr.status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		goto out;
 	status = decode_sequence(xdr, &res->seq_res, rqstp);
@@ -6340,12 +9870,22 @@ out:
  * Decode WRITE response
  */
 static int nfs4_xdr_dec_write(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			      struct nfs_writeres *res)
 {
+=======
+			      void *data)
+{
+	struct nfs_pgio_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
 	status = decode_compound_hdr(xdr, &hdr);
+<<<<<<< HEAD
+=======
+	res->op_status = hdr.status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		goto out;
 	status = decode_sequence(xdr, &res->seq_res, rqstp);
@@ -6369,12 +9909,22 @@ out:
  * Decode COMMIT response
  */
 static int nfs4_xdr_dec_commit(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs_writeres *res)
 {
+=======
+			       void *data)
+{
+	struct nfs_commitres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
 	status = decode_compound_hdr(xdr, &hdr);
+<<<<<<< HEAD
+=======
+	res->op_status = hdr.status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		goto out;
 	status = decode_sequence(xdr, &res->seq_res, rqstp);
@@ -6384,10 +9934,13 @@ static int nfs4_xdr_dec_commit(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
 	if (status)
 		goto out;
 	status = decode_commit(xdr, res);
+<<<<<<< HEAD
 	if (status)
 		goto out;
 	if (res->fattr)
 		decode_getfattr(xdr, res->fattr, res->server);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6396,8 +9949,14 @@ out:
  * Decode FSINFO response
  */
 static int nfs4_xdr_dec_fsinfo(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs4_fsinfo_res *res)
 {
+=======
+			       void *data)
+{
+	struct nfs4_fsinfo_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6415,8 +9974,14 @@ static int nfs4_xdr_dec_fsinfo(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Decode PATHCONF response
  */
 static int nfs4_xdr_dec_pathconf(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 struct nfs4_pathconf_res *res)
 {
+=======
+				 void *data)
+{
+	struct nfs4_pathconf_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6434,8 +9999,14 @@ static int nfs4_xdr_dec_pathconf(struct rpc_rqst *req, struct xdr_stream *xdr,
  * Decode STATFS response
  */
 static int nfs4_xdr_dec_statfs(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 			       struct nfs4_statfs_res *res)
 {
+=======
+			       void *data)
+{
+	struct nfs4_statfs_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6454,8 +10025,14 @@ static int nfs4_xdr_dec_statfs(struct rpc_rqst *req, struct xdr_stream *xdr,
  */
 static int nfs4_xdr_dec_server_caps(struct rpc_rqst *req,
 				    struct xdr_stream *xdr,
+<<<<<<< HEAD
 				    struct nfs4_server_caps_res *res)
 {
+=======
+				    void *data)
+{
+	struct nfs4_server_caps_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6493,8 +10070,14 @@ static int nfs4_xdr_dec_renew(struct rpc_rqst *rqstp, struct xdr_stream *xdr,
  */
 static int nfs4_xdr_dec_setclientid(struct rpc_rqst *req,
 				    struct xdr_stream *xdr,
+<<<<<<< HEAD
 				    struct nfs4_setclientid_res *res)
 {
+=======
+				    void *data)
+{
+	struct nfs4_setclientid_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6509,7 +10092,11 @@ static int nfs4_xdr_dec_setclientid(struct rpc_rqst *req,
  */
 static int nfs4_xdr_dec_setclientid_confirm(struct rpc_rqst *req,
 					    struct xdr_stream *xdr,
+<<<<<<< HEAD
 					    struct nfs_fsinfo *fsinfo)
+=======
+					    void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct compound_hdr hdr;
 	int status;
@@ -6517,10 +10104,13 @@ static int nfs4_xdr_dec_setclientid_confirm(struct rpc_rqst *req,
 	status = decode_compound_hdr(xdr, &hdr);
 	if (!status)
 		status = decode_setclientid_confirm(xdr);
+<<<<<<< HEAD
 	if (!status)
 		status = decode_putrootfh(xdr);
 	if (!status)
 		status = decode_fsinfo(xdr, fsinfo);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -6529,8 +10119,14 @@ static int nfs4_xdr_dec_setclientid_confirm(struct rpc_rqst *req,
  */
 static int nfs4_xdr_dec_delegreturn(struct rpc_rqst *rqstp,
 				    struct xdr_stream *xdr,
+<<<<<<< HEAD
 				    struct nfs4_delegreturnres *res)
 {
+=======
+				    void *data)
+{
+	struct nfs4_delegreturnres *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6543,10 +10139,25 @@ static int nfs4_xdr_dec_delegreturn(struct rpc_rqst *rqstp,
 	status = decode_putfh(xdr);
 	if (status != 0)
 		goto out;
+<<<<<<< HEAD
 	status = decode_delegreturn(xdr);
 	if (status != 0)
 		goto out;
 	decode_getfattr(xdr, res->fattr, res->server);
+=======
+	if (res->lr_res) {
+		status = decode_layoutreturn(xdr, res->lr_res);
+		res->lr_ret = status;
+		if (status)
+			goto out;
+	}
+	if (res->fattr) {
+		status = decode_getfattr(xdr, res->fattr, res->server);
+		if (status != 0)
+			goto out;
+	}
+	status = decode_delegreturn(xdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6556,8 +10167,14 @@ out:
  */
 static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs4_fs_locations_res *res)
 {
+=======
+				     void *data)
+{
+	struct nfs4_fs_locations_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6570,6 +10187,7 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
 	status = decode_putfh(xdr);
 	if (status)
 		goto out;
+<<<<<<< HEAD
 	status = decode_lookup(xdr);
 	if (status)
 		goto out;
@@ -6577,6 +10195,28 @@ static int nfs4_xdr_dec_fs_locations(struct rpc_rqst *req,
 	status = decode_getfattr_generic(xdr, &res->fs_locations->fattr,
 					 NULL, res->fs_locations,
 					 res->fs_locations->server);
+=======
+	if (res->migration) {
+		xdr_enter_page(xdr, PAGE_SIZE);
+		status = decode_getfattr_generic(xdr,
+					res->fs_locations->fattr,
+					 NULL, res->fs_locations,
+					 res->fs_locations->server);
+		if (status)
+			goto out;
+		if (res->renew)
+			status = decode_renew(xdr);
+	} else {
+		status = decode_lookup(xdr);
+		if (status)
+			goto out;
+		xdr_enter_page(xdr, PAGE_SIZE);
+		status = decode_getfattr_generic(xdr,
+					res->fs_locations->fattr,
+					 NULL, res->fs_locations,
+					 res->fs_locations->server);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6586,8 +10226,14 @@ out:
  */
 static int nfs4_xdr_dec_secinfo(struct rpc_rqst *rqstp,
 				struct xdr_stream *xdr,
+<<<<<<< HEAD
 				struct nfs4_secinfo_res *res)
 {
+=======
+				void *data)
+{
+	struct nfs4_secinfo_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6605,8 +10251,58 @@ out:
 	return status;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_NFS_V4_1)
 /*
+=======
+/*
+ * Decode FSID_PRESENT response
+ */
+static int nfs4_xdr_dec_fsid_present(struct rpc_rqst *rqstp,
+				     struct xdr_stream *xdr,
+				     void *data)
+{
+	struct nfs4_fsid_present_res *res = data;
+	struct compound_hdr hdr;
+	int status;
+
+	status = decode_compound_hdr(xdr, &hdr);
+	if (status)
+		goto out;
+	status = decode_sequence(xdr, &res->seq_res, rqstp);
+	if (status)
+		goto out;
+	status = decode_putfh(xdr);
+	if (status)
+		goto out;
+	status = decode_getfh(xdr, res->fh);
+	if (status)
+		goto out;
+	if (res->renew)
+		status = decode_renew(xdr);
+out:
+	return status;
+}
+
+#if defined(CONFIG_NFS_V4_1)
+/*
+ * Decode BIND_CONN_TO_SESSION response
+ */
+static int nfs4_xdr_dec_bind_conn_to_session(struct rpc_rqst *rqstp,
+					struct xdr_stream *xdr,
+					void *res)
+{
+	struct compound_hdr hdr;
+	int status;
+
+	status = decode_compound_hdr(xdr, &hdr);
+	if (!status)
+		status = decode_bind_conn_to_session(xdr, res);
+	return status;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Decode EXCHANGE_ID response
  */
 static int nfs4_xdr_dec_exchange_id(struct rpc_rqst *rqstp,
@@ -6627,7 +10323,11 @@ static int nfs4_xdr_dec_exchange_id(struct rpc_rqst *rqstp,
  */
 static int nfs4_xdr_dec_create_session(struct rpc_rqst *rqstp,
 				       struct xdr_stream *xdr,
+<<<<<<< HEAD
 				       struct nfs41_create_session_res *res)
+=======
+				       void *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct compound_hdr hdr;
 	int status;
@@ -6655,11 +10355,34 @@ static int nfs4_xdr_dec_destroy_session(struct rpc_rqst *rqstp,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Decode DESTROY_CLIENTID response
+ */
+static int nfs4_xdr_dec_destroy_clientid(struct rpc_rqst *rqstp,
+					struct xdr_stream *xdr,
+					void *res)
+{
+	struct compound_hdr hdr;
+	int status;
+
+	status = decode_compound_hdr(xdr, &hdr);
+	if (!status)
+		status = decode_destroy_clientid(xdr, res);
+	return status;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Decode SEQUENCE response
  */
 static int nfs4_xdr_dec_sequence(struct rpc_rqst *rqstp,
 				 struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 struct nfs4_sequence_res *res)
+=======
+				 void *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct compound_hdr hdr;
 	int status;
@@ -6670,13 +10393,24 @@ static int nfs4_xdr_dec_sequence(struct rpc_rqst *rqstp,
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Decode GET_LEASE_TIME response
  */
 static int nfs4_xdr_dec_get_lease_time(struct rpc_rqst *rqstp,
 				       struct xdr_stream *xdr,
+<<<<<<< HEAD
 				       struct nfs4_get_lease_time_res *res)
 {
+=======
+				       void *data)
+{
+	struct nfs4_get_lease_time_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6690,13 +10424,24 @@ static int nfs4_xdr_dec_get_lease_time(struct rpc_rqst *rqstp,
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NFS_V4_1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Decode RECLAIM_COMPLETE response
  */
 static int nfs4_xdr_dec_reclaim_complete(struct rpc_rqst *rqstp,
 					 struct xdr_stream *xdr,
+<<<<<<< HEAD
 					 struct nfs41_reclaim_complete_res *res)
 {
+=======
+					 void *data)
+{
+	struct nfs41_reclaim_complete_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6704,6 +10449,7 @@ static int nfs4_xdr_dec_reclaim_complete(struct rpc_rqst *rqstp,
 	if (!status)
 		status = decode_sequence(xdr, &res->seq_res, rqstp);
 	if (!status)
+<<<<<<< HEAD
 		status = decode_reclaim_complete(xdr, (void *)NULL);
 	return status;
 }
@@ -6731,6 +10477,9 @@ static int nfs4_xdr_dec_getdevicelist(struct rpc_rqst *rqstp,
 		goto out;
 	status = decode_getdevicelist(xdr, res->devlist);
 out:
+=======
+		status = decode_reclaim_complete(xdr, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -6739,8 +10488,14 @@ out:
  */
 static int nfs4_xdr_dec_getdeviceinfo(struct rpc_rqst *rqstp,
 				      struct xdr_stream *xdr,
+<<<<<<< HEAD
 				      struct nfs4_getdeviceinfo_res *res)
 {
+=======
+				      void *data)
+{
+	struct nfs4_getdeviceinfo_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6750,7 +10505,11 @@ static int nfs4_xdr_dec_getdeviceinfo(struct rpc_rqst *rqstp,
 	status = decode_sequence(xdr, &res->seq_res, rqstp);
 	if (status != 0)
 		goto out;
+<<<<<<< HEAD
 	status = decode_getdeviceinfo(xdr, res->pdev);
+=======
+	status = decode_getdeviceinfo(xdr, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return status;
 }
@@ -6760,8 +10519,14 @@ out:
  */
 static int nfs4_xdr_dec_layoutget(struct rpc_rqst *rqstp,
 				  struct xdr_stream *xdr,
+<<<<<<< HEAD
 				  struct nfs4_layoutget_res *res)
 {
+=======
+				  void *data)
+{
+	struct nfs4_layoutget_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6784,8 +10549,14 @@ out:
  */
 static int nfs4_xdr_dec_layoutreturn(struct rpc_rqst *rqstp,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs4_layoutreturn_res *res)
 {
+=======
+				     void *data)
+{
+	struct nfs4_layoutreturn_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6808,8 +10579,14 @@ out:
  */
 static int nfs4_xdr_dec_layoutcommit(struct rpc_rqst *rqstp,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs4_layoutcommit_res *res)
 {
+=======
+				     void *data)
+{
+	struct nfs4_layoutcommit_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6835,8 +10612,14 @@ out:
  */
 static int nfs4_xdr_dec_secinfo_no_name(struct rpc_rqst *rqstp,
 					struct xdr_stream *xdr,
+<<<<<<< HEAD
 					struct nfs4_secinfo_res *res)
 {
+=======
+					void *data)
+{
+	struct nfs4_secinfo_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6859,8 +10642,14 @@ out:
  */
 static int nfs4_xdr_dec_test_stateid(struct rpc_rqst *rqstp,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs41_test_stateid_res *res)
 {
+=======
+				     void *data)
+{
+	struct nfs41_test_stateid_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6880,8 +10669,14 @@ out:
  */
 static int nfs4_xdr_dec_free_stateid(struct rpc_rqst *rqstp,
 				     struct xdr_stream *xdr,
+<<<<<<< HEAD
 				     struct nfs41_free_stateid_res *res)
 {
+=======
+				     void *data)
+{
+	struct nfs41_free_stateid_res *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compound_hdr hdr;
 	int status;
 
@@ -6912,6 +10707,7 @@ out:
  * on a directory already in our cache.
  */
 int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
+<<<<<<< HEAD
 		       int plus)
 {
 	uint32_t bitmap[3] = {0};
@@ -6923,6 +10719,21 @@ int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 		p = xdr_inline_decode(xdr, 4);
 		if (unlikely(!p))
 			goto out_overflow;
+=======
+		       bool plus)
+{
+	unsigned int savep;
+	uint32_t bitmap[3] = {0};
+	uint32_t len;
+	uint64_t new_cookie;
+	__be32 *p = xdr_inline_decode(xdr, 4);
+	if (unlikely(!p))
+		return -EAGAIN;
+	if (*p == xdr_zero) {
+		p = xdr_inline_decode(xdr, 4);
+		if (unlikely(!p))
+			return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*p == xdr_zero)
 			return -EAGAIN;
 		entry->eof = 1;
@@ -6931,14 +10742,23 @@ int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 
 	p = xdr_inline_decode(xdr, 12);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
 	entry->prev_cookie = entry->cookie;
 	p = xdr_decode_hyper(p, &entry->cookie);
+=======
+		return -EAGAIN;
+	p = xdr_decode_hyper(p, &new_cookie);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->len = be32_to_cpup(p);
 
 	p = xdr_inline_decode(xdr, entry->len);
 	if (unlikely(!p))
+<<<<<<< HEAD
 		goto out_overflow;
+=======
+		return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->name = (const char *) p;
 
 	/*
@@ -6950,6 +10770,7 @@ int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 	entry->fattr->valid = 0;
 
 	if (decode_attr_bitmap(xdr, bitmap) < 0)
+<<<<<<< HEAD
 		goto out_overflow;
 
 	if (decode_attr_length(xdr, &len, &p) < 0)
@@ -6958,6 +10779,16 @@ int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 	if (decode_getfattr_attrs(xdr, bitmap, entry->fattr, entry->fh,
 				  NULL, entry->server) < 0)
 		goto out_overflow;
+=======
+		return -EAGAIN;
+
+	if (decode_attr_length(xdr, &len, &savep) < 0)
+		return -EAGAIN;
+
+	if (decode_getfattr_attrs(xdr, bitmap, entry->fattr, entry->fh,
+			NULL, entry->server) < 0)
+		return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entry->fattr->valid & NFS_ATTR_FATTR_MOUNTED_ON_FILEID)
 		entry->ino = entry->fattr->mounted_on_fileid;
 	else if (entry->fattr->valid & NFS_ATTR_FATTR_FILEID)
@@ -6967,11 +10798,17 @@ int nfs4_decode_dirent(struct xdr_stream *xdr, struct nfs_entry *entry,
 	if (entry->fattr->valid & NFS_ATTR_FATTR_TYPE)
 		entry->d_type = nfs_umode_to_dtype(entry->fattr->mode);
 
+<<<<<<< HEAD
 	return 0;
 
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EAGAIN;
+=======
+	entry->cookie = new_cookie;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -7011,6 +10848,11 @@ static struct {
 	{ NFS4ERR_SYMLINK,	-ELOOP		},
 	{ NFS4ERR_OP_ILLEGAL,	-EOPNOTSUPP	},
 	{ NFS4ERR_DEADLOCK,	-EDEADLK	},
+<<<<<<< HEAD
+=======
+	{ NFS4ERR_NOXATTR,	-ENODATA	},
+	{ NFS4ERR_XATTR2BIG,	-E2BIG		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ -1,			-EIO		}
 };
 
@@ -7038,18 +10880,55 @@ nfs4_stat_to_errno(int stat)
 	return -stat;
 }
 
+<<<<<<< HEAD
 #define PROC(proc, argtype, restype)				\
 [NFSPROC4_CLNT_##proc] = {					\
 	.p_proc   = NFSPROC4_COMPOUND,				\
 	.p_encode = (kxdreproc_t)nfs4_xdr_##argtype,		\
 	.p_decode = (kxdrdproc_t)nfs4_xdr_##restype,		\
+=======
+#ifdef CONFIG_NFS_V4_2
+#include "nfs42xdr.c"
+#endif /* CONFIG_NFS_V4_2 */
+
+#define PROC(proc, argtype, restype)				\
+[NFSPROC4_CLNT_##proc] = {					\
+	.p_proc   = NFSPROC4_COMPOUND,				\
+	.p_encode = nfs4_xdr_##argtype,				\
+	.p_decode = nfs4_xdr_##restype,				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.p_arglen = NFS4_##argtype##_sz,			\
 	.p_replen = NFS4_##restype##_sz,			\
 	.p_statidx = NFSPROC4_CLNT_##proc,			\
 	.p_name   = #proc,					\
 }
 
+<<<<<<< HEAD
 struct rpc_procinfo	nfs4_procedures[] = {
+=======
+#define STUB(proc)		\
+[NFSPROC4_CLNT_##proc] = {	\
+	.p_name = #proc,	\
+}
+
+#if defined(CONFIG_NFS_V4_1)
+#define PROC41(proc, argtype, restype)				\
+	PROC(proc, argtype, restype)
+#else
+#define PROC41(proc, argtype, restype)				\
+	STUB(proc)
+#endif
+
+#if defined(CONFIG_NFS_V4_2)
+#define PROC42(proc, argtype, restype)				\
+	PROC(proc, argtype, restype)
+#else
+#define PROC42(proc, argtype, restype)				\
+	STUB(proc)
+#endif
+
+const struct rpc_procinfo nfs4_procedures[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PROC(READ,		enc_read,		dec_read),
 	PROC(WRITE,		enc_write,		dec_write),
 	PROC(COMMIT,		enc_commit,		dec_commit),
@@ -7086,6 +10965,7 @@ struct rpc_procinfo	nfs4_procedures[] = {
 	PROC(FS_LOCATIONS,	enc_fs_locations,	dec_fs_locations),
 	PROC(RELEASE_LOCKOWNER,	enc_release_lockowner,	dec_release_lockowner),
 	PROC(SECINFO,		enc_secinfo,		dec_secinfo),
+<<<<<<< HEAD
 #if defined(CONFIG_NFS_V4_1)
 	PROC(EXCHANGE_ID,	enc_exchange_id,	dec_exchange_id),
 	PROC(CREATE_SESSION,	enc_create_session,	dec_create_session),
@@ -7115,3 +10995,47 @@ const struct rpc_version nfs_version4 = {
  *  c-basic-offset: 8
  * End:
  */
+=======
+	PROC(FSID_PRESENT,	enc_fsid_present,	dec_fsid_present),
+	PROC41(EXCHANGE_ID,	enc_exchange_id,	dec_exchange_id),
+	PROC41(CREATE_SESSION,	enc_create_session,	dec_create_session),
+	PROC41(DESTROY_SESSION,	enc_destroy_session,	dec_destroy_session),
+	PROC41(SEQUENCE,	enc_sequence,		dec_sequence),
+	PROC(GET_LEASE_TIME,	enc_get_lease_time,	dec_get_lease_time),
+	PROC41(RECLAIM_COMPLETE,enc_reclaim_complete,	dec_reclaim_complete),
+	PROC41(GETDEVICEINFO,	enc_getdeviceinfo,	dec_getdeviceinfo),
+	PROC41(LAYOUTGET,	enc_layoutget,		dec_layoutget),
+	PROC41(LAYOUTCOMMIT,	enc_layoutcommit,	dec_layoutcommit),
+	PROC41(LAYOUTRETURN,	enc_layoutreturn,	dec_layoutreturn),
+	PROC41(SECINFO_NO_NAME,	enc_secinfo_no_name,	dec_secinfo_no_name),
+	PROC41(TEST_STATEID,	enc_test_stateid,	dec_test_stateid),
+	PROC41(FREE_STATEID,	enc_free_stateid,	dec_free_stateid),
+	STUB(GETDEVICELIST),
+	PROC41(BIND_CONN_TO_SESSION,
+			enc_bind_conn_to_session, dec_bind_conn_to_session),
+	PROC41(DESTROY_CLIENTID,enc_destroy_clientid,	dec_destroy_clientid),
+	PROC42(SEEK,		enc_seek,		dec_seek),
+	PROC42(ALLOCATE,	enc_allocate,		dec_allocate),
+	PROC42(DEALLOCATE,	enc_deallocate,		dec_deallocate),
+	PROC42(LAYOUTSTATS,	enc_layoutstats,	dec_layoutstats),
+	PROC42(CLONE,		enc_clone,		dec_clone),
+	PROC42(COPY,		enc_copy,		dec_copy),
+	PROC42(OFFLOAD_CANCEL,	enc_offload_cancel,	dec_offload_cancel),
+	PROC42(COPY_NOTIFY,	enc_copy_notify,	dec_copy_notify),
+	PROC(LOOKUPP,		enc_lookupp,		dec_lookupp),
+	PROC42(LAYOUTERROR,	enc_layouterror,	dec_layouterror),
+	PROC42(GETXATTR,	enc_getxattr,		dec_getxattr),
+	PROC42(SETXATTR,	enc_setxattr,		dec_setxattr),
+	PROC42(LISTXATTRS,	enc_listxattrs,		dec_listxattrs),
+	PROC42(REMOVEXATTR,	enc_removexattr,	dec_removexattr),
+	PROC42(READ_PLUS,	enc_read_plus,		dec_read_plus),
+};
+
+static unsigned int nfs_version4_counts[ARRAY_SIZE(nfs4_procedures)];
+const struct rpc_version nfs_version4 = {
+	.number			= 4,
+	.nrprocs		= ARRAY_SIZE(nfs4_procedures),
+	.procs			= nfs4_procedures,
+	.counts			= nfs_version4_counts,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

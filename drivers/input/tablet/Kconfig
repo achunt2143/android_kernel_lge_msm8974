@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Tablet driver configuration
 #
@@ -37,6 +41,7 @@ config TABLET_USB_AIPTEK
 	  To compile this driver as a module, choose M here: the
 	  module will be called aiptek.
 
+<<<<<<< HEAD
 config TABLET_USB_GTCO
         tristate "GTCO CalComp/InterWrite USB Support"
         depends on USB && INPUT
@@ -49,6 +54,8 @@ config TABLET_USB_GTCO
           To compile this driver as a module, choose M here: the
           module will be called gtco.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config TABLET_USB_HANWANG
 	tristate "Hanwang Art Master III tablet support (USB)"
 	depends on USB_ARCH_HAS_HCD
@@ -73,6 +80,7 @@ config TABLET_USB_KBTAB
 	  To compile this driver as a module, choose M here: the
 	  module will be called kbtab.
 
+<<<<<<< HEAD
 config TABLET_USB_WACOM
 	tristate "Wacom Intuos/Graphire tablet support (USB)"
 	depends on USB_ARCH_HAS_HCD
@@ -88,5 +96,31 @@ config TABLET_USB_WACOM
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called wacom.
+=======
+config TABLET_USB_PEGASUS
+	tristate "Pegasus Mobile Notetaker Pen input tablet support"
+	depends on USB_ARCH_HAS_HCD
+	select USB
+	help
+	  Say Y here if you want to use the Pegasus Mobile Notetaker,
+	  also known as:
+	  Genie e-note The Notetaker,
+	  Staedtler Digital ballpoint pen 990 01,
+	  IRISnotes Express or
+	  NEWLink Digital Note Taker.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called pegasus_notetaker.
+
+config TABLET_SERIAL_WACOM4
+	tristate "Wacom protocol 4 serial tablet support"
+	select SERIO
+	help
+	  Say Y here if you want to use Wacom protocol 4 serial tablets.
+	  E.g. serial versions of the Cintiq, Graphire or Penpartner.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called wacom_serial4.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPU core / file system interface and HW structures
  *
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SPU_H
@@ -27,6 +34,11 @@
 #include <linux/workqueue.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <asm/reg.h>
+#include <asm/copro.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LS_SIZE (256 * 1024)
 #define LS_ADDR_MASK (LS_SIZE - 1)
@@ -212,6 +224,7 @@ int spu_64k_pages_available(void);
 struct mm_struct;
 extern void spu_flush_all_slbs(struct mm_struct *mm);
 
+<<<<<<< HEAD
 /* This interface allows a profiler (e.g., OProfile) to store a ref
  * to spu context information that it creates.	This caching technique
  * avoids the need to recreate this information after a save/restore operation.
@@ -226,6 +239,8 @@ void spu_set_profile_private_kref(struct spu_context *ctx,
 
 void *spu_get_profile_private_kref(struct spu_context *ctx);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* system callbacks from the SPU */
 struct spu_syscall_block {
 	u64 nr_ret;
@@ -235,6 +250,10 @@ extern long spu_sys_callback(struct spu_syscall_block *s);
 
 /* syscalls implemented in spufs */
 struct file;
+<<<<<<< HEAD
+=======
+struct coredump_params;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct spufs_calls {
 	long (*create_thread)(const char __user *name,
 					unsigned int flags, umode_t mode,
@@ -242,7 +261,11 @@ struct spufs_calls {
 	long (*spu_run)(struct file *filp, __u32 __user *unpc,
 						__u32 __user *ustatus);
 	int (*coredump_extra_notes_size)(void);
+<<<<<<< HEAD
 	int (*coredump_extra_notes_write)(struct file *file, loff_t *foffset);
+=======
+	int (*coredump_extra_notes_write)(struct coredump_params *cprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*notify_spus_active)(void);
 	struct module *owner;
 };
@@ -273,6 +296,7 @@ void unregister_spu_syscalls(struct spufs_calls *calls);
 int spu_add_dev_attr(struct device_attribute *attr);
 void spu_remove_dev_attr(struct device_attribute *attr);
 
+<<<<<<< HEAD
 int spu_add_dev_attr_group(struct attribute_group *attrs);
 void spu_remove_dev_attr_group(struct attribute_group *attrs);
 
@@ -297,6 +321,10 @@ int spu_handle_mm_fault(struct mm_struct *mm, unsigned long ea,
 struct notifier_block;
 int spu_switch_event_register(struct notifier_block * n);
 int spu_switch_event_unregister(struct notifier_block * n);
+=======
+int spu_add_dev_attr_group(const struct attribute_group *attrs);
+void spu_remove_dev_attr_group(const struct attribute_group *attrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void notify_spus_active(void);
 extern void do_notify_spus_active(void);

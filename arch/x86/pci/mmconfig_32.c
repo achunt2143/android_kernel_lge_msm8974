@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2004 Matthew Wilcox <matthew@wil.cx>
  * Copyright (C) 2004 Intel Corp.
  *
  * This code is released under the GNU General Public License version 2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2004 Matthew Wilcox <matthew@wil.cx>
+ * Copyright (C) 2004 Intel Corp.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -11,9 +18,15 @@
 
 #include <linux/pci.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/e820.h>
 #include <asm/pci_x86.h>
 #include <acpi/acpi.h>
+=======
+#include <linux/rcupdate.h>
+#include <asm/e820/api.h>
+#include <asm/pci_x86.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Assume systems with more busses have correct MCFG */
 #define mmcfg_virt_addr ((void __iomem *) fix_to_virt(FIX_PCIE_MCFG))
@@ -60,9 +73,18 @@ err:		*value = -1;
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	base = get_base_addr(seg, bus, devfn);
 	if (!base)
 		goto err;
+=======
+	rcu_read_lock();
+	base = get_base_addr(seg, bus, devfn);
+	if (!base) {
+		rcu_read_unlock();
+		goto err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_lock_irqsave(&pci_config_lock, flags);
 
@@ -80,6 +102,10 @@ err:		*value = -1;
 		break;
 	}
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -93,9 +119,18 @@ static int pci_mmcfg_write(unsigned int seg, unsigned int bus,
 	if ((bus > 255) || (devfn > 255) || (reg > 4095))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	base = get_base_addr(seg, bus, devfn);
 	if (!base)
 		return -EINVAL;
+=======
+	rcu_read_lock();
+	base = get_base_addr(seg, bus, devfn);
+	if (!base) {
+		rcu_read_unlock();
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_lock_irqsave(&pci_config_lock, flags);
 
@@ -113,18 +148,30 @@ static int pci_mmcfg_write(unsigned int seg, unsigned int bus,
 		break;
 	}
 	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct pci_raw_ops pci_mmcfg = {
+=======
+const struct pci_raw_ops pci_mmcfg = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read =		pci_mmcfg_read,
 	.write =	pci_mmcfg_write,
 };
 
 int __init pci_mmcfg_arch_init(void)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "PCI: Using MMCONFIG for extended config space\n");
+=======
+	printk(KERN_INFO "PCI: Using ECAM for extended config space\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_pci_ext_ops = &pci_mmcfg;
 	return 1;
 }
@@ -132,3 +179,21 @@ int __init pci_mmcfg_arch_init(void)
 void __init pci_mmcfg_arch_free(void)
 {
 }
+<<<<<<< HEAD
+=======
+
+int pci_mmcfg_arch_map(struct pci_mmcfg_region *cfg)
+{
+	return 0;
+}
+
+void pci_mmcfg_arch_unmap(struct pci_mmcfg_region *cfg)
+{
+	unsigned long flags;
+
+	/* Invalidate the cached mmcfg map entry. */
+	raw_spin_lock_irqsave(&pci_config_lock, flags);
+	mmcfg_last_accessed_device = 0;
+	raw_spin_unlock_irqrestore(&pci_config_lock, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

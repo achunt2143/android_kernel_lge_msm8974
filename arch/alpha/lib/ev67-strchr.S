@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev67-strchr.S
  * 21264 version contributed by Rick Gorton <rick.gorton@alpha-processor.com>
@@ -15,7 +19,11 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  * Try not to change the actual algorithm if possible for consistency.
  */
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -86,3 +94,7 @@ $found:	negq    t0, t1		# E : clear all but least set bit
 	ret			# L0 :
 
 	.end strchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strchr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

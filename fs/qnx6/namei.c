@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QNX6 file system, Linux implementation.
  *
@@ -28,6 +32,7 @@ struct dentry *qnx6_lookup(struct inode *dir, struct dentry *dentry,
 	if (ino) {
 		foundinode = qnx6_iget(dir->i_sb, ino);
 		qnx6_put_page(page);
+<<<<<<< HEAD
 		if (IS_ERR(foundinode)) {
 			QNX6DEBUG((KERN_ERR "qnx6: lookup->iget -> "
 				" error %ld\n", PTR_ERR(foundinode)));
@@ -39,4 +44,13 @@ struct dentry *qnx6_lookup(struct inode *dir, struct dentry *dentry,
 	}
 	d_add(dentry, foundinode);
 	return NULL;
+=======
+		if (IS_ERR(foundinode))
+			pr_debug("lookup->iget ->  error %ld\n",
+				 PTR_ERR(foundinode));
+	} else {
+		pr_debug("%s(): not found %s\n", __func__, name);
+	}
+	return d_splice_alias(foundinode, dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

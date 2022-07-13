@@ -1,19 +1,30 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _S390_TLBFLUSH_H
 #define _S390_TLBFLUSH_H
 
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 
 /*
  * Flush all tlb entries on the local cpu.
+=======
+
+/*
+ * Flush all TLB entries on the local CPU.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void __tlb_flush_local(void)
 {
 	asm volatile("ptlb" : : : "memory");
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 /*
  * Flush all tlb entries on all cpus.
@@ -74,11 +85,46 @@ static inline void __tlb_flush_idte(unsigned long asce)
 
 static inline void __tlb_flush_mm(struct mm_struct * mm)
 {
+=======
+/*
+ * Flush TLB entries for a specific ASCE on all CPUs
+ */
+static inline void __tlb_flush_idte(unsigned long asce)
+{
+	unsigned long opt;
+
+	opt = IDTE_PTOA;
+	if (MACHINE_HAS_TLB_GUEST)
+		opt |= IDTE_GUEST_ASCE;
+	/* Global TLB flush for the mm */
+	asm volatile("idte 0,%1,%0" : : "a" (opt), "a" (asce) : "cc");
+}
+
+/*
+ * Flush all TLB entries on all CPUs.
+ */
+static inline void __tlb_flush_global(void)
+{
+	unsigned int dummy = 0;
+
+	csp(&dummy, 0, 0);
+}
+
+/*
+ * Flush TLB entries for a specific mm on all CPUs (in case gmap is used
+ * this implicates multiple ASCEs!).
+ */
+static inline void __tlb_flush_mm(struct mm_struct *mm)
+{
+	unsigned long gmap_asce;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the machine has IDTE we prefer to do a per mm flush
 	 * on all cpus instead of doing a local flush if the mm
 	 * only ran on the local cpu.
 	 */
+<<<<<<< HEAD
 	if (MACHINE_HAS_IDTE && list_empty(&mm->context.gmap_list))
 		__tlb_flush_idte((unsigned long) mm->pgd |
 				 mm->context.asce_bits);
@@ -94,6 +140,42 @@ static inline void __tlb_flush_mm_cond(struct mm_struct * mm)
 		mm->context.flush_mm = 0;
 	}
 	spin_unlock(&mm->page_table_lock);
+=======
+	preempt_disable();
+	atomic_inc(&mm->context.flush_count);
+	/* Reset TLB flush mask */
+	cpumask_copy(mm_cpumask(mm), &mm->context.cpu_attach_mask);
+	barrier();
+	gmap_asce = READ_ONCE(mm->context.gmap_asce);
+	if (MACHINE_HAS_IDTE && gmap_asce != -1UL) {
+		if (gmap_asce)
+			__tlb_flush_idte(gmap_asce);
+		__tlb_flush_idte(mm->context.asce);
+	} else {
+		/* Global TLB flush */
+		__tlb_flush_global();
+	}
+	atomic_dec(&mm->context.flush_count);
+	preempt_enable();
+}
+
+static inline void __tlb_flush_kernel(void)
+{
+	if (MACHINE_HAS_IDTE)
+		__tlb_flush_idte(init_mm.context.asce);
+	else
+		__tlb_flush_global();
+}
+
+static inline void __tlb_flush_mm_lazy(struct mm_struct * mm)
+{
+	spin_lock(&mm->context.lock);
+	if (mm->context.flush_mm) {
+		mm->context.flush_mm = 0;
+		__tlb_flush_mm(mm);
+	}
+	spin_unlock(&mm->context.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -120,19 +202,31 @@ static inline void __tlb_flush_mm_cond(struct mm_struct * mm)
 
 static inline void flush_tlb_mm(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	__tlb_flush_mm_cond(mm);
+=======
+	__tlb_flush_mm_lazy(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void flush_tlb_range(struct vm_area_struct *vma,
 				   unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	__tlb_flush_mm_cond(vma->vm_mm);
+=======
+	__tlb_flush_mm_lazy(vma->vm_mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void flush_tlb_kernel_range(unsigned long start,
 					  unsigned long end)
 {
+<<<<<<< HEAD
 	__tlb_flush_mm(&init_mm);
+=======
+	__tlb_flush_kernel();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _S390_TLBFLUSH_H */

@@ -379,11 +379,19 @@ _060_real_access:
 
 
 | Execption handling for movs access to illegal memory
+<<<<<<< HEAD
 	.section .fixup,#alloc,#execinstr
 	.even
 1:	moveq		#-1,%d1
 	rts
 .section __ex_table,#alloc
+=======
+	.section .fixup,"ax"
+	.even
+1:	moveq		#-1,%d1
+	rts
+.section __ex_table,"a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align 4
 	.long	dmrbuae,1b
 	.long	dmrwuae,1b

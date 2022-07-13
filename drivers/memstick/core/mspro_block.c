@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Sony MemoryStick Pro storage support
  *
  *  Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -13,6 +18,13 @@
  */
 
 #include <linux/blkdev.h>
+=======
+ * Special thanks to Carlos Corbacho for providing various MemoryStick cards
+ * that made this driver possible.
+ */
+
+#include <linux/blk-mq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/idr.h>
 #include <linux/hdreg.h>
 #include <linux/kthread.h>
@@ -137,11 +149,18 @@ struct mspro_devinfo {
 
 struct mspro_block_data {
 	struct memstick_dev   *card;
+<<<<<<< HEAD
 	unsigned int          usage_count;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int          caps;
 	struct gendisk        *disk;
 	struct request_queue  *queue;
 	struct request        *block_req;
+<<<<<<< HEAD
+=======
+	struct blk_mq_tag_set tag_set;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t            q_lock;
 
 	unsigned short        page_size;
@@ -152,7 +171,10 @@ struct mspro_block_data {
 	unsigned char         system;
 	unsigned char         read_only:1,
 			      eject:1,
+<<<<<<< HEAD
 			      has_request:1,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      data_dir:1,
 			      active:1;
 	unsigned char         transfer_cmd;
@@ -182,6 +204,7 @@ static int mspro_block_complete_req(struct memstick_dev *card, int error);
 
 /*** Block device ***/
 
+<<<<<<< HEAD
 static int mspro_block_bd_open(struct block_device *bdev, fmode_t mode)
 {
 	struct gendisk *disk = bdev->bd_disk;
@@ -205,11 +228,15 @@ static int mspro_block_bd_open(struct block_device *bdev, fmode_t mode)
 
 
 static int mspro_block_disk_release(struct gendisk *disk)
+=======
+static void mspro_block_bd_free_disk(struct gendisk *disk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mspro_block_data *msb = disk->private_data;
 	int disk_id = MINOR(disk_devt(disk)) >> MSPRO_BLOCK_PART_SHIFT;
 
 	mutex_lock(&mspro_block_disk_lock);
+<<<<<<< HEAD
 
 	if (msb) {
 		if (msb->usage_count)
@@ -231,6 +258,12 @@ static int mspro_block_disk_release(struct gendisk *disk)
 static int mspro_block_bd_release(struct gendisk *disk, fmode_t mode)
 {
 	return mspro_block_disk_release(disk);
+=======
+	idr_remove(&mspro_block_disk_idr, disk_id);
+	mutex_unlock(&mspro_block_disk_lock);
+
+	kfree(msb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mspro_block_bd_getgeo(struct block_device *bdev,
@@ -246,10 +279,16 @@ static int mspro_block_bd_getgeo(struct block_device *bdev,
 }
 
 static const struct block_device_operations ms_block_bdops = {
+<<<<<<< HEAD
 	.open    = mspro_block_bd_open,
 	.release = mspro_block_bd_release,
 	.getgeo  = mspro_block_bd_getgeo,
 	.owner   = THIS_MODULE
+=======
+	.owner		= THIS_MODULE,
+	.getgeo		= mspro_block_bd_getgeo,
+	.free_disk	= mspro_block_bd_free_disk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*** Information ***/
@@ -282,7 +321,11 @@ static const char *mspro_block_attr_name(unsigned char tag)
 		return "attr_devinfo";
 	default:
 		return NULL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 typedef ssize_t (*sysfs_show_t)(struct device *dev,
@@ -305,8 +348,13 @@ static ssize_t mspro_block_attr_show_default(struct device *dev,
 				buffer[rc++] = '\n';
 		}
 
+<<<<<<< HEAD
 		rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "%02x ",
 				((unsigned char *)s_attr->data)[cnt]);
+=======
+		rc += sysfs_emit_at(buffer, rc, "%02x ",
+				    ((unsigned char *)s_attr->data)[cnt]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
@@ -335,6 +383,7 @@ static ssize_t mspro_block_attr_show_sysinfo(struct device *dev,
 		date_tz_f *= 15;
 	}
 
+<<<<<<< HEAD
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "class: %x\n",
 			x_sys->class);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "block size: %x\n",
@@ -390,6 +439,45 @@ static ssize_t mspro_block_attr_show_sysinfo(struct device *dev,
 			x_sys->device_type);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "mspro id: %s\n",
 			x_sys->mspro_id);
+=======
+	rc += sysfs_emit_at(buffer, rc, "class: %x\n", x_sys->class);
+	rc += sysfs_emit_at(buffer, rc, "block size: %x\n", be16_to_cpu(x_sys->block_size));
+	rc += sysfs_emit_at(buffer, rc, "block count: %x\n", be16_to_cpu(x_sys->block_count));
+	rc += sysfs_emit_at(buffer, rc, "user block count: %x\n",
+			    be16_to_cpu(x_sys->user_block_count));
+	rc += sysfs_emit_at(buffer, rc, "page size: %x\n", be16_to_cpu(x_sys->page_size));
+	rc += sysfs_emit_at(buffer, rc, "assembly date: GMT%+d:%d %04u-%02u-%02u %02u:%02u:%02u\n",
+			    date_tz, date_tz_f,
+			    be16_to_cpup((__be16 *)&x_sys->assembly_date[1]),
+			    x_sys->assembly_date[3], x_sys->assembly_date[4],
+			    x_sys->assembly_date[5], x_sys->assembly_date[6],
+			    x_sys->assembly_date[7]);
+	rc += sysfs_emit_at(buffer, rc, "serial number: %x\n", be32_to_cpu(x_sys->serial_number));
+	rc += sysfs_emit_at(buffer, rc, "assembly maker code: %x\n", x_sys->assembly_maker_code);
+	rc += sysfs_emit_at(buffer, rc, "assembly model code: %02x%02x%02x\n",
+			    x_sys->assembly_model_code[0],
+			    x_sys->assembly_model_code[1],
+			    x_sys->assembly_model_code[2]);
+	rc += sysfs_emit_at(buffer, rc, "memory maker code: %x\n",
+			    be16_to_cpu(x_sys->memory_maker_code));
+	rc += sysfs_emit_at(buffer, rc, "memory model code: %x\n",
+			    be16_to_cpu(x_sys->memory_model_code));
+	rc += sysfs_emit_at(buffer, rc, "vcc: %x\n", x_sys->vcc);
+	rc += sysfs_emit_at(buffer, rc, "vpp: %x\n", x_sys->vpp);
+	rc += sysfs_emit_at(buffer, rc, "controller number: %x\n",
+			    be16_to_cpu(x_sys->controller_number));
+	rc += sysfs_emit_at(buffer, rc, "controller function: %x\n",
+			    be16_to_cpu(x_sys->controller_function));
+	rc += sysfs_emit_at(buffer, rc, "start sector: %x\n", be16_to_cpu(x_sys->start_sector));
+	rc += sysfs_emit_at(buffer, rc, "unit size: %x\n", be16_to_cpu(x_sys->unit_size));
+	rc += sysfs_emit_at(buffer, rc, "sub class: %x\n", x_sys->ms_sub_class);
+	rc += sysfs_emit_at(buffer, rc, "interface type: %x\n", x_sys->interface_type);
+	rc += sysfs_emit_at(buffer, rc, "controller code: %x\n",
+			    be16_to_cpu(x_sys->controller_code));
+	rc += sysfs_emit_at(buffer, rc, "format type: %x\n", x_sys->format_type);
+	rc += sysfs_emit_at(buffer, rc, "device type: %x\n", x_sys->device_type);
+	rc += sysfs_emit_at(buffer, rc, "mspro id: %s\n", x_sys->mspro_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -401,7 +489,11 @@ static ssize_t mspro_block_attr_show_modelname(struct device *dev,
 						     struct mspro_sys_attr,
 						     dev_attr);
 
+<<<<<<< HEAD
 	return scnprintf(buffer, PAGE_SIZE, "%s", (char *)s_attr->data);
+=======
+	return sysfs_emit(buffer, "%s", (char *)s_attr->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t mspro_block_attr_show_mbr(struct device *dev,
@@ -414,6 +506,7 @@ static ssize_t mspro_block_attr_show_mbr(struct device *dev,
 	struct mspro_mbr *x_mbr = x_attr->data;
 	ssize_t rc = 0;
 
+<<<<<<< HEAD
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "boot partition: %x\n",
 			x_mbr->boot_partition);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "start head: %x\n",
@@ -435,6 +528,19 @@ static ssize_t mspro_block_attr_show_mbr(struct device *dev,
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc,
 			"sectors per partition: %x\n",
 			x_mbr->sectors_per_partition);
+=======
+	rc += sysfs_emit_at(buffer, rc, "boot partition: %x\n", x_mbr->boot_partition);
+	rc += sysfs_emit_at(buffer, rc, "start head: %x\n", x_mbr->start_head);
+	rc += sysfs_emit_at(buffer, rc, "start sector: %x\n", x_mbr->start_sector);
+	rc += sysfs_emit_at(buffer, rc, "start cylinder: %x\n", x_mbr->start_cylinder);
+	rc += sysfs_emit_at(buffer, rc, "partition type: %x\n", x_mbr->partition_type);
+	rc += sysfs_emit_at(buffer, rc, "end head: %x\n", x_mbr->end_head);
+	rc += sysfs_emit_at(buffer, rc, "end sector: %x\n", x_mbr->end_sector);
+	rc += sysfs_emit_at(buffer, rc, "end cylinder: %x\n", x_mbr->end_cylinder);
+	rc += sysfs_emit_at(buffer, rc, "start sectors: %x\n", x_mbr->start_sectors);
+	rc += sysfs_emit_at(buffer, rc, "sectors per partition: %x\n",
+			    x_mbr->sectors_per_partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -454,6 +560,7 @@ static ssize_t mspro_block_attr_show_specfile(struct device *dev,
 	memcpy(ext, x_spfile->ext, 3);
 	ext[3] = 0;
 
+<<<<<<< HEAD
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "name: %s\n", name);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "ext: %s\n", ext);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "attribute: %x\n",
@@ -470,6 +577,21 @@ static ssize_t mspro_block_attr_show_specfile(struct device *dev,
 			x_spfile->cluster);
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "size: %x\n",
 			x_spfile->size);
+=======
+	rc += sysfs_emit_at(buffer, rc, "name: %s\n", name);
+	rc += sysfs_emit_at(buffer, rc, "ext: %s\n", ext);
+	rc += sysfs_emit_at(buffer, rc, "attribute: %x\n", x_spfile->attr);
+	rc += sysfs_emit_at(buffer, rc, "time: %d:%d:%d\n",
+			    x_spfile->time >> 11,
+			    (x_spfile->time >> 5) & 0x3f,
+			    (x_spfile->time & 0x1f) * 2);
+	rc += sysfs_emit_at(buffer, rc, "date: %d-%d-%d\n",
+			    (x_spfile->date >> 9) + 1980,
+			    (x_spfile->date >> 5) & 0xf,
+			    x_spfile->date & 0x1f);
+	rc += sysfs_emit_at(buffer, rc, "start cluster: %x\n", x_spfile->cluster);
+	rc += sysfs_emit_at(buffer, rc, "size: %x\n", x_spfile->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -483,6 +605,7 @@ static ssize_t mspro_block_attr_show_devinfo(struct device *dev,
 	struct mspro_devinfo *x_devinfo = x_attr->data;
 	ssize_t rc = 0;
 
+<<<<<<< HEAD
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "cylinders: %x\n",
 			be16_to_cpu(x_devinfo->cylinders));
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "heads: %x\n",
@@ -493,6 +616,16 @@ static ssize_t mspro_block_attr_show_devinfo(struct device *dev,
 			be16_to_cpu(x_devinfo->bytes_per_sector));
 	rc += scnprintf(buffer + rc, PAGE_SIZE - rc, "sectors per track: %x\n",
 			be16_to_cpu(x_devinfo->sectors_per_track));
+=======
+	rc += sysfs_emit_at(buffer, rc, "cylinders: %x\n", be16_to_cpu(x_devinfo->cylinders));
+	rc += sysfs_emit_at(buffer, rc, "heads: %x\n", be16_to_cpu(x_devinfo->heads));
+	rc += sysfs_emit_at(buffer, rc, "bytes per track: %x\n",
+			    be16_to_cpu(x_devinfo->bytes_per_track));
+	rc += sysfs_emit_at(buffer, rc, "bytes per sector: %x\n",
+			    be16_to_cpu(x_devinfo->bytes_per_sector));
+	rc += sysfs_emit_at(buffer, rc, "sectors per track: %x\n",
+			    be16_to_cpu(x_devinfo->sectors_per_track));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -696,14 +829,22 @@ static void h_mspro_block_setup_cmd(struct memstick_dev *card, u64 offset,
 
 /*** Data transfer ***/
 
+<<<<<<< HEAD
 static int mspro_block_issue_req(struct memstick_dev *card, int chunk)
+=======
+static int mspro_block_issue_req(struct memstick_dev *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
 	u64 t_off;
 	unsigned int count;
 
+<<<<<<< HEAD
 try_again:
 	while (chunk) {
+=======
+	while (true) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msb->current_page = 0;
 		msb->current_seg = 0;
 		msb->seg_count = blk_rq_map_sg(msb->block_req->q,
@@ -711,8 +852,23 @@ try_again:
 					       msb->req_sg);
 
 		if (!msb->seg_count) {
+<<<<<<< HEAD
 			chunk = __blk_end_request_cur(msb->block_req, -ENOMEM);
 			continue;
+=======
+			unsigned int bytes = blk_rq_cur_bytes(msb->block_req);
+			bool chunk;
+
+			chunk = blk_update_request(msb->block_req,
+							BLK_STS_RESOURCE,
+							bytes);
+			if (chunk)
+				continue;
+			__blk_mq_end_request(msb->block_req,
+						BLK_STS_RESOURCE);
+			msb->block_req = NULL;
+			return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		t_off = blk_rq_pos(msb->block_req);
@@ -729,6 +885,7 @@ try_again:
 		memstick_new_req(card->host);
 		return 0;
 	}
+<<<<<<< HEAD
 
 	dev_dbg(&card->dev, "blk_fetch\n");
 	msb->block_req = blk_fetch_request(msb->queue);
@@ -740,20 +897,34 @@ try_again:
 	dev_dbg(&card->dev, "trying again\n");
 	chunk = 1;
 	goto try_again;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mspro_block_complete_req(struct memstick_dev *card, int error)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
+<<<<<<< HEAD
 	int chunk, cnt;
+=======
+	int cnt;
+	bool chunk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int t_len = 0;
 	unsigned long flags;
 
 	spin_lock_irqsave(&msb->q_lock, flags);
+<<<<<<< HEAD
 	dev_dbg(&card->dev, "complete %d, %d\n", msb->has_request ? 1 : 0,
 		error);
 
 	if (msb->has_request) {
+=======
+	dev_dbg(&card->dev, "complete %d, %d\n", msb->block_req ? 1 : 0,
+		error);
+
+	if (msb->block_req) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Nothing to do - not really an error */
 		if (error == -EAGAIN)
 			error = 0;
@@ -778,6 +949,7 @@ static int mspro_block_complete_req(struct memstick_dev *card, int error)
 		if (error && !t_len)
 			t_len = blk_rq_cur_bytes(msb->block_req);
 
+<<<<<<< HEAD
 		chunk = __blk_end_request(msb->block_req, error, t_len);
 
 		error = mspro_block_issue_req(card, chunk);
@@ -786,6 +958,19 @@ static int mspro_block_complete_req(struct memstick_dev *card, int error)
 			goto out;
 		else
 			msb->has_request = 0;
+=======
+		chunk = blk_update_request(msb->block_req,
+				errno_to_blk_status(error), t_len);
+		if (chunk) {
+			error = mspro_block_issue_req(card);
+			if (!error)
+				goto out;
+		} else {
+			__blk_mq_end_request(msb->block_req,
+						errno_to_blk_status(error));
+			msb->block_req = NULL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (!error)
 			error = -EAGAIN;
@@ -806,8 +991,13 @@ static void mspro_block_stop(struct memstick_dev *card)
 
 	while (1) {
 		spin_lock_irqsave(&msb->q_lock, flags);
+<<<<<<< HEAD
 		if (!msb->has_request) {
 			blk_stop_queue(msb->queue);
+=======
+		if (!msb->block_req) {
+			blk_mq_stop_hw_queues(msb->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = 1;
 		}
 		spin_unlock_irqrestore(&msb->q_lock, flags);
@@ -822,6 +1012,7 @@ static void mspro_block_stop(struct memstick_dev *card)
 static void mspro_block_start(struct memstick_dev *card)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&msb->q_lock, flags);
@@ -861,6 +1052,39 @@ static void mspro_block_submit_req(struct request_queue *q)
 	msb->has_request = 1;
 	if (mspro_block_issue_req(card, 0))
 		msb->has_request = 0;
+=======
+
+	blk_mq_start_hw_queues(msb->queue);
+}
+
+static blk_status_t mspro_queue_rq(struct blk_mq_hw_ctx *hctx,
+				   const struct blk_mq_queue_data *bd)
+{
+	struct memstick_dev *card = hctx->queue->queuedata;
+	struct mspro_block_data *msb = memstick_get_drvdata(card);
+
+	spin_lock_irq(&msb->q_lock);
+
+	if (msb->block_req) {
+		spin_unlock_irq(&msb->q_lock);
+		return BLK_STS_DEV_RESOURCE;
+	}
+
+	if (msb->eject) {
+		spin_unlock_irq(&msb->q_lock);
+		blk_mq_start_request(bd->rq);
+		return BLK_STS_IOERR;
+	}
+
+	msb->block_req = bd->rq;
+	blk_mq_start_request(bd->rq);
+
+	if (mspro_block_issue_req(card))
+		msb->block_req = NULL;
+
+	spin_unlock_irq(&msb->q_lock);
+	return BLK_STS_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*** Initialization ***/
@@ -1026,8 +1250,13 @@ static int mspro_block_read_attributes(struct memstick_dev *card)
 	} else
 		attr_count = attr->count;
 
+<<<<<<< HEAD
 	msb->attr_group.attrs = kzalloc((attr_count + 1)
 					* sizeof(struct attribute),
+=======
+	msb->attr_group.attrs = kcalloc(attr_count + 1,
+					sizeof(*msb->attr_group.attrs),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 	if (!msb->attr_group.attrs) {
 		rc = -ENOMEM;
@@ -1035,12 +1264,19 @@ static int mspro_block_read_attributes(struct memstick_dev *card)
 	}
 	msb->attr_group.name = "media_attributes";
 
+<<<<<<< HEAD
 	buffer = kmalloc(attr_len, GFP_KERNEL);
+=======
+	buffer = kmemdup(attr, attr_len, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer) {
 		rc = -ENOMEM;
 		goto out_free_attr;
 	}
+<<<<<<< HEAD
 	memcpy(buffer, (char *)attr, attr_len);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (cnt = 0; cnt < attr_count; ++cnt) {
 		s_attr = kzalloc(sizeof(struct mspro_sys_attr), GFP_KERNEL);
@@ -1181,20 +1417,41 @@ static int mspro_block_init_card(struct memstick_dev *card)
 
 }
 
+<<<<<<< HEAD
 static int mspro_block_init_disk(struct memstick_dev *card)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
 	struct memstick_host *host = card->host;
+=======
+static const struct blk_mq_ops mspro_mq_ops = {
+	.queue_rq	= mspro_queue_rq,
+};
+
+static int mspro_block_init_disk(struct memstick_dev *card)
+{
+	struct mspro_block_data *msb = memstick_get_drvdata(card);
+	struct queue_limits lim = {
+		.logical_block_size	= msb->page_size,
+		.max_hw_sectors		= MSPRO_BLOCK_MAX_PAGES,
+		.max_segments		= MSPRO_BLOCK_MAX_SEGS,
+		.max_segment_size	= MSPRO_BLOCK_MAX_PAGES * msb->page_size,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mspro_devinfo *dev_info = NULL;
 	struct mspro_sys_info *sys_info = NULL;
 	struct mspro_sys_attr *s_attr = NULL;
 	int rc, disk_id;
+<<<<<<< HEAD
 	u64 limit = BLK_BOUNCE_HIGH;
 	unsigned long capacity;
 
 	if (host->dev.dma_mask && *(host->dev.dma_mask))
 		limit = *(host->dev.dma_mask);
 
+=======
+	unsigned long capacity;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (rc = 0; msb->attr_group.attrs[rc]; ++rc) {
 		s_attr = mspro_from_sysfs_attr(msb->attr_group.attrs[rc]);
 
@@ -1214,6 +1471,7 @@ static int mspro_block_init_disk(struct memstick_dev *card)
 	msb->page_size = be16_to_cpu(sys_info->unit_size);
 
 	mutex_lock(&mspro_block_disk_lock);
+<<<<<<< HEAD
 	if (!idr_pre_get(&mspro_block_disk_idr, GFP_KERNEL)) {
 		mutex_unlock(&mspro_block_disk_lock);
 		return -ENOMEM;
@@ -1263,18 +1521,61 @@ static int mspro_block_init_disk(struct memstick_dev *card)
 
 	blk_queue_logical_block_size(msb->queue, msb->page_size);
 
+=======
+	disk_id = idr_alloc(&mspro_block_disk_idr, card, 0, 256, GFP_KERNEL);
+	mutex_unlock(&mspro_block_disk_lock);
+	if (disk_id < 0)
+		return disk_id;
+
+	rc = blk_mq_alloc_sq_tag_set(&msb->tag_set, &mspro_mq_ops, 2,
+				     BLK_MQ_F_SHOULD_MERGE);
+	if (rc)
+		goto out_release_id;
+
+	msb->disk = blk_mq_alloc_disk(&msb->tag_set, &lim, card);
+	if (IS_ERR(msb->disk)) {
+		rc = PTR_ERR(msb->disk);
+		goto out_free_tag_set;
+	}
+	msb->queue = msb->disk->queue;
+
+	msb->disk->major = major;
+	msb->disk->first_minor = disk_id << MSPRO_BLOCK_PART_SHIFT;
+	msb->disk->minors = 1 << MSPRO_BLOCK_PART_SHIFT;
+	msb->disk->fops = &ms_block_bdops;
+	msb->disk->private_data = msb;
+
+	sprintf(msb->disk->disk_name, "mspblk%d", disk_id);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	capacity = be16_to_cpu(sys_info->user_block_count);
 	capacity *= be16_to_cpu(sys_info->block_size);
 	capacity *= msb->page_size >> 9;
 	set_capacity(msb->disk, capacity);
 	dev_dbg(&card->dev, "capacity set %ld\n", capacity);
 
+<<<<<<< HEAD
 	add_disk(msb->disk);
 	msb->active = 1;
 	return 0;
 
 out_put_disk:
 	put_disk(msb->disk);
+=======
+	if (msb->read_only)
+		set_disk_ro(msb->disk, true);
+
+	rc = device_add_disk(&card->dev, msb->disk, NULL);
+	if (rc)
+		goto out_cleanup_disk;
+	msb->active = 1;
+	return 0;
+
+out_cleanup_disk:
+	put_disk(msb->disk);
+out_free_tag_set:
+	blk_mq_free_tag_set(&msb->tag_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_release_id:
 	mutex_lock(&mspro_block_disk_lock);
 	idr_remove(&mspro_block_disk_idr, disk_id);
@@ -1351,13 +1652,22 @@ static void mspro_block_remove(struct memstick_dev *card)
 
 	spin_lock_irqsave(&msb->q_lock, flags);
 	msb->eject = 1;
+<<<<<<< HEAD
 	blk_start_queue(msb->queue);
 	spin_unlock_irqrestore(&msb->q_lock, flags);
+=======
+	spin_unlock_irqrestore(&msb->q_lock, flags);
+	blk_mq_start_hw_queues(msb->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_gendisk(msb->disk);
 	dev_dbg(&card->dev, "mspro block remove\n");
 
+<<<<<<< HEAD
 	blk_cleanup_queue(msb->queue);
+=======
+	blk_mq_free_tag_set(&msb->tag_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msb->queue = NULL;
 
 	sysfs_remove_group(&card->dev.kobj, &msb->attr_group);
@@ -1366,7 +1676,11 @@ static void mspro_block_remove(struct memstick_dev *card)
 	mspro_block_data_clear(msb);
 	mutex_unlock(&mspro_block_disk_lock);
 
+<<<<<<< HEAD
 	mspro_block_disk_release(msb->disk);
+=======
+	put_disk(msb->disk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memstick_set_drvdata(card, NULL);
 }
 
@@ -1377,8 +1691,14 @@ static int mspro_block_suspend(struct memstick_dev *card, pm_message_t state)
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&msb->q_lock, flags);
 	blk_stop_queue(msb->queue);
+=======
+	blk_mq_stop_hw_queues(msb->queue);
+
+	spin_lock_irqsave(&msb->q_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msb->active = 0;
 	spin_unlock_irqrestore(&msb->q_lock, flags);
 
@@ -1388,7 +1708,10 @@ static int mspro_block_suspend(struct memstick_dev *card, pm_message_t state)
 static int mspro_block_resume(struct memstick_dev *card)
 {
 	struct mspro_block_data *msb = memstick_get_drvdata(card);
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 #ifdef CONFIG_MEMSTICK_UNSAFE_RESUME
@@ -1407,7 +1730,12 @@ static int mspro_block_resume(struct memstick_dev *card)
 
 	new_msb->card = card;
 	memstick_set_drvdata(card, new_msb);
+<<<<<<< HEAD
 	if (mspro_block_init_card(card))
+=======
+	rc = mspro_block_init_card(card);
+	if (rc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 
 	for (cnt = 0; new_msb->attr_group.attrs[cnt]
@@ -1434,9 +1762,13 @@ out_unlock:
 
 #endif /* CONFIG_MEMSTICK_UNSAFE_RESUME */
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&msb->q_lock, flags);
 	blk_start_queue(msb->queue);
 	spin_unlock_irqrestore(&msb->q_lock, flags);
+=======
+	blk_mq_start_hw_queues(msb->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 

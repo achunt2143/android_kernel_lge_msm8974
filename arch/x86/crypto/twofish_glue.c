@@ -38,8 +38,13 @@
  * Third Edition.
  */
 
+<<<<<<< HEAD
 #include <crypto/twofish.h>
 #include <linux/crypto.h>
+=======
+#include <crypto/algapi.h>
+#include <crypto/twofish.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -70,7 +75,10 @@ static struct crypto_alg alg = {
 	.cra_ctxsize		=	sizeof(struct twofish_ctx),
 	.cra_alignmask		=	0,
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_list		=	LIST_HEAD_INIT(alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{
 		.cipher = {
 			.cia_min_keysize	=	TF_MIN_KEY_SIZE,
@@ -82,16 +90,25 @@ static struct crypto_alg alg = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init init(void)
+=======
+static int __init twofish_glue_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return crypto_register_alg(&alg);
 }
 
+<<<<<<< HEAD
 static void __exit fini(void)
+=======
+static void __exit twofish_glue_fini(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	crypto_unregister_alg(&alg);
 }
 
+<<<<<<< HEAD
 module_init(init);
 module_exit(fini);
 
@@ -99,3 +116,12 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION ("Twofish Cipher Algorithm, asm optimized");
 MODULE_ALIAS("twofish");
 MODULE_ALIAS("twofish-asm");
+=======
+module_init(twofish_glue_init);
+module_exit(twofish_glue_fini);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION ("Twofish Cipher Algorithm, asm optimized");
+MODULE_ALIAS_CRYPTO("twofish");
+MODULE_ALIAS_CRYPTO("twofish-asm");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

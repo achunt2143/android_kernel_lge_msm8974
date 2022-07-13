@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -11,6 +15,7 @@
  *		Donald Becker, <becker@super.org>
  *		Alan Cox, <alan@lxorguk.ukuu.org.uk>
  *		Steve Whitehouse, <gw7rrm@eeshack3.swan.ac.uk>
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
@@ -132,12 +137,21 @@ struct ethhdr {
 
 #ifdef __KERNEL__
 #include <linux/skbuff.h>
+=======
+ */
+#ifndef _LINUX_IF_ETHER_H
+#define _LINUX_IF_ETHER_H
+
+#include <linux/skbuff.h>
+#include <uapi/linux/if_ether.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct ethhdr *eth_hdr(const struct sk_buff *skb)
 {
 	return (struct ethhdr *)skb_mac_header(skb);
 }
 
+<<<<<<< HEAD
 int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
 
 int mac_pton(const char *s, u8 *mac);
@@ -145,4 +159,23 @@ extern ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len);
 
 #endif
 
+=======
+/* Prefer this version in TX path, instead of
+ * skb_reset_mac_header() + eth_hdr()
+ */
+static inline struct ethhdr *skb_eth_hdr(const struct sk_buff *skb)
+{
+	return (struct ethhdr *)skb->data;
+}
+
+static inline struct ethhdr *inner_eth_hdr(const struct sk_buff *skb)
+{
+	return (struct ethhdr *)skb_inner_mac_header(skb);
+}
+
+int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
+
+extern ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_IF_ETHER_H */

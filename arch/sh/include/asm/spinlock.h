@@ -1,16 +1,25 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * include/asm-sh/spinlock.h
  *
  * Copyright (C) 2002, 2003 Paul Mundt
  * Copyright (C) 2006, 2007 Akio Idehara
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_SH_SPINLOCK_H
 #define __ASM_SH_SPINLOCK_H
 
+<<<<<<< HEAD
 /*
  * The only locking implemented here uses SH-4A opcodes. For others,
  * split this out as per atomic-*.h.
@@ -223,4 +232,14 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
 
+=======
+#if defined(CONFIG_CPU_SH4A)
+#include <asm/spinlock-llsc.h>
+#elif defined(CONFIG_CPU_J2)
+#include <asm/spinlock-cas.h>
+#else
+#error "The configured cpu type does not support spinlocks"
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_SPINLOCK_H */

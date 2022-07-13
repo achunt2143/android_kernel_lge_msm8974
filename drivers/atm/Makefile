@@ -1,13 +1,21 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Linux network (ATM) device drivers.
 #
 
 fore_200e-y	:= fore200e.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_ATM_ZATM)		+= zatm.o uPD98402.o
 obj-$(CONFIG_ATM_NICSTAR)	+= nicstar.o
 obj-$(CONFIG_ATM_AMBASSADOR)	+= ambassador.o
 obj-$(CONFIG_ATM_HORIZON)	+= horizon.o
+=======
+obj-$(CONFIG_ATM_NICSTAR)	+= nicstar.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_ATM_IA)		+= iphase.o suni.o
 obj-$(CONFIG_ATM_FORE200E)	+= fore_200e.o
 obj-$(CONFIG_ATM_ENI)		+= eni.o suni.o
@@ -26,7 +34,10 @@ endif
 
 obj-$(CONFIG_ATM_DUMMY)		+= adummy.o
 obj-$(CONFIG_ATM_TCP)		+= atmtcp.o
+<<<<<<< HEAD
 obj-$(CONFIG_ATM_FIRESTREAM)	+= firestream.o
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_ATM_LANAI)		+= lanai.o
 
 obj-$(CONFIG_ATM_HE)		+= he.o

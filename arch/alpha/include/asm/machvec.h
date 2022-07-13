@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_MACHVEC_H
 #define __ALPHA_MACHVEC_H 1
 
@@ -33,6 +37,10 @@ struct alpha_machine_vector
 
 	int nr_irqs;
 	int rtc_port;
+<<<<<<< HEAD
+=======
+	int rtc_boot_cpu_only;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int max_asn;
 	unsigned long max_isa_dma_address;
 	unsigned long irq_probe_mask;
@@ -44,13 +52,24 @@ struct alpha_machine_vector
 	void (*mv_pci_tbi)(struct pci_controller *hose,
 			   dma_addr_t start, dma_addr_t end);
 
+<<<<<<< HEAD
 	unsigned int (*mv_ioread8)(void __iomem *);
 	unsigned int (*mv_ioread16)(void __iomem *);
 	unsigned int (*mv_ioread32)(void __iomem *);
+=======
+	u8 (*mv_ioread8)(const void __iomem *);
+	u16 (*mv_ioread16)(const void __iomem *);
+	u32 (*mv_ioread32)(const void __iomem *);
+	u64 (*mv_ioread64)(const void __iomem *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*mv_iowrite8)(u8, void __iomem *);
 	void (*mv_iowrite16)(u16, void __iomem *);
 	void (*mv_iowrite32)(u32, void __iomem *);
+<<<<<<< HEAD
+=======
+	void (*mv_iowrite64)(u64, void __iomem *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 (*mv_readb)(const volatile void __iomem *);
 	u16 (*mv_readw)(const volatile void __iomem *);
@@ -95,6 +114,7 @@ struct alpha_machine_vector
 
 	struct _alpha_agp_info *(*agp_info)(void);
 
+<<<<<<< HEAD
 	unsigned int (*rtc_get_time)(struct rtc_time *);
 	int (*rtc_set_time)(struct rtc_time *);
 
@@ -106,6 +126,10 @@ struct alpha_machine_vector
 	unsigned long (*node_mem_start)(int);
 	unsigned long (*node_mem_size)(int);
 
+=======
+	const char *vector_name;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* System specific parameters.  */
 	union {
 	    struct {
@@ -126,6 +150,7 @@ extern struct alpha_machine_vector alpha_mv;
 
 #ifdef CONFIG_ALPHA_GENERIC
 extern int alpha_using_srm;
+<<<<<<< HEAD
 #else
 #ifdef CONFIG_ALPHA_SRM
 #define alpha_using_srm 1
@@ -135,4 +160,21 @@ extern int alpha_using_srm;
 #endif /* GENERIC */
 
 #endif
+=======
+extern int alpha_using_qemu;
+#else
+# ifdef CONFIG_ALPHA_SRM
+#  define alpha_using_srm 1
+# else
+#  define alpha_using_srm 0
+# endif
+# ifdef CONFIG_ALPHA_QEMU
+#  define alpha_using_qemu 1
+# else
+#  define alpha_using_qemu 0
+# endif
+#endif /* GENERIC */
+
+#endif /* __KERNEL__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ALPHA_MACHVEC_H */

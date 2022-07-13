@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * transport_class.h - a generic container for all transport classes
  *
  * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _TRANSPORT_CLASS_H_
@@ -63,16 +70,34 @@ struct transport_container {
 	container_of(x, struct transport_container, ac)
 
 void transport_remove_device(struct device *);
+<<<<<<< HEAD
 void transport_add_device(struct device *);
+=======
+int transport_add_device(struct device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void transport_setup_device(struct device *);
 void transport_configure_device(struct device *);
 void transport_destroy_device(struct device *);
 
+<<<<<<< HEAD
 static inline void
 transport_register_device(struct device *dev)
 {
 	transport_setup_device(dev);
 	transport_add_device(dev);
+=======
+static inline int
+transport_register_device(struct device *dev)
+{
+	int ret;
+
+	transport_setup_device(dev);
+	ret = transport_add_device(dev);
+	if (ret)
+		transport_destroy_device(dev);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void

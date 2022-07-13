@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/core_irongate.c
  *
@@ -19,10 +23,16 @@
 #include <linux/sched.h>
 #include <linux/init.h>
 #include <linux/initrd.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 
 #include <asm/ptrace.h>
 #include <asm/pci.h>
+=======
+#include <linux/memblock.h>
+
+#include <asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 
@@ -233,16 +243,24 @@ albacore_init_arch(void)
 			unsigned long size;
 
 			size = initrd_end - initrd_start;
+<<<<<<< HEAD
 			free_bootmem_node(NODE_DATA(0), __pa(initrd_start),
 					  PAGE_ALIGN(size));
+=======
+			memblock_free((void *)initrd_start, PAGE_ALIGN(size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!move_initrd(pci_mem))
 				printk("irongate_init_arch: initrd too big "
 				       "(%ldK)\ndisabling initrd\n",
 				       size / 1024);
 		}
 #endif
+<<<<<<< HEAD
 		reserve_bootmem_node(NODE_DATA(0), pci_mem, memtop -
 				pci_mem, BOOTMEM_DEFAULT);
+=======
+		memblock_reserve(pci_mem, memtop - pci_mem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("irongate_init_arch: temporarily reserving "
 			"region %08lx-%08lx for PCI\n", pci_mem, memtop - 1);
 	}
@@ -304,7 +322,10 @@ irongate_init_arch(void)
 #include <linux/agp_backend.h>
 #include <linux/agpgart.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GET_PAGE_DIR_OFF(addr) (addr >> 22)
 #define GET_PAGE_DIR_IDX(addr) (GET_PAGE_DIR_OFF(addr))

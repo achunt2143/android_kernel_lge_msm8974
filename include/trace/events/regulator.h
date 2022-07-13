@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM regulator
 
@@ -69,6 +73,41 @@ DEFINE_EVENT(regulator_basic, regulator_disable_complete,
 
 );
 
+<<<<<<< HEAD
+=======
+DEFINE_EVENT(regulator_basic, regulator_bypass_enable,
+
+	TP_PROTO(const char *name),
+
+	TP_ARGS(name)
+
+);
+
+DEFINE_EVENT(regulator_basic, regulator_bypass_enable_complete,
+
+	TP_PROTO(const char *name),
+
+	TP_ARGS(name)
+
+);
+
+DEFINE_EVENT(regulator_basic, regulator_bypass_disable,
+
+	TP_PROTO(const char *name),
+
+	TP_ARGS(name)
+
+);
+
+DEFINE_EVENT(regulator_basic, regulator_bypass_disable_complete,
+
+	TP_PROTO(const char *name),
+
+	TP_ARGS(name)
+
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Events that take a range of numerical values, mostly for voltages
  * and so on.

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * net/sched/sch_sfq.c	Stochastic Fairness Queueing discipline.
  *
@@ -6,6 +7,12 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * net/sched/sch_sfq.c	Stochastic Fairness Queueing discipline.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  */
 
@@ -18,12 +25,20 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/jhash.h>
+=======
+#include <linux/siphash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <net/netlink.h>
 #include <net/pkt_sched.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <net/pkt_cls.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/red.h>
 
 
@@ -121,11 +136,20 @@ struct sfq_sched_data {
 	u8		headdrop;
 	u8		maxdepth;	/* limit of packets per flow */
 
+<<<<<<< HEAD
 	u32		perturbation;
 	u8		cur_depth;	/* depth of longest slot */
 	u8		flags;
 	unsigned short  scaled_quantum; /* SFQ_ALLOT_SIZE(quantum) */
 	struct tcf_proto *filter_list;
+=======
+	siphash_key_t 	perturbation;
+	u8		cur_depth;	/* depth of longest slot */
+	u8		flags;
+	unsigned short  scaled_quantum; /* SFQ_ALLOT_SIZE(quantum) */
+	struct tcf_proto __rcu *filter_list;
+	struct tcf_block *block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sfq_index	*ht;		/* Hash table ('divisor' slots) */
 	struct sfq_slot	*slots;		/* Flows table ('maxflows' entries) */
 
@@ -144,6 +168,10 @@ struct sfq_sched_data {
 	int		perturb_period;
 	unsigned int	quantum;	/* Allotment per round: MUST BE >= MTU */
 	struct timer_list perturb_timer;
+<<<<<<< HEAD
+=======
+	struct Qdisc	*sch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -156,6 +184,7 @@ static inline struct sfq_head *sfq_dep_head(struct sfq_sched_data *q, sfq_index 
 	return &q->dep[val - SFQ_MAX_FLOWS];
 }
 
+<<<<<<< HEAD
 /*
  * In order to be able to quickly rehash our queue when timer changes
  * q->perturbation, we store flow_keys in skb->cb[]
@@ -180,6 +209,12 @@ static unsigned int sfq_hash(const struct sfq_sched_data *q,
 			    (__force u32)keys->src ^ keys->ip_proto,
 			    (__force u32)keys->ports, q->perturbation);
 	return hash & (q->divisor - 1);
+=======
+static unsigned int sfq_hash(const struct sfq_sched_data *q,
+			     const struct sk_buff *skb)
+{
+	return skb_get_hash_perturb(skb, &q->perturbation) & (q->divisor - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
@@ -187,6 +222,10 @@ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
 	struct tcf_result res;
+<<<<<<< HEAD
+=======
+	struct tcf_proto *fl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	if (TC_H_MAJ(skb->priority) == sch->handle &&
@@ -194,6 +233,7 @@ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
 	    TC_H_MIN(skb->priority) <= q->divisor)
 		return TC_H_MIN(skb->priority);
 
+<<<<<<< HEAD
 	if (!q->filter_list) {
 		skb_flow_dissect(skb, &sfq_skb_cb(skb)->keys);
 		return sfq_hash(q, skb) + 1;
@@ -201,12 +241,26 @@ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
 
 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 	result = tc_classify(skb, q->filter_list, &res);
+=======
+	fl = rcu_dereference_bh(q->filter_list);
+	if (!fl)
+		return sfq_hash(q, skb) + 1;
+
+	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+	result = tcf_classify(skb, NULL, fl, &res, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result >= 0) {
 #ifdef CONFIG_NET_CLS_ACT
 		switch (result) {
 		case TC_ACT_STOLEN:
 		case TC_ACT_QUEUED:
+<<<<<<< HEAD
 			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
+=======
+		case TC_ACT_TRAP:
+			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TC_ACT_SHOT:
 			return 0;
 		}
@@ -237,10 +291,19 @@ static inline void sfq_link(struct sfq_sched_data *q, sfq_index x)
 }
 
 #define sfq_unlink(q, x, n, p)			\
+<<<<<<< HEAD
 	n = q->slots[x].dep.next;		\
 	p = q->slots[x].dep.prev;		\
 	sfq_dep_head(q, p)->next = n;		\
 	sfq_dep_head(q, n)->prev = p
+=======
+	do {					\
+		n = q->slots[x].dep.next;	\
+		p = q->slots[x].dep.prev;	\
+		sfq_dep_head(q, p)->next = n;	\
+		sfq_dep_head(q, n)->prev = p;	\
+	} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static inline void sfq_dec(struct sfq_sched_data *q, sfq_index x)
@@ -308,12 +371,16 @@ static inline void slot_queue_add(struct sfq_slot *slot, struct sk_buff *skb)
 	slot->skblist_prev = skb;
 }
 
+<<<<<<< HEAD
 #define	slot_queue_walk(slot, skb)		\
 	for (skb = slot->skblist_next;		\
 	     skb != (struct sk_buff *)slot;	\
 	     skb = skb->next)
 
 static unsigned int sfq_drop(struct Qdisc *sch)
+=======
+static unsigned int sfq_drop(struct Qdisc *sch, struct sk_buff **to_free)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
 	sfq_index x, d = q->cur_depth;
@@ -330,10 +397,16 @@ drop:
 		len = qdisc_pkt_len(skb);
 		slot->backlog -= len;
 		sfq_dec(q, x);
+<<<<<<< HEAD
 		kfree_skb(skb);
 		sch->q.qlen--;
 		sch->qstats.drops++;
 		sch->qstats.backlog -= len;
+=======
+		sch->q.qlen--;
+		qdisc_qstats_backlog_dec(sch, skb);
+		qdisc_drop(skb, sch, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return len;
 	}
 
@@ -367,6 +440,7 @@ static int sfq_headdrop(const struct sfq_sched_data *q)
 }
 
 static int
+<<<<<<< HEAD
 sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
@@ -374,14 +448,28 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	sfq_index x, qlen;
 	struct sfq_slot *slot;
 	int uninitialized_var(ret);
+=======
+sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
+{
+	struct sfq_sched_data *q = qdisc_priv(sch);
+	unsigned int hash, dropped;
+	sfq_index x, qlen;
+	struct sfq_slot *slot;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *head;
 	int delta;
 
 	hash = sfq_classify(skb, sch, &ret);
 	if (hash == 0) {
 		if (ret & __NET_XMIT_BYPASS)
+<<<<<<< HEAD
 			sch->qstats.drops++;
 		kfree_skb(skb);
+=======
+			qdisc_qstats_drop(sch);
+		__qdisc_drop(skb, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	hash--;
@@ -391,7 +479,11 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (x == SFQ_EMPTY_SLOT) {
 		x = q->dep[0].next; /* get a free slot */
 		if (x >= SFQ_MAX_FLOWS)
+<<<<<<< HEAD
 			return qdisc_drop(skb, sch);
+=======
+			return qdisc_drop(skb, sch, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->ht[hash] = x;
 		slot = &q->slots[x];
 		slot->hash = hash;
@@ -410,7 +502,11 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 			break;
 
 		case RED_PROB_MARK:
+<<<<<<< HEAD
 			sch->qstats.overlimits++;
+=======
+			qdisc_qstats_overlimit(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sfq_prob_mark(q)) {
 				/* We know we have at least one packet in queue */
 				if (sfq_headdrop(q) &&
@@ -427,7 +523,11 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 			goto congestion_drop;
 
 		case RED_HARD_MARK:
+<<<<<<< HEAD
 			sch->qstats.overlimits++;
+=======
+			qdisc_qstats_overlimit(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sfq_hard_mark(q)) {
 				/* We know we have at least one packet in queue */
 				if (sfq_headdrop(q) &&
@@ -448,21 +548,36 @@ sfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (slot->qlen >= q->maxdepth) {
 congestion_drop:
 		if (!sfq_headdrop(q))
+<<<<<<< HEAD
 			return qdisc_drop(skb, sch);
+=======
+			return qdisc_drop(skb, sch, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We know we have at least one packet in queue */
 		head = slot_dequeue_head(slot);
 		delta = qdisc_pkt_len(head) - qdisc_pkt_len(skb);
 		sch->qstats.backlog -= delta;
 		slot->backlog -= delta;
+<<<<<<< HEAD
 		qdisc_drop(head, sch);
 
 		slot_queue_add(slot, skb);
+=======
+		qdisc_drop(head, sch, to_free);
+
+		slot_queue_add(slot, skb);
+		qdisc_tree_reduce_backlog(sch, 0, delta);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_XMIT_CN;
 	}
 
 enqueue:
+<<<<<<< HEAD
 	sch->qstats.backlog += qdisc_pkt_len(skb);
+=======
+	qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot->backlog += qdisc_pkt_len(skb);
 	slot_queue_add(slot, skb);
 	sfq_inc(q, x);
@@ -485,6 +600,7 @@ enqueue:
 		return NET_XMIT_SUCCESS;
 
 	qlen = slot->qlen;
+<<<<<<< HEAD
 	sfq_drop(sch);
 	/* Return Congestion Notification only if we dropped a packet
 	 * from this flow.
@@ -494,6 +610,19 @@ enqueue:
 
 	/* As we dropped a packet, better let upper stack know this */
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	dropped = sfq_drop(sch, to_free);
+	/* Return Congestion Notification only if we dropped a packet
+	 * from this flow.
+	 */
+	if (qlen != slot->qlen) {
+		qdisc_tree_reduce_backlog(sch, 0, dropped - qdisc_pkt_len(skb));
+		return NET_XMIT_CN;
+	}
+
+	/* As we dropped a packet, better let upper stack know this */
+	qdisc_tree_reduce_backlog(sch, 1, dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NET_XMIT_SUCCESS;
 }
 
@@ -521,7 +650,11 @@ next_slot:
 	sfq_dec(q, a);
 	qdisc_bstats_update(sch, skb);
 	sch->q.qlen--;
+<<<<<<< HEAD
 	sch->qstats.backlog -= qdisc_pkt_len(skb);
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot->backlog -= qdisc_pkt_len(skb);
 	/* Is the slot empty? */
 	if (slot->qlen == 0) {
@@ -544,7 +677,11 @@ sfq_reset(struct Qdisc *sch)
 	struct sk_buff *skb;
 
 	while ((skb = sfq_dequeue(sch)) != NULL)
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		rtnl_kfree_skbs(skb, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -561,6 +698,10 @@ static void sfq_rehash(struct Qdisc *sch)
 	struct sfq_slot *slot;
 	struct sk_buff_head list;
 	int dropped = 0;
+<<<<<<< HEAD
+=======
+	unsigned int drop_len = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__skb_queue_head_init(&list);
 
@@ -587,7 +728,13 @@ static void sfq_rehash(struct Qdisc *sch)
 		if (x == SFQ_EMPTY_SLOT) {
 			x = q->dep[0].next; /* get a free slot */
 			if (x >= SFQ_MAX_FLOWS) {
+<<<<<<< HEAD
 drop:				sch->qstats.backlog -= qdisc_pkt_len(skb);
+=======
+drop:
+				qdisc_qstats_backlog_dec(sch, skb);
+				drop_len += qdisc_pkt_len(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree_skb(skb);
 				dropped++;
 				continue;
@@ -617,6 +764,7 @@ drop:				sch->qstats.backlog -= qdisc_pkt_len(skb);
 		}
 	}
 	sch->q.qlen -= dropped;
+<<<<<<< HEAD
 	qdisc_tree_decrease_qlen(sch, dropped);
 }
 
@@ -628,12 +776,33 @@ static void sfq_perturbation(unsigned long arg)
 
 	spin_lock(root_lock);
 	q->perturbation = net_random();
+=======
+	qdisc_tree_reduce_backlog(sch, dropped, drop_len);
+}
+
+static void sfq_perturbation(struct timer_list *t)
+{
+	struct sfq_sched_data *q = from_timer(q, t, perturb_timer);
+	struct Qdisc *sch = q->sch;
+	spinlock_t *root_lock;
+	siphash_key_t nkey;
+
+	get_random_bytes(&nkey, sizeof(nkey));
+	rcu_read_lock();
+	root_lock = qdisc_lock(qdisc_root_sleeping(sch));
+	spin_lock(root_lock);
+	q->perturbation = nkey;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!q->filter_list && q->tail)
 		sfq_rehash(sch);
 	spin_unlock(root_lock);
 
 	if (q->perturb_period)
 		mod_timer(&q->perturb_timer, jiffies + q->perturb_period);
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
@@ -641,8 +810,15 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
 	struct sfq_sched_data *q = qdisc_priv(sch);
 	struct tc_sfq_qopt *ctl = nla_data(opt);
 	struct tc_sfq_qopt_v1 *ctl_v1 = NULL;
+<<<<<<< HEAD
 	unsigned int qlen;
 	struct red_parms *p = NULL;
+=======
+	unsigned int qlen, dropped = 0;
+	struct red_parms *p = NULL;
+	struct sk_buff *to_free = NULL;
+	struct sk_buff *tail = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (opt->nla_len < nla_attr_size(sizeof(*ctl)))
 		return -EINVAL;
@@ -651,6 +827,21 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
 	if (ctl->divisor &&
 	    (!is_power_of_2(ctl->divisor) || ctl->divisor > 65536))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+
+	/* slot->allot is a short, make sure quantum is not too big. */
+	if (ctl->quantum) {
+		unsigned int scaled = SFQ_ALLOT_SIZE(ctl->quantum);
+
+		if (scaled <= 0 || scaled > SHRT_MAX)
+			return -EINVAL;
+	}
+
+	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
+					ctl_v1->Wlog, ctl_v1->Scell_log, NULL))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ctl_v1 && ctl_v1->qth_min) {
 		p = kmalloc(sizeof(*p), GFP_KERNEL);
 		if (!p)
@@ -689,14 +880,29 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
 	}
 
 	qlen = sch->q.qlen;
+<<<<<<< HEAD
 	while (sch->q.qlen > q->limit)
 		sfq_drop(sch);
 	qdisc_tree_decrease_qlen(sch, qlen - sch->q.qlen);
+=======
+	while (sch->q.qlen > q->limit) {
+		dropped += sfq_drop(sch, &to_free);
+		if (!tail)
+			tail = to_free;
+	}
+
+	rtnl_kfree_skbs(to_free, tail);
+	qdisc_tree_reduce_backlog(sch, qlen - sch->q.qlen, dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer(&q->perturb_timer);
 	if (q->perturb_period) {
 		mod_timer(&q->perturb_timer, jiffies + q->perturb_period);
+<<<<<<< HEAD
 		q->perturbation = net_random();
+=======
+		get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sch_tree_unlock(sch);
 	kfree(p);
@@ -705,28 +911,40 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
 
 static void *sfq_alloc(size_t sz)
 {
+<<<<<<< HEAD
 	void *ptr = kmalloc(sz, GFP_KERNEL | __GFP_NOWARN);
 
 	if (!ptr)
 		ptr = vmalloc(sz);
 	return ptr;
+=======
+	return  kvmalloc(sz, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sfq_free(void *addr)
 {
+<<<<<<< HEAD
 	if (addr) {
 		if (is_vmalloc_addr(addr))
 			vfree(addr);
 		else
 			kfree(addr);
 	}
+=======
+	kvfree(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sfq_destroy(struct Qdisc *sch)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
 
+<<<<<<< HEAD
 	tcf_destroy_chain(&q->filter_list);
+=======
+	tcf_block_put(q->block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->perturb_period = 0;
 	del_timer_sync(&q->perturb_timer);
 	sfq_free(q->ht);
@@ -734,6 +952,7 @@ static void sfq_destroy(struct Qdisc *sch)
 	kfree(q->red_parms);
 }
 
+<<<<<<< HEAD
 static int sfq_init(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
@@ -742,6 +961,21 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt)
 	q->perturb_timer.function = sfq_perturbation;
 	q->perturb_timer.data = (unsigned long)sch;
 	init_timer_deferrable(&q->perturb_timer);
+=======
+static int sfq_init(struct Qdisc *sch, struct nlattr *opt,
+		    struct netlink_ext_ack *extack)
+{
+	struct sfq_sched_data *q = qdisc_priv(sch);
+	int i;
+	int err;
+
+	q->sch = sch;
+	timer_setup(&q->perturb_timer, sfq_perturbation, TIMER_DEFERRABLE);
+
+	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < SFQ_MAX_DEPTH + 1; i++) {
 		q->dep[i].next = i + SFQ_MAX_FLOWS;
@@ -757,7 +991,11 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt)
 	q->quantum = psched_mtu(qdisc_dev(sch));
 	q->scaled_quantum = SFQ_ALLOT_SIZE(q->quantum);
 	q->perturb_period = 0;
+<<<<<<< HEAD
 	q->perturbation = net_random();
+=======
+	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (opt) {
 		int err = sfq_change(sch, opt);
@@ -768,9 +1006,16 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt)
 	q->ht = sfq_alloc(sizeof(q->ht[0]) * q->divisor);
 	q->slots = sfq_alloc(sizeof(q->slots[0]) * q->maxflows);
 	if (!q->ht || !q->slots) {
+<<<<<<< HEAD
 		sfq_destroy(sch);
 		return -ENOMEM;
 	}
+=======
+		/* Note: sfq_destroy() will be called by our caller */
+		return -ENOMEM;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < q->divisor; i++)
 		q->ht[i] = SFQ_EMPTY_SLOT;
 
@@ -812,7 +1057,12 @@ static int sfq_dump(struct Qdisc *sch, struct sk_buff *skb)
 	memcpy(&opt.stats, &q->stats, sizeof(opt.stats));
 	opt.flags	= q->flags;
 
+<<<<<<< HEAD
 	NLA_PUT(skb, TCA_OPTIONS, sizeof(opt), &opt);
+=======
+	if (nla_put(skb, TCA_OPTIONS, sizeof(opt), &opt))
+		goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb->len;
 
@@ -826,7 +1076,11 @@ static struct Qdisc *sfq_leaf(struct Qdisc *sch, unsigned long arg)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static unsigned long sfq_get(struct Qdisc *sch, u32 classid)
+=======
+static unsigned long sfq_find(struct Qdisc *sch, u32 classid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -834,6 +1088,7 @@ static unsigned long sfq_get(struct Qdisc *sch, u32 classid)
 static unsigned long sfq_bind(struct Qdisc *sch, unsigned long parent,
 			      u32 classid)
 {
+<<<<<<< HEAD
 	/* we cannot bypass queue discipline anymore */
 	sch->flags &= ~TCQ_F_CAN_BYPASS;
 	return 0;
@@ -844,12 +1099,27 @@ static void sfq_put(struct Qdisc *q, unsigned long cl)
 }
 
 static struct tcf_proto **sfq_find_tcf(struct Qdisc *sch, unsigned long cl)
+=======
+	return 0;
+}
+
+static void sfq_unbind(struct Qdisc *q, unsigned long cl)
+{
+}
+
+static struct tcf_block *sfq_tcf_block(struct Qdisc *sch, unsigned long cl,
+				       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sfq_sched_data *q = qdisc_priv(sch);
 
 	if (cl)
 		return NULL;
+<<<<<<< HEAD
 	return &q->filter_list;
+=======
+	return q->block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sfq_dump_class(struct Qdisc *sch, unsigned long cl,
@@ -874,7 +1144,11 @@ static int sfq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 		qs.qlen = slot->qlen;
 		qs.backlog = slot->backlog;
 	}
+<<<<<<< HEAD
 	if (gnet_stats_copy_queue(d, &qs) < 0)
+=======
+	if (gnet_stats_copy_queue(d, NULL, &qs, qs.qlen) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	return gnet_stats_copy_app(d, &xstats, sizeof(xstats));
 }
@@ -888,6 +1162,7 @@ static void sfq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
 		return;
 
 	for (i = 0; i < q->divisor; i++) {
+<<<<<<< HEAD
 		if (q->ht[i] == SFQ_EMPTY_SLOT ||
 		    arg->count < arg->skip) {
 			arg->count++;
@@ -898,16 +1173,31 @@ static void sfq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
 			break;
 		}
 		arg->count++;
+=======
+		if (q->ht[i] == SFQ_EMPTY_SLOT) {
+			arg->count++;
+			continue;
+		}
+		if (!tc_qdisc_stats_dump(sch, i + 1, arg))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static const struct Qdisc_class_ops sfq_class_ops = {
 	.leaf		=	sfq_leaf,
+<<<<<<< HEAD
 	.get		=	sfq_get,
 	.put		=	sfq_put,
 	.tcf_chain	=	sfq_find_tcf,
 	.bind_tcf	=	sfq_bind,
 	.unbind_tcf	=	sfq_put,
+=======
+	.find		=	sfq_find,
+	.tcf_block	=	sfq_tcf_block,
+	.bind_tcf	=	sfq_bind,
+	.unbind_tcf	=	sfq_unbind,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dump		=	sfq_dump_class,
 	.dump_stats	=	sfq_dump_class_stats,
 	.walk		=	sfq_walk,
@@ -920,7 +1210,10 @@ static struct Qdisc_ops sfq_qdisc_ops __read_mostly = {
 	.enqueue	=	sfq_enqueue,
 	.dequeue	=	sfq_dequeue,
 	.peek		=	qdisc_peek_dequeued,
+<<<<<<< HEAD
 	.drop		=	sfq_drop,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		=	sfq_init,
 	.reset		=	sfq_reset,
 	.destroy	=	sfq_destroy,
@@ -928,6 +1221,10 @@ static struct Qdisc_ops sfq_qdisc_ops __read_mostly = {
 	.dump		=	sfq_dump,
 	.owner		=	THIS_MODULE,
 };
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NET_SCH("sfq");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init sfq_module_init(void)
 {
@@ -940,3 +1237,7 @@ static void __exit sfq_module_exit(void)
 module_init(sfq_module_init)
 module_exit(sfq_module_exit)
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Stochastic Fairness qdisc");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

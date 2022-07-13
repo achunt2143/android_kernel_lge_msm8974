@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /*
  * mmc_spi.c - Access SD/MMC cards through SPI master controllers
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Access SD/MMC cards through SPI master controllers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * (C) Copyright 2005, Intec Automation,
  *		Mike Lavender (mike@steroidmicros)
@@ -8,6 +14,7 @@
  *		Hans-Peter Nilsson (hp@axis.com)
  * (C) Copyright 2007, ATRON electronic GmbH,
  *		Jan Nikitenko <jan.nikitenko@gmail.com>
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,19 +30,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sched.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/bio.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc7.h>
 #include <linux/crc-itu-t.h>
 #include <linux/scatterlist.h>
 
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>		/* for R1_SPI_* bit values */
+<<<<<<< HEAD
+=======
+#include <linux/mmc/slot-gpio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spi/spi.h>
 #include <linux/spi/mmc_spi.h>
@@ -90,6 +106,7 @@
 
 #define MMC_SPI_BLOCKSIZE	512
 
+<<<<<<< HEAD
 
 /* These fixed timeouts come from the latest SD specs, which say to ignore
  * the CSD values.  The R1B value is for card erase (e.g. the "I forgot the
@@ -98,6 +115,10 @@
  * shorter timeouts ... but why bother?
  */
 #define r1b_timeout		(HZ * 3)
+=======
+#define MMC_SPI_R1B_TIMEOUT_MS	3000
+#define MMC_SPI_INIT_TIMEOUT_MS	3000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* One of the critical speed parameters is the amount of data which may
  * be transferred in one command. If this value is too low, the SD card
@@ -138,19 +159,27 @@ struct mmc_spi_host {
 	struct spi_transfer	status;
 	struct spi_message	readback;
 
+<<<<<<< HEAD
 	/* underlying DMA-aware controller, or null */
 	struct device		*dma_dev;
 
 	/* buffer used for commands and for message "overhead" */
 	struct scratch		*data;
 	dma_addr_t		data_dma;
+=======
+	/* buffer used for commands and for message "overhead" */
+	struct scratch		*data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Specs say to write ones most of the time, even when the card
 	 * has no need to read its input data; and many cards won't care.
 	 * This is our source of those ones.
 	 */
 	void			*ones;
+<<<<<<< HEAD
 	dma_addr_t		ones_dma;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -166,11 +195,16 @@ static inline int mmc_cs_off(struct mmc_spi_host *host)
 	return spi_setup(host->spi);
 }
 
+<<<<<<< HEAD
 static int
 mmc_spi_readbytes(struct mmc_spi_host *host, unsigned len)
 {
 	int status;
 
+=======
+static int mmc_spi_readbytes(struct mmc_spi_host *host, unsigned int len)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len > sizeof(*host->data)) {
 		WARN_ON(1);
 		return -EIO;
@@ -178,6 +212,7 @@ mmc_spi_readbytes(struct mmc_spi_host *host, unsigned len)
 
 	host->status.len = len;
 
+<<<<<<< HEAD
 	if (host->dma_dev)
 		dma_sync_single_for_device(host->dma_dev,
 				host->data_dma, sizeof(*host->data),
@@ -191,15 +226,25 @@ mmc_spi_readbytes(struct mmc_spi_host *host, unsigned len)
 				DMA_FROM_DEVICE);
 
 	return status;
+=======
+	return spi_sync_locked(host->spi, &host->readback);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mmc_spi_skip(struct mmc_spi_host *host, unsigned long timeout,
 			unsigned n, u8 byte)
 {
+<<<<<<< HEAD
 	u8		*cp = host->data->status;
 	unsigned long start = jiffies;
 
 	while (1) {
+=======
+	u8 *cp = host->data->status;
+	unsigned long start = jiffies;
+
+	do {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int		status;
 		unsigned	i;
 
@@ -212,6 +257,7 @@ static int mmc_spi_skip(struct mmc_spi_host *host, unsigned long timeout,
 				return cp[i];
 		}
 
+<<<<<<< HEAD
 		if (time_is_before_jiffies(start + timeout))
 			break;
 
@@ -222,6 +268,11 @@ static int mmc_spi_skip(struct mmc_spi_host *host, unsigned long timeout,
 		if (time_is_before_jiffies(start+1))
 			schedule();
 	}
+=======
+		/* If we need long timeouts, we may release the CPU */
+		cond_resched();
+	} while (time_is_after_jiffies(start + timeout));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ETIMEDOUT;
 }
 
@@ -261,6 +312,10 @@ static char *maptype(struct mmc_command *cmd)
 static int mmc_spi_response_get(struct mmc_spi_host *host,
 		struct mmc_command *cmd, int cs_on)
 {
+<<<<<<< HEAD
+=======
+	unsigned long timeout_ms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	*cp = host->data->status;
 	u8	*end = cp + host->t.len;
 	int	value = 0;
@@ -359,8 +414,16 @@ checkstatus:
 		/* maybe we read all the busy tokens already */
 		while (cp < end && *cp == 0)
 			cp++;
+<<<<<<< HEAD
 		if (cp == end)
 			mmc_spi_wait_unbusy(host, r1b_timeout);
+=======
+		if (cp == end) {
+			timeout_ms = cmd->busy_timeout ? cmd->busy_timeout :
+				MMC_SPI_R1B_TIMEOUT_MS;
+			mmc_spi_wait_unbusy(host, msecs_to_jiffies(timeout_ms));
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* SPI R2 == R1 + second status byte; SEND_STATUS
@@ -414,7 +477,11 @@ checkstatus:
 
 	default:
 		dev_dbg(&host->spi->dev, "bad response type %04x\n",
+<<<<<<< HEAD
 				mmc_spi_resp_type(cmd));
+=======
+			mmc_spi_resp_type(cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (value >= 0)
 			value = -EINVAL;
 		goto done;
@@ -447,7 +514,10 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 {
 	struct scratch		*data = host->data;
 	u8			*cp = data->status;
+<<<<<<< HEAD
 	u32			arg = cmd->arg;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			status;
 	struct spi_transfer	*t;
 
@@ -464,6 +534,7 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 	 * We init the whole buffer to all-ones, which is what we need
 	 * to write while we're reading (later) response data.
 	 */
+<<<<<<< HEAD
 	memset(cp++, 0xff, sizeof(data->status));
 
 	*cp++ = 0x40 | cmd->opcode;
@@ -472,6 +543,14 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 	*cp++ = (u8)(arg >> 8);
 	*cp++ = (u8)arg;
 	*cp++ = (crc7(0, &data->status[1], 5) << 1) | 0x01;
+=======
+	memset(cp, 0xff, sizeof(data->status));
+
+	cp[1] = 0x40 | cmd->opcode;
+	put_unaligned_be32(cmd->arg, cp + 2);
+	cp[6] = crc7_be(0, cp + 1, 5) | 0x01;
+	cp += 7;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Then, read up to 13 bytes (while writing all-ones):
 	 *  - N(CR) (== 1..8) bytes of all-ones
@@ -522,7 +601,11 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 		/* else:  R1 (most commands) */
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&host->spi->dev, "  mmc_spi: CMD%d, resp %s\n",
+=======
+	dev_dbg(&host->spi->dev, "  CMD%d, resp %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd->opcode, maptype(cmd));
 
 	/* send command, leaving chipselect active */
@@ -531,11 +614,15 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 	t = &host->t;
 	memset(t, 0, sizeof(*t));
 	t->tx_buf = t->rx_buf = data->status;
+<<<<<<< HEAD
 	t->tx_dma = t->rx_dma = host->data_dma;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->len = cp - data->status;
 	t->cs_change = 1;
 	spi_message_add_tail(t, &host->m);
 
+<<<<<<< HEAD
 	if (host->dma_dev) {
 		host->m.is_dma_mapped = 1;
 		dma_sync_single_for_device(host->dma_dev,
@@ -548,6 +635,9 @@ mmc_spi_command_send(struct mmc_spi_host *host,
 		dma_sync_single_for_cpu(host->dma_dev,
 				host->data_dma, sizeof(*host->data),
 				DMA_BIDIRECTIONAL);
+=======
+	status = spi_sync_locked(host->spi, &host->m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		dev_dbg(&host->spi->dev, "  ... write returned %d\n", status);
 		cmd->error = status;
@@ -565,6 +655,7 @@ mmc_spi_command_send(struct mmc_spi_host *host,
  * We always provide TX data for data and CRC.  The MMC/SD protocol
  * requires us to write ones; but Linux defaults to writing zeroes;
  * so we explicitly initialize it to all ones on RX paths.
+<<<<<<< HEAD
  *
  * We also handle DMA mapping, so the underlying SPI controller does
  * not need to (re)do it for each message.
@@ -582,11 +673,25 @@ mmc_spi_setup_data_message(
 	spi_message_init(&host->m);
 	if (dma)
 		host->m.is_dma_mapped = 1;
+=======
+ */
+static void
+mmc_spi_setup_data_message(struct mmc_spi_host *host, bool multiple, bool write)
+{
+	struct spi_transfer	*t;
+	struct scratch		*scratch = host->data;
+
+	spi_message_init(&host->m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* for reads, readblock() skips 0xff bytes before finding
 	 * the token; for writes, this transfer issues that token.
 	 */
+<<<<<<< HEAD
 	if (direction == DMA_TO_DEVICE) {
+=======
+	if (write) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t = &host->token;
 		memset(t, 0, sizeof(*t));
 		t->len = 1;
@@ -595,8 +700,11 @@ mmc_spi_setup_data_message(
 		else
 			scratch->data_token = SPI_TOKEN_SINGLE;
 		t->tx_buf = &scratch->data_token;
+<<<<<<< HEAD
 		if (dma)
 			t->tx_dma = dma + offsetof(struct scratch, data_token);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi_message_add_tail(t, &host->m);
 	}
 
@@ -606,13 +714,17 @@ mmc_spi_setup_data_message(
 	t = &host->t;
 	memset(t, 0, sizeof(*t));
 	t->tx_buf = host->ones;
+<<<<<<< HEAD
 	t->tx_dma = host->ones_dma;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* length and actual buffer info are written later */
 	spi_message_add_tail(t, &host->m);
 
 	t = &host->crc;
 	memset(t, 0, sizeof(*t));
 	t->len = 2;
+<<<<<<< HEAD
 	if (direction == DMA_TO_DEVICE) {
 		/* the actual CRC may get written later */
 		t->tx_buf = &scratch->crc_val;
@@ -624,6 +736,14 @@ mmc_spi_setup_data_message(
 		t->rx_buf = &scratch->crc_val;
 		if (dma)
 			t->rx_dma = dma + offsetof(struct scratch, crc_val);
+=======
+	if (write) {
+		/* the actual CRC may get written later */
+		t->tx_buf = &scratch->crc_val;
+	} else {
+		t->tx_buf = host->ones;
+		t->rx_buf = &scratch->crc_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spi_message_add_tail(t, &host->m);
 
@@ -641,6 +761,7 @@ mmc_spi_setup_data_message(
 	 * the next token (next data block, or STOP_TRAN).  We can try to
 	 * minimize I/O ops by using a single read to collect end-of-busy.
 	 */
+<<<<<<< HEAD
 	if (multiple || direction == DMA_TO_DEVICE) {
 		t = &host->early_status;
 		memset(t, 0, sizeof(*t));
@@ -652,6 +773,14 @@ mmc_spi_setup_data_message(
 		t->rx_buf = scratch->status;
 		if (dma)
 			t->rx_dma = dma + offsetof(struct scratch, status);
+=======
+	if (multiple || write) {
+		t = &host->early_status;
+		memset(t, 0, sizeof(*t));
+		t->len = write ? sizeof(scratch->status) : 1;
+		t->tx_buf = host->ones;
+		t->rx_buf = scratch->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->cs_change = 1;
 		spi_message_add_tail(t, &host->m);
 	}
@@ -679,6 +808,7 @@ mmc_spi_writeblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	u32			pattern;
 
 	if (host->mmc->use_spi_crc)
+<<<<<<< HEAD
 		scratch->crc_val = cpu_to_be16(
 				crc_itu_t(0, t->tx_buf, t->len));
 	if (host->dma_dev)
@@ -688,16 +818,24 @@ mmc_spi_writeblock(struct mmc_spi_host *host, struct spi_transfer *t,
 
 	status = spi_sync_locked(spi, &host->m);
 
+=======
+		scratch->crc_val = cpu_to_be16(crc_itu_t(0, t->tx_buf, t->len));
+
+	status = spi_sync_locked(spi, &host->m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != 0) {
 		dev_dbg(&spi->dev, "write error (%d)\n", status);
 		return status;
 	}
 
+<<<<<<< HEAD
 	if (host->dma_dev)
 		dma_sync_single_for_cpu(host->dma_dev,
 				host->data_dma, sizeof(*scratch),
 				DMA_BIDIRECTIONAL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Get the transmission data-response reply.  It must follow
 	 * immediately after the data block we transferred.  This reply
@@ -710,10 +848,14 @@ mmc_spi_writeblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	 * so we have to cope with this situation and check the response
 	 * bit-by-bit. Arggh!!!
 	 */
+<<<<<<< HEAD
 	pattern  = scratch->status[0] << 24;
 	pattern |= scratch->status[1] << 16;
 	pattern |= scratch->status[2] << 8;
 	pattern |= scratch->status[3];
+=======
+	pattern = get_unaligned_be32(scratch->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First 3 bit of pattern are undefined */
 	pattern |= 0xE0000000;
@@ -749,8 +891,11 @@ mmc_spi_writeblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	}
 
 	t->tx_buf += t->len;
+<<<<<<< HEAD
 	if (host->dma_dev)
 		t->tx_dma += t->len;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return when not busy.  If we didn't collect that status yet,
 	 * we'll need some more I/O.
@@ -814,6 +959,7 @@ mmc_spi_readblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	}
 	leftover = status << 1;
 
+<<<<<<< HEAD
 	if (host->dma_dev) {
 		dma_sync_single_for_device(host->dma_dev,
 				host->data_dma, sizeof(*scratch),
@@ -832,6 +978,12 @@ mmc_spi_readblock(struct mmc_spi_host *host, struct spi_transfer *t,
 		dma_sync_single_for_cpu(host->dma_dev,
 				t->rx_dma, t->len,
 				DMA_FROM_DEVICE);
+=======
+	status = spi_sync_locked(spi, &host->m);
+	if (status < 0) {
+		dev_dbg(&spi->dev, "read error %d\n", status);
+		return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (bitshift) {
@@ -860,16 +1012,25 @@ mmc_spi_readblock(struct mmc_spi_host *host, struct spi_transfer *t,
 
 		be16_to_cpus(&scratch->crc_val);
 		if (scratch->crc_val != crc) {
+<<<<<<< HEAD
 			dev_dbg(&spi->dev, "read - crc error: crc_val=0x%04x, "
 					"computed=0x%04x len=%d\n",
 					scratch->crc_val, crc, t->len);
+=======
+			dev_dbg(&spi->dev,
+				"read - crc error: crc_val=0x%04x, computed=0x%04x len=%d\n",
+				scratch->crc_val, crc, t->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EILSEQ;
 		}
 	}
 
 	t->rx_buf += t->len;
+<<<<<<< HEAD
 	if (host->dma_dev)
 		t->rx_dma += t->len;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -884,6 +1045,7 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 		struct mmc_data *data, u32 blk_size)
 {
 	struct spi_device	*spi = host->spi;
+<<<<<<< HEAD
 	struct device		*dma_dev = host->dma_dev;
 	struct spi_transfer	*t;
 	enum dma_data_direction	direction;
@@ -898,6 +1060,18 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 	else
 		direction = DMA_TO_DEVICE;
 	mmc_spi_setup_data_message(host, multiple, direction);
+=======
+	struct spi_transfer	*t;
+	struct scatterlist	*sg;
+	unsigned		n_sg;
+	bool			multiple = (data->blocks > 1);
+	bool			write = (data->flags & MMC_DATA_WRITE);
+	const char		*write_or_read = write ? "write" : "read";
+	u32			clock_rate;
+	unsigned long		timeout;
+
+	mmc_spi_setup_data_message(host, multiple, write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t = &host->t;
 
 	if (t->speed_hz)
@@ -905,13 +1079,20 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 	else
 		clock_rate = spi->max_speed_hz;
 
+<<<<<<< HEAD
 	timeout = data->timeout_ns +
 		  data->timeout_clks * 1000000 / clock_rate;
 	timeout = usecs_to_jiffies((unsigned int)(timeout / 1000)) + 1;
+=======
+	timeout = data->timeout_ns / 1000 +
+		  data->timeout_clks * 1000000 / clock_rate;
+	timeout = usecs_to_jiffies((unsigned int)timeout) + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Handle scatterlist segments one at a time, with synch for
 	 * each 512-byte block
 	 */
+<<<<<<< HEAD
 	for (sg = data->sg, n_sg = data->sg_len; n_sg; n_sg--, sg++) {
 		int			status = 0;
 		dma_addr_t		dma_addr = 0;
@@ -939,6 +1120,16 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 		/* allow pio too; we don't allow highmem */
 		kmap_addr = kmap(sg_page(sg));
 		if (direction == DMA_TO_DEVICE)
+=======
+	for_each_sg(data->sg, sg, data->sg_len, n_sg) {
+		int			status = 0;
+		void			*kmap_addr;
+		unsigned		length = sg->length;
+
+		/* allow pio too; we don't allow highmem */
+		kmap_addr = kmap(sg_page(sg));
+		if (write)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t->tx_buf = kmap_addr + sg->offset;
 		else
 			t->rx_buf = kmap_addr + sg->offset;
@@ -947,6 +1138,7 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 		while (length) {
 			t->len = min(length, blk_size);
 
+<<<<<<< HEAD
 			dev_dbg(&host->spi->dev,
 				"    mmc_spi: %s block, %d bytes\n",
 				(direction == DMA_TO_DEVICE)
@@ -955,6 +1147,11 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 				t->len);
 
 			if (direction == DMA_TO_DEVICE)
+=======
+			dev_dbg(&spi->dev, "    %s block, %d bytes\n", write_or_read, t->len);
+
+			if (write)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = mmc_spi_writeblock(host, t, timeout);
 			else
 				status = mmc_spi_readblock(host, t, timeout);
@@ -969,6 +1166,7 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 		}
 
 		/* discard mappings */
+<<<<<<< HEAD
 		if (direction == DMA_FROM_DEVICE)
 			flush_kernel_dcache_page(sg_page(sg));
 		kunmap(sg_page(sg));
@@ -981,6 +1179,17 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 				(direction == DMA_TO_DEVICE)
 					? "write" : "read",
 				status);
+=======
+		if (write)
+			/* nothing to do */;
+		else
+			flush_dcache_page(sg_page(sg));
+		kunmap(sg_page(sg));
+
+		if (status < 0) {
+			data->error = status;
+			dev_dbg(&spi->dev, "%s status %d\n", write_or_read, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -991,12 +1200,20 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 	 * that can affect the STOP_TRAN logic.   Complete (and current)
 	 * MMC specs should sort that out before Linux starts using CMD23.
 	 */
+<<<<<<< HEAD
 	if (direction == DMA_TO_DEVICE && multiple) {
+=======
+	if (write && multiple) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct scratch	*scratch = host->data;
 		int		tmp;
 		const unsigned	statlen = sizeof(scratch->status);
 
+<<<<<<< HEAD
 		dev_dbg(&spi->dev, "    mmc_spi: STOP_TRAN\n");
+=======
+		dev_dbg(&spi->dev, "    STOP_TRAN\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Tweak the per-block message we set up earlier by morphing
 		 * it to hold single buffer with the token followed by some
@@ -1011,6 +1228,7 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 		scratch->status[0] = SPI_TOKEN_STOP_TRAN;
 
 		host->early_status.tx_buf = host->early_status.rx_buf;
+<<<<<<< HEAD
 		host->early_status.tx_dma = host->early_status.rx_dma;
 		host->early_status.len = statlen;
 
@@ -1026,6 +1244,11 @@ mmc_spi_data_do(struct mmc_spi_host *host, struct mmc_command *cmd,
 					host->data_dma, sizeof(*scratch),
 					DMA_BIDIRECTIONAL);
 
+=======
+		host->early_status.len = statlen;
+
+		tmp = spi_sync_locked(spi, &host->m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp < 0) {
 			if (!data->error)
 				data->error = tmp;
@@ -1088,7 +1311,11 @@ static void mmc_spi_request(struct mmc_host *mmc, struct mmc_request *mrq)
 #endif
 
 	/* request exclusive bus access */
+<<<<<<< HEAD
 	spi_bus_lock(host->spi->master);
+=======
+	spi_bus_lock(host->spi->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 crc_recover:
 	/* issue command; then optionally data and stop */
@@ -1120,7 +1347,11 @@ crc_recover:
 	}
 
 	/* release the bus */
+<<<<<<< HEAD
 	spi_bus_unlock(host->spi->master);
+=======
+	spi_bus_unlock(host->spi->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc_request_done(host->mmc, mrq);
 }
@@ -1138,7 +1369,11 @@ static void mmc_spi_initsequence(struct mmc_spi_host *host)
 	/* Try to be very sure any previous command has completed;
 	 * wait till not-busy, skip debris from any old commands.
 	 */
+<<<<<<< HEAD
 	mmc_spi_wait_unbusy(host, r1b_timeout);
+=======
+	mmc_spi_wait_unbusy(host, msecs_to_jiffies(MMC_SPI_INIT_TIMEOUT_MS));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc_spi_readbytes(host, 10);
 
 	/*
@@ -1154,17 +1389,35 @@ static void mmc_spi_initsequence(struct mmc_spi_host *host)
 	 * SPI protocol.  Another is that when chipselect is released while
 	 * the card returns BUSY status, the clock must issue several cycles
 	 * with chipselect high before the card will stop driving its output.
+<<<<<<< HEAD
 	 */
 	host->spi->mode |= SPI_CS_HIGH;
+=======
+	 *
+	 * SPI_CS_HIGH means "asserted" here. In some cases like when using
+	 * GPIOs for chip select, SPI_CS_HIGH is set but this will be logically
+	 * inverted by gpiolib, so if we want to ascertain to drive it high
+	 * we should toggle the default with an XOR as we do here.
+	 */
+	host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (spi_setup(host->spi) != 0) {
 		/* Just warn; most cards work without it. */
 		dev_warn(&host->spi->dev,
 				"can't change chip-select polarity\n");
+<<<<<<< HEAD
 		host->spi->mode &= ~SPI_CS_HIGH;
 	} else {
 		mmc_spi_readbytes(host, 18);
 
 		host->spi->mode &= ~SPI_CS_HIGH;
+=======
+		host->spi->mode ^= SPI_CS_HIGH;
+	} else {
+		mmc_spi_readbytes(host, 18);
+
+		host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (spi_setup(host->spi) != 0) {
 			/* Wot, we can't get the same setup we had before? */
 			dev_err(&host->spi->dev,
@@ -1192,7 +1445,11 @@ static void mmc_spi_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		canpower = host->pdata && host->pdata->setpower;
 
+<<<<<<< HEAD
 		dev_dbg(&host->spi->dev, "mmc_spi: power %s (%d)%s\n",
+=======
+		dev_dbg(&host->spi->dev, "power %s (%d)%s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mmc_powerstring(ios->power_mode),
 				ios->vdd,
 				canpower ? ", can switch" : "");
@@ -1253,8 +1510,12 @@ static void mmc_spi_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				mres = spi_setup(host->spi);
 				if (mres < 0)
 					dev_dbg(&host->spi->dev,
+<<<<<<< HEAD
 						"switch back to SPI mode 3"
 						" failed\n");
+=======
+						"switch back to SPI mode 3 failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -1266,12 +1527,17 @@ static void mmc_spi_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		host->spi->max_speed_hz = ios->clock;
 		status = spi_setup(host->spi);
+<<<<<<< HEAD
 		dev_dbg(&host->spi->dev,
 			"mmc_spi:  clock to %d Hz, %d\n",
+=======
+		dev_dbg(&host->spi->dev, "  clock to %d Hz, %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			host->spi->max_speed_hz, status);
 	}
 }
 
+<<<<<<< HEAD
 static int mmc_spi_get_ro(struct mmc_host *mmc)
 {
 	struct mmc_spi_host *host = mmc_priv(mmc);
@@ -1299,6 +1565,13 @@ static const struct mmc_host_ops mmc_spi_ops = {
 	.set_ios	= mmc_spi_set_ios,
 	.get_ro		= mmc_spi_get_ro,
 	.get_cd		= mmc_spi_get_cd,
+=======
+static const struct mmc_host_ops mmc_spi_ops = {
+	.request	= mmc_spi_request,
+	.set_ios	= mmc_spi_set_ios,
+	.get_ro		= mmc_gpio_get_ro,
+	.get_cd		= mmc_gpio_get_cd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1324,11 +1597,19 @@ static int mmc_spi_probe(struct spi_device *spi)
 	struct mmc_host		*mmc;
 	struct mmc_spi_host	*host;
 	int			status;
+<<<<<<< HEAD
+=======
+	bool			has_ro = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We rely on full duplex transfers, mostly to reduce
 	 * per-transfer overheads (by making fewer transfers).
 	 */
+<<<<<<< HEAD
 	if (spi->master->flags & SPI_MASTER_HALF_DUPLEX)
+=======
+	if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* MMC and SD specs only seem to care that sampling is on the
@@ -1390,6 +1671,11 @@ static int mmc_spi_probe(struct spi_device *spi)
 
 	host->ones = ones;
 
+<<<<<<< HEAD
+=======
+	dev_set_drvdata(&spi->dev, mmc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Platform data is used to hook up things like card sensing
 	 * and power switching gpios.
 	 */
@@ -1406,13 +1692,18 @@ static int mmc_spi_probe(struct spi_device *spi)
 			host->powerup_msecs = 250;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, mmc);
 
 	/* preallocate dma buffers */
+=======
+	/* Preallocate buffers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->data = kmalloc(sizeof(*host->data), GFP_KERNEL);
 	if (!host->data)
 		goto fail_nobuf1;
 
+<<<<<<< HEAD
 	if (spi->master->dev.parent->dma_mask) {
 		struct device	*dev = spi->master->dev.parent;
 
@@ -1438,6 +1729,14 @@ static int mmc_spi_probe(struct spi_device *spi)
 	host->status.tx_dma = host->ones_dma;
 	host->status.rx_buf = &host->data->status;
 	host->status.rx_dma = host->data_dma + offsetof(struct scratch, status);
+=======
+	/* setup message for status/busy readback */
+	spi_message_init(&host->readback);
+
+	spi_message_add_tail(&host->status, &host->readback);
+	host->status.tx_buf = host->ones;
+	host->status.rx_buf = &host->data->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->status.cs_change = 1;
 
 	/* register card detect irq */
@@ -1448,6 +1747,7 @@ static int mmc_spi_probe(struct spi_device *spi)
 	}
 
 	/* pass platform capabilities, if any */
+<<<<<<< HEAD
 	if (host->pdata)
 		mmc->caps |= host->pdata->caps;
 
@@ -1460,12 +1760,52 @@ static int mmc_spi_probe(struct spi_device *spi)
 			host->dma_dev ? "" : ", no DMA",
 			(host->pdata && host->pdata->get_ro)
 				? "" : ", no WP",
+=======
+	if (host->pdata) {
+		mmc->caps |= host->pdata->caps;
+		mmc->caps2 |= host->pdata->caps2;
+	}
+
+	status = mmc_add_host(mmc);
+	if (status != 0)
+		goto fail_glue_init;
+
+	/*
+	 * Index 0 is card detect
+	 * Old boardfiles were specifying 1 ms as debounce
+	 */
+	status = mmc_gpiod_request_cd(mmc, NULL, 0, false, 1000);
+	if (status == -EPROBE_DEFER)
+		goto fail_gpiod_request;
+	if (!status) {
+		/*
+		 * The platform has a CD GPIO signal that may support
+		 * interrupts, so let mmc_gpiod_request_cd_irq() decide
+		 * if polling is needed or not.
+		 */
+		mmc->caps &= ~MMC_CAP_NEEDS_POLL;
+		mmc_gpiod_request_cd_irq(mmc);
+	}
+	mmc_detect_change(mmc, 0);
+
+	/* Index 1 is write protect/read only */
+	status = mmc_gpiod_request_ro(mmc, NULL, 1, 0);
+	if (status == -EPROBE_DEFER)
+		goto fail_gpiod_request;
+	if (!status)
+		has_ro = true;
+
+	dev_info(&spi->dev, "SD/MMC host %s%s%s%s\n",
+			dev_name(&mmc->class_dev),
+			has_ro ? "" : ", no WP",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(host->pdata && host->pdata->setpower)
 				? "" : ", no poweroff",
 			(mmc->caps & MMC_CAP_NEEDS_POLL)
 				? ", cd polling" : "");
 	return 0;
 
+<<<<<<< HEAD
 fail_add_host:
 	mmc_remove_host (mmc);
 fail_glue_init:
@@ -1479,12 +1819,22 @@ fail_nobuf1:
 	mmc_spi_put_pdata(spi);
 	dev_set_drvdata(&spi->dev, NULL);
 
+=======
+fail_gpiod_request:
+	mmc_remove_host(mmc);
+fail_glue_init:
+	kfree(host->data);
+fail_nobuf1:
+	mmc_spi_put_pdata(spi);
+	mmc_free_host(mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nomem:
 	kfree(ones);
 	return status;
 }
 
 
+<<<<<<< HEAD
 static int __devexit mmc_spi_remove(struct spi_device *spi)
 {
 	struct mmc_host		*mmc = dev_get_drvdata(&spi->dev);
@@ -1521,10 +1871,43 @@ static struct of_device_id mmc_spi_of_match_table[] __devinitdata = {
 	{ .compatible = "mmc-spi-slot", },
 	{},
 };
+=======
+static void mmc_spi_remove(struct spi_device *spi)
+{
+	struct mmc_host		*mmc = dev_get_drvdata(&spi->dev);
+	struct mmc_spi_host	*host = mmc_priv(mmc);
+
+	/* prevent new mmc_detect_change() calls */
+	if (host->pdata && host->pdata->exit)
+		host->pdata->exit(&spi->dev, mmc);
+
+	mmc_remove_host(mmc);
+
+	kfree(host->data);
+	kfree(host->ones);
+
+	spi->max_speed_hz = mmc->f_max;
+	mmc_spi_put_pdata(spi);
+	mmc_free_host(mmc);
+}
+
+static const struct spi_device_id mmc_spi_dev_ids[] = {
+	{ "mmc-spi-slot"},
+	{ },
+};
+MODULE_DEVICE_TABLE(spi, mmc_spi_dev_ids);
+
+static const struct of_device_id mmc_spi_of_match_table[] = {
+	{ .compatible = "mmc-spi-slot", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, mmc_spi_of_match_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct spi_driver mmc_spi_driver = {
 	.driver = {
 		.name =		"mmc_spi",
+<<<<<<< HEAD
 		.owner =	THIS_MODULE,
 		.of_match_table = mmc_spi_of_match_table,
 	},
@@ -1549,6 +1932,18 @@ module_exit(mmc_spi_exit);
 
 MODULE_AUTHOR("Mike Lavender, David Brownell, "
 		"Hans-Peter Nilsson, Jan Nikitenko");
+=======
+		.of_match_table = mmc_spi_of_match_table,
+	},
+	.id_table =	mmc_spi_dev_ids,
+	.probe =	mmc_spi_probe,
+	.remove =	mmc_spi_remove,
+};
+
+module_spi_driver(mmc_spi_driver);
+
+MODULE_AUTHOR("Mike Lavender, David Brownell, Hans-Peter Nilsson, Jan Nikitenko");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SPI SD/MMC host driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("spi:mmc_spi");

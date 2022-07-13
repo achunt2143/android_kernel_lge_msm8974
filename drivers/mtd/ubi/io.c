@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) International Business Machines Corp., 2006
  * Copyright (c) Nokia Corporation, 2006, 2007
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём)
  */
 
@@ -45,7 +52,11 @@
  * About minimal I/O units. In general, UBI assumes flash device model where
  * there is only one minimal I/O unit size. E.g., in case of NOR flash it is 1,
  * in case of NAND flash it is a NAND page, etc. This is reported by MTD in the
+<<<<<<< HEAD
  * @ubi->mtd->writesize field. But as an exception, UBI admits of using another
+=======
+ * @ubi->mtd->writesize field. But as an exception, UBI admits use of another
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (smaller) minimal I/O unit size for EC and VID headers to make it possible
  * to do different optimizations.
  *
@@ -91,6 +102,7 @@
 #include <linux/slab.h>
 #include "ubi.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_DEBUG
 static int paranoid_check_not_bad(const struct ubi_device *ubi, int pnum);
 static int paranoid_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum);
@@ -106,6 +118,17 @@ static int paranoid_check_vid_hdr(const struct ubi_device *ubi, int pnum,
 #define paranoid_check_peb_vid_hdr(ubi, pnum) 0
 #define paranoid_check_vid_hdr(ubi, pnum, vid_hdr) 0
 #endif
+=======
+static int self_check_not_bad(const struct ubi_device *ubi, int pnum);
+static int self_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum);
+static int self_check_ec_hdr(const struct ubi_device *ubi, int pnum,
+			     const struct ubi_ec_hdr *ec_hdr);
+static int self_check_peb_vid_hdr(const struct ubi_device *ubi, int pnum);
+static int self_check_vid_hdr(const struct ubi_device *ubi, int pnum,
+			      const struct ubi_vid_hdr *vid_hdr);
+static int self_check_write(struct ubi_device *ubi, const void *buf, int pnum,
+			    int offset, int len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ubi_io_read - read data from a physical eraseblock.
@@ -142,7 +165,11 @@ int ubi_io_read(const struct ubi_device *ubi, void *buf, int pnum, int offset,
 	ubi_assert(offset >= 0 && offset + len <= ubi->peb_size);
 	ubi_assert(len > 0);
 
+<<<<<<< HEAD
 	err = paranoid_check_not_bad(ubi, pnum);
+=======
+	err = self_check_not_bad(ubi, pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -183,22 +210,38 @@ retry:
 			 * enabled. A corresponding message will be printed
 			 * later, when it is has been scrubbed.
 			 */
+<<<<<<< HEAD
 			dbg_msg("fixable bit-flip detected at PEB %d", pnum);
+=======
+			ubi_msg(ubi, "fixable bit-flip detected at PEB %d",
+				pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ubi_assert(len == read);
 			return UBI_IO_BITFLIPS;
 		}
 
 		if (retries++ < UBI_IO_RETRIES) {
+<<<<<<< HEAD
 			dbg_io("error %d%s while reading %d bytes from PEB "
 			       "%d:%d, read only %zd bytes, retry",
 			       err, errstr, len, pnum, offset, read);
+=======
+			ubi_warn(ubi, "error %d%s while reading %d bytes from PEB %d:%d, read only %zd bytes, retry",
+				 err, errstr, len, pnum, offset, read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			yield();
 			goto retry;
 		}
 
+<<<<<<< HEAD
 		ubi_err("error %d%s while reading %d bytes from PEB %d:%d, "
 			"read %zd bytes", err, errstr, len, pnum, offset, read);
 		ubi_dbg_dump_stack();
+=======
+		ubi_err(ubi, "error %d%s while reading %d bytes from PEB %d:%d, read %zd bytes",
+			err, errstr, len, pnum, offset, read);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The driver should never return -EBADMSG if it failed to read
@@ -214,7 +257,23 @@ retry:
 
 		if (ubi_dbg_is_bitflip(ubi)) {
 			dbg_gen("bit-flip (emulated)");
+<<<<<<< HEAD
 			err = UBI_IO_BITFLIPS;
+=======
+			return UBI_IO_BITFLIPS;
+		}
+
+		if (ubi_dbg_is_read_failure(ubi, MASK_READ_FAILURE)) {
+			ubi_warn(ubi, "cannot read %d bytes from PEB %d:%d (emulated)",
+				 len, pnum, offset);
+			return -EIO;
+		}
+
+		if (ubi_dbg_is_eccerr(ubi)) {
+			ubi_warn(ubi, "ECC error (emulated) while reading %d bytes from PEB %d:%d, read %zd bytes",
+				 len, pnum, offset, read);
+			return -EBADMSG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -253,6 +312,7 @@ int ubi_io_write(struct ubi_device *ubi, const void *buf, int pnum, int offset,
 	ubi_assert(len > 0 && len % ubi->hdrs_min_io_size == 0);
 
 	if (ubi->ro_mode) {
+<<<<<<< HEAD
 		ubi_err("read-only mode");
 		return -EROFS;
 	}
@@ -260,11 +320,22 @@ int ubi_io_write(struct ubi_device *ubi, const void *buf, int pnum, int offset,
 	/* The below has to be compiled out if paranoid checks are disabled */
 
 	err = paranoid_check_not_bad(ubi, pnum);
+=======
+		ubi_err(ubi, "read-only mode");
+		return -EROFS;
+	}
+
+	err = self_check_not_bad(ubi, pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	/* The area we are writing to has to contain all 0xFF bytes */
+<<<<<<< HEAD
 	err = ubi_dbg_check_all_ff(ubi, pnum, offset, len);
+=======
+	err = ubi_self_check_all_ff(ubi, pnum, offset, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -273,33 +344,57 @@ int ubi_io_write(struct ubi_device *ubi, const void *buf, int pnum, int offset,
 		 * We write to the data area of the physical eraseblock. Make
 		 * sure it has valid EC and VID headers.
 		 */
+<<<<<<< HEAD
 		err = paranoid_check_peb_ec_hdr(ubi, pnum);
 		if (err)
 			return err;
 		err = paranoid_check_peb_vid_hdr(ubi, pnum);
+=======
+		err = self_check_peb_ec_hdr(ubi, pnum);
+		if (err)
+			return err;
+		err = self_check_peb_vid_hdr(ubi, pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 
 	if (ubi_dbg_is_write_failure(ubi)) {
+<<<<<<< HEAD
 		dbg_err("cannot write %d bytes to PEB %d:%d "
 			"(emulated)", len, pnum, offset);
 		ubi_dbg_dump_stack();
+=======
+		ubi_err(ubi, "cannot write %d bytes to PEB %d:%d (emulated)",
+			len, pnum, offset);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
 	addr = (loff_t)pnum * ubi->peb_size + offset;
 	err = mtd_write(ubi->mtd, addr, len, &written, buf);
 	if (err) {
+<<<<<<< HEAD
 		ubi_err("error %d while writing %d bytes to PEB %d:%d, written "
 			"%zd bytes", err, len, pnum, offset, written);
 		ubi_dbg_dump_stack();
 		ubi_dbg_dump_flash(ubi, pnum, offset, len);
+=======
+		ubi_err(ubi, "error %d while writing %d bytes to PEB %d:%d, written %zd bytes",
+			err, len, pnum, offset, written);
+		dump_stack();
+		ubi_dump_flash(ubi, pnum, offset, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ubi_assert(written == len);
 
 	if (!err) {
+<<<<<<< HEAD
 		err = ubi_dbg_check_write(ubi, buf, pnum, offset, len);
+=======
+		err = self_check_write(ubi, buf, pnum, offset, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -310,13 +405,18 @@ int ubi_io_write(struct ubi_device *ubi, const void *buf, int pnum, int offset,
 		offset += len;
 		len = ubi->peb_size - offset;
 		if (len)
+<<<<<<< HEAD
 			err = ubi_dbg_check_all_ff(ubi, pnum, offset, len);
+=======
+			err = ubi_self_check_all_ff(ubi, pnum, offset, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
 /**
+<<<<<<< HEAD
  * erase_callback - MTD erasure call-back.
  * @ei: MTD erase information object.
  *
@@ -329,6 +429,8 @@ static void erase_callback(struct erase_info *ei)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * do_sync_erase - synchronously erase a physical eraseblock.
  * @ubi: UBI device description object
  * @pnum: the physical eraseblock number to erase
@@ -341,17 +443,25 @@ static int do_sync_erase(struct ubi_device *ubi, int pnum)
 {
 	int err, retries = 0;
 	struct erase_info ei;
+<<<<<<< HEAD
 	wait_queue_head_t wq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_io("erase PEB %d", pnum);
 	ubi_assert(pnum >= 0 && pnum < ubi->peb_count);
 
 	if (ubi->ro_mode) {
+<<<<<<< HEAD
 		ubi_err("read-only mode");
+=======
+		ubi_err(ubi, "read-only mode");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EROFS;
 	}
 
 retry:
+<<<<<<< HEAD
 	init_waitqueue_head(&wq);
 	memset(&ei, 0, sizeof(struct erase_info));
 
@@ -360,10 +470,17 @@ retry:
 	ei.len      = ubi->peb_size;
 	ei.callback = erase_callback;
 	ei.priv     = (unsigned long)&wq;
+=======
+	memset(&ei, 0, sizeof(struct erase_info));
+
+	ei.addr     = (loff_t)pnum * ubi->peb_size;
+	ei.len      = ubi->peb_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = mtd_erase(ubi->mtd, &ei);
 	if (err) {
 		if (retries++ < UBI_IO_RETRIES) {
+<<<<<<< HEAD
 			dbg_io("error %d while erasing PEB %d, retry",
 			       err, pnum);
 			yield();
@@ -393,11 +510,28 @@ retry:
 	}
 
 	err = ubi_dbg_check_all_ff(ubi, pnum, 0, ubi->peb_size);
+=======
+			ubi_warn(ubi, "error %d while erasing PEB %d, retry",
+				 err, pnum);
+			yield();
+			goto retry;
+		}
+		ubi_err(ubi, "cannot erase PEB %d, error %d", pnum, err);
+		dump_stack();
+		return err;
+	}
+
+	err = ubi_self_check_all_ff(ubi, pnum, 0, ubi->peb_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	if (ubi_dbg_is_erase_failure(ubi)) {
+<<<<<<< HEAD
 		dbg_err("cannot erase PEB %d (emulated)", pnum);
+=======
+		ubi_err(ubi, "cannot erase PEB %d (emulated)", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -420,7 +554,11 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 {
 	int err, i, patt_count;
 
+<<<<<<< HEAD
 	ubi_msg("run torture test for PEB %d", pnum);
+=======
+	ubi_msg(ubi, "run torture test for PEB %d", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	patt_count = ARRAY_SIZE(patterns);
 	ubi_assert(patt_count > 0);
 
@@ -437,7 +575,11 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 
 		err = ubi_check_pattern(ubi->peb_buf, 0xFF, ubi->peb_size);
 		if (err == 0) {
+<<<<<<< HEAD
 			ubi_err("erased PEB %d, but a non-0xFF byte found",
+=======
+			ubi_err(ubi, "erased PEB %d, but a non-0xFF byte found",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pnum);
 			err = -EIO;
 			goto out;
@@ -457,7 +599,11 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 		err = ubi_check_pattern(ubi->peb_buf, patterns[i],
 					ubi->peb_size);
 		if (err == 0) {
+<<<<<<< HEAD
 			ubi_err("pattern %x checking failed for PEB %d",
+=======
+			ubi_err(ubi, "pattern %x checking failed for PEB %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				patterns[i], pnum);
 			err = -EIO;
 			goto out;
@@ -465,7 +611,11 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 	}
 
 	err = patt_count;
+<<<<<<< HEAD
 	ubi_msg("PEB %d passed torture test, do not mark it as bad", pnum);
+=======
+	ubi_msg(ubi, "PEB %d passed torture test, do not mark it as bad", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&ubi->buf_mutex);
@@ -475,7 +625,11 @@ out:
 		 * has not passed because it happened on a freshly erased
 		 * physical eraseblock which means something is wrong with it.
 		 */
+<<<<<<< HEAD
 		ubi_err("read problems on freshly erased PEB %d, must be bad",
+=======
+		ubi_err(ubi, "read problems on freshly erased PEB %d, must be bad",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pnum);
 		err = -EIO;
 	}
@@ -504,10 +658,20 @@ out:
  */
 static int nor_erase_prepare(struct ubi_device *ubi, int pnum)
 {
+<<<<<<< HEAD
 	int err, err1;
 	size_t written;
 	loff_t addr;
 	uint32_t data = 0;
+=======
+	int err;
+	size_t written;
+	loff_t addr;
+	uint32_t data = 0;
+	struct ubi_ec_hdr ec_hdr;
+	struct ubi_vid_io_buf vidb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Note, we cannot generally define VID header buffers on stack,
 	 * because of the way we deal with these buffers (see the header
@@ -518,6 +682,7 @@ static int nor_erase_prepare(struct ubi_device *ubi, int pnum)
 	struct ubi_vid_hdr vid_hdr;
 
 	/*
+<<<<<<< HEAD
 	 * It is important to first invalidate the EC header, and then the VID
 	 * header. Otherwise a power cut may lead to valid EC header and
 	 * invalid VID header, in which case UBI will treat this PEB as
@@ -564,6 +729,44 @@ static int nor_erase_prepare(struct ubi_device *ubi, int pnum)
 	ubi_err("cannot invalidate PEB %d, write returned %d read returned %d",
 		pnum, err, err1);
 	ubi_dbg_dump_flash(ubi, pnum, 0, ubi->peb_size);
+=======
+	 * If VID or EC is valid, we have to corrupt them before erasing.
+	 * It is important to first invalidate the EC header, and then the VID
+	 * header. Otherwise a power cut may lead to valid EC header and
+	 * invalid VID header, in which case UBI will treat this PEB as
+	 * corrupted and will try to preserve it, and print scary warnings.
+	 */
+	addr = (loff_t)pnum * ubi->peb_size;
+	err = ubi_io_read_ec_hdr(ubi, pnum, &ec_hdr, 0);
+	if (err != UBI_IO_BAD_HDR_EBADMSG && err != UBI_IO_BAD_HDR &&
+	    err != UBI_IO_FF){
+		err = mtd_write(ubi->mtd, addr, 4, &written, (void *)&data);
+		if(err)
+			goto error;
+	}
+
+	ubi_init_vid_buf(ubi, &vidb, &vid_hdr);
+	ubi_assert(&vid_hdr == ubi_get_vid_hdr(&vidb));
+
+	err = ubi_io_read_vid_hdr(ubi, pnum, &vidb, 0);
+	if (err != UBI_IO_BAD_HDR_EBADMSG && err != UBI_IO_BAD_HDR &&
+	    err != UBI_IO_FF){
+		addr += ubi->vid_hdr_aloffset;
+		err = mtd_write(ubi->mtd, addr, 4, &written, (void *)&data);
+		if (err)
+			goto error;
+	}
+	return 0;
+
+error:
+	/*
+	 * The PEB contains a valid VID or EC header, but we cannot invalidate
+	 * it. Supposedly the flash media or the driver is screwed up, so
+	 * return an error.
+	 */
+	ubi_err(ubi, "cannot invalidate PEB %d, write returned %d", pnum, err);
+	ubi_dump_flash(ubi, pnum, 0, ubi->peb_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -589,16 +792,35 @@ int ubi_io_sync_erase(struct ubi_device *ubi, int pnum, int torture)
 
 	ubi_assert(pnum >= 0 && pnum < ubi->peb_count);
 
+<<<<<<< HEAD
 	err = paranoid_check_not_bad(ubi, pnum);
+=======
+	err = self_check_not_bad(ubi, pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err != 0)
 		return err;
 
 	if (ubi->ro_mode) {
+<<<<<<< HEAD
 		ubi_err("read-only mode");
 		return -EROFS;
 	}
 
 	if (ubi->nor_flash) {
+=======
+		ubi_err(ubi, "read-only mode");
+		return -EROFS;
+	}
+
+	/*
+	 * If the flash is ECC-ed then we have to erase the ECC block before we
+	 * can write to it. But the write is in preparation to an erase in the
+	 * first place. This means we cannot zero out EC and VID before the
+	 * erase and we just have to hope the flash starts erasing from the
+	 * start of the page.
+	 */
+	if (ubi->nor_flash && ubi->mtd->writesize == 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = nor_erase_prepare(ubi, pnum);
 		if (err)
 			return err;
@@ -636,7 +858,11 @@ int ubi_io_is_bad(const struct ubi_device *ubi, int pnum)
 
 		ret = mtd_block_isbad(mtd, (loff_t)pnum * ubi->peb_size);
 		if (ret < 0)
+<<<<<<< HEAD
 			ubi_err("error %d while checking if PEB %d is bad",
+=======
+			ubi_err(ubi, "error %d while checking if PEB %d is bad",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret, pnum);
 		else if (ret)
 			dbg_io("PEB %d is bad", pnum);
@@ -662,7 +888,11 @@ int ubi_io_mark_bad(const struct ubi_device *ubi, int pnum)
 	ubi_assert(pnum >= 0 && pnum < ubi->peb_count);
 
 	if (ubi->ro_mode) {
+<<<<<<< HEAD
 		ubi_err("read-only mode");
+=======
+		ubi_err(ubi, "read-only mode");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EROFS;
 	}
 
@@ -671,7 +901,11 @@ int ubi_io_mark_bad(const struct ubi_device *ubi, int pnum)
 
 	err = mtd_block_markbad(mtd, (loff_t)pnum * ubi->peb_size);
 	if (err)
+<<<<<<< HEAD
 		ubi_err("cannot mark PEB %d bad, error %d", pnum, err);
+=======
+		ubi_err(ubi, "cannot mark PEB %d bad, error %d", pnum, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -694,35 +928,57 @@ static int validate_ec_hdr(const struct ubi_device *ubi,
 	leb_start = be32_to_cpu(ec_hdr->data_offset);
 
 	if (ec_hdr->version != UBI_VERSION) {
+<<<<<<< HEAD
 		ubi_err("node with incompatible UBI version found: "
 			"this UBI version is %d, image version is %d",
+=======
+		ubi_err(ubi, "node with incompatible UBI version found: this UBI version is %d, image version is %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			UBI_VERSION, (int)ec_hdr->version);
 		goto bad;
 	}
 
 	if (vid_hdr_offset != ubi->vid_hdr_offset) {
+<<<<<<< HEAD
 		ubi_err("bad VID header offset %d, expected %d",
+=======
+		ubi_err(ubi, "bad VID header offset %d, expected %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vid_hdr_offset, ubi->vid_hdr_offset);
 		goto bad;
 	}
 
 	if (leb_start != ubi->leb_start) {
+<<<<<<< HEAD
 		ubi_err("bad data offset %d, expected %d",
+=======
+		ubi_err(ubi, "bad data offset %d, expected %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			leb_start, ubi->leb_start);
 		goto bad;
 	}
 
 	if (ec < 0 || ec > UBI_MAX_ERASECOUNTER) {
+<<<<<<< HEAD
 		ubi_err("bad erase counter %lld", ec);
+=======
+		ubi_err(ubi, "bad erase counter %lld", ec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	return 0;
 
 bad:
+<<<<<<< HEAD
 	ubi_err("bad EC header");
 	ubi_dbg_dump_ec_hdr(ec_hdr);
 	ubi_dbg_dump_stack();
+=======
+	ubi_err(ubi, "bad EC header");
+	ubi_dump_ec_hdr(ec_hdr);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -786,10 +1042,17 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 		if (ubi_check_pattern(ec_hdr, 0xFF, UBI_EC_HDR_SIZE)) {
 			/* The physical eraseblock is supposedly empty */
 			if (verbose)
+<<<<<<< HEAD
 				ubi_warn("no EC header found at PEB %d, "
 					 "only 0xFF bytes", pnum);
 			dbg_bld("no EC header found at PEB %d, "
 				"only 0xFF bytes", pnum);
+=======
+				ubi_warn(ubi, "no EC header found at PEB %d, only 0xFF bytes",
+					 pnum);
+			dbg_bld("no EC header found at PEB %d, only 0xFF bytes",
+				pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!read_err)
 				return UBI_IO_FF;
 			else
@@ -801,12 +1064,21 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 		 * 0xFF bytes. Report that the header is corrupted.
 		 */
 		if (verbose) {
+<<<<<<< HEAD
 			ubi_warn("bad magic number at PEB %d: %08x instead of "
 				 "%08x", pnum, magic, UBI_EC_HDR_MAGIC);
 			ubi_dbg_dump_ec_hdr(ec_hdr);
 		}
 		dbg_bld("bad magic number at PEB %d: %08x instead of "
 			"%08x", pnum, magic, UBI_EC_HDR_MAGIC);
+=======
+			ubi_warn(ubi, "bad magic number at PEB %d: %08x instead of %08x",
+				 pnum, magic, UBI_EC_HDR_MAGIC);
+			ubi_dump_ec_hdr(ec_hdr);
+		}
+		dbg_bld("bad magic number at PEB %d: %08x instead of %08x",
+			pnum, magic, UBI_EC_HDR_MAGIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return UBI_IO_BAD_HDR;
 	}
 
@@ -815,12 +1087,21 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 
 	if (hdr_crc != crc) {
 		if (verbose) {
+<<<<<<< HEAD
 			ubi_warn("bad EC header CRC at PEB %d, calculated "
 				 "%#08x, read %#08x", pnum, crc, hdr_crc);
 			ubi_dbg_dump_ec_hdr(ec_hdr);
 		}
 		dbg_bld("bad EC header CRC at PEB %d, calculated "
 			"%#08x, read %#08x", pnum, crc, hdr_crc);
+=======
+			ubi_warn(ubi, "bad EC header CRC at PEB %d, calculated %#08x, read %#08x",
+				 pnum, crc, hdr_crc);
+			ubi_dump_ec_hdr(ec_hdr);
+		}
+		dbg_bld("bad EC header CRC at PEB %d, calculated %#08x, read %#08x",
+			pnum, crc, hdr_crc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!read_err)
 			return UBI_IO_BAD_HDR;
@@ -831,7 +1112,11 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 	/* And of course validate what has just been read from the media */
 	err = validate_ec_hdr(ubi, ec_hdr);
 	if (err) {
+<<<<<<< HEAD
 		ubi_err("validation failed for PEB %d", pnum);
+=======
+		ubi_err(ubi, "validation failed for PEB %d", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -839,7 +1124,40 @@ int ubi_io_read_ec_hdr(struct ubi_device *ubi, int pnum,
 	 * If there was %-EBADMSG, but the header CRC is still OK, report about
 	 * a bit-flip to force scrubbing on this PEB.
 	 */
+<<<<<<< HEAD
 	return read_err ? UBI_IO_BITFLIPS : 0;
+=======
+	if (read_err)
+		return UBI_IO_BITFLIPS;
+
+	if (ubi_dbg_is_read_failure(ubi, MASK_READ_FAILURE_EC)) {
+		ubi_warn(ubi, "cannot read EC header from PEB %d (emulated)",
+			 pnum);
+		return -EIO;
+	}
+
+	if (ubi_dbg_is_ff(ubi, MASK_IO_FF_EC)) {
+		ubi_warn(ubi, "bit-all-ff (emulated)");
+		return UBI_IO_FF;
+	}
+
+	if (ubi_dbg_is_ff_bitflips(ubi, MASK_IO_FF_BITFLIPS_EC)) {
+		ubi_warn(ubi, "bit-all-ff with error reported by MTD driver (emulated)");
+		return UBI_IO_FF_BITFLIPS;
+	}
+
+	if (ubi_dbg_is_bad_hdr(ubi, MASK_BAD_HDR_EC)) {
+		ubi_warn(ubi, "bad_hdr (emulated)");
+		return UBI_IO_BAD_HDR;
+	}
+
+	if (ubi_dbg_is_bad_hdr_ebadmsg(ubi, MASK_BAD_HDR_EBADMSG_EC)) {
+		ubi_warn(ubi, "bad_hdr with ECC error (emulated)");
+		return UBI_IO_BAD_HDR_EBADMSG;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -874,10 +1192,23 @@ int ubi_io_write_ec_hdr(struct ubi_device *ubi, int pnum,
 	crc = crc32(UBI_CRC32_INIT, ec_hdr, UBI_EC_HDR_SIZE_CRC);
 	ec_hdr->hdr_crc = cpu_to_be32(crc);
 
+<<<<<<< HEAD
 	err = paranoid_check_ec_hdr(ubi, pnum, ec_hdr);
 	if (err)
 		return err;
 
+=======
+	err = self_check_ec_hdr(ubi, pnum, ec_hdr);
+	if (err)
+		return err;
+
+	if (ubi_dbg_is_power_cut(ubi, MASK_POWER_CUT_EC)) {
+		ubi_warn(ubi, "emulating a power cut when writing EC header");
+		ubi_ro_mode(ubi);
+		return -EROFS;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ubi_io_write(ubi, ec_hdr, pnum, 0, ubi->ec_hdr_alsize);
 	return err;
 }
@@ -905,45 +1236,77 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 	int usable_leb_size = ubi->leb_size - data_pad;
 
 	if (copy_flag != 0 && copy_flag != 1) {
+<<<<<<< HEAD
 		dbg_err("bad copy_flag");
+=======
+		ubi_err(ubi, "bad copy_flag");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (vol_id < 0 || lnum < 0 || data_size < 0 || used_ebs < 0 ||
 	    data_pad < 0) {
+<<<<<<< HEAD
 		dbg_err("negative values");
+=======
+		ubi_err(ubi, "negative values");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (vol_id >= UBI_MAX_VOLUMES && vol_id < UBI_INTERNAL_VOL_START) {
+<<<<<<< HEAD
 		dbg_err("bad vol_id");
+=======
+		ubi_err(ubi, "bad vol_id");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (vol_id < UBI_INTERNAL_VOL_START && compat != 0) {
+<<<<<<< HEAD
 		dbg_err("bad compat");
+=======
+		ubi_err(ubi, "bad compat");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (vol_id >= UBI_INTERNAL_VOL_START && compat != UBI_COMPAT_DELETE &&
 	    compat != UBI_COMPAT_RO && compat != UBI_COMPAT_PRESERVE &&
 	    compat != UBI_COMPAT_REJECT) {
+<<<<<<< HEAD
 		dbg_err("bad compat");
+=======
+		ubi_err(ubi, "bad compat");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (vol_type != UBI_VID_DYNAMIC && vol_type != UBI_VID_STATIC) {
+<<<<<<< HEAD
 		dbg_err("bad vol_type");
+=======
+		ubi_err(ubi, "bad vol_type");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (data_pad >= ubi->leb_size / 2) {
+<<<<<<< HEAD
 		dbg_err("bad data_pad");
+=======
+		ubi_err(ubi, "bad data_pad");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (data_size > ubi->leb_size) {
+<<<<<<< HEAD
 		dbg_err("bad data_size");
+=======
+		ubi_err(ubi, "bad data_size");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
@@ -955,15 +1318,24 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 		 * mapped logical eraseblocks.
 		 */
 		if (used_ebs == 0) {
+<<<<<<< HEAD
 			dbg_err("zero used_ebs");
 			goto bad;
 		}
 		if (data_size == 0) {
 			dbg_err("zero data_size");
+=======
+			ubi_err(ubi, "zero used_ebs");
+			goto bad;
+		}
+		if (data_size == 0) {
+			ubi_err(ubi, "zero data_size");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bad;
 		}
 		if (lnum < used_ebs - 1) {
 			if (data_size != usable_leb_size) {
+<<<<<<< HEAD
 				dbg_err("bad data_size");
 				goto bad;
 			}
@@ -974,26 +1346,49 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 			}
 		} else {
 			dbg_err("too high lnum");
+=======
+				ubi_err(ubi, "bad data_size");
+				goto bad;
+			}
+		} else if (lnum > used_ebs - 1) {
+			ubi_err(ubi, "too high lnum");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bad;
 		}
 	} else {
 		if (copy_flag == 0) {
 			if (data_crc != 0) {
+<<<<<<< HEAD
 				dbg_err("non-zero data CRC");
 				goto bad;
 			}
 			if (data_size != 0) {
 				dbg_err("non-zero data_size");
+=======
+				ubi_err(ubi, "non-zero data CRC");
+				goto bad;
+			}
+			if (data_size != 0) {
+				ubi_err(ubi, "non-zero data_size");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto bad;
 			}
 		} else {
 			if (data_size == 0) {
+<<<<<<< HEAD
 				dbg_err("zero data_size of copy");
+=======
+				ubi_err(ubi, "zero data_size of copy");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto bad;
 			}
 		}
 		if (used_ebs != 0) {
+<<<<<<< HEAD
 			dbg_err("bad used_ebs");
+=======
+			ubi_err(ubi, "bad used_ebs");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bad;
 		}
 	}
@@ -1001,9 +1396,15 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 	return 0;
 
 bad:
+<<<<<<< HEAD
 	ubi_err("bad VID header");
 	ubi_dbg_dump_vid_hdr(vid_hdr);
 	ubi_dbg_dump_stack();
+=======
+	ubi_err(ubi, "bad VID header");
+	ubi_dump_vid_hdr(vid_hdr);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1011,12 +1412,20 @@ bad:
  * ubi_io_read_vid_hdr - read and check a volume identifier header.
  * @ubi: UBI device description object
  * @pnum: physical eraseblock number to read from
+<<<<<<< HEAD
  * @vid_hdr: &struct ubi_vid_hdr object where to store the read volume
  * identifier header
  * @verbose: be verbose if the header is corrupted or wasn't found
  *
  * This function reads the volume identifier header from physical eraseblock
  * @pnum and stores it in @vid_hdr. It also checks CRC checksum of the read
+=======
+ * @vidb: the volume identifier buffer to store data in
+ * @verbose: be verbose if the header is corrupted or wasn't found
+ *
+ * This function reads the volume identifier header from physical eraseblock
+ * @pnum and stores it in @vidb. It also checks CRC checksum of the read
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * volume identifier header. The error codes are the same as in
  * 'ubi_io_read_ec_hdr()'.
  *
@@ -1024,18 +1433,32 @@ bad:
  * 'ubi_io_read_ec_hdr()', so refer commentaries in 'ubi_io_read_ec_hdr()'.
  */
 int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
+<<<<<<< HEAD
 			struct ubi_vid_hdr *vid_hdr, int verbose)
 {
 	int err, read_err;
 	uint32_t crc, magic, hdr_crc;
 	void *p;
+=======
+			struct ubi_vid_io_buf *vidb, int verbose)
+{
+	int err, read_err;
+	uint32_t crc, magic, hdr_crc;
+	struct ubi_vid_hdr *vid_hdr = ubi_get_vid_hdr(vidb);
+	void *p = vidb->buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_io("read VID header from PEB %d", pnum);
 	ubi_assert(pnum >= 0 &&  pnum < ubi->peb_count);
 
+<<<<<<< HEAD
 	p = (char *)vid_hdr - ubi->vid_hdr_shift;
 	read_err = ubi_io_read(ubi, p, pnum, ubi->vid_hdr_aloffset,
 			  ubi->vid_hdr_alsize);
+=======
+	read_err = ubi_io_read(ubi, p, pnum, ubi->vid_hdr_aloffset,
+			  ubi->vid_hdr_shift + UBI_VID_HDR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (read_err && read_err != UBI_IO_BITFLIPS && !mtd_is_eccerr(read_err))
 		return read_err;
 
@@ -1046,10 +1469,17 @@ int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
 
 		if (ubi_check_pattern(vid_hdr, 0xFF, UBI_VID_HDR_SIZE)) {
 			if (verbose)
+<<<<<<< HEAD
 				ubi_warn("no VID header found at PEB %d, "
 					 "only 0xFF bytes", pnum);
 			dbg_bld("no VID header found at PEB %d, "
 				"only 0xFF bytes", pnum);
+=======
+				ubi_warn(ubi, "no VID header found at PEB %d, only 0xFF bytes",
+					 pnum);
+			dbg_bld("no VID header found at PEB %d, only 0xFF bytes",
+				pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!read_err)
 				return UBI_IO_FF;
 			else
@@ -1057,12 +1487,21 @@ int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
 		}
 
 		if (verbose) {
+<<<<<<< HEAD
 			ubi_warn("bad magic number at PEB %d: %08x instead of "
 				 "%08x", pnum, magic, UBI_VID_HDR_MAGIC);
 			ubi_dbg_dump_vid_hdr(vid_hdr);
 		}
 		dbg_bld("bad magic number at PEB %d: %08x instead of "
 			"%08x", pnum, magic, UBI_VID_HDR_MAGIC);
+=======
+			ubi_warn(ubi, "bad magic number at PEB %d: %08x instead of %08x",
+				 pnum, magic, UBI_VID_HDR_MAGIC);
+			ubi_dump_vid_hdr(vid_hdr);
+		}
+		dbg_bld("bad magic number at PEB %d: %08x instead of %08x",
+			pnum, magic, UBI_VID_HDR_MAGIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return UBI_IO_BAD_HDR;
 	}
 
@@ -1071,12 +1510,21 @@ int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
 
 	if (hdr_crc != crc) {
 		if (verbose) {
+<<<<<<< HEAD
 			ubi_warn("bad CRC at PEB %d, calculated %#08x, "
 				 "read %#08x", pnum, crc, hdr_crc);
 			ubi_dbg_dump_vid_hdr(vid_hdr);
 		}
 		dbg_bld("bad CRC at PEB %d, calculated %#08x, "
 			"read %#08x", pnum, crc, hdr_crc);
+=======
+			ubi_warn(ubi, "bad CRC at PEB %d, calculated %#08x, read %#08x",
+				 pnum, crc, hdr_crc);
+			ubi_dump_vid_hdr(vid_hdr);
+		}
+		dbg_bld("bad CRC at PEB %d, calculated %#08x, read %#08x",
+			pnum, crc, hdr_crc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!read_err)
 			return UBI_IO_BAD_HDR;
 		else
@@ -1085,39 +1533,98 @@ int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
 
 	err = validate_vid_hdr(ubi, vid_hdr);
 	if (err) {
+<<<<<<< HEAD
 		ubi_err("validation failed for PEB %d", pnum);
 		return -EINVAL;
 	}
 
 	return read_err ? UBI_IO_BITFLIPS : 0;
+=======
+		ubi_err(ubi, "validation failed for PEB %d", pnum);
+		return -EINVAL;
+	}
+
+	if (read_err)
+		return UBI_IO_BITFLIPS;
+
+	if (ubi_dbg_is_read_failure(ubi, MASK_READ_FAILURE_VID)) {
+		ubi_warn(ubi, "cannot read VID header from PEB %d (emulated)",
+			 pnum);
+		return -EIO;
+	}
+
+	if (ubi_dbg_is_ff(ubi, MASK_IO_FF_VID)) {
+		ubi_warn(ubi, "bit-all-ff (emulated)");
+		return UBI_IO_FF;
+	}
+
+	if (ubi_dbg_is_ff_bitflips(ubi, MASK_IO_FF_BITFLIPS_VID)) {
+		ubi_warn(ubi, "bit-all-ff with error reported by MTD driver (emulated)");
+		return UBI_IO_FF_BITFLIPS;
+	}
+
+	if (ubi_dbg_is_bad_hdr(ubi, MASK_BAD_HDR_VID)) {
+		ubi_warn(ubi, "bad_hdr (emulated)");
+		return UBI_IO_BAD_HDR;
+	}
+
+	if (ubi_dbg_is_bad_hdr_ebadmsg(ubi, MASK_BAD_HDR_EBADMSG_VID)) {
+		ubi_warn(ubi, "bad_hdr with ECC error (emulated)");
+		return UBI_IO_BAD_HDR_EBADMSG;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ubi_io_write_vid_hdr - write a volume identifier header.
  * @ubi: UBI device description object
  * @pnum: the physical eraseblock number to write to
+<<<<<<< HEAD
  * @vid_hdr: the volume identifier header to write
  *
  * This function writes the volume identifier header described by @vid_hdr to
  * physical eraseblock @pnum. This function automatically fills the
  * @vid_hdr->magic and the @vid_hdr->version fields, as well as calculates
  * header CRC checksum and stores it at vid_hdr->hdr_crc.
+=======
+ * @vidb: the volume identifier buffer to write
+ *
+ * This function writes the volume identifier header described by @vid_hdr to
+ * physical eraseblock @pnum. This function automatically fills the
+ * @vidb->hdr->magic and the @vidb->hdr->version fields, as well as calculates
+ * header CRC checksum and stores it at vidb->hdr->hdr_crc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function returns zero in case of success and a negative error code in
  * case of failure. If %-EIO is returned, the physical eraseblock probably went
  * bad.
  */
 int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
+<<<<<<< HEAD
 			 struct ubi_vid_hdr *vid_hdr)
 {
 	int err;
 	uint32_t crc;
 	void *p;
+=======
+			 struct ubi_vid_io_buf *vidb)
+{
+	struct ubi_vid_hdr *vid_hdr = ubi_get_vid_hdr(vidb);
+	int err;
+	uint32_t crc;
+	void *p = vidb->buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_io("write VID header to PEB %d", pnum);
 	ubi_assert(pnum >= 0 &&  pnum < ubi->peb_count);
 
+<<<<<<< HEAD
 	err = paranoid_check_peb_ec_hdr(ubi, pnum);
+=======
+	err = self_check_peb_ec_hdr(ubi, pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1126,44 +1633,79 @@ int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 	crc = crc32(UBI_CRC32_INIT, vid_hdr, UBI_VID_HDR_SIZE_CRC);
 	vid_hdr->hdr_crc = cpu_to_be32(crc);
 
+<<<<<<< HEAD
 	err = paranoid_check_vid_hdr(ubi, pnum, vid_hdr);
 	if (err)
 		return err;
 
 	p = (char *)vid_hdr - ubi->vid_hdr_shift;
+=======
+	err = self_check_vid_hdr(ubi, pnum, vid_hdr);
+	if (err)
+		return err;
+
+	if (ubi_dbg_is_power_cut(ubi, MASK_POWER_CUT_VID)) {
+		ubi_warn(ubi, "emulating a power cut when writing VID header");
+		ubi_ro_mode(ubi);
+		return -EROFS;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ubi_io_write(ubi, p, pnum, ubi->vid_hdr_aloffset,
 			   ubi->vid_hdr_alsize);
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_DEBUG
 
 /**
  * paranoid_check_not_bad - ensure that a physical eraseblock is not bad.
+=======
+/**
+ * self_check_not_bad - ensure that a physical eraseblock is not bad.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @pnum: physical eraseblock number to check
  *
  * This function returns zero if the physical eraseblock is good, %-EINVAL if
  * it is bad and a negative error code if an error occurred.
  */
+<<<<<<< HEAD
 static int paranoid_check_not_bad(const struct ubi_device *ubi, int pnum)
 {
 	int err;
 
 	if (!ubi->dbg->chk_io)
+=======
+static int self_check_not_bad(const struct ubi_device *ubi, int pnum)
+{
+	int err;
+
+	if (!ubi_dbg_chk_io(ubi))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	err = ubi_io_is_bad(ubi, pnum);
 	if (!err)
 		return err;
 
+<<<<<<< HEAD
 	ubi_err("paranoid check failed for PEB %d", pnum);
 	ubi_dbg_dump_stack();
+=======
+	ubi_err(ubi, "self-check failed for PEB %d", pnum);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err > 0 ? -EINVAL : err;
 }
 
 /**
+<<<<<<< HEAD
  * paranoid_check_ec_hdr - check if an erase counter header is all right.
+=======
+ * self_check_ec_hdr - check if an erase counter header is all right.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @pnum: physical eraseblock number the erase counter header belongs to
  * @ec_hdr: the erase counter header to check
@@ -1171,37 +1713,60 @@ static int paranoid_check_not_bad(const struct ubi_device *ubi, int pnum)
  * This function returns zero if the erase counter header contains valid
  * values, and %-EINVAL if not.
  */
+<<<<<<< HEAD
 static int paranoid_check_ec_hdr(const struct ubi_device *ubi, int pnum,
 				 const struct ubi_ec_hdr *ec_hdr)
+=======
+static int self_check_ec_hdr(const struct ubi_device *ubi, int pnum,
+			     const struct ubi_ec_hdr *ec_hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	uint32_t magic;
 
+<<<<<<< HEAD
 	if (!ubi->dbg->chk_io)
+=======
+	if (!ubi_dbg_chk_io(ubi))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	magic = be32_to_cpu(ec_hdr->magic);
 	if (magic != UBI_EC_HDR_MAGIC) {
+<<<<<<< HEAD
 		ubi_err("bad magic %#08x, must be %#08x",
+=======
+		ubi_err(ubi, "bad magic %#08x, must be %#08x",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			magic, UBI_EC_HDR_MAGIC);
 		goto fail;
 	}
 
 	err = validate_ec_hdr(ubi, ec_hdr);
 	if (err) {
+<<<<<<< HEAD
 		ubi_err("paranoid check failed for PEB %d", pnum);
+=======
+		ubi_err(ubi, "self-check failed for PEB %d", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	ubi_dbg_dump_ec_hdr(ec_hdr);
 	ubi_dbg_dump_stack();
+=======
+	ubi_dump_ec_hdr(ec_hdr);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 /**
+<<<<<<< HEAD
  * paranoid_check_peb_ec_hdr - check erase counter header.
  * @ubi: UBI device description object
  * @pnum: the physical eraseblock number to check
@@ -1210,12 +1775,26 @@ fail:
  * a negative error code if not or if an error occurred.
  */
 static int paranoid_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum)
+=======
+ * self_check_peb_ec_hdr - check erase counter header.
+ * @ubi: UBI device description object
+ * @pnum: the physical eraseblock number to check
+ *
+ * This function returns zero if the erase counter header is all right and
+ * a negative error code if not or if an error occurred.
+ */
+static int self_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	uint32_t crc, hdr_crc;
 	struct ubi_ec_hdr *ec_hdr;
 
+<<<<<<< HEAD
 	if (!ubi->dbg->chk_io)
+=======
+	if (!ubi_dbg_chk_io(ubi))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ec_hdr = kzalloc(ubi->ec_hdr_alsize, GFP_NOFS);
@@ -1229,15 +1808,27 @@ static int paranoid_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum)
 	crc = crc32(UBI_CRC32_INIT, ec_hdr, UBI_EC_HDR_SIZE_CRC);
 	hdr_crc = be32_to_cpu(ec_hdr->hdr_crc);
 	if (hdr_crc != crc) {
+<<<<<<< HEAD
 		ubi_err("bad CRC, calculated %#08x, read %#08x", crc, hdr_crc);
 		ubi_err("paranoid check failed for PEB %d", pnum);
 		ubi_dbg_dump_ec_hdr(ec_hdr);
 		ubi_dbg_dump_stack();
+=======
+		ubi_err(ubi, "bad CRC, calculated %#08x, read %#08x",
+			crc, hdr_crc);
+		ubi_err(ubi, "self-check failed for PEB %d", pnum);
+		ubi_dump_ec_hdr(ec_hdr);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	err = paranoid_check_ec_hdr(ubi, pnum, ec_hdr);
+=======
+	err = self_check_ec_hdr(ubi, pnum, ec_hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	kfree(ec_hdr);
@@ -1245,7 +1836,11 @@ exit:
 }
 
 /**
+<<<<<<< HEAD
  * paranoid_check_vid_hdr - check that a volume identifier header is all right.
+=======
+ * self_check_vid_hdr - check that a volume identifier header is all right.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @pnum: physical eraseblock number the volume identifier header belongs to
  * @vid_hdr: the volume identifier header to check
@@ -1253,46 +1848,74 @@ exit:
  * This function returns zero if the volume identifier header is all right, and
  * %-EINVAL if not.
  */
+<<<<<<< HEAD
 static int paranoid_check_vid_hdr(const struct ubi_device *ubi, int pnum,
 				  const struct ubi_vid_hdr *vid_hdr)
+=======
+static int self_check_vid_hdr(const struct ubi_device *ubi, int pnum,
+			      const struct ubi_vid_hdr *vid_hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	uint32_t magic;
 
+<<<<<<< HEAD
 	if (!ubi->dbg->chk_io)
+=======
+	if (!ubi_dbg_chk_io(ubi))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	magic = be32_to_cpu(vid_hdr->magic);
 	if (magic != UBI_VID_HDR_MAGIC) {
+<<<<<<< HEAD
 		ubi_err("bad VID header magic %#08x at PEB %d, must be %#08x",
+=======
+		ubi_err(ubi, "bad VID header magic %#08x at PEB %d, must be %#08x",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			magic, pnum, UBI_VID_HDR_MAGIC);
 		goto fail;
 	}
 
 	err = validate_vid_hdr(ubi, vid_hdr);
 	if (err) {
+<<<<<<< HEAD
 		ubi_err("paranoid check failed for PEB %d", pnum);
+=======
+		ubi_err(ubi, "self-check failed for PEB %d", pnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	return err;
 
 fail:
+<<<<<<< HEAD
 	ubi_err("paranoid check failed for PEB %d", pnum);
 	ubi_dbg_dump_vid_hdr(vid_hdr);
 	ubi_dbg_dump_stack();
+=======
+	ubi_err(ubi, "self-check failed for PEB %d", pnum);
+	ubi_dump_vid_hdr(vid_hdr);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 
 }
 
 /**
+<<<<<<< HEAD
  * paranoid_check_peb_vid_hdr - check volume identifier header.
+=======
+ * self_check_peb_vid_hdr - check volume identifier header.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @pnum: the physical eraseblock number to check
  *
  * This function returns zero if the volume identifier header is all right,
  * and a negative error code if not or if an error occurred.
  */
+<<<<<<< HEAD
 static int paranoid_check_peb_vid_hdr(const struct ubi_device *ubi, int pnum)
 {
 	int err;
@@ -1308,11 +1931,31 @@ static int paranoid_check_peb_vid_hdr(const struct ubi_device *ubi, int pnum)
 		return -ENOMEM;
 
 	p = (char *)vid_hdr - ubi->vid_hdr_shift;
+=======
+static int self_check_peb_vid_hdr(const struct ubi_device *ubi, int pnum)
+{
+	int err;
+	uint32_t crc, hdr_crc;
+	struct ubi_vid_io_buf *vidb;
+	struct ubi_vid_hdr *vid_hdr;
+	void *p;
+
+	if (!ubi_dbg_chk_io(ubi))
+		return 0;
+
+	vidb = ubi_alloc_vid_buf(ubi, GFP_NOFS);
+	if (!vidb)
+		return -ENOMEM;
+
+	vid_hdr = ubi_get_vid_hdr(vidb);
+	p = vidb->buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ubi_io_read(ubi, p, pnum, ubi->vid_hdr_aloffset,
 			  ubi->vid_hdr_alsize);
 	if (err && err != UBI_IO_BITFLIPS && !mtd_is_eccerr(err))
 		goto exit;
 
+<<<<<<< HEAD
 	crc = crc32(UBI_CRC32_INIT, vid_hdr, UBI_EC_HDR_SIZE_CRC);
 	hdr_crc = be32_to_cpu(vid_hdr->hdr_crc);
 	if (hdr_crc != crc) {
@@ -1321,19 +1964,40 @@ static int paranoid_check_peb_vid_hdr(const struct ubi_device *ubi, int pnum)
 		ubi_err("paranoid check failed for PEB %d", pnum);
 		ubi_dbg_dump_vid_hdr(vid_hdr);
 		ubi_dbg_dump_stack();
+=======
+	crc = crc32(UBI_CRC32_INIT, vid_hdr, UBI_VID_HDR_SIZE_CRC);
+	hdr_crc = be32_to_cpu(vid_hdr->hdr_crc);
+	if (hdr_crc != crc) {
+		ubi_err(ubi, "bad VID header CRC at PEB %d, calculated %#08x, read %#08x",
+			pnum, crc, hdr_crc);
+		ubi_err(ubi, "self-check failed for PEB %d", pnum);
+		ubi_dump_vid_hdr(vid_hdr);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	err = paranoid_check_vid_hdr(ubi, pnum, vid_hdr);
 
 exit:
 	ubi_free_vid_hdr(ubi, vid_hdr);
+=======
+	err = self_check_vid_hdr(ubi, pnum, vid_hdr);
+
+exit:
+	ubi_free_vid_buf(vidb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /**
+<<<<<<< HEAD
  * ubi_dbg_check_write - make sure write succeeded.
+=======
+ * self_check_write - make sure write succeeded.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @buf: buffer with data which were written
  * @pnum: physical eraseblock number the data were written to
@@ -1344,20 +2008,34 @@ exit:
  * the original data buffer - the data have to match. Returns zero if the data
  * match and a negative error code if not or in case of failure.
  */
+<<<<<<< HEAD
 int ubi_dbg_check_write(struct ubi_device *ubi, const void *buf, int pnum,
 			int offset, int len)
+=======
+static int self_check_write(struct ubi_device *ubi, const void *buf, int pnum,
+			    int offset, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 	size_t read;
 	void *buf1;
 	loff_t addr = (loff_t)pnum * ubi->peb_size + offset;
 
+<<<<<<< HEAD
 	if (!ubi->dbg->chk_io)
 		return 0;
 
 	buf1 = __vmalloc(len, GFP_NOFS, PAGE_KERNEL);
 	if (!buf1) {
 		ubi_err("cannot allocate memory to check writes");
+=======
+	if (!ubi_dbg_chk_io(ubi))
+		return 0;
+
+	buf1 = __vmalloc(len, GFP_NOFS);
+	if (!buf1) {
+		ubi_err(ubi, "cannot allocate memory to check writes");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1373,6 +2051,7 @@ int ubi_dbg_check_write(struct ubi_device *ubi, const void *buf, int pnum,
 		if (c == c1)
 			continue;
 
+<<<<<<< HEAD
 		ubi_err("paranoid check failed for PEB %d:%d, len %d",
 			pnum, offset, len);
 		ubi_msg("data differ at position %d", i);
@@ -1386,6 +2065,21 @@ int ubi_dbg_check_write(struct ubi_device *ubi, const void *buf, int pnum,
 		print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 1,
 			       buf1 + i, dump_len, 1);
 		ubi_dbg_dump_stack();
+=======
+		ubi_err(ubi, "self-check failed for PEB %d:%d, len %d",
+			pnum, offset, len);
+		ubi_msg(ubi, "data differ at position %d", i);
+		dump_len = max_t(int, 128, len - i);
+		ubi_msg(ubi, "hex dump of the original buffer from %d to %d",
+			i, i + dump_len);
+		print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 1,
+			       buf + i, dump_len, 1);
+		ubi_msg(ubi, "hex dump of the read buffer from %d to %d",
+			i, i + dump_len);
+		print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 1,
+			       buf1 + i, dump_len, 1);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out_free;
 	}
@@ -1399,7 +2093,11 @@ out_free:
 }
 
 /**
+<<<<<<< HEAD
  * ubi_dbg_check_all_ff - check that a region of flash is empty.
+=======
+ * ubi_self_check_all_ff - check that a region of flash is empty.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ubi: UBI device description object
  * @pnum: the physical eraseblock number to check
  * @offset: the starting offset within the physical eraseblock to check
@@ -1409,33 +2107,56 @@ out_free:
  * @offset of the physical eraseblock @pnum, and a negative error code if not
  * or if an error occurred.
  */
+<<<<<<< HEAD
 int ubi_dbg_check_all_ff(struct ubi_device *ubi, int pnum, int offset, int len)
+=======
+int ubi_self_check_all_ff(struct ubi_device *ubi, int pnum, int offset, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	size_t read;
 	int err;
 	void *buf;
 	loff_t addr = (loff_t)pnum * ubi->peb_size + offset;
 
+<<<<<<< HEAD
 	if (!ubi->dbg->chk_io)
 		return 0;
 
 	buf = __vmalloc(len, GFP_NOFS, PAGE_KERNEL);
 	if (!buf) {
 		ubi_err("cannot allocate memory to check for 0xFFs");
+=======
+	if (!ubi_dbg_chk_io(ubi))
+		return 0;
+
+	buf = __vmalloc(len, GFP_NOFS);
+	if (!buf) {
+		ubi_err(ubi, "cannot allocate memory to check for 0xFFs");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	err = mtd_read(ubi->mtd, addr, len, &read, buf);
 	if (err && !mtd_is_bitflip(err)) {
+<<<<<<< HEAD
 		ubi_err("error %d while reading %d bytes from PEB %d:%d, "
 			"read %zd bytes", err, len, pnum, offset, read);
+=======
+		ubi_err(ubi, "err %d while reading %d bytes from PEB %d:%d, read %zd bytes",
+			err, len, pnum, offset, read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 	err = ubi_check_pattern(buf, 0xFF, len);
 	if (err == 0) {
+<<<<<<< HEAD
 		ubi_err("flash region at PEB %d:%d, length %d does not "
 			"contain all 0xFF bytes", pnum, offset, len);
+=======
+		ubi_err(ubi, "flash region at PEB %d:%d, length %d does not contain all 0xFF bytes",
+			pnum, offset, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
@@ -1443,6 +2164,7 @@ int ubi_dbg_check_all_ff(struct ubi_device *ubi, int pnum, int offset, int len)
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	ubi_err("paranoid check failed for PEB %d", pnum);
 	ubi_msg("hex dump of the %d-%d region", offset, offset + len);
 	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 1, buf, len, 1);
@@ -1454,3 +2176,14 @@ error:
 }
 
 #endif /* CONFIG_MTD_UBI_DEBUG */
+=======
+	ubi_err(ubi, "self-check failed for PEB %d", pnum);
+	ubi_msg(ubi, "hex dump of the %d-%d region", offset, offset + len);
+	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 1, buf, len, 1);
+	err = -EINVAL;
+error:
+	dump_stack();
+	vfree(buf);
+	return err;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

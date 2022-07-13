@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Copyright (C) 1992, 1998 Linus Torvalds, Ingo Molnar
  *
@@ -8,9 +12,15 @@
  * io_apic.c.)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
+=======
+#include <linux/seq_file.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel_stat.h>
 #include <linux/notifier.h>
 #include <linux/cpu.h>
@@ -20,12 +30,17 @@
 #include <linux/mm.h>
 
 #include <asm/apic.h>
+<<<<<<< HEAD
 
 DEFINE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
 EXPORT_PER_CPU_SYMBOL(irq_stat);
 
 DEFINE_PER_CPU(struct pt_regs *, irq_regs);
 EXPORT_PER_CPU_SYMBOL(irq_regs);
+=======
+#include <asm/nospec-branch.h>
+#include <asm/softirq_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_STACKOVERFLOW
 
@@ -55,6 +70,7 @@ static inline int check_stack_overflow(void) { return 0; }
 static inline void print_stack_overflow(void) { }
 #endif
 
+<<<<<<< HEAD
 /*
  * per-CPU IRQ handling contexts (thread information and stack)
  */
@@ -85,6 +101,31 @@ execute_on_irq_stack(int overflow, struct irq_desc *desc, int irq)
 
 	curctx = (union irq_ctx *) current_thread_info();
 	irqctx = __this_cpu_read(hardirq_ctx);
+=======
+static void call_on_stack(void *func, void *stack)
+{
+	asm volatile("xchgl	%%ebx,%%esp	\n"
+		     CALL_NOSPEC
+		     "movl	%%ebx,%%esp	\n"
+		     : "=b" (stack)
+		     : "0" (stack),
+		       [thunk_target] "D"(func)
+		     : "memory", "cc", "edx", "ecx", "eax");
+}
+
+static inline void *current_stack(void)
+{
+	return (void *)(current_stack_pointer & ~(THREAD_SIZE - 1));
+}
+
+static inline int execute_on_irq_stack(int overflow, struct irq_desc *desc)
+{
+	struct irq_stack *curstk, *irqstk;
+	u32 *isp, *prev_esp, arg1;
+
+	curstk = (struct irq_stack *) current_stack();
+	irqstk = __this_cpu_read(pcpu_hot.hardirq_stack_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * this is where we switch to the IRQ stack. However, if we are
@@ -92,6 +133,7 @@ execute_on_irq_stack(int overflow, struct irq_desc *desc, int irq)
 	 * handler) we can't do that and just have to keep using the
 	 * current stack (which is the irq stack already after all)
 	 */
+<<<<<<< HEAD
 	if (unlikely(curctx == irqctx))
 		return 0;
 
@@ -102,21 +144,40 @@ execute_on_irq_stack(int overflow, struct irq_desc *desc, int irq)
 
 	/* Copy the preempt_count so that the [soft]irq checks work. */
 	irqctx->tinfo.preempt_count = curctx->tinfo.preempt_count;
+=======
+	if (unlikely(curstk == irqstk))
+		return 0;
+
+	isp = (u32 *) ((char *)irqstk + sizeof(*irqstk));
+
+	/* Save the next esp at the bottom of the stack */
+	prev_esp = (u32 *)irqstk;
+	*prev_esp = current_stack_pointer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(overflow))
 		call_on_stack(print_stack_overflow, isp);
 
 	asm volatile("xchgl	%%ebx,%%esp	\n"
+<<<<<<< HEAD
 		     "call	*%%edi		\n"
 		     "movl	%%ebx,%%esp	\n"
 		     : "=a" (arg1), "=d" (arg2), "=b" (isp)
 		     :  "0" (irq),   "1" (desc),  "2" (isp),
 			"D" (desc->handle_irq)
+=======
+		     CALL_NOSPEC
+		     "movl	%%ebx,%%esp	\n"
+		     : "=a" (arg1), "=b" (isp)
+		     :  "0" (desc),   "1" (isp),
+			[thunk_target] "D" (desc->handle_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     : "memory", "cc", "ecx");
 	return 1;
 }
 
 /*
+<<<<<<< HEAD
  * allocate per-cpu stacks for hardirq and for softirq processing
  */
 void __cpuinit irq_ctx_init(int cpu)
@@ -198,4 +259,58 @@ bool handle_irq(unsigned irq, struct pt_regs *regs)
 	}
 
 	return true;
+=======
+ * Allocate per-cpu stacks for hardirq and softirq processing
+ */
+int irq_init_percpu_irqstack(unsigned int cpu)
+{
+	int node = cpu_to_node(cpu);
+	struct page *ph, *ps;
+
+	if (per_cpu(pcpu_hot.hardirq_stack_ptr, cpu))
+		return 0;
+
+	ph = alloc_pages_node(node, THREADINFO_GFP, THREAD_SIZE_ORDER);
+	if (!ph)
+		return -ENOMEM;
+	ps = alloc_pages_node(node, THREADINFO_GFP, THREAD_SIZE_ORDER);
+	if (!ps) {
+		__free_pages(ph, THREAD_SIZE_ORDER);
+		return -ENOMEM;
+	}
+
+	per_cpu(pcpu_hot.hardirq_stack_ptr, cpu) = page_address(ph);
+	per_cpu(pcpu_hot.softirq_stack_ptr, cpu) = page_address(ps);
+	return 0;
+}
+
+#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+void do_softirq_own_stack(void)
+{
+	struct irq_stack *irqstk;
+	u32 *isp, *prev_esp;
+
+	irqstk = __this_cpu_read(pcpu_hot.softirq_stack_ptr);
+
+	/* build the stack frame on the softirq stack */
+	isp = (u32 *) ((char *)irqstk + sizeof(*irqstk));
+
+	/* Push the previous esp onto the stack */
+	prev_esp = (u32 *)irqstk;
+	*prev_esp = current_stack_pointer;
+
+	call_on_stack(__do_softirq, isp);
+}
+#endif
+
+void __handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+{
+	int overflow = check_stack_overflow();
+
+	if (user_mode(regs) || !execute_on_irq_stack(overflow, desc)) {
+		if (unlikely(overflow))
+			print_stack_overflow();
+		generic_handle_irq_desc(desc);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

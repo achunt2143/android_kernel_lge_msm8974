@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ufs/namei.c
  *
@@ -38,11 +42,19 @@ static inline int ufs_add_nondir(struct dentry *dentry, struct inode *inode)
 {
 	int err = ufs_add_link(dentry, inode);
 	if (!err) {
+<<<<<<< HEAD
 		d_instantiate(dentry, inode);
 		return 0;
 	}
 	inode_dec_link_count(inode);
 	iput(inode);
+=======
+		d_instantiate_new(dentry, inode);
+		return 0;
+	}
+	inode_dec_link_count(inode);
+	discard_new_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -54,11 +66,17 @@ static struct dentry *ufs_lookup(struct inode * dir, struct dentry *dentry, unsi
 	if (dentry->d_name.len > UFS_MAXNAMLEN)
 		return ERR_PTR(-ENAMETOOLONG);
 
+<<<<<<< HEAD
 	lock_ufs(dir->i_sb);
 	ino = ufs_inode_by_name(dir, &dentry->d_name);
 	if (ino)
 		inode = ufs_iget(dir->i_sb, ino);
 	unlock_ufs(dir->i_sb);
+=======
+	ino = ufs_inode_by_name(dir, &dentry->d_name);
+	if (ino)
+		inode = ufs_iget(dir->i_sb, ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return d_splice_alias(inode, dentry);
 }
 
@@ -70,6 +88,7 @@ static struct dentry *ufs_lookup(struct inode * dir, struct dentry *dentry, unsi
  * If the create succeeds, we fill in the inode information
  * with d_instantiate(). 
  */
+<<<<<<< HEAD
 static int ufs_create (struct inode * dir, struct dentry * dentry, umode_t mode,
 		bool excl)
 {
@@ -95,6 +114,27 @@ static int ufs_create (struct inode * dir, struct dentry * dentry, umode_t mode,
 }
 
 static int ufs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
+=======
+static int ufs_create (struct mnt_idmap * idmap,
+		struct inode * dir, struct dentry * dentry, umode_t mode,
+		bool excl)
+{
+	struct inode *inode;
+
+	inode = ufs_new_inode(dir, mode);
+	if (IS_ERR(inode))
+		return PTR_ERR(inode);
+
+	inode->i_op = &ufs_file_inode_operations;
+	inode->i_fop = &ufs_file_operations;
+	inode->i_mapping->a_ops = &ufs_aops;
+	mark_inode_dirty(inode);
+	return ufs_add_nondir(dentry, inode);
+}
+
+static int ufs_mknod(struct mnt_idmap *idmap, struct inode *dir,
+		     struct dentry *dentry, umode_t mode, dev_t rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	int err;
@@ -108,22 +148,35 @@ static int ufs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev
 		init_special_inode(inode, mode, rdev);
 		ufs_set_inode_dev(inode->i_sb, UFS_I(inode), rdev);
 		mark_inode_dirty(inode);
+<<<<<<< HEAD
 		lock_ufs(dir->i_sb);
 		err = ufs_add_nondir(dentry, inode);
 		unlock_ufs(dir->i_sb);
+=======
+		err = ufs_add_nondir(dentry, inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 static int ufs_symlink (struct inode * dir, struct dentry * dentry,
 	const char * symname)
 {
 	struct super_block * sb = dir->i_sb;
 	int err = -ENAMETOOLONG;
+=======
+static int ufs_symlink (struct mnt_idmap * idmap, struct inode * dir,
+	struct dentry * dentry, const char * symname)
+{
+	struct super_block * sb = dir->i_sb;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned l = strlen(symname)+1;
 	struct inode * inode;
 
 	if (l > sb->s_blocksize)
+<<<<<<< HEAD
 		goto out_notlocked;
 
 	lock_ufs(dir->i_sb);
@@ -135,18 +188,38 @@ static int ufs_symlink (struct inode * dir, struct dentry * dentry,
 	if (l > UFS_SB(sb)->s_uspi->s_maxsymlinklen) {
 		/* slow symlink */
 		inode->i_op = &ufs_symlink_inode_operations;
+=======
+		return -ENAMETOOLONG;
+
+	inode = ufs_new_inode(dir, S_IFLNK | S_IRWXUGO);
+	err = PTR_ERR(inode);
+	if (IS_ERR(inode))
+		return err;
+
+	if (l > UFS_SB(sb)->s_uspi->s_maxsymlinklen) {
+		/* slow symlink */
+		inode->i_op = &page_symlink_inode_operations;
+		inode_nohighmem(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &ufs_aops;
 		err = page_symlink(inode, symname, l);
 		if (err)
 			goto out_fail;
 	} else {
 		/* fast symlink */
+<<<<<<< HEAD
 		inode->i_op = &ufs_fast_symlink_inode_operations;
 		memcpy(UFS_I(inode)->i_u1.i_symlink, symname, l);
+=======
+		inode->i_op = &simple_symlink_inode_operations;
+		inode->i_link = (char *)UFS_I(inode)->i_u1.i_symlink;
+		memcpy(inode->i_link, symname, l);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_size = l-1;
 	}
 	mark_inode_dirty(inode);
 
+<<<<<<< HEAD
 	err = ufs_add_nondir(dentry, inode);
 out:
 	unlock_ufs(dir->i_sb);
@@ -157,11 +230,20 @@ out_fail:
 	inode_dec_link_count(inode);
 	iput(inode);
 	goto out;
+=======
+	return ufs_add_nondir(dentry, inode);
+
+out_fail:
+	inode_dec_link_count(inode);
+	discard_new_inode(inode);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ufs_link (struct dentry * old_dentry, struct inode * dir,
 	struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *inode = old_dentry->d_inode;
 	int error;
 
@@ -177,11 +259,34 @@ static int ufs_link (struct dentry * old_dentry, struct inode * dir,
 }
 
 static int ufs_mkdir(struct inode * dir, struct dentry * dentry, umode_t mode)
+=======
+	struct inode *inode = d_inode(old_dentry);
+	int error;
+
+	inode_set_ctime_current(inode);
+	inode_inc_link_count(inode);
+	ihold(inode);
+
+	error = ufs_add_link(dentry, inode);
+	if (error) {
+		inode_dec_link_count(inode);
+		iput(inode);
+	} else
+		d_instantiate(dentry, inode);
+	return error;
+}
+
+static int ufs_mkdir(struct mnt_idmap * idmap, struct inode * dir,
+	struct dentry * dentry, umode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode * inode;
 	int err;
 
+<<<<<<< HEAD
 	lock_ufs(dir->i_sb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode_inc_link_count(dir);
 
 	inode = ufs_new_inode(dir, S_IFDIR|mode);
@@ -202,25 +307,42 @@ static int ufs_mkdir(struct inode * dir, struct dentry * dentry, umode_t mode)
 	err = ufs_add_link(dentry, inode);
 	if (err)
 		goto out_fail;
+<<<<<<< HEAD
 	unlock_ufs(dir->i_sb);
 
 	d_instantiate(dentry, inode);
 out:
 	return err;
+=======
+
+	d_instantiate_new(dentry, inode);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_fail:
 	inode_dec_link_count(inode);
 	inode_dec_link_count(inode);
+<<<<<<< HEAD
 	iput (inode);
 out_dir:
 	inode_dec_link_count(dir);
 	unlock_ufs(dir->i_sb);
 	goto out;
+=======
+	discard_new_inode(inode);
+out_dir:
+	inode_dec_link_count(dir);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ufs_unlink(struct inode *dir, struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode * inode = dentry->d_inode;
+=======
+	struct inode * inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ufs_dir_entry *de;
 	struct page *page;
 	int err = -ENOENT;
@@ -233,7 +355,11 @@ static int ufs_unlink(struct inode *dir, struct dentry *dentry)
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	inode->i_ctime = dir->i_ctime;
+=======
+	inode_set_ctime_to_ts(inode, inode_get_ctime(dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode_dec_link_count(inode);
 	err = 0;
 out:
@@ -242,10 +368,16 @@ out:
 
 static int ufs_rmdir (struct inode * dir, struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode * inode = dentry->d_inode;
 	int err= -ENOTEMPTY;
 
 	lock_ufs(dir->i_sb);
+=======
+	struct inode * inode = d_inode(dentry);
+	int err= -ENOTEMPTY;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ufs_empty_dir (inode)) {
 		err = ufs_unlink(dir, dentry);
 		if (!err) {
@@ -254,6 +386,7 @@ static int ufs_rmdir (struct inode * dir, struct dentry *dentry)
 			inode_dec_link_count(dir);
 		}
 	}
+<<<<<<< HEAD
 	unlock_ufs(dir->i_sb);
 	return err;
 }
@@ -263,12 +396,29 @@ static int ufs_rename(struct inode *old_dir, struct dentry *old_dentry,
 {
 	struct inode *old_inode = old_dentry->d_inode;
 	struct inode *new_inode = new_dentry->d_inode;
+=======
+	return err;
+}
+
+static int ufs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
+		      struct dentry *old_dentry, struct inode *new_dir,
+		      struct dentry *new_dentry, unsigned int flags)
+{
+	struct inode *old_inode = d_inode(old_dentry);
+	struct inode *new_inode = d_inode(new_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *dir_page = NULL;
 	struct ufs_dir_entry * dir_de = NULL;
 	struct page *old_page;
 	struct ufs_dir_entry *old_de;
 	int err = -ENOENT;
 
+<<<<<<< HEAD
+=======
+	if (flags & ~RENAME_NOREPLACE)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_de = ufs_find_entry(old_dir, &old_dentry->d_name, &old_page);
 	if (!old_de)
 		goto out;
@@ -292,8 +442,13 @@ static int ufs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		new_de = ufs_find_entry(new_dir, &new_dentry->d_name, &new_page);
 		if (!new_de)
 			goto out_dir;
+<<<<<<< HEAD
 		ufs_set_link(new_dir, new_de, new_page, old_inode);
 		new_inode->i_ctime = CURRENT_TIME_SEC;
+=======
+		ufs_set_link(new_dir, new_de, new_page, old_inode, 1);
+		inode_set_ctime_current(new_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dir_de)
 			drop_nlink(new_inode);
 		inode_dec_link_count(new_inode);
@@ -309,13 +464,26 @@ static int ufs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	 * Like most other Unix systems, set the ctime for inodes on a
  	 * rename.
 	 */
+<<<<<<< HEAD
 	old_inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_ctime_current(old_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ufs_delete_entry(old_dir, old_de, old_page);
 	mark_inode_dirty(old_inode);
 
 	if (dir_de) {
+<<<<<<< HEAD
 		ufs_set_link(old_inode, dir_de, dir_page, new_dir);
+=======
+		if (old_dir != new_dir)
+			ufs_set_link(old_inode, dir_de, dir_page, new_dir, 0);
+		else {
+			kunmap(dir_page);
+			put_page(dir_page);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode_dec_link_count(old_dir);
 	}
 	return 0;
@@ -324,11 +492,19 @@ static int ufs_rename(struct inode *old_dir, struct dentry *old_dentry,
 out_dir:
 	if (dir_de) {
 		kunmap(dir_page);
+<<<<<<< HEAD
 		page_cache_release(dir_page);
 	}
 out_old:
 	kunmap(old_page);
 	page_cache_release(old_page);
+=======
+		put_page(dir_page);
+	}
+out_old:
+	kunmap(old_page);
+	put_page(old_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }

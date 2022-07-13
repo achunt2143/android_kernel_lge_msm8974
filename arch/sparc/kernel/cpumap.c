@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cpumap.c: used for optimizing CPU assignment
  *
  * Copyright (C) 2009 Hong H. Pham <hong.pham@windriver.com>
@@ -6,7 +10,10 @@
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/spinlock.h>
 #include <asm/cpudata.h>
@@ -50,7 +57,11 @@ struct cpuinfo_tree {
 
 	/* Offsets into nodes[] for each level of the tree */
 	struct cpuinfo_level level[CPUINFO_LVL_MAX];
+<<<<<<< HEAD
 	struct cpuinfo_node  nodes[0];
+=======
+	struct cpuinfo_node  nodes[] __counted_by(total_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -194,8 +205,12 @@ static struct cpuinfo_tree *build_cpuinfo_tree(void)
 
 	n = enumerate_cpuinfo_nodes(tmp_level);
 
+<<<<<<< HEAD
 	new_tree = kzalloc(sizeof(struct cpuinfo_tree) +
 	                   (sizeof(struct cpuinfo_node) * n), GFP_ATOMIC);
+=======
+	new_tree = kzalloc(struct_size(new_tree, nodes, n), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new_tree)
 		return NULL;
 
@@ -327,6 +342,14 @@ static int iterate_cpu(struct cpuinfo_tree *t, unsigned int root_index)
 	case SUN4V_CHIP_NIAGARA3:
 	case SUN4V_CHIP_NIAGARA4:
 	case SUN4V_CHIP_NIAGARA5:
+<<<<<<< HEAD
+=======
+	case SUN4V_CHIP_SPARC_M6:
+	case SUN4V_CHIP_SPARC_M7:
+	case SUN4V_CHIP_SPARC_M8:
+	case SUN4V_CHIP_SPARC_SN:
+	case SUN4V_CHIP_SPARC64X:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rover_inc_table = niagara_iterate_method;
 		break;
 	default:

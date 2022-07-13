@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip_vs_nfct.c:	Netfilter connection tracking support for IPVS
  *
@@ -7,6 +11,7 @@
  * Portions Copyright (C) 2003-2010
  * Julian Anastasov
  *
+<<<<<<< HEAD
  *
  * This code is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +28,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  * Ben North <ben@redfrontdoor.org>
  * Julian Anastasov <ja@ssi.bg>		Reorganize and sync with latest kernels
  * Hannes Eder <heder@google.com>	Extend NFCT support for FTP, ipvs match
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Current status:
  *
  * - provide conntrack confirmation for new and related connections, by
@@ -44,7 +54,10 @@
  * when RELATED conntrack is created from real server (Active FTP DATA)
  * - if iptables_nat is not loaded the Passive FTP will not work (the
  * PASV response can not be NAT-ed) but Active FTP should work
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -63,10 +76,15 @@
 #include <net/ip_vs.h>
 #include <net/netfilter/nf_conntrack_core.h>
 #include <net/netfilter/nf_conntrack_expect.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_seqadj.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 
 
+<<<<<<< HEAD
 #define FMT_TUPLE	"%pI4:%u->%pI4:%u/%u"
 #define ARG_TUPLE(T)	&(T)->src.u3.ip, ntohs((T)->src.u.all), \
 			&(T)->dst.u3.ip, ntohs((T)->dst.u.all), \
@@ -76,16 +94,39 @@
 #define ARG_CONN(C)	&((C)->caddr.ip), ntohs((C)->cport), \
 			&((C)->vaddr.ip), ntohs((C)->vport), \
 			&((C)->daddr.ip), ntohs((C)->dport), \
+=======
+#define FMT_TUPLE	"%s:%u->%s:%u/%u"
+#define ARG_TUPLE(T)	IP_VS_DBG_ADDR((T)->src.l3num, &(T)->src.u3),	\
+			ntohs((T)->src.u.all),				\
+			IP_VS_DBG_ADDR((T)->src.l3num, &(T)->dst.u3),	\
+			ntohs((T)->dst.u.all),				\
+			(T)->dst.protonum
+
+#define FMT_CONN	"%s:%u->%s:%u->%s:%u/%u:%u"
+#define ARG_CONN(C)	IP_VS_DBG_ADDR((C)->af, &((C)->caddr)),		\
+			ntohs((C)->cport),				\
+			IP_VS_DBG_ADDR((C)->af, &((C)->vaddr)),		\
+			ntohs((C)->vport),				\
+			IP_VS_DBG_ADDR((C)->daf, &((C)->daddr)),	\
+			ntohs((C)->dport),				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(C)->protocol, (C)->state
 
 void
 ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 {
 	enum ip_conntrack_info ctinfo;
+<<<<<<< HEAD
 	struct nf_conn *ct = ct = nf_ct_get(skb, &ctinfo);
 	struct nf_conntrack_tuple new_tuple;
 
 	if (ct == NULL || nf_ct_is_confirmed(ct) || nf_ct_is_untracked(ct) ||
+=======
+	struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
+	struct nf_conntrack_tuple new_tuple;
+
+	if (ct == NULL || nf_ct_is_confirmed(ct) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    nf_ct_is_dying(ct))
 		return;
 
@@ -93,10 +134,25 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Never alter conntrack for OPS conns (no reply is expected) */
+	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Alter reply only in original direction */
 	if (CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Applications may adjust TCP seqs */
+	if (cp->app && nf_ct_protonum(ct) == IPPROTO_TCP &&
+	    !nfct_seqadj(ct) && !nfct_seqadj_ext_add(ct))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The connection is not yet in the hashtable, so we update it.
 	 * CIP->VIP will remain the same, so leave the tuple in
@@ -118,6 +174,7 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 		    new_tuple.dst.protonum != IPPROTO_ICMPV6)
 			new_tuple.dst.u.tcp.port = cp->vport;
 	}
+<<<<<<< HEAD
 	IP_VS_DBG(7, "%s: Updating conntrack ct=%p, status=0x%lX, "
 		  "ctinfo=%d, old reply=" FMT_TUPLE
 		  ", new reply=" FMT_TUPLE ", cp=" FMT_CONN "\n",
@@ -125,6 +182,19 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 		  ARG_TUPLE(&ct->tuplehash[IP_CT_DIR_REPLY].tuple),
 		  ARG_TUPLE(&new_tuple), ARG_CONN(cp));
 	nf_conntrack_alter_reply(ct, &new_tuple);
+=======
+	IP_VS_DBG_BUF(7, "%s: Updating conntrack ct=%p, status=0x%lX, "
+		      "ctinfo=%d, old reply=" FMT_TUPLE "\n",
+		      __func__, ct, ct->status, ctinfo,
+		      ARG_TUPLE(&ct->tuplehash[IP_CT_DIR_REPLY].tuple));
+	IP_VS_DBG_BUF(7, "%s: Updating conntrack ct=%p, status=0x%lX, "
+		      "ctinfo=%d, new reply=" FMT_TUPLE "\n",
+		      __func__, ct, ct->status, ctinfo,
+		      ARG_TUPLE(&new_tuple));
+	nf_conntrack_alter_reply(ct, &new_tuple);
+	IP_VS_DBG_BUF(7, "%s: Updated conntrack ct=%p for cp=" FMT_CONN "\n",
+		      __func__, ct, ARG_CONN(cp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ip_vs_confirm_conntrack(struct sk_buff *skb)
@@ -143,9 +213,12 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	struct ip_vs_conn_param p;
 	struct net *net = nf_ct_net(ct);
 
+<<<<<<< HEAD
 	if (exp->tuple.src.l3num != PF_INET)
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We assume that no NF locks are held before this callback.
 	 * ip_vs_conn_out_get and ip_vs_conn_in_get should match their
@@ -156,12 +229,17 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 
 	/* RS->CLIENT */
 	orig = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
+<<<<<<< HEAD
 	ip_vs_conn_fill_param(net, exp->tuple.src.l3num, orig->dst.protonum,
+=======
+	ip_vs_conn_fill_param(net_ipvs(net), exp->tuple.src.l3num, orig->dst.protonum,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      &orig->src.u3, orig->src.u.tcp.port,
 			      &orig->dst.u3, orig->dst.u.tcp.port, &p);
 	cp = ip_vs_conn_out_get(&p);
 	if (cp) {
 		/* Change reply CLIENT->RS to CLIENT->VS */
+<<<<<<< HEAD
 		new_reply = ct->tuplehash[IP_CT_DIR_REPLY].tuple;
 		IP_VS_DBG(7, "%s: ct=%p, status=0x%lX, tuples=" FMT_TUPLE ", "
 			  FMT_TUPLE ", found inout cp=" FMT_CONN "\n",
@@ -175,6 +253,17 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 			  __func__, ct,
 			  ARG_TUPLE(orig), ARG_TUPLE(&new_reply),
 			  ARG_CONN(cp));
+=======
+		IP_VS_DBG_BUF(7, "%s: for ct=%p, status=0x%lX found inout cp="
+			      FMT_CONN "\n",
+			      __func__, ct, ct->status, ARG_CONN(cp));
+		new_reply = ct->tuplehash[IP_CT_DIR_REPLY].tuple;
+		IP_VS_DBG_BUF(7, "%s: ct=%p before alter: reply tuple="
+			      FMT_TUPLE "\n",
+			      __func__, ct, ARG_TUPLE(&new_reply));
+		new_reply.dst.u3 = cp->vaddr;
+		new_reply.dst.u.tcp.port = cp->vport;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto alter;
 	}
 
@@ -182,6 +271,7 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	cp = ip_vs_conn_in_get(&p);
 	if (cp) {
 		/* Change reply VS->CLIENT to RS->CLIENT */
+<<<<<<< HEAD
 		new_reply = ct->tuplehash[IP_CT_DIR_REPLY].tuple;
 		IP_VS_DBG(7, "%s: ct=%p, status=0x%lX, tuples=" FMT_TUPLE ", "
 			  FMT_TUPLE ", found outin cp=" FMT_CONN "\n",
@@ -201,6 +291,23 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	IP_VS_DBG(7, "%s: ct=%p, status=0x%lX, tuple=" FMT_TUPLE
 		  " - unknown expect\n",
 		  __func__, ct, ct->status, ARG_TUPLE(orig));
+=======
+		IP_VS_DBG_BUF(7, "%s: for ct=%p, status=0x%lX found outin cp="
+			      FMT_CONN "\n",
+			      __func__, ct, ct->status, ARG_CONN(cp));
+		new_reply = ct->tuplehash[IP_CT_DIR_REPLY].tuple;
+		IP_VS_DBG_BUF(7, "%s: ct=%p before alter: reply tuple="
+			      FMT_TUPLE "\n",
+			      __func__, ct, ARG_TUPLE(&new_reply));
+		new_reply.src.u3 = cp->daddr;
+		new_reply.src.u.tcp.port = cp->dport;
+		goto alter;
+	}
+
+	IP_VS_DBG_BUF(7, "%s: ct=%p, status=0x%lX, tuple=" FMT_TUPLE
+		      " - unknown expect\n",
+		      __func__, ct, ct->status, ARG_TUPLE(orig));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 alter:
@@ -223,7 +330,11 @@ void ip_vs_nfct_expect_related(struct sk_buff *skb, struct nf_conn *ct,
 {
 	struct nf_conntrack_expect *exp;
 
+<<<<<<< HEAD
 	if (ct == NULL || nf_ct_is_untracked(ct))
+=======
+	if (ct == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	exp = nf_ct_expect_alloc(ct);
@@ -238,9 +349,15 @@ void ip_vs_nfct_expect_related(struct sk_buff *skb, struct nf_conn *ct,
 
 	exp->expectfn = ip_vs_nfct_expect_callback;
 
+<<<<<<< HEAD
 	IP_VS_DBG(7, "%s: ct=%p, expect tuple=" FMT_TUPLE "\n",
 		__func__, ct, ARG_TUPLE(&exp->tuple));
 	nf_ct_expect_related(exp);
+=======
+	IP_VS_DBG_BUF(7, "%s: ct=%p, expect tuple=" FMT_TUPLE "\n",
+		      __func__, ct, ARG_TUPLE(&exp->tuple));
+	nf_ct_expect_related(exp, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nf_ct_expect_put(exp);
 }
 EXPORT_SYMBOL(ip_vs_nfct_expect_related);
@@ -265,6 +382,7 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 	tuple.dst.u3 = cp->vaddr;
 	tuple.dst.u.all = cp->vport;
 
+<<<<<<< HEAD
 	IP_VS_DBG(7, "%s: dropping conntrack with tuple=" FMT_TUPLE
 		" for conn " FMT_CONN "\n",
 		__func__, ARG_TUPLE(&tuple), ARG_CONN(cp));
@@ -289,6 +407,27 @@ void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 	} else {
 		IP_VS_DBG(7, "%s: no conntrack for tuple=" FMT_TUPLE "\n",
 			__func__, ARG_TUPLE(&tuple));
+=======
+	IP_VS_DBG_BUF(7, "%s: dropping conntrack for conn " FMT_CONN "\n",
+		      __func__, ARG_CONN(cp));
+
+	h = nf_conntrack_find_get(cp->ipvs->net, &nf_ct_zone_dflt, &tuple);
+	if (h) {
+		ct = nf_ct_tuplehash_to_ctrack(h);
+		if (nf_ct_kill(ct)) {
+			IP_VS_DBG_BUF(7, "%s: ct=%p deleted for tuple="
+				      FMT_TUPLE "\n",
+				      __func__, ct, ARG_TUPLE(&tuple));
+		} else {
+			IP_VS_DBG_BUF(7, "%s: ct=%p, no conntrack for tuple="
+				      FMT_TUPLE "\n",
+				      __func__, ct, ARG_TUPLE(&tuple));
+		}
+		nf_ct_put(ct);
+	} else {
+		IP_VS_DBG_BUF(7, "%s: no conntrack for tuple=" FMT_TUPLE "\n",
+			      __func__, ARG_TUPLE(&tuple));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

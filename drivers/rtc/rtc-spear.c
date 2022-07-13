@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/rtc/rtc-spear.c
  *
  * Copyright (C) 2010 ST Microelectronics
  * Rajeev Kumar<rajeev-dlh.kumar@st.com>
+<<<<<<< HEAD
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bcd.h>
@@ -16,6 +23,10 @@
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 #include <linux/slab.h>
@@ -152,12 +163,21 @@ static void rtc_wait_not_busy(struct spear_rtc_config *config)
 static irqreturn_t spear_rtc_irq(int irq, void *dev_id)
 {
 	struct spear_rtc_config *config = dev_id;
+<<<<<<< HEAD
 	unsigned long flags, events = 0;
 	unsigned int irq_data;
 
 	spin_lock_irqsave(&config->lock, flags);
 	irq_data = readl(config->ioaddr + STATUS_REG);
 	spin_unlock_irqrestore(&config->lock, flags);
+=======
+	unsigned long events = 0;
+	unsigned int irq_data;
+
+	spin_lock(&config->lock);
+	irq_data = readl(config->ioaddr + STATUS_REG);
+	spin_unlock(&config->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((irq_data & RTC_INT_MASK)) {
 		spear_rtc_clear_interrupt(config);
@@ -169,18 +189,26 @@ static irqreturn_t spear_rtc_irq(int irq, void *dev_id)
 
 }
 
+<<<<<<< HEAD
 static int tm2bcd(struct rtc_time *tm)
 {
 	if (rtc_valid_tm(tm) != 0)
 		return -EINVAL;
+=======
+static void tm2bcd(struct rtc_time *tm)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm->tm_sec = bin2bcd(tm->tm_sec);
 	tm->tm_min = bin2bcd(tm->tm_min);
 	tm->tm_hour = bin2bcd(tm->tm_hour);
 	tm->tm_mday = bin2bcd(tm->tm_mday);
 	tm->tm_mon = bin2bcd(tm->tm_mon + 1);
 	tm->tm_year = bin2bcd(tm->tm_year);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcd2tm(struct rtc_time *tm)
@@ -210,8 +238,15 @@ static int spear_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	/* we don't report wday/yday/isdst ... */
 	rtc_wait_not_busy(config);
 
+<<<<<<< HEAD
 	time = readl(config->ioaddr + TIME_REG);
 	date = readl(config->ioaddr + DATE_REG);
+=======
+	do {
+		time = readl(config->ioaddr + TIME_REG);
+		date = readl(config->ioaddr + DATE_REG);
+	} while (time == readl(config->ioaddr + TIME_REG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm->tm_sec = (time >> SECOND_SHIFT) & SECOND_MASK;
 	tm->tm_min = (time >> MINUTE_SHIFT) & MIN_MASK;
 	tm->tm_hour = (time >> HOUR_SHIFT) & HOUR_MASK;
@@ -234,10 +269,16 @@ static int spear_rtc_read_time(struct device *dev, struct rtc_time *tm)
 static int spear_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spear_rtc_config *config = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned int time, date, err = 0;
 
 	if (tm2bcd(tm) < 0)
 		return -EINVAL;
+=======
+	unsigned int time, date;
+
+	tm2bcd(tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtc_wait_not_busy(config);
 	time = (tm->tm_sec << SECOND_SHIFT) | (tm->tm_min << MINUTE_SHIFT) |
@@ -246,11 +287,16 @@ static int spear_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		(tm->tm_year << YEAR_SHIFT);
 	writel(time, config->ioaddr + TIME_REG);
 	writel(date, config->ioaddr + DATE_REG);
+<<<<<<< HEAD
 	err = is_write_complete(config);
 	if (err < 0)
 		return err;
 
 	return 0;
+=======
+
+	return is_write_complete(config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -294,10 +340,17 @@ static int spear_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 static int spear_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
 	struct spear_rtc_config *config = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned int time, date, err = 0;
 
 	if (tm2bcd(&alm->time) < 0)
 		return -EINVAL;
+=======
+	unsigned int time, date;
+	int err;
+
+	tm2bcd(&alm->time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtc_wait_not_busy(config);
 
@@ -344,7 +397,11 @@ static int spear_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct rtc_class_ops spear_rtc_ops = {
+=======
+static const struct rtc_class_ops spear_rtc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_time = spear_rtc_read_time,
 	.set_time = spear_rtc_set_time,
 	.read_alarm = spear_rtc_read_alarm,
@@ -352,6 +409,7 @@ static struct rtc_class_ops spear_rtc_ops = {
 	.alarm_irq_enable = spear_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 static int __devinit spear_rtc_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -392,10 +450,51 @@ static int __devinit spear_rtc_probe(struct platform_device *pdev)
 		status = -ENOMEM;
 		goto err_disable_clock;
 	}
+=======
+static int spear_rtc_probe(struct platform_device *pdev)
+{
+	struct spear_rtc_config *config;
+	int status = 0;
+	int irq;
+
+	config = devm_kzalloc(&pdev->dev, sizeof(*config), GFP_KERNEL);
+	if (!config)
+		return -ENOMEM;
+
+	config->rtc = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(config->rtc))
+		return PTR_ERR(config->rtc);
+
+	/* alarm irqs */
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+
+	status = devm_request_irq(&pdev->dev, irq, spear_rtc_irq, 0, pdev->name,
+			config);
+	if (status) {
+		dev_err(&pdev->dev, "Alarm interrupt IRQ%d already claimed\n",
+				irq);
+		return status;
+	}
+
+	config->ioaddr = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(config->ioaddr))
+		return PTR_ERR(config->ioaddr);
+
+	config->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(config->clk))
+		return PTR_ERR(config->clk);
+
+	status = clk_prepare_enable(config->clk);
+	if (status < 0)
+		return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&config->lock);
 	platform_set_drvdata(pdev, config);
 
+<<<<<<< HEAD
 	config->rtc = rtc_device_register(pdev->name, &pdev->dev,
 			&spear_rtc_ops, THIS_MODULE);
 	if (IS_ERR(config->rtc)) {
@@ -419,12 +518,22 @@ static int __devinit spear_rtc_probe(struct platform_device *pdev)
 				claimed\n", irq);
 		goto err_clear_platdata;
 	}
+=======
+	config->rtc->ops = &spear_rtc_ops;
+	config->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
+	config->rtc->range_max = RTC_TIMESTAMP_END_9999;
+
+	status = devm_rtc_register_device(config->rtc);
+	if (status)
+		goto err_disable_clock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!device_can_wakeup(&pdev->dev))
 		device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
 
+<<<<<<< HEAD
 err_clear_platdata:
 	platform_set_drvdata(pdev, NULL);
 	rtc_device_unregister(config->rtc);
@@ -438,10 +547,15 @@ err_kfree:
 	kfree(config);
 err_release_region:
 	release_mem_region(res->start, resource_size(res));
+=======
+err_disable_clock:
+	clk_disable_unprepare(config->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
 
+<<<<<<< HEAD
 static int __devexit spear_rtc_remove(struct platform_device *pdev)
 {
 	struct spear_rtc_config *config = platform_get_drvdata(pdev);
@@ -471,6 +585,21 @@ static int __devexit spear_rtc_remove(struct platform_device *pdev)
 
 static int spear_rtc_suspend(struct platform_device *pdev, pm_message_t state)
 {
+=======
+static void spear_rtc_remove(struct platform_device *pdev)
+{
+	struct spear_rtc_config *config = platform_get_drvdata(pdev);
+
+	spear_rtc_disable_interrupt(config);
+	clk_disable_unprepare(config->clk);
+	device_init_wakeup(&pdev->dev, 0);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int spear_rtc_suspend(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spear_rtc_config *config = platform_get_drvdata(pdev);
 	int irq;
 
@@ -486,8 +615,14 @@ static int spear_rtc_suspend(struct platform_device *pdev, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spear_rtc_resume(struct platform_device *pdev)
 {
+=======
+static int spear_rtc_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spear_rtc_config *config = platform_get_drvdata(pdev);
 	int irq;
 
@@ -505,12 +640,19 @@ static int spear_rtc_resume(struct platform_device *pdev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 #else
 #define spear_rtc_suspend	NULL
 #define spear_rtc_resume	NULL
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(spear_rtc_pm_ops, spear_rtc_suspend, spear_rtc_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void spear_rtc_shutdown(struct platform_device *pdev)
 {
 	struct spear_rtc_config *config = platform_get_drvdata(pdev);
@@ -519,6 +661,7 @@ static void spear_rtc_shutdown(struct platform_device *pdev)
 	clk_disable(config->clk);
 }
 
+<<<<<<< HEAD
 static struct platform_driver spear_rtc_driver = {
 	.probe = spear_rtc_probe,
 	.remove = __devexit_p(spear_rtc_remove),
@@ -527,6 +670,24 @@ static struct platform_driver spear_rtc_driver = {
 	.shutdown = spear_rtc_shutdown,
 	.driver = {
 		.name = "rtc-spear",
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id spear_rtc_id_table[] = {
+	{ .compatible = "st,spear600-rtc" },
+	{}
+};
+MODULE_DEVICE_TABLE(of, spear_rtc_id_table);
+#endif
+
+static struct platform_driver spear_rtc_driver = {
+	.probe = spear_rtc_probe,
+	.remove_new = spear_rtc_remove,
+	.shutdown = spear_rtc_shutdown,
+	.driver = {
+		.name = "rtc-spear",
+		.pm = &spear_rtc_pm_ops,
+		.of_match_table = of_match_ptr(spear_rtc_id_table),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -22,6 +23,17 @@
  * Contact Information:
  * wlanfae <wlanfae@realtek.com>
 ******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Based on the r8180 driver, which is:
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rtl_core.h"
 #include "r8192E_phy.h"
 #include "r8192E_phyreg.h"
@@ -30,6 +42,7 @@
 #include "rtl_dm.h"
 #include "rtl_wx.h"
 
+<<<<<<< HEAD
 extern int WDCAPARA_ADD[];
 
 void rtl8192e_start_beacon(struct net_device *dev)
@@ -63,10 +76,22 @@ static void rtl8192e_update_msr(struct net_device *dev)
 	u8 msr;
 	enum led_ctl_mode LedAction = LED_CTL_NO_LINK;
 	msr  = read_nic_byte(dev, MSR);
+=======
+static int WDCAPARA_ADD[] = {EDCAPARA_BE, EDCAPARA_BK, EDCAPARA_VI,
+			     EDCAPARA_VO};
+
+static void _rtl92e_update_msr(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	u8 msr;
+
+	msr  = rtl92e_readb(dev, MSR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msr &= ~MSR_LINK_MASK;
 
 	switch (priv->rtllib->iw_mode) {
 	case IW_MODE_INFRA:
+<<<<<<< HEAD
 		if (priv->rtllib->state == RTLLIB_LINKED)
 			msr |= (MSR_LINK_MANAGED << MSR_LINK_SHIFT);
 		else
@@ -84,28 +109,46 @@ static void rtl8192e_update_msr(struct net_device *dev)
 			msr |= (MSR_LINK_MASTER << MSR_LINK_SHIFT);
 		else
 			msr |= (MSR_LINK_NONE << MSR_LINK_SHIFT);
+=======
+		if (priv->rtllib->link_state == MAC80211_LINKED)
+			msr |= MSR_LINK_MANAGED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	write_nic_byte(dev, MSR, msr);
 	if (priv->rtllib->LedControlHandler)
 		priv->rtllib->LedControlHandler(dev, LedAction);
 }
 
 void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
+=======
+	rtl92e_writeb(dev, MSR, msr);
+}
+
+void rtl92e_set_reg(struct net_device *dev, u8 variable, u8 *val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
 	switch (variable) {
 	case HW_VAR_BSSID:
+<<<<<<< HEAD
 		write_nic_dword(dev, BSSIDR, ((u32 *)(val))[0]);
 		write_nic_word(dev, BSSIDR+2, ((u16 *)(val+2))[0]);
+=======
+		/* BSSIDR 2 byte alignment */
+		rtl92e_writew(dev, BSSIDR, *(u16 *)val);
+		rtl92e_writel(dev, BSSIDR + 2, *(u32 *)(val + 2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HW_VAR_MEDIA_STATUS:
 	{
+<<<<<<< HEAD
 		enum rt_op_mode OpMode = *((enum rt_op_mode *)(val));
 		enum led_ctl_mode LedAction = LED_CTL_NO_LINK;
 		u8		btMsr = read_nic_byte(dev, MSR);
@@ -116,6 +159,16 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 		case RT_OP_MODE_INFRASTRUCTURE:
 			btMsr |= MSR_INFRA;
 			LedAction = LED_CTL_LINK;
+=======
+		enum rt_op_mode op_mode = *((enum rt_op_mode *)(val));
+		u8 btMsr = rtl92e_readb(dev, MSR);
+
+		btMsr &= 0xfc;
+
+		switch (op_mode) {
+		case RT_OP_MODE_INFRASTRUCTURE:
+			btMsr |= MSR_INFRA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case RT_OP_MODE_IBSS:
@@ -124,7 +177,10 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 
 		case RT_OP_MODE_AP:
 			btMsr |= MSR_AP;
+<<<<<<< HEAD
 			LedAction = LED_CTL_LINK;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -132,8 +188,12 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 			break;
 		}
 
+<<<<<<< HEAD
 		write_nic_byte(dev, MSR, btMsr);
 
+=======
+		rtl92e_writeb(dev, MSR, btMsr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	break;
 
@@ -141,6 +201,7 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 	{
 		u32	RegRCR, Type;
 
+<<<<<<< HEAD
 		Type = ((u8 *)(val))[0];
 		RegRCR = read_nic_dword(dev, RCR);
 		priv->ReceiveConfig = RegRCR;
@@ -153,38 +214,73 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 		write_nic_dword(dev, RCR, RegRCR);
 		priv->ReceiveConfig = RegRCR;
 
+=======
+		Type = val[0];
+		RegRCR = rtl92e_readl(dev, RCR);
+		priv->receive_config = RegRCR;
+
+		if (Type)
+			RegRCR |= (RCR_CBSSID);
+		else
+			RegRCR &= (~RCR_CBSSID);
+
+		rtl92e_writel(dev, RCR, RegRCR);
+		priv->receive_config = RegRCR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	break;
 
 	case HW_VAR_SLOT_TIME:
 
 		priv->slot_time = val[0];
+<<<<<<< HEAD
 		write_nic_byte(dev, SLOT_TIME, val[0]);
+=======
+		rtl92e_writeb(dev, SLOT_TIME, val[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
 	case HW_VAR_ACK_PREAMBLE:
 	{
 		u32 regTmp;
+<<<<<<< HEAD
 		priv->short_preamble = (bool)(*(u8 *)val);
 		regTmp = priv->basic_rate;
 		if (priv->short_preamble)
 			regTmp |= BRSR_AckShortPmb;
 		write_nic_dword(dev, RRSR, regTmp);
+=======
+
+		priv->short_preamble = (bool)*val;
+		regTmp = priv->basic_rate;
+		if (priv->short_preamble)
+			regTmp |= BRSR_AckShortPmb;
+		rtl92e_writel(dev, RRSR, regTmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case HW_VAR_CPU_RST:
+<<<<<<< HEAD
 		write_nic_dword(dev, CPU_GEN, ((u32 *)(val))[0]);
+=======
+		rtl92e_writel(dev, CPU_GEN, ((u32 *)(val))[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HW_VAR_AC_PARAM:
 	{
+<<<<<<< HEAD
 		u8	pAcParam = *((u8 *)val);
+=======
+		u8	pAcParam = *val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32	eACI = pAcParam;
 		u8		u1bAIFS;
 		u32		u4bAcParam;
 		u8 mode = priv->rtllib->mode;
+<<<<<<< HEAD
 		struct rtllib_qos_parameters *qos_parameters =
 			 &priv->rtllib->current_network.qos_data.parameters;
 
@@ -227,6 +323,48 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 		}
 		priv->rtllib->SetHwRegHandler(dev, HW_VAR_ACM_CTRL,
 					      (u8 *)(&pAcParam));
+=======
+		struct rtllib_qos_parameters *qop =
+			 &priv->rtllib->current_network.qos_data.parameters;
+
+		u1bAIFS = qop->aifs[pAcParam] *
+			  ((mode & (WIRELESS_MODE_G | WIRELESS_MODE_N_24G)) ? 9 : 20) + aSifsTime;
+
+		rtl92e_dm_init_edca_turbo(dev);
+
+		u4bAcParam = (le16_to_cpu(qop->tx_op_limit[pAcParam]) <<
+			      AC_PARAM_TXOP_LIMIT_OFFSET) |
+				((le16_to_cpu(qop->cw_max[pAcParam])) <<
+				 AC_PARAM_ECW_MAX_OFFSET) |
+				((le16_to_cpu(qop->cw_min[pAcParam])) <<
+				 AC_PARAM_ECW_MIN_OFFSET) |
+				(((u32)u1bAIFS) << AC_PARAM_AIFS_OFFSET);
+
+		switch (eACI) {
+		case AC1_BK:
+			rtl92e_writel(dev, EDCAPARA_BK, u4bAcParam);
+			break;
+
+		case AC0_BE:
+			rtl92e_writel(dev, EDCAPARA_BE, u4bAcParam);
+			break;
+
+		case AC2_VI:
+			rtl92e_writel(dev, EDCAPARA_VI, u4bAcParam);
+			break;
+
+		case AC3_VO:
+			rtl92e_writel(dev, EDCAPARA_VO, u4bAcParam);
+			break;
+
+		default:
+			netdev_info(dev, "SetHwReg8185(): invalid ACI: %d !\n",
+				    eACI);
+			break;
+		}
+		priv->rtllib->set_hw_reg_handler(dev, HW_VAR_ACM_CTRL,
+					      &pAcParam);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -234,6 +372,7 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 	{
 		struct rtllib_qos_parameters *qos_parameters =
 			 &priv->rtllib->current_network.qos_data.parameters;
+<<<<<<< HEAD
 		u8 pAcParam = *((u8 *)val);
 		u32 eACI = pAcParam;
 		union aci_aifsn *pAciAifsn = (union aci_aifsn *) &
@@ -244,10 +383,19 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 		RT_TRACE(COMP_DBG, "===========>%s():HW_VAR_ACM_CTRL:%x\n",
 			 __func__, eACI);
 		AcmCtrl = AcmCtrl | ((priv->AcmMethod == 2) ? 0x0 : 0x1);
+=======
+		u8 pAcParam = *val;
+		u32 eACI = pAcParam;
+		union aci_aifsn *pAciAifsn = (union aci_aifsn *)&
+					      (qos_parameters->aifs[0]);
+		u8 acm = pAciAifsn->f.acm;
+		u8 AcmCtrl = rtl92e_readb(dev, ACM_HW_CTRL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (acm) {
 			switch (eACI) {
 			case AC0_BE:
+<<<<<<< HEAD
 				AcmCtrl |= AcmHw_BeqEn;
 				break;
 
@@ -263,11 +411,23 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 				RT_TRACE(COMP_QOS, "SetHwReg8185(): [HW_VAR_"
 					 "ACM_CTRL] acm set failed: eACI is "
 					 "%d\n", eACI);
+=======
+				AcmCtrl |= ACM_HW_BEQ_EN;
+				break;
+
+			case AC2_VI:
+				AcmCtrl |= ACM_HW_VIQ_EN;
+				break;
+
+			case AC3_VO:
+				AcmCtrl |= ACM_HW_VOQ_EN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		} else {
 			switch (eACI) {
 			case AC0_BE:
+<<<<<<< HEAD
 				AcmCtrl &= (~AcmHw_BeqEn);
 				break;
 
@@ -277,34 +437,61 @@ void rtl8192e_SetHwReg(struct net_device *dev, u8 variable, u8 *val)
 
 			case AC3_VO:
 				AcmCtrl &= (~AcmHw_BeqEn);
+=======
+				AcmCtrl &= (~ACM_HW_BEQ_EN);
+				break;
+
+			case AC2_VI:
+				AcmCtrl &= (~ACM_HW_VIQ_EN);
+				break;
+
+			case AC3_VO:
+				AcmCtrl &= (~ACM_HW_BEQ_EN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			default:
 				break;
 			}
 		}
+<<<<<<< HEAD
 
 		RT_TRACE(COMP_QOS, "SetHwReg8190pci(): [HW_VAR_ACM_CTRL] Write"
 			 " 0x%X\n", AcmCtrl);
 		write_nic_byte(dev, AcmHwCtrl, AcmCtrl);
+=======
+		rtl92e_writeb(dev, ACM_HW_CTRL, AcmCtrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case HW_VAR_SIFS:
+<<<<<<< HEAD
 		write_nic_byte(dev, SIFS, val[0]);
 		write_nic_byte(dev, SIFS+1, val[0]);
+=======
+		rtl92e_writeb(dev, SIFS, val[0]);
+		rtl92e_writeb(dev, SIFS + 1, val[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HW_VAR_RF_TIMING:
 	{
+<<<<<<< HEAD
 		u8 Rf_Timing = *((u8 *)val);
 		write_nic_byte(dev, rFPGA0_RFTiming1, Rf_Timing);
+=======
+		u8 Rf_Timing = *val;
+
+		rtl92e_writeb(dev, rFPGA0_RFTiming1, Rf_Timing);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	default:
 		break;
 	}
+<<<<<<< HEAD
 
 }
 
@@ -312,10 +499,19 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
+=======
+}
+
+static void _rtl92e_read_eeprom_info(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	const u8 bMac_Tmp_Addr[ETH_ALEN] = {0x00, 0xe0, 0x4c, 0x00, 0x00, 0x01};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 tempval;
 	u8 ICVer8192, ICVer8256;
 	u16 i, usValue, IC_Version;
 	u16 EEPROMId;
+<<<<<<< HEAD
 	u8 bMac_Tmp_Addr[6] = {0x00, 0xe0, 0x4c, 0x00, 0x00, 0x01};
 	RT_TRACE(COMP_INIT, "====> rtl8192_read_eeprom_info\n");
 
@@ -342,6 +538,31 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 		ICVer8256 = ((IC_Version&0xf0)>>4);
 		RT_TRACE(COMP_INIT, "\nICVer8192 = 0x%x\n", ICVer8192);
 		RT_TRACE(COMP_INIT, "\nICVer8256 = 0x%x\n", ICVer8256);
+=======
+
+	EEPROMId = rtl92e_eeprom_read(dev, 0);
+	if (EEPROMId != RTL8190_EEPROM_ID) {
+		netdev_err(dev, "%s(): Invalid EEPROM ID: %x\n", __func__,
+			   EEPROMId);
+		priv->autoload_fail_flag = true;
+	} else {
+		priv->autoload_fail_flag = false;
+	}
+
+	if (!priv->autoload_fail_flag) {
+		priv->eeprom_vid = rtl92e_eeprom_read(dev, EEPROM_VID >> 1);
+		priv->eeprom_did = rtl92e_eeprom_read(dev, EEPROM_DID >> 1);
+
+		usValue = rtl92e_eeprom_read(dev,
+					     (EEPROM_Customer_ID >> 1)) >> 8;
+		priv->eeprom_customer_id = usValue & 0xff;
+		usValue = rtl92e_eeprom_read(dev,
+					     EEPROM_ICVersion_ChannelPlan >> 1);
+		IC_Version = (usValue & 0xff00) >> 8;
+
+		ICVer8192 = IC_Version & 0xf;
+		ICVer8256 = (IC_Version & 0xf0) >> 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ICVer8192 == 0x2) {
 			if (ICVer8256 == 0x5)
 				priv->card_8192_version = VERSION_8190_BE;
@@ -354,12 +575,16 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 			priv->card_8192_version = VERSION_8190_BD;
 			break;
 		}
+<<<<<<< HEAD
 		RT_TRACE(COMP_INIT, "\nIC Version = 0x%x\n",
 			  priv->card_8192_version);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		priv->card_8192_version = VERSION_8190_BD;
 		priv->eeprom_vid = 0;
 		priv->eeprom_did = 0;
+<<<<<<< HEAD
 		priv->eeprom_CustomerID = 0;
 		priv->eeprom_ChannelPlan = 0;
 		RT_TRACE(COMP_INIT, "\nIC Version = 0x%x\n", 0xff);
@@ -465,10 +690,82 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 				RT_TRACE(COMP_INIT, "OFDM 2.4G Tx Power Level,"
 					 " Index %d = 0x%02x\n", i + 1,
 					 priv->EEPROMTxPowerLevelOFDM24G[i+1]);
+=======
+		priv->eeprom_customer_id = 0;
+	}
+
+	if (!priv->autoload_fail_flag) {
+		u8 addr[ETH_ALEN];
+
+		for (i = 0; i < 6; i += 2) {
+			usValue = rtl92e_eeprom_read(dev,
+				 (EEPROM_NODE_ADDRESS_BYTE_0 + i) >> 1);
+			*(u16 *)(&addr[i]) = usValue;
+		}
+		eth_hw_addr_set(dev, addr);
+	} else {
+		eth_hw_addr_set(dev, bMac_Tmp_Addr);
+	}
+
+	if (priv->card_8192_version > VERSION_8190_BD)
+		priv->tx_pwr_data_read_from_eeprom = true;
+	else
+		priv->tx_pwr_data_read_from_eeprom = false;
+
+	if (priv->card_8192_version > VERSION_8190_BD) {
+		if (!priv->autoload_fail_flag) {
+			tempval = (rtl92e_eeprom_read(dev,
+						      (EEPROM_RFInd_PowerDiff >> 1))) & 0xff;
+			priv->eeprom_legacy_ht_tx_pwr_diff = tempval & 0xf;
+		} else {
+			priv->eeprom_legacy_ht_tx_pwr_diff = 0x04;
+		}
+
+		if (!priv->autoload_fail_flag)
+			priv->eeprom_thermal_meter = ((rtl92e_eeprom_read(dev,
+						   (EEPROM_ThermalMeter >> 1))) &
+						   0xff00) >> 8;
+		else
+			priv->eeprom_thermal_meter = EEPROM_Default_ThermalMeter;
+		priv->tssi_13dBm = priv->eeprom_thermal_meter * 100;
+
+		if (priv->epromtype == EEPROM_93C46) {
+			if (!priv->autoload_fail_flag) {
+				usValue = rtl92e_eeprom_read(dev,
+					  EEPROM_TxPwDiff_CrystalCap >> 1);
+				priv->eeprom_ant_pwr_diff = usValue & 0x0fff;
+				priv->eeprom_crystal_cap = (usValue & 0xf000)
+							 >> 12;
+			} else {
+				priv->eeprom_ant_pwr_diff =
+					 EEPROM_Default_AntTxPowerDiff;
+				priv->eeprom_crystal_cap =
+					 EEPROM_Default_TxPwDiff_CrystalCap;
+			}
+
+			for (i = 0; i < 14; i += 2) {
+				if (!priv->autoload_fail_flag)
+					usValue = rtl92e_eeprom_read(dev,
+						  (EEPROM_TxPwIndex_CCK + i) >> 1);
+				else
+					usValue = EEPROM_Default_TxPower;
+				*((u16 *)(&priv->eeprom_tx_pwr_level_cck[i])) =
+								 usValue;
+			}
+			for (i = 0; i < 14; i += 2) {
+				if (!priv->autoload_fail_flag)
+					usValue = rtl92e_eeprom_read(dev,
+						(EEPROM_TxPwIndex_OFDM_24G + i) >> 1);
+				else
+					usValue = EEPROM_Default_TxPower;
+				*((u16 *)(&priv->eeprom_tx_pwr_level_ofdm24g[i]))
+							 = usValue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		if (priv->epromtype == EEPROM_93C46) {
 			for (i = 0; i < 14; i++) {
+<<<<<<< HEAD
 				priv->TxPowerLevelCCK[i] =
 					 priv->EEPROMTxPowerLevelCCK[i];
 				priv->TxPowerLevelOFDM24G[i] =
@@ -610,10 +907,53 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 		priv->ChannelPlan = 0;
 	priv->ChannelPlan = COUNTRY_CODE_WORLD_WIDE_13;
 
+=======
+				priv->tx_pwr_level_cck[i] =
+					 priv->eeprom_tx_pwr_level_cck[i];
+				priv->tx_pwr_level_ofdm_24g[i] =
+					 priv->eeprom_tx_pwr_level_ofdm24g[i];
+			}
+			priv->legacy_ht_tx_pwr_diff =
+					 priv->eeprom_legacy_ht_tx_pwr_diff;
+			priv->antenna_tx_pwr_diff[0] = priv->eeprom_ant_pwr_diff & 0xf;
+			priv->antenna_tx_pwr_diff[1] = (priv->eeprom_ant_pwr_diff &
+							0xf0) >> 4;
+			priv->antenna_tx_pwr_diff[2] = (priv->eeprom_ant_pwr_diff &
+							0xf00) >> 8;
+			priv->crystal_cap = priv->eeprom_crystal_cap;
+			priv->thermal_meter[0] = priv->eeprom_thermal_meter & 0xf;
+			priv->thermal_meter[1] = (priv->eeprom_thermal_meter &
+						     0xf0) >> 4;
+		} else if (priv->epromtype == EEPROM_93C56) {
+			priv->legacy_ht_tx_pwr_diff =
+				 priv->eeprom_legacy_ht_tx_pwr_diff;
+			priv->antenna_tx_pwr_diff[0] = 0;
+			priv->antenna_tx_pwr_diff[1] = 0;
+			priv->antenna_tx_pwr_diff[2] = 0;
+			priv->crystal_cap = priv->eeprom_crystal_cap;
+			priv->thermal_meter[0] = priv->eeprom_thermal_meter & 0xf;
+			priv->thermal_meter[1] = (priv->eeprom_thermal_meter &
+						     0xf0) >> 4;
+		}
+	}
+
+	rtl92e_init_adaptive_rate(dev);
+
+	switch (priv->eeprom_customer_id) {
+	case EEPROM_CID_NetCore:
+		priv->customer_id = RT_CID_819X_NETCORE;
+		break;
+	case EEPROM_CID_TOSHIBA:
+		priv->customer_id = RT_CID_TOSHIBA;
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->eeprom_vid == 0x1186 &&  priv->eeprom_did == 0x3304)
 		priv->rtllib->bSupportRemoteWakeUp = true;
 	else
 		priv->rtllib->bSupportRemoteWakeUp = false;
+<<<<<<< HEAD
 
 	RT_TRACE(COMP_INIT, "RegChannelPlan(%d)\n", priv->RegChannelPlan);
 	RT_TRACE(COMP_INIT, "ChannelPlan = %d\n", priv->ChannelPlan);
@@ -621,10 +961,16 @@ static void rtl8192_read_eeprom_info(struct net_device *dev)
 }
 
 void rtl8192_get_eeprom_size(struct net_device *dev)
+=======
+}
+
+void rtl92e_get_eeprom_size(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 curCR;
 	struct r8192_priv *priv = rtllib_priv(dev);
 
+<<<<<<< HEAD
 	RT_TRACE(COMP_INIT, "===========>%s()\n", __func__);
 	curCR = read_nic_dword(dev, EPROM_CMD);
 	RT_TRACE(COMP_INIT, "read from Reg Cmd9346CR(%x):%x\n", EPROM_CMD,
@@ -637,6 +983,15 @@ void rtl8192_get_eeprom_size(struct net_device *dev)
 }
 
 static void rtl8192_hwconfig(struct net_device *dev)
+=======
+	curCR = rtl92e_readw(dev, EPROM_CMD);
+	priv->epromtype = (curCR & EPROM_CMD_9356SEL) ? EEPROM_93C56 :
+			  EEPROM_93C46;
+	_rtl92e_read_eeprom_info(dev);
+}
+
+static void _rtl92e_hwconfig(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 regRATR = 0, regRRSR = 0;
 	u8 regBwOpMode = 0, regTmp = 0;
@@ -648,6 +1003,7 @@ static void rtl8192_hwconfig(struct net_device *dev)
 		regRATR = RATE_ALL_CCK;
 		regRRSR = RATE_ALL_CCK;
 		break;
+<<<<<<< HEAD
 	case WIRELESS_MODE_A:
 		regBwOpMode = BW_OPMODE_5G | BW_OPMODE_20MHZ;
 		regRATR = RATE_ALL_OFDM_AG;
@@ -671,6 +1027,16 @@ static void rtl8192_hwconfig(struct net_device *dev)
 			  RATE_ALL_OFDM_2SS;
 		regRRSR = RATE_ALL_OFDM_AG;
 		break;
+=======
+	case WIRELESS_MODE_AUTO:
+	case WIRELESS_MODE_N_24G:
+		regBwOpMode = BW_OPMODE_20MHZ;
+		regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG |
+			  RATE_ALL_OFDM_1SS | RATE_ALL_OFDM_2SS;
+		regRRSR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
+		break;
+	case WIRELESS_MODE_G:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		regBwOpMode = BW_OPMODE_20MHZ;
 		regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
@@ -678,6 +1044,7 @@ static void rtl8192_hwconfig(struct net_device *dev)
 		break;
 	}
 
+<<<<<<< HEAD
 	write_nic_byte(dev, BW_OPMODE, regBwOpMode);
 	{
 		u32 ratr_value = 0;
@@ -697,6 +1064,27 @@ static void rtl8192_hwconfig(struct net_device *dev)
 }
 
 bool rtl8192_adapter_start(struct net_device *dev)
+=======
+	rtl92e_writeb(dev, BW_OPMODE, regBwOpMode);
+	{
+		u32 ratr_value;
+
+		ratr_value = regRATR;
+		ratr_value &= ~(RATE_ALL_OFDM_2SS);
+		rtl92e_writel(dev, RATR0, ratr_value);
+		rtl92e_writeb(dev, UFWP, 1);
+	}
+	regTmp = rtl92e_readb(dev, 0x313);
+	regRRSR = ((regTmp) << 24) | (regRRSR & 0x00ffffff);
+	rtl92e_writel(dev, RRSR, regRRSR);
+
+	rtl92e_writew(dev, RETRY_LIMIT,
+		      priv->short_retry_limit << RETRY_LIMIT_SHORT_SHIFT |
+		      priv->long_retry_limit << RETRY_LIMIT_LONG_SHIFT);
+}
+
+bool rtl92e_start_adapter(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 	u32 ulRegRead;
@@ -704,6 +1092,7 @@ bool rtl8192_adapter_start(struct net_device *dev)
 	u8 tmpvalue;
 	u8 ICVersion, SwitchingRegulatorOutput;
 	bool bfirmwareok = true;
+<<<<<<< HEAD
 	u32 tmpRegA, tmpRegC, TempCCk;
 	int i = 0;
 	u32 retry_times = 0;
@@ -843,6 +1232,127 @@ start:
 
 	RT_TRACE(COMP_INIT, "Load Firmware!\n");
 	bfirmwareok = init_firmware(dev);
+=======
+	u32 tmpRegA, TempCCk;
+	int i = 0;
+	u32 retry_times = 0;
+
+	priv->being_init_adapter = true;
+
+start:
+	rtl92e_reset_desc_ring(dev);
+	priv->rf_mode = RF_OP_By_SW_3wire;
+
+	rtl92e_writeb(dev, ANAPAR, 0x37);
+	mdelay(500);
+
+	priv->fw_info->status = FW_STATUS_0_INIT;
+
+	ulRegRead = rtl92e_readl(dev, CPU_GEN);
+	if (priv->fw_info->status == FW_STATUS_0_INIT)
+		ulRegRead |= CPU_GEN_SYSTEM_RESET;
+	else if (priv->fw_info->status == FW_STATUS_5_READY)
+		ulRegRead |= CPU_GEN_FIRMWARE_RESET;
+	else
+		netdev_err(dev, "%s(): undefined firmware state: %d.\n",
+			   __func__, priv->fw_info->status);
+
+	rtl92e_writel(dev, CPU_GEN, ulRegRead);
+
+	ICVersion = rtl92e_readb(dev, IC_VERRSION);
+	if (ICVersion >= 0x4) {
+		SwitchingRegulatorOutput = rtl92e_readb(dev, SWREGULATOR);
+		if (SwitchingRegulatorOutput  != 0xb8) {
+			rtl92e_writeb(dev, SWREGULATOR, 0xa8);
+			mdelay(1);
+			rtl92e_writeb(dev, SWREGULATOR, 0xb8);
+		}
+	}
+	rtStatus = rtl92e_config_bb(dev);
+	if (!rtStatus) {
+		netdev_warn(dev, "%s(): Failed to configure BB\n", __func__);
+		return rtStatus;
+	}
+
+	priv->loopback_mode = RTL819X_NO_LOOPBACK;
+	ulRegRead = rtl92e_readl(dev, CPU_GEN);
+	if (priv->loopback_mode == RTL819X_NO_LOOPBACK)
+		ulRegRead = (ulRegRead & CPU_GEN_NO_LOOPBACK_MSK) |
+			    CPU_GEN_NO_LOOPBACK_SET;
+	else if (priv->loopback_mode == RTL819X_MAC_LOOPBACK)
+		ulRegRead |= CPU_CCK_LOOPBACK;
+	else
+		netdev_err(dev, "%s: Invalid loopback mode setting.\n",
+			   __func__);
+
+	rtl92e_writel(dev, CPU_GEN, ulRegRead);
+
+	udelay(500);
+
+	_rtl92e_hwconfig(dev);
+	rtl92e_writeb(dev, CMDR, CR_RE | CR_TE);
+
+	rtl92e_writeb(dev, PCIF, ((MXDMA2_NO_LIMIT << MXDMA2_RX_SHIFT) |
+				  (MXDMA2_NO_LIMIT << MXDMA2_TX_SHIFT)));
+	rtl92e_writel(dev, MAC0, ((u32 *)dev->dev_addr)[0]);
+	rtl92e_writew(dev, MAC4, ((u16 *)(dev->dev_addr + 4))[0]);
+	rtl92e_writel(dev, RCR, priv->receive_config);
+
+	rtl92e_writel(dev, RQPN1, NUM_OF_PAGE_IN_FW_QUEUE_BK <<
+		      RSVD_FW_QUEUE_PAGE_BK_SHIFT |
+		      NUM_OF_PAGE_IN_FW_QUEUE_BE <<
+		      RSVD_FW_QUEUE_PAGE_BE_SHIFT |
+		      NUM_OF_PAGE_IN_FW_QUEUE_VI <<
+		      RSVD_FW_QUEUE_PAGE_VI_SHIFT |
+		      NUM_OF_PAGE_IN_FW_QUEUE_VO <<
+		      RSVD_FW_QUEUE_PAGE_VO_SHIFT);
+	rtl92e_writel(dev, RQPN2, NUM_OF_PAGE_IN_FW_QUEUE_MGNT <<
+		      RSVD_FW_QUEUE_PAGE_MGNT_SHIFT);
+	rtl92e_writel(dev, RQPN3, APPLIED_RESERVED_QUEUE_IN_FW |
+		      NUM_OF_PAGE_IN_FW_QUEUE_BCN <<
+		      RSVD_FW_QUEUE_PAGE_BCN_SHIFT |
+		      NUM_OF_PAGE_IN_FW_QUEUE_PUB <<
+		      RSVD_FW_QUEUE_PAGE_PUB_SHIFT);
+
+	rtl92e_tx_enable(dev);
+	rtl92e_rx_enable(dev);
+	ulRegRead = (0xFFF00000 & rtl92e_readl(dev, RRSR))  |
+		     RATE_ALL_OFDM_AG | RATE_ALL_CCK;
+	rtl92e_writel(dev, RRSR, ulRegRead);
+	rtl92e_writel(dev, RATR0 + 4 * 7, (RATE_ALL_OFDM_AG | RATE_ALL_CCK));
+
+	rtl92e_writeb(dev, ACK_TIMEOUT, 0x30);
+
+	rtl92e_set_wireless_mode(dev, priv->rtllib->mode);
+	rtl92e_cam_reset(dev);
+	{
+		u8 SECR_value = 0x0;
+
+		SECR_value |= SCR_TxEncEnable;
+		SECR_value |= SCR_RxDecEnable;
+		SECR_value |= SCR_NoSKMC;
+		rtl92e_writeb(dev, SECR, SECR_value);
+	}
+	rtl92e_writew(dev, ATIMWND, 2);
+	rtl92e_writew(dev, BCN_INTERVAL, 100);
+
+	for (i = 0; i < QOS_QUEUE_NUM; i++)
+		rtl92e_writel(dev, WDCAPARA_ADD[i], 0x005e4332);
+
+	rtl92e_writeb(dev, 0xbe, 0xc0);
+
+	rtl92e_config_mac(dev);
+
+	if (priv->card_8192_version > VERSION_8190_BD) {
+		rtl92e_get_tx_power(dev);
+		rtl92e_set_tx_power(dev, priv->chan);
+	}
+
+	tmpvalue = rtl92e_readb(dev, IC_VERRSION);
+	priv->ic_cut = tmpvalue;
+
+	bfirmwareok = rtl92e_init_fw(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bfirmwareok) {
 		if (retry_times < 10) {
 			retry_times++;
@@ -852,6 +1362,7 @@ start:
 			goto end;
 		}
 	}
+<<<<<<< HEAD
 	RT_TRACE(COMP_INIT, "Load Firmware finished!\n");
 	if (priv->ResetProgress == RESET_TYPE_NORESET) {
 		RT_TRACE(COMP_INIT, "RF Config Started!\n");
@@ -947,11 +1458,73 @@ start:
 		}
 	}
 	rtl8192_irq_enable(dev);
+=======
+
+	rtStatus = rtl92e_config_rf(dev);
+	if (!rtStatus) {
+		netdev_info(dev, "RF Config failed\n");
+		return rtStatus;
+	}
+
+	rtl92e_set_bb_reg(dev, rFPGA0_RFMOD, bCCKEn, 0x1);
+	rtl92e_set_bb_reg(dev, rFPGA0_RFMOD, bOFDMEn, 0x1);
+
+	rtl92e_writeb(dev, 0x87, 0x0);
+
+	if (priv->rtllib->rf_off_reason > RF_CHANGE_BY_PS) {
+		rtl92e_set_rf_state(dev, rf_off, priv->rtllib->rf_off_reason);
+	} else if (priv->rtllib->rf_off_reason >= RF_CHANGE_BY_IPS) {
+		rtl92e_set_rf_state(dev, rf_off, priv->rtllib->rf_off_reason);
+	} else {
+		priv->rtllib->rf_power_state = rf_on;
+		priv->rtllib->rf_off_reason = 0;
+	}
+
+	if (priv->rtllib->FwRWRF)
+		priv->rf_mode = RF_OP_By_FW;
+	else
+		priv->rf_mode = RF_OP_By_SW_3wire;
+
+	rtl92e_dm_init_txpower_tracking(dev);
+
+	if (priv->ic_cut >= IC_VersionCut_D) {
+		tmpRegA = rtl92e_get_bb_reg(dev, rOFDM0_XATxIQImbalance,
+					    bMaskDWord);
+		rtl92e_get_bb_reg(dev, rOFDM0_XCTxIQImbalance, bMaskDWord);
+
+		for (i = 0; i < TX_BB_GAIN_TABLE_LEN; i++) {
+			if (tmpRegA == dm_tx_bb_gain[i]) {
+				priv->rfa_txpowertrackingindex = i;
+				priv->rfa_txpowertrackingindex_real = i;
+				priv->rfa_txpowertracking_default =
+					 priv->rfa_txpowertrackingindex;
+				break;
+			}
+		}
+
+		TempCCk = rtl92e_get_bb_reg(dev, rCCK0_TxFilter1,
+					    bMaskByte2);
+
+		for (i = 0; i < CCK_TX_BB_GAIN_TABLE_LEN; i++) {
+			if (TempCCk == dm_cck_tx_bb_gain[i][0]) {
+				priv->cck_present_attn_20m_def = i;
+				break;
+			}
+		}
+		priv->cck_present_attn_40m_def = 0;
+		priv->cck_present_attn_diff = 0;
+		priv->cck_present_attn =
+			  priv->cck_present_attn_20m_def;
+		priv->btxpower_tracking = false;
+	}
+	rtl92e_irq_enable(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 end:
 	priv->being_init_adapter = false;
 	return rtStatus;
 }
 
+<<<<<<< HEAD
 static void rtl8192_net_update(struct net_device *dev)
 {
 
@@ -982,6 +1555,23 @@ static void rtl8192_net_update(struct net_device *dev)
 }
 
 void rtl8192_link_change(struct net_device *dev)
+=======
+static void _rtl92e_net_update(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	struct rtllib_network *net;
+	u16 rate_config = 0;
+
+	net = &priv->rtllib->current_network;
+	rtl92e_config_rate(dev, &rate_config);
+	priv->dot11_current_preamble_mode = PREAMBLE_AUTO;
+	priv->basic_rate = rate_config &= 0x15f;
+	rtl92e_writew(dev, BSSIDR, *(u16 *)net->bssid);
+	rtl92e_writel(dev, BSSIDR + 2, *(u32 *)(net->bssid + 2));
+}
+
+void rtl92e_link_change(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 	struct rtllib_device *ieee = priv->rtllib;
@@ -989,6 +1579,7 @@ void rtl8192_link_change(struct net_device *dev)
 	if (!priv->up)
 		return;
 
+<<<<<<< HEAD
 	if (ieee->state == RTLLIB_LINKED) {
 		rtl8192_net_update(dev);
 		priv->ops->update_ratr_table(dev);
@@ -1017,10 +1608,39 @@ void rtl8192_link_change(struct net_device *dev)
 
 void rtl8192_AllowAllDestAddr(struct net_device *dev,
 			      bool bAllowAllDA, bool WriteIntoReg)
+=======
+	if (ieee->link_state == MAC80211_LINKED) {
+		_rtl92e_net_update(dev);
+		rtl92e_update_ratr_table(dev);
+		if ((ieee->pairwise_key_type == KEY_TYPE_WEP40) ||
+		    (ieee->pairwise_key_type == KEY_TYPE_WEP104))
+			rtl92e_enable_hw_security_config(dev);
+	} else {
+		rtl92e_writeb(dev, 0x173, 0);
+	}
+	_rtl92e_update_msr(dev);
+
+	if (ieee->iw_mode == IW_MODE_INFRA) {
+		u32 reg;
+
+		reg = rtl92e_readl(dev, RCR);
+		if (priv->rtllib->link_state == MAC80211_LINKED)
+			priv->receive_config = reg |= RCR_CBSSID;
+		else
+			priv->receive_config = reg &= ~RCR_CBSSID;
+
+		rtl92e_writel(dev, RCR, reg);
+	}
+}
+
+void rtl92e_set_monitor_mode(struct net_device *dev, bool bAllowAllDA,
+			     bool WriteIntoReg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
 	if (bAllowAllDA)
+<<<<<<< HEAD
 		priv->ReceiveConfig |= RCR_AAP;
 	else
 		priv->ReceiveConfig &= ~RCR_AAP;
@@ -1030,6 +1650,17 @@ void rtl8192_AllowAllDestAddr(struct net_device *dev,
 }
 
 static u8 MRateToHwRate8190Pci(u8 rate)
+=======
+		priv->receive_config |= RCR_AAP;
+	else
+		priv->receive_config &= ~RCR_AAP;
+
+	if (WriteIntoReg)
+		rtl92e_writel(dev, RCR, priv->receive_config);
+}
+
+static u8 _rtl92e_rate_mgn_to_hw(u8 rate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8  ret = DESC90_RATE1M;
 
@@ -1118,7 +1749,11 @@ static u8 MRateToHwRate8190Pci(u8 rate)
 	case MGN_MCS15:
 		ret = DESC90_RATEMCS15;
 		break;
+<<<<<<< HEAD
 	case (0x80|0x20):
+=======
+	case (0x80 | 0x20):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = DESC90_RATEMCS32;
 		break;
 	default:
@@ -1127,7 +1762,12 @@ static u8 MRateToHwRate8190Pci(u8 rate)
 	return ret;
 }
 
+<<<<<<< HEAD
 static u8 rtl8192_MapHwQueueToFirmwareQueue(u8 QueueID, u8 priority)
+=======
+static u8 _rtl92e_hw_queue_to_fw_queue(struct net_device *dev, u8 QueueID,
+				       u8 priority)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 QueueSelect = 0x0;
 
@@ -1160,13 +1800,19 @@ static u8 rtl8192_MapHwQueueToFirmwareQueue(u8 QueueID, u8 priority)
 		QueueSelect = QSLT_HIGH;
 		break;
 	default:
+<<<<<<< HEAD
 		RT_TRACE(COMP_ERR, "TransmitTCB(): Impossible Queue Selection:"
 			 " %d\n", QueueID);
+=======
+		netdev_warn(dev, "%s(): Impossible Queue Selection: %d\n",
+			    __func__, QueueID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return QueueSelect;
 }
 
+<<<<<<< HEAD
 void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 			   struct cb_desc *cb_desc, struct sk_buff *skb)
 {
@@ -1184,6 +1830,36 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 						cb_desc);
 
 	if (cb_desc->bAMPDUEnable) {
+=======
+static u8 _rtl92e_query_is_short(u8 TxHT, u8 TxRate, struct cb_desc *tcb_desc)
+{
+	u8   tmp_Short;
+
+	tmp_Short = (TxHT == 1) ? ((tcb_desc->bUseShortGI) ? 1 : 0) :
+			((tcb_desc->bUseShortPreamble) ? 1 : 0);
+	if (TxHT == 1 && TxRate != DESC90_RATEMCS15)
+		tmp_Short = 0;
+
+	return tmp_Short;
+}
+
+void  rtl92e_fill_tx_desc(struct net_device *dev, struct tx_desc *pdesc,
+			  struct cb_desc *cb_desc, struct sk_buff *skb)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	dma_addr_t mapping;
+	struct tx_fwinfo_8190pci *pTxFwInfo;
+
+	pTxFwInfo = (struct tx_fwinfo_8190pci *)skb->data;
+	memset(pTxFwInfo, 0, sizeof(struct tx_fwinfo_8190pci));
+	pTxFwInfo->TxHT = (cb_desc->data_rate & 0x80) ? 1 : 0;
+	pTxFwInfo->TxRate = _rtl92e_rate_mgn_to_hw(cb_desc->data_rate);
+	pTxFwInfo->EnableCPUDur = cb_desc->tx_enable_fw_calc_dur;
+	pTxFwInfo->Short = _rtl92e_query_is_short(pTxFwInfo->TxHT,
+						  pTxFwInfo->TxRate, cb_desc);
+
+	if (cb_desc->ampdu_enable) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pTxFwInfo->AllowAggregation = 1;
 		pTxFwInfo->RxMF = cb_desc->ampdu_factor;
 		pTxFwInfo->RxAMD = cb_desc->ampdu_density;
@@ -1196,20 +1872,33 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 	pTxFwInfo->RtsEnable =	(cb_desc->bRTSEnable) ? 1 : 0;
 	pTxFwInfo->CtsEnable = (cb_desc->bCTSEnable) ? 1 : 0;
 	pTxFwInfo->RtsSTBC = (cb_desc->bRTSSTBC) ? 1 : 0;
+<<<<<<< HEAD
 	pTxFwInfo->RtsHT = (cb_desc->rts_rate&0x80) ? 1 : 0;
 	pTxFwInfo->RtsRate = MRateToHwRate8190Pci((u8)cb_desc->rts_rate);
+=======
+	pTxFwInfo->RtsHT = (cb_desc->rts_rate & 0x80) ? 1 : 0;
+	pTxFwInfo->RtsRate = _rtl92e_rate_mgn_to_hw(cb_desc->rts_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pTxFwInfo->RtsBandwidth = 0;
 	pTxFwInfo->RtsSubcarrier = cb_desc->RTSSC;
 	pTxFwInfo->RtsShort = (pTxFwInfo->RtsHT == 0) ?
 			  (cb_desc->bRTSUseShortPreamble ? 1 : 0) :
 			  (cb_desc->bRTSUseShortGI ? 1 : 0);
+<<<<<<< HEAD
 	if (priv->CurrentChannelBW == HT_CHANNEL_WIDTH_20_40) {
+=======
+	if (priv->current_chnl_bw == HT_CHANNEL_WIDTH_20_40) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cb_desc->bPacketBW) {
 			pTxFwInfo->TxBandwidth = 1;
 			pTxFwInfo->TxSubCarrier = 0;
 		} else {
 			pTxFwInfo->TxBandwidth = 0;
+<<<<<<< HEAD
 			pTxFwInfo->TxSubCarrier = priv->nCur40MhzPrimeSC;
+=======
+			pTxFwInfo->TxSubCarrier = priv->n_cur_40mhz_prime_sc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		pTxFwInfo->TxBandwidth = 0;
@@ -1217,6 +1906,7 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 	}
 
 	memset((u8 *)pdesc, 0, 12);
+<<<<<<< HEAD
 	pdesc->LINIP = 0;
 	pdesc->CmdInit = 1;
 	pdesc->Offset = sizeof(struct tx_fwinfo_8190pci) + 8;
@@ -1225,15 +1915,38 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 	pdesc->SecCAMID = 0;
 	pdesc->RATid = cb_desc->RATRIndex;
 
+=======
+
+	mapping = dma_map_single(&priv->pdev->dev, skb->data, skb->len,
+				 DMA_TO_DEVICE);
+	if (dma_mapping_error(&priv->pdev->dev, mapping)) {
+		netdev_err(dev, "%s(): DMA Mapping error\n", __func__);
+		return;
+	}
+
+	pdesc->LINIP = 0;
+	pdesc->CmdInit = 1;
+	pdesc->Offset = sizeof(struct tx_fwinfo_8190pci) + 8;
+	pdesc->PktSize = skb->len - sizeof(struct tx_fwinfo_8190pci);
+
+	pdesc->SecCAMID = 0;
+	pdesc->RATid = cb_desc->ratr_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdesc->NoEnc = 1;
 	pdesc->SecType = 0x0;
 	if (cb_desc->bHwSec) {
 		static u8 tmp;
+<<<<<<< HEAD
 		if (!tmp) {
 			RT_TRACE(COMP_DBG, "==>================hw sec\n");
 			tmp = 1;
 		}
+=======
+
+		if (!tmp)
+			tmp = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (priv->rtllib->pairwise_key_type) {
 		case KEY_TYPE_WEP40:
 		case KEY_TYPE_WEP104:
@@ -1257,6 +1970,7 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 
 	pdesc->PktId = 0x0;
 
+<<<<<<< HEAD
 	pdesc->QueueSelect = rtl8192_MapHwQueueToFirmwareQueue(
 						cb_desc->queue_index,
 						cb_desc->priority);
@@ -1264,11 +1978,21 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 
 	pdesc->DISFB = cb_desc->bTxDisableRateFallBack;
 	pdesc->USERATE = cb_desc->bTxUseDriverAssingedRate;
+=======
+	pdesc->QueueSelect = _rtl92e_hw_queue_to_fw_queue(dev,
+							  cb_desc->queue_index,
+							  cb_desc->priority);
+	pdesc->TxFWInfoSize = sizeof(struct tx_fwinfo_8190pci);
+
+	pdesc->DISFB = cb_desc->tx_dis_rate_fallback;
+	pdesc->USERATE = cb_desc->tx_use_drv_assinged_rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdesc->FirstSeg = 1;
 	pdesc->LastSeg = 1;
 	pdesc->TxBufferSize = skb->len;
 
+<<<<<<< HEAD
 	pdesc->TxBuffAddr = cpu_to_le32(mapping);
 }
 
@@ -1280,6 +2004,20 @@ void  rtl8192_tx_fill_cmd_desc(struct net_device *dev,
 	dma_addr_t mapping = pci_map_single(priv->pdev, skb->data, skb->len,
 			 PCI_DMA_TODEVICE);
 
+=======
+	pdesc->TxBuffAddr = mapping;
+}
+
+void  rtl92e_fill_tx_cmd_desc(struct net_device *dev, struct tx_desc_cmd *entry,
+			      struct cb_desc *cb_desc, struct sk_buff *skb)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	dma_addr_t mapping = dma_map_single(&priv->pdev->dev, skb->data,
+					    skb->len, DMA_TO_DEVICE);
+
+	if (dma_mapping_error(&priv->pdev->dev, mapping))
+		netdev_err(dev, "%s(): DMA Mapping error\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(entry, 0, 12);
 	entry->LINIP = cb_desc->bLastIniPkt;
 	entry->FirstSeg = 1;
@@ -1287,6 +2025,7 @@ void  rtl8192_tx_fill_cmd_desc(struct net_device *dev,
 	if (cb_desc->bCmdOrInit == DESC_PACKET_TYPE_INIT) {
 		entry->CmdInit = DESC_PACKET_TYPE_INIT;
 	} else {
+<<<<<<< HEAD
 		struct tx_desc * entry_tmp = (struct tx_desc *)entry;
 		entry_tmp->CmdInit = DESC_PACKET_TYPE_NORMAL;
 		entry_tmp->Offset = sizeof(struct tx_fwinfo_8190pci) + 8;
@@ -1302,6 +2041,23 @@ void  rtl8192_tx_fill_cmd_desc(struct net_device *dev,
 }
 
 static u8 HwRateToMRate90(bool bIsHT, u8 rate)
+=======
+		struct tx_desc *entry_tmp = (struct tx_desc *)entry;
+
+		entry_tmp->CmdInit = DESC_PACKET_TYPE_NORMAL;
+		entry_tmp->Offset = sizeof(struct tx_fwinfo_8190pci) + 8;
+		entry_tmp->PktSize = cb_desc->pkt_size + entry_tmp->Offset;
+		entry_tmp->QueueSelect = QSLT_CMD;
+		entry_tmp->TxFWInfoSize = 0x08;
+		entry_tmp->RATid = DESC_PACKET_TYPE_INIT;
+	}
+	entry->TxBufferSize = skb->len;
+	entry->TxBuffAddr = mapping;
+	entry->OWN = 1;
+}
+
+static u8 _rtl92e_rate_hw_to_mgn(bool bIsHT, u8 rate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8  ret_rate = 0x02;
 
@@ -1343,11 +2099,14 @@ static u8 HwRateToMRate90(bool bIsHT, u8 rate)
 		case DESC90_RATE54M:
 			ret_rate = MGN_54M;
 			break;
+<<<<<<< HEAD
 
 		default:
 			RT_TRACE(COMP_RECV, "HwRateToMRate90(): Non supported"
 				 "Rate [%x], bIsHT = %d!!!\n", rate, bIsHT);
 						  break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	} else {
@@ -1401,12 +2160,16 @@ static u8 HwRateToMRate90(bool bIsHT, u8 rate)
 			ret_rate = MGN_MCS15;
 			break;
 		case DESC90_RATEMCS32:
+<<<<<<< HEAD
 			ret_rate = (0x80|0x20);
 			break;
 
 		default:
 			RT_TRACE(COMP_RECV, "HwRateToMRate90(): Non supported "
 				 "Rate [%x], bIsHT = %d!!!\n", rate, bIsHT);
+=======
+			ret_rate = 0x80 | 0x20;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1414,7 +2177,11 @@ static u8 HwRateToMRate90(bool bIsHT, u8 rate)
 	return ret_rate;
 }
 
+<<<<<<< HEAD
 static long rtl8192_signal_scale_mapping(struct r8192_priv *priv, long currsig)
+=======
+static long _rtl92e_signal_scale_mapping(struct r8192_priv *priv, long currsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long retsig;
 
@@ -1442,7 +2209,10 @@ static long rtl8192_signal_scale_mapping(struct r8192_priv *priv, long currsig)
 	return retsig;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	 rx_hal_is_cck_rate(_pdrvinfo)\
 			((_pdrvinfo->RxRate == DESC90_RATE1M ||\
 			_pdrvinfo->RxRate == DESC90_RATE2M ||\
@@ -1450,7 +2220,11 @@ static long rtl8192_signal_scale_mapping(struct r8192_priv *priv, long currsig)
 			_pdrvinfo->RxRate == DESC90_RATE11M) &&\
 			!_pdrvinfo->RxHT)
 
+<<<<<<< HEAD
 static void rtl8192_query_rxphystatus(
+=======
+static void _rtl92e_query_rxphystatus(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r8192_priv *priv,
 	struct rtllib_rx_stats *pstats,
 	struct rx_desc  *pdesc,
@@ -1464,11 +2238,18 @@ static void rtl8192_query_rxphystatus(
 {
 	struct phy_sts_ofdm_819xpci *pofdm_buf;
 	struct phy_sts_cck_819xpci *pcck_buf;
+<<<<<<< HEAD
 	struct phy_ofdm_rx_status_rxsc_sgien_exintfflag *prxsc;
 	u8 *prxpkt;
 	u8 i, max_spatial_stream, tmp_rxsnr, tmp_rxevm, rxsc_sgien_exflg;
 	char rx_pwr[4], rx_pwr_all = 0;
 	char rx_snrX, rx_evmX;
+=======
+	u8 *prxpkt;
+	u8 i, max_spatial_stream, tmp_rxevm;
+	s8 rx_pwr[4], rx_pwr_all = 0;
+	s8 rx_evmX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 evm, pwdb_all;
 	u32 RSSI, total_rssi = 0;
 	u8 is_cck_rate = 0;
@@ -1476,8 +2257,11 @@ static void rtl8192_query_rxphystatus(
 	static	u8 check_reg824;
 	static	u32 reg824_bit9;
 
+<<<<<<< HEAD
 	priv->stats.numqry_phystatus++;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	is_cck_rate = rx_hal_is_cck_rate(pdrvinfo);
 	memset(precord_stats, 0, sizeof(struct rtllib_rx_stats));
 	pstats->bPacketMatchBSSID = precord_stats->bPacketMatchBSSID =
@@ -1487,12 +2271,21 @@ static void rtl8192_query_rxphystatus(
 	pstats->bPacketBeacon = precord_stats->bPacketBeacon = bPacketBeacon;
 	pstats->bToSelfBA = precord_stats->bToSelfBA = bToSelfBA;
 	if (check_reg824 == 0) {
+<<<<<<< HEAD
 		reg824_bit9 = rtl8192_QueryBBReg(priv->rtllib->dev,
 			      rFPGA0_XA_HSSIParameter2, 0x200);
 		check_reg824 = 1;
 	}
 
 
+=======
+		reg824_bit9 = rtl92e_get_bb_reg(priv->rtllib->dev,
+						rFPGA0_XA_HSSIParameter2,
+						0x200);
+		check_reg824 = 1;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prxpkt = (u8 *)pdrvinfo;
 
 	prxpkt += sizeof(struct rx_fwinfo);
@@ -1508,10 +2301,16 @@ static void rtl8192_query_rxphystatus(
 	if (is_cck_rate) {
 		u8 report;
 
+<<<<<<< HEAD
 		priv->stats.numqry_phystatusCCK++;
 		if (!reg824_bit9) {
 			report = pcck_buf->cck_agc_rpt & 0xc0;
 			report = report>>6;
+=======
+		if (!reg824_bit9) {
+			report = pcck_buf->cck_agc_rpt & 0xc0;
+			report >>= 6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (report) {
 			case 0x3:
 				rx_pwr_all = -35 - (pcck_buf->cck_agc_rpt &
@@ -1531,7 +2330,11 @@ static void rtl8192_query_rxphystatus(
 			}
 		} else {
 			report = pcck_buf->cck_agc_rpt & 0x60;
+<<<<<<< HEAD
 			report = report>>5;
+=======
+			report >>= 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (report) {
 			case 0x3:
 				rx_pwr_all = -35 -
@@ -1556,7 +2359,11 @@ static void rtl8192_query_rxphystatus(
 			}
 		}
 
+<<<<<<< HEAD
 		pwdb_all = rtl819x_query_rxpwrpercentage(rx_pwr_all);
+=======
+		pwdb_all = rtl92e_rx_db_to_percent(rx_pwr_all);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pstats->RxPWDBAll = precord_stats->RxPWDBAll = pwdb_all;
 		pstats->RecvSignalPower = rx_pwr_all;
 
@@ -1573,7 +2380,11 @@ static void rtl8192_query_rxphystatus(
 				else if (pcck_buf->sq_rpt < 20)
 					sq = 100;
 				else
+<<<<<<< HEAD
 					sq = ((64-sq) * 100) / 44;
+=======
+					sq = ((64 - sq) * 100) / 44;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			pstats->SignalQuality = sq;
 			precord_stats->SignalQuality = sq;
@@ -1583,7 +2394,10 @@ static void rtl8192_query_rxphystatus(
 			precord_stats->RxMIMOSignalQuality[1] = -1;
 		}
 	} else {
+<<<<<<< HEAD
 		priv->stats.numqry_phystatusHT++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = RF90_PATH_A; i < RF90_PATH_MAX; i++) {
 			if (priv->brfpath_rxenable[i])
 				rf_rx_num++;
@@ -1591,16 +2405,21 @@ static void rtl8192_query_rxphystatus(
 			rx_pwr[i] = ((pofdm_buf->trsw_gain_X[i] & 0x3F) *
 				     2) - 110;
 
+<<<<<<< HEAD
 			tmp_rxsnr = pofdm_buf->rxsnr_X[i];
 			rx_snrX = (char)(tmp_rxsnr);
 			rx_snrX /= 2;
 			priv->stats.rxSNRdB[i] = (long)rx_snrX;
 
 			RSSI = rtl819x_query_rxpwrpercentage(rx_pwr[i]);
+=======
+			RSSI = rtl92e_rx_db_to_percent(rx_pwr[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (priv->brfpath_rxenable[i])
 				total_rssi += RSSI;
 
 			if (bpacket_match_bssid) {
+<<<<<<< HEAD
 				pstats->RxMIMOSignalStrength[i] = (u8) RSSI;
 				precord_stats->RxMIMOSignalStrength[i] =
 								(u8) RSSI;
@@ -1613,6 +2432,17 @@ static void rtl8192_query_rxphystatus(
 
 		pstats->RxPWDBAll = precord_stats->RxPWDBAll = pwdb_all;
 		pstats->RxPower = precord_stats->RxPower =	rx_pwr_all;
+=======
+				pstats->RxMIMOSignalStrength[i] = RSSI;
+				precord_stats->RxMIMOSignalStrength[i] = RSSI;
+			}
+		}
+
+		rx_pwr_all = (((pofdm_buf->pwdb_all) >> 1) & 0x7f) - 106;
+		pwdb_all = rtl92e_rx_db_to_percent(rx_pwr_all);
+
+		pstats->RxPWDBAll = precord_stats->RxPWDBAll = pwdb_all;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pstats->RecvSignalPower = rx_pwr_all;
 		if (pdrvinfo->RxHT && pdrvinfo->RxRate >= DESC90_RATEMCS8 &&
 		    pdrvinfo->RxRate <= DESC90_RATEMCS15)
@@ -1622,6 +2452,7 @@ static void rtl8192_query_rxphystatus(
 
 		for (i = 0; i < max_spatial_stream; i++) {
 			tmp_rxevm = pofdm_buf->rxevm_X[i];
+<<<<<<< HEAD
 			rx_evmX = (char)(tmp_rxevm);
 
 			rx_evmX /= 2;
@@ -1649,22 +2480,52 @@ static void rtl8192_query_rxphystatus(
 			priv->stats.received_bwtype[1+prxsc->rxsc]++;
 		else
 			priv->stats.received_bwtype[0]++;
+=======
+			rx_evmX = (s8)(tmp_rxevm);
+
+			rx_evmX /= 2;
+
+			evm = rtl92e_evm_db_to_percent(rx_evmX);
+			if (bpacket_match_bssid) {
+				if (i == 0) {
+					pstats->SignalQuality = evm & 0xff;
+					precord_stats->SignalQuality = evm & 0xff;
+				}
+				pstats->RxMIMOSignalQuality[i] = evm & 0xff;
+				precord_stats->RxMIMOSignalQuality[i] = evm & 0xff;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (is_cck_rate) {
 		pstats->SignalStrength = precord_stats->SignalStrength =
+<<<<<<< HEAD
 					 (u8)(rtl8192_signal_scale_mapping(priv,
 					 (long)pwdb_all));
+=======
+					 _rtl92e_signal_scale_mapping(priv,
+					 (long)pwdb_all);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		if (rf_rx_num != 0)
 			pstats->SignalStrength = precord_stats->SignalStrength =
+<<<<<<< HEAD
 					 (u8)(rtl8192_signal_scale_mapping(priv,
 					 (long)(total_rssi /= rf_rx_num)));
 	}
 }
 
 static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
+=======
+					 _rtl92e_signal_scale_mapping(priv,
+					 (long)(total_rssi /= rf_rx_num));
+	}
+}
+
+static void _rtl92e_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct rtllib_rx_stats *prev_st,
 				    struct rtllib_rx_stats *curr_st)
 {
@@ -1677,6 +2538,7 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	static u32 slide_beacon_adc_pwdb_index;
 	static u32 slide_beacon_adc_pwdb_statistics;
 	static u32 last_beacon_adc_pwdb;
+<<<<<<< HEAD
 	struct rtllib_hdr_3addr *hdr;
 	u16 sc;
 	unsigned int frag, seq;
@@ -1686,6 +2548,9 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	frag = WLAN_GET_SEQ_FRAG(sc);
 	seq = WLAN_GET_SEQ_SEQ(sc);
 	curr_st->Seq_Num = seq;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!prev_st->bIsAMPDU)
 		bcheck = true;
 
@@ -1701,9 +2566,14 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	if (slide_rssi_index >= PHY_RSSI_SLID_WIN_MAX)
 		slide_rssi_index = 0;
 
+<<<<<<< HEAD
 	tmp_val = priv->stats.slide_rssi_total/slide_rssi_statistics;
 	priv->stats.signal_strength = rtl819x_translate_todbm(priv,
 				      (u8)tmp_val);
+=======
+	tmp_val = priv->stats.slide_rssi_total / slide_rssi_statistics;
+	priv->stats.signal_strength = rtl92e_translate_to_dbm(priv, tmp_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	curr_st->rssi = priv->stats.signal_strength;
 	if (!prev_st->bPacketMatchBSSID) {
 		if (!prev_st->bToSelfBA)
@@ -1713,6 +2583,7 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	if (!bcheck)
 		return;
 
+<<<<<<< HEAD
 	rtl819x_process_cck_rxpathsel(priv, prev_st);
 
 	priv->stats.num_process_phyinfo++;
@@ -1724,6 +2595,10 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 			RT_TRACE(COMP_DBG, "Jacken -> pPreviousstats->RxMIMO"
 				 "SignalStrength[rfpath]  = %d\n",
 				 prev_st->RxMIMOSignalStrength[rfpath]);
+=======
+	if (!prev_st->bIsCCK && prev_st->bPacketToSelf) {
+		for (rfpath = RF90_PATH_A; rfpath < priv->num_total_rf_path; rfpath++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (priv->stats.rx_rssi_percentage[rfpath] == 0) {
 				priv->stats.rx_rssi_percentage[rfpath] =
 					 prev_st->RxMIMOSignalStrength[rfpath];
@@ -1741,6 +2616,7 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 			} else {
 				priv->stats.rx_rssi_percentage[rfpath] =
 				   ((priv->stats.rx_rssi_percentage[rfpath] *
+<<<<<<< HEAD
 				   (RX_SMOOTH-1)) +
 				   (prev_st->RxMIMOSignalStrength[rfpath])) /
 				   (RX_SMOOTH);
@@ -1752,31 +2628,56 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	}
 
 
+=======
+				   (RX_SMOOTH - 1)) +
+				   (prev_st->RxMIMOSignalStrength[rfpath])) /
+				   (RX_SMOOTH);
+			}
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prev_st->bPacketBeacon) {
 		if (slide_beacon_adc_pwdb_statistics++ >=
 		    PHY_Beacon_RSSI_SLID_WIN_MAX) {
 			slide_beacon_adc_pwdb_statistics =
 					 PHY_Beacon_RSSI_SLID_WIN_MAX;
+<<<<<<< HEAD
 			last_beacon_adc_pwdb = priv->stats.Slide_Beacon_pwdb
 					       [slide_beacon_adc_pwdb_index];
 			priv->stats.Slide_Beacon_Total -= last_beacon_adc_pwdb;
 		}
 		priv->stats.Slide_Beacon_Total += prev_st->RxPWDBAll;
 		priv->stats.Slide_Beacon_pwdb[slide_beacon_adc_pwdb_index] =
+=======
+			last_beacon_adc_pwdb = priv->stats.slide_beacon_pwdb
+					       [slide_beacon_adc_pwdb_index];
+			priv->stats.slide_beacon_total -= last_beacon_adc_pwdb;
+		}
+		priv->stats.slide_beacon_total += prev_st->RxPWDBAll;
+		priv->stats.slide_beacon_pwdb[slide_beacon_adc_pwdb_index] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 prev_st->RxPWDBAll;
 		slide_beacon_adc_pwdb_index++;
 		if (slide_beacon_adc_pwdb_index >= PHY_Beacon_RSSI_SLID_WIN_MAX)
 			slide_beacon_adc_pwdb_index = 0;
+<<<<<<< HEAD
 		prev_st->RxPWDBAll = priv->stats.Slide_Beacon_Total /
+=======
+		prev_st->RxPWDBAll = priv->stats.slide_beacon_total /
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     slide_beacon_adc_pwdb_statistics;
 		if (prev_st->RxPWDBAll >= 3)
 			prev_st->RxPWDBAll -= 3;
 	}
+<<<<<<< HEAD
 
 	RT_TRACE(COMP_RXDESC, "Smooth %s PWDB = %d\n",
 				prev_st->bIsCCK ? "CCK" : "OFDM",
 				prev_st->RxPWDBAll);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prev_st->bPacketToSelf || prev_st->bPacketBeacon ||
 	    prev_st->bToSelfBA) {
 		if (priv->undecorated_smoothed_pwdb < 0)
@@ -1784,17 +2685,28 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 		if (prev_st->RxPWDBAll > (u32)priv->undecorated_smoothed_pwdb) {
 			priv->undecorated_smoothed_pwdb =
 					(((priv->undecorated_smoothed_pwdb) *
+<<<<<<< HEAD
 					(RX_SMOOTH-1)) +
+=======
+					(RX_SMOOTH - 1)) +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(prev_st->RxPWDBAll)) / (RX_SMOOTH);
 			priv->undecorated_smoothed_pwdb =
 					 priv->undecorated_smoothed_pwdb + 1;
 		} else {
 			priv->undecorated_smoothed_pwdb =
 					(((priv->undecorated_smoothed_pwdb) *
+<<<<<<< HEAD
 					(RX_SMOOTH-1)) +
 					(prev_st->RxPWDBAll)) / (RX_SMOOTH);
 		}
 		rtl819x_update_rxsignalstatistics8190pci(priv, prev_st);
+=======
+					(RX_SMOOTH - 1)) +
+					(prev_st->RxPWDBAll)) / (RX_SMOOTH);
+		}
+		rtl92e_update_rx_statistics(priv, prev_st);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (prev_st->SignalQuality != 0) {
@@ -1816,7 +2728,10 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 
 			tmp_val = priv->stats.slide_evm_total /
 				  slide_evm_statistics;
+<<<<<<< HEAD
 			priv->stats.signal_quality = tmp_val;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->stats.last_signal_strength_inpercent = tmp_val;
 		}
 
@@ -1839,16 +2754,28 @@ static void rtl8192_process_phyinfo(struct r8192_priv *priv, u8 *buffer,
 	}
 }
 
+<<<<<<< HEAD
 static void rtl8192_TranslateRxSignalStuff(struct net_device *dev,
 					   struct sk_buff *skb,
 					   struct rtllib_rx_stats *pstats,
 					   struct rx_desc *pdesc,
 					   struct rx_fwinfo *pdrvinfo)
+=======
+static void _rtl92e_translate_rx_signal_stats(struct net_device *dev,
+					      struct sk_buff *skb,
+					      struct rtllib_rx_stats *pstats,
+					      struct rx_desc *pdesc,
+					      struct rx_fwinfo *pdrvinfo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
 	bool bpacket_match_bssid, bpacket_toself;
 	bool bPacketBeacon = false;
+<<<<<<< HEAD
 	struct rtllib_hdr_3addr *hdr;
+=======
+	struct ieee80211_hdr_3addr *hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool bToSelfBA = false;
 	static struct rtllib_rx_stats  previous_stats;
 	u16 fc, type;
@@ -1857,6 +2784,7 @@ static void rtl8192_TranslateRxSignalStuff(struct net_device *dev,
 
 	tmp_buf = skb->data + pstats->RxDrvInfoSize + pstats->RxBufShift;
 
+<<<<<<< HEAD
 	hdr = (struct rtllib_hdr_3addr *)tmp_buf;
 	fc = le16_to_cpu(hdr->frame_ctl);
 	type = WLAN_FC_GET_TYPE(fc);
@@ -1885,19 +2813,50 @@ static void rtl8192_TranslateRxSignalStuff(struct net_device *dev,
 }
 
 static void rtl8192_UpdateReceivedRateHistogramStatistics(
+=======
+	hdr = (struct ieee80211_hdr_3addr *)tmp_buf;
+	fc = le16_to_cpu(hdr->frame_control);
+	type = WLAN_FC_GET_TYPE(fc);
+	praddr = hdr->addr1;
+
+	bpacket_match_bssid =
+		((type != RTLLIB_FTYPE_CTL) &&
+		 ether_addr_equal(priv->rtllib->current_network.bssid,
+				  (fc & IEEE80211_FCTL_TODS) ? hdr->addr1 :
+				  (fc & IEEE80211_FCTL_FROMDS) ? hdr->addr2 :
+				  hdr->addr3) &&
+		 (!pstats->bHwError) && (!pstats->bCRC) && (!pstats->bICV));
+	bpacket_toself = bpacket_match_bssid &&		/* check this */
+			 ether_addr_equal(praddr, priv->rtllib->dev->dev_addr);
+	if (ieee80211_is_beacon(hdr->frame_control))
+		bPacketBeacon = true;
+	_rtl92e_process_phyinfo(priv, tmp_buf, &previous_stats, pstats);
+	_rtl92e_query_rxphystatus(priv, pstats, pdesc, pdrvinfo,
+				  &previous_stats, bpacket_match_bssid,
+				  bpacket_toself, bPacketBeacon, bToSelfBA);
+	rtl92e_copy_mpdu_stats(pstats, &previous_stats);
+}
+
+static void _rtl92e_update_received_rate_histogram_stats(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   struct net_device *dev,
 					   struct rtllib_rx_stats *pstats)
 {
 	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
 	u32 rcvType = 1;
+<<<<<<< HEAD
 	u32 rateIndex;
 	u32 preamble_guardinterval;
+=======
+	u32 rate_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pstats->bCRC)
 		rcvType = 2;
 	else if (pstats->bICV)
 		rcvType = 3;
 
+<<<<<<< HEAD
 	if (pstats->bShortPreamble)
 		preamble_guardinterval = 1;
 	else
@@ -2003,6 +2962,105 @@ bool rtl8192_rx_query_status_desc(struct net_device *dev,
 				  struct sk_buff *skb)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
+=======
+	switch (pstats->rate) {
+	case MGN_1M:
+		rate_index = 0;
+		break;
+	case MGN_2M:
+		rate_index = 1;
+		break;
+	case MGN_5_5M:
+		rate_index = 2;
+		break;
+	case MGN_11M:
+		rate_index = 3;
+		break;
+	case MGN_6M:
+		rate_index = 4;
+		break;
+	case MGN_9M:
+		rate_index = 5;
+		break;
+	case MGN_12M:
+		rate_index = 6;
+		break;
+	case MGN_18M:
+		rate_index = 7;
+		break;
+	case MGN_24M:
+		rate_index = 8;
+		break;
+	case MGN_36M:
+		rate_index = 9;
+		break;
+	case MGN_48M:
+		rate_index = 10;
+		break;
+	case MGN_54M:
+		rate_index = 11;
+		break;
+	case MGN_MCS0:
+		rate_index = 12;
+		break;
+	case MGN_MCS1:
+		rate_index = 13;
+		break;
+	case MGN_MCS2:
+		rate_index = 14;
+		break;
+	case MGN_MCS3:
+		rate_index = 15;
+		break;
+	case MGN_MCS4:
+		rate_index = 16;
+		break;
+	case MGN_MCS5:
+		rate_index = 17;
+		break;
+	case MGN_MCS6:
+		rate_index = 18;
+		break;
+	case MGN_MCS7:
+		rate_index = 19;
+		break;
+	case MGN_MCS8:
+		rate_index = 20;
+		break;
+	case MGN_MCS9:
+		rate_index = 21;
+		break;
+	case MGN_MCS10:
+		rate_index = 22;
+		break;
+	case MGN_MCS11:
+		rate_index = 23;
+		break;
+	case MGN_MCS12:
+		rate_index = 24;
+		break;
+	case MGN_MCS13:
+		rate_index = 25;
+		break;
+	case MGN_MCS14:
+		rate_index = 26;
+		break;
+	case MGN_MCS15:
+		rate_index = 27;
+		break;
+	default:
+		rate_index = 28;
+		break;
+	}
+	priv->stats.received_rate_histogram[0][rate_index]++;
+	priv->stats.received_rate_histogram[rcvType][rate_index]++;
+}
+
+bool rtl92e_get_rx_stats(struct net_device *dev, struct rtllib_rx_stats *stats,
+			 struct rx_desc *pdesc, struct sk_buff *skb)
+{
+	struct rx_fwinfo *pDrvInfo = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stats->bICV = pdesc->ICV;
 	stats->bCRC = pdesc->CRC32;
@@ -2013,6 +3071,7 @@ bool rtl8192_rx_query_status_desc(struct net_device *dev,
 		stats->bHwError |= 1;
 
 	if (stats->bHwError) {
+<<<<<<< HEAD
 		stats->bShift = false;
 
 		if (pdesc->CRC32) {
@@ -2084,6 +3143,49 @@ void rtl8192_halt_adapter(struct net_device *dev, bool reset)
 	if (!priv->rtllib->bSupportRemoteWakeUp) {
 		u1bTmp = 0x0;
 		write_nic_byte(dev, CMDR, u1bTmp);
+=======
+		return false;
+	}
+
+	stats->RxDrvInfoSize = pdesc->RxDrvInfoSize;
+	stats->RxBufShift = (pdesc->Shift) & 0x03;
+	stats->Decrypted = !pdesc->SWDec;
+
+	pDrvInfo = (struct rx_fwinfo *)(skb->data + stats->RxBufShift);
+
+	stats->rate = _rtl92e_rate_hw_to_mgn((bool)pDrvInfo->RxHT,
+					     pDrvInfo->RxRate);
+
+	_rtl92e_update_received_rate_histogram_stats(dev, stats);
+
+	stats->bIsAMPDU = (pDrvInfo->PartAggr == 1);
+	stats->bFirstMPDU = (pDrvInfo->PartAggr == 1) &&
+			    (pDrvInfo->FirstAGGR == 1);
+
+	stats->TimeStampLow = pDrvInfo->TSFL;
+	stats->TimeStampHigh = rtl92e_readl(dev, TSFR + 4);
+
+	_rtl92e_translate_rx_signal_stats(dev, skb, stats, pdesc, pDrvInfo);
+	skb_trim(skb, skb->len - S_CRC_LEN);
+
+	return true;
+}
+
+void rtl92e_stop_adapter(struct net_device *dev, bool reset)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	int i;
+	u8	op_mode;
+	u8	u1bTmp;
+	u32	ulRegRead;
+
+	op_mode = RT_OP_MODE_NO_LINK;
+	priv->rtllib->set_hw_reg_handler(dev, HW_VAR_MEDIA_STATUS, &op_mode);
+
+	if (!priv->rtllib->bSupportRemoteWakeUp) {
+		u1bTmp = 0x0;
+		rtl92e_writeb(dev, CMDR, u1bTmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mdelay(20);
@@ -2091,6 +3193,7 @@ void rtl8192_halt_adapter(struct net_device *dev, bool reset)
 	if (!reset) {
 		mdelay(150);
 
+<<<<<<< HEAD
 		priv->bHwRfOffAction = 2;
 
 		if (!priv->rtllib->bSupportRemoteWakeUp) {
@@ -2106,10 +3209,27 @@ void rtl8192_halt_adapter(struct net_device *dev, bool reset)
 
 			write_nic_byte(dev, PMR, 0x5);
 			write_nic_byte(dev, MacBlkCtrl, 0xa);
+=======
+		priv->hw_rf_off_action = 2;
+
+		if (!priv->rtllib->bSupportRemoteWakeUp) {
+			rtl92e_set_rf_off(dev);
+			ulRegRead = rtl92e_readl(dev, CPU_GEN);
+			ulRegRead |= CPU_GEN_SYSTEM_RESET;
+			rtl92e_writel(dev, CPU_GEN, ulRegRead);
+		} else {
+			rtl92e_writel(dev, WFCRC0, 0xffffffff);
+			rtl92e_writel(dev, WFCRC1, 0xffffffff);
+			rtl92e_writel(dev, WFCRC2, 0xffffffff);
+
+			rtl92e_writeb(dev, PMR, 0x5);
+			rtl92e_writeb(dev, MAC_BLK_CTRL, 0xa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	for (i = 0; i < MAX_QUEUE_SIZE; i++)
+<<<<<<< HEAD
 		skb_queue_purge(&priv->rtllib->skb_waitQ[i]);
 	for (i = 0; i < MAX_QUEUE_SIZE; i++)
 		skb_queue_purge(&priv->rtllib->skb_aggQ[i]);
@@ -2149,11 +3269,40 @@ void rtl8192_update_ratr_table(struct net_device *dev)
 			else
 				ratr_value &= 0x0F81F007;
 		}
+=======
+		skb_queue_purge(&priv->rtllib->skb_waitq[i]);
+
+	skb_queue_purge(&priv->skb_queue);
+}
+
+void rtl92e_update_ratr_table(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	struct rtllib_device *ieee = priv->rtllib;
+	u8 *pMcsRate = ieee->dot11ht_oper_rate_set;
+	u32 ratr_value = 0;
+	u16 rate_config = 0;
+	u8 rate_index = 0;
+
+	rtl92e_config_rate(dev, &rate_config);
+	ratr_value = rate_config | *pMcsRate << 12;
+	switch (ieee->mode) {
+	case WIRELESS_MODE_B:
+		ratr_value &= 0x0000000F;
+		break;
+	case WIRELESS_MODE_G:
+	case WIRELESS_MODE_G | WIRELESS_MODE_B:
+		ratr_value &= 0x00000FF7;
+		break;
+	case WIRELESS_MODE_N_24G:
+		ratr_value &= 0x000FF007;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 	ratr_value &= 0x0FFFFFFF;
+<<<<<<< HEAD
 	if (ieee->pHTInfo->bCurTxBW40MHz &&
 	    ieee->pHTInfo->bCurShortGI40MHz)
 		ratr_value |= 0x80000000;
@@ -2194,6 +3343,39 @@ rtl8192_InitializeVariables(struct net_device  *dev)
 		RCR_AICV |
 		RCR_AB | RCR_AM | RCR_APM |
 		RCR_AAP | ((u32)7<<RCR_MXDMA_OFFSET) |
+=======
+	if (ieee->ht_info->cur_tx_bw40mhz &&
+	    ieee->ht_info->cur_short_gi_40mhz)
+		ratr_value |= 0x80000000;
+	else if (!ieee->ht_info->cur_tx_bw40mhz &&
+		  ieee->ht_info->cur_short_gi_20mhz)
+		ratr_value |= 0x80000000;
+	rtl92e_writel(dev, RATR0 + rate_index * 4, ratr_value);
+	rtl92e_writeb(dev, UFWP, 1);
+}
+
+void
+rtl92e_init_variables(struct net_device  *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+
+	strscpy(priv->nick, "rtl8192E", sizeof(priv->nick));
+
+	priv->rtllib->softmac_features  = IEEE_SOFTMAC_SCAN |
+		IEEE_SOFTMAC_ASSOCIATE | IEEE_SOFTMAC_PROBERQ |
+		IEEE_SOFTMAC_PROBERS | IEEE_SOFTMAC_TX_QUEUE;
+
+	priv->rtllib->tx_headroom = sizeof(struct tx_fwinfo_8190pci);
+
+	priv->short_retry_limit = 0x30;
+	priv->long_retry_limit = 0x30;
+
+	priv->receive_config = RCR_ADD3	|
+		RCR_AMF | RCR_ADF |
+		RCR_AICV |
+		RCR_AB | RCR_AM | RCR_APM |
+		RCR_AAP | ((u32)7 << RCR_MXDMA_OFFSET) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		((u32)7 << RCR_FIFO_OFFSET) | RCR_ONLYERLPKT;
 
 	priv->irq_mask[0] = (u32)(IMR_ROK | IMR_VODOK | IMR_VIDOK |
@@ -2201,6 +3383,7 @@ rtl8192_InitializeVariables(struct net_device  *dev)
 			    IMR_MGNTDOK | IMR_COMDOK | IMR_HIGHDOK |
 			    IMR_BDOK | IMR_RXCMDOK | IMR_TIMEOUT0 |
 			    IMR_RDU | IMR_RXFOVW | IMR_TXFOVW |
+<<<<<<< HEAD
 			    IMR_BcnInt | IMR_TBDOK | IMR_TBDER);
 
 
@@ -2225,10 +3408,32 @@ void rtl8192_DisableInterrupt(struct net_device *dev)
 	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
 
 	write_nic_dword(dev, INTA_MASK, 0);
+=======
+			    IMR_TBDOK | IMR_TBDER);
+
+	priv->bfirst_after_down = false;
+}
+
+void rtl92e_irq_enable(struct net_device *dev)
+{
+	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
+
+	priv->irq_enabled = 1;
+
+	rtl92e_writel(dev, INTA_MASK, priv->irq_mask[0]);
+}
+
+void rtl92e_irq_disable(struct net_device *dev)
+{
+	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
+
+	rtl92e_writel(dev, INTA_MASK, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->irq_enabled = 0;
 }
 
+<<<<<<< HEAD
 void rtl8192_ClearInterrupt(struct net_device *dev)
 {
 	u32 tmp = 0;
@@ -2241,18 +3446,30 @@ void rtl8192_enable_rx(struct net_device *dev)
 {
 	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
 	write_nic_dword(dev, RDQDA, priv->rx_ring_dma[RX_MPDU_QUEUE]);
+=======
+void rtl92e_enable_rx(struct net_device *dev)
+{
+	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
+
+	rtl92e_writel(dev, RDQDA, priv->rx_ring_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const u32 TX_DESC_BASE[] = {
 	BKQDA, BEQDA, VIQDA, VOQDA, HCCAQDA, CQDA, MQDA, HQDA, BQDA
 };
 
+<<<<<<< HEAD
 void rtl8192_enable_tx(struct net_device *dev)
+=======
+void rtl92e_enable_tx(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = (struct r8192_priv *)rtllib_priv(dev);
 	u32 i;
 
 	for (i = 0; i < MAX_TX_QUEUE_COUNT; i++)
+<<<<<<< HEAD
 		write_nic_dword(dev, TX_DESC_BASE[i], priv->tx_ring[i].dma);
 }
 
@@ -2313,11 +3530,66 @@ bool rtl8192_HalRxCheckStuck(struct net_device *dev)
 
 		for (i = 0; i < SilentResetRxSoltNum; i++)
 			TotalRxStuckCount += priv->SilentResetRxStuckEvent[i];
+=======
+		rtl92e_writel(dev, TX_DESC_BASE[i], priv->tx_ring[i].dma);
+}
+
+void rtl92e_ack_irq(struct net_device *dev, u32 *p_inta)
+{
+	*p_inta = rtl92e_readl(dev, ISR);
+	rtl92e_writel(dev, ISR, *p_inta);
+}
+
+bool rtl92e_is_rx_stuck(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	u16		  RegRxCounter = rtl92e_readw(dev, 0x130);
+	bool		  bStuck = false;
+	static u8	  rx_chk_cnt;
+	u32		slot_index = 0, TotalRxStuckCount = 0;
+	u8		i;
+	u8		SilentResetRxSoltNum = 4;
+
+	rx_chk_cnt++;
+	if (priv->undecorated_smoothed_pwdb >= (RATE_ADAPTIVE_TH_HIGH + 5)) {
+		rx_chk_cnt = 0;
+	} else if ((priv->undecorated_smoothed_pwdb < (RATE_ADAPTIVE_TH_HIGH + 5))
+	  && (((priv->current_chnl_bw != HT_CHANNEL_WIDTH_20) &&
+	  (priv->undecorated_smoothed_pwdb >= RATE_ADAPTIVE_TH_LOW_40M))
+	  || ((priv->current_chnl_bw == HT_CHANNEL_WIDTH_20) &&
+	  (priv->undecorated_smoothed_pwdb >= RATE_ADAPTIVE_TH_LOW_20M)))) {
+		if (rx_chk_cnt < 2)
+			return bStuck;
+		rx_chk_cnt = 0;
+	} else if ((((priv->current_chnl_bw != HT_CHANNEL_WIDTH_20) &&
+		  (priv->undecorated_smoothed_pwdb < RATE_ADAPTIVE_TH_LOW_40M)) ||
+		((priv->current_chnl_bw == HT_CHANNEL_WIDTH_20) &&
+		 (priv->undecorated_smoothed_pwdb < RATE_ADAPTIVE_TH_LOW_20M))) &&
+		priv->undecorated_smoothed_pwdb >= VERY_LOW_RSSI) {
+		if (rx_chk_cnt < 4)
+			return bStuck;
+		rx_chk_cnt = 0;
+	} else {
+		if (rx_chk_cnt < 8)
+			return bStuck;
+		rx_chk_cnt = 0;
+	}
+
+
+	slot_index = (priv->silent_reset_rx_slot_index++) % SilentResetRxSoltNum;
+
+	if (priv->rx_ctr == RegRxCounter) {
+		priv->silent_reset_rx_stuck_event[slot_index] = 1;
+
+		for (i = 0; i < SilentResetRxSoltNum; i++)
+			TotalRxStuckCount += priv->silent_reset_rx_stuck_event[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (TotalRxStuckCount == SilentResetRxSoltNum) {
 			bStuck = true;
 			for (i = 0; i < SilentResetRxSoltNum; i++)
 				TotalRxStuckCount +=
+<<<<<<< HEAD
 					 priv->SilentResetRxStuckEvent[i];
 		}
 
@@ -2327,10 +3599,20 @@ bool rtl8192_HalRxCheckStuck(struct net_device *dev)
 	}
 
 	priv->RxCounter = RegRxCounter;
+=======
+					 priv->silent_reset_rx_stuck_event[i];
+		}
+	} else {
+		priv->silent_reset_rx_stuck_event[slot_index] = 0;
+	}
+
+	priv->rx_ctr = RegRxCounter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bStuck;
 }
 
+<<<<<<< HEAD
 bool rtl8192_HalTxCheckStuck(struct net_device *dev)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
@@ -2344,16 +3626,38 @@ bool rtl8192_HalTxCheckStuck(struct net_device *dev)
 		bStuck = true;
 
 	priv->TxCounter = RegTxCounter;
+=======
+bool rtl92e_is_tx_stuck(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	bool	bStuck = false;
+	u16	RegTxCounter = rtl92e_readw(dev, 0x128);
+
+	if (priv->tx_counter == RegTxCounter)
+		bStuck = true;
+
+	priv->tx_counter = RegTxCounter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bStuck;
 }
 
+<<<<<<< HEAD
 bool rtl8192_GetNmodeSupportBySecCfg(struct net_device *dev)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 	struct rtllib_device *ieee = priv->rtllib;
 	if (ieee->rtllib_ap_sec_type &&
 	   (ieee->rtllib_ap_sec_type(priv->rtllib)&(SEC_ALG_WEP |
+=======
+bool rtl92e_get_nmode_support_by_sec(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	struct rtllib_device *ieee = priv->rtllib;
+
+	if (ieee->rtllib_ap_sec_type &&
+	   (ieee->rtllib_ap_sec_type(priv->rtllib) & (SEC_ALG_WEP |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     SEC_ALG_TKIP))) {
 		return false;
 	} else {
@@ -2361,6 +3665,7 @@ bool rtl8192_GetNmodeSupportBySecCfg(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 bool rtl8192_GetHalfNmodeSupportByAPs(struct net_device *dev)
 {
 	bool Reval;
@@ -2392,4 +3697,12 @@ void ActUpdateChannelAccessSetting(struct net_device *dev,
 	struct channel_access_setting *ChnlAccessSetting)
 {
 	return;
+=======
+bool rtl92e_is_halfn_supported_by_ap(struct net_device *dev)
+{
+	struct r8192_priv *priv = rtllib_priv(dev);
+	struct rtllib_device *ieee = priv->rtllib;
+
+	return ieee->half_wireless_n24g_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

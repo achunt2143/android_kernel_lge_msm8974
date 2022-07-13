@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   ALSA sequencer Ports 
  *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   ALSA sequencer Ports 
+ *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_PORTS_H
 #define __SND_SEQ_PORTS_H
@@ -57,6 +64,20 @@ struct snd_seq_port_subs_info {
 	int (*close)(void *private_data, struct snd_seq_port_subscribe *info);
 };
 
+<<<<<<< HEAD
+=======
+/* context for converting from legacy control event to UMP packet */
+struct snd_seq_ump_midi2_bank {
+	bool rpn_set;
+	bool nrpn_set;
+	bool bank_set;
+	unsigned char cc_rpn_msb, cc_rpn_lsb;
+	unsigned char cc_nrpn_msb, cc_nrpn_lsb;
+	unsigned char cc_data_msb, cc_data_lsb;
+	unsigned char cc_bank_msb, cc_bank_lsb;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_seq_client_port {
 
 	struct snd_seq_addr addr;	/* client/port number */
@@ -73,7 +94,10 @@ struct snd_seq_client_port {
 			   int atomic, int hop);
 	void (*private_free)(void *private_data);
 	void *private_data;
+<<<<<<< HEAD
 	unsigned int callback_all : 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int closing : 1;
 	unsigned int timestamping: 1;
 	unsigned int time_real: 1;
@@ -88,6 +112,16 @@ struct snd_seq_client_port {
 	int midi_voices;
 	int synth_voices;
 		
+<<<<<<< HEAD
+=======
+	/* UMP direction and group */
+	unsigned char direction;
+	unsigned char ump_group;
+
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+	struct snd_seq_ump_midi2_bank midi2_bank[16]; /* per channel */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_seq_client;
@@ -102,8 +136,14 @@ struct snd_seq_client_port *snd_seq_port_query_nearest(struct snd_seq_client *cl
 /* unlock the port */
 #define snd_seq_port_unlock(port) snd_use_lock_free(&(port)->use_lock)
 
+<<<<<<< HEAD
 /* create a port, port number is returned (-1 on failure) */
 struct snd_seq_client_port *snd_seq_create_port(struct snd_seq_client *client, int port_index);
+=======
+/* create a port, port number or a negative error code is returned */
+int snd_seq_create_port(struct snd_seq_client *client, int port_index,
+			struct snd_seq_client_port **port_ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* delete a port */
 int snd_seq_delete_port(struct snd_seq_client *client, int port);
@@ -136,7 +176,13 @@ int snd_seq_port_subscribe(struct snd_seq_client_port *port,
 			   struct snd_seq_port_subscribe *info);
 
 /* get matched subscriber */
+<<<<<<< HEAD
 struct snd_seq_subscribers *snd_seq_port_get_subscription(struct snd_seq_port_subs_info *src_grp,
 							  struct snd_seq_addr *dest_addr);
+=======
+int snd_seq_port_get_subscription(struct snd_seq_port_subs_info *src_grp,
+				  struct snd_seq_addr *dest_addr,
+				  struct snd_seq_port_subscribe *subs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

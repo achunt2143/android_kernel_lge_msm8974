@@ -44,11 +44,20 @@
 
 /*
  * We allocate in as big chunks as we can, up to a maximum of 256 KB
+<<<<<<< HEAD
  * per chunk.
  */
 enum {
 	MLX4_ICM_ALLOC_SIZE	= 1 << 18,
 	MLX4_TABLE_CHUNK_SIZE	= 1 << 18
+=======
+ * per chunk. Note that the chunks are not necessarily in contiguous
+ * physical memory.
+ */
+enum {
+	MLX4_ICM_ALLOC_SIZE	= 1 << 18,
+	MLX4_TABLE_CHUNK_SIZE	= 1 << 18,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void mlx4_free_icm_pages(struct mlx4_dev *dev, struct mlx4_icm_chunk *chunk)
@@ -56,12 +65,21 @@ static void mlx4_free_icm_pages(struct mlx4_dev *dev, struct mlx4_icm_chunk *chu
 	int i;
 
 	if (chunk->nsg > 0)
+<<<<<<< HEAD
 		pci_unmap_sg(dev->pdev, chunk->mem, chunk->npages,
 			     PCI_DMA_BIDIRECTIONAL);
 
 	for (i = 0; i < chunk->npages; ++i)
 		__free_pages(sg_page(&chunk->mem[i]),
 			     get_order(chunk->mem[i].length));
+=======
+		dma_unmap_sg(&dev->persist->pdev->dev, chunk->sg, chunk->npages,
+			     DMA_BIDIRECTIONAL);
+
+	for (i = 0; i < chunk->npages; ++i)
+		__free_pages(sg_page(&chunk->sg[i]),
+			     get_order(chunk->sg[i].length));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_free_icm_coherent(struct mlx4_dev *dev, struct mlx4_icm_chunk *chunk)
@@ -69,9 +87,16 @@ static void mlx4_free_icm_coherent(struct mlx4_dev *dev, struct mlx4_icm_chunk *
 	int i;
 
 	for (i = 0; i < chunk->npages; ++i)
+<<<<<<< HEAD
 		dma_free_coherent(&dev->pdev->dev, chunk->mem[i].length,
 				  lowmem_page_address(sg_page(&chunk->mem[i])),
 				  sg_dma_address(&chunk->mem[i]));
+=======
+		dma_free_coherent(&dev->persist->pdev->dev,
+				  chunk->buf[i].size,
+				  chunk->buf[i].addr,
+				  chunk->buf[i].dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mlx4_free_icm(struct mlx4_dev *dev, struct mlx4_icm *icm, int coherent)
@@ -93,6 +118,7 @@ void mlx4_free_icm(struct mlx4_dev *dev, struct mlx4_icm *icm, int coherent)
 	kfree(icm);
 }
 
+<<<<<<< HEAD
 static int mlx4_alloc_icm_pages(struct scatterlist *mem, int order, gfp_t gfp_mask)
 {
 	struct page *page;
@@ -100,11 +126,25 @@ static int mlx4_alloc_icm_pages(struct scatterlist *mem, int order, gfp_t gfp_ma
 	page = alloc_pages(gfp_mask, order);
 	if (!page)
 		return -ENOMEM;
+=======
+static int mlx4_alloc_icm_pages(struct scatterlist *mem, int order,
+				gfp_t gfp_mask, int node)
+{
+	struct page *page;
+
+	page = alloc_pages_node(node, gfp_mask, order);
+	if (!page) {
+		page = alloc_pages(gfp_mask, order);
+		if (!page)
+			return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_set_page(mem, page, PAGE_SIZE << order, 0);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mlx4_alloc_icm_coherent(struct device *dev, struct scatterlist *mem,
 				    int order, gfp_t gfp_mask)
 {
@@ -116,6 +156,23 @@ static int mlx4_alloc_icm_coherent(struct device *dev, struct scatterlist *mem,
 	sg_set_buf(mem, buf, PAGE_SIZE << order);
 	BUG_ON(mem->offset);
 	sg_dma_len(mem) = PAGE_SIZE << order;
+=======
+static int mlx4_alloc_icm_coherent(struct device *dev, struct mlx4_icm_buf *buf,
+				   int order, gfp_t gfp_mask)
+{
+	buf->addr = dma_alloc_coherent(dev, PAGE_SIZE << order,
+				       &buf->dma_addr, gfp_mask);
+	if (!buf->addr)
+		return -ENOMEM;
+
+	if (offset_in_page(buf->addr)) {
+		dma_free_coherent(dev, PAGE_SIZE << order, buf->addr,
+				  buf->dma_addr);
+		return -ENOMEM;
+	}
+
+	buf->size = PAGE_SIZE << order;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -125,14 +182,30 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 	struct mlx4_icm *icm;
 	struct mlx4_icm_chunk *chunk = NULL;
 	int cur_order;
+<<<<<<< HEAD
+=======
+	gfp_t mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* We use sg_set_buf for coherent allocs, which assumes low memory */
 	BUG_ON(coherent && (gfp_mask & __GFP_HIGHMEM));
 
+<<<<<<< HEAD
 	icm = kmalloc(sizeof *icm, gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
 	if (!icm)
 		return NULL;
+=======
+	icm = kmalloc_node(sizeof(*icm),
+			   gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN),
+			   dev->numa_node);
+	if (!icm) {
+		icm = kmalloc(sizeof(*icm),
+			      gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
+		if (!icm)
+			return NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	icm->refcount = 0;
 	INIT_LIST_HEAD(&icm->chunk_list);
@@ -141,6 +214,7 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 
 	while (npages > 0) {
 		if (!chunk) {
+<<<<<<< HEAD
 			chunk = kmalloc(sizeof *chunk,
 					gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
 			if (!chunk)
@@ -149,12 +223,30 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 			sg_init_table(chunk->mem, MLX4_ICM_CHUNK_LEN);
 			chunk->npages = 0;
 			chunk->nsg    = 0;
+=======
+			chunk = kzalloc_node(sizeof(*chunk),
+					     gfp_mask & ~(__GFP_HIGHMEM |
+							  __GFP_NOWARN),
+					     dev->numa_node);
+			if (!chunk) {
+				chunk = kzalloc(sizeof(*chunk),
+						gfp_mask & ~(__GFP_HIGHMEM |
+							     __GFP_NOWARN));
+				if (!chunk)
+					goto fail;
+			}
+			chunk->coherent = coherent;
+
+			if (!coherent)
+				sg_init_table(chunk->sg, MLX4_ICM_CHUNK_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&chunk->list, &icm->chunk_list);
 		}
 
 		while (1 << cur_order > npages)
 			--cur_order;
 
+<<<<<<< HEAD
 		if (coherent)
 			ret = mlx4_alloc_icm_coherent(&dev->pdev->dev,
 						      &chunk->mem[chunk->npages],
@@ -162,6 +254,20 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 		else
 			ret = mlx4_alloc_icm_pages(&chunk->mem[chunk->npages],
 						   cur_order, gfp_mask);
+=======
+		mask = gfp_mask;
+		if (cur_order)
+			mask &= ~__GFP_DIRECT_RECLAIM;
+
+		if (coherent)
+			ret = mlx4_alloc_icm_coherent(&dev->persist->pdev->dev,
+						&chunk->buf[chunk->npages],
+						cur_order, mask);
+		else
+			ret = mlx4_alloc_icm_pages(&chunk->sg[chunk->npages],
+						   cur_order, mask,
+						   dev->numa_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ret) {
 			if (--cur_order < 0)
@@ -175,11 +281,19 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 		if (coherent)
 			++chunk->nsg;
 		else if (chunk->npages == MLX4_ICM_CHUNK_LEN) {
+<<<<<<< HEAD
 			chunk->nsg = pci_map_sg(dev->pdev, chunk->mem,
 						chunk->npages,
 						PCI_DMA_BIDIRECTIONAL);
 
 			if (chunk->nsg <= 0)
+=======
+			chunk->nsg = dma_map_sg(&dev->persist->pdev->dev,
+						chunk->sg, chunk->npages,
+						DMA_BIDIRECTIONAL);
+
+			if (!chunk->nsg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto fail;
 		}
 
@@ -190,11 +304,18 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 	}
 
 	if (!coherent && chunk) {
+<<<<<<< HEAD
 		chunk->nsg = pci_map_sg(dev->pdev, chunk->mem,
 					chunk->npages,
 					PCI_DMA_BIDIRECTIONAL);
 
 		if (chunk->nsg <= 0)
+=======
+		chunk->nsg = dma_map_sg(&dev->persist->pdev->dev, chunk->sg,
+					chunk->npages, DMA_BIDIRECTIONAL);
+
+		if (!chunk->nsg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 	}
 
@@ -227,9 +348,16 @@ int mlx4_UNMAP_ICM_AUX(struct mlx4_dev *dev)
 			MLX4_CMD_TIME_CLASS_B, MLX4_CMD_NATIVE);
 }
 
+<<<<<<< HEAD
 int mlx4_table_get(struct mlx4_dev *dev, struct mlx4_icm_table *table, int obj)
 {
 	int i = (obj & (table->num_obj - 1)) / (MLX4_TABLE_CHUNK_SIZE / table->obj_size);
+=======
+int mlx4_table_get(struct mlx4_dev *dev, struct mlx4_icm_table *table, u32 obj)
+{
+	u32 i = (obj & (table->num_obj - 1)) /
+			(MLX4_TABLE_CHUNK_SIZE / table->obj_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	mutex_lock(&table->mutex);
@@ -262,16 +390,28 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 void mlx4_table_put(struct mlx4_dev *dev, struct mlx4_icm_table *table, int obj)
 {
 	int i;
+=======
+void mlx4_table_put(struct mlx4_dev *dev, struct mlx4_icm_table *table, u32 obj)
+{
+	u32 i;
+	u64 offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = (obj & (table->num_obj - 1)) / (MLX4_TABLE_CHUNK_SIZE / table->obj_size);
 
 	mutex_lock(&table->mutex);
 
 	if (--table->icm[i]->refcount == 0) {
+<<<<<<< HEAD
 		mlx4_UNMAP_ICM(dev, table->virt + i * MLX4_TABLE_CHUNK_SIZE,
+=======
+		offset = (u64) i * MLX4_TABLE_CHUNK_SIZE;
+		mlx4_UNMAP_ICM(dev, table->virt + offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       MLX4_TABLE_CHUNK_SIZE / MLX4_ICM_PAGE_SIZE);
 		mlx4_free_icm(dev, table->icm[i], table->coherent);
 		table->icm[i] = NULL;
@@ -280,19 +420,34 @@ void mlx4_table_put(struct mlx4_dev *dev, struct mlx4_icm_table *table, int obj)
 	mutex_unlock(&table->mutex);
 }
 
+<<<<<<< HEAD
 void *mlx4_table_find(struct mlx4_icm_table *table, int obj, dma_addr_t *dma_handle)
 {
 	int idx, offset, dma_offset, i;
 	struct mlx4_icm_chunk *chunk;
 	struct mlx4_icm *icm;
 	struct page *page = NULL;
+=======
+void *mlx4_table_find(struct mlx4_icm_table *table, u32 obj,
+			dma_addr_t *dma_handle)
+{
+	int offset, dma_offset, i;
+	u64 idx;
+	struct mlx4_icm_chunk *chunk;
+	struct mlx4_icm *icm;
+	void *addr = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!table->lowmem)
 		return NULL;
 
 	mutex_lock(&table->mutex);
 
+<<<<<<< HEAD
 	idx = (obj & (table->num_obj - 1)) * table->obj_size;
+=======
+	idx = (u64) (obj & (table->num_obj - 1)) * table->obj_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icm = table->icm[idx / MLX4_TABLE_CHUNK_SIZE];
 	dma_offset = offset = idx % MLX4_TABLE_CHUNK_SIZE;
 
@@ -301,17 +456,49 @@ void *mlx4_table_find(struct mlx4_icm_table *table, int obj, dma_addr_t *dma_han
 
 	list_for_each_entry(chunk, &icm->chunk_list, list) {
 		for (i = 0; i < chunk->npages; ++i) {
+<<<<<<< HEAD
 			if (dma_handle && dma_offset >= 0) {
 				if (sg_dma_len(&chunk->mem[i]) > dma_offset)
 					*dma_handle = sg_dma_address(&chunk->mem[i]) +
 						dma_offset;
 				dma_offset -= sg_dma_len(&chunk->mem[i]);
 			}
+=======
+			dma_addr_t dma_addr;
+			size_t len;
+
+			if (table->coherent) {
+				len = chunk->buf[i].size;
+				dma_addr = chunk->buf[i].dma_addr;
+				addr = chunk->buf[i].addr;
+			} else {
+				struct page *page;
+
+				len = sg_dma_len(&chunk->sg[i]);
+				dma_addr = sg_dma_address(&chunk->sg[i]);
+
+				/* XXX: we should never do this for highmem
+				 * allocation.  This function either needs
+				 * to be split, or the kernel virtual address
+				 * return needs to be made optional.
+				 */
+				page = sg_page(&chunk->sg[i]);
+				addr = lowmem_page_address(page);
+			}
+
+			if (dma_handle && dma_offset >= 0) {
+				if (len > dma_offset)
+					*dma_handle = dma_addr + dma_offset;
+				dma_offset -= len;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * DMA mapping can merge pages but not split them,
 			 * so if we found the page, dma_handle has already
 			 * been assigned to.
 			 */
+<<<<<<< HEAD
 			if (chunk->mem[i].length > offset) {
 				page = sg_page(&chunk->mem[i]);
 				goto out;
@@ -330,6 +517,26 @@ int mlx4_table_get_range(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 {
 	int inc = MLX4_TABLE_CHUNK_SIZE / table->obj_size;
 	int i, err;
+=======
+			if (len > offset)
+				goto out;
+			offset -= len;
+		}
+	}
+
+	addr = NULL;
+out:
+	mutex_unlock(&table->mutex);
+	return addr ? addr + offset : NULL;
+}
+
+int mlx4_table_get_range(struct mlx4_dev *dev, struct mlx4_icm_table *table,
+			 u32 start, u32 end)
+{
+	int inc = MLX4_TABLE_CHUNK_SIZE / table->obj_size;
+	int err;
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = start; i <= end; i += inc) {
 		err = mlx4_table_get(dev, table, i);
@@ -349,27 +556,48 @@ fail:
 }
 
 void mlx4_table_put_range(struct mlx4_dev *dev, struct mlx4_icm_table *table,
+<<<<<<< HEAD
 			  int start, int end)
 {
 	int i;
+=======
+			  u32 start, u32 end)
+{
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = start; i <= end; i += MLX4_TABLE_CHUNK_SIZE / table->obj_size)
 		mlx4_table_put(dev, table, i);
 }
 
 int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
+<<<<<<< HEAD
 			u64 virt, int obj_size,	int nobj, int reserved,
+=======
+			u64 virt, int obj_size,	u32 nobj, int reserved,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int use_lowmem, int use_coherent)
 {
 	int obj_per_chunk;
 	int num_icm;
 	unsigned chunk_size;
 	int i;
+<<<<<<< HEAD
 
 	obj_per_chunk = MLX4_TABLE_CHUNK_SIZE / obj_size;
 	num_icm = (nobj + obj_per_chunk - 1) / obj_per_chunk;
 
 	table->icm      = kcalloc(num_icm, sizeof *table->icm, GFP_KERNEL);
+=======
+	u64 size;
+
+	obj_per_chunk = MLX4_TABLE_CHUNK_SIZE / obj_size;
+	if (WARN_ON(!obj_per_chunk))
+		return -EINVAL;
+	num_icm = DIV_ROUND_UP(nobj, obj_per_chunk);
+
+	table->icm      = kvcalloc(num_icm, sizeof(*table->icm), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!table->icm)
 		return -ENOMEM;
 	table->virt     = virt;
@@ -380,10 +608,19 @@ int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 	table->coherent = use_coherent;
 	mutex_init(&table->mutex);
 
+<<<<<<< HEAD
 	for (i = 0; i * MLX4_TABLE_CHUNK_SIZE < reserved * obj_size; ++i) {
 		chunk_size = MLX4_TABLE_CHUNK_SIZE;
 		if ((i + 1) * MLX4_TABLE_CHUNK_SIZE > nobj * obj_size)
 			chunk_size = PAGE_ALIGN(nobj * obj_size - i * MLX4_TABLE_CHUNK_SIZE);
+=======
+	size = (u64) nobj * obj_size;
+	for (i = 0; i * MLX4_TABLE_CHUNK_SIZE < reserved * obj_size; ++i) {
+		chunk_size = MLX4_TABLE_CHUNK_SIZE;
+		if ((i + 1) * MLX4_TABLE_CHUNK_SIZE > size)
+			chunk_size = PAGE_ALIGN(size -
+					i * MLX4_TABLE_CHUNK_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		table->icm[i] = mlx4_alloc_icm(dev, chunk_size >> PAGE_SHIFT,
 					       (use_lowmem ? GFP_KERNEL : GFP_HIGHUSER) |
@@ -413,6 +650,11 @@ err:
 			mlx4_free_icm(dev, table->icm[i], use_coherent);
 		}
 
+<<<<<<< HEAD
+=======
+	kvfree(table->icm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -427,5 +669,9 @@ void mlx4_cleanup_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table)
 			mlx4_free_icm(dev, table->icm[i], table->coherent);
 		}
 
+<<<<<<< HEAD
 	kfree(table->icm);
+=======
+	kvfree(table->icm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/mmap.c
  */
@@ -5,12 +9,18 @@
 #include <linux/mm.h>
 #include <linux/mman.h>
 #include <linux/shm.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/sched/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/personality.h>
 #include <linux/random.h>
 #include <asm/cachetype.h>
 
+<<<<<<< HEAD
 static inline unsigned long COLOUR_ALIGN_DOWN(unsigned long addr,
 					      unsigned long pgoff)
 {
@@ -23,10 +33,13 @@ static inline unsigned long COLOUR_ALIGN_DOWN(unsigned long addr,
 	return base - off;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COLOUR_ALIGN(addr,pgoff)		\
 	((((addr)+SHMLBA-1)&~(SHMLBA-1)) +	\
 	 (((pgoff)<<PAGE_SHIFT) & (SHMLBA-1)))
 
+<<<<<<< HEAD
 /* gap between mmap and stack */
 #define MIN_GAP (128*1024*1024UL)
 #define MAX_GAP ((TASK_SIZE)/6*5)
@@ -54,6 +67,8 @@ static unsigned long mmap_base(unsigned long rnd)
 	return PAGE_ALIGN(TASK_SIZE - gap - rnd);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We need to ensure that shared mappings are correctly aligned to
  * avoid aliasing issues with VIPT caches.  We need to ensure that
@@ -69,9 +84,15 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 {
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
+<<<<<<< HEAD
 	unsigned long start_addr, vm_start;
 	int do_align = 0;
 	int aliasing = cache_is_vipt_aliasing();
+=======
+	int do_align = 0;
+	int aliasing = cache_is_vipt_aliasing();
+	struct vm_unmapped_area_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We only need to do colour alignment if either the I or D
@@ -104,6 +125,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 		    (!vma || addr + len <= vm_start_gap(vma)))
 			return addr;
 	}
+<<<<<<< HEAD
 	if (len > mm->cached_hole_size) {
 	        start_addr = addr = mm->free_area_cache;
 	} else {
@@ -146,6 +168,16 @@ full_search:
 		if (do_align)
 			addr = COLOUR_ALIGN(addr, pgoff);
 	}
+=======
+
+	info.flags = 0;
+	info.length = len;
+	info.low_limit = mm->mmap_base;
+	info.high_limit = TASK_SIZE;
+	info.align_mask = do_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	return vm_unmapped_area(&info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long
@@ -158,6 +190,10 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	unsigned long addr = addr0;
 	int do_align = 0;
 	int aliasing = cache_is_vipt_aliasing();
+<<<<<<< HEAD
+=======
+	struct vm_unmapped_area_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We only need to do colour alignment if either the I or D
@@ -189,6 +225,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 			return addr;
 	}
 
+<<<<<<< HEAD
 	/* check if free_area_cache is useful for us */
 	if (len <= mm->cached_hole_size) {
 		mm->cached_hole_size = 0;
@@ -239,12 +276,23 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	} while (len < vma->vm_start);
 
 bottomup:
+=======
+	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+	info.length = len;
+	info.low_limit = FIRST_USER_ADDRESS;
+	info.high_limit = mm->mmap_base;
+	info.align_mask = do_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	addr = vm_unmapped_area(&info);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * A failed mmap() very likely causes application failure,
 	 * so fall back to the bottom-up function here. This scenario
 	 * can happen with large stack limits and large mmap()
 	 * allocations.
 	 */
+<<<<<<< HEAD
 	mm->cached_hole_size = ~0UL;
 	mm->free_area_cache = TASK_UNMAPPED_BASE;
 	addr = arch_get_unmapped_area(filp, addr0, len, pgoff, flags);
@@ -253,10 +301,20 @@ bottomup:
 	 */
 	mm->free_area_cache = mm->mmap_base;
 	mm->cached_hole_size = ~0UL;
+=======
+	if (addr & ~PAGE_MASK) {
+		VM_BUG_ON(addr != -ENOMEM);
+		info.flags = 0;
+		info.low_limit = mm->mmap_base;
+		info.high_limit = TASK_SIZE;
+		addr = vm_unmapped_area(&info);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return addr;
 }
 
+<<<<<<< HEAD
 void arch_pick_mmap_layout(struct mm_struct *mm)
 {
 	unsigned long random_factor = 0UL;
@@ -276,11 +334,17 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * You really shouldn't be using read() or write() on /dev/mem.  This
  * might go away in the future.
  */
+<<<<<<< HEAD
 int valid_phys_addr_range(unsigned long addr, size_t size)
+=======
+int valid_phys_addr_range(phys_addr_t addr, size_t size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (addr < PHYS_OFFSET)
 		return 0;
@@ -291,6 +355,7 @@ int valid_phys_addr_range(unsigned long addr, size_t size)
 }
 
 /*
+<<<<<<< HEAD
  * We don't use supersection mappings for mmap() on /dev/mem, which
  * means that we can't map the memory area above the 4G barrier into
  * userspace.
@@ -321,3 +386,11 @@ int devmem_is_allowed(unsigned long pfn)
 }
 
 #endif
+=======
+ * Do not allow /dev/mem mappings beyond the supported physical range.
+ */
+int valid_mmap_phys_addr_range(unsigned long pfn, size_t size)
+{
+	return (pfn + (size >> PAGE_SHIFT)) <= (1 + (PHYS_MASK >> PAGE_SHIFT));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

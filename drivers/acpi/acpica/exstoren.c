@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -43,6 +48,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -61,7 +72,11 @@ ACPI_MODULE_NAME("exstoren")
  *
  * RETURN:      Status, resolved object in source_desc_ptr.
  *
+<<<<<<< HEAD
  * DESCRIPTION: Resolve an object.  If the object is a reference, dereference
+=======
+ * DESCRIPTION: Resolve an object. If the object is a reference, dereference
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              it and return the actual object in the source_desc_ptr.
  *
  ******************************************************************************/
@@ -86,6 +101,7 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
 		 * These cases all require only Integers or values that
 		 * can be converted to Integers (Strings or Buffers)
 		 */
+<<<<<<< HEAD
 
 	case ACPI_TYPE_INTEGER:
 	case ACPI_TYPE_STRING:
@@ -94,6 +110,14 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
 		/*
 		 * Stores into a Field/Region or into a Integer/Buffer/String
 		 * are all essentially the same.  This case handles the
+=======
+	case ACPI_TYPE_INTEGER:
+	case ACPI_TYPE_STRING:
+	case ACPI_TYPE_BUFFER:
+		/*
+		 * Stores into a Field/Region or into a Integer/Buffer/String
+		 * are all essentially the same. This case handles the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * "interchangeable" types Integer, String, and Buffer.
 		 */
 		if (source_desc->common.type == ACPI_TYPE_LOCAL_REFERENCE) {
@@ -110,7 +134,11 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
 
 		/* For copy_object, no further validation necessary */
 
+<<<<<<< HEAD
 		if (walk_state->opcode == AML_COPY_OP) {
+=======
+		if (walk_state->opcode == AML_COPY_OBJECT_OP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -125,16 +153,26 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
 			/* Conversion successful but still not a valid type */
 
 			ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 				    "Cannot assign type %s to %s (must be type Int/Str/Buf)",
 				    acpi_ut_get_object_type_name(source_desc),
 				    acpi_ut_get_type_name(target_type)));
+=======
+				    "Cannot assign type [%s] to [%s] (must be type Int/Str/Buf)",
+				    acpi_ut_get_object_type_name(source_desc),
+				    acpi_ut_get_type_name(target_type)));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_AML_OPERAND_TYPE;
 		}
 		break;
 
 	case ACPI_TYPE_LOCAL_ALIAS:
 	case ACPI_TYPE_LOCAL_METHOD_ALIAS:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * All aliases should have been resolved earlier, during the
 		 * operand resolution phase.
@@ -145,7 +183,10 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
 
 	case ACPI_TYPE_PACKAGE:
 	default:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * All other types than Alias and the various Fields come here,
 		 * including the untyped case - ACPI_TYPE_ANY.
@@ -167,7 +208,11 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: "Store" an object to another object.  This may include
+=======
+ * DESCRIPTION: "Store" an object to another object. This may include
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              converting the source type to the target type (implicit
  *              conversion), and a copy of the value of the source to
  *              the target.
@@ -178,14 +223,22 @@ acpi_ex_resolve_object(union acpi_operand_object **source_desc_ptr,
  *              with the input value.
  *
  *              When storing into an object the data is converted to the
+<<<<<<< HEAD
  *              target object type then stored in the object.  This means
+=======
+ *              target object type then stored in the object. This means
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              that the target object type (for an initialized target) will
  *              not be changed by a store operation.
  *
  *              This module allows destination types of Number, String,
  *              Buffer, and Package.
  *
+<<<<<<< HEAD
  *              Assumes parameters are already validated.  NOTE: source_desc
+=======
+ *              Assumes parameters are already validated. NOTE: source_desc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              resolution (from a reference object) must be performed by
  *              the caller if necessary.
  *
@@ -254,7 +307,11 @@ acpi_ex_store_object_to_object(union acpi_operand_object *source_desc,
 
 		/* Truncate value if we are executing from a 32-bit ACPI table */
 
+<<<<<<< HEAD
 		acpi_ex_truncate_for32bit_table(dest_desc);
+=======
+		(void)acpi_ex_truncate_for32bit_table(dest_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_STRING:
@@ -280,7 +337,11 @@ acpi_ex_store_object_to_object(union acpi_operand_object *source_desc,
 		/*
 		 * All other types come here.
 		 */
+<<<<<<< HEAD
 		ACPI_WARNING((AE_INFO, "Store into type %s not implemented",
+=======
+		ACPI_WARNING((AE_INFO, "Store into type [%s] not implemented",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      acpi_ut_get_object_type_name(dest_desc)));
 
 		status = AE_NOT_IMPLEMENTED;

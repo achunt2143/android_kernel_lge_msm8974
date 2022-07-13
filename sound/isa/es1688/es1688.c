@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Driver for generic ESS AudioDrive ESx688 soundcards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Driver for generic ESS AudioDrive ESx688 soundcards
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -41,11 +48,14 @@
 MODULE_DESCRIPTION(CRD_NAME);
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ESS,ES688 PnP AudioDrive,pnp:ESS0100},"
 	        "{ESS,ES1688 PnP AudioDrive,pnp:ESS0102},"
 	        "{ESS,ES688 AudioDrive,pnp:ESS6881},"
 	        "{ESS,ES1688 AudioDrive,pnp:ESS1681}}");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("snd_es968");
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
@@ -71,6 +81,7 @@ module_param_array(isapnp, bool, NULL, 0444);
 MODULE_PARM_DESC(isapnp, "PnP detection for specified soundcard.");
 #endif
 MODULE_PARM_DESC(enable, "Enable " CRD_NAME " soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
 module_param_array(mpu_port, long, NULL, 0444);
@@ -82,6 +93,19 @@ MODULE_PARM_DESC(irq, "IRQ # for " CRD_NAME " driver.");
 module_param_array(mpu_irq, int, NULL, 0444);
 MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " CRD_NAME " driver.");
 module_param_array(dma8, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for " CRD_NAME " driver.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+module_param_hw_array(fm_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(fm_port, "FM port # for ES1688 driver.");
+MODULE_PARM_DESC(irq, "IRQ # for " CRD_NAME " driver.");
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " CRD_NAME " driver.");
+module_param_hw_array(dma8, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma8, "8-bit DMA # for " CRD_NAME " driver.");
 
 #ifdef CONFIG_PNP
@@ -90,11 +114,16 @@ MODULE_PARM_DESC(dma8, "8-bit DMA # for " CRD_NAME " driver.");
 #define is_isapnp_selected(dev)		0
 #endif
 
+<<<<<<< HEAD
 static int __devinit snd_es1688_match(struct device *dev, unsigned int n)
+=======
+static int snd_es1688_match(struct device *dev, unsigned int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return enable[n] && !is_isapnp_selected(n);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_es1688_legacy_create(struct snd_card *card,
 					struct device *dev, unsigned int n)
 {
@@ -102,6 +131,15 @@ static int __devinit snd_es1688_legacy_create(struct snd_card *card,
 	static long possible_ports[] = {0x220, 0x240, 0x260};
 	static int possible_irqs[] = {5, 9, 10, 7, -1};
 	static int possible_dmas[] = {1, 3, 0, -1};
+=======
+static int snd_es1688_legacy_create(struct snd_card *card,
+				    struct device *dev, unsigned int n)
+{
+	struct snd_es1688 *chip = card->private_data;
+	static const long possible_ports[] = {0x220, 0x240, 0x260};
+	static const int possible_irqs[] = {5, 9, 10, 7, -1};
+	static const int possible_dmas[] = {1, 3, 0, -1};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int i, error;
 
@@ -134,6 +172,7 @@ static int __devinit snd_es1688_legacy_create(struct snd_card *card,
 	return error;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_es1688_probe(struct snd_card *card, unsigned int n)
 {
 	struct snd_es1688 *chip = card->private_data;
@@ -142,6 +181,15 @@ static int __devinit snd_es1688_probe(struct snd_card *card, unsigned int n)
 	int error;
 
 	error = snd_es1688_pcm(card, chip, 0, &pcm);
+=======
+static int snd_es1688_probe(struct snd_card *card, unsigned int n)
+{
+	struct snd_es1688 *chip = card->private_data;
+	struct snd_opl3 *opl3;
+	int error;
+
+	error = snd_es1688_pcm(card, chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 
@@ -149,11 +197,19 @@ static int __devinit snd_es1688_probe(struct snd_card *card, unsigned int n)
 	if (error < 0)
 		return error;
 
+<<<<<<< HEAD
 	strlcpy(card->driver, "ES1688", sizeof(card->driver));
 	strlcpy(card->shortname, pcm->name, sizeof(card->shortname));
 	snprintf(card->longname, sizeof(card->longname),
 		"%s at 0x%lx, irq %i, dma %i", pcm->name, chip->port,
 		 chip->irq, chip->dma8);
+=======
+	strscpy(card->driver, "ES1688", sizeof(card->driver));
+	strscpy(card->shortname, chip->pcm->name, sizeof(card->shortname));
+	scnprintf(card->longname, sizeof(card->longname),
+		  "%s at 0x%lx, irq %i, dma %i", chip->pcm->name, chip->port,
+		  chip->irq, chip->dma8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fm_port[n] == SNDRV_AUTO_PORT)
 		fm_port[n] = port[n];	/* share the same port */
@@ -182,18 +238,28 @@ static int __devinit snd_es1688_probe(struct snd_card *card, unsigned int n)
 	return snd_card_register(card);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_es1688_isa_probe(struct device *dev, unsigned int n)
+=======
+static int snd_es1688_isa_probe(struct device *dev, unsigned int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int error;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[n], id[n], THIS_MODULE,
 				sizeof(struct snd_es1688), &card);
+=======
+	error = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE,
+				  sizeof(struct snd_es1688), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 
 	error = snd_es1688_legacy_create(card, dev, n);
 	if (error < 0)
+<<<<<<< HEAD
 		goto out;
 
 	snd_card_set_dev(card, dev);
@@ -201,10 +267,18 @@ static int __devinit snd_es1688_isa_probe(struct device *dev, unsigned int n)
 	error = snd_es1688_probe(card, n);
 	if (error < 0)
 		goto out;
+=======
+		return error;
+
+	error = snd_es1688_probe(card, n);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(dev, card);
 
 	return 0;
+<<<<<<< HEAD
 out:
 	snd_card_free(card);
 	return error;
@@ -215,12 +289,17 @@ static int __devexit snd_es1688_isa_remove(struct device *dev, unsigned int n)
 	snd_card_free(dev_get_drvdata(dev));
 	dev_set_drvdata(dev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver snd_es1688_driver = {
 	.match		= snd_es1688_match,
 	.probe		= snd_es1688_isa_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_es1688_isa_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0	/* FIXME */
 	.suspend	= snd_es1688_suspend,
 	.resume		= snd_es1688_resume,
@@ -233,9 +312,15 @@ static struct isa_driver snd_es1688_driver = {
 static int snd_es968_pnp_is_probed;
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static int __devinit snd_card_es968_pnp(struct snd_card *card, unsigned int n,
 					struct pnp_card_link *pcard,
 					const struct pnp_card_device_id *pid)
+=======
+static int snd_card_es968_pnp(struct snd_card *card, unsigned int n,
+			      struct pnp_card_link *pcard,
+			      const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_es1688 *chip = card->private_data;
 	struct pnp_dev *pdev;
@@ -258,13 +343,21 @@ static int __devinit snd_card_es968_pnp(struct snd_card *card, unsigned int n,
 				 mpu_irq[n], dma8[n], ES1688_HW_AUTO);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_es968_pnp_detect(struct pnp_card_link *pcard,
 					  const struct pnp_card_device_id *pid)
+=======
+static int snd_es968_pnp_detect(struct pnp_card_link *pcard,
+				const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	static unsigned int dev;
 	int error;
+<<<<<<< HEAD
 	struct snd_es1688 *chip;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_es968_pnp_is_probed)
 		return -EBUSY;
@@ -275,6 +368,7 @@ static int __devinit snd_es968_pnp_detect(struct pnp_card_link *pcard,
 	if (dev == SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[dev], id[dev], THIS_MODULE,
 				sizeof(struct snd_es1688), &card);
 	if (error < 0)
@@ -287,6 +381,17 @@ static int __devinit snd_es968_pnp_detect(struct pnp_card_link *pcard,
 		return error;
 	}
 	snd_card_set_dev(card, &pcard->card->dev);
+=======
+	error = snd_devm_card_new(&pcard->card->dev,
+				  index[dev], id[dev], THIS_MODULE,
+				  sizeof(struct snd_es1688), &card);
+	if (error < 0)
+		return error;
+
+	error = snd_card_es968_pnp(card, dev, pcard, pid);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = snd_es1688_probe(card, dev);
 	if (error < 0)
 		return error;
@@ -295,10 +400,15 @@ static int __devinit snd_es968_pnp_detect(struct pnp_card_link *pcard,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_es968_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
+=======
+static void snd_es968_pnp_remove(struct pnp_card_link *pcard)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_es968_pnp_is_probed = 0;
 }
 
@@ -307,10 +417,15 @@ static int snd_es968_pnp_suspend(struct pnp_card_link *pcard,
 				 pm_message_t state)
 {
 	struct snd_card *card = pnp_get_card_drvdata(pcard);
+<<<<<<< HEAD
 	struct snd_es1688 *chip = card->private_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
+=======
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -325,7 +440,11 @@ static int snd_es968_pnp_resume(struct pnp_card_link *pcard)
 }
 #endif
 
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_es968_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_es968_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .id = "ESS0968", .devs = { { "@@@0968" }, } },
 	{ .id = "ESS0968", .devs = { { "ESS0968" }, } },
 	{ .id = "", } /* end */
@@ -338,7 +457,11 @@ static struct pnp_card_driver es968_pnpc_driver = {
 	.name		= DEV_NAME " PnP",
 	.id_table	= snd_es968_pnpids,
 	.probe		= snd_es968_pnp_detect,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_es968_pnp_remove),
+=======
+	.remove		= snd_es968_pnp_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_es968_pnp_suspend,
 	.resume		= snd_es968_pnp_resume,

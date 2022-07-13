@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2012 by Oracle Inc
  * Author: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
  *
+<<<<<<< HEAD
  * This code borrows ideas from https://lkml.org/lkml/2011/11/30/249
  * so many thanks go to Kevin Tian <kevin.tian@intel.com>
  * and Yu Ke <ke.yu@intel.com>.
@@ -17,6 +22,16 @@
  *
  */
 
+=======
+ * This code borrows ideas from
+ * https://lore.kernel.org/lkml/1322673664-14642-6-git-send-email-konrad.wilk@oracle.com
+ * so many thanks go to Kevin Tian <kevin.tian@intel.com>
+ * and Yu Ke <ke.yu@intel.com>.
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/cpufreq.h>
 #include <linux/freezer.h>
@@ -25,6 +40,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <acpi/processor.h>
@@ -34,6 +50,15 @@
 
 #define DRV_NAME "xen-acpi-processor: "
 
+=======
+#include <linux/syscore_ops.h>
+#include <linux/acpi.h>
+#include <acpi/processor.h>
+#include <xen/xen.h>
+#include <xen/interface/platform.h>
+#include <asm/xen/hypercall.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int no_hypercall;
 MODULE_PARM_DESC(off, "Inhibit the hypercall.");
 module_param_named(off, no_hypercall, int, 0400);
@@ -50,9 +75,17 @@ static DEFINE_MUTEX(acpi_ids_mutex);
 /* Which ACPI ID we have processed from 'struct acpi_processor'. */
 static unsigned long *acpi_ids_done;
 /* Which ACPI ID exist in the SSDT/DSDT processor definitions. */
+<<<<<<< HEAD
 static unsigned long __initdata *acpi_id_present;
 /* And if there is an _CST definition (or a PBLK) for the ACPI IDs */
 static unsigned long __initdata *acpi_id_cst_present;
+=======
+static unsigned long *acpi_id_present;
+/* And if there is an _CST definition (or a PBLK) for the ACPI IDs */
+static unsigned long *acpi_id_cst_present;
+/* Which ACPI P-State dependencies for a enumerated processor */
+static struct acpi_psd_package *acpi_psd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int push_cxx_to_hypervisor(struct acpi_processor *_pr)
 {
@@ -97,13 +130,20 @@ static int push_cxx_to_hypervisor(struct acpi_processor *_pr)
 
 		dst_cx->type = cx->type;
 		dst_cx->latency = cx->latency;
+<<<<<<< HEAD
 		dst_cx->power = cx->power;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dst_cx->dpcnt = 0;
 		set_xen_guest_handle(dst_cx->dp, NULL);
 	}
 	if (!ok) {
+<<<<<<< HEAD
 		pr_debug(DRV_NAME "No _Cx for ACPI CPU %u\n", _pr->acpi_id);
+=======
+		pr_debug("No _Cx for ACPI CPU %u\n", _pr->acpi_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(dst_cx_states);
 		return -EINVAL;
 	}
@@ -117,7 +157,11 @@ static int push_cxx_to_hypervisor(struct acpi_processor *_pr)
 	set_xen_guest_handle(op.u.set_pminfo.power.states, dst_cx_states);
 
 	if (!no_hypercall)
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret) {
 		pr_debug("ACPI CPU%u - C-states uploaded.\n", _pr->acpi_id);
@@ -128,11 +172,19 @@ static int push_cxx_to_hypervisor(struct acpi_processor *_pr)
 			pr_debug("     C%d: %s %d uS\n",
 				 cx->type, cx->desc, (u32)cx->latency);
 		}
+<<<<<<< HEAD
 	} else if (ret != -EINVAL)
 		/* EINVAL means the ACPI ID is incorrect - meaning the ACPI
 		 * table is referencing a non-existing CPU - which can happen
 		 * with broken ACPI tables. */
 		pr_err(DRV_NAME "(CX): Hypervisor error (%d) for ACPI CPU%u\n",
+=======
+	} else if ((ret != -EINVAL) && (ret != -ENOSYS))
+		/* EINVAL means the ACPI ID is incorrect - meaning the ACPI
+		 * table is referencing a non-existing CPU - which can happen
+		 * with broken ACPI tables. */
+		pr_err("(CX): Hypervisor error (%d) for ACPI CPU%u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ret, _pr->acpi_id);
 
 	kfree(dst_cx_states);
@@ -238,14 +290,22 @@ static int push_pxx_to_hypervisor(struct acpi_processor *_pr)
 		dst_perf->flags |= XEN_PX_PSD;
 
 	if (dst_perf->flags != (XEN_PX_PSD | XEN_PX_PSS | XEN_PX_PCT | XEN_PX_PPC)) {
+<<<<<<< HEAD
 		pr_warn(DRV_NAME "ACPI CPU%u missing some P-state data (%x), skipping.\n",
+=======
+		pr_warn("ACPI CPU%u missing some P-state data (%x), skipping\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			_pr->acpi_id, dst_perf->flags);
 		ret = -ENODEV;
 		goto err_free;
 	}
 
 	if (!no_hypercall)
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret) {
 		struct acpi_processor_performance *perf;
@@ -260,12 +320,21 @@ static int push_pxx_to_hypervisor(struct acpi_processor *_pr)
 			(u32) perf->states[i].power,
 			(u32) perf->states[i].transition_latency);
 		}
+<<<<<<< HEAD
 	} else if (ret != -EINVAL)
 		/* EINVAL means the ACPI ID is incorrect - meaning the ACPI
 		 * table is referencing a non-existing CPU - which can happen
 		 * with broken ACPI tables. */
 		pr_warn(DRV_NAME "(_PXX): Hypervisor error (%d) for ACPI CPU%u\n",
 		       ret, _pr->acpi_id);
+=======
+	} else if ((ret != -EINVAL) && (ret != -ENOSYS))
+		/* EINVAL means the ACPI ID is incorrect - meaning the ACPI
+		 * table is referencing a non-existing CPU - which can happen
+		 * with broken ACPI tables. */
+		pr_warn("(_PXX): Hypervisor error (%d) for ACPI CPU%u\n",
+			ret, _pr->acpi_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free:
 	if (!IS_ERR_OR_NULL(dst_states))
 		kfree(dst_states);
@@ -303,7 +372,11 @@ static unsigned int __init get_max_acpi_id(void)
 	info = &op.u.pcpu_info;
 	info->xen_cpuid = 0;
 
+<<<<<<< HEAD
 	ret = HYPERVISOR_dom0_op(&op);
+=======
+	ret = HYPERVISOR_platform_op(&op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return NR_CPUS;
 
@@ -311,13 +384,21 @@ static unsigned int __init get_max_acpi_id(void)
 	last_cpu = op.u.pcpu_info.max_present;
 	for (i = 0; i <= last_cpu; i++) {
 		info->xen_cpuid = i;
+<<<<<<< HEAD
 		ret = HYPERVISOR_dom0_op(&op);
+=======
+		ret = HYPERVISOR_platform_op(&op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			continue;
 		max_acpi_id = max(info->acpi_id, max_acpi_id);
 	}
 	max_acpi_id *= 2; /* Slack for CPU hotplug support. */
+<<<<<<< HEAD
 	pr_debug(DRV_NAME "Max ACPI ID: %u\n", max_acpi_id);
+=======
+	pr_debug("Max ACPI ID: %u\n", max_acpi_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return max_acpi_id;
 }
 /*
@@ -329,7 +410,11 @@ static unsigned int __init get_max_acpi_id(void)
  * for_each_[present|online]_cpu macros which are banded to the virtual
  * CPU amount.
  */
+<<<<<<< HEAD
 static acpi_status __init
+=======
+static acpi_status
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 read_acpi_id(acpi_handle handle, u32 lvl, void *context, void **rv)
 {
 	u32 acpi_id;
@@ -361,18 +446,43 @@ read_acpi_id(acpi_handle handle, u32 lvl, void *context, void **rv)
 	default:
 		return AE_OK;
 	}
+<<<<<<< HEAD
 	/* There are more ACPI Processor objects than in x2APIC or MADT.
 	 * This can happen with incorrect ACPI SSDT declerations. */
 	if (acpi_id > nr_acpi_bits) {
 		pr_debug(DRV_NAME "We only have %u, trying to set %u\n",
 			 nr_acpi_bits, acpi_id);
+=======
+	if (invalid_phys_cpuid(acpi_get_phys_id(handle,
+						acpi_type == ACPI_TYPE_DEVICE,
+						acpi_id))) {
+		pr_debug("CPU with ACPI ID %u is unavailable\n", acpi_id);
+		return AE_OK;
+	}
+	/* There are more ACPI Processor objects than in x2APIC or MADT.
+	 * This can happen with incorrect ACPI SSDT declerations. */
+	if (acpi_id >= nr_acpi_bits) {
+		pr_debug("max acpi id %u, trying to set %u\n",
+			 nr_acpi_bits - 1, acpi_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AE_OK;
 	}
 	/* OK, There is a ACPI Processor object */
 	__set_bit(acpi_id, acpi_id_present);
 
+<<<<<<< HEAD
 	pr_debug(DRV_NAME "ACPI CPU%u w/ PBLK:0x%lx\n", acpi_id,
 		 (unsigned long)pblk);
+=======
+	pr_debug("ACPI CPU%u w/ PBLK:0x%lx\n", acpi_id, (unsigned long)pblk);
+
+	/* It has P-state dependencies */
+	if (!acpi_processor_get_psd(handle, &acpi_psd[acpi_id])) {
+		pr_debug("ACPI CPU%u w/ PST:coord_type = %llu domain = %llu\n",
+			 acpi_id, acpi_psd[acpi_id].coord_type,
+			 acpi_psd[acpi_id].domain);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = acpi_evaluate_object(handle, "_CST", NULL, &buffer);
 	if (ACPI_FAILURE(status)) {
@@ -384,12 +494,17 @@ read_acpi_id(acpi_handle handle, u32 lvl, void *context, void **rv)
 
 	return AE_OK;
 }
+<<<<<<< HEAD
 static int __init check_acpi_ids(struct acpi_processor *pr_backup)
+=======
+static int check_acpi_ids(struct acpi_processor *pr_backup)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (!pr_backup)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* All online CPUs have been processed at this stage. Now verify
 	 * whether in fact "online CPUs" == physical CPUs.
 	 */
@@ -400,20 +515,51 @@ static int __init check_acpi_ids(struct acpi_processor *pr_backup)
 	acpi_id_cst_present = kcalloc(BITS_TO_LONGS(nr_acpi_bits), sizeof(unsigned long), GFP_KERNEL);
 	if (!acpi_id_cst_present) {
 		kfree(acpi_id_present);
+=======
+	if (acpi_id_present && acpi_id_cst_present)
+		/* OK, done this once .. skip to uploading */
+		goto upload;
+
+	/* All online CPUs have been processed at this stage. Now verify
+	 * whether in fact "online CPUs" == physical CPUs.
+	 */
+	acpi_id_present = bitmap_zalloc(nr_acpi_bits, GFP_KERNEL);
+	if (!acpi_id_present)
+		return -ENOMEM;
+
+	acpi_id_cst_present = bitmap_zalloc(nr_acpi_bits, GFP_KERNEL);
+	if (!acpi_id_cst_present) {
+		bitmap_free(acpi_id_present);
+		return -ENOMEM;
+	}
+
+	acpi_psd = kcalloc(nr_acpi_bits, sizeof(struct acpi_psd_package),
+			   GFP_KERNEL);
+	if (!acpi_psd) {
+		bitmap_free(acpi_id_present);
+		bitmap_free(acpi_id_cst_present);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	acpi_walk_namespace(ACPI_TYPE_PROCESSOR, ACPI_ROOT_OBJECT,
 			    ACPI_UINT32_MAX,
 			    read_acpi_id, NULL, NULL, NULL);
+<<<<<<< HEAD
 	acpi_get_devices("ACPI0007", read_acpi_id, NULL, NULL);
 
+=======
+	acpi_get_devices(ACPI_PROCESSOR_DEVICE_HID, read_acpi_id, NULL, NULL);
+
+upload:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bitmap_equal(acpi_id_present, acpi_ids_done, nr_acpi_bits)) {
 		unsigned int i;
 		for_each_set_bit(i, acpi_id_present, nr_acpi_bits) {
 			pr_backup->acpi_id = i;
 			/* Mask out C-states if there are no _CST or PBLK */
 			pr_backup->flags.power = test_bit(i, acpi_id_cst_present);
+<<<<<<< HEAD
 			(void)upload_pm_data(pr_backup);
 		}
 	}
@@ -453,12 +599,31 @@ static int __init check_prereq(void)
 	}
 	return -ENODEV;
 }
+=======
+			/* num_entries is non-zero if we evaluated _PSD */
+			if (acpi_psd[i].num_entries) {
+				memcpy(&pr_backup->performance->domain_info,
+				       &acpi_psd[i],
+				       sizeof(struct acpi_psd_package));
+			}
+			(void)upload_pm_data(pr_backup);
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* acpi_perf_data is a pointer to percpu data. */
 static struct acpi_processor_performance __percpu *acpi_perf_data;
 
 static void free_acpi_perf_data(void)
 {
+<<<<<<< HEAD
 	unsigned int i;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Freeing a NULL pointer is OK, and alloc_percpu zeroes. */
 	for_each_possible_cpu(i)
@@ -467,6 +632,7 @@ static void free_acpi_perf_data(void)
 	free_percpu(acpi_perf_data);
 }
 
+<<<<<<< HEAD
 static int __init xen_acpi_processor_init(void)
 {
 	struct acpi_processor *pr_backup = NULL;
@@ -478,13 +644,84 @@ static int __init xen_acpi_processor_init(void)
 
 	nr_acpi_bits = get_max_acpi_id() + 1;
 	acpi_ids_done = kcalloc(BITS_TO_LONGS(nr_acpi_bits), sizeof(unsigned long), GFP_KERNEL);
+=======
+static int xen_upload_processor_pm_data(void)
+{
+	struct acpi_processor *pr_backup = NULL;
+	int i;
+	int rc = 0;
+
+	pr_info("Uploading Xen processor PM info\n");
+
+	for_each_possible_cpu(i) {
+		struct acpi_processor *_pr;
+		_pr = per_cpu(processors, i /* APIC ID */);
+		if (!_pr)
+			continue;
+
+		if (!pr_backup)
+			pr_backup = kmemdup(_pr, sizeof(*_pr), GFP_KERNEL);
+		(void)upload_pm_data(_pr);
+	}
+
+	rc = check_acpi_ids(pr_backup);
+	kfree(pr_backup);
+
+	return rc;
+}
+
+static void xen_acpi_processor_resume_worker(struct work_struct *dummy)
+{
+	int rc;
+
+	bitmap_zero(acpi_ids_done, nr_acpi_bits);
+
+	rc = xen_upload_processor_pm_data();
+	if (rc != 0)
+		pr_info("ACPI data upload failed, error = %d\n", rc);
+}
+
+static void xen_acpi_processor_resume(void)
+{
+	static DECLARE_WORK(wq, xen_acpi_processor_resume_worker);
+
+	/*
+	 * xen_upload_processor_pm_data() calls non-atomic code.
+	 * However, the context for xen_acpi_processor_resume is syscore
+	 * with only the boot CPU online and in an atomic context.
+	 *
+	 * So defer the upload for some point safer.
+	 */
+	schedule_work(&wq);
+}
+
+static struct syscore_ops xap_syscore_ops = {
+	.resume	= xen_acpi_processor_resume,
+};
+
+static int __init xen_acpi_processor_init(void)
+{
+	int i;
+	int rc;
+
+	if (!xen_initial_domain())
+		return -ENODEV;
+
+	nr_acpi_bits = get_max_acpi_id() + 1;
+	acpi_ids_done = bitmap_zalloc(nr_acpi_bits, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!acpi_ids_done)
 		return -ENOMEM;
 
 	acpi_perf_data = alloc_percpu(struct acpi_processor_performance);
 	if (!acpi_perf_data) {
+<<<<<<< HEAD
 		pr_debug(DRV_NAME "Memory allocation error for acpi_perf_data.\n");
 		kfree(acpi_ids_done);
+=======
+		pr_debug("Memory allocation error for acpi_perf_data\n");
+		bitmap_free(acpi_ids_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	for_each_possible_cpu(i) {
@@ -500,6 +737,7 @@ static int __init xen_acpi_processor_init(void)
 	(void)acpi_processor_preregister_performance(acpi_perf_data);
 
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		struct acpi_processor_performance *perf;
 
 		perf = per_cpu_ptr(acpi_perf_data, i);
@@ -540,18 +778,60 @@ err_out:
 	/* Freeing a NULL pointer is OK: alloc_percpu zeroes. */
 	free_acpi_perf_data();
 	kfree(acpi_ids_done);
+=======
+		struct acpi_processor *pr;
+		struct acpi_processor_performance *perf;
+
+		pr = per_cpu(processors, i);
+		perf = per_cpu_ptr(acpi_perf_data, i);
+		if (!pr)
+			continue;
+
+		pr->performance = perf;
+		rc = acpi_processor_get_performance_info(pr);
+		if (rc)
+			goto err_out;
+	}
+
+	rc = xen_upload_processor_pm_data();
+	if (rc)
+		goto err_unregister;
+
+	register_syscore_ops(&xap_syscore_ops);
+
+	return 0;
+err_unregister:
+	for_each_possible_cpu(i)
+		acpi_processor_unregister_performance(i);
+
+err_out:
+	/* Freeing a NULL pointer is OK: alloc_percpu zeroes. */
+	free_acpi_perf_data();
+	bitmap_free(acpi_ids_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 static void __exit xen_acpi_processor_exit(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	kfree(acpi_ids_done);
 	for_each_possible_cpu(i) {
 		struct acpi_processor_performance *perf;
 		perf = per_cpu_ptr(acpi_perf_data, i);
 		acpi_processor_unregister_performance(perf, i);
 	}
+=======
+	unregister_syscore_ops(&xap_syscore_ops);
+	bitmap_free(acpi_ids_done);
+	bitmap_free(acpi_id_present);
+	bitmap_free(acpi_id_cst_present);
+	kfree(acpi_psd);
+	for_each_possible_cpu(i)
+		acpi_processor_unregister_performance(i);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_acpi_perf_data();
 }
 

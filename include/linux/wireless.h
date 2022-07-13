@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file define a set of standard wireless extensions
  *
@@ -6,6 +10,7 @@
  * Authors :	Jean Tourrilhes - HPL - <jt@hpl.hp.com>
  * Copyright (c) 1997-2007 Jean Tourrilhes, All Rights Reserved.
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_WIRELESS_H
 #define _LINUX_WIRELESS_H
@@ -690,6 +695,13 @@ struct	iw_point
 };
 
 #ifdef __KERNEL__
+=======
+#ifndef _LINUX_WIRELESS_H
+#define _LINUX_WIRELESS_H
+
+#include <uapi/linux/wireless.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 
 #include <linux/compat.h>
@@ -700,6 +712,7 @@ struct compat_iw_point {
 	__u16 flags;
 };
 #endif
+<<<<<<< HEAD
 #endif
 
 /*
@@ -1126,11 +1139,25 @@ struct iw_event
 			 IW_EV_POINT_OFF)
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 struct __compat_iw_event {
 	__u16		len;			/* Real length of this stuff */
 	__u16		cmd;			/* Wireless IOCTL */
+<<<<<<< HEAD
 	compat_caddr_t	pointer;
+=======
+
+	union {
+		compat_caddr_t	pointer;
+
+		/* we need ptr_bytes to make memcpy() run-time destination
+		 * buffer bounds checking happy, nothing special
+		 */
+		DECLARE_FLEX_ARRAY(__u8, ptr_bytes);
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define IW_EV_COMPAT_LCP_LEN offsetof(struct __compat_iw_event, pointer)
 #define IW_EV_COMPAT_POINT_OFF offsetof(struct compat_iw_point, length)
@@ -1146,6 +1173,7 @@ struct __compat_iw_event {
 	(IW_EV_COMPAT_LCP_LEN + sizeof(struct compat_iw_point) - \
 	 IW_EV_COMPAT_POINT_OFF)
 #endif
+<<<<<<< HEAD
 #endif
 
 /* Size of the Event prefix when packed in stream */
@@ -1159,4 +1187,6 @@ struct __compat_iw_event {
 #define IW_EV_QUAL_PK_LEN	(IW_EV_LCP_PK_LEN + sizeof(struct iw_quality))
 #define IW_EV_POINT_PK_LEN	(IW_EV_LCP_PK_LEN + 4)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_WIRELESS_H */

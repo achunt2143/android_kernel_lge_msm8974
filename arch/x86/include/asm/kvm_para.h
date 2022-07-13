@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_KVM_PARA_H
 #define _ASM_X86_KVM_PARA_H
 
@@ -102,18 +103,55 @@ extern int kvm_register_clock(char *txt);
 #define KVM_HYPERCALL ".byte 0x0f,0x01,0xc1"
 
 /* For KVM hypercalls, a three-byte sequence of either the vmrun or the vmmrun
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_KVM_PARA_H
+#define _ASM_X86_KVM_PARA_H
+
+#include <asm/processor.h>
+#include <asm/alternative.h>
+#include <linux/interrupt.h>
+#include <uapi/asm/kvm_para.h>
+
+#include <asm/tdx.h>
+
+#ifdef CONFIG_KVM_GUEST
+bool kvm_check_and_clear_guest_paused(void);
+#else
+static inline bool kvm_check_and_clear_guest_paused(void)
+{
+	return false;
+}
+#endif /* CONFIG_KVM_GUEST */
+
+#define KVM_HYPERCALL \
+        ALTERNATIVE("vmcall", "vmmcall", X86_FEATURE_VMMCALL)
+
+/* For KVM hypercalls, a three-byte sequence of either the vmcall or the vmmcall
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * instruction.  The hypervisor may replace it with something else but only the
  * instructions are guaranteed to be supported.
  *
  * Up to four arguments may be passed in rbx, rcx, rdx, and rsi respectively.
  * The hypercall number should be placed in rax and the return value will be
+<<<<<<< HEAD
  * placed in rax.  No other registers will be clobbered unless explicited
+=======
+ * placed in rax.  No other registers will be clobbered unless explicitly
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * noted by the particular hypercall.
  */
 
 static inline long kvm_hypercall0(unsigned int nr)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+		return tdx_kvm_hypercall(nr, 0, 0, 0, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(KVM_HYPERCALL
 		     : "=a"(ret)
 		     : "a"(nr)
@@ -124,6 +162,13 @@ static inline long kvm_hypercall0(unsigned int nr)
 static inline long kvm_hypercall1(unsigned int nr, unsigned long p1)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+		return tdx_kvm_hypercall(nr, p1, 0, 0, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(KVM_HYPERCALL
 		     : "=a"(ret)
 		     : "a"(nr), "b"(p1)
@@ -135,6 +180,13 @@ static inline long kvm_hypercall2(unsigned int nr, unsigned long p1,
 				  unsigned long p2)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+		return tdx_kvm_hypercall(nr, p1, p2, 0, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(KVM_HYPERCALL
 		     : "=a"(ret)
 		     : "a"(nr), "b"(p1), "c"(p2)
@@ -146,6 +198,13 @@ static inline long kvm_hypercall3(unsigned int nr, unsigned long p1,
 				  unsigned long p2, unsigned long p3)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+		return tdx_kvm_hypercall(nr, p1, p2, p3, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(KVM_HYPERCALL
 		     : "=a"(ret)
 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
@@ -158,6 +217,13 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
 				  unsigned long p4)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
+		return tdx_kvm_hypercall(nr, p1, p2, p3, p4);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(KVM_HYPERCALL
 		     : "=a"(ret)
 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3), "S"(p4)
@@ -165,6 +231,7 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int kvm_para_available(void)
 {
 	unsigned int eax, ebx, ecx, edx;
@@ -183,10 +250,61 @@ static inline int kvm_para_available(void)
 		return 1;
 
 	return 0;
+=======
+static inline long kvm_sev_hypercall3(unsigned int nr, unsigned long p1,
+				      unsigned long p2, unsigned long p3)
+{
+	long ret;
+
+	asm volatile("vmmcall"
+		     : "=a"(ret)
+		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
+		     : "memory");
+	return ret;
+}
+
+#ifdef CONFIG_KVM_GUEST
+void kvmclock_init(void);
+void kvmclock_disable(void);
+bool kvm_para_available(void);
+unsigned int kvm_arch_para_features(void);
+unsigned int kvm_arch_para_hints(void);
+void kvm_async_pf_task_wait_schedule(u32 token);
+void kvm_async_pf_task_wake(u32 token);
+u32 kvm_read_and_reset_apf_flags(void);
+bool __kvm_handle_async_pf(struct pt_regs *regs, u32 token);
+
+DECLARE_STATIC_KEY_FALSE(kvm_async_pf_enabled);
+
+static __always_inline bool kvm_handle_async_pf(struct pt_regs *regs, u32 token)
+{
+	if (static_branch_unlikely(&kvm_async_pf_enabled))
+		return __kvm_handle_async_pf(regs, token);
+	else
+		return false;
+}
+
+#ifdef CONFIG_PARAVIRT_SPINLOCKS
+void __init kvm_spinlock_init(void);
+#else /* !CONFIG_PARAVIRT_SPINLOCKS */
+static inline void kvm_spinlock_init(void)
+{
+}
+#endif /* CONFIG_PARAVIRT_SPINLOCKS */
+
+#else /* CONFIG_KVM_GUEST */
+#define kvm_async_pf_task_wait_schedule(T) do {} while(0)
+#define kvm_async_pf_task_wake(T) do {} while(0)
+
+static inline bool kvm_para_available(void)
+{
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int kvm_arch_para_features(void)
 {
+<<<<<<< HEAD
 	return cpuid_eax(KVM_CPUID_FEATURES);
 }
 
@@ -201,10 +319,17 @@ extern void kvm_disable_steal_time(void);
 #define kvm_async_pf_task_wait(T) do {} while(0)
 #define kvm_async_pf_task_wake(T) do {} while(0)
 static inline u32 kvm_read_and_reset_pf_reason(void)
+=======
+	return 0;
+}
+
+static inline unsigned int kvm_arch_para_hints(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void kvm_disable_steal_time(void)
 {
 	return;
@@ -213,4 +338,17 @@ static inline void kvm_disable_steal_time(void)
 
 #endif /* __KERNEL__ */
 
+=======
+static inline u32 kvm_read_and_reset_apf_flags(void)
+{
+	return 0;
+}
+
+static __always_inline bool kvm_handle_async_pf(struct pt_regs *regs, u32 token)
+{
+	return false;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_KVM_PARA_H */

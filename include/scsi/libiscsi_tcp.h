@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iSCSI over TCP/IP Data-Path lib
  *
  * Copyright (C) 2008 Mike Christie
  * Copyright (C) 2008 Red Hat, Inc.  All rights reserved.
  * maintained by open-iscsi@googlegroups.com
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -16,6 +21,8 @@
  * General Public License for more details.
  *
  * See the file COPYING included with this distribution for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LIBISCSI_TCP_H
@@ -26,7 +33,11 @@
 struct iscsi_tcp_conn;
 struct iscsi_segment;
 struct sk_buff;
+<<<<<<< HEAD
 struct hash_desc;
+=======
+struct ahash_request;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef int iscsi_segment_done_fn_t(struct iscsi_tcp_conn *,
 				    struct iscsi_segment *);
@@ -38,7 +49,11 @@ struct iscsi_segment {
 	unsigned int		total_size;
 	unsigned int		total_copied;
 
+<<<<<<< HEAD
 	struct hash_desc	*hash;
+=======
+	struct ahash_request	*hash;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char		padbuf[ISCSI_PAD_LEN];
 	unsigned char		recv_digest[ISCSI_DIGEST_SIZE];
 	unsigned char		digest[ISCSI_DIGEST_SIZE];
@@ -73,7 +88,11 @@ struct iscsi_tcp_conn {
 	/* control data */
 	struct iscsi_tcp_recv	in;		/* TCP receive context */
 	/* CRC32C (Rx) LLD should set this is they do not offload */
+<<<<<<< HEAD
 	struct hash_desc	*rx_hash;
+=======
+	struct ahash_request	*rx_hash;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct iscsi_tcp_task {
@@ -83,6 +102,11 @@ struct iscsi_tcp_task {
 	struct iscsi_pool	r2tpool;
 	struct kfifo		r2tqueue;
 	void			*dd_data;
+<<<<<<< HEAD
+=======
+	spinlock_t		pool2queue;
+	spinlock_t		queue2pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -109,15 +133,27 @@ extern void iscsi_tcp_segment_unmap(struct iscsi_segment *segment);
 extern void iscsi_segment_init_linear(struct iscsi_segment *segment,
 				      void *data, size_t size,
 				      iscsi_segment_done_fn_t *done,
+<<<<<<< HEAD
 				      struct hash_desc *hash);
+=======
+				      struct ahash_request *hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int
 iscsi_segment_seek_sg(struct iscsi_segment *segment,
 		      struct scatterlist *sg_list, unsigned int sg_count,
 		      unsigned int offset, size_t size,
+<<<<<<< HEAD
 		      iscsi_segment_done_fn_t *done, struct hash_desc *hash);
 
 /* digest helpers */
 extern void iscsi_tcp_dgst_header(struct hash_desc *hash, const void *hdr,
+=======
+		      iscsi_segment_done_fn_t *done,
+		      struct ahash_request *hash);
+
+/* digest helpers */
+extern void iscsi_tcp_dgst_header(struct ahash_request *hash, const void *hdr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  size_t hdrlen,
 				  unsigned char digest[ISCSI_DIGEST_SIZE]);
 extern struct iscsi_cls_conn *

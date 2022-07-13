@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 /*
  *  AMD K7 Powernow driver.
  *  (C) 2003 Dave Jones on behalf of SuSE Labs.
  *  (C) 2003-2004 Dave Jones <davej@redhat.com>
  *
  *  Licensed under the terms of the GNU GPL License version 2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  AMD K7 Powernow driver.
+ *  (C) 2003 Dave Jones on behalf of SuSE Labs.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Based upon datasheets & sample CPUs kindly provided by AMD.
  *
  * Errata 5:
@@ -14,6 +22,11 @@
  *  - We disable half multipliers if ACPI is used on A0 stepping CPUs.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -36,9 +49,12 @@
 
 #include "powernow-k7.h"
 
+<<<<<<< HEAD
 #define PFX "powernow: "
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct psb_s {
 	u8 signature[10];
 	u8 tableversion;
@@ -111,7 +127,11 @@ static int check_fsb(unsigned int fsbspeed)
 }
 
 static const struct x86_cpu_id powernow_k7_cpuids[] = {
+<<<<<<< HEAD
 	{ X86_VENDOR_AMD, 6, },
+=======
+	X86_MATCH_VENDOR_FAM(AMD, 6, NULL),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, powernow_k7_cpuids);
@@ -128,14 +148,23 @@ static int check_powernow(void)
 	maxei = cpuid_eax(0x80000000);
 	if (maxei < 0x80000007) {	/* Any powernow info ? */
 #ifdef MODULE
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "No powernow capabilities detected\n");
+=======
+		pr_info("No powernow capabilities detected\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if ((c->x86_model == 6) && (c->x86_mask == 0)) {
 		printk(KERN_INFO PFX "K7 660[A0] core detected, "
 				"enabling errata workarounds\n");
+=======
+	if ((c->x86_model == 6) && (c->x86_stepping == 0)) {
+		pr_info("K7 660[A0] core detected, enabling errata workarounds\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		have_a0 = 1;
 	}
 
@@ -145,14 +174,22 @@ static int check_powernow(void)
 	if (!(edx & (1 << 1 | 1 << 2)))
 		return 0;
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "PowerNOW! Technology present. Can scale: ");
 
 	if (edx & 1 << 1) {
 		printk("frequency");
+=======
+	pr_info("PowerNOW! Technology present. Can scale: ");
+
+	if (edx & 1 << 1) {
+		pr_cont("frequency");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		can_scale_bus = 1;
 	}
 
 	if ((edx & (1 << 1 | 1 << 2)) == 0x6)
+<<<<<<< HEAD
 		printk(" and ");
 
 	if (edx & 1 << 2) {
@@ -161,6 +198,16 @@ static int check_powernow(void)
 	}
 
 	printk(".\n");
+=======
+		pr_cont(" and ");
+
+	if (edx & 1 << 2) {
+		pr_cont("voltage");
+		can_scale_vid = 1;
+	}
+
+	pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -177,7 +224,11 @@ static int get_ranges(unsigned char *pst)
 	unsigned int speed;
 	u8 fid, vid;
 
+<<<<<<< HEAD
 	powernow_table = kzalloc((sizeof(struct cpufreq_frequency_table) *
+=======
+	powernow_table = kzalloc((sizeof(*powernow_table) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(number_scales + 1)), GFP_KERNEL);
 	if (!powernow_table)
 		return -ENOMEM;
@@ -186,7 +237,11 @@ static int get_ranges(unsigned char *pst)
 		fid = *pst++;
 
 		powernow_table[j].frequency = (fsb * fid_codes[fid]) / 10;
+<<<<<<< HEAD
 		powernow_table[j].index = fid; /* lower 8 bits */
+=======
+		powernow_table[j].driver_data = fid; /* lower 8 bits */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		speed = powernow_table[j].frequency;
 
@@ -203,7 +258,11 @@ static int get_ranges(unsigned char *pst)
 			maximum_speed = speed;
 
 		vid = *pst++;
+<<<<<<< HEAD
 		powernow_table[j].index |= (vid << 8); /* upper 8 bits */
+=======
+		powernow_table[j].driver_data |= (vid << 8); /* upper 8 bits */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pr_debug("   FID: 0x%x (%d.%dx [%dMHz])  "
 			 "VID: 0x%x (%d.%03dV)\n", fid, fid_codes[fid] / 10,
@@ -212,7 +271,11 @@ static int get_ranges(unsigned char *pst)
 			 mobile_vid_table[vid]%1000);
 	}
 	powernow_table[number_scales].frequency = CPUFREQ_TABLE_END;
+<<<<<<< HEAD
 	powernow_table[number_scales].index = 0;
+=======
+	powernow_table[number_scales].driver_data = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -248,7 +311,11 @@ static void change_VID(int vid)
 }
 
 
+<<<<<<< HEAD
 static void change_speed(unsigned int index)
+=======
+static int powernow_target(struct cpufreq_policy *policy, unsigned int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 fid, vid;
 	struct cpufreq_freqs freqs;
@@ -260,10 +327,15 @@ static void change_speed(unsigned int index)
 	 * vid are the upper 8 bits.
 	 */
 
+<<<<<<< HEAD
 	fid = powernow_table[index].index & 0xFF;
 	vid = (powernow_table[index].index & 0xFF00) >> 8;
 
 	freqs.cpu = 0;
+=======
+	fid = powernow_table[index].driver_data & 0xFF;
+	vid = (powernow_table[index].driver_data & 0xFF00) >> 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdmsrl(MSR_K7_FID_VID_STATUS, fidvidstatus.val);
 	cfid = fidvidstatus.bits.CFID;
@@ -271,8 +343,11 @@ static void change_speed(unsigned int index)
 
 	freqs.new = powernow_table[index].frequency;
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Now do the magic poking into the MSRs.  */
 
 	if (have_a0 == 1)	/* A0 errata 5 */
@@ -292,7 +367,11 @@ static void change_speed(unsigned int index)
 	if (have_a0 == 1)
 		local_irq_enable();
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -311,8 +390,12 @@ static int powernow_acpi_init(void)
 		goto err0;
 	}
 
+<<<<<<< HEAD
 	acpi_processor_perf = kzalloc(sizeof(struct acpi_processor_performance),
 				      GFP_KERNEL);
+=======
+	acpi_processor_perf = kzalloc(sizeof(*acpi_processor_perf), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!acpi_processor_perf) {
 		retval = -ENOMEM;
 		goto err0;
@@ -348,7 +431,11 @@ static int powernow_acpi_init(void)
 		goto err2;
 	}
 
+<<<<<<< HEAD
 	powernow_table = kzalloc((sizeof(struct cpufreq_frequency_table) *
+=======
+	powernow_table = kzalloc((sizeof(*powernow_table) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(number_scales + 1)), GFP_KERNEL);
 	if (!powernow_table) {
 		retval = -ENOMEM;
@@ -375,8 +462,13 @@ static int powernow_acpi_init(void)
 		fid = pc.bits.fid;
 
 		powernow_table[i].frequency = fsb * fid_codes[fid] / 10;
+<<<<<<< HEAD
 		powernow_table[i].index = fid; /* lower 8 bits */
 		powernow_table[i].index |= (vid << 8); /* upper 8 bits */
+=======
+		powernow_table[i].driver_data = fid; /* lower 8 bits */
+		powernow_table[i].driver_data |= (vid << 8); /* upper 8 bits */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		speed = powernow_table[i].frequency;
 		speed_mhz = speed / 1000;
@@ -419,7 +511,11 @@ static int powernow_acpi_init(void)
 	}
 
 	powernow_table[i].frequency = CPUFREQ_TABLE_END;
+<<<<<<< HEAD
 	powernow_table[i].index = 0;
+=======
+	powernow_table[i].driver_data = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* notify BIOS that we exist */
 	acpi_processor_notify_smm(THIS_MODULE);
@@ -427,22 +523,34 @@ static int powernow_acpi_init(void)
 	return 0;
 
 err2:
+<<<<<<< HEAD
 	acpi_processor_unregister_performance(acpi_processor_perf, 0);
+=======
+	acpi_processor_unregister_performance(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	free_cpumask_var(acpi_processor_perf->shared_cpu_map);
 err05:
 	kfree(acpi_processor_perf);
 err0:
+<<<<<<< HEAD
 	printk(KERN_WARNING PFX "ACPI perflib can not be used on "
 			"this platform\n");
+=======
+	pr_warn("ACPI perflib can not be used on this platform\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_processor_perf = NULL;
 	return retval;
 }
 #else
 static int powernow_acpi_init(void)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "no support for ACPI processor found."
 	       "  Please recompile your kernel with ACPI processor\n");
+=======
+	pr_info("no support for ACPI processor found - please recompile your kernel with ACPI processor\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 #endif
@@ -474,8 +582,12 @@ static int powernow_decode_bios(int maxfid, int startvid)
 			psb = (struct psb_s *) p;
 			pr_debug("Table version: 0x%x\n", psb->tableversion);
 			if (psb->tableversion != 0x12) {
+<<<<<<< HEAD
 				printk(KERN_INFO PFX "Sorry, only v1.2 tables"
 						" supported right now\n");
+=======
+				pr_info("Sorry, only v1.2 tables supported right now\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENODEV;
 			}
 
@@ -487,10 +599,15 @@ static int powernow_decode_bios(int maxfid, int startvid)
 
 			latency = psb->settlingtime;
 			if (latency < 100) {
+<<<<<<< HEAD
 				printk(KERN_INFO PFX "BIOS set settling time "
 						"to %d microseconds. "
 						"Should be at least 100. "
 						"Correcting.\n", latency);
+=======
+				pr_info("BIOS set settling time to %d microseconds. Should be at least 100. Correcting.\n",
+					latency);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				latency = 100;
 			}
 			pr_debug("Settling Time: %d microseconds.\n",
@@ -499,7 +616,11 @@ static int powernow_decode_bios(int maxfid, int startvid)
 					"relevant to this CPU).\n",
 					psb->numpst);
 
+<<<<<<< HEAD
 			p += sizeof(struct psb_s);
+=======
+			p += sizeof(*psb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pst = (struct pst_s *) p;
 
@@ -512,20 +633,34 @@ static int powernow_decode_bios(int maxfid, int startvid)
 				    (maxfid == pst->maxfid) &&
 				    (startvid == pst->startvid)) {
 					print_pst_entry(pst, j);
+<<<<<<< HEAD
 					p = (char *)pst + sizeof(struct pst_s);
+=======
+					p = (char *)pst + sizeof(*pst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ret = get_ranges(p);
 					return ret;
 				} else {
 					unsigned int k;
+<<<<<<< HEAD
 					p = (char *)pst + sizeof(struct pst_s);
+=======
+					p = (char *)pst + sizeof(*pst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					for (k = 0; k < number_scales; k++)
 						p += 2;
 				}
 			}
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "No PST tables match this cpuid "
 					"(0x%x)\n", etuple);
 			printk(KERN_INFO PFX "This is indicative of a broken "
 					"BIOS.\n");
+=======
+			pr_info("No PST tables match this cpuid (0x%x)\n",
+				etuple);
+			pr_info("This is indicative of a broken BIOS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return -EINVAL;
 		}
@@ -536,6 +671,7 @@ static int powernow_decode_bios(int maxfid, int startvid)
 }
 
 
+<<<<<<< HEAD
 static int powernow_target(struct cpufreq_policy *policy,
 			    unsigned int target_freq,
 			    unsigned int relation)
@@ -557,6 +693,8 @@ static int powernow_verify(struct cpufreq_policy *policy)
 	return cpufreq_frequency_table_verify(policy, powernow_table);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We use the fact that the bus frequency is somehow
  * a multiple of 100000/3 khz, then we compute sgtc according
@@ -565,7 +703,11 @@ static int powernow_verify(struct cpufreq_policy *policy)
  * We will then get the same kind of behaviour already tested under
  * the "well-known" other OS.
  */
+<<<<<<< HEAD
 static int __cpuinit fixup_sgtc(void)
+=======
+static int fixup_sgtc(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int sgtc;
 	unsigned int m;
@@ -579,7 +721,11 @@ static int __cpuinit fixup_sgtc(void)
 	sgtc = 100 * m * latency;
 	sgtc = sgtc / 3;
 	if (sgtc > 0xfffff) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "SGTC too large %d\n", sgtc);
+=======
+		pr_warn("SGTC too large %d\n", sgtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sgtc = 0xfffff;
 	}
 	return sgtc;
@@ -599,6 +745,7 @@ static unsigned int powernow_get(unsigned int cpu)
 }
 
 
+<<<<<<< HEAD
 static int __cpuinit acer_cpufreq_pst(const struct dmi_system_id *d)
 {
 	printk(KERN_WARNING PFX
@@ -609,6 +756,14 @@ static int __cpuinit acer_cpufreq_pst(const struct dmi_system_id *d)
 		"BIOS than 3A71 (01/20/2003)\n");
 	printk(KERN_WARNING PFX
 		"cpufreq scaling has been disabled as a result of this.\n");
+=======
+static int acer_cpufreq_pst(const struct dmi_system_id *d)
+{
+	pr_warn("%s laptop with broken PST tables in BIOS detected\n",
+		d->ident);
+	pr_warn("You need to downgrade to 3A21 (09/09/2002), or try a newer BIOS than 3A71 (01/20/2003)\n");
+	pr_warn("cpufreq scaling has been disabled as a result of this\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -617,7 +772,11 @@ static int __cpuinit acer_cpufreq_pst(const struct dmi_system_id *d)
  * A BIOS update is all that can save them.
  * Mention this, and disable cpufreq.
  */
+<<<<<<< HEAD
 static struct dmi_system_id __cpuinitdata powernow_dmi_table[] = {
+=======
+static const struct dmi_system_id powernow_dmi_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.callback = acer_cpufreq_pst,
 		.ident = "Acer Aspire",
@@ -629,7 +788,11 @@ static struct dmi_system_id __cpuinitdata powernow_dmi_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static int __cpuinit powernow_cpu_init(struct cpufreq_policy *policy)
+=======
+static int powernow_cpu_init(struct cpufreq_policy *policy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union msr_fidvidstatus fidvidstatus;
 	int result;
@@ -643,38 +806,59 @@ static int __cpuinit powernow_cpu_init(struct cpufreq_policy *policy)
 
 	fsb = (10 * cpu_khz) / fid_codes[fidvidstatus.bits.CFID];
 	if (!fsb) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "can not determine bus frequency\n");
+=======
+		pr_warn("can not determine bus frequency\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	pr_debug("FSB: %3dMHz\n", fsb/1000);
 
 	if (dmi_check_system(powernow_dmi_table) || acpi_force) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "PSB/PST known to be broken.  "
 				"Trying ACPI instead\n");
+=======
+		pr_info("PSB/PST known to be broken - trying ACPI instead\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = powernow_acpi_init();
 	} else {
 		result = powernow_decode_bios(fidvidstatus.bits.MFID,
 				fidvidstatus.bits.SVID);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "Trying ACPI perflib\n");
+=======
+			pr_info("Trying ACPI perflib\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			maximum_speed = 0;
 			minimum_speed = -1;
 			latency = 0;
 			result = powernow_acpi_init();
 			if (result) {
+<<<<<<< HEAD
 				printk(KERN_INFO PFX
 					"ACPI and legacy methods failed\n");
+=======
+				pr_info("ACPI and legacy methods failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/* SGTC use the bus clock as timer */
 			latency = fixup_sgtc();
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "SGTC: %d\n", latency);
+=======
+			pr_info("SGTC: %d\n", latency);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (result)
 		return result;
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "Minimum speed %d MHz. Maximum speed %d MHz.\n",
 				minimum_speed/1000, maximum_speed/1000);
 
@@ -686,15 +870,31 @@ static int __cpuinit powernow_cpu_init(struct cpufreq_policy *policy)
 	cpufreq_frequency_table_get_attr(powernow_table, policy->cpu);
 
 	return cpufreq_frequency_table_cpuinfo(policy, powernow_table);
+=======
+	pr_info("Minimum speed %d MHz - Maximum speed %d MHz\n",
+		minimum_speed/1000, maximum_speed/1000);
+
+	policy->cpuinfo.transition_latency =
+		cpufreq_scale(2000000UL, fsb, latency);
+	policy->freq_table = powernow_table;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int powernow_cpu_exit(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	cpufreq_frequency_table_put_attr(policy->cpu);
 
 #ifdef CONFIG_X86_POWERNOW_K7_ACPI
 	if (acpi_processor_perf) {
 		acpi_processor_unregister_performance(acpi_processor_perf, 0);
+=======
+#ifdef CONFIG_X86_POWERNOW_K7_ACPI
+	if (acpi_processor_perf) {
+		acpi_processor_unregister_performance(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_cpumask_var(acpi_processor_perf->shared_cpu_map);
 		kfree(acpi_processor_perf);
 	}
@@ -704,6 +904,7 @@ static int powernow_cpu_exit(struct cpufreq_policy *policy)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct freq_attr *powernow_table_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -712,6 +913,11 @@ static struct freq_attr *powernow_table_attr[] = {
 static struct cpufreq_driver powernow_driver = {
 	.verify		= powernow_verify,
 	.target		= powernow_target,
+=======
+static struct cpufreq_driver powernow_driver = {
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= powernow_target,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get		= powernow_get,
 #ifdef CONFIG_X86_POWERNOW_K7_ACPI
 	.bios_limit	= acpi_processor_get_bios_limit,
@@ -719,8 +925,12 @@ static struct cpufreq_driver powernow_driver = {
 	.init		= powernow_cpu_init,
 	.exit		= powernow_cpu_exit,
 	.name		= "powernow-k7",
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
 	.attr		= powernow_table_attr,
+=======
+	.attr		= cpufreq_generic_attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init powernow_init(void)
@@ -739,7 +949,11 @@ static void __exit powernow_exit(void)
 module_param(acpi_force,  int, 0444);
 MODULE_PARM_DESC(acpi_force, "Force ACPI to be used.");
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Powernow driver for AMD K7 processors.");
 MODULE_LICENSE("GPL");
 

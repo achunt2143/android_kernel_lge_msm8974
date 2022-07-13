@@ -1,14 +1,30 @@
+<<<<<<< HEAD
 /*
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * CE4100 PCI-I2C glue code for PXA's driver
+ * Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The CE4100's I2C device is more or less the same one as found on PXA.
  * It does not support slave mode, the register slightly moved. This PCI
  * device provides three bars, every contains a single I2C controller.
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/platform_device.h>
 #include <linux/i2c/pxa-i2c.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
+=======
+#include <linux/init.h>
+#include <linux/pci.h>
+#include <linux/platform_device.h>
+#include <linux/platform_data/i2c-pxa.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_address.h>
 
 #define CE4100_PCI_I2C_DEVS	3
@@ -94,14 +110,22 @@ out:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 static int __devinit ce4100_i2c_probe(struct pci_dev *dev,
+=======
+static int ce4100_i2c_probe(struct pci_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct pci_device_id *ent)
 {
 	int ret;
 	int i;
 	struct ce4100_devices *sds;
 
+<<<<<<< HEAD
 	ret = pci_enable_device_mem(dev);
+=======
+	ret = pcim_enable_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -110,10 +134,15 @@ static int __devinit ce4100_i2c_probe(struct pci_dev *dev,
 		return -EINVAL;
 	}
 	sds = kzalloc(sizeof(*sds), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!sds) {
 		ret = -ENOMEM;
 		goto err_mem;
 	}
+=======
+	if (!sds)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(sds->pdev); i++) {
 		sds->pdev[i] = add_i2c_device(dev, i);
@@ -128,6 +157,7 @@ static int __devinit ce4100_i2c_probe(struct pci_dev *dev,
 	return 0;
 
 err_dev_add:
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
 	kfree(sds);
 err_mem:
@@ -178,3 +208,23 @@ module_exit(ce4100_i2c_exit);
 MODULE_DESCRIPTION("CE4100 PCI-I2C glue code for PXA's driver");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Sebastian Andrzej Siewior <bigeasy@linutronix.de>");
+=======
+	kfree(sds);
+	return ret;
+}
+
+static const struct pci_device_id ce4100_i2c_devices[] = {
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x2e68)},
+	{ },
+};
+
+static struct pci_driver ce4100_i2c_driver = {
+	.driver = {
+		.suppress_bind_attrs = true,
+	},
+	.name           = "ce4100_i2c",
+	.id_table       = ce4100_i2c_devices,
+	.probe          = ce4100_i2c_probe,
+};
+builtin_pci_driver(ce4100_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

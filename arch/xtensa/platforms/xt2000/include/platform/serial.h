@@ -11,7 +11,11 @@
 #ifndef _XTENSA_XT2000_SERIAL_H
 #define _XTENSA_XT2000_SERIAL_H
 
+<<<<<<< HEAD
 #include <variant/core.h>
+=======
+#include <asm/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 /*  National-Semi PC16552D DUART:  */

@@ -1,16 +1,29 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007 Luca Bigliardi (shammash@artha.org).
  * Licensed under the GPL.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2007 Luca Bigliardi (shammash@artha.org).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Transport usage:
  *  ethN=vde,<vde_switch>,<mac addr>,<port>,<group>,<mode>,<description>
  *
  */
 
+<<<<<<< HEAD
 #include "linux/init.h"
 #include <linux/netdevice.h>
 #include "net_kern.h"
 #include "net_user.h"
+=======
+#include <linux/init.h>
+#include <linux/netdevice.h>
+#include <net_kern.h>
+#include <net_user.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vde.h"
 
 static void vde_init(struct net_device *dev, void *data)

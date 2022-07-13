@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -23,11 +30,20 @@
  * Larry Finger <Larry.Finger@lwfinger.net>
  *
  ******************************************************************************/
+<<<<<<< HEAD
 /*---------------------------------------------------------------------
 
 	For type defines and data structure defines
 
 -----------------------------------------------------------------------*/
+=======
+/* ---------------------------------------------------------------------
+ *
+ *	For type defines and data structure defines
+ *
+ * ---------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __DRV_TYPES_H__
 #define __DRV_TYPES_H__
 
@@ -47,8 +63,11 @@ enum _NIC_VERSION {
 	RTL8716_NIC
 };
 
+<<<<<<< HEAD
 struct _adapter;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct	qos_priv	{
 	/* bit mask option: u-apsd, s-apsd, ts, block ack... */
 	unsigned int qos_option;
@@ -70,9 +89,13 @@ struct	qos_priv	{
 #include "rtl871x_event.h"
 #include "rtl871x_led.h"
 
+<<<<<<< HEAD
 #define SPEC_DEV_ID_NONE BIT(0)
 #define SPEC_DEV_ID_DISABLE_HT BIT(1)
 #define SPEC_DEV_ID_ENABLE_PS BIT(2)
+=======
+#define SPEC_DEV_ID_DISABLE_HT BIT(1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct specific_device_id {
 	u32		flags;
@@ -127,6 +150,7 @@ struct registry_priv {
 	u8 wifi_test;
 };
 
+<<<<<<< HEAD
 /* For registry parameters */
 #define RGTRY_OFT(field) ((addr_t)FIELD_OFFSET(struct registry_priv, field))
 #define RGTRY_SZ(field)   sizeof(((struct registry_priv *)0)->field)
@@ -134,19 +158,30 @@ struct registry_priv {
 			 field))
 #define BSSID_SZ(field)   sizeof(((struct ndis_wlan_bssid_ex *)0)->field)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dvobj_priv {
 	struct _adapter *padapter;
 	u32 nr_endpoint;
 	u8   ishighspeed;
+<<<<<<< HEAD
 	uint(*inirp_init)(struct _adapter *adapter);
 	uint(*inirp_deinit)(struct _adapter *adapter);
+=======
+	uint (*inirp_init)(struct _adapter *adapter);
+	uint (*inirp_deinit)(struct _adapter *adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_device *pusbdev;
 };
 
 /**
  * struct _adapter - the main adapter structure for this device.
  *
+<<<<<<< HEAD
  * bup: True indicates that the interface is Up.
+=======
+ * bup: True indicates that the interface is up.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct _adapter {
 	struct	dvobj_priv dvobjpriv;
@@ -165,6 +200,7 @@ struct _adapter {
 	struct	hal_priv	halpriv;
 	struct	led_priv	ledpriv;
 	struct mp_priv  mppriv;
+<<<<<<< HEAD
 	s32	bDriverStopped;
 	s32	bSurpriseRemoved;
 	u32	IsrContent;
@@ -178,18 +214,36 @@ struct _adapter {
 	pid_t recvThread;
 	uint(*dvobj_init)(struct _adapter *adapter);
 	void  (*dvobj_deinit)(struct _adapter *adapter);
+=======
+	bool	driver_stopped;
+	bool	surprise_removed;
+	bool	suspended;
+	u8	eeprom_address_size;
+	u8	hw_init_completed;
+	struct task_struct *cmd_thread;
+	uint (*dvobj_init)(struct _adapter *adapter);
+	void (*dvobj_deinit)(struct _adapter *adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *pnetdev;
 	int bup;
 	struct net_device_stats stats;
 	struct iw_statistics iwstats;
 	int pid; /*process id from UI*/
+<<<<<<< HEAD
 	_workitem wkFilterRxFF0;
 	u8 blnEnableRxFF0Filter;
 	spinlock_t lockRxFF0Filter;
+=======
+	struct work_struct wk_filter_rx_ff0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct firmware *fw;
 	struct usb_interface *pusb_intf;
 	struct mutex mutex_start;
 	struct completion rtl8712_fw_ready;
+<<<<<<< HEAD
+=======
+	struct completion rx_filter_ready;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline u8 *myid(struct eeprom_priv *peepriv)

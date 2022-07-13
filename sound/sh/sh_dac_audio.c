@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sh_dac_audio.c - SuperH DAC audio driver for ALSA
  *
  * Copyright (c) 2009 by Rafael Ignacio Zurita <rizurita@yahoo.com>
  *
+<<<<<<< HEAD
  *
  * Based on sh_dac_audio.c (Copyright (C) 2004, 2005 by Andriy Skulysh)
  *
@@ -20,6 +25,9 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+ * Based on sh_dac_audio.c (Copyright (C) 2004, 2005 by Andriy Skulysh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/hrtimer.h>
@@ -40,7 +48,10 @@
 MODULE_AUTHOR("Rafael Ignacio Zurita <rizurita@yahoo.com>");
 MODULE_DESCRIPTION("SuperH DAC audio driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{SuperH DAC audio support}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Module Parameters */
 static int index = SNDRV_DEFAULT_IDX1;
@@ -87,13 +98,21 @@ static void dac_audio_reset(struct snd_sh_dac *chip)
 
 static void dac_audio_set_rate(struct snd_sh_dac *chip)
 {
+<<<<<<< HEAD
 	chip->wakeups_per_second = ktime_set(0, 1000000000 / chip->rate);
+=======
+	chip->wakeups_per_second = 1000000000 / chip->rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* PCM INTERFACE */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_sh_dac_pcm_hw = {
+=======
+static const struct snd_pcm_hardware snd_sh_dac_pcm_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= (SNDRV_PCM_INFO_MMAP |
 					SNDRV_PCM_INFO_MMAP_VALID |
 					SNDRV_PCM_INFO_INTERLEAVED |
@@ -140,6 +159,7 @@ static int snd_sh_dac_pcm_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_sh_dac_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *hw_params)
 {
@@ -152,6 +172,8 @@ static int snd_sh_dac_pcm_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_sh_dac_pcm_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
@@ -184,6 +206,7 @@ static int snd_sh_dac_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream, int channel,
 	snd_pcm_uframes_t pos, void __user *src, snd_pcm_uframes_t count)
 {
@@ -201,6 +224,18 @@ static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream, int channel,
 
 	memcpy_toio(chip->data_buffer + b_pos, src, b_count);
 	chip->buffer_end = chip->data_buffer + b_pos + b_count;
+=======
+static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream,
+			       int channel, unsigned long pos,
+			       struct iov_iter *src, unsigned long count)
+{
+	/* channel is not used (interleaved data) */
+	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
+
+	if (copy_from_iter_toio(chip->data_buffer + pos, src, count))
+		return -EFAULT;
+	chip->buffer_end = chip->data_buffer + pos + count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->empty) {
 		chip->empty = 0;
@@ -211,6 +246,7 @@ static int snd_sh_dac_pcm_copy(struct snd_pcm_substream *substream, int channel,
 }
 
 static int snd_sh_dac_pcm_silence(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 				  int channel, snd_pcm_uframes_t pos,
 				  snd_pcm_uframes_t count)
 {
@@ -228,6 +264,16 @@ static int snd_sh_dac_pcm_silence(struct snd_pcm_substream *substream,
 
 	memset_io(chip->data_buffer + b_pos, 0, b_count);
 	chip->buffer_end = chip->data_buffer + b_pos + b_count;
+=======
+				  int channel, unsigned long pos,
+				  unsigned long count)
+{
+	/* channel is not used (interleaved data) */
+	struct snd_sh_dac *chip = snd_pcm_substream_chip(substream);
+
+	memset_io(chip->data_buffer + pos, 0, count);
+	chip->buffer_end = chip->data_buffer + pos + count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->empty) {
 		chip->empty = 0;
@@ -247,21 +293,35 @@ snd_pcm_uframes_t snd_sh_dac_pcm_pointer(struct snd_pcm_substream *substream)
 }
 
 /* pcm ops */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_sh_dac_pcm_ops = {
 	.open		= snd_sh_dac_pcm_open,
 	.close		= snd_sh_dac_pcm_close,
 	.ioctl		= snd_pcm_lib_ioctl,
 	.hw_params	= snd_sh_dac_pcm_hw_params,
 	.hw_free	= snd_sh_dac_pcm_hw_free,
+=======
+static const struct snd_pcm_ops snd_sh_dac_pcm_ops = {
+	.open		= snd_sh_dac_pcm_open,
+	.close		= snd_sh_dac_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare	= snd_sh_dac_pcm_prepare,
 	.trigger	= snd_sh_dac_pcm_trigger,
 	.pointer	= snd_sh_dac_pcm_pointer,
 	.copy		= snd_sh_dac_pcm_copy,
+<<<<<<< HEAD
 	.silence	= snd_sh_dac_pcm_silence,
 	.mmap		= snd_pcm_lib_mmap_iomem,
 };
 
 static int __devinit snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
+=======
+	.fill_silence	= snd_sh_dac_pcm_silence,
+	.mmap		= snd_pcm_lib_mmap_iomem,
+};
+
+static int snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_pcm *pcm;
@@ -276,10 +336,15 @@ static int __devinit snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_sh_dac_pcm_ops);
 
 	/* buffer size=48K */
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
 					  snd_dma_continuous_data(GFP_KERNEL),
 							48 * 1024,
 							48 * 1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
+				       NULL, 48 * 1024, 48 * 1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -287,12 +352,18 @@ static int __devinit snd_sh_dac_pcm(struct snd_sh_dac *chip, int device)
 
 
 /* driver .remove  --  destructor */
+<<<<<<< HEAD
 static int snd_sh_dac_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
 	platform_set_drvdata(devptr, NULL);
 
 	return 0;
+=======
+static void snd_sh_dac_remove(struct platform_device *devptr)
+{
+	snd_card_free(platform_get_drvdata(devptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* free -- it has been defined by create */
@@ -346,14 +417,24 @@ static enum hrtimer_restart sh_dac_audio_timer(struct hrtimer *handle)
 }
 
 /* create  --  chip-specific constructor for the cards components */
+<<<<<<< HEAD
 static int __devinit snd_sh_dac_create(struct snd_card *card,
 				       struct platform_device *devptr,
 				       struct snd_sh_dac **rchip)
+=======
+static int snd_sh_dac_create(struct snd_card *card,
+			     struct platform_device *devptr,
+			     struct snd_sh_dac **rchip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_sh_dac *chip;
 	int err;
 
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   .dev_free = snd_sh_dac_dev_free,
 	};
 
@@ -392,13 +473,21 @@ static int __devinit snd_sh_dac_create(struct snd_card *card,
 }
 
 /* driver .probe  --  constructor */
+<<<<<<< HEAD
 static int __devinit snd_sh_dac_probe(struct platform_device *devptr)
+=======
+static int snd_sh_dac_probe(struct platform_device *devptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_sh_dac *chip;
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&devptr->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 			snd_printk(KERN_ERR "cannot allocate the card\n");
 			return err;
@@ -420,7 +509,11 @@ static int __devinit snd_sh_dac_probe(struct platform_device *devptr)
 	if (err < 0)
 		goto probe_error;
 
+<<<<<<< HEAD
 	snd_printk("ALSA driver for SuperH DAC audio");
+=======
+	snd_printk(KERN_INFO "ALSA driver for SuperH DAC audio");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(devptr, card);
 	return 0;
@@ -433,12 +526,22 @@ probe_error:
 /*
  * "driver" definition
  */
+<<<<<<< HEAD
 static struct platform_driver driver = {
 	.probe	= snd_sh_dac_probe,
 	.remove = snd_sh_dac_remove,
+=======
+static struct platform_driver sh_dac_driver = {
+	.probe	= snd_sh_dac_probe,
+	.remove_new = snd_sh_dac_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "dac_audio",
 	},
 };
 
+<<<<<<< HEAD
 module_platform_driver(driver);
+=======
+module_platform_driver(sh_dac_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_SB_H
 #define __SOUND_SB_H
 
 /*
  *  Header file for SoundBlaster cards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +31,14 @@
 #include "rawmidi.h"
 #include <linux/interrupt.h>
 #include <asm/io.h>
+=======
+ */
+
+#include <sound/pcm.h>
+#include <sound/rawmidi.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum sb_hw_type {
 	SB_HW_AUTO,
@@ -305,10 +318,20 @@ int snd_sbmixer_new(struct snd_sb *chip);
 #ifdef CONFIG_PM
 void snd_sbmixer_suspend(struct snd_sb *chip);
 void snd_sbmixer_resume(struct snd_sb *chip);
+<<<<<<< HEAD
 #endif
 
 /* sb8_init.c */
 int snd_sb8dsp_pcm(struct snd_sb *chip, int device, struct snd_pcm ** rpcm);
+=======
+#else
+static inline void snd_sbmixer_suspend(struct snd_sb *chip) {}
+static inline void snd_sbmixer_resume(struct snd_sb *chip) {}
+#endif
+
+/* sb8_init.c */
+int snd_sb8dsp_pcm(struct snd_sb *chip, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sb8.c */
 irqreturn_t snd_sb8dsp_interrupt(struct snd_sb *chip);
 int snd_sb8_playback_open(struct snd_pcm_substream *substream);
@@ -317,10 +340,17 @@ int snd_sb8_playback_close(struct snd_pcm_substream *substream);
 int snd_sb8_capture_close(struct snd_pcm_substream *substream);
 /* midi8.c */
 irqreturn_t snd_sb8dsp_midi_interrupt(struct snd_sb *chip);
+<<<<<<< HEAD
 int snd_sb8dsp_midi(struct snd_sb *chip, int device, struct snd_rawmidi ** rrawmidi);
 
 /* sb16_init.c */
 int snd_sb16dsp_pcm(struct snd_sb *chip, int device, struct snd_pcm ** rpcm);
+=======
+int snd_sb8dsp_midi(struct snd_sb *chip, int device);
+
+/* sb16_init.c */
+int snd_sb16dsp_pcm(struct snd_sb *chip, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct snd_pcm_ops *snd_sb16dsp_get_pcm_ops(int direction);
 int snd_sb16dsp_configure(struct snd_sb *chip);
 /* sb16.c */

@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2006 - Florian Fainelli <florian@openwrt.org>
  *
  * Control the Cobalt Qube/RaQ front LED
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/leds.h>
@@ -34,22 +41,33 @@ static struct led_classdev qube_front_led = {
 	.default_trigger	= "default-on",
 };
 
+<<<<<<< HEAD
 static int __devinit cobalt_qube_led_probe(struct platform_device *pdev)
 {
 	struct resource *res;
 	int retval;
+=======
+static int cobalt_qube_led_probe(struct platform_device *pdev)
+{
+	struct resource *res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	led_port = ioremap(res->start, resource_size(res));
+=======
+	led_port = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!led_port)
 		return -ENOMEM;
 
 	led_value = LED_FRONT_LEFT | LED_FRONT_RIGHT;
 	writeb(led_value, led_port);
 
+<<<<<<< HEAD
 	retval = led_classdev_register(&pdev->dev, &qube_front_led);
 	if (retval)
 		goto err_iounmap;
@@ -73,14 +91,22 @@ static int __devexit cobalt_qube_led_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+	return devm_led_classdev_register(&pdev->dev, &qube_front_led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cobalt_qube_led_driver = {
 	.probe	= cobalt_qube_led_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(cobalt_qube_led_remove),
 	.driver	= {
 		.name	= "cobalt-qube-leds",
 		.owner	= THIS_MODULE,
+=======
+	.driver	= {
+		.name	= "cobalt-qube-leds",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

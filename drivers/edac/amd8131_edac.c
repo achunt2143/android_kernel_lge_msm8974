@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * amd8131_edac.c, AMD8131 hypertransport chip EDAC kernel module
  *
@@ -6,6 +10,7 @@
  * Authors:	Cao Qingtao <qingtao.cao@windriver.com>
  * 		Benjamin Walsh <benjamin.walsh@windriver.com>
  * 		Hu Yongqi <yongqi.hu@windriver.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -29,7 +36,10 @@
 #include <linux/edac.h>
 #include <linux/pci_ids.h>
 
+<<<<<<< HEAD
 #include "edac_core.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "edac_module.h"
 #include "amd8131_edac.h"
 
@@ -57,6 +67,7 @@ static void edac_pci_write_dword(struct pci_dev *dev, int reg, u32 val32)
 			" PCI Access Write Error at 0x%x\n", reg);
 }
 
+<<<<<<< HEAD
 static char * const bridge_str[] = {
 	[NORTH_A] = "NORTH A",
 	[NORTH_B] = "NORTH B",
@@ -65,6 +76,8 @@ static char * const bridge_str[] = {
 	[NO_BRIDGE] = "NO BRIDGE",
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Support up to two AMD8131 chipsets on a platform */
 static struct amd8131_dev_info amd8131_devices[] = {
 	{
@@ -375,5 +388,9 @@ module_init(amd8131_edac_init);
 module_exit(amd8131_edac_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Cao Qingtao <qingtao.cao@windriver.com>\n");
+=======
+MODULE_AUTHOR("Cao Qingtao <qingtao.cao@windriver.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("AMD8131 HyperTransport PCI-X Tunnel EDAC kernel module");

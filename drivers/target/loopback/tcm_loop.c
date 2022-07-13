@@ -3,7 +3,11 @@
  * This file contains the Linux/SCSI LLD virtual SCSI initiator driver
  * for emulated SAS initiator ports
  *
+<<<<<<< HEAD
  * © Copyright 2011 RisingTide Systems LLC.
+=======
+ * © Copyright 2011-2013 Datera, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
  *
@@ -34,28 +38,47 @@
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_fabric_configfs.h>
 #include <target/target_core_configfs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "tcm_loop.h"
 
 #define to_tcm_loop_hba(hba)	container_of(hba, struct tcm_loop_hba, dev)
 
+<<<<<<< HEAD
 /* Local pointer to allocated TCM configfs fabric module */
 static struct target_fabric_configfs *tcm_loop_fabric_configfs;
 
 static struct workqueue_struct *tcm_loop_workqueue;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kmem_cache *tcm_loop_cmd_cache;
 
 static int tcm_loop_hba_no_cnt;
 
 static int tcm_loop_queue_status(struct se_cmd *se_cmd);
 
+<<<<<<< HEAD
+=======
+static unsigned int tcm_loop_nr_hw_queues = 1;
+module_param_named(nr_hw_queues, tcm_loop_nr_hw_queues, uint, 0644);
+
+static unsigned int tcm_loop_can_queue = 1024;
+module_param_named(can_queue, tcm_loop_can_queue, uint, 0644);
+
+static unsigned int tcm_loop_cmd_per_lun = 1024;
+module_param_named(cmd_per_lun, tcm_loop_cmd_per_lun, uint, 0644);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called from struct target_core_fabric_ops->check_stop_free()
  */
 static int tcm_loop_check_stop_free(struct se_cmd *se_cmd)
 {
+<<<<<<< HEAD
 	/*
 	 * Do not release struct se_cmd's containing a valid TMR
 	 * pointer.  These will be released directly in tcm_loop_device_reset()
@@ -69,12 +92,16 @@ static int tcm_loop_check_stop_free(struct se_cmd *se_cmd)
 	 */
 	transport_generic_free_cmd(se_cmd, 0);
 	return 1;
+=======
+	return transport_generic_free_cmd(se_cmd, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tcm_loop_release_cmd(struct se_cmd *se_cmd)
 {
 	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
 				struct tcm_loop_cmd, tl_se_cmd);
+<<<<<<< HEAD
 
 	kmem_cache_free(tcm_loop_cmd_cache, tl_cmd);
 }
@@ -98,6 +125,27 @@ static int pseudo_lld_bus_match(struct device *dev,
 static struct bus_type tcm_loop_lld_bus = {
 	.name			= "tcm_loop_bus",
 	.match			= pseudo_lld_bus_match,
+=======
+	struct scsi_cmnd *sc = tl_cmd->sc;
+
+	if (se_cmd->se_cmd_flags & SCF_SCSI_TMR_CDB)
+		kmem_cache_free(tcm_loop_cmd_cache, tl_cmd);
+	else
+		scsi_done(sc);
+}
+
+static int tcm_loop_show_info(struct seq_file *m, struct Scsi_Host *host)
+{
+	seq_puts(m, "tcm_loop_proc_info()\n");
+	return 0;
+}
+
+static int tcm_loop_driver_probe(struct device *);
+static void tcm_loop_driver_remove(struct device *);
+
+static const struct bus_type tcm_loop_lld_bus = {
+	.name			= "tcm_loop_bus",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe			= tcm_loop_driver_probe,
 	.remove			= tcm_loop_driver_remove,
 };
@@ -109,6 +157,7 @@ static struct device_driver tcm_loop_driverfs = {
 /*
  * Used with root_device_register() in tcm_loop_alloc_core_bus() below
  */
+<<<<<<< HEAD
 struct device *tcm_loop_primary;
 
 /*
@@ -159,14 +208,24 @@ static void tcm_loop_submission_work(struct work_struct *work)
 {
 	struct tcm_loop_cmd *tl_cmd =
 		container_of(work, struct tcm_loop_cmd, work);
+=======
+static struct device *tcm_loop_primary;
+
+static void tcm_loop_target_queue_cmd(struct tcm_loop_cmd *tl_cmd)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_cmd *se_cmd = &tl_cmd->tl_se_cmd;
 	struct scsi_cmnd *sc = tl_cmd->sc;
 	struct tcm_loop_nexus *tl_nexus;
 	struct tcm_loop_hba *tl_hba;
 	struct tcm_loop_tpg *tl_tpg;
 	struct scatterlist *sgl_bidi = NULL;
+<<<<<<< HEAD
 	u32 sgl_bidi_count = 0;
 	int ret;
+=======
+	u32 sgl_bidi_count = 0, transfer_length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tl_hba = *(struct tcm_loop_hba **)shost_priv(sc->device->host);
 	tl_tpg = &tl_hba->tl_hba_tpgs[sc->device->id];
@@ -179,15 +238,27 @@ static void tcm_loop_submission_work(struct work_struct *work)
 		set_host_byte(sc, DID_NO_CONNECT);
 		goto out_done;
 	}
+<<<<<<< HEAD
 
 	tl_nexus = tl_hba->tl_nexus;
 	if (!tl_nexus) {
 		scmd_printk(KERN_ERR, sc, "TCM_Loop I_T Nexus"
 				" does not exist\n");
+=======
+	if (tl_tpg->tl_transport_status == TCM_TRANSPORT_OFFLINE) {
+		set_host_byte(sc, DID_TRANSPORT_DISRUPTED);
+		goto out_done;
+	}
+	tl_nexus = tl_tpg->tl_nexus;
+	if (!tl_nexus) {
+		scmd_printk(KERN_ERR, sc,
+			    "TCM_Loop I_T Nexus does not exist\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_host_byte(sc, DID_ERROR);
 		goto out_done;
 	}
 
+<<<<<<< HEAD
 	transport_init_se_cmd(se_cmd, tl_tpg->tl_se_tpg.se_tpg_tfo,
 			tl_nexus->se_sess,
 			scsi_bufflen(sc), sc->sc_data_direction,
@@ -257,6 +328,36 @@ static void tcm_loop_submission_work(struct work_struct *work)
 out_done:
 	sc->scsi_done(sc);
 	return;
+=======
+	transfer_length = scsi_transfer_length(sc);
+	if (!scsi_prot_sg_count(sc) &&
+	    scsi_get_prot_op(sc) != SCSI_PROT_NORMAL) {
+		se_cmd->prot_pto = true;
+		/*
+		 * loopback transport doesn't support
+		 * WRITE_GENERATE, READ_STRIP protection
+		 * information operations, go ahead unprotected.
+		 */
+		transfer_length = scsi_bufflen(sc);
+	}
+
+	se_cmd->tag = tl_cmd->sc_cmd_tag;
+	target_init_cmd(se_cmd, tl_nexus->se_sess, &tl_cmd->tl_sense_buf[0],
+			tl_cmd->sc->device->lun, transfer_length,
+			TCM_SIMPLE_TAG, sc->sc_data_direction, 0);
+
+	if (target_submit_prep(se_cmd, sc->cmnd, scsi_sglist(sc),
+			       scsi_sg_count(sc), sgl_bidi, sgl_bidi_count,
+			       scsi_prot_sglist(sc), scsi_prot_sg_count(sc),
+			       GFP_ATOMIC))
+		return;
+
+	target_submit(se_cmd);
+	return;
+
+out_done:
+	scsi_done(sc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -265,6 +366,7 @@ out_done:
  */
 static int tcm_loop_queuecommand(struct Scsi_Host *sh, struct scsi_cmnd *sc)
 {
+<<<<<<< HEAD
 	struct tcm_loop_cmd *tl_cmd;
 
 	pr_debug("tcm_loop_queuecommand() %d:%d:%d:%d got CDB: 0x%02x"
@@ -284,6 +386,85 @@ static int tcm_loop_queuecommand(struct Scsi_Host *sh, struct scsi_cmnd *sc)
 	INIT_WORK(&tl_cmd->work, tcm_loop_submission_work);
 	queue_work(tcm_loop_workqueue, &tl_cmd->work);
 	return 0;
+=======
+	struct tcm_loop_cmd *tl_cmd = scsi_cmd_priv(sc);
+
+	pr_debug("%s() %d:%d:%d:%llu got CDB: 0x%02x scsi_buf_len: %u\n",
+		 __func__, sc->device->host->host_no, sc->device->id,
+		 sc->device->channel, sc->device->lun, sc->cmnd[0],
+		 scsi_bufflen(sc));
+
+	memset(tl_cmd, 0, sizeof(*tl_cmd));
+	tl_cmd->sc = sc;
+	tl_cmd->sc_cmd_tag = scsi_cmd_to_rq(sc)->tag;
+
+	tcm_loop_target_queue_cmd(tl_cmd);
+	return 0;
+}
+
+/*
+ * Called from SCSI EH process context to issue a LUN_RESET TMR
+ * to struct scsi_device
+ */
+static int tcm_loop_issue_tmr(struct tcm_loop_tpg *tl_tpg,
+			      u64 lun, int task, enum tcm_tmreq_table tmr)
+{
+	struct se_cmd *se_cmd;
+	struct se_session *se_sess;
+	struct tcm_loop_nexus *tl_nexus;
+	struct tcm_loop_cmd *tl_cmd;
+	int ret = TMR_FUNCTION_FAILED, rc;
+
+	/*
+	 * Locate the tl_nexus and se_sess pointers
+	 */
+	tl_nexus = tl_tpg->tl_nexus;
+	if (!tl_nexus) {
+		pr_err("Unable to perform device reset without active I_T Nexus\n");
+		return ret;
+	}
+
+	tl_cmd = kmem_cache_zalloc(tcm_loop_cmd_cache, GFP_KERNEL);
+	if (!tl_cmd)
+		return ret;
+
+	init_completion(&tl_cmd->tmr_done);
+
+	se_cmd = &tl_cmd->tl_se_cmd;
+	se_sess = tl_tpg->tl_nexus->se_sess;
+
+	rc = target_submit_tmr(se_cmd, se_sess, tl_cmd->tl_sense_buf, lun,
+			       NULL, tmr, GFP_KERNEL, task,
+			       TARGET_SCF_ACK_KREF);
+	if (rc < 0)
+		goto release;
+	wait_for_completion(&tl_cmd->tmr_done);
+	ret = se_cmd->se_tmr_req->response;
+	target_put_sess_cmd(se_cmd);
+
+out:
+	return ret;
+
+release:
+	kmem_cache_free(tcm_loop_cmd_cache, tl_cmd);
+	goto out;
+}
+
+static int tcm_loop_abort_task(struct scsi_cmnd *sc)
+{
+	struct tcm_loop_hba *tl_hba;
+	struct tcm_loop_tpg *tl_tpg;
+	int ret;
+
+	/*
+	 * Locate the tcm_loop_hba_t pointer
+	 */
+	tl_hba = *(struct tcm_loop_hba **)shost_priv(sc->device->host);
+	tl_tpg = &tl_hba->tl_hba_tpgs[sc->device->id];
+	ret = tcm_loop_issue_tmr(tl_tpg, sc->device->lun,
+				 scsi_cmd_to_rq(sc)->tag, TMR_ABORT_TASK);
+	return (ret == TMR_FUNCTION_COMPLETE) ? SUCCESS : FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -292,6 +473,7 @@ static int tcm_loop_queuecommand(struct Scsi_Host *sh, struct scsi_cmnd *sc)
  */
 static int tcm_loop_device_reset(struct scsi_cmnd *sc)
 {
+<<<<<<< HEAD
 	struct se_cmd *se_cmd = NULL;
 	struct se_portal_group *se_tpg;
 	struct se_session *se_sess;
@@ -301,10 +483,17 @@ static int tcm_loop_device_reset(struct scsi_cmnd *sc)
 	struct tcm_loop_tmr *tl_tmr = NULL;
 	struct tcm_loop_tpg *tl_tpg;
 	int ret = FAILED, rc;
+=======
+	struct tcm_loop_hba *tl_hba;
+	struct tcm_loop_tpg *tl_tpg;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Locate the tcm_loop_hba_t pointer
 	 */
 	tl_hba = *(struct tcm_loop_hba **)shost_priv(sc->device->host);
+<<<<<<< HEAD
 	/*
 	 * Locate the tl_nexus and se_sess pointers
 	 */
@@ -398,13 +587,66 @@ static struct scsi_host_template tcm_loop_driver_template = {
 	.slave_alloc		= tcm_loop_slave_alloc,
 	.slave_configure	= tcm_loop_slave_configure,
 	.module			= THIS_MODULE,
+=======
+	tl_tpg = &tl_hba->tl_hba_tpgs[sc->device->id];
+
+	ret = tcm_loop_issue_tmr(tl_tpg, sc->device->lun,
+				 0, TMR_LUN_RESET);
+	return (ret == TMR_FUNCTION_COMPLETE) ? SUCCESS : FAILED;
+}
+
+static int tcm_loop_target_reset(struct scsi_cmnd *sc)
+{
+	struct tcm_loop_hba *tl_hba;
+	struct tcm_loop_tpg *tl_tpg;
+
+	/*
+	 * Locate the tcm_loop_hba_t pointer
+	 */
+	tl_hba = *(struct tcm_loop_hba **)shost_priv(sc->device->host);
+	if (!tl_hba) {
+		pr_err("Unable to perform device reset without active I_T Nexus\n");
+		return FAILED;
+	}
+	/*
+	 * Locate the tl_tpg pointer from TargetID in sc->device->id
+	 */
+	tl_tpg = &tl_hba->tl_hba_tpgs[sc->device->id];
+	if (tl_tpg) {
+		tl_tpg->tl_transport_status = TCM_TRANSPORT_ONLINE;
+		return SUCCESS;
+	}
+	return FAILED;
+}
+
+static const struct scsi_host_template tcm_loop_driver_template = {
+	.show_info		= tcm_loop_show_info,
+	.proc_name		= "tcm_loopback",
+	.name			= "TCM_Loopback",
+	.queuecommand		= tcm_loop_queuecommand,
+	.change_queue_depth	= scsi_change_queue_depth,
+	.eh_abort_handler = tcm_loop_abort_task,
+	.eh_device_reset_handler = tcm_loop_device_reset,
+	.eh_target_reset_handler = tcm_loop_target_reset,
+	.this_id		= -1,
+	.sg_tablesize		= 256,
+	.max_sectors		= 0xFFFF,
+	.dma_boundary		= PAGE_SIZE - 1,
+	.module			= THIS_MODULE,
+	.track_queue_depth	= 1,
+	.cmd_size		= sizeof(struct tcm_loop_cmd),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int tcm_loop_driver_probe(struct device *dev)
 {
 	struct tcm_loop_hba *tl_hba;
 	struct Scsi_Host *sh;
+<<<<<<< HEAD
 	int error;
+=======
+	int error, host_prot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tl_hba = to_tcm_loop_hba(dev);
 
@@ -426,7 +668,21 @@ static int tcm_loop_driver_probe(struct device *dev)
 	sh->max_id = 2;
 	sh->max_lun = 0;
 	sh->max_channel = 0;
+<<<<<<< HEAD
 	sh->max_cmd_len = TL_SCSI_MAX_CMD_LEN;
+=======
+	sh->max_cmd_len = SCSI_MAX_VARLEN_CDB_SIZE;
+	sh->nr_hw_queues = tcm_loop_nr_hw_queues;
+	sh->can_queue = tcm_loop_can_queue;
+	sh->cmd_per_lun = tcm_loop_cmd_per_lun;
+
+	host_prot = SHOST_DIF_TYPE1_PROTECTION | SHOST_DIF_TYPE2_PROTECTION |
+		    SHOST_DIF_TYPE3_PROTECTION | SHOST_DIX_TYPE1_PROTECTION |
+		    SHOST_DIX_TYPE2_PROTECTION | SHOST_DIX_TYPE3_PROTECTION;
+
+	scsi_host_set_prot(sh, host_prot);
+	scsi_host_set_guard(sh, SHOST_DIX_GUARD_CRC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = scsi_add_host(sh, &tl_hba->dev);
 	if (error) {
@@ -437,7 +693,11 @@ static int tcm_loop_driver_probe(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tcm_loop_driver_remove(struct device *dev)
+=======
+static void tcm_loop_driver_remove(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcm_loop_hba *tl_hba;
 	struct Scsi_Host *sh;
@@ -447,7 +707,10 @@ static int tcm_loop_driver_remove(struct device *dev)
 
 	scsi_remove_host(sh);
 	scsi_host_put(sh);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tcm_loop_release_adapter(struct device *dev)
@@ -471,8 +734,13 @@ static int tcm_loop_setup_hba_bus(struct tcm_loop_hba *tl_hba, int tcm_loop_host
 
 	ret = device_register(&tl_hba->dev);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("device_register() failed for"
 				" tl_hba->dev: %d\n", ret);
+=======
+		pr_err("device_register() failed for tl_hba->dev: %d\n", ret);
+		put_device(&tl_hba->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -501,8 +769,12 @@ static int tcm_loop_alloc_core_bus(void)
 
 	ret = driver_register(&tcm_loop_driverfs);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("driver_register() failed for"
 				"tcm_loop_driverfs\n");
+=======
+		pr_err("driver_register() failed for tcm_loop_driverfs\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bus_unreg;
 	}
 
@@ -525,6 +797,7 @@ static void tcm_loop_release_core_bus(void)
 	pr_debug("Releasing TCM Loop Core BUS\n");
 }
 
+<<<<<<< HEAD
 static char *tcm_loop_get_fabric_name(void)
 {
 	return "loopback";
@@ -555,24 +828,40 @@ static u8 tcm_loop_get_fabric_proto_ident(struct se_portal_group *se_tpg)
 	}
 
 	return sas_get_fabric_proto_ident(se_tpg);
+=======
+static inline struct tcm_loop_tpg *tl_tpg(struct se_portal_group *se_tpg)
+{
+	return container_of(se_tpg, struct tcm_loop_tpg, tl_se_tpg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char *tcm_loop_get_endpoint_wwn(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct tcm_loop_tpg *tl_tpg = se_tpg->se_tpg_fabric_ptr;
 	/*
 	 * Return the passed NAA identifier for the SAS Target Port
 	 */
 	return &tl_tpg->tl_hba->tl_wwn_address[0];
+=======
+	/*
+	 * Return the passed NAA identifier for the Target Port
+	 */
+	return &tl_tpg(se_tpg)->tl_hba->tl_wwn_address[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u16 tcm_loop_get_tag(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct tcm_loop_tpg *tl_tpg = se_tpg->se_tpg_fabric_ptr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This Tag is used when forming SCSI Name identifier in EVPD=1 0x83
 	 * to represent the SCSI Target Port.
 	 */
+<<<<<<< HEAD
 	return tl_tpg->tl_tpgt;
 }
 
@@ -671,6 +960,9 @@ static char *tcm_loop_parse_pr_out_transport_id(
 
 	return sas_parse_pr_out_transport_id(se_tpg, buf, out_tid_len,
 			port_nexus_ptr);
+=======
+	return tl_tpg(se_tpg)->tl_tpgt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -682,6 +974,7 @@ static int tcm_loop_check_demo_mode(struct se_portal_group *se_tpg)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int tcm_loop_check_demo_mode_cache(struct se_portal_group *se_tpg)
 {
 	return 0;
@@ -733,6 +1026,13 @@ static void tcm_loop_tpg_release_fabric_acl(
 static u32 tcm_loop_get_inst_index(struct se_portal_group *se_tpg)
 {
 	return 1;
+=======
+static int tcm_loop_check_prot_fabric_only(struct se_portal_group *se_tpg)
+{
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+	return tl_tpg->tl_fabric_prot_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 tcm_loop_sess_get_index(struct se_session *se_sess)
@@ -740,6 +1040,7 @@ static u32 tcm_loop_sess_get_index(struct se_session *se_sess)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void tcm_loop_set_default_node_attributes(struct se_node_acl *se_acl)
 {
 	return;
@@ -750,6 +1051,8 @@ static u32 tcm_loop_get_task_tag(struct se_cmd *se_cmd)
 	return 1;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tcm_loop_get_cmd_state(struct se_cmd *se_cmd)
 {
 	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
@@ -758,6 +1061,7 @@ static int tcm_loop_get_cmd_state(struct se_cmd *se_cmd)
 	return tl_cmd->sc_cmd_state;
 }
 
+<<<<<<< HEAD
 static int tcm_loop_shutdown_session(struct se_session *se_sess)
 {
 	return 0;
@@ -768,6 +1072,8 @@ static void tcm_loop_close_session(struct se_session *se_sess)
 	return;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tcm_loop_write_pending(struct se_cmd *se_cmd)
 {
 	/*
@@ -779,6 +1085,7 @@ static int tcm_loop_write_pending(struct se_cmd *se_cmd)
 	 * We now tell TCM to add this WRITE CDB directly into the TCM storage
 	 * object execution queue.
 	 */
+<<<<<<< HEAD
 	transport_generic_process_write(se_cmd);
 	return 0;
 }
@@ -789,11 +1096,20 @@ static int tcm_loop_write_pending_status(struct se_cmd *se_cmd)
 }
 
 static int tcm_loop_queue_data_in(struct se_cmd *se_cmd)
+=======
+	target_execute_cmd(se_cmd);
+	return 0;
+}
+
+static int tcm_loop_queue_data_or_status(const char *func,
+		struct se_cmd *se_cmd, u8 scsi_status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
 				struct tcm_loop_cmd, tl_se_cmd);
 	struct scsi_cmnd *sc = tl_cmd->sc;
 
+<<<<<<< HEAD
 	pr_debug("tcm_loop_queue_data_in() called for scsi_cmnd: %p"
 		     " cdb: 0x%02x\n", sc, sc->cmnd[0]);
 
@@ -814,6 +1130,10 @@ static int tcm_loop_queue_status(struct se_cmd *se_cmd)
 
 	pr_debug("tcm_loop_queue_status() called for scsi_cmnd: %p"
 			" cdb: 0x%02x\n", sc, sc->cmnd[0]);
+=======
+	pr_debug("%s() called for scsi_cmnd: %p cdb: 0x%02x\n",
+		 func, sc, sc->cmnd[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (se_cmd->sense_buffer &&
 	   ((se_cmd->se_cmd_flags & SCF_TRANSPORT_TASK_SENSE) ||
@@ -822,14 +1142,20 @@ static int tcm_loop_queue_status(struct se_cmd *se_cmd)
 		memcpy(sc->sense_buffer, se_cmd->sense_buffer,
 				SCSI_SENSE_BUFFERSIZE);
 		sc->result = SAM_STAT_CHECK_CONDITION;
+<<<<<<< HEAD
 		set_driver_byte(sc, DRIVER_SENSE);
 	} else
 		sc->result = se_cmd->scsi_status;
+=======
+	} else
+		sc->result = scsi_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_host_byte(sc, DID_OK);
 	if ((se_cmd->se_cmd_flags & SCF_OVERFLOW_BIT) ||
 	    (se_cmd->se_cmd_flags & SCF_UNDERFLOW_BIT))
 		scsi_set_resid(sc, se_cmd->residual_count);
+<<<<<<< HEAD
 	sc->scsi_done(sc);
 	return 0;
 }
@@ -855,6 +1181,34 @@ static u16 tcm_loop_set_fabric_sense_len(struct se_cmd *se_cmd, u32 sense_length
 static u16 tcm_loop_get_fabric_sense_len(void)
 {
 	return 0;
+=======
+	return 0;
+}
+
+static int tcm_loop_queue_data_in(struct se_cmd *se_cmd)
+{
+	return tcm_loop_queue_data_or_status(__func__, se_cmd, SAM_STAT_GOOD);
+}
+
+static int tcm_loop_queue_status(struct se_cmd *se_cmd)
+{
+	return tcm_loop_queue_data_or_status(__func__,
+					     se_cmd, se_cmd->scsi_status);
+}
+
+static void tcm_loop_queue_tm_rsp(struct se_cmd *se_cmd)
+{
+	struct tcm_loop_cmd *tl_cmd = container_of(se_cmd,
+				struct tcm_loop_cmd, tl_se_cmd);
+
+	/* Wake up tcm_loop_issue_tmr(). */
+	complete(&tl_cmd->tmr_done);
+}
+
+static void tcm_loop_aborted_task(struct se_cmd *se_cmd)
+{
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char *tcm_loop_dump_proto_id(struct tcm_loop_hba *tl_hba)
@@ -883,8 +1237,12 @@ static int tcm_loop_port_link(
 				struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
 
+<<<<<<< HEAD
 	atomic_inc(&tl_tpg->tl_tpg_port_count);
 	smp_mb__after_atomic_inc();
+=======
+	atomic_inc_mb(&tl_tpg->tl_tpg_port_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Add Linux/SCSI struct scsi_device by HCTL
 	 */
@@ -908,8 +1266,13 @@ static void tcm_loop_port_unlink(
 	sd = scsi_device_lookup(tl_hba->sh, 0, tl_tpg->tl_tpgt,
 				se_lun->unpacked_lun);
 	if (!sd) {
+<<<<<<< HEAD
 		pr_err("Unable to locate struct scsi_device for %d:%d:"
 			"%d\n", 0, tl_tpg->tl_tpgt, se_lun->unpacked_lun);
+=======
+		pr_err("Unable to locate struct scsi_device for %d:%d:%llu\n",
+		       0, tl_tpg->tl_tpgt, se_lun->unpacked_lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/*
@@ -918,20 +1281,79 @@ static void tcm_loop_port_unlink(
 	scsi_remove_device(sd);
 	scsi_device_put(sd);
 
+<<<<<<< HEAD
 	atomic_dec(&tl_tpg->tl_tpg_port_count);
 	smp_mb__after_atomic_dec();
+=======
+	atomic_dec_mb(&tl_tpg->tl_tpg_port_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("TCM_Loop_ConfigFS: Port Unlink Successful\n");
 }
 
 /* End items for tcm_loop_port_cit */
 
+<<<<<<< HEAD
 /* Start items for tcm_loop_nexus_cit */
 
+=======
+static ssize_t tcm_loop_tpg_attrib_fabric_prot_type_show(
+		struct config_item *item, char *page)
+{
+	struct se_portal_group *se_tpg = attrib_to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+
+	return sprintf(page, "%d\n", tl_tpg->tl_fabric_prot_type);
+}
+
+static ssize_t tcm_loop_tpg_attrib_fabric_prot_type_store(
+		struct config_item *item, const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = attrib_to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg, struct tcm_loop_tpg,
+						   tl_se_tpg);
+	unsigned long val;
+	int ret = kstrtoul(page, 0, &val);
+
+	if (ret) {
+		pr_err("kstrtoul() returned %d for fabric_prot_type\n", ret);
+		return ret;
+	}
+	if (val != 0 && val != 1 && val != 3) {
+		pr_err("Invalid qla2xxx fabric_prot_type: %lu\n", val);
+		return -EINVAL;
+	}
+	tl_tpg->tl_fabric_prot_type = val;
+
+	return count;
+}
+
+CONFIGFS_ATTR(tcm_loop_tpg_attrib_, fabric_prot_type);
+
+static struct configfs_attribute *tcm_loop_tpg_attrib_attrs[] = {
+	&tcm_loop_tpg_attrib_attr_fabric_prot_type,
+	NULL,
+};
+
+/* Start items for tcm_loop_nexus_cit */
+
+static int tcm_loop_alloc_sess_cb(struct se_portal_group *se_tpg,
+				  struct se_session *se_sess, void *p)
+{
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+					struct tcm_loop_tpg, tl_se_tpg);
+
+	tl_tpg->tl_nexus = p;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tcm_loop_make_nexus(
 	struct tcm_loop_tpg *tl_tpg,
 	const char *name)
 {
+<<<<<<< HEAD
 	struct se_portal_group *se_tpg;
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
 	struct tcm_loop_nexus *tl_nexus;
@@ -982,6 +1404,33 @@ static int tcm_loop_make_nexus(
 out:
 	kfree(tl_nexus);
 	return ret;
+=======
+	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
+	struct tcm_loop_nexus *tl_nexus;
+	int ret;
+
+	if (tl_tpg->tl_nexus) {
+		pr_debug("tl_tpg->tl_nexus already exists\n");
+		return -EEXIST;
+	}
+
+	tl_nexus = kzalloc(sizeof(*tl_nexus), GFP_KERNEL);
+	if (!tl_nexus)
+		return -ENOMEM;
+
+	tl_nexus->se_sess = target_setup_session(&tl_tpg->tl_se_tpg, 0, 0,
+					TARGET_PROT_DIN_PASS | TARGET_PROT_DOUT_PASS,
+					name, tl_nexus, tcm_loop_alloc_sess_cb);
+	if (IS_ERR(tl_nexus->se_sess)) {
+		ret = PTR_ERR(tl_nexus->se_sess);
+		kfree(tl_nexus);
+		return ret;
+	}
+
+	pr_debug("TCM_Loop_ConfigFS: Established I_T Nexus to emulated %s Initiator Port: %s\n",
+		 tcm_loop_dump_proto_id(tl_hba), name);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tcm_loop_drop_nexus(
@@ -989,9 +1438,14 @@ static int tcm_loop_drop_nexus(
 {
 	struct se_session *se_sess;
 	struct tcm_loop_nexus *tl_nexus;
+<<<<<<< HEAD
 	struct tcm_loop_hba *tl_hba = tpg->tl_hba;
 
 	tl_nexus = tpg->tl_hba->tl_nexus;
+=======
+
+	tl_nexus = tpg->tl_nexus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tl_nexus)
 		return -ENODEV;
 
@@ -1000,6 +1454,7 @@ static int tcm_loop_drop_nexus(
 		return -ENODEV;
 
 	if (atomic_read(&tpg->tl_tpg_port_count)) {
+<<<<<<< HEAD
 		pr_err("Unable to remove TCM_Loop I_T Nexus with"
 			" active TPG port count: %d\n",
 			atomic_read(&tpg->tl_tpg_port_count));
@@ -1014,22 +1469,47 @@ static int tcm_loop_drop_nexus(
 	 */
 	transport_deregister_session(tl_nexus->se_sess);
 	tpg->tl_hba->tl_nexus = NULL;
+=======
+		pr_err("Unable to remove TCM_Loop I_T Nexus with active TPG port count: %d\n",
+		       atomic_read(&tpg->tl_tpg_port_count));
+		return -EPERM;
+	}
+
+	pr_debug("TCM_Loop_ConfigFS: Removing I_T Nexus to emulated %s Initiator Port: %s\n",
+		 tcm_loop_dump_proto_id(tpg->tl_hba),
+		 tl_nexus->se_sess->se_node_acl->initiatorname);
+	/*
+	 * Release the SCSI I_T Nexus to the emulated Target Port
+	 */
+	target_remove_session(se_sess);
+	tpg->tl_nexus = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tl_nexus);
 	return 0;
 }
 
 /* End items for tcm_loop_nexus_cit */
 
+<<<<<<< HEAD
 static ssize_t tcm_loop_tpg_show_nexus(
 	struct se_portal_group *se_tpg,
 	char *page)
 {
+=======
+static ssize_t tcm_loop_tpg_nexus_show(struct config_item *item, char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_nexus *tl_nexus;
 	ssize_t ret;
 
+<<<<<<< HEAD
 	tl_nexus = tl_tpg->tl_hba->tl_nexus;
+=======
+	tl_nexus = tl_tpg->tl_nexus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tl_nexus)
 		return -ENODEV;
 
@@ -1039,11 +1519,18 @@ static ssize_t tcm_loop_tpg_show_nexus(
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t tcm_loop_tpg_store_nexus(
 	struct se_portal_group *se_tpg,
 	const char *page,
 	size_t count)
 {
+=======
+static ssize_t tcm_loop_tpg_nexus_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
 			struct tcm_loop_tpg, tl_se_tpg);
 	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
@@ -1062,8 +1549,13 @@ static ssize_t tcm_loop_tpg_store_nexus(
 	 * tcm_loop_make_nexus()
 	 */
 	if (strlen(page) >= TL_WWN_ADDR_LEN) {
+<<<<<<< HEAD
 		pr_err("Emulated NAA Sas Address: %s, exceeds"
 				" max: %d\n", page, TL_WWN_ADDR_LEN);
+=======
+		pr_err("Emulated NAA Sas Address: %s, exceeds max: %d\n",
+		       page, TL_WWN_ADDR_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	snprintf(&i_port[0], TL_WWN_ADDR_LEN, "%s", page);
@@ -1071,9 +1563,14 @@ static ssize_t tcm_loop_tpg_store_nexus(
 	ptr = strstr(i_port, "naa.");
 	if (ptr) {
 		if (tl_hba->tl_proto_id != SCSI_PROTOCOL_SAS) {
+<<<<<<< HEAD
 			pr_err("Passed SAS Initiator Port %s does not"
 				" match target port protoid: %s\n", i_port,
 				tcm_loop_dump_proto_id(tl_hba));
+=======
+			pr_err("Passed SAS Initiator Port %s does not match target port protoid: %s\n",
+			       i_port, tcm_loop_dump_proto_id(tl_hba));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		port_ptr = &i_port[0];
@@ -1082,9 +1579,14 @@ static ssize_t tcm_loop_tpg_store_nexus(
 	ptr = strstr(i_port, "fc.");
 	if (ptr) {
 		if (tl_hba->tl_proto_id != SCSI_PROTOCOL_FCP) {
+<<<<<<< HEAD
 			pr_err("Passed FCP Initiator Port %s does not"
 				" match target port protoid: %s\n", i_port,
 				tcm_loop_dump_proto_id(tl_hba));
+=======
+			pr_err("Passed FCP Initiator Port %s does not match target port protoid: %s\n",
+			       i_port, tcm_loop_dump_proto_id(tl_hba));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		port_ptr = &i_port[3]; /* Skip over "fc." */
@@ -1093,16 +1595,26 @@ static ssize_t tcm_loop_tpg_store_nexus(
 	ptr = strstr(i_port, "iqn.");
 	if (ptr) {
 		if (tl_hba->tl_proto_id != SCSI_PROTOCOL_ISCSI) {
+<<<<<<< HEAD
 			pr_err("Passed iSCSI Initiator Port %s does not"
 				" match target port protoid: %s\n", i_port,
 				tcm_loop_dump_proto_id(tl_hba));
+=======
+			pr_err("Passed iSCSI Initiator Port %s does not match target port protoid: %s\n",
+			       i_port, tcm_loop_dump_proto_id(tl_hba));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		port_ptr = &i_port[0];
 		goto check_newline;
 	}
+<<<<<<< HEAD
 	pr_err("Unable to locate prefix for emulated Initiator Port:"
 			" %s\n", i_port);
+=======
+	pr_err("Unable to locate prefix for emulated Initiator Port: %s\n",
+	       i_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 	/*
 	 * Clear any trailing newline for the NAA WWN
@@ -1118,23 +1630,101 @@ check_newline:
 	return count;
 }
 
+<<<<<<< HEAD
 TF_TPG_BASE_ATTR(tcm_loop, nexus, S_IRUGO | S_IWUSR);
 
 static struct configfs_attribute *tcm_loop_tpg_attrs[] = {
 	&tcm_loop_tpg_nexus.attr,
+=======
+static ssize_t tcm_loop_tpg_transport_status_show(struct config_item *item,
+		char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+			struct tcm_loop_tpg, tl_se_tpg);
+	const char *status = NULL;
+	ssize_t ret = -EINVAL;
+
+	switch (tl_tpg->tl_transport_status) {
+	case TCM_TRANSPORT_ONLINE:
+		status = "online";
+		break;
+	case TCM_TRANSPORT_OFFLINE:
+		status = "offline";
+		break;
+	default:
+		break;
+	}
+
+	if (status)
+		ret = snprintf(page, PAGE_SIZE, "%s\n", status);
+
+	return ret;
+}
+
+static ssize_t tcm_loop_tpg_transport_status_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+			struct tcm_loop_tpg, tl_se_tpg);
+
+	if (!strncmp(page, "online", 6)) {
+		tl_tpg->tl_transport_status = TCM_TRANSPORT_ONLINE;
+		return count;
+	}
+	if (!strncmp(page, "offline", 7)) {
+		tl_tpg->tl_transport_status = TCM_TRANSPORT_OFFLINE;
+		if (tl_tpg->tl_nexus) {
+			struct se_session *tl_sess = tl_tpg->tl_nexus->se_sess;
+
+			core_allocate_nexus_loss_ua(tl_sess->se_node_acl);
+		}
+		return count;
+	}
+	return -EINVAL;
+}
+
+static ssize_t tcm_loop_tpg_address_show(struct config_item *item,
+					 char *page)
+{
+	struct se_portal_group *se_tpg = to_tpg(item);
+	struct tcm_loop_tpg *tl_tpg = container_of(se_tpg,
+			struct tcm_loop_tpg, tl_se_tpg);
+	struct tcm_loop_hba *tl_hba = tl_tpg->tl_hba;
+
+	return snprintf(page, PAGE_SIZE, "%d:0:%d\n",
+			tl_hba->sh->host_no, tl_tpg->tl_tpgt);
+}
+
+CONFIGFS_ATTR(tcm_loop_tpg_, nexus);
+CONFIGFS_ATTR(tcm_loop_tpg_, transport_status);
+CONFIGFS_ATTR_RO(tcm_loop_tpg_, address);
+
+static struct configfs_attribute *tcm_loop_tpg_attrs[] = {
+	&tcm_loop_tpg_attr_nexus,
+	&tcm_loop_tpg_attr_transport_status,
+	&tcm_loop_tpg_attr_address,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
 /* Start items for tcm_loop_naa_cit */
 
+<<<<<<< HEAD
 struct se_portal_group *tcm_loop_make_naa_tpg(
 	struct se_wwn *wwn,
 	struct config_group *group,
 	const char *name)
+=======
+static struct se_portal_group *tcm_loop_make_naa_tpg(struct se_wwn *wwn,
+						     const char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcm_loop_hba *tl_hba = container_of(wwn,
 			struct tcm_loop_hba, tl_hba_wwn);
 	struct tcm_loop_tpg *tl_tpg;
+<<<<<<< HEAD
 	char *tpgt_str, *end_ptr;
 	int ret;
 	unsigned short int tpgt;
@@ -1151,12 +1741,28 @@ struct se_portal_group *tcm_loop_make_naa_tpg(
 	if (tpgt >= TL_TPGS_PER_HBA) {
 		pr_err("Passed tpgt: %hu exceeds TL_TPGS_PER_HBA:"
 				" %u\n", tpgt, TL_TPGS_PER_HBA);
+=======
+	int ret;
+	unsigned long tpgt;
+
+	if (strstr(name, "tpgt_") != name) {
+		pr_err("Unable to locate \"tpgt_#\" directory group\n");
+		return ERR_PTR(-EINVAL);
+	}
+	if (kstrtoul(name+5, 10, &tpgt))
+		return ERR_PTR(-EINVAL);
+
+	if (tpgt >= TL_TPGS_PER_HBA) {
+		pr_err("Passed tpgt: %lu exceeds TL_TPGS_PER_HBA: %u\n",
+		       tpgt, TL_TPGS_PER_HBA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-EINVAL);
 	}
 	tl_tpg = &tl_hba->tl_hba_tpgs[tpgt];
 	tl_tpg->tl_hba = tl_hba;
 	tl_tpg->tl_tpgt = tpgt;
 	/*
+<<<<<<< HEAD
 	 * Register the tl_tpg as a emulated SAS TCM Target Endpoint
 	 */
 	ret = core_tpg_register(&tcm_loop_fabric_configfs->tf_ops,
@@ -1173,6 +1779,21 @@ struct se_portal_group *tcm_loop_make_naa_tpg(
 }
 
 void tcm_loop_drop_naa_tpg(
+=======
+	 * Register the tl_tpg as a emulated TCM Target Endpoint
+	 */
+	ret = core_tpg_register(wwn, &tl_tpg->tl_se_tpg, tl_hba->tl_proto_id);
+	if (ret < 0)
+		return ERR_PTR(-ENOMEM);
+
+	pr_debug("TCM_Loop_ConfigFS: Allocated Emulated %s Target Port %s,t,0x%04lx\n",
+		 tcm_loop_dump_proto_id(tl_hba),
+		 config_item_name(&wwn->wwn_group.cg_item), tpgt);
+	return &tl_tpg->tl_se_tpg;
+}
+
+static void tcm_loop_drop_naa_tpg(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_portal_group *se_tpg)
 {
 	struct se_wwn *wwn = se_tpg->se_tpg_wwn;
@@ -1184,27 +1805,45 @@ void tcm_loop_drop_naa_tpg(
 	tl_hba = tl_tpg->tl_hba;
 	tpgt = tl_tpg->tl_tpgt;
 	/*
+<<<<<<< HEAD
 	 * Release the I_T Nexus for the Virtual SAS link if present
 	 */
 	tcm_loop_drop_nexus(tl_tpg);
 	/*
 	 * Deregister the tl_tpg as a emulated SAS TCM Target Endpoint
+=======
+	 * Release the I_T Nexus for the Virtual target link if present
+	 */
+	tcm_loop_drop_nexus(tl_tpg);
+	/*
+	 * Deregister the tl_tpg as a emulated TCM Target Endpoint
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	core_tpg_deregister(se_tpg);
 
 	tl_tpg->tl_hba = NULL;
 	tl_tpg->tl_tpgt = 0;
 
+<<<<<<< HEAD
 	pr_debug("TCM_Loop_ConfigFS: Deallocated Emulated %s"
 		" Target Port %s,t,0x%04x\n", tcm_loop_dump_proto_id(tl_hba),
 		config_item_name(&wwn->wwn_group.cg_item), tpgt);
+=======
+	pr_debug("TCM_Loop_ConfigFS: Deallocated Emulated %s Target Port %s,t,0x%04x\n",
+		 tcm_loop_dump_proto_id(tl_hba),
+		 config_item_name(&wwn->wwn_group.cg_item), tpgt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* End items for tcm_loop_naa_cit */
 
 /* Start items for tcm_loop_cit */
 
+<<<<<<< HEAD
 struct se_wwn *tcm_loop_make_scsi_hba(
+=======
+static struct se_wwn *tcm_loop_make_scsi_hba(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct target_fabric_configfs *tf,
 	struct config_group *group,
 	const char *name)
@@ -1214,11 +1853,18 @@ struct se_wwn *tcm_loop_make_scsi_hba(
 	char *ptr;
 	int ret, off = 0;
 
+<<<<<<< HEAD
 	tl_hba = kzalloc(sizeof(struct tcm_loop_hba), GFP_KERNEL);
 	if (!tl_hba) {
 		pr_err("Unable to allocate struct tcm_loop_hba\n");
 		return ERR_PTR(-ENOMEM);
 	}
+=======
+	tl_hba = kzalloc(sizeof(*tl_hba), GFP_KERNEL);
+	if (!tl_hba)
+		return ERR_PTR(-ENOMEM);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Determine the emulated Protocol Identifier and Target Port Name
 	 * based on the incoming configfs directory name.
@@ -1236,8 +1882,13 @@ struct se_wwn *tcm_loop_make_scsi_hba(
 	}
 	ptr = strstr(name, "iqn.");
 	if (!ptr) {
+<<<<<<< HEAD
 		pr_err("Unable to locate prefix for emulated Target "
 				"Port: %s\n", name);
+=======
+		pr_err("Unable to locate prefix for emulated Target Port: %s\n",
+		       name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
@@ -1245,9 +1896,14 @@ struct se_wwn *tcm_loop_make_scsi_hba(
 
 check_len:
 	if (strlen(name) >= TL_WWN_ADDR_LEN) {
+<<<<<<< HEAD
 		pr_err("Emulated NAA %s Address: %s, exceeds"
 			" max: %d\n", name, tcm_loop_dump_proto_id(tl_hba),
 			TL_WWN_ADDR_LEN);
+=======
+		pr_err("Emulated NAA %s Address: %s, exceeds max: %d\n",
+		       name, tcm_loop_dump_proto_id(tl_hba), TL_WWN_ADDR_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
@@ -1260,6 +1916,7 @@ check_len:
 	 */
 	ret = tcm_loop_setup_hba_bus(tl_hba, tcm_loop_hba_no_cnt);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
 
 	sh = tl_hba->sh;
@@ -1268,21 +1925,39 @@ check_len:
 		" %s Address: %s at Linux/SCSI Host ID: %d\n",
 		tcm_loop_dump_proto_id(tl_hba), name, sh->host_no);
 
+=======
+		return ERR_PTR(ret);
+
+	sh = tl_hba->sh;
+	tcm_loop_hba_no_cnt++;
+	pr_debug("TCM_Loop_ConfigFS: Allocated emulated Target %s Address: %s at Linux/SCSI Host ID: %d\n",
+		 tcm_loop_dump_proto_id(tl_hba), name, sh->host_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &tl_hba->tl_hba_wwn;
 out:
 	kfree(tl_hba);
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 void tcm_loop_drop_scsi_hba(
+=======
+static void tcm_loop_drop_scsi_hba(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_wwn *wwn)
 {
 	struct tcm_loop_hba *tl_hba = container_of(wwn,
 				struct tcm_loop_hba, tl_hba_wwn);
 
+<<<<<<< HEAD
 	pr_debug("TCM_Loop_ConfigFS: Deallocating emulated Target"
 		" SAS Address: %s at Linux/SCSI Host ID: %d\n",
 		tl_hba->tl_wwn_address, tl_hba->sh->host_no);
+=======
+	pr_debug("TCM_Loop_ConfigFS: Deallocating emulated Target %s Address: %s at Linux/SCSI Host ID: %d\n",
+		 tcm_loop_dump_proto_id(tl_hba), tl_hba->tl_wwn_address,
+		 tl_hba->sh->host_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Call device_unregister() on the original tl_hba->dev.
 	 * tcm_loop_fabric_scsi.c:tcm_loop_release_adapter() will
@@ -1292,22 +1967,34 @@ void tcm_loop_drop_scsi_hba(
 }
 
 /* Start items for tcm_loop_cit */
+<<<<<<< HEAD
 static ssize_t tcm_loop_wwn_show_attr_version(
 	struct target_fabric_configfs *tf,
 	char *page)
+=======
+static ssize_t tcm_loop_wwn_version_show(struct config_item *item, char *page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(page, "TCM Loopback Fabric module %s\n", TCM_LOOP_VERSION);
 }
 
+<<<<<<< HEAD
 TF_WWN_ATTR_RO(tcm_loop, version);
 
 static struct configfs_attribute *tcm_loop_wwn_attrs[] = {
 	&tcm_loop_wwn_version.attr,
+=======
+CONFIGFS_ATTR_RO(tcm_loop_wwn_, version);
+
+static struct configfs_attribute *tcm_loop_wwn_attrs[] = {
+	&tcm_loop_wwn_attr_version,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
 /* End items for tcm_loop_cit */
 
+<<<<<<< HEAD
 static int tcm_loop_register_configfs(void)
 {
 	struct target_fabric_configfs *fabric;
@@ -1430,30 +2117,72 @@ static void tcm_loop_deregister_configfs(void)
 	pr_debug("TCM_LOOP[0] - Cleared"
 				" tcm_loop_fabric_configfs\n");
 }
+=======
+static const struct target_core_fabric_ops loop_ops = {
+	.module				= THIS_MODULE,
+	.fabric_name			= "loopback",
+	.tpg_get_wwn			= tcm_loop_get_endpoint_wwn,
+	.tpg_get_tag			= tcm_loop_get_tag,
+	.tpg_check_demo_mode		= tcm_loop_check_demo_mode,
+	.tpg_check_prot_fabric_only	= tcm_loop_check_prot_fabric_only,
+	.check_stop_free		= tcm_loop_check_stop_free,
+	.release_cmd			= tcm_loop_release_cmd,
+	.sess_get_index			= tcm_loop_sess_get_index,
+	.write_pending			= tcm_loop_write_pending,
+	.get_cmd_state			= tcm_loop_get_cmd_state,
+	.queue_data_in			= tcm_loop_queue_data_in,
+	.queue_status			= tcm_loop_queue_status,
+	.queue_tm_rsp			= tcm_loop_queue_tm_rsp,
+	.aborted_task			= tcm_loop_aborted_task,
+	.fabric_make_wwn		= tcm_loop_make_scsi_hba,
+	.fabric_drop_wwn		= tcm_loop_drop_scsi_hba,
+	.fabric_make_tpg		= tcm_loop_make_naa_tpg,
+	.fabric_drop_tpg		= tcm_loop_drop_naa_tpg,
+	.fabric_post_link		= tcm_loop_port_link,
+	.fabric_pre_unlink		= tcm_loop_port_unlink,
+	.tfc_wwn_attrs			= tcm_loop_wwn_attrs,
+	.tfc_tpg_base_attrs		= tcm_loop_tpg_attrs,
+	.tfc_tpg_attrib_attrs		= tcm_loop_tpg_attrib_attrs,
+	.default_submit_type		= TARGET_QUEUE_SUBMIT,
+	.direct_submit_supp		= 0,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init tcm_loop_fabric_init(void)
 {
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
 	tcm_loop_workqueue = alloc_workqueue("tcm_loop", 0, 0);
 	if (!tcm_loop_workqueue)
 		goto out;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tcm_loop_cmd_cache = kmem_cache_create("tcm_loop_cmd_cache",
 				sizeof(struct tcm_loop_cmd),
 				__alignof__(struct tcm_loop_cmd),
 				0, NULL);
 	if (!tcm_loop_cmd_cache) {
+<<<<<<< HEAD
 		pr_debug("kmem_cache_create() for"
 			" tcm_loop_cmd_cache failed\n");
 		goto out_destroy_workqueue;
+=======
+		pr_debug("kmem_cache_create() for tcm_loop_cmd_cache failed\n");
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = tcm_loop_alloc_core_bus();
 	if (ret)
 		goto out_destroy_cache;
 
+<<<<<<< HEAD
 	ret = tcm_loop_register_configfs();
+=======
+	ret = target_register_template(&loop_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_release_core_bus;
 
@@ -1463,18 +2192,27 @@ out_release_core_bus:
 	tcm_loop_release_core_bus();
 out_destroy_cache:
 	kmem_cache_destroy(tcm_loop_cmd_cache);
+<<<<<<< HEAD
 out_destroy_workqueue:
 	destroy_workqueue(tcm_loop_workqueue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
 static void __exit tcm_loop_fabric_exit(void)
 {
+<<<<<<< HEAD
 	tcm_loop_deregister_configfs();
 	tcm_loop_release_core_bus();
 	kmem_cache_destroy(tcm_loop_cmd_cache);
 	destroy_workqueue(tcm_loop_workqueue);
+=======
+	target_unregister_template(&loop_ops);
+	tcm_loop_release_core_bus();
+	kmem_cache_destroy(tcm_loop_cmd_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_DESCRIPTION("TCM loopback virtual Linux/SCSI fabric module");

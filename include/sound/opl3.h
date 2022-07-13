@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_OPL3_H
 #define __SOUND_OPL3_H
 
@@ -7,7 +11,10 @@
  * Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
  *                  Hannu Savolainen 1993-1996
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      The OPL-3 mode is switched on by writing 0x01, to the offset 5
  *      of the right side.
  *
@@ -33,6 +40,7 @@
  *      The stereo connection bits are located in the FEEDBACK_CONNECTION
  *      register of the voice (0xC0-0xC8). In 4 OP voices these bits are
  *      in the second half of the voice.
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -49,16 +57,23 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/core.h>
 #include <sound/hwdep.h>
 #include <sound/timer.h>
 #include <sound/seq_midi_emul.h>
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
 #include <sound/seq_oss.h>
 #include <sound/seq_oss_legacy.h>
 #endif
+=======
+#include <sound/seq_oss.h>
+#include <sound/seq_oss_legacy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/seq_device.h>
 #include <sound/asound_fm.h>
 
@@ -247,7 +262,11 @@ struct fm_operator {
 	unsigned char attack_decay;
 	unsigned char sustain_release;
 	unsigned char wave_select;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Instrument data */
 struct fm_instrument {
@@ -321,7 +340,11 @@ struct snd_opl3 {
 	unsigned char fm_mode;		/* OPL mode, see SNDRV_DM_FM_MODE_XXX */
 	unsigned char rhythm;		/* percussion mode flag */
 	unsigned char max_voices;	/* max number of voices */
+<<<<<<< HEAD
 #if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_OPL3_MODE_SYNTH 0		/* OSS - voices allocated by application */
 #define SNDRV_OPL3_MODE_SEQ 1		/* ALSA - driver handles voice allocation */
 	int synth_mode;			/* synth mode */
@@ -330,7 +353,11 @@ struct snd_opl3 {
 	struct snd_seq_device *seq_dev;	/* sequencer device */
 	struct snd_midi_channel_set * chset;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_device *oss_seq_dev;	/* OSS sequencer device */
 	struct snd_midi_channel_set * oss_chset;
 #endif
@@ -374,7 +401,11 @@ int snd_opl3_release(struct snd_hwdep * hw, struct file *file);
 
 void snd_opl3_reset(struct snd_opl3 * opl3);
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long snd_opl3_write(struct snd_hwdep *hw, const char __user *buf, long count,
 		    loff_t *offset);
 int snd_opl3_load_patch(struct snd_opl3 *opl3,

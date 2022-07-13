@@ -4,9 +4,15 @@
  */
 
 #include <signal.h>
+<<<<<<< HEAD
 #include "kern_util.h"
 #include "longjmp.h"
 #include "sysdep/ptrace.h"
+=======
+#include <kern_util.h>
+#include <longjmp.h>
+#include <sysdep/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <generated/asm-offsets.h>
 
 /* Set during early boot */

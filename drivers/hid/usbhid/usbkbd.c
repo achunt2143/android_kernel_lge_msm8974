@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  *
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
@@ -39,11 +46,18 @@
 #define DRIVER_VERSION ""
 #define DRIVER_AUTHOR "Vojtech Pavlik <vojtech@ucw.cz>"
 #define DRIVER_DESC "USB HID Boot Protocol keyboard driver"
+<<<<<<< HEAD
 #define DRIVER_LICENSE "GPL"
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE(DRIVER_LICENSE);
+=======
+
+MODULE_AUTHOR(DRIVER_AUTHOR);
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const unsigned char usb_kbd_keycode[256] = {
 	  0,  0,  0,  0, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38,
@@ -76,7 +90,11 @@ static const unsigned char usb_kbd_keycode[256] = {
  *		new key is pressed or a key that was pressed is released.
  * @led:	URB for sending LEDs (e.g. numlock, ...)
  * @newleds:	data that will be sent with the @led URB representing which LEDs
+<<<<<<< HEAD
  		should be on
+=======
+ *		should be on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name:	Name of the keyboard. @dev's name field points to this buffer
  * @phys:	Physical path of the keyboard. @dev's phys field points to this
  *		buffer
@@ -104,7 +122,11 @@ struct usb_kbd {
 	unsigned char *leds;
 	dma_addr_t new_dma;
 	dma_addr_t leds_dma;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t leds_lock;
 	bool led_urb_submitted;
 
@@ -146,7 +168,11 @@ static void usb_kbd_irq(struct urb *urb)
 				input_report_key(kbd->dev, usb_kbd_keycode[kbd->new[i]], 1);
 			else
 				hid_info(urb->dev,
+<<<<<<< HEAD
 					 "Unknown key (scancode %#x) released.\n",
+=======
+					 "Unknown key (scancode %#x) pressed.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 kbd->new[i]);
 		}
 	}
@@ -188,15 +214,25 @@ static int usb_kbd_event(struct input_dev *dev, unsigned int type,
 	}
 
 	*(kbd->leds) = kbd->newleds;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kbd->led->dev = kbd->usbdev;
 	if (usb_submit_urb(kbd->led, GFP_ATOMIC))
 		pr_err("usb_submit_urb(leds) failed\n");
 	else
 		kbd->led_urb_submitted = true;
+<<<<<<< HEAD
 	
 	spin_unlock_irqrestore(&kbd->leds_lock, flags);
 	
+=======
+
+	spin_unlock_irqrestore(&kbd->leds_lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -218,14 +254,22 @@ static void usb_kbd_led(struct urb *urb)
 	}
 
 	*(kbd->leds) = kbd->newleds;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kbd->led->dev = kbd->usbdev;
 	if (usb_submit_urb(kbd->led, GFP_ATOMIC)){
 		hid_err(urb->dev, "usb_submit_urb(leds) failed\n");
 		kbd->led_urb_submitted = false;
 	}
 	spin_unlock_irqrestore(&kbd->leds_lock, flags);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_kbd_open(struct input_dev *dev)
@@ -252,11 +296,19 @@ static int usb_kbd_alloc_mem(struct usb_device *dev, struct usb_kbd *kbd)
 		return -1;
 	if (!(kbd->led = usb_alloc_urb(0, GFP_KERNEL)))
 		return -1;
+<<<<<<< HEAD
 	if (!(kbd->new = usb_alloc_coherent(dev, 8, GFP_ATOMIC, &kbd->new_dma)))
 		return -1;
 	if (!(kbd->cr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_KERNEL)))
 		return -1;
 	if (!(kbd->leds = usb_alloc_coherent(dev, 1, GFP_ATOMIC, &kbd->leds_dma)))
+=======
+	if (!(kbd->new = usb_alloc_coherent(dev, 8, GFP_KERNEL, &kbd->new_dma)))
+		return -1;
+	if (!(kbd->cr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_KERNEL)))
+		return -1;
+	if (!(kbd->leds = usb_alloc_coherent(dev, 1, GFP_KERNEL, &kbd->leds_dma)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	return 0;
@@ -292,7 +344,11 @@ static int usb_kbd_probe(struct usb_interface *iface,
 		return -ENODEV;
 
 	pipe = usb_rcvintpipe(dev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
+=======
+	maxp = usb_maxpacket(dev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kbd = kzalloc(sizeof(struct usb_kbd), GFP_KERNEL);
 	input_dev = input_allocate_device();
@@ -307,7 +363,11 @@ static int usb_kbd_probe(struct usb_interface *iface,
 	spin_lock_init(&kbd->leds_lock);
 
 	if (dev->manufacturer)
+<<<<<<< HEAD
 		strlcpy(kbd->name, dev->manufacturer, sizeof(kbd->name));
+=======
+		strscpy(kbd->name, dev->manufacturer, sizeof(kbd->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->product) {
 		if (dev->manufacturer)
@@ -371,9 +431,15 @@ static int usb_kbd_probe(struct usb_interface *iface,
 	device_set_wakeup_enable(&dev->dev, 1);
 	return 0;
 
+<<<<<<< HEAD
 fail2:	
 	usb_kbd_free_mem(dev, kbd);
 fail1:	
+=======
+fail2:
+	usb_kbd_free_mem(dev, kbd);
+fail1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_free_device(input_dev);
 	kfree(kbd);
 	return error;
@@ -393,7 +459,11 @@ static void usb_kbd_disconnect(struct usb_interface *intf)
 	}
 }
 
+<<<<<<< HEAD
 static struct usb_device_id usb_kbd_id_table [] = {
+=======
+static const struct usb_device_id usb_kbd_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_INTERFACE_INFO(USB_INTERFACE_CLASS_HID, USB_INTERFACE_SUBCLASS_BOOT,
 		USB_INTERFACE_PROTOCOL_KEYBOARD) },
 	{ }						/* Terminating entry */

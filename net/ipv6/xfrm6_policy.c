@@ -1,13 +1,25 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm6_policy.c: based on xfrm4_policy.c
  *
  * Authors:
  *	Mitsuru KANDA @USAGI
+<<<<<<< HEAD
  * 	Kazunori MIYAZAWA @USAGI
  * 	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
  * 		IPv6 support
  * 	YOSHIFUJI Hideaki
  * 		Split up af-specific portion
+=======
+ *	Kazunori MIYAZAWA @USAGI
+ *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
+ *		IPv6 support
+ *	YOSHIFUJI Hideaki
+ *		Split up af-specific portion
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -20,6 +32,7 @@
 #include <net/ip.h>
 #include <net/ipv6.h>
 #include <net/ip6_route.h>
+<<<<<<< HEAD
 #if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
 #include <net/mip6.h>
 #endif
@@ -29,12 +42,25 @@ static struct xfrm_policy_afinfo xfrm6_policy_afinfo;
 static struct dst_entry *xfrm6_dst_lookup(struct net *net, int tos,
 					  const xfrm_address_t *saddr,
 					  const xfrm_address_t *daddr)
+=======
+#include <net/l3mdev.h>
+
+static struct dst_entry *xfrm6_dst_lookup(struct net *net, int tos, int oif,
+					  const xfrm_address_t *saddr,
+					  const xfrm_address_t *daddr,
+					  u32 mark)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct flowi6 fl6;
 	struct dst_entry *dst;
 	int err;
 
 	memset(&fl6, 0, sizeof(fl6));
+<<<<<<< HEAD
+=======
+	fl6.flowi6_l3mdev = l3mdev_master_ifindex_by_index(net, oif);
+	fl6.flowi6_mark = mark;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&fl6.daddr, daddr, sizeof(fl6.daddr));
 	if (saddr)
 		memcpy(&fl6.saddr, saddr, sizeof(fl6.saddr));
@@ -50,24 +76,39 @@ static struct dst_entry *xfrm6_dst_lookup(struct net *net, int tos,
 	return dst;
 }
 
+<<<<<<< HEAD
 static int xfrm6_get_saddr(struct net *net,
 			   xfrm_address_t *saddr, xfrm_address_t *daddr)
+=======
+static int xfrm6_get_saddr(struct net *net, int oif,
+			   xfrm_address_t *saddr, xfrm_address_t *daddr,
+			   u32 mark)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dst_entry *dst;
 	struct net_device *dev;
 
+<<<<<<< HEAD
 	dst = xfrm6_dst_lookup(net, 0, NULL, daddr);
+=======
+	dst = xfrm6_dst_lookup(net, 0, oif, NULL, daddr, mark);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dst))
 		return -EHOSTUNREACH;
 
 	dev = ip6_dst_idev(dst)->dev;
+<<<<<<< HEAD
 	ipv6_dev_get_saddr(dev_net(dev), dev,
 			   (struct in6_addr *)&daddr->a6, 0,
 			   (struct in6_addr *)&saddr->a6);
+=======
+	ipv6_dev_get_saddr(dev_net(dev), dev, &daddr->in6, 0, &saddr->in6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst_release(dst);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int xfrm6_get_tos(const struct flowi *fl)
 {
 	return 0;
@@ -105,10 +146,27 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 	if (rt->rt6i_peer)
 		atomic_inc(&rt->rt6i_peer->refcnt);
 
+=======
+static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
+			  const struct flowi *fl)
+{
+	struct rt6_info *rt = (struct rt6_info *)xdst->route;
+
+	xdst->u.dst.dev = dev;
+	netdev_hold(dev, &xdst->u.dst.dev_tracker, GFP_ATOMIC);
+
+	xdst->u.rt6.rt6i_idev = in6_dev_get(dev);
+	if (!xdst->u.rt6.rt6i_idev) {
+		netdev_put(dev, &xdst->u.dst.dev_tracker);
+		return -ENODEV;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sheit... I remember I did this right. Apparently,
 	 * it was magically lost, so this code needs audit */
 	xdst->u.rt6.rt6i_flags = rt->rt6i_flags & (RTF_ANYCAST |
 						   RTF_LOCAL);
+<<<<<<< HEAD
 	xdst->u.rt6.rt6i_metric = rt->rt6i_metric;
 	xdst->u.rt6.rt6i_node = rt->rt6i_node;
 	if (rt->rt6i_node)
@@ -116,10 +174,18 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 	xdst->u.rt6.rt6i_gateway = rt->rt6i_gateway;
 	xdst->u.rt6.rt6i_dst = rt->rt6i_dst;
 	xdst->u.rt6.rt6i_src = rt->rt6i_src;
+=======
+	xdst->route_cookie = rt6_get_cookie(rt);
+	xdst->u.rt6.rt6i_gateway = rt->rt6i_gateway;
+	xdst->u.rt6.rt6i_dst = rt->rt6i_dst;
+	xdst->u.rt6.rt6i_src = rt->rt6i_src;
+	rt6_uncached_list_add(&xdst->u.rt6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void
 _decode_session6(struct sk_buff *skb, struct flowi *fl, int reverse)
 {
@@ -211,17 +277,36 @@ static inline int xfrm6_garbage_collect(struct dst_ops *ops)
 }
 
 static void xfrm6_update_pmtu(struct dst_entry *dst, u32 mtu)
+=======
+static void xfrm6_update_pmtu(struct dst_entry *dst, struct sock *sk,
+			      struct sk_buff *skb, u32 mtu,
+			      bool confirm_neigh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
 	struct dst_entry *path = xdst->route;
 
+<<<<<<< HEAD
 	path->ops->update_pmtu(path, mtu);
+=======
+	path->ops->update_pmtu(path, sk, skb, mtu, confirm_neigh);
+}
+
+static void xfrm6_redirect(struct dst_entry *dst, struct sock *sk,
+			   struct sk_buff *skb)
+{
+	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
+	struct dst_entry *path = xdst->route;
+
+	path->ops->redirect(path, sk, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xfrm6_dst_destroy(struct dst_entry *dst)
 {
 	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
 
+<<<<<<< HEAD
 	if (likely(xdst->u.rt6.rt6i_idev))
 		in6_dev_put(xdst->u.rt6.rt6i_idev);
 	dst_destroy_metrics_generic(dst);
@@ -238,17 +323,37 @@ static void xfrm6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
 	if (!unregister)
 		return;
 
+=======
+	dst_destroy_metrics_generic(dst);
+	rt6_uncached_list_del(&xdst->u.rt6);
+	if (likely(xdst->u.rt6.rt6i_idev))
+		in6_dev_put(xdst->u.rt6.rt6i_idev);
+	xfrm_dst_destroy(xdst);
+}
+
+static void xfrm6_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
+{
+	struct xfrm_dst *xdst;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xdst = (struct xfrm_dst *)dst;
 	if (xdst->u.rt6.rt6i_idev->dev == dev) {
 		struct inet6_dev *loopback_idev =
 			in6_dev_get(dev_net(dev)->loopback_dev);
+<<<<<<< HEAD
 		BUG_ON(!loopback_idev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		do {
 			in6_dev_put(xdst->u.rt6.rt6i_idev);
 			xdst->u.rt6.rt6i_idev = loopback_idev;
 			in6_dev_hold(loopback_idev);
+<<<<<<< HEAD
 			xdst = (struct xfrm_dst *)xdst->u.dst.child;
+=======
+			xdst = (struct xfrm_dst *)xfrm_dst_child(&xdst->u.dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (xdst->u.dst.xfrm);
 
 		__in6_dev_put(loopback_idev);
@@ -257,15 +362,23 @@ static void xfrm6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
 	xfrm_dst_ifdown(dst, dev);
 }
 
+<<<<<<< HEAD
 static struct dst_ops xfrm6_dst_ops = {
 	.family =		AF_INET6,
 	.protocol =		cpu_to_be16(ETH_P_IPV6),
 	.gc =			xfrm6_garbage_collect,
 	.update_pmtu =		xfrm6_update_pmtu,
+=======
+static struct dst_ops xfrm6_dst_ops_template = {
+	.family =		AF_INET6,
+	.update_pmtu =		xfrm6_update_pmtu,
+	.redirect =		xfrm6_redirect,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cow_metrics =		dst_cow_metrics_generic,
 	.destroy =		xfrm6_dst_destroy,
 	.ifdown =		xfrm6_dst_ifdown,
 	.local_out =		__ip6_local_out,
+<<<<<<< HEAD
 	.gc_thresh =		1024,
 };
 
@@ -277,13 +390,26 @@ static struct xfrm_policy_afinfo xfrm6_policy_afinfo = {
 	.decode_session =	_decode_session6,
 	.get_tos =		xfrm6_get_tos,
 	.init_path =		xfrm6_init_path,
+=======
+	.gc_thresh =		32768,
+};
+
+static const struct xfrm_policy_afinfo xfrm6_policy_afinfo = {
+	.dst_ops =		&xfrm6_dst_ops_template,
+	.dst_lookup =		xfrm6_dst_lookup,
+	.get_saddr =		xfrm6_get_saddr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fill_dst =		xfrm6_fill_dst,
 	.blackhole_route =	ip6_blackhole_route,
 };
 
 static int __init xfrm6_policy_init(void)
 {
+<<<<<<< HEAD
 	return xfrm_policy_register_afinfo(&xfrm6_policy_afinfo);
+=======
+	return xfrm_policy_register_afinfo(&xfrm6_policy_afinfo, AF_INET6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xfrm6_policy_fini(void)
@@ -295,14 +421,21 @@ static void xfrm6_policy_fini(void)
 static struct ctl_table xfrm6_policy_table[] = {
 	{
 		.procname       = "xfrm6_gc_thresh",
+<<<<<<< HEAD
 		.data	   	= &init_net.xfrm.xfrm6_dst_ops.gc_thresh,
 		.maxlen	 	= sizeof(int),
 		.mode	   	= 0644,
+=======
+		.data		= &init_net.xfrm.xfrm6_dst_ops.gc_thresh,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.proc_handler   = proc_dointvec,
 	},
 	{ }
 };
 
+<<<<<<< HEAD
 static struct ctl_table_header *sysctl_hdr;
 #endif
 
@@ -331,16 +464,121 @@ int __init xfrm6_init(void)
 		dst_entries_destroy(&xfrm6_dst_ops);
 		goto out;
 	}
+=======
+static int __net_init xfrm6_net_sysctl_init(struct net *net)
+{
+	struct ctl_table *table;
+	struct ctl_table_header *hdr;
+
+	table = xfrm6_policy_table;
+	if (!net_eq(net, &init_net)) {
+		table = kmemdup(table, sizeof(xfrm6_policy_table), GFP_KERNEL);
+		if (!table)
+			goto err_alloc;
+
+		table[0].data = &net->xfrm.xfrm6_dst_ops.gc_thresh;
+	}
+
+	hdr = register_net_sysctl_sz(net, "net/ipv6", table,
+				     ARRAY_SIZE(xfrm6_policy_table));
+	if (!hdr)
+		goto err_reg;
+
+	net->ipv6.sysctl.xfrm6_hdr = hdr;
+	return 0;
+
+err_reg:
+	if (!net_eq(net, &init_net))
+		kfree(table);
+err_alloc:
+	return -ENOMEM;
+}
+
+static void __net_exit xfrm6_net_sysctl_exit(struct net *net)
+{
+	struct ctl_table *table;
+
+	if (!net->ipv6.sysctl.xfrm6_hdr)
+		return;
+
+	table = net->ipv6.sysctl.xfrm6_hdr->ctl_table_arg;
+	unregister_net_sysctl_table(net->ipv6.sysctl.xfrm6_hdr);
+	if (!net_eq(net, &init_net))
+		kfree(table);
+}
+#else /* CONFIG_SYSCTL */
+static inline int xfrm6_net_sysctl_init(struct net *net)
+{
+	return 0;
+}
+
+static inline void xfrm6_net_sysctl_exit(struct net *net)
+{
+}
+#endif
+
+static int __net_init xfrm6_net_init(struct net *net)
+{
+	int ret;
+
+	memcpy(&net->xfrm.xfrm6_dst_ops, &xfrm6_dst_ops_template,
+	       sizeof(xfrm6_dst_ops_template));
+	ret = dst_entries_init(&net->xfrm.xfrm6_dst_ops);
+	if (ret)
+		return ret;
+
+	ret = xfrm6_net_sysctl_init(net);
+	if (ret)
+		dst_entries_destroy(&net->xfrm.xfrm6_dst_ops);
+
+	return ret;
+}
+
+static void __net_exit xfrm6_net_exit(struct net *net)
+{
+	xfrm6_net_sysctl_exit(net);
+	dst_entries_destroy(&net->xfrm.xfrm6_dst_ops);
+}
+
+static struct pernet_operations xfrm6_net_ops = {
+	.init	= xfrm6_net_init,
+	.exit	= xfrm6_net_exit,
+};
+
+int __init xfrm6_init(void)
+{
+	int ret;
+
+	ret = xfrm6_policy_init();
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = xfrm6_state_init();
 	if (ret)
 		goto out_policy;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	sysctl_hdr = register_net_sysctl_table(&init_net, net_ipv6_ctl_path,
 						xfrm6_policy_table);
 #endif
 out:
 	return ret;
+=======
+	ret = xfrm6_protocol_init();
+	if (ret)
+		goto out_state;
+
+	ret = register_pernet_subsys(&xfrm6_net_ops);
+	if (ret)
+		goto out_protocol;
+out:
+	return ret;
+out_protocol:
+	xfrm6_protocol_fini();
+out_state:
+	xfrm6_state_fini();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_policy:
 	xfrm6_policy_fini();
 	goto out;
@@ -348,6 +586,7 @@ out_policy:
 
 void xfrm6_fini(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	if (sysctl_hdr)
 		unregister_net_sysctl_table(sysctl_hdr);
@@ -356,4 +595,10 @@ void xfrm6_fini(void)
 	xfrm6_policy_fini();
 	xfrm6_state_fini();
 	dst_entries_destroy(&xfrm6_dst_ops);
+=======
+	unregister_pernet_subsys(&xfrm6_net_ops);
+	xfrm6_protocol_fini();
+	xfrm6_policy_fini();
+	xfrm6_state_fini();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

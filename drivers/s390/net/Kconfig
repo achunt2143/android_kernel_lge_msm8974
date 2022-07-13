@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "S/390 network device drivers"
 	depends on NETDEVICES && S390
 
 config LCS
 	def_tristate m
 	prompt "Lan Channel Station Interface"
+<<<<<<< HEAD
 	depends on CCW && NETDEVICES && (ETHERNET || TR || FDDI)
 	help
 	   Select this option if you want to use LCS networking on IBM System z.
@@ -11,6 +16,13 @@ config LCS
 	   FDDI (IEEE 802.7) and Ethernet.
 	   To compile as a module, choose M. The module name is lcs.
 	   If you do not know what it is, it's safe to choose Y.
+=======
+	depends on CCW && NETDEVICES && ETHERNET
+	help
+	  Select this option if you want to use LCS networking on IBM System z.
+	  To compile as a module, choose M. The module name is lcs.
+	  If you do not use LCS, choose N.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CTCM
 	def_tristate m
@@ -58,6 +70,7 @@ config SMSGIUCV_EVENT
 
 	  To compile as a module, choose M. The module name is "smsgiucv_app".
 
+<<<<<<< HEAD
 config CLAW
 	def_tristate m
 	prompt "CLAW device support"
@@ -80,6 +93,16 @@ config QETH
 	
 	  For details please refer to the documentation provided by IBM at
 	  <http://www.ibm.com/developerworks/linux/linux390>
+=======
+config QETH
+	def_tristate y
+	prompt "Gigabit Ethernet device support"
+	depends on CCW && NETDEVICES && IP_MULTICAST && QDIO && ETHERNET
+	help
+	  This driver supports IBM's OSA Express network adapters in QDIO mode,
+	  HiperSockets interfaces and z/VM virtual NICs for Guest LAN and
+	  VSWITCH.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M.
 	  The module name is qeth.
@@ -88,6 +111,10 @@ config QETH_L2
 	def_tristate y
 	prompt "qeth layer 2 device support"
 	depends on QETH
+<<<<<<< HEAD
+=======
+	depends on BRIDGE || BRIDGE=n
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option to be able to run qeth devices in layer 2 mode.
 	  To compile as a module, choose M. The module name is qeth_l2.
@@ -102,6 +129,7 @@ config QETH_L3
 	  To compile as a module choose M. The module name is qeth_l3.
 	  If unsure, choose Y.
 
+<<<<<<< HEAD
 config QETH_IPV6
 	def_bool y if (QETH_L3 = IPV6) || (QETH_L3 && IPV6 = 'y')
 
@@ -109,4 +137,29 @@ config CCWGROUP
 	tristate
 	default (LCS || CTCM || QETH || CLAW)
 
+=======
+config QETH_OSX
+	def_bool !HAVE_MARCH_Z15_FEATURES
+	prompt "qeth OSX device support"
+	depends on QETH
+	help
+	  This enables the qeth driver to support devices in OSX mode.
+	  If unsure, choose N.
+
+config CCWGROUP
+	tristate
+	default (LCS || CTCM || QETH || SMC)
+
+config ISM
+	tristate "Support for ISM vPCI Adapter"
+	depends on PCI
+	imply SMC
+	default n
+	help
+	  Select this option if you want to use the Internal Shared Memory
+	  vPCI Adapter. The adapter can be used with the SMC network protocol.
+
+	  To compile as a module choose M. The module name is ism.
+	  If unsure, choose N.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * traps.h:  Format of entries for the Sparc trap table.
  *
  * Copyright (C) 1995 David S. Miller (davem@caip.rutgers.edu)
  */
+<<<<<<< HEAD
 
 #ifndef _SPARC_TRAPS_H
 #define _SPARC_TRAPS_H
@@ -11,6 +16,14 @@
 
 #ifndef __ASSEMBLY__
 #ifdef __KERNEL__
+=======
+#ifndef _SPARC_TRAPS_H
+#define _SPARC_TRAPS_H
+
+#include <uapi/asm/traps.h>
+
+#ifndef __ASSEMBLY__
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is for V8 compliant Sparc CPUS */
 struct tt_entry {
 	unsigned long inst_one;
@@ -22,6 +35,7 @@ struct tt_entry {
 /* We set this to _start in system setup. */
 extern struct tt_entry *sparc_ttable;
 
+<<<<<<< HEAD
 #endif /* (__KERNEL__) */
 #endif /* !(__ASSEMBLY__) */
 
@@ -130,4 +144,7 @@ extern struct tt_entry *sparc_ttable;
 			     (level == SP_TRAP_NETBSD) || \
 			     (level == SP_TRAP_LINUX))
 
+=======
+#endif /* !(__ASSEMBLY__) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(_SPARC_TRAPS_H) */

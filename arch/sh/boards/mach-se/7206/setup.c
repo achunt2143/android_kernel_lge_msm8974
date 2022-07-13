@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * linux/arch/sh/boards/se/7206/setup.c
@@ -90,7 +94,10 @@ static int se7206_mode_pins(void)
 
 static struct sh_machine_vector mv_se __initmv = {
 	.mv_name		= "SolutionEngine",
+<<<<<<< HEAD
 	.mv_nr_irqs		= 256,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_se7206_IRQ,
 	.mv_mode_pins		= se7206_mode_pins,
 };

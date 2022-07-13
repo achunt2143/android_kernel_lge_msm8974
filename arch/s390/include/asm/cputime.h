@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 /*
  *  include/asm-s390/cputime.h
  *
  *  (C) Copyright IBM Corp. 2004
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *  Copyright IBM Corp. 2004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Author: Martin Schwidefsky <schwidefsky@de.ibm.com>
  */
@@ -10,6 +16,7 @@
 #define _S390_CPUTIME_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/percpu.h>
 #include <linux/spinlock.h>
 #include <asm/div64.h>
@@ -187,5 +194,15 @@ static inline int s390_nohz_delay(int cpu)
 }
 
 #define arch_needs_cpu(cpu) s390_nohz_delay(cpu)
+=======
+#include <asm/timex.h>
+
+/*
+ * Convert cputime to nanoseconds.
+ */
+#define cputime_to_nsecs(cputime) tod_to_ns(cputime)
+
+void account_idle_time_irq(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _S390_CPUTIME_H */

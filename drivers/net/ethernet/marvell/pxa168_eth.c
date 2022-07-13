@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PXA168 ethernet driver.
  * Most of the code is derived from mv643xx ethernet driver.
@@ -7,6 +11,7 @@
  *		Zhangfei Gao <zgao6@marvell.com>
  *		Philip Rakity <prakity@marvell.com>
  *		Mark Brown <markb@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +50,34 @@
 #include <asm/pgtable.h>
 #include <asm/cacheflush.h>
 #include <linux/pxa168_eth.h>
+=======
+ */
+
+#include <linux/bitops.h>
+#include <linux/clk.h>
+#include <linux/delay.h>
+#include <linux/dma-mapping.h>
+#include <linux/etherdevice.h>
+#include <linux/ethtool.h>
+#include <linux/in.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/ip.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_net.h>
+#include <linux/phy.h>
+#include <linux/platform_device.h>
+#include <linux/pxa168_eth.h>
+#include <linux/tcp.h>
+#include <linux/types.h>
+#include <linux/udp.h>
+#include <linux/workqueue.h>
+#include <linux/pgtable.h>
+
+#include <asm/cacheflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME	"pxa168-eth"
 #define DRIVER_VERSION	"0.3"
@@ -60,6 +93,11 @@
 #define PORT_COMMAND		0x0410
 #define PORT_STATUS		0x0418
 #define HTPR			0x0428
+<<<<<<< HEAD
+=======
+#define MAC_ADDR_LOW		0x0430
+#define MAC_ADDR_HIGH		0x0438
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDMA_CONFIG		0x0440
 #define SDMA_CMD		0x0448
 #define INT_CAUSE		0x0450
@@ -103,6 +141,10 @@
 #define SDMA_CMD_ERD		(1 << 7)
 
 /* Bit definitions of the Port Config Reg */
+<<<<<<< HEAD
+=======
+#define PCR_DUPLEX_FULL		(1 << 15)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCR_HS			(1 << 12)
 #define PCR_EN			(1 << 7)
 #define PCR_PM			(1 << 0)
@@ -110,11 +152,24 @@
 /* Bit definitions of the Port Config Extend Reg */
 #define PCXR_2BSM		(1 << 28)
 #define PCXR_DSCP_EN		(1 << 21)
+<<<<<<< HEAD
+=======
+#define PCXR_RMII_EN		(1 << 20)
+#define PCXR_AN_SPEED_DIS	(1 << 19)
+#define PCXR_SPEED_100		(1 << 18)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCXR_MFL_1518		(0 << 14)
 #define PCXR_MFL_1536		(1 << 14)
 #define PCXR_MFL_2048		(2 << 14)
 #define PCXR_MFL_64K		(3 << 14)
+<<<<<<< HEAD
 #define PCXR_FLP		(1 << 11)
+=======
+#define PCXR_FLOWCTL_DIS	(1 << 12)
+#define PCXR_FLP		(1 << 11)
+#define PCXR_AN_FLOWCTL_DIS	(1 << 10)
+#define PCXR_AN_DUPLEX_DIS	(1 << 9)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCXR_PRIO_TX_OFF	3
 #define PCXR_TX_HIGH_PRI	(7 << PCXR_PRIO_TX_OFF)
 
@@ -163,11 +218,18 @@
 /* Bit definitions for Port status */
 #define PORT_SPEED_100		(1 << 0)
 #define FULL_DUPLEX		(1 << 1)
+<<<<<<< HEAD
 #define FLOW_CONTROL_ENABLED	(1 << 2)
 #define LINK_UP			(1 << 3)
 
 /* Bit definitions for work to be done */
 #define WORK_LINK		(1 << 0)
+=======
+#define FLOW_CONTROL_DISABLED	(1 << 2)
+#define LINK_UP			(1 << 3)
+
+/* Bit definitions for work to be done */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WORK_TX_DONE		(1 << 1)
 
 /*
@@ -192,7 +254,16 @@ struct tx_desc {
 };
 
 struct pxa168_eth_private {
+<<<<<<< HEAD
 	int port_num;		/* User Ethernet port number    */
+=======
+	struct platform_device *pdev;
+	int port_num;		/* User Ethernet port number    */
+	int phy_addr;
+	int phy_speed;
+	int phy_duplex;
+	phy_interface_t phy_intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int rx_resource_err;	/* Rx ring resource error flag */
 
@@ -234,7 +305,10 @@ struct pxa168_eth_private {
 	 */
 	struct timer_list timeout;
 	struct mii_bus *smi_bus;
+<<<<<<< HEAD
 	struct phy_device *phy;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clock */
 	struct clk *clk;
@@ -262,23 +336,39 @@ enum hash_table_entry {
 	HASH_ENTRY_RECEIVE_DISCARD_BIT = 2
 };
 
+<<<<<<< HEAD
 static int pxa168_get_settings(struct net_device *dev, struct ethtool_cmd *cmd);
 static int pxa168_set_settings(struct net_device *dev, struct ethtool_cmd *cmd);
 static int pxa168_init_hw(struct pxa168_eth_private *pep);
+=======
+static int pxa168_init_hw(struct pxa168_eth_private *pep);
+static int pxa168_init_phy(struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void eth_port_reset(struct net_device *dev);
 static void eth_port_start(struct net_device *dev);
 static int pxa168_eth_open(struct net_device *dev);
 static int pxa168_eth_stop(struct net_device *dev);
+<<<<<<< HEAD
 static int ethernet_phy_setup(struct net_device *dev);
 
 static inline u32 rdl(struct pxa168_eth_private *pep, int offset)
 {
 	return readl(pep->base + offset);
+=======
+
+static inline u32 rdl(struct pxa168_eth_private *pep, int offset)
+{
+	return readl_relaxed(pep->base + offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void wrl(struct pxa168_eth_private *pep, int offset, u32 data)
 {
+<<<<<<< HEAD
 	writel(data, pep->base + offset);
+=======
+	writel_relaxed(data, pep->base + offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void abort_dma(struct pxa168_eth_private *pep)
@@ -298,6 +388,7 @@ static void abort_dma(struct pxa168_eth_private *pep)
 	} while (max_retries-- > 0 && delay <= 0);
 
 	if (max_retries <= 0)
+<<<<<<< HEAD
 		printk(KERN_ERR "%s : DMA Stuck\n", __func__);
 }
 
@@ -336,6 +427,9 @@ static void ethernet_phy_reset(struct pxa168_eth_private *pep)
 	do {
 		data = phy_read(pep->phy, MII_BMCR);
 	} while (data >= 0 && data & BMCR_RESET);
+=======
+		netdev_err(pep->dev, "%s : DMA Stuck\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rxq_refill(struct net_device *dev)
@@ -357,8 +451,13 @@ static void rxq_refill(struct net_device *dev)
 		/* Get 'used' Rx descriptor */
 		used_rx_desc = pep->rx_used_desc_q;
 		p_used_rx_desc = &pep->p_rx_desc_area[used_rx_desc];
+<<<<<<< HEAD
 		size = skb->end - skb->data;
 		p_used_rx_desc->buf_ptr = dma_map_single(NULL,
+=======
+		size = skb_end_pointer(skb) - skb->data;
+		p_used_rx_desc->buf_ptr = dma_map_single(&pep->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 skb->data,
 							 size,
 							 DMA_FROM_DEVICE);
@@ -366,9 +465,15 @@ static void rxq_refill(struct net_device *dev)
 		pep->rx_skb[used_rx_desc] = skb;
 
 		/* Return the descriptor to DMA ownership */
+<<<<<<< HEAD
 		wmb();
 		p_used_rx_desc->cmd_sts = BUF_OWNED_BY_DMA | RX_EN_INT;
 		wmb();
+=======
+		dma_wmb();
+		p_used_rx_desc->cmd_sts = BUF_OWNED_BY_DMA | RX_EN_INT;
+		dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Move the used descriptor pointer to the next descriptor */
 		pep->rx_used_desc_q = (used_rx_desc + 1) % pep->rx_ring_size;
@@ -389,9 +494,15 @@ static void rxq_refill(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static inline void rxq_refill_timer_wrapper(unsigned long data)
 {
 	struct pxa168_eth_private *pep = (void *)data;
+=======
+static inline void rxq_refill_timer_wrapper(struct timer_list *t)
+{
+	struct pxa168_eth_private *pep = from_timer(pep, t, timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_schedule(&pep->napi);
 }
 
@@ -427,7 +538,11 @@ static void inverse_every_nibble(unsigned char *mac_addr)
  * Outputs
  * return the calculated entry.
  */
+<<<<<<< HEAD
 static u32 hash_function(unsigned char *mac_addr_orig)
+=======
+static u32 hash_function(const unsigned char *mac_addr_orig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 hash_result;
 	u32 addr0;
@@ -472,7 +587,11 @@ static u32 hash_function(unsigned char *mac_addr_orig)
  * -ENOSPC if table full
  */
 static int add_del_hash_entry(struct pxa168_eth_private *pep,
+<<<<<<< HEAD
 			      unsigned char *mac_addr,
+=======
+			      const unsigned char *mac_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u32 rd, u32 skip, int del)
 {
 	struct addr_table_entry *entry, *start;
@@ -526,9 +645,16 @@ static int add_del_hash_entry(struct pxa168_eth_private *pep,
 
 	if (i == HOP_NUMBER) {
 		if (!del) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: table section is full, need to "
 					"move to 16kB implementation?\n",
 					 __FILE__);
+=======
+			netdev_info(pep->dev,
+				    "%s: table section is full, need to "
+				    "move to 16kB implementation?\n",
+				    __FILE__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOSPC;
 		} else
 			return 0;
@@ -558,7 +684,11 @@ static int add_del_hash_entry(struct pxa168_eth_private *pep,
  */
 static void update_hash_table_mac_address(struct pxa168_eth_private *pep,
 					  unsigned char *oaddr,
+<<<<<<< HEAD
 					  unsigned char *addr)
+=======
+					  const unsigned char *addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Delete old entry */
 	if (oaddr)
@@ -582,6 +712,7 @@ static int init_hash_table(struct pxa168_eth_private *pep)
 	 * function.Driver can dynamically switch to them if the 1/2kB hash
 	 * table is full.
 	 */
+<<<<<<< HEAD
 	if (pep->htpr == NULL) {
 		pep->htpr = dma_alloc_coherent(pep->dev->dev.parent,
 					      HASH_ADDR_TABLE_SIZE,
@@ -590,6 +721,17 @@ static int init_hash_table(struct pxa168_eth_private *pep)
 			return -ENOMEM;
 	}
 	memset(pep->htpr, 0, HASH_ADDR_TABLE_SIZE);
+=======
+	if (!pep->htpr) {
+		pep->htpr = dma_alloc_coherent(pep->dev->dev.parent,
+					       HASH_ADDR_TABLE_SIZE,
+					       &pep->htpr_dma, GFP_KERNEL);
+		if (!pep->htpr)
+			return -ENOMEM;
+	} else {
+		memset(pep->htpr, 0, HASH_ADDR_TABLE_SIZE);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wrl(pep, HTPR, pep->htpr_dma);
 	return 0;
 }
@@ -618,17 +760,53 @@ static void pxa168_eth_set_rx_mode(struct net_device *dev)
 		update_hash_table_mac_address(pep, NULL, ha->addr);
 }
 
+<<<<<<< HEAD
+=======
+static void pxa168_eth_get_mac_address(struct net_device *dev,
+				       unsigned char *addr)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+	unsigned int mac_h = rdl(pep, MAC_ADDR_HIGH);
+	unsigned int mac_l = rdl(pep, MAC_ADDR_LOW);
+
+	addr[0] = (mac_h >> 24) & 0xff;
+	addr[1] = (mac_h >> 16) & 0xff;
+	addr[2] = (mac_h >> 8) & 0xff;
+	addr[3] = mac_h & 0xff;
+	addr[4] = (mac_l >> 8) & 0xff;
+	addr[5] = mac_l & 0xff;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pxa168_eth_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *sa = addr;
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	unsigned char oldMac[ETH_ALEN];
+<<<<<<< HEAD
+=======
+	u32 mac_h, mac_l;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!is_valid_ether_addr(sa->sa_data))
 		return -EADDRNOTAVAIL;
 	memcpy(oldMac, dev->dev_addr, ETH_ALEN);
+<<<<<<< HEAD
 	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
 	memcpy(dev->dev_addr, sa->sa_data, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, sa->sa_data);
+
+	mac_h = dev->dev_addr[0] << 24;
+	mac_h |= dev->dev_addr[1] << 16;
+	mac_h |= dev->dev_addr[2] << 8;
+	mac_h |= dev->dev_addr[3];
+	mac_l = dev->dev_addr[4] << 8;
+	mac_l |= dev->dev_addr[5];
+	wrl(pep, MAC_ADDR_HIGH, mac_h);
+	wrl(pep, MAC_ADDR_LOW, mac_l);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_addr_lock_bh(dev);
 	update_hash_table_mac_address(pep, oldMac, dev->dev_addr);
 	netif_addr_unlock_bh(dev);
@@ -641,6 +819,7 @@ static void eth_port_start(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	int tx_curr_desc, rx_curr_desc;
 
+<<<<<<< HEAD
 	/* Perform PHY reset, if there is a PHY. */
 	if (pep->phy != NULL) {
 		struct ethtool_cmd cmd;
@@ -649,6 +828,9 @@ static void eth_port_start(struct net_device *dev)
 		ethernet_phy_reset(pep);
 		pxa168_set_settings(pep->dev, &cmd);
 	}
+=======
+	phy_start(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Assignment of Tx CTRP of given queue */
 	tx_curr_desc = pep->tx_curr_desc_q;
@@ -703,6 +885,11 @@ static void eth_port_reset(struct net_device *dev)
 	val = rdl(pep, PORT_CONFIG);
 	val &= ~PCR_EN;
 	wrl(pep, PORT_CONFIG, val);
+<<<<<<< HEAD
+=======
+
+	phy_stop(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -745,10 +932,17 @@ static int txq_reclaim(struct net_device *dev, int force)
 
 		if (cmd_sts & TX_ERROR) {
 			if (net_ratelimit())
+<<<<<<< HEAD
 				printk(KERN_ERR "%s: Error in TX\n", dev->name);
 			dev->stats.tx_errors++;
 		}
 		dma_unmap_single(NULL, addr, count, DMA_TO_DEVICE);
+=======
+				netdev_err(dev, "Error in TX\n");
+			dev->stats.tx_errors++;
+		}
+		dma_unmap_single(&pep->pdev->dev, addr, count, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (skb)
 			dev_kfree_skb_irq(skb);
 		released++;
@@ -758,12 +952,20 @@ txq_reclaim_end:
 	return released;
 }
 
+<<<<<<< HEAD
 static void pxa168_eth_tx_timeout(struct net_device *dev)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 
 	printk(KERN_INFO "%s: TX timeout  desc_count %d\n",
 	       dev->name, pep->tx_desc_count);
+=======
+static void pxa168_eth_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+
+	netdev_info(dev, "TX timeout  desc_count %d\n", pep->tx_desc_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_work(&pep->tx_timeout_task);
 }
@@ -797,7 +999,11 @@ static int rxq_process(struct net_device *dev, int budget)
 		rx_used_desc = pep->rx_used_desc_q;
 		rx_desc = &pep->p_rx_desc_area[rx_curr_desc];
 		cmd_sts = rx_desc->cmd_sts;
+<<<<<<< HEAD
 		rmb();
+=======
+		dma_rmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd_sts & (BUF_OWNED_BY_DMA))
 			break;
 		skb = pep->rx_skb[rx_curr_desc];
@@ -811,7 +1017,11 @@ static int rxq_process(struct net_device *dev, int budget)
 		if (rx_next_curr_desc == rx_used_desc)
 			pep->rx_resource_err = 1;
 		pep->rx_desc_count--;
+<<<<<<< HEAD
 		dma_unmap_single(NULL, rx_desc->buf_ptr,
+=======
+		dma_unmap_single(&pep->pdev->dev, rx_desc->buf_ptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 rx_desc->buf_size,
 				 DMA_FROM_DEVICE);
 		received_packets++;
@@ -833,9 +1043,14 @@ static int rxq_process(struct net_device *dev, int budget)
 			if ((cmd_sts & (RX_FIRST_DESC | RX_LAST_DESC)) !=
 			    (RX_FIRST_DESC | RX_LAST_DESC)) {
 				if (net_ratelimit())
+<<<<<<< HEAD
 					printk(KERN_ERR
 					       "%s: Rx pkt on multiple desc\n",
 					       dev->name);
+=======
+					netdev_err(dev,
+						   "Rx pkt on multiple desc\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (cmd_sts & RX_ERROR)
 				stats->rx_errors++;
@@ -872,6 +1087,7 @@ static int pxa168_eth_collect_events(struct pxa168_eth_private *pep,
 	}
 	if (icr & ICR_RXBUF)
 		ret = 1;
+<<<<<<< HEAD
 	if (icr & ICR_MII_CH) {
 		pep->work_todo |= WORK_LINK;
 		ret = 1;
@@ -910,6 +1126,11 @@ static void handle_link_event(struct pxa168_eth_private *pep)
 		netif_carrier_on(dev);
 }
 
+=======
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t pxa168_eth_int_handler(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
@@ -967,8 +1188,16 @@ static int set_port_config_ext(struct pxa168_eth_private *pep)
 		skb_size = PCXR_MFL_64K;
 
 	/* Extended Port Configuration */
+<<<<<<< HEAD
 	wrl(pep,
 	    PORT_CONFIG_EXT, PCXR_2BSM | /* Two byte prefix aligns IP hdr */
+=======
+	wrl(pep, PORT_CONFIG_EXT,
+	    PCXR_AN_SPEED_DIS |		 /* Disable HW AN */
+	    PCXR_AN_DUPLEX_DIS |
+	    PCXR_AN_FLOWCTL_DIS |
+	    PCXR_2BSM |			 /* Two byte prefix aligns IP hdr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    PCXR_DSCP_EN |		 /* Enable DSCP in IP */
 	    skb_size | PCXR_FLP |	 /* do not force link pass */
 	    PCXR_TX_HIGH_PRI);		 /* Transmit - high priority queue */
@@ -976,6 +1205,69 @@ static int set_port_config_ext(struct pxa168_eth_private *pep)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void pxa168_eth_adjust_link(struct net_device *dev)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+	struct phy_device *phy = dev->phydev;
+	u32 cfg, cfg_o = rdl(pep, PORT_CONFIG);
+	u32 cfgext, cfgext_o = rdl(pep, PORT_CONFIG_EXT);
+
+	cfg = cfg_o & ~PCR_DUPLEX_FULL;
+	cfgext = cfgext_o & ~(PCXR_SPEED_100 | PCXR_FLOWCTL_DIS | PCXR_RMII_EN);
+
+	if (phy->interface == PHY_INTERFACE_MODE_RMII)
+		cfgext |= PCXR_RMII_EN;
+	if (phy->speed == SPEED_100)
+		cfgext |= PCXR_SPEED_100;
+	if (phy->duplex)
+		cfg |= PCR_DUPLEX_FULL;
+	if (!phy->pause)
+		cfgext |= PCXR_FLOWCTL_DIS;
+
+	/* Bail out if there has nothing changed */
+	if (cfg == cfg_o && cfgext == cfgext_o)
+		return;
+
+	wrl(pep, PORT_CONFIG, cfg);
+	wrl(pep, PORT_CONFIG_EXT, cfgext);
+
+	phy_print_status(phy);
+}
+
+static int pxa168_init_phy(struct net_device *dev)
+{
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+	struct ethtool_link_ksettings cmd;
+	struct phy_device *phy = NULL;
+	int err;
+
+	if (dev->phydev)
+		return 0;
+
+	phy = mdiobus_scan_c22(pep->smi_bus, pep->phy_addr);
+	if (IS_ERR(phy))
+		return PTR_ERR(phy);
+
+	err = phy_connect_direct(dev, phy, pxa168_eth_adjust_link,
+				 pep->phy_intf);
+	if (err)
+		return err;
+
+	cmd.base.phy_address = pep->phy_addr;
+	cmd.base.speed = pep->phy_speed;
+	cmd.base.duplex = pep->phy_duplex;
+	linkmode_copy(cmd.link_modes.advertising, PHY_BASIC_FEATURES);
+	cmd.base.autoneg = AUTONEG_ENABLE;
+
+	if (cmd.base.speed != 0)
+		cmd.base.autoneg = AUTONEG_DISABLE;
+
+	return phy_ethtool_set_link_ksettings(dev, &cmd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pxa168_init_hw(struct pxa168_eth_private *pep)
 {
 	int err = 0;
@@ -1014,8 +1306,12 @@ static int rxq_init(struct net_device *dev)
 	int rx_desc_num = pep->rx_ring_size;
 
 	/* Allocate RX skb rings */
+<<<<<<< HEAD
 	pep->rx_skb = kmalloc(sizeof(*pep->rx_skb) * pep->rx_ring_size,
 			     GFP_KERNEL);
+=======
+	pep->rx_skb = kcalloc(rx_desc_num, sizeof(*pep->rx_skb), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pep->rx_skb)
 		return -ENOMEM;
 
@@ -1024,6 +1320,7 @@ static int rxq_init(struct net_device *dev)
 	size = pep->rx_ring_size * sizeof(struct rx_desc);
 	pep->rx_desc_area_size = size;
 	pep->p_rx_desc_area = dma_alloc_coherent(pep->dev->dev.parent, size,
+<<<<<<< HEAD
 						&pep->rx_desc_dma, GFP_KERNEL);
 	if (!pep->p_rx_desc_area) {
 		printk(KERN_ERR "%s: Cannot alloc RX ring (size %d bytes)\n",
@@ -1033,6 +1330,15 @@ static int rxq_init(struct net_device *dev)
 	memset((void *)pep->p_rx_desc_area, 0, size);
 	/* initialize the next_desc_ptr links in the Rx descriptors ring */
 	p_rx_desc = (struct rx_desc *)pep->p_rx_desc_area;
+=======
+						 &pep->rx_desc_dma,
+						 GFP_KERNEL);
+	if (!pep->p_rx_desc_area)
+		goto out;
+
+	/* initialize the next_desc_ptr links in the Rx descriptors ring */
+	p_rx_desc = pep->p_rx_desc_area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < rx_desc_num; i++) {
 		p_rx_desc[i].next_desc_ptr = pep->rx_desc_dma +
 		    ((i + 1) % rx_desc_num) * sizeof(struct rx_desc);
@@ -1060,9 +1366,14 @@ static void rxq_deinit(struct net_device *dev)
 		}
 	}
 	if (pep->rx_desc_count)
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "Error in freeing Rx Ring. %d skb's still\n",
 		       pep->rx_desc_count);
+=======
+		netdev_err(dev, "Error in freeing Rx Ring. %d skb's still\n",
+			   pep->rx_desc_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Free RX ring */
 	if (pep->p_rx_desc_area)
 		dma_free_coherent(pep->dev->dev.parent, pep->rx_desc_area_size,
@@ -1077,8 +1388,12 @@ static int txq_init(struct net_device *dev)
 	int size = 0, i = 0;
 	int tx_desc_num = pep->tx_ring_size;
 
+<<<<<<< HEAD
 	pep->tx_skb = kmalloc(sizeof(*pep->tx_skb) * pep->tx_ring_size,
 			     GFP_KERNEL);
+=======
+	pep->tx_skb = kcalloc(tx_desc_num, sizeof(*pep->tx_skb), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pep->tx_skb)
 		return -ENOMEM;
 
@@ -1087,6 +1402,7 @@ static int txq_init(struct net_device *dev)
 	size = pep->tx_ring_size * sizeof(struct tx_desc);
 	pep->tx_desc_area_size = size;
 	pep->p_tx_desc_area = dma_alloc_coherent(pep->dev->dev.parent, size,
+<<<<<<< HEAD
 						&pep->tx_desc_dma, GFP_KERNEL);
 	if (!pep->p_tx_desc_area) {
 		printk(KERN_ERR "%s: Cannot allocate Tx Ring (size %d bytes)\n",
@@ -1096,6 +1412,14 @@ static int txq_init(struct net_device *dev)
 	memset((void *)pep->p_tx_desc_area, 0, pep->tx_desc_area_size);
 	/* Initialize the next_desc_ptr links in the Tx descriptors ring */
 	p_tx_desc = (struct tx_desc *)pep->p_tx_desc_area;
+=======
+						 &pep->tx_desc_dma,
+						 GFP_KERNEL);
+	if (!pep->p_tx_desc_area)
+		goto out;
+	/* Initialize the next_desc_ptr links in the Tx descriptors ring */
+	p_tx_desc = pep->p_tx_desc_area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < tx_desc_num; i++) {
 		p_tx_desc[i].next_desc_ptr = pep->tx_desc_dma +
 		    ((i + 1) % tx_desc_num) * sizeof(struct tx_desc);
@@ -1128,10 +1452,20 @@ static int pxa168_eth_open(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	int err;
 
+<<<<<<< HEAD
 	err = request_irq(dev->irq, pxa168_eth_int_handler,
 			  IRQF_DISABLED, dev->name, dev);
 	if (err) {
 		dev_printk(KERN_ERR, &dev->dev, "can't assign irq\n");
+=======
+	err = pxa168_init_phy(dev);
+	if (err)
+		return err;
+
+	err = request_irq(dev->irq, pxa168_eth_int_handler, 0, dev->name, dev);
+	if (err) {
+		dev_err(&dev->dev, "can't assign irq\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 	pep->rx_resource_err = 0;
@@ -1149,8 +1483,13 @@ static int pxa168_eth_open(struct net_device *dev)
 	pep->rx_used_desc_q = 0;
 	pep->rx_curr_desc_q = 0;
 	netif_carrier_off(dev);
+<<<<<<< HEAD
 	eth_port_start(dev);
 	napi_enable(&pep->napi);
+=======
+	napi_enable(&pep->napi);
+	eth_port_start(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out_free_rx_skb:
 	rxq_deinit(dev);
@@ -1181,6 +1520,7 @@ static int pxa168_eth_stop(struct net_device *dev)
 
 static int pxa168_eth_change_mtu(struct net_device *dev, int mtu)
 {
+<<<<<<< HEAD
 	int retval;
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 
@@ -1189,6 +1529,12 @@ static int pxa168_eth_change_mtu(struct net_device *dev, int mtu)
 
 	dev->mtu = mtu;
 	retval = set_port_config_ext(pep);
+=======
+	struct pxa168_eth_private *pep = netdev_priv(dev);
+
+	dev->mtu = mtu;
+	set_port_config_ext(pep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(dev))
 		return 0;
@@ -1201,9 +1547,14 @@ static int pxa168_eth_change_mtu(struct net_device *dev, int mtu)
 	 */
 	pxa168_eth_stop(dev);
 	if (pxa168_eth_open(dev)) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &dev->dev,
 			   "fatal error on re-opening device after "
 			   "MTU change\n");
+=======
+		dev_err(&dev->dev,
+			"fatal error on re-opening device after MTU change\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1228,10 +1579,13 @@ static int pxa168_rx_poll(struct napi_struct *napi, int budget)
 	struct net_device *dev = pep->dev;
 	int work_done = 0;
 
+<<<<<<< HEAD
 	if (unlikely(pep->work_todo & WORK_LINK)) {
 		pep->work_todo &= ~(WORK_LINK);
 		handle_link_event(pep);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We call txq_reclaim every time since in NAPI interupts are disabled
 	 * and due to this we miss the TX_DONE interrupt,which is not updated in
@@ -1244,14 +1598,23 @@ static int pxa168_rx_poll(struct napi_struct *napi, int budget)
 	}
 	work_done = rxq_process(dev, budget);
 	if (work_done < budget) {
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrl(pep, INT_MASK, ALL_INTS);
 	}
 
 	return work_done;
 }
 
+<<<<<<< HEAD
 static int pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
@@ -1264,11 +1627,20 @@ static int pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	length = skb->len;
 	pep->tx_skb[tx_index] = skb;
 	desc->byte_cnt = length;
+<<<<<<< HEAD
 	desc->buf_ptr = dma_map_single(NULL, skb->data, length, DMA_TO_DEVICE);
 
 	skb_tx_timestamp(skb);
 
 	wmb();
+=======
+	desc->buf_ptr = dma_map_single(&pep->pdev->dev, skb->data, length,
+					DMA_TO_DEVICE);
+
+	skb_tx_timestamp(skb);
+
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->cmd_sts = BUF_OWNED_BY_DMA | TX_GEN_CRC | TX_FIRST_DESC |
 			TX_ZERO_PADDING | TX_LAST_DESC | TX_EN_INT;
 	wmb();
@@ -1276,7 +1648,11 @@ static int pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	stats->tx_bytes += length;
 	stats->tx_packets++;
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pep->tx_ring_size - pep->tx_desc_count <= 1) {
 		/* We handled the current skb, but now we are out of space.*/
 		netif_stop_queue(dev);
@@ -1306,15 +1682,24 @@ static int pxa168_smi_read(struct mii_bus *bus, int phy_addr, int regnum)
 	int val;
 
 	if (smi_wait_ready(pep)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "pxa168_eth: SMI bus busy timeout\n");
+=======
+		netdev_warn(pep->dev, "pxa168_eth: SMI bus busy timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 	wrl(pep, SMI, (phy_addr << 16) | (regnum << 21) | SMI_OP_R);
 	/* now wait for the data to be valid */
 	for (i = 0; !((val = rdl(pep, SMI)) & SMI_R_VALID); i++) {
 		if (i == PHY_WAIT_ITERATIONS) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 				"pxa168_eth: SMI bus read not valid\n");
+=======
+			netdev_warn(pep->dev,
+				    "pxa168_eth: SMI bus read not valid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 		msleep(10);
@@ -1329,7 +1714,11 @@ static int pxa168_smi_write(struct mii_bus *bus, int phy_addr, int regnum,
 	struct pxa168_eth_private *pep = bus->priv;
 
 	if (smi_wait_ready(pep)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "pxa168_eth: SMI bus busy timeout\n");
+=======
+		netdev_warn(pep->dev, "pxa168_eth: SMI bus busy timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 
@@ -1337,13 +1726,18 @@ static int pxa168_smi_write(struct mii_bus *bus, int phy_addr, int regnum,
 	    SMI_OP_W | (value & 0xffff));
 
 	if (smi_wait_ready(pep)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "pxa168_eth: SMI bus busy timeout\n");
+=======
+		netdev_err(pep->dev, "pxa168_eth: SMI bus busy timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pxa168_eth_do_ioctl(struct net_device *dev, struct ifreq *ifr,
 			       int cmd)
 {
@@ -1441,10 +1835,21 @@ static int pxa168_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 
 	return phy_ethtool_sset(pep->phy, cmd);
 }
+=======
+#ifdef CONFIG_NET_POLL_CONTROLLER
+static void pxa168_eth_netpoll(struct net_device *dev)
+{
+	disable_irq(dev->irq);
+	pxa168_eth_int_handler(dev->irq, dev);
+	enable_irq(dev->irq);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pxa168_get_drvinfo(struct net_device *dev,
 			       struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strncpy(info->driver, DRIVER_NAME, 32);
 	strncpy(info->version, DRIVER_VERSION, 32);
 	strncpy(info->fw_version, "N/A", 32);
@@ -1468,18 +1873,54 @@ static const struct net_device_ops pxa168_eth_netdev_ops = {
 	.ndo_do_ioctl = pxa168_eth_do_ioctl,
 	.ndo_change_mtu = pxa168_eth_change_mtu,
 	.ndo_tx_timeout = pxa168_eth_tx_timeout,
+=======
+	strscpy(info->driver, DRIVER_NAME, sizeof(info->driver));
+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
+	strscpy(info->fw_version, "N/A", sizeof(info->fw_version));
+	strscpy(info->bus_info, "N/A", sizeof(info->bus_info));
+}
+
+static const struct ethtool_ops pxa168_ethtool_ops = {
+	.get_drvinfo	= pxa168_get_drvinfo,
+	.nway_reset	= phy_ethtool_nway_reset,
+	.get_link	= ethtool_op_get_link,
+	.get_ts_info	= ethtool_op_get_ts_info,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+};
+
+static const struct net_device_ops pxa168_eth_netdev_ops = {
+	.ndo_open		= pxa168_eth_open,
+	.ndo_stop		= pxa168_eth_stop,
+	.ndo_start_xmit		= pxa168_eth_start_xmit,
+	.ndo_set_rx_mode	= pxa168_eth_set_rx_mode,
+	.ndo_set_mac_address	= pxa168_eth_set_mac_address,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_eth_ioctl		= phy_do_ioctl,
+	.ndo_change_mtu		= pxa168_eth_change_mtu,
+	.ndo_tx_timeout		= pxa168_eth_tx_timeout,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller    = pxa168_eth_netpoll,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int pxa168_eth_probe(struct platform_device *pdev)
 {
 	struct pxa168_eth_private *pep = NULL;
 	struct net_device *dev = NULL;
+<<<<<<< HEAD
 	struct resource *res;
 	struct clk *clk;
+=======
+	struct clk *clk;
+	struct device_node *np;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	printk(KERN_NOTICE "PXA168 10/100 Ethernet Driver\n");
 
+<<<<<<< HEAD
 	clk = clk_get(&pdev->dev, "MFUCLK");
 	if (IS_ERR(clk)) {
 		printk(KERN_ERR "%s: Fast Ethernet failed to get clock\n",
@@ -1487,6 +1928,14 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 	clk_enable(clk);
+=======
+	clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(clk)) {
+		dev_err(&pdev->dev, "Fast Ethernet failed to get clock\n");
+		return -ENODEV;
+	}
+	clk_prepare_enable(clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = alloc_etherdev(sizeof(struct pxa168_eth_private));
 	if (!dev) {
@@ -1498,6 +1947,7 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	pep = netdev_priv(dev);
 	pep->dev = dev;
 	pep->clk = clk;
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		err = -ENODEV;
@@ -1544,6 +1994,93 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	if (pep->smi_bus == NULL) {
 		err = -ENOMEM;
 		goto err_base;
+=======
+
+	pep->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(pep->base)) {
+		err = PTR_ERR(pep->base);
+		goto err_netdev;
+	}
+
+	err = platform_get_irq(pdev, 0);
+	if (err == -EPROBE_DEFER)
+		goto err_netdev;
+	BUG_ON(dev->irq < 0);
+	dev->irq = err;
+	dev->netdev_ops = &pxa168_eth_netdev_ops;
+	dev->watchdog_timeo = 2 * HZ;
+	dev->base_addr = 0;
+	dev->ethtool_ops = &pxa168_ethtool_ops;
+
+	/* MTU range: 68 - 9500 */
+	dev->min_mtu = ETH_MIN_MTU;
+	dev->max_mtu = 9500;
+
+	INIT_WORK(&pep->tx_timeout_task, pxa168_eth_tx_timeout_task);
+
+	err = of_get_ethdev_address(pdev->dev.of_node, dev);
+	if (err) {
+		u8 addr[ETH_ALEN];
+
+		/* try reading the mac address, if set by the bootloader */
+		pxa168_eth_get_mac_address(dev, addr);
+		if (is_valid_ether_addr(addr)) {
+			eth_hw_addr_set(dev, addr);
+		} else {
+			dev_info(&pdev->dev, "Using random mac address\n");
+			eth_hw_addr_random(dev);
+		}
+	}
+
+	pep->rx_ring_size = NUM_RX_DESCS;
+	pep->tx_ring_size = NUM_TX_DESCS;
+
+	pep->pd = dev_get_platdata(&pdev->dev);
+	if (pep->pd) {
+		if (pep->pd->rx_queue_size)
+			pep->rx_ring_size = pep->pd->rx_queue_size;
+
+		if (pep->pd->tx_queue_size)
+			pep->tx_ring_size = pep->pd->tx_queue_size;
+
+		pep->port_num = pep->pd->port_number;
+		pep->phy_addr = pep->pd->phy_addr;
+		pep->phy_speed = pep->pd->speed;
+		pep->phy_duplex = pep->pd->duplex;
+		pep->phy_intf = pep->pd->intf;
+
+		if (pep->pd->init)
+			pep->pd->init();
+	} else if (pdev->dev.of_node) {
+		of_property_read_u32(pdev->dev.of_node, "port-id",
+				     &pep->port_num);
+
+		np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+		if (!np) {
+			dev_err(&pdev->dev, "missing phy-handle\n");
+			err = -EINVAL;
+			goto err_netdev;
+		}
+		of_property_read_u32(np, "reg", &pep->phy_addr);
+		of_node_put(np);
+		err = of_get_phy_mode(pdev->dev.of_node, &pep->phy_intf);
+		if (err && err != -ENODEV)
+			goto err_netdev;
+	}
+
+	/* Hardware supports only 3 ports */
+	BUG_ON(pep->port_num > 2);
+	netif_napi_add_weight(dev, &pep->napi, pxa168_rx_poll,
+			      pep->rx_ring_size);
+
+	memset(&pep->timeout, 0, sizeof(struct timer_list));
+	timer_setup(&pep->timeout, rxq_refill_timer_wrapper, 0);
+
+	pep->smi_bus = mdiobus_alloc();
+	if (!pep->smi_bus) {
+		err = -ENOMEM;
+		goto err_netdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pep->smi_bus->priv = pep;
 	pep->smi_bus->name = "pxa168_eth smi";
@@ -1557,11 +2094,17 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	if (err)
 		goto err_free_mdio;
 
+<<<<<<< HEAD
 	pxa168_init_hw(pep);
 	err = ethernet_phy_setup(dev);
 	if (err)
 		goto err_mdiobus;
 	SET_NETDEV_DEV(dev, &pdev->dev);
+=======
+	pep->pdev = pdev;
+	SET_NETDEV_DEV(dev, &pdev->dev);
+	pxa168_init_hw(pep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_netdev(dev);
 	if (err)
 		goto err_mdiobus;
@@ -1571,6 +2114,7 @@ err_mdiobus:
 	mdiobus_unregister(pep->smi_bus);
 err_free_mdio:
 	mdiobus_free(pep->smi_bus);
+<<<<<<< HEAD
 err_base:
 	iounmap(pep->base);
 err_netdev:
@@ -1582,15 +2126,30 @@ err_clk:
 }
 
 static int pxa168_eth_remove(struct platform_device *pdev)
+=======
+err_netdev:
+	free_netdev(dev);
+err_clk:
+	clk_disable_unprepare(clk);
+	return err;
+}
+
+static void pxa168_eth_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	cancel_work_sync(&pep->tx_timeout_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pep->htpr) {
 		dma_free_coherent(pep->dev->dev.parent, HASH_ADDR_TABLE_SIZE,
 				  pep->htpr, pep->htpr_dma);
 		pep->htpr = NULL;
 	}
+<<<<<<< HEAD
 	if (pep->clk) {
 		clk_disable(pep->clk);
 		clk_put(pep->clk);
@@ -1608,6 +2167,16 @@ static int pxa168_eth_remove(struct platform_device *pdev)
 	free_netdev(dev);
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+	if (dev->phydev)
+		phy_disconnect(dev->phydev);
+
+	clk_disable_unprepare(pep->clk);
+	mdiobus_unregister(pep->smi_bus);
+	mdiobus_free(pep->smi_bus);
+	unregister_netdev(dev);
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxa168_eth_shutdown(struct platform_device *pdev)
@@ -1632,15 +2201,33 @@ static int pxa168_eth_suspend(struct platform_device *pdev, pm_message_t state)
 #define pxa168_eth_suspend NULL
 #endif
 
+<<<<<<< HEAD
 static struct platform_driver pxa168_eth_driver = {
 	.probe = pxa168_eth_probe,
 	.remove = pxa168_eth_remove,
+=======
+static const struct of_device_id pxa168_eth_of_match[] = {
+	{ .compatible = "marvell,pxa168-eth" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, pxa168_eth_of_match);
+
+static struct platform_driver pxa168_eth_driver = {
+	.probe = pxa168_eth_probe,
+	.remove_new = pxa168_eth_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = pxa168_eth_shutdown,
 	.resume = pxa168_eth_resume,
 	.suspend = pxa168_eth_suspend,
 	.driver = {
+<<<<<<< HEAD
 		   .name = DRIVER_NAME,
 		   },
+=======
+		.name		= DRIVER_NAME,
+		.of_match_table	= pxa168_eth_of_match,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pxa168_eth_driver);

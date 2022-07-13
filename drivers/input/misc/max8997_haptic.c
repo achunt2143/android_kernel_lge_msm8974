@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MAX8997-haptic controller driver
  *
@@ -5,6 +9,7 @@
  * Donggeun Kim <dg77.kim@samsung.com>
  *
  * This program is not provided / owned by Maxim Integrated Products.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +29,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/err.h>
@@ -76,6 +86,7 @@ static int max8997_haptic_set_duty_cycle(struct max8997_haptic *chip)
 		unsigned int duty = chip->pwm_period * chip->level / 100;
 		ret = pwm_config(chip->pwm, duty, chip->pwm_period);
 	} else {
+<<<<<<< HEAD
 		int i;
 		u8 duty_index = 0;
 
@@ -85,6 +96,12 @@ static int max8997_haptic_set_duty_cycle(struct max8997_haptic *chip)
 				break;
 			}
 		}
+=======
+		u8 duty_index = 0;
+
+		duty_index = DIV_ROUND_UP(chip->level * 64, 100);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (chip->internal_mode_pattern) {
 		case 0:
 			max8997_write_reg(chip->client,
@@ -182,11 +199,29 @@ static void max8997_haptic_enable(struct max8997_haptic *chip)
 	}
 
 	if (!chip->enabled) {
+<<<<<<< HEAD
 		chip->enabled = true;
 		regulator_enable(chip->regulator);
 		max8997_haptic_configure(chip);
 		if (chip->mode == MAX8997_EXTERNAL_MODE)
 			pwm_enable(chip->pwm);
+=======
+		error = regulator_enable(chip->regulator);
+		if (error) {
+			dev_err(chip->dev, "Failed to enable regulator\n");
+			goto out;
+		}
+		max8997_haptic_configure(chip);
+		if (chip->mode == MAX8997_EXTERNAL_MODE) {
+			error = pwm_enable(chip->pwm);
+			if (error) {
+				dev_err(chip->dev, "Failed to enable PWM\n");
+				regulator_disable(chip->regulator);
+				goto out;
+			}
+		}
+		chip->enabled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -241,17 +276,31 @@ static void max8997_haptic_close(struct input_dev *dev)
 	max8997_haptic_disable(chip);
 }
 
+<<<<<<< HEAD
 static int __devinit max8997_haptic_probe(struct platform_device *pdev)
+=======
+static int max8997_haptic_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
 	const struct max8997_platform_data *pdata =
 					dev_get_platdata(iodev->dev);
+<<<<<<< HEAD
 	const struct max8997_haptic_platform_data *haptic_pdata =
 					pdata->haptic_pdata;
+=======
+	const struct max8997_haptic_platform_data *haptic_pdata = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max8997_haptic *chip;
 	struct input_dev *input_dev;
 	int error;
 
+<<<<<<< HEAD
+=======
+	if (pdata)
+		haptic_pdata = pdata->haptic_pdata;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!haptic_pdata) {
 		dev_err(&pdev->dev, "no haptic platform data\n");
 		return -EINVAL;
@@ -286,8 +335,12 @@ static int __devinit max8997_haptic_probe(struct platform_device *pdev)
 		break;
 
 	case MAX8997_EXTERNAL_MODE:
+<<<<<<< HEAD
 		chip->pwm = pwm_request(haptic_pdata->pwm_channel_id,
 					"max8997-haptic");
+=======
+		chip->pwm = pwm_get(&pdev->dev, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(chip->pwm)) {
 			error = PTR_ERR(chip->pwm);
 			dev_err(&pdev->dev,
@@ -295,6 +348,15 @@ static int __devinit max8997_haptic_probe(struct platform_device *pdev)
 				error);
 			goto err_free_mem;
 		}
+<<<<<<< HEAD
+=======
+
+		/*
+		 * FIXME: pwm_apply_args() should be removed when switching to
+		 * the atomic PWM API.
+		 */
+		pwm_apply_args(chip->pwm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -346,7 +408,11 @@ err_put_regulator:
 	regulator_put(chip->regulator);
 err_free_pwm:
 	if (chip->mode == MAX8997_EXTERNAL_MODE)
+<<<<<<< HEAD
 		pwm_free(chip->pwm);
+=======
+		pwm_put(chip->pwm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_mem:
 	input_free_device(input_dev);
 	kfree(chip);
@@ -354,7 +420,11 @@ err_free_mem:
 	return error;
 }
 
+<<<<<<< HEAD
 static int __devexit max8997_haptic_remove(struct platform_device *pdev)
+=======
+static void max8997_haptic_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max8997_haptic *chip = platform_get_drvdata(pdev);
 
@@ -362,6 +432,7 @@ static int __devexit max8997_haptic_remove(struct platform_device *pdev)
 	regulator_put(chip->regulator);
 
 	if (chip->mode == MAX8997_EXTERNAL_MODE)
+<<<<<<< HEAD
 		pwm_free(chip->pwm);
 
 	kfree(chip);
@@ -370,6 +441,13 @@ static int __devexit max8997_haptic_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+		pwm_put(chip->pwm);
+
+	kfree(chip);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int max8997_haptic_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -379,29 +457,49 @@ static int max8997_haptic_suspend(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(max8997_haptic_pm_ops, max8997_haptic_suspend, NULL);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(max8997_haptic_pm_ops,
+				max8997_haptic_suspend, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct platform_device_id max8997_haptic_id[] = {
 	{ "max8997-haptic", 0 },
 	{ },
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, max8997_haptic_id);
+=======
+MODULE_DEVICE_TABLE(platform, max8997_haptic_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver max8997_haptic_driver = {
 	.driver	= {
 		.name	= "max8997-haptic",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &max8997_haptic_pm_ops,
 	},
 	.probe		= max8997_haptic_probe,
 	.remove		= __devexit_p(max8997_haptic_remove),
+=======
+		.pm	= pm_sleep_ptr(&max8997_haptic_pm_ops),
+	},
+	.probe		= max8997_haptic_probe,
+	.remove_new	= max8997_haptic_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= max8997_haptic_id,
 };
 module_platform_driver(max8997_haptic_driver);
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:max8997-haptic");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Donggeun Kim <dg77.kim@samsung.com>");
 MODULE_DESCRIPTION("max8997_haptic driver");
 MODULE_LICENSE("GPL");

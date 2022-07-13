@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Makes a tree bootable image for IBM Evaluation boards.
  * Basically, just take a zImage, skip the ELF header, and stuff

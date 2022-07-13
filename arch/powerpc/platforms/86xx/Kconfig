@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config PPC_86xx
 menuconfig PPC_86xx
 	bool "86xx-based boards"
@@ -5,11 +6,20 @@ menuconfig PPC_86xx
 	select FSL_SOC
 	select ALTIVEC
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+=======
+# SPDX-License-Identifier: GPL-2.0
+menuconfig PPC_86xx
+	bool "86xx-based boards"
+	depends on PPC_BOOK3S_32
+	select FSL_SOC
+	select ALTIVEC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Freescale E600 SoCs have 74xx cores.
 
 if PPC_86xx
 
+<<<<<<< HEAD
 config MPC8641_HPCN
 	bool "Freescale MPC8641 HPCN"
 	select PPC_I8259
@@ -33,12 +43,18 @@ config MPC8610_HPCD
 	help
 	  This option enables support for the MPC8610 HPCD board.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GEF_PPC9A
 	bool "GE PPC9A"
 	select DEFAULT_UIMAGE
 	select MMIO_NVRAM
+<<<<<<< HEAD
 	select GENERIC_GPIO
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select GE_FPGA
 	help
 	  This option enables support for the GE PPC9A.
@@ -47,8 +63,12 @@ config GEF_SBC310
 	bool "GE SBC310"
 	select DEFAULT_UIMAGE
 	select MMIO_NVRAM
+<<<<<<< HEAD
 	select GENERIC_GPIO
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select GE_FPGA
 	help
 	  This option enables support for the GE SBC310.
@@ -57,6 +77,7 @@ config GEF_SBC610
 	bool "GE SBC610"
 	select DEFAULT_UIMAGE
 	select MMIO_NVRAM
+<<<<<<< HEAD
 	select GENERIC_GPIO
 	select ARCH_REQUIRE_GPIOLIB
 	select GE_FPGA
@@ -64,10 +85,24 @@ config GEF_SBC610
 	help
 	  This option enables support for the GE SBC610.
 
+=======
+	select GPIOLIB
+	select GE_FPGA
+	select HAVE_RAPIDIO
+	help
+	  This option enables support for the GE SBC610.
+
+config MVME7100
+	bool "Artesyn MVME7100"
+	help
+	  This option enables support for the Emerson/Artesyn MVME7100 board.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 config MPC8641
 	bool
+<<<<<<< HEAD
 	select PPC_PCI_CHOICE
 	select FSL_PCI if PCI
 	select PPC_UDBG_16550
@@ -81,3 +116,11 @@ config MPC8610
 	select PPC_UDBG_16550
 	select MPIC
 	default y if MPC8610_HPCD
+=======
+	select HAVE_PCI
+	select FSL_PCI if PCI
+	select PPC_UDBG_16550
+	select MPIC
+	default y if GEF_SBC610 || GEF_SBC310 || GEF_PPC9A \
+			|| MVME7100
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

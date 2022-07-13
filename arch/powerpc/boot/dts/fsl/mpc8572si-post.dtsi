@@ -162,7 +162,11 @@
 /include/ "pq3-dma-1.dtsi"
 /include/ "pq3-gpio-0.dtsi"
 	gpio-controller@f000 {
+<<<<<<< HEAD
 		compatible = "fsl,mpc8572-gpio", "fsl,pq3-gpio";
+=======
+		compatible = "fsl,mpc8572-gpio";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	L2: l2-cache-controller@20000 {

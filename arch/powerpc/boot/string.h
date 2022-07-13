@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PPC_BOOT_STRING_H_
 #define _PPC_BOOT_STRING_H_
 #include <stddef.h>
@@ -6,6 +10,10 @@ extern char *strcpy(char *dest, const char *src);
 extern char *strncpy(char *dest, const char *src, size_t n);
 extern char *strcat(char *dest, const char *src);
 extern char *strchr(const char *s, int c);
+<<<<<<< HEAD
+=======
+extern char *strrchr(const char *s, int c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int strcmp(const char *s1, const char *s2);
 extern int strncmp(const char *s1, const char *s2, size_t n);
 extern size_t strlen(const char *s);

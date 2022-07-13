@@ -29,7 +29,10 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/timer.h>
@@ -53,7 +56,11 @@
 #include <pcmcia/ss.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*====================================================================*/
 
@@ -114,6 +121,10 @@ struct smc_private {
     struct mii_if_info		mii_if;
     int				duplex;
     int				rx_ovrn;
+<<<<<<< HEAD
+=======
+    unsigned long		last_rx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Special definitions for Megahertz multifunction cards */
@@ -271,7 +282,11 @@ static void smc91c92_release(struct pcmcia_device *link);
 static int smc_open(struct net_device *dev);
 static int smc_close(struct net_device *dev);
 static int smc_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+<<<<<<< HEAD
 static void smc_tx_timeout(struct net_device *dev);
+=======
+static void smc_tx_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t smc_start_xmit(struct sk_buff *skb,
 					struct net_device *dev);
 static irqreturn_t smc_interrupt(int irq, void *dev_id);
@@ -280,7 +295,11 @@ static void set_rx_mode(struct net_device *dev);
 static int s9k_config(struct net_device *dev, struct ifmap *map);
 static void smc_set_xcvr(struct net_device *dev, int if_port);
 static void smc_reset(struct net_device *dev);
+<<<<<<< HEAD
 static void media_check(u_long arg);
+=======
+static void media_check(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mdio_sync(unsigned int addr);
 static int mdio_read(struct net_device *dev, int phy_id, int loc);
 static void mdio_write(struct net_device *dev, int phy_id, int loc, int value);
@@ -294,8 +313,12 @@ static const struct net_device_ops smc_netdev_ops = {
 	.ndo_tx_timeout 	= smc_tx_timeout,
 	.ndo_set_config 	= s9k_config,
 	.ndo_set_rx_mode	= set_rx_mode,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= smc_ioctl,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= smc_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
@@ -319,7 +342,11 @@ static int smc91c92_probe(struct pcmcia_device *link)
 
     /* The SMC91c92-specific entries in the device structure. */
     dev->netdev_ops = &smc_netdev_ops;
+<<<<<<< HEAD
     SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+    dev->ethtool_ops = &ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     dev->watchdog_timeo = TX_TIMEOUT;
 
     smc->mii_if.dev = dev;
@@ -348,6 +375,10 @@ static void smc91c92_detach(struct pcmcia_device *link)
 
 static int cvt_ascii_address(struct net_device *dev, char *s)
 {
+<<<<<<< HEAD
+=======
+    u8 mac[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, j, da, c;
 
     if (strlen(s) != 12)
@@ -360,8 +391,14 @@ static int cvt_ascii_address(struct net_device *dev, char *s)
 	    da += ((c >= '0') && (c <= '9')) ?
 		(c - '0') : ((c & 0x0f) + 9);
 	}
+<<<<<<< HEAD
 	dev->dev_addr[i] = da;
     }
+=======
+	mac[i] = da;
+    }
+    eth_hw_addr_set(dev, mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return 0;
 }
 
@@ -540,6 +577,10 @@ static int mot_setup(struct pcmcia_device *link)
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
     int i, wait, loop;
+<<<<<<< HEAD
+=======
+    u8 mac[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     u_int addr;
 
     /* Read Ethernet address from Serial EEPROM */
@@ -560,9 +601,16 @@ static int mot_setup(struct pcmcia_device *link)
 	    return -1;
 	
 	addr = inw(ioaddr + GENERAL);
+<<<<<<< HEAD
 	dev->dev_addr[2*i]   = addr & 0xff;
 	dev->dev_addr[2*i+1] = (addr >> 8) & 0xff;
     }
+=======
+	mac[2*i]   = addr & 0xff;
+	mac[2*i+1] = (addr >> 8) & 0xff;
+    }
+    eth_hw_addr_set(dev, mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return 0;
 }
@@ -667,14 +715,22 @@ static int pcmcia_osi_mac(struct pcmcia_device *p_dev,
 			  void *priv)
 {
 	struct net_device *dev = priv;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tuple->TupleDataLen < 8)
 		return -EINVAL;
 	if (tuple->TupleData[0] != 0x04)
 		return -EINVAL;
+<<<<<<< HEAD
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = tuple->TupleData[i+2];
+=======
+
+	eth_hw_addr_set(dev, &tuple->TupleData[2]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 };
 
@@ -740,7 +796,11 @@ static int smc91c92_resume(struct pcmcia_device *link)
 	     (smc->cardid == PRODID_PSION_NET100))) {
 		i = osi_load_firmware(link);
 		if (i) {
+<<<<<<< HEAD
 			pr_err("smc91c92_cs: Failed to load firmware\n");
+=======
+			netdev_err(dev, "Failed to load firmware\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return i;
 		}
 	}
@@ -793,7 +853,11 @@ static int check_sig(struct pcmcia_device *link)
     }
 
     if (width) {
+<<<<<<< HEAD
 	    pr_info("using 8-bit IO window\n");
+=======
+	    netdev_info(dev, "using 8-bit IO window\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	    smc91c92_suspend(link);
 	    pcmcia_fixup_iowidth(link);
@@ -1036,7 +1100,11 @@ static void smc_dump(struct net_device *dev)
     save = inw(ioaddr + BANK_SELECT);
     for (w = 0; w < 4; w++) {
 	SMC_SELECT_BANK(w);
+<<<<<<< HEAD
 	netdev_printk(KERN_DEBUG, dev, "bank %d: ", w);
+=======
+	netdev_dbg(dev, "bank %d: ", w);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 14; i += 2)
 	    pr_cont(" %04x", inw(ioaddr + i));
 	pr_cont("\n");
@@ -1071,11 +1139,16 @@ static int smc_open(struct net_device *dev)
     smc->packets_waiting = 0;
 
     smc_reset(dev);
+<<<<<<< HEAD
     init_timer(&smc->media);
     smc->media.function = media_check;
     smc->media.data = (u_long) dev;
     smc->media.expires = jiffies + HZ;
     add_timer(&smc->media);
+=======
+    timer_setup(&smc->media, media_check, 0);
+    mod_timer(&smc->media, jiffies + HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return 0;
 } /* smc_open */
@@ -1176,13 +1249,21 @@ static void smc_hardware_send_packet(struct net_device * dev)
 
     smc->saved_skb = NULL;
     dev_kfree_skb_irq(skb);
+<<<<<<< HEAD
     dev->trans_start = jiffies;
+=======
+    netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     netif_start_queue(dev);
 }
 
 /*====================================================================*/
 
+<<<<<<< HEAD
 static void smc_tx_timeout(struct net_device *dev)
+=======
+static void smc_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct smc_private *smc = netdev_priv(dev);
     unsigned int ioaddr = dev->base_addr;
@@ -1191,7 +1272,11 @@ static void smc_tx_timeout(struct net_device *dev)
 		  inw(ioaddr)&0xff, inw(ioaddr + 2));
     dev->stats.tx_errors++;
     smc_reset(dev);
+<<<<<<< HEAD
     dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+    netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     smc->saved_skb = NULL;
     netif_wake_queue(dev);
 }
@@ -1213,8 +1298,12 @@ static netdev_tx_t smc_start_xmit(struct sk_buff *skb,
     if (smc->saved_skb) {
 	/* THIS SHOULD NEVER HAPPEN. */
 	dev->stats.tx_aborted_errors++;
+<<<<<<< HEAD
 	netdev_printk(KERN_DEBUG, dev,
 		      "Internal error -- sent packet while busy\n");
+=======
+	netdev_dbg(dev, "Internal error -- sent packet while busy\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_BUSY;
     }
     smc->saved_skb = skb;
@@ -1254,7 +1343,11 @@ static netdev_tx_t smc_start_xmit(struct sk_buff *skb,
     }
 
     /* Otherwise defer until the Tx-space-allocated interrupt. */
+<<<<<<< HEAD
     pr_debug("%s: memory allocation deferred.\n", dev->name);
+=======
+    netdev_dbg(dev, "memory allocation deferred.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     outw((IM_ALLOC_INT << 8) | (ir & 0xff00), ioaddr + INTERRUPT);
     spin_unlock_irqrestore(&smc->lock, flags);
 
@@ -1317,8 +1410,13 @@ static void smc_eph_irq(struct net_device *dev)
 
     SMC_SELECT_BANK(0);
     ephs = inw(ioaddr + EPH);
+<<<<<<< HEAD
     pr_debug("%s: Ethernet protocol handler interrupt, status"
 	  " %4.4x.\n", dev->name, ephs);
+=======
+    netdev_dbg(dev, "Ethernet protocol handler interrupt, status %4.4x.\n",
+	       ephs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     /* Could be a counter roll-over warning: update stats. */
     card_stats = inw(ioaddr + COUNTER);
     /* single collisions */
@@ -1357,8 +1455,13 @@ static irqreturn_t smc_interrupt(int irq, void *dev_id)
 
     ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
     pr_debug("%s: SMC91c92 interrupt %d at %#x.\n", dev->name,
 	  irq, ioaddr);
+=======
+    netdev_dbg(dev, "SMC91c92 interrupt %d at %#x.\n",
+	       irq, ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     spin_lock(&smc->lock);
     smc->watchdog = 0;
@@ -1366,8 +1469,13 @@ static irqreturn_t smc_interrupt(int irq, void *dev_id)
     if ((saved_bank & 0xff00) != 0x3300) {
 	/* The device does not exist -- the card could be off-line, or
 	   maybe it has been ejected. */
+<<<<<<< HEAD
 	pr_debug("%s: SMC91c92 interrupt %d for non-existent"
 	      "/ejected device.\n", dev->name, irq);
+=======
+	netdev_dbg(dev, "SMC91c92 interrupt %d for non-existent/ejected device.\n",
+		   irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handled = 0;
 	goto irq_done;
     }
@@ -1380,8 +1488,13 @@ static irqreturn_t smc_interrupt(int irq, void *dev_id)
 
     do { /* read the status flag, and mask it */
 	status = inw(ioaddr + INTERRUPT) & 0xff;
+<<<<<<< HEAD
 	pr_debug("%s: Status is %#2.2x (mask %#2.2x).\n", dev->name,
 	      status, mask);
+=======
+	netdev_dbg(dev, "Status is %#2.2x (mask %#2.2x).\n",
+		   status, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((status & mask) == 0) {
 	    if (bogus_cnt == INTR_WORK)
 		handled = 0;
@@ -1425,15 +1538,24 @@ static irqreturn_t smc_interrupt(int irq, void *dev_id)
 	    smc_eph_irq(dev);
     } while (--bogus_cnt);
 
+<<<<<<< HEAD
     pr_debug("  Restoring saved registers mask %2.2x bank %4.4x"
 	  " pointer %4.4x.\n", mask, saved_bank, saved_pointer);
+=======
+    netdev_dbg(dev, "  Restoring saved registers mask %2.2x bank %4.4x pointer %4.4x.\n",
+	       mask, saved_bank, saved_pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* restore state register */
     outw((mask<<8), ioaddr + INTERRUPT);
     outw(saved_pointer, ioaddr + POINTER);
     SMC_SELECT_BANK(saved_bank);
 
+<<<<<<< HEAD
     pr_debug("%s: Exiting interrupt IRQ%d.\n", dev->name, irq);
+=======
+    netdev_dbg(dev, "Exiting interrupt IRQ%d.\n", irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 irq_done:
 
@@ -1491,18 +1613,32 @@ static void smc_rx(struct net_device *dev)
     rx_status = inw(ioaddr + DATA_1);
     packet_length = inw(ioaddr + DATA_1) & 0x07ff;
 
+<<<<<<< HEAD
     pr_debug("%s: Receive status %4.4x length %d.\n",
 	  dev->name, rx_status, packet_length);
 
     if (!(rx_status & RS_ERRORS)) {		
 	/* do stuff to make a new packet */
 	struct sk_buff *skb;
+=======
+    netdev_dbg(dev, "Receive status %4.4x length %d.\n",
+	       rx_status, packet_length);
+
+    if (!(rx_status & RS_ERRORS)) {
+	/* do stuff to make a new packet */
+	struct sk_buff *skb;
+	struct smc_private *smc = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Note: packet_length adds 5 or 6 extra bytes here! */
 	skb = netdev_alloc_skb(dev, packet_length+2);
 	
 	if (skb == NULL) {
+<<<<<<< HEAD
 	    pr_debug("%s: Low memory, packet dropped.\n", dev->name);
+=======
+	    netdev_dbg(dev, "Low memory, packet dropped.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    dev->stats.rx_dropped++;
 	    outw(MC_RELEASE, ioaddr + MMU_CMD);
 	    return;
@@ -1515,7 +1651,11 @@ static void smc_rx(struct net_device *dev)
 	skb->protocol = eth_type_trans(skb, dev);
 	
 	netif_rx(skb);
+<<<<<<< HEAD
 	dev->last_rx = jiffies;
+=======
+	smc->last_rx = jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += packet_length;
 	if (rx_status & RS_MULTICAST)
@@ -1643,7 +1783,11 @@ static void smc_reset(struct net_device *dev)
     struct smc_private *smc = netdev_priv(dev);
     int i;
 
+<<<<<<< HEAD
     pr_debug("%s: smc91c92 reset called.\n", dev->name);
+=======
+    netdev_dbg(dev, "smc91c92 reset called.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* The first interaction must be a write to bring the chip out
        of sleep mode. */
@@ -1712,10 +1856,17 @@ static void smc_reset(struct net_device *dev)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static void media_check(u_long arg)
 {
     struct net_device *dev = (struct net_device *) arg;
     struct smc_private *smc = netdev_priv(dev);
+=======
+static void media_check(struct timer_list *t)
+{
+    struct smc_private *smc = from_timer(smc, t, media);
+    struct net_device *dev = smc->mii_if.dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned int ioaddr = dev->base_addr;
     u_short i, media, saved_bank;
     u_short link;
@@ -1796,7 +1947,11 @@ static void media_check(u_long arg)
     }
 
     /* Ignore collisions unless we've had no rx's recently */
+<<<<<<< HEAD
     if (time_after(jiffies, dev->last_rx + HZ)) {
+=======
+    if (time_after(jiffies, smc->last_rx + HZ)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smc->tx_err || (smc->media_status & EPH_16COL))
 	    media |= EPH_16COL;
     }
@@ -1847,6 +2002,7 @@ static int smc_link_ok(struct net_device *dev)
     }
 }
 
+<<<<<<< HEAD
 static int smc_netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
     u16 tmp;
@@ -1897,6 +2053,60 @@ static int smc_netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
     outw(tmp, ioaddr + TCR);
 	
     return 0;
+=======
+static void smc_netdev_get_ecmd(struct net_device *dev,
+				struct ethtool_link_ksettings *ecmd)
+{
+	u16 tmp;
+	unsigned int ioaddr = dev->base_addr;
+	u32 supported;
+
+	supported = (SUPPORTED_TP | SUPPORTED_AUI |
+		     SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full);
+
+	SMC_SELECT_BANK(1);
+	tmp = inw(ioaddr + CONFIG);
+	ecmd->base.port = (tmp & CFG_AUI_SELECT) ? PORT_AUI : PORT_TP;
+	ecmd->base.speed = SPEED_10;
+	ecmd->base.phy_address = ioaddr + MGMT;
+
+	SMC_SELECT_BANK(0);
+	tmp = inw(ioaddr + TCR);
+	ecmd->base.duplex = (tmp & TCR_FDUPLX) ? DUPLEX_FULL : DUPLEX_HALF;
+
+	ethtool_convert_legacy_u32_to_link_mode(ecmd->link_modes.supported,
+						supported);
+}
+
+static int smc_netdev_set_ecmd(struct net_device *dev,
+			       const struct ethtool_link_ksettings *ecmd)
+{
+	u16 tmp;
+	unsigned int ioaddr = dev->base_addr;
+
+	if (ecmd->base.speed != SPEED_10)
+		return -EINVAL;
+	if (ecmd->base.duplex != DUPLEX_HALF &&
+	    ecmd->base.duplex != DUPLEX_FULL)
+		return -EINVAL;
+	if (ecmd->base.port != PORT_TP && ecmd->base.port != PORT_AUI)
+		return -EINVAL;
+
+	if (ecmd->base.port == PORT_AUI)
+		smc_set_xcvr(dev, 1);
+	else
+		smc_set_xcvr(dev, 0);
+
+	SMC_SELECT_BANK(0);
+	tmp = inw(ioaddr + TCR);
+	if (ecmd->base.duplex == DUPLEX_FULL)
+		tmp |= TCR_FDUPLX;
+	else
+		tmp &= ~TCR_FDUPLX;
+	outw(tmp, ioaddr + TCR);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int check_if_running(struct net_device *dev)
@@ -1908,21 +2118,34 @@ static int check_if_running(struct net_device *dev)
 
 static void smc_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 }
 
 static int smc_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+}
+
+static int smc_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *ecmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smc_private *smc = netdev_priv(dev);
 	unsigned int ioaddr = dev->base_addr;
 	u16 saved_bank = inw(ioaddr + BANK_SELECT);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&smc->lock, flags);
 	SMC_SELECT_BANK(3);
 	if (smc->cfg & CFG_MII_SELECT)
+<<<<<<< HEAD
 		ret = mii_ethtool_gset(&smc->mii_if, ecmd);
 	else
 		ret = smc_netdev_get_ecmd(dev, ecmd);
@@ -1932,6 +2155,18 @@ static int smc_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 }
 
 static int smc_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+		mii_ethtool_get_link_ksettings(&smc->mii_if, ecmd);
+	else
+		smc_netdev_get_ecmd(dev, ecmd);
+	SMC_SELECT_BANK(saved_bank);
+	spin_unlock_irqrestore(&smc->lock, flags);
+	return 0;
+}
+
+static int smc_set_link_ksettings(struct net_device *dev,
+				  const struct ethtool_link_ksettings *ecmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smc_private *smc = netdev_priv(dev);
 	unsigned int ioaddr = dev->base_addr;
@@ -1942,7 +2177,11 @@ static int smc_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 	spin_lock_irqsave(&smc->lock, flags);
 	SMC_SELECT_BANK(3);
 	if (smc->cfg & CFG_MII_SELECT)
+<<<<<<< HEAD
 		ret = mii_ethtool_sset(&smc->mii_if, ecmd);
+=======
+		ret = mii_ethtool_set_link_ksettings(&smc->mii_if, ecmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ret = smc_netdev_set_ecmd(dev, ecmd);
 	SMC_SELECT_BANK(saved_bank);
@@ -1986,10 +2225,17 @@ static int smc_nway_reset(struct net_device *dev)
 static const struct ethtool_ops ethtool_ops = {
 	.begin = check_if_running,
 	.get_drvinfo = smc_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = smc_get_settings,
 	.set_settings = smc_set_settings,
 	.get_link = smc_get_link,
 	.nway_reset = smc_nway_reset,
+=======
+	.get_link = smc_get_link,
+	.nway_reset = smc_nway_reset,
+	.get_link_ksettings = smc_get_link_ksettings,
+	.set_link_ksettings = smc_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int smc_ioctl (struct net_device *dev, struct ifreq *rq, int cmd)
@@ -2054,6 +2300,7 @@ static struct pcmcia_driver smc91c92_cs_driver = {
 	.suspend	= smc91c92_suspend,
 	.resume		= smc91c92_resume,
 };
+<<<<<<< HEAD
 
 static int __init init_smc91c92_cs(void)
 {
@@ -2067,3 +2314,6 @@ static void __exit exit_smc91c92_cs(void)
 
 module_init(init_smc91c92_cs);
 module_exit(exit_smc91c92_cs);
+=======
+module_pcmcia_driver(smc91c92_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

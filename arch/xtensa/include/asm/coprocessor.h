@@ -12,9 +12,14 @@
 #ifndef _XTENSA_COPROCESSOR_H
 #define _XTENSA_COPROCESSOR_H
 
+<<<<<<< HEAD
 #include <linux/stringify.h>
 #include <variant/core.h>
 #include <variant/tie.h>
+=======
+#include <variant/tie.h>
+#include <asm/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/types.h>
 
 #ifdef __ASSEMBLY__
@@ -90,6 +95,7 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 
 #if XCHAL_HAVE_CP
 
@@ -104,6 +110,8 @@
 #endif /* XCHAL_HAVE_CP */
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Additional registers.
  * We define three types of additional registers:
@@ -157,6 +165,7 @@ typedef struct { XCHAL_CP6_SA_LIST(2) } xtregs_cp6_t
 typedef struct { XCHAL_CP7_SA_LIST(2) } xtregs_cp7_t
 	__attribute__ ((aligned (XCHAL_CP7_SA_ALIGN)));
 
+<<<<<<< HEAD
 extern struct thread_info* coprocessor_owner[XCHAL_CP_MAX];
 extern void coprocessor_save(void*, int);
 extern void coprocessor_load(void*, int);
@@ -171,6 +180,14 @@ static inline void coprocessor_clear_cpenable(void)
 	unsigned long i = 0;
 	WSR_CPENABLE(i);
 }
+=======
+struct thread_info;
+void coprocessor_flush(struct thread_info *ti, int cp_index);
+void coprocessor_release_all(struct thread_info *ti);
+void coprocessor_flush_all(struct thread_info *ti);
+void coprocessor_flush_release_all(struct thread_info *ti);
+void local_coprocessors_flush_release_all(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* XTENSA_HAVE_COPROCESSORS */
 

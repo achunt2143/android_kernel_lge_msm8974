@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_AK4117_H
 #define __SOUND_AK4117_H
 
 /*
  *  Routines for Asahi Kasei AK4117
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define AK4117_REG_PWRDN	0x00	/* power down */
@@ -155,6 +162,17 @@
 typedef void (ak4117_write_t)(void *private_data, unsigned char addr, unsigned char data);
 typedef unsigned char (ak4117_read_t)(void *private_data, unsigned char addr);
 
+<<<<<<< HEAD
+=======
+enum {
+	AK4117_PARITY_ERRORS,
+	AK4117_V_BIT_ERRORS,
+	AK4117_QCRC_ERRORS,
+	AK4117_CCRC_ERRORS,
+	AK4117_NUM_ERRORS
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ak4117 {
 	struct snd_card *card;
 	ak4117_write_t * write;
@@ -165,10 +183,14 @@ struct ak4117 {
 	unsigned char regmap[5];
 	struct snd_kcontrol *kctls[AK4117_CONTROLS];
 	struct snd_pcm_substream *substream;
+<<<<<<< HEAD
 	unsigned long parity_errors;
 	unsigned long v_bit_errors;
 	unsigned long qcrc_errors;
 	unsigned long ccrc_errors;
+=======
+	unsigned long errors[AK4117_NUM_ERRORS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char rcs0;
 	unsigned char rcs1;
 	unsigned char rcs2;

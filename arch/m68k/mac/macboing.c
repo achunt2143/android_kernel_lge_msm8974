@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Mac bong noise generator. Note - we ought to put a boingy noise
  *	here 8)
@@ -15,6 +19,11 @@
 #include <asm/macintosh.h>
 #include <asm/mac_asc.h>
 
+<<<<<<< HEAD
+=======
+#include "mac.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mac_asc_inited;
 /*
  * dumb triangular wave table
@@ -22,6 +31,7 @@ static int mac_asc_inited;
 static __u8 mac_asc_wave_tab[ 0x800 ];
 
 /*
+<<<<<<< HEAD
  * Alan's original sine table; needs interpolating to 0x800
  * (hint: interpolate or hardwire [0 -> Pi/2[, it's symmetric)
  */
@@ -31,6 +41,8 @@ static const signed char sine_data[] = {
 };
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * where the ASC hides ...
  */
 static volatile __u8* mac_asc_regs = ( void* )0x50F14000;
@@ -47,16 +59,26 @@ static unsigned long mac_bell_phasepersample;
  * some function protos
  */
 static void mac_init_asc( void );
+<<<<<<< HEAD
 static void mac_nosound( unsigned long );
 static void mac_quadra_start_bell( unsigned int, unsigned int, unsigned int );
 static void mac_quadra_ring_bell( unsigned long );
+=======
+static void mac_nosound(struct timer_list *);
+static void mac_quadra_start_bell( unsigned int, unsigned int, unsigned int );
+static void mac_quadra_ring_bell(struct timer_list *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mac_av_start_bell( unsigned int, unsigned int, unsigned int );
 static void ( *mac_special_bell )( unsigned int, unsigned int, unsigned int );
 
 /*
  * our timer to start/continue/stop the bell
  */
+<<<<<<< HEAD
 static DEFINE_TIMER(mac_sound_timer, mac_nosound, 0, 0);
+=======
+static DEFINE_TIMER(mac_sound_timer, mac_nosound);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Sort of initialize the sound chip (called from mac_mksound on the first
@@ -115,7 +137,11 @@ static void mac_init_asc( void )
 			 *   support 16-bit stereo output, but only mono input."
 			 *
 			 *   Technical Information Library (TIL) article number 16405. 
+<<<<<<< HEAD
 			 *   http://support.apple.com/kb/TA32601 
+=======
+			 *   https://support.apple.com/kb/TA32601
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *
 			 * --David Kilzer
 			 */
@@ -215,7 +241,11 @@ void mac_mksound( unsigned int freq, unsigned int length )
 /*
  * regular ASC: stop whining ..
  */
+<<<<<<< HEAD
 static void mac_nosound( unsigned long ignored )
+=======
+static void mac_nosound(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mac_asc_regs[ ASC_ENABLE ] = 0;
 }
@@ -269,7 +299,11 @@ static void mac_quadra_start_bell( unsigned int freq, unsigned int length, unsig
  * already load the wave table, or at least call this one...
  * This piece keeps reloading the wave table until done.
  */
+<<<<<<< HEAD
 static void mac_quadra_ring_bell( unsigned long ignored )
+=======
+static void mac_quadra_ring_bell(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int	i, count = mac_asc_samplespersec / HZ;
 	unsigned long flags;

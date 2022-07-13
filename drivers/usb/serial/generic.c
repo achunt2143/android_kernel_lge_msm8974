@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * USB Serial Converter Generic functions
  *
@@ -11,6 +12,18 @@
  */
 
 #include <linux/kernel.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * USB Serial Converter Generic functions
+ *
+ * Copyright (C) 2010 - 2013 Johan Hovold (jhovold@gmail.com)
+ * Copyright (C) 1999 - 2002 Greg Kroah-Hartman (greg@kroah.com)
+ */
+
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/sysrq.h>
@@ -24,6 +37,7 @@
 #include <linux/kfifo.h>
 #include <linux/serial.h>
 
+<<<<<<< HEAD
 static int debug;
 
 #ifdef CONFIG_USB_SERIAL_GENERIC
@@ -31,6 +45,10 @@ static int debug;
 static int generic_probe(struct usb_interface *interface,
 			 const struct usb_device_id *id);
 
+=======
+#ifdef CONFIG_USB_SERIAL_GENERIC
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __u16 vendor  = 0x05f9;
 static __u16 product = 0xffff;
 
@@ -42,6 +60,7 @@ MODULE_PARM_DESC(product, "User specified USB idProduct");
 
 static struct usb_device_id generic_device_ids[2]; /* Initially all zeroes. */
 
+<<<<<<< HEAD
 /* we want to look at all devices, as the vendor/product id can change
  * depending on the command line argument */
 static const struct usb_device_id generic_serial_ids[] = {
@@ -58,14 +77,49 @@ static struct usb_driver generic_driver = {
 
 /* All of the device info needed for the Generic Serial Converter */
 struct usb_serial_driver usb_serial_generic_device = {
+=======
+static int usb_serial_generic_probe(struct usb_serial *serial,
+					const struct usb_device_id *id)
+{
+	struct device *dev = &serial->interface->dev;
+
+	dev_info(dev, "The \"generic\" usb-serial driver is only for testing and one-off prototypes.\n");
+	dev_info(dev, "Tell linux-usb@vger.kernel.org to add your device to a proper driver.\n");
+
+	return 0;
+}
+
+static int usb_serial_generic_calc_num_ports(struct usb_serial *serial,
+					struct usb_serial_endpoints *epds)
+{
+	struct device *dev = &serial->interface->dev;
+	int num_ports;
+
+	num_ports = max(epds->num_bulk_in, epds->num_bulk_out);
+
+	if (num_ports == 0) {
+		dev_err(dev, "device has no bulk endpoints\n");
+		return -ENODEV;
+	}
+
+	return num_ports;
+}
+
+static struct usb_serial_driver usb_serial_generic_device = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.owner =	THIS_MODULE,
 		.name =		"generic",
 	},
 	.id_table =		generic_device_ids,
+<<<<<<< HEAD
 	.num_ports =		1,
 	.disconnect =		usb_serial_generic_disconnect,
 	.release =		usb_serial_generic_release,
+=======
+	.probe =		usb_serial_generic_probe,
+	.calc_num_ports =	usb_serial_generic_calc_num_ports,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.throttle =		usb_serial_generic_throttle,
 	.unthrottle =		usb_serial_generic_unthrottle,
 	.resume =		usb_serial_generic_resume,
@@ -75,6 +129,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&usb_serial_generic_device, NULL
 };
 
+<<<<<<< HEAD
 static int generic_probe(struct usb_interface *interface,
 			       const struct usb_device_id *id)
 {
@@ -92,14 +147,27 @@ int usb_serial_generic_register(int _debug)
 	int retval = 0;
 
 	debug = _debug;
+=======
+#endif
+
+int usb_serial_generic_register(void)
+{
+	int retval = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_SERIAL_GENERIC
 	generic_device_ids[0].idVendor = vendor;
 	generic_device_ids[0].idProduct = product;
 	generic_device_ids[0].match_flags =
 		USB_DEVICE_ID_MATCH_VENDOR | USB_DEVICE_ID_MATCH_PRODUCT;
 
+<<<<<<< HEAD
 	/* register our generic driver with ourselves */
 	retval = usb_serial_register_drivers(&generic_driver, serial_drivers);
+=======
+	retval = usb_serial_register_drivers(serial_drivers,
+			"usbserial_generic", generic_device_ids);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return retval;
 }
@@ -107,14 +175,19 @@ int usb_serial_generic_register(int _debug)
 void usb_serial_generic_deregister(void)
 {
 #ifdef CONFIG_USB_SERIAL_GENERIC
+<<<<<<< HEAD
 	/* remove our generic driver */
 	usb_serial_deregister_drivers(&generic_driver, serial_drivers);
+=======
+	usb_serial_deregister_drivers(serial_drivers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 int usb_serial_generic_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	int result = 0;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	dbg("%s - port %d", __func__, port->number);
@@ -126,6 +199,11 @@ int usb_serial_generic_open(struct tty_struct *tty, struct usb_serial_port *port
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	/* if we have a bulk endpoint, start reading from it */
+=======
+
+	clear_bit(USB_SERIAL_THROTTLED, &port->flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port->bulk_in_size)
 		result = usb_serial_generic_submit_read_urbs(port, GFP_KERNEL);
 
@@ -133,6 +211,7 @@ int usb_serial_generic_open(struct tty_struct *tty, struct usb_serial_port *port
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_open);
 
+<<<<<<< HEAD
 static void generic_cleanup(struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;
@@ -163,6 +242,25 @@ void usb_serial_generic_close(struct usb_serial_port *port)
 {
 	dbg("%s - port %d", __func__, port->number);
 	generic_cleanup(port);
+=======
+void usb_serial_generic_close(struct usb_serial_port *port)
+{
+	unsigned long flags;
+	int i;
+
+	if (port->bulk_out_size) {
+		for (i = 0; i < ARRAY_SIZE(port->write_urbs); ++i)
+			usb_kill_urb(port->write_urbs[i]);
+
+		spin_lock_irqsave(&port->lock, flags);
+		kfifo_reset_out(&port->write_fifo);
+		spin_unlock_irqrestore(&port->lock, flags);
+	}
+	if (port->bulk_in_size) {
+		for (i = 0; i < ARRAY_SIZE(port->read_urbs); ++i)
+			usb_kill_urb(port->read_urbs[i]);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_close);
 
@@ -173,12 +271,25 @@ int usb_serial_generic_prepare_write_buffer(struct usb_serial_port *port,
 }
 
 /**
+<<<<<<< HEAD
  * usb_serial_generic_write_start - kick off an URB write
  * @port:	Pointer to the &struct usb_serial_port data
  *
  * Returns zero on success, or a negative errno value
  */
 static int usb_serial_generic_write_start(struct usb_serial_port *port)
+=======
+ * usb_serial_generic_write_start - start writing buffered data
+ * @port: usb-serial port
+ * @mem_flags: flags to use for memory allocations
+ *
+ * Serialised using USB_SERIAL_WRITE_BUSY flag.
+ *
+ * Return: Zero on success or if busy, otherwise a negative errno value.
+ */
+int usb_serial_generic_write_start(struct usb_serial_port *port,
+							gfp_t mem_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct urb *urb;
 	int count, result;
@@ -203,14 +314,22 @@ retry:
 						urb->transfer_buffer,
 						port->bulk_out_size);
 	urb->transfer_buffer_length = count;
+<<<<<<< HEAD
 	usb_serial_debug_data(debug, &port->dev, __func__, count,
 						urb->transfer_buffer);
+=======
+	usb_serial_debug_data(&port->dev, __func__, count, urb->transfer_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&port->lock, flags);
 	port->tx_bytes += count;
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	clear_bit(i, &port->write_urbs_free);
+<<<<<<< HEAD
 	result = usb_submit_urb(urb, GFP_ATOMIC);
+=======
+	result = usb_submit_urb(urb, mem_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result) {
 		dev_err_console(port, "%s - error submitting urb: %d\n",
 						__func__, result);
@@ -225,6 +344,7 @@ retry:
 
 	goto retry;	/* try sending off another urb */
 }
+<<<<<<< HEAD
 
 /**
  * usb_serial_generic_write - generic write function for serial USB devices
@@ -236,15 +356,31 @@ retry:
  * Returns the number of characters actually written, which may be anything
  * from zero to @count. If an error occurs, it returns the negative errno
  * value.
+=======
+EXPORT_SYMBOL_GPL(usb_serial_generic_write_start);
+
+/**
+ * usb_serial_generic_write - generic write function
+ * @tty: tty for the port
+ * @port: usb-serial port
+ * @buf: data to write
+ * @count: number of bytes to write
+ *
+ * Return: The number of characters buffered, which may be anything from
+ * zero to @count, or a negative errno value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int usb_serial_generic_write(struct tty_struct *tty,
 	struct usb_serial_port *port, const unsigned char *buf, int count)
 {
 	int result;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
 	/* only do something if we have a bulk out endpoint */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!port->bulk_out_size)
 		return -ENODEV;
 
@@ -252,7 +388,11 @@ int usb_serial_generic_write(struct tty_struct *tty,
 		return 0;
 
 	count = kfifo_in_locked(&port->write_fifo, buf, count, &port->lock);
+<<<<<<< HEAD
 	result = usb_serial_generic_write_start(port);
+=======
+	result = usb_serial_generic_write_start(port, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		return result;
 
@@ -260,6 +400,7 @@ int usb_serial_generic_write(struct tty_struct *tty,
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_write);
 
+<<<<<<< HEAD
 int usb_serial_generic_write_room(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -267,6 +408,13 @@ int usb_serial_generic_write_room(struct tty_struct *tty)
 	int room;
 
 	dbg("%s - port %d", __func__, port->number);
+=======
+unsigned int usb_serial_generic_write_room(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	unsigned long flags;
+	unsigned int room;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!port->bulk_out_size)
 		return 0;
@@ -275,6 +423,7 @@ int usb_serial_generic_write_room(struct tty_struct *tty)
 	room = kfifo_avail(&port->write_fifo);
 	spin_unlock_irqrestore(&port->lock, flags);
 
+<<<<<<< HEAD
 	dbg("%s - returns %d", __func__, room);
 	return room;
 }
@@ -286,6 +435,17 @@ int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
 	int chars;
 
 	dbg("%s - port %d", __func__, port->number);
+=======
+	dev_dbg(&port->dev, "%s - returns %u\n", __func__, room);
+	return room;
+}
+
+unsigned int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	unsigned long flags;
+	unsigned int chars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!port->bulk_out_size)
 		return 0;
@@ -294,9 +454,48 @@ int usb_serial_generic_chars_in_buffer(struct tty_struct *tty)
 	chars = kfifo_len(&port->write_fifo) + port->tx_bytes;
 	spin_unlock_irqrestore(&port->lock, flags);
 
+<<<<<<< HEAD
 	dbg("%s - returns %d", __func__, chars);
 	return chars;
 }
+=======
+	dev_dbg(&port->dev, "%s - returns %u\n", __func__, chars);
+	return chars;
+}
+EXPORT_SYMBOL_GPL(usb_serial_generic_chars_in_buffer);
+
+void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	unsigned int bps;
+	unsigned long period;
+	unsigned long expire;
+
+	bps = tty_get_baud_rate(tty);
+	if (!bps)
+		bps = 9600;	/* B0 */
+	/*
+	 * Use a poll-period of roughly the time it takes to send one
+	 * character or at least one jiffy.
+	 */
+	period = max_t(unsigned long, (10 * HZ / bps), 1);
+	if (timeout)
+		period = min_t(unsigned long, period, timeout);
+
+	dev_dbg(&port->dev, "%s - timeout = %u ms, period = %u ms\n",
+					__func__, jiffies_to_msecs(timeout),
+					jiffies_to_msecs(period));
+	expire = jiffies + timeout;
+	while (!port->serial->type->tx_empty(port)) {
+		schedule_timeout_interruptible(period);
+		if (signal_pending(current))
+			break;
+		if (timeout && time_after(jiffies, expire))
+			break;
+	}
+}
+EXPORT_SYMBOL_GPL(usb_serial_generic_wait_until_sent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int usb_serial_generic_submit_read_urb(struct usb_serial_port *port,
 						int index, gfp_t mem_flags)
@@ -306,11 +505,19 @@ static int usb_serial_generic_submit_read_urb(struct usb_serial_port *port,
 	if (!test_and_clear_bit(index, &port->read_urbs_free))
 		return 0;
 
+<<<<<<< HEAD
 	dbg("%s - port %d, urb %d\n", __func__, port->number, index);
 
 	res = usb_submit_urb(port->read_urbs[index], mem_flags);
 	if (res) {
 		if (res != -EPERM) {
+=======
+	dev_dbg(&port->dev, "%s - urb %d\n", __func__, index);
+
+	res = usb_submit_urb(port->read_urbs[index], mem_flags);
+	if (res) {
+		if (res != -EPERM && res != -ENODEV) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&port->dev,
 					"%s - usb_submit_urb failed: %d\n",
 					__func__, res);
@@ -328,8 +535,11 @@ int usb_serial_generic_submit_read_urbs(struct usb_serial_port *port,
 	int res;
 	int i;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(port->read_urbs); ++i) {
 		res = usb_serial_generic_submit_read_urb(port, i, mem_flags);
 		if (res)
@@ -348,12 +558,17 @@ EXPORT_SYMBOL_GPL(usb_serial_generic_submit_read_urbs);
 void usb_serial_generic_process_read_urb(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
+<<<<<<< HEAD
 	struct tty_struct *tty;
 	char *ch = (char *)urb->transfer_buffer;
+=======
+	char *ch = urb->transfer_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!urb->actual_length)
 		return;
+<<<<<<< HEAD
 
 	tty = tty_port_tty_get(&port->port);
 	if (!tty)
@@ -372,6 +587,22 @@ void usb_serial_generic_process_read_urb(struct urb *urb)
 	}
 	tty_flip_buffer_push(tty);
 	tty_kref_put(tty);
+=======
+	/*
+	 * The per character mucking around with sysrq path it too slow for
+	 * stuff like 3G modems, so shortcircuit it in the 99.9999999% of
+	 * cases where the USB serial is not a console anyway.
+	 */
+	if (port->sysrq) {
+		for (i = 0; i < urb->actual_length; i++, ch++) {
+			if (!usb_serial_handle_sysrq_char(port, *ch))
+				tty_insert_flip_char(&port->port, *ch, TTY_NORMAL);
+		}
+	} else {
+		tty_insert_flip_string(&port->port, ch, urb->actual_length);
+	}
+	tty_flip_buffer_push(&port->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_process_read_urb);
 
@@ -379,13 +610,19 @@ void usb_serial_generic_read_bulk_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	unsigned char *data = urb->transfer_buffer;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	bool stopped = false;
+	int status = urb->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(port->read_urbs); ++i) {
 		if (urb == port->read_urbs[i])
 			break;
 	}
+<<<<<<< HEAD
 	set_bit(i, &port->read_urbs_free);
 
 	dbg("%s - port %d, urb %d, len %d\n", __func__, port->number, i,
@@ -407,6 +644,57 @@ void usb_serial_generic_read_bulk_callback(struct urb *urb)
 		usb_serial_generic_submit_read_urb(port, i, GFP_ATOMIC);
 	} else
 		spin_unlock_irqrestore(&port->lock, flags);
+=======
+
+	dev_dbg(&port->dev, "%s - urb %d, len %d\n", __func__, i,
+							urb->actual_length);
+	switch (status) {
+	case 0:
+		usb_serial_debug_data(&port->dev, __func__, urb->actual_length,
+							data);
+		port->serial->type->process_read_urb(urb);
+		break;
+	case -ENOENT:
+	case -ECONNRESET:
+	case -ESHUTDOWN:
+		dev_dbg(&port->dev, "%s - urb stopped: %d\n",
+							__func__, status);
+		stopped = true;
+		break;
+	case -EPIPE:
+		dev_err(&port->dev, "%s - urb stopped: %d\n",
+							__func__, status);
+		stopped = true;
+		break;
+	default:
+		dev_dbg(&port->dev, "%s - nonzero urb status: %d\n",
+							__func__, status);
+		break;
+	}
+
+	/*
+	 * Make sure URB processing is done before marking as free to avoid
+	 * racing with unthrottle() on another CPU. Matches the barriers
+	 * implied by the test_and_clear_bit() in
+	 * usb_serial_generic_submit_read_urb().
+	 */
+	smp_mb__before_atomic();
+	set_bit(i, &port->read_urbs_free);
+	/*
+	 * Make sure URB is marked as free before checking the throttled flag
+	 * to avoid racing with unthrottle() on another CPU. Matches the
+	 * smp_mb__after_atomic() in unthrottle().
+	 */
+	smp_mb__after_atomic();
+
+	if (stopped)
+		return;
+
+	if (test_bit(USB_SERIAL_THROTTLED, &port->flags))
+		return;
+
+	usb_serial_generic_submit_read_urb(port, i, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_read_bulk_callback);
 
@@ -417,17 +705,25 @@ void usb_serial_generic_write_bulk_callback(struct urb *urb)
 	int status = urb->status;
 	int i;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
 	for (i = 0; i < ARRAY_SIZE(port->write_urbs); ++i)
 		if (port->write_urbs[i] == urb)
 			break;
 
+=======
+	for (i = 0; i < ARRAY_SIZE(port->write_urbs); ++i) {
+		if (port->write_urbs[i] == urb)
+			break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&port->lock, flags);
 	port->tx_bytes -= urb->transfer_buffer_length;
 	set_bit(i, &port->write_urbs_free);
 	spin_unlock_irqrestore(&port->lock, flags);
 
+<<<<<<< HEAD
 	if (status) {
 		dbg("%s - non-zero urb status: %d", __func__, status);
 
@@ -438,6 +734,28 @@ void usb_serial_generic_write_bulk_callback(struct urb *urb)
 		usb_serial_generic_write_start(port);
 	}
 
+=======
+	switch (status) {
+	case 0:
+		break;
+	case -ENOENT:
+	case -ECONNRESET:
+	case -ESHUTDOWN:
+		dev_dbg(&port->dev, "%s - urb stopped: %d\n",
+							__func__, status);
+		return;
+	case -EPIPE:
+		dev_err_console(port, "%s - urb stopped: %d\n",
+							__func__, status);
+		return;
+	default:
+		dev_err_console(port, "%s - nonzero urb status: %d\n",
+							__func__, status);
+		break;
+	}
+
+	usb_serial_generic_write_start(port, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_serial_port_softint(port);
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_write_bulk_callback);
@@ -445,6 +763,7 @@ EXPORT_SYMBOL_GPL(usb_serial_generic_write_bulk_callback);
 void usb_serial_generic_throttle(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	dbg("%s - port %d", __func__, port->number);
@@ -454,12 +773,17 @@ void usb_serial_generic_throttle(struct tty_struct *tty)
 	spin_lock_irqsave(&port->lock, flags);
 	port->throttle_req = 1;
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+
+	set_bit(USB_SERIAL_THROTTLED, &port->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_throttle);
 
 void usb_serial_generic_unthrottle(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	int was_throttled;
 
 	dbg("%s - port %d", __func__, port->number);
@@ -479,6 +803,101 @@ EXPORT_SYMBOL_GPL(usb_serial_generic_unthrottle);
 int usb_serial_handle_sysrq_char(struct usb_serial_port *port, unsigned int ch)
 {
 	if (port->sysrq && port->port.console) {
+=======
+
+	clear_bit(USB_SERIAL_THROTTLED, &port->flags);
+
+	/*
+	 * Matches the smp_mb__after_atomic() in
+	 * usb_serial_generic_read_bulk_callback().
+	 */
+	smp_mb__after_atomic();
+
+	usb_serial_generic_submit_read_urbs(port, GFP_KERNEL);
+}
+EXPORT_SYMBOL_GPL(usb_serial_generic_unthrottle);
+
+static bool usb_serial_generic_msr_changed(struct tty_struct *tty,
+				unsigned long arg, struct async_icount *cprev)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct async_icount cnow;
+	unsigned long flags;
+	bool ret;
+
+	/*
+	 * Use tty-port initialised flag to detect all hangups including the
+	 * one generated at USB-device disconnect.
+	 */
+	if (!tty_port_initialized(&port->port))
+		return true;
+
+	spin_lock_irqsave(&port->lock, flags);
+	cnow = port->icount;				/* atomic copy*/
+	spin_unlock_irqrestore(&port->lock, flags);
+
+	ret =	((arg & TIOCM_RNG) && (cnow.rng != cprev->rng)) ||
+		((arg & TIOCM_DSR) && (cnow.dsr != cprev->dsr)) ||
+		((arg & TIOCM_CD)  && (cnow.dcd != cprev->dcd)) ||
+		((arg & TIOCM_CTS) && (cnow.cts != cprev->cts));
+
+	*cprev = cnow;
+
+	return ret;
+}
+
+int usb_serial_generic_tiocmiwait(struct tty_struct *tty, unsigned long arg)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct async_icount cnow;
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&port->lock, flags);
+	cnow = port->icount;				/* atomic copy */
+	spin_unlock_irqrestore(&port->lock, flags);
+
+	ret = wait_event_interruptible(port->port.delta_msr_wait,
+			usb_serial_generic_msr_changed(tty, arg, &cnow));
+	if (!ret && !tty_port_initialized(&port->port))
+		ret = -EIO;
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(usb_serial_generic_tiocmiwait);
+
+int usb_serial_generic_get_icount(struct tty_struct *tty,
+					struct serial_icounter_struct *icount)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct async_icount cnow;
+	unsigned long flags;
+
+	spin_lock_irqsave(&port->lock, flags);
+	cnow = port->icount;				/* atomic copy */
+	spin_unlock_irqrestore(&port->lock, flags);
+
+	icount->cts = cnow.cts;
+	icount->dsr = cnow.dsr;
+	icount->rng = cnow.rng;
+	icount->dcd = cnow.dcd;
+	icount->tx = cnow.tx;
+	icount->rx = cnow.rx;
+	icount->frame = cnow.frame;
+	icount->parity = cnow.parity;
+	icount->overrun = cnow.overrun;
+	icount->brk = cnow.brk;
+	icount->buf_overrun = cnow.buf_overrun;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(usb_serial_generic_get_icount);
+
+#if defined(CONFIG_USB_SERIAL_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+int usb_serial_handle_sysrq_char(struct usb_serial_port *port, unsigned int ch)
+{
+	if (port->sysrq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ch && time_before(jiffies, port->sysrq)) {
 			handle_sysrq(ch);
 			port->sysrq = 0;
@@ -488,16 +907,25 @@ int usb_serial_handle_sysrq_char(struct usb_serial_port *port, unsigned int ch)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 #else
 int usb_serial_handle_sysrq_char(struct usb_serial_port *port, unsigned int ch)
 {
 	return 0;
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(usb_serial_handle_sysrq_char);
 
 int usb_serial_handle_break(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
+=======
+	if (!port->port.console)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!port->sysrq) {
 		port->sysrq = jiffies + HZ*5;
 		return 1;
@@ -506,6 +934,7 @@ int usb_serial_handle_break(struct usb_serial_port *port)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usb_serial_handle_break);
+<<<<<<< HEAD
 
 /**
  *	usb_serial_handle_dcd_change - handle a change of carrier detect state
@@ -522,6 +951,33 @@ void usb_serial_handle_dcd_change(struct usb_serial_port *usb_port,
 
 	if (status)
 		wake_up_interruptible(&port->open_wait);
+=======
+#endif
+
+/**
+ * usb_serial_handle_dcd_change - handle a change of carrier detect state
+ * @port: usb-serial port
+ * @tty: tty for the port
+ * @status: new carrier detect status, nonzero if active
+ */
+void usb_serial_handle_dcd_change(struct usb_serial_port *port,
+				struct tty_struct *tty, unsigned int status)
+{
+	dev_dbg(&port->dev, "%s - status %d\n", __func__, status);
+
+	if (tty) {
+		struct tty_ldisc *ld = tty_ldisc_ref(tty);
+
+		if (ld) {
+			if (ld->ops->dcd_change)
+				ld->ops->dcd_change(tty, status);
+			tty_ldisc_deref(ld);
+		}
+	}
+
+	if (status)
+		wake_up_interruptible(&port->port.open_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (tty && !C_CLOCAL(tty))
 		tty_hangup(tty);
 }
@@ -534,7 +990,11 @@ int usb_serial_generic_resume(struct usb_serial *serial)
 
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
+<<<<<<< HEAD
 		if (!test_bit(ASYNCB_INITIALIZED, &port->port.flags))
+=======
+		if (!tty_port_initialized(&port->port))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (port->bulk_in_size) {
@@ -545,7 +1005,11 @@ int usb_serial_generic_resume(struct usb_serial *serial)
 		}
 
 		if (port->bulk_out_size) {
+<<<<<<< HEAD
 			r = usb_serial_generic_write_start(port);
+=======
+			r = usb_serial_generic_write_start(port, GFP_NOIO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r < 0)
 				c++;
 		}
@@ -554,6 +1018,7 @@ int usb_serial_generic_resume(struct usb_serial *serial)
 	return c ? -EIO : 0;
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_resume);
+<<<<<<< HEAD
 
 void usb_serial_generic_disconnect(struct usb_serial *serial)
 {
@@ -571,3 +1036,5 @@ void usb_serial_generic_release(struct usb_serial *serial)
 {
 	dbg("%s", __func__);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

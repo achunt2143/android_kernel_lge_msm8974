@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *
@@ -9,6 +13,7 @@
  * Q40 PS/2 keyboard controller driver for Linux/m68k
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +36,9 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 #include <linux/interrupt.h>
 #include <linux/err.h>
@@ -39,7 +47,11 @@
 #include <linux/slab.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/q40_master.h>
 #include <asm/irq.h>
 #include <asm/q40ints.h>
@@ -122,7 +134,11 @@ static void q40kbd_close(struct serio *port)
 	q40kbd_flush(q40kbd);
 }
 
+<<<<<<< HEAD
 static int __devinit q40kbd_probe(struct platform_device *pdev)
+=======
+static int q40kbd_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct q40kbd *q40kbd;
 	struct serio *port;
@@ -143,8 +159,13 @@ static int __devinit q40kbd_probe(struct platform_device *pdev)
 	port->close = q40kbd_close;
 	port->port_data = q40kbd;
 	port->dev.parent = &pdev->dev;
+<<<<<<< HEAD
 	strlcpy(port->name, "Q40 Kbd Port", sizeof(port->name));
 	strlcpy(port->phys, "Q40", sizeof(port->phys));
+=======
+	strscpy(port->name, "Q40 Kbd Port", sizeof(port->name));
+	strscpy(port->phys, "Q40", sizeof(port->phys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	q40kbd_stop();
 
@@ -168,7 +189,11 @@ err_free_mem:
 	return error;
 }
 
+<<<<<<< HEAD
 static int __devexit q40kbd_remove(struct platform_device *pdev)
+=======
+static void q40kbd_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct q40kbd *q40kbd = platform_get_drvdata(pdev);
 
@@ -180,14 +205,18 @@ static int __devexit q40kbd_remove(struct platform_device *pdev)
 	serio_unregister_port(q40kbd->port);
 	free_irq(Q40_IRQ_KEYBOARD, q40kbd);
 	kfree(q40kbd);
+<<<<<<< HEAD
 
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver q40kbd_driver = {
 	.driver		= {
 		.name	= "q40kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.remove		= __devexit_p(q40kbd_remove),
@@ -205,3 +234,10 @@ static void __exit q40kbd_exit(void)
 
 module_init(q40kbd_init);
 module_exit(q40kbd_exit);
+=======
+	},
+	.remove_new	= q40kbd_remove,
+};
+
+module_platform_driver_probe(q40kbd_driver, q40kbd_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

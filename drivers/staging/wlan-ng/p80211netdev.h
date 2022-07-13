@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* p80211netdev.h
 *
 * WLAN net device structure and functions
@@ -49,6 +50,39 @@
 *
 * --------------------------------------------------------------------
 */
+=======
+/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
+/*
+ *
+ * WLAN net device structure and functions
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * This file declares the structure type that represents each wlan
+ * interface.
+ *
+ * --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _LINUX_P80211NETDEV_H
 #define _LINUX_P80211NETDEV_H
@@ -57,9 +91,12 @@
 #include <linux/wireless.h>
 #include <linux/netdevice.h>
 
+<<<<<<< HEAD
 #undef netdevice_t
 typedef struct net_device netdevice_t;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WLAN_RELEASE	"0.3.0-staging"
 
 #define WLAN_DEVICE_CLOSED	0
@@ -101,7 +138,11 @@ typedef struct net_device netdevice_t;
 #define P80211_NSDCAP_NOSCAN                0x200 /* nsd can scan */
 
 /* Received frame statistics */
+<<<<<<< HEAD
 typedef struct p80211_frmrx_t {
+=======
+struct p80211_frmrx {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mgmt;
 	u32 assocreq;
 	u32 assocresp;
@@ -135,6 +176,7 @@ typedef struct p80211_frmrx_t {
 	u32 data_unknown;
 	u32 decrypt;
 	u32 decrypt_err;
+<<<<<<< HEAD
 } p80211_frmrx_t;
 
 /* called by /proc/net/wireless */
@@ -142,12 +184,19 @@ struct iw_statistics *p80211wext_get_wireless_stats(netdevice_t * dev);
 /* wireless extensions' ioctls */
 extern struct iw_handler_def p80211wext_handler_def;
 int p80211wext_event_associated(struct wlandevice *wlandev, int assoc);
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* WEP stuff */
 #define NUM_WEPKEYS 4
 #define MAX_KEYLEN 32
 
+<<<<<<< HEAD
 #define HOSTWEP_DEFAULTKEY_MASK (BIT(1)|BIT(0))
+=======
+#define HOSTWEP_DEFAULTKEY_MASK GENMASK(1, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HOSTWEP_SHAREDKEY BIT(3)
 #define HOSTWEP_DECRYPT  BIT(4)
 #define HOSTWEP_ENCRYPT  BIT(5)
@@ -158,8 +207,12 @@ extern int wlan_watchdog;
 extern int wlan_wext_write;
 
 /* WLAN device type */
+<<<<<<< HEAD
 typedef struct wlandevice {
 	struct wlandevice *next;	/* link for list of devices */
+=======
+struct wlandevice {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *priv;		/* private data for MSD */
 
 	/* Subsystem State */
@@ -180,6 +233,7 @@ typedef struct wlandevice {
 	unsigned int ethconv;
 
 	/* device methods (init by MSD, used by p80211 */
+<<<<<<< HEAD
 	int (*open) (struct wlandevice *wlandev);
 	int (*close) (struct wlandevice *wlandev);
 	void (*reset) (struct wlandevice *wlandev);
@@ -194,6 +248,22 @@ typedef struct wlandevice {
 	/* 802.11 State */
 	u8 bssid[WLAN_BSSID_LEN];
 	p80211pstr32_t ssid;
+=======
+	int (*open)(struct wlandevice *wlandev);
+	int (*close)(struct wlandevice *wlandev);
+	void (*reset)(struct wlandevice *wlandev);
+	int (*txframe)(struct wlandevice *wlandev, struct sk_buff *skb,
+		       struct p80211_hdr *p80211_hdr,
+		       struct p80211_metawep *p80211_wep);
+	int (*mlmerequest)(struct wlandevice *wlandev, struct p80211msg *msg);
+	int (*set_multicast_list)(struct wlandevice *wlandev,
+				  struct net_device *dev);
+	void (*tx_timeout)(struct wlandevice *wlandev);
+
+	/* 802.11 State */
+	u8 bssid[WLAN_BSSID_LEN];
+	struct p80211pstr32 ssid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 macmode;
 	int linkstatus;
 
@@ -208,8 +278,12 @@ typedef struct wlandevice {
 	/* netlink socket */
 	/* queue for indications waiting for cmd completion */
 	/* Linux netdevice and support */
+<<<<<<< HEAD
 	netdevice_t *netdev;	/* ptr to linux netdevice */
 	struct net_device_stats linux_stats;
+=======
+	struct net_device *netdev;	/* ptr to linux netdevice */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Rx bottom half */
 	struct tasklet_struct rx_bh;
@@ -217,7 +291,11 @@ typedef struct wlandevice {
 	struct sk_buff_head nsd_rxq;
 
 	/* 802.11 device statistics */
+<<<<<<< HEAD
 	struct p80211_frmrx_t rx;
+=======
+	struct p80211_frmrx rx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct iw_statistics wstats;
 
@@ -225,6 +303,7 @@ typedef struct wlandevice {
 	u8 spy_number;
 	char spy_address[IW_MAX_SPY][ETH_ALEN];
 	struct iw_quality spy_stat[IW_MAX_SPY];
+<<<<<<< HEAD
 } wlandevice_t;
 
 /* WEP stuff */
@@ -240,4 +319,21 @@ int register_wlandev(wlandevice_t *wlandev);
 int unregister_wlandev(wlandevice_t *wlandev);
 void p80211netdev_rx(wlandevice_t *wlandev, struct sk_buff *skb);
 void p80211netdev_hwremoved(wlandevice_t *wlandev);
+=======
+};
+
+/* WEP stuff */
+int wep_change_key(struct wlandevice *wlandev, int keynum, u8 *key, int keylen);
+int wep_decrypt(struct wlandevice *wlandev, u8 *buf, u32 len, int key_override,
+		u8 *iv, u8 *icv);
+int wep_encrypt(struct wlandevice *wlandev, u8 *buf, u8 *dst, u32 len,
+		int keynum, u8 *iv, u8 *icv);
+
+int wlan_setup(struct wlandevice *wlandev, struct device *physdev);
+void wlan_unsetup(struct wlandevice *wlandev);
+int register_wlandev(struct wlandevice *wlandev);
+int unregister_wlandev(struct wlandevice *wlandev);
+void p80211netdev_rx(struct wlandevice *wlandev, struct sk_buff *skb);
+void p80211netdev_hwremoved(struct wlandevice *wlandev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Microchip network device configuration
 #
@@ -5,11 +9,16 @@
 config NET_VENDOR_MICROCHIP
 	bool "Microchip devices"
 	default y
+<<<<<<< HEAD
 	depends on SPI && EXPERIMENTAL
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -20,9 +29,15 @@ if NET_VENDOR_MICROCHIP
 
 config ENC28J60
 	tristate "ENC28J60 support"
+<<<<<<< HEAD
 	depends on SPI && EXPERIMENTAL
 	select CRC32
 	---help---
+=======
+	depends on SPI
+	select CRC32
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support for the Microchip EN28J60 ethernet chip.
 
 	  To compile this driver as a module, choose M here. The module will be
@@ -31,8 +46,42 @@ config ENC28J60
 config ENC28J60_WRITEVERIFY
 	bool "Enable write verify"
 	depends on ENC28J60
+<<<<<<< HEAD
 	---help---
 	  Enable the verify after the buffer write useful for debugging purpose.
 	  If unsure, say N.
 
+=======
+	help
+	  Enable the verify after the buffer write useful for debugging purpose.
+	  If unsure, say N.
+
+config ENCX24J600
+    tristate "ENCX24J600 support"
+    depends on SPI
+	help
+      Support for the Microchip ENC424J600/624J600 ethernet chip.
+
+      To compile this driver as a module, choose M here. The module will be
+      called encx24j600.
+
+config LAN743X
+	tristate "LAN743x support"
+	depends on PCI
+	depends on PTP_1588_CLOCK_OPTIONAL
+	select PHYLIB
+	select FIXED_PHY
+	select CRC16
+	select CRC32
+	help
+	  Support for the Microchip LAN743x PCI Express Gigabit Ethernet chip
+
+	  To compile this driver as a module, choose M here. The module will be
+	  called lan743x.
+
+source "drivers/net/ethernet/microchip/lan966x/Kconfig"
+source "drivers/net/ethernet/microchip/sparx5/Kconfig"
+source "drivers/net/ethernet/microchip/vcap/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_MICROCHIP

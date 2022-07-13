@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Character device configuration
 #
@@ -6,6 +10,7 @@ menu "Character devices"
 
 source "drivers/tty/Kconfig"
 
+<<<<<<< HEAD
 config DEVMEM
 	bool "Memory device driver"
 	default y
@@ -71,12 +76,20 @@ config TTY_PRINTK
 	depends on EXPERT
 	default n
 	---help---
+=======
+config TTY_PRINTK
+	tristate "TTY driver to output user messages via printk"
+	depends on EXPERT && TTY
+	default n
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, the support for writing user messages (i.e.
 	  console messages) via printk is available.
 
 	  The feature is useful to inline user messages with kernel
 	  messages.
 	  In order to use this feature, you should output user messages
+<<<<<<< HEAD
 	  to /dev/ttyprintk or redirect console to this TTY.
 
 	  If unsure, say N.
@@ -108,23 +121,50 @@ config BFIN_OTP_WRITE_ENABLE
 	  need it so as to not inadvertently clobber data.
 
 	  If unsure, say N.
+=======
+	  to /dev/ttyprintk or redirect console to this TTY, or boot
+	  the kernel with console=ttyprintk.
+
+	  If unsure, say N.
+
+config TTY_PRINTK_LEVEL
+	depends on TTY_PRINTK
+	int "ttyprintk log level (1-7)"
+	range 1 7
+	default "6"
+	help
+	  Printk log level to use for ttyprintk messages.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PRINTER
 	tristate "Parallel printer support"
 	depends on PARPORT
+<<<<<<< HEAD
 	---help---
+=======
+	depends on HAS_IOPORT || PARPORT_NOT_PC
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you intend to attach a printer to the parallel port of your Linux
 	  box (as opposed to using a serial printer; if the connector at the
 	  printer has 9 or 25 holes ["female"], then it's serial), say Y.
 	  Also read the Printing-HOWTO, available from
+<<<<<<< HEAD
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	  <https://www.tldp.org/docs.html#howto>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  It is possible to share one parallel port among several devices
 	  (e.g. printer and ZIP drive) and it is safe to compile the
 	  corresponding drivers into the kernel.
 
 	  To compile this driver as a module, choose M here and read
+<<<<<<< HEAD
 	  <file:Documentation/parport.txt>.  The module will be called lp.
+=======
+	  <file:Documentation/admin-guide/parport.rst>.  The module will be called lp.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If you have several parallel ports, you can specify which ports to
 	  use with the "lp" kernel command line option.  (Try "man bootparam"
@@ -138,7 +178,11 @@ config PRINTER
 config LP_CONSOLE
 	bool "Support for console on line printer"
 	depends on PRINTER
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you want kernel messages to be printed out as they occur, you
 	  can have a console on the printer. This option adds support for
 	  doing that; to actually get it to happen you need to pass the
@@ -155,7 +199,11 @@ config LP_CONSOLE
 config PPDEV
 	tristate "Support for user-space parallel port device drivers"
 	depends on PARPORT
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Saying Y to this adds support for /dev/parport device nodes.  This
 	  is needed for programs that want portable access to the parallel
 	  port, for instance deviceid (which displays Plug-and-Play device
@@ -170,6 +218,7 @@ config PPDEV
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 source "drivers/tty/hvc/Kconfig"
 
 config VIRTIO_CONSOLE
@@ -178,6 +227,15 @@ config VIRTIO_CONSOLE
 	select HVC_DRIVER
 	help
 	  Virtio console for use with lguest and other hypervisors.
+=======
+config VIRTIO_CONSOLE
+	tristate "Virtio console"
+	depends on TTY
+	select HVC_DRIVER
+	select VIRTIO
+	help
+	  Virtio console for use with hypervisors.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Also serves as a general-purpose serial device for data
 	  transfer between the guest and host.  Character devices at
@@ -196,6 +254,23 @@ config IBM_BSR
 	  of threads across a large system which avoids bouncing a cacheline
 	  between several cores on a system
 
+<<<<<<< HEAD
+=======
+config POWERNV_OP_PANEL
+	tristate "IBM POWERNV Operator Panel Display support"
+	depends on PPC_POWERNV
+	default m
+	help
+	  If you say Y here, a special character device node, /dev/op_panel,
+	  will be created which exposes the operator panel display on IBM
+	  Power Systems machines with FSPs.
+
+	  If you don't require access to the operator panel display from user
+	  space, say N.
+
+	  If unsure, say M here to build it as a module called powernv-op-panel.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/char/ipmi/Kconfig"
 
 config DS1620
@@ -213,7 +288,11 @@ config DS1620
 config NWBUTTON
 	tristate "NetWinder Button"
 	depends on ARCH_NETWINDER
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here and create a character device node /dev/nwbutton
 	  with major and minor numbers 10 and 158 ("man mknod"), then every
 	  time the orange button is pressed a number of times, the number of
@@ -249,7 +328,11 @@ config NWBUTTON_REBOOT
 config NWFLASH
 	tristate "NetWinder flash support"
 	depends on ARCH_NETWINDER
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here and create a character device /dev/flash with
 	  major 10 and minor 160 you can manipulate the flash ROM containing
 	  the NetWinder firmware. Be careful as accidentally overwriting the
@@ -263,6 +346,7 @@ config NWFLASH
 
 source "drivers/char/hw_random/Kconfig"
 
+<<<<<<< HEAD
 config NVRAM
 	tristate "/dev/nvram support"
 	depends on ATARI || X86 || (ARM && RTC_DRV_CMOS) || GENERIC_NVRAM
@@ -384,12 +468,18 @@ config DS1302
 
 endif # RTC_LIB
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config DTLK
 	tristate "Double Talk PC internal speech card support"
 	depends on ISA
 	help
 	  This driver is for the DoubleTalk PC, a speech synthesizer
+<<<<<<< HEAD
 	  manufactured by RC Systems (<http://www.rcsys.com/>).  It is also
+=======
+	  manufactured by RC Systems (<https://www.rcsys.com/>).  It is also
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  called the `internal DoubleTalk'.
 
 	  To compile this driver as a module, choose M here: the
@@ -397,7 +487,11 @@ config DTLK
 
 config XILINX_HWICAP
 	tristate "Xilinx HWICAP Support"
+<<<<<<< HEAD
 	depends on XILINX_VIRTEX || MICROBLAZE
+=======
+	depends on MICROBLAZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables support for Xilinx Internal Configuration
 	  Access Port (ICAP) driver.  The ICAP is used on Xilinx Virtex
@@ -405,6 +499,7 @@ config XILINX_HWICAP
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config R3964
 	tristate "Siemens R3964 line discipline"
 	---help---
@@ -425,6 +520,16 @@ config APPLICOM
 	  fieldbus cards made by Applicom International. More information
 	  about these cards can be found on the WWW at the address
 	  <http://www.applicom-int.com/>, or by email from David Woodhouse
+=======
+config APPLICOM
+	tristate "Applicom intelligent fieldbus card support"
+	depends on PCI
+	help
+	  This driver provides the kernel-side support for the intelligent
+	  fieldbus cards made by Applicom International. More information
+	  about these cards can be found on the WWW at the address
+	  <https://www.applicom-int.com/>, or by email from David Woodhouse
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  <dwmw2@infradead.org>.
 
 	  To compile this driver as a module, choose M here: the
@@ -433,18 +538,29 @@ config APPLICOM
 	  If unsure, say N.
 
 config SONYPI
+<<<<<<< HEAD
 	tristate "Sony Vaio Programmable I/O Control Device support (EXPERIMENTAL)"
 	depends on EXPERIMENTAL && X86 && PCI && INPUT && !64BIT
 	---help---
+=======
+	tristate "Sony Vaio Programmable I/O Control Device support"
+	depends on X86_32 && PCI && INPUT
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver enables access to the Sony Programmable I/O Control
 	  Device which can be found in many (all ?) Sony Vaio laptops.
 
 	  If you have one of those laptops, read
+<<<<<<< HEAD
 	  <file:Documentation/laptops/sonypi.txt>, and say Y or M here.
+=======
+	  <file:Documentation/admin-guide/laptops/sonypi.rst>, and say Y or M here.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called sonypi.
 
+<<<<<<< HEAD
 config GPIO_TB0219
 	tristate "TANBAC TB0219 GPIO support"
 	depends on TANBAC_TB022X
@@ -457,6 +573,13 @@ config MWAVE
 	depends on X86
 	select SERIAL_8250
 	---help---
+=======
+config MWAVE
+	tristate "ACP Modem (Mwave) support"
+	depends on X86 && TTY
+	select SERIAL_8250
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The ACP modem (Mwave) for Linux is a WinModem. It is composed of a
 	  kernel driver and a user level application. Together these components
 	  support direct attachment to public switched telephone networks (PSTNs)
@@ -511,6 +634,7 @@ config NSC_GPIO
 	  pc8736x_gpio drivers.  If those drivers are built as
 	  modules, this one will be too, named nsc_gpio
 
+<<<<<<< HEAD
 config RAW_DRIVER
 	tristate "RAW driver (/dev/raw/rawN)"
 	depends on BLOCK
@@ -533,6 +657,50 @@ config MAX_RAW_DEVS
 
 config HPET
 	bool "HPET - High Precision Event Timer" if (X86 || IA64)
+=======
+config DEVMEM
+	bool "/dev/mem virtual device support"
+	default y
+	help
+	  Say Y here if you want to support the /dev/mem device.
+	  The /dev/mem device is used to access areas of physical
+	  memory.
+	  When in doubt, say "Y".
+
+config NVRAM
+	tristate "/dev/nvram support"
+	depends on X86 || HAVE_ARCH_NVRAM_OPS
+	default M68K || PPC
+	help
+	  If you say Y here and create a character special file /dev/nvram
+	  with major number 10 and minor number 144 using mknod ("man mknod"),
+	  you get read and write access to the non-volatile memory.
+
+	  /dev/nvram may be used to view settings in NVRAM or to change them
+	  (with some utility). It could also be used to frequently
+	  save a few bits of very important data that may not be lost over
+	  power-off and for which writing to disk is too insecure. Note
+	  however that most NVRAM space in a PC belongs to the BIOS and you
+	  should NEVER idly tamper with it. See Ralf Brown's interrupt list
+	  for a guide to the use of CMOS bytes by your BIOS.
+
+	  This memory is conventionally called "NVRAM" on PowerPC machines,
+	  "CMOS RAM" on PCs, "NVRAM" on Ataris and "PRAM" on Macintoshes.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called nvram.
+
+config DEVPORT
+	bool "/dev/port character device"
+	depends on HAS_IOPORT
+	default y
+	help
+	  Say Y here if you want to support the /dev/port device. The /dev/port
+	  device is similar to /dev/mem, but for I/O ports.
+
+config HPET
+	bool "HPET - High Precision Event Timer" if X86
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	depends on ACPI
 	help
@@ -548,6 +716,7 @@ config HPET_MMAP
 	  If you say Y here, user applications will be able to mmap
 	  the HPET registers.
 
+<<<<<<< HEAD
 	  In some hardware implementations, the page containing HPET
 	  registers may also contain other things that shouldn't be
 	  exposed to the user.  If this applies to your hardware,
@@ -556,11 +725,28 @@ config HPET_MMAP
 config HANGCHECK_TIMER
 	tristate "Hangcheck timer"
 	depends on X86 || IA64 || PPC64 || S390
+=======
+config HPET_MMAP_DEFAULT
+	bool "Enable HPET MMAP access by default"
+	default y
+	depends on HPET_MMAP
+	help
+	  In some hardware implementations, the page containing HPET
+	  registers may also contain other things that shouldn't be
+	  exposed to the user.  This option selects the default (if
+	  kernel parameter hpet_mmap is not set) user access to the
+	  registers for applications that require it.
+
+config HANGCHECK_TIMER
+	tristate "Hangcheck timer"
+	depends on X86 || PPC64 || S390
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The hangcheck-timer module detects when the system has gone
 	  out to lunch past a certain margin.  It can reboot the system
 	  or merely print a warning.
 
+<<<<<<< HEAD
 config MMTIMER
 	tristate "MMTIMER Memory mapped RTC for SGI Altix"
 	depends on IA64_GENERIC || IA64_SGI_SN2
@@ -569,6 +755,8 @@ config MMTIMER
 	  The mmtimer device allows direct userspace access to the
 	  Altix system timer.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config UV_MMTIMER
 	tristate "UV_MMTIMER Memory mapped RTC for SGI UV"
 	depends on X86_UV
@@ -581,7 +769,11 @@ source "drivers/char/tpm/Kconfig"
 
 config TELCLOCK
 	tristate "Telecom clock driver for ATCA SBC"
+<<<<<<< HEAD
 	depends on EXPERIMENTAL && X86
+=======
+	depends on X86
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  The telecom clock device is specific to the MPCBL0010 and MPCBL0050
@@ -592,6 +784,7 @@ config TELCLOCK
 	  /sys/devices/platform/telco_clock, with a number of files for
 	  controlling the behavior of this hardware.
 
+<<<<<<< HEAD
 config DEVPORT
 	bool
 	depends on !M68K
@@ -691,3 +884,22 @@ config MSM_RDBG
 	  stub running on peripheral subsystems such as the ADSP, MODEM etc.
 endmenu
 
+=======
+source "drivers/s390/char/Kconfig"
+
+source "drivers/char/xillybus/Kconfig"
+
+config ADI
+	tristate "SPARC Privileged ADI driver"
+	depends on SPARC64
+	default m
+	help
+	  SPARC M7 and newer processors utilize ADI (Application Data
+	  Integrity) to version and protect memory.  This driver provides
+	  read/write access to the ADI versions for privileged processes.
+	  This feature is also known as MCD (Memory Corruption Detection)
+	  and SSM (Silicon Secured Memory).  Intended consumers of this
+	  driver include crash and makedumpfile.
+
+endmenu
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

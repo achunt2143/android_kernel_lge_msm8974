@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The USB Monitor, inspired by Dave Harding's USBMon.
  *
@@ -12,7 +16,11 @@
 #include <linux/export.h>
 #include <linux/usb.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "usb_mon.h"
 
@@ -28,14 +36,25 @@ static int mon_stat_open(struct inode *inode, struct file *file)
 	struct mon_bus *mbus;
 	struct snap *sp;
 
+<<<<<<< HEAD
 	if ((sp = kmalloc(sizeof(struct snap), GFP_KERNEL)) == NULL)
+=======
+	sp = kmalloc(sizeof(struct snap), GFP_KERNEL);
+	if (sp == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	mbus = inode->i_private;
 
+<<<<<<< HEAD
 	sp->slen = snprintf(sp->str, STAT_BUF_SIZE,
 	    "nreaders %d events %u text_lost %u\n",
 	    mbus->nreaders, mbus->cnt_events, mbus->cnt_text_lost);
+=======
+	sp->slen = scnprintf(sp->str, STAT_BUF_SIZE,
+			     "nreaders %d events %u text_lost %u\n",
+			     mbus->nreaders, mbus->cnt_events, mbus->cnt_text_lost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	file->private_data = sp;
 	return 0;

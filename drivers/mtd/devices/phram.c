@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) ????		Jochen Schäuble <psionic@psionic.de>
  * Copyright (c) 2003-2004	Joern Engel <joern@wh.fh-wedel.de>
  *
  * Usage:
  *
  * one commend line parameter per device, each in the form:
+<<<<<<< HEAD
  *   phram=<name>,<start>,<len>
  * <name> may be up to 63 characters.
  * <start> and <len> can be octal, decimal or hexadecimal.  If followed
@@ -13,11 +19,25 @@
  *
  * Example:
  *	phram=swap,64Mi,128Mi phram=test,900Mi,1Mi
+=======
+ *   phram=<name>,<start>,<len>[,<erasesize>]
+ * <name> may be up to 63 characters.
+ * <start>, <len>, and <erasesize> can be octal, decimal or hexadecimal.  If followed
+ * by "ki", "Mi" or "Gi", the numbers will be interpreted as kilo, mega or
+ * gigabytes. <erasesize> is optional and defaults to PAGE_SIZE.
+ *
+ * Example:
+ *	phram=swap,64Mi,128Mi phram=test,900Mi,1Mi,64Ki
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -25,10 +45,21 @@
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
 #include <linux/mtd/mtd.h>
+<<<<<<< HEAD
+=======
+#include <asm/div64.h>
+#include <linux/platform_device.h>
+#include <linux/of_address.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct phram_mtd_list {
 	struct mtd_info mtd;
 	struct list_head list;
+<<<<<<< HEAD
+=======
+	bool cached;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static LIST_HEAD(phram_list);
@@ -39,6 +70,7 @@ static int phram_erase(struct mtd_info *mtd, struct erase_info *instr)
 
 	memset(start + instr->addr, 0xff, instr->len);
 
+<<<<<<< HEAD
 	/*
 	 * This'll catch a few races. Free the thing before returning :)
 	 * I don't feel at all ashamed. This kind of thing is possible anyway
@@ -46,6 +78,8 @@ static int phram_erase(struct mtd_info *mtd, struct erase_info *instr)
 	 */
 	instr->state = MTD_ERASE_DONE;
 	mtd_erase_callback(instr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -82,20 +116,63 @@ static int phram_write(struct mtd_info *mtd, loff_t to, size_t len,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int phram_map(struct phram_mtd_list *phram, phys_addr_t start, size_t len)
+{
+	void *addr = NULL;
+
+	if (phram->cached)
+		addr = memremap(start, len, MEMREMAP_WB);
+	else
+		addr = (void __force *)ioremap(start, len);
+	if (!addr)
+		return -EIO;
+
+	phram->mtd.priv = addr;
+
+	return 0;
+}
+
+static void phram_unmap(struct phram_mtd_list *phram)
+{
+	void *addr = phram->mtd.priv;
+
+	if (phram->cached) {
+		memunmap(addr);
+		return;
+	}
+
+	iounmap((void __iomem *)addr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void unregister_devices(void)
 {
 	struct phram_mtd_list *this, *safe;
 
 	list_for_each_entry_safe(this, safe, &phram_list, list) {
 		mtd_device_unregister(&this->mtd);
+<<<<<<< HEAD
 		iounmap(this->mtd.priv);
+=======
+		phram_unmap(this);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(this->mtd.name);
 		kfree(this);
 	}
 }
 
+<<<<<<< HEAD
 static int register_device(char *name, unsigned long start, unsigned long len)
 {
+=======
+static int register_device(struct platform_device *pdev, const char *name,
+			   phys_addr_t start, size_t len, uint32_t erasesize)
+{
+	struct device_node *np = pdev ? pdev->dev.of_node : NULL;
+	bool cached = np ? !of_property_read_bool(np, "no-map") : false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct phram_mtd_list *new;
 	int ret = -ENOMEM;
 
@@ -103,9 +180,16 @@ static int register_device(char *name, unsigned long start, unsigned long len)
 	if (!new)
 		goto out0;
 
+<<<<<<< HEAD
 	ret = -EIO;
 	new->mtd.priv = ioremap(start, len);
 	if (!new->mtd.priv) {
+=======
+	new->cached = cached;
+
+	ret = phram_map(new, start, len);
+	if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("ioremap failed\n");
 		goto out1;
 	}
@@ -121,26 +205,47 @@ static int register_device(char *name, unsigned long start, unsigned long len)
 	new->mtd._write = phram_write;
 	new->mtd.owner = THIS_MODULE;
 	new->mtd.type = MTD_RAM;
+<<<<<<< HEAD
 	new->mtd.erasesize = PAGE_SIZE;
 	new->mtd.writesize = 1;
 
+=======
+	new->mtd.erasesize = erasesize;
+	new->mtd.writesize = 1;
+
+	mtd_set_of_node(&new->mtd, np);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EAGAIN;
 	if (mtd_device_register(&new->mtd, NULL, 0)) {
 		pr_err("Failed to register new device\n");
 		goto out2;
 	}
 
+<<<<<<< HEAD
 	list_add_tail(&new->list, &phram_list);
 	return 0;
 
 out2:
 	iounmap(new->mtd.priv);
+=======
+	if (pdev)
+		platform_set_drvdata(pdev, new);
+	else
+		list_add_tail(&new->list, &phram_list);
+
+	return 0;
+
+out2:
+	phram_unmap(new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out1:
 	kfree(new);
 out0:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ustrtoul(const char *cp, char **endp, unsigned int base)
 {
 	unsigned long result = simple_strtoul(cp, endp, base);
@@ -170,6 +275,39 @@ static int parse_num32(uint32_t *num32, const char *token)
 
 	*num32 = n;
 	return 0;
+=======
+static int parse_num64(uint64_t *num64, char *token)
+{
+	size_t len;
+	int shift = 0;
+	int ret;
+
+	len = strlen(token);
+	/* By dwmw2 editorial decree, "ki", "Mi" or "Gi" are to be used. */
+	if (len > 2) {
+		if (token[len - 1] == 'i') {
+			switch (token[len - 2]) {
+			case 'G':
+				shift += 10;
+				fallthrough;
+			case 'M':
+				shift += 10;
+				fallthrough;
+			case 'k':
+				shift += 10;
+				token[len - 2] = 0;
+				break;
+			default:
+				return -EINVAL;
+			}
+		}
+	}
+
+	ret = kstrtou64(token, 0, num64);
+	*num64 <<= shift;
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int parse_name(char **pname, const char *token)
@@ -181,12 +319,19 @@ static int parse_name(char **pname, const char *token)
 	if (len > 64)
 		return -ENOSPC;
 
+<<<<<<< HEAD
 	name = kmalloc(len, GFP_KERNEL);
 	if (!name)
 		return -ENOMEM;
 
 	strcpy(name, token);
 
+=======
+	name = kstrdup(token, GFP_KERNEL);
+	if (!name)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pname = name;
 	return 0;
 }
@@ -195,6 +340,10 @@ static int parse_name(char **pname, const char *token)
 static inline void kill_final_newline(char *str)
 {
 	char *newline = strrchr(str, '\n');
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (newline && !newline[1])
 		*newline = 0;
 }
@@ -205,6 +354,7 @@ static inline void kill_final_newline(char *str)
 	return 1;		\
 } while (0)
 
+<<<<<<< HEAD
 /*
  * This shall contain the module parameter if any. It is of the form:
  * - phram=<device>,<address>,<size> for module case
@@ -222,6 +372,30 @@ static int __init phram_setup(const char *val)
 	char *name;
 	uint32_t start;
 	uint32_t len;
+=======
+#ifndef MODULE
+static int phram_init_called;
+/*
+ * This shall contain the module parameter if any. It is of the form:
+ * - phram=<device>,<address>,<size>[,<erasesize>] for module case
+ * - phram.phram=<device>,<address>,<size>[,<erasesize>] for built-in case
+ * We leave 64 bytes for the device name, 20 for the address , 20 for the
+ * size and 20 for the erasesize.
+ * Example: phram.phram=rootfs,0xa0000000,512Mi,65536
+ */
+static char phram_paramline[64 + 20 + 20 + 20];
+#endif
+
+static int phram_setup(const char *val)
+{
+	char buf[64 + 20 + 20 + 20], *str = buf;
+	char *token[4];
+	char *name;
+	uint64_t start;
+	uint64_t len;
+	uint64_t erasesize = PAGE_SIZE;
+	uint32_t rem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret;
 
 	if (strnlen(val, sizeof(buf)) >= sizeof(buf))
@@ -230,7 +404,11 @@ static int __init phram_setup(const char *val)
 	strcpy(str, val);
 	kill_final_newline(str);
 
+<<<<<<< HEAD
 	for (i=0; i<3; i++)
+=======
+	for (i = 0; i < 4; i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		token[i] = strsep(&str, ",");
 
 	if (str)
@@ -243,6 +421,7 @@ static int __init phram_setup(const char *val)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = parse_num32(&start, token[1]);
 	if (ret) {
 		kfree(name);
@@ -270,11 +449,84 @@ static int __init phram_param_call(const char *val, struct kernel_param *kp)
 	 * This function is always called before 'init_phram()', whether
 	 * built-in or module.
 	 */
+=======
+	ret = parse_num64(&start, token[1]);
+	if (ret) {
+		parse_err("illegal start address\n");
+		goto error;
+	}
+
+	ret = parse_num64(&len, token[2]);
+	if (ret) {
+		parse_err("illegal device length\n");
+		goto error;
+	}
+
+	if (token[3]) {
+		ret = parse_num64(&erasesize, token[3]);
+		if (ret) {
+			parse_err("illegal erasesize\n");
+			goto error;
+		}
+	}
+
+	if (len == 0 || erasesize == 0 || erasesize > len
+	    || erasesize > UINT_MAX) {
+		parse_err("illegal erasesize or len\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
+	div_u64_rem(len, (uint32_t)erasesize, &rem);
+	if (rem) {
+		parse_err("len is not multiple of erasesize\n");
+		ret = -EINVAL;
+		goto error;
+	}
+
+	ret = register_device(NULL, name, start, len, (uint32_t)erasesize);
+	if (ret)
+		goto error;
+
+	pr_info("%s device: %#llx at %#llx for erasesize %#llx\n", name, len, start, erasesize);
+	return 0;
+
+error:
+	kfree(name);
+	return ret;
+}
+
+static int phram_param_call(const char *val, const struct kernel_param *kp)
+{
+#ifdef MODULE
+	return phram_setup(val);
+#else
+	/*
+	 * If more parameters are later passed in via
+	 * /sys/module/phram/parameters/phram
+	 * and init_phram() has already been called,
+	 * we can parse the argument now.
+	 */
+
+	if (phram_init_called)
+		return phram_setup(val);
+
+	/*
+	 * During early boot stage, we only save the parameters
+	 * here. We must parse them later: if the param passed
+	 * from kernel boot command line, phram_param_call() is
+	 * called so early that it is not possible to resolve
+	 * the device (even kmalloc() fails). Defer that work to
+	 * phram_setup().
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strlen(val) >= sizeof(phram_paramline))
 		return -ENOSPC;
 	strcpy(phram_paramline, val);
 
 	return 0;
+<<<<<<< HEAD
 }
 
 module_param_call(phram, phram_param_call, NULL, NULL, 000);
@@ -287,11 +539,80 @@ static int __init init_phram(void)
 		return phram_setup(phram_paramline);
 
 	return 0;
+=======
+#endif
+}
+
+module_param_call(phram, phram_param_call, NULL, NULL, 0200);
+MODULE_PARM_DESC(phram, "Memory region to map. \"phram=<name>,<start>,<length>[,<erasesize>]\"");
+
+#ifdef CONFIG_OF
+static const struct of_device_id phram_of_match[] = {
+	{ .compatible = "phram" },
+	{}
+};
+MODULE_DEVICE_TABLE(of, phram_of_match);
+#endif
+
+static int phram_probe(struct platform_device *pdev)
+{
+	struct resource *res;
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!res)
+		return -ENOMEM;
+
+	/* mtd_set_of_node() reads name from "label" */
+	return register_device(pdev, NULL, res->start, resource_size(res),
+			       PAGE_SIZE);
+}
+
+static void phram_remove(struct platform_device *pdev)
+{
+	struct phram_mtd_list *phram = platform_get_drvdata(pdev);
+
+	mtd_device_unregister(&phram->mtd);
+	phram_unmap(phram);
+	kfree(phram);
+}
+
+static struct platform_driver phram_driver = {
+	.probe		= phram_probe,
+	.remove_new	= phram_remove,
+	.driver		= {
+		.name		= "phram",
+		.of_match_table	= of_match_ptr(phram_of_match),
+	},
+};
+
+static int __init init_phram(void)
+{
+	int ret;
+
+	ret = platform_driver_register(&phram_driver);
+	if (ret)
+		return ret;
+
+#ifndef MODULE
+	if (phram_paramline[0])
+		ret = phram_setup(phram_paramline);
+	phram_init_called = 1;
+#endif
+
+	if (ret)
+		platform_driver_unregister(&phram_driver);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit cleanup_phram(void)
 {
 	unregister_devices();
+<<<<<<< HEAD
+=======
+	platform_driver_unregister(&phram_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(init_phram);

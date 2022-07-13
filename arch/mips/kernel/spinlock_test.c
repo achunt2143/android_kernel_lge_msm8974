@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kthread.h>
 #include <linux/hrtimer.h>
@@ -5,7 +9,11 @@
 #include <linux/debugfs.h>
 #include <linux/export.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/debug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ss_get(void *data, u64 *val)
 {
@@ -34,7 +42,11 @@ static int ss_get(void *data, u64 *val)
 	return 0;
 }
 
+<<<<<<< HEAD
 DEFINE_SIMPLE_ATTRIBUTE(fops_ss, ss_get, NULL, "%llu\n");
+=======
+DEFINE_DEBUGFS_ATTRIBUTE(fops_ss, ss_get, NULL, "%llu\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -113,6 +125,7 @@ static int multi_get(void *data, u64 *val)
 	return 0;
 }
 
+<<<<<<< HEAD
 DEFINE_SIMPLE_ATTRIBUTE(fops_multi, multi_get, NULL, "%llu\n");
 
 
@@ -136,6 +149,16 @@ static int __init spinlock_test(void)
 	if (!d)
 		return -ENOMEM;
 
+=======
+DEFINE_DEBUGFS_ATTRIBUTE(fops_multi, multi_get, NULL, "%llu\n");
+
+static int __init spinlock_test(void)
+{
+	debugfs_create_file_unsafe("spin_single", S_IRUGO, mips_debugfs_dir, NULL,
+			    &fops_ss);
+	debugfs_create_file_unsafe("spin_multi", S_IRUGO, mips_debugfs_dir, NULL,
+			    &fops_multi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 device_initcall(spinlock_test);

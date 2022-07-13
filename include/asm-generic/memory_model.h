@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_MEMORY_MODEL_H
 #define __ASM_MEMORY_MODEL_H
 
@@ -22,11 +23,22 @@
 
 #endif /* CONFIG_DISCONTIGMEM */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_MEMORY_MODEL_H
+#define __ASM_MEMORY_MODEL_H
+
+#include <linux/pfn.h>
+
+#ifndef __ASSEMBLY__
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * supports 3 memory models.
  */
 #if defined(CONFIG_FLATMEM)
 
+<<<<<<< HEAD
 #define __pfn_to_page(pfn)	(mem_map + ((pfn) - ARCH_PFN_OFFSET))
 #define __page_to_pfn(page)	((unsigned long)((page) - mem_map) + \
 				 ARCH_PFN_OFFSET)
@@ -44,6 +56,27 @@
 	(unsigned long)(__pg - __pgdat->node_mem_map) +			\
 	 __pgdat->node_start_pfn;					\
 })
+=======
+#ifndef ARCH_PFN_OFFSET
+#define ARCH_PFN_OFFSET		(0UL)
+#endif
+
+#define __pfn_to_page(pfn)	(mem_map + ((pfn) - ARCH_PFN_OFFSET))
+#define __page_to_pfn(page)	((unsigned long)((page) - mem_map) + \
+				 ARCH_PFN_OFFSET)
+
+#ifndef pfn_valid
+static inline int pfn_valid(unsigned long pfn)
+{
+	/* avoid <linux/mm.h> include hell */
+	extern unsigned long max_mapnr;
+	unsigned long pfn_offset = ARCH_PFN_OFFSET;
+
+	return pfn >= pfn_offset && (pfn - pfn_offset) < max_mapnr;
+}
+#define pfn_valid pfn_valid
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #elif defined(CONFIG_SPARSEMEM_VMEMMAP)
 
@@ -53,7 +86,11 @@
 
 #elif defined(CONFIG_SPARSEMEM)
 /*
+<<<<<<< HEAD
  * Note: section's mem_map is encorded to reflect its start_pfn.
+=======
+ * Note: section's mem_map is encoded to reflect its start_pfn.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * section[i].section_mem_map == mem_map's address - start_pfn;
  */
 #define __page_to_pfn(pg)					\
@@ -67,7 +104,17 @@
 	struct mem_section *__sec = __pfn_to_section(__pfn);	\
 	__section_mem_map_addr(__sec) + __pfn;		\
 })
+<<<<<<< HEAD
 #endif /* CONFIG_FLATMEM/DISCONTIGMEM/SPARSEMEM */
+=======
+#endif /* CONFIG_FLATMEM/SPARSEMEM */
+
+/*
+ * Convert a physical address to a Page Frame Number and back
+ */
+#define	__phys_to_pfn(paddr)	PHYS_PFN(paddr)
+#define	__pfn_to_phys(pfn)	PFN_PHYS(pfn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define page_to_pfn __page_to_pfn
 #define pfn_to_page __pfn_to_page

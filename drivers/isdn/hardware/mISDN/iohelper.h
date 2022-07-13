@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iohelper.h
  *		helper for define functions to access ISDN hardware
@@ -7,6 +11,7 @@
  * Author       Karsten Keil <keil@isdn4linux.de>
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,11 +26,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _IOHELPER_H
 #define _IOHELPER_H
 
+<<<<<<< HEAD
 typedef	u8	(read_reg_func)(void *hwp, u8 offset);
 			       typedef	void	(write_reg_func)(void *hwp, u8 offset, u8 value);
 			       typedef	void	(fifo_func)(void *hwp, u8 offset, u8 *datap, int size);
@@ -34,6 +42,16 @@ typedef	u8	(read_reg_func)(void *hwp, u8 offset);
 				       u32	port;
 				       u32	ale;
 			       };
+=======
+typedef u8 (read_reg_func)(void *hwp, u8 offset);
+typedef void (write_reg_func)(void *hwp, u8 offset, u8 value);
+typedef void (fifo_func)(void *hwp, u8 offset, u8 *datap, int size);
+
+struct _ioport {
+	u32 port;
+	u32 ale;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IOFUNC_IO(name, hws, ap)					\
 	static u8 Read##name##_IO(void *p, u8 off) {			\

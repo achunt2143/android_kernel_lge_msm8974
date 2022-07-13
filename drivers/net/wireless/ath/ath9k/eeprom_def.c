@@ -79,29 +79,51 @@ static void ath9k_olc_get_pdadcs(struct ath_hw *ah,
 
 static int ath9k_hw_def_get_eeprom_ver(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	return ((ah->eeprom.def.baseEepHeader.version >> 12) & 0xF);
+=======
+	u16 version = le16_to_cpu(ah->eeprom.def.baseEepHeader.version);
+
+	return (version & AR5416_EEP_VER_MAJOR_MASK) >>
+		AR5416_EEP_VER_MAJOR_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_hw_def_get_eeprom_rev(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	return ((ah->eeprom.def.baseEepHeader.version) & 0xFFF);
+=======
+	u16 version = le16_to_cpu(ah->eeprom.def.baseEepHeader.version);
+
+	return version & AR5416_EEP_VER_MINOR_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SIZE_EEPROM_DEF (sizeof(struct ar5416_eeprom_def) / sizeof(u16))
 
 static bool __ath9k_hw_def_fill_eeprom(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	struct ath_common *common = ath9k_hw_common(ah);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 *eep_data = (u16 *)&ah->eeprom.def;
 	int addr, ar5416_eep_start_loc = 0x100;
 
 	for (addr = 0; addr < SIZE_EEPROM_DEF; addr++) {
+<<<<<<< HEAD
 		if (!ath9k_hw_nvram_read(common, addr + ar5416_eep_start_loc,
 					 eep_data)) {
 			ath_err(ath9k_hw_common(ah),
 				"Unable to read eeprom region\n");
 			return false;
 		}
+=======
+		if (!ath9k_hw_nvram_read(ah, addr + ar5416_eep_start_loc,
+					 eep_data))
+			return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eep_data++;
 	}
 	return true;
@@ -130,6 +152,7 @@ static bool ath9k_hw_def_fill_eeprom(struct ath_hw *ah)
 		return __ath9k_hw_def_fill_eeprom(ah);
 }
 
+<<<<<<< HEAD
 #undef SIZE_EEPROM_DEF
 
 #if defined(CONFIG_ATH9K_DEBUGFS) || defined(CONFIG_ATH9K_HTC_DEBUGFS)
@@ -140,6 +163,16 @@ static u32 ath9k_def_dump_modal_eeprom(char *buf, u32 len, u32 size,
 	PR_EEP("Chain1 Ant. Control", modal_hdr->antCtrlChain[1]);
 	PR_EEP("Chain2 Ant. Control", modal_hdr->antCtrlChain[2]);
 	PR_EEP("Ant. Common Control", modal_hdr->antCtrlCommon);
+=======
+#ifdef CONFIG_ATH9K_COMMON_DEBUG
+static u32 ath9k_def_dump_modal_eeprom(char *buf, u32 len, u32 size,
+				       struct modal_eep_header *modal_hdr)
+{
+	PR_EEP("Chain0 Ant. Control", le16_to_cpu(modal_hdr->antCtrlChain[0]));
+	PR_EEP("Chain1 Ant. Control", le16_to_cpu(modal_hdr->antCtrlChain[1]));
+	PR_EEP("Chain2 Ant. Control", le16_to_cpu(modal_hdr->antCtrlChain[2]));
+	PR_EEP("Ant. Common Control", le32_to_cpu(modal_hdr->antCtrlCommon));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PR_EEP("Chain0 Ant. Gain", modal_hdr->antennaGainCh[0]);
 	PR_EEP("Chain1 Ant. Gain", modal_hdr->antennaGainCh[1]);
 	PR_EEP("Chain2 Ant. Gain", modal_hdr->antennaGainCh[2]);
@@ -195,9 +228,15 @@ static u32 ath9k_def_dump_modal_eeprom(char *buf, u32 len, u32 size,
 	PR_EEP("Chain1 OutputBias", modal_hdr->ob_ch1);
 	PR_EEP("Chain1 DriverBias", modal_hdr->db_ch1);
 	PR_EEP("LNA Control", modal_hdr->lna_ctl);
+<<<<<<< HEAD
 	PR_EEP("XPA Bias Freq0", modal_hdr->xpaBiasLvlFreq[0]);
 	PR_EEP("XPA Bias Freq1", modal_hdr->xpaBiasLvlFreq[1]);
 	PR_EEP("XPA Bias Freq2", modal_hdr->xpaBiasLvlFreq[2]);
+=======
+	PR_EEP("XPA Bias Freq0", le16_to_cpu(modal_hdr->xpaBiasLvlFreq[0]));
+	PR_EEP("XPA Bias Freq1", le16_to_cpu(modal_hdr->xpaBiasLvlFreq[1]));
+	PR_EEP("XPA Bias Freq2", le16_to_cpu(modal_hdr->xpaBiasLvlFreq[2]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
@@ -207,6 +246,7 @@ static u32 ath9k_hw_def_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 {
 	struct ar5416_eeprom_def *eep = &ah->eeprom.def;
 	struct base_eep_header *pBase = &eep->baseEepHeader;
+<<<<<<< HEAD
 
 	if (!dump_base_hdr) {
 		len += snprintf(buf + len, size - len,
@@ -216,16 +256,37 @@ static u32 ath9k_hw_def_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 		len += snprintf(buf + len, size - len,
 				"%20s :\n", "5GHz modal Header");
 		len += ath9k_def_dump_modal_eeprom(buf, len, size,
+=======
+	u32 binBuildNumber = le32_to_cpu(pBase->binBuildNumber);
+
+	if (!dump_base_hdr) {
+		len += scnprintf(buf + len, size - len,
+				 "%20s :\n", "2GHz modal Header");
+		len = ath9k_def_dump_modal_eeprom(buf, len, size,
+						   &eep->modalHeader[0]);
+		len += scnprintf(buf + len, size - len,
+				 "%20s :\n", "5GHz modal Header");
+		len = ath9k_def_dump_modal_eeprom(buf, len, size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   &eep->modalHeader[1]);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	PR_EEP("Major Version", pBase->version >> 12);
 	PR_EEP("Minor Version", pBase->version & 0xFFF);
 	PR_EEP("Checksum", pBase->checksum);
 	PR_EEP("Length", pBase->length);
 	PR_EEP("RegDomain1", pBase->regDmn[0]);
 	PR_EEP("RegDomain2", pBase->regDmn[1]);
+=======
+	PR_EEP("Major Version", ath9k_hw_def_get_eeprom_ver(ah));
+	PR_EEP("Minor Version", ath9k_hw_def_get_eeprom_rev(ah));
+	PR_EEP("Checksum", le16_to_cpu(pBase->checksum));
+	PR_EEP("Length", le16_to_cpu(pBase->length));
+	PR_EEP("RegDomain1", le16_to_cpu(pBase->regDmn[0]));
+	PR_EEP("RegDomain2", le16_to_cpu(pBase->regDmn[1]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PR_EEP("TX Mask", pBase->txMask);
 	PR_EEP("RX Mask", pBase->rxMask);
 	PR_EEP("Allow 5GHz", !!(pBase->opCapFlags & AR5416_OPFLAGS_11A));
@@ -238,6 +299,7 @@ static u32 ath9k_hw_def_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 					AR5416_OPFLAGS_N_5G_HT20));
 	PR_EEP("Disable 5Ghz HT40", !!(pBase->opCapFlags &
 					AR5416_OPFLAGS_N_5G_HT40));
+<<<<<<< HEAD
 	PR_EEP("Big Endian", !!(pBase->eepMisc & 0x01));
 	PR_EEP("Cal Bin Major Ver", (pBase->binBuildNumber >> 24) & 0xFF);
 	PR_EEP("Cal Bin Minor Ver", (pBase->binBuildNumber >> 16) & 0xFF);
@@ -246,6 +308,16 @@ static u32 ath9k_hw_def_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 
 	len += snprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
 			pBase->macAddr);
+=======
+	PR_EEP("Big Endian", !!(pBase->eepMisc & AR5416_EEPMISC_BIG_ENDIAN));
+	PR_EEP("Cal Bin Major Ver", (binBuildNumber >> 24) & 0xFF);
+	PR_EEP("Cal Bin Minor Ver", (binBuildNumber >> 16) & 0xFF);
+	PR_EEP("Cal Bin Build", (binBuildNumber >> 8) & 0xFF);
+	PR_EEP("OpenLoop Power Ctrl", pBase->openLoopPwrCntl);
+
+	len += scnprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
+			 pBase->macAddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (len > size)
@@ -261,6 +333,7 @@ static u32 ath9k_hw_def_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 }
 #endif
 
+<<<<<<< HEAD
 
 static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
 {
@@ -349,10 +422,45 @@ static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
 
 		word = swab16(eep->baseEepHeader.deviceCap);
 		eep->baseEepHeader.deviceCap = word;
+=======
+static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
+{
+	struct ar5416_eeprom_def *eep = &ah->eeprom.def;
+	struct ath_common *common = ath9k_hw_common(ah);
+	u32 el;
+	bool need_swap;
+	int i, err;
+
+	err = ath9k_hw_nvram_swap_data(ah, &need_swap, SIZE_EEPROM_DEF);
+	if (err)
+		return err;
+
+	if (need_swap)
+		el = swab16((__force u16)eep->baseEepHeader.length);
+	else
+		el = le16_to_cpu(eep->baseEepHeader.length);
+
+	el = min(el / sizeof(u16), SIZE_EEPROM_DEF);
+	if (!ath9k_hw_nvram_validate_checksum(ah, el))
+		return -EINVAL;
+
+	if (need_swap) {
+		u32 j;
+
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.length);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.checksum);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.version);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.regDmn[0]);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.regDmn[1]);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.rfSilent);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.blueToothOptions);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.deviceCap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (j = 0; j < ARRAY_SIZE(eep->modalHeader); j++) {
 			struct modal_eep_header *pModal =
 				&eep->modalHeader[j];
+<<<<<<< HEAD
 			integer = swab32(pModal->antCtrlCommon);
 			pModal->antCtrlCommon = integer;
 
@@ -382,6 +490,29 @@ static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
 	/* Enable fixup for AR_AN_TOP2 if necessary */
 	if ((ah->hw_version.devid == AR9280_DEVID_PCI) &&
 	    ((eep->baseEepHeader.version & 0xff) > 0x0a) &&
+=======
+			EEPROM_FIELD_SWAB32(pModal->antCtrlCommon);
+
+			for (i = 0; i < AR5416_MAX_CHAINS; i++)
+				EEPROM_FIELD_SWAB32(pModal->antCtrlChain[i]);
+
+			for (i = 0; i < 3; i++)
+				EEPROM_FIELD_SWAB16(pModal->xpaBiasLvlFreq[i]);
+
+			for (i = 0; i < AR_EEPROM_MODAL_SPURS; i++)
+				EEPROM_FIELD_SWAB16(
+					pModal->spurChans[i].spurChan);
+		}
+	}
+
+	if (!ath9k_hw_nvram_check_version(ah, AR5416_EEP_VER,
+	    AR5416_EEP_NO_BACK_VER))
+		return -EINVAL;
+
+	/* Enable fixup for AR_AN_TOP2 if necessary */
+	if ((ah->hw_version.devid == AR9280_DEVID_PCI) &&
+	    ((le16_to_cpu(eep->baseEepHeader.version) & 0xff) > 0x0a) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (eep->baseEepHeader.pwdclkind == 0))
 		ah->need_an_top2_fixup = true;
 
@@ -392,6 +523,11 @@ static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#undef SIZE_EEPROM_DEF
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
 				   enum eeprom_param param)
 {
@@ -412,6 +548,7 @@ static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
 	case EEP_MAC_MSW:
 		return get_unaligned_be16(pBase->macAddr + 4);
 	case EEP_REG_0:
+<<<<<<< HEAD
 		return pBase->regDmn[0];
 	case EEP_OP_CAP:
 		return pBase->deviceCap;
@@ -419,6 +556,15 @@ static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
 		return pBase->opCapFlags;
 	case EEP_RF_SILENT:
 		return pBase->rfSilent;
+=======
+		return le16_to_cpu(pBase->regDmn[0]);
+	case EEP_OP_CAP:
+		return le16_to_cpu(pBase->deviceCap);
+	case EEP_OP_MODE:
+		return pBase->opCapFlags;
+	case EEP_RF_SILENT:
+		return le16_to_cpu(pBase->rfSilent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EEP_OB_5:
 		return pModal[0].ob;
 	case EEP_DB_5:
@@ -427,8 +573,11 @@ static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
 		return pModal[1].ob;
 	case EEP_DB_2:
 		return pModal[1].db;
+<<<<<<< HEAD
 	case EEP_MINOR_REV:
 		return AR5416_VER_MASK;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EEP_TX_MASK:
 		return pBase->txMask;
 	case EEP_RX_MASK:
@@ -440,33 +589,57 @@ static u32 ath9k_hw_def_get_eeprom(struct ath_hw *ah,
 	case EEP_TXGAIN_TYPE:
 		return pBase->txGainType;
 	case EEP_OL_PWRCTRL:
+<<<<<<< HEAD
 		if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_19)
+=======
+		if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_19)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pBase->openLoopPwrCntl ? true : false;
 		else
 			return false;
 	case EEP_RC_CHAIN_MASK:
+<<<<<<< HEAD
 		if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_19)
+=======
+		if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_19)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pBase->rcChainMask;
 		else
 			return 0;
 	case EEP_DAC_HPWR_5G:
+<<<<<<< HEAD
 		if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_20)
+=======
+		if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_20)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pBase->dacHiPwrMode_5G;
 		else
 			return 0;
 	case EEP_FRAC_N_5G:
+<<<<<<< HEAD
 		if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_22)
+=======
+		if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_22)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pBase->frac_n_5g;
 		else
 			return 0;
 	case EEP_PWR_TABLE_OFFSET:
+<<<<<<< HEAD
 		if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_21)
+=======
+		if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_21)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pBase->pwr_table_offset;
 		else
 			return AR5416_PWR_TABLE_OFFSET_DB;
 	case EEP_ANTENNA_GAIN_2G:
 		band = 1;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EEP_ANTENNA_GAIN_5G:
 		return max_t(u8, max_t(u8,
 			pModal[band].antennaGainCh[0],
@@ -482,7 +655,12 @@ static void ath9k_hw_def_set_gain(struct ath_hw *ah,
 				  struct ar5416_eeprom_def *eep,
 				  u8 txRxAttenLocal, int regChainOffset, int i)
 {
+<<<<<<< HEAD
 	if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_3) {
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txRxAttenLocal = pModal->txRxAttenCh[i];
 
 		if (AR_SREV_9280_20_OR_LATER(ah)) {
@@ -499,6 +677,7 @@ static void ath9k_hw_def_set_gain(struct ath_hw *ah,
 			      AR_PHY_GAIN_2GHZ_XATTEN2_DB,
 			      pModal->xatten2Db[i]);
 		} else {
+<<<<<<< HEAD
 			REG_WRITE(ah, AR_PHY_GAIN_2GHZ + regChainOffset,
 			  (REG_READ(ah, AR_PHY_GAIN_2GHZ + regChainOffset) &
 			   ~AR_PHY_GAIN_2GHZ_BSW_MARGIN)
@@ -509,6 +688,14 @@ static void ath9k_hw_def_set_gain(struct ath_hw *ah,
 			   ~AR_PHY_GAIN_2GHZ_BSW_ATTEN)
 			  | SM(pModal->bswAtten[i],
 			       AR_PHY_GAIN_2GHZ_BSW_ATTEN));
+=======
+			REG_RMW(ah, AR_PHY_GAIN_2GHZ + regChainOffset,
+				SM(pModal-> bswMargin[i], AR_PHY_GAIN_2GHZ_BSW_MARGIN),
+				AR_PHY_GAIN_2GHZ_BSW_MARGIN);
+			REG_RMW(ah, AR_PHY_GAIN_2GHZ + regChainOffset,
+				SM(pModal->bswAtten[i], AR_PHY_GAIN_2GHZ_BSW_ATTEN),
+				AR_PHY_GAIN_2GHZ_BSW_ATTEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -520,6 +707,7 @@ static void ath9k_hw_def_set_gain(struct ath_hw *ah,
 		      AR_PHY_RXGAIN + regChainOffset,
 		      AR9280_PHY_RXGAIN_TXRX_MARGIN, pModal->rxTxMarginCh[i]);
 	} else {
+<<<<<<< HEAD
 		REG_WRITE(ah,
 			  AR_PHY_RXGAIN + regChainOffset,
 			  (REG_READ(ah, AR_PHY_RXGAIN + regChainOffset) &
@@ -531,6 +719,16 @@ static void ath9k_hw_def_set_gain(struct ath_hw *ah,
 			   ~AR_PHY_GAIN_2GHZ_RXTX_MARGIN) |
 			  SM(pModal->rxTxMarginCh[i], AR_PHY_GAIN_2GHZ_RXTX_MARGIN));
 	}
+=======
+		REG_RMW(ah, AR_PHY_RXGAIN + regChainOffset,
+			SM(txRxAttenLocal, AR_PHY_RXGAIN_TXRX_ATTEN),
+			AR_PHY_RXGAIN_TXRX_ATTEN);
+		REG_RMW(ah, AR_PHY_GAIN_2GHZ + regChainOffset,
+			SM(pModal->rxTxMarginCh[i], AR_PHY_GAIN_2GHZ_RXTX_MARGIN),
+			AR_PHY_GAIN_2GHZ_RXTX_MARGIN);
+	}
+	REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
@@ -540,11 +738,21 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 	struct ar5416_eeprom_def *eep = &ah->eeprom.def;
 	int i, regChainOffset;
 	u8 txRxAttenLocal;
+<<<<<<< HEAD
 
 	pModal = &(eep->modalHeader[IS_CHAN_2GHZ(chan)]);
 	txRxAttenLocal = IS_CHAN_2GHZ(chan) ? 23 : 44;
 
 	REG_WRITE(ah, AR_PHY_SWITCH_COM, pModal->antCtrlCommon & 0xffff);
+=======
+	u32 antCtrlCommon;
+
+	pModal = &(eep->modalHeader[IS_CHAN_2GHZ(chan)]);
+	txRxAttenLocal = IS_CHAN_2GHZ(chan) ? 23 : 44;
+	antCtrlCommon = le32_to_cpu(pModal->antCtrlCommon);
+
+	REG_WRITE(ah, AR_PHY_SWITCH_COM, antCtrlCommon & 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < AR5416_MAX_CHAINS; i++) {
 		if (AR_SREV_9280(ah)) {
@@ -558,7 +766,11 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 			regChainOffset = i * 0x1000;
 
 		REG_WRITE(ah, AR_PHY_SWITCH_CHAIN_0 + regChainOffset,
+<<<<<<< HEAD
 			  pModal->antCtrlChain[i]);
+=======
+			  le32_to_cpu(pModal->antCtrlChain[i]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		REG_WRITE(ah, AR_PHY_TIMING_CTRL4(0) + regChainOffset,
 			  (REG_READ(ah, AR_PHY_TIMING_CTRL4(0) + regChainOffset) &
@@ -658,7 +870,11 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 			      pModal->thresh62);
 	}
 
+<<<<<<< HEAD
 	if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_2) {
+=======
+	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_RMW_FIELD(ah, AR_PHY_RF_CTL2,
 			      AR_PHY_TX_END_DATA_START,
 			      pModal->txFrameToDataStart);
@@ -666,7 +882,11 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 			      pModal->txFrameToPaOn);
 	}
 
+<<<<<<< HEAD
 	if (AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_3) {
+=======
+	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_CHAN_HT40(chan))
 			REG_RMW_FIELD(ah, AR_PHY_SETTLING,
 				      AR_PHY_SETTLING_SWITCH,
@@ -674,13 +894,22 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 	}
 
 	if (AR_SREV_9280_20_OR_LATER(ah) &&
+<<<<<<< HEAD
 	    AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_19)
+=======
+	    ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_19)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_RMW_FIELD(ah, AR_PHY_CCK_TX_CTRL,
 			      AR_PHY_CCK_TX_CTRL_TX_DAC_SCALE_CCK,
 			      pModal->miscBits);
 
 
+<<<<<<< HEAD
 	if (AR_SREV_9280_20(ah) && AR5416_VER_MASK >= AR5416_EEP_MINOR_VER_20) {
+=======
+	if (AR_SREV_9280_20(ah) &&
+	    ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_20) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_CHAN_2GHZ(chan))
 			REG_RMW_FIELD(ah, AR_AN_TOP1, AR_AN_TOP1_DACIPMODE,
 					eep->baseEepHeader.dacLpMode);
@@ -704,7 +933,11 @@ static void ath9k_hw_def_set_board_values(struct ath_hw *ah,
 static void ath9k_hw_def_set_addac(struct ath_hw *ah,
 				   struct ath9k_channel *chan)
 {
+<<<<<<< HEAD
 #define XPA_LVL_FREQ(cnt) (pModal->xpaBiasLvlFreq[cnt])
+=======
+#define XPA_LVL_FREQ(cnt) (le16_to_cpu(pModal->xpaBiasLvlFreq[cnt]))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct modal_eep_header *pModal;
 	struct ar5416_eeprom_def *eep = &ah->eeprom.def;
 	u8 biaslevel;
@@ -851,8 +1084,12 @@ static void ath9k_hw_set_def_power_cal_table(struct ath_hw *ah,
 
 	pwr_table_offset = ah->eep_ops->get_eeprom(ah, EEP_PWR_TABLE_OFFSET);
 
+<<<<<<< HEAD
 	if ((pEepData->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_2) {
+=======
+	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdGainOverlap_t2 =
 			pEepData->modalHeader[modalIdx].pdGainOverlap;
 	} else {
@@ -868,7 +1105,11 @@ static void ath9k_hw_set_def_power_cal_table(struct ath_hw *ah,
 		numPiers = AR5416_NUM_5G_CAL_PIERS;
 	}
 
+<<<<<<< HEAD
 	if (OLC_FOR_AR9280_20_LATER && IS_CHAN_2GHZ(chan)) {
+=======
+	if (OLC_FOR_AR9280_20_LATER(ah) && IS_CHAN_2GHZ(chan)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pRawDataset = pEepData->calPierData2G[0];
 		ah->initPDADC = ((struct calDataPerFreqOpLoop *)
 				 pRawDataset)->vpdPdg[0][0];
@@ -909,7 +1150,11 @@ static void ath9k_hw_set_def_power_cal_table(struct ath_hw *ah,
 				pRawDataset = pEepData->calPierData5G[i];
 
 
+<<<<<<< HEAD
 			if (OLC_FOR_AR9280_20_LATER) {
+=======
+			if (OLC_FOR_AR9280_20_LATER(ah)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				u8 pcdacIdx;
 				u8 txPower;
 
@@ -937,7 +1182,11 @@ static void ath9k_hw_set_def_power_cal_table(struct ath_hw *ah,
 
 			ENABLE_REGWRITE_BUFFER(ah);
 
+<<<<<<< HEAD
 			if (OLC_FOR_AR9280_20_LATER) {
+=======
+			if (OLC_FOR_AR9280_20_LATER(ah)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				REG_WRITE(ah,
 					AR_PHY_TPCRG5 + regChainOffset,
 					SM(0x6,
@@ -991,9 +1240,12 @@ static void ath9k_hw_set_def_power_per_rate_table(struct ath_hw *ah,
 						  u16 antenna_reduction,
 						  u16 powerLimit)
 {
+<<<<<<< HEAD
 #define REDUCE_SCALED_POWER_BY_TWO_CHAIN     6  /* 10*log10(2)*2 */
 #define REDUCE_SCALED_POWER_BY_THREE_CHAIN   9 /* 10*log10(3)*2 */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ar5416_eeprom_def *pEepData = &ah->eeprom.def;
 	u16 twiceMaxEdgePower;
 	int i;
@@ -1027,6 +1279,7 @@ static void ath9k_hw_set_def_power_per_rate_table(struct ath_hw *ah,
 
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
 
+<<<<<<< HEAD
 	scaledPower = powerLimit - antenna_reduction;
 
 	switch (ar5416_get_ntxchains(tx_chainmask)) {
@@ -1045,6 +1298,10 @@ static void ath9k_hw_set_def_power_per_rate_table(struct ath_hw *ah,
 			scaledPower = 0;
 		break;
 	}
+=======
+	scaledPower = ath9k_hw_get_scaled_power(ah, powerLimit,
+						antenna_reduction);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_CHAN_2GHZ(chan)) {
 		numCtlModes = ARRAY_SIZE(ctlModesFor11g) -
@@ -1243,10 +1500,15 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 
 	memset(ratesArray, 0, sizeof(ratesArray));
 
+<<<<<<< HEAD
 	if ((pEepData->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_2) {
 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
 	}
+=======
+	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
+		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_hw_set_def_power_per_rate_table(ah, chan,
 					       &ratesArray[0], cfgCtl,
@@ -1263,6 +1525,7 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 			regulatory->max_power_level = ratesArray[i];
 	}
 
+<<<<<<< HEAD
 	switch(ar5416_get_ntxchains(ah->txchainmask)) {
 	case 1:
 		break;
@@ -1277,6 +1540,9 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 			"Invalid chainmask configuration\n");
 		break;
 	}
+=======
+	ath9k_hw_update_regulatory_maxpower(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test)
 		return;
@@ -1305,7 +1571,11 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 		  | ATH9K_POW_SM(ratesArray[rate24mb], 0));
 
 	if (IS_CHAN_2GHZ(chan)) {
+<<<<<<< HEAD
 		if (OLC_FOR_AR9280_20_LATER) {
+=======
+		if (OLC_FOR_AR9280_20_LATER(ah)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cck_ofdm_delta = 2;
 			REG_WRITE(ah, AR_PHY_POWER_TX_RATE3,
 				ATH9K_POW_SM(RT_AR_DELTA(rate2s), 24)
@@ -1361,7 +1631,11 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 					 ht40PowerIncForPdadc, 8)
 			  | ATH9K_POW_SM(ratesArray[rateHt40_4] +
 					 ht40PowerIncForPdadc, 0));
+<<<<<<< HEAD
 		if (OLC_FOR_AR9280_20_LATER) {
+=======
+		if (OLC_FOR_AR9280_20_LATER(ah)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			REG_WRITE(ah, AR_PHY_POWER_TX_RATE9,
 				ATH9K_POW_SM(ratesArray[rateExtOfdm], 24)
 				| ATH9K_POW_SM(RT_AR_DELTA(rateExtCck), 16)
@@ -1380,11 +1654,29 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 		  ATH9K_POW_SM(pModal->pwrDecreaseFor3Chain, 6)
 		  | ATH9K_POW_SM(pModal->pwrDecreaseFor2Chain, 0));
 
+<<<<<<< HEAD
+=======
+	/* TPC initializations */
+	if (ah->tpc_enabled) {
+		int ht40_delta;
+
+		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
+		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
+		/* Enable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
+			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
+	} else {
+		/* Disable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
 static u16 ath9k_hw_def_get_spur_channel(struct ath_hw *ah, u16 i, bool is2GHz)
 {
+<<<<<<< HEAD
 #define EEP_DEF_SPURCHAN \
 	(ah->eeprom.def.modalHeader[is2GHz].spurChans[i].spurChan)
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -1410,6 +1702,16 @@ static u16 ath9k_hw_def_get_spur_channel(struct ath_hw *ah, u16 i, bool is2GHz)
 	return spur_val;
 
 #undef EEP_DEF_SPURCHAN
+=======
+	__le16 spch = ah->eeprom.def.modalHeader[is2GHz].spurChans[i].spurChan;
+
+	return le16_to_cpu(spch);
+}
+
+static u8 ath9k_hw_def_get_eepmisc(struct ath_hw *ah)
+{
+	return ah->eeprom.def.baseEepHeader.eepMisc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct eeprom_ops eep_def_ops = {
@@ -1422,5 +1724,10 @@ const struct eeprom_ops eep_def_ops = {
 	.set_board_values	= ath9k_hw_def_set_board_values,
 	.set_addac		= ath9k_hw_def_set_addac,
 	.set_txpower		= ath9k_hw_def_set_txpower,
+<<<<<<< HEAD
 	.get_spur_channel	= ath9k_hw_def_get_spur_channel
+=======
+	.get_spur_channel	= ath9k_hw_def_get_spur_channel,
+	.get_eepmisc		= ath9k_hw_def_get_eepmisc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

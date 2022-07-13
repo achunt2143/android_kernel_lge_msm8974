@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * I2C driver for Marvell 88PM860x
  *
  * Copyright (C) 2009 Marvell International Ltd.
+<<<<<<< HEAD
  * 	Haojian Zhuang <haojian.zhuang@marvell.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,6 +21,16 @@
 #include <linux/regmap.h>
 #include <linux/mfd/88pm860x.h>
 #include <linux/slab.h>
+=======
+ *
+ * Author: Haojian Zhuang <haojian.zhuang@marvell.com>
+ */
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/i2c.h>
+#include <linux/regmap.h>
+#include <linux/mfd/88pm860x.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pm860x_reg_read(struct i2c_client *i2c, int reg)
 {
@@ -91,8 +106,23 @@ static int read_device(struct i2c_client *i2c, int reg,
 	unsigned char msgbuf0[I2C_SMBUS_BLOCK_MAX + 3];
 	unsigned char msgbuf1[I2C_SMBUS_BLOCK_MAX + 2];
 	struct i2c_adapter *adap = i2c->adapter;
+<<<<<<< HEAD
 	struct i2c_msg msg[2] = {{i2c->addr, 0, 1, msgbuf0},
 				 {i2c->addr, I2C_M_RD, 0, msgbuf1},
+=======
+	struct i2c_msg msg[2] = {
+					{
+						.addr = i2c->addr,
+						.flags = 0,
+						.len = 1,
+						.buf = msgbuf0
+					},
+					{	.addr = i2c->addr,
+						.flags = I2C_M_RD,
+						.len = 0,
+						.buf = msgbuf1
+					},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 	int num = 1, ret = 0;
 
@@ -114,7 +144,11 @@ static int read_device(struct i2c_client *i2c, int reg,
 static int write_device(struct i2c_client *i2c, int reg,
 			int bytes, void *src)
 {
+<<<<<<< HEAD
 	unsigned char buf[bytes + 1];
+=======
+	unsigned char buf[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i2c_adapter *adap = i2c->adapter;
 	struct i2c_msg msg;
 	int ret;
@@ -132,6 +166,7 @@ static int write_device(struct i2c_client *i2c, int reg,
 	return 0;
 }
 
+<<<<<<< HEAD
 int pm860x_page_reg_read(struct i2c_client *i2c, int reg)
 {
 	unsigned char zero = 0;
@@ -152,20 +187,30 @@ int pm860x_page_reg_read(struct i2c_client *i2c, int reg)
 }
 EXPORT_SYMBOL(pm860x_page_reg_read);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pm860x_page_reg_write(struct i2c_client *i2c, int reg,
 			  unsigned char data)
 {
 	unsigned char zero;
 	int ret;
 
+<<<<<<< HEAD
 	i2c_lock_adapter(i2c->adapter);
+=======
+	i2c_lock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_device(i2c, 0xFA, 0, &zero);
 	read_device(i2c, 0xFB, 0, &zero);
 	read_device(i2c, 0xFF, 0, &zero);
 	ret = write_device(i2c, reg, 1, &data);
 	read_device(i2c, 0xFE, 0, &zero);
 	read_device(i2c, 0xFC, 0, &zero);
+<<<<<<< HEAD
 	i2c_unlock_adapter(i2c->adapter);
+=======
+	i2c_unlock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(pm860x_page_reg_write);
@@ -176,13 +221,18 @@ int pm860x_page_bulk_read(struct i2c_client *i2c, int reg,
 	unsigned char zero = 0;
 	int ret;
 
+<<<<<<< HEAD
 	i2c_lock_adapter(i2c->adapter);
+=======
+	i2c_lock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_device(i2c, 0xfa, 0, &zero);
 	read_device(i2c, 0xfb, 0, &zero);
 	read_device(i2c, 0xff, 0, &zero);
 	ret = read_device(i2c, reg, count, buf);
 	read_device(i2c, 0xFE, 0, &zero);
 	read_device(i2c, 0xFC, 0, &zero);
+<<<<<<< HEAD
 	i2c_unlock_adapter(i2c->adapter);
 	return ret;
 }
@@ -388,3 +438,9 @@ module_exit(pm860x_i2c_exit);
 MODULE_DESCRIPTION("I2C Driver for Marvell 88PM860x");
 MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com>");
 MODULE_LICENSE("GPL");
+=======
+	i2c_unlock_bus(i2c->adapter, I2C_LOCK_SEGMENT);
+	return ret;
+}
+EXPORT_SYMBOL(pm860x_page_bulk_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

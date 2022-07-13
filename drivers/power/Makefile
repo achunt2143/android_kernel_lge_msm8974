@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ccflags-$(CONFIG_POWER_SUPPLY_DEBUG) := -DDEBUG
 
 power_supply-y				:= power_supply_core.o
@@ -86,3 +87,8 @@ obj-$(CONFIG_CHARGER_UNIFIED_WLC_BQ5102X) += bq5102x_wireless_power_receiver.o
 obj-$(CONFIG_LGE_SMART_CHARGING) += smart_charging.o
 obj-$(CONFIG_LGE_CURRENTNOW)	+= currentnow.o
 obj-$(CONFIG_BQ24192_CHARGER) += bq24192_charger.o
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+obj-$(CONFIG_POWER_RESET)	+= reset/
+obj-$(CONFIG_POWER_SUPPLY)	+= supply/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

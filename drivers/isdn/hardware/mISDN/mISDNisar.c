@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mISDNisar.c   ISAR (Siemens PSB 7110) specific functions
  *
  * Author Karsten Keil (keil@isdn4linux.de)
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* define this to enable static debug messages, if you kernel supports
@@ -40,7 +47,10 @@ MODULE_VERSION(ISAR_REV);
 
 #define DEBUG_HW_FIRMWARE_FIFO	0x10000
 
+<<<<<<< HEAD
 static const u8 faxmodulation_s[] = "3,24,48,72,73,74,96,97,98,121,122,145,146";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u8 faxmodulation[] = {3, 24, 48, 72, 73, 74, 96, 97, 98, 121,
 				   122, 145, 146};
 #define FAXMODCNT 13
@@ -235,7 +245,11 @@ load_firmware(struct isar_hw *isar, const u8 *buf, int size)
 			goto reterror;
 		}
 		if (!poll_mbox(isar, 1000)) {
+<<<<<<< HEAD
 			pr_warning("ISAR poll_mbox dkey failed\n");
+=======
+			pr_warn("ISAR poll_mbox dkey failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ETIME;
 			goto reterror;
 		}
@@ -421,13 +435,26 @@ deliver_status(struct isar_ch *ch, int status)
 static inline void
 isar_rcv_frame(struct isar_ch *ch)
 {
+<<<<<<< HEAD
 	u8		*ptr;
+=======
+	u8	*ptr;
+	int	maxlen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ch->is->clsb) {
 		pr_debug("%s; ISAR zero len frame\n", ch->is->name);
 		ch->is->write_reg(ch->is->hw, ISAR_IIA, 0);
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (test_bit(FLG_RX_OFF, &ch->bch.Flags)) {
+		ch->bch.dropcnt += ch->is->clsb;
+		ch->is->write_reg(ch->is->hw, ISAR_IIA, 0);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ch->bch.state) {
 	case ISDN_P_NONE:
 		pr_debug("%s: ISAR protocol 0 spurious IIS_RDATA %x/%x/%x\n",
@@ -437,6 +464,7 @@ isar_rcv_frame(struct isar_ch *ch)
 	case ISDN_P_B_RAW:
 	case ISDN_P_B_L2DTMF:
 	case ISDN_P_B_MODEM_ASYNC:
+<<<<<<< HEAD
 		if (!ch->bch.rx_skb) {
 			ch->bch.rx_skb = mI_alloc_skb(ch->bch.maxlen,
 						      GFP_ATOMIC);
@@ -467,6 +495,24 @@ isar_rcv_frame(struct isar_ch *ch)
 				 ch->is->name);
 			ch->is->write_reg(ch->is->hw, ISAR_IIA, 0);
 			skb_trim(ch->bch.rx_skb, 0);
+=======
+		maxlen = bchannel_get_rxbuf(&ch->bch, ch->is->clsb);
+		if (maxlen < 0) {
+			pr_warn("%s.B%d: No bufferspace for %d bytes\n",
+				ch->is->name, ch->bch.nr, ch->is->clsb);
+			ch->is->write_reg(ch->is->hw, ISAR_IIA, 0);
+			break;
+		}
+		rcv_mbox(ch->is, skb_put(ch->bch.rx_skb, ch->is->clsb));
+		recv_Bchannel(&ch->bch, 0, false);
+		break;
+	case ISDN_P_B_HDLC:
+		maxlen = bchannel_get_rxbuf(&ch->bch, ch->is->clsb);
+		if (maxlen < 0) {
+			pr_warn("%s.B%d: No bufferspace for %d bytes\n",
+				ch->is->name, ch->bch.nr, ch->is->clsb);
+			ch->is->write_reg(ch->is->hw, ISAR_IIA, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (ch->is->cmsb & HDLC_ERROR) {
@@ -488,13 +534,21 @@ isar_rcv_frame(struct isar_ch *ch)
 		rcv_mbox(ch->is, ptr);
 		if (ch->is->cmsb & HDLC_FED) {
 			if (ch->bch.rx_skb->len < 3) { /* last 2 are the FCS */
+<<<<<<< HEAD
 				pr_debug("%s: ISAR frame to short %d\n",
+=======
+				pr_debug("%s: ISAR frame too short %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 ch->is->name, ch->bch.rx_skb->len);
 				skb_trim(ch->bch.rx_skb, 0);
 				break;
 			}
 			skb_trim(ch->bch.rx_skb, ch->bch.rx_skb->len - 2);
+<<<<<<< HEAD
 			recv_Bchannel(&ch->bch, 0);
+=======
+			recv_Bchannel(&ch->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case ISDN_P_B_T30_FAX:
@@ -530,7 +584,11 @@ isar_rcv_frame(struct isar_ch *ch)
 				ch->state = STFAX_ESCAPE;
 				/* set_skb_flag(skb, DF_NOMOREDATA); */
 			}
+<<<<<<< HEAD
 			recv_Bchannel(&ch->bch, 0);
+=======
+			recv_Bchannel(&ch->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ch->is->cmsb & SART_NMD)
 				deliver_status(ch, HW_MOD_NOCARR);
 			break;
@@ -564,13 +622,21 @@ isar_rcv_frame(struct isar_ch *ch)
 		rcv_mbox(ch->is, ptr);
 		if (ch->is->cmsb & HDLC_FED) {
 			if (ch->bch.rx_skb->len < 3) { /* last 2 are the FCS */
+<<<<<<< HEAD
 				pr_info("%s: ISAR frame to short %d\n",
+=======
+				pr_info("%s: ISAR frame too short %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ch->is->name, ch->bch.rx_skb->len);
 				skb_trim(ch->bch.rx_skb, 0);
 				break;
 			}
 			skb_trim(ch->bch.rx_skb, ch->bch.rx_skb->len - 2);
+<<<<<<< HEAD
 			recv_Bchannel(&ch->bch, 0);
+=======
+			recv_Bchannel(&ch->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ch->is->cmsb & SART_NMD) { /* ABORT */
 			pr_debug("%s: isar_rcv_frame: no more data\n",
@@ -598,6 +664,7 @@ isar_fill_fifo(struct isar_ch *ch)
 	u8 msb;
 	u8 *ptr;
 
+<<<<<<< HEAD
 	pr_debug("%s: ch%d  tx_skb %p tx_idx %d\n",
 		 ch->is->name, ch->bch.nr, ch->bch.tx_skb, ch->bch.tx_idx);
 	if (!ch->bch.tx_skb)
@@ -608,6 +675,27 @@ isar_fill_fifo(struct isar_ch *ch)
 	if (!(ch->is->bstat &
 	      (ch->dpath == 1 ? BSTAT_RDM1 : BSTAT_RDM2)))
 		return;
+=======
+	pr_debug("%s: ch%d  tx_skb %d tx_idx %d\n", ch->is->name, ch->bch.nr,
+		 ch->bch.tx_skb ? ch->bch.tx_skb->len : -1, ch->bch.tx_idx);
+	if (!(ch->is->bstat &
+	      (ch->dpath == 1 ? BSTAT_RDM1 : BSTAT_RDM2)))
+		return;
+	if (!ch->bch.tx_skb) {
+		if (!test_bit(FLG_TX_EMPTY, &ch->bch.Flags) ||
+		    (ch->bch.state != ISDN_P_B_RAW))
+			return;
+		count = ch->mml;
+		/* use the card buffer */
+		memset(ch->is->buf, ch->bch.fill[0], count);
+		send_mbox(ch->is, SET_DPS(ch->dpath) | ISAR_HIS_SDATA,
+			  0, count, ch->is->buf);
+		return;
+	}
+	count = ch->bch.tx_skb->len - ch->bch.tx_idx;
+	if (count <= 0)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count > ch->mml) {
 		msb = 0;
 		count = ch->mml;
@@ -686,9 +774,15 @@ sel_bch_isar(struct isar_hw *isar, u8 dpath)
 static void
 send_next(struct isar_ch *ch)
 {
+<<<<<<< HEAD
 	pr_debug("%s: %s ch%d tx_skb %p tx_idx %d\n",
 		 ch->is->name, __func__, ch->bch.nr,
 		 ch->bch.tx_skb, ch->bch.tx_idx);
+=======
+	pr_debug("%s: %s ch%d tx_skb %d tx_idx %d\n", ch->is->name, __func__,
+		 ch->bch.nr, ch->bch.tx_skb ? ch->bch.tx_skb->len : -1,
+		 ch->bch.tx_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch->bch.state == ISDN_P_B_T30_FAX) {
 		if (ch->cmd == PCTRL_CMD_FTH) {
 			if (test_bit(FLG_LASTDATA, &ch->bch.Flags)) {
@@ -702,6 +796,7 @@ send_next(struct isar_ch *ch)
 			}
 		}
 	}
+<<<<<<< HEAD
 	if (ch->bch.tx_skb) {
 		/* send confirm, on trans, free on hdlc. */
 		if (test_bit(FLG_TRANSPARENT, &ch->bch.Flags))
@@ -711,6 +806,15 @@ send_next(struct isar_ch *ch)
 	if (get_next_bframe(&ch->bch))
 		isar_fill_fifo(ch);
 	else {
+=======
+	dev_kfree_skb(ch->bch.tx_skb);
+	if (get_next_bframe(&ch->bch)) {
+		isar_fill_fifo(ch);
+		test_and_clear_bit(FLG_TX_EMPTY, &ch->bch.Flags);
+	} else if (test_bit(FLG_TX_EMPTY, &ch->bch.Flags)) {
+		isar_fill_fifo(ch);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_and_clear_bit(FLG_DLEETX, &ch->bch.Flags)) {
 			if (test_and_clear_bit(FLG_LASTDATA,
 					       &ch->bch.Flags)) {
@@ -724,6 +828,11 @@ send_next(struct isar_ch *ch)
 			} else {
 				deliver_status(ch, HW_MOD_CONNECT);
 			}
+<<<<<<< HEAD
+=======
+		} else if (test_bit(FLG_FILLEMPTY, &ch->bch.Flags)) {
+			test_and_set_bit(FLG_TX_EMPTY, &ch->bch.Flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -756,10 +865,17 @@ check_send(struct isar_hw *isar, u8 rdm)
 	}
 }
 
+<<<<<<< HEAD
 const char *dmril[] = {"NO SPEED", "1200/75", "NODEF2", "75/1200", "NODEF4",
 		       "300", "600", "1200", "2400", "4800", "7200",
 		       "9600nt", "9600t", "12000", "14400", "WRONG"};
 const char *dmrim[] = {"NO MOD", "NO DEF", "V32/V32b", "V22", "V21",
+=======
+static const char *dmril[] = {"NO SPEED", "1200/75", "NODEF2", "75/1200", "NODEF4",
+		       "300", "600", "1200", "2400", "4800", "7200",
+		       "9600nt", "9600t", "12000", "14400", "WRONG"};
+static const char *dmrim[] = {"NO MOD", "NO DEF", "V32/V32b", "V22", "V21",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "Bell103", "V23", "Bell202", "V17", "V29", "V27ter"};
 
 static void
@@ -970,6 +1086,10 @@ isar_pump_statev_fax(struct isar_ch *ch, u8 devt) {
 				break;
 			case PCTRL_CMD_FTM:
 				p1 = 2;
+<<<<<<< HEAD
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case PCTRL_CMD_FTH:
 				send_mbox(ch->is, dps | ISAR_HIS_PUMPCTRL,
 					  PCTRL_CMD_SILON, 1, &p1);
@@ -1144,9 +1264,15 @@ mISDNisar_irq(struct isar_hw *isar)
 EXPORT_SYMBOL(mISDNisar_irq);
 
 static void
+<<<<<<< HEAD
 ftimer_handler(unsigned long data)
 {
 	struct isar_ch *ch = (struct isar_ch *)data;
+=======
+ftimer_handler(struct timer_list *t)
+{
+	struct isar_ch *ch = from_timer(ch, t, ftimer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: ftimer flags %lx\n", ch->is->name, ch->bch.Flags);
 	test_and_clear_bit(FLG_FTI_RUN, &ch->bch.Flags);
@@ -1175,6 +1301,10 @@ setup_pump(struct isar_ch *ch) {
 			send_mbox(ch->is, dps | ISAR_HIS_PUMPCFG,
 				  PMOD_DTMF, 1, param);
 		}
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISDN_P_B_MODEM_ASYNC:
 		ctrl = PMOD_DATAMODEM;
 		if (test_bit(FLG_ORIGIN, &ch->bch.Flags)) {
@@ -1266,6 +1396,10 @@ setup_iom2(struct isar_ch *ch) {
 	case ISDN_P_B_MODEM_ASYNC:
 	case ISDN_P_B_T30_FAX:
 		cmsb |= IOM_CTRL_RCV;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISDN_P_B_L2DTMF:
 		if (test_bit(FLG_DTMFSEND, &ch->bch.Flags))
 			cmsb |= IOM_CTRL_RCV;
@@ -1300,7 +1434,11 @@ modeisar(struct isar_ch *ch, u32 bprotocol)
 						   &ch->is->Flags))
 				ch->dpath = 1;
 			else {
+<<<<<<< HEAD
 				pr_info("modeisar both pathes in use\n");
+=======
+				pr_info("modeisar both paths in use\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EBUSY;
 			}
 			if (bprotocol == ISDN_P_B_HDLC)
@@ -1487,6 +1625,7 @@ isar_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 		spin_lock_irqsave(ich->is->hwlock, flags);
 		ret = bchannel_senddata(bch, skb);
 		if (ret > 0) { /* direct TX */
+<<<<<<< HEAD
 			id = hh->id; /* skb can be freed */
 			ret = 0;
 			isar_fill_fifo(ich);
@@ -1495,6 +1634,12 @@ isar_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 				queue_ch_frame(ch, PH_DATA_CNF, id, NULL);
 		} else
 			spin_unlock_irqrestore(ich->is->hwlock, flags);
+=======
+			ret = 0;
+			isar_fill_fifo(ich);
+		}
+		spin_unlock_irqrestore(ich->is->hwlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	case PH_ACTIVATE_REQ:
 		spin_lock_irqsave(ich->is->hwlock, flags);
@@ -1562,6 +1707,10 @@ isar_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 				ich->is->name, hh->id);
 			ret = -EINVAL;
 		}
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_info("%s: %s unknown prim(%x,%x)\n",
 			ich->is->name, __func__, hh->prim, hh->id);
@@ -1575,6 +1724,7 @@ isar_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 static int
 channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 {
+<<<<<<< HEAD
 	int	ret = 0;
 
 	switch (cq->op) {
@@ -1589,6 +1739,9 @@ channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 		break;
 	}
 	return ret;
+=======
+	return mISDN_ctrl_bchannel(bch, cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1603,6 +1756,7 @@ isar_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	switch (cmd) {
 	case CLOSE_CHANNEL:
 		test_and_clear_bit(FLG_OPEN, &bch->Flags);
+<<<<<<< HEAD
 		if (test_bit(FLG_ACTIVE, &bch->Flags)) {
 			spin_lock_irqsave(ich->is->hwlock, flags);
 			mISDN_freebchannel(bch);
@@ -1612,6 +1766,13 @@ isar_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 			skb_queue_purge(&bch->rqueue);
 			bch->rcount = 0;
 		}
+=======
+		cancel_work_sync(&bch->workq);
+		spin_lock_irqsave(ich->is->hwlock, flags);
+		mISDN_clear_bchannel(bch);
+		modeisar(ich, ISDN_P_NONE);
+		spin_unlock_irqrestore(ich->is->hwlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->protocol = ISDN_P_NONE;
 		ch->peer = NULL;
 		module_put(ich->is->owner);
@@ -1654,6 +1815,7 @@ init_isar(struct isar_hw *isar)
 	}
 	if (isar->version != 1)
 		return -EINVAL;
+<<<<<<< HEAD
 	isar->ch[0].ftimer.function = &ftimer_handler;
 	isar->ch[0].ftimer.data = (long)&isar->ch[0];
 	init_timer(&isar->ch[0].ftimer);
@@ -1661,6 +1823,11 @@ init_isar(struct isar_hw *isar)
 	isar->ch[1].ftimer.function = &ftimer_handler;
 	isar->ch[1].ftimer.data = (long)&isar->ch[1];
 	init_timer(&isar->ch[1].ftimer);
+=======
+	timer_setup(&isar->ch[0].ftimer, ftimer_handler, 0);
+	test_and_set_bit(FLG_INITIALIZED, &isar->ch[0].bch.Flags);
+	timer_setup(&isar->ch[1].ftimer, ftimer_handler, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	test_and_set_bit(FLG_INITIALIZED, &isar->ch[1].bch.Flags);
 	return 0;
 }
@@ -1677,7 +1844,10 @@ isar_open(struct isar_hw *isar, struct channel_req *rq)
 	bch = &isar->ch[rq->adr.channel - 1].bch;
 	if (test_and_set_bit(FLG_OPEN, &bch->Flags))
 		return -EBUSY; /* b-channel can be only open once */
+<<<<<<< HEAD
 	test_and_clear_bit(FLG_FILLEMPTY, &bch->Flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bch->ch.protocol = rq->protocol;
 	rq->ch = &bch->ch;
 	return 0;
@@ -1691,7 +1861,11 @@ mISDNisar_init(struct isar_hw *isar, void *hw)
 	isar->hw = hw;
 	for (i = 0; i < 2; i++) {
 		isar->ch[i].bch.nr = i + 1;
+<<<<<<< HEAD
 		mISDN_initbchannel(&isar->ch[i].bch, MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(&isar->ch[i].bch, MAX_DATA_MEM, 32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		isar->ch[i].bch.ch.nr = i + 1;
 		isar->ch[i].bch.ch.send = &isar_l2l1;
 		isar->ch[i].bch.ch.ctrl = isar_bctrl;

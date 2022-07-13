@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram miXart soundcards
  *
  * main header file
  *
  * Copyright (c) 2003 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_MIXART_H
@@ -74,6 +81,7 @@ struct mixart_mgr {
 	/* memory-maps */
 	struct mem_area mem[2];
 
+<<<<<<< HEAD
 	/* share the name */
 	char shortname[32];         /* short name of this soundcard */
 	char longname[80];          /* name of this soundcard */
@@ -81,10 +89,13 @@ struct mixart_mgr {
 	/* message tasklet */
 	struct tasklet_struct msg_taskq;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* one and only blocking message or notification may be pending  */
 	u32 pending_event;
 	wait_queue_head_t msg_sleep;
 
+<<<<<<< HEAD
 	/* messages stored for tasklet */
 	u32 msg_fifo[MSG_FIFO_SIZE];
 	int msg_fifo_readptr;
@@ -94,6 +105,16 @@ struct mixart_mgr {
 	spinlock_t lock;              /* interrupt spinlock */
 	spinlock_t msg_lock;          /* mailbox spinlock */
 	struct mutex msg_mutex;   /* mutex for blocking_requests */
+=======
+	/* messages fifo */
+	u32 msg_fifo[MSG_FIFO_SIZE];
+	int msg_fifo_readptr;
+	int msg_fifo_writeptr;
+	atomic_t msg_processed;       /* number of messages to be processed in irq thread */
+
+	struct mutex lock;              /* interrupt lock */
+	struct mutex msg_lock;		/* mailbox lock */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex setup_mutex; /* mutex used in hw_params, open and close */
 

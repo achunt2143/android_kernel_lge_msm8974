@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VXpocket V2/440 soundcards
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
 
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -29,6 +36,7 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 /*
  */
 
@@ -36,6 +44,11 @@ MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("Digigram VXPocket");
 MODULE_LICENSE("GPL");
 MODULE_SUPPORTED_DEVICE("{{Digigram,VXPocket},{Digigram,VXPocket440}}");
+=======
+MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
+MODULE_DESCRIPTION("Digigram VXPocket");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -62,10 +75,15 @@ static unsigned int card_alloc;
  */
 static void vxpocket_release(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
+=======
+	free_irq(link->irq, link->priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcmcia_disable_device(link);
 }
 
 /*
+<<<<<<< HEAD
  * destructor, called from snd_card_free_when_closed()
  */
 static int snd_vxpocket_dev_free(struct snd_device *device)
@@ -79,6 +97,8 @@ static int snd_vxpocket_dev_free(struct snd_device *device)
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Hardware information
  */
 
@@ -93,7 +113,11 @@ static int snd_vxpocket_dev_free(struct snd_device *device)
 
 static const DECLARE_TLV_DB_SCALE(db_scale_old_vol, -11350, 50, 0);
 
+<<<<<<< HEAD
 static struct snd_vx_hardware vxpocket_hw = {
+=======
+static const struct snd_vx_hardware vxpocket_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "VXPocket",
 	.type = VX_TYPE_VXPOCKET,
 
@@ -115,7 +139,11 @@ static struct snd_vx_hardware vxpocket_hw = {
  * UER, but only for the first two inputs and outputs.
  */
 
+<<<<<<< HEAD
 static struct snd_vx_hardware vxp440_hw = {
+=======
+static const struct snd_vx_hardware vxp440_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "VXPocket440",
 	.type = VX_TYPE_VXP440,
 
@@ -137,16 +165,20 @@ static int snd_vxpocket_new(struct snd_card *card, int ibl,
 {
 	struct vx_core *chip;
 	struct snd_vxpocket *vxp;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_vxpocket_dev_free,
 	};
 	int err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip = snd_vx_create(card, &vxpocket_hw, &snd_vxpocket_ops,
 			     sizeof(struct snd_vxpocket) - sizeof(struct vx_core));
 	if (!chip)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
 	if (err < 0) {
 		kfree(chip);
@@ -155,6 +187,11 @@ static int snd_vxpocket_new(struct snd_card *card, int ibl,
 	chip->ibl.size = ibl;
 
 	vxp = (struct snd_vxpocket *)chip;
+=======
+	chip->ibl.size = ibl;
+
+	vxp = to_vxpocket(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vxp->p_dev = link;
 	link->priv = chip;
@@ -173,6 +210,10 @@ static int snd_vxpocket_new(struct snd_card *card, int ibl,
 
 /**
  * snd_vxpocket_assign_resources - initialize the hardware and card instance.
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @port: i/o port for the card
  * @irq: irq number for the card
  *
@@ -185,7 +226,11 @@ static int snd_vxpocket_assign_resources(struct vx_core *chip, int port, int irq
 {
 	int err;
 	struct snd_card *card = chip->card;
+<<<<<<< HEAD
 	struct snd_vxpocket *vxp = (struct snd_vxpocket *)chip;
+=======
+	struct snd_vxpocket *vxp = to_vxpocket(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_printdd(KERN_DEBUG "vxpocket assign resources: port = 0x%x, irq = %d\n", port, irq);
 	vxp->port = port;
@@ -195,8 +240,15 @@ static int snd_vxpocket_assign_resources(struct vx_core *chip, int port, int irq
 		card->shortname, port, irq);
 
 	chip->irq = irq;
+<<<<<<< HEAD
 
 	if ((err = snd_vx_setup_firmware(chip)) < 0)
+=======
+	card->sync_irq = chip->irq;
+
+	err = snd_vx_setup_firmware(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
@@ -227,18 +279,31 @@ static int vxpocket_config(struct pcmcia_device *link)
 
 	ret = pcmcia_request_io(link);
 	if (ret)
+<<<<<<< HEAD
 		goto failed;
 
 	ret = pcmcia_request_irq(link, snd_vx_irq_handler);
 	if (ret)
 		goto failed;
+=======
+		goto failed_preirq;
+
+	ret = request_threaded_irq(link->irq, snd_vx_irq_handler,
+				   snd_vx_threaded_irq_handler,
+				   IRQF_SHARED, link->devname, link->priv);
+	if (ret)
+		goto failed_preirq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = pcmcia_enable_device(link);
 	if (ret)
 		goto failed;
 
 	chip->dev = &link->dev;
+<<<<<<< HEAD
 	snd_card_set_dev(chip->card, chip->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_vxpocket_assign_resources(chip, link->resource[0]->start,
 						link->irq) < 0)
@@ -246,7 +311,13 @@ static int vxpocket_config(struct pcmcia_device *link)
 
 	return 0;
 
+<<<<<<< HEAD
 failed:
+=======
+ failed:
+	free_irq(link->irq, link->priv);
+failed_preirq:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcmcia_disable_device(link);
 	return -ENODEV;
 }
@@ -260,7 +331,11 @@ static int vxp_suspend(struct pcmcia_device *link)
 	snd_printdd(KERN_DEBUG "SUSPEND\n");
 	if (chip) {
 		snd_printdd(KERN_DEBUG "snd_vx_suspend calling\n");
+<<<<<<< HEAD
 		snd_vx_suspend(chip, PMSG_SUSPEND);
+=======
+		snd_vx_suspend(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -307,7 +382,12 @@ static int vxpocket_probe(struct pcmcia_device *p_dev)
 		return -ENODEV; /* disabled explicitly */
 
 	/* ok, create a card instance */
+<<<<<<< HEAD
 	err = snd_card_create(index[i], id[i], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&p_dev->dev, index[i], id[i], THIS_MODULE,
+			   0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		snd_printk(KERN_ERR "vxpocket: cannot create a card instance\n");
 		return err;
@@ -367,6 +447,7 @@ static struct pcmcia_driver vxp_cs_driver = {
 	.resume		= vxp_resume,
 #endif
 };
+<<<<<<< HEAD
 
 static int __init init_vxpocket(void)
 {
@@ -380,3 +461,6 @@ static void __exit exit_vxpocket(void)
 
 module_init(init_vxpocket);
 module_exit(exit_vxpocket);
+=======
+module_pcmcia_driver(vxp_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

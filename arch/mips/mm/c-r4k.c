@@ -7,6 +7,10 @@
  * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002 Ralf Baechle (ralf@gnu.org)
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  */
+<<<<<<< HEAD
+=======
+#include <linux/cpu_pm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hardirq.h>
 #include <linux/init.h>
 #include <linux/highmem.h>
@@ -16,8 +20,14 @@
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/bitops.h>
+=======
+#include <linux/export.h>
+#include <linux/bitops.h>
+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/bcache.h>
 #include <asm/bootinfo.h>
@@ -25,6 +35,7 @@
 #include <asm/cacheops.h>
 #include <asm/cpu.h>
 #include <asm/cpu-features.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
@@ -34,6 +45,62 @@
 #include <asm/war.h>
 #include <asm/cacheflush.h> /* for run_uncached() */
 
+=======
+#include <asm/cpu-type.h>
+#include <asm/io.h>
+#include <asm/page.h>
+#include <asm/r4kcache.h>
+#include <asm/sections.h>
+#include <asm/mmu_context.h>
+#include <asm/cacheflush.h> /* for run_uncached() */
+#include <asm/traps.h>
+#include <asm/mips-cps.h>
+
+/*
+ * Bits describing what cache ops an SMP callback function may perform.
+ *
+ * R4K_HIT   -	Virtual user or kernel address based cache operations. The
+ *		active_mm must be checked before using user addresses, falling
+ *		back to kmap.
+ * R4K_INDEX -	Index based cache operations.
+ */
+
+#define R4K_HIT		BIT(0)
+#define R4K_INDEX	BIT(1)
+
+/**
+ * r4k_op_needs_ipi() - Decide if a cache op needs to be done on every core.
+ * @type:	Type of cache operations (R4K_HIT or R4K_INDEX).
+ *
+ * Decides whether a cache op needs to be performed on every core in the system.
+ * This may change depending on the @type of cache operation, as well as the set
+ * of online CPUs, so preemption should be disabled by the caller to prevent CPU
+ * hotplug from changing the result.
+ *
+ * Returns:	1 if the cache operation @type should be done on every core in
+ *		the system.
+ *		0 if the cache operation @type is globalized and only needs to
+ *		be performed on a simple CPU.
+ */
+static inline bool r4k_op_needs_ipi(unsigned int type)
+{
+	/* The MIPS Coherence Manager (CM) globalizes address-based cache ops */
+	if (type == R4K_HIT && mips_cm_present())
+		return false;
+
+	/*
+	 * Hardware doesn't globalize the required cache ops, so SMP calls may
+	 * be needed, but only if there are foreign CPUs (non-siblings with
+	 * separate caches).
+	 */
+	/* cpu_foreign_map[] undeclared when !CONFIG_SMP */
+#ifdef CONFIG_SMP
+	return !cpumask_empty(&cpu_foreign_map[0]);
+#else
+	return false;
+#endif
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Special Variant of smp_call_function for use by cache functions:
@@ -44,6 +111,7 @@
  *    primary cache.
  *  o doesn't disable interrupts on the local CPU
  */
+<<<<<<< HEAD
 static inline void r4k_on_each_cpu(void (*func) (void *info), void *info)
 {
 	preempt_disable();
@@ -51,21 +119,34 @@ static inline void r4k_on_each_cpu(void (*func) (void *info), void *info)
 #if !defined(CONFIG_MIPS_MT_SMP) && !defined(CONFIG_MIPS_MT_SMTC)
 	smp_call_function(func, info, 1);
 #endif
+=======
+static inline void r4k_on_each_cpu(unsigned int type,
+				   void (*func)(void *info), void *info)
+{
+	preempt_disable();
+	if (r4k_op_needs_ipi(type))
+		smp_call_function_many(&cpu_foreign_map[smp_processor_id()],
+				       func, info, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	func(info);
 	preempt_enable();
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_MIPS_CMP)
 #define cpu_has_safe_index_cacheops 0
 #else
 #define cpu_has_safe_index_cacheops 1
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Must die.
  */
 static unsigned long icache_size __read_mostly;
 static unsigned long dcache_size __read_mostly;
+<<<<<<< HEAD
 static unsigned long scache_size __read_mostly;
 
 /*
@@ -82,14 +163,26 @@ static struct bcache_ops no_sc_ops = {
 
 struct bcache_ops *bcops = &no_sc_ops;
 
+=======
+static unsigned long vcache_size __read_mostly;
+static unsigned long scache_size __read_mostly;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_is_r4600_v1_x()	((read_c0_prid() & 0xfffffff0) == 0x00002010)
 #define cpu_is_r4600_v2_x()	((read_c0_prid() & 0xfffffff0) == 0x00002020)
 
 #define R4600_HIT_CACHEOP_WAR_IMPL					\
 do {									\
+<<<<<<< HEAD
 	if (R4600_V2_HIT_CACHEOP_WAR && cpu_is_r4600_v2_x())		\
 		*(volatile unsigned long *)CKSEG1;			\
 	if (R4600_V1_HIT_CACHEOP_WAR)					\
+=======
+	if (IS_ENABLED(CONFIG_WAR_R4600_V2_HIT_CACHEOP) &&		\
+	    cpu_is_r4600_v2_x())					\
+		*(volatile unsigned long *)CKSEG1;			\
+	if (IS_ENABLED(CONFIG_WAR_R4600_V1_HIT_CACHEOP))					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__asm__ __volatile__("nop;nop;nop;nop");		\
 } while (0)
 
@@ -103,15 +196,59 @@ static inline void r4k_blast_dcache_page_dc32(unsigned long addr)
 
 static inline void r4k_blast_dcache_page_dc64(unsigned long addr)
 {
+<<<<<<< HEAD
 	R4600_HIT_CACHEOP_WAR_IMPL;
 	blast_dcache64_page(addr);
 }
 
 static void __cpuinit r4k_blast_dcache_page_setup(void)
+=======
+	blast_dcache64_page(addr);
+}
+
+static inline void r4k_blast_dcache_page_dc128(unsigned long addr)
+{
+	blast_dcache128_page(addr);
+}
+
+static void r4k_blast_dcache_page_setup(void)
+{
+	unsigned long  dc_lsize = cpu_dcache_line_size();
+
+	switch (dc_lsize) {
+	case 0:
+		r4k_blast_dcache_page = (void *)cache_noop;
+		break;
+	case 16:
+		r4k_blast_dcache_page = blast_dcache16_page;
+		break;
+	case 32:
+		r4k_blast_dcache_page = r4k_blast_dcache_page_dc32;
+		break;
+	case 64:
+		r4k_blast_dcache_page = r4k_blast_dcache_page_dc64;
+		break;
+	case 128:
+		r4k_blast_dcache_page = r4k_blast_dcache_page_dc128;
+		break;
+	default:
+		break;
+	}
+}
+
+#ifndef CONFIG_EVA
+#define r4k_blast_dcache_user_page  r4k_blast_dcache_page
+#else
+
+static void (*r4k_blast_dcache_user_page)(unsigned long addr);
+
+static void r4k_blast_dcache_user_page_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long  dc_lsize = cpu_dcache_line_size();
 
 	if (dc_lsize == 0)
+<<<<<<< HEAD
 		r4k_blast_dcache_page = (void *)cache_noop;
 	else if (dc_lsize == 16)
 		r4k_blast_dcache_page = blast_dcache16_page;
@@ -140,6 +277,23 @@ static void __cpuinit r4k_blast_dcache_page_indexed_setup(void)
 static void (* r4k_blast_dcache)(void);
 
 static void __cpuinit r4k_blast_dcache_setup(void)
+=======
+		r4k_blast_dcache_user_page = (void *)cache_noop;
+	else if (dc_lsize == 16)
+		r4k_blast_dcache_user_page = blast_dcache16_user_page;
+	else if (dc_lsize == 32)
+		r4k_blast_dcache_user_page = blast_dcache32_user_page;
+	else if (dc_lsize == 64)
+		r4k_blast_dcache_user_page = blast_dcache64_user_page;
+}
+
+#endif
+
+void (* r4k_blast_dcache)(void);
+EXPORT_SYMBOL(r4k_blast_dcache);
+
+static void r4k_blast_dcache_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long dc_lsize = cpu_dcache_line_size();
 
@@ -151,9 +305,17 @@ static void __cpuinit r4k_blast_dcache_setup(void)
 		r4k_blast_dcache = blast_dcache32;
 	else if (dc_lsize == 64)
 		r4k_blast_dcache = blast_dcache64;
+<<<<<<< HEAD
 }
 
 /* force code alignment (used for TX49XX_ICACHE_INDEX_INV_WAR) */
+=======
+	else if (dc_lsize == 128)
+		r4k_blast_dcache = blast_dcache128;
+}
+
+/* force code alignment (used for CONFIG_WAR_TX49XX_ICACHE_INDEX_INV) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JUMP_TO_ALIGN(order) \
 	__asm__ __volatile__( \
 		"b\t1f\n\t" \
@@ -161,7 +323,11 @@ static void __cpuinit r4k_blast_dcache_setup(void)
 		"1:\n\t" \
 		)
 #define CACHE32_UNROLL32_ALIGN	JUMP_TO_ALIGN(10) /* 32 * 32 = 1024 */
+<<<<<<< HEAD
 #define CACHE32_UNROLL32_ALIGN2	JUMP_TO_ALIGN(11)
+=======
+#define CACHE32_UNROLL32_ALIGN2 JUMP_TO_ALIGN(11)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void blast_r4600_v1_icache32(void)
 {
@@ -178,18 +344,28 @@ static inline void tx49_blast_icache32(void)
 	unsigned long end = start + current_cpu_data.icache.waysize;
 	unsigned long ws_inc = 1UL << current_cpu_data.icache.waybit;
 	unsigned long ws_end = current_cpu_data.icache.ways <<
+<<<<<<< HEAD
 	                       current_cpu_data.icache.waybit;
+=======
+			       current_cpu_data.icache.waybit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ws, addr;
 
 	CACHE32_UNROLL32_ALIGN2;
 	/* I'm in even chunk.  blast odd chunks */
 	for (ws = 0; ws < ws_end; ws += ws_inc)
 		for (addr = start + 0x400; addr < end; addr += 0x400 * 2)
+<<<<<<< HEAD
 			cache32_unroll32(addr|ws, Index_Invalidate_I);
+=======
+			cache_unroll(32, kernel_cache, Index_Invalidate_I,
+				     addr | ws, 32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CACHE32_UNROLL32_ALIGN;
 	/* I'm in odd chunk.  blast even chunks */
 	for (ws = 0; ws < ws_end; ws += ws_inc)
 		for (addr = start; addr < end; addr += 0x400 * 2)
+<<<<<<< HEAD
 			cache32_unroll32(addr|ws, Index_Invalidate_I);
 }
 
@@ -222,11 +398,19 @@ static inline void tx49_blast_icache32_page_indexed(unsigned long page)
 	for (ws = 0; ws < ws_end; ws += ws_inc)
 		for (addr = start; addr < end; addr += 0x400 * 2)
 			cache32_unroll32(addr|ws, Index_Invalidate_I);
+=======
+			cache_unroll(32, kernel_cache, Index_Invalidate_I,
+				     addr | ws, 32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void (* r4k_blast_icache_page)(unsigned long addr);
 
+<<<<<<< HEAD
 static void __cpuinit r4k_blast_icache_page_setup(void)
+=======
+static void r4k_blast_icache_page_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long ic_lsize = cpu_icache_line_size();
 
@@ -234,20 +418,40 @@ static void __cpuinit r4k_blast_icache_page_setup(void)
 		r4k_blast_icache_page = (void *)cache_noop;
 	else if (ic_lsize == 16)
 		r4k_blast_icache_page = blast_icache16_page;
+<<<<<<< HEAD
+=======
+	else if (ic_lsize == 32 && current_cpu_type() == CPU_LOONGSON2EF)
+		r4k_blast_icache_page = loongson2_blast_icache32_page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (ic_lsize == 32)
 		r4k_blast_icache_page = blast_icache32_page;
 	else if (ic_lsize == 64)
 		r4k_blast_icache_page = blast_icache64_page;
+<<<<<<< HEAD
 }
 
 
 static void (* r4k_blast_icache_page_indexed)(unsigned long addr);
 
 static void __cpuinit r4k_blast_icache_page_indexed_setup(void)
+=======
+	else if (ic_lsize == 128)
+		r4k_blast_icache_page = blast_icache128_page;
+}
+
+#ifndef CONFIG_EVA
+#define r4k_blast_icache_user_page  r4k_blast_icache_page
+#else
+
+static void (*r4k_blast_icache_user_page)(unsigned long addr);
+
+static void r4k_blast_icache_user_page_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long ic_lsize = cpu_icache_line_size();
 
 	if (ic_lsize == 0)
+<<<<<<< HEAD
 		r4k_blast_icache_page_indexed = (void *)cache_noop;
 	else if (ic_lsize == 16)
 		r4k_blast_icache_page_indexed = blast_icache16_page_indexed;
@@ -268,6 +472,23 @@ static void __cpuinit r4k_blast_icache_page_indexed_setup(void)
 static void (* r4k_blast_icache)(void);
 
 static void __cpuinit r4k_blast_icache_setup(void)
+=======
+		r4k_blast_icache_user_page = (void *)cache_noop;
+	else if (ic_lsize == 16)
+		r4k_blast_icache_user_page = blast_icache16_user_page;
+	else if (ic_lsize == 32)
+		r4k_blast_icache_user_page = blast_icache32_user_page;
+	else if (ic_lsize == 64)
+		r4k_blast_icache_user_page = blast_icache64_user_page;
+}
+
+#endif
+
+void (* r4k_blast_icache)(void);
+EXPORT_SYMBOL(r4k_blast_icache);
+
+static void r4k_blast_icache_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long ic_lsize = cpu_icache_line_size();
 
@@ -276,19 +497,38 @@ static void __cpuinit r4k_blast_icache_setup(void)
 	else if (ic_lsize == 16)
 		r4k_blast_icache = blast_icache16;
 	else if (ic_lsize == 32) {
+<<<<<<< HEAD
 		if (R4600_V1_INDEX_ICACHEOP_WAR && cpu_is_r4600_v1_x())
 			r4k_blast_icache = blast_r4600_v1_icache32;
 		else if (TX49XX_ICACHE_INDEX_INV_WAR)
 			r4k_blast_icache = tx49_blast_icache32;
+=======
+		if (IS_ENABLED(CONFIG_WAR_R4600_V1_INDEX_ICACHEOP) &&
+		    cpu_is_r4600_v1_x())
+			r4k_blast_icache = blast_r4600_v1_icache32;
+		else if (IS_ENABLED(CONFIG_WAR_TX49XX_ICACHE_INDEX_INV))
+			r4k_blast_icache = tx49_blast_icache32;
+		else if (current_cpu_type() == CPU_LOONGSON2EF)
+			r4k_blast_icache = loongson2_blast_icache32;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			r4k_blast_icache = blast_icache32;
 	} else if (ic_lsize == 64)
 		r4k_blast_icache = blast_icache64;
+<<<<<<< HEAD
+=======
+	else if (ic_lsize == 128)
+		r4k_blast_icache = blast_icache128;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void (* r4k_blast_scache_page)(unsigned long addr);
 
+<<<<<<< HEAD
 static void __cpuinit r4k_blast_scache_page_setup(void)
+=======
+static void r4k_blast_scache_page_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sc_lsize = cpu_scache_line_size();
 
@@ -304,6 +544,7 @@ static void __cpuinit r4k_blast_scache_page_setup(void)
 		r4k_blast_scache_page = blast_scache128_page;
 }
 
+<<<<<<< HEAD
 static void (* r4k_blast_scache_page_indexed)(unsigned long addr);
 
 static void __cpuinit r4k_blast_scache_page_indexed_setup(void)
@@ -325,6 +566,11 @@ static void __cpuinit r4k_blast_scache_page_indexed_setup(void)
 static void (* r4k_blast_scache)(void);
 
 static void __cpuinit r4k_blast_scache_setup(void)
+=======
+static void (* r4k_blast_scache)(void);
+
+static void r4k_blast_scache_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sc_lsize = cpu_scache_line_size();
 
@@ -340,6 +586,7 @@ static void __cpuinit r4k_blast_scache_setup(void)
 		r4k_blast_scache = blast_scache128;
 }
 
+<<<<<<< HEAD
 static inline void local_r4k___flush_cache_all(void * args)
 {
 #if defined(CONFIG_CPU_LOONGSON2)
@@ -350,6 +597,30 @@ static inline void local_r4k___flush_cache_all(void * args)
 	r4k_blast_icache();
 
 	switch (current_cpu_type()) {
+=======
+static void (*r4k_blast_scache_node)(long node);
+
+static void r4k_blast_scache_node_setup(void)
+{
+	unsigned long sc_lsize = cpu_scache_line_size();
+
+	if (current_cpu_type() != CPU_LOONGSON64)
+		r4k_blast_scache_node = (void *)cache_noop;
+	else if (sc_lsize == 16)
+		r4k_blast_scache_node = blast_scache16_node;
+	else if (sc_lsize == 32)
+		r4k_blast_scache_node = blast_scache32_node;
+	else if (sc_lsize == 64)
+		r4k_blast_scache_node = blast_scache64_node;
+	else if (sc_lsize == 128)
+		r4k_blast_scache_node = blast_scache128_node;
+}
+
+static inline void local_r4k___flush_cache_all(void * args)
+{
+	switch (current_cpu_type()) {
+	case CPU_LOONGSON2EF:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_R4000SC:
 	case CPU_R4000MC:
 	case CPU_R4400SC:
@@ -357,12 +628,39 @@ static inline void local_r4k___flush_cache_all(void * args)
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
 		r4k_blast_scache();
+=======
+	case CPU_R16000:
+		/*
+		 * These caches are inclusive caches, that is, if something
+		 * is not cached in the S-cache, we know it also won't be
+		 * in one of the primary caches.
+		 */
+		r4k_blast_scache();
+		break;
+
+	case CPU_LOONGSON64:
+		/* Use get_ebase_cpunum() for both NUMA=y/n */
+		r4k_blast_scache_node(get_ebase_cpunum() >> 2);
+		break;
+
+	case CPU_BMIPS5000:
+		r4k_blast_scache();
+		__sync();
+		break;
+
+	default:
+		r4k_blast_dcache();
+		r4k_blast_icache();
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void r4k___flush_cache_all(void)
 {
+<<<<<<< HEAD
 	r4k_on_each_cpu(local_r4k___flush_cache_all, NULL);
 }
 
@@ -379,6 +677,49 @@ static inline int has_valid_asid(const struct mm_struct *mm)
 #else
 	return cpu_context(smp_processor_id(), mm);
 #endif
+=======
+	r4k_on_each_cpu(R4K_INDEX, local_r4k___flush_cache_all, NULL);
+}
+
+/**
+ * has_valid_asid() - Determine if an mm already has an ASID.
+ * @mm:		Memory map.
+ * @type:	R4K_HIT or R4K_INDEX, type of cache op.
+ *
+ * Determines whether @mm already has an ASID on any of the CPUs which cache ops
+ * of type @type within an r4k_on_each_cpu() call will affect. If
+ * r4k_on_each_cpu() does an SMP call to a single VPE in each core, then the
+ * scope of the operation is confined to sibling CPUs, otherwise all online CPUs
+ * will need to be checked.
+ *
+ * Must be called in non-preemptive context.
+ *
+ * Returns:	1 if the CPUs affected by @type cache ops have an ASID for @mm.
+ *		0 otherwise.
+ */
+static inline int has_valid_asid(const struct mm_struct *mm, unsigned int type)
+{
+	unsigned int i;
+	const cpumask_t *mask = cpu_present_mask;
+
+	if (cpu_has_mmid)
+		return cpu_context(0, mm) != 0;
+
+	/* cpu_sibling_map[] undeclared when !CONFIG_SMP */
+#ifdef CONFIG_SMP
+	/*
+	 * If r4k_on_each_cpu does SMP calls, it does them to a single VPE in
+	 * each foreign core, so we only need to worry about siblings.
+	 * Otherwise we need to worry about all present CPUs.
+	 */
+	if (r4k_op_needs_ipi(type))
+		mask = &cpu_sibling_map[smp_processor_id()];
+#endif
+	for_each_cpu(i, mask)
+		if (cpu_context(i, mm))
+			return 1;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r4k__flush_cache_vmap(void)
@@ -391,15 +732,36 @@ static void r4k__flush_cache_vunmap(void)
 	r4k_blast_dcache();
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Note: flush_tlb_range() assumes flush_cache_range() sufficiently flushes
+ * whole caches when vma is executable.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void local_r4k_flush_cache_range(void * args)
 {
 	struct vm_area_struct *vma = args;
 	int exec = vma->vm_flags & VM_EXEC;
 
+<<<<<<< HEAD
 	if (!(has_valid_asid(vma->vm_mm)))
 		return;
 
 	r4k_blast_dcache();
+=======
+	if (!has_valid_asid(vma->vm_mm, R4K_INDEX))
+		return;
+
+	/*
+	 * If dcache can alias, we must blast it since mapping is changing.
+	 * If executable, we must ensure any dirty lines are written back far
+	 * enough to be visible to icache.
+	 */
+	if (cpu_has_dc_aliases || (exec && !cpu_has_ic_fills_f_dc))
+		r4k_blast_dcache();
+	/* If executable, blast stale lines from icache */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (exec)
 		r4k_blast_icache();
 }
@@ -409,20 +771,33 @@ static void r4k_flush_cache_range(struct vm_area_struct *vma,
 {
 	int exec = vma->vm_flags & VM_EXEC;
 
+<<<<<<< HEAD
 	if (cpu_has_dc_aliases || (exec && !cpu_has_ic_fills_f_dc))
 		r4k_on_each_cpu(local_r4k_flush_cache_range, vma);
+=======
+	if (cpu_has_dc_aliases || exec)
+		r4k_on_each_cpu(R4K_INDEX, local_r4k_flush_cache_range, vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void local_r4k_flush_cache_mm(void * args)
 {
 	struct mm_struct *mm = args;
 
+<<<<<<< HEAD
 	if (!has_valid_asid(mm))
+=======
+	if (!has_valid_asid(mm, R4K_INDEX))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
 	 * Kludge alert.  For obscure reasons R4000SC and R4400SC go nuts if we
+<<<<<<< HEAD
 	 * only flush the primary caches but R10000 and R12000 behave sane ...
+=======
+	 * only flush the primary caches but R1x000 behave sane ...
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * R4000SC and R4400SC indexed S-cache ops also invalidate primary
 	 * caches, so we can bail out early.
 	 */
@@ -442,7 +817,11 @@ static void r4k_flush_cache_mm(struct mm_struct *mm)
 	if (!cpu_has_dc_aliases)
 		return;
 
+<<<<<<< HEAD
 	r4k_on_each_cpu(local_r4k_flush_cache_mm, mm);
+=======
+	r4k_on_each_cpu(R4K_INDEX, local_r4k_flush_cache_mm, mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct flush_cache_page_args {
@@ -460,13 +839,17 @@ static inline void local_r4k_flush_cache_page(void *args)
 	int exec = vma->vm_flags & VM_EXEC;
 	struct mm_struct *mm = vma->vm_mm;
 	int map_coherent = 0;
+<<<<<<< HEAD
 	pgd_t *pgdp;
 	pud_t *pudp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd_t *pmdp;
 	pte_t *ptep;
 	void *vaddr;
 
 	/*
+<<<<<<< HEAD
 	 * If ownes no valid ASID yet, cannot possibly have gotten
 	 * this page into the cache.
 	 */
@@ -478,6 +861,17 @@ static inline void local_r4k_flush_cache_page(void *args)
 	pudp = pud_offset(pgdp, addr);
 	pmdp = pmd_offset(pudp, addr);
 	ptep = pte_offset(pmdp, addr);
+=======
+	 * If owns no valid ASID yet, cannot possibly have gotten
+	 * this page into the cache.
+	 */
+	if (!has_valid_asid(mm, R4K_HIT))
+		return;
+
+	addr &= PAGE_MASK;
+	pmdp = pmd_off(mm, addr);
+	ptep = pte_offset_kernel(pmdp, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the page isn't marked valid, the page cannot possibly be
@@ -489,12 +883,21 @@ static inline void local_r4k_flush_cache_page(void *args)
 	if ((mm == current->active_mm) && (pte_val(*ptep) & _PAGE_VALID))
 		vaddr = NULL;
 	else {
+<<<<<<< HEAD
+=======
+		struct folio *folio = page_folio(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Use kmap_coherent or kmap_atomic to do flushes for
 		 * another ASID than the current one.
 		 */
 		map_coherent = (cpu_has_dc_aliases &&
+<<<<<<< HEAD
 				page_mapped(page) && !Page_dcache_dirty(page));
+=======
+				folio_mapped(folio) &&
+				!folio_test_dcache_dirty(folio));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (map_coherent)
 			vaddr = kmap_coherent(page, addr);
 		else
@@ -503,18 +906,30 @@ static inline void local_r4k_flush_cache_page(void *args)
 	}
 
 	if (cpu_has_dc_aliases || (exec && !cpu_has_ic_fills_f_dc)) {
+<<<<<<< HEAD
 		r4k_blast_dcache_page(addr);
+=======
+		vaddr ? r4k_blast_dcache_page(addr) :
+			r4k_blast_dcache_user_page(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (exec && !cpu_icache_snoops_remote_store)
 			r4k_blast_scache_page(addr);
 	}
 	if (exec) {
 		if (vaddr && cpu_has_vtag_icache && mm == current->active_mm) {
+<<<<<<< HEAD
 			int cpu = smp_processor_id();
 
 			if (cpu_context(cpu, mm) != 0)
 				drop_mmu_context(mm, cpu);
 		} else
 			r4k_blast_icache_page(addr);
+=======
+			drop_mmu_context(mm);
+		} else
+			vaddr ? r4k_blast_icache_page(addr) :
+				r4k_blast_icache_user_page(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vaddr) {
@@ -534,7 +949,11 @@ static void r4k_flush_cache_page(struct vm_area_struct *vma,
 	args.addr = addr;
 	args.pfn = pfn;
 
+<<<<<<< HEAD
 	r4k_on_each_cpu(local_r4k_flush_cache_page, &args);
+=======
+	r4k_on_each_cpu(R4K_HIT, local_r4k_flush_cache_page, &args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void local_r4k_flush_data_cache_page(void * addr)
@@ -547,12 +966,18 @@ static void r4k_flush_data_cache_page(unsigned long addr)
 	if (in_atomic())
 		local_r4k_flush_data_cache_page((void *)addr);
 	else
+<<<<<<< HEAD
 		r4k_on_each_cpu(local_r4k_flush_data_cache_page, (void *) addr);
+=======
+		r4k_on_each_cpu(R4K_HIT, local_r4k_flush_data_cache_page,
+				(void *) addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct flush_icache_range_args {
 	unsigned long start;
 	unsigned long end;
+<<<<<<< HEAD
 };
 
 static inline void local_r4k_flush_icache_range(unsigned long start, unsigned long end)
@@ -570,6 +995,59 @@ static inline void local_r4k_flush_icache_range(unsigned long start, unsigned lo
 		r4k_blast_icache();
 	else
 		protected_blast_icache_range(start, end);
+=======
+	unsigned int type;
+	bool user;
+};
+
+static inline void __local_r4k_flush_icache_range(unsigned long start,
+						  unsigned long end,
+						  unsigned int type,
+						  bool user)
+{
+	if (!cpu_has_ic_fills_f_dc) {
+		if (type == R4K_INDEX ||
+		    (type & R4K_INDEX && end - start >= dcache_size)) {
+			r4k_blast_dcache();
+		} else {
+			R4600_HIT_CACHEOP_WAR_IMPL;
+			if (user)
+				protected_blast_dcache_range(start, end);
+			else
+				blast_dcache_range(start, end);
+		}
+	}
+
+	if (type == R4K_INDEX ||
+	    (type & R4K_INDEX && end - start > icache_size))
+		r4k_blast_icache();
+	else {
+		switch (boot_cpu_type()) {
+		case CPU_LOONGSON2EF:
+			protected_loongson2_blast_icache_range(start, end);
+			break;
+
+		default:
+			if (user)
+				protected_blast_icache_range(start, end);
+			else
+				blast_icache_range(start, end);
+			break;
+		}
+	}
+}
+
+static inline void local_r4k_flush_icache_range(unsigned long start,
+						unsigned long end)
+{
+	__local_r4k_flush_icache_range(start, end, R4K_HIT | R4K_INDEX, false);
+}
+
+static inline void local_r4k_flush_icache_user_range(unsigned long start,
+						     unsigned long end)
+{
+	__local_r4k_flush_icache_range(start, end, R4K_HIT | R4K_INDEX, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void local_r4k_flush_icache_range_ipi(void *args)
@@ -577,12 +1055,55 @@ static inline void local_r4k_flush_icache_range_ipi(void *args)
 	struct flush_icache_range_args *fir_args = args;
 	unsigned long start = fir_args->start;
 	unsigned long end = fir_args->end;
+<<<<<<< HEAD
 
 	local_r4k_flush_icache_range(start, end);
+=======
+	unsigned int type = fir_args->type;
+	bool user = fir_args->user;
+
+	__local_r4k_flush_icache_range(start, end, type, user);
+}
+
+static void __r4k_flush_icache_range(unsigned long start, unsigned long end,
+				     bool user)
+{
+	struct flush_icache_range_args args;
+	unsigned long size, cache_size;
+
+	args.start = start;
+	args.end = end;
+	args.type = R4K_HIT | R4K_INDEX;
+	args.user = user;
+
+	/*
+	 * Indexed cache ops require an SMP call.
+	 * Consider if that can or should be avoided.
+	 */
+	preempt_disable();
+	if (r4k_op_needs_ipi(R4K_INDEX) && !r4k_op_needs_ipi(R4K_HIT)) {
+		/*
+		 * If address-based cache ops don't require an SMP call, then
+		 * use them exclusively for small flushes.
+		 */
+		size = end - start;
+		cache_size = icache_size;
+		if (!cpu_has_ic_fills_f_dc) {
+			size *= 2;
+			cache_size += dcache_size;
+		}
+		if (size <= cache_size)
+			args.type &= ~R4K_INDEX;
+	}
+	r4k_on_each_cpu(args.type, local_r4k_flush_icache_range_ipi, &args);
+	preempt_enable();
+	instruction_hazard();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r4k_flush_icache_range(unsigned long start, unsigned long end)
 {
+<<<<<<< HEAD
 	struct flush_icache_range_args args;
 
 	args.start = start;
@@ -590,6 +1111,14 @@ static void r4k_flush_icache_range(unsigned long start, unsigned long end)
 
 	r4k_on_each_cpu(local_r4k_flush_icache_range_ipi, &args);
 	instruction_hazard();
+=======
+	return __r4k_flush_icache_range(start, end, false);
+}
+
+static void r4k_flush_icache_user_range(unsigned long start, unsigned long end)
+{
+	return __r4k_flush_icache_range(start, end, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_DMA_NONCOHERENT
@@ -597,6 +1126,7 @@ static void r4k_flush_icache_range(unsigned long start, unsigned long end)
 static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 {
 	/* Catch bad driver code */
+<<<<<<< HEAD
 	BUG_ON(size == 0);
 
 	preempt_disable();
@@ -605,6 +1135,22 @@ static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 			r4k_blast_scache();
 		else
 			blast_scache_range(addr, addr + size);
+=======
+	if (WARN_ON(size == 0))
+		return;
+
+	preempt_disable();
+	if (cpu_has_inclusive_pcaches) {
+		if (size >= scache_size) {
+			if (current_cpu_type() != CPU_LOONGSON64)
+				r4k_blast_scache();
+			else
+				r4k_blast_scache_node(pa_to_nid(addr));
+		} else {
+			blast_scache_range(addr, addr + size);
+		}
+		preempt_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sync();
 		return;
 	}
@@ -612,9 +1158,18 @@ static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 	/*
 	 * Either no secondary cache or the available caches don't have the
 	 * subset property so we have to flush the primary caches
+<<<<<<< HEAD
 	 * explicitly
 	 */
 	if (cpu_has_safe_index_cacheops && size >= dcache_size) {
+=======
+	 * explicitly.
+	 * If we would need IPI to perform an INDEX-type operation, then
+	 * we have to use the HIT-type alternative as IPI cannot be used
+	 * here due to interrupts possibly being disabled.
+	 */
+	if (!r4k_op_needs_ipi(R4K_INDEX) && size >= dcache_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r4k_blast_dcache();
 	} else {
 		R4600_HIT_CACHEOP_WAR_IMPL;
@@ -626,6 +1181,7 @@ static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 	__sync();
 }
 
+<<<<<<< HEAD
 static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 {
 	/* Catch bad driver code */
@@ -639,11 +1195,57 @@ static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 			unsigned long lsize = cpu_scache_line_size();
 			unsigned long almask = ~(lsize - 1);
 
+=======
+static void prefetch_cache_inv(unsigned long addr, unsigned long size)
+{
+	unsigned int linesz = cpu_scache_line_size();
+	unsigned long addr0 = addr, addr1;
+
+	addr0 &= ~(linesz - 1);
+	addr1 = (addr0 + size - 1) & ~(linesz - 1);
+
+	protected_writeback_scache_line(addr0);
+	if (likely(addr1 != addr0))
+		protected_writeback_scache_line(addr1);
+	else
+		return;
+
+	addr0 += linesz;
+	if (likely(addr1 != addr0))
+		protected_writeback_scache_line(addr0);
+	else
+		return;
+
+	addr1 -= linesz;
+	if (likely(addr1 > addr0))
+		protected_writeback_scache_line(addr0);
+}
+
+static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
+{
+	/* Catch bad driver code */
+	if (WARN_ON(size == 0))
+		return;
+
+	preempt_disable();
+
+	if (current_cpu_type() == CPU_BMIPS5000)
+		prefetch_cache_inv(addr, size);
+
+	if (cpu_has_inclusive_pcaches) {
+		if (size >= scache_size) {
+			if (current_cpu_type() != CPU_LOONGSON64)
+				r4k_blast_scache();
+			else
+				r4k_blast_scache_node(pa_to_nid(addr));
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * There is no clearly documented alignment requirement
 			 * for the cache instruction on MIPS processors and
 			 * some processors, among them the RM5200 and RM7000
 			 * QED processors will throw an address error for cache
+<<<<<<< HEAD
 			 * hit ops with insufficient alignment.  Solved by
 			 * aligning the address to cache line size.
 			 */
@@ -652,10 +1254,19 @@ static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 				 (addr + size - 1) & almask);
 			blast_inv_scache_range(addr, addr + size);
 		}
+=======
+			 * hit ops with insufficient alignment.	 Solved by
+			 * aligning the address to cache line size.
+			 */
+			blast_inv_scache_range(addr, addr + size);
+		}
+		preempt_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sync();
 		return;
 	}
 
+<<<<<<< HEAD
 	if (cpu_has_safe_index_cacheops && size >= dcache_size) {
 		r4k_blast_dcache();
 	} else {
@@ -665,6 +1276,12 @@ static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 		R4600_HIT_CACHEOP_WAR_IMPL;
 		cache_op(Hit_Writeback_Inv_D, addr & almask);
 		cache_op(Hit_Writeback_Inv_D, (addr + size - 1)  & almask);
+=======
+	if (!r4k_op_needs_ipi(R4K_INDEX) && size >= dcache_size) {
+		r4k_blast_dcache();
+	} else {
+		R4600_HIT_CACHEOP_WAR_IMPL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blast_inv_dcache_range(addr, addr + size);
 	}
 	preempt_enable();
@@ -674,6 +1291,7 @@ static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 }
 #endif /* CONFIG_DMA_NONCOHERENT */
 
+<<<<<<< HEAD
 /*
  * While we're protected against bad userland addresses we don't care
  * very much about what happens in that case.  Usually a segmentation
@@ -720,6 +1338,8 @@ static void r4k_flush_cache_sigtramp(unsigned long addr)
 	r4k_on_each_cpu(local_r4k_flush_cache_sigtramp, (void *) addr);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void r4k_flush_icache_all(void)
 {
 	if (cpu_has_vtag_icache)
@@ -731,6 +1351,18 @@ struct flush_kernel_vmap_range_args {
 	int		size;
 };
 
+<<<<<<< HEAD
+=======
+static inline void local_r4k_flush_kernel_vmap_range_index(void *args)
+{
+	/*
+	 * Aliases only affect the primary caches so don't bother with
+	 * S-caches or T-caches.
+	 */
+	r4k_blast_dcache();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void local_r4k_flush_kernel_vmap_range(void *args)
 {
 	struct flush_kernel_vmap_range_args *vmra = args;
@@ -741,12 +1373,17 @@ static inline void local_r4k_flush_kernel_vmap_range(void *args)
 	 * Aliases only affect the primary caches so don't bother with
 	 * S-caches or T-caches.
 	 */
+<<<<<<< HEAD
 	if (cpu_has_safe_index_cacheops && size >= dcache_size)
 		r4k_blast_dcache();
 	else {
 		R4600_HIT_CACHEOP_WAR_IMPL;
 		blast_dcache_range(vaddr, vaddr + size);
 	}
+=======
+	R4600_HIT_CACHEOP_WAR_IMPL;
+	blast_dcache_range(vaddr, vaddr + size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r4k_flush_kernel_vmap_range(unsigned long vaddr, int size)
@@ -756,7 +1393,16 @@ static void r4k_flush_kernel_vmap_range(unsigned long vaddr, int size)
 	args.vaddr = (unsigned long) vaddr;
 	args.size = size;
 
+<<<<<<< HEAD
 	r4k_on_each_cpu(local_r4k_flush_kernel_vmap_range, &args);
+=======
+	if (size >= dcache_size)
+		r4k_on_each_cpu(R4K_INDEX,
+				local_r4k_flush_kernel_vmap_range_index, NULL);
+	else
+		r4k_on_each_cpu(R4K_HIT, local_r4k_flush_kernel_vmap_range,
+				&args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void rm7k_erratum31(void)
@@ -787,6 +1433,7 @@ static inline void rm7k_erratum31(void)
 			"cache\t%1, 0x3000(%0)\n\t"
 			".set pop\n"
 			:
+<<<<<<< HEAD
 			: "r" (addr), "i" (Index_Store_Tag_I), "i" (Fill));
 	}
 }
@@ -796,14 +1443,82 @@ static char *way_string[] __cpuinitdata = { NULL, "direct mapped", "2-way",
 };
 
 static void __cpuinit probe_pcache(void)
+=======
+			: "r" (addr), "i" (Index_Store_Tag_I), "i" (Fill_I));
+	}
+}
+
+static inline int alias_74k_erratum(struct cpuinfo_mips *c)
+{
+	unsigned int imp = c->processor_id & PRID_IMP_MASK;
+	unsigned int rev = c->processor_id & PRID_REV_MASK;
+	int present = 0;
+
+	/*
+	 * Early versions of the 74K do not update the cache tags on a
+	 * vtag miss/ptag hit which can occur in the case of KSEG0/KUSEG
+	 * aliases.  In this case it is better to treat the cache as always
+	 * having aliases.  Also disable the synonym tag update feature
+	 * where available.  In this case no opportunistic tag update will
+	 * happen where a load causes a virtual address miss but a physical
+	 * address hit during a D-cache look-up.
+	 */
+	switch (imp) {
+	case PRID_IMP_74K:
+		if (rev <= PRID_REV_ENCODE_332(2, 4, 0))
+			present = 1;
+		if (rev == PRID_REV_ENCODE_332(2, 4, 0))
+			write_c0_config6(read_c0_config6() | MTI_CONF6_SYND);
+		break;
+	case PRID_IMP_1074K:
+		if (rev <= PRID_REV_ENCODE_332(1, 1, 0)) {
+			present = 1;
+			write_c0_config6(read_c0_config6() | MTI_CONF6_SYND);
+		}
+		break;
+	default:
+		BUG();
+	}
+
+	return present;
+}
+
+static void b5k_instruction_hazard(void)
+{
+	__sync();
+	__sync();
+	__asm__ __volatile__(
+	"       nop; nop; nop; nop; nop; nop; nop; nop\n"
+	"       nop; nop; nop; nop; nop; nop; nop; nop\n"
+	"       nop; nop; nop; nop; nop; nop; nop; nop\n"
+	"       nop; nop; nop; nop; nop; nop; nop; nop\n"
+	: : : "memory");
+}
+
+static char *way_string[] = { NULL, "direct mapped", "2-way",
+	"3-way", "4-way", "5-way", "6-way", "7-way", "8-way",
+	"9-way", "10-way", "11-way", "12-way",
+	"13-way", "14-way", "15-way", "16-way",
+};
+
+static void probe_pcache(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 	unsigned int config = read_c0_config();
 	unsigned int prid = read_c0_prid();
+<<<<<<< HEAD
 	unsigned long config1;
 	unsigned int lsize;
 
 	switch (c->cputype) {
+=======
+	int has_74k_erratum = 0;
+	unsigned long config1;
+	unsigned int lsize;
+
+	switch (current_cpu_type()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_R4600:			/* QED style two way caches? */
 	case CPU_R4700:
 	case CPU_R5000:
@@ -821,7 +1536,10 @@ static void __cpuinit probe_pcache(void)
 		c->options |= MIPS_CPU_CACHE_CDEX_P;
 		break;
 
+<<<<<<< HEAD
 	case CPU_R5432:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_R5500:
 		icache_size = 1 << (12 + ((config & CONF_IC) >> 9));
 		c->icache.linesz = 16 << ((config & CONF_IB) >> 5);
@@ -861,7 +1579,11 @@ static void __cpuinit probe_pcache(void)
 		icache_size = 1 << (12 + ((config & CONF_IC) >> 9));
 		c->icache.linesz = 16 << ((config & CONF_IB) >> 5);
 		c->icache.ways = 1;
+<<<<<<< HEAD
 		c->icache.waybit = 0; 	/* doesn't matter */
+=======
+		c->icache.waybit = 0;	/* doesn't matter */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dcache_size = 1 << (12 + ((config & CONF_DC) >> 6));
 		c->dcache.linesz = 16 << ((config & CONF_DB) >> 4);
@@ -874,6 +1596,10 @@ static void __cpuinit probe_pcache(void)
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
+=======
+	case CPU_R16000:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icache_size = 1 << (12 + ((config & R10K_CONF_IC) >> 29));
 		c->icache.linesz = 64;
 		c->icache.ways = 2;
@@ -887,6 +1613,7 @@ static void __cpuinit probe_pcache(void)
 		c->options |= MIPS_CPU_PREFETCH;
 		break;
 
+<<<<<<< HEAD
 	case CPU_VR4133:
 		write_c0_config(config & ~VR41_CONF_P4K);
 	case CPU_VR4131:
@@ -934,6 +1661,11 @@ static void __cpuinit probe_pcache(void)
 		rm7k_erratum31();
 
 	case CPU_RM9000:
+=======
+	case CPU_RM7000:
+		rm7k_erratum31();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icache_size = 1 << (12 + ((config & CONF_IC) >> 9));
 		c->icache.linesz = 16 << ((config & CONF_IB) >> 5);
 		c->icache.ways = 4;
@@ -944,6 +1676,7 @@ static void __cpuinit probe_pcache(void)
 		c->dcache.ways = 4;
 		c->dcache.waybit = __ffs(dcache_size / c->dcache.ways);
 
+<<<<<<< HEAD
 #if !defined(CONFIG_SMP) || !defined(RM9000_CDEX_SMP_WAR)
 		c->options |= MIPS_CPU_CACHE_CDEX_P;
 #endif
@@ -951,6 +1684,13 @@ static void __cpuinit probe_pcache(void)
 		break;
 
 	case CPU_LOONGSON2:
+=======
+		c->options |= MIPS_CPU_CACHE_CDEX_P;
+		c->options |= MIPS_CPU_PREFETCH;
+		break;
+
+	case CPU_LOONGSON2EF:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icache_size = 1 << (12 + ((config & CONF_IC) >> 9));
 		c->icache.linesz = 16 << ((config & CONF_IB) >> 5);
 		if (prid & 0x3)
@@ -968,6 +1708,55 @@ static void __cpuinit probe_pcache(void)
 		c->dcache.waybit = 0;
 		break;
 
+<<<<<<< HEAD
+=======
+	case CPU_LOONGSON64:
+		config1 = read_c0_config1();
+		lsize = (config1 >> 19) & 7;
+		if (lsize)
+			c->icache.linesz = 2 << lsize;
+		else
+			c->icache.linesz = 0;
+		c->icache.sets = 64 << ((config1 >> 22) & 7);
+		c->icache.ways = 1 + ((config1 >> 16) & 7);
+		icache_size = c->icache.sets *
+					  c->icache.ways *
+					  c->icache.linesz;
+		c->icache.waybit = 0;
+
+		lsize = (config1 >> 10) & 7;
+		if (lsize)
+			c->dcache.linesz = 2 << lsize;
+		else
+			c->dcache.linesz = 0;
+		c->dcache.sets = 64 << ((config1 >> 13) & 7);
+		c->dcache.ways = 1 + ((config1 >> 7) & 7);
+		dcache_size = c->dcache.sets *
+					  c->dcache.ways *
+					  c->dcache.linesz;
+		c->dcache.waybit = 0;
+		if ((c->processor_id & (PRID_IMP_MASK | PRID_REV_MASK)) >=
+				(PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0) ||
+				(c->processor_id & PRID_IMP_MASK) == PRID_IMP_LOONGSON_64R)
+			c->options |= MIPS_CPU_PREFETCH;
+		break;
+
+	case CPU_CAVIUM_OCTEON3:
+		/* For now lie about the number of ways. */
+		c->icache.linesz = 128;
+		c->icache.sets = 16;
+		c->icache.ways = 8;
+		c->icache.flags |= MIPS_CACHE_VTAG;
+		icache_size = c->icache.sets * c->icache.ways * c->icache.linesz;
+
+		c->dcache.linesz = 128;
+		c->dcache.ways = 8;
+		c->dcache.sets = 8;
+		dcache_size = c->dcache.sets * c->dcache.ways * c->dcache.linesz;
+		c->options |= MIPS_CPU_PREFETCH;
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (!(config & MIPS_CONF_M))
 			panic("Don't know how to probe P-caches on this cpu.");
@@ -978,6 +1767,7 @@ static void __cpuinit probe_pcache(void)
 		 */
 		config1 = read_c0_config1();
 
+<<<<<<< HEAD
 		if ((lsize = ((config1 >> 19) & 7)))
 			c->icache.linesz = 2 << lsize;
 		else
@@ -991,6 +1781,25 @@ static void __cpuinit probe_pcache(void)
 		c->icache.waybit = __ffs(icache_size/c->icache.ways);
 
 		if (config & 0x8)		/* VI bit */
+=======
+		lsize = (config1 >> 19) & 7;
+
+		/* IL == 7 is reserved */
+		if (lsize == 7)
+			panic("Invalid icache line size");
+
+		c->icache.linesz = lsize ? 2 << lsize : 0;
+
+		c->icache.sets = 32 << (((config1 >> 22) + 1) & 7);
+		c->icache.ways = 1 + ((config1 >> 16) & 7);
+
+		icache_size = c->icache.sets *
+			      c->icache.ways *
+			      c->icache.linesz;
+		c->icache.waybit = __ffs(icache_size/c->icache.ways);
+
+		if (config & MIPS_CONF_VI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->icache.flags |= MIPS_CACHE_VTAG;
 
 		/*
@@ -998,6 +1807,7 @@ static void __cpuinit probe_pcache(void)
 		 */
 		c->dcache.flags = 0;
 
+<<<<<<< HEAD
 		if ((lsize = ((config1 >> 10) & 7)))
 			c->dcache.linesz = 2 << lsize;
 		else
@@ -1008,6 +1818,22 @@ static void __cpuinit probe_pcache(void)
 		dcache_size = c->dcache.sets *
 		              c->dcache.ways *
 		              c->dcache.linesz;
+=======
+		lsize = (config1 >> 10) & 7;
+
+		/* DL == 7 is reserved */
+		if (lsize == 7)
+			panic("Invalid dcache line size");
+
+		c->dcache.linesz = lsize ? 2 << lsize : 0;
+
+		c->dcache.sets = 32 << (((config1 >> 13) + 1) & 7);
+		c->dcache.ways = 1 + ((config1 >> 7) & 7);
+
+		dcache_size = c->dcache.sets *
+			      c->dcache.ways *
+			      c->dcache.linesz;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->dcache.waybit = __ffs(dcache_size/c->dcache.ways);
 
 		c->options |= MIPS_CPU_PREFETCH;
@@ -1016,13 +1842,22 @@ static void __cpuinit probe_pcache(void)
 
 	/*
 	 * Processor configuration sanity check for the R4000SC erratum
+<<<<<<< HEAD
 	 * #5.  With page sizes larger than 32kB there is no possibility
+=======
+	 * #5.	With page sizes larger than 32kB there is no possibility
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to get a VCE exception anymore so we don't care about this
 	 * misconfiguration.  The case is rather theoretical anyway;
 	 * presumably no vendor is shipping his hardware in the "bad"
 	 * configuration.
 	 */
+<<<<<<< HEAD
 	if ((prid & 0xff00) == PRID_IMP_R4000 && (prid & 0xff) < 0x40 &&
+=======
+	if ((prid & PRID_IMP_MASK) == PRID_IMP_R4000 &&
+	    (prid & PRID_REV_MASK) < PRID_REV_R4400 &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !(config & CONF_SC) && c->icache.linesz != 16 &&
 	    PAGE_SIZE <= 0x8000)
 		panic("Improper R4000SC processor configuration detected");
@@ -1037,6 +1872,7 @@ static void __cpuinit probe_pcache(void)
 		dcache_size / (c->dcache.linesz * c->dcache.ways) : 0;
 
 	/*
+<<<<<<< HEAD
 	 * R10000 and R12000 P-caches are odd in a positive way.  They're 32kB
 	 * 2-way virtually indexed so normally would suffer from aliases.  So
 	 * normally they'd suffer from aliases but magic in the hardware deals
@@ -1048,12 +1884,27 @@ static void __cpuinit probe_pcache(void)
 	case CPU_SB1:
 	case CPU_SB1A:
 	case CPU_XLR:
+=======
+	 * R1x000 P-caches are odd in a positive way.  They're 32kB 2-way
+	 * virtually indexed so normally would suffer from aliases.  So
+	 * normally they'd suffer from aliases but magic in the hardware deals
+	 * with that for us so we don't need to take care ourselves.
+	 */
+	switch (current_cpu_type()) {
+	case CPU_20KC:
+	case CPU_25KF:
+	case CPU_I6400:
+	case CPU_I6500:
+	case CPU_SB1:
+	case CPU_SB1A:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->dcache.flags |= MIPS_CACHE_PINDEX;
 		break;
 
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
 		break;
 
 	case CPU_24K:
@@ -1072,6 +1923,57 @@ static void __cpuinit probe_pcache(void)
 	}
 
 	switch (c->cputype) {
+=======
+	case CPU_R16000:
+		break;
+
+	case CPU_74K:
+	case CPU_1074K:
+		has_74k_erratum = alias_74k_erratum(c);
+		fallthrough;
+	case CPU_M14KC:
+	case CPU_M14KEC:
+	case CPU_24K:
+	case CPU_34K:
+	case CPU_1004K:
+	case CPU_INTERAPTIV:
+	case CPU_P5600:
+	case CPU_PROAPTIV:
+	case CPU_M5150:
+	case CPU_QEMU_GENERIC:
+	case CPU_P6600:
+	case CPU_M6250:
+		if (!(read_c0_config7() & MIPS_CONF7_IAR) &&
+		    (c->icache.waysize > PAGE_SIZE))
+			c->icache.flags |= MIPS_CACHE_ALIASES;
+		if (!has_74k_erratum && (read_c0_config7() & MIPS_CONF7_AR)) {
+			/*
+			 * Effectively physically indexed dcache,
+			 * thus no virtual aliases.
+			*/
+			c->dcache.flags |= MIPS_CACHE_PINDEX;
+			break;
+		}
+		fallthrough;
+	default:
+		if (has_74k_erratum || c->dcache.waysize > PAGE_SIZE)
+			c->dcache.flags |= MIPS_CACHE_ALIASES;
+	}
+
+	/* Physically indexed caches don't suffer from virtual aliasing */
+	if (c->dcache.flags & MIPS_CACHE_PINDEX)
+		c->dcache.flags &= ~MIPS_CACHE_ALIASES;
+
+	/*
+	 * In systems with CM the icache fills from L2 or closer caches, and
+	 * thus sees remote stores without needing to write them back any
+	 * further than that.
+	 */
+	if (mips_cm_present())
+		c->icache.flags |= MIPS_IC_SNOOPS_REMOTE;
+
+	switch (current_cpu_type()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_20KC:
 		/*
 		 * Some older 20Kc chips doesn't have the 'VI' bit in
@@ -1081,6 +1983,7 @@ static void __cpuinit probe_pcache(void)
 		break;
 
 	case CPU_ALCHEMY:
+<<<<<<< HEAD
 		c->icache.flags |= MIPS_CACHE_IC_F_DC;
 		break;
 	}
@@ -1104,6 +2007,64 @@ static void __cpuinit probe_pcache(void)
 	       (c->dcache.flags & MIPS_CACHE_ALIASES) ?
 			"cache aliases" : "no aliases",
 	       c->dcache.linesz);
+=======
+	case CPU_I6400:
+	case CPU_I6500:
+		c->icache.flags |= MIPS_CACHE_IC_F_DC;
+		break;
+
+	case CPU_BMIPS5000:
+		c->icache.flags |= MIPS_CACHE_IC_F_DC;
+		/* Cache aliases are handled in hardware; allow HIGHMEM */
+		c->dcache.flags &= ~MIPS_CACHE_ALIASES;
+		break;
+
+	case CPU_LOONGSON2EF:
+		/*
+		 * LOONGSON2 has 4 way icache, but when using indexed cache op,
+		 * one op will act on all 4 ways
+		 */
+		c->icache.ways = 1;
+	}
+
+	pr_info("Primary instruction cache %ldkB, %s, %s, linesize %d bytes.\n",
+		icache_size >> 10,
+		c->icache.flags & MIPS_CACHE_VTAG ? "VIVT" : "VIPT",
+		way_string[c->icache.ways], c->icache.linesz);
+
+	pr_info("Primary data cache %ldkB, %s, %s, %s, linesize %d bytes\n",
+		dcache_size >> 10, way_string[c->dcache.ways],
+		(c->dcache.flags & MIPS_CACHE_PINDEX) ? "PIPT" : "VIPT",
+		(c->dcache.flags & MIPS_CACHE_ALIASES) ?
+			"cache aliases" : "no aliases",
+		c->dcache.linesz);
+}
+
+static void probe_vcache(void)
+{
+	struct cpuinfo_mips *c = &current_cpu_data;
+	unsigned int config2, lsize;
+
+	if (current_cpu_type() != CPU_LOONGSON64)
+		return;
+
+	config2 = read_c0_config2();
+	if ((lsize = ((config2 >> 20) & 15)))
+		c->vcache.linesz = 2 << lsize;
+	else
+		c->vcache.linesz = lsize;
+
+	c->vcache.sets = 64 << ((config2 >> 24) & 15);
+	c->vcache.ways = 1 + ((config2 >> 16) & 15);
+
+	vcache_size = c->vcache.sets * c->vcache.ways * c->vcache.linesz;
+
+	c->vcache.waybit = 0;
+	c->vcache.waysize = vcache_size / c->vcache.ways;
+
+	pr_info("Unified victim cache %ldkB %s, linesize %d bytes.\n",
+		vcache_size >> 10, way_string[c->vcache.ways], c->vcache.linesz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1112,7 +2073,11 @@ static void __cpuinit probe_pcache(void)
  * executes in KSEG1 space or else you will crash and burn badly.  You have
  * been warned.
  */
+<<<<<<< HEAD
 static int __cpuinit probe_scache(void)
+=======
+static int probe_scache(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, addr, begin, end, pow2;
 	unsigned int config = read_c0_config();
@@ -1162,13 +2127,21 @@ static int __cpuinit probe_scache(void)
 	scache_size = addr;
 	c->scache.linesz = 16 << ((config & R4K_CONF_SB) >> 22);
 	c->scache.ways = 1;
+<<<<<<< HEAD
 	c->dcache.waybit = 0;		/* does not matter */
+=======
+	c->scache.waybit = 0;		/* does not matter */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_LOONGSON2)
 static void __init loongson2_sc_init(void)
+=======
+static void loongson2_sc_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 
@@ -1183,6 +2156,7 @@ static void __init loongson2_sc_init(void)
 
 	c->options |= MIPS_CPU_INCLUSIVE_CACHES;
 }
+<<<<<<< HEAD
 #endif
 
 extern int r5k_sc_init(void);
@@ -1190,6 +2164,41 @@ extern int rm7k_sc_init(void);
 extern int mips_sc_init(void);
 
 static void __cpuinit setup_scache(void)
+=======
+
+static void loongson3_sc_init(void)
+{
+	struct cpuinfo_mips *c = &current_cpu_data;
+	unsigned int config2, lsize;
+
+	config2 = read_c0_config2();
+	lsize = (config2 >> 4) & 15;
+	if (lsize)
+		c->scache.linesz = 2 << lsize;
+	else
+		c->scache.linesz = 0;
+	c->scache.sets = 64 << ((config2 >> 8) & 15);
+	c->scache.ways = 1 + (config2 & 15);
+
+	/* Loongson-3 has 4-Scache banks, while Loongson-2K have only 2 banks */
+	if ((c->processor_id & PRID_IMP_MASK) == PRID_IMP_LOONGSON_64R)
+		c->scache.sets *= 2;
+	else
+		c->scache.sets *= 4;
+
+	scache_size = c->scache.sets * c->scache.ways * c->scache.linesz;
+
+	c->scache.waybit = 0;
+	c->scache.waysize = scache_size / c->scache.ways;
+	pr_info("Unified secondary cache %ldkB %s, linesize %d bytes.\n",
+	       scache_size >> 10, way_string[c->scache.ways], c->scache.linesz);
+	if (scache_size)
+		c->options |= MIPS_CPU_INCLUSIVE_CACHES;
+	return;
+}
+
+static void setup_scache(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 	unsigned int config = read_c0_config();
@@ -1200,7 +2209,11 @@ static void __cpuinit setup_scache(void)
 	 * processors don't have a S-cache that would be relevant to the
 	 * Linux memory management.
 	 */
+<<<<<<< HEAD
 	switch (c->cputype) {
+=======
+	switch (current_cpu_type()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_R4000SC:
 	case CPU_R4000MC:
 	case CPU_R4400SC:
@@ -1213,6 +2226,10 @@ static void __cpuinit setup_scache(void)
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
+<<<<<<< HEAD
+=======
+	case CPU_R16000:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scache_size = 0x80000 << ((config & R10K_CONF_SS) >> 16);
 		c->scache.linesz = 64 << ((config >> 13) & 1);
 		c->scache.ways = 2;
@@ -1225,36 +2242,69 @@ static void __cpuinit setup_scache(void)
 #ifdef CONFIG_R5000_CPU_SCACHE
 		r5k_sc_init();
 #endif
+<<<<<<< HEAD
                 return;
 
 	case CPU_RM7000:
 	case CPU_RM9000:
+=======
+		return;
+
+	case CPU_RM7000:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_RM7000_CPU_SCACHE
 		rm7k_sc_init();
 #endif
 		return;
 
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_LOONGSON2)
 	case CPU_LOONGSON2:
 		loongson2_sc_init();
 		return;
 #endif
 	case CPU_XLP:
+=======
+	case CPU_LOONGSON2EF:
+		loongson2_sc_init();
+		return;
+
+	case CPU_LOONGSON64:
+		loongson3_sc_init();
+		return;
+
+	case CPU_CAVIUM_OCTEON3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't need to worry about L2, fully coherent */
 		return;
 
 	default:
+<<<<<<< HEAD
 		if (c->isa_level == MIPS_CPU_ISA_M32R1 ||
 		    c->isa_level == MIPS_CPU_ISA_M32R2 ||
 		    c->isa_level == MIPS_CPU_ISA_M64R1 ||
 		    c->isa_level == MIPS_CPU_ISA_M64R2) {
+=======
+		if (c->isa_level & (MIPS_CPU_ISA_M32R1 | MIPS_CPU_ISA_M64R1 |
+				    MIPS_CPU_ISA_M32R2 | MIPS_CPU_ISA_M64R2 |
+				    MIPS_CPU_ISA_M32R5 | MIPS_CPU_ISA_M64R5 |
+				    MIPS_CPU_ISA_M32R6 | MIPS_CPU_ISA_M64R6)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MIPS_CPU_SCACHE
 			if (mips_sc_init ()) {
 				scache_size = c->scache.ways * c->scache.sets * c->scache.linesz;
 				printk("MIPS secondary cache %ldkB, %s, linesize %d bytes.\n",
 				       scache_size >> 10,
 				       way_string[c->scache.ways], c->scache.linesz);
+<<<<<<< HEAD
 			}
+=======
+
+				if (current_cpu_type() == CPU_BMIPS5000)
+					c->options |= MIPS_CPU_INCLUSIVE_CACHES;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 			if (!(c->scache.flags & MIPS_CACHE_NOT_PRESENT))
 				panic("Dunno how to handle MIPS32 / MIPS64 second level cache");
@@ -1325,18 +2375,31 @@ static void nxp_pr4450_fixup_config(void)
 	NXP_BARRIER();
 }
 
+<<<<<<< HEAD
 static int __cpuinitdata cca = -1;
+=======
+static int cca = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init cca_setup(char *str)
 {
 	get_option(&str, &cca);
 
+<<<<<<< HEAD
 	return 1;
 }
 
 __setup("cca=", cca_setup);
 
 static void __cpuinit coherency_setup(void)
+=======
+	return 0;
+}
+
+early_param("cca", cca_setup);
+
+static void coherency_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cca < 0 || cca > 7)
 		cca = read_c0_config() & CONF_CM_CMASK;
@@ -1347,7 +2410,11 @@ static void __cpuinit coherency_setup(void)
 
 	/*
 	 * c0_status.cu=0 specifies that updates by the sc instruction use
+<<<<<<< HEAD
 	 * the coherency mode specified by the TLB; 1 means cachable
+=======
+	 * the coherency mode specified by the TLB; 1 means cacheable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * coherent update on write will be used.  Not all processors have
 	 * this bit and; some wire it to zero, others like Toshiba had the
 	 * silly idea of putting something else there ...
@@ -1376,6 +2443,7 @@ static void __cpuinit coherency_setup(void)
 	}
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_DMA_NONCOHERENT)
 
 static int __cpuinitdata coherentio;
@@ -1399,6 +2467,14 @@ void __cpuinit r4k_cache_init(void)
 	struct cpuinfo_mips *c = &current_cpu_data;
 
 	switch (c->cputype) {
+=======
+static void r4k_cache_error_setup(void)
+{
+	extern char __weak except_vec2_generic;
+	extern char __weak except_vec2_sb1;
+
+	switch (current_cpu_type()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_SB1:
 	case CPU_SB1A:
 		set_uncached_handler(0x100, &except_vec2_sb1, 0x80);
@@ -1408,6 +2484,7 @@ void __cpuinit r4k_cache_init(void)
 		set_uncached_handler(0x100, &except_vec2_generic, 0x80);
 		break;
 	}
+<<<<<<< HEAD
 
 	probe_pcache();
 	setup_scache();
@@ -1421,13 +2498,42 @@ void __cpuinit r4k_cache_init(void)
 	r4k_blast_scache_page_setup();
 	r4k_blast_scache_page_indexed_setup();
 	r4k_blast_scache_setup();
+=======
+}
+
+void r4k_cache_init(void)
+{
+	extern void build_clear_page(void);
+	extern void build_copy_page(void);
+	struct cpuinfo_mips *c = &current_cpu_data;
+
+	probe_pcache();
+	probe_vcache();
+	setup_scache();
+
+	r4k_blast_dcache_page_setup();
+	r4k_blast_dcache_setup();
+	r4k_blast_icache_page_setup();
+	r4k_blast_icache_setup();
+	r4k_blast_scache_page_setup();
+	r4k_blast_scache_setup();
+	r4k_blast_scache_node_setup();
+#ifdef CONFIG_EVA
+	r4k_blast_dcache_user_page_setup();
+	r4k_blast_icache_user_page_setup();
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some MIPS32 and MIPS64 processors have physically indexed caches.
 	 * This code supports virtually indexed processors and will be
 	 * unnecessarily inefficient on physically indexed processors.
 	 */
+<<<<<<< HEAD
 	if (c->dcache.linesz)
+=======
+	if (c->dcache.linesz && cpu_has_dc_aliases)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shm_align_mask = max_t( unsigned long,
 					c->dcache.sets * c->dcache.linesz - 1,
 					PAGE_SIZE - 1);
@@ -1445,6 +2551,7 @@ void __cpuinit r4k_cache_init(void)
 
 	__flush_kernel_vmap_range = r4k_flush_kernel_vmap_range;
 
+<<<<<<< HEAD
 	flush_cache_sigtramp	= r4k_flush_cache_sigtramp;
 	flush_icache_all	= r4k_flush_icache_all;
 	local_flush_data_cache_page	= local_r4k_flush_data_cache_page;
@@ -1471,3 +2578,93 @@ void __cpuinit r4k_cache_init(void)
 #endif
 	coherency_setup();
 }
+=======
+	flush_icache_all	= r4k_flush_icache_all;
+	flush_data_cache_page	= r4k_flush_data_cache_page;
+	flush_icache_range	= r4k_flush_icache_range;
+	local_flush_icache_range	= local_r4k_flush_icache_range;
+	__flush_icache_user_range	= r4k_flush_icache_user_range;
+	__local_flush_icache_user_range	= local_r4k_flush_icache_user_range;
+
+#ifdef CONFIG_DMA_NONCOHERENT
+	_dma_cache_wback_inv	= r4k_dma_cache_wback_inv;
+	_dma_cache_wback	= r4k_dma_cache_wback_inv;
+	_dma_cache_inv		= r4k_dma_cache_inv;
+#endif /* CONFIG_DMA_NONCOHERENT */
+
+	build_clear_page();
+	build_copy_page();
+
+	/*
+	 * We want to run CMP kernels on core with and without coherent
+	 * caches. Therefore, do not use CONFIG_MIPS_CMP to decide whether
+	 * or not to flush caches.
+	 */
+	local_r4k___flush_cache_all(NULL);
+
+	coherency_setup();
+	board_cache_error_setup = r4k_cache_error_setup;
+
+	/*
+	 * Per-CPU overrides
+	 */
+	switch (current_cpu_type()) {
+	case CPU_BMIPS4350:
+	case CPU_BMIPS4380:
+		/* No IPI is needed because all CPUs share the same D$ */
+		flush_data_cache_page = r4k_blast_dcache_page;
+		break;
+	case CPU_BMIPS5000:
+		/* We lose our superpowers if L2 is disabled */
+		if (c->scache.flags & MIPS_CACHE_NOT_PRESENT)
+			break;
+
+		/* I$ fills from D$ just by emptying the write buffers */
+		flush_cache_page = (void *)b5k_instruction_hazard;
+		flush_cache_range = (void *)b5k_instruction_hazard;
+		flush_data_cache_page = (void *)b5k_instruction_hazard;
+		flush_icache_range = (void *)b5k_instruction_hazard;
+		local_flush_icache_range = (void *)b5k_instruction_hazard;
+
+
+		/* Optimization: an L2 flush implicitly flushes the L1 */
+		current_cpu_data.options |= MIPS_CPU_INCLUSIVE_CACHES;
+		break;
+	case CPU_LOONGSON64:
+		/* Loongson-3 maintains cache coherency by hardware */
+		__flush_cache_all	= cache_noop;
+		__flush_cache_vmap	= cache_noop;
+		__flush_cache_vunmap	= cache_noop;
+		__flush_kernel_vmap_range = (void *)cache_noop;
+		flush_cache_mm		= (void *)cache_noop;
+		flush_cache_page	= (void *)cache_noop;
+		flush_cache_range	= (void *)cache_noop;
+		flush_icache_all	= (void *)cache_noop;
+		flush_data_cache_page	= (void *)cache_noop;
+		break;
+	}
+}
+
+static int r4k_cache_pm_notifier(struct notifier_block *self, unsigned long cmd,
+			       void *v)
+{
+	switch (cmd) {
+	case CPU_PM_ENTER_FAILED:
+	case CPU_PM_EXIT:
+		coherency_setup();
+		break;
+	}
+
+	return NOTIFY_OK;
+}
+
+static struct notifier_block r4k_cache_pm_notifier_block = {
+	.notifier_call = r4k_cache_pm_notifier,
+};
+
+static int __init r4k_cache_init_pm(void)
+{
+	return cpu_pm_register_notifier(&r4k_cache_pm_notifier_block);
+}
+arch_initcall(r4k_cache_init_pm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

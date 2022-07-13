@@ -10,6 +10,7 @@
 #ifndef _ASM_MACH_IP22_SPACES_H
 #define _ASM_MACH_IP22_SPACES_H
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_64BIT
 
@@ -21,6 +22,9 @@
 #define MAP_BASE		0xc000000000000000
 
 #endif /* CONFIG_64BIT */
+=======
+#define PHYS_OFFSET     _AC(0x08000000, UL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-generic/spaces.h>
 

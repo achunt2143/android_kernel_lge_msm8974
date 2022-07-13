@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /*
  * drivers/usb/generic.c - generic driver for USB devices (not interfaces)
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * drivers/usb/core/generic.c - generic driver for USB devices (not interfaces)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * (C) Copyright 2005 Greg Kroah-Hartman <gregkh@suse.de>
  *
@@ -15,10 +21,18 @@
  *		(usb_device_id matching changes by Adam J. Richter)
  *	(C) Copyright Greg Kroah-Hartman 2002-2003
  *
+<<<<<<< HEAD
+=======
+ * Released under the GPLv2 only.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
+=======
+#include <uapi/linux/usb/audio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "usb.h"
 
 static inline const char *plural(int n)
@@ -40,12 +54,47 @@ static int is_activesync(struct usb_interface_descriptor *desc)
 		&& desc->bInterfaceProtocol == 1;
 }
 
+<<<<<<< HEAD
+=======
+static bool is_audio(struct usb_interface_descriptor *desc)
+{
+	return desc->bInterfaceClass == USB_CLASS_AUDIO;
+}
+
+static bool is_uac3_config(struct usb_interface_descriptor *desc)
+{
+	return desc->bInterfaceProtocol == UAC_VERSION_3;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int usb_choose_configuration(struct usb_device *udev)
 {
 	int i;
 	int num_configs;
 	int insufficient_power = 0;
 	struct usb_host_config *c, *best;
+<<<<<<< HEAD
+=======
+	struct usb_device_driver *udriver;
+
+	/*
+	 * If a USB device (not an interface) doesn't have a driver then the
+	 * kernel has no business trying to select or install a configuration
+	 * for it.
+	 */
+	if (!udev->dev.driver)
+		return -1;
+	udriver = to_usb_device_driver(udev->dev.driver);
+
+	if (usb_device_is_owned(udev))
+		return 0;
+
+	if (udriver->choose_configuration) {
+		i = udriver->choose_configuration(udev);
+		if (i >= 0)
+			return i;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	best = NULL;
 	c = udev->config;
@@ -97,11 +146,43 @@ int usb_choose_configuration(struct usb_device *udev)
 		 */
 
 		/* Rule out configs that draw too much bus current */
+<<<<<<< HEAD
 		if (c->desc.bMaxPower * 2 > udev->bus_mA) {
+=======
+		if (usb_get_max_power(udev, c) > udev->bus_mA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			insufficient_power++;
 			continue;
 		}
 
+<<<<<<< HEAD
+=======
+		/*
+		 * Select first configuration as default for audio so that
+		 * devices that don't comply with UAC3 protocol are supported.
+		 * But, still iterate through other configurations and
+		 * select UAC3 compliant config if present.
+		 */
+		if (desc && is_audio(desc)) {
+			/* Always prefer the first found UAC3 config */
+			if (is_uac3_config(desc)) {
+				best = c;
+				break;
+			}
+
+			/* If there is no UAC3 config, prefer the first config */
+			else if (i == 0)
+				best = c;
+
+			/* Unconditional continue, because the rest of the code
+			 * in the loop is irrelevant for audio devices, and
+			 * because it can reassign best, which for audio devices
+			 * we don't want.
+			 */
+			continue;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* When the first config's first interface is one of Microsoft's
 		 * pet nonstandard Ethernet-over-USB protocols, ignore it unless
 		 * this kernel has enabled the necessary host side driver.
@@ -152,23 +233,65 @@ int usb_choose_configuration(struct usb_device *udev)
 	}
 	return i;
 }
+<<<<<<< HEAD
 
 static int generic_probe(struct usb_device *udev)
+=======
+EXPORT_SYMBOL_GPL(usb_choose_configuration);
+
+static int __check_for_non_generic_match(struct device_driver *drv, void *data)
+{
+	struct usb_device *udev = data;
+	struct usb_device_driver *udrv;
+
+	if (!is_usb_device_driver(drv))
+		return 0;
+	udrv = to_usb_device_driver(drv);
+	if (udrv == &usb_generic_driver)
+		return 0;
+	return usb_driver_applicable(udev, udrv);
+}
+
+static bool usb_generic_driver_match(struct usb_device *udev)
+{
+	if (udev->use_generic_driver)
+		return true;
+
+	/*
+	 * If any other driver wants the device, leave the device to this other
+	 * driver.
+	 */
+	if (bus_for_each_drv(&usb_bus_type, NULL, udev, __check_for_non_generic_match))
+		return false;
+
+	return true;
+}
+
+int usb_generic_driver_probe(struct usb_device *udev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, c;
 
 	/* Choose and set the configuration.  This registers the interfaces
 	 * with the driver core and lets interface drivers bind to them.
 	 */
+<<<<<<< HEAD
 	if (usb_device_is_owned(udev))
 		;		/* Don't configure if the device is owned */
 	else if (udev->authorized == 0)
+=======
+	if (udev->authorized == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&udev->dev, "Device is not authorized for usage\n");
 	else {
 		c = usb_choose_configuration(udev);
 		if (c >= 0) {
 			err = usb_set_configuration(udev, c);
+<<<<<<< HEAD
 			if (err) {
+=======
+			if (err && err != -ENODEV) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_err(&udev->dev, "can't set config #%d, error %d\n",
 					c, err);
 				/* This need not be fatal.  The user can try to
@@ -182,7 +305,11 @@ static int generic_probe(struct usb_device *udev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void generic_disconnect(struct usb_device *udev)
+=======
+void usb_generic_driver_disconnect(struct usb_device *udev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	usb_notify_remove_device(udev);
 
@@ -194,7 +321,11 @@ static void generic_disconnect(struct usb_device *udev)
 
 #ifdef	CONFIG_PM
 
+<<<<<<< HEAD
 static int generic_suspend(struct usb_device *udev, pm_message_t msg)
+=======
+int usb_generic_driver_suspend(struct usb_device *udev, pm_message_t msg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -206,16 +337,35 @@ static int generic_suspend(struct usb_device *udev, pm_message_t msg)
 	if (!udev->parent)
 		rc = hcd_bus_suspend(udev, msg);
 
+<<<<<<< HEAD
 	/* Non-root devices don't need to do anything for FREEZE or PRETHAW */
 	else if (msg.event == PM_EVENT_FREEZE || msg.event == PM_EVENT_PRETHAW)
+=======
+	/*
+	 * Non-root USB2 devices don't need to do anything for FREEZE
+	 * or PRETHAW. USB3 devices don't support global suspend and
+	 * needs to be selectively suspended.
+	 */
+	else if ((msg.event == PM_EVENT_FREEZE || msg.event == PM_EVENT_PRETHAW)
+		 && (udev->speed < USB_SPEED_SUPER))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 	else
 		rc = usb_port_suspend(udev, msg);
 
+<<<<<<< HEAD
 	return rc;
 }
 
 static int generic_resume(struct usb_device *udev, pm_message_t msg)
+=======
+	if (rc == 0)
+		usbfs_notify_suspend(udev);
+	return rc;
+}
+
+int usb_generic_driver_resume(struct usb_device *udev, pm_message_t msg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -228,6 +378,12 @@ static int generic_resume(struct usb_device *udev, pm_message_t msg)
 		rc = hcd_bus_resume(udev, msg);
 	else
 		rc = usb_port_resume(udev, msg);
+<<<<<<< HEAD
+=======
+
+	if (rc == 0)
+		usbfs_notify_resume(udev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -235,11 +391,20 @@ static int generic_resume(struct usb_device *udev, pm_message_t msg)
 
 struct usb_device_driver usb_generic_driver = {
 	.name =	"usb",
+<<<<<<< HEAD
 	.probe = generic_probe,
 	.disconnect = generic_disconnect,
 #ifdef	CONFIG_PM
 	.suspend = generic_suspend,
 	.resume = generic_resume,
+=======
+	.match = usb_generic_driver_match,
+	.probe = usb_generic_driver_probe,
+	.disconnect = usb_generic_driver_disconnect,
+#ifdef	CONFIG_PM
+	.suspend = usb_generic_driver_suspend,
+	.resume = usb_generic_driver_resume,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.supports_autosuspend = 1,
 };

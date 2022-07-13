@@ -1,14 +1,22 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LANTIQ_PLATFORM_H__
 #define _LANTIQ_PLATFORM_H__
 
+<<<<<<< HEAD
 #include <linux/mtd/partitions.h>
 #include <linux/socket.h>
 
@@ -44,6 +52,10 @@ struct ltq_pci_data {
 	int irq[16];
 };
 
+=======
+#include <linux/socket.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* struct used to pass info to network drivers */
 struct ltq_eth_data {
 	struct sockaddr mac;

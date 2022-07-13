@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for ALSA
 #
@@ -7,12 +11,31 @@ snd-usb-audio-objs := 	card.o \
 			endpoint.o \
 			format.o \
 			helper.o \
+<<<<<<< HEAD
 			mixer.o \
 			mixer_quirks.o \
 			pcm.o \
 			proc.o \
 			quirks.o \
 			stream.o
+=======
+			implicit.o \
+			mixer.o \
+			mixer_quirks.o \
+			mixer_scarlett.o \
+			mixer_scarlett2.o \
+			mixer_us16x08.o \
+			mixer_s1810c.o \
+			pcm.o \
+			power.o \
+			proc.o \
+			quirks.o \
+			stream.o \
+			validate.o
+
+snd-usb-audio-$(CONFIG_SND_USB_AUDIO_MIDI_V2) += midi2.o
+snd-usb-audio-$(CONFIG_SND_USB_AUDIO_USE_MEDIA_CONTROLLER) += media.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 snd-usbmidi-lib-objs := midi.o
 
@@ -23,4 +46,9 @@ obj-$(CONFIG_SND_USB_UA101) += snd-usbmidi-lib.o
 obj-$(CONFIG_SND_USB_USX2Y) += snd-usbmidi-lib.o
 obj-$(CONFIG_SND_USB_US122L) += snd-usbmidi-lib.o
 
+<<<<<<< HEAD
 obj-$(CONFIG_SND) += misc/ usx2y/ caiaq/ 6fire/
+=======
+obj-$(CONFIG_SND) += misc/ usx2y/ caiaq/ 6fire/ hiface/ bcd2000/
+obj-$(CONFIG_SND_USB_LINE6)	+= line6/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

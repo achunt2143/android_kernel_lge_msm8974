@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -54,8 +65,12 @@ ACPI_MODULE_NAME("exfldio")
 /* Local prototypes */
 static acpi_status
 acpi_ex_field_datum_io(union acpi_operand_object *obj_desc,
+<<<<<<< HEAD
 		       u32 field_datum_byte_offset,
 		       u64 *value, u32 read_write);
+=======
+		       u32 field_datum_byte_offset, u64 *value, u32 read_write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u8
 acpi_ex_register_overflow(union acpi_operand_object *obj_desc, u64 value);
@@ -124,12 +139,15 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 		}
 	}
 
+<<<<<<< HEAD
 	/* Exit if Address/Length have been disallowed by the host OS */
 
 	if (rgn_desc->common.flags & AOPOBJ_INVALID) {
 		return_ACPI_STATUS(AE_AML_ILLEGAL_ADDRESS);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Exit now for SMBus, GSBus or IPMI address space, it has a non-linear
 	 * address space and the request cannot be directly validated
@@ -145,7 +163,11 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 #ifdef ACPI_UNDER_DEVELOPMENT
 	/*
 	 * If the Field access is any_acc, we can now compute the optimal
+<<<<<<< HEAD
 	 * access (because we know know the length of the parent region)
+=======
+	 * access (because we know the length of the parent region)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!(obj_desc->common.flags & AOPOBJ_DATA_VALID)) {
 		if (ACPI_FAILURE(status)) {
@@ -155,7 +177,11 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 #endif
 
 	/*
+<<<<<<< HEAD
 	 * Validate the request.  The entire request from the byte offset for a
+=======
+	 * Validate the request. The entire request from the byte offset for a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * length of one field datum (access width) must fit within the region.
 	 * (Region length is specified in bytes)
 	 */
@@ -171,7 +197,11 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 			if (ACPI_ROUND_UP(rgn_desc->region.length,
 					  obj_desc->common_field.
 					  access_byte_width) >=
+<<<<<<< HEAD
 			    ((acpi_size) obj_desc->common_field.
+=======
+			    ((acpi_size)obj_desc->common_field.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     base_byte_offset +
 			     obj_desc->common_field.access_byte_width +
 			     field_datum_byte_offset)) {
@@ -183,11 +213,20 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 		    obj_desc->common_field.access_byte_width) {
 			/*
 			 * This is the case where the access_type (acc_word, etc.) is wider
+<<<<<<< HEAD
 			 * than the region itself.  For example, a region of length one
 			 * byte, and a field with Dword access specified.
 			 */
 			ACPI_ERROR((AE_INFO,
 				    "Field [%4.4s] access width (%u bytes) too large for region [%4.4s] (length %u)",
+=======
+			 * than the region itself. For example, a region of length one
+			 * byte, and a field with Dword access specified.
+			 */
+			ACPI_ERROR((AE_INFO,
+				    "Field [%4.4s] access width (%u bytes) "
+				    "too large for region [%4.4s] (length %u)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    acpi_ut_get_node_name(obj_desc->
 							  common_field.node),
 				    obj_desc->common_field.access_byte_width,
@@ -201,7 +240,12 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
 		 * exceeds region length, indicate an error
 		 */
 		ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 			    "Field [%4.4s] Base+Offset+Width %u+%u+%u is beyond end of region [%4.4s] (length %u)",
+=======
+			    "Field [%4.4s] Base+Offset+Width %u+%u+%u "
+			    "is beyond end of region [%4.4s] (length %u)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    acpi_ut_get_node_name(obj_desc->common_field.node),
 			    obj_desc->common_field.base_byte_offset,
 			    field_datum_byte_offset,
@@ -222,9 +266,15 @@ acpi_ex_setup_region(union acpi_operand_object *obj_desc,
  * PARAMETERS:  obj_desc                - Field to be read
  *              field_datum_byte_offset - Byte offset of this datum within the
  *                                        parent field
+<<<<<<< HEAD
  *              Value                   - Where to store value (must at least
  *                                        64 bits)
  *              Function                - Read or Write flag plus other region-
+=======
+ *              value                   - Where to store value (must at least
+ *                                        64 bits)
+ *              function                - Read or Write flag plus other region-
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                        dependent flags
  *
  * RETURN:      Status
@@ -270,17 +320,27 @@ acpi_ex_access_region(union acpi_operand_object *obj_desc,
 	}
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_BFIELD,
+<<<<<<< HEAD
 			      " Region [%s:%X], Width %X, ByteBase %X, Offset %X at %p\n",
+=======
+			      " Region [%s:%X], Width %X, ByteBase %X, Offset %X at %8.8X%8.8X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      acpi_ut_get_region_name(rgn_desc->region.
 						      space_id),
 			      rgn_desc->region.space_id,
 			      obj_desc->common_field.access_byte_width,
 			      obj_desc->common_field.base_byte_offset,
+<<<<<<< HEAD
 			      field_datum_byte_offset, ACPI_CAST_PTR(void,
 								     (rgn_desc->
 								      region.
 								      address +
 								      region_offset))));
+=======
+			      field_datum_byte_offset,
+			      ACPI_FORMAT_UINT64(rgn_desc->region.address +
+						 region_offset)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Invoke the appropriate address_space/op_region handler */
 
@@ -315,13 +375,21 @@ acpi_ex_access_region(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_register_overflow
  *
  * PARAMETERS:  obj_desc                - Register(Field) to be written
+<<<<<<< HEAD
  *              Value                   - Value to be stored
+=======
+ *              value                   - Value to be stored
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if value overflows the field, FALSE otherwise
  *
  * DESCRIPTION: Check if a value is out of range of the field being written.
  *              Used to check if the values written to Index and Bank registers
+<<<<<<< HEAD
  *              are out of range.  Normally, the value is simply truncated
+=======
+ *              are out of range. Normally, the value is simply truncated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              to fit the field, but this case is most likely a serious
  *              coding error in the ASL.
  *
@@ -330,7 +398,10 @@ acpi_ex_access_region(union acpi_operand_object *obj_desc,
 static u8
 acpi_ex_register_overflow(union acpi_operand_object *obj_desc, u64 value)
 {
+<<<<<<< HEAD
 	ACPI_FUNCTION_NAME(ex_register_overflow);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (obj_desc->common_field.bit_length >= ACPI_INTEGER_BIT_SIZE) {
 		/*
@@ -365,12 +436,20 @@ acpi_ex_register_overflow(union acpi_operand_object *obj_desc, u64 value)
  * PARAMETERS:  obj_desc                - Field to be read
  *              field_datum_byte_offset - Byte offset of this datum within the
  *                                        parent field
+<<<<<<< HEAD
  *              Value                   - Where to store value (must be 64 bits)
+=======
+ *              value                   - Where to store value (must be 64 bits)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              read_write              - Read or Write flag
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: Read or Write a single datum of a field.  The field_type is
+=======
+ * DESCRIPTION: Read or Write a single datum of a field. The field_type is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              demultiplexed here to handle the different types of fields
  *              (buffer_field, region_field, index_field, bank_field)
  *
@@ -426,29 +505,49 @@ acpi_ex_field_datum_io(union acpi_operand_object *obj_desc,
 			 * Copy the data from the source buffer.
 			 * Length is the field width in bytes.
 			 */
+<<<<<<< HEAD
 			ACPI_MEMCPY(value,
 				    (obj_desc->buffer_field.buffer_obj)->buffer.
 				    pointer +
 				    obj_desc->buffer_field.base_byte_offset +
 				    field_datum_byte_offset,
 				    obj_desc->common_field.access_byte_width);
+=======
+			memcpy(value,
+			       (obj_desc->buffer_field.buffer_obj)->buffer.
+			       pointer +
+			       obj_desc->buffer_field.base_byte_offset +
+			       field_datum_byte_offset,
+			       obj_desc->common_field.access_byte_width);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/*
 			 * Copy the data to the target buffer.
 			 * Length is the field width in bytes.
 			 */
+<<<<<<< HEAD
 			ACPI_MEMCPY((obj_desc->buffer_field.buffer_obj)->buffer.
 				    pointer +
 				    obj_desc->buffer_field.base_byte_offset +
 				    field_datum_byte_offset, value,
 				    obj_desc->common_field.access_byte_width);
+=======
+			memcpy((obj_desc->buffer_field.buffer_obj)->buffer.
+			       pointer +
+			       obj_desc->buffer_field.base_byte_offset +
+			       field_datum_byte_offset, value,
+			       obj_desc->common_field.access_byte_width);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		status = AE_OK;
 		break;
 
 	case ACPI_TYPE_LOCAL_BANK_FIELD:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Ensure that the bank_value is not beyond the capacity of
 		 * the register
@@ -477,7 +576,11 @@ acpi_ex_field_datum_io(union acpi_operand_object *obj_desc,
 		 * region_field case and write the datum to the Operation Region
 		 */
 
+<<<<<<< HEAD
 		/*lint -fallthrough */
+=======
+		ACPI_FALLTHROUGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case ACPI_TYPE_LOCAL_REGION_FIELD:
 		/*
@@ -490,7 +593,10 @@ acpi_ex_field_datum_io(union acpi_operand_object *obj_desc,
 		break;
 
 	case ACPI_TYPE_LOCAL_INDEX_FIELD:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Ensure that the index_value is not beyond the capacity of
 		 * the register
@@ -574,7 +680,11 @@ acpi_ex_field_datum_io(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_write_with_update_rule
  *
  * PARAMETERS:  obj_desc                - Field to be written
+<<<<<<< HEAD
  *              Mask                    - bitmask within field datum
+=======
+ *              mask                    - bitmask within field datum
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              field_value             - Value to write
  *              field_datum_byte_offset - Offset of datum within field
  *
@@ -650,15 +760,24 @@ acpi_ex_write_with_update_rule(union acpi_operand_object *obj_desc,
 
 			ACPI_ERROR((AE_INFO,
 				    "Unknown UpdateRule value: 0x%X",
+<<<<<<< HEAD
 				    (obj_desc->common_field.
 				     field_flags &
+=======
+				    (obj_desc->common_field.field_flags &
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     AML_FIELD_UPDATE_RULE_MASK)));
 			return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
 		}
 	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
+<<<<<<< HEAD
 			  "Mask %8.8X%8.8X, DatumOffset %X, Width %X, Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
+=======
+			  "Mask %8.8X%8.8X, DatumOffset %X, Width %X, "
+			  "Value %8.8X%8.8X, MergedValue %8.8X%8.8X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ACPI_FORMAT_UINT64(mask),
 			  field_datum_byte_offset,
 			  obj_desc->common_field.access_byte_width,
@@ -667,8 +786,14 @@ acpi_ex_write_with_update_rule(union acpi_operand_object *obj_desc,
 
 	/* Write the merged value */
 
+<<<<<<< HEAD
 	status = acpi_ex_field_datum_io(obj_desc, field_datum_byte_offset,
 					&merged_value, ACPI_WRITE);
+=======
+	status =
+	    acpi_ex_field_datum_io(obj_desc, field_datum_byte_offset,
+				   &merged_value, ACPI_WRITE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(status);
 }
@@ -678,7 +803,11 @@ acpi_ex_write_with_update_rule(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_extract_from_field
  *
  * PARAMETERS:  obj_desc            - Field to be read
+<<<<<<< HEAD
  *              Buffer              - Where to store the field data
+=======
+ *              buffer              - Where to store the field data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              buffer_length       - Length of Buffer
  *
  * RETURN:      Status
@@ -715,7 +844,11 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
 		return_ACPI_STATUS(AE_BUFFER_OVERFLOW);
 	}
 
+<<<<<<< HEAD
 	ACPI_MEMSET(buffer, 0, buffer_length);
+=======
+	memset(buffer, 0, buffer_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	access_bit_width = ACPI_MUL_8(obj_desc->common_field.access_byte_width);
 
 	/* Handle the simple case here */
@@ -732,7 +865,11 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
 			status =
 			    acpi_ex_field_datum_io(obj_desc, 0, &raw_datum,
 						   ACPI_READ);
+<<<<<<< HEAD
 			ACPI_MEMCPY(buffer, &raw_datum, buffer_length);
+=======
+			memcpy(buffer, &raw_datum, buffer_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return_ACPI_STATUS(status);
@@ -776,8 +913,14 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
 		/* Get next input datum from the field */
 
 		field_offset += obj_desc->common_field.access_byte_width;
+<<<<<<< HEAD
 		status = acpi_ex_field_datum_io(obj_desc, field_offset,
 						&raw_datum, ACPI_READ);
+=======
+		status =
+		    acpi_ex_field_datum_io(obj_desc, field_offset, &raw_datum,
+					   ACPI_READ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -805,9 +948,15 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
 
 		/* Write merged datum to target buffer */
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(((char *)buffer) + buffer_offset, &merged_datum,
 			    ACPI_MIN(obj_desc->common_field.access_byte_width,
 				     buffer_length - buffer_offset));
+=======
+		memcpy(((char *)buffer) + buffer_offset, &merged_datum,
+		       ACPI_MIN(obj_desc->common_field.access_byte_width,
+				buffer_length - buffer_offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		buffer_offset += obj_desc->common_field.access_byte_width;
 		merged_datum =
@@ -823,9 +972,15 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
 
 	/* Write the last datum to the buffer */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(((char *)buffer) + buffer_offset, &merged_datum,
 		    ACPI_MIN(obj_desc->common_field.access_byte_width,
 			     buffer_length - buffer_offset));
+=======
+	memcpy(((char *)buffer) + buffer_offset, &merged_datum,
+	       ACPI_MIN(obj_desc->common_field.access_byte_width,
+			buffer_length - buffer_offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -835,7 +990,11 @@ acpi_ex_extract_from_field(union acpi_operand_object *obj_desc,
  * FUNCTION:    acpi_ex_insert_into_field
  *
  * PARAMETERS:  obj_desc            - Field to be written
+<<<<<<< HEAD
  *              Buffer              - Data to be written
+=======
+ *              buffer              - Data to be written
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              buffer_length       - Length of Buffer
  *
  * RETURN:      Status
@@ -870,9 +1029,16 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 	new_buffer = NULL;
 	required_length =
 	    ACPI_ROUND_BITS_UP_TO_BYTES(obj_desc->common_field.bit_length);
+<<<<<<< HEAD
 	/*
 	 * We must have a buffer that is at least as long as the field
 	 * we are writing to.  This is because individual fields are
+=======
+
+	/*
+	 * We must have a buffer that is at least as long as the field
+	 * we are writing to. This is because individual fields are
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * indivisible and partial writes are not supported -- as per
 	 * the ACPI specification.
 	 */
@@ -887,10 +1053,17 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 
 		/*
 		 * Copy the original data to the new buffer, starting
+<<<<<<< HEAD
 		 * at Byte zero.  All unused (upper) bytes of the
 		 * buffer will be 0.
 		 */
 		ACPI_MEMCPY((char *)new_buffer, (char *)buffer, buffer_length);
+=======
+		 * at Byte zero. All unused (upper) bytes of the
+		 * buffer will be 0.
+		 */
+		memcpy((char *)new_buffer, (char *)buffer, buffer_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buffer = new_buffer;
 		buffer_length = required_length;
 	}
@@ -904,6 +1077,7 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 
 	access_bit_width = ACPI_MUL_8(obj_desc->common_field.access_byte_width);
 
+<<<<<<< HEAD
 	/*
 	 * Create the bitmasks used for bit insertion.
 	 * Note: This if/else is used to bypass compiler differences with the
@@ -915,6 +1089,11 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 		width_mask = ACPI_MASK_BITS_ABOVE(access_bit_width);
 	}
 
+=======
+	/* Create the bitmasks used for bit insertion */
+
+	width_mask = ACPI_MASK_BITS_ABOVE_64(access_bit_width);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask = width_mask &
 	    ACPI_MASK_BITS_BELOW(obj_desc->common_field.start_field_bit_offset);
 
@@ -930,9 +1109,15 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 
 	/* Get initial Datum from the input buffer */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(&raw_datum, buffer,
 		    ACPI_MIN(obj_desc->common_field.access_byte_width,
 			     buffer_length - buffer_offset));
+=======
+	memcpy(&raw_datum, buffer,
+	       ACPI_MIN(obj_desc->common_field.access_byte_width,
+			buffer_length - buffer_offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	merged_datum =
 	    raw_datum << obj_desc->common_field.start_field_bit_offset;
@@ -944,9 +1129,15 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 		/* Write merged datum to the target field */
 
 		merged_datum &= mask;
+<<<<<<< HEAD
 		status = acpi_ex_write_with_update_rule(obj_desc, mask,
 							merged_datum,
 							field_offset);
+=======
+		status =
+		    acpi_ex_write_with_update_rule(obj_desc, mask, merged_datum,
+						   field_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			goto exit;
 		}
@@ -982,9 +1173,15 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 		/* Get the next input datum from the buffer */
 
 		buffer_offset += obj_desc->common_field.access_byte_width;
+<<<<<<< HEAD
 		ACPI_MEMCPY(&raw_datum, ((char *)buffer) + buffer_offset,
 			    ACPI_MIN(obj_desc->common_field.access_byte_width,
 				     buffer_length - buffer_offset));
+=======
+		memcpy(&raw_datum, ((char *)buffer) + buffer_offset,
+		       ACPI_MIN(obj_desc->common_field.access_byte_width,
+				buffer_length - buffer_offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		merged_datum |=
 		    raw_datum << obj_desc->common_field.start_field_bit_offset;
@@ -1002,11 +1199,19 @@ acpi_ex_insert_into_field(union acpi_operand_object *obj_desc,
 	/* Write the last datum to the field */
 
 	merged_datum &= mask;
+<<<<<<< HEAD
 	status = acpi_ex_write_with_update_rule(obj_desc,
 						mask, merged_datum,
 						field_offset);
 
       exit:
+=======
+	status =
+	    acpi_ex_write_with_update_rule(obj_desc, mask, merged_datum,
+					   field_offset);
+
+exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Free temporary buffer if we used one */
 
 	if (new_buffer) {

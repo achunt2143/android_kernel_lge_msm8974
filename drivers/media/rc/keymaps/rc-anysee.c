@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Anysee remote controller keytable
  *
  * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -16,12 +21,15 @@
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
  *    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
 static struct rc_map_table anysee[] = {
+<<<<<<< HEAD
 	{ 0x0800, KEY_0 },
 	{ 0x0801, KEY_1 },
 	{ 0x0802, KEY_2 },
@@ -32,6 +40,18 @@ static struct rc_map_table anysee[] = {
 	{ 0x0807, KEY_7 },
 	{ 0x0808, KEY_8 },
 	{ 0x0809, KEY_9 },
+=======
+	{ 0x0800, KEY_NUMERIC_0 },
+	{ 0x0801, KEY_NUMERIC_1 },
+	{ 0x0802, KEY_NUMERIC_2 },
+	{ 0x0803, KEY_NUMERIC_3 },
+	{ 0x0804, KEY_NUMERIC_4 },
+	{ 0x0805, KEY_NUMERIC_5 },
+	{ 0x0806, KEY_NUMERIC_6 },
+	{ 0x0807, KEY_NUMERIC_7 },
+	{ 0x0808, KEY_NUMERIC_8 },
+	{ 0x0809, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x080a, KEY_POWER2 },          /* [red power button] */
 	{ 0x080b, KEY_VIDEO },           /* [*] MODE */
 	{ 0x080c, KEY_CHANNEL },         /* [symbol counterclockwise arrow] */
@@ -70,10 +90,17 @@ static struct rc_map_table anysee[] = {
 
 static struct rc_map_list anysee_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = anysee,
 		.size    = ARRAY_SIZE(anysee),
 		.rc_type = RC_TYPE_NEC,
 		.name    = RC_MAP_ANYSEE,
+=======
+		.scan     = anysee,
+		.size     = ARRAY_SIZE(anysee),
+		.rc_proto = RC_PROTO_NEC,
+		.name     = RC_MAP_ANYSEE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -92,3 +119,7 @@ module_exit(exit_rc_map_anysee)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Antti Palosaari <crope@iki.fi>");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Anysee remote keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

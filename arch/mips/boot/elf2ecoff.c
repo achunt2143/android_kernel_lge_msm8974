@@ -29,7 +29,11 @@
 /* elf2ecoff.c
 
    This program converts an elf executable to an ECOFF executable.
+<<<<<<< HEAD
    No symbol table is retained.   This is useful primarily in building
+=======
+   No symbol table is retained.	  This is useful primarily in building
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    net-bootable kernels for machines (e.g., DECstation and Alpha) which
    only support the ECOFF object file format. */
 
@@ -43,19 +47,34 @@
 #include <limits.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+<<<<<<< HEAD
+=======
+#include <stdint.h>
+#include <inttypes.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ecoff.h"
 
 /*
  * Some extra ELF definitions
  */
+<<<<<<< HEAD
 #define PT_MIPS_REGINFO 0x70000000	/* Register usage information */
+=======
+#define PT_MIPS_REGINFO 	0x70000000	/* Register usage information */
+#define PT_MIPS_ABIFLAGS	0x70000003	/* Records ABI related flags  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* -------------------------------------------------------------------- */
 
 struct sect {
+<<<<<<< HEAD
 	unsigned long vaddr;
 	unsigned long len;
+=======
+	uint32_t vaddr;
+	uint32_t len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int *symTypeTable;
@@ -152,6 +171,7 @@ static char *saveRead(int file, off_t offset, off_t len, char *name)
 }
 
 #define swab16(x) \
+<<<<<<< HEAD
 	((unsigned short)( \
 		(((unsigned short)(x) & (unsigned short)0x00ffU) << 8) | \
 		(((unsigned short)(x) & (unsigned short)0xff00U) >> 8) ))
@@ -162,6 +182,18 @@ static char *saveRead(int file, off_t offset, off_t len, char *name)
 		(((unsigned int)(x) & (unsigned int)0x0000ff00UL) <<  8) | \
 		(((unsigned int)(x) & (unsigned int)0x00ff0000UL) >>  8) | \
 		(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24) ))
+=======
+	((uint16_t)( \
+		(((uint16_t)(x) & (uint16_t)0x00ffU) << 8) | \
+		(((uint16_t)(x) & (uint16_t)0xff00U) >> 8) ))
+
+#define swab32(x) \
+	((unsigned int)( \
+		(((uint32_t)(x) & (uint32_t)0x000000ffUL) << 24) | \
+		(((uint32_t)(x) & (uint32_t)0x0000ff00UL) <<  8) | \
+		(((uint32_t)(x) & (uint32_t)0x00ff0000UL) >>  8) | \
+		(((uint32_t)(x) & (uint32_t)0xff000000UL) >> 24) ))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void convert_elf_hdr(Elf32_Ehdr * e)
 {
@@ -267,14 +299,21 @@ int main(int argc, char *argv[])
 	Elf32_Ehdr ex;
 	Elf32_Phdr *ph;
 	Elf32_Shdr *sh;
+<<<<<<< HEAD
 	char *shstrtab;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, pad;
 	struct sect text, data, bss;
 	struct filehdr efh;
 	struct aouthdr eah;
 	struct scnhdr esecs[6];
 	int infile, outfile;
+<<<<<<< HEAD
 	unsigned long cur_vma = ULONG_MAX;
+=======
+	uint32_t cur_vma = UINT32_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int addflag = 0;
 	int nosecs;
 
@@ -335,6 +374,7 @@ int main(int argc, char *argv[])
 				     "sh");
 	if (must_convert_endian)
 		convert_elf_shdrs(sh, ex.e_shnum);
+<<<<<<< HEAD
 	/* Read in the section string table. */
 	shstrtab = saveRead(infile, sh[ex.e_shstrndx].sh_offset,
 			    sh[ex.e_shstrndx].sh_size, "shstrtab");
@@ -342,6 +382,12 @@ int main(int argc, char *argv[])
 	/* Figure out if we can cram the program header into an ECOFF
 	   header...  Basically, we can't handle anything but loadable
 	   segments, but we can ignore some kinds of segments.  We can't
+=======
+
+	/* Figure out if we can cram the program header into an ECOFF
+	   header...  Basically, we can't handle anything but loadable
+	   segments, but we can ignore some kinds of segments.	We can't
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   handle holes in the address space.  Segments may be out of order,
 	   so we sort them first. */
 
@@ -349,17 +395,56 @@ int main(int argc, char *argv[])
 
 	for (i = 0; i < ex.e_phnum; i++) {
 		/* Section types we can ignore... */
+<<<<<<< HEAD
 		if (ph[i].p_type == PT_NULL || ph[i].p_type == PT_NOTE ||
 		    ph[i].p_type == PT_PHDR
 		    || ph[i].p_type == PT_MIPS_REGINFO)
 			continue;
 		/* Section types we can't handle... */
 		else if (ph[i].p_type != PT_LOAD) {
+=======
+		switch (ph[i].p_type) {
+		case PT_NULL:
+		case PT_NOTE:
+		case PT_PHDR:
+		case PT_MIPS_REGINFO:
+		case PT_MIPS_ABIFLAGS:
+			continue;
+
+		case PT_LOAD:
+			/* Writable (data) segment? */
+			if (ph[i].p_flags & PF_W) {
+				struct sect ndata, nbss;
+
+				ndata.vaddr = ph[i].p_vaddr;
+				ndata.len = ph[i].p_filesz;
+				nbss.vaddr = ph[i].p_vaddr + ph[i].p_filesz;
+				nbss.len = ph[i].p_memsz - ph[i].p_filesz;
+
+				combine(&data, &ndata, 0);
+				combine(&bss, &nbss, 1);
+			} else {
+				struct sect ntxt;
+
+				ntxt.vaddr = ph[i].p_vaddr;
+				ntxt.len = ph[i].p_filesz;
+
+				combine(&text, &ntxt, 0);
+			}
+			/* Remember the lowest segment start address. */
+			if (ph[i].p_vaddr < cur_vma)
+				cur_vma = ph[i].p_vaddr;
+			break;
+
+		default:
+			/* Section types we can't handle... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fprintf(stderr,
 				"Program header %d type %d can't be converted.\n",
 				ex.e_phnum, ph[i].p_type);
 			exit(1);
 		}
+<<<<<<< HEAD
 		/* Writable (data) segment? */
 		if (ph[i].p_flags & PF_W) {
 			struct sect ndata, nbss;
@@ -382,6 +467,8 @@ int main(int argc, char *argv[])
 		/* Remember the lowest segment start address. */
 		if (ph[i].p_vaddr < cur_vma)
 			cur_vma = ph[i].p_vaddr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Sections must be in order to be converted... */
@@ -437,7 +524,11 @@ int main(int argc, char *argv[])
 	efh.f_symptr = 0;
 	efh.f_nsyms = 0;
 	efh.f_opthdr = sizeof eah;
+<<<<<<< HEAD
 	efh.f_flags = 0x100f;	/* Stripped, not sharable. */
+=======
+	efh.f_flags = 0x100f;	/* Stripped, not shareable. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(esecs, 0, sizeof esecs);
 	strcpy(esecs[0].s_name, ".text");
@@ -514,7 +605,11 @@ int main(int argc, char *argv[])
 
 		for (i = 0; i < nosecs; i++) {
 			printf
+<<<<<<< HEAD
 			    ("Section %d: %s phys %lx  size %lx  file offset %lx\n",
+=======
+			    ("Section %d: %s phys %"PRIx32"  size %"PRIx32"\t file offset %"PRIx32"\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     i, esecs[i].s_name, esecs[i].s_paddr,
 			     esecs[i].s_size, esecs[i].s_scnptr);
 		}
@@ -551,7 +646,11 @@ int main(int argc, char *argv[])
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Copy the loadable sections.   Zero-fill any gaps less than 64k;
+=======
+	 * Copy the loadable sections.	 Zero-fill any gaps less than 64k;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * complain about any zero-filling, and die if we're asked to zero-fill
 	 * more than 64k.
 	 */
@@ -560,17 +659,29 @@ int main(int argc, char *argv[])
 		   the section can be loaded before copying. */
 		if (ph[i].p_type == PT_LOAD && ph[i].p_filesz) {
 			if (cur_vma != ph[i].p_vaddr) {
+<<<<<<< HEAD
 				unsigned long gap =
 				    ph[i].p_vaddr - cur_vma;
 				char obuf[1024];
 				if (gap > 65536) {
 					fprintf(stderr,
 						"Intersegment gap (%ld bytes) too large.\n",
+=======
+				uint32_t gap = ph[i].p_vaddr - cur_vma;
+				char obuf[1024];
+				if (gap > 65536) {
+					fprintf(stderr,
+						"Intersegment gap (%"PRId32" bytes) too large.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						gap);
 					exit(1);
 				}
 				fprintf(stderr,
+<<<<<<< HEAD
 					"Warning: %ld byte intersegment gap.\n",
+=======
+					"Warning: %d byte intersegment gap.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					gap);
 				memset(obuf, 0, sizeof obuf);
 				while (gap) {

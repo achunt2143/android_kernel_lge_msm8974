@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -64,13 +71,23 @@
 
 #define		GPIOMUX_EN	BIT(3)	/* When this bit is set to "1",
 					 * GPIO PINs will switch to MAC
+<<<<<<< HEAD
 					 * GPIO Function*/
+=======
+					 * GPIO Function
+					 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		GPIOSEL_GPIO	0	/* UART or JTAG or pure GPIO*/
 #define		GPIOSEL_PHYDBG	1	/* PHYDBG*/
 #define		GPIOSEL_BT	2	/* BT_coex*/
 #define		GPIOSEL_WLANDBG	3	/* WLANDBG*/
+<<<<<<< HEAD
 #define		GPIOSEL_GPIO_MASK	(~(BIT(0)|BIT(1)))
 /* HW Readio OFF switch (GPIO BIT) */
+=======
+#define		GPIOSEL_GPIO_MASK	(~(BIT(0) | BIT(1)))
+/* HW Radio OFF switch (GPIO BIT) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		HAL_8192S_HW_GPIO_OFF_BIT	BIT(3)
 #define		HAL_8192S_HW_GPIO_OFF_MASK	0xF7
 #define		HAL_8192S_HW_GPIO_WPS_BIT	BIT(4)

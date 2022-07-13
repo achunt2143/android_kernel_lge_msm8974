@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menu "Kernel hacking"
 
 config TRACE_IRQFLAGS_SUPPORT
@@ -8,6 +9,12 @@ source "lib/Kconfig.debug"
 config SH_STANDARD_BIOS
 	bool "Use LinuxSH standard BIOS"
 	depends on SUPERH32
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+config SH_STANDARD_BIOS
+	bool "Use LinuxSH standard BIOS"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if your target has the gdb-sh-stub
 	  package from www.m17n.org (or any conforming standard LinuxSH BIOS)
@@ -21,13 +28,31 @@ config SH_STANDARD_BIOS
 
 config STACK_DEBUG
 	bool "Check for stack overflows"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL && SUPERH32
+=======
+	depends on DEBUG_KERNEL && PRINTK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option will cause messages to be printed if free stack space
 	  drops below a certain limit. Saying Y here will add overhead to
 	  every function call and will therefore incur a major
 	  performance hit. Most users should say N.
 
+<<<<<<< HEAD
+=======
+config EARLY_PRINTK
+	bool "Early printk"
+	depends on SH_STANDARD_BIOS
+	help
+	  Say Y here to redirect kernel printk messages to the serial port
+	  used by the SH-IPL bootloader, starting very early in the boot
+	  process and ending when the kernel's serial console is initialised.
+	  This option is only useful while porting the kernel to a new machine,
+	  when the kernel may crash or hang before the serial console is
+	  initialised.  If unsure, say N.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config 4KSTACKS
 	bool "Use 4Kb for kernel stacks instead of 8Kb"
 	depends on DEBUG_KERNEL && (MMU || BROKEN) && !PAGE_SIZE_64KB
@@ -40,7 +65,11 @@ config 4KSTACKS
 
 config IRQSTACKS
 	bool "Use separate kernel stacks when processing interrupts"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL && SUPERH32 && BROKEN
+=======
+	depends on DEBUG_KERNEL && BROKEN
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say Y here the kernel will use separate kernel stacks
 	  for handling hard and soft interrupts.  This can help avoid
@@ -48,7 +77,11 @@ config IRQSTACKS
 
 config DUMP_CODE
 	bool "Show disassembly of nearby code in register dumps"
+<<<<<<< HEAD
 	depends on DEBUG_KERNEL && SUPERH32
+=======
+	depends on DEBUG_KERNEL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y if DEBUG_BUGVERBOSE
 	default n
 	help
@@ -60,8 +93,13 @@ config DUMP_CODE
 
 config DWARF_UNWINDER
 	bool "Enable the DWARF unwinder for stacktraces"
+<<<<<<< HEAD
 	select FRAME_POINTER
 	depends on SUPERH32
+=======
+	depends on DEBUG_KERNEL
+	select FRAME_POINTER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  Enabling this option will make stacktraces more accurate, at
@@ -79,6 +117,7 @@ config SH_NO_BSS_INIT
 	  For all other cases, say N. If this option seems perplexing, or
 	  you aren't sure, say N.
 
+<<<<<<< HEAD
 config SH64_SR_WATCH
 	bool "Debug: set SR.WATCH to enable hardware watchpoints and trace"
 	depends on SUPERH64
@@ -89,3 +128,8 @@ config MCOUNT
 	depends on STACK_DEBUG || FUNCTION_TRACER
 
 endmenu
+=======
+config MCOUNT
+	def_bool y
+	depends on STACK_DEBUG || FUNCTION_TRACER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

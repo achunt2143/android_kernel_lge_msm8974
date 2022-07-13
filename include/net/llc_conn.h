@@ -38,6 +38,10 @@ struct llc_sock {
 	struct llc_addr	    laddr;		/* lsap/mac pair */
 	struct llc_addr	    daddr;		/* dsap/mac pair */
 	struct net_device   *dev;		/* device to send to remote */
+<<<<<<< HEAD
+=======
+	netdevice_tracker   dev_tracker;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		    copied_seq;		/* head of yet unread data */
 	u8		    retry_count;	/* number of retries */
 	u8		    ack_must_be_send;
@@ -95,6 +99,7 @@ static __inline__ char llc_backlog_type(struct sk_buff *skb)
 	return skb->cb[sizeof(skb->cb) - 1];
 }
 
+<<<<<<< HEAD
 extern struct sock *llc_sk_alloc(struct net *net, int family, gfp_t priority,
 				 struct proto *prot);
 extern void llc_sk_free(struct sock *sk);
@@ -119,4 +124,27 @@ extern void llc_sap_remove_socket(struct llc_sap *sap, struct sock *sk);
 
 extern u8 llc_data_accept_state(u8 state);
 extern void llc_build_offset_table(void);
+=======
+struct sock *llc_sk_alloc(struct net *net, int family, gfp_t priority,
+			  struct proto *prot, int kern);
+void llc_sk_stop_all_timers(struct sock *sk, bool sync);
+void llc_sk_free(struct sock *sk);
+
+void llc_sk_reset(struct sock *sk);
+
+/* Access to a connection */
+int llc_conn_state_process(struct sock *sk, struct sk_buff *skb);
+void llc_conn_send_pdu(struct sock *sk, struct sk_buff *skb);
+void llc_conn_rtn_pdu(struct sock *sk, struct sk_buff *skb);
+void llc_conn_resend_i_pdu_as_cmd(struct sock *sk, u8 nr, u8 first_p_bit);
+void llc_conn_resend_i_pdu_as_rsp(struct sock *sk, u8 nr, u8 first_f_bit);
+int llc_conn_remove_acked_pdus(struct sock *conn, u8 nr, u16 *how_many_unacked);
+struct sock *llc_lookup_established(struct llc_sap *sap, struct llc_addr *daddr,
+				    struct llc_addr *laddr, const struct net *net);
+void llc_sap_add_socket(struct llc_sap *sap, struct sock *sk);
+void llc_sap_remove_socket(struct llc_sap *sap, struct sock *sk);
+
+u8 llc_data_accept_state(u8 state);
+void llc_build_offset_table(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LLC_CONN_H */

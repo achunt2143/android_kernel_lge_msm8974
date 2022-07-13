@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_SOCKET_H
 #define _ASM_SOCKET_H
 
@@ -79,10 +80,21 @@
 #define SO_MAX_PACING_RATE	44
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_SOCKET_H
+#define _ASM_SOCKET_H
+
+#include <uapi/asm/socket.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* O_NONBLOCK clashes with the bits used for socket types.  Therefore we
  * have to define SOCK_NONBLOCK to a different value here.
  */
 #define SOCK_NONBLOCK	0x40000000
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_SOCKET_H */

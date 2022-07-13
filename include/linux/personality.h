@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_PERSONALITY_H
 #define _LINUX_PERSONALITY_H
 
@@ -103,12 +104,20 @@ struct exec_domain {
 	struct module		*module;	/* module context of the ed. */
 	struct exec_domain	*next;		/* linked list (internal) */
 };
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_PERSONALITY_H
+#define _LINUX_PERSONALITY_H
+
+#include <uapi/linux/personality.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return the base personality without flags.
  */
 #define personality(pers)	(pers & PER_MASK)
 
+<<<<<<< HEAD
 
 /*
  * Change personality of the currently running process.
@@ -117,5 +126,11 @@ struct exec_domain {
 	((current->personality == (pers)) ? 0 : __set_personality(pers))
 
 #endif /* __KERNEL__ */
+=======
+/*
+ * Change personality of the currently running process.
+ */
+#define set_personality(pers)	(current->personality = (pers))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_PERSONALITY_H */

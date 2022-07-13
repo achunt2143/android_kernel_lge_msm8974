@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* parport_sunbpp.c: Parallel-port routines for SBUS
  * 
  * Author: Derrick J. Brashear <shadow@dementia.org>
@@ -27,7 +31,11 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/parport.h>
 
@@ -82,6 +90,7 @@ static unsigned char parport_sunbpp_read_data(struct parport *p)
 	return sbus_readb(&regs->p_dr);
 }
 
+<<<<<<< HEAD
 #if 0
 static void control_pc_to_sunbpp(struct parport *p, unsigned char status)
 {
@@ -103,6 +112,8 @@ static void control_pc_to_sunbpp(struct parport *p, unsigned char status)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char status_sunbpp_to_pc(struct parport *p)
 {
 	struct bpp_regs __iomem *regs = (struct bpp_regs __iomem *)p->base;
@@ -286,7 +297,11 @@ static struct parport_operations parport_sunbpp_ops =
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int __devinit bpp_probe(struct platform_device *op)
+=======
+static int bpp_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport_operations *ops;
 	struct bpp_regs __iomem *regs;
@@ -305,6 +320,7 @@ static int __devinit bpp_probe(struct platform_device *op)
 	size = resource_size(&op->resource[0]);
 	dma = PARPORT_DMA_NONE;
 
+<<<<<<< HEAD
 	ops = kmalloc(sizeof(struct parport_operations), GFP_KERNEL);
         if (!ops)
 		goto out_unmap;
@@ -314,6 +330,20 @@ static int __devinit bpp_probe(struct platform_device *op)
 	dprintk(("register_port\n"));
 	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops)))
 		goto out_free_ops;
+=======
+	ops = kmemdup(&parport_sunbpp_ops, sizeof(struct parport_operations),
+		      GFP_KERNEL);
+	if (!ops) {
+		err = -ENOMEM;
+		goto out_unmap;
+	}
+
+	dprintk(("register_port\n"));
+	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops))) {
+		err = -ENOMEM;
+		goto out_free_ops;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p->size = size;
 	p->dev = &op->dev;
@@ -331,7 +361,11 @@ static int __devinit bpp_probe(struct platform_device *op)
 	value_tcr &= ~P_TCR_DIR;
 	sbus_writeb(value_tcr, &regs->p_tcr);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: sunbpp at 0x%lx\n", p->name, p->base);
+=======
+	pr_info("%s: sunbpp at 0x%lx\n", p->name, p->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(&op->dev, p);
 
@@ -351,7 +385,11 @@ out_unmap:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit bpp_remove(struct platform_device *op)
+=======
+static void bpp_remove(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport *p = dev_get_drvdata(&op->dev);
 	struct parport_operations *ops = p->ops;
@@ -368,8 +406,11 @@ static int __devexit bpp_remove(struct platform_device *op)
 	kfree(ops);
 
 	dev_set_drvdata(&op->dev, NULL);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id bpp_match[] = {
@@ -384,17 +425,27 @@ MODULE_DEVICE_TABLE(of, bpp_match);
 static struct platform_driver bpp_sbus_driver = {
 	.driver = {
 		.name = "bpp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = bpp_match,
 	},
 	.probe		= bpp_probe,
 	.remove		= __devexit_p(bpp_remove),
+=======
+		.of_match_table = bpp_match,
+	},
+	.probe		= bpp_probe,
+	.remove_new	= bpp_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(bpp_sbus_driver);
 
 MODULE_AUTHOR("Derrick J Brashear");
 MODULE_DESCRIPTION("Parport Driver for Sparc bidirectional Port");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("Sparc Bidirectional Parallel Port");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_VERSION("2.0");
 MODULE_LICENSE("GPL");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/module.h>
 
@@ -15,10 +16,28 @@ void *memcpy(void *to, const void *from, size_t n)
 EXPORT_SYMBOL(memcpy);
 
 void *memset(void *s, int c, size_t count)
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/string.h>
+#include <linux/export.h>
+
+#undef memcpy
+#undef memset
+#undef memmove
+
+__visible void *memcpy(void *to, const void *from, size_t n)
+{
+	return __memcpy(to, from, n);
+}
+EXPORT_SYMBOL(memcpy);
+
+__visible void *memset(void *s, int c, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __memset(s, c, count);
 }
 EXPORT_SYMBOL(memset);
+<<<<<<< HEAD
 
 void *memmove(void *dest, const void *src, size_t n)
 {
@@ -206,3 +225,5 @@ void *memmove(void *dest, const void *src, size_t n)
 
 }
 EXPORT_SYMBOL(memmove);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

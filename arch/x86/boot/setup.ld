@@ -3,26 +3,47 @@
  *
  * Linker script for the i386 setup code
  */
+<<<<<<< HEAD
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
+=======
+OUTPUT_FORMAT("elf32-i386")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT_ARCH(i386)
 ENTRY(_start)
 
 SECTIONS
 {
 	. = 0;
+<<<<<<< HEAD
 	.bstext		: { *(.bstext) }
 	.bsdata		: { *(.bsdata) }
 
 	. = 497;
+=======
+	.bstext	: {
+		*(.bstext)
+		. = 495;
+	} =0xffffffff
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.header		: { *(.header) }
 	.entrytext	: { *(.entrytext) }
 	.inittext	: { *(.inittext) }
 	.initdata	: { *(.initdata) }
 	__end_init = .;
 
+<<<<<<< HEAD
 	.text		: { *(.text) }
 	.text32		: { *(.text32) }
 
+=======
+	.text		: { *(.text .text.*) }
+	.text32		: { *(.text32) }
+
+	.pecompat	: { *(.pecompat) }
+	PROVIDE(pecompat_fsize = setup_size - pecompat_fstart);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(16);
 	.rodata		: { *(.rodata*) }
 
@@ -38,8 +59,15 @@ SECTIONS
 	.signature	: {
 		setup_sig = .;
 		LONG(0x5a5aaa55)
+<<<<<<< HEAD
 	}
 
+=======
+
+		setup_size = ALIGN(ABSOLUTE(.), 4096);
+		setup_sects = ABSOLUTE(setup_size / 512);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(16);
 	.bss		:
@@ -51,7 +79,13 @@ SECTIONS
 	. = ALIGN(16);
 	_end = .;
 
+<<<<<<< HEAD
 	/DISCARD/ : { *(.note*) }
+=======
+	/DISCARD/	: {
+		*(.note*)
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The ASSERT() sink to . is intentional, for binutils 2.14 compatibility:

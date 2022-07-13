@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Driver for SoundBlaster 16/AWE32/AWE64 soundcards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Driver for SoundBlaster 16/AWE32/AWE64 soundcards
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/dma.h>
@@ -46,6 +53,7 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
 #ifndef SNDRV_SBAWE
 MODULE_DESCRIPTION("Sound Blaster 16");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Creative Labs,SB 16},"
 		"{Creative Labs,SB Vibra16S},"
 		"{Creative Labs,SB Vibra16C},"
@@ -56,13 +64,21 @@ MODULE_DESCRIPTION("Sound Blaster AWE");
 MODULE_SUPPORTED_DEVICE("{{Creative Labs,SB AWE 32},"
 		"{Creative Labs,SB AWE 64},"
 		"{Creative Labs,SB AWE 64 Gold}}");
+=======
+#else
+MODULE_DESCRIPTION("Sound Blaster AWE");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if 0
 #define SNDRV_DEBUG_IRQ
 #endif
 
+<<<<<<< HEAD
 #if defined(SNDRV_SBAWE) && (defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE)))
+=======
+#if defined(SNDRV_SBAWE) && IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_SBAWE_EMU8000
 #endif
 
@@ -99,6 +115,7 @@ MODULE_PARM_DESC(enable, "Enable SoundBlaster 16 soundcard.");
 module_param_array(isapnp, bool, NULL, 0444);
 MODULE_PARM_DESC(isapnp, "PnP detection for specified soundcard.");
 #endif
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for SB16 driver.");
 module_param_array(mpu_port, long, NULL, 0444);
@@ -114,6 +131,23 @@ MODULE_PARM_DESC(irq, "IRQ # for SB16 driver.");
 module_param_array(dma8, int, NULL, 0444);
 MODULE_PARM_DESC(dma8, "8-bit DMA # for SB16 driver.");
 module_param_array(dma16, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for SB16 driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for SB16 driver.");
+module_param_hw_array(fm_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(fm_port, "FM port # for SB16 PnP driver.");
+#ifdef SNDRV_SBAWE_EMU8000
+module_param_hw_array(awe_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(awe_port, "AWE port # for SB16 PnP driver.");
+#endif
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for SB16 driver.");
+module_param_hw_array(dma8, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma8, "8-bit DMA # for SB16 driver.");
+module_param_hw_array(dma16, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma16, "16-bit DMA # for SB16 driver.");
 module_param_array(mic_agc, int, NULL, 0444);
 MODULE_PARM_DESC(mic_agc, "Mic Auto-Gain-Control switch.");
@@ -145,7 +179,11 @@ struct snd_card_sb16 {
 
 #ifdef CONFIG_PNP
 
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_sb16_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_sb16_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SNDRV_SBAWE
 	/* Sound Blaster 16 PnP */
 	{ .id = "CTL0024", .devs = { { "CTL0031" } } },
@@ -250,9 +288,15 @@ MODULE_DEVICE_TABLE(pnp_card, snd_sb16_pnpids);
 
 #ifdef CONFIG_PNP
 
+<<<<<<< HEAD
 static int __devinit snd_card_sb16_pnp(int dev, struct snd_card_sb16 *acard,
 				       struct pnp_card_link *card,
 				       const struct pnp_card_device_id *id)
+=======
+static int snd_card_sb16_pnp(int dev, struct snd_card_sb16 *acard,
+			     struct pnp_card_link *card,
+			     const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -308,6 +352,7 @@ __wt_error:
 
 #endif /* CONFIG_PNP */
 
+<<<<<<< HEAD
 static void snd_sb16_free(struct snd_card *card)
 {
 	struct snd_card_sb16 *acard = card->private_data;
@@ -317,27 +362,45 @@ static void snd_sb16_free(struct snd_card *card)
 	release_and_free_resource(acard->fm_res);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PNP
 #define is_isapnp_selected(dev)		isapnp[dev]
 #else
 #define is_isapnp_selected(dev)		0
 #endif
 
+<<<<<<< HEAD
 static int snd_sb16_card_new(int dev, struct snd_card **cardp)
+=======
+static int snd_sb16_card_new(struct device *devptr, int dev,
+			     struct snd_card **cardp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_card_sb16), &card);
 	if (err < 0)
 		return err;
 	card->private_free = snd_sb16_free;
+=======
+	err = snd_devm_card_new(devptr, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_card_sb16), &card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cardp = card;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
+=======
+static int snd_sb16_probe(struct snd_card *card, int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int xirq, xdma8, xdma16;
 	struct snd_sb *chip;
@@ -354,6 +417,7 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 	xdma8 = dma8[dev];
 	xdma16 = dma16[dev];
 
+<<<<<<< HEAD
 	if ((err = snd_sbdsp_create(card,
 				    port[dev],
 				    xirq,
@@ -362,6 +426,11 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 				    xdma16,
 				    SB_HW_AUTO,
 				    &chip)) < 0)
+=======
+	err = snd_sbdsp_create(card, port[dev], xirq, snd_sb16dsp_interrupt,
+			       xdma8, xdma16, SB_HW_AUTO, &chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	acard->chip = chip;
@@ -370,10 +439,21 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 		return -ENODEV;
 	}
 	chip->mpu_port = mpu_port[dev];
+<<<<<<< HEAD
 	if (! is_isapnp_selected(dev) && (err = snd_sb16dsp_configure(chip)) < 0)
 		return err;
 
 	if ((err = snd_sb16dsp_pcm(chip, 0, &chip->pcm)) < 0)
+=======
+	if (!is_isapnp_selected(dev)) {
+		err = snd_sb16dsp_configure(chip);
+		if (err < 0)
+			return err;
+	}
+
+	err = snd_sb16dsp_pcm(chip, 0);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	strcpy(card->driver,
@@ -393,10 +473,18 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 			xdma8 >= 0 ? "&" : "", xdma16);
 
 	if (chip->mpu_port > 0 && chip->mpu_port != SNDRV_AUTO_PORT) {
+<<<<<<< HEAD
 		if ((err = snd_mpu401_uart_new(card, 0, MPU401_HW_SB,
 					       chip->mpu_port,
 					       MPU401_INFO_IRQ_HOOK, -1,
 					       &chip->rmidi)) < 0)
+=======
+		err = snd_mpu401_uart_new(card, 0, MPU401_HW_SB,
+					  chip->mpu_port,
+					  MPU401_INFO_IRQ_HOOK, -1,
+					  &chip->rmidi);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		chip->rmidi_callback = snd_mpu401_uart_interrupt;
 	}
@@ -419,12 +507,22 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 #else
 			int seqdev = 1;
 #endif
+<<<<<<< HEAD
 			if ((err = snd_opl3_hwdep_new(opl3, 0, seqdev, &synth)) < 0)
+=======
+			err = snd_opl3_hwdep_new(opl3, 0, seqdev, &synth);
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_sbmixer_new(chip)) < 0)
+=======
+	err = snd_sbmixer_new(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 #ifdef CONFIG_SND_SB16_CSP
@@ -441,8 +539,14 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 #endif
 #ifdef SNDRV_SBAWE_EMU8000
 	if (awe_port[dev] > 0) {
+<<<<<<< HEAD
 		if ((err = snd_emu8000_new(card, 1, awe_port[dev],
 					   seq_ports[dev], NULL)) < 0) {
+=======
+		err = snd_emu8000_new(card, 1, awe_port[dev],
+				      seq_ports[dev], NULL);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "fatal error - EMU-8000 synthesizer not detected at 0x%lx\n", awe_port[dev]);
 
 			return err;
@@ -457,7 +561,12 @@ static int __devinit snd_sb16_probe(struct snd_card *card, int dev)
 		(mic_agc[dev] ? 0x00 : 0x01));
 	spin_unlock_irqrestore(&chip->mixer_lock, flags);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0)
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
@@ -470,7 +579,10 @@ static int snd_sb16_suspend(struct snd_card *card, pm_message_t state)
 	struct snd_sb *chip = acard->chip;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_suspend(chip);
 	return 0;
 }
@@ -487,13 +599,21 @@ static int snd_sb16_resume(struct snd_card *card)
 }
 #endif
 
+<<<<<<< HEAD
 static int __devinit snd_sb16_isa_probe1(int dev, struct device *pdev)
+=======
+static int snd_sb16_isa_probe1(int dev, struct device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card_sb16 *acard;
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_sb16_card_new(dev, &card);
+=======
+	err = snd_sb16_card_new(pdev, dev, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -501,27 +621,43 @@ static int __devinit snd_sb16_isa_probe1(int dev, struct device *pdev)
 	/* non-PnP FM port address is hardwired with base port address */
 	fm_port[dev] = port[dev];
 	/* block the 0x388 port to avoid PnP conflicts */
+<<<<<<< HEAD
 	acard->fm_res = request_region(0x388, 4, "SoundBlaster FM");
+=======
+	acard->fm_res = devm_request_region(card->dev, 0x388, 4,
+					    "SoundBlaster FM");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SNDRV_SBAWE_EMU8000
 	/* non-PnP AWE port address is hardwired with base port address */
 	awe_port[dev] = port[dev] + 0x400;
 #endif
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, pdev);
 	if ((err = snd_sb16_probe(card, dev)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_sb16_probe(card, dev);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(pdev, card);
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_sb16_isa_match(struct device *pdev, unsigned int dev)
+=======
+static int snd_sb16_isa_match(struct device *pdev, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return enable[dev] && !is_isapnp_selected(dev);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sb16_isa_probe(struct device *pdev, unsigned int dev)
 {
 	int err;
@@ -531,18 +667,40 @@ static int __devinit snd_sb16_isa_probe(struct device *pdev, unsigned int dev)
 
 	if (irq[dev] == SNDRV_AUTO_IRQ) {
 		if ((irq[dev] = snd_legacy_find_free_irq(possible_irqs)) < 0) {
+=======
+static int snd_sb16_isa_probe(struct device *pdev, unsigned int dev)
+{
+	int err;
+	static const int possible_irqs[] = {5, 9, 10, 7, -1};
+	static const int possible_dmas8[] = {1, 3, 0, -1};
+	static const int possible_dmas16[] = {5, 6, 7, -1};
+
+	if (irq[dev] == SNDRV_AUTO_IRQ) {
+		irq[dev] = snd_legacy_find_free_irq(possible_irqs);
+		if (irq[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free IRQ\n");
 			return -EBUSY;
 		}
 	}
 	if (dma8[dev] == SNDRV_AUTO_DMA) {
+<<<<<<< HEAD
 		if ((dma8[dev] = snd_legacy_find_free_dma(possible_dmas8)) < 0) {
+=======
+		dma8[dev] = snd_legacy_find_free_dma(possible_dmas8);
+		if (dma8[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free 8-bit DMA\n");
 			return -EBUSY;
 		}
 	}
 	if (dma16[dev] == SNDRV_AUTO_DMA) {
+<<<<<<< HEAD
 		if ((dma16[dev] = snd_legacy_find_free_dma(possible_dmas16)) < 0) {
+=======
+		dma16[dev] = snd_legacy_find_free_dma(possible_dmas16);
+		if (dma16[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free 16-bit DMA\n");
 			return -EBUSY;
 		}
@@ -551,7 +709,11 @@ static int __devinit snd_sb16_isa_probe(struct device *pdev, unsigned int dev)
 	if (port[dev] != SNDRV_AUTO_PORT)
 		return snd_sb16_isa_probe1(dev, pdev);
 	else {
+<<<<<<< HEAD
 		static int possible_ports[] = {0x220, 0x240, 0x260, 0x280};
+=======
+		static const int possible_ports[] = {0x220, 0x240, 0x260, 0x280};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int i;
 		for (i = 0; i < ARRAY_SIZE(possible_ports); i++) {
 			port[dev] = possible_ports[i];
@@ -563,6 +725,7 @@ static int __devinit snd_sb16_isa_probe(struct device *pdev, unsigned int dev)
 	}
 }
 
+<<<<<<< HEAD
 static int __devexit snd_sb16_isa_remove(struct device *pdev, unsigned int dev)
 {
 	snd_card_free(dev_get_drvdata(pdev));
@@ -570,6 +733,8 @@ static int __devexit snd_sb16_isa_remove(struct device *pdev, unsigned int dev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_sb16_isa_suspend(struct device *dev, unsigned int n,
 				pm_message_t state)
@@ -592,7 +757,10 @@ static int snd_sb16_isa_resume(struct device *dev, unsigned int n)
 static struct isa_driver snd_sb16_isa_driver = {
 	.match		= snd_sb16_isa_match,
 	.probe		= snd_sb16_isa_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_sb16_isa_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_sb16_isa_suspend,
 	.resume		= snd_sb16_isa_resume,
@@ -604,8 +772,13 @@ static struct isa_driver snd_sb16_isa_driver = {
 
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static int __devinit snd_sb16_pnp_detect(struct pnp_card_link *pcard,
 					 const struct pnp_card_device_id *pid)
+=======
+static int snd_sb16_pnp_detect(struct pnp_card_link *pcard,
+			       const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -614,6 +787,7 @@ static int __devinit snd_sb16_pnp_detect(struct pnp_card_link *pcard,
 	for ( ; dev < SNDRV_CARDS; dev++) {
 		if (!enable[dev] || !isapnp[dev])
 			continue;
+<<<<<<< HEAD
 		res = snd_sb16_card_new(dev, &card);
 		if (res < 0)
 			return res;
@@ -623,6 +797,17 @@ static int __devinit snd_sb16_pnp_detect(struct pnp_card_link *pcard,
 			snd_card_free(card);
 			return res;
 		}
+=======
+		res = snd_sb16_card_new(&pcard->card->dev, dev, &card);
+		if (res < 0)
+			return res;
+		res = snd_card_sb16_pnp(dev, card->private_data, pcard, pid);
+		if (res < 0)
+			return res;
+		res = snd_sb16_probe(card, dev);
+		if (res < 0)
+			return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pnp_set_card_drvdata(pcard, card);
 		dev++;
 		return 0;
@@ -631,12 +816,15 @@ static int __devinit snd_sb16_pnp_detect(struct pnp_card_link *pcard,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_sb16_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_sb16_pnp_suspend(struct pnp_card_link *pcard, pm_message_t state)
 {
@@ -657,7 +845,10 @@ static struct pnp_card_driver sb16_pnpc_driver = {
 #endif
 	.id_table = snd_sb16_pnpids,
 	.probe = snd_sb16_pnp_detect,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_sb16_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend = snd_sb16_pnp_suspend,
 	.resume = snd_sb16_pnp_resume,

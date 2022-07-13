@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/jfs/ioctl.c
  *
@@ -11,6 +15,7 @@
 #include <linux/mount.h>
 #include <linux/time.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <asm/current.h>
 #include <asm/uaccess.h>
 
@@ -18,6 +23,20 @@
 #include "jfs_dinode.h"
 #include "jfs_inode.h"
 
+=======
+#include <linux/blkdev.h>
+#include <asm/current.h>
+#include <linux/uaccess.h>
+#include <linux/fileattr.h>
+
+#include "jfs_filsys.h"
+#include "jfs_debug.h"
+#include "jfs_incore.h"
+#include "jfs_dinode.h"
+#include "jfs_inode.h"
+#include "jfs_dmap.h"
+#include "jfs_discard.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct {
 	long jfs_flag;
@@ -51,6 +70,7 @@ static long jfs_map_ext2(unsigned long flags, int from)
 	return mapped;
 }
 
+<<<<<<< HEAD
 
 long jfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
@@ -123,10 +143,95 @@ setflags_out:
 		mnt_drop_write_file(filp);
 		return err;
 	}
+=======
+int jfs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
+{
+	struct jfs_inode_info *jfs_inode = JFS_IP(d_inode(dentry));
+	unsigned int flags = jfs_inode->mode2 & JFS_FL_USER_VISIBLE;
+
+	if (d_is_special(dentry))
+		return -ENOTTY;
+
+	fileattr_fill_flags(fa, jfs_map_ext2(flags, 0));
+
+	return 0;
+}
+
+int jfs_fileattr_set(struct mnt_idmap *idmap,
+		     struct dentry *dentry, struct fileattr *fa)
+{
+	struct inode *inode = d_inode(dentry);
+	struct jfs_inode_info *jfs_inode = JFS_IP(inode);
+	unsigned int flags;
+
+	if (d_is_special(dentry))
+		return -ENOTTY;
+
+	if (fileattr_has_fsx(fa))
+		return -EOPNOTSUPP;
+
+	flags = jfs_map_ext2(fa->flags, 1);
+	if (!S_ISDIR(inode->i_mode))
+		flags &= ~JFS_DIRSYNC_FL;
+
+	/* Is it quota file? Do not allow user to mess with it */
+	if (IS_NOQUOTA(inode))
+		return -EPERM;
+
+	flags = flags & JFS_FL_USER_MODIFIABLE;
+	flags |= jfs_inode->mode2 & ~JFS_FL_USER_MODIFIABLE;
+	jfs_inode->mode2 = flags;
+
+	jfs_set_inode_flags(inode);
+	inode_set_ctime_current(inode);
+	mark_inode_dirty(inode);
+
+	return 0;
+}
+
+long jfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	struct inode *inode = file_inode(filp);
+
+	switch (cmd) {
+	case FITRIM:
+	{
+		struct super_block *sb = inode->i_sb;
+		struct fstrim_range range;
+		s64 ret = 0;
+
+		if (!capable(CAP_SYS_ADMIN))
+			return -EPERM;
+
+		if (!bdev_max_discard_sectors(sb->s_bdev)) {
+			jfs_warn("FITRIM not supported on device");
+			return -EOPNOTSUPP;
+		}
+
+		if (copy_from_user(&range, (struct fstrim_range __user *)arg,
+		    sizeof(range)))
+			return -EFAULT;
+
+		range.minlen = max_t(unsigned int, range.minlen,
+				     bdev_discard_granularity(sb->s_bdev));
+
+		ret = jfs_ioc_trim(inode, &range);
+		if (ret < 0)
+			return ret;
+
+		if (copy_to_user((struct fstrim_range __user *)arg, &range,
+		    sizeof(range)))
+			return -EFAULT;
+
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_COMPAT
 long jfs_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
@@ -146,3 +251,5 @@ long jfs_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	return jfs_ioctl(filp, cmd, arg);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/pgtable-nommu.h
  *
  *  Copyright (C) 1995-2002 Russell King
  *  Copyright (C) 2004  Hyok S. Choi
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASMARM_PGTABLE_NOMMU_H
 #define _ASMARM_PGTABLE_NOMMU_H
@@ -24,9 +31,12 @@
 #define pgd_none(pgd)		(0)
 #define pgd_bad(pgd)		(0)
 #define pgd_clear(pgdp)
+<<<<<<< HEAD
 #define kern_addr_valid(addr)	(1)
 #define	pmd_offset(a, b)	((void *)0)
 /* FIXME */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PMD_SHIFT determines the size of the area a second-level page table can map
  * PGDIR_SHIFT determines what a third-level page table entry can map
@@ -45,6 +55,7 @@
 
 #define swapper_pg_dir ((pgd_t *) 0)
 
+<<<<<<< HEAD
 #define __swp_type(x)		(0)
 #define __swp_offset(x)		(0)
 #define __swp_entry(typ,off)	((swp_entry_t) { ((typ) | ((off) << 7)) })
@@ -68,6 +79,17 @@ static inline int pte_file(pte_t pte) { return 0; }
 #define pgprot_noncached(prot)	__pgprot(0)
 #define pgprot_writecombine(prot) __pgprot(0)
 #define pgprot_dmacoherent(prot) __pgprot(0)
+=======
+
+typedef pte_t *pte_addr_t;
+
+/*
+ * Mark the prot value as uncacheable and unbufferable.
+ */
+#define pgprot_noncached(prot)	(prot)
+#define pgprot_writecombine(prot) (prot)
+#define pgprot_device(prot)	(prot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -76,6 +98,7 @@ static inline int pte_file(pte_t pte) { return 0; }
 extern unsigned int kobjsize(const void *objp);
 
 /*
+<<<<<<< HEAD
  * No page table caches to initialise.
  */
 #define pgtable_cache_init()	do { } while (0)
@@ -83,15 +106,21 @@ extern unsigned int kobjsize(const void *objp);
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All 32bit addresses are effectively valid for vmalloc...
  * Sort of meaningless for non-VM targets.
  */
 #define	VMALLOC_START	0UL
 #define	VMALLOC_END	0xffffffffUL
 
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS      (0)
 
 #include <asm-generic/pgtable.h>
+=======
+#define FIRST_USER_ADDRESS      0UL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else 
 

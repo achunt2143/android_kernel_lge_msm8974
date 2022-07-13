@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/init.h>
@@ -6,6 +7,18 @@
 #include "cpu.h"
 
 static void __cpuinit early_init_transmeta(struct cpuinfo_x86 *c)
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/kernel.h>
+#include <linux/sched.h>
+#include <linux/sched/clock.h>
+#include <linux/mm.h>
+#include <asm/cpufeature.h>
+#include <asm/msr.h>
+#include "cpu.h"
+
+static void early_init_transmeta(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 xlvl;
 
@@ -13,11 +26,19 @@ static void __cpuinit early_init_transmeta(struct cpuinfo_x86 *c)
 	xlvl = cpuid_eax(0x80860000);
 	if ((xlvl & 0xffff0000) == 0x80860000) {
 		if (xlvl >= 0x80860001)
+<<<<<<< HEAD
 			c->x86_capability[2] = cpuid_edx(0x80860001);
 	}
 }
 
 static void __cpuinit init_transmeta(struct cpuinfo_x86 *c)
+=======
+			c->x86_capability[CPUID_8086_0001_EDX] = cpuid_edx(0x80860001);
+	}
+}
+
+static void init_transmeta(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cap_mask, uk, max, dummy;
 	unsigned int cms_rev1, cms_rev2;
@@ -34,7 +55,11 @@ static void __cpuinit init_transmeta(struct cpuinfo_x86 *c)
 	if (max >= 0x80860001) {
 		cpuid(0x80860001, &dummy, &cpu_rev, &cpu_freq, &cpu_flags);
 		if (cpu_rev != 0x02000000) {
+<<<<<<< HEAD
 			printk(KERN_INFO "CPU: Processor revision %u.%u.%u.%u, %u MHz\n",
+=======
+			pr_info("CPU: Processor revision %u.%u.%u.%u, %u MHz\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(cpu_rev >> 24) & 0xff,
 				(cpu_rev >> 16) & 0xff,
 				(cpu_rev >> 8) & 0xff,
@@ -45,10 +70,17 @@ static void __cpuinit init_transmeta(struct cpuinfo_x86 *c)
 	if (max >= 0x80860002) {
 		cpuid(0x80860002, &new_cpu_rev, &cms_rev1, &cms_rev2, &dummy);
 		if (cpu_rev == 0x02000000) {
+<<<<<<< HEAD
 			printk(KERN_INFO "CPU: Processor revision %08X, %u MHz\n",
 				new_cpu_rev, cpu_freq);
 		}
 		printk(KERN_INFO "CPU: Code Morphing Software revision %u.%u.%u-%u-%u\n",
+=======
+			pr_info("CPU: Processor revision %08X, %u MHz\n",
+				new_cpu_rev, cpu_freq);
+		}
+		pr_info("CPU: Code Morphing Software revision %u.%u.%u-%u-%u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (cms_rev1 >> 24) & 0xff,
 		       (cms_rev1 >> 16) & 0xff,
 		       (cms_rev1 >> 8) & 0xff,
@@ -77,13 +109,21 @@ static void __cpuinit init_transmeta(struct cpuinfo_x86 *c)
 		      (void *)&cpu_info[56],
 		      (void *)&cpu_info[60]);
 		cpu_info[64] = '\0';
+<<<<<<< HEAD
 		printk(KERN_INFO "CPU: %s\n", cpu_info);
+=======
+		pr_info("CPU: %s\n", cpu_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Unhide possibly hidden capability flags */
 	rdmsr(0x80860004, cap_mask, uk);
 	wrmsr(0x80860004, ~0, uk);
+<<<<<<< HEAD
 	c->x86_capability[0] = cpuid_edx(0x00000001);
+=======
+	c->x86_capability[CPUID_1_EDX] = cpuid_edx(0x00000001);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wrmsr(0x80860004, cap_mask, uk);
 
 	/* All Transmeta CPUs have a constant TSC */
@@ -98,7 +138,11 @@ static void __cpuinit init_transmeta(struct cpuinfo_x86 *c)
 #endif
 }
 
+<<<<<<< HEAD
 static const struct cpu_dev __cpuinitconst transmeta_cpu_dev = {
+=======
+static const struct cpu_dev transmeta_cpu_dev = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_vendor	= "Transmeta",
 	.c_ident	= { "GenuineTMx86", "TransmetaCPU" },
 	.c_early_init	= early_init_transmeta,

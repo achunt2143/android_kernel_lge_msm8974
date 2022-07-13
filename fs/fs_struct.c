@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/sched.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+#include <linux/export.h>
+#include <linux/sched/signal.h>
+#include <linux/sched/task.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/path.h>
 #include <linux/slab.h>
@@ -10,7 +17,11 @@
  * Replace the fs->{rootmnt,root} with {mnt,dentry}. Put the old values.
  * It can block.
  */
+<<<<<<< HEAD
 void set_fs_root(struct fs_struct *fs, struct path *path)
+=======
+void set_fs_root(struct fs_struct *fs, const struct path *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct path old_root;
 
@@ -29,7 +40,11 @@ void set_fs_root(struct fs_struct *fs, struct path *path)
  * Replace the fs->{pwdmnt,pwd} with {mnt,dentry}. Put the old values.
  * It can block.
  */
+<<<<<<< HEAD
 void set_fs_pwd(struct fs_struct *fs, struct path *path)
+=======
+void set_fs_pwd(struct fs_struct *fs, const struct path *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct path old_pwd;
 
@@ -53,14 +68,22 @@ static inline int replace_path(struct path *p, const struct path *old, const str
 	return 1;
 }
 
+<<<<<<< HEAD
 void chroot_fs_refs(struct path *old_root, struct path *new_root)
+=======
+void chroot_fs_refs(const struct path *old_root, const struct path *new_root)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *g, *p;
 	struct fs_struct *fs;
 	int count = 0;
 
 	read_lock(&tasklist_lock);
+<<<<<<< HEAD
 	do_each_thread(g, p) {
+=======
+	for_each_process_thread(g, p) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		task_lock(p);
 		fs = p->fs;
 		if (fs) {
@@ -77,7 +100,11 @@ void chroot_fs_refs(struct path *old_root, struct path *new_root)
 			spin_unlock(&fs->lock);
 		}
 		task_unlock(p);
+<<<<<<< HEAD
 	} while_each_thread(g, p);
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&tasklist_lock);
 	while (count--)
 		path_put(old_root);
@@ -115,7 +142,11 @@ struct fs_struct *copy_fs_struct(struct fs_struct *old)
 		fs->users = 1;
 		fs->in_exec = 0;
 		spin_lock_init(&fs->lock);
+<<<<<<< HEAD
 		seqcount_init(&fs->seq);
+=======
+		seqcount_spinlock_init(&fs->seq, &fs->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fs->umask = old->umask;
 
 		spin_lock(&old->lock);
@@ -127,9 +158,13 @@ struct fs_struct *copy_fs_struct(struct fs_struct *old)
 	}
 	return fs;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(copy_fs_struct);
 
 EXPORT_SYMBOL_GPL(copy_fs_struct);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int unshare_fs_struct(void)
 {
 	struct fs_struct *fs = current->fs;
@@ -163,6 +198,7 @@ EXPORT_SYMBOL(current_umask);
 struct fs_struct init_fs = {
 	.users		= 1,
 	.lock		= __SPIN_LOCK_UNLOCKED(init_fs.lock),
+<<<<<<< HEAD
 	.seq		= SEQCNT_ZERO,
 	.umask		= 0022,
 };
@@ -190,3 +226,8 @@ void daemonize_fs_struct(void)
 			free_fs_struct(fs);
 	}
 }
+=======
+	.seq		= SEQCNT_SPINLOCK_ZERO(init_fs.seq, &init_fs.lock),
+	.umask		= 0022,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

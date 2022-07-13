@@ -26,17 +26,33 @@
 
 #ifndef __NOUVEAU_CRTC_H__
 #define __NOUVEAU_CRTC_H__
+<<<<<<< HEAD
+=======
+#include <drm/drm_crtc.h>
+
+#include <nvif/head.h>
+#include <nvif/event.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nouveau_crtc {
 	struct drm_crtc base;
 
+<<<<<<< HEAD
 	int index;
+=======
+	struct nvif_head head;
+	int index;
+	struct nvif_event vblank;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t dpms_saved_fp_control;
 	uint32_t fp_users;
 	int saturation;
+<<<<<<< HEAD
 	int color_vibrance;
 	int vibrant_hue;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sharpness;
 	int last_dpms;
 
@@ -46,12 +62,19 @@ struct nouveau_crtc {
 		int cpp;
 		bool blanked;
 		uint32_t offset;
+<<<<<<< HEAD
 		uint32_t tile_flags;
+=======
+		uint32_t handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} fb;
 
 	struct {
 		struct nouveau_bo *nvbo;
+<<<<<<< HEAD
 		bool visible;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t offset;
 		void (*set_offset)(struct nouveau_crtc *, uint32_t offset);
 		void (*set_pos)(struct nouveau_crtc *, int x, int y);
@@ -60,6 +83,7 @@ struct nouveau_crtc {
 	} cursor;
 
 	struct {
+<<<<<<< HEAD
 		struct nouveau_bo *nvbo;
 		uint16_t r[256];
 		uint16_t g[256];
@@ -70,11 +94,22 @@ struct nouveau_crtc {
 	int (*set_dither)(struct nouveau_crtc *crtc, bool update);
 	int (*set_scale)(struct nouveau_crtc *crtc, bool update);
 	int (*set_color_vibrance)(struct nouveau_crtc *crtc, bool update);
+=======
+		int depth;
+	} lut;
+
+	void (*save)(struct drm_crtc *crtc);
+	void (*restore)(struct drm_crtc *crtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct nouveau_crtc *nouveau_crtc(struct drm_crtc *crtc)
 {
+<<<<<<< HEAD
 	return container_of(crtc, struct nouveau_crtc, base);
+=======
+	return crtc ? container_of(crtc, struct nouveau_crtc, base) : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct drm_crtc *to_drm_crtc(struct nouveau_crtc *crtc)
@@ -82,6 +117,7 @@ static inline struct drm_crtc *to_drm_crtc(struct nouveau_crtc *crtc)
 	return &crtc->base;
 }
 
+<<<<<<< HEAD
 int nv50_crtc_create(struct drm_device *dev, int index);
 int nv50_crtc_cursor_set(struct drm_crtc *drm_crtc, struct drm_file *file_priv,
 			 uint32_t buffer_handle, uint32_t width,
@@ -93,5 +129,8 @@ int nv50_cursor_init(struct nouveau_crtc *);
 
 struct nouveau_connector *
 nouveau_crtc_connector_get(struct nouveau_crtc *crtc);
+=======
+int nv04_cursor_init(struct nouveau_crtc *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NOUVEAU_CRTC_H__ */

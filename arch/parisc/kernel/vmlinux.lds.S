@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*    Kernel link layout for various "sections"
  *
  *    Copyright (C) 1999-2003 Matthew Wilcox <willy at parisc-linux.org>
@@ -6,6 +10,7 @@
  *    Copyright (C) 2000 Michael Ang <mang with subcarrier.org>
  *    Copyright (C) 2002 Randolph Chung <tausq with parisc-linux.org>
  *    Copyright (C) 2003 James Bottomley <jejb with parisc-linux.org>
+<<<<<<< HEAD
  *    Copyright (C) 2006 Helge Deller <deller@gmx.de>
  *
  *
@@ -24,6 +29,24 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include <asm-generic/vmlinux.lds.h>
+=======
+ *    Copyright (C) 2006-2013 Helge Deller <deller@gmx.de>
+ */
+
+/*
+ * Put page table entries (swapper_pg_dir) as the first thing in .bss. This
+ * will ensure that it has .bss alignment (PAGE_SIZE).
+ */
+#define BSS_FIRST_SECTIONS	*(.data..vm0.pmd) \
+				*(.data..vm0.pgd) \
+				*(.data..vm0.pte)
+
+#define CC_USING_PATCHABLE_FUNCTION_ENTRY
+#define RO_EXCEPTION_TABLE_ALIGN	8
+
+#include <asm-generic/vmlinux.lds.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* needed for the processor specific cache alignment size */	
 #include <asm/cache.h>
 #include <asm/page.h>
@@ -39,7 +62,20 @@ OUTPUT_FORMAT("elf64-hppa-linux")
 OUTPUT_ARCH(hppa:hppa2.0w)
 #endif
 
+<<<<<<< HEAD
 ENTRY(_stext)
+=======
+#define EXIT_TEXT_SECTIONS()	.exit.text : { EXIT_TEXT }
+#if !defined(CONFIG_64BIT) || defined(CONFIG_MLONGCALLS)
+#define MLONGCALL_KEEP(x)
+#define MLONGCALL_DISCARD(x)	x
+#else
+#define MLONGCALL_KEEP(x)	x
+#define MLONGCALL_DISCARD(x)
+#endif
+
+ENTRY(parisc_kernel_start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_64BIT
 jiffies = jiffies_64 + 4;
 #else
@@ -49,6 +85,7 @@ SECTIONS
 {
 	. = KERNEL_BINARY_TEXT_START;
 
+<<<<<<< HEAD
 	_text = .;		/* Text and read-only data */
 	.head ALIGN(16) : {
 		HEAD_TEXT
@@ -59,21 +96,68 @@ SECTIONS
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+=======
+	__init_begin = .;
+	HEAD_TEXT_SECTION
+	MLONGCALL_DISCARD(INIT_TEXT_SECTION(8))
+
+	. = ALIGN(PAGE_SIZE);
+	INIT_DATA_SECTION(PAGE_SIZE)
+	MLONGCALL_DISCARD(EXIT_TEXT_SECTIONS())
+	.exit.data :
+	{
+		EXIT_DATA
+	}
+	PERCPU_SECTION(8)
+	. = ALIGN(4);
+	.altinstructions : {
+		__alt_instructions = .;
+		*(.altinstructions)
+		__alt_instructions_end = .;
+	}
+	. = ALIGN(HUGEPAGE_SIZE);
+	__init_end = .;
+	/* freed after init ends here */
+
+	_text = .;		/* Text and read-only data */
+	_stext = .;
+	MLONGCALL_KEEP(INIT_TEXT_SECTION(8))
+	.text ALIGN(PAGE_SIZE) : {
+		TEXT_TEXT
+		LOCK_TEXT
+		SCHED_TEXT
+		KPROBES_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.text.do_softirq)
 		*(.text.sys_exit)
 		*(.text.do_sigaltstack)
 		*(.text.do_fork)
+<<<<<<< HEAD
+=======
+		*(.text.div)
+		*($$*)			/* millicode routines */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.text.*)
 		*(.fixup)
 		*(.lock.text)		/* out-of-line lock text */
 		*(.gnu.warning)
 	}
+<<<<<<< HEAD
 	/* End of text section */
 	_etext = .;
+=======
+	MLONGCALL_KEEP(EXIT_TEXT_SECTIONS())
+	. = ALIGN(PAGE_SIZE);
+	_etext = .;
+	/* End of text section */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Start of data section */
 	_sdata = .;
 
+<<<<<<< HEAD
 	RODATA
 
 	/* writeable */
@@ -85,17 +169,55 @@ SECTIONS
 	data_start = .;
 
 	/* unwind info */
+=======
+	/* Architecturally we need to keep __gp below 0x1000000 and thus
+	 * in front of RO_DATA() which stores lots of tracepoint
+	 * and ftrace symbols. */
+#ifdef CONFIG_64BIT
+	. = ALIGN(16);
+	/* Linkage tables */
+	.opd : {
+		__start_opd = .;
+		*(.opd)
+		__end_opd = .;
+	} PROVIDE (__gp = .);
+	.plt : {
+		*(.plt)
+	}
+	.dlt : {
+		*(.dlt)
+	}
+#endif
+
+	RO_DATA(PAGE_SIZE)
+
+	/* unwind info */
+	. = ALIGN(4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.PARISC.unwind : {
 		__start___unwind = .;
 		*(.PARISC.unwind)
 		__stop___unwind = .;
 	}
 
+<<<<<<< HEAD
 	EXCEPTION_TABLE(16)
 	NOTES
 
 	/* Data */
 	RW_DATA_SECTION(L1_CACHE_BYTES, PAGE_SIZE, THREAD_SIZE)
+=======
+	/* writeable */
+	/* Make sure this is page aligned so
+	 * that we can properly leave these
+	 * as writable
+	 */
+	. = ALIGN(HUGEPAGE_SIZE);
+	data_start = .;
+
+	/* Data */
+	RW_DATA(L1_CACHE_BYTES, PAGE_SIZE, PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PA-RISC locks requires 16-byte alignment */
 	. = ALIGN(16);
@@ -104,6 +226,7 @@ SECTIONS
 	}
 
 	/* End of data section */
+<<<<<<< HEAD
 	_edata = .;
 
 	/* BSS */
@@ -158,6 +281,19 @@ SECTIONS
 	_end = . ;
 
 	STABS_DEBUG
+=======
+	. = ALIGN(PAGE_SIZE);
+	_edata = .;
+
+	/* BSS */
+	BSS_SECTION(PAGE_SIZE, PAGE_SIZE, PAGE_SIZE)
+
+	. = ALIGN(HUGEPAGE_SIZE);
+	_end = . ;
+
+	STABS_DEBUG
+	ELF_DETAILS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.note 0 : { *(.note) }
 
 	/* Sections to be discarded */

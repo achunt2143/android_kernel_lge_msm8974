@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*********************************************************************
  * Author: Cavium Networks
  *
@@ -28,6 +29,18 @@
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/init.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+ *
+ * Copyright (c) 2003-2007 Cavium Networks
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/netdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <linux/string.h>
@@ -41,5 +54,9 @@
 #endif /* CONFIG_XFRM */
 
 extern const struct ethtool_ops cvm_oct_ethtool_ops;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 int cvm_oct_phy_setup_device(struct net_device *dev);

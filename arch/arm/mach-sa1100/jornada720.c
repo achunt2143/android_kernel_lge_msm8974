@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/jornada720.c
  *
@@ -6,17 +10,25 @@
  * Copyright (C) 2007 Kristoffer Ericson <Kristoffer.Ericson@gmail.com>
  * Copyright (C) 2006 Filip Zyzniewski <filip.zyzniewski@tefnet.pl>
  *  Copyright (C) 2005 Michael Gernoth <michael@gernoth.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/tty.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/machine.h>
+#include <linux/platform_data/sa11x0-serial.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/ioport.h>
 #include <linux/mtd/mtd.h>
@@ -30,7 +42,10 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include <asm/mach/serial_sa1100.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <mach/hardware.h>
 #include <mach/irqs.h>
@@ -189,6 +204,20 @@ static struct platform_device s1d13xxxfb_device = {
 	.resource	= s1d13xxxfb_resources,
 };
 
+<<<<<<< HEAD
+=======
+static struct gpiod_lookup_table jornada_pcmcia_gpiod_table = {
+	.dev_id = "1800",
+	.table = {
+		GPIO_LOOKUP("sa1111", 0, "s0-power", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("sa1111", 1, "s1-power", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("sa1111", 2, "s0-3v", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("sa1111", 3, "s1-3v", GPIO_ACTIVE_HIGH),
+		{ },
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource sa1111_resources[] = {
 	[0] = DEFINE_RES_MEM(SA1111REGSTART, SA1111REGLEN),
 	[1] = DEFINE_RES_IRQ(IRQ_GPIO1),
@@ -217,9 +246,28 @@ static struct platform_device jornada_ssp_device = {
 	.id             = -1,
 };
 
+<<<<<<< HEAD
 static struct platform_device jornada_kbd_device = {
 	.name		= "jornada720_kbd",
 	.id		= -1,
+=======
+static struct resource jornada_kbd_resources[] = {
+	DEFINE_RES_IRQ(IRQ_GPIO0),
+};
+
+static struct platform_device jornada_kbd_device = {
+	.name		= "jornada720_kbd",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(jornada_kbd_resources),
+	.resource	= jornada_kbd_resources,
+};
+
+static struct gpiod_lookup_table jornada_ts_gpiod_table = {
+	.dev_id		= "jornada_ts",
+	.table		= {
+		GPIO_LOOKUP("gpio", 9, "penup", GPIO_ACTIVE_HIGH),
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device jornada_ts_device = {
@@ -250,6 +298,12 @@ static int __init jornada720_init(void)
 		GPSR = GPIO_GPIO20;	/* restart gpio20 */
 		udelay(20);		/* give it some time to restart */
 
+<<<<<<< HEAD
+=======
+		gpiod_add_lookup_table(&jornada_ts_gpiod_table);
+		gpiod_add_lookup_table(&jornada_pcmcia_gpiod_table);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = platform_add_devices(devices, ARRAY_SIZE(devices));
 	}
 
@@ -346,8 +400,14 @@ MACHINE_START(JORNADA720, "HP Jornada 720")
 	.map_io		= jornada720_map_io,
 	.nr_irqs	= SA1100_NR_IRQS,
 	.init_irq	= sa1100_init_irq,
+<<<<<<< HEAD
 	.timer		= &sa1100_timer,
 	.init_machine	= jornada720_mach_init,
+=======
+	.init_time	= sa1100_timer_init,
+	.init_machine	= jornada720_mach_init,
+	.init_late	= sa11x0_init_late,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SA1111
 	.dma_zone_size	= SZ_1M,
 #endif

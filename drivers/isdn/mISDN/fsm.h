@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Author       Karsten Keil <kkeil@novell.com>
@@ -5,6 +9,7 @@
  * Thanks to    Jan den Ouden
  *              Fritz Elfert
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +20,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MISDN_FSM_H
@@ -55,7 +62,11 @@ struct FsmTimer {
 	void *arg;
 };
 
+<<<<<<< HEAD
 extern void mISDN_FsmNew(struct Fsm *, struct FsmNode *, int);
+=======
+extern int mISDN_FsmNew(struct Fsm *, struct FsmNode *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void mISDN_FsmFree(struct Fsm *);
 extern int mISDN_FsmEvent(struct FsmInst *, int , void *);
 extern void mISDN_FsmChangeState(struct FsmInst *, int);

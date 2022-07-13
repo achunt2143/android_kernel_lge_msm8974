@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip22-setup.c: SGI specific setup, including init of the feature struct.
  *
@@ -8,7 +12,10 @@
 #include <linux/kernel.h>
 #include <linux/kdev_t.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/sched.h>
 #include <linux/tty.h>

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * Copyright (c) 1999-2000 Cisco, Inc.
  * Copyright (c) 1999-2001 Motorola, Inc.
@@ -10,6 +14,7 @@
  *
  * This abstraction represents an SCTP endpoint.
  *
+<<<<<<< HEAD
  * The SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -33,6 +38,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -40,16 +50,22 @@
  *    Jon Grimm <jgrimm@austin.ibm.com>
  *    Daisy Chang <daisyc@us.ibm.com>
  *    Dajiang Zhang <dajiang.zhang@nokia.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/in.h>
 #include <linux/random.h>	/* get_random_bytes() */
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/ipv6.h>
 #include <net/sctp/sctp.h>
@@ -65,15 +81,21 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 						struct sock *sk,
 						gfp_t gfp)
 {
+<<<<<<< HEAD
 	struct sctp_hmac_algo_param *auth_hmacs = NULL;
 	struct sctp_chunks_param *auth_chunks = NULL;
 	struct sctp_shared_key *null_key;
 	int err;
+=======
+	struct net *net = sock_net(sk);
+	struct sctp_shared_key *null_key;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep->digest = kzalloc(SCTP_SIGNATURE_SIZE, gfp);
 	if (!ep->digest)
 		return NULL;
 
+<<<<<<< HEAD
 	if (sctp_auth_enable) {
 		/* Allocate space for HMACS and CHUNKS authentication
 		 * variables.  There are arrays that we encode directly
@@ -111,6 +133,16 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 			auth_chunks->chunks[1] = SCTP_CID_ASCONF_ACK;
 			auth_chunks->param_hdr.length =
 					htons(sizeof(sctp_paramhdr_t) + 2);
+=======
+	ep->asconf_enable = net->sctp.addip_enable;
+	ep->auth_enable = net->sctp.auth_enable;
+	if (ep->auth_enable) {
+		if (sctp_auth_init(ep, gfp))
+			goto nomem;
+		if (ep->asconf_enable) {
+			sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF);
+			sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF_ACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -119,9 +151,14 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 	ep->base.type = SCTP_EP_TYPE_SOCKET;
 
 	/* Initialize the basic object fields. */
+<<<<<<< HEAD
 	atomic_set(&ep->base.refcnt, 1);
 	ep->base.dead = 0;
 	ep->base.malloced = 1;
+=======
+	refcount_set(&ep->base.refcnt, 1);
+	ep->base.dead = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create an input queue.  */
 	sctp_inq_init(&ep->base.inqueue);
@@ -132,21 +169,29 @@ static struct sctp_endpoint *sctp_endpoint_init(struct sctp_endpoint *ep,
 	/* Initialize the bind addr area */
 	sctp_bind_addr_init(&ep->base.bind_addr, 0);
 
+<<<<<<< HEAD
 	/* Remember who we are attached to.  */
 	ep->base.sk = sk;
 	sock_hold(ep->base.sk);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create the lists of associations.  */
 	INIT_LIST_HEAD(&ep->asocs);
 
 	/* Use SCTP specific send buffer space queues.  */
+<<<<<<< HEAD
 	ep->sndbuf_policy = sctp_sndbuf_policy;
+=======
+	ep->sndbuf_policy = net->sctp.sndbuf_policy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sk->sk_data_ready = sctp_data_ready;
 	sk->sk_write_space = sctp_write_space;
 	sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
 
 	/* Get the receive buffer policy for this endpoint */
+<<<<<<< HEAD
 	ep->rcvbuf_policy = sctp_rcvbuf_policy;
 
 	/* Initialize the secret key used with cookie. */
@@ -181,6 +226,38 @@ nomem:
 	/* Free all allocations */
 	kfree(auth_hmacs);
 	kfree(auth_chunks);
+=======
+	ep->rcvbuf_policy = net->sctp.rcvbuf_policy;
+
+	/* Initialize the secret key used with cookie. */
+	get_random_bytes(ep->secret_key, sizeof(ep->secret_key));
+
+	/* SCTP-AUTH extensions*/
+	INIT_LIST_HEAD(&ep->endpoint_shared_keys);
+	null_key = sctp_auth_shkey_create(0, gfp);
+	if (!null_key)
+		goto nomem_shkey;
+
+	list_add(&null_key->key_list, &ep->endpoint_shared_keys);
+
+	/* Add the null key to the endpoint shared keys list and
+	 * set the hmcas and chunks pointers.
+	 */
+	ep->prsctp_enable = net->sctp.prsctp_enable;
+	ep->reconf_enable = net->sctp.reconf_enable;
+	ep->ecn_enable = net->sctp.ecn_enable;
+
+	/* Remember who we are attached to.  */
+	ep->base.sk = sk;
+	ep->base.net = sock_net(sk);
+	sock_hold(ep->base.sk);
+
+	return ep;
+
+nomem_shkey:
+	sctp_auth_free(ep);
+nomem:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ep->digest);
 	return NULL;
 
@@ -194,12 +271,22 @@ struct sctp_endpoint *sctp_endpoint_new(struct sock *sk, gfp_t gfp)
 	struct sctp_endpoint *ep;
 
 	/* Build a local endpoint. */
+<<<<<<< HEAD
 	ep = t_new(struct sctp_endpoint, gfp);
 	if (!ep)
 		goto fail;
 	if (!sctp_endpoint_init(ep, sk, gfp))
 		goto fail_init;
 	ep->base.malloced = 1;
+=======
+	ep = kzalloc(sizeof(*ep), gfp);
+	if (!ep)
+		goto fail;
+
+	if (!sctp_endpoint_init(ep, sk, gfp))
+		goto fail_init;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_DBG_OBJCNT_INC(ep);
 	return ep;
 
@@ -227,7 +314,11 @@ void sctp_endpoint_add_asoc(struct sctp_endpoint *ep,
 
 	/* Increment the backlog value for a TCP-style listening socket. */
 	if (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))
+<<<<<<< HEAD
 		sk->sk_ack_backlog++;
+=======
+		sk_acceptq_added(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Free the endpoint structure.  Delay cleanup until
@@ -235,9 +326,15 @@ void sctp_endpoint_add_asoc(struct sctp_endpoint *ep,
  */
 void sctp_endpoint_free(struct sctp_endpoint *ep)
 {
+<<<<<<< HEAD
 	ep->base.dead = 1;
 
 	ep->base.sk->sk_state = SCTP_SS_CLOSED;
+=======
+	ep->base.dead = true;
+
+	inet_sk_set_state(ep->base.sk, SCTP_SS_CLOSED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unlink this endpoint, so we can't find it again! */
 	sctp_unhash_endpoint(ep);
@@ -246,6 +343,7 @@ void sctp_endpoint_free(struct sctp_endpoint *ep)
 }
 
 /* Final destructor for endpoint.  */
+<<<<<<< HEAD
 static void sctp_endpoint_destroy(struct sctp_endpoint *ep)
 {
 	int i;
@@ -254,6 +352,28 @@ static void sctp_endpoint_destroy(struct sctp_endpoint *ep)
 
 	/* Free up the HMAC transform. */
 	crypto_free_hash(sctp_sk(ep->base.sk)->hmac);
+=======
+static void sctp_endpoint_destroy_rcu(struct rcu_head *head)
+{
+	struct sctp_endpoint *ep = container_of(head, struct sctp_endpoint, rcu);
+	struct sock *sk = ep->base.sk;
+
+	sctp_sk(sk)->ep = NULL;
+	sock_put(sk);
+
+	kfree(ep);
+	SCTP_DBG_OBJCNT_DEC(ep);
+}
+
+static void sctp_endpoint_destroy(struct sctp_endpoint *ep)
+{
+	struct sock *sk;
+
+	if (unlikely(!ep->base.dead)) {
+		WARN(1, "Attempt to destroy undead endpoint %p!\n", ep);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free the digest buffer */
 	kfree(ep->digest);
@@ -262,16 +382,21 @@ static void sctp_endpoint_destroy(struct sctp_endpoint *ep)
 	 * chunks and hmacs arrays that were allocated
 	 */
 	sctp_auth_destroy_keys(&ep->endpoint_shared_keys);
+<<<<<<< HEAD
 	kfree(ep->auth_hmacs_list);
 	kfree(ep->auth_chunk_list);
 
 	/* AUTH - Free any allocated HMAC transform containers */
 	sctp_auth_destroy_hmacs(ep->auth_hmacs);
+=======
+	sctp_auth_free(ep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cleanup. */
 	sctp_inq_free(&ep->base.inqueue);
 	sctp_bind_addr_free(&ep->base.bind_addr);
 
+<<<<<<< HEAD
 	for (i = 0; i < SCTP_HOW_MANY_SECRETS; ++i)
 		memset(&ep->secret_key[i], 0, SCTP_SECRET_SIZE);
 
@@ -294,6 +419,22 @@ static void sctp_endpoint_destroy(struct sctp_endpoint *ep)
 void sctp_endpoint_hold(struct sctp_endpoint *ep)
 {
 	atomic_inc(&ep->base.refcnt);
+=======
+	memset(ep->secret_key, 0, sizeof(ep->secret_key));
+
+	sk = ep->base.sk;
+	/* Remove and free the port */
+	if (sctp_sk(sk)->bind_hash)
+		sctp_put_port(sk);
+
+	call_rcu(&ep->rcu, sctp_endpoint_destroy_rcu);
+}
+
+/* Hold a reference to an endpoint. */
+int sctp_endpoint_hold(struct sctp_endpoint *ep)
+{
+	return refcount_inc_not_zero(&ep->base.refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Release a reference to an endpoint and clean up if there are
@@ -301,17 +442,34 @@ void sctp_endpoint_hold(struct sctp_endpoint *ep)
  */
 void sctp_endpoint_put(struct sctp_endpoint *ep)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&ep->base.refcnt))
+=======
+	if (refcount_dec_and_test(&ep->base.refcnt))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sctp_endpoint_destroy(ep);
 }
 
 /* Is this the endpoint we are looking for?  */
 struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
+<<<<<<< HEAD
 					       const union sctp_addr *laddr)
 {
 	struct sctp_endpoint *retval = NULL;
 
 	if (htons(ep->base.bind_addr.port) == laddr->v4.sin_port) {
+=======
+					       struct net *net,
+					       const union sctp_addr *laddr,
+					       int dif, int sdif)
+{
+	int bound_dev_if = READ_ONCE(ep->base.sk->sk_bound_dev_if);
+	struct sctp_endpoint *retval = NULL;
+
+	if (net_eq(ep->base.net, net) &&
+	    sctp_sk_bound_dev_eq(net, bound_dev_if, dif, sdif) &&
+	    (htons(ep->base.bind_addr.port) == laddr->v4.sin_port)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sctp_bind_addr_match(&ep->base.bind_addr, laddr,
 					 sctp_sk(ep->base.sk)))
 			retval = ep;
@@ -321,15 +479,23 @@ struct sctp_endpoint *sctp_endpoint_is_match(struct sctp_endpoint *ep,
 }
 
 /* Find the association that goes with this chunk.
+<<<<<<< HEAD
  * We do a linear search of the associations for this endpoint.
  * We return the matching transport address too.
  */
 static struct sctp_association *__sctp_endpoint_lookup_assoc(
+=======
+ * We lookup the transport from hashtable at first, then get association
+ * through t->assoc.
+ */
+struct sctp_association *sctp_endpoint_lookup_assoc(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct sctp_endpoint *ep,
 	const union sctp_addr *paddr,
 	struct sctp_transport **transport)
 {
 	struct sctp_association *asoc = NULL;
+<<<<<<< HEAD
 	struct sctp_association *tmp;
 	struct sctp_transport *t = NULL;
 	struct sctp_hashbucket *head;
@@ -337,6 +503,9 @@ static struct sctp_association *__sctp_endpoint_lookup_assoc(
 	struct hlist_node *node;
 	int hash;
 	int rport;
+=======
+	struct sctp_transport *t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*transport = NULL;
 
@@ -344,6 +513,7 @@ static struct sctp_association *__sctp_endpoint_lookup_assoc(
 	 * on this endpoint.
 	 */
 	if (!ep->base.bind_addr.port)
+<<<<<<< HEAD
 		goto out;
 
 	rport = ntohs(paddr->v4.sin_port);
@@ -380,16 +550,38 @@ struct sctp_association *sctp_endpoint_lookup_assoc(
 	asoc = __sctp_endpoint_lookup_assoc(ep, paddr, transport);
 	sctp_local_bh_enable();
 
+=======
+		return NULL;
+
+	rcu_read_lock();
+	t = sctp_epaddr_lookup_transport(ep, paddr);
+	if (!t)
+		goto out;
+
+	*transport = t;
+	asoc = t->asoc;
+out:
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return asoc;
 }
 
 /* Look for any peeled off association from the endpoint that matches the
  * given peer address.
  */
+<<<<<<< HEAD
 int sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
 				const union sctp_addr *paddr)
 {
 	struct sctp_sockaddr_entry *addr;
+=======
+bool sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
+				 const union sctp_addr *paddr)
+{
+	int bound_dev_if = READ_ONCE(ep->base.sk->sk_bound_dev_if);
+	struct sctp_sockaddr_entry *addr;
+	struct net *net = ep->base.net;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_bind_addr *bp;
 
 	bp = &ep->base.bind_addr;
@@ -397,11 +589,20 @@ int sctp_endpoint_is_peeled_off(struct sctp_endpoint *ep,
 	 * so the address_list can not change.
 	 */
 	list_for_each_entry(addr, &bp->address_list, list) {
+<<<<<<< HEAD
 		if (sctp_has_association(&addr->a, paddr))
 			return 1;
 	}
 
 	return 0;
+=======
+		if (sctp_has_association(net, &addr->a, paddr,
+					 bound_dev_if, bound_dev_if))
+			return true;
+	}
+
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Do delayed input processing.  This is scheduled by sctp_rcv().
@@ -414,11 +615,20 @@ static void sctp_endpoint_bh_rcv(struct work_struct *work)
 			     base.inqueue.immediate);
 	struct sctp_association *asoc;
 	struct sock *sk;
+<<<<<<< HEAD
 	struct sctp_transport *transport;
 	struct sctp_chunk *chunk;
 	struct sctp_inq *inqueue;
 	sctp_subtype_t subtype;
 	sctp_state_t state;
+=======
+	struct net *net;
+	struct sctp_transport *transport;
+	struct sctp_chunk *chunk;
+	struct sctp_inq *inqueue;
+	union sctp_subtype subtype;
+	enum sctp_state state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 	int first_time = 1;	/* is this the first time through the loop */
 
@@ -428,6 +638,10 @@ static void sctp_endpoint_bh_rcv(struct work_struct *work)
 	asoc = NULL;
 	inqueue = &ep->base.inqueue;
 	sk = ep->base.sk;
+<<<<<<< HEAD
+=======
+	net = sock_net(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (NULL != (chunk = sctp_inq_pop(inqueue))) {
 		subtype = SCTP_ST_CHUNK(chunk->chunk_hdr->type);
@@ -478,6 +692,7 @@ normal:
 		 */
 		if (asoc && sctp_chunk_is_data(chunk))
 			asoc->peer.last_data_from = chunk->transport;
+<<<<<<< HEAD
 		else
 			SCTP_INC_STATS(SCTP_MIB_INCTRLCHUNKS);
 
@@ -485,6 +700,18 @@ normal:
 			chunk->transport->last_time_heard = jiffies;
 
 		error = sctp_do_sm(SCTP_EVENT_T_CHUNK, subtype, state,
+=======
+		else {
+			SCTP_INC_STATS(ep->base.net, SCTP_MIB_INCTRLCHUNKS);
+			if (asoc)
+				asoc->stats.ictrlchunks++;
+		}
+
+		if (chunk->transport)
+			chunk->transport->last_time_heard = ktime_get();
+
+		error = sctp_do_sm(net, SCTP_EVENT_T_CHUNK, subtype, state,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ep, asoc, chunk, GFP_ATOMIC);
 
 		if (error && chunk)

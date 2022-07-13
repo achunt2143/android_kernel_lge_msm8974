@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TI DA830/OMAP L137 chip specific setup
  *
  * Author: Mark A. Greer <mgreer@mvista.com>
  *
+<<<<<<< HEAD
  * 2009 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
@@ -23,6 +28,25 @@
 #include <mach/gpio-davinci.h>
 
 #include "clock.h"
+=======
+ * 2009 (c) MontaVista Software, Inc.
+ */
+#include <linux/clk-provider.h>
+#include <linux/clk/davinci.h>
+#include <linux/gpio.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/irqchip/irq-davinci-cp-intc.h>
+
+#include <clocksource/timer-davinci.h>
+
+#include <asm/mach/map.h>
+
+#include "common.h"
+#include "cputype.h"
+#include "da8xx.h"
+#include "irqs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mux.h"
 
 /* Offsets of the 8 compare registers on the da830 */
@@ -37,6 +61,7 @@
 
 #define DA830_REF_FREQ		24000000
 
+<<<<<<< HEAD
 static struct pll_data pll0_data = {
 	.num		= 1,
 	.phys_base	= DA8XX_PLL0_BASE,
@@ -426,6 +451,8 @@ static struct clk_lookup da830_clks[] = {
 	CLK(NULL,		NULL,		NULL),
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device specific mux setup
  *
@@ -838,6 +865,7 @@ static const struct mux_config da830_pins[] = {
 #endif
 };
 
+<<<<<<< HEAD
 const short da830_emif25_pins[] __initdata = {
 	DA830_EMA_D_0, DA830_EMA_D_1, DA830_EMA_D_2, DA830_EMA_D_3,
 	DA830_EMA_D_4, DA830_EMA_D_5, DA830_EMA_D_6, DA830_EMA_D_7,
@@ -1108,6 +1136,8 @@ static u8 da830_default_priorities[DA830_N_CP_INTC_IRQ] = {
 	[IRQ_DA8XX_ARMCLKSTOPREQ]	= 7,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc da830_io_desc[] = {
 	{
 		.virtual	= IO_VIRT,
@@ -1123,8 +1153,11 @@ static struct map_desc da830_io_desc[] = {
 	},
 };
 
+<<<<<<< HEAD
 static u32 da830_psc_bases[] = { DA8XX_PSC0_BASE, DA8XX_PSC1_BASE };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Contents of JTAG ID register used to identify exact cpu type */
 static struct davinci_id da830_ids[] = {
 	{
@@ -1150,6 +1183,7 @@ static struct davinci_id da830_ids[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct davinci_timer_instance da830_timer_instance[2] = {
 	{
 		.base		= DA8XX_TIMER64P0_BASE,
@@ -1179,11 +1213,15 @@ static struct davinci_timer_info da830_timer_info = {
 };
 
 static struct davinci_soc_info davinci_soc_info_da830 = {
+=======
+static const struct davinci_soc_info davinci_soc_info_da830 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.io_desc		= da830_io_desc,
 	.io_desc_num		= ARRAY_SIZE(da830_io_desc),
 	.jtag_id_reg		= DA8XX_SYSCFG0_BASE + DA8XX_JTAG_ID_REG,
 	.ids			= da830_ids,
 	.ids_num		= ARRAY_SIZE(da830_ids),
+<<<<<<< HEAD
 	.cpu_clks		= da830_clks,
 	.psc_bases		= da830_psc_bases,
 	.psc_bases_num		= ARRAY_SIZE(da830_psc_bases),
@@ -1201,6 +1239,11 @@ static struct davinci_soc_info davinci_soc_info_da830 = {
 	.gpio_irq		= IRQ_DA8XX_GPIO0,
 	.serial_dev		= &da8xx_serial_device,
 	.emac_pdata		= &da8xx_emac_pdata,
+=======
+	.pinmux_base		= DA8XX_SYSCFG0_BASE + 0x120,
+	.pinmux_pins		= da830_pins,
+	.pinmux_pins_num	= ARRAY_SIZE(da830_pins),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init da830_init(void)

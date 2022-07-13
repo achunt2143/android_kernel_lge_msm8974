@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  *  arch/s390/kernel/cpcmd.h
  *
  *  S390 version
  *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *  S390 version
+ *    Copyright IBM Corp. 1999
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
  *               Christian Borntraeger (cborntra@de.ibm.com),
  */
@@ -12,9 +19,14 @@
 
 /*
  * the lowlevel function for cpcmd
+<<<<<<< HEAD
  * the caller of __cpcmd has to ensure that the response buffer is below 2 GB
  */
 extern int __cpcmd(const char *cmd, char *response, int rlen, int *response_code);
+=======
+ */
+int __cpcmd(const char *cmd, char *response, int rlen, int *response_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpcmd is the in-kernel interface for issuing CP commands
@@ -27,8 +39,14 @@ extern int __cpcmd(const char *cmd, char *response, int rlen, int *response_code
  * response_code: return pointer for VM's error code
  * return value: the size of the response. The caller can check if the buffer
  *		was large enough by comparing the return value and rlen
+<<<<<<< HEAD
  * NOTE: If the response buffer is not below 2 GB, cpcmd can sleep
  */
 extern int cpcmd(const char *cmd, char *response, int rlen, int *response_code);
+=======
+ * NOTE: If the response buffer is not in real storage, cpcmd can sleep
+ */
+int cpcmd(const char *cmd, char *response, int rlen, int *response_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_S390_CPCMD_H */

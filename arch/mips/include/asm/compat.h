@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_COMPAT_H
 #define _ASM_COMPAT_H
 /*
@@ -8,6 +12,7 @@
 #include <asm/page.h>
 #include <asm/ptrace.h>
 
+<<<<<<< HEAD
 #define COMPAT_USER_HZ		100
 #define COMPAT_UTS_MACHINE	"mips\0\0\0"
 
@@ -53,6 +58,30 @@ struct compat_timeval {
 	compat_time_t	tv_sec;
 	s32		tv_usec;
 };
+=======
+#define __compat_uid_t	__compat_uid_t
+typedef s32		__compat_uid_t;
+typedef s32		__compat_gid_t;
+
+typedef __compat_uid_t	__compat_uid32_t;
+typedef __compat_gid_t	__compat_gid32_t;
+#define __compat_uid32_t __compat_uid32_t
+
+#define compat_statfs		compat_statfs
+#define compat_ipc64_perm	compat_ipc64_perm
+
+#define _COMPAT_NSIG		128		/* Don't ask !$@#% ...	*/
+#define _COMPAT_NSIG_BPW	32
+typedef u32		compat_sigset_word;
+
+#define COMPAT_RLIM_INFINITY	0x7fffffffUL
+
+#include <asm-generic/compat.h>
+
+#define COMPAT_UTS_MACHINE	"mips\0\0\0"
+
+typedef u32		compat_nlink_t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct compat_stat {
 	compat_dev_t	st_dev;
@@ -66,17 +95,26 @@ struct compat_stat {
 	s32		st_pad2[2];
 	compat_off_t	st_size;
 	s32		st_pad3;
+<<<<<<< HEAD
 	compat_time_t	st_atime;
 	s32		st_atime_nsec;
 	compat_time_t	st_mtime;
 	s32		st_mtime_nsec;
 	compat_time_t	st_ctime;
+=======
+	old_time32_t	st_atime;
+	s32		st_atime_nsec;
+	old_time32_t	st_mtime;
+	s32		st_mtime_nsec;
+	old_time32_t	st_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32		st_ctime_nsec;
 	s32		st_blksize;
 	s32		st_blocks;
 	s32		st_pad4[14];
 };
 
+<<<<<<< HEAD
 struct compat_flock {
 	short		l_type;
 	short		l_whence;
@@ -99,6 +137,10 @@ struct compat_flock64 {
 	compat_loff_t	l_len;
 	compat_pid_t	l_pid;
 };
+=======
+#define __ARCH_COMPAT_FLOCK_EXTRA_SYSID		s32 l_sysid;
+#define __ARCH_COMPAT_FLOCK_PAD			s32 pad[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct compat_statfs {
 	int		f_type;
@@ -115,6 +157,7 @@ struct compat_statfs {
 	int		f_spare[5];
 };
 
+<<<<<<< HEAD
 #define COMPAT_RLIM_INFINITY	0x7fffffffUL
 
 typedef u32		compat_old_sigset_t;	/* at least 32 bits */
@@ -154,6 +197,8 @@ static inline void __user *arch_compat_alloc_user_space(long len)
 	return (void __user *) (regs->regs[29] - len);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_ipc64_perm {
 	compat_key_t key;
 	__compat_uid32_t uid;
@@ -169,16 +214,25 @@ struct compat_ipc64_perm {
 
 struct compat_semid64_ds {
 	struct compat_ipc64_perm sem_perm;
+<<<<<<< HEAD
 	compat_time_t	sem_otime;
 	compat_time_t	sem_ctime;
 	compat_ulong_t	sem_nsems;
 	compat_ulong_t	__unused1;
 	compat_ulong_t	__unused2;
+=======
+	compat_ulong_t	sem_otime;
+	compat_ulong_t	sem_ctime;
+	compat_ulong_t	sem_nsems;
+	compat_ulong_t	sem_otime_high;
+	compat_ulong_t	sem_ctime_high;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct compat_msqid64_ds {
 	struct compat_ipc64_perm msg_perm;
 #ifndef CONFIG_CPU_LITTLE_ENDIAN
+<<<<<<< HEAD
 	compat_ulong_t	__unused1;
 #endif
 	compat_time_t	msg_stime;
@@ -198,6 +252,27 @@ struct compat_msqid64_ds {
 	compat_time_t	msg_ctime;
 #ifdef CONFIG_CPU_LITTLE_ENDIAN
 	compat_ulong_t	__unused3;
+=======
+	compat_ulong_t	msg_stime_high;
+#endif
+	compat_ulong_t	msg_stime;
+#ifdef CONFIG_CPU_LITTLE_ENDIAN
+	compat_ulong_t	msg_stime_high;
+#endif
+#ifndef CONFIG_CPU_LITTLE_ENDIAN
+	compat_ulong_t	msg_rtime_high;
+#endif
+	compat_ulong_t	msg_rtime;
+#ifdef CONFIG_CPU_LITTLE_ENDIAN
+	compat_ulong_t	msg_rtime_high;
+#endif
+#ifndef CONFIG_CPU_LITTLE_ENDIAN
+	compat_ulong_t	msg_ctime_high;
+#endif
+	compat_ulong_t	msg_ctime;
+#ifdef CONFIG_CPU_LITTLE_ENDIAN
+	compat_ulong_t	msg_ctime_high;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	compat_ulong_t	msg_cbytes;
 	compat_ulong_t	msg_qnum;
@@ -211,6 +286,7 @@ struct compat_msqid64_ds {
 struct compat_shmid64_ds {
 	struct compat_ipc64_perm shm_perm;
 	compat_size_t	shm_segsz;
+<<<<<<< HEAD
 	compat_time_t	shm_atime;
 	compat_time_t	shm_dtime;
 	compat_time_t	shm_ctime;
@@ -224,6 +300,31 @@ struct compat_shmid64_ds {
 static inline int is_compat_task(void)
 {
 	return test_thread_flag(TIF_32BIT);
+=======
+	compat_ulong_t	shm_atime;
+	compat_ulong_t	shm_dtime;
+	compat_ulong_t	shm_ctime;
+	compat_pid_t	shm_cpid;
+	compat_pid_t	shm_lpid;
+	compat_ulong_t	shm_nattch;
+	compat_ushort_t	shm_atime_high;
+	compat_ushort_t	shm_dtime_high;
+	compat_ushort_t	shm_ctime_high;
+	compat_ushort_t	__unused2;
+};
+
+/* MIPS has unusual order of fields in stack_t */
+typedef struct compat_sigaltstack {
+	compat_uptr_t			ss_sp;
+	compat_size_t			ss_size;
+	int				ss_flags;
+} compat_stack_t;
+#define compat_sigaltstack compat_sigaltstack
+
+static inline int is_compat_task(void)
+{
+	return test_thread_flag(TIF_32BIT_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _ASM_COMPAT_H */

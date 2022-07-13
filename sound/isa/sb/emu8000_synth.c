@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *     and (c) 1999 Steve Ratcliffe <steve@parabola.demon.co.uk>
  *  Copyright (C) 1999-2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Emu8000 synth plug-in routine
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emu8000_local.h"
@@ -34,8 +41,14 @@ MODULE_LICENSE("GPL");
 /*
  * create a new hardware dependent device for Emu8000
  */
+<<<<<<< HEAD
 static int snd_emu8000_new_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_emu8000_probe(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu8000 *hw;
 	struct snd_emux *emu;
 
@@ -93,8 +106,14 @@ static int snd_emu8000_new_device(struct snd_seq_device *dev)
 /*
  * free all resources
  */
+<<<<<<< HEAD
 static int snd_emu8000_delete_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_emu8000_remove(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu8000 *hw;
 
 	if (dev->driver_data == NULL)
@@ -103,10 +122,15 @@ static int snd_emu8000_delete_device(struct snd_seq_device *dev)
 	hw = dev->driver_data;
 	if (hw->pcm)
 		snd_device_free(dev->card, hw->pcm);
+<<<<<<< HEAD
 	if (hw->emu)
 		snd_emux_free(hw->emu);
 	if (hw->memhdr)
 		snd_util_memhdr_free(hw->memhdr);
+=======
+	snd_emux_free(hw->emu);
+	snd_util_memhdr_free(hw->memhdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->emu = NULL;
 	hw->memhdr = NULL;
 	return 0;
@@ -116,6 +140,7 @@ static int snd_emu8000_delete_device(struct snd_seq_device *dev)
  *  INIT part
  */
 
+<<<<<<< HEAD
 static int __init alsa_emu8000_init(void)
 {
 	
@@ -134,3 +159,16 @@ static void __exit alsa_emu8000_exit(void)
 
 module_init(alsa_emu8000_init)
 module_exit(alsa_emu8000_exit)
+=======
+static struct snd_seq_driver emu8000_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_emu8000_probe,
+		.remove = snd_emu8000_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_EMU8000,
+	.argsize = sizeof(struct snd_emu8000 *),
+};
+
+module_snd_seq_driver(emu8000_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

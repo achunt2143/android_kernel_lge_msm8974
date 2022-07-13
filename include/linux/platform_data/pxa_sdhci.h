@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/platform_data/pxa_sdhci.h
  *
@@ -5,10 +9,13 @@
  *	Zhangfei Gao <zhangfei.gao@marvell.com>
  *
  * PXA Platform - SDHCI platform data definitions
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PXA_SDHCI_H_
@@ -33,11 +40,18 @@
  *	1: choose feedback clk + delay value
  *	2: choose internal clk
  * @clk_delay_enable: enable clk_delay or not, used on pxa910
+<<<<<<< HEAD
  * @ext_cd_gpio: gpio pin used for external CD line
  * @ext_cd_gpio_invert: invert values for external CD gpio line
  * @max_speed: the maximum speed supported
  * @host_caps: Standard MMC host capabilities bit field.
  * @quirks: quirks of platfrom
+=======
+ * @max_speed: the maximum speed supported
+ * @host_caps: Standard MMC host capabilities bit field.
+ * @quirks: quirks of platfrom
+ * @quirks2: quirks2 of platfrom
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pm_caps: pm_caps of platfrom
  */
 struct sdhci_pxa_platdata {
@@ -45,6 +59,7 @@ struct sdhci_pxa_platdata {
 	unsigned int	clk_delay_cycles;
 	unsigned int	clk_delay_sel;
 	bool		clk_delay_enable;
+<<<<<<< HEAD
 	unsigned int	ext_cd_gpio;
 	bool		ext_cd_gpio_invert;
 	unsigned int	max_speed;
@@ -57,4 +72,13 @@ struct sdhci_pxa {
 	u8	clk_enable;
 	u8	power_mode;
 };
+=======
+	unsigned int	max_speed;
+	u32		host_caps;
+	u32		host_caps2;
+	unsigned int	quirks;
+	unsigned int	quirks2;
+	unsigned int	pm_caps;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PXA_SDHCI_H_ */

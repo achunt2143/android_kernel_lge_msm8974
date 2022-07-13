@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ld script to make SuperH Linux kernel
  * Written by Niibe Yutaka and Paul Mundt
  */
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH64
 #define LOAD_OFFSET	PAGE_OFFSET
 OUTPUT_ARCH(sh:sh5)
@@ -10,6 +15,10 @@ OUTPUT_ARCH(sh:sh5)
 OUTPUT_ARCH(sh)
 #endif
 
+=======
+OUTPUT_ARCH(sh)
+#define RUNTIME_DISCARD_EXIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/thread_info.h>
 #include <asm/cache.h>
 #include <asm/vmlinux.lds.h>
@@ -27,6 +36,7 @@ SECTIONS
 
 	_text = .;		/* Text and read-only data */
 
+<<<<<<< HEAD
 	.empty_zero_page : AT(ADDR(.empty_zero_page) - LOAD_OFFSET) {
 		*(.empty_zero_page)
 	} = 0
@@ -35,21 +45,41 @@ SECTIONS
 		HEAD_TEXT
 		TEXT_TEXT
 		EXTRA_TEXT
+=======
+	.empty_zero_page : AT(ADDR(.empty_zero_page)) {
+		*(.empty_zero_page)
+	} = 0
+
+	.text : AT(ADDR(.text)) {
+		HEAD_TEXT
+		TEXT_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCHED_TEXT
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
+<<<<<<< HEAD
+=======
+		SOFTIRQENTRY_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.fixup)
 		*(.gnu.warning)
 		_etext = .;		/* End of text section */
 	} = 0x0009
 
 	EXCEPTION_TABLE(16)
+<<<<<<< HEAD
 	NOTES
 
 	_sdata = .;
 	RO_DATA(PAGE_SIZE)
 	RW_DATA_SECTION(L1_CACHE_BYTES, PAGE_SIZE, THREAD_SIZE)
+=======
+
+	_sdata = .;
+	RO_DATA(PAGE_SIZE)
+	RW_DATA(L1_CACHE_BYTES, PAGE_SIZE, THREAD_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_edata = .;
 
 	DWARF_EH_FRAME
@@ -60,7 +90,11 @@ SECTIONS
 	INIT_DATA_SECTION(16)
 
 	. = ALIGN(4);
+<<<<<<< HEAD
 	.machvec.init : AT(ADDR(.machvec.init) - LOAD_OFFSET) {
+=======
+	.machvec.init : AT(ADDR(.machvec.init)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__machvec_start = .;
 		*(.machvec.init)
 		__machvec_end = .;
@@ -72,17 +106,29 @@ SECTIONS
 	 * .exit.text is discarded at runtime, not link time, to deal with
 	 * references from __bug_table
 	 */
+<<<<<<< HEAD
 	.exit.text : AT(ADDR(.exit.text) - LOAD_OFFSET) { EXIT_TEXT }
 	.exit.data : AT(ADDR(.exit.data) - LOAD_OFFSET) { EXIT_DATA }
+=======
+	.exit.text : AT(ADDR(.exit.text)) { EXIT_TEXT }
+	.exit.data : AT(ADDR(.exit.data)) { EXIT_DATA }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(PAGE_SIZE);
 	__init_end = .;
 	BSS_SECTION(0, PAGE_SIZE, 4)
+<<<<<<< HEAD
 	_ebss = .;			/* uClinux MTD sucks */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_end = . ;
 
 	STABS_DEBUG
 	DWARF_DEBUG
+<<<<<<< HEAD
+=======
+	ELF_DETAILS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DISCARDS
 }

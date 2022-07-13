@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control.  MAX6690 sensor.
  *
  * Copyright (C) 2005 Paul Mackerras, IBM Corp. <paulus@samba.org>
+<<<<<<< HEAD
  *
  * Use and redistribute under the terms of the GNU GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -11,12 +18,20 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pmac_low_i2c.h>
 
 #include "windfarm.h"
 
+<<<<<<< HEAD
 #define VERSION "0.2"
+=======
+#define VERSION "1.0"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This currently only exports the external temperature sensor,
    since that's all the control loops need. */
@@ -55,18 +70,50 @@ static void wf_max6690_release(struct wf_sensor *sr)
 	kfree(max);
 }
 
+<<<<<<< HEAD
 static struct wf_sensor_ops wf_max6690_ops = {
+=======
+static const struct wf_sensor_ops wf_max6690_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= wf_max6690_get,
 	.release	= wf_max6690_release,
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int wf_max6690_probe(struct i2c_client *client,
 			    const struct i2c_device_id *id)
 {
 	struct wf_6690_sensor *max;
 	int rc;
 
+=======
+static int wf_max6690_probe(struct i2c_client *client)
+{
+	const char *name, *loc;
+	struct wf_6690_sensor *max;
+	int rc;
+
+	loc = of_get_property(client->dev.of_node, "hwsensor-location", NULL);
+	if (!loc) {
+		dev_warn(&client->dev, "Missing hwsensor-location property!\n");
+		return -ENXIO;
+	}
+
+	/*
+	 * We only expose the external temperature register for
+	 * now as this is all we need for our control loops
+	 */
+	if (!strcmp(loc, "BACKSIDE") || !strcmp(loc, "SYS CTRLR AMBIENT"))
+		name = "backside-temp";
+	else if (!strcmp(loc, "NB Ambient"))
+		name = "north-bridge-temp";
+	else if (!strcmp(loc, "GPU Ambient"))
+		name = "gpu-temp";
+	else
+		return -ENXIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max = kzalloc(sizeof(struct wf_6690_sensor), GFP_KERNEL);
 	if (max == NULL) {
 		printk(KERN_ERR "windfarm: Couldn't create MAX6690 sensor: "
@@ -75,11 +122,16 @@ static int wf_max6690_probe(struct i2c_client *client,
 	}
 
 	max->i2c = client;
+<<<<<<< HEAD
 	max->sens.name = client->dev.platform_data;
+=======
+	max->sens.name = name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max->sens.ops = &wf_max6690_ops;
 	i2c_set_clientdata(client, max);
 
 	rc = wf_register_sensor(&max->sens);
+<<<<<<< HEAD
 	if (rc) {
 		kfree(max);
 	}
@@ -160,11 +212,20 @@ static int wf_max6690_attach(struct i2c_adapter *adapter)
 }
 
 static int wf_max6690_remove(struct i2c_client *client)
+=======
+	if (rc)
+		kfree(max);
+	return rc;
+}
+
+static void wf_max6690_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wf_6690_sensor *max = i2c_get_clientdata(client);
 
 	max->i2c = NULL;
 	wf_unregister_sensor(&max->sens);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -173,17 +234,38 @@ static const struct i2c_device_id wf_max6690_id[] = {
 	{ "wf_max6690", 0 },
 	{ }
 };
+=======
+}
+
+static const struct i2c_device_id wf_max6690_id[] = {
+	{ "MAC,max6690", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, wf_max6690_id);
+
+static const struct of_device_id wf_max6690_of_id[] = {
+	{ .compatible = "max6690", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, wf_max6690_of_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver wf_max6690_driver = {
 	.driver = {
 		.name		= "wf_max6690",
+<<<<<<< HEAD
 	},
 	.attach_adapter	= wf_max6690_attach,
+=======
+		.of_match_table = wf_max6690_of_id,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= wf_max6690_probe,
 	.remove		= wf_max6690_remove,
 	.id_table	= wf_max6690_id,
 };
 
+<<<<<<< HEAD
 static int __init wf_max6690_sensor_init(void)
 {
 	/* Don't register on old machines that use therm_pm72 for now */
@@ -201,6 +283,9 @@ static void __exit wf_max6690_sensor_exit(void)
 
 module_init(wf_max6690_sensor_init);
 module_exit(wf_max6690_sensor_exit);
+=======
+module_i2c_driver(wf_max6690_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Paul Mackerras <paulus@samba.org>");
 MODULE_DESCRIPTION("MAX6690 sensor objects for PowerMac thermal control");

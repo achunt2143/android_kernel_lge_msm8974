@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 *  Digi AccelePort USB-4 and USB-2 Serial Converters
 *
 *  Copyright 2000 by Digi International
 *
+<<<<<<< HEAD
 *  This program is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
 *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *  Shamelessly based on Brian Warner's keyspan_pda.c and Greg Kroah-Hartman's
 *  usb-serial driver.
 *
@@ -17,25 +24,38 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
 #include <linux/tty_flip.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
 #include <linux/uaccess.h>
 #include <linux/usb.h>
 #include <linux/wait.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/usb.h>
+#include <linux/wait.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb/serial.h>
 
 /* Defines */
 
+<<<<<<< HEAD
 /*
  * Version Information
  */
 #define DRIVER_VERSION "v1.80.1.2"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Peter Berger <pberger@brimson.com>, Al Borchers <borchers@steinerpoint.com>"
 #define DRIVER_DESC "Digi AccelePort USB-2/USB-4 Serial Converter driver"
 
@@ -200,22 +220,32 @@ struct digi_port {
 	unsigned char dp_out_buf[DIGI_OUT_BUF_SIZE];
 	int dp_write_urb_in_use;
 	unsigned int dp_modem_signals;
+<<<<<<< HEAD
 	wait_queue_head_t dp_modem_change_wait;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dp_transmit_idle;
 	wait_queue_head_t dp_transmit_idle_wait;
 	int dp_throttled;
 	int dp_throttle_restart;
 	wait_queue_head_t dp_flush_wait;
 	wait_queue_head_t dp_close_wait;	/* wait queue for close */
+<<<<<<< HEAD
 	struct work_struct dp_wakeup_work;
+=======
+	wait_queue_head_t write_wait;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_serial_port *dp_port;
 };
 
 
 /* Local Function Declarations */
 
+<<<<<<< HEAD
 static void digi_wakeup_write(struct usb_serial_port *port);
 static void digi_wakeup_write_lock(struct work_struct *work);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int digi_write_oob_command(struct usb_serial_port *port,
 	unsigned char *buf, int count, int interruptible);
 static int digi_write_inb_command(struct usb_serial_port *port,
@@ -227,16 +257,27 @@ static int digi_transmit_idle(struct usb_serial_port *port,
 static void digi_rx_throttle(struct tty_struct *tty);
 static void digi_rx_unthrottle(struct tty_struct *tty);
 static void digi_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 		struct usb_serial_port *port, struct ktermios *old_termios);
 static void digi_break_ctl(struct tty_struct *tty, int break_state);
+=======
+			     struct usb_serial_port *port,
+			     const struct ktermios *old_termios);
+static int digi_break_ctl(struct tty_struct *tty, int break_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int digi_tiocmget(struct tty_struct *tty);
 static int digi_tiocmset(struct tty_struct *tty, unsigned int set,
 		unsigned int clear);
 static int digi_write(struct tty_struct *tty, struct usb_serial_port *port,
 		const unsigned char *buf, int count);
 static void digi_write_bulk_callback(struct urb *urb);
+<<<<<<< HEAD
 static int digi_write_room(struct tty_struct *tty);
 static int digi_chars_in_buffer(struct tty_struct *tty);
+=======
+static unsigned int digi_write_room(struct tty_struct *tty);
+static unsigned int digi_chars_in_buffer(struct tty_struct *tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int digi_open(struct tty_struct *tty, struct usb_serial_port *port);
 static void digi_close(struct usb_serial_port *port);
 static void digi_dtr_rts(struct usb_serial_port *port, int on);
@@ -244,15 +285,23 @@ static int digi_startup_device(struct usb_serial *serial);
 static int digi_startup(struct usb_serial *serial);
 static void digi_disconnect(struct usb_serial *serial);
 static void digi_release(struct usb_serial *serial);
+<<<<<<< HEAD
+=======
+static int digi_port_probe(struct usb_serial_port *port);
+static void digi_port_remove(struct usb_serial_port *port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void digi_read_bulk_callback(struct urb *urb);
 static int digi_read_inb_callback(struct urb *urb);
 static int digi_read_oob_callback(struct urb *urb);
 
 
+<<<<<<< HEAD
 /* Statics */
 
 static bool debug;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(DIGI_VENDOR_ID, DIGI_2_ID) },
 	{ USB_DEVICE(DIGI_VENDOR_ID, DIGI_4_ID) },
@@ -271,6 +320,7 @@ static const struct usb_device_id id_table_4[] = {
 
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
+<<<<<<< HEAD
 static struct usb_driver digi_driver = {
 	.name =		"digi_acceleport",
 	.probe =	usb_serial_probe,
@@ -279,6 +329,8 @@ static struct usb_driver digi_driver = {
 };
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* device info needed for the Digi serial converter */
 
 static struct usb_serial_driver digi_acceleport_2_device = {
@@ -289,6 +341,11 @@ static struct usb_serial_driver digi_acceleport_2_device = {
 	.description =			"Digi 2 port USB adapter",
 	.id_table =			id_table_2,
 	.num_ports =			3,
+<<<<<<< HEAD
+=======
+	.num_bulk_in =			4,
+	.num_bulk_out =			4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =				digi_open,
 	.close =			digi_close,
 	.dtr_rts =			digi_dtr_rts,
@@ -306,6 +363,11 @@ static struct usb_serial_driver digi_acceleport_2_device = {
 	.attach =			digi_startup,
 	.disconnect =			digi_disconnect,
 	.release =			digi_release,
+<<<<<<< HEAD
+=======
+	.port_probe =			digi_port_probe,
+	.port_remove =			digi_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver digi_acceleport_4_device = {
@@ -316,6 +378,11 @@ static struct usb_serial_driver digi_acceleport_4_device = {
 	.description =			"Digi 4 port USB adapter",
 	.id_table =			id_table_4,
 	.num_ports =			4,
+<<<<<<< HEAD
+=======
+	.num_bulk_in =			5,
+	.num_bulk_out =			5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =				digi_open,
 	.close =			digi_close,
 	.write =			digi_write,
@@ -332,6 +399,11 @@ static struct usb_serial_driver digi_acceleport_4_device = {
 	.attach =			digi_startup,
 	.disconnect =			digi_disconnect,
 	.release =			digi_release,
+<<<<<<< HEAD
+=======
+	.port_probe =			digi_port_probe,
+	.port_remove =			digi_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
@@ -368,6 +440,7 @@ __releases(lock)
 	return timeout;
 }
 
+<<<<<<< HEAD
 
 /*
  *  Digi Wakeup Write
@@ -398,6 +471,8 @@ static void digi_wakeup_write(struct usb_serial_port *port)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Digi Write OOB Command
  *
@@ -412,20 +487,35 @@ static void digi_wakeup_write(struct usb_serial_port *port)
 static int digi_write_oob_command(struct usb_serial_port *port,
 	unsigned char *buf, int count, int interruptible)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	int len;
 	struct usb_serial_port *oob_port = (struct usb_serial_port *)((struct digi_serial *)(usb_get_serial_data(port->serial)))->ds_oob_port;
 	struct digi_port *oob_priv = usb_get_serial_port_data(oob_port);
+<<<<<<< HEAD
 	unsigned long flags = 0;
 
 	dbg("digi_write_oob_command: TOP: port=%d, count=%d", oob_priv->dp_port_num, count);
+=======
+	unsigned long flags;
+
+	dev_dbg(&port->dev,
+		"digi_write_oob_command: TOP: port=%d, count=%d\n",
+		oob_priv->dp_port_num, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&oob_priv->dp_port_lock, flags);
 	while (count > 0) {
 		while (oob_priv->dp_write_urb_in_use) {
 			cond_wait_interruptible_timeout_irqrestore(
+<<<<<<< HEAD
 				&oob_port->write_wait, DIGI_RETRY_TIMEOUT,
+=======
+				&oob_priv->write_wait, DIGI_RETRY_TIMEOUT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&oob_priv->dp_port_lock, flags);
 			if (interruptible && signal_pending(current))
 				return -EINTR;
@@ -473,9 +563,15 @@ static int digi_write_inb_command(struct usb_serial_port *port,
 	int len;
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	unsigned char *data = port->write_urb->transfer_buffer;
+<<<<<<< HEAD
 	unsigned long flags = 0;
 
 	dbg("digi_write_inb_command: TOP: port=%d, count=%d",
+=======
+	unsigned long flags;
+
+	dev_dbg(&port->dev, "digi_write_inb_command: TOP: port=%d, count=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->dp_port_num, count);
 
 	if (timeout)
@@ -488,7 +584,11 @@ static int digi_write_inb_command(struct usb_serial_port *port,
 		while (priv->dp_write_urb_in_use &&
 		       time_before(jiffies, timeout)) {
 			cond_wait_interruptible_timeout_irqrestore(
+<<<<<<< HEAD
 				&port->write_wait, DIGI_RETRY_TIMEOUT,
+=======
+				&priv->write_wait, DIGI_RETRY_TIMEOUT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&priv->dp_port_lock, flags);
 			if (signal_pending(current))
 				return -EINTR;
@@ -554,10 +654,17 @@ static int digi_set_modem_signals(struct usb_serial_port *port,
 	struct usb_serial_port *oob_port = (struct usb_serial_port *) ((struct digi_serial *)(usb_get_serial_data(port->serial)))->ds_oob_port;
 	struct digi_port *oob_priv = usb_get_serial_port_data(oob_port);
 	unsigned char *data = oob_port->write_urb->transfer_buffer;
+<<<<<<< HEAD
 	unsigned long flags = 0;
 
 
 	dbg("digi_set_modem_signals: TOP: port=%d, modem_signals=0x%x",
+=======
+	unsigned long flags;
+
+	dev_dbg(&port->dev,
+		"digi_set_modem_signals: TOP: port=%d, modem_signals=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port_priv->dp_port_num, modem_signals);
 
 	spin_lock_irqsave(&oob_priv->dp_port_lock, flags);
@@ -566,7 +673,11 @@ static int digi_set_modem_signals(struct usb_serial_port *port,
 	while (oob_priv->dp_write_urb_in_use) {
 		spin_unlock(&port_priv->dp_port_lock);
 		cond_wait_interruptible_timeout_irqrestore(
+<<<<<<< HEAD
 			&oob_port->write_wait, DIGI_RETRY_TIMEOUT,
+=======
+			&oob_priv->write_wait, DIGI_RETRY_TIMEOUT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&oob_priv->dp_port_lock, flags);
 		if (interruptible && signal_pending(current))
 			return -EINTR;
@@ -589,9 +700,15 @@ static int digi_set_modem_signals(struct usb_serial_port *port,
 	ret = usb_submit_urb(oob_port->write_urb, GFP_ATOMIC);
 	if (ret == 0) {
 		oob_priv->dp_write_urb_in_use = 1;
+<<<<<<< HEAD
 		port_priv->dp_modem_signals =
 			(port_priv->dp_modem_signals&~(TIOCM_DTR|TIOCM_RTS))
 			| (modem_signals&(TIOCM_DTR|TIOCM_RTS));
+=======
+		port_priv->dp_modem_signals &= ~(TIOCM_DTR | TIOCM_RTS);
+		port_priv->dp_modem_signals |=
+				modem_signals & (TIOCM_DTR | TIOCM_RTS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&port_priv->dp_port_lock);
 	spin_unlock_irqrestore(&oob_priv->dp_port_lock, flags);
@@ -619,7 +736,11 @@ static int digi_transmit_idle(struct usb_serial_port *port,
 	int ret;
 	unsigned char buf[2];
 	struct digi_port *priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	unsigned long flags = 0;
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 	priv->dp_transmit_idle = 0;
@@ -657,9 +778,12 @@ static void digi_rx_throttle(struct tty_struct *tty)
 	struct usb_serial_port *port = tty->driver_data;
 	struct digi_port *priv = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 
 	dbg("digi_rx_throttle: TOP: port=%d", priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* stop receiving characters by not resubmitting the read urb */
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 	priv->dp_throttled = 1;
@@ -675,8 +799,11 @@ static void digi_rx_unthrottle(struct tty_struct *tty)
 	struct usb_serial_port *port = tty->driver_data;
 	struct digi_port *priv = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	dbg("digi_rx_unthrottle: TOP: port=%d", priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 
 	/* restart read chain */
@@ -697,11 +824,21 @@ static void digi_rx_unthrottle(struct tty_struct *tty)
 
 
 static void digi_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 		struct usb_serial_port *port, struct ktermios *old_termios)
 {
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	unsigned int iflag = tty->termios->c_iflag;
 	unsigned int cflag = tty->termios->c_cflag;
+=======
+			     struct usb_serial_port *port,
+			     const struct ktermios *old_termios)
+{
+	struct digi_port *priv = usb_get_serial_port_data(port);
+	struct device *dev = &port->dev;
+	unsigned int iflag = tty->termios.c_iflag;
+	unsigned int cflag = tty->termios.c_cflag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int old_iflag = old_termios->c_iflag;
 	unsigned int old_cflag = old_termios->c_cflag;
 	unsigned char buf[32];
@@ -710,7 +847,13 @@ static void digi_set_termios(struct tty_struct *tty,
 	int i = 0;
 	speed_t baud;
 
+<<<<<<< HEAD
 	dbg("digi_set_termios: TOP: port=%d, iflag=0x%x, old_iflag=0x%x, cflag=0x%x, old_cflag=0x%x", priv->dp_port_num, iflag, old_iflag, cflag, old_cflag);
+=======
+	dev_dbg(dev,
+		"digi_set_termios: TOP: port=%d, iflag=0x%x, old_iflag=0x%x, cflag=0x%x, old_cflag=0x%x\n",
+		priv->dp_port_num, iflag, old_iflag, cflag, old_cflag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set baud rate */
 	baud = tty_get_baud_rate(tty);
@@ -718,12 +861,20 @@ static void digi_set_termios(struct tty_struct *tty,
 		arg = -1;
 
 		/* reassert DTR and (maybe) RTS on transition from B0 */
+<<<<<<< HEAD
 		if ((old_cflag&CBAUD) == B0) {
 			/* don't set RTS if using hardware flow control */
 			/* and throttling input */
 			modem_signals = TIOCM_DTR;
 			if (!(tty->termios->c_cflag & CRTSCTS) ||
 			    !test_bit(TTY_THROTTLED, &tty->flags))
+=======
+		if ((old_cflag & CBAUD) == B0) {
+			/* don't set RTS if using hardware flow control */
+			/* and throttling input */
+			modem_signals = TIOCM_DTR;
+			if (!C_CRTSCTS(tty) || !tty_throttled(tty))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				modem_signals |= TIOCM_RTS;
 			digi_set_modem_signals(port, modem_signals, 1);
 		}
@@ -761,11 +912,19 @@ static void digi_set_termios(struct tty_struct *tty,
 		}
 	}
 	/* set parity */
+<<<<<<< HEAD
 	tty->termios->c_cflag &= ~CMSPAR;
 
 	if ((cflag&(PARENB|PARODD)) != (old_cflag&(PARENB|PARODD))) {
 		if (cflag&PARENB) {
 			if (cflag&PARODD)
+=======
+	tty->termios.c_cflag &= ~CMSPAR;
+
+	if ((cflag & (PARENB | PARODD)) != (old_cflag & (PARENB | PARODD))) {
+		if (cflag & PARENB) {
+			if (cflag & PARODD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				arg = DIGI_PARITY_ODD;
 			else
 				arg = DIGI_PARITY_EVEN;
@@ -778,16 +937,28 @@ static void digi_set_termios(struct tty_struct *tty,
 		buf[i++] = 0;
 	}
 	/* set word size */
+<<<<<<< HEAD
 	if ((cflag&CSIZE) != (old_cflag&CSIZE)) {
 		arg = -1;
 		switch (cflag&CSIZE) {
+=======
+	if ((cflag & CSIZE) != (old_cflag & CSIZE)) {
+		arg = -1;
+		switch (cflag & CSIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CS5: arg = DIGI_WORD_SIZE_5; break;
 		case CS6: arg = DIGI_WORD_SIZE_6; break;
 		case CS7: arg = DIGI_WORD_SIZE_7; break;
 		case CS8: arg = DIGI_WORD_SIZE_8; break;
 		default:
+<<<<<<< HEAD
 			dbg("digi_set_termios: can't handle word size %d",
 				(cflag&CSIZE));
+=======
+			dev_dbg(dev,
+				"digi_set_termios: can't handle word size %d\n",
+				cflag & CSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -801,9 +972,15 @@ static void digi_set_termios(struct tty_struct *tty,
 	}
 
 	/* set stop bits */
+<<<<<<< HEAD
 	if ((cflag&CSTOPB) != (old_cflag&CSTOPB)) {
 
 		if ((cflag&CSTOPB))
+=======
+	if ((cflag & CSTOPB) != (old_cflag & CSTOPB)) {
+
+		if ((cflag & CSTOPB))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			arg = DIGI_STOP_BITS_2;
 		else
 			arg = DIGI_STOP_BITS_1;
@@ -816,15 +993,26 @@ static void digi_set_termios(struct tty_struct *tty,
 	}
 
 	/* set input flow control */
+<<<<<<< HEAD
 	if ((iflag&IXOFF) != (old_iflag&IXOFF)
 	    || (cflag&CRTSCTS) != (old_cflag&CRTSCTS)) {
 		arg = 0;
 		if (iflag&IXOFF)
+=======
+	if ((iflag & IXOFF) != (old_iflag & IXOFF) ||
+			(cflag & CRTSCTS) != (old_cflag & CRTSCTS)) {
+		arg = 0;
+		if (iflag & IXOFF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			arg |= DIGI_INPUT_FLOW_CONTROL_XON_XOFF;
 		else
 			arg &= ~DIGI_INPUT_FLOW_CONTROL_XON_XOFF;
 
+<<<<<<< HEAD
 		if (cflag&CRTSCTS) {
+=======
+		if (cflag & CRTSCTS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			arg |= DIGI_INPUT_FLOW_CONTROL_RTS;
 
 			/* On USB-4 it is necessary to assert RTS prior */
@@ -844,20 +1032,32 @@ static void digi_set_termios(struct tty_struct *tty,
 	}
 
 	/* set output flow control */
+<<<<<<< HEAD
 	if ((iflag & IXON) != (old_iflag & IXON)
 	    || (cflag & CRTSCTS) != (old_cflag & CRTSCTS)) {
+=======
+	if ((iflag & IXON) != (old_iflag & IXON) ||
+			(cflag & CRTSCTS) != (old_cflag & CRTSCTS)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		arg = 0;
 		if (iflag & IXON)
 			arg |= DIGI_OUTPUT_FLOW_CONTROL_XON_XOFF;
 		else
 			arg &= ~DIGI_OUTPUT_FLOW_CONTROL_XON_XOFF;
 
+<<<<<<< HEAD
 		if (cflag & CRTSCTS) {
 			arg |= DIGI_OUTPUT_FLOW_CONTROL_CTS;
 		} else {
 			arg &= ~DIGI_OUTPUT_FLOW_CONTROL_CTS;
 			tty->hw_stopped = 0;
 		}
+=======
+		if (cflag & CRTSCTS)
+			arg |= DIGI_OUTPUT_FLOW_CONTROL_CTS;
+		else
+			arg &= ~DIGI_OUTPUT_FLOW_CONTROL_CTS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		buf[i++] = DIGI_CMD_SET_OUTPUT_FLOW_CONTROL;
 		buf[i++] = priv->dp_port_num;
@@ -879,12 +1079,20 @@ static void digi_set_termios(struct tty_struct *tty,
 	}
 	ret = digi_write_oob_command(port, buf, i, 1);
 	if (ret != 0)
+<<<<<<< HEAD
 		dbg("digi_set_termios: write oob failed, ret=%d", ret);
+=======
+		dev_dbg(dev, "digi_set_termios: write oob failed, ret=%d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty_encode_baud_rate(tty, baud, baud);
 }
 
 
+<<<<<<< HEAD
 static void digi_break_ctl(struct tty_struct *tty, int break_state)
+=======
+static int digi_break_ctl(struct tty_struct *tty, int break_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	unsigned char buf[4];
@@ -893,7 +1101,12 @@ static void digi_break_ctl(struct tty_struct *tty, int break_state)
 	buf[1] = 2;				/* length */
 	buf[2] = break_state ? 1 : 0;
 	buf[3] = 0;				/* pad */
+<<<<<<< HEAD
 	digi_write_inb_command(port, buf, 4, 0);
+=======
+
+	return digi_write_inb_command(port, buf, 4, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -904,8 +1117,11 @@ static int digi_tiocmget(struct tty_struct *tty)
 	unsigned int val;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%s: TOP: port=%d", __func__, priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 	val = priv->dp_modem_signals;
 	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
@@ -921,8 +1137,11 @@ static int digi_tiocmset(struct tty_struct *tty,
 	unsigned int val;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%s: TOP: port=%d", __func__, priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 	val = (priv->dp_modem_signals & ~clear) | set;
 	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
@@ -937,10 +1156,17 @@ static int digi_write(struct tty_struct *tty, struct usb_serial_port *port,
 	int ret, data_len, new_len;
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	unsigned char *data = port->write_urb->transfer_buffer;
+<<<<<<< HEAD
 	unsigned long flags = 0;
 
 	dbg("digi_write: TOP: port=%d, count=%d, in_interrupt=%ld",
 		priv->dp_port_num, count, in_interrupt());
+=======
+	unsigned long flags;
+
+	dev_dbg(&port->dev, "digi_write: TOP: port=%d, count=%d\n",
+		priv->dp_port_num, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy user data (which can sleep) before getting spin lock */
 	count = min(count, port->bulk_out_size-2);
@@ -998,7 +1224,11 @@ static int digi_write(struct tty_struct *tty, struct usb_serial_port *port,
 		dev_err_console(port,
 			"%s: usb_submit_urb failed, ret=%d, port=%d\n",
 			__func__, ret, priv->dp_port_num);
+<<<<<<< HEAD
 	dbg("digi_write: returning %d", ret);
+=======
+	dev_dbg(&port->dev, "digi_write: returning %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 }
@@ -1010,10 +1240,17 @@ static void digi_write_bulk_callback(struct urb *urb)
 	struct usb_serial *serial;
 	struct digi_port *priv;
 	struct digi_serial *serial_priv;
+<<<<<<< HEAD
 	int ret = 0;
 	int status = urb->status;
 
 	dbg("digi_write_bulk_callback: TOP, status=%d", status);
+=======
+	unsigned long flags;
+	int ret = 0;
+	int status = urb->status;
+	bool wakeup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* port and serial sanity check */
 	if (port == NULL || (priv = usb_get_serial_port_data(port)) == NULL) {
@@ -1031,16 +1268,29 @@ static void digi_write_bulk_callback(struct urb *urb)
 
 	/* handle oob callback */
 	if (priv->dp_port_num == serial_priv->ds_oob_port_num) {
+<<<<<<< HEAD
 		dbg("digi_write_bulk_callback: oob callback");
 		spin_lock(&priv->dp_port_lock);
 		priv->dp_write_urb_in_use = 0;
 		wake_up_interruptible(&port->write_wait);
 		spin_unlock(&priv->dp_port_lock);
+=======
+		dev_dbg(&port->dev, "digi_write_bulk_callback: oob callback\n");
+		spin_lock_irqsave(&priv->dp_port_lock, flags);
+		priv->dp_write_urb_in_use = 0;
+		wake_up_interruptible(&priv->write_wait);
+		spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* try to send any buffered data on this port */
+<<<<<<< HEAD
 	spin_lock(&priv->dp_port_lock);
+=======
+	wakeup = true;
+	spin_lock_irqsave(&priv->dp_port_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->dp_write_urb_in_use = 0;
 	if (priv->dp_out_buf_len > 0) {
 		*((unsigned char *)(port->write_urb->transfer_buffer))
@@ -1055,6 +1305,7 @@ static void digi_write_bulk_callback(struct urb *urb)
 		if (ret == 0) {
 			priv->dp_write_urb_in_use = 1;
 			priv->dp_out_buf_len = 0;
+<<<<<<< HEAD
 		}
 	}
 	/* wake up processes sleeping on writes immediately */
@@ -1064,10 +1315,18 @@ static void digi_write_bulk_callback(struct urb *urb)
 	schedule_work(&priv->dp_wakeup_work);
 
 	spin_unlock(&priv->dp_port_lock);
+=======
+			wakeup = false;
+		}
+	}
+	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret && ret != -EPERM)
 		dev_err_console(port,
 			"%s: usb_submit_urb failed, ret=%d, port=%d\n",
 			__func__, ret, priv->dp_port_num);
+<<<<<<< HEAD
 }
 
 static int digi_write_room(struct tty_struct *tty)
@@ -1076,6 +1335,19 @@ static int digi_write_room(struct tty_struct *tty)
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	int room;
 	unsigned long flags = 0;
+=======
+
+	if (wakeup)
+		tty_port_tty_wakeup(&port->port);
+}
+
+static unsigned int digi_write_room(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct digi_port *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	unsigned int room;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->dp_port_lock, flags);
 
@@ -1085,11 +1357,16 @@ static int digi_write_room(struct tty_struct *tty)
 		room = port->bulk_out_size - 2 - priv->dp_out_buf_len;
 
 	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+<<<<<<< HEAD
 	dbg("digi_write_room: port=%d, room=%d", priv->dp_port_num, room);
+=======
+	dev_dbg(&port->dev, "digi_write_room: port=%d, room=%u\n", priv->dp_port_num, room);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return room;
 
 }
 
+<<<<<<< HEAD
 static int digi_chars_in_buffer(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -1106,12 +1383,35 @@ static int digi_chars_in_buffer(struct tty_struct *tty)
 		return priv->dp_out_buf_len;
 	}
 
+=======
+static unsigned int digi_chars_in_buffer(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct digi_port *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	unsigned int chars;
+
+	spin_lock_irqsave(&priv->dp_port_lock, flags);
+	if (priv->dp_write_urb_in_use)
+		chars = port->bulk_out_size - 2;
+	else
+		chars = priv->dp_out_buf_len;
+	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+
+	dev_dbg(&port->dev, "%s: port=%d, chars=%d\n", __func__,
+			priv->dp_port_num, chars);
+	return chars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void digi_dtr_rts(struct usb_serial_port *port, int on)
 {
 	/* Adjust DTR and RTS */
+<<<<<<< HEAD
 	digi_set_modem_signals(port, on * (TIOCM_DTR|TIOCM_RTS), 1);
+=======
+	digi_set_modem_signals(port, on * (TIOCM_DTR | TIOCM_RTS), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int digi_open(struct tty_struct *tty, struct usb_serial_port *port)
@@ -1121,8 +1421,11 @@ static int digi_open(struct tty_struct *tty, struct usb_serial_port *port)
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	struct ktermios not_termios;
 
+<<<<<<< HEAD
 	dbg("digi_open: TOP: port=%d", priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* be sure the device is started up */
 	if (digi_startup_device(port->serial) != 0)
 		return -ENXIO;
@@ -1141,12 +1444,21 @@ static int digi_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	ret = digi_write_oob_command(port, buf, 8, 1);
 	if (ret != 0)
+<<<<<<< HEAD
 		dbg("digi_open: write oob failed, ret=%d", ret);
 
 	/* set termios settings */
 	if (tty) {
 		not_termios.c_cflag = ~tty->termios->c_cflag;
 		not_termios.c_iflag = ~tty->termios->c_iflag;
+=======
+		dev_dbg(&port->dev, "digi_open: write oob failed, ret=%d\n", ret);
+
+	/* set termios settings */
+	if (tty) {
+		not_termios.c_cflag = ~tty->termios.c_cflag;
+		not_termios.c_iflag = ~tty->termios.c_iflag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		digi_set_termios(tty, port, &not_termios);
 	}
 	return 0;
@@ -1160,13 +1472,17 @@ static void digi_close(struct usb_serial_port *port)
 	unsigned char buf[32];
 	struct digi_port *priv = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	dbg("digi_close: TOP: port=%d", priv->dp_port_num);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&port->serial->disc_mutex);
 	/* if disconnected, just clear flags */
 	if (port->serial->disconnected)
 		goto exit;
 
+<<<<<<< HEAD
 	if (port->serial->dev) {
 		/* FIXME: Transmit idle belongs in the wait_unti_sent path */
 		digi_transmit_idle(port, DIGI_CLOSE_TIMEOUT);
@@ -1214,13 +1530,63 @@ static void digi_close(struct usb_serial_port *port)
 		/* shutdown any outstanding bulk writes */
 		usb_kill_urb(port->write_urb);
 	}
+=======
+	/* FIXME: Transmit idle belongs in the wait_unti_sent path */
+	digi_transmit_idle(port, DIGI_CLOSE_TIMEOUT);
+
+	/* disable input flow control */
+	buf[0] = DIGI_CMD_SET_INPUT_FLOW_CONTROL;
+	buf[1] = priv->dp_port_num;
+	buf[2] = DIGI_DISABLE;
+	buf[3] = 0;
+
+	/* disable output flow control */
+	buf[4] = DIGI_CMD_SET_OUTPUT_FLOW_CONTROL;
+	buf[5] = priv->dp_port_num;
+	buf[6] = DIGI_DISABLE;
+	buf[7] = 0;
+
+	/* disable reading modem signals automatically */
+	buf[8] = DIGI_CMD_READ_INPUT_SIGNALS;
+	buf[9] = priv->dp_port_num;
+	buf[10] = DIGI_DISABLE;
+	buf[11] = 0;
+
+	/* disable receive */
+	buf[12] = DIGI_CMD_RECEIVE_ENABLE;
+	buf[13] = priv->dp_port_num;
+	buf[14] = DIGI_DISABLE;
+	buf[15] = 0;
+
+	/* flush fifos */
+	buf[16] = DIGI_CMD_IFLUSH_FIFO;
+	buf[17] = priv->dp_port_num;
+	buf[18] = DIGI_FLUSH_TX | DIGI_FLUSH_RX;
+	buf[19] = 0;
+
+	ret = digi_write_oob_command(port, buf, 20, 0);
+	if (ret != 0)
+		dev_dbg(&port->dev, "digi_close: write oob failed, ret=%d\n",
+									ret);
+	/* wait for final commands on oob port to complete */
+	prepare_to_wait(&priv->dp_flush_wait, &wait,
+			TASK_INTERRUPTIBLE);
+	schedule_timeout(DIGI_CLOSE_TIMEOUT);
+	finish_wait(&priv->dp_flush_wait, &wait);
+
+	/* shutdown any outstanding bulk writes */
+	usb_kill_urb(port->write_urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	spin_lock_irq(&priv->dp_port_lock);
 	priv->dp_write_urb_in_use = 0;
 	wake_up_interruptible(&priv->dp_close_wait);
 	spin_unlock_irq(&priv->dp_port_lock);
 	mutex_unlock(&port->serial->disc_mutex);
+<<<<<<< HEAD
 	dbg("digi_close: done");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1261,6 +1627,7 @@ static int digi_startup_device(struct usb_serial *serial)
 	return ret;
 }
 
+<<<<<<< HEAD
 
 static int digi_startup(struct usb_serial *serial)
 {
@@ -1334,6 +1701,49 @@ static int digi_startup(struct usb_serial *serial)
 	serial_priv->ds_oob_port_num = serial->type->num_ports;
 	serial_priv->ds_oob_port = serial->port[serial_priv->ds_oob_port_num];
 	serial_priv->ds_device_started = 0;
+=======
+static int digi_port_init(struct usb_serial_port *port, unsigned port_num)
+{
+	struct digi_port *priv;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	spin_lock_init(&priv->dp_port_lock);
+	priv->dp_port_num = port_num;
+	init_waitqueue_head(&priv->dp_transmit_idle_wait);
+	init_waitqueue_head(&priv->dp_flush_wait);
+	init_waitqueue_head(&priv->dp_close_wait);
+	init_waitqueue_head(&priv->write_wait);
+	priv->dp_port = port;
+
+	usb_set_serial_port_data(port, priv);
+
+	return 0;
+}
+
+static int digi_startup(struct usb_serial *serial)
+{
+	struct digi_serial *serial_priv;
+	int ret;
+
+	serial_priv = kzalloc(sizeof(*serial_priv), GFP_KERNEL);
+	if (!serial_priv)
+		return -ENOMEM;
+
+	spin_lock_init(&serial_priv->ds_serial_lock);
+	serial_priv->ds_oob_port_num = serial->type->num_ports;
+	serial_priv->ds_oob_port = serial->port[serial_priv->ds_oob_port_num];
+
+	ret = digi_port_init(serial_priv->ds_oob_port,
+						serial_priv->ds_oob_port_num);
+	if (ret) {
+		kfree(serial_priv);
+		return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_serial_data(serial, serial_priv);
 
 	return 0;
@@ -1343,7 +1753,10 @@ static int digi_startup(struct usb_serial *serial)
 static void digi_disconnect(struct usb_serial *serial)
 {
 	int i;
+<<<<<<< HEAD
 	dbg("digi_disconnect: TOP, in_interrupt()=%ld", in_interrupt());
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop reads and writes on all ports */
 	for (i = 0; i < serial->type->num_ports + 1; i++) {
@@ -1355,6 +1768,7 @@ static void digi_disconnect(struct usb_serial *serial)
 
 static void digi_release(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int i;
 	dbg("digi_release: TOP, in_interrupt()=%ld", in_interrupt());
 
@@ -1365,6 +1779,31 @@ static void digi_release(struct usb_serial *serial)
 	kfree(usb_get_serial_data(serial));
 }
 
+=======
+	struct digi_serial *serial_priv;
+	struct digi_port *priv;
+
+	serial_priv = usb_get_serial_data(serial);
+
+	priv = usb_get_serial_port_data(serial_priv->ds_oob_port);
+	kfree(priv);
+
+	kfree(serial_priv);
+}
+
+static int digi_port_probe(struct usb_serial_port *port)
+{
+	return digi_port_init(port, port->port_number);
+}
+
+static void digi_port_remove(struct usb_serial_port *port)
+{
+	struct digi_port *priv;
+
+	priv = usb_get_serial_port_data(port);
+	kfree(priv);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void digi_read_bulk_callback(struct urb *urb)
 {
@@ -1374,8 +1813,11 @@ static void digi_read_bulk_callback(struct urb *urb)
 	int ret;
 	int status = urb->status;
 
+<<<<<<< HEAD
 	dbg("digi_read_bulk_callback: TOP");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* port sanity check, do not resubmit if port is not valid */
 	if (port == NULL)
 		return;
@@ -1431,6 +1873,7 @@ static void digi_read_bulk_callback(struct urb *urb)
 
 static int digi_read_inb_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 
 	struct usb_serial_port *port = urb->context;
 	struct tty_struct *tty;
@@ -1459,6 +1902,39 @@ static int digi_read_inb_callback(struct urb *urb)
 
 	tty = tty_port_tty_get(&port->port);
 	spin_lock(&priv->dp_port_lock);
+=======
+	struct usb_serial_port *port = urb->context;
+	struct digi_port *priv = usb_get_serial_port_data(port);
+	unsigned char *buf = urb->transfer_buffer;
+	unsigned long flags;
+	int opcode;
+	int len;
+	int port_status;
+	unsigned char *data;
+	int tty_flag, throttled;
+
+	/* short/multiple packet check */
+	if (urb->actual_length < 2) {
+		dev_warn(&port->dev, "short packet received\n");
+		return -1;
+	}
+
+	opcode = buf[0];
+	len = buf[1];
+
+	if (urb->actual_length != len + 2) {
+		dev_err(&port->dev, "malformed packet received: port=%d, opcode=%d, len=%d, actual_length=%u\n",
+			priv->dp_port_num, opcode, len, urb->actual_length);
+		return -1;
+	}
+
+	if (opcode == DIGI_CMD_RECEIVE_DATA && len < 1) {
+		dev_err(&port->dev, "malformed data packet received\n");
+		return -1;
+	}
+
+	spin_lock_irqsave(&priv->dp_port_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check for throttle; if set, do not resubmit read urb */
 	/* indicate the read chain needs to be restarted on unthrottle */
@@ -1467,6 +1943,7 @@ static int digi_read_inb_callback(struct urb *urb)
 		priv->dp_throttle_restart = 1;
 
 	/* receive data */
+<<<<<<< HEAD
 	if (tty && opcode == DIGI_CMD_RECEIVE_DATA) {
 		/* get flag from port_status */
 		flag = 0;
@@ -1474,19 +1951,40 @@ static int digi_read_inb_callback(struct urb *urb)
 		/* overrun is special, not associated with a char */
 		if (port_status & DIGI_OVERRUN_ERROR)
 			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
+=======
+	if (opcode == DIGI_CMD_RECEIVE_DATA) {
+		port_status = buf[2];
+		data = &buf[3];
+
+		/* get flag from port_status */
+		tty_flag = 0;
+
+		/* overrun is special, not associated with a char */
+		if (port_status & DIGI_OVERRUN_ERROR)
+			tty_insert_flip_char(&port->port, 0, TTY_OVERRUN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* break takes precedence over parity, */
 		/* which takes precedence over framing errors */
 		if (port_status & DIGI_BREAK_ERROR)
+<<<<<<< HEAD
 			flag = TTY_BREAK;
 		else if (port_status & DIGI_PARITY_ERROR)
 			flag = TTY_PARITY;
 		else if (port_status & DIGI_FRAMING_ERROR)
 			flag = TTY_FRAME;
+=======
+			tty_flag = TTY_BREAK;
+		else if (port_status & DIGI_PARITY_ERROR)
+			tty_flag = TTY_PARITY;
+		else if (port_status & DIGI_FRAMING_ERROR)
+			tty_flag = TTY_FRAME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* data length is len-1 (one byte of len is port_status) */
 		--len;
 		if (len > 0) {
+<<<<<<< HEAD
 			tty_insert_flip_string_fixed_flag(tty, data, flag,
 									len);
 			tty_flip_buffer_push(tty);
@@ -1499,6 +1997,19 @@ static int digi_read_inb_callback(struct urb *urb)
 		dbg("%s: got RECEIVE_DISABLE", __func__);
 	else if (opcode != DIGI_CMD_RECEIVE_DATA)
 		dbg("%s: unknown opcode: %d", __func__, opcode);
+=======
+			tty_insert_flip_string_fixed_flag(&port->port, data,
+					tty_flag, len);
+			tty_flip_buffer_push(&port->port);
+		}
+	}
+	spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+
+	if (opcode == DIGI_CMD_RECEIVE_DISABLE)
+		dev_dbg(&port->dev, "%s: got RECEIVE_DISABLE\n", __func__);
+	else if (opcode != DIGI_CMD_RECEIVE_DATA)
+		dev_dbg(&port->dev, "%s: unknown opcode: %d\n", __func__, opcode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return throttled ? 1 : 0;
 
@@ -1520,6 +2031,7 @@ static int digi_read_oob_callback(struct urb *urb)
 	struct usb_serial_port *port = urb->context;
 	struct usb_serial *serial = port->serial;
 	struct tty_struct *tty;
+<<<<<<< HEAD
 	struct digi_port *priv = usb_get_serial_port_data(port);
 	int opcode, line, status, val;
 	int i;
@@ -1536,6 +2048,26 @@ static int digi_read_oob_callback(struct urb *urb)
 		val = ((unsigned char *)urb->transfer_buffer)[i++];
 
 		dbg("digi_read_oob_callback: opcode=%d, line=%d, status=%d, val=%d",
+=======
+	struct digi_port *priv;
+	unsigned char *buf = urb->transfer_buffer;
+	int opcode, line, status, val;
+	unsigned long flags;
+	int i;
+	unsigned int rts;
+
+	if (urb->actual_length < 4)
+		return -1;
+
+	/* handle each oob command */
+	for (i = 0; i < urb->actual_length - 3; i += 4) {
+		opcode = buf[i];
+		line = buf[i + 1];
+		status = buf[i + 2];
+		val = buf[i + 3];
+
+		dev_dbg(&port->dev, "digi_read_oob_callback: opcode=%d, line=%d, status=%d, val=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			opcode, line, status, val);
 
 		if (status != 0 || line >= serial->type->num_ports)
@@ -1551,6 +2083,7 @@ static int digi_read_oob_callback(struct urb *urb)
 
 		rts = 0;
 		if (tty)
+<<<<<<< HEAD
 			rts = tty->termios->c_cflag & CRTSCTS;
 		
 		if (tty && opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
@@ -1568,6 +2101,22 @@ static int digi_read_oob_callback(struct urb *urb)
 				/* port must be open to use tty struct */
 				if (rts)
 					tty->hw_stopped = 1;
+=======
+			rts = C_CRTSCTS(tty);
+
+		if (tty && opcode == DIGI_CMD_READ_INPUT_SIGNALS) {
+			bool wakeup = false;
+
+			spin_lock_irqsave(&priv->dp_port_lock, flags);
+			/* convert from digi flags to termiox flags */
+			if (val & DIGI_READ_INPUT_SIGNALS_CTS) {
+				priv->dp_modem_signals |= TIOCM_CTS;
+				if (rts)
+					wakeup = true;
+			} else {
+				priv->dp_modem_signals &= ~TIOCM_CTS;
+				/* port must be open to use tty struct */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (val & DIGI_READ_INPUT_SIGNALS_DSR)
 				priv->dp_modem_signals |= TIOCM_DSR;
@@ -1582,6 +2131,7 @@ static int digi_read_oob_callback(struct urb *urb)
 			else
 				priv->dp_modem_signals &= ~TIOCM_CD;
 
+<<<<<<< HEAD
 			wake_up_interruptible(&priv->dp_modem_change_wait);
 			spin_unlock(&priv->dp_port_lock);
 		} else if (opcode == DIGI_CMD_TRANSMIT_IDLE) {
@@ -1589,6 +2139,17 @@ static int digi_read_oob_callback(struct urb *urb)
 			priv->dp_transmit_idle = 1;
 			wake_up_interruptible(&priv->dp_transmit_idle_wait);
 			spin_unlock(&priv->dp_port_lock);
+=======
+			spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+
+			if (wakeup)
+				tty_port_tty_wakeup(&port->port);
+		} else if (opcode == DIGI_CMD_TRANSMIT_IDLE) {
+			spin_lock_irqsave(&priv->dp_port_lock, flags);
+			priv->dp_transmit_idle = 1;
+			wake_up_interruptible(&priv->dp_transmit_idle_wait);
+			spin_unlock_irqrestore(&priv->dp_port_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (opcode == DIGI_CMD_IFLUSH_FIFO) {
 			wake_up_interruptible(&priv->dp_flush_wait);
 		}
@@ -1598,11 +2159,18 @@ static int digi_read_oob_callback(struct urb *urb)
 
 }
 
+<<<<<<< HEAD
 module_usb_serial_driver(digi_driver, serial_drivers);
+=======
+module_usb_serial_driver(serial_drivers, id_table_combined);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

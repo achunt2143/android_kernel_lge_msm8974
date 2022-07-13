@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_AGP_H
 #define _ASM_X86_AGP_H
 
 #include <asm/pgtable.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_AGP_H
+#define _ASM_X86_AGP_H
+
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 
 /*
  * Functions to keep the agpgart mappings coherent with the MMU. The
  * GART gives the CPU a physical alias of pages in memory. The alias
  * region is mapped uncacheable. Make sure there are no conflicting
+<<<<<<< HEAD
  * mappings with different cachability attributes for the same
+=======
+ * mappings with different cacheability attributes for the same
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * page. This avoids data corruption on some CPUs.
  */
 
@@ -22,10 +34,13 @@
  */
 #define flush_agp_cache() wbinvd()
 
+<<<<<<< HEAD
 /* GATT allocation. Returns/accepts GATT kernel virtual address. */
 #define alloc_gatt_pages(order)		\
 	((char *)__get_free_pages(GFP_KERNEL, (order)))
 #define free_gatt_pages(table, order)	\
 	free_pages((unsigned long)(table), (order))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_AGP_H */

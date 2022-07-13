@@ -1,12 +1,21 @@
+<<<<<<< HEAD
 /*
  * OMAP3 OPP table definitions.
  *
  * Copyright (C) 2009-2010 Texas Instruments Incorporated - http://www.ti.com/
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * OMAP3 OPP table definitions.
+ *
+ * Copyright (C) 2009-2010 Texas Instruments Incorporated - https://www.ti.com/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Nishanth Menon
  *	Kevin Hilman
  * Copyright (C) 2010-2011 Nokia Corporation.
  *      Eduardo Valentin
  *      Paul Walmsley
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,6 +30,12 @@
 
 #include <plat/cpu.h>
 
+=======
+ */
+#include <linux/module.h>
+
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "control.h"
 #include "omap_opp_data.h"
 #include "pm.h"
@@ -84,6 +99,7 @@ struct omap_volt_data omap36xx_vddcore_volt_data[] = {
 	VOLT_DATA_DEFINE(OMAP3630_VDD_CORE_OPP100_UV, OMAP3630_CONTROL_FUSE_OPP100_VDD2, 0xf9, 0x16),
 	VOLT_DATA_DEFINE(0, 0, 0, 0),
 };
+<<<<<<< HEAD
 
 /* OPP data */
 
@@ -170,3 +186,5 @@ int __init omap3_opp_init(void)
 	return r;
 }
 device_initcall(omap3_opp_init);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

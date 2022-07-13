@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/renesas/r7780rp/setup.c
  *
@@ -8,10 +12,13 @@
  *
  * This contains support for the R7780RP-1, R7780MP, and R7785RP
  * Highlander modules.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/io.h>
@@ -392,10 +399,17 @@ static unsigned char irl2irq[HL_NR_IRL];
 
 static int highlander_irq_demux(int irq)
 {
+<<<<<<< HEAD
 	if (irq >= HL_NR_IRL || irq < 0 || !irl2irq[irq])
 		return irq;
 
 	return irl2irq[irq];
+=======
+	if (irq >= HL_NR_IRL + 16 || irq < 16 || !irl2irq[irq - 16])
+		return irq;
+
+	return irl2irq[irq - 16];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init highlander_init_irq(void)

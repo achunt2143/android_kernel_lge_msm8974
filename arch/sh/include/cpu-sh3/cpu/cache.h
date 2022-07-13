@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * include/asm-sh/cpu-sh3/cache.h
  *
@@ -6,6 +7,13 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * include/asm-sh/cpu-sh3/cache.h
+ *
+ * Copyright (C) 1999 Niibe Yutaka
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_CPU_SH3_CACHE_H
 #define __ASM_CPU_SH3_CACHE_H
@@ -17,7 +25,11 @@
 #define SH_CACHE_COMBINED	4
 #define SH_CACHE_ASSOC		8
 
+<<<<<<< HEAD
 #define CCR		0xffffffec	/* Address of Cache Control Register */
+=======
+#define SH_CCR		0xffffffec	/* Address of Cache Control Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CCR_CACHE_CE	0x01	/* Cache Enable */
 #define CCR_CACHE_WT	0x02	/* Write-Through (for P0,U0,P3) (else writeback) */

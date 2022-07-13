@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * adm1031.c - Part of lm_sensors, Linux kernel modules for hardware
  *	       monitoring
  * Based on lm75.c and lm85.c
  * Supports adm1030 / adm1031
  * Copyright (C) 2004 Alexandre d'Alton <alex@alexdalton.org>
+<<<<<<< HEAD
  * Reworked by Jean Delvare <khali@linux-fr.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +24,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ * Reworked by Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -74,10 +82,18 @@ typedef u8 auto_chan_table_t[8][2];
 
 /* Each client has this additional data */
 struct adm1031_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	int chip_type;
 	char valid;		/* !=0 if following fields are valid */
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+	struct mutex update_lock;
+	int chip_type;
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 	unsigned int update_interval;	/* In milliseconds */
 	/*
@@ -105,6 +121,7 @@ struct adm1031_data {
 	s8 temp_crit[3];
 };
 
+<<<<<<< HEAD
 static int adm1031_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id);
 static int adm1031_detect(struct i2c_client *client,
@@ -133,6 +150,8 @@ static struct i2c_driver adm1031_driver = {
 	.address_list	= normal_i2c,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 adm1031_read_value(struct i2c_client *client, u8 reg)
 {
 	return i2c_smbus_read_byte_data(client, reg);
@@ -144,6 +163,99 @@ adm1031_write_value(struct i2c_client *client, u8 reg, unsigned int value)
 	return i2c_smbus_write_byte_data(client, reg, value);
 }
 
+<<<<<<< HEAD
+=======
+static struct adm1031_data *adm1031_update_device(struct device *dev)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	unsigned long next_update;
+	int chan;
+
+	mutex_lock(&data->update_lock);
+
+	next_update = data->last_updated
+	  + msecs_to_jiffies(data->update_interval);
+	if (time_after(jiffies, next_update) || !data->valid) {
+
+		dev_dbg(&client->dev, "Starting adm1031 update\n");
+		for (chan = 0;
+		     chan < ((data->chip_type == adm1031) ? 3 : 2); chan++) {
+			u8 oldh, newh;
+
+			oldh =
+			    adm1031_read_value(client, ADM1031_REG_TEMP(chan));
+			data->ext_temp[chan] =
+			    adm1031_read_value(client, ADM1031_REG_EXT_TEMP);
+			newh =
+			    adm1031_read_value(client, ADM1031_REG_TEMP(chan));
+			if (newh != oldh) {
+				data->ext_temp[chan] =
+				    adm1031_read_value(client,
+						       ADM1031_REG_EXT_TEMP);
+#ifdef DEBUG
+				oldh =
+				    adm1031_read_value(client,
+						       ADM1031_REG_TEMP(chan));
+
+				/* oldh is actually newer */
+				if (newh != oldh)
+					dev_warn(&client->dev,
+					  "Remote temperature may be wrong.\n");
+#endif
+			}
+			data->temp[chan] = newh;
+
+			data->temp_offset[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_TEMP_OFFSET(chan));
+			data->temp_min[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_TEMP_MIN(chan));
+			data->temp_max[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_TEMP_MAX(chan));
+			data->temp_crit[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_TEMP_CRIT(chan));
+			data->auto_temp[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_AUTO_TEMP(chan));
+
+		}
+
+		data->conf1 = adm1031_read_value(client, ADM1031_REG_CONF1);
+		data->conf2 = adm1031_read_value(client, ADM1031_REG_CONF2);
+
+		data->alarm = adm1031_read_value(client, ADM1031_REG_STATUS(0))
+		    | (adm1031_read_value(client, ADM1031_REG_STATUS(1)) << 8);
+		if (data->chip_type == adm1030)
+			data->alarm &= 0xc0ff;
+
+		for (chan = 0; chan < (data->chip_type == adm1030 ? 1 : 2);
+		     chan++) {
+			data->fan_div[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_FAN_DIV(chan));
+			data->fan_min[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_FAN_MIN(chan));
+			data->fan[chan] =
+			    adm1031_read_value(client,
+					       ADM1031_REG_FAN_SPEED(chan));
+			data->pwm[chan] =
+			  (adm1031_read_value(client,
+					ADM1031_REG_PWM) >> (4 * chan)) & 0x0f;
+		}
+		data->last_updated = jiffies;
+		data->valid = true;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TEMP_TO_REG(val)		(((val) < 0 ? ((val - 500) / 1000) : \
 					((val + 500) / 1000)))
@@ -162,13 +274,21 @@ adm1031_write_value(struct i2c_client *client, u8 reg, unsigned int value)
 static int FAN_TO_REG(int reg, int div)
 {
 	int tmp;
+<<<<<<< HEAD
 	tmp = FAN_FROM_REG(SENSORS_LIMIT(reg, 0, 65535), div);
+=======
+	tmp = FAN_FROM_REG(clamp_val(reg, 0, 65535), div);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tmp > 255 ? 255 : tmp;
 }
 
 #define FAN_DIV_FROM_REG(reg)		(1<<(((reg)&0xc0)>>6))
 
+<<<<<<< HEAD
 #define PWM_TO_REG(val)			(SENSORS_LIMIT((val), 0, 255) >> 4)
+=======
+#define PWM_TO_REG(val)			(clamp_val((val), 0, 255) >> 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PWM_FROM_REG(val)		((val) << 4)
 
 #define FAN_CHAN_FROM_REG(reg)		(((reg) >> 5) & 7)
@@ -192,9 +312,14 @@ static int FAN_TO_REG(int reg, int div)
 static int AUTO_TEMP_MAX_TO_REG(int val, int reg, int pwm)
 {
 	int ret;
+<<<<<<< HEAD
 	int range = val - AUTO_TEMP_MIN_FROM_REG(reg);
 
 	range = ((val - AUTO_TEMP_MIN_FROM_REG(reg))*10)/(16 - pwm);
+=======
+	int range = ((val - AUTO_TEMP_MIN_FROM_REG(reg)) * 10) / (16 - pwm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ((reg & 0xf8) |
 	       (range < 10000 ? 0 :
 		range < 20000 ? 1 :
@@ -268,7 +393,11 @@ get_fan_auto_nearest(struct adm1031_data *data, int chan, u8 val, u8 reg)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_auto_channel(struct device *dev,
+=======
+static ssize_t fan_auto_channel_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -277,11 +406,19 @@ static ssize_t show_fan_auto_channel(struct device *dev,
 }
 
 static ssize_t
+<<<<<<< HEAD
 set_fan_auto_channel(struct device *dev, struct device_attribute *attr,
 		     const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+fan_auto_channel_store(struct device *dev, struct device_attribute *attr,
+		       const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	u8 reg;
@@ -329,6 +466,7 @@ set_fan_auto_channel(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(auto_fan1_channel, S_IRUGO | S_IWUSR,
 		show_fan_auto_channel, set_fan_auto_channel, 0);
 static SENSOR_DEVICE_ATTR(auto_fan2_channel, S_IRUGO | S_IWUSR,
@@ -336,6 +474,13 @@ static SENSOR_DEVICE_ATTR(auto_fan2_channel, S_IRUGO | S_IWUSR,
 
 /* Auto Temps */
 static ssize_t show_auto_temp_off(struct device *dev,
+=======
+static SENSOR_DEVICE_ATTR_RW(auto_fan1_channel, fan_auto_channel, 0);
+static SENSOR_DEVICE_ATTR_RW(auto_fan2_channel, fan_auto_channel, 1);
+
+/* Auto Temps */
+static ssize_t auto_temp_off_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -343,7 +488,11 @@ static ssize_t show_auto_temp_off(struct device *dev,
 	return sprintf(buf, "%d\n",
 		       AUTO_TEMP_OFF_FROM_REG(data->auto_temp[nr]));
 }
+<<<<<<< HEAD
 static ssize_t show_auto_temp_min(struct device *dev,
+=======
+static ssize_t auto_temp_min_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -352,11 +501,19 @@ static ssize_t show_auto_temp_min(struct device *dev,
 		       AUTO_TEMP_MIN_FROM_REG(data->auto_temp[nr]));
 }
 static ssize_t
+<<<<<<< HEAD
 set_auto_temp_min(struct device *dev, struct device_attribute *attr,
 		  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+auto_temp_min_store(struct device *dev, struct device_attribute *attr,
+		    const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -365,6 +522,10 @@ set_auto_temp_min(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	val = clamp_val(val, 0, 127000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->auto_temp[nr] = AUTO_TEMP_MIN_TO_REG(val, data->auto_temp[nr]);
 	adm1031_write_value(client, ADM1031_REG_AUTO_TEMP(nr),
@@ -372,7 +533,11 @@ set_auto_temp_min(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t show_auto_temp_max(struct device *dev,
+=======
+static ssize_t auto_temp_max_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -381,11 +546,19 @@ static ssize_t show_auto_temp_max(struct device *dev,
 		       AUTO_TEMP_MAX_FROM_REG(data->auto_temp[nr]));
 }
 static ssize_t
+<<<<<<< HEAD
 set_auto_temp_max(struct device *dev, struct device_attribute *attr,
 		  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+auto_temp_max_store(struct device *dev, struct device_attribute *attr,
+		    const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -394,6 +567,10 @@ set_auto_temp_max(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	val = clamp_val(val, 0, 127000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->temp_max[nr] = AUTO_TEMP_MAX_TO_REG(val, data->auto_temp[nr],
 						  data->pwm[nr]);
@@ -403,6 +580,7 @@ set_auto_temp_max(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 #define auto_temp_reg(offset)						\
 static SENSOR_DEVICE_ATTR(auto_temp##offset##_off, S_IRUGO,		\
 		show_auto_temp_off, NULL, offset - 1);			\
@@ -418,16 +596,39 @@ auto_temp_reg(3);
 /* pwm */
 static ssize_t show_pwm(struct device *dev,
 			struct device_attribute *attr, char *buf)
+=======
+static SENSOR_DEVICE_ATTR_RO(auto_temp1_off, auto_temp_off, 0);
+static SENSOR_DEVICE_ATTR_RW(auto_temp1_min, auto_temp_min, 0);
+static SENSOR_DEVICE_ATTR_RW(auto_temp1_max, auto_temp_max, 0);
+static SENSOR_DEVICE_ATTR_RO(auto_temp2_off, auto_temp_off, 1);
+static SENSOR_DEVICE_ATTR_RW(auto_temp2_min, auto_temp_min, 1);
+static SENSOR_DEVICE_ATTR_RW(auto_temp2_max, auto_temp_max, 1);
+static SENSOR_DEVICE_ATTR_RO(auto_temp3_off, auto_temp_off, 2);
+static SENSOR_DEVICE_ATTR_RW(auto_temp3_min, auto_temp_min, 2);
+static SENSOR_DEVICE_ATTR_RW(auto_temp3_max, auto_temp_max, 2);
+
+/* pwm */
+static ssize_t pwm_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", PWM_FROM_REG(data->pwm[nr]));
 }
+<<<<<<< HEAD
 static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 		       const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t pwm_store(struct device *dev, struct device_attribute *attr,
+			 const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret, reg;
@@ -452,12 +653,19 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(pwm1, S_IRUGO | S_IWUSR, show_pwm, set_pwm, 0);
 static SENSOR_DEVICE_ATTR(pwm2, S_IRUGO | S_IWUSR, show_pwm, set_pwm, 1);
 static SENSOR_DEVICE_ATTR(auto_fan1_min_pwm, S_IRUGO | S_IWUSR,
 		show_pwm, set_pwm, 0);
 static SENSOR_DEVICE_ATTR(auto_fan2_min_pwm, S_IRUGO | S_IWUSR,
 		show_pwm, set_pwm, 1);
+=======
+static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
+static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
+static SENSOR_DEVICE_ATTR_RW(auto_fan1_min_pwm, pwm, 0);
+static SENSOR_DEVICE_ATTR_RW(auto_fan2_min_pwm, pwm, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Fans */
 
@@ -507,9 +715,14 @@ static int trust_fan_readings(struct adm1031_data *data, int chan)
 	return res;
 }
 
+<<<<<<< HEAD
 
 static ssize_t show_fan(struct device *dev,
 			struct device_attribute *attr, char *buf)
+=======
+static ssize_t fan_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
@@ -520,15 +733,25 @@ static ssize_t show_fan(struct device *dev,
 	return sprintf(buf, "%d\n", value);
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_div(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", FAN_DIV_FROM_REG(data->fan_div[nr]));
 }
+<<<<<<< HEAD
 static ssize_t show_fan_min(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t fan_min_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
@@ -536,11 +759,20 @@ static ssize_t show_fan_min(struct device *dev,
 		       FAN_FROM_REG(data->fan_min[nr],
 				    FAN_DIV_FROM_REG(data->fan_div[nr])));
 }
+<<<<<<< HEAD
 static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t fan_min_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -560,11 +792,20 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t fan_div_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	u8 tmp;
@@ -603,11 +844,16 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 			    data->fan_min[nr]);
 
 	/* Invalidate the cache: fan speed is no longer valid */
+<<<<<<< HEAD
 	data->valid = 0;
+=======
+	data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 #define fan_offset(offset)						\
 static SENSOR_DEVICE_ATTR(fan##offset##_input, S_IRUGO,			\
 		show_fan, NULL, offset - 1);				\
@@ -623,6 +869,18 @@ fan_offset(2);
 /* Temps */
 static ssize_t show_temp(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+
+/* Temps */
+static ssize_t temp_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
@@ -632,7 +890,11 @@ static ssize_t show_temp(struct device *dev,
 	    (((data->ext_temp[nr] >> ((nr - 1) * 3)) & 7));
 	return sprintf(buf, "%d\n", TEMP_FROM_REG_EXT(data->temp[nr], ext));
 }
+<<<<<<< HEAD
 static ssize_t show_temp_offset(struct device *dev,
+=======
+static ssize_t temp_offset_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -640,33 +902,54 @@ static ssize_t show_temp_offset(struct device *dev,
 	return sprintf(buf, "%d\n",
 		       TEMP_OFFSET_FROM_REG(data->temp_offset[nr]));
 }
+<<<<<<< HEAD
 static ssize_t show_temp_min(struct device *dev,
+=======
+static ssize_t temp_min_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_min[nr]));
 }
+<<<<<<< HEAD
 static ssize_t show_temp_max(struct device *dev,
+=======
+static ssize_t temp_max_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_max[nr]));
 }
+<<<<<<< HEAD
 static ssize_t show_temp_crit(struct device *dev,
+=======
+static ssize_t temp_crit_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_crit[nr]));
 }
+<<<<<<< HEAD
 static ssize_t set_temp_offset(struct device *dev,
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_offset_store(struct device *dev,
+				 struct device_attribute *attr,
+				 const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -675,7 +958,11 @@ static ssize_t set_temp_offset(struct device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, -15000, 15000);
+=======
+	val = clamp_val(val, -15000, 15000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->temp_offset[nr] = TEMP_OFFSET_TO_REG(val);
 	adm1031_write_value(client, ADM1031_REG_TEMP_OFFSET(nr),
@@ -683,11 +970,20 @@ static ssize_t set_temp_offset(struct device *dev,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_min_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -696,7 +992,11 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, -55000, nr == 0 ? 127750 : 127875);
+=======
+	val = clamp_val(val, -55000, 127000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->temp_min[nr] = TEMP_TO_REG(val);
 	adm1031_write_value(client, ADM1031_REG_TEMP_MIN(nr),
@@ -704,11 +1004,20 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_max_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -717,7 +1026,11 @@ static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, -55000, nr == 0 ? 127750 : 127875);
+=======
+	val = clamp_val(val, -55000, 127000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->temp_max[nr] = TEMP_TO_REG(val);
 	adm1031_write_value(client, ADM1031_REG_TEMP_MAX(nr),
@@ -725,11 +1038,20 @@ static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_temp_crit(struct device *dev, struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_crit_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
 	int ret;
@@ -738,7 +1060,11 @@ static ssize_t set_temp_crit(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, -55000, nr == 0 ? 127750 : 127875);
+=======
+	val = clamp_val(val, -55000, 127000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 	data->temp_crit[nr] = TEMP_TO_REG(val);
 	adm1031_write_value(client, ADM1031_REG_TEMP_CRIT(nr),
@@ -747,6 +1073,7 @@ static ssize_t set_temp_crit(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 #define temp_reg(offset)						\
 static SENSOR_DEVICE_ATTR(temp##offset##_input, S_IRUGO,		\
 		show_temp, NULL, offset - 1);				\
@@ -765,22 +1092,50 @@ temp_reg(3);
 
 /* Alarms */
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_offset, temp_offset, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_min, temp_min, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_max, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit, temp_crit, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_offset, temp_offset, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_min, temp_min, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_crit, temp_crit, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_offset, temp_offset, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_min, temp_min, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_max, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_crit, temp_crit, 2);
+
+/* Alarms */
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", data->alarm);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
 
 static ssize_t show_alarm(struct device *dev,
 			  struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(alarms);
+
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	struct adm1031_data *data = adm1031_update_device(dev);
 	return sprintf(buf, "%d\n", (data->alarm >> bitnr) & 1);
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 0);
 static SENSOR_DEVICE_ATTR(fan1_fault, S_IRUGO, show_alarm, NULL, 1);
 static SENSOR_DEVICE_ATTR(temp2_max_alarm, S_IRUGO, show_alarm, NULL, 2);
@@ -796,27 +1151,60 @@ static SENSOR_DEVICE_ATTR(temp3_min_alarm, S_IRUGO, show_alarm, NULL, 11);
 static SENSOR_DEVICE_ATTR(temp3_crit_alarm, S_IRUGO, show_alarm, NULL, 12);
 static SENSOR_DEVICE_ATTR(temp3_fault, S_IRUGO, show_alarm, NULL, 13);
 static SENSOR_DEVICE_ATTR(temp1_crit_alarm, S_IRUGO, show_alarm, NULL, 14);
+=======
+static SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(fan1_fault, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp2_max_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp2_min_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp2_crit_alarm, alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp2_fault, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(temp1_min_alarm, alarm, 7);
+static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 8);
+static SENSOR_DEVICE_ATTR_RO(fan2_fault, alarm, 9);
+static SENSOR_DEVICE_ATTR_RO(temp3_max_alarm, alarm, 10);
+static SENSOR_DEVICE_ATTR_RO(temp3_min_alarm, alarm, 11);
+static SENSOR_DEVICE_ATTR_RO(temp3_crit_alarm, alarm, 12);
+static SENSOR_DEVICE_ATTR_RO(temp3_fault, alarm, 13);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 14);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Update Interval */
 static const unsigned int update_intervals[] = {
 	16000, 8000, 4000, 2000, 1000, 500, 250, 125,
 };
 
+<<<<<<< HEAD
 static ssize_t show_update_interval(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t update_interval_show(struct device *dev,
+				    struct device_attribute *attr, char *buf)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%u\n", data->update_interval);
 }
 
+<<<<<<< HEAD
 static ssize_t set_update_interval(struct device *dev,
 				   struct device_attribute *attr,
 				   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1031_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t update_interval_store(struct device *dev,
+				     struct device_attribute *attr,
+				     const char *buf, size_t count)
+{
+	struct adm1031_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int i, err;
 	u8 reg;
@@ -848,8 +1236,12 @@ static ssize_t set_update_interval(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(update_interval, S_IRUGO | S_IWUSR, show_update_interval,
 		   set_update_interval);
+=======
+static DEVICE_ATTR_RW(update_interval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *adm1031_attributes[] = {
 	&sensor_dev_attr_fan1_input.dev_attr.attr,
@@ -943,11 +1335,16 @@ static int adm1031_detect(struct i2c_client *client,
 		return -ENODEV;
 	name = (id == 0x30) ? "adm1030" : "adm1031";
 
+<<<<<<< HEAD
 	strlcpy(info->type, name, I2C_NAME_SIZE);
+=======
+	strscpy(info->type, name, I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adm1031_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
@@ -1011,6 +1408,8 @@ static int adm1031_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void adm1031_init_client(struct i2c_client *client)
 {
 	unsigned int read_val;
@@ -1042,6 +1441,7 @@ static void adm1031_init_client(struct i2c_client *client)
 	data->update_interval = update_intervals[i];
 }
 
+<<<<<<< HEAD
 static struct adm1031_data *adm1031_update_device(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -1133,6 +1533,61 @@ static struct adm1031_data *adm1031_update_device(struct device *dev)
 	return data;
 }
 
+=======
+static const struct i2c_device_id adm1031_id[];
+
+static int adm1031_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct adm1031_data *data;
+
+	data = devm_kzalloc(dev, sizeof(struct adm1031_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	i2c_set_clientdata(client, data);
+	data->client = client;
+	data->chip_type = i2c_match_id(adm1031_id, client)->driver_data;
+	mutex_init(&data->update_lock);
+
+	if (data->chip_type == adm1030)
+		data->chan_select_table = &auto_channel_select_table_adm1030;
+	else
+		data->chan_select_table = &auto_channel_select_table_adm1031;
+
+	/* Initialize the ADM1031 chip */
+	adm1031_init_client(client);
+
+	/* sysfs hooks */
+	data->groups[0] = &adm1031_group;
+	if (data->chip_type == adm1031)
+		data->groups[1] = &adm1031_group_opt;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id adm1031_id[] = {
+	{ "adm1030", adm1030 },
+	{ "adm1031", adm1031 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, adm1031_id);
+
+static struct i2c_driver adm1031_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		.name = "adm1031",
+	},
+	.probe		= adm1031_probe,
+	.id_table	= adm1031_id,
+	.detect		= adm1031_detect,
+	.address_list	= normal_i2c,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_i2c_driver(adm1031_driver);
 
 MODULE_AUTHOR("Alexandre d'Alton <alex@alexdalton.org>");

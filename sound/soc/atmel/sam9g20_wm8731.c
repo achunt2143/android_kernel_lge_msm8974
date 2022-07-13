@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sam9g20_wm8731  --  SoC audio for AT91SAM9G20-based
  * 			ATMEL AT91SAM9G20ek board.
@@ -13,6 +17,7 @@
  * Based on corgi.c by:
  * Copyright 2005 Wolfson Microelectronics PLC.
  * Copyright 2005 Openedhand Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +32,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -36,7 +43,11 @@
 #include <linux/timer.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atmel-ssc.h>
 
@@ -45,10 +56,13 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
+<<<<<<< HEAD
 #include <asm/mach-types.h>
 #include <mach/hardware.h>
 #include <mach/gpio.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../codecs/wm8731.h"
 #include "atmel-pcm.h"
 #include "atmel_ssc_dai.h"
@@ -62,6 +76,7 @@
  */
 #undef ENABLE_MIC_INPUT
 
+<<<<<<< HEAD
 static struct clk *mclk;
 
 static int at91sam9g20ek_hw_params(struct snd_pcm_substream *substream,
@@ -118,6 +133,8 @@ static int at91sam9g20ek_set_bias_level(struct snd_soc_card *card,
 	return ret;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("Int Mic", NULL),
 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
@@ -125,8 +142,14 @@ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route intercon[] = {
 
+<<<<<<< HEAD
 	/* speaker connected to LHPOUT */
 	{"Ext Spk", NULL, "LHPOUT"},
+=======
+	/* speaker connected to LHPOUT/RHPOUT */
+	{"Ext Spk", NULL, "LHPOUT"},
+	{"Ext Spk", NULL, "RHPOUT"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mic is connected to Mic Jack, with WM8731 Mic Bias */
 	{"MICIN", NULL, "Mic Bias"},
@@ -138,6 +161,7 @@ static const struct snd_soc_dapm_route intercon[] = {
  */
 static int at91sam9g20ek_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
@@ -185,6 +209,43 @@ static struct snd_soc_dai_link at91sam9g20ek_dai = {
 	.platform_name = "atmel-pcm-audio",
 	.codec_name = "wm8731.0-001b",
 	.ops = &at91sam9g20ek_ops,
+=======
+	struct snd_soc_dai *codec_dai = snd_soc_rtd_to_codec(rtd, 0);
+	struct device *dev = rtd->dev;
+	int ret;
+
+	dev_dbg(dev, "%s called\n", __func__);
+
+	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_MCLK,
+				     MCLK_RATE, SND_SOC_CLOCK_IN);
+	if (ret < 0) {
+		dev_err(dev, "Failed to set WM8731 SYSCLK: %d\n", ret);
+		return ret;
+	}
+
+#ifndef ENABLE_MIC_INPUT
+	snd_soc_dapm_nc_pin(&rtd->card->dapm, "Int Mic");
+#endif
+
+	return 0;
+}
+
+SND_SOC_DAILINK_DEFS(pcm,
+	DAILINK_COMP_ARRAY(COMP_CPU("at91rm9200_ssc.0")),
+	DAILINK_COMP_ARRAY(COMP_CODEC("wm8731.0-001b", "wm8731-hifi")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("at91rm9200_ssc.0")));
+
+static struct snd_soc_dai_link at91sam9g20ek_dai = {
+	.name = "WM8731",
+	.stream_name = "WM8731 PCM",
+	.init = at91sam9g20ek_wm8731_init,
+	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
+		   SND_SOC_DAIFMT_CBP_CFP,
+#ifndef ENABLE_MIC_INPUT
+	.playback_only = true,
+#endif
+	SND_SOC_DAILINK_REG(pcm),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_card snd_soc_at91sam9g20ek = {
@@ -192,6 +253,7 @@ static struct snd_soc_card snd_soc_at91sam9g20ek = {
 	.owner = THIS_MODULE,
 	.dai_link = &at91sam9g20ek_dai,
 	.num_links = 1,
+<<<<<<< HEAD
 	.set_bias_level = at91sam9g20ek_set_bias_level,
 };
 
@@ -273,8 +335,117 @@ static void __exit at91sam9g20ek_exit(void)
 
 module_init(at91sam9g20ek_init);
 module_exit(at91sam9g20ek_exit);
+=======
+
+	.dapm_widgets = at91sam9g20ek_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(at91sam9g20ek_dapm_widgets),
+	.dapm_routes = intercon,
+	.num_dapm_routes = ARRAY_SIZE(intercon),
+	.fully_routed = true,
+};
+
+static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	struct device_node *codec_np, *cpu_np;
+	struct snd_soc_card *card = &snd_soc_at91sam9g20ek;
+	int ret;
+
+	if (!np) {
+		return -ENODEV;
+	}
+
+	ret = atmel_ssc_set_audio(0);
+	if (ret) {
+		dev_err(&pdev->dev, "ssc channel is not valid: %d\n", ret);
+		return ret;
+	}
+
+	card->dev = &pdev->dev;
+
+	/* Parse device node info */
+	ret = snd_soc_of_parse_card_name(card, "atmel,model");
+	if (ret)
+		goto err;
+
+	ret = snd_soc_of_parse_audio_routing(card,
+		"atmel,audio-routing");
+	if (ret)
+		goto err;
+
+	/* Parse codec info */
+	at91sam9g20ek_dai.codecs->name = NULL;
+	codec_np = of_parse_phandle(np, "atmel,audio-codec", 0);
+	if (!codec_np) {
+		dev_err(&pdev->dev, "codec info missing\n");
+		ret = -EINVAL;
+		goto err;
+	}
+	at91sam9g20ek_dai.codecs->of_node = codec_np;
+
+	/* Parse dai and platform info */
+	at91sam9g20ek_dai.cpus->dai_name = NULL;
+	at91sam9g20ek_dai.platforms->name = NULL;
+	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
+	if (!cpu_np) {
+		dev_err(&pdev->dev, "dai and pcm info missing\n");
+		of_node_put(codec_np);
+		ret = -EINVAL;
+		goto err;
+	}
+	at91sam9g20ek_dai.cpus->of_node = cpu_np;
+	at91sam9g20ek_dai.platforms->of_node = cpu_np;
+
+	of_node_put(codec_np);
+	of_node_put(cpu_np);
+
+	ret = snd_soc_register_card(card);
+	if (ret) {
+		dev_err_probe(&pdev->dev, ret,
+			      "snd_soc_register_card() failed\n");
+		goto err;
+	}
+
+	return 0;
+
+err:
+	atmel_ssc_put_audio(0);
+	return ret;
+}
+
+static void at91sam9g20ek_audio_remove(struct platform_device *pdev)
+{
+	struct snd_soc_card *card = platform_get_drvdata(pdev);
+
+	snd_soc_unregister_card(card);
+	atmel_ssc_put_audio(0);
+}
+
+#ifdef CONFIG_OF
+static const struct of_device_id at91sam9g20ek_wm8731_dt_ids[] = {
+	{ .compatible = "atmel,at91sam9g20ek-wm8731-audio", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, at91sam9g20ek_wm8731_dt_ids);
+#endif
+
+static struct platform_driver at91sam9g20ek_audio_driver = {
+	.driver = {
+		.name	= "at91sam9g20ek-audio",
+		.of_match_table = of_match_ptr(at91sam9g20ek_wm8731_dt_ids),
+	},
+	.probe	= at91sam9g20ek_audio_probe,
+	.remove_new = at91sam9g20ek_audio_remove,
+};
+
+module_platform_driver(at91sam9g20ek_audio_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Module information */
 MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
 MODULE_DESCRIPTION("ALSA SoC AT91SAM9G20EK_WM8731");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:at91sam9g20ek-audio");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

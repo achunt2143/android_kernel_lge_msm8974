@@ -19,7 +19,11 @@ void __init shx3_cache_init(void)
 {
 	unsigned int ccr;
 
+<<<<<<< HEAD
 	ccr = __raw_readl(CCR);
+=======
+	ccr = __raw_readl(SH_CCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we've got cache aliases, resolve them in hardware.
@@ -40,5 +44,9 @@ void __init shx3_cache_init(void)
 	ccr |= CCR_CACHE_IBE;
 #endif
 
+<<<<<<< HEAD
 	writel_uncached(ccr, CCR);
+=======
+	writel_uncached(ccr, SH_CCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

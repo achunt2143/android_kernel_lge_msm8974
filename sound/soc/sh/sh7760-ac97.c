@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Generic AC97 sound support for SH7760
  *
@@ -5,6 +6,13 @@
  *
  * Licensed under the GPLv2.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Generic AC97 sound support for SH7760
+//
+// (c) 2007 Manuel Lauss
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -16,6 +24,7 @@
 
 #define IPSEL 0xFE400034
 
+<<<<<<< HEAD
 static struct snd_soc_dai_link sh7760_ac97_dai = {
 	.name = "AC97",
 	.stream_name = "AC97 HiFi",
@@ -24,6 +33,17 @@ static struct snd_soc_dai_link sh7760_ac97_dai = {
 	.platform_name = "sh7760-pcm-audio",
 	.codec_name = "ac97-codec",
 	.ops = NULL,
+=======
+SND_SOC_DAILINK_DEFS(ac97,
+	DAILINK_COMP_ARRAY(COMP_CPU("hac-dai.0")),	/* HAC0 */
+	DAILINK_COMP_ARRAY(COMP_CODEC("ac97-codec", "ac97-hifi")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("sh7760-pcm-audio")));
+
+static struct snd_soc_dai_link sh7760_ac97_dai = {
+	.name = "AC97",
+	.stream_name = "AC97 HiFi",
+	SND_SOC_DAILINK_REG(ac97),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_card sh7760_ac97_soc_machine  = {
@@ -68,6 +88,10 @@ static void __exit sh7760_ac97_exit(void)
 module_init(sh7760_ac97_init);
 module_exit(sh7760_ac97_exit);
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Generic SH7760 AC97 sound machine");
 MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Implementation of the access vector table type.
  *
@@ -17,12 +18,32 @@
  *	Tuned number of hash slots for avtab to reduce memory usage
  */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Implementation of the access vector table type.
+ *
+ * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
+ */
+
+/* Updated: Frank Mayer <mayerf@tresys.com> and
+ *          Karl MacMillan <kmacmillan@tresys.com>
+ *          Added conditional policy language extensions
+ *          Copyright (C) 2003 Tresys Technology, LLC
+ *
+ * Updated: Yuichi Nakamura <ynakam@hitachisoft.jp>
+ *          Tuned number of hash slots for avtab to reduce memory usage
+ */
+
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include "avtab.h"
 #include "policydb.h"
 
+<<<<<<< HEAD
 static struct kmem_cache *avtab_node_cachep;
 static struct kmem_cache *avtab_xperms_cachep;
 
@@ -36,6 +57,55 @@ static struct avtab_node*
 avtab_insert_node(struct avtab *h, int hvalue,
 		  struct avtab_node *prev, struct avtab_node *cur,
 		  struct avtab_key *key, struct avtab_datum *datum)
+=======
+static struct kmem_cache *avtab_node_cachep __ro_after_init;
+static struct kmem_cache *avtab_xperms_cachep __ro_after_init;
+
+/* Based on MurmurHash3, written by Austin Appleby and placed in the
+ * public domain.
+ */
+static inline u32 avtab_hash(const struct avtab_key *keyp, u32 mask)
+{
+	static const u32 c1 = 0xcc9e2d51;
+	static const u32 c2 = 0x1b873593;
+	static const u32 r1 = 15;
+	static const u32 r2 = 13;
+	static const u32 m = 5;
+	static const u32 n = 0xe6546b64;
+
+	u32 hash = 0;
+
+#define mix(input)                                         \
+	do {                                               \
+		u32 v = input;                             \
+		v *= c1;                                   \
+		v = (v << r1) | (v >> (32 - r1));          \
+		v *= c2;                                   \
+		hash ^= v;                                 \
+		hash = (hash << r2) | (hash >> (32 - r2)); \
+		hash = hash * m + n;                       \
+	} while (0)
+
+	mix(keyp->target_class);
+	mix(keyp->target_type);
+	mix(keyp->source_type);
+
+#undef mix
+
+	hash ^= hash >> 16;
+	hash *= 0x85ebca6b;
+	hash ^= hash >> 13;
+	hash *= 0xc2b2ae35;
+	hash ^= hash >> 16;
+
+	return hash & mask;
+}
+
+static struct avtab_node *avtab_insert_node(struct avtab *h,
+					    struct avtab_node **dst,
+					    const struct avtab_key *key,
+					    const struct avtab_datum *datum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct avtab_node *newnode;
 	struct avtab_extended_perms *xperms;
@@ -56,6 +126,7 @@ avtab_insert_node(struct avtab *h, int hvalue,
 		newnode->datum.u.data = datum->u.data;
 	}
 
+<<<<<<< HEAD
 	if (prev) {
 		newnode->next = prev->next;
 		prev->next = newnode;
@@ -63,11 +134,16 @@ avtab_insert_node(struct avtab *h, int hvalue,
 		newnode->next = h->htable[hvalue];
 		h->htable[hvalue] = newnode;
 	}
+=======
+	newnode->next = *dst;
+	*dst = newnode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	h->nel++;
 	return newnode;
 }
 
+<<<<<<< HEAD
 static int avtab_insert(struct avtab *h, struct avtab_key *key, struct avtab_datum *datum)
 {
 	int hvalue;
@@ -102,6 +178,53 @@ static int avtab_insert(struct avtab *h, struct avtab_key *key, struct avtab_dat
 	}
 
 	newnode = avtab_insert_node(h, hvalue, prev, cur, key, datum);
+=======
+static int avtab_node_cmp(const struct avtab_key *key1,
+			  const struct avtab_key *key2)
+{
+	u16 specified = key1->specified & ~(AVTAB_ENABLED | AVTAB_ENABLED_OLD);
+
+	if (key1->source_type == key2->source_type &&
+	    key1->target_type == key2->target_type &&
+	    key1->target_class == key2->target_class &&
+	    (specified & key2->specified))
+		return 0;
+	if (key1->source_type < key2->source_type)
+		return -1;
+	if (key1->source_type == key2->source_type &&
+	    key1->target_type < key2->target_type)
+		return -1;
+	if (key1->source_type == key2->source_type &&
+	    key1->target_type == key2->target_type &&
+	    key1->target_class < key2->target_class)
+		return -1;
+	return 1;
+}
+
+static int avtab_insert(struct avtab *h, const struct avtab_key *key,
+			const struct avtab_datum *datum)
+{
+	u32 hvalue;
+	struct avtab_node *prev, *cur, *newnode;
+	int cmp;
+
+	if (!h || !h->nslot || h->nel == U32_MAX)
+		return -EINVAL;
+
+	hvalue = avtab_hash(key, h->mask);
+	for (prev = NULL, cur = h->htable[hvalue]; cur;
+	     prev = cur, cur = cur->next) {
+		cmp = avtab_node_cmp(key, &cur->key);
+		/* extended perms may not be unique */
+		if (cmp == 0 && !(key->specified & AVTAB_XPERMS))
+			return -EEXIST;
+		if (cmp <= 0)
+			break;
+	}
+
+	newnode = avtab_insert_node(h, prev ? &prev->next : &h->htable[hvalue],
+				    key, datum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!newnode)
 		return -ENOMEM;
 
@@ -112,6 +235,7 @@ static int avtab_insert(struct avtab *h, struct avtab_key *key, struct avtab_dat
  * key/specified mask into the table, as needed by the conditional avtab.
  * It also returns a pointer to the node inserted.
  */
+<<<<<<< HEAD
 struct avtab_node *
 avtab_insert_nonunique(struct avtab *h, struct avtab_key *key, struct avtab_datum *datum)
 {
@@ -172,11 +296,33 @@ struct avtab_datum *avtab_search(struct avtab *h, struct avtab_key *key)
 	}
 
 	return NULL;
+=======
+struct avtab_node *avtab_insert_nonunique(struct avtab *h,
+					  const struct avtab_key *key,
+					  const struct avtab_datum *datum)
+{
+	u32 hvalue;
+	struct avtab_node *prev, *cur;
+	int cmp;
+
+	if (!h || !h->nslot || h->nel == U32_MAX)
+		return NULL;
+	hvalue = avtab_hash(key, h->mask);
+	for (prev = NULL, cur = h->htable[hvalue]; cur;
+	     prev = cur, cur = cur->next) {
+		cmp = avtab_node_cmp(key, &cur->key);
+		if (cmp <= 0)
+			break;
+	}
+	return avtab_insert_node(h, prev ? &prev->next : &h->htable[hvalue],
+				 key, datum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This search function returns a node pointer, and can be used in
  * conjunction with avtab_search_next_node()
  */
+<<<<<<< HEAD
 struct avtab_node*
 avtab_search_node(struct avtab *h, struct avtab_key *key)
 {
@@ -185,10 +331,21 @@ avtab_search_node(struct avtab *h, struct avtab_key *key)
 	u16 specified = key->specified & ~(AVTAB_ENABLED|AVTAB_ENABLED_OLD);
 
 	if (!h || !h->htable)
+=======
+struct avtab_node *avtab_search_node(struct avtab *h,
+				     const struct avtab_key *key)
+{
+	u32 hvalue;
+	struct avtab_node *cur;
+	int cmp;
+
+	if (!h || !h->nslot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	hvalue = avtab_hash(key, h->mask);
 	for (cur = h->htable[hvalue]; cur; cur = cur->next) {
+<<<<<<< HEAD
 		if (key->source_type == cur->key.source_type &&
 		    key->target_type == cur->key.target_type &&
 		    key->target_class == cur->key.target_class &&
@@ -203,11 +360,18 @@ avtab_search_node(struct avtab *h, struct avtab_key *key)
 		if (key->source_type == cur->key.source_type &&
 		    key->target_type == cur->key.target_type &&
 		    key->target_class < cur->key.target_class)
+=======
+		cmp = avtab_node_cmp(key, &cur->key);
+		if (cmp == 0)
+			return cur;
+		if (cmp < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct avtab_node*
 avtab_search_node_next(struct avtab_node *node, int specified)
 {
@@ -232,6 +396,24 @@ avtab_search_node_next(struct avtab_node *node, int specified)
 		if (node->key.source_type == cur->key.source_type &&
 		    node->key.target_type == cur->key.target_type &&
 		    node->key.target_class < cur->key.target_class)
+=======
+struct avtab_node *avtab_search_node_next(struct avtab_node *node,
+					  u16 specified)
+{
+	struct avtab_key tmp_key;
+	struct avtab_node *cur;
+	int cmp;
+
+	if (!node)
+		return NULL;
+	tmp_key = node->key;
+	tmp_key.specified = specified;
+	for (cur = node->next; cur; cur = cur->next) {
+		cmp = avtab_node_cmp(&tmp_key, &cur->key);
+		if (cmp == 0)
+			return cur;
+		if (cmp < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	return NULL;
@@ -239,10 +421,17 @@ avtab_search_node_next(struct avtab_node *node, int specified)
 
 void avtab_destroy(struct avtab *h)
 {
+<<<<<<< HEAD
 	int i;
 	struct avtab_node *cur, *temp;
 
 	if (!h || !h->htable)
+=======
+	u32 i;
+	struct avtab_node *cur, *temp;
+
+	if (!h)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	for (i = 0; i < h->nslot; i++) {
@@ -255,23 +444,53 @@ void avtab_destroy(struct avtab *h)
 						temp->datum.u.xperms);
 			kmem_cache_free(avtab_node_cachep, temp);
 		}
+<<<<<<< HEAD
 		h->htable[i] = NULL;
 	}
 	kfree(h->htable);
 	h->htable = NULL;
+=======
+	}
+	kvfree(h->htable);
+	h->htable = NULL;
+	h->nel = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->nslot = 0;
 	h->mask = 0;
 }
 
+<<<<<<< HEAD
 int avtab_init(struct avtab *h)
 {
 	h->htable = NULL;
 	h->nel = 0;
+=======
+void avtab_init(struct avtab *h)
+{
+	h->htable = NULL;
+	h->nel = 0;
+	h->nslot = 0;
+	h->mask = 0;
+}
+
+static int avtab_alloc_common(struct avtab *h, u32 nslot)
+{
+	if (!nslot)
+		return 0;
+
+	h->htable = kvcalloc(nslot, sizeof(void *), GFP_KERNEL);
+	if (!h->htable)
+		return -ENOMEM;
+
+	h->nslot = nslot;
+	h->mask = nslot - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int avtab_alloc(struct avtab *h, u32 nrules)
 {
+<<<<<<< HEAD
 	u16 mask = 0;
 	u32 shift = 0;
 	u32 work = nrules;
@@ -307,6 +526,34 @@ int avtab_alloc(struct avtab *h, u32 nrules)
 void avtab_hash_eval(struct avtab *h, char *tag)
 {
 	int i, chain_len, slots_used, max_chain_len;
+=======
+	int rc;
+	u32 nslot = 0;
+
+	if (nrules != 0) {
+		nslot = nrules > 3 ? rounddown_pow_of_two(nrules / 2) : 2;
+		if (nslot > MAX_AVTAB_HASH_BUCKETS)
+			nslot = MAX_AVTAB_HASH_BUCKETS;
+
+		rc = avtab_alloc_common(h, nslot);
+		if (rc)
+			return rc;
+	}
+
+	pr_debug("SELinux: %d avtab hash slots, %d rules.\n", nslot, nrules);
+	return 0;
+}
+
+int avtab_alloc_dup(struct avtab *new, const struct avtab *orig)
+{
+	return avtab_alloc_common(new, orig->nslot);
+}
+
+#ifdef CONFIG_SECURITY_SELINUX_DEBUG
+void avtab_hash_eval(struct avtab *h, const char *tag)
+{
+	u32 i, chain_len, slots_used, max_chain_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long chain2_len_sum;
 	struct avtab_node *cur;
 
@@ -325,6 +572,7 @@ void avtab_hash_eval(struct avtab *h, char *tag)
 
 			if (chain_len > max_chain_len)
 				max_chain_len = chain_len;
+<<<<<<< HEAD
 			chain2_len_sum += chain_len * chain_len;
 		}
 	}
@@ -362,6 +610,22 @@ static void avtab_android_m_compat_set(void)
 }
 
 static uint16_t spec_order[] = {
+=======
+			chain2_len_sum +=
+				(unsigned long long)chain_len * chain_len;
+		}
+	}
+
+	pr_debug("SELinux: %s:  %d entries and %d/%d buckets used, "
+		 "longest chain length %d, sum of chain length^2 %llu\n",
+		 tag, h->nel, slots_used, h->nslot, max_chain_len,
+		 chain2_len_sum);
+}
+#endif /* CONFIG_SECURITY_SELINUX_DEBUG */
+
+/* clang-format off */
+static const uint16_t spec_order[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AVTAB_ALLOWED,
 	AVTAB_AUDITDENY,
 	AVTAB_AUDITALLOW,
@@ -372,22 +636,39 @@ static uint16_t spec_order[] = {
 	AVTAB_XPERMS_AUDITALLOW,
 	AVTAB_XPERMS_DONTAUDIT
 };
+<<<<<<< HEAD
 
 int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		    int (*insertf)(struct avtab *a, struct avtab_key *k,
 				   struct avtab_datum *d, void *p),
+=======
+/* clang-format on */
+
+int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
+		    int (*insertf)(struct avtab *a, const struct avtab_key *k,
+				   const struct avtab_datum *d, void *p),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    void *p)
 {
 	__le16 buf16[4];
 	u16 enabled;
+<<<<<<< HEAD
 	u32 items, items2, val, vers = pol->policyvers;
+=======
+	u32 items, items2, val, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct avtab_key key;
 	struct avtab_datum datum;
 	struct avtab_extended_perms xperms;
 	__le32 buf32[ARRAY_SIZE(xperms.perms.p)];
+<<<<<<< HEAD
 	unsigned int android_m_compat_optype = 0;
 	int i, rc;
 	unsigned set;
+=======
+	int rc;
+	unsigned int set, vers = pol->policyvers;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&key, 0, sizeof(struct avtab_key));
 	memset(&datum, 0, sizeof(struct avtab_datum));
@@ -395,11 +676,16 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 	if (vers < POLICYDB_VERSION_AVTAB) {
 		rc = next_entry(buf32, fp, sizeof(u32));
 		if (rc) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated entry\n");
+=======
+			pr_err("SELinux: avtab: truncated entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 		items2 = le32_to_cpu(buf32[0]);
 		if (items2 > ARRAY_SIZE(buf32)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: entry overflow\n");
 			return -EINVAL;
 
@@ -407,6 +693,14 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		rc = next_entry(buf32, fp, sizeof(u32)*items2);
 		if (rc) {
 			printk(KERN_ERR "SELinux: avtab: truncated entry\n");
+=======
+			pr_err("SELinux: avtab: entry overflow\n");
+			return -EINVAL;
+		}
+		rc = next_entry(buf32, fp, sizeof(u32) * items2);
+		if (rc) {
+			pr_err("SELinux: avtab: truncated entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 		items = 0;
@@ -414,19 +708,31 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		val = le32_to_cpu(buf32[items++]);
 		key.source_type = (u16)val;
 		if (key.source_type != val) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated source type\n");
+=======
+			pr_err("SELinux: avtab: truncated source type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		val = le32_to_cpu(buf32[items++]);
 		key.target_type = (u16)val;
 		if (key.target_type != val) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated target type\n");
+=======
+			pr_err("SELinux: avtab: truncated target type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		val = le32_to_cpu(buf32[items++]);
 		key.target_class = (u16)val;
 		if (key.target_class != val) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated target class\n");
+=======
+			pr_err("SELinux: avtab: truncated target class\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -434,6 +740,7 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		enabled = (val & AVTAB_ENABLED_OLD) ? AVTAB_ENABLED : 0;
 
 		if (!(val & (AVTAB_AV | AVTAB_TYPE))) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: null entry\n");
 			return -EINVAL;
 		}
@@ -444,6 +751,17 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		}
 		if (val & AVTAB_XPERMS) {
 			printk(KERN_ERR "SELinux: avtab: entry has extended permissions\n");
+=======
+			pr_err("SELinux: avtab: null entry\n");
+			return -EINVAL;
+		}
+		if ((val & AVTAB_AV) && (val & AVTAB_TYPE)) {
+			pr_err("SELinux: avtab: entry has both access vectors and types\n");
+			return -EINVAL;
+		}
+		if (val & AVTAB_XPERMS) {
+			pr_err("SELinux: avtab: entry has extended permissions\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -458,15 +776,26 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		}
 
 		if (items != items2) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: entry only had %d items, expected %d\n", items2, items);
+=======
+			pr_err("SELinux: avtab: entry only had %d items, expected %d\n",
+			       items2, items);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		return 0;
 	}
 
+<<<<<<< HEAD
 	rc = next_entry(buf16, fp, sizeof(u16)*4);
 	if (rc) {
 		printk(KERN_ERR "SELinux: avtab: truncated entry\n");
+=======
+	rc = next_entry(buf16, fp, sizeof(u16) * 4);
+	if (rc) {
+		pr_err("SELinux: avtab: truncated entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
@@ -476,6 +805,7 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 	key.target_class = le16_to_cpu(buf16[items++]);
 	key.specified = le16_to_cpu(buf16[items++]);
 
+<<<<<<< HEAD
 	if ((key.specified & AVTAB_OPTYPE) &&
 			(vers == POLICYDB_VERSION_XPERMS_IOCTL)) {
 		key.specified = avtab_optype_to_xperms(key.specified);
@@ -497,19 +827,40 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 	}
 	if (!set || set > 1) {
 		printk(KERN_ERR "SELinux:  avtab:  more than one specifier\n");
+=======
+	if (!policydb_type_isvalid(pol, key.source_type) ||
+	    !policydb_type_isvalid(pol, key.target_type) ||
+	    !policydb_class_isvalid(pol, key.target_class)) {
+		pr_err("SELinux: avtab: invalid type or class\n");
+		return -EINVAL;
+	}
+
+	set = hweight16(key.specified & (AVTAB_XPERMS | AVTAB_TYPE | AVTAB_AV));
+	if (!set || set > 1) {
+		pr_err("SELinux:  avtab:  more than one specifier\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if ((vers < POLICYDB_VERSION_XPERMS_IOCTL) &&
+<<<<<<< HEAD
 			(key.specified & AVTAB_XPERMS)) {
 		printk(KERN_ERR "SELinux:  avtab:  policy version %u does not "
 				"support extended permissions rules and one "
 				"was specified\n", vers);
+=======
+	    (key.specified & AVTAB_XPERMS)) {
+		pr_err("SELinux:  avtab:  policy version %u does not "
+		       "support extended permissions rules and one "
+		       "was specified\n",
+		       vers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	} else if (key.specified & AVTAB_XPERMS) {
 		memset(&xperms, 0, sizeof(struct avtab_extended_perms));
 		rc = next_entry(&xperms.specified, fp, sizeof(u8));
 		if (rc) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated entry\n");
 			return rc;
 		}
@@ -533,6 +884,20 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 		rc = next_entry(buf32, fp, sizeof(u32)*ARRAY_SIZE(xperms.perms.p));
 		if (rc) {
 			printk(KERN_ERR "SELinux: avtab: truncated entry\n");
+=======
+			pr_err("SELinux: avtab: truncated entry\n");
+			return rc;
+		}
+		rc = next_entry(&xperms.driver, fp, sizeof(u8));
+		if (rc) {
+			pr_err("SELinux: avtab: truncated entry\n");
+			return rc;
+		}
+		rc = next_entry(buf32, fp,
+				sizeof(u32) * ARRAY_SIZE(xperms.perms.p));
+		if (rc) {
+			pr_err("SELinux: avtab: truncated entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 		for (i = 0; i < ARRAY_SIZE(xperms.perms.p); i++)
@@ -541,21 +906,34 @@ int avtab_read_item(struct avtab *a, void *fp, struct policydb *pol,
 	} else {
 		rc = next_entry(buf32, fp, sizeof(u32));
 		if (rc) {
+<<<<<<< HEAD
 			printk(KERN_ERR "SELinux: avtab: truncated entry\n");
+=======
+			pr_err("SELinux: avtab: truncated entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 		datum.u.data = le32_to_cpu(*buf32);
 	}
 	if ((key.specified & AVTAB_TYPE) &&
 	    !policydb_type_isvalid(pol, datum.u.data)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "SELinux: avtab: invalid type\n");
+=======
+		pr_err("SELinux: avtab: invalid type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return insertf(a, &key, &datum, p);
 }
 
+<<<<<<< HEAD
 static int avtab_insertf(struct avtab *a, struct avtab_key *k,
 			 struct avtab_datum *d, void *p)
+=======
+static int avtab_insertf(struct avtab *a, const struct avtab_key *k,
+			 const struct avtab_datum *d, void *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return avtab_insert(a, k, d);
 }
@@ -566,15 +944,25 @@ int avtab_read(struct avtab *a, void *fp, struct policydb *pol)
 	__le32 buf[1];
 	u32 nel, i;
 
+<<<<<<< HEAD
 
 	rc = next_entry(buf, fp, sizeof(u32));
 	if (rc < 0) {
 		printk(KERN_ERR "SELinux: avtab: truncated table\n");
+=======
+	rc = next_entry(buf, fp, sizeof(u32));
+	if (rc < 0) {
+		pr_err("SELinux: avtab: truncated table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 	nel = le32_to_cpu(buf[0]);
 	if (!nel) {
+<<<<<<< HEAD
 		printk(KERN_ERR "SELinux: avtab: table is empty\n");
+=======
+		pr_err("SELinux: avtab: table is empty\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EINVAL;
 		goto bad;
 	}
@@ -587,9 +975,15 @@ int avtab_read(struct avtab *a, void *fp, struct policydb *pol)
 		rc = avtab_read_item(a, fp, pol, avtab_insertf, NULL);
 		if (rc) {
 			if (rc == -ENOMEM)
+<<<<<<< HEAD
 				printk(KERN_ERR "SELinux: avtab: out of memory\n");
 			else if (rc == -EEXIST)
 				printk(KERN_ERR "SELinux: avtab: duplicate entry\n");
+=======
+				pr_err("SELinux: avtab: out of memory\n");
+			else if (rc == -EEXIST)
+				pr_err("SELinux: avtab: duplicate entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			goto bad;
 		}
@@ -604,7 +998,11 @@ bad:
 	goto out;
 }
 
+<<<<<<< HEAD
 int avtab_write_item(struct policydb *p, struct avtab_node *cur, void *fp)
+=======
+int avtab_write_item(struct policydb *p, const struct avtab_node *cur, void *fp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le16 buf16[4];
 	__le32 buf32[ARRAY_SIZE(cur->datum.u.xperms->perms.p)];
@@ -614,29 +1012,44 @@ int avtab_write_item(struct policydb *p, struct avtab_node *cur, void *fp)
 	buf16[0] = cpu_to_le16(cur->key.source_type);
 	buf16[1] = cpu_to_le16(cur->key.target_type);
 	buf16[2] = cpu_to_le16(cur->key.target_class);
+<<<<<<< HEAD
 	if (avtab_android_m_compat && (cur->key.specified & AVTAB_XPERMS) &&
 		    (cur->datum.u.xperms->specified == AVTAB_XPERMS_IOCTLDRIVER))
 		buf16[3] = cpu_to_le16(avtab_xperms_to_optype(cur->key.specified));
 	else
 		buf16[3] = cpu_to_le16(cur->key.specified);
+=======
+	buf16[3] = cpu_to_le16(cur->key.specified);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = put_entry(buf16, sizeof(u16), 4, fp);
 	if (rc)
 		return rc;
 
 	if (cur->key.specified & AVTAB_XPERMS) {
+<<<<<<< HEAD
 		if (avtab_android_m_compat == 0) {
 			rc = put_entry(&cur->datum.u.xperms->specified,
 					sizeof(u8), 1, fp);
 			if (rc)
 				return rc;
 		}
+=======
+		rc = put_entry(&cur->datum.u.xperms->specified, sizeof(u8), 1,
+			       fp);
+		if (rc)
+			return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = put_entry(&cur->datum.u.xperms->driver, sizeof(u8), 1, fp);
 		if (rc)
 			return rc;
 		for (i = 0; i < ARRAY_SIZE(cur->datum.u.xperms->perms.p); i++)
 			buf32[i] = cpu_to_le32(cur->datum.u.xperms->perms.p[i]);
 		rc = put_entry(buf32, sizeof(u32),
+<<<<<<< HEAD
 				ARRAY_SIZE(cur->datum.u.xperms->perms.p), fp);
+=======
+			       ARRAY_SIZE(cur->datum.u.xperms->perms.p), fp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		buf32[0] = cpu_to_le32(cur->datum.u.data);
 		rc = put_entry(buf32, sizeof(u32), 1, fp);
@@ -648,7 +1061,11 @@ int avtab_write_item(struct policydb *p, struct avtab_node *cur, void *fp)
 
 int avtab_write(struct policydb *p, struct avtab *a, void *fp)
 {
+<<<<<<< HEAD
 	unsigned int i;
+=======
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 	struct avtab_node *cur;
 	__le32 buf[1];
@@ -668,6 +1085,7 @@ int avtab_write(struct policydb *p, struct avtab *a, void *fp)
 
 	return rc;
 }
+<<<<<<< HEAD
 void avtab_cache_init(void)
 {
 	avtab_node_cachep = kmem_cache_create("avtab_node",
@@ -682,4 +1100,14 @@ void avtab_cache_destroy(void)
 {
 	kmem_cache_destroy(avtab_node_cachep);
 	kmem_cache_destroy(avtab_xperms_cachep);
+=======
+
+void __init avtab_cache_init(void)
+{
+	avtab_node_cachep = kmem_cache_create(
+		"avtab_node", sizeof(struct avtab_node), 0, SLAB_PANIC, NULL);
+	avtab_xperms_cachep = kmem_cache_create(
+		"avtab_extended_perms", sizeof(struct avtab_extended_perms), 0,
+		SLAB_PANIC, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

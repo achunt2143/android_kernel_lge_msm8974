@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __PPC64_VDSO_H__
 #define __PPC64_VDSO_H__
 
@@ -21,10 +22,34 @@
 extern unsigned long vdso64_rt_sigtramp;
 extern unsigned long vdso32_sigtramp;
 extern unsigned long vdso32_rt_sigtramp;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_POWERPC_VDSO_H
+#define _ASM_POWERPC_VDSO_H
+
+#define VDSO_VERSION_STRING	LINUX_2.6.15
+
+#ifndef __ASSEMBLY__
+
+#ifdef CONFIG_PPC64
+#include <generated/vdso64-offsets.h>
+#endif
+
+#ifdef CONFIG_VDSO32
+#include <generated/vdso32-offsets.h>
+#endif
+
+#define VDSO64_SYMBOL(base, name) ((unsigned long)(base) + (vdso64_offset_##name))
+
+#define VDSO32_SYMBOL(base, name) ((unsigned long)(base) + (vdso32_offset_##name))
+
+int vdso_getcpu_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* __ASSEMBLY__ */
 
 #ifdef __VDSO64__
+<<<<<<< HEAD
 #ifdef VDS64_HAS_DESCRIPTORS
 #define V_FUNCTION_BEGIN(name)		\
 	.globl name;			\
@@ -44,6 +69,8 @@ extern unsigned long vdso32_rt_sigtramp;
 
 #else /* VDS64_HAS_DESCRIPTORS */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define V_FUNCTION_BEGIN(name)		\
 	.globl name;			\
 	name:				\
@@ -52,8 +79,11 @@ extern unsigned long vdso32_rt_sigtramp;
 	.size name,.-name;
 
 #define V_LOCAL_FUNC(name) (name)
+<<<<<<< HEAD
 
 #endif /* VDS64_HAS_DESCRIPTORS */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __VDSO64__ */
 
 #ifdef __VDSO32__
@@ -72,6 +102,10 @@ extern unsigned long vdso32_rt_sigtramp;
 
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 #endif /* __PPC64_VDSO_H__ */
+=======
+#endif /* _ASM_POWERPC_VDSO_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_ninja32.c 	- Ninja32 PATA for new ATA layer
  *			  (C) 2007 Red Hat Inc
@@ -37,7 +41,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -77,7 +84,11 @@ static void ninja32_dev_select(struct ata_port *ap, unsigned int device)
 	}
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template ninja32_sht = {
+=======
+static const struct scsi_host_template ninja32_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -123,10 +134,14 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		return rc;
 
 	host->iomap = pcim_iomap_table(dev);
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(dev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(dev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask_and_coherent(&dev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 	pci_set_master(dev);
@@ -145,7 +160,11 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	ap->ioaddr.altstatus_addr = base + 0x1E;
 	ap->ioaddr.bmdma_addr = base;
 	ata_sff_std_ports(&ap->ioaddr);
+<<<<<<< HEAD
 	ap->pflags = ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
+=======
+	ap->pflags |= ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ninja32_program(base);
 	/* FIXME: Should we disable them at remove ? */
@@ -153,11 +172,18 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 				 IRQF_SHARED, &ninja32_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int ninja32_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int ninja32_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -184,12 +210,17 @@ static struct pci_driver ninja32_pci_driver = {
 	.id_table	= ninja32,
 	.probe 		= ninja32_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ninja32_reinit_one,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init ninja32_init(void)
 {
 	return pci_register_driver(&ninja32_pci_driver);
@@ -199,12 +230,18 @@ static void __exit ninja32_exit(void)
 {
 	pci_unregister_driver(&ninja32_pci_driver);
 }
+=======
+module_pci_driver(ninja32_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Ninja32 ATA");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, ninja32);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(ninja32_init);
 module_exit(ninja32_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

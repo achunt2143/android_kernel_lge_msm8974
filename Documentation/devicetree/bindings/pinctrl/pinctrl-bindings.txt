@@ -38,7 +38,11 @@ property exists to define the pin configuration. Each state may also be
 assigned a name. When names are used, another property exists to map from
 those names to the integer IDs.
 
+<<<<<<< HEAD
 Each client device's own binding determines the set of states the must be
+=======
+Each client device's own binding determines the set of states that must be
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 defined in its device tree node, and whether to define the set of state
 IDs that must be provided, or whether to define the set of state names that
 must be provided.
@@ -77,13 +81,21 @@ For example:
 	device {
 		pinctrl-names = "active", "idle";
 		pinctrl-0 = <&state_0_node_a>;
+<<<<<<< HEAD
 		pinctrl-1 = <&state_1_node_a &state_1_node_b>;
+=======
+		pinctrl-1 = <&state_1_node_a>, <&state_1_node_b>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* For the same device if using state IDs */
 	device {
 		pinctrl-0 = <&state_0_node_a>;
+<<<<<<< HEAD
 		pinctrl-1 = <&state_1_node_a &state_1_node_b>;
+=======
+		pinctrl-1 = <&state_1_node_a>, <&state_1_node_b>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/*
@@ -98,6 +110,7 @@ For example:
 
 == Pin controller devices ==
 
+<<<<<<< HEAD
 Pin controller devices should contain the pin configuration nodes that client
 devices reference.
 
@@ -184,3 +197,14 @@ All parameters not listed here, do not take an argument.
 
 More in-depth documentation on these parameters can be found in
 <include/linux/pinctrl/pinconfig-generic.h>
+=======
+See pinctrl.yaml
+
+== Generic pin multiplexing node content ==
+
+See pinmux-node.yaml
+
+== Generic pin configuration node content ==
+
+See pincfg-node.yaml
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

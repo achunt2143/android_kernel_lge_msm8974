@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2011 Cisco Systems, Inc.  All rights reserved.
  *
@@ -15,6 +16,10 @@
  * SOFTWARE.
  *
  */
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright 2011 Cisco Systems, Inc.  All rights reserved. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _ENIC_PP_H_
 #define _ENIC_PP_H_

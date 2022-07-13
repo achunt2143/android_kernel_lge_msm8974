@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2011 QLogic Corporation
@@ -5,10 +6,95 @@
  * See LICENSE.qla2xxx for copyright and licensing details.
  */
 #include "qla_def.h"
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * QLogic Fibre Channel HBA Driver
+ * Copyright (c)  2003-2014 QLogic Corporation
+ */
+#include "qla_def.h"
+#include "qla_target.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/delay.h>
 #include <linux/gfp.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC
+#define IS_PPCARCH      true
+#else
+#define IS_PPCARCH      false
+#endif
+
+static struct mb_cmd_name {
+	uint16_t cmd;
+	const char *str;
+} mb_str[] = {
+	{MBC_GET_PORT_DATABASE,		"GPDB"},
+	{MBC_GET_ID_LIST,		"GIDList"},
+	{MBC_GET_LINK_PRIV_STATS,	"Stats"},
+	{MBC_GET_RESOURCE_COUNTS,	"ResCnt"},
+};
+
+static const char *mb_to_str(uint16_t cmd)
+{
+	int i;
+	struct mb_cmd_name *e;
+
+	for (i = 0; i < ARRAY_SIZE(mb_str); i++) {
+		e = mb_str + i;
+		if (cmd == e->cmd)
+			return e->str;
+	}
+	return "unknown";
+}
+
+static struct rom_cmd {
+	uint16_t cmd;
+} rom_cmds[] = {
+	{ MBC_LOAD_RAM },
+	{ MBC_EXECUTE_FIRMWARE },
+	{ MBC_READ_RAM_WORD },
+	{ MBC_MAILBOX_REGISTER_TEST },
+	{ MBC_VERIFY_CHECKSUM },
+	{ MBC_GET_FIRMWARE_VERSION },
+	{ MBC_LOAD_RISC_RAM },
+	{ MBC_DUMP_RISC_RAM },
+	{ MBC_LOAD_RISC_RAM_EXTENDED },
+	{ MBC_DUMP_RISC_RAM_EXTENDED },
+	{ MBC_WRITE_RAM_WORD_EXTENDED },
+	{ MBC_READ_RAM_EXTENDED },
+	{ MBC_GET_RESOURCE_COUNTS },
+	{ MBC_SET_FIRMWARE_OPTION },
+	{ MBC_MID_INITIALIZE_FIRMWARE },
+	{ MBC_GET_FIRMWARE_STATE },
+	{ MBC_GET_MEM_OFFLOAD_CNTRL_STAT },
+	{ MBC_GET_RETRY_COUNT },
+	{ MBC_TRACE_CONTROL },
+	{ MBC_INITIALIZE_MULTIQ },
+	{ MBC_IOCB_COMMAND_A64 },
+	{ MBC_GET_ADAPTER_LOOP_ID },
+	{ MBC_READ_SFP },
+	{ MBC_SET_RNID_PARAMS },
+	{ MBC_GET_RNID_PARAMS },
+	{ MBC_GET_SET_ZIO_THRESHOLD },
+};
+
+static int is_rom_cmd(uint16_t cmd)
+{
+	int i;
+	struct  rom_cmd *wc;
+
+	for (i = 0; i < ARRAY_SIZE(rom_cmds); i++) {
+		wc = rom_cmds + i;
+		if (wc->cmd == cmd)
+			return 1;
+	}
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * qla2x00_mailbox_command
@@ -32,6 +118,7 @@
 static int
 qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 {
+<<<<<<< HEAD
 	int		rval;
 	unsigned long    flags = 0;
 	device_reg_t __iomem *reg;
@@ -40,11 +127,22 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	uint16_t	command = 0;
 	uint16_t	*iptr;
 	uint16_t __iomem *optr;
+=======
+	int		rval, i;
+	unsigned long    flags = 0;
+	device_reg_t *reg;
+	uint8_t		abort_active, eeh_delay;
+	uint8_t		io_lock_on;
+	uint16_t	command = 0;
+	uint16_t	*iptr;
+	__le16 __iomem  *optr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t	cnt;
 	uint32_t	mboxes;
 	unsigned long	wait_time;
 	struct qla_hw_data *ha = vha->hw;
 	scsi_qla_host_t *base_vha = pci_get_drvdata(ha->pdev);
+<<<<<<< HEAD
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1000, "Entered %s.\n", __func__);
 
@@ -52,6 +150,16 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		ql_log(ql_log_warn, vha, 0x1001,
 		    "error_state is greater than pci_channel_io_frozen, "
 		    "exiting.\n");
+=======
+	u32 chip_reset;
+
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1000, "Entered %s.\n", __func__);
+
+	if (ha->pdev->error_state == pci_channel_io_perm_failure) {
+		ql_log(ql_log_warn, vha, 0x1001,
+		    "PCI channel failed permanently, exiting.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_TIMEOUT;
 	}
 
@@ -61,12 +169,27 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		return QLA_FUNCTION_TIMEOUT;
 	}
 
+<<<<<<< HEAD
+=======
+	/* if PCI error, then avoid mbx processing.*/
+	if (test_bit(PFLG_DISCONNECTED, &base_vha->dpc_flags) &&
+	    test_bit(UNLOADING, &base_vha->dpc_flags)) {
+		ql_log(ql_log_warn, vha, 0xd04e,
+		    "PCI error, exiting.\n");
+		return QLA_FUNCTION_TIMEOUT;
+	}
+	eeh_delay = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = ha->iobase;
 	io_lock_on = base_vha->flags.init_done;
 
 	rval = QLA_SUCCESS;
 	abort_active = test_bit(ABORT_ISP_ACTIVE, &base_vha->dpc_flags);
+<<<<<<< HEAD
 
+=======
+	chip_reset = ha->chip_reset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ha->flags.pci_channel_io_perm_failure) {
 		ql_log(ql_log_warn, vha, 0x1003,
@@ -74,7 +197,11 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		return QLA_FUNCTION_TIMEOUT;
 	}
 
+<<<<<<< HEAD
 	if (ha->flags.isp82xx_fw_hung) {
+=======
+	if (IS_P3P_TYPE(ha) && ha->flags.isp82xx_fw_hung) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Setting Link-Down error */
 		mcp->mb[0] = MBS_LINK_DOWN_ERROR;
 		ql_log(ql_log_warn, vha, 0x1004,
@@ -82,6 +209,21 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		return QLA_FUNCTION_TIMEOUT;
 	}
 
+<<<<<<< HEAD
+=======
+	/* check if ISP abort is active and return cmd with timeout */
+	if (((test_bit(ABORT_ISP_ACTIVE, &base_vha->dpc_flags) ||
+	      test_bit(ISP_ABORT_RETRY, &base_vha->dpc_flags) ||
+	      test_bit(ISP_ABORT_NEEDED, &base_vha->dpc_flags)) &&
+	      !is_rom_cmd(mcp->mb[0])) || ha->flags.eeh_busy) {
+		ql_log(ql_log_info, vha, 0x1005,
+		    "Cmd 0x%x aborted with timeout since ISP Abort is pending\n",
+		    mcp->mb[0]);
+		return QLA_FUNCTION_TIMEOUT;
+	}
+
+	atomic_inc(&ha->num_pend_mbx_stage1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Wait for active mailbox commands to finish by waiting at most tov
 	 * seconds. This is to serialize actual issuing of mailbox cmds during
@@ -89,6 +231,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	 */
 	if (!wait_for_completion_timeout(&ha->mbx_cmd_comp, mcp->tov * HZ)) {
 		/* Timeout occurred. Return error. */
+<<<<<<< HEAD
 		ql_log(ql_log_warn, vha, 0x1005,
 		    "Cmd access timeout, cmd=0x%x, Exiting.\n",
 		    mcp->mb[0]);
@@ -96,6 +239,26 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	}
 
 	ha->flags.mbox_busy = 1;
+=======
+		ql_log(ql_log_warn, vha, 0xd035,
+		    "Cmd access timeout, cmd=0x%x, Exiting.\n",
+		    mcp->mb[0]);
+		vha->hw_err_cnt++;
+		atomic_dec(&ha->num_pend_mbx_stage1);
+		return QLA_FUNCTION_TIMEOUT;
+	}
+	atomic_dec(&ha->num_pend_mbx_stage1);
+	if (ha->flags.purge_mbox || chip_reset != ha->chip_reset ||
+	    ha->flags.eeh_busy) {
+		ql_log(ql_log_warn, vha, 0xd035,
+		       "Purge mbox: purge[%d] eeh[%d] cmd=0x%x, Exiting.\n",
+		       ha->flags.purge_mbox, ha->flags.eeh_busy, mcp->mb[0]);
+		rval = QLA_ABORTED;
+		goto premature_exit;
+	}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save mailbox command for debug */
 	ha->mcp = mcp;
 
@@ -104,6 +267,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
+<<<<<<< HEAD
 	/* Load mailbox registers. */
 	if (IS_QLA82XX(ha))
 		optr = (uint16_t __iomem *)&reg->isp82.mailbox_in[0];
@@ -111,23 +275,56 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		optr = (uint16_t __iomem *)&reg->isp24.mailbox0;
 	else
 		optr = (uint16_t __iomem *)MAILBOX_REG(ha, &reg->isp, 0);
+=======
+	if (ha->flags.purge_mbox || chip_reset != ha->chip_reset ||
+	    ha->flags.mbox_busy) {
+		rval = QLA_ABORTED;
+		spin_unlock_irqrestore(&ha->hardware_lock, flags);
+		goto premature_exit;
+	}
+	ha->flags.mbox_busy = 1;
+
+	/* Load mailbox registers. */
+	if (IS_P3P_TYPE(ha))
+		optr = &reg->isp82.mailbox_in[0];
+	else if (IS_FWI2_CAPABLE(ha) && !(IS_P3P_TYPE(ha)))
+		optr = &reg->isp24.mailbox0;
+	else
+		optr = MAILBOX_REG(ha, &reg->isp, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iptr = mcp->mb;
 	command = mcp->mb[0];
 	mboxes = mcp->out_mb;
 
+<<<<<<< HEAD
 	for (cnt = 0; cnt < ha->mbx_count; cnt++) {
 		if (IS_QLA2200(ha) && cnt == 8)
 			optr =
 			    (uint16_t __iomem *)MAILBOX_REG(ha, &reg->isp, 8);
 		if (mboxes & BIT_0)
 			WRT_REG_WORD(optr, *iptr);
+=======
+	ql_dbg(ql_dbg_mbx, vha, 0x1111,
+	    "Mailbox registers (OUT):\n");
+	for (cnt = 0; cnt < ha->mbx_count; cnt++) {
+		if (IS_QLA2200(ha) && cnt == 8)
+			optr = MAILBOX_REG(ha, &reg->isp, 8);
+		if (mboxes & BIT_0) {
+			ql_dbg(ql_dbg_mbx, vha, 0x1112,
+			    "mbox[%d]<-0x%04x\n", cnt, *iptr);
+			wrt_reg_word(optr, *iptr);
+		} else {
+			wrt_reg_word(optr, 0);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mboxes >>= 1;
 		optr++;
 		iptr++;
 	}
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1111,
 	    "Loaded MBX registers (displayed in bytes) =.\n");
 	ql_dump_buffer(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1112,
@@ -143,6 +340,10 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1117,
 	    "I/O Address = %p.\n", optr);
 	ql_dump_regs(ql_dbg_mbx + ql_dbg_buffer, vha, 0x100e);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1117,
+	    "I/O Address = %p.\n", optr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Issue set host interrupt command to send cmd out. */
 	ha->flags.mbox_int = 0;
@@ -154,6 +355,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	    "jiffies=%lx.\n", jiffies);
 
 	/* Wait for mbx cmd completion until timeout */
+<<<<<<< HEAD
 
 	if ((!abort_active && io_lock_on) || IS_NOPOLLING_TYPE(ha)) {
 		set_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
@@ -180,10 +382,60 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 
 		clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
 
+=======
+	atomic_inc(&ha->num_pend_mbx_stage2);
+	if ((!abort_active && io_lock_on) || IS_NOPOLLING_TYPE(ha)) {
+		set_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
+
+		if (IS_P3P_TYPE(ha))
+			wrt_reg_dword(&reg->isp82.hint, HINT_MBX_INT_PENDING);
+		else if (IS_FWI2_CAPABLE(ha))
+			wrt_reg_dword(&reg->isp24.hccr, HCCRX_SET_HOST_INT);
+		else
+			wrt_reg_word(&reg->isp.hccr, HCCR_SET_HOST_INT);
+		spin_unlock_irqrestore(&ha->hardware_lock, flags);
+
+		wait_time = jiffies;
+		if (!wait_for_completion_timeout(&ha->mbx_intr_comp,
+		    mcp->tov * HZ)) {
+			ql_dbg(ql_dbg_mbx, vha, 0x117a,
+			    "cmd=%x Timeout.\n", command);
+			spin_lock_irqsave(&ha->hardware_lock, flags);
+			clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
+			spin_unlock_irqrestore(&ha->hardware_lock, flags);
+
+			if (chip_reset != ha->chip_reset) {
+				eeh_delay = ha->flags.eeh_busy ? 1 : 0;
+
+				spin_lock_irqsave(&ha->hardware_lock, flags);
+				ha->flags.mbox_busy = 0;
+				spin_unlock_irqrestore(&ha->hardware_lock,
+				    flags);
+				atomic_dec(&ha->num_pend_mbx_stage2);
+				rval = QLA_ABORTED;
+				goto premature_exit;
+			}
+		} else if (ha->flags.purge_mbox ||
+		    chip_reset != ha->chip_reset) {
+			eeh_delay = ha->flags.eeh_busy ? 1 : 0;
+
+			spin_lock_irqsave(&ha->hardware_lock, flags);
+			ha->flags.mbox_busy = 0;
+			spin_unlock_irqrestore(&ha->hardware_lock, flags);
+			atomic_dec(&ha->num_pend_mbx_stage2);
+			rval = QLA_ABORTED;
+			goto premature_exit;
+		}
+
+		if (time_after(jiffies, wait_time + 5 * HZ))
+			ql_log(ql_log_warn, vha, 0x1015, "cmd=0x%x, waited %d msecs\n",
+			    command, jiffies_to_msecs(jiffies - wait_time));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x1011,
 		    "Cmd=%x Polling Mode.\n", command);
 
+<<<<<<< HEAD
 		if (IS_QLA82XX(ha)) {
 			if (RD_REG_DWORD(&reg->isp82.hint) &
 				HINT_MBX_INT_PENDING) {
@@ -200,10 +452,46 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 			WRT_REG_DWORD(&reg->isp24.hccr, HCCRX_SET_HOST_INT);
 		else
 			WRT_REG_WORD(&reg->isp.hccr, HCCR_SET_HOST_INT);
+=======
+		if (IS_P3P_TYPE(ha)) {
+			if (rd_reg_dword(&reg->isp82.hint) &
+				HINT_MBX_INT_PENDING) {
+				ha->flags.mbox_busy = 0;
+				spin_unlock_irqrestore(&ha->hardware_lock,
+					flags);
+				atomic_dec(&ha->num_pend_mbx_stage2);
+				ql_dbg(ql_dbg_mbx, vha, 0x1012,
+				    "Pending mailbox timeout, exiting.\n");
+				vha->hw_err_cnt++;
+				rval = QLA_FUNCTION_TIMEOUT;
+				goto premature_exit;
+			}
+			wrt_reg_dword(&reg->isp82.hint, HINT_MBX_INT_PENDING);
+		} else if (IS_FWI2_CAPABLE(ha))
+			wrt_reg_dword(&reg->isp24.hccr, HCCRX_SET_HOST_INT);
+		else
+			wrt_reg_word(&reg->isp.hccr, HCCR_SET_HOST_INT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 		wait_time = jiffies + mcp->tov * HZ; /* wait at most tov secs */
 		while (!ha->flags.mbox_int) {
+<<<<<<< HEAD
+=======
+			if (ha->flags.purge_mbox ||
+			    chip_reset != ha->chip_reset) {
+				eeh_delay = ha->flags.eeh_busy ? 1 : 0;
+
+				spin_lock_irqsave(&ha->hardware_lock, flags);
+				ha->flags.mbox_busy = 0;
+				spin_unlock_irqrestore(&ha->hardware_lock,
+				    flags);
+				atomic_dec(&ha->num_pend_mbx_stage2);
+				rval = QLA_ABORTED;
+				goto premature_exit;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (time_after(jiffies, wait_time))
 				break;
 
@@ -219,6 +507,10 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		    "Waited %d sec.\n",
 		    (uint)((jiffies - (wait_time - (mcp->tov * HZ)))/HZ));
 	}
+<<<<<<< HEAD
+=======
+	atomic_dec(&ha->num_pend_mbx_stage2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check whether we timed out */
 	if (ha->flags.mbox_int) {
@@ -231,27 +523,60 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		ha->flags.mbox_int = 0;
 		clear_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
 
+<<<<<<< HEAD
 		if (ha->flags.isp82xx_fw_hung) {
 			ha->flags.mbox_busy = 0;
+=======
+		if (IS_P3P_TYPE(ha) && ha->flags.isp82xx_fw_hung) {
+			spin_lock_irqsave(&ha->hardware_lock, flags);
+			ha->flags.mbox_busy = 0;
+			spin_unlock_irqrestore(&ha->hardware_lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Setting Link-Down error */
 			mcp->mb[0] = MBS_LINK_DOWN_ERROR;
 			ha->mcp = NULL;
 			rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 			ql_log(ql_log_warn, vha, 0x1015,
+=======
+			ql_log(ql_log_warn, vha, 0xd048,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "FW hung = %d.\n", ha->flags.isp82xx_fw_hung);
 			goto premature_exit;
 		}
 
+<<<<<<< HEAD
 		if (ha->mailbox_out[0] != MBS_COMMAND_COMPLETE)
 			rval = QLA_FUNCTION_FAILED;
+=======
+		if (ha->mailbox_out[0] != MBS_COMMAND_COMPLETE) {
+			ql_dbg(ql_dbg_mbx, vha, 0x11ff,
+			       "mb_out[0] = %#x <> %#x\n", ha->mailbox_out[0],
+			       MBS_COMMAND_COMPLETE);
+			rval = QLA_FUNCTION_FAILED;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Load return mailbox registers. */
 		iptr2 = mcp->mb;
 		iptr = (uint16_t *)&ha->mailbox_out[0];
 		mboxes = mcp->in_mb;
+<<<<<<< HEAD
 		for (cnt = 0; cnt < ha->mbx_count; cnt++) {
 			if (mboxes & BIT_0)
 				*iptr2 = *iptr;
+=======
+
+		ql_dbg(ql_dbg_mbx, vha, 0x1113,
+		    "Mailbox registers (IN):\n");
+		for (cnt = 0; cnt < ha->mbx_count; cnt++) {
+			if (mboxes & BIT_0) {
+				*iptr2 = *iptr;
+				ql_dbg(ql_dbg_mbx, vha, 0x1114,
+				    "mbox[%d]->0x%04x\n", cnt, *iptr2);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			mboxes >>= 1;
 			iptr2++;
@@ -259,6 +584,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 		}
 	} else {
 
+<<<<<<< HEAD
 		uint16_t mb0;
 		uint32_t ictrl;
 
@@ -287,6 +613,71 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	}
 
 	ha->flags.mbox_busy = 0;
+=======
+		uint16_t mb[8];
+		uint32_t ictrl, host_status, hccr;
+		uint16_t        w;
+
+		if (IS_FWI2_CAPABLE(ha)) {
+			mb[0] = rd_reg_word(&reg->isp24.mailbox0);
+			mb[1] = rd_reg_word(&reg->isp24.mailbox1);
+			mb[2] = rd_reg_word(&reg->isp24.mailbox2);
+			mb[3] = rd_reg_word(&reg->isp24.mailbox3);
+			mb[7] = rd_reg_word(&reg->isp24.mailbox7);
+			ictrl = rd_reg_dword(&reg->isp24.ictrl);
+			host_status = rd_reg_dword(&reg->isp24.host_status);
+			hccr = rd_reg_dword(&reg->isp24.hccr);
+
+			ql_log(ql_log_warn, vha, 0xd04c,
+			    "MBX Command timeout for cmd %x, iocontrol=%x jiffies=%lx "
+			    "mb[0-3]=[0x%x 0x%x 0x%x 0x%x] mb7 0x%x host_status 0x%x hccr 0x%x\n",
+			    command, ictrl, jiffies, mb[0], mb[1], mb[2], mb[3],
+			    mb[7], host_status, hccr);
+			vha->hw_err_cnt++;
+
+		} else {
+			mb[0] = RD_MAILBOX_REG(ha, &reg->isp, 0);
+			ictrl = rd_reg_word(&reg->isp.ictrl);
+			ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1119,
+			    "MBX Command timeout for cmd %x, iocontrol=%x jiffies=%lx "
+			    "mb[0]=0x%x\n", command, ictrl, jiffies, mb[0]);
+			vha->hw_err_cnt++;
+		}
+		ql_dump_regs(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1019);
+
+		/* Capture FW dump only, if PCI device active */
+		if (!pci_channel_offline(vha->hw->pdev)) {
+			pci_read_config_word(ha->pdev, PCI_VENDOR_ID, &w);
+			if (w == 0xffff || ictrl == 0xffffffff ||
+			    (chip_reset != ha->chip_reset)) {
+				/* This is special case if there is unload
+				 * of driver happening and if PCI device go
+				 * into bad state due to PCI error condition
+				 * then only PCI ERR flag would be set.
+				 * we will do premature exit for above case.
+				 */
+				spin_lock_irqsave(&ha->hardware_lock, flags);
+				ha->flags.mbox_busy = 0;
+				spin_unlock_irqrestore(&ha->hardware_lock,
+				    flags);
+				rval = QLA_FUNCTION_TIMEOUT;
+				goto premature_exit;
+			}
+
+			/* Attempt to capture firmware dump for further
+			 * anallysis of the current formware state. we do not
+			 * need to do this if we are intentionally generating
+			 * a dump
+			 */
+			if (mcp->mb[0] != MBC_GEN_SYSTEM_ERROR)
+				qla2xxx_dump_fw(vha);
+			rval = QLA_FUNCTION_TIMEOUT;
+		 }
+	}
+	spin_lock_irqsave(&ha->hardware_lock, flags);
+	ha->flags.mbox_busy = 0;
+	spin_unlock_irqrestore(&ha->hardware_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clean up */
 	ha->mcp = NULL;
@@ -320,6 +711,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 					    CRB_NIU_XG_PAUSE_CTL_P1);
 				}
 				ql_log(ql_log_info, base_vha, 0x101c,
+<<<<<<< HEAD
 				    "Mailbox cmd timeout occured, cmd=0x%x, "
 				    "mb[0]=0x%x, eeh_busy=0x%x. Scheduling ISP "
 				    "abort.\n", command, mcp->mb[0],
@@ -328,6 +720,17 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 				qla2xxx_wake_dpc(vha);
 			}
 		} else if (!abort_active) {
+=======
+				    "Mailbox cmd timeout occurred, cmd=0x%x, "
+				    "mb[0]=0x%x, eeh_busy=0x%x. Scheduling ISP "
+				    "abort.\n", command, mcp->mb[0],
+				    ha->flags.eeh_busy);
+				vha->hw_err_cnt++;
+				set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
+				qla2xxx_wake_dpc(vha);
+			}
+		} else if (current == ha->dpc_thread) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* call abort directly since we are in the DPC thread */
 			ql_dbg(ql_dbg_mbx, vha, 0x101d,
 			    "Timeout, calling abort_isp.\n");
@@ -345,14 +748,26 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 					    CRB_NIU_XG_PAUSE_CTL_P1);
 				}
 				ql_log(ql_log_info, base_vha, 0x101e,
+<<<<<<< HEAD
 				    "Mailbox cmd timeout occured, cmd=0x%x, "
 				    "mb[0]=0x%x. Scheduling ISP abort ",
 				    command, mcp->mb[0]);
+=======
+				    "Mailbox cmd timeout occurred, cmd=0x%x, "
+				    "mb[0]=0x%x. Scheduling ISP abort ",
+				    command, mcp->mb[0]);
+				vha->hw_err_cnt++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_bit(ABORT_ISP_ACTIVE, &vha->dpc_flags);
 				clear_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 				/* Allow next mbx cmd to come in. */
 				complete(&ha->mbx_cmd_comp);
+<<<<<<< HEAD
 				if (ha->isp_ops->abort_isp(vha)) {
+=======
+				if (ha->isp_ops->abort_isp(vha) &&
+				    !ha->flags.eeh_busy) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* Failed. retry later. */
 					set_bit(ISP_ABORT_NEEDED,
 					    &vha->dpc_flags);
@@ -370,14 +785,62 @@ premature_exit:
 	complete(&ha->mbx_cmd_comp);
 
 mbx_done:
+<<<<<<< HEAD
 	if (rval) {
 		ql_dbg(ql_dbg_mbx, base_vha, 0x1020,
 		    "**** Failed mbx[0]=%x, mb[1]=%x, mb[2]=%x, mb[3]=%x, cmd=%x ****.\n",
 		    mcp->mb[0], mcp->mb[1], mcp->mb[2], mcp->mb[3], command);
+=======
+	if (rval == QLA_ABORTED) {
+		ql_log(ql_log_info, vha, 0xd035,
+		    "Chip Reset in progress. Purging Mbox cmd=0x%x.\n",
+		    mcp->mb[0]);
+	} else if (rval) {
+		if (ql2xextended_error_logging & (ql_dbg_disc|ql_dbg_mbx)) {
+			pr_warn("%s [%s]-%04x:%ld: **** Failed=%x", QL_MSGHDR,
+			    dev_name(&ha->pdev->dev), 0x1020+0x800,
+			    vha->host_no, rval);
+			mboxes = mcp->in_mb;
+			cnt = 4;
+			for (i = 0; i < ha->mbx_count && cnt; i++, mboxes >>= 1)
+				if (mboxes & BIT_0) {
+					printk(" mb[%u]=%x", i, mcp->mb[i]);
+					cnt--;
+				}
+			pr_warn(" cmd=%x ****\n", command);
+		}
+		if (IS_FWI2_CAPABLE(ha) && !(IS_P3P_TYPE(ha))) {
+			ql_dbg(ql_dbg_mbx, vha, 0x1198,
+			    "host_status=%#x intr_ctrl=%#x intr_status=%#x\n",
+			    rd_reg_dword(&reg->isp24.host_status),
+			    rd_reg_dword(&reg->isp24.ictrl),
+			    rd_reg_dword(&reg->isp24.istatus));
+		} else {
+			ql_dbg(ql_dbg_mbx, vha, 0x1206,
+			    "ctrl_status=%#x ictrl=%#x istatus=%#x\n",
+			    rd_reg_word(&reg->isp.ctrl_status),
+			    rd_reg_word(&reg->isp.ictrl),
+			    rd_reg_word(&reg->isp.istatus));
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ql_dbg(ql_dbg_mbx, base_vha, 0x1021, "Done %s.\n", __func__);
 	}
 
+<<<<<<< HEAD
+=======
+	i = 500;
+	while (i && eeh_delay && (ha->pci_error_state < QLA_PCI_SLOT_RESET)) {
+		/*
+		 * The caller of this mailbox encounter pci error.
+		 * Hold the thread until PCIE link reset complete to make
+		 * sure caller does not unmap dma while recovery is
+		 * in progress.
+		 */
+		msleep(1);
+		i--;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
@@ -390,7 +853,12 @@ qla2x00_load_ram(scsi_qla_host_t *vha, dma_addr_t req_dma, uint32_t risc_addr,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1022, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1022,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (MSW(risc_addr) || IS_FWI2_CAPABLE(ha)) {
 		mcp->mb[0] = MBC_LOAD_RISC_RAM_EXTENDED;
@@ -415,22 +883,41 @@ qla2x00_load_ram(scsi_qla_host_t *vha, dma_addr_t req_dma, uint32_t risc_addr,
 		mcp->out_mb |= MBX_4;
 	}
 
+<<<<<<< HEAD
 	mcp->in_mb = MBX_0;
+=======
+	mcp->in_mb = MBX_1|MBX_0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->tov = MBX_TOV_SECONDS;
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
 
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1023,
+<<<<<<< HEAD
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x1024, "Done %s.\n", __func__);
+=======
+		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1]);
+		vha->hw_err_cnt++;
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1024,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
+<<<<<<< HEAD
 #define	EXTENDED_BB_CREDITS	BIT_0
+=======
+#define	NVME_ENABLE_FLAG	BIT_3
+#define	EDIF_HW_SUPPORT		BIT_10
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * qla2x00_execute_fw
  *     Start adapter firmware.
@@ -453,9 +940,20 @@ qla2x00_execute_fw(scsi_qla_host_t *vha, uint32_t risc_addr)
 	struct qla_hw_data *ha = vha->hw;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1025, "Entered %s.\n", __func__);
 
+=======
+	u8 semaphore = 0;
+#define EXE_FW_FORCE_SEMAPHORE BIT_7
+	u8 retry = 5;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1025,
+	    "Entered %s.\n", __func__);
+
+again:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[0] = MBC_EXECUTE_FIRMWARE;
 	mcp->out_mb = MBX_0;
 	mcp->in_mb = MBX_0;
@@ -463,6 +961,7 @@ qla2x00_execute_fw(scsi_qla_host_t *vha, uint32_t risc_addr)
 		mcp->mb[1] = MSW(risc_addr);
 		mcp->mb[2] = LSW(risc_addr);
 		mcp->mb[3] = 0;
+<<<<<<< HEAD
 		if (IS_QLA81XX(ha) || IS_QLA83XX(ha)) {
 			struct nvram_81xx *nv = ha->nvram;
 			mcp->mb[4] = (nv->enhanced_features &
@@ -471,6 +970,50 @@ qla2x00_execute_fw(scsi_qla_host_t *vha, uint32_t risc_addr)
 			mcp->mb[4] = 0;
 		mcp->out_mb |= MBX_4|MBX_3|MBX_2|MBX_1;
 		mcp->in_mb |= MBX_1;
+=======
+		mcp->mb[4] = 0;
+		mcp->mb[11] = 0;
+
+		/* Enable BPM? */
+		if (ha->flags.lr_detected) {
+			mcp->mb[4] = BIT_0;
+			if (IS_BPM_RANGE_CAPABLE(ha))
+				mcp->mb[4] |=
+				    ha->lr_distance << LR_DIST_FW_POS;
+		}
+
+		if (ql2xnvmeenable && (IS_QLA27XX(ha) || IS_QLA28XX(ha)))
+			mcp->mb[4] |= NVME_ENABLE_FLAG;
+
+		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+			struct nvram_81xx *nv = ha->nvram;
+			/* set minimum speed if specified in nvram */
+			if (nv->min_supported_speed >= 2 &&
+			    nv->min_supported_speed <= 5) {
+				mcp->mb[4] |= BIT_4;
+				mcp->mb[11] |= nv->min_supported_speed & 0xF;
+				mcp->out_mb |= MBX_11;
+				mcp->in_mb |= BIT_5;
+				vha->min_supported_speed =
+				    nv->min_supported_speed;
+			}
+
+			if (IS_PPCARCH)
+				mcp->mb[11] |= BIT_4;
+		}
+
+		if (ha->flags.exlogins_enabled)
+			mcp->mb[4] |= ENABLE_EXTENDED_LOGIN;
+
+		if (ha->flags.exchoffld_enabled)
+			mcp->mb[4] |= ENABLE_EXCHANGE_OFFLD;
+
+		if (semaphore)
+			mcp->mb[11] |= EXE_FW_FORCE_SEMAPHORE;
+
+		mcp->out_mb |= MBX_4 | MBX_3 | MBX_2 | MBX_1 | MBX_11;
+		mcp->in_mb |= MBX_5 | MBX_3 | MBX_2 | MBX_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mcp->mb[1] = LSW(risc_addr);
 		mcp->out_mb |= MBX_1;
@@ -485,6 +1028,7 @@ qla2x00_execute_fw(scsi_qla_host_t *vha, uint32_t risc_addr)
 	rval = qla2x00_mailbox_command(vha, mcp);
 
 	if (rval != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1026,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
@@ -496,6 +1040,284 @@ qla2x00_execute_fw(scsi_qla_host_t *vha, uint32_t risc_addr)
 		}
 	}
 
+=======
+		if (IS_QLA28XX(ha) && rval == QLA_COMMAND_ERROR &&
+		    mcp->mb[1] == 0x27 && retry) {
+			semaphore = 1;
+			retry--;
+			ql_dbg(ql_dbg_async, vha, 0x1026,
+			    "Exe FW: force semaphore.\n");
+			goto again;
+		}
+
+		if (retry) {
+			retry--;
+			ql_dbg(ql_dbg_async, vha, 0x509d,
+			    "Exe FW retry: mb[0]=%x retry[%d]\n", mcp->mb[0], retry);
+			goto again;
+		}
+		ql_dbg(ql_dbg_mbx, vha, 0x1026,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+		vha->hw_err_cnt++;
+		return rval;
+	}
+
+	if (!IS_FWI2_CAPABLE(ha))
+		goto done;
+
+	ha->fw_ability_mask = mcp->mb[3] << 16 | mcp->mb[2];
+	ql_dbg(ql_dbg_mbx, vha, 0x119a,
+	    "fw_ability_mask=%x.\n", ha->fw_ability_mask);
+	ql_dbg(ql_dbg_mbx, vha, 0x1027, "exchanges=%x.\n", mcp->mb[1]);
+	if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+		ha->max_supported_speed = mcp->mb[2] & (BIT_0|BIT_1);
+		ql_dbg(ql_dbg_mbx, vha, 0x119b, "max_supported_speed=%s.\n",
+		    ha->max_supported_speed == 0 ? "16Gps" :
+		    ha->max_supported_speed == 1 ? "32Gps" :
+		    ha->max_supported_speed == 2 ? "64Gps" : "unknown");
+		if (vha->min_supported_speed) {
+			ha->min_supported_speed = mcp->mb[5] &
+			    (BIT_0 | BIT_1 | BIT_2);
+			ql_dbg(ql_dbg_mbx, vha, 0x119c,
+			    "min_supported_speed=%s.\n",
+			    ha->min_supported_speed == 6 ? "64Gps" :
+			    ha->min_supported_speed == 5 ? "32Gps" :
+			    ha->min_supported_speed == 4 ? "16Gps" :
+			    ha->min_supported_speed == 3 ? "8Gps" :
+			    ha->min_supported_speed == 2 ? "4Gps" : "unknown");
+		}
+	}
+
+	if (IS_QLA28XX(ha) && (mcp->mb[5] & EDIF_HW_SUPPORT)) {
+		ha->flags.edif_hw = 1;
+		ql_log(ql_log_info, vha, 0xffff,
+		    "%s: edif HW\n", __func__);
+	}
+
+done:
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1028,
+	    "Done %s.\n", __func__);
+
+	return rval;
+}
+
+/*
+ * qla_get_exlogin_status
+ *	Get extended login status
+ *	uses the memory offload control/status Mailbox
+ *
+ * Input:
+ *	ha:		adapter state pointer.
+ *	fwopt:		firmware options
+ *
+ * Returns:
+ *	qla2x00 local function status
+ *
+ * Context:
+ *	Kernel context.
+ */
+#define	FETCH_XLOGINS_STAT	0x8
+int
+qla_get_exlogin_status(scsi_qla_host_t *vha, uint16_t *buf_sz,
+	uint16_t *ex_logins_cnt)
+{
+	int rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x118f,
+	    "Entered %s\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_MEM_OFFLOAD_CNTRL_STAT;
+	mcp->mb[1] = FETCH_XLOGINS_STAT;
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_10|MBX_4|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1115, "Failed=%x.\n", rval);
+	} else {
+		*buf_sz = mcp->mb[4];
+		*ex_logins_cnt = mcp->mb[10];
+
+		ql_log(ql_log_info, vha, 0x1190,
+		    "buffer size 0x%x, exchange login count=%d\n",
+		    mcp->mb[4], mcp->mb[10]);
+
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1116,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+/*
+ * qla_set_exlogin_mem_cfg
+ *	set extended login memory configuration
+ *	Mbx needs to be issues before init_cb is set
+ *
+ * Input:
+ *	ha:		adapter state pointer.
+ *	buffer:		buffer pointer
+ *	phys_addr:	physical address of buffer
+ *	size:		size of buffer
+ *	TARGET_QUEUE_LOCK must be released
+ *	ADAPTER_STATE_LOCK must be release
+ *
+ * Returns:
+ *	qla2x00 local funxtion status code.
+ *
+ * Context:
+ *	Kernel context.
+ */
+#define CONFIG_XLOGINS_MEM	0x9
+int
+qla_set_exlogin_mem_cfg(scsi_qla_host_t *vha, dma_addr_t phys_addr)
+{
+	int		rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x111a,
+	    "Entered %s.\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_MEM_OFFLOAD_CNTRL_STAT;
+	mcp->mb[1] = CONFIG_XLOGINS_MEM;
+	mcp->mb[2] = MSW(phys_addr);
+	mcp->mb[3] = LSW(phys_addr);
+	mcp->mb[6] = MSW(MSD(phys_addr));
+	mcp->mb[7] = LSW(MSD(phys_addr));
+	mcp->mb[8] = MSW(ha->exlogin_size);
+	mcp->mb[9] = LSW(ha->exlogin_size);
+	mcp->out_mb = MBX_9|MBX_8|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_11|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x111b,
+		       "EXlogin Failed=%x. MB0=%x MB11=%x\n",
+		       rval, mcp->mb[0], mcp->mb[11]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x118c,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+/*
+ * qla_get_exchoffld_status
+ *	Get exchange offload status
+ *	uses the memory offload control/status Mailbox
+ *
+ * Input:
+ *	ha:		adapter state pointer.
+ *	fwopt:		firmware options
+ *
+ * Returns:
+ *	qla2x00 local function status
+ *
+ * Context:
+ *	Kernel context.
+ */
+#define	FETCH_XCHOFFLD_STAT	0x2
+int
+qla_get_exchoffld_status(scsi_qla_host_t *vha, uint16_t *buf_sz,
+	uint16_t *ex_logins_cnt)
+{
+	int rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1019,
+	    "Entered %s\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_MEM_OFFLOAD_CNTRL_STAT;
+	mcp->mb[1] = FETCH_XCHOFFLD_STAT;
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_10|MBX_4|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1155, "Failed=%x.\n", rval);
+	} else {
+		*buf_sz = mcp->mb[4];
+		*ex_logins_cnt = mcp->mb[10];
+
+		ql_log(ql_log_info, vha, 0x118e,
+		    "buffer size 0x%x, exchange offload count=%d\n",
+		    mcp->mb[4], mcp->mb[10]);
+
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1156,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+/*
+ * qla_set_exchoffld_mem_cfg
+ *	Set exchange offload memory configuration
+ *	Mbx needs to be issues before init_cb is set
+ *
+ * Input:
+ *	ha:		adapter state pointer.
+ *	buffer:		buffer pointer
+ *	phys_addr:	physical address of buffer
+ *	size:		size of buffer
+ *	TARGET_QUEUE_LOCK must be released
+ *	ADAPTER_STATE_LOCK must be release
+ *
+ * Returns:
+ *	qla2x00 local funxtion status code.
+ *
+ * Context:
+ *	Kernel context.
+ */
+#define CONFIG_XCHOFFLD_MEM	0x3
+int
+qla_set_exchoffld_mem_cfg(scsi_qla_host_t *vha)
+{
+	int		rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1157,
+	    "Entered %s.\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_MEM_OFFLOAD_CNTRL_STAT;
+	mcp->mb[1] = CONFIG_XCHOFFLD_MEM;
+	mcp->mb[2] = MSW(ha->exchoffld_buf_dma);
+	mcp->mb[3] = LSW(ha->exchoffld_buf_dma);
+	mcp->mb[6] = MSW(MSD(ha->exchoffld_buf_dma));
+	mcp->mb[7] = LSW(MSD(ha->exchoffld_buf_dma));
+	mcp->mb[8] = MSW(ha->exchoffld_size);
+	mcp->mb[9] = LSW(ha->exchoffld_size);
+	mcp->out_mb = MBX_9|MBX_8|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_11|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval != QLA_SUCCESS) {
+		/*EMPTY*/
+		ql_dbg(ql_dbg_mbx, vha, 0x1158, "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1192,
+		    "Done %s.\n", __func__);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
@@ -523,15 +1345,32 @@ qla2x00_get_fw_version(scsi_qla_host_t *vha)
 	mbx_cmd_t	*mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1029, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1029,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_FIRMWARE_VERSION;
 	mcp->out_mb = MBX_0;
 	mcp->in_mb = MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+<<<<<<< HEAD
 	if (IS_QLA81XX(vha->hw) || IS_QLA8031(ha))
 		mcp->in_mb |= MBX_13|MBX_12|MBX_11|MBX_10|MBX_9|MBX_8;
 	if (IS_QLA83XX(vha->hw))
 		mcp->in_mb |= MBX_17|MBX_16|MBX_15;
+=======
+	if (IS_QLA81XX(vha->hw) || IS_QLA8031(ha) || IS_QLA8044(ha))
+		mcp->in_mb |= MBX_13|MBX_12|MBX_11|MBX_10|MBX_9|MBX_8;
+	if (IS_FWI2_CAPABLE(ha))
+		mcp->in_mb |= MBX_17|MBX_16|MBX_15;
+	if (IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->in_mb |=
+		    MBX_25|MBX_24|MBX_23|MBX_22|MBX_21|MBX_20|MBX_19|MBX_18|
+		    MBX_14|MBX_13|MBX_11|MBX_10|MBX_9|MBX_8|MBX_7;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 	mcp->tov = MBX_TOV_SECONDS;
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -547,7 +1386,12 @@ qla2x00_get_fw_version(scsi_qla_host_t *vha)
 		ha->fw_memory_size = 0x1FFFF;		/* Defaults to 128KB. */
 	else
 		ha->fw_memory_size = (mcp->mb[5] << 16) | mcp->mb[4];
+<<<<<<< HEAD
 	if (IS_QLA81XX(vha->hw) || IS_QLA8031(vha->hw)) {
+=======
+
+	if (IS_QLA81XX(vha->hw) || IS_QLA8031(vha->hw) || IS_QLA8044(ha)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->mpi_version[0] = mcp->mb[10] & 0xff;
 		ha->mpi_version[1] = mcp->mb[11] >> 8;
 		ha->mpi_version[2] = mcp->mb[11] & 0xff;
@@ -556,6 +1400,7 @@ qla2x00_get_fw_version(scsi_qla_host_t *vha)
 		ha->phy_version[1] = mcp->mb[9] >> 8;
 		ha->phy_version[2] = mcp->mb[9] & 0xff;
 	}
+<<<<<<< HEAD
 	if (IS_QLA83XX(ha)) {
 		if (mcp->mb[6] & BIT_15) {
 			ha->fw_attributes_h = mcp->mb[15];
@@ -568,6 +1413,101 @@ qla2x00_get_fw_version(scsi_qla_host_t *vha)
 			ql_dbg(ql_dbg_mbx, vha, 0x112f,
 			    "%s: FwAttributes [Upper]  invalid, MB6:%04x\n",
 			    __func__, mcp->mb[6]);
+=======
+
+	if (IS_FWI2_CAPABLE(ha)) {
+		ha->fw_attributes_h = mcp->mb[15];
+		ha->fw_attributes_ext[0] = mcp->mb[16];
+		ha->fw_attributes_ext[1] = mcp->mb[17];
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1139,
+		    "%s: FW_attributes Upper: 0x%x, Lower: 0x%x.\n",
+		    __func__, mcp->mb[15], mcp->mb[6]);
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x112f,
+		    "%s: Ext_FwAttributes Upper: 0x%x, Lower: 0x%x.\n",
+		    __func__, mcp->mb[17], mcp->mb[16]);
+
+		if (ha->fw_attributes_h & 0x4)
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x118d,
+			    "%s: Firmware supports Extended Login 0x%x\n",
+			    __func__, ha->fw_attributes_h);
+
+		if (ha->fw_attributes_h & 0x8)
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1191,
+			    "%s: Firmware supports Exchange Offload 0x%x\n",
+			    __func__, ha->fw_attributes_h);
+
+		/*
+		 * FW supports nvme and driver load parameter requested nvme.
+		 * BIT 26 of fw_attributes indicates NVMe support.
+		 */
+		if ((ha->fw_attributes_h &
+		    (FW_ATTR_H_NVME | FW_ATTR_H_NVME_UPDATED)) &&
+			ql2xnvmeenable) {
+			if (ha->fw_attributes_h & FW_ATTR_H_NVME_FBURST)
+				vha->flags.nvme_first_burst = 1;
+
+			vha->flags.nvme_enabled = 1;
+			ql_log(ql_log_info, vha, 0xd302,
+			    "%s: FC-NVMe is Enabled (0x%x)\n",
+			     __func__, ha->fw_attributes_h);
+		}
+
+		/* BIT_13 of Extended FW Attributes informs about NVMe2 support */
+		if (ha->fw_attributes_ext[0] & FW_ATTR_EXT0_NVME2) {
+			ql_log(ql_log_info, vha, 0xd302,
+			       "Firmware supports NVMe2 0x%x\n",
+			       ha->fw_attributes_ext[0]);
+			vha->flags.nvme2_enabled = 1;
+		}
+
+		if (IS_QLA28XX(ha) && ha->flags.edif_hw && ql2xsecenable &&
+		    (ha->fw_attributes_ext[0] & FW_ATTR_EXT0_EDIF)) {
+			ha->flags.edif_enabled = 1;
+			ql_log(ql_log_info, vha, 0xffff,
+			       "%s: edif is enabled\n", __func__);
+		}
+	}
+
+	if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+		ha->serdes_version[0] = mcp->mb[7] & 0xff;
+		ha->serdes_version[1] = mcp->mb[8] >> 8;
+		ha->serdes_version[2] = mcp->mb[8] & 0xff;
+		ha->mpi_version[0] = mcp->mb[10] & 0xff;
+		ha->mpi_version[1] = mcp->mb[11] >> 8;
+		ha->mpi_version[2] = mcp->mb[11] & 0xff;
+		ha->pep_version[0] = mcp->mb[13] & 0xff;
+		ha->pep_version[1] = mcp->mb[14] >> 8;
+		ha->pep_version[2] = mcp->mb[14] & 0xff;
+		ha->fw_shared_ram_start = (mcp->mb[19] << 16) | mcp->mb[18];
+		ha->fw_shared_ram_end = (mcp->mb[21] << 16) | mcp->mb[20];
+		ha->fw_ddr_ram_start = (mcp->mb[23] << 16) | mcp->mb[22];
+		ha->fw_ddr_ram_end = (mcp->mb[25] << 16) | mcp->mb[24];
+		if (IS_QLA28XX(ha)) {
+			if (mcp->mb[16] & BIT_10)
+				ha->flags.secure_fw = 1;
+
+			ql_log(ql_log_info, vha, 0xffff,
+			    "Secure Flash Update in FW: %s\n",
+			    (ha->flags.secure_fw) ? "Supported" :
+			    "Not Supported");
+		}
+
+		if (ha->flags.scm_supported_a &&
+		    (ha->fw_attributes_ext[0] & FW_ATTR_EXT0_SCM_SUPPORTED)) {
+			ha->flags.scm_supported_f = 1;
+			ha->sf_init_cb->flags |= cpu_to_le16(BIT_13);
+		}
+		ql_log(ql_log_info, vha, 0x11a3, "SCM in FW: %s\n",
+		       (ha->flags.scm_supported_f) ? "Supported" :
+		       "Not Supported");
+
+		if (vha->flags.nvme2_enabled) {
+			/* set BIT_15 of special feature control block for SLER */
+			ha->sf_init_cb->flags |= cpu_to_le16(BIT_15);
+			/* set BIT_14 of special feature control block for PI CTRL*/
+			ha->sf_init_cb->flags |= cpu_to_le16(BIT_14);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 failed:
@@ -576,7 +1516,12 @@ failed:
 		ql_dbg(ql_dbg_mbx, vha, 0x102a, "Failed=%x.\n", rval);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x102b, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x102b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rval;
 }
@@ -602,7 +1547,12 @@ qla2x00_get_fw_options(scsi_qla_host_t *vha, uint16_t *fwopts)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x102c, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x102c,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_FIRMWARE_OPTION;
 	mcp->out_mb = MBX_0;
@@ -620,7 +1570,12 @@ qla2x00_get_fw_options(scsi_qla_host_t *vha, uint16_t *fwopts)
 		fwopts[2] = mcp->mb[2];
 		fwopts[3] = mcp->mb[3];
 
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x102e, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x102e,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -648,7 +1603,12 @@ qla2x00_set_fw_options(scsi_qla_host_t *vha, uint16_t *fwopts)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x102f, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x102f,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_SET_FIRMWARE_OPTION;
 	mcp->mb[1] = fwopts[1];
@@ -658,6 +1618,11 @@ qla2x00_set_fw_options(scsi_qla_host_t *vha, uint16_t *fwopts)
 	mcp->in_mb = MBX_0;
 	if (IS_FWI2_CAPABLE(vha->hw)) {
 		mcp->in_mb |= MBX_1;
+<<<<<<< HEAD
+=======
+		mcp->mb[10] = fwopts[10];
+		mcp->out_mb |= MBX_10;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mcp->mb[10] = fwopts[10];
 		mcp->mb[11] = fwopts[11];
@@ -676,7 +1641,12 @@ qla2x00_set_fw_options(scsi_qla_host_t *vha, uint16_t *fwopts)
 		    "Failed=%x (%x/%x).\n", rval, mcp->mb[0], mcp->mb[1]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1031, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1031,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -704,7 +1674,12 @@ qla2x00_mbx_reg_test(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1032, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1032,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_MAILBOX_REGISTER_TEST;
 	mcp->mb[1] = 0xAAAA;
@@ -732,9 +1707,17 @@ qla2x00_mbx_reg_test(scsi_qla_host_t *vha)
 	if (rval != QLA_SUCCESS) {
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1033, "Failed=%x.\n", rval);
+<<<<<<< HEAD
 	} else {
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1034, "Done %s.\n", __func__);
+=======
+		vha->hw_err_cnt++;
+	} else {
+		/*EMPTY*/
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1034,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -762,7 +1745,12 @@ qla2x00_verify_checksum(scsi_qla_host_t *vha, uint32_t risc_addr)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1035, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1035,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_VERIFY_CHECKSUM;
 	mcp->out_mb = MBX_0;
@@ -787,7 +1775,12 @@ qla2x00_verify_checksum(scsi_qla_host_t *vha, uint32_t risc_addr)
 		    "Failed=%x chm sum=%x.\n", rval, IS_FWI2_CAPABLE(vha->hw) ?
 		    (mcp->mb[2] << 16) | mcp->mb[1] : mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1037, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1037,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -819,6 +1812,7 @@ qla2x00_issue_iocb_timeout(scsi_qla_host_t *vha, void *buffer,
 	mbx_cmd_t	mc;
 	mbx_cmd_t	*mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1038, "Entered %s.\n", __func__);
 
 	mcp->mb[0] = MBC_IOCB_COMMAND_A64;
@@ -829,6 +1823,22 @@ qla2x00_issue_iocb_timeout(scsi_qla_host_t *vha, void *buffer,
 	mcp->mb[7] = LSW(MSD(phys_addr));
 	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
 	mcp->in_mb = MBX_2|MBX_0;
+=======
+	if (!vha->hw->flags.fw_started)
+		return QLA_INVALID_COMMAND;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1038,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_IOCB_COMMAND_A64;
+	mcp->mb[1] = 0;
+	mcp->mb[2] = MSW(LSD(phys_addr));
+	mcp->mb[3] = LSW(LSD(phys_addr));
+	mcp->mb[6] = MSW(MSD(phys_addr));
+	mcp->mb[7] = LSW(MSD(phys_addr));
+	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->tov = tov;
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -837,12 +1847,22 @@ qla2x00_issue_iocb_timeout(scsi_qla_host_t *vha, void *buffer,
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1039, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		sts_entry_t *sts_entry = (sts_entry_t *) buffer;
+=======
+		sts_entry_t *sts_entry = buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Mask reserved bits. */
 		sts_entry->entry_status &=
 		    IS_FWI2_CAPABLE(vha->hw) ? RF_MASK_24XX : RF_MASK;
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x103a, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x103a,
+		    "Done %s (status=%x).\n", __func__,
+		    sts_entry->entry_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -881,6 +1901,7 @@ qla2x00_abort_command(srb_t *sp)
 	fc_port_t	*fcport = sp->fcport;
 	scsi_qla_host_t *vha = fcport->vha;
 	struct qla_hw_data *ha = vha->hw;
+<<<<<<< HEAD
 	struct req_que *req = vha->req;
 	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
 
@@ -888,12 +1909,31 @@ qla2x00_abort_command(srb_t *sp)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	for (handle = 1; handle < MAX_OUTSTANDING_COMMANDS; handle++) {
+=======
+	struct req_que *req;
+	struct scsi_cmnd *cmd = GET_CMD_SP(sp);
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x103b,
+	    "Entered %s.\n", __func__);
+
+	if (sp->qpair)
+		req = sp->qpair->req;
+	else
+		req = vha->req;
+
+	spin_lock_irqsave(&ha->hardware_lock, flags);
+	for (handle = 1; handle < req->num_outstanding_cmds; handle++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req->outstanding_cmds[handle] == sp)
 			break;
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
+<<<<<<< HEAD
 	if (handle == MAX_OUTSTANDING_COMMANDS) {
+=======
+	if (handle == req->num_outstanding_cmds) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* command not found */
 		return QLA_FUNCTION_FAILED;
 	}
@@ -915,19 +1955,29 @@ qla2x00_abort_command(srb_t *sp)
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x103c, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x103d, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x103d,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
 int
+<<<<<<< HEAD
 qla2x00_abort_target(struct fc_port *fcport, unsigned int l, int tag)
+=======
+qla2x00_abort_target(struct fc_port *fcport, uint64_t l, int tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval, rval2;
 	mbx_cmd_t  mc;
 	mbx_cmd_t  *mcp = &mc;
 	scsi_qla_host_t *vha;
+<<<<<<< HEAD
 	struct req_que *req;
 	struct rsp_que *rsp;
 
@@ -938,6 +1988,14 @@ qla2x00_abort_target(struct fc_port *fcport, unsigned int l, int tag)
 
 	req = vha->hw->req_q_map[0];
 	rsp = req->rsp;
+=======
+
+	vha = fcport->vha;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x103e,
+	    "Entered %s.\n", __func__);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[0] = MBC_ABORT_TARGET;
 	mcp->out_mb = MBX_9|MBX_2|MBX_1|MBX_0;
 	if (HAS_EXTENDED_IDS(vha->hw)) {
@@ -955,29 +2013,48 @@ qla2x00_abort_target(struct fc_port *fcport, unsigned int l, int tag)
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
 	if (rval != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x103f, "Failed=%x.\n", rval);
 	}
 
 	/* Issue marker IOCB. */
 	rval2 = qla2x00_marker(vha, req, rsp, fcport->loop_id, 0,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x103f,
+		    "Failed=%x.\n", rval);
+	}
+
+	/* Issue marker IOCB. */
+	rval2 = qla2x00_marker(vha, vha->hw->base_qpair, fcport->loop_id, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							MK_SYNC_ID);
 	if (rval2 != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1040,
 		    "Failed to issue marker IOCB (%x).\n", rval2);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1041, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1041,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
 int
+<<<<<<< HEAD
 qla2x00_lun_reset(struct fc_port *fcport, unsigned int l, int tag)
+=======
+qla2x00_lun_reset(struct fc_port *fcport, uint64_t l, int tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval, rval2;
 	mbx_cmd_t  mc;
 	mbx_cmd_t  *mcp = &mc;
 	scsi_qla_host_t *vha;
+<<<<<<< HEAD
 	struct req_que *req;
 	struct rsp_que *rsp;
 
@@ -987,13 +2064,25 @@ qla2x00_lun_reset(struct fc_port *fcport, unsigned int l, int tag)
 
 	req = vha->hw->req_q_map[0];
 	rsp = req->rsp;
+=======
+
+	vha = fcport->vha;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1042,
+	    "Entered %s.\n", __func__);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[0] = MBC_LUN_RESET;
 	mcp->out_mb = MBX_9|MBX_3|MBX_2|MBX_1|MBX_0;
 	if (HAS_EXTENDED_IDS(vha->hw))
 		mcp->mb[1] = fcport->loop_id;
 	else
 		mcp->mb[1] = fcport->loop_id << 8;
+<<<<<<< HEAD
 	mcp->mb[2] = l;
+=======
+	mcp->mb[2] = (u32)l;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[3] = 0;
 	mcp->mb[9] = vha->vp_idx;
 
@@ -1006,13 +2095,22 @@ qla2x00_lun_reset(struct fc_port *fcport, unsigned int l, int tag)
 	}
 
 	/* Issue marker IOCB. */
+<<<<<<< HEAD
 	rval2 = qla2x00_marker(vha, req, rsp, fcport->loop_id, l,
+=======
+	rval2 = qla2x00_marker(vha, vha->hw->base_qpair, fcport->loop_id, l,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								MK_SYNC_ID_LUN);
 	if (rval2 != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1044,
 		    "Failed to issue marker IOCB (%x).\n", rval2);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1045, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1045,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1046,7 +2144,12 @@ qla2x00_get_adapter_id(scsi_qla_host_t *vha, uint16_t *id, uint8_t *al_pa,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1046, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1046,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_ADAPTER_LOOP_ID;
 	mcp->mb[9] = vha->vp_idx;
@@ -1054,6 +2157,14 @@ qla2x00_get_adapter_id(scsi_qla_host_t *vha, uint16_t *id, uint8_t *al_pa,
 	mcp->in_mb = MBX_9|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
 	if (IS_CNA_CAPABLE(vha->hw))
 		mcp->in_mb |= MBX_13|MBX_12|MBX_11|MBX_10;
+<<<<<<< HEAD
+=======
+	if (IS_FWI2_CAPABLE(vha->hw))
+		mcp->in_mb |= MBX_19|MBX_18|MBX_17|MBX_16;
+	if (IS_QLA27XX(vha->hw) || IS_QLA28XX(vha->hw))
+		mcp->in_mb |= MBX_15|MBX_21|MBX_22|MBX_23;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->tov = MBX_TOV_SECONDS;
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -1074,7 +2185,12 @@ qla2x00_get_adapter_id(scsi_qla_host_t *vha, uint16_t *id, uint8_t *al_pa,
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1047, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1048, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1048,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (IS_CNA_CAPABLE(vha->hw)) {
 			vha->fcoe_vlan_id = mcp->mb[9] & 0xfff;
@@ -1086,6 +2202,44 @@ qla2x00_get_adapter_id(scsi_qla_host_t *vha, uint16_t *id, uint8_t *al_pa,
 			vha->fcoe_vn_port_mac[1] = mcp->mb[13] >> 8;
 			vha->fcoe_vn_port_mac[0] = mcp->mb[13] & 0xff;
 		}
+<<<<<<< HEAD
+=======
+		/* If FA-WWN supported */
+		if (IS_FAWWN_CAPABLE(vha->hw)) {
+			if (mcp->mb[7] & BIT_14) {
+				vha->port_name[0] = MSB(mcp->mb[16]);
+				vha->port_name[1] = LSB(mcp->mb[16]);
+				vha->port_name[2] = MSB(mcp->mb[17]);
+				vha->port_name[3] = LSB(mcp->mb[17]);
+				vha->port_name[4] = MSB(mcp->mb[18]);
+				vha->port_name[5] = LSB(mcp->mb[18]);
+				vha->port_name[6] = MSB(mcp->mb[19]);
+				vha->port_name[7] = LSB(mcp->mb[19]);
+				fc_host_port_name(vha->host) =
+				    wwn_to_u64(vha->port_name);
+				ql_dbg(ql_dbg_mbx, vha, 0x10ca,
+				    "FA-WWN acquired %016llx\n",
+				    wwn_to_u64(vha->port_name));
+			}
+		}
+
+		if (IS_QLA27XX(vha->hw) || IS_QLA28XX(vha->hw)) {
+			vha->bbcr = mcp->mb[15];
+			if (mcp->mb[7] & SCM_EDC_ACC_RECEIVED) {
+				ql_log(ql_log_info, vha, 0x11a4,
+				       "SCM: EDC ELS completed, flags 0x%x\n",
+				       mcp->mb[21]);
+			}
+			if (mcp->mb[7] & SCM_RDF_ACC_RECEIVED) {
+				vha->hw->flags.scm_enabled = 1;
+				vha->scm_fabric_connection_flags |=
+				    SCM_FLAG_RDF_COMPLETED;
+				ql_log(ql_log_info, vha, 0x11a5,
+				       "SCM: RDF ELS completed, flags 0x%x\n",
+				       mcp->mb[23]);
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1115,7 +2269,12 @@ qla2x00_get_retry_cnt(scsi_qla_host_t *vha, uint8_t *retry_cnt, uint8_t *tov,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1049, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1049,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_RETRY_COUNT;
 	mcp->out_mb = MBX_0;
@@ -1138,7 +2297,11 @@ qla2x00_get_retry_cnt(scsi_qla_host_t *vha, uint8_t *retry_cnt, uint8_t *tov,
 			*tov = ratov;
 		}
 
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x104b,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x104b,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "Done %s mb3=%d ratov=%d.\n", __func__, mcp->mb[3], ratov);
 	}
 
@@ -1170,10 +2333,18 @@ qla2x00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x104c, "Entered %s.\n", __func__);
 
 	if (IS_QLA82XX(ha) && ql2xdbwr)
 		qla82xx_wr_32(ha, ha->nxdb_wr_ptr,
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x104c,
+	    "Entered %s.\n", __func__);
+
+	if (IS_P3P_TYPE(ha) && ql2xdbwr)
+		qla82xx_wr_32(ha, (uintptr_t __force)ha->nxdb_wr_ptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(0x04 | (ha->portnum << 5) | (0 << 8) | (0 << 16)));
 
 	if (ha->flags.npiv_supported)
@@ -1187,7 +2358,11 @@ qla2x00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 	mcp->mb[6] = MSW(MSD(ha->init_cb_dma));
 	mcp->mb[7] = LSW(MSD(ha->init_cb_dma));
 	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+<<<<<<< HEAD
 	if ((IS_QLA81XX(ha) || IS_QLA83XX(ha)) && ha->ex_init_cb->ex_version) {
+=======
+	if (ha->ex_init_cb && ha->ex_init_cb->ex_version) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->mb[1] = BIT_0;
 		mcp->mb[10] = MSW(ha->ex_init_cb_dma);
 		mcp->mb[11] = LSW(ha->ex_init_cb_dma);
@@ -1196,9 +2371,26 @@ qla2x00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 		mcp->mb[14] = sizeof(*ha->ex_init_cb);
 		mcp->out_mb |= MBX_14|MBX_13|MBX_12|MBX_11|MBX_10;
 	}
+<<<<<<< HEAD
 	/* 1 and 2 should normally be captured. */
 	mcp->in_mb = MBX_2|MBX_1|MBX_0;
 	if (IS_QLA83XX(ha))
+=======
+
+	if (ha->flags.scm_supported_f || vha->flags.nvme2_enabled) {
+		mcp->mb[1] |= BIT_1;
+		mcp->mb[16] = MSW(ha->sf_init_cb_dma);
+		mcp->mb[17] = LSW(ha->sf_init_cb_dma);
+		mcp->mb[18] = MSW(MSD(ha->sf_init_cb_dma));
+		mcp->mb[19] = LSW(MSD(ha->sf_init_cb_dma));
+		mcp->mb[15] = sizeof(*ha->sf_init_cb);
+		mcp->out_mb |= MBX_19|MBX_18|MBX_17|MBX_16|MBX_15;
+	}
+
+	/* 1 and 2 should normally be captured. */
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* mb3 is additional info about the installed SFP. */
 		mcp->in_mb  |= MBX_3;
 	mcp->buf_size = size;
@@ -1209,16 +2401,43 @@ qla2x00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 	if (rval != QLA_SUCCESS) {
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x104d,
+<<<<<<< HEAD
 		    "Failed=%x mb[0]=%x, mb[1]=%x, mb[2]=%x, mb[3]=%x,.\n",
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2], mcp->mb[3]);
 	} else {
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x104e, "Done %s.\n", __func__);
+=======
+		    "Failed=%x mb[0]=%x, mb[1]=%x, mb[2]=%x, mb[3]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2], mcp->mb[3]);
+		if (ha->init_cb) {
+			ql_dbg(ql_dbg_mbx, vha, 0x104d, "init_cb:\n");
+			ql_dump_buffer(ql_dbg_init + ql_dbg_verbose, vha,
+			    0x0104d, ha->init_cb, sizeof(*ha->init_cb));
+		}
+		if (ha->ex_init_cb && ha->ex_init_cb->ex_version) {
+			ql_dbg(ql_dbg_mbx, vha, 0x104d, "ex_init_cb:\n");
+			ql_dump_buffer(ql_dbg_init + ql_dbg_verbose, vha,
+			    0x0104d, ha->ex_init_cb, sizeof(*ha->ex_init_cb));
+		}
+	} else {
+		if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+			if (mcp->mb[2] == 6 || mcp->mb[3] == 2)
+				ql_dbg(ql_dbg_mbx, vha, 0x119d,
+				    "Invalid SFP/Validation Failed\n");
+		}
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x104e,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * qla2x00_get_port_database
  *	Issue normal/enhanced get port database mailbox command
@@ -1246,6 +2465,7 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 	dma_addr_t pd_dma;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x104f, "Entered %s.\n", __func__);
 
 	pd24 = NULL;
@@ -1256,6 +2476,19 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
 	memset(pd, 0, max(PORT_DATABASE_SIZE, PORT_DATABASE_24XX_SIZE));
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x104f,
+	    "Entered %s.\n", __func__);
+
+	pd24 = NULL;
+	pd = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &pd_dma);
+	if (pd  == NULL) {
+		ql_log(ql_log_warn, vha, 0x1050,
+		    "Failed to allocate port database structure.\n");
+		fcport->query = 0;
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_PORT_DATABASE;
 	if (opt != 0 && !IS_FWI2_CAPABLE(ha))
@@ -1290,6 +2523,7 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 
 	if (IS_FWI2_CAPABLE(ha)) {
 		uint64_t zero = 0;
+<<<<<<< HEAD
 		pd24 = (struct port_database_24xx *) pd;
 
 		/* Check for logged in state. */
@@ -1301,6 +2535,34 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 			    pd24->last_login_state, fcport->loop_id);
 			rval = QLA_FUNCTION_FAILED;
 			goto gpd_error_out;
+=======
+		u8 current_login_state, last_login_state;
+
+		pd24 = (struct port_database_24xx *) pd;
+
+		/* Check for logged in state. */
+		if (NVME_TARGET(ha, fcport)) {
+			current_login_state = pd24->current_login_state >> 4;
+			last_login_state = pd24->last_login_state >> 4;
+		} else {
+			current_login_state = pd24->current_login_state & 0xf;
+			last_login_state = pd24->last_login_state & 0xf;
+		}
+		fcport->current_login_state = pd24->current_login_state;
+		fcport->last_login_state = pd24->last_login_state;
+
+		/* Check for logged in state. */
+		if (current_login_state != PDS_PRLI_COMPLETE &&
+		    last_login_state != PDS_PRLI_COMPLETE) {
+			ql_dbg(ql_dbg_mbx, vha, 0x119a,
+			    "Unable to verify login-state (%x/%x) for loop_id %x.\n",
+			    current_login_state, last_login_state,
+			    fcport->loop_id);
+			rval = QLA_FUNCTION_FAILED;
+
+			if (!fcport->query)
+				goto gpd_error_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (fcport->loop_id == FC_NO_LOOP_ID ||
@@ -1326,6 +2588,16 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 			fcport->port_type = FCT_INITIATOR;
 		else
 			fcport->port_type = FCT_TARGET;
+<<<<<<< HEAD
+=======
+
+		/* Passback COS information. */
+		fcport->supported_classes = (pd24->flags & PDF_CLASS_2) ?
+				FC_COS_CLASS2 : FC_COS_CLASS3;
+
+		if (pd24->prli_svc_param_word_3[0] & BIT_7)
+			fcport->flags |= FCF_CONF_COMP_SUPPORTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		uint64_t zero = 0;
 
@@ -1367,23 +2639,90 @@ qla2x00_get_port_database(scsi_qla_host_t *vha, fc_port_t *fcport, uint8_t opt)
 
 		/* Passback COS information. */
 		fcport->supported_classes = (pd->options & BIT_4) ?
+<<<<<<< HEAD
 		    FC_COS_CLASS2: FC_COS_CLASS3;
+=======
+		    FC_COS_CLASS2 : FC_COS_CLASS3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 gpd_error_out:
 	dma_pool_free(ha->s_dma_pool, pd, pd_dma);
+<<<<<<< HEAD
+=======
+	fcport->query = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1052,
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n", rval,
 		    mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1053, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1053,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
+<<<<<<< HEAD
+=======
+int
+qla24xx_get_port_database(scsi_qla_host_t *vha, u16 nport_handle,
+	struct port_database_24xx *pdb)
+{
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	dma_addr_t pdb_dma;
+	int rval;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1115,
+	    "Entered %s.\n", __func__);
+
+	memset(pdb, 0, sizeof(*pdb));
+
+	pdb_dma = dma_map_single(&vha->hw->pdev->dev, pdb,
+	    sizeof(*pdb), DMA_FROM_DEVICE);
+	if (!pdb_dma) {
+		ql_log(ql_log_warn, vha, 0x1116, "Failed to map dma buffer.\n");
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+
+	mcp->mb[0] = MBC_GET_PORT_DATABASE;
+	mcp->mb[1] = nport_handle;
+	mcp->mb[2] = MSW(LSD(pdb_dma));
+	mcp->mb[3] = LSW(LSD(pdb_dma));
+	mcp->mb[6] = MSW(MSD(pdb_dma));
+	mcp->mb[7] = LSW(MSD(pdb_dma));
+	mcp->mb[9] = 0;
+	mcp->mb[10] = 0;
+	mcp->out_mb = MBX_10|MBX_9|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->buf_size = sizeof(*pdb);
+	mcp->flags = MBX_DMA_IN;
+	mcp->tov = vha->hw->login_timeout * 2;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x111a,
+		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x111b,
+		    "Done %s.\n", __func__);
+	}
+
+	dma_unmap_single(&vha->hw->pdev->dev, pdb_dma,
+	    sizeof(*pdb), DMA_FROM_DEVICE);
+
+	return rval;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * qla2x00_get_firmware_state
  *	Get adapter firmware state.
@@ -1406,13 +2745,27 @@ qla2x00_get_firmware_state(scsi_qla_host_t *vha, uint16_t *states)
 	int rval;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1054, "Entered %s.\n", __func__);
+=======
+	struct qla_hw_data *ha = vha->hw;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1054,
+	    "Entered %s.\n", __func__);
+
+	if (!ha->flags.fw_started)
+		return QLA_FUNCTION_FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_FIRMWARE_STATE;
 	mcp->out_mb = MBX_0;
 	if (IS_FWI2_CAPABLE(vha->hw))
+<<<<<<< HEAD
 		mcp->in_mb = MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+=======
+		mcp->in_mb = MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		mcp->in_mb = MBX_1|MBX_0;
 	mcp->tov = MBX_TOV_SECONDS;
@@ -1423,17 +2776,34 @@ qla2x00_get_firmware_state(scsi_qla_host_t *vha, uint16_t *states)
 	states[0] = mcp->mb[1];
 	if (IS_FWI2_CAPABLE(vha->hw)) {
 		states[1] = mcp->mb[2];
+<<<<<<< HEAD
 		states[2] = mcp->mb[3];
 		states[3] = mcp->mb[4];
 		states[4] = mcp->mb[5];
+=======
+		states[2] = mcp->mb[3];  /* SFP info */
+		states[3] = mcp->mb[4];
+		states[4] = mcp->mb[5];
+		states[5] = mcp->mb[6];  /* DPORT status */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rval != QLA_SUCCESS) {
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1055, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		/*EMPTY*/
 		ql_dbg(ql_dbg_mbx, vha, 0x1056, "Done %s.\n", __func__);
+=======
+		if (IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+			if (mcp->mb[2] == 6 || mcp->mb[3] == 2)
+				ql_dbg(ql_dbg_mbx, vha, 0x119e,
+				    "Invalid SFP/Validation Failed\n");
+		}
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1056,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1465,7 +2835,12 @@ qla2x00_get_port_name(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t *name,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1057, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1057,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_PORT_NAME;
 	mcp->mb[9] = vha->vp_idx;
@@ -1499,7 +2874,64 @@ qla2x00_get_port_name(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t *name,
 			name[7] = LSB(mcp->mb[7]);
 		}
 
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1059, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1059,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+/*
+ * qla24xx_link_initialization
+ *	Issue link initialization mailbox command.
+ *
+ * Input:
+ *	ha = adapter block pointer.
+ *	TARGET_QUEUE_LOCK must be released.
+ *	ADAPTER_STATE_LOCK must be released.
+ *
+ * Returns:
+ *	qla2x00 local function return status code.
+ *
+ * Context:
+ *	Kernel context.
+ */
+int
+qla24xx_link_initialize(scsi_qla_host_t *vha)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1152,
+	    "Entered %s.\n", __func__);
+
+	if (!IS_FWI2_CAPABLE(vha->hw) || IS_CNA_CAPABLE(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	mcp->mb[0] = MBC_LINK_INITIALIZATION;
+	mcp->mb[1] = BIT_4;
+	if (vha->hw->operating_mode == LOOP)
+		mcp->mb[1] |= BIT_6;
+	else
+		mcp->mb[1] |= BIT_5;
+	mcp->mb[2] = 0;
+	mcp->mb[3] = 0;
+	mcp->out_mb = MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1153, "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1154,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1527,7 +2959,12 @@ qla2x00_lip_reset(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x105a, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_disc, vha, 0x105a,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_CNA_CAPABLE(vha->hw)) {
 		/* Logout across all FCFs. */
@@ -1537,7 +2974,11 @@ qla2x00_lip_reset(scsi_qla_host_t *vha)
 		mcp->out_mb = MBX_2|MBX_1|MBX_0;
 	} else if (IS_FWI2_CAPABLE(vha->hw)) {
 		mcp->mb[0] = MBC_LIP_FULL_LOGIN;
+<<<<<<< HEAD
 		mcp->mb[1] = BIT_6;
+=======
+		mcp->mb[1] = BIT_4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->mb[2] = 0;
 		mcp->mb[3] = vha->hw->loop_reset_delay;
 		mcp->out_mb = MBX_3|MBX_2|MBX_1|MBX_0;
@@ -1564,7 +3005,12 @@ qla2x00_lip_reset(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_mbx, vha, 0x105b, "Failed=%x.\n", rval);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x105c, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x105c,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1596,9 +3042,16 @@ qla2x00_send_sns(scsi_qla_host_t *vha, dma_addr_t sns_phys_address,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x105d, "Entered %s.\n", __func__);
 
 	ql_dbg(ql_dbg_mbx, vha, 0x105e,
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x105d,
+	    "Entered %s.\n", __func__);
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x105e,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "Retry cnt=%d ratov=%d total tov=%d.\n",
 	    vha->hw->retry_count, vha->hw->login_timeout, mcp->tov);
 
@@ -1622,7 +3075,12 @@ qla2x00_send_sns(scsi_qla_host_t *vha, dma_addr_t sns_phys_address,
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1060, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1060,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1639,6 +3097,7 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	uint32_t	iop[2];
 	struct qla_hw_data *ha = vha->hw;
 	struct req_que *req;
+<<<<<<< HEAD
 	struct rsp_que *rsp;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1061, "Entered %s.\n", __func__);
@@ -1650,11 +3109,24 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	rsp = req->rsp;
 
 	lg = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &lg_dma);
+=======
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1061,
+	    "Entered %s.\n", __func__);
+
+	if (vha->vp_idx && vha->qpair)
+		req = vha->qpair->req;
+	else
+		req = ha->req_q_map[0];
+
+	lg = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &lg_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lg == NULL) {
 		ql_log(ql_log_warn, vha, 0x1062,
 		    "Failed to allocate login IOCB.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
+<<<<<<< HEAD
 	memset(lg, 0, sizeof(struct logio_entry_24xx));
 
 	lg->entry_type = LOGINOUT_PORT_IOCB_TYPE;
@@ -1666,6 +3138,18 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		lg->control_flags |= __constant_cpu_to_le16(LCF_COND_PLOGI);
 	if (opt & BIT_1)
 		lg->control_flags |= __constant_cpu_to_le16(LCF_SKIP_PRLI);
+=======
+
+	lg->entry_type = LOGINOUT_PORT_IOCB_TYPE;
+	lg->entry_count = 1;
+	lg->handle = make_handle(req->id, lg->handle);
+	lg->nport_handle = cpu_to_le16(loop_id);
+	lg->control_flags = cpu_to_le16(LCF_COMMAND_PLOGI);
+	if (opt & BIT_0)
+		lg->control_flags |= cpu_to_le16(LCF_COND_PLOGI);
+	if (opt & BIT_1)
+		lg->control_flags |= cpu_to_le16(LCF_SKIP_PRLI);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lg->port_id[0] = al_pa;
 	lg->port_id[1] = area;
 	lg->port_id[2] = domain;
@@ -1680,7 +3164,11 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		    "Failed to complete IOCB -- error status (%x).\n",
 		    lg->entry_status);
 		rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 	} else if (lg->comp_status != __constant_cpu_to_le16(CS_COMPLETE)) {
+=======
+	} else if (lg->comp_status != cpu_to_le16(CS_COMPLETE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iop[0] = le32_to_cpu(lg->io_parameter[0]);
 		iop[1] = le32_to_cpu(lg->io_parameter[1]);
 
@@ -1715,7 +3203,12 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 			break;
 		}
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1066, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1066,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		iop[0] = le32_to_cpu(lg->io_parameter[0]);
 
@@ -1733,6 +3226,13 @@ qla24xx_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 			mb[10] |= BIT_0;	/* Class 2. */
 		if (lg->io_parameter[9] || lg->io_parameter[10])
 			mb[10] |= BIT_1;	/* Class 3. */
+<<<<<<< HEAD
+=======
+		if (lg->io_parameter[0] & cpu_to_le32(BIT_7))
+			mb[10] |= BIT_7;	/* Confirmed Completion
+						 * Allowed
+						 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dma_pool_free(ha->s_dma_pool, lg, lg_dma);
@@ -1770,7 +3270,12 @@ qla2x00_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1067, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1067,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_LOGIN_FABRIC_PORT;
 	mcp->out_mb = MBX_3|MBX_2|MBX_1|MBX_0;
@@ -1818,7 +3323,12 @@ qla2x00_login_fabric(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1069, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1069,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -1849,7 +3359,12 @@ qla2x00_login_local_device(scsi_qla_host_t *vha, fc_port_t *fcport,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x106a, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x106a,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_FWI2_CAPABLE(ha))
 		return qla24xx_login_fabric(vha, fcport->loop_id,
@@ -1891,7 +3406,12 @@ qla2x00_login_local_device(scsi_qla_host_t *vha, fc_port_t *fcport,
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[6], mcp->mb[7]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x106c, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x106c,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (rval);
@@ -1906,16 +3426,25 @@ qla24xx_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	dma_addr_t	lg_dma;
 	struct qla_hw_data *ha = vha->hw;
 	struct req_que *req;
+<<<<<<< HEAD
 	struct rsp_que *rsp;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x106d, "Entered %s.\n", __func__);
 
 	lg = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &lg_dma);
+=======
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x106d,
+	    "Entered %s.\n", __func__);
+
+	lg = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &lg_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lg == NULL) {
 		ql_log(ql_log_warn, vha, 0x106e,
 		    "Failed to allocate logout IOCB.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
+<<<<<<< HEAD
 	memset(lg, 0, sizeof(struct logio_entry_24xx));
 
 	if (ql2xmaxqueues > 1)
@@ -1929,6 +3458,16 @@ qla24xx_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	lg->nport_handle = cpu_to_le16(loop_id);
 	lg->control_flags =
 	    __constant_cpu_to_le16(LCF_COMMAND_LOGO|LCF_IMPL_LOGO|
+=======
+
+	req = vha->req;
+	lg->entry_type = LOGINOUT_PORT_IOCB_TYPE;
+	lg->entry_count = 1;
+	lg->handle = make_handle(req->id, lg->handle);
+	lg->nport_handle = cpu_to_le16(loop_id);
+	lg->control_flags =
+	    cpu_to_le16(LCF_COMMAND_LOGO|LCF_IMPL_LOGO|
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		LCF_FREE_NPORT);
 	lg->port_id[0] = al_pa;
 	lg->port_id[1] = area;
@@ -1944,7 +3483,11 @@ qla24xx_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		    "Failed to complete IOCB -- error status (%x).\n",
 		    lg->entry_status);
 		rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 	} else if (lg->comp_status != __constant_cpu_to_le16(CS_COMPLETE)) {
+=======
+	} else if (lg->comp_status != cpu_to_le16(CS_COMPLETE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_mbx, vha, 0x1071,
 		    "Failed to complete IOCB -- completion status (%x) "
 		    "ioparam=%x/%x.\n", le16_to_cpu(lg->comp_status),
@@ -1952,7 +3495,12 @@ qla24xx_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		    le32_to_cpu(lg->io_parameter[1]));
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1072, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1072,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dma_pool_free(ha->s_dma_pool, lg, lg_dma);
@@ -1984,7 +3532,12 @@ qla2x00_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1073, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1073,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_LOGOUT_FABRIC_PORT;
 	mcp->out_mb = MBX_1|MBX_0;
@@ -2007,7 +3560,12 @@ qla2x00_fabric_logout(scsi_qla_host_t *vha, uint16_t loop_id, uint8_t domain,
 		    "Failed=%x mb[1]=%x.\n", rval, mcp->mb[1]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1075, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1075,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2035,10 +3593,18 @@ qla2x00_full_login_lip(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1076, "Entered %s.\n", __func__);
 
 	mcp->mb[0] = MBC_LIP_FULL_LOGIN;
 	mcp->mb[1] = IS_FWI2_CAPABLE(vha->hw) ? BIT_3 : 0;
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1076,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_LIP_FULL_LOGIN;
+	mcp->mb[1] = IS_FWI2_CAPABLE(vha->hw) ? BIT_4 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[2] = 0;
 	mcp->mb[3] = 0;
 	mcp->out_mb = MBX_3|MBX_2|MBX_1|MBX_0;
@@ -2052,7 +3618,12 @@ qla2x00_full_login_lip(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_mbx, vha, 0x1077, "Failed=%x.\n", rval);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1078, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1078,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2078,7 +3649,12 @@ qla2x00_get_id_list(scsi_qla_host_t *vha, void *id_list, dma_addr_t id_list_dma,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1079, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1079,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (id_list == NULL)
 		return QLA_FUNCTION_FAILED;
@@ -2110,7 +3686,12 @@ qla2x00_get_id_list(scsi_qla_host_t *vha, void *id_list, dma_addr_t id_list_dma,
 		ql_dbg(ql_dbg_mbx, vha, 0x107a, "Failed=%x.\n", rval);
 	} else {
 		*entries = mcp->mb[1];
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x107b, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x107b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2130,20 +3711,36 @@ qla2x00_get_id_list(scsi_qla_host_t *vha, void *id_list, dma_addr_t id_list_dma,
  *	Kernel context.
  */
 int
+<<<<<<< HEAD
 qla2x00_get_resource_cnts(scsi_qla_host_t *vha, uint16_t *cur_xchg_cnt,
     uint16_t *orig_xchg_cnt, uint16_t *cur_iocb_cnt,
     uint16_t *orig_iocb_cnt, uint16_t *max_npiv_vports, uint16_t *max_fcfs)
 {
+=======
+qla2x00_get_resource_cnts(scsi_qla_host_t *vha)
+{
+	struct qla_hw_data *ha = vha->hw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rval;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x107c, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x107c,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_RESOURCE_COUNTS;
 	mcp->out_mb = MBX_0;
 	mcp->in_mb = MBX_11|MBX_10|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+<<<<<<< HEAD
 	if (IS_QLA81XX(vha->hw) || IS_QLA83XX(vha->hw))
+=======
+	if (IS_QLA81XX(ha) || IS_QLA83XX(ha) ||
+	    IS_QLA27XX(ha) || IS_QLA28XX(ha))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->in_mb |= MBX_12;
 	mcp->tov = MBX_TOV_SECONDS;
 	mcp->flags = 0;
@@ -2154,12 +3751,17 @@ qla2x00_get_resource_cnts(scsi_qla_host_t *vha, uint16_t *cur_xchg_cnt,
 		ql_dbg(ql_dbg_mbx, vha, 0x107d,
 		    "Failed mb[0]=%x.\n", mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x107e,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x107e,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "Done %s mb1=%x mb2=%x mb3=%x mb6=%x mb7=%x mb10=%x "
 		    "mb11=%x mb12=%x.\n", __func__, mcp->mb[1], mcp->mb[2],
 		    mcp->mb[3], mcp->mb[6], mcp->mb[7], mcp->mb[10],
 		    mcp->mb[11], mcp->mb[12]);
 
+<<<<<<< HEAD
 		if (cur_xchg_cnt)
 			*cur_xchg_cnt = mcp->mb[3];
 		if (orig_xchg_cnt)
@@ -2172,6 +3774,18 @@ qla2x00_get_resource_cnts(scsi_qla_host_t *vha, uint16_t *cur_xchg_cnt,
 			*max_npiv_vports = mcp->mb[11];
 		if ((IS_QLA81XX(vha->hw) || IS_QLA83XX(vha->hw)) && max_fcfs)
 			*max_fcfs = mcp->mb[12];
+=======
+		ha->orig_fw_tgt_xcb_count =  mcp->mb[1];
+		ha->cur_fw_tgt_xcb_count = mcp->mb[2];
+		ha->cur_fw_xcb_count = mcp->mb[3];
+		ha->orig_fw_xcb_count = mcp->mb[6];
+		ha->cur_fw_iocb_count = mcp->mb[7];
+		ha->orig_fw_iocb_count = mcp->mb[10];
+		if (ha->flags.npiv_supported)
+			ha->max_npiv_vports = mcp->mb[11];
+		if (IS_QLA81XX(ha) || IS_QLA83XX(ha))
+			ha->fw_max_fcf_count = mcp->mb[12];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (rval);
@@ -2192,7 +3806,12 @@ qla2x00_get_resource_cnts(scsi_qla_host_t *vha, uint16_t *cur_xchg_cnt,
  *	Kernel context.
  */
 int
+<<<<<<< HEAD
 qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
+=======
+qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map,
+		u8 *num_entries)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval;
 	mbx_cmd_t mc;
@@ -2201,15 +3820,25 @@ qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
 	dma_addr_t pmap_dma;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x107f, "Entered %s.\n", __func__);
 
 	pmap = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &pmap_dma);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x107f,
+	    "Entered %s.\n", __func__);
+
+	pmap = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &pmap_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pmap  == NULL) {
 		ql_log(ql_log_warn, vha, 0x1080,
 		    "Memory alloc failed.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
+<<<<<<< HEAD
 	memset(pmap, 0, FCAL_MAP_SIZE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GET_FC_AL_POSITION_MAP;
 	mcp->mb[2] = MSW(pmap_dma);
@@ -2224,7 +3853,11 @@ qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
 	rval = qla2x00_mailbox_command(vha, mcp);
 
 	if (rval == QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1081,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1081,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "mb0/mb1=%x/%X FC/AL position map size (%x).\n",
 		    mcp->mb[0], mcp->mb[1], (unsigned)pmap[0]);
 		ql_dump_buffer(ql_dbg_mbx + ql_dbg_buffer, vha, 0x111d,
@@ -2232,13 +3865,23 @@ qla2x00_get_fcal_position_map(scsi_qla_host_t *vha, char *pos_map)
 
 		if (pos_map)
 			memcpy(pos_map, pmap, FCAL_MAP_SIZE);
+<<<<<<< HEAD
+=======
+		if (num_entries)
+			*num_entries = pmap[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dma_pool_free(ha->s_dma_pool, pmap, pmap_dma);
 
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1082, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1083, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1083,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2264,6 +3907,7 @@ qla2x00_get_link_status(scsi_qla_host_t *vha, uint16_t loop_id,
 	int rval;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 	uint32_t *siter, *diter, dwords;
 	struct qla_hw_data *ha = vha->hw;
 
@@ -2272,6 +3916,18 @@ qla2x00_get_link_status(scsi_qla_host_t *vha, uint16_t loop_id,
 	mcp->mb[0] = MBC_GET_LINK_STATUS;
 	mcp->mb[2] = MSW(stats_dma);
 	mcp->mb[3] = LSW(stats_dma);
+=======
+	uint32_t *iter = (uint32_t *)stats;
+	ushort dwords = offsetof(typeof(*stats), link_up_cnt)/sizeof(*iter);
+	struct qla_hw_data *ha = vha->hw;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1084,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_GET_LINK_STATUS;
+	mcp->mb[2] = MSW(LSD(stats_dma));
+	mcp->mb[3] = LSW(LSD(stats_dma));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[6] = MSW(MSD(stats_dma));
 	mcp->mb[7] = LSW(MSD(stats_dma));
 	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_0;
@@ -2300,12 +3956,20 @@ qla2x00_get_link_status(scsi_qla_host_t *vha, uint16_t loop_id,
 			    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 			rval = QLA_FUNCTION_FAILED;
 		} else {
+<<<<<<< HEAD
 			/* Copy over data -- firmware data is LE. */
 			ql_dbg(ql_dbg_mbx, vha, 0x1086, "Done %s.\n", __func__);
 			dwords = offsetof(struct link_statistics, unused1) / 4;
 			siter = diter = &stats->link_fail_cnt;
 			while (dwords--)
 				*diter++ = le32_to_cpu(*siter++);
+=======
+			/* Re-endianize - firmware data is le32. */
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1086,
+			    "Done %s.\n", __func__);
+			for ( ; dwords--; iter++)
+				le32_to_cpus(iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* Failed. */
@@ -2317,11 +3981,16 @@ qla2x00_get_link_status(scsi_qla_host_t *vha, uint16_t loop_id,
 
 int
 qla24xx_get_isp_stats(scsi_qla_host_t *vha, struct link_statistics *stats,
+<<<<<<< HEAD
     dma_addr_t stats_dma)
+=======
+    dma_addr_t stats_dma, uint16_t options)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 	uint32_t *siter, *diter, dwords;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1088, "Entered %s.\n", __func__);
@@ -2339,6 +4008,25 @@ qla24xx_get_isp_stats(scsi_qla_host_t *vha, struct link_statistics *stats,
 	mcp->tov = MBX_TOV_SECONDS;
 	mcp->flags = IOCTL_CMD;
 	rval = qla2x00_mailbox_command(vha, mcp);
+=======
+	uint32_t *iter = (uint32_t *)stats;
+	ushort dwords = sizeof(*stats)/sizeof(*iter);
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1088,
+	    "Entered %s.\n", __func__);
+
+	memset(&mc, 0, sizeof(mc));
+	mc.mb[0] = MBC_GET_LINK_PRIV_STATS;
+	mc.mb[2] = MSW(LSD(stats_dma));
+	mc.mb[3] = LSW(LSD(stats_dma));
+	mc.mb[6] = MSW(MSD(stats_dma));
+	mc.mb[7] = LSW(MSD(stats_dma));
+	mc.mb[8] = dwords;
+	mc.mb[9] = vha->vp_idx;
+	mc.mb[10] = options;
+
+	rval = qla24xx_send_mb_cmd(vha, &mc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rval == QLA_SUCCESS) {
 		if (mcp->mb[0] != MBS_COMMAND_COMPLETE) {
@@ -2346,12 +4034,20 @@ qla24xx_get_isp_stats(scsi_qla_host_t *vha, struct link_statistics *stats,
 			    "Failed mb[0]=%x.\n", mcp->mb[0]);
 			rval = QLA_FUNCTION_FAILED;
 		} else {
+<<<<<<< HEAD
 			ql_dbg(ql_dbg_mbx, vha, 0x108a, "Done %s.\n", __func__);
 			/* Copy over data -- firmware data is LE. */
 			dwords = sizeof(struct link_statistics) / 4;
 			siter = diter = &stats->link_fail_cnt;
 			while (dwords--)
 				*diter++ = le32_to_cpu(*siter++);
+=======
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x108a,
+			    "Done %s.\n", __func__);
+			/* Re-endianize - firmware data is le32. */
+			for ( ; dwords--; iter++)
+				le32_to_cpus(iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* Failed. */
@@ -2373,6 +4069,7 @@ qla24xx_abort_command(srb_t *sp)
 	fc_port_t	*fcport = sp->fcport;
 	struct scsi_qla_host *vha = fcport->vha;
 	struct qla_hw_data *ha = vha->hw;
+<<<<<<< HEAD
 	struct req_que *req = vha->req;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x108c, "Entered %s.\n", __func__);
@@ -2389,11 +4086,40 @@ qla24xx_abort_command(srb_t *sp)
 	}
 
 	abt = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &abt_dma);
+=======
+	struct req_que *req;
+	struct qla_qpair *qpair = sp->qpair;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x108c,
+	    "Entered %s.\n", __func__);
+
+	if (sp->qpair)
+		req = sp->qpair->req;
+	else
+		return QLA_ERR_NO_QPAIR;
+
+	if (ql2xasynctmfenable)
+		return qla24xx_async_abort_command(sp);
+
+	spin_lock_irqsave(qpair->qp_lock_ptr, flags);
+	for (handle = 1; handle < req->num_outstanding_cmds; handle++) {
+		if (req->outstanding_cmds[handle] == sp)
+			break;
+	}
+	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
+	if (handle == req->num_outstanding_cmds) {
+		/* Command not found. */
+		return QLA_ERR_NOT_FOUND;
+	}
+
+	abt = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &abt_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (abt == NULL) {
 		ql_log(ql_log_warn, vha, 0x108d,
 		    "Failed to allocate abort IOCB.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
+<<<<<<< HEAD
 	memset(abt, 0, sizeof(struct abort_entry_24xx));
 
 	abt->entry_type = ABORT_IOCB_TYPE;
@@ -2407,6 +4133,22 @@ qla24xx_abort_command(srb_t *sp)
 	abt->vp_index = fcport->vp_idx;
 
 	abt->req_que_no = cpu_to_le16(req->id);
+=======
+
+	abt->entry_type = ABORT_IOCB_TYPE;
+	abt->entry_count = 1;
+	abt->handle = make_handle(req->id, abt->handle);
+	abt->nport_handle = cpu_to_le16(fcport->loop_id);
+	abt->handle_to_abort = make_handle(req->id, handle);
+	abt->port_id[0] = fcport->d_id.b.al_pa;
+	abt->port_id[1] = fcport->d_id.b.area;
+	abt->port_id[2] = fcport->d_id.b.domain;
+	abt->vp_index = fcport->vha->vp_idx;
+
+	abt->req_que_no = cpu_to_le16(req->id);
+	/* Need to pass original sp */
+	qla_nvme_abort_set_option(abt, sp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rval = qla2x00_issue_iocb(vha, abt, abt_dma, 0);
 	if (rval != QLA_SUCCESS) {
@@ -2417,6 +4159,7 @@ qla24xx_abort_command(srb_t *sp)
 		    "Failed to complete IOCB -- error status (%x).\n",
 		    abt->entry_status);
 		rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 	} else if (abt->nport_handle != __constant_cpu_to_le16(0)) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1090,
 		    "Failed to complete IOCB -- completion status (%x).\n",
@@ -2425,6 +4168,24 @@ qla24xx_abort_command(srb_t *sp)
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x1091, "Done %s.\n", __func__);
 	}
+=======
+	} else if (abt->nport_handle != cpu_to_le16(0)) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1090,
+		    "Failed to complete IOCB -- completion status (%x).\n",
+		    le16_to_cpu(abt->nport_handle));
+		if (abt->nport_handle == cpu_to_le16(CS_IOCB_ERROR))
+			rval = QLA_FUNCTION_PARAMETER_ERROR;
+		else
+			rval = QLA_FUNCTION_FAILED;
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1091,
+		    "Done %s.\n", __func__);
+	}
+	if (rval == QLA_SUCCESS)
+		qla_nvme_abort_process_comp_status(abt, sp);
+
+	qla_wait_nvme_release_cmd_kref(sp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_pool_free(ha->s_dma_pool, abt, abt_dma);
 
@@ -2440,7 +4201,11 @@ struct tsk_mgmt_cmd {
 
 static int
 __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
+<<<<<<< HEAD
     unsigned int l, int tag)
+=======
+    uint64_t l, int tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int		rval, rval2;
 	struct tsk_mgmt_cmd *tsk;
@@ -2449,12 +4214,17 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 	scsi_qla_host_t *vha;
 	struct qla_hw_data *ha;
 	struct req_que *req;
+<<<<<<< HEAD
 	struct rsp_que *rsp;
+=======
+	struct qla_qpair *qpair;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vha = fcport->vha;
 	ha = vha->hw;
 	req = vha->req;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1092, "Entered %s.\n", __func__);
 
 	if (ha->flags.cpu_affinity_enabled)
@@ -2462,23 +4232,46 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 	else
 		rsp = req->rsp;
 	tsk = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &tsk_dma);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1092,
+	    "Entered %s.\n", __func__);
+
+	if (vha->vp_idx && vha->qpair) {
+		/* NPIV port */
+		qpair = vha->qpair;
+		req = qpair->req;
+	}
+
+	tsk = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &tsk_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tsk == NULL) {
 		ql_log(ql_log_warn, vha, 0x1093,
 		    "Failed to allocate task management IOCB.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
+<<<<<<< HEAD
 	memset(tsk, 0, sizeof(struct tsk_mgmt_cmd));
 
 	tsk->p.tsk.entry_type = TSK_MGMT_IOCB_TYPE;
 	tsk->p.tsk.entry_count = 1;
 	tsk->p.tsk.handle = MAKE_HANDLE(req->id, tsk->p.tsk.handle);
+=======
+
+	tsk->p.tsk.entry_type = TSK_MGMT_IOCB_TYPE;
+	tsk->p.tsk.entry_count = 1;
+	tsk->p.tsk.handle = make_handle(req->id, tsk->p.tsk.handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tsk->p.tsk.nport_handle = cpu_to_le16(fcport->loop_id);
 	tsk->p.tsk.timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	tsk->p.tsk.control_flags = cpu_to_le32(type);
 	tsk->p.tsk.port_id[0] = fcport->d_id.b.al_pa;
 	tsk->p.tsk.port_id[1] = fcport->d_id.b.area;
 	tsk->p.tsk.port_id[2] = fcport->d_id.b.domain;
+<<<<<<< HEAD
 	tsk->p.tsk.vp_index = fcport->vp_idx;
+=======
+	tsk->p.tsk.vp_index = fcport->vha->vp_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (type == TCF_LUN_RESET) {
 		int_to_scsilun(l, &tsk->p.tsk.lun);
 		host_to_fcp_swap((uint8_t *)&tsk->p.tsk.lun,
@@ -2495,8 +4288,12 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 		    "Failed to complete IOCB -- error status (%x).\n",
 		    sts->entry_status);
 		rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 	} else if (sts->comp_status !=
 	    __constant_cpu_to_le16(CS_COMPLETE)) {
+=======
+	} else if (sts->comp_status != cpu_to_le16(CS_COMPLETE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_mbx, vha, 0x1096,
 		    "Failed to complete IOCB -- completion status (%x).\n",
 		    le16_to_cpu(sts->comp_status));
@@ -2504,7 +4301,11 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 	} else if (le16_to_cpu(sts->scsi_status) &
 	    SS_RESPONSE_INFO_LEN_VALID) {
 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
+<<<<<<< HEAD
 			ql_dbg(ql_dbg_mbx, vha, 0x1097,
+=======
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1097,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "Ignoring inconsistent data length -- not enough "
 			    "response info (%d).\n",
 			    le32_to_cpu(sts->rsp_data_len));
@@ -2517,13 +4318,23 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 	}
 
 	/* Issue marker IOCB. */
+<<<<<<< HEAD
 	rval2 = qla2x00_marker(vha, req, rsp, fcport->loop_id, l,
 	    type == TCF_LUN_RESET ? MK_SYNC_ID_LUN: MK_SYNC_ID);
+=======
+	rval2 = qla2x00_marker(vha, ha->base_qpair, fcport->loop_id, l,
+	    type == TCF_LUN_RESET ? MK_SYNC_ID_LUN : MK_SYNC_ID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rval2 != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1099,
 		    "Failed to issue marker IOCB (%x).\n", rval2);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x109a, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x109a,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dma_pool_free(ha->s_dma_pool, tsk, tsk_dma);
@@ -2532,7 +4343,11 @@ __qla24xx_issue_tmf(char *name, uint32_t type, struct fc_port *fcport,
 }
 
 int
+<<<<<<< HEAD
 qla24xx_abort_target(struct fc_port *fcport, unsigned int l, int tag)
+=======
+qla24xx_abort_target(struct fc_port *fcport, uint64_t l, int tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qla_hw_data *ha = fcport->vha->hw;
 
@@ -2543,7 +4358,11 @@ qla24xx_abort_target(struct fc_port *fcport, unsigned int l, int tag)
 }
 
 int
+<<<<<<< HEAD
 qla24xx_lun_reset(struct fc_port *fcport, unsigned int l, int tag)
+=======
+qla24xx_lun_reset(struct fc_port *fcport, uint64_t l, int tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qla_hw_data *ha = fcport->vha->hw;
 
@@ -2564,7 +4383,12 @@ qla2x00_system_error(scsi_qla_host_t *vha)
 	if (!IS_QLA23XX(ha) && !IS_FWI2_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x109b, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x109b,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_GEN_SYSTEM_ERROR;
 	mcp->out_mb = MBX_0;
@@ -2576,7 +4400,162 @@ qla2x00_system_error(scsi_qla_host_t *vha)
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x109c, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x109d, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x109d,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla2x00_write_serdes_word(scsi_qla_host_t *vha, uint16_t addr, uint16_t data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_QLA25XX(vha->hw) && !IS_QLA2031(vha->hw) &&
+	    !IS_QLA27XX(vha->hw) && !IS_QLA28XX(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1182,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_WRITE_SERDES;
+	mcp->mb[1] = addr;
+	if (IS_QLA2031(vha->hw))
+		mcp->mb[2] = data & 0xff;
+	else
+		mcp->mb[2] = data;
+
+	mcp->mb[3] = 0;
+	mcp->out_mb = MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1183,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1184,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla2x00_read_serdes_word(scsi_qla_host_t *vha, uint16_t addr, uint16_t *data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_QLA25XX(vha->hw) && !IS_QLA2031(vha->hw) &&
+	    !IS_QLA27XX(vha->hw) && !IS_QLA28XX(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1185,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_READ_SERDES;
+	mcp->mb[1] = addr;
+	mcp->mb[3] = 0;
+	mcp->out_mb = MBX_3|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (IS_QLA2031(vha->hw))
+		*data = mcp->mb[1] & 0xff;
+	else
+		*data = mcp->mb[1];
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1186,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1187,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla8044_write_serdes_word(scsi_qla_host_t *vha, uint32_t addr, uint32_t data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_QLA8044(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x11a0,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_SET_GET_ETH_SERDES_REG;
+	mcp->mb[1] = HCS_WRITE_SERDES;
+	mcp->mb[3] = LSW(addr);
+	mcp->mb[4] = MSW(addr);
+	mcp->mb[5] = LSW(data);
+	mcp->mb[6] = MSW(data);
+	mcp->out_mb = MBX_6|MBX_5|MBX_4|MBX_3|MBX_1|MBX_0;
+	mcp->in_mb = MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x11a1,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1188,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla8044_read_serdes_word(scsi_qla_host_t *vha, uint32_t addr, uint32_t *data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_QLA8044(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1189,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_SET_GET_ETH_SERDES_REG;
+	mcp->mb[1] = HCS_READ_SERDES;
+	mcp->mb[3] = LSW(addr);
+	mcp->mb[4] = MSW(addr);
+	mcp->out_mb = MBX_4|MBX_3|MBX_1|MBX_0;
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	*data = mcp->mb[2] << 16 | mcp->mb[1];
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x118a,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x118b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2584,7 +4563,14 @@ qla2x00_system_error(scsi_qla_host_t *vha)
 
 /**
  * qla2x00_set_serdes_params() -
+<<<<<<< HEAD
  * @ha: HA context
+=======
+ * @vha: HA context
+ * @sw_em_1g: serial link options
+ * @sw_em_2g: serial link options
+ * @sw_em_4g: serial link options
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns
  */
@@ -2596,7 +4582,12 @@ qla2x00_set_serdes_params(scsi_qla_host_t *vha, uint16_t sw_em_1g,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x109e, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x109e,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_SERDES_PARAMS;
 	mcp->mb[1] = BIT_0;
@@ -2615,7 +4606,12 @@ qla2x00_set_serdes_params(scsi_qla_host_t *vha, uint16_t sw_em_1g,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
 		/*EMPTY*/
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10a0, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a0,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2631,7 +4627,12 @@ qla2x00_stop_firmware(scsi_qla_host_t *vha)
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10a1, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a1,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_STOP_FIRMWARE;
 	mcp->mb[1] = 0;
@@ -2646,7 +4647,12 @@ qla2x00_stop_firmware(scsi_qla_host_t *vha)
 		if (mcp->mb[0] == MBS_INVALID_COMMAND)
 			rval = QLA_INVALID_COMMAND;
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10a3, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a3,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2660,7 +4666,12 @@ qla2x00_enable_eft_trace(scsi_qla_host_t *vha, dma_addr_t eft_dma,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10a4, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a4,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -2686,7 +4697,12 @@ qla2x00_enable_eft_trace(scsi_qla_host_t *vha, dma_addr_t eft_dma,
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10a6, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a6,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2699,7 +4715,12 @@ qla2x00_disable_eft_trace(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10a7, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a7,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -2719,7 +4740,12 @@ qla2x00_disable_eft_trace(scsi_qla_host_t *vha)
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10a9, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10a9,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2733,10 +4759,19 @@ qla2x00_enable_fce_trace(scsi_qla_host_t *vha, dma_addr_t fce_dma,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10aa, "Entered %s.\n", __func__);
 
 	if (!IS_QLA25XX(vha->hw) && !IS_QLA81XX(vha->hw) &&
 	    !IS_QLA83XX(vha->hw))
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10aa,
+	    "Entered %s.\n", __func__);
+
+	if (!IS_QLA25XX(vha->hw) && !IS_QLA81XX(vha->hw) &&
+	    !IS_QLA83XX(vha->hw) && !IS_QLA27XX(vha->hw) &&
+	    !IS_QLA28XX(vha->hw))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_FAILED;
 
 	if (unlikely(pci_channel_offline(vha->hw->pdev)))
@@ -2764,7 +4799,12 @@ qla2x00_enable_fce_trace(scsi_qla_host_t *vha, dma_addr_t fce_dma,
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10ac, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ac,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (mb)
 			memcpy(mb, mcp->mb, 8 * sizeof(*mb));
@@ -2782,7 +4822,12 @@ qla2x00_disable_fce_trace(scsi_qla_host_t *vha, uint64_t *wr, uint64_t *rd)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10ad, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ad,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -2804,7 +4849,12 @@ qla2x00_disable_fce_trace(scsi_qla_host_t *vha, uint64_t *wr, uint64_t *rd)
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10af, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10af,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (wr)
 			*wr = (uint64_t) mcp->mb[5] << 48 |
@@ -2829,7 +4879,12 @@ qla2x00_get_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10b0, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10b0,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_IIDMA_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -2845,7 +4900,11 @@ qla2x00_get_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	rval = qla2x00_mailbox_command(vha, mcp);
 
 	/* Return mailbox statuses. */
+<<<<<<< HEAD
 	if (mb != NULL) {
+=======
+	if (mb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb[0] = mcp->mb[0];
 		mb[1] = mcp->mb[1];
 		mb[3] = mcp->mb[3];
@@ -2854,7 +4913,12 @@ qla2x00_get_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x10b1, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10b2, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10b2,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (port_speed)
 			*port_speed = mcp->mb[3];
 	}
@@ -2870,7 +4934,12 @@ qla2x00_set_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10b3, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10b3,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_IIDMA_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -2878,10 +4947,14 @@ qla2x00_set_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	mcp->mb[0] = MBC_PORT_PARAMS;
 	mcp->mb[1] = loop_id;
 	mcp->mb[2] = BIT_0;
+<<<<<<< HEAD
 	if (IS_CNA_CAPABLE(vha->hw))
 		mcp->mb[3] = port_speed & (BIT_5|BIT_4|BIT_3|BIT_2|BIT_1|BIT_0);
 	else
 		mcp->mb[3] = port_speed & (BIT_2|BIT_1|BIT_0);
+=======
+	mcp->mb[3] = port_speed & 0x3F;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[9] = vha->vp_idx;
 	mcp->out_mb = MBX_9|MBX_3|MBX_2|MBX_1|MBX_0;
 	mcp->in_mb = MBX_3|MBX_1|MBX_0;
@@ -2890,16 +4963,28 @@ qla2x00_set_idma_speed(scsi_qla_host_t *vha, uint16_t loop_id,
 	rval = qla2x00_mailbox_command(vha, mcp);
 
 	/* Return mailbox statuses. */
+<<<<<<< HEAD
 	if (mb != NULL) {
+=======
+	if (mb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb[0] = mcp->mb[0];
 		mb[1] = mcp->mb[1];
 		mb[3] = mcp->mb[3];
 	}
 
 	if (rval != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10b4, "Failed=%x.\n", rval);
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x10b5, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx, vha, 0x10b4,
+		    "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10b5,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -2909,6 +4994,7 @@ void
 qla24xx_report_id_acquisition(scsi_qla_host_t *vha,
 	struct vp_rpt_id_entry_24xx *rptid_entry)
 {
+<<<<<<< HEAD
 	uint8_t vp_idx;
 	uint16_t stat = le16_to_cpu(rptid_entry->vp_idx);
 	struct qla_hw_data *ha = vha->hw;
@@ -2916,10 +5002,22 @@ qla24xx_report_id_acquisition(scsi_qla_host_t *vha,
 	unsigned long   flags;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10b6, "Entered %s.\n", __func__);
+=======
+	struct qla_hw_data *ha = vha->hw;
+	scsi_qla_host_t *vp = NULL;
+	unsigned long   flags;
+	int found;
+	port_id_t id;
+	struct fc_port *fcport;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10b6,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rptid_entry->entry_status != 0)
 		return;
 
+<<<<<<< HEAD
 	if (rptid_entry->format == 0) {
 		ql_dbg(ql_dbg_mbx, vha, 0x10b7,
 		    "Format 0 : Number of VPs setup %d, number of "
@@ -2972,6 +5070,233 @@ reg_needed:
 		set_bit(REGISTER_FDMI_NEEDED, &vp->dpc_flags);
 		set_bit(VP_DPC_NEEDED, &vha->dpc_flags);
 		qla2xxx_wake_dpc(vha);
+=======
+	id.b.domain = rptid_entry->port_id[2];
+	id.b.area   = rptid_entry->port_id[1];
+	id.b.al_pa  = rptid_entry->port_id[0];
+	id.b.rsvd_1 = 0;
+	ha->flags.n2n_ae = 0;
+
+	if (rptid_entry->format == 0) {
+		/* loop */
+		ql_dbg(ql_dbg_async, vha, 0x10b7,
+		    "Format 0 : Number of VPs setup %d, number of "
+		    "VPs acquired %d.\n", rptid_entry->vp_setup,
+		    rptid_entry->vp_acquired);
+		ql_dbg(ql_dbg_async, vha, 0x10b8,
+		    "Primary port id %02x%02x%02x.\n",
+		    rptid_entry->port_id[2], rptid_entry->port_id[1],
+		    rptid_entry->port_id[0]);
+		ha->current_topology = ISP_CFG_NL;
+		qla_update_host_map(vha, id);
+
+	} else if (rptid_entry->format == 1) {
+		/* fabric */
+		ql_dbg(ql_dbg_async, vha, 0x10b9,
+		    "Format 1: VP[%d] enabled - status %d - with "
+		    "port id %02x%02x%02x.\n", rptid_entry->vp_idx,
+			rptid_entry->vp_status,
+		    rptid_entry->port_id[2], rptid_entry->port_id[1],
+		    rptid_entry->port_id[0]);
+		ql_dbg(ql_dbg_async, vha, 0x5075,
+		   "Format 1: Remote WWPN %8phC.\n",
+		   rptid_entry->u.f1.port_name);
+
+		ql_dbg(ql_dbg_async, vha, 0x5075,
+		   "Format 1: WWPN %8phC.\n",
+		   vha->port_name);
+
+		switch (rptid_entry->u.f1.flags & TOPO_MASK) {
+		case TOPO_N2N:
+			ha->current_topology = ISP_CFG_N;
+			spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
+			list_for_each_entry(fcport, &vha->vp_fcports, list) {
+				fcport->scan_state = QLA_FCPORT_SCAN;
+				fcport->n2n_flag = 0;
+			}
+			id.b24 = 0;
+			if (wwn_to_u64(vha->port_name) >
+			    wwn_to_u64(rptid_entry->u.f1.port_name)) {
+				vha->d_id.b24 = 0;
+				vha->d_id.b.al_pa = 1;
+				ha->flags.n2n_bigger = 1;
+
+				id.b.al_pa = 2;
+				ql_dbg(ql_dbg_async, vha, 0x5075,
+				    "Format 1: assign local id %x remote id %x\n",
+				    vha->d_id.b24, id.b24);
+			} else {
+				ql_dbg(ql_dbg_async, vha, 0x5075,
+				    "Format 1: Remote login - Waiting for WWPN %8phC.\n",
+				    rptid_entry->u.f1.port_name);
+				ha->flags.n2n_bigger = 0;
+			}
+
+			fcport = qla2x00_find_fcport_by_wwpn(vha,
+			    rptid_entry->u.f1.port_name, 1);
+			spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
+
+
+			if (fcport) {
+				fcport->plogi_nack_done_deadline = jiffies + HZ;
+				fcport->dm_login_expire = jiffies +
+					QLA_N2N_WAIT_TIME * HZ;
+				fcport->scan_state = QLA_FCPORT_FOUND;
+				fcport->n2n_flag = 1;
+				fcport->keep_nport_handle = 1;
+				fcport->login_retry = vha->hw->login_retry_count;
+				fcport->fc4_type = FS_FC4TYPE_FCP;
+				if (vha->flags.nvme_enabled)
+					fcport->fc4_type |= FS_FC4TYPE_NVME;
+
+				if (wwn_to_u64(vha->port_name) >
+				    wwn_to_u64(fcport->port_name)) {
+					fcport->d_id = id;
+				}
+
+				switch (fcport->disc_state) {
+				case DSC_DELETED:
+					set_bit(RELOGIN_NEEDED,
+					    &vha->dpc_flags);
+					break;
+				case DSC_DELETE_PEND:
+					break;
+				default:
+					qlt_schedule_sess_for_deletion(fcport);
+					break;
+				}
+			} else {
+				qla24xx_post_newsess_work(vha, &id,
+				    rptid_entry->u.f1.port_name,
+				    rptid_entry->u.f1.node_name,
+				    NULL,
+				    FS_FCP_IS_N2N);
+			}
+
+			/* if our portname is higher then initiate N2N login */
+
+			set_bit(N2N_LOGIN_NEEDED, &vha->dpc_flags);
+			return;
+		case TOPO_FL:
+			ha->current_topology = ISP_CFG_FL;
+			break;
+		case TOPO_F:
+			ha->current_topology = ISP_CFG_F;
+			break;
+		default:
+			break;
+		}
+
+		ha->flags.gpsc_supported = 1;
+		ha->current_topology = ISP_CFG_F;
+		/* buffer to buffer credit flag */
+		vha->flags.bbcr_enable = (rptid_entry->u.f1.bbcr & 0xf) != 0;
+
+		if (rptid_entry->vp_idx == 0) {
+			if (rptid_entry->vp_status == VP_STAT_COMPL) {
+				/* FA-WWN is only for physical port */
+				if (qla_ini_mode_enabled(vha) &&
+				    ha->flags.fawwpn_enabled &&
+				    (rptid_entry->u.f1.flags &
+				     BIT_6)) {
+					memcpy(vha->port_name,
+					    rptid_entry->u.f1.port_name,
+					    WWN_SIZE);
+				}
+
+				qla_update_host_map(vha, id);
+			}
+
+			set_bit(REGISTER_FC4_NEEDED, &vha->dpc_flags);
+			set_bit(REGISTER_FDMI_NEEDED, &vha->dpc_flags);
+		} else {
+			if (rptid_entry->vp_status != VP_STAT_COMPL &&
+				rptid_entry->vp_status != VP_STAT_ID_CHG) {
+				ql_dbg(ql_dbg_mbx, vha, 0x10ba,
+				    "Could not acquire ID for VP[%d].\n",
+				    rptid_entry->vp_idx);
+				return;
+			}
+
+			found = 0;
+			spin_lock_irqsave(&ha->vport_slock, flags);
+			list_for_each_entry(vp, &ha->vp_list, list) {
+				if (rptid_entry->vp_idx == vp->vp_idx) {
+					found = 1;
+					break;
+				}
+			}
+			spin_unlock_irqrestore(&ha->vport_slock, flags);
+
+			if (!found)
+				return;
+
+			qla_update_host_map(vp, id);
+
+			/*
+			 * Cannot configure here as we are still sitting on the
+			 * response queue. Handle it in dpc context.
+			 */
+			set_bit(VP_IDX_ACQUIRED, &vp->vp_flags);
+			set_bit(REGISTER_FC4_NEEDED, &vp->dpc_flags);
+			set_bit(REGISTER_FDMI_NEEDED, &vp->dpc_flags);
+		}
+		set_bit(VP_DPC_NEEDED, &vha->dpc_flags);
+		qla2xxx_wake_dpc(vha);
+	} else if (rptid_entry->format == 2) {
+		ql_dbg(ql_dbg_async, vha, 0x505f,
+		    "RIDA: format 2/N2N Primary port id %02x%02x%02x.\n",
+		    rptid_entry->port_id[2], rptid_entry->port_id[1],
+		    rptid_entry->port_id[0]);
+
+		ql_dbg(ql_dbg_async, vha, 0x5075,
+		    "N2N: Remote WWPN %8phC.\n",
+		    rptid_entry->u.f2.port_name);
+
+		/* N2N.  direct connect */
+		ha->current_topology = ISP_CFG_N;
+		ha->flags.rida_fmt2 = 1;
+		vha->d_id.b.domain = rptid_entry->port_id[2];
+		vha->d_id.b.area = rptid_entry->port_id[1];
+		vha->d_id.b.al_pa = rptid_entry->port_id[0];
+
+		ha->flags.n2n_ae = 1;
+		spin_lock_irqsave(&ha->vport_slock, flags);
+		qla_update_vp_map(vha, SET_AL_PA);
+		spin_unlock_irqrestore(&ha->vport_slock, flags);
+
+		list_for_each_entry(fcport, &vha->vp_fcports, list) {
+			fcport->scan_state = QLA_FCPORT_SCAN;
+			fcport->n2n_flag = 0;
+		}
+
+		fcport = qla2x00_find_fcport_by_wwpn(vha,
+		    rptid_entry->u.f2.port_name, 1);
+
+		if (fcport) {
+			fcport->login_retry = vha->hw->login_retry_count;
+			fcport->plogi_nack_done_deadline = jiffies + HZ;
+			fcport->scan_state = QLA_FCPORT_FOUND;
+			fcport->keep_nport_handle = 1;
+			fcport->n2n_flag = 1;
+			fcport->d_id.b.domain =
+				rptid_entry->u.f2.remote_nport_id[2];
+			fcport->d_id.b.area =
+				rptid_entry->u.f2.remote_nport_id[1];
+			fcport->d_id.b.al_pa =
+				rptid_entry->u.f2.remote_nport_id[0];
+
+			/*
+			 * For the case where remote port sending PRLO, FW
+			 * sends up RIDA Format 2 as an indication of session
+			 * loss. In other word, FW state change from PRLI
+			 * complete back to PLOGI complete. Delete the
+			 * session and let relogin drive the reconnect.
+			 */
+			if (atomic_read(&fcport->state) == FCS_ONLINE)
+				qlt_schedule_sess_for_deletion(fcport);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2999,22 +5324,38 @@ qla24xx_modify_vp_config(scsi_qla_host_t *vha)
 
 	/* This can be called by the parent */
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10bb, "Entered %s.\n", __func__);
 
 	vpmod = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &vpmod_dma);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10bb,
+	    "Entered %s.\n", __func__);
+
+	vpmod = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &vpmod_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vpmod) {
 		ql_log(ql_log_warn, vha, 0x10bc,
 		    "Failed to allocate modify VP IOCB.\n");
 		return QLA_MEMORY_ALLOC_FAILED;
 	}
 
+<<<<<<< HEAD
 	memset(vpmod, 0, sizeof(struct vp_config_entry_24xx));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vpmod->entry_type = VP_CONFIG_IOCB_TYPE;
 	vpmod->entry_count = 1;
 	vpmod->command = VCT_COMMAND_MOD_ENABLE_VPS;
 	vpmod->vp_count = 1;
 	vpmod->vp_index1 = vha->vp_idx;
 	vpmod->options_idx1 = BIT_3|BIT_4|BIT_5;
+<<<<<<< HEAD
+=======
+
+	qlt_modify_vp_config(vha, vpmod);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(vpmod->node_name_idx1, vha->node_name, WWN_SIZE);
 	memcpy(vpmod->port_name_idx1, vha->port_name, WWN_SIZE);
 	vpmod->entry_count = 1;
@@ -3028,14 +5369,23 @@ qla24xx_modify_vp_config(scsi_qla_host_t *vha)
 		    "Failed to complete IOCB -- error status (%x).\n",
 		    vpmod->comp_status);
 		rval = QLA_FUNCTION_FAILED;
+<<<<<<< HEAD
 	} else if (vpmod->comp_status != __constant_cpu_to_le16(CS_COMPLETE)) {
+=======
+	} else if (vpmod->comp_status != cpu_to_le16(CS_COMPLETE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_dbg(ql_dbg_mbx, vha, 0x10bf,
 		    "Failed to complete IOCB -- completion status (%x).\n",
 		    le16_to_cpu(vpmod->comp_status));
 		rval = QLA_FUNCTION_FAILED;
 	} else {
 		/* EMPTY */
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10c0, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10c0,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_vport_set_state(vha->fc_vport, FC_VPORT_INITIALIZING);
 	}
 	dma_pool_free(ha->s_dma_pool, vpmod, vpmod_dma);
@@ -3044,6 +5394,7 @@ qla24xx_modify_vp_config(scsi_qla_host_t *vha)
 }
 
 /*
+<<<<<<< HEAD
  * qla24xx_control_vp
  *	Enable a virtual port for given host
  *
@@ -3121,6 +5472,8 @@ qla24xx_control_vp(scsi_qla_host_t *vha, int cmd)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qla2x00_send_change_request
  *	Receive or disable RSCN request from fabric controller
  *
@@ -3149,6 +5502,7 @@ qla2x00_send_change_request(scsi_qla_host_t *vha, uint16_t format,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10c7, "Entered %s.\n", __func__);
 
 	/*
@@ -3157,6 +5511,10 @@ qla2x00_send_change_request(scsi_qla_host_t *vha, uint16_t format,
 	 */
 	if (vp_idx == 0)
 		return QLA_FUNCTION_FAILED;
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10c7,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_SEND_CHANGE_REQUEST;
 	mcp->mb[1] = format;
@@ -3185,12 +5543,22 @@ qla2x00_dump_ram(scsi_qla_host_t *vha, dma_addr_t req_dma, uint32_t addr,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1009, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1009,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (MSW(addr) || IS_FWI2_CAPABLE(vha->hw)) {
 		mcp->mb[0] = MBC_DUMP_RISC_RAM_EXTENDED;
 		mcp->mb[8] = MSW(addr);
+<<<<<<< HEAD
 		mcp->out_mb = MBX_8|MBX_0;
+=======
+		mcp->mb[10] = 0;
+		mcp->out_mb = MBX_10|MBX_8|MBX_0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mcp->mb[0] = MBC_DUMP_RISC_RAM;
 		mcp->out_mb = MBX_0;
@@ -3219,12 +5587,20 @@ qla2x00_dump_ram(scsi_qla_host_t *vha, dma_addr_t req_dma, uint32_t addr,
 		ql_dbg(ql_dbg_mbx, vha, 0x1008,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1007, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1007,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 84XX Support **************************************************************/
 
 struct cs84xx_mgmt_cmd {
@@ -3244,7 +5620,12 @@ qla84xx_verify_chip(struct scsi_qla_host *vha, uint16_t *status)
 	unsigned long flags;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10c8, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10c8,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mn = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &mn_dma);
 	if (mn == NULL) {
@@ -3268,7 +5649,11 @@ qla84xx_verify_chip(struct scsi_qla_host *vha, uint16_t *status)
 		ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x111c,
 		    "Dump of Verify Request.\n");
 		ql_dump_buffer(ql_dbg_mbx + ql_dbg_buffer, vha, 0x111e,
+<<<<<<< HEAD
 		    (uint8_t *)mn, sizeof(*mn));
+=======
+		    mn, sizeof(*mn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rval = qla2x00_issue_iocb_timeout(vha, mn, mn_dma, 0, 120);
 		if (rval != QLA_SUCCESS) {
@@ -3280,12 +5665,20 @@ qla84xx_verify_chip(struct scsi_qla_host *vha, uint16_t *status)
 		ql_dbg(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1110,
 		    "Dump of Verify Response.\n");
 		ql_dump_buffer(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1118,
+<<<<<<< HEAD
 		    (uint8_t *)mn, sizeof(*mn));
+=======
+		    mn, sizeof(*mn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status[0] = le16_to_cpu(mn->p.rsp.comp_status);
 		status[1] = status[0] == CS_VCS_CHIP_FAILURE ?
 		    le16_to_cpu(mn->p.rsp.failure_code) : 0;
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10ce,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ce,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "cs=%x fc=%x.\n", status[0], status[1]);
 
 		if (status[0] != CS_COMPLETE) {
@@ -3299,7 +5692,11 @@ qla84xx_verify_chip(struct scsi_qla_host *vha, uint16_t *status)
 				retry = 1;
 			}
 		} else {
+<<<<<<< HEAD
 			ql_dbg(ql_dbg_mbx, vha, 0x10d0,
+=======
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "Firmware updated to %x.\n",
 			    le32_to_cpu(mn->p.rsp.fw_ver));
 
@@ -3316,9 +5713,17 @@ verify_done:
 	dma_pool_free(ha->s_dma_pool, mn, mn_dma);
 
 	if (rval != QLA_SUCCESS) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10d1, "Failed=%x.\n", rval);
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x10d2, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx, vha, 0x10d1,
+		    "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d2,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3331,10 +5736,23 @@ qla25xx_init_req_que(struct scsi_qla_host *vha, struct req_que *req)
 	unsigned long flags;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 	struct device_reg_25xxmq __iomem *reg;
 	struct qla_hw_data *ha = vha->hw;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10d3, "Entered %s.\n", __func__);
+=======
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!ha->flags.fw_started)
+		return QLA_SUCCESS;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d3,
+	    "Entered %s.\n", __func__);
+
+	if (IS_SHADOW_REG_CAPABLE(ha))
+		req->options |= BIT_13;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_INITIALIZE_MULTIQ;
 	mcp->mb[1] = req->options;
@@ -3348,26 +5766,43 @@ qla25xx_init_req_que(struct scsi_qla_host *vha, struct req_que *req)
 	mcp->mb[12] = req->qos;
 	mcp->mb[11] = req->vp_idx;
 	mcp->mb[13] = req->rid;
+<<<<<<< HEAD
 	if (IS_QLA83XX(ha))
 		mcp->mb[15] = 0;
 
 	reg = (struct device_reg_25xxmq *)((void *)(ha->mqiobase) +
 		QLA_QUE_PAGE * req->id);
 
+=======
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->mb[15] = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[4] = req->id;
 	/* que in ptr index */
 	mcp->mb[8] = 0;
 	/* que out ptr index */
+<<<<<<< HEAD
 	mcp->mb[9] = 0;
+=======
+	mcp->mb[9] = *req->out_ptr = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->out_mb = MBX_14|MBX_13|MBX_12|MBX_11|MBX_10|MBX_9|MBX_8|MBX_7|
 			MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
 	mcp->in_mb = MBX_0;
 	mcp->flags = MBX_DMA_OUT;
 	mcp->tov = MBX_TOV_SECONDS * 2;
 
+<<<<<<< HEAD
 	if (IS_QLA81XX(ha) || IS_QLA83XX(ha))
 		mcp->in_mb |= MBX_1;
 	if (IS_QLA83XX(ha)) {
+=======
+	if (IS_QLA81XX(ha) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+	    IS_QLA28XX(ha))
+		mcp->in_mb |= MBX_1;
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->out_mb |= MBX_15;
 		/* debug q create issue in SR-IOV */
 		mcp->in_mb |= MBX_9 | MBX_8 | MBX_7;
@@ -3375,12 +5810,19 @@ qla25xx_init_req_que(struct scsi_qla_host *vha, struct req_que *req)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	if (!(req->options & BIT_0)) {
+<<<<<<< HEAD
 		WRT_REG_DWORD(&reg->req_q_in, 0);
 		if (!IS_QLA83XX(ha))
 			WRT_REG_DWORD(&reg->req_q_out, 0);
 	}
 	req->req_q_in = &reg->req_q_in;
 	req->req_q_out = &reg->req_q_out;
+=======
+		wrt_reg_dword(req->req_q_in, 0);
+		if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+			wrt_reg_dword(req->req_q_out, 0);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -3388,7 +5830,12 @@ qla25xx_init_req_que(struct scsi_qla_host *vha, struct req_que *req)
 		ql_dbg(ql_dbg_mbx, vha, 0x10d4,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10d5, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d5,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3401,10 +5848,23 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 	unsigned long flags;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 	struct device_reg_25xxmq __iomem *reg;
 	struct qla_hw_data *ha = vha->hw;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10d6, "Entered %s.\n", __func__);
+=======
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!ha->flags.fw_started)
+		return QLA_SUCCESS;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d6,
+	    "Entered %s.\n", __func__);
+
+	if (IS_SHADOW_REG_CAPABLE(ha))
+		rsp->options |= BIT_13;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_INITIALIZE_MULTIQ;
 	mcp->mb[1] = rsp->options;
@@ -3415,6 +5875,7 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 	mcp->mb[5] = rsp->length;
 	mcp->mb[14] = rsp->msix->entry;
 	mcp->mb[13] = rsp->rid;
+<<<<<<< HEAD
 	if (IS_QLA83XX(ha))
 		mcp->mb[15] = 0;
 
@@ -3424,6 +5885,14 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 	mcp->mb[4] = rsp->id;
 	/* que in ptr index */
 	mcp->mb[8] = 0;
+=======
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->mb[15] = 0;
+
+	mcp->mb[4] = rsp->id;
+	/* que in ptr index */
+	mcp->mb[8] = *rsp->in_ptr = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* que out ptr index */
 	mcp->mb[9] = 0;
 	mcp->out_mb = MBX_14|MBX_13|MBX_9|MBX_8|MBX_7
@@ -3435,7 +5904,11 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 	if (IS_QLA81XX(ha)) {
 		mcp->out_mb |= MBX_12|MBX_11|MBX_10;
 		mcp->in_mb |= MBX_1;
+<<<<<<< HEAD
 	} else if (IS_QLA83XX(ha)) {
+=======
+	} else if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->out_mb |= MBX_15|MBX_12|MBX_11|MBX_10;
 		mcp->in_mb |= MBX_1;
 		/* debug q create issue in SR-IOV */
@@ -3444,9 +5917,15 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	if (!(rsp->options & BIT_0)) {
+<<<<<<< HEAD
 		WRT_REG_DWORD(&reg->rsp_q_out, 0);
 		if (!IS_QLA83XX(ha))
 			WRT_REG_DWORD(&reg->rsp_q_in, 0);
+=======
+		wrt_reg_dword(rsp->rsp_q_out, 0);
+		if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+			wrt_reg_dword(rsp->rsp_q_in, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -3456,7 +5935,12 @@ qla25xx_init_rsp_que(struct scsi_qla_host *vha, struct rsp_que *rsp)
 		ql_dbg(ql_dbg_mbx, vha, 0x10d7,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10d8, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d8,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3469,7 +5953,12 @@ qla81xx_idc_ack(scsi_qla_host_t *vha, uint16_t *mb)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10d9, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10d9,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_IDC_ACK;
 	memcpy(&mcp->mb[1], mb, QLA_IDC_ACK_REGS * sizeof(uint16_t));
@@ -3483,7 +5972,12 @@ qla81xx_idc_ack(scsi_qla_host_t *vha, uint16_t *mb)
 		ql_dbg(ql_dbg_mbx, vha, 0x10da,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10db, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10db,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3496,9 +5990,17 @@ qla81xx_fac_get_sector_size(scsi_qla_host_t *vha, uint32_t *sector_size)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10dc, "Entered %s.\n", __func__);
 
 	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw))
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10dc,
+	    "Entered %s.\n", __func__);
+
+	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw) &&
+	    !IS_QLA27XX(vha->hw) && !IS_QLA28XX(vha->hw))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_FAILED;
 
 	mcp->mb[0] = MBC_FLASH_ACCESS_CTRL;
@@ -3514,7 +6016,12 @@ qla81xx_fac_get_sector_size(scsi_qla_host_t *vha, uint32_t *sector_size)
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10de, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10de,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*sector_size = mcp->mb[1];
 	}
 
@@ -3528,10 +6035,19 @@ qla81xx_fac_do_write_enable(scsi_qla_host_t *vha, int enable)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw))
 		return QLA_FUNCTION_FAILED;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10df, "Entered %s.\n", __func__);
+=======
+	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw) &&
+	    !IS_QLA27XX(vha->hw) && !IS_QLA28XX(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10df,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_FLASH_ACCESS_CTRL;
 	mcp->mb[1] = enable ? FAC_OPT_CMD_WRITE_ENABLE :
@@ -3547,7 +6063,12 @@ qla81xx_fac_do_write_enable(scsi_qla_host_t *vha, int enable)
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10e1, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e1,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3560,10 +6081,19 @@ qla81xx_fac_erase_sector(scsi_qla_host_t *vha, uint32_t start, uint32_t finish)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw))
 		return QLA_FUNCTION_FAILED;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10e2, "Entered %s.\n", __func__);
+=======
+	if (!IS_QLA81XX(vha->hw) && !IS_QLA83XX(vha->hw) &&
+	    !IS_QLA27XX(vha->hw) && !IS_QLA28XX(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e2,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_FLASH_ACCESS_CTRL;
 	mcp->mb[1] = FAC_OPT_CMD_ERASE_SECTOR;
@@ -3582,7 +6112,48 @@ qla81xx_fac_erase_sector(scsi_qla_host_t *vha, uint32_t start, uint32_t finish)
 		    "Failed=%x mb[0]=%x mb[1]=%x mb[2]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10e4, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e4,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla81xx_fac_semaphore_access(scsi_qla_host_t *vha, int lock)
+{
+	int rval = QLA_SUCCESS;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_QLA81XX(ha) && !IS_QLA83XX(ha) &&
+	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+		return rval;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e2,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_FLASH_ACCESS_CTRL;
+	mcp->mb[1] = (lock ? FAC_OPT_CMD_LOCK_SEMAPHORE :
+	    FAC_OPT_CMD_UNLOCK_SEMAPHORE);
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x10e3,
+		    "Failed=%x mb[0]=%x mb[1]=%x mb[2]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e4,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3595,7 +6166,12 @@ qla81xx_restart_mpi_firmware(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10e5, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e5,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_RESTART_MPI_FW;
 	mcp->out_mb = MBX_0;
@@ -3609,7 +6185,269 @@ qla81xx_restart_mpi_firmware(scsi_qla_host_t *vha)
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10e7, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e7,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla82xx_set_driver_version(scsi_qla_host_t *vha, char *version)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int i;
+	int len;
+	__le16 *str;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_P3P_TYPE(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x117b,
+	    "Entered %s.\n", __func__);
+
+	str = (__force __le16 *)version;
+	len = strlen(version);
+
+	mcp->mb[0] = MBC_SET_RNID_PARAMS;
+	mcp->mb[1] = RNID_TYPE_SET_VERSION << 8;
+	mcp->out_mb = MBX_1|MBX_0;
+	for (i = 4; i < 16 && len; i++, str++, len -= 2) {
+		mcp->mb[i] = le16_to_cpup(str);
+		mcp->out_mb |= 1<<i;
+	}
+	for (; i < 16; i++) {
+		mcp->mb[i] = 0;
+		mcp->out_mb |= 1<<i;
+	}
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x117c,
+		    "Failed=%x mb[0]=%x,%x.\n", rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x117d,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla25xx_set_driver_version(scsi_qla_host_t *vha, char *version)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int len;
+	uint16_t dwlen;
+	uint8_t *str;
+	dma_addr_t str_dma;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_FWI2_CAPABLE(ha) || IS_QLA24XX_TYPE(ha) || IS_QLA81XX(ha) ||
+	    IS_P3P_TYPE(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x117e,
+	    "Entered %s.\n", __func__);
+
+	str = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &str_dma);
+	if (!str) {
+		ql_log(ql_log_warn, vha, 0x117f,
+		    "Failed to allocate driver version param.\n");
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+
+	memcpy(str, "\x7\x3\x11\x0", 4);
+	dwlen = str[0];
+	len = dwlen * 4 - 4;
+	memset(str + 4, 0, len);
+	if (len > strlen(version))
+		len = strlen(version);
+	memcpy(str + 4, version, len);
+
+	mcp->mb[0] = MBC_SET_RNID_PARAMS;
+	mcp->mb[1] = RNID_TYPE_SET_VERSION << 8 | dwlen;
+	mcp->mb[2] = MSW(LSD(str_dma));
+	mcp->mb[3] = LSW(LSD(str_dma));
+	mcp->mb[6] = MSW(MSD(str_dma));
+	mcp->mb[7] = LSW(MSD(str_dma));
+	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1180,
+		    "Failed=%x mb[0]=%x,%x.\n", rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1181,
+		    "Done %s.\n", __func__);
+	}
+
+	dma_pool_free(ha->s_dma_pool, str, str_dma);
+
+	return rval;
+}
+
+int
+qla24xx_get_port_login_templ(scsi_qla_host_t *vha, dma_addr_t buf_dma,
+			     void *buf, uint16_t bufsiz)
+{
+	int rval, i;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	uint32_t	*bp;
+
+	if (!IS_FWI2_CAPABLE(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1159,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_GET_RNID_PARAMS;
+	mcp->mb[1] = RNID_TYPE_PORT_LOGIN << 8;
+	mcp->mb[2] = MSW(buf_dma);
+	mcp->mb[3] = LSW(buf_dma);
+	mcp->mb[6] = MSW(MSD(buf_dma));
+	mcp->mb[7] = LSW(MSD(buf_dma));
+	mcp->mb[8] = bufsiz/4;
+	mcp->out_mb = MBX_8|MBX_7|MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x115a,
+		    "Failed=%x mb[0]=%x,%x.\n", rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x115b,
+		    "Done %s.\n", __func__);
+		bp = (uint32_t *) buf;
+		for (i = 0; i < (bufsiz-4)/4; i++, bp++)
+			*bp = le32_to_cpu((__force __le32)*bp);
+	}
+
+	return rval;
+}
+
+#define PUREX_CMD_COUNT	4
+int
+qla25xx_set_els_cmds_supported(scsi_qla_host_t *vha)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	uint8_t *els_cmd_map;
+	uint8_t active_cnt = 0;
+	dma_addr_t els_cmd_map_dma;
+	uint8_t cmd_opcode[PUREX_CMD_COUNT];
+	uint8_t i, index, purex_bit;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_QLA25XX(ha) && !IS_QLA2031(ha) &&
+	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+		return QLA_SUCCESS;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1197,
+	    "Entered %s.\n", __func__);
+
+	els_cmd_map = dma_alloc_coherent(&ha->pdev->dev, ELS_CMD_MAP_SIZE,
+	    &els_cmd_map_dma, GFP_KERNEL);
+	if (!els_cmd_map) {
+		ql_log(ql_log_warn, vha, 0x7101,
+		    "Failed to allocate RDP els command param.\n");
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+
+	/* List of Purex ELS */
+	if (ql2xrdpenable) {
+		cmd_opcode[active_cnt] = ELS_RDP;
+		active_cnt++;
+	}
+	if (ha->flags.scm_supported_f) {
+		cmd_opcode[active_cnt] = ELS_FPIN;
+		active_cnt++;
+	}
+	if (ha->flags.edif_enabled) {
+		cmd_opcode[active_cnt] = ELS_AUTH_ELS;
+		active_cnt++;
+	}
+
+	for (i = 0; i < active_cnt; i++) {
+		index = cmd_opcode[i] / 8;
+		purex_bit = cmd_opcode[i] % 8;
+		els_cmd_map[index] |= 1 << purex_bit;
+	}
+
+	mcp->mb[0] = MBC_SET_RNID_PARAMS;
+	mcp->mb[1] = RNID_TYPE_ELS_CMD << 8;
+	mcp->mb[2] = MSW(LSD(els_cmd_map_dma));
+	mcp->mb[3] = LSW(LSD(els_cmd_map_dma));
+	mcp->mb[6] = MSW(MSD(els_cmd_map_dma));
+	mcp->mb[7] = LSW(MSD(els_cmd_map_dma));
+	mcp->out_mb = MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = MBX_DMA_OUT;
+	mcp->buf_size = ELS_CMD_MAP_SIZE;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x118d,
+		    "Failed=%x (%x,%x).\n", rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x118c,
+		    "Done %s.\n", __func__);
+	}
+
+	dma_free_coherent(&ha->pdev->dev, ELS_CMD_MAP_SIZE,
+	   els_cmd_map, els_cmd_map_dma);
+
+	return rval;
+}
+
+static int
+qla2x00_read_asic_temperature(scsi_qla_host_t *vha, uint16_t *temp)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_FWI2_CAPABLE(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1159,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_GET_RNID_PARAMS;
+	mcp->mb[1] = RNID_TYPE_ASIC_TEMP << 8;
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+	*temp = mcp->mb[1];
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x115a,
+		    "Failed=%x mb[0]=%x,%x.\n", rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x115b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3624,7 +6462,12 @@ qla2x00_read_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10e8, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e8,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
@@ -3634,8 +6477,13 @@ qla2x00_read_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 
 	mcp->mb[0] = MBC_READ_SFP;
 	mcp->mb[1] = dev;
+<<<<<<< HEAD
 	mcp->mb[2] = MSW(sfp_dma);
 	mcp->mb[3] = LSW(sfp_dma);
+=======
+	mcp->mb[2] = MSW(LSD(sfp_dma));
+	mcp->mb[3] = LSW(LSD(sfp_dma));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[6] = MSW(MSD(sfp_dma));
 	mcp->mb[7] = LSW(MSD(sfp_dma));
 	mcp->mb[8] = len;
@@ -3653,8 +6501,18 @@ qla2x00_read_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x10e9,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+<<<<<<< HEAD
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x10ea, "Done %s.\n", __func__);
+=======
+		if (mcp->mb[0] == MBS_COMMAND_ERROR && mcp->mb[1] == 0x22) {
+			/* sfp is not there */
+			rval = QLA_INTERFACE_ERROR;
+		}
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ea,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3669,7 +6527,12 @@ qla2x00_write_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10eb, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10eb,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
@@ -3682,8 +6545,13 @@ qla2x00_write_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 
 	mcp->mb[0] = MBC_WRITE_SFP;
 	mcp->mb[1] = dev;
+<<<<<<< HEAD
 	mcp->mb[2] = MSW(sfp_dma);
 	mcp->mb[3] = LSW(sfp_dma);
+=======
+	mcp->mb[2] = MSW(LSD(sfp_dma));
+	mcp->mb[3] = LSW(LSD(sfp_dma));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->mb[6] = MSW(MSD(sfp_dma));
 	mcp->mb[7] = LSW(MSD(sfp_dma));
 	mcp->mb[8] = len;
@@ -3699,7 +6567,12 @@ qla2x00_write_sfp(scsi_qla_host_t *vha, dma_addr_t sfp_dma, uint8_t *sfp,
 		ql_dbg(ql_dbg_mbx, vha, 0x10ec,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10ed, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ed,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3713,7 +6586,12 @@ qla2x00_get_xgmac_stats(scsi_qla_host_t *vha, dma_addr_t stats_dma,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10ee, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ee,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_CNA_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -3735,7 +6613,12 @@ qla2x00_get_xgmac_stats(scsi_qla_host_t *vha, dma_addr_t stats_dma,
 		    "Failed=%x mb[0]=%x mb[1]=%x mb[2]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10f0, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f0,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 		*actual_size = mcp->mb[2] << 2;
@@ -3752,7 +6635,12 @@ qla2x00_get_dcbx_params(scsi_qla_host_t *vha, dma_addr_t tlv_dma,
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10f1, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f1,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_CNA_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -3775,7 +6663,12 @@ qla2x00_get_dcbx_params(scsi_qla_host_t *vha, dma_addr_t tlv_dma,
 		    "Failed=%x mb[0]=%x mb[1]=%x mb[2]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10f3, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f3,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -3788,7 +6681,12 @@ qla2x00_read_ram_word(scsi_qla_host_t *vha, uint32_t risc_addr, uint32_t *data)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10f4, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f4,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -3798,14 +6696,23 @@ qla2x00_read_ram_word(scsi_qla_host_t *vha, uint32_t risc_addr, uint32_t *data)
 	mcp->mb[8] = MSW(risc_addr);
 	mcp->out_mb = MBX_8|MBX_1|MBX_0;
 	mcp->in_mb = MBX_3|MBX_2|MBX_0;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x10f5,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10f6, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f6,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*data = mcp->mb[3] << 16 | mcp->mb[2];
 	}
 
@@ -3819,9 +6726,15 @@ qla2x00_loopback_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 	int rval;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
+<<<<<<< HEAD
 	uint32_t iter_cnt = 0x1;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x10f7, "Entered %s.\n", __func__);
+=======
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f7,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(mcp->mb, 0 , sizeof(mcp->mb));
 	mcp->mb[0] = MBC_DIAGNOSTIC_LOOP_BACK;
@@ -3844,8 +6757,13 @@ qla2x00_loopback_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 	mcp->mb[7] = MSW(MSD(mreq->rcv_dma));
 
 	/* Iteration count */
+<<<<<<< HEAD
 	mcp->mb[18] = LSW(iter_cnt);
 	mcp->mb[19] = MSW(iter_cnt);
+=======
+	mcp->mb[18] = LSW(mreq->iteration_count);
+	mcp->mb[19] = MSW(mreq->iteration_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->out_mb = MBX_21|MBX_20|MBX_19|MBX_18|MBX_17|MBX_16|MBX_15|
 	    MBX_14|MBX_13|MBX_12|MBX_11|MBX_10|MBX_7|MBX_6|MBX_1|MBX_0;
@@ -3865,7 +6783,12 @@ qla2x00_loopback_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 		    "mb[19]=%x.\n", rval, mcp->mb[0], mcp->mb[1], mcp->mb[2],
 		    mcp->mb[3], mcp->mb[18], mcp->mb[19]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10f9, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10f9,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Copy mailbox information */
@@ -3882,6 +6805,7 @@ qla2x00_echo_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10fa, "Entered %s.\n", __func__);
 
 	memset(mcp->mb, 0 , sizeof(mcp->mb));
@@ -3889,6 +6813,16 @@ qla2x00_echo_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 	mcp->mb[1] = mreq->options | BIT_6;	/* BIT_6 specifies 64bit address */
 	if (IS_CNA_CAPABLE(ha)) {
 		mcp->mb[1] |= BIT_15;
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10fa,
+	    "Entered %s.\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_DIAGNOSTIC_ECHO;
+	/* BIT_6 specifies 64bit address */
+	mcp->mb[1] = mreq->options | BIT_15 | BIT_6;
+	if (IS_CNA_CAPABLE(ha)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->mb[2] = vha->fcoe_fcf_idx;
 	}
 	mcp->mb[16] = LSW(mreq->rcv_dma);
@@ -3909,10 +6843,18 @@ qla2x00_echo_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 		mcp->out_mb |= MBX_2;
 
 	mcp->in_mb = MBX_0;
+<<<<<<< HEAD
 	if (IS_QLA24XX_TYPE(ha) || IS_QLA25XX(ha) ||
 	    IS_CNA_CAPABLE(ha) || IS_QLA2031(ha))
 		mcp->in_mb |= MBX_1;
 	if (IS_CNA_CAPABLE(ha) || IS_QLA2031(ha))
+=======
+	if (IS_CNA_CAPABLE(ha) || IS_QLA24XX_TYPE(ha) || IS_QLA25XX(ha) ||
+	    IS_QLA2031(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->in_mb |= MBX_1;
+	if (IS_CNA_CAPABLE(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) ||
+	    IS_QLA28XX(ha))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcp->in_mb |= MBX_3;
 
 	mcp->tov = MBX_TOV_SECONDS;
@@ -3926,7 +6868,12 @@ qla2x00_echo_test(scsi_qla_host_t *vha, struct msg_echo_lb *mreq,
 		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
 		    rval, mcp->mb[0], mcp->mb[1]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10fc, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10fc,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Copy mailbox information */
@@ -3941,7 +6888,11 @@ qla84xx_reset_chip(scsi_qla_host_t *vha, uint16_t enable_diagnostic)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x10fd,
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10fd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "Entered %s enable_diag=%d.\n", __func__, enable_diagnostic);
 
 	mcp->mb[0] = MBC_ISP84XX_RESET;
@@ -3955,7 +6906,12 @@ qla84xx_reset_chip(scsi_qla_host_t *vha, uint16_t enable_diagnostic)
 	if (rval != QLA_SUCCESS)
 		ql_dbg(ql_dbg_mbx, vha, 0x10fe, "Failed=%x.\n", rval);
 	else
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10ff, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ff,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rval;
 }
@@ -3967,7 +6923,12 @@ qla2x00_write_ram_word(scsi_qla_host_t *vha, uint32_t risc_addr, uint32_t data)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1100, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1100,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(vha->hw))
 		return QLA_FUNCTION_FAILED;
@@ -3978,15 +6939,28 @@ qla2x00_write_ram_word(scsi_qla_host_t *vha, uint32_t risc_addr, uint32_t data)
 	mcp->mb[3] = MSW(data);
 	mcp->mb[8] = MSW(risc_addr);
 	mcp->out_mb = MBX_8|MBX_3|MBX_2|MBX_1|MBX_0;
+<<<<<<< HEAD
 	mcp->in_mb = MBX_0;
 	mcp->tov = 30;
+=======
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x1101,
+<<<<<<< HEAD
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
 		ql_dbg(ql_dbg_mbx, vha, 0x1102, "Done %s.\n", __func__);
+=======
+		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1102,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4003,11 +6977,17 @@ qla81xx_write_mpi_register(scsi_qla_host_t *vha, uint16_t *mb)
 
 	rval = QLA_SUCCESS;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1103, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1103,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
 
 	/* Write the MBC data to the registers */
+<<<<<<< HEAD
 	WRT_REG_WORD(&reg->mailbox0, MBC_WRITE_MPI_REGISTER);
 	WRT_REG_WORD(&reg->mailbox1, mb[0]);
 	WRT_REG_WORD(&reg->mailbox2, mb[1]);
@@ -4015,11 +6995,24 @@ qla81xx_write_mpi_register(scsi_qla_host_t *vha, uint16_t *mb)
 	WRT_REG_WORD(&reg->mailbox4, mb[3]);
 
 	WRT_REG_DWORD(&reg->hccr, HCCRX_SET_HOST_INT);
+=======
+	wrt_reg_word(&reg->mailbox0, MBC_WRITE_MPI_REGISTER);
+	wrt_reg_word(&reg->mailbox1, mb[0]);
+	wrt_reg_word(&reg->mailbox2, mb[1]);
+	wrt_reg_word(&reg->mailbox3, mb[2]);
+	wrt_reg_word(&reg->mailbox4, mb[3]);
+
+	wrt_reg_dword(&reg->hccr, HCCRX_SET_HOST_INT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Poll for MBC interrupt */
 	for (timer = 6000000; timer; timer--) {
 		/* Check for pending interrupts. */
+<<<<<<< HEAD
 		stat = RD_REG_DWORD(&reg->host_status);
+=======
+		stat = rd_reg_dword(&reg->host_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (stat & HSRX_RISC_INT) {
 			stat &= 0xff;
 
@@ -4027,10 +7020,17 @@ qla81xx_write_mpi_register(scsi_qla_host_t *vha, uint16_t *mb)
 			    stat == 0x10 || stat == 0x11) {
 				set_bit(MBX_INTERRUPT,
 				    &ha->mbx_cmd_flags);
+<<<<<<< HEAD
 				mb0 = RD_REG_WORD(&reg->mailbox0);
 				WRT_REG_DWORD(&reg->hccr,
 				    HCCRX_CLR_RISC_INT);
 				RD_REG_DWORD(&reg->hccr);
+=======
+				mb0 = rd_reg_word(&reg->mailbox0);
+				wrt_reg_dword(&reg->hccr,
+				    HCCRX_CLR_RISC_INT);
+				rd_reg_dword(&reg->hccr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -4046,7 +7046,72 @@ qla81xx_write_mpi_register(scsi_qla_host_t *vha, uint16_t *mb)
 		ql_dbg(ql_dbg_mbx, vha, 0x1104,
 		    "Failed=%x mb[0]=%x.\n", rval, mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1105, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1105,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+/* Set the specified data rate */
+int
+qla2x00_set_data_rate(scsi_qla_host_t *vha, uint16_t mode)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+	uint16_t val;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1106,
+	    "Entered %s speed:0x%x mode:0x%x.\n", __func__, ha->set_data_rate,
+	    mode);
+
+	if (!IS_FWI2_CAPABLE(ha))
+		return QLA_FUNCTION_FAILED;
+
+	memset(mcp, 0, sizeof(*mcp));
+	switch (ha->set_data_rate) {
+	case PORT_SPEED_AUTO:
+	case PORT_SPEED_4GB:
+	case PORT_SPEED_8GB:
+	case PORT_SPEED_16GB:
+	case PORT_SPEED_32GB:
+		val = ha->set_data_rate;
+		break;
+	default:
+		ql_log(ql_log_warn, vha, 0x1199,
+		    "Unrecognized speed setting:%d. Setting Autoneg\n",
+		    ha->set_data_rate);
+		val = ha->set_data_rate = PORT_SPEED_AUTO;
+		break;
+	}
+
+	mcp->mb[0] = MBC_DATA_RATE;
+	mcp->mb[1] = mode;
+	mcp->mb[2] = val;
+
+	mcp->out_mb = MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->in_mb |= MBX_4|MBX_3;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1107,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		if (mcp->mb[1] != 0x7)
+			ql_dbg(ql_dbg_mbx, vha, 0x1179,
+				"Speed set:0x%x\n", mcp->mb[1]);
+
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1108,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4060,17 +7125,30 @@ qla2x00_get_data_rate(scsi_qla_host_t *vha)
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1106, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1106,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
 
 	mcp->mb[0] = MBC_DATA_RATE;
+<<<<<<< HEAD
 	mcp->mb[1] = 0;
 	mcp->out_mb = MBX_1|MBX_0;
 	mcp->in_mb = MBX_2|MBX_1|MBX_0;
 	if (IS_QLA83XX(ha))
 		mcp->in_mb |= MBX_3;
+=======
+	mcp->mb[1] = QLA_GET_DATA_RATE;
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+		mcp->in_mb |= MBX_4|MBX_3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->tov = MBX_TOV_SECONDS;
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -4078,7 +7156,21 @@ qla2x00_get_data_rate(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_mbx, vha, 0x1107,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1108, "Done %s.\n", __func__);
+=======
+		if (mcp->mb[1] != 0x7)
+			ha->link_data_rate = mcp->mb[1];
+
+		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+			if (mcp->mb[4] & BIT_0)
+				ql_log(ql_log_info, vha, 0x11a2,
+				    "FEC=enabled (data rate).\n");
+		}
+
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1108,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mcp->mb[1] != 0x7)
 			ha->link_data_rate = mcp->mb[1];
 	}
@@ -4094,9 +7186,17 @@ qla81xx_get_port_config(scsi_qla_host_t *vha, uint16_t *mb)
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1109, "Entered %s.\n", __func__);
 
 	if (!IS_QLA81XX(ha) && !IS_QLA83XX(ha))
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1109,
+	    "Entered %s.\n", __func__);
+
+	if (!IS_QLA81XX(ha) && !IS_QLA83XX(ha) && !IS_QLA8044(ha) &&
+	    !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_FAILED;
 	mcp->mb[0] = MBC_GET_PORT_CONFIG;
 	mcp->out_mb = MBX_0;
@@ -4113,7 +7213,12 @@ qla81xx_get_port_config(scsi_qla_host_t *vha, uint16_t *mb)
 		/* Copy all bits to preserve original value */
 		memcpy(mb, &mcp->mb[1], sizeof(uint16_t) * 4);
 
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x110b, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x110b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rval;
 }
@@ -4125,7 +7230,12 @@ qla81xx_set_port_config(scsi_qla_host_t *vha, uint16_t *mb)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x110c, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x110c,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_SET_PORT_CONFIG;
 	/* Copy all bits to preserve original setting */
@@ -4140,7 +7250,12 @@ qla81xx_set_port_config(scsi_qla_host_t *vha, uint16_t *mb)
 		ql_dbg(ql_dbg_mbx, vha, 0x110d,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x110e, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x110e,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rval;
 }
@@ -4155,7 +7270,12 @@ qla24xx_set_fcp_prio(scsi_qla_host_t *vha, uint16_t loop_id, uint16_t priority,
 	mbx_cmd_t *mcp = &mc;
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x110f, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x110f,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_QLA24XX_TYPE(ha) && !IS_QLA25XX(ha))
 		return QLA_FUNCTION_FAILED;
@@ -4170,7 +7290,11 @@ qla24xx_set_fcp_prio(scsi_qla_host_t *vha, uint16_t loop_id, uint16_t priority,
 	mcp->mb[9] = vha->vp_idx;
 	mcp->out_mb = MBX_9|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
 	mcp->in_mb = MBX_4|MBX_3|MBX_1|MBX_0;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 	rval = qla2x00_mailbox_command(vha, mcp);
 	if (mb != NULL) {
@@ -4183,13 +7307,19 @@ qla24xx_set_fcp_prio(scsi_qla_host_t *vha, uint16_t loop_id, uint16_t priority,
 	if (rval != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_mbx, vha, 0x10cd, "Failed=%x.\n", rval);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x10cc, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10cc,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
 }
 
 int
+<<<<<<< HEAD
 qla2x00_get_thermal_temp(scsi_qla_host_t *vha, uint16_t *temp, uint16_t *frac)
 {
 	int rval;
@@ -4218,6 +7348,51 @@ qla2x00_get_thermal_temp(scsi_qla_host_t *vha, uint16_t *temp, uint16_t *frac)
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1018, "Done %s.\n", __func__);
 fail:
+=======
+qla2x00_get_thermal_temp(scsi_qla_host_t *vha, uint16_t *temp)
+{
+	int rval = QLA_FUNCTION_FAILED;
+	struct qla_hw_data *ha = vha->hw;
+	uint8_t byte;
+
+	if (!IS_FWI2_CAPABLE(ha) || IS_QLA24XX_TYPE(ha) || IS_QLA81XX(ha)) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1150,
+		    "Thermal not supported by this card.\n");
+		return rval;
+	}
+
+	if (IS_QLA25XX(ha)) {
+		if (ha->pdev->subsystem_vendor == PCI_VENDOR_ID_QLOGIC &&
+		    ha->pdev->subsystem_device == 0x0175) {
+			rval = qla2x00_read_sfp(vha, 0, &byte,
+			    0x98, 0x1, 1, BIT_13|BIT_0);
+			*temp = byte;
+			return rval;
+		}
+		if (ha->pdev->subsystem_vendor == PCI_VENDOR_ID_HP &&
+		    ha->pdev->subsystem_device == 0x338e) {
+			rval = qla2x00_read_sfp(vha, 0, &byte,
+			    0x98, 0x1, 1, BIT_15|BIT_14|BIT_0);
+			*temp = byte;
+			return rval;
+		}
+		ql_dbg(ql_dbg_mbx, vha, 0x10c9,
+		    "Thermal not supported by this card.\n");
+		return rval;
+	}
+
+	if (IS_QLA82XX(ha)) {
+		*temp = qla82xx_read_temperature(vha);
+		rval = QLA_SUCCESS;
+		return rval;
+	} else if (IS_QLA8044(ha)) {
+		*temp = qla8044_read_temperature(vha);
+		rval = QLA_SUCCESS;
+		return rval;
+	}
+
+	rval = qla2x00_read_asic_temperature(vha, temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
@@ -4229,7 +7404,12 @@ qla82xx_mbx_intr_enable(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1017, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1017,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_FWI2_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
@@ -4240,7 +7420,11 @@ qla82xx_mbx_intr_enable(scsi_qla_host_t *vha)
 
 	mcp->out_mb = MBX_1|MBX_0;
 	mcp->in_mb = MBX_0;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -4248,7 +7432,12 @@ qla82xx_mbx_intr_enable(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_mbx, vha, 0x1016,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x100e, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x100e,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4262,9 +7451,16 @@ qla82xx_mbx_intr_disable(scsi_qla_host_t *vha)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x100d, "Entered %s.\n", __func__);
 
 	if (!IS_QLA82XX(ha))
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x100d,
+	    "Entered %s.\n", __func__);
+
+	if (!IS_P3P_TYPE(ha))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QLA_FUNCTION_FAILED;
 
 	memset(mcp, 0, sizeof(mbx_cmd_t));
@@ -4273,7 +7469,11 @@ qla82xx_mbx_intr_disable(scsi_qla_host_t *vha)
 
 	mcp->out_mb = MBX_1|MBX_0;
 	mcp->in_mb = MBX_0;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -4281,7 +7481,12 @@ qla82xx_mbx_intr_disable(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_mbx, vha, 0x100c,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x100b, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x100b,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4295,7 +7500,12 @@ qla82xx_md_get_template_size(scsi_qla_host_t *vha)
 	mbx_cmd_t *mcp = &mc;
 	int rval = QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x111f, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x111f,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(mcp->mb, 0 , sizeof(mcp->mb));
 	mcp->mb[0] = LSW(MBC_DIAGNOSTIC_MINIDUMP_TEMPLATE);
@@ -4318,7 +7528,12 @@ qla82xx_md_get_template_size(scsi_qla_host_t *vha)
 		    (mcp->mb[1] << 16) | mcp->mb[0],
 		    (mcp->mb[3] << 16) | mcp->mb[2]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1121, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1121,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->md_template_size = ((mcp->mb[3] << 16) | mcp->mb[2]);
 		if (!ha->md_template_size) {
 			ql_dbg(ql_dbg_mbx, vha, 0x1122,
@@ -4337,7 +7552,12 @@ qla82xx_md_get_template(scsi_qla_host_t *vha)
 	mbx_cmd_t *mcp = &mc;
 	int rval = QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1123, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1123,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ha->md_tmplt_hdr = dma_alloc_coherent(&ha->pdev->dev,
 	   ha->md_template_size, &ha->md_tmplt_hdr_dma, GFP_KERNEL);
@@ -4372,7 +7592,67 @@ qla82xx_md_get_template(scsi_qla_host_t *vha)
 		    ((mcp->mb[1] << 16) | mcp->mb[0]),
 		    ((mcp->mb[3] << 16) | mcp->mb[2]));
 	} else
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1126, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1126,
+		    "Done %s.\n", __func__);
+	return rval;
+}
+
+int
+qla8044_md_get_template(scsi_qla_host_t *vha)
+{
+	struct qla_hw_data *ha = vha->hw;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int rval = QLA_FUNCTION_FAILED;
+	int offset = 0, size = MINIDUMP_SIZE_36K;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0xb11f,
+	    "Entered %s.\n", __func__);
+
+	ha->md_tmplt_hdr = dma_alloc_coherent(&ha->pdev->dev,
+	   ha->md_template_size, &ha->md_tmplt_hdr_dma, GFP_KERNEL);
+	if (!ha->md_tmplt_hdr) {
+		ql_log(ql_log_warn, vha, 0xb11b,
+		    "Unable to allocate memory for Minidump template.\n");
+		return rval;
+	}
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	while (offset < ha->md_template_size) {
+		mcp->mb[0] = LSW(MBC_DIAGNOSTIC_MINIDUMP_TEMPLATE);
+		mcp->mb[1] = MSW(MBC_DIAGNOSTIC_MINIDUMP_TEMPLATE);
+		mcp->mb[2] = LSW(RQST_TMPLT);
+		mcp->mb[3] = MSW(RQST_TMPLT);
+		mcp->mb[4] = LSW(LSD(ha->md_tmplt_hdr_dma + offset));
+		mcp->mb[5] = MSW(LSD(ha->md_tmplt_hdr_dma + offset));
+		mcp->mb[6] = LSW(MSD(ha->md_tmplt_hdr_dma + offset));
+		mcp->mb[7] = MSW(MSD(ha->md_tmplt_hdr_dma + offset));
+		mcp->mb[8] = LSW(size);
+		mcp->mb[9] = MSW(size);
+		mcp->mb[10] = offset & 0x0000FFFF;
+		mcp->mb[11] = offset & 0xFFFF0000;
+		mcp->flags = MBX_DMA_OUT|MBX_DMA_IN|IOCTL_CMD;
+		mcp->tov = MBX_TOV_SECONDS;
+		mcp->out_mb = MBX_11|MBX_10|MBX_9|MBX_8|
+			MBX_7|MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+		mcp->in_mb = MBX_3|MBX_2|MBX_1|MBX_0;
+		rval = qla2x00_mailbox_command(vha, mcp);
+
+		if (rval != QLA_SUCCESS) {
+			ql_dbg(ql_dbg_mbx, vha, 0xb11c,
+				"mailbox command FAILED=0x%x, subcode=%x.\n",
+				((mcp->mb[1] << 16) | mcp->mb[0]),
+				((mcp->mb[3] << 16) | mcp->mb[2]));
+			return rval;
+		} else
+			ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0xb11d,
+				"Done %s.\n", __func__);
+		offset = offset + size;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
@@ -4387,7 +7667,12 @@ qla81xx_set_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 	if (!IS_QLA81XX(ha) && !IS_QLA8031(ha))
 		return QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1133, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1133,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(mcp, 0, sizeof(mbx_cmd_t));
 	mcp->mb[0] = MBC_SET_LED_CONFIG;
@@ -4404,7 +7689,11 @@ qla81xx_set_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 	if (IS_QLA8031(ha))
 		mcp->out_mb |= MBX_6|MBX_5|MBX_4|MBX_3;
 	mcp->in_mb = MBX_0;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -4412,7 +7701,12 @@ qla81xx_set_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 		ql_dbg(ql_dbg_mbx, vha, 0x1134,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1135, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1135,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4429,7 +7723,12 @@ qla81xx_get_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 	if (!IS_QLA81XX(ha) && !IS_QLA8031(ha))
 		return QLA_FUNCTION_FAILED;
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x1136, "Entered %s.\n", __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1136,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(mcp, 0, sizeof(mbx_cmd_t));
 	mcp->mb[0] = MBC_GET_LED_CONFIG;
@@ -4438,7 +7737,11 @@ qla81xx_get_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 	mcp->in_mb = MBX_2|MBX_1|MBX_0;
 	if (IS_QLA8031(ha))
 		mcp->in_mb |= MBX_6|MBX_5|MBX_4|MBX_3;
+<<<<<<< HEAD
 	mcp->tov = 30;
+=======
+	mcp->tov = MBX_TOV_SECONDS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp->flags = 0;
 
 	rval = qla2x00_mailbox_command(vha, mcp);
@@ -4454,7 +7757,12 @@ qla81xx_get_led_config(scsi_qla_host_t *vha, uint16_t *led_cfg)
 			led_cfg[4] = mcp->mb[5];
 			led_cfg[5] = mcp->mb[6];
 		}
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1138, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1138,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rval;
@@ -4468,10 +7776,17 @@ qla82xx_mbx_beacon_ctl(scsi_qla_host_t *vha, int enable)
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	if (!IS_QLA82XX(ha))
 		return QLA_FUNCTION_FAILED;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1127,
+=======
+	if (!IS_P3P_TYPE(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1127,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Entered %s.\n", __func__);
 
 	memset(mcp, 0, sizeof(mbx_cmd_t));
@@ -4491,7 +7806,11 @@ qla82xx_mbx_beacon_ctl(scsi_qla_host_t *vha, int enable)
 		ql_dbg(ql_dbg_mbx, vha, 0x1128,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1129,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1129,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "Done %s.\n", __func__);
 	}
 
@@ -4499,17 +7818,29 @@ qla82xx_mbx_beacon_ctl(scsi_qla_host_t *vha, int enable)
 }
 
 int
+<<<<<<< HEAD
 qla83xx_write_remote_reg(scsi_qla_host_t *vha, uint32_t reg, uint32_t data)
+=======
+qla83xx_wr_reg(scsi_qla_host_t *vha, uint32_t reg, uint32_t data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval;
 	struct qla_hw_data *ha = vha->hw;
 	mbx_cmd_t mc;
 	mbx_cmd_t *mcp = &mc;
 
+<<<<<<< HEAD
 	if (!IS_QLA83XX(ha))
 		return QLA_FUNCTION_FAILED;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1130, "Entered %s.\n", __func__);
+=======
+	if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1130,
+	    "Entered %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcp->mb[0] = MBC_WRITE_REMOTE_REG;
 	mcp->mb[1] = LSW(reg);
@@ -4527,7 +7858,11 @@ qla83xx_write_remote_reg(scsi_qla_host_t *vha, uint32_t reg, uint32_t data)
 		ql_dbg(ql_dbg_mbx, vha, 0x1131,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	} else {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x1132,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1132,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "Done %s.\n", __func__);
 	}
 
@@ -4543,13 +7878,22 @@ qla2x00_port_logout(scsi_qla_host_t *vha, struct fc_port *fcport)
 	mbx_cmd_t *mcp = &mc;
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha)) {
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x113b,
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x113b,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "Implicit LOGO Unsupported.\n");
 		return QLA_FUNCTION_FAILED;
 	}
 
 
+<<<<<<< HEAD
 	ql_dbg(ql_dbg_mbx, vha, 0x113c, "Done %s.\n",  __func__);
+=======
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x113c,
+	    "Entering %s.\n",  __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Perform Implicit LOGO. */
 	mcp->mb[0] = MBC_PORT_LOGOUT;
@@ -4564,8 +7908,883 @@ qla2x00_port_logout(scsi_qla_host_t *vha, struct fc_port *fcport)
 		ql_dbg(ql_dbg_mbx, vha, 0x113d,
 		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
 	else
+<<<<<<< HEAD
 		ql_dbg(ql_dbg_mbx, vha, 0x113e, "Done %s.\n", __func__);
+=======
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x113e,
+		    "Done %s.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rval;
 }
 
+<<<<<<< HEAD
+=======
+int
+qla83xx_rd_reg(scsi_qla_host_t *vha, uint32_t reg, uint32_t *data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+	unsigned long retry_max_time = jiffies + (2 * HZ);
+
+	if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx, vha, 0x114b, "Entered %s.\n", __func__);
+
+retry_rd_reg:
+	mcp->mb[0] = MBC_READ_REMOTE_REG;
+	mcp->mb[1] = LSW(reg);
+	mcp->mb[2] = MSW(reg);
+	mcp->out_mb = MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_4|MBX_3|MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x114c,
+		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1]);
+	} else {
+		*data = (mcp->mb[3] | (mcp->mb[4] << 16));
+		if (*data == QLA8XXX_BAD_VALUE) {
+			/*
+			 * During soft-reset CAMRAM register reads might
+			 * return 0xbad0bad0. So retry for MAX of 2 sec
+			 * while reading camram registers.
+			 */
+			if (time_after(jiffies, retry_max_time)) {
+				ql_dbg(ql_dbg_mbx, vha, 0x1141,
+				    "Failure to read CAMRAM register. "
+				    "data=0x%x.\n", *data);
+				return QLA_FUNCTION_FAILED;
+			}
+			msleep(100);
+			goto retry_rd_reg;
+		}
+		ql_dbg(ql_dbg_mbx, vha, 0x1142, "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla83xx_restart_nic_firmware(scsi_qla_host_t *vha)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_QLA83XX(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1143, "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_RESTART_NIC_FIRMWARE;
+	mcp->out_mb = MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1144,
+		    "Failed=%x mb[0]=%x mb[1]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1]);
+		qla2xxx_dump_fw(vha);
+	} else {
+		ql_dbg(ql_dbg_mbx, vha, 0x1145, "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla83xx_access_control(scsi_qla_host_t *vha, uint16_t options,
+	uint32_t start_addr, uint32_t end_addr, uint16_t *sector_size)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	uint8_t subcode = (uint8_t)options;
+	struct qla_hw_data *ha = vha->hw;
+
+	if (!IS_QLA8031(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1146, "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_SET_ACCESS_CONTROL;
+	mcp->mb[1] = options;
+	mcp->out_mb = MBX_1|MBX_0;
+	if (subcode & BIT_2) {
+		mcp->mb[2] = LSW(start_addr);
+		mcp->mb[3] = MSW(start_addr);
+		mcp->mb[4] = LSW(end_addr);
+		mcp->mb[5] = MSW(end_addr);
+		mcp->out_mb |= MBX_5|MBX_4|MBX_3|MBX_2;
+	}
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	if (!(subcode & (BIT_2 | BIT_5)))
+		mcp->in_mb |= MBX_4|MBX_3;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1147,
+		    "Failed=%x mb[0]=%x mb[1]=%x mb[2]=%x mb[3]=%x mb[4]=%x.\n",
+		    rval, mcp->mb[0], mcp->mb[1], mcp->mb[2], mcp->mb[3],
+		    mcp->mb[4]);
+		qla2xxx_dump_fw(vha);
+	} else {
+		if (subcode & BIT_5)
+			*sector_size = mcp->mb[1];
+		else if (subcode & (BIT_6 | BIT_7)) {
+			ql_dbg(ql_dbg_mbx, vha, 0x1148,
+			    "Driver-lock id=%x%x", mcp->mb[4], mcp->mb[3]);
+		} else if (subcode & (BIT_3 | BIT_4)) {
+			ql_dbg(ql_dbg_mbx, vha, 0x1149,
+			    "Flash-lock id=%x%x", mcp->mb[4], mcp->mb[3]);
+		}
+		ql_dbg(ql_dbg_mbx, vha, 0x114a, "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla2x00_dump_mctp_data(scsi_qla_host_t *vha, dma_addr_t req_dma, uint32_t addr,
+	uint32_t size)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	if (!IS_MCTP_CAPABLE(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x114f,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_DUMP_RISC_RAM_EXTENDED;
+	mcp->mb[1] = LSW(addr);
+	mcp->mb[2] = MSW(req_dma);
+	mcp->mb[3] = LSW(req_dma);
+	mcp->mb[4] = MSW(size);
+	mcp->mb[5] = LSW(size);
+	mcp->mb[6] = MSW(MSD(req_dma));
+	mcp->mb[7] = LSW(MSD(req_dma));
+	mcp->mb[8] = MSW(addr);
+	/* Setting RAM ID to valid */
+	/* For MCTP RAM ID is 0x40 */
+	mcp->mb[10] = BIT_7 | 0x40;
+
+	mcp->out_mb |= MBX_10|MBX_8|MBX_7|MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|
+	    MBX_0;
+
+	mcp->in_mb = MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x114e,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x114d,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+qla26xx_dport_diagnostics(scsi_qla_host_t *vha,
+	void *dd_buf, uint size, uint options)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	dma_addr_t dd_dma;
+
+	if (!IS_QLA83XX(vha->hw) && !IS_QLA27XX(vha->hw) &&
+	    !IS_QLA28XX(vha->hw))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x119f,
+	    "Entered %s.\n", __func__);
+
+	dd_dma = dma_map_single(&vha->hw->pdev->dev,
+	    dd_buf, size, DMA_FROM_DEVICE);
+	if (dma_mapping_error(&vha->hw->pdev->dev, dd_dma)) {
+		ql_log(ql_log_warn, vha, 0x1194, "Failed to map dma buffer.\n");
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+
+	memset(dd_buf, 0, size);
+
+	mcp->mb[0] = MBC_DPORT_DIAGNOSTICS;
+	mcp->mb[1] = options;
+	mcp->mb[2] = MSW(LSD(dd_dma));
+	mcp->mb[3] = LSW(LSD(dd_dma));
+	mcp->mb[6] = MSW(MSD(dd_dma));
+	mcp->mb[7] = LSW(MSD(dd_dma));
+	mcp->mb[8] = size;
+	mcp->out_mb = MBX_8|MBX_7|MBX_6|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->buf_size = size;
+	mcp->flags = MBX_DMA_IN;
+	mcp->tov = MBX_TOV_SECONDS * 4;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1195, "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1196,
+		    "Done %s.\n", __func__);
+	}
+
+	dma_unmap_single(&vha->hw->pdev->dev, dd_dma,
+	    size, DMA_FROM_DEVICE);
+
+	return rval;
+}
+
+int
+qla26xx_dport_diagnostics_v2(scsi_qla_host_t *vha,
+			     struct qla_dport_diag_v2 *dd,  mbx_cmd_t *mcp)
+{
+	int rval;
+	dma_addr_t dd_dma;
+	uint size = sizeof(dd->buf);
+	uint16_t options = dd->options;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x119f,
+	       "Entered %s.\n", __func__);
+
+	dd_dma = dma_map_single(&vha->hw->pdev->dev,
+				dd->buf, size, DMA_FROM_DEVICE);
+	if (dma_mapping_error(&vha->hw->pdev->dev, dd_dma)) {
+		ql_log(ql_log_warn, vha, 0x1194,
+		       "Failed to map dma buffer.\n");
+		return QLA_MEMORY_ALLOC_FAILED;
+	}
+
+	memset(dd->buf, 0, size);
+
+	mcp->mb[0] = MBC_DPORT_DIAGNOSTICS;
+	mcp->mb[1] = options;
+	mcp->mb[2] = MSW(LSD(dd_dma));
+	mcp->mb[3] = LSW(LSD(dd_dma));
+	mcp->mb[6] = MSW(MSD(dd_dma));
+	mcp->mb[7] = LSW(MSD(dd_dma));
+	mcp->mb[8] = size;
+	mcp->out_mb = MBX_8 | MBX_7 | MBX_6 | MBX_3 | MBX_2 | MBX_1 | MBX_0;
+	mcp->in_mb = MBX_3 | MBX_2 | MBX_1 | MBX_0;
+	mcp->buf_size = size;
+	mcp->flags = MBX_DMA_IN;
+	mcp->tov = MBX_TOV_SECONDS * 4;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1195, "Failed=%x.\n", rval);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1196,
+		       "Done %s.\n", __func__);
+	}
+
+	dma_unmap_single(&vha->hw->pdev->dev, dd_dma, size, DMA_FROM_DEVICE);
+
+	return rval;
+}
+
+static void qla2x00_async_mb_sp_done(srb_t *sp, int res)
+{
+	sp->u.iocb_cmd.u.mbx.rc = res;
+
+	complete(&sp->u.iocb_cmd.u.mbx.comp);
+	/* don't free sp here. Let the caller do the free */
+}
+
+/*
+ * This mailbox uses the iocb interface to send MB command.
+ * This allows non-critial (non chip setup) command to go
+ * out in parrallel.
+ */
+int qla24xx_send_mb_cmd(struct scsi_qla_host *vha, mbx_cmd_t *mcp)
+{
+	int rval = QLA_FUNCTION_FAILED;
+	srb_t *sp;
+	struct srb_iocb *c;
+
+	if (!vha->hw->flags.fw_started)
+		goto done;
+
+	/* ref: INIT */
+	sp = qla2x00_get_sp(vha, NULL, GFP_KERNEL);
+	if (!sp)
+		goto done;
+
+	c = &sp->u.iocb_cmd;
+	init_completion(&c->u.mbx.comp);
+
+	sp->type = SRB_MB_IOCB;
+	sp->name = mb_to_str(mcp->mb[0]);
+	qla2x00_init_async_sp(sp, qla2x00_get_async_timeout(vha) + 2,
+			      qla2x00_async_mb_sp_done);
+
+	memcpy(sp->u.iocb_cmd.u.mbx.out_mb, mcp->mb, SIZEOF_IOCB_MB_REG);
+
+	rval = qla2x00_start_sp(sp);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1018,
+		    "%s: %s Failed submission. %x.\n",
+		    __func__, sp->name, rval);
+		goto done_free_sp;
+	}
+
+	ql_dbg(ql_dbg_mbx, vha, 0x113f, "MB:%s hndl %x submitted\n",
+	    sp->name, sp->handle);
+
+	wait_for_completion(&c->u.mbx.comp);
+	memcpy(mcp->mb, sp->u.iocb_cmd.u.mbx.in_mb, SIZEOF_IOCB_MB_REG);
+
+	rval = c->u.mbx.rc;
+	switch (rval) {
+	case QLA_FUNCTION_TIMEOUT:
+		ql_dbg(ql_dbg_mbx, vha, 0x1140, "%s: %s Timeout. %x.\n",
+		    __func__, sp->name, rval);
+		break;
+	case  QLA_SUCCESS:
+		ql_dbg(ql_dbg_mbx, vha, 0x119d, "%s: %s done.\n",
+		    __func__, sp->name);
+		break;
+	default:
+		ql_dbg(ql_dbg_mbx, vha, 0x119e, "%s: %s Failed. %x.\n",
+		    __func__, sp->name, rval);
+		break;
+	}
+
+done_free_sp:
+	/* ref: INIT */
+	kref_put(&sp->cmd_kref, qla2x00_sp_release);
+done:
+	return rval;
+}
+
+/*
+ * qla24xx_gpdb_wait
+ * NOTE: Do not call this routine from DPC thread
+ */
+int qla24xx_gpdb_wait(struct scsi_qla_host *vha, fc_port_t *fcport, u8 opt)
+{
+	int rval = QLA_FUNCTION_FAILED;
+	dma_addr_t pd_dma;
+	struct port_database_24xx *pd;
+	struct qla_hw_data *ha = vha->hw;
+	mbx_cmd_t mc;
+
+	if (!vha->hw->flags.fw_started)
+		goto done;
+
+	pd = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &pd_dma);
+	if (pd  == NULL) {
+		ql_log(ql_log_warn, vha, 0xd047,
+		    "Failed to allocate port database structure.\n");
+		goto done_free_sp;
+	}
+
+	memset(&mc, 0, sizeof(mc));
+	mc.mb[0] = MBC_GET_PORT_DATABASE;
+	mc.mb[1] = fcport->loop_id;
+	mc.mb[2] = MSW(pd_dma);
+	mc.mb[3] = LSW(pd_dma);
+	mc.mb[6] = MSW(MSD(pd_dma));
+	mc.mb[7] = LSW(MSD(pd_dma));
+	mc.mb[9] = vha->vp_idx;
+	mc.mb[10] = opt;
+
+	rval = qla24xx_send_mb_cmd(vha, &mc);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x1193,
+		    "%s: %8phC fail\n", __func__, fcport->port_name);
+		goto done_free_sp;
+	}
+
+	rval = __qla24xx_parse_gpdb(vha, fcport, pd);
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1197, "%s: %8phC done\n",
+	    __func__, fcport->port_name);
+
+done_free_sp:
+	if (pd)
+		dma_pool_free(ha->s_dma_pool, pd, pd_dma);
+done:
+	return rval;
+}
+
+int __qla24xx_parse_gpdb(struct scsi_qla_host *vha, fc_port_t *fcport,
+    struct port_database_24xx *pd)
+{
+	int rval = QLA_SUCCESS;
+	uint64_t zero = 0;
+	u8 current_login_state, last_login_state;
+
+	if (NVME_TARGET(vha->hw, fcport)) {
+		current_login_state = pd->current_login_state >> 4;
+		last_login_state = pd->last_login_state >> 4;
+	} else {
+		current_login_state = pd->current_login_state & 0xf;
+		last_login_state = pd->last_login_state & 0xf;
+	}
+
+	/* Check for logged in state. */
+	if (current_login_state != PDS_PRLI_COMPLETE) {
+		ql_dbg(ql_dbg_mbx, vha, 0x119a,
+		    "Unable to verify login-state (%x/%x) for loop_id %x.\n",
+		    current_login_state, last_login_state, fcport->loop_id);
+		rval = QLA_FUNCTION_FAILED;
+		goto gpd_error_out;
+	}
+
+	if (fcport->loop_id == FC_NO_LOOP_ID ||
+	    (memcmp(fcport->port_name, (uint8_t *)&zero, 8) &&
+	     memcmp(fcport->port_name, pd->port_name, 8))) {
+		/* We lost the device mid way. */
+		rval = QLA_NOT_LOGGED_IN;
+		goto gpd_error_out;
+	}
+
+	/* Names are little-endian. */
+	memcpy(fcport->node_name, pd->node_name, WWN_SIZE);
+	memcpy(fcport->port_name, pd->port_name, WWN_SIZE);
+
+	/* Get port_id of device. */
+	fcport->d_id.b.domain = pd->port_id[0];
+	fcport->d_id.b.area = pd->port_id[1];
+	fcport->d_id.b.al_pa = pd->port_id[2];
+	fcport->d_id.b.rsvd_1 = 0;
+
+	ql_dbg(ql_dbg_disc, vha, 0x2062,
+	     "%8phC SVC Param w3 %02x%02x",
+	     fcport->port_name,
+	     pd->prli_svc_param_word_3[1],
+	     pd->prli_svc_param_word_3[0]);
+
+	if (NVME_TARGET(vha->hw, fcport)) {
+		fcport->port_type = FCT_NVME;
+		if ((pd->prli_svc_param_word_3[0] & BIT_5) == 0)
+			fcport->port_type |= FCT_NVME_INITIATOR;
+		if ((pd->prli_svc_param_word_3[0] & BIT_4) == 0)
+			fcport->port_type |= FCT_NVME_TARGET;
+		if ((pd->prli_svc_param_word_3[0] & BIT_3) == 0)
+			fcport->port_type |= FCT_NVME_DISCOVERY;
+	} else {
+		/* If not target must be initiator or unknown type. */
+		if ((pd->prli_svc_param_word_3[0] & BIT_4) == 0)
+			fcport->port_type = FCT_INITIATOR;
+		else
+			fcport->port_type = FCT_TARGET;
+	}
+	/* Passback COS information. */
+	fcport->supported_classes = (pd->flags & PDF_CLASS_2) ?
+		FC_COS_CLASS2 : FC_COS_CLASS3;
+
+	if (pd->prli_svc_param_word_3[0] & BIT_7) {
+		fcport->flags |= FCF_CONF_COMP_SUPPORTED;
+		fcport->conf_compl_supported = 1;
+	}
+
+gpd_error_out:
+	return rval;
+}
+
+/*
+ * qla24xx_gidlist__wait
+ * NOTE: don't call this routine from DPC thread.
+ */
+int qla24xx_gidlist_wait(struct scsi_qla_host *vha,
+	void *id_list, dma_addr_t id_list_dma, uint16_t *entries)
+{
+	int rval = QLA_FUNCTION_FAILED;
+	mbx_cmd_t mc;
+
+	if (!vha->hw->flags.fw_started)
+		goto done;
+
+	memset(&mc, 0, sizeof(mc));
+	mc.mb[0] = MBC_GET_ID_LIST;
+	mc.mb[2] = MSW(id_list_dma);
+	mc.mb[3] = LSW(id_list_dma);
+	mc.mb[6] = MSW(MSD(id_list_dma));
+	mc.mb[7] = LSW(MSD(id_list_dma));
+	mc.mb[8] = 0;
+	mc.mb[9] = vha->vp_idx;
+
+	rval = qla24xx_send_mb_cmd(vha, &mc);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x119b,
+		    "%s:  fail\n", __func__);
+	} else {
+		*entries = mc.mb[1];
+		ql_dbg(ql_dbg_mbx, vha, 0x119c,
+		    "%s:  done\n", __func__);
+	}
+done:
+	return rval;
+}
+
+int qla27xx_set_zio_threshold(scsi_qla_host_t *vha, uint16_t value)
+{
+	int rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1200,
+	    "Entered %s\n", __func__);
+
+	memset(mcp->mb, 0 , sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_SET_ZIO_THRESHOLD;
+	mcp->mb[1] = 1;
+	mcp->mb[2] = value;
+	mcp->out_mb = MBX_2 | MBX_1 | MBX_0;
+	mcp->in_mb = MBX_2 | MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1201, "%s %x\n",
+	    (rval != QLA_SUCCESS) ? "Failed"  : "Done", rval);
+
+	return rval;
+}
+
+int qla27xx_get_zio_threshold(scsi_qla_host_t *vha, uint16_t *value)
+{
+	int rval;
+	mbx_cmd_t	mc;
+	mbx_cmd_t	*mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x1203,
+	    "Entered %s\n", __func__);
+
+	memset(mcp->mb, 0, sizeof(mcp->mb));
+	mcp->mb[0] = MBC_GET_SET_ZIO_THRESHOLD;
+	mcp->mb[1] = 0;
+	mcp->out_mb = MBX_1 | MBX_0;
+	mcp->in_mb = MBX_2 | MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval == QLA_SUCCESS)
+		*value = mc.mb[2];
+
+	ql_dbg(ql_dbg_mbx, vha, 0x1205, "%s %x\n",
+	    (rval != QLA_SUCCESS) ? "Failed" : "Done", rval);
+
+	return rval;
+}
+
+int
+qla2x00_read_sfp_dev(struct scsi_qla_host *vha, char *buf, int count)
+{
+	struct qla_hw_data *ha = vha->hw;
+	uint16_t iter, addr, offset;
+	dma_addr_t phys_addr;
+	int rval, c;
+	u8 *sfp_data;
+
+	memset(ha->sfp_data, 0, SFP_DEV_SIZE);
+	addr = 0xa0;
+	phys_addr = ha->sfp_data_dma;
+	sfp_data = ha->sfp_data;
+	offset = c = 0;
+
+	for (iter = 0; iter < SFP_DEV_SIZE / SFP_BLOCK_SIZE; iter++) {
+		if (iter == 4) {
+			/* Skip to next device address. */
+			addr = 0xa2;
+			offset = 0;
+		}
+
+		rval = qla2x00_read_sfp(vha, phys_addr, sfp_data,
+		    addr, offset, SFP_BLOCK_SIZE, BIT_1);
+		if (rval != QLA_SUCCESS) {
+			ql_log(ql_log_warn, vha, 0x706d,
+			    "Unable to read SFP data (%x/%x/%x).\n", rval,
+			    addr, offset);
+
+			return rval;
+		}
+
+		if (buf && (c < count)) {
+			u16 sz;
+
+			if ((count - c) >= SFP_BLOCK_SIZE)
+				sz = SFP_BLOCK_SIZE;
+			else
+				sz = count - c;
+
+			memcpy(buf, sfp_data, sz);
+			buf += SFP_BLOCK_SIZE;
+			c += sz;
+		}
+		phys_addr += SFP_BLOCK_SIZE;
+		sfp_data  += SFP_BLOCK_SIZE;
+		offset += SFP_BLOCK_SIZE;
+	}
+
+	return rval;
+}
+
+int qla24xx_res_count_wait(struct scsi_qla_host *vha,
+    uint16_t *out_mb, int out_mb_sz)
+{
+	int rval = QLA_FUNCTION_FAILED;
+	mbx_cmd_t mc;
+
+	if (!vha->hw->flags.fw_started)
+		goto done;
+
+	memset(&mc, 0, sizeof(mc));
+	mc.mb[0] = MBC_GET_RESOURCE_COUNTS;
+
+	rval = qla24xx_send_mb_cmd(vha, &mc);
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0xffff,
+			"%s:  fail\n", __func__);
+	} else {
+		if (out_mb_sz <= SIZEOF_IOCB_MB_REG)
+			memcpy(out_mb, mc.mb, out_mb_sz);
+		else
+			memcpy(out_mb, mc.mb, SIZEOF_IOCB_MB_REG);
+
+		ql_dbg(ql_dbg_mbx, vha, 0xffff,
+			"%s:  done\n", __func__);
+	}
+done:
+	return rval;
+}
+
+int qla28xx_secure_flash_update(scsi_qla_host_t *vha, uint16_t opts,
+    uint16_t region, uint32_t len, dma_addr_t sfub_dma_addr,
+    uint32_t sfub_len)
+{
+	int		rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	mcp->mb[0] = MBC_SECURE_FLASH_UPDATE;
+	mcp->mb[1] = opts;
+	mcp->mb[2] = region;
+	mcp->mb[3] = MSW(len);
+	mcp->mb[4] = LSW(len);
+	mcp->mb[5] = MSW(sfub_dma_addr);
+	mcp->mb[6] = LSW(sfub_dma_addr);
+	mcp->mb[7] = MSW(MSD(sfub_dma_addr));
+	mcp->mb[8] = LSW(MSD(sfub_dma_addr));
+	mcp->mb[9] = sfub_len;
+	mcp->out_mb =
+	    MBX_9|MBX_8|MBX_7|MBX_6|MBX_5|MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0xffff, "%s(%ld): failed rval 0x%x, %x %x %x",
+			__func__, vha->host_no, rval, mcp->mb[0], mcp->mb[1],
+			mcp->mb[2]);
+	}
+
+	return rval;
+}
+
+int qla2xxx_write_remote_register(scsi_qla_host_t *vha, uint32_t addr,
+    uint32_t data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e8,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_WRITE_REMOTE_REG;
+	mcp->mb[1] = LSW(addr);
+	mcp->mb[2] = MSW(addr);
+	mcp->mb[3] = LSW(data);
+	mcp->mb[4] = MSW(data);
+	mcp->out_mb = MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x10e9,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ea,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int qla2xxx_read_remote_register(scsi_qla_host_t *vha, uint32_t addr,
+    uint32_t *data)
+{
+	int rval;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+
+	ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10e8,
+	    "Entered %s.\n", __func__);
+
+	mcp->mb[0] = MBC_READ_REMOTE_REG;
+	mcp->mb[1] = LSW(addr);
+	mcp->mb[2] = MSW(addr);
+	mcp->out_mb = MBX_2|MBX_1|MBX_0;
+	mcp->in_mb = MBX_4|MBX_3|MBX_2|MBX_1|MBX_0;
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	*data = (uint32_t)((((uint32_t)mcp->mb[4]) << 16) | mcp->mb[3]);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0x10e9,
+		    "Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0x10ea,
+		    "Done %s.\n", __func__);
+	}
+
+	return rval;
+}
+
+int
+ql26xx_led_config(scsi_qla_host_t *vha, uint16_t options, uint16_t *led)
+{
+	struct qla_hw_data *ha = vha->hw;
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int rval;
+
+	if (!IS_QLA2031(ha) && !IS_QLA27XX(ha) && !IS_QLA28XX(ha))
+		return QLA_FUNCTION_FAILED;
+
+	ql_dbg(ql_dbg_mbx, vha, 0x7070, "Entered %s (options=%x).\n",
+	    __func__, options);
+
+	mcp->mb[0] = MBC_SET_GET_FC_LED_CONFIG;
+	mcp->mb[1] = options;
+	mcp->out_mb = MBX_1|MBX_0;
+	mcp->in_mb = MBX_1|MBX_0;
+	if (options & BIT_0) {
+		if (options & BIT_1) {
+			mcp->mb[2] = led[2];
+			mcp->out_mb |= MBX_2;
+		}
+		if (options & BIT_2) {
+			mcp->mb[3] = led[0];
+			mcp->out_mb |= MBX_3;
+		}
+		if (options & BIT_3) {
+			mcp->mb[4] = led[1];
+			mcp->out_mb |= MBX_4;
+		}
+	} else {
+		mcp->in_mb |= MBX_4|MBX_3|MBX_2;
+	}
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+	if (rval) {
+		ql_dbg(ql_dbg_mbx, vha, 0x7071, "Failed %s %x (mb=%x,%x)\n",
+		    __func__, rval, mcp->mb[0], mcp->mb[1]);
+		return rval;
+	}
+
+	if (options & BIT_0) {
+		ha->beacon_blink_led = 0;
+		ql_dbg(ql_dbg_mbx, vha, 0x7072, "Done %s\n", __func__);
+	} else {
+		led[2] = mcp->mb[2];
+		led[0] = mcp->mb[3];
+		led[1] = mcp->mb[4];
+		ql_dbg(ql_dbg_mbx, vha, 0x7073, "Done %s (led=%x,%x,%x)\n",
+		    __func__, led[0], led[1], led[2]);
+	}
+
+	return rval;
+}
+
+/**
+ * qla_no_op_mb(): This MB is used to check if FW is still alive and
+ * able to generate an interrupt. Otherwise, a timeout will trigger
+ * FW dump + reset
+ * @vha: host adapter pointer
+ * Return: None
+ */
+void qla_no_op_mb(struct scsi_qla_host *vha)
+{
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int rval;
+
+	memset(&mc, 0, sizeof(mc));
+	mcp->mb[0] = 0; // noop cmd= 0
+	mcp->out_mb = MBX_0;
+	mcp->in_mb = MBX_0;
+	mcp->tov = 5;
+	mcp->flags = 0;
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval) {
+		ql_dbg(ql_dbg_async, vha, 0x7071,
+			"Failed %s %x\n", __func__, rval);
+	}
+}
+
+int qla_mailbox_passthru(scsi_qla_host_t *vha,
+			 uint16_t *mbx_in, uint16_t *mbx_out)
+{
+	mbx_cmd_t mc;
+	mbx_cmd_t *mcp = &mc;
+	int rval = -EINVAL;
+
+	memset(&mc, 0, sizeof(mc));
+	/* Receiving all 32 register's contents */
+	memcpy(&mcp->mb, (char *)mbx_in, (32 * sizeof(uint16_t)));
+
+	mcp->out_mb = 0xFFFFFFFF;
+	mcp->in_mb = 0xFFFFFFFF;
+
+	mcp->tov = MBX_TOV_SECONDS;
+	mcp->flags = 0;
+	mcp->bufp = NULL;
+
+	rval = qla2x00_mailbox_command(vha, mcp);
+
+	if (rval != QLA_SUCCESS) {
+		ql_dbg(ql_dbg_mbx, vha, 0xf0a2,
+			"Failed=%x mb[0]=%x.\n", rval, mcp->mb[0]);
+	} else {
+		ql_dbg(ql_dbg_mbx + ql_dbg_verbose, vha, 0xf0a3, "Done %s.\n",
+		       __func__);
+		/* passing all 32 register's contents */
+		memcpy(mbx_out, &mcp->mb, 32 * sizeof(uint16_t));
+	}
+
+	return rval;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

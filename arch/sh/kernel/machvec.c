@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/machvec.c
  *
@@ -5,10 +9,13 @@
  *
  *  Copyright (C) 1999  Niibe Yutaka
  *  Copyright (C) 2002 - 2007 Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/string.h>
@@ -18,12 +25,21 @@
 #include <asm/setup.h>
 #include <asm/io.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
+=======
+#include <asm/processor.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MV_NAME_SIZE 32
 
 #define for_each_mv(mv) \
+<<<<<<< HEAD
 	for ((mv) = (struct sh_machine_vector *)&__machvec_start; \
 	     (mv) && (unsigned long)(mv) < (unsigned long)&__machvec_end; \
+=======
+	for ((mv) = (struct sh_machine_vector *)__machvec_start; \
+	     (mv) && (unsigned long)(mv) < (unsigned long)__machvec_end; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     (mv)++)
 
 static struct sh_machine_vector * __init get_mv_byname(const char *name)
@@ -67,10 +83,17 @@ static int __init early_parse_mv(char *from)
 
 	mvp = get_mv_byname(mv_name);
 	if (unlikely(!mvp)) {
+<<<<<<< HEAD
 		printk("Available vectors:\n\n\t'%s', ", sh_mv.mv_name);
 		for_each_mv(mvp)
 			printk("'%s', ", mvp->mv_name);
 		printk("\n\n");
+=======
+		pr_info("Available vectors:\n\n\t'%s', ", sh_mv.mv_name);
+		for_each_mv(mvp)
+			pr_cont("'%s', ", mvp->mv_name);
+		pr_cont("\n\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("Failed to select machvec '%s' -- halting.\n",
 		      mv_name);
 	} else
@@ -89,8 +112,13 @@ void __init sh_mv_setup(void)
 	if (!machvec_selected) {
 		unsigned long machvec_size;
 
+<<<<<<< HEAD
 		machvec_size = ((unsigned long)&__machvec_end -
 				(unsigned long)&__machvec_start);
+=======
+		machvec_size = ((unsigned long)__machvec_end -
+				(unsigned long)__machvec_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Sanity check for machvec section alignment. Ensure
@@ -104,10 +132,17 @@ void __init sh_mv_setup(void)
 		 * vector (usually the only one) from .machvec.init.
 		 */
 		if (machvec_size >= sizeof(struct sh_machine_vector))
+<<<<<<< HEAD
 			sh_mv = *(struct sh_machine_vector *)&__machvec_start;
 	}
 
 	printk(KERN_NOTICE "Booting machvec: %s\n", get_system_type());
+=======
+			sh_mv = *(struct sh_machine_vector *)__machvec_start;
+	}
+
+	pr_notice("Booting machvec: %s\n", get_system_type());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Manually walk the vec, fill in anything that the board hasn't yet
@@ -121,7 +156,10 @@ void __init sh_mv_setup(void)
 	mv_set(irq_demux);
 	mv_set(mode_pins);
 	mv_set(mem_init);
+<<<<<<< HEAD
 
 	if (!sh_mv.mv_nr_irqs)
 		sh_mv.mv_nr_irqs = NR_IRQS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

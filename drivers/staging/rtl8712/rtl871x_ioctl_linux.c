@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_ioctl_linux.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -42,12 +49,19 @@
 #include <linux/wireless.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/version.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/semaphore.h>
 #include <net/iw_handler.h>
 #include <linux/if_arp.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RTL_IOCTL_WPA_SUPPLICANT	(SIOCIWFIRSTPRIV + 0x1E)
 
@@ -55,7 +69,10 @@
 #define MAX_CUSTOM_LEN 64
 #define RATE_COUNT 4
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 rtl8180_rates[] = {1000000, 2000000, 5500000, 11000000,
 		       6000000, 9000000, 12000000, 18000000,
 		       24000000, 36000000, 48000000, 54000000};
@@ -67,6 +84,7 @@ static const long ieee80211_wlan_frequencies[] = {
 	2472, 2484
 };
 
+<<<<<<< HEAD
 static const char * const iw_operation_mode[] = {
 	"Auto", "Ad-Hoc", "Managed",  "Master", "Repeater", "Secondary",
 	 "Monitor"
@@ -98,14 +116,20 @@ static int hwaddr_aton_i(const char *txt, u8 *addr)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_indicate_wx_assoc_event(struct _adapter *padapter)
 {
 	union iwreq_data wrqu;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 	wrqu.ap_addr.sa_family = ARPHRD_ETHER;
+<<<<<<< HEAD
 	memcpy(wrqu.ap_addr.sa_data, pmlmepriv->cur_network.network.MacAddress,
 		ETH_ALEN);
+=======
+	memcpy(wrqu.ap_addr.sa_data, pmlmepriv->cur_network.network.MacAddress, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 }
 
@@ -114,7 +138,11 @@ void r8712_indicate_wx_disassoc_event(struct _adapter *padapter)
 	union iwreq_data wrqu;
 
 	wrqu.ap_addr.sa_family = ARPHRD_ETHER;
+<<<<<<< HEAD
 	memset(wrqu.ap_addr.sa_data, 0, ETH_ALEN);
+=======
+	eth_zero_addr(wrqu.ap_addr.sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 }
 
@@ -126,12 +154,22 @@ static inline void handle_pairwise_key(struct sta_info *psta,
 	memcpy(psta->x_UncstKey.skey, param->u.crypt.key,
 	       (param->u.crypt. key_len > 16 ? 16 : param->u.crypt.key_len));
 	if (strcmp(param->u.crypt.alg, "TKIP") == 0) { /* set mic key */
+<<<<<<< HEAD
 		memcpy(psta->tkiptxmickey. skey, &(param->u.crypt.
 			key[16]), 8);
 		memcpy(psta->tkiprxmickey. skey, &(param->u.crypt.
 			key[24]), 8);
 		padapter->securitypriv. busetkipkey = false;
 		_set_timer(&padapter->securitypriv.tkip_timer, 50);
+=======
+		memcpy(psta->tkiptxmickey. skey,
+		       &param->u.crypt.key[16], 8);
+		memcpy(psta->tkiprxmickey. skey,
+		       &param->u.crypt.key[24], 8);
+		padapter->securitypriv. busetkipkey = false;
+		mod_timer(&padapter->securitypriv.tkip_timer,
+			  jiffies + msecs_to_jiffies(50));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	r8712_setstakey_cmd(padapter, (unsigned char *)psta, true);
 }
@@ -139,6 +177,7 @@ static inline void handle_pairwise_key(struct sta_info *psta,
 static inline void handle_group_key(struct ieee_param *param,
 				    struct _adapter *padapter)
 {
+<<<<<<< HEAD
 	if (0 < param->u.crypt.idx &&
 	    param->u.crypt.idx < 3) {
 		/* group key idx is 1 or 2 */
@@ -157,10 +196,34 @@ static inline void handle_group_key(struct ieee_param *param,
 			    pwrctrlpriv.pwr_mode)
 				_set_timer(&(padapter->mlmepriv.dhcp_timer),
 					   60000);
+=======
+	union Keytype *gk = padapter->securitypriv.XGrpKey;
+	union Keytype *gtk = padapter->securitypriv.XGrptxmickey;
+	union Keytype *grk = padapter->securitypriv.XGrprxmickey;
+
+	if (param->u.crypt.idx > 0 &&
+	    param->u.crypt.idx < 3) {
+		/* group key idx is 1 or 2 */
+		memcpy(gk[param->u.crypt.idx - 1].skey,
+		       param->u.crypt.key,
+		       (param->u.crypt.key_len > 16 ? 16 :
+			param->u.crypt.key_len));
+		memcpy(gtk[param->u.crypt.idx - 1].skey,
+		       &param->u.crypt.key[16], 8);
+		memcpy(grk[param->u.crypt.idx - 1].skey,
+		       &param->u.crypt.key[24], 8);
+		padapter->securitypriv.binstallGrpkey = true;
+		r8712_set_key(padapter, &padapter->securitypriv, param->u.crypt.idx);
+		if (padapter->registrypriv.power_mgnt > PS_MODE_ACTIVE) {
+			if (padapter->registrypriv.power_mgnt != padapter->pwrctrlpriv.pwr_mode)
+				mod_timer(&padapter->mlmepriv.dhcp_timer,
+					  jiffies + msecs_to_jiffies(60000));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
+<<<<<<< HEAD
 static inline char *translate_scan(struct _adapter *padapter,
 				   struct iw_request_info *info,
 				   struct wlan_network *pnetwork,
@@ -173,6 +236,93 @@ static inline char *translate_scan(struct _adapter *padapter,
 	u32 i = 0, ht_ielen = 0;
 	u16	cap, ht_cap = false, mcs_rate;
 	u8	rssi, bw_40MHz = 0, short_GI = 0;
+=======
+static noinline_for_stack char *translate_scan_wpa(struct iw_request_info *info,
+						   struct wlan_network *pnetwork,
+						   struct iw_event *iwe,
+						   char *start, char *stop)
+{
+	/* parsing WPA/WPA2 IE */
+	u8 buf[MAX_WPA_IE_LEN];
+	u8 wpa_ie[255], rsn_ie[255];
+	u16 wpa_len = 0, rsn_len = 0;
+	int n, i;
+
+	r8712_get_sec_ie(pnetwork->network.IEs,
+			 pnetwork->network.IELength, rsn_ie, &rsn_len,
+			 wpa_ie, &wpa_len);
+	if (wpa_len > 0) {
+		memset(buf, 0, MAX_WPA_IE_LEN);
+		n = sprintf(buf, "wpa_ie=");
+		for (i = 0; i < wpa_len; i++) {
+			n += scnprintf(buf + n, MAX_WPA_IE_LEN - n,
+						"%02x", wpa_ie[i]);
+			if (n == MAX_WPA_IE_LEN - 1)
+				break;
+		}
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVCUSTOM;
+		iwe->u.data.length = (u16)strlen(buf);
+		start = iwe_stream_add_point(info, start, stop, iwe, buf);
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVGENIE;
+		iwe->u.data.length = (u16)wpa_len;
+		start = iwe_stream_add_point(info, start, stop, iwe, wpa_ie);
+	}
+	if (rsn_len > 0) {
+		memset(buf, 0, MAX_WPA_IE_LEN);
+		n = sprintf(buf, "rsn_ie=");
+		for (i = 0; i < rsn_len; i++) {
+			n += scnprintf(buf + n, MAX_WPA_IE_LEN - n,
+						"%02x", rsn_ie[i]);
+			if (n == MAX_WPA_IE_LEN - 1)
+				break;
+		}
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVCUSTOM;
+		iwe->u.data.length = strlen(buf);
+		start = iwe_stream_add_point(info, start, stop, iwe, buf);
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVGENIE;
+		iwe->u.data.length = rsn_len;
+		start = iwe_stream_add_point(info, start, stop, iwe, rsn_ie);
+	}
+
+	return start;
+}
+
+static noinline_for_stack char *translate_scan_wps(struct iw_request_info *info,
+						   struct wlan_network *pnetwork,
+						   struct iw_event *iwe,
+						   char *start, char *stop)
+{
+	/* parsing WPS IE */
+	u8 wps_ie[512];
+	uint wps_ielen;
+
+	if (r8712_get_wps_ie(pnetwork->network.IEs, pnetwork->network.IELength, wps_ie, &wps_ielen)) {
+		if (wps_ielen > 2) {
+			iwe->cmd = IWEVGENIE;
+			iwe->u.data.length = (u16)wps_ielen;
+			start = iwe_stream_add_point(info, start, stop, iwe, wps_ie);
+		}
+	}
+
+	return start;
+}
+
+static char *translate_scan(struct _adapter *padapter,
+			    struct iw_request_info *info,
+			    struct wlan_network *pnetwork,
+			    char *start, char *stop)
+{
+	struct iw_event iwe;
+	char *current_val;
+	s8 *p;
+	u32 i = 0, ht_ielen = 0;
+	u16	cap, ht_cap = false;
+	u8 rssi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pnetwork->network.Configuration.DSConfig < 1) ||
 	    (pnetwork->network.Configuration.DSConfig > 14)) {
@@ -184,11 +334,16 @@ static inline char *translate_scan(struct _adapter *padapter,
 	/* AP MAC address */
 	iwe.cmd = SIOCGIWAP;
 	iwe.u.ap_addr.sa_family = ARPHRD_ETHER;
+<<<<<<< HEAD
 	memcpy(iwe.u.ap_addr.sa_data, pnetwork->network.MacAddress, ETH_ALEN);
+=======
+	ether_addr_copy(iwe.u.ap_addr.sa_data, pnetwork->network.MacAddress);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_ADDR_LEN);
 	/* Add the ESSID */
 	iwe.cmd = SIOCGIWESSID;
 	iwe.u.data.flags = 1;
+<<<<<<< HEAD
 	iwe.u.data.length = (u16)min((u16)pnetwork->network.Ssid.SsidLength,
 			    (u16)32);
 	start = iwe_stream_add_point(info, start, stop, &iwe,
@@ -216,11 +371,34 @@ static inline char *translate_scan(struct _adapter *padapter,
 	} else if ((r8712_is_cckrates_included((u8 *)&pnetwork->network.
 		    SupportedRates)) == true) {
 		if (ht_cap == true)
+=======
+	iwe.u.data.length = min_t(u32, pnetwork->network.Ssid.SsidLength, 32);
+	start = iwe_stream_add_point(info, start, stop, &iwe,
+				     pnetwork->network.Ssid.Ssid);
+	/* parsing HT_CAP_IE */
+	p = r8712_get_ie(&pnetwork->network.IEs[12], WLAN_EID_HT_CAPABILITY,
+			 &ht_ielen, pnetwork->network.IELength - 12);
+	if (p && ht_ielen > 0)
+		ht_cap = true;
+	/* Add the protocol name */
+	iwe.cmd = SIOCGIWNAME;
+	if (r8712_is_cckratesonly_included(pnetwork->network.rates)) {
+		if (ht_cap)
+			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bn");
+		else
+			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11b");
+	} else if (r8712_is_cckrates_included(pnetwork->network.rates)) {
+		if (ht_cap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bgn");
 		else
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bg");
 	} else {
+<<<<<<< HEAD
 		if (ht_cap == true)
+=======
+		if (ht_cap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11gn");
 		else
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11g");
@@ -228,6 +406,7 @@ static inline char *translate_scan(struct _adapter *padapter,
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_CHAR_LEN);
 	/* Add mode */
 	iwe.cmd = SIOCGIWMODE;
+<<<<<<< HEAD
 	memcpy((u8 *)&cap, r8712_get_capability_from_ie(pnetwork->network.IEs),
 		2);
 	cap = le16_to_cpu(cap);
@@ -238,10 +417,21 @@ static inline char *translate_scan(struct _adapter *padapter,
 			iwe.u.mode = (u32)IW_MODE_ADHOC;
 		start = iwe_stream_add_event(info, start, stop, &iwe,
 			IW_EV_UINT_LEN);
+=======
+	memcpy((u8 *)&cap, r8712_get_capability_from_ie(pnetwork->network.IEs), 2);
+	le16_to_cpus(&cap);
+	if (cap & (WLAN_CAPABILITY_IBSS | WLAN_CAPABILITY_ESS)) {
+		if (cap & WLAN_CAPABILITY_ESS)
+			iwe.u.mode = (u32)IW_MODE_MASTER;
+		else
+			iwe.u.mode = (u32)IW_MODE_ADHOC;
+		start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_UINT_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Add frequency/channel */
 	iwe.cmd = SIOCGIWFREQ;
 	{
+<<<<<<< HEAD
 		/*  check legel index */
 		u8 dsconfig = pnetwork->network.Configuration.DSConfig;
 		if (dsconfig >= 1 && dsconfig <= sizeof(
@@ -249,12 +439,20 @@ static inline char *translate_scan(struct _adapter *padapter,
 			iwe.u.freq.m = (s32)(ieee80211_wlan_frequencies[
 				       pnetwork->network.Configuration.
 				       DSConfig - 1] * 100000);
+=======
+		/*  check legal index */
+		u8 dsconfig = pnetwork->network.Configuration.DSConfig;
+
+		if (dsconfig >= 1 && dsconfig <= sizeof(ieee80211_wlan_frequencies) / sizeof(long))
+			iwe.u.freq.m = (s32)(ieee80211_wlan_frequencies[dsconfig - 1] * 100000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			iwe.u.freq.m = 0;
 	}
 	iwe.u.freq.e = (s16)1;
 	iwe.u.freq.i = (u8)pnetwork->network.Configuration.DSConfig;
 	start = iwe_stream_add_event(info, start, stop, &iwe,
+<<<<<<< HEAD
 		IW_EV_FREQ_LEN);
 	/* Add encryption capability */
 	iwe.cmd = SIOCGIWENCODE;
@@ -266,6 +464,17 @@ static inline char *translate_scan(struct _adapter *padapter,
 	iwe.u.data.length = (u16)0;
 	start = iwe_stream_add_point(info, start, stop, &iwe,
 		pnetwork->network.Ssid.Ssid);
+=======
+				     IW_EV_FREQ_LEN);
+	/* Add encryption capability */
+	iwe.cmd = SIOCGIWENCODE;
+	if (cap & WLAN_CAPABILITY_PRIVACY)
+		iwe.u.data.flags = (u16)(IW_ENCODE_ENABLED | IW_ENCODE_NOKEY);
+	else
+		iwe.u.data.flags = (u16)(IW_ENCODE_DISABLED);
+	iwe.u.data.length = (u16)0;
+	start = iwe_stream_add_point(info, start, stop, &iwe, pnetwork->network.Ssid.Ssid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*Add basic and extended rates */
 	current_val = start + iwe_stream_lcp_len(info);
 	iwe.cmd = SIOCGIWRATE;
@@ -273,16 +482,25 @@ static inline char *translate_scan(struct _adapter *padapter,
 	iwe.u.bitrate.disabled = 0;
 	iwe.u.bitrate.value = 0;
 	i = 0;
+<<<<<<< HEAD
 	while (pnetwork->network.SupportedRates[i] != 0) {
 		/* Bit rate given in 500 kb/s units */
 		iwe.u.bitrate.value = (pnetwork->network.SupportedRates[i++] &
 				      0x7F) * 500000;
 		current_val = iwe_stream_add_value(info, start, current_val,
 			      stop, &iwe, IW_EV_PARAM_LEN);
+=======
+	while (pnetwork->network.rates[i] != 0) {
+		/* Bit rate given in 500 kb/s units */
+		iwe.u.bitrate.value = (pnetwork->network.rates[i++] & 0x7F) * 500000;
+		current_val = iwe_stream_add_value(info, start, current_val, stop, &iwe,
+						   IW_EV_PARAM_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Check if we added any event */
 	if ((current_val - start) > iwe_stream_lcp_len(info))
 		start = current_val;
+<<<<<<< HEAD
 	/* parsing WPA/WPA2 IE */
 	{
 		u8 buf[MAX_WPA_IE_LEN];
@@ -351,12 +569,23 @@ static inline char *translate_scan(struct _adapter *padapter,
 			}
 		}
 	}
+=======
+
+	start = translate_scan_wpa(info, pnetwork, &iwe, start, stop);
+
+	start = translate_scan_wps(info, pnetwork, &iwe, start, stop);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add quality statistics */
 	iwe.cmd = IWEVQUAL;
 	rssi = r8712_signal_scale_mapping(pnetwork->network.Rssi);
 	/* we only update signal_level (signal strength) that is rssi. */
+<<<<<<< HEAD
 	iwe.u.qual.updated = (u8)(IW_QUAL_QUAL_INVALID | IW_QUAL_LEVEL_UPDATED |
 				  IW_QUAL_NOISE_INVALID);
+=======
+	iwe.u.qual.updated = (u8)(IW_QUAL_QUAL_INVALID | IW_QUAL_LEVEL_UPDATED | IW_QUAL_NOISE_INVALID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iwe.u.qual.level = rssi;  /* signal strength */
 	iwe.u.qual.qual = 0; /* signal quality */
 	iwe.u.qual.noise = 0; /* noise level */
@@ -367,7 +596,11 @@ static inline char *translate_scan(struct _adapter *padapter,
 
 static int wpa_set_auth_algs(struct net_device *dev, u32 value)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if ((value & AUTH_ALG_SHARED_KEY) && (value & AUTH_ALG_OPEN_SYSTEM)) {
@@ -388,8 +621,14 @@ static int wpa_set_auth_algs(struct net_device *dev, u32 value)
 						 Ndis802_11AuthModeOpen;
 			padapter->securitypriv.AuthAlgrthm = 0;
 		}
+<<<<<<< HEAD
 	} else
 		ret = -EINVAL;
+=======
+	} else {
+		ret = -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -399,7 +638,11 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 	int ret = 0;
 	u32 wep_key_idx, wep_key_len = 0;
 	struct NDIS_802_11_WEP	 *pwep = NULL;
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 
@@ -408,6 +651,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 	if (param_len != (u32)((u8 *) param->u.crypt.key - (u8 *)param) +
 			 param->u.crypt.key_len)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
 	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
 	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff) {
@@ -420,6 +664,17 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 	if (strcmp(param->u.crypt.alg, "WEP") == 0) {
 		printk(KERN_INFO "r8712u: wpa_set_encryption, crypt.alg ="
 		       " WEP\n");
+=======
+	if (!is_broadcast_ether_addr(param->sta_addr))
+		return -EINVAL;
+
+	if (param->u.crypt.idx >= WEP_KEYS) {
+		/* for large key indices, set the default (0) */
+		param->u.crypt.idx = 0;
+	}
+	if (strcmp(param->u.crypt.alg, "WEP") == 0) {
+		netdev_info(dev, "r8712u: %s: crypt.alg = WEP\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->securitypriv.ndisencryptstatus =
 			     Ndis802_11Encryption1Enabled;
 		padapter->securitypriv.PrivacyAlgrthm = _WEP40_;
@@ -428,6 +683,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 		wep_key_len = param->u.crypt.key_len;
 		if (wep_key_idx >= WEP_KEYS)
 			wep_key_idx = 0;
+<<<<<<< HEAD
 		if (wep_key_len > 0) {
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			pwep = (struct NDIS_802_11_WEP *)_malloc((u32)
@@ -449,12 +705,32 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 			}
 		} else
 			return -EINVAL;
+=======
+		if (wep_key_len <= 0)
+			return -EINVAL;
+
+		wep_key_len = wep_key_len <= 5 ? 5 : 13;
+		pwep = kzalloc(sizeof(*pwep), GFP_ATOMIC);
+		if (!pwep)
+			return -ENOMEM;
+		pwep->KeyLength = wep_key_len;
+		pwep->Length = wep_key_len +
+			offsetof(struct NDIS_802_11_WEP, KeyMaterial);
+		if (wep_key_len == 13) {
+			padapter->securitypriv.PrivacyAlgrthm = _WEP104_;
+			padapter->securitypriv.XGrpPrivacy = _WEP104_;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pwep->KeyIndex = wep_key_idx;
 		pwep->KeyIndex |= 0x80000000;
 		memcpy(pwep->KeyMaterial, param->u.crypt.key, pwep->KeyLength);
 		if (param->u.crypt.set_tx) {
+<<<<<<< HEAD
 			if (r8712_set_802_11_add_wep(padapter, pwep) ==
 			    (u8)_FAIL)
+=======
+			if (r8712_set_802_11_add_wep(padapter, pwep))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -EOPNOTSUPP;
 		} else {
 			/* don't update "psecuritypriv->PrivacyAlgrthm" and
@@ -465,9 +741,15 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 				ret = -EOPNOTSUPP;
 				goto exit;
 			}
+<<<<<<< HEAD
 			memcpy(&(psecuritypriv->DefKey[wep_key_idx].
 				skey[0]), pwep->KeyMaterial,
 				pwep->KeyLength);
+=======
+			memcpy(&psecuritypriv->DefKey[wep_key_idx].skey[0],
+			       pwep->KeyMaterial,
+			       pwep->KeyLength);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psecuritypriv->DefKeylen[wep_key_idx] =
 				pwep->KeyLength;
 			r8712_set_key(padapter, psecuritypriv, wep_key_idx);
@@ -477,19 +759,34 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 	if (padapter->securitypriv.AuthAlgrthm == 2) { /* 802_1x */
 		struct sta_info *psta, *pbcmc_sta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
+<<<<<<< HEAD
 
 		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE |
 		    WIFI_MP_STATE) == true) { /* sta mode */
+=======
+		struct security_priv *spriv = &padapter->securitypriv;
+
+		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE |
+		    WIFI_MP_STATE)) { /* sta mode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psta = r8712_get_stainfo(pstapriv,
 						 get_bssid(pmlmepriv));
 			if (psta) {
 				psta->ieee8021x_blocked = false;
+<<<<<<< HEAD
 				if ((padapter->securitypriv.ndisencryptstatus ==
 				    Ndis802_11Encryption2Enabled) ||
 				    (padapter->securitypriv.ndisencryptstatus ==
 				    Ndis802_11Encryption3Enabled))
 					psta->XPrivacy = padapter->
 					    securitypriv.PrivacyAlgrthm;
+=======
+				if (spriv->ndisencryptstatus ==
+				    Ndis802_11Encryption2Enabled ||
+				    spriv->ndisencryptstatus ==
+				    Ndis802_11Encryption3Enabled)
+					psta->XPrivacy = spriv->PrivacyAlgrthm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (param->u.crypt.set_tx == 1)
 					handle_pairwise_key(psta, param,
 							    padapter);
@@ -499,6 +796,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 			pbcmc_sta = r8712_get_bcmc_stainfo(padapter);
 			if (pbcmc_sta) {
 				pbcmc_sta->ieee8021x_blocked = false;
+<<<<<<< HEAD
 				if ((padapter->securitypriv.ndisencryptstatus ==
 				    Ndis802_11Encryption2Enabled) ||
 				    (padapter->securitypriv.ndisencryptstatus ==
@@ -506,17 +804,30 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
 					pbcmc_sta->XPrivacy =
 					  padapter->securitypriv.
 					  PrivacyAlgrthm;
+=======
+				if (spriv->ndisencryptstatus ==
+				    Ndis802_11Encryption2Enabled ||
+				    spriv->ndisencryptstatus ==
+				    Ndis802_11Encryption3Enabled)
+					pbcmc_sta->XPrivacy =
+						spriv->PrivacyAlgrthm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 exit:
+<<<<<<< HEAD
 	kfree((u8 *)pwep);
+=======
+	kfree(pwep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 			    unsigned short ielen)
 {
+<<<<<<< HEAD
 	u8 *buf = NULL, *pos = NULL;
 	int group_cipher = 0, pairwise_cipher = 0;
 	int ret = 0;
@@ -529,24 +840,45 @@ static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 			return -ENOMEM;
 		memcpy(buf, pie , ielen);
 		pos = buf;
+=======
+	u8 *buf = NULL;
+	int group_cipher = 0, pairwise_cipher = 0;
+	int ret = 0;
+
+	if (ielen > MAX_WPA_IE_LEN || !pie)
+		return -EINVAL;
+	if (ielen) {
+		buf = kmemdup(pie, ielen, GFP_ATOMIC);
+		if (!buf)
+			return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ielen < RSN_HEADER_LEN) {
 			ret  = -EINVAL;
 			goto exit;
 		}
 		if (r8712_parse_wpa_ie(buf, ielen, &group_cipher,
+<<<<<<< HEAD
 		    &pairwise_cipher) == _SUCCESS) {
+=======
+				       &pairwise_cipher) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			padapter->securitypriv.AuthAlgrthm = 2;
 			padapter->securitypriv.ndisauthtype =
 				  Ndis802_11AuthModeWPAPSK;
 		}
 		if (r8712_parse_wpa2_ie(buf, ielen, &group_cipher,
+<<<<<<< HEAD
 		    &pairwise_cipher) == _SUCCESS) {
+=======
+					&pairwise_cipher) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			padapter->securitypriv.AuthAlgrthm = 2;
 			padapter->securitypriv.ndisauthtype =
 				  Ndis802_11AuthModeWPA2PSK;
 		}
 		switch (group_cipher) {
 		case WPA_CIPHER_NONE:
+<<<<<<< HEAD
 			padapter->securitypriv.XGrpPrivacy =
 				 _NO_PRIVACY_;
 			padapter->securitypriv.ndisencryptstatus =
@@ -571,10 +903,31 @@ static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 			padapter->securitypriv.XGrpPrivacy = _WEP104_;
 			padapter->securitypriv.ndisencryptstatus =
 				 Ndis802_11Encryption1Enabled;
+=======
+			padapter->securitypriv.XGrpPrivacy = _NO_PRIVACY_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11EncryptionDisabled;
+			break;
+		case WPA_CIPHER_WEP40:
+			padapter->securitypriv.XGrpPrivacy = _WEP40_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption1Enabled;
+			break;
+		case WPA_CIPHER_TKIP:
+			padapter->securitypriv.XGrpPrivacy = _TKIP_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption2Enabled;
+			break;
+		case WPA_CIPHER_CCMP:
+			padapter->securitypriv.XGrpPrivacy = _AES_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption3Enabled;
+			break;
+		case WPA_CIPHER_WEP104:
+			padapter->securitypriv.XGrpPrivacy = _WEP104_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption1Enabled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		switch (pairwise_cipher) {
 		case WPA_CIPHER_NONE:
+<<<<<<< HEAD
 			padapter->securitypriv.PrivacyAlgrthm =
 				 _NO_PRIVACY_;
 			padapter->securitypriv.ndisencryptstatus =
@@ -599,6 +952,26 @@ static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 			padapter->securitypriv.PrivacyAlgrthm = _WEP104_;
 			padapter->securitypriv.ndisencryptstatus =
 				 Ndis802_11Encryption1Enabled;
+=======
+			padapter->securitypriv.PrivacyAlgrthm = _NO_PRIVACY_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11EncryptionDisabled;
+			break;
+		case WPA_CIPHER_WEP40:
+			padapter->securitypriv.PrivacyAlgrthm = _WEP40_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption1Enabled;
+			break;
+		case WPA_CIPHER_TKIP:
+			padapter->securitypriv.PrivacyAlgrthm = _TKIP_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption2Enabled;
+			break;
+		case WPA_CIPHER_CCMP:
+			padapter->securitypriv.PrivacyAlgrthm = _AES_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption3Enabled;
+			break;
+		case WPA_CIPHER_WEP104:
+			padapter->securitypriv.PrivacyAlgrthm = _WEP104_;
+			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption1Enabled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		padapter->securitypriv.wps_phase = false;
@@ -609,16 +982,25 @@ static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 			while (cnt < ielen) {
 				eid = buf[cnt];
 
+<<<<<<< HEAD
 				if ((eid == _VENDOR_SPECIFIC_IE_) &&
 				    (!memcmp(&buf[cnt+2], wps_oui, 4))) {
 					printk(KERN_INFO "r8712u: "
 					       "SET WPS_IE\n");
 					padapter->securitypriv.wps_ie_len =
 					    ((buf[cnt+1] + 2) <
+=======
+				if ((eid == WLAN_EID_VENDOR_SPECIFIC) &&
+				    (!memcmp(&buf[cnt + 2], wps_oui, 4))) {
+					netdev_info(padapter->pnetdev, "r8712u: SET WPS_IE\n");
+					padapter->securitypriv.wps_ie_len =
+					    ((buf[cnt + 1] + 2) <
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    (MAX_WPA_IE_LEN << 2)) ?
 					    (buf[cnt + 1] + 2) :
 					    (MAX_WPA_IE_LEN << 2);
 					memcpy(padapter->securitypriv.wps_ie,
+<<<<<<< HEAD
 					    &buf[cnt],
 					    padapter->securitypriv.wps_ie_len);
 					padapter->securitypriv.wps_phase =
@@ -629,6 +1011,18 @@ static int r871x_set_wpa_ie(struct _adapter *padapter, char *pie,
 					break;
 				} else
 					cnt += buf[cnt + 1] + 2;
+=======
+					       &buf[cnt],
+					       padapter->securitypriv.wps_ie_len);
+					padapter->securitypriv.wps_phase =
+								 true;
+					netdev_info(padapter->pnetdev, "r8712u: SET WPS_IE, wps_phase==true\n");
+					cnt += buf[cnt + 1] + 2;
+					break;
+				}
+
+				cnt += buf[cnt + 1] + 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -637,6 +1031,7 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_name(struct net_device *dev,
 			     struct iw_request_info *info,
 			     union iwreq_data *wrqu, char *extra)
@@ -659,28 +1054,65 @@ static int r8711_wx_get_name(struct net_device *dev,
 		prates = &pcur_bss->SupportedRates;
 		if (r8712_is_cckratesonly_included((u8 *)prates) == true) {
 			if (ht_cap == true)
+=======
+static int r8711_wx_get_name(struct net_device *dev, struct iw_request_info *info,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	u32 ht_ielen = 0;
+	char *p;
+	u8 ht_cap = false;
+	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
+	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+	u8 *prates;
+
+	if (check_fwstate(pmlmepriv, _FW_LINKED | WIFI_ADHOC_MASTER_STATE) == true) {
+		/* parsing HT_CAP_IE */
+		p = r8712_get_ie(&pcur_bss->IEs[12], WLAN_EID_HT_CAPABILITY,
+				 &ht_ielen, pcur_bss->IELength - 12);
+		if (p && ht_ielen > 0)
+			ht_cap = true;
+		prates = pcur_bss->rates;
+		if (r8712_is_cckratesonly_included(prates)) {
+			if (ht_cap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11bn");
 			else
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11b");
+<<<<<<< HEAD
 		} else if ((r8712_is_cckrates_included((u8 *)prates)) == true) {
 			if (ht_cap == true)
+=======
+		} else if (r8712_is_cckrates_included(prates)) {
+			if (ht_cap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11bgn");
 			else
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11bg");
 		} else {
+<<<<<<< HEAD
 			if (ht_cap == true)
+=======
+			if (ht_cap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11gn");
 			else
 				snprintf(wrqu->name, IFNAMSIZ,
 					 "IEEE 802.11g");
 		}
+<<<<<<< HEAD
 	} else
 		snprintf(wrqu->name, IFNAMSIZ, "unassociated");
+=======
+	} else {
+		snprintf(wrqu->name, IFNAMSIZ, "unassociated");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -697,22 +1129,34 @@ static int r8711_wx_set_freq(struct net_device *dev,
 			     struct iw_request_info *info,
 			     union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iw_freq *fwrq = &wrqu->freq;
 	int rc = 0;
 
 /* If setting by frequency, convert to a channel */
+<<<<<<< HEAD
 	if ((fwrq->e == 1) &&
 	  (fwrq->m >= (int) 2.412e8) &&
 	  (fwrq->m <= (int) 2.487e8)) {
 		int f = fwrq->m / 100000;
 		int c = 0;
+=======
+	if ((fwrq->e == 1) && (fwrq->m >= 241200000) && (fwrq->m <= 248700000)) {
+		int f = fwrq->m / 100000;
+		int c = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((c < 14) && (f != frequency_list[c]))
 			c++;
 		fwrq->e = 0;
 		fwrq->m = c + 1;
 	}
 	/* Setting by channel number */
+<<<<<<< HEAD
 	if ((fwrq->m > 14) || (fwrq->e > 0))
 		rc = -EOPNOTSUPP;
 	else {
@@ -720,6 +1164,16 @@ static int r8711_wx_set_freq(struct net_device *dev,
 		if ((channel < 1) || (channel > 14))
 			rc = -EINVAL;
 		else {
+=======
+	if ((fwrq->m > 14) || (fwrq->e > 0)) {
+		rc = -EOPNOTSUPP;
+	} else {
+		int channel = fwrq->m;
+
+		if ((channel < 1) || (channel > 14)) {
+			rc = -EINVAL;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Yes ! We can set it !!! */
 			padapter->registrypriv.channel = channel;
 		}
@@ -727,6 +1181,7 @@ static int r8711_wx_set_freq(struct net_device *dev,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_freq(struct net_device *dev,
 			     struct iw_request_info *info,
 			     union iwreq_data *wrqu, char *extra)
@@ -743,6 +1198,23 @@ static int r8711_wx_get_freq(struct net_device *dev,
 	} else {
 		return -ENOLINK;
 	}
+=======
+static int r8711_wx_get_freq(struct net_device *dev, struct iw_request_info *info,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+
+	if (!check_fwstate(pmlmepriv, _FW_LINKED))
+		return -ENOLINK;
+
+	wrqu->freq.m = ieee80211_wlan_frequencies[
+		       pcur_bss->Configuration.DSConfig - 1] * 100000;
+	wrqu->freq.e = 1;
+	wrqu->freq.i = pcur_bss->Configuration.DSConfig;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -750,7 +1222,11 @@ static int r8711_wx_set_mode(struct net_device *dev,
 			     struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *b)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum NDIS_802_11_NETWORK_INFRASTRUCTURE networkType;
 
 	switch (wrqu->mode) {
@@ -781,6 +1257,7 @@ static int r8711_wx_set_mode(struct net_device *dev,
 static int r8711_wx_get_mode(struct net_device *dev, struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *b)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
@@ -790,12 +1267,24 @@ static int r8711_wx_get_mode(struct net_device *dev, struct iw_request_info *a,
 		 WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE) == true)
 		wrqu->mode = IW_MODE_ADHOC;
 	else if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+
+	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE))
+		wrqu->mode = IW_MODE_INFRA;
+	else if (check_fwstate(pmlmepriv,
+			       WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE))
+		wrqu->mode = IW_MODE_ADHOC;
+	else if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrqu->mode = IW_MODE_MASTER;
 	else
 		wrqu->mode = IW_MODE_AUTO;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int r871x_wx_set_pmkid(struct net_device *dev,
 			     struct iw_request_info *a,
 			     union iwreq_data *wrqu, char *extra)
@@ -803,12 +1292,22 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct iw_pmksa *pPMK = (struct iw_pmksa *) extra;
+=======
+static int r871x_wx_set_pmkid(struct net_device *dev, struct iw_request_info *a,
+			      union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
+	struct iw_pmksa *pPMK = (struct iw_pmksa *) extra;
+	struct RT_PMKID_LIST *pl = psecuritypriv->PMKIDList;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 strZeroMacAddress[ETH_ALEN] = {0x00};
 	u8 strIssueBssid[ETH_ALEN] = {0x00};
 	u8 j, blInserted = false;
 	int intReturn = false;
 
 /*
+<<<<<<< HEAD
 	There are the BSSID information in the bssid.sa_data array.
 	If cmd is IW_PMKSA_FLUSH, it means the wpa_suppplicant wants to clear
 	 all the PMKID information. If cmd is IW_PMKSA_ADD, it means the
@@ -817,12 +1316,23 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 	  remove a PMKID/BSSID from driver.
 */
 	if (pPMK == NULL)
+=======
+ *	There are the BSSID information in the bssid.sa_data array.
+ *	If cmd is IW_PMKSA_FLUSH, it means the wpa_supplicant wants to clear
+ *	all the PMKID information. If cmd is IW_PMKSA_ADD, it means the
+ *	wpa_supplicant wants to add a PMKID/BSSID to driver.
+ *	If cmd is IW_PMKSA_REMOVE, it means the wpa_supplicant wants to
+ *	remove a PMKID/BSSID from driver.
+ */
+	if (!pPMK)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	memcpy(strIssueBssid, pPMK->bssid.sa_data, ETH_ALEN);
 	switch (pPMK->cmd) {
 	case IW_PMKSA_ADD:
 		if (!memcmp(strIssueBssid, strZeroMacAddress, ETH_ALEN))
 			return intReturn;
+<<<<<<< HEAD
 		else
 			intReturn = true;
 		blInserted = false;
@@ -837,6 +1347,20 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 				memcpy(psecuritypriv->PMKIDList[j].PMKID,
 					pPMK->pmkid, IW_PMKID_LEN);
 				psecuritypriv->PMKIDList[j].bUsed = true;
+=======
+		intReturn = true;
+		blInserted = false;
+		/* overwrite PMKID */
+		for (j = 0; j < NUM_PMKID_CACHE; j++) {
+			if (!memcmp(pl[j].Bssid, strIssueBssid, ETH_ALEN)) {
+				/* BSSID is matched, the same AP => rewrite
+				 * with new PMKID.
+				 */
+				netdev_info(dev, "r8712u: %s: BSSID exists in the PMKList.\n",
+					    __func__);
+				memcpy(pl[j].PMKID, pPMK->pmkid, IW_PMKID_LEN);
+				pl[j].bUsed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				psecuritypriv->PMKIDIndex = j + 1;
 				blInserted = true;
 				break;
@@ -844,6 +1368,7 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 		}
 		if (!blInserted) {
 			/* Find a new entry */
+<<<<<<< HEAD
 			printk(KERN_INFO "r8712u: r871x_wx_set_pmkid: Use the"
 			    " new entry index = %d for this PMKID.\n",
 			    psecuritypriv->PMKIDIndex);
@@ -854,6 +1379,16 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 			psecuritypriv->PMKIDList[psecuritypriv->PMKIDIndex].
 				bUsed = true;
 			psecuritypriv->PMKIDIndex++ ;
+=======
+			netdev_info(dev, "r8712u: %s: Use the new entry index = %d for this PMKID.\n",
+				    __func__, psecuritypriv->PMKIDIndex);
+			memcpy(pl[psecuritypriv->PMKIDIndex].Bssid,
+			       strIssueBssid, ETH_ALEN);
+			memcpy(pl[psecuritypriv->PMKIDIndex].PMKID,
+			       pPMK->pmkid, IW_PMKID_LEN);
+			pl[psecuritypriv->PMKIDIndex].bUsed = true;
+			psecuritypriv->PMKIDIndex++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (psecuritypriv->PMKIDIndex == NUM_PMKID_CACHE)
 				psecuritypriv->PMKIDIndex = 0;
 		}
@@ -861,6 +1396,7 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 	case IW_PMKSA_REMOVE:
 		intReturn = true;
 		for (j = 0; j < NUM_PMKID_CACHE; j++) {
+<<<<<<< HEAD
 			if (!memcmp(psecuritypriv->PMKIDList[j].Bssid,
 			    strIssueBssid, ETH_ALEN)) {
 				/* BSSID is matched, the same AP => Remove
@@ -868,19 +1404,35 @@ static int r871x_wx_set_pmkid(struct net_device *dev,
 				memset(psecuritypriv->PMKIDList[j].Bssid,
 					0x00, ETH_ALEN);
 				psecuritypriv->PMKIDList[j].bUsed = false;
+=======
+			if (!memcmp(pl[j].Bssid, strIssueBssid, ETH_ALEN)) {
+				/* BSSID is matched, the same AP => Remove
+				 * this PMKID information and reset it.
+				 */
+				eth_zero_addr(pl[j].Bssid);
+				pl[j].bUsed = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 		break;
 	case IW_PMKSA_FLUSH:
 		memset(psecuritypriv->PMKIDList, 0,
+<<<<<<< HEAD
 			sizeof(struct RT_PMKID_LIST) * NUM_PMKID_CACHE);
+=======
+		       sizeof(struct RT_PMKID_LIST) * NUM_PMKID_CACHE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psecuritypriv->PMKIDIndex = 0;
 		intReturn = true;
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r871x_wx_set_pmkid: "
 		       "unknown Command\n");
+=======
+		netdev_info(dev, "r8712u: %s: unknown Command\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		intReturn = false;
 		break;
 	}
@@ -897,9 +1449,14 @@ static int r8711_wx_get_sens(struct net_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_range(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
+=======
+static int r8711_wx_get_range(struct net_device *dev, struct iw_request_info *info,
+			      union iwreq_data *wrqu, char *extra)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iw_range *range = (struct iw_range *)extra;
 	u16 val;
@@ -924,8 +1481,13 @@ static int r8711_wx_get_range(struct net_device *dev,
 	range->max_qual.noise = 100;
 	range->max_qual.updated = 7; /* Updated all three */
 	range->avg_qual.qual = 92; /* > 8% missed beacons is 'bad' */
+<<<<<<< HEAD
 	/* TODO: Find real 'good' to 'bad' threshol value for RSSI */
 	range->avg_qual.level = 20 + -98;
+=======
+	/* TODO: Find real 'good' to 'bad' threshold value for RSSI */
+	range->avg_qual.level = 0x100 - 78;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	range->avg_qual.noise = 0;
 	range->avg_qual.updated = 7; /* Updated all three */
 	range->num_bitrates = RATE_COUNT;
@@ -959,9 +1521,15 @@ static int r8711_wx_get_rate(struct net_device *dev,
 			     union iwreq_data *wrqu, char *extra);
 
 static int r871x_wx_set_priv(struct net_device *dev,
+<<<<<<< HEAD
 				struct iw_request_info *info,
 				union iwreq_data *awrq,
 				char *extra)
+=======
+			     struct iw_request_info *info,
+			     union iwreq_data *awrq,
+			     char *extra)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0, len = 0;
 	char *ext;
@@ -969,6 +1537,7 @@ static int r871x_wx_set_priv(struct net_device *dev,
 	struct iw_point *dwrq = (struct iw_point *)awrq;
 
 	len = dwrq->length;
+<<<<<<< HEAD
 	ext = _malloc(len);
 	if (!ext)
 		return -ENOMEM;
@@ -978,23 +1547,42 @@ static int r871x_wx_set_priv(struct net_device *dev,
 	}
 
 	if (0 == strcasecmp(ext, "RSSI")) {
+=======
+	ext = strndup_user(dwrq->pointer, len);
+	if (IS_ERR(ext))
+		return PTR_ERR(ext);
+
+	if (!strcasecmp(ext, "RSSI")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*Return received signal strength indicator in -db for */
 		/* current AP */
 		/*<ssid> Rssi xx */
 		struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 		struct wlan_network *pcur_network = &pmlmepriv->cur_network;
 		/*static u8 xxxx; */
+<<<<<<< HEAD
 		if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 			sprintf(ext, "%s rssi %d",
 				pcur_network->network.Ssid.Ssid,
 				/*(xxxx=xxxx+10) */
 				((padapter->recvpriv.fw_rssi)>>1)-95
+=======
+		if (check_fwstate(pmlmepriv, _FW_LINKED)) {
+			sprintf(ext, "%s rssi %d",
+				pcur_network->network.Ssid.Ssid,
+				/*(xxxx=xxxx+10) */
+				((padapter->recvpriv.fw_rssi) >> 1) - 95
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*pcur_network->network.Rssi */
 				);
 		} else {
 			sprintf(ext, "OK");
 		}
+<<<<<<< HEAD
 	} else if (0 == strcasecmp(ext, "LINKSPEED")) {
+=======
+	} else if (!strcasecmp(ext, "LINKSPEED")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*Return link speed in MBPS */
 		/*LinkSpeed xx */
 		union iwreq_data wrqd;
@@ -1002,11 +1590,16 @@ static int r871x_wx_set_priv(struct net_device *dev,
 		int mbps;
 
 		ret_inner = r8711_wx_get_rate(dev, info, &wrqd, extra);
+<<<<<<< HEAD
 		if (0 != ret_inner)
+=======
+		if (ret_inner != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mbps = 0;
 		else
 			mbps = wrqd.bitrate.value / 1000000;
 		sprintf(ext, "LINKSPEED %d", mbps);
+<<<<<<< HEAD
 	} else if (0 == strcasecmp(ext, "MACADDR")) {
 		/*Return mac address of the station */
 		/*Macaddr = xx.xx.xx.xx.xx.xx */
@@ -1028,6 +1621,27 @@ static int r871x_wx_set_priv(struct net_device *dev,
 		pmlmepriv->passive_mode = 0;
 		sprintf(ext, "OK");
 	} else if (0 == strncmp(ext, "DCE-E", 5)) {
+=======
+	} else if (!strcasecmp(ext, "MACADDR")) {
+		/*Return mac address of the station */
+		/* Macaddr = xx:xx:xx:xx:xx:xx */
+		sprintf(ext, "MACADDR = %pM", dev->dev_addr);
+	} else if (!strcasecmp(ext, "SCAN-ACTIVE")) {
+		/*Set scan type to active */
+		/*OK if successful */
+		struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+
+		pmlmepriv->passive_mode = 1;
+		sprintf(ext, "OK");
+	} else if (!strcasecmp(ext, "SCAN-PASSIVE")) {
+		/*Set scan type to passive */
+		/*OK if successful */
+		struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+
+		pmlmepriv->passive_mode = 0;
+		sprintf(ext, "OK");
+	} else if (!strncmp(ext, "DCE-E", 5)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*Set scan type to passive */
 		/*OK if successful */
 		r8712_disconnectCtrlEx_cmd(padapter
@@ -1037,7 +1651,11 @@ static int r871x_wx_set_priv(struct net_device *dev,
 			, 5000 /*u32 firstStageTO */
 		);
 		sprintf(ext, "OK");
+<<<<<<< HEAD
 	} else if (0 == strncmp(ext, "DCE-D", 5)) {
+=======
+	} else if (!strncmp(ext, "DCE-D", 5)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*Set scan type to passive */
 		/*OK if successfu */
 		r8712_disconnectCtrlEx_cmd(padapter
@@ -1048,12 +1666,19 @@ static int r871x_wx_set_priv(struct net_device *dev,
 		);
 		sprintf(ext, "OK");
 	} else {
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r871x_wx_set_priv: unknown Command"
 		       " %s.\n", ext);
 		goto FREE_EXT;
 	}
 	if (copy_to_user(dwrq->pointer, ext,
 				min(dwrq->length, (__u16)(strlen(ext)+1))))
+=======
+		netdev_info(dev, "r8712u: %s: unknown Command %s.\n", __func__, ext);
+		goto FREE_EXT;
+	}
+	if (copy_to_user(dwrq->pointer, ext, min(dwrq->length, (__u16)(strlen(ext) + 1))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EFAULT;
 
 FREE_EXT:
@@ -1071,6 +1696,7 @@ FREE_EXT:
  * MAC# of a preferred Access Point.
  * Currently, the request comes via Wireless Extensions' SIOCSIWAP ioctl.
  *
+<<<<<<< HEAD
  * For this operation to succeed, there is no need for the interface to be Up.
  *
  */
@@ -1081,6 +1707,16 @@ static int r8711_wx_set_wap(struct net_device *dev,
 {
 	int ret = -EINPROGRESS;
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+ * For this operation to succeed, there is no need for the interface to be up.
+ *
+ */
+static int r8711_wx_set_wap(struct net_device *dev, struct iw_request_info *info,
+			    union iwreq_data *awrq, char *extra)
+{
+	int ret = -EINPROGRESS;
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct  __queue *queue = &pmlmepriv->scanned_queue;
 	struct sockaddr *temp = (struct sockaddr *)awrq;
@@ -1090,14 +1726,21 @@ static int r8711_wx_set_wap(struct net_device *dev,
 	struct wlan_network *pnetwork = NULL;
 	enum NDIS_802_11_AUTHENTICATION_MODE	authmode;
 
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true)
 		return -EBUSY;
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true)
+=======
+	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
+		return -EBUSY;
+	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	if (temp->sa_family != ARPHRD_ETHER)
 		return -EINVAL;
 	authmode = padapter->securitypriv.ndisauthtype;
 	spin_lock_irqsave(&queue->lock, irqL);
+<<<<<<< HEAD
 	phead = get_list_head(queue);
 	pmlmepriv->pscanned = get_next(phead);
 	while (1) {
@@ -1106,6 +1749,16 @@ static int r8711_wx_set_wap(struct net_device *dev,
 		pnetwork = LIST_CONTAINOR(pmlmepriv->pscanned,
 			   struct wlan_network, list);
 		pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
+=======
+	phead = &queue->queue;
+	pmlmepriv->pscanned = phead->next;
+	while (1) {
+		if (end_of_queue_search(phead, pmlmepriv->pscanned))
+			break;
+		pnetwork = container_of(pmlmepriv->pscanned,
+					struct wlan_network, list);
+		pmlmepriv->pscanned = pmlmepriv->pscanned->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst_bssid = pnetwork->network.MacAddress;
 		if (!memcmp(dst_bssid, temp->sa_data, ETH_ALEN)) {
 			r8712_set_802_11_infrastructure_mode(padapter,
@@ -1115,9 +1768,15 @@ static int r8711_wx_set_wap(struct net_device *dev,
 	}
 	spin_unlock_irqrestore(&queue->lock, irqL);
 	if (!ret) {
+<<<<<<< HEAD
 		if (!r8712_set_802_11_authentication_mode(padapter, authmode))
 			ret = -ENOMEM;
 		else {
+=======
+		if (!r8712_set_802_11_authentication_mode(padapter, authmode)) {
+			ret = -ENOMEM;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!r8712_set_802_11_bssid(padapter, temp->sa_data))
 				ret = -1;
 		}
@@ -1125,6 +1784,7 @@ static int r8711_wx_set_wap(struct net_device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_wap(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
@@ -1139,6 +1799,20 @@ static int r8711_wx_get_wap(struct net_device *dev,
 	    WIFI_ADHOC_MASTER_STATE|WIFI_AP_STATE)) {
 		memcpy(wrqu->ap_addr.sa_data, pcur_bss->MacAddress, ETH_ALEN);
 	}
+=======
+static int r8711_wx_get_wap(struct net_device *dev, struct iw_request_info *info,
+			    union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+
+	wrqu->ap_addr.sa_family = ARPHRD_ETHER;
+	if (check_fwstate(pmlmepriv, _FW_LINKED | WIFI_ADHOC_MASTER_STATE | WIFI_AP_STATE))
+		ether_addr_copy(wrqu->ap_addr.sa_data, pcur_bss->MacAddress);
+	else
+		eth_zero_addr(wrqu->ap_addr.sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1147,6 +1821,7 @@ static int r871x_wx_set_mlme(struct net_device *dev,
 			     union iwreq_data *wrqu, char *extra)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	u16 reason;
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct iw_mlme *mlme = (struct iw_mlme *) extra;
@@ -1154,6 +1829,13 @@ static int r871x_wx_set_mlme(struct net_device *dev,
 	if (mlme == NULL)
 		return -1;
 	reason = cpu_to_le16(mlme->reason_code);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_mlme *mlme = (struct iw_mlme *) extra;
+
+	if (!mlme)
+		return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mlme->cmd) {
 	case IW_MLME_DEAUTH:
 		if (!r8712_set_802_11_disassociate(padapter))
@@ -1169,7 +1851,11 @@ static int r871x_wx_set_mlme(struct net_device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function intends to handle the Set Scan command.
  * Currently, the request comes via Wireless Extensions' SIOCSIWSCAN ioctl.
@@ -1177,6 +1863,7 @@ static int r871x_wx_set_mlme(struct net_device *dev,
  * For this operation to succeed, the interface is brought Up beforehand.
  *
  */
+<<<<<<< HEAD
 static int r8711_wx_set_scan(struct net_device *dev,
 			struct iw_request_info *a,
 			union iwreq_data *wrqu, char *extra)
@@ -1206,11 +1893,42 @@ static int r8711_wx_set_scan(struct net_device *dev,
 				  (u8)IW_ESSID_MAX_SIZE);
 			memset((unsigned char *)&ssid, 0,
 				 sizeof(struct ndis_802_11_ssid));
+=======
+static int r8711_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	u8 status = true;
+
+	if (padapter->driver_stopped) {
+		netdev_info(dev, "In %s: driver_stopped=%d\n",
+			    __func__, padapter->driver_stopped);
+		return -1;
+	}
+	if (!padapter->bup)
+		return -ENETDOWN;
+	if (!padapter->hw_init_completed)
+		return -1;
+	if ((check_fwstate(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING)) ||
+	    (pmlmepriv->sitesurveyctrl.traffic_busy))
+		return 0;
+	if (wrqu->data.length == sizeof(struct iw_scan_req)) {
+		struct iw_scan_req *req = (struct iw_scan_req *)extra;
+
+		if (wrqu->data.flags & IW_SCAN_THIS_ESSID) {
+			struct ndis_802_11_ssid ssid;
+			unsigned long irqL;
+			u32 len = min_t(u8, req->essid_len, IW_ESSID_MAX_SIZE);
+
+			memset((unsigned char *)&ssid, 0, sizeof(struct ndis_802_11_ssid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(ssid.Ssid, req->essid, len);
 			ssid.SsidLength = len;
 			spin_lock_irqsave(&pmlmepriv->lock, irqL);
 			if ((check_fwstate(pmlmepriv, _FW_UNDER_SURVEY |
 			     _FW_UNDER_LINKING)) ||
+<<<<<<< HEAD
 			    (pmlmepriv->sitesurveyctrl.traffic_busy == true)) {
 				if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
 					status = false;
@@ -1221,15 +1939,36 @@ static int r8711_wx_set_scan(struct net_device *dev,
 	} else
 		status = r8712_set_802_11_bssid_list_scan(padapter);
 	if (status == false)
+=======
+			    (pmlmepriv->sitesurveyctrl.traffic_busy)) {
+				if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
+					status = false;
+			} else {
+				status = r8712_sitesurvey_cmd(padapter, &ssid);
+			}
+			spin_unlock_irqrestore(&pmlmepriv->lock, irqL);
+		}
+	} else {
+		status = r8712_set_802_11_bssid_list_scan(padapter);
+	}
+	if (!status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_scan(struct net_device *dev,
 				struct iw_request_info *a,
 				union iwreq_data *wrqu, char *extra)
 {
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+static int r8711_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct  __queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork = NULL;
@@ -1239,27 +1978,46 @@ static int r8711_wx_get_scan(struct net_device *dev,
 	char *stop = ev + wrqu->data.length;
 	u32 ret = 0, cnt = 0;
 
+<<<<<<< HEAD
 	if (padapter->bDriverStopped)
 		return -EINVAL;
 	while (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)) {
+=======
+	if (padapter->driver_stopped)
+		return -EINVAL;
+	while (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(30);
 		cnt++;
 		if (cnt > 100)
 			break;
 	}
 	spin_lock_irqsave(&queue->lock, irqL);
+<<<<<<< HEAD
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 	while (1) {
 		if (end_of_queue_search(phead, plist) == true)
+=======
+	phead = &queue->queue;
+	plist = phead->next;
+	while (1) {
+		if (end_of_queue_search(phead, plist))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if ((stop - ev) < SCAN_ITEM_SIZE) {
 			ret = -E2BIG;
 			break;
 		}
+<<<<<<< HEAD
 		pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
 		ev = translate_scan(padapter, a, pnetwork, ev, stop);
 		plist = get_next(plist);
+=======
+		pnetwork = container_of(plist, struct wlan_network, list);
+		ev = translate_scan(padapter, a, pnetwork, ev, stop);
+		plist = plist->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&queue->lock, irqL);
 	wrqu->data.length = ev - extra;
@@ -1279,11 +2037,18 @@ static int r8711_wx_get_scan(struct net_device *dev,
  * For this operation to succeed, there is no need for the interface to be Up.
  *
  */
+<<<<<<< HEAD
 static int r8711_wx_set_essid(struct net_device *dev,
 				struct iw_request_info *a,
 				union iwreq_data *wrqu, char *extra)
 {
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+static int r8711_wx_set_essid(struct net_device *dev, struct iw_request_info *a,
+			      union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct  __queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork = NULL;
@@ -1307,6 +2072,7 @@ static int r8711_wx_set_essid(struct net_device *dev,
 		ndis_ssid.SsidLength = len;
 		memcpy(ndis_ssid.Ssid, extra, len);
 		src_ssid = ndis_ssid.Ssid;
+<<<<<<< HEAD
 		phead = get_list_head(queue);
 		pmlmepriv->pscanned = get_next(phead);
 		while (1) {
@@ -1315,12 +2081,26 @@ static int r8711_wx_set_essid(struct net_device *dev,
 			pnetwork = LIST_CONTAINOR(pmlmepriv->pscanned,
 				   struct wlan_network, list);
 			pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
+=======
+		phead = &queue->queue;
+		pmlmepriv->pscanned = phead->next;
+		while (1) {
+			if (end_of_queue_search(phead, pmlmepriv->pscanned))
+				break;
+			pnetwork = container_of(pmlmepriv->pscanned,
+						struct wlan_network, list);
+			pmlmepriv->pscanned = pmlmepriv->pscanned->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dst_ssid = pnetwork->network.Ssid.Ssid;
 			if ((!memcmp(dst_ssid, src_ssid, ndis_ssid.SsidLength))
 			    && (pnetwork->network.Ssid.SsidLength ==
 			     ndis_ssid.SsidLength)) {
+<<<<<<< HEAD
 				if (check_fwstate(pmlmepriv,
 							WIFI_ADHOC_STATE)) {
+=======
+				if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (pnetwork->network.
 						InfrastructureMode
 						!=
@@ -1342,6 +2122,7 @@ static int r8711_wx_set_essid(struct net_device *dev,
 	return -EINPROGRESS;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_get_essid(struct net_device *dev,
 				struct iw_request_info *a,
 				union iwreq_data *wrqu, char *extra)
@@ -1352,6 +2133,17 @@ static int r8711_wx_get_essid(struct net_device *dev,
 	u32 len, ret = 0;
 
 	if (check_fwstate(pmlmepriv, _FW_LINKED|WIFI_ADHOC_MASTER_STATE)) {
+=======
+static int r8711_wx_get_essid(struct net_device *dev, struct iw_request_info *a,
+			      union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+	u32 len, ret = 0;
+
+	if (check_fwstate(pmlmepriv, _FW_LINKED | WIFI_ADHOC_MASTER_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = pcur_bss->Ssid.SsidLength;
 		wrqu->essid.length = len;
 		memcpy(extra, pcur_bss->Ssid.Ssid, len);
@@ -1362,17 +2154,28 @@ static int r8711_wx_get_essid(struct net_device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_set_rate(struct net_device *dev,
 				struct iw_request_info *a,
 				union iwreq_data *wrqu, char *extra)
 {
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+static int r8711_wx_set_rate(struct net_device *dev, struct iw_request_info *a,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 target_rate = wrqu->bitrate.value;
 	u32 fixed = wrqu->bitrate.fixed;
 	u32 ratevalue = 0;
 	u8 datarates[NumRates];
 	u8 mpdatarate[NumRates] = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0xff};
+<<<<<<< HEAD
 	int i, ret = 0;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (target_rate == -1) {
 		ratevalue = 11;
@@ -1426,6 +2229,7 @@ set_rate:
 			datarates[i] = mpdatarate[i];
 			if (fixed == 0)
 				break;
+<<<<<<< HEAD
 		} else
 			datarates[i] = 0xff;
 	}
@@ -1441,6 +2245,21 @@ static int r8711_wx_get_rate(struct net_device *dev,
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct ndis_wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+=======
+		} else {
+			datarates[i] = 0xff;
+		}
+	}
+	return r8712_setdatarate_cmd(padapter, datarates);
+}
+
+static int r8711_wx_get_rate(struct net_device *dev, struct iw_request_info *info,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_ht_cap *pht_capie;
 	unsigned char rf_type = padapter->registrypriv.rf_config;
 	int i;
@@ -1451,6 +2270,7 @@ static int r8711_wx_get_rate(struct net_device *dev,
 	u16 mcs_rate = 0;
 
 	i = 0;
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, _FW_LINKED|WIFI_ADHOC_MASTER_STATE)) {
 		p = r8712_get_ie(&pcur_bss->IEs[12],
 				 _HT_CAPABILITY_IE_, &ht_ielen,
@@ -1501,12 +2321,57 @@ static int r8711_wx_get_rts(struct net_device *dev,
 				union iwreq_data *wrqu, char *extra)
 {
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	if (!check_fwstate(pmlmepriv, _FW_LINKED | WIFI_ADHOC_MASTER_STATE))
+		return -ENOLINK;
+	p = r8712_get_ie(&pcur_bss->IEs[12], WLAN_EID_HT_CAPABILITY, &ht_ielen,
+			 pcur_bss->IELength - 12);
+	if (p && ht_ielen > 0) {
+		ht_cap = true;
+		pht_capie = (struct ieee80211_ht_cap *)(p + 2);
+		memcpy(&mcs_rate, &pht_capie->mcs, 2);
+		bw_40MHz = (le16_to_cpu(pht_capie->cap_info) &
+			    IEEE80211_HT_CAP_SUP_WIDTH_20_40) ? 1 : 0;
+		short_GI = (le16_to_cpu(pht_capie->cap_info) &
+			    (IEEE80211_HT_CAP_SGI_20 |
+			    IEEE80211_HT_CAP_SGI_40)) ? 1 : 0;
+	}
+	while ((pcur_bss->rates[i] != 0) &&
+	       (pcur_bss->rates[i] != 0xFF)) {
+		rate = pcur_bss->rates[i] & 0x7F;
+		if (rate > max_rate)
+			max_rate = rate;
+		wrqu->bitrate.fixed = 0;	/* no auto select */
+		wrqu->bitrate.value = rate * 500000;
+		i++;
+	}
+	if (ht_cap) {
+		if (mcs_rate & 0x8000 /* MCS15 */
+		    &&
+		    rf_type == RTL8712_RF_2T2R)
+			max_rate = (bw_40MHz) ? ((short_GI) ? 300 : 270) :
+			((short_GI) ? 144 : 130);
+		else /* default MCS7 */
+			max_rate = (bw_40MHz) ? ((short_GI) ? 150 : 135) :
+			((short_GI) ? 72 : 65);
+		max_rate *= 2; /* Mbps/2 */
+	}
+	wrqu->bitrate.value = max_rate * 500000;
+	return 0;
+}
+
+static int r8711_wx_get_rts(struct net_device *dev, struct iw_request_info *info,
+			    union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrqu->rts.value = padapter->registrypriv.rts_thresh;
 	wrqu->rts.fixed = 0;	/* no auto select */
 	return 0;
 }
 
+<<<<<<< HEAD
 static int r8711_wx_set_frag(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
@@ -1516,6 +2381,16 @@ static int r8711_wx_set_frag(struct net_device *dev,
 	if (wrqu->frag.disabled)
 		padapter->xmitpriv.frag_len = MAX_FRAG_THRESHOLD;
 	else {
+=======
+static int r8711_wx_set_frag(struct net_device *dev, struct iw_request_info *info,
+			     union iwreq_data *wrqu, char *extra)
+{
+	struct _adapter *padapter = netdev_priv(dev);
+
+	if (wrqu->frag.disabled) {
+		padapter->xmitpriv.frag_len = MAX_FRAG_THRESHOLD;
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (wrqu->frag.value < MIN_FRAG_THRESHOLD ||
 		    wrqu->frag.value > MAX_FRAG_THRESHOLD)
 			return -EINVAL;
@@ -1528,7 +2403,11 @@ static int r8711_wx_get_frag(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrqu->frag.value = padapter->xmitpriv.frag_len;
 	wrqu->frag.fixed = 0;	/* no auto select */
@@ -1553,14 +2432,23 @@ static int r8711_wx_set_enc(struct net_device *dev,
 	u32 keyindex_provided;
 	struct NDIS_802_11_WEP	 wep;
 	enum NDIS_802_11_AUTHENTICATION_MODE authmode;
+<<<<<<< HEAD
 	struct iw_point *erq = &(wrqu->encoding);
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct iw_point *erq = &wrqu->encoding;
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	key = erq->flags & IW_ENCODE_INDEX;
 	memset(&wep, 0, sizeof(struct NDIS_802_11_WEP));
 	if (erq->flags & IW_ENCODE_DISABLED) {
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r8711_wx_set_enc: "
 		       "EncryptionDisabled\n");
+=======
+		netdev_info(dev, "r8712u: %s: EncryptionDisabled\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->securitypriv.ndisencryptstatus =
 				 Ndis802_11EncryptionDisabled;
 		padapter->securitypriv.PrivacyAlgrthm = _NO_PRIVACY_;
@@ -1581,8 +2469,12 @@ static int r8711_wx_set_enc(struct net_device *dev,
 	}
 	/* set authentication mode */
 	if (erq->flags & IW_ENCODE_OPEN) {
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r8711_wx_set_enc: "
 		       "IW_ENCODE_OPEN\n");
+=======
+		netdev_info(dev, "r8712u: %s: IW_ENCODE_OPEN\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->securitypriv.ndisencryptstatus =
 				 Ndis802_11Encryption1Enabled;
 		padapter->securitypriv.AuthAlgrthm = 0; /* open system */
@@ -1591,8 +2483,13 @@ static int r8711_wx_set_enc(struct net_device *dev,
 		authmode = Ndis802_11AuthModeOpen;
 		padapter->securitypriv.ndisauthtype = authmode;
 	} else if (erq->flags & IW_ENCODE_RESTRICTED) {
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r8711_wx_set_enc: "
 		       "IW_ENCODE_RESTRICTED\n");
+=======
+		netdev_info(dev,
+				"r8712u: %s: IW_ENCODE_RESTRICTED\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->securitypriv.ndisencryptstatus =
 				 Ndis802_11Encryption1Enabled;
 		padapter->securitypriv.AuthAlgrthm = 1; /* shared system */
@@ -1613,11 +2510,20 @@ static int r8711_wx_set_enc(struct net_device *dev,
 	if (erq->length > 0) {
 		wep.KeyLength = erq->length <= 5 ? 5 : 13;
 		wep.Length = wep.KeyLength +
+<<<<<<< HEAD
 			     FIELD_OFFSET(struct NDIS_802_11_WEP, KeyMaterial);
 	} else {
 		wep.KeyLength = 0 ;
 		if (keyindex_provided == 1) { /* set key_id only, no given
 					       * KeyMaterial(erq->length==0).*/
+=======
+			     offsetof(struct NDIS_802_11_WEP, KeyMaterial);
+	} else {
+		wep.KeyLength = 0;
+		if (keyindex_provided == 1) { /* set key_id only, no given
+					       * KeyMaterial(erq->length==0).
+					       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			padapter->securitypriv.PrivacyKeyIndex = key;
 			switch (padapter->securitypriv.DefKeylen[key]) {
 			case 5:
@@ -1638,7 +2544,11 @@ static int r8711_wx_set_enc(struct net_device *dev,
 	}
 	wep.KeyIndex |= 0x80000000;	/* transmit key */
 	memcpy(wep.KeyMaterial, keybuf, wep.KeyLength);
+<<<<<<< HEAD
 	if (r8712_set_802_11_add_wep(padapter, &wep) == _FAIL)
+=======
+	if (r8712_set_802_11_add_wep(padapter, &wep))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 	return 0;
 }
@@ -1647,12 +2557,22 @@ static int r8711_wx_get_enc(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *keybuf)
 {
+<<<<<<< HEAD
 	uint key, ret = 0;
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
 	struct iw_point *erq = &(wrqu->encoding);
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == false) {
+=======
+	uint key;
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_point *erq = &wrqu->encoding;
+	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
+	union Keytype *dk = padapter->securitypriv.DefKey;
+
+	if (!check_fwstate(pmlmepriv, _FW_LINKED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
 			erq->length = 0;
 			erq->flags |= IW_ENCODE_DISABLED;
@@ -1677,9 +2597,14 @@ static int r8711_wx_get_enc(struct net_device *dev,
 	case Ndis802_11Encryption1Enabled:
 		erq->length = padapter->securitypriv.DefKeylen[key];
 		if (erq->length) {
+<<<<<<< HEAD
 			memcpy(keybuf, padapter->securitypriv.DefKey[
 				key].skey, padapter->securitypriv.
 				DefKeylen[key]);
+=======
+			memcpy(keybuf, dk[key].skey,
+			       padapter->securitypriv.DefKeylen[key]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			erq->flags |= IW_ENCODE_ENABLED;
 			if (padapter->securitypriv.ndisauthtype ==
 			    Ndis802_11AuthModeOpen)
@@ -1703,7 +2628,11 @@ static int r8711_wx_get_enc(struct net_device *dev,
 		erq->flags |= IW_ENCODE_DISABLED;
 		break;
 	}
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r8711_wx_get_power(struct net_device *dev,
@@ -1720,7 +2649,11 @@ static int r871x_wx_set_gen_ie(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r871x_set_wpa_ie(padapter, extra, wrqu->data.length);
 }
@@ -1729,8 +2662,13 @@ static int r871x_wx_set_auth(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct iw_param *param = (struct iw_param *)&(wrqu->param);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_param *param = (struct iw_param *)&wrqu->param;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int paramid;
 	int paramval;
 	int ret = 0;
@@ -1772,12 +2710,21 @@ static int r871x_wx_set_auth(struct net_device *dev,
 		 */
 		if (padapter->securitypriv.ndisencryptstatus ==
 		    Ndis802_11Encryption1Enabled) {
+<<<<<<< HEAD
 				/* it means init value, or using wep,
 				 * ndisencryptstatus =
 				 *	Ndis802_11Encryption1Enabled,
 				 * then it needn't reset it;
 				 */
 				break;
+=======
+			/* it means init value, or using wep,
+			 * ndisencryptstatus =
+			 *	Ndis802_11Encryption1Enabled,
+			 * then it needn't reset it;
+			 */
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (paramval) {
@@ -1819,6 +2766,7 @@ static int r871x_wx_set_enc_ext(struct net_device *dev,
 	u32 param_len;
 	int ret = 0;
 
+<<<<<<< HEAD
 	param_len = sizeof(struct ieee_param) + pext->key_len;
 	param = (struct ieee_param *)_malloc(param_len);
 	if (param == NULL)
@@ -1826,6 +2774,8 @@ static int r871x_wx_set_enc_ext(struct net_device *dev,
 	memset(param, 0, param_len);
 	param->cmd = IEEE_CMD_SET_ENCRYPTION;
 	memset(param->sta_addr, 0xff, ETH_ALEN);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pext->alg) {
 	case IW_ENCODE_ALG_NONE:
 		alg_name = "none";
@@ -1842,7 +2792,18 @@ static int r871x_wx_set_enc_ext(struct net_device *dev,
 	default:
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	strncpy((char *)param->u.crypt.alg, alg_name, IEEE_CRYPT_ALG_NAME_LEN);
+=======
+
+	param_len = sizeof(struct ieee_param) + pext->key_len;
+	param = kzalloc(param_len, GFP_ATOMIC);
+	if (!param)
+		return -ENOMEM;
+	param->cmd = IEEE_CMD_SET_ENCRYPTION;
+	eth_broadcast_addr(param->sta_addr);
+	strscpy((char *)param->u.crypt.alg, alg_name, IEEE_CRYPT_ALG_NAME_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pext->ext_flags & IW_ENCODE_EXT_GROUP_KEY)
 		param->u.crypt.set_tx = 0;
 	if (pext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY)
@@ -1875,7 +2836,11 @@ static int r8711_wx_read32(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *keybuf)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 addr;
 	u32 data32;
 
@@ -1892,12 +2857,20 @@ static int r8711_wx_write32(struct net_device *dev,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *keybuf)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 addr;
 	u32 data32;
 
 	get_user(addr, (u32 __user *)wrqu->data.pointer);
+<<<<<<< HEAD
 	data32 = ((u32)wrqu->data.length<<16) | (u32)wrqu->data.flags ;
+=======
+	data32 = ((u32)wrqu->data.length << 16) | (u32)wrqu->data.flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r8712_write32(padapter, addr, data32);
 	return 0;
 }
@@ -1906,7 +2879,11 @@ static int dummy(struct net_device *dev,
 		struct iw_request_info *a,
 		union iwreq_data *wrqu, char *b)
 {
+<<<<<<< HEAD
 	return -ENOSYS;
+=======
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r8711_drvext_hdl(struct net_device *dev,
@@ -1920,17 +2897,26 @@ static int r871x_mp_ioctl_hdl(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iw_point *p = &wrqu->data;
 	struct oid_par_priv oid_par;
 	struct mp_ioctl_handler *phandler;
 	struct mp_ioctl_param *poidparam;
 	unsigned long BytesRead, BytesWritten, BytesNeeded;
+<<<<<<< HEAD
 	u8 *pparmbuf = NULL, bset;
+=======
+	u8 *pparmbuf, bset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 len;
 	uint status;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if ((!p->length) || (!p->pointer)) {
 		ret = -EINVAL;
 		goto _r871x_mp_ioctl_hdl_exit;
@@ -1947,6 +2933,17 @@ static int r871x_mp_ioctl_hdl(struct net_device *dev,
 		ret = -EFAULT;
 		goto _r871x_mp_ioctl_hdl_exit;
 	}
+=======
+	if ((!p->length) || (!p->pointer))
+		return -EINVAL;
+
+	bset = (u8)(p->flags & 0xFFFF);
+	len = p->length;
+	pparmbuf = memdup_user(p->pointer, len);
+	if (IS_ERR(pparmbuf))
+		return PTR_ERR(pparmbuf);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	poidparam = (struct mp_ioctl_param *)pparmbuf;
 	if (poidparam->subcode >= MAX_MP_IOCTL_SUBCODE) {
 		ret = -EINVAL;
@@ -1958,9 +2955,15 @@ static int r871x_mp_ioctl_hdl(struct net_device *dev,
 		ret = -EINVAL;
 		goto _r871x_mp_ioctl_hdl_exit;
 	}
+<<<<<<< HEAD
 	if (phandler->oid == 0 && phandler->handler)
 		status = phandler->handler(&oid_par);
 	else if (phandler->handler) {
+=======
+	if (phandler->oid == 0 && phandler->handler) {
+		status = phandler->handler(&oid_par);
+	} else if (phandler->handler) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		oid_par.adapter_context = padapter;
 		oid_par.oid = phandler->oid;
 		oid_par.information_buf = poidparam->data;
@@ -1980,9 +2983,15 @@ static int r871x_mp_ioctl_hdl(struct net_device *dev,
 		status = phandler->handler(&oid_par);
 		/* todo:check status, BytesNeeded, etc. */
 	} else {
+<<<<<<< HEAD
 		printk(KERN_INFO "r8712u: r871x_mp_ioctl_hdl(): err!,"
 		    " subcode=%d, oid=%d, handler=%p\n",
 		    poidparam->subcode, phandler->oid, phandler->handler);
+=======
+		netdev_info(dev, "r8712u: %s: err!, subcode=%d, oid=%d, handler=%p\n",
+			    __func__, poidparam->subcode, phandler->oid,
+			    phandler->handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EFAULT;
 		goto _r871x_mp_ioctl_hdl_exit;
 	}
@@ -2003,7 +3012,11 @@ static int r871x_get_ap_info(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct  __queue *queue = &pmlmepriv->scanned_queue;
 	struct iw_point *pdata = &wrqu->data;
@@ -2013,17 +3026,27 @@ static int r871x_get_ap_info(struct net_device *dev,
 	struct list_head *plist, *phead;
 	unsigned char *pbuf;
 	u8 bssid[ETH_ALEN];
+<<<<<<< HEAD
 	char data[32];
 
 	if (padapter->bDriverStopped || (pdata == NULL))
 		return -EINVAL;
 	while (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)) {
+=======
+	char data[33];
+
+	if (padapter->driver_stopped || !pdata)
+		return -EINVAL;
+	while (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY |
+			     _FW_UNDER_LINKING)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(30);
 		cnt++;
 		if (cnt > 100)
 			break;
 	}
 	pdata->flags = 0;
+<<<<<<< HEAD
 	if (pdata->length >= 32) {
 		if (copy_from_user(data, pdata->pointer, 32))
 			return -EINVAL;
@@ -2048,20 +3071,57 @@ static int r871x_get_ap_info(struct net_device *dev,
 			/* BSSID match, then check if supporting wpa/wpa2 */
 			pbuf = r8712_get_wpa_ie(&pnetwork->network.IEs[12],
 			       &wpa_ielen, pnetwork->network.IELength-12);
+=======
+	if (pdata->length < 32)
+		return -EINVAL;
+	if (copy_from_user(data, pdata->pointer, 32))
+		return -EINVAL;
+	data[32] = 0;
+
+	spin_lock_irqsave(&pmlmepriv->scanned_queue.lock, irqL);
+	phead = &queue->queue;
+	plist = phead->next;
+	while (1) {
+		if (end_of_queue_search(phead, plist))
+			break;
+		pnetwork = container_of(plist, struct wlan_network, list);
+		if (!mac_pton(data, bssid)) {
+			netdev_info(dev, "r8712u: Invalid BSSID '%s'.\n",
+				    (u8 *)data);
+			spin_unlock_irqrestore(&pmlmepriv->scanned_queue.lock,
+					       irqL);
+			return -EINVAL;
+		}
+		netdev_info(dev, "r8712u: BSSID:%pM\n", bssid);
+		if (ether_addr_equal(bssid, pnetwork->network.MacAddress)) {
+			/* BSSID match, then check if supporting wpa/wpa2 */
+			pbuf = r8712_get_wpa_ie(&pnetwork->network.IEs[12],
+			       &wpa_ielen, pnetwork->network.IELength - 12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pbuf && (wpa_ielen > 0)) {
 				pdata->flags = 1;
 				break;
 			}
 			pbuf = r8712_get_wpa2_ie(&pnetwork->network.IEs[12],
+<<<<<<< HEAD
 			       &wpa_ielen, pnetwork->network.IELength-12);
+=======
+			       &wpa_ielen, pnetwork->network.IELength - 12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pbuf && (wpa_ielen > 0)) {
 				pdata->flags = 2;
 				break;
 			}
 		}
+<<<<<<< HEAD
 		plist = get_next(plist);
 	}
 	spin_unlock_irqrestore(&(pmlmepriv->scanned_queue.lock), irqL);
+=======
+		plist = plist->next;
+	}
+	spin_unlock_irqrestore(&pmlmepriv->scanned_queue.lock, irqL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata->length >= 34) {
 		if (copy_to_user((u8 __user *)pdata->pointer + 32,
 		    (u8 *)&pdata->flags, 1))
@@ -2074,10 +3134,17 @@ static int r871x_set_pid(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
 	struct iw_point *pdata = &wrqu->data;
 
 	if ((padapter->bDriverStopped) || (pdata == NULL))
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_point *pdata = &wrqu->data;
+
+	if (padapter->driver_stopped || !pdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (copy_from_user(&padapter->pid, pdata->pointer, sizeof(int)))
 		return -EINVAL;
@@ -2089,11 +3156,19 @@ static int r871x_set_chplan(struct net_device *dev,
 				union iwreq_data *wrqu, char *extra)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
 	struct iw_point *pdata = &wrqu->data;
 	int ch_plan = -1;
 
 	if ((padapter->bDriverStopped) || (pdata == NULL)) {
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_point *pdata = &wrqu->data;
+	int ch_plan = -1;
+
+	if (padapter->driver_stopped || !pdata) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto exit;
 	}
@@ -2109,6 +3184,7 @@ static int r871x_wps_start(struct net_device *dev,
 			   struct iw_request_info *info,
 			   union iwreq_data *wrqu, char *extra)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *)netdev_priv(dev);
 	struct iw_point *pdata = &wrqu->data;
 	u32   u32wps_start = 0;
@@ -2117,6 +3193,16 @@ static int r871x_wps_start(struct net_device *dev,
 		return -EFAULT;
 	if ((padapter->bDriverStopped) || (pdata == NULL))
 		return -EINVAL;
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+	struct iw_point *pdata = &wrqu->data;
+	u32   u32wps_start = 0;
+
+	if (padapter->driver_stopped || !pdata)
+		return -EINVAL;
+	if (copy_from_user((void *)&u32wps_start, pdata->pointer, 4))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (u32wps_start == 0)
 		u32wps_start = *extra;
 	if (u32wps_start == 1) /* WPS Start */
@@ -2133,12 +3219,20 @@ static int r871x_wps_start(struct net_device *dev,
 
 static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (name) {
 	case IEEE_PARAM_WPA_ENABLED:
 		padapter->securitypriv.AuthAlgrthm = 2; /* 802.1x */
+<<<<<<< HEAD
 		switch ((value)&0xff) {
+=======
+		switch ((value) & 0xff) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1: /* WPA */
 			padapter->securitypriv.ndisauthtype =
 				Ndis802_11AuthModeWPAPSK; /* WPA_PSK */
@@ -2172,7 +3266,10 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 		break;
 	case IEEE_PARAM_AUTH_ALGS:
 		return wpa_set_auth_algs(dev, value);
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE_PARAM_IEEE_802_1X:
 		break;
 	case IEEE_PARAM_WPAX_SELECT:
@@ -2186,7 +3283,11 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 
 static int wpa_mlme(struct net_device *dev, u32 command, u32 reason)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (command) {
 	case IEEE_MLME_STA_DEAUTH:
@@ -2207,6 +3308,7 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 {
 	struct ieee_param *param;
 	int ret = 0;
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
 
 	if (p->length < sizeof(struct ieee_param) || !p->pointer)
@@ -2218,6 +3320,15 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 		kfree((u8 *)param);
 		return -EFAULT;
 	}
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+
+	if (p->length < sizeof(struct ieee_param) || !p->pointer)
+		return -EINVAL;
+	param = memdup_user(p->pointer, p->length);
+	if (IS_ERR(param))
+		return PTR_ERR(param);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (param->cmd) {
 	case IEEE_CMD_SET_WPA_PARAM:
 		ret = wpa_set_param(dev, param->u.wpa_param.name,
@@ -2240,7 +3351,11 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 	}
 	if (ret == 0 && copy_to_user(p->pointer, param, p->length))
 		ret = -EFAULT;
+<<<<<<< HEAD
 	kfree((u8 *)param);
+=======
+	kfree(param);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2282,7 +3397,12 @@ static iw_handler r8711_handlers[] = {
 	r8711_wx_set_wap,		/* SIOCSIWAP */
 	r8711_wx_get_wap,		/* SIOCGIWAP */
 	r871x_wx_set_mlme,		/* request MLME operation;
+<<<<<<< HEAD
 					 *  uses struct iw_mlme */
+=======
+					 *  uses struct iw_mlme
+					 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dummy,				/* SIOCGIWAPLIST -- deprecated */
 	r8711_wx_set_scan,		/* SIOCSIWSCAN */
 	r8711_wx_get_scan,		/* SIOCGIWSCAN */
@@ -2364,7 +3484,11 @@ static iw_handler r8711_private_handler[] = {
 
 static struct iw_statistics *r871x_get_wireless_stats(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct _adapter *padapter = (struct _adapter *) netdev_priv(dev);
+=======
+	struct _adapter *padapter = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iw_statistics *piwstats = &padapter->iwstats;
 	int tmp_level = 0;
 	int tmp_qual = 0;
@@ -2375,7 +3499,11 @@ static struct iw_statistics *r871x_get_wireless_stats(struct net_device *dev)
 		piwstats->qual.level = 0;
 		piwstats->qual.noise = 0;
 	} else {
+<<<<<<< HEAD
 		/* show percentage, we need transfer dbm to orignal value. */
+=======
+		/* show percentage, we need transfer dbm to original value. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp_level = padapter->recvpriv.fw_rssi;
 		tmp_qual = padapter->recvpriv.signal;
 		tmp_noise = padapter->recvpriv.noise;
@@ -2389,10 +3517,17 @@ static struct iw_statistics *r871x_get_wireless_stats(struct net_device *dev)
 
 struct iw_handler_def r871x_handlers_def = {
 	.standard = r8711_handlers,
+<<<<<<< HEAD
 	.num_standard = sizeof(r8711_handlers) / sizeof(iw_handler),
 	.private = r8711_private_handler,
 	.private_args = (struct iw_priv_args *)r8711_private_args,
 	.num_private = sizeof(r8711_private_handler) / sizeof(iw_handler),
+=======
+	.num_standard = ARRAY_SIZE(r8711_handlers),
+	.private = r8711_private_handler,
+	.private_args = (struct iw_priv_args *)r8711_private_args,
+	.num_private = ARRAY_SIZE(r8711_private_handler),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_private_args = sizeof(r8711_private_args) /
 			    sizeof(struct iw_priv_args),
 	.get_wireless_stats = r871x_get_wireless_stats

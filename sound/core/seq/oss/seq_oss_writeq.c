@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * seq_oss_writeq.c - write queue and sync
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_writeq.h"
@@ -28,6 +35,10 @@
 #include "../seq_clientmgr.h"
 #include <linux/wait.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -39,7 +50,12 @@ snd_seq_oss_writeq_new(struct seq_oss_devinfo *dp, int maxlen)
 	struct seq_oss_writeq *q;
 	struct snd_seq_client_pool pool;
 
+<<<<<<< HEAD
 	if ((q = kzalloc(sizeof(*q), GFP_KERNEL)) == NULL)
+=======
+	q = kzalloc(sizeof(*q), GFP_KERNEL);
+	if (!q)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	q->dp = dp;
 	q->maxlen = maxlen;
@@ -115,7 +131,11 @@ snd_seq_oss_writeq_sync(struct seq_oss_writeq *q)
 		rec->t.code = SEQ_SYNCTIMER;
 		rec->t.time = time;
 		q->sync_event_put = 1;
+<<<<<<< HEAD
 		snd_seq_kernel_client_enqueue_blocking(dp->cseq, &ev, NULL, 0, 0);
+=======
+		snd_seq_kernel_client_enqueue(dp->cseq, &ev, NULL, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wait_event_interruptible_timeout(q->sync_sleep, ! q->sync_event_put, HZ);
@@ -138,9 +158,13 @@ snd_seq_oss_writeq_wakeup(struct seq_oss_writeq *q, abstime_t time)
 	spin_lock_irqsave(&q->sync_lock, flags);
 	q->sync_time = time;
 	q->sync_event_put = 0;
+<<<<<<< HEAD
 	if (waitqueue_active(&q->sync_sleep)) {
 		wake_up(&q->sync_sleep);
 	}
+=======
+	wake_up(&q->sync_sleep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&q->sync_lock, flags);
 }
 

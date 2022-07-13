@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Ours Technology Inc. OTi-6858 USB to serial adapter driver.
  *
@@ -5,6 +6,11 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Ours Technology Inc. OTi-6858 USB to serial adapter driver.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_USB_SERIAL_OTI6858_H
 #define __LINUX_USB_SERIAL_OTI6858_H

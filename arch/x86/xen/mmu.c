@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Xen mmu operations
  *
@@ -120,6 +121,17 @@ DEFINE_PER_CPU(unsigned long, xen_current_cr3);	 /* actual vcpu cr3 */
  * redzone above it, so round it up to a PGD boundary.
  */
 #define USER_LIMIT	((STACK_TOP_MAX + PGDIR_SIZE - 1) & PGDIR_MASK)
+=======
+// SPDX-License-Identifier: GPL-2.0
+
+#include <linux/pfn.h>
+#include <asm/xen/page.h>
+#include <asm/xen/hypercall.h>
+#include <xen/interface/memory.h>
+
+#include "multicalls.h"
+#include "mmu.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long arbitrary_virt_to_mfn(void *vaddr)
 {
@@ -151,6 +163,7 @@ xmaddr_t arbitrary_virt_to_machine(void *vaddr)
 }
 EXPORT_SYMBOL_GPL(arbitrary_virt_to_machine);
 
+<<<<<<< HEAD
 void make_lowmem_page_readonly(void *vaddr)
 {
 	pte_t *pte, ptev;
@@ -2389,3 +2402,18 @@ out:
 	return err;
 }
 EXPORT_SYMBOL_GPL(xen_remap_domain_mfn_range);
+=======
+/* Returns: 0 success */
+int xen_unmap_domain_gfn_range(struct vm_area_struct *vma,
+			       int nr, struct page **pages)
+{
+	if (xen_feature(XENFEAT_auto_translated_physmap))
+		return xen_xlate_unmap_gfn_range(vma, nr, pages);
+
+	if (!pages)
+		return 0;
+
+	return -EINVAL;
+}
+EXPORT_SYMBOL_GPL(xen_unmap_domain_gfn_range);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

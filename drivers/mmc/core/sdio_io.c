@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/core/sdio_io.c
  *
  *  Copyright 2007-2008 Pierre Ossman
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,12 +15,24 @@
  */
 
 #include <linux/export.h>
+=======
+ */
+
+#include <linux/export.h>
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
 #include <linux/mmc/sdio.h>
 #include <linux/mmc/sdio_func.h>
 
 #include "sdio_ops.h"
+<<<<<<< HEAD
+=======
+#include "core.h"
+#include "card.h"
+#include "host.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	sdio_claim_host - exclusively claim a bus for a certain SDIO function
@@ -26,8 +43,13 @@
  */
 void sdio_claim_host(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (WARN_ON(!func))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc_claim_host(func->card->host);
 }
@@ -42,8 +64,13 @@ EXPORT_SYMBOL_GPL(sdio_claim_host);
  */
 void sdio_release_host(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (WARN_ON(!func))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc_release_host(func->card->host);
 }
@@ -62,8 +89,13 @@ int sdio_enable_func(struct sdio_func *func)
 	unsigned char reg;
 	unsigned long timeout;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("SDIO: Enabling device %s...\n", sdio_func_id(func));
 
@@ -112,8 +144,13 @@ int sdio_disable_func(struct sdio_func *func)
 	int ret;
 	unsigned char reg;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("SDIO: Disabling device %s...\n", sdio_func_id(func));
 
@@ -133,7 +170,11 @@ int sdio_disable_func(struct sdio_func *func)
 
 err:
 	pr_debug("SDIO: Failed to disable device %s\n", sdio_func_id(func));
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(sdio_disable_func);
 
@@ -188,8 +229,12 @@ EXPORT_SYMBOL_GPL(sdio_set_block_size);
  */
 static inline unsigned int sdio_max_byte_size(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	unsigned mval =	min(func->card->host->max_seg_size,
 			    func->card->host->max_blk_size);
+=======
+	unsigned mval =	func->card->host->max_blk_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mmc_blksz_for_byte_mode(func->card))
 		mval = min(mval, func->cur_blksize);
@@ -202,6 +247,24 @@ static inline unsigned int sdio_max_byte_size(struct sdio_func *func)
 	return min(mval, 512u); /* maximum size for byte mode */
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * This is legacy code, which needs to be re-worked some day. Basically we need
+ * to take into account the properties of the host, as to enable the SDIO func
+ * driver layer to allocate optimal buffers.
+ */
+static inline unsigned int _sdio_align_size(unsigned int sz)
+{
+	/*
+	 * FIXME: We don't have a system for the controller to tell
+	 * the core about its problems yet, so for now we just 32-bit
+	 * align the size.
+	 */
+	return ALIGN(sz, 4);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	sdio_align_size - pads a transfer size to a more optimal value
  *	@func: SDIO function
@@ -229,7 +292,11 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 	 * wants to increase the size up to a point where it
 	 * might need more than one block.
 	 */
+<<<<<<< HEAD
 	sz = mmc_align_data_size(func->card, sz);
+=======
+	sz = _sdio_align_size(sz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we can still do this with just a byte transfer, then
@@ -251,7 +318,11 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 		 */
 		blk_sz = ((sz + func->cur_blksize - 1) /
 			func->cur_blksize) * func->cur_blksize;
+<<<<<<< HEAD
 		blk_sz = mmc_align_data_size(func->card, blk_sz);
+=======
+		blk_sz = _sdio_align_size(blk_sz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * This value is only good if it is still just
@@ -264,8 +335,12 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 		 * We failed to do one request, but at least try to
 		 * pad the remainder properly.
 		 */
+<<<<<<< HEAD
 		byte_sz = mmc_align_data_size(func->card,
 				sz % func->cur_blksize);
+=======
+		byte_sz = _sdio_align_size(sz % func->cur_blksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (byte_sz <= sdio_max_byte_size(func)) {
 			blk_sz = sz / func->cur_blksize;
 			return blk_sz * func->cur_blksize + byte_sz;
@@ -275,16 +350,24 @@ unsigned int sdio_align_size(struct sdio_func *func, unsigned int sz)
 		 * We need multiple requests, so first check that the
 		 * controller can handle the chunk size;
 		 */
+<<<<<<< HEAD
 		chunk_sz = mmc_align_data_size(func->card,
 				sdio_max_byte_size(func));
+=======
+		chunk_sz = _sdio_align_size(sdio_max_byte_size(func));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chunk_sz == sdio_max_byte_size(func)) {
 			/*
 			 * Fix up the size of the remainder (if any)
 			 */
 			byte_sz = orig_sz % chunk_sz;
 			if (byte_sz) {
+<<<<<<< HEAD
 				byte_sz = mmc_align_data_size(func->card,
 						byte_sz);
+=======
+				byte_sz = _sdio_align_size(byte_sz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			return (orig_sz / chunk_sz) * chunk_sz + byte_sz;
@@ -308,6 +391,7 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 	unsigned max_blocks;
 	int ret;
 
+<<<<<<< HEAD
 	/* Do the bulk of the transfer using block mode (if supported). */
 	if (func->card->cccr.multi_block && (size > sdio_max_byte_size(func))) {
 		/* Blocks per command is limited by host count, host transfer
@@ -316,6 +400,16 @@ static int sdio_io_rw_ext_helper(struct sdio_func *func, int write,
 		max_blocks = min(func->card->host->max_blk_count,
 			func->card->host->max_seg_size / func->cur_blksize);
 		max_blocks = min(max_blocks, 511u);
+=======
+	if (!func || (func->num > 7))
+		return -EINVAL;
+
+	/* Do the bulk of the transfer using block mode (if supported). */
+	if (func->card->cccr.multi_block && (size > sdio_max_byte_size(func))) {
+		/* Blocks per command is limited by host count, host transfer
+		 * size and the maximum for IO_RW_EXTENDED of 511 blocks. */
+		max_blocks = min(func->card->host->max_blk_count, 511u);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (remainder >= func->cur_blksize) {
 			unsigned blocks;
@@ -371,6 +465,7 @@ u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 	int ret;
 	u8 val;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 
 	if (err_ret)
@@ -383,11 +478,26 @@ u8 sdio_readb(struct sdio_func *func, unsigned int addr, int *err_ret)
 		return 0xFF;
 	}
 
+=======
+	if (!func) {
+		if (err_ret)
+			*err_ret = -EINVAL;
+		return 0xFF;
+	}
+
+	ret = mmc_io_rw_direct(func->card, 0, func->num, addr, 0, &val);
+	if (err_ret)
+		*err_ret = ret;
+	if (ret)
+		return 0xFF;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 EXPORT_SYMBOL_GPL(sdio_readb);
 
 /**
+<<<<<<< HEAD
  *	sdio_readb_ext - read a single byte from a SDIO function
  *	@func: SDIO function to access
  *	@addr: address to read
@@ -421,6 +531,8 @@ unsigned char sdio_readb_ext(struct sdio_func *func, unsigned int addr,
 EXPORT_SYMBOL_GPL(sdio_readb_ext);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	sdio_writeb - write a single byte to a SDIO function
  *	@func: SDIO function to access
  *	@b: byte to write
@@ -435,7 +547,15 @@ void sdio_writeb(struct sdio_func *func, u8 b, unsigned int addr, int *err_ret)
 {
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		if (err_ret)
+			*err_ret = -EINVAL;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mmc_io_rw_direct(func->card, 1, func->num, addr, b, NULL);
 	if (err_ret)
@@ -467,7 +587,11 @@ u8 sdio_writeb_readb(struct sdio_func *func, u8 write_byte,
 	if (err_ret)
 		*err_ret = ret;
 	if (ret)
+<<<<<<< HEAD
 		val = 0xff;
+=======
+		return 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return val;
 }
@@ -555,6 +679,7 @@ u16 sdio_readw(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (err_ret)
 		*err_ret = 0;
 
@@ -564,6 +689,13 @@ u16 sdio_readw(struct sdio_func *func, unsigned int addr, int *err_ret)
 			*err_ret = ret;
 		return 0xFFFF;
 	}
+=======
+	ret = sdio_memcpy_fromio(func, func->tmpbuf, addr, 2);
+	if (err_ret)
+		*err_ret = ret;
+	if (ret)
+		return 0xFFFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return le16_to_cpup((__le16 *)func->tmpbuf);
 }
@@ -607,6 +739,7 @@ u32 sdio_readl(struct sdio_func *func, unsigned int addr, int *err_ret)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (err_ret)
 		*err_ret = 0;
 
@@ -616,6 +749,13 @@ u32 sdio_readl(struct sdio_func *func, unsigned int addr, int *err_ret)
 			*err_ret = ret;
 		return 0xFFFFFFFF;
 	}
+=======
+	ret = sdio_memcpy_fromio(func, func->tmpbuf, addr, 4);
+	if (err_ret)
+		*err_ret = ret;
+	if (ret)
+		return 0xFFFFFFFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return le32_to_cpup((__le32 *)func->tmpbuf);
 }
@@ -660,6 +800,7 @@ unsigned char sdio_f0_readb(struct sdio_func *func, unsigned int addr,
 	int ret;
 	unsigned char val;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 
 	if (err_ret)
@@ -672,6 +813,20 @@ unsigned char sdio_f0_readb(struct sdio_func *func, unsigned int addr,
 		return 0xFF;
 	}
 
+=======
+	if (!func) {
+		if (err_ret)
+			*err_ret = -EINVAL;
+		return 0xFF;
+	}
+
+	ret = mmc_io_rw_direct(func->card, 0, 0, addr, 0, &val);
+	if (err_ret)
+		*err_ret = ret;
+	if (ret)
+		return 0xFF;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 EXPORT_SYMBOL_GPL(sdio_f0_readb);
@@ -695,7 +850,15 @@ void sdio_f0_writeb(struct sdio_func *func, unsigned char b, unsigned int addr,
 {
 	int ret;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
+=======
+	if (!func) {
+		if (err_ret)
+			*err_ret = -EINVAL;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((addr < 0xF0 || addr > 0xFF) && (!mmc_card_lenient_fn0(func->card))) {
 		if (err_ret)
@@ -721,8 +884,13 @@ EXPORT_SYMBOL_GPL(sdio_f0_writeb);
  */
 mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func)
 {
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return func->card->host->pm_caps;
 }
@@ -731,6 +899,10 @@ EXPORT_SYMBOL_GPL(sdio_get_host_pm_caps);
 /**
  *	sdio_set_host_pm_flags - set wanted host power management capabilities
  *	@func: SDIO function attached to host
+<<<<<<< HEAD
+=======
+ *	@flags: Power Management flags to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Set a capability bitmask corresponding to wanted host controller
  *	power management features for the upcoming suspend state.
@@ -744,8 +916,13 @@ int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 {
 	struct mmc_host *host;
 
+<<<<<<< HEAD
 	BUG_ON(!func);
 	BUG_ON(!func->card);
+=======
+	if (!func)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host = func->card->host;
 
@@ -757,3 +934,82 @@ int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sdio_set_host_pm_flags);
+<<<<<<< HEAD
+=======
+
+/**
+ *	sdio_retune_crc_disable - temporarily disable retuning on CRC errors
+ *	@func: SDIO function attached to host
+ *
+ *	If the SDIO card is known to be in a state where it might produce
+ *	CRC errors on the bus in response to commands (like if we know it is
+ *	transitioning between power states), an SDIO function driver can
+ *	call this function to temporarily disable the SD/MMC core behavior of
+ *	triggering an automatic retuning.
+ *
+ *	This function should be called while the host is claimed and the host
+ *	should remain claimed until sdio_retune_crc_enable() is called.
+ *	Specifically, the expected sequence of calls is:
+ *	- sdio_claim_host()
+ *	- sdio_retune_crc_disable()
+ *	- some number of calls like sdio_writeb() and sdio_readb()
+ *	- sdio_retune_crc_enable()
+ *	- sdio_release_host()
+ */
+void sdio_retune_crc_disable(struct sdio_func *func)
+{
+	func->card->host->retune_crc_disable = true;
+}
+EXPORT_SYMBOL_GPL(sdio_retune_crc_disable);
+
+/**
+ *	sdio_retune_crc_enable - re-enable retuning on CRC errors
+ *	@func: SDIO function attached to host
+ *
+ *	This is the complement to sdio_retune_crc_disable().
+ */
+void sdio_retune_crc_enable(struct sdio_func *func)
+{
+	func->card->host->retune_crc_disable = false;
+}
+EXPORT_SYMBOL_GPL(sdio_retune_crc_enable);
+
+/**
+ *	sdio_retune_hold_now - start deferring retuning requests till release
+ *	@func: SDIO function attached to host
+ *
+ *	This function can be called if it's currently a bad time to do
+ *	a retune of the SDIO card.  Retune requests made during this time
+ *	will be held and we'll actually do the retune sometime after the
+ *	release.
+ *
+ *	This function could be useful if an SDIO card is in a power state
+ *	where it can respond to a small subset of commands that doesn't
+ *	include the retuning command.  Care should be taken when using
+ *	this function since (presumably) the retuning request we might be
+ *	deferring was made for a good reason.
+ *
+ *	This function should be called while the host is claimed.
+ */
+void sdio_retune_hold_now(struct sdio_func *func)
+{
+	mmc_retune_hold_now(func->card->host);
+}
+EXPORT_SYMBOL_GPL(sdio_retune_hold_now);
+
+/**
+ *	sdio_retune_release - signal that it's OK to retune now
+ *	@func: SDIO function attached to host
+ *
+ *	This is the complement to sdio_retune_hold_now().  Calling this
+ *	function won't make a retune happen right away but will allow
+ *	them to be scheduled normally.
+ *
+ *	This function should be called while the host is claimed.
+ */
+void sdio_retune_release(struct sdio_func *func)
+{
+	mmc_retune_release(func->card->host);
+}
+EXPORT_SYMBOL_GPL(sdio_retune_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

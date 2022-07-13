@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* sonet.h - SONET/SHD physical layer control */
  
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -59,6 +60,16 @@ struct sonet_stats {
 #ifdef __KERNEL__
 
 #include <linux/atomic.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* sonet.h - SONET/SHD physical layer control */
+#ifndef LINUX_SONET_H
+#define LINUX_SONET_H
+
+
+#include <linux/atomic.h>
+#include <uapi/linux/sonet.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct k_sonet_stats {
 #define __HANDLE_ITEM(i) atomic_t i
@@ -71,5 +82,8 @@ extern void sonet_subtract_stats(struct k_sonet_stats *from,
     struct sonet_stats *to);
 
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

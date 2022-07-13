@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Source for:
  * Cypress TrueTouch(TM) Standard Product (TTSP) SPI touchscreen driver.
@@ -8,6 +12,7 @@
  *
  * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
  * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +30,11 @@
  *
  * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
  *
+=======
+ * Copyright (C) 2013 Cypress Semiconductor
+ *
+ * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "cyttsp_core.h"
@@ -33,6 +43,11 @@
 #include <linux/input.h>
 #include <linux/spi/spi.h>
 
+<<<<<<< HEAD
+=======
+#define CY_SPI_NAME		"cyttsp-spi"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CY_SPI_WR_OP		0x00 /* r/~w */
 #define CY_SPI_RD_OP		0x01
 #define CY_SPI_CMD_BYTES	4
@@ -43,6 +58,7 @@
 #define CY_SPI_DATA_BUF_SIZE	(CY_SPI_CMD_BYTES + CY_SPI_DATA_SIZE)
 #define CY_SPI_BITS_PER_WORD	8
 
+<<<<<<< HEAD
 static int cyttsp_spi_xfer(struct cyttsp *ts,
 			   u8 op, u8 reg, u8 *buf, int length)
 {
@@ -51,11 +67,25 @@ static int cyttsp_spi_xfer(struct cyttsp *ts,
 	struct spi_transfer xfer[2];
 	u8 *wr_buf = &ts->xfer_buf[0];
 	u8 *rd_buf = &ts->xfer_buf[CY_SPI_DATA_BUF_SIZE];
+=======
+static int cyttsp_spi_xfer(struct device *dev, u8 *xfer_buf,
+			   u8 op, u16 reg, u8 *buf, int length)
+{
+	struct spi_device *spi = to_spi_device(dev);
+	struct spi_message msg;
+	struct spi_transfer xfer[2];
+	u8 *wr_buf = &xfer_buf[0];
+	u8 *rd_buf = &xfer_buf[CY_SPI_DATA_BUF_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 	int i;
 
 	if (length > CY_SPI_DATA_SIZE) {
+<<<<<<< HEAD
 		dev_err(ts->dev, "%s: length %d is too big.\n",
+=======
+		dev_err(dev, "%s: length %d is too big.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, length);
 		return -EINVAL;
 	}
@@ -95,13 +125,21 @@ static int cyttsp_spi_xfer(struct cyttsp *ts,
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(ts->dev, "%s: bad operation code=%d\n", __func__, op);
+=======
+		dev_err(dev, "%s: bad operation code=%d\n", __func__, op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	retval = spi_sync(spi, &msg);
 	if (retval < 0) {
+<<<<<<< HEAD
 		dev_dbg(ts->dev, "%s: spi_sync() error %d, len=%d, op=%d\n",
+=======
+		dev_dbg(dev, "%s: spi_sync() error %d, len=%d, op=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, retval, xfer[1].len, op);
 
 		/*
@@ -113,6 +151,7 @@ static int cyttsp_spi_xfer(struct cyttsp *ts,
 
 	if (rd_buf[CY_SPI_SYNC_BYTE] != CY_SPI_SYNC_ACK1 ||
 	    rd_buf[CY_SPI_SYNC_BYTE + 1] != CY_SPI_SYNC_ACK2) {
+<<<<<<< HEAD
 
 		dev_dbg(ts->dev, "%s: operation %d failed\n", __func__, op);
 
@@ -121,6 +160,15 @@ static int cyttsp_spi_xfer(struct cyttsp *ts,
 				__func__, i, rd_buf[i]);
 		for (i = 0; i < length; i++)
 			dev_dbg(ts->dev, "%s: test buf[%d]:0x%02x\n",
+=======
+		dev_dbg(dev, "%s: operation %d failed\n", __func__, op);
+
+		for (i = 0; i < CY_SPI_CMD_BYTES; i++)
+			dev_dbg(dev, "%s: test rd_buf[%d]:0x%02x\n",
+				__func__, i, rd_buf[i]);
+		for (i = 0; i < length; i++)
+			dev_dbg(dev, "%s: test buf[%d]:0x%02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, i, buf[i]);
 
 		return -EIO;
@@ -129,6 +177,7 @@ static int cyttsp_spi_xfer(struct cyttsp *ts,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cyttsp_spi_read_block_data(struct cyttsp *ts,
 				      u8 addr, u8 length, void *data)
 {
@@ -139,6 +188,20 @@ static int cyttsp_spi_write_block_data(struct cyttsp *ts,
 				       u8 addr, u8 length, const void *data)
 {
 	return cyttsp_spi_xfer(ts, CY_SPI_WR_OP, addr, (void *)data, length);
+=======
+static int cyttsp_spi_read_block_data(struct device *dev, u8 *xfer_buf,
+				      u16 addr, u8 length, void *data)
+{
+	return cyttsp_spi_xfer(dev, xfer_buf, CY_SPI_RD_OP, addr, data,
+			length);
+}
+
+static int cyttsp_spi_write_block_data(struct device *dev, u8 *xfer_buf,
+				       u16 addr, u8 length, const void *data)
+{
+	return cyttsp_spi_xfer(dev, xfer_buf, CY_SPI_WR_OP, addr, (void *)data,
+			length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct cyttsp_bus_ops cyttsp_spi_bus_ops = {
@@ -147,7 +210,11 @@ static const struct cyttsp_bus_ops cyttsp_spi_bus_ops = {
 	.read		= cyttsp_spi_read_block_data,
 };
 
+<<<<<<< HEAD
 static int __devinit cyttsp_spi_probe(struct spi_device *spi)
+=======
+static int cyttsp_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cyttsp *ts;
 	int error;
@@ -172,6 +239,7 @@ static int __devinit cyttsp_spi_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit cyttsp_spi_remove(struct spi_device *spi)
 {
 	struct cyttsp *ts = spi_get_drvdata(spi);
@@ -180,20 +248,38 @@ static int __devexit cyttsp_spi_remove(struct spi_device *spi)
 
 	return 0;
 }
+=======
+static const struct of_device_id cyttsp_of_spi_match[] = {
+	{ .compatible = "cypress,cy8ctma340", },
+	{ .compatible = "cypress,cy8ctst341", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, cyttsp_of_spi_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct spi_driver cyttsp_spi_driver = {
 	.driver = {
 		.name	= CY_SPI_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &cyttsp_pm_ops,
 	},
 	.probe  = cyttsp_spi_probe,
 	.remove = __devexit_p(cyttsp_spi_remove),
+=======
+		.pm	= pm_sleep_ptr(&cyttsp_pm_ops),
+		.of_match_table = cyttsp_of_spi_match,
+	},
+	.probe  = cyttsp_spi_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(cyttsp_spi_driver);
 
+<<<<<<< HEAD
 MODULE_ALIAS("spi:cyttsp");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cypress TrueTouch(R) Standard Product (TTSP) SPI driver");
 MODULE_AUTHOR("Cypress");

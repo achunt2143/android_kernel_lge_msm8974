@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * compat ioctls for control API
  *
  *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* this file included from control.c */
@@ -35,6 +42,7 @@ struct snd_ctl_elem_list32 {
 static int snd_ctl_elem_list_compat(struct snd_card *card,
 				    struct snd_ctl_elem_list32 __user *data32)
 {
+<<<<<<< HEAD
 	struct snd_ctl_elem_list __user *data;
 	compat_caddr_t ptr;
 	int err;
@@ -53,6 +61,24 @@ static int snd_ctl_elem_list_compat(struct snd_card *card,
 		return err;
 	/* copy the result */
 	if (copy_in_user(data32, data, 4 * sizeof(u32)))
+=======
+	struct snd_ctl_elem_list data = {};
+	compat_caddr_t ptr;
+	int err;
+
+	/* offset, space, used, count */
+	if (copy_from_user(&data, data32, 4 * sizeof(u32)))
+		return -EFAULT;
+	/* pids */
+	if (get_user(ptr, &data32->pids))
+		return -EFAULT;
+	data.pids = compat_ptr(ptr);
+	err = snd_ctl_elem_list(card, &data);
+	if (err < 0)
+		return err;
+	/* copy the result */
+	if (copy_to_user(data32, &data, 4 * sizeof(u32)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 }
@@ -89,26 +115,41 @@ struct snd_ctl_elem_info32 {
 		unsigned char reserved[128];
 	} value;
 	unsigned char reserved[64];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_ctl_elem_info_compat(struct snd_ctl_file *ctl,
 				    struct snd_ctl_elem_info32 __user *data32)
 {
+<<<<<<< HEAD
 	struct snd_ctl_elem_info *data;
+=======
+	struct snd_ctl_elem_info *data __free(kfree) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (! data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	err = -EFAULT;
 	/* copy id */
 	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)))
 		goto error;
+=======
+	/* copy id */
+	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we need to copy the item index.
 	 * hope this doesn't break anything..
 	 */
 	if (get_user(data->value.enumerated.item, &data32->value.enumerated.item))
+<<<<<<< HEAD
 		goto error;
 
 	snd_power_lock(ctl->card);
@@ -127,33 +168,63 @@ static int snd_ctl_elem_info_compat(struct snd_ctl_file *ctl,
 		goto error;
 	if (put_user(data->owner, &data32->owner))
 		goto error;
+=======
+		return -EFAULT;
+
+	err = snd_ctl_elem_info(ctl, data);
+	if (err < 0)
+		return err;
+	/* restore info to 32bit */
+	/* id, type, access, count */
+	if (copy_to_user(&data32->id, &data->id, sizeof(data->id)) ||
+	    copy_to_user(&data32->type, &data->type, 3 * sizeof(u32)))
+		return -EFAULT;
+	if (put_user(data->owner, &data32->owner))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (data->type) {
 	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:
 	case SNDRV_CTL_ELEM_TYPE_INTEGER:
 		if (put_user(data->value.integer.min, &data32->value.integer.min) ||
 		    put_user(data->value.integer.max, &data32->value.integer.max) ||
 		    put_user(data->value.integer.step, &data32->value.integer.step))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_CTL_ELEM_TYPE_INTEGER64:
 		if (copy_to_user(&data32->value.integer64,
 				 &data->value.integer64,
 				 sizeof(data->value.integer64)))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_CTL_ELEM_TYPE_ENUMERATED:
 		if (copy_to_user(&data32->value.enumerated,
 				 &data->value.enumerated,
 				 sizeof(data->value.enumerated)))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	err = 0;
  error:
 	kfree(data);
 	return err;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* read / write */
@@ -170,12 +241,29 @@ struct snd_ctl_elem_value32 {
         unsigned char reserved[128];
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_X32_ABI
+/* x32 has a different alignment for 64bit values from ia32 */
+struct snd_ctl_elem_value_x32 {
+	struct snd_ctl_elem_id id;
+	unsigned int indirect;	/* bit-field causes misalignment */
+	union {
+		s32 integer[128];
+		unsigned char data[512];
+		s64 integer64[64];
+	} value;
+	unsigned char reserved[128];
+};
+#endif /* CONFIG_X86_X32_ABI */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* get the value type and count of the control */
 static int get_ctl_type(struct snd_card *card, struct snd_ctl_elem_id *id,
 			int *countp)
 {
 	struct snd_kcontrol *kctl;
+<<<<<<< HEAD
 	struct snd_ctl_elem_info *info;
 	int err;
 
@@ -193,15 +281,39 @@ static int get_ctl_type(struct snd_card *card, struct snd_ctl_elem_id *id,
 	info->id = *id;
 	err = kctl->info(kctl, info);
 	up_read(&card->controls_rwsem);
+=======
+	struct snd_ctl_elem_info *info __free(kfree) = NULL;
+	int err;
+
+	guard(rwsem_read)(&card->controls_rwsem);
+	kctl = snd_ctl_find_id_locked(card, id);
+	if (!kctl)
+		return -ENOENT;
+	info = kzalloc(sizeof(*info), GFP_KERNEL);
+	if (info == NULL)
+		return -ENOMEM;
+	info->id = *id;
+	err = snd_power_ref_and_wait(card);
+	if (!err)
+		err = kctl->info(kctl, info);
+	snd_power_unref(card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err >= 0) {
 		err = info->type;
 		*countp = info->count;
 	}
+<<<<<<< HEAD
 	kfree(info);
 	return err;
 }
 
 static int get_elem_size(int type, int count)
+=======
+	return err;
+}
+
+static int get_elem_size(snd_ctl_elem_type_t type, int count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (type) {
 	case SNDRV_CTL_ELEM_TYPE_INTEGER64:
@@ -219,11 +331,21 @@ static int get_elem_size(int type, int count)
 
 static int copy_ctl_value_from_user(struct snd_card *card,
 				    struct snd_ctl_elem_value *data,
+<<<<<<< HEAD
 				    struct snd_ctl_elem_value32 __user *data32,
 				    int *typep, int *countp)
 {
 	int i, type, size;
 	int uninitialized_var(count);
+=======
+				    void __user *userdata,
+				    void __user *valuep,
+				    int *typep, int *countp)
+{
+	struct snd_ctl_elem_value32 __user *data32 = userdata;
+	int i, type, size;
+	int count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int indirect;
 
 	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)))
@@ -236,15 +358,25 @@ static int copy_ctl_value_from_user(struct snd_card *card,
 	if (type < 0)
 		return type;
 
+<<<<<<< HEAD
 	if (type == SNDRV_CTL_ELEM_TYPE_BOOLEAN ||
 	    type == SNDRV_CTL_ELEM_TYPE_INTEGER) {
 		for (i = 0; i < count; i++) {
 			int val;
 			if (get_user(val, &data32->value.integer[i]))
+=======
+	if (type == (__force int)SNDRV_CTL_ELEM_TYPE_BOOLEAN ||
+	    type == (__force int)SNDRV_CTL_ELEM_TYPE_INTEGER) {
+		for (i = 0; i < count; i++) {
+			s32 __user *intp = valuep;
+			int val;
+			if (get_user(val, &intp[i]))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EFAULT;
 			data->value.integer.value[i] = val;
 		}
 	} else {
+<<<<<<< HEAD
 		size = get_elem_size(type, count);
 		if (size < 0) {
 			printk(KERN_ERR "snd_ioctl32_ctl_elem_value: unknown type %d\n", type);
@@ -252,6 +384,14 @@ static int copy_ctl_value_from_user(struct snd_card *card,
 		}
 		if (copy_from_user(data->value.bytes.data,
 				   data32->value.data, size))
+=======
+		size = get_elem_size((__force snd_ctl_elem_type_t)type, count);
+		if (size < 0) {
+			dev_err(card->dev, "snd_ioctl32_ctl_elem_value: unknown type %d\n", type);
+			return -EINVAL;
+		}
+		if (copy_from_user(data->value.bytes.data, valuep, size))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -261,6 +401,7 @@ static int copy_ctl_value_from_user(struct snd_card *card,
 }
 
 /* restore the value to 32bit */
+<<<<<<< HEAD
 static int copy_ctl_value_to_user(struct snd_ctl_elem_value32 __user *data32,
 				  struct snd_ctl_elem_value *data,
 				  int type, int count)
@@ -288,12 +429,46 @@ static int snd_ctl_elem_read_user_compat(struct snd_card *card,
 					 struct snd_ctl_elem_value32 __user *data32)
 {
 	struct snd_ctl_elem_value *data;
+=======
+static int copy_ctl_value_to_user(void __user *userdata,
+				  void __user *valuep,
+				  struct snd_ctl_elem_value *data,
+				  int type, int count)
+{
+	struct snd_ctl_elem_value32 __user *data32 = userdata;
+	int i, size;
+
+	if (type == (__force int)SNDRV_CTL_ELEM_TYPE_BOOLEAN ||
+	    type == (__force int)SNDRV_CTL_ELEM_TYPE_INTEGER) {
+		for (i = 0; i < count; i++) {
+			s32 __user *intp = valuep;
+			int val;
+			val = data->value.integer.value[i];
+			if (put_user(val, &intp[i]))
+				return -EFAULT;
+		}
+	} else {
+		size = get_elem_size((__force snd_ctl_elem_type_t)type, count);
+		if (copy_to_user(valuep, data->value.bytes.data, size))
+			return -EFAULT;
+	}
+	if (copy_to_user(&data32->id, &data->id, sizeof(data32->id)))
+		return -EFAULT;
+	return 0;
+}
+
+static int ctl_elem_read_user(struct snd_card *card,
+			      void __user *userdata, void __user *valuep)
+{
+	struct snd_ctl_elem_value *data __free(kfree) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, type, count;
 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (data == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if ((err = copy_ctl_value_from_user(card, data, data32, &type, &count)) < 0)
 		goto error;
 
@@ -313,6 +488,23 @@ static int snd_ctl_elem_write_user_compat(struct snd_ctl_file *file,
 					  struct snd_ctl_elem_value32 __user *data32)
 {
 	struct snd_ctl_elem_value *data;
+=======
+	err = copy_ctl_value_from_user(card, data, userdata, valuep,
+				       &type, &count);
+	if (err < 0)
+		return err;
+
+	err = snd_ctl_elem_read(card, data);
+	if (err < 0)
+		return err;
+	return copy_ctl_value_to_user(userdata, valuep, data, type, count);
+}
+
+static int ctl_elem_write_user(struct snd_ctl_file *file,
+			       void __user *userdata, void __user *valuep)
+{
+	struct snd_ctl_elem_value *data __free(kfree) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_card *card = file->card;
 	int err, type, count;
 
@@ -320,6 +512,7 @@ static int snd_ctl_elem_write_user_compat(struct snd_ctl_file *file,
 	if (data == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if ((err = copy_ctl_value_from_user(card, data, data32, &type, &count)) < 0)
 		goto error;
 
@@ -335,18 +528,62 @@ static int snd_ctl_elem_write_user_compat(struct snd_ctl_file *file,
 	return err;
 }
 
+=======
+	err = copy_ctl_value_from_user(card, data, userdata, valuep,
+				       &type, &count);
+	if (err < 0)
+		return err;
+
+	err = snd_ctl_elem_write(card, file, data);
+	if (err < 0)
+		return err;
+	return copy_ctl_value_to_user(userdata, valuep, data, type, count);
+}
+
+static int snd_ctl_elem_read_user_compat(struct snd_card *card,
+					 struct snd_ctl_elem_value32 __user *data32)
+{
+	return ctl_elem_read_user(card, data32, &data32->value);
+}
+
+static int snd_ctl_elem_write_user_compat(struct snd_ctl_file *file,
+					  struct snd_ctl_elem_value32 __user *data32)
+{
+	return ctl_elem_write_user(file, data32, &data32->value);
+}
+
+#ifdef CONFIG_X86_X32_ABI
+static int snd_ctl_elem_read_user_x32(struct snd_card *card,
+				      struct snd_ctl_elem_value_x32 __user *data32)
+{
+	return ctl_elem_read_user(card, data32, &data32->value);
+}
+
+static int snd_ctl_elem_write_user_x32(struct snd_ctl_file *file,
+				       struct snd_ctl_elem_value_x32 __user *data32)
+{
+	return ctl_elem_write_user(file, data32, &data32->value);
+}
+#endif /* CONFIG_X86_X32_ABI */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* add or replace a user control */
 static int snd_ctl_elem_add_compat(struct snd_ctl_file *file,
 				   struct snd_ctl_elem_info32 __user *data32,
 				   int replace)
 {
+<<<<<<< HEAD
 	struct snd_ctl_elem_info *data;
 	int err;
+=======
+	struct snd_ctl_elem_info *data __free(kfree) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (! data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	err = -EFAULT;
 	/* id, type, access, count */ \
 	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)) ||
@@ -355,35 +592,59 @@ static int snd_ctl_elem_add_compat(struct snd_ctl_file *file,
 	if (get_user(data->owner, &data32->owner) ||
 	    get_user(data->type, &data32->type))
 		goto error;
+=======
+	/* id, type, access, count */ \
+	if (copy_from_user(&data->id, &data32->id, sizeof(data->id)) ||
+	    copy_from_user(&data->type, &data32->type, 3 * sizeof(u32)))
+		return -EFAULT;
+	if (get_user(data->owner, &data32->owner))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (data->type) {
 	case SNDRV_CTL_ELEM_TYPE_BOOLEAN:
 	case SNDRV_CTL_ELEM_TYPE_INTEGER:
 		if (get_user(data->value.integer.min, &data32->value.integer.min) ||
 		    get_user(data->value.integer.max, &data32->value.integer.max) ||
 		    get_user(data->value.integer.step, &data32->value.integer.step))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_CTL_ELEM_TYPE_INTEGER64:
 		if (copy_from_user(&data->value.integer64,
 				   &data32->value.integer64,
 				   sizeof(data->value.integer64)))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_CTL_ELEM_TYPE_ENUMERATED:
 		if (copy_from_user(&data->value.enumerated,
 				   &data32->value.enumerated,
 				   sizeof(data->value.enumerated)))
+<<<<<<< HEAD
 			goto error;
+=======
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->value.enumerated.names_ptr =
 			(uintptr_t)compat_ptr(data->value.enumerated.names_ptr);
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	err = snd_ctl_elem_add(file, data, replace);
  error:
 	kfree(data);
 	return err;
+=======
+	return snd_ctl_elem_add(file, data, replace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }  
 
 enum {
@@ -393,6 +654,13 @@ enum {
 	SNDRV_CTL_IOCTL_ELEM_WRITE32 = _IOWR('U', 0x13, struct snd_ctl_elem_value32),
 	SNDRV_CTL_IOCTL_ELEM_ADD32 = _IOWR('U', 0x17, struct snd_ctl_elem_info32),
 	SNDRV_CTL_IOCTL_ELEM_REPLACE32 = _IOWR('U', 0x18, struct snd_ctl_elem_info32),
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_X32_ABI
+	SNDRV_CTL_IOCTL_ELEM_READ_X32 = _IOWR('U', 0x12, struct snd_ctl_elem_value_x32),
+	SNDRV_CTL_IOCTL_ELEM_WRITE_X32 = _IOWR('U', 0x13, struct snd_ctl_elem_value_x32),
+#endif /* CONFIG_X86_X32_ABI */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline long snd_ctl_ioctl_compat(struct file *file, unsigned int cmd, unsigned long arg)
@@ -431,6 +699,7 @@ static inline long snd_ctl_ioctl_compat(struct file *file, unsigned int cmd, uns
 		return snd_ctl_elem_add_compat(ctl, argp, 0);
 	case SNDRV_CTL_IOCTL_ELEM_REPLACE32:
 		return snd_ctl_elem_add_compat(ctl, argp, 1);
+<<<<<<< HEAD
 	}
 
 	down_read(&snd_ioctl_rwsem);
@@ -444,5 +713,23 @@ static inline long snd_ctl_ioctl_compat(struct file *file, unsigned int cmd, uns
 		}
 	}
 	up_read(&snd_ioctl_rwsem);
+=======
+#ifdef CONFIG_X86_X32_ABI
+	case SNDRV_CTL_IOCTL_ELEM_READ_X32:
+		return snd_ctl_elem_read_user_x32(ctl->card, argp);
+	case SNDRV_CTL_IOCTL_ELEM_WRITE_X32:
+		return snd_ctl_elem_write_user_x32(ctl, argp);
+#endif /* CONFIG_X86_X32_ABI */
+	}
+
+	guard(rwsem_read)(&snd_ioctl_rwsem);
+	list_for_each_entry(p, &snd_control_compat_ioctls, list) {
+		if (p->fioctl) {
+			err = p->fioctl(ctl->card, ctl, cmd, arg);
+			if (err != -ENOIOCTLCMD)
+				return err;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOIOCTLCMD;
 }

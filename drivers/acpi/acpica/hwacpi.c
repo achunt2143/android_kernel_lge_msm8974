@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -53,7 +64,11 @@ ACPI_MODULE_NAME("hwacpi")
  *
  * FUNCTION:    acpi_hw_set_mode
  *
+<<<<<<< HEAD
  * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
+=======
+ * PARAMETERS:  mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -67,6 +82,15 @@ acpi_status acpi_hw_set_mode(u32 mode)
 
 	ACPI_FUNCTION_TRACE(hw_set_mode);
 
+<<<<<<< HEAD
+=======
+	/* If the Hardware Reduced flag is set, machine is always in acpi mode */
+
+	if (acpi_gbl_reduced_hardware) {
+		return_ACPI_STATUS(AE_OK);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
 	 * system does not support mode transition.
@@ -103,19 +127,30 @@ acpi_status acpi_hw_set_mode(u32 mode)
 		break;
 
 	case ACPI_SYS_MODE_LEGACY:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * BIOS should clear all fixed status bits and restore fixed event
 		 * enable bits to default
 		 */
 		status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
+<<<<<<< HEAD
 					    (u32) acpi_gbl_FADT.acpi_disable,
 					    8);
+=======
+					    (u32)acpi_gbl_FADT.acpi_disable, 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 				  "Attempting to enable Legacy (non-ACPI) mode\n"));
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
@@ -136,7 +171,11 @@ acpi_status acpi_hw_set_mode(u32 mode)
  *
  * RETURN:      SYS_MODE_ACPI or SYS_MODE_LEGACY
  *
+<<<<<<< HEAD
  * DESCRIPTION: Return current operating state of system.  Determined by
+=======
+ * DESCRIPTION: Return current operating state of system. Determined by
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              querying the SCI_EN bit.
  *
  ******************************************************************************/
@@ -148,6 +187,15 @@ u32 acpi_hw_get_mode(void)
 
 	ACPI_FUNCTION_TRACE(hw_get_mode);
 
+<<<<<<< HEAD
+=======
+	/* If the Hardware Reduced flag is set, machine is always in acpi mode */
+
+	if (acpi_gbl_reduced_hardware) {
+		return_UINT32(ACPI_SYS_MODE_ACPI);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
 	 * system does not support mode transition.

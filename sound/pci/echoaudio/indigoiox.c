@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA driver for Echoaudio soundcards.
  *  Copyright (C) 2009 Giuliano Pochini <pochini@shiny.it>
@@ -14,6 +15,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  ALSA driver for Echoaudio soundcards.
+ *  Copyright (C) 2009 Giuliano Pochini <pochini@shiny.it>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define INDIGO_FAMILY
@@ -69,12 +76,20 @@ static const struct firmware card_fw[] = {
 	{0, "indigo_iox_dsp.fw"}
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_echo_ids) = {
+=======
+static const struct pci_device_id snd_echo_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x1057, 0x3410, 0xECC0, 0x00D0, 0, 0, 0},	/* Indigo IOx */
 	{0,}
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware pcm_hardware_skel = {
+=======
+static const struct snd_pcm_hardware pcm_hardware_skel = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |

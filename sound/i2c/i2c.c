@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Generic i2c interface for ALSA
  *
  *   (c) 1998 Gerd Knorr <kraxel@cs.tu-berlin.de>
  *   Modified for the ALSA driver by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -39,7 +46,11 @@ static int snd_i2c_bit_readbytes(struct snd_i2c_device *device,
 static int snd_i2c_bit_probeaddr(struct snd_i2c_bus *bus,
 				 unsigned short addr);
 
+<<<<<<< HEAD
 static struct snd_i2c_ops snd_i2c_bit_ops = {
+=======
+static const struct snd_i2c_ops snd_i2c_bit_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sendbytes = snd_i2c_bit_sendbytes,
 	.readbytes = snd_i2c_bit_readbytes,
 	.probeaddr = snd_i2c_bit_probeaddr,
@@ -81,7 +92,11 @@ int snd_i2c_bus_create(struct snd_card *card, const char *name,
 {
 	struct snd_i2c_bus *bus;
 	int err;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free =	snd_i2c_bus_dev_free,
 	};
 
@@ -98,7 +113,11 @@ int snd_i2c_bus_create(struct snd_card *card, const char *name,
 		list_add_tail(&bus->buses, &master->buses);
 		bus->master = master;
 	}
+<<<<<<< HEAD
 	strlcpy(bus->name, name, sizeof(bus->name));
+=======
+	strscpy(bus->name, name, sizeof(bus->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_device_new(card, SNDRV_DEV_BUS, bus, &ops);
 	if (err < 0) {
 		snd_i2c_bus_free(bus);
@@ -122,7 +141,11 @@ int snd_i2c_device_create(struct snd_i2c_bus *bus, const char *name,
 	if (device == NULL)
 		return -ENOMEM;
 	device->addr = addr;
+<<<<<<< HEAD
 	strlcpy(device->name, name, sizeof(device->name));
+=======
+	strscpy(device->name, name, sizeof(device->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&device->list, &bus->devices);
 	device->bus = bus;
 	*rdevice = device;
@@ -338,6 +361,7 @@ static int snd_i2c_bit_probeaddr(struct snd_i2c_bus *bus, unsigned short addr)
 	snd_i2c_bit_stop(bus);
 	return err;
 }
+<<<<<<< HEAD
 
 
 static int __init alsa_i2c_init(void)
@@ -351,3 +375,5 @@ static void __exit alsa_i2c_exit(void)
 
 module_init(alsa_i2c_init)
 module_exit(alsa_i2c_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

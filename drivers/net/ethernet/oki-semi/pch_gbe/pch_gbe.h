@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 - 2010 Intel Corporation.
  * Copyright (C) 2010 OKI SEMICONDUCTOR Co., LTD.
  *
  * This code was derived from the Intel e1000e Linux driver.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PCH_GBE_H_
@@ -159,7 +166,11 @@ struct pch_gbe_regs {
 #define PCH_GBE_RH_ALM_FULL_8   0x00001000      /* 8 words */
 #define PCH_GBE_RH_ALM_FULL_16  0x00002000      /* 16 words */
 #define PCH_GBE_RH_ALM_FULL_32  0x00003000      /* 32 words */
+<<<<<<< HEAD
 /* RX FIFO Read Triger Threshold */
+=======
+/* RX FIFO Read Trigger Threshold */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCH_GBE_RH_RD_TRG_4     0x00000000      /* 4 words */
 #define PCH_GBE_RH_RD_TRG_8     0x00000200      /* 8 words */
 #define PCH_GBE_RH_RD_TRG_16    0x00000400      /* 16 words */
@@ -327,6 +338,7 @@ struct pch_gbe_regs {
 #define PCH_GBE_FC_FULL			3
 #define PCH_GBE_FC_DEFAULT		PCH_GBE_FC_FULL
 
+<<<<<<< HEAD
 
 struct pch_gbe_hw;
 /**
@@ -353,6 +365,8 @@ struct pch_gbe_functions {
 	s32 (*read_mac_addr) (struct pch_gbe_hw *);
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct pch_gbe_mac_info - MAC information
  * @addr[6]:		Store the MAC address
@@ -395,6 +409,7 @@ struct pch_gbe_phy_info {
 
 /*!
  * @ingroup Gigabit Ether driver Layer
+<<<<<<< HEAD
  * @struct  pch_gbe_bus_info
  * @brief   Bus information
  */
@@ -406,6 +421,8 @@ struct pch_gbe_bus_info {
 
 /*!
  * @ingroup Gigabit Ether driver Layer
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @struct  pch_gbe_hw
  * @brief   Hardware information
  */
@@ -415,10 +432,15 @@ struct pch_gbe_hw {
 	struct pch_gbe_regs  __iomem *reg;
 	spinlock_t miim_lock;
 
+<<<<<<< HEAD
 	const struct pch_gbe_functions *func;
 	struct pch_gbe_mac_info mac;
 	struct pch_gbe_phy_info phy;
 	struct pch_gbe_bus_info bus;
+=======
+	struct pch_gbe_mac_info mac;
+	struct pch_gbe_phy_info phy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -482,7 +504,10 @@ struct pch_gbe_buffer {
 
 /**
  * struct pch_gbe_tx_ring - tx ring information
+<<<<<<< HEAD
  * @tx_lock:	spinlock structs
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @desc:	pointer to the descriptor ring memory
  * @dma:	physical address of the descriptor ring
  * @size:	length of descriptor ring in bytes
@@ -492,7 +517,10 @@ struct pch_gbe_buffer {
  * @buffer_info:	array of buffer information structs
  */
 struct pch_gbe_tx_ring {
+<<<<<<< HEAD
 	spinlock_t tx_lock;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pch_gbe_tx_desc *desc;
 	dma_addr_t dma;
 	unsigned int size;
@@ -582,6 +610,22 @@ struct pch_gbe_hw_stats {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * struct pch_gbe_privdata - PCI Device ID driver data
+ * @phy_tx_clk_delay:		Bool, configure the PHY TX delay in software
+ * @phy_disable_hibernate:	Bool, disable PHY hibernation
+ * @platform_init:		Platform initialization callback, called from
+ *				probe, prior to PHY initialization.
+ */
+struct pch_gbe_privdata {
+	bool phy_tx_clk_delay;
+	bool phy_disable_hibernate;
+	int (*platform_init)(struct pci_dev *pdev);
+};
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct pch_gbe_adapter - board specific private data structure
  * @stats_lock:	Spinlock structure for status
  * @ethtool_lock:	Spinlock structure for ethtool
@@ -603,7 +647,11 @@ struct pch_gbe_hw_stats {
  * @rx_ring:		Pointer of Rx descriptor ring structure
  * @rx_buffer_len:	Receive buffer length
  * @tx_queue_len:	Transmit queue length
+<<<<<<< HEAD
  * @have_msi:		PCI MSI mode flag
+=======
+ * @pch_gbe_privdata:	PCI Device ID driver_data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 struct pch_gbe_adapter {
@@ -612,6 +660,10 @@ struct pch_gbe_adapter {
 	atomic_t irq_sem;
 	struct net_device *netdev;
 	struct pci_dev *pdev;
+<<<<<<< HEAD
+=======
+	int irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *polling_netdev;
 	struct napi_struct napi;
 	struct pch_gbe_hw hw;
@@ -626,11 +678,15 @@ struct pch_gbe_adapter {
 	struct pch_gbe_rx_ring *rx_ring;
 	unsigned long rx_buffer_len;
 	unsigned long tx_queue_len;
+<<<<<<< HEAD
 	bool have_msi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool rx_stop_flag;
 	int hwts_tx_en;
 	int hwts_rx_en;
 	struct pci_dev *ptp_pdev;
+<<<<<<< HEAD
 };
 
 extern const char pch_driver_version[];
@@ -671,4 +727,36 @@ extern s32 pch_gbe_mac_force_mac_fc(struct pch_gbe_hw *hw);
 extern s32 pch_gbe_mac_read_mac_addr(struct pch_gbe_hw *hw);
 extern u16 pch_gbe_mac_ctrl_miim(struct pch_gbe_hw *hw,
 				  u32 addr, u32 dir, u32 reg, u16 data);
+=======
+	struct pch_gbe_privdata *pdata;
+};
+
+#define pch_gbe_hw_to_adapter(hw)	container_of(hw, struct pch_gbe_adapter, hw)
+
+/* pch_gbe_main.c */
+int pch_gbe_up(struct pch_gbe_adapter *adapter);
+void pch_gbe_down(struct pch_gbe_adapter *adapter);
+void pch_gbe_reinit_locked(struct pch_gbe_adapter *adapter);
+void pch_gbe_reset(struct pch_gbe_adapter *adapter);
+int pch_gbe_setup_tx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_tx_ring *txdr);
+int pch_gbe_setup_rx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_rx_ring *rxdr);
+void pch_gbe_free_tx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_tx_ring *tx_ring);
+void pch_gbe_free_rx_resources(struct pch_gbe_adapter *adapter,
+			       struct pch_gbe_rx_ring *rx_ring);
+void pch_gbe_update_stats(struct pch_gbe_adapter *adapter);
+
+/* pch_gbe_param.c */
+void pch_gbe_check_options(struct pch_gbe_adapter *adapter);
+
+/* pch_gbe_ethtool.c */
+void pch_gbe_set_ethtool_ops(struct net_device *netdev);
+
+/* pch_gbe_mac.c */
+s32 pch_gbe_mac_force_mac_fc(struct pch_gbe_hw *hw);
+u16 pch_gbe_mac_ctrl_miim(struct pch_gbe_hw *hw, u32 addr, u32 dir, u32 reg,
+			  u16 data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PCH_GBE_H_ */

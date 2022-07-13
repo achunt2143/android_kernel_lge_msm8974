@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -53,8 +60,13 @@ ACPI_MODULE_NAME("rsutils")
  *
  * FUNCTION:    acpi_rs_decode_bitmask
  *
+<<<<<<< HEAD
  * PARAMETERS:  Mask            - Bitmask to decode
  *              List            - Where the converted list is returned
+=======
+ * PARAMETERS:  mask            - Bitmask to decode
+ *              list            - Where the converted list is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Count of bits set (length of list)
  *
@@ -86,8 +98,13 @@ u8 acpi_rs_decode_bitmask(u16 mask, u8 * list)
  *
  * FUNCTION:    acpi_rs_encode_bitmask
  *
+<<<<<<< HEAD
  * PARAMETERS:  List            - List of values to encode
  *              Count           - Length of list
+=======
+ * PARAMETERS:  list            - List of values to encode
+ *              count           - Length of list
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Encoded bitmask
  *
@@ -108,15 +125,24 @@ u16 acpi_rs_encode_bitmask(u8 * list, u8 count)
 		mask |= (0x1 << list[i]);
 	}
 
+<<<<<<< HEAD
 	return mask;
+=======
+	return (mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_rs_move_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Destination         - Pointer to the destination descriptor
  *              Source              - Pointer to the source descriptor
+=======
+ * PARAMETERS:  destination         - Pointer to the destination descriptor
+ *              source              - Pointer to the source descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              item_count          - How many items to move
  *              move_type           - Byte width
  *
@@ -147,7 +173,12 @@ acpi_rs_move_data(void *destination, void *source, u16 item_count, u8 move_type)
 		case ACPI_RSC_MOVE_GPIO_RES:
 		case ACPI_RSC_MOVE_SERIAL_VEN:
 		case ACPI_RSC_MOVE_SERIAL_RES:
+<<<<<<< HEAD
 			ACPI_MEMCPY(destination, source, item_count);
+=======
+
+			memcpy(destination, source, item_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 
 			/*
@@ -157,21 +188,37 @@ acpi_rs_move_data(void *destination, void *source, u16 item_count, u8 move_type)
 			 */
 		case ACPI_RSC_MOVE16:
 		case ACPI_RSC_MOVE_GPIO_PIN:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_MOVE_16_TO_16(&ACPI_CAST_PTR(u16, destination)[i],
 					   &ACPI_CAST_PTR(u16, source)[i]);
 			break;
 
 		case ACPI_RSC_MOVE32:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_MOVE_32_TO_32(&ACPI_CAST_PTR(u32, destination)[i],
 					   &ACPI_CAST_PTR(u32, source)[i]);
 			break;
 
 		case ACPI_RSC_MOVE64:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_MOVE_64_TO_64(&ACPI_CAST_PTR(u64, destination)[i],
 					   &ACPI_CAST_PTR(u64, source)[i]);
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -183,7 +230,11 @@ acpi_rs_move_data(void *destination, void *source, u16 item_count, u8 move_type)
  *
  * PARAMETERS:  total_length        - Length of the AML descriptor, including
  *                                    the header and length fields.
+<<<<<<< HEAD
  *              Aml                 - Pointer to the raw AML descriptor
+=======
+ *              aml                 - Pointer to the raw AML descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -216,6 +267,7 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
 		ACPI_MOVE_16_TO_16(&aml->large_header.resource_length,
 				   &resource_length);
 	} else {
+<<<<<<< HEAD
 		/* Small descriptor -- bits 2:0 of byte 0 contain the length */
 
 		aml->small_header.descriptor_type = (u8)
@@ -224,6 +276,15 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
 		    ((aml->small_header.
 		      descriptor_type & ~ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK)
 
+=======
+		/*
+		 * Small descriptor -- bits 2:0 of byte 0 contain the length
+		 * Clear any existing length, preserving descriptor type bits
+		 */
+		aml->small_header.descriptor_type = (u8)
+		    ((aml->small_header.descriptor_type &
+		      ~ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     | resource_length);
 	}
 }
@@ -235,7 +296,11 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
  * PARAMETERS:  descriptor_type     - Byte to be inserted as the type
  *              total_length        - Length of the AML descriptor, including
  *                                    the header and length fields.
+<<<<<<< HEAD
  *              Aml                 - Pointer to the raw AML descriptor
+=======
+ *              aml                 - Pointer to the raw AML descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -265,8 +330,13 @@ acpi_rs_set_resource_header(u8 descriptor_type,
  *
  * FUNCTION:    acpi_rs_strcpy
  *
+<<<<<<< HEAD
  * PARAMETERS:  Destination         - Pointer to the destination string
  *              Source              - Pointer to the source string
+=======
+ * PARAMETERS:  destination         - Pointer to the destination string
+ *              source              - Pointer to the source string
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      String length, including NULL terminator
  *
@@ -300,7 +370,11 @@ static u16 acpi_rs_strcpy(char *destination, char *source)
  *              minimum_length      - Minimum length of the descriptor (minus
  *                                    any optional fields)
  *              resource_source     - Where the resource_source is returned
+<<<<<<< HEAD
  *              Aml                 - Pointer to the raw AML descriptor
+=======
+ *              aml                 - Pointer to the raw AML descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              string_ptr          - (optional) where to store the actual
  *                                    resource_source string
  *
@@ -328,13 +402,22 @@ acpi_rs_get_resource_source(acpi_rs_length resource_length,
 	aml_resource_source = ACPI_ADD_PTR(u8, aml, minimum_length);
 
 	/*
+<<<<<<< HEAD
 	 * resource_source is present if the length of the descriptor is longer than
 	 * the minimum length.
+=======
+	 * resource_source is present if the length of the descriptor is longer
+	 * than the minimum length.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * Note: Some resource descriptors will have an additional null, so
 	 * we add 1 to the minimum length.
 	 */
+<<<<<<< HEAD
 	if (total_length > (acpi_rsdesc_size) (minimum_length + 1)) {
+=======
+	if (total_length > (acpi_rsdesc_size)(minimum_length + 1)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Get the resource_source_index */
 
@@ -358,11 +441,21 @@ acpi_rs_get_resource_source(acpi_rs_length resource_length,
 		 *
 		 * Zero the entire area of the buffer.
 		 */
+<<<<<<< HEAD
 		total_length = (u32)
 		ACPI_STRLEN(ACPI_CAST_PTR(char, &aml_resource_source[1])) + 1;
 		total_length = (u32) ACPI_ROUND_UP_TO_NATIVE_WORD(total_length);
 
 		ACPI_MEMSET(resource_source->string_ptr, 0, total_length);
+=======
+		total_length =
+		    (u32)strlen(ACPI_CAST_PTR(char, &aml_resource_source[1])) +
+		    1;
+
+		total_length = (u32)ACPI_ROUND_UP_TO_NATIVE_WORD(total_length);
+
+		memset(resource_source->string_ptr, 0, total_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Copy the resource_source string to the destination */
 
@@ -371,7 +464,11 @@ acpi_rs_get_resource_source(acpi_rs_length resource_length,
 				   ACPI_CAST_PTR(char,
 						 &aml_resource_source[1]));
 
+<<<<<<< HEAD
 		return ((acpi_rs_length) total_length);
+=======
+		return ((acpi_rs_length)total_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* resource_source is not present */
@@ -386,7 +483,11 @@ acpi_rs_get_resource_source(acpi_rs_length resource_length,
  *
  * FUNCTION:    acpi_rs_set_resource_source
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml                 - Pointer to the raw AML descriptor
+=======
+ * PARAMETERS:  aml                 - Pointer to the raw AML descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              minimum_length      - Minimum length of the descriptor (minus
  *                                    any optional fields)
  *              resource_source     - Internal resource_source
@@ -400,9 +501,15 @@ acpi_rs_get_resource_source(acpi_rs_length resource_length,
  ******************************************************************************/
 
 acpi_rsdesc_size
+<<<<<<< HEAD
 acpi_rs_set_resource_source(union aml_resource * aml,
 			    acpi_rs_length minimum_length,
 			    struct acpi_resource_source * resource_source)
+=======
+acpi_rs_set_resource_source(union aml_resource *aml,
+			    acpi_rs_length minimum_length,
+			    struct acpi_resource_source *resource_source)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *aml_resource_source;
 	acpi_rsdesc_size descriptor_length;
@@ -425,15 +532,25 @@ acpi_rs_set_resource_source(union aml_resource * aml,
 
 		/* Copy the resource_source string */
 
+<<<<<<< HEAD
 		ACPI_STRCPY(ACPI_CAST_PTR(char, &aml_resource_source[1]),
 			    resource_source->string_ptr);
+=======
+		strcpy(ACPI_CAST_PTR(char, &aml_resource_source[1]),
+		       resource_source->string_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Add the length of the string (+ 1 for null terminator) to the
 		 * final descriptor length
 		 */
+<<<<<<< HEAD
 		descriptor_length +=
 		    ((acpi_rsdesc_size) resource_source->string_length + 1);
+=======
+		descriptor_length += ((acpi_rsdesc_size)
+				      resource_source->string_length + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Return the new total length of the AML descriptor */
@@ -445,7 +562,11 @@ acpi_rs_set_resource_source(union aml_resource * aml,
  *
  * FUNCTION:    acpi_rs_get_prt_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node
+=======
+ * PARAMETERS:  node            - Device node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_buffer      - Pointer to a buffer structure for the
  *                                results
  *
@@ -460,8 +581,13 @@ acpi_rs_set_resource_source(union aml_resource * aml,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_rs_get_prt_method_data(struct acpi_namespace_node * node,
 			    struct acpi_buffer * ret_buffer)
+=======
+acpi_rs_get_prt_method_data(struct acpi_namespace_node *node,
+			    struct acpi_buffer *ret_buffer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_operand_object *obj_desc;
 	acpi_status status;
@@ -472,8 +598,14 @@ acpi_rs_get_prt_method_data(struct acpi_namespace_node * node,
 
 	/* Execute the method, no parameters */
 
+<<<<<<< HEAD
 	status = acpi_ut_evaluate_object(node, METHOD_NAME__PRT,
 					 ACPI_BTYPE_PACKAGE, &obj_desc);
+=======
+	status =
+	    acpi_ut_evaluate_object(node, METHOD_NAME__PRT, ACPI_BTYPE_PACKAGE,
+				    &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -494,7 +626,11 @@ acpi_rs_get_prt_method_data(struct acpi_namespace_node * node,
  *
  * FUNCTION:    acpi_rs_get_crs_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node
+=======
+ * PARAMETERS:  node            - Device node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_buffer      - Pointer to a buffer structure for the
  *                                results
  *
@@ -521,8 +657,14 @@ acpi_rs_get_crs_method_data(struct acpi_namespace_node *node,
 
 	/* Execute the method, no parameters */
 
+<<<<<<< HEAD
 	status = acpi_ut_evaluate_object(node, METHOD_NAME__CRS,
 					 ACPI_BTYPE_BUFFER, &obj_desc);
+=======
+	status =
+	    acpi_ut_evaluate_object(node, METHOD_NAME__CRS, ACPI_BTYPE_BUFFER,
+				    &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -534,7 +676,11 @@ acpi_rs_get_crs_method_data(struct acpi_namespace_node *node,
 	 */
 	status = acpi_rs_create_resource_list(obj_desc, ret_buffer);
 
+<<<<<<< HEAD
 	/* On exit, we must delete the object returned by evaluate_object */
+=======
+	/* On exit, we must delete the object returned by evaluateObject */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
@@ -544,7 +690,11 @@ acpi_rs_get_crs_method_data(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_rs_get_prs_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node
+=======
+ * PARAMETERS:  node            - Device node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_buffer      - Pointer to a buffer structure for the
  *                                results
  *
@@ -558,7 +708,10 @@ acpi_rs_get_crs_method_data(struct acpi_namespace_node *node,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 #ifdef ACPI_FUTURE_USAGE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 			    struct acpi_buffer *ret_buffer)
@@ -572,8 +725,14 @@ acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 
 	/* Execute the method, no parameters */
 
+<<<<<<< HEAD
 	status = acpi_ut_evaluate_object(node, METHOD_NAME__PRS,
 					 ACPI_BTYPE_BUFFER, &obj_desc);
+=======
+	status =
+	    acpi_ut_evaluate_object(node, METHOD_NAME__PRS, ACPI_BTYPE_BUFFER,
+				    &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -585,18 +744,29 @@ acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 	 */
 	status = acpi_rs_create_resource_list(obj_desc, ret_buffer);
 
+<<<<<<< HEAD
 	/* On exit, we must delete the object returned by evaluate_object */
+=======
+	/* On exit, we must delete the object returned by evaluateObject */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_rs_get_aei_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node
+=======
+ * PARAMETERS:  node            - Device node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_buffer      - Pointer to a buffer structure for the
  *                                results
  *
@@ -623,8 +793,14 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
 
 	/* Execute the method, no parameters */
 
+<<<<<<< HEAD
 	status = acpi_ut_evaluate_object(node, METHOD_NAME__AEI,
 					 ACPI_BTYPE_BUFFER, &obj_desc);
+=======
+	status =
+	    acpi_ut_evaluate_object(node, METHOD_NAME__AEI, ACPI_BTYPE_BUFFER,
+				    &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -636,7 +812,11 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
 	 */
 	status = acpi_rs_create_resource_list(obj_desc, ret_buffer);
 
+<<<<<<< HEAD
 	/* On exit, we must delete the object returned by evaluate_object */
+=======
+	/* On exit, we must delete the object returned by evaluateObject */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
@@ -646,8 +826,13 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_rs_get_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle          - Handle to the containing object
  *              Path            - Path to method, relative to Handle
+=======
+ * PARAMETERS:  handle          - Handle to the containing object
+ *              path            - Path to method, relative to Handle
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_buffer      - Pointer to a buffer structure for the
  *                                results
  *
@@ -663,7 +848,11 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
 
 acpi_status
 acpi_rs_get_method_data(acpi_handle handle,
+<<<<<<< HEAD
 			char *path, struct acpi_buffer *ret_buffer)
+=======
+			const char *path, struct acpi_buffer *ret_buffer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_operand_object *obj_desc;
 	acpi_status status;
@@ -675,7 +864,13 @@ acpi_rs_get_method_data(acpi_handle handle,
 	/* Execute the method, no parameters */
 
 	status =
+<<<<<<< HEAD
 	    acpi_ut_evaluate_object(handle, path, ACPI_BTYPE_BUFFER, &obj_desc);
+=======
+	    acpi_ut_evaluate_object(ACPI_CAST_PTR
+				    (struct acpi_namespace_node, handle), path,
+				    ACPI_BTYPE_BUFFER, &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -697,7 +892,11 @@ acpi_rs_get_method_data(acpi_handle handle,
  *
  * FUNCTION:    acpi_rs_set_srs_method_data
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node
+=======
+ * PARAMETERS:  node            - Device node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              in_buffer       - Pointer to a buffer structure of the
  *                                parameter
  *
@@ -732,7 +931,11 @@ acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
 	}
 
 	info->prefix_node = node;
+<<<<<<< HEAD
 	info->pathname = METHOD_NAME__SRS;
+=======
+	info->relative_pathname = METHOD_NAME__SRS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->parameters = args;
 	info->flags = ACPI_IGNORE_RETURN_VALUE;
 
@@ -744,7 +947,11 @@ acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
 	 * Convert the linked list into a byte stream
 	 */
 	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
+<<<<<<< HEAD
 	status = acpi_rs_create_aml_resources(in_buffer->pointer, &buffer);
+=======
+	status = acpi_rs_create_aml_resources(in_buffer, &buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		goto cleanup;
 	}
@@ -775,7 +982,11 @@ acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
 
 	acpi_ut_remove_reference(args[0]);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_FREE(info);
 	return_ACPI_STATUS(status);
 }

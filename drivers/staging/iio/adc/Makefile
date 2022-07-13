@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for industrial I/O ADC drivers
 #
 
+<<<<<<< HEAD
 max1363-y := max1363_core.o
 max1363-y += max1363_ring.o
 
@@ -38,3 +43,6 @@ obj-$(CONFIG_ADT7310) += adt7310.o
 obj-$(CONFIG_ADT7410) += adt7410.o
 obj-$(CONFIG_AD7280) += ad7280a.o
 obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+=======
+obj-$(CONFIG_AD7816) += ad7816.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

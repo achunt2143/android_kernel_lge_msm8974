@@ -11,15 +11,26 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/pm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/ssb/ssb.h>
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int ssb_pcihost_suspend(struct pci_dev *dev, pm_message_t state)
 {
+=======
+#ifdef CONFIG_PM_SLEEP
+static int ssb_pcihost_suspend(struct device *d)
+{
+	struct pci_dev *dev = to_pci_dev(d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ssb_bus *ssb = pci_get_drvdata(dev);
 	int err;
 
@@ -28,17 +39,36 @@ static int ssb_pcihost_suspend(struct pci_dev *dev, pm_message_t state)
 		return err;
 	pci_save_state(dev);
 	pci_disable_device(dev);
+<<<<<<< HEAD
 	pci_set_power_state(dev, pci_choose_state(dev, state));
+=======
+
+	/* if there is a wakeup enabled child device on ssb bus,
+	   enable pci wakeup posibility. */
+	device_set_wakeup_enable(d, d->power.wakeup_path);
+
+	pci_prepare_to_sleep(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ssb_pcihost_resume(struct pci_dev *dev)
 {
 	struct ssb_bus *ssb = pci_get_drvdata(dev);
 	int err;
 
 	pci_set_power_state(dev, 0);
+=======
+static int ssb_pcihost_resume(struct device *d)
+{
+	struct pci_dev *dev = to_pci_dev(d);
+	struct ssb_bus *ssb = pci_get_drvdata(dev);
+	int err;
+
+	pci_back_from_sleep(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pci_enable_device(dev);
 	if (err)
 		return err;
@@ -49,6 +79,7 @@ static int ssb_pcihost_resume(struct pci_dev *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else /* CONFIG_PM */
 # define ssb_pcihost_suspend	NULL
 # define ssb_pcihost_resume	NULL
@@ -60,6 +91,20 @@ static int __devinit ssb_pcihost_probe(struct pci_dev *dev,
 	struct ssb_bus *ssb;
 	int err = -ENOMEM;
 	const char *name;
+=======
+
+static const struct dev_pm_ops ssb_pcihost_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(ssb_pcihost_suspend, ssb_pcihost_resume)
+};
+
+#endif /* CONFIG_PM_SLEEP */
+
+static int ssb_pcihost_probe(struct pci_dev *dev,
+			     const struct pci_device_id *id)
+{
+	struct ssb_bus *ssb;
+	int err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	ssb = kzalloc(sizeof(*ssb), GFP_KERNEL);
@@ -68,10 +113,14 @@ static int __devinit ssb_pcihost_probe(struct pci_dev *dev,
 	err = pci_enable_device(dev);
 	if (err)
 		goto err_kfree_ssb;
+<<<<<<< HEAD
 	name = dev_name(&dev->dev);
 	if (dev->driver && dev->driver->name)
 		name = dev->driver->name;
 	err = pci_request_regions(dev, name);
+=======
+	err = pci_request_regions(dev, dev_driver_string(&dev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_pci_disable;
 	pci_set_master(dev);
@@ -111,12 +160,22 @@ static void ssb_pcihost_remove(struct pci_dev *dev)
 	pci_set_drvdata(dev, NULL);
 }
 
+<<<<<<< HEAD
 int __devinit ssb_pcihost_register(struct pci_driver *driver)
 {
 	driver->probe = ssb_pcihost_probe;
 	driver->remove = ssb_pcihost_remove;
 	driver->suspend = ssb_pcihost_suspend;
 	driver->resume = ssb_pcihost_resume;
+=======
+int ssb_pcihost_register(struct pci_driver *driver)
+{
+	driver->probe = ssb_pcihost_probe;
+	driver->remove = ssb_pcihost_remove;
+#ifdef CONFIG_PM_SLEEP
+	driver->driver.pm = &ssb_pcihost_pm_ops;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pci_register_driver(driver);
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/renesas/rts7751r2d/irq.c
  *
@@ -116,10 +120,17 @@ static unsigned char irl2irq[R2D_NR_IRL];
 
 int rts7751r2d_irq_demux(int irq)
 {
+<<<<<<< HEAD
 	if (irq >= R2D_NR_IRL || irq < 0 || !irl2irq[irq])
 		return irq;
 
 	return irl2irq[irq];
+=======
+	if (irq >= R2D_NR_IRL + 16 || irq < 16 || !irl2irq[irq - 16])
+		return irq;
+
+	return irl2irq[irq - 16];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

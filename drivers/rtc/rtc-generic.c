@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* rtc-generic: RTC driver using the generic RTC abstraction
  *
  * Copyright (C) 2008 Kyle McMartin <kyle@mcmartin.ca>
@@ -9,6 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
+<<<<<<< HEAD
 #include <asm/rtc.h>
 
 static int generic_get_time(struct device *dev, struct rtc_time *tm)
@@ -40,6 +45,15 @@ static int __init generic_rtc_probe(struct platform_device *dev)
 
 	rtc = rtc_device_register("rtc-generic", &dev->dev, &generic_rtc_ops,
 				  THIS_MODULE);
+=======
+static int __init generic_rtc_probe(struct platform_device *dev)
+{
+	struct rtc_device *rtc;
+	const struct rtc_class_ops *ops = dev_get_platdata(&dev->dev);
+
+	rtc = devm_rtc_device_register(&dev->dev, "rtc-generic",
+					ops, THIS_MODULE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
@@ -48,6 +62,7 @@ static int __init generic_rtc_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit generic_rtc_remove(struct platform_device *dev)
 {
 	struct rtc_device *rtc = platform_get_drvdata(dev);
@@ -77,6 +92,15 @@ static void __exit generic_rtc_fini(void)
 
 module_init(generic_rtc_init);
 module_exit(generic_rtc_fini);
+=======
+static struct platform_driver generic_rtc_driver = {
+	.driver = {
+		.name = "rtc-generic",
+	},
+};
+
+module_platform_driver_probe(generic_rtc_driver, generic_rtc_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Kyle McMartin <kyle@mcmartin.ca>");
 MODULE_LICENSE("GPL");

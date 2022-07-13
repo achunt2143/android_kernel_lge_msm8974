@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Real Time Clock driver for Wolfson Microelectronics WM8350
  *
@@ -5,12 +9,15 @@
  *
  *  Author: Liam Girdwood
  *          linux@wolfsonmicro.com
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,8 +37,11 @@
 #define WM8350_SET_TIME_RETRIES	5
 #define WM8350_GET_TIME_RETRIES	5
 
+<<<<<<< HEAD
 #define to_wm8350_from_rtc_dev(d) container_of(d, struct wm8350, rtc.pdev.dev)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read current time and date in RTC
  */
@@ -339,11 +349,18 @@ static const struct rtc_class_ops wm8350_rtc_ops = {
 	.alarm_irq_enable = wm8350_rtc_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8350_rtc_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct wm8350 *wm8350 = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int wm8350_rtc_suspend(struct device *dev)
+{
+	struct wm8350 *wm8350 = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	u16 reg;
 
@@ -353,8 +370,12 @@ static int wm8350_rtc_suspend(struct device *dev)
 	    reg & WM8350_RTC_ALMSTS) {
 		ret = wm8350_rtc_stop_alarm(wm8350);
 		if (ret != 0)
+<<<<<<< HEAD
 			dev_err(&pdev->dev, "Failed to stop RTC alarm: %d\n",
 				ret);
+=======
+			dev_err(dev, "Failed to stop RTC alarm: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -362,23 +383,34 @@ static int wm8350_rtc_suspend(struct device *dev)
 
 static int wm8350_rtc_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct wm8350 *wm8350 = dev_get_drvdata(&pdev->dev);
+=======
+	struct wm8350 *wm8350 = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (wm8350->rtc.alarm_enabled) {
 		ret = wm8350_rtc_start_alarm(wm8350);
 		if (ret != 0)
+<<<<<<< HEAD
 			dev_err(&pdev->dev,
 				"Failed to restart RTC alarm: %d\n", ret);
+=======
+			dev_err(dev, "Failed to restart RTC alarm: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 
 #else
 #define wm8350_rtc_suspend NULL
 #define wm8350_rtc_resume NULL
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int wm8350_rtc_probe(struct platform_device *pdev)
@@ -401,8 +433,11 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
 	/* enable the RTC if it's not already enabled */
 	power5 = wm8350_reg_read(wm8350, WM8350_POWER_MGMT_5);
 	if (!(power5 &  WM8350_RTC_TICK_ENA)) {
+<<<<<<< HEAD
 		dev_info(wm8350->dev, "Starting RTC\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8350_reg_unlock(wm8350);
 
 		ret = wm8350_set_bits(wm8350, WM8350_POWER_MGMT_5,
@@ -439,6 +474,7 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 1);
 
+<<<<<<< HEAD
 	wm_rtc->rtc = rtc_device_register("wm8350", &pdev->dev,
 					  &wm8350_rtc_ops, THIS_MODULE);
 	if (IS_ERR(wm_rtc->rtc)) {
@@ -480,6 +516,46 @@ static struct dev_pm_ops wm8350_rtc_pm_ops = {
 static struct platform_driver wm8350_rtc_driver = {
 	.probe = wm8350_rtc_probe,
 	.remove = __devexit_p(wm8350_rtc_remove),
+=======
+	wm_rtc->rtc = devm_rtc_device_register(&pdev->dev, "wm8350",
+					&wm8350_rtc_ops, THIS_MODULE);
+	if (IS_ERR(wm_rtc->rtc))
+		return PTR_ERR(wm_rtc->rtc);
+
+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
+			    wm8350_rtc_update_handler, 0,
+			    "RTC Seconds", wm8350);
+	if (ret)
+		return ret;
+
+	wm8350_mask_irq(wm8350, WM8350_IRQ_RTC_SEC);
+
+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
+			    wm8350_rtc_alarm_handler, 0,
+			    "RTC Alarm", wm8350);
+	if (ret) {
+		wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
+		return ret;
+	}
+
+	return 0;
+}
+
+static void wm8350_rtc_remove(struct platform_device *pdev)
+{
+	struct wm8350 *wm8350 = platform_get_drvdata(pdev);
+
+	wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
+	wm8350_free_irq(wm8350, WM8350_IRQ_RTC_ALM, wm8350);
+}
+
+static SIMPLE_DEV_PM_OPS(wm8350_rtc_pm_ops, wm8350_rtc_suspend,
+			wm8350_rtc_resume);
+
+static struct platform_driver wm8350_rtc_driver = {
+	.probe = wm8350_rtc_probe,
+	.remove_new = wm8350_rtc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "wm8350-rtc",
 		.pm = &wm8350_rtc_pm_ops,

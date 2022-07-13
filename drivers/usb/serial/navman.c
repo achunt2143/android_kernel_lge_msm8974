@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Navman Serial USB driver
  *
  * Copyright (C) 2006 Greg Kroah-Hartman <gregkh@suse.de>
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	version 2 as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  *	Add termios method that uses copy_hw but also kills all echo
  *	flags as the navman is rx only so cannot echo.
@@ -14,15 +21,21 @@
 
 #include <linux/gfp.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include <linux/module.h>
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
+<<<<<<< HEAD
 static bool debug;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(0x0a99, 0x0001) },	/* Talon Technology device */
 	{ USB_DEVICE(0x0df7, 0x0900) },	/* Mobile Action i-gotU */
@@ -30,6 +43,7 @@ static const struct usb_device_id id_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
+<<<<<<< HEAD
 static struct usb_driver navman_driver = {
 	.name =		"navman",
 	.probe =	usb_serial_probe,
@@ -37,11 +51,16 @@ static struct usb_driver navman_driver = {
 	.id_table =	id_table,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void navman_read_int_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	unsigned char *data = urb->transfer_buffer;
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = urb->status;
 	int result;
 
@@ -53,6 +72,7 @@ static void navman_read_int_callback(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d",
 		    __func__, status);
 		return;
@@ -71,6 +91,23 @@ static void navman_read_int_callback(struct urb *urb)
 		tty_flip_buffer_push(tty);
 	}
 	tty_kref_put(tty);
+=======
+		dev_dbg(&port->dev, "%s - urb shutting down with status: %d\n",
+			__func__, status);
+		return;
+	default:
+		dev_dbg(&port->dev, "%s - nonzero urb status received: %d\n",
+			__func__, status);
+		goto exit;
+	}
+
+	usb_serial_debug_data(&port->dev, __func__, urb->actual_length, data);
+
+	if (urb->actual_length) {
+		tty_insert_flip_string(&port->port, data, urb->actual_length);
+		tty_flip_buffer_push(&port->port);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	result = usb_submit_urb(urb, GFP_ATOMIC);
@@ -84,10 +121,16 @@ static int navman_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	int result = 0;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
 	if (port->interrupt_in_urb) {
 		dbg("%s - adding interrupt input for treo", __func__);
+=======
+	if (port->interrupt_in_urb) {
+		dev_dbg(&port->dev, "%s - adding interrupt input for treo\n",
+			__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 		if (result)
 			dev_err(&port->dev,
@@ -99,16 +142,22 @@ static int navman_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 static void navman_close(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(port->interrupt_in_urb);
 }
 
 static int navman_write(struct tty_struct *tty, struct usb_serial_port *port,
 			const unsigned char *buf, int count)
 {
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This device can't write any data, only read from the device
 	 */
@@ -132,9 +181,15 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&navman_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(navman_driver, serial_drivers);
 
 MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

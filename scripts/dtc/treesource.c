@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
  *
@@ -16,6 +17,11 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
  *                                                                   USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "dtc.h"
@@ -25,6 +31,7 @@ extern FILE *yyin;
 extern int yyparse(void);
 extern YYLTYPE yylloc;
 
+<<<<<<< HEAD
 struct boot_info *the_boot_info;
 int treesource_error;
 
@@ -32,6 +39,15 @@ struct boot_info *dt_from_source(const char *fname)
 {
 	the_boot_info = NULL;
 	treesource_error = 0;
+=======
+struct dt_info *parser_output;
+bool treesource_error;
+
+struct dt_info *dt_from_source(const char *fname)
+{
+	parser_output = NULL;
+	treesource_error = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	srcfile_push(fname);
 	yyin = current_srcfile->f;
@@ -43,7 +59,11 @@ struct boot_info *dt_from_source(const char *fname)
 	if (treesource_error)
 		die("Syntax error parsing input tree\n");
 
+<<<<<<< HEAD
 	return the_boot_info;
+=======
+	return parser_output;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void write_prefix(FILE *f, int level)
@@ -54,13 +74,20 @@ static void write_prefix(FILE *f, int level)
 		fputc('\t', f);
 }
 
+<<<<<<< HEAD
 static int isstring(char c)
 {
 	return (isprint(c)
+=======
+static bool isstring(char c)
+{
+	return (isprint((unsigned char)c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		|| (c == '\0')
 		|| strchr("\a\b\t\n\v\f\r", c));
 }
 
+<<<<<<< HEAD
 static void write_propval_string(FILE *f, struct data val)
 {
 	const char *str = val.val;
@@ -79,6 +106,20 @@ static void write_propval_string(FILE *f, struct data val)
 	for (i = 0; i < (val.len-1); i++) {
 		char c = str[i];
 
+=======
+static void write_propval_string(FILE *f, const char *s, size_t len)
+{
+	const char *end = s + len - 1;
+
+	if (!len)
+		return;
+
+	assert(*end == '\0');
+
+	fprintf(f, "\"");
+	while (s < end) {
+		char c = *s++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (c) {
 		case '\a':
 			fprintf(f, "\\a");
@@ -108,6 +149,7 @@ static void write_propval_string(FILE *f, struct data val)
 			fprintf(f, "\\\"");
 			break;
 		case '\0':
+<<<<<<< HEAD
 			fprintf(f, "\", ");
 			while (m && (m->offset < i)) {
 				if (m->type == LABEL) {
@@ -237,6 +279,61 @@ static void write_propval_bytes(FILE *f, struct data val)
 }
 
 static void write_propval(FILE *f, struct property *prop)
+=======
+			fprintf(f, "\\0");
+			break;
+		default:
+			if (isprint((unsigned char)c))
+				fprintf(f, "%c", c);
+			else
+				fprintf(f, "\\x%02"PRIx8, c);
+		}
+	}
+	fprintf(f, "\"");
+}
+
+static void write_propval_int(FILE *f, const char *p, size_t len, size_t width)
+{
+	const char *end = p + len;
+	assert(len % width == 0);
+
+	for (; p < end; p += width) {
+		switch (width) {
+		case 1:
+			fprintf(f, "%02"PRIx8, *(const uint8_t*)p);
+			break;
+		case 2:
+			fprintf(f, "0x%02"PRIx16, dtb_ld16(p));
+			break;
+		case 4:
+			fprintf(f, "0x%02"PRIx32, dtb_ld32(p));
+			break;
+		case 8:
+			fprintf(f, "0x%02"PRIx64, dtb_ld64(p));
+			break;
+		}
+		if (p + width < end)
+			fputc(' ', f);
+	}
+}
+
+static const char *delim_start[] = {
+	[TYPE_UINT8] = "[",
+	[TYPE_UINT16] = "/bits/ 16 <",
+	[TYPE_UINT32] = "<",
+	[TYPE_UINT64] = "/bits/ 64 <",
+	[TYPE_STRING] = "",
+};
+static const char *delim_end[] = {
+	[TYPE_UINT8] = "]",
+	[TYPE_UINT16] = ">",
+	[TYPE_UINT32] = ">",
+	[TYPE_UINT64] = ">",
+	[TYPE_STRING] = "",
+};
+
+static enum markertype guess_value_type(struct property *prop)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = prop->val.len;
 	const char *p = prop->val.val;
@@ -245,11 +342,14 @@ static void write_propval(FILE *f, struct property *prop)
 	int nnotstringlbl = 0, nnotcelllbl = 0;
 	int i;
 
+<<<<<<< HEAD
 	if (len == 0) {
 		fprintf(f, ";\n");
 		return;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < len; i++) {
 		if (! isstring(p[i]))
 			nnotstring++;
@@ -264,6 +364,7 @@ static void write_propval(FILE *f, struct property *prop)
 			nnotcelllbl++;
 	}
 
+<<<<<<< HEAD
 	fprintf(f, " = ");
 	if ((p[len-1] == '\0') && (nnotstring == 0) && (nnul < (len-nnul))
 	    && (nnotstringlbl == 0)) {
@@ -279,6 +380,114 @@ static void write_propval(FILE *f, struct property *prop)
 	}
 
 	fprintf(f, ";\n");
+=======
+	if ((p[len-1] == '\0') && (nnotstring == 0) && (nnul <= (len-nnul))
+	    && (nnotstringlbl == 0)) {
+		return TYPE_STRING;
+	} else if (((len % sizeof(cell_t)) == 0) && (nnotcelllbl == 0)) {
+		return TYPE_UINT32;
+	}
+
+	return TYPE_UINT8;
+}
+
+static void write_propval(FILE *f, struct property *prop)
+{
+	size_t len = prop->val.len;
+	struct marker *m = prop->val.markers;
+	struct marker dummy_marker;
+	enum markertype emit_type = TYPE_NONE;
+	char *srcstr;
+
+	if (len == 0) {
+		fprintf(f, ";");
+		if (annotate) {
+			srcstr = srcpos_string_first(prop->srcpos, annotate);
+			if (srcstr) {
+				fprintf(f, " /* %s */", srcstr);
+				free(srcstr);
+			}
+		}
+		fprintf(f, "\n");
+		return;
+	}
+
+	fprintf(f, " =");
+
+	if (!next_type_marker(m)) {
+		/* data type information missing, need to guess */
+		dummy_marker.type = guess_value_type(prop);
+		dummy_marker.next = prop->val.markers;
+		dummy_marker.offset = 0;
+		dummy_marker.ref = NULL;
+		m = &dummy_marker;
+	}
+
+	for_each_marker(m) {
+		size_t chunk_len = (m->next ? m->next->offset : len) - m->offset;
+		size_t data_len = type_marker_length(m) ? : len - m->offset;
+		const char *p = &prop->val.val[m->offset];
+		struct marker *m_phandle;
+
+		if (is_type_marker(m->type)) {
+			emit_type = m->type;
+			fprintf(f, " %s", delim_start[emit_type]);
+		} else if (m->type == LABEL)
+			fprintf(f, " %s:", m->ref);
+
+		if (emit_type == TYPE_NONE || chunk_len == 0)
+			continue;
+
+		switch(emit_type) {
+		case TYPE_UINT16:
+			write_propval_int(f, p, chunk_len, 2);
+			break;
+		case TYPE_UINT32:
+			m_phandle = prop->val.markers;
+			for_each_marker_of_type(m_phandle, REF_PHANDLE)
+				if (m->offset == m_phandle->offset)
+					break;
+
+			if (m_phandle) {
+				if (m_phandle->ref[0] == '/')
+					fprintf(f, "&{%s}", m_phandle->ref);
+				else
+					fprintf(f, "&%s", m_phandle->ref);
+				if (chunk_len > 4) {
+					fputc(' ', f);
+					write_propval_int(f, p + 4, chunk_len - 4, 4);
+				}
+			} else {
+				write_propval_int(f, p, chunk_len, 4);
+			}
+			break;
+		case TYPE_UINT64:
+			write_propval_int(f, p, chunk_len, 8);
+			break;
+		case TYPE_STRING:
+			write_propval_string(f, p, chunk_len);
+			break;
+		default:
+			write_propval_int(f, p, chunk_len, 1);
+		}
+
+		if (chunk_len == data_len) {
+			size_t pos = m->offset + chunk_len;
+			fprintf(f, pos == len ? "%s" : "%s,",
+			        delim_end[emit_type] ? : "");
+			emit_type = TYPE_NONE;
+		}
+	}
+	fprintf(f, ";");
+	if (annotate) {
+		srcstr = srcpos_string_first(prop->srcpos, annotate);
+		if (srcstr) {
+			fprintf(f, " /* %s */", srcstr);
+			free(srcstr);
+		}
+	}
+	fprintf(f, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void write_tree_source_node(FILE *f, struct node *tree, int level)
@@ -286,14 +495,33 @@ static void write_tree_source_node(FILE *f, struct node *tree, int level)
 	struct property *prop;
 	struct node *child;
 	struct label *l;
+<<<<<<< HEAD
+=======
+	char *srcstr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_prefix(f, level);
 	for_each_label(tree->labels, l)
 		fprintf(f, "%s: ", l->label);
 	if (tree->name && (*tree->name))
+<<<<<<< HEAD
 		fprintf(f, "%s {\n", tree->name);
 	else
 		fprintf(f, "/ {\n");
+=======
+		fprintf(f, "%s {", tree->name);
+	else
+		fprintf(f, "/ {");
+
+	if (annotate) {
+		srcstr = srcpos_string_first(tree->srcpos, annotate);
+		if (srcstr) {
+			fprintf(f, " /* %s */", srcstr);
+			free(srcstr);
+		}
+	}
+	fprintf(f, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_property(tree, prop) {
 		write_prefix(f, level+1);
@@ -307,6 +535,7 @@ static void write_tree_source_node(FILE *f, struct node *tree, int level)
 		write_tree_source_node(f, child, level+1);
 	}
 	write_prefix(f, level);
+<<<<<<< HEAD
 	fprintf(f, "};\n");
 }
 
@@ -328,17 +557,36 @@ static void write_deleted_list(FILE *f, struct del_list *list)
 }
 
 void dt_to_source(FILE *f, struct boot_info *bi)
+=======
+	fprintf(f, "};");
+	if (annotate) {
+		srcstr = srcpos_string_last(tree->srcpos, annotate);
+		if (srcstr) {
+			fprintf(f, " /* %s */", srcstr);
+			free(srcstr);
+		}
+	}
+	fprintf(f, "\n");
+}
+
+void dt_to_source(FILE *f, struct dt_info *dti)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct reserve_info *re;
 
 	fprintf(f, "/dts-v1/;\n\n");
 
+<<<<<<< HEAD
 	for (re = bi->reservelist; re; re = re->next) {
+=======
+	for (re = dti->reservelist; re; re = re->next) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct label *l;
 
 		for_each_label(re->labels, l)
 			fprintf(f, "%s: ", l->label);
 		fprintf(f, "/memreserve/\t0x%016llx 0x%016llx;\n",
+<<<<<<< HEAD
 			(unsigned long long)re->re.address,
 			(unsigned long long)re->re.size);
 	}
@@ -351,3 +599,11 @@ void dt_to_source(FILE *f, struct boot_info *bi)
 	}
 }
 
+=======
+			(unsigned long long)re->address,
+			(unsigned long long)re->size);
+	}
+
+	write_tree_source_node(f, dti->dt, 0);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

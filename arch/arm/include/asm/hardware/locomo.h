@@ -158,8 +158,11 @@
 #define LOCOMO_LPT_TOH(TOH)	((TOH & 0x7) << 4)
 #define LOCOMO_LPT_TOL(TOL)	((TOL & 0x7))
 
+<<<<<<< HEAD
 extern struct bus_type locomo_bus_type;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LOCOMO_DEVID_KEYBOARD	0
 #define LOCOMO_DEVID_FRONTLIGHT	1
 #define LOCOMO_DEVID_BACKLIGHT	2
@@ -188,16 +191,24 @@ struct locomo_driver {
 	struct device_driver	drv;
 	unsigned int		devid;
 	int (*probe)(struct locomo_dev *);
+<<<<<<< HEAD
 	int (*remove)(struct locomo_dev *);
 	int (*suspend)(struct locomo_dev *, pm_message_t);
 	int (*resume)(struct locomo_dev *);
+=======
+	void (*remove)(struct locomo_dev *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define LOCOMO_DRV(_d)	container_of((_d), struct locomo_driver, drv)
 
 #define LOCOMO_DRIVER_NAME(_ldev) ((_ldev)->dev.driver->name)
 
+<<<<<<< HEAD
 void locomo_lcd_power(struct locomo_dev *, int, unsigned int);
+=======
+extern void locomolcd_power(int on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int locomo_driver_register(struct locomo_driver *);
 void locomo_driver_unregister(struct locomo_driver *);

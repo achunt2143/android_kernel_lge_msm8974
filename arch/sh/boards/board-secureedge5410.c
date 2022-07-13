@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2002  David McCullough <davidm@snapgear.com>
  * Copyright (C) 2003  Paul Mundt <lethal@linux-sh.org>
@@ -14,7 +18,10 @@
 #include <linux/interrupt.h>
 #include <linux/timer.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <asm/machvec.h>
 #include <mach/secureedge5410.h>
@@ -49,7 +56,11 @@ static int __init eraseconfig_init(void)
 				irq);
 	return 0;
 }
+<<<<<<< HEAD
 module_init(eraseconfig_init);
+=======
+device_initcall(eraseconfig_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize IRQ setting
@@ -71,6 +82,9 @@ static void __init init_snapgear_IRQ(void)
  */
 static struct sh_machine_vector mv_snapgear __initmv = {
 	.mv_name		= "SnapGear SecureEdge5410",
+<<<<<<< HEAD
 	.mv_nr_irqs		= 72,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_snapgear_IRQ,
 };

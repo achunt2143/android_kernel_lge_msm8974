@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -26,6 +33,7 @@
 #ifndef __IEEE80211_H
 #define __IEEE80211_H
 
+<<<<<<< HEAD
 #include "osdep_service.h"
 #include "drv_types.h"
 #include "wifi.h"
@@ -34,6 +42,10 @@
 
 #define MGMT_QUEUE_NUM 5
 #define ETH_ALEN	6
+=======
+#include <linux/ieee80211.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE_CMD_SET_WPA_PARAM			1
 #define IEEE_CMD_SET_WPA_IE			2
 #define IEEE_CMD_SET_ENCRYPTION			3
@@ -61,7 +73,10 @@
 #define IEEE_CRYPT_ERR_TX_KEY_SET_FAILED	6
 #define IEEE_CRYPT_ERR_CARD_CONF_FAILED		7
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	IEEE_CRYPT_ALG_NAME_LEN			16
 
 #define WPA_CIPHER_NONE				BIT(0)
@@ -70,8 +85,11 @@
 #define WPA_CIPHER_TKIP				BIT(3)
 #define WPA_CIPHER_CCMP				BIT(4)
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WPA_SELECTOR_LEN			4
 #define RSN_HEADER_LEN				4
 
@@ -88,7 +106,10 @@ enum NETWORK_TYPE {
 	WIRELESS_11BGN		= (WIRELESS_11B | WIRELESS_11G | WIRELESS_11N),
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ieee_param {
 	u32 cmd;
 	u8 sta_addr[ETH_ALEN];
@@ -100,7 +121,11 @@ struct ieee_param {
 		struct {
 			u32 len;
 			u8 reserved[32];
+<<<<<<< HEAD
 			u8 data[0];
+=======
+			u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} wpa_ie;
 		struct {
 			int command;
@@ -113,11 +138,16 @@ struct ieee_param {
 			u8 idx;
 			u8 seq[8]; /* sequence counter (set: RX, get: TX) */
 			u16 key_len;
+<<<<<<< HEAD
 			u8 key[0];
+=======
+			u8 key[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} crypt;
 	} u;
 };
 
+<<<<<<< HEAD
 #define IEEE80211_DATA_LEN		2304
 /* Maximum size for the MA-UNITDATA primitive, 802.11 standard section
    6.2.1.1.2.
@@ -276,6 +306,13 @@ enum eap_type {
 #ifndef ETH_P_80211_RAW
 #define ETH_P_80211_RAW (ETH_P_ECONET + 1)
 #endif
+=======
+#define MIN_FRAG_THRESHOLD     256U
+#define	MAX_FRAG_THRESHOLD     2346U
+
+/* QoS,QOS */
+#define NORMAL_ACK			0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IEEE 802.11 defines */
 
@@ -290,6 +327,7 @@ struct ieee80211_snap_hdr {
 
 #define SNAP_SIZE sizeof(struct ieee80211_snap_hdr)
 
+<<<<<<< HEAD
 #define WLAN_FC_GET_TYPE(fc) ((fc) & IEEE80211_FCTL_FTYPE)
 #define WLAN_FC_GET_STYPE(fc) ((fc) & IEEE80211_FCTL_STYPE)
 
@@ -377,11 +415,19 @@ struct ieee80211_snap_hdr {
 #define IEEE80211_NUM_OFDM_RATESLEN	8
 
 
+=======
+#define IEEE80211_CCK_RATE_LEN			4
+#define IEEE80211_NUM_OFDM_RATESLEN	8
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_CCK_RATE_1MB		        0x02
 #define IEEE80211_CCK_RATE_2MB		        0x04
 #define IEEE80211_CCK_RATE_5MB		        0x0B
 #define IEEE80211_CCK_RATE_11MB		        0x16
+<<<<<<< HEAD
 #define IEEE80211_OFDM_RATE_LEN			8
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IEEE80211_OFDM_RATE_6MB		        0x0C
 #define IEEE80211_OFDM_RATE_9MB		        0x12
 #define IEEE80211_OFDM_RATE_12MB		0x18
@@ -392,6 +438,7 @@ struct ieee80211_snap_hdr {
 #define IEEE80211_OFDM_RATE_54MB		0x6C
 #define IEEE80211_BASIC_RATE_MASK		0x80
 
+<<<<<<< HEAD
 #define IEEE80211_CCK_RATE_1MB_MASK		(1<<0)
 #define IEEE80211_CCK_RATE_2MB_MASK		(1<<1)
 #define IEEE80211_CCK_RATE_5MB_MASK		(1<<2)
@@ -773,16 +820,37 @@ extern inline int ieee80211_get_hdrlen(u16 fc)
 	}
 	return hdrlen;
 }
+=======
+#define WEP_KEYS 4
+
+/* MAX_RATES_LENGTH needs to be 12.  The spec says 8, and many APs
+ * only use 8, and then use extended rates for the remaining supported
+ * rates.  Other APs, however, stick all of their supported rates on the
+ * main rates information element...
+ */
+#define MAX_RATES_LENGTH                  ((u8)12)
+#define MAX_WPA_IE_LEN 128
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct registry_priv;
 
 u8 *r8712_set_ie(u8 *pbuf, sint index, uint len, u8 *source, uint *frlen);
+<<<<<<< HEAD
 u8 *r8712_get_ie(u8*pbuf, sint index, sint *len, sint limit);
 unsigned char *r8712_get_wpa_ie(unsigned char *pie, int *rsn_ie_len, int limit);
 unsigned char *r8712_get_wpa2_ie(unsigned char *pie, int *rsn_ie_len,
 				 int limit);
 int r8712_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher,
 			int *pairwise_cipher);
+=======
+u8 *r8712_get_ie(u8 *pbuf, sint index, uint *len, sint limit);
+unsigned char *r8712_get_wpa_ie(unsigned char *pie, uint *rsn_ie_len,
+				int limit);
+unsigned char *r8712_get_wpa2_ie(unsigned char *pie, uint *rsn_ie_len,
+				 int limit);
+int r8712_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher,
+		       int *pairwise_cipher);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int r8712_parse_wpa2_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher,
 			int *pairwise_cipher);
 int r8712_get_sec_ie(u8 *in_ie, uint in_len, u8 *rsn_ie, u16 *rsn_len,

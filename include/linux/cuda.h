@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for talking to the CUDA.  The CUDA is a microcontroller
  * which controls the ADB, system power, RTC, and various other things.
  *
  * Copyright (C) 1996 Paul Mackerras.
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_CUDA_H
 #define _LINUX_CUDA_H
@@ -32,10 +37,25 @@
 #ifdef __KERNEL__
 
 extern int find_via_cuda(void);
+=======
+#ifndef _LINUX_CUDA_H
+#define _LINUX_CUDA_H
+
+#include <linux/rtc.h>
+#include <uapi/linux/cuda.h>
+
+
+extern int __init find_via_cuda(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int cuda_request(struct adb_request *req,
 			void (*done)(struct adb_request *), int nbytes, ...);
 extern void cuda_poll(void);
 
+<<<<<<< HEAD
 #endif	/* __KERNEL */
+=======
+extern time64_t cuda_get_time(void);
+extern int cuda_set_rtc_time(struct rtc_time *tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_CUDA_H */

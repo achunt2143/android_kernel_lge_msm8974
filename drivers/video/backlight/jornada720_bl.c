@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Backlight driver for HP Jornada 700 series (710/720/728)
  * Copyright (C) 2006-2009 Kristoffer Ericson <kristoffer.ericson@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version
  * 2 or any later version as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/backlight.h>
@@ -38,6 +45,7 @@ static int jornada_bl_get_brightness(struct backlight_device *bd)
 	ret = jornada_ssp_byte(GETBRIGHTNESS);
 
 	if (jornada_ssp_byte(GETBRIGHTNESS) != TXDUMMY) {
+<<<<<<< HEAD
 		printk(KERN_ERR "bl : get brightness timeout\n");
 		jornada_ssp_end();
 		return -ETIMEDOUT;
@@ -47,6 +55,19 @@ static int jornada_bl_get_brightness(struct backlight_device *bd)
 	jornada_ssp_end();
 
 	return (BL_MAX_BRIGHT - ret);
+=======
+		dev_err(&bd->dev, "get brightness timeout\n");
+		jornada_ssp_end();
+		return -ETIMEDOUT;
+	}
+
+	/* exchange txdummy for value */
+	ret = jornada_ssp_byte(TXDUMMY);
+
+	jornada_ssp_end();
+
+	return BL_MAX_BRIGHT - ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int jornada_bl_update_status(struct backlight_device *bd)
@@ -56,10 +77,17 @@ static int jornada_bl_update_status(struct backlight_device *bd)
 	jornada_ssp_start();
 
 	/* If backlight is off then really turn it off */
+<<<<<<< HEAD
 	if ((bd->props.power != FB_BLANK_UNBLANK) || (bd->props.fb_blank != FB_BLANK_UNBLANK)) {
 		ret = jornada_ssp_byte(BRIGHTNESSOFF);
 		if (ret != TXDUMMY) {
 			printk(KERN_INFO "bl : brightness off timeout\n");
+=======
+	if (backlight_is_blank(bd)) {
+		ret = jornada_ssp_byte(BRIGHTNESSOFF);
+		if (ret != TXDUMMY) {
+			dev_info(&bd->dev, "brightness off timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* turn off backlight */
 			PPSR &= ~PPC_LDD1;
 			PPDR |= PPC_LDD1;
@@ -68,6 +96,7 @@ static int jornada_bl_update_status(struct backlight_device *bd)
 	} else  /* turn on backlight */
 		PPSR |= PPC_LDD1;
 
+<<<<<<< HEAD
 		/* send command to our mcu */
 		if (jornada_ssp_byte(SETBRIGHTNESS) != TXDUMMY) {
 			printk(KERN_INFO "bl : failed to set brightness\n");
@@ -87,6 +116,32 @@ static int jornada_bl_update_status(struct backlight_device *bd)
 
 		/* If infact we get an TXDUMMY as output we are happy and dont
 		   make any further comments about it */
+=======
+	/* send command to our mcu */
+	if (jornada_ssp_byte(SETBRIGHTNESS) != TXDUMMY) {
+		dev_info(&bd->dev, "failed to set brightness\n");
+		ret = -ETIMEDOUT;
+		goto out;
+	}
+
+	/*
+	 * at this point we expect that the mcu has accepted
+	 * our command and is waiting for our new value
+	 * please note that maximum brightness is 255,
+	 * but due to physical layout it is equal to 0, so we simply
+	 * invert the value (MAX VALUE - NEW VALUE).
+	 */
+	if (jornada_ssp_byte(BL_MAX_BRIGHT - bd->props.brightness)
+		!= TXDUMMY) {
+		dev_err(&bd->dev, "set brightness failed\n");
+		ret = -ETIMEDOUT;
+	}
+
+	/*
+	 * If infact we get an TXDUMMY as output we are happy and dont
+	 * make any further comments about it
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	jornada_ssp_end();
 
@@ -108,17 +163,28 @@ static int jornada_bl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = BL_MAX_BRIGHT;
+<<<<<<< HEAD
 	bd = backlight_device_register(S1D_DEVICENAME, &pdev->dev, NULL,
 				       &jornada_bl_ops, &props);
 
 	if (IS_ERR(bd)) {
 		ret = PTR_ERR(bd);
 		printk(KERN_ERR "bl : failed to register device, err=%x\n", ret);
+=======
+
+	bd = devm_backlight_device_register(&pdev->dev, S1D_DEVICENAME,
+					&pdev->dev, NULL, &jornada_bl_ops,
+					&props);
+	if (IS_ERR(bd)) {
+		ret = PTR_ERR(bd);
+		dev_err(&pdev->dev, "failed to register device, err=%x\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	bd->props.power = FB_BLANK_UNBLANK;
 	bd->props.brightness = BL_DEF_BRIGHT;
+<<<<<<< HEAD
 	/* note. make sure max brightness is set otherwise
 	   you will get seemingly non-related errors when
 	   trying to change brightness */
@@ -135,13 +201,27 @@ static int jornada_bl_remove(struct platform_device *pdev)
 	struct backlight_device *bd = platform_get_drvdata(pdev);
 
 	backlight_device_unregister(bd);
+=======
+	/*
+	 * note. make sure max brightness is set otherwise
+	 * you will get seemingly non-related errors when
+	 * trying to change brightness
+	 */
+	jornada_bl_update_status(bd);
+
+	platform_set_drvdata(pdev, bd);
+	dev_info(&pdev->dev, "HP Jornada 700 series backlight driver\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static struct platform_driver jornada_bl_driver = {
 	.probe		= jornada_bl_probe,
+<<<<<<< HEAD
 	.remove		= jornada_bl_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver	= {
 		.name	= "jornada_bl",
 	},

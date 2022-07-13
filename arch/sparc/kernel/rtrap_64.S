@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rtrap.S: Preparing for return from trap on Sparc V9.
  *
@@ -14,21 +18,58 @@
 #include <asm/visasm.h>
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 #define		RTRAP_PSTATE		(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_IE)
 #define		RTRAP_PSTATE_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV)
 #define		RTRAP_PSTATE_AG_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_AG)
+=======
+#ifdef CONFIG_CONTEXT_TRACKING_USER
+# define SCHEDULE_USER schedule_user
+#else
+# define SCHEDULE_USER schedule
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.text
 		.align			32
 __handle_preemption:
+<<<<<<< HEAD
 		call			schedule
 		 wrpr			%g0, RTRAP_PSTATE, %pstate
+=======
+		call			SCHEDULE_USER
+661:		 wrpr			%g0, RTRAP_PSTATE, %pstate
+		/* If userspace is using ADI, it could potentially pass
+		 * a pointer with version tag embedded in it. To maintain
+		 * the ADI security, we must re-enable PSTATE.mcde before
+		 * we continue execution in the kernel for another thread.
+		 */
+		.section .sun_m7_1insn_patch, "ax"
+		.word	661b
+		 wrpr			%g0, RTRAP_PSTATE|PSTATE_MCDE, %pstate
+		.previous
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ba,pt			%xcc, __handle_preemption_continue
 		 wrpr			%g0, RTRAP_PSTATE_IRQOFF, %pstate
 
 __handle_user_windows:
+<<<<<<< HEAD
 		call			fault_in_user_windows
 		 wrpr			%g0, RTRAP_PSTATE, %pstate
+=======
+		add			%sp, PTREGS_OFF, %o0
+		call			fault_in_user_windows
+661:		 wrpr			%g0, RTRAP_PSTATE, %pstate
+		/* If userspace is using ADI, it could potentially pass
+		 * a pointer with version tag embedded in it. To maintain
+		 * the ADI security, we must re-enable PSTATE.mcde before
+		 * we continue execution in the kernel for another thread.
+		 */
+		.section .sun_m7_1insn_patch, "ax"
+		.word	661b
+		 wrpr			%g0, RTRAP_PSTATE|PSTATE_MCDE, %pstate
+		.previous
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ba,pt			%xcc, __handle_preemption_continue
 		 wrpr			%g0, RTRAP_PSTATE_IRQOFF, %pstate
 
@@ -45,7 +86,20 @@ __handle_signal:
 		add			%sp, PTREGS_OFF, %o0
 		mov			%l0, %o2
 		call			do_notify_resume
+<<<<<<< HEAD
 		 wrpr			%g0, RTRAP_PSTATE, %pstate
+=======
+661:		 wrpr			%g0, RTRAP_PSTATE, %pstate
+		/* If userspace is using ADI, it could potentially pass
+		 * a pointer with version tag embedded in it. To maintain
+		 * the ADI security, we must re-enable PSTATE.mcde before
+		 * we continue execution in the kernel for another thread.
+		 */
+		.section .sun_m7_1insn_patch, "ax"
+		.word	661b
+		 wrpr			%g0, RTRAP_PSTATE|PSTATE_MCDE, %pstate
+		.previous
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrpr			%g0, RTRAP_PSTATE_IRQOFF, %pstate
 
 		/* Signal delivery can modify pt_regs tstate, so we must
@@ -54,8 +108,14 @@ __handle_signal:
 		ldx			[%sp + PTREGS_OFF + PT_V9_TSTATE], %l1
 		sethi			%hi(0xf << 20), %l4
 		and			%l1, %l4, %l4
+<<<<<<< HEAD
 		ba,pt			%xcc, __handle_preemption_continue
 		 andn			%l1, %l4, %l1
+=======
+		andn			%l1, %l4, %l1
+		ba,pt			%xcc, __handle_preemption_continue
+		 srl			%l4, 20, %l4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* When returning from a NMI (%pil==15) interrupt we want to
 		 * avoid running softirqs, doing IRQ tracing, preempting, etc.
@@ -67,12 +127,23 @@ rtrap_nmi:	ldx			[%sp + PTREGS_OFF + PT_V9_TSTATE], %l1
 		andn			%l1, %l4, %l1
 		srl			%l4, 20, %l4
 		ba,pt			%xcc, rtrap_no_irq_enable
+<<<<<<< HEAD
 		 wrpr			%l4, %pil
+=======
+		nop
+		/* Do not actually set the %pil here.  We will do that
+		 * below after we clear PSTATE_IE in the %pstate register.
+		 * If we re-enable interrupts here, we can recurse down
+		 * the hardirq stack potentially endlessly, causing a
+		 * stack overflow.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.align			64
 		.globl			rtrap_irq, rtrap, irqsz_patchme, rtrap_xcall
 rtrap_irq:
 rtrap:
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 		sethi			%hi(__cpu_data), %l0
 		lduw			[%l0 + %lo(__cpu_data)], %l1
@@ -85,6 +156,10 @@ rtrap:
 
 		/* mm/ultra.S:xcall_report_regs KNOWS about this load. */
 		 ldx			[%sp + PTREGS_OFF + PT_V9_TSTATE], %l1
+=======
+		/* mm/ultra.S:xcall_report_regs KNOWS about this load. */
+		ldx			[%sp + PTREGS_OFF + PT_V9_TSTATE], %l1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 rtrap_xcall:
 		sethi			%hi(0xf << 20), %l4
 		and			%l1, %l4, %l4
@@ -226,10 +301,26 @@ rt_continue:	ldx			[%sp + PTREGS_OFF + PT_V9_G1], %g1
 		rdpr			%otherwin, %l2
 		srl			%l1, 3, %l1
 
+<<<<<<< HEAD
 		wrpr			%l2, %g0, %canrestore
 		wrpr			%l1, %g0, %wstate
 		brnz,pt			%l2, user_rtt_restore
 		 wrpr			%g0, %g0, %otherwin
+=======
+661:		wrpr			%l2, %g0, %canrestore
+		.section		.fast_win_ctrl_1insn_patch, "ax"
+		.word			661b
+		.word			0x89880000	! normalw
+		.previous
+
+		wrpr			%l1, %g0, %wstate
+		brnz,pt			%l2, user_rtt_restore
+661:		 wrpr			%g0, %g0, %otherwin
+		.section		.fast_win_ctrl_1insn_patch, "ax"
+		.word			661b
+		 nop
+		.previous
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ldx			[%g6 + TI_FLAGS], %g3
 		wr			%g0, ASI_AIUP, %asi
@@ -239,6 +330,7 @@ rt_continue:	ldx			[%sp + PTREGS_OFF + PT_V9_G1], %g1
 		bne,pt			%xcc, user_rtt_fill_32bit
 		 wrpr			%g1, %cwp
 		ba,a,pt			%xcc, user_rtt_fill_64bit
+<<<<<<< HEAD
 
 user_rtt_fill_fixup:
 		rdpr	%cwp, %g1
@@ -286,6 +378,21 @@ user_rtt_fill_fixup:
 		 add	%sp, PTREGS_OFF, %o0
 		ba,pt	%xcc, rtrap
 		 nop
+=======
+		 nop
+
+user_rtt_fill_fixup_dax:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	1, %g3
+
+user_rtt_fill_fixup_mna:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	2, %g3
+
+user_rtt_fill_fixup:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 clr	%g3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 user_rtt_pre_restore:
 		add			%g1, 1, %g1
@@ -307,7 +414,11 @@ kern_rtt_restore:
 		retry
 
 to_kernel:
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT
+=======
+#ifdef CONFIG_PREEMPTION
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ldsw			[%g6 + TI_PRE_COUNT], %l5
 		brnz			%l5, kern_fpucheck
 		 ldx			[%g6 + TI_FLAGS], %l5
@@ -316,12 +427,19 @@ to_kernel:
 		 nop
 		cmp			%l4, 0
 		bne,pn			%xcc, kern_fpucheck
+<<<<<<< HEAD
 		 sethi			%hi(PREEMPT_ACTIVE), %l6
 		stw			%l6, [%g6 + TI_PRE_COUNT]
 		call			schedule
 		 nop
 		ba,pt			%xcc, rtrap
 		 stw			%g0, [%g6 + TI_PRE_COUNT]
+=======
+		 nop
+		call			preempt_schedule_irq
+		 nop
+		ba,pt			%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 kern_fpucheck:	ldub			[%g6 + TI_FPDEPTH], %l5
 		brz,pt			%l5, rt_continue

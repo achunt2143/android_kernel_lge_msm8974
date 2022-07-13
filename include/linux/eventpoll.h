@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/eventpoll.h ( Efficient event polling implementation )
  *  Copyright (C) 2001,...,2006	 Davide Libenzi
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -62,6 +67,16 @@ struct epoll_event {
 } EPOLL_PACKED;
 
 #ifdef __KERNEL__
+=======
+ *  Davide Libenzi <davidel@xmailserver.org>
+ */
+#ifndef _LINUX_EVENTPOLL_H
+#define _LINUX_EVENTPOLL_H
+
+#include <uapi/linux/eventpoll.h>
+#include <uapi/linux/kcmp.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Forward declarations to avoid compiler errors */
 struct file;
@@ -69,6 +84,7 @@ struct file;
 
 #ifdef CONFIG_EPOLL
 
+<<<<<<< HEAD
 /* Used to initialize the epoll bits inside the "struct file" */
 static inline void eventpoll_init_file(struct file *file)
 {
@@ -76,6 +92,11 @@ static inline void eventpoll_init_file(struct file *file)
 	INIT_LIST_HEAD(&file->f_tfile_llink);
 }
 
+=======
+#ifdef CONFIG_KCMP
+struct file *get_epoll_tfile_raw_ptr(struct file *file, int tfd, unsigned long toff);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Used to release the epoll bits inside the "struct file" */
 void eventpoll_release_file(struct file *file);
@@ -97,7 +118,11 @@ static inline void eventpoll_release(struct file *file)
 	 * because the file in on the way to be removed and nobody ( but
 	 * eventpoll ) has still a reference to this file.
 	 */
+<<<<<<< HEAD
 	if (likely(list_empty(&file->f_ep_links)))
+=======
+	if (likely(!file->f_ep))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
@@ -108,14 +133,50 @@ static inline void eventpoll_release(struct file *file)
 	eventpoll_release_file(file);
 }
 
+<<<<<<< HEAD
 #else
 
 static inline void eventpoll_init_file(struct file *file) {}
+=======
+int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
+		 bool nonblock);
+
+/* Tells if the epoll_ctl(2) operation needs an event copy from userspace */
+static inline int ep_op_has_event(int op)
+{
+	return op != EPOLL_CTL_DEL;
+}
+
+#else
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void eventpoll_release(struct file *file) {}
 
 #endif
 
+<<<<<<< HEAD
 #endif /* #ifdef __KERNEL__ */
 
 #endif /* #ifndef _LINUX_EVENTPOLL_H */
 
+=======
+#if defined(CONFIG_ARM) && defined(CONFIG_OABI_COMPAT)
+/* ARM OABI has an incompatible struct layout and needs a special handler */
+extern struct epoll_event __user *
+epoll_put_uevent(__poll_t revents, __u64 data,
+		 struct epoll_event __user *uevent);
+#else
+static inline struct epoll_event __user *
+epoll_put_uevent(__poll_t revents, __u64 data,
+		 struct epoll_event __user *uevent)
+{
+	if (__put_user(revents, &uevent->events) ||
+	    __put_user(data, &uevent->data))
+		return NULL;
+
+	return uevent+1;
+}
+#endif
+
+#endif /* #ifndef _LINUX_EVENTPOLL_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

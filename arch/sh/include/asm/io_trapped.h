@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_IO_TRAPPED_H
 #define __ASM_SH_IO_TRAPPED_H
 
@@ -36,7 +40,11 @@ __ioremap_trapped(unsigned long offset, unsigned long size)
 #define __ioremap_trapped(offset, size) NULL
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_IOPORT
+=======
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct list_head trapped_io;
 
 static inline void __iomem *

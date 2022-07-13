@@ -76,7 +76,13 @@
 
 #include <linux/prefetch.h>
 
+<<<<<<< HEAD
 #include "cvmx-fpa.h"
+=======
+#include <asm/compiler.h>
+
+#include <asm/octeon/cvmx-fpa.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * By default we disable the max depth support. Most programs
  * don't use it and it slows down the command queue processing
@@ -143,8 +149,13 @@ typedef struct {
 /**
  * This structure contains the global state of all command queues.
  * It is stored in a bootmem named block and shared by all
+<<<<<<< HEAD
  * applications running on Octeon. Tickets are stored in a differnet
  * cahce line that queue information to reduce the contention on the
+=======
+ * applications running on Octeon. Tickets are stored in a different
+ * cache line that queue information to reduce the contention on the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ll/sc used to get a ticket. If this is not the case, the update
  * of queue state causes the ll/sc to fail quite often.
  */
@@ -170,7 +181,11 @@ cvmx_cmd_queue_result_t cvmx_cmd_queue_initialize(cvmx_cmd_queue_id_t queue_id,
 						  int pool_size);
 
 /**
+<<<<<<< HEAD
  * Shutdown a queue a free it's command buffers to the FPA. The
+=======
+ * Shutdown a queue and free its command buffers to the FPA. The
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * hardware connected to the queue must be stopped before this
  * function is called.
  *
@@ -192,7 +207,11 @@ int cvmx_cmd_queue_length(cvmx_cmd_queue_id_t queue_id);
 
 /**
  * Return the command buffer to be written to. The purpose of this
+<<<<<<< HEAD
  * function is to allow CVMX routine access t othe low level buffer
+=======
+ * function is to allow CVMX routine access to the low level buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * for initial hardware setup. User applications should not call this
  * function directly.
  *
@@ -244,6 +263,7 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
 		".set noreorder\n"
 		"1:\n"
 		/* Atomic add one to ticket_ptr */
+<<<<<<< HEAD
 		"ll     %[my_ticket], %[ticket_ptr]\n"
 		/* and store the original value */
 		"li     %[ticket], 1\n"
@@ -274,6 +294,38 @@ static inline void __cvmx_cmd_queue_lock(cvmx_cmd_queue_id_t queue_id,
 		"4:\n"
 		".set pop\n" :
 		[ticket_ptr] "=m"(__cvmx_cmd_queue_state_ptr->ticket[__cvmx_cmd_queue_get_index(queue_id)]),
+=======
+		"ll	%[my_ticket], %[ticket_ptr]\n"
+		/* and store the original value */
+		"li	%[ticket], 1\n"
+		/* in my_ticket */
+		"baddu	%[ticket], %[my_ticket]\n"
+		"sc	%[ticket], %[ticket_ptr]\n"
+		"beqz	%[ticket], 1b\n"
+		" nop\n"
+		/* Load the current now_serving ticket */
+		"lbu	%[ticket], %[now_serving]\n"
+		"2:\n"
+		/* Jump out if now_serving == my_ticket */
+		"beq	%[ticket], %[my_ticket], 4f\n"
+		/* Find out how many tickets are in front of me */
+		" subu	 %[ticket], %[my_ticket], %[ticket]\n"
+		/* Use tickets in front of me minus one to delay */
+		"subu  %[ticket], 1\n"
+		/* Delay will be ((tickets in front)-1)*32 loops */
+		"cins	%[ticket], %[ticket], 5, 7\n"
+		"3:\n"
+		/* Loop here until our ticket might be up */
+		"bnez	%[ticket], 3b\n"
+		" subu	%[ticket], 1\n"
+		/* Jump back up to check out ticket again */
+		"b	2b\n"
+		/* Load the current now_serving ticket */
+		" lbu	%[ticket], %[now_serving]\n"
+		"4:\n"
+		".set pop\n" :
+		[ticket_ptr] "=" GCC_OFF_SMALL_ASM()(__cvmx_cmd_queue_state_ptr->ticket[__cvmx_cmd_queue_get_index(queue_id)]),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[now_serving] "=m"(qptr->now_serving), [ticket] "=r"(tmp),
 		[my_ticket] "=r"(my_ticket)
 	    );
@@ -313,9 +365,15 @@ static inline __cvmx_cmd_queue_state_t
  *
  * @queue_id:  Hardware command queue to write to
  * @use_locking:
+<<<<<<< HEAD
  *                  Use internal locking to ensure exclusive access for queue
  *                  updates. If you don't use this locking you must ensure
  *                  exclusivity some other way. Locking is strongly recommended.
+=======
+ *		    Use internal locking to ensure exclusive access for queue
+ *		    updates. If you don't use this locking you must ensure
+ *		    exclusivity some other way. Locking is strongly recommended.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd_count: Number of command words to write
  * @cmds:      Array of commands to write
  *
@@ -411,9 +469,15 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write(cvmx_cmd_queue_id_t
  *
  * @queue_id: Hardware command queue to write to
  * @use_locking:
+<<<<<<< HEAD
  *                 Use internal locking to ensure exclusive access for queue
  *                 updates. If you don't use this locking you must ensure
  *                 exclusivity some other way. Locking is strongly recommended.
+=======
+ *		   Use internal locking to ensure exclusive access for queue
+ *		   updates. If you don't use this locking you must ensure
+ *		   exclusivity some other way. Locking is strongly recommended.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd1:     Command
  * @cmd2:     Command
  *
@@ -510,9 +574,15 @@ static inline cvmx_cmd_queue_result_t cvmx_cmd_queue_write2(cvmx_cmd_queue_id_t
  *
  * @queue_id: Hardware command queue to write to
  * @use_locking:
+<<<<<<< HEAD
  *                 Use internal locking to ensure exclusive access for queue
  *                 updates. If you don't use this locking you must ensure
  *                 exclusivity some other way. Locking is strongly recommended.
+=======
+ *		   Use internal locking to ensure exclusive access for queue
+ *		   updates. If you don't use this locking you must ensure
+ *		   exclusivity some other way. Locking is strongly recommended.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd1:     Command
  * @cmd2:     Command
  * @cmd3:     Command

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2009 Intel Corporation. All rights reserved.
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright(c) 2009 Intel Corporation. All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -25,7 +32,11 @@
 #include <linux/export.h>
 
 /**
+<<<<<<< HEAD
  * fc_vport_create() - Create a new NPIV vport instance
+=======
+ * libfc_vport_create() - Create a new NPIV vport instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @vport: fc_vport structure from scsi_transport_fc
  * @privsize: driver private data size to allocate along with the Scsi_Host
  */

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * alloc.c
  *
  * Extent allocs and frees
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -30,6 +38,10 @@
 #include <linux/swap.h>
 #include <linux/quotaops.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -164,7 +176,18 @@ static int ocfs2_dinode_insert_check(struct ocfs2_extent_tree *et,
 				     struct ocfs2_extent_rec *rec);
 static int ocfs2_dinode_sanity_check(struct ocfs2_extent_tree *et);
 static void ocfs2_dinode_fill_root_el(struct ocfs2_extent_tree *et);
+<<<<<<< HEAD
 static struct ocfs2_extent_tree_operations ocfs2_dinode_et_ops = {
+=======
+
+static int ocfs2_reuse_blk_from_dealloc(handle_t *handle,
+					struct ocfs2_extent_tree *et,
+					struct buffer_head **new_eb_bh,
+					int blk_wanted, int *blk_given);
+static int ocfs2_is_dealloc_empty(struct ocfs2_extent_tree *et);
+
+static const struct ocfs2_extent_tree_operations ocfs2_dinode_et_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eo_set_last_eb_blk	= ocfs2_dinode_set_last_eb_blk,
 	.eo_get_last_eb_blk	= ocfs2_dinode_get_last_eb_blk,
 	.eo_update_clusters	= ocfs2_dinode_update_clusters,
@@ -286,7 +309,11 @@ static void ocfs2_xattr_value_update_clusters(struct ocfs2_extent_tree *et,
 	le32_add_cpu(&vb->vb_xv->xr_clusters, clusters);
 }
 
+<<<<<<< HEAD
 static struct ocfs2_extent_tree_operations ocfs2_xattr_value_et_ops = {
+=======
+static const struct ocfs2_extent_tree_operations ocfs2_xattr_value_et_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eo_set_last_eb_blk	= ocfs2_xattr_value_set_last_eb_blk,
 	.eo_get_last_eb_blk	= ocfs2_xattr_value_get_last_eb_blk,
 	.eo_update_clusters	= ocfs2_xattr_value_update_clusters,
@@ -332,7 +359,11 @@ static void ocfs2_xattr_tree_update_clusters(struct ocfs2_extent_tree *et,
 	le32_add_cpu(&xb->xb_attrs.xb_root.xt_clusters, clusters);
 }
 
+<<<<<<< HEAD
 static struct ocfs2_extent_tree_operations ocfs2_xattr_tree_et_ops = {
+=======
+static const struct ocfs2_extent_tree_operations ocfs2_xattr_tree_et_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eo_set_last_eb_blk	= ocfs2_xattr_tree_set_last_eb_blk,
 	.eo_get_last_eb_blk	= ocfs2_xattr_tree_get_last_eb_blk,
 	.eo_update_clusters	= ocfs2_xattr_tree_update_clusters,
@@ -379,7 +410,11 @@ static void ocfs2_dx_root_fill_root_el(struct ocfs2_extent_tree *et)
 	et->et_root_el = &dx_root->dr_list;
 }
 
+<<<<<<< HEAD
 static struct ocfs2_extent_tree_operations ocfs2_dx_root_et_ops = {
+=======
+static const struct ocfs2_extent_tree_operations ocfs2_dx_root_et_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eo_set_last_eb_blk	= ocfs2_dx_root_set_last_eb_blk,
 	.eo_get_last_eb_blk	= ocfs2_dx_root_get_last_eb_blk,
 	.eo_update_clusters	= ocfs2_dx_root_update_clusters,
@@ -425,7 +460,11 @@ ocfs2_refcount_tree_extent_contig(struct ocfs2_extent_tree *et,
 	return CONTIG_NONE;
 }
 
+<<<<<<< HEAD
 static struct ocfs2_extent_tree_operations ocfs2_refcount_tree_et_ops = {
+=======
+static const struct ocfs2_extent_tree_operations ocfs2_refcount_tree_et_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eo_set_last_eb_blk	= ocfs2_refcount_tree_set_last_eb_blk,
 	.eo_get_last_eb_blk	= ocfs2_refcount_tree_get_last_eb_blk,
 	.eo_update_clusters	= ocfs2_refcount_tree_update_clusters,
@@ -438,7 +477,11 @@ static void __ocfs2_init_extent_tree(struct ocfs2_extent_tree *et,
 				     struct buffer_head *bh,
 				     ocfs2_journal_access_func access,
 				     void *obj,
+<<<<<<< HEAD
 				     struct ocfs2_extent_tree_operations *ops)
+=======
+				     const struct ocfs2_extent_tree_operations *ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	et->et_ops = ops;
 	et->et_root_bh = bh;
@@ -447,6 +490,10 @@ static void __ocfs2_init_extent_tree(struct ocfs2_extent_tree *et,
 	if (!obj)
 		obj = (void *)bh->b_data;
 	et->et_object = obj;
+<<<<<<< HEAD
+=======
+	et->et_dealloc = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	et->et_ops->eo_fill_root_el(et);
 	if (!et->et_ops->eo_fill_max_leaf_clusters)
@@ -908,6 +955,7 @@ static int ocfs2_validate_extent_block(struct super_block *sb,
 	 */
 
 	if (!OCFS2_IS_VALID_EXTENT_BLOCK(eb)) {
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Extent block #%llu has bad signature %.*s",
 			    (unsigned long long)bh->b_blocknr, 7,
@@ -934,6 +982,30 @@ static int ocfs2_validate_extent_block(struct super_block *sb,
 	}
 
 	return 0;
+=======
+		rc = ocfs2_error(sb,
+				 "Extent block #%llu has bad signature %.*s\n",
+				 (unsigned long long)bh->b_blocknr, 7,
+				 eb->h_signature);
+		goto bail;
+	}
+
+	if (le64_to_cpu(eb->h_blkno) != bh->b_blocknr) {
+		rc = ocfs2_error(sb,
+				 "Extent block #%llu has an invalid h_blkno of %llu\n",
+				 (unsigned long long)bh->b_blocknr,
+				 (unsigned long long)le64_to_cpu(eb->h_blkno));
+		goto bail;
+	}
+
+	if (le32_to_cpu(eb->h_fs_generation) != OCFS2_SB(sb)->fs_generation)
+		rc = ocfs2_error(sb,
+				 "Extent block #%llu has an invalid h_fs_generation of #%u\n",
+				 (unsigned long long)bh->b_blocknr,
+				 le32_to_cpu(eb->h_fs_generation));
+bail:
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ocfs2_read_extent_block(struct ocfs2_caching_info *ci, u64 eb_blkno,
@@ -956,8 +1028,12 @@ int ocfs2_read_extent_block(struct ocfs2_caching_info *ci, u64 eb_blkno,
 /*
  * How many free extents have we got before we need more meta data?
  */
+<<<<<<< HEAD
 int ocfs2_num_free_extents(struct ocfs2_super *osb,
 			   struct ocfs2_extent_tree *et)
+=======
+int ocfs2_num_free_extents(struct ocfs2_extent_tree *et)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	struct ocfs2_extent_list *el = NULL;
@@ -979,7 +1055,18 @@ int ocfs2_num_free_extents(struct ocfs2_super *osb,
 		el = &eb->h_list;
 	}
 
+<<<<<<< HEAD
 	BUG_ON(el->l_tree_depth != 0);
+=======
+	if (el->l_tree_depth != 0) {
+		retval = ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+				"Owner %llu has leaf extent block %llu with an invalid l_tree_depth of %u\n",
+				(unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
+				(unsigned long long)last_eb_blk,
+				le16_to_cpu(el->l_tree_depth));
+		goto bail;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = le16_to_cpu(el->l_count) - le16_to_cpu(el->l_next_free_rec);
 bail:
@@ -1025,7 +1112,11 @@ static int ocfs2_create_new_meta_bhs(handle_t *handle,
 		for(i = count;  i < (num_got + count); i++) {
 			bhs[i] = sb_getblk(osb->sb, first_blkno);
 			if (bhs[i] == NULL) {
+<<<<<<< HEAD
 				status = -EIO;
+=======
+				status = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mlog_errno(status);
 				goto bail;
 			}
@@ -1070,7 +1161,10 @@ bail:
 			brelse(bhs[i]);
 			bhs[i] = NULL;
 		}
+<<<<<<< HEAD
 		mlog_errno(status);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
@@ -1160,7 +1254,11 @@ static int ocfs2_add_branch(handle_t *handle,
 			    struct buffer_head **last_eb_bh,
 			    struct ocfs2_alloc_context *meta_ac)
 {
+<<<<<<< HEAD
 	int status, new_blocks, i;
+=======
+	int status, new_blocks, i, block_given = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 next_blkno, new_last_eb_blk;
 	struct buffer_head *bh;
 	struct buffer_head **new_eb_bhs = NULL;
@@ -1215,11 +1313,39 @@ static int ocfs2_add_branch(handle_t *handle,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	status = ocfs2_create_new_meta_bhs(handle, et, new_blocks,
 					   meta_ac, new_eb_bhs);
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
+=======
+	/* Firstyly, try to reuse dealloc since we have already estimated how
+	 * many extent blocks we may use.
+	 */
+	if (!ocfs2_is_dealloc_empty(et)) {
+		status = ocfs2_reuse_blk_from_dealloc(handle, et,
+						      new_eb_bhs, new_blocks,
+						      &block_given);
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+	}
+
+	BUG_ON(block_given > new_blocks);
+
+	if (block_given < new_blocks) {
+		BUG_ON(!meta_ac);
+		status = ocfs2_create_new_meta_bhs(handle, et,
+						   new_blocks - block_given,
+						   meta_ac,
+						   &new_eb_bhs[block_given]);
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Note: new_eb_bhs[new_blocks - 1] is the guy which will be
@@ -1342,15 +1468,34 @@ static int ocfs2_shift_tree_depth(handle_t *handle,
 				  struct ocfs2_alloc_context *meta_ac,
 				  struct buffer_head **ret_new_eb_bh)
 {
+<<<<<<< HEAD
 	int status, i;
+=======
+	int status, i, block_given = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 new_clusters;
 	struct buffer_head *new_eb_bh = NULL;
 	struct ocfs2_extent_block *eb;
 	struct ocfs2_extent_list  *root_el;
 	struct ocfs2_extent_list  *eb_el;
 
+<<<<<<< HEAD
 	status = ocfs2_create_new_meta_bhs(handle, et, 1, meta_ac,
 					   &new_eb_bh);
+=======
+	if (!ocfs2_is_dealloc_empty(et)) {
+		status = ocfs2_reuse_blk_from_dealloc(handle, et,
+						      &new_eb_bh, 1,
+						      &block_given);
+	} else if (meta_ac) {
+		status = ocfs2_create_new_meta_bhs(handle, et, 1, meta_ac,
+						   &new_eb_bh);
+
+	} else {
+		BUG();
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
@@ -1445,22 +1590,34 @@ static int ocfs2_find_branch_target(struct ocfs2_extent_tree *et,
 
 	while(le16_to_cpu(el->l_tree_depth) > 1) {
 		if (le16_to_cpu(el->l_next_free_rec) == 0) {
+<<<<<<< HEAD
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
 				    "Owner %llu has empty "
 				    "extent list (next_free_rec == 0)",
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci));
 			status = -EIO;
+=======
+			status = ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+					"Owner %llu has empty extent list (next_free_rec == 0)\n",
+					(unsigned long long)ocfs2_metadata_cache_owner(et->et_ci));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail;
 		}
 		i = le16_to_cpu(el->l_next_free_rec) - 1;
 		blkno = le64_to_cpu(el->l_recs[i].e_blkno);
 		if (!blkno) {
+<<<<<<< HEAD
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
 				    "Owner %llu has extent "
 				    "list where extent # %d has no physical "
 				    "block start",
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci), i);
 			status = -EIO;
+=======
+			status = ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+					"Owner %llu has extent list where extent # %d has no physical block start\n",
+					(unsigned long long)ocfs2_metadata_cache_owner(et->et_ci), i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail;
 		}
 
@@ -1516,7 +1673,11 @@ static int ocfs2_grow_tree(handle_t *handle, struct ocfs2_extent_tree *et,
 	int depth = le16_to_cpu(el->l_tree_depth);
 	struct buffer_head *bh = NULL;
 
+<<<<<<< HEAD
 	BUG_ON(meta_ac == NULL);
+=======
+	BUG_ON(meta_ac == NULL && ocfs2_is_dealloc_empty(et));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	shift = ocfs2_find_branch_target(et, &bh);
 	if (shift < 0) {
@@ -1565,10 +1726,15 @@ static int ocfs2_grow_tree(handle_t *handle, struct ocfs2_extent_tree *et,
 	 * the new data. */
 	ret = ocfs2_add_branch(handle, et, bh, last_eb_bh,
 			       meta_ac);
+<<<<<<< HEAD
 	if (ret < 0) {
 		mlog_errno(ret);
 		goto out;
 	}
+=======
+	if (ret < 0)
+		mlog_errno(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (final_depth)
@@ -1788,8 +1954,12 @@ static int __ocfs2_find_path(struct ocfs2_caching_info *ci,
 	while (el->l_tree_depth) {
 		if (le16_to_cpu(el->l_next_free_rec) == 0) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(ci),
+<<<<<<< HEAD
 				    "Owner %llu has empty extent list at "
 				    "depth %u\n",
+=======
+				    "Owner %llu has empty extent list at depth %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)ocfs2_metadata_cache_owner(ci),
 				    le16_to_cpu(el->l_tree_depth));
 			ret = -EROFS;
@@ -1814,8 +1984,12 @@ static int __ocfs2_find_path(struct ocfs2_caching_info *ci,
 		blkno = le64_to_cpu(el->l_recs[i].e_blkno);
 		if (blkno == 0) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(ci),
+<<<<<<< HEAD
 				    "Owner %llu has bad blkno in extent list "
 				    "at depth %u (index %d)\n",
+=======
+				    "Owner %llu has bad blkno in extent list at depth %u (index %d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)ocfs2_metadata_cache_owner(ci),
 				    le16_to_cpu(el->l_tree_depth), i);
 			ret = -EROFS;
@@ -1836,8 +2010,12 @@ static int __ocfs2_find_path(struct ocfs2_caching_info *ci,
 		if (le16_to_cpu(el->l_next_free_rec) >
 		    le16_to_cpu(el->l_count)) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(ci),
+<<<<<<< HEAD
 				    "Owner %llu has bad count in extent list "
 				    "at block %llu (next free=%u, count=%u)\n",
+=======
+				    "Owner %llu has bad count in extent list at block %llu (next free=%u, count=%u)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)ocfs2_metadata_cache_owner(ci),
 				    (unsigned long long)bh->b_blocknr,
 				    le16_to_cpu(el->l_next_free_rec),
@@ -1940,14 +2118,20 @@ out:
  * the new changes.
  *
  * left_rec: the record on the left.
+<<<<<<< HEAD
  * left_child_el: is the child list pointed to by left_rec
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * right_rec: the record to the right of left_rec
  * right_child_el: is the child list pointed to by right_rec
  *
  * By definition, this only works on interior nodes.
  */
 static void ocfs2_adjust_adjacent_records(struct ocfs2_extent_rec *left_rec,
+<<<<<<< HEAD
 				  struct ocfs2_extent_list *left_child_el,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct ocfs2_extent_rec *right_rec,
 				  struct ocfs2_extent_list *right_child_el)
 {
@@ -2010,7 +2194,11 @@ static void ocfs2_adjust_root_records(struct ocfs2_extent_list *root_el,
 	 */
 	BUG_ON(i >= (le16_to_cpu(root_el->l_next_free_rec) - 1));
 
+<<<<<<< HEAD
 	ocfs2_adjust_adjacent_records(&root_el->l_recs[i], left_el,
+=======
+	ocfs2_adjust_adjacent_records(&root_el->l_recs[i],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      &root_el->l_recs[i + 1], right_el);
 }
 
@@ -2035,7 +2223,11 @@ static void ocfs2_complete_edge_insert(handle_t *handle,
 	int i, idx;
 	struct ocfs2_extent_list *el, *left_el, *right_el;
 	struct ocfs2_extent_rec *left_rec, *right_rec;
+<<<<<<< HEAD
 	struct buffer_head *root_bh = left_path->p_node[subtree_index].bh;
+=======
+	struct buffer_head *root_bh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the counts and position values within all the
@@ -2067,8 +2259,12 @@ static void ocfs2_complete_edge_insert(handle_t *handle,
 		el = right_path->p_node[i].el;
 		right_rec = &el->l_recs[0];
 
+<<<<<<< HEAD
 		ocfs2_adjust_adjacent_records(left_rec, left_el, right_rec,
 					      right_el);
+=======
+		ocfs2_adjust_adjacent_records(left_rec, right_rec, right_el);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ocfs2_journal_dirty(handle, left_path->p_node[i].bh);
 		ocfs2_journal_dirty(handle, right_path->p_node[i].bh);
@@ -2116,8 +2312,12 @@ static int ocfs2_rotate_subtree_right(handle_t *handle,
 
 	if (left_el->l_next_free_rec != left_el->l_count) {
 		ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+<<<<<<< HEAD
 			    "Inode %llu has non-full interior leaf node %llu"
 			    "(next free = %u)",
+=======
+			    "Inode %llu has non-full interior leaf node %llu (next free = %u)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 			    (unsigned long long)left_leaf_bh->b_blocknr,
 			    le16_to_cpu(left_el->l_next_free_rec));
@@ -2256,8 +2456,12 @@ int ocfs2_find_cpos_for_left_leaf(struct super_block *sb,
 		 * If we got here, we never found a valid node where
 		 * the tree indicated one should be.
 		 */
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Invalid extent tree at extent block %llu\n",
+=======
+		ocfs2_error(sb, "Invalid extent tree at extent block %llu\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)blkno);
 		ret = -EROFS;
 		goto out;
@@ -2283,9 +2487,15 @@ static int ocfs2_extend_rotate_transaction(handle_t *handle, int subtree_depth,
 	int ret = 0;
 	int credits = (path->p_tree_depth - subtree_depth) * 2 + 1 + op_credits;
 
+<<<<<<< HEAD
 	if (handle->h_buffer_credits < credits)
 		ret = ocfs2_extend_trans(handle,
 					 credits - handle->h_buffer_credits);
+=======
+	if (jbd2_handle_buffer_credits(handle) < credits)
+		ret = ocfs2_extend_trans(handle,
+				credits - jbd2_handle_buffer_credits(handle));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2362,7 +2572,11 @@ static int ocfs2_rotate_tree_right(handle_t *handle,
 				   struct ocfs2_path *right_path,
 				   struct ocfs2_path **ret_left_path)
 {
+<<<<<<< HEAD
 	int ret, start, orig_credits = handle->h_buffer_credits;
+=======
+	int ret, start, orig_credits = jbd2_handle_buffer_credits(handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cpos;
 	struct ocfs2_path *left_path = NULL;
 	struct super_block *sb = ocfs2_metadata_cache_get_super(et->et_ci);
@@ -2518,7 +2732,11 @@ out_ret_path:
 
 static int ocfs2_update_edge_lengths(handle_t *handle,
 				     struct ocfs2_extent_tree *et,
+<<<<<<< HEAD
 				     int subtree_index, struct ocfs2_path *path)
+=======
+				     struct ocfs2_path *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, idx, ret;
 	struct ocfs2_extent_rec *rec;
@@ -2526,6 +2744,7 @@ static int ocfs2_update_edge_lengths(handle_t *handle,
 	struct ocfs2_extent_block *eb;
 	u32 range;
 
+<<<<<<< HEAD
 	/*
 	 * In normal tree rotation process, we will never touch the
 	 * tree branch above subtree_index and ocfs2_extend_rotate_transaction
@@ -2541,6 +2760,8 @@ static int ocfs2_update_edge_lengths(handle_t *handle,
 		goto out;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_journal_access_path(et->et_ci, handle, path);
 	if (ret) {
 		mlog_errno(ret);
@@ -2626,11 +2847,16 @@ static void ocfs2_unlink_subtree(handle_t *handle,
 	int i;
 	struct buffer_head *root_bh = left_path->p_node[subtree_index].bh;
 	struct ocfs2_extent_list *root_el = left_path->p_node[subtree_index].el;
+<<<<<<< HEAD
 	struct ocfs2_extent_list *el;
 	struct ocfs2_extent_block *eb;
 
 	el = path_leaf_el(left_path);
 
+=======
+	struct ocfs2_extent_block *eb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eb = (struct ocfs2_extent_block *)right_path->p_node[subtree_index + 1].bh->b_data;
 
 	for(i = 1; i < le16_to_cpu(root_el->l_next_free_rec); i++)
@@ -2779,8 +3005,12 @@ static int ocfs2_rotate_subtree_left(handle_t *handle,
 	if (del_right_subtree) {
 		ocfs2_unlink_subtree(handle, et, left_path, right_path,
 				     subtree_index, dealloc);
+<<<<<<< HEAD
 		ret = ocfs2_update_edge_lengths(handle, et, subtree_index,
 						left_path);
+=======
+		ret = ocfs2_update_edge_lengths(handle, et, left_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
@@ -2872,8 +3102,12 @@ int ocfs2_find_cpos_for_right_leaf(struct super_block *sb,
 		 * If we got here, we never found a valid node where
 		 * the tree indicated one should be.
 		 */
+<<<<<<< HEAD
 		ocfs2_error(sb,
 			    "Invalid extent tree at extent block %llu\n",
+=======
+		ocfs2_error(sb, "Invalid extent tree at extent block %llu\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)blkno);
 		ret = -EROFS;
 		goto out;
@@ -2925,7 +3159,12 @@ static int __ocfs2_rotate_tree_left(handle_t *handle,
 	struct ocfs2_path *right_path = NULL;
 	struct super_block *sb = ocfs2_metadata_cache_get_super(et->et_ci);
 
+<<<<<<< HEAD
 	BUG_ON(!ocfs2_is_empty_extent(&(path_leaf_el(path)->l_recs[0])));
+=======
+	if (!ocfs2_is_empty_extent(&(path_leaf_el(path)->l_recs[0])))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*empty_extent_path = NULL;
 
@@ -2966,7 +3205,11 @@ static int __ocfs2_rotate_tree_left(handle_t *handle,
 		     right_path->p_node[subtree_root].bh->b_blocknr,
 		     right_path->p_tree_depth);
 
+<<<<<<< HEAD
 		ret = ocfs2_extend_rotate_transaction(handle, subtree_root,
+=======
+		ret = ocfs2_extend_rotate_transaction(handle, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      orig_credits, left_path);
 		if (ret) {
 			mlog_errno(ret);
@@ -3039,6 +3282,7 @@ static int ocfs2_remove_rightmost_path(handle_t *handle,
 	struct ocfs2_extent_block *eb;
 	struct ocfs2_extent_list *el;
 
+<<<<<<< HEAD
 
 	ret = ocfs2_et_sanity_check(et);
 	if (ret)
@@ -3054,6 +3298,11 @@ static int ocfs2_remove_rightmost_path(handle_t *handle,
 		mlog_errno(ret);
 		goto out;
 	}
+=======
+	ret = ocfs2_et_sanity_check(et);
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_journal_access_path(et->et_ci, handle, path);
 	if (ret) {
@@ -3096,8 +3345,12 @@ static int ocfs2_remove_rightmost_path(handle_t *handle,
 
 		ocfs2_unlink_subtree(handle, et, left_path, path,
 				     subtree_index, dealloc);
+<<<<<<< HEAD
 		ret = ocfs2_update_edge_lengths(handle, et, subtree_index,
 						left_path);
+=======
+		ret = ocfs2_update_edge_lengths(handle, et, left_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
@@ -3130,6 +3383,33 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int ocfs2_remove_rightmost_empty_extent(struct ocfs2_super *osb,
+				struct ocfs2_extent_tree *et,
+				struct ocfs2_path *path,
+				struct ocfs2_cached_dealloc_ctxt *dealloc)
+{
+	handle_t *handle;
+	int ret;
+	int credits = path->p_tree_depth * 2 + 1;
+
+	handle = ocfs2_start_trans(osb, credits);
+	if (IS_ERR(handle)) {
+		ret = PTR_ERR(handle);
+		mlog_errno(ret);
+		return ret;
+	}
+
+	ret = ocfs2_remove_rightmost_path(handle, et, path, dealloc);
+	if (ret)
+		mlog_errno(ret);
+
+	ocfs2_commit_trans(osb, handle);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Left rotation of btree records.
  *
@@ -3151,7 +3431,11 @@ static int ocfs2_rotate_tree_left(handle_t *handle,
 				  struct ocfs2_path *path,
 				  struct ocfs2_cached_dealloc_ctxt *dealloc)
 {
+<<<<<<< HEAD
 	int ret, orig_credits = handle->h_buffer_credits;
+=======
+	int ret, orig_credits = jbd2_handle_buffer_credits(handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_path *tmp_path = NULL, *restart_path = NULL;
 	struct ocfs2_extent_block *eb;
 	struct ocfs2_extent_list *el;
@@ -3197,11 +3481,18 @@ rightmost_no_delete:
 			goto rightmost_no_delete;
 
 		if (le16_to_cpu(el->l_next_free_rec) == 0) {
+<<<<<<< HEAD
 			ret = -EIO;
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
 				    "Owner %llu has empty extent block at %llu",
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 				    (unsigned long long)le64_to_cpu(eb->h_blkno));
+=======
+			ret = ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+					"Owner %llu has empty extent block at %llu\n",
+					(unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
+					(unsigned long long)le64_to_cpu(eb->h_blkno));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -3370,7 +3661,11 @@ static int ocfs2_merge_rec_right(struct ocfs2_path *left_path,
 		ret = ocfs2_get_right_path(et, left_path, &right_path);
 		if (ret) {
 			mlog_errno(ret);
+<<<<<<< HEAD
 			goto out;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		right_el = path_leaf_el(right_path);
@@ -3390,8 +3685,13 @@ static int ocfs2_merge_rec_right(struct ocfs2_path *left_path,
 							right_path);
 
 		ret = ocfs2_extend_rotate_transaction(handle, subtree_index,
+<<<<<<< HEAD
 						      handle->h_buffer_credits,
 						      right_path);
+=======
+					jbd2_handle_buffer_credits(handle),
+					right_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
@@ -3453,8 +3753,12 @@ static int ocfs2_merge_rec_right(struct ocfs2_path *left_path,
 					   subtree_index);
 	}
 out:
+<<<<<<< HEAD
 	if (right_path)
 		ocfs2_free_path(right_path);
+=======
+	ocfs2_free_path(right_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3536,7 +3840,11 @@ static int ocfs2_merge_rec_left(struct ocfs2_path *right_path,
 		ret = ocfs2_get_left_path(et, right_path, &left_path);
 		if (ret) {
 			mlog_errno(ret);
+<<<<<<< HEAD
 			goto out;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		left_el = path_leaf_el(left_path);
@@ -3553,8 +3861,13 @@ static int ocfs2_merge_rec_left(struct ocfs2_path *right_path,
 							right_path);
 
 		ret = ocfs2_extend_rotate_transaction(handle, subtree_index,
+<<<<<<< HEAD
 						      handle->h_buffer_credits,
 						      left_path);
+=======
+					jbd2_handle_buffer_credits(handle),
+					left_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
@@ -3604,8 +3917,11 @@ static int ocfs2_merge_rec_left(struct ocfs2_path *right_path,
 		 * The easy case - we can just plop the record right in.
 		 */
 		*left_rec = *split_rec;
+<<<<<<< HEAD
 
 		has_empty_extent = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		le16_add_cpu(&left_rec->e_leaf_clusters, split_clusters);
 
@@ -3628,6 +3944,17 @@ static int ocfs2_merge_rec_left(struct ocfs2_path *right_path,
 		 */
 		if (le16_to_cpu(right_rec->e_leaf_clusters) == 0 &&
 		    le16_to_cpu(el->l_next_free_rec) == 1) {
+<<<<<<< HEAD
+=======
+			/* extend credit for ocfs2_remove_rightmost_path */
+			ret = ocfs2_extend_rotate_transaction(handle, 0,
+					jbd2_handle_buffer_credits(handle),
+					right_path);
+			if (ret) {
+				mlog_errno(ret);
+				goto out;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ret = ocfs2_remove_rightmost_path(handle, et,
 							  right_path,
@@ -3647,8 +3974,12 @@ static int ocfs2_merge_rec_left(struct ocfs2_path *right_path,
 						   right_path, subtree_index);
 	}
 out:
+<<<<<<< HEAD
 	if (left_path)
 		ocfs2_free_path(left_path);
+=======
+	ocfs2_free_path(left_path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3667,6 +3998,17 @@ static int ocfs2_try_to_merge_extent(handle_t *handle,
 	BUG_ON(ctxt->c_contig_type == CONTIG_NONE);
 
 	if (ctxt->c_split_covers_rec && ctxt->c_has_empty_extent) {
+<<<<<<< HEAD
+=======
+		/* extend credit for ocfs2_remove_rightmost_path */
+		ret = ocfs2_extend_rotate_transaction(handle, 0,
+				jbd2_handle_buffer_credits(handle),
+				path);
+		if (ret) {
+			mlog_errno(ret);
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The merge code will need to create an empty
 		 * extent to take the place of the newly
@@ -3715,6 +4057,18 @@ static int ocfs2_try_to_merge_extent(handle_t *handle,
 		 */
 		BUG_ON(!ocfs2_is_empty_extent(&el->l_recs[0]));
 
+<<<<<<< HEAD
+=======
+		/* extend credit for ocfs2_remove_rightmost_path */
+		ret = ocfs2_extend_rotate_transaction(handle, 0,
+					jbd2_handle_buffer_credits(handle),
+					path);
+		if (ret) {
+			mlog_errno(ret);
+			goto out;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The merge left us with an empty extent, remove it. */
 		ret = ocfs2_rotate_tree_left(handle, et, path, dealloc);
 		if (ret) {
@@ -3736,6 +4090,18 @@ static int ocfs2_try_to_merge_extent(handle_t *handle,
 			goto out;
 		}
 
+<<<<<<< HEAD
+=======
+		/* extend credit for ocfs2_remove_rightmost_path */
+		ret = ocfs2_extend_rotate_transaction(handle, 0,
+				jbd2_handle_buffer_credits(handle),
+				path);
+		if (ret) {
+			mlog_errno(ret);
+			goto out;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_rotate_tree_left(handle, et, path, dealloc);
 		/*
 		 * Error from this last rotate is not critical, so
@@ -3771,6 +4137,19 @@ static int ocfs2_try_to_merge_extent(handle_t *handle,
 		}
 
 		if (ctxt->c_split_covers_rec) {
+<<<<<<< HEAD
+=======
+			/* extend credit for ocfs2_remove_rightmost_path */
+			ret = ocfs2_extend_rotate_transaction(handle, 0,
+					jbd2_handle_buffer_credits(handle),
+					path);
+			if (ret) {
+				mlog_errno(ret);
+				ret = 0;
+				goto out;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The merge may have left an empty extent in
 			 * our leaf. Try to rotate it away.
@@ -3906,7 +4285,11 @@ rotate:
 	 * above.
 	 *
 	 * This leaf needs to have space, either by the empty 1st
+<<<<<<< HEAD
 	 * extent record, or by virtue of an l_next_rec < l_count.
+=======
+	 * extent record, or by virtue of an l_next_free_rec < l_count.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	ocfs2_rotate_leaf(el, insert_rec);
 }
@@ -3916,7 +4299,11 @@ static void ocfs2_adjust_rightmost_records(handle_t *handle,
 					   struct ocfs2_path *path,
 					   struct ocfs2_extent_rec *insert_rec)
 {
+<<<<<<< HEAD
 	int ret, i, next_free;
+=======
+	int i, next_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh;
 	struct ocfs2_extent_list *el;
 	struct ocfs2_extent_rec *rec;
@@ -3931,9 +4318,14 @@ static void ocfs2_adjust_rightmost_records(handle_t *handle,
 		next_free = le16_to_cpu(el->l_next_free_rec);
 		if (next_free == 0) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+<<<<<<< HEAD
 				    "Owner %llu has a bad extent list",
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci));
 			ret = -EIO;
+=======
+				    "Owner %llu has a bad extent list\n",
+				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -4313,6 +4705,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static enum ocfs2_contig_type
 ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 			       struct ocfs2_path *path,
@@ -4320,6 +4713,15 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 			       struct ocfs2_extent_rec *split_rec)
 {
 	int status;
+=======
+static int ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
+			       struct ocfs2_path *path,
+			       struct ocfs2_extent_list *el, int index,
+			       struct ocfs2_extent_rec *split_rec,
+			       struct ocfs2_merge_ctxt *ctxt)
+{
+	int status = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum ocfs2_contig_type ret = CONTIG_NONE;
 	u32 left_cpos, right_cpos;
 	struct ocfs2_extent_rec *rec = NULL;
@@ -4334,17 +4736,33 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 	} else if (path->p_tree_depth > 0) {
 		status = ocfs2_find_cpos_for_left_leaf(sb, path, &left_cpos);
 		if (status)
+<<<<<<< HEAD
 			goto out;
 
 		if (left_cpos != 0) {
 			left_path = ocfs2_new_path_from_path(path);
 			if (!left_path)
 				goto out;
+=======
+			goto exit;
+
+		if (left_cpos != 0) {
+			left_path = ocfs2_new_path_from_path(path);
+			if (!left_path) {
+				status = -ENOMEM;
+				mlog_errno(status);
+				goto exit;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			status = ocfs2_find_path(et->et_ci, left_path,
 						 left_cpos);
 			if (status)
+<<<<<<< HEAD
 				goto out;
+=======
+				goto free_left_path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			new_el = path_leaf_el(left_path);
 
@@ -4352,6 +4770,7 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 			    le16_to_cpu(new_el->l_count)) {
 				bh = path_leaf_bh(left_path);
 				eb = (struct ocfs2_extent_block *)bh->b_data;
+<<<<<<< HEAD
 				ocfs2_error(sb,
 					    "Extent block #%llu has an "
 					    "invalid l_next_free_rec of "
@@ -4362,6 +4781,14 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 					    le16_to_cpu(new_el->l_count));
 				status = -EINVAL;
 				goto out;
+=======
+				status = ocfs2_error(sb,
+						"Extent block #%llu has an invalid l_next_free_rec of %d.  It should have matched the l_count of %d\n",
+						(unsigned long long)le64_to_cpu(eb->h_blkno),
+						le16_to_cpu(new_el->l_next_free_rec),
+						le16_to_cpu(new_el->l_count));
+				goto free_left_path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			rec = &new_el->l_recs[
 				le16_to_cpu(new_el->l_next_free_rec) - 1];
@@ -4388,6 +4815,7 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 		 path->p_tree_depth > 0) {
 		status = ocfs2_find_cpos_for_right_leaf(sb, path, &right_cpos);
 		if (status)
+<<<<<<< HEAD
 			goto out;
 
 		if (right_cpos == 0)
@@ -4400,6 +4828,23 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 		status = ocfs2_find_path(et->et_ci, right_path, right_cpos);
 		if (status)
 			goto out;
+=======
+			goto free_left_path;
+
+		if (right_cpos == 0)
+			goto free_left_path;
+
+		right_path = ocfs2_new_path_from_path(path);
+		if (!right_path) {
+			status = -ENOMEM;
+			mlog_errno(status);
+			goto free_left_path;
+		}
+
+		status = ocfs2_find_path(et->et_ci, right_path, right_cpos);
+		if (status)
+			goto free_right_path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		new_el = path_leaf_el(right_path);
 		rec = &new_el->l_recs[0];
@@ -4407,6 +4852,7 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 			if (le16_to_cpu(new_el->l_next_free_rec) <= 1) {
 				bh = path_leaf_bh(right_path);
 				eb = (struct ocfs2_extent_block *)bh->b_data;
+<<<<<<< HEAD
 				ocfs2_error(sb,
 					    "Extent block #%llu has an "
 					    "invalid l_next_free_rec of %d",
@@ -4414,6 +4860,13 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 					    le16_to_cpu(new_el->l_next_free_rec));
 				status = -EINVAL;
 				goto out;
+=======
+				status = ocfs2_error(sb,
+						"Extent block #%llu has an invalid l_next_free_rec of %d\n",
+						(unsigned long long)le64_to_cpu(eb->h_blkno),
+						le16_to_cpu(new_el->l_next_free_rec));
+				goto free_right_path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			rec = &new_el->l_recs[1];
 		}
@@ -4430,6 +4883,7 @@ ocfs2_figure_merge_contig_type(struct ocfs2_extent_tree *et,
 			ret = contig_type;
 	}
 
+<<<<<<< HEAD
 out:
 	if (left_path)
 		ocfs2_free_path(left_path);
@@ -4437,6 +4891,17 @@ out:
 		ocfs2_free_path(right_path);
 
 	return ret;
+=======
+free_right_path:
+	ocfs2_free_path(right_path);
+free_left_path:
+	ocfs2_free_path(left_path);
+exit:
+	if (status == 0)
+		ctxt->c_contig_type = ret;
+
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ocfs2_figure_contig_type(struct ocfs2_extent_tree *et,
@@ -4671,7 +5136,11 @@ int ocfs2_insert_extent(handle_t *handle,
 			struct ocfs2_alloc_context *meta_ac)
 {
 	int status;
+<<<<<<< HEAD
 	int uninitialized_var(free_records);
+=======
+	int free_records;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *last_eb_bh = NULL;
 	struct ocfs2_insert_type insert = {0, };
 	struct ocfs2_extent_rec rec;
@@ -4742,6 +5211,10 @@ int ocfs2_add_clusters_in_btree(handle_t *handle,
 				enum ocfs2_alloc_restarted *reason_ret)
 {
 	int status = 0, err = 0;
+<<<<<<< HEAD
+=======
+	int need_free = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int free_extents;
 	enum ocfs2_alloc_restarted reason = RESTART_NONE;
 	u32 bit_off, num_bits;
@@ -4755,7 +5228,11 @@ int ocfs2_add_clusters_in_btree(handle_t *handle,
 	if (mark_unwritten)
 		flags = OCFS2_EXT_UNWRITTEN;
 
+<<<<<<< HEAD
 	free_extents = ocfs2_num_free_extents(osb, et);
+=======
+	free_extents = ocfs2_num_free_extents(et);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (free_extents < 0) {
 		status = free_extents;
 		mlog_errno(status);
@@ -4796,7 +5273,12 @@ int ocfs2_add_clusters_in_btree(handle_t *handle,
 					      OCFS2_JOURNAL_ACCESS_WRITE);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
 		goto leave;
+=======
+		need_free = 1;
+		goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	block = ocfs2_clusters_to_blocks(osb->sb, bit_off);
@@ -4807,7 +5289,12 @@ int ocfs2_add_clusters_in_btree(handle_t *handle,
 				     num_bits, flags, meta_ac);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
 		goto leave;
+=======
+		need_free = 1;
+		goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ocfs2_journal_dirty(handle, et->et_root_bh);
@@ -4821,6 +5308,22 @@ int ocfs2_add_clusters_in_btree(handle_t *handle,
 		reason = RESTART_TRANS;
 	}
 
+<<<<<<< HEAD
+=======
+bail:
+	if (need_free) {
+		if (data_ac->ac_which == OCFS2_AC_USE_LOCAL)
+			ocfs2_free_local_alloc_bits(osb, handle, data_ac,
+					bit_off, num_bits);
+		else
+			ocfs2_free_clusters(handle,
+					data_ac->ac_inode,
+					data_ac->ac_bh,
+					ocfs2_clusters_to_blocks(osb->sb, bit_off),
+					num_bits);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 leave:
 	if (reason_ret)
 		*reason_ret = reason;
@@ -4945,6 +5448,17 @@ leftright:
 
 		el = path_leaf_el(path);
 		split_index = ocfs2_search_extent_list(el, cpos);
+<<<<<<< HEAD
+=======
+		if (split_index == -1) {
+			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+				    "Owner %llu has an extent at cpos %u which can no longer be found\n",
+				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
+				    cpos);
+			ret = -EROFS;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto leftright;
 	}
 out:
@@ -5007,7 +5521,10 @@ int ocfs2_split_extent(handle_t *handle,
 	struct buffer_head *last_eb_bh = NULL;
 	struct ocfs2_extent_rec *rec = &el->l_recs[split_index];
 	struct ocfs2_merge_ctxt ctxt;
+<<<<<<< HEAD
 	struct ocfs2_extent_list *rightmost_el;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (le32_to_cpu(rec->e_cpos) > le32_to_cpu(split_rec->e_cpos) ||
 	    ((le32_to_cpu(rec->e_cpos) + le16_to_cpu(rec->e_leaf_clusters)) <
@@ -5017,9 +5534,20 @@ int ocfs2_split_extent(handle_t *handle,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ctxt.c_contig_type = ocfs2_figure_merge_contig_type(et, path, el,
 							    split_index,
 							    split_rec);
+=======
+	ret = ocfs2_figure_merge_contig_type(et, path, el,
+					     split_index,
+					     split_rec,
+					     &ctxt);
+	if (ret) {
+		mlog_errno(ret);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The core merge / split code wants to know how much room is
@@ -5027,8 +5555,11 @@ int ocfs2_split_extent(handle_t *handle,
 	 * rightmost extent list.
 	 */
 	if (path->p_tree_depth) {
+<<<<<<< HEAD
 		struct ocfs2_extent_block *eb;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_read_extent_block(et->et_ci,
 					      ocfs2_et_get_last_eb_blk(et),
 					      &last_eb_bh);
@@ -5036,11 +5567,15 @@ int ocfs2_split_extent(handle_t *handle,
 			mlog_errno(ret);
 			goto out;
 		}
+<<<<<<< HEAD
 
 		eb = (struct ocfs2_extent_block *) last_eb_bh->b_data;
 		rightmost_el = &eb->h_list;
 	} else
 		rightmost_el = path_root_el(path);
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rec->e_cpos == split_rec->e_cpos &&
 	    rec->e_leaf_clusters == split_rec->e_leaf_clusters)
@@ -5119,12 +5654,20 @@ int ocfs2_change_extent_flag(handle_t *handle,
 	el = path_leaf_el(left_path);
 
 	index = ocfs2_search_extent_list(el, cpos);
+<<<<<<< HEAD
 	if (index == -1 || index >= le16_to_cpu(el->l_next_free_rec)) {
 		ocfs2_error(sb,
 			    "Owner %llu has an extent at cpos %u which can no "
 			    "longer be found.\n",
 			     (unsigned long long)
 			     ocfs2_metadata_cache_owner(et->et_ci), cpos);
+=======
+	if (index == -1) {
+		ocfs2_error(sb,
+			    "Owner %llu has an extent at cpos %u which can no longer be found\n",
+			    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
+			    cpos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EROFS;
 		goto out;
 	}
@@ -5133,7 +5676,11 @@ int ocfs2_change_extent_flag(handle_t *handle,
 	rec = &el->l_recs[index];
 	if (new_flags && (rec->e_flags & new_flags)) {
 		mlog(ML_ERROR, "Owner %llu tried to set %d flags on an "
+<<<<<<< HEAD
 		     "extent that already had them",
+=======
+		     "extent that already had them\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 		     new_flags);
 		goto out;
@@ -5141,7 +5688,11 @@ int ocfs2_change_extent_flag(handle_t *handle,
 
 	if (clear_flags && !(rec->e_flags & clear_flags)) {
 		mlog(ML_ERROR, "Owner %llu tried to clear %d flags on an "
+<<<<<<< HEAD
 		     "extent that didn't have them",
+=======
+		     "extent that didn't have them\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 		     clear_flags);
 		goto out;
@@ -5191,9 +5742,13 @@ int ocfs2_mark_extent_written(struct inode *inode,
 		cpos, len, phys);
 
 	if (!ocfs2_writes_unwritten_extents(OCFS2_SB(inode->i_sb))) {
+<<<<<<< HEAD
 		ocfs2_error(inode->i_sb, "Inode %llu has unwritten extents "
 			    "that are being written to, but the feature bit "
 			    "is not set in the super block.",
+=======
+		ocfs2_error(inode->i_sb, "Inode %llu has unwritten extents that are being written to, but the feature bit is not set in the super block\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)OCFS2_I(inode)->ip_blkno);
 		ret = -EROFS;
 		goto out;
@@ -5292,7 +5847,11 @@ static int ocfs2_truncate_rec(handle_t *handle,
 {
 	int ret;
 	u32 left_cpos, rec_range, trunc_range;
+<<<<<<< HEAD
 	int wants_rotate = 0, is_rightmost_tree_rec = 0;
+=======
+	int is_rightmost_tree_rec = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = ocfs2_metadata_cache_get_super(et->et_ci);
 	struct ocfs2_path *left_path = NULL;
 	struct ocfs2_extent_list *el = path_leaf_el(path);
@@ -5300,6 +5859,18 @@ static int ocfs2_truncate_rec(handle_t *handle,
 	struct ocfs2_extent_block *eb;
 
 	if (ocfs2_is_empty_extent(&el->l_recs[0]) && index > 0) {
+<<<<<<< HEAD
+=======
+		/* extend credit for ocfs2_remove_rightmost_path */
+		ret = ocfs2_extend_rotate_transaction(handle, 0,
+				jbd2_handle_buffer_credits(handle),
+				path);
+		if (ret) {
+			mlog_errno(ret);
+			goto out;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_rotate_tree_left(handle, et, path, dealloc);
 		if (ret) {
 			mlog_errno(ret);
@@ -5362,8 +5933,13 @@ static int ocfs2_truncate_rec(handle_t *handle,
 	}
 
 	ret = ocfs2_extend_rotate_transaction(handle, 0,
+<<<<<<< HEAD
 					      handle->h_buffer_credits,
 					      path);
+=======
+					jbd2_handle_buffer_credits(handle),
+					path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		mlog_errno(ret);
 		goto out;
@@ -5389,7 +5965,10 @@ static int ocfs2_truncate_rec(handle_t *handle,
 
 		memset(rec, 0, sizeof(*rec));
 		ocfs2_cleanup_merge(el, index);
+<<<<<<< HEAD
 		wants_rotate = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		next_free = le16_to_cpu(el->l_next_free_rec);
 		if (is_rightmost_tree_rec && next_free > 1) {
@@ -5432,10 +6011,15 @@ static int ocfs2_truncate_rec(handle_t *handle,
 	ocfs2_journal_dirty(handle, path_leaf_bh(path));
 
 	ret = ocfs2_rotate_tree_left(handle, et, path, dealloc);
+<<<<<<< HEAD
 	if (ret) {
 		mlog_errno(ret);
 		goto out;
 	}
+=======
+	if (ret)
+		mlog_errno(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ocfs2_free_path(left_path);
@@ -5475,10 +6059,16 @@ int ocfs2_remove_extent(handle_t *handle,
 
 	el = path_leaf_el(path);
 	index = ocfs2_search_extent_list(el, cpos);
+<<<<<<< HEAD
 	if (index == -1 || index >= le16_to_cpu(el->l_next_free_rec)) {
 		ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
 			    "Owner %llu has an extent at cpos %u which can no "
 			    "longer be found.\n",
+=======
+	if (index == -1) {
+		ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+			    "Owner %llu has an extent at cpos %u which can no longer be found\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 			    cpos);
 		ret = -EROFS;
@@ -5541,9 +6131,15 @@ int ocfs2_remove_extent(handle_t *handle,
 
 		el = path_leaf_el(path);
 		index = ocfs2_search_extent_list(el, cpos);
+<<<<<<< HEAD
 		if (index == -1 || index >= le16_to_cpu(el->l_next_free_rec)) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
 				    "Owner %llu: split at cpos %u lost record.",
+=======
+		if (index == -1) {
+			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+				    "Owner %llu: split at cpos %u lost record\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 				    cpos);
 			ret = -EROFS;
@@ -5559,8 +6155,12 @@ int ocfs2_remove_extent(handle_t *handle,
 			ocfs2_rec_clusters(el, rec);
 		if (rec_range != trunc_range) {
 			ocfs2_error(ocfs2_metadata_cache_get_super(et->et_ci),
+<<<<<<< HEAD
 				    "Owner %llu: error after split at cpos %u"
 				    "trunc len %u, existing record is (%u,%u)",
+=======
+				    "Owner %llu: error after split at cpos %u trunc len %u, existing record is (%u,%u)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)ocfs2_metadata_cache_owner(et->et_ci),
 				    cpos, len, le32_to_cpu(rec->e_cpos),
 				    ocfs2_rec_clusters(el, rec));
@@ -5570,10 +6170,15 @@ int ocfs2_remove_extent(handle_t *handle,
 
 		ret = ocfs2_truncate_rec(handle, et, path, index, dealloc,
 					 cpos, len);
+<<<<<<< HEAD
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
 		}
+=======
+		if (ret)
+			mlog_errno(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -5602,7 +6207,11 @@ static int ocfs2_reserve_blocks_for_rec_trunc(struct inode *inode,
 
 	*ac = NULL;
 
+<<<<<<< HEAD
 	num_free_extents = ocfs2_num_free_extents(osb, et);
+=======
+	num_free_extents = ocfs2_num_free_extents(et);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (num_free_extents < 0) {
 		ret = num_free_extents;
 		mlog_errno(ret);
@@ -5618,7 +6227,10 @@ static int ocfs2_reserve_blocks_for_rec_trunc(struct inode *inode,
 		if (ret < 0) {
 			if (ret != -ENOSPC)
 				mlog_errno(ret);
+<<<<<<< HEAD
 			goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -5637,7 +6249,11 @@ int ocfs2_remove_btree_range(struct inode *inode,
 			     struct ocfs2_extent_tree *et,
 			     u32 cpos, u32 phys_cpos, u32 len, int flags,
 			     struct ocfs2_cached_dealloc_ctxt *dealloc,
+<<<<<<< HEAD
 			     u64 refcount_loc)
+=======
+			     u64 refcount_loc, bool refcount_tree_locked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, credits = 0, extra_blocks = 0;
 	u64 phys_blkno = ocfs2_clusters_to_blocks(inode->i_sb, phys_cpos);
@@ -5648,6 +6264,7 @@ int ocfs2_remove_btree_range(struct inode *inode,
 	struct ocfs2_refcount_tree *ref_tree = NULL;
 
 	if ((flags & OCFS2_EXT_REFCOUNTED) && len) {
+<<<<<<< HEAD
 		BUG_ON(!(OCFS2_I(inode)->ip_dyn_features &
 			 OCFS2_HAS_REFCOUNT_FL));
 
@@ -5656,6 +6273,17 @@ int ocfs2_remove_btree_range(struct inode *inode,
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
+=======
+		BUG_ON(!ocfs2_is_refcount_inode(inode));
+
+		if (!refcount_tree_locked) {
+			ret = ocfs2_lock_refcount_tree(osb, refcount_loc, 1,
+						       &ref_tree, NULL);
+			if (ret) {
+				mlog_errno(ret);
+				goto bail;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ret = ocfs2_prepare_refcount_change_for_del(inode,
@@ -5666,7 +6294,11 @@ int ocfs2_remove_btree_range(struct inode *inode,
 							    &extra_blocks);
 		if (ret < 0) {
 			mlog_errno(ret);
+<<<<<<< HEAD
 			goto out;
+=======
+			goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -5674,10 +6306,17 @@ int ocfs2_remove_btree_range(struct inode *inode,
 						 extra_blocks);
 	if (ret) {
 		mlog_errno(ret);
+<<<<<<< HEAD
 		return ret;
 	}
 
 	mutex_lock(&tl_inode->i_mutex);
+=======
+		goto bail;
+	}
+
+	inode_lock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ocfs2_truncate_log_needs_flush(osb)) {
 		ret = __ocfs2_flush_truncate_log(osb);
@@ -5712,6 +6351,10 @@ int ocfs2_remove_btree_range(struct inode *inode,
 	}
 
 	ocfs2_et_update_clusters(et, -len);
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, inode, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, et->et_root_bh);
 
@@ -5733,8 +6376,13 @@ int ocfs2_remove_btree_range(struct inode *inode,
 out_commit:
 	ocfs2_commit_trans(osb, handle);
 out:
+<<<<<<< HEAD
 	mutex_unlock(&tl_inode->i_mutex);
 
+=======
+	inode_unlock(tl_inode);
+bail:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (meta_ac)
 		ocfs2_free_alloc_context(meta_ac);
 
@@ -5789,7 +6437,11 @@ int ocfs2_truncate_log_append(struct ocfs2_super *osb,
 	struct ocfs2_dinode *di;
 	struct ocfs2_truncate_log *tl;
 
+<<<<<<< HEAD
 	BUG_ON(mutex_trylock(&tl_inode->i_mutex));
+=======
+	BUG_ON(inode_trylock(tl_inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start_cluster = ocfs2_blocks_to_clusters(osb->sb, start_blk);
 
@@ -5854,7 +6506,10 @@ bail:
 }
 
 static int ocfs2_replay_truncate_records(struct ocfs2_super *osb,
+<<<<<<< HEAD
 					 handle_t *handle,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 struct inode *data_alloc_inode,
 					 struct buffer_head *data_alloc_bh)
 {
@@ -5867,16 +6522,34 @@ static int ocfs2_replay_truncate_records(struct ocfs2_super *osb,
 	struct ocfs2_truncate_log *tl;
 	struct inode *tl_inode = osb->osb_tl_inode;
 	struct buffer_head *tl_bh = osb->osb_tl_bh;
+<<<<<<< HEAD
+=======
+	handle_t *handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	di = (struct ocfs2_dinode *) tl_bh->b_data;
 	tl = &di->id2.i_dealloc;
 	i = le16_to_cpu(tl->tl_used) - 1;
 	while (i >= 0) {
+<<<<<<< HEAD
+=======
+		handle = ocfs2_start_trans(osb, OCFS2_TRUNCATE_LOG_FLUSH_ONE_REC);
+		if (IS_ERR(handle)) {
+			status = PTR_ERR(handle);
+			mlog_errno(status);
+			goto bail;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Caller has given us at least enough credits to
 		 * update the truncate log dinode */
 		status = ocfs2_journal_access_di(handle, INODE_CACHE(tl_inode), tl_bh,
 						 OCFS2_JOURNAL_ACCESS_WRITE);
 		if (status < 0) {
+<<<<<<< HEAD
+=======
+			ocfs2_commit_trans(osb, handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlog_errno(status);
 			goto bail;
 		}
@@ -5885,6 +6558,7 @@ static int ocfs2_replay_truncate_records(struct ocfs2_super *osb,
 
 		ocfs2_journal_dirty(handle, tl_bh);
 
+<<<<<<< HEAD
 		/* TODO: Perhaps we can calculate the bulk of the
 		 * credits up front rather than extending like
 		 * this. */
@@ -5895,6 +6569,8 @@ static int ocfs2_replay_truncate_records(struct ocfs2_super *osb,
 			goto bail;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec = tl->tl_recs[i];
 		start_blk = ocfs2_clusters_to_blocks(data_alloc_inode->i_sb,
 						    le32_to_cpu(rec.t_start));
@@ -5911,10 +6587,19 @@ static int ocfs2_replay_truncate_records(struct ocfs2_super *osb,
 						     data_alloc_bh, start_blk,
 						     num_clusters);
 			if (status < 0) {
+<<<<<<< HEAD
+=======
+				ocfs2_commit_trans(osb, handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mlog_errno(status);
 				goto bail;
 			}
 		}
+<<<<<<< HEAD
+=======
+
+		ocfs2_commit_trans(osb, handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i--;
 	}
 
@@ -5924,20 +6609,33 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
 /* Expects you to already be holding tl_inode->i_mutex */
+=======
+/* Expects you to already be holding tl_inode->i_rwsem */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 {
 	int status;
 	unsigned int num_to_flush;
+<<<<<<< HEAD
 	handle_t *handle;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *tl_inode = osb->osb_tl_inode;
 	struct inode *data_alloc_inode = NULL;
 	struct buffer_head *tl_bh = osb->osb_tl_bh;
 	struct buffer_head *data_alloc_bh = NULL;
 	struct ocfs2_dinode *di;
 	struct ocfs2_truncate_log *tl;
+<<<<<<< HEAD
 
 	BUG_ON(mutex_trylock(&tl_inode->i_mutex));
+=======
+	struct ocfs2_journal *journal = osb->journal;
+
+	BUG_ON(inode_trylock(tl_inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	di = (struct ocfs2_dinode *) tl_bh->b_data;
 
@@ -5956,6 +6654,23 @@ int __ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Appending truncate log(TA) and flushing truncate log(TF) are
+	 * two separated transactions. They can be both committed but not
+	 * checkpointed. If crash occurs then, both two transaction will be
+	 * replayed with several already released to global bitmap clusters.
+	 * Then truncate log will be replayed resulting in cluster double free.
+	 */
+	jbd2_journal_lock_updates(journal->j_journal);
+	status = jbd2_journal_flush(journal->j_journal, 0);
+	jbd2_journal_unlock_updates(journal->j_journal);
+	if (status < 0) {
+		mlog_errno(status);
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data_alloc_inode = ocfs2_get_system_file_inode(osb,
 						       GLOBAL_BITMAP_SYSTEM_INODE,
 						       OCFS2_INVALID_SLOT);
@@ -5965,7 +6680,11 @@ int __ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&data_alloc_inode->i_mutex);
+=======
+	inode_lock(data_alloc_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_inode_lock(data_alloc_inode, &data_alloc_bh, 1);
 	if (status < 0) {
@@ -5973,6 +6692,7 @@ int __ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 		goto out_mutex;
 	}
 
+<<<<<<< HEAD
 	handle = ocfs2_start_trans(osb, OCFS2_TRUNCATE_LOG_UPDATE);
 	if (IS_ERR(handle)) {
 		status = PTR_ERR(handle);
@@ -5981,18 +6701,28 @@ int __ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 	}
 
 	status = ocfs2_replay_truncate_records(osb, handle, data_alloc_inode,
+=======
+	status = ocfs2_replay_truncate_records(osb, data_alloc_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       data_alloc_bh);
 	if (status < 0)
 		mlog_errno(status);
 
+<<<<<<< HEAD
 	ocfs2_commit_trans(osb, handle);
 
 out_unlock:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(data_alloc_bh);
 	ocfs2_inode_unlock(data_alloc_inode, 1);
 
 out_mutex:
+<<<<<<< HEAD
 	mutex_unlock(&data_alloc_inode->i_mutex);
+=======
+	inode_unlock(data_alloc_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(data_alloc_inode);
 
 out:
@@ -6004,9 +6734,15 @@ int ocfs2_flush_truncate_log(struct ocfs2_super *osb)
 	int status;
 	struct inode *tl_inode = osb->osb_tl_inode;
 
+<<<<<<< HEAD
 	mutex_lock(&tl_inode->i_mutex);
 	status = __ocfs2_flush_truncate_log(osb);
 	mutex_unlock(&tl_inode->i_mutex);
+=======
+	inode_lock(tl_inode);
+	status = __ocfs2_flush_truncate_log(osb);
+	inode_unlock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -6029,17 +6765,66 @@ static void ocfs2_truncate_log_worker(struct work_struct *work)
 void ocfs2_schedule_truncate_log_flush(struct ocfs2_super *osb,
 				       int cancel)
 {
+<<<<<<< HEAD
 	if (osb->osb_tl_inode) {
+=======
+	if (osb->osb_tl_inode &&
+			atomic_read(&osb->osb_tl_disable) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We want to push off log flushes while truncates are
 		 * still running. */
 		if (cancel)
 			cancel_delayed_work(&osb->osb_truncate_log_wq);
 
+<<<<<<< HEAD
 		queue_delayed_work(ocfs2_wq, &osb->osb_truncate_log_wq,
+=======
+		queue_delayed_work(osb->ocfs2_wq, &osb->osb_truncate_log_wq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   OCFS2_TRUNCATE_LOG_FLUSH_INTERVAL);
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Try to flush truncate logs if we can free enough clusters from it.
+ * As for return value, "< 0" means error, "0" no space and "1" means
+ * we have freed enough spaces and let the caller try to allocate again.
+ */
+int ocfs2_try_to_free_truncate_log(struct ocfs2_super *osb,
+					unsigned int needed)
+{
+	tid_t target;
+	int ret = 0;
+	unsigned int truncated_clusters;
+
+	inode_lock(osb->osb_tl_inode);
+	truncated_clusters = osb->truncated_clusters;
+	inode_unlock(osb->osb_tl_inode);
+
+	/*
+	 * Check whether we can succeed in allocating if we free
+	 * the truncate log.
+	 */
+	if (truncated_clusters < needed)
+		goto out;
+
+	ret = ocfs2_flush_truncate_log(osb);
+	if (ret) {
+		mlog_errno(ret);
+		goto out;
+	}
+
+	if (jbd2_journal_start_commit(osb->journal->j_journal, &target)) {
+		jbd2_log_wait_commit(osb->journal->j_journal, target);
+		ret = 1;
+	}
+out:
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_get_truncate_log_info(struct ocfs2_super *osb,
 				       int slot_num,
 				       struct inode **tl_inode,
@@ -6106,17 +6891,28 @@ int ocfs2_begin_truncate_log_recovery(struct ocfs2_super *osb,
 	if (le16_to_cpu(tl->tl_used)) {
 		trace_ocfs2_truncate_log_recovery_num(le16_to_cpu(tl->tl_used));
 
+<<<<<<< HEAD
 		*tl_copy = kmalloc(tl_bh->b_size, GFP_KERNEL);
+=======
+		/*
+		 * Assuming the write-out below goes well, this copy will be
+		 * passed back to recovery for processing.
+		 */
+		*tl_copy = kmemdup(tl_bh->b_data, tl_bh->b_size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(*tl_copy)) {
 			status = -ENOMEM;
 			mlog_errno(status);
 			goto bail;
 		}
 
+<<<<<<< HEAD
 		/* Assuming the write-out below goes well, this copy
 		 * will be passed back to recovery for processing. */
 		memcpy(*tl_copy, tl_bh->b_data, tl_bh->b_size);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* All we need to do to clear the truncate log is set
 		 * tl_used. */
 		tl->tl_used = 0;
@@ -6130,11 +6926,18 @@ int ocfs2_begin_truncate_log_recovery(struct ocfs2_super *osb,
 	}
 
 bail:
+<<<<<<< HEAD
 	if (tl_inode)
 		iput(tl_inode);
 	brelse(tl_bh);
 
 	if (status < 0 && (*tl_copy)) {
+=======
+	iput(tl_inode);
+	brelse(tl_bh);
+
+	if (status < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(*tl_copy);
 		*tl_copy = NULL;
 		mlog_errno(status);
@@ -6165,7 +6968,11 @@ int ocfs2_complete_truncate_log_recovery(struct ocfs2_super *osb,
 		(unsigned long long)le64_to_cpu(tl_copy->i_blkno),
 		num_recs);
 
+<<<<<<< HEAD
 	mutex_lock(&tl_inode->i_mutex);
+=======
+	inode_lock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for(i = 0; i < num_recs; i++) {
 		if (ocfs2_truncate_log_needs_flush(osb)) {
 			status = __ocfs2_flush_truncate_log(osb);
@@ -6196,7 +7003,11 @@ int ocfs2_complete_truncate_log_recovery(struct ocfs2_super *osb,
 	}
 
 bail_up:
+<<<<<<< HEAD
 	mutex_unlock(&tl_inode->i_mutex);
+=======
+	inode_unlock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -6206,9 +7017,17 @@ void ocfs2_truncate_log_shutdown(struct ocfs2_super *osb)
 	int status;
 	struct inode *tl_inode = osb->osb_tl_inode;
 
+<<<<<<< HEAD
 	if (tl_inode) {
 		cancel_delayed_work(&osb->osb_truncate_log_wq);
 		flush_workqueue(ocfs2_wq);
+=======
+	atomic_set(&osb->osb_tl_disable, 1);
+
+	if (tl_inode) {
+		cancel_delayed_work(&osb->osb_truncate_log_wq);
+		flush_workqueue(osb->ocfs2_wq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = ocfs2_flush_truncate_log(osb);
 		if (status < 0)
@@ -6237,6 +7056,10 @@ int ocfs2_truncate_log_init(struct ocfs2_super *osb)
 	 * until we're sure all is well. */
 	INIT_DELAYED_WORK(&osb->osb_truncate_log_wq,
 			  ocfs2_truncate_log_worker);
+<<<<<<< HEAD
+=======
+	atomic_set(&osb->osb_tl_disable, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	osb->osb_tl_bh    = tl_bh;
 	osb->osb_tl_inode = tl_inode;
 
@@ -6300,7 +7123,11 @@ static int ocfs2_free_cached_blocks(struct ocfs2_super *osb,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	inode_lock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_inode_lock(inode, &di_bh, 1);
 	if (ret) {
@@ -6308,6 +7135,7 @@ static int ocfs2_free_cached_blocks(struct ocfs2_super *osb,
 		goto out_mutex;
 	}
 
+<<<<<<< HEAD
 	handle = ocfs2_start_trans(osb, OCFS2_SUBALLOC_FREE);
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
@@ -6315,17 +7143,30 @@ static int ocfs2_free_cached_blocks(struct ocfs2_super *osb,
 		goto out_unlock;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (head) {
 		if (head->free_bg)
 			bg_blkno = head->free_bg;
 		else
 			bg_blkno = ocfs2_which_suballoc_group(head->free_blk,
 							      head->free_bit);
+<<<<<<< HEAD
+=======
+		handle = ocfs2_start_trans(osb, OCFS2_SUBALLOC_FREE);
+		if (IS_ERR(handle)) {
+			ret = PTR_ERR(handle);
+			mlog_errno(ret);
+			goto out_unlock;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trace_ocfs2_free_cached_blocks(
 		     (unsigned long long)head->free_blk, head->free_bit);
 
 		ret = ocfs2_free_suballoc_bits(handle, inode, di_bh,
 					       head->free_bit, bg_blkno, 1);
+<<<<<<< HEAD
 		if (ret) {
 			mlog_errno(ret);
 			goto out_journal;
@@ -6336,20 +7177,33 @@ static int ocfs2_free_cached_blocks(struct ocfs2_super *osb,
 			mlog_errno(ret);
 			goto out_journal;
 		}
+=======
+		if (ret)
+			mlog_errno(ret);
+
+		ocfs2_commit_trans(osb, handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tmp = head;
 		head = head->free_next;
 		kfree(tmp);
 	}
 
+<<<<<<< HEAD
 out_journal:
 	ocfs2_commit_trans(osb, handle);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unlock:
 	ocfs2_inode_unlock(inode, 1);
 	brelse(di_bh);
 out_mutex:
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 out:
 	while(head) {
@@ -6393,7 +7247,11 @@ static int ocfs2_free_cached_clusters(struct ocfs2_super *osb,
 	handle_t *handle;
 	int ret = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&tl_inode->i_mutex);
+=======
+	inode_lock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (head) {
 		if (ocfs2_truncate_log_needs_flush(osb)) {
@@ -6425,7 +7283,11 @@ static int ocfs2_free_cached_clusters(struct ocfs2_super *osb,
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&tl_inode->i_mutex);
+=======
+	inode_unlock(tl_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (head) {
 		/* Premature exit may have left some dangling items. */
@@ -6506,6 +7368,157 @@ ocfs2_find_per_slot_free_list(int type,
 	return fl;
 }
 
+<<<<<<< HEAD
+=======
+static struct ocfs2_per_slot_free_list *
+ocfs2_find_preferred_free_list(int type,
+			       int preferred_slot,
+			       int *real_slot,
+			       struct ocfs2_cached_dealloc_ctxt *ctxt)
+{
+	struct ocfs2_per_slot_free_list *fl = ctxt->c_first_suballocator;
+
+	while (fl) {
+		if (fl->f_inode_type == type && fl->f_slot == preferred_slot) {
+			*real_slot = fl->f_slot;
+			return fl;
+		}
+
+		fl = fl->f_next_suballocator;
+	}
+
+	/* If we can't find any free list matching preferred slot, just use
+	 * the first one.
+	 */
+	fl = ctxt->c_first_suballocator;
+	*real_slot = fl->f_slot;
+
+	return fl;
+}
+
+/* Return Value 1 indicates empty */
+static int ocfs2_is_dealloc_empty(struct ocfs2_extent_tree *et)
+{
+	struct ocfs2_per_slot_free_list *fl = NULL;
+
+	if (!et->et_dealloc)
+		return 1;
+
+	fl = et->et_dealloc->c_first_suballocator;
+	if (!fl)
+		return 1;
+
+	if (!fl->f_first)
+		return 1;
+
+	return 0;
+}
+
+/* If extent was deleted from tree due to extent rotation and merging, and
+ * no metadata is reserved ahead of time. Try to reuse some extents
+ * just deleted. This is only used to reuse extent blocks.
+ * It is supposed to find enough extent blocks in dealloc if our estimation
+ * on metadata is accurate.
+ */
+static int ocfs2_reuse_blk_from_dealloc(handle_t *handle,
+					struct ocfs2_extent_tree *et,
+					struct buffer_head **new_eb_bh,
+					int blk_wanted, int *blk_given)
+{
+	int i, status = 0, real_slot;
+	struct ocfs2_cached_dealloc_ctxt *dealloc;
+	struct ocfs2_per_slot_free_list *fl;
+	struct ocfs2_cached_block_free *bf;
+	struct ocfs2_extent_block *eb;
+	struct ocfs2_super *osb =
+		OCFS2_SB(ocfs2_metadata_cache_get_super(et->et_ci));
+
+	*blk_given = 0;
+
+	/* If extent tree doesn't have a dealloc, this is not faulty. Just
+	 * tell upper caller dealloc can't provide any block and it should
+	 * ask for alloc to claim more space.
+	 */
+	dealloc = et->et_dealloc;
+	if (!dealloc)
+		goto bail;
+
+	for (i = 0; i < blk_wanted; i++) {
+		/* Prefer to use local slot */
+		fl = ocfs2_find_preferred_free_list(EXTENT_ALLOC_SYSTEM_INODE,
+						    osb->slot_num, &real_slot,
+						    dealloc);
+		/* If no more block can be reused, we should claim more
+		 * from alloc. Just return here normally.
+		 */
+		if (!fl) {
+			status = 0;
+			break;
+		}
+
+		bf = fl->f_first;
+		fl->f_first = bf->free_next;
+
+		new_eb_bh[i] = sb_getblk(osb->sb, bf->free_blk);
+		if (new_eb_bh[i] == NULL) {
+			status = -ENOMEM;
+			mlog_errno(status);
+			goto bail;
+		}
+
+		mlog(0, "Reusing block(%llu) from "
+		     "dealloc(local slot:%d, real slot:%d)\n",
+		     bf->free_blk, osb->slot_num, real_slot);
+
+		ocfs2_set_new_buffer_uptodate(et->et_ci, new_eb_bh[i]);
+
+		status = ocfs2_journal_access_eb(handle, et->et_ci,
+						 new_eb_bh[i],
+						 OCFS2_JOURNAL_ACCESS_CREATE);
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+
+		memset(new_eb_bh[i]->b_data, 0, osb->sb->s_blocksize);
+		eb = (struct ocfs2_extent_block *) new_eb_bh[i]->b_data;
+
+		/* We can't guarantee that buffer head is still cached, so
+		 * polutlate the extent block again.
+		 */
+		strcpy(eb->h_signature, OCFS2_EXTENT_BLOCK_SIGNATURE);
+		eb->h_blkno = cpu_to_le64(bf->free_blk);
+		eb->h_fs_generation = cpu_to_le32(osb->fs_generation);
+		eb->h_suballoc_slot = cpu_to_le16(real_slot);
+		eb->h_suballoc_loc = cpu_to_le64(bf->free_bg);
+		eb->h_suballoc_bit = cpu_to_le16(bf->free_bit);
+		eb->h_list.l_count =
+			cpu_to_le16(ocfs2_extent_recs_per_eb(osb->sb));
+
+		/* We'll also be dirtied by the caller, so
+		 * this isn't absolutely necessary.
+		 */
+		ocfs2_journal_dirty(handle, new_eb_bh[i]);
+
+		if (!fl->f_first) {
+			dealloc->c_first_suballocator = fl->f_next_suballocator;
+			kfree(fl);
+		}
+		kfree(bf);
+	}
+
+	*blk_given = i;
+
+bail:
+	if (unlikely(status < 0)) {
+		for (i = 0; i < blk_wanted; i++)
+			brelse(new_eb_bh[i]);
+	}
+
+	return status;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_cache_block_dealloc(struct ocfs2_cached_dealloc_ctxt *ctxt,
 			      int type, int slot, u64 suballoc,
 			      u64 blkno, unsigned int bit)
@@ -6566,6 +7579,11 @@ void ocfs2_map_and_dirty_page(struct inode *inode, handle_t *handle,
 			      struct page *page, int zero, u64 *phys)
 {
 	int ret, partial = 0;
+<<<<<<< HEAD
+=======
+	loff_t start_byte = ((loff_t)page->index << PAGE_SHIFT) + from;
+	loff_t length = to - from;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_map_page_blocks(page, phys, inode, from, to, 0);
 	if (ret)
@@ -6585,7 +7603,12 @@ void ocfs2_map_and_dirty_page(struct inode *inode, handle_t *handle,
 	if (ret < 0)
 		mlog_errno(ret);
 	else if (ocfs2_should_order_data(inode)) {
+<<<<<<< HEAD
 		ret = ocfs2_jbd2_file_inode(handle, inode);
+=======
+		ret = ocfs2_jbd2_inode_add_write(handle, inode,
+						 start_byte, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			mlog_errno(ret);
 	}
@@ -6602,7 +7625,11 @@ static void ocfs2_zero_cluster_pages(struct inode *inode, loff_t start,
 {
 	int i;
 	struct page *page;
+<<<<<<< HEAD
 	unsigned int from, to = PAGE_CACHE_SIZE;
+=======
+	unsigned int from, to = PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = inode->i_sb;
 
 	BUG_ON(!ocfs2_sparse_alloc(OCFS2_SB(sb)));
@@ -6610,6 +7637,7 @@ static void ocfs2_zero_cluster_pages(struct inode *inode, loff_t start,
 	if (numpages == 0)
 		goto out;
 
+<<<<<<< HEAD
 	to = PAGE_CACHE_SIZE;
 	for(i = 0; i < numpages; i++) {
 		page = pages[i];
@@ -6620,11 +7648,27 @@ static void ocfs2_zero_cluster_pages(struct inode *inode, loff_t start,
 
 		BUG_ON(from > PAGE_CACHE_SIZE);
 		BUG_ON(to > PAGE_CACHE_SIZE);
+=======
+	to = PAGE_SIZE;
+	for(i = 0; i < numpages; i++) {
+		page = pages[i];
+
+		from = start & (PAGE_SIZE - 1);
+		if ((end >> PAGE_SHIFT) == page->index)
+			to = end & (PAGE_SIZE - 1);
+
+		BUG_ON(from > PAGE_SIZE);
+		BUG_ON(to > PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ocfs2_map_and_dirty_page(inode, handle, from, to, page, 1,
 					 &phys);
 
+<<<<<<< HEAD
 		start = (page->index + 1) << PAGE_CACHE_SHIFT;
+=======
+		start = (page->index + 1) << PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	if (pages)
@@ -6643,7 +7687,11 @@ int ocfs2_grab_pages(struct inode *inode, loff_t start, loff_t end,
 
 	numpages = 0;
 	last_page_bytes = PAGE_ALIGN(end);
+<<<<<<< HEAD
 	index = start >> PAGE_CACHE_SHIFT;
+=======
+	index = start >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		pages[numpages] = find_or_create_page(mapping, index, GFP_NOFS);
 		if (!pages[numpages]) {
@@ -6654,7 +7702,11 @@ int ocfs2_grab_pages(struct inode *inode, loff_t start, loff_t end,
 
 		numpages++;
 		index++;
+<<<<<<< HEAD
 	} while (index < (last_page_bytes >> PAGE_CACHE_SHIFT));
+=======
+	} while (index < (last_page_bytes >> PAGE_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (ret != 0) {
@@ -6680,6 +7732,7 @@ static int ocfs2_grab_eof_pages(struct inode *inode, loff_t start, loff_t end,
 }
 
 /*
+<<<<<<< HEAD
  * Zero the area past i_size but still within an allocated
  * cluster. This avoids exposing nonzero data on subsequent file
  * extends.
@@ -6687,6 +7740,14 @@ static int ocfs2_grab_eof_pages(struct inode *inode, loff_t start, loff_t end,
  * We need to call this before i_size is updated on the inode because
  * otherwise block_write_full_page() will skip writeout of pages past
  * i_size. The new_i_size parameter is passed for this reason.
+=======
+ * Zero partial cluster for a hole punch or truncate. This avoids exposing
+ * nonzero data on subsequent file extends.
+ *
+ * We need to call this before i_size is updated on the inode because
+ * otherwise block_write_full_folio() will skip writeout of pages past
+ * i_size.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ocfs2_zero_range_for_truncate(struct inode *inode, handle_t *handle,
 				  u64 range_start, u64 range_end)
@@ -6704,6 +7765,18 @@ int ocfs2_zero_range_for_truncate(struct inode *inode, handle_t *handle,
 	if (!ocfs2_sparse_alloc(OCFS2_SB(sb)))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Avoid zeroing pages fully beyond current i_size. It is pointless as
+	 * underlying blocks of those pages should be already zeroed out and
+	 * page writeback will skip them anyway.
+	 */
+	range_end = min_t(u64, range_end, i_size_read(inode));
+	if (range_start >= range_end)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pages = kcalloc(ocfs2_pages_per_cluster(sb),
 			sizeof(struct page *), GFP_NOFS);
 	if (pages == NULL) {
@@ -6712,9 +7785,12 @@ int ocfs2_zero_range_for_truncate(struct inode *inode, handle_t *handle,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (range_start == range_end)
 		goto out;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_extent_map_get_blocks(inode,
 					  range_start >> sb->s_blocksize_bits,
 					  &phys, NULL, &ext_flags);
@@ -6751,8 +7827,12 @@ int ocfs2_zero_range_for_truncate(struct inode *inode, handle_t *handle,
 		mlog_errno(ret);
 
 out:
+<<<<<<< HEAD
 	if (pages)
 		kfree(pages);
+=======
+	kfree(pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -6805,21 +7885,34 @@ void ocfs2_set_inode_data_inline(struct inode *inode, struct ocfs2_dinode *di)
 int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 					 struct buffer_head *di_bh)
 {
+<<<<<<< HEAD
 	int ret, i, has_data, num_pages = 0;
 	handle_t *handle;
 	u64 uninitialized_var(block);
+=======
+	int ret, has_data, num_pages = 0;
+	int need_free = 0;
+	u32 bit_off, num;
+	handle_t *handle;
+	u64 block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)di_bh->b_data;
 	struct ocfs2_alloc_context *data_ac = NULL;
+<<<<<<< HEAD
 	struct page **pages = NULL;
 	loff_t end = osb->s_clustersize;
+=======
+	struct page *page = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_extent_tree et;
 	int did_quota = 0;
 
 	has_data = i_size_read(inode) ? 1 : 0;
 
 	if (has_data) {
+<<<<<<< HEAD
 		pages = kcalloc(ocfs2_pages_per_cluster(osb->sb),
 				sizeof(struct page *), GFP_NOFS);
 		if (pages == NULL) {
@@ -6828,6 +7921,8 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 			goto out;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_reserve_clusters(osb, 1, &data_ac);
 		if (ret) {
 			mlog_errno(ret);
@@ -6840,7 +7935,11 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
 		mlog_errno(ret);
+<<<<<<< HEAD
 		goto out_unlock;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = ocfs2_journal_access_di(handle, INODE_CACHE(inode), di_bh,
@@ -6851,8 +7950,13 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 	}
 
 	if (has_data) {
+<<<<<<< HEAD
 		u32 bit_off, num;
 		unsigned int page_end;
+=======
+		unsigned int page_end = min_t(unsigned, PAGE_SIZE,
+							osb->s_clustersize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 phys;
 
 		ret = dquot_alloc_space_nodirty(inode,
@@ -6861,7 +7965,11 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 			goto out_commit;
 		did_quota = 1;
 
+<<<<<<< HEAD
 		data_ac->ac_resv = &OCFS2_I(inode)->ip_la_data_resv;
+=======
+		data_ac->ac_resv = &oi->ip_la_data_resv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = ocfs2_claim_clusters(handle, data_ac, 1, &bit_off,
 					   &num);
@@ -6876,6 +7984,7 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 		 */
 		block = phys = ocfs2_clusters_to_blocks(inode->i_sb, bit_off);
 
+<<<<<<< HEAD
 		/*
 		 * Non sparse file systems zero on extend, so no need
 		 * to do that now.
@@ -6887,6 +7996,13 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 		ret = ocfs2_grab_eof_pages(inode, 0, end, pages, &num_pages);
 		if (ret) {
 			mlog_errno(ret);
+=======
+		ret = ocfs2_grab_eof_pages(inode, 0, page_end, &page,
+					   &num_pages);
+		if (ret) {
+			mlog_errno(ret);
+			need_free = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_commit;
 		}
 
@@ -6894,6 +8010,7 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 		 * This should populate the 1st page for us and mark
 		 * it up to date.
 		 */
+<<<<<<< HEAD
 		ret = ocfs2_read_inline_data(inode, pages[0], di_bh);
 		if (ret) {
 			mlog_errno(ret);
@@ -6907,6 +8024,17 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 		for (i = 0; i < num_pages; i++)
 			ocfs2_map_and_dirty_page(inode, handle, 0, page_end,
 						 pages[i], i > 0, &phys);
+=======
+		ret = ocfs2_read_inline_data(inode, page, di_bh);
+		if (ret) {
+			mlog_errno(ret);
+			need_free = 1;
+			goto out_unlock;
+		}
+
+		ocfs2_map_and_dirty_page(inode, handle, 0, page_end, page, 0,
+					 &phys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock(&oi->ip_lock);
@@ -6914,6 +8042,10 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 	di->i_dyn_features = cpu_to_le16(oi->ip_dyn_features);
 	spin_unlock(&oi->ip_lock);
 
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, inode, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_dinode_new_extent_list(inode, di);
 
 	ocfs2_journal_dirty(handle, di_bh);
@@ -6928,17 +8060,30 @@ int ocfs2_convert_inline_data_to_extents(struct inode *inode,
 		ret = ocfs2_insert_extent(handle, &et, 0, block, 1, 0, NULL);
 		if (ret) {
 			mlog_errno(ret);
+<<<<<<< HEAD
 			goto out_commit;
+=======
+			need_free = 1;
+			goto out_unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		inode->i_blocks = ocfs2_inode_sector_count(inode);
 	}
 
+<<<<<<< HEAD
+=======
+out_unlock:
+	if (page)
+		ocfs2_unlock_and_free_pages(&page, num_pages);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_commit:
 	if (ret < 0 && did_quota)
 		dquot_free_space_nodirty(inode,
 					  ocfs2_clusters_to_bytes(osb->sb, 1));
 
+<<<<<<< HEAD
 	ocfs2_commit_trans(osb, handle);
 
 out_unlock:
@@ -6951,6 +8096,25 @@ out:
 		kfree(pages);
 	}
 
+=======
+	if (need_free) {
+		if (data_ac->ac_which == OCFS2_AC_USE_LOCAL)
+			ocfs2_free_local_alloc_bits(osb, handle, data_ac,
+					bit_off, num);
+		else
+			ocfs2_free_clusters(handle,
+					data_ac->ac_inode,
+					data_ac->ac_bh,
+					ocfs2_clusters_to_blocks(osb->sb, bit_off),
+					num);
+	}
+
+	ocfs2_commit_trans(osb, handle);
+
+out:
+	if (data_ac)
+		ocfs2_free_alloc_context(data_ac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -6975,6 +8139,10 @@ int ocfs2_commit_truncate(struct ocfs2_super *osb,
 	u64 refcount_loc = le64_to_cpu(di->i_refcount_loc);
 	struct ocfs2_extent_tree et;
 	struct ocfs2_cached_dealloc_ctxt dealloc;
+<<<<<<< HEAD
+=======
+	struct ocfs2_refcount_tree *ref_tree = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_init_dinode_extent_tree(&et, INODE_CACHE(inode), di_bh);
 	ocfs2_init_dealloc_ctxt(&dealloc);
@@ -7048,6 +8216,7 @@ start:
 		 * to check it up here before changing the tree.
 		*/
 		if (root_el->l_tree_depth && rec->e_int_clusters == 0) {
+<<<<<<< HEAD
 			ocfs2_error(inode->i_sb, "Inode %lu has an empty "
 				    "extent record, depth %u\n", inode->i_ino,
 				    le16_to_cpu(root_el->l_tree_depth));
@@ -7057,6 +8226,25 @@ start:
 		trunc_cpos = le32_to_cpu(rec->e_cpos);
 		trunc_len = 0;
 		blkno = 0;
+=======
+			mlog(ML_ERROR, "Inode %lu has an empty "
+				    "extent record, depth %u\n", inode->i_ino,
+				    le16_to_cpu(root_el->l_tree_depth));
+			status = ocfs2_remove_rightmost_empty_extent(osb,
+					&et, path, &dealloc);
+			if (status) {
+				mlog_errno(status);
+				goto bail;
+			}
+
+			ocfs2_reinit_path(path, 1);
+			goto start;
+		} else {
+			trunc_cpos = le32_to_cpu(rec->e_cpos);
+			trunc_len = 0;
+			blkno = 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (le32_to_cpu(rec->e_cpos) >= new_highest_cpos) {
 		/*
 		 * Truncate entire record.
@@ -7084,9 +8272,24 @@ start:
 
 	phys_cpos = ocfs2_blocks_to_clusters(inode->i_sb, blkno);
 
+<<<<<<< HEAD
 	status = ocfs2_remove_btree_range(inode, &et, trunc_cpos,
 					  phys_cpos, trunc_len, flags, &dealloc,
 					  refcount_loc);
+=======
+	if ((flags & OCFS2_EXT_REFCOUNTED) && trunc_len && !ref_tree) {
+		status = ocfs2_lock_refcount_tree(osb, refcount_loc, 1,
+				&ref_tree, NULL);
+		if (status) {
+			mlog_errno(status);
+			goto bail;
+		}
+	}
+
+	status = ocfs2_remove_btree_range(inode, &et, trunc_cpos,
+					  phys_cpos, trunc_len, flags, &dealloc,
+					  refcount_loc, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
@@ -7101,6 +8304,11 @@ start:
 	goto start;
 
 bail:
+<<<<<<< HEAD
+=======
+	if (ref_tree)
+		ocfs2_unlock_refcount_tree(osb, ref_tree, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_schedule_truncate_log_flush(osb, 1);
 
@@ -7124,17 +8332,32 @@ int ocfs2_truncate_inline(struct inode *inode, struct buffer_head *di_bh,
 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)di_bh->b_data;
 	struct ocfs2_inline_data *idata = &di->id2.i_data;
 
+<<<<<<< HEAD
 	if (end > i_size_read(inode))
 		end = i_size_read(inode);
 
 	BUG_ON(start >= end);
+=======
+	/* No need to punch hole beyond i_size. */
+	if (start >= i_size_read(inode))
+		return 0;
+
+	if (end > i_size_read(inode))
+		end = i_size_read(inode);
+
+	BUG_ON(start > end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) ||
 	    !(le16_to_cpu(di->i_dyn_features) & OCFS2_INLINE_DATA_FL) ||
 	    !ocfs2_supports_inline_data(osb)) {
 		ocfs2_error(inode->i_sb,
+<<<<<<< HEAD
 			    "Inline data flags for inode %llu don't agree! "
 			    "Disk: 0x%x, Memory: 0x%x, Superblock: 0x%x\n",
+=======
+			    "Inline data flags for inode %llu don't agree! Disk: 0x%x, Memory: 0x%x, Superblock: 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)OCFS2_I(inode)->ip_blkno,
 			    le16_to_cpu(di->i_dyn_features),
 			    OCFS2_I(inode)->ip_dyn_features,
@@ -7163,7 +8386,11 @@ int ocfs2_truncate_inline(struct inode *inode, struct buffer_head *di_bh,
 	/*
 	 * No need to worry about the data page here - it's been
 	 * truncated already and inline data doesn't need it for
+<<<<<<< HEAD
 	 * pushing zero's to disk, so we'll let readpage pick it up
+=======
+	 * pushing zero's to disk, so we'll let read_folio pick it up
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * later.
 	 */
 	if (trunc) {
@@ -7172,11 +8399,20 @@ int ocfs2_truncate_inline(struct inode *inode, struct buffer_head *di_bh,
 	}
 
 	inode->i_blocks = ocfs2_inode_sector_count(inode);
+<<<<<<< HEAD
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
 
 	di->i_ctime = di->i_mtime = cpu_to_le64(inode->i_ctime.tv_sec);
 	di->i_ctime_nsec = di->i_mtime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
 
+=======
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+
+	di->i_ctime = di->i_mtime = cpu_to_le64(inode_get_ctime_sec(inode));
+	di->i_ctime_nsec = di->i_mtime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
+
+	ocfs2_update_inode_fsync_trans(handle, inode, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_journal_dirty(handle, di_bh);
 
 out_commit:
@@ -7188,6 +8424,7 @@ out:
 
 static int ocfs2_trim_extent(struct super_block *sb,
 			     struct ocfs2_group_desc *gd,
+<<<<<<< HEAD
 			     u32 start, u32 count)
 {
 	u64 discard, bcount;
@@ -7195,6 +8432,26 @@ static int ocfs2_trim_extent(struct super_block *sb,
 	bcount = ocfs2_clusters_to_blocks(sb, count);
 	discard = le64_to_cpu(gd->bg_blkno) +
 			ocfs2_clusters_to_blocks(sb, start);
+=======
+			     u64 group, u32 start, u32 count)
+{
+	u64 discard, bcount;
+	struct ocfs2_super *osb = OCFS2_SB(sb);
+
+	bcount = ocfs2_clusters_to_blocks(sb, count);
+	discard = ocfs2_clusters_to_blocks(sb, start);
+
+	/*
+	 * For the first cluster group, the gd->bg_blkno is not at the start
+	 * of the group, but at an offset from the start. If we add it while
+	 * calculating discard for first group, we will wrongly start fstrim a
+	 * few blocks after the desried start block and the range can cross
+	 * over into the next cluster group. So, add it only if this is not
+	 * the first cluster group.
+	 */
+	if (group != osb->first_cluster_group_blkno)
+		discard += le64_to_cpu(gd->bg_blkno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_trim_extent(sb, (unsigned long long)discard, bcount);
 
@@ -7202,7 +8459,11 @@ static int ocfs2_trim_extent(struct super_block *sb,
 }
 
 static int ocfs2_trim_group(struct super_block *sb,
+<<<<<<< HEAD
 			    struct ocfs2_group_desc *gd,
+=======
+			    struct ocfs2_group_desc *gd, u64 group,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    u32 start, u32 max, u32 minbits)
 {
 	int ret = 0, count = 0, next;
@@ -7221,7 +8482,11 @@ static int ocfs2_trim_group(struct super_block *sb,
 		next = ocfs2_find_next_bit(bitmap, max, start);
 
 		if ((next - start) >= minbits) {
+<<<<<<< HEAD
 			ret = ocfs2_trim_extent(sb, gd,
+=======
+			ret = ocfs2_trim_extent(sb, gd, group,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						start, next - start);
 			if (ret < 0) {
 				mlog_errno(ret);
@@ -7246,10 +8511,18 @@ static int ocfs2_trim_group(struct super_block *sb,
 	return count;
 }
 
+<<<<<<< HEAD
 int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 {
 	struct ocfs2_super *osb = OCFS2_SB(sb);
 	u64 start, len, trimmed, first_group, last_group, group;
+=======
+static
+int ocfs2_trim_mainbm(struct super_block *sb, struct fstrim_range *range)
+{
+	struct ocfs2_super *osb = OCFS2_SB(sb);
+	u64 start, len, trimmed = 0, first_group, last_group = 0, group = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, cnt;
 	u32 first_bit, last_bit, minlen;
 	struct buffer_head *main_bm_bh = NULL;
@@ -7261,6 +8534,7 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	start = range->start >> osb->s_clustersize_bits;
 	len = range->len >> osb->s_clustersize_bits;
 	minlen = range->minlen >> osb->s_clustersize_bits;
+<<<<<<< HEAD
 	trimmed = 0;
 
 	if (!len) {
@@ -7271,6 +8545,15 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	if (minlen >= osb->bitmap_cpg)
 		return -EINVAL;
 
+=======
+
+	if (minlen >= osb->bitmap_cpg || range->len < sb->s_blocksize)
+		return -EINVAL;
+
+	trace_ocfs2_trim_mainbm(start, len, minlen);
+
+next_group:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	main_bm_inode = ocfs2_get_system_file_inode(osb,
 						    GLOBAL_BITMAP_SYSTEM_INODE,
 						    OCFS2_INVALID_SLOT);
@@ -7280,7 +8563,11 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&main_bm_inode->i_mutex);
+=======
+	inode_lock(main_bm_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_inode_lock(main_bm_inode, &main_bm_bh, 0);
 	if (ret < 0) {
@@ -7289,6 +8576,7 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	}
 	main_bm = (struct ocfs2_dinode *)main_bm_bh->b_data;
 
+<<<<<<< HEAD
 	if (start >= le32_to_cpu(main_bm->i_clusters)) {
 		ret = -EINVAL;
 		goto out_unlock;
@@ -7309,6 +8597,36 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 	last_bit = osb->bitmap_cpg;
 
 	for (group = first_group; group <= last_group;) {
+=======
+	/*
+	 * Do some check before trim the first group.
+	 */
+	if (!group) {
+		if (start >= le32_to_cpu(main_bm->i_clusters)) {
+			ret = -EINVAL;
+			goto out_unlock;
+		}
+
+		if (start + len > le32_to_cpu(main_bm->i_clusters))
+			len = le32_to_cpu(main_bm->i_clusters) - start;
+
+		/*
+		 * Determine first and last group to examine based on
+		 * start and len
+		 */
+		first_group = ocfs2_which_cluster_group(main_bm_inode, start);
+		if (first_group == osb->first_cluster_group_blkno)
+			first_bit = start;
+		else
+			first_bit = start - ocfs2_blocks_to_clusters(sb,
+								first_group);
+		last_group = ocfs2_which_cluster_group(main_bm_inode,
+						       start + len - 1);
+		group = first_group;
+	}
+
+	do {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (first_bit + len >= osb->bitmap_cpg)
 			last_bit = osb->bitmap_cpg;
 		else
@@ -7323,7 +8641,12 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 		}
 
 		gd = (struct ocfs2_group_desc *)gd_bh->b_data;
+<<<<<<< HEAD
 		cnt = ocfs2_trim_group(sb, gd, first_bit, last_bit, minlen);
+=======
+		cnt = ocfs2_trim_group(sb, gd, group,
+				       first_bit, last_bit, minlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(gd_bh);
 		gd_bh = NULL;
 		if (cnt < 0) {
@@ -7339,6 +8662,7 @@ int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
 			group = ocfs2_clusters_to_blocks(sb, osb->bitmap_cpg);
 		else
 			group += ocfs2_clusters_to_blocks(sb, osb->bitmap_cpg);
+<<<<<<< HEAD
 	}
 	range->len = trimmed * sb->s_blocksize;
 out_unlock:
@@ -7348,5 +8672,85 @@ out_mutex:
 	mutex_unlock(&main_bm_inode->i_mutex);
 	iput(main_bm_inode);
 out:
+=======
+	} while (0);
+
+out_unlock:
+	ocfs2_inode_unlock(main_bm_inode, 0);
+	brelse(main_bm_bh);
+	main_bm_bh = NULL;
+out_mutex:
+	inode_unlock(main_bm_inode);
+	iput(main_bm_inode);
+
+	/*
+	 * If all the groups trim are not done or failed, but we should release
+	 * main_bm related locks for avoiding the current IO starve, then go to
+	 * trim the next group
+	 */
+	if (ret >= 0 && group <= last_group) {
+		cond_resched();
+		goto next_group;
+	}
+out:
+	range->len = trimmed * osb->s_clustersize;
+	return ret;
+}
+
+int ocfs2_trim_fs(struct super_block *sb, struct fstrim_range *range)
+{
+	int ret;
+	struct ocfs2_super *osb = OCFS2_SB(sb);
+	struct ocfs2_trim_fs_info info, *pinfo = NULL;
+
+	ocfs2_trim_fs_lock_res_init(osb);
+
+	trace_ocfs2_trim_fs(range->start, range->len, range->minlen);
+
+	ret = ocfs2_trim_fs_lock(osb, NULL, 1);
+	if (ret < 0) {
+		if (ret != -EAGAIN) {
+			mlog_errno(ret);
+			ocfs2_trim_fs_lock_res_uninit(osb);
+			return ret;
+		}
+
+		mlog(ML_NOTICE, "Wait for trim on device (%s) to "
+		     "finish, which is running from another node.\n",
+		     osb->dev_str);
+		ret = ocfs2_trim_fs_lock(osb, &info, 0);
+		if (ret < 0) {
+			mlog_errno(ret);
+			ocfs2_trim_fs_lock_res_uninit(osb);
+			return ret;
+		}
+
+		if (info.tf_valid && info.tf_success &&
+		    info.tf_start == range->start &&
+		    info.tf_len == range->len &&
+		    info.tf_minlen == range->minlen) {
+			/* Avoid sending duplicated trim to a shared device */
+			mlog(ML_NOTICE, "The same trim on device (%s) was "
+			     "just done from node (%u), return.\n",
+			     osb->dev_str, info.tf_nodenum);
+			range->len = info.tf_trimlen;
+			goto out;
+		}
+	}
+
+	info.tf_nodenum = osb->node_num;
+	info.tf_start = range->start;
+	info.tf_len = range->len;
+	info.tf_minlen = range->minlen;
+
+	ret = ocfs2_trim_mainbm(sb, range);
+
+	info.tf_trimlen = range->len;
+	info.tf_success = (ret < 0 ? 0 : 1);
+	pinfo = &info;
+out:
+	ocfs2_trim_fs_unlock(osb, pinfo);
+	ocfs2_trim_fs_lock_res_uninit(osb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * pps_gen_parport.c -- kernel parallel port PPS signal generator
  *
@@ -17,6 +18,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * pps_gen_parport.c -- kernel parallel port PPS signal generator
+ *
+ * Copyright (C) 2009   Alexander Gordeev <lasaine@lvk.cs.msu.su>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -34,8 +42,11 @@
 #include <linux/hrtimer.h>
 #include <linux/parport.h>
 
+<<<<<<< HEAD
 #define DRVDESC "parallel port PPS signal generator"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SIGNAL		0
 #define NO_SIGNAL	PARPORT_CONTROL_STROBE
 
@@ -70,7 +81,11 @@ static long hrtimer_error = SAFETY_INTERVAL;
 /* the kernel hrtimer event */
 static enum hrtimer_restart hrtimer_event(struct hrtimer *timer)
 {
+<<<<<<< HEAD
 	struct timespec expire_time, ts1, ts2, ts3, dts;
+=======
+	struct timespec64 expire_time, ts1, ts2, ts3, dts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pps_generator_pp *dev;
 	struct parport *port;
 	long lim, delta;
@@ -78,7 +93,11 @@ static enum hrtimer_restart hrtimer_event(struct hrtimer *timer)
 
 	/* We have to disable interrupts here. The idea is to prevent
 	 * other interrupts on the same processor to introduce random
+<<<<<<< HEAD
 	 * lags while polling the clock. getnstimeofday() takes <1us on
+=======
+	 * lags while polling the clock. ktime_get_real_ts64() takes <1us on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * most machines while other interrupt handlers can take much
 	 * more potentially.
 	 *
@@ -88,22 +107,36 @@ static enum hrtimer_restart hrtimer_event(struct hrtimer *timer)
 	local_irq_save(flags);
 
 	/* first of all we get the time stamp... */
+<<<<<<< HEAD
 	getnstimeofday(&ts1);
 	expire_time = ktime_to_timespec(hrtimer_get_softexpires(timer));
+=======
+	ktime_get_real_ts64(&ts1);
+	expire_time = ktime_to_timespec64(hrtimer_get_softexpires(timer));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = container_of(timer, struct pps_generator_pp, timer);
 	lim = NSEC_PER_SEC - send_delay - dev->port_write_time;
 
 	/* check if we are late */
 	if (expire_time.tv_sec != ts1.tv_sec || ts1.tv_nsec > lim) {
 		local_irq_restore(flags);
+<<<<<<< HEAD
 		pr_err("we are late this time %ld.%09ld\n",
 				ts1.tv_sec, ts1.tv_nsec);
+=======
+		pr_err("we are late this time %lld.%09ld\n",
+				(s64)ts1.tv_sec, ts1.tv_nsec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
 	/* busy loop until the time is right for an assert edge */
 	do {
+<<<<<<< HEAD
 		getnstimeofday(&ts2);
+=======
+		ktime_get_real_ts64(&ts2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (expire_time.tv_sec == ts2.tv_sec && ts2.tv_nsec < lim);
 
 	/* set the signal */
@@ -113,17 +146,26 @@ static enum hrtimer_restart hrtimer_event(struct hrtimer *timer)
 	/* busy loop until the time is right for a clear edge */
 	lim = NSEC_PER_SEC - dev->port_write_time;
 	do {
+<<<<<<< HEAD
 		getnstimeofday(&ts2);
+=======
+		ktime_get_real_ts64(&ts2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (expire_time.tv_sec == ts2.tv_sec && ts2.tv_nsec < lim);
 
 	/* unset the signal */
 	port->ops->write_control(port, NO_SIGNAL);
 
+<<<<<<< HEAD
 	getnstimeofday(&ts3);
+=======
+	ktime_get_real_ts64(&ts3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_restore(flags);
 
 	/* update calibrated port write time */
+<<<<<<< HEAD
 	dts = timespec_sub(ts3, ts2);
 	dev->port_write_time =
 		(dev->port_write_time + timespec_to_ns(&dts)) >> 1;
@@ -132,6 +174,16 @@ done:
 	/* update calibrated hrtimer error */
 	dts = timespec_sub(ts1, expire_time);
 	delta = timespec_to_ns(&dts);
+=======
+	dts = timespec64_sub(ts3, ts2);
+	dev->port_write_time =
+		(dev->port_write_time + timespec64_to_ns(&dts)) >> 1;
+
+done:
+	/* update calibrated hrtimer error */
+	dts = timespec64_sub(ts1, expire_time);
+	delta = timespec64_to_ns(&dts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the new error value is bigger then the old, use the new
 	 * value, if not then slowly move towards the new value. This
 	 * way it should be safe in bad conditions and efficient in
@@ -161,6 +213,7 @@ static void calibrate_port(struct pps_generator_pp *dev)
 	long acc = 0;
 
 	for (i = 0; i < (1 << PORT_NTESTS_SHIFT); i++) {
+<<<<<<< HEAD
 		struct timespec a, b;
 		unsigned long irq_flags;
 
@@ -172,6 +225,19 @@ static void calibrate_port(struct pps_generator_pp *dev)
 
 		b = timespec_sub(b, a);
 		acc += timespec_to_ns(&b);
+=======
+		struct timespec64 a, b;
+		unsigned long irq_flags;
+
+		local_irq_save(irq_flags);
+		ktime_get_real_ts64(&a);
+		port->ops->write_control(port, NO_SIGNAL);
+		ktime_get_real_ts64(&b);
+		local_irq_restore(irq_flags);
+
+		b = timespec64_sub(b, a);
+		acc += timespec64_to_ns(&b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->port_write_time = acc >> PORT_NTESTS_SHIFT;
@@ -180,9 +246,15 @@ static void calibrate_port(struct pps_generator_pp *dev)
 
 static inline ktime_t next_intr_time(struct pps_generator_pp *dev)
 {
+<<<<<<< HEAD
 	struct timespec ts;
 
 	getnstimeofday(&ts);
+=======
+	struct timespec64 ts;
+
+	ktime_get_real_ts64(&ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ktime_set(ts.tv_sec +
 			((ts.tv_nsec > 990 * NSEC_PER_MSEC) ? 1 : 0),
@@ -192,13 +264,31 @@ static inline ktime_t next_intr_time(struct pps_generator_pp *dev)
 
 static void parport_attach(struct parport *port)
 {
+<<<<<<< HEAD
+=======
+	struct pardev_cb pps_cb;
+
+	if (send_delay > SEND_DELAY_MAX) {
+		pr_err("delay value should be not greater then %d\n", SEND_DELAY_MAX);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (attached) {
 		/* we already have a port */
 		return;
 	}
 
+<<<<<<< HEAD
 	device.pardev = parport_register_device(port, KBUILD_MODNAME,
 			NULL, NULL, NULL, PARPORT_FLAG_EXCL, &device);
+=======
+	memset(&pps_cb, 0, sizeof(pps_cb));
+	pps_cb.private = &device;
+	pps_cb.flags = PARPORT_FLAG_EXCL;
+	device.pardev = parport_register_dev_model(port, KBUILD_MODNAME,
+						   &pps_cb, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!device.pardev) {
 		pr_err("couldn't register with %s\n", port->name);
 		return;
@@ -236,6 +326,7 @@ static void parport_detach(struct parport *port)
 
 static struct parport_driver pps_gen_parport_driver = {
 	.name = KBUILD_MODNAME,
+<<<<<<< HEAD
 	.attach = parport_attach,
 	.detach = parport_detach,
 };
@@ -274,4 +365,14 @@ module_exit(pps_gen_parport_exit);
 
 MODULE_AUTHOR("Alexander Gordeev <lasaine@lvk.cs.msu.su>");
 MODULE_DESCRIPTION(DRVDESC);
+=======
+	.match_port = parport_attach,
+	.detach = parport_detach,
+	.devmodel = true,
+};
+module_parport_driver(pps_gen_parport_driver);
+
+MODULE_AUTHOR("Alexander Gordeev <lasaine@lvk.cs.msu.su>");
+MODULE_DESCRIPTION("parallel port PPS signal generator");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

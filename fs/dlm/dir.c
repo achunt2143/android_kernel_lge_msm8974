@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -23,6 +30,7 @@
 #include "lock.h"
 #include "dir.h"
 
+<<<<<<< HEAD
 
 static void put_free_de(struct dlm_ls *ls, struct dlm_direntry *de)
 {
@@ -67,6 +75,8 @@ void dlm_clear_free_entries(struct dlm_ls *ls)
 	spin_unlock(&ls->ls_recover_list_lock);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We use the upper 16 bits of the hash value to select the directory node.
  * Low bits are used for distribution of rsb's among hash buckets on each node.
@@ -78,6 +88,7 @@ void dlm_clear_free_entries(struct dlm_ls *ls)
 
 int dlm_hash2nodeid(struct dlm_ls *ls, uint32_t hash)
 {
+<<<<<<< HEAD
 	struct list_head *tmp;
 	struct dlm_member *memb = NULL;
 	uint32_t node, n = 0;
@@ -110,10 +121,21 @@ int dlm_hash2nodeid(struct dlm_ls *ls, uint32_t hash)
 	nodeid = memb->nodeid;
  out:
 	return nodeid;
+=======
+	uint32_t node;
+
+	if (ls->ls_num_nodes == 1)
+		return dlm_our_nodeid();
+	else {
+		node = (hash >> 16) % ls->ls_total_weight;
+		return ls->ls_node_array[node];
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dlm_dir_nodeid(struct dlm_rsb *r)
 {
+<<<<<<< HEAD
 	return dlm_hash2nodeid(r->res_ls, r->res_hash);
 }
 
@@ -205,22 +227,57 @@ int dlm_recover_directory(struct dlm_ls *ls)
 	uint16_t namelen;
 
 	log_debug(ls, "dlm_recover_directory");
+=======
+	return r->res_dir_nodeid;
+}
+
+void dlm_recover_dir_nodeid(struct dlm_ls *ls)
+{
+	struct dlm_rsb *r;
+
+	down_read(&ls->ls_root_sem);
+	list_for_each_entry(r, &ls->ls_root_list, res_root_list) {
+		r->res_dir_nodeid = dlm_hash2nodeid(ls, r->res_hash);
+	}
+	up_read(&ls->ls_root_sem);
+}
+
+int dlm_recover_directory(struct dlm_ls *ls, uint64_t seq)
+{
+	struct dlm_member *memb;
+	char *b, *last_name = NULL;
+	int error = -ENOMEM, last_len, nodeid, result;
+	uint16_t namelen;
+	unsigned int count = 0, count_match = 0, count_bad = 0, count_add = 0;
+
+	log_rinfo(ls, "dlm_recover_directory");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dlm_no_directory(ls))
 		goto out_status;
 
+<<<<<<< HEAD
 	dlm_dir_clear(ls);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last_name = kmalloc(DLM_RESNAME_MAXLEN, GFP_NOFS);
 	if (!last_name)
 		goto out;
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
+<<<<<<< HEAD
+=======
+		if (memb->nodeid == dlm_our_nodeid())
+			continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(last_name, 0, DLM_RESNAME_MAXLEN);
 		last_len = 0;
 
 		for (;;) {
 			int left;
+<<<<<<< HEAD
 			error = dlm_recovery_stopped(ls);
 			if (error)
 				goto out_free;
@@ -231,13 +288,30 @@ int dlm_recover_directory(struct dlm_ls *ls)
 				goto out_free;
 
 			schedule();
+=======
+			if (dlm_recovery_stopped(ls)) {
+				error = -EINTR;
+				goto out_free;
+			}
+
+			error = dlm_rcom_names(ls, memb->nodeid,
+					       last_name, last_len, seq);
+			if (error)
+				goto out_free;
+
+			cond_resched();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * pick namelen/name pairs out of received buffer
 			 */
 
 			b = ls->ls_recover_buf->rc_buf;
+<<<<<<< HEAD
 			left = ls->ls_recover_buf->rc_header.h_length;
+=======
+			left = le16_to_cpu(ls->ls_recover_buf->rc_header.h_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			left -= sizeof(struct dlm_rcom);
 
 			for (;;) {
@@ -267,6 +341,7 @@ int dlm_recover_directory(struct dlm_ls *ls)
 				if (namelen > DLM_RESNAME_MAXLEN)
 					goto out_free;
 
+<<<<<<< HEAD
 				error = -ENOMEM;
 				de = get_free_de(ls, namelen);
 				if (!de)
@@ -285,11 +360,64 @@ int dlm_recover_directory(struct dlm_ls *ls)
 			}
 		}
          done:
+=======
+				error = dlm_master_lookup(ls, memb->nodeid,
+							  b, namelen,
+							  DLM_LU_RECOVER_DIR,
+							  &nodeid, &result);
+				if (error) {
+					log_error(ls, "recover_dir lookup %d",
+						  error);
+					goto out_free;
+				}
+
+				/* The name was found in rsbtbl, but the
+				 * master nodeid is different from
+				 * memb->nodeid which says it is the master.
+				 * This should not happen. */
+
+				if (result == DLM_LU_MATCH &&
+				    nodeid != memb->nodeid) {
+					count_bad++;
+					log_error(ls, "recover_dir lookup %d "
+						  "nodeid %d memb %d bad %u",
+						  result, nodeid, memb->nodeid,
+						  count_bad);
+					print_hex_dump_bytes("dlm_recover_dir ",
+							     DUMP_PREFIX_NONE,
+							     b, namelen);
+				}
+
+				/* The name was found in rsbtbl, and the
+				 * master nodeid matches memb->nodeid. */
+
+				if (result == DLM_LU_MATCH &&
+				    nodeid == memb->nodeid) {
+					count_match++;
+				}
+
+				/* The name was not found in rsbtbl and was
+				 * added with memb->nodeid as the master. */
+
+				if (result == DLM_LU_ADD) {
+					count_add++;
+				}
+
+				last_len = namelen;
+				memcpy(last_name, b, namelen);
+				b += namelen;
+				left -= namelen;
+				count++;
+			}
+		}
+	 done:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		;
 	}
 
  out_status:
 	error = 0;
+<<<<<<< HEAD
 	log_debug(ls, "dlm_recover_directory %d entries", count);
  out_free:
 	kfree(last_name);
@@ -349,6 +477,20 @@ int dlm_dir_lookup(struct dlm_ls *ls, int nodeid, char *name, int namelen,
 }
 
 static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, char *name, int len)
+=======
+	dlm_set_recover_status(ls, DLM_RS_DIR);
+
+	log_rinfo(ls, "dlm_recover_directory %u in %u new",
+		  count, count_add);
+ out_free:
+	kfree(last_name);
+ out:
+	return error;
+}
+
+static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, const char *name,
+				     int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_rsb *r;
 	uint32_t hash, bucket;
@@ -358,10 +500,17 @@ static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, char *name, int len)
 	bucket = hash & (ls->ls_rsbtbl_size - 1);
 
 	spin_lock(&ls->ls_rsbtbl[bucket].lock);
+<<<<<<< HEAD
 	rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[bucket].keep, name, len, 0, &r);
 	if (rv)
 		rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[bucket].toss,
 					 name, len, 0, &r);
+=======
+	rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[bucket].keep, name, len, &r);
+	if (rv)
+		rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[bucket].toss,
+					 name, len, &r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&ls->ls_rsbtbl[bucket].lock);
 
 	if (!rv)
@@ -371,7 +520,11 @@ static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, char *name, int len)
 	list_for_each_entry(r, &ls->ls_root_list, res_root_list) {
 		if (len == r->res_length && !memcmp(name, r->res_name, len)) {
 			up_read(&ls->ls_root_sem);
+<<<<<<< HEAD
 			log_error(ls, "find_rsb_root revert to root_list %s",
+=======
+			log_debug(ls, "find_rsb_root revert to root_list %s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  r->res_name);
 			return r;
 		}
@@ -384,7 +537,11 @@ static struct dlm_rsb *find_rsb_root(struct dlm_ls *ls, char *name, int len)
    for rsb's we're master of and whose directory node matches the requesting
    node.  inbuf is the rsb name last sent, inlen is the name's length */
 
+<<<<<<< HEAD
 void dlm_copy_master_names(struct dlm_ls *ls, char *inbuf, int inlen,
+=======
+void dlm_copy_master_names(struct dlm_ls *ls, const char *inbuf, int inlen,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  			   char *outbuf, int outlen, int nodeid)
 {
 	struct list_head *list;
@@ -397,9 +554,14 @@ void dlm_copy_master_names(struct dlm_ls *ls, char *inbuf, int inlen,
 	if (inlen > 1) {
 		r = find_rsb_root(ls, inbuf, inlen);
 		if (!r) {
+<<<<<<< HEAD
 			inbuf[inlen - 1] = '\0';
 			log_error(ls, "copy_master_names from %d start %d %s",
 				  nodeid, inlen, inbuf);
+=======
+			log_error(ls, "copy_master_names from %d start %d %.*s",
+				  nodeid, inlen, inlen, inbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		list = r->res_root_list.next;
@@ -429,6 +591,10 @@ void dlm_copy_master_names(struct dlm_ls *ls, char *inbuf, int inlen,
 			be_namelen = cpu_to_be16(0);
 			memcpy(outbuf + offset, &be_namelen, sizeof(__be16));
 			offset += sizeof(__be16);
+<<<<<<< HEAD
+=======
+			ls->ls_recover_dir_sent_msg++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -437,6 +603,10 @@ void dlm_copy_master_names(struct dlm_ls *ls, char *inbuf, int inlen,
 		offset += sizeof(__be16);
 		memcpy(outbuf + offset, r->res_name, r->res_length);
 		offset += r->res_length;
+<<<<<<< HEAD
+=======
+		ls->ls_recover_dir_sent_res++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -449,8 +619,13 @@ void dlm_copy_master_names(struct dlm_ls *ls, char *inbuf, int inlen,
 		be_namelen = cpu_to_be16(0xFFFF);
 		memcpy(outbuf + offset, &be_namelen, sizeof(__be16));
 		offset += sizeof(__be16);
+<<<<<<< HEAD
 	}
 
+=======
+		ls->ls_recover_dir_sent_msg++;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	up_read(&ls->ls_root_sem);
 }

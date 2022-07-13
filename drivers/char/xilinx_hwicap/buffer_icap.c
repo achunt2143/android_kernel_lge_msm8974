@@ -269,8 +269,12 @@ int buffer_icap_set_configuration(struct hwicap_drvdata *drvdata, u32 *data,
 {
 	int status;
 	s32 buffer_count = 0;
+<<<<<<< HEAD
 	s32 num_writes = 0;
 	bool dirty = 0;
+=======
+	bool dirty = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i;
 	void __iomem *base_address = drvdata->base_address;
 
@@ -279,7 +283,11 @@ int buffer_icap_set_configuration(struct hwicap_drvdata *drvdata, u32 *data,
 
 		/* Copy data to bram */
 		buffer_icap_set_bram(base_address, buffer_count, data[i]);
+<<<<<<< HEAD
 		dirty = 1;
+=======
+		dirty = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (buffer_count < XHI_MAX_BUFFER_INTS - 1) {
 			buffer_count++;
@@ -298,8 +306,12 @@ int buffer_icap_set_configuration(struct hwicap_drvdata *drvdata, u32 *data,
 		}
 
 		buffer_count = 0;
+<<<<<<< HEAD
 		num_writes++;
 		dirty = 0;
+=======
+		dirty = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Write unwritten data to ICAP */
@@ -328,7 +340,10 @@ int buffer_icap_get_configuration(struct hwicap_drvdata *drvdata, u32 *data,
 {
 	int status;
 	s32 buffer_count = 0;
+<<<<<<< HEAD
 	s32 read_count = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i;
 	void __iomem *base_address = drvdata->base_address;
 
@@ -353,7 +368,10 @@ int buffer_icap_get_configuration(struct hwicap_drvdata *drvdata, u32 *data,
 			}
 
 			buffer_count = 0;
+<<<<<<< HEAD
 			read_count++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Copy data from bram */

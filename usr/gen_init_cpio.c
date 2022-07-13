@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 #include <stdio.h>
 #include <stdlib.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -19,10 +27,19 @@
 
 #define xstr(s) #s
 #define str(s) xstr(s)
+<<<<<<< HEAD
+=======
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int offset;
 static unsigned int ino = 721;
 static time_t default_mtime;
+<<<<<<< HEAD
+=======
+static bool do_file_mtime;
+static bool do_csum = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct file_handler {
 	const char *type;
@@ -76,7 +93,11 @@ static void cpio_trailer(void)
 
 	sprintf(s, "%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
+<<<<<<< HEAD
 		"070701",		/* magic */
+=======
+		do_csum ? "070702" : "070701", /* magic */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0,			/* ino */
 		0,			/* mode */
 		(long) 0,		/* uid */
@@ -108,7 +129,11 @@ static int cpio_mkslink(const char *name, const char *target,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
+<<<<<<< HEAD
 		"070701",		/* magic */
+=======
+		do_csum ? "070702" : "070701", /* magic */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ino++,			/* ino */
 		S_IFLNK | mode,		/* mode */
 		(long) uid,		/* uid */
@@ -157,7 +182,11 @@ static int cpio_mkgeneric(const char *name, unsigned int mode,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
+<<<<<<< HEAD
 		"070701",		/* magic */
+=======
+		do_csum ? "070702" : "070701", /* magic */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ino++,			/* ino */
 		mode,			/* mode */
 		(long) uid,		/* uid */
@@ -187,7 +216,11 @@ struct generic_type {
 	mode_t mode;
 };
 
+<<<<<<< HEAD
 static struct generic_type generic_type_table[] = {
+=======
+static const struct generic_type generic_type_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[GT_DIR] = {
 		.type = "dir",
 		.mode = S_IFDIR
@@ -251,7 +284,11 @@ static int cpio_mknod(const char *name, unsigned int mode,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
+<<<<<<< HEAD
 		"070701",		/* magic */
+=======
+		do_csum ? "070702" : "070701", /* magic */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ino++,			/* ino */
 		mode,			/* mode */
 		(long) uid,		/* uid */
@@ -291,11 +328,38 @@ static int cpio_mknod_line(const char *line)
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static int cpio_mkfile_csum(int fd, unsigned long size, uint32_t *csum)
+{
+	while (size) {
+		unsigned char filebuf[65536];
+		ssize_t this_read;
+		size_t i, this_size = MIN(size, sizeof(filebuf));
+
+		this_read = read(fd, filebuf, this_size);
+		if (this_read <= 0 || this_read > this_size)
+			return -1;
+
+		for (i = 0; i < this_read; i++)
+			*csum += filebuf[i];
+
+		size -= this_read;
+	}
+	/* seek back to the start for data segment I/O */
+	if (lseek(fd, 0, SEEK_SET) < 0)
+		return -1;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cpio_mkfile(const char *name, const char *location,
 			unsigned int mode, uid_t uid, gid_t gid,
 			unsigned int nlinks)
 {
 	char s[256];
+<<<<<<< HEAD
 	char *filebuf = NULL;
 	struct stat buf;
 	long size;
@@ -304,6 +368,17 @@ static int cpio_mkfile(const char *name, const char *location,
 	int rc = -1;
 	int namesize;
 	unsigned int i;
+=======
+	struct stat buf;
+	unsigned long size;
+	int file;
+	int retval;
+	int rc = -1;
+	time_t mtime;
+	int namesize;
+	unsigned int i;
+	uint32_t csum = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mode |= S_IFREG;
 
@@ -319,6 +394,7 @@ static int cpio_mkfile(const char *name, const char *location,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	filebuf = malloc(buf.st_size);
 	if (!filebuf) {
 		fprintf (stderr, "out of memory\n");
@@ -328,37 +404,82 @@ static int cpio_mkfile(const char *name, const char *location,
 	retval = read (file, filebuf, buf.st_size);
 	if (retval < 0) {
 		fprintf (stderr, "Can not read %s file\n", location);
+=======
+	if (do_file_mtime) {
+		mtime = default_mtime;
+	} else {
+		mtime = buf.st_mtime;
+		if (mtime > 0xffffffff) {
+			fprintf(stderr, "%s: Timestamp exceeds maximum cpio timestamp, clipping.\n",
+					location);
+			mtime = 0xffffffff;
+		}
+
+		if (mtime < 0) {
+			fprintf(stderr, "%s: Timestamp negative, clipping.\n",
+					location);
+			mtime = 0;
+		}
+	}
+
+	if (buf.st_size > 0xffffffff) {
+		fprintf(stderr, "%s: Size exceeds maximum cpio file size\n",
+			location);
+		goto error;
+	}
+
+	if (do_csum && cpio_mkfile_csum(file, buf.st_size, &csum) < 0) {
+		fprintf(stderr, "Failed to checksum file %s\n", location);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 	size = 0;
 	for (i = 1; i <= nlinks; i++) {
 		/* data goes on last link */
+<<<<<<< HEAD
 		if (i == nlinks) size = buf.st_size;
+=======
+		if (i == nlinks)
+			size = buf.st_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (name[0] == '/')
 			name++;
 		namesize = strlen(name) + 1;
 		sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 		       "%08lX%08X%08X%08X%08X%08X%08X",
+<<<<<<< HEAD
 			"070701",		/* magic */
+=======
+			do_csum ? "070702" : "070701", /* magic */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ino,			/* ino */
 			mode,			/* mode */
 			(long) uid,		/* uid */
 			(long) gid,		/* gid */
 			nlinks,			/* nlink */
+<<<<<<< HEAD
 			(long) buf.st_mtime,	/* mtime */
+=======
+			(long) mtime,		/* mtime */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			size,			/* filesize */
 			3,			/* major */
 			1,			/* minor */
 			0,			/* rmajor */
 			0,			/* rminor */
 			namesize,		/* namesize */
+<<<<<<< HEAD
 			0);			/* chksum */
+=======
+			size ? csum : 0);	/* chksum */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		push_hdr(s);
 		push_string(name);
 		push_pad();
 
+<<<<<<< HEAD
 		if (size) {
 			if (fwrite(filebuf, size, 1, stdout) != 1) {
 				fprintf(stderr, "writing filebuf failed\n");
@@ -367,21 +488,50 @@ static int cpio_mkfile(const char *name, const char *location,
 			offset += size;
 			push_pad();
 		}
+=======
+		while (size) {
+			unsigned char filebuf[65536];
+			ssize_t this_read;
+			size_t this_size = MIN(size, sizeof(filebuf));
+
+			this_read = read(file, filebuf, this_size);
+			if (this_read <= 0 || this_read > this_size) {
+				fprintf(stderr, "Can not read %s file\n", location);
+				goto error;
+			}
+
+			if (fwrite(filebuf, this_read, 1, stdout) != 1) {
+				fprintf(stderr, "writing filebuf failed\n");
+				goto error;
+			}
+			offset += this_read;
+			size -= this_read;
+		}
+		push_pad();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		name += namesize;
 	}
 	ino++;
 	rc = 0;
+<<<<<<< HEAD
 	
 error:
 	if (filebuf) free(filebuf);
 	if (file >= 0) close(file);
+=======
+
+error:
+	if (file >= 0)
+		close(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static char *cpio_replace_env(char *new_location)
 {
 	char expanded[PATH_MAX + 1];
+<<<<<<< HEAD
 	char env_var[PATH_MAX + 1];
 	char *start;
 	char *end;
@@ -400,12 +550,26 @@ static char *cpio_replace_env(char *new_location)
 			new_location[PATH_MAX] = 0;
 		} else
 			break;
+=======
+	char *start, *end, *var;
+
+	while ((start = strstr(new_location, "${")) &&
+	       (end = strchr(start + 2, '}'))) {
+		*start = *end = 0;
+		var = getenv(start + 2);
+		snprintf(expanded, sizeof expanded, "%s%s%s",
+			 new_location, var ? var : "", end + 1);
+		strcpy(new_location, expanded);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return new_location;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cpio_mkfile_line(const char *line)
 {
 	char name[PATH_MAX + 1];
@@ -461,7 +625,11 @@ static int cpio_mkfile_line(const char *line)
 static void usage(const char *prog)
 {
 	fprintf(stderr, "Usage:\n"
+<<<<<<< HEAD
 		"\t%s [-t <timestamp>] <cpio_list>\n"
+=======
+		"\t%s [-t <timestamp>] [-c] <cpio_list>\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"\n"
 		"<cpio_list> is a file containing newline separated entries that\n"
 		"describe the files to be included in the initramfs archive:\n"
@@ -495,12 +663,23 @@ static void usage(const char *prog)
 		"file /sbin/kinit /usr/src/klibc/kinit/kinit 0755 0 0\n"
 		"\n"
 		"<timestamp> is time in seconds since Epoch that will be used\n"
+<<<<<<< HEAD
 		"as mtime for symlinks, special files and directories. The default\n"
 		"is to use the current time for these entries.\n",
 		prog);
 }
 
 struct file_handler file_handler_table[] = {
+=======
+		"as mtime for symlinks, directories, regular and special files.\n"
+		"The default is to use the current time for all files, but\n"
+		"preserve modification time for regular files.\n"
+		"-c: calculate and store 32-bit checksums for file data.\n",
+		prog);
+}
+
+static const struct file_handler file_handler_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type    = "file",
 		.handler = cpio_mkfile_line,
@@ -538,7 +717,11 @@ int main (int argc, char *argv[])
 
 	default_mtime = time(NULL);
 	while (1) {
+<<<<<<< HEAD
 		int opt = getopt(argc, argv, "t:h");
+=======
+		int opt = getopt(argc, argv, "t:ch");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *invalid;
 
 		if (opt == -1)
@@ -552,6 +735,13 @@ int main (int argc, char *argv[])
 				usage(argv[0]);
 				exit(1);
 			}
+<<<<<<< HEAD
+=======
+			do_file_mtime = true;
+			break;
+		case 'c':
+			do_csum = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 'h':
 		case '?':
@@ -560,6 +750,19 @@ int main (int argc, char *argv[])
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Timestamps after 2106-02-07 06:28:15 UTC have an ascii hex time_t
+	 * representation that exceeds 8 chars and breaks the cpio header
+	 * specification. Negative timestamps similarly exceed 8 chars.
+	 */
+	if (default_mtime > 0xffffffff || default_mtime < 0) {
+		fprintf(stderr, "ERROR: Timestamp out of range for cpio format\n");
+		exit(1);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (argc - optind != 1) {
 		usage(argv[0]);
 		exit(1);

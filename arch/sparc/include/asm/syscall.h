@@ -1,9 +1,22 @@
+<<<<<<< HEAD
 #ifndef __ASM_SPARC_SYSCALL_H
 #define __ASM_SPARC_SYSCALL_H
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <asm/ptrace.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SPARC_SYSCALL_H
+#define __ASM_SPARC_SYSCALL_H
+
+#include <uapi/linux/audit.h>
+#include <linux/kernel.h>
+#include <linux/compat.h>
+#include <linux/sched.h>
+#include <asm/ptrace.h>
+#include <asm/thread_info.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The syscall table always contains 32 bit pointers since we know that the
@@ -92,11 +105,18 @@ static inline void syscall_set_return_value(struct task_struct *task,
 
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
+<<<<<<< HEAD
 					 unsigned int i, unsigned int n,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned long *args)
 {
 	int zero_extend = 0;
 	unsigned int j;
+<<<<<<< HEAD
+=======
+	unsigned int n = 6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPARC64
 	if (test_tsk_thread_flag(task, TIF_32BIT))
@@ -104,7 +124,11 @@ static inline void syscall_get_arguments(struct task_struct *task,
 #endif
 
 	for (j = 0; j < n; j++) {
+<<<<<<< HEAD
 		unsigned long val = regs->u_regs[UREG_I0 + i + j];
+=======
+		unsigned long val = regs->u_regs[UREG_I0 + j];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (zero_extend)
 			args[j] = (u32) val;
@@ -113,6 +137,7 @@ static inline void syscall_get_arguments(struct task_struct *task,
 	}
 }
 
+<<<<<<< HEAD
 static inline void syscall_set_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
 					 unsigned int i, unsigned int n,
@@ -122,6 +147,18 @@ static inline void syscall_set_arguments(struct task_struct *task,
 
 	for (j = 0; j < n; j++)
 		regs->u_regs[UREG_I0 + i + j] = args[j];
+=======
+static inline int syscall_get_arch(struct task_struct *task)
+{
+#if defined(CONFIG_SPARC64) && defined(CONFIG_COMPAT)
+	return test_tsk_thread_flag(task, TIF_32BIT)
+		? AUDIT_ARCH_SPARC : AUDIT_ARCH_SPARC64;
+#elif defined(CONFIG_SPARC64)
+	return AUDIT_ARCH_SPARC64;
+#else
+	return AUDIT_ARCH_SPARC;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* __ASM_SPARC_SYSCALL_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Copyright (C) 2000 YAEGASHI Takeshi
  *	Hitachi HD64461 companion chip support
@@ -56,7 +60,11 @@ static struct irq_chip hd64461_irq_chip = {
 	.irq_unmask	= hd64461_unmask_irq,
 };
 
+<<<<<<< HEAD
 static void hd64461_irq_demux(unsigned int irq, struct irq_desc *desc)
+=======
+static void hd64461_irq_demux(struct irq_desc *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short intv = __raw_readw(HD64461_NIRR);
 	unsigned int ext_irq = HD64461_IRQBASE;
@@ -71,12 +79,18 @@ static void hd64461_irq_demux(unsigned int irq, struct irq_desc *desc)
 	}
 }
 
+<<<<<<< HEAD
 int __init setup_hd64461(void)
 {
 	int i, nid = cpu_to_node(boot_cpu_data);
 
 	if (!MACH_HD64461)
 		return 0;
+=======
+static int __init setup_hd64461(void)
+{
+	int irq_base, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO
 	       "HD64461 configured at 0x%x on irq %d(mapped into %d to %d)\n",
@@ -89,6 +103,7 @@ int __init setup_hd64461(void)
 #endif
 	__raw_writew(0xffff, HD64461_NIMR);
 
+<<<<<<< HEAD
 	/*  IRQ 80 -> 95 belongs to HD64461  */
 	for (i = HD64461_IRQBASE; i < HD64461_IRQBASE + 16; i++) {
 		unsigned int irq;
@@ -111,6 +126,18 @@ int __init setup_hd64461(void)
 					 handle_level_irq);
 	}
 
+=======
+	irq_base = irq_alloc_descs(HD64461_IRQBASE, HD64461_IRQBASE, 16, -1);
+	if (IS_ERR_VALUE(irq_base)) {
+		pr_err("%s: failed hooking irqs for HD64461\n", __func__);
+		return irq_base;
+	}
+
+	for (i = 0; i < 16; i++)
+		irq_set_chip_and_handler(irq_base + i, &hd64461_irq_chip,
+					 handle_level_irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_set_chained_handler(CONFIG_HD64461_IRQ, hd64461_irq_demux);
 	irq_set_irq_type(CONFIG_HD64461_IRQ, IRQ_TYPE_LEVEL_LOW);
 

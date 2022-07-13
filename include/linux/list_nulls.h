@@ -1,6 +1,16 @@
+<<<<<<< HEAD
 #ifndef _LINUX_LIST_NULLS_H
 #define _LINUX_LIST_NULLS_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_LIST_NULLS_H
+#define _LINUX_LIST_NULLS_H
+
+#include <linux/poison.h>
+#include <linux/const.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Special version of lists, where end of list is not a NULL pointer,
  * but a 'nulls' marker, which can have many different values.
@@ -21,10 +31,23 @@ struct hlist_nulls_head {
 struct hlist_nulls_node {
 	struct hlist_nulls_node *next, **pprev;
 };
+<<<<<<< HEAD
 #define INIT_HLIST_NULLS_HEAD(ptr, nulls) \
 	((ptr)->first = (struct hlist_nulls_node *) (1UL | (((long)nulls) << 1)))
 
 #define hlist_nulls_entry(ptr, type, member) container_of(ptr,type,member)
+=======
+#define NULLS_MARKER(value) (1UL | (((long)value) << 1))
+#define INIT_HLIST_NULLS_HEAD(ptr, nulls) \
+	((ptr)->first = (struct hlist_nulls_node *) NULLS_MARKER(nulls))
+
+#define hlist_nulls_entry(ptr, type, member) container_of(ptr,type,member)
+
+#define hlist_nulls_entry_safe(ptr, type, member) \
+	({ typeof(ptr) ____ptr = (ptr); \
+	   !is_a_nulls(____ptr) ? hlist_nulls_entry(____ptr, type, member) : NULL; \
+	})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ptr_is_a_nulls - Test if a ptr is a nulls
  * @ptr: ptr to be tested
@@ -46,14 +69,45 @@ static inline unsigned long get_nulls_value(const struct hlist_nulls_node *ptr)
 	return ((unsigned long)ptr) >> 1;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * hlist_nulls_unhashed - Has node been removed and reinitialized?
+ * @h: Node to be checked
+ *
+ * Not that not all removal functions will leave a node in unhashed state.
+ * For example, hlist_del_init_rcu() leaves the node in unhashed state,
+ * but hlist_nulls_del() does not.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int hlist_nulls_unhashed(const struct hlist_nulls_node *h)
 {
 	return !h->pprev;
 }
 
+<<<<<<< HEAD
 static inline int hlist_nulls_empty(const struct hlist_nulls_head *h)
 {
 	return is_a_nulls(h->first);
+=======
+/**
+ * hlist_nulls_unhashed_lockless - Has node been removed and reinitialized?
+ * @h: Node to be checked
+ *
+ * Not that not all removal functions will leave a node in unhashed state.
+ * For example, hlist_del_init_rcu() leaves the node in unhashed state,
+ * but hlist_nulls_del() does not.  Unlike hlist_nulls_unhashed(), this
+ * function may be used locklessly.
+ */
+static inline int hlist_nulls_unhashed_lockless(const struct hlist_nulls_node *h)
+{
+	return !READ_ONCE(h->pprev);
+}
+
+static inline int hlist_nulls_empty(const struct hlist_nulls_head *h)
+{
+	return is_a_nulls(READ_ONCE(h->first));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hlist_nulls_add_head(struct hlist_nulls_node *n,
@@ -62,25 +116,43 @@ static inline void hlist_nulls_add_head(struct hlist_nulls_node *n,
 	struct hlist_nulls_node *first = h->first;
 
 	n->next = first;
+<<<<<<< HEAD
 	n->pprev = &h->first;
 	h->first = n;
 	if (!is_a_nulls(first))
 		first->pprev = &n->next;
+=======
+	WRITE_ONCE(n->pprev, &h->first);
+	h->first = n;
+	if (!is_a_nulls(first))
+		WRITE_ONCE(first->pprev, &n->next);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __hlist_nulls_del(struct hlist_nulls_node *n)
 {
 	struct hlist_nulls_node *next = n->next;
 	struct hlist_nulls_node **pprev = n->pprev;
+<<<<<<< HEAD
 	*pprev = next;
 	if (!is_a_nulls(next))
 		next->pprev = pprev;
+=======
+
+	WRITE_ONCE(*pprev, next);
+	if (!is_a_nulls(next))
+		WRITE_ONCE(next->pprev, pprev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hlist_nulls_del(struct hlist_nulls_node *n)
 {
 	__hlist_nulls_del(n);
+<<<<<<< HEAD
 	n->pprev = LIST_POISON2;
+=======
+	WRITE_ONCE(n->pprev, LIST_POISON2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

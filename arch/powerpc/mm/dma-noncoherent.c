@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PowerPC version derived from arch/arm/mm/consistent.c
  *    Copyright (C) 2001 Dan Malek (dmalek@jlc.net)
  *
  *  Copyright (C) 2000 Russell King
+<<<<<<< HEAD
  *
  * Consistent memory allocators.  Used for DMA devices that want to
  * share uncached memory with the processor core.  The function return
@@ -311,11 +316,28 @@ void __dma_free_coherent(size_t size, void *vaddr)
 	dump_stack();
 }
 EXPORT_SYMBOL(__dma_free_coherent);
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/errno.h>
+#include <linux/types.h>
+#include <linux/highmem.h>
+#include <linux/dma-direct.h>
+#include <linux/dma-map-ops.h>
+
+#include <asm/tlbflush.h>
+#include <asm/dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * make an area consistent.
  */
+<<<<<<< HEAD
 void __dma_sync(void *vaddr, size_t size, int direction)
+=======
+static void __dma_sync(void *vaddr, size_t size, int direction)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long start = (unsigned long)vaddr;
 	unsigned long end   = start + size;
@@ -328,7 +350,11 @@ void __dma_sync(void *vaddr, size_t size, int direction)
 		 * invalidate only when cache-line aligned otherwise there is
 		 * the potential for discarding uncommitted data from the cache
 		 */
+<<<<<<< HEAD
 		if ((start & (L1_CACHE_BYTES - 1)) || (size & (L1_CACHE_BYTES - 1)))
+=======
+		if ((start | end) & (L1_CACHE_BYTES - 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flush_dcache_range(start, end);
 		else
 			invalidate_dcache_range(start, end);
@@ -341,7 +367,10 @@ void __dma_sync(void *vaddr, size_t size, int direction)
 		break;
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(__dma_sync);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HIGHMEM
 /*
@@ -388,6 +417,7 @@ static inline void __dma_sync_page_highmem(struct page *page,
  * __dma_sync_page makes memory consistent. identical to __dma_sync, but
  * takes a struct page instead of a virtual address
  */
+<<<<<<< HEAD
 void __dma_sync_page(struct page *page, unsigned long offset,
 	size_t size, int direction)
 {
@@ -418,4 +448,36 @@ unsigned long __dma_get_coherent_pfn(unsigned long cpu_addr)
 	if (pte_none(*ptep) || !pte_present(*ptep))
 		return 0;
 	return pte_pfn(*ptep);
+=======
+static void __dma_sync_page(phys_addr_t paddr, size_t size, int dir)
+{
+	struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
+	unsigned offset = paddr & ~PAGE_MASK;
+
+#ifdef CONFIG_HIGHMEM
+	__dma_sync_page_highmem(page, offset, size, dir);
+#else
+	unsigned long start = (unsigned long)page_address(page) + offset;
+	__dma_sync((void *)start, size, dir);
+#endif
+}
+
+void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+		enum dma_data_direction dir)
+{
+	__dma_sync_page(paddr, size, dir);
+}
+
+void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+		enum dma_data_direction dir)
+{
+	__dma_sync_page(paddr, size, dir);
+}
+
+void arch_dma_prep_coherent(struct page *page, size_t size)
+{
+	unsigned long kaddr = (unsigned long)page_address(page);
+
+	flush_dcache_range(kaddr, kaddr + size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * uptodate.c
  *
  * Tracking the up-to-date-ness of a local buffer_head with respect to
@@ -8,6 +13,7 @@
  *
  * Copyright (C) 2002, 2004, 2005 Oracle.  All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation; either
@@ -23,6 +29,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Standard buffer head caching flags (uptodate, etc) are insufficient
  * in a clustered environment - a buffer may be marked up to date on
  * our local node but could have been modified by another cluster
@@ -67,7 +75,11 @@ struct ocfs2_meta_cache_item {
 	sector_t	c_block;
 };
 
+<<<<<<< HEAD
 static struct kmem_cache *ocfs2_uptodate_cachep = NULL;
+=======
+static struct kmem_cache *ocfs2_uptodate_cachep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u64 ocfs2_metadata_cache_owner(struct ocfs2_caching_info *ci)
 {
@@ -633,6 +645,10 @@ int __init init_ocfs2_uptodate_cache(void)
 
 void exit_ocfs2_uptodate_cache(void)
 {
+<<<<<<< HEAD
 	if (ocfs2_uptodate_cachep)
 		kmem_cache_destroy(ocfs2_uptodate_cachep);
+=======
+	kmem_cache_destroy(ocfs2_uptodate_cachep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

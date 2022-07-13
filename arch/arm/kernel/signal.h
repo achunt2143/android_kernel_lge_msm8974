@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  linux/arch/arm/kernel/signal.h
  *
@@ -11,3 +12,18 @@
 #define KERN_RESTART_CODE	(KERN_SIGRETURN_CODE + sizeof(sigreturn_codes))
 
 extern const unsigned long syscall_restart_code[2];
+=======
+#include <asm/ucontext.h>
+
+struct sigframe {
+	struct ucontext uc;
+	unsigned long retcode[4];
+};
+
+struct rt_sigframe {
+	struct siginfo info;
+	struct sigframe sig;
+};
+
+extern struct page *get_signal_page(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

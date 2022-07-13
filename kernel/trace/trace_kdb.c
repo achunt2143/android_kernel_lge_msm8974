@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kdb helper for dumping the ftrace buffer
  *
@@ -16,6 +20,7 @@
 #include "trace.h"
 #include "trace_output.h"
 
+<<<<<<< HEAD
 static void ftrace_dump_buf(int skip_lines, long cpu_file)
 {
 	/* use static because iter can be a bit big for the stack */
@@ -47,12 +52,43 @@ static void ftrace_dump_buf(int skip_lines, long cpu_file)
 		for_each_tracing_cpu(cpu) {
 			iter.buffer_iter[cpu] =
 			ring_buffer_read_prepare(iter.tr->buffer, cpu);
+=======
+static struct trace_iterator iter;
+static struct ring_buffer_iter *buffer_iter[CONFIG_NR_CPUS];
+
+static void ftrace_dump_buf(int skip_entries, long cpu_file)
+{
+	struct trace_array *tr;
+	unsigned int old_userobj;
+	int cnt = 0, cpu;
+
+	tr = iter.tr;
+
+	old_userobj = tr->trace_flags;
+
+	/* don't look at user memory in panic mode */
+	tr->trace_flags &= ~TRACE_ITER_SYM_USEROBJ;
+
+	kdb_printf("Dumping ftrace buffer:\n");
+	if (skip_entries)
+		kdb_printf("(skipping %d entries)\n", skip_entries);
+
+	trace_iterator_reset(&iter);
+	iter.iter_flags |= TRACE_FILE_LAT_FMT;
+
+	if (cpu_file == RING_BUFFER_ALL_CPUS) {
+		for_each_tracing_cpu(cpu) {
+			iter.buffer_iter[cpu] =
+			ring_buffer_read_prepare(iter.array_buffer->buffer,
+						 cpu, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ring_buffer_read_start(iter.buffer_iter[cpu]);
 			tracing_iter_reset(&iter, cpu);
 		}
 	} else {
 		iter.cpu_file = cpu_file;
 		iter.buffer_iter[cpu_file] =
+<<<<<<< HEAD
 			ring_buffer_read_prepare(iter.tr->buffer, cpu_file);
 		ring_buffer_read_start(iter.buffer_iter[cpu_file]);
 		tracing_iter_reset(&iter, cpu_file);
@@ -60,16 +96,35 @@ static void ftrace_dump_buf(int skip_lines, long cpu_file)
 	if (!trace_empty(&iter))
 		trace_find_next_entry_inc(&iter);
 	while (!trace_empty(&iter)) {
+=======
+			ring_buffer_read_prepare(iter.array_buffer->buffer,
+						 cpu_file, GFP_ATOMIC);
+		ring_buffer_read_start(iter.buffer_iter[cpu_file]);
+		tracing_iter_reset(&iter, cpu_file);
+	}
+
+	while (trace_find_next_entry_inc(&iter)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!cnt)
 			kdb_printf("---------------------------------\n");
 		cnt++;
 
+<<<<<<< HEAD
 		if (trace_find_next_entry_inc(&iter) != NULL && !skip_lines)
 			print_trace_line(&iter);
 		if (!skip_lines)
 			trace_printk_seq(&iter.seq);
 		else
 			skip_lines--;
+=======
+		if (!skip_entries) {
+			print_trace_line(&iter);
+			trace_printk_seq(&iter.seq);
+		} else {
+			skip_entries--;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (KDB_FLAG(CMD_INTERRUPT))
 			goto out;
 	}
@@ -80,6 +135,7 @@ static void ftrace_dump_buf(int skip_lines, long cpu_file)
 		kdb_printf("---------------------------------\n");
 
 out:
+<<<<<<< HEAD
 	trace_flags = old_userobj;
 
 	for_each_tracing_cpu(cpu) {
@@ -89,6 +145,16 @@ out:
 	for_each_tracing_cpu(cpu)
 		if (iter.buffer_iter[cpu])
 			ring_buffer_read_finish(iter.buffer_iter[cpu]);
+=======
+	tr->trace_flags = old_userobj;
+
+	for_each_tracing_cpu(cpu) {
+		if (iter.buffer_iter[cpu]) {
+			ring_buffer_read_finish(iter.buffer_iter[cpu]);
+			iter.buffer_iter[cpu] = NULL;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -96,17 +162,31 @@ out:
  */
 static int kdb_ftdump(int argc, const char **argv)
 {
+<<<<<<< HEAD
 	int skip_lines = 0;
 	long cpu_file;
 	char *cp;
+=======
+	int skip_entries = 0;
+	long cpu_file;
+	char *cp;
+	int cnt;
+	int cpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc > 2)
 		return KDB_ARGCOUNT;
 
 	if (argc) {
+<<<<<<< HEAD
 		skip_lines = simple_strtol(argv[1], &cp, 0);
 		if (*cp)
 			skip_lines = 0;
+=======
+		skip_entries = simple_strtol(argv[1], &cp, 0);
+		if (*cp)
+			skip_entries = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (argc == 2) {
@@ -115,20 +195,64 @@ static int kdb_ftdump(int argc, const char **argv)
 		    !cpu_online(cpu_file))
 			return KDB_BADINT;
 	} else {
+<<<<<<< HEAD
 		cpu_file = TRACE_PIPE_ALL_CPU;
 	}
 
 	kdb_trap_printk++;
 	ftrace_dump_buf(skip_lines, cpu_file);
+=======
+		cpu_file = RING_BUFFER_ALL_CPUS;
+	}
+
+	kdb_trap_printk++;
+
+	trace_init_global_iter(&iter);
+	iter.buffer_iter = buffer_iter;
+
+	for_each_tracing_cpu(cpu) {
+		atomic_inc(&per_cpu_ptr(iter.array_buffer->data, cpu)->disabled);
+	}
+
+	/* A negative skip_entries means skip all but the last entries */
+	if (skip_entries < 0) {
+		if (cpu_file == RING_BUFFER_ALL_CPUS)
+			cnt = trace_total_entries(NULL);
+		else
+			cnt = trace_total_entries_cpu(NULL, cpu_file);
+		skip_entries = max(cnt + skip_entries, 0);
+	}
+
+	ftrace_dump_buf(skip_entries, cpu_file);
+
+	for_each_tracing_cpu(cpu) {
+		atomic_dec(&per_cpu_ptr(iter.array_buffer->data, cpu)->disabled);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kdb_trap_printk--;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static __init int kdb_ftrace_register(void)
 {
 	kdb_register_repeat("ftdump", kdb_ftdump, "[skip_#lines] [cpu]",
 			    "Dump ftrace log", 0, KDB_REPEAT_NONE);
+=======
+static kdbtab_t ftdump_cmd = {
+	.name = "ftdump",
+	.func = kdb_ftdump,
+	.usage = "[skip_#entries] [cpu]",
+	.help = "Dump ftrace log; -skip dumps last #entries",
+	.flags = KDB_ENABLE_ALWAYS_SAFE,
+};
+
+static __init int kdb_ftrace_register(void)
+{
+	kdb_register(&ftdump_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

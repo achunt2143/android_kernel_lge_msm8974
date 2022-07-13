@@ -100,7 +100,11 @@ static int snd_opl4_seq_unuse(void *private_data, struct snd_seq_port_subscribe 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_midi_op opl4_ops = {
+=======
+static const struct snd_midi_op opl4_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.note_on =		snd_opl4_note_on,
 	.note_off =		snd_opl4_note_off,
 	.note_terminate =	snd_opl4_terminate_note,
@@ -124,8 +128,14 @@ static void snd_opl4_seq_free_port(void *private_data)
 	snd_midi_channel_free_set(opl4->chset);
 }
 
+<<<<<<< HEAD
 static int snd_opl4_seq_new_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_opl4_seq_probe(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_opl4 *opl4;
 	int client;
 	struct snd_seq_port_callback pcallbacks;
@@ -180,8 +190,14 @@ static int snd_opl4_seq_new_device(struct snd_seq_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_opl4_seq_delete_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_opl4_seq_remove(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_opl4 *opl4;
 
 	opl4 = *(struct snd_opl4 **)SNDRV_SEQ_DEVICE_ARGPTR(dev);
@@ -195,6 +211,7 @@ static int snd_opl4_seq_delete_device(struct snd_seq_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init alsa_opl4_synth_init(void)
 {
 	static struct snd_seq_dev_ops ops = {
@@ -213,3 +230,16 @@ static void __exit alsa_opl4_synth_exit(void)
 
 module_init(alsa_opl4_synth_init)
 module_exit(alsa_opl4_synth_exit)
+=======
+static struct snd_seq_driver opl4_seq_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_opl4_seq_probe,
+		.remove = snd_opl4_seq_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_OPL4,
+	.argsize = sizeof(struct snd_opl4 *),
+};
+
+module_snd_seq_driver(opl4_seq_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

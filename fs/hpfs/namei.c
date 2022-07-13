@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/namei.c
  *
@@ -10,6 +14,7 @@
 
 static void hpfs_update_directory_times(struct inode *dir)
 {
+<<<<<<< HEAD
 	time_t t = get_seconds();
 	if (t == dir->i_mtime.tv_sec &&
 	    t == dir->i_ctime.tv_sec)
@@ -20,6 +25,18 @@ static void hpfs_update_directory_times(struct inode *dir)
 }
 
 static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
+=======
+	time64_t t = local_to_gmt(dir->i_sb, local_get_seconds(dir->i_sb));
+	if (t == inode_get_mtime_sec(dir) &&
+	    t == inode_get_ctime_sec(dir))
+		return;
+	inode_set_mtime_to_ts(dir, inode_set_ctime(dir, t, 0));
+	hpfs_write_inode_nolock(dir);
+}
+
+static int hpfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
+		      struct dentry *dentry, umode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *name = dentry->d_name.name;
 	unsigned len = dentry->d_name.len;
@@ -49,7 +66,11 @@ static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	/*dee.archive = 0;*/
 	dee.hidden = name[0] == '.';
 	dee.fnode = cpu_to_le32(fno);
+<<<<<<< HEAD
 	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(gmt_to_local(dir->i_sb, get_seconds()));
+=======
+	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = new_inode(dir->i_sb);
 	if (!result)
 		goto bail2;
@@ -57,10 +78,15 @@ static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	result->i_ino = fno;
 	hpfs_i(result)->i_parent_dir = dir->i_ino;
 	hpfs_i(result)->i_dno = dno;
+<<<<<<< HEAD
 	result->i_ctime.tv_sec = result->i_mtime.tv_sec = result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date));
 	result->i_ctime.tv_nsec = 0; 
 	result->i_mtime.tv_nsec = 0; 
 	result->i_atime.tv_nsec = 0; 
+=======
+	inode_set_mtime_to_ts(result,
+			      inode_set_atime_to_ts(result, inode_set_ctime(result, local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date)), 0)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_i(result)->i_ea_size = 0;
 	result->i_mode |= S_IFDIR;
 	result->i_op = &hpfs_dir_iops;
@@ -81,7 +107,11 @@ static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	fnode->len = len;
 	memcpy(fnode->name, name, len > 15 ? 15 : len);
 	fnode->up = cpu_to_le32(dir->i_ino);
+<<<<<<< HEAD
 	fnode->dirflag = 1;
+=======
+	fnode->flags |= FNODE_dir;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnode->btree.n_free_nodes = 7;
 	fnode->btree.n_used_nodes = 1;
 	fnode->btree.first_free = cpu_to_le16(0x14);
@@ -90,7 +120,11 @@ static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	dnode->root_dnode = 1;
 	dnode->up = cpu_to_le32(fno);
 	de = hpfs_add_de(dir->i_sb, dnode, "\001\001", 2, 0);
+<<<<<<< HEAD
 	de->creation_date = de->write_date = de->read_date = cpu_to_le32(gmt_to_local(dir->i_sb, get_seconds()));
+=======
+	de->creation_date = de->write_date = de->read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(mode & 0222)) de->read_only = 1;
 	de->first = de->directory = 1;
 	/*de->hidden = de->system = 0;*/
@@ -102,8 +136,13 @@ static int hpfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	inc_nlink(dir);
 	insert_inode_hash(result);
 
+<<<<<<< HEAD
 	if (result->i_uid != current_fsuid() ||
 	    result->i_gid != current_fsgid() ||
+=======
+	if (!uid_eq(result->i_uid, current_fsuid()) ||
+	    !gid_eq(result->i_gid, current_fsgid()) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    result->i_mode != (mode | S_IFDIR)) {
 		result->i_uid = current_fsuid();
 		result->i_gid = current_fsgid();
@@ -127,7 +166,12 @@ bail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int hpfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl)
+=======
+static int hpfs_create(struct mnt_idmap *idmap, struct inode *dir,
+		       struct dentry *dentry, umode_t mode, bool excl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *name = dentry->d_name.name;
 	unsigned len = dentry->d_name.len;
@@ -150,7 +194,11 @@ static int hpfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 	dee.archive = 1;
 	dee.hidden = name[0] == '.';
 	dee.fnode = cpu_to_le32(fno);
+<<<<<<< HEAD
 	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(gmt_to_local(dir->i_sb, get_seconds()));
+=======
+	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = new_inode(dir->i_sb);
 	if (!result)
@@ -164,10 +212,15 @@ static int hpfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 	result->i_fop = &hpfs_file_ops;
 	set_nlink(result, 1);
 	hpfs_i(result)->i_parent_dir = dir->i_ino;
+<<<<<<< HEAD
 	result->i_ctime.tv_sec = result->i_mtime.tv_sec = result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date));
 	result->i_ctime.tv_nsec = 0;
 	result->i_mtime.tv_nsec = 0;
 	result->i_atime.tv_nsec = 0;
+=======
+	inode_set_mtime_to_ts(result,
+			      inode_set_atime_to_ts(result, inode_set_ctime(result, local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date)), 0)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_i(result)->i_ea_size = 0;
 	if (dee.read_only)
 		result->i_mode &= ~0222;
@@ -191,8 +244,13 @@ static int hpfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, b
 
 	insert_inode_hash(result);
 
+<<<<<<< HEAD
 	if (result->i_uid != current_fsuid() ||
 	    result->i_gid != current_fsgid() ||
+=======
+	if (!uid_eq(result->i_uid, current_fsuid()) ||
+	    !gid_eq(result->i_gid, current_fsgid()) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    result->i_mode != (mode | S_IFREG)) {
 		result->i_uid = current_fsuid();
 		result->i_gid = current_fsgid();
@@ -214,7 +272,12 @@ bail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int hpfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
+=======
+static int hpfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
+		      struct dentry *dentry, umode_t mode, dev_t rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *name = dentry->d_name.name;
 	unsigned len = dentry->d_name.len;
@@ -227,8 +290,11 @@ static int hpfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
 	int err;
 	if ((err = hpfs_chk_name(name, &len))) return err==-ENOENT ? -EINVAL : err;
 	if (hpfs_sb(dir->i_sb)->sb_eas < 2) return -EPERM;
+<<<<<<< HEAD
 	if (!new_valid_dev(rdev))
 		return -EINVAL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_lock(dir->i_sb);
 	err = -ENOSPC;
 	fnode = hpfs_alloc_fnode(dir->i_sb, hpfs_i(dir)->i_dno, &fno, &bh);
@@ -239,7 +305,11 @@ static int hpfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
 	dee.archive = 1;
 	dee.hidden = name[0] == '.';
 	dee.fnode = cpu_to_le32(fno);
+<<<<<<< HEAD
 	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(gmt_to_local(dir->i_sb, get_seconds()));
+=======
+	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = new_inode(dir->i_sb);
 	if (!result)
@@ -248,10 +318,15 @@ static int hpfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, de
 	hpfs_init_inode(result);
 	result->i_ino = fno;
 	hpfs_i(result)->i_parent_dir = dir->i_ino;
+<<<<<<< HEAD
 	result->i_ctime.tv_sec = result->i_mtime.tv_sec = result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date));
 	result->i_ctime.tv_nsec = 0;
 	result->i_mtime.tv_nsec = 0;
 	result->i_atime.tv_nsec = 0;
+=======
+	inode_set_mtime_to_ts(result,
+			      inode_set_atime_to_ts(result, inode_set_ctime(result, local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date)), 0)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_i(result)->i_ea_size = 0;
 	result->i_uid = current_fsuid();
 	result->i_gid = current_fsgid();
@@ -290,7 +365,12 @@ bail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int hpfs_symlink(struct inode *dir, struct dentry *dentry, const char *symlink)
+=======
+static int hpfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+			struct dentry *dentry, const char *symlink)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *name = dentry->d_name.name;
 	unsigned len = dentry->d_name.len;
@@ -315,7 +395,11 @@ static int hpfs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	dee.archive = 1;
 	dee.hidden = name[0] == '.';
 	dee.fnode = cpu_to_le32(fno);
+<<<<<<< HEAD
 	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(gmt_to_local(dir->i_sb, get_seconds()));
+=======
+	dee.creation_date = dee.write_date = dee.read_date = cpu_to_le32(local_get_seconds(dir->i_sb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = new_inode(dir->i_sb);
 	if (!result)
@@ -323,10 +407,15 @@ static int hpfs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	result->i_ino = fno;
 	hpfs_init_inode(result);
 	hpfs_i(result)->i_parent_dir = dir->i_ino;
+<<<<<<< HEAD
 	result->i_ctime.tv_sec = result->i_mtime.tv_sec = result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date));
 	result->i_ctime.tv_nsec = 0;
 	result->i_mtime.tv_nsec = 0;
 	result->i_atime.tv_nsec = 0;
+=======
+	inode_set_mtime_to_ts(result,
+			      inode_set_atime_to_ts(result, inode_set_ctime(result, local_to_gmt(dir->i_sb, le32_to_cpu(dee.creation_date)), 0)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_i(result)->i_ea_size = 0;
 	result->i_mode = S_IFLNK | 0777;
 	result->i_uid = current_fsuid();
@@ -334,6 +423,10 @@ static int hpfs_symlink(struct inode *dir, struct dentry *dentry, const char *sy
 	result->i_blocks = 1;
 	set_nlink(result, 1);
 	result->i_size = strlen(symlink);
+<<<<<<< HEAD
+=======
+	inode_nohighmem(result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result->i_op = &page_symlink_inode_operations;
 	result->i_data.a_ops = &hpfs_symlink_aops;
 
@@ -374,15 +467,25 @@ static int hpfs_unlink(struct inode *dir, struct dentry *dentry)
 	unsigned len = dentry->d_name.len;
 	struct quad_buffer_head qbh;
 	struct hpfs_dirent *de;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
 	dnode_secno dno;
 	int r;
 	int rep = 0;
+=======
+	struct inode *inode = d_inode(dentry);
+	dnode_secno dno;
+	int r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	hpfs_lock(dir->i_sb);
 	hpfs_adjust_length(name, &len);
+<<<<<<< HEAD
 again:
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOENT;
 	de = map_dirent(dir, hpfs_i(dir)->i_dno, name, len, &dno, &qbh);
 	if (!de)
@@ -402,6 +505,7 @@ again:
 		hpfs_error(dir->i_sb, "there was error when removing dirent");
 		err = -EFSERROR;
 		break;
+<<<<<<< HEAD
 	case 2:		/* no space for deleting, try to truncate file */
 
 		err = -ENOSPC;
@@ -429,6 +533,11 @@ again:
 		}
 		hpfs_unlock(dir->i_sb);
 		return -ENOSPC;
+=======
+	case 2:		/* no space for deleting */
+		err = -ENOSPC;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		drop_nlink(inode);
 		err = 0;
@@ -450,7 +559,11 @@ static int hpfs_rmdir(struct inode *dir, struct dentry *dentry)
 	unsigned len = dentry->d_name.len;
 	struct quad_buffer_head qbh;
 	struct hpfs_dirent *de;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dnode_secno dno;
 	int n_items = 0;
 	int err;
@@ -500,9 +613,16 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int hpfs_symlink_readpage(struct file *file, struct page *page)
 {
 	char *link = kmap(page);
+=======
+static int hpfs_symlink_read_folio(struct file *file, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	char *link = page_address(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *i = page->mapping->host;
 	struct fnode *fnode;
 	struct buffer_head *bh;
@@ -518,31 +638,51 @@ static int hpfs_symlink_readpage(struct file *file, struct page *page)
 		goto fail;
 	hpfs_unlock(i->i_sb);
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return 0;
 
 fail:
 	hpfs_unlock(i->i_sb);
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return err;
 }
 
 const struct address_space_operations hpfs_symlink_aops = {
+<<<<<<< HEAD
 	.readpage	= hpfs_symlink_readpage
 };
 	
 static int hpfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		struct inode *new_dir, struct dentry *new_dentry)
+=======
+	.read_folio	= hpfs_symlink_read_folio
+};
+
+static int hpfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
+		       struct dentry *old_dentry, struct inode *new_dir,
+		       struct dentry *new_dentry, unsigned int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *old_name = old_dentry->d_name.name;
 	unsigned old_len = old_dentry->d_name.len;
 	const unsigned char *new_name = new_dentry->d_name.name;
 	unsigned new_len = new_dentry->d_name.len;
+<<<<<<< HEAD
 	struct inode *i = old_dentry->d_inode;
 	struct inode *new_inode = new_dentry->d_inode;
+=======
+	struct inode *i = d_inode(old_dentry);
+	struct inode *new_inode = d_inode(new_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct quad_buffer_head qbh, qbh1;
 	struct hpfs_dirent *dep, *nde;
 	struct hpfs_dirent de;
@@ -552,6 +692,12 @@ static int hpfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	struct fnode *fnode;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (flags & ~RENAME_NOREPLACE)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((err = hpfs_chk_name(new_name, &new_len))) return err;
 	err = 0;
 	hpfs_adjust_length(old_name, &old_len);
@@ -588,7 +734,11 @@ static int hpfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 			err = -EFSERROR;
 			goto end1;
 		}
+<<<<<<< HEAD
 		err = r == 2 ? -ENOSPC : r == 1 ? -EFSERROR : 0;
+=======
+		err = -ENOSPC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end1;
 	}
 

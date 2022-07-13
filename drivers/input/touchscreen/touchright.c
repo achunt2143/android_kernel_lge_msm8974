@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Touchright serial touchscreen driver
  *
@@ -8,11 +12,14 @@
  * and Dan Streetman <ddstreet@ieee.org>
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -20,7 +27,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Touchright serial touchscreen driver"
 
@@ -153,7 +163,11 @@ static int tr_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id tr_serio_ids[] = {
+=======
+static const struct serio_device_id tr_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_TOUCHRIGHT,
@@ -176,6 +190,7 @@ static struct serio_driver tr_drv = {
 	.disconnect	= tr_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -192,3 +207,6 @@ static void __exit tr_exit(void)
 
 module_init(tr_init);
 module_exit(tr_exit);
+=======
+module_serio_driver(tr_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

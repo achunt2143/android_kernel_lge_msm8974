@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MAX9768 AMP driver
  *
  * Copyright (C) 2011, 2012 by Wolfram Sang, Pengutronix e.K.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; version 2 of the License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regmap.h>
 
 #include <sound/core.h>
@@ -30,12 +41,21 @@
 
 struct max9768 {
 	struct regmap *regmap;
+<<<<<<< HEAD
 	int mute_gpio;
 	int shdn_gpio;
 	u32 flags;
 };
 
 static struct reg_default max9768_default_regs[] = {
+=======
+	struct gpio_desc *mute;
+	struct gpio_desc *shdn;
+	u32 flags;
+};
+
+static const struct reg_default max9768_default_regs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0 },
 	{ 3,  MAX9768_CTRL_FILTERLESS},
 };
@@ -43,9 +63,15 @@ static struct reg_default max9768_default_regs[] = {
 static int max9768_get_gpio(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
 	int val = gpio_get_value_cansleep(max9768->mute_gpio);
+=======
+	struct snd_soc_component *c = snd_soc_kcontrol_component(kcontrol);
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(c);
+	int val = gpiod_get_value_cansleep(max9768->mute);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = !val;
 
@@ -55,16 +81,27 @@ static int max9768_get_gpio(struct snd_kcontrol *kcontrol,
 static int max9768_set_gpio(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
 
 	gpio_set_value_cansleep(max9768->mute_gpio, !ucontrol->value.integer.value[0]);
+=======
+	struct snd_soc_component *c = snd_soc_kcontrol_component(kcontrol);
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(c);
+
+	gpiod_set_value_cansleep(max9768->mute, !ucontrol->value.integer.value[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const unsigned int volume_tlv[] = {
 	TLV_DB_RANGE_HEAD(43),
+=======
+static const DECLARE_TLV_DB_RANGE(volume_tlv,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 0, TLV_DB_SCALE_ITEM(-16150, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(-9280, 0, 0),
 	2, 2, TLV_DB_SCALE_ITEM(-9030, 0, 0),
@@ -107,8 +144,13 @@ static const unsigned int volume_tlv[] = {
 	51, 57, TLV_DB_SCALE_ITEM(290, 50, 0),
 	58, 58, TLV_DB_SCALE_ITEM(650, 0, 0),
 	59, 62, TLV_DB_SCALE_ITEM(700, 60, 0),
+<<<<<<< HEAD
 	63, 63, TLV_DB_SCALE_ITEM(950, 0, 0),
 };
+=======
+	63, 63, TLV_DB_SCALE_ITEM(950, 0, 0)
+);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new max9768_volume[] = {
 	SOC_SINGLE_TLV("Playback Volume", MAX9768_VOL, 0, 63, 0, volume_tlv),
@@ -118,6 +160,7 @@ static const struct snd_kcontrol_new max9768_mute[] = {
 	SOC_SINGLE_BOOL_EXT("Playback Switch", 0, max9768_get_gpio, max9768_set_gpio),
 };
 
+<<<<<<< HEAD
 static int max9768_probe(struct snd_soc_codec *codec)
 {
 	struct max9768 *max9768 = snd_soc_codec_get_drvdata(codec);
@@ -130,12 +173,39 @@ static int max9768_probe(struct snd_soc_codec *codec)
 
 	if (max9768->flags & MAX9768_FLAG_CLASSIC_PWM) {
 		ret = snd_soc_write(codec, MAX9768_CTRL, MAX9768_CTRL_PWM);
+=======
+static const struct snd_soc_dapm_widget max9768_dapm_widgets[] = {
+SND_SOC_DAPM_INPUT("IN"),
+
+SND_SOC_DAPM_OUTPUT("OUT+"),
+SND_SOC_DAPM_OUTPUT("OUT-"),
+};
+
+static const struct snd_soc_dapm_route max9768_dapm_routes[] = {
+	{ "OUT+", NULL, "IN" },
+	{ "OUT-", NULL, "IN" },
+};
+
+static int max9768_probe(struct snd_soc_component *component)
+{
+	struct max9768 *max9768 = snd_soc_component_get_drvdata(component);
+	int ret;
+
+	if (max9768->flags & MAX9768_FLAG_CLASSIC_PWM) {
+		ret = regmap_write(max9768->regmap, MAX9768_CTRL,
+			MAX9768_CTRL_PWM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
 
+<<<<<<< HEAD
 	if (gpio_is_valid(max9768->mute_gpio)) {
 		ret = snd_soc_add_codec_controls(codec, max9768_mute,
+=======
+	if (max9768->mute) {
+		ret = snd_soc_add_component_controls(component, max9768_mute,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ARRAY_SIZE(max9768_mute));
 		if (ret)
 			return ret;
@@ -144,10 +214,21 @@ static int max9768_probe(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver max9768_codec_driver = {
 	.probe = max9768_probe,
 	.controls = max9768_volume,
 	.num_controls = ARRAY_SIZE(max9768_volume),
+=======
+static const struct snd_soc_component_driver max9768_component_driver = {
+	.probe = max9768_probe,
+	.controls = max9768_volume,
+	.num_controls = ARRAY_SIZE(max9768_volume),
+	.dapm_widgets = max9768_dapm_widgets,
+	.num_dapm_widgets = ARRAY_SIZE(max9768_dapm_widgets),
+	.dapm_routes = max9768_dapm_routes,
+	.num_dapm_routes = ARRAY_SIZE(max9768_dapm_routes),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct regmap_config max9768_i2c_regmap_config = {
@@ -159,17 +240,25 @@ static const struct regmap_config max9768_i2c_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
+<<<<<<< HEAD
 static int __devinit max9768_i2c_probe(struct i2c_client *client,
 	const struct i2c_device_id *id)
 {
 	struct max9768 *max9768;
 	struct max9768_pdata *pdata = client->dev.platform_data;
 	int err;
+=======
+static int max9768_i2c_probe(struct i2c_client *client)
+{
+	struct max9768 *max9768;
+	struct max9768_pdata *pdata = client->dev.platform_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max9768 = devm_kzalloc(&client->dev, sizeof(*max9768), GFP_KERNEL);
 	if (!max9768)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (pdata) {
 		/* Mute on powerup to avoid clicks */
 		err = gpio_request_one(pdata->mute_gpio, GPIOF_INIT_HIGH, "MAX9768 Mute");
@@ -223,6 +312,35 @@ static int __devexit max9768_i2c_remove(struct i2c_client *client)
 		gpio_free(max9768->mute_gpio);
 
 	return 0;
+=======
+	/* Mute on powerup to avoid clicks */
+	max9768->mute = devm_gpiod_get_optional(&client->dev,
+						"mute",
+						GPIOD_OUT_HIGH);
+	if (IS_ERR(max9768->mute))
+		return PTR_ERR(max9768->mute);
+	gpiod_set_consumer_name(max9768->mute, "MAX9768 Mute");
+
+	/* Activate chip by releasing shutdown, enables I2C */
+	max9768->shdn = devm_gpiod_get_optional(&client->dev,
+						"shutdown",
+						GPIOD_OUT_HIGH);
+	if (IS_ERR(max9768->shdn))
+		return PTR_ERR(max9768->shdn);
+	gpiod_set_consumer_name(max9768->shdn, "MAX9768 Shutdown");
+
+	if (pdata)
+		max9768->flags = pdata->flags;
+
+	i2c_set_clientdata(client, max9768);
+
+	max9768->regmap = devm_regmap_init_i2c(client, &max9768_i2c_regmap_config);
+	if (IS_ERR(max9768->regmap))
+		return PTR_ERR(max9768->regmap);
+
+	return devm_snd_soc_register_component(&client->dev,
+		&max9768_component_driver, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id max9768_i2c_id[] = {
@@ -234,14 +352,23 @@ MODULE_DEVICE_TABLE(i2c, max9768_i2c_id);
 static struct i2c_driver max9768_i2c_driver = {
 	.driver = {
 		.name = "max9768",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = max9768_i2c_probe,
 	.remove = __devexit_p(max9768_i2c_remove),
+=======
+	},
+	.probe = max9768_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max9768_i2c_id,
 };
 module_i2c_driver(max9768_i2c_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wolfram Sang <w.sang@pengutronix.de>");
+=======
+MODULE_AUTHOR("Wolfram Sang <kernel@pengutronix.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ASoC MAX9768 amplifier driver");
 MODULE_LICENSE("GPL v2");

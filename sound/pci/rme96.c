@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for RME Digi96, Digi96/8 and Digi96/8 PRO/PAD/PST audio
  *   interfaces 
@@ -6,6 +10,7 @@
  *    
  *      Thanks to Henk Hesselink <henk@anda.nl> for the analog volume control
  *      code.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */      
 
 #include <linux/delay.h>
@@ -28,6 +35,11 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/info.h>
@@ -37,19 +49,25 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* note, two last pcis should be equal, it is not a bug */
 
 MODULE_AUTHOR("Anders Torger <torger@ludd.luth.se>");
 MODULE_DESCRIPTION("RME Digi96, Digi96/8, Digi96/8 PRO, Digi96/8 PST, "
 		   "Digi96/8 PAD");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{RME,Digi96},"
 		"{RME,Digi96/8},"
 		"{RME,Digi96/8 PRO},"
 		"{RME,Digi96/8 PST},"
 		"{RME,Digi96/8 PAD}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -198,6 +216,34 @@ MODULE_PARM_DESC(enable, "Enable RME Digi96 soundcard.");
 #define RME96_AD1852_VOL_BITS 14
 #define RME96_AD1855_VOL_BITS 10
 
+<<<<<<< HEAD
+=======
+/* Defines for snd_rme96_trigger */
+#define RME96_TB_START_PLAYBACK 1
+#define RME96_TB_START_CAPTURE 2
+#define RME96_TB_STOP_PLAYBACK 4
+#define RME96_TB_STOP_CAPTURE 8
+#define RME96_TB_RESET_PLAYPOS 16
+#define RME96_TB_RESET_CAPTUREPOS 32
+#define RME96_TB_CLEAR_PLAYBACK_IRQ 64
+#define RME96_TB_CLEAR_CAPTURE_IRQ 128
+#define RME96_RESUME_PLAYBACK	(RME96_TB_START_PLAYBACK)
+#define RME96_RESUME_CAPTURE	(RME96_TB_START_CAPTURE)
+#define RME96_RESUME_BOTH	(RME96_RESUME_PLAYBACK \
+				| RME96_RESUME_CAPTURE)
+#define RME96_START_PLAYBACK	(RME96_TB_START_PLAYBACK \
+				| RME96_TB_RESET_PLAYPOS)
+#define RME96_START_CAPTURE	(RME96_TB_START_CAPTURE \
+				| RME96_TB_RESET_CAPTUREPOS)
+#define RME96_START_BOTH	(RME96_START_PLAYBACK \
+				| RME96_START_CAPTURE)
+#define RME96_STOP_PLAYBACK	(RME96_TB_STOP_PLAYBACK \
+				| RME96_TB_CLEAR_PLAYBACK_IRQ)
+#define RME96_STOP_CAPTURE	(RME96_TB_STOP_CAPTURE \
+				| RME96_TB_CLEAR_CAPTURE_IRQ)
+#define RME96_STOP_BOTH		(RME96_STOP_PLAYBACK \
+				| RME96_STOP_CAPTURE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rme96 {
 	spinlock_t    lock;
@@ -214,6 +260,14 @@ struct rme96 {
 
 	u8 rev; /* card revision number */
 
+<<<<<<< HEAD
+=======
+	u32 playback_pointer;
+	u32 capture_pointer;
+	void *playback_suspend_buffer;
+	void *capture_suspend_buffer;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_substream *playback_substream;
 	struct snd_pcm_substream *capture_substream;
 
@@ -230,7 +284,11 @@ struct rme96 {
 	struct snd_kcontrol   *spdif_ctl;
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_rme96_ids) = {
+=======
+static const struct pci_device_id snd_rme96_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96), 0, },
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96_8), 0, },
 	{ PCI_VDEVICE(XILINX, PCI_DEVICE_ID_RME_DIGI96_8_PRO), 0, },
@@ -270,8 +328,12 @@ snd_rme96_playback_pointer(struct snd_pcm_substream *substream);
 static snd_pcm_uframes_t
 snd_rme96_capture_pointer(struct snd_pcm_substream *substream);
 
+<<<<<<< HEAD
 static void __devinit 
 snd_rme96_proc_init(struct rme96 *rme96);
+=======
+static void snd_rme96_proc_init(struct rme96 *rme96);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 snd_rme96_create_switches(struct snd_card *card,
@@ -296,6 +358,7 @@ snd_rme96_capture_ptr(struct rme96 *rme96)
 
 static int
 snd_rme96_playback_silence(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			   int channel, /* not used (interleaved data) */
 			   snd_pcm_uframes_t pos,
 			   snd_pcm_uframes_t count)
@@ -303,6 +366,12 @@ snd_rme96_playback_silence(struct snd_pcm_substream *substream,
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	count <<= rme96->playback_frlog;
 	pos <<= rme96->playback_frlog;
+=======
+			   int channel, unsigned long pos, unsigned long count)
+{
+	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset_io(rme96->iobase + RME96_IO_PLAY_BUFFER + pos,
 		  0, count);
 	return 0;
@@ -310,6 +379,7 @@ snd_rme96_playback_silence(struct snd_pcm_substream *substream,
 
 static int
 snd_rme96_playback_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			int channel, /* not used (interleaved data) */
 			snd_pcm_uframes_t pos,
 			void __user *src,
@@ -321,10 +391,20 @@ snd_rme96_playback_copy(struct snd_pcm_substream *substream,
 	copy_from_user_toio(rme96->iobase + RME96_IO_PLAY_BUFFER + pos, src,
 			    count);
 	return 0;
+=======
+			int channel, unsigned long pos,
+			struct iov_iter *src, unsigned long count)
+{
+	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+
+	return copy_from_iter_toio(rme96->iobase + RME96_IO_PLAY_BUFFER + pos,
+				   src, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 snd_rme96_capture_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 		       int channel, /* not used (interleaved data) */
 		       snd_pcm_uframes_t pos,
 		       void __user *dst,
@@ -336,15 +416,34 @@ snd_rme96_capture_copy(struct snd_pcm_substream *substream,
 	copy_to_user_fromio(dst, rme96->iobase + RME96_IO_REC_BUFFER + pos,
 			    count);
         return 0;
+=======
+		       int channel, unsigned long pos,
+		       struct iov_iter *dst, unsigned long count)
+{
+	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+
+	return copy_to_iter_fromio(dst,
+				   rme96->iobase + RME96_IO_REC_BUFFER + pos,
+				   count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Digital output capabilities (S/PDIF)
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_rme96_playback_spdif_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+=======
+static const struct snd_pcm_hardware snd_rme96_playback_spdif_info =
+{
+	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
+			      SNDRV_PCM_INFO_MMAP_VALID |
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -370,10 +469,19 @@ static struct snd_pcm_hardware snd_rme96_playback_spdif_info =
 /*
  * Digital input capabilities (S/PDIF)
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_rme96_capture_spdif_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+=======
+static const struct snd_pcm_hardware snd_rme96_capture_spdif_info =
+{
+	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
+			      SNDRV_PCM_INFO_MMAP_VALID |
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -399,10 +507,19 @@ static struct snd_pcm_hardware snd_rme96_capture_spdif_info =
 /*
  * Digital output capabilities (ADAT)
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_rme96_playback_adat_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+=======
+static const struct snd_pcm_hardware snd_rme96_playback_adat_info =
+{
+	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
+			      SNDRV_PCM_INFO_MMAP_VALID |
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -424,10 +541,19 @@ static struct snd_pcm_hardware snd_rme96_playback_adat_info =
 /*
  * Digital input capabilities (ADAT)
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_rme96_capture_adat_info =
 {
 	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
 			      SNDRV_PCM_INFO_MMAP_VALID |
+=======
+static const struct snd_pcm_hardware snd_rme96_capture_adat_info =
+{
+	.info =		     (SNDRV_PCM_INFO_MMAP_IOMEM |
+			      SNDRV_PCM_INFO_MMAP_VALID |
+			      SNDRV_PCM_INFO_SYNC_START |
+			      SNDRV_PCM_INFO_RESUME |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      SNDRV_PCM_INFO_INTERLEAVED |
 			      SNDRV_PCM_INFO_PAUSE),
 	.formats =	     (SNDRV_PCM_FMTBIT_S16_LE |
@@ -634,12 +760,23 @@ snd_rme96_playback_getrate(struct rme96 *rme96)
 	int rate, dummy;
 
 	if (!(rme96->wcreg & RME96_WCR_MASTER) &&
+<<<<<<< HEAD
             snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
 	    (rate = snd_rme96_capture_getrate(rme96, &dummy)) > 0)
 	{
 	        /* slave clock */
 	        return rate;
 	}
+=======
+	    snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG) {
+		rate = snd_rme96_capture_getrate(rme96, &dummy);
+		if (rate > 0) {
+			/* slave clock */
+			return rate;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rate = ((rme96->wcreg >> RME96_WCR_BITPOS_FREQ_0) & 1) +
 		(((rme96->wcreg >> RME96_WCR_BITPOS_FREQ_1) & 1) << 1);
 	switch (rate) {
@@ -885,8 +1022,12 @@ snd_rme96_setframelog(struct rme96 *rme96,
 }
 
 static int
+<<<<<<< HEAD
 snd_rme96_playback_setformat(struct rme96 *rme96,
 			     int format)
+=======
+snd_rme96_playback_setformat(struct rme96 *rme96, snd_pcm_format_t format)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -903,8 +1044,12 @@ snd_rme96_playback_setformat(struct rme96 *rme96,
 }
 
 static int
+<<<<<<< HEAD
 snd_rme96_capture_setformat(struct rme96 *rme96,
 			    int format)
+=======
+snd_rme96_capture_setformat(struct rme96 *rme96, snd_pcm_format_t format)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
@@ -954,10 +1099,18 @@ snd_rme96_playback_hw_params(struct snd_pcm_substream *substream,
 	runtime->dma_bytes = RME96_BUFFER_SIZE;
 
 	spin_lock_irq(&rme96->lock);
+<<<<<<< HEAD
 	if (!(rme96->wcreg & RME96_WCR_MASTER) &&
             snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
 	    (rate = snd_rme96_capture_getrate(rme96, &dummy)) > 0)
 	{
+=======
+	rate = 0;
+	if (!(rme96->wcreg & RME96_WCR_MASTER) &&
+	    snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG)
+		rate = snd_rme96_capture_getrate(rme96, &dummy);
+	if (rate > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 /* slave clock */
                 if ((int)params_rate(params) != rate) {
 			err = -EIO;
@@ -1016,11 +1169,17 @@ snd_rme96_capture_hw_params(struct snd_pcm_substream *substream,
 	runtime->dma_bytes = RME96_BUFFER_SIZE;
 
 	spin_lock_irq(&rme96->lock);
+<<<<<<< HEAD
 	if ((err = snd_rme96_capture_setformat(rme96, params_format(params))) < 0) {
+=======
+	err = snd_rme96_capture_setformat(rme96, params_format(params));
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&rme96->lock);
 		return err;
 	}
 	if (snd_rme96_getinputtype(rme96) == RME96_INPUT_ANALOG) {
+<<<<<<< HEAD
 		if ((err = snd_rme96_capture_analog_setrate(rme96,
 							    params_rate(params))) < 0)
 		{
@@ -1038,6 +1197,26 @@ snd_rme96_capture_hw_params(struct snd_pcm_substream *substream,
 			spin_unlock_irq(&rme96->lock);
 			return -EIO;
                 }
+=======
+		err = snd_rme96_capture_analog_setrate(rme96, params_rate(params));
+		if (err < 0) {
+			spin_unlock_irq(&rme96->lock);
+			return err;
+		}
+	} else {
+		rate = snd_rme96_capture_getrate(rme96, &isadat);
+		if (rate > 0) {
+			if ((int)params_rate(params) != rate) {
+				spin_unlock_irq(&rme96->lock);
+				return -EIO;
+			}
+			if ((isadat && runtime->hw.channels_min == 2) ||
+			    (!isadat && runtime->hw.channels_min == 8)) {
+				spin_unlock_irq(&rme96->lock);
+				return -EIO;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         }
 	snd_rme96_setframelog(rme96, params_channels(params), 0);
 	if (rme96->playback_periodsize != 0) {
@@ -1057,6 +1236,7 @@ snd_rme96_capture_hw_params(struct snd_pcm_substream *substream,
 }
 
 static void
+<<<<<<< HEAD
 snd_rme96_playback_start(struct rme96 *rme96,
 			 int from_pause)
 {
@@ -1105,6 +1285,37 @@ snd_rme96_capture_stop(struct rme96 *rme96)
 	rme96->wcreg &= ~RME96_WCR_START_2;
 	writel(rme96->wcreg, rme96->iobase + RME96_IO_CONTROL_REGISTER);
 }
+=======
+snd_rme96_trigger(struct rme96 *rme96,
+		  int op)
+{
+	if (op & RME96_TB_RESET_PLAYPOS)
+		writel(0, rme96->iobase + RME96_IO_RESET_PLAY_POS);
+	if (op & RME96_TB_RESET_CAPTUREPOS)
+		writel(0, rme96->iobase + RME96_IO_RESET_REC_POS);
+	if (op & RME96_TB_CLEAR_PLAYBACK_IRQ) {
+		rme96->rcreg = readl(rme96->iobase + RME96_IO_CONTROL_REGISTER);
+		if (rme96->rcreg & RME96_RCR_IRQ)
+			writel(0, rme96->iobase + RME96_IO_CONFIRM_PLAY_IRQ);
+	}
+	if (op & RME96_TB_CLEAR_CAPTURE_IRQ) {
+		rme96->rcreg = readl(rme96->iobase + RME96_IO_CONTROL_REGISTER);
+		if (rme96->rcreg & RME96_RCR_IRQ_2)
+			writel(0, rme96->iobase + RME96_IO_CONFIRM_REC_IRQ);
+	}
+	if (op & RME96_TB_START_PLAYBACK)
+		rme96->wcreg |= RME96_WCR_START;
+	if (op & RME96_TB_STOP_PLAYBACK)
+		rme96->wcreg &= ~RME96_WCR_START;
+	if (op & RME96_TB_START_CAPTURE)
+		rme96->wcreg |= RME96_WCR_START_2;
+	if (op & RME96_TB_STOP_CAPTURE)
+		rme96->wcreg &= ~RME96_WCR_START_2;
+	writel(rme96->wcreg, rme96->iobase + RME96_IO_CONTROL_REGISTER);
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t
 snd_rme96_interrupt(int irq,
@@ -1133,9 +1344,15 @@ snd_rme96_interrupt(int irq,
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static unsigned int period_bytes[] = { RME96_SMALL_BLOCK_SIZE, RME96_LARGE_BLOCK_SIZE };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_period_bytes = {
+=======
+static const unsigned int period_bytes[] = { RME96_SMALL_BLOCK_SIZE, RME96_LARGE_BLOCK_SIZE };
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_period_bytes = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(period_bytes),
 	.list = period_bytes,
 	.mask = 0
@@ -1147,6 +1364,7 @@ rme96_set_buffer_size_constraint(struct rme96 *rme96,
 {
 	unsigned int size;
 
+<<<<<<< HEAD
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 				     RME96_BUFFER_SIZE, RME96_BUFFER_SIZE);
 	if ((size = rme96->playback_periodsize) != 0 ||
@@ -1154,6 +1372,17 @@ rme96_set_buffer_size_constraint(struct rme96 *rme96,
 		snd_pcm_hw_constraint_minmax(runtime,
 					     SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 					     size, size);
+=======
+	snd_pcm_hw_constraint_single(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+				     RME96_BUFFER_SIZE);
+	size = rme96->playback_periodsize;
+	if (!size)
+		size = rme96->capture_periodsize;
+	if (size)
+		snd_pcm_hw_constraint_single(runtime,
+					     SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
+					     size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		snd_pcm_hw_constraint_list(runtime, 0,
 					   SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
@@ -1167,8 +1396,14 @@ snd_rme96_playback_spdif_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
 	spin_lock_irq(&rme96->lock);	
         if (rme96->playback_substream != NULL) {
+=======
+	snd_pcm_set_sync(substream);
+	spin_lock_irq(&rme96->lock);	
+	if (rme96->playback_substream) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&rme96->lock);
                 return -EBUSY;
         }
@@ -1179,6 +1414,7 @@ snd_rme96_playback_spdif_open(struct snd_pcm_substream *substream)
 
 	runtime->hw = snd_rme96_playback_spdif_info;
 	if (!(rme96->wcreg & RME96_WCR_MASTER) &&
+<<<<<<< HEAD
             snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
 	    (rate = snd_rme96_capture_getrate(rme96, &dummy)) > 0)
 	{
@@ -1186,6 +1422,16 @@ snd_rme96_playback_spdif_open(struct snd_pcm_substream *substream)
                 runtime->hw.rates = snd_pcm_rate_to_rate_bit(rate);
                 runtime->hw.rate_min = rate;
                 runtime->hw.rate_max = rate;
+=======
+	    snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG) {
+		rate = snd_rme96_capture_getrate(rme96, &dummy);
+		if (rate > 0) {
+			/* slave clock */
+			runtime->hw.rates = snd_pcm_rate_to_rate_bit(rate);
+			runtime->hw.rate_min = rate;
+			runtime->hw.rate_max = rate;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}        
 	rme96_set_buffer_size_constraint(rme96, runtime);
 
@@ -1203,6 +1449,7 @@ snd_rme96_capture_spdif_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
 	runtime->hw = snd_rme96_capture_spdif_info;
         if (snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
             (rate = snd_rme96_capture_getrate(rme96, &isadat)) > 0)
@@ -1217,6 +1464,23 @@ snd_rme96_capture_spdif_open(struct snd_pcm_substream *substream)
         
 	spin_lock_irq(&rme96->lock);
         if (rme96->capture_substream != NULL) {
+=======
+	snd_pcm_set_sync(substream);
+	runtime->hw = snd_rme96_capture_spdif_info;
+	if (snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG) {
+		rate = snd_rme96_capture_getrate(rme96, &isadat);
+		if (rate > 0) {
+			if (isadat)
+				return -EIO;
+			runtime->hw.rates = snd_pcm_rate_to_rate_bit(rate);
+			runtime->hw.rate_min = rate;
+			runtime->hw.rate_max = rate;
+		}
+	}
+        
+	spin_lock_irq(&rme96->lock);
+	if (rme96->capture_substream) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&rme96->lock);
                 return -EBUSY;
         }
@@ -1234,8 +1498,14 @@ snd_rme96_playback_adat_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;        
 	
+<<<<<<< HEAD
 	spin_lock_irq(&rme96->lock);	
         if (rme96->playback_substream != NULL) {
+=======
+	snd_pcm_set_sync(substream);
+	spin_lock_irq(&rme96->lock);	
+	if (rme96->playback_substream) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&rme96->lock);
                 return -EBUSY;
         }
@@ -1246,6 +1516,7 @@ snd_rme96_playback_adat_open(struct snd_pcm_substream *substream)
 	
 	runtime->hw = snd_rme96_playback_adat_info;
 	if (!(rme96->wcreg & RME96_WCR_MASTER) &&
+<<<<<<< HEAD
             snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG &&
 	    (rate = snd_rme96_capture_getrate(rme96, &dummy)) > 0)
 	{
@@ -1254,6 +1525,18 @@ snd_rme96_playback_adat_open(struct snd_pcm_substream *substream)
                 runtime->hw.rate_min = rate;
                 runtime->hw.rate_max = rate;
 	}        
+=======
+	    snd_rme96_getinputtype(rme96) != RME96_INPUT_ANALOG) {
+		rate = snd_rme96_capture_getrate(rme96, &dummy);
+		if (rate > 0) {
+			/* slave clock */
+			runtime->hw.rates = snd_pcm_rate_to_rate_bit(rate);
+			runtime->hw.rate_min = rate;
+			runtime->hw.rate_max = rate;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rme96_set_buffer_size_constraint(rme96, runtime);
 	return 0;
 }
@@ -1265,13 +1548,22 @@ snd_rme96_capture_adat_open(struct snd_pcm_substream *substream)
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
+<<<<<<< HEAD
+=======
+	snd_pcm_set_sync(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->hw = snd_rme96_capture_adat_info;
         if (snd_rme96_getinputtype(rme96) == RME96_INPUT_ANALOG) {
                 /* makes no sense to use analog input. Note that analog
                    expension cards AEB4/8-I are RME96_INPUT_INTERNAL */
                 return -EIO;
         }
+<<<<<<< HEAD
         if ((rate = snd_rme96_capture_getrate(rme96, &isadat)) > 0) {
+=======
+	rate = snd_rme96_capture_getrate(rme96, &isadat);
+	if (rate > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 if (!isadat) {
                         return -EIO;
                 }
@@ -1281,7 +1573,11 @@ snd_rme96_capture_adat_open(struct snd_pcm_substream *substream)
         }
         
 	spin_lock_irq(&rme96->lock);	
+<<<<<<< HEAD
         if (rme96->capture_substream != NULL) {
+=======
+	if (rme96->capture_substream) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&rme96->lock);
                 return -EBUSY;
         }
@@ -1300,7 +1596,11 @@ snd_rme96_playback_close(struct snd_pcm_substream *substream)
 
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_playback_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_PLAYBACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rme96->playback_substream = NULL;
 	rme96->playback_periodsize = 0;
@@ -1321,7 +1621,11 @@ snd_rme96_capture_close(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_capture_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_CAPTURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rme96->capture_substream = NULL;
 	rme96->capture_periodsize = 0;
@@ -1336,7 +1640,11 @@ snd_rme96_playback_prepare(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_playback_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_PLAYBACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	writel(0, rme96->iobase + RME96_IO_RESET_PLAY_POS);
 	spin_unlock_irq(&rme96->lock);
@@ -1350,7 +1658,11 @@ snd_rme96_capture_prepare(struct snd_pcm_substream *substream)
 	
 	spin_lock_irq(&rme96->lock);	
 	if (RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 		snd_rme96_capture_stop(rme96);
+=======
+		snd_rme96_trigger(rme96, RME96_STOP_CAPTURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	writel(0, rme96->iobase + RME96_IO_RESET_REC_POS);
 	spin_unlock_irq(&rme96->lock);
@@ -1362,10 +1674,25 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 			   int cmd)
 {
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	struct snd_pcm_substream *s;
+	bool sync;
+
+	snd_pcm_group_for_each_entry(s, substream) {
+		if (snd_pcm_substream_chip(s) == rme96)
+			snd_pcm_trigger_done(s, substream);
+	}
+
+	sync = (rme96->playback_substream && rme96->capture_substream) &&
+	       (rme96->playback_substream->group ==
+		rme96->capture_substream->group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (!RME96_ISPLAYING(rme96)) {
+<<<<<<< HEAD
 			if (substream != rme96->playback_substream) {
 				return -EBUSY;
 			}
@@ -1379,10 +1706,27 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 				return -EBUSY;
 			}
 			snd_rme96_playback_stop(rme96);
+=======
+			if (substream != rme96->playback_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_START_BOTH
+						 : RME96_START_PLAYBACK);
+		}
+		break;
+
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		if (RME96_ISPLAYING(rme96)) {
+			if (substream != rme96->playback_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 :  RME96_STOP_PLAYBACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		if (RME96_ISPLAYING(rme96)) {
 			snd_rme96_playback_stop(rme96);
 		}
@@ -1397,6 +1741,24 @@ snd_rme96_playback_trigger(struct snd_pcm_substream *substream,
 	default:
 		return -EINVAL;
 	}
+=======
+		if (RME96_ISPLAYING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_PLAYBACK);
+		break;
+
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		if (!RME96_ISPLAYING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_RESUME_BOTH
+						 : RME96_RESUME_PLAYBACK);
+		break;
+
+	default:
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1405,10 +1767,25 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 			  int cmd)
 {
 	struct rme96 *rme96 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	struct snd_pcm_substream *s;
+	bool sync;
+
+	snd_pcm_group_for_each_entry(s, substream) {
+		if (snd_pcm_substream_chip(s) == rme96)
+			snd_pcm_trigger_done(s, substream);
+	}
+
+	sync = (rme96->playback_substream && rme96->capture_substream) &&
+	       (rme96->playback_substream->group ==
+		rme96->capture_substream->group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (!RME96_ISRECORDING(rme96)) {
+<<<<<<< HEAD
 			if (substream != rme96->capture_substream) {
 				return -EBUSY;
 			}
@@ -1422,10 +1799,27 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 				return -EBUSY;
 			}
 			snd_rme96_capture_stop(rme96);
+=======
+			if (substream != rme96->capture_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_START_BOTH
+						 : RME96_START_CAPTURE);
+		}
+		break;
+
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		if (RME96_ISRECORDING(rme96)) {
+			if (substream != rme96->capture_substream)
+				return -EBUSY;
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_CAPTURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		if (RME96_ISRECORDING(rme96)) {
 			snd_rme96_capture_stop(rme96);
 		}
@@ -1437,6 +1831,20 @@ snd_rme96_capture_trigger(struct snd_pcm_substream *substream,
 		}
 		break;
 		
+=======
+		if (RME96_ISRECORDING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_STOP_BOTH
+						 : RME96_STOP_CAPTURE);
+		break;
+
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		if (!RME96_ISRECORDING(rme96))
+			snd_rme96_trigger(rme96, sync ? RME96_RESUME_BOTH
+						 : RME96_RESUME_CAPTURE);
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
@@ -1458,15 +1866,22 @@ snd_rme96_capture_pointer(struct snd_pcm_substream *substream)
 	return snd_rme96_capture_ptr(rme96);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_playback_spdif_ops = {
 	.open =		snd_rme96_playback_spdif_open,
 	.close =	snd_rme96_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_rme96_playback_spdif_ops = {
+	.open =		snd_rme96_playback_spdif_open,
+	.close =	snd_rme96_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_rme96_playback_hw_params,
 	.prepare =	snd_rme96_playback_prepare,
 	.trigger =	snd_rme96_playback_trigger,
 	.pointer =	snd_rme96_playback_pointer,
 	.copy =		snd_rme96_playback_copy,
+<<<<<<< HEAD
 	.silence =	snd_rme96_playback_silence,
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
@@ -1475,6 +1890,15 @@ static struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
 	.open =		snd_rme96_capture_spdif_open,
 	.close =	snd_rme96_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+	.fill_silence =	snd_rme96_playback_silence,
+	.mmap =		snd_pcm_lib_mmap_iomem,
+};
+
+static const struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
+	.open =		snd_rme96_capture_spdif_open,
+	.close =	snd_rme96_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_rme96_capture_hw_params,
 	.prepare =	snd_rme96_capture_prepare,
 	.trigger =	snd_rme96_capture_trigger,
@@ -1483,15 +1907,22 @@ static struct snd_pcm_ops snd_rme96_capture_spdif_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme96_playback_adat_ops = {
 	.open =		snd_rme96_playback_adat_open,
 	.close =	snd_rme96_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_rme96_playback_adat_ops = {
+	.open =		snd_rme96_playback_adat_open,
+	.close =	snd_rme96_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_rme96_playback_hw_params,
 	.prepare =	snd_rme96_playback_prepare,
 	.trigger =	snd_rme96_playback_trigger,
 	.pointer =	snd_rme96_playback_pointer,
 	.copy =		snd_rme96_playback_copy,
+<<<<<<< HEAD
 	.silence =	snd_rme96_playback_silence,
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
@@ -1500,6 +1931,15 @@ static struct snd_pcm_ops snd_rme96_capture_adat_ops = {
 	.open =		snd_rme96_capture_adat_open,
 	.close =	snd_rme96_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+	.fill_silence =	snd_rme96_playback_silence,
+	.mmap =		snd_pcm_lib_mmap_iomem,
+};
+
+static const struct snd_pcm_ops snd_rme96_capture_adat_ops = {
+	.open =		snd_rme96_capture_adat_open,
+	.close =	snd_rme96_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_rme96_capture_hw_params,
 	.prepare =	snd_rme96_capture_prepare,
 	.trigger =	snd_rme96_capture_trigger,
@@ -1509,6 +1949,7 @@ static struct snd_pcm_ops snd_rme96_capture_adat_ops = {
 };
 
 static void
+<<<<<<< HEAD
 snd_rme96_free(void *private_data)
 {
 	struct rme96 *rme96 = (struct rme96 *)private_data;
@@ -1533,6 +1974,17 @@ snd_rme96_free(void *private_data)
 		rme96->port = 0;
 	}
 	pci_disable_device(rme96->pci);
+=======
+snd_rme96_free(struct rme96 *rme96)
+{
+	if (rme96->irq >= 0) {
+		snd_rme96_trigger(rme96, RME96_STOP_BOTH);
+		rme96->areg &= ~RME96_AR_DAC_EN;
+		writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	}
+	vfree(rme96->playback_suspend_buffer);
+	vfree(rme96->capture_suspend_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1549,7 +2001,11 @@ snd_rme96_free_adat_pcm(struct snd_pcm *pcm)
 	rme96->adat_pcm = NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_rme96_create(struct rme96 *rme96)
 {
 	struct pci_dev *pci = rme96->pci;
@@ -1558,6 +2014,7 @@ snd_rme96_create(struct rme96 *rme96)
 	rme96->irq = -1;
 	spin_lock_init(&rme96->lock);
 
+<<<<<<< HEAD
 	if ((err = pci_enable_device(pci)) < 0)
 		return err;
 
@@ -1577,16 +2034,50 @@ snd_rme96_create(struct rme96 *rme96)
 		return -EBUSY;
 	}
 	rme96->irq = pci->irq;
+=======
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+	err = pci_request_regions(pci, "RME96");
+	if (err < 0)
+		return err;
+	rme96->port = pci_resource_start(rme96->pci, 0);
+
+	rme96->iobase = devm_ioremap(&pci->dev, rme96->port, RME96_IO_SIZE);
+	if (!rme96->iobase) {
+		dev_err(rme96->card->dev,
+			"unable to remap memory region 0x%lx-0x%lx\n",
+			rme96->port, rme96->port + RME96_IO_SIZE - 1);
+		return -EBUSY;
+	}
+
+	if (devm_request_irq(&pci->dev, pci->irq, snd_rme96_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, rme96)) {
+		dev_err(rme96->card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	rme96->irq = pci->irq;
+	rme96->card->sync_irq = rme96->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read the card's revision number */
 	pci_read_config_byte(pci, 8, &rme96->rev);	
 	
 	/* set up ALSA pcm device for S/PDIF */
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(rme96->card, "Digi96 IEC958", 0,
 			       1, 1, &rme96->spdif_pcm)) < 0)
 	{
 		return err;
 	}
+=======
+	err = snd_pcm_new(rme96->card, "Digi96 IEC958", 0,
+			  1, 1, &rme96->spdif_pcm);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rme96->spdif_pcm->private_data = rme96;
 	rme96->spdif_pcm->private_free = snd_rme96_free_spdif_pcm;
 	strcpy(rme96->spdif_pcm->name, "Digi96 IEC958");
@@ -1600,11 +2091,18 @@ snd_rme96_create(struct rme96 *rme96)
 		/* ADAT is not available on the base model */
 		rme96->adat_pcm = NULL;
 	} else {
+<<<<<<< HEAD
 		if ((err = snd_pcm_new(rme96->card, "Digi96 ADAT", 1,
 				       1, 1, &rme96->adat_pcm)) < 0)
 		{
 			return err;
 		}		
+=======
+		err = snd_pcm_new(rme96->card, "Digi96 ADAT", 1,
+				  1, 1, &rme96->adat_pcm);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rme96->adat_pcm->private_data = rme96;
 		rme96->adat_pcm->private_free = snd_rme96_free_adat_pcm;
 		strcpy(rme96->adat_pcm->name, "Digi96 ADAT");
@@ -1618,8 +2116,12 @@ snd_rme96_create(struct rme96 *rme96)
 	rme96->capture_periodsize = 0;
 	
 	/* make sure playback/capture is stopped, if by some reason active */
+<<<<<<< HEAD
 	snd_rme96_playback_stop(rme96);
 	snd_rme96_capture_stop(rme96);
+=======
+	snd_rme96_trigger(rme96, RME96_STOP_BOTH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* set default values in registers */
 	rme96->wcreg =
@@ -1654,9 +2156,15 @@ snd_rme96_create(struct rme96 *rme96)
 	}
 	
 	/* init switch interface */
+<<<<<<< HEAD
 	if ((err = snd_rme96_create_switches(rme96->card, rme96)) < 0) {
 		return err;
 	}
+=======
+	err = snd_rme96_create_switches(rme96->card, rme96);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         /* init proc interface */
 	snd_rme96_proc_init(rme96);
@@ -1797,6 +2305,7 @@ snd_rme96_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit 
 snd_rme96_proc_init(struct rme96 *rme96)
 {
@@ -1804,6 +2313,11 @@ snd_rme96_proc_init(struct rme96 *rme96)
 
 	if (! snd_card_proc_new(rme96->card, "rme96", &entry))
 		snd_info_set_text_ops(entry, rme96, snd_rme96_proc_read);
+=======
+static void snd_rme96_proc_init(struct rme96 *rme96)
+{
+	snd_card_ro_proc_new(rme96->card, "rme96", rme96, snd_rme96_proc_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1842,6 +2356,7 @@ snd_rme96_put_loopback_control(struct snd_kcontrol *kcontrol, struct snd_ctl_ele
 static int
 snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *_texts[5] = { "Optical", "Coaxial", "Internal", "XLR", "Analog" };
 	struct rme96 *rme96 = snd_kcontrol_chip(kcontrol);
 	char *texts[5] = { _texts[0], _texts[1], _texts[2], _texts[3], _texts[4] };
@@ -1855,19 +2370,46 @@ snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 		break;
 	case PCI_DEVICE_ID_RME_DIGI96_8_PRO:
 		uinfo->value.enumerated.items = 4;
+=======
+	static const char * const _texts[5] = {
+		"Optical", "Coaxial", "Internal", "XLR", "Analog"
+	};
+	struct rme96 *rme96 = snd_kcontrol_chip(kcontrol);
+	const char *texts[5] = {
+		_texts[0], _texts[1], _texts[2], _texts[3], _texts[4]
+	};
+	int num_items;
+	
+	switch (rme96->pci->device) {
+	case PCI_DEVICE_ID_RME_DIGI96:
+	case PCI_DEVICE_ID_RME_DIGI96_8:
+		num_items = 3;
+		break;
+	case PCI_DEVICE_ID_RME_DIGI96_8_PRO:
+		num_items = 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case PCI_DEVICE_ID_RME_DIGI96_8_PAD_OR_PST:
 		if (rme96->rev > 4) {
 			/* PST */
+<<<<<<< HEAD
 			uinfo->value.enumerated.items = 4;
 			texts[3] = _texts[4]; /* Analog instead of XLR */
 		} else {
 			/* PAD */
 			uinfo->value.enumerated.items = 5;
+=======
+			num_items = 4;
+			texts[3] = _texts[4]; /* Analog instead of XLR */
+		} else {
+			/* PAD */
+			num_items = 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
 		snd_BUG();
+<<<<<<< HEAD
 		break;
 	}
 	if (uinfo->value.enumerated.item > uinfo->value.enumerated.items - 1) {
@@ -1875,6 +2417,11 @@ snd_rme96_info_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+		return -EINVAL;
+	}
+	return snd_ctl_enum_info(uinfo, 1, num_items, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int
 snd_rme96_get_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1960,6 +2507,7 @@ snd_rme96_put_inputtype_control(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 static int
 snd_rme96_info_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = { "AutoSync", "Internal", "Word" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1970,6 +2518,11 @@ snd_rme96_info_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = { "AutoSync", "Internal", "Word" };
+	
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int
 snd_rme96_get_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1999,6 +2552,7 @@ snd_rme96_put_clockmode_control(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 static int
 snd_rme96_info_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = { "0 dB", "-6 dB", "-12 dB", "-18 dB" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -2009,6 +2563,13 @@ snd_rme96_info_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"0 dB", "-6 dB", "-12 dB", "-18 dB"
+	};
+	
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int
 snd_rme96_get_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2039,6 +2600,7 @@ snd_rme96_put_attenuation_control(struct snd_kcontrol *kcontrol, struct snd_ctl_
 static int
 snd_rme96_info_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = { "1+2", "3+4", "5+6", "7+8" };
 	
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -2049,6 +2611,11 @@ snd_rme96_info_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	}
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = { "1+2", "3+4", "5+6", "7+8" };
+	
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int
 snd_rme96_get_montracks_control(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -2225,7 +2792,11 @@ snd_rme96_dac_volume_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_valu
         return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_rme96_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_rme96_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -2313,16 +2884,30 @@ snd_rme96_create_switches(struct snd_card *card,
 	struct snd_kcontrol *kctl;
 
 	for (idx = 0; idx < 7; idx++) {
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_rme96_controls[idx], rme96))) < 0)
+=======
+		kctl = snd_ctl_new1(&snd_rme96_controls[idx], rme96);
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		if (idx == 1)	/* IEC958 (S/PDIF) Stream */
 			rme96->spdif_ctl = kctl;
 	}
 
 	if (RME96_HAS_ANALOG_OUT(rme96)) {
+<<<<<<< HEAD
 		for (idx = 7; idx < 10; idx++)
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_rme96_controls[idx], rme96))) < 0)
 				return err;
+=======
+		for (idx = 7; idx < 10; idx++) {
+			err = snd_ctl_add(card, snd_ctl_new1(&snd_rme96_controls[idx], rme96));
+			if (err < 0)
+				return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	
 	return 0;
@@ -2332,14 +2917,86 @@ snd_rme96_create_switches(struct snd_card *card,
  * Card initialisation
  */
 
+<<<<<<< HEAD
+=======
+static int rme96_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct rme96 *rme96 = card->private_data;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+
+	/* save capture & playback pointers */
+	rme96->playback_pointer = readl(rme96->iobase + RME96_IO_GET_PLAY_POS)
+				  & RME96_RCR_AUDIO_ADDR_MASK;
+	rme96->capture_pointer = readl(rme96->iobase + RME96_IO_GET_REC_POS)
+				 & RME96_RCR_AUDIO_ADDR_MASK;
+
+	/* save playback and capture buffers */
+	memcpy_fromio(rme96->playback_suspend_buffer,
+		      rme96->iobase + RME96_IO_PLAY_BUFFER, RME96_BUFFER_SIZE);
+	memcpy_fromio(rme96->capture_suspend_buffer,
+		      rme96->iobase + RME96_IO_REC_BUFFER, RME96_BUFFER_SIZE);
+
+	/* disable the DAC  */
+	rme96->areg &= ~RME96_AR_DAC_EN;
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	return 0;
+}
+
+static int rme96_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct rme96 *rme96 = card->private_data;
+
+	/* reset playback and record buffer pointers */
+	writel(0, rme96->iobase + RME96_IO_SET_PLAY_POS
+		  + rme96->playback_pointer);
+	writel(0, rme96->iobase + RME96_IO_SET_REC_POS
+		  + rme96->capture_pointer);
+
+	/* restore playback and capture buffers */
+	memcpy_toio(rme96->iobase + RME96_IO_PLAY_BUFFER,
+		    rme96->playback_suspend_buffer, RME96_BUFFER_SIZE);
+	memcpy_toio(rme96->iobase + RME96_IO_REC_BUFFER,
+		    rme96->capture_suspend_buffer, RME96_BUFFER_SIZE);
+
+	/* reset the ADC */
+	writel(rme96->areg | RME96_AR_PD2,
+	       rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+
+	/* reset and enable DAC, restore analog volume */
+	snd_rme96_reset_dac(rme96);
+	rme96->areg |= RME96_AR_DAC_EN;
+	writel(rme96->areg, rme96->iobase + RME96_IO_ADDITIONAL_REG);
+	if (RME96_HAS_ANALOG_OUT(rme96)) {
+		usleep_range(3000, 10000);
+		snd_rme96_apply_dac_volume(rme96);
+	}
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
+
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(rme96_pm, rme96_suspend, rme96_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_rme96_card_free(struct snd_card *card)
 {
 	snd_rme96_free(card->private_data);
 }
 
+<<<<<<< HEAD
 static int __devinit
 snd_rme96_probe(struct pci_dev *pci,
 		const struct pci_device_id *pci_id)
+=======
+static int
+__snd_rme96_probe(struct pci_dev *pci,
+		  const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct rme96 *rme96;
@@ -2354,20 +3011,41 @@ snd_rme96_probe(struct pci_dev *pci,
 		dev++;
 		return -ENOENT;
 	}
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct rme96), &card);
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*rme96), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	card->private_free = snd_rme96_card_free;
 	rme96 = card->private_data;
 	rme96->card = card;
 	rme96->pci = pci;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 	if ((err = snd_rme96_create(rme96)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
 	
+=======
+	err = snd_rme96_create(rme96);
+	if (err)
+		return err;
+	
+	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
+		rme96->playback_suspend_buffer = vmalloc(RME96_BUFFER_SIZE);
+		if (!rme96->playback_suspend_buffer)
+			return -ENOMEM;
+		rme96->capture_suspend_buffer = vmalloc(RME96_BUFFER_SIZE);
+		if (!rme96->capture_suspend_buffer)
+			return -ENOMEM;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(card->driver, "Digi96");
 	switch (rme96->pci->device) {
 	case PCI_DEVICE_ID_RME_DIGI96:
@@ -2390,16 +3068,24 @@ snd_rme96_probe(struct pci_dev *pci,
 	}
 	sprintf(card->longname, "%s at 0x%lx, irq %d", card->shortname,
 		rme96->port, rme96->irq);
+<<<<<<< HEAD
 	
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;	
 	}
+=======
+	err = snd_card_register(card);
+	if (err)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_rme96_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -2425,3 +3111,21 @@ static void __exit alsa_card_rme96_exit(void)
 
 module_init(alsa_card_rme96_init)
 module_exit(alsa_card_rme96_exit)
+=======
+static int snd_rme96_probe(struct pci_dev *pci,
+			   const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_rme96_probe(pci, pci_id));
+}
+
+static struct pci_driver rme96_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_rme96_ids,
+	.probe = snd_rme96_probe,
+	.driver = {
+		.pm = &rme96_pm,
+	},
+};
+
+module_pci_driver(rme96_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

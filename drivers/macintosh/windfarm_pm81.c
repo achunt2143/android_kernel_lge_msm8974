@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. iMac G5
  *
  * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
  *
+<<<<<<< HEAD
  * Released under the term of the GNU GPL v2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The algorithm used is the PID control algorithm, used the same
  * way the published Darwin code does, using the same values that
  * are present in the Darwin 8.2 snapshot property lists (note however
@@ -90,7 +97,10 @@
  * from the SDB partition. If we ever end up with actually slewing the system
  * clock and thus changing operating points, we'll have to find a way to
  * communicate with the CPU freq driver;
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -104,7 +114,12 @@
 #include <linux/kmod.h>
 #include <linux/device.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -140,7 +155,12 @@ static struct wf_control *fan_system;
 static struct wf_control *cpufreq_clamp;
 
 /* Set to kick the control loop into life */
+<<<<<<< HEAD
 static int wf_smu_all_controls_ok, wf_smu_all_sensors_ok, wf_smu_started;
+=======
+static int wf_smu_all_controls_ok, wf_smu_all_sensors_ok;
+static bool wf_smu_started;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Failure handling.. could be nicer */
 #define FAILURE_FAN		0x01
@@ -149,6 +169,10 @@ static int wf_smu_all_controls_ok, wf_smu_all_sensors_ok, wf_smu_started;
 
 static unsigned int wf_smu_failure_state;
 static int wf_smu_readjust, wf_smu_skipping;
+<<<<<<< HEAD
+=======
+static bool wf_smu_overtemp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ****** System Fans Control Loop ******
@@ -302,6 +326,7 @@ static void wf_smu_create_sys_fans(void)
 	pid_param.interval = WF_SMU_SYS_FANS_INTERVAL;
 	pid_param.history_len = WF_SMU_SYS_FANS_HISTORY_SIZE;
 	pid_param.itarget = param->itarget;
+<<<<<<< HEAD
 	pid_param.min = fan_system->ops->get_min(fan_system);
 	pid_param.max = fan_system->ops->get_max(fan_system);
 	if (fan_hd) {
@@ -309,6 +334,15 @@ static void wf_smu_create_sys_fans(void)
 			max(pid_param.min,fan_hd->ops->get_min(fan_hd));
 		pid_param.max =
 			min(pid_param.max,fan_hd->ops->get_max(fan_hd));
+=======
+	pid_param.min = wf_control_get_min(fan_system);
+	pid_param.max = wf_control_get_max(fan_system);
+	if (fan_hd) {
+		pid_param.min =
+			max(pid_param.min, wf_control_get_min(fan_hd));
+		pid_param.max =
+			min(pid_param.max, wf_control_get_max(fan_hd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	wf_pid_init(&wf_smu_sys_fans->pid, &pid_param);
 
@@ -337,7 +371,11 @@ static void wf_smu_sys_fans_tick(struct wf_smu_sys_fans_state *st)
 	}
 	st->ticks = WF_SMU_SYS_FANS_INTERVAL;
 
+<<<<<<< HEAD
 	rc = sensor_hd_temp->ops->get_value(sensor_hd_temp, &temp);
+=======
+	rc = wf_sensor_get(sensor_hd_temp, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_WARNING "windfarm: HD temp sensor error %d\n",
 		       rc);
@@ -373,7 +411,11 @@ static void wf_smu_sys_fans_tick(struct wf_smu_sys_fans_state *st)
 	st->hd_setpoint = new_setpoint;
  readjust:
 	if (fan_system && wf_smu_failure_state == 0) {
+<<<<<<< HEAD
 		rc = fan_system->ops->set_value(fan_system, st->sys_setpoint);
+=======
+		rc = wf_control_set(fan_system, st->sys_setpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_WARNING "windfarm: Sys fan error %d\n",
 			       rc);
@@ -381,7 +423,11 @@ static void wf_smu_sys_fans_tick(struct wf_smu_sys_fans_state *st)
 		}
 	}
 	if (fan_hd && wf_smu_failure_state == 0) {
+<<<<<<< HEAD
 		rc = fan_hd->ops->set_value(fan_hd, st->hd_setpoint);
+=======
+		rc = wf_control_set(fan_hd, st->hd_setpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_WARNING "windfarm: HD fan error %d\n",
 			       rc);
@@ -400,7 +446,11 @@ static void wf_smu_create_cpu_fans(void)
 
 	/* First, locate the PID params in SMU SBD */
 	hdr = smu_get_sdb_partition(SMU_SDB_CPUPIDDATA_ID, NULL);
+<<<<<<< HEAD
 	if (hdr == 0) {
+=======
+	if (!hdr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "windfarm: CPU PID fan config not found "
 		       "max fan speed\n");
 		goto fail;
@@ -447,13 +497,22 @@ static void wf_smu_create_cpu_fans(void)
 	pid_param.ttarget = tmax - tdelta;
 	pid_param.pmaxadj = maxpow - powadj;
 
+<<<<<<< HEAD
 	pid_param.min = fan_cpu_main->ops->get_min(fan_cpu_main);
 	pid_param.max = fan_cpu_main->ops->get_max(fan_cpu_main);
+=======
+	pid_param.min = wf_control_get_min(fan_cpu_main);
+	pid_param.max = wf_control_get_max(fan_cpu_main);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wf_cpu_pid_init(&wf_smu_cpu_fans->pid, &pid_param);
 
 	DBG("wf: CPU Fan control initialized.\n");
+<<<<<<< HEAD
 	DBG("    ttarged=%d.%03d, tmax=%d.%03d, min=%d RPM, max=%d RPM\n",
+=======
+	DBG("    ttarget=%d.%03d, tmax=%d.%03d, min=%d RPM, max=%d RPM\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    FIX32TOPRINT(pid_param.ttarget), FIX32TOPRINT(pid_param.tmax),
 	    pid_param.min, pid_param.max);
 
@@ -481,7 +540,11 @@ static void wf_smu_cpu_fans_tick(struct wf_smu_cpu_fans_state *st)
 	}
 	st->ticks = WF_SMU_CPU_FANS_INTERVAL;
 
+<<<<<<< HEAD
 	rc = sensor_cpu_temp->ops->get_value(sensor_cpu_temp, &temp);
+=======
+	rc = wf_sensor_get(sensor_cpu_temp, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_WARNING "windfarm: CPU temp sensor error %d\n",
 		       rc);
@@ -489,7 +552,11 @@ static void wf_smu_cpu_fans_tick(struct wf_smu_cpu_fans_state *st)
 		return;
 	}
 
+<<<<<<< HEAD
 	rc = sensor_cpu_power->ops->get_value(sensor_cpu_power, &power);
+=======
+	rc = wf_sensor_get(sensor_cpu_power, &power);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_WARNING "windfarm: CPU power sensor error %d\n",
 		       rc);
@@ -525,8 +592,12 @@ static void wf_smu_cpu_fans_tick(struct wf_smu_cpu_fans_state *st)
 	st->cpu_setpoint = new_setpoint;
  readjust:
 	if (fan_cpu_main && wf_smu_failure_state == 0) {
+<<<<<<< HEAD
 		rc = fan_cpu_main->ops->set_value(fan_cpu_main,
 						  st->cpu_setpoint);
+=======
+		rc = wf_control_set(fan_cpu_main, st->cpu_setpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_WARNING "windfarm: CPU main fan"
 			       " error %d\n", rc);
@@ -549,7 +620,11 @@ static void wf_smu_tick(void)
 		DBG("wf: creating control loops !\n");
 		wf_smu_create_sys_fans();
 		wf_smu_create_cpu_fans();
+<<<<<<< HEAD
 		wf_smu_started = 1;
+=======
+		wf_smu_started = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Skipping ticks */
@@ -594,6 +669,10 @@ static void wf_smu_tick(void)
 	if (new_failure & FAILURE_OVERTEMP) {
 		wf_set_overtemp();
 		wf_smu_skipping = 2;
+<<<<<<< HEAD
+=======
+		wf_smu_overtemp = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We only clear the overtemp condition if overtemp is cleared
@@ -602,8 +681,15 @@ static void wf_smu_tick(void)
 	 * the control loop levels, but we don't want to keep it clear
 	 * here in this case
 	 */
+<<<<<<< HEAD
 	if (new_failure == 0 && last_failure & FAILURE_OVERTEMP)
 		wf_clear_overtemp();
+=======
+	if (!wf_smu_failure_state && wf_smu_overtemp) {
+		wf_clear_overtemp();
+		wf_smu_overtemp = false;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wf_smu_new_control(struct wf_control *ct)
@@ -702,7 +788,11 @@ static int wf_init_pm(void)
 	const struct smu_sdbp_header *hdr;
 
 	hdr = smu_get_sdb_partition(SMU_SDB_SENSORTREE_ID, NULL);
+<<<<<<< HEAD
 	if (hdr != 0) {
+=======
+	if (hdr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct smu_sdbp_sensortree *st =
 			(struct smu_sdbp_sensortree *)&hdr[1];
 		wf_smu_mach_model = st->model_id;
@@ -721,7 +811,11 @@ static int wf_smu_probe(struct platform_device *ddev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit wf_smu_remove(struct platform_device *ddev)
+=======
+static void wf_smu_remove(struct platform_device *ddev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	wf_unregister_client(&wf_smu_events);
 
@@ -758,6 +852,7 @@ static int __devexit wf_smu_remove(struct platform_device *ddev)
 	/* Destroy control loops state structures */
 	kfree(wf_smu_sys_fans);
 	kfree(wf_smu_cpu_fans);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -768,6 +863,15 @@ static struct platform_driver wf_smu_driver = {
 	.driver = {
 		.name = "windfarm",
 		.owner	= THIS_MODULE,
+=======
+}
+
+static struct platform_driver wf_smu_driver = {
+	.probe = wf_smu_probe,
+	.remove_new = wf_smu_remove,
+	.driver = {
+		.name = "windfarm",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ld script to make m68k Linux kernel */
 
 #include <asm-generic/vmlinux.lds.h>
@@ -15,6 +19,11 @@ SECTIONS
   .text : {
 	HEAD_TEXT
 	TEXT_TEXT
+<<<<<<< HEAD
+=======
+	IRQENTRY_TEXT
+	SOFTIRQENTRY_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCHED_TEXT
 	LOCK_TEXT
 	*(.fixup)
@@ -27,6 +36,7 @@ SECTIONS
 
   _sdata = .;			/* Start of data section */
 
+<<<<<<< HEAD
   RODATA
 
   RW_DATA_SECTION(16, PAGE_SIZE, THREAD_SIZE)
@@ -34,6 +44,13 @@ SECTIONS
   _sbss = .;
   BSS_SECTION(0, 0, 0)
   _ebss = .;
+=======
+  RO_DATA(4096)
+
+  RW_DATA(16, PAGE_SIZE, THREAD_SIZE)
+
+  BSS_SECTION(0, 0, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   _edata = .;			/* End of data section */
 
@@ -47,7 +64,10 @@ SECTIONS
 	*(.m68k_fixup)
 	__stop_fixup = .;
   }
+<<<<<<< HEAD
   NOTES
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   .init_end : {
 	/* This ALIGN be in a section so that _end is at the end of the
 	   load segment. */
@@ -58,7 +78,11 @@ SECTIONS
   _end = . ;
 
   STABS_DEBUG
+<<<<<<< HEAD
   .comment 0 : { *(.comment) }
+=======
+  ELF_DETAILS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   /* Sections to be discarded */
   DISCARDS

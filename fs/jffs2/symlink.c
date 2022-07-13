@@ -9,6 +9,7 @@
  *
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -65,3 +66,13 @@ static void *jffs2_follow_link(struct dentry *dentry, struct nameidata *nd)
 	return NULL;
 }
 
+=======
+#include "nodelist.h"
+
+const struct inode_operations jffs2_symlink_inode_operations =
+{
+	.get_link =	simple_get_link,
+	.setattr =	jffs2_setattr,
+	.listxattr =	jffs2_listxattr,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

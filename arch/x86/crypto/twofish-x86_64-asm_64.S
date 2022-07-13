@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /***************************************************************************
 *   Copyright (C) 2006 by Joachim Fritschi, <jfritschi@freenet.de>        *
 *                                                                         *
@@ -15,11 +16,21 @@
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/***************************************************************************
+*   Copyright (C) 2006 by Joachim Fritschi, <jfritschi@freenet.de>        *
+*                                                                         *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ***************************************************************************/
 
 .file "twofish-x86_64-asm.S"
 .text
 
+<<<<<<< HEAD
+=======
+#include <linux/linkage.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm-offsets.h>
 
 #define a_offset	0
@@ -214,11 +225,15 @@
 	xor	%r8d,		d ## D;\
 	ror	$1,		d ## D;
 
+<<<<<<< HEAD
 .align 8
 .global twofish_enc_blk
 .global twofish_dec_blk
 
 twofish_enc_blk:
+=======
+SYM_FUNC_START(twofish_enc_blk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushq    R1
 
 	/* %rdi contains the ctx address */
@@ -267,10 +282,18 @@ twofish_enc_blk:
 	movq	R1,	8(%rsi)
 
 	popq	R1
+<<<<<<< HEAD
 	movq	$1,%rax
 	ret
 
 twofish_dec_blk:
+=======
+	movl	$1,%eax
+	RET
+SYM_FUNC_END(twofish_enc_blk)
+
+SYM_FUNC_START(twofish_dec_blk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushq    R1
 
 	/* %rdi contains the ctx address */
@@ -318,5 +341,11 @@ twofish_dec_blk:
 	movq	R1,	8(%rsi)
 
 	popq	R1
+<<<<<<< HEAD
 	movq	$1,%rax
 	ret
+=======
+	movl	$1,%eax
+	RET
+SYM_FUNC_END(twofish_dec_blk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

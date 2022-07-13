@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ATI IXP 150/200/250 AC97 modem controllers
  *
  *	Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +25,11 @@
  */
 
 #include <asm/io.h>
+=======
+ */
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -37,7 +47,10 @@
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("ATI IXP MC97 controller");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ATI,IXP150/200/250}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = -2; /* Exclude the first card */
 static char *id = SNDRV_DEFAULT_STR1;	/* ID for this card */
@@ -183,10 +196,17 @@ struct atiixp_modem;
  */
 
 struct atiixp_dma_desc {
+<<<<<<< HEAD
 	u32 addr;	/* DMA buffer address */
 	u16 status;	/* status bits */
 	u16 size;	/* size of the packet in dwords */
 	u32 next;	/* address of the next packet descriptor */
+=======
+	__le32 addr;	/* DMA buffer address */
+	u16 status;	/* status bits */
+	u16 size;	/* size of the packet in dwords */
+	__le32 next;	/* address of the next packet descriptor */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -261,7 +281,11 @@ struct atiixp_modem {
 
 /*
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_atiixp_ids) = {
+=======
+static const struct pci_device_id snd_atiixp_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(ATI, 0x434d), 0 }, /* SB200 */
 	{ PCI_VDEVICE(ATI, 0x4378), 0 }, /* SB400 */
 	{ 0, }
@@ -335,7 +359,11 @@ static int atiixp_build_dma_packets(struct atiixp_modem *chip,
 		return -ENOMEM;
 
 	if (dma->desc_buf.area == NULL) {
+<<<<<<< HEAD
 		if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
+=======
+		if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ATI_DESC_LIST_SIZE, &dma->desc_buf) < 0)
 			return -ENOMEM;
 		dma->period_bytes = dma->periods = 0; /* clear */
@@ -400,7 +428,11 @@ static int snd_atiixp_acquire_codec(struct atiixp_modem *chip)
 
 	while (atiixp_read(chip, PHYS_OUT_ADDR) & ATI_REG_PHYS_OUT_ADDR_EN) {
 		if (! timeout--) {
+<<<<<<< HEAD
 			snd_printk(KERN_WARNING "atiixp-modem: codec acquire timeout\n");
+=======
+			dev_warn(chip->card->dev, "codec acquire timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EBUSY;
 		}
 		udelay(1);
@@ -433,7 +465,11 @@ static unsigned short snd_atiixp_codec_read(struct atiixp_modem *chip,
 	} while (--timeout);
 	/* time out may happen during reset */
 	if (reg < 0x7c)
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "atiixp-modem: codec read timeout (reg %x)\n", reg);
+=======
+		dev_warn(chip->card->dev, "codec read timeout (reg %x)\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0xffff;
 }
 
@@ -499,7 +535,11 @@ static int snd_atiixp_aclink_reset(struct atiixp_modem *chip)
 		msleep(1);
 		atiixp_update(chip, CMD, ATI_REG_CMD_AC_RESET, ATI_REG_CMD_AC_RESET);
 		if (!--timeout) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "atiixp-modem: codec reset timeout\n");
+=======
+			dev_err(chip->card->dev, "codec reset timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -511,7 +551,10 @@ static int snd_atiixp_aclink_reset(struct atiixp_modem *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_atiixp_aclink_down(struct atiixp_modem *chip)
 {
 	// if (atiixp_read(chip, MODEM_MIRROR) & 0x1) /* modem running, too? */
@@ -521,7 +564,10 @@ static int snd_atiixp_aclink_down(struct atiixp_modem *chip)
 		     ATI_REG_CMD_POWERDOWN);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * auto-detection of codecs
@@ -553,7 +599,11 @@ static int snd_atiixp_codec_detect(struct atiixp_modem *chip)
 	atiixp_write(chip, IER, 0); /* disable irqs */
 
 	if ((chip->codec_not_ready_bits & ALL_CODEC_NOT_READY) == ALL_CODEC_NOT_READY) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "atiixp-modem: no codec detected!\n");
+=======
+		dev_err(chip->card->dev, "no codec detected!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 	return 0;
@@ -624,7 +674,11 @@ static snd_pcm_uframes_t snd_atiixp_pcm_pointer(struct snd_pcm_substream *substr
 			continue;
 		return bytes_to_frames(runtime, curptr);
 	}
+<<<<<<< HEAD
 	snd_printd("atiixp-modem: invalid DMA pointer read 0x%x (buf=%x)\n",
+=======
+	dev_dbg(chip->card->dev, "invalid DMA pointer read 0x%x (buf=%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   readl(chip->remap_addr + dma->ops->dt_cur), dma->buf_addr);
 	return 0;
 }
@@ -637,10 +691,15 @@ static void snd_atiixp_xrun_dma(struct atiixp_modem *chip,
 {
 	if (! dma->substream || ! dma->running)
 		return;
+<<<<<<< HEAD
 	snd_printdd("atiixp-modem: XRUN detected (DMA %d)\n", dma->ops->type);
 	snd_pcm_stream_lock(dma->substream);
 	snd_pcm_stop(dma->substream, SNDRV_PCM_STATE_XRUN);
 	snd_pcm_stream_unlock(dma->substream);
+=======
+	dev_dbg(chip->card->dev, "XRUN detected (DMA %d)\n", dma->ops->type);
+	snd_pcm_stop_xrun(dma->substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -799,9 +858,12 @@ static int snd_atiixp_pcm_hw_params(struct snd_pcm_substream *substream,
 	int err;
 	int i;
 
+<<<<<<< HEAD
 	err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
 	if (err < 0)
 		return err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma->buf_addr = substream->runtime->dma_addr;
 	dma->buf_bytes = params_buffer_bytes(hw_params);
 
@@ -828,7 +890,10 @@ static int snd_atiixp_pcm_hw_free(struct snd_pcm_substream *substream)
 	struct atiixp_dma *dma = substream->runtime->private_data;
 
 	atiixp_clear_dma_packets(chip, dma, substream);
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -836,7 +901,11 @@ static int snd_atiixp_pcm_hw_free(struct snd_pcm_substream *substream)
 /*
  * pcm hardware definition, identical for all DMA types
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_atiixp_pcm_hw =
+=======
+static const struct snd_pcm_hardware snd_atiixp_pcm_hw =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -862,8 +931,13 @@ static int snd_atiixp_pcm_open(struct snd_pcm_substream *substream,
 	struct atiixp_modem *chip = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
+<<<<<<< HEAD
 	static unsigned int rates[] = { 8000,  9600, 12000, 16000 };
 	static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+=======
+	static const unsigned int rates[] = { 8000,  9600, 12000, 16000 };
+	static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.count = ARRAY_SIZE(rates),
 		.list = rates,
 		.mask = 0,
@@ -877,12 +951,21 @@ static int snd_atiixp_pcm_open(struct snd_pcm_substream *substream,
 	dma->substream = substream;
 	runtime->hw = snd_atiixp_pcm_hw;
 	dma->ac97_pcm_type = pcm_type;
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_list(runtime, 0,
 					      SNDRV_PCM_HW_PARAM_RATE,
 					      &hw_constraints_rates)) < 0)
 		return err;
 	if ((err = snd_pcm_hw_constraint_integer(runtime,
 						 SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
+=======
+	err = snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
+					 &hw_constraints_rates);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime->private_data = dma;
 
@@ -949,10 +1032,16 @@ static int snd_atiixp_capture_close(struct snd_pcm_substream *substream)
 
 
 /* AC97 playback */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_atiixp_playback_ops = {
 	.open =		snd_atiixp_playback_open,
 	.close =	snd_atiixp_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_atiixp_playback_ops = {
+	.open =		snd_atiixp_playback_open,
+	.close =	snd_atiixp_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_atiixp_pcm_hw_params,
 	.hw_free =	snd_atiixp_pcm_hw_free,
 	.prepare =	snd_atiixp_playback_prepare,
@@ -961,10 +1050,16 @@ static struct snd_pcm_ops snd_atiixp_playback_ops = {
 };
 
 /* AC97 capture */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_atiixp_capture_ops = {
 	.open =		snd_atiixp_capture_open,
 	.close =	snd_atiixp_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_atiixp_capture_ops = {
+	.open =		snd_atiixp_capture_open,
+	.close =	snd_atiixp_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_atiixp_pcm_hw_params,
 	.hw_free =	snd_atiixp_pcm_hw_free,
 	.prepare =	snd_atiixp_capture_prepare,
@@ -972,7 +1067,11 @@ static struct snd_pcm_ops snd_atiixp_capture_ops = {
 	.pointer =	snd_atiixp_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct atiixp_dma_ops snd_atiixp_playback_dma_ops = {
+=======
+static const struct atiixp_dma_ops snd_atiixp_playback_dma_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = ATI_DMA_PLAYBACK,
 	.llp_offset = ATI_REG_MODEM_OUT_DMA1_LINKPTR,
 	.dt_cur = ATI_REG_MODEM_OUT_DMA1_DT_CUR,
@@ -981,7 +1080,11 @@ static struct atiixp_dma_ops snd_atiixp_playback_dma_ops = {
 	.flush_dma = atiixp_out_flush_dma,
 };
 	
+<<<<<<< HEAD
 static struct atiixp_dma_ops snd_atiixp_capture_dma_ops = {
+=======
+static const struct atiixp_dma_ops snd_atiixp_capture_dma_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = ATI_DMA_CAPTURE,
 	.llp_offset = ATI_REG_MODEM_IN_DMA_LINKPTR,
 	.dt_cur = ATI_REG_MODEM_IN_DMA_DT_CUR,
@@ -990,7 +1093,11 @@ static struct atiixp_dma_ops snd_atiixp_capture_dma_ops = {
 	.flush_dma = atiixp_in_flush_dma,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_atiixp_pcm_new(struct atiixp_modem *chip)
+=======
+static int snd_atiixp_pcm_new(struct atiixp_modem *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1010,9 +1117,14 @@ static int __devinit snd_atiixp_pcm_new(struct atiixp_modem *chip)
 	strcpy(pcm->name, "ATI IXP MC97");
 	chip->pcmdevs[ATI_PCMDEV_ANALOG] = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci),
 					      64*1024, 128*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &chip->pci->dev, 64*1024, 128*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1063,17 +1175,29 @@ static irqreturn_t snd_atiixp_interrupt(int irq, void *dev_id)
  * ac97 mixer section
  */
 
+<<<<<<< HEAD
 static int __devinit snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
+=======
+static int snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
 	int i, err;
 	int codec_count;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
 		.write = snd_atiixp_ac97_write,
 		.read = snd_atiixp_ac97_read,
 	};
 	static unsigned int codec_skip[NUM_ATI_CODECS] = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+		.write = snd_atiixp_ac97_write,
+		.read = snd_atiixp_ac97_read,
+	};
+	static const unsigned int codec_skip[NUM_ATI_CODECS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ATI_REG_ISR_CODEC0_NOT_READY,
 		ATI_REG_ISR_CODEC1_NOT_READY,
 		ATI_REG_ISR_CODEC2_NOT_READY,
@@ -1082,7 +1206,12 @@ static int __devinit snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
 	if (snd_atiixp_codec_detect(chip) < 0)
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, chip, &pbus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, chip, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pbus->clock = clock;
 	chip->ac97_bus = pbus;
@@ -1096,16 +1225,28 @@ static int __devinit snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
 		ac97.pci = chip->pci;
 		ac97.num = i;
 		ac97.scaps = AC97_SCAP_SKIP_AUDIO | AC97_SCAP_POWER_SAVE;
+<<<<<<< HEAD
 		if ((err = snd_ac97_mixer(pbus, &ac97, &chip->ac97[i])) < 0) {
 			chip->ac97[i] = NULL; /* to be sure */
 			snd_printdd("atiixp-modem: codec %d not available for modem\n", i);
+=======
+		err = snd_ac97_mixer(pbus, &ac97, &chip->ac97[i]);
+		if (err < 0) {
+			chip->ac97[i] = NULL; /* to be sure */
+			dev_dbg(chip->card->dev,
+				"codec %d not available for modem\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		codec_count++;
 	}
 
 	if (! codec_count) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "atiixp-modem: no codec available\n");
+=======
+		dev_err(chip->card->dev, "no codec available\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1115,6 +1256,7 @@ static int __devinit snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 /*
  * power management
@@ -1122,16 +1264,28 @@ static int __devinit snd_atiixp_mixer_new(struct atiixp_modem *chip, int clock)
 static int snd_atiixp_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+/*
+ * power management
+ */
+static int snd_atiixp_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atiixp_modem *chip = card->private_data;
 	int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	for (i = 0; i < NUM_ATI_PCMDEVS; i++)
 		snd_pcm_suspend_all(chip->pcmdevs[i]);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < NUM_ATI_CODECS; i++)
 		snd_ac97_suspend(chip->ac97[i]);
 	snd_atiixp_aclink_down(chip);
 	snd_atiixp_chip_stop(chip);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -1155,6 +1309,17 @@ static int snd_atiixp_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	return 0;
+}
+
+static int snd_atiixp_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct atiixp_modem *chip = card->private_data;
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_atiixp_aclink_reset(chip);
 	snd_atiixp_chip_start(chip);
 
@@ -1164,10 +1329,16 @@ static int snd_atiixp_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 
 #ifdef CONFIG_PROC_FS
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_atiixp_pm, snd_atiixp_suspend, snd_atiixp_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc interface for register dump
  */
@@ -1182,6 +1353,7 @@ static void snd_atiixp_proc_read(struct snd_info_entry *entry,
 		snd_iprintf(buffer, "%02x: %08x\n", i, readl(chip->remap_addr + i));
 }
 
+<<<<<<< HEAD
 static void __devinit snd_atiixp_proc_init(struct atiixp_modem *chip)
 {
 	struct snd_info_entry *entry;
@@ -1192,12 +1364,20 @@ static void __devinit snd_atiixp_proc_init(struct atiixp_modem *chip)
 #else
 #define snd_atiixp_proc_init(chip)
 #endif
+=======
+static void snd_atiixp_proc_init(struct atiixp_modem *chip)
+{
+	snd_card_ro_proc_new(chip->card, "atiixp-modem", chip,
+			     snd_atiixp_proc_read);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  * destructor
  */
 
+<<<<<<< HEAD
 static int snd_atiixp_free(struct atiixp_modem *chip)
 {
 	if (chip->irq < 0)
@@ -1219,11 +1399,17 @@ static int snd_atiixp_dev_free(struct snd_device *device)
 {
 	struct atiixp_modem *chip = device->device_data;
 	return snd_atiixp_free(chip);
+=======
+static void snd_atiixp_free(struct snd_card *card)
+{
+	snd_atiixp_chip_stop(card->private_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * constructor for chip instance
  */
+<<<<<<< HEAD
 static int __devinit snd_atiixp_create(struct snd_card *card,
 				       struct pci_dev *pci,
 				       struct atiixp_modem **r_chip)
@@ -1243,11 +1429,23 @@ static int __devinit snd_atiixp_create(struct snd_card *card,
 		return -ENOMEM;
 	}
 
+=======
+static int snd_atiixp_init(struct snd_card *card, struct pci_dev *pci)
+{
+	struct atiixp_modem *chip = card->private_data;
+	int err;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	mutex_init(&chip->open_mutex);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, "ATI IXP MC97")) < 0) {
 		kfree(chip);
 		pci_disable_device(pci);
@@ -1279,17 +1477,41 @@ static int __devinit snd_atiixp_create(struct snd_card *card,
 	snd_card_set_dev(card, &pci->dev);
 
 	*r_chip = chip;
+=======
+	err = pcim_iomap_regions(pci, 1 << 0, "ATI IXP MC97");
+	if (err < 0)
+		return err;
+	chip->addr = pci_resource_start(pci, 0);
+	chip->remap_addr = pcim_iomap_table(pci)[0];
+
+	if (devm_request_irq(&pci->dev, pci->irq, snd_atiixp_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_atiixp_free;
+	pci_set_master(pci);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_atiixp_probe(struct pci_dev *pci,
 				      const struct pci_device_id *pci_id)
+=======
+static int __snd_atiixp_probe(struct pci_dev *pci,
+			      const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct atiixp_modem *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
@@ -1308,6 +1530,31 @@ static int __devinit snd_atiixp_probe(struct pci_dev *pci,
 
 	if ((err = snd_atiixp_pcm_new(chip)) < 0)
 		goto __error;
+=======
+	err = snd_devm_card_new(&pci->dev, index, id, THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+
+	strcpy(card->driver, "ATIIXP-MODEM");
+	strcpy(card->shortname, "ATI IXP Modem");
+	err = snd_atiixp_init(card, pci);
+	if (err < 0)
+		return err;
+
+	err = snd_atiixp_aclink_reset(chip);
+	if (err < 0)
+		return err;
+
+	err = snd_atiixp_mixer_new(chip, ac97_clock);
+	if (err < 0)
+		return err;
+
+	err = snd_atiixp_pcm_new(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	snd_atiixp_proc_init(chip);
 
@@ -1316,6 +1563,7 @@ static int __devinit snd_atiixp_probe(struct pci_dev *pci,
 	sprintf(card->longname, "%s rev %x at 0x%lx, irq %i",
 		card->shortname, pci->revision, chip->addr, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0)
 		goto __error;
 
@@ -1357,3 +1605,29 @@ static void __exit alsa_card_atiixp_exit(void)
 
 module_init(alsa_card_atiixp_init)
 module_exit(alsa_card_atiixp_exit)
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	pci_set_drvdata(pci, card);
+	return 0;
+}
+
+static int snd_atiixp_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_atiixp_probe(pci, pci_id));
+}
+
+static struct pci_driver atiixp_modem_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_atiixp_ids,
+	.probe = snd_atiixp_probe,
+	.driver = {
+		.pm = &snd_atiixp_pm,
+	},
+};
+
+module_pci_driver(atiixp_modem_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

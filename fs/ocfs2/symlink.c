@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  linux/cluster/ssi/cfs/symlink.c
  *
  *	This program is free software; you can redistribute it and/or
@@ -54,6 +58,7 @@
 #include "buffer_head_io.h"
 
 
+<<<<<<< HEAD
 static char *ocfs2_fast_symlink_getlink(struct inode *inode,
 					struct buffer_head **bh)
 {
@@ -169,5 +174,45 @@ const struct inode_operations ocfs2_fast_symlink_inode_operations = {
 	.getxattr	= generic_getxattr,
 	.listxattr	= ocfs2_listxattr,
 	.removexattr	= generic_removexattr,
+=======
+static int ocfs2_fast_symlink_read_folio(struct file *f, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	struct inode *inode = page->mapping->host;
+	struct buffer_head *bh = NULL;
+	int status = ocfs2_read_inode_block(inode, &bh);
+	struct ocfs2_dinode *fe;
+	const char *link;
+	void *kaddr;
+	size_t len;
+
+	if (status < 0) {
+		mlog_errno(status);
+		return status;
+	}
+
+	fe = (struct ocfs2_dinode *) bh->b_data;
+	link = (char *) fe->id2.i_symlink;
+	/* will be less than a page size */
+	len = strnlen(link, ocfs2_fast_symlink_chars(inode->i_sb));
+	kaddr = kmap_atomic(page);
+	memcpy(kaddr, link, len + 1);
+	kunmap_atomic(kaddr);
+	SetPageUptodate(page);
+	unlock_page(page);
+	brelse(bh);
+	return 0;
+}
+
+const struct address_space_operations ocfs2_fast_symlink_aops = {
+	.read_folio		= ocfs2_fast_symlink_read_folio,
+};
+
+const struct inode_operations ocfs2_symlink_inode_operations = {
+	.get_link	= page_get_link,
+	.getattr	= ocfs2_getattr,
+	.setattr	= ocfs2_setattr,
+	.listxattr	= ocfs2_listxattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fiemap		= ocfs2_fiemap,
 };

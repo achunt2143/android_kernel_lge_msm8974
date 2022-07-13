@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_IO_H
 #define __ASM_SH_IO_H
 
@@ -16,6 +20,7 @@
 #include <asm/cache.h>
 #include <asm/addrspace.h>
 #include <asm/machvec.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm-generic/iomap.h>
 
@@ -23,6 +28,15 @@
 #define __IO_PREFIX     generic
 #include <asm/io_generic.h>
 #include <asm/io_trapped.h>
+=======
+#include <asm/page.h>
+#include <linux/pgtable.h>
+#include <asm-generic/iomap.h>
+
+#define __IO_PREFIX     generic
+#include <asm/io_generic.h>
+#include <asm-generic/pci_iomap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/mangle-port.h>
 
 #define __raw_writeb(v,a)	(__chk_io_ptr(a), *(volatile u8  __force *)(a) = (v))
@@ -113,6 +127,7 @@ static inline void pfx##reads##bwlq(volatile void __iomem *mem,		\
 __BUILD_MEMORY_STRING(__raw_, b, u8)
 __BUILD_MEMORY_STRING(__raw_, w, u16)
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH32
 void __raw_writesl(void __iomem *addr, const void *data, int longlen);
 void __raw_readsl(const void __iomem *addr, void *data, int longlen);
@@ -123,6 +138,38 @@ __BUILD_MEMORY_STRING(__raw_, l, u32)
 __BUILD_MEMORY_STRING(__raw_, q, u64)
 
 #ifdef CONFIG_HAS_IOPORT
+=======
+void __raw_writesl(void __iomem *addr, const void *data, int longlen);
+void __raw_readsl(const void __iomem *addr, void *data, int longlen);
+
+__BUILD_MEMORY_STRING(__raw_, q, u64)
+
+#define ioport_map ioport_map
+#define ioport_unmap ioport_unmap
+#define pci_iounmap pci_iounmap
+
+#define ioread8 ioread8
+#define ioread16 ioread16
+#define ioread16be ioread16be
+#define ioread32 ioread32
+#define ioread32be ioread32be
+
+#define iowrite8 iowrite8
+#define iowrite16 iowrite16
+#define iowrite16be iowrite16be
+#define iowrite32 iowrite32
+#define iowrite32be iowrite32be
+
+#define ioread8_rep ioread8_rep
+#define ioread16_rep ioread16_rep
+#define ioread32_rep ioread32_rep
+
+#define iowrite8_rep iowrite8_rep
+#define iowrite16_rep iowrite16_rep
+#define iowrite32_rep iowrite32_rep
+
+#ifdef CONFIG_HAS_IOPORT_MAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Slowdown I/O port space accesses for antique hardware.
@@ -134,7 +181,11 @@ __BUILD_MEMORY_STRING(__raw_, q, u64)
  * load/store instructions. sh_io_port_base is the virtual address to
  * which all ports are being mapped.
  */
+<<<<<<< HEAD
 extern const unsigned long sh_io_port_base;
+=======
+extern unsigned long sh_io_port_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void __set_io_port_base(unsigned long pbase)
 {
@@ -160,7 +211,11 @@ static inline void pfx##out##bwlq##p(type val, unsigned long port)	\
 {									\
 	volatile type *__addr;						\
 									\
+<<<<<<< HEAD
 	__addr = __ioport_map(port, sizeof(type));			\
+=======
+	__addr = (void __iomem *)sh_io_port_base + port;		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*__addr = val;							\
 	slow;								\
 }									\
@@ -170,7 +225,11 @@ static inline type pfx##in##bwlq##p(unsigned long port)			\
 	volatile type *__addr;						\
 	type __val;							\
 									\
+<<<<<<< HEAD
 	__addr = __ioport_map(port, sizeof(type));			\
+=======
+	__addr = (void __iomem *)sh_io_port_base + port;		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__val = *__addr;						\
 	slow;								\
 									\
@@ -218,6 +277,7 @@ __BUILD_IOPORT_STRING(w, u16)
 __BUILD_IOPORT_STRING(l, u32)
 __BUILD_IOPORT_STRING(q, u64)
 
+<<<<<<< HEAD
 #endif
 
 #define IO_SPACE_LIMIT 0xffffffff
@@ -226,6 +286,41 @@ __BUILD_IOPORT_STRING(q, u64)
 #define mmiowb()		wmb()
 
 /* We really want to try and get these to memcpy etc */
+=======
+#else /* !CONFIG_HAS_IOPORT_MAP */
+
+#include <asm/io_noioport.h>
+
+#endif
+
+#define inb(addr)      inb(addr)
+#define inw(addr)      inw(addr)
+#define inl(addr)      inl(addr)
+#define outb(x, addr)  outb((x), (addr))
+#define outw(x, addr)  outw((x), (addr))
+#define outl(x, addr)  outl((x), (addr))
+
+#define inb_p(addr)    inb(addr)
+#define inw_p(addr)    inw(addr)
+#define inl_p(addr)    inl(addr)
+#define outb_p(x, addr)        outb((x), (addr))
+#define outw_p(x, addr)        outw((x), (addr))
+#define outl_p(x, addr)        outl((x), (addr))
+
+#define insb insb
+#define insw insw
+#define insl insl
+#define outsb outsb
+#define outsw outsw
+#define outsl outsl
+
+#define IO_SPACE_LIMIT 0xffffffff
+
+/* We really want to try and get these to memcpy etc */
+#define memset_io memset_io
+#define memcpy_fromio memcpy_fromio
+#define memcpy_toio memcpy_toio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void memcpy_fromio(void *, const volatile void __iomem *, unsigned long);
 void memcpy_toio(volatile void __iomem *, const void *, unsigned long);
 void memset_io(volatile void __iomem *, int, unsigned long);
@@ -243,6 +338,7 @@ unsigned long long poke_real_address_q(unsigned long long addr,
 #define phys_to_virt(address)	(__va(address))
 #endif
 
+<<<<<<< HEAD
 /*
  * On 32-bit SH, we traditionally have the whole physical address space
  * mapped at all times (as MIPS does), so "ioremap()" and "iounmap()" do
@@ -382,4 +478,25 @@ int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
 #endif /* __KERNEL__ */
 
+=======
+#ifdef CONFIG_MMU
+/*
+ * I/O memory mapping functions.
+ */
+#define ioremap_prot ioremap_prot
+#define iounmap iounmap
+
+#define _PAGE_IOREMAP pgprot_val(PAGE_KERNEL_NOCACHE)
+
+#define ioremap_cache(addr, size)  \
+	ioremap_prot((addr), (size), pgprot_val(PAGE_KERNEL))
+#endif /* CONFIG_MMU */
+
+#include <asm-generic/io.h>
+
+#define ARCH_HAS_VALID_PHYS_ADDR_RANGE
+int valid_phys_addr_range(phys_addr_t addr, size_t size);
+int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_IO_H */

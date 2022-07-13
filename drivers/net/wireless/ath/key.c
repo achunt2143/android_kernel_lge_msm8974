@@ -45,7 +45,12 @@ bool ath_hw_keyreset(struct ath_common *common, u16 entry)
 	void *ah = common->ah;
 
 	if (entry >= common->keymax) {
+<<<<<<< HEAD
 		ath_err(common, "keycache entry %u out of range\n", entry);
+=======
+		ath_err(common, "keyreset: keycache entry %u out of range\n",
+			entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -83,15 +88,24 @@ bool ath_hw_keyreset(struct ath_common *common, u16 entry)
 }
 EXPORT_SYMBOL(ath_hw_keyreset);
 
+<<<<<<< HEAD
 static bool ath_hw_keysetmac(struct ath_common *common,
 			     u16 entry, const u8 *mac)
+=======
+bool ath_hw_keysetmac(struct ath_common *common, u16 entry, const u8 *mac)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 macHi, macLo;
 	u32 unicast_flag = AR_KEYTABLE_VALID;
 	void *ah = common->ah;
 
 	if (entry >= common->keymax) {
+<<<<<<< HEAD
 		ath_err(common, "keycache entry %u out of range\n", entry);
+=======
+		ath_err(common, "keysetmac: keycache entry %u out of range\n",
+			entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -103,7 +117,11 @@ static bool ath_hw_keysetmac(struct ath_common *common,
 		 * Not setting this bit allows the hardware to use the key
 		 * for multicast frame decryption.
 		 */
+<<<<<<< HEAD
 		if (mac[0] & 0x01)
+=======
+		if (is_multicast_ether_addr(mac))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unicast_flag = 0;
 
 		macLo = get_unaligned_le32(mac);
@@ -123,6 +141,10 @@ static bool ath_hw_keysetmac(struct ath_common *common,
 
 	return true;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ath_hw_keysetmac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool ath_hw_set_keycache_entry(struct ath_common *common, u16 entry,
 				      const struct ath_keyval *k,
@@ -133,7 +155,12 @@ static bool ath_hw_set_keycache_entry(struct ath_common *common, u16 entry,
 	u32 keyType;
 
 	if (entry >= common->keymax) {
+<<<<<<< HEAD
 		ath_err(common, "keycache entry %u out of range\n", entry);
+=======
+		ath_err(common, "set-entry: keycache entry %u out of range\n",
+			entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -500,7 +527,11 @@ int ath_key_config(struct ath_common *common,
 
 	hk.kv_len = key->keylen;
 	if (key->keylen)
+<<<<<<< HEAD
 		memcpy(hk.kv_val, key->key, key->keylen);
+=======
+		memcpy(&hk.kv_values, key->key, key->keylen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(key->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
 		switch (vif->type) {
@@ -578,6 +609,7 @@ EXPORT_SYMBOL(ath_key_config);
 /*
  * Delete Key.
  */
+<<<<<<< HEAD
 void ath_key_delete(struct ath_common *common, struct ieee80211_key_conf *key)
 {
 	ath_hw_keyreset(common, key->hw_key_idx);
@@ -601,6 +633,40 @@ void ath_key_delete(struct ath_common *common, struct ieee80211_key_conf *key)
 
 		clear_bit(key->hw_key_idx + 32, common->tkip_keymap);
 		clear_bit(key->hw_key_idx + 64 + 32, common->tkip_keymap);
+=======
+void ath_key_delete(struct ath_common *common, u8 hw_key_idx)
+{
+	/* Leave CCMP and TKIP (main key) configured to avoid disabling
+	 * encryption for potentially pending frames already in a TXQ with the
+	 * keyix pointing to this key entry. Instead, only clear the MAC address
+	 * to prevent RX processing from using this key cache entry.
+	 */
+	if (test_bit(hw_key_idx, common->ccmp_keymap) ||
+	    test_bit(hw_key_idx, common->tkip_keymap))
+		ath_hw_keysetmac(common, hw_key_idx, NULL);
+	else
+		ath_hw_keyreset(common, hw_key_idx);
+	if (hw_key_idx < IEEE80211_WEP_NKID)
+		return;
+
+	clear_bit(hw_key_idx, common->keymap);
+	clear_bit(hw_key_idx, common->ccmp_keymap);
+	if (!test_bit(hw_key_idx, common->tkip_keymap))
+		return;
+
+	clear_bit(hw_key_idx + 64, common->keymap);
+
+	clear_bit(hw_key_idx, common->tkip_keymap);
+	clear_bit(hw_key_idx + 64, common->tkip_keymap);
+
+	if (!(common->crypt_caps & ATH_CRYPT_CAP_MIC_COMBINED)) {
+		ath_hw_keyreset(common, hw_key_idx + 32);
+		clear_bit(hw_key_idx + 32, common->keymap);
+		clear_bit(hw_key_idx + 64 + 32, common->keymap);
+
+		clear_bit(hw_key_idx + 32, common->tkip_keymap);
+		clear_bit(hw_key_idx + 64 + 32, common->tkip_keymap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL(ath_key_delete);

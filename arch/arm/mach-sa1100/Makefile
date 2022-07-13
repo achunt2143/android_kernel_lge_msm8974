@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
 # Common support
+<<<<<<< HEAD
 obj-y := clock.o generic.o irq.o time.o #nmi-oopser.o
 obj-m :=
 obj-n :=
@@ -49,6 +54,18 @@ obj-$(CONFIG_SA1100_SIMPAD)		+= simpad.o
 # LEDs support
 obj-$(CONFIG_LEDS) += $(led-y)
 
+=======
+obj-y := clock.o generic.o #nmi-oopser.o
+
+# Specific board support
+obj-$(CONFIG_SA1100_ASSABET)		+= assabet.o
+obj-$(CONFIG_ASSABET_NEPONSET)		+= neponset.o
+obj-$(CONFIG_SA1100_COLLIE)		+= collie.o
+obj-$(CONFIG_SA1100_H3600)		+= h3600.o h3xxx.o
+obj-$(CONFIG_SA1100_JORNADA720)		+= jornada720.o
+obj-$(CONFIG_SA1100_JORNADA720_SSP)	+= jornada720_ssp.o
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Miscellaneous functions
 obj-$(CONFIG_PM)			+= pm.o sleep.o
 obj-$(CONFIG_SA1100_SSP)		+= ssp.o

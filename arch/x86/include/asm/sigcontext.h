@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_SIGCONTEXT_H
 #define _ASM_X86_SIGCONTEXT_H
 
@@ -289,5 +290,14 @@ struct _xstate {
 	struct _ymmh_state ymmh;
 	/* new processor state extensions go here */
 };
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_SIGCONTEXT_H
+#define _ASM_X86_SIGCONTEXT_H
+
+/* This is a legacy header - all kernel code includes <uapi/asm/sigcontext.h> directly. */
+
+#include <uapi/asm/sigcontext.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_SIGCONTEXT_H */

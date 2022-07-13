@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Current development and maintenance by:
  *   (c) 2000, 2001 Robert Baruch (autophile@starband.net)
@@ -25,6 +31,7 @@
  *
  * See the Kconfig help text for a list of devices known to be supported by
  * this driver.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -39,6 +46,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -53,10 +62,20 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-usbat"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Driver for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable");
 MODULE_AUTHOR("Daniel Drake <dsd@gentoo.org>, Robert Baruch <autophile@starband.net>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_IMPORT_NS(USB_STORAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Supported device types */
 #define USBAT_DEV_HP8200	0x01
@@ -168,7 +187,11 @@ static int init_usbat_flash(struct us_data *us);
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
   .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
+=======
+  .driver_info = (flags) }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id usbat_usb_ids[] = {
 #	include "unusual_usbat.h"
@@ -271,7 +294,11 @@ static int usbat_bulk_read(struct us_data *us,
 	if (len == 0)
 		return USB_STOR_XFER_GOOD;
 
+<<<<<<< HEAD
 	US_DEBUGP("usbat_bulk_read: len = %d\n", len);
+=======
+	usb_stor_dbg(us, "len = %d\n", len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return usb_stor_bulk_transfer_sg(us, us->recv_bulk_pipe, buf, len, use_sg, NULL);
 }
 
@@ -286,7 +313,11 @@ static int usbat_bulk_write(struct us_data *us,
 	if (len == 0)
 		return USB_STOR_XFER_GOOD;
 
+<<<<<<< HEAD
 	US_DEBUGP("usbat_bulk_write:  len = %d\n", len);
+=======
+	usb_stor_dbg(us, "len = %d\n", len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return usb_stor_bulk_transfer_sg(us, us->send_bulk_pipe, buf, len, use_sg, NULL);
 }
 
@@ -312,7 +343,11 @@ static int usbat_get_status(struct us_data *us, unsigned char *status)
 	int rc;
 	rc = usbat_read(us, USBAT_ATA, USBAT_ATA_STATUS, status);
 
+<<<<<<< HEAD
 	US_DEBUGP("usbat_get_status: 0x%02X\n", (unsigned short) (*status));
+=======
+	usb_stor_dbg(us, "0x%02X\n", *status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -405,7 +440,12 @@ static int usbat_wait_not_busy(struct us_data *us, int minutes)
 	int result;
 	unsigned char *status = us->iobuf;
 
+<<<<<<< HEAD
 	/* Synchronizing cache on a CDR could take a heck of a long time,
+=======
+	/*
+	 * Synchronizing cache on a CDR could take a heck of a long time,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * but probably not more than 10 minutes or so. On the other hand,
 	 * doing a full blank on a CDRW at speed 1 will take about 75
 	 * minutes!
@@ -425,7 +465,11 @@ static int usbat_wait_not_busy(struct us_data *us, int minutes)
 			return USB_STOR_TRANSPORT_FAILED;
 
 		if ((*status & 0x80)==0x00) { /* not busy */
+<<<<<<< HEAD
 			US_DEBUGP("Waited not busy for %d steps\n", i);
+=======
+			usb_stor_dbg(us, "Waited not busy for %d steps\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return USB_STOR_TRANSPORT_GOOD;
 		}
 
@@ -439,8 +483,13 @@ static int usbat_wait_not_busy(struct us_data *us, int minutes)
 			msleep(1000); /* X minutes */
 	}
 
+<<<<<<< HEAD
 	US_DEBUGP("Waited not busy for %d minutes, timing out.\n",
 		minutes);
+=======
+	usb_stor_dbg(us, "Waited not busy for %d minutes, timing out\n",
+		     minutes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return USB_STOR_TRANSPORT_FAILED;
 }
 
@@ -657,8 +706,14 @@ static int usbat_hp8200e_rw_block_test(struct us_data *us,
 			if (*status & 0x20) /* device fault */
 				return USB_STOR_TRANSPORT_FAILED;
 
+<<<<<<< HEAD
 			US_DEBUGP("Redoing %s\n",
 			  direction==DMA_TO_DEVICE ? "write" : "read");
+=======
+			usb_stor_dbg(us, "Redoing %s\n",
+				     direction == DMA_TO_DEVICE
+				     ? "write" : "read");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else if (result != USB_STOR_XFER_GOOD)
 			return USB_STOR_TRANSPORT_ERROR;
@@ -667,8 +722,13 @@ static int usbat_hp8200e_rw_block_test(struct us_data *us,
 
 	}
 
+<<<<<<< HEAD
 	US_DEBUGP("Bummer! %s bulk data 20 times failed.\n",
 		direction==DMA_TO_DEVICE ? "Writing" : "Reading");
+=======
+	usb_stor_dbg(us, "Bummer! %s bulk data 20 times failed\n",
+		     direction == DMA_TO_DEVICE ? "Writing" : "Reading");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return USB_STOR_TRANSPORT_FAILED;
 }
@@ -827,7 +887,11 @@ static int usbat_read_user_io(struct us_data *us, unsigned char *data_flags)
 		data_flags,
 		USBAT_UIO_READ);
 
+<<<<<<< HEAD
 	US_DEBUGP("usbat_read_user_io: UIO register reads %02X\n", (unsigned short) (*data_flags));
+=======
+	usb_stor_dbg(us, "UIO register reads %02X\n", *data_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -900,10 +964,18 @@ static int usbat_device_enable_cdt(struct us_data *us)
 /*
  * Determine if media is present.
  */
+<<<<<<< HEAD
 static int usbat_flash_check_media_present(unsigned char *uio)
 {
 	if (*uio & USBAT_UIO_UI0) {
 		US_DEBUGP("usbat_flash_check_media_present: no media detected\n");
+=======
+static int usbat_flash_check_media_present(struct us_data *us,
+					   unsigned char *uio)
+{
+	if (*uio & USBAT_UIO_UI0) {
+		usb_stor_dbg(us, "no media detected\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USBAT_FLASH_MEDIA_NONE;
 	}
 
@@ -913,10 +985,18 @@ static int usbat_flash_check_media_present(unsigned char *uio)
 /*
  * Determine if media has changed since last operation
  */
+<<<<<<< HEAD
 static int usbat_flash_check_media_changed(unsigned char *uio)
 {
 	if (*uio & USBAT_UIO_0) {
 		US_DEBUGP("usbat_flash_check_media_changed: media change detected\n");
+=======
+static int usbat_flash_check_media_changed(struct us_data *us,
+					   unsigned char *uio)
+{
+	if (*uio & USBAT_UIO_0) {
+		usb_stor_dbg(us, "media change detected\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USBAT_FLASH_MEDIA_CHANGED;
 	}
 
@@ -937,7 +1017,11 @@ static int usbat_flash_check_media(struct us_data *us,
 		return USB_STOR_TRANSPORT_ERROR;
 
 	/* Check for media existence */
+<<<<<<< HEAD
 	rc = usbat_flash_check_media_present(uio);
+=======
+	rc = usbat_flash_check_media_present(us, uio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc == USBAT_FLASH_MEDIA_NONE) {
 		info->sense_key = 0x02;
 		info->sense_asc = 0x3A;
@@ -946,7 +1030,11 @@ static int usbat_flash_check_media(struct us_data *us,
 	}
 
 	/* Check for media change */
+<<<<<<< HEAD
 	rc = usbat_flash_check_media_changed(uio);
+=======
+	rc = usbat_flash_check_media_changed(us, uio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc == USBAT_FLASH_MEDIA_CHANGED) {
 
 		/* Reset and re-enable card detect */
@@ -1008,11 +1096,19 @@ static int usbat_identify_device(struct us_data *us,
 	/* Check for error bit, or if the command 'fell through' */
 	if (status == 0xA1 || !(status & 0x01)) {
 		/* Device is HP 8200 */
+<<<<<<< HEAD
 		US_DEBUGP("usbat_identify_device: Detected HP8200 CDRW\n");
 		info->devicetype = USBAT_DEV_HP8200;
 	} else {
 		/* Device is a CompactFlash reader/writer */
 		US_DEBUGP("usbat_identify_device: Detected Flash reader/writer\n");
+=======
+		usb_stor_dbg(us, "Detected HP8200 CDRW\n");
+		info->devicetype = USBAT_DEV_HP8200;
+	} else {
+		/* Device is a CompactFlash reader/writer */
+		usb_stor_dbg(us, "Detected Flash reader/writer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->devicetype = USBAT_DEV_FLASH;
 	}
 
@@ -1075,7 +1171,11 @@ static int usbat_flash_get_sector_count(struct us_data *us,
 	/* ATA command : IDENTIFY DEVICE */
 	rc = usbat_multiple_write(us, registers, command, 3);
 	if (rc != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_get_sector_count: Gah! identify_device failed\n");
+=======
+		usb_stor_dbg(us, "Gah! identify_device failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = USB_STOR_TRANSPORT_ERROR;
 		goto leave;
 	}
@@ -1178,7 +1278,11 @@ static int usbat_flash_read_data(struct us_data *us,
 		if (result != USB_STOR_TRANSPORT_GOOD)
 			goto leave;
   	 
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_read_data:  %d bytes\n", len);
+=======
+		usb_stor_dbg(us, "%d bytes\n", len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 		/* Store the data in the transfer buffer */
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
@@ -1301,8 +1405,12 @@ static int usbat_hp8200e_handle_read10(struct us_data *us,
 	unsigned int sg_offset = 0;
 	struct scatterlist *sg = NULL;
 
+<<<<<<< HEAD
 	US_DEBUGP("handle_read10: transfersize %d\n",
 		srb->transfersize);
+=======
+	usb_stor_dbg(us, "transfersize %d\n", srb->transfersize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (scsi_bufflen(srb) < 0x10000) {
 
@@ -1329,14 +1437,23 @@ static int usbat_hp8200e_handle_read10(struct us_data *us,
 		len = short_pack(data[7+9], data[7+8]);
 		len <<= 16;
 		len |= data[7+7];
+<<<<<<< HEAD
 		US_DEBUGP("handle_read10: GPCMD_READ_CD: len %d\n", len);
+=======
+		usb_stor_dbg(us, "GPCMD_READ_CD: len %d\n", len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->transfersize = scsi_bufflen(srb)/len;
 	}
 
 	if (!srb->transfersize)  {
 		srb->transfersize = 2048; /* A guess */
+<<<<<<< HEAD
 		US_DEBUGP("handle_read10: transfersize 0, forcing %d\n",
 			srb->transfersize);
+=======
+		usb_stor_dbg(us, "transfersize 0, forcing %d\n",
+			     srb->transfersize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1346,7 +1463,11 @@ static int usbat_hp8200e_handle_read10(struct us_data *us,
 	 */
 
 	len = (65535/srb->transfersize) * srb->transfersize;
+<<<<<<< HEAD
 	US_DEBUGP("Max read is %d bytes\n", len);
+=======
+	usb_stor_dbg(us, "Max read is %d bytes\n", len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = min(len, scsi_bufflen(srb));
 	buffer = kmalloc(len, GFP_NOIO);
 	if (buffer == NULL) /* bloody hell! */
@@ -1460,10 +1581,16 @@ static int init_usbat(struct us_data *us, int devicetype)
 	unsigned char *status = us->iobuf;
 
 	us->extra = kzalloc(sizeof(struct usbat_info), GFP_NOIO);
+<<<<<<< HEAD
 	if (!us->extra) {
 		US_DEBUGP("init_usbat: Gah! Can't allocate storage for usbat info struct!\n");
 		return 1;
 	}
+=======
+	if (!us->extra)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info = (struct usbat_info *) (us->extra);
 
 	/* Enable peripheral control signals */
@@ -1471,14 +1598,21 @@ static int init_usbat(struct us_data *us, int devicetype)
 				 USBAT_UIO_OE1 | USBAT_UIO_OE0,
 				 USBAT_UIO_EPAD | USBAT_UIO_1);
 	if (rc != USB_STOR_XFER_GOOD)
+<<<<<<< HEAD
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 1\n");
+=======
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msleep(2000);
 
 	rc = usbat_read_user_io(us, status);
 	if (rc != USB_STOR_TRANSPORT_GOOD)
+<<<<<<< HEAD
 		return rc;
 
 	US_DEBUGP("INIT 2\n");
@@ -1504,10 +1638,38 @@ static int init_usbat(struct us_data *us, int devicetype)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 5\n");
+=======
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 2\n");
+
+	rc = usbat_read_user_io(us, status);
+	if (rc != USB_STOR_XFER_GOOD)
+		return -EIO;
+
+	rc = usbat_read_user_io(us, status);
+	if (rc != USB_STOR_XFER_GOOD)
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 3\n");
+
+	rc = usbat_select_and_test_registers(us);
+	if (rc != USB_STOR_TRANSPORT_GOOD)
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 4\n");
+
+	rc = usbat_read_user_io(us, status);
+	if (rc != USB_STOR_XFER_GOOD)
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 5\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable peripheral control signals and card detect */
 	rc = usbat_device_enable_cdt(us);
 	if (rc != USB_STOR_TRANSPORT_GOOD)
+<<<<<<< HEAD
 		return rc;
 
 	US_DEBUGP("INIT 6\n");
@@ -1517,11 +1679,23 @@ static int init_usbat(struct us_data *us, int devicetype)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 7\n");
+=======
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 6\n");
+
+	rc = usbat_read_user_io(us, status);
+	if (rc != USB_STOR_XFER_GOOD)
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 7\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msleep(1400);
 
 	rc = usbat_read_user_io(us, status);
 	if (rc != USB_STOR_XFER_GOOD)
+<<<<<<< HEAD
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 8\n");
@@ -1537,6 +1711,23 @@ static int init_usbat(struct us_data *us, int devicetype)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 10\n");
+=======
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 8\n");
+
+	rc = usbat_select_and_test_registers(us);
+	if (rc != USB_STOR_TRANSPORT_GOOD)
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 9\n");
+
+	/* At this point, we need to detect which device we are using */
+	if (usbat_set_transport(us, info, devicetype))
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 10\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usbat_get_device_type(us) == USBAT_DEV_FLASH) { 
 		subcountH = 0x02;
@@ -1545,11 +1736,19 @@ static int init_usbat(struct us_data *us, int devicetype)
 	rc = usbat_set_shuttle_features(us, (USBAT_FEAT_ETEN | USBAT_FEAT_ET2 | USBAT_FEAT_ET1),
 									0x00, 0x88, 0x08, subcountH, subcountL);
 	if (rc != USB_STOR_XFER_GOOD)
+<<<<<<< HEAD
 		return USB_STOR_TRANSPORT_ERROR;
 
 	US_DEBUGP("INIT 11\n");
 
 	return USB_STOR_TRANSPORT_GOOD;
+=======
+		return -EIO;
+
+	usb_stor_dbg(us, "INIT 11\n");
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1566,9 +1765,16 @@ static int usbat_hp8200e_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	len = scsi_bufflen(srb);
 
+<<<<<<< HEAD
 	/* Send A0 (ATA PACKET COMMAND).
 	   Note: I guess we're never going to get any of the ATA
 	   commands... just ATA Packet Commands.
+=======
+	/*
+	 * Send A0 (ATA PACKET COMMAND).
+	 * Note: I guess we're never going to get any of the ATA
+	 * commands... just ATA Packet Commands.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  	 */
 
 	registers[0] = USBAT_ATA_FEATURES;
@@ -1592,7 +1798,11 @@ static int usbat_hp8200e_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	result = usbat_get_status(us, status);
+<<<<<<< HEAD
 	US_DEBUGP("Status = %02X\n", *status);
+=======
+	usb_stor_dbg(us, "Status = %02X\n", *status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 	if (srb->cmnd[0] == TEST_UNIT_READY)
@@ -1610,7 +1820,11 @@ static int usbat_hp8200e_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 		if (result == USB_STOR_TRANSPORT_GOOD) {
 			transferred += len;
+<<<<<<< HEAD
 			US_DEBUGP("Wrote %08X bytes\n", transferred);
+=======
+			usb_stor_dbg(us, "Wrote %08X bytes\n", transferred);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return result;
@@ -1623,8 +1837,13 @@ static int usbat_hp8200e_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	if (len > 0xFFFF) {
+<<<<<<< HEAD
 		US_DEBUGP("Error: len = %08X... what do I do now?\n",
 			len);
+=======
+		usb_stor_dbg(us, "Error: len = %08X... what do I do now?\n",
+			     len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -1693,7 +1912,11 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 	};
 
 	if (srb->cmnd[0] == INQUIRY) {
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: INQUIRY. Returning bogus response.\n");
+=======
+		usb_stor_dbg(us, "INQUIRY - Returning bogus response\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(ptr, inquiry_response, sizeof(inquiry_response));
 		fill_inquiry_response(us, ptr, 36);
 		return USB_STOR_TRANSPORT_GOOD;
@@ -1710,8 +1933,13 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 
 		/* hard coded 512 byte sectors as per ATA spec */
 		info->ssize = 0x200;
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: READ_CAPACITY: %ld sectors, %ld bytes per sector\n",
 			  info->sectors, info->ssize);
+=======
+		usb_stor_dbg(us, "READ_CAPACITY: %ld sectors, %ld bytes per sector\n",
+			     info->sectors, info->ssize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * build the reply
@@ -1726,7 +1954,11 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == MODE_SELECT_10) {
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport:  Gah! MODE_SELECT_10.\n");
+=======
+		usb_stor_dbg(us, "Gah! MODE_SELECT_10\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -1736,7 +1968,12 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 
 		blocks = ((u32)(srb->cmnd[7]) << 8) | ((u32)(srb->cmnd[8]));
 
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport:  READ_10: read block 0x%04lx  count %ld\n", block, blocks);
+=======
+		usb_stor_dbg(us, "READ_10: read block 0x%04lx  count %ld\n",
+			     block, blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return usbat_flash_read_data(us, info, block, blocks);
 	}
 
@@ -1750,7 +1987,12 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 		blocks = ((u32)(srb->cmnd[6]) << 24) | ((u32)(srb->cmnd[7]) << 16) |
 		         ((u32)(srb->cmnd[8]) <<  8) | ((u32)(srb->cmnd[9]));
 
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: READ_12: read block 0x%04lx  count %ld\n", block, blocks);
+=======
+		usb_stor_dbg(us, "READ_12: read block 0x%04lx  count %ld\n",
+			     block, blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return usbat_flash_read_data(us, info, block, blocks);
 	}
 
@@ -1760,7 +2002,12 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 
 		blocks = ((u32)(srb->cmnd[7]) << 8) | ((u32)(srb->cmnd[8]));
 
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: WRITE_10: write block 0x%04lx  count %ld\n", block, blocks);
+=======
+		usb_stor_dbg(us, "WRITE_10: write block 0x%04lx  count %ld\n",
+			     block, blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return usbat_flash_write_data(us, info, block, blocks);
 	}
 
@@ -1774,13 +2021,22 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 		blocks = ((u32)(srb->cmnd[6]) << 24) | ((u32)(srb->cmnd[7]) << 16) |
 		         ((u32)(srb->cmnd[8]) <<  8) | ((u32)(srb->cmnd[9]));
 
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: WRITE_12: write block 0x%04lx  count %ld\n", block, blocks);
+=======
+		usb_stor_dbg(us, "WRITE_12: write block 0x%04lx  count %ld\n",
+			     block, blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return usbat_flash_write_data(us, info, block, blocks);
 	}
 
 
 	if (srb->cmnd[0] == TEST_UNIT_READY) {
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: TEST_UNIT_READY.\n");
+=======
+		usb_stor_dbg(us, "TEST_UNIT_READY\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rc = usbat_flash_check_media(us, info);
 		if (rc != USB_STOR_TRANSPORT_GOOD)
@@ -1790,7 +2046,11 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 	}
 
 	if (srb->cmnd[0] == REQUEST_SENSE) {
+<<<<<<< HEAD
 		US_DEBUGP("usbat_flash_transport: REQUEST_SENSE.\n");
+=======
+		usb_stor_dbg(us, "REQUEST_SENSE\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(ptr, 0, 18);
 		ptr[0] = 0xF0;
@@ -1811,8 +2071,13 @@ static int usbat_flash_transport(struct scsi_cmnd * srb, struct us_data *us)
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
+<<<<<<< HEAD
 	US_DEBUGP("usbat_flash_transport: Gah! Unknown command: %d (0x%x)\n",
 			  srb->cmnd[0], srb->cmnd[0]);
+=======
+	usb_stor_dbg(us, "Gah! Unknown command: %d (0x%x)\n",
+		     srb->cmnd[0], srb->cmnd[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->sense_key = 0x05;
 	info->sense_asc = 0x20;
 	info->sense_ascq = 0x00;
@@ -1829,6 +2094,11 @@ static int init_usbat_flash(struct us_data *us)
 	return init_usbat(us, USBAT_DEV_FLASH);
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template usbat_host_template;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int usbat_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1836,11 +2106,21 @@ static int usbat_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - usbat_usb_ids) + usbat_unusual_dev_list);
 	if (result)
 		return result;
 
 	/* The actual transport will be determined later by the
+=======
+			(id - usbat_usb_ids) + usbat_unusual_dev_list,
+			&usbat_host_template);
+	if (result)
+		return result;
+
+	/*
+	 * The actual transport will be determined later by the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * initialization routine; this is just a placeholder.
 	 */
 	us->transport_name = "Shuttle USBAT";
@@ -1853,7 +2133,11 @@ static int usbat_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver usbat_driver = {
+<<<<<<< HEAD
 	.name =		"ums-usbat",
+=======
+	.name =		DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	usbat_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1866,4 +2150,8 @@ static struct usb_driver usbat_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(usbat_driver);
+=======
+module_usb_stor_driver(usbat_driver, usbat_host_template, DRV_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

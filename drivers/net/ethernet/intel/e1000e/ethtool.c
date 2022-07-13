@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ethtool support for e1000 */
 
@@ -35,10 +40,18 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 
 #include "e1000.h"
 
 enum {NETDEV_STATS, E1000_STATS};
+=======
+#include <linux/pm_runtime.h>
+
+#include "e1000.h"
+
+enum { NETDEV_STATS, E1000_STATS };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct e1000_stats {
 	char stat_string[ETH_GSTRING_LEN];
@@ -47,6 +60,16 @@ struct e1000_stats {
 	int stat_offset;
 };
 
+<<<<<<< HEAD
+=======
+static const char e1000e_priv_flags_strings[][ETH_GSTRING_LEN] = {
+#define E1000E_PRIV_FLAGS_S0IX_ENABLED	BIT(0)
+	"s0ix-enabled",
+};
+
+#define E1000E_PRIV_FLAGS_STR_LEN ARRAY_SIZE(e1000e_priv_flags_strings)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_STAT(str, m) { \
 		.stat_string = str, \
 		.type = E1000_STATS, \
@@ -98,7 +121,10 @@ static const struct e1000_stats e1000_gstrings_stats[] = {
 	E1000_STAT("rx_flow_control_xoff", stats.xoffrxc),
 	E1000_STAT("tx_flow_control_xon", stats.xontxc),
 	E1000_STAT("tx_flow_control_xoff", stats.xofftxc),
+<<<<<<< HEAD
 	E1000_STAT("rx_long_byte_count", stats.gorc),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	E1000_STAT("rx_csum_offload_good", hw_csum_good),
 	E1000_STAT("rx_csum_offload_errors", hw_csum_err),
 	E1000_STAT("rx_header_split", rx_hdr_split),
@@ -108,6 +134,14 @@ static const struct e1000_stats e1000_gstrings_stats[] = {
 	E1000_STAT("dropped_smbus", stats.mgpdc),
 	E1000_STAT("rx_dma_failed", rx_dma_failed),
 	E1000_STAT("tx_dma_failed", tx_dma_failed),
+<<<<<<< HEAD
+=======
+	E1000_STAT("rx_hwtstamp_cleared", rx_hwtstamp_cleared),
+	E1000_STAT("uncorr_ecc_errors", uncorr_errors),
+	E1000_STAT("corr_ecc_errors", corr_errors),
+	E1000_STAT("tx_hwtstamp_timeouts", tx_hwtstamp_timeouts),
+	E1000_STAT("tx_hwtstamp_skipped", tx_hwtstamp_skipped),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define E1000_GLOBAL_STATS_LEN	ARRAY_SIZE(e1000_gstrings_stats)
@@ -117,6 +151,7 @@ static const char e1000_gstrings_test[][ETH_GSTRING_LEN] = {
 	"Interrupt test (offline)", "Loopback test  (offline)",
 	"Link test   (on/offline)"
 };
+<<<<<<< HEAD
 #define E1000_TEST_LEN ARRAY_SIZE(e1000_gstrings_test)
 
 static int e1000_get_settings(struct net_device *netdev,
@@ -164,14 +199,70 @@ static int e1000_get_settings(struct net_device *netdev,
 
 	speed = -1;
 	ecmd->duplex = -1;
+=======
+
+#define E1000_TEST_LEN ARRAY_SIZE(e1000_gstrings_test)
+
+static int e1000_get_link_ksettings(struct net_device *netdev,
+				    struct ethtool_link_ksettings *cmd)
+{
+	u32 speed, supported, advertising, lp_advertising, lpa_t;
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	struct e1000_hw *hw = &adapter->hw;
+
+	if (hw->phy.media_type == e1000_media_type_copper) {
+		supported = (SUPPORTED_10baseT_Half |
+			     SUPPORTED_10baseT_Full |
+			     SUPPORTED_100baseT_Half |
+			     SUPPORTED_100baseT_Full |
+			     SUPPORTED_1000baseT_Full |
+			     SUPPORTED_Asym_Pause |
+			     SUPPORTED_Autoneg |
+			     SUPPORTED_Pause |
+			     SUPPORTED_TP);
+		if (hw->phy.type == e1000_phy_ife)
+			supported &= ~SUPPORTED_1000baseT_Full;
+		advertising = ADVERTISED_TP;
+
+		if (hw->mac.autoneg == 1) {
+			advertising |= ADVERTISED_Autoneg;
+			/* the e1000 autoneg seems to match ethtool nicely */
+			advertising |= hw->phy.autoneg_advertised;
+		}
+
+		cmd->base.port = PORT_TP;
+		cmd->base.phy_address = hw->phy.addr;
+	} else {
+		supported   = (SUPPORTED_1000baseT_Full |
+			       SUPPORTED_FIBRE |
+			       SUPPORTED_Autoneg);
+
+		advertising = (ADVERTISED_1000baseT_Full |
+			       ADVERTISED_FIBRE |
+			       ADVERTISED_Autoneg);
+
+		cmd->base.port = PORT_FIBRE;
+	}
+
+	speed = SPEED_UNKNOWN;
+	cmd->base.duplex = DUPLEX_UNKNOWN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(netdev)) {
 		if (netif_carrier_ok(netdev)) {
 			speed = adapter->link_speed;
+<<<<<<< HEAD
 			ecmd->duplex = adapter->link_duplex - 1;
 		}
 	} else {
 		u32 status = er32(STATUS);
+=======
+			cmd->base.duplex = adapter->link_duplex - 1;
+		}
+	} else if (!pm_runtime_suspended(netdev->dev.parent)) {
+		u32 status = er32(STATUS);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status & E1000_STATUS_LU) {
 			if (status & E1000_STATUS_SPEED_1000)
 				speed = SPEED_1000;
@@ -181,6 +272,7 @@ static int e1000_get_settings(struct net_device *netdev,
 				speed = SPEED_10;
 
 			if (status & E1000_STATUS_FD)
+<<<<<<< HEAD
 				ecmd->duplex = DUPLEX_FULL;
 			else
 				ecmd->duplex = DUPLEX_HALF;
@@ -189,15 +281,51 @@ static int e1000_get_settings(struct net_device *netdev,
 
 	ethtool_cmd_speed_set(ecmd, speed);
 	ecmd->autoneg = ((hw->phy.media_type == e1000_media_type_fiber) ||
+=======
+				cmd->base.duplex = DUPLEX_FULL;
+			else
+				cmd->base.duplex = DUPLEX_HALF;
+		}
+	}
+
+	cmd->base.speed = speed;
+	cmd->base.autoneg = ((hw->phy.media_type == e1000_media_type_fiber) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 hw->mac.autoneg) ? AUTONEG_ENABLE : AUTONEG_DISABLE;
 
 	/* MDI-X => 2; MDI =>1; Invalid =>0 */
 	if ((hw->phy.media_type == e1000_media_type_copper) &&
 	    netif_carrier_ok(netdev))
+<<<<<<< HEAD
 		ecmd->eth_tp_mdix = hw->phy.is_mdix ? ETH_TP_MDI_X :
 		                                      ETH_TP_MDI;
 	else
 		ecmd->eth_tp_mdix = ETH_TP_MDI_INVALID;
+=======
+		cmd->base.eth_tp_mdix = hw->phy.is_mdix ?
+			ETH_TP_MDI_X : ETH_TP_MDI;
+	else
+		cmd->base.eth_tp_mdix = ETH_TP_MDI_INVALID;
+
+	if (hw->phy.mdix == AUTO_ALL_MODES)
+		cmd->base.eth_tp_mdix_ctrl = ETH_TP_MDI_AUTO;
+	else
+		cmd->base.eth_tp_mdix_ctrl = hw->phy.mdix;
+
+	if (hw->phy.media_type != e1000_media_type_copper)
+		cmd->base.eth_tp_mdix_ctrl = ETH_TP_MDI_INVALID;
+
+	lpa_t = mii_stat1000_to_ethtool_lpa_t(adapter->phy_regs.stat1000);
+	lp_advertising = lpa_t |
+	mii_lpa_to_ethtool_lpa_t(adapter->phy_regs.lpa);
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.lp_advertising,
+						lp_advertising);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -209,14 +337,23 @@ static int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx)
 	mac->autoneg = 0;
 
 	/* Make sure dplx is at most 1 bit and lsb of speed is not set
+<<<<<<< HEAD
 	 * for the switch() below to work */
+=======
+	 * for the switch() below to work
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((spd & 1) || (dplx & ~1))
 		goto err_inval;
 
 	/* Fiber NICs only allow 1000 gbps Full duplex */
 	if ((adapter->hw.phy.media_type == e1000_media_type_fiber) &&
+<<<<<<< HEAD
 	    spd != SPEED_1000 &&
 	    dplx != DUPLEX_FULL) {
+=======
+	    (spd != SPEED_1000) && (dplx != DUPLEX_FULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_inval;
 	}
 
@@ -234,6 +371,7 @@ static int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx)
 		mac->forced_speed_duplex = ADVERTISE_100_FULL;
 		break;
 	case SPEED_1000 + DUPLEX_FULL:
+<<<<<<< HEAD
 		mac->autoneg = 1;
 		adapter->hw.phy.autoneg_advertised = ADVERTISE_1000_FULL;
 		break;
@@ -241,6 +379,24 @@ static int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx)
 	default:
 		goto err_inval;
 	}
+=======
+		if (adapter->hw.phy.media_type == e1000_media_type_copper) {
+			mac->autoneg = 1;
+			adapter->hw.phy.autoneg_advertised =
+				ADVERTISE_1000_FULL;
+		} else {
+			mac->forced_speed_duplex = ADVERTISE_1000_FULL;
+		}
+		break;
+	case SPEED_1000 + DUPLEX_HALF:	/* not supported */
+	default:
+		goto err_inval;
+	}
+
+	/* clear MDI, MDI(-X) override is only allowed when autoneg enabled */
+	adapter->hw.phy.mdix = AUTO_ALL_MODES;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_inval:
@@ -248,6 +404,7 @@ err_inval:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int e1000_set_settings(struct net_device *netdev,
 			      struct ethtool_cmd *ecmd)
 {
@@ -256,18 +413,59 @@ static int e1000_set_settings(struct net_device *netdev,
 
 	/*
 	 * When SoL/IDER sessions are active, autoneg/speed/duplex
+=======
+static int e1000_set_link_ksettings(struct net_device *netdev,
+				    const struct ethtool_link_ksettings *cmd)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	struct e1000_hw *hw = &adapter->hw;
+	int ret_val = 0;
+	u32 advertising;
+
+	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+						cmd->link_modes.advertising);
+
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	/* When SoL/IDER sessions are active, autoneg/speed/duplex
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * cannot be changed
 	 */
 	if (hw->phy.ops.check_reset_block &&
 	    hw->phy.ops.check_reset_block(hw)) {
+<<<<<<< HEAD
 		e_err("Cannot change link characteristics when SoL/IDER is "
 		      "active.\n");
 		return -EINVAL;
+=======
+		e_err("Cannot change link characteristics when SoL/IDER is active.\n");
+		ret_val = -EINVAL;
+		goto out;
+	}
+
+	/* MDI setting is only allowed when autoneg enabled because
+	 * some hardware doesn't allow MDI setting when speed or
+	 * duplex is forced.
+	 */
+	if (cmd->base.eth_tp_mdix_ctrl) {
+		if (hw->phy.media_type != e1000_media_type_copper) {
+			ret_val = -EOPNOTSUPP;
+			goto out;
+		}
+
+		if ((cmd->base.eth_tp_mdix_ctrl != ETH_TP_MDI_AUTO) &&
+		    (cmd->base.autoneg != AUTONEG_ENABLE)) {
+			e_err("forcing MDI/MDI-X state is not supported when link speed and/or duplex are forced\n");
+			ret_val = -EINVAL;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
 
+<<<<<<< HEAD
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
 		hw->mac.autoneg = 1;
 		if (hw->phy.media_type == e1000_media_type_fiber)
@@ -293,13 +491,56 @@ static int e1000_set_settings(struct net_device *netdev,
 
 	if (netif_running(adapter->netdev)) {
 		e1000e_down(adapter);
+=======
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+		hw->mac.autoneg = 1;
+		if (hw->phy.media_type == e1000_media_type_fiber)
+			hw->phy.autoneg_advertised = ADVERTISED_1000baseT_Full |
+			    ADVERTISED_FIBRE | ADVERTISED_Autoneg;
+		else
+			hw->phy.autoneg_advertised = advertising |
+			    ADVERTISED_TP | ADVERTISED_Autoneg;
+		advertising = hw->phy.autoneg_advertised;
+		if (adapter->fc_autoneg)
+			hw->fc.requested_mode = e1000_fc_default;
+	} else {
+		u32 speed = cmd->base.speed;
+		/* calling this overrides forced MDI setting */
+		if (e1000_set_spd_dplx(adapter, speed, cmd->base.duplex)) {
+			ret_val = -EINVAL;
+			goto out;
+		}
+	}
+
+	/* MDI-X => 2; MDI => 1; Auto => 3 */
+	if (cmd->base.eth_tp_mdix_ctrl) {
+		/* fix up the value for auto (3 => 0) as zero is mapped
+		 * internally to auto
+		 */
+		if (cmd->base.eth_tp_mdix_ctrl == ETH_TP_MDI_AUTO)
+			hw->phy.mdix = AUTO_ALL_MODES;
+		else
+			hw->phy.mdix = cmd->base.eth_tp_mdix_ctrl;
+	}
+
+	/* reset the link */
+	if (netif_running(adapter->netdev)) {
+		e1000e_down(adapter, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e1000e_up(adapter);
 	} else {
 		e1000e_reset(adapter);
 	}
 
+<<<<<<< HEAD
 	clear_bit(__E1000_RESETTING, &adapter->state);
 	return 0;
+=======
+out:
+	pm_runtime_put_sync(netdev->dev.parent);
+	clear_bit(__E1000_RESETTING, &adapter->state);
+	return ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void e1000_get_pauseparam(struct net_device *netdev,
@@ -309,7 +550,11 @@ static void e1000_get_pauseparam(struct net_device *netdev,
 	struct e1000_hw *hw = &adapter->hw;
 
 	pause->autoneg =
+<<<<<<< HEAD
 		(adapter->fc_autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE);
+=======
+	    (adapter->fc_autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->fc.current_mode == e1000_fc_rx_pause) {
 		pause->rx_pause = 1;
@@ -333,10 +578,19 @@ static int e1000_set_pauseparam(struct net_device *netdev,
 	while (test_and_set_bit(__E1000_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
 
+<<<<<<< HEAD
 	if (adapter->fc_autoneg == AUTONEG_ENABLE) {
 		hw->fc.requested_mode = e1000_fc_default;
 		if (netif_running(adapter->netdev)) {
 			e1000e_down(adapter);
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	if (adapter->fc_autoneg == AUTONEG_ENABLE) {
+		hw->fc.requested_mode = e1000_fc_default;
+		if (netif_running(adapter->netdev)) {
+			e1000e_down(adapter, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e1000e_up(adapter);
 		} else {
 			e1000e_reset(adapter);
@@ -365,6 +619,10 @@ static int e1000_set_pauseparam(struct net_device *netdev,
 	}
 
 out:
+<<<<<<< HEAD
+=======
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(__E1000_RESETTING, &adapter->state);
 	return retval;
 }
@@ -381,9 +639,15 @@ static void e1000_set_msglevel(struct net_device *netdev, u32 data)
 	adapter->msg_enable = data;
 }
 
+<<<<<<< HEAD
 static int e1000_get_regs_len(struct net_device *netdev)
 {
 #define E1000_REGS_LEN 32 /* overestimate */
+=======
+static int e1000_get_regs_len(struct net_device __always_unused *netdev)
+{
+#define E1000_REGS_LEN 32	/* overestimate */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return E1000_REGS_LEN * sizeof(u32);
 }
 
@@ -395,6 +659,7 @@ static void e1000_get_regs(struct net_device *netdev,
 	u32 *regs_buff = p;
 	u16 phy_data;
 
+<<<<<<< HEAD
 	memset(p, 0, E1000_REGS_LEN * sizeof(u32));
 
 	regs->version = (1 << 24) | (adapter->pdev->revision << 16) |
@@ -420,6 +685,36 @@ static void e1000_get_regs(struct net_device *netdev,
 	/* ethtool doesn't use anything past this point, so all this
 	 * code is likely legacy junk for apps that may or may not
 	 * exist */
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	memset(p, 0, E1000_REGS_LEN * sizeof(u32));
+
+	regs->version = (1u << 24) |
+			(adapter->pdev->revision << 16) |
+			adapter->pdev->device;
+
+	regs_buff[0] = er32(CTRL);
+	regs_buff[1] = er32(STATUS);
+
+	regs_buff[2] = er32(RCTL);
+	regs_buff[3] = er32(RDLEN(0));
+	regs_buff[4] = er32(RDH(0));
+	regs_buff[5] = er32(RDT(0));
+	regs_buff[6] = er32(RDTR);
+
+	regs_buff[7] = er32(TCTL);
+	regs_buff[8] = er32(TDLEN(0));
+	regs_buff[9] = er32(TDH(0));
+	regs_buff[10] = er32(TDT(0));
+	regs_buff[11] = er32(TIDV);
+
+	regs_buff[12] = adapter->hw.phy.type;	/* PHY type (IGP=1, M88=0) */
+
+	/* ethtool doesn't use anything past this point, so all this
+	 * code is likely legacy junk for apps that may or may not exist
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy.type == e1000_phy_m88) {
 		e1e_rphy(hw, M88E1000_PHY_SPEC_STATUS, &phy_data);
 		regs_buff[13] = (u32)phy_data; /* cable length */
@@ -435,10 +730,19 @@ static void e1000_get_regs(struct net_device *netdev,
 		regs_buff[22] = adapter->phy_stats.receive_errors;
 		regs_buff[23] = regs_buff[13]; /* mdix mode */
 	}
+<<<<<<< HEAD
 	regs_buff[21] = 0; /* was idle_errors */
 	e1e_rphy(hw, PHY_1000T_STATUS, &phy_data);
 	regs_buff[24] = (u32)phy_data;  /* phy local receiver status */
 	regs_buff[25] = regs_buff[24];  /* phy remote receiver status */
+=======
+	regs_buff[21] = 0;	/* was idle_errors */
+	e1e_rphy(hw, MII_STAT1000, &phy_data);
+	regs_buff[24] = (u32)phy_data;	/* phy local receiver status */
+	regs_buff[25] = regs_buff[24];	/* phy remote receiver status */
+
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int e1000_get_eeprom_len(struct net_device *netdev)
@@ -466,11 +770,21 @@ static int e1000_get_eeprom(struct net_device *netdev,
 	first_word = eeprom->offset >> 1;
 	last_word = (eeprom->offset + eeprom->len - 1) >> 1;
 
+<<<<<<< HEAD
 	eeprom_buff = kmalloc(sizeof(u16) *
 			(last_word - first_word + 1), GFP_KERNEL);
 	if (!eeprom_buff)
 		return -ENOMEM;
 
+=======
+	eeprom_buff = kmalloc_array(last_word - first_word + 1, sizeof(u16),
+				    GFP_KERNEL);
+	if (!eeprom_buff)
+		return -ENOMEM;
+
+	pm_runtime_get_sync(netdev->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->nvm.type == e1000_nvm_eeprom_spi) {
 		ret_val = e1000_read_nvm(hw, first_word,
 					 last_word - first_word + 1,
@@ -478,12 +792,21 @@ static int e1000_get_eeprom(struct net_device *netdev,
 	} else {
 		for (i = 0; i < last_word - first_word + 1; i++) {
 			ret_val = e1000_read_nvm(hw, first_word + i, 1,
+<<<<<<< HEAD
 						      &eeprom_buff[i]);
+=======
+						 &eeprom_buff[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret_val)
 				break;
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	pm_runtime_put_sync(netdev->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val) {
 		/* a read error occurred, throw away the result */
 		memset(eeprom_buff, 0xff, sizeof(u16) *
@@ -516,7 +839,12 @@ static int e1000_set_eeprom(struct net_device *netdev,
 	if (eeprom->len == 0)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (eeprom->magic != (adapter->pdev->vendor | (adapter->pdev->device << 16)))
+=======
+	if (eeprom->magic !=
+	    (adapter->pdev->vendor | (adapter->pdev->device << 16)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	if (adapter->flags & FLAG_READ_ONLY_NVM)
@@ -532,6 +860,11 @@ static int e1000_set_eeprom(struct net_device *netdev,
 
 	ptr = (void *)eeprom_buff;
 
+<<<<<<< HEAD
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (eeprom->offset & 1) {
 		/* need read/modify/write of first changed EEPROM word */
 		/* only the second byte of the word is being modified */
@@ -542,7 +875,11 @@ static int e1000_set_eeprom(struct net_device *netdev,
 		/* need read/modify/write of last changed EEPROM word */
 		/* only the first byte of the word is being modified */
 		ret_val = e1000_read_nvm(hw, last_word, 1,
+<<<<<<< HEAD
 				  &eeprom_buff[last_word - first_word]);
+=======
+					 &eeprom_buff[last_word - first_word]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret_val)
 		goto out;
@@ -562,8 +899,12 @@ static int e1000_set_eeprom(struct net_device *netdev,
 	if (ret_val)
 		goto out;
 
+<<<<<<< HEAD
 	/*
 	 * Update the checksum over the first part of the EEPROM if needed
+=======
+	/* Update the checksum over the first part of the EEPROM if needed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and flush shadow RAM for applicable controllers
 	 */
 	if ((first_word <= NVM_CHECKSUM_REG) ||
@@ -573,6 +914,10 @@ static int e1000_set_eeprom(struct net_device *netdev,
 		ret_val = e1000e_update_nvm_checksum(hw);
 
 out:
+<<<<<<< HEAD
+=======
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(eeprom_buff);
 	return ret_val;
 }
@@ -582,6 +927,7 @@ static void e1000_get_drvinfo(struct net_device *netdev,
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	strlcpy(drvinfo->driver,  e1000e_driver_name,
 		sizeof(drvinfo->driver));
 	strlcpy(drvinfo->version, e1000e_driver_version,
@@ -605,6 +951,27 @@ static void e1000_get_drvinfo(struct net_device *netdev,
 
 static void e1000_get_ringparam(struct net_device *netdev,
 				struct ethtool_ringparam *ring)
+=======
+	strscpy(drvinfo->driver, e1000e_driver_name, sizeof(drvinfo->driver));
+
+	/* EEPROM image version # is reported as firmware version # for
+	 * PCI-E controllers
+	 */
+	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+		 "%d.%d-%d",
+		 FIELD_GET(0xF000, adapter->eeprom_vers),
+		 FIELD_GET(0x0FF0, adapter->eeprom_vers),
+		 (adapter->eeprom_vers & 0x000F));
+
+	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
+		sizeof(drvinfo->bus_info));
+}
+
+static void e1000_get_ringparam(struct net_device *netdev,
+				struct ethtool_ringparam *ring,
+				struct kernel_ethtool_ringparam *kernel_ring,
+				struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 
@@ -615,7 +982,13 @@ static void e1000_get_ringparam(struct net_device *netdev,
 }
 
 static int e1000_set_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
 			       struct ethtool_ringparam *ring)
+=======
+			       struct ethtool_ringparam *ring,
+			       struct kernel_ethtool_ringparam *kernel_ring,
+			       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	struct e1000_ring *temp_tx = NULL, *temp_rx = NULL;
@@ -670,10 +1043,18 @@ static int e1000_set_ringparam(struct net_device *netdev,
 		}
 	}
 
+<<<<<<< HEAD
 	e1000e_down(adapter);
 
 	/*
 	 * We can't just free everything and then setup again, because the
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	e1000e_down(adapter, true);
+
+	/* We can't just free everything and then setup again, because the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * ISRs in MSI-X mode get passed pointers to the Tx and Rx ring
 	 * structs.  First, attempt to allocate new resources...
 	 */
@@ -709,6 +1090,10 @@ err_setup_rx:
 		e1000e_free_tx_resources(temp_tx);
 err_setup:
 	e1000e_up(adapter);
+<<<<<<< HEAD
+=======
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_temp:
 	vfree(temp_tx);
 	vfree(temp_rx);
@@ -722,12 +1107,18 @@ static bool reg_pattern_test(struct e1000_adapter *adapter, u64 *data,
 {
 	u32 pat, val;
 	static const u32 test[] = {
+<<<<<<< HEAD
 		0x5A5A5A5A, 0xA5A5A5A5, 0x00000000, 0xFFFFFFFF};
+=======
+		0x5A5A5A5A, 0xA5A5A5A5, 0x00000000, 0xFFFFFFFF
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (pat = 0; pat < ARRAY_SIZE(test); pat++) {
 		E1000_WRITE_REG_ARRAY(&adapter->hw, reg, offset,
 				      (test[pat] & write));
 		val = E1000_READ_REG_ARRAY(&adapter->hw, reg, offset);
 		if (val != (test[pat] & write & mask)) {
+<<<<<<< HEAD
 			e_err("pattern test reg %04X failed: got 0x%08X "
 			      "expected 0x%08X\n", reg + offset, val,
 			      (test[pat] & write & mask));
@@ -736,12 +1127,23 @@ static bool reg_pattern_test(struct e1000_adapter *adapter, u64 *data,
 		}
 	}
 	return 0;
+=======
+			e_err("pattern test failed (reg 0x%05X): got 0x%08X expected 0x%08X\n",
+			      reg + (offset << 2), val,
+			      (test[pat] & write & mask));
+			*data = reg;
+			return true;
+		}
+	}
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool reg_set_and_check(struct e1000_adapter *adapter, u64 *data,
 			      int reg, u32 mask, u32 write)
 {
 	u32 val;
+<<<<<<< HEAD
 	__ew32(&adapter->hw, reg, write & mask);
 	val = __er32(&adapter->hw, reg);
 	if ((write & mask) != (val & mask)) {
@@ -752,6 +1154,20 @@ static bool reg_set_and_check(struct e1000_adapter *adapter, u64 *data,
 	}
 	return 0;
 }
+=======
+
+	__ew32(&adapter->hw, reg, write & mask);
+	val = __er32(&adapter->hw, reg);
+	if ((write & mask) != (val & mask)) {
+		e_err("set/check test failed (reg 0x%05X): got 0x%08X expected 0x%08X\n",
+		      reg, (val & mask), (write & mask));
+		*data = reg;
+		return true;
+	}
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_PATTERN_TEST_ARRAY(reg, offset, mask, write)                       \
 	do {                                                                   \
 		if (reg_pattern_test(adapter, data, reg, offset, mask, write)) \
@@ -776,6 +1192,7 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	u32 i;
 	u32 toggle;
 	u32 mask;
+<<<<<<< HEAD
 
 	/*
 	 * The status register is Read Only, so a write should fail.
@@ -783,12 +1200,25 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	 */
 	switch (mac->type) {
 	/* there are several bits on newer hardware that are r/w */
+=======
+	u32 wlock_mac = 0;
+
+	/* The status register is Read Only, so a write should fail.
+	 * Some bits that get toggled are ignored.  There are several bits
+	 * on newer hardware that are r/w.
+	 */
+	switch (mac->type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_82571:
 	case e1000_82572:
 	case e1000_80003es2lan:
 		toggle = 0x7FFFF3FF;
 		break;
+<<<<<<< HEAD
         default:
+=======
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		toggle = 0x7FFFF033;
 		break;
 	}
@@ -798,8 +1228,13 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	ew32(STATUS, toggle);
 	after = er32(STATUS) & toggle;
 	if (value != after) {
+<<<<<<< HEAD
 		e_err("failed STATUS register test got: 0x%08X expected: "
 		      "0x%08X\n", after, value);
+=======
+		e_err("failed STATUS register test got: 0x%08X expected: 0x%08X\n",
+		      after, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*data = 1;
 		return 1;
 	}
@@ -814,6 +1249,7 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	}
 
 	REG_PATTERN_TEST(E1000_RDTR, 0x0000FFFF, 0xFFFFFFFF);
+<<<<<<< HEAD
 	REG_PATTERN_TEST(E1000_RDBAH, 0xFFFFFFFF, 0xFFFFFFFF);
 	REG_PATTERN_TEST(E1000_RDLEN, 0x000FFF80, 0x000FFFFF);
 	REG_PATTERN_TEST(E1000_RDH, 0x0000FFFF, 0x0000FFFF);
@@ -823,6 +1259,17 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	REG_PATTERN_TEST(E1000_TIPG, 0x3FFFFFFF, 0x3FFFFFFF);
 	REG_PATTERN_TEST(E1000_TDBAH, 0xFFFFFFFF, 0xFFFFFFFF);
 	REG_PATTERN_TEST(E1000_TDLEN, 0x000FFF80, 0x000FFFFF);
+=======
+	REG_PATTERN_TEST(E1000_RDBAH(0), 0xFFFFFFFF, 0xFFFFFFFF);
+	REG_PATTERN_TEST(E1000_RDLEN(0), 0x000FFF80, 0x000FFFFF);
+	REG_PATTERN_TEST(E1000_RDH(0), 0x0000FFFF, 0x0000FFFF);
+	REG_PATTERN_TEST(E1000_RDT(0), 0x0000FFFF, 0x0000FFFF);
+	REG_PATTERN_TEST(E1000_FCRTH, 0x0000FFF8, 0x0000FFF8);
+	REG_PATTERN_TEST(E1000_FCTTV, 0x0000FFFF, 0x0000FFFF);
+	REG_PATTERN_TEST(E1000_TIPG, 0x3FFFFFFF, 0x3FFFFFFF);
+	REG_PATTERN_TEST(E1000_TDBAH(0), 0xFFFFFFFF, 0xFFFFFFFF);
+	REG_PATTERN_TEST(E1000_TDLEN(0), 0x000FFF80, 0x000FFFFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_SET_AND_CHECK(E1000_RCTL, 0xFFFFFFFF, 0x00000000);
 
@@ -831,29 +1278,90 @@ static int e1000_reg_test(struct e1000_adapter *adapter, u64 *data)
 	REG_SET_AND_CHECK(E1000_TCTL, 0xFFFFFFFF, 0x00000000);
 
 	REG_SET_AND_CHECK(E1000_RCTL, before, 0xFFFFFFFF);
+<<<<<<< HEAD
 	REG_PATTERN_TEST(E1000_RDBAL, 0xFFFFFFF0, 0xFFFFFFFF);
 	if (!(adapter->flags & FLAG_IS_ICH))
 		REG_PATTERN_TEST(E1000_TXCW, 0xC000FFFF, 0x0000FFFF);
 	REG_PATTERN_TEST(E1000_TDBAL, 0xFFFFFFF0, 0xFFFFFFFF);
+=======
+	REG_PATTERN_TEST(E1000_RDBAL(0), 0xFFFFFFF0, 0xFFFFFFFF);
+	if (!(adapter->flags & FLAG_IS_ICH))
+		REG_PATTERN_TEST(E1000_TXCW, 0xC000FFFF, 0x0000FFFF);
+	REG_PATTERN_TEST(E1000_TDBAL(0), 0xFFFFFFF0, 0xFFFFFFFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_PATTERN_TEST(E1000_TIDV, 0x0000FFFF, 0x0000FFFF);
 	mask = 0x8003FFFF;
 	switch (mac->type) {
 	case e1000_ich10lan:
 	case e1000_pchlan:
 	case e1000_pch2lan:
+<<<<<<< HEAD
 		mask |= (1 << 18);
+=======
+	case e1000_pch_lpt:
+	case e1000_pch_spt:
+	case e1000_pch_cnp:
+	case e1000_pch_tgp:
+	case e1000_pch_adp:
+	case e1000_pch_mtp:
+	case e1000_pch_lnp:
+	case e1000_pch_ptp:
+	case e1000_pch_nvp:
+		mask |= BIT(18);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	for (i = 0; i < mac->rar_entry_count; i++)
 		REG_PATTERN_TEST_ARRAY(E1000_RA, ((i << 1) + 1),
 		                       mask, 0xFFFFFFFF);
+=======
+
+	if (mac->type >= e1000_pch_lpt)
+		wlock_mac = FIELD_GET(E1000_FWSM_WLOCK_MAC_MASK, er32(FWSM));
+
+	for (i = 0; i < mac->rar_entry_count; i++) {
+		if (mac->type >= e1000_pch_lpt) {
+			/* Cannot test write-protected SHRAL[n] registers */
+			if ((wlock_mac == 1) || (wlock_mac && (i > wlock_mac)))
+				continue;
+
+			/* SHRAH[9] different than the others */
+			if (i == 10)
+				mask |= BIT(30);
+			else
+				mask &= ~BIT(30);
+		}
+		if (mac->type == e1000_pch2lan) {
+			/* SHRAH[0,1,2] different than previous */
+			if (i == 1)
+				mask &= 0xFFF4FFFF;
+			/* SHRAH[3] different than SHRAH[0,1,2] */
+			if (i == 4)
+				mask |= BIT(30);
+			/* RAR[1-6] owned by management engine - skipping */
+			if (i > 0)
+				i += 6;
+		}
+
+		REG_PATTERN_TEST_ARRAY(E1000_RA, ((i << 1) + 1), mask,
+				       0xFFFFFFFF);
+		/* reset index to actual value */
+		if ((mac->type == e1000_pch2lan) && (i > 6))
+			i -= 6;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < mac->mta_reg_count; i++)
 		REG_PATTERN_TEST_ARRAY(E1000_MTA, i, 0xFFFFFFFF, 0xFFFFFFFF);
 
 	*data = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -874,15 +1382,25 @@ static int e1000_eeprom_test(struct e1000_adapter *adapter, u64 *data)
 	}
 
 	/* If Checksum is not Correct return error else test passed */
+<<<<<<< HEAD
 	if ((checksum != (u16) NVM_SUM) && !(*data))
+=======
+	if ((checksum != (u16)NVM_SUM) && !(*data))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*data = 2;
 
 	return *data;
 }
 
+<<<<<<< HEAD
 static irqreturn_t e1000_test_intr(int irq, void *data)
 {
 	struct net_device *netdev = (struct net_device *) data;
+=======
+static irqreturn_t e1000_test_intr(int __always_unused irq, void *data)
+{
+	struct net_device *netdev = (struct net_device *)data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
@@ -915,8 +1433,13 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 	if (!request_irq(irq, e1000_test_intr, IRQF_PROBE_SHARED, netdev->name,
 			 netdev)) {
 		shared_int = 0;
+<<<<<<< HEAD
 	} else if (request_irq(irq, e1000_test_intr, IRQF_SHARED,
 		 netdev->name, netdev)) {
+=======
+	} else if (request_irq(irq, e1000_test_intr, IRQF_SHARED, netdev->name,
+			       netdev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*data = 1;
 		ret_val = -1;
 		goto out;
@@ -926,12 +1449,20 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 	/* Disable all the interrupts */
 	ew32(IMC, 0xFFFFFFFF);
 	e1e_flush();
+<<<<<<< HEAD
 	usleep_range(10000, 20000);
+=======
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Test each interrupt */
 	for (i = 0; i < 10; i++) {
 		/* Interrupt to test */
+<<<<<<< HEAD
 		mask = 1 << i;
+=======
+		mask = BIT(i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (adapter->flags & FLAG_IS_ICH) {
 			switch (mask) {
@@ -948,8 +1479,12 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 		}
 
 		if (!shared_int) {
+<<<<<<< HEAD
 			/*
 			 * Disable the interrupt to be reported in
+=======
+			/* Disable the interrupt to be reported in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the cause register and then force the same
 			 * interrupt and see if one gets posted.  If
 			 * an interrupt was posted to the bus, the
@@ -959,7 +1494,11 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 			ew32(IMC, mask);
 			ew32(ICS, mask);
 			e1e_flush();
+<<<<<<< HEAD
 			usleep_range(10000, 20000);
+=======
+			usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (adapter->test_icr & mask) {
 				*data = 3;
@@ -967,8 +1506,12 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 			}
 		}
 
+<<<<<<< HEAD
 		/*
 		 * Enable the interrupt to be reported in
+=======
+		/* Enable the interrupt to be reported in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the cause register and then force the same
 		 * interrupt and see if one gets posted.  If
 		 * an interrupt was not posted to the bus, the
@@ -978,7 +1521,11 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 		ew32(IMS, mask);
 		ew32(ICS, mask);
 		e1e_flush();
+<<<<<<< HEAD
 		usleep_range(10000, 20000);
+=======
+		usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(adapter->test_icr & mask)) {
 			*data = 4;
@@ -986,8 +1533,12 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 		}
 
 		if (!shared_int) {
+<<<<<<< HEAD
 			/*
 			 * Disable the other interrupts to be reported in
+=======
+			/* Disable the other interrupts to be reported in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the cause register and then force the other
 			 * interrupts and see if any get posted.  If
 			 * an interrupt was posted to the bus, the
@@ -997,7 +1548,11 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 			ew32(IMC, ~mask & 0x00007FFF);
 			ew32(ICS, ~mask & 0x00007FFF);
 			e1e_flush();
+<<<<<<< HEAD
 			usleep_range(10000, 20000);
+=======
+			usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (adapter->test_icr) {
 				*data = 5;
@@ -1009,7 +1564,11 @@ static int e1000_intr_test(struct e1000_adapter *adapter, u64 *data)
 	/* Disable all the interrupts */
 	ew32(IMC, 0xFFFFFFFF);
 	e1e_flush();
+<<<<<<< HEAD
 	usleep_range(10000, 20000);
+=======
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unhook test interrupt handler */
 	free_irq(irq, netdev);
@@ -1029,10 +1588,15 @@ static void e1000_free_desc_rings(struct e1000_adapter *adapter)
 	struct e1000_ring *tx_ring = &adapter->test_tx_ring;
 	struct e1000_ring *rx_ring = &adapter->test_rx_ring;
 	struct pci_dev *pdev = adapter->pdev;
+<<<<<<< HEAD
+=======
+	struct e1000_buffer *buffer_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (tx_ring->desc && tx_ring->buffer_info) {
 		for (i = 0; i < tx_ring->count; i++) {
+<<<<<<< HEAD
 			if (tx_ring->buffer_info[i].dma)
 				dma_unmap_single(&pdev->dev,
 					tx_ring->buffer_info[i].dma,
@@ -1040,17 +1604,37 @@ static void e1000_free_desc_rings(struct e1000_adapter *adapter)
 					DMA_TO_DEVICE);
 			if (tx_ring->buffer_info[i].skb)
 				dev_kfree_skb(tx_ring->buffer_info[i].skb);
+=======
+			buffer_info = &tx_ring->buffer_info[i];
+
+			if (buffer_info->dma)
+				dma_unmap_single(&pdev->dev,
+						 buffer_info->dma,
+						 buffer_info->length,
+						 DMA_TO_DEVICE);
+			dev_kfree_skb(buffer_info->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (rx_ring->desc && rx_ring->buffer_info) {
 		for (i = 0; i < rx_ring->count; i++) {
+<<<<<<< HEAD
 			if (rx_ring->buffer_info[i].dma)
 				dma_unmap_single(&pdev->dev,
 					rx_ring->buffer_info[i].dma,
 					2048, DMA_FROM_DEVICE);
 			if (rx_ring->buffer_info[i].skb)
 				dev_kfree_skb(rx_ring->buffer_info[i].skb);
+=======
+			buffer_info = &rx_ring->buffer_info[i];
+
+			if (buffer_info->dma)
+				dma_unmap_single(&pdev->dev,
+						 buffer_info->dma,
+						 2048, DMA_FROM_DEVICE);
+			dev_kfree_skb(buffer_info->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1087,8 +1671,12 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 		tx_ring->count = E1000_DEFAULT_TXD;
 
 	tx_ring->buffer_info = kcalloc(tx_ring->count,
+<<<<<<< HEAD
 				       sizeof(struct e1000_buffer),
 				       GFP_KERNEL);
+=======
+				       sizeof(struct e1000_buffer), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tx_ring->buffer_info) {
 		ret_val = 1;
 		goto err_nomem;
@@ -1105,11 +1693,19 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 	tx_ring->next_to_use = 0;
 	tx_ring->next_to_clean = 0;
 
+<<<<<<< HEAD
 	ew32(TDBAL, ((u64) tx_ring->dma & 0x00000000FFFFFFFF));
 	ew32(TDBAH, ((u64) tx_ring->dma >> 32));
 	ew32(TDLEN, tx_ring->count * sizeof(struct e1000_tx_desc));
 	ew32(TDH, 0);
 	ew32(TDT, 0);
+=======
+	ew32(TDBAL(0), ((u64)tx_ring->dma & 0x00000000FFFFFFFF));
+	ew32(TDBAH(0), ((u64)tx_ring->dma >> 32));
+	ew32(TDLEN(0), tx_ring->count * sizeof(struct e1000_tx_desc));
+	ew32(TDH(0), 0);
+	ew32(TDT(0), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TCTL, E1000_TCTL_PSP | E1000_TCTL_EN | E1000_TCTL_MULR |
 	     E1000_COLLISION_THRESHOLD << E1000_CT_SHIFT |
 	     E1000_COLLISION_DISTANCE << E1000_COLD_SHIFT);
@@ -1128,8 +1724,13 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 		tx_ring->buffer_info[i].skb = skb;
 		tx_ring->buffer_info[i].length = skb->len;
 		tx_ring->buffer_info[i].dma =
+<<<<<<< HEAD
 			dma_map_single(&pdev->dev, skb->data, skb->len,
 				       DMA_TO_DEVICE);
+=======
+		    dma_map_single(&pdev->dev, skb->data, skb->len,
+				   DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dma_mapping_error(&pdev->dev,
 				      tx_ring->buffer_info[i].dma)) {
 			ret_val = 4;
@@ -1149,8 +1750,12 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 		rx_ring->count = E1000_DEFAULT_RXD;
 
 	rx_ring->buffer_info = kcalloc(rx_ring->count,
+<<<<<<< HEAD
 				       sizeof(struct e1000_buffer),
 				       GFP_KERNEL);
+=======
+				       sizeof(struct e1000_buffer), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rx_ring->buffer_info) {
 		ret_val = 5;
 		goto err_nomem;
@@ -1169,6 +1774,7 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 	rctl = er32(RCTL);
 	if (!(adapter->flags2 & FLAG2_NO_DISABLE_RX))
 		ew32(RCTL, rctl & ~E1000_RCTL_EN);
+<<<<<<< HEAD
 	ew32(RDBAL, ((u64) rx_ring->dma & 0xFFFFFFFF));
 	ew32(RDBAH, ((u64) rx_ring->dma >> 32));
 	ew32(RDLEN, rx_ring->size);
@@ -1179,6 +1785,18 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 		E1000_RCTL_SBP | E1000_RCTL_SECRC |
 		E1000_RCTL_LBM_NO | E1000_RCTL_RDMTS_HALF |
 		(adapter->hw.mac.mc_filter_type << E1000_RCTL_MO_SHIFT);
+=======
+	ew32(RDBAL(0), ((u64)rx_ring->dma & 0xFFFFFFFF));
+	ew32(RDBAH(0), ((u64)rx_ring->dma >> 32));
+	ew32(RDLEN(0), rx_ring->size);
+	ew32(RDH(0), 0);
+	ew32(RDT(0), 0);
+	rctl = E1000_RCTL_EN | E1000_RCTL_BAM | E1000_RCTL_SZ_2048 |
+	    E1000_RCTL_UPE | E1000_RCTL_MPE | E1000_RCTL_LPE |
+	    E1000_RCTL_SBP | E1000_RCTL_SECRC |
+	    E1000_RCTL_LBM_NO | E1000_RCTL_RDMTS_HALF |
+	    (adapter->hw.mac.mc_filter_type << E1000_RCTL_MO_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(RCTL, rctl);
 
 	for (i = 0; i < rx_ring->count; i++) {
@@ -1193,8 +1811,13 @@ static int e1000_setup_desc_rings(struct e1000_adapter *adapter)
 		skb_reserve(skb, NET_IP_ALIGN);
 		rx_ring->buffer_info[i].skb = skb;
 		rx_ring->buffer_info[i].dma =
+<<<<<<< HEAD
 			dma_map_single(&pdev->dev, skb->data, 2048,
 				       DMA_FROM_DEVICE);
+=======
+		    dma_map_single(&pdev->dev, skb->data, 2048,
+				   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dma_mapping_error(&pdev->dev,
 				      rx_ring->buffer_info[i].dma)) {
 			ret_val = 8;
@@ -1233,7 +1856,11 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 
 	if (hw->phy.type == e1000_phy_ife) {
 		/* force 100, set loopback */
+<<<<<<< HEAD
 		e1e_wphy(hw, PHY_CONTROL, 0x6100);
+=======
+		e1e_wphy(hw, MII_BMCR, 0x6100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Now set up the MAC to the same speed/duplex as the PHY. */
 		ctrl_reg = er32(CTRL);
@@ -1245,7 +1872,11 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 
 		ew32(CTRL, ctrl_reg);
 		e1e_flush();
+<<<<<<< HEAD
 		udelay(500);
+=======
+		usleep_range(500, 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	}
@@ -1256,9 +1887,15 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 		/* Auto-MDI/MDIX Off */
 		e1e_wphy(hw, M88E1000_PHY_SPEC_CTRL, 0x0808);
 		/* reset to update Auto-MDI/MDIX */
+<<<<<<< HEAD
 		e1e_wphy(hw, PHY_CONTROL, 0x9140);
 		/* autoneg off */
 		e1e_wphy(hw, PHY_CONTROL, 0x8140);
+=======
+		e1e_wphy(hw, MII_BMCR, 0x9140);
+		/* autoneg off */
+		e1e_wphy(hw, MII_BMCR, 0x8140);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case e1000_phy_gg82563:
 		e1e_wphy(hw, GG82563_PHY_KMRN_MODE_CTRL, 0x1CC);
@@ -1270,8 +1907,13 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 		phy_reg |= 0x006;
 		e1e_wphy(hw, PHY_REG(2, 21), phy_reg);
 		/* Assert SW reset for above settings to take effect */
+<<<<<<< HEAD
 		e1000e_commit_phy(hw);
 		mdelay(1);
+=======
+		hw->phy.ops.commit(hw);
+		usleep_range(1000, 2000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Force Full Duplex */
 		e1e_rphy(hw, PHY_REG(769, 16), &phy_reg);
 		e1e_wphy(hw, PHY_REG(769, 16), phy_reg | 0x000C);
@@ -1299,12 +1941,19 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 	case e1000_phy_82579:
 		/* Disable PHY energy detect power down */
 		e1e_rphy(hw, PHY_REG(0, 21), &phy_reg);
+<<<<<<< HEAD
 		e1e_wphy(hw, PHY_REG(0, 21), phy_reg & ~(1 << 3));
+=======
+		e1e_wphy(hw, PHY_REG(0, 21), phy_reg & ~BIT(3));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Disable full chip energy detect */
 		e1e_rphy(hw, PHY_REG(776, 18), &phy_reg);
 		e1e_wphy(hw, PHY_REG(776, 18), phy_reg | 1);
 		/* Enable loopback on the PHY */
+<<<<<<< HEAD
 #define I82577_PHY_LBK_CTRL          19
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e1e_wphy(hw, I82577_PHY_LBK_CTRL, 0x8001);
 		break;
 	default:
@@ -1312,8 +1961,13 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 	}
 
 	/* force 1000, set loopback */
+<<<<<<< HEAD
 	e1e_wphy(hw, PHY_CONTROL, 0x4140);
 	mdelay(250);
+=======
+	e1e_wphy(hw, MII_BMCR, 0x4140);
+	msleep(250);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now set up the MAC to the same speed/duplex as the PHY. */
 	ctrl_reg = er32(CTRL);
@@ -1328,10 +1982,16 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 
 	if (hw->phy.media_type == e1000_media_type_copper &&
 	    hw->phy.type == e1000_phy_m88) {
+<<<<<<< HEAD
 		ctrl_reg |= E1000_CTRL_ILOS; /* Invert Loss of Signal */
 	} else {
 		/*
 		 * Set the ILOS bit on the fiber Nic if half duplex link is
+=======
+		ctrl_reg |= E1000_CTRL_ILOS;	/* Invert Loss of Signal */
+	} else {
+		/* Set the ILOS bit on the fiber Nic if half duplex link is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * detected.
 		 */
 		if ((er32(STATUS) & E1000_STATUS_FD) == 0)
@@ -1340,14 +2000,22 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 
 	ew32(CTRL, ctrl_reg);
 
+<<<<<<< HEAD
 	/*
 	 * Disable the receiver on the PHY so when a cable is plugged in, the
+=======
+	/* Disable the receiver on the PHY so when a cable is plugged in, the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * PHY does not begin to autoneg when a cable is reconnected to the NIC.
 	 */
 	if (hw->phy.type == e1000_phy_m88)
 		e1000_phy_disable_receiver(adapter);
 
+<<<<<<< HEAD
 	udelay(500);
+=======
+	usleep_range(500, 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1356,12 +2024,20 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
 	u32 ctrl = er32(CTRL);
+<<<<<<< HEAD
 	int link = 0;
 
 	/* special requirements for 82571/82572 fiber adapters */
 
 	/*
 	 * jump through hoops to make sure link is up because serdes
+=======
+	int link;
+
+	/* special requirements for 82571/82572 fiber adapters */
+
+	/* jump through hoops to make sure link is up because serdes
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * link is hardwired up
 	 */
 	ctrl |= E1000_CTRL_SLU;
@@ -1369,7 +2045,11 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
 
 	/* disable autoneg */
 	ctrl = er32(TXCW);
+<<<<<<< HEAD
 	ctrl &= ~(1 << 31);
+=======
+	ctrl &= ~BIT(31);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXCW, ctrl);
 
 	link = (er32(STATUS) & E1000_STATUS_LU);
@@ -1381,6 +2061,7 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
 		ew32(CTRL, ctrl);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * special write to serdes control register to enable SerDes analog
 	 * loopback
@@ -1389,6 +2070,14 @@ static int e1000_set_82571_fiber_loopback(struct e1000_adapter *adapter)
 	ew32(SCTL, E1000_SERDES_LB_ON);
 	e1e_flush();
 	usleep_range(10000, 20000);
+=======
+	/* special write to serdes control register to enable SerDes analog
+	 * loopback
+	 */
+	ew32(SCTL, E1000_SCTL_ENABLE_SERDES_LOOPBACK);
+	e1e_flush();
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1400,8 +2089,12 @@ static int e1000_set_es2lan_mac_loopback(struct e1000_adapter *adapter)
 	u32 ctrlext = er32(CTRL_EXT);
 	u32 ctrl = er32(CTRL);
 
+<<<<<<< HEAD
 	/*
 	 * save CTRL_EXT to restore later, reuse an empty variable (unused
+=======
+	/* save CTRL_EXT to restore later, reuse an empty variable (unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on mac_type 80003es2lan)
 	 */
 	adapter->tx_fifo_head = ctrlext;
@@ -1433,18 +2126,40 @@ static int e1000_set_es2lan_mac_loopback(struct e1000_adapter *adapter)
 static int e1000_setup_loopback_test(struct e1000_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 rctl;
 
+=======
+	u32 rctl, fext_nvm11, tarc0;
+
+	if (hw->mac.type >= e1000_pch_spt) {
+		fext_nvm11 = er32(FEXTNVM11);
+		fext_nvm11 |= E1000_FEXTNVM11_DISABLE_MULR_FIX;
+		ew32(FEXTNVM11, fext_nvm11);
+		tarc0 = er32(TARC(0));
+		/* clear bits 28 & 29 (control of MULR concurrent requests) */
+		tarc0 &= 0xcfffffff;
+		/* set bit 29 (value of MULR requests is now 2) */
+		tarc0 |= 0x20000000;
+		ew32(TARC(0), tarc0);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy.media_type == e1000_media_type_fiber ||
 	    hw->phy.media_type == e1000_media_type_internal_serdes) {
 		switch (hw->mac.type) {
 		case e1000_80003es2lan:
 			return e1000_set_es2lan_mac_loopback(adapter);
+<<<<<<< HEAD
 			break;
 		case e1000_82571:
 		case e1000_82572:
 			return e1000_set_82571_fiber_loopback(adapter);
 			break;
+=======
+		case e1000_82571:
+		case e1000_82572:
+			return e1000_set_82571_fiber_loopback(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			rctl = er32(RCTL);
 			rctl |= E1000_RCTL_LBM_TCVR;
@@ -1461,7 +2176,11 @@ static int e1000_setup_loopback_test(struct e1000_adapter *adapter)
 static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 {
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 rctl;
+=======
+	u32 rctl, fext_nvm11, tarc0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 phy_reg;
 
 	rctl = er32(RCTL);
@@ -1469,6 +2188,26 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 	ew32(RCTL, rctl);
 
 	switch (hw->mac.type) {
+<<<<<<< HEAD
+=======
+	case e1000_pch_spt:
+	case e1000_pch_cnp:
+	case e1000_pch_tgp:
+	case e1000_pch_adp:
+	case e1000_pch_mtp:
+	case e1000_pch_lnp:
+	case e1000_pch_ptp:
+	case e1000_pch_nvp:
+		fext_nvm11 = er32(FEXTNVM11);
+		fext_nvm11 &= ~E1000_FEXTNVM11_DISABLE_MULR_FIX;
+		ew32(FEXTNVM11, fext_nvm11);
+		tarc0 = er32(TARC(0));
+		/* clear bits 28 & 29 (control of MULR concurrent requests) */
+		/* set bit 29 (value of MULR requests is now 0) */
+		tarc0 &= 0xcfffffff;
+		ew32(TARC(0), tarc0);
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_80003es2lan:
 		if (hw->phy.media_type == e1000_media_type_fiber ||
 		    hw->phy.media_type == e1000_media_type_internal_serdes) {
@@ -1476,11 +2215,16 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 			ew32(CTRL_EXT, adapter->tx_fifo_head);
 			adapter->tx_fifo_head = 0;
 		}
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case e1000_82571:
 	case e1000_82572:
 		if (hw->phy.media_type == e1000_media_type_fiber ||
 		    hw->phy.media_type == e1000_media_type_internal_serdes) {
+<<<<<<< HEAD
 #define E1000_SERDES_LB_OFF 0x400
 			ew32(SCTL, E1000_SERDES_LB_OFF);
 			e1e_flush();
@@ -1488,15 +2232,32 @@ static void e1000_loopback_cleanup(struct e1000_adapter *adapter)
 			break;
 		}
 		/* Fall Through */
+=======
+			ew32(SCTL, E1000_SCTL_DISABLE_SERDES_LOOPBACK);
+			e1e_flush();
+			usleep_range(10000, 11000);
+			break;
+		}
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		hw->mac.autoneg = 1;
 		if (hw->phy.type == e1000_phy_gg82563)
 			e1e_wphy(hw, GG82563_PHY_KMRN_MODE_CTRL, 0x180);
+<<<<<<< HEAD
 		e1e_rphy(hw, PHY_CONTROL, &phy_reg);
 		if (phy_reg & MII_CR_LOOPBACK) {
 			phy_reg &= ~MII_CR_LOOPBACK;
 			e1e_wphy(hw, PHY_CONTROL, phy_reg);
 			e1000e_commit_phy(hw);
+=======
+		e1e_rphy(hw, MII_BMCR, &phy_reg);
+		if (phy_reg & BMCR_LOOPBACK) {
+			phy_reg &= ~BMCR_LOOPBACK;
+			e1e_wphy(hw, MII_BMCR, phy_reg);
+			if (hw->phy.ops.commit)
+				hw->phy.ops.commit(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -1508,8 +2269,13 @@ static void e1000_create_lbtest_frame(struct sk_buff *skb,
 	memset(skb->data, 0xFF, frame_size);
 	frame_size &= ~1;
 	memset(&skb->data[frame_size / 2], 0xAA, frame_size / 2 - 1);
+<<<<<<< HEAD
 	memset(&skb->data[frame_size / 2 + 10], 0xBE, 1);
 	memset(&skb->data[frame_size / 2 + 12], 0xAF, 1);
+=======
+	skb->data[frame_size / 2 + 10] = 0xBE;
+	skb->data[frame_size / 2 + 12] = 0xAF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int e1000_check_lbtest_frame(struct sk_buff *skb,
@@ -1518,7 +2284,11 @@ static int e1000_check_lbtest_frame(struct sk_buff *skb,
 	frame_size &= ~1;
 	if (*(skb->data + 3) == 0xFF)
 		if ((*(skb->data + frame_size / 2 + 10) == 0xBE) &&
+<<<<<<< HEAD
 		   (*(skb->data + frame_size / 2 + 12) == 0xAF))
+=======
+		    (*(skb->data + frame_size / 2 + 12) == 0xAF))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	return 13;
 }
@@ -1529,16 +2299,26 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 	struct e1000_ring *rx_ring = &adapter->test_rx_ring;
 	struct pci_dev *pdev = adapter->pdev;
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
+=======
+	struct e1000_buffer *buffer_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j, k, l;
 	int lc;
 	int good_cnt;
 	int ret_val = 0;
 	unsigned long time;
 
+<<<<<<< HEAD
 	ew32(RDT, rx_ring->count - 1);
 
 	/*
 	 * Calculate the loop count based on the largest descriptor ring
+=======
+	ew32(RDT(0), rx_ring->count - 1);
+
+	/* Calculate the loop count based on the largest descriptor ring
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * The idea is to wrap the largest ring a number of times using 64
 	 * send/receive pairs during each loop
 	 */
@@ -1550,6 +2330,7 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 
 	k = 0;
 	l = 0;
+<<<<<<< HEAD
 	for (j = 0; j <= lc; j++) { /* loop count loop */
 		for (i = 0; i < 64; i++) { /* send the packets */
 			e1000_create_lbtest_frame(tx_ring->buffer_info[k].skb,
@@ -1558,10 +2339,24 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 					tx_ring->buffer_info[k].dma,
 					tx_ring->buffer_info[k].length,
 					DMA_TO_DEVICE);
+=======
+	/* loop count loop */
+	for (j = 0; j <= lc; j++) {
+		/* send the packets */
+		for (i = 0; i < 64; i++) {
+			buffer_info = &tx_ring->buffer_info[k];
+
+			e1000_create_lbtest_frame(buffer_info->skb, 1024);
+			dma_sync_single_for_device(&pdev->dev,
+						   buffer_info->dma,
+						   buffer_info->length,
+						   DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			k++;
 			if (k == tx_ring->count)
 				k = 0;
 		}
+<<<<<<< HEAD
 		ew32(TDT, k);
 		e1e_flush();
 		msleep(200);
@@ -1574,18 +2369,40 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 
 			ret_val = e1000_check_lbtest_frame(
 					rx_ring->buffer_info[l].skb, 1024);
+=======
+		ew32(TDT(0), k);
+		e1e_flush();
+		msleep(200);
+		time = jiffies;	/* set the start time for the receive */
+		good_cnt = 0;
+		/* receive the sent packets */
+		do {
+			buffer_info = &rx_ring->buffer_info[l];
+
+			dma_sync_single_for_cpu(&pdev->dev,
+						buffer_info->dma, 2048,
+						DMA_FROM_DEVICE);
+
+			ret_val = e1000_check_lbtest_frame(buffer_info->skb,
+							   1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!ret_val)
 				good_cnt++;
 			l++;
 			if (l == rx_ring->count)
 				l = 0;
+<<<<<<< HEAD
 			/*
 			 * time + 20 msecs (200 msecs on 2.4) is more than
+=======
+			/* time + 20 msecs (200 msecs on 2.4) is more than
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * enough time to complete the receives, if it's
 			 * exceeded, break and error off
 			 */
 		} while ((good_cnt < 64) && !time_after(jiffies, time + 20));
 		if (good_cnt != 64) {
+<<<<<<< HEAD
 			ret_val = 13; /* ret_val is the same as mis-compare */
 			break;
 		}
@@ -1594,6 +2411,16 @@ static int e1000_run_loopback_test(struct e1000_adapter *adapter)
 			break;
 		}
 	} /* end loop count loop */
+=======
+			ret_val = 13;	/* ret_val is the same as mis-compare */
+			break;
+		}
+		if (time_after(jiffies, time + 20)) {
+			ret_val = 14;	/* error code for time out error */
+			break;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -1601,10 +2428,14 @@ static int e1000_loopback_test(struct e1000_adapter *adapter, u64 *data)
 {
 	struct e1000_hw *hw = &adapter->hw;
 
+<<<<<<< HEAD
 	/*
 	 * PHY loopback cannot be performed if SoL/IDER
 	 * sessions are active
 	 */
+=======
+	/* PHY loopback cannot be performed if SoL/IDER sessions are active */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy.ops.check_reset_block &&
 	    hw->phy.ops.check_reset_block(hw)) {
 		e_err("Cannot do PHY loopback test when SoL/IDER is active.\n");
@@ -1636,10 +2467,17 @@ static int e1000_link_test(struct e1000_adapter *adapter, u64 *data)
 	*data = 0;
 	if (hw->phy.media_type == e1000_media_type_internal_serdes) {
 		int i = 0;
+<<<<<<< HEAD
 		hw->mac.serdes_has_link = false;
 
 		/*
 		 * On some blade server designs, link establishment
+=======
+
+		hw->mac.serdes_has_link = false;
+
+		/* On some blade server designs, link establishment
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * could take as long as 2-3 minutes
 		 */
 		do {
@@ -1653,11 +2491,18 @@ static int e1000_link_test(struct e1000_adapter *adapter, u64 *data)
 	} else {
 		hw->mac.ops.check_for_link(hw);
 		if (hw->mac.autoneg)
+<<<<<<< HEAD
 			/*
 			 * On some Phy/switch combinations, link establishment
 			 * can take a few seconds more than expected.
 			 */
 			msleep(5000);
+=======
+			/* On some Phy/switch combinations, link establishment
+			 * can take a few seconds more than expected.
+			 */
+			msleep_interruptible(5000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(er32(STATUS) & E1000_STATUS_LU))
 			*data = 1;
@@ -1665,13 +2510,23 @@ static int e1000_link_test(struct e1000_adapter *adapter, u64 *data)
 	return *data;
 }
 
+<<<<<<< HEAD
 static int e1000e_get_sset_count(struct net_device *netdev, int sset)
+=======
+static int e1000e_get_sset_count(struct net_device __always_unused *netdev,
+				 int sset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (sset) {
 	case ETH_SS_TEST:
 		return E1000_TEST_LEN;
 	case ETH_SS_STATS:
 		return E1000_STATS_LEN;
+<<<<<<< HEAD
+=======
+	case ETH_SS_PRIV_FLAGS:
+		return E1000E_PRIV_FLAGS_STR_LEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
@@ -1686,6 +2541,11 @@ static void e1000_diag_test(struct net_device *netdev,
 	u8 autoneg;
 	bool if_running = netif_running(netdev);
 
+<<<<<<< HEAD
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(__E1000_TESTING, &adapter->state);
 
 	if (!if_running) {
@@ -1712,7 +2572,11 @@ static void e1000_diag_test(struct net_device *netdev,
 
 		if (if_running)
 			/* indicate we're in test mode */
+<<<<<<< HEAD
 			dev_close(netdev);
+=======
+			e1000e_close(netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (e1000_reg_test(adapter, &data[0]))
 			eth_test->flags |= ETH_TEST_FL_FAILED;
@@ -1745,7 +2609,11 @@ static void e1000_diag_test(struct net_device *netdev,
 
 		clear_bit(__E1000_TESTING, &adapter->state);
 		if (if_running)
+<<<<<<< HEAD
 			dev_open(netdev);
+=======
+			e1000e_open(netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Online tests */
 
@@ -1771,6 +2639,11 @@ static void e1000_diag_test(struct net_device *netdev,
 	}
 
 	msleep_interruptible(4 * 1000);
+<<<<<<< HEAD
+=======
+
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void e1000_get_wol(struct net_device *netdev,
@@ -1793,8 +2666,12 @@ static void e1000_get_wol(struct net_device *netdev,
 		wol->supported &= ~WAKE_UCAST;
 
 		if (adapter->wol & E1000_WUFC_EX)
+<<<<<<< HEAD
 			e_err("Interface does not support directed (unicast) "
 			      "frame wake-up packets\n");
+=======
+			e_err("Interface does not support directed (unicast) frame wake-up packets\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (adapter->wol & E1000_WUFC_EX)
@@ -1846,6 +2723,11 @@ static int e1000_set_phys_id(struct net_device *netdev,
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
+<<<<<<< HEAD
+=======
+		pm_runtime_get_sync(netdev->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!hw->mac.ops.blink_led)
 			return 2;	/* cycle on/off twice per second */
 
@@ -1857,6 +2739,10 @@ static int e1000_set_phys_id(struct net_device *netdev,
 			e1e_wphy(hw, IFE_PHY_SPECIAL_CONTROL_LED, 0);
 		hw->mac.ops.led_off(hw);
 		hw->mac.ops.cleanup_led(hw);
+<<<<<<< HEAD
+=======
+		pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ETHTOOL_ID_ON:
@@ -1867,11 +2753,21 @@ static int e1000_set_phys_id(struct net_device *netdev,
 		hw->mac.ops.led_off(hw);
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int e1000_get_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
 			      struct ethtool_coalesce *ec)
+=======
+			      struct ethtool_coalesce *ec,
+			      struct kernel_ethtool_coalesce *kernel_coal,
+			      struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 
@@ -1884,10 +2780,18 @@ static int e1000_get_coalesce(struct net_device *netdev,
 }
 
 static int e1000_set_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
 			      struct ethtool_coalesce *ec)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
+=======
+			      struct ethtool_coalesce *ec,
+			      struct kernel_ethtool_coalesce *kernel_coal,
+			      struct netlink_ext_ack *extack)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((ec->rx_coalesce_usecs > E1000_MAX_ITR_USECS) ||
 	    ((ec->rx_coalesce_usecs > 4) &&
@@ -1896,7 +2800,12 @@ static int e1000_set_coalesce(struct net_device *netdev,
 		return -EINVAL;
 
 	if (ec->rx_coalesce_usecs == 4) {
+<<<<<<< HEAD
 		adapter->itr = adapter->itr_setting = 4;
+=======
+		adapter->itr_setting = 4;
+		adapter->itr = adapter->itr_setting;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (ec->rx_coalesce_usecs <= 3) {
 		adapter->itr = 20000;
 		adapter->itr_setting = ec->rx_coalesce_usecs;
@@ -1905,10 +2814,21 @@ static int e1000_set_coalesce(struct net_device *netdev,
 		adapter->itr_setting = adapter->itr & ~3;
 	}
 
+<<<<<<< HEAD
 	if (adapter->itr_setting != 0)
 		ew32(ITR, 1000000000 / (adapter->itr * 256));
 	else
 		ew32(ITR, 0);
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	if (adapter->itr_setting != 0)
+		e1000e_write_itr(adapter, adapter->itr);
+	else
+		e1000e_write_itr(adapter, 0);
+
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1923,13 +2843,23 @@ static int e1000_nway_reset(struct net_device *netdev)
 	if (!adapter->hw.mac.autoneg)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	e1000e_reinit_locked(adapter);
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+	e1000e_reinit_locked(adapter);
+	pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void e1000_get_ethtool_stats(struct net_device *netdev,
+<<<<<<< HEAD
 				    struct ethtool_stats *stats,
+=======
+				    struct ethtool_stats __always_unused *stats,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    u64 *data)
 {
 	struct e1000_adapter *adapter = netdev_priv(netdev);
@@ -1937,6 +2867,7 @@ static void e1000_get_ethtool_stats(struct net_device *netdev,
 	int i;
 	char *p = NULL;
 
+<<<<<<< HEAD
 	e1000e_get_stats64(netdev, &net_stats);
 	for (i = 0; i < E1000_GLOBAL_STATS_LEN; i++) {
 		switch (e1000_gstrings_stats[i].type) {
@@ -1947,6 +2878,23 @@ static void e1000_get_ethtool_stats(struct net_device *netdev,
 		case E1000_STATS:
 			p = (char *) adapter +
 					e1000_gstrings_stats[i].stat_offset;
+=======
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	dev_get_stats(netdev, &net_stats);
+
+	pm_runtime_put_sync(netdev->dev.parent);
+
+	for (i = 0; i < E1000_GLOBAL_STATS_LEN; i++) {
+		switch (e1000_gstrings_stats[i].type) {
+		case NETDEV_STATS:
+			p = (char *)&net_stats +
+			    e1000_gstrings_stats[i].stat_offset;
+			break;
+		case E1000_STATS:
+			p = (char *)adapter +
+			    e1000_gstrings_stats[i].stat_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			data[i] = 0;
@@ -1954,12 +2902,21 @@ static void e1000_get_ethtool_stats(struct net_device *netdev,
 		}
 
 		data[i] = (e1000_gstrings_stats[i].sizeof_stat ==
+<<<<<<< HEAD
 			sizeof(u64)) ? *(u64 *)p : *(u32 *)p;
 	}
 }
 
 static void e1000_get_strings(struct net_device *netdev, u32 stringset,
 			      u8 *data)
+=======
+			   sizeof(u64)) ? *(u64 *)p : *(u32 *)p;
+	}
+}
+
+static void e1000_get_strings(struct net_device __always_unused *netdev,
+			      u32 stringset, u8 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *p = data;
 	int i;
@@ -1975,11 +2932,23 @@ static void e1000_get_strings(struct net_device *netdev, u32 stringset,
 			p += ETH_GSTRING_LEN;
 		}
 		break;
+<<<<<<< HEAD
+=======
+	case ETH_SS_PRIV_FLAGS:
+		memcpy(data, e1000e_priv_flags_strings,
+		       E1000E_PRIV_FLAGS_STR_LEN * ETH_GSTRING_LEN);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int e1000_get_rxnfc(struct net_device *netdev,
+<<<<<<< HEAD
 			   struct ethtool_rxnfc *info, u32 *rule_locs)
+=======
+			   struct ethtool_rxnfc *info,
+			   u32 __always_unused *rule_locs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	info->data = 0;
 
@@ -1987,7 +2956,15 @@ static int e1000_get_rxnfc(struct net_device *netdev,
 	case ETHTOOL_GRXFH: {
 		struct e1000_adapter *adapter = netdev_priv(netdev);
 		struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 		u32 mrqc = er32(MRQC);
+=======
+		u32 mrqc;
+
+		pm_runtime_get_sync(netdev->dev.parent);
+		mrqc = er32(MRQC);
+		pm_runtime_put_sync(netdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(mrqc & E1000_MRQC_RSS_FIELD_MASK))
 			return 0;
@@ -1996,7 +2973,11 @@ static int e1000_get_rxnfc(struct net_device *netdev,
 		case TCP_V4_FLOW:
 			if (mrqc & E1000_MRQC_RSS_FIELD_IPV4_TCP)
 				info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case UDP_V4_FLOW:
 		case SCTP_V4_FLOW:
 		case AH_ESP_V4_FLOW:
@@ -2007,7 +2988,11 @@ static int e1000_get_rxnfc(struct net_device *netdev,
 		case TCP_V6_FLOW:
 			if (mrqc & E1000_MRQC_RSS_FIELD_IPV6_TCP)
 				info->data |= RXH_L4_B_0_1 | RXH_L4_B_2_3;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case UDP_V6_FLOW:
 		case SCTP_V6_FLOW:
 		case AH_ESP_V6_FLOW:
@@ -2025,9 +3010,205 @@ static int e1000_get_rxnfc(struct net_device *netdev,
 	}
 }
 
+<<<<<<< HEAD
 static const struct ethtool_ops e1000_ethtool_ops = {
 	.get_settings		= e1000_get_settings,
 	.set_settings		= e1000_set_settings,
+=======
+static int e1000e_get_eee(struct net_device *netdev, struct ethtool_keee *edata)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	struct e1000_hw *hw = &adapter->hw;
+	u16 cap_addr, lpa_addr, pcs_stat_addr, phy_data;
+	u32 ret_val;
+
+	if (!(adapter->flags2 & FLAG2_HAS_EEE))
+		return -EOPNOTSUPP;
+
+	switch (hw->phy.type) {
+	case e1000_phy_82579:
+		cap_addr = I82579_EEE_CAPABILITY;
+		lpa_addr = I82579_EEE_LP_ABILITY;
+		pcs_stat_addr = I82579_EEE_PCS_STATUS;
+		break;
+	case e1000_phy_i217:
+		cap_addr = I217_EEE_CAPABILITY;
+		lpa_addr = I217_EEE_LP_ABILITY;
+		pcs_stat_addr = I217_EEE_PCS_STATUS;
+		break;
+	default:
+		return -EOPNOTSUPP;
+	}
+
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	ret_val = hw->phy.ops.acquire(hw);
+	if (ret_val) {
+		pm_runtime_put_sync(netdev->dev.parent);
+		return -EBUSY;
+	}
+
+	/* EEE Capability */
+	ret_val = e1000_read_emi_reg_locked(hw, cap_addr, &phy_data);
+	if (ret_val)
+		goto release;
+	mii_eee_cap1_mod_linkmode_t(edata->supported, phy_data);
+
+	/* EEE Advertised */
+	mii_eee_cap1_mod_linkmode_t(edata->advertised, adapter->eee_advert);
+
+	/* EEE Link Partner Advertised */
+	ret_val = e1000_read_emi_reg_locked(hw, lpa_addr, &phy_data);
+	if (ret_val)
+		goto release;
+	mii_eee_cap1_mod_linkmode_t(edata->lp_advertised, phy_data);
+
+	/* EEE PCS Status */
+	ret_val = e1000_read_emi_reg_locked(hw, pcs_stat_addr, &phy_data);
+	if (ret_val)
+		goto release;
+	if (hw->phy.type == e1000_phy_82579)
+		phy_data <<= 8;
+
+	/* Result of the EEE auto negotiation - there is no register that
+	 * has the status of the EEE negotiation so do a best-guess based
+	 * on whether Tx or Rx LPI indications have been received.
+	 */
+	if (phy_data & (E1000_EEE_TX_LPI_RCVD | E1000_EEE_RX_LPI_RCVD))
+		edata->eee_active = true;
+
+	edata->eee_enabled = !hw->dev_spec.ich8lan.eee_disable;
+	edata->tx_lpi_enabled = true;
+	edata->tx_lpi_timer = er32(LPIC) >> E1000_LPIC_LPIET_SHIFT;
+
+release:
+	hw->phy.ops.release(hw);
+	if (ret_val)
+		ret_val = -ENODATA;
+
+	pm_runtime_put_sync(netdev->dev.parent);
+
+	return ret_val;
+}
+
+static int e1000e_set_eee(struct net_device *netdev, struct ethtool_keee *edata)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported) = {};
+	__ETHTOOL_DECLARE_LINK_MODE_MASK(tmp) = {};
+	struct e1000_hw *hw = &adapter->hw;
+	struct ethtool_keee eee_curr;
+	s32 ret_val;
+
+	ret_val = e1000e_get_eee(netdev, &eee_curr);
+	if (ret_val)
+		return ret_val;
+
+	if (eee_curr.tx_lpi_enabled != edata->tx_lpi_enabled) {
+		e_err("Setting EEE tx-lpi is not supported\n");
+		return -EINVAL;
+	}
+
+	if (eee_curr.tx_lpi_timer != edata->tx_lpi_timer) {
+		e_err("Setting EEE Tx LPI timer is not supported\n");
+		return -EINVAL;
+	}
+
+	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+			 supported);
+	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT,
+			 supported);
+
+	if (linkmode_andnot(tmp, edata->advertised, supported)) {
+		e_err("EEE advertisement supports only 100TX and/or 1000T full-duplex\n");
+		return -EINVAL;
+	}
+
+	adapter->eee_advert = linkmode_to_mii_eee_cap1_t(edata->advertised);
+
+	hw->dev_spec.ich8lan.eee_disable = !edata->eee_enabled;
+
+	pm_runtime_get_sync(netdev->dev.parent);
+
+	/* reset the link */
+	if (netif_running(netdev))
+		e1000e_reinit_locked(adapter);
+	else
+		e1000e_reset(adapter);
+
+	pm_runtime_put_sync(netdev->dev.parent);
+
+	return 0;
+}
+
+static int e1000e_get_ts_info(struct net_device *netdev,
+			      struct ethtool_ts_info *info)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+
+	ethtool_op_get_ts_info(netdev, info);
+
+	if (!(adapter->flags & FLAG_HAS_HW_TIMESTAMP))
+		return 0;
+
+	info->so_timestamping |= (SOF_TIMESTAMPING_TX_HARDWARE |
+				  SOF_TIMESTAMPING_RX_HARDWARE |
+				  SOF_TIMESTAMPING_RAW_HARDWARE);
+
+	info->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ON);
+
+	info->rx_filters = (BIT(HWTSTAMP_FILTER_NONE) |
+			    BIT(HWTSTAMP_FILTER_PTP_V1_L4_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_EVENT) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_SYNC) |
+			    BIT(HWTSTAMP_FILTER_PTP_V2_DELAY_REQ) |
+			    BIT(HWTSTAMP_FILTER_ALL));
+
+	if (adapter->ptp_clock)
+		info->phc_index = ptp_clock_index(adapter->ptp_clock);
+
+	return 0;
+}
+
+static u32 e1000e_get_priv_flags(struct net_device *netdev)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	u32 priv_flags = 0;
+
+	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
+		priv_flags |= E1000E_PRIV_FLAGS_S0IX_ENABLED;
+
+	return priv_flags;
+}
+
+static int e1000e_set_priv_flags(struct net_device *netdev, u32 priv_flags)
+{
+	struct e1000_adapter *adapter = netdev_priv(netdev);
+	unsigned int flags2 = adapter->flags2;
+
+	flags2 &= ~FLAG2_ENABLE_S0IX_FLOWS;
+	if (priv_flags & E1000E_PRIV_FLAGS_S0IX_ENABLED) {
+		struct e1000_hw *hw = &adapter->hw;
+
+		if (hw->mac.type < e1000_pch_cnp)
+			return -EINVAL;
+		flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
+	}
+
+	if (flags2 != adapter->flags2)
+		adapter->flags2 = flags2;
+
+	return 0;
+}
+
+static const struct ethtool_ops e1000_ethtool_ops = {
+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= e1000_get_drvinfo,
 	.get_regs_len		= e1000_get_regs_len,
 	.get_regs		= e1000_get_regs,
@@ -2052,9 +3233,23 @@ static const struct ethtool_ops e1000_ethtool_ops = {
 	.get_coalesce		= e1000_get_coalesce,
 	.set_coalesce		= e1000_set_coalesce,
 	.get_rxnfc		= e1000_get_rxnfc,
+<<<<<<< HEAD
+=======
+	.get_ts_info		= e1000e_get_ts_info,
+	.get_eee		= e1000e_get_eee,
+	.set_eee		= e1000e_set_eee,
+	.get_link_ksettings	= e1000_get_link_ksettings,
+	.set_link_ksettings	= e1000_set_link_ksettings,
+	.get_priv_flags		= e1000e_get_priv_flags,
+	.set_priv_flags		= e1000e_set_priv_flags,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void e1000e_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &e1000_ethtool_ops);
+=======
+	netdev->ethtool_ops = &e1000_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

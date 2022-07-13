@@ -1,11 +1,20 @@
+<<<<<<< HEAD
 /*
  * OMAP hardware spinlock driver
  *
  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * OMAP hardware spinlock driver
+ *
+ * Copyright (C) 2010-2021 Texas Instruments Incorporated - https://www.ti.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Contact: Simon Que <sque@ti.com>
  *          Hari Kanigeri <h-kanigeri2@ti.com>
  *          Ohad Ben-Cohen <ohad@wizery.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,6 +24,9 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+ *          Suman Anna <s-anna@ti.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,6 +39,10 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/hwspinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 
 #include "hwspinlock_internal.h"
@@ -78,6 +94,7 @@ static const struct hwspinlock_ops omap_hwspinlock_ops = {
 	.relax = omap_hwspinlock_relax,
 };
 
+<<<<<<< HEAD
 static int __devinit omap_hwspinlock_probe(struct platform_device *pdev)
 {
 	struct hwspinlock_pdata *pdata = pdev->dev.platform_data;
@@ -97,11 +114,34 @@ static int __devinit omap_hwspinlock_probe(struct platform_device *pdev)
 	io_base = ioremap(res->start, resource_size(res));
 	if (!io_base)
 		return -ENOMEM;
+=======
+static int omap_hwspinlock_probe(struct platform_device *pdev)
+{
+	struct hwspinlock_device *bank;
+	void __iomem *io_base;
+	int num_locks, i, ret;
+	/* Only a single hwspinlock block device is supported */
+	int base_id = 0;
+
+	io_base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(io_base))
+		return PTR_ERR(io_base);
+
+	/*
+	 * make sure the module is enabled and clocked before reading
+	 * the module SYSSTATUS register
+	 */
+	devm_pm_runtime_enable(&pdev->dev);
+	ret = pm_runtime_resume_and_get(&pdev->dev);
+	if (ret < 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine number of locks */
 	i = readl(io_base + SYSSTATUS_OFFSET);
 	i >>= SPINLOCK_NUMLOCKS_BIT_OFFSET;
 
+<<<<<<< HEAD
 	/* one of the four lsb's must be set, and nothing else */
 	if (hweight_long(i & 0xf) != 1 || i > 8) {
 		ret = -EINVAL;
@@ -167,6 +207,47 @@ static struct platform_driver omap_hwspinlock_driver = {
 	.driver		= {
 		.name	= "omap_hwspinlock",
 		.owner	= THIS_MODULE,
+=======
+	/*
+	 * runtime PM will make sure the clock of this module is
+	 * enabled again iff at least one lock is requested
+	 */
+	ret = pm_runtime_put(&pdev->dev);
+	if (ret < 0)
+		return ret;
+
+	/* one of the four lsb's must be set, and nothing else */
+	if (hweight_long(i & 0xf) != 1 || i > 8)
+		return -EINVAL;
+
+	num_locks = i * 32; /* actual number of locks in this device */
+
+	bank = devm_kzalloc(&pdev->dev, struct_size(bank, lock, num_locks),
+			    GFP_KERNEL);
+	if (!bank)
+		return -ENOMEM;
+
+	for (i = 0; i < num_locks; i++)
+		bank->lock[i].priv = io_base + LOCK_BASE_OFFSET + sizeof(u32) * i;
+
+	return devm_hwspin_lock_register(&pdev->dev, bank, &omap_hwspinlock_ops,
+						base_id, num_locks);
+}
+
+static const struct of_device_id omap_hwspinlock_of_match[] = {
+	{ .compatible = "ti,omap4-hwspinlock", },
+	{ .compatible = "ti,am64-hwspinlock", },
+	{ .compatible = "ti,am654-hwspinlock", },
+	{ /* end */ },
+};
+MODULE_DEVICE_TABLE(of, omap_hwspinlock_of_match);
+
+static struct platform_driver omap_hwspinlock_driver = {
+	.probe		= omap_hwspinlock_probe,
+	.driver		= {
+		.name	= "omap_hwspinlock",
+		.of_match_table = omap_hwspinlock_of_match,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

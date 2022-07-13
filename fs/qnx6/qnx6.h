@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QNX6 file system, Linux implementation.
  *
@@ -10,6 +14,15 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/pagemap.h>
 
@@ -19,12 +32,15 @@ typedef __u64 __bitwise __fs64;
 
 #include <linux/qnx6_fs.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_QNX6FS_DEBUG
 #define QNX6DEBUG(X) printk X
 #else
 #define QNX6DEBUG(X) (void) 0
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qnx6_sb_info {
 	struct buffer_head	*sb_buf;	/* superblock buffer */
 	struct qnx6_super_block	*sb;		/* our superblock */
@@ -128,7 +144,11 @@ extern struct qnx6_super_block *qnx6_mmi_fill_super(struct super_block *s,
 static inline void qnx6_put_page(struct page *page)
 {
 	kunmap(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern unsigned qnx6_find_entry(int len, struct inode *dir, const char *name,

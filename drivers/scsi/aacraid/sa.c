@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -6,6 +10,7 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
+<<<<<<< HEAD
  *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,12 +26,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
+ *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *  sa.c
  *
  * Abstract: Drawbridge specific support functions
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -148,6 +160,7 @@ static void aac_sa_notify_adapter(struct aac_dev *dev, u32 event)
  *	@dev: Adapter
  *	@command: Command to execute
  *	@p1: first parameter
+<<<<<<< HEAD
  *	@ret: adapter status
  *
  *	This routine will send a synchronous command to the adapter and wait 
@@ -155,6 +168,23 @@ static void aac_sa_notify_adapter(struct aac_dev *dev, u32 event)
  */
 
 static int sa_sync_cmd(struct aac_dev *dev, u32 command, 
+=======
+ *	@p2: second parameter
+ *	@p3: third parameter
+ *	@p4: forth parameter
+ *	@p5: fifth parameter
+ *	@p6: sixth parameter
+ *	@ret: adapter status
+ *	@r1: first return value
+ *	@r2: second return value
+ *	@r3: third return value
+ *	@r4: forth return value
+ *
+ *	This routine will send a synchronous command to the adapter and wait
+ *	for its	completion.
+ */
+static int sa_sync_cmd(struct aac_dev *dev, u32 command,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 p1, u32 p2, u32 p3, u32 p4, u32 p5, u32 p6,
 		u32 *ret, u32 *r1, u32 *r2, u32 *r3, u32 *r4)
 {
@@ -245,19 +275,31 @@ static void aac_sa_interrupt_adapter (struct aac_dev *dev)
 
 static void aac_sa_start_adapter(struct aac_dev *dev)
 {
+<<<<<<< HEAD
 	struct aac_init *init;
+=======
+	union aac_init *init;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Fill in the remaining pieces of the init.
 	 */
 	init = dev->init;
+<<<<<<< HEAD
 	init->HostElapsedSeconds = cpu_to_le32(get_seconds());
+=======
+	init->r7.host_elapsed_seconds = cpu_to_le32(ktime_get_real_seconds());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We can only use a 32 bit address here */
 	sa_sync_cmd(dev, INIT_STRUCT_BASE_ADDRESS, 
 			(u32)(ulong)dev->init_pa, 0, 0, 0, 0, 0,
 			NULL, NULL, NULL, NULL, NULL);
 }
 
+<<<<<<< HEAD
 static int aac_sa_restart_adapter(struct aac_dev *dev, int bled)
+=======
+static int aac_sa_restart_adapter(struct aac_dev *dev, int bled, u8 reset_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EINVAL;
 }
@@ -296,6 +338,10 @@ static int aac_sa_check_health(struct aac_dev *dev)
 
 /**
  *	aac_sa_ioremap
+<<<<<<< HEAD
+=======
+ *	@dev: device to ioremap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@size: mapping resize request
  *
  */
@@ -305,7 +351,11 @@ static int aac_sa_ioremap(struct aac_dev * dev, u32 size)
 		iounmap(dev->regs.sa);
 		return 0;
 	}
+<<<<<<< HEAD
 	dev->base = dev->regs.sa = ioremap(dev->scsi_host_ptr->base, size);
+=======
+	dev->base = dev->regs.sa = ioremap(dev->base_start, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (dev->base == NULL) ? -1 : 0;
 }
 
@@ -313,8 +363,13 @@ static int aac_sa_ioremap(struct aac_dev * dev, u32 size)
  *	aac_sa_init	-	initialize an ARM based AAC card
  *	@dev: device to configure
  *
+<<<<<<< HEAD
  *	Allocate and set up resources for the ARM based AAC variants. The 
  *	device_interface in the commregion will be allocated and linked 
+=======
+ *	Allocate and set up resources for the ARM based AAC variants. The
+ *	device_interface in the commregion will be allocated and linked
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	to the comm region.
  */
 
@@ -328,6 +383,25 @@ int aac_sa_init(struct aac_dev *dev)
 	instance = dev->id;
 	name     = dev->name;
 
+<<<<<<< HEAD
+=======
+	/*
+	 *	Fill in the function dispatch table.
+	 */
+
+	dev->a_ops.adapter_interrupt = aac_sa_interrupt_adapter;
+	dev->a_ops.adapter_disable_int = aac_sa_disable_interrupt;
+	dev->a_ops.adapter_enable_int = aac_sa_enable_interrupt;
+	dev->a_ops.adapter_notify = aac_sa_notify_adapter;
+	dev->a_ops.adapter_sync_cmd = sa_sync_cmd;
+	dev->a_ops.adapter_check_health = aac_sa_check_health;
+	dev->a_ops.adapter_restart = aac_sa_restart_adapter;
+	dev->a_ops.adapter_start = aac_sa_start_adapter;
+	dev->a_ops.adapter_intr = aac_sa_intr;
+	dev->a_ops.adapter_deliver = aac_rx_deliver_producer;
+	dev->a_ops.adapter_ioremap = aac_sa_ioremap;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (aac_sa_ioremap(dev, dev->base_size)) {
 		printk(KERN_WARNING "%s: unable to map adapter.\n", name);
 		goto error_iounmap;
@@ -362,6 +436,7 @@ int aac_sa_init(struct aac_dev *dev)
 	}
 
 	/*
+<<<<<<< HEAD
 	 *	Fill in the function dispatch table.
 	 */
 
@@ -377,6 +452,8 @@ int aac_sa_init(struct aac_dev *dev)
 	dev->a_ops.adapter_ioremap = aac_sa_ioremap;
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *	First clear out all interrupts.  Then enable the one's that 
 	 *	we can handle.
 	 */
@@ -387,13 +464,21 @@ int aac_sa_init(struct aac_dev *dev)
 		goto error_irq;
 	dev->sync_mode = 0;	/* sync. mode not supported */
 	if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
+<<<<<<< HEAD
 			IRQF_SHARED|IRQF_DISABLED,
 			"aacraid", (void *)dev ) < 0) {
+=======
+			IRQF_SHARED, "aacraid", (void *)dev) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "%s%d: Interrupt unavailable.\n",
 			name, instance);
 		goto error_iounmap;
 	}
+<<<<<<< HEAD
 	dev->dbg_base = dev->scsi_host_ptr->base;
+=======
+	dev->dbg_base = dev->base_start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->dbg_base_mapped = dev->base;
 	dev->dbg_size = dev->base_size;
 

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PCR_H
 #define __PCR_H
 
 struct pcr_ops {
+<<<<<<< HEAD
 	u64 (*read)(void);
 	void (*write)(u64);
 };
@@ -9,6 +14,20 @@ extern const struct pcr_ops *pcr_ops;
 
 extern void deferred_pcr_work_irq(int irq, struct pt_regs *regs);
 extern void schedule_deferred_pcr_work(void);
+=======
+	u64 (*read_pcr)(unsigned long);
+	void (*write_pcr)(unsigned long, u64);
+	u64 (*read_pic)(unsigned long);
+	void (*write_pic)(unsigned long, u64);
+	u64 (*nmi_picl_value)(unsigned int nmi_hz);
+	u64 pcr_nmi_enable;
+	u64 pcr_nmi_disable;
+};
+extern const struct pcr_ops *pcr_ops;
+
+void deferred_pcr_work_irq(int irq, struct pt_regs *regs);
+void schedule_deferred_pcr_work(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCR_PIC_PRIV		0x00000001 /* PIC access is privileged */
 #define PCR_STRACE		0x00000002 /* Trace supervisor events  */
@@ -27,6 +46,7 @@ extern void schedule_deferred_pcr_work(void);
 #define PCR_N2_SL1_SHIFT	27
 #define PCR_N2_OV1		0x80000000
 
+<<<<<<< HEAD
 extern unsigned int picl_shift;
 
 /* In order to commonize as much of the implementation as
@@ -44,5 +64,21 @@ static inline u64 picl_value(unsigned int nmi_hz)
 extern u64 pcr_enable;
 
 extern int pcr_arch_init(void);
+=======
+#define PCR_N4_OV		0x00000001 /* PIC overflow             */
+#define PCR_N4_TOE		0x00000002 /* Trap On Event            */
+#define PCR_N4_UTRACE		0x00000004 /* Trace user events        */
+#define PCR_N4_STRACE		0x00000008 /* Trace supervisor events  */
+#define PCR_N4_HTRACE		0x00000010 /* Trace hypervisor events  */
+#define PCR_N4_MASK		0x000007e0 /* Event mask               */
+#define PCR_N4_MASK_SHIFT	5
+#define PCR_N4_SL		0x0000f800 /* Event Select             */
+#define PCR_N4_SL_SHIFT		11
+#define PCR_N4_PICNPT		0x00010000 /* PIC non-privileged trap  */
+#define PCR_N4_PICNHT		0x00020000 /* PIC non-hypervisor trap  */
+#define PCR_N4_NTC		0x00040000 /* Next-To-Commit wrap      */
+
+int pcr_arch_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __PCR_H */

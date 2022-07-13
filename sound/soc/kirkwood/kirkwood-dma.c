@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kirkwood-dma.c
  *
  * (c) 2010 Arnaud Patard <apatard@mandriva.com>
  * (c) 2010 Arnaud Patard <arnaud.patard@rtp-net.org>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -21,6 +28,7 @@
 #include <sound/soc.h>
 #include "kirkwood.h"
 
+<<<<<<< HEAD
 #define KIRKWOOD_RATES \
 	(SNDRV_PCM_RATE_44100 | \
 	 SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000)
@@ -48,6 +56,22 @@ static struct snd_pcm_hardware kirkwood_dma_snd_hw = {
 	.channels_min		= 1,
 	.channels_max		= 2,
 	.buffer_bytes_max	= KIRKWOOD_SND_MAX_PERIOD_BYTES * KIRKWOOD_SND_MAX_PERIODS,
+=======
+static struct kirkwood_dma_data *kirkwood_priv(struct snd_pcm_substream *subs)
+{
+	struct snd_soc_pcm_runtime *soc_runtime = subs->private_data;
+	return snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(soc_runtime, 0));
+}
+
+static const struct snd_pcm_hardware kirkwood_dma_snd_hw = {
+	.info = SNDRV_PCM_INFO_INTERLEAVED |
+		SNDRV_PCM_INFO_MMAP |
+		SNDRV_PCM_INFO_MMAP_VALID |
+		SNDRV_PCM_INFO_BLOCK_TRANSFER |
+		SNDRV_PCM_INFO_PAUSE |
+		SNDRV_PCM_INFO_NO_PERIOD_WAKEUP,
+	.buffer_bytes_max	= KIRKWOOD_SND_MAX_BUFFER_BYTES,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.period_bytes_min	= KIRKWOOD_SND_MIN_PERIOD_BYTES,
 	.period_bytes_max	= KIRKWOOD_SND_MAX_PERIOD_BYTES,
 	.periods_min		= KIRKWOOD_SND_MIN_PERIODS,
@@ -55,12 +79,18 @@ static struct snd_pcm_hardware kirkwood_dma_snd_hw = {
 	.fifo_size		= 0,
 };
 
+<<<<<<< HEAD
 static u64 kirkwood_dma_dmamask = DMA_BIT_MASK(32);
 
 static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
 {
 	struct kirkwood_dma_priv *prdata = dev_id;
 	struct kirkwood_dma_data *priv = prdata->data;
+=======
+static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
+{
+	struct kirkwood_dma_data *priv = dev_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mask, status, cause;
 
 	mask = readl(priv->io + KIRKWOOD_INT_MASK);
@@ -71,7 +101,10 @@ static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
 		printk(KERN_WARNING "%s: got err interrupt 0x%lx\n",
 				__func__, cause);
 		writel(cause, priv->io + KIRKWOOD_ERR_CAUSE);
+<<<<<<< HEAD
 		return IRQ_HANDLED;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* we've enabled only bytes interrupts ... */
@@ -86,10 +119,17 @@ static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
 	writel(status, priv->io + KIRKWOOD_INT_CAUSE);
 
 	if (status & KIRKWOOD_INT_CAUSE_PLAY_BYTES)
+<<<<<<< HEAD
 		snd_pcm_period_elapsed(prdata->play_stream);
 
 	if (status & KIRKWOOD_INT_CAUSE_REC_BYTES)
 		snd_pcm_period_elapsed(prdata->rec_stream);
+=======
+		snd_pcm_period_elapsed(priv->substream_play);
+
+	if (status & KIRKWOOD_INT_CAUSE_REC_BYTES)
+		snd_pcm_period_elapsed(priv->substream_rec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -107,7 +147,11 @@ kirkwood_dma_conf_mbus_windows(void __iomem *base, int win,
 
 	/* try to find matching cs for current dma address */
 	for (i = 0; i < dram->num_cs; i++) {
+<<<<<<< HEAD
 		const struct mbus_dram_window *cs = dram->cs + i;
+=======
+		const struct mbus_dram_window *cs = &dram->cs[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((cs->base & 0xffff0000) < (dma & 0xffff0000)) {
 			writel(cs->base & 0xffff0000,
 				base + KIRKWOOD_AUDIO_WIN_BASE_REG(win));
@@ -119,6 +163,7 @@ kirkwood_dma_conf_mbus_windows(void __iomem *base, int win,
 	}
 }
 
+<<<<<<< HEAD
 static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 {
 	int err;
@@ -132,6 +177,15 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 	unsigned long addr;
 
 	priv = snd_soc_dai_get_dma_data(cpu_dai, substream);
+=======
+static int kirkwood_dma_open(struct snd_soc_component *component,
+			     struct snd_pcm_substream *substream)
+{
+	int err;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_soc_set_runtime_hwparams(substream, &kirkwood_dma_snd_hw);
 
 	/* Ensure that all constraints linked to dma burst are fulfilled */
@@ -154,6 +208,7 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	if (prdata == NULL) {
 		prdata = kzalloc(sizeof(struct kirkwood_dma_priv), GFP_KERNEL);
 		if (prdata == NULL)
@@ -169,11 +224,19 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 		}
 
 		snd_soc_platform_set_drvdata(platform, prdata);
+=======
+	if (!priv->substream_play && !priv->substream_rec) {
+		err = request_irq(priv->irq, kirkwood_dma_irq, IRQF_SHARED,
+				  "kirkwood-i2s", priv);
+		if (err)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Enable Error interrupts. We're only ack'ing them but
 		 * it's useful for diagnostics
 		 */
+<<<<<<< HEAD
 		writel((unsigned long)-1, priv->io + KIRKWOOD_ERR_MASK);
 	}
 
@@ -187,11 +250,25 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 		prdata->rec_stream = substream;
 		kirkwood_dma_conf_mbus_windows(priv->io,
 			KIRKWOOD_RECORD_WIN, addr, dram);
+=======
+		writel((unsigned int)-1, priv->io + KIRKWOOD_ERR_MASK);
+	}
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+		if (priv->substream_play)
+			return -EBUSY;
+		priv->substream_play = substream;
+	} else {
+		if (priv->substream_rec)
+			return -EBUSY;
+		priv->substream_rec = substream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kirkwood_dma_close(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *soc_runtime = substream->private_data;
@@ -215,11 +292,30 @@ static int kirkwood_dma_close(struct snd_pcm_substream *substream)
 		free_irq(priv->irq, prdata);
 		kfree(prdata);
 		snd_soc_platform_set_drvdata(platform, NULL);
+=======
+static int kirkwood_dma_close(struct snd_soc_component *component,
+			      struct snd_pcm_substream *substream)
+{
+	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
+
+	if (!priv)
+		return 0;
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+		priv->substream_play = NULL;
+	else
+		priv->substream_rec = NULL;
+
+	if (!priv->substream_play && !priv->substream_rec) {
+		writel(0, priv->io + KIRKWOOD_ERR_MASK);
+		free_irq(priv->irq, priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kirkwood_dma_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params)
 {
@@ -247,6 +343,32 @@ static int kirkwood_dma_prepare(struct snd_pcm_substream *substream)
 
 	priv = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
+=======
+static int kirkwood_dma_hw_params(struct snd_soc_component *component,
+				  struct snd_pcm_substream *substream,
+				  struct snd_pcm_hw_params *params)
+{
+	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
+	const struct mbus_dram_target_info *dram = mv_mbus_dram_info();
+	unsigned long addr = substream->runtime->dma_addr;
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+		kirkwood_dma_conf_mbus_windows(priv->io,
+			KIRKWOOD_PLAYBACK_WIN, addr, dram);
+	else
+		kirkwood_dma_conf_mbus_windows(priv->io,
+			KIRKWOOD_RECORD_WIN, addr, dram);
+	return 0;
+}
+
+static int kirkwood_dma_prepare(struct snd_soc_component *component,
+				struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
+	unsigned long size, count;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* compute buffer size in term of "words" as requested in specs */
 	size = frames_to_bytes(runtime, runtime->buffer_size);
 	size = (size>>2)-1;
@@ -266,6 +388,7 @@ static int kirkwood_dma_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static snd_pcm_uframes_t kirkwood_dma_pointer(struct snd_pcm_substream
 						*substream)
 {
@@ -276,6 +399,15 @@ static snd_pcm_uframes_t kirkwood_dma_pointer(struct snd_pcm_substream
 
 	priv = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
+=======
+static snd_pcm_uframes_t kirkwood_dma_pointer(
+	struct snd_soc_component *component,
+	struct snd_pcm_substream *substream)
+{
+	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
+	snd_pcm_uframes_t count;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		count = bytes_to_frames(substream->runtime,
 			readl(priv->io + KIRKWOOD_PLAY_BYTE_COUNT));
@@ -286,6 +418,7 @@ static snd_pcm_uframes_t kirkwood_dma_pointer(struct snd_pcm_substream
 	return count;
 }
 
+<<<<<<< HEAD
 struct snd_pcm_ops kirkwood_dma_ops = {
 	.open =		kirkwood_dma_open,
 	.close =        kirkwood_dma_close,
@@ -339,10 +472,26 @@ static int kirkwood_dma_new(struct snd_soc_pcm_runtime *rtd)
 		if (ret)
 			return ret;
 	}
+=======
+static int kirkwood_dma_new(struct snd_soc_component *component,
+			    struct snd_soc_pcm_runtime *rtd)
+{
+	size_t size = kirkwood_dma_snd_hw.buffer_bytes_max;
+	struct snd_card *card = rtd->card->snd_card;
+	int ret;
+
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+
+	snd_pcm_set_managed_buffer_all(rtd->pcm, SNDRV_DMA_TYPE_DEV,
+				       card->dev, size, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void kirkwood_dma_free_dma_buffers(struct snd_pcm *pcm)
 {
 	struct snd_pcm_substream *substream;
@@ -396,3 +545,14 @@ MODULE_AUTHOR("Arnaud Patard <arnaud.patard@rtp-net.org>");
 MODULE_DESCRIPTION("Marvell Kirkwood Audio DMA module");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:kirkwood-pcm-audio");
+=======
+const struct snd_soc_component_driver kirkwood_soc_component = {
+	.name		= DRV_NAME,
+	.open		= kirkwood_dma_open,
+	.close		= kirkwood_dma_close,
+	.hw_params	= kirkwood_dma_hw_params,
+	.prepare	= kirkwood_dma_prepare,
+	.pointer	= kirkwood_dma_pointer,
+	.pcm_construct	= kirkwood_dma_new,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Header file for sonic.c
  *
@@ -109,6 +113,12 @@
 #define SONIC_CR_TXP            0x0002
 #define SONIC_CR_HTX            0x0001
 
+<<<<<<< HEAD
+=======
+#define SONIC_CR_ALL (SONIC_CR_LCAM | SONIC_CR_RRRA | \
+		      SONIC_CR_RXEN | SONIC_CR_TXP)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SONIC data configuration bits
  */
@@ -174,6 +184,10 @@
 #define SONIC_TCR_NCRS          0x0100
 #define SONIC_TCR_CRLS          0x0080
 #define SONIC_TCR_EXC           0x0040
+<<<<<<< HEAD
+=======
+#define SONIC_TCR_OWC           0x0020
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SONIC_TCR_PMB           0x0008
 #define SONIC_TCR_FU            0x0004
 #define SONIC_TCR_BCM           0x0002
@@ -273,8 +287,14 @@
 #define SONIC_NUM_RDS   SONIC_NUM_RRS /* number of receive descriptors */
 #define SONIC_NUM_TDS   16            /* number of transmit descriptors */
 
+<<<<<<< HEAD
 #define SONIC_RDS_MASK  (SONIC_NUM_RDS-1)
 #define SONIC_TDS_MASK  (SONIC_NUM_TDS-1)
+=======
+#define SONIC_RRS_MASK  (SONIC_NUM_RRS - 1)
+#define SONIC_RDS_MASK  (SONIC_NUM_RDS - 1)
+#define SONIC_TDS_MASK  (SONIC_NUM_TDS - 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SONIC_RBSIZE	1520          /* size of one resource buffer */
 
@@ -311,15 +331,25 @@ struct sonic_local {
 	u32 rda_laddr;              /* logical DMA address of RDA */
 	dma_addr_t rx_laddr[SONIC_NUM_RRS]; /* logical DMA addresses of rx skbuffs */
 	dma_addr_t tx_laddr[SONIC_NUM_TDS]; /* logical DMA addresses of tx skbuffs */
+<<<<<<< HEAD
 	unsigned int rra_end;
 	unsigned int cur_rwp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cur_rx;
 	unsigned int cur_tx;           /* first unacked transmit packet */
 	unsigned int eol_rx;
 	unsigned int eol_tx;           /* last unacked transmit packet */
+<<<<<<< HEAD
 	unsigned int next_tx;          /* next free TD */
 	struct device *device;         /* generic device */
 	struct net_device_stats stats;
+=======
+	int msg_enable;
+	struct device *device;         /* generic device */
+	struct net_device_stats stats;
+	spinlock_t lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define TX_TIMEOUT (3 * HZ)
@@ -333,19 +363,31 @@ static void sonic_rx(struct net_device *dev);
 static int sonic_close(struct net_device *dev);
 static struct net_device_stats *sonic_get_stats(struct net_device *dev);
 static void sonic_multicast_list(struct net_device *dev);
+<<<<<<< HEAD
 static int sonic_init(struct net_device *dev);
 static void sonic_tx_timeout(struct net_device *dev);
+=======
+static int sonic_init(struct net_device *dev, bool may_sleep);
+static void sonic_tx_timeout(struct net_device *dev, unsigned int txqueue);
+static void sonic_msg_init(struct net_device *dev);
+static int sonic_alloc_descriptors(struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Internal inlines for reading/writing DMA buffers.  Note that bus
    size and endianness matter here, whereas they don't for registers,
    as far as we can tell. */
 /* OpenBSD calls this "SWO".  I'd like to think that sonic_buf_put()
    is a much better name. */
+<<<<<<< HEAD
 static inline void sonic_buf_put(void* base, int bitmode,
+=======
+static inline void sonic_buf_put(u16 *base, int bitmode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 int offset, __u16 val)
 {
 	if (bitmode)
 #ifdef __BIG_ENDIAN
+<<<<<<< HEAD
 		((__u16 *) base + (offset*2))[1] = val;
 #else
 		((__u16 *) base + (offset*2))[0] = val;
@@ -355,16 +397,36 @@ static inline void sonic_buf_put(void* base, int bitmode,
 }
 
 static inline __u16 sonic_buf_get(void* base, int bitmode,
+=======
+		__raw_writew(val, base + (offset * 2) + 1);
+#else
+		__raw_writew(val, base + (offset * 2) + 0);
+#endif
+	else
+		__raw_writew(val, base + (offset * 1) + 0);
+}
+
+static inline __u16 sonic_buf_get(u16 *base, int bitmode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  int offset)
 {
 	if (bitmode)
 #ifdef __BIG_ENDIAN
+<<<<<<< HEAD
 		return ((volatile __u16 *) base + (offset*2))[1];
 #else
 		return ((volatile __u16 *) base + (offset*2))[0];
 #endif
 	else
 		return ((volatile __u16 *) base)[offset];
+=======
+		return __raw_readw(base + (offset * 2) + 1);
+#else
+		return __raw_readw(base + (offset * 2) + 0);
+#endif
+	else
+		return __raw_readw(base + (offset * 1) + 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Inlines that you should actually use for reading/writing DMA buffers */
@@ -444,7 +506,27 @@ static inline __u16 sonic_rra_get(struct net_device* dev, int entry,
 			     (entry * SIZEOF_SONIC_RR) + offset);
 }
 
+<<<<<<< HEAD
 static const char *version =
+=======
+static inline u16 sonic_rr_addr(struct net_device *dev, int entry)
+{
+	struct sonic_local *lp = netdev_priv(dev);
+
+	return lp->rra_laddr +
+	       entry * SIZEOF_SONIC_RR * SONIC_BUS_SCALE(lp->dma_bitmode);
+}
+
+static inline u16 sonic_rr_entry(struct net_device *dev, u16 addr)
+{
+	struct sonic_local *lp = netdev_priv(dev);
+
+	return (addr - (u16)lp->rra_laddr) / (SIZEOF_SONIC_RR *
+					      SONIC_BUS_SCALE(lp->dma_bitmode));
+}
+
+static const char version[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "sonic.c:v0.92 20.9.98 tsbogend@alpha.franken.de\n";
 
 #endif /* SONIC_H */

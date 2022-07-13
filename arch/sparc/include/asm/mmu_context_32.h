@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 #ifndef __SPARC_MMU_CONTEXT_H
 #define __SPARC_MMU_CONTEXT_H
 
 #include <asm/btfixup.h>
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __SPARC_MMU_CONTEXT_H
+#define __SPARC_MMU_CONTEXT_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 #include <asm-generic/mm_hooks.h>
 
+<<<<<<< HEAD
 static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 {
 }
@@ -19,10 +27,20 @@ static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 
 /*
  * Destroy a dead context.  This occurs when mmput drops the
+=======
+/* Initialize a new mmu context.  This is invoked when a new
+ * address space instance (unique or shared) is instantiated.
+ */
+#define init_new_context init_new_context
+int init_new_context(struct task_struct *tsk, struct mm_struct *mm);
+
+/* Destroy a dead context.  This occurs when mmput drops the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mm_users count to zero, the mmaps have been released, and
  * all the page tables have been flushed.  Our job is to destroy
  * any remaining processor-specific state.
  */
+<<<<<<< HEAD
 BTFIXUPDEF_CALL(void, destroy_context, struct mm_struct *)
 
 #define destroy_context(mm) BTFIXUP_CALL(destroy_context)(mm)
@@ -33,10 +51,23 @@ BTFIXUPDEF_CALL(void, switch_mm, struct mm_struct *, struct mm_struct *, struct 
 #define switch_mm(old_mm, mm, tsk) BTFIXUP_CALL(switch_mm)(old_mm, mm, tsk)
 
 #define deactivate_mm(tsk,mm)	do { } while (0)
+=======
+#define destroy_context destroy_context
+void destroy_context(struct mm_struct *mm);
+
+/* Switch the current MM context. */
+void switch_mm(struct mm_struct *old_mm, struct mm_struct *mm,
+	       struct task_struct *tsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Activate a new MM instance for the current task. */
 #define activate_mm(active_mm, mm) switch_mm((active_mm), (mm), NULL)
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/mmu_context.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__ASSEMBLY__) */
 
 #endif /* !(__SPARC_MMU_CONTEXT_H) */

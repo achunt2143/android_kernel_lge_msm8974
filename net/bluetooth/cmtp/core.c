@@ -53,6 +53,7 @@ static LIST_HEAD(cmtp_session_list);
 static struct cmtp_session *__cmtp_get_session(bdaddr_t *bdaddr)
 {
 	struct cmtp_session *session;
+<<<<<<< HEAD
 	struct list_head *p;
 
 	BT_DBG("");
@@ -62,27 +63,50 @@ static struct cmtp_session *__cmtp_get_session(bdaddr_t *bdaddr)
 		if (!bacmp(bdaddr, &session->bdaddr))
 			return session;
 	}
+=======
+
+	BT_DBG("");
+
+	list_for_each_entry(session, &cmtp_session_list, list)
+		if (!bacmp(bdaddr, &session->bdaddr))
+			return session;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 static void __cmtp_link_session(struct cmtp_session *session)
 {
+<<<<<<< HEAD
 	__module_get(THIS_MODULE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&session->list, &cmtp_session_list);
 }
 
 static void __cmtp_unlink_session(struct cmtp_session *session)
 {
 	list_del(&session->list);
+<<<<<<< HEAD
 	module_put(THIS_MODULE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __cmtp_copy_session(struct cmtp_session *session, struct cmtp_conninfo *ci)
 {
+<<<<<<< HEAD
 	memset(ci, 0, sizeof(*ci));
 	bacpy(&ci->bdaddr, &session->bdaddr);
 
 	ci->flags = session->flags;
+=======
+	u32 valid_flags = BIT(CMTP_LOOPBACK);
+	memset(ci, 0, sizeof(*ci));
+	bacpy(&ci->bdaddr, &session->bdaddr);
+
+	ci->flags = session->flags & valid_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ci->state = session->state;
 
 	ci->num = session->num;
@@ -125,7 +149,11 @@ static inline void cmtp_add_msgpart(struct cmtp_session *session, int id, const 
 	if (skb && (skb->len > 0))
 		skb_copy_from_linear_data(skb, skb_put(nskb, skb->len), skb->len);
 
+<<<<<<< HEAD
 	memcpy(skb_put(nskb, count), buf, count);
+=======
+	skb_put_data(nskb, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session->reassembly[id] = nskb;
 
@@ -181,8 +209,12 @@ static inline int cmtp_recv_frame(struct cmtp_session *session, struct sk_buff *
 			cmtp_add_msgpart(session, id, skb->data + hdrlen, len);
 			break;
 		default:
+<<<<<<< HEAD
 			if (session->reassembly[id] != NULL)
 				kfree_skb(session->reassembly[id]);
+=======
+			kfree_skb(session->reassembly[id]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			session->reassembly[id] = NULL;
 			break;
 		}
@@ -284,17 +316,28 @@ static int cmtp_session(void *arg)
 	struct cmtp_session *session = arg;
 	struct sock *sk = session->sock->sk;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	wait_queue_t wait;
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("session %p", session);
 
 	set_user_nice(current, -15);
 
+<<<<<<< HEAD
 	init_waitqueue_entry(&wait, current);
 	add_wait_queue(sk_sleep(sk), &wait);
 	while (!kthread_should_stop()) {
 		set_current_state(TASK_INTERRUPTIBLE);
 
+=======
+	add_wait_queue(sk_sleep(sk), &wait);
+	while (1) {
+		if (atomic_read(&session->terminate))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sk->sk_state != BT_CONNECTED)
 			break;
 
@@ -308,14 +351,27 @@ static int cmtp_session(void *arg)
 
 		cmtp_process_transmit(session);
 
+<<<<<<< HEAD
 		schedule();
 	}
 	set_current_state(TASK_RUNNING);
+=======
+		/*
+		 * wait_woken() performs the necessary memory barriers
+		 * for us; see the header comment for this primitive.
+		 */
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_wait_queue(sk_sleep(sk), &wait);
 
 	down_write(&cmtp_session_sem);
 
+<<<<<<< HEAD
 	if (!(session->flags & (1 << CMTP_LOOPBACK)))
+=======
+	if (!(session->flags & BIT(CMTP_LOOPBACK)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmtp_detach_device(session);
 
 	fput(session->sock->file);
@@ -325,11 +381,19 @@ static int cmtp_session(void *arg)
 	up_write(&cmtp_session_sem);
 
 	kfree(session);
+<<<<<<< HEAD
+=======
+	module_put_and_kthread_exit(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 {
+<<<<<<< HEAD
+=======
+	u32 valid_flags = BIT(CMTP_LOOPBACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cmtp_session *session, *s;
 	int i, err;
 
@@ -338,18 +402,29 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 	if (!l2cap_is_socket(sock))
 		return -EBADFD;
 
+<<<<<<< HEAD
+=======
+	if (req->flags & ~valid_flags)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	session = kzalloc(sizeof(struct cmtp_session), GFP_KERNEL);
 	if (!session)
 		return -ENOMEM;
 
 	down_write(&cmtp_session_sem);
 
+<<<<<<< HEAD
 	s = __cmtp_get_session(&bt_sk(sock->sk)->dst);
+=======
+	s = __cmtp_get_session(&l2cap_pi(sock->sk)->chan->dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s && s->state == BT_CONNECTED) {
 		err = -EEXIST;
 		goto failed;
 	}
 
+<<<<<<< HEAD
 	bacpy(&session->bdaddr, &bt_sk(sock->sk)->dst);
 
 	session->mtu = min_t(uint, l2cap_pi(sock->sk)->omtu, l2cap_pi(sock->sk)->imtu);
@@ -357,6 +432,16 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 	BT_DBG("mtu %d", session->mtu);
 
 	sprintf(session->name, "%s", batostr(&bt_sk(sock->sk)->dst));
+=======
+	bacpy(&session->bdaddr, &l2cap_pi(sock->sk)->chan->dst);
+
+	session->mtu = min_t(uint, l2cap_pi(sock->sk)->chan->omtu,
+					l2cap_pi(sock->sk)->chan->imtu);
+
+	BT_DBG("mtu %d", session->mtu);
+
+	sprintf(session->name, "%pMR", &session->bdaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session->sock  = sock;
 	session->state = BT_CONFIG;
@@ -376,25 +461,52 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 
 	__cmtp_link_session(session);
 
+<<<<<<< HEAD
 	session->task = kthread_run(cmtp_session, session, "kcmtpd_ctr_%d",
 								session->num);
 	if (IS_ERR(session->task)) {
+=======
+	__module_get(THIS_MODULE);
+	session->task = kthread_run(cmtp_session, session, "kcmtpd_ctr_%d",
+								session->num);
+	if (IS_ERR(session->task)) {
+		module_put(THIS_MODULE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = PTR_ERR(session->task);
 		goto unlink;
 	}
 
+<<<<<<< HEAD
 	if (!(session->flags & (1 << CMTP_LOOPBACK))) {
 		err = cmtp_attach_device(session);
 		if (err < 0)
 			goto detach;
+=======
+	if (!(session->flags & BIT(CMTP_LOOPBACK))) {
+		err = cmtp_attach_device(session);
+		if (err < 0) {
+			/* Caller will call fput in case of failure, and so
+			 * will cmtp_session kthread.
+			 */
+			get_file(session->sock->file);
+
+			atomic_inc(&session->terminate);
+			wake_up_interruptible(sk_sleep(session->sock->sk));
+			up_write(&cmtp_session_sem);
+			return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	up_write(&cmtp_session_sem);
 	return 0;
 
+<<<<<<< HEAD
 detach:
 	cmtp_detach_device(session);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unlink:
 	__cmtp_unlink_session(session);
 
@@ -406,11 +518,21 @@ failed:
 
 int cmtp_del_connection(struct cmtp_conndel_req *req)
 {
+<<<<<<< HEAD
+=======
+	u32 valid_flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cmtp_session *session;
 	int err = 0;
 
 	BT_DBG("");
 
+<<<<<<< HEAD
+=======
+	if (req->flags & ~valid_flags)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_read(&cmtp_session_sem);
 
 	session = __cmtp_get_session(&req->bdaddr);
@@ -419,7 +541,17 @@ int cmtp_del_connection(struct cmtp_conndel_req *req)
 		skb_queue_purge(&session->transmit);
 
 		/* Stop session thread */
+<<<<<<< HEAD
 		kthread_stop(session->task);
+=======
+		atomic_inc(&session->terminate);
+
+		/*
+		 * See the comment preceding the call to wait_woken()
+		 * in cmtp_session().
+		 */
+		wake_up_interruptible(sk_sleep(session->sock->sk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		err = -ENOENT;
 
@@ -429,19 +561,29 @@ int cmtp_del_connection(struct cmtp_conndel_req *req)
 
 int cmtp_get_connlist(struct cmtp_connlist_req *req)
 {
+<<<<<<< HEAD
 	struct list_head *p;
+=======
+	struct cmtp_session *session;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0, n = 0;
 
 	BT_DBG("");
 
 	down_read(&cmtp_session_sem);
 
+<<<<<<< HEAD
 	list_for_each(p, &cmtp_session_list) {
 		struct cmtp_session *session;
 		struct cmtp_conninfo ci;
 
 		session = list_entry(p, struct cmtp_session, list);
 
+=======
+	list_for_each_entry(session, &cmtp_session_list, list) {
+		struct cmtp_conninfo ci;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__cmtp_copy_session(session, &ci);
 
 		if (copy_to_user(req->ci, &ci, sizeof(ci))) {
@@ -482,9 +624,13 @@ static int __init cmtp_init(void)
 {
 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
 
+<<<<<<< HEAD
 	cmtp_init_sockets();
 
 	return 0;
+=======
+	return cmtp_init_sockets();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit cmtp_exit(void)

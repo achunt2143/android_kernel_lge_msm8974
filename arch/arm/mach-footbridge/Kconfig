@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 if ARCH_FOOTBRIDGE
 
 menu "Footbridge Implementations"
@@ -53,6 +54,32 @@ config ARCH_EBSA285_HOST
 	select ISA
 	select ISA_DMA
 	select PCI
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+menuconfig ARCH_FOOTBRIDGE
+	bool "FootBridge Implementations"
+	depends on ARCH_MULTI_V4 && !(ARCH_MULTI_V4T || ARCH_MULTI_V5)
+	depends on !(ARCH_MOXART || ARCH_GEMINI || ARCH_SA1100)
+	depends on ATAGS
+	depends on CPU_LITTLE_ENDIAN
+	depends on MMU
+	select ARCH_NO_SG_CHAIN
+	select CPU_SA110
+	select FOOTBRIDGE
+	select NEED_MACH_MEMORY_H
+	help
+	  Support for systems based on the DC21285 companion chip
+	  ("FootBridge"), such as the Simtec CATS and the Rebel NetWinder.
+
+if ARCH_FOOTBRIDGE
+
+config ARCH_EBSA285_HOST
+	bool "EBSA285 (host mode)"
+	select ARCH_EBSA285
+	select ISA
+	select ARCH_MAY_HAVE_PC_FDC
+	select FORCE_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you intend to run this kernel on the EBSA285 card
 	  in host ("central function") mode.
@@ -63,10 +90,15 @@ config ARCH_NETWINDER
 	bool "NetWinder"
 	select CLKEVT_I8253
 	select CLKSRC_I8253
+<<<<<<< HEAD
 	select FOOTBRIDGE_HOST
 	select ISA
 	select ISA_DMA
 	select PCI
+=======
+	select ISA
+	select FORCE_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you intend to run this kernel on the Rebel.COM
 	  NetWinder.  Information about this machine can be found at:
@@ -75,6 +107,7 @@ config ARCH_NETWINDER
 
 	  Saying N will reduce the size of the Footbridge kernel.
 
+<<<<<<< HEAD
 endmenu
 
 # Footbridge support
@@ -92,6 +125,15 @@ config FOOTBRIDGE_ADDIN
 # EBSA285 board in either host or addin mode
 config ARCH_EBSA285
 	select ARCH_MAY_HAVE_PC_FDC
+=======
+# Footbridge support
+config FOOTBRIDGE
+	def_bool y
+	select ARCH_MIGHT_HAVE_PC_SERIO
+	select ISA_DMA_API
+
+config ARCH_EBSA285
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool
 
 endif

@@ -12,6 +12,7 @@
 #ifndef __PKTCDVD_H
 #define __PKTCDVD_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 /*
@@ -108,12 +109,18 @@ struct pkt_ctrl_command {
 #define PACKET_CTRL_CMD		_IOWR(PACKET_IOCTL_MAGIC, 1, struct pkt_ctrl_command)
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/completion.h>
 #include <linux/cdrom.h>
 #include <linux/kobject.h>
 #include <linux/sysfs.h>
 #include <linux/mempool.h>
+<<<<<<< HEAD
+=======
+#include <uapi/linux/pktcdvd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* default bio write queue congestion marks */
 #define PKT_WRITE_CONGESTION_ON    10000
@@ -247,6 +254,7 @@ struct packet_stacked_data
 };
 #define PSD_POOL_SIZE		64
 
+<<<<<<< HEAD
 struct pktcdvd_kobj
 {
 	struct kobject		kobj;
@@ -260,6 +268,14 @@ struct pktcdvd_device
 	struct block_device	*bdev;		/* dev attached */
 	dev_t			pkt_dev;	/* our dev */
 	char			name[20];
+=======
+struct pktcdvd_device
+{
+	struct file		*bdev_file;	/* dev attached */
+	/* handle acquired for bdev during pkt_open_dev() */
+	struct file		*f_open_bdev;
+	dev_t			pkt_dev;	/* our dev */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct packet_settings	settings;
 	struct packet_stats	stats;
 	int			refcnt;		/* Open count */
@@ -278,10 +294,19 @@ struct pktcdvd_device
 	spinlock_t		lock;		/* Serialize access to bio_queue */
 	struct rb_root		bio_queue;	/* Work queue of bios we need to handle */
 	int			bio_queue_size;	/* Number of nodes in bio_queue */
+<<<<<<< HEAD
 	sector_t		current_sector;	/* Keep track of where the elevator is */
 	atomic_t		scan_queue;	/* Set to non-zero when pkt_handle_queue */
 						/* needs to be run. */
 	mempool_t		*rb_pool;	/* mempool for pkt_rb_node allocations */
+=======
+	bool			congested;	/* Someone is waiting for bio_queue_size
+						 * to drop. */
+	sector_t		current_sector;	/* Keep track of where the elevator is */
+	atomic_t		scan_queue;	/* Set to non-zero when pkt_handle_queue */
+						/* needs to be run. */
+	mempool_t		rb_pool;	/* mempool for pkt_rb_node allocations */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct packet_iosched   iosched;
 	struct gendisk		*disk;
@@ -290,13 +315,19 @@ struct pktcdvd_device
 	int			write_congestion_on;
 
 	struct device		*dev;		/* sysfs pktcdvd[0-7] dev */
+<<<<<<< HEAD
 	struct pktcdvd_kobj	*kobj_stat;	/* sysfs pktcdvd[0-7]/stat/     */
 	struct pktcdvd_kobj	*kobj_wqueue;	/* sysfs pktcdvd[0-7]/write_queue/ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct dentry		*dfs_d_root;	/* debugfs: devname directory */
 	struct dentry		*dfs_f_info;	/* debugfs: info file */
 };
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __PKTCDVD_H */

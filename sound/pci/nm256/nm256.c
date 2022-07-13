@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Driver for NeoMagic 256AV and 256ZX chipsets.
  * Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>
@@ -7,6 +11,7 @@
  * so I just put my acknoledgment to him/her here.
  * The original author's web page is found at
  *	http://www.uglx.org/sony.html
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +30,11 @@
  */
   
 #include <asm/io.h>
+=======
+ */
+  
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -46,8 +56,11 @@
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("NeoMagic NM256AV/ZX");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{NeoMagic,NM256AV},"
 		"{NeoMagic,NM256ZX}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * some compile conditions.
@@ -209,11 +222,17 @@ struct nm256 {
 	struct snd_card *card;
 
 	void __iomem *cport;		/* control port */
+<<<<<<< HEAD
 	struct resource *res_cport;	/* its resource */
 	unsigned long cport_addr;	/* physical address */
 
 	void __iomem *buffer;		/* buffer */
 	struct resource *res_buffer;	/* its resource */
+=======
+	unsigned long cport_addr;	/* physical address */
+
+	void __iomem *buffer;		/* buffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long buffer_addr;	/* buffer phyiscal address */
 
 	u32 buffer_start;		/* start offset from pci resource 0 */
@@ -262,7 +281,11 @@ struct nm256 {
 /*
  * PCI ids
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_nm256_ids) = {
+=======
+static const struct pci_device_id snd_nm256_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VDEVICE(NEOMAGIC, PCI_DEVICE_ID_NEOMAGIC_NM256AV_AUDIO), 0},
 	{PCI_VDEVICE(NEOMAGIC, PCI_DEVICE_ID_NEOMAGIC_NM256ZX_AUDIO), 0},
 	{PCI_VDEVICE(NEOMAGIC, PCI_DEVICE_ID_NEOMAGIC_NM256XL_PLUS_AUDIO), 0},
@@ -313,12 +336,21 @@ snd_nm256_writel(struct nm256 *chip, int offset, u32 val)
 }
 
 static inline void
+<<<<<<< HEAD
 snd_nm256_write_buffer(struct nm256 *chip, void *src, int offset, int size)
+=======
+snd_nm256_write_buffer(struct nm256 *chip, const void *src, int offset, int size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	offset -= chip->buffer_start;
 #ifdef CONFIG_SND_DEBUG
 	if (offset < 0 || offset >= chip->buffer_size) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "write_buffer invalid offset = %d size = %d\n",
+=======
+		dev_err(chip->card->dev,
+			"write_buffer invalid offset = %d size = %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   offset, size);
 		return;
 	}
@@ -366,7 +398,12 @@ snd_nm256_load_coefficient(struct nm256 *chip, int stream, int number)
 		 NM_RECORD_REG_OFFSET : NM_PLAYBACK_REG_OFFSET);
 
 	if (snd_nm256_readb(chip, poffset) & 1) {
+<<<<<<< HEAD
 		snd_printd("NM256: Engine was enabled while loading coefficients!\n");
+=======
+		dev_dbg(chip->card->dev,
+			"NM256: Engine was enabled while loading coefficients!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -396,10 +433,17 @@ snd_nm256_load_coefficient(struct nm256 *chip, int stream, int number)
 
 
 /* The actual rates supported by the card. */
+<<<<<<< HEAD
 static unsigned int samplerates[8] = {
 	8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000,
 };
 static struct snd_pcm_hw_constraint_list constraints_rates = {
+=======
+static const unsigned int samplerates[8] = {
+	8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000,
+};
+static const struct snd_pcm_hw_constraint_list constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(samplerates), 
 	.list = samplerates,
 	.mask = 0,
@@ -466,11 +510,20 @@ static int snd_nm256_acquire_irq(struct nm256 *chip)
 	if (chip->irq < 0) {
 		if (request_irq(chip->pci->irq, chip->interrupt, IRQF_SHARED,
 				KBUILD_MODNAME, chip)) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "unable to grab IRQ %d\n", chip->pci->irq);
+=======
+			dev_err(chip->card->dev,
+				"unable to grab IRQ %d\n", chip->pci->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&chip->irq_mutex);
 			return -EBUSY;
 		}
 		chip->irq = chip->pci->irq;
+<<<<<<< HEAD
+=======
+		chip->card->sync_irq = chip->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	chip->irq_acks++;
 	mutex_unlock(&chip->irq_mutex);
@@ -486,6 +539,10 @@ static void snd_nm256_release_irq(struct nm256 *chip)
 	if (chip->irq_acks == 0 && chip->irq >= 0) {
 		free_irq(chip->irq, chip);
 		chip->irq = -1;
+<<<<<<< HEAD
+=======
+		chip->card->sync_irq = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&chip->irq_mutex);
 }
@@ -569,7 +626,11 @@ snd_nm256_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_RESUME:
 		s->suspended = 0;
+<<<<<<< HEAD
 		/* fallthru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_TRIGGER_START:
 		if (! s->running) {
 			snd_nm256_playback_start(chip, s, substream);
@@ -578,7 +639,11 @@ snd_nm256_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 		s->suspended = 1;
+<<<<<<< HEAD
 		/* fallthru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_TRIGGER_STOP:
 		if (s->running) {
 			snd_nm256_playback_stop(chip);
@@ -692,6 +757,7 @@ snd_nm256_capture_pointer(struct snd_pcm_substream *substream)
  */
 static int
 snd_nm256_playback_silence(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			   int channel, /* not used (interleaved data) */
 			   snd_pcm_uframes_t pos,
 			   snd_pcm_uframes_t count)
@@ -700,12 +766,20 @@ snd_nm256_playback_silence(struct snd_pcm_substream *substream,
 	struct nm256_stream *s = runtime->private_data;
 	count = frames_to_bytes(runtime, count);
 	pos = frames_to_bytes(runtime, pos);
+=======
+			   int channel, unsigned long pos, unsigned long count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct nm256_stream *s = runtime->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset_io(s->bufptr + pos, 0, count);
 	return 0;
 }
 
 static int
 snd_nm256_playback_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			int channel, /* not used (interleaved data) */
 			snd_pcm_uframes_t pos,
 			void __user *src,
@@ -718,6 +792,15 @@ snd_nm256_playback_copy(struct snd_pcm_substream *substream,
 	if (copy_from_user_toio(s->bufptr + pos, src, count))
 		return -EFAULT;
 	return 0;
+=======
+			int channel, unsigned long pos,
+			struct iov_iter *src, unsigned long count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct nm256_stream *s = runtime->private_data;
+
+	return copy_from_iter_toio(s->bufptr + pos, src, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -725,6 +808,7 @@ snd_nm256_playback_copy(struct snd_pcm_substream *substream,
  */
 static int
 snd_nm256_capture_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 		       int channel, /* not used (interleaved data) */
 		       snd_pcm_uframes_t pos,
 		       void __user *dst,
@@ -737,6 +821,15 @@ snd_nm256_capture_copy(struct snd_pcm_substream *substream,
 	if (copy_to_user_fromio(dst, s->bufptr + pos, count))
 		return -EFAULT;
 	return 0;
+=======
+		       int channel, unsigned long pos,
+		       struct iov_iter *dst, unsigned long count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct nm256_stream *s = runtime->private_data;
+
+	return copy_to_iter_fromio(dst, s->bufptr + pos, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* !__i386__ */
@@ -779,7 +872,11 @@ snd_nm256_capture_update(struct nm256 *chip)
 /*
  * hardware info
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_nm256_playback =
+=======
+static const struct snd_pcm_hardware snd_nm256_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			SNDRV_PCM_INFO_MMAP_IOMEM |SNDRV_PCM_INFO_MMAP_VALID |
 				SNDRV_PCM_INFO_INTERLEAVED |
@@ -798,7 +895,11 @@ static struct snd_pcm_hardware snd_nm256_playback =
 	.period_bytes_max =	128 * 1024,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_nm256_capture =
+=======
+static const struct snd_pcm_hardware snd_nm256_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			SNDRV_PCM_INFO_MMAP_IOMEM | SNDRV_PCM_INFO_MMAP_VALID |
 				SNDRV_PCM_INFO_INTERLEAVED |
@@ -832,7 +933,11 @@ static int snd_nm256_pcm_hw_params(struct snd_pcm_substream *substream,
  */
 static void snd_nm256_setup_stream(struct nm256 *chip, struct nm256_stream *s,
 				   struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 				   struct snd_pcm_hardware *hw_ptr)
+=======
+				   const struct snd_pcm_hardware *hw_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
@@ -899,25 +1004,41 @@ snd_nm256_capture_close(struct snd_pcm_substream *substream)
 /*
  * create a pcm instance
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_nm256_playback_ops = {
 	.open =		snd_nm256_playback_open,
 	.close =	snd_nm256_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_nm256_playback_ops = {
+	.open =		snd_nm256_playback_open,
+	.close =	snd_nm256_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_nm256_pcm_hw_params,
 	.prepare =	snd_nm256_pcm_prepare,
 	.trigger =	snd_nm256_playback_trigger,
 	.pointer =	snd_nm256_playback_pointer,
 #ifndef __i386__
 	.copy =		snd_nm256_playback_copy,
+<<<<<<< HEAD
 	.silence =	snd_nm256_playback_silence,
+=======
+	.fill_silence =	snd_nm256_playback_silence,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_nm256_capture_ops = {
 	.open =		snd_nm256_capture_open,
 	.close =	snd_nm256_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_nm256_capture_ops = {
+	.open =		snd_nm256_capture_open,
+	.close =	snd_nm256_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_nm256_pcm_hw_params,
 	.prepare =	snd_nm256_pcm_prepare,
 	.trigger =	snd_nm256_capture_trigger,
@@ -928,7 +1049,11 @@ static struct snd_pcm_ops snd_nm256_capture_ops = {
 	.mmap =		snd_pcm_lib_mmap_iomem,
 };
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_nm256_pcm(struct nm256 *chip, int device)
 {
 	struct snd_pcm *pcm;
@@ -1039,7 +1164,11 @@ snd_nm256_interrupt(int irq, void *dev_id)
 	if (status & NM_MISC_INT_1) {
 		status &= ~NM_MISC_INT_1;
 		NM_ACK_INT(chip, NM_MISC_INT_1);
+<<<<<<< HEAD
 		snd_printd("NM256: Got misc interrupt #1\n");
+=======
+		dev_dbg(chip->card->dev, "NM256: Got misc interrupt #1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_nm256_writew(chip, NM_INT_REG, 0x8000);
 		cbyte = snd_nm256_readb(chip, 0x400);
 		snd_nm256_writeb(chip, 0x400, cbyte | 2);
@@ -1048,14 +1177,23 @@ snd_nm256_interrupt(int irq, void *dev_id)
 	if (status & NM_MISC_INT_2) {
 		status &= ~NM_MISC_INT_2;
 		NM_ACK_INT(chip, NM_MISC_INT_2);
+<<<<<<< HEAD
 		snd_printd("NM256: Got misc interrupt #2\n");
+=======
+		dev_dbg(chip->card->dev, "NM256: Got misc interrupt #2\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cbyte = snd_nm256_readb(chip, 0x400);
 		snd_nm256_writeb(chip, 0x400, cbyte & ~2);
 	}
 
 	/* Unknown interrupt. */
 	if (status) {
+<<<<<<< HEAD
 		snd_printd("NM256: Fire in the hole! Unknown status 0x%x\n",
+=======
+		dev_dbg(chip->card->dev,
+			"NM256: Fire in the hole! Unknown status 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   status);
 		/* Pray. */
 		NM_ACK_INT(chip, status);
@@ -1104,7 +1242,11 @@ snd_nm256_interrupt_zx(int irq, void *dev_id)
 	if (status & NM2_MISC_INT_1) {
 		status &= ~NM2_MISC_INT_1;
 		NM2_ACK_INT(chip, NM2_MISC_INT_1);
+<<<<<<< HEAD
 		snd_printd("NM256: Got misc interrupt #1\n");
+=======
+		dev_dbg(chip->card->dev, "NM256: Got misc interrupt #1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cbyte = snd_nm256_readb(chip, 0x400);
 		snd_nm256_writeb(chip, 0x400, cbyte | 2);
 	}
@@ -1112,14 +1254,23 @@ snd_nm256_interrupt_zx(int irq, void *dev_id)
 	if (status & NM2_MISC_INT_2) {
 		status &= ~NM2_MISC_INT_2;
 		NM2_ACK_INT(chip, NM2_MISC_INT_2);
+<<<<<<< HEAD
 		snd_printd("NM256: Got misc interrupt #2\n");
+=======
+		dev_dbg(chip->card->dev, "NM256: Got misc interrupt #2\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cbyte = snd_nm256_readb(chip, 0x400);
 		snd_nm256_writeb(chip, 0x400, cbyte & ~2);
 	}
 
 	/* Unknown interrupt. */
 	if (status) {
+<<<<<<< HEAD
 		snd_printd("NM256: Fire in the hole! Unknown status 0x%x\n",
+=======
+		dev_dbg(chip->card->dev,
+			"NM256: Fire in the hole! Unknown status 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   status);
 		/* Pray. */
 		NM2_ACK_INT(chip, status);
@@ -1171,7 +1322,11 @@ struct initialValues {
 	unsigned short value;
 };
 
+<<<<<<< HEAD
 static struct initialValues nm256_ac97_init_val[] =
+=======
+static const struct initialValues nm256_ac97_init_val[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{ AC97_MASTER, 		0x8000 },
 	{ AC97_HEADPHONE,	0x8000 },
@@ -1245,11 +1400,19 @@ snd_nm256_ac97_write(struct snd_ac97 *ac97,
 			return;
 		}
 	}
+<<<<<<< HEAD
 	snd_printd("nm256: ac97 codec not ready..\n");
 }
 
 /* static resolution table */
 static struct snd_ac97_res_table nm256_res_table[] = {
+=======
+	dev_dbg(chip->card->dev, "nm256: ac97 codec not ready..\n");
+}
+
+/* static resolution table */
+static const struct snd_ac97_res_table nm256_res_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ AC97_MASTER, 0x1f1f },
 	{ AC97_HEADPHONE, 0x1f1f },
 	{ AC97_MASTER_MONO, 0x001f },
@@ -1295,24 +1458,43 @@ snd_nm256_ac97_reset(struct snd_ac97 *ac97)
 }
 
 /* create an ac97 mixer interface */
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_nm256_mixer(struct nm256 *chip)
 {
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
 	int err;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.reset = snd_nm256_ac97_reset,
 		.write = snd_nm256_ac97_write,
 		.read = snd_nm256_ac97_read,
 	};
 
+<<<<<<< HEAD
 	chip->ac97_regs = kcalloc(ARRAY_SIZE(nm256_ac97_init_val),
 				  sizeof(short), GFP_KERNEL);
 	if (! chip->ac97_regs)
 		return -ENOMEM;
 
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus)) < 0)
+=======
+	chip->ac97_regs = devm_kcalloc(chip->card->dev,
+				       ARRAY_SIZE(nm256_ac97_init_val),
+				       sizeof(short), GFP_KERNEL);
+	if (! chip->ac97_regs)
+		return -ENOMEM;
+
+	err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	memset(&ac97, 0, sizeof(ac97));
@@ -1336,7 +1518,11 @@ snd_nm256_mixer(struct nm256 *chip)
  * RAM.
  */
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_nm256_peek_for_sig(struct nm256 *chip)
 {
 	/* The signature is located 1K below the end of video RAM.  */
@@ -1345,9 +1531,16 @@ snd_nm256_peek_for_sig(struct nm256 *chip)
 	unsigned long pointer_found = chip->buffer_end - 0x1400;
 	u32 sig;
 
+<<<<<<< HEAD
 	temp = ioremap_nocache(chip->buffer_addr + chip->buffer_end - 0x400, 16);
 	if (temp == NULL) {
 		snd_printk(KERN_ERR "Unable to scan for card signature in video RAM\n");
+=======
+	temp = ioremap(chip->buffer_addr + chip->buffer_end - 0x400, 16);
+	if (temp == NULL) {
+		dev_err(chip->card->dev,
+			"Unable to scan for card signature in video RAM\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -1361,12 +1554,22 @@ snd_nm256_peek_for_sig(struct nm256 *chip)
 		if (pointer == 0xffffffff ||
 		    pointer < chip->buffer_size ||
 		    pointer > chip->buffer_end) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "invalid signature found: 0x%x\n", pointer);
+=======
+			dev_err(chip->card->dev,
+				"invalid signature found: 0x%x\n", pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iounmap(temp);
 			return -ENODEV;
 		} else {
 			pointer_found = pointer;
+<<<<<<< HEAD
 			printk(KERN_INFO "nm256: found card signature in video RAM: 0x%x\n",
+=======
+			dev_info(chip->card->dev,
+				 "found card signature in video RAM: 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       pointer);
 		}
 	}
@@ -1377,11 +1580,15 @@ snd_nm256_peek_for_sig(struct nm256 *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * APM event handler, so the card is properly reinitialized after a power
  * event.
  */
+<<<<<<< HEAD
 static int nm256_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
@@ -1400,12 +1607,29 @@ static int nm256_suspend(struct pci_dev *pci, pm_message_t state)
 static int nm256_resume(struct pci_dev *pci)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+static int nm256_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct nm256 *chip = card->private_data;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+	snd_ac97_suspend(chip->ac97);
+	chip->coeffs_current = 0;
+	return 0;
+}
+
+static int nm256_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nm256 *chip = card->private_data;
 	int i;
 
 	/* Perform a full reset on the hardware */
 	chip->in_resume = 1;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -1416,6 +1640,8 @@ static int nm256_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_nm256_init_chip(chip);
 
 	/* restore ac97 */
@@ -1434,14 +1660,25 @@ static int nm256_resume(struct pci_dev *pci)
 	chip->in_resume = 0;
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 static int snd_nm256_free(struct nm256 *chip)
 {
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(nm256_pm, nm256_suspend, nm256_resume);
+
+static void snd_nm256_free(struct snd_card *card)
+{
+	struct nm256 *chip = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->streams[SNDRV_PCM_STREAM_PLAYBACK].running)
 		snd_nm256_playback_stop(chip);
 	if (chip->streams[SNDRV_PCM_STREAM_CAPTURE].running)
 		snd_nm256_capture_stop(chip);
+<<<<<<< HEAD
 
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
@@ -1487,6 +1724,21 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 		return -ENOMEM;
 	}
 
+=======
+}
+
+static int
+snd_nm256_create(struct snd_card *card, struct pci_dev *pci)
+{
+	struct nm256 *chip = card->private_data;
+	int err, pval;
+	u32 addr;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->card = card;
 	chip->pci = pci;
 	chip->use_cache = use_cache;
@@ -1508,6 +1760,7 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 	chip->buffer_addr = pci_resource_start(pci, 0);
 	chip->cport_addr = pci_resource_start(pci, 1);
 
+<<<<<<< HEAD
 	/* Init the memory port info.  */
 	/* remap control port (#2) */
 	chip->res_cport = request_mem_region(chip->cport_addr, NM_PORT2_SIZE,
@@ -1523,6 +1776,19 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 		snd_printk(KERN_ERR "unable to map control port %lx\n", chip->cport_addr);
 		err = -ENOMEM;
 		goto __error;
+=======
+	err = pci_request_regions(pci, card->driver);
+	if (err < 0)
+		return err;
+
+	/* Init the memory port info.  */
+	/* remap control port (#2) */
+	chip->cport = devm_ioremap(&pci->dev, chip->cport_addr, NM_PORT2_SIZE);
+	if (!chip->cport) {
+		dev_err(card->dev, "unable to map control port %lx\n",
+			chip->cport_addr);
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!strcmp(card->driver, "NM256AV")) {
@@ -1530,6 +1796,7 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 		pval = snd_nm256_readw(chip, NM_MIXER_PRESENCE);
 		if ((pval & NM_PRESENCE_MASK) != NM_PRESENCE_VALUE) {
 			if (! force_ac97) {
+<<<<<<< HEAD
 				printk(KERN_ERR "nm256: no ac97 is found!\n");
 				printk(KERN_ERR "  force the driver to load by "
 				       "passing in the module parameter\n");
@@ -1538,6 +1805,17 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 				       "cs423x drivers instead.\n");
 				err = -ENXIO;
 				goto __error;
+=======
+				dev_err(card->dev,
+					"no ac97 is found!\n");
+				dev_err(card->dev,
+					"force the driver to load by passing in the module parameter\n");
+				dev_err(card->dev,
+					" force_ac97=1\n");
+				dev_err(card->dev,
+					"or try sb16, opl3sa2, or cs423x drivers instead.\n");
+				return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		chip->buffer_end = 2560 * 1024;
@@ -1567,13 +1845,20 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 		chip->buffer_end = buffer_top;
 	else {
 		/* get buffer end pointer from signature */
+<<<<<<< HEAD
 		if ((err = snd_nm256_peek_for_sig(chip)) < 0)
 			goto __error;
+=======
+		err = snd_nm256_peek_for_sig(chip);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	chip->buffer_start = chip->buffer_end - chip->buffer_size;
 	chip->buffer_addr += chip->buffer_start;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "nm256: Mapping port 1 from 0x%x - 0x%x\n",
 	       chip->buffer_start, chip->buffer_end);
 
@@ -1591,6 +1876,17 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 		err = -ENOMEM;
 		snd_printk(KERN_ERR "unable to map ring buffer at %lx\n", chip->buffer_addr);
 		goto __error;
+=======
+	dev_info(card->dev, "Mapping port 1 from 0x%x - 0x%x\n",
+	       chip->buffer_start, chip->buffer_end);
+
+	chip->buffer = devm_ioremap(&pci->dev, chip->buffer_addr,
+				    chip->buffer_size);
+	if (!chip->buffer) {
+		dev_err(card->dev, "unable to map ring buffer at %lx\n",
+			chip->buffer_addr);
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set offsets */
@@ -1615,6 +1911,7 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci,
 	snd_nm256_init_chip(chip);
 
 	// pci_set_master(pci); /* needed? */
+<<<<<<< HEAD
 	
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0)
 		goto __error;
@@ -1635,6 +1932,17 @@ enum { NM_BLACKLISTED, NM_RESET_WORKAROUND, NM_RESET_WORKAROUND_2 };
 static struct snd_pci_quirk nm256_quirks[] __devinitdata = {
 	/* HP omnibook 4150 has cs4232 codec internally */
 	SND_PCI_QUIRK(0x103c, 0x0007, "HP omnibook 4150", NM_BLACKLISTED),
+=======
+	return 0;
+}
+
+
+enum { NM_IGNORED, NM_RESET_WORKAROUND, NM_RESET_WORKAROUND_2 };
+
+static const struct snd_pci_quirk nm256_quirks[] = {
+	/* HP omnibook 4150 has cs4232 codec internally */
+	SND_PCI_QUIRK(0x103c, 0x0007, "HP omnibook 4150", NM_IGNORED),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset workarounds to avoid lock-ups */
 	SND_PCI_QUIRK(0x104d, 0x8041, "Sony PCG-F305", NM_RESET_WORKAROUND),
 	SND_PCI_QUIRK(0x1028, 0x0080, "Dell Latitude LS", NM_RESET_WORKAROUND),
@@ -1643,8 +1951,13 @@ static struct snd_pci_quirk nm256_quirks[] __devinitdata = {
 };
 
 
+<<<<<<< HEAD
 static int __devinit snd_nm256_probe(struct pci_dev *pci,
 				     const struct pci_device_id *pci_id)
+=======
+static int snd_nm256_probe(struct pci_dev *pci,
+			   const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct nm256 *chip;
@@ -1653,6 +1966,7 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 
 	q = snd_pci_quirk_lookup(pci, nm256_quirks);
 	if (q) {
+<<<<<<< HEAD
 		snd_printdd(KERN_INFO "nm256: Enabled quirk for %s.\n", q->name);
 		switch (q->value) {
 		case NM_BLACKLISTED:
@@ -1662,15 +1976,35 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 		case NM_RESET_WORKAROUND_2:
 			reset_workaround_2 = 1;
 			/* Fall-through */
+=======
+		dev_dbg(&pci->dev, "Enabled quirk for %s.\n",
+			    snd_pci_quirk_name(q));
+		switch (q->value) {
+		case NM_IGNORED:
+			dev_info(&pci->dev,
+				 "The device is on the denylist. Loading stopped\n");
+			return -ENODEV;
+		case NM_RESET_WORKAROUND_2:
+			reset_workaround_2 = 1;
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NM_RESET_WORKAROUND:
 			reset_workaround = 1;
 			break;
 		}
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index, id, THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (pci->device) {
 	case PCI_DEVICE_ID_NEOMAGIC_NM256AV_AUDIO:
@@ -1683,8 +2017,12 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 		strcpy(card->driver, "NM256XL+");
 		break;
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "invalid device id 0x%x\n", pci->device);
 		snd_card_free(card);
+=======
+		dev_err(&pci->dev, "invalid device id 0x%x\n", pci->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1699,6 +2037,7 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 		capture_bufsize = 4;
 	if (capture_bufsize > 128)
 		capture_bufsize = 128;
+<<<<<<< HEAD
 	if ((err = snd_nm256_create(card, pci, &chip)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -1707,10 +2046,19 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 
 	if (reset_workaround) {
 		snd_printdd(KERN_INFO "nm256: reset_workaround activated\n");
+=======
+	err = snd_nm256_create(card, pci);
+	if (err < 0)
+		return err;
+
+	if (reset_workaround) {
+		dev_dbg(&pci->dev, "reset_workaround activated\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->reset_workaround = 1;
 	}
 
 	if (reset_workaround_2) {
+<<<<<<< HEAD
 		snd_printdd(KERN_INFO "nm256: reset_workaround_2 activated\n");
 		chip->reset_workaround_2 = 1;
 	}
@@ -1720,21 +2068,41 @@ static int __devinit snd_nm256_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+		dev_dbg(&pci->dev, "reset_workaround_2 activated\n");
+		chip->reset_workaround_2 = 1;
+	}
+
+	err = snd_nm256_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_nm256_mixer(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(card->shortname, "NeoMagic %s", card->driver);
 	sprintf(card->longname, "%s at 0x%lx & 0x%lx, irq %d",
 		card->shortname,
 		chip->buffer_addr, chip->cport_addr, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+	card->private_free = snd_nm256_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_nm256_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -1766,3 +2134,15 @@ static void __exit alsa_card_nm256_exit(void)
 
 module_init(alsa_card_nm256_init)
 module_exit(alsa_card_nm256_exit)
+=======
+static struct pci_driver nm256_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_nm256_ids,
+	.probe = snd_nm256_probe,
+	.driver = {
+		.pm = &nm256_pm,
+	},
+};
+
+module_pci_driver(nm256_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

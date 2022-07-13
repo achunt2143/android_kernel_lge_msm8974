@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sun_esp.c: ESP front-end for Sparc SBUS systems.
  *
  * Copyright (C) 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -11,7 +15,12 @@
 #include <linux/init.h>
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 
 #include <asm/irq.h>
@@ -43,8 +52,12 @@ enum dvma_rev {
 	dvmahme
 };
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_setup_dma(struct esp *esp,
 					struct platform_device *dma_of)
+=======
+static int esp_sbus_setup_dma(struct esp *esp, struct platform_device *dma_of)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	esp->dma = dma_of;
 
@@ -79,9 +92,15 @@ static int __devinit esp_sbus_setup_dma(struct esp *esp,
 
 }
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_map_regs(struct esp *esp, int hme)
 {
 	struct platform_device *op = esp->dev;
+=======
+static int esp_sbus_map_regs(struct esp *esp, int hme)
+{
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 
 	/* On HME, two reg sets exist, first is DVMA,
@@ -99,6 +118,7 @@ static int __devinit esp_sbus_map_regs(struct esp *esp, int hme)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_map_command_block(struct esp *esp)
 {
 	struct platform_device *op = esp->dev;
@@ -106,23 +126,43 @@ static int __devinit esp_sbus_map_command_block(struct esp *esp)
 	esp->command_block = dma_alloc_coherent(&op->dev, 16,
 						&esp->command_block_dma,
 						GFP_ATOMIC);
+=======
+static int esp_sbus_map_command_block(struct esp *esp)
+{
+	esp->command_block = dma_alloc_coherent(esp->dev, 16,
+						&esp->command_block_dma,
+						GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!esp->command_block)
 		return -ENOMEM;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_register_irq(struct esp *esp)
 {
 	struct Scsi_Host *host = esp->host;
 	struct platform_device *op = esp->dev;
+=======
+static int esp_sbus_register_irq(struct esp *esp)
+{
+	struct Scsi_Host *host = esp->host;
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->irq = op->archdata.irqs[0];
 	return request_irq(host->irq, scsi_esp_intr, IRQF_SHARED, "ESP", esp);
 }
 
+<<<<<<< HEAD
 static void __devinit esp_get_scsi_id(struct esp *esp, struct platform_device *espdma)
 {
 	struct platform_device *op = esp->dev;
+=======
+static void esp_get_scsi_id(struct esp *esp, struct platform_device *espdma)
+{
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *dp;
 
 	dp = op->dev.of_node;
@@ -142,6 +182,7 @@ done:
 	esp->scsi_id_mask = (1 << esp->scsi_id);
 }
 
+<<<<<<< HEAD
 static void __devinit esp_get_differential(struct esp *esp)
 {
 	struct platform_device *op = esp->dev;
@@ -149,14 +190,29 @@ static void __devinit esp_get_differential(struct esp *esp)
 
 	dp = op->dev.of_node;
 	if (of_find_property(dp, "differential", NULL))
+=======
+static void esp_get_differential(struct esp *esp)
+{
+	struct platform_device *op = to_platform_device(esp->dev);
+	struct device_node *dp;
+
+	dp = op->dev.of_node;
+	if (of_property_read_bool(dp, "differential"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		esp->flags |= ESP_FLAG_DIFFERENTIAL;
 	else
 		esp->flags &= ~ESP_FLAG_DIFFERENTIAL;
 }
 
+<<<<<<< HEAD
 static void __devinit esp_get_clock_params(struct esp *esp)
 {
 	struct platform_device *op = esp->dev;
+=======
+static void esp_get_clock_params(struct esp *esp)
+{
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *bus_dp, *dp;
 	int fmhz;
 
@@ -170,10 +226,17 @@ static void __devinit esp_get_clock_params(struct esp *esp)
 	esp->cfreq = fmhz;
 }
 
+<<<<<<< HEAD
 static void __devinit esp_get_bursts(struct esp *esp, struct platform_device *dma_of)
 {
 	struct device_node *dma_dp = dma_of->dev.of_node;
 	struct platform_device *op = esp->dev;
+=======
+static void esp_get_bursts(struct esp *esp, struct platform_device *dma_of)
+{
+	struct device_node *dma_dp = dma_of->dev.of_node;
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *dp;
 	u8 bursts, val;
 
@@ -195,7 +258,11 @@ static void __devinit esp_get_bursts(struct esp *esp, struct platform_device *dm
 	esp->bursts = bursts;
 }
 
+<<<<<<< HEAD
 static void __devinit esp_sbus_get_props(struct esp *esp, struct platform_device *espdma)
+=======
+static void esp_sbus_get_props(struct esp *esp, struct platform_device *espdma)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	esp_get_scsi_id(esp, espdma);
 	esp_get_differential(esp);
@@ -213,6 +280,7 @@ static u8 sbus_esp_read8(struct esp *esp, unsigned long reg)
 	return sbus_readb(esp->regs + (reg * 4UL));
 }
 
+<<<<<<< HEAD
 static dma_addr_t sbus_esp_map_single(struct esp *esp, void *buf,
 				      size_t sz, int dir)
 {
@@ -245,6 +313,8 @@ static void sbus_esp_unmap_sg(struct esp *esp, struct scatterlist *sg,
 	dma_unmap_sg(&op->dev, sg, num_sg, dir);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sbus_esp_irq_pending(struct esp *esp)
 {
 	if (dma_read32(DMA_CSR) & (DMA_HNDL_INTR | DMA_HNDL_ERROR))
@@ -256,14 +326,21 @@ static void sbus_esp_reset_dma(struct esp *esp)
 {
 	int can_do_burst16, can_do_burst32, can_do_burst64;
 	int can_do_sbus64, lim;
+<<<<<<< HEAD
 	struct platform_device *op;
+=======
+	struct platform_device *op = to_platform_device(esp->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	can_do_burst16 = (esp->bursts & DMA_BURST16) != 0;
 	can_do_burst32 = (esp->bursts & DMA_BURST32) != 0;
 	can_do_burst64 = 0;
 	can_do_sbus64 = 0;
+<<<<<<< HEAD
 	op = esp->dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbus_can_dma_64bit())
 		can_do_sbus64 = 1;
 	if (sbus_can_burst64())
@@ -475,10 +552,13 @@ static int sbus_esp_dma_error(struct esp *esp)
 static const struct esp_driver_ops sbus_esp_ops = {
 	.esp_write8	=	sbus_esp_write8,
 	.esp_read8	=	sbus_esp_read8,
+<<<<<<< HEAD
 	.map_single	=	sbus_esp_map_single,
 	.map_sg		=	sbus_esp_map_sg,
 	.unmap_single	=	sbus_esp_unmap_single,
 	.unmap_sg	=	sbus_esp_unmap_sg,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_pending	=	sbus_esp_irq_pending,
 	.reset_dma	=	sbus_esp_reset_dma,
 	.dma_drain	=	sbus_esp_dma_drain,
@@ -487,11 +567,18 @@ static const struct esp_driver_ops sbus_esp_ops = {
 	.dma_error	=	sbus_esp_dma_error,
 };
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_probe_one(struct platform_device *op,
 					struct platform_device *espdma,
 					int hme)
 {
 	struct scsi_host_template *tpnt = &scsi_esp_template;
+=======
+static int esp_sbus_probe_one(struct platform_device *op,
+			      struct platform_device *espdma, int hme)
+{
+	const struct scsi_host_template *tpnt = &scsi_esp_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	struct esp *esp;
 	int err;
@@ -506,7 +593,11 @@ static int __devinit esp_sbus_probe_one(struct platform_device *op,
 	esp = shost_priv(host);
 
 	esp->host = host;
+<<<<<<< HEAD
 	esp->dev = op;
+=======
+	esp->dev = &op->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	esp->ops = &sbus_esp_ops;
 
 	if (hme)
@@ -542,7 +633,11 @@ static int __devinit esp_sbus_probe_one(struct platform_device *op,
 
 	dev_set_drvdata(&op->dev, esp);
 
+<<<<<<< HEAD
 	err = scsi_esp_register(esp, &op->dev);
+=======
+	err = scsi_esp_register(esp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto fail_free_irq;
 
@@ -562,18 +657,31 @@ fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit esp_sbus_probe(struct platform_device *op)
+=======
+static int esp_sbus_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dma_node = NULL;
 	struct device_node *dp = op->dev.of_node;
 	struct platform_device *dma_of = NULL;
 	int hme = 0;
+<<<<<<< HEAD
 
 	if (dp->parent &&
 	    (!strcmp(dp->parent->name, "espdma") ||
 	     !strcmp(dp->parent->name, "dma")))
 		dma_node = dp->parent;
 	else if (!strcmp(dp->name, "SUNW,fas")) {
+=======
+	int ret;
+
+	if (of_node_name_eq(dp->parent, "espdma") ||
+	    of_node_name_eq(dp->parent, "dma"))
+		dma_node = dp->parent;
+	else if (of_node_name_eq(dp, "SUNW,fas")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_node = op->dev.of_node;
 		hme = 1;
 	}
@@ -582,10 +690,21 @@ static int __devinit esp_sbus_probe(struct platform_device *op)
 	if (!dma_of)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return esp_sbus_probe_one(op, dma_of, hme);
 }
 
 static int __devexit esp_sbus_remove(struct platform_device *op)
+=======
+	ret = esp_sbus_probe_one(op, dma_of, hme);
+	if (ret)
+		put_device(&dma_of->dev);
+
+	return ret;
+}
+
+static void esp_sbus_remove(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct esp *esp = dev_get_drvdata(&op->dev);
 	struct platform_device *dma_of = esp->dma;
@@ -615,7 +734,11 @@ static int __devexit esp_sbus_remove(struct platform_device *op)
 
 	dev_set_drvdata(&op->dev, NULL);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	put_device(&dma_of->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id esp_match[] = {
@@ -635,6 +758,7 @@ MODULE_DEVICE_TABLE(of, esp_match);
 static struct platform_driver esp_sbus_driver = {
 	.driver = {
 		.name = "esp",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = esp_match,
 	},
@@ -659,3 +783,16 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(sunesp_init);
 module_exit(sunesp_exit);
+=======
+		.of_match_table = esp_match,
+	},
+	.probe		= esp_sbus_probe,
+	.remove_new	= esp_sbus_remove,
+};
+module_platform_driver(esp_sbus_driver);
+
+MODULE_DESCRIPTION("Sun ESP SCSI driver");
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+MODULE_LICENSE("GPL");
+MODULE_VERSION(DRV_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

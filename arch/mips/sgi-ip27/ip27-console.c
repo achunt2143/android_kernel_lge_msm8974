@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2001, 2002 Ralf Baechle
  */
+<<<<<<< HEAD
 #include <linux/init.h>
 
 #include <asm/page.h>
@@ -13,10 +14,24 @@
 #include <asm/sn/klconfig.h>
 #include <asm/sn/ioc3.h>
 #include <asm/sn/sn_private.h>
+=======
+
+#include <asm/page.h>
+#include <asm/setup.h>
+#include <asm/sn/addrs.h>
+#include <asm/sn/agent.h>
+#include <asm/sn/klconfig.h>
+#include <asm/sn/ioc3.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/serial.h>
 #include <linux/serial_core.h>
 
+<<<<<<< HEAD
+=======
+#include "ip27-common.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IOC3_CLK	(22000000 / 3)
 #define IOC3_FLAGS	(0)
 
@@ -31,10 +46,20 @@ static inline struct ioc3_uartregs *console_uart(void)
 	return &ioc3->sregs.uarta;
 }
 
+<<<<<<< HEAD
 void __init prom_putchar(char c)
 {
 	struct ioc3_uartregs *uart = console_uart();
 
 	while ((uart->iu_lsr & 0x20) == 0);
 	uart->iu_thr = c;
+=======
+void prom_putchar(char c)
+{
+	struct ioc3_uartregs *uart = console_uart();
+
+	while ((readb(&uart->iu_lsr) & 0x20) == 0)
+		;
+	writeb(c, &uart->iu_thr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

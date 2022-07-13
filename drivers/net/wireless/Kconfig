@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Wireless LAN device configuration
 #
@@ -8,11 +12,16 @@ menuconfig WLAN
 	depends on NET
 	select WIRELESS
 	default y
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This section contains all the pre 802.11 and 802.11 wireless
 	  device drivers. For a complete list of drivers and documentation
 	  on them refer to the wireless wiki:
 
+<<<<<<< HEAD
 	  http://wireless.kernel.org/en/users/Drivers
 
 if WLAN
@@ -344,5 +353,31 @@ source "drivers/net/wireless/wl1251/Kconfig"
 source "drivers/net/wireless/wl12xx/Kconfig"
 source "drivers/net/wireless/zd1211rw/Kconfig"
 source "drivers/net/wireless/mwifiex/Kconfig"
+=======
+	  https://wireless.wiki.kernel.org/en/users/Drivers
+
+if WLAN
+
+source "drivers/net/wireless/admtek/Kconfig"
+source "drivers/net/wireless/ath/Kconfig"
+source "drivers/net/wireless/atmel/Kconfig"
+source "drivers/net/wireless/broadcom/Kconfig"
+source "drivers/net/wireless/intel/Kconfig"
+source "drivers/net/wireless/intersil/Kconfig"
+source "drivers/net/wireless/marvell/Kconfig"
+source "drivers/net/wireless/mediatek/Kconfig"
+source "drivers/net/wireless/microchip/Kconfig"
+source "drivers/net/wireless/purelifi/Kconfig"
+source "drivers/net/wireless/ralink/Kconfig"
+source "drivers/net/wireless/realtek/Kconfig"
+source "drivers/net/wireless/rsi/Kconfig"
+source "drivers/net/wireless/silabs/Kconfig"
+source "drivers/net/wireless/st/Kconfig"
+source "drivers/net/wireless/ti/Kconfig"
+source "drivers/net/wireless/zydas/Kconfig"
+source "drivers/net/wireless/quantenna/Kconfig"
+
+source "drivers/net/wireless/virtual/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # WLAN

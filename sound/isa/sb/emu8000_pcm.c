@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pcm emulation on emu8000 wavetable
  *
  *  Copyright (C) 2002 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +24,13 @@
  */
 
 #include "emu8000_local.h"
+=======
+ */
+
+#include "emu8000_local.h"
+
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <sound/initval.h>
@@ -155,7 +167,11 @@ static int calc_rate_offset(int hz)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware emu8k_pcm_hw = {
+=======
+static const struct snd_pcm_hardware emu8k_pcm_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef USE_NONINTERLEAVE
 	.info =			SNDRV_PCM_INFO_NONINTERLEAVED,
 #else
@@ -191,9 +207,15 @@ static inline int emu8k_get_curpos(struct snd_emu8k_pcm *rec, int ch)
  * timer interrupt handler
  * check the current position and update the period if necessary.
  */
+<<<<<<< HEAD
 static void emu8k_pcm_timer_func(unsigned long data)
 {
 	struct snd_emu8k_pcm *rec = (struct snd_emu8k_pcm *)data;
+=======
+static void emu8k_pcm_timer_func(struct timer_list *t)
+{
+	struct snd_emu8k_pcm *rec = from_timer(rec, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ptr, delta;
 
 	spin_lock(&rec->timer_lock);
@@ -207,8 +229,12 @@ static void emu8k_pcm_timer_func(unsigned long data)
 	rec->last_ptr = ptr;
 
 	/* reprogram timer */
+<<<<<<< HEAD
 	rec->timer.expires = jiffies + 1;
 	add_timer(&rec->timer);
+=======
+	mod_timer(&rec->timer, jiffies + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update period */
 	if (rec->period_pos >= (int)rec->period_size) {
@@ -240,9 +266,13 @@ static int emu8k_pcm_open(struct snd_pcm_substream *subs)
 	runtime->private_data = rec;
 
 	spin_lock_init(&rec->timer_lock);
+<<<<<<< HEAD
 	init_timer(&rec->timer);
 	rec->timer.function = emu8k_pcm_timer_func;
 	rec->timer.data = (unsigned long)rec;
+=======
+	timer_setup(&rec->timer, emu8k_pcm_timer_func, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	runtime->hw = emu8k_pcm_hw;
 	runtime->hw.buffer_bytes_max = emu->mem_size - LOOP_BLANK_SIZE * 3;
@@ -250,7 +280,11 @@ static int emu8k_pcm_open(struct snd_pcm_substream *subs)
 
 	/* use timer to update periods.. (specified in msec) */
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_TIME,
+<<<<<<< HEAD
 				     (1000000 + HZ - 1) / HZ, UINT_MAX);
+=======
+				     DIV_ROUND_UP(1000000, HZ), UINT_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -359,8 +393,12 @@ static void start_voice(struct snd_emu8k_pcm *rec, int ch)
 	/* start timer */
 	spin_lock_irqsave(&rec->timer_lock, flags);
 	if (! rec->timer_running) {
+<<<<<<< HEAD
 		rec->timer.expires = jiffies + 1;
 		add_timer(&rec->timer);
+=======
+		mod_timer(&rec->timer, jiffies + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec->timer_running = 1;
 	}
 	spin_unlock_irqrestore(&rec->timer_lock, flags);
@@ -424,6 +462,7 @@ do { \
 		return -EAGAIN;\
 } while (0)
 
+<<<<<<< HEAD
 
 #ifdef USE_NONINTERLEAVE
 /* copy one channel block */
@@ -504,11 +543,89 @@ static int emu8k_pcm_silence(struct snd_pcm_substream *subs,
 
 #else /* interleave */
 
+=======
+#define GET_VAL(sval, iter)						\
+	do {								\
+		if (!iter)						\
+			sval = 0;					\
+		else if (copy_from_iter(&sval, 2, iter) != 2)		\
+			return -EFAULT;					\
+	} while (0)
+
+#ifdef USE_NONINTERLEAVE
+
+#define LOOP_WRITE(rec, offset, iter, count)			\
+	do {							\
+		struct snd_emu8000 *emu = (rec)->emu;		\
+		snd_emu8000_write_wait(emu, 1);			\
+		EMU8000_SMALW_WRITE(emu, offset);		\
+		while (count > 0) {				\
+			unsigned short sval;			\
+			CHECK_SCHEDULER();			\
+			GET_VAL(sval, iter);			\
+			EMU8000_SMLD_WRITE(emu, sval);		\
+			count--;				\
+		}						\
+	} while (0)
+
+/* copy one channel block */
+static int emu8k_pcm_copy(struct snd_pcm_substream *subs,
+			  int voice, unsigned long pos,
+			  struct iov_iter *src, unsigned long count)
+{
+	struct snd_emu8k_pcm *rec = subs->runtime->private_data;
+
+	/* convert to word unit */
+	pos = (pos << 1) + rec->loop_start[voice];
+	count <<= 1;
+	LOOP_WRITE(rec, pos, src, count);
+	return 0;
+}
+
+/* make a channel block silence */
+static int emu8k_pcm_silence(struct snd_pcm_substream *subs,
+			     int voice, unsigned long pos, unsigned long count)
+{
+	struct snd_emu8k_pcm *rec = subs->runtime->private_data;
+
+	/* convert to word unit */
+	pos = (pos << 1) + rec->loop_start[voice];
+	count <<= 1;
+	LOOP_WRITE(rec, pos, NULL, count);
+	return 0;
+}
+
+#else /* interleave */
+
+#define LOOP_WRITE(rec, pos, iter, count)				\
+	do {								\
+		struct snd_emu8000 *emu = rec->emu;			\
+		snd_emu8000_write_wait(emu, 1);				\
+		EMU8000_SMALW_WRITE(emu, pos + rec->loop_start[0]);	\
+		if (rec->voices > 1)					\
+			EMU8000_SMARW_WRITE(emu, pos + rec->loop_start[1]); \
+		while (count > 0) {					\
+			unsigned short sval;				\
+			CHECK_SCHEDULER();				\
+			GET_VAL(sval, iter);				\
+			EMU8000_SMLD_WRITE(emu, sval);			\
+			if (rec->voices > 1) {				\
+				CHECK_SCHEDULER();			\
+				GET_VAL(sval, iter);			\
+				EMU8000_SMRD_WRITE(emu, sval);		\
+			}						\
+			count--;					\
+		}							\
+	} while (0)
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * copy the interleaved data can be done easily by using
  * DMA "left" and "right" channels on emu8k engine.
  */
 static int emu8k_pcm_copy(struct snd_pcm_substream *subs,
+<<<<<<< HEAD
 			  int voice,
 			  snd_pcm_uframes_t pos,
 			  void __user *src,
@@ -538,10 +655,22 @@ static int emu8k_pcm_copy(struct snd_pcm_substream *subs,
 			buf++;
 		}
 	}
+=======
+			  int voice, unsigned long pos,
+			  struct iov_iter *src, unsigned long count)
+{
+	struct snd_emu8k_pcm *rec = subs->runtime->private_data;
+
+	/* convert to frames */
+	pos = bytes_to_frames(subs->runtime, pos);
+	count = bytes_to_frames(subs->runtime, count);
+	LOOP_WRITE(rec, pos, src, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int emu8k_pcm_silence(struct snd_pcm_substream *subs,
+<<<<<<< HEAD
 			     int voice,
 			     snd_pcm_uframes_t pos,
 			     snd_pcm_uframes_t count)
@@ -561,6 +690,16 @@ static int emu8k_pcm_silence(struct snd_pcm_substream *subs,
 			EMU8000_SMRD_WRITE(emu, 0);
 		}
 	}
+=======
+			     int voice, unsigned long pos, unsigned long count)
+{
+	struct snd_emu8k_pcm *rec = subs->runtime->private_data;
+
+	/* convert to frames */
+	pos = bytes_to_frames(subs->runtime, pos);
+	count = bytes_to_frames(subs->runtime, count);
+	LOOP_WRITE(rec, pos, NULL, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif
@@ -636,7 +775,12 @@ static int emu8k_pcm_prepare(struct snd_pcm_substream *subs)
 		int err, i, ch;
 
 		snd_emux_terminate_all(rec->emu->emu);
+<<<<<<< HEAD
 		if ((err = emu8k_open_dram_for_pcm(rec->emu, rec->voices)) != 0)
+=======
+		err = emu8k_open_dram_for_pcm(rec->emu, rec->voices);
+		if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		rec->dram_opened = 1;
 
@@ -667,17 +811,27 @@ static snd_pcm_uframes_t emu8k_pcm_pointer(struct snd_pcm_substream *subs)
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops emu8k_pcm_ops = {
 	.open =		emu8k_pcm_open,
 	.close =	emu8k_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops emu8k_pcm_ops = {
+	.open =		emu8k_pcm_open,
+	.close =	emu8k_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	emu8k_pcm_hw_params,
 	.hw_free =	emu8k_pcm_hw_free,
 	.prepare =	emu8k_pcm_prepare,
 	.trigger =	emu8k_pcm_trigger,
 	.pointer =	emu8k_pcm_pointer,
 	.copy =		emu8k_pcm_copy,
+<<<<<<< HEAD
 	.silence =	emu8k_pcm_silence,
+=======
+	.fill_silence =	emu8k_pcm_silence,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -692,7 +846,12 @@ int snd_emu8000_pcm_new(struct snd_card *card, struct snd_emu8000 *emu, int inde
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(card, "Emu8000 PCM", index, 1, 0, &pcm)) < 0)
+=======
+	err = snd_pcm_new(card, "Emu8000 PCM", index, 1, 0, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm->private_data = emu;
 	pcm->private_free = snd_emu8000_pcm_free;

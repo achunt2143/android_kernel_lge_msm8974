@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IP6 tables REJECT target module
  * Linux INET6 implementation
@@ -7,12 +11,18 @@
  * Authors:
  *	Yasuyuki Kozakai	<yasuyuki.kozakai@toshiba.co.jp>
  *
+<<<<<<< HEAD
  * Based on net/ipv4/netfilter/ipt_REJECT.c
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+ * Copyright (c) 2005-2007 Patrick McHardy <kaber@trash.net>
+ *
+ * Based on net/ipv4/netfilter/ipt_REJECT.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,21 +31,31 @@
 #include <linux/skbuff.h>
 #include <linux/icmpv6.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <net/ipv6.h>
 #include <net/tcp.h>
 #include <net/icmp.h>
 #include <net/ip6_checksum.h>
 #include <net/ip6_fib.h>
 #include <net/ip6_route.h>
+=======
+#include <net/icmp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/flow.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter_ipv6/ip6t_REJECT.h>
 
+<<<<<<< HEAD
+=======
+#include <net/netfilter/ipv6/nf_reject.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Yasuyuki KOZAKAI <yasuyuki.kozakai@toshiba.co.jp>");
 MODULE_DESCRIPTION("Xtables: packet \"rejection\" target for IPv6");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /* Send RST reply */
 static void send_reset(struct net *net, struct sk_buff *oldskb)
 {
@@ -181,10 +201,13 @@ send_unreach(struct net *net, struct sk_buff *skb_in, unsigned char code,
 	icmpv6_send(skb_in, ICMPV6_DEST_UNREACH, code, 0);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ip6t_reject_info *reject = par->targinfo;
+<<<<<<< HEAD
 	struct net *net = dev_net((par->in != NULL) ? par->in : par->out);
 
 	pr_debug("%s: medium point\n", __func__);
@@ -203,16 +226,50 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 		break;
 	case IP6T_ICMP6_PORT_UNREACH:
 		send_unreach(net, skb, ICMPV6_PORT_UNREACH, par->hooknum);
+=======
+	struct net *net = xt_net(par);
+
+	switch (reject->with) {
+	case IP6T_ICMP6_NO_ROUTE:
+		nf_send_unreach6(net, skb, ICMPV6_NOROUTE, xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_ADM_PROHIBITED:
+		nf_send_unreach6(net, skb, ICMPV6_ADM_PROHIBITED,
+				 xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_NOT_NEIGHBOUR:
+		nf_send_unreach6(net, skb, ICMPV6_NOT_NEIGHBOUR,
+				 xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_ADDR_UNREACH:
+		nf_send_unreach6(net, skb, ICMPV6_ADDR_UNREACH,
+				 xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_PORT_UNREACH:
+		nf_send_unreach6(net, skb, ICMPV6_PORT_UNREACH,
+				 xt_hooknum(par));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IP6T_ICMP6_ECHOREPLY:
 		/* Do nothing */
 		break;
 	case IP6T_TCP_RESET:
+<<<<<<< HEAD
 		send_reset(net, skb);
 		break;
 	default:
 		if (net_ratelimit())
 			pr_info("case %u not handled yet\n", reject->with);
+=======
+		nf_send_reset6(net, par->state->sk, skb, xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_POLICY_FAIL:
+		nf_send_unreach6(net, skb, ICMPV6_POLICY_FAIL, xt_hooknum(par));
+		break;
+	case IP6T_ICMP6_REJECT_ROUTE:
+		nf_send_unreach6(net, skb, ICMPV6_REJECT_ROUTE,
+				 xt_hooknum(par));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -225,6 +282,7 @@ static int reject_tg6_check(const struct xt_tgchk_param *par)
 	const struct ip6t_entry *e = par->entryinfo;
 
 	if (rejinfo->with == IP6T_ICMP6_ECHOREPLY) {
+<<<<<<< HEAD
 		pr_info("ECHOREPLY is not supported.\n");
 		return -EINVAL;
 	} else if (rejinfo->with == IP6T_TCP_RESET) {
@@ -232,6 +290,16 @@ static int reject_tg6_check(const struct xt_tgchk_param *par)
 		if (e->ipv6.proto != IPPROTO_TCP ||
 		    (e->ipv6.invflags & XT_INV_PROTO)) {
 			pr_info("TCP_RESET illegal for non-tcp\n");
+=======
+		pr_info_ratelimited("ECHOREPLY is not supported\n");
+		return -EINVAL;
+	} else if (rejinfo->with == IP6T_TCP_RESET) {
+		/* Must specify that it's a TCP packet */
+		if (!(e->ipv6.flags & IP6T_F_PROTO) ||
+		    e->ipv6.proto != IPPROTO_TCP ||
+		    (e->ipv6.invflags & XT_INV_PROTO)) {
+			pr_info_ratelimited("TCP_RESET illegal for non-tcp\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}

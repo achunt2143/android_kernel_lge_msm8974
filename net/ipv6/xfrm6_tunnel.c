@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C)2003,2004 USAGI/WIDE Project
  *
@@ -20,6 +21,16 @@
  *
  * Based on net/ipv4/xfrm4_tunnel.c
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C)2003,2004 USAGI/WIDE Project
+ *
+ * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
+ *		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+ *
+ * Based on net/ipv4/xfrm4_tunnel.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/xfrm.h>
@@ -45,7 +56,11 @@ struct xfrm6_tunnel_net {
 	u32 spi;
 };
 
+<<<<<<< HEAD
 static int xfrm6_tunnel_net_id __read_mostly;
+=======
+static unsigned int xfrm6_tunnel_net_id __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct xfrm6_tunnel_net *xfrm6_tunnel_pernet(struct net *net)
 {
 	return net_generic(net, xfrm6_tunnel_net_id);
@@ -60,7 +75,11 @@ struct xfrm6_tunnel_spi {
 	struct hlist_node	list_byspi;
 	xfrm_address_t		addr;
 	u32			spi;
+<<<<<<< HEAD
 	atomic_t		refcnt;
+=======
+	refcount_t		refcnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rcu_head		rcu_head;
 };
 
@@ -68,11 +87,19 @@ static DEFINE_SPINLOCK(xfrm6_tunnel_spi_lock);
 
 static struct kmem_cache *xfrm6_tunnel_spi_kmem __read_mostly;
 
+<<<<<<< HEAD
 static inline unsigned xfrm6_tunnel_spi_hash_byaddr(const xfrm_address_t *addr)
 {
 	unsigned h;
 
 	h = (__force u32)(addr->a6[0] ^ addr->a6[1] ^ addr->a6[2] ^ addr->a6[3]);
+=======
+static inline unsigned int xfrm6_tunnel_spi_hash_byaddr(const xfrm_address_t *addr)
+{
+	unsigned int h;
+
+	h = ipv6_addr_hash((const struct in6_addr *)addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h ^= h >> 16;
 	h ^= h >> 8;
 	h &= XFRM6_TUNNEL_SPI_BYADDR_HSIZE - 1;
@@ -80,7 +107,11 @@ static inline unsigned xfrm6_tunnel_spi_hash_byaddr(const xfrm_address_t *addr)
 	return h;
 }
 
+<<<<<<< HEAD
 static inline unsigned xfrm6_tunnel_spi_hash_byspi(u32 spi)
+=======
+static inline unsigned int xfrm6_tunnel_spi_hash_byspi(u32 spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return spi % XFRM6_TUNNEL_SPI_BYSPI_HSIZE;
 }
@@ -89,12 +120,20 @@ static struct xfrm6_tunnel_spi *__xfrm6_tunnel_spi_lookup(struct net *net, const
 {
 	struct xfrm6_tunnel_net *xfrm6_tn = xfrm6_tunnel_pernet(net);
 	struct xfrm6_tunnel_spi *x6spi;
+<<<<<<< HEAD
 	struct hlist_node *pos;
 
 	hlist_for_each_entry_rcu(x6spi, pos,
 			     &xfrm6_tn->spi_byaddr[xfrm6_tunnel_spi_hash_byaddr(saddr)],
 			     list_byaddr) {
 		if (memcmp(&x6spi->addr, saddr, sizeof(x6spi->addr)) == 0)
+=======
+
+	hlist_for_each_entry_rcu(x6spi,
+			     &xfrm6_tn->spi_byaddr[xfrm6_tunnel_spi_hash_byaddr(saddr)],
+			     list_byaddr, lockdep_is_held(&xfrm6_tunnel_spi_lock)) {
+		if (xfrm6_addr_equal(&x6spi->addr, saddr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return x6spi;
 	}
 
@@ -112,7 +151,10 @@ __be32 xfrm6_tunnel_spi_lookup(struct net *net, const xfrm_address_t *saddr)
 	rcu_read_unlock_bh();
 	return htonl(spi);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(xfrm6_tunnel_spi_lookup);
 
 static int __xfrm6_tunnel_spi_check(struct net *net, u32 spi)
@@ -120,9 +162,14 @@ static int __xfrm6_tunnel_spi_check(struct net *net, u32 spi)
 	struct xfrm6_tunnel_net *xfrm6_tn = xfrm6_tunnel_pernet(net);
 	struct xfrm6_tunnel_spi *x6spi;
 	int index = xfrm6_tunnel_spi_hash_byspi(spi);
+<<<<<<< HEAD
 	struct hlist_node *pos;
 
 	hlist_for_each_entry(x6spi, pos,
+=======
+
+	hlist_for_each_entry(x6spi,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     &xfrm6_tn->spi_byspi[index],
 			     list_byspi) {
 		if (x6spi->spi == spi)
@@ -148,6 +195,12 @@ static u32 __xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
 		index = __xfrm6_tunnel_spi_check(net, spi);
 		if (index >= 0)
 			goto alloc_spi;
+<<<<<<< HEAD
+=======
+
+		if (spi == XFRM6_TUNNEL_SPI_MAX)
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (spi = XFRM6_TUNNEL_SPI_MIN; spi < xfrm6_tn->spi; spi++) {
 		index = __xfrm6_tunnel_spi_check(net, spi);
@@ -164,7 +217,11 @@ alloc_spi:
 
 	memcpy(&x6spi->addr, saddr, sizeof(x6spi->addr));
 	x6spi->spi = spi;
+<<<<<<< HEAD
 	atomic_set(&x6spi->refcnt, 1);
+=======
+	refcount_set(&x6spi->refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hlist_add_head_rcu(&x6spi->list_byspi, &xfrm6_tn->spi_byspi[index]);
 
@@ -182,7 +239,11 @@ __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
 	spin_lock_bh(&xfrm6_tunnel_spi_lock);
 	x6spi = __xfrm6_tunnel_spi_lookup(net, saddr);
 	if (x6spi) {
+<<<<<<< HEAD
 		atomic_inc(&x6spi->refcnt);
+=======
+		refcount_inc(&x6spi->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi = x6spi->spi;
 	} else
 		spi = __xfrm6_tunnel_alloc_spi(net, saddr);
@@ -190,7 +251,10 @@ __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr)
 
 	return htonl(spi);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(xfrm6_tunnel_alloc_spi);
 
 static void x6spi_destroy_rcu(struct rcu_head *head)
@@ -203,6 +267,7 @@ static void xfrm6_tunnel_free_spi(struct net *net, xfrm_address_t *saddr)
 {
 	struct xfrm6_tunnel_net *xfrm6_tn = xfrm6_tunnel_pernet(net);
 	struct xfrm6_tunnel_spi *x6spi;
+<<<<<<< HEAD
 	struct hlist_node *pos, *n;
 
 	spin_lock_bh(&xfrm6_tunnel_spi_lock);
@@ -213,6 +278,18 @@ static void xfrm6_tunnel_free_spi(struct net *net, xfrm_address_t *saddr)
 	{
 		if (memcmp(&x6spi->addr, saddr, sizeof(x6spi->addr)) == 0) {
 			if (atomic_dec_and_test(&x6spi->refcnt)) {
+=======
+	struct hlist_node *n;
+
+	spin_lock_bh(&xfrm6_tunnel_spi_lock);
+
+	hlist_for_each_entry_safe(x6spi, n,
+				  &xfrm6_tn->spi_byaddr[xfrm6_tunnel_spi_hash_byaddr(saddr)],
+				  list_byaddr)
+	{
+		if (xfrm6_addr_equal(&x6spi->addr, saddr)) {
+			if (refcount_dec_and_test(&x6spi->refcnt)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hlist_del_rcu(&x6spi->list_byaddr);
 				hlist_del_rcu(&x6spi->list_byspi);
 				call_rcu(&x6spi->rcu_head, x6spi_destroy_rcu);
@@ -241,7 +318,11 @@ static int xfrm6_tunnel_rcv(struct sk_buff *skb)
 	__be32 spi;
 
 	spi = xfrm6_tunnel_spi_lookup(net, (const xfrm_address_t *)&iph->saddr);
+<<<<<<< HEAD
 	return xfrm6_rcv_spi(skb, IPPROTO_IPV6, spi);
+=======
+	return xfrm6_rcv_spi(skb, IPPROTO_IPV6, spi, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm6_tunnel_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
@@ -285,6 +366,7 @@ static int xfrm6_tunnel_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int xfrm6_tunnel_init_state(struct xfrm_state *x)
 {
 	if (x->props.mode != XFRM_MODE_TUNNEL)
@@ -292,6 +374,19 @@ static int xfrm6_tunnel_init_state(struct xfrm_state *x)
 
 	if (x->encap)
 		return -EINVAL;
+=======
+static int xfrm6_tunnel_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
+{
+	if (x->props.mode != XFRM_MODE_TUNNEL) {
+		NL_SET_ERR_MSG(extack, "IPv6 tunnel can only be used with tunnel mode");
+		return -EINVAL;
+	}
+
+	if (x->encap) {
+		NL_SET_ERR_MSG(extack, "IPv6 tunnel is not compatible with encapsulation");
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x->props.header_len = sizeof(struct ipv6hdr);
 
@@ -306,7 +401,10 @@ static void xfrm6_tunnel_destroy(struct xfrm_state *x)
 }
 
 static const struct xfrm_type xfrm6_tunnel_type = {
+<<<<<<< HEAD
 	.description	= "IP6IP6",
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner          = THIS_MODULE,
 	.proto		= IPPROTO_IPV6,
 	.init_state	= xfrm6_tunnel_init_state,
@@ -318,13 +416,21 @@ static const struct xfrm_type xfrm6_tunnel_type = {
 static struct xfrm6_tunnel xfrm6_tunnel_handler __read_mostly = {
 	.handler	= xfrm6_tunnel_rcv,
 	.err_handler	= xfrm6_tunnel_err,
+<<<<<<< HEAD
 	.priority	= 2,
+=======
+	.priority	= 3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xfrm6_tunnel xfrm46_tunnel_handler __read_mostly = {
 	.handler	= xfrm6_tunnel_rcv,
 	.err_handler	= xfrm6_tunnel_err,
+<<<<<<< HEAD
 	.priority	= 2,
+=======
+	.priority	= 3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __net_init xfrm6_tunnel_net_init(struct net *net)
@@ -343,6 +449,20 @@ static int __net_init xfrm6_tunnel_net_init(struct net *net)
 
 static void __net_exit xfrm6_tunnel_net_exit(struct net *net)
 {
+<<<<<<< HEAD
+=======
+	struct xfrm6_tunnel_net *xfrm6_tn = xfrm6_tunnel_pernet(net);
+	unsigned int i;
+
+	xfrm_flush_gc();
+	xfrm_state_flush(net, 0, false, true);
+
+	for (i = 0; i < XFRM6_TUNNEL_SPI_BYADDR_HSIZE; i++)
+		WARN_ON_ONCE(!hlist_empty(&xfrm6_tn->spi_byaddr[i]));
+
+	for (i = 0; i < XFRM6_TUNNEL_SPI_BYSPI_HSIZE; i++)
+		WARN_ON_ONCE(!hlist_empty(&xfrm6_tn->spi_byspi[i]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations xfrm6_tunnel_net_ops = {
@@ -356,10 +476,14 @@ static int __init xfrm6_tunnel_init(void)
 {
 	int rv;
 
+<<<<<<< HEAD
 	xfrm6_tunnel_spi_kmem = kmem_cache_create("xfrm6_tunnel_spi",
 						  sizeof(struct xfrm6_tunnel_spi),
 						  0, SLAB_HWCACHE_ALIGN,
 						  NULL);
+=======
+	xfrm6_tunnel_spi_kmem = KMEM_CACHE(xfrm6_tunnel_spi, SLAB_HWCACHE_ALIGN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xfrm6_tunnel_spi_kmem)
 		return -ENOMEM;
 	rv = register_pernet_subsys(&xfrm6_tunnel_net_ops);
@@ -393,10 +517,21 @@ static void __exit xfrm6_tunnel_fini(void)
 	xfrm6_tunnel_deregister(&xfrm6_tunnel_handler, AF_INET6);
 	xfrm_unregister_type(&xfrm6_tunnel_type, AF_INET6);
 	unregister_pernet_subsys(&xfrm6_tunnel_net_ops);
+<<<<<<< HEAD
+=======
+	/* Someone maybe has gotten the xfrm6_tunnel_spi.
+	 * So need to wait it.
+	 */
+	rcu_barrier();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(xfrm6_tunnel_spi_kmem);
 }
 
 module_init(xfrm6_tunnel_init);
 module_exit(xfrm6_tunnel_fini);
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("IPv6 XFRM tunnel driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_XFRM_TYPE(AF_INET6, XFRM_PROTO_IPV6);

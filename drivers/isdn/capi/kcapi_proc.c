@@ -108,6 +108,7 @@ static const struct seq_operations seq_contrstats_ops = {
 	.show	= contrstats_show,
 };
 
+<<<<<<< HEAD
 static int seq_controller_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &seq_controller_ops);
@@ -134,6 +135,8 @@ static const struct file_operations proc_contrstats_ops = {
 	.release	= seq_release,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // /proc/capi/applications:
 //      applid l3cnt dblkcnt dblklen #ncci recvqueuelen
 // /proc/capi/applstats:
@@ -216,6 +219,7 @@ static const struct seq_operations seq_applstats_ops = {
 	.show	= applstats_show,
 };
 
+<<<<<<< HEAD
 static int
 seq_applications_open(struct inode *inode, struct file *file)
 {
@@ -293,6 +297,20 @@ static const struct file_operations proc_driver_ops = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= seq_release,
+=======
+// ---------------------------------------------------------------------------
+
+/* /proc/capi/drivers is always empty */
+static ssize_t empty_read(struct file *file, char __user *buf,
+			  size_t size, loff_t *off)
+{
+	return 0;
+}
+
+static const struct proc_ops empty_proc_ops = {
+	.proc_read	= empty_read,
+	.proc_lseek	= default_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 // ---------------------------------------------------------------------------
@@ -302,6 +320,7 @@ kcapi_proc_init(void)
 {
 	proc_mkdir("capi",             NULL);
 	proc_mkdir("capi/controllers", NULL);
+<<<<<<< HEAD
 	proc_create("capi/controller",   0, NULL, &proc_controller_ops);
 	proc_create("capi/contrstats",   0, NULL, &proc_contrstats_ops);
 	proc_create("capi/applications", 0, NULL, &proc_applications_ops);
@@ -310,6 +329,16 @@ kcapi_proc_init(void)
 }
 
 void __exit
+=======
+	proc_create_seq("capi/controller",   0, NULL, &seq_controller_ops);
+	proc_create_seq("capi/contrstats",   0, NULL, &seq_contrstats_ops);
+	proc_create_seq("capi/applications", 0, NULL, &seq_applications_ops);
+	proc_create_seq("capi/applstats",    0, NULL, &seq_applstats_ops);
+	proc_create("capi/driver",           0, NULL, &empty_proc_ops);
+}
+
+void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 kcapi_proc_exit(void)
 {
 	remove_proc_entry("capi/driver",       NULL);

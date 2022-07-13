@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 pagetable management routines.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006, 2007 Sony Corporation
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,17 +21,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/memblock.h>
 
 #include <asm/machdep.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/lv1call.h>
 #include <asm/ps3fb.h>
 
+<<<<<<< HEAD
+=======
+#define PS3_VERBOSE_RESULT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "platform.h"
 
 /**
@@ -43,9 +57,15 @@ enum ps3_lpar_vas_id {
 
 static DEFINE_SPINLOCK(ps3_htab_lock);
 
+<<<<<<< HEAD
 static long ps3_hpte_insert(unsigned long hpte_group, unsigned long va,
 	unsigned long pa, unsigned long rflags, unsigned long vflags,
 	int psize, int ssize)
+=======
+static long ps3_hpte_insert(unsigned long hpte_group, unsigned long vpn,
+	unsigned long pa, unsigned long rflags, unsigned long vflags,
+	int psize, int apsize, int ssize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u64 hpte_v, hpte_r;
@@ -61,8 +81,13 @@ static long ps3_hpte_insert(unsigned long hpte_group, unsigned long va,
 	 */
 	vflags &= ~HPTE_V_SECONDARY;
 
+<<<<<<< HEAD
 	hpte_v = hpte_encode_v(va, psize, ssize) | vflags | HPTE_V_VALID;
 	hpte_r = hpte_encode_r(ps3_mm_phys_to_lpar(pa), psize) | rflags;
+=======
+	hpte_v = hpte_encode_v(vpn, psize, apsize, ssize) | vflags | HPTE_V_VALID;
+	hpte_r = hpte_encode_r(ps3_mm_phys_to_lpar(pa), psize, apsize) | rflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&ps3_htab_lock, flags);
 
@@ -75,8 +100,14 @@ static long ps3_hpte_insert(unsigned long hpte_group, unsigned long va,
 
 	if (result) {
 		/* all entries bolted !*/
+<<<<<<< HEAD
 		pr_info("%s:result=%d va=%lx pa=%lx ix=%lx v=%llx r=%llx\n",
 			__func__, result, va, pa, hpte_group, hpte_v, hpte_r);
+=======
+		pr_info("%s:result=%s vpn=%lx pa=%lx ix=%lx v=%llx r=%llx\n",
+			__func__, ps3_result(result), vpn, pa, hpte_group,
+			hpte_v, hpte_r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 	}
 
@@ -107,7 +138,12 @@ static long ps3_hpte_remove(unsigned long hpte_group)
 }
 
 static long ps3_hpte_updatepp(unsigned long slot, unsigned long newpp,
+<<<<<<< HEAD
 	unsigned long va, int psize, int ssize, int local)
+=======
+			      unsigned long vpn, int psize, int apsize,
+			      int ssize, unsigned long inv_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u64 hpte_v, want_v, hpte_rs;
@@ -115,7 +151,11 @@ static long ps3_hpte_updatepp(unsigned long slot, unsigned long newpp,
 	unsigned long flags;
 	long ret;
 
+<<<<<<< HEAD
 	want_v = hpte_encode_v(va, psize, ssize);
+=======
+	want_v = hpte_encode_avpn(vpn, psize, ssize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&ps3_htab_lock, flags);
 
@@ -125,8 +165,13 @@ static long ps3_hpte_updatepp(unsigned long slot, unsigned long newpp,
 				       &hpte_rs);
 
 	if (result) {
+<<<<<<< HEAD
 		pr_info("%s: res=%d read va=%lx slot=%lx psize=%d\n",
 			__func__, result, va, slot, psize);
+=======
+		pr_info("%s: result=%s read vpn=%lx slot=%lx psize=%d\n",
+			__func__, ps3_result(result), vpn, slot, psize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 	}
 
@@ -156,11 +201,19 @@ static long ps3_hpte_updatepp(unsigned long slot, unsigned long newpp,
 static void ps3_hpte_updateboltedpp(unsigned long newpp, unsigned long ea,
 	int psize, int ssize)
 {
+<<<<<<< HEAD
 	panic("ps3_hpte_updateboltedpp() not implemented");
 }
 
 static void ps3_hpte_invalidate(unsigned long slot, unsigned long va,
 	int psize, int ssize, int local)
+=======
+	pr_info("ps3_hpte_updateboltedpp() not implemented");
+}
+
+static void ps3_hpte_invalidate(unsigned long slot, unsigned long vpn,
+				int psize, int apsize, int ssize, int local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int result;
@@ -170,15 +223,25 @@ static void ps3_hpte_invalidate(unsigned long slot, unsigned long va,
 	result = lv1_write_htab_entry(PS3_LPAR_VAS_ID_CURRENT, slot, 0, 0);
 
 	if (result) {
+<<<<<<< HEAD
 		pr_info("%s: res=%d va=%lx slot=%lx psize=%d\n",
 			__func__, result, va, slot, psize);
+=======
+		pr_info("%s: result=%s vpn=%lx slot=%lx psize=%d\n",
+			__func__, ps3_result(result), vpn, slot, psize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 	}
 
 	spin_unlock_irqrestore(&ps3_htab_lock, flags);
 }
 
+<<<<<<< HEAD
 static void ps3_hpte_clear(void)
+=======
+/* Called during kexec sequence with MMU off */
+static notrace void ps3_hpte_clear(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long hpte_count = (1UL << ppc64_pft_size) >> 4;
 	u64 i;
@@ -192,12 +255,21 @@ static void ps3_hpte_clear(void)
 
 void __init ps3_hpte_init(unsigned long htab_size)
 {
+<<<<<<< HEAD
 	ppc_md.hpte_invalidate = ps3_hpte_invalidate;
 	ppc_md.hpte_updatepp = ps3_hpte_updatepp;
 	ppc_md.hpte_updateboltedpp = ps3_hpte_updateboltedpp;
 	ppc_md.hpte_insert = ps3_hpte_insert;
 	ppc_md.hpte_remove = ps3_hpte_remove;
 	ppc_md.hpte_clear_all = ps3_hpte_clear;
+=======
+	mmu_hash_ops.hpte_invalidate = ps3_hpte_invalidate;
+	mmu_hash_ops.hpte_updatepp = ps3_hpte_updatepp;
+	mmu_hash_ops.hpte_updateboltedpp = ps3_hpte_updateboltedpp;
+	mmu_hash_ops.hpte_insert = ps3_hpte_insert;
+	mmu_hash_ops.hpte_remove = ps3_hpte_remove;
+	mmu_hash_ops.hpte_clear_all = ps3_hpte_clear;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ppc64_pft_size = __ilog2(htab_size);
 }

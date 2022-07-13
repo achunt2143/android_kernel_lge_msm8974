@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *  Copyright (c) 2006-2010 Jiri Kosina
@@ -6,6 +10,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
@@ -60,10 +67,62 @@ static const struct {
 	__s32 y;
 }  hid_hat_to_axis[] = {{ 0, 0}, { 0,-1}, { 1,-1}, { 1, 0}, { 1, 1}, { 0, 1}, {-1, 1}, {-1, 0}, {-1,-1}};
 
+<<<<<<< HEAD
+=======
+struct usage_priority {
+	__u32 usage;			/* the HID usage associated */
+	bool global;			/* we assume all usages to be slotted,
+					 * unless global
+					 */
+	unsigned int slot_overwrite;	/* for globals: allows to set the usage
+					 * before or after the slots
+					 */
+};
+
+/*
+ * hid-input will convert this list into priorities:
+ * the first element will have the highest priority
+ * (the length of the following array) and the last
+ * element the lowest (1).
+ *
+ * hid-input will then shift the priority by 8 bits to leave some space
+ * in case drivers want to interleave other fields.
+ *
+ * To accommodate slotted devices, the slot priority is
+ * defined in the next 8 bits (defined by 0xff - slot).
+ *
+ * If drivers want to add fields before those, hid-input will
+ * leave out the first 8 bits of the priority value.
+ *
+ * This still leaves us 65535 individual priority values.
+ */
+static const struct usage_priority hidinput_usages_priorities[] = {
+	{ /* Eraser (eraser touching) must always come before tipswitch */
+	  .usage = HID_DG_ERASER,
+	},
+	{ /* Invert must always come before In Range */
+	  .usage = HID_DG_INVERT,
+	},
+	{ /* Is the tip of the tool touching? */
+	  .usage = HID_DG_TIPSWITCH,
+	},
+	{ /* Tip Pressure might emulate tip switch */
+	  .usage = HID_DG_TIPPRESSURE,
+	},
+	{ /* In Range needs to come after the other tool states */
+	  .usage = HID_DG_INRANGE,
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define map_abs(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_ABS, (c))
 #define map_rel(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_REL, (c))
 #define map_key(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_KEY, (c))
 #define map_led(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_LED, (c))
+<<<<<<< HEAD
+=======
+#define map_msc(c)	hid_map_usage(hidinput, usage, &bit, &max, EV_MSC, (c))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define map_abs_clear(c)	hid_map_usage_clear(hidinput, usage, &bit, \
 		&max, EV_ABS, (c))
@@ -172,6 +231,10 @@ static int hidinput_setkeycode(struct input_dev *dev,
 	if (usage) {
 		*old_keycode = usage->type == EV_KEY ?
 				usage->code : KEY_RESERVED;
+<<<<<<< HEAD
+=======
+		usage->type = EV_KEY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usage->code = ke->keycode;
 
 		clear_bit(*old_keycode, dev->keybit);
@@ -208,7 +271,11 @@ static int hidinput_setkeycode(struct input_dev *dev,
  * Only exponent 1 length units are processed. Centimeters and inches are
  * converted to millimeters. Degrees are converted to radians.
  */
+<<<<<<< HEAD
 static __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
+=======
+__s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__s32 unit_exponent = field->unit_exponent;
 	__s32 logical_extents = field->logical_maximum -
@@ -225,7 +292,20 @@ static __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
 	 * Verify and convert units.
 	 * See HID specification v1.11 6.2.2.7 Global Items for unit decoding
 	 */
+<<<<<<< HEAD
 	if (code == ABS_X || code == ABS_Y || code == ABS_Z) {
+=======
+	switch (code) {
+	case ABS_X:
+	case ABS_Y:
+	case ABS_Z:
+	case ABS_MT_POSITION_X:
+	case ABS_MT_POSITION_Y:
+	case ABS_MT_TOOL_X:
+	case ABS_MT_TOOL_Y:
+	case ABS_MT_TOUCH_MAJOR:
+	case ABS_MT_TOUCH_MINOR:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (field->unit == 0x11) {		/* If centimeters */
 			/* Convert to millimeters */
 			unit_exponent += 1;
@@ -239,7 +319,18 @@ static __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
 		} else {
 			return 0;
 		}
+<<<<<<< HEAD
 	} else if (code == ABS_RX || code == ABS_RY || code == ABS_RZ) {
+=======
+		break;
+
+	case ABS_RX:
+	case ABS_RY:
+	case ABS_RZ:
+	case ABS_WHEEL:
+	case ABS_TILT_X:
+	case ABS_TILT_Y:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (field->unit == 0x14) {		/* If degrees */
 			/* Convert to radians */
 			prev = logical_extents;
@@ -250,7 +341,13 @@ static __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
 		} else if (field->unit != 0x12) {	/* If not radians */
 			return 0;
 		}
+<<<<<<< HEAD
 	} else {
+=======
+		break;
+
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -270,8 +367,14 @@ static __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code)
 	}
 
 	/* Calculate resolution */
+<<<<<<< HEAD
 	return logical_extents / physical_extents;
 }
+=======
+	return DIV_ROUND_CLOSEST(logical_extents, physical_extents);
+}
+EXPORT_SYMBOL_GPL(hidinput_calc_abs_res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HID_BATTERY_STRENGTH
 static enum power_supply_property hidinput_battery_props[] = {
@@ -285,14 +388,90 @@ static enum power_supply_property hidinput_battery_props[] = {
 
 #define HID_BATTERY_QUIRK_PERCENT	(1 << 0) /* always reports percent */
 #define HID_BATTERY_QUIRK_FEATURE	(1 << 1) /* ask for feature report */
+<<<<<<< HEAD
 
 static const struct hid_device_id hid_battery_quirks[] = {
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
 			       USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI),
+=======
+#define HID_BATTERY_QUIRK_IGNORE	(1 << 2) /* completely ignore the battery */
+#define HID_BATTERY_QUIRK_AVOID_QUERY	(1 << 3) /* do not query the battery */
+
+static const struct hid_device_id hid_battery_quirks[] = {
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+		USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO),
+	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+		USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI),
+	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+		USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI),
+	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+			       USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
 		USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI),
 	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
+<<<<<<< HEAD
+=======
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+		USB_DEVICE_ID_APPLE_MAGICTRACKPAD),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_ELECOM,
+		USB_DEVICE_ID_ELECOM_BM084),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_SYMBOL,
+		USB_DEVICE_ID_SYMBOL_SCANNER_3),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_ASUSTEK,
+		USB_DEVICE_ID_ASUSTEK_T100CHI_KEYBOARD),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_LOGITECH,
+		USB_DEVICE_ID_LOGITECH_DINOVO_EDGE_KBD),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_ASUS_TP420IA_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_ASUS_GV301RA_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_ELAN, USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_ELAN, USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_L),
+	  HID_BATTERY_QUIRK_AVOID_QUERY },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_PRO_MW),
+	  HID_BATTERY_QUIRK_AVOID_QUERY },
+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGEE, USB_DEVICE_ID_UGEE_XPPEN_TABLET_DECO_PRO_SW),
+	  HID_BATTERY_QUIRK_AVOID_QUERY },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15T_DR100),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_EU0009NV),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_15),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_13_AW0020NG),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO2_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_LENOVO_YOGA_C630_TOUCHSCREEN),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_13T_AW100),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_14T_EA100_V1),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_14T_EA100_V2),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15_EU0556NG),
+	  HID_BATTERY_QUIRK_IGNORE },
+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_CHROMEBOOK_TROGDOR_POMPOM),
+	  HID_BATTERY_QUIRK_AVOID_QUERY },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
@@ -308,13 +487,54 @@ static unsigned find_battery_quirk(struct hid_device *hdev)
 	return quirks;
 }
 
+<<<<<<< HEAD
+=======
+static int hidinput_scale_battery_capacity(struct hid_device *dev,
+					   int value)
+{
+	if (dev->battery_min < dev->battery_max &&
+	    value >= dev->battery_min && value <= dev->battery_max)
+		value = ((value - dev->battery_min) * 100) /
+			(dev->battery_max - dev->battery_min);
+
+	return value;
+}
+
+static int hidinput_query_battery_capacity(struct hid_device *dev)
+{
+	u8 *buf;
+	int ret;
+
+	buf = kmalloc(4, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = hid_hw_raw_request(dev, dev->battery_report_id, buf, 4,
+				 dev->battery_report_type, HID_REQ_GET_REPORT);
+	if (ret < 2) {
+		kfree(buf);
+		return -ENODATA;
+	}
+
+	ret = hidinput_scale_battery_capacity(dev, buf[1]);
+	kfree(buf);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hidinput_get_battery_property(struct power_supply *psy,
 					 enum power_supply_property prop,
 					 union power_supply_propval *val)
 {
+<<<<<<< HEAD
 	struct hid_device *dev = container_of(psy, struct hid_device, battery);
 	int ret = 0;
 	__u8 *buf;
+=======
+	struct hid_device *dev = power_supply_get_drvdata(psy);
+	int value;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (prop) {
 	case POWER_SUPPLY_PROP_PRESENT:
@@ -323,6 +543,7 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 		break;
 
 	case POWER_SUPPLY_PROP_CAPACITY:
+<<<<<<< HEAD
 
 		buf = kmalloc(2 * sizeof(__u8), GFP_KERNEL);
 		if (!buf) {
@@ -346,6 +567,18 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 			val->intval = (100 * (buf[1] - dev->battery_min)) /
 				(dev->battery_max - dev->battery_min);
 		kfree(buf);
+=======
+		if (dev->battery_status != HID_BATTERY_REPORTED &&
+		    !dev->battery_avoid_query) {
+			value = hidinput_query_battery_capacity(dev);
+			if (value < 0)
+				return value;
+		} else  {
+			value = dev->battery_capacity;
+		}
+
+		val->intval = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case POWER_SUPPLY_PROP_MODEL_NAME:
@@ -353,7 +586,24 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 		break;
 
 	case POWER_SUPPLY_PROP_STATUS:
+<<<<<<< HEAD
 		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+=======
+		if (dev->battery_status != HID_BATTERY_REPORTED &&
+		    !dev->battery_avoid_query) {
+			value = hidinput_query_battery_capacity(dev);
+			if (value < 0)
+				return value;
+
+			dev->battery_capacity = value;
+			dev->battery_status = HID_BATTERY_QUERIED;
+		}
+
+		if (dev->battery_status == HID_BATTERY_UNKNOWN)
+			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
+		else
+			val->intval = dev->battery_charge_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case POWER_SUPPLY_PROP_SCOPE:
@@ -368,6 +618,7 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 	return ret;
 }
 
+<<<<<<< HEAD
 static bool hidinput_setup_battery(struct hid_device *dev, unsigned report_type, struct hid_field *field)
 {
 	struct power_supply *battery = &dev->battery;
@@ -390,16 +641,57 @@ static bool hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
 	battery->num_properties = ARRAY_SIZE(hidinput_battery_props);
 	battery->use_for_apm = 0;
 	battery->get_property = hidinput_get_battery_property;
+=======
+static int hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
+				  struct hid_field *field, bool is_percentage)
+{
+	struct power_supply_desc *psy_desc;
+	struct power_supply_config psy_cfg = { .drv_data = dev, };
+	unsigned quirks;
+	s32 min, max;
+	int error;
+
+	if (dev->battery)
+		return 0;	/* already initialized? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	quirks = find_battery_quirk(dev);
 
 	hid_dbg(dev, "device %x:%x:%x %d quirks %d\n",
 		dev->bus, dev->vendor, dev->product, dev->version, quirks);
 
+<<<<<<< HEAD
 	min = field->logical_minimum;
 	max = field->logical_maximum;
 
 	if (quirks & HID_BATTERY_QUIRK_PERCENT) {
+=======
+	if (quirks & HID_BATTERY_QUIRK_IGNORE)
+		return 0;
+
+	psy_desc = kzalloc(sizeof(*psy_desc), GFP_KERNEL);
+	if (!psy_desc)
+		return -ENOMEM;
+
+	psy_desc->name = kasprintf(GFP_KERNEL, "hid-%s-battery",
+				   strlen(dev->uniq) ?
+					dev->uniq : dev_name(&dev->dev));
+	if (!psy_desc->name) {
+		error = -ENOMEM;
+		goto err_free_mem;
+	}
+
+	psy_desc->type = POWER_SUPPLY_TYPE_BATTERY;
+	psy_desc->properties = hidinput_battery_props;
+	psy_desc->num_properties = ARRAY_SIZE(hidinput_battery_props);
+	psy_desc->use_for_apm = 0;
+	psy_desc->get_property = hidinput_get_battery_property;
+
+	min = field->logical_minimum;
+	max = field->logical_maximum;
+
+	if (is_percentage || (quirks & HID_BATTERY_QUIRK_PERCENT)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		min = 0;
 		max = 100;
 	}
@@ -411,6 +703,7 @@ static bool hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
 	dev->battery_max = max;
 	dev->battery_report_type = report_type;
 	dev->battery_report_id = field->report->id;
+<<<<<<< HEAD
 
 	ret = power_supply_register(&dev->dev, battery);
 	if (ret != 0) {
@@ -423,10 +716,42 @@ static bool hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
 
 out:
 	return true;
+=======
+	dev->battery_charge_status = POWER_SUPPLY_STATUS_DISCHARGING;
+
+	/*
+	 * Stylus is normally not connected to the device and thus we
+	 * can't query the device and get meaningful battery strength.
+	 * We have to wait for the device to report it on its own.
+	 */
+	dev->battery_avoid_query = report_type == HID_INPUT_REPORT &&
+				   field->physical == HID_DG_STYLUS;
+
+	if (quirks & HID_BATTERY_QUIRK_AVOID_QUERY)
+		dev->battery_avoid_query = true;
+
+	dev->battery = power_supply_register(&dev->dev, psy_desc, &psy_cfg);
+	if (IS_ERR(dev->battery)) {
+		error = PTR_ERR(dev->battery);
+		hid_warn(dev, "can't register power supply: %d\n", error);
+		goto err_free_name;
+	}
+
+	power_supply_powers(dev->battery, &dev->dev);
+	return 0;
+
+err_free_name:
+	kfree(psy_desc->name);
+err_free_mem:
+	kfree(psy_desc);
+	dev->battery = NULL;
+	return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hidinput_cleanup_battery(struct hid_device *dev)
 {
+<<<<<<< HEAD
 	if (!dev->battery.name)
 		return;
 
@@ -452,6 +777,96 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 	struct input_dev *input = hidinput->input;
 	struct hid_device *device = input_get_drvdata(input);
 	int max = 0, code;
+=======
+	const struct power_supply_desc *psy_desc;
+
+	if (!dev->battery)
+		return;
+
+	psy_desc = dev->battery->desc;
+	power_supply_unregister(dev->battery);
+	kfree(psy_desc->name);
+	kfree(psy_desc);
+	dev->battery = NULL;
+}
+
+static void hidinput_update_battery(struct hid_device *dev, int value)
+{
+	int capacity;
+
+	if (!dev->battery)
+		return;
+
+	if (value == 0 || value < dev->battery_min || value > dev->battery_max)
+		return;
+
+	capacity = hidinput_scale_battery_capacity(dev, value);
+
+	if (dev->battery_status != HID_BATTERY_REPORTED ||
+	    capacity != dev->battery_capacity ||
+	    ktime_after(ktime_get_coarse(), dev->battery_ratelimit_time)) {
+		dev->battery_capacity = capacity;
+		dev->battery_status = HID_BATTERY_REPORTED;
+		dev->battery_ratelimit_time =
+			ktime_add_ms(ktime_get_coarse(), 30 * 1000);
+		power_supply_changed(dev->battery);
+	}
+}
+
+static bool hidinput_set_battery_charge_status(struct hid_device *dev,
+					       unsigned int usage, int value)
+{
+	switch (usage) {
+	case HID_BAT_CHARGING:
+		dev->battery_charge_status = value ?
+					     POWER_SUPPLY_STATUS_CHARGING :
+					     POWER_SUPPLY_STATUS_DISCHARGING;
+		return true;
+	}
+
+	return false;
+}
+#else  /* !CONFIG_HID_BATTERY_STRENGTH */
+static int hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
+				  struct hid_field *field, bool is_percentage)
+{
+	return 0;
+}
+
+static void hidinput_cleanup_battery(struct hid_device *dev)
+{
+}
+
+static void hidinput_update_battery(struct hid_device *dev, int value)
+{
+}
+
+static bool hidinput_set_battery_charge_status(struct hid_device *dev,
+					       unsigned int usage, int value)
+{
+	return false;
+}
+#endif	/* CONFIG_HID_BATTERY_STRENGTH */
+
+static bool hidinput_field_in_collection(struct hid_device *device, struct hid_field *field,
+					 unsigned int type, unsigned int usage)
+{
+	struct hid_collection *collection;
+
+	collection = &device->collection[field->usage->collection_index];
+
+	return collection->type == type && collection->usage == usage;
+}
+
+static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_field *field,
+				     struct hid_usage *usage, unsigned int usage_index)
+{
+	struct input_dev *input = hidinput->input;
+	struct hid_device *device = input_get_drvdata(input);
+	const struct usage_priority *usage_priority = NULL;
+	int max = 0, code;
+	unsigned int i = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *bit = NULL;
 
 	field->hidinput = hidinput;
@@ -469,6 +884,31 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		goto ignore;
 	}
 
+<<<<<<< HEAD
+=======
+	/* assign a priority based on the static list declared here */
+	for (i = 0; i < ARRAY_SIZE(hidinput_usages_priorities); i++) {
+		if (usage->hid == hidinput_usages_priorities[i].usage) {
+			usage_priority = &hidinput_usages_priorities[i];
+
+			field->usages_priorities[usage_index] =
+				(ARRAY_SIZE(hidinput_usages_priorities) - i) << 8;
+			break;
+		}
+	}
+
+	/*
+	 * For slotted devices, we need to also add the slot index
+	 * in the priority.
+	 */
+	if (usage_priority && usage_priority->global)
+		field->usages_priorities[usage_index] |=
+			usage_priority->slot_overwrite;
+	else
+		field->usages_priorities[usage_index] |=
+			(0xff - field->slot_idx) << 16;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device->driver->input_mapping) {
 		int ret = device->driver->input_mapping(device, hidinput, field,
 				usage, &bit, &max);
@@ -503,9 +943,31 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 				if (code <= 0xf)
 					code += BTN_JOYSTICK;
 				else
+<<<<<<< HEAD
 					code += BTN_TRIGGER_HAPPY;
 				break;
 		case HID_GD_GAMEPAD:  code += BTN_GAMEPAD; break;
+=======
+					code += BTN_TRIGGER_HAPPY - 0x10;
+				break;
+		case HID_GD_GAMEPAD:
+				if (code <= 0xf)
+					code += BTN_GAMEPAD;
+				else
+					code += BTN_TRIGGER_HAPPY - 0x10;
+				break;
+		case HID_CP_CONSUMER_CONTROL:
+				if (hidinput_field_in_collection(device, field,
+								 HID_COLLECTION_NAMED_ARRAY,
+								 HID_CP_PROGRAMMABLEBUTTONS)) {
+					if (code <= 0x1d)
+						code += KEY_MACRO1;
+					else
+						code += BTN_TRIGGER_HAPPY - 0x1e;
+					break;
+				}
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			switch (field->physical) {
 			case HID_GD_MOUSE:
@@ -553,6 +1015,34 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		if ((usage->hid & 0xf0) == 0xa0) {	/* SystemControl */
+			switch (usage->hid & 0xf) {
+			case 0x9: map_key_clear(KEY_MICMUTE); break;
+			default: goto ignore;
+			}
+			break;
+		}
+
+		if ((usage->hid & 0xf0) == 0xb0) {	/* SC - Display */
+			switch (usage->hid & 0xf) {
+			case 0x05: map_key_clear(KEY_SWITCHVIDEOMODE); break;
+			default: goto ignore;
+			}
+			break;
+		}
+
+		/*
+		 * Some lazy vendors declare 255 usages for System Control,
+		 * leading to the creation of ABS_X|Y axis and too many others.
+		 * It wouldn't be a problem if joydev doesn't consider the
+		 * device as a joystick then.
+		 */
+		if (field->application == HID_GD_SYSTEM_CONTROL)
+			goto ignore;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((usage->hid & 0xf0) == 0x90) {	/* D-pad */
 			switch (usage->hid) {
 			case HID_GD_UP:	   usage->hat_dir = 1; break;
@@ -573,7 +1063,25 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		/* These usage IDs map directly to the usage codes. */
 		case HID_GD_X: case HID_GD_Y: case HID_GD_Z:
 		case HID_GD_RX: case HID_GD_RY: case HID_GD_RZ:
+<<<<<<< HEAD
 		case HID_GD_SLIDER: case HID_GD_DIAL: case HID_GD_WHEEL:
+=======
+			if (field->flags & HID_MAIN_ITEM_RELATIVE)
+				map_rel(usage->hid & 0xf);
+			else
+				map_abs_clear(usage->hid & 0xf);
+			break;
+
+		case HID_GD_WHEEL:
+			if (field->flags & HID_MAIN_ITEM_RELATIVE) {
+				set_bit(REL_WHEEL, input->relbit);
+				map_rel(REL_WHEEL_HI_RES);
+			} else {
+				map_abs(usage->hid & 0xf);
+			}
+			break;
+		case HID_GD_SLIDER: case HID_GD_DIAL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (field->flags & HID_MAIN_ITEM_RELATIVE)
 				map_rel(usage->hid & 0xf);
 			else
@@ -589,6 +1097,19 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case HID_GD_START:	map_key_clear(BTN_START);	break;
 		case HID_GD_SELECT:	map_key_clear(BTN_SELECT);	break;
 
+<<<<<<< HEAD
+=======
+		case HID_GD_RFKILL_BTN:
+			/* MS wireless radio ctl extension, also check CA */
+			if (field->application == HID_GD_WIRELESS_RADIO_CTLS) {
+				map_key_clear(KEY_RFKILL);
+				/* We need to simulate the btn release */
+				field->flags |= HID_MAIN_ITEM_RELATIVE;
+				break;
+			}
+			goto unknown;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default: goto unknown;
 		}
 
@@ -613,6 +1134,14 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		break;
 
 	case HID_UP_DIGITIZER:
+<<<<<<< HEAD
+=======
+		if ((field->application & 0xff) == 0x01) /* Digitizer */
+			__set_bit(INPUT_PROP_POINTER, input->propbit);
+		else if ((field->application & 0xff) == 0x02) /* Pen */
+			__set_bit(INPUT_PROP_DIRECT, input->propbit);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (usage->hid & 0xff) {
 		case 0x00: /* Undefined */
 			goto ignore;
@@ -627,6 +1156,7 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 			break;
 
 		case 0x32: /* InRange */
+<<<<<<< HEAD
 			switch (field->physical & 0xff) {
 			case 0x21: map_key(BTN_TOOL_MOUSE); break;
 			case 0x22: map_key(BTN_TOOL_FINGER); break;
@@ -638,6 +1168,54 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 			map_key_clear(BTN_TOOL_RUBBER);
 			break;
 
+=======
+			switch (field->physical) {
+			case HID_DG_PUCK:
+				map_key(BTN_TOOL_MOUSE);
+				break;
+			case HID_DG_FINGER:
+				map_key(BTN_TOOL_FINGER);
+				break;
+			default:
+				/*
+				 * If the physical is not given,
+				 * rely on the application.
+				 */
+				if (!field->physical) {
+					switch (field->application) {
+					case HID_DG_TOUCHSCREEN:
+					case HID_DG_TOUCHPAD:
+						map_key_clear(BTN_TOOL_FINGER);
+						break;
+					default:
+						map_key_clear(BTN_TOOL_PEN);
+					}
+				} else {
+					map_key(BTN_TOOL_PEN);
+				}
+				break;
+			}
+			break;
+
+		case 0x3b: /* Battery Strength */
+			hidinput_setup_battery(device, HID_INPUT_REPORT, field, false);
+			usage->type = EV_PWR;
+			return;
+
+		case 0x3c: /* Invert */
+			device->quirks &= ~HID_QUIRK_NOINVERT;
+			map_key_clear(BTN_TOOL_RUBBER);
+			break;
+
+		case 0x3d: /* X Tilt */
+			map_abs_clear(ABS_TILT_X);
+			break;
+
+		case 0x3e: /* Y Tilt */
+			map_abs_clear(ABS_TILT_Y);
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x33: /* Touch */
 		case 0x42: /* TipSwitch */
 		case 0x43: /* TipSwitch2 */
@@ -649,6 +1227,7 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 			map_key_clear(BTN_STYLUS);
 			break;
 
+<<<<<<< HEAD
 		case 0x46: /* TabletPick */
 			map_key_clear(BTN_STYLUS2);
 			break;
@@ -656,11 +1235,61 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x51: /* ContactID */
 			device->quirks |= HID_QUIRK_MULTITOUCH;
 			goto unknown;
+=======
+		case 0x45: /* ERASER */
+			/*
+			 * This event is reported when eraser tip touches the surface.
+			 * Actual eraser (BTN_TOOL_RUBBER) is set and released either
+			 * by Invert if tool reports proximity or by Eraser directly.
+			 */
+			if (!test_bit(BTN_TOOL_RUBBER, input->keybit)) {
+				device->quirks |= HID_QUIRK_NOINVERT;
+				set_bit(BTN_TOOL_RUBBER, input->keybit);
+			}
+			map_key_clear(BTN_TOUCH);
+			break;
+
+		case 0x46: /* TabletPick */
+		case 0x5a: /* SecondaryBarrelSwitch */
+			map_key_clear(BTN_STYLUS2);
+			break;
+
+		case 0x5b: /* TransducerSerialNumber */
+		case 0x6e: /* TransducerSerialNumber2 */
+			map_msc(MSC_SERIAL);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:  goto unknown;
 		}
 		break;
 
+<<<<<<< HEAD
+=======
+	case HID_UP_TELEPHONY:
+		switch (usage->hid & HID_USAGE) {
+		case 0x2f: map_key_clear(KEY_MICMUTE);		break;
+		case 0xb0: map_key_clear(KEY_NUMERIC_0);	break;
+		case 0xb1: map_key_clear(KEY_NUMERIC_1);	break;
+		case 0xb2: map_key_clear(KEY_NUMERIC_2);	break;
+		case 0xb3: map_key_clear(KEY_NUMERIC_3);	break;
+		case 0xb4: map_key_clear(KEY_NUMERIC_4);	break;
+		case 0xb5: map_key_clear(KEY_NUMERIC_5);	break;
+		case 0xb6: map_key_clear(KEY_NUMERIC_6);	break;
+		case 0xb7: map_key_clear(KEY_NUMERIC_7);	break;
+		case 0xb8: map_key_clear(KEY_NUMERIC_8);	break;
+		case 0xb9: map_key_clear(KEY_NUMERIC_9);	break;
+		case 0xba: map_key_clear(KEY_NUMERIC_STAR);	break;
+		case 0xbb: map_key_clear(KEY_NUMERIC_POUND);	break;
+		case 0xbc: map_key_clear(KEY_NUMERIC_A);	break;
+		case 0xbd: map_key_clear(KEY_NUMERIC_B);	break;
+		case 0xbe: map_key_clear(KEY_NUMERIC_C);	break;
+		case 0xbf: map_key_clear(KEY_NUMERIC_D);	break;
+		default: goto ignore;
+		}
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HID_UP_CONSUMER:	/* USB HUT v1.12, pages 75-84 */
 		switch (usage->hid & HID_USAGE) {
 		case 0x000: goto ignore;
@@ -689,7 +1318,26 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x06a: map_key_clear(KEY_GREEN);		break;
 		case 0x06b: map_key_clear(KEY_BLUE);		break;
 		case 0x06c: map_key_clear(KEY_YELLOW);		break;
+<<<<<<< HEAD
 		case 0x06d: map_key_clear(KEY_ZOOM);		break;
+=======
+		case 0x06d: map_key_clear(KEY_ASPECT_RATIO);	break;
+
+		case 0x06f: map_key_clear(KEY_BRIGHTNESSUP);		break;
+		case 0x070: map_key_clear(KEY_BRIGHTNESSDOWN);		break;
+		case 0x072: map_key_clear(KEY_BRIGHTNESS_TOGGLE);	break;
+		case 0x073: map_key_clear(KEY_BRIGHTNESS_MIN);		break;
+		case 0x074: map_key_clear(KEY_BRIGHTNESS_MAX);		break;
+		case 0x075: map_key_clear(KEY_BRIGHTNESS_AUTO);		break;
+
+		case 0x076: map_key_clear(KEY_CAMERA_ACCESS_ENABLE);	break;
+		case 0x077: map_key_clear(KEY_CAMERA_ACCESS_DISABLE);	break;
+		case 0x078: map_key_clear(KEY_CAMERA_ACCESS_TOGGLE);	break;
+
+		case 0x079: map_key_clear(KEY_KBDILLUMUP);	break;
+		case 0x07a: map_key_clear(KEY_KBDILLUMDOWN);	break;
+		case 0x07c: map_key_clear(KEY_KBDILLUMTOGGLE);	break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case 0x082: map_key_clear(KEY_VIDEO_NEXT);	break;
 		case 0x083: map_key_clear(KEY_LAST);		break;
@@ -731,6 +1379,14 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x0bf: map_key_clear(KEY_SLOW);		break;
 
 		case 0x0cd: map_key_clear(KEY_PLAYPAUSE);	break;
+<<<<<<< HEAD
+=======
+		case 0x0cf: map_key_clear(KEY_VOICECOMMAND);	break;
+
+		case 0x0d8: map_key_clear(KEY_DICTATE);		break;
+		case 0x0d9: map_key_clear(KEY_EMOJI_PICKER);	break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x0e0: map_abs_clear(ABS_VOLUME);		break;
 		case 0x0e2: map_key_clear(KEY_MUTE);		break;
 		case 0x0e5: map_key_clear(KEY_BASSBOOST);	break;
@@ -738,6 +1394,10 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x0ea: map_key_clear(KEY_VOLUMEDOWN);	break;
 		case 0x0f5: map_key_clear(KEY_SLOW);		break;
 
+<<<<<<< HEAD
+=======
+		case 0x181: map_key_clear(KEY_BUTTONCONFIG);	break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x182: map_key_clear(KEY_BOOKMARKS);	break;
 		case 0x183: map_key_clear(KEY_CONFIG);		break;
 		case 0x184: map_key_clear(KEY_WORDPROCESSOR);	break;
@@ -751,6 +1411,11 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x18c: map_key_clear(KEY_VOICEMAIL);	break;
 		case 0x18d: map_key_clear(KEY_ADDRESSBOOK);	break;
 		case 0x18e: map_key_clear(KEY_CALENDAR);	break;
+<<<<<<< HEAD
+=======
+		case 0x18f: map_key_clear(KEY_TASKMANAGER);	break;
+		case 0x190: map_key_clear(KEY_JOURNAL);		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x191: map_key_clear(KEY_FINANCE);		break;
 		case 0x192: map_key_clear(KEY_CALC);		break;
 		case 0x193: map_key_clear(KEY_PLAYER);		break;
@@ -759,15 +1424,31 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x199: map_key_clear(KEY_CHAT);		break;
 		case 0x19c: map_key_clear(KEY_LOGOFF);		break;
 		case 0x19e: map_key_clear(KEY_COFFEE);		break;
+<<<<<<< HEAD
+=======
+		case 0x19f: map_key_clear(KEY_CONTROLPANEL);		break;
+		case 0x1a2: map_key_clear(KEY_APPSELECT);		break;
+		case 0x1a3: map_key_clear(KEY_NEXT);		break;
+		case 0x1a4: map_key_clear(KEY_PREVIOUS);	break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x1a6: map_key_clear(KEY_HELP);		break;
 		case 0x1a7: map_key_clear(KEY_DOCUMENTS);	break;
 		case 0x1ab: map_key_clear(KEY_SPELLCHECK);	break;
 		case 0x1ae: map_key_clear(KEY_KEYBOARD);	break;
+<<<<<<< HEAD
+=======
+		case 0x1b1: map_key_clear(KEY_SCREENSAVER);		break;
+		case 0x1b4: map_key_clear(KEY_FILE);		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x1b6: map_key_clear(KEY_IMAGES);		break;
 		case 0x1b7: map_key_clear(KEY_AUDIO);		break;
 		case 0x1b8: map_key_clear(KEY_VIDEO);		break;
 		case 0x1bc: map_key_clear(KEY_MESSENGER);	break;
 		case 0x1bd: map_key_clear(KEY_INFO);		break;
+<<<<<<< HEAD
+=======
+		case 0x1cb: map_key_clear(KEY_ASSISTANT);	break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x201: map_key_clear(KEY_NEW);		break;
 		case 0x202: map_key_clear(KEY_OPEN);		break;
 		case 0x203: map_key_clear(KEY_CLOSE);		break;
@@ -791,9 +1472,19 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x22d: map_key_clear(KEY_ZOOMIN);		break;
 		case 0x22e: map_key_clear(KEY_ZOOMOUT);		break;
 		case 0x22f: map_key_clear(KEY_ZOOMRESET);	break;
+<<<<<<< HEAD
 		case 0x233: map_key_clear(KEY_SCROLLUP);	break;
 		case 0x234: map_key_clear(KEY_SCROLLDOWN);	break;
 		case 0x238: map_rel(REL_HWHEEL);		break;
+=======
+		case 0x232: map_key_clear(KEY_FULL_SCREEN);	break;
+		case 0x233: map_key_clear(KEY_SCROLLUP);	break;
+		case 0x234: map_key_clear(KEY_SCROLLDOWN);	break;
+		case 0x238: /* AC Pan */
+			set_bit(REL_HWHEEL, input->relbit);
+			map_rel(REL_HWHEEL_HI_RES);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x23d: map_key_clear(KEY_EDIT);		break;
 		case 0x25f: map_key_clear(KEY_CANCEL);		break;
 		case 0x269: map_key_clear(KEY_INSERT);		break;
@@ -804,15 +1495,63 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x28b: map_key_clear(KEY_FORWARDMAIL);	break;
 		case 0x28c: map_key_clear(KEY_SEND);		break;
 
+<<<<<<< HEAD
 		default:    goto ignore;
+=======
+		case 0x29d: map_key_clear(KEY_KBD_LAYOUT_NEXT);	break;
+
+		case 0x2a2: map_key_clear(KEY_ALL_APPLICATIONS);	break;
+
+		case 0x2c7: map_key_clear(KEY_KBDINPUTASSIST_PREV);		break;
+		case 0x2c8: map_key_clear(KEY_KBDINPUTASSIST_NEXT);		break;
+		case 0x2c9: map_key_clear(KEY_KBDINPUTASSIST_PREVGROUP);		break;
+		case 0x2ca: map_key_clear(KEY_KBDINPUTASSIST_NEXTGROUP);		break;
+		case 0x2cb: map_key_clear(KEY_KBDINPUTASSIST_ACCEPT);	break;
+		case 0x2cc: map_key_clear(KEY_KBDINPUTASSIST_CANCEL);	break;
+
+		case 0x29f: map_key_clear(KEY_SCALE);		break;
+
+		default: map_key_clear(KEY_UNKNOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case HID_UP_GENDEVCTRLS:
+<<<<<<< HEAD
 		if (hidinput_setup_battery(device, HID_INPUT_REPORT, field))
 			goto ignore;
 		else
 			goto unknown;
+=======
+		switch (usage->hid) {
+		case HID_DC_BATTERYSTRENGTH:
+			hidinput_setup_battery(device, HID_INPUT_REPORT, field, false);
+			usage->type = EV_PWR;
+			return;
+		}
+		goto unknown;
+
+	case HID_UP_BATTERY:
+		switch (usage->hid) {
+		case HID_BAT_ABSOLUTESTATEOFCHARGE:
+			hidinput_setup_battery(device, HID_INPUT_REPORT, field, true);
+			usage->type = EV_PWR;
+			return;
+		case HID_BAT_CHARGING:
+			usage->type = EV_PWR;
+			return;
+		}
+		goto unknown;
+	case HID_UP_CAMERA:
+		switch (usage->hid & HID_USAGE) {
+		case 0x020:
+			map_key_clear(KEY_CAMERA_FOCUS);	break;
+		case 0x021:
+			map_key_clear(KEY_CAMERA);		break;
+		default:
+			goto ignore;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case HID_UP_HPVENDOR:	/* Reported on a Dutch layout HP5308 */
@@ -834,6 +1573,19 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		}
 		break;
 
+<<<<<<< HEAD
+=======
+	case HID_UP_HPVENDOR2:
+		set_bit(EV_REP, input->evbit);
+		switch (usage->hid & HID_USAGE) {
+		case 0x001: map_key_clear(KEY_MICMUTE);		break;
+		case 0x003: map_key_clear(KEY_BRIGHTNESSDOWN);	break;
+		case 0x004: map_key_clear(KEY_BRIGHTNESSUP);	break;
+		default:    goto ignore;
+		}
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HID_UP_MSVENDOR:
 		goto ignore;
 
@@ -842,6 +1594,13 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		goto ignore;
 
 	case HID_UP_LOGIVENDOR:
+<<<<<<< HEAD
+=======
+		/* intentional fallback */
+	case HID_UP_LOGIVENDOR2:
+		/* intentional fallback */
+	case HID_UP_LOGIVENDOR3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto ignore;
 
 	case HID_UP_PID:
@@ -870,6 +1629,7 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 	}
 
 mapped:
+<<<<<<< HEAD
 	if (device->driver->input_mapped && device->driver->input_mapped(device,
 				hidinput, field, usage, &bit, &max) < 0)
 		goto ignore;
@@ -878,11 +1638,57 @@ mapped:
 
 	while (usage->code <= max && test_and_set_bit(usage->code, bit))
 		usage->code = find_next_zero_bit(bit, max + 1, usage->code);
+=======
+	/* Mapping failed, bail out */
+	if (!bit)
+		return;
+
+	if (device->driver->input_mapped &&
+	    device->driver->input_mapped(device, hidinput, field, usage,
+					 &bit, &max) < 0) {
+		/*
+		 * The driver indicated that no further generic handling
+		 * of the usage is desired.
+		 */
+		return;
+	}
+
+	set_bit(usage->type, input->evbit);
+
+	/*
+	 * This part is *really* controversial:
+	 * - HID aims at being generic so we should do our best to export
+	 *   all incoming events
+	 * - HID describes what events are, so there is no reason for ABS_X
+	 *   to be mapped to ABS_Y
+	 * - HID is using *_MISC+N as a default value, but nothing prevents
+	 *   *_MISC+N to overwrite a legitimate even, which confuses userspace
+	 *   (for instance ABS_MISC + 7 is ABS_MT_SLOT, which has a different
+	 *   processing)
+	 *
+	 * If devices still want to use this (at their own risk), they will
+	 * have to use the quirk HID_QUIRK_INCREMENT_USAGE_ON_DUPLICATE, but
+	 * the default should be a reliable mapping.
+	 */
+	while (usage->code <= max && test_and_set_bit(usage->code, bit)) {
+		if (device->quirks & HID_QUIRK_INCREMENT_USAGE_ON_DUPLICATE) {
+			usage->code = find_next_zero_bit(bit,
+							 max + 1,
+							 usage->code);
+		} else {
+			device->status |= HID_STAT_DUP_DETECTED;
+			goto ignore;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usage->code > max)
 		goto ignore;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usage->type == EV_ABS) {
 
 		int a = field->logical_minimum;
@@ -931,24 +1737,113 @@ mapped:
 		set_bit(MSC_SCAN, input->mscbit);
 	}
 
+<<<<<<< HEAD
 ignore:
 	return;
 
+=======
+	return;
+
+ignore:
+	usage->type = 0;
+	usage->code = 0;
+}
+
+static void hidinput_handle_scroll(struct hid_usage *usage,
+				   struct input_dev *input,
+				   __s32 value)
+{
+	int code;
+	int hi_res, lo_res;
+
+	if (value == 0)
+		return;
+
+	if (usage->code == REL_WHEEL_HI_RES)
+		code = REL_WHEEL;
+	else
+		code = REL_HWHEEL;
+
+	/*
+	 * Windows reports one wheel click as value 120. Where a high-res
+	 * scroll wheel is present, a fraction of 120 is reported instead.
+	 * Our REL_WHEEL_HI_RES axis does the same because all HW must
+	 * adhere to the 120 expectation.
+	 */
+	hi_res = value * 120/usage->resolution_multiplier;
+
+	usage->wheel_accumulated += hi_res;
+	lo_res = usage->wheel_accumulated/120;
+	if (lo_res)
+		usage->wheel_accumulated -= lo_res * 120;
+
+	input_event(input, EV_REL, code, lo_res);
+	input_event(input, EV_REL, usage->code, hi_res);
+}
+
+static void hid_report_release_tool(struct hid_report *report, struct input_dev *input,
+				    unsigned int tool)
+{
+	/* if the given tool is not currently reported, ignore */
+	if (!test_bit(tool, input->key))
+		return;
+
+	/*
+	 * if the given tool was previously set, release it,
+	 * release any TOUCH and send an EV_SYN
+	 */
+	input_event(input, EV_KEY, BTN_TOUCH, 0);
+	input_event(input, EV_KEY, tool, 0);
+	input_event(input, EV_SYN, SYN_REPORT, 0);
+
+	report->tool = 0;
+}
+
+static void hid_report_set_tool(struct hid_report *report, struct input_dev *input,
+				unsigned int new_tool)
+{
+	if (report->tool != new_tool)
+		hid_report_release_tool(report, input, report->tool);
+
+	input_event(input, EV_KEY, new_tool, 1);
+	report->tool = new_tool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct hid_usage *usage, __s32 value)
 {
 	struct input_dev *input;
+<<<<<<< HEAD
 	unsigned *quirks = &hid->quirks;
 
+=======
+	struct hid_report *report = field->report;
+	unsigned *quirks = &hid->quirks;
+
+	if (!usage->type)
+		return;
+
+	if (usage->type == EV_PWR) {
+		bool handled = hidinput_set_battery_charge_status(hid, usage->hid, value);
+
+		if (!handled)
+			hidinput_update_battery(hid, value);
+
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!field->hidinput)
 		return;
 
 	input = field->hidinput->input;
 
+<<<<<<< HEAD
 	if (!usage->type)
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
 		int hat_dir = usage->hat_dir;
 		if (!hat_dir)
@@ -959,6 +1854,7 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct 
 		return;
 	}
 
+<<<<<<< HEAD
 	if (usage->hid == (HID_UP_DIGITIZER | 0x003c)) { /* Invert */
 		*quirks = value ? (*quirks | HID_QUIRK_INVERT) : (*quirks & ~HID_QUIRK_INVERT);
 		return;
@@ -986,10 +1882,127 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct 
 	}
 
 	if (usage->hid == (HID_UP_PID | 0x7fUL)) {
+=======
+	/*
+	 * Ignore out-of-range values as per HID specification,
+	 * section 5.10 and 6.2.25, when NULL state bit is present.
+	 * When it's not, clamp the value to match Microsoft's input
+	 * driver as mentioned in "Required HID usages for digitizers":
+	 * https://msdn.microsoft.com/en-us/library/windows/hardware/dn672278(v=vs.85).asp
+	 *
+	 * The logical_minimum < logical_maximum check is done so that we
+	 * don't unintentionally discard values sent by devices which
+	 * don't specify logical min and max.
+	 */
+	if ((field->flags & HID_MAIN_ITEM_VARIABLE) &&
+	    field->logical_minimum < field->logical_maximum) {
+		if (field->flags & HID_MAIN_ITEM_NULL_STATE &&
+		    (value < field->logical_minimum ||
+		     value > field->logical_maximum)) {
+			dbg_hid("Ignoring out-of-range value %x\n", value);
+			return;
+		}
+		value = clamp(value,
+			      field->logical_minimum,
+			      field->logical_maximum);
+	}
+
+	switch (usage->hid) {
+	case HID_DG_ERASER:
+		report->tool_active |= !!value;
+
+		/*
+		 * if eraser is set, we must enforce BTN_TOOL_RUBBER
+		 * to accommodate for devices not following the spec.
+		 */
+		if (value)
+			hid_report_set_tool(report, input, BTN_TOOL_RUBBER);
+		else if (report->tool != BTN_TOOL_RUBBER)
+			/* value is off, tool is not rubber, ignore */
+			return;
+		else if (*quirks & HID_QUIRK_NOINVERT &&
+			 !test_bit(BTN_TOUCH, input->key)) {
+			/*
+			 * There is no invert to release the tool, let hid_input
+			 * send BTN_TOUCH with scancode and release the tool after.
+			 */
+			hid_report_release_tool(report, input, BTN_TOOL_RUBBER);
+			return;
+		}
+
+		/* let hid-input set BTN_TOUCH */
+		break;
+
+	case HID_DG_INVERT:
+		report->tool_active |= !!value;
+
+		/*
+		 * If invert is set, we store BTN_TOOL_RUBBER.
+		 */
+		if (value)
+			hid_report_set_tool(report, input, BTN_TOOL_RUBBER);
+		else if (!report->tool_active)
+			/* tool_active not set means Invert and Eraser are not set */
+			hid_report_release_tool(report, input, BTN_TOOL_RUBBER);
+
+		/* no further processing */
+		return;
+
+	case HID_DG_INRANGE:
+		report->tool_active |= !!value;
+
+		if (report->tool_active) {
+			/*
+			 * if tool is not set but is marked as active,
+			 * assume ours
+			 */
+			if (!report->tool)
+				report->tool = usage->code;
+
+			/* drivers may have changed the value behind our back, resend it */
+			hid_report_set_tool(report, input, report->tool);
+		} else {
+			hid_report_release_tool(report, input, usage->code);
+		}
+
+		/* reset tool_active for the next event */
+		report->tool_active = false;
+
+		/* no further processing */
+		return;
+
+	case HID_DG_TIPSWITCH:
+		report->tool_active |= !!value;
+
+		/* if tool is set to RUBBER we should ignore the current value */
+		if (report->tool == BTN_TOOL_RUBBER)
+			return;
+
+		break;
+
+	case HID_DG_TIPPRESSURE:
+		if (*quirks & HID_QUIRK_NOTOUCH) {
+			int a = field->logical_minimum;
+			int b = field->logical_maximum;
+
+			if (value > a + ((b - a) >> 3)) {
+				input_event(input, EV_KEY, BTN_TOUCH, 1);
+				report->tool_active = true;
+			}
+		}
+		break;
+
+	case HID_UP_PID | 0x83UL: /* Simultaneous Effects Max */
+		dbg_hid("Maximum Effects - %d\n",value);
+		return;
+
+	case HID_UP_PID | 0x7fUL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dbg_hid("PID Pool Report\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	if ((usage->type == EV_KEY) && (usage->code == 0)) /* Key 0 is "unassigned", not KEY_UNKNOWN */
 		return;
 
@@ -1021,12 +2034,77 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct 
 
 	/* report the usage code as scancode if the key status has changed */
 	if (usage->type == EV_KEY && !!test_bit(usage->code, input->key) != value)
+=======
+	switch (usage->type) {
+	case EV_KEY:
+		if (usage->code == 0) /* Key 0 is "unassigned", not KEY_UNKNOWN */
+			return;
+		break;
+
+	case EV_REL:
+		if (usage->code == REL_WHEEL_HI_RES ||
+		    usage->code == REL_HWHEEL_HI_RES) {
+			hidinput_handle_scroll(usage, input, value);
+			return;
+		}
+		break;
+
+	case EV_ABS:
+		if ((field->flags & HID_MAIN_ITEM_RELATIVE) &&
+		    usage->code == ABS_VOLUME) {
+			int count = abs(value);
+			int direction = value > 0 ? KEY_VOLUMEUP : KEY_VOLUMEDOWN;
+			int i;
+
+			for (i = 0; i < count; i++) {
+				input_event(input, EV_KEY, direction, 1);
+				input_sync(input);
+				input_event(input, EV_KEY, direction, 0);
+				input_sync(input);
+			}
+			return;
+
+		} else if (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
+			   ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))
+			value = field->logical_maximum - value;
+		break;
+	}
+
+	/*
+	 * Ignore reports for absolute data if the data didn't change. This is
+	 * not only an optimization but also fixes 'dead' key reports. Some
+	 * RollOver implementations for localized keys (like BACKSLASH/PIPE; HID
+	 * 0x31 and 0x32) report multiple keys, even though a localized keyboard
+	 * can only have one of them physically available. The 'dead' keys
+	 * report constant 0. As all map to the same keycode, they'd confuse
+	 * the input layer. If we filter the 'dead' keys on the HID level, we
+	 * skip the keycode translation and only forward real events.
+	 */
+	if (!(field->flags & (HID_MAIN_ITEM_RELATIVE |
+	                      HID_MAIN_ITEM_BUFFERED_BYTE)) &&
+			      (field->flags & HID_MAIN_ITEM_VARIABLE) &&
+	    usage->usage_index < field->maxusage &&
+	    value == field->value[usage->usage_index])
+		return;
+
+	/* report the usage code as scancode if the key status has changed */
+	if (usage->type == EV_KEY &&
+	    (!test_bit(usage->code, input->key)) == value)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_event(input, EV_MSC, MSC_SCAN, usage->hid);
 
 	input_event(input, usage->type, usage->code, value);
 
+<<<<<<< HEAD
 	if ((field->flags & HID_MAIN_ITEM_RELATIVE) && (usage->type == EV_KEY))
 		input_event(input, usage->type, usage->code, 0);
+=======
+	if ((field->flags & HID_MAIN_ITEM_RELATIVE) &&
+	    usage->type == EV_KEY && value) {
+		input_sync(input);
+		input_event(input, usage->type, usage->code, 0);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hidinput_report_event(struct hid_device *hid, struct hid_report *report)
@@ -1041,7 +2119,12 @@ void hidinput_report_event(struct hid_device *hid, struct hid_report *report)
 }
 EXPORT_SYMBOL_GPL(hidinput_report_event);
 
+<<<<<<< HEAD
 int hidinput_find_field(struct hid_device *hid, unsigned int type, unsigned int code, struct hid_field **field)
+=======
+static int hidinput_find_field(struct hid_device *hid, unsigned int type,
+			       unsigned int code, struct hid_field **field)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hid_report *report;
 	int i, j;
@@ -1056,7 +2139,10 @@ int hidinput_find_field(struct hid_device *hid, unsigned int type, unsigned int 
 	}
 	return -1;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(hidinput_find_field);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hid_field *hidinput_get_led_field(struct hid_device *hid)
 {
@@ -1100,6 +2186,81 @@ unsigned int hidinput_count_leds(struct hid_device *hid)
 }
 EXPORT_SYMBOL_GPL(hidinput_count_leds);
 
+<<<<<<< HEAD
+=======
+static void hidinput_led_worker(struct work_struct *work)
+{
+	struct hid_device *hid = container_of(work, struct hid_device,
+					      led_work);
+	struct hid_field *field;
+	struct hid_report *report;
+	int ret;
+	u32 len;
+	__u8 *buf;
+
+	field = hidinput_get_led_field(hid);
+	if (!field)
+		return;
+
+	/*
+	 * field->report is accessed unlocked regarding HID core. So there might
+	 * be another incoming SET-LED request from user-space, which changes
+	 * the LED state while we assemble our outgoing buffer. However, this
+	 * doesn't matter as hid_output_report() correctly converts it into a
+	 * boolean value no matter what information is currently set on the LED
+	 * field (even garbage). So the remote device will always get a valid
+	 * request.
+	 * And in case we send a wrong value, a next led worker is spawned
+	 * for every SET-LED request so the following worker will send the
+	 * correct value, guaranteed!
+	 */
+
+	report = field->report;
+
+	/* use custom SET_REPORT request if possible (asynchronous) */
+	if (hid->ll_driver->request)
+		return hid->ll_driver->request(hid, report, HID_REQ_SET_REPORT);
+
+	/* fall back to generic raw-output-report */
+	len = hid_report_len(report);
+	buf = hid_alloc_report_buf(report, GFP_KERNEL);
+	if (!buf)
+		return;
+
+	hid_output_report(report, buf);
+	/* synchronous output report */
+	ret = hid_hw_output_report(hid, buf, len);
+	if (ret == -ENOSYS)
+		hid_hw_raw_request(hid, report->id, buf, len, HID_OUTPUT_REPORT,
+				HID_REQ_SET_REPORT);
+	kfree(buf);
+}
+
+static int hidinput_input_event(struct input_dev *dev, unsigned int type,
+				unsigned int code, int value)
+{
+	struct hid_device *hid = input_get_drvdata(dev);
+	struct hid_field *field;
+	int offset;
+
+	if (type == EV_FF)
+		return input_ff_event(dev, type, code, value);
+
+	if (type != EV_LED)
+		return -1;
+
+	if ((offset = hidinput_find_field(hid, type, code, &field)) == -1) {
+		hid_warn(dev, "event field not found\n");
+		return -1;
+	}
+
+	hid_set_field(field, offset, value);
+
+	schedule_work(&hid->led_work);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hidinput_open(struct input_dev *dev)
 {
 	struct hid_device *hid = input_get_drvdata(dev);
@@ -1114,32 +2275,401 @@ static void hidinput_close(struct input_dev *dev)
 	hid_hw_close(hid);
 }
 
+<<<<<<< HEAD
+=======
+static bool __hidinput_change_resolution_multipliers(struct hid_device *hid,
+		struct hid_report *report, bool use_logical_max)
+{
+	struct hid_usage *usage;
+	bool update_needed = false;
+	bool get_report_completed = false;
+	int i, j;
+
+	if (report->maxfield == 0)
+		return false;
+
+	for (i = 0; i < report->maxfield; i++) {
+		__s32 value = use_logical_max ?
+			      report->field[i]->logical_maximum :
+			      report->field[i]->logical_minimum;
+
+		/* There is no good reason for a Resolution
+		 * Multiplier to have a count other than 1.
+		 * Ignore that case.
+		 */
+		if (report->field[i]->report_count != 1)
+			continue;
+
+		for (j = 0; j < report->field[i]->maxusage; j++) {
+			usage = &report->field[i]->usage[j];
+
+			if (usage->hid != HID_GD_RESOLUTION_MULTIPLIER)
+				continue;
+
+			/*
+			 * If we have more than one feature within this
+			 * report we need to fill in the bits from the
+			 * others before we can overwrite the ones for the
+			 * Resolution Multiplier.
+			 *
+			 * But if we're not allowed to read from the device,
+			 * we just bail. Such a device should not exist
+			 * anyway.
+			 */
+			if (!get_report_completed && report->maxfield > 1) {
+				if (hid->quirks & HID_QUIRK_NO_INIT_REPORTS)
+					return update_needed;
+
+				hid_hw_request(hid, report, HID_REQ_GET_REPORT);
+				hid_hw_wait(hid);
+				get_report_completed = true;
+			}
+
+			report->field[i]->value[j] = value;
+			update_needed = true;
+		}
+	}
+
+	return update_needed;
+}
+
+static void hidinput_change_resolution_multipliers(struct hid_device *hid)
+{
+	struct hid_report_enum *rep_enum;
+	struct hid_report *rep;
+	int ret;
+
+	rep_enum = &hid->report_enum[HID_FEATURE_REPORT];
+	list_for_each_entry(rep, &rep_enum->report_list, list) {
+		bool update_needed = __hidinput_change_resolution_multipliers(hid,
+								     rep, true);
+
+		if (update_needed) {
+			ret = __hid_request(hid, rep, HID_REQ_SET_REPORT);
+			if (ret) {
+				__hidinput_change_resolution_multipliers(hid,
+								    rep, false);
+				return;
+			}
+		}
+	}
+
+	/* refresh our structs */
+	hid_setup_resolution_multiplier(hid);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void report_features(struct hid_device *hid)
 {
 	struct hid_driver *drv = hid->driver;
 	struct hid_report_enum *rep_enum;
 	struct hid_report *rep;
+<<<<<<< HEAD
+=======
+	struct hid_usage *usage;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j;
 
 	rep_enum = &hid->report_enum[HID_FEATURE_REPORT];
 	list_for_each_entry(rep, &rep_enum->report_list, list)
 		for (i = 0; i < rep->maxfield; i++) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Ignore if report count is out of bounds. */
 			if (rep->field[i]->report_count < 1)
 				continue;
 
 			for (j = 0; j < rep->field[i]->maxusage; j++) {
+<<<<<<< HEAD
 				/* Verify if Battery Strength feature is available */
 				hidinput_setup_battery(hid, HID_FEATURE_REPORT, rep->field[i]);
 
 				if (drv->feature_mapping)
 					drv->feature_mapping(hid, rep->field[i],
 							     rep->field[i]->usage + j);
+=======
+				usage = &rep->field[i]->usage[j];
+
+				/* Verify if Battery Strength feature is available */
+				if (usage->hid == HID_DC_BATTERYSTRENGTH)
+					hidinput_setup_battery(hid, HID_FEATURE_REPORT,
+							       rep->field[i], false);
+
+				if (drv->feature_mapping)
+					drv->feature_mapping(hid, rep->field[i], usage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 }
 
+<<<<<<< HEAD
+=======
+static struct hid_input *hidinput_allocate(struct hid_device *hid,
+					   unsigned int application)
+{
+	struct hid_input *hidinput = kzalloc(sizeof(*hidinput), GFP_KERNEL);
+	struct input_dev *input_dev = input_allocate_device();
+	const char *suffix = NULL;
+	size_t suffix_len, name_len;
+
+	if (!hidinput || !input_dev)
+		goto fail;
+
+	if ((hid->quirks & HID_QUIRK_INPUT_PER_APP) &&
+	    hid->maxapplication > 1) {
+		switch (application) {
+		case HID_GD_KEYBOARD:
+			suffix = "Keyboard";
+			break;
+		case HID_GD_KEYPAD:
+			suffix = "Keypad";
+			break;
+		case HID_GD_MOUSE:
+			suffix = "Mouse";
+			break;
+		case HID_DG_PEN:
+			/*
+			 * yes, there is an issue here:
+			 *  DG_PEN -> "Stylus"
+			 *  DG_STYLUS -> "Pen"
+			 * But changing this now means users with config snippets
+			 * will have to change it and the test suite will not be happy.
+			 */
+			suffix = "Stylus";
+			break;
+		case HID_DG_STYLUS:
+			suffix = "Pen";
+			break;
+		case HID_DG_TOUCHSCREEN:
+			suffix = "Touchscreen";
+			break;
+		case HID_DG_TOUCHPAD:
+			suffix = "Touchpad";
+			break;
+		case HID_GD_SYSTEM_CONTROL:
+			suffix = "System Control";
+			break;
+		case HID_CP_CONSUMER_CONTROL:
+			suffix = "Consumer Control";
+			break;
+		case HID_GD_WIRELESS_RADIO_CTLS:
+			suffix = "Wireless Radio Control";
+			break;
+		case HID_GD_SYSTEM_MULTIAXIS:
+			suffix = "System Multi Axis";
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (suffix) {
+		name_len = strlen(hid->name);
+		suffix_len = strlen(suffix);
+		if ((name_len < suffix_len) ||
+		    strcmp(hid->name + name_len - suffix_len, suffix)) {
+			hidinput->name = kasprintf(GFP_KERNEL, "%s %s",
+						   hid->name, suffix);
+			if (!hidinput->name)
+				goto fail;
+		}
+	}
+
+	input_set_drvdata(input_dev, hid);
+	input_dev->event = hidinput_input_event;
+	input_dev->open = hidinput_open;
+	input_dev->close = hidinput_close;
+	input_dev->setkeycode = hidinput_setkeycode;
+	input_dev->getkeycode = hidinput_getkeycode;
+
+	input_dev->name = hidinput->name ? hidinput->name : hid->name;
+	input_dev->phys = hid->phys;
+	input_dev->uniq = hid->uniq;
+	input_dev->id.bustype = hid->bus;
+	input_dev->id.vendor  = hid->vendor;
+	input_dev->id.product = hid->product;
+	input_dev->id.version = hid->version;
+	input_dev->dev.parent = &hid->dev;
+
+	hidinput->input = input_dev;
+	hidinput->application = application;
+	list_add_tail(&hidinput->list, &hid->inputs);
+
+	INIT_LIST_HEAD(&hidinput->reports);
+
+	return hidinput;
+
+fail:
+	kfree(hidinput);
+	input_free_device(input_dev);
+	hid_err(hid, "Out of memory during hid input probe\n");
+	return NULL;
+}
+
+static bool hidinput_has_been_populated(struct hid_input *hidinput)
+{
+	int i;
+	unsigned long r = 0;
+
+	for (i = 0; i < BITS_TO_LONGS(EV_CNT); i++)
+		r |= hidinput->input->evbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(KEY_CNT); i++)
+		r |= hidinput->input->keybit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(REL_CNT); i++)
+		r |= hidinput->input->relbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(ABS_CNT); i++)
+		r |= hidinput->input->absbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(MSC_CNT); i++)
+		r |= hidinput->input->mscbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(LED_CNT); i++)
+		r |= hidinput->input->ledbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(SND_CNT); i++)
+		r |= hidinput->input->sndbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(FF_CNT); i++)
+		r |= hidinput->input->ffbit[i];
+
+	for (i = 0; i < BITS_TO_LONGS(SW_CNT); i++)
+		r |= hidinput->input->swbit[i];
+
+	return !!r;
+}
+
+static void hidinput_cleanup_hidinput(struct hid_device *hid,
+		struct hid_input *hidinput)
+{
+	struct hid_report *report;
+	int i, k;
+
+	list_del(&hidinput->list);
+	input_free_device(hidinput->input);
+	kfree(hidinput->name);
+
+	for (k = HID_INPUT_REPORT; k <= HID_OUTPUT_REPORT; k++) {
+		if (k == HID_OUTPUT_REPORT &&
+			hid->quirks & HID_QUIRK_SKIP_OUTPUT_REPORTS)
+			continue;
+
+		list_for_each_entry(report, &hid->report_enum[k].report_list,
+				    list) {
+
+			for (i = 0; i < report->maxfield; i++)
+				if (report->field[i]->hidinput == hidinput)
+					report->field[i]->hidinput = NULL;
+		}
+	}
+
+	kfree(hidinput);
+}
+
+static struct hid_input *hidinput_match(struct hid_report *report)
+{
+	struct hid_device *hid = report->device;
+	struct hid_input *hidinput;
+
+	list_for_each_entry(hidinput, &hid->inputs, list) {
+		if (hidinput->report &&
+		    hidinput->report->id == report->id)
+			return hidinput;
+	}
+
+	return NULL;
+}
+
+static struct hid_input *hidinput_match_application(struct hid_report *report)
+{
+	struct hid_device *hid = report->device;
+	struct hid_input *hidinput;
+
+	list_for_each_entry(hidinput, &hid->inputs, list) {
+		if (hidinput->application == report->application)
+			return hidinput;
+
+		/*
+		 * Keep SystemControl and ConsumerControl applications together
+		 * with the main keyboard, if present.
+		 */
+		if ((report->application == HID_GD_SYSTEM_CONTROL ||
+		     report->application == HID_CP_CONSUMER_CONTROL) &&
+		    hidinput->application == HID_GD_KEYBOARD) {
+			return hidinput;
+		}
+	}
+
+	return NULL;
+}
+
+static inline void hidinput_configure_usages(struct hid_input *hidinput,
+					     struct hid_report *report)
+{
+	int i, j, k;
+	int first_field_index = 0;
+	int slot_collection_index = -1;
+	int prev_collection_index = -1;
+	unsigned int slot_idx = 0;
+	struct hid_field *field;
+
+	/*
+	 * First tag all the fields that are part of a slot,
+	 * a slot needs to have one Contact ID in the collection
+	 */
+	for (i = 0; i < report->maxfield; i++) {
+		field = report->field[i];
+
+		/* ignore fields without usage */
+		if (field->maxusage < 1)
+			continue;
+
+		/*
+		 * janitoring when collection_index changes
+		 */
+		if (prev_collection_index != field->usage->collection_index) {
+			prev_collection_index = field->usage->collection_index;
+			first_field_index = i;
+		}
+
+		/*
+		 * if we already found a Contact ID in the collection,
+		 * tag and continue to the next.
+		 */
+		if (slot_collection_index == field->usage->collection_index) {
+			field->slot_idx = slot_idx;
+			continue;
+		}
+
+		/* check if the current field has Contact ID */
+		for (j = 0; j < field->maxusage; j++) {
+			if (field->usage[j].hid == HID_DG_CONTACTID) {
+				slot_collection_index = field->usage->collection_index;
+				slot_idx++;
+
+				/*
+				 * mark all previous fields and this one in the
+				 * current collection to be slotted.
+				 */
+				for (k = first_field_index; k <= i; k++)
+					report->field[k]->slot_idx = slot_idx;
+				break;
+			}
+		}
+	}
+
+	for (i = 0; i < report->maxfield; i++)
+		for (j = 0; j < report->field[i]->maxusage; j++)
+			hidinput_configure_usage(hidinput, report->field[i],
+						 report->field[i]->usage + j,
+						 j);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Register the input device; print a message.
  * Configure the input layer interface
@@ -1148,12 +2678,25 @@ static void report_features(struct hid_device *hid)
 
 int hidinput_connect(struct hid_device *hid, unsigned int force)
 {
+<<<<<<< HEAD
 	struct hid_report *report;
 	struct hid_input *hidinput = NULL;
 	struct input_dev *input_dev;
 	int i, j, k;
 
 	INIT_LIST_HEAD(&hid->inputs);
+=======
+	struct hid_driver *drv = hid->driver;
+	struct hid_report *report;
+	struct hid_input *next, *hidinput = NULL;
+	unsigned int application;
+	int i, k;
+
+	INIT_LIST_HEAD(&hid->inputs);
+	INIT_WORK(&hid->led_work, hidinput_led_worker);
+
+	hid->status &= ~HID_STAT_DUP_DETECTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!force) {
 		for (i = 0; i < hid->maxcollection; i++) {
@@ -1180,6 +2723,7 @@ int hidinput_connect(struct hid_device *hid, unsigned int force)
 			if (!report->maxfield)
 				continue;
 
+<<<<<<< HEAD
 			if (!hidinput) {
 				hidinput = kzalloc(sizeof(*hidinput), GFP_KERNEL);
 				input_dev = input_allocate_device();
@@ -1252,6 +2796,65 @@ out_cleanup:
 	list_del(&hidinput->list);
 	input_free_device(hidinput->input);
 	kfree(hidinput);
+=======
+			application = report->application;
+
+			/*
+			 * Find the previous hidinput report attached
+			 * to this report id.
+			 */
+			if (hid->quirks & HID_QUIRK_MULTI_INPUT)
+				hidinput = hidinput_match(report);
+			else if (hid->maxapplication > 1 &&
+				 (hid->quirks & HID_QUIRK_INPUT_PER_APP))
+				hidinput = hidinput_match_application(report);
+
+			if (!hidinput) {
+				hidinput = hidinput_allocate(hid, application);
+				if (!hidinput)
+					goto out_unwind;
+			}
+
+			hidinput_configure_usages(hidinput, report);
+
+			if (hid->quirks & HID_QUIRK_MULTI_INPUT)
+				hidinput->report = report;
+
+			list_add_tail(&report->hidinput_list,
+				      &hidinput->reports);
+		}
+	}
+
+	hidinput_change_resolution_multipliers(hid);
+
+	list_for_each_entry_safe(hidinput, next, &hid->inputs, list) {
+		if (drv->input_configured &&
+		    drv->input_configured(hid, hidinput))
+			goto out_unwind;
+
+		if (!hidinput_has_been_populated(hidinput)) {
+			/* no need to register an input device not populated */
+			hidinput_cleanup_hidinput(hid, hidinput);
+			continue;
+		}
+
+		if (input_register_device(hidinput->input))
+			goto out_unwind;
+		hidinput->registered = true;
+	}
+
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "No inputs registered, leaving\n");
+		goto out_unwind;
+	}
+
+	if (hid->status & HID_STAT_DUP_DETECTED)
+		hid_dbg(hid,
+			"Some usages could not be mapped, please use HID_QUIRK_INCREMENT_USAGE_ON_DUPLICATE if this is legitimate.\n");
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unwind:
 	/* unwind the ones we already registered */
 	hidinput_disconnect(hid);
@@ -1268,9 +2871,31 @@ void hidinput_disconnect(struct hid_device *hid)
 
 	list_for_each_entry_safe(hidinput, next, &hid->inputs, list) {
 		list_del(&hidinput->list);
+<<<<<<< HEAD
 		input_unregister_device(hidinput->input);
 		kfree(hidinput);
 	}
 }
 EXPORT_SYMBOL_GPL(hidinput_disconnect);
 
+=======
+		if (hidinput->registered)
+			input_unregister_device(hidinput->input);
+		else
+			input_free_device(hidinput->input);
+		kfree(hidinput->name);
+		kfree(hidinput);
+	}
+
+	/* led_work is spawned by input_dev callbacks, but doesn't access the
+	 * parent input_dev at all. Once all input devices are removed, we
+	 * know that led_work will never get restarted, so we can cancel it
+	 * synchronously and are safe. */
+	cancel_work_sync(&hid->led_work);
+}
+EXPORT_SYMBOL_GPL(hidinput_disconnect);
+
+#ifdef CONFIG_HID_KUNIT_TEST
+#include "hid-input-test.c"
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

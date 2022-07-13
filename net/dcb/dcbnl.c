@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2008-2011, Intel Corporation.
  *
@@ -14,6 +15,13 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2008-2011, Intel Corporation.
+ *
+ * Description: Data Center Bridging netlink interface
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Lucy Liu <lucy.liu@intel.com>
  */
 
@@ -25,11 +33,18 @@
 #include <linux/dcbnl.h>
 #include <net/dcbevent.h>
 #include <linux/rtnetlink.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <net/sock.h>
 
 /**
  * Data Center Bridging (DCB) is a collection of Ethernet enhancements
+=======
+#include <linux/init.h>
+#include <net/sock.h>
+
+/* Data Center Bridging (DCB) is a collection of Ethernet enhancements
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * intended to allow network traffic with differing requirements
  * (highly reliable, no drops vs. best effort vs. low latency) to operate
  * and co-exist on Ethernet.  Current DCB features are:
@@ -50,10 +65,13 @@
  * features for capable devices.
  */
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Lucy Liu, <lucy.liu@intel.com>");
 MODULE_DESCRIPTION("Data Center Bridging netlink interface");
 MODULE_LICENSE("GPL");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************** DCB attribute policies *************************************/
 
 /* DCB netlink attributes policy */
@@ -178,10 +196,18 @@ static const struct nla_policy dcbnl_ieee_policy[DCB_ATTR_IEEE_MAX + 1] = {
 	[DCB_ATTR_IEEE_ETS]	    = {.len = sizeof(struct ieee_ets)},
 	[DCB_ATTR_IEEE_PFC]	    = {.len = sizeof(struct ieee_pfc)},
 	[DCB_ATTR_IEEE_APP_TABLE]   = {.type = NLA_NESTED},
+<<<<<<< HEAD
 };
 
 static const struct nla_policy dcbnl_ieee_app[DCB_ATTR_IEEE_APP_MAX + 1] = {
 	[DCB_ATTR_IEEE_APP]	    = {.len = sizeof(struct dcb_app)},
+=======
+	[DCB_ATTR_IEEE_MAXRATE]   = {.len = sizeof(struct ieee_maxrate)},
+	[DCB_ATTR_IEEE_QCN]         = {.len = sizeof(struct ieee_qcn)},
+	[DCB_ATTR_IEEE_QCN_STATS]   = {.len = sizeof(struct ieee_qcn_stats)},
+	[DCB_ATTR_DCB_BUFFER]       = {.len = sizeof(struct dcbnl_buffer)},
+	[DCB_ATTR_DCB_APP_TRUST_TABLE] = {.type = NLA_NESTED},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* DCB number of traffic classes nested attributes. */
@@ -193,6 +219,7 @@ static const struct nla_policy dcbnl_featcfg_nest[DCB_FEATCFG_ATTR_MAX + 1] = {
 };
 
 static LIST_HEAD(dcb_app_list);
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(dcb_lock);
 
 /* standard netlink reply call */
@@ -211,10 +238,63 @@ static int dcbnl_reply(u8 value, u8 event, u8 cmd, u8 attr, u32 pid,
 	nlh = NLMSG_NEW(dcbnl_skb, pid, seq, event, sizeof(*dcb), flags);
 
 	dcb = NLMSG_DATA(nlh);
+=======
+static LIST_HEAD(dcb_rewr_list);
+static DEFINE_SPINLOCK(dcb_lock);
+
+static enum ieee_attrs_app dcbnl_app_attr_type_get(u8 selector)
+{
+	switch (selector) {
+	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
+	case IEEE_8021QAZ_APP_SEL_STREAM:
+	case IEEE_8021QAZ_APP_SEL_DGRAM:
+	case IEEE_8021QAZ_APP_SEL_ANY:
+	case IEEE_8021QAZ_APP_SEL_DSCP:
+		return DCB_ATTR_IEEE_APP;
+	case DCB_APP_SEL_PCP:
+		return DCB_ATTR_DCB_APP;
+	default:
+		return DCB_ATTR_IEEE_APP_UNSPEC;
+	}
+}
+
+static bool dcbnl_app_attr_type_validate(enum ieee_attrs_app type)
+{
+	switch (type) {
+	case DCB_ATTR_IEEE_APP:
+	case DCB_ATTR_DCB_APP:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool dcbnl_app_selector_validate(enum ieee_attrs_app type, u8 selector)
+{
+	return dcbnl_app_attr_type_get(selector) == type;
+}
+
+static struct sk_buff *dcbnl_newmsg(int type, u8 cmd, u32 port, u32 seq,
+				    u32 flags, struct nlmsghdr **nlhp)
+{
+	struct sk_buff *skb;
+	struct dcbmsg *dcb;
+	struct nlmsghdr *nlh;
+
+	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+	if (!skb)
+		return NULL;
+
+	nlh = nlmsg_put(skb, port, seq, type, sizeof(*dcb), flags);
+	BUG_ON(!nlh);
+
+	dcb = nlmsg_data(nlh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcb->dcb_family = AF_UNSPEC;
 	dcb->cmd = cmd;
 	dcb->dcb_pad = 0;
 
+<<<<<<< HEAD
 	ret = nla_put_u8(dcbnl_skb, attr, value);
 	if (ret)
 		goto err;
@@ -281,6 +361,49 @@ static int dcbnl_getpfccfg(struct net_device *netdev, struct nlattr **tb,
 	nest = nla_nest_start(dcbnl_skb, DCB_ATTR_PFC_CFG);
 	if (!nest)
 		goto err;
+=======
+	if (nlhp)
+		*nlhp = nlh;
+
+	return skb;
+}
+
+static int dcbnl_getstate(struct net_device *netdev, struct nlmsghdr *nlh,
+			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	/* if (!tb[DCB_ATTR_STATE] || !netdev->dcbnl_ops->getstate) */
+	if (!netdev->dcbnl_ops->getstate)
+		return -EOPNOTSUPP;
+
+	return nla_put_u8(skb, DCB_ATTR_STATE,
+			  netdev->dcbnl_ops->getstate(netdev));
+}
+
+static int dcbnl_getpfccfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			   u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_PFC_UP_ATTR_MAX + 1], *nest;
+	u8 value;
+	int ret;
+	int i;
+	int getall = 0;
+
+	if (!tb[DCB_ATTR_PFC_CFG])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->getpfccfg)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_PFC_UP_ATTR_MAX,
+					  tb[DCB_ATTR_PFC_CFG],
+					  dcbnl_pfc_up_nest, NULL);
+	if (ret)
+		return ret;
+
+	nest = nla_nest_start_noflag(skb, DCB_ATTR_PFC_CFG);
+	if (!nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data[DCB_PFC_UP_ATTR_ALL])
 		getall = 1;
@@ -291,6 +414,7 @@ static int dcbnl_getpfccfg(struct net_device *netdev, struct nlattr **tb,
 
 		netdev->dcbnl_ops->getpfccfg(netdev, i - DCB_PFC_UP_ATTR_0,
 		                             &value);
+<<<<<<< HEAD
 		ret = nla_put_u8(dcbnl_skb, i, value);
 
 		if (ret) {
@@ -335,10 +459,31 @@ static int dcbnl_getperm_hwaddr(struct net_device *netdev, struct nlattr **tb,
 	dcb = NLMSG_DATA(nlh);
 	dcb->dcb_family = AF_UNSPEC;
 	dcb->cmd = DCB_CMD_GPERM_HWADDR;
+=======
+		ret = nla_put_u8(skb, i, value);
+		if (ret) {
+			nla_nest_cancel(skb, nest);
+			return ret;
+		}
+	}
+	nla_nest_end(skb, nest);
+
+	return 0;
+}
+
+static int dcbnl_getperm_hwaddr(struct net_device *netdev, struct nlmsghdr *nlh,
+				u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	u8 perm_addr[MAX_ADDR_LEN];
+
+	if (!netdev->dcbnl_ops->getpermhwaddr)
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(perm_addr, 0, sizeof(perm_addr));
 	netdev->dcbnl_ops->getpermhwaddr(netdev, perm_addr);
 
+<<<<<<< HEAD
 	ret = nla_put(dcbnl_skb, DCB_ATTR_PERM_HWADDR, sizeof(perm_addr),
 	              perm_addr);
 
@@ -389,6 +534,35 @@ static int dcbnl_getcap(struct net_device *netdev, struct nlattr **tb,
 	nest = nla_nest_start(dcbnl_skb, DCB_ATTR_CAP);
 	if (!nest)
 		goto err;
+=======
+	return nla_put(skb, DCB_ATTR_PERM_HWADDR, sizeof(perm_addr), perm_addr);
+}
+
+static int dcbnl_getcap(struct net_device *netdev, struct nlmsghdr *nlh,
+			u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_CAP_ATTR_MAX + 1], *nest;
+	u8 value;
+	int ret;
+	int i;
+	int getall = 0;
+
+	if (!tb[DCB_ATTR_CAP])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->getcap)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_CAP_ATTR_MAX,
+					  tb[DCB_ATTR_CAP], dcbnl_cap_nest,
+					  NULL);
+	if (ret)
+		return ret;
+
+	nest = nla_nest_start_noflag(skb, DCB_ATTR_CAP);
+	if (!nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data[DCB_CAP_ATTR_ALL])
 		getall = 1;
@@ -398,6 +572,7 @@ static int dcbnl_getcap(struct net_device *netdev, struct nlattr **tb,
 			continue;
 
 		if (!netdev->dcbnl_ops->getcap(netdev, i, &value)) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb, i, value);
 
 			if (ret) {
@@ -461,6 +636,44 @@ static int dcbnl_getnumtcs(struct net_device *netdev, struct nlattr **tb,
 		ret = -EINVAL;
 		goto err;
 	}
+=======
+			ret = nla_put_u8(skb, i, value);
+			if (ret) {
+				nla_nest_cancel(skb, nest);
+				return ret;
+			}
+		}
+	}
+	nla_nest_end(skb, nest);
+
+	return 0;
+}
+
+static int dcbnl_getnumtcs(struct net_device *netdev, struct nlmsghdr *nlh,
+			   u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_NUMTCS_ATTR_MAX + 1], *nest;
+	u8 value;
+	int ret;
+	int i;
+	int getall = 0;
+
+	if (!tb[DCB_ATTR_NUMTCS])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->getnumtcs)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_NUMTCS_ATTR_MAX,
+					  tb[DCB_ATTR_NUMTCS],
+					  dcbnl_numtcs_nest, NULL);
+	if (ret)
+		return ret;
+
+	nest = nla_nest_start_noflag(skb, DCB_ATTR_NUMTCS);
+	if (!nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data[DCB_NUMTCS_ATTR_ALL])
 		getall = 1;
@@ -471,6 +684,7 @@ static int dcbnl_getnumtcs(struct net_device *netdev, struct nlattr **tb,
 
 		ret = netdev->dcbnl_ops->getnumtcs(netdev, i, &value);
 		if (!ret) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb, i, value);
 
 			if (ret) {
@@ -519,6 +733,41 @@ static int dcbnl_setnumtcs(struct net_device *netdev, struct nlattr **tb,
 		goto err;
 	}
 
+=======
+			ret = nla_put_u8(skb, i, value);
+			if (ret) {
+				nla_nest_cancel(skb, nest);
+				return ret;
+			}
+		} else
+			return -EINVAL;
+	}
+	nla_nest_end(skb, nest);
+
+	return 0;
+}
+
+static int dcbnl_setnumtcs(struct net_device *netdev, struct nlmsghdr *nlh,
+			   u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_NUMTCS_ATTR_MAX + 1];
+	int ret;
+	u8 value;
+	int i;
+
+	if (!tb[DCB_ATTR_NUMTCS])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setnumtcs)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_NUMTCS_ATTR_MAX,
+					  tb[DCB_ATTR_NUMTCS],
+					  dcbnl_numtcs_nest, NULL);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = DCB_NUMTCS_ATTR_ALL+1; i <= DCB_NUMTCS_ATTR_MAX; i++) {
 		if (data[i] == NULL)
 			continue;
@@ -526,6 +775,7 @@ static int dcbnl_setnumtcs(struct net_device *netdev, struct nlattr **tb,
 		value = nla_get_u8(data[i]);
 
 		ret = netdev->dcbnl_ops->setnumtcs(netdev, i, value);
+<<<<<<< HEAD
 
 		if (ret)
 			goto operr;
@@ -562,11 +812,41 @@ static int dcbnl_setpfcstate(struct net_device *netdev, struct nlattr **tb,
 
 	if (!tb[DCB_ATTR_PFC_STATE] || !netdev->dcbnl_ops->setpfcstate)
 		return ret;
+=======
+		if (ret)
+			break;
+	}
+
+	return nla_put_u8(skb, DCB_ATTR_NUMTCS, !!ret);
+}
+
+static int dcbnl_getpfcstate(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	if (!netdev->dcbnl_ops->getpfcstate)
+		return -EOPNOTSUPP;
+
+	return nla_put_u8(skb, DCB_ATTR_PFC_STATE,
+			  netdev->dcbnl_ops->getpfcstate(netdev));
+}
+
+static int dcbnl_setpfcstate(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	u8 value;
+
+	if (!tb[DCB_ATTR_PFC_STATE])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setpfcstate)
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	value = nla_get_u8(tb[DCB_ATTR_PFC_STATE]);
 
 	netdev->dcbnl_ops->setpfcstate(netdev, value);
 
+<<<<<<< HEAD
 	ret = dcbnl_reply(0, RTM_SETDCB, DCB_CMD_PFC_SSTATE, DCB_ATTR_PFC_STATE,
 	                  pid, seq, flags);
 
@@ -579,10 +859,19 @@ static int dcbnl_getapp(struct net_device *netdev, struct nlattr **tb,
 	struct sk_buff *dcbnl_skb;
 	struct nlmsghdr *nlh;
 	struct dcbmsg *dcb;
+=======
+	return nla_put_u8(skb, DCB_ATTR_PFC_STATE, 0);
+}
+
+static int dcbnl_getapp(struct net_device *netdev, struct nlmsghdr *nlh,
+			u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *app_nest;
 	struct nlattr *app_tb[DCB_APP_ATTR_MAX + 1];
 	u16 id;
 	u8 up, idtype;
+<<<<<<< HEAD
 	int ret = -EINVAL;
 
 	if (!tb[DCB_ATTR_APP])
@@ -598,17 +887,46 @@ static int dcbnl_getapp(struct net_device *netdev, struct nlattr **tb,
 	if ((!app_tb[DCB_APP_ATTR_IDTYPE]) ||
 	    (!app_tb[DCB_APP_ATTR_ID]))
 		goto out;
+=======
+	int ret;
+
+	if (!tb[DCB_ATTR_APP])
+		return -EINVAL;
+
+	ret = nla_parse_nested_deprecated(app_tb, DCB_APP_ATTR_MAX,
+					  tb[DCB_ATTR_APP], dcbnl_app_nest,
+					  NULL);
+	if (ret)
+		return ret;
+
+	/* all must be non-null */
+	if ((!app_tb[DCB_APP_ATTR_IDTYPE]) ||
+	    (!app_tb[DCB_APP_ATTR_ID]))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* either by eth type or by socket number */
 	idtype = nla_get_u8(app_tb[DCB_APP_ATTR_IDTYPE]);
 	if ((idtype != DCB_APP_IDTYPE_ETHTYPE) &&
 	    (idtype != DCB_APP_IDTYPE_PORTNUM))
+<<<<<<< HEAD
 		goto out;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id = nla_get_u16(app_tb[DCB_APP_ATTR_ID]);
 
 	if (netdev->dcbnl_ops->getapp) {
+<<<<<<< HEAD
 		up = netdev->dcbnl_ops->getapp(netdev, idtype, id);
+=======
+		ret = netdev->dcbnl_ops->getapp(netdev, idtype, id);
+		if (ret < 0)
+			return ret;
+		else
+			up = ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct dcb_app app = {
 					.selector = idtype,
@@ -617,6 +935,7 @@ static int dcbnl_getapp(struct net_device *netdev, struct nlattr **tb,
 		up = dcb_getapp(netdev, &app);
 	}
 
+<<<<<<< HEAD
 	/* send this back */
 	dcbnl_skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!dcbnl_skb)
@@ -664,11 +983,43 @@ static int dcbnl_setapp(struct net_device *netdev, struct nlattr **tb,
                         u32 pid, u32 seq, u16 flags)
 {
 	int err, ret = -EINVAL;
+=======
+	app_nest = nla_nest_start_noflag(skb, DCB_ATTR_APP);
+	if (!app_nest)
+		return -EMSGSIZE;
+
+	ret = nla_put_u8(skb, DCB_APP_ATTR_IDTYPE, idtype);
+	if (ret)
+		goto out_cancel;
+
+	ret = nla_put_u16(skb, DCB_APP_ATTR_ID, id);
+	if (ret)
+		goto out_cancel;
+
+	ret = nla_put_u8(skb, DCB_APP_ATTR_PRIORITY, up);
+	if (ret)
+		goto out_cancel;
+
+	nla_nest_end(skb, app_nest);
+
+	return 0;
+
+out_cancel:
+	nla_nest_cancel(skb, app_nest);
+	return ret;
+}
+
+static int dcbnl_setapp(struct net_device *netdev, struct nlmsghdr *nlh,
+			u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 id;
 	u8 up, idtype;
 	struct nlattr *app_tb[DCB_APP_ATTR_MAX + 1];
 
 	if (!tb[DCB_ATTR_APP])
+<<<<<<< HEAD
 		goto out;
 
 	ret = nla_parse_nested(app_tb, DCB_APP_ATTR_MAX, tb[DCB_ATTR_APP],
@@ -677,28 +1028,53 @@ static int dcbnl_setapp(struct net_device *netdev, struct nlattr **tb,
 		goto out;
 
 	ret = -EINVAL;
+=======
+		return -EINVAL;
+
+	ret = nla_parse_nested_deprecated(app_tb, DCB_APP_ATTR_MAX,
+					  tb[DCB_ATTR_APP], dcbnl_app_nest,
+					  NULL);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* all must be non-null */
 	if ((!app_tb[DCB_APP_ATTR_IDTYPE]) ||
 	    (!app_tb[DCB_APP_ATTR_ID]) ||
 	    (!app_tb[DCB_APP_ATTR_PRIORITY]))
+<<<<<<< HEAD
 		goto out;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* either by eth type or by socket number */
 	idtype = nla_get_u8(app_tb[DCB_APP_ATTR_IDTYPE]);
 	if ((idtype != DCB_APP_IDTYPE_ETHTYPE) &&
 	    (idtype != DCB_APP_IDTYPE_PORTNUM))
+<<<<<<< HEAD
 		goto out;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id = nla_get_u16(app_tb[DCB_APP_ATTR_ID]);
 	up = nla_get_u8(app_tb[DCB_APP_ATTR_PRIORITY]);
 
 	if (netdev->dcbnl_ops->setapp) {
+<<<<<<< HEAD
 		err = netdev->dcbnl_ops->setapp(netdev, idtype, id, up);
+=======
+		ret = netdev->dcbnl_ops->setapp(netdev, idtype, id, up);
+		if (ret < 0)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct dcb_app app;
 		app.selector = idtype;
 		app.protocol = id;
 		app.priority = up;
+<<<<<<< HEAD
 		err = dcb_setapp(netdev, &app);
 	}
 
@@ -714,10 +1090,25 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 	struct sk_buff *dcbnl_skb;
 	struct nlmsghdr *nlh;
 	struct dcbmsg *dcb;
+=======
+		ret = dcb_setapp(netdev, &app);
+	}
+
+	ret = nla_put_u8(skb, DCB_ATTR_APP, ret);
+	dcbnl_cee_notify(netdev, RTM_SETDCB, DCB_CMD_SAPP, seq, 0);
+
+	return ret;
+}
+
+static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     struct nlattr **tb, struct sk_buff *skb, int dir)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *pg_nest, *param_nest, *data;
 	struct nlattr *pg_tb[DCB_PG_ATTR_MAX + 1];
 	struct nlattr *param_tb[DCB_TC_ATTR_PARAM_MAX + 1];
 	u8 prio, pgid, tc_pct, up_map;
+<<<<<<< HEAD
 	int ret  = -EINVAL;
 	int getall = 0;
 	int i;
@@ -748,6 +1139,30 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 	pg_nest = nla_nest_start(dcbnl_skb, DCB_ATTR_PG_CFG);
 	if (!pg_nest)
 		goto err;
+=======
+	int ret;
+	int getall = 0;
+	int i;
+
+	if (!tb[DCB_ATTR_PG_CFG])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->getpgtccfgtx ||
+	    !netdev->dcbnl_ops->getpgtccfgrx ||
+	    !netdev->dcbnl_ops->getpgbwgcfgtx ||
+	    !netdev->dcbnl_ops->getpgbwgcfgrx)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(pg_tb, DCB_PG_ATTR_MAX,
+					  tb[DCB_ATTR_PG_CFG], dcbnl_pg_nest,
+					  NULL);
+	if (ret)
+		return ret;
+
+	pg_nest = nla_nest_start_noflag(skb, DCB_ATTR_PG_CFG);
+	if (!pg_nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pg_tb[DCB_PG_ATTR_TC_ALL])
 		getall = 1;
@@ -760,12 +1175,22 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 			data = pg_tb[DCB_PG_ATTR_TC_ALL];
 		else
 			data = pg_tb[i];
+<<<<<<< HEAD
 		ret = nla_parse_nested(param_tb, DCB_TC_ATTR_PARAM_MAX,
 				       data, dcbnl_tc_param_nest);
 		if (ret)
 			goto err_pg;
 
 		param_nest = nla_nest_start(dcbnl_skb, i);
+=======
+		ret = nla_parse_nested_deprecated(param_tb,
+						  DCB_TC_ATTR_PARAM_MAX, data,
+						  dcbnl_tc_param_nest, NULL);
+		if (ret)
+			goto err_pg;
+
+		param_nest = nla_nest_start_noflag(skb, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!param_nest)
 			goto err_pg;
 
@@ -788,33 +1213,53 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 
 		if (param_tb[DCB_TC_ATTR_PARAM_PGID] ||
 		    param_tb[DCB_TC_ATTR_PARAM_ALL]) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb,
+=======
+			ret = nla_put_u8(skb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                 DCB_TC_ATTR_PARAM_PGID, pgid);
 			if (ret)
 				goto err_param;
 		}
 		if (param_tb[DCB_TC_ATTR_PARAM_UP_MAPPING] ||
 		    param_tb[DCB_TC_ATTR_PARAM_ALL]) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb,
+=======
+			ret = nla_put_u8(skb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                 DCB_TC_ATTR_PARAM_UP_MAPPING, up_map);
 			if (ret)
 				goto err_param;
 		}
 		if (param_tb[DCB_TC_ATTR_PARAM_STRICT_PRIO] ||
 		    param_tb[DCB_TC_ATTR_PARAM_ALL]) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb,
+=======
+			ret = nla_put_u8(skb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                 DCB_TC_ATTR_PARAM_STRICT_PRIO, prio);
 			if (ret)
 				goto err_param;
 		}
 		if (param_tb[DCB_TC_ATTR_PARAM_BW_PCT] ||
 		    param_tb[DCB_TC_ATTR_PARAM_ALL]) {
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb, DCB_TC_ATTR_PARAM_BW_PCT,
+=======
+			ret = nla_put_u8(skb, DCB_TC_ATTR_PARAM_BW_PCT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                 tc_pct);
 			if (ret)
 				goto err_param;
 		}
+<<<<<<< HEAD
 		nla_nest_end(dcbnl_skb, param_nest);
+=======
+		nla_nest_end(skb, param_nest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pg_tb[DCB_PG_ATTR_BW_ID_ALL])
@@ -837,12 +1282,17 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 			netdev->dcbnl_ops->getpgbwgcfgtx(netdev,
 					i - DCB_PG_ATTR_BW_ID_0, &tc_pct);
 		}
+<<<<<<< HEAD
 		ret = nla_put_u8(dcbnl_skb, i, tc_pct);
 
+=======
+		ret = nla_put_u8(skb, i, tc_pct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto err_pg;
 	}
 
+<<<<<<< HEAD
 	nla_nest_end(dcbnl_skb, pg_nest);
 
 	nlmsg_end(dcbnl_skb, nlh);
@@ -850,10 +1300,14 @@ static int __dcbnl_pg_getcfg(struct net_device *netdev, struct nlattr **tb,
 	ret = rtnl_unicast(dcbnl_skb, &init_net, pid);
 	if (ret)
 		goto err_out;
+=======
+	nla_nest_end(skb, pg_nest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_param:
+<<<<<<< HEAD
 	nla_nest_cancel(dcbnl_skb, param_nest);
 err_pg:
 	nla_nest_cancel(dcbnl_skb, pg_nest);
@@ -911,6 +1365,63 @@ static int dcbnl_setpfccfg(struct net_device *netdev, struct nlattr **tb,
 	                       dcbnl_pfc_up_nest);
 	if (ret)
 		goto err;
+=======
+	nla_nest_cancel(skb, param_nest);
+err_pg:
+	nla_nest_cancel(skb, pg_nest);
+
+	return -EMSGSIZE;
+}
+
+static int dcbnl_pgtx_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	return __dcbnl_pg_getcfg(netdev, nlh, tb, skb, 0);
+}
+
+static int dcbnl_pgrx_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	return __dcbnl_pg_getcfg(netdev, nlh, tb, skb, 1);
+}
+
+static int dcbnl_setstate(struct net_device *netdev, struct nlmsghdr *nlh,
+			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	u8 value;
+
+	if (!tb[DCB_ATTR_STATE])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setstate)
+		return -EOPNOTSUPP;
+
+	value = nla_get_u8(tb[DCB_ATTR_STATE]);
+
+	return nla_put_u8(skb, DCB_ATTR_STATE,
+			  netdev->dcbnl_ops->setstate(netdev, value));
+}
+
+static int dcbnl_setpfccfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			   u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_PFC_UP_ATTR_MAX + 1];
+	int i;
+	int ret;
+	u8 value;
+
+	if (!tb[DCB_ATTR_PFC_CFG])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setpfccfg)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_PFC_UP_ATTR_MAX,
+					  tb[DCB_ATTR_PFC_CFG],
+					  dcbnl_pfc_up_nest, NULL);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = DCB_PFC_UP_ATTR_0; i <= DCB_PFC_UP_ATTR_7; i++) {
 		if (data[i] == NULL)
@@ -920,6 +1431,7 @@ static int dcbnl_setpfccfg(struct net_device *netdev, struct nlattr **tb,
 			data[i]->nla_type - DCB_PFC_UP_ATTR_0, value);
 	}
 
+<<<<<<< HEAD
 	ret = dcbnl_reply(0, RTM_SETDCB, DCB_CMD_PFC_SCFG, DCB_ATTR_PFC_CFG,
 	                  pid, seq, flags);
 err:
@@ -936,22 +1448,52 @@ static int dcbnl_setall(struct net_device *netdev, struct nlattr **tb,
 
 	ret = dcbnl_reply(netdev->dcbnl_ops->setall(netdev), RTM_SETDCB,
 	                  DCB_CMD_SET_ALL, DCB_ATTR_SET_ALL, pid, seq, flags);
+=======
+	return nla_put_u8(skb, DCB_ATTR_PFC_CFG, 0);
+}
+
+static int dcbnl_setall(struct net_device *netdev, struct nlmsghdr *nlh,
+			u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	int ret;
+
+	if (!tb[DCB_ATTR_SET_ALL])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setall)
+		return -EOPNOTSUPP;
+
+	ret = nla_put_u8(skb, DCB_ATTR_SET_ALL,
+			 netdev->dcbnl_ops->setall(netdev));
+	dcbnl_cee_notify(netdev, RTM_SETDCB, DCB_CMD_SET_ALL, seq, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlattr **tb,
                              u32 pid, u32 seq, u16 flags, int dir)
 {
 	struct nlattr *pg_tb[DCB_PG_ATTR_MAX + 1];
 	struct nlattr *param_tb[DCB_TC_ATTR_PARAM_MAX + 1];
 	int ret = -EINVAL;
+=======
+static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb,
+			     int dir)
+{
+	struct nlattr *pg_tb[DCB_PG_ATTR_MAX + 1];
+	struct nlattr *param_tb[DCB_TC_ATTR_PARAM_MAX + 1];
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u8 pgid;
 	u8 up_map;
 	u8 prio;
 	u8 tc_pct;
 
+<<<<<<< HEAD
 	if (!tb[DCB_ATTR_PG_CFG] ||
 	    !netdev->dcbnl_ops->setpgtccfgtx ||
 	    !netdev->dcbnl_ops->setpgtccfgrx ||
@@ -963,15 +1505,40 @@ static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlattr **tb,
 	                       tb[DCB_ATTR_PG_CFG], dcbnl_pg_nest);
 	if (ret)
 		goto err;
+=======
+	if (!tb[DCB_ATTR_PG_CFG])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setpgtccfgtx ||
+	    !netdev->dcbnl_ops->setpgtccfgrx ||
+	    !netdev->dcbnl_ops->setpgbwgcfgtx ||
+	    !netdev->dcbnl_ops->setpgbwgcfgrx)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(pg_tb, DCB_PG_ATTR_MAX,
+					  tb[DCB_ATTR_PG_CFG], dcbnl_pg_nest,
+					  NULL);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = DCB_PG_ATTR_TC_0; i <= DCB_PG_ATTR_TC_7; i++) {
 		if (!pg_tb[i])
 			continue;
 
+<<<<<<< HEAD
 		ret = nla_parse_nested(param_tb, DCB_TC_ATTR_PARAM_MAX,
 		                       pg_tb[i], dcbnl_tc_param_nest);
 		if (ret)
 			goto err;
+=======
+		ret = nla_parse_nested_deprecated(param_tb,
+						  DCB_TC_ATTR_PARAM_MAX,
+						  pg_tb[i],
+						  dcbnl_tc_param_nest, NULL);
+		if (ret)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pgid = DCB_ATTR_VALUE_UNDEFINED;
 		prio = DCB_ATTR_VALUE_UNDEFINED;
@@ -1024,6 +1591,7 @@ static int __dcbnl_pg_setcfg(struct net_device *netdev, struct nlattr **tb,
 		}
 	}
 
+<<<<<<< HEAD
 	ret = dcbnl_reply(0, RTM_SETDCB,
 			  (dir ? DCB_CMD_PGRX_SCFG : DCB_CMD_PGTX_SCFG),
 			  DCB_ATTR_PG_CFG, pid, seq, flags);
@@ -1050,10 +1618,31 @@ static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlattr **tb,
 	struct sk_buff *dcbnl_skb;
 	struct nlmsghdr *nlh;
 	struct dcbmsg *dcb;
+=======
+	return nla_put_u8(skb, DCB_ATTR_PG_CFG, 0);
+}
+
+static int dcbnl_pgtx_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	return __dcbnl_pg_setcfg(netdev, nlh, seq, tb, skb, 0);
+}
+
+static int dcbnl_pgrx_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			     u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	return __dcbnl_pg_setcfg(netdev, nlh, seq, tb, skb, 1);
+}
+
+static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			    u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *bcn_nest;
 	struct nlattr *bcn_tb[DCB_BCN_ATTR_MAX + 1];
 	u8 value_byte;
 	u32 value_integer;
+<<<<<<< HEAD
 	int ret  = -EINVAL;
 	bool getall = false;
 	int i;
@@ -1081,6 +1670,28 @@ static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlattr **tb,
 	bcn_nest = nla_nest_start(dcbnl_skb, DCB_ATTR_BCN);
 	if (!bcn_nest)
 		goto err;
+=======
+	int ret;
+	bool getall = false;
+	int i;
+
+	if (!tb[DCB_ATTR_BCN])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->getbcnrp ||
+	    !netdev->dcbnl_ops->getbcncfg)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(bcn_tb, DCB_BCN_ATTR_MAX,
+					  tb[DCB_ATTR_BCN], dcbnl_bcn_nest,
+					  NULL);
+	if (ret)
+		return ret;
+
+	bcn_nest = nla_nest_start_noflag(skb, DCB_ATTR_BCN);
+	if (!bcn_nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bcn_tb[DCB_BCN_ATTR_ALL])
 		getall = true;
@@ -1091,7 +1702,11 @@ static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlattr **tb,
 
 		netdev->dcbnl_ops->getbcnrp(netdev, i - DCB_BCN_ATTR_RP_0,
 		                            &value_byte);
+<<<<<<< HEAD
 		ret = nla_put_u8(dcbnl_skb, i, value_byte);
+=======
+		ret = nla_put_u8(skb, i, value_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto err_bcn;
 	}
@@ -1102,11 +1717,16 @@ static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlattr **tb,
 
 		netdev->dcbnl_ops->getbcncfg(netdev, i,
 		                             &value_integer);
+<<<<<<< HEAD
 		ret = nla_put_u32(dcbnl_skb, i, value_integer);
+=======
+		ret = nla_put_u32(skb, i, value_integer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto err_bcn;
 	}
 
+<<<<<<< HEAD
 	nla_nest_end(dcbnl_skb, bcn_nest);
 
 	nlmsg_end(dcbnl_skb, nlh);
@@ -1114,10 +1734,14 @@ static int dcbnl_bcn_getcfg(struct net_device *netdev, struct nlattr **tb,
 	ret = rtnl_unicast(dcbnl_skb, &init_net, pid);
 	if (ret)
 		goto err_out;
+=======
+	nla_nest_end(skb, bcn_nest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_bcn:
+<<<<<<< HEAD
 	nla_nest_cancel(dcbnl_skb, bcn_nest);
 nlmsg_failure:
 err:
@@ -1145,6 +1769,33 @@ static int dcbnl_bcn_setcfg(struct net_device *netdev, struct nlattr **tb,
 	                       dcbnl_pfc_up_nest);
 	if (ret)
 		goto err;
+=======
+	nla_nest_cancel(skb, bcn_nest);
+	return ret;
+}
+
+static int dcbnl_bcn_setcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			    u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	struct nlattr *data[DCB_BCN_ATTR_MAX + 1];
+	int i;
+	int ret;
+	u8 value_byte;
+	u32 value_int;
+
+	if (!tb[DCB_ATTR_BCN])
+		return -EINVAL;
+
+	if (!netdev->dcbnl_ops->setbcncfg ||
+	    !netdev->dcbnl_ops->setbcnrp)
+		return -EOPNOTSUPP;
+
+	ret = nla_parse_nested_deprecated(data, DCB_BCN_ATTR_MAX,
+					  tb[DCB_ATTR_BCN], dcbnl_bcn_nest,
+					  NULL);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = DCB_BCN_ATTR_RP_0; i <= DCB_BCN_ATTR_RP_7; i++) {
 		if (data[i] == NULL)
@@ -1162,10 +1813,14 @@ static int dcbnl_bcn_setcfg(struct net_device *netdev, struct nlattr **tb,
 	                                     i, value_int);
 	}
 
+<<<<<<< HEAD
 	ret = dcbnl_reply(0, RTM_SETDCB, DCB_CMD_BCN_SCFG, DCB_ATTR_BCN,
 	                  pid, seq, flags);
 err:
 	return ret;
+=======
+	return nla_put_u8(skb, DCB_ATTR_BCN, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
@@ -1185,7 +1840,12 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
 	 */
 	err = ops->peer_getappinfo(netdev, &info, &app_count);
 	if (!err && app_count) {
+<<<<<<< HEAD
 		table = kmalloc(sizeof(struct dcb_app) * app_count, GFP_KERNEL);
+=======
+		table = kmalloc_array(app_count, sizeof(struct dcb_app),
+				      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!table)
 			return -ENOMEM;
 
@@ -1202,6 +1862,7 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
 		 */
 		err = -EMSGSIZE;
 
+<<<<<<< HEAD
 		app = nla_nest_start(skb, app_nested_type);
 		if (!app)
 			goto nla_put_failure;
@@ -1213,6 +1874,21 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
 			NLA_PUT(skb, app_entry_type, sizeof(struct dcb_app),
 				&table[i]);
 
+=======
+		app = nla_nest_start_noflag(skb, app_nested_type);
+		if (!app)
+			goto nla_put_failure;
+
+		if (app_info_type &&
+		    nla_put(skb, app_info_type, sizeof(info), &info))
+			goto nla_put_failure;
+
+		for (i = 0; i < app_count; i++) {
+			if (nla_put(skb, app_entry_type, sizeof(struct dcb_app),
+				    &table[i]))
+				goto nla_put_failure;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nla_nest_end(skb, app);
 	}
 	err = 0;
@@ -1222,6 +1898,7 @@ nla_put_failure:
 	return err;
 }
 
+<<<<<<< HEAD
 /* Handle IEEE 802.1Qaz GET commands. */
 static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 {
@@ -1236,19 +1913,155 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 	ieee = nla_nest_start(skb, DCB_ATTR_IEEE);
 	if (!ieee)
 		goto nla_put_failure;
+=======
+static int dcbnl_getapptrust(struct net_device *netdev, struct sk_buff *skb)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+	enum ieee_attrs_app type;
+	struct nlattr *apptrust;
+	int nselectors, err, i;
+	u8 *selectors;
+
+	selectors = kzalloc(IEEE_8021QAZ_APP_SEL_MAX + 1, GFP_KERNEL);
+	if (!selectors)
+		return -ENOMEM;
+
+	err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
+	if (err) {
+		err = 0;
+		goto out;
+	}
+
+	apptrust = nla_nest_start(skb, DCB_ATTR_DCB_APP_TRUST_TABLE);
+	if (!apptrust) {
+		err = -EMSGSIZE;
+		goto out;
+	}
+
+	for (i = 0; i < nselectors; i++) {
+		type = dcbnl_app_attr_type_get(selectors[i]);
+		err = nla_put_u8(skb, type, selectors[i]);
+		if (err) {
+			nla_nest_cancel(skb, apptrust);
+			goto out;
+		}
+	}
+	nla_nest_end(skb, apptrust);
+
+out:
+	kfree(selectors);
+	return err;
+}
+
+/* Set or delete APP table or rewrite table entries. The APP struct is validated
+ * and the appropriate callback function is called.
+ */
+static int dcbnl_app_table_setdel(struct nlattr *attr,
+				  struct net_device *netdev,
+				  int (*setdel)(struct net_device *dev,
+						struct dcb_app *app))
+{
+	struct dcb_app *app_data;
+	enum ieee_attrs_app type;
+	struct nlattr *attr_itr;
+	int rem, err;
+
+	nla_for_each_nested(attr_itr, attr, rem) {
+		type = nla_type(attr_itr);
+
+		if (!dcbnl_app_attr_type_validate(type))
+			continue;
+
+		if (nla_len(attr_itr) < sizeof(struct dcb_app))
+			return -ERANGE;
+
+		app_data = nla_data(attr_itr);
+
+		if (!dcbnl_app_selector_validate(type, app_data->selector))
+			return -EINVAL;
+
+		err = setdel(netdev, app_data);
+		if (err)
+			return err;
+	}
+
+	return 0;
+}
+
+/* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
+static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+	struct nlattr *ieee, *app, *rewr;
+	struct dcb_app_type *itr;
+	int dcbx;
+	int err;
+
+	if (nla_put_string(skb, DCB_ATTR_IFNAME, netdev->name))
+		return -EMSGSIZE;
+
+	ieee = nla_nest_start_noflag(skb, DCB_ATTR_IEEE);
+	if (!ieee)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ops->ieee_getets) {
 		struct ieee_ets ets;
 		memset(&ets, 0, sizeof(ets));
 		err = ops->ieee_getets(netdev, &ets);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_IEEE_ETS, sizeof(ets), &ets);
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_IEEE_ETS, sizeof(ets), &ets))
+			return -EMSGSIZE;
+	}
+
+	if (ops->ieee_getmaxrate) {
+		struct ieee_maxrate maxrate;
+		memset(&maxrate, 0, sizeof(maxrate));
+		err = ops->ieee_getmaxrate(netdev, &maxrate);
+		if (!err) {
+			err = nla_put(skb, DCB_ATTR_IEEE_MAXRATE,
+				      sizeof(maxrate), &maxrate);
+			if (err)
+				return -EMSGSIZE;
+		}
+	}
+
+	if (ops->ieee_getqcn) {
+		struct ieee_qcn qcn;
+
+		memset(&qcn, 0, sizeof(qcn));
+		err = ops->ieee_getqcn(netdev, &qcn);
+		if (!err) {
+			err = nla_put(skb, DCB_ATTR_IEEE_QCN,
+				      sizeof(qcn), &qcn);
+			if (err)
+				return -EMSGSIZE;
+		}
+	}
+
+	if (ops->ieee_getqcnstats) {
+		struct ieee_qcn_stats qcn_stats;
+
+		memset(&qcn_stats, 0, sizeof(qcn_stats));
+		err = ops->ieee_getqcnstats(netdev, &qcn_stats);
+		if (!err) {
+			err = nla_put(skb, DCB_ATTR_IEEE_QCN_STATS,
+				      sizeof(qcn_stats), &qcn_stats);
+			if (err)
+				return -EMSGSIZE;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ops->ieee_getpfc) {
 		struct ieee_pfc pfc;
 		memset(&pfc, 0, sizeof(pfc));
 		err = ops->ieee_getpfc(netdev, &pfc);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_IEEE_PFC, sizeof(pfc), &pfc);
 	}
@@ -1265,6 +2078,36 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 			if (err) {
 				spin_unlock(&dcb_lock);
 				goto nla_put_failure;
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_IEEE_PFC, sizeof(pfc), &pfc))
+			return -EMSGSIZE;
+	}
+
+	if (ops->dcbnl_getbuffer) {
+		struct dcbnl_buffer buffer;
+
+		memset(&buffer, 0, sizeof(buffer));
+		err = ops->dcbnl_getbuffer(netdev, &buffer);
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_DCB_BUFFER, sizeof(buffer), &buffer))
+			return -EMSGSIZE;
+	}
+
+	app = nla_nest_start_noflag(skb, DCB_ATTR_IEEE_APP_TABLE);
+	if (!app)
+		return -EMSGSIZE;
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_app_list, list) {
+		if (itr->ifindex == netdev->ifindex) {
+			enum ieee_attrs_app type =
+				dcbnl_app_attr_type_get(itr->app.selector);
+			err = nla_put(skb, type, sizeof(itr->app), &itr->app);
+			if (err) {
+				spin_unlock_bh(&dcb_lock);
+				return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -1274,24 +2117,69 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 	else
 		dcbx = -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	spin_unlock(&dcb_lock);
 	nla_nest_end(skb, app);
 
+=======
+	spin_unlock_bh(&dcb_lock);
+	nla_nest_end(skb, app);
+
+	rewr = nla_nest_start(skb, DCB_ATTR_DCB_REWR_TABLE);
+	if (!rewr)
+		return -EMSGSIZE;
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_rewr_list, list) {
+		if (itr->ifindex == netdev->ifindex) {
+			enum ieee_attrs_app type =
+				dcbnl_app_attr_type_get(itr->app.selector);
+			err = nla_put(skb, type, sizeof(itr->app), &itr->app);
+			if (err) {
+				spin_unlock_bh(&dcb_lock);
+				nla_nest_cancel(skb, rewr);
+				return -EMSGSIZE;
+			}
+		}
+	}
+
+	spin_unlock_bh(&dcb_lock);
+	nla_nest_end(skb, rewr);
+
+	if (ops->dcbnl_getapptrust) {
+		err = dcbnl_getapptrust(netdev, skb);
+		if (err)
+			return err;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get peer info if available */
 	if (ops->ieee_peer_getets) {
 		struct ieee_ets ets;
 		memset(&ets, 0, sizeof(ets));
 		err = ops->ieee_peer_getets(netdev, &ets);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_IEEE_PEER_ETS, sizeof(ets), &ets);
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_IEEE_PEER_ETS, sizeof(ets), &ets))
+			return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ops->ieee_peer_getpfc) {
 		struct ieee_pfc pfc;
 		memset(&pfc, 0, sizeof(pfc));
 		err = ops->ieee_peer_getpfc(netdev, &pfc);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_IEEE_PEER_PFC, sizeof(pfc), &pfc);
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_IEEE_PEER_PFC, sizeof(pfc), &pfc))
+			return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ops->peer_getappinfo && ops->peer_getapptable) {
@@ -1300,13 +2188,18 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 					   DCB_ATTR_IEEE_APP_UNSPEC,
 					   DCB_ATTR_IEEE_APP);
 		if (err)
+<<<<<<< HEAD
 			goto nla_put_failure;
+=======
+			return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nla_nest_end(skb, ieee);
 	if (dcbx >= 0) {
 		err = nla_put_u8(skb, DCB_ATTR_DCBX, dcbx);
 		if (err)
+<<<<<<< HEAD
 			goto nla_put_failure;
 	}
 
@@ -1314,6 +2207,12 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
 
 nla_put_failure:
 	return err;
+=======
+			return -EMSGSIZE;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
@@ -1322,6 +2221,7 @@ static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
 	u8 pgid, up_map, prio, tc_pct;
 	const struct dcbnl_rtnl_ops *ops = dev->dcbnl_ops;
 	int i = dir ? DCB_ATTR_CEE_TX_PG : DCB_ATTR_CEE_RX_PG;
+<<<<<<< HEAD
 	struct nlattr *pg = nla_nest_start(skb, i);
 
 	if (!pg)
@@ -1332,6 +2232,18 @@ static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
 
 		if (!tc_nest)
 			goto nla_put_failure;
+=======
+	struct nlattr *pg = nla_nest_start_noflag(skb, i);
+
+	if (!pg)
+		return -EMSGSIZE;
+
+	for (i = DCB_PG_ATTR_TC_0; i <= DCB_PG_ATTR_TC_7; i++) {
+		struct nlattr *tc_nest = nla_nest_start_noflag(skb, i);
+
+		if (!tc_nest)
+			return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pgid = DCB_ATTR_VALUE_UNDEFINED;
 		prio = DCB_ATTR_VALUE_UNDEFINED;
@@ -1345,10 +2257,18 @@ static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
 			ops->getpgtccfgtx(dev, i - DCB_PG_ATTR_TC_0,
 					  &prio, &pgid, &tc_pct, &up_map);
 
+<<<<<<< HEAD
 		NLA_PUT_U8(skb, DCB_TC_ATTR_PARAM_PGID, pgid);
 		NLA_PUT_U8(skb, DCB_TC_ATTR_PARAM_UP_MAPPING, up_map);
 		NLA_PUT_U8(skb, DCB_TC_ATTR_PARAM_STRICT_PRIO, prio);
 		NLA_PUT_U8(skb, DCB_TC_ATTR_PARAM_BW_PCT, tc_pct);
+=======
+		if (nla_put_u8(skb, DCB_TC_ATTR_PARAM_PGID, pgid) ||
+		    nla_put_u8(skb, DCB_TC_ATTR_PARAM_UP_MAPPING, up_map) ||
+		    nla_put_u8(skb, DCB_TC_ATTR_PARAM_STRICT_PRIO, prio) ||
+		    nla_put_u8(skb, DCB_TC_ATTR_PARAM_BW_PCT, tc_pct))
+			return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nla_nest_end(skb, tc_nest);
 	}
 
@@ -1361,6 +2281,7 @@ static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
 		else
 			ops->getpgbwgcfgtx(dev, i - DCB_PG_ATTR_BW_ID_0,
 					   &tc_pct);
+<<<<<<< HEAD
 		NLA_PUT_U8(skb, i, tc_pct);
 	}
 	nla_nest_end(skb, pg);
@@ -1368,6 +2289,13 @@ static int dcbnl_cee_pg_fill(struct sk_buff *skb, struct net_device *dev,
 
 nla_put_failure:
 	return -EMSGSIZE;
+=======
+		if (nla_put_u8(skb, i, tc_pct))
+			return -EMSGSIZE;
+	}
+	nla_nest_end(skb, pg);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
@@ -1378,9 +2306,15 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 	int dcbx, i, err = -EMSGSIZE;
 	u8 value;
 
+<<<<<<< HEAD
 	NLA_PUT_STRING(skb, DCB_ATTR_IFNAME, netdev->name);
 
 	cee = nla_nest_start(skb, DCB_ATTR_CEE);
+=======
+	if (nla_put_string(skb, DCB_ATTR_IFNAME, netdev->name))
+		goto nla_put_failure;
+	cee = nla_nest_start_noflag(skb, DCB_ATTR_CEE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cee)
 		goto nla_put_failure;
 
@@ -1399,28 +2333,48 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 
 	/* local pfc */
 	if (ops->getpfccfg) {
+<<<<<<< HEAD
 		struct nlattr *pfc_nest = nla_nest_start(skb, DCB_ATTR_CEE_PFC);
+=======
+		struct nlattr *pfc_nest = nla_nest_start_noflag(skb,
+								DCB_ATTR_CEE_PFC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!pfc_nest)
 			goto nla_put_failure;
 
 		for (i = DCB_PFC_UP_ATTR_0; i <= DCB_PFC_UP_ATTR_7; i++) {
 			ops->getpfccfg(netdev, i - DCB_PFC_UP_ATTR_0, &value);
+<<<<<<< HEAD
 			NLA_PUT_U8(skb, i, value);
+=======
+			if (nla_put_u8(skb, i, value))
+				goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		nla_nest_end(skb, pfc_nest);
 	}
 
 	/* local app */
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	app = nla_nest_start(skb, DCB_ATTR_CEE_APP_TABLE);
+=======
+	spin_lock_bh(&dcb_lock);
+	app = nla_nest_start_noflag(skb, DCB_ATTR_CEE_APP_TABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!app)
 		goto dcb_unlock;
 
 	list_for_each_entry(itr, &dcb_app_list, list) {
 		if (itr->ifindex == netdev->ifindex) {
+<<<<<<< HEAD
 			struct nlattr *app_nest = nla_nest_start(skb,
 								 DCB_ATTR_APP);
+=======
+			struct nlattr *app_nest = nla_nest_start_noflag(skb,
+									DCB_ATTR_APP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!app_nest)
 				goto dcb_unlock;
 
@@ -1449,18 +2403,33 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 	else
 		dcbx = -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	spin_unlock(&dcb_lock);
 
 	/* features flags */
 	if (ops->getfeatcfg) {
 		struct nlattr *feat = nla_nest_start(skb, DCB_ATTR_CEE_FEAT);
+=======
+	spin_unlock_bh(&dcb_lock);
+
+	/* features flags */
+	if (ops->getfeatcfg) {
+		struct nlattr *feat = nla_nest_start_noflag(skb,
+							    DCB_ATTR_CEE_FEAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!feat)
 			goto nla_put_failure;
 
 		for (i = DCB_FEATCFG_ATTR_ALL + 1; i <= DCB_FEATCFG_ATTR_MAX;
 		     i++)
+<<<<<<< HEAD
 			if (!ops->getfeatcfg(netdev, i, &value))
 				NLA_PUT_U8(skb, i, value);
+=======
+			if (!ops->getfeatcfg(netdev, i, &value) &&
+			    nla_put_u8(skb, i, value))
+				goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nla_nest_end(skb, feat);
 	}
@@ -1470,16 +2439,28 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 		struct cee_pg pg;
 		memset(&pg, 0, sizeof(pg));
 		err = ops->cee_peer_getpg(netdev, &pg);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_CEE_PEER_PG, sizeof(pg), &pg);
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_CEE_PEER_PG, sizeof(pg), &pg))
+			goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ops->cee_peer_getpfc) {
 		struct cee_pfc pfc;
 		memset(&pfc, 0, sizeof(pfc));
 		err = ops->cee_peer_getpfc(netdev, &pfc);
+<<<<<<< HEAD
 		if (!err)
 			NLA_PUT(skb, DCB_ATTR_CEE_PEER_PFC, sizeof(pfc), &pfc);
+=======
+		if (!err &&
+		    nla_put(skb, DCB_ATTR_CEE_PEER_PFC, sizeof(pfc), &pfc))
+			goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ops->peer_getappinfo && ops->peer_getapptable) {
@@ -1501,24 +2482,38 @@ static int dcbnl_cee_fill(struct sk_buff *skb, struct net_device *netdev)
 	return 0;
 
 dcb_unlock:
+<<<<<<< HEAD
 	spin_unlock(&dcb_lock);
 nla_put_failure:
+=======
+	spin_unlock_bh(&dcb_lock);
+nla_put_failure:
+	err = -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int dcbnl_notify(struct net_device *dev, int event, int cmd,
+<<<<<<< HEAD
 			u32 seq, u32 pid, int dcbx_ver)
+=======
+			u32 seq, u32 portid, int dcbx_ver)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = dev_net(dev);
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;
+<<<<<<< HEAD
 	struct dcbmsg *dcb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct dcbnl_rtnl_ops *ops = dev->dcbnl_ops;
 	int err;
 
 	if (!ops)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!skb)
 		return -ENOBUFS;
@@ -1532,6 +2527,11 @@ static int dcbnl_notify(struct net_device *dev, int event, int cmd,
 	dcb = NLMSG_DATA(nlh);
 	dcb->dcb_family = AF_UNSPEC;
 	dcb->cmd = cmd;
+=======
+	skb = dcbnl_newmsg(event, cmd, portid, seq, 0, &nlh);
+	if (!skb)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dcbx_ver == DCB_CAP_DCBX_VER_IEEE)
 		err = dcbnl_ieee_fill(skb, dev);
@@ -1540,8 +2540,12 @@ static int dcbnl_notify(struct net_device *dev, int event, int cmd,
 
 	if (err < 0) {
 		/* Report error to broadcast listeners */
+<<<<<<< HEAD
 		nlmsg_cancel(skb, nlh);
 		kfree_skb(skb);
+=======
+		nlmsg_free(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtnl_set_sk_err(net, RTNLGRP_DCB, err);
 	} else {
 		/* End nlmsg and notify broadcast listeners */
@@ -1553,13 +2557,20 @@ static int dcbnl_notify(struct net_device *dev, int event, int cmd,
 }
 
 int dcbnl_ieee_notify(struct net_device *dev, int event, int cmd,
+<<<<<<< HEAD
 		      u32 seq, u32 pid)
 {
 	return dcbnl_notify(dev, event, cmd, seq, pid, DCB_CAP_DCBX_VER_IEEE);
+=======
+		      u32 seq, u32 portid)
+{
+	return dcbnl_notify(dev, event, cmd, seq, portid, DCB_CAP_DCBX_VER_IEEE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dcbnl_ieee_notify);
 
 int dcbnl_cee_notify(struct net_device *dev, int event, int cmd,
+<<<<<<< HEAD
 		     u32 seq, u32 pid)
 {
 	return dcbnl_notify(dev, event, cmd, seq, pid, DCB_CAP_DCBX_VER_CEE);
@@ -1580,12 +2591,42 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlattr **tb,
 
 	if (!ops)
 		return err;
+=======
+		     u32 seq, u32 portid)
+{
+	return dcbnl_notify(dev, event, cmd, seq, portid, DCB_CAP_DCBX_VER_CEE);
+}
+EXPORT_SYMBOL(dcbnl_cee_notify);
+
+/* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb SET commands.
+ * If any requested operation can not be completed
+ * the entire msg is aborted and error value is returned.
+ * No attempt is made to reconcile the case where only part of the
+ * cmd can be completed.
+ */
+static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
+			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
+	int prio;
+	int err;
+
+	if (!ops)
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tb[DCB_ATTR_IEEE])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = nla_parse_nested(ieee, DCB_ATTR_IEEE_MAX,
 			       tb[DCB_ATTR_IEEE], dcbnl_ieee_policy);
+=======
+	err = nla_parse_nested_deprecated(ieee, DCB_ATTR_IEEE_MAX,
+					  tb[DCB_ATTR_IEEE],
+					  dcbnl_ieee_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1596,6 +2637,26 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlattr **tb,
 			goto err;
 	}
 
+<<<<<<< HEAD
+=======
+	if (ieee[DCB_ATTR_IEEE_MAXRATE] && ops->ieee_setmaxrate) {
+		struct ieee_maxrate *maxrate =
+			nla_data(ieee[DCB_ATTR_IEEE_MAXRATE]);
+		err = ops->ieee_setmaxrate(netdev, maxrate);
+		if (err)
+			goto err;
+	}
+
+	if (ieee[DCB_ATTR_IEEE_QCN] && ops->ieee_setqcn) {
+		struct ieee_qcn *qcn =
+			nla_data(ieee[DCB_ATTR_IEEE_QCN]);
+
+		err = ops->ieee_setqcn(netdev, qcn);
+		if (err)
+			goto err;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ieee[DCB_ATTR_IEEE_PFC] && ops->ieee_setpfc) {
 		struct ieee_pfc *pfc = nla_data(ieee[DCB_ATTR_IEEE_PFC]);
 		err = ops->ieee_setpfc(netdev, pfc);
@@ -1603,6 +2664,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlattr **tb,
 			goto err;
 	}
 
+<<<<<<< HEAD
 	if (ieee[DCB_ATTR_IEEE_APP_TABLE]) {
 		struct nlattr *attr;
 		int rem;
@@ -1624,10 +2686,94 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlattr **tb,
 err:
 	dcbnl_reply(err, RTM_SETDCB, DCB_CMD_IEEE_SET, DCB_ATTR_IEEE,
 		    pid, seq, flags);
+=======
+	if (ieee[DCB_ATTR_DCB_BUFFER] && ops->dcbnl_setbuffer) {
+		struct dcbnl_buffer *buffer =
+			nla_data(ieee[DCB_ATTR_DCB_BUFFER]);
+
+		for (prio = 0; prio < ARRAY_SIZE(buffer->prio2buffer); prio++) {
+			if (buffer->prio2buffer[prio] >= DCBX_MAX_BUFFERS) {
+				err = -EINVAL;
+				goto err;
+			}
+		}
+
+		err = ops->dcbnl_setbuffer(netdev, buffer);
+		if (err)
+			goto err;
+	}
+
+	if (ieee[DCB_ATTR_DCB_REWR_TABLE]) {
+		err = dcbnl_app_table_setdel(ieee[DCB_ATTR_DCB_REWR_TABLE],
+					     netdev,
+					     ops->dcbnl_setrewr ?: dcb_setrewr);
+		if (err)
+			goto err;
+	}
+
+	if (ieee[DCB_ATTR_IEEE_APP_TABLE]) {
+		err = dcbnl_app_table_setdel(ieee[DCB_ATTR_IEEE_APP_TABLE],
+					     netdev, ops->ieee_setapp ?:
+					     dcb_ieee_setapp);
+		if (err)
+			goto err;
+	}
+
+	if (ieee[DCB_ATTR_DCB_APP_TRUST_TABLE]) {
+		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
+		struct nlattr *attr;
+		int nselectors = 0;
+		int rem;
+
+		if (!ops->dcbnl_setapptrust) {
+			err = -EOPNOTSUPP;
+			goto err;
+		}
+
+		nla_for_each_nested(attr, ieee[DCB_ATTR_DCB_APP_TRUST_TABLE],
+				    rem) {
+			enum ieee_attrs_app type = nla_type(attr);
+			u8 selector;
+			int i;
+
+			if (!dcbnl_app_attr_type_validate(type) ||
+			    nla_len(attr) != 1 ||
+			    nselectors >= sizeof(selectors)) {
+				err = -EINVAL;
+				goto err;
+			}
+
+			selector = nla_get_u8(attr);
+
+			if (!dcbnl_app_selector_validate(type, selector)) {
+				err = -EINVAL;
+				goto err;
+			}
+
+			/* Duplicate selector ? */
+			for (i = 0; i < nselectors; i++) {
+				if (selectors[i] == selector) {
+					err = -EINVAL;
+					goto err;
+				}
+			}
+
+			selectors[nselectors++] = selector;
+		}
+
+		err = ops->dcbnl_setapptrust(netdev, selectors, nselectors);
+		if (err)
+			goto err;
+	}
+
+err:
+	err = nla_put_u8(skb, DCB_ATTR_IEEE, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcbnl_ieee_notify(netdev, RTM_SETDCB, DCB_CMD_IEEE_SET, seq, 0);
 	return err;
 }
 
+<<<<<<< HEAD
 static int dcbnl_ieee_get(struct net_device *netdev, struct nlattr **tb,
 			  u32 pid, u32 seq, u16 flags)
 {
@@ -1637,10 +2783,17 @@ static int dcbnl_ieee_get(struct net_device *netdev, struct nlattr **tb,
 	struct dcbmsg *dcb;
 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
 	int err;
+=======
+static int dcbnl_ieee_get(struct net_device *netdev, struct nlmsghdr *nlh,
+			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ops)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!skb)
 		return -ENOBUFS;
@@ -1674,6 +2827,17 @@ static int dcbnl_ieee_del(struct net_device *netdev, struct nlattr **tb,
 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
 	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
 	int err = -EOPNOTSUPP;
+=======
+	return dcbnl_ieee_fill(skb, netdev);
+}
+
+static int dcbnl_ieee_del(struct net_device *netdev, struct nlmsghdr *nlh,
+			  u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ops)
 		return -EOPNOTSUPP;
@@ -1681,12 +2845,19 @@ static int dcbnl_ieee_del(struct net_device *netdev, struct nlattr **tb,
 	if (!tb[DCB_ATTR_IEEE])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = nla_parse_nested(ieee, DCB_ATTR_IEEE_MAX,
 			       tb[DCB_ATTR_IEEE], dcbnl_ieee_policy);
+=======
+	err = nla_parse_nested_deprecated(ieee, DCB_ATTR_IEEE_MAX,
+					  tb[DCB_ATTR_IEEE],
+					  dcbnl_ieee_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	if (ieee[DCB_ATTR_IEEE_APP_TABLE]) {
+<<<<<<< HEAD
 		struct nlattr *attr;
 		int rem;
 
@@ -1708,12 +2879,32 @@ static int dcbnl_ieee_del(struct net_device *netdev, struct nlattr **tb,
 err:
 	dcbnl_reply(err, RTM_SETDCB, DCB_CMD_IEEE_DEL, DCB_ATTR_IEEE,
 		    pid, seq, flags);
+=======
+		err = dcbnl_app_table_setdel(ieee[DCB_ATTR_IEEE_APP_TABLE],
+					     netdev, ops->ieee_delapp ?:
+					     dcb_ieee_delapp);
+		if (err)
+			goto err;
+	}
+
+	if (ieee[DCB_ATTR_DCB_REWR_TABLE]) {
+		err = dcbnl_app_table_setdel(ieee[DCB_ATTR_DCB_REWR_TABLE],
+					     netdev,
+					     ops->dcbnl_delrewr ?: dcb_delrewr);
+		if (err)
+			goto err;
+	}
+
+err:
+	err = nla_put_u8(skb, DCB_ATTR_IEEE, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcbnl_ieee_notify(netdev, RTM_SETDCB, DCB_CMD_IEEE_DEL, seq, 0);
 	return err;
 }
 
 
 /* DCBX configuration */
+<<<<<<< HEAD
 static int dcbnl_getdcbx(struct net_device *netdev, struct nlattr **tb,
 			 u32 pid, u32 seq, u16 flags)
 {
@@ -1732,6 +2923,21 @@ static int dcbnl_setdcbx(struct net_device *netdev, struct nlattr **tb,
 			 u32 pid, u32 seq, u16 flags)
 {
 	int ret;
+=======
+static int dcbnl_getdcbx(struct net_device *netdev, struct nlmsghdr *nlh,
+			 u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	if (!netdev->dcbnl_ops->getdcbx)
+		return -EOPNOTSUPP;
+
+	return nla_put_u8(skb, DCB_ATTR_DCBX,
+			  netdev->dcbnl_ops->getdcbx(netdev));
+}
+
+static int dcbnl_setdcbx(struct net_device *netdev, struct nlmsghdr *nlh,
+			 u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 value;
 
 	if (!netdev->dcbnl_ops->setdcbx)
@@ -1742,6 +2948,7 @@ static int dcbnl_setdcbx(struct net_device *netdev, struct nlattr **tb,
 
 	value = nla_get_u8(tb[DCB_ATTR_DCBX]);
 
+<<<<<<< HEAD
 	ret = dcbnl_reply(netdev->dcbnl_ops->setdcbx(netdev, value),
 			  RTM_SETDCB, DCB_CMD_SDCBX, DCB_ATTR_DCBX,
 			  pid, seq, flags);
@@ -1755,6 +2962,15 @@ static int dcbnl_getfeatcfg(struct net_device *netdev, struct nlattr **tb,
 	struct sk_buff *dcbnl_skb;
 	struct nlmsghdr *nlh;
 	struct dcbmsg *dcb;
+=======
+	return nla_put_u8(skb, DCB_ATTR_DCBX,
+			  netdev->dcbnl_ops->setdcbx(netdev, value));
+}
+
+static int dcbnl_getfeatcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			    u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *data[DCB_FEATCFG_ATTR_MAX + 1], *nest;
 	u8 value;
 	int ret, i;
@@ -1766,6 +2982,7 @@ static int dcbnl_getfeatcfg(struct net_device *netdev, struct nlattr **tb,
 	if (!tb[DCB_ATTR_FEATCFG])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = nla_parse_nested(data, DCB_FEATCFG_ATTR_MAX, tb[DCB_ATTR_FEATCFG],
 			       dcbnl_featcfg_nest);
 	if (ret)
@@ -1788,6 +3005,17 @@ static int dcbnl_getfeatcfg(struct net_device *netdev, struct nlattr **tb,
 		ret = -EMSGSIZE;
 		goto nla_put_failure;
 	}
+=======
+	ret = nla_parse_nested_deprecated(data, DCB_FEATCFG_ATTR_MAX,
+					  tb[DCB_ATTR_FEATCFG],
+					  dcbnl_featcfg_nest, NULL);
+	if (ret)
+		return ret;
+
+	nest = nla_nest_start_noflag(skb, DCB_ATTR_FEATCFG);
+	if (!nest)
+		return -EMSGSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data[DCB_FEATCFG_ATTR_ALL])
 		getall = 1;
@@ -1798,6 +3026,7 @@ static int dcbnl_getfeatcfg(struct net_device *netdev, struct nlattr **tb,
 
 		ret = netdev->dcbnl_ops->getfeatcfg(netdev, i, &value);
 		if (!ret)
+<<<<<<< HEAD
 			ret = nla_put_u8(dcbnl_skb, i, value);
 
 		if (ret) {
@@ -1820,6 +3049,23 @@ err_out:
 
 static int dcbnl_setfeatcfg(struct net_device *netdev, struct nlattr **tb,
 			    u32 pid, u32 seq, u16 flags)
+=======
+			ret = nla_put_u8(skb, i, value);
+
+		if (ret) {
+			nla_nest_cancel(skb, nest);
+			goto nla_put_failure;
+		}
+	}
+	nla_nest_end(skb, nest);
+
+nla_put_failure:
+	return ret;
+}
+
+static int dcbnl_setfeatcfg(struct net_device *netdev, struct nlmsghdr *nlh,
+			    u32 seq, struct nlattr **tb, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *data[DCB_FEATCFG_ATTR_MAX + 1];
 	int ret, i;
@@ -1831,8 +3077,14 @@ static int dcbnl_setfeatcfg(struct net_device *netdev, struct nlattr **tb,
 	if (!tb[DCB_ATTR_FEATCFG])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = nla_parse_nested(data, DCB_FEATCFG_ATTR_MAX, tb[DCB_ATTR_FEATCFG],
 			       dcbnl_featcfg_nest);
+=======
+	ret = nla_parse_nested_deprecated(data, DCB_FEATCFG_ATTR_MAX,
+					  tb[DCB_ATTR_FEATCFG],
+					  dcbnl_featcfg_nest, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret)
 		goto err;
@@ -1849,13 +3101,18 @@ static int dcbnl_setfeatcfg(struct net_device *netdev, struct nlattr **tb,
 			goto err;
 	}
 err:
+<<<<<<< HEAD
 	dcbnl_reply(ret, RTM_SETDCB, DCB_CMD_SFEATCFG, DCB_ATTR_FEATCFG,
 		    pid, seq, flags);
+=======
+	ret = nla_put_u8(skb, DCB_ATTR_FEATCFG, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /* Handle CEE DCBX GET commands. */
+<<<<<<< HEAD
 static int dcbnl_cee_get(struct net_device *netdev, struct nlattr **tb,
 			 u32 pid, u32 seq, u16 flags)
 {
@@ -1865,10 +3122,17 @@ static int dcbnl_cee_get(struct net_device *netdev, struct nlattr **tb,
 	struct dcbmsg *dcb;
 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
 	int err;
+=======
+static int dcbnl_cee_get(struct net_device *netdev, struct nlmsghdr *nlh,
+			 u32 seq, struct nlattr **tb, struct sk_buff *skb)
+{
+	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ops)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!skb)
 		return -ENOBUFS;
@@ -2044,6 +3308,161 @@ out:
 
 /**
  * dcb_getapp - retrieve the DCBX application user priority
+=======
+	return dcbnl_cee_fill(skb, netdev);
+}
+
+struct reply_func {
+	/* reply netlink message type */
+	int	type;
+
+	/* function to fill message contents */
+	int   (*cb)(struct net_device *, struct nlmsghdr *, u32,
+		    struct nlattr **, struct sk_buff *);
+};
+
+static const struct reply_func reply_funcs[DCB_CMD_MAX+1] = {
+	[DCB_CMD_GSTATE]	= { RTM_GETDCB, dcbnl_getstate },
+	[DCB_CMD_SSTATE]	= { RTM_SETDCB, dcbnl_setstate },
+	[DCB_CMD_PFC_GCFG]	= { RTM_GETDCB, dcbnl_getpfccfg },
+	[DCB_CMD_PFC_SCFG]	= { RTM_SETDCB, dcbnl_setpfccfg },
+	[DCB_CMD_GPERM_HWADDR]	= { RTM_GETDCB, dcbnl_getperm_hwaddr },
+	[DCB_CMD_GCAP]		= { RTM_GETDCB, dcbnl_getcap },
+	[DCB_CMD_GNUMTCS]	= { RTM_GETDCB, dcbnl_getnumtcs },
+	[DCB_CMD_SNUMTCS]	= { RTM_SETDCB, dcbnl_setnumtcs },
+	[DCB_CMD_PFC_GSTATE]	= { RTM_GETDCB, dcbnl_getpfcstate },
+	[DCB_CMD_PFC_SSTATE]	= { RTM_SETDCB, dcbnl_setpfcstate },
+	[DCB_CMD_GAPP]		= { RTM_GETDCB, dcbnl_getapp },
+	[DCB_CMD_SAPP]		= { RTM_SETDCB, dcbnl_setapp },
+	[DCB_CMD_PGTX_GCFG]	= { RTM_GETDCB, dcbnl_pgtx_getcfg },
+	[DCB_CMD_PGTX_SCFG]	= { RTM_SETDCB, dcbnl_pgtx_setcfg },
+	[DCB_CMD_PGRX_GCFG]	= { RTM_GETDCB, dcbnl_pgrx_getcfg },
+	[DCB_CMD_PGRX_SCFG]	= { RTM_SETDCB, dcbnl_pgrx_setcfg },
+	[DCB_CMD_SET_ALL]	= { RTM_SETDCB, dcbnl_setall },
+	[DCB_CMD_BCN_GCFG]	= { RTM_GETDCB, dcbnl_bcn_getcfg },
+	[DCB_CMD_BCN_SCFG]	= { RTM_SETDCB, dcbnl_bcn_setcfg },
+	[DCB_CMD_IEEE_GET]	= { RTM_GETDCB, dcbnl_ieee_get },
+	[DCB_CMD_IEEE_SET]	= { RTM_SETDCB, dcbnl_ieee_set },
+	[DCB_CMD_IEEE_DEL]	= { RTM_SETDCB, dcbnl_ieee_del },
+	[DCB_CMD_GDCBX]		= { RTM_GETDCB, dcbnl_getdcbx },
+	[DCB_CMD_SDCBX]		= { RTM_SETDCB, dcbnl_setdcbx },
+	[DCB_CMD_GFEATCFG]	= { RTM_GETDCB, dcbnl_getfeatcfg },
+	[DCB_CMD_SFEATCFG]	= { RTM_SETDCB, dcbnl_setfeatcfg },
+	[DCB_CMD_CEE_GET]	= { RTM_GETDCB, dcbnl_cee_get },
+};
+
+static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+		    struct netlink_ext_ack *extack)
+{
+	struct net *net = sock_net(skb->sk);
+	struct net_device *netdev;
+	struct dcbmsg *dcb = nlmsg_data(nlh);
+	struct nlattr *tb[DCB_ATTR_MAX + 1];
+	u32 portid = NETLINK_CB(skb).portid;
+	int ret = -EINVAL;
+	struct sk_buff *reply_skb;
+	struct nlmsghdr *reply_nlh = NULL;
+	const struct reply_func *fn;
+
+	if ((nlh->nlmsg_type == RTM_SETDCB) && !netlink_capable(skb, CAP_NET_ADMIN))
+		return -EPERM;
+
+	ret = nlmsg_parse_deprecated(nlh, sizeof(*dcb), tb, DCB_ATTR_MAX,
+				     dcbnl_rtnl_policy, extack);
+	if (ret < 0)
+		return ret;
+
+	if (dcb->cmd > DCB_CMD_MAX)
+		return -EINVAL;
+
+	/* check if a reply function has been defined for the command */
+	fn = &reply_funcs[dcb->cmd];
+	if (!fn->cb)
+		return -EOPNOTSUPP;
+	if (fn->type == RTM_SETDCB && !netlink_capable(skb, CAP_NET_ADMIN))
+		return -EPERM;
+
+	if (!tb[DCB_ATTR_IFNAME])
+		return -EINVAL;
+
+	netdev = __dev_get_by_name(net, nla_data(tb[DCB_ATTR_IFNAME]));
+	if (!netdev)
+		return -ENODEV;
+
+	if (!netdev->dcbnl_ops)
+		return -EOPNOTSUPP;
+
+	reply_skb = dcbnl_newmsg(fn->type, dcb->cmd, portid, nlh->nlmsg_seq,
+				 nlh->nlmsg_flags, &reply_nlh);
+	if (!reply_skb)
+		return -ENOMEM;
+
+	ret = fn->cb(netdev, nlh, nlh->nlmsg_seq, tb, reply_skb);
+	if (ret < 0) {
+		nlmsg_free(reply_skb);
+		goto out;
+	}
+
+	nlmsg_end(reply_skb, reply_nlh);
+
+	ret = rtnl_unicast(reply_skb, net, portid);
+out:
+	return ret;
+}
+
+static struct dcb_app_type *dcb_rewr_lookup(const struct dcb_app *app,
+					    int ifindex, int proto)
+{
+	struct dcb_app_type *itr;
+
+	list_for_each_entry(itr, &dcb_rewr_list, list) {
+		if (itr->app.selector == app->selector &&
+		    itr->app.priority == app->priority &&
+		    itr->ifindex == ifindex &&
+		    ((proto == -1) || itr->app.protocol == proto))
+			return itr;
+	}
+
+	return NULL;
+}
+
+static struct dcb_app_type *dcb_app_lookup(const struct dcb_app *app,
+					   int ifindex, int prio)
+{
+	struct dcb_app_type *itr;
+
+	list_for_each_entry(itr, &dcb_app_list, list) {
+		if (itr->app.selector == app->selector &&
+		    itr->app.protocol == app->protocol &&
+		    itr->ifindex == ifindex &&
+		    ((prio == -1) || itr->app.priority == prio))
+			return itr;
+	}
+
+	return NULL;
+}
+
+static int dcb_app_add(struct list_head *list, const struct dcb_app *app,
+		       int ifindex)
+{
+	struct dcb_app_type *entry;
+
+	entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+	if (!entry)
+		return -ENOMEM;
+
+	memcpy(&entry->app, app, sizeof(*app));
+	entry->ifindex = ifindex;
+	list_add(&entry->list, list);
+
+	return 0;
+}
+
+/**
+ * dcb_getapp - retrieve the DCBX application user priority
+ * @dev: network interface
+ * @app: application to get user priority of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * On success returns a non-zero 802.1p user priority bitmap
  * otherwise returns 0 as the invalid user priority bitmap to
@@ -2054,6 +3473,7 @@ u8 dcb_getapp(struct net_device *dev, struct dcb_app *app)
 	struct dcb_app_type *itr;
 	u8 prio = 0;
 
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	list_for_each_entry(itr, &dcb_app_list, list) {
 		if (itr->app.selector == app->selector &&
@@ -2064,6 +3484,13 @@ u8 dcb_getapp(struct net_device *dev, struct dcb_app *app)
 		}
 	}
 	spin_unlock(&dcb_lock);
+=======
+	spin_lock_bh(&dcb_lock);
+	itr = dcb_app_lookup(app, dev->ifindex, -1);
+	if (itr)
+		prio = itr->app.priority;
+	spin_unlock_bh(&dcb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return prio;
 }
@@ -2071,21 +3498,35 @@ EXPORT_SYMBOL(dcb_getapp);
 
 /**
  * dcb_setapp - add CEE dcb application data to app list
+<<<<<<< HEAD
  *
  * Priority 0 is an invalid priority in CEE spec. This routine
  * removes applications from the app list if the priority is
  * set to zero.
+=======
+ * @dev: network interface
+ * @new: application data to add
+ *
+ * Priority 0 is an invalid priority in CEE spec. This routine
+ * removes applications from the app list if the priority is
+ * set to zero. Priority is expected to be 8-bit 802.1p user priority bitmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dcb_setapp(struct net_device *dev, struct dcb_app *new)
 {
 	struct dcb_app_type *itr;
 	struct dcb_app_type event;
+<<<<<<< HEAD
+=======
+	int err = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	event.ifindex = dev->ifindex;
 	memcpy(&event.app, new, sizeof(event.app));
 	if (dev->dcbnl_ops->getdcbx)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	/* Search for existing match and replace */
 	list_for_each_entry(itr, &dcb_app_list, list) {
@@ -2118,11 +3559,38 @@ out:
 	spin_unlock(&dcb_lock);
 	call_dcbevent_notifiers(DCB_APP_EVENT, &event);
 	return 0;
+=======
+	spin_lock_bh(&dcb_lock);
+	/* Search for existing match and replace */
+	itr = dcb_app_lookup(new, dev->ifindex, -1);
+	if (itr) {
+		if (new->priority)
+			itr->app.priority = new->priority;
+		else {
+			list_del(&itr->list);
+			kfree(itr);
+		}
+		goto out;
+	}
+	/* App type does not exist add new application type */
+	if (new->priority)
+		err = dcb_app_add(&dcb_app_list, new, dev->ifindex);
+out:
+	spin_unlock_bh(&dcb_lock);
+	if (!err)
+		call_dcbevent_notifiers(DCB_APP_EVENT, &event);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dcb_setapp);
 
 /**
  * dcb_ieee_getapp_mask - retrieve the IEEE DCB application priority
+<<<<<<< HEAD
+=======
+ * @dev: network interface
+ * @app: where to store the retrieve application data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Helper routine which on success returns a non-zero 802.1Qaz user
  * priority bitmap otherwise returns 0 to indicate the dcb_app was
@@ -2133,6 +3601,7 @@ u8 dcb_ieee_getapp_mask(struct net_device *dev, struct dcb_app *app)
 	struct dcb_app_type *itr;
 	u8 prio = 0;
 
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	list_for_each_entry(itr, &dcb_app_list, list) {
 		if (itr->app.selector == app->selector &&
@@ -2142,11 +3611,19 @@ u8 dcb_ieee_getapp_mask(struct net_device *dev, struct dcb_app *app)
 		}
 	}
 	spin_unlock(&dcb_lock);
+=======
+	spin_lock_bh(&dcb_lock);
+	itr = dcb_app_lookup(app, dev->ifindex, -1);
+	if (itr)
+		prio |= 1 << itr->app.priority;
+	spin_unlock_bh(&dcb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return prio;
 }
 EXPORT_SYMBOL(dcb_ieee_getapp_mask);
 
+<<<<<<< HEAD
 /**
  * dcb_ieee_setapp - add IEEE dcb application data to app list
  *
@@ -2157,6 +3634,77 @@ EXPORT_SYMBOL(dcb_ieee_getapp_mask);
 int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
 {
 	struct dcb_app_type *itr, *entry;
+=======
+/* Get protocol value from rewrite entry. */
+u16 dcb_getrewr(struct net_device *dev, struct dcb_app *app)
+{
+	struct dcb_app_type *itr;
+	u16 proto = 0;
+
+	spin_lock_bh(&dcb_lock);
+	itr = dcb_rewr_lookup(app, dev->ifindex, -1);
+	if (itr)
+		proto = itr->app.protocol;
+	spin_unlock_bh(&dcb_lock);
+
+	return proto;
+}
+EXPORT_SYMBOL(dcb_getrewr);
+
+ /* Add rewrite entry to the rewrite list. */
+int dcb_setrewr(struct net_device *dev, struct dcb_app *new)
+{
+	int err;
+
+	spin_lock_bh(&dcb_lock);
+	/* Search for existing match and abort if found. */
+	if (dcb_rewr_lookup(new, dev->ifindex, new->protocol)) {
+		err = -EEXIST;
+		goto out;
+	}
+
+	err = dcb_app_add(&dcb_rewr_list, new, dev->ifindex);
+out:
+	spin_unlock_bh(&dcb_lock);
+
+	return err;
+}
+EXPORT_SYMBOL(dcb_setrewr);
+
+/* Delete rewrite entry from the rewrite list. */
+int dcb_delrewr(struct net_device *dev, struct dcb_app *del)
+{
+	struct dcb_app_type *itr;
+	int err = -ENOENT;
+
+	spin_lock_bh(&dcb_lock);
+	/* Search for existing match and remove it. */
+	itr = dcb_rewr_lookup(del, dev->ifindex, del->protocol);
+	if (itr) {
+		list_del(&itr->list);
+		kfree(itr);
+		err = 0;
+	}
+
+	spin_unlock_bh(&dcb_lock);
+
+	return err;
+}
+EXPORT_SYMBOL(dcb_delrewr);
+
+/**
+ * dcb_ieee_setapp - add IEEE dcb application data to app list
+ * @dev: network interface
+ * @new: application data to add
+ *
+ * This adds Application data to the list. Multiple application
+ * entries may exists for the same selector and protocol as long
+ * as the priorities are different. Priority is expected to be a
+ * 3-bit unsigned integer
+ */
+int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcb_app_type event;
 	int err = 0;
 
@@ -2165,6 +3713,7 @@ int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
 	if (dev->dcbnl_ops->getdcbx)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	/* Search for existing match and abort if found */
 	list_for_each_entry(itr, &dcb_app_list, list) {
@@ -2189,6 +3738,18 @@ int dcb_ieee_setapp(struct net_device *dev, struct dcb_app *new)
 	list_add(&entry->list, &dcb_app_list);
 out:
 	spin_unlock(&dcb_lock);
+=======
+	spin_lock_bh(&dcb_lock);
+	/* Search for existing match and abort if found */
+	if (dcb_app_lookup(new, dev->ifindex, new->priority)) {
+		err = -EEXIST;
+		goto out;
+	}
+
+	err = dcb_app_add(&dcb_app_list, new, dev->ifindex);
+out:
+	spin_unlock_bh(&dcb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		call_dcbevent_notifiers(DCB_APP_EVENT, &event);
 	return err;
@@ -2197,6 +3758,11 @@ EXPORT_SYMBOL(dcb_ieee_setapp);
 
 /**
  * dcb_ieee_delapp - delete IEEE dcb application data from list
+<<<<<<< HEAD
+=======
+ * @dev: network interface
+ * @del: application data to delete
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This removes a matching APP data from the APP list
  */
@@ -2211,6 +3777,7 @@ int dcb_ieee_delapp(struct net_device *dev, struct dcb_app *del)
 	if (dev->dcbnl_ops->getdcbx)
 		event.dcbx = dev->dcbnl_ops->getdcbx(dev);
 
+<<<<<<< HEAD
 	spin_lock(&dcb_lock);
 	/* Search for existing match and remove it. */
 	list_for_each_entry(itr, &dcb_app_list, list) {
@@ -2227,12 +3794,24 @@ int dcb_ieee_delapp(struct net_device *dev, struct dcb_app *del)
 
 out:
 	spin_unlock(&dcb_lock);
+=======
+	spin_lock_bh(&dcb_lock);
+	/* Search for existing match and remove it. */
+	if ((itr = dcb_app_lookup(del, dev->ifindex, del->priority))) {
+		list_del(&itr->list);
+		kfree(itr);
+		err = 0;
+	}
+
+	spin_unlock_bh(&dcb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		call_dcbevent_notifiers(DCB_APP_EVENT, &event);
 	return err;
 }
 EXPORT_SYMBOL(dcb_ieee_delapp);
 
+<<<<<<< HEAD
 static void dcb_flushapp(void)
 {
 	struct dcb_app_type *app;
@@ -2264,3 +3843,195 @@ static void __exit dcbnl_exit(void)
 	dcb_flushapp();
 }
 module_exit(dcbnl_exit);
+=======
+/* dcb_getrewr_prio_pcp_mask_map - For a given device, find mapping from
+ * priorities to the PCP and DEI values assigned to that priority.
+ */
+void dcb_getrewr_prio_pcp_mask_map(const struct net_device *dev,
+				   struct dcb_rewr_prio_pcp_map *p_map)
+{
+	int ifindex = dev->ifindex;
+	struct dcb_app_type *itr;
+	u8 prio;
+
+	memset(p_map->map, 0, sizeof(p_map->map));
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_rewr_list, list) {
+		if (itr->ifindex == ifindex &&
+		    itr->app.selector == DCB_APP_SEL_PCP &&
+		    itr->app.protocol < 16 &&
+		    itr->app.priority < IEEE_8021QAZ_MAX_TCS) {
+			prio = itr->app.priority;
+			p_map->map[prio] |= 1 << itr->app.protocol;
+		}
+	}
+	spin_unlock_bh(&dcb_lock);
+}
+EXPORT_SYMBOL(dcb_getrewr_prio_pcp_mask_map);
+
+/* dcb_getrewr_prio_dscp_mask_map - For a given device, find mapping from
+ * priorities to the DSCP values assigned to that priority.
+ */
+void dcb_getrewr_prio_dscp_mask_map(const struct net_device *dev,
+				    struct dcb_ieee_app_prio_map *p_map)
+{
+	int ifindex = dev->ifindex;
+	struct dcb_app_type *itr;
+	u8 prio;
+
+	memset(p_map->map, 0, sizeof(p_map->map));
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_rewr_list, list) {
+		if (itr->ifindex == ifindex &&
+		    itr->app.selector == IEEE_8021QAZ_APP_SEL_DSCP &&
+		    itr->app.protocol < 64 &&
+		    itr->app.priority < IEEE_8021QAZ_MAX_TCS) {
+			prio = itr->app.priority;
+			p_map->map[prio] |= 1ULL << itr->app.protocol;
+		}
+	}
+	spin_unlock_bh(&dcb_lock);
+}
+EXPORT_SYMBOL(dcb_getrewr_prio_dscp_mask_map);
+
+/*
+ * dcb_ieee_getapp_prio_dscp_mask_map - For a given device, find mapping from
+ * priorities to the DSCP values assigned to that priority. Initialize p_map
+ * such that each map element holds a bit mask of DSCP values configured for
+ * that priority by APP entries.
+ */
+void dcb_ieee_getapp_prio_dscp_mask_map(const struct net_device *dev,
+					struct dcb_ieee_app_prio_map *p_map)
+{
+	int ifindex = dev->ifindex;
+	struct dcb_app_type *itr;
+	u8 prio;
+
+	memset(p_map->map, 0, sizeof(p_map->map));
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_app_list, list) {
+		if (itr->ifindex == ifindex &&
+		    itr->app.selector == IEEE_8021QAZ_APP_SEL_DSCP &&
+		    itr->app.protocol < 64 &&
+		    itr->app.priority < IEEE_8021QAZ_MAX_TCS) {
+			prio = itr->app.priority;
+			p_map->map[prio] |= 1ULL << itr->app.protocol;
+		}
+	}
+	spin_unlock_bh(&dcb_lock);
+}
+EXPORT_SYMBOL(dcb_ieee_getapp_prio_dscp_mask_map);
+
+/*
+ * dcb_ieee_getapp_dscp_prio_mask_map - For a given device, find mapping from
+ * DSCP values to the priorities assigned to that DSCP value. Initialize p_map
+ * such that each map element holds a bit mask of priorities configured for a
+ * given DSCP value by APP entries.
+ */
+void
+dcb_ieee_getapp_dscp_prio_mask_map(const struct net_device *dev,
+				   struct dcb_ieee_app_dscp_map *p_map)
+{
+	int ifindex = dev->ifindex;
+	struct dcb_app_type *itr;
+
+	memset(p_map->map, 0, sizeof(p_map->map));
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_app_list, list) {
+		if (itr->ifindex == ifindex &&
+		    itr->app.selector == IEEE_8021QAZ_APP_SEL_DSCP &&
+		    itr->app.protocol < 64 &&
+		    itr->app.priority < IEEE_8021QAZ_MAX_TCS)
+			p_map->map[itr->app.protocol] |= 1 << itr->app.priority;
+	}
+	spin_unlock_bh(&dcb_lock);
+}
+EXPORT_SYMBOL(dcb_ieee_getapp_dscp_prio_mask_map);
+
+/*
+ * Per 802.1Q-2014, the selector value of 1 is used for matching on Ethernet
+ * type, with valid PID values >= 1536. A special meaning is then assigned to
+ * protocol value of 0: "default priority. For use when priority is not
+ * otherwise specified".
+ *
+ * dcb_ieee_getapp_default_prio_mask - For a given device, find all APP entries
+ * of the form {$PRIO, ETHERTYPE, 0} and construct a bit mask of all default
+ * priorities set by these entries.
+ */
+u8 dcb_ieee_getapp_default_prio_mask(const struct net_device *dev)
+{
+	int ifindex = dev->ifindex;
+	struct dcb_app_type *itr;
+	u8 mask = 0;
+
+	spin_lock_bh(&dcb_lock);
+	list_for_each_entry(itr, &dcb_app_list, list) {
+		if (itr->ifindex == ifindex &&
+		    itr->app.selector == IEEE_8021QAZ_APP_SEL_ETHERTYPE &&
+		    itr->app.protocol == 0 &&
+		    itr->app.priority < IEEE_8021QAZ_MAX_TCS)
+			mask |= 1 << itr->app.priority;
+	}
+	spin_unlock_bh(&dcb_lock);
+
+	return mask;
+}
+EXPORT_SYMBOL(dcb_ieee_getapp_default_prio_mask);
+
+static void dcbnl_flush_dev(struct net_device *dev)
+{
+	struct dcb_app_type *itr, *tmp;
+
+	spin_lock_bh(&dcb_lock);
+
+	list_for_each_entry_safe(itr, tmp, &dcb_app_list, list) {
+		if (itr->ifindex == dev->ifindex) {
+			list_del(&itr->list);
+			kfree(itr);
+		}
+	}
+
+	spin_unlock_bh(&dcb_lock);
+}
+
+static int dcbnl_netdevice_event(struct notifier_block *nb,
+				 unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+
+	switch (event) {
+	case NETDEV_UNREGISTER:
+		if (!dev->dcbnl_ops)
+			return NOTIFY_DONE;
+
+		dcbnl_flush_dev(dev);
+
+		return NOTIFY_OK;
+	default:
+		return NOTIFY_DONE;
+	}
+}
+
+static struct notifier_block dcbnl_nb __read_mostly = {
+	.notifier_call  = dcbnl_netdevice_event,
+};
+
+static int __init dcbnl_init(void)
+{
+	int err;
+
+	err = register_netdevice_notifier(&dcbnl_nb);
+	if (err)
+		return err;
+
+	rtnl_register(PF_UNSPEC, RTM_GETDCB, dcb_doit, NULL, 0);
+	rtnl_register(PF_UNSPEC, RTM_SETDCB, dcb_doit, NULL, 0);
+
+	return 0;
+}
+device_initcall(dcbnl_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

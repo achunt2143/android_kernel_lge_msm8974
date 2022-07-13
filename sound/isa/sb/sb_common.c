@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Uros Bizjak <uros@kss-loka.si>
  *
  *  Lowlevel routines for control of Sound Blaster cards
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -26,11 +33,18 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/sb.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
@@ -94,7 +108,11 @@ int snd_sbdsp_reset(struct snd_sb *chip)
 
 static int snd_sbdsp_version(struct snd_sb * chip)
 {
+<<<<<<< HEAD
 	unsigned int result = -ENODEV;
+=======
+	unsigned int result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_sbdsp_command(chip, SB_DSP_GET_VERSION);
 	result = (short) snd_sbdsp_get_byte(chip) << 8;
@@ -182,6 +200,7 @@ static int snd_sbdsp_probe(struct snd_sb * chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_sbdsp_free(struct snd_sb *chip)
 {
 	if (chip->res_port)
@@ -208,6 +227,8 @@ static int snd_sbdsp_dev_free(struct snd_device *device)
 	return snd_sbdsp_free(chip);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_sbdsp_create(struct snd_card *card,
 		     unsigned long port,
 		     int irq,
@@ -219,15 +240,23 @@ int snd_sbdsp_create(struct snd_card *card,
 {
 	struct snd_sb *chip;
 	int err;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_sbdsp_dev_free,
 	};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(!r_chip))
 		return -EINVAL;
 	*r_chip = NULL;
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
 	if (chip == NULL)
+=======
+	chip = devm_kzalloc(card->dev, sizeof(*chip), GFP_KERNEL);
+	if (!chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	spin_lock_init(&chip->reg_lock);
 	spin_lock_init(&chip->open_lock);
@@ -238,6 +267,7 @@ int snd_sbdsp_create(struct snd_card *card,
 	chip->dma16 = -1;
 	chip->port = port;
 	
+<<<<<<< HEAD
 	if (request_irq(irq, irq_handler,
 			(hardware == SB_HW_ALS4000 ||
 			 hardware == SB_HW_CS5530) ?
@@ -248,20 +278,45 @@ int snd_sbdsp_create(struct snd_card *card,
 		return -EBUSY;
 	}
 	chip->irq = irq;
+=======
+	if (devm_request_irq(card->dev, irq, irq_handler,
+			     (hardware == SB_HW_ALS4000 ||
+			      hardware == SB_HW_CS5530) ?
+			     IRQF_SHARED : 0,
+			     "SoundBlaster", (void *) chip)) {
+		snd_printk(KERN_ERR "sb: can't grab irq %d\n", irq);
+		return -EBUSY;
+	}
+	chip->irq = irq;
+	card->sync_irq = chip->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hardware == SB_HW_ALS4000)
 		goto __skip_allocation;
 	
+<<<<<<< HEAD
 	if ((chip->res_port = request_region(port, 16, "SoundBlaster")) == NULL) {
 		snd_printk(KERN_ERR "sb: can't grab port 0x%lx\n", port);
 		snd_sbdsp_free(chip);
+=======
+	chip->res_port = devm_request_region(card->dev, port, 16,
+					     "SoundBlaster");
+	if (!chip->res_port) {
+		snd_printk(KERN_ERR "sb: can't grab port 0x%lx\n", port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 #ifdef CONFIG_ISA
+<<<<<<< HEAD
 	if (dma8 >= 0 && request_dma(dma8, "SoundBlaster - 8bit")) {
 		snd_printk(KERN_ERR "sb: can't grab DMA8 %d\n", dma8);
 		snd_sbdsp_free(chip);
+=======
+	if (dma8 >= 0 && snd_devm_request_dma(card->dev, dma8,
+					      "SoundBlaster - 8bit")) {
+		snd_printk(KERN_ERR "sb: can't grab DMA8 %d\n", dma8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	chip->dma8 = dma8;
@@ -269,9 +324,15 @@ int snd_sbdsp_create(struct snd_card *card,
 		if (hardware != SB_HW_ALS100 && (dma16 < 5 || dma16 > 7)) {
 			/* no duplex */
 			dma16 = -1;
+<<<<<<< HEAD
 		} else if (request_dma(dma16, "SoundBlaster - 16bit")) {
 			snd_printk(KERN_ERR "sb: can't grab DMA16 %d\n", dma16);
 			snd_sbdsp_free(chip);
+=======
+		} else if (snd_devm_request_dma(card->dev, dma16,
+						"SoundBlaster - 16bit")) {
+			snd_printk(KERN_ERR "sb: can't grab DMA16 %d\n", dma16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EBUSY;
 		}
 	}
@@ -281,6 +342,7 @@ int snd_sbdsp_create(struct snd_card *card,
       __skip_allocation:
 	chip->card = card;
 	chip->hardware = hardware;
+<<<<<<< HEAD
 	if ((err = snd_sbdsp_probe(chip)) < 0) {
 		snd_sbdsp_free(chip);
 		return err;
@@ -289,6 +351,11 @@ int snd_sbdsp_create(struct snd_card *card,
 		snd_sbdsp_free(chip);
 		return err;
 	}
+=======
+	err = snd_sbdsp_probe(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*r_chip = chip;
 	return 0;
 }
@@ -306,6 +373,7 @@ EXPORT_SYMBOL(snd_sbmixer_add_ctl);
 EXPORT_SYMBOL(snd_sbmixer_suspend);
 EXPORT_SYMBOL(snd_sbmixer_resume);
 #endif
+<<<<<<< HEAD
 
 /*
  *  INIT part
@@ -322,3 +390,5 @@ static void __exit alsa_sb_common_exit(void)
 
 module_init(alsa_sb_common_init)
 module_exit(alsa_sb_common_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

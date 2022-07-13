@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detection routine for the NCR53c710 based Amiga SCSI Controllers for Linux.
  *		Amiga MacroSystemUS WarpEngine SCSI controller.
@@ -38,7 +42,11 @@ static struct zorro_driver_data {
 	const char *name;
 	unsigned long offset;
 	int absolute;	/* offset is absolute address */
+<<<<<<< HEAD
 } zorro7xx_driver_data[] __devinitdata = {
+=======
+} zorro7xx_driver_data[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "PowerUP 603e+", .offset = 0xf40000, .absolute = 1 },
 	{ .name = "WarpEngine 40xx", .offset = 0x40000 },
 	{ .name = "A4091", .offset = 0x800000 },
@@ -46,7 +54,11 @@ static struct zorro_driver_data {
 	{ 0 }
 };
 
+<<<<<<< HEAD
 static struct zorro_device_id zorro7xx_zorro_tbl[] __devinitdata = {
+=======
+static struct zorro_device_id zorro7xx_zorro_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id = ZORRO_PROD_PHASE5_BLIZZARD_603E_PLUS,
 		.driver_data = (unsigned long)&zorro7xx_driver_data[0],
@@ -71,8 +83,13 @@ static struct zorro_device_id zorro7xx_zorro_tbl[] __devinitdata = {
 };
 MODULE_DEVICE_TABLE(zorro, zorro7xx_zorro_tbl);
 
+<<<<<<< HEAD
 static int __devinit zorro7xx_init_one(struct zorro_dev *z,
 				       const struct zorro_device_id *ent)
+=======
+static int zorro7xx_init_one(struct zorro_dev *z,
+			     const struct zorro_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host;
 	struct NCR_700_Host_Parameters *hostdata;
@@ -104,7 +121,11 @@ static int __devinit zorro7xx_init_one(struct zorro_dev *z,
 	if (ioaddr > 0x01000000)
 		hostdata->base = ioremap(ioaddr, zorro_resource_len(z));
 	else
+<<<<<<< HEAD
 		hostdata->base = (void __iomem *)ZTWO_VADDR(ioaddr);
+=======
+		hostdata->base = ZTWO_VADDR(ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hostdata->clock = 50;
 	hostdata->chip710 = 1;
@@ -150,7 +171,11 @@ static int __devinit zorro7xx_init_one(struct zorro_dev *z,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static __devexit void zorro7xx_remove_one(struct zorro_dev *z)
+=======
+static void zorro7xx_remove_one(struct zorro_dev *z)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = zorro_get_drvdata(z);
 	struct NCR_700_Host_Parameters *hostdata = shost_priv(host);
@@ -158,6 +183,11 @@ static __devexit void zorro7xx_remove_one(struct zorro_dev *z)
 	scsi_remove_host(host);
 
 	NCR_700_release(host);
+<<<<<<< HEAD
+=======
+	if (host->base > 0x01000000)
+		iounmap(hostdata->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(hostdata);
 	free_irq(host->irq, host);
 	zorro_release_device(z);
@@ -167,7 +197,11 @@ static struct zorro_driver zorro7xx_driver = {
 	.name	  = "zorro7xx-scsi",
 	.id_table = zorro7xx_zorro_tbl,
 	.probe	  = zorro7xx_init_one,
+<<<<<<< HEAD
 	.remove	  = __devexit_p(zorro7xx_remove_one),
+=======
+	.remove	  = zorro7xx_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init zorro7xx_scsi_init(void)

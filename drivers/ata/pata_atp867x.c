@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_atp867x.c - ARTOP 867X 64bit 4-channel UDMA133 ATA controller driver
  *
@@ -7,6 +11,7 @@
  * Based in part on early ide code from
  *	2003-2004 by Eric Uhrhane, Google, Inc.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +27,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  *   1. RAID features [comparison, XOR, striping, mirroring, etc.]
  */
@@ -29,7 +36,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -170,8 +180,14 @@ static int atp867x_get_active_clocks_shifted(struct ata_port *ap,
 	case 1 ... 6:
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "ATP867X: active %dclk is invalid. "
 			"Using 12clk.\n", clk);
+=======
+		ata_port_warn(ap, "ATP867X: active %dclk is invalid. "
+			"Using 12clk.\n", clk);
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 9 ... 12:
 		clocks = 7;	/* 12 clk */
 		break;
@@ -185,7 +201,12 @@ active_clock_shift_done:
 	return clocks << ATP867X_IO_PIOSPD_ACTIVE_SHIFT;
 }
 
+<<<<<<< HEAD
 static int atp867x_get_recover_clocks_shifted(unsigned int clk)
+=======
+static int atp867x_get_recover_clocks_shifted(struct ata_port *ap,
+					      unsigned int clk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char clocks = clk;
 
@@ -202,8 +223,14 @@ static int atp867x_get_recover_clocks_shifted(unsigned int clk)
 	case 15:
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "ATP867X: recover %dclk is invalid. "
 			"Using default 12clk.\n", clk);
+=======
+		ata_port_warn(ap, "ATP867X: recover %dclk is invalid. "
+			"Using default 12clk.\n", clk);
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 12:	/* default 12 clk */
 		clocks = 0;
 		break;
@@ -238,7 +265,11 @@ static void atp867x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	iowrite8(b, dp->dma_mode);
 
 	b = atp867x_get_active_clocks_shifted(ap, t.active) |
+<<<<<<< HEAD
 	    atp867x_get_recover_clocks_shifted(t.recover);
+=======
+		atp867x_get_recover_clocks_shifted(ap, t.recover);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adev->devno & 1)
 		iowrite8(b, dp->slave_piospd);
@@ -246,7 +277,11 @@ static void atp867x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 		iowrite8(b, dp->mstr_piospd);
 
 	b = atp867x_get_active_clocks_shifted(ap, t.act8b) |
+<<<<<<< HEAD
 	    atp867x_get_recover_clocks_shifted(t.rec8b);
+=======
+		atp867x_get_recover_clocks_shifted(ap, t.rec8b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite8(b, dp->eightb_piospd);
 }
@@ -271,7 +306,11 @@ static int atp867x_cable_detect(struct ata_port *ap)
 	return ATA_CBL_PATA_UNK;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template atp867x_sht = {
+=======
+static const struct scsi_host_template atp867x_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -283,7 +322,10 @@ static struct ata_port_operations atp867x_ops = {
 };
 
 
+<<<<<<< HEAD
 #ifdef	ATP867X_DEBUG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void atp867x_check_res(struct pci_dev *pdev)
 {
 	int i;
@@ -293,7 +335,11 @@ static void atp867x_check_res(struct pci_dev *pdev)
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
 		start = pci_resource_start(pdev, i);
 		len   = pci_resource_len(pdev, i);
+<<<<<<< HEAD
 		printk(KERN_DEBUG "ATP867X: resource start:len=%lx:%lx\n",
+=======
+		dev_dbg(&pdev->dev, "ATP867X: resource start:len=%lx:%lx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start, len);
 	}
 }
@@ -303,6 +349,7 @@ static void atp867x_check_ports(struct ata_port *ap, int port)
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 	struct atp867x_priv *dp = ap->private_data;
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "ATP867X: port[%d] addresses\n"
 		"  cmd_addr	=0x%llx, 0x%llx\n"
 		"  ctl_addr	=0x%llx, 0x%llx\n"
@@ -346,6 +393,50 @@ static void atp867x_check_ports(struct ata_port *ap, int port)
 		(unsigned long)dp->pci66mhz);
 }
 #endif
+=======
+	ata_port_dbg(ap, "ATP867X: port[%d] addresses\n"
+		"  cmd_addr	=0x%lx, 0x%lx\n"
+		"  ctl_addr	=0x%lx, 0x%lx\n"
+		"  bmdma_addr	=0x%lx, 0x%lx\n"
+		"  data_addr	=0x%lx\n"
+		"  error_addr	=0x%lx\n"
+		"  feature_addr	=0x%lx\n"
+		"  nsect_addr	=0x%lx\n"
+		"  lbal_addr	=0x%lx\n"
+		"  lbam_addr	=0x%lx\n"
+		"  lbah_addr	=0x%lx\n"
+		"  device_addr	=0x%lx\n"
+		"  status_addr	=0x%lx\n"
+		"  command_addr	=0x%lx\n"
+		"  dp->dma_mode	=0x%lx\n"
+		"  dp->mstr_piospd	=0x%lx\n"
+		"  dp->slave_piospd	=0x%lx\n"
+		"  dp->eightb_piospd	=0x%lx\n"
+		"  dp->pci66mhz		=0x%lx\n",
+		port,
+		(unsigned long)ioaddr->cmd_addr,
+		(unsigned long)ATP867X_IO_PORTBASE(ap, port),
+		(unsigned long)ioaddr->ctl_addr,
+		(unsigned long)ATP867X_IO_ALTSTATUS(ap, port),
+		(unsigned long)ioaddr->bmdma_addr,
+		(unsigned long)ATP867X_IO_DMABASE(ap, port),
+		(unsigned long)ioaddr->data_addr,
+		(unsigned long)ioaddr->error_addr,
+		(unsigned long)ioaddr->feature_addr,
+		(unsigned long)ioaddr->nsect_addr,
+		(unsigned long)ioaddr->lbal_addr,
+		(unsigned long)ioaddr->lbam_addr,
+		(unsigned long)ioaddr->lbah_addr,
+		(unsigned long)ioaddr->device_addr,
+		(unsigned long)ioaddr->status_addr,
+		(unsigned long)ioaddr->command_addr,
+		(unsigned long)dp->dma_mode,
+		(unsigned long)dp->mstr_piospd,
+		(unsigned long)dp->slave_piospd,
+		(unsigned long)dp->eightb_piospd,
+		(unsigned long)dp->pci66mhz);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int atp867x_set_priv(struct ata_port *ap)
 {
@@ -383,8 +474,12 @@ static void atp867x_fixup(struct ata_host *host)
 	if (v < 0x80) {
 		v = 0x80;
 		pci_write_config_byte(pdev, PCI_LATENCY_TIMER, v);
+<<<<<<< HEAD
 		printk(KERN_DEBUG "ATP867X: set latency timer of device %s"
 			" to %d\n", pci_name(pdev), v);
+=======
+		dev_dbg(&pdev->dev, "ATP867X: set latency timer to %d\n", v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -432,6 +527,7 @@ static int atp867x_ata_pci_sff_init_host(struct ata_host *host)
 		return rc;
 	host->iomap = pcim_iomap_table(pdev);
 
+<<<<<<< HEAD
 #ifdef	ATP867X_DEBUG
 	atp867x_check_res(pdev);
 
@@ -439,6 +535,13 @@ static int atp867x_ata_pci_sff_init_host(struct ata_host *host)
 		printk(KERN_DEBUG "ATP867X: iomap[%d]=0x%llx\n", i,
 			(unsigned long long)(host->iomap[i]));
 #endif
+=======
+	atp867x_check_res(pdev);
+
+	for (i = 0; i < PCI_STD_NUM_BARS; i++)
+		dev_dbg(gdev, "ATP867X: iomap[%d]=0x%p\n", i,
+			host->iomap[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * request, iomap BARs and init port addresses accordingly
@@ -457,9 +560,14 @@ static int atp867x_ata_pci_sff_init_host(struct ata_host *host)
 		if (rc)
 			return rc;
 
+<<<<<<< HEAD
 #ifdef	ATP867X_DEBUG
 		atp867x_check_ports(ap, i);
 #endif
+=======
+		atp867x_check_ports(ap, i);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ata_port_desc(ap, "cmd 0x%lx ctl 0x%lx",
 			(unsigned long)ioaddr->cmd_addr,
 			(unsigned long)ioaddr->ctl_addr);
@@ -476,12 +584,16 @@ static int atp867x_ata_pci_sff_init_host(struct ata_host *host)
 
 	atp867x_fixup(host);
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
 	return rc;
+=======
+	return dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int atp867x_init_one(struct pci_dev *pdev,
@@ -504,7 +616,11 @@ static int atp867x_init_one(struct pci_dev *pdev,
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "ATP867X: ATP867 ATA UDMA133 controller (rev %02X)",
+=======
+	dev_info(&pdev->dev, "ATP867X: ATP867 ATA UDMA133 controller (rev %02X)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdev->device);
 
 	host = ata_host_alloc_pinfo(&pdev->dev, ppi, ATP867X_NUM_PORTS);
@@ -531,10 +647,17 @@ err_out:
 	return rc;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int atp867x_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int atp867x_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -559,12 +682,17 @@ static struct pci_driver atp867x_driver = {
 	.id_table 	= atp867x_pci_tbl,
 	.probe 		= atp867x_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= atp867x_reinit_one,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init atp867x_init(void)
 {
 	return pci_register_driver(&atp867x_driver);
@@ -574,12 +702,18 @@ static void __exit atp867x_exit(void)
 {
 	pci_unregister_driver(&atp867x_driver);
 }
+=======
+module_pci_driver(atp867x_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("John(Jung-Ik) Lee, Google Inc.");
 MODULE_DESCRIPTION("low level driver for Artop/Acard 867x ATA controller");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, atp867x_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(atp867x_init);
 module_exit(atp867x_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

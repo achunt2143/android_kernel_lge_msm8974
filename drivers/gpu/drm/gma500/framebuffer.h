@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2008-2011, Intel Corporation
  *
@@ -17,11 +18,20 @@
  * Authors:
  *      Eric Anholt <eric@anholt.net>
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2008-2011, Intel Corporation
+ *
+ * Authors:
+ *      Eric Anholt <eric@anholt.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _FRAMEBUFFER_H_
 #define _FRAMEBUFFER_H_
 
+<<<<<<< HEAD
 #include <drm/drmP.h>
 #include <drm/drm_fb_helper.h>
 
@@ -42,6 +52,11 @@ struct psb_fbdev {
 #define to_psb_fb(x) container_of(x, struct psb_framebuffer, base)
 
 extern int psb_intel_connector_clones(struct drm_device *dev, int type_mask);
+=======
+#include "psb_drv.h"
+
+extern int gma_connector_clones(struct drm_device *dev, int type_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

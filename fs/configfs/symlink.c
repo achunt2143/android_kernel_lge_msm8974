@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -18,6 +19,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * symlink.c - operations for configfs symlinks.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on sysfs:
  * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
  *
@@ -64,16 +71,45 @@ static void fill_item_path(struct config_item * item, char * buffer, int length)
 
 		/* back up enough to print this bus id with '/' */
 		length -= cur;
+<<<<<<< HEAD
 		strncpy(buffer + length,config_item_name(p),cur);
+=======
+		memcpy(buffer + length, config_item_name(p), cur);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(buffer + --length) = '/';
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int configfs_get_target_path(struct config_item *item,
+		struct config_item *target, char *path)
+{
+	int depth, size;
+	char *s;
+
+	depth = item_depth(item);
+	size = item_path_length(target) + depth * 3 - 1;
+	if (size > PATH_MAX)
+		return -ENAMETOOLONG;
+
+	pr_debug("%s: depth = %d, size = %d\n", __func__, depth, size);
+
+	for (s = path; depth--; s += 3)
+		strcpy(s,"../");
+
+	fill_item_path(target, path, size);
+	pr_debug("%s: path = '%s'\n", __func__, path);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int create_link(struct config_item *parent_item,
 		       struct config_item *item,
 		       struct dentry *dentry)
 {
 	struct configfs_dirent *target_sd = item->ci_dentry->d_fsdata;
+<<<<<<< HEAD
 	struct configfs_symlink *sl;
 	int ret;
 
@@ -105,6 +141,39 @@ static int create_link(struct config_item *parent_item,
 	}
 
 out:
+=======
+	char *body;
+	int ret;
+
+	if (!configfs_dirent_is_ready(target_sd))
+		return -ENOENT;
+
+	body = kzalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!body)
+		return -ENOMEM;
+
+	configfs_get(target_sd);
+	spin_lock(&configfs_dirent_lock);
+	if (target_sd->s_type & CONFIGFS_USET_DROPPING) {
+		spin_unlock(&configfs_dirent_lock);
+		configfs_put(target_sd);
+		kfree(body);
+		return -ENOENT;
+	}
+	target_sd->s_links++;
+	spin_unlock(&configfs_dirent_lock);
+	ret = configfs_get_target_path(parent_item, item, body);
+	if (!ret)
+		ret = configfs_create_link(target_sd, parent_item->ci_dentry,
+					   dentry, body);
+	if (ret) {
+		spin_lock(&configfs_dirent_lock);
+		target_sd->s_links--;
+		spin_unlock(&configfs_dirent_lock);
+		configfs_put(target_sd);
+		kfree(body);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -132,23 +201,37 @@ static int get_target(const char *symname, struct path *path,
 }
 
 
+<<<<<<< HEAD
 int configfs_symlink(struct inode *dir, struct dentry *dentry, const char *symname)
+=======
+int configfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
+		     struct dentry *dentry, const char *symname)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct path path;
 	struct configfs_dirent *sd;
 	struct config_item *parent_item;
 	struct config_item *target_item = NULL;
+<<<<<<< HEAD
 	struct config_item_type *type;
+=======
+	const struct config_item_type *type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sd = dentry->d_parent->d_fsdata;
 	/*
 	 * Fake invisibility if dir belongs to a group/default groups hierarchy
 	 * being attached
 	 */
+<<<<<<< HEAD
 	ret = -ENOENT;
 	if (!configfs_dirent_is_ready(sd))
 		goto out;
+=======
+	if (!configfs_dirent_is_ready(sd))
+		return -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parent_item = configfs_get_config_item(dentry->d_parent);
 	type = parent_item->ci_type;
@@ -158,11 +241,51 @@ int configfs_symlink(struct inode *dir, struct dentry *dentry, const char *symna
 	    !type->ct_item_ops->allow_link)
 		goto out_put;
 
+<<<<<<< HEAD
 	ret = get_target(symname, &path, &target_item, dentry->d_sb);
 	if (ret)
 		goto out_put;
 
 	ret = type->ct_item_ops->allow_link(parent_item, target_item);
+=======
+	/*
+	 * This is really sick.  What they wanted was a hybrid of
+	 * link(2) and symlink(2) - they wanted the target resolved
+	 * at syscall time (as link(2) would've done), be a directory
+	 * (which link(2) would've refused to do) *AND* be a deep
+	 * fucking magic, making the target busy from rmdir POV.
+	 * symlink(2) is nothing of that sort, and the locking it
+	 * gets matches the normal symlink(2) semantics.  Without
+	 * attempts to resolve the target (which might very well
+	 * not even exist yet) done prior to locking the parent
+	 * directory.  This perversion, OTOH, needs to resolve
+	 * the target, which would lead to obvious deadlocks if
+	 * attempted with any directories locked.
+	 *
+	 * Unfortunately, that garbage is userland ABI and we should've
+	 * said "no" back in 2005.  Too late now, so we get to
+	 * play very ugly games with locking.
+	 *
+	 * Try *ANYTHING* of that sort in new code, and you will
+	 * really regret it.  Just ask yourself - what could a BOFH
+	 * do to me and do I want to find it out first-hand?
+	 *
+	 *  AV, a thoroughly annoyed bastard.
+	 */
+	inode_unlock(dir);
+	ret = get_target(symname, &path, &target_item, dentry->d_sb);
+	inode_lock(dir);
+	if (ret)
+		goto out_put;
+
+	if (dentry->d_inode || d_unhashed(dentry))
+		ret = -EEXIST;
+	else
+		ret = inode_permission(&nop_mnt_idmap, dir,
+				       MAY_WRITE | MAY_EXEC);
+	if (!ret)
+		ret = type->ct_item_ops->allow_link(parent_item, target_item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		mutex_lock(&configfs_symlink_mutex);
 		ret = create_link(parent_item, target_item, dentry);
@@ -177,24 +300,37 @@ int configfs_symlink(struct inode *dir, struct dentry *dentry, const char *symna
 
 out_put:
 	config_item_put(parent_item);
+<<<<<<< HEAD
 
 out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 int configfs_unlink(struct inode *dir, struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct configfs_dirent *sd = dentry->d_fsdata;
 	struct configfs_symlink *sl;
 	struct config_item *parent_item;
 	struct config_item_type *type;
+=======
+	struct configfs_dirent *sd = dentry->d_fsdata, *target_sd;
+	struct config_item *parent_item;
+	const struct config_item_type *type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = -EPERM;  /* What lack-of-symlink returns */
 	if (!(sd->s_type & CONFIGFS_ITEM_LINK))
 		goto out;
 
+<<<<<<< HEAD
 	sl = sd->s_element;
+=======
+	target_sd = sd->s_element;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parent_item = configfs_get_config_item(dentry->d_parent);
 	type = parent_item->ci_type;
@@ -208,12 +344,17 @@ int configfs_unlink(struct inode *dir, struct dentry *dentry)
 
 	/*
 	 * drop_link() must be called before
+<<<<<<< HEAD
 	 * list_del_init(&sl->sl_list), so that the order of
+=======
+	 * decrementing target's ->s_links, so that the order of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * drop_link(this, target) and drop_item(target) is preserved.
 	 */
 	if (type && type->ct_item_ops &&
 	    type->ct_item_ops->drop_link)
 		type->ct_item_ops->drop_link(parent_item,
+<<<<<<< HEAD
 					       sl->sl_target);
 
 	spin_lock(&configfs_dirent_lock);
@@ -223,6 +364,14 @@ int configfs_unlink(struct inode *dir, struct dentry *dentry)
 	/* Put reference from create_link() */
 	config_item_put(sl->sl_target);
 	kfree(sl);
+=======
+					       target_sd->s_element);
+
+	spin_lock(&configfs_dirent_lock);
+	target_sd->s_links--;
+	spin_unlock(&configfs_dirent_lock);
+	configfs_put(target_sd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	config_item_put(parent_item);
 
@@ -232,6 +381,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int configfs_get_target_path(struct config_item * item, struct config_item * target,
 				   char *path)
 {
@@ -309,6 +459,10 @@ const struct inode_operations configfs_symlink_inode_operations = {
 	.follow_link = configfs_follow_link,
 	.readlink = generic_readlink,
 	.put_link = configfs_put_link,
+=======
+const struct inode_operations configfs_symlink_inode_operations = {
+	.get_link = simple_get_link,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr = configfs_setattr,
 };
 

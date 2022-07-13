@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_ES1688_H
 #define __SOUND_ES1688_H
 
 /*
  *  Header file for ES488/ES1688
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -24,11 +29,21 @@
 
 #include "control.h"
 #include "pcm.h"
+=======
+ */
+
+#include <sound/control.h>
+#include <sound/pcm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 
 #define ES1688_HW_AUTO		0x0000
 #define ES1688_HW_688		0x0001
 #define ES1688_HW_1688		0x0002
+<<<<<<< HEAD
+=======
+#define ES1688_HW_UNDEF	0x0003
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_es1688 {
 	unsigned long port;		/* port of ESS chip */
@@ -114,8 +129,12 @@ int snd_es1688_create(struct snd_card *card,
 		      int mpu_irq,
 		      int dma8,
 		      unsigned short hardware);
+<<<<<<< HEAD
 int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device,
 		   struct snd_pcm **rpcm);
+=======
+int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_es1688_mixer(struct snd_card *card, struct snd_es1688 *chip);
 int snd_es1688_reset(struct snd_es1688 *chip);
 

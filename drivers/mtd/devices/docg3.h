@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handles the M-Systems DiskOnChip G3 chip
  *
  * Copyright (C) 2011 Robert Jarzmik
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MTD_DOCG3_H
@@ -299,7 +306,10 @@ struct docg3_cascade {
  * @oob_autoecc: if 1, use only bytes 0-7, 15, and fill the others with HW ECC
  *               if 0, use all the 16 bytes.
  * @oob_write_buf: prepared OOB for next page_write
+<<<<<<< HEAD
  * @debugfs_root: debugfs root node
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct docg3 {
 	struct device *dev;
@@ -312,13 +322,17 @@ struct docg3 {
 	loff_t oob_write_ofs;
 	int oob_autoecc;
 	u8 oob_write_buf[DOC_LAYOUT_OOB_SIZE];
+<<<<<<< HEAD
 	struct dentry *debugfs_root;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define doc_err(fmt, arg...) dev_err(docg3->dev, (fmt), ## arg)
 #define doc_info(fmt, arg...) dev_info(docg3->dev, (fmt), ## arg)
 #define doc_dbg(fmt, arg...) dev_dbg(docg3->dev, (fmt), ## arg)
 #define doc_vdbg(fmt, arg...) dev_vdbg(docg3->dev, (fmt), ## arg)
+<<<<<<< HEAD
 
 #define DEBUGFS_RO_ATTR(name, show_fct) \
 	static int name##_open(struct inode *inode, struct file *file) \
@@ -330,6 +344,8 @@ struct docg3 {
 		.read = seq_read, \
 		.release = single_release \
 	};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*

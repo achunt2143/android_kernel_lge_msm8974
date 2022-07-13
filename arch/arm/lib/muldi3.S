@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/muldi3.S
  *
  *  Author:     Nicolas Pitre
  *  Created:    Oct 19, 2005
  *  Copyright:  Monta Vista Software, Inc.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,12 @@
  */
 
 #include <linux/linkage.h>
+=======
+ */
+
+#include <linux/linkage.h>
+#include <asm/assembler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARMEB__
 #define xh r0
@@ -41,7 +52,11 @@ ENTRY(__aeabi_lmul)
 	adc	xh, xh, yh, lsr #16
 	adds	xl, xl, ip, lsl #16
 	adc	xh, xh, ip, lsr #16
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENDPROC(__muldi3)
 ENDPROC(__aeabi_lmul)

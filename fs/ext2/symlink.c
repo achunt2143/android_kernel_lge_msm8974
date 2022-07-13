@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext2/symlink.c
  *
@@ -19,6 +23,7 @@
 
 #include "ext2.h"
 #include "xattr.h"
+<<<<<<< HEAD
 #include <linux/namei.h>
 
 static void *ext2_follow_link(struct dentry *dentry, struct nameidata *nd)
@@ -51,4 +56,19 @@ const struct inode_operations ext2_fast_symlink_inode_operations = {
 	.listxattr	= ext2_listxattr,
 	.removexattr	= generic_removexattr,
 #endif
+=======
+
+const struct inode_operations ext2_symlink_inode_operations = {
+	.get_link	= page_get_link,
+	.getattr	= ext2_getattr,
+	.setattr	= ext2_setattr,
+	.listxattr	= ext2_listxattr,
+};
+ 
+const struct inode_operations ext2_fast_symlink_inode_operations = {
+	.get_link	= simple_get_link,
+	.getattr	= ext2_getattr,
+	.setattr	= ext2_setattr,
+	.listxattr	= ext2_listxattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

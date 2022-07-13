@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  *  linux/arch/arm/mm/extable.c
  */
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  linux/arch/arm/mm/extable.c
+ */
+#include <linux/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 
 int fixup_exception(struct pt_regs *regs)
@@ -9,8 +17,18 @@ int fixup_exception(struct pt_regs *regs)
 	const struct exception_table_entry *fixup;
 
 	fixup = search_exception_tables(instruction_pointer(regs));
+<<<<<<< HEAD
 	if (fixup)
 		regs->ARM_pc = fixup->fixup;
+=======
+	if (fixup) {
+		regs->ARM_pc = fixup->fixup;
+#ifdef CONFIG_THUMB2_KERNEL
+		/* Clear the IT state to avoid nasty surprises in the fixup */
+		regs->ARM_cpsr &= ~PSR_IT_MASK;
+#endif
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fixup != NULL;
 }

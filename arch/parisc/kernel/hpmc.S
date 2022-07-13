@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * HPMC (High Priority Machine Check) handler.
  *
  * Copyright (C) 1999 Philipp Rumpf <prumpf@tux.org>
  * Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
  * Copyright (C) 2000 Hewlett-Packard (John Marvin)
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -41,12 +48,22 @@
  */
 
 	.level		1.1
+<<<<<<< HEAD
 	.data
 
 #include <asm/assembly.h>
 #include <asm/pdc.h>
 
 #include <linux/linkage.h>
+=======
+
+#include <asm/assembly.h>
+#include <asm/pdc.h>
+#include <asm/psw.h>
+
+#include <linux/linkage.h>
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * stack for os_hpmc, the HPMC handler.
@@ -55,6 +72,7 @@
 	 * IODC requires 7K byte stack.  That leaves 1K byte for os_hpmc.
 	 */
 
+<<<<<<< HEAD
 	.align	PAGE_SIZE
 hpmc_stack:
 	.block 16384
@@ -65,12 +83,29 @@ hpmc_stack:
 hpmc_iodc_buf:
 	.block HPMC_IODC_BUF_SIZE
 
+=======
+	.import toc_stack,data
+#define hpmc_stack	toc_stack	/* re-use the TOC stack */
+
+#define HPMC_IODC_BUF_SIZE 0x8000
+
+	__PAGE_ALIGNED_BSS
+	.align 4096
+hpmc_iodc_buf:
+	.block HPMC_IODC_BUF_SIZE
+
+	.section .bss
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align 8
 hpmc_raddr:
 	.block 128
 
 #define HPMC_PIM_DATA_SIZE 896 /* Enough to hold all architected 2.0 state */
 
+<<<<<<< HEAD
+=======
+	.section .bss
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align 8
 ENTRY(hpmc_pim_data)
 	.block HPMC_PIM_DATA_SIZE
@@ -79,6 +114,10 @@ END(hpmc_pim_data)
 	.text
 
 	.import intr_save, code
+<<<<<<< HEAD
+=======
+	.align 16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(os_hpmc)
 .os_hpmc:
 
@@ -131,7 +170,11 @@ ENTRY(os_hpmc)
 	 * So turn on the Q bit and turn off the M bit.
 	 */
 
+<<<<<<< HEAD
 	ldo     8(%r0),%r4                       /* PSW Q on, PSW M off */
+=======
+	ldi     PSW_SM_Q,%r4                   /* PSW Q on, PSW M off */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtctl   %r4,ipsw
 	mtctl   %r0,pcsq
 	mtctl   %r0,pcsq
@@ -253,7 +296,11 @@ os_hpmc_5:
 
 	tovirt_r1 %r30      /* make sp virtual */
 
+<<<<<<< HEAD
 	rsm 8,%r0           /* Clear Q bit */
+=======
+	rsm     PSW_SM_Q,%r0           /* Clear Q bit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldi     1,%r8       /* Set trap code to "1" for HPMC */
 	load32	PA(intr_save),%r1
 	be      0(%sr7,%r1)
@@ -295,6 +342,7 @@ os_hpmc_6:
 
 	b .
 	nop
+<<<<<<< HEAD
 ENDPROC(os_hpmc)
 .os_hpmc_end:
 	nop
@@ -303,3 +351,6 @@ ENDPROC(os_hpmc)
 	.export os_hpmc_size
 os_hpmc_size:
 	.word .os_hpmc_end-.os_hpmc
+=======
+	.align 16	/* make function length multiple of 16 bytes */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

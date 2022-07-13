@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH SPI bus driver
  *
@@ -5,6 +9,7 @@
  *
  * Based on pxa2xx_spi.c:
  * Copyright (C) 2005 Stephen Street / StreetFire Sound Labs
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -85,6 +92,7 @@
 struct spi_sh_data {
 	void __iomem *addr;
 	int irq;
+<<<<<<< HEAD
 	struct spi_master *master;
 	struct list_head queue;
 	struct workqueue_struct *workqueue;
@@ -92,6 +100,11 @@ struct spi_sh_data {
 	unsigned long cr1;
 	wait_queue_head_t wait;
 	spinlock_t lock;
+=======
+	struct spi_controller *host;
+	unsigned long cr1;
+	wait_queue_head_t wait;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int width;
 };
 
@@ -171,7 +184,10 @@ static int spi_sh_send(struct spi_sh_data *ss, struct spi_message *mesg,
 	int remain = t->len;
 	int cur_len;
 	unsigned char *data;
+<<<<<<< HEAD
 	unsigned long tmp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long ret;
 
 	if (t->len)
@@ -213,9 +229,13 @@ static int spi_sh_send(struct spi_sh_data *ss, struct spi_message *mesg,
 	}
 
 	if (list_is_last(&t->transfer_list, &mesg->transfers)) {
+<<<<<<< HEAD
 		tmp = spi_sh_read(ss, SPI_SH_CR1);
 		tmp = tmp & ~(SPI_SH_SSD | SPI_SH_SSDB);
 		spi_sh_write(ss, tmp, SPI_SH_CR1);
+=======
+		spi_sh_clear_bit(ss, SPI_SH_SSD | SPI_SH_SSDB, SPI_SH_CR1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi_sh_set_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
 
 		ss->cr1 &= ~SPI_SH_TBE;
@@ -239,7 +259,10 @@ static int spi_sh_receive(struct spi_sh_data *ss, struct spi_message *mesg,
 	int remain = t->len;
 	int cur_len;
 	unsigned char *data;
+<<<<<<< HEAD
 	unsigned long tmp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long ret;
 
 	if (t->len > SPI_SH_MAX_BYTE)
@@ -247,9 +270,13 @@ static int spi_sh_receive(struct spi_sh_data *ss, struct spi_message *mesg,
 	else
 		spi_sh_write(ss, t->len, SPI_SH_CR3);
 
+<<<<<<< HEAD
 	tmp = spi_sh_read(ss, SPI_SH_CR1);
 	tmp = tmp & ~(SPI_SH_SSD | SPI_SH_SSDB);
 	spi_sh_write(ss, tmp, SPI_SH_CR1);
+=======
+	spi_sh_clear_bit(ss, SPI_SH_SSD | SPI_SH_SSDB, SPI_SH_CR1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_sh_set_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
 
 	spi_sh_wait_write_buffer_empty(ss);
@@ -291,16 +318,25 @@ static int spi_sh_receive(struct spi_sh_data *ss, struct spi_message *mesg,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void spi_sh_work(struct work_struct *work)
 {
 	struct spi_sh_data *ss = container_of(work, struct spi_sh_data, ws);
 	struct spi_message *mesg;
 	struct spi_transfer *t;
 	unsigned long flags;
+=======
+static int spi_sh_transfer_one_message(struct spi_controller *ctlr,
+					struct spi_message *mesg)
+{
+	struct spi_sh_data *ss = spi_controller_get_devdata(ctlr);
+	struct spi_transfer *t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	pr_debug("%s: enter\n", __func__);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&ss->lock, flags);
 	while (!list_empty(&ss->queue)) {
 		mesg = list_entry(ss->queue.next, struct spi_message, queue);
@@ -331,6 +367,32 @@ static void spi_sh_work(struct work_struct *work)
 		mesg->complete(mesg->context);
 	}
 
+=======
+	spi_sh_clear_bit(ss, SPI_SH_SSA, SPI_SH_CR1);
+
+	list_for_each_entry(t, &mesg->transfers, transfer_list) {
+		pr_debug("tx_buf = %p, rx_buf = %p\n",
+			 t->tx_buf, t->rx_buf);
+		pr_debug("len = %d, delay.value = %d\n",
+			 t->len, t->delay.value);
+
+		if (t->tx_buf) {
+			ret = spi_sh_send(ss, mesg, t);
+			if (ret < 0)
+				goto error;
+		}
+		if (t->rx_buf) {
+			ret = spi_sh_receive(ss, mesg, t);
+			if (ret < 0)
+				goto error;
+		}
+		mesg->actual_length += t->len;
+	}
+
+	mesg->status = 0;
+	spi_finalize_current_message(ctlr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_fifo(ss);
 	spi_sh_set_bit(ss, SPI_SH_SSD, SPI_SH_CR1);
 	udelay(100);
@@ -340,6 +402,7 @@ static void spi_sh_work(struct work_struct *work)
 
 	clear_fifo(ss);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ss->lock, flags);
 
 	return;
@@ -347,19 +410,36 @@ static void spi_sh_work(struct work_struct *work)
  error:
 	mesg->status = ret;
 	mesg->complete(mesg->context);
+=======
+	return 0;
+
+ error:
+	mesg->status = ret;
+	spi_finalize_current_message(ctlr);
+	if (mesg->complete)
+		mesg->complete(mesg->context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_sh_clear_bit(ss, SPI_SH_SSA | SPI_SH_SSDB | SPI_SH_SSD,
 			 SPI_SH_CR1);
 	clear_fifo(ss);
 
+<<<<<<< HEAD
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spi_sh_setup(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	struct spi_sh_data *ss = spi_master_get_devdata(spi->master);
 
 	if (!spi->bits_per_word)
 		spi->bits_per_word = 8;
+=======
+	struct spi_sh_data *ss = spi_controller_get_devdata(spi->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: enter\n", __func__);
 
@@ -376,6 +456,7 @@ static int spi_sh_setup(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spi_sh_transfer(struct spi_device *spi, struct spi_message *mesg)
 {
 	struct spi_sh_data *ss = spi_master_get_devdata(spi->master);
@@ -402,6 +483,11 @@ static int spi_sh_transfer(struct spi_device *spi, struct spi_message *mesg)
 static void spi_sh_cleanup(struct spi_device *spi)
 {
 	struct spi_sh_data *ss = spi_master_get_devdata(spi->master);
+=======
+static void spi_sh_cleanup(struct spi_device *spi)
+{
+	struct spi_sh_data *ss = spi_controller_get_devdata(spi->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: enter\n", __func__);
 
@@ -432,6 +518,7 @@ static irqreturn_t spi_sh_irq(int irq, void *_ss)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devexit spi_sh_remove(struct platform_device *pdev)
 {
 	struct spi_sh_data *ss = dev_get_drvdata(&pdev->dev);
@@ -448,6 +535,20 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 {
 	struct resource *res;
 	struct spi_master *master;
+=======
+static void spi_sh_remove(struct platform_device *pdev)
+{
+	struct spi_sh_data *ss = platform_get_drvdata(pdev);
+
+	spi_unregister_controller(ss->host);
+	free_irq(ss->irq, ss);
+}
+
+static int spi_sh_probe(struct platform_device *pdev)
+{
+	struct resource *res;
+	struct spi_controller *host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_sh_data *ss;
 	int ret, irq;
 
@@ -459,6 +560,7 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 	}
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq < 0) {
 		dev_err(&pdev->dev, "platform_get_irq error\n");
 		return -ENODEV;
@@ -472,6 +574,19 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 
 	ss = spi_master_get_devdata(master);
 	dev_set_drvdata(&pdev->dev, ss);
+=======
+	if (irq < 0)
+		return irq;
+
+	host = devm_spi_alloc_host(&pdev->dev, sizeof(struct spi_sh_data));
+	if (host == NULL) {
+		dev_err(&pdev->dev, "devm_spi_alloc_host error.\n");
+		return -ENOMEM;
+	}
+
+	ss = spi_controller_get_devdata(host);
+	platform_set_drvdata(pdev, ss);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (res->flags & IORESOURCE_MEM_TYPE_MASK) {
 	case IORESOURCE_MEM_8BIT:
@@ -482,6 +597,7 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 		break;
 	default:
 		dev_err(&pdev->dev, "No support width\n");
+<<<<<<< HEAD
 		ret = -ENODEV;
 		goto error1;
 	}
@@ -504,10 +620,23 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 		ret = -EBUSY;
 		goto error2;
 	}
+=======
+		return -ENODEV;
+	}
+	ss->irq = irq;
+	ss->host = host;
+	ss->addr = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	if (ss->addr == NULL) {
+		dev_err(&pdev->dev, "ioremap error.\n");
+		return -ENOMEM;
+	}
+	init_waitqueue_head(&ss->wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_irq(irq, spi_sh_irq, 0, "spi_sh", ss);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "request_irq error\n");
+<<<<<<< HEAD
 		goto error3;
 	}
 
@@ -521,10 +650,26 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		printk(KERN_ERR "spi_register_master error.\n");
 		goto error4;
+=======
+		return ret;
+	}
+
+	host->num_chipselect = 2;
+	host->bus_num = pdev->id;
+	host->setup = spi_sh_setup;
+	host->transfer_one_message = spi_sh_transfer_one_message;
+	host->cleanup = spi_sh_cleanup;
+
+	ret = spi_register_controller(host);
+	if (ret < 0) {
+		printk(KERN_ERR "spi_register_controller error.\n");
+		goto error3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
+<<<<<<< HEAD
  error4:
 	free_irq(irq, ss);
  error3:
@@ -534,20 +679,34 @@ static int __devinit spi_sh_probe(struct platform_device *pdev)
  error1:
 	spi_master_put(master);
 
+=======
+ error3:
+	free_irq(irq, ss);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static struct platform_driver spi_sh_driver = {
 	.probe = spi_sh_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(spi_sh_remove),
 	.driver = {
 		.name = "sh_spi",
 		.owner = THIS_MODULE,
+=======
+	.remove_new = spi_sh_remove,
+	.driver = {
+		.name = "sh_spi",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(spi_sh_driver);
 
 MODULE_DESCRIPTION("SH SPI bus driver");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Yoshihiro Shimoda");
 MODULE_ALIAS("platform:sh_spi");

@@ -67,7 +67,11 @@ static DEFINE_SPINLOCK(sbwd_lock);
  *
  * wdog is the iomem address of the cfg register
  */
+<<<<<<< HEAD
 void sbwdog_set(char __iomem *wdog, unsigned long t)
+=======
+static void sbwdog_set(char __iomem *wdog, unsigned long t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&sbwd_lock);
 	__raw_writeb(0, wdog);
@@ -81,7 +85,11 @@ void sbwdog_set(char __iomem *wdog, unsigned long t)
  *
  * wdog is the iomem address of the cfg register
  */
+<<<<<<< HEAD
 void sbwdog_pet(char __iomem *wdog)
+=======
+static void sbwdog_pet(char __iomem *wdog)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&sbwd_lock);
 	__raw_writeb(__raw_readb(wdog) | 1, wdog);
@@ -105,7 +113,11 @@ static const struct watchdog_info ident = {
  */
 static int sbwdog_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	nonseekable_open(inode, file);
+=======
+	stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_and_set_bit(0, &sbwdog_gate))
 		return -EBUSY;
 	__module_get(THIS_MODULE);
@@ -202,13 +214,21 @@ static long sbwdog_ioctl(struct file *file, unsigned int cmd,
 		timeout = time;
 		sbwdog_set(user_dog, timeout);
 		sbwdog_pet(user_dog);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		/*
 		 * get the remaining count from the ... count register
 		 * which is 1*8 before the config register
 		 */
+<<<<<<< HEAD
 		ret = put_user(__raw_readq(user_dog - 8) / 1000000, p);
+=======
+		ret = put_user((u32)__raw_readq(user_dog - 8) / 1000000, p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return ret;
@@ -236,6 +256,10 @@ static const struct file_operations sbwdog_fops = {
 	.llseek		= no_llseek,
 	.write		= sbwdog_write,
 	.unlocked_ioctl	= sbwdog_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= sbwdog_open,
 	.release	= sbwdog_release,
 };
@@ -341,7 +365,10 @@ MODULE_PARM_DESC(timeout,
       "Watchdog timeout in microseconds (max/default 8388607 or 8.3ish secs)");
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * example code that can be put in a platform code area to utilize the

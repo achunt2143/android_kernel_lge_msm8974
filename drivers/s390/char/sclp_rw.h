@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * interface to the SCLP-read/write driver
  *
@@ -45,6 +49,10 @@ struct mdb_header {
 struct mdb {
 	struct mdb_header header;
 	struct go go;
+<<<<<<< HEAD
+=======
+	struct mto mto;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 struct msg_buf {
@@ -52,6 +60,7 @@ struct msg_buf {
 	struct mdb mdb;
 } __attribute__((packed));
 
+<<<<<<< HEAD
 struct write_sccb {
 	struct sccb_header header;
 	struct msg_buf msg_buf;
@@ -60,6 +69,11 @@ struct write_sccb {
 /* The number of empty mto buffers that can be contained in a single sccb. */
 #define NR_EMPTY_MTO_PER_SCCB ((PAGE_SIZE - sizeof(struct sclp_buffer) - \
 			sizeof(struct write_sccb)) / sizeof(struct mto))
+=======
+/* The number of empty mto buffers that can be contained in a single sccb. */
+#define NR_EMPTY_MSG_PER_SCCB ((PAGE_SIZE - sizeof(struct sclp_buffer) - \
+			sizeof(struct sccb_header)) / sizeof(struct msg_buf))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * data structure for information about list of SCCBs (only for writing),
@@ -68,7 +82,12 @@ struct write_sccb {
 struct sclp_buffer {
 	struct list_head list;		/* list_head for sccb_info chain */
 	struct sclp_req request;
+<<<<<<< HEAD
 	struct write_sccb *sccb;
+=======
+	void *sccb;
+	struct msg_buf *current_msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *current_line;
 	int current_length;
 	int retry_count;
@@ -76,8 +95,13 @@ struct sclp_buffer {
 	unsigned short columns;
 	unsigned short htab;
 	/* statistics about this buffer */
+<<<<<<< HEAD
 	unsigned int mto_char_sum;	/* # chars in sccb */
 	unsigned int mto_number;	/* # mtos in sccb */
+=======
+	unsigned int char_sum;		/* # chars in sccb */
+	unsigned int messages;		/* # messages in sccb */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Callback that is called after reaching final status. */
 	void (*callback)(struct sclp_buffer *, int);
 };
@@ -88,6 +112,7 @@ void *sclp_unmake_buffer(struct sclp_buffer *);
 int sclp_buffer_space(struct sclp_buffer *);
 int sclp_write(struct sclp_buffer *buffer, const unsigned char *, int);
 int sclp_emit_buffer(struct sclp_buffer *,void (*)(struct sclp_buffer *,int));
+<<<<<<< HEAD
 void sclp_set_columns(struct sclp_buffer *, unsigned short);
 void sclp_set_htab(struct sclp_buffer *, unsigned short);
 int sclp_chars_in_buffer(struct sclp_buffer *);
@@ -97,5 +122,8 @@ void sclp_console_pm_event(enum sclp_pm_event sclp_pm_event);
 #else
 static inline void sclp_console_pm_event(enum sclp_pm_event sclp_pm_event) { }
 #endif
+=======
+unsigned int sclp_chars_in_buffer(struct sclp_buffer *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __SCLP_RW_H__ */

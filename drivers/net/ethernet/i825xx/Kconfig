@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Intel 82596/82593/82596 network device configuration
 #
@@ -5,6 +9,7 @@
 config NET_VENDOR_I825XX
 	bool "Intel (82586/82593/82596) devices"
 	default y
+<<<<<<< HEAD
 	depends on NET_VENDOR_INTEL && (ISA || ISA_DMA_API || ARM || \
 		   ARCH_ACORN || MCA || MCA_LEGACY || SNI_RM || SUN3 || \
 		   GSC || BVME6000 || MVME16x || EXPERIMENTAL)
@@ -12,6 +17,11 @@ config NET_VENDOR_I825XX
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on NET_VENDOR_INTEL
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question does not directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -20,6 +30,7 @@ config NET_VENDOR_I825XX
 
 if NET_VENDOR_I825XX
 
+<<<<<<< HEAD
 config ELPLUS
 	tristate "3c505 \"EtherLink Plus\" support"
 	depends on ISA && ISA_DMA_API
@@ -87,11 +98,25 @@ config BVME6000_NET
 	tristate "BVME6000 Ethernet support"
 	depends on BVME6000
 	---help---
+=======
+config ARM_ETHER1
+	tristate "Acorn Ether1 support"
+	depends on ARM && ARCH_ACORN
+	help
+	  If you have an Acorn system with one of these (AKA25) network cards,
+	  you should say Y to this option if you wish to use it with Linux.
+
+config BVME6000_NET
+	tristate "BVME6000 Ethernet support"
+	depends on BVME6000
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the driver for the Ethernet interface on BVME4000 and
 	  BVME6000 VME boards.  Say Y here to include the driver for this chip
 	  in your kernel.
 	  To compile this driver as a module, choose M here.
 
+<<<<<<< HEAD
 config EEXPRESS
 	tristate "EtherExpress 16 support"
 	depends on ISA
@@ -138,11 +163,25 @@ config MVME16x_NET
 	tristate "MVME16x Ethernet support"
 	depends on MVME16x
 	---help---
+=======
+config LASI_82596
+	tristate "Lasi ethernet"
+	depends on GSC
+	help
+	  Say Y here to support the builtin Intel 82596 ethernet controller
+	  found in Hewlett-Packard PA-RISC machines with 10Mbit ethernet.
+
+config MVME16x_NET
+	tristate "MVME16x Ethernet support"
+	depends on MVME16x
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the driver for the Ethernet interface on the Motorola
 	  MVME162, 166, 167, 172 and 177 boards.  Say Y here to include the
 	  driver for this chip in your kernel.
 	  To compile this driver as a module, choose M here.
 
+<<<<<<< HEAD
 config NI52
 	tristate "NI5210 support"
 	depends on ISA
@@ -158,18 +197,29 @@ config SNI_82596
 	tristate "SNI RM ethernet"
 	depends on SNI_RM
 	---help---
+=======
+config SNI_82596
+	tristate "SNI RM ethernet"
+	depends on SNI_RM
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to support the on-board Intel 82596 ethernet controller
 	  built into SNI RM machines.
 
 config SUN3_82586
 	bool "Sun3 on-board Intel 82586 support"
 	depends on SUN3
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver enables support for the on-board Intel 82586 based
 	  Ethernet adapter found on Sun 3/1xx and 3/2xx motherboards.  Note
 	  that this driver does not support 82586-based adapters on additional
 	  VME boards.
 
+<<<<<<< HEAD
 config ZNET
 	tristate "Zenith Z-Note support (EXPERIMENTAL)"
 	depends on EXPERIMENTAL && ISA_DMA_API
@@ -180,4 +230,6 @@ config ZNET
 	  by this driver. Read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_I825XX

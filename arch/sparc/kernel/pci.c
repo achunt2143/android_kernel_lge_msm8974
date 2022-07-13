@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci.c: UltraSparc PCI controller support.
  *
  * Copyright (C) 1997, 1998, 1999 David S. Miller (davem@redhat.com)
@@ -19,15 +23,27 @@
 #include <linux/irq.h>
 #include <linux/init.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include <asm/uaccess.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/of_platform.h>
+#include <linux/pgtable.h>
+#include <linux/platform_device.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/prom.h>
 #include <asm/apb.h>
 
 #include "pci_impl.h"
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* List of all PCI controllers found in the system. */
 struct pci_pbm_info *pci_pbm_root = NULL;
@@ -184,8 +200,15 @@ static unsigned long pci_parse_of_flags(u32 addr0)
 
 	if (addr0 & 0x02000000) {
 		flags = IORESOURCE_MEM | PCI_BASE_ADDRESS_SPACE_MEMORY;
+<<<<<<< HEAD
 		flags |= (addr0 >> 22) & PCI_BASE_ADDRESS_MEM_TYPE_64;
 		flags |= (addr0 >> 28) & PCI_BASE_ADDRESS_MEM_TYPE_1M;
+=======
+		flags |= (addr0 >> 28) & PCI_BASE_ADDRESS_MEM_TYPE_1M;
+		if (addr0 & 0x01000000)
+			flags |= IORESOURCE_MEM_64
+				 | PCI_BASE_ADDRESS_MEM_TYPE_64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (addr0 & 0x40000000)
 			flags |= IORESOURCE_PREFETCH
 				 | PCI_BASE_ADDRESS_MEM_PREFETCH;
@@ -210,8 +233,13 @@ static void pci_parse_of_addrs(struct platform_device *op,
 	if (!addrs)
 		return;
 	if (ofpci_verbose)
+<<<<<<< HEAD
 		printk("    parse addresses (%d bytes) @ %p\n",
 		       proplen, addrs);
+=======
+		pci_info(dev, "    parse addresses (%d bytes) @ %p\n",
+			 proplen, addrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	op_res = &op->resource[0];
 	for (; proplen >= 20; proplen -= 20, addrs += 5, op_res++) {
 		struct resource *res;
@@ -223,31 +251,63 @@ static void pci_parse_of_addrs(struct platform_device *op,
 			continue;
 		i = addrs[0] & 0xff;
 		if (ofpci_verbose)
+<<<<<<< HEAD
 			printk("  start: %llx, end: %llx, i: %x\n",
 			       op_res->start, op_res->end, i);
+=======
+			pci_info(dev, "  start: %llx, end: %llx, i: %x\n",
+				 op_res->start, op_res->end, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (PCI_BASE_ADDRESS_0 <= i && i <= PCI_BASE_ADDRESS_5) {
 			res = &dev->resource[(i - PCI_BASE_ADDRESS_0) >> 2];
 		} else if (i == dev->rom_base_reg) {
 			res = &dev->resource[PCI_ROM_RESOURCE];
+<<<<<<< HEAD
 			flags |= IORESOURCE_READONLY | IORESOURCE_CACHEABLE
 			      | IORESOURCE_SIZEALIGN;
 		} else {
 			printk(KERN_ERR "PCI: bad cfg reg num 0x%x\n", i);
+=======
+			flags |= IORESOURCE_READONLY | IORESOURCE_SIZEALIGN;
+		} else {
+			pci_err(dev, "bad cfg reg num 0x%x\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		res->start = op_res->start;
 		res->end = op_res->end;
 		res->flags = flags;
 		res->name = pci_name(dev);
+<<<<<<< HEAD
 	}
 }
 
+=======
+
+		pci_info(dev, "reg 0x%x: %pR\n", i, res);
+	}
+}
+
+static void pci_init_dev_archdata(struct dev_archdata *sd, void *iommu,
+				  void *stc, void *host_controller,
+				  struct platform_device  *op,
+				  int numa_node)
+{
+	sd->iommu = iommu;
+	sd->stc = stc;
+	sd->host_controller = host_controller;
+	sd->op = op;
+	sd->numa_node = numa_node;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 					 struct device_node *node,
 					 struct pci_bus *bus, int devfn)
 {
 	struct dev_archdata *sd;
+<<<<<<< HEAD
 	struct pci_slot *slot;
 	struct platform_device *op;
 	struct pci_dev *dev;
@@ -265,11 +325,26 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	sd->op = op = of_find_device_by_node(node);
 	sd->numa_node = pbm->numa_node;
 
+=======
+	struct platform_device *op;
+	struct pci_dev *dev;
+	u32 class;
+
+	dev = pci_alloc_dev(bus);
+	if (!dev)
+		return NULL;
+
+	op = of_find_device_by_node(node);
+	sd = &dev->dev.archdata;
+	pci_init_dev_archdata(sd, pbm->iommu, &pbm->stc, pbm, op,
+			      pbm->numa_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sd = &op->dev.archdata;
 	sd->iommu = pbm->iommu;
 	sd->stc = &pbm->stc;
 	sd->numa_node = pbm->numa_node;
 
+<<<<<<< HEAD
 	if (!strcmp(node->name, "ebus"))
 		of_propagate_archdata(op);
 
@@ -282,6 +357,15 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 		       devfn, type);
 
 	dev->bus = bus;
+=======
+	if (of_node_name_eq(node, "ebus"))
+		of_propagate_archdata(op);
+
+	if (ofpci_verbose)
+		pci_info(bus,"    create device, devfn: %x, type: %s\n",
+			 devfn, of_node_get_device_type(node));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->sysdata = node;
 	dev->dev.parent = bus->bridge;
 	dev->dev.bus = &pci_bus_type;
@@ -290,10 +374,14 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	dev->multifunction = 0;		/* maybe a lie? */
 	set_pcie_port_type(dev);
 
+<<<<<<< HEAD
 	list_for_each_entry(slot, &dev->bus->slots, list)
 		if (PCI_SLOT(dev->devfn) == slot->number)
 			dev->slot = slot;
 
+=======
+	pci_dev_assign_slot(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->vendor = of_getintprop_default(node, "vendor-id", 0xffff);
 	dev->device = of_getintprop_default(node, "device-id", 0xffff);
 	dev->subsystem_vendor =
@@ -306,7 +394,11 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	/* We can't actually use the firmware value, we have
 	 * to read what is in the register right now.  One
 	 * reason is that in the case of IDE interfaces the
+<<<<<<< HEAD
 	 * firmware can sample the value before the the IDE
+=======
+	 * firmware can sample the value before the IDE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * interface is programmed into native mode.
 	 */
 	pci_read_config_dword(dev, PCI_CLASS_REVISION, &class);
@@ -316,10 +408,13 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	dev_set_name(&dev->dev, "%04x:%02x:%02x.%d", pci_domain_nr(bus),
 		dev->bus->number, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
+<<<<<<< HEAD
 	if (ofpci_verbose)
 		printk("    class: 0x%x device name: %s\n",
 		       dev->class, pci_name(dev));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* I have seen IDE devices which will not respond to
 	 * the bmdma simplex check reads if bus mastering is
 	 * disabled.
@@ -327,6 +422,7 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 	if ((dev->class >> 8) == PCI_CLASS_STORAGE_IDE)
 		pci_set_master(dev);
 
+<<<<<<< HEAD
 	dev->current_state = 4;		/* unknown power state */
 	dev->error_state = pci_channel_io_normal;
 	dev->dma_mask = 0xffffffff;
@@ -336,6 +432,17 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 		dev->hdr_type = PCI_HEADER_TYPE_BRIDGE;
 		dev->rom_base_reg = PCI_ROM_ADDRESS1;
 	} else if (!strcmp(type, "cardbus")) {
+=======
+	dev->current_state = PCI_UNKNOWN;	/* unknown power state */
+	dev->error_state = pci_channel_io_normal;
+	dev->dma_mask = 0xffffffff;
+
+	if (of_node_name_eq(node, "pci")) {
+		/* a PCI-PCI bridge */
+		dev->hdr_type = PCI_HEADER_TYPE_BRIDGE;
+		dev->rom_base_reg = PCI_ROM_ADDRESS1;
+	} else if (of_node_is_type(node, "cardbus")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->hdr_type = PCI_HEADER_TYPE_CARDBUS;
 	} else {
 		dev->hdr_type = PCI_HEADER_TYPE_NORMAL;
@@ -346,17 +453,31 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
 			dev->irq = PCI_IRQ_NONE;
 	}
 
+<<<<<<< HEAD
 	pci_parse_of_addrs(sd->op, node, dev);
 
 	if (ofpci_verbose)
 		printk("    adding to system ...\n");
+=======
+	pci_info(dev, "[%04x:%04x] type %02x class %#08x\n",
+		 dev->vendor, dev->device, dev->hdr_type, dev->class);
+
+	pci_parse_of_addrs(sd->op, node, dev);
+
+	if (ofpci_verbose)
+		pci_info(dev, "    adding to system ...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_device_add(dev, bus);
 
 	return dev;
 }
 
+<<<<<<< HEAD
 static void __devinit apb_calc_first_last(u8 map, u32 *first_p, u32 *last_p)
+=======
+static void apb_calc_first_last(u8 map, u32 *first_p, u32 *last_p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 idx, first, last;
 
@@ -375,6 +496,7 @@ static void __devinit apb_calc_first_last(u8 map, u32 *first_p, u32 *last_p)
 	*last_p = last;
 }
 
+<<<<<<< HEAD
 /* For PCI bus devices which lack a 'ranges' property we interrogate
  * the config space values to set the resources, just like the generic
  * Linux PCI probing code does.
@@ -468,6 +590,14 @@ static void __devinit pci_cfg_fake_ranges(struct pci_dev *dev,
 static void __devinit apb_fake_ranges(struct pci_dev *dev,
 				      struct pci_bus *bus,
 				      struct pci_pbm_info *pbm)
+=======
+/* Cook up fake bus resources for SUNW,simba PCI bridges which lack
+ * a proper 'ranges' property.
+ */
+static void apb_fake_ranges(struct pci_dev *dev,
+			    struct pci_bus *bus,
+			    struct pci_pbm_info *pbm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_bus_region region;
 	struct resource *res;
@@ -491,6 +621,7 @@ static void __devinit apb_fake_ranges(struct pci_dev *dev,
 	pcibios_bus_to_resource(dev->bus, res, &region);
 }
 
+<<<<<<< HEAD
 static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 				      struct device_node *node,
 				      struct pci_bus *bus);
@@ -500,6 +631,17 @@ static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 static void __devinit of_scan_pci_bridge(struct pci_pbm_info *pbm,
 					 struct device_node *node,
 					 struct pci_dev *dev)
+=======
+static void pci_of_scan_bus(struct pci_pbm_info *pbm,
+			    struct device_node *node,
+			    struct pci_bus *bus);
+
+#define GET_64BIT(prop, i)	((((u64) (prop)[(i)]) << 32) | (prop)[(i)+1])
+
+static void of_scan_pci_bridge(struct pci_pbm_info *pbm,
+			       struct device_node *node,
+			       struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_bus *bus;
 	const u32 *busrange, *ranges;
@@ -510,15 +652,31 @@ static void __devinit of_scan_pci_bridge(struct pci_pbm_info *pbm,
 	u64 size;
 
 	if (ofpci_verbose)
+<<<<<<< HEAD
 		printk("of_scan_pci_bridge(%s)\n", node->full_name);
+=======
+		pci_info(dev, "of_scan_pci_bridge(%pOF)\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* parse bus-range property */
 	busrange = of_get_property(node, "bus-range", &len);
 	if (busrange == NULL || len != 8) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "Can't get bus-range for PCI-PCI bridge %s\n",
 		       node->full_name);
 		return;
 	}
+=======
+		pci_info(dev, "Can't get bus-range for PCI-PCI bridge %pOF\n",
+		       node);
+		return;
+	}
+
+	if (ofpci_verbose)
+		pci_info(dev, "    Bridge bus range [%u --> %u]\n",
+			 busrange[0], busrange[1]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ranges = of_get_property(node, "ranges", &len);
 	simba = 0;
 	if (ranges == NULL) {
@@ -529,15 +687,30 @@ static void __devinit of_scan_pci_bridge(struct pci_pbm_info *pbm,
 
 	bus = pci_add_new_bus(dev->bus, dev, busrange[0]);
 	if (!bus) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to create pci bus for %s\n",
 		       node->full_name);
+=======
+		pci_err(dev, "Failed to create pci bus for %pOF\n",
+			node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	bus->primary = dev->bus->number;
+<<<<<<< HEAD
 	bus->subordinate = busrange[1];
 	bus->bridge_ctl = 0;
 
+=======
+	pci_bus_insert_busn_res(bus, busrange[0], busrange[1]);
+	bus->bridge_ctl = 0;
+
+	if (ofpci_verbose)
+		pci_info(dev, "    Bridge ranges[%p] simba[%d]\n",
+			 ranges, simba);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* parse ranges property, or cook one up by hand for Simba */
 	/* PCI #address-cells == 3 and #size-cells == 2 always */
 	res = &dev->resource[PCI_BRIDGE_RESOURCES];
@@ -550,26 +723,65 @@ static void __devinit of_scan_pci_bridge(struct pci_pbm_info *pbm,
 		apb_fake_ranges(dev, bus, pbm);
 		goto after_ranges;
 	} else if (ranges == NULL) {
+<<<<<<< HEAD
 		pci_cfg_fake_ranges(dev, bus, pbm);
+=======
+		pci_read_bridge_bases(bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto after_ranges;
 	}
 	i = 1;
 	for (; len >= 32; len -= 32, ranges += 8) {
+<<<<<<< HEAD
+=======
+		u64 start;
+
+		if (ofpci_verbose)
+			pci_info(dev, "    RAW Range[%08x:%08x:%08x:%08x:%08x:%08x:"
+				 "%08x:%08x]\n",
+				 ranges[0], ranges[1], ranges[2], ranges[3],
+				 ranges[4], ranges[5], ranges[6], ranges[7]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = pci_parse_of_flags(ranges[0]);
 		size = GET_64BIT(ranges, 6);
 		if (flags == 0 || size == 0)
 			continue;
+<<<<<<< HEAD
 		if (flags & IORESOURCE_IO) {
 			res = bus->resource[0];
 			if (res->flags) {
 				printk(KERN_ERR "PCI: ignoring extra I/O range"
 				       " for bridge %s\n", node->full_name);
+=======
+
+		/* On PCI-Express systems, PCI bridges that have no devices downstream
+		 * have a bogus size value where the first 32-bit cell is 0xffffffff.
+		 * This results in a bogus range where start + size overflows.
+		 *
+		 * Just skip these otherwise the kernel will complain when the resource
+		 * tries to be claimed.
+		 */
+		if (size >> 32 == 0xffffffff)
+			continue;
+
+		if (flags & IORESOURCE_IO) {
+			res = bus->resource[0];
+			if (res->flags) {
+				pci_err(dev, "ignoring extra I/O range"
+					" for bridge %pOF\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		} else {
 			if (i >= PCI_NUM_RESOURCES - PCI_BRIDGE_RESOURCES) {
+<<<<<<< HEAD
 				printk(KERN_ERR "PCI: too many memory ranges"
 				       " for bridge %s\n", node->full_name);
+=======
+				pci_err(dev, "too many memory ranges"
+					" for bridge %pOF\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			res = bus->resource[i];
@@ -577,22 +789,42 @@ static void __devinit of_scan_pci_bridge(struct pci_pbm_info *pbm,
 		}
 
 		res->flags = flags;
+<<<<<<< HEAD
 		region.start = GET_64BIT(ranges, 1);
 		region.end = region.start + size - 1;
+=======
+		region.start = start = GET_64BIT(ranges, 1);
+		region.end = region.start + size - 1;
+
+		if (ofpci_verbose)
+			pci_info(dev, "      Using flags[%08x] start[%016llx] size[%016llx]\n",
+				 flags, start, size);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcibios_bus_to_resource(dev->bus, res, &region);
 	}
 after_ranges:
 	sprintf(bus->name, "PCI Bus %04x:%02x", pci_domain_nr(bus),
 		bus->number);
 	if (ofpci_verbose)
+<<<<<<< HEAD
 		printk("    bus name: %s\n", bus->name);
+=======
+		pci_info(dev, "    bus name: %s\n", bus->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_of_scan_bus(pbm, node, bus);
 }
 
+<<<<<<< HEAD
 static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 				      struct device_node *node,
 				      struct pci_bus *bus)
+=======
+static void pci_of_scan_bus(struct pci_pbm_info *pbm,
+			    struct device_node *node,
+			    struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *child;
 	const u32 *reg;
@@ -600,6 +832,7 @@ static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 	struct pci_dev *dev;
 
 	if (ofpci_verbose)
+<<<<<<< HEAD
 		printk("PCI: scan_bus[%s] bus no %d\n",
 		       node->full_name, bus->number);
 
@@ -608,6 +841,15 @@ static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 	while ((child = of_get_next_child(node, child)) != NULL) {
 		if (ofpci_verbose)
 			printk("  * %s\n", child->full_name);
+=======
+		pci_info(bus, "scan_bus[%pOF] bus no %d\n",
+			 node, bus->number);
+
+	prev_devfn = -1;
+	for_each_child_of_node(node, child) {
+		if (ofpci_verbose)
+			pci_info(bus, "  * %pOF\n", child);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg = of_get_property(child, "reg", &reglen);
 		if (reg == NULL || reglen < 20)
 			continue;
@@ -628,11 +870,17 @@ static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 		if (!dev)
 			continue;
 		if (ofpci_verbose)
+<<<<<<< HEAD
 			printk("PCI: dev header type: %x\n",
 			       dev->hdr_type);
 
 		if (dev->hdr_type == PCI_HEADER_TYPE_BRIDGE ||
 		    dev->hdr_type == PCI_HEADER_TYPE_CARDBUS)
+=======
+			pci_info(dev, "dev header type: %x\n", dev->hdr_type);
+
+		if (pci_is_bridge(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			of_scan_pci_bridge(pbm, child, dev);
 	}
 }
@@ -646,12 +894,20 @@ show_pciobppath_attr(struct device * dev, struct device_attribute * attr, char *
 	pdev = to_pci_dev(dev);
 	dp = pdev->dev.of_node;
 
+<<<<<<< HEAD
 	return snprintf (buf, PAGE_SIZE, "%s\n", dp->full_name);
+=======
+	return scnprintf(buf, PAGE_SIZE, "%pOF\n", dp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(obppath, S_IRUSR | S_IRGRP | S_IROTH, show_pciobppath_attr, NULL);
 
+<<<<<<< HEAD
 static void __devinit pci_bus_register_of_sysfs(struct pci_bus *bus)
+=======
+static void pci_bus_register_of_sysfs(struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *dev;
 	struct pci_bus *child_bus;
@@ -672,13 +928,85 @@ static void __devinit pci_bus_register_of_sysfs(struct pci_bus *bus)
 		pci_bus_register_of_sysfs(child_bus);
 }
 
+<<<<<<< HEAD
 struct pci_bus * __devinit pci_scan_one_pbm(struct pci_pbm_info *pbm,
 					    struct device *parent)
+=======
+static void pci_claim_legacy_resources(struct pci_dev *dev)
+{
+	struct pci_bus_region region;
+	struct resource *p, *root, *conflict;
+
+	if ((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+		return;
+
+	p = kzalloc(sizeof(*p), GFP_KERNEL);
+	if (!p)
+		return;
+
+	p->name = "Video RAM area";
+	p->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
+
+	region.start = 0xa0000UL;
+	region.end = region.start + 0x1ffffUL;
+	pcibios_bus_to_resource(dev->bus, p, &region);
+
+	root = pci_find_parent_resource(dev, p);
+	if (!root) {
+		pci_info(dev, "can't claim VGA legacy %pR: no compatible bridge window\n", p);
+		goto err;
+	}
+
+	conflict = request_resource_conflict(root, p);
+	if (conflict) {
+		pci_info(dev, "can't claim VGA legacy %pR: address conflict with %s %pR\n",
+			 p, conflict->name, conflict);
+		goto err;
+	}
+
+	pci_info(dev, "VGA legacy framebuffer %pR\n", p);
+	return;
+
+err:
+	kfree(p);
+}
+
+static void pci_claim_bus_resources(struct pci_bus *bus)
+{
+	struct pci_bus *child_bus;
+	struct pci_dev *dev;
+
+	list_for_each_entry(dev, &bus->devices, bus_list) {
+		struct resource *r;
+		int i;
+
+		pci_dev_for_each_resource(dev, r, i) {
+			if (r->parent || !r->start || !r->flags)
+				continue;
+
+			if (ofpci_verbose)
+				pci_info(dev, "Claiming Resource %d: %pR\n",
+					 i, r);
+
+			pci_claim_resource(dev, i);
+		}
+
+		pci_claim_legacy_resources(dev);
+	}
+
+	list_for_each_entry(child_bus, &bus->children, node)
+		pci_claim_bus_resources(child_bus);
+}
+
+struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+				 struct device *parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LIST_HEAD(resources);
 	struct device_node *node = pbm->op->dev.of_node;
 	struct pci_bus *bus;
 
+<<<<<<< HEAD
 	printk("PCI: Scanning PBM %s\n", node->full_name);
 
 	pci_add_resource_offset(&resources, &pbm->io_space,
@@ -719,15 +1047,54 @@ resource_size_t pcibios_align_resource(void *data, const struct resource *res,
 
 int pcibios_enable_device(struct pci_dev *dev, int mask)
 {
+=======
+	printk("PCI: Scanning PBM %pOF\n", node);
+
+	pci_add_resource_offset(&resources, &pbm->io_space,
+				pbm->io_offset);
+	pci_add_resource_offset(&resources, &pbm->mem_space,
+				pbm->mem_offset);
+	if (pbm->mem64_space.flags)
+		pci_add_resource_offset(&resources, &pbm->mem64_space,
+					pbm->mem64_offset);
+	pbm->busn.start = pbm->pci_first_busno;
+	pbm->busn.end	= pbm->pci_last_busno;
+	pbm->busn.flags	= IORESOURCE_BUS;
+	pci_add_resource(&resources, &pbm->busn);
+	bus = pci_create_root_bus(parent, pbm->pci_first_busno, pbm->pci_ops,
+				  pbm, &resources);
+	if (!bus) {
+		printk(KERN_ERR "Failed to create bus for %pOF\n", node);
+		pci_free_resource_list(&resources);
+		return NULL;
+	}
+
+	pci_of_scan_bus(pbm, node, bus);
+	pci_bus_register_of_sysfs(bus);
+
+	pci_claim_bus_resources(bus);
+
+	pci_bus_add_devices(bus);
+	return bus;
+}
+
+int pcibios_enable_device(struct pci_dev *dev, int mask)
+{
+	struct resource *res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cmd, oldcmd;
 	int i;
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
 	oldcmd = cmd;
 
+<<<<<<< HEAD
 	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
 		struct resource *res = &dev->resource[i];
 
+=======
+	pci_dev_for_each_resource(dev, res, i) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Only set up the requested stuff */
 		if (!(mask & (1<<i)))
 			continue;
@@ -739,14 +1106,19 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
 	}
 
 	if (cmd != oldcmd) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "PCI: Enabling device: (%s), cmd %x\n",
 		       pci_name(dev), cmd);
                 /* Enable the appropriate bits in the PCI command register.  */
+=======
+		pci_info(dev, "enabling device (%04x -> %04x)\n", oldcmd, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 char * __devinit pcibios_setup(char *str)
 {
 	return str;
@@ -913,6 +1285,18 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 				 vma->vm_page_prot);
 	if (ret)
 		return ret;
+=======
+/* Platform support for /proc/bus/pci/X/Y mmap()s. */
+int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma)
+{
+	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
+	resource_size_t ioaddr = pci_resource_start(pdev, bar);
+
+	if (!pbm)
+		return -EINVAL;
+
+	vma->vm_pgoff += (ioaddr + pbm->io_space.start) >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -959,7 +1343,11 @@ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
 void arch_teardown_msi_irq(unsigned int irq)
 {
 	struct msi_desc *entry = irq_get_msi_desc(irq);
+<<<<<<< HEAD
 	struct pci_dev *pdev = entry->dev;
+=======
+	struct pci_dev *pdev = msi_desc_to_pci_dev(entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
 
 	if (pbm->teardown_msi_irq)
@@ -967,6 +1355,7 @@ void arch_teardown_msi_irq(unsigned int irq)
 }
 #endif /* !(CONFIG_PCI_MSI) */
 
+<<<<<<< HEAD
 static void ali_sound_dma_hack(struct pci_dev *pdev, int set_bit)
 {
 	struct pci_dev *ali_isa_bridge;
@@ -975,17 +1364,41 @@ static void ali_sound_dma_hack(struct pci_dev *pdev, int set_bit)
 	/* ALI sound chips generate 31-bits of DMA, a special register
 	 * determines what bit 31 is emitted as.
 	 */
+=======
+/* ALI sound chips generate 31-bits of DMA, a special register
+ * determines what bit 31 is emitted as.
+ */
+int ali_sound_dma_hack(struct device *dev, u64 device_mask)
+{
+	struct iommu *iommu = dev->archdata.iommu;
+	struct pci_dev *ali_isa_bridge;
+	u8 val;
+
+	if (!dev_is_pci(dev))
+		return 0;
+
+	if (to_pci_dev(dev)->vendor != PCI_VENDOR_ID_AL ||
+	    to_pci_dev(dev)->device != PCI_DEVICE_ID_AL_M5451 ||
+	    device_mask != 0x7fffffff)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ali_isa_bridge = pci_get_device(PCI_VENDOR_ID_AL,
 					 PCI_DEVICE_ID_AL_M1533,
 					 NULL);
 
 	pci_read_config_byte(ali_isa_bridge, 0x7e, &val);
+<<<<<<< HEAD
 	if (set_bit)
+=======
+	if (iommu->dma_addr_mask & 0x80000000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val |= 0x01;
 	else
 		val &= ~0x01;
 	pci_write_config_byte(ali_isa_bridge, 0x7e, val);
 	pci_dev_put(ali_isa_bridge);
+<<<<<<< HEAD
 }
 
 int pci64_dma_supported(struct pci_dev *pdev, u64 device_mask)
@@ -1012,12 +1425,16 @@ int pci64_dma_supported(struct pci_dev *pdev, u64 device_mask)
 		return 0;
 
 	return (device_mask & dma_addr_mask) == dma_addr_mask;
+=======
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pci_resource_to_user(const struct pci_dev *pdev, int bar,
 			  const struct resource *rp, resource_size_t *start,
 			  resource_size_t *end)
 {
+<<<<<<< HEAD
 	struct pci_pbm_info *pbm = pdev->dev.archdata.host_controller;
 	unsigned long offset;
 
@@ -1028,6 +1445,20 @@ void pci_resource_to_user(const struct pci_dev *pdev, int bar,
 
 	*start = rp->start - offset;
 	*end = rp->end - offset;
+=======
+	struct pci_bus_region region;
+
+	/*
+	 * "User" addresses are shown in /sys/devices/pci.../.../resource
+	 * and /proc/bus/pci/devices and used as mmap offsets for
+	 * /proc/bus/pci/BB/DD.F files (see proc_bus_pci_mmap()).
+	 *
+	 * On sparc, these are PCI bus addresses, i.e., raw BAR values.
+	 */
+	pcibios_resource_to_bus(pdev->bus, &region, (struct resource *) rp);
+	*start = region.start;
+	*end = region.end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pcibios_set_master(struct pci_dev *dev)
@@ -1035,6 +1466,30 @@ void pcibios_set_master(struct pci_dev *dev)
 	/* No special bus mastering setup handling */
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI_IOV
+int pcibios_device_add(struct pci_dev *dev)
+{
+	struct pci_dev *pdev;
+
+	/* Add sriov arch specific initialization here.
+	 * Copy dev_archdata from PF to VF
+	 */
+	if (dev->is_virtfn) {
+		struct dev_archdata *psd;
+
+		pdev = dev->physfn;
+		psd = &pdev->dev.archdata;
+		pci_init_dev_archdata(&dev->dev.archdata, psd->iommu,
+				      psd->stc, psd->host_controller, NULL,
+				      psd->numa_node);
+	}
+	return 0;
+}
+#endif /* CONFIG_PCI_IOV */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init pcibios_init(void)
 {
 	pci_dfl_cache_line_size = 64 >> 2;
@@ -1043,8 +1498,44 @@ static int __init pcibios_init(void)
 subsys_initcall(pcibios_init);
 
 #ifdef CONFIG_SYSFS
+<<<<<<< HEAD
 static void __devinit pci_bus_slot_names(struct device_node *node,
 					 struct pci_bus *bus)
+=======
+
+#define SLOT_NAME_SIZE  11  /* Max decimal digits + null in u32 */
+
+static void pcie_bus_slot_names(struct pci_bus *pbus)
+{
+	struct pci_dev *pdev;
+	struct pci_bus *bus;
+
+	list_for_each_entry(pdev, &pbus->devices, bus_list) {
+		char name[SLOT_NAME_SIZE];
+		struct pci_slot *pci_slot;
+		const u32 *slot_num;
+		int len;
+
+		slot_num = of_get_property(pdev->dev.of_node,
+					   "physical-slot#", &len);
+
+		if (slot_num == NULL || len != 4)
+			continue;
+
+		snprintf(name, sizeof(name), "%u", slot_num[0]);
+		pci_slot = pci_create_slot(pbus, slot_num[0], name, NULL);
+
+		if (IS_ERR(pci_slot))
+			pr_err("PCI: pci_create_slot returned %ld.\n",
+			       PTR_ERR(pci_slot));
+	}
+
+	list_for_each_entry(bus, &pbus->children, node)
+		pcie_bus_slot_names(bus);
+}
+
+static void pci_bus_slot_names(struct device_node *node, struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pci_slot_names {
 		u32	slot_mask;
@@ -1062,8 +1553,13 @@ static void __devinit pci_bus_slot_names(struct device_node *node,
 	sp = prop->names;
 
 	if (ofpci_verbose)
+<<<<<<< HEAD
 		printk("PCI: Making slots for [%s] mask[0x%02x]\n",
 		       node->full_name, mask);
+=======
+		pci_info(bus, "Making slots for [%pOF] mask[0x%02x]\n",
+			 node, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = 0;
 	while (mask) {
@@ -1076,12 +1572,21 @@ static void __devinit pci_bus_slot_names(struct device_node *node,
 		}
 
 		if (ofpci_verbose)
+<<<<<<< HEAD
 			printk("PCI: Making slot [%s]\n", sp);
 
 		pci_slot = pci_create_slot(bus, i, sp, NULL);
 		if (IS_ERR(pci_slot))
 			printk(KERN_ERR "PCI: pci_create_slot returned %ld\n",
 			       PTR_ERR(pci_slot));
+=======
+			pci_info(bus, "Making slot [%s]\n", sp);
+
+		pci_slot = pci_create_slot(bus, i, sp, NULL);
+		if (IS_ERR(pci_slot))
+			pci_err(bus, "pci_create_slot returned %ld\n",
+				PTR_ERR(pci_slot));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sp += strlen(sp) + 1;
 		mask &= ~this_bit;
@@ -1095,6 +1600,7 @@ static int __init of_pci_slot_init(void)
 
 	while ((pbus = pci_find_next_bus(pbus)) != NULL) {
 		struct device_node *node;
+<<<<<<< HEAD
 
 		if (pbus->self) {
 			/* PCI->PCI bridge */
@@ -1107,10 +1613,39 @@ static int __init of_pci_slot_init(void)
 		}
 
 		pci_bus_slot_names(node, pbus);
+=======
+		struct pci_dev *pdev;
+
+		pdev = list_first_entry(&pbus->devices, struct pci_dev,
+					bus_list);
+
+		if (pdev && pci_is_pcie(pdev)) {
+			pcie_bus_slot_names(pbus);
+		} else {
+
+			if (pbus->self) {
+
+				/* PCI->PCI bridge */
+				node = pbus->self->dev.of_node;
+
+			} else {
+				struct pci_pbm_info *pbm = pbus->sysdata;
+
+				/* Host PCI controller */
+				node = pbm->op->dev.of_node;
+			}
+
+			pci_bus_slot_names(node, pbus);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(of_pci_slot_init);
+=======
+device_initcall(of_pci_slot_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 /* atmdev.h - ATM device driver declarations and various related items */
  
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
  
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* atmdev.h - ATM device driver declarations and various related items */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_ATMDEV_H
 #define LINUX_ATMDEV_H
 
 
+<<<<<<< HEAD
 #include <linux/atmapi.h>
 #include <linux/atm.h>
 #include <linux/atmioc.h>
@@ -213,6 +219,8 @@ struct atm_cirange {
 
 #ifdef __KERNEL__
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/wait.h> /* wait_queue_head_t */
 #include <linux/time.h> /* struct timeval */
 #include <linux/net.h>
@@ -221,6 +229,11 @@ struct atm_cirange {
 #include <linux/uio.h>
 #include <net/sock.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/refcount.h>
+#include <uapi/linux/atmdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PROC_FS
 #include <linux/proc_fs.h>
@@ -308,6 +321,10 @@ struct atm_vcc {
 	struct atm_dev	*dev;		/* device back pointer */
 	struct atm_qos	qos;		/* QOS */
 	struct atm_sap	sap;		/* SAP */
+<<<<<<< HEAD
+=======
+	void (*release_cb)(struct atm_vcc *vcc); /* release_sock callback */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*push)(struct atm_vcc *vcc,struct sk_buff *skb);
 	void (*pop)(struct atm_vcc *vcc,struct sk_buff *skb); /* optional */
 	int (*push_oam)(struct atm_vcc *vcc,void *cell);
@@ -315,6 +332,10 @@ struct atm_vcc {
 	void		*dev_data;	/* per-device data */
 	void		*proto_data;	/* per-protocol data */
 	struct k_atm_aal_stats *stats;	/* pointer to AAL stats group */
+<<<<<<< HEAD
+=======
+	struct module *owner;		/* owner of ->push function */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SVC part --- may move later ------------------------------------- */
 	short		itf;		/* interface number */
 	struct sockaddr_atmsvc local;
@@ -356,7 +377,11 @@ struct atm_dev {
 	const char	*type;		/* device type name */
 	int		number;		/* device index */
 	void		*dev_data;	/* per-device data */
+<<<<<<< HEAD
 	void		*phy_data;	/* private PHY date */
+=======
+	void		*phy_data;	/* private PHY data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	flags;		/* device flags (ATM_DF_*) */
 	struct list_head local;		/* local ATM addresses */
 	struct list_head lecs;		/* LECS ATM addresses learned via ILMI */
@@ -365,7 +390,11 @@ struct atm_dev {
 	struct k_atm_dev_stats stats;	/* statistics */
 	char		signal;		/* signal status (ATM_PHY_SIG_*) */
 	int		link_rate;	/* link rate (default: OC3) */
+<<<<<<< HEAD
 	atomic_t	refcnt;		/* reference count */
+=======
+	refcount_t	refcnt;		/* reference count */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t	lock;		/* protect internal members */
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry *proc_entry; /* proc entry */
@@ -381,11 +410,14 @@ struct atm_dev {
 #define ATM_OF_IMMED  1		/* Attempt immediate delivery */
 #define ATM_OF_INRATE 2		/* Attempt in-rate delivery */
 
+<<<<<<< HEAD
 
 /*
  * ioctl, getsockopt, and setsockopt are optional and can be set to NULL.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct atmdev_ops { /* only send is required */
 	void (*dev_close)(struct atm_dev *dev);
 	int (*open)(struct atm_vcc *vcc);
@@ -395,11 +427,16 @@ struct atmdev_ops { /* only send is required */
 	int (*compat_ioctl)(struct atm_dev *dev,unsigned int cmd,
 			    void __user *arg);
 #endif
+<<<<<<< HEAD
 	int (*getsockopt)(struct atm_vcc *vcc,int level,int optname,
 	    void __user *optval,int optlen);
 	int (*setsockopt)(struct atm_vcc *vcc,int level,int optname,
 	    void __user *optval,unsigned int optlen);
 	int (*send)(struct atm_vcc *vcc,struct sk_buff *skb);
+=======
+	int (*send)(struct atm_vcc *vcc,struct sk_buff *skb);
+	int (*send_bh)(struct atm_vcc *vcc, struct sk_buff *skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*send_oam)(struct atm_vcc *vcc,void *cell,int flags);
 	void (*phy_put)(struct atm_dev *dev,unsigned char value,
 	    unsigned long addr);
@@ -419,7 +456,12 @@ struct atmphy_ops {
 struct atm_skb_data {
 	struct atm_vcc	*vcc;		/* ATM VCC */
 	unsigned long	atm_options;	/* ATM layer options */
+<<<<<<< HEAD
 };
+=======
+	unsigned int	acct_truesize;  /* truesize accounted to vcc */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VCC_HTABLE_SIZE 32
 
@@ -446,6 +488,23 @@ void vcc_insert_socket(struct sock *sk);
 
 void atm_dev_release_vccs(struct atm_dev *dev);
 
+<<<<<<< HEAD
+=======
+static inline void atm_account_tx(struct atm_vcc *vcc, struct sk_buff *skb)
+{
+	/*
+	 * Because ATM skbs may not belong to a sock (and we don't
+	 * necessarily want to), skb->truesize may be adjusted,
+	 * escaping the hack in pskb_expand_head() which avoids
+	 * doing so for some cases. So stash the value of truesize
+	 * at the time we accounted it, and atm_pop_raw() can use
+	 * that value later, in case it changes.
+	 */
+	refcount_add(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc);
+	ATM_SKB(skb)->acct_truesize = skb->truesize;
+	ATM_SKB(skb)->atm_options = vcc->atm_options;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void atm_force_charge(struct atm_vcc *vcc,int truesize)
 {
@@ -461,20 +520,32 @@ static inline void atm_return(struct atm_vcc *vcc,int truesize)
 
 static inline int atm_may_send(struct atm_vcc *vcc,unsigned int size)
 {
+<<<<<<< HEAD
 	return (size + atomic_read(&sk_atm(vcc)->sk_wmem_alloc)) <
+=======
+	return (size + refcount_read(&sk_atm(vcc)->sk_wmem_alloc)) <
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       sk_atm(vcc)->sk_sndbuf;
 }
 
 
 static inline void atm_dev_hold(struct atm_dev *dev)
 {
+<<<<<<< HEAD
 	atomic_inc(&dev->refcnt);
+=======
+	refcount_inc(&dev->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static inline void atm_dev_put(struct atm_dev *dev)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&dev->refcnt)) {
+=======
+	if (refcount_dec_and_test(&dev->refcnt)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!test_bit(ATM_DF_REMOVED, &dev->flags));
 		if (dev->ops->dev_close)
 			dev->ops->dev_close(dev);
@@ -521,6 +592,9 @@ void deregister_atm_ioctl(struct atm_ioctl *);
 int register_atmdevice_notifier(struct notifier_block *nb);
 void unregister_atmdevice_notifier(struct notifier_block *nb);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

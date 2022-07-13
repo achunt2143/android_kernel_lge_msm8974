@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  dialog.h -- common declarations for all dialog modules
  *
  *  AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sys/types.h>
@@ -26,6 +33,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+<<<<<<< HEAD
 #ifndef KBUILD_NO_NLS
 # include <libintl.h>
 #else
@@ -52,6 +60,12 @@
 #else
 #define OLD_NCURSES 0
 #endif
+=======
+#ifdef __sun__
+#define CURS_MACROS
+#endif
+#include <ncurses.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TR(params) _tracef params
 
@@ -106,8 +120,19 @@ struct dialog_color {
 	int hl;		/* highlight this item */
 };
 
+<<<<<<< HEAD
 struct dialog_info {
 	const char *backtitle;
+=======
+struct subtitle_list {
+	struct subtitle_list *next;
+	const char *text;
+};
+
+struct dialog_info {
+	const char *backtitle;
+	struct subtitle_list *subtitles;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dialog_color screen;
 	struct dialog_color shadow;
 	struct dialog_color dialog;
@@ -120,10 +145,13 @@ struct dialog_info {
 	struct dialog_color button_label_active;
 	struct dialog_color button_label_inactive;
 	struct dialog_color inputbox;
+<<<<<<< HEAD
 	struct dialog_color inputbox_border;
 	struct dialog_color searchbox;
 	struct dialog_color searchbox_title;
 	struct dialog_color searchbox_border;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dialog_color position_indicator;
 	struct dialog_color menubox;
 	struct dialog_color menubox_border;
@@ -144,6 +172,10 @@ struct dialog_info {
  */
 extern struct dialog_info dlg;
 extern char dialog_input_result[];
+<<<<<<< HEAD
+=======
+extern int saved_x, saved_y;		/* Needed in signal handler in mconf.c */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function prototypes
@@ -163,7 +195,11 @@ char item_tag(void);
 /* item list manipulation for lxdialog use */
 #define MAXITEMSTR 200
 struct dialog_item {
+<<<<<<< HEAD
 	char str[MAXITEMSTR];	/* promtp displayed */
+=======
+	char str[MAXITEMSTR];	/* prompt displayed */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char tag;
 	void *data;	/* pointer to menu item - used by menubox+checklist */
 	int selected;	/* Set to 1 by dialog_*() function if selected. */
@@ -193,8 +229,28 @@ int item_is_tag(char tag);
 int on_key_esc(WINDOW *win);
 int on_key_resize(void);
 
+<<<<<<< HEAD
 int init_dialog(const char *backtitle);
 void set_dialog_backtitle(const char *backtitle);
+=======
+/* minimum (re)size values */
+#define CHECKLIST_HEIGHT_MIN 6	/* For dialog_checklist() */
+#define CHECKLIST_WIDTH_MIN 6
+#define INPUTBOX_HEIGHT_MIN 2	/* For dialog_inputbox() */
+#define INPUTBOX_WIDTH_MIN 2
+#define MENUBOX_HEIGHT_MIN 15	/* For dialog_menu() */
+#define MENUBOX_WIDTH_MIN 65
+#define TEXTBOX_HEIGHT_MIN 8	/* For dialog_textbox() */
+#define TEXTBOX_WIDTH_MIN 8
+#define YESNO_HEIGHT_MIN 4	/* For dialog_yesno() */
+#define YESNO_WIDTH_MIN 4
+#define WINDOW_HEIGHT_MIN 19	/* For init_dialog() */
+#define WINDOW_WIDTH_MIN 80
+
+int init_dialog(const char *backtitle);
+void set_dialog_backtitle(const char *backtitle);
+void set_dialog_subtitles(struct subtitle_list *subtitles);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void end_dialog(int x, int y);
 void attr_clear(WINDOW * win, int height, int width, chtype attr);
 void dialog_clear(void);
@@ -209,11 +265,18 @@ int first_alpha(const char *string, const char *exempt);
 int dialog_yesno(const char *title, const char *prompt, int height, int width);
 int dialog_msgbox(const char *title, const char *prompt, int height,
 		  int width, int pause);
+<<<<<<< HEAD
 int dialog_textbox(const char *title, const char *file, int height, int width);
+=======
+int dialog_textbox(const char *title, const char *tbuf, int initial_height,
+		   int initial_width, int *_vscroll, int *_hscroll,
+		   int (*extra_key_cb)(int, size_t, size_t, void *), void *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dialog_menu(const char *title, const char *prompt,
 		const void *selected, int *s_scroll);
 int dialog_checklist(const char *title, const char *prompt, int height,
 		     int width, int list_height);
+<<<<<<< HEAD
 extern char dialog_input_result[];
 int dialog_inputbox(const char *title, const char *prompt, int height,
 		    int width, const char *init);
@@ -228,3 +291,7 @@ int dialog_inputbox(const char *title, const char *prompt, int height,
  *   -- uppercase chars are used to invoke the button (M_EVENT + 'O')
  */
 #define M_EVENT (KEY_MAX+1)
+=======
+int dialog_inputbox(const char *title, const char *prompt, int height,
+		    int width, const char *init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

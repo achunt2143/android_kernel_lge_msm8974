@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007-2008 rPath, Inc. - All Rights Reserved
  *
+<<<<<<< HEAD
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -19,6 +26,7 @@
 #include "video.h"
 #include "vesa.h"
 
+<<<<<<< HEAD
 /*
  * Common variables
  */
@@ -26,6 +34,15 @@ int adapter;			/* 0=CGA/MDA/HGC, 1=EGA, 2=VGA+ */
 u16 video_segment;
 int force_x, force_y;	/* Don't query the BIOS for cols/rows */
 
+=======
+#include <uapi/asm/boot.h>
+
+/*
+ * Common variables
+ */
+int adapter;		/* 0=CGA/MDA/HGC, 1=EGA, 2=VGA+ */
+int force_x, force_y;	/* Don't query the BIOS for cols/rows */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int do_restore;		/* Screen contents changed during mode flip */
 int graphic_mode;	/* Graphic mode with linear frame buffer */
 

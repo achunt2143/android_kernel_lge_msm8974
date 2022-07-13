@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE64xx/88SE94xx register IO interface
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -21,6 +26,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 
@@ -160,7 +167,11 @@ static inline void mvs_write_port_irq_mask(struct mvs_info *mvi,
 			MVS_P4_INT_MASK, port, val);
 }
 
+<<<<<<< HEAD
 static inline void __devinit mvs_phy_hacks(struct mvs_info *mvi)
+=======
+static inline void mvs_phy_hacks(struct mvs_info *mvi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 

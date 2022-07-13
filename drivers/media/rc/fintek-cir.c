@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Feature Integration Technology Inc. (aka Fintek) LPC CIR
  *
@@ -6,6 +10,7 @@
  * Special thanks to Fintek for providing hardware and spec sheets.
  * This driver is based upon the nuvoton, ite and ene drivers for
  * similar hardware.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +28,12 @@
  * USA
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pnp.h>
@@ -31,7 +42,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <media/rc-core.h>
+<<<<<<< HEAD
 #include <linux/pci_ids.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fintek-cir.h"
 
@@ -64,6 +78,7 @@ static inline void fintek_set_reg_bit(struct fintek_dev *fintek, u8 val, u8 reg)
 	fintek_cr_write(fintek, tmp, reg);
 }
 
+<<<<<<< HEAD
 /* clear config register bit without changing other bits */
 static inline void fintek_clear_reg_bit(struct fintek_dev *fintek, u8 val, u8 reg)
 {
@@ -71,6 +86,8 @@ static inline void fintek_clear_reg_bit(struct fintek_dev *fintek, u8 val, u8 re
 	fintek_cr_write(fintek, tmp, reg);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* enter config mode */
 static inline void fintek_config_mode_enable(struct fintek_dev *fintek)
 {
@@ -103,6 +120,7 @@ static inline void fintek_cir_reg_write(struct fintek_dev *fintek, u8 val, u8 of
 /* read val from cir config register */
 static u8 fintek_cir_reg_read(struct fintek_dev *fintek, u8 offset)
 {
+<<<<<<< HEAD
 	u8 val;
 
 	val = inb(fintek->cir_addr + offset);
@@ -113,12 +131,18 @@ static u8 fintek_cir_reg_read(struct fintek_dev *fintek, u8 offset)
 #define pr_reg(text, ...) \
 	printk(KERN_INFO KBUILD_MODNAME ": " text, ## __VA_ARGS__)
 
+=======
+	return inb(fintek->cir_addr + offset);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* dump current cir register contents */
 static void cir_dump_regs(struct fintek_dev *fintek)
 {
 	fintek_config_mode_enable(fintek);
 	fintek_select_logical_dev(fintek, fintek->logical_dev_cir);
 
+<<<<<<< HEAD
 	pr_reg("%s: Dump CIR logical device registers:\n", FINTEK_DRIVER_NAME);
 	pr_reg(" * CR CIR BASE ADDR: 0x%x\n",
 	       (fintek_cr_read(fintek, CIR_CR_BASE_ADDR_HI) << 8) |
@@ -134,6 +158,28 @@ static void cir_dump_regs(struct fintek_dev *fintek)
 	pr_reg(" * RX_DATA:    0x%x\n", fintek_cir_reg_read(fintek, CIR_RX_DATA));
 	pr_reg(" * TX_CONTROL: 0x%x\n", fintek_cir_reg_read(fintek, CIR_TX_CONTROL));
 	pr_reg(" * TX_DATA:    0x%x\n", fintek_cir_reg_read(fintek, CIR_TX_DATA));
+=======
+	pr_info("%s: Dump CIR logical device registers:\n", FINTEK_DRIVER_NAME);
+	pr_info(" * CR CIR BASE ADDR: 0x%x\n",
+		(fintek_cr_read(fintek, CIR_CR_BASE_ADDR_HI) << 8) |
+		fintek_cr_read(fintek, CIR_CR_BASE_ADDR_LO));
+	pr_info(" * CR CIR IRQ NUM:   0x%x\n",
+		fintek_cr_read(fintek, CIR_CR_IRQ_SEL));
+
+	fintek_config_mode_disable(fintek);
+
+	pr_info("%s: Dump CIR registers:\n", FINTEK_DRIVER_NAME);
+	pr_info(" * STATUS:     0x%x\n",
+		fintek_cir_reg_read(fintek, CIR_STATUS));
+	pr_info(" * CONTROL:    0x%x\n",
+		fintek_cir_reg_read(fintek, CIR_CONTROL));
+	pr_info(" * RX_DATA:    0x%x\n",
+		fintek_cir_reg_read(fintek, CIR_RX_DATA));
+	pr_info(" * TX_CONTROL: 0x%x\n",
+		fintek_cir_reg_read(fintek, CIR_TX_CONTROL));
+	pr_info(" * TX_DATA:    0x%x\n",
+		fintek_cir_reg_read(fintek, CIR_TX_DATA));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* detect hardware features */
@@ -144,7 +190,10 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 	u8 vendor_major, vendor_minor;
 	u8 portsel, ir_class;
 	u16 vendor, chip;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fintek_config_mode_enable(fintek);
 
@@ -204,7 +253,11 @@ static int fintek_hw_detect(struct fintek_dev *fintek)
 
 	spin_unlock_irqrestore(&fintek->fintek_lock, flags);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fintek_cir_ldev_init(struct fintek_dev *fintek)
@@ -289,8 +342,14 @@ static int fintek_cmdsize(u8 cmd, u8 subcmd)
 /* process ir data stored in driver buffer */
 static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 {
+<<<<<<< HEAD
 	DEFINE_IR_RAW_EVENT(rawir);
 	u8 sample;
+=======
+	struct ir_raw_event rawir = {};
+	u8 sample;
+	bool event = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < fintek->pkts; i++) {
@@ -309,7 +368,11 @@ static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 			if (fintek->rem)
 				fintek->parser_state = PARSE_IRDATA;
 			else
+<<<<<<< HEAD
 				ir_raw_event_reset(fintek->rdev);
+=======
+				ir_raw_event_overflow(fintek->rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SUBCMD:
 			fintek->rem = fintek_cmdsize(fintek->cmd, sample);
@@ -320,15 +383,27 @@ static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 			break;
 		case PARSE_IRDATA:
 			fintek->rem--;
+<<<<<<< HEAD
 			init_ir_raw_event(&rawir);
 			rawir.pulse = ((sample & BUF_PULSE_BIT) != 0);
 			rawir.duration = US_TO_NS((sample & BUF_SAMPLE_MASK)
 					  * CIR_SAMPLE_PERIOD);
+=======
+			rawir.pulse = ((sample & BUF_PULSE_BIT) != 0);
+			rawir.duration = (sample & BUF_SAMPLE_MASK)
+					  * CIR_SAMPLE_PERIOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			fit_dbg("Storing %s with duration %d",
 				rawir.pulse ? "pulse" : "space",
 				rawir.duration);
+<<<<<<< HEAD
 			ir_raw_event_store_with_filter(fintek->rdev, &rawir);
+=======
+			if (ir_raw_event_store_with_filter(fintek->rdev,
+									&rawir))
+				event = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -338,8 +413,15 @@ static void fintek_process_rx_ir_data(struct fintek_dev *fintek)
 
 	fintek->pkts = 0;
 
+<<<<<<< HEAD
 	fit_dbg("Calling ir_raw_event_handle");
 	ir_raw_event_handle(fintek->rdev);
+=======
+	if (event) {
+		fit_dbg("Calling ir_raw_event_handle");
+		ir_raw_event_handle(fintek->rdev);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* copy data from hardware rx register into driver buffer */
@@ -489,20 +571,34 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 		return ret;
 
 	/* input device for IR remote (and tx) */
+<<<<<<< HEAD
 	rdev = rc_allocate_device();
 	if (!rdev)
 		goto failure;
+=======
+	rdev = rc_allocate_device(RC_DRIVER_IR_RAW);
+	if (!rdev)
+		goto exit_free_dev_rdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = -ENODEV;
 	/* validate pnp resources */
 	if (!pnp_port_valid(pdev, 0)) {
 		dev_err(&pdev->dev, "IR PNP Port not valid!\n");
+<<<<<<< HEAD
 		goto failure;
+=======
+		goto exit_free_dev_rdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pnp_irq_valid(pdev, 0)) {
 		dev_err(&pdev->dev, "IR PNP IRQ not valid!\n");
+<<<<<<< HEAD
 		goto failure;
+=======
+		goto exit_free_dev_rdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	fintek->cir_addr = pnp_port_start(pdev, 0);
@@ -519,7 +615,11 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 
 	ret = fintek_hw_detect(fintek);
 	if (ret)
+<<<<<<< HEAD
 		goto failure;
+=======
+		goto exit_free_dev_rdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize CIR & CIR Wake Logical Devices */
 	fintek_config_mode_enable(fintek);
@@ -531,11 +631,18 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 
 	/* Set up the rc device */
 	rdev->priv = fintek;
+<<<<<<< HEAD
 	rdev->driver_type = RC_DRIVER_IR_RAW;
 	rdev->allowed_protos = RC_TYPE_ALL;
 	rdev->open = fintek_open;
 	rdev->close = fintek_close;
 	rdev->input_name = FINTEK_DESCRIPTION;
+=======
+	rdev->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
+	rdev->open = fintek_open;
+	rdev->close = fintek_close;
+	rdev->device_name = FINTEK_DESCRIPTION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->input_phys = "fintek/cir0";
 	rdev->input_id.bustype = BUS_HOST;
 	rdev->input_id.vendor = VENDOR_ID_FINTEK;
@@ -544,14 +651,23 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 	rdev->dev.parent = &pdev->dev;
 	rdev->driver_name = FINTEK_DRIVER_NAME;
 	rdev->map_name = RC_MAP_RC6_MCE;
+<<<<<<< HEAD
 	rdev->timeout = US_TO_NS(1000);
 	/* rx resolution is hardwired to 50us atm, 1, 25, 100 also possible */
 	rdev->rx_resolution = US_TO_NS(CIR_SAMPLE_PERIOD);
+=======
+	rdev->timeout = 1000;
+	/* rx resolution is hardwired to 50us atm, 1, 25, 100 also possible */
+	rdev->rx_resolution = CIR_SAMPLE_PERIOD;
+
+	fintek->rdev = rdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = -EBUSY;
 	/* now claim resources */
 	if (!request_region(fintek->cir_addr,
 			    fintek->cir_port_len, FINTEK_DRIVER_NAME))
+<<<<<<< HEAD
 		goto failure;
 
 	if (request_irq(fintek->cir_irq, fintek_cir_isr, IRQF_SHARED,
@@ -564,25 +680,51 @@ static int fintek_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id
 
 	device_init_wakeup(&pdev->dev, true);
 	fintek->rdev = rdev;
+=======
+		goto exit_free_dev_rdev;
+
+	if (request_irq(fintek->cir_irq, fintek_cir_isr, IRQF_SHARED,
+			FINTEK_DRIVER_NAME, (void *)fintek))
+		goto exit_free_cir_addr;
+
+	ret = rc_register_device(rdev);
+	if (ret)
+		goto exit_free_irq;
+
+	device_init_wakeup(&pdev->dev, true);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fit_pr(KERN_NOTICE, "driver has been successfully loaded\n");
 	if (debug)
 		cir_dump_regs(fintek);
 
 	return 0;
 
+<<<<<<< HEAD
 failure:
 	if (fintek->cir_irq)
 		free_irq(fintek->cir_irq, fintek);
 	if (fintek->cir_addr)
 		release_region(fintek->cir_addr, fintek->cir_port_len);
 
+=======
+exit_free_irq:
+	free_irq(fintek->cir_irq, fintek);
+exit_free_cir_addr:
+	release_region(fintek->cir_addr, fintek->cir_port_len);
+exit_free_dev_rdev:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc_free_device(rdev);
 	kfree(fintek);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit fintek_remove(struct pnp_dev *pdev)
+=======
+static void fintek_remove(struct pnp_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fintek_dev *fintek = pnp_get_drvdata(pdev);
 	unsigned long flags;
@@ -634,7 +776,10 @@ static int fintek_suspend(struct pnp_dev *pdev, pm_message_t state)
 
 static int fintek_resume(struct pnp_dev *pdev)
 {
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fintek_dev *fintek = pnp_get_drvdata(pdev);
 
 	fit_dbg("%s called", __func__);
@@ -651,7 +796,11 @@ static int fintek_resume(struct pnp_dev *pdev)
 
 	fintek_cir_regs_init(fintek);
 
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fintek_shutdown(struct pnp_dev *pdev)
@@ -670,12 +819,17 @@ static struct pnp_driver fintek_driver = {
 	.id_table	= fintek_ids,
 	.flags		= PNP_DRIVER_RES_DO_NOT_CHANGE,
 	.probe		= fintek_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(fintek_remove),
+=======
+	.remove		= fintek_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= fintek_suspend,
 	.resume		= fintek_resume,
 	.shutdown	= fintek_shutdown,
 };
 
+<<<<<<< HEAD
 int fintek_init(void)
 {
 	return pnp_register_driver(&fintek_driver);
@@ -686,6 +840,8 @@ void fintek_exit(void)
 	pnp_unregister_driver(&fintek_driver);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(debug, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Enable debugging output");
 
@@ -695,5 +851,9 @@ MODULE_DESCRIPTION(FINTEK_DESCRIPTION " driver");
 MODULE_AUTHOR("Jarod Wilson <jarod@redhat.com>");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(fintek_init);
 module_exit(fintek_exit);
+=======
+module_pnp_driver(fintek_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

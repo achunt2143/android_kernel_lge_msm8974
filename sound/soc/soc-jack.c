@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * soc-jack.c  --  ALSA SoC jack handling
  *
@@ -10,14 +11,28 @@
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// soc-jack.c  --  ALSA SoC jack handling
+//
+// Copyright 2008 Wolfson Microelectronics PLC.
+//
+// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/jack.h>
 #include <sound/soc.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
 #include <linux/delay.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <trace/events/asoc.h>
 
 /**
@@ -47,6 +62,12 @@ int snd_soc_jack_new(struct snd_soc_codec *codec, const char *id, int type,
 EXPORT_SYMBOL_GPL(snd_soc_jack_new);
 
 /**
+=======
+#include <linux/suspend.h>
+#include <trace/events/asoc.h>
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_soc_jack_report - Report the current status for a jack
  *
  * @jack:   the jack
@@ -62,6 +83,7 @@ EXPORT_SYMBOL_GPL(snd_soc_jack_new);
  */
 void snd_soc_jack_report(struct snd_soc_jack *jack, int status, int mask)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	struct snd_soc_dapm_context *dapm;
 	struct snd_soc_jack_pin *pin;
@@ -92,6 +114,27 @@ void snd_soc_jack_report(struct snd_soc_jack *jack, int status, int mask)
 
 	list_for_each_entry(pin, &jack->pins, list) {
 		enable = pin->mask & jack->status;
+=======
+	struct snd_soc_dapm_context *dapm;
+	struct snd_soc_jack_pin *pin;
+	unsigned int sync = 0;
+
+	if (!jack || !jack->jack)
+		return;
+	trace_snd_soc_jack_report(jack, mask, status);
+
+	dapm = &jack->card->dapm;
+
+	mutex_lock(&jack->mutex);
+
+	jack->status &= ~mask;
+	jack->status |= status & mask;
+
+	trace_snd_soc_jack_notify(jack, status);
+
+	list_for_each_entry(pin, &jack->pins, list) {
+		int enable = pin->mask & jack->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pin->invert)
 			enable = !enable;
@@ -100,6 +143,7 @@ void snd_soc_jack_report(struct snd_soc_jack *jack, int status, int mask)
 			snd_soc_dapm_enable_pin(dapm, pin->pin);
 		else
 			snd_soc_dapm_disable_pin(dapm, pin->pin);
+<<<<<<< HEAD
 	}
 
 	/* Report before the DAPM sync to help users updating micbias status */
@@ -110,11 +154,27 @@ void snd_soc_jack_report(struct snd_soc_jack *jack, int status, int mask)
 	snd_jack_report(jack->jack, jack->status);
 
 out:
+=======
+
+		/* we need to sync for this case only */
+		sync = 1;
+	}
+
+	/* Report before the DAPM sync to help users updating micbias status */
+	blocking_notifier_call_chain(&jack->notifier, jack->status, jack);
+
+	if (sync)
+		snd_soc_dapm_sync(dapm);
+
+	snd_jack_report(jack->jack, jack->status);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&jack->mutex);
 }
 EXPORT_SYMBOL_GPL(snd_soc_jack_report);
 
 /**
+<<<<<<< HEAD
  * snd_soc_jack_report_no_dapm - Report the current status for a jack
  *				 without DAPM sync
  * @jack:   the jack
@@ -132,11 +192,17 @@ void snd_soc_jack_report_no_dapm(struct snd_soc_jack *jack, int status,
 EXPORT_SYMBOL_GPL(snd_soc_jack_report_no_dapm);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_soc_jack_add_zones - Associate voltage zones with jack
  *
  * @jack:  ASoC jack
  * @count: Number of zones
+<<<<<<< HEAD
  * @zone:  Array of zones
+=======
+ * @zones:  Array of zones
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * After this function has been called the zones specified in the
  * array will be associated with the jack.
@@ -156,12 +222,22 @@ EXPORT_SYMBOL_GPL(snd_soc_jack_add_zones);
 
 /**
  * snd_soc_jack_get_type - Based on the mic bias value, this function returns
+<<<<<<< HEAD
  * the type of jack from the zones delcared in the jack type
  *
  * @micbias_voltage:  mic bias voltage at adc channel when jack is plugged in
  *
  * Based on the mic bias value passed, this function helps identify
  * the type of jack from the already delcared jack zones
+=======
+ * the type of jack from the zones declared in the jack type
+ *
+ * @jack:  ASoC jack
+ * @micbias_voltage:  mic bias voltage at adc channel when jack is plugged in
+ *
+ * Based on the mic bias value passed, this function helps identify
+ * the type of jack from the already declared jack zones
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_soc_jack_get_type(struct snd_soc_jack *jack, int micbias_voltage)
 {
@@ -179,7 +255,11 @@ EXPORT_SYMBOL_GPL(snd_soc_jack_get_type);
 /**
  * snd_soc_jack_add_pins - Associate DAPM pins with an ASoC jack
  *
+<<<<<<< HEAD
  * @jack:  ASoC jack
+=======
+ * @jack:  ASoC jack created with snd_soc_card_jack_new_pins()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count: Number of pins
  * @pins:  Array of pins
  *
@@ -194,21 +274,37 @@ int snd_soc_jack_add_pins(struct snd_soc_jack *jack, int count,
 
 	for (i = 0; i < count; i++) {
 		if (!pins[i].pin) {
+<<<<<<< HEAD
 			printk(KERN_ERR "No name for pin %d\n", i);
 			return -EINVAL;
 		}
 		if (!pins[i].mask) {
 			printk(KERN_ERR "No mask for pin %d (%s)\n", i,
 			       pins[i].pin);
+=======
+			dev_err(jack->card->dev, "ASoC: No name for pin %d\n",
+				i);
+			return -EINVAL;
+		}
+		if (!pins[i].mask) {
+			dev_err(jack->card->dev, "ASoC: No mask for pin %d"
+				" (%s)\n", i, pins[i].pin);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
 		INIT_LIST_HEAD(&pins[i].list);
 		list_add(&(pins[i].list), &jack->pins);
+<<<<<<< HEAD
 	}
 
 	snd_soc_dapm_new_widgets(&jack->codec->card->dapm);
 
+=======
+		snd_jack_add_new_kctl(jack->jack, pins[i].pin, pins[i].mask);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Update to reflect the last reported status; canned jack
 	 * implementations are likely to set their state before the
 	 * card has an opportunity to associate pins.
@@ -254,6 +350,15 @@ void snd_soc_jack_notifier_unregister(struct snd_soc_jack *jack,
 EXPORT_SYMBOL_GPL(snd_soc_jack_notifier_unregister);
 
 #ifdef CONFIG_GPIOLIB
+<<<<<<< HEAD
+=======
+struct jack_gpio_tbl {
+	int count;
+	struct snd_soc_jack *jack;
+	struct snd_soc_jack_gpio *gpios;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* gpio detect */
 static void snd_soc_jack_gpio_detect(struct snd_soc_jack_gpio *gpio)
 {
@@ -261,7 +366,11 @@ static void snd_soc_jack_gpio_detect(struct snd_soc_jack_gpio *gpio)
 	int enable;
 	int report;
 
+<<<<<<< HEAD
 	enable = gpio_get_value_cansleep(gpio->gpio);
+=======
+	enable = gpiod_get_value_cansleep(gpio->desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gpio->invert)
 		enable = !enable;
 
@@ -271,7 +380,11 @@ static void snd_soc_jack_gpio_detect(struct snd_soc_jack_gpio *gpio)
 		report = 0;
 
 	if (gpio->jack_status_check)
+<<<<<<< HEAD
 		report = gpio->jack_status_check();
+=======
+		report = gpio->jack_status_check(gpio->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_soc_jack_report(jack, report, gpio->report);
 }
@@ -280,14 +393,22 @@ static void snd_soc_jack_gpio_detect(struct snd_soc_jack_gpio *gpio)
 static irqreturn_t gpio_handler(int irq, void *data)
 {
 	struct snd_soc_jack_gpio *gpio = data;
+<<<<<<< HEAD
 	struct device *dev = gpio->jack->codec->card->dev;
+=======
+	struct device *dev = gpio->jack->card->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_snd_soc_jack_irq(gpio->name);
 
 	if (device_may_wakeup(dev))
 		pm_wakeup_event(dev, gpio->debounce_time + 50);
 
+<<<<<<< HEAD
 	schedule_delayed_work(&gpio->work,
+=======
+	queue_delayed_work(system_power_efficient_wq, &gpio->work,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      msecs_to_jiffies(gpio->debounce_time));
 
 	return IRQ_HANDLED;
@@ -302,6 +423,52 @@ static void gpio_work(struct work_struct *work)
 	snd_soc_jack_gpio_detect(gpio);
 }
 
+<<<<<<< HEAD
+=======
+static int snd_soc_jack_pm_notifier(struct notifier_block *nb,
+				    unsigned long action, void *data)
+{
+	struct snd_soc_jack_gpio *gpio =
+			container_of(nb, struct snd_soc_jack_gpio, pm_notifier);
+
+	switch (action) {
+	case PM_POST_SUSPEND:
+	case PM_POST_HIBERNATION:
+	case PM_POST_RESTORE:
+		/*
+		 * Use workqueue so we do not have to care about running
+		 * concurrently with work triggered by the interrupt handler.
+		 */
+		queue_delayed_work(system_power_efficient_wq, &gpio->work, 0);
+		break;
+	}
+
+	return NOTIFY_DONE;
+}
+
+static void jack_free_gpios(struct snd_soc_jack *jack, int count,
+			    struct snd_soc_jack_gpio *gpios)
+{
+	int i;
+
+	for (i = 0; i < count; i++) {
+		gpiod_unexport(gpios[i].desc);
+		unregister_pm_notifier(&gpios[i].pm_notifier);
+		free_irq(gpiod_to_irq(gpios[i].desc), &gpios[i]);
+		cancel_delayed_work_sync(&gpios[i].work);
+		gpiod_put(gpios[i].desc);
+		gpios[i].jack = NULL;
+	}
+}
+
+static void jack_devres_free_gpios(struct device *dev, void *res)
+{
+	struct jack_gpio_tbl *tbl = res;
+
+	jack_free_gpios(tbl->jack, tbl->count, tbl->gpios);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_soc_jack_add_gpios - Associate GPIO pins with an ASoC jack
  *
@@ -316,6 +483,7 @@ int snd_soc_jack_add_gpios(struct snd_soc_jack *jack, int count,
 			struct snd_soc_jack_gpio *gpios)
 {
 	int i, ret;
+<<<<<<< HEAD
 
 	for (i = 0; i < count; i++) {
 		if (!gpio_is_valid(gpios[i].gpio)) {
@@ -327,10 +495,26 @@ int snd_soc_jack_add_gpios(struct snd_soc_jack *jack, int count,
 		if (!gpios[i].name) {
 			printk(KERN_ERR "No name for gpio %d\n",
 				gpios[i].gpio);
+=======
+	struct jack_gpio_tbl *tbl;
+
+	tbl = devres_alloc(jack_devres_free_gpios, sizeof(*tbl), GFP_KERNEL);
+	if (!tbl)
+		return -ENOMEM;
+	tbl->jack = jack;
+	tbl->count = count;
+	tbl->gpios = gpios;
+
+	for (i = 0; i < count; i++) {
+		if (!gpios[i].name) {
+			dev_err(jack->card->dev,
+				"ASoC: No name for gpio at index %d\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EINVAL;
 			goto undo;
 		}
 
+<<<<<<< HEAD
 		ret = gpio_request(gpios[i].gpio, gpios[i].name);
 		if (ret)
 			goto undo;
@@ -344,6 +528,47 @@ int snd_soc_jack_add_gpios(struct snd_soc_jack *jack, int count,
 
 		ret = request_any_context_irq(gpio_to_irq(gpios[i].gpio),
 					      gpio_handler,
+=======
+		if (gpios[i].desc) {
+			/* Already have a GPIO descriptor. */
+			goto got_gpio;
+		} else if (gpios[i].gpiod_dev) {
+			/* Get a GPIO descriptor */
+			gpios[i].desc = gpiod_get_index(gpios[i].gpiod_dev,
+							gpios[i].name,
+							gpios[i].idx, GPIOD_IN);
+			if (IS_ERR(gpios[i].desc)) {
+				ret = PTR_ERR(gpios[i].desc);
+				dev_err(gpios[i].gpiod_dev,
+					"ASoC: Cannot get gpio at index %d: %d",
+					i, ret);
+				goto undo;
+			}
+		} else {
+			/* legacy GPIO number */
+			if (!gpio_is_valid(gpios[i].gpio)) {
+				dev_err(jack->card->dev,
+					"ASoC: Invalid gpio %d\n",
+					gpios[i].gpio);
+				ret = -EINVAL;
+				goto undo;
+			}
+
+			ret = gpio_request_one(gpios[i].gpio, GPIOF_IN,
+					       gpios[i].name);
+			if (ret)
+				goto undo;
+
+			gpios[i].desc = gpio_to_desc(gpios[i].gpio);
+		}
+got_gpio:
+		INIT_DELAYED_WORK(&gpios[i].work, gpio_work);
+		gpios[i].jack = jack;
+
+		ret = request_any_context_irq(gpiod_to_irq(gpios[i].desc),
+					      gpio_handler,
+					      IRQF_SHARED |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      IRQF_TRIGGER_RISING |
 					      IRQF_TRIGGER_FALLING,
 					      gpios[i].name,
@@ -352,6 +577,7 @@ int snd_soc_jack_add_gpios(struct snd_soc_jack *jack, int count,
 			goto err;
 
 		if (gpios[i].wake) {
+<<<<<<< HEAD
 			ret = irq_set_irq_wake(gpio_to_irq(gpios[i].gpio), 1);
 			if (ret != 0)
 				printk(KERN_ERR
@@ -366,18 +592,75 @@ int snd_soc_jack_add_gpios(struct snd_soc_jack *jack, int count,
 		snd_soc_jack_gpio_detect(&gpios[i]);
 	}
 
+=======
+			ret = irq_set_irq_wake(gpiod_to_irq(gpios[i].desc), 1);
+			if (ret != 0)
+				dev_err(jack->card->dev,
+					"ASoC: Failed to mark GPIO at index %d as wake source: %d\n",
+					i, ret);
+		}
+
+		/*
+		 * Register PM notifier so we do not miss state transitions
+		 * happening while system is asleep.
+		 */
+		gpios[i].pm_notifier.notifier_call = snd_soc_jack_pm_notifier;
+		register_pm_notifier(&gpios[i].pm_notifier);
+
+		/* Expose GPIO value over sysfs for diagnostic purposes */
+		gpiod_export(gpios[i].desc, false);
+
+		/* Update initial jack status */
+		schedule_delayed_work(&gpios[i].work,
+				      msecs_to_jiffies(gpios[i].debounce_time));
+	}
+
+	devres_add(jack->card->dev, tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err:
 	gpio_free(gpios[i].gpio);
 undo:
+<<<<<<< HEAD
 	snd_soc_jack_free_gpios(jack, i, gpios);
+=======
+	jack_free_gpios(jack, i, gpios);
+	devres_free(tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_soc_jack_add_gpios);
 
 /**
+<<<<<<< HEAD
+=======
+ * snd_soc_jack_add_gpiods - Associate GPIO descriptor pins with an ASoC jack
+ *
+ * @gpiod_dev: GPIO consumer device
+ * @jack:      ASoC jack
+ * @count:     number of pins
+ * @gpios:     array of gpio pins
+ *
+ * This function will request gpio, set data direction and request irq
+ * for each gpio in the array.
+ */
+int snd_soc_jack_add_gpiods(struct device *gpiod_dev,
+			    struct snd_soc_jack *jack,
+			    int count, struct snd_soc_jack_gpio *gpios)
+{
+	int i;
+
+	for (i = 0; i < count; i++)
+		gpios[i].gpiod_dev = gpiod_dev;
+
+	return snd_soc_jack_add_gpios(jack, count, gpios);
+}
+EXPORT_SYMBOL_GPL(snd_soc_jack_add_gpiods);
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_soc_jack_free_gpios - Release GPIO pins' resources of an ASoC jack
  *
  * @jack:  ASoC jack
@@ -389,6 +672,7 @@ EXPORT_SYMBOL_GPL(snd_soc_jack_add_gpios);
 void snd_soc_jack_free_gpios(struct snd_soc_jack *jack, int count,
 			struct snd_soc_jack_gpio *gpios)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < count; i++) {
@@ -398,6 +682,10 @@ void snd_soc_jack_free_gpios(struct snd_soc_jack *jack, int count,
 		gpio_free(gpios[i].gpio);
 		gpios[i].jack = NULL;
 	}
+=======
+	jack_free_gpios(jack, count, gpios);
+	devres_destroy(jack->card->dev, jack_devres_free_gpios, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(snd_soc_jack_free_gpios);
 #endif	/* CONFIG_GPIOLIB */

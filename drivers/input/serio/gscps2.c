@@ -31,7 +31,10 @@
 #include <linux/spinlock.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/pci_ids.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 #include <asm/io.h>
@@ -40,7 +43,10 @@
 MODULE_AUTHOR("Laurent Canet <canetl@esiee.fr>, Thibaut Varene <varenet@parisc-linux.org>, Helge Deller <deller@gmx.de>");
 MODULE_DESCRIPTION("HP GSC PS2 port driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(parisc, gscps2_device_tbl);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PFX "gscps2.c: "
 
@@ -93,7 +99,11 @@ struct gscps2port {
 	struct parisc_device *padev;
 	struct serio *port;
 	spinlock_t lock;
+<<<<<<< HEAD
 	char *addr;
+=======
+	char __iomem *addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 act, append; /* position in buffer[] */
 	struct {
 		u8 data;
@@ -116,7 +126,11 @@ struct gscps2port {
  * wait_TBE() - wait for Transmit Buffer Empty
  */
 
+<<<<<<< HEAD
 static int wait_TBE(char *addr)
+=======
+static int wait_TBE(char __iomem *addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timeout = 25000; /* device is expected to react within 250 msec */
 	while (gscps2_readb_status(addr) & GSC_STAT_TBNE) {
@@ -148,14 +162,22 @@ static void gscps2_flush(struct gscps2port *ps2port)
 static inline int gscps2_writeb_output(struct gscps2port *ps2port, u8 data)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	char *addr = ps2port->addr;
+=======
+	char __iomem *addr = ps2port->addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!wait_TBE(addr)) {
 		printk(KERN_DEBUG PFX "timeout - could not write byte %#x\n", data);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	while (gscps2_readb_status(ps2port->addr) & GSC_STAT_RBNE)
+=======
+	while (gscps2_readb_status(addr) & GSC_STAT_RBNE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* wait */;
 
 	spin_lock_irqsave(&ps2port->lock, flags);
@@ -202,13 +224,20 @@ static void gscps2_enable(struct gscps2port *ps2port, int enable)
 
 static void gscps2_reset(struct gscps2port *ps2port)
 {
+<<<<<<< HEAD
 	char *addr = ps2port->addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/* reset the interface */
 	spin_lock_irqsave(&ps2port->lock, flags);
 	gscps2_flush(ps2port);
+<<<<<<< HEAD
 	writeb(0xff, addr+GSC_RESET);
+=======
+	writeb(0xff, ps2port->addr + GSC_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gscps2_flush(ps2port);
 	spin_unlock_irqrestore(&ps2port->lock, flags);
 }
@@ -327,7 +356,11 @@ static void gscps2_close(struct serio *port)
  * @return: success/error report
  */
 
+<<<<<<< HEAD
 static int __devinit gscps2_probe(struct parisc_device *dev)
+=======
+static int __init gscps2_probe(struct parisc_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gscps2port *ps2port;
 	struct serio *serio;
@@ -352,7 +385,15 @@ static int __devinit gscps2_probe(struct parisc_device *dev)
 
 	ps2port->port = serio;
 	ps2port->padev = dev;
+<<<<<<< HEAD
 	ps2port->addr = ioremap_nocache(hpa, GSC_STATUS + 4);
+=======
+	ps2port->addr = ioremap(hpa, GSC_STATUS + 4);
+	if (!ps2port->addr) {
+		ret = -ENOMEM;
+		goto fail_nomem;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&ps2port->lock);
 
 	gscps2_reset(ps2port);
@@ -360,7 +401,11 @@ static int __devinit gscps2_probe(struct parisc_device *dev)
 
 	snprintf(serio->name, sizeof(serio->name), "gsc-ps2-%s",
 		 (ps2port->id == GSC_ID_KEYBOARD) ? "keyboard" : "mouse");
+<<<<<<< HEAD
 	strlcpy(serio->phys, dev_name(&dev->dev), sizeof(serio->phys));
+=======
+	strscpy(serio->phys, dev_name(&dev->dev), sizeof(serio->phys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->id.type		= SERIO_8042;
 	serio->write		= gscps2_write;
 	serio->open		= gscps2_open;
@@ -384,9 +429,15 @@ static int __devinit gscps2_probe(struct parisc_device *dev)
 		goto fail;
 #endif
 
+<<<<<<< HEAD
 	printk(KERN_INFO "serio: %s port at 0x%p irq %d @ %s\n",
 		ps2port->port->name,
 		ps2port->addr,
+=======
+	pr_info("serio: %s port at 0x%08lx irq %d @ %s\n",
+		ps2port->port->name,
+		hpa,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ps2port->padev->irq,
 		ps2port->port->phys);
 
@@ -414,7 +465,11 @@ fail_nomem:
  * @return: success/error report
  */
 
+<<<<<<< HEAD
 static int __devexit gscps2_remove(struct parisc_device *dev)
+=======
+static void __exit gscps2_remove(struct parisc_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gscps2port *ps2port = dev_get_drvdata(&dev->dev);
 
@@ -428,23 +483,40 @@ static int __devexit gscps2_remove(struct parisc_device *dev)
 #endif
 	dev_set_drvdata(&dev->dev, NULL);
 	kfree(ps2port);
+<<<<<<< HEAD
 	return 0;
 }
 
 
 static struct parisc_device_id gscps2_device_tbl[] = {
+=======
+}
+
+
+static const struct parisc_device_id gscps2_device_tbl[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00084 }, /* LASI PS/2 */
 #ifdef DINO_TESTED
 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00096 }, /* DINO PS/2 */
 #endif
 	{ 0, }	/* 0 terminated list */
 };
+<<<<<<< HEAD
 
 static struct parisc_driver parisc_ps2_driver = {
 	.name		= "gsc_ps2",
 	.id_table	= gscps2_device_tbl,
 	.probe		= gscps2_probe,
 	.remove		= __devexit_p(gscps2_remove),
+=======
+MODULE_DEVICE_TABLE(parisc, gscps2_device_tbl);
+
+static struct parisc_driver parisc_ps2_driver __refdata = {
+	.name		= "gsc_ps2",
+	.id_table	= gscps2_device_tbl,
+	.probe		= gscps2_probe,
+	.remove		= __exit_p(gscps2_remove),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init gscps2_init(void)

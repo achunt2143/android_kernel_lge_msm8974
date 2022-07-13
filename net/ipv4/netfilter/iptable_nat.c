@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
  * (C) 2011 Patrick McHardy <kaber@trash.net>
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* (C) 1999-2001 Paul `Rusty' Russell
+ * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
+ * (C) 2011 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -15,8 +22,17 @@
 #include <net/ip.h>
 
 #include <net/netfilter/nf_nat.h>
+<<<<<<< HEAD
 #include <net/netfilter/nf_nat_core.h>
 #include <net/netfilter/nf_nat_l3proto.h>
+=======
+
+struct iptable_nat_pernet {
+	struct nf_hook_ops *nf_nat_ops;
+};
+
+static unsigned int iptable_nat_net_id __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct xt_table nf_nat_ipv4_table = {
 	.name		= "nat",
@@ -28,6 +44,7 @@ static const struct xt_table nf_nat_ipv4_table = {
 	.af		= NFPROTO_IPV4,
 };
 
+<<<<<<< HEAD
 static unsigned int alloc_null_binding(struct nf_conn *ct, unsigned int hooknum)
 {
 	/* Force range to this IP; let proto decide mapping for
@@ -244,62 +261,169 @@ static struct nf_hook_ops nf_nat_ipv4_ops[] __read_mostly = {
 	{
 		.hook		= nf_nat_ipv4_in,
 		.owner		= THIS_MODULE,
+=======
+static const struct nf_hook_ops nf_nat_ipv4_ops[] = {
+	{
+		.hook		= ipt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
+<<<<<<< HEAD
 	/* After packet filtering, change source */
 	{
 		.hook		= nf_nat_ipv4_out,
 		.owner		= THIS_MODULE,
+=======
+	{
+		.hook		= ipt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_POST_ROUTING,
 		.priority	= NF_IP_PRI_NAT_SRC,
 	},
+<<<<<<< HEAD
 	/* Before packet filtering, change destination */
 	{
 		.hook		= nf_nat_ipv4_local_fn,
 		.owner		= THIS_MODULE,
+=======
+	{
+		.hook		= ipt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_LOCAL_OUT,
 		.priority	= NF_IP_PRI_NAT_DST,
 	},
+<<<<<<< HEAD
 	/* After packet filtering, change source */
 	{
 		.hook		= nf_nat_ipv4_fn,
 		.owner		= THIS_MODULE,
+=======
+	{
+		.hook		= ipt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_IPV4,
 		.hooknum	= NF_INET_LOCAL_IN,
 		.priority	= NF_IP_PRI_NAT_SRC,
 	},
 };
 
+<<<<<<< HEAD
 static int __net_init iptable_nat_net_init(struct net *net)
 {
 	struct ipt_replace *repl;
+=======
+static int ipt_nat_register_lookups(struct net *net)
+{
+	struct iptable_nat_pernet *xt_nat_net;
+	struct nf_hook_ops *ops;
+	struct xt_table *table;
+	int i, ret;
+
+	xt_nat_net = net_generic(net, iptable_nat_net_id);
+	table = xt_find_table(net, NFPROTO_IPV4, "nat");
+	if (WARN_ON_ONCE(!table))
+		return -ENOENT;
+
+	ops = kmemdup(nf_nat_ipv4_ops, sizeof(nf_nat_ipv4_ops), GFP_KERNEL);
+	if (!ops)
+		return -ENOMEM;
+
+	for (i = 0; i < ARRAY_SIZE(nf_nat_ipv4_ops); i++) {
+		ops[i].priv = table;
+		ret = nf_nat_ipv4_register_fn(net, &ops[i]);
+		if (ret) {
+			while (i)
+				nf_nat_ipv4_unregister_fn(net, &ops[--i]);
+
+			kfree(ops);
+			return ret;
+		}
+	}
+
+	xt_nat_net->nf_nat_ops = ops;
+	return 0;
+}
+
+static void ipt_nat_unregister_lookups(struct net *net)
+{
+	struct iptable_nat_pernet *xt_nat_net = net_generic(net, iptable_nat_net_id);
+	struct nf_hook_ops *ops = xt_nat_net->nf_nat_ops;
+	int i;
+
+	if (!ops)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(nf_nat_ipv4_ops); i++)
+		nf_nat_ipv4_unregister_fn(net, &ops[i]);
+
+	kfree(ops);
+}
+
+static int iptable_nat_table_init(struct net *net)
+{
+	struct ipt_replace *repl;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	repl = ipt_alloc_initial_table(&nf_nat_ipv4_table);
 	if (repl == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	net->ipv4.nat_table = ipt_register_table(net, &nf_nat_ipv4_table, repl);
 	kfree(repl);
 	if (IS_ERR(net->ipv4.nat_table))
 		return PTR_ERR(net->ipv4.nat_table);
 	return 0;
+=======
+
+	ret = ipt_register_table(net, &nf_nat_ipv4_table, repl, NULL);
+	if (ret < 0) {
+		kfree(repl);
+		return ret;
+	}
+
+	ret = ipt_nat_register_lookups(net);
+	if (ret < 0)
+		ipt_unregister_table_exit(net, "nat");
+
+	kfree(repl);
+	return ret;
+}
+
+static void __net_exit iptable_nat_net_pre_exit(struct net *net)
+{
+	ipt_nat_unregister_lookups(net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit iptable_nat_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	ipt_unregister_table(net, net->ipv4.nat_table);
 }
 
 static struct pernet_operations iptable_nat_net_ops = {
 	.init	= iptable_nat_net_init,
 	.exit	= iptable_nat_net_exit,
+=======
+	ipt_unregister_table_exit(net, "nat");
+}
+
+static struct pernet_operations iptable_nat_net_ops = {
+	.pre_exit = iptable_nat_net_pre_exit,
+	.exit	= iptable_nat_net_exit,
+	.id	= &iptable_nat_net_id,
+	.size	= sizeof(struct iptable_nat_pernet),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init iptable_nat_init(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = register_pernet_subsys(&iptable_nat_net_ops);
@@ -315,15 +439,39 @@ err2:
 	unregister_pernet_subsys(&iptable_nat_net_ops);
 err1:
 	return err;
+=======
+	int ret = xt_register_template(&nf_nat_ipv4_table,
+				       iptable_nat_table_init);
+
+	if (ret < 0)
+		return ret;
+
+	ret = register_pernet_subsys(&iptable_nat_net_ops);
+	if (ret < 0) {
+		xt_unregister_template(&nf_nat_ipv4_table);
+		return ret;
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit iptable_nat_exit(void)
 {
+<<<<<<< HEAD
 	nf_unregister_hooks(nf_nat_ipv4_ops, ARRAY_SIZE(nf_nat_ipv4_ops));
 	unregister_pernet_subsys(&iptable_nat_net_ops);
+=======
+	unregister_pernet_subsys(&iptable_nat_net_ops);
+	xt_unregister_template(&nf_nat_ipv4_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(iptable_nat_init);
 module_exit(iptable_nat_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("iptables legacy nat table");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

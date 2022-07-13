@@ -7,6 +7,7 @@
  *   written by Ralf Baechle <ralf@linux-mips.org>
  */
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <linux/errno.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
@@ -14,10 +15,22 @@
 #include <linux/personality.h>
 #include <linux/random.h>
 #include <linux/sched.h>
+=======
+#include <linux/elf-randomize.h>
+#include <linux/errno.h>
+#include <linux/mm.h>
+#include <linux/mman.h>
+#include <linux/export.h>
+#include <linux/personality.h>
+#include <linux/random.h>
+#include <linux/sched/signal.h>
+#include <linux/sched/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long shm_align_mask = PAGE_SIZE - 1;	/* Sane caches */
 EXPORT_SYMBOL(shm_align_mask);
 
+<<<<<<< HEAD
 /* gap between mmap and stack */
 #define MIN_GAP (128*1024*1024UL)
 #define MAX_GAP ((TASK_SIZE)/6*5)
@@ -57,6 +70,8 @@ static inline unsigned long COLOUR_ALIGN_DOWN(unsigned long addr,
 	return base - off;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COLOUR_ALIGN(addr, pgoff)				\
 	((((addr) + shm_align_mask) & ~shm_align_mask) +	\
 	 (((pgoff) << PAGE_SHIFT) & shm_align_mask))
@@ -70,8 +85,13 @@ static unsigned long arch_get_unmapped_area_common(struct file *filp,
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned long addr = addr0;
+<<<<<<< HEAD
 	unsigned long vm_start;
 	int do_color_align;
+=======
+	int do_color_align;
+	struct vm_unmapped_area_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(len > TASK_SIZE))
 		return -ENOMEM;
@@ -108,6 +128,7 @@ static unsigned long arch_get_unmapped_area_common(struct file *filp,
 			return addr;
 	}
 
+<<<<<<< HEAD
 	if (dir == UP) {
 		addr = mm->mmap_base;
 		if (do_color_align)
@@ -184,12 +205,28 @@ static unsigned long arch_get_unmapped_area_common(struct file *filp,
 		} while (likely(len < vm_start));
 
 bottomup:
+=======
+	info.length = len;
+	info.align_mask = do_color_align ? (PAGE_MASK & shm_align_mask) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+
+	if (dir == DOWN) {
+		info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+		info.low_limit = PAGE_SIZE;
+		info.high_limit = mm->mmap_base;
+		addr = vm_unmapped_area(&info);
+
+		if (!(addr & ~PAGE_MASK))
+			return addr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * A failed mmap() very likely causes application failure,
 		 * so fall back to the bottom-up function here. This scenario
 		 * can happen with large stack limits and large mmap()
 		 * allocations.
 		 */
+<<<<<<< HEAD
 		mm->cached_hole_size = ~0UL;
 		mm->free_area_cache = TASK_UNMAPPED_BASE;
 		addr = arch_get_unmapped_area(filp, addr0, len, pgoff, flags);
@@ -201,6 +238,14 @@ bottomup:
 
 		return addr;
 	}
+=======
+	}
+
+	info.flags = 0;
+	info.low_limit = mm->mmap_base;
+	info.high_limit = TASK_SIZE;
+	return vm_unmapped_area(&info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr0,
@@ -222,6 +267,7 @@ unsigned long arch_get_unmapped_area_topdown(struct file *filp,
 			addr0, len, pgoff, flags, DOWN);
 }
 
+<<<<<<< HEAD
 void arch_pick_mmap_layout(struct mm_struct *mm)
 {
 	unsigned long random_factor = 0UL;
@@ -272,3 +318,15 @@ unsigned long arch_randomize_brk(struct mm_struct *mm)
 
 	return ret;
 }
+=======
+bool __virt_addr_valid(const volatile void *kaddr)
+{
+	unsigned long vaddr = (unsigned long)kaddr;
+
+	if ((vaddr < PAGE_OFFSET) || (vaddr >= MAP_BASE))
+		return false;
+
+	return pfn_valid(PFN_DOWN(virt_to_phys(kaddr)));
+}
+EXPORT_SYMBOL_GPL(__virt_addr_valid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

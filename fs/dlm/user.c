@@ -1,15 +1,24 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2006-2010 Red Hat, Inc.  All rights reserved.
  *
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License v.2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2006-2010 Red Hat, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/miscdevice.h>
 #include <linux/init.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/poll.h>
@@ -18,6 +27,12 @@
 #include <linux/dlm.h>
 #include <linux/dlm_device.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+
+#include <trace/events/dlm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlm_internal.h"
 #include "lockspace.h"
@@ -25,6 +40,11 @@
 #include "lvb_table.h"
 #include "user.h"
 #include "ast.h"
+<<<<<<< HEAD
+=======
+#include "config.h"
+#include "memory.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char name_prefix[] = "dlm";
 static const struct file_operations device_fops;
@@ -48,7 +68,11 @@ struct dlm_lock_params32 {
 	__u32 bastaddr;
 	__u32 lksb;
 	char lvb[DLM_USER_LVB_LEN];
+<<<<<<< HEAD
 	char name[0];
+=======
+	char name[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dlm_write_request32 {
@@ -110,11 +134,19 @@ static void compat_input(struct dlm_write_request *kb,
 		kb->i.lock.parent = kb32->i.lock.parent;
 		kb->i.lock.xid = kb32->i.lock.xid;
 		kb->i.lock.timeout = kb32->i.lock.timeout;
+<<<<<<< HEAD
 		kb->i.lock.castparam = (void *)(long)kb32->i.lock.castparam;
 		kb->i.lock.castaddr = (void *)(long)kb32->i.lock.castaddr;
 		kb->i.lock.bastparam = (void *)(long)kb32->i.lock.bastparam;
 		kb->i.lock.bastaddr = (void *)(long)kb32->i.lock.bastaddr;
 		kb->i.lock.lksb = (void *)(long)kb32->i.lock.lksb;
+=======
+		kb->i.lock.castparam = (__user void *)(long)kb32->i.lock.castparam;
+		kb->i.lock.castaddr = (__user void *)(long)kb32->i.lock.castaddr;
+		kb->i.lock.bastparam = (__user void *)(long)kb32->i.lock.bastparam;
+		kb->i.lock.bastaddr = (__user void *)(long)kb32->i.lock.bastaddr;
+		kb->i.lock.lksb = (__user void *)(long)kb32->i.lock.lksb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(kb->i.lock.lvb, kb32->i.lock.lvb, DLM_USER_LVB_LEN);
 		memcpy(kb->i.lock.name, kb32->i.lock.name, namelen);
 	}
@@ -123,13 +155,24 @@ static void compat_input(struct dlm_write_request *kb,
 static void compat_output(struct dlm_lock_result *res,
 			  struct dlm_lock_result32 *res32)
 {
+<<<<<<< HEAD
+=======
+	memset(res32, 0, sizeof(*res32));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res32->version[0] = res->version[0];
 	res32->version[1] = res->version[1];
 	res32->version[2] = res->version[2];
 
+<<<<<<< HEAD
 	res32->user_astaddr = (__u32)(long)res->user_astaddr;
 	res32->user_astparam = (__u32)(long)res->user_astparam;
 	res32->user_lksb = (__u32)(long)res->user_lksb;
+=======
+	res32->user_astaddr = (__u32)(__force long)res->user_astaddr;
+	res32->user_astparam = (__u32)(__force long)res->user_astparam;
+	res32->user_lksb = (__u32)(__force long)res->user_lksb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res32->bast_mode = res->bast_mode;
 
 	res32->lvb_offset = res->lvb_offset;
@@ -142,6 +185,27 @@ static void compat_output(struct dlm_lock_result *res,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+/* should held proc->asts_spin lock */
+void dlm_purge_lkb_callbacks(struct dlm_lkb *lkb)
+{
+	struct dlm_callback *cb, *safe;
+
+	list_for_each_entry_safe(cb, safe, &lkb->lkb_callbacks, list) {
+		list_del(&cb->list);
+		kref_put(&cb->ref, dlm_release_callback);
+	}
+
+	clear_bit(DLM_IFL_CB_PENDING_BIT, &lkb->lkb_iflags);
+
+	/* invalidate */
+	dlm_callback_set_last_ptr(&lkb->lkb_last_cast, NULL);
+	dlm_callback_set_last_ptr(&lkb->lkb_last_cb, NULL);
+	lkb->lkb_last_bast_mode = -1;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Figure out if this lock is at the end of its life and no longer
    available for the application to use.  The lkb still exists until
    the final ast is read.  A lock becomes EOL in three situations:
@@ -173,18 +237,31 @@ static int lkb_is_endoflife(int mode, int status)
    being removed and then remove that lkb from the orphans list and free it */
 
 void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
+<<<<<<< HEAD
 		      int status, uint32_t sbflags, uint64_t seq)
+=======
+		      int status, uint32_t sbflags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_ls *ls;
 	struct dlm_user_args *ua;
 	struct dlm_user_proc *proc;
 	int rv;
 
+<<<<<<< HEAD
 	if (lkb->lkb_flags & (DLM_IFL_ORPHAN | DLM_IFL_DEAD))
 		return;
 
 	ls = lkb->lkb_resource->res_ls;
 	mutex_lock(&ls->ls_clear_proc_locks);
+=======
+	if (test_bit(DLM_DFL_ORPHAN_BIT, &lkb->lkb_dflags) ||
+	    test_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags))
+		return;
+
+	ls = lkb->lkb_resource->res_ls;
+	spin_lock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If ORPHAN/DEAD flag is set, it means the process is dead so an ast
 	   can't be delivered.  For ORPHAN's, dlm_clear_proc_locks() freed
@@ -192,7 +269,12 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 	   for cases where a completion ast is received for an operation that
 	   began before clear_proc_locks did its cancel/unlock. */
 
+<<<<<<< HEAD
 	if (lkb->lkb_flags & (DLM_IFL_ORPHAN | DLM_IFL_DEAD))
+=======
+	if (test_bit(DLM_DFL_ORPHAN_BIT, &lkb->lkb_dflags) ||
+	    test_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	DLM_ASSERT(lkb->lkb_ua, dlm_print_lkb(lkb););
@@ -203,6 +285,7 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 		goto out;
 
 	if ((flags & DLM_CB_CAST) && lkb_is_endoflife(mode, status))
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_ENDOFLIFE;
 
 	spin_lock(&proc->asts_spin);
@@ -221,6 +304,32 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 	spin_unlock(&proc->asts_spin);
 
 	if (lkb->lkb_flags & DLM_IFL_ENDOFLIFE) {
+=======
+		set_bit(DLM_IFL_ENDOFLIFE_BIT, &lkb->lkb_iflags);
+
+	spin_lock(&proc->asts_spin);
+
+	rv = dlm_enqueue_lkb_callback(lkb, flags, mode, status, sbflags);
+	switch (rv) {
+	case DLM_ENQUEUE_CALLBACK_FAILURE:
+		spin_unlock(&proc->asts_spin);
+		WARN_ON_ONCE(1);
+		goto out;
+	case DLM_ENQUEUE_CALLBACK_NEED_SCHED:
+		kref_get(&lkb->lkb_ref);
+		list_add_tail(&lkb->lkb_cb_list, &proc->asts);
+		wake_up_interruptible(&proc->wait);
+		break;
+	case DLM_ENQUEUE_CALLBACK_SUCCESS:
+		break;
+	default:
+		WARN_ON_ONCE(1);
+		break;
+	}
+	spin_unlock(&proc->asts_spin);
+
+	if (test_bit(DLM_IFL_ENDOFLIFE_BIT, &lkb->lkb_iflags)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* N.B. spin_lock locks_spin, not asts_spin */
 		spin_lock(&proc->locks_spin);
 		if (!list_empty(&lkb->lkb_ownqueue)) {
@@ -230,7 +339,11 @@ void dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,
 		spin_unlock(&proc->locks_spin);
 	}
  out:
+<<<<<<< HEAD
 	mutex_unlock(&ls->ls_clear_proc_locks);
+=======
+	spin_unlock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int device_user_lock(struct dlm_user_proc *proc,
@@ -238,6 +351,10 @@ static int device_user_lock(struct dlm_user_proc *proc,
 {
 	struct dlm_ls *ls;
 	struct dlm_user_args *ua;
+<<<<<<< HEAD
+=======
+	uint32_t lkid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = -ENOMEM;
 
 	ls = dlm_find_lockspace_local(proc->lockspace);
@@ -260,6 +377,7 @@ static int device_user_lock(struct dlm_user_proc *proc,
 	ua->bastaddr = params->bastaddr;
 	ua->xid = params->xid;
 
+<<<<<<< HEAD
 	if (params->flags & DLM_LKF_CONVERT)
 		error = dlm_user_convert(ls, ua,
 				         params->mode, params->flags,
@@ -270,6 +388,23 @@ static int device_user_lock(struct dlm_user_proc *proc,
 					 params->mode, params->flags,
 					 params->name, params->namelen,
 					 (unsigned long) params->timeout);
+=======
+	if (params->flags & DLM_LKF_CONVERT) {
+		error = dlm_user_convert(ls, ua,
+					 params->mode, params->flags,
+					 params->lkid, params->lvb);
+	} else if (params->flags & DLM_LKF_ORPHAN) {
+		error = dlm_user_adopt_orphan(ls, ua,
+					 params->mode, params->flags,
+					 params->name, params->namelen,
+					 &lkid);
+		if (!error)
+			error = lkid;
+	} else {
+		error = dlm_user_request(ls, ua,
+					 params->mode, params->flags,
+					 params->name, params->namelen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!error)
 			error = ua->lksb.sb_lkid;
 	}
@@ -346,6 +481,13 @@ static int dlm_device_register(struct dlm_ls *ls, char *name)
 	error = misc_register(&ls->ls_device);
 	if (error) {
 		kfree(ls->ls_device.name);
+<<<<<<< HEAD
+=======
+		/* this has to be set to NULL
+		 * to avoid a double-free in dlm_device_deregister
+		 */
+		ls->ls_device.name = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 fail:
 	return error;
@@ -353,18 +495,27 @@ fail:
 
 int dlm_device_deregister(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	int error;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The device is not registered.  This happens when the lockspace
 	   was never used from userspace, or when device_create_lockspace()
 	   calls dlm_release_lockspace() after the register fails. */
 	if (!ls->ls_device.name)
 		return 0;
 
+<<<<<<< HEAD
 	error = misc_deregister(&ls->ls_device);
 	if (!error)
 		kfree(ls->ls_device.name);
 	return error;
+=======
+	misc_deregister(&ls->ls_device);
+	kfree(ls->ls_device.name);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int device_user_purge(struct dlm_user_proc *proc,
@@ -392,9 +543,15 @@ static int device_create_lockspace(struct dlm_lspace_params *params)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	error = dlm_new_lockspace(params->name, NULL, params->flags,
 				  DLM_USER_LVB_LEN, NULL, NULL, NULL,
 				  &lockspace);
+=======
+	error = dlm_new_user_lockspace(params->name, dlm_config.ci_cluster_name,
+				       params->flags, DLM_USER_LVB_LEN, NULL,
+				       NULL, NULL, &lockspace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
@@ -493,7 +650,10 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 {
 	struct dlm_user_proc *proc = file->private_data;
 	struct dlm_write_request *kbuf;
+<<<<<<< HEAD
 	sigset_t tmpsig, allsigs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 #ifdef CONFIG_COMPAT
@@ -503,6 +663,7 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 #endif
 		return -EINVAL;
 
+<<<<<<< HEAD
 	kbuf = kzalloc(count + 1, GFP_NOFS);
 	if (!kbuf)
 		return -ENOMEM;
@@ -511,6 +672,18 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 		error = -EFAULT;
 		goto out_free;
 	}
+=======
+	/*
+	 * can't compare against COMPAT/dlm_write_request32 because
+	 * we don't yet know if is64bit is zero
+	 */
+	if (count > sizeof(struct dlm_write_request) + DLM_RESNAME_MAXLEN)
+		return -EINVAL;
+
+	kbuf = memdup_user_nul(buf, count);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (check_version(kbuf)) {
 		error = -EBADE;
@@ -550,9 +723,12 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 		goto out_free;
 	}
 
+<<<<<<< HEAD
 	sigfillset(&allsigs);
 	sigprocmask(SIG_BLOCK, &allsigs, &tmpsig);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = -EINVAL;
 
 	switch (kbuf->cmd)
@@ -560,7 +736,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_LOCK:
 		if (!proc) {
 			log_print("no locking on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_user_lock(proc, &kbuf->i.lock);
 		break;
@@ -568,7 +748,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_UNLOCK:
 		if (!proc) {
 			log_print("no locking on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_user_unlock(proc, &kbuf->i.lock);
 		break;
@@ -576,7 +760,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_DEADLOCK:
 		if (!proc) {
 			log_print("no locking on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_user_deadlock(proc, &kbuf->i.lock);
 		break;
@@ -584,7 +772,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_CREATE_LOCKSPACE:
 		if (proc) {
 			log_print("create/remove only on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_create_lockspace(&kbuf->i.lspace);
 		break;
@@ -592,7 +784,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_REMOVE_LOCKSPACE:
 		if (proc) {
 			log_print("create/remove only on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_remove_lockspace(&kbuf->i.lspace);
 		break;
@@ -600,7 +796,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 	case DLM_USER_PURGE:
 		if (!proc) {
 			log_print("no locking on control device");
+<<<<<<< HEAD
 			goto out_sig;
+=======
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		error = device_user_purge(proc, &kbuf->i.purge);
 		break;
@@ -610,8 +810,11 @@ static ssize_t device_write(struct file *file, const char __user *buf,
 			  kbuf->cmd);
 	}
 
+<<<<<<< HEAD
  out_sig:
 	sigprocmask(SIG_SETMASK, &tmpsig, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out_free:
 	kfree(kbuf);
 	return error;
@@ -652,15 +855,21 @@ static int device_close(struct inode *inode, struct file *file)
 {
 	struct dlm_user_proc *proc = file->private_data;
 	struct dlm_ls *ls;
+<<<<<<< HEAD
 	sigset_t tmpsig, allsigs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ls = dlm_find_lockspace_local(proc->lockspace);
 	if (!ls)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	sigfillset(&allsigs);
 	sigprocmask(SIG_BLOCK, &allsigs, &tmpsig);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(DLM_PROC_FLAGS_CLOSING, &proc->flags);
 
 	dlm_clear_proc_locks(ls, proc);
@@ -678,9 +887,12 @@ static int device_close(struct inode *inode, struct file *file)
 	/* FIXME: AUTOFREE: if this ls is no longer used do
 	   device_remove_lockspace() */
 
+<<<<<<< HEAD
 	sigprocmask(SIG_SETMASK, &tmpsig, NULL);
 	recalc_sigpending();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -701,7 +913,11 @@ static int copy_result_to_user(struct dlm_user_args *ua, int compat,
 	result.version[0] = DLM_DEVICE_VERSION_MAJOR;
 	result.version[1] = DLM_DEVICE_VERSION_MINOR;
 	result.version[2] = DLM_DEVICE_VERSION_PATCH;
+<<<<<<< HEAD
 	memcpy(&result.lksb, &ua->lksb, sizeof(struct dlm_lksb));
+=======
+	memcpy(&result.lksb, &ua->lksb, offsetof(struct dlm_lksb, sb_lvbptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result.user_lksb = ua->user_lksb;
 
 	/* FIXME: dlm1 provides for the user's bastparam/addr to not be updated
@@ -780,8 +996,14 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 	struct dlm_user_proc *proc = file->private_data;
 	struct dlm_lkb *lkb;
 	DECLARE_WAITQUEUE(wait, current);
+<<<<<<< HEAD
 	struct dlm_callback cb;
 	int rv, resid, copy_lvb = 0;
+=======
+	struct dlm_callback *cb;
+	int rv, ret, copy_lvb = 0;
+	int old_mode, new_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count == sizeof(struct dlm_device_version)) {
 		rv = copy_version_to_user(buf, count);
@@ -836,17 +1058,32 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 	   without removing lkb_cb_list; so empty lkb_cb_list is always
 	   consistent with empty lkb_callbacks */
 
+<<<<<<< HEAD
 	lkb = list_entry(proc->asts.next, struct dlm_lkb, lkb_cb_list);
 
 	rv = dlm_rem_lkb_callback(lkb->lkb_resource->res_ls, lkb, &cb, &resid);
 	if (rv < 0) {
 		/* this shouldn't happen; lkb should have been removed from
 		   list when resid was zero */
+=======
+	lkb = list_first_entry(&proc->asts, struct dlm_lkb, lkb_cb_list);
+
+	/* rem_lkb_callback sets a new lkb_last_cast */
+	old_mode = lkb->lkb_last_cast->mode;
+
+	rv = dlm_dequeue_lkb_callback(lkb, &cb);
+	switch (rv) {
+	case DLM_DEQUEUE_CALLBACK_EMPTY:
+		/* this shouldn't happen; lkb should have been removed from
+		 * list when last item was dequeued
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		log_print("dlm_rem_lkb_callback empty %x", lkb->lkb_id);
 		list_del_init(&lkb->lkb_cb_list);
 		spin_unlock(&proc->asts_spin);
 		/* removes ref for proc->asts, may cause lkb to be freed */
 		dlm_put_lkb(lkb);
+<<<<<<< HEAD
 		goto try_another;
 	}
 	if (!resid)
@@ -886,6 +1123,50 @@ static ssize_t device_read(struct file *file, char __user *buf, size_t count,
 }
 
 static unsigned int device_poll(struct file *file, poll_table *wait)
+=======
+		WARN_ON_ONCE(1);
+		goto try_another;
+	case DLM_DEQUEUE_CALLBACK_LAST:
+		list_del_init(&lkb->lkb_cb_list);
+		clear_bit(DLM_IFL_CB_PENDING_BIT, &lkb->lkb_iflags);
+		break;
+	case DLM_DEQUEUE_CALLBACK_SUCCESS:
+		break;
+	default:
+		WARN_ON_ONCE(1);
+		break;
+	}
+	spin_unlock(&proc->asts_spin);
+
+	if (cb->flags & DLM_CB_BAST) {
+		trace_dlm_bast(lkb->lkb_resource->res_ls, lkb, cb->mode);
+	} else if (cb->flags & DLM_CB_CAST) {
+		new_mode = cb->mode;
+
+		if (!cb->sb_status && lkb->lkb_lksb->sb_lvbptr &&
+		    dlm_lvb_operations[old_mode + 1][new_mode + 1])
+			copy_lvb = 1;
+
+		lkb->lkb_lksb->sb_status = cb->sb_status;
+		lkb->lkb_lksb->sb_flags = cb->sb_flags;
+		trace_dlm_ast(lkb->lkb_resource->res_ls, lkb);
+	}
+
+	ret = copy_result_to_user(lkb->lkb_ua,
+				  test_bit(DLM_PROC_FLAGS_COMPAT, &proc->flags),
+				  cb->flags, cb->mode, copy_lvb, buf, count);
+
+	kref_put(&cb->ref, dlm_release_callback);
+
+	/* removes ref for proc->asts, may cause lkb to be freed */
+	if (rv == DLM_DEQUEUE_CALLBACK_LAST)
+		dlm_put_lkb(lkb);
+
+	return ret;
+}
+
+static __poll_t device_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_user_proc *proc = file->private_data;
 
@@ -894,7 +1175,11 @@ static unsigned int device_poll(struct file *file, poll_table *wait)
 	spin_lock(&proc->asts_spin);
 	if (!list_empty(&proc->asts)) {
 		spin_unlock(&proc->asts_spin);
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM;
+=======
+		return EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&proc->asts_spin);
 	return 0;

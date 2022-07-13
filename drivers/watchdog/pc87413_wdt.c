@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      NS pc87413-wdt Watchdog Timer driver for Linux 2.6.x.x
  *
@@ -6,11 +10,14 @@
  *      (C) Copyright 2006 Sven Anders, <anders@anduras.de>
  *                     and Marcus Junker, <junker@anduras.de>
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      Neither Sven Anders, Marcus Junker nor ANDURAS AG
  *      admit liability nor provide warranty for any of this software.
  *      This material is provided "AS-IS" and at no charge.
@@ -286,7 +293,11 @@ static int pc87413_open(struct inode *inode, struct file *file)
 
 	pr_info("Watchdog enabled. Timeout set to %d minute(s).\n", timeout);
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -437,7 +448,11 @@ static long pc87413_ioctl(struct file *file, unsigned int cmd,
 			return -EINVAL;
 		timeout = new_timeout;
 		pc87413_refresh();
+<<<<<<< HEAD
 		/* fall through and return the new timeout... */
+=======
+		fallthrough;	/* and return the new timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		new_timeout = timeout * 60;
 		return put_user(new_timeout, uarg.i);
@@ -446,10 +461,17 @@ static long pc87413_ioctl(struct file *file, unsigned int cmd,
 	}
 }
 
+<<<<<<< HEAD
 /* -- Notifier funtions -----------------------------------------*/
 
 /**
  *	notify_sys:
+=======
+/* -- Notifier functions -----------------------------------------*/
+
+/**
+ *	pc87413_notify_sys:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@this: our notifier block
  *	@code: the event being reported
  *	@unused: unused
@@ -477,6 +499,10 @@ static const struct file_operations pc87413_fops = {
 	.llseek		= no_llseek,
 	.write		= pc87413_write,
 	.unlocked_ioctl	= pc87413_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= pc87413_open,
 	.release	= pc87413_release,
 };
@@ -512,9 +538,14 @@ static int __init pc87413_init(void)
 		return -EBUSY;
 
 	ret = register_reboot_notifier(&pc87413_notifier);
+<<<<<<< HEAD
 	if (ret != 0) {
 		pr_err("cannot register reboot notifier (err=%d)\n", ret);
 	}
+=======
+	if (ret != 0)
+		pr_err("cannot register reboot notifier (err=%d)\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = misc_register(&pc87413_miscdev);
 	if (ret != 0) {
@@ -575,6 +606,7 @@ static void __exit pc87413_exit(void)
 module_init(pc87413_init);
 module_exit(pc87413_exit);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Sven Anders <anders@anduras.de>, "
 		"Marcus Junker <junker@anduras.de>,");
 MODULE_DESCRIPTION("PC87413 WDT driver");
@@ -583,6 +615,14 @@ MODULE_LICENSE("GPL");
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
 module_param(io, int, 0);
+=======
+MODULE_AUTHOR("Sven Anders <anders@anduras.de>");
+MODULE_AUTHOR("Marcus Junker <junker@anduras.de>");
+MODULE_DESCRIPTION("PC87413 WDT driver");
+MODULE_LICENSE("GPL");
+
+module_param_hw(io, int, ioport, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(io, MODNAME " I/O port (default: "
 					__MODULE_STRING(IO_DEFAULT) ").");
 

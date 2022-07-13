@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -13,14 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) IBM Corporation, 2004
  *
  * Author: Max Asböck <amax@us.ibm.com>
+<<<<<<< HEAD
  *
  */
 
 #include <linux/sched.h>
+=======
+ */
+
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ibmasm.h"
 #include "dot_command.h"
 
@@ -52,7 +64,11 @@ void ibmasm_init_reverse_heartbeat(struct service_processor *sp, struct reverse_
 	rhb->stopped = 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * start_reverse_heartbeat
  * Loop forever, sending a reverse heartbeat dot command to the service
  * processor, then sleeping. The loop comes to an end if the service

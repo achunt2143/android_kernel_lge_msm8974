@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 
     AudioScience HPI driver
     Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of version 2 of the GNU General Public License as
     published by the Free Software Foundation;
@@ -15,6 +20,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 HPI Operating System Specific macros for Linux Kernel driver
 
@@ -41,10 +48,13 @@ HPI Operating System Specific macros for Linux Kernel driver
 
 #define HPI_NO_OS_FILE_OPS
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define HPI64BIT
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** Details of a memory area allocated with  pci_alloc_consistent
 Need all info for parameters to pci_free_consistent
 */
@@ -82,7 +92,11 @@ struct hpi_ioctl_linux {
 };
 
 /* Conflict?: H is already used by a number of drivers hid, bluetooth hci,
+<<<<<<< HEAD
    and some sound drivers sb16, hdsp, emu10k. AFAIK 0xFC is ununsed command
+=======
+   and some sound drivers sb16, hdsp, emu10k. AFAIK 0xFC is unused command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #define HPI_IOCTL_LINUX _IOWR('H', 0xFC, struct hpi_ioctl_linux)
 
@@ -155,6 +169,13 @@ struct hpi_adapter {
 	struct hpi_adapter_obj *adapter;
 	struct snd_card *snd_card;
 
+<<<<<<< HEAD
+=======
+	int irq;
+	int interrupt_mode;
+	void (*interrupt_callback) (struct hpi_adapter *);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mutex prevents contention for one card
 	   between multiple user programs (via ioctl) */
 	struct mutex mutex;

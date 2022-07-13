@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_mp_ioctl.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -26,6 +33,10 @@
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
+=======
+#include <linux/rndis.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "osdep_service.h"
 #include "drv_types.h"
 #include "mlme_osdep.h"
@@ -34,12 +45,20 @@
 
 uint oid_null_function(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	return NDIS_STATUS_SUCCESS;
+=======
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_wireless_mode_hdl(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
@@ -48,24 +67,39 @@ uint oid_rt_wireless_mode_hdl(struct oid_par_priv *poid_par_priv)
 			Adapter->registrypriv.wireless_mode =
 					*(u8 *)poid_par_priv->information_buf;
 		else
+<<<<<<< HEAD
 			status = NDIS_STATUS_INVALID_LENGTH;
+=======
+			status = RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (poid_par_priv->type_of_oid == QUERY_OID) {
 		if (poid_par_priv->information_buf_len >= sizeof(u8)) {
 			*(u8 *)poid_par_priv->information_buf =
 					 Adapter->registrypriv.wireless_mode;
 			*poid_par_priv->bytes_rw =
 					poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 		} else
 			status = NDIS_STATUS_INVALID_LENGTH;
 	} else {
 		status = NDIS_STATUS_NOT_ACCEPTED;
+=======
+		} else {
+			status = RNDIS_STATUS_INVALID_LENGTH;
+		}
+	} else {
+		status = RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
 
 uint oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	struct bb_reg_param *pbbreg;
@@ -73,21 +107,34 @@ uint oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 	u32 value;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbbreg = (struct bb_reg_param *)(poid_par_priv->information_buf);
 	offset = (u16)(pbbreg->offset) & 0xFFF; /*0ffset :0x800~0xfff*/
 	if (offset < BB_REG_BASE_ADDR)
 		offset |= BB_REG_BASE_ADDR;
 	value = pbbreg->value;
 	r8712_bb_reg_write(Adapter, offset, value);
+<<<<<<< HEAD
 	return status;
+=======
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	struct bb_reg_param *pbbreg;
@@ -95,9 +142,15 @@ uint oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 	u32 value;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbbreg = (struct bb_reg_param *)(poid_par_priv->information_buf);
 	offset = (u16)(pbbreg->offset) & 0xFFF; /*0ffset :0x800~0xfff*/
 	if (offset < BB_REG_BASE_ADDR)
@@ -105,12 +158,19 @@ uint oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 	value = r8712_bb_reg_read(Adapter, offset);
 	pbbreg->value = value;
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	return status;
+=======
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	struct rf_reg_param *pbbreg;
@@ -119,6 +179,7 @@ uint oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 	u32 value;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(struct rf_reg_param))
 		return NDIS_STATUS_INVALID_LENGTH;
@@ -130,19 +191,36 @@ uint oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 	value = pbbreg->value;
 	r8712_rf_reg_write(Adapter, path, offset, value);
 	return status;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(struct rf_reg_param))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	pbbreg = (struct rf_reg_param *)(poid_par_priv->information_buf);
+	path = (u8)pbbreg->path;
+	if (path > RF_PATH_B)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	offset = (u8)pbbreg->offset;
+	value = pbbreg->value;
+	r8712_rf_reg_write(Adapter, path, offset, value);
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rf_reg_param *pbbreg;
 	u8 path;
 	u8 offset;
 	u32 value;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(struct rf_reg_param))
 		return NDIS_STATUS_INVALID_LENGTH;
@@ -150,11 +228,24 @@ uint oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 	path = (u8)pbbreg->path;
 	if (path > RF_PATH_B) /* 1T2R  path_a /path_b */
 		return NDIS_STATUS_NOT_ACCEPTED;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(struct rf_reg_param))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	pbbreg = (struct rf_reg_param *)(poid_par_priv->information_buf);
+	path = (u8)pbbreg->path;
+	if (path > RF_PATH_B) /* 1T2R  path_a /path_b */
+		return RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	offset = (u8)pbbreg->offset;
 	value = r8712_rf_reg_read(Adapter, path, offset);
 	pbbreg->value = value;
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	return status;
+=======
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*This function initializes the DUT to the MP test mode*/
@@ -163,6 +254,7 @@ static int mp_start_test(struct _adapter *padapter)
 	struct mp_priv *pmppriv = &padapter->mppriv;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct wlan_network *tgt_network = &pmlmepriv->cur_network;
+<<<<<<< HEAD
 	struct ndis_wlan_bssid_ex bssid;
 	struct sta_info *psta;
 	unsigned long length;
@@ -185,6 +277,35 @@ static int mp_start_test(struct _adapter *padapter)
 		bssid.Length = length;
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
+=======
+	struct wlan_bssid_ex *bssid;
+	struct sta_info *psta;
+	unsigned long length;
+	unsigned long irqL;
+	int res = 0;
+
+	bssid = kzalloc(sizeof(*bssid), GFP_KERNEL);
+	if (!bssid)
+		return -ENOMEM;
+
+	/* 3 1. initialize a new struct wlan_bssid_ex */
+	memcpy(bssid->MacAddress, pmppriv->network_macaddr, ETH_ALEN);
+	bssid->Ssid.SsidLength = 16;
+	memcpy(bssid->Ssid.Ssid, (unsigned char *)"mp_pseudo_adhoc",
+		bssid->Ssid.SsidLength);
+	bssid->InfrastructureMode = Ndis802_11IBSS;
+	bssid->NetworkTypeInUse = Ndis802_11DS;
+	bssid->IELength = 0;
+	length = r8712_get_wlan_bssid_ex_sz(bssid);
+	if (length % 4) {
+		/*round up to multiple of 4 bytes.*/
+		bssid->Length = ((length >> 2) + 1) << 2;
+	} else {
+		bssid->Length = length;
+	}
+	spin_lock_irqsave(&pmlmepriv->lock, irqL);
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end_of_mp_start_test;
 	/*init mp_start_test status*/
 	pmppriv->prev_fw_state = get_fwstate(pmlmepriv);
@@ -198,6 +319,7 @@ static int mp_start_test(struct _adapter *padapter)
 				 tgt_network->network.MacAddress);
 	if (psta)
 		r8712_free_stainfo(padapter, psta);
+<<<<<<< HEAD
 	psta = r8712_alloc_stainfo(&padapter->stapriv, bssid.MacAddress);
 	if (psta == NULL) {
 		res = _FAIL;
@@ -207,12 +329,27 @@ static int mp_start_test(struct _adapter *padapter)
 	tgt_network->join_res = 1;
 	tgt_network->aid = psta->aid = 1;
 	memcpy(&tgt_network->network, &bssid, length);
+=======
+	psta = r8712_alloc_stainfo(&padapter->stapriv, bssid->MacAddress);
+	if (!psta) {
+		res = -ENOMEM;
+		goto end_of_mp_start_test;
+	}
+	/* 3 3. join pseudo AdHoc */
+	tgt_network->join_res = 1;
+	tgt_network->aid = psta->aid = 1;
+	memcpy(&tgt_network->network, bssid, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 	r8712_os_indicate_connect(padapter);
 	/* Set to LINKED STATE for MP TRX Testing */
 	set_fwstate(pmlmepriv, _FW_LINKED);
 end_of_mp_start_test:
 	spin_unlock_irqrestore(&pmlmepriv->lock, irqL);
+<<<<<<< HEAD
+=======
+	kfree(bssid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -226,9 +363,15 @@ static int mp_stop_test(struct _adapter *padapter)
 	unsigned long irqL;
 
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == false)
 		goto end_of_mp_stop_test;
 	/* 3 1. disconnect psudo AdHoc */
+=======
+	if (!check_fwstate(pmlmepriv, WIFI_MP_STATE))
+		goto end_of_mp_stop_test;
+	/* 3 1. disconnect pseudo AdHoc */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r8712_os_indicate_disconnect(padapter);
 	/* 3 2. clear psta used in mp test mode. */
 	psta = r8712_get_stainfo(&padapter->stapriv,
@@ -244,6 +387,7 @@ end_of_mp_stop_test:
 	return _SUCCESS;
 }
 
+<<<<<<< HEAD
 int mp_start_joinbss(struct _adapter *padapter, struct ndis_802_11_ssid *pssid)
 {
 	struct mp_priv *pmppriv = &padapter->mppriv;
@@ -278,17 +422,40 @@ uint oid_rt_pro_set_data_rate_hdl(struct oid_par_priv
 	Adapter->mppriv.curr_rateidx = ratevalue;
 	r8712_SetDataRate(Adapter);
 	return status;
+=======
+uint oid_rt_pro_set_data_rate_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+	u32 ratevalue;
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	ratevalue = *((u32 *)poid_par_priv->information_buf);
+	if (ratevalue >= MPT_RATE_LAST)
+		return RNDIS_STATUS_INVALID_DATA;
+	Adapter->mppriv.curr_rateidx = ratevalue;
+	r8712_SetDataRate(Adapter);
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_start_test_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mode;
 	u8 val8;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return  NDIS_STATUS_NOT_ACCEPTED;
 	mode = *((u32 *)poid_par_priv->information_buf);
 	Adapter->mppriv.mode = mode;/* 1 for loopback*/
@@ -298,6 +465,17 @@ uint oid_rt_pro_start_test_hdl(struct oid_par_priv *poid_par_priv)
 	r8712_write8(Adapter, RCR, 0); /* RCR : disable all pkt, 0x10250048 */
 	/* RCR disable Check BSSID, 0x1025004a */
 	r8712_write8(Adapter, RCR+2, 0x57);
+=======
+		return  RNDIS_STATUS_NOT_ACCEPTED;
+	mode = *((u32 *)poid_par_priv->information_buf);
+	Adapter->mppriv.mode = mode;/* 1 for loopback*/
+	if (mp_start_test(Adapter))
+		status = RNDIS_STATUS_NOT_ACCEPTED;
+	r8712_write8(Adapter, MSR, 1); /* Link in ad hoc network, 0x1025004C */
+	r8712_write8(Adapter, RCR, 0); /* RCR : disable all pkt, 0x10250048 */
+	/* RCR disable Check BSSID, 0x1025004a */
+	r8712_write8(Adapter, RCR + 2, 0x57);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable RX filter map , mgt frames will put in RX FIFO 0 */
 	r8712_write16(Adapter, RXFLTMAP0, 0x0);
 	val8 = r8712_read8(Adapter, EE_9346CR);
@@ -313,6 +491,7 @@ uint oid_rt_pro_stop_test_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
@@ -340,12 +519,39 @@ uint oid_rt_pro_set_channel_direct_call_hdl(struct oid_par_priv
 	Adapter->mppriv.curr_ch = Channel;
 	r8712_SetChannel(Adapter);
 	return status;
+=======
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (mp_stop_test(Adapter) == _FAIL)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_channel_direct_call_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+	u32		Channel;
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	Channel = *((u32 *)poid_par_priv->information_buf);
+	if (Channel > 14)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	Adapter->mppriv.curr_ch = Channel;
+	r8712_SetChannel(Adapter);
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_set_antenna_bb_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
 	u32 antenna;
 
@@ -353,10 +559,19 @@ uint oid_rt_pro_set_antenna_bb_hdl(struct oid_par_priv *poid_par_priv)
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len != sizeof(u32))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+	u32 antenna;
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	antenna = *((u32 *)poid_par_priv->information_buf);
 	Adapter->mppriv.antenna_tx = (u16)((antenna & 0xFFFF0000) >> 16);
 	Adapter->mppriv.antenna_rx = (u16)(antenna & 0x0000FFFF);
 	r8712_SwitchAntenna(Adapter);
+<<<<<<< HEAD
 	return status;
 }
 
@@ -391,10 +606,42 @@ uint oid_rt_pro_query_tx_packet_sent_hdl(
 		status = NDIS_STATUS_NOT_ACCEPTED;
 		return status;
 	}
+=======
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_tx_power_control_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+	u32 tx_pwr_idx;
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	tx_pwr_idx = *((u32 *)poid_par_priv->information_buf);
+	if (tx_pwr_idx > MAX_TX_PWR_INDEX_N_MODE)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	Adapter->mppriv.curr_txpoweridx = (u8)tx_pwr_idx;
+	r8712_SetTxPower(Adapter);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_query_tx_packet_sent_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		*(u32 *)poid_par_priv->information_buf =
 					Adapter->mppriv.tx_pktcount;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	} else
 		status = NDIS_STATUS_INVALID_LENGTH;
 	return status;
@@ -411,10 +658,27 @@ uint oid_rt_pro_query_rx_packet_received_hdl(
 		status = NDIS_STATUS_NOT_ACCEPTED;
 		return status;
 	}
+=======
+	} else {
+		return RNDIS_STATUS_INVALID_LENGTH;
+	}
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_query_rx_packet_received_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		*(u32 *)poid_par_priv->information_buf =
 					Adapter->mppriv.rx_pktcount;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	} else
 		status = NDIS_STATUS_INVALID_LENGTH;
 	return status;
@@ -431,10 +695,27 @@ uint oid_rt_pro_query_rx_packet_crc32_error_hdl(
 		status = NDIS_STATUS_NOT_ACCEPTED;
 		return status;
 	}
+=======
+	} else {
+		return RNDIS_STATUS_INVALID_LENGTH;
+	}
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_query_rx_packet_crc32_error_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		*(u32 *)poid_par_priv->information_buf =
 					Adapter->mppriv.rx_crcerrpktcount;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	} else
 		status = NDIS_STATUS_INVALID_LENGTH;
 	return status;
@@ -442,11 +723,21 @@ uint oid_rt_pro_query_rx_packet_crc32_error_hdl(
 
 uint oid_rt_pro_reset_tx_packet_sent_hdl(struct oid_par_priv
 						*poid_par_priv)
+=======
+	} else {
+		return RNDIS_STATUS_INVALID_LENGTH;
+	}
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_reset_tx_packet_sent_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	Adapter->mppriv.tx_pktcount = 0;
 	return NDIS_STATUS_SUCCESS;
@@ -456,10 +747,20 @@ uint oid_rt_pro_reset_rx_packet_received_hdl(struct oid_par_priv
 						    *poid_par_priv)
 {
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	Adapter->mppriv.tx_pktcount = 0;
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_reset_rx_packet_received_hdl(struct oid_par_priv *poid_par_priv)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		Adapter->mppriv.rx_pktcount = 0;
@@ -471,11 +772,25 @@ uint oid_rt_pro_reset_rx_packet_received_hdl(struct oid_par_priv
 
 uint oid_rt_reset_phy_rx_packet_count_hdl(struct oid_par_priv
 						 *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len == sizeof(u32)) {
+		Adapter->mppriv.rx_pktcount = 0;
+		Adapter->mppriv.rx_crcerrpktcount = 0;
+	} else {
+		return RNDIS_STATUS_INVALID_LENGTH;
+	}
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_reset_phy_rx_packet_count_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	r8712_ResetPhyRxPktCount(Adapter);
 	return NDIS_STATUS_SUCCESS;
@@ -483,11 +798,20 @@ uint oid_rt_reset_phy_rx_packet_count_hdl(struct oid_par_priv
 
 uint oid_rt_get_phy_rx_packet_received_hdl(struct oid_par_priv
 						  *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	r8712_ResetPhyRxPktCount(Adapter);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_get_phy_rx_packet_received_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len != sizeof(u32))
 		return NDIS_STATUS_INVALID_LENGTH;
@@ -499,11 +823,24 @@ uint oid_rt_get_phy_rx_packet_received_hdl(struct oid_par_priv
 
 uint oid_rt_get_phy_rx_packet_crc32_error_hdl(struct oid_par_priv
 						     *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	*(u32 *)poid_par_priv->information_buf =
+					 r8712_GetPhyRxPktReceived(Adapter);
+	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_get_phy_rx_packet_crc32_error_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len != sizeof(u32))
 		return NDIS_STATUS_INVALID_LENGTH;
@@ -515,11 +852,24 @@ uint oid_rt_get_phy_rx_packet_crc32_error_hdl(struct oid_par_priv
 
 uint oid_rt_pro_set_modulation_hdl(struct oid_par_priv
 					  *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len != sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	*(u32 *)poid_par_priv->information_buf =
+					 r8712_GetPhyRxPktCRC32Error(Adapter);
+	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_modulation_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 
 	Adapter->mppriv.curr_modem = *((u8 *)poid_par_priv->information_buf);
@@ -528,12 +878,22 @@ uint oid_rt_pro_set_modulation_hdl(struct oid_par_priv
 
 uint oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv
 					     *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+	Adapter->mppriv.curr_modem = *((u8 *)poid_par_priv->information_buf);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	u32		bStartTest;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	bStartTest = *((u32 *)poid_par_priv->information_buf);
 	r8712_SetContinuousTx(Adapter, (u8)bStartTest);
@@ -542,12 +902,22 @@ uint oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv
 
 uint oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv
 						 *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	bStartTest = *((u32 *)poid_par_priv->information_buf);
+	r8712_SetContinuousTx(Adapter, (u8)bStartTest);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	u32		bStartTest;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	bStartTest = *((u32 *)poid_par_priv->information_buf);
 	r8712_SetSingleCarrierTx(Adapter, (u8)bStartTest);
@@ -556,12 +926,22 @@ uint oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv
 
 uint oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv
 						      *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	bStartTest = *((u32 *)poid_par_priv->information_buf);
+	r8712_SetSingleCarrierTx(Adapter, (u8)bStartTest);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	u32		bStartTest;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	bStartTest = *((u32 *)poid_par_priv->information_buf);
 	r8712_SetCarrierSuppressionTx(Adapter, (u8)bStartTest);
@@ -570,12 +950,22 @@ uint oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv
 
 uint oid_rt_pro_set_single_tone_tx_hdl(struct oid_par_priv
 					      *poid_par_priv)
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	bStartTest = *((u32 *)poid_par_priv->information_buf);
+	r8712_SetCarrierSuppressionTx(Adapter, (u8)bStartTest);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_set_single_tone_tx_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	u32		bStartTest;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	bStartTest = *((u32 *)poid_par_priv->information_buf);
 	r8712_SetSingleToneTx(Adapter, (u8)bStartTest);
@@ -608,11 +998,28 @@ uint oid_rt_pro_read_register_hdl(struct oid_par_priv
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	bStartTest = *((u32 *)poid_par_priv->information_buf);
+	r8712_SetSingleToneTx(Adapter, (u8)bStartTest);
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_pro_read_register_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mp_rw_reg *RegRWStruct;
 	u16		offset;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RegRWStruct = (struct mp_rw_reg *)poid_par_priv->information_buf;
 	if ((RegRWStruct->offset >= 0x10250800) &&
 	    (RegRWStruct->offset <= 0x10250FFF)) {
@@ -635,7 +1042,11 @@ uint oid_rt_pro_read_register_hdl(struct oid_par_priv
 						    RegRWStruct->offset);
 			break;
 		default:
+<<<<<<< HEAD
 			status = NDIS_STATUS_NOT_ACCEPTED;
+=======
+			status = RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -647,14 +1058,22 @@ uint oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mp_rw_reg *RegRWStruct;
 	u16		offset;
 	u32		value;
 	u32 oldValue = 0;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RegRWStruct = (struct mp_rw_reg *)poid_par_priv->information_buf;
 	if ((RegRWStruct->offset >= 0x10250800) &&
 	    (RegRWStruct->offset <= 0x10250FFF)) {
@@ -691,6 +1110,7 @@ uint oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 				(unsigned int)RegRWStruct->value);
 			break;
 		default:
+<<<<<<< HEAD
 			status = NDIS_STATUS_NOT_ACCEPTED;
 			break;
 		}
@@ -699,10 +1119,16 @@ uint oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 		    (RegRWStruct->offset == HIMR) &&
 		    (RegRWStruct->width == 4))
 			Adapter->ImrContent = RegRWStruct->value;
+=======
+			status = RNDIS_STATUS_NOT_ACCEPTED;
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
 
+<<<<<<< HEAD
 uint oid_rt_pro_burst_read_register_hdl(struct oid_par_priv
 					       *poid_par_priv)
 {
@@ -870,10 +1296,13 @@ uint oid_rt_pro_set_data_rate_ex_hdl(struct oid_par_priv
 	return status;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uint oid_rt_get_thermal_meter_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
@@ -884,6 +1313,17 @@ uint oid_rt_get_thermal_meter_hdl(struct oid_par_priv *poid_par_priv)
 
 	if (poid_par_priv->information_buf_len < sizeof(u8))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+	if (Adapter->mppriv.act_in_progress)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+
+	if (poid_par_priv->information_buf_len < sizeof(u8))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*init workparam*/
 	Adapter->mppriv.act_in_progress = true;
 	Adapter->mppriv.workparam.bcompleted = false;
@@ -896,6 +1336,7 @@ uint oid_rt_get_thermal_meter_hdl(struct oid_par_priv *poid_par_priv)
 	*(u32 *)poid_par_priv->information_buf =
 				 Adapter->mppriv.workparam.io_value;
 	*poid_par_priv->bytes_rw = sizeof(u32);
+<<<<<<< HEAD
 	return status;
 }
 
@@ -1147,22 +1588,38 @@ uint oid_rt_pro_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv)
 	return NDIS_STATUS_SUCCESS;
 }
 /*------------------------------------------------------------------------*/
+=======
+	return RNDIS_STATUS_SUCCESS;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uint oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct EFUSE_ACCESS_STRUCT *pefuse;
 	u8 *data;
 	u16 addr = 0, cnts = 0;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len <
 	    sizeof(struct EFUSE_ACCESS_STRUCT))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len <
+	    sizeof(struct EFUSE_ACCESS_STRUCT))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pefuse = (struct EFUSE_ACCESS_STRUCT *)poid_par_priv->information_buf;
 	addr = pefuse->start_addr;
 	cnts = pefuse->cnts;
@@ -1170,26 +1627,44 @@ uint oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv)
 	memset(data, 0xFF, cnts);
 	if ((addr > 511) || (cnts < 1) || (cnts > 512) || (addr + cnts) >
 	     EFUSE_MAX_SIZE)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (r8712_efuse_access(Adapter, true, addr, cnts, data) == false)
 		status = NDIS_STATUS_FAILURE;
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
 	return status;
 }
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (!r8712_efuse_access(Adapter, true, addr, cnts, data))
+		status = RNDIS_STATUS_FAILURE;
+	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+	return status;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*------------------------------------------------------------------------*/
 uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
 
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct EFUSE_ACCESS_STRUCT *pefuse;
 	u8 *data;
 	u16 addr = 0, cnts = 0;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pefuse = (struct EFUSE_ACCESS_STRUCT *)poid_par_priv->information_buf;
 	addr = pefuse->start_addr;
@@ -1198,6 +1673,7 @@ uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 
 	if ((addr > 511) || (cnts < 1) || (cnts > 512) ||
 	    (addr + cnts) > r8712_efuse_get_max_size(Adapter))
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (r8712_efuse_access(Adapter, false, addr, cnts, data) == false)
 		status = NDIS_STATUS_FAILURE;
@@ -1248,18 +1724,42 @@ uint oid_rt_get_efuse_current_size_hdl(struct oid_par_priv
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(int))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (!r8712_efuse_access(Adapter, false, addr, cnts, data))
+		status = RNDIS_STATUS_FAILURE;
+	return status;
+}
+
+/*----------------------------------------------------------------------*/
+
+uint oid_rt_get_efuse_current_size_hdl(struct oid_par_priv *poid_par_priv)
+{
+	struct _adapter *Adapter = (struct _adapter *)
+				   (poid_par_priv->adapter_context);
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(int))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r8712_efuse_reg_init(Adapter);
 	*(int *)poid_par_priv->information_buf =
 				 r8712_efuse_get_current_size(Adapter);
 	r8712_efuse_reg_uninit(Adapter);
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+<<<<<<< HEAD
 	return status;
+=======
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_get_efuse_max_size_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
@@ -1270,11 +1770,26 @@ uint oid_rt_get_efuse_max_size_hdl(struct oid_par_priv *poid_par_priv)
 					 r8712_efuse_get_max_size(Adapter);
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
 	return status;
+=======
+
+	if (poid_par_priv->type_of_oid != QUERY_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	*(int *)poid_par_priv->information_buf =
+					 r8712_efuse_get_max_size(Adapter);
+	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint oid_rt_pro_efuse_hdl(struct oid_par_priv *poid_par_priv)
 {
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (poid_par_priv->type_of_oid == QUERY_OID)
 		status = oid_rt_pro_read_efuse_hdl(poid_par_priv);
@@ -1287,29 +1802,51 @@ uint oid_rt_pro_efuse_map_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
+=======
+	uint status = RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		*data;
 
 	*poid_par_priv->bytes_rw = 0;
 	if (poid_par_priv->information_buf_len < EFUSE_MAP_MAX_SIZE)
+<<<<<<< HEAD
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = (u8 *)poid_par_priv->information_buf;
 	if (poid_par_priv->type_of_oid == QUERY_OID) {
 		if (r8712_efuse_map_read(Adapter, 0, EFUSE_MAP_MAX_SIZE, data))
 			*poid_par_priv->bytes_rw = EFUSE_MAP_MAX_SIZE;
 		else
+<<<<<<< HEAD
 			status = NDIS_STATUS_FAILURE;
 	} else {
 		/* SET_OID */
 		if (r8712_efuse_reg_init(Adapter) == true) {
+=======
+			status = RNDIS_STATUS_FAILURE;
+	} else {
+		/* SET_OID */
+		if (r8712_efuse_reg_init(Adapter)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r8712_efuse_map_write(Adapter, 0,
 			    EFUSE_MAP_MAX_SIZE, data))
 				*poid_par_priv->bytes_rw = EFUSE_MAP_MAX_SIZE;
 			else
+<<<<<<< HEAD
 				status = NDIS_STATUS_FAILURE;
 			r8712_efuse_reg_uninit(Adapter);
 		} else {
 			status = NDIS_STATUS_FAILURE;
+=======
+				status = RNDIS_STATUS_FAILURE;
+			r8712_efuse_reg_uninit(Adapter);
+		} else {
+			status = RNDIS_STATUS_FAILURE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return status;
@@ -1319,6 +1856,7 @@ uint oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
+<<<<<<< HEAD
 	uint status = NDIS_STATUS_SUCCESS;
 	u32		bandwidth;
 
@@ -1326,11 +1864,20 @@ uint oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv)
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(u32))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+	u32		bandwidth;
+
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bandwidth = *((u32 *)poid_par_priv->information_buf);/*4*/
 	if (bandwidth != HT_CHANNEL_WIDTH_20)
 		bandwidth = HT_CHANNEL_WIDTH_40;
 	Adapter->mppriv.curr_bandwidth = (u8)bandwidth;
 	r8712_SwitchBandwidth(Adapter);
+<<<<<<< HEAD
 	return status;
 }
 
@@ -1355,6 +1902,12 @@ uint oid_rt_set_crystal_cap_hdl(struct oid_par_priv *poid_par_priv)
 
 uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv
 					   *poid_par_priv)
+=======
+	return RNDIS_STATUS_SUCCESS;
+}
+
+uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _adapter *Adapter = (struct _adapter *)
 				   (poid_par_priv->adapter_context);
@@ -1362,9 +1915,15 @@ uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv
 	u32		rcr_val32;
 
 	if (poid_par_priv->type_of_oid != SET_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(u8))
 		return NDIS_STATUS_INVALID_LENGTH;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(u8))
+		return RNDIS_STATUS_INVALID_LENGTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_pkt_type = *((u8 *)poid_par_priv->information_buf);/*4*/
 	rcr_val32 = r8712_read32(Adapter, RCR);/*RCR = 0x10250048*/
 	rcr_val32 &= ~(RCR_CBSSID | RCR_AB | RCR_AM | RCR_APM | RCR_AAP);
@@ -1376,7 +1935,11 @@ uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv
 		rcr_val32 |= (RCR_AB | RCR_AM | RCR_APM | RCR_AAP | RCR_ACRC32);
 		break;
 	case RX_PKT_PHY_MATCH:
+<<<<<<< HEAD
 		rcr_val32 |= (RCR_APM|RCR_ACRC32);
+=======
+		rcr_val32 |= (RCR_APM | RCR_ACRC32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		rcr_val32 &= ~(RCR_AAP |
@@ -1391,6 +1954,7 @@ uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv
 	else
 		Adapter->mppriv.check_mp_pkt = 0;
 	r8712_write32(Adapter, RCR, rcr_val32);
+<<<<<<< HEAD
 	return NDIS_STATUS_SUCCESS;
 }
 
@@ -1438,12 +2002,18 @@ uint oid_rt_pro_set_pkt_test_mode_hdl(struct oid_par_priv
 		status = NDIS_STATUS_NOT_ACCEPTED;
 	return status;
 }
+=======
+	return RNDIS_STATUS_SUCCESS;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*--------------------------------------------------------------------------*/
 /*Linux*/
 unsigned int mp_ioctl_xmit_packet_hdl(struct oid_par_priv *poid_par_priv)
 {
 	return _SUCCESS;
 }
+<<<<<<< HEAD
 /*-------------------------------------------------------------------------*/
 uint oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
 {
@@ -1454,6 +2024,16 @@ uint oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
 	bpwrup = *(u8 *)poid_par_priv->information_buf;
 	/*CALL  the power_down function*/
 	return NDIS_STATUS_SUCCESS;
+=======
+
+/*-------------------------------------------------------------------------*/
+uint oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
+{
+	if (poid_par_priv->type_of_oid != SET_OID)
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	/*CALL  the power_down function*/
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------- */
@@ -1463,6 +2043,7 @@ uint oid_rt_get_power_mode_hdl(struct oid_par_priv *poid_par_priv)
 				   (poid_par_priv->adapter_context);
 
 	if (poid_par_priv->type_of_oid != QUERY_OID)
+<<<<<<< HEAD
 		return NDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(u32))
 		return NDIS_STATUS_INVALID_LENGTH;
@@ -1470,4 +2051,13 @@ uint oid_rt_get_power_mode_hdl(struct oid_par_priv *poid_par_priv)
 		 Adapter->registrypriv.low_power ? POWER_LOW : POWER_NORMAL;
 	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
 	return NDIS_STATUS_SUCCESS;
+=======
+		return RNDIS_STATUS_NOT_ACCEPTED;
+	if (poid_par_priv->information_buf_len < sizeof(u32))
+		return RNDIS_STATUS_INVALID_LENGTH;
+	*(int *)poid_par_priv->information_buf =
+		 Adapter->registrypriv.low_power ? POWER_LOW : POWER_NORMAL;
+	*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
+	return RNDIS_STATUS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

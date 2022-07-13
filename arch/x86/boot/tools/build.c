@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *  Copyright (C) 1997 Martin Mares
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This file builds a disk-image from two different files:
  *
  * - setup: 8086 machine code, sets up system parm
@@ -13,6 +18,17 @@
  * It does some checking that all files are of the correct type, and
  * just writes the result to stdout, removing headers and padding to
  * the right amount. It also writes some system data to stderr.
+=======
+ * This file builds a disk-image from three different files:
+ *
+ * - setup: 8086 machine code, sets up system parm
+ * - system: 80386 code for actual system
+ * - zoffset.h: header with ZO_* defines
+ *
+ * It does some checking that all files are of the correct type, and writes
+ * the result to the specified destination, removing headers and padding to
+ * the right amount. It also writes some system data to stdout.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -38,17 +54,25 @@ typedef unsigned char  u8;
 typedef unsigned short u16;
 typedef unsigned int   u32;
 
+<<<<<<< HEAD
 #define DEFAULT_MAJOR_ROOT 0
 #define DEFAULT_MINOR_ROOT 0
 #define DEFAULT_ROOT_DEV (DEFAULT_MAJOR_ROOT << 8 | DEFAULT_MINOR_ROOT)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Minimal number of setup sectors */
 #define SETUP_SECT_MIN 5
 #define SETUP_SECT_MAX 64
 
 /* This must be large enough to hold the entire setup */
 u8 buf[SETUP_SECT_MAX*512];
+<<<<<<< HEAD
 int is_big_kernel;
+=======
+
+static unsigned long _edata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------------------------------------------------------------------*/
 
@@ -124,17 +148,62 @@ static void die(const char * str, ...)
 	va_list args;
 	va_start(args, str);
 	vfprintf(stderr, str, args);
+<<<<<<< HEAD
+=======
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fputc('\n', stderr);
 	exit(1);
 }
 
 static void usage(void)
 {
+<<<<<<< HEAD
 	die("Usage: build setup system [> image]");
+=======
+	die("Usage: build setup system zoffset.h image");
+}
+
+/*
+ * Parse zoffset.h and find the entry points. We could just #include zoffset.h
+ * but that would mean tools/build would have to be rebuilt every time. It's
+ * not as if parsing it is hard...
+ */
+#define PARSE_ZOFS(p, sym) do { \
+	if (!strncmp(p, "#define ZO_" #sym " ", 11+sizeof(#sym)))	\
+		sym = strtoul(p + 11 + sizeof(#sym), NULL, 16);		\
+} while (0)
+
+static void parse_zoffset(char *fname)
+{
+	FILE *file;
+	char *p;
+	int c;
+
+	file = fopen(fname, "r");
+	if (!file)
+		die("Unable to open `%s': %m", fname);
+	c = fread(buf, 1, sizeof(buf) - 1, file);
+	if (ferror(file))
+		die("read-error on `zoffset.h'");
+	fclose(file);
+	buf[c] = 0;
+
+	p = (char *)buf;
+
+	while (p && *p) {
+		PARSE_ZOFS(p, _edata);
+
+		p = strchr(p, '\n');
+		while (p && (*p == '\r' || *p == '\n'))
+			p++;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int main(int argc, char ** argv)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_EFI_STUB
 	unsigned int file_sz, pe_header;
 #endif
@@ -143,12 +212,28 @@ int main(int argc, char ** argv)
 	u32 sys_size;
 	struct stat sb;
 	FILE *file;
+=======
+	unsigned int i, sz, setup_sectors;
+	int c;
+	struct stat sb;
+	FILE *file, *dest;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fd;
 	void *kernel;
 	u32 crc = 0xffffffffUL;
 
+<<<<<<< HEAD
 	if (argc != 3)
 		usage();
+=======
+	if (argc != 5)
+		usage();
+	parse_zoffset(argv[3]);
+
+	dest = fopen(argv[4], "w");
+	if (!dest)
+		die("Unable to write `%s': %m", argv[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy the setup code */
 	file = fopen(argv[1], "r");
@@ -164,23 +249,32 @@ int main(int argc, char ** argv)
 	fclose(file);
 
 	/* Pad unused space with zeros */
+<<<<<<< HEAD
 	setup_sectors = (c + 511) / 512;
+=======
+	setup_sectors = (c + 4095) / 4096;
+	setup_sectors *= 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (setup_sectors < SETUP_SECT_MIN)
 		setup_sectors = SETUP_SECT_MIN;
 	i = setup_sectors*512;
 	memset(buf+c, 0, i-c);
 
+<<<<<<< HEAD
 	/* Set the default root device */
 	put_unaligned_le16(DEFAULT_ROOT_DEV, &buf[508]);
 
 	fprintf(stderr, "Setup is %d bytes (padded to %d bytes).\n", c, i);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Open and stat the kernel file */
 	fd = open(argv[2], O_RDONLY);
 	if (fd < 0)
 		die("Unable to open `%s': %m", argv[2]);
 	if (fstat(fd, &sb))
 		die("Unable to stat `%s': %m", argv[2]);
+<<<<<<< HEAD
 	sz = sb.st_size;
 	fprintf (stderr, "System is %d kB\n", (sz+1023)/1024);
 	kernel = mmap(NULL, sz, PROT_READ, MAP_SHARED, fd, 0);
@@ -239,10 +333,23 @@ int main(int argc, char ** argv)
 
 	crc = partial_crc32(buf, i, crc);
 	if (fwrite(buf, 1, i, stdout) != i)
+=======
+	if (_edata != sb.st_size)
+		die("Unexpected file size `%s': %u != %u", argv[2], _edata,
+		    sb.st_size);
+	sz = _edata - 4;
+	kernel = mmap(NULL, sz, PROT_READ, MAP_SHARED, fd, 0);
+	if (kernel == MAP_FAILED)
+		die("Unable to mmap '%s': %m", argv[2]);
+
+	crc = partial_crc32(buf, i, crc);
+	if (fwrite(buf, 1, i, dest) != i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("Writing setup failed");
 
 	/* Copy the kernel code */
 	crc = partial_crc32(kernel, sz, crc);
+<<<<<<< HEAD
 	if (fwrite(kernel, 1, sz, stdout) != sz)
 		die("Writing kernel failed");
 
@@ -259,6 +366,20 @@ int main(int argc, char ** argv)
 	if (fwrite(buf, 1, 4, stdout) != 4)
 		die("Writing CRC failed");
 
+=======
+	if (fwrite(kernel, 1, sz, dest) != sz)
+		die("Writing kernel failed");
+
+	/* Write the CRC */
+	put_unaligned_le32(crc, buf);
+	if (fwrite(buf, 1, 4, dest) != 4)
+		die("Writing CRC failed");
+
+	/* Catch any delayed write failures */
+	if (fclose(dest))
+		die("Writing image failed");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	close(fd);
 
 	/* Everything is OK */

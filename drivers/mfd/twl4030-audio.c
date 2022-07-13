@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MFD driver for twl4030 audio submodule, which contains an audio codec, and
  * the vibra control.
@@ -5,6 +9,7 @@
  * Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
  *
  * Copyright:   (C) 2009 Nokia Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,6 +25,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -28,7 +35,13 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/i2c/twl.h>
+=======
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/mfd/twl.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/core.h>
 #include <linux/mfd/twl4030-audio.h>
 
@@ -116,7 +129,11 @@ EXPORT_SYMBOL_GPL(twl4030_audio_enable_resource);
  * Disable the resource.
  * The function returns with error or the content of the register
  */
+<<<<<<< HEAD
 int twl4030_audio_disable_resource(unsigned id)
+=======
+int twl4030_audio_disable_resource(enum twl4030_audio_res id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct twl4030_audio *audio = platform_get_drvdata(twl4030_audio_dev);
 	int val;
@@ -156,19 +173,63 @@ unsigned int twl4030_audio_get_mclk(void)
 }
 EXPORT_SYMBOL_GPL(twl4030_audio_get_mclk);
 
+<<<<<<< HEAD
 static int __devinit twl4030_audio_probe(struct platform_device *pdev)
 {
 	struct twl4030_audio *audio;
 	struct twl4030_audio_data *pdata = pdev->dev.platform_data;
+=======
+static bool twl4030_audio_has_codec(struct twl4030_audio_data *pdata,
+			      struct device_node *parent)
+{
+	struct device_node *node;
+
+	if (pdata && pdata->codec)
+		return true;
+
+	node = of_get_child_by_name(parent, "codec");
+	if (node) {
+		of_node_put(node);
+		return true;
+	}
+
+	return false;
+}
+
+static bool twl4030_audio_has_vibra(struct twl4030_audio_data *pdata,
+			      struct device_node *node)
+{
+	int vibra;
+
+	if (pdata && pdata->vibra)
+		return true;
+
+	if (!of_property_read_u32(node, "ti,enable-vibra", &vibra) && vibra)
+		return true;
+
+	return false;
+}
+
+static int twl4030_audio_probe(struct platform_device *pdev)
+{
+	struct twl4030_audio *audio;
+	struct twl4030_audio_data *pdata = dev_get_platdata(&pdev->dev);
+	struct device_node *node = pdev->dev.of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mfd_cell *cell = NULL;
 	int ret, childs = 0;
 	u8 val;
 
+<<<<<<< HEAD
 	if (!pdata) {
+=======
+	if (!pdata && !node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "Platform data is missing\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Configure APLL_INFREQ and disable APLL if enabled */
 	val = 0;
 	switch (pdata->audio_mclk) {
@@ -180,11 +241,32 @@ static int __devinit twl4030_audio_probe(struct platform_device *pdev)
 		break;
 	case 38400000:
 		val |= TWL4030_APLL_INFREQ_38400KHZ;
+=======
+	audio = devm_kzalloc(&pdev->dev, sizeof(struct twl4030_audio),
+			     GFP_KERNEL);
+	if (!audio)
+		return -ENOMEM;
+
+	mutex_init(&audio->mutex);
+	audio->audio_mclk = twl_get_hfclk_rate();
+
+	/* Configure APLL_INFREQ and disable APLL if enabled */
+	switch (audio->audio_mclk) {
+	case 19200000:
+		val = TWL4030_APLL_INFREQ_19200KHZ;
+		break;
+	case 26000000:
+		val = TWL4030_APLL_INFREQ_26000KHZ;
+		break;
+	case 38400000:
+		val = TWL4030_APLL_INFREQ_38400KHZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&pdev->dev, "Invalid audio_mclk\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE,
 					val, TWL4030_REG_APLL_CTL);
 
@@ -197,6 +279,9 @@ static int __devinit twl4030_audio_probe(struct platform_device *pdev)
 	twl4030_audio_dev = pdev;
 	mutex_init(&audio->mutex);
 	audio->audio_mclk = pdata->audio_mclk;
+=======
+	twl_i2c_write_u8(TWL4030_MODULE_AUDIO_VOICE, val, TWL4030_REG_APLL_CTL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Codec power */
 	audio->resource[TWL4030_AUDIO_RES_POWER].reg = TWL4030_REG_CODEC_MODE;
@@ -206,6 +291,7 @@ static int __devinit twl4030_audio_probe(struct platform_device *pdev)
 	audio->resource[TWL4030_AUDIO_RES_APLL].reg = TWL4030_REG_APLL_CTL;
 	audio->resource[TWL4030_AUDIO_RES_APLL].mask = TWL4030_APLL_EN;
 
+<<<<<<< HEAD
 	if (pdata->codec) {
 		cell = &audio->cells[childs];
 		cell->name = "twl4030-codec";
@@ -224,11 +310,39 @@ static int __devinit twl4030_audio_probe(struct platform_device *pdev)
 	if (childs)
 		ret = mfd_add_devices(&pdev->dev, pdev->id, audio->cells,
 				      childs, NULL, 0);
+=======
+	if (twl4030_audio_has_codec(pdata, node)) {
+		cell = &audio->cells[childs];
+		cell->name = "twl4030-codec";
+		if (pdata) {
+			cell->platform_data = pdata->codec;
+			cell->pdata_size = sizeof(*pdata->codec);
+		}
+		childs++;
+	}
+	if (twl4030_audio_has_vibra(pdata, node)) {
+		cell = &audio->cells[childs];
+		cell->name = "twl4030-vibra";
+		if (pdata) {
+			cell->platform_data = pdata->vibra;
+			cell->pdata_size = sizeof(*pdata->vibra);
+		}
+		childs++;
+	}
+
+	platform_set_drvdata(pdev, audio);
+	twl4030_audio_dev = pdev;
+
+	if (childs)
+		ret = mfd_add_devices(&pdev->dev, pdev->id, audio->cells,
+				      childs, NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		dev_err(&pdev->dev, "No platform data found for childs\n");
 		ret = -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (!ret)
 		return 0;
 
@@ -259,9 +373,41 @@ static struct platform_driver twl4030_audio_driver = {
 		.owner	= THIS_MODULE,
 		.name	= "twl4030-audio",
 	},
+=======
+	if (ret)
+		twl4030_audio_dev = NULL;
+
+	return ret;
+}
+
+static void twl4030_audio_remove(struct platform_device *pdev)
+{
+	mfd_remove_devices(&pdev->dev);
+	twl4030_audio_dev = NULL;
+}
+
+static const struct of_device_id twl4030_audio_of_match[] = {
+	{.compatible = "ti,twl4030-audio", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, twl4030_audio_of_match);
+
+static struct platform_driver twl4030_audio_driver = {
+	.driver		= {
+		.name	= "twl4030-audio",
+		.of_match_table = twl4030_audio_of_match,
+	},
+	.probe		= twl4030_audio_probe,
+	.remove_new	= twl4030_audio_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(twl4030_audio_driver);
 
 MODULE_AUTHOR("Peter Ujfalusi <peter.ujfalusi@ti.com>");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_DESCRIPTION("TWL4030 audio block MFD driver");
+MODULE_ALIAS("platform:twl4030-audio");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

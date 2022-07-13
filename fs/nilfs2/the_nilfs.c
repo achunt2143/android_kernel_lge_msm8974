@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * the_nilfs.c - the_nilfs shared structure.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * the_nilfs shared structure.
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -26,6 +36,10 @@
 #include <linux/blkdev.h>
 #include <linux/backing-dev.h>
 #include <linux/random.h>
+<<<<<<< HEAD
+=======
+#include <linux/log2.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 #include "nilfs.h"
 #include "segment.h"
@@ -60,12 +74,20 @@ void nilfs_set_last_segment(struct the_nilfs *nilfs,
 
 /**
  * alloc_nilfs - allocate a nilfs object
+<<<<<<< HEAD
  * @bdev: block device to which the_nilfs is related
+=======
+ * @sb: super block instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return Value: On success, pointer to the_nilfs is returned.
  * On error, NULL is returned.
  */
+<<<<<<< HEAD
 struct the_nilfs *alloc_nilfs(struct block_device *bdev)
+=======
+struct the_nilfs *alloc_nilfs(struct super_block *sb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct the_nilfs *nilfs;
 
@@ -73,7 +95,12 @@ struct the_nilfs *alloc_nilfs(struct block_device *bdev)
 	if (!nilfs)
 		return NULL;
 
+<<<<<<< HEAD
 	nilfs->ns_bdev = bdev;
+=======
+	nilfs->ns_sb = sb;
+	nilfs->ns_bdev = sb->s_bdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&nilfs->ns_ndirtyblks, 0);
 	init_rwsem(&nilfs->ns_sem);
 	mutex_init(&nilfs->ns_snapshot_mount_mutex);
@@ -85,6 +112,10 @@ struct the_nilfs *alloc_nilfs(struct block_device *bdev)
 	nilfs->ns_cptree = RB_ROOT;
 	spin_lock_init(&nilfs->ns_cptree_lock);
 	init_rwsem(&nilfs->ns_segctor_sem);
+<<<<<<< HEAD
+=======
+	nilfs->ns_sb_update_freq = NILFS_SB_FREQ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nilfs;
 }
@@ -110,8 +141,13 @@ static int nilfs_load_super_root(struct the_nilfs *nilfs,
 	struct nilfs_super_root *raw_sr;
 	struct nilfs_super_block **sbp = nilfs->ns_sbp;
 	struct nilfs_inode *rawi;
+<<<<<<< HEAD
 	unsigned dat_entry_size, segment_usage_size, checkpoint_size;
 	unsigned inode_size;
+=======
+	unsigned int dat_entry_size, segment_usage_size, checkpoint_size;
+	unsigned int inode_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = nilfs_read_super_root_block(nilfs, sr_block, &bh_sr, 1);
@@ -193,16 +229,57 @@ static int nilfs_store_log_cursor(struct the_nilfs *nilfs,
 		nilfs_get_segnum_of_block(nilfs, nilfs->ns_last_pseg);
 	nilfs->ns_cno = nilfs->ns_last_cno + 1;
 	if (nilfs->ns_segnum >= nilfs->ns_nsegments) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS invalid last segment number.\n");
+=======
+		nilfs_err(nilfs->ns_sb,
+			  "pointed segment number is out of range: segnum=%llu, nsegments=%lu",
+			  (unsigned long long)nilfs->ns_segnum,
+			  nilfs->ns_nsegments);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 	}
 	return ret;
 }
 
 /**
+<<<<<<< HEAD
  * load_nilfs - load and recover the nilfs
  * @nilfs: the_nilfs structure to be released
  * @sb: super block isntance used to recover past segment
+=======
+ * nilfs_get_blocksize - get block size from raw superblock data
+ * @sb: super block instance
+ * @sbp: superblock raw data buffer
+ * @blocksize: place to store block size
+ *
+ * nilfs_get_blocksize() calculates the block size from the block size
+ * exponent information written in @sbp and stores it in @blocksize,
+ * or aborts with an error message if it's too large.
+ *
+ * Return Value: On success, 0 is returned. If the block size is too
+ * large, -EINVAL is returned.
+ */
+static int nilfs_get_blocksize(struct super_block *sb,
+			       struct nilfs_super_block *sbp, int *blocksize)
+{
+	unsigned int shift_bits = le32_to_cpu(sbp->s_log_block_size);
+
+	if (unlikely(shift_bits >
+		     ilog2(NILFS_MAX_BLOCK_SIZE) - BLOCK_SIZE_BITS)) {
+		nilfs_err(sb, "too large filesystem blocksize: 2 ^ %u KiB",
+			  shift_bits);
+		return -EINVAL;
+	}
+	*blocksize = BLOCK_SIZE << shift_bits;
+	return 0;
+}
+
+/**
+ * load_nilfs - load and recover the nilfs
+ * @nilfs: the_nilfs structure to be released
+ * @sb: super block instance used to recover past segment
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * load_nilfs() searches and load the latest super root,
  * attaches the last segment, and does recovery if needed.
@@ -217,12 +294,21 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 	int err;
 
 	if (!valid_fs) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "NILFS warning: mounting unchecked fs\n");
 		if (s_flags & MS_RDONLY) {
 			printk(KERN_INFO "NILFS: INFO: recovery "
 			       "required for readonly filesystem.\n");
 			printk(KERN_INFO "NILFS: write access will "
 			       "be enabled during recovery.\n");
+=======
+		nilfs_warn(sb, "mounting unchecked fs");
+		if (s_flags & SB_RDONLY) {
+			nilfs_info(sb,
+				   "recovery required for readonly filesystem");
+			nilfs_info(sb,
+				   "write access will be enabled during recovery");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -237,6 +323,7 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 			goto scan_error;
 
 		if (!nilfs_valid_sb(sbp[1])) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "NILFS warning: unable to fall back to spare"
 			       "super block\n");
@@ -244,6 +331,13 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		}
 		printk(KERN_INFO
 		       "NILFS: try rollback from an earlier position\n");
+=======
+			nilfs_warn(sb,
+				   "unable to fall back to spare super block");
+			goto scan_error;
+		}
+		nilfs_info(sb, "trying rollback from an earlier position");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * restore super block with its spare and reconfigure
@@ -254,12 +348,24 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		nilfs->ns_sbwtime = le64_to_cpu(sbp[0]->s_wtime);
 
 		/* verify consistency between two super blocks */
+<<<<<<< HEAD
 		blocksize = BLOCK_SIZE << le32_to_cpu(sbp[0]->s_log_block_size);
 		if (blocksize != nilfs->ns_blocksize) {
 			printk(KERN_WARNING
 			       "NILFS warning: blocksize differs between "
 			       "two super blocks (%d != %d)\n",
 			       blocksize, nilfs->ns_blocksize);
+=======
+		err = nilfs_get_blocksize(sb, sbp[0], &blocksize);
+		if (err)
+			goto scan_error;
+
+		if (blocksize != nilfs->ns_blocksize) {
+			nilfs_warn(sb,
+				   "blocksize differs between two super blocks (%d != %d)",
+				   blocksize, nilfs->ns_blocksize);
+			err = -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto scan_error;
 		}
 
@@ -278,6 +384,7 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 
 	err = nilfs_load_super_root(nilfs, sb, ri.ri_super_root);
 	if (unlikely(err)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: error loading super root.\n");
 		goto failed;
 	}
@@ -291,19 +398,45 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		if (nilfs_test_opt(nilfs, NORECOVERY)) {
 			printk(KERN_INFO "NILFS: norecovery option specified. "
 			       "skipping roll-forward recovery\n");
+=======
+		nilfs_err(sb, "error %d while loading super root", err);
+		goto failed;
+	}
+
+	err = nilfs_sysfs_create_device_group(sb);
+	if (unlikely(err))
+		goto sysfs_error;
+
+	if (valid_fs)
+		goto skip_recovery;
+
+	if (s_flags & SB_RDONLY) {
+		__u64 features;
+
+		if (nilfs_test_opt(nilfs, NORECOVERY)) {
+			nilfs_info(sb,
+				   "norecovery option specified, skipping roll-forward recovery");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto skip_recovery;
 		}
 		features = le64_to_cpu(nilfs->ns_sbp[0]->s_feature_compat_ro) &
 			~NILFS_FEATURE_COMPAT_RO_SUPP;
 		if (features) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: couldn't proceed with "
 			       "recovery because of unsupported optional "
 			       "features (%llx)\n",
 			       (unsigned long long)features);
+=======
+			nilfs_err(sb,
+				  "couldn't proceed with recovery because of unsupported optional features (%llx)",
+				  (unsigned long long)features);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EROFS;
 			goto failed_unload;
 		}
 		if (really_read_only) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: write access "
 			       "unavailable, cannot proceed.\n");
 			err = -EROFS;
@@ -313,6 +446,17 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 	} else if (nilfs_test_opt(nilfs, NORECOVERY)) {
 		printk(KERN_ERR "NILFS: recovery cancelled because norecovery "
 		       "option was specified for a read/write mount\n");
+=======
+			nilfs_err(sb,
+				  "write access unavailable, cannot proceed");
+			err = -EROFS;
+			goto failed_unload;
+		}
+		sb->s_flags &= ~SB_RDONLY;
+	} else if (nilfs_test_opt(nilfs, NORECOVERY)) {
+		nilfs_err(sb,
+			  "recovery cancelled because norecovery option was specified for a read/write mount");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto failed_unload;
 	}
@@ -327,11 +471,20 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 	up_write(&nilfs->ns_sem);
 
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: failed to update super block. "
 		       "recovery unfinished.\n");
 		goto failed_unload;
 	}
 	printk(KERN_INFO "NILFS: recovery complete.\n");
+=======
+		nilfs_err(sb,
+			  "error %d updating super block. recovery unfinished.",
+			  err);
+		goto failed_unload;
+	}
+	nilfs_info(sb, "recovery complete");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  skip_recovery:
 	nilfs_clear_recovery_info(&ri);
@@ -339,10 +492,20 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 	return 0;
 
  scan_error:
+<<<<<<< HEAD
 	printk(KERN_ERR "NILFS: error searching super root.\n");
 	goto failed;
 
  failed_unload:
+=======
+	nilfs_err(sb, "error %d while searching super root", err);
+	goto failed;
+
+ failed_unload:
+	nilfs_sysfs_delete_device_group(nilfs);
+
+ sysfs_error:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(nilfs->ns_cpfile);
 	iput(nilfs->ns_sufile);
 	iput(nilfs->ns_dat);
@@ -376,6 +539,21 @@ unsigned long nilfs_nrsvsegs(struct the_nilfs *nilfs, unsigned long nsegs)
 				  100));
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_max_segment_count - calculate the maximum number of segments
+ * @nilfs: nilfs object
+ */
+static u64 nilfs_max_segment_count(struct the_nilfs *nilfs)
+{
+	u64 max_count = U64_MAX;
+
+	max_count = div64_ul(max_count, nilfs->ns_blocks_per_segment);
+	return min_t(u64, max_count, ULONG_MAX);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nilfs_set_nsegments(struct the_nilfs *nilfs, unsigned long nsegs)
 {
 	nilfs->ns_nsegments = nsegs;
@@ -385,6 +563,7 @@ void nilfs_set_nsegments(struct the_nilfs *nilfs, unsigned long nsegs)
 static int nilfs_store_disk_layout(struct the_nilfs *nilfs,
 				   struct nilfs_super_block *sbp)
 {
+<<<<<<< HEAD
 	if (le32_to_cpu(sbp->s_rev_level) < NILFS_MIN_SUPP_REV) {
 		printk(KERN_ERR "NILFS: unsupported revision "
 		       "(superblock rev.=%d.%d, current rev.=%d.%d). "
@@ -392,6 +571,16 @@ static int nilfs_store_disk_layout(struct the_nilfs *nilfs,
 		       le32_to_cpu(sbp->s_rev_level),
 		       le16_to_cpu(sbp->s_minor_rev_level),
 		       NILFS_CURRENT_REV, NILFS_MINOR_REV);
+=======
+	u64 nsegments, nblocks;
+
+	if (le32_to_cpu(sbp->s_rev_level) < NILFS_MIN_SUPP_REV) {
+		nilfs_err(nilfs->ns_sb,
+			  "unsupported revision (superblock rev.=%d.%d, current rev.=%d.%d). Please check the version of mkfs.nilfs(2).",
+			  le32_to_cpu(sbp->s_rev_level),
+			  le16_to_cpu(sbp->s_minor_rev_level),
+			  NILFS_CURRENT_REV, NILFS_MINOR_REV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	nilfs->ns_sbsize = le16_to_cpu(sbp->s_bytes);
@@ -399,11 +588,29 @@ static int nilfs_store_disk_layout(struct the_nilfs *nilfs,
 		return -EINVAL;
 
 	nilfs->ns_inode_size = le16_to_cpu(sbp->s_inode_size);
+<<<<<<< HEAD
+=======
+	if (nilfs->ns_inode_size > nilfs->ns_blocksize) {
+		nilfs_err(nilfs->ns_sb, "too large inode size: %d bytes",
+			  nilfs->ns_inode_size);
+		return -EINVAL;
+	} else if (nilfs->ns_inode_size < NILFS_MIN_INODE_SIZE) {
+		nilfs_err(nilfs->ns_sb, "too small inode size: %d bytes",
+			  nilfs->ns_inode_size);
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs->ns_first_ino = le32_to_cpu(sbp->s_first_ino);
 
 	nilfs->ns_blocks_per_segment = le32_to_cpu(sbp->s_blocks_per_segment);
 	if (nilfs->ns_blocks_per_segment < NILFS_SEG_MIN_BLOCKS) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: too short segment.\n");
+=======
+		nilfs_err(nilfs->ns_sb, "too short segment: %lu blocks",
+			  nilfs->ns_blocks_per_segment);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -412,11 +619,48 @@ static int nilfs_store_disk_layout(struct the_nilfs *nilfs,
 		le32_to_cpu(sbp->s_r_segments_percentage);
 	if (nilfs->ns_r_segments_percentage < 1 ||
 	    nilfs->ns_r_segments_percentage > 99) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: invalid reserved segments percentage.\n");
 		return -EINVAL;
 	}
 
 	nilfs_set_nsegments(nilfs, le64_to_cpu(sbp->s_nsegments));
+=======
+		nilfs_err(nilfs->ns_sb,
+			  "invalid reserved segments percentage: %lu",
+			  nilfs->ns_r_segments_percentage);
+		return -EINVAL;
+	}
+
+	nsegments = le64_to_cpu(sbp->s_nsegments);
+	if (nsegments > nilfs_max_segment_count(nilfs)) {
+		nilfs_err(nilfs->ns_sb,
+			  "segment count %llu exceeds upper limit (%llu segments)",
+			  (unsigned long long)nsegments,
+			  (unsigned long long)nilfs_max_segment_count(nilfs));
+		return -EINVAL;
+	}
+
+	nblocks = sb_bdev_nr_blocks(nilfs->ns_sb);
+	if (nblocks) {
+		u64 min_block_count = nsegments * nilfs->ns_blocks_per_segment;
+		/*
+		 * To avoid failing to mount early device images without a
+		 * second superblock, exclude that block count from the
+		 * "min_block_count" calculation.
+		 */
+
+		if (nblocks < min_block_count) {
+			nilfs_err(nilfs->ns_sb,
+				  "total number of segment blocks %llu exceeds device size (%llu blocks)",
+				  (unsigned long long)min_block_count,
+				  (unsigned long long)nblocks);
+			return -EINVAL;
+		}
+	}
+
+	nilfs_set_nsegments(nilfs, nsegments);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs->ns_crc_seed = le32_to_cpu(sbp->s_crc_seed);
 	return 0;
 }
@@ -431,7 +675,11 @@ static int nilfs_valid_sb(struct nilfs_super_block *sbp)
 	if (!sbp || le16_to_cpu(sbp->s_magic) != NILFS_SUPER_MAGIC)
 		return 0;
 	bytes = le16_to_cpu(sbp->s_bytes);
+<<<<<<< HEAD
 	if (bytes > BLOCK_SIZE)
+=======
+	if (bytes < sumoff + 4 || bytes > BLOCK_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	crc = crc32_le(le32_to_cpu(sbp->s_crc_seed), (unsigned char *)sbp,
 		       sumoff);
@@ -441,11 +689,41 @@ static int nilfs_valid_sb(struct nilfs_super_block *sbp)
 	return crc == le32_to_cpu(sbp->s_sum);
 }
 
+<<<<<<< HEAD
 static int nilfs_sb2_bad_offset(struct nilfs_super_block *sbp, u64 offset)
 {
 	return offset < ((le64_to_cpu(sbp->s_nsegments) *
 			  le32_to_cpu(sbp->s_blocks_per_segment)) <<
 			 (le32_to_cpu(sbp->s_log_block_size) + 10));
+=======
+/**
+ * nilfs_sb2_bad_offset - check the location of the second superblock
+ * @sbp: superblock raw data buffer
+ * @offset: byte offset of second superblock calculated from device size
+ *
+ * nilfs_sb2_bad_offset() checks if the position on the second
+ * superblock is valid or not based on the filesystem parameters
+ * stored in @sbp.  If @offset points to a location within the segment
+ * area, or if the parameters themselves are not normal, it is
+ * determined to be invalid.
+ *
+ * Return Value: true if invalid, false if valid.
+ */
+static bool nilfs_sb2_bad_offset(struct nilfs_super_block *sbp, u64 offset)
+{
+	unsigned int shift_bits = le32_to_cpu(sbp->s_log_block_size);
+	u32 blocks_per_segment = le32_to_cpu(sbp->s_blocks_per_segment);
+	u64 nsegments = le64_to_cpu(sbp->s_nsegments);
+	u64 index;
+
+	if (blocks_per_segment < NILFS_SEG_MIN_BLOCKS ||
+	    shift_bits > ilog2(NILFS_MAX_BLOCK_SIZE) - BLOCK_SIZE_BITS)
+		return true;
+
+	index = offset >> (shift_bits + BLOCK_SIZE_BITS);
+	do_div(index, blocks_per_segment);
+	return index < nsegments;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nilfs_release_super_block(struct the_nilfs *nilfs)
@@ -487,15 +765,28 @@ static int nilfs_load_super_block(struct the_nilfs *nilfs,
 {
 	struct nilfs_super_block **sbp = nilfs->ns_sbp;
 	struct buffer_head **sbh = nilfs->ns_sbh;
+<<<<<<< HEAD
 	u64 sb2off = NILFS_SB2_OFFSET_BYTES(nilfs->ns_bdev->bd_inode->i_size);
 	int valid[2], swp = 0;
 
+=======
+	u64 sb2off, devsize = bdev_nr_bytes(nilfs->ns_bdev);
+	int valid[2], swp = 0;
+
+	if (devsize < NILFS_SEG_MIN_BLOCKS * NILFS_MIN_BLOCK_SIZE + 4096) {
+		nilfs_err(sb, "device size too small");
+		return -EINVAL;
+	}
+	sb2off = NILFS_SB2_OFFSET_BYTES(devsize);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbp[0] = nilfs_read_super_block(sb, NILFS_SB_OFFSET_BYTES, blocksize,
 					&sbh[0]);
 	sbp[1] = nilfs_read_super_block(sb, sb2off, blocksize, &sbh[1]);
 
 	if (!sbp[0]) {
 		if (!sbp[1]) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: unable to read superblock\n");
 			return -EIO;
 		}
@@ -506,6 +797,18 @@ static int nilfs_load_super_block(struct the_nilfs *nilfs,
 		printk(KERN_WARNING
 		       "NILFS warning: unable to read secondary superblock "
 		       "(blocksize = %d)\n", blocksize);
+=======
+			nilfs_err(sb, "unable to read superblock");
+			return -EIO;
+		}
+		nilfs_warn(sb,
+			   "unable to read primary superblock (blocksize = %d)",
+			   blocksize);
+	} else if (!sbp[1]) {
+		nilfs_warn(sb,
+			   "unable to read secondary superblock (blocksize = %d)",
+			   blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -527,14 +830,24 @@ static int nilfs_load_super_block(struct the_nilfs *nilfs,
 	}
 	if (!valid[swp]) {
 		nilfs_release_super_block(nilfs);
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: Can't find nilfs on dev %s.\n",
 		       sb->s_id);
+=======
+		nilfs_err(sb, "couldn't find nilfs on the device");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (!valid[!swp])
+<<<<<<< HEAD
 		printk(KERN_WARNING "NILFS warning: broken superblock. "
 		       "using spare superblock (blocksize = %d).\n", blocksize);
+=======
+		nilfs_warn(sb,
+			   "broken superblock, retrying with spare superblock (blocksize = %d)",
+			   blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (swp)
 		nilfs_swap_super_block(nilfs);
 
@@ -568,7 +881,11 @@ int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data)
 
 	blocksize = sb_min_blocksize(sb, NILFS_MIN_BLOCK_SIZE);
 	if (!blocksize) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: unable to set blocksize\n");
+=======
+		nilfs_err(sb, "unable to set blocksize");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out;
 	}
@@ -584,11 +901,22 @@ int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data)
 	if (err)
 		goto failed_sbh;
 
+<<<<<<< HEAD
 	blocksize = BLOCK_SIZE << le32_to_cpu(sbp->s_log_block_size);
 	if (blocksize < NILFS_MIN_BLOCK_SIZE ||
 	    blocksize > NILFS_MAX_BLOCK_SIZE) {
 		printk(KERN_ERR "NILFS: couldn't mount because of unsupported "
 		       "filesystem blocksize %d\n", blocksize);
+=======
+	err = nilfs_get_blocksize(sb, sbp, &blocksize);
+	if (err)
+		goto failed_sbh;
+
+	if (blocksize < NILFS_MIN_BLOCK_SIZE) {
+		nilfs_err(sb,
+			  "couldn't mount because of unsupported filesystem blocksize %d",
+			  blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto failed_sbh;
 	}
@@ -596,21 +924,42 @@ int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data)
 		int hw_blocksize = bdev_logical_block_size(sb->s_bdev);
 
 		if (blocksize < hw_blocksize) {
+<<<<<<< HEAD
 			printk(KERN_ERR
 			       "NILFS: blocksize %d too small for device "
 			       "(sector-size = %d).\n",
 			       blocksize, hw_blocksize);
+=======
+			nilfs_err(sb,
+				  "blocksize %d too small for device (sector-size = %d)",
+				  blocksize, hw_blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto failed_sbh;
 		}
 		nilfs_release_super_block(nilfs);
+<<<<<<< HEAD
 		sb_set_blocksize(sb, blocksize);
+=======
+		if (!sb_set_blocksize(sb, blocksize)) {
+			nilfs_err(sb, "bad blocksize %d", blocksize);
+			err = -EINVAL;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = nilfs_load_super_block(nilfs, sb, blocksize, &sbp);
 		if (err)
 			goto out;
+<<<<<<< HEAD
 			/* not failed_sbh; sbh is released automatically
 			   when reloading fails. */
+=======
+			/*
+			 * Not to failed_sbh; sbh is released automatically
+			 * when reloading fails.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	nilfs->ns_blocksize_bits = sb->s_blocksize_bits;
 	nilfs->ns_blocksize = blocksize;
@@ -664,7 +1013,11 @@ int nilfs_discard_segments(struct the_nilfs *nilfs, __u64 *segnump,
 			ret = blkdev_issue_discard(nilfs->ns_bdev,
 						   start * sects_per_block,
 						   nblocks * sects_per_block,
+<<<<<<< HEAD
 						   GFP_NOFS, 0);
+=======
+						   GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0)
 				return ret;
 			nblocks = 0;
@@ -674,7 +1027,11 @@ int nilfs_discard_segments(struct the_nilfs *nilfs, __u64 *segnump,
 		ret = blkdev_issue_discard(nilfs->ns_bdev,
 					   start * sects_per_block,
 					   nblocks * sects_per_block,
+<<<<<<< HEAD
 					   GFP_NOFS, 0);
+=======
+					   GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -682,9 +1039,13 @@ int nilfs_count_free_blocks(struct the_nilfs *nilfs, sector_t *nblocks)
 {
 	unsigned long ncleansegs;
 
+<<<<<<< HEAD
 	down_read(&NILFS_MDT(nilfs->ns_dat)->mi_sem);
 	ncleansegs = nilfs_sufile_get_ncleansegs(nilfs->ns_sufile);
 	up_read(&NILFS_MDT(nilfs->ns_dat)->mi_sem);
+=======
+	ncleansegs = nilfs_sufile_get_ncleansegs(nilfs->ns_sufile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*nblocks = (sector_t)ncleansegs * nilfs->ns_blocks_per_segment;
 	return 0;
 }
@@ -715,7 +1076,11 @@ struct nilfs_root *nilfs_lookup_root(struct the_nilfs *nilfs, __u64 cno)
 		} else if (cno > root->cno) {
 			n = n->rb_right;
 		} else {
+<<<<<<< HEAD
 			atomic_inc(&root->count);
+=======
+			refcount_inc(&root->count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&nilfs->ns_cptree_lock);
 			return root;
 		}
@@ -730,12 +1095,20 @@ nilfs_find_or_create_root(struct the_nilfs *nilfs, __u64 cno)
 {
 	struct rb_node **p, *parent;
 	struct nilfs_root *root, *new;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	root = nilfs_lookup_root(nilfs, cno);
 	if (root)
 		return root;
 
+<<<<<<< HEAD
 	new = kmalloc(sizeof(*root), GFP_KERNEL);
+=======
+	new = kzalloc(sizeof(*root), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!new)
 		return NULL;
 
@@ -753,7 +1126,11 @@ nilfs_find_or_create_root(struct the_nilfs *nilfs, __u64 cno)
 		} else if (cno > root->cno) {
 			p = &(*p)->rb_right;
 		} else {
+<<<<<<< HEAD
 			atomic_inc(&root->count);
+=======
+			refcount_inc(&root->count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&nilfs->ns_cptree_lock);
 			kfree(new);
 			return root;
@@ -763,20 +1140,36 @@ nilfs_find_or_create_root(struct the_nilfs *nilfs, __u64 cno)
 	new->cno = cno;
 	new->ifile = NULL;
 	new->nilfs = nilfs;
+<<<<<<< HEAD
 	atomic_set(&new->count, 1);
 	atomic_set(&new->inodes_count, 0);
 	atomic_set(&new->blocks_count, 0);
+=======
+	refcount_set(&new->count, 1);
+	atomic64_set(&new->inodes_count, 0);
+	atomic64_set(&new->blocks_count, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rb_link_node(&new->rb_node, parent, p);
 	rb_insert_color(&new->rb_node, &nilfs->ns_cptree);
 
 	spin_unlock(&nilfs->ns_cptree_lock);
 
+<<<<<<< HEAD
+=======
+	err = nilfs_sysfs_create_snapshot_group(new);
+	if (err) {
+		kfree(new);
+		new = NULL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 }
 
 void nilfs_put_root(struct nilfs_root *root)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&root->count)) {
 		struct the_nilfs *nilfs = root->nilfs;
 
@@ -785,6 +1178,16 @@ void nilfs_put_root(struct nilfs_root *root)
 		spin_unlock(&nilfs->ns_cptree_lock);
 		if (root->ifile)
 			iput(root->ifile);
+=======
+	struct the_nilfs *nilfs = root->nilfs;
+
+	if (refcount_dec_and_lock(&root->count, &nilfs->ns_cptree_lock)) {
+		rb_erase(&root->rb_node, &nilfs->ns_cptree);
+		spin_unlock(&nilfs->ns_cptree_lock);
+
+		nilfs_sysfs_delete_snapshot_group(root);
+		iput(root->ifile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		kfree(root);
 	}

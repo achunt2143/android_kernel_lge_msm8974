@@ -6,6 +6,7 @@
  * Copyright (C) 1991, 1992  Linus Torvalds
  * Copyright (C) 1994 - 2000, 2006  Ralf Baechle
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+<<<<<<< HEAD
  */
 #include <linux/cache.h>
 #include <linux/compat.h>
@@ -50,11 +51,30 @@ extern asmlinkage int fpu_emulator_restore_context32(struct sigcontext32 __user 
  */
 #define __NR_O32_restart_syscall        4253
 
+=======
+ * Copyright (C) 2016, Imagination Technologies Ltd.
+ */
+#include <linux/compat.h>
+#include <linux/compiler.h>
+#include <linux/errno.h>
+#include <linux/kernel.h>
+#include <linux/signal.h>
+#include <linux/syscalls.h>
+
+#include <asm/compat-signal.h>
+#include <linux/uaccess.h>
+#include <asm/unistd.h>
+#include <asm/syscalls.h>
+
+#include "signal-common.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 32-bit compatibility types */
 
 typedef unsigned int __sighandler32_t;
 typedef void (*vfptr_t)(void);
 
+<<<<<<< HEAD
 struct sigaction32 {
 	unsigned int		sa_flags;
 	__sighandler32_t	sa_handler;
@@ -276,10 +296,13 @@ static inline int get_sigset(sigset_t *kbuf, const compat_sigset_t __user *ubuf)
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Atomically swap in the new signal mask, and wait for a signal.
  */
 
+<<<<<<< HEAD
 asmlinkage int sys32_sigsuspend(nabi_no_regargs struct pt_regs regs)
 {
 	compat_sigset_t __user *uset;
@@ -326,6 +349,15 @@ asmlinkage int sys32_rt_sigsuspend(nabi_no_regargs struct pt_regs regs)
 
 SYSCALL_DEFINE3(32_sigaction, long, sig, const struct sigaction32 __user *, act,
 	struct sigaction32 __user *, oact)
+=======
+asmlinkage int sys32_sigsuspend(compat_sigset_t __user *uset)
+{
+	return compat_sys_rt_sigsuspend(uset, sizeof(compat_sigset_t));
+}
+
+SYSCALL_DEFINE3(32_sigaction, long, sig, const struct compat_sigaction __user *, act,
+	struct compat_sigaction __user *, oact)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct k_sigaction new_ka, old_ka;
 	int ret;
@@ -335,7 +367,11 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct sigaction32 __user *, act,
 		old_sigset_t mask;
 		s32 handler;
 
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_READ, act, sizeof(*act)))
+=======
+		if (!access_ok(act, sizeof(*act)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		err |= __get_user(handler, &act->sa_handler);
 		new_ka.sa.sa_handler = (void __user *)(s64)handler;
@@ -350,11 +386,19 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct sigaction32 __user *, act,
 	ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
 
 	if (!ret && oact) {
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)))
 			return -EFAULT;
 		err |= __put_user(old_ka.sa.sa_flags, &oact->sa_flags);
 		err |= __put_user((u32)(u64)old_ka.sa.sa_handler,
 		                  &oact->sa_handler);
+=======
+		if (!access_ok(oact, sizeof(*oact)))
+			return -EFAULT;
+		err |= __put_user(old_ka.sa.sa_flags, &oact->sa_flags);
+		err |= __put_user((u32)(u64)old_ka.sa.sa_handler,
+				  &oact->sa_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err |= __put_user(old_ka.sa.sa_mask.sig[0], oact->sa_mask.sig);
 		err |= __put_user(0, &oact->sa_mask.sig[1]);
 		err |= __put_user(0, &oact->sa_mask.sig[2]);
@@ -365,6 +409,7 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct sigaction32 __user *, act,
 
 	return ret;
 }
+<<<<<<< HEAD
 
 asmlinkage int sys32_sigaltstack(nabi_no_regargs struct pt_regs regs)
 {
@@ -813,3 +858,5 @@ static int signal32_init(void)
 }
 
 arch_initcall(signal32_init);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

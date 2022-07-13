@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -93,7 +104,11 @@ u8 acpi_ps_has_completed_scope(struct acpi_parse_state * parser_state)
  * FUNCTION:    acpi_ps_init_scope
  *
  * PARAMETERS:  parser_state        - Current parser state object
+<<<<<<< HEAD
  *              Root                - the Root Node of this new scope
+=======
+ *              root                - the Root Node of this new scope
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -131,7 +146,11 @@ acpi_ps_init_scope(struct acpi_parse_state * parser_state,
  * FUNCTION:    acpi_ps_push_scope
  *
  * PARAMETERS:  parser_state        - Current parser state object
+<<<<<<< HEAD
  *              Op                  - Current op to be pushed
+=======
+ *              op                  - Current op to be pushed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              remaining_args      - List of args remaining
  *              arg_count           - Fixed or variable number of args
  *
@@ -184,7 +203,11 @@ acpi_ps_push_scope(struct acpi_parse_state *parser_state,
  * FUNCTION:    acpi_ps_pop_scope
  *
  * PARAMETERS:  parser_state        - Current parser state object
+<<<<<<< HEAD
  *              Op                  - Where the popped op is returned
+=======
+ *              op                  - Where the popped op is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              arg_list            - Where the popped "next argument" is
  *                                    returned
  *              arg_count           - Count of objects in arg_list

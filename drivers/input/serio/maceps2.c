@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SGI O2 MACE PS2 controller driver for linux
  *
  * Copyright (C) 2002 Vivien Chappelier
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
@@ -116,7 +123,11 @@ static void maceps2_close(struct serio *dev)
 }
 
 
+<<<<<<< HEAD
 static struct serio * __devinit maceps2_allocate_port(int idx)
+=======
+static struct serio *maceps2_allocate_port(int idx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio;
 
@@ -135,7 +146,11 @@ static struct serio * __devinit maceps2_allocate_port(int idx)
 	return serio;
 }
 
+<<<<<<< HEAD
 static int __devinit maceps2_probe(struct platform_device *dev)
+=======
+static int maceps2_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	maceps2_port[0] = maceps2_allocate_port(0);
 	maceps2_port[1] = maceps2_allocate_port(1);
@@ -151,21 +166,34 @@ static int __devinit maceps2_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit maceps2_remove(struct platform_device *dev)
 {
 	serio_unregister_port(maceps2_port[0]);
 	serio_unregister_port(maceps2_port[1]);
 
 	return 0;
+=======
+static void maceps2_remove(struct platform_device *dev)
+{
+	serio_unregister_port(maceps2_port[0]);
+	serio_unregister_port(maceps2_port[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver maceps2_driver = {
 	.driver		= {
 		.name	= "maceps2",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= maceps2_probe,
 	.remove		= __devexit_p(maceps2_remove),
+=======
+	},
+	.probe		= maceps2_probe,
+	.remove_new	= maceps2_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init maceps2_init(void)

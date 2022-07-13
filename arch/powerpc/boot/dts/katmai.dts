@@ -319,7 +319,11 @@
 			>;
 		};
 
+<<<<<<< HEAD
 		PCIE0: pciex@d00000000 {
+=======
+		PCIE0: pcie@d00000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;
@@ -360,7 +364,11 @@
 				0x0 0x0 0x0 0x4 &UIC3 0x3 0x4 /* swizzled int D */>;
 		};
 
+<<<<<<< HEAD
 		PCIE1: pciex@d20000000 {
+=======
+		PCIE1: pcie@d20000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;
@@ -401,7 +409,11 @@
 				0x0 0x0 0x0 0x4 &UIC3 0x7 0x4 /* swizzled int D */>;
 		};
 
+<<<<<<< HEAD
 		PCIE2: pciex@d40000000 {
+=======
+		PCIE2: pcie@d40000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;
@@ -442,6 +454,7 @@
 				0x0 0x0 0x0 0x4 &UIC3 0xb 0x4 /* swizzled int D */>;
 		};
 
+<<<<<<< HEAD
 		MSI: ppc4xx-msi@400300000 {
 				compatible = "amcc,ppc4xx-msi", "ppc4xx-msi";
 				reg = < 0x4 0x00300000 0x100>;
@@ -460,6 +473,8 @@
 					3 &UIC0 0x0F 1>;
 		};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		I2O: i2o@400100000 {
 			compatible = "ibm,i2o-440spe";
 			reg = <0x00000004 0x00100000 0x100>;
@@ -505,6 +520,10 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = "/plb/opb/serial@f0000200";
+=======
+		stdout-path = "/plb/opb/serial@f0000200";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

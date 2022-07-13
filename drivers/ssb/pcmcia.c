@@ -8,6 +8,11 @@
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
+<<<<<<< HEAD
+=======
+#include "ssb_private.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -18,8 +23,11 @@
 #include <pcmcia/ds.h>
 #include <pcmcia/cisreg.h>
 
+<<<<<<< HEAD
 #include "ssb_private.h"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the following to 1 to enable a printk on each coreswitch. */
 #define SSB_VERBOSE_PCMCIACORESWITCH_DEBUG		0
@@ -143,20 +151,33 @@ int ssb_pcmcia_switch_coreidx(struct ssb_bus *bus,
 
 	return 0;
 error:
+<<<<<<< HEAD
 	ssb_printk(KERN_ERR PFX "Failed to switch to core %u\n", coreidx);
 	return err;
 }
 
 int ssb_pcmcia_switch_core(struct ssb_bus *bus,
 			   struct ssb_device *dev)
+=======
+	pr_err("Failed to switch to core %u\n", coreidx);
+	return err;
+}
+
+static int ssb_pcmcia_switch_core(struct ssb_bus *bus, struct ssb_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 #if SSB_VERBOSE_PCMCIACORESWITCH_DEBUG
+<<<<<<< HEAD
 	ssb_printk(KERN_INFO PFX
 		   "Switching to %s core, index %d\n",
 		   ssb_core_name(dev->id.coreid),
 		   dev->core_index);
+=======
+	pr_info("Switching to %s core, index %d\n",
+		ssb_core_name(dev->id.coreid), dev->core_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	err = ssb_pcmcia_switch_coreidx(bus, dev->core_index);
@@ -172,7 +193,11 @@ int ssb_pcmcia_switch_segment(struct ssb_bus *bus, u8 seg)
 	int err;
 	u8 val;
 
+<<<<<<< HEAD
 	SSB_WARN_ON((seg != 0) && (seg != 1));
+=======
+	WARN_ON((seg != 0) && (seg != 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		err = ssb_pcmcia_cfg_write(bus, SSB_PCMCIA_MEMSEG, seg);
 		if (err)
@@ -192,7 +217,11 @@ int ssb_pcmcia_switch_segment(struct ssb_bus *bus, u8 seg)
 
 	return 0;
 error:
+<<<<<<< HEAD
 	ssb_printk(KERN_ERR PFX "Failed to switch pcmcia segment\n");
+=======
+	pr_err("Failed to switch pcmcia segment\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -302,7 +331,11 @@ static void ssb_pcmcia_block_read(struct ssb_device *dev, void *buffer,
 	case sizeof(u16): {
 		__le16 *buf = buffer;
 
+<<<<<<< HEAD
 		SSB_WARN_ON(count & 1);
+=======
+		WARN_ON(count & 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (count) {
 			*buf = (__force __le16)__raw_readw(addr);
 			buf++;
@@ -313,7 +346,11 @@ static void ssb_pcmcia_block_read(struct ssb_device *dev, void *buffer,
 	case sizeof(u32): {
 		__le16 *buf = buffer;
 
+<<<<<<< HEAD
 		SSB_WARN_ON(count & 3);
+=======
+		WARN_ON(count & 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (count) {
 			*buf = (__force __le16)__raw_readw(addr);
 			buf++;
@@ -324,7 +361,11 @@ static void ssb_pcmcia_block_read(struct ssb_device *dev, void *buffer,
 		break;
 	}
 	default:
+<<<<<<< HEAD
 		SSB_WARN_ON(1);
+=======
+		WARN_ON(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 unlock:
 	spin_unlock_irqrestore(&bus->bar_lock, flags);
@@ -341,7 +382,10 @@ static void ssb_pcmcia_write8(struct ssb_device *dev, u16 offset, u8 value)
 	err = select_core_and_segment(dev, &offset);
 	if (likely(!err))
 		writeb(value, bus->mmio + offset);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bus->bar_lock, flags);
 }
 
@@ -355,7 +399,10 @@ static void ssb_pcmcia_write16(struct ssb_device *dev, u16 offset, u16 value)
 	err = select_core_and_segment(dev, &offset);
 	if (likely(!err))
 		writew(value, bus->mmio + offset);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bus->bar_lock, flags);
 }
 
@@ -371,7 +418,10 @@ static void ssb_pcmcia_write32(struct ssb_device *dev, u16 offset, u32 value)
 		writew((value & 0x0000FFFF), bus->mmio + offset);
 		writew(((value & 0xFFFF0000) >> 16), bus->mmio + offset + 2);
 	}
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bus->bar_lock, flags);
 }
 
@@ -402,7 +452,11 @@ static void ssb_pcmcia_block_write(struct ssb_device *dev, const void *buffer,
 	case sizeof(u16): {
 		const __le16 *buf = buffer;
 
+<<<<<<< HEAD
 		SSB_WARN_ON(count & 1);
+=======
+		WARN_ON(count & 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (count) {
 			__raw_writew((__force u16)(*buf), addr);
 			buf++;
@@ -413,7 +467,11 @@ static void ssb_pcmcia_block_write(struct ssb_device *dev, const void *buffer,
 	case sizeof(u32): {
 		const __le16 *buf = buffer;
 
+<<<<<<< HEAD
 		SSB_WARN_ON(count & 3);
+=======
+		WARN_ON(count & 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (count) {
 			__raw_writew((__force u16)(*buf), addr);
 			buf++;
@@ -424,10 +482,16 @@ static void ssb_pcmcia_block_write(struct ssb_device *dev, const void *buffer,
 		break;
 	}
 	default:
+<<<<<<< HEAD
 		SSB_WARN_ON(1);
 	}
 unlock:
 	mmiowb();
+=======
+		WARN_ON(1);
+	}
+unlock:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bus->bar_lock, flags);
 }
 #endif /* CONFIG_SSB_BLOCKIO */
@@ -549,6 +613,7 @@ static int ssb_pcmcia_sprom_write_all(struct ssb_bus *bus, const u16 *sprom)
 	bool failed = 0;
 	size_t size = SSB_PCMCIA_SPROM_SIZE;
 
+<<<<<<< HEAD
 	ssb_printk(KERN_NOTICE PFX
 		   "Writing SPROM. Do NOT turn off the power! "
 		   "Please stand by...\n");
@@ -573,20 +638,51 @@ static int ssb_pcmcia_sprom_write_all(struct ssb_bus *bus, const u16 *sprom)
 		if (err) {
 			ssb_printk(KERN_NOTICE PFX
 				   "Failed to write to SPROM.\n");
+=======
+	pr_notice("Writing SPROM. Do NOT turn off the power! Please stand by...\n");
+	err = ssb_pcmcia_sprom_command(bus, SSB_PCMCIA_SPROMCTL_WRITEEN);
+	if (err) {
+		pr_notice("Could not enable SPROM write access\n");
+		return -EBUSY;
+	}
+	pr_notice("[ 0%%");
+	msleep(500);
+	for (i = 0; i < size; i++) {
+		if (i == size / 4)
+			pr_cont("25%%");
+		else if (i == size / 2)
+			pr_cont("50%%");
+		else if (i == (size * 3) / 4)
+			pr_cont("75%%");
+		else if (i % 2)
+			pr_cont(".");
+		err = ssb_pcmcia_sprom_write(bus, i, sprom[i]);
+		if (err) {
+			pr_notice("Failed to write to SPROM\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			failed = 1;
 			break;
 		}
 	}
 	err = ssb_pcmcia_sprom_command(bus, SSB_PCMCIA_SPROMCTL_WRITEDIS);
 	if (err) {
+<<<<<<< HEAD
 		ssb_printk(KERN_NOTICE PFX
 			   "Could not disable SPROM write access.\n");
+=======
+		pr_notice("Could not disable SPROM write access\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		failed = 1;
 	}
 	msleep(500);
 	if (!failed) {
+<<<<<<< HEAD
 		ssb_printk("100%% ]\n");
 		ssb_printk(KERN_NOTICE PFX "SPROM written.\n");
+=======
+		pr_cont("100%% ]\n");
+		pr_notice("SPROM written\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return failed ? -EBUSY : 0;
@@ -700,9 +796,14 @@ static int ssb_pcmcia_do_get_invariants(struct pcmcia_device *p_dev,
 	return -ENOSPC; /* continue with next entry */
 
 error:
+<<<<<<< HEAD
 	ssb_printk(KERN_ERR PFX
 		   "PCMCIA: Failed to fetch device invariants: %s\n",
 		   error_description);
+=======
+	pr_err("PCMCIA: Failed to fetch device invariants: %s\n",
+	       error_description);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -722,8 +823,12 @@ int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
 	res = pcmcia_loop_tuple(bus->host_pcmcia, CISTPL_FUNCE,
 				ssb_pcmcia_get_mac, sprom);
 	if (res != 0) {
+<<<<<<< HEAD
 		ssb_printk(KERN_ERR PFX
 			"PCMCIA: Failed to fetch MAC address\n");
+=======
+		pr_err("PCMCIA: Failed to fetch MAC address\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -733,6 +838,7 @@ int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
 	if ((res == 0) || (res == -ENOSPC))
 		return 0;
 
+<<<<<<< HEAD
 	ssb_printk(KERN_ERR PFX
 			"PCMCIA: Failed to fetch device invariants\n");
 	return -ENODEV;
@@ -741,6 +847,15 @@ int ssb_pcmcia_get_invariants(struct ssb_bus *bus,
 static ssize_t ssb_pcmcia_attr_sprom_show(struct device *pcmciadev,
 					  struct device_attribute *attr,
 					  char *buf)
+=======
+	pr_err("PCMCIA: Failed to fetch device invariants\n");
+	return -ENODEV;
+}
+
+static ssize_t ssb_sprom_show(struct device *pcmciadev,
+			      struct device_attribute *attr,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *pdev =
 		container_of(pcmciadev, struct pcmcia_device, dev);
@@ -754,9 +869,15 @@ static ssize_t ssb_pcmcia_attr_sprom_show(struct device *pcmciadev,
 				   ssb_pcmcia_sprom_read_all);
 }
 
+<<<<<<< HEAD
 static ssize_t ssb_pcmcia_attr_sprom_store(struct device *pcmciadev,
 					   struct device_attribute *attr,
 					   const char *buf, size_t count)
+=======
+static ssize_t ssb_sprom_store(struct device *pcmciadev,
+			       struct device_attribute *attr,
+			       const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *pdev =
 		container_of(pcmciadev, struct pcmcia_device, dev);
@@ -771,9 +892,13 @@ static ssize_t ssb_pcmcia_attr_sprom_store(struct device *pcmciadev,
 				    ssb_pcmcia_sprom_write_all);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(ssb_sprom, 0600,
 		   ssb_pcmcia_attr_sprom_show,
 		   ssb_pcmcia_attr_sprom_store);
+=======
+static DEVICE_ATTR_ADMIN_RW(ssb_sprom);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ssb_pcmcia_cor_setup(struct ssb_bus *bus, u8 cor)
 {
@@ -843,6 +968,10 @@ int ssb_pcmcia_init(struct ssb_bus *bus)
 
 	return 0;
 error:
+<<<<<<< HEAD
 	ssb_printk(KERN_ERR PFX "Failed to initialize PCMCIA host device\n");
+=======
+	pr_err("Failed to initialize PCMCIA host device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }

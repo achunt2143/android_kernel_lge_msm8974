@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_MMU_CONTEXT_32_H
 #define __ASM_SH_MMU_CONTEXT_32_H
 
@@ -10,6 +11,12 @@ static inline void destroy_context(struct mm_struct *mm)
 	/* Do nothing */
 }
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_MMU_CONTEXT_32_H
+#define __ASM_SH_MMU_CONTEXT_32_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_HAS_PTEAEX
 static inline void set_asid(unsigned long asid)
 {

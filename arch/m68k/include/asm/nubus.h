@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_M68K_NUBUS_H
 #define _ASM_M68K_NUBUS_H
 
 #include <asm/raw_io.h>
+<<<<<<< HEAD
+=======
+#include <asm/kmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define nubus_readb raw_inb
 #define nubus_readw raw_inw

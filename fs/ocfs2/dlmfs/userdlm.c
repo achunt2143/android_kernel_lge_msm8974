@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * userdlm.c
  *
  * Code which implements the kernel side of a minimal userspace
@@ -10,6 +15,7 @@
  * functions.
  *
  * Copyright (C) 2003, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -28,18 +34,33 @@
  */
 
 #include <linux/signal.h>
+=======
+ */
+
+#include <linux/signal.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/types.h>
 #include <linux/crc32.h>
 
+<<<<<<< HEAD
 #include "ocfs2_lockingver.h"
 #include "stackglue.h"
 #include "userdlm.h"
 
 #define MLOG_MASK_PREFIX ML_DLMFS
 #include "cluster/masklog.h"
+=======
+#include "../ocfs2_lockingver.h"
+#include "../stackglue.h"
+#include "userdlm.h"
+
+#define MLOG_MASK_PREFIX ML_DLMFS
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static inline struct user_lock_res *user_lksb_to_lock_res(struct ocfs2_dlm_lksb *lksb)
@@ -448,6 +469,14 @@ again:
 	}
 
 	spin_lock(&lockres->l_lock);
+<<<<<<< HEAD
+=======
+	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
+		spin_unlock(&lockres->l_lock);
+		status = -EAGAIN;
+		goto bail;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We only compare against the currently granted level
 	 * here. If the lock is blocked waiting on a downconvert,
@@ -560,6 +589,7 @@ void user_dlm_write_lvb(struct inode *inode,
 	spin_unlock(&lockres->l_lock);
 }
 
+<<<<<<< HEAD
 ssize_t user_dlm_read_lvb(struct inode *inode,
 			  char *val,
 			  unsigned int len)
@@ -569,15 +599,28 @@ ssize_t user_dlm_read_lvb(struct inode *inode,
 	ssize_t ret = len;
 
 	BUG_ON(len > DLM_LVB_LEN);
+=======
+bool user_dlm_read_lvb(struct inode *inode, char *val)
+{
+	struct user_lock_res *lockres = &DLMFS_I(inode)->ip_lockres;
+	char *lvb;
+	bool ret = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&lockres->l_lock);
 
 	BUG_ON(lockres->l_level < DLM_LOCK_PR);
 	if (ocfs2_dlm_lvb_valid(&lockres->l_lksb)) {
 		lvb = ocfs2_dlm_lvb(&lockres->l_lksb);
+<<<<<<< HEAD
 		memcpy(val, lvb, len);
 	} else
 		ret = 0;
+=======
+		memcpy(val, lvb, DLM_LVB_LEN);
+	} else
+		ret = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&lockres->l_lock);
 	return ret;
@@ -614,7 +657,11 @@ int user_dlm_destroy_lock(struct user_lock_res *lockres)
 	spin_lock(&lockres->l_lock);
 	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
 		spin_unlock(&lockres->l_lock);
+<<<<<<< HEAD
 		return 0;
+=======
+		goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lockres->l_flags |= USER_LOCK_IN_TEARDOWN;
@@ -628,22 +675,43 @@ int user_dlm_destroy_lock(struct user_lock_res *lockres)
 	}
 
 	if (lockres->l_ro_holders || lockres->l_ex_holders) {
+<<<<<<< HEAD
+=======
+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&lockres->l_lock);
 		goto bail;
 	}
 
 	status = 0;
 	if (!(lockres->l_flags & USER_LOCK_ATTACHED)) {
+<<<<<<< HEAD
+=======
+		/*
+		 * lock is never requested, leave USER_LOCK_IN_TEARDOWN set
+		 * to avoid new lock request coming in.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&lockres->l_lock);
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	lockres->l_flags &= ~USER_LOCK_ATTACHED;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lockres->l_flags |= USER_LOCK_BUSY;
 	spin_unlock(&lockres->l_lock);
 
 	status = ocfs2_dlm_unlock(conn, &lockres->l_lksb, DLM_LKF_VALBLK);
 	if (status) {
+<<<<<<< HEAD
+=======
+		spin_lock(&lockres->l_lock);
+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
+		lockres->l_flags &= ~USER_LOCK_BUSY;
+		spin_unlock(&lockres->l_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		user_log_dlm_error("ocfs2_dlm_unlock", status, lockres);
 		goto bail;
 	}
@@ -667,7 +735,11 @@ void user_dlm_set_locking_protocol(void)
 	ocfs2_stack_glue_set_max_proto_version(&user_dlm_lproto.lp_max_version);
 }
 
+<<<<<<< HEAD
 struct ocfs2_cluster_connection *user_dlm_register(struct qstr *name)
+=======
+struct ocfs2_cluster_connection *user_dlm_register(const struct qstr *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	struct ocfs2_cluster_connection *conn;

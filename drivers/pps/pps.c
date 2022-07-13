@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * PPS core file
  *
@@ -17,6 +18,13 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * PPS core file
+ *
+ * Copyright (C) 2005-2009   Rodolfo Giometti <giometti@linux.it>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -49,13 +57,21 @@ static DEFINE_IDR(pps_idr);
  * Char device methods
  */
 
+<<<<<<< HEAD
 static unsigned int pps_cdev_poll(struct file *file, poll_table *wait)
+=======
+static __poll_t pps_cdev_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pps_device *pps = file->private_data;
 
 	poll_wait(file, &pps->queue, wait);
 
+<<<<<<< HEAD
 	return POLLIN | POLLRDNORM;
+=======
+	return EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pps_cdev_fasync(int fd, struct file *file, int on)
@@ -64,6 +80,46 @@ static int pps_cdev_fasync(int fd, struct file *file, int on)
 	return fasync_helper(fd, file, on, &pps->async_queue);
 }
 
+<<<<<<< HEAD
+=======
+static int pps_cdev_pps_fetch(struct pps_device *pps, struct pps_fdata *fdata)
+{
+	unsigned int ev = pps->last_ev;
+	int err = 0;
+
+	/* Manage the timeout */
+	if (fdata->timeout.flags & PPS_TIME_INVALID)
+		err = wait_event_interruptible(pps->queue,
+				ev != pps->last_ev);
+	else {
+		unsigned long ticks;
+
+		dev_dbg(pps->dev, "timeout %lld.%09d\n",
+				(long long) fdata->timeout.sec,
+				fdata->timeout.nsec);
+		ticks = fdata->timeout.sec * HZ;
+		ticks += fdata->timeout.nsec / (NSEC_PER_SEC / HZ);
+
+		if (ticks != 0) {
+			err = wait_event_interruptible_timeout(
+					pps->queue,
+					ev != pps->last_ev,
+					ticks);
+			if (err == 0)
+				return -ETIMEDOUT;
+		}
+	}
+
+	/* Check for pending signals */
+	if (err == -ERESTARTSYS) {
+		dev_dbg(pps->dev, "pending signal caught\n");
+		return -EINTR;
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long pps_cdev_ioctl(struct file *file,
 		unsigned int cmd, unsigned long arg)
 {
@@ -129,6 +185,17 @@ static long pps_cdev_ioctl(struct file *file,
 			pps->params.mode |= PPS_CANWAIT;
 		pps->params.api_version = PPS_API_VERS;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * Clear unused fields of pps_kparams to avoid leaking
+		 * uninitialized data of the PPS_SETPARAMS caller via
+		 * PPS_GETPARAMS
+		 */
+		pps->params.assert_off_tu.flags = 0;
+		pps->params.clear_off_tu.flags = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&pps->lock);
 
 		break;
@@ -144,7 +211,10 @@ static long pps_cdev_ioctl(struct file *file,
 
 	case PPS_FETCH: {
 		struct pps_fdata fdata;
+<<<<<<< HEAD
 		unsigned int ev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_dbg(pps->dev, "PPS_FETCH\n");
 
@@ -152,6 +222,7 @@ static long pps_cdev_ioctl(struct file *file,
 		if (err)
 			return -EFAULT;
 
+<<<<<<< HEAD
 		ev = pps->last_ev;
 
 		/* Manage the timeout */
@@ -182,6 +253,11 @@ static long pps_cdev_ioctl(struct file *file,
 			dev_dbg(pps->dev, "pending signal caught\n");
 			return -EINTR;
 		}
+=======
+		err = pps_cdev_pps_fetch(pps, &fdata);
+		if (err)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Return the fetched timestamp */
 		spin_lock_irq(&pps->lock);
@@ -242,6 +318,60 @@ static long pps_cdev_ioctl(struct file *file,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+static long pps_cdev_compat_ioctl(struct file *file,
+		unsigned int cmd, unsigned long arg)
+{
+	struct pps_device *pps = file->private_data;
+	void __user *uarg = (void __user *) arg;
+
+	cmd = _IOC(_IOC_DIR(cmd), _IOC_TYPE(cmd), _IOC_NR(cmd), sizeof(void *));
+
+	if (cmd == PPS_FETCH) {
+		struct pps_fdata_compat compat;
+		struct pps_fdata fdata;
+		int err;
+
+		dev_dbg(pps->dev, "PPS_FETCH\n");
+
+		err = copy_from_user(&compat, uarg, sizeof(struct pps_fdata_compat));
+		if (err)
+			return -EFAULT;
+
+		memcpy(&fdata.timeout, &compat.timeout,
+					sizeof(struct pps_ktime_compat));
+
+		err = pps_cdev_pps_fetch(pps, &fdata);
+		if (err)
+			return err;
+
+		/* Return the fetched timestamp */
+		spin_lock_irq(&pps->lock);
+
+		compat.info.assert_sequence = pps->assert_sequence;
+		compat.info.clear_sequence = pps->clear_sequence;
+		compat.info.current_mode = pps->current_mode;
+
+		memcpy(&compat.info.assert_tu, &pps->assert_tu,
+				sizeof(struct pps_ktime_compat));
+		memcpy(&compat.info.clear_tu, &pps->clear_tu,
+				sizeof(struct pps_ktime_compat));
+
+		spin_unlock_irq(&pps->lock);
+
+		return copy_to_user(uarg, &compat,
+				sizeof(struct pps_fdata_compat)) ? -EFAULT : 0;
+	}
+
+	return pps_cdev_ioctl(file, cmd, arg);
+}
+#else
+#define pps_cdev_compat_ioctl	NULL
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pps_cdev_open(struct inode *inode, struct file *file)
 {
 	struct pps_device *pps = container_of(inode->i_cdev,
@@ -268,6 +398,10 @@ static const struct file_operations pps_cdev_fops = {
 	.llseek		= no_llseek,
 	.poll		= pps_cdev_poll,
 	.fasync		= pps_cdev_fasync,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= pps_cdev_compat_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= pps_cdev_ioctl,
 	.open		= pps_cdev_open,
 	.release	= pps_cdev_release,
@@ -295,6 +429,7 @@ int pps_register_cdev(struct pps_device *pps)
 	dev_t devt;
 
 	mutex_lock(&pps_idr_lock);
+<<<<<<< HEAD
 	/* Get new ID for the new PPS source */
 	if (idr_pre_get(&pps_idr, GFP_KERNEL) == 0) {
 		mutex_unlock(&pps_idr_lock);
@@ -318,6 +453,23 @@ int pps_register_cdev(struct pps_device *pps)
 		err = -EBUSY;
 		goto free_idr;
 	}
+=======
+	/*
+	 * Get new ID for the new PPS source.  After idr_alloc() calling
+	 * the new source will be freely available into the kernel.
+	 */
+	err = idr_alloc(&pps_idr, pps, 0, PPS_MAX_SOURCES, GFP_KERNEL);
+	if (err < 0) {
+		if (err == -ENOSPC) {
+			pr_err("%s: too many PPS sources in the system\n",
+			       pps->info.name);
+			err = -EBUSY;
+		}
+		goto out_unlock;
+	}
+	pps->id = err;
+	mutex_unlock(&pps_idr_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	devt = MKDEV(MAJOR(pps_devt), pps->id);
 
@@ -332,8 +484,15 @@ int pps_register_cdev(struct pps_device *pps)
 	}
 	pps->dev = device_create(pps_class, pps->info.dev, devt, pps,
 							"pps%d", pps->id);
+<<<<<<< HEAD
 	if (IS_ERR(pps->dev))
 		goto del_cdev;
+=======
+	if (IS_ERR(pps->dev)) {
+		err = PTR_ERR(pps->dev);
+		goto del_cdev;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Override the release function with our own */
 	pps->dev->release = pps_device_destruct;
@@ -349,8 +508,13 @@ del_cdev:
 free_idr:
 	mutex_lock(&pps_idr_lock);
 	idr_remove(&pps_idr, pps->id);
+<<<<<<< HEAD
 	mutex_unlock(&pps_idr_lock);
 
+=======
+out_unlock:
+	mutex_unlock(&pps_idr_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -407,12 +571,20 @@ static int __init pps_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	pps_class = class_create(THIS_MODULE, "pps");
+=======
+	pps_class = class_create("pps");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pps_class)) {
 		pr_err("failed to allocate class\n");
 		return PTR_ERR(pps_class);
 	}
+<<<<<<< HEAD
 	pps_class->dev_attrs = pps_attrs;
+=======
+	pps_class->dev_groups = pps_groups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = alloc_chrdev_region(&pps_devt, 0, PPS_MAX_SOURCES, "pps");
 	if (err < 0) {

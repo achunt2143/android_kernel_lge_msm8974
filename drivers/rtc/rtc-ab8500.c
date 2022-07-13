@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Virupax Sadashivpetimath <virupax.sadashivpetimath@stericsson.com>
  *
  * RTC clock driver for the RTC part of the AB8500 Power management chip.
@@ -17,6 +24,11 @@
 #include <linux/mfd/abx500.h>
 #include <linux/mfd/abx500/ab8500.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/pm_wakeirq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AB8500_RTC_SOFF_STAT_REG	0x00
 #define AB8500_RTC_CC_CONF_REG		0x01
@@ -44,7 +56,10 @@
 #define RTC_STATUS_DATA			0x01
 
 #define COUNTS_PER_SEC			(0xF000 / 60)
+<<<<<<< HEAD
 #define AB8500_RTC_EPOCH		2000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u8 ab8500_rtc_time_regs[] = {
 	AB8500_RTC_WATCH_TMIN_HI_REG, AB8500_RTC_WATCH_TMIN_MID_REG,
@@ -57,6 +72,7 @@ static const u8 ab8500_rtc_alarm_regs[] = {
 	AB8500_RTC_ALRM_MIN_LOW_REG
 };
 
+<<<<<<< HEAD
 /* Calculate the seconds from 1970 to 01-01-2000 00:00:00 */
 static unsigned long get_elapsed_seconds(int year)
 {
@@ -74,6 +90,8 @@ static unsigned long get_elapsed_seconds(int year)
 	return secs;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ab8500_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	unsigned long timeout = jiffies + HZ;
@@ -88,6 +106,7 @@ static int ab8500_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (retval < 0)
 		return retval;
 
+<<<<<<< HEAD
 	/* Early AB8500 chips will not clear the rtc read request bit */
 	if (abx500_get_chip_id(dev) == 0) {
 		usleep_range(1000, 1000);
@@ -104,6 +123,19 @@ static int ab8500_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 			usleep_range(1000, 5000);
 		}
+=======
+	/* Wait for some cycles after enabling the rtc read in ab8500 */
+	while (time_before(jiffies, timeout)) {
+		retval = abx500_get_register_interruptible(dev,
+			AB8500_RTC, AB8500_RTC_READ_REQ_REG, &value);
+		if (retval < 0)
+			return retval;
+
+		if (!(value & RTC_READ_REQUEST))
+			break;
+
+		usleep_range(1000, 5000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Read the Watchtime registers */
@@ -121,11 +153,16 @@ static int ab8500_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	secs =	secs / COUNTS_PER_SEC;
 	secs =	secs + (mins * 60);
 
+<<<<<<< HEAD
 	/* Add back the initially subtracted number of seconds */
 	secs += get_elapsed_seconds(AB8500_RTC_EPOCH);
 
 	rtc_time_to_tm(secs, tm);
 	return rtc_valid_tm(tm);
+=======
+	rtc_time64_to_tm(secs, tm);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ab8500_rtc_set_time(struct device *dev, struct rtc_time *tm)
@@ -134,6 +171,7 @@ static int ab8500_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[ARRAY_SIZE(ab8500_rtc_time_regs)];
 	unsigned long no_secs, no_mins, secs = 0;
 
+<<<<<<< HEAD
 	if (tm->tm_year < (AB8500_RTC_EPOCH - 1900)) {
 		dev_dbg(dev, "year should be equal to or greater than %d\n",
 				AB8500_RTC_EPOCH);
@@ -148,6 +186,9 @@ static int ab8500_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	 * we only have a small counter in the RTC.
 	 */
 	secs -= get_elapsed_seconds(AB8500_RTC_EPOCH);
+=======
+	secs = rtc_tm_to_time64(tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	no_mins = secs / 60;
 
@@ -205,12 +246,18 @@ static int ab8500_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	mins = (buf[0] << 16) | (buf[1] << 8) | (buf[2]);
 	secs = mins * 60;
 
+<<<<<<< HEAD
 	/* Add back the initially subtracted number of seconds */
 	secs += get_elapsed_seconds(AB8500_RTC_EPOCH);
 
 	rtc_time_to_tm(secs, &alarm->time);
 
 	return rtc_valid_tm(&alarm->time);
+=======
+	rtc_time64_to_tm(secs, &alarm->time);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ab8500_rtc_irq_enable(struct device *dev, unsigned int enabled)
@@ -224,6 +271,7 @@ static int ab8500_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	int retval, i;
 	unsigned char buf[ARRAY_SIZE(ab8500_rtc_alarm_regs)];
+<<<<<<< HEAD
 	unsigned long mins, secs = 0;
 
 	if (alarm->time.tm_year < (AB8500_RTC_EPOCH - 1900)) {
@@ -242,6 +290,11 @@ static int ab8500_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	secs -= get_elapsed_seconds(AB8500_RTC_EPOCH);
 
 	mins = secs / 60;
+=======
+	unsigned long mins;
+
+	mins = (unsigned long)rtc_tm_to_time64(&alarm->time) / 60;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf[2] = mins & 0xFF;
 	buf[1] = (mins >> 8) & 0xFF;
@@ -258,7 +311,10 @@ static int ab8500_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	return ab8500_rtc_irq_enable(dev, alarm->enabled);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ab8500_rtc_set_calibration(struct device *dev, int calibration)
 {
 	int retval;
@@ -351,6 +407,7 @@ static DEVICE_ATTR(rtc_calibration, S_IRUGO | S_IWUSR,
 		   ab8500_sysfs_show_rtc_calibration,
 		   ab8500_sysfs_store_rtc_calibration);
 
+<<<<<<< HEAD
 static int ab8500_sysfs_rtc_register(struct device *dev)
 {
 	return device_create_file(dev, &dev_attr_rtc_calibration);
@@ -360,6 +417,16 @@ static void ab8500_sysfs_rtc_unregister(struct device *dev)
 {
 	device_remove_file(dev, &dev_attr_rtc_calibration);
 }
+=======
+static struct attribute *ab8500_rtc_attrs[] = {
+	&dev_attr_rtc_calibration.attr,
+	NULL
+};
+
+static const struct attribute_group ab8500_rtc_sysfs_files = {
+	.attrs	= ab8500_rtc_attrs,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t rtc_alarm_handler(int irq, void *data)
 {
@@ -380,8 +447,20 @@ static const struct rtc_class_ops ab8500_rtc_ops = {
 	.alarm_irq_enable	= ab8500_rtc_irq_enable,
 };
 
+<<<<<<< HEAD
 static int __devinit ab8500_rtc_probe(struct platform_device *pdev)
 {
+=======
+static const struct platform_device_id ab85xx_rtc_ids[] = {
+	{ "ab8500-rtc", (kernel_ulong_t)&ab8500_rtc_ops, },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(platform, ab85xx_rtc_ids);
+
+static int ab8500_rtc_probe(struct platform_device *pdev)
+{
+	const struct platform_device_id *platid = platform_get_device_id(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct rtc_device *rtc;
 	u8 rtc_ctrl;
@@ -413,6 +492,7 @@ static int __devinit ab8500_rtc_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, true);
 
+<<<<<<< HEAD
 	rtc = rtc_device_register("ab8500-rtc", &pdev->dev, &ab8500_rtc_ops,
 			THIS_MODULE);
 	if (IS_ERR(rtc)) {
@@ -452,15 +532,57 @@ static int __devexit ab8500_rtc_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return 0;
+=======
+	rtc = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(rtc))
+		return PTR_ERR(rtc);
+
+	rtc->ops = (struct rtc_class_ops *)platid->driver_data;
+
+	err = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+			rtc_alarm_handler, IRQF_ONESHOT,
+			"ab8500-rtc", rtc);
+	if (err < 0)
+		return err;
+
+	dev_pm_set_wake_irq(&pdev->dev, irq);
+	platform_set_drvdata(pdev, rtc);
+
+	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->features);
+	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->features);
+
+	rtc->range_max = (1ULL << 24) * 60 - 1; // 24-bit minutes + 59 secs
+	rtc->start_secs = RTC_TIMESTAMP_BEGIN_2000;
+	rtc->set_start_time = true;
+
+	err = rtc_add_group(rtc, &ab8500_rtc_sysfs_files);
+	if (err)
+		return err;
+
+	return devm_rtc_register_device(rtc);
+}
+
+static void ab8500_rtc_remove(struct platform_device *pdev)
+{
+	dev_pm_clear_wake_irq(&pdev->dev);
+	device_init_wakeup(&pdev->dev, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ab8500_rtc_driver = {
 	.driver = {
 		.name = "ab8500-rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe	= ab8500_rtc_probe,
 	.remove = __devexit_p(ab8500_rtc_remove),
+=======
+	},
+	.probe	= ab8500_rtc_probe,
+	.remove_new = ab8500_rtc_remove,
+	.id_table = ab85xx_rtc_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(ab8500_rtc_driver);

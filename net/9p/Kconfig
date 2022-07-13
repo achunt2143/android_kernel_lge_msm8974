@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # 9P protocol configuration
 #
 
 menuconfig NET_9P
+<<<<<<< HEAD
 	depends on NET
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tristate "Plan 9 Resource Sharing Support (9P2000)"
 	help
 	  If you say Y here, you will get experimental support for
@@ -15,6 +22,18 @@ menuconfig NET_9P
 
 if NET_9P
 
+<<<<<<< HEAD
+=======
+config NET_9P_FD
+	default NET_9P
+	imply INET
+	imply UNIX
+	tristate "9P FD Transport"
+	help
+	  This builds support for transports over TCP, Unix sockets and
+	  filedescriptors.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NET_9P_VIRTIO
 	depends on VIRTIO
 	tristate "9P Virtio Transport"
@@ -22,8 +41,22 @@ config NET_9P_VIRTIO
 	  This builds support for a transports between
 	  guest partitions and a host partition.
 
+<<<<<<< HEAD
 config NET_9P_RDMA
 	depends on INET && INFINIBAND && INFINIBAND_ADDR_TRANS && EXPERIMENTAL
+=======
+config NET_9P_XEN
+	depends on XEN
+	select XEN_XENBUS_FRONTEND
+	tristate "9P Xen Transport"
+	help
+	  This builds support for a transport for 9pfs between
+	  two Xen domains.
+
+
+config NET_9P_RDMA
+	depends on INET && INFINIBAND && INFINIBAND_ADDR_TRANS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tristate "9P RDMA Transport (Experimental)"
 	help
 	  This builds support for an RDMA transport.

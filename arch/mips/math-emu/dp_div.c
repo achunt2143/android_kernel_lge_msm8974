@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -28,31 +33,62 @@
 
 ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 {
+=======
+ */
+
+#include "ieee754dp.h"
+
+union ieee754dp ieee754dp_div(union ieee754dp x, union ieee754dp y)
+{
+	u64 rm;
+	int re;
+	u64 bm;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	COMPXDP;
 	COMPYDP;
 
 	EXPLODEXDP;
 	EXPLODEYDP;
 
+<<<<<<< HEAD
 	CLEARCX;
+=======
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FLUSHXDP;
 	FLUSHYDP;
 
 	switch (CLPAIR(xc, yc)) {
+<<<<<<< HEAD
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+=======
+	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_SNAN):
+<<<<<<< HEAD
+=======
+		return ieee754dp_nanxcpt(y);
+
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_ZERO):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_NORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_DNORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_INF):
+<<<<<<< HEAD
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754dp_nanxcpt(ieee754dp_indef(), "div", x, y);
+=======
+		return ieee754dp_nanxcpt(x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_QNAN):
@@ -68,12 +104,21 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 		return x;
 
 
+<<<<<<< HEAD
 		/* Infinity handling
 		 */
 
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_INF):
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754dp_xcpt(ieee754dp_indef(), "div", x, y);
+=======
+	/*
+	 * Infinity handling
+	 */
+	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_INF):
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754dp_indef();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_INF):
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_INF):
@@ -85,6 +130,7 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_DNORM):
 		return ieee754dp_inf(xs ^ ys);
 
+<<<<<<< HEAD
 		/* Zero handling
 		 */
 
@@ -96,6 +142,19 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_ZERO):
 		SETCX(IEEE754_ZERO_DIVIDE);
 		return ieee754dp_xcpt(ieee754dp_inf(xs ^ ys), "div", x, y);
+=======
+	/*
+	 * Zero handling
+	 */
+	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_ZERO):
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754dp_indef();
+
+	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_ZERO):
+	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_ZERO):
+		ieee754_setcx(IEEE754_ZERO_DIVIDE);
+		return ieee754dp_inf(xs ^ ys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_NORM):
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_DNORM):
@@ -103,7 +162,11 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_DNORM):
 		DPDNORMX;
+<<<<<<< HEAD
 
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_DNORM):
 		DPDNORMY;
 		break;
@@ -122,6 +185,7 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 	xm <<= 3;
 	ym <<= 3;
 
+<<<<<<< HEAD
 	{
 		/* now the dirty work */
 
@@ -153,4 +217,36 @@ ieee754dp ieee754dp_div(ieee754dp x, ieee754dp y)
 
 		DPNORMRET2(xs == ys ? 0 : 1, re, rm, "div", x, y);
 	}
+=======
+	/* now the dirty work */
+
+	rm = 0;
+	re = xe - ye;
+
+	for (bm = DP_MBIT(DP_FBITS + 2); bm; bm >>= 1) {
+		if (xm >= ym) {
+			xm -= ym;
+			rm |= bm;
+			if (xm == 0)
+				break;
+		}
+		xm <<= 1;
+	}
+
+	rm <<= 1;
+	if (xm)
+		rm |= 1;	/* have remainder, set sticky */
+
+	assert(rm);
+
+	/*
+	 * Normalise rm to rounding precision ?
+	 */
+	while ((rm >> (DP_FBITS + 3)) == 0) {
+		rm <<= 1;
+		re--;
+	}
+
+	return ieee754dp_format(xs == ys ? 0 : 1, re, rm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

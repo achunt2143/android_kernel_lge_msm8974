@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Medion X10 RF remote keytable
  *
@@ -5,6 +9,7 @@
  *
  * This file is based on a keytable provided by
  * Jan Losinski <losinski@wh2.tu-dresden.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -50,6 +57,7 @@ static struct rc_map_table medion_x10[] = {
 	{ 0x35, KEY_BLUE }, /* blue */
 	{ 0x16, KEY_TEXT }, /* TXT */
 
+<<<<<<< HEAD
 	{ 0x0d, KEY_1 },
 	{ 0x0e, KEY_2 },
 	{ 0x0f, KEY_3 },
@@ -60,6 +68,18 @@ static struct rc_map_table medion_x10[] = {
 	{ 0x14, KEY_8 },
 	{ 0x15, KEY_9 },
 	{ 0x17, KEY_0 },
+=======
+	{ 0x0d, KEY_NUMERIC_1 },
+	{ 0x0e, KEY_NUMERIC_2 },
+	{ 0x0f, KEY_NUMERIC_3 },
+	{ 0x10, KEY_NUMERIC_4 },
+	{ 0x11, KEY_NUMERIC_5 },
+	{ 0x12, KEY_NUMERIC_6 },
+	{ 0x13, KEY_NUMERIC_7 },
+	{ 0x14, KEY_NUMERIC_8 },
+	{ 0x15, KEY_NUMERIC_9 },
+	{ 0x17, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1c, KEY_SEARCH }, /* TV/RAD, CH SRC */
 	{ 0x20, KEY_DELETE }, /* DELETE */
 
@@ -93,10 +113,17 @@ static struct rc_map_table medion_x10[] = {
 
 static struct rc_map_list medion_x10_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = medion_x10,
 		.size    = ARRAY_SIZE(medion_x10),
 		.rc_type = RC_TYPE_OTHER,
 		.name    = RC_MAP_MEDION_X10,
+=======
+		.scan     = medion_x10,
+		.size     = ARRAY_SIZE(medion_x10),
+		.rc_proto = RC_PROTO_OTHER,
+		.name     = RC_MAP_MEDION_X10,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -115,3 +142,7 @@ module_exit(exit_rc_map_medion_x10)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Anssi Hannula <anssi.hannula@iki.fi>");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Medion X10 RF remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

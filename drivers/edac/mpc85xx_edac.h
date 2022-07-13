@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Freescale MPC85xx Memory Controller kenel module
  * Author: Dave Jiang <djiang@mvista.com>
@@ -7,6 +8,14 @@
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Freescale MPC85xx Memory Controller kernel module
+ * Author: Dave Jiang <djiang@mvista.com>
+ *
+ * 2006-2007 (c) MontaVista Software, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _MPC85XX_EDAC_H_
 #define _MPC85XX_EDAC_H_
@@ -17,6 +26,7 @@
 #define mpc85xx_printk(level, fmt, arg...) \
 	edac_printk(level, "MPC85xx", fmt, ##arg)
 
+<<<<<<< HEAD
 #define mpc85xx_mc_printk(mci, level, fmt, arg...) \
 	edac_mc_chipset_printk(mci, level, "MPC85xx", fmt, ##arg)
 
@@ -75,6 +85,8 @@
 #define	DDR_EDI_SBED	0x4	/* single-bit ECC error disable */
 #define	DDR_EDI_MBED	0x8	/* multi-bit ECC error disable */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * L2 Err defines
  */
@@ -134,13 +146,21 @@
 #define MPC85XX_PCI_ERR_DR		0x0000
 #define MPC85XX_PCI_ERR_CAP_DR		0x0004
 #define MPC85XX_PCI_ERR_EN		0x0008
+<<<<<<< HEAD
 #define MPC85XX_PCI_ERR_ATTRIB		0x000c
 #define MPC85XX_PCI_ERR_ADDR		0x0010
+=======
+#define   PEX_ERR_ICCAIE_EN_BIT		0x00020000
+#define MPC85XX_PCI_ERR_ATTRIB		0x000c
+#define MPC85XX_PCI_ERR_ADDR		0x0010
+#define   PEX_ERR_ICCAD_DISR_BIT	0x00020000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPC85XX_PCI_ERR_EXT_ADDR	0x0014
 #define MPC85XX_PCI_ERR_DL		0x0018
 #define MPC85XX_PCI_ERR_DH		0x001c
 #define MPC85XX_PCI_GAS_TIMR		0x0020
 #define MPC85XX_PCI_PCIX_TIMR		0x0024
+<<<<<<< HEAD
 
 struct mpc85xx_mc_pdata {
 	char *name;
@@ -148,6 +168,12 @@ struct mpc85xx_mc_pdata {
 	void __iomem *mc_vbase;
 	int irq;
 };
+=======
+#define MPC85XX_PCIE_ERR_CAP_R0		0x0028
+#define MPC85XX_PCIE_ERR_CAP_R1		0x002c
+#define MPC85XX_PCIE_ERR_CAP_R2		0x0030
+#define MPC85XX_PCIE_ERR_CAP_R3		0x0034
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mpc85xx_l2_pdata {
 	char *name;
@@ -158,6 +184,10 @@ struct mpc85xx_l2_pdata {
 
 struct mpc85xx_pci_pdata {
 	char *name;
+<<<<<<< HEAD
+=======
+	bool is_pcie;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int edac_idx;
 	void __iomem *pci_vbase;
 	int irq;

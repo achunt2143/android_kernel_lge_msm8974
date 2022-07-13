@@ -7,6 +7,7 @@ Many of the "generic" devices like HPET or IO APIC have the ce4100
 name in their compatible property because they first appeared in this
 SoC.
 
+<<<<<<< HEAD
 The CPU node
 ------------
 	cpu@0 {
@@ -18,6 +19,38 @@ The CPU node
 
 The reg property describes the CPU number. The lapic property points to
 the local APIC timer.
+=======
+The CPU nodes
+-------------
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "intel,ce4100";
+			reg = <0x00>;
+		};
+
+		cpu@2 {
+			device_type = "cpu";
+			compatible = "intel,ce4100";
+			reg = <0x02>;
+		};
+	};
+
+A "cpu" node describes one logical processor (hardware thread).
+
+Required properties:
+
+- device_type
+	Device type, must be "cpu".
+
+- reg
+	Local APIC ID, the unique number assigned to each processor by
+	system hardware.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 The SoC node
 ------------

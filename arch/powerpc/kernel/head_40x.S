@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Copyright (c) 1995-1996 Gary Thomas <gdt@linuxppc.org>
  *      Initial PowerPC version.
@@ -18,11 +22,15 @@
  *         	frank_rowand@mvista.com or source@mvista.com
  * 	   	debbie_chu@mvista.com
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Module name: head_4xx.S
  *
  *    Description:
  *      Kernel execution entry point code.
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or
  *    modify it under the terms of the GNU General Public License
@@ -36,12 +44,29 @@
 #include <asm/page.h>
 #include <asm/mmu.h>
 #include <asm/pgtable.h>
+=======
+ */
+
+#include <linux/init.h>
+#include <linux/pgtable.h>
+#include <linux/sizes.h>
+#include <linux/linkage.h>
+
+#include <asm/processor.h>
+#include <asm/page.h>
+#include <asm/mmu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cputable.h>
 #include <asm/thread_info.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
 
+<<<<<<< HEAD
+=======
+#include "head_32.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* As with the other PowerPC ports, it is expected that when code
  * execution begins here, the following registers contain valid, yet
  * optional, information:
@@ -55,8 +80,13 @@
  * This is all going to change RSN when we add bi_recs.......  -- Dan
  */
 	__HEAD
+<<<<<<< HEAD
 _ENTRY(_stext);
 _ENTRY(_start);
+=======
+_GLOBAL(_stext);
+_GLOBAL(_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mr	r31,r3			/* save device tree ptr */
 
@@ -75,7 +105,10 @@ turn_on_mmu:
 	lis	r0,start_here@h
 	ori	r0,r0,start_here@l
 	mtspr	SPRN_SRR0,r0
+<<<<<<< HEAD
 	SYNC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfi				/* enables MMU */
 	b	.			/* prevent prefetch past rfi */
 
@@ -85,6 +118,7 @@ turn_on_mmu:
  */
 	. = 0xc0
 crit_save:
+<<<<<<< HEAD
 _ENTRY(crit_r10)
 	.space	4
 _ENTRY(crit_r11)
@@ -135,6 +169,22 @@ _ENTRY(saved_ksp_limit)
 	stw	r0,GPR0(r11);						     \
 	SAVE_4GPRS(3, r11);						     \
 	SAVE_2GPRS(7, r11)
+=======
+_GLOBAL(crit_r10)
+	.space	4
+_GLOBAL(crit_r11)
+	.space	4
+_GLOBAL(crit_srr0)
+	.space	4
+_GLOBAL(crit_srr1)
+	.space	4
+_GLOBAL(crit_r1)
+	.space	4
+_GLOBAL(crit_dear)
+	.space	4
+_GLOBAL(crit_esr)
+	.space	4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Exception prolog for critical exceptions.  This is a little different
@@ -144,6 +194,7 @@ _ENTRY(saved_ksp_limit)
  * Instead we use a couple of words of memory at low physical addresses.
  * This is OK since we don't support SMP on these processors.
  */
+<<<<<<< HEAD
 #define CRITICAL_EXCEPTION_PROLOG					     \
 	stw	r10,crit_r10@l(0);	/* save two registers to work with */\
 	stw	r11,crit_r11@l(0);					     \
@@ -177,6 +228,64 @@ _ENTRY(saved_ksp_limit)
 	stw	r0,GPR0(r11);						     \
 	SAVE_4GPRS(3, r11);						     \
 	SAVE_2GPRS(7, r11)
+=======
+.macro CRITICAL_EXCEPTION_PROLOG trapno name
+	stw	r10,crit_r10@l(0)	/* save two registers to work with */
+	stw	r11,crit_r11@l(0)
+	mfspr	r10,SPRN_SRR0
+	mfspr	r11,SPRN_SRR1
+	stw	r10,crit_srr0@l(0)
+	stw	r11,crit_srr1@l(0)
+	mfspr	r10,SPRN_DEAR
+	mfspr	r11,SPRN_ESR
+	stw	r10,crit_dear@l(0)
+	stw	r11,crit_esr@l(0)
+	mfcr	r10			/* save CR in r10 for now	   */
+	mfspr	r11,SPRN_SRR3		/* check whether user or kernel    */
+	andi.	r11,r11,MSR_PR
+	lis	r11,(critirq_ctx-PAGE_OFFSET)@ha
+	lwz	r11,(critirq_ctx-PAGE_OFFSET)@l(r11)
+	beq	1f
+	/* COMING FROM USER MODE */
+	mfspr	r11,SPRN_SPRG_THREAD	/* if from user, start at top of   */
+	lwz	r11,TASK_STACK-THREAD(r11) /* this thread's kernel stack */
+1:	stw	r1,crit_r1@l(0)
+	addi	r1,r11,THREAD_SIZE-INT_FRAME_SIZE /* Alloc an excpt frm  */
+	LOAD_REG_IMMEDIATE(r11, MSR_KERNEL & ~(MSR_ME|MSR_DE|MSR_CE)) /* re-enable MMU */
+	mtspr	SPRN_SRR1, r11
+	lis	r11, 1f@h
+	ori	r11, r11, 1f@l
+	mtspr	SPRN_SRR0, r11
+	rfi
+
+	.text
+1:
+\name\()_virt:
+	lwz	r11,crit_r1@l(0)
+	stw	r11,GPR1(r1)
+	stw	r11,0(r1)
+	mr	r11,r1
+	stw	r10,_CCR(r11)		/* save various registers	   */
+	stw	r12,GPR12(r11)
+	stw	r9,GPR9(r11)
+	mflr	r10
+	stw	r10,_LINK(r11)
+	lis	r9,PAGE_OFFSET@ha
+	lwz	r10,crit_r10@l(r9)
+	lwz	r12,crit_r11@l(r9)
+	stw	r10,GPR10(r11)
+	stw	r12,GPR11(r11)
+	lwz	r12,crit_dear@l(r9)
+	lwz	r9,crit_esr@l(r9)
+	stw	r12,_DEAR(r11)		/* since they may have had stuff   */
+	stw	r9,_ESR(r11)		/* exception was taken		   */
+	mfspr	r12,SPRN_SRR2
+	mfspr	r9,SPRN_SRR3
+	rlwinm	r9,r9,0,14,12		/* clear MSR_WE (necessary?)	   */
+	COMMON_EXCEPTION_PROLOG_END \trapno + 2
+_ASM_NOKPROBE_SYMBOL(\name\()_virt)
+.endm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * State at this point:
@@ -194,6 +303,7 @@ _ENTRY(saved_ksp_limit)
 /*
  * Exception vectors.
  */
+<<<<<<< HEAD
 #define	START_EXCEPTION(n, label)					     \
 	. = n;								     \
 label:
@@ -241,6 +351,14 @@ label:
 	EXC_XFER_TEMPLATE(hdlr, n+1, MSR_KERNEL, COPY_EE, transfer_to_handler, \
 			  ret_from_except)
 
+=======
+#define CRITICAL_EXCEPTION(n, label, hdlr)			\
+	START_EXCEPTION(n, label);				\
+	CRITICAL_EXCEPTION_PROLOG n label;				\
+	prepare_transfer_to_handler;				\
+	bl	hdlr;						\
+	b	ret_from_crit_exc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 0x0100 - Critical Interrupt Exception
@@ -256,6 +374,7 @@ label:
  * 0x0300 - Data Storage Exception
  * This happens for just a few reasons.  U0 set (but we don't do that),
  * or zone protection fault (user violation, write to protected page).
+<<<<<<< HEAD
  * If this is just an update of modified status, we do that quickly
  * and exit.  Otherwise, we call heavywight functions to do the work.
  */
@@ -385,12 +504,23 @@ label:
 	mfspr	r11, SPRN_SPRG_SCRATCH1
 	mfspr	r10, SPRN_SPRG_SCRATCH0
 	b	DataAccess
+=======
+ * The other Data TLB exceptions bail out to this point
+ * if they can't resolve the lightweight TLB fault.
+ */
+	START_EXCEPTION(0x0300,	DataStorage)
+	EXCEPTION_PROLOG 0x300 DataStorage handle_dar_dsisr=1
+	prepare_transfer_to_handler
+	bl	do_page_fault
+	b	interrupt_return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 0x0400 - Instruction Storage Exception
  * This is caused by a fetch from non-execute or guarded pages.
  */
 	START_EXCEPTION(0x0400, InstructionAccess)
+<<<<<<< HEAD
 	NORMAL_EXCEPTION_PROLOG
 	mr	r4,r12			/* Pass SRR0 as arg2 */
 	li	r5,0			/* Pass zero as arg3 */
@@ -454,6 +584,60 @@ label:
 	CRITICAL_EXCEPTION(0x1020, WDTException, unknown_exception)
 #endif
 #endif
+=======
+	EXCEPTION_PROLOG 0x400 InstructionAccess
+	li	r5,0
+	stw	r5, _ESR(r11)		/* Zero ESR */
+	stw	r12, _DEAR(r11)		/* SRR0 as DEAR */
+	prepare_transfer_to_handler
+	bl	do_page_fault
+	b	interrupt_return
+
+/* 0x0500 - External Interrupt Exception */
+	EXCEPTION(0x0500, HardwareInterrupt, do_IRQ)
+
+/* 0x0600 - Alignment Exception */
+	START_EXCEPTION(0x0600, Alignment)
+	EXCEPTION_PROLOG 0x600 Alignment handle_dar_dsisr=1
+	prepare_transfer_to_handler
+	bl	alignment_exception
+	REST_NVGPRS(r1)
+	b	interrupt_return
+
+/* 0x0700 - Program Exception */
+	START_EXCEPTION(0x0700, ProgramCheck)
+	EXCEPTION_PROLOG 0x700 ProgramCheck handle_dar_dsisr=1
+	prepare_transfer_to_handler
+	bl	program_check_exception
+	REST_NVGPRS(r1)
+	b	interrupt_return
+
+	EXCEPTION(0x0800, Trap_08, unknown_exception)
+	EXCEPTION(0x0900, Trap_09, unknown_exception)
+	EXCEPTION(0x0A00, Trap_0A, unknown_exception)
+	EXCEPTION(0x0B00, Trap_0B, unknown_exception)
+
+/* 0x0C00 - System Call Exception */
+	START_EXCEPTION(0x0C00,	SystemCall)
+	SYSCALL_ENTRY	0xc00
+/*	Trap_0D is commented out to get more space for system call exception */
+
+/*	EXCEPTION(0x0D00, Trap_0D, unknown_exception) */
+	EXCEPTION(0x0E00, Trap_0E, unknown_exception)
+	EXCEPTION(0x0F00, Trap_0F, unknown_exception)
+
+/* 0x1000 - Programmable Interval Timer (PIT) Exception */
+	START_EXCEPTION(0x1000, DecrementerTrap)
+	b Decrementer
+
+/* 0x1010 - Fixed Interval Timer (FIT) Exception */
+	START_EXCEPTION(0x1010, FITExceptionTrap)
+	b FITException
+
+/* 0x1020 - Watchdog Timer (WDT) Exception */
+	START_EXCEPTION(0x1020, WDTExceptionTrap)
+	b WDTException
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 0x1100 - Data TLB Miss Exception
  * As the name implies, translation is not in the MMU, so search the
@@ -461,6 +645,7 @@ label:
  * load TLB entries from the page table if they exist.
  */
 	START_EXCEPTION(0x1100,	DTLBMiss)
+<<<<<<< HEAD
 	mtspr	SPRN_SPRG_SCRATCH0, r10 /* Save some working registers */
 	mtspr	SPRN_SPRG_SCRATCH1, r11
 #ifdef CONFIG_403GCX
@@ -478,6 +663,15 @@ label:
 	mtspr	SPRN_SPRG_SCRATCH6, r11
 	mtspr	SPRN_SPRG_SCRATCH5, r12
 #endif
+=======
+	mtspr	SPRN_SPRG_SCRATCH5, r10 /* Save some working registers */
+	mtspr	SPRN_SPRG_SCRATCH6, r11
+	mtspr	SPRN_SPRG_SCRATCH3, r12
+	mtspr	SPRN_SPRG_SCRATCH4, r9
+	mfcr	r12
+	mfspr	r9, SPRN_PID
+	rlwimi	r12, r9, 0, 0xff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r10, SPRN_DEAR		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -497,6 +691,7 @@ label:
 3:
 	mfspr	r11,SPRN_SPRG_THREAD
 	lwz	r11,PGDIR(r11)
+<<<<<<< HEAD
 4:
 	tophys(r11, r11)
 	rlwimi	r11, r10, 12, 20, 29	/* Create L1 (pgdir/pmd) address */
@@ -511,17 +706,48 @@ label:
 
 	ori	r11, r11, _PAGE_ACCESSED
 	stw	r11, 0(r12)
+=======
+#ifdef CONFIG_PPC_KUAP
+	rlwinm.	r9, r9, 0, 0xff
+	beq	5f			/* Kuap fault */
+#endif
+4:
+	tophys(r11, r11)
+	rlwimi	r11, r10, 12, 20, 29	/* Create L1 (pgdir/pmd) address */
+	lwz	r11, 0(r11)		/* Get L1 entry */
+	andi.	r9, r11, _PMD_PRESENT	/* Check if it points to a PTE page */
+	beq	2f			/* Bail if no table */
+
+	rlwimi	r11, r10, 22, 20, 29	/* Compute PTE address */
+	lwz	r11, 0(r11)		/* Get Linux PTE */
+	li	r9, _PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_READ
+	andc.	r9, r9, r11		/* Check permission */
+	bne	5f
+
+	rlwinm	r9, r11, 1, _PAGE_WRITE	/* dirty => w */
+	and	r9, r9, r11		/* hwwrite = dirty & w */
+	rlwimi	r11, r9, 0, _PAGE_WRITE	/* replace w by hwwrite */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create TLB tag.  This is the faulting address plus a static
 	 * set of bits.  These are size, valid, E, U0.
 	*/
+<<<<<<< HEAD
 	li	r12, 0x00c0
 	rlwimi	r10, r12, 0, 20, 31
+=======
+	li	r9, 0x00c0
+	rlwimi	r10, r9, 0, 20, 31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b	finish_tlb_load
 
 2:	/* Check for possible large-page pmd entry */
+<<<<<<< HEAD
 	rlwinm.	r9, r12, 2, 22, 24
+=======
+	rlwinm.	r9, r11, 2, 22, 24
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	5f
 
 	/* Create TLB tag.  This is the faulting address, plus a static
@@ -529,7 +755,10 @@ label:
 	 */
 	ori	r9, r9, 0x40
 	rlwimi	r10, r9, 0, 20, 31
+<<<<<<< HEAD
 	mr	r11, r12
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b	finish_tlb_load
 
@@ -537,6 +766,7 @@ label:
 	/* The bailout.  Restore registers to pre-exception conditions
 	 * and call the heavyweights to help us out.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_403GCX
 	lwz     r12, 12(r0)
 	lwz     r11, 8(r0)
@@ -555,12 +785,22 @@ label:
 	mfspr	r11, SPRN_SPRG_SCRATCH1
 	mfspr	r10, SPRN_SPRG_SCRATCH0
 	b	DataAccess
+=======
+	mtspr	SPRN_PID, r12
+	mtcrf	0x80, r12
+	mfspr	r9, SPRN_SPRG_SCRATCH4
+	mfspr	r12, SPRN_SPRG_SCRATCH3
+	mfspr	r11, SPRN_SPRG_SCRATCH6
+	mfspr	r10, SPRN_SPRG_SCRATCH5
+	b	DataStorage
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 0x1200 - Instruction TLB Miss Exception
  * Nearly the same as above, except we get our information from different
  * registers and bailout to a different point.
  */
 	START_EXCEPTION(0x1200,	ITLBMiss)
+<<<<<<< HEAD
 	mtspr	SPRN_SPRG_SCRATCH0, r10	 /* Save some working registers */
 	mtspr	SPRN_SPRG_SCRATCH1, r11
 #ifdef CONFIG_403GCX
@@ -578,6 +818,15 @@ label:
 	mtspr	SPRN_SPRG_SCRATCH6, r11
 	mtspr	SPRN_SPRG_SCRATCH5, r12
 #endif
+=======
+	mtspr	SPRN_SPRG_SCRATCH5, r10	 /* Save some working registers */
+	mtspr	SPRN_SPRG_SCRATCH6, r11
+	mtspr	SPRN_SPRG_SCRATCH3, r12
+	mtspr	SPRN_SPRG_SCRATCH4, r9
+	mfcr	r12
+	mfspr	r9, SPRN_PID
+	rlwimi	r12, r9, 0, 0xff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfspr	r10, SPRN_SRR0		/* Get faulting address */
 
 	/* If we are faulting a kernel address, we have to use the
@@ -597,6 +846,7 @@ label:
 3:
 	mfspr	r11,SPRN_SPRG_THREAD
 	lwz	r11,PGDIR(r11)
+<<<<<<< HEAD
 4:
 	tophys(r11, r11)
 	rlwimi	r11, r10, 12, 20, 29	/* Create L1 (pgdir/pmd) address */
@@ -611,17 +861,48 @@ label:
 
 	ori	r11, r11, _PAGE_ACCESSED
 	stw	r11, 0(r12)
+=======
+#ifdef CONFIG_PPC_KUAP
+	rlwinm.	r9, r9, 0, 0xff
+	beq	5f			/* Kuap fault */
+#endif
+4:
+	tophys(r11, r11)
+	rlwimi	r11, r10, 12, 20, 29	/* Create L1 (pgdir/pmd) address */
+	lwz	r11, 0(r11)		/* Get L1 entry */
+	andi.	r9, r11, _PMD_PRESENT	/* Check if it points to a PTE page */
+	beq	2f			/* Bail if no table */
+
+	rlwimi	r11, r10, 22, 20, 29	/* Compute PTE address */
+	lwz	r11, 0(r11)		/* Get Linux PTE */
+	li	r9, _PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC
+	andc.	r9, r9, r11		/* Check permission */
+	bne	5f
+
+	rlwinm	r9, r11, 1, _PAGE_WRITE	/* dirty => w */
+	and	r9, r9, r11		/* hwwrite = dirty & w */
+	rlwimi	r11, r9, 0, _PAGE_WRITE	/* replace w by hwwrite */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create TLB tag.  This is the faulting address plus a static
 	 * set of bits.  These are size, valid, E, U0.
 	*/
+<<<<<<< HEAD
 	li	r12, 0x00c0
 	rlwimi	r10, r12, 0, 20, 31
+=======
+	li	r9, 0x00c0
+	rlwimi	r10, r9, 0, 20, 31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b	finish_tlb_load
 
 2:	/* Check for possible large-page pmd entry */
+<<<<<<< HEAD
 	rlwinm.	r9, r12, 2, 22, 24
+=======
+	rlwinm.	r9, r11, 2, 22, 24
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	5f
 
 	/* Create TLB tag.  This is the faulting address, plus a static
@@ -629,7 +910,10 @@ label:
 	 */
 	ori	r9, r9, 0x40
 	rlwimi	r10, r9, 0, 20, 31
+<<<<<<< HEAD
 	mr	r11, r12
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b	finish_tlb_load
 
@@ -637,6 +921,7 @@ label:
 	/* The bailout.  Restore registers to pre-exception conditions
 	 * and call the heavyweights to help us out.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_403GCX
 	lwz     r12, 12(r0)
 	lwz     r11, 8(r0)
@@ -675,6 +960,29 @@ label:
 	EXCEPTION(0x1D00, Trap_1D, unknown_exception, EXC_XFER_EE)
 	EXCEPTION(0x1E00, Trap_1E, unknown_exception, EXC_XFER_EE)
 	EXCEPTION(0x1F00, Trap_1F, unknown_exception, EXC_XFER_EE)
+=======
+	mtspr	SPRN_PID, r12
+	mtcrf	0x80, r12
+	mfspr	r9, SPRN_SPRG_SCRATCH4
+	mfspr	r12, SPRN_SPRG_SCRATCH3
+	mfspr	r11, SPRN_SPRG_SCRATCH6
+	mfspr	r10, SPRN_SPRG_SCRATCH5
+	b	InstructionAccess
+
+	EXCEPTION(0x1300, Trap_13, unknown_exception)
+	EXCEPTION(0x1400, Trap_14, unknown_exception)
+	EXCEPTION(0x1500, Trap_15, unknown_exception)
+	EXCEPTION(0x1600, Trap_16, unknown_exception)
+	EXCEPTION(0x1700, Trap_17, unknown_exception)
+	EXCEPTION(0x1800, Trap_18, unknown_exception)
+	EXCEPTION(0x1900, Trap_19, unknown_exception)
+	EXCEPTION(0x1A00, Trap_1A, unknown_exception)
+	EXCEPTION(0x1B00, Trap_1B, unknown_exception)
+	EXCEPTION(0x1C00, Trap_1C, unknown_exception)
+	EXCEPTION(0x1D00, Trap_1D, unknown_exception)
+	EXCEPTION(0x1E00, Trap_1E, unknown_exception)
+	EXCEPTION(0x1F00, Trap_1F, unknown_exception)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Check for a single step debug exception while in an exception
  * handler before state has been saved.  This is to catch the case
@@ -691,7 +999,11 @@ label:
  */
 	/* 0x2000 - Debug Exception */
 	START_EXCEPTION(0x2000, DebugTrap)
+<<<<<<< HEAD
 	CRITICAL_EXCEPTION_PROLOG
+=======
+	CRITICAL_EXCEPTION_PROLOG 0x2000 DebugTrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If this is a single step or branch-taken exception in an
@@ -727,12 +1039,16 @@ label:
 	lwz	r12,GPR12(r11)
 	lwz	r10,crit_r10@l(0)
 	lwz	r11,crit_r11@l(0)
+<<<<<<< HEAD
 	PPC405_ERR77_SYNC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfci
 	b	.
 
 	/* continue normal handling for a critical exception... */
 2:	mfspr	r4,SPRN_DBSR
+<<<<<<< HEAD
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	EXC_XFER_TEMPLATE(DebugException, 0x2002, \
 		(MSR_KERNEL & ~(MSR_ME|MSR_DE|MSR_CE)), \
@@ -748,6 +1064,38 @@ DataAccess:
 	stw	r5,_ESR(r11)
 	mfspr	r4,SPRN_DEAR		/* Grab the DEAR, save it, pass arg2 */
 	EXC_XFER_LITE(0x300, handle_page_fault)
+=======
+	stw	r4,_ESR(r11)		/* DebugException takes DBSR in _ESR */
+	prepare_transfer_to_handler
+	bl	DebugException
+	b	ret_from_crit_exc
+
+	/* Programmable Interval Timer (PIT) Exception. (from 0x1000) */
+	__HEAD
+Decrementer:
+	EXCEPTION_PROLOG 0x1000 Decrementer
+	lis	r0,TSR_PIS@h
+	mtspr	SPRN_TSR,r0		/* Clear the PIT exception */
+	prepare_transfer_to_handler
+	bl	timer_interrupt
+	b	interrupt_return
+
+	/* Fixed Interval Timer (FIT) Exception. (from 0x1010) */
+	__HEAD
+FITException:
+	EXCEPTION_PROLOG 0x1010 FITException
+	prepare_transfer_to_handler
+	bl	unknown_exception
+	b	interrupt_return
+
+	/* Watchdog Timer (WDT) Exception. (from 0x1020) */
+	__HEAD
+WDTException:
+	CRITICAL_EXCEPTION_PROLOG 0x1020 WDTException
+	prepare_transfer_to_handler
+	bl	WatchdogException
+	b	ret_from_crit_exc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Other PowerPC processors, namely those derived from the 6xx-series
  * have vectors from 0x2100 through 0x2F00 defined, but marked as reserved.
@@ -755,12 +1103,20 @@ DataAccess:
  * reserved.
  */
 
+<<<<<<< HEAD
+=======
+	__HEAD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Damn, I came up one instruction too many to fit into the
 	 * exception space :-).  Both the instruction and data TLB
 	 * miss get to this point to load the TLB.
 	 * 	r10 - TLB_TAG value
 	 * 	r11 - Linux PTE
+<<<<<<< HEAD
 	 *	r12, r9 - available to use
+=======
+	 *	r9 - available to use
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *	PID - loaded with proper value when we get here
 	 *	Upon exit, we reload everything and RFI.
 	 * Actually, it will fit now, but oh well.....a common place
@@ -769,6 +1125,7 @@ DataAccess:
 tlb_4xx_index:
 	.long	0
 finish_tlb_load:
+<<<<<<< HEAD
 	/* load the next available TLB index.
 	*/
 	lwz	r9, tlb_4xx_index@l(0)
@@ -784,12 +1141,29 @@ finish_tlb_load:
 	 */
 	li	r12, 0x0ce2
 	andc	r11, r11, r12
+=======
+	/*
+	 * Clear out the software-only bits in the PTE to generate the
+	 * TLB_DATA value.  These are the bottom 2 bits of the RPM, the
+	 * 4 bits of the zone field, and M.
+	 */
+	li	r9, 0x0cf2
+	andc	r11, r11, r9
+	rlwimi	r11, r10, 8, 24, 27	/* Copy 4 upper address bit into zone */
+
+	/* load the next available TLB index. */
+	lwz	r9, tlb_4xx_index@l(0)
+	addi	r9, r9, 1
+	andi.	r9, r9, PPC40X_TLB_SIZE - 1
+	stw	r9, tlb_4xx_index@l(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tlbwe	r11, r9, TLB_DATA		/* Load TLB LO */
 	tlbwe	r10, r9, TLB_TAG		/* Load TLB HI */
 
 	/* Done...restore registers and get out of here.
 	*/
+<<<<<<< HEAD
 #ifdef CONFIG_403GCX
 	lwz     r12, 12(r0)
 	lwz     r11, 8(r0)
@@ -819,6 +1193,17 @@ finish_tlb_load:
 _ENTRY(giveup_fpu)
 	blr
 
+=======
+	mtspr	SPRN_PID, r12
+	mtcrf	0x80, r12
+	mfspr	r9, SPRN_SPRG_SCRATCH4
+	mfspr	r12, SPRN_SPRG_SCRATCH3
+	mfspr	r11, SPRN_SPRG_SCRATCH6
+	mfspr	r10, SPRN_SPRG_SCRATCH5
+	rfi			/* Should sync shadow TLBs */
+	b	.		/* prevent prefetch past rfi */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is where the main kernel code starts.
  */
 start_here:
@@ -836,13 +1221,23 @@ start_here:
 	lis	r1,init_thread_union@ha
 	addi	r1,r1,init_thread_union@l
 	li	r0,0
+<<<<<<< HEAD
 	stwu	r0,THREAD_SIZE-STACK_FRAME_OVERHEAD(r1)
+=======
+	stwu	r0,THREAD_SIZE-STACK_FRAME_MIN_SIZE(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bl	early_init	/* We have to do this with MMU on */
 
 /*
  * Decide what sort of machine this is and initialize the MMU.
  */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KASAN
+	bl	kasan_early_init
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r3,0
 	mr	r4,r31
 	bl	machine_init
@@ -875,7 +1270,11 @@ start_here:
 	ori	r6, r6, swapper_pg_dir@l
 	lis	r5, abatron_pteptrs@h
 	ori	r5, r5, abatron_pteptrs@l
+<<<<<<< HEAD
 	stw	r5, 0xf0(r0)	/* Must match your Abatron config file */
+=======
+	stw	r5, 0xf0(0)	/* Must match your Abatron config file */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tophys(r5,r5)
 	stw	r6, 0(r5)
 
@@ -890,10 +1289,17 @@ start_here:
 	b	.		/* prevent prefetch past rfi */
 
 /* Set up the initial MMU state so we can do the first level of
+<<<<<<< HEAD
  * kernel initialization.  This maps the first 16 MBytes of memory 1:1
  * virtual to physical and more importantly sets the cache mode.
  */
 initial_mmu:
+=======
+ * kernel initialization.  This maps the first 32 MBytes of memory 1:1
+ * virtual to physical and more importantly sets the cache mode.
+ */
+SYM_FUNC_START_LOCAL(initial_mmu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlbia			/* Invalidate all TLB entries */
 	isync
 
@@ -927,6 +1333,7 @@ initial_mmu:
 	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
 	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_TEXT_DEBUG) && defined(SERIAL_DEBUG_IO_BASE)
 
 	/* Load a TLB entry for the UART, so that ppc4xx_progress() can use
@@ -945,6 +1352,13 @@ initial_mmu:
 	tlbwe	r4,r0,TLB_DATA
 	tlbwe	r3,r0,TLB_TAG
 #endif /* CONFIG_SERIAL_DEBUG_TEXT && SERIAL_DEBUG_IO_BASE */
+=======
+	li	r0,62			/* TLB slot 62 */
+	addis	r4,r4,SZ_16M@h
+	addis	r3,r3,SZ_16M@h
+	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
+	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	isync
 
@@ -955,11 +1369,16 @@ initial_mmu:
 	mtspr	SPRN_EVPR,r0
 
 	blr
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(initial_mmu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(abort)
         mfspr   r13,SPRN_DBCR0
         oris    r13,r13,DBCR0_RST_SYSTEM@h
         mtspr   SPRN_DBCR0,r13
+<<<<<<< HEAD
 
 _GLOBAL(set_context)
 
@@ -996,3 +1415,5 @@ swapper_pg_dir:
  */
 abatron_pteptrs:
 	.space	8
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

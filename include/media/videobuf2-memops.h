@@ -14,6 +14,7 @@
 #ifndef _MEDIA_VIDEOBUF2_MEMOPS_H
 #define _MEDIA_VIDEOBUF2_MEMOPS_H
 
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
 
 /**
@@ -24,12 +25,28 @@
  */
 struct vb2_vmarea_handler {
 	atomic_t		*refcount;
+=======
+#include <media/videobuf2-v4l2.h>
+#include <linux/mm.h>
+#include <linux/refcount.h>
+
+/**
+ * struct vb2_vmarea_handler - common vma refcount tracking handler.
+ *
+ * @refcount:	pointer to &refcount_t entry in the buffer.
+ * @put:	callback to function that decreases buffer refcount.
+ * @arg:	argument for @put callback.
+ */
+struct vb2_vmarea_handler {
+	refcount_t		*refcount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			(*put)(void *arg);
 	void			*arg;
 };
 
 extern const struct vm_operations_struct vb2_common_vm_ops;
 
+<<<<<<< HEAD
 int vb2_get_contig_userptr(unsigned long vaddr, unsigned long size,
 			   struct vm_area_struct **res_vma, dma_addr_t *res_pa);
 
@@ -41,5 +58,11 @@ int vb2_mmap_pfn_range(struct vm_area_struct *vma, unsigned long paddr,
 struct vm_area_struct *vb2_get_vma(struct vm_area_struct *vma);
 void vb2_put_vma(struct vm_area_struct *vma);
 
+=======
+struct frame_vector *vb2_create_framevec(unsigned long start,
+					 unsigned long length,
+					 bool write);
+void vb2_destroy_framevec(struct frame_vector *vec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

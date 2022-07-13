@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACINTERP_H__
 #define __ACINTERP_H__
 
@@ -67,7 +78,11 @@
 typedef const struct acpi_exdump_info {
 	u8 opcode;
 	u8 offset;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } acpi_exdump_info;
 
@@ -87,6 +102,13 @@ typedef const struct acpi_exdump_info {
 #define ACPI_EXD_PACKAGE                11
 #define ACPI_EXD_FIELD                  12
 #define ACPI_EXD_REFERENCE              13
+<<<<<<< HEAD
+=======
+#define ACPI_EXD_LIST                   14	/* Operand object list */
+#define ACPI_EXD_HDLR_LIST              15	/* Address Handler list */
+#define ACPI_EXD_RGN_LIST               16	/* Region list */
+#define ACPI_EXD_NODE                   17	/* Namespace Node */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* restore default alignment */
 
@@ -97,7 +119,12 @@ typedef const struct acpi_exdump_info {
  */
 acpi_status
 acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
+<<<<<<< HEAD
 			   union acpi_operand_object **result_desc, u32 flags);
+=======
+			   union acpi_operand_object **result_desc,
+			   u32 implicit_conversion);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
@@ -127,10 +154,41 @@ void
 acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			u32 level, u32 index);
 
+<<<<<<< HEAD
+=======
+void
+acpi_ex_start_trace_method(struct acpi_namespace_node *method_node,
+			   union acpi_operand_object *obj_desc,
+			   struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_stop_trace_method(struct acpi_namespace_node *method_node,
+			  union acpi_operand_object *obj_desc,
+			  struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_start_trace_opcode(union acpi_parse_object *op,
+			   struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_stop_trace_opcode(union acpi_parse_object *op,
+			  struct acpi_walk_state *walk_state);
+
+void
+acpi_ex_trace_point(acpi_trace_event_type type,
+		    u8 begin, u8 *aml, char *pathname);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
 acpi_status
+<<<<<<< HEAD
+=======
+acpi_ex_get_protocol_buffer_length(u32 protocol_id, u32 *return_length);
+
+acpi_status
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_ex_common_buffer_setup(union acpi_operand_object *obj_desc,
 			    u32 buffer_length, u32 * datum_count);
 
@@ -275,6 +333,29 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
 acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info);
 
 /*
+<<<<<<< HEAD
+=======
+ * exserial - field_unit support for serial address spaces
+ */
+acpi_status
+acpi_ex_read_serial_bus(union acpi_operand_object *obj_desc,
+			union acpi_operand_object **return_buffer);
+
+acpi_status
+acpi_ex_write_serial_bus(union acpi_operand_object *source_desc,
+			 union acpi_operand_object *obj_desc,
+			 union acpi_operand_object **return_buffer);
+
+acpi_status
+acpi_ex_read_gpio(union acpi_operand_object *obj_desc, void *buffer);
+
+acpi_status
+acpi_ex_write_gpio(union acpi_operand_object *source_desc,
+		   union acpi_operand_object *obj_desc,
+		   union acpi_operand_object **return_buffer);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * exsystem - Interface to OS services
  */
 acpi_status
@@ -344,7 +425,11 @@ acpi_ex_resolve_to_value(union acpi_operand_object **stack_ptr,
 acpi_status
 acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 			 union acpi_operand_object *operand,
+<<<<<<< HEAD
 			 acpi_object_type * return_type,
+=======
+			 acpi_object_type *return_type,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 union acpi_operand_object **return_desc);
 
 /*
@@ -371,12 +456,18 @@ void
 acpi_ex_dump_operands(union acpi_operand_object **operands,
 		      const char *opcode_name, u32 num_opcodes);
 
+<<<<<<< HEAD
 #ifdef	ACPI_FUTURE_USAGE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 acpi_ex_dump_object_descriptor(union acpi_operand_object *object, u32 flags);
 
 void acpi_ex_dump_namespace_node(struct acpi_namespace_node *node, u32 flags);
+<<<<<<< HEAD
 #endif				/* ACPI_FUTURE_USAGE */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * exnames - AML namestring support
@@ -400,9 +491,12 @@ acpi_ex_store_object_to_node(union acpi_operand_object *source_desc,
 			     struct acpi_walk_state *walk_state,
 			     u8 implicit_conversion);
 
+<<<<<<< HEAD
 #define ACPI_IMPLICIT_CONVERSION        TRUE
 #define ACPI_NO_IMPLICIT_CONVERSION     FALSE
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * exstoren - resolve/store object
  */
@@ -454,11 +548,15 @@ void acpi_ex_enter_interpreter(void);
 
 void acpi_ex_exit_interpreter(void);
 
+<<<<<<< HEAD
 void acpi_ex_reacquire_interpreter(void);
 
 void acpi_ex_relinquish_interpreter(void);
 
 void acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc);
+=======
+u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void acpi_ex_acquire_global_lock(u32 rule);
 
@@ -468,6 +566,11 @@ void acpi_ex_eisa_id_to_string(char *dest, u64 compressed_id);
 
 void acpi_ex_integer_to_string(char *dest, u64 value);
 
+<<<<<<< HEAD
+=======
+void acpi_ex_pci_cls_to_string(char *dest, u8 class_code[3]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 acpi_is_valid_space_id(u8 space_id);
 
 /*

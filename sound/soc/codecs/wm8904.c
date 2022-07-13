@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8904.c  --  WM8904 ALSA SoC Audio driver
  *
@@ -13,6 +14,19 @@
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * wm8904.c  --  WM8904 ALSA SoC Audio driver
+ *
+ * Copyright 2009-12 Wolfson Microelectronics plc
+ *
+ * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+ */
+
+#include <linux/clk.h>
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
@@ -49,6 +63,10 @@ static const char *wm8904_supply_names[WM8904_NUM_SUPPLIES] = {
 /* codec private data */
 struct wm8904_priv {
 	struct regmap *regmap;
+<<<<<<< HEAD
+=======
+	struct clk *mclk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum wm8904_type devtype;
 
@@ -100,7 +118,11 @@ static const struct reg_default wm8904_reg_defaults[] = {
 	{ 14,  0x0000 },     /* R14  - Power Management 2 */
 	{ 15,  0x0000 },     /* R15  - Power Management 3 */
 	{ 18,  0x0000 },     /* R18  - Power Management 6 */
+<<<<<<< HEAD
 	{ 19,  0x945E },     /* R20  - Clock Rates 0 */
+=======
+	{ 20,  0x945E },     /* R20  - Clock Rates 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 21,  0x0C05 },     /* R21  - Clock Rates 1 */
 	{ 22,  0x0006 },     /* R22  - Clock Rates 2 */
 	{ 24,  0x0050 },     /* R24  - Audio Interface 0 */
@@ -310,6 +332,7 @@ static bool wm8904_readable_register(struct device *dev, unsigned int reg)
 	case WM8904_FLL_NCO_TEST_1:
 		return true;
 	default:
+<<<<<<< HEAD
 		return true;
 	}
 }
@@ -327,23 +350,49 @@ static int wm8904_configure_clocking(struct snd_soc_codec *codec)
 	/* Gate the clock while we're updating to avoid misclocking */
 	clock2 = snd_soc_read(codec, WM8904_CLOCK_RATES_2);
 	snd_soc_update_bits(codec, WM8904_CLOCK_RATES_2,
+=======
+		return false;
+	}
+}
+
+static int wm8904_configure_clocking(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+	unsigned int clock0, clock2, rate;
+
+	/* Gate the clock while we're updating to avoid misclocking */
+	clock2 = snd_soc_component_read(component, WM8904_CLOCK_RATES_2);
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_SYSCLK_SRC, 0);
 
 	/* This should be done on init() for bypass paths */
 	switch (wm8904->sysclk_src) {
 	case WM8904_CLK_MCLK:
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Using %dHz MCLK\n", wm8904->mclk_rate);
+=======
+		dev_dbg(component->dev, "Using %dHz MCLK\n", wm8904->mclk_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		clock2 &= ~WM8904_SYSCLK_SRC;
 		rate = wm8904->mclk_rate;
 
 		/* Ensure the FLL is stopped */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
+=======
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_OSC_ENA | WM8904_FLL_ENA, 0);
 		break;
 
 	case WM8904_CLK_FLL:
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Using %dHz FLL clock\n",
+=======
+		dev_dbg(component->dev, "Using %dHz FLL clock\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8904->fll_fout);
 
 		clock2 |= WM8904_SYSCLK_SRC;
@@ -351,7 +400,11 @@ static int wm8904_configure_clocking(struct snd_soc_codec *codec)
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "System clock not configured\n");
+=======
+		dev_err(component->dev, "System clock not configured\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -364,6 +417,7 @@ static int wm8904_configure_clocking(struct snd_soc_codec *codec)
 		wm8904->sysclk_rate = rate;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_CLOCK_RATES_0, WM8904_MCLK_DIV,
 			    clock0);
 
@@ -371,17 +425,33 @@ static int wm8904_configure_clocking(struct snd_soc_codec *codec)
 			    WM8904_CLK_SYS_ENA | WM8904_SYSCLK_SRC, clock2);
 
 	dev_dbg(codec->dev, "CLK_SYS is %dHz\n", wm8904->sysclk_rate);
+=======
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_0, WM8904_MCLK_DIV,
+			    clock0);
+
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_2,
+			    WM8904_CLK_SYS_ENA | WM8904_SYSCLK_SRC, clock2);
+
+	dev_dbg(component->dev, "CLK_SYS is %dHz\n", wm8904->sysclk_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void wm8904_set_drc(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+static void wm8904_set_drc(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	int save, i;
 
 	/* Save any enables; the configuration should clear them. */
+<<<<<<< HEAD
 	save = snd_soc_read(codec, WM8904_DRC_0);
 
 	for (i = 0; i < WM8904_DRC_REGS; i++)
@@ -390,23 +460,44 @@ static void wm8904_set_drc(struct snd_soc_codec *codec)
 
 	/* Reenable the DRC */
 	snd_soc_update_bits(codec, WM8904_DRC_0,
+=======
+	save = snd_soc_component_read(component, WM8904_DRC_0);
+
+	for (i = 0; i < WM8904_DRC_REGS; i++)
+		snd_soc_component_update_bits(component, WM8904_DRC_0 + i, 0xffff,
+				    pdata->drc_cfgs[wm8904->drc_cfg].regs[i]);
+
+	/* Reenable the DRC */
+	snd_soc_component_update_bits(component, WM8904_DRC_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_DRC_ENA | WM8904_DRC_DAC_PATH, save);
 }
 
 static int wm8904_put_drc_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	int value = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+	struct wm8904_pdata *pdata = wm8904->pdata;
+	int value = ucontrol->value.enumerated.item[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (value >= pdata->num_drc_cfgs)
 		return -EINVAL;
 
 	wm8904->drc_cfg = value;
 
+<<<<<<< HEAD
 	wm8904_set_drc(codec);
+=======
+	wm8904_set_drc(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -414,17 +505,28 @@ static int wm8904_put_drc_enum(struct snd_kcontrol *kcontrol,
 static int wm8904_get_drc_enum(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.enumerated.item[0] = wm8904->drc_cfg;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void wm8904_set_retune_mobile(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+static void wm8904_set_retune_mobile(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	int best, best_val, save, i, cfg;
 
@@ -447,7 +549,11 @@ static void wm8904_set_retune_mobile(struct snd_soc_codec *codec)
 		}
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "ReTune Mobile %s/%dHz for %dHz sample rate\n",
+=======
+	dev_dbg(component->dev, "ReTune Mobile %s/%dHz for %dHz sample rate\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->retune_mobile_cfgs[best].name,
 		pdata->retune_mobile_cfgs[best].rate,
 		wm8904->fs);
@@ -455,6 +561,7 @@ static void wm8904_set_retune_mobile(struct snd_soc_codec *codec)
 	/* The EQ will be disabled while reconfiguring it, remember the
 	 * current configuration. 
 	 */
+<<<<<<< HEAD
 	save = snd_soc_read(codec, WM8904_EQ1);
 
 	for (i = 0; i < WM8904_EQ_REGS; i++)
@@ -462,22 +569,42 @@ static void wm8904_set_retune_mobile(struct snd_soc_codec *codec)
 				pdata->retune_mobile_cfgs[best].regs[i]);
 
 	snd_soc_update_bits(codec, WM8904_EQ1, WM8904_EQ_ENA, save);
+=======
+	save = snd_soc_component_read(component, WM8904_EQ1);
+
+	for (i = 0; i < WM8904_EQ_REGS; i++)
+		snd_soc_component_update_bits(component, WM8904_EQ1 + i, 0xffff,
+				pdata->retune_mobile_cfgs[best].regs[i]);
+
+	snd_soc_component_update_bits(component, WM8904_EQ1, WM8904_EQ_ENA, save);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8904_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	int value = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+	struct wm8904_pdata *pdata = wm8904->pdata;
+	int value = ucontrol->value.enumerated.item[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (value >= pdata->num_retune_mobile_cfgs)
 		return -EINVAL;
 
 	wm8904->retune_mobile_cfg = value;
 
+<<<<<<< HEAD
 	wm8904_set_retune_mobile(codec);
+=======
+	wm8904_set_retune_mobile(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -485,8 +612,13 @@ static int wm8904_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 static int wm8904_get_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.enumerated.item[0] = wm8904->retune_mobile_cfg;
 
@@ -495,9 +627,15 @@ static int wm8904_get_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 
 static int deemph_settings[] = { 0, 32000, 44100, 48000 };
 
+<<<<<<< HEAD
 static int wm8904_set_deemph(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+static int wm8904_set_deemph(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, i, best;
 
 	/* If we're using deemphasis select the nearest available sample 
@@ -516,17 +654,28 @@ static int wm8904_set_deemph(struct snd_soc_codec *codec)
 		val = 0;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Set deemphasis %d\n", val);
 
 	return snd_soc_update_bits(codec, WM8904_DAC_DIGITAL_1,
+=======
+	dev_dbg(component->dev, "Set deemphasis %d\n", val);
+
+	return snd_soc_component_update_bits(component, WM8904_DAC_DIGITAL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   WM8904_DEEMPH_MASK, val);
 }
 
 static int wm8904_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = wm8904->deemph;
 	return 0;
@@ -535,16 +684,26 @@ static int wm8904_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8904_put_deemph(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
 	int deemph = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+	unsigned int deemph = ucontrol->value.integer.value[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (deemph > 1)
 		return -EINVAL;
 
 	wm8904->deemph = deemph;
 
+<<<<<<< HEAD
 	return wm8904_set_deemph(codec);
+=======
+	return wm8904_set_deemph(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const DECLARE_TLV_DB_SCALE(dac_boost_tlv, 0, 600, 0);
@@ -553,6 +712,7 @@ static const DECLARE_TLV_DB_SCALE(out_tlv, -5700, 100, 0);
 static const DECLARE_TLV_DB_SCALE(sidetone_tlv, -3600, 300, 0);
 static const DECLARE_TLV_DB_SCALE(eq_tlv, -1200, 100, 0);
 
+<<<<<<< HEAD
 static const char *input_mode_text[] = {
 	"Single-Ended", "Differential Line", "Differential Mic"
 };
@@ -563,17 +723,28 @@ static const struct soc_enum lin_mode =
 static const struct soc_enum rin_mode =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_RIGHT_INPUT_1, 0, 3, input_mode_text);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *hpf_mode_text[] = {
 	"Hi-fi", "Voice 1", "Voice 2", "Voice 3"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum hpf_mode =
 	SOC_ENUM_SINGLE(WM8904_ADC_DIGITAL_0, 5, 4, hpf_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(hpf_mode, WM8904_ADC_DIGITAL_0, 5,
+			    hpf_mode_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int wm8904_adc_osr_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 	int ret;
 
@@ -586,7 +757,11 @@ static int wm8904_adc_osr_put(struct snd_kcontrol *kcontrol,
 	else
 		val = WM8904_ADC_128_OSR_TST_MODE | WM8904_ADC_BIASX1P5;
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_ADC_TEST_0,
+=======
+	snd_soc_component_update_bits(component, WM8904_ADC_TEST_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_ADC_128_OSR_TST_MODE | WM8904_ADC_BIASX1P5,
 			    val);
 
@@ -597,9 +772,12 @@ static const struct snd_kcontrol_new wm8904_adc_snd_controls[] = {
 SOC_DOUBLE_R_TLV("Digital Capture Volume", WM8904_ADC_DIGITAL_VOLUME_LEFT,
 		 WM8904_ADC_DIGITAL_VOLUME_RIGHT, 1, 119, 0, digital_tlv),
 
+<<<<<<< HEAD
 SOC_ENUM("Left Caputure Mode", lin_mode),
 SOC_ENUM("Right Capture Mode", rin_mode),
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* No TLV since it depends on mode */
 SOC_DOUBLE_R("Capture Volume", WM8904_ANALOGUE_LEFT_INPUT_0,
 	     WM8904_ANALOGUE_RIGHT_INPUT_0, 0, 31, 0),
@@ -608,6 +786,7 @@ SOC_DOUBLE_R("Capture Switch", WM8904_ANALOGUE_LEFT_INPUT_0,
 
 SOC_SINGLE("High Pass Filter Switch", WM8904_ADC_DIGITAL_0, 4, 1, 0),
 SOC_ENUM("High Pass Filter Mode", hpf_mode),
+<<<<<<< HEAD
 
 {       .iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "ADC 128x OSR Switch",
@@ -615,14 +794,22 @@ SOC_ENUM("High Pass Filter Mode", hpf_mode),
 	.put = wm8904_adc_osr_put,
 	.private_value = SOC_SINGLE_VALUE(WM8904_ANALOGUE_ADC_0, 0, 1, 0),
 },
+=======
+SOC_SINGLE_EXT("ADC 128x OSR Switch", WM8904_ANALOGUE_ADC_0, 0, 1, 0,
+	snd_soc_get_volsw, wm8904_adc_osr_put),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *drc_path_text[] = {
 	"ADC", "DAC"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum drc_path =
 	SOC_ENUM_SINGLE(WM8904_DRC_0, 14, 2, drc_path_text);
+=======
+static SOC_ENUM_SINGLE_DECL(drc_path, WM8904_DRC_0, 14, drc_path_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new wm8904_dac_snd_controls[] = {
 SOC_SINGLE_TLV("Digital Playback Boost Volume", 
@@ -668,7 +855,12 @@ SOC_SINGLE_TLV("EQ5 Volume", WM8904_EQ6, 0, 24, 0, eq_tlv),
 static int cp_event(struct snd_soc_dapm_widget *w,
 		    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	BUG_ON(event != SND_SOC_DAPM_POST_PMU);
+=======
+	if (WARN_ON(event != SND_SOC_DAPM_POST_PMU))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Maximum startup time */
 	udelay(500);
@@ -679,8 +871,13 @@ static int cp_event(struct snd_soc_dapm_widget *w,
 static int sysclk_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -691,11 +888,19 @@ static int sysclk_event(struct snd_soc_dapm_widget *w,
 		 */
 		switch (wm8904->sysclk_src) {
 		case WM8904_CLK_FLL:
+<<<<<<< HEAD
 			snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
 					    WM8904_FLL_OSC_ENA,
 					    WM8904_FLL_OSC_ENA);
 
 			snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
+=======
+			snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+					    WM8904_FLL_OSC_ENA,
+					    WM8904_FLL_OSC_ENA);
+
+			snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8904_FLL_ENA,
 					    WM8904_FLL_ENA);
 			break;
@@ -706,7 +911,11 @@ static int sysclk_event(struct snd_soc_dapm_widget *w,
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
+=======
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_OSC_ENA | WM8904_FLL_ENA, 0);
 		break;
 	}
@@ -717,12 +926,21 @@ static int sysclk_event(struct snd_soc_dapm_widget *w,
 static int out_pga_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int reg, val;
 	int dcs_mask;
 	int dcs_l, dcs_r;
 	int dcs_l_reg, dcs_r_reg;
+<<<<<<< HEAD
+=======
+	int an_out_reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int timeout;
 	int pwr_reg;
 
@@ -738,6 +956,10 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 		dcs_mask = WM8904_DCS_ENA_CHAN_0 | WM8904_DCS_ENA_CHAN_1;
 		dcs_r_reg = WM8904_DC_SERVO_8;
 		dcs_l_reg = WM8904_DC_SERVO_9;
+<<<<<<< HEAD
+=======
+		an_out_reg = WM8904_ANALOGUE_OUT1_LEFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcs_l = 0;
 		dcs_r = 1;
 		break;
@@ -746,40 +968,65 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 		dcs_mask = WM8904_DCS_ENA_CHAN_2 | WM8904_DCS_ENA_CHAN_3;
 		dcs_r_reg = WM8904_DC_SERVO_6;
 		dcs_l_reg = WM8904_DC_SERVO_7;
+<<<<<<< HEAD
+=======
+		an_out_reg = WM8904_ANALOGUE_OUT2_LEFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcs_l = 2;
 		dcs_r = 3;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid reg %d\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		/* Power on the PGAs */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, pwr_reg,
+=======
+		snd_soc_component_update_bits(component, pwr_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_PGA_ENA | WM8904_HPR_PGA_ENA,
 				    WM8904_HPL_PGA_ENA | WM8904_HPR_PGA_ENA);
 
 		/* Power on the amplifier */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, reg,
+=======
+		snd_soc_component_update_bits(component, reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_ENA | WM8904_HPR_ENA,
 				    WM8904_HPL_ENA | WM8904_HPR_ENA);
 
 
 		/* Enable the first stage */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, reg,
+=======
+		snd_soc_component_update_bits(component, reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_ENA_DLY | WM8904_HPR_ENA_DLY,
 				    WM8904_HPL_ENA_DLY | WM8904_HPR_ENA_DLY);
 
 		/* Power up the DC servo */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_DC_SERVO_0,
+=======
+		snd_soc_component_update_bits(component, WM8904_DC_SERVO_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    dcs_mask, dcs_mask);
 
 		/* Either calibrate the DC servo or restore cached state
 		 * if we have that.
 		 */
 		if (wm8904->dcs_state[dcs_l] || wm8904->dcs_state[dcs_r]) {
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "Restoring DC servo state\n");
 
 			snd_soc_write(codec, dcs_l_reg,
@@ -794,6 +1041,22 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 			dev_dbg(codec->dev, "Calibrating DC servo\n");
 
 			snd_soc_write(codec, WM8904_DC_SERVO_1,
+=======
+			dev_dbg(component->dev, "Restoring DC servo state\n");
+
+			snd_soc_component_write(component, dcs_l_reg,
+				      wm8904->dcs_state[dcs_l]);
+			snd_soc_component_write(component, dcs_r_reg,
+				      wm8904->dcs_state[dcs_r]);
+
+			snd_soc_component_write(component, WM8904_DC_SERVO_1, dcs_mask);
+
+			timeout = 20;
+		} else {
+			dev_dbg(component->dev, "Calibrating DC servo\n");
+
+			snd_soc_component_write(component, WM8904_DC_SERVO_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dcs_mask << WM8904_DCS_TRIG_STARTUP_0_SHIFT);
 
 			timeout = 500;
@@ -802,7 +1065,11 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 		/* Wait for DC servo to complete */
 		dcs_mask <<= WM8904_DCS_CAL_COMPLETE_SHIFT;
 		do {
+<<<<<<< HEAD
 			val = snd_soc_read(codec, WM8904_DC_SERVO_READBACK_0);
+=======
+			val = snd_soc_component_read(component, WM8904_DC_SERVO_READBACK_0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((val & dcs_mask) == dcs_mask)
 				break;
 
@@ -810,6 +1077,7 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 		} while (--timeout);
 
 		if ((val & dcs_mask) != dcs_mask)
+<<<<<<< HEAD
 			dev_warn(codec->dev, "DC servo timed out\n");
 		else
 			dev_dbg(codec->dev, "DC servo ready\n");
@@ -818,11 +1086,29 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 		snd_soc_update_bits(codec, reg,
 				    WM8904_HPL_ENA_OUTP | WM8904_HPR_ENA_OUTP,
 				    WM8904_HPL_ENA_OUTP | WM8904_HPR_ENA_OUTP);
+=======
+			dev_warn(component->dev, "DC servo timed out\n");
+		else
+			dev_dbg(component->dev, "DC servo ready\n");
+
+		/* Enable the output stage */
+		snd_soc_component_update_bits(component, reg,
+				    WM8904_HPL_ENA_OUTP | WM8904_HPR_ENA_OUTP,
+				    WM8904_HPL_ENA_OUTP | WM8904_HPR_ENA_OUTP);
+
+		/* Update volume, requires PGA to be powered */
+		val = snd_soc_component_read(component, an_out_reg);
+		snd_soc_component_write(component, an_out_reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
 		/* Unshort the output itself */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, reg,
+=======
+		snd_soc_component_update_bits(component, reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_RMV_SHORT |
 				    WM8904_HPR_RMV_SHORT,
 				    WM8904_HPL_RMV_SHORT |
@@ -832,7 +1118,11 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 
 	case SND_SOC_DAPM_PRE_PMD:
 		/* Short the output */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, reg,
+=======
+		snd_soc_component_update_bits(component, reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_RMV_SHORT |
 				    WM8904_HPR_RMV_SHORT, 0);
 		break;
@@ -840,6 +1130,7 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_POST_PMD:
 		/* Cache the DC servo configuration; this will be
 		 * invalidated if we change the configuration. */
+<<<<<<< HEAD
 		wm8904->dcs_state[dcs_l] = snd_soc_read(codec, dcs_l_reg);
 		wm8904->dcs_state[dcs_r] = snd_soc_read(codec, dcs_r_reg);
 
@@ -848,13 +1139,27 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 
 		/* Disable the amplifier input and output stages */
 		snd_soc_update_bits(codec, reg,
+=======
+		wm8904->dcs_state[dcs_l] = snd_soc_component_read(component, dcs_l_reg);
+		wm8904->dcs_state[dcs_r] = snd_soc_component_read(component, dcs_r_reg);
+
+		snd_soc_component_update_bits(component, WM8904_DC_SERVO_0,
+				    dcs_mask, 0);
+
+		/* Disable the amplifier input and output stages */
+		snd_soc_component_update_bits(component, reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_ENA | WM8904_HPR_ENA |
 				    WM8904_HPL_ENA_DLY | WM8904_HPR_ENA_DLY |
 				    WM8904_HPL_ENA_OUTP | WM8904_HPR_ENA_OUTP,
 				    0);
 
 		/* PGAs too */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, pwr_reg,
+=======
+		snd_soc_component_update_bits(component, pwr_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_HPL_PGA_ENA | WM8904_HPR_PGA_ENA,
 				    0);
 		break;
@@ -863,62 +1168,129 @@ static int out_pga_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const char *input_mode_text[] = {
+	"Single-Ended", "Differential Line", "Differential Mic"
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *lin_text[] = {
 	"IN1L", "IN2L", "IN3L"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum lin_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_LEFT_INPUT_1, 2, 3, lin_text);
+=======
+static SOC_ENUM_SINGLE_DECL(lin_enum, WM8904_ANALOGUE_LEFT_INPUT_1, 2,
+			    lin_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new lin_mux =
 	SOC_DAPM_ENUM("Left Capture Mux", lin_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum lin_inv_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_LEFT_INPUT_1, 4, 3, lin_text);
 
 static const struct snd_kcontrol_new lin_inv_mux =
 	SOC_DAPM_ENUM("Left Capture Inveting Mux", lin_inv_enum);
+=======
+static SOC_ENUM_SINGLE_DECL(lin_inv_enum, WM8904_ANALOGUE_LEFT_INPUT_1, 4,
+			    lin_text);
+
+static const struct snd_kcontrol_new lin_inv_mux =
+	SOC_DAPM_ENUM("Left Capture Inverting Mux", lin_inv_enum);
+
+static SOC_ENUM_SINGLE_DECL(lin_mode_enum,
+			    WM8904_ANALOGUE_LEFT_INPUT_1, 0,
+			    input_mode_text);
+
+static const struct snd_kcontrol_new lin_mode =
+	SOC_DAPM_ENUM("Left Capture Mode", lin_mode_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *rin_text[] = {
 	"IN1R", "IN2R", "IN3R"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum rin_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_RIGHT_INPUT_1, 2, 3, rin_text);
+=======
+static SOC_ENUM_SINGLE_DECL(rin_enum, WM8904_ANALOGUE_RIGHT_INPUT_1, 2,
+			    rin_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new rin_mux =
 	SOC_DAPM_ENUM("Right Capture Mux", rin_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum rin_inv_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_RIGHT_INPUT_1, 4, 3, rin_text);
 
 static const struct snd_kcontrol_new rin_inv_mux =
 	SOC_DAPM_ENUM("Right Capture Inveting Mux", rin_inv_enum);
+=======
+static SOC_ENUM_SINGLE_DECL(rin_inv_enum, WM8904_ANALOGUE_RIGHT_INPUT_1, 4,
+			    rin_text);
+
+static const struct snd_kcontrol_new rin_inv_mux =
+	SOC_DAPM_ENUM("Right Capture Inverting Mux", rin_inv_enum);
+
+static SOC_ENUM_SINGLE_DECL(rin_mode_enum,
+			    WM8904_ANALOGUE_RIGHT_INPUT_1, 0,
+			    input_mode_text);
+
+static const struct snd_kcontrol_new rin_mode =
+	SOC_DAPM_ENUM("Right Capture Mode", rin_mode_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *aif_text[] = {
 	"Left", "Right"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum aifoutl_enum =
 	SOC_ENUM_SINGLE(WM8904_AUDIO_INTERFACE_0, 7, 2, aif_text);
+=======
+static SOC_ENUM_SINGLE_DECL(aifoutl_enum, WM8904_AUDIO_INTERFACE_0, 7,
+			    aif_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new aifoutl_mux =
 	SOC_DAPM_ENUM("AIFOUTL Mux", aifoutl_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum aifoutr_enum =
 	SOC_ENUM_SINGLE(WM8904_AUDIO_INTERFACE_0, 6, 2, aif_text);
+=======
+static SOC_ENUM_SINGLE_DECL(aifoutr_enum, WM8904_AUDIO_INTERFACE_0, 6,
+			    aif_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new aifoutr_mux =
 	SOC_DAPM_ENUM("AIFOUTR Mux", aifoutr_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum aifinl_enum =
 	SOC_ENUM_SINGLE(WM8904_AUDIO_INTERFACE_0, 5, 2, aif_text);
+=======
+static SOC_ENUM_SINGLE_DECL(aifinl_enum, WM8904_AUDIO_INTERFACE_0, 5,
+			    aif_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new aifinl_mux =
 	SOC_DAPM_ENUM("AIFINL Mux", aifinl_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum aifinr_enum =
 	SOC_ENUM_SINGLE(WM8904_AUDIO_INTERFACE_0, 4, 2, aif_text);
+=======
+static SOC_ENUM_SINGLE_DECL(aifinr_enum, WM8904_AUDIO_INTERFACE_0, 4,
+			    aif_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new aifinr_mux =
 	SOC_DAPM_ENUM("AIFINR Mux", aifinr_enum);
@@ -943,9 +1315,17 @@ SND_SOC_DAPM_SUPPLY("MICBIAS", WM8904_MIC_BIAS_CONTROL_0, 0, 0, NULL, 0),
 SND_SOC_DAPM_MUX("Left Capture Mux", SND_SOC_NOPM, 0, 0, &lin_mux),
 SND_SOC_DAPM_MUX("Left Capture Inverting Mux", SND_SOC_NOPM, 0, 0,
 		 &lin_inv_mux),
+<<<<<<< HEAD
 SND_SOC_DAPM_MUX("Right Capture Mux", SND_SOC_NOPM, 0, 0, &rin_mux),
 SND_SOC_DAPM_MUX("Right Capture Inverting Mux", SND_SOC_NOPM, 0, 0,
 		 &rin_inv_mux),
+=======
+SND_SOC_DAPM_MUX("Left Capture Mode", SND_SOC_NOPM, 0, 0, &lin_mode),
+SND_SOC_DAPM_MUX("Right Capture Mux", SND_SOC_NOPM, 0, 0, &rin_mux),
+SND_SOC_DAPM_MUX("Right Capture Inverting Mux", SND_SOC_NOPM, 0, 0,
+		 &rin_inv_mux),
+SND_SOC_DAPM_MUX("Right Capture Mode", SND_SOC_NOPM, 0, 0, &rin_mode),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SND_SOC_DAPM_PGA("Left Capture PGA", WM8904_POWER_MANAGEMENT_0, 1, 0,
 		 NULL, 0),
@@ -1000,42 +1380,75 @@ static const char *out_mux_text[] = {
 	"DAC", "Bypass"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum hpl_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_OUT12_ZC, 3, 2, out_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(hpl_enum, WM8904_ANALOGUE_OUT12_ZC, 3,
+			    out_mux_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new hpl_mux =
 	SOC_DAPM_ENUM("HPL Mux", hpl_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum hpr_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_OUT12_ZC, 2, 2, out_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(hpr_enum, WM8904_ANALOGUE_OUT12_ZC, 2,
+			    out_mux_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new hpr_mux =
 	SOC_DAPM_ENUM("HPR Mux", hpr_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum linel_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_OUT12_ZC, 1, 2, out_mux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(linel_enum, WM8904_ANALOGUE_OUT12_ZC, 1,
+			    out_mux_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new linel_mux =
 	SOC_DAPM_ENUM("LINEL Mux", linel_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum liner_enum =
 	SOC_ENUM_SINGLE(WM8904_ANALOGUE_OUT12_ZC, 0, 2, out_mux_text);
 
 static const struct snd_kcontrol_new liner_mux =
 	SOC_DAPM_ENUM("LINEL Mux", liner_enum);
+=======
+static SOC_ENUM_SINGLE_DECL(liner_enum, WM8904_ANALOGUE_OUT12_ZC, 0,
+			    out_mux_text);
+
+static const struct snd_kcontrol_new liner_mux =
+	SOC_DAPM_ENUM("LINER Mux", liner_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *sidetone_text[] = {
 	"None", "Left", "Right"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dacl_sidetone_enum =
 	SOC_ENUM_SINGLE(WM8904_DAC_DIGITAL_0, 2, 3, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dacl_sidetone_enum, WM8904_DAC_DIGITAL_0, 2,
+			    sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new dacl_sidetone_mux =
 	SOC_DAPM_ENUM("Left Sidetone Mux", dacl_sidetone_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum dacr_sidetone_enum =
 	SOC_ENUM_SINGLE(WM8904_DAC_DIGITAL_0, 0, 3, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dacr_sidetone_enum, WM8904_DAC_DIGITAL_0, 0,
+			    sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new dacr_sidetone_mux =
 	SOC_DAPM_ENUM("Right Sidetone Mux", dacr_sidetone_enum);
@@ -1068,6 +1481,15 @@ static const struct snd_soc_dapm_route adc_intercon[] = {
 	{ "Left Capture Inverting Mux", "IN2L", "IN2L" },
 	{ "Left Capture Inverting Mux", "IN3L", "IN3L" },
 
+<<<<<<< HEAD
+=======
+	{ "Left Capture Mode", "Single-Ended", "Left Capture Inverting Mux" },
+	{ "Left Capture Mode", "Differential Line", "Left Capture Mux" },
+	{ "Left Capture Mode", "Differential Line", "Left Capture Inverting Mux" },
+	{ "Left Capture Mode", "Differential Mic", "Left Capture Mux" },
+	{ "Left Capture Mode", "Differential Mic", "Left Capture Inverting Mux" },
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Right Capture Mux", "IN1R", "IN1R" },
 	{ "Right Capture Mux", "IN2R", "IN2R" },
 	{ "Right Capture Mux", "IN3R", "IN3R" },
@@ -1076,6 +1498,7 @@ static const struct snd_soc_dapm_route adc_intercon[] = {
 	{ "Right Capture Inverting Mux", "IN2R", "IN2R" },
 	{ "Right Capture Inverting Mux", "IN3R", "IN3R" },
 
+<<<<<<< HEAD
 	{ "Left Capture PGA", NULL, "Left Capture Mux" },
 	{ "Left Capture PGA", NULL, "Left Capture Inverting Mux" },
 
@@ -1086,6 +1509,24 @@ static const struct snd_soc_dapm_route adc_intercon[] = {
 	{ "AIFOUTL", "Right", "ADCR" },
 	{ "AIFOUTR", "Left",  "ADCL" },
 	{ "AIFOUTR", "Right", "ADCR" },
+=======
+	{ "Right Capture Mode", "Single-Ended", "Right Capture Inverting Mux" },
+	{ "Right Capture Mode", "Differential Line", "Right Capture Mux" },
+	{ "Right Capture Mode", "Differential Line", "Right Capture Inverting Mux" },
+	{ "Right Capture Mode", "Differential Mic", "Right Capture Mux" },
+	{ "Right Capture Mode", "Differential Mic", "Right Capture Inverting Mux" },
+
+	{ "Left Capture PGA", NULL, "Left Capture Mode" },
+	{ "Right Capture PGA", NULL, "Right Capture Mode" },
+
+	{ "AIFOUTL Mux", "Left", "ADCL" },
+	{ "AIFOUTL Mux", "Right", "ADCR" },
+	{ "AIFOUTR Mux", "Left", "ADCL" },
+	{ "AIFOUTR Mux", "Right", "ADCR" },
+
+	{ "AIFOUTL", NULL, "AIFOUTL Mux" },
+	{ "AIFOUTR", NULL, "AIFOUTR Mux" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ "ADCL", NULL, "CLK_DSP" },
 	{ "ADCL", NULL, "Left Capture PGA" },
@@ -1095,12 +1536,25 @@ static const struct snd_soc_dapm_route adc_intercon[] = {
 };
 
 static const struct snd_soc_dapm_route dac_intercon[] = {
+<<<<<<< HEAD
 	{ "DACL", "Right", "AIFINR" },
 	{ "DACL", "Left",  "AIFINL" },
 	{ "DACL", NULL, "CLK_DSP" },
 
 	{ "DACR", "Right", "AIFINR" },
 	{ "DACR", "Left",  "AIFINL" },
+=======
+	{ "DACL Mux", "Left", "AIFINL" },
+	{ "DACL Mux", "Right", "AIFINR" },
+
+	{ "DACR Mux", "Left", "AIFINL" },
+	{ "DACR Mux", "Right", "AIFINR" },
+
+	{ "DACL", NULL, "DACL Mux" },
+	{ "DACL", NULL, "CLK_DSP" },
+
+	{ "DACR", NULL, "DACR Mux" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "DACR", NULL, "CLK_DSP" },
 
 	{ "Charge pump", NULL, "SYSCLK" },
@@ -1164,10 +1618,17 @@ static const struct snd_soc_dapm_route wm8912_intercon[] = {
 	{ "LINER PGA", NULL, "DACR" },
 };
 
+<<<<<<< HEAD
 static int wm8904_add_widgets(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+=======
+static int wm8904_add_widgets(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_soc_dapm_new_controls(dapm, wm8904_core_dapm_widgets,
 				  ARRAY_SIZE(wm8904_core_dapm_widgets));
@@ -1176,11 +1637,19 @@ static int wm8904_add_widgets(struct snd_soc_codec *codec)
 
 	switch (wm8904->devtype) {
 	case WM8904:
+<<<<<<< HEAD
 		snd_soc_add_codec_controls(codec, wm8904_adc_snd_controls,
 				     ARRAY_SIZE(wm8904_adc_snd_controls));
 		snd_soc_add_codec_controls(codec, wm8904_dac_snd_controls,
 				     ARRAY_SIZE(wm8904_dac_snd_controls));
 		snd_soc_add_codec_controls(codec, wm8904_snd_controls,
+=======
+		snd_soc_add_component_controls(component, wm8904_adc_snd_controls,
+				     ARRAY_SIZE(wm8904_adc_snd_controls));
+		snd_soc_add_component_controls(component, wm8904_dac_snd_controls,
+				     ARRAY_SIZE(wm8904_dac_snd_controls));
+		snd_soc_add_component_controls(component, wm8904_snd_controls,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm8904_snd_controls));
 
 		snd_soc_dapm_new_controls(dapm, wm8904_adc_dapm_widgets,
@@ -1190,8 +1659,11 @@ static int wm8904_add_widgets(struct snd_soc_codec *codec)
 		snd_soc_dapm_new_controls(dapm, wm8904_dapm_widgets,
 					  ARRAY_SIZE(wm8904_dapm_widgets));
 
+<<<<<<< HEAD
 		snd_soc_dapm_add_routes(dapm, core_intercon,
 					ARRAY_SIZE(core_intercon));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_soc_dapm_add_routes(dapm, adc_intercon,
 					ARRAY_SIZE(adc_intercon));
 		snd_soc_dapm_add_routes(dapm, dac_intercon,
@@ -1201,7 +1673,11 @@ static int wm8904_add_widgets(struct snd_soc_codec *codec)
 		break;
 
 	case WM8912:
+<<<<<<< HEAD
 		snd_soc_add_codec_controls(codec, wm8904_dac_snd_controls,
+=======
+		snd_soc_add_component_controls(component, wm8904_dac_snd_controls,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm8904_dac_snd_controls));
 
 		snd_soc_dapm_new_controls(dapm, wm8904_dac_dapm_widgets,
@@ -1214,7 +1690,10 @@ static int wm8904_add_widgets(struct snd_soc_codec *codec)
 		break;
 	}
 
+<<<<<<< HEAD
 	snd_soc_dapm_new_widgets(dapm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1280,8 +1759,13 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, i, best, best_val, cur_val;
 	unsigned int aif1 = 0;
 	unsigned int aif2 = 0;
@@ -1292,7 +1776,11 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 	/* What BCLK do we need? */
 	wm8904->fs = params_rate(params);
 	if (wm8904->tdm_slots) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Configuring for %d %d bit TDM slots\n",
+=======
+		dev_dbg(component->dev, "Configuring for %d %d bit TDM slots\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8904->tdm_slots, wm8904->tdm_width);
 		wm8904->bclk = snd_soc_calc_bclk(wm8904->fs,
 						 wm8904->tdm_width, 2,
@@ -1301,6 +1789,7 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 		wm8904->bclk = snd_soc_params_to_bclk(params);
 	}
 
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
@@ -1311,6 +1800,18 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 		aif1 |= 0x80;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		aif1 |= 0x40;
+		break;
+	case 24:
+		aif1 |= 0x80;
+		break;
+	case 32:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aif1 |= 0xc0;
 		break;
 	default:
@@ -1318,9 +1819,15 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 	}
 
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Target BCLK is %dHz\n", wm8904->bclk);
 
 	ret = wm8904_configure_clocking(codec);
+=======
+	dev_dbg(component->dev, "Target BCLK is %dHz\n", wm8904->bclk);
+
+	ret = wm8904_configure_clocking(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		return ret;
 
@@ -1336,7 +1843,11 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 			best_val = cur_val;
 		}
 	}
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Selected CLK_SYS_RATIO of %d\n",
+=======
+	dev_dbg(component->dev, "Selected CLK_SYS_RATIO of %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk_sys_rates[best].ratio);
 	clock1 |= (clk_sys_rates[best].clk_sys_rate
 		   << WM8904_CLK_SYS_RATE_SHIFT);
@@ -1352,7 +1863,11 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 			best_val = cur_val;
 		}
 	}
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Selected SAMPLE_RATE of %dHz\n",
+=======
+	dev_dbg(component->dev, "Selected SAMPLE_RATE of %dHz\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sample_rates[best].rate);
 	clock1 |= (sample_rates[best].sample_rate
 		   << WM8904_SAMPLE_RATE_SHIFT);
@@ -1375,11 +1890,16 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 	wm8904->bclk = (wm8904->sysclk_rate * 10) / bclk_divs[best].div;
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Selected BCLK_DIV of %d for %dHz BCLK\n",
+=======
+	dev_dbg(component->dev, "Selected BCLK_DIV of %d for %dHz BCLK\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bclk_divs[best].div, wm8904->bclk);
 	aif2 |= bclk_divs[best].bclk_div;
 
 	/* LRCLK is a simple fraction of BCLK */
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "LRCLK_RATE is %d\n", wm8904->bclk / wm8904->fs);
 	aif3 |= wm8904->bclk / wm8904->fs;
 
@@ -1393,10 +1913,26 @@ static int wm8904_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_update_bits(codec, WM8904_AUDIO_INTERFACE_3,
 			    WM8904_LRCLK_RATE_MASK, aif3);
 	snd_soc_update_bits(codec, WM8904_CLOCK_RATES_1,
+=======
+	dev_dbg(component->dev, "LRCLK_RATE is %d\n", wm8904->bclk / wm8904->fs);
+	aif3 |= wm8904->bclk / wm8904->fs;
+
+	/* Apply the settings */
+	snd_soc_component_update_bits(component, WM8904_DAC_DIGITAL_1,
+			    WM8904_DAC_SB_FILT, dac_digital1);
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_1,
+			    WM8904_AIF_WL_MASK, aif1);
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_2,
+			    WM8904_BCLK_DIV_MASK, aif2);
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_3,
+			    WM8904_LRCLK_RATE_MASK, aif3);
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_SAMPLE_RATE_MASK |
 			    WM8904_CLK_SYS_RATE_MASK, clock1);
 
 	/* Update filters for the new settings */
+<<<<<<< HEAD
 	wm8904_set_retune_mobile(codec);
 	wm8904_set_deemph(codec);
 
@@ -1427,13 +1963,21 @@ static int wm8904_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	dev_dbg(dai->dev, "Clock source is %d at %uHz\n", clk_id, freq);
 
 	wm8904_configure_clocking(codec);
+=======
+	wm8904_set_retune_mobile(component);
+	wm8904_set_deemph(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int wm8904_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
+=======
+	struct snd_soc_component *component = dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int aif1 = 0;
 	unsigned int aif3 = 0;
 
@@ -1457,6 +2001,10 @@ static int wm8904_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_B:
 		aif1 |= 0x3 | WM8904_AIF_LRCLK_INV;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_SOC_DAIFMT_DSP_A:
 		aif1 |= 0x3;
 		break;
@@ -1510,10 +2058,17 @@ static int wm8904_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_AUDIO_INTERFACE_1,
 			    WM8904_AIF_BCLK_INV | WM8904_AIF_LRCLK_INV |
 			    WM8904_AIF_FMT_MASK | WM8904_BCLK_DIR, aif1);
 	snd_soc_update_bits(codec, WM8904_AUDIO_INTERFACE_3,
+=======
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_1,
+			    WM8904_AIF_BCLK_INV | WM8904_AIF_LRCLK_INV |
+			    WM8904_AIF_FMT_MASK | WM8904_BCLK_DIR, aif1);
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_LRCLK_DIR, aif3);
 
 	return 0;
@@ -1523,8 +2078,13 @@ static int wm8904_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 static int wm8904_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 			       unsigned int rx_mask, int slots, int slot_width)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int aif1 = 0;
 
 	/* Don't need to validate anything if we're turning off TDM */
@@ -1562,7 +2122,11 @@ out:
 	wm8904->tdm_width = slot_width;
 	wm8904->tdm_slots = slots / 2;
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_AUDIO_INTERFACE_1,
+=======
+	snd_soc_component_update_bits(component, WM8904_AUDIO_INTERFACE_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_AIFADC_TDM | WM8904_AIFADC_TDM_CHAN |
 			    WM8904_AIFDAC_TDM | WM8904_AIFDAC_TDM_CHAN, aif1);
 
@@ -1680,8 +2244,13 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 			  unsigned int Fref, unsigned int Fout)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _fll_div fll_div;
 	int ret, val;
 	int clock2, fll1;
@@ -1691,19 +2260,33 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 	    Fout == wm8904->fll_fout)
 		return 0;
 
+<<<<<<< HEAD
 	clock2 = snd_soc_read(codec, WM8904_CLOCK_RATES_2);
 
 	if (Fout == 0) {
 		dev_dbg(codec->dev, "FLL disabled\n");
+=======
+	clock2 = snd_soc_component_read(component, WM8904_CLOCK_RATES_2);
+
+	if (Fout == 0) {
+		dev_dbg(component->dev, "FLL disabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		wm8904->fll_fref = 0;
 		wm8904->fll_fout = 0;
 
 		/* Gate SYSCLK to avoid glitches */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_CLOCK_RATES_2,
 				    WM8904_CLK_SYS_ENA, 0);
 
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
+=======
+		snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_2,
+				    WM8904_CLK_SYS_ENA, 0);
+
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_OSC_ENA | WM8904_FLL_ENA, 0);
 
 		goto out;
@@ -1720,7 +2303,11 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 		break;
 
 	case WM8904_FLL_FREE_RUNNING:
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Using free running FLL\n");
+=======
+		dev_dbg(component->dev, "Using free running FLL\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Force 12MHz and output/4 for now */
 		Fout = 12000000;
 		Fref = 12000000;
@@ -1730,12 +2317,17 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unknown FLL ID %d\n", fll_id);
+=======
+		dev_err(component->dev, "Unknown FLL ID %d\n", fll_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Save current state then disable the FLL and SYSCLK to avoid
 	 * misclocking */
+<<<<<<< HEAD
 	fll1 = snd_soc_read(codec, WM8904_FLL_CONTROL_1);
 	snd_soc_update_bits(codec, WM8904_CLOCK_RATES_2,
 			    WM8904_CLK_SYS_ENA, 0);
@@ -1744,6 +2336,16 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 
 	/* Unlock forced oscilator control to switch it on/off */
 	snd_soc_update_bits(codec, WM8904_CONTROL_INTERFACE_TEST_1,
+=======
+	fll1 = snd_soc_component_read(component, WM8904_FLL_CONTROL_1);
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_2,
+			    WM8904_CLK_SYS_ENA, 0);
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+			    WM8904_FLL_OSC_ENA | WM8904_FLL_ENA, 0);
+
+	/* Unlock forced oscilator control to switch it on/off */
+	snd_soc_component_update_bits(component, WM8904_CONTROL_INTERFACE_TEST_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_USER_KEY, WM8904_USER_KEY);
 
 	if (fll_id == WM8904_FLL_FREE_RUNNING) {
@@ -1752,24 +2354,42 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 		val = 0;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_FLL_NCO_TEST_1, WM8904_FLL_FRC_NCO,
 			    val);
 	snd_soc_update_bits(codec, WM8904_CONTROL_INTERFACE_TEST_1,
+=======
+	snd_soc_component_update_bits(component, WM8904_FLL_NCO_TEST_1, WM8904_FLL_FRC_NCO,
+			    val);
+	snd_soc_component_update_bits(component, WM8904_CONTROL_INTERFACE_TEST_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_USER_KEY, 0);
 
 	switch (fll_id) {
 	case WM8904_FLL_MCLK:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_5,
+=======
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_CLK_REF_SRC_MASK, 0);
 		break;
 
 	case WM8904_FLL_LRCLK:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_5,
+=======
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_CLK_REF_SRC_MASK, 1);
 		break;
 
 	case WM8904_FLL_BCLK:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_FLL_CONTROL_5,
+=======
+		snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_FLL_CLK_REF_SRC_MASK, 2);
 		break;
 	}
@@ -1778,47 +2398,133 @@ static int wm8904_set_fll(struct snd_soc_dai *dai, int fll_id, int source,
 		val = WM8904_FLL_FRACN_ENA;
 	else
 		val = 0;
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
 			    WM8904_FLL_FRACN_ENA, val);
 
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_2,
+=======
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+			    WM8904_FLL_FRACN_ENA, val);
+
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_FLL_OUTDIV_MASK | WM8904_FLL_FRATIO_MASK,
 			    (fll_div.fll_outdiv << WM8904_FLL_OUTDIV_SHIFT) |
 			    (fll_div.fll_fratio << WM8904_FLL_FRATIO_SHIFT));
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8904_FLL_CONTROL_3, fll_div.k);
 
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_4, WM8904_FLL_N_MASK,
 			    fll_div.n << WM8904_FLL_N_SHIFT);
 
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_5,
+=======
+	snd_soc_component_write(component, WM8904_FLL_CONTROL_3, fll_div.k);
+
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_4, WM8904_FLL_N_MASK,
+			    fll_div.n << WM8904_FLL_N_SHIFT);
+
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_FLL_CLK_REF_DIV_MASK,
 			    fll_div.fll_clk_ref_div 
 			    << WM8904_FLL_CLK_REF_DIV_SHIFT);
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
+=======
+	dev_dbg(component->dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8904->fll_fref = Fref;
 	wm8904->fll_fout = Fout;
 	wm8904->fll_src = source;
 
 	/* Enable the FLL if it was previously active */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
 			    WM8904_FLL_OSC_ENA, fll1);
 	snd_soc_update_bits(codec, WM8904_FLL_CONTROL_1,
+=======
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+			    WM8904_FLL_OSC_ENA, fll1);
+	snd_soc_component_update_bits(component, WM8904_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_FLL_ENA, fll1);
 
 out:
 	/* Reenable SYSCLK if it was previously active */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_CLOCK_RATES_2,
+=======
+	snd_soc_component_update_bits(component, WM8904_CLOCK_RATES_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8904_CLK_SYS_ENA, clock2);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8904_digital_mute(struct snd_soc_dai *codec_dai, int mute)
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+static int wm8904_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+			     unsigned int freq, int dir)
+{
+	struct snd_soc_component *component = dai->component;
+	struct wm8904_priv *priv = snd_soc_component_get_drvdata(component);
+	unsigned long mclk_freq;
+	int ret;
+
+	switch (clk_id) {
+	case WM8904_CLK_AUTO:
+		/* We don't have any rate constraints, so just ignore the
+		 * request to disable constraining.
+		 */
+		if (!freq)
+			return 0;
+
+		mclk_freq = clk_get_rate(priv->mclk);
+		/* enable FLL if a different sysclk is desired */
+		if (mclk_freq != freq) {
+			priv->sysclk_src = WM8904_CLK_FLL;
+			ret = wm8904_set_fll(dai, WM8904_FLL_MCLK,
+					     WM8904_FLL_MCLK,
+					     mclk_freq, freq);
+			if (ret)
+				return ret;
+			break;
+		}
+		clk_id = WM8904_CLK_MCLK;
+		fallthrough;
+
+	case WM8904_CLK_MCLK:
+		priv->sysclk_src = clk_id;
+		priv->mclk_rate = freq;
+		break;
+
+	case WM8904_CLK_FLL:
+		priv->sysclk_src = clk_id;
+		break;
+
+	default:
+		return -EINVAL;
+	}
+
+	dev_dbg(dai->dev, "Clock source is %d at %uHz\n", clk_id, freq);
+
+	wm8904_configure_clocking(component);
+
+	return 0;
+}
+
+static int wm8904_mute(struct snd_soc_dai *codec_dai, int mute, int direction)
+{
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val;
 
 	if (mute)
@@ -1826,15 +2532,26 @@ static int wm8904_digital_mute(struct snd_soc_dai *codec_dai, int mute)
 	else
 		val = 0;
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8904_DAC_DIGITAL_1, WM8904_DAC_MUTE, val);
+=======
+	snd_soc_component_update_bits(component, WM8904_DAC_DIGITAL_1, WM8904_DAC_MUTE, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8904_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+static int wm8904_set_bias_level(struct snd_soc_component *component,
+				 enum snd_soc_bias_level level)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	switch (level) {
@@ -1843,26 +2560,43 @@ static int wm8904_set_bias_level(struct snd_soc_codec *codec,
 
 	case SND_SOC_BIAS_PREPARE:
 		/* VMID resistance 2*50k */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_VMID_CONTROL_0,
+=======
+		snd_soc_component_update_bits(component, WM8904_VMID_CONTROL_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_VMID_RES_MASK,
 				    0x1 << WM8904_VMID_RES_SHIFT);
 
 		/* Normal bias current */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_BIAS_CONTROL_0,
+=======
+		snd_soc_component_update_bits(component, WM8904_BIAS_CONTROL_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_ISEL_MASK, 2 << WM8904_ISEL_SHIFT);
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8904->supplies),
 						    wm8904->supplies);
 			if (ret != 0) {
 				dev_err(codec->dev,
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			ret = regulator_bulk_enable(ARRAY_SIZE(wm8904->supplies),
+						    wm8904->supplies);
+			if (ret != 0) {
+				dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to enable supplies: %d\n",
 					ret);
 				return ret;
 			}
 
+<<<<<<< HEAD
 			regcache_sync(wm8904->regmap);
 
 			/* Enable bias */
@@ -1871,6 +2605,26 @@ static int wm8904_set_bias_level(struct snd_soc_codec *codec,
 
 			/* Enable VMID, VMID buffering, 2*5k resistance */
 			snd_soc_update_bits(codec, WM8904_VMID_CONTROL_0,
+=======
+			ret = clk_prepare_enable(wm8904->mclk);
+			if (ret) {
+				dev_err(component->dev,
+					"Failed to enable MCLK: %d\n", ret);
+				regulator_bulk_disable(ARRAY_SIZE(wm8904->supplies),
+						       wm8904->supplies);
+				return ret;
+			}
+
+			regcache_cache_only(wm8904->regmap, false);
+			regcache_sync(wm8904->regmap);
+
+			/* Enable bias */
+			snd_soc_component_update_bits(component, WM8904_BIAS_CONTROL_0,
+					    WM8904_BIAS_ENA, WM8904_BIAS_ENA);
+
+			/* Enable VMID, VMID buffering, 2*5k resistance */
+			snd_soc_component_update_bits(component, WM8904_VMID_CONTROL_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8904_VMID_ENA |
 					    WM8904_VMID_RES_MASK,
 					    WM8904_VMID_ENA |
@@ -1881,17 +2635,26 @@ static int wm8904_set_bias_level(struct snd_soc_codec *codec,
 		}
 
 		/* Maintain VMID with 2*250k */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_VMID_CONTROL_0,
+=======
+		snd_soc_component_update_bits(component, WM8904_VMID_CONTROL_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_VMID_RES_MASK,
 				    0x2 << WM8904_VMID_RES_SHIFT);
 
 		/* Bias current *0.5 */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_BIAS_CONTROL_0,
+=======
+		snd_soc_component_update_bits(component, WM8904_BIAS_CONTROL_0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8904_ISEL_MASK, 0);
 		break;
 
 	case SND_SOC_BIAS_OFF:
 		/* Turn off VMID */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8904_VMID_CONTROL_0,
 				    WM8904_VMID_RES_MASK | WM8904_VMID_ENA, 0);
 
@@ -1913,6 +2676,24 @@ static int wm8904_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_update_bits(component, WM8904_VMID_CONTROL_0,
+				    WM8904_VMID_RES_MASK | WM8904_VMID_ENA, 0);
+
+		/* Stop bias generation */
+		snd_soc_component_update_bits(component, WM8904_BIAS_CONTROL_0,
+				    WM8904_BIAS_ENA, 0);
+
+		snd_soc_component_write(component, WM8904_SW_RESET_AND_ID, 0);
+		regcache_cache_only(wm8904->regmap, true);
+		regcache_mark_dirty(wm8904->regmap);
+
+		regulator_bulk_disable(ARRAY_SIZE(wm8904->supplies),
+				       wm8904->supplies);
+		clk_disable_unprepare(wm8904->mclk);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1927,7 +2708,12 @@ static const struct snd_soc_dai_ops wm8904_dai_ops = {
 	.set_tdm_slot = wm8904_set_tdm_slot,
 	.set_pll = wm8904_set_fll,
 	.hw_params = wm8904_hw_params,
+<<<<<<< HEAD
 	.digital_mute = wm8904_digital_mute,
+=======
+	.mute_stream = wm8904_mute,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8904_dai = {
@@ -1947,6 +2733,7 @@ static struct snd_soc_dai_driver wm8904_dai = {
 		.formats = WM8904_FORMATS,
 	},
 	.ops = &wm8904_dai_ops,
+<<<<<<< HEAD
 	.symmetric_rates = 1,
 };
 
@@ -1972,6 +2759,14 @@ static int wm8904_resume(struct snd_soc_codec *codec)
 static void wm8904_handle_retune_mobile_pdata(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	.symmetric_rate = 1,
+};
+
+static void wm8904_handle_retune_mobile_pdata(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	struct snd_kcontrol_new control =
 		SOC_ENUM_EXT("EQ Mode",
@@ -2014,6 +2809,7 @@ static void wm8904_handle_retune_mobile_pdata(struct snd_soc_codec *codec)
 		wm8904->retune_mobile_texts = t;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Allocated %d unique ReTune Mobile names\n",
 		wm8904->num_retune_mobile_texts);
 
@@ -2029,16 +2825,41 @@ static void wm8904_handle_retune_mobile_pdata(struct snd_soc_codec *codec)
 static void wm8904_handle_pdata(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
+=======
+	dev_dbg(component->dev, "Allocated %d unique ReTune Mobile names\n",
+		wm8904->num_retune_mobile_texts);
+
+	wm8904->retune_mobile_enum.items = wm8904->num_retune_mobile_texts;
+	wm8904->retune_mobile_enum.texts = wm8904->retune_mobile_texts;
+
+	ret = snd_soc_add_component_controls(component, &control, 1);
+	if (ret != 0)
+		dev_err(component->dev,
+			"Failed to add ReTune Mobile control: %d\n", ret);
+}
+
+static void wm8904_handle_pdata(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8904_pdata *pdata = wm8904->pdata;
 	int ret, i;
 
 	if (!pdata) {
+<<<<<<< HEAD
 		snd_soc_add_codec_controls(codec, wm8904_eq_controls,
+=======
+		snd_soc_add_component_controls(component, wm8904_eq_controls,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm8904_eq_controls));
 		return;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "%d DRC configurations\n", pdata->num_drc_cfgs);
+=======
+	dev_dbg(component->dev, "%d DRC configurations\n", pdata->num_drc_cfgs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->num_drc_cfgs) {
 		struct snd_kcontrol_new control =
@@ -2046,6 +2867,7 @@ static void wm8904_handle_pdata(struct snd_soc_codec *codec)
 				     wm8904_get_drc_enum, wm8904_put_drc_enum);
 
 		/* We need an array of texts for the enum API */
+<<<<<<< HEAD
 		wm8904->drc_texts = kmalloc(sizeof(char *)
 					    * pdata->num_drc_cfgs, GFP_KERNEL);
 		if (!wm8904->drc_texts) {
@@ -2054,10 +2876,18 @@ static void wm8904_handle_pdata(struct snd_soc_codec *codec)
 				pdata->num_drc_cfgs);
 			return;
 		}
+=======
+		wm8904->drc_texts = kmalloc_array(pdata->num_drc_cfgs,
+						  sizeof(char *),
+						  GFP_KERNEL);
+		if (!wm8904->drc_texts)
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < pdata->num_drc_cfgs; i++)
 			wm8904->drc_texts[i] = pdata->drc_cfgs[i].name;
 
+<<<<<<< HEAD
 		wm8904->drc_enum.max = pdata->num_drc_cfgs;
 		wm8904->drc_enum.texts = wm8904->drc_texts;
 
@@ -2076,10 +2906,31 @@ static void wm8904_handle_pdata(struct snd_soc_codec *codec)
 		wm8904_handle_retune_mobile_pdata(codec);
 	else
 		snd_soc_add_codec_controls(codec, wm8904_eq_controls,
+=======
+		wm8904->drc_enum.items = pdata->num_drc_cfgs;
+		wm8904->drc_enum.texts = wm8904->drc_texts;
+
+		ret = snd_soc_add_component_controls(component, &control, 1);
+		if (ret != 0)
+			dev_err(component->dev,
+				"Failed to add DRC mode control: %d\n", ret);
+
+		wm8904_set_drc(component);
+	}
+
+	dev_dbg(component->dev, "%d ReTune Mobile configurations\n",
+		pdata->num_retune_mobile_cfgs);
+
+	if (pdata->num_retune_mobile_cfgs)
+		wm8904_handle_retune_mobile_pdata(component);
+	else
+		snd_soc_add_component_controls(component, wm8904_eq_controls,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm8904_eq_controls));
 }
 
 
+<<<<<<< HEAD
 static int wm8904_probe(struct snd_soc_codec *codec)
 {
 	struct wm8904_priv *wm8904 = snd_soc_codec_get_drvdata(codec);
@@ -2088,6 +2939,11 @@ static int wm8904_probe(struct snd_soc_codec *codec)
 
 	codec->cache_sync = 1;
 	codec->control_data = wm8904->regmap;
+=======
+static int wm8904_probe(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (wm8904->devtype) {
 	case WM8904:
@@ -2096,11 +2952,16 @@ static int wm8904_probe(struct snd_soc_codec *codec)
 		memset(&wm8904_dai.capture, 0, sizeof(wm8904_dai.capture));
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unknown device type %d\n",
+=======
+		dev_err(component->dev, "Unknown device type %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8904->devtype);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_REGMAP);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
@@ -2240,6 +3101,29 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8904 = {
 	.resume =	wm8904_resume,
 	.set_bias_level = wm8904_set_bias_level,
 	.idle_bias_off = true,
+=======
+	wm8904_handle_pdata(component);
+
+	wm8904_add_widgets(component);
+
+	return 0;
+}
+
+static void wm8904_remove(struct snd_soc_component *component)
+{
+	struct wm8904_priv *wm8904 = snd_soc_component_get_drvdata(component);
+
+	kfree(wm8904->retune_mobile_texts);
+	kfree(wm8904->drc_texts);
+}
+
+static const struct snd_soc_component_driver soc_component_dev_wm8904 = {
+	.probe			= wm8904_probe,
+	.remove			= wm8904_remove,
+	.set_bias_level		= wm8904_set_bias_level,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct regmap_config wm8904_regmap = {
@@ -2250,23 +3134,63 @@ static const struct regmap_config wm8904_regmap = {
 	.volatile_reg = wm8904_volatile_register,
 	.readable_reg = wm8904_readable_register,
 
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_MAPLE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_defaults = wm8904_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8904_reg_defaults),
 };
 
+<<<<<<< HEAD
 static __devinit int wm8904_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
 {
 	struct wm8904_priv *wm8904;
 	int ret;
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id wm8904_of_match[] = {
+	{
+		.compatible = "wlf,wm8904",
+		.data = (void *)WM8904,
+	}, {
+		.compatible = "wlf,wm8912",
+		.data = (void *)WM8912,
+	}, {
+		/* sentinel */
+	}
+};
+MODULE_DEVICE_TABLE(of, wm8904_of_match);
+#endif
+
+static const struct i2c_device_id wm8904_i2c_id[];
+
+static int wm8904_i2c_probe(struct i2c_client *i2c)
+{
+	struct wm8904_priv *wm8904;
+	unsigned int val;
+	int ret, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8904 = devm_kzalloc(&i2c->dev, sizeof(struct wm8904_priv),
 			      GFP_KERNEL);
 	if (wm8904 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	wm8904->regmap = regmap_init_i2c(i2c, &wm8904_regmap);
+=======
+	wm8904->mclk = devm_clk_get(&i2c->dev, "mclk");
+	if (IS_ERR(wm8904->mclk)) {
+		ret = PTR_ERR(wm8904->mclk);
+		dev_err(&i2c->dev, "Failed to get MCLK\n");
+		return ret;
+	}
+
+	wm8904->regmap = devm_regmap_init_i2c(i2c, &wm8904_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm8904->regmap)) {
 		ret = PTR_ERR(wm8904->regmap);
 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
@@ -2274,6 +3198,7 @@ static __devinit int wm8904_i2c_probe(struct i2c_client *i2c,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	wm8904->devtype = id->driver_data;
 	i2c_set_clientdata(i2c, wm8904);
 	wm8904->pdata = i2c->dev.platform_data;
@@ -2298,6 +3223,139 @@ static __devexit int wm8904_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+	if (i2c->dev.of_node) {
+		const struct of_device_id *match;
+
+		match = of_match_node(wm8904_of_match, i2c->dev.of_node);
+		if (match == NULL)
+			return -EINVAL;
+		wm8904->devtype = (uintptr_t)match->data;
+	} else {
+		const struct i2c_device_id *id =
+			i2c_match_id(wm8904_i2c_id, i2c);
+		wm8904->devtype = id->driver_data;
+	}
+
+	i2c_set_clientdata(i2c, wm8904);
+	wm8904->pdata = i2c->dev.platform_data;
+
+	for (i = 0; i < ARRAY_SIZE(wm8904->supplies); i++)
+		wm8904->supplies[i].supply = wm8904_supply_names[i];
+
+	ret = devm_regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8904->supplies),
+				      wm8904->supplies);
+	if (ret != 0) {
+		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
+		return ret;
+	}
+
+	ret = regulator_bulk_enable(ARRAY_SIZE(wm8904->supplies),
+				    wm8904->supplies);
+	if (ret != 0) {
+		dev_err(&i2c->dev, "Failed to enable supplies: %d\n", ret);
+		return ret;
+	}
+
+	ret = regmap_read(wm8904->regmap, WM8904_SW_RESET_AND_ID, &val);
+	if (ret < 0) {
+		dev_err(&i2c->dev, "Failed to read ID register: %d\n", ret);
+		goto err_enable;
+	}
+	if (val != 0x8904) {
+		dev_err(&i2c->dev, "Device is not a WM8904, ID is %x\n", val);
+		ret = -EINVAL;
+		goto err_enable;
+	}
+
+	ret = regmap_read(wm8904->regmap, WM8904_REVISION, &val);
+	if (ret < 0) {
+		dev_err(&i2c->dev, "Failed to read device revision: %d\n",
+			ret);
+		goto err_enable;
+	}
+	dev_info(&i2c->dev, "revision %c\n", val + 'A');
+
+	ret = regmap_write(wm8904->regmap, WM8904_SW_RESET_AND_ID, 0);
+	if (ret < 0) {
+		dev_err(&i2c->dev, "Failed to issue reset: %d\n", ret);
+		goto err_enable;
+	}
+
+	/* Change some default settings - latch VU and enable ZC */
+	regmap_update_bits(wm8904->regmap, WM8904_ADC_DIGITAL_VOLUME_LEFT,
+			   WM8904_ADC_VU, WM8904_ADC_VU);
+	regmap_update_bits(wm8904->regmap, WM8904_ADC_DIGITAL_VOLUME_RIGHT,
+			   WM8904_ADC_VU, WM8904_ADC_VU);
+	regmap_update_bits(wm8904->regmap, WM8904_DAC_DIGITAL_VOLUME_LEFT,
+			   WM8904_DAC_VU, WM8904_DAC_VU);
+	regmap_update_bits(wm8904->regmap, WM8904_DAC_DIGITAL_VOLUME_RIGHT,
+			   WM8904_DAC_VU, WM8904_DAC_VU);
+	regmap_update_bits(wm8904->regmap, WM8904_ANALOGUE_OUT1_LEFT,
+			   WM8904_HPOUT_VU | WM8904_HPOUTLZC,
+			   WM8904_HPOUT_VU | WM8904_HPOUTLZC);
+	regmap_update_bits(wm8904->regmap, WM8904_ANALOGUE_OUT1_RIGHT,
+			   WM8904_HPOUT_VU | WM8904_HPOUTRZC,
+			   WM8904_HPOUT_VU | WM8904_HPOUTRZC);
+	regmap_update_bits(wm8904->regmap, WM8904_ANALOGUE_OUT2_LEFT,
+			   WM8904_LINEOUT_VU | WM8904_LINEOUTLZC,
+			   WM8904_LINEOUT_VU | WM8904_LINEOUTLZC);
+	regmap_update_bits(wm8904->regmap, WM8904_ANALOGUE_OUT2_RIGHT,
+			   WM8904_LINEOUT_VU | WM8904_LINEOUTRZC,
+			   WM8904_LINEOUT_VU | WM8904_LINEOUTRZC);
+	regmap_update_bits(wm8904->regmap, WM8904_CLOCK_RATES_0,
+			   WM8904_SR_MODE, 0);
+
+	/* Apply configuration from the platform data. */
+	if (wm8904->pdata) {
+		for (i = 0; i < WM8904_GPIO_REGS; i++) {
+			if (!wm8904->pdata->gpio_cfg[i])
+				continue;
+
+			regmap_update_bits(wm8904->regmap,
+					   WM8904_GPIO_CONTROL_1 + i,
+					   0xffff,
+					   wm8904->pdata->gpio_cfg[i]);
+		}
+
+		/* Zero is the default value for these anyway */
+		for (i = 0; i < WM8904_MIC_REGS; i++)
+			regmap_update_bits(wm8904->regmap,
+					   WM8904_MIC_BIAS_CONTROL_0 + i,
+					   0xffff,
+					   wm8904->pdata->mic_cfg[i]);
+	}
+
+	/* Set Class W by default - this will be managed by the Class
+	 * G widget at runtime where bypass paths are available.
+	 */
+	regmap_update_bits(wm8904->regmap, WM8904_CLASS_W_0,
+			    WM8904_CP_DYN_PWR, WM8904_CP_DYN_PWR);
+
+	/* Use normal bias source */
+	regmap_update_bits(wm8904->regmap, WM8904_BIAS_CONTROL_0,
+			    WM8904_POBCTRL, 0);
+
+	/* Fill the cache for the ADC test register */
+	regmap_read(wm8904->regmap, WM8904_ADC_TEST_0, &val);
+
+	/* Can leave the device powered off until we need it */
+	regcache_cache_only(wm8904->regmap, true);
+	regulator_bulk_disable(ARRAY_SIZE(wm8904->supplies), wm8904->supplies);
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_wm8904, &wm8904_dai, 1);
+	if (ret != 0)
+		return ret;
+
+	return 0;
+
+err_enable:
+	regulator_bulk_disable(ARRAY_SIZE(wm8904->supplies), wm8904->supplies);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8904_i2c_id[] = {
 	{ "wm8904", WM8904 },
 	{ "wm8912", WM8912 },
@@ -2309,6 +3367,7 @@ MODULE_DEVICE_TABLE(i2c, wm8904_i2c_id);
 static struct i2c_driver wm8904_i2c_driver = {
 	.driver = {
 		.name = "wm8904",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe =    wm8904_i2c_probe,
@@ -2333,6 +3392,15 @@ static void __exit wm8904_exit(void)
 	i2c_del_driver(&wm8904_i2c_driver);
 }
 module_exit(wm8904_exit);
+=======
+		.of_match_table = of_match_ptr(wm8904_of_match),
+	},
+	.probe = wm8904_i2c_probe,
+	.id_table = wm8904_i2c_id,
+};
+
+module_i2c_driver(wm8904_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8904 driver");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");

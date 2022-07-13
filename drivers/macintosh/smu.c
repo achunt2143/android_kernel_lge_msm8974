@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PowerMac G5 SMU driver
  *
  * Copyright 2004 J. Mayer <l_indien@magic.fr>
  * Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
+<<<<<<< HEAD
  *
  * Released under the term of the GNU GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -23,7 +30,11 @@
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/dmapool.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 #include <linux/highmem.h>
 #include <linux/jiffies.h>
@@ -34,6 +45,7 @@
 #include <linux/delay.h>
 #include <linux/poll.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/slab.h>
@@ -41,12 +53,28 @@
 #include <asm/byteorder.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+#include <linux/sched/signal.h>
+
+#include <asm/byteorder.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
 #include <asm/smu.h>
 #include <asm/sections.h>
+<<<<<<< HEAD
 #include <asm/abs_addr.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VERSION "0.7"
 #define AUTHOR  "(c) 2005 Benjamin Herrenschmidt, IBM Corp."
@@ -99,8 +127,14 @@ static DEFINE_MUTEX(smu_mutex);
 static struct smu_device	*smu;
 static DEFINE_MUTEX(smu_part_access);
 static int smu_irq_inited;
+<<<<<<< HEAD
 
 static void smu_i2c_retry(unsigned long data);
+=======
+static unsigned long smu_cmdbuf_abs;
+
+static void smu_i2c_retry(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SMU driver low level stuff
@@ -121,11 +155,15 @@ static void smu_start_cmd(void)
 
 	DPRINTK("SMU: starting cmd %x, %d bytes data\n", cmd->cmd,
 		cmd->data_len);
+<<<<<<< HEAD
 	DPRINTK("SMU: data buffer: %02x %02x %02x %02x %02x %02x %02x %02x\n",
 		((u8 *)cmd->data_buf)[0], ((u8 *)cmd->data_buf)[1],
 		((u8 *)cmd->data_buf)[2], ((u8 *)cmd->data_buf)[3],
 		((u8 *)cmd->data_buf)[4], ((u8 *)cmd->data_buf)[5],
 		((u8 *)cmd->data_buf)[6], ((u8 *)cmd->data_buf)[7]);
+=======
+	DPRINTK("SMU: data buffer: %8ph\n", cmd->data_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill the SMU command buffer */
 	smu->cmd_buf->cmd = cmd->cmd;
@@ -135,7 +173,11 @@ static void smu_start_cmd(void)
 	/* Flush command and data to RAM */
 	faddr = (unsigned long)smu->cmd_buf;
 	fend = faddr + smu->cmd_buf->length + 2;
+<<<<<<< HEAD
 	flush_inval_dcache_range(faddr, fend);
+=======
+	flush_dcache_range(faddr, fend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* We also disable NAP mode for the duration of the command
@@ -197,7 +239,11 @@ static irqreturn_t smu_db_intr(int irq, void *arg)
 		 * reply length (it's only 2 cache lines anyway)
 		 */
 		faddr = (unsigned long)smu->cmd_buf;
+<<<<<<< HEAD
 		flush_inval_dcache_range(faddr, faddr + 256);
+=======
+		flush_dcache_range(faddr, faddr + 256);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Now check ack */
 		ack = (~cmd->cmd) & 0xff;
@@ -281,7 +327,11 @@ int smu_queue_cmd(struct smu_cmd *cmd)
 	spin_unlock_irqrestore(&smu->lock, flags);
 
 	/* Workaround for early calls when irq isn't available */
+<<<<<<< HEAD
 	if (!smu_irq_inited || smu->db_irq == NO_IRQ)
+=======
+	if (!smu_irq_inited || !smu->db_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smu_spinwait_cmd(cmd);
 
 	return 0;
@@ -474,7 +524,11 @@ EXPORT_SYMBOL(smu_present);
 int __init smu_init (void)
 {
 	struct device_node *np;
+<<<<<<< HEAD
 	const u32 *data;
+=======
+	u64 data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
         np = of_find_node_by_type(NULL, "smu");
@@ -483,26 +537,52 @@ int __init smu_init (void)
 
 	printk(KERN_INFO "SMU: Driver %s %s\n", VERSION, AUTHOR);
 
+<<<<<<< HEAD
 	if (smu_cmdbuf_abs == 0) {
 		printk(KERN_ERR "SMU: Command buffer not allocated !\n");
+=======
+	/*
+	 * SMU based G5s need some memory below 2Gb. Thankfully this is
+	 * called at a time where memblock is still available.
+	 */
+	smu_cmdbuf_abs = memblock_phys_alloc_range(4096, 4096, 0, 0x80000000UL);
+	if (smu_cmdbuf_abs == 0) {
+		printk(KERN_ERR "SMU: Command buffer allocation failed !\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto fail_np;
 	}
 
+<<<<<<< HEAD
 	smu = alloc_bootmem(sizeof(struct smu_device));
+=======
+	smu = memblock_alloc(sizeof(struct smu_device), SMP_CACHE_BYTES);
+	if (!smu)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      sizeof(struct smu_device));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&smu->lock);
 	INIT_LIST_HEAD(&smu->cmd_list);
 	INIT_LIST_HEAD(&smu->cmd_i2c_list);
 	smu->of_node = np;
+<<<<<<< HEAD
 	smu->db_irq = NO_IRQ;
 	smu->msg_irq = NO_IRQ;
+=======
+	smu->db_irq = 0;
+	smu->msg_irq = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* smu_cmdbuf_abs is in the low 2G of RAM, can be converted to a
 	 * 32 bits value safely
 	 */
 	smu->cmd_buf_abs = (u32)smu_cmdbuf_abs;
+<<<<<<< HEAD
 	smu->cmd_buf = (struct smu_cmd_buf *)abs_to_virt(smu_cmdbuf_abs);
+=======
+	smu->cmd_buf = __va(smu_cmdbuf_abs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smu->db_node = of_find_node_by_name(NULL, "smu-doorbell");
 	if (smu->db_node == NULL) {
@@ -510,8 +590,12 @@ int __init smu_init (void)
 		ret = -ENXIO;
 		goto fail_bootmem;
 	}
+<<<<<<< HEAD
 	data = of_get_property(smu->db_node, "reg", NULL);
 	if (data == NULL) {
+=======
+	if (of_property_read_reg(smu->db_node, 0, &data, NULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "SMU: Can't find doorbell GPIO address !\n");
 		ret = -ENXIO;
 		goto fail_db_node;
@@ -521,7 +605,11 @@ int __init smu_init (void)
 	 * and ack. GPIOs are at 0x50, best would be to find that out
 	 * in the device-tree though.
 	 */
+<<<<<<< HEAD
 	smu->doorbell = *data;
+=======
+	smu->doorbell = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smu->doorbell < 0x50)
 		smu->doorbell += 0x50;
 
@@ -530,13 +618,21 @@ int __init smu_init (void)
 		smu->msg_node = of_find_node_by_name(NULL, "smu-interrupt");
 		if (smu->msg_node == NULL)
 			break;
+<<<<<<< HEAD
 		data = of_get_property(smu->msg_node, "reg", NULL);
 		if (data == NULL) {
+=======
+		if (of_property_read_reg(smu->msg_node, 0, &data, NULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			of_node_put(smu->msg_node);
 			smu->msg_node = NULL;
 			break;
 		}
+<<<<<<< HEAD
 		smu->msg = *data;
+=======
+		smu->msg = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (smu->msg < 0x50)
 			smu->msg += 0x50;
 	} while(0);
@@ -561,12 +657,20 @@ int __init smu_init (void)
 	return 0;
 
 fail_msg_node:
+<<<<<<< HEAD
 	if (smu->msg_node)
 		of_node_put(smu->msg_node);
 fail_db_node:
 	of_node_put(smu->db_node);
 fail_bootmem:
 	free_bootmem((unsigned long)smu, sizeof(struct smu_device));
+=======
+	of_node_put(smu->msg_node);
+fail_db_node:
+	of_node_put(smu->db_node);
+fail_bootmem:
+	memblock_free(smu, sizeof(struct smu_device));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smu = NULL;
 fail_np:
 	of_node_put(np);
@@ -579,6 +683,7 @@ static int smu_late_init(void)
 	if (!smu)
 		return 0;
 
+<<<<<<< HEAD
 	init_timer(&smu->i2c_timer);
 	smu->i2c_timer.function = smu_i2c_retry;
 	smu->i2c_timer.data = (unsigned long)smu;
@@ -594,29 +699,60 @@ static int smu_late_init(void)
 		if (smu->msg_irq == NO_IRQ)
 			printk(KERN_ERR "smu: failed to map irq for node %s\n",
 			       smu->msg_node->full_name);
+=======
+	timer_setup(&smu->i2c_timer, smu_i2c_retry, 0);
+
+	if (smu->db_node) {
+		smu->db_irq = irq_of_parse_and_map(smu->db_node, 0);
+		if (!smu->db_irq)
+			printk(KERN_ERR "smu: failed to map irq for node %pOF\n",
+			       smu->db_node);
+	}
+	if (smu->msg_node) {
+		smu->msg_irq = irq_of_parse_and_map(smu->msg_node, 0);
+		if (!smu->msg_irq)
+			printk(KERN_ERR "smu: failed to map irq for node %pOF\n",
+			       smu->msg_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Try to request the interrupts
 	 */
 
+<<<<<<< HEAD
 	if (smu->db_irq != NO_IRQ) {
+=======
+	if (smu->db_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (request_irq(smu->db_irq, smu_db_intr,
 				IRQF_SHARED, "SMU doorbell", smu) < 0) {
 			printk(KERN_WARNING "SMU: can't "
 			       "request interrupt %d\n",
 			       smu->db_irq);
+<<<<<<< HEAD
 			smu->db_irq = NO_IRQ;
 		}
 	}
 
 	if (smu->msg_irq != NO_IRQ) {
+=======
+			smu->db_irq = 0;
+		}
+	}
+
+	if (smu->msg_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (request_irq(smu->msg_irq, smu_msg_intr,
 				IRQF_SHARED, "SMU message", smu) < 0) {
 			printk(KERN_WARNING "SMU: can't "
 			       "request interrupt %d\n",
 			       smu->msg_irq);
+<<<<<<< HEAD
 			smu->msg_irq = NO_IRQ;
+=======
+			smu->msg_irq = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -636,7 +772,11 @@ static void smu_expose_childs(struct work_struct *unused)
 {
 	struct device_node *np;
 
+<<<<<<< HEAD
 	for (np = NULL; (np = of_get_next_child(smu->of_node, np)) != NULL;)
+=======
+	for_each_child_of_node(smu->of_node, np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (of_device_is_compatible(np, "smu-sensors"))
 			of_platform_device_create(np, "smu-sensors",
 						  &smu->of_dev->dev);
@@ -671,7 +811,10 @@ static struct platform_driver smu_of_platform_driver =
 {
 	.driver = {
 		.name = "smu",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = smu_platform_match,
 	},
 	.probe		= smu_platform_probe,
@@ -753,7 +896,11 @@ static void smu_i2c_complete_command(struct smu_i2c_cmd *cmd, int fail)
 }
 
 
+<<<<<<< HEAD
 static void smu_i2c_retry(unsigned long data)
+=======
+static void smu_i2c_retry(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smu_i2c_cmd	*cmd = smu->cmd_i2c_cur;
 
@@ -793,7 +940,11 @@ static void smu_i2c_low_completion(struct smu_cmd *scmd, void *misc)
 		BUG_ON(cmd != smu->cmd_i2c_cur);
 		if (!smu_irq_inited) {
 			mdelay(5);
+<<<<<<< HEAD
 			smu_i2c_retry(0);
+=======
+			smu_i2c_retry(NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		mod_timer(&smu->i2c_timer, jiffies + msecs_to_jiffies(5));
@@ -847,10 +998,19 @@ int smu_queue_i2c(struct smu_i2c_cmd *cmd)
 	cmd->read = cmd->info.devaddr & 0x01;
 	switch(cmd->info.type) {
 	case SMU_I2C_TRANSFER_SIMPLE:
+<<<<<<< HEAD
 		memset(&cmd->info.sublen, 0, 4);
 		break;
 	case SMU_I2C_TRANSFER_COMBINED:
 		cmd->info.devaddr &= 0xfe;
+=======
+		cmd->info.sublen = 0;
+		memset(cmd->info.subaddr, 0, sizeof(cmd->info.subaddr));
+		break;
+	case SMU_I2C_TRANSFER_COMBINED:
+		cmd->info.devaddr &= 0xfe;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SMU_I2C_TRANSFER_STDSUB:
 		if (cmd->info.sublen > 3)
 			return -EINVAL;
@@ -998,7 +1158,11 @@ static struct smu_sdbp_header *smu_create_sdb_partition(int id)
 		       "%02x !\n", id, hdr->id);
 		goto failure;
 	}
+<<<<<<< HEAD
 	if (prom_add_property(smu->of_node, prop)) {
+=======
+	if (of_add_property(smu->of_node, prop)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "SMU: Failed creating sdb-partition-%02x "
 		       "property !\n", id);
 		goto failure;
@@ -1013,7 +1177,11 @@ static struct smu_sdbp_header *smu_create_sdb_partition(int id)
 /* Note: Only allowed to return error code in pointers (using ERR_PTR)
  * when interruptible is 1
  */
+<<<<<<< HEAD
 const struct smu_sdbp_header *__smu_get_sdb_partition(int id,
+=======
+static const struct smu_sdbp_header *__smu_get_sdb_partition(int id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int *size, int interruptible)
 {
 	char pname[32];
@@ -1084,7 +1252,11 @@ static int smu_open(struct inode *inode, struct file *file)
 	unsigned long flags;
 
 	pp = kzalloc(sizeof(struct smu_private), GFP_KERNEL);
+<<<<<<< HEAD
 	if (pp == 0)
+=======
+	if (!pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	spin_lock_init(&pp->lock);
 	pp->mode = smu_file_commands;
@@ -1245,6 +1417,7 @@ static ssize_t smu_read(struct file *file, char __user *buf,
 	return -EBADFD;
 }
 
+<<<<<<< HEAD
 static unsigned int smu_fpoll(struct file *file, poll_table *wait)
 {
 	struct smu_private *pp = file->private_data;
@@ -1252,6 +1425,15 @@ static unsigned int smu_fpoll(struct file *file, poll_table *wait)
 	unsigned long flags;
 
 	if (pp == 0)
+=======
+static __poll_t smu_fpoll(struct file *file, poll_table *wait)
+{
+	struct smu_private *pp = file->private_data;
+	__poll_t mask = 0;
+	unsigned long flags;
+
+	if (!pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (pp->mode == smu_file_commands) {
@@ -1259,9 +1441,16 @@ static unsigned int smu_fpoll(struct file *file, poll_table *wait)
 
 		spin_lock_irqsave(&pp->lock, flags);
 		if (pp->busy && pp->cmd.status != 1)
+<<<<<<< HEAD
 			mask |= POLLIN;
 		spin_unlock_irqrestore(&pp->lock, flags);
 	} if (pp->mode == smu_file_events) {
+=======
+			mask |= EPOLLIN;
+		spin_unlock_irqrestore(&pp->lock, flags);
+	}
+	if (pp->mode == smu_file_events) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Not yet implemented */
 	}
 	return mask;
@@ -1273,7 +1462,11 @@ static int smu_release(struct inode *inode, struct file *file)
 	unsigned long flags;
 	unsigned int busy;
 
+<<<<<<< HEAD
 	if (pp == 0)
+=======
+	if (!pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	file->private_data = NULL;

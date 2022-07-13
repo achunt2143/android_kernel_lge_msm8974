@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dcssblk.c -- the S/390 block driver for dcss memory
  *
@@ -16,29 +20,73 @@
 #include <linux/blkdev.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <asm/extmem.h>
 #include <asm/io.h>
+=======
+#include <linux/pfn_t.h>
+#include <linux/uio.h>
+#include <linux/dax.h>
+#include <linux/io.h>
+#include <asm/extmem.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DCSSBLK_NAME "dcssblk"
 #define DCSSBLK_MINORS_PER_DISK 1
 #define DCSSBLK_PARM_LEN 400
 #define DCSS_BUS_ID_SIZE 20
 
+<<<<<<< HEAD
 static int dcssblk_open(struct block_device *bdev, fmode_t mode);
 static int dcssblk_release(struct gendisk *disk, fmode_t mode);
 static void dcssblk_make_request(struct request_queue *q, struct bio *bio);
 static int dcssblk_direct_access(struct block_device *bdev, sector_t secnum,
 				 void **kaddr, unsigned long *pfn);
+=======
+static int dcssblk_open(struct gendisk *disk, blk_mode_t mode);
+static void dcssblk_release(struct gendisk *disk);
+static void dcssblk_submit_bio(struct bio *bio);
+static long dcssblk_dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff,
+		long nr_pages, enum dax_access_mode mode, void **kaddr,
+		pfn_t *pfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char dcssblk_segments[DCSSBLK_PARM_LEN] = "\0";
 
 static int dcssblk_major;
 static const struct block_device_operations dcssblk_devops = {
 	.owner   	= THIS_MODULE,
+<<<<<<< HEAD
 	.open    	= dcssblk_open,
 	.release 	= dcssblk_release,
 	.direct_access 	= dcssblk_direct_access,
+=======
+	.submit_bio	= dcssblk_submit_bio,
+	.open    	= dcssblk_open,
+	.release 	= dcssblk_release,
+};
+
+static int dcssblk_dax_zero_page_range(struct dax_device *dax_dev,
+				       pgoff_t pgoff, size_t nr_pages)
+{
+	long rc;
+	void *kaddr;
+
+	rc = dax_direct_access(dax_dev, pgoff, nr_pages, DAX_ACCESS,
+			&kaddr, NULL);
+	if (rc < 0)
+		return dax_mem2blk_err(rc);
+
+	memset(kaddr, 0, nr_pages << PAGE_SHIFT);
+	dax_flush(dax_dev, kaddr, nr_pages << PAGE_SHIFT);
+	return 0;
+}
+
+static const struct dax_operations dcssblk_dax_ops = {
+	.direct_access = dcssblk_dax_direct_access,
+	.zero_page_range = dcssblk_dax_zero_page_range,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dcssblk_dev_info {
@@ -52,9 +100,15 @@ struct dcssblk_dev_info {
 	int segment_type;
 	unsigned char save_pending;
 	unsigned char is_shared;
+<<<<<<< HEAD
 	struct request_queue *dcssblk_queue;
 	int num_of_segments;
 	struct list_head seg_list;
+=======
+	int num_of_segments;
+	struct list_head seg_list;
+	struct dax_device *dax_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct segment_info {
@@ -69,6 +123,7 @@ static ssize_t dcssblk_add_store(struct device * dev, struct device_attribute *a
 				  size_t count);
 static ssize_t dcssblk_remove_store(struct device * dev, struct device_attribute *attr, const char * buf,
 				  size_t count);
+<<<<<<< HEAD
 static ssize_t dcssblk_save_store(struct device * dev, struct device_attribute *attr, const char * buf,
 				  size_t count);
 static ssize_t dcssblk_save_show(struct device *dev, struct device_attribute *attr, char *buf);
@@ -86,6 +141,11 @@ static DEVICE_ATTR(save, S_IWUSR | S_IRUSR, dcssblk_save_show,
 static DEVICE_ATTR(shared, S_IWUSR | S_IRUSR, dcssblk_shared_show,
 		   dcssblk_shared_store);
 static DEVICE_ATTR(seglist, S_IRUSR, dcssblk_seglist_show, NULL);
+=======
+
+static DEVICE_ATTR(add, S_IWUSR, NULL, dcssblk_add_store);
+static DEVICE_ATTR(remove, S_IWUSR, NULL, dcssblk_remove_store);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct device *dcssblk_root_dev;
 
@@ -229,9 +289,15 @@ dcssblk_is_continuous(struct dcssblk_dev_info *dev_info)
 	if (dev_info->num_of_segments <= 1)
 		return 0;
 
+<<<<<<< HEAD
 	sort_list = kzalloc(
 			sizeof(struct segment_info) * dev_info->num_of_segments,
 			GFP_KERNEL);
+=======
+	sort_list = kcalloc(dev_info->num_of_segments,
+			    sizeof(struct segment_info),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sort_list == NULL)
 		return -ENOMEM;
 	i = 0;
@@ -318,12 +384,15 @@ dcssblk_load_segment(char *name, struct segment_info **seg_info)
 	return rc;
 }
 
+<<<<<<< HEAD
 static void dcssblk_unregister_callback(struct device *dev)
 {
 	device_unregister(dev);
 	put_device(dev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * device attribute for switching shared/nonshared (exclusive)
  * operation (show + store)
@@ -406,16 +475,37 @@ removeseg:
 			segment_unload(entry->segment_name);
 	}
 	list_del(&dev_info->lh);
+<<<<<<< HEAD
 
 	del_gendisk(dev_info->gd);
 	blk_cleanup_queue(dev_info->dcssblk_queue);
 	dev_info->gd->queue = NULL;
 	put_disk(dev_info->gd);
 	rc = device_schedule_callback(dev, dcssblk_unregister_callback);
+=======
+	up_write(&dcssblk_devices_sem);
+
+	dax_remove_host(dev_info->gd);
+	kill_dax(dev_info->dax_dev);
+	put_dax(dev_info->dax_dev);
+	del_gendisk(dev_info->gd);
+	put_disk(dev_info->gd);
+
+	if (device_remove_file_self(dev, attr)) {
+		device_unregister(dev);
+		put_device(dev);
+	}
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	up_write(&dcssblk_devices_sem);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(shared, S_IWUSR | S_IRUSR, dcssblk_shared_show,
+		   dcssblk_shared_store);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * device attribute for save operation on current copy
@@ -450,7 +540,17 @@ dcssblk_save_store(struct device *dev, struct device_attribute *attr, const char
 			pr_info("All DCSSs that map to device %s are "
 				"saved\n", dev_info->segment_name);
 			list_for_each_entry(entry, &dev_info->seg_list, lh) {
+<<<<<<< HEAD
 				segment_save(entry->segment_name);
+=======
+				if (entry->segment_type == SEG_TYPE_EN ||
+				    entry->segment_type == SEG_TYPE_SN)
+					pr_warn("DCSS %s is of type SN or EN"
+						" and cannot be saved\n",
+						entry->segment_name);
+				else
+					segment_save(entry->segment_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}  else {
 			// device is busy => we save it when it becomes
@@ -476,6 +576,11 @@ dcssblk_save_store(struct device *dev, struct device_attribute *attr, const char
 	up_write(&dcssblk_devices_sem);
 	return count;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(save, S_IWUSR | S_IRUSR, dcssblk_save_show,
+		   dcssblk_save_store);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * device attribute for showing all segments in a device
@@ -502,6 +607,24 @@ dcssblk_seglist_show(struct device *dev, struct device_attribute *attr,
 	up_read(&dcssblk_devices_sem);
 	return i;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(seglist, S_IRUSR, dcssblk_seglist_show, NULL);
+
+static struct attribute *dcssblk_dev_attrs[] = {
+	&dev_attr_shared.attr,
+	&dev_attr_save.attr,
+	&dev_attr_seglist.attr,
+	NULL,
+};
+static struct attribute_group dcssblk_dev_attr_group = {
+	.attrs = dcssblk_dev_attrs,
+};
+static const struct attribute_group *dcssblk_dev_attr_groups[] = {
+	&dcssblk_dev_attr_group,
+	NULL,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * device attribute for adding devices
@@ -509,9 +632,19 @@ dcssblk_seglist_show(struct device *dev, struct device_attribute *attr,
 static ssize_t
 dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int rc, i, j, num_of_segments;
 	struct dcssblk_dev_info *dev_info;
 	struct segment_info *seg_info, *temp;
+=======
+	struct queue_limits lim = {
+		.logical_block_size	= 4096,
+	};
+	int rc, i, j, num_of_segments;
+	struct dcssblk_dev_info *dev_info;
+	struct segment_info *seg_info, *temp;
+	struct dax_device *dax_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *local_buf;
 	unsigned long seg_byte_size;
 
@@ -536,11 +669,19 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 	 * parse input
 	 */
 	num_of_segments = 0;
+<<<<<<< HEAD
 	for (i = 0; ((buf[i] != '\0') && (buf[i] != '\n') && i < count); i++) {
 		for (j = i; (buf[j] != ':') &&
 			(buf[j] != '\0') &&
 			(buf[j] != '\n') &&
 			j < count; j++) {
+=======
+	for (i = 0; (i < count && (buf[i] != '\0') && (buf[i] != '\n')); i++) {
+		for (j = i; j < count &&
+			(buf[j] != ':') &&
+			(buf[j] != '\0') &&
+			(buf[j] != '\n'); j++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			local_buf[j-i] = toupper(buf[j]);
 		}
 		local_buf[j-i] = '\0';
@@ -579,7 +720,11 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 		rc = -ENAMETOOLONG;
 		goto seg_list_del;
 	}
+<<<<<<< HEAD
 	strlcpy(local_buf, buf, i + 1);
+=======
+	strscpy(local_buf, buf, i + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info->num_of_segments = num_of_segments;
 	rc = dcssblk_is_continuous(dev_info);
 	if (rc < 0)
@@ -588,6 +733,7 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 	dev_info->start = dcssblk_find_lowest_addr(dev_info);
 	dev_info->end = dcssblk_find_highest_addr(dev_info);
 
+<<<<<<< HEAD
 	dev_set_name(&dev_info->dev, dev_info->segment_name);
 	dev_info->dev.release = dcssblk_release_segment;
 	INIT_LIST_HEAD(&dev_info->lh);
@@ -604,6 +750,23 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 	dev_info->gd->driverfs_dev = &dev_info->dev;
 	blk_queue_make_request(dev_info->dcssblk_queue, dcssblk_make_request);
 	blk_queue_logical_block_size(dev_info->dcssblk_queue, 4096);
+=======
+	dev_set_name(&dev_info->dev, "%s", dev_info->segment_name);
+	dev_info->dev.release = dcssblk_release_segment;
+	dev_info->dev.groups = dcssblk_dev_attr_groups;
+	INIT_LIST_HEAD(&dev_info->lh);
+	dev_info->gd = blk_alloc_disk(&lim, NUMA_NO_NODE);
+	if (IS_ERR(dev_info->gd)) {
+		rc = PTR_ERR(dev_info->gd);
+		goto seg_list_del;
+	}
+	dev_info->gd->major = dcssblk_major;
+	dev_info->gd->minors = DCSSBLK_MINORS_PER_DISK;
+	dev_info->gd->fops = &dcssblk_devops;
+	dev_info->gd->private_data = dev_info;
+	dev_info->gd->flags |= GENHD_FL_NO_PART;
+	blk_queue_flag_set(QUEUE_FLAG_DAX, dev_info->gd->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seg_byte_size = (dev_info->end - dev_info->start + 1);
 	set_capacity(dev_info->gd, seg_byte_size >> 9); // size in sectors
@@ -637,6 +800,7 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 	 * register the device
 	 */
 	rc = device_register(&dev_info->dev);
+<<<<<<< HEAD
 	if (rc) {
 		module_put(THIS_MODULE);
 		goto dev_list_del;
@@ -653,6 +817,26 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 		goto unregister_dev;
 
 	add_disk(dev_info->gd);
+=======
+	if (rc)
+		goto put_dev;
+
+	dax_dev = alloc_dax(dev_info, &dcssblk_dax_ops);
+	if (IS_ERR(dax_dev)) {
+		rc = PTR_ERR(dax_dev);
+		goto put_dev;
+	}
+	set_dax_synchronous(dax_dev);
+	dev_info->dax_dev = dax_dev;
+	rc = dax_add_host(dev_info->dax_dev, dev_info->gd);
+	if (rc)
+		goto out_dax;
+
+	get_device(&dev_info->dev);
+	rc = device_add_disk(&dev_info->dev, dev_info->gd, NULL);
+	if (rc)
+		goto out_dax_host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (dev_info->segment_type) {
 		case SEG_TYPE_SR:
@@ -668,12 +852,24 @@ dcssblk_add_store(struct device *dev, struct device_attribute *attr, const char 
 	rc = count;
 	goto out;
 
+<<<<<<< HEAD
 unregister_dev:
 	list_del(&dev_info->lh);
 	blk_cleanup_queue(dev_info->dcssblk_queue);
 	dev_info->gd->queue = NULL;
 	put_disk(dev_info->gd);
 	device_unregister(&dev_info->dev);
+=======
+out_dax_host:
+	put_device(&dev_info->dev);
+	dax_remove_host(dev_info->gd);
+out_dax:
+	kill_dax(dev_info->dax_dev);
+	put_dax(dev_info->dax_dev);
+put_dev:
+	list_del(&dev_info->lh);
+	put_disk(dev_info->gd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(seg_info, &dev_info->seg_list, lh) {
 		segment_unload(seg_info->segment_name);
 	}
@@ -683,8 +879,11 @@ unregister_dev:
 dev_list_del:
 	list_del(&dev_info->lh);
 release_gd:
+<<<<<<< HEAD
 	blk_cleanup_queue(dev_info->dcssblk_queue);
 	dev_info->gd->queue = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_disk(dev_info->gd);
 	up_write(&dcssblk_devices_sem);
 seg_list_del:
@@ -723,7 +922,11 @@ dcssblk_remove_store(struct device *dev, struct device_attribute *attr, const ch
 	/*
 	 * parse input
 	 */
+<<<<<<< HEAD
 	for (i = 0; ((*(buf+i)!='\0') && (*(buf+i)!='\n') && i < count); i++) {
+=======
+	for (i = 0; (i < count && (*(buf+i)!='\0') && (*(buf+i)!='\n')); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_buf[i] = toupper(buf[i]);
 	}
 	local_buf[i] = '\0';
@@ -736,20 +939,31 @@ dcssblk_remove_store(struct device *dev, struct device_attribute *attr, const ch
 	dev_info = dcssblk_get_device_by_name(local_buf);
 	if (dev_info == NULL) {
 		up_write(&dcssblk_devices_sem);
+<<<<<<< HEAD
 		pr_warning("Device %s cannot be removed because it is not a "
 			   "known device\n", local_buf);
+=======
+		pr_warn("Device %s cannot be removed because it is not a known device\n",
+			local_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto out_buf;
 	}
 	if (atomic_read(&dev_info->use_count) != 0) {
 		up_write(&dcssblk_devices_sem);
+<<<<<<< HEAD
 		pr_warning("Device %s cannot be removed while it is in "
 			   "use\n", local_buf);
+=======
+		pr_warn("Device %s cannot be removed while it is in use\n",
+			local_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EBUSY;
 		goto out_buf;
 	}
 
 	list_del(&dev_info->lh);
+<<<<<<< HEAD
 	del_gendisk(dev_info->gd);
 	blk_cleanup_queue(dev_info->dcssblk_queue);
 	dev_info->gd->queue = NULL;
@@ -763,6 +977,22 @@ dcssblk_remove_store(struct device *dev, struct device_attribute *attr, const ch
 	put_device(&dev_info->dev);
 	up_write(&dcssblk_devices_sem);
 
+=======
+	/* unload all related segments */
+	list_for_each_entry(entry, &dev_info->seg_list, lh)
+		segment_unload(entry->segment_name);
+	up_write(&dcssblk_devices_sem);
+
+	dax_remove_host(dev_info->gd);
+	kill_dax(dev_info->dax_dev);
+	put_dax(dev_info->dax_dev);
+	del_gendisk(dev_info->gd);
+	put_disk(dev_info->gd);
+
+	device_unregister(&dev_info->dev);
+	put_device(&dev_info->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = count;
 out_buf:
 	kfree(local_buf);
@@ -770,23 +1000,35 @@ out_buf:
 }
 
 static int
+<<<<<<< HEAD
 dcssblk_open(struct block_device *bdev, fmode_t mode)
 {
 	struct dcssblk_dev_info *dev_info;
 	int rc;
 
 	dev_info = bdev->bd_disk->private_data;
+=======
+dcssblk_open(struct gendisk *disk, blk_mode_t mode)
+{
+	struct dcssblk_dev_info *dev_info = disk->private_data;
+	int rc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (NULL == dev_info) {
 		rc = -ENODEV;
 		goto out;
 	}
 	atomic_inc(&dev_info->use_count);
+<<<<<<< HEAD
 	bdev->bd_block_size = 4096;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = 0;
 out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int
 dcssblk_release(struct gendisk *disk, fmode_t mode)
 {
@@ -797,6 +1039,17 @@ dcssblk_release(struct gendisk *disk, fmode_t mode)
 	if (!dev_info) {
 		rc = -ENODEV;
 		goto out;
+=======
+static void
+dcssblk_release(struct gendisk *disk)
+{
+	struct dcssblk_dev_info *dev_info = disk->private_data;
+	struct segment_info *entry;
+
+	if (!dev_info) {
+		WARN_ON(1);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	down_write(&dcssblk_devices_sem);
 	if (atomic_dec_and_test(&dev_info->use_count)
@@ -804,11 +1057,21 @@ dcssblk_release(struct gendisk *disk, fmode_t mode)
 		pr_info("Device %s has become idle and is being saved "
 			"now\n", dev_info->segment_name);
 		list_for_each_entry(entry, &dev_info->seg_list, lh) {
+<<<<<<< HEAD
 			segment_save(entry->segment_name);
+=======
+			if (entry->segment_type == SEG_TYPE_EN ||
+			    entry->segment_type == SEG_TYPE_SN)
+				pr_warn("DCSS %s is of type SN or EN and cannot"
+					" be saved\n", entry->segment_name);
+			else
+				segment_save(entry->segment_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		dev_info->save_pending = 0;
 	}
 	up_write(&dcssblk_devices_sem);
+<<<<<<< HEAD
 	rc = 0;
 out:
 	return rc;
@@ -824,11 +1087,26 @@ dcssblk_make_request(struct request_queue *q, struct bio *bio)
 	unsigned long source_addr;
 	unsigned long bytes_done;
 	int i;
+=======
+}
+
+static void
+dcssblk_submit_bio(struct bio *bio)
+{
+	struct dcssblk_dev_info *dev_info;
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+	unsigned long index;
+	void *page_addr;
+	unsigned long source_addr;
+	unsigned long bytes_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bytes_done = 0;
 	dev_info = bio->bi_bdev->bd_disk->private_data;
 	if (dev_info == NULL)
 		goto fail;
+<<<<<<< HEAD
 	if ((bio->bi_sector & 7) != 0 || (bio->bi_size & 4095) != 0)
 		/* Request is not page-aligned. */
 		goto fail;
@@ -837,6 +1115,12 @@ dcssblk_make_request(struct request_queue *q, struct bio *bio)
 		/* Request beyond end of DCSS segment. */
 		goto fail;
 	}
+=======
+	if (!IS_ALIGNED(bio->bi_iter.bi_sector, 8) ||
+	    !IS_ALIGNED(bio->bi_iter.bi_size, PAGE_SIZE))
+		/* Request is not page-aligned. */
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* verify data transfer direction */
 	if (dev_info->is_shared) {
 		switch (dev_info->segment_type) {
@@ -845,14 +1129,20 @@ dcssblk_make_request(struct request_queue *q, struct bio *bio)
 		case SEG_TYPE_SC:
 			/* cannot write to these segments */
 			if (bio_data_dir(bio) == WRITE) {
+<<<<<<< HEAD
 				pr_warning("Writing to %s failed because it "
 					   "is a read-only device\n",
 					   dev_name(&dev_info->dev));
+=======
+				pr_warn("Writing to %s failed because it is a read-only device\n",
+					dev_name(&dev_info->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto fail;
 			}
 		}
 	}
 
+<<<<<<< HEAD
 	index = (bio->bi_sector >> 3);
 	bio_for_each_segment(bvec, bio, i) {
 		page_addr = (unsigned long)
@@ -871,11 +1161,29 @@ dcssblk_make_request(struct request_queue *q, struct bio *bio)
 		bytes_done += bvec->bv_len;
 	}
 	bio_endio(bio, 0);
+=======
+	index = (bio->bi_iter.bi_sector >> 3);
+	bio_for_each_segment(bvec, bio, iter) {
+		page_addr = bvec_virt(&bvec);
+		source_addr = dev_info->start + (index<<12) + bytes_done;
+		if (unlikely(!IS_ALIGNED((unsigned long)page_addr, PAGE_SIZE) ||
+			     !IS_ALIGNED(bvec.bv_len, PAGE_SIZE)))
+			// More paranoia.
+			goto fail;
+		if (bio_data_dir(bio) == READ)
+			memcpy(page_addr, __va(source_addr), bvec.bv_len);
+		else
+			memcpy(__va(source_addr), page_addr, bvec.bv_len);
+		bytes_done += bvec.bv_len;
+	}
+	bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 fail:
 	bio_io_error(bio);
 }
 
+<<<<<<< HEAD
 static int
 dcssblk_direct_access (struct block_device *bdev, sector_t secnum,
 			void **kaddr, unsigned long *pfn)
@@ -895,6 +1203,33 @@ dcssblk_direct_access (struct block_device *bdev, sector_t secnum,
 	*pfn = virt_to_phys(*kaddr) >> PAGE_SHIFT;
 
 	return 0;
+=======
+static long
+__dcssblk_direct_access(struct dcssblk_dev_info *dev_info, pgoff_t pgoff,
+		long nr_pages, void **kaddr, pfn_t *pfn)
+{
+	resource_size_t offset = pgoff * PAGE_SIZE;
+	unsigned long dev_sz;
+
+	dev_sz = dev_info->end - dev_info->start + 1;
+	if (kaddr)
+		*kaddr = __va(dev_info->start + offset);
+	if (pfn)
+		*pfn = __pfn_to_pfn_t(PFN_DOWN(dev_info->start + offset),
+				PFN_DEV|PFN_SPECIAL);
+
+	return (dev_sz - offset) / PAGE_SIZE;
+}
+
+static long
+dcssblk_dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff,
+		long nr_pages, enum dax_access_mode mode, void **kaddr,
+		pfn_t *pfn)
+{
+	struct dcssblk_dev_info *dev_info = dax_get_private(dax_dev);
+
+	return __dcssblk_direct_access(dev_info, pgoff, nr_pages, kaddr, pfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -906,10 +1241,17 @@ dcssblk_check_params(void)
 
 	for (i = 0; (i < DCSSBLK_PARM_LEN) && (dcssblk_segments[i] != '\0');
 	     i++) {
+<<<<<<< HEAD
 		for (j = i; (dcssblk_segments[j] != ',')  &&
 			    (dcssblk_segments[j] != '\0') &&
 			    (dcssblk_segments[j] != '(')  &&
 			    (j < DCSSBLK_PARM_LEN); j++)
+=======
+		for (j = i; (j < DCSSBLK_PARM_LEN) &&
+			    (dcssblk_segments[j] != ',')  &&
+			    (dcssblk_segments[j] != '\0') &&
+			    (dcssblk_segments[j] != '('); j++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			buf[j-i] = dcssblk_segments[j];
 		}
@@ -940,6 +1282,7 @@ dcssblk_check_params(void)
 }
 
 /*
+<<<<<<< HEAD
  * Suspend / Resume
  */
 static int dcssblk_freeze(struct device *dev)
@@ -1022,13 +1365,18 @@ static struct platform_device *dcssblk_pdev;
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The init/exit functions.
  */
 static void __exit
 dcssblk_exit(void)
 {
+<<<<<<< HEAD
 	platform_device_unregister(dcssblk_pdev);
 	platform_driver_unregister(&dcssblk_pdrv);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	root_device_unregister(dcssblk_root_dev);
 	unregister_blkdev(dcssblk_major, DCSSBLK_NAME);
 }
@@ -1038,6 +1386,7 @@ dcssblk_init(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	rc = platform_driver_register(&dcssblk_pdrv);
 	if (rc)
 		return rc;
@@ -1054,6 +1403,11 @@ dcssblk_init(void)
 		rc = PTR_ERR(dcssblk_root_dev);
 		goto out_pdev;
 	}
+=======
+	dcssblk_root_dev = root_device_register("dcssblk");
+	if (IS_ERR(dcssblk_root_dev))
+		return PTR_ERR(dcssblk_root_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = device_create_file(dcssblk_root_dev, &dev_attr_add);
 	if (rc)
 		goto out_root;
@@ -1071,10 +1425,14 @@ dcssblk_init(void)
 
 out_root:
 	root_device_unregister(dcssblk_root_dev);
+<<<<<<< HEAD
 out_pdev:
 	platform_device_unregister(dcssblk_pdev);
 out_pdrv:
 	platform_driver_unregister(&dcssblk_pdrv);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 

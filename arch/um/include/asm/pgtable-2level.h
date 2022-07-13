@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2000, 2001, 2002 Jeff Dike (jdike@karaya.com)
  * Copyright 2003 PathScale, Inc.
  * Derived from include/asm-i386/pgtable.h
+<<<<<<< HEAD
  * Licensed under the GPL
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_PGTABLE_2LEVEL_H
@@ -23,7 +30,10 @@
 #define PTRS_PER_PTE	1024
 #define USER_PTRS_PER_PGD ((TASK_SIZE + (PGDIR_SIZE - 1)) / PGDIR_SIZE)
 #define PTRS_PER_PGD	1024
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pte_ERROR(e) \
         printk("%s:%d: bad pte %p(%08lx).\n", __FILE__, __LINE__, &(e), \
@@ -41,6 +51,7 @@ static inline void pgd_mkuptodate(pgd_t pgd)	{ }
 #define pfn_pte(pfn, prot) __pte(pfn_to_phys(pfn) | pgprot_val(prot))
 #define pfn_pmd(pfn, prot) __pmd(pfn_to_phys(pfn) | pgprot_val(prot))
 
+<<<<<<< HEAD
 /*
  * Bits 0 through 4 are taken
  */
@@ -50,4 +61,6 @@ static inline void pgd_mkuptodate(pgd_t pgd)	{ }
 
 #define pgoff_to_pte(off) ((pte_t) { ((off) << 5) + _PAGE_FILE })
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

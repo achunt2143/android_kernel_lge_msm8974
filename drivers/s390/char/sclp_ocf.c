@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/sclp_ocf.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    SCLP OCF communication parameters sysfs interface
  *
  *    Copyright IBM Corp. 2011
@@ -27,7 +32,11 @@
 #define OCF_LENGTH_CPC_NAME 8UL
 
 static char hmc_network[OCF_LENGTH_HMC_NETWORK + 1];
+<<<<<<< HEAD
 static char cpc_name[OCF_LENGTH_CPC_NAME + 1];
+=======
+static char cpc_name[OCF_LENGTH_CPC_NAME]; /* in EBCDIC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(sclp_ocf_lock);
 static struct work_struct sclp_ocf_change_work;
@@ -73,9 +82,14 @@ static void sclp_ocf_handler(struct evbuf_header *evbuf)
 	}
 	if (cpc) {
 		size = min(OCF_LENGTH_CPC_NAME, (size_t) cpc->length);
+<<<<<<< HEAD
 		memcpy(cpc_name, cpc + 1, size);
 		EBCASC(cpc_name, size);
 		cpc_name[size] = 0;
+=======
+		memset(cpc_name, 0, OCF_LENGTH_CPC_NAME);
+		memcpy(cpc_name, cpc + 1, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&sclp_ocf_lock);
 	schedule_work(&sclp_ocf_change_work);
@@ -86,6 +100,7 @@ static struct sclp_register sclp_ocf_event = {
 	.receiver_fn = sclp_ocf_handler,
 };
 
+<<<<<<< HEAD
 static ssize_t cpc_name_show(struct kobject *kobj,
 			     struct kobj_attribute *attr, char *page)
 {
@@ -95,6 +110,25 @@ static ssize_t cpc_name_show(struct kobject *kobj,
 	rc = snprintf(page, PAGE_SIZE, "%s\n", cpc_name);
 	spin_unlock_irq(&sclp_ocf_lock);
 	return rc;
+=======
+void sclp_ocf_cpc_name_copy(char *dst)
+{
+	spin_lock_irq(&sclp_ocf_lock);
+	memcpy(dst, cpc_name, OCF_LENGTH_CPC_NAME);
+	spin_unlock_irq(&sclp_ocf_lock);
+}
+EXPORT_SYMBOL(sclp_ocf_cpc_name_copy);
+
+static ssize_t cpc_name_show(struct kobject *kobj,
+			     struct kobj_attribute *attr, char *page)
+{
+	char name[OCF_LENGTH_CPC_NAME + 1];
+
+	sclp_ocf_cpc_name_copy(name);
+	name[OCF_LENGTH_CPC_NAME] = 0;
+	EBCASC(name, OCF_LENGTH_CPC_NAME);
+	return snprintf(page, PAGE_SIZE, "%s\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kobj_attribute cpc_name_attr =
@@ -120,7 +154,11 @@ static struct attribute *ocf_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group ocf_attr_group = {
+=======
+static const struct attribute_group ocf_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = ocf_attrs,
 };
 

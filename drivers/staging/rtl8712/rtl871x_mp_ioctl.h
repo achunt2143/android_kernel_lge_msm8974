@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -60,7 +67,11 @@ struct eeprom_rw_param {
 struct EFUSE_ACCESS_STRUCT {
 	u16	start_addr;
 	u16	cnts;
+<<<<<<< HEAD
 	u8	data[0];
+=======
+	u8	data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct burst_rw_reg {
@@ -83,6 +94,7 @@ struct DR_VARIABLE_STRUCT {
 	u32 variable;
 };
 
+<<<<<<< HEAD
 int mp_start_joinbss(struct _adapter *padapter, struct ndis_802_11_ssid *pssid);
 
 /* oid_rtl_seg_87_11_00 */
@@ -121,6 +133,11 @@ uint oid_rt_pro_h2c_set_rate_table_hdl(
 				struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_h2c_get_rate_table_hdl(
 				struct oid_par_priv *poid_par_priv);
+=======
+/* oid_rtl_seg_87_11_00 */
+uint oid_rt_pro_read_register_hdl(struct oid_par_priv *poid_par_priv);
+uint oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* oid_rtl_seg_81_80_00 */
 uint oid_rt_pro_set_data_rate_hdl(
 				struct oid_par_priv *poid_par_priv);
@@ -159,6 +176,7 @@ uint oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv);
 /* oid_rtl_seg_81_85 */
 uint oid_rt_wireless_mode_hdl(struct oid_par_priv *poid_par_priv);
+<<<<<<< HEAD
 /* oid_rtl_seg_87_12_00 */
 uint oid_rt_pro_encryption_ctrl_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_add_sta_info_hdl(struct oid_par_priv *poid_par_priv);
@@ -169,11 +187,16 @@ uint oid_rt_pro_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_rw_efuse_pgpkt_hdl(struct oid_par_priv *poid_par_priv);
+=======
+uint oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv);
+uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uint oid_rt_get_efuse_current_size_hdl(
 				struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_efuse_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_efuse_map_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv);
+<<<<<<< HEAD
 uint oid_rt_set_crystal_cap_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv);
 uint oid_rt_get_efuse_max_size_hdl(struct oid_par_priv *poid_par_priv);
@@ -181,6 +204,10 @@ uint oid_rt_pro_set_tx_agc_offset_hdl(
 				struct oid_par_priv *poid_par_priv);
 uint oid_rt_pro_set_pkt_test_mode_hdl(
 				struct oid_par_priv *poid_par_priv);
+=======
+uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv);
+uint oid_rt_get_efuse_max_size_hdl(struct oid_par_priv *poid_par_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uint oid_rt_get_thermal_meter_hdl(
 				struct oid_par_priv *poid_par_priv);
 uint oid_rt_reset_phy_rx_packet_count_hdl(
@@ -195,6 +222,7 @@ uint oid_rt_get_power_mode_hdl(
 				struct oid_par_priv *poid_par_priv);
 #ifdef _RTL871X_MP_IOCTL_C_ /* CAUTION!!! */
 /* This ifdef _MUST_ be left in!! */
+<<<<<<< HEAD
 static const struct oid_obj_priv oid_rtl_seg_81_80_00[] = {
 	{1, &oid_null_function},	/*0x00	OID_RT_PRO_RESET_DUT */
 	{1, &oid_rt_pro_set_data_rate_hdl},	/*0x01*/
@@ -288,6 +316,10 @@ extern struct oid_obj_priv oid_rtl_seg_81_80_20[16];
 extern struct oid_obj_priv oid_rtl_seg_81_80_40[6];
 extern struct oid_obj_priv oid_rtl_seg_81_80_80[3];
 extern struct oid_obj_priv oid_rtl_seg_81_85[1];
+=======
+
+#else /* _RTL871X_MP_IOCTL_C_ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct oid_obj_priv oid_rtl_seg_81_87[5];
 extern struct oid_obj_priv oid_rtl_seg_87_11_00[32];
 extern struct oid_obj_priv oid_rtl_seg_87_11_20[5];
@@ -299,7 +331,10 @@ extern struct oid_obj_priv oid_rtl_seg_87_12_00[32];
 
 #endif /* _RTL871X_MP_IOCTL_C_ */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum MP_MODE {
 	MP_START_MODE,
 	MP_STOP_MODE,
@@ -348,7 +383,11 @@ struct mp_ioctl_handler {
 struct mp_ioctl_param {
 	unsigned int subcode;
 	unsigned int len;
+<<<<<<< HEAD
 	unsigned char data[0];
+=======
+	unsigned char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define GEN_MP_IOCTL_SUBCODE(code) _MP_IOCTL_ ## code ## _CMD_
@@ -430,7 +469,11 @@ static struct mp_ioctl_handler mp_ioctl_hdl[] = {
 			     oid_rt_pro_write_rf_reg_hdl,
 			     OID_RT_PRO_RF_WRITE_REGISTRY},
 	{sizeof(struct rfintfs_parm), NULL, 0},
+<<<<<<< HEAD
 	{0, &mp_ioctl_xmit_packet_hdl, 0},/*12*/
+=======
+	{0, mp_ioctl_xmit_packet_hdl, 0},/*12*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{sizeof(struct psmode_param), NULL, 0},/*13*/
 	{sizeof(struct eeprom_rw_param), NULL, 0},/*14*/
 	{sizeof(struct eeprom_rw_param), NULL, 0},/*15*/

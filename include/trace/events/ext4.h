@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ext4
 
@@ -14,10 +18,162 @@ struct ext4_prealloc_space;
 struct ext4_inode_info;
 struct mpage_da_data;
 struct ext4_map_blocks;
+<<<<<<< HEAD
 struct ext4_extent;
 
 #define EXT4_I(inode) (container_of(inode, struct ext4_inode_info, vfs_inode))
 
+=======
+struct extent_status;
+struct ext4_fsmap;
+struct partial_cluster;
+
+#define EXT4_I(inode) (container_of(inode, struct ext4_inode_info, vfs_inode))
+
+#define show_mballoc_flags(flags) __print_flags(flags, "|",	\
+	{ EXT4_MB_HINT_MERGE,		"HINT_MERGE" },		\
+	{ EXT4_MB_HINT_RESERVED,	"HINT_RESV" },		\
+	{ EXT4_MB_HINT_METADATA,	"HINT_MDATA" },		\
+	{ EXT4_MB_HINT_FIRST,		"HINT_FIRST" },		\
+	{ EXT4_MB_HINT_BEST,		"HINT_BEST" },		\
+	{ EXT4_MB_HINT_DATA,		"HINT_DATA" },		\
+	{ EXT4_MB_HINT_NOPREALLOC,	"HINT_NOPREALLOC" },	\
+	{ EXT4_MB_HINT_GROUP_ALLOC,	"HINT_GRP_ALLOC" },	\
+	{ EXT4_MB_HINT_GOAL_ONLY,	"HINT_GOAL_ONLY" },	\
+	{ EXT4_MB_HINT_TRY_GOAL,	"HINT_TRY_GOAL" },	\
+	{ EXT4_MB_DELALLOC_RESERVED,	"DELALLOC_RESV" },	\
+	{ EXT4_MB_STREAM_ALLOC,		"STREAM_ALLOC" },	\
+	{ EXT4_MB_USE_ROOT_BLOCKS,	"USE_ROOT_BLKS" },	\
+	{ EXT4_MB_USE_RESERVED,		"USE_RESV" },		\
+	{ EXT4_MB_STRICT_CHECK,		"STRICT_CHECK" })
+
+#define show_map_flags(flags) __print_flags(flags, "|",			\
+	{ EXT4_GET_BLOCKS_CREATE,		"CREATE" },		\
+	{ EXT4_GET_BLOCKS_UNWRIT_EXT,		"UNWRIT" },		\
+	{ EXT4_GET_BLOCKS_DELALLOC_RESERVE,	"DELALLOC" },		\
+	{ EXT4_GET_BLOCKS_PRE_IO,		"PRE_IO" },		\
+	{ EXT4_GET_BLOCKS_CONVERT,		"CONVERT" },		\
+	{ EXT4_GET_BLOCKS_METADATA_NOFAIL,	"METADATA_NOFAIL" },	\
+	{ EXT4_GET_BLOCKS_NO_NORMALIZE,		"NO_NORMALIZE" },	\
+	{ EXT4_GET_BLOCKS_CONVERT_UNWRITTEN,	"CONVERT_UNWRITTEN" },  \
+	{ EXT4_GET_BLOCKS_ZERO,			"ZERO" },		\
+	{ EXT4_GET_BLOCKS_IO_SUBMIT,		"IO_SUBMIT" },		\
+	{ EXT4_EX_NOCACHE,			"EX_NOCACHE" })
+
+/*
+ * __print_flags() requires that all enum values be wrapped in the
+ * TRACE_DEFINE_ENUM macro so that the enum value can be encoded in the ftrace
+ * ring buffer.
+ */
+TRACE_DEFINE_ENUM(BH_New);
+TRACE_DEFINE_ENUM(BH_Mapped);
+TRACE_DEFINE_ENUM(BH_Unwritten);
+TRACE_DEFINE_ENUM(BH_Boundary);
+
+#define show_mflags(flags) __print_flags(flags, "",	\
+	{ EXT4_MAP_NEW,		"N" },			\
+	{ EXT4_MAP_MAPPED,	"M" },			\
+	{ EXT4_MAP_UNWRITTEN,	"U" },			\
+	{ EXT4_MAP_BOUNDARY,	"B" })
+
+#define show_free_flags(flags) __print_flags(flags, "|",	\
+	{ EXT4_FREE_BLOCKS_METADATA,		"METADATA" },	\
+	{ EXT4_FREE_BLOCKS_FORGET,		"FORGET" },	\
+	{ EXT4_FREE_BLOCKS_VALIDATED,		"VALIDATED" },	\
+	{ EXT4_FREE_BLOCKS_NO_QUOT_UPDATE,	"NO_QUOTA" },	\
+	{ EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER,"1ST_CLUSTER" },\
+	{ EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER,	"LAST_CLUSTER" })
+
+TRACE_DEFINE_ENUM(ES_WRITTEN_B);
+TRACE_DEFINE_ENUM(ES_UNWRITTEN_B);
+TRACE_DEFINE_ENUM(ES_DELAYED_B);
+TRACE_DEFINE_ENUM(ES_HOLE_B);
+TRACE_DEFINE_ENUM(ES_REFERENCED_B);
+
+#define show_extent_status(status) __print_flags(status, "",	\
+	{ EXTENT_STATUS_WRITTEN,	"W" },			\
+	{ EXTENT_STATUS_UNWRITTEN,	"U" },			\
+	{ EXTENT_STATUS_DELAYED,	"D" },			\
+	{ EXTENT_STATUS_HOLE,		"H" },			\
+	{ EXTENT_STATUS_REFERENCED,	"R" })
+
+#define show_falloc_mode(mode) __print_flags(mode, "|",		\
+	{ FALLOC_FL_KEEP_SIZE,		"KEEP_SIZE"},		\
+	{ FALLOC_FL_PUNCH_HOLE,		"PUNCH_HOLE"},		\
+	{ FALLOC_FL_NO_HIDE_STALE,	"NO_HIDE_STALE"},	\
+	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
+	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
+
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_ENCRYPTED_FILENAME);
+TRACE_DEFINE_ENUM(EXT4_FC_REASON_MAX);
+
+#define show_fc_reason(reason)						\
+	__print_symbolic(reason,					\
+		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
+		{ EXT4_FC_REASON_CROSS_RENAME,	"CROSS_RENAME"},	\
+		{ EXT4_FC_REASON_JOURNAL_FLAG_CHANGE, "JOURNAL_FLAG_CHANGE"}, \
+		{ EXT4_FC_REASON_NOMEM,	"NO_MEM"},			\
+		{ EXT4_FC_REASON_SWAP_BOOT,	"SWAP_BOOT"},		\
+		{ EXT4_FC_REASON_RESIZE,	"RESIZE"},		\
+		{ EXT4_FC_REASON_RENAME_DIR,	"RENAME_DIR"},		\
+		{ EXT4_FC_REASON_FALLOC_RANGE,	"FALLOC_RANGE"},	\
+		{ EXT4_FC_REASON_INODE_JOURNAL_DATA,	"INODE_JOURNAL_DATA"}, \
+		{ EXT4_FC_REASON_ENCRYPTED_FILENAME,	"ENCRYPTED_FILENAME"})
+
+TRACE_DEFINE_ENUM(CR_POWER2_ALIGNED);
+TRACE_DEFINE_ENUM(CR_GOAL_LEN_FAST);
+TRACE_DEFINE_ENUM(CR_BEST_AVAIL_LEN);
+TRACE_DEFINE_ENUM(CR_GOAL_LEN_SLOW);
+TRACE_DEFINE_ENUM(CR_ANY_FREE);
+
+#define show_criteria(cr)                                               \
+	__print_symbolic(cr,                                            \
+			 { CR_POWER2_ALIGNED, "CR_POWER2_ALIGNED" },	\
+			 { CR_GOAL_LEN_FAST, "CR_GOAL_LEN_FAST" },      \
+			 { CR_BEST_AVAIL_LEN, "CR_BEST_AVAIL_LEN" },    \
+			 { CR_GOAL_LEN_SLOW, "CR_GOAL_LEN_SLOW" },      \
+			 { CR_ANY_FREE, "CR_ANY_FREE" })
+
+TRACE_EVENT(ext4_other_inode_update_time,
+	TP_PROTO(struct inode *inode, ino_t orig_ino),
+
+	TP_ARGS(inode, orig_ino),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	ino_t,	orig_ino		)
+		__field(	uid_t,	uid			)
+		__field(	gid_t,	gid			)
+		__field(	__u16, mode			)
+	),
+
+	TP_fast_assign(
+		__entry->orig_ino = orig_ino;
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->uid	= i_uid_read(inode);
+		__entry->gid	= i_gid_read(inode);
+		__entry->mode	= inode->i_mode;
+	),
+
+	TP_printk("dev %d,%d orig_ino %lu ino %lu mode 0%o uid %u gid %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->orig_ino,
+		  (unsigned long) __entry->ino, __entry->mode,
+		  __entry->uid, __entry->gid)
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(ext4_free_inode,
 	TP_PROTO(struct inode *inode),
 
@@ -26,19 +182,33 @@ TRACE_EVENT(ext4_free_inode,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16, mode			)
 		__field(	uid_t,	uid			)
 		__field(	gid_t,	gid			)
 		__field(	__u64, blocks			)
+=======
+		__field(	uid_t,	uid			)
+		__field(	gid_t,	gid			)
+		__field(	__u64, blocks			)
+		__field(	__u16, mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode	= inode->i_mode;
 		__entry->uid	= inode->i_uid;
 		__entry->gid	= inode->i_gid;
 		__entry->blocks	= inode->i_blocks;
+=======
+		__entry->uid	= i_uid_read(inode);
+		__entry->gid	= i_gid_read(inode);
+		__entry->blocks	= inode->i_blocks;
+		__entry->mode	= inode->i_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu mode 0%o uid %u gid %u blocks %llu",
@@ -138,6 +308,29 @@ TRACE_EVENT(ext4_drop_inode,
 		  (unsigned long) __entry->ino, __entry->drop)
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(ext4_nfs_commit_metadata,
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+	),
+
+	TP_printk("dev %d,%d ino %lu",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino)
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(ext4_mark_inode_dirty,
 	TP_PROTO(struct inode *inode, unsigned long IP),
 
@@ -155,7 +348,11 @@ TRACE_EVENT(ext4_mark_inode_dirty,
 		__entry->ip	= IP;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dev %d,%d ino %lu caller %pF",
+=======
+	TP_printk("dev %d,%d ino %lu caller %pS",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino, (void *)__entry->ip)
 );
@@ -185,17 +382,26 @@ TRACE_EVENT(ext4_begin_ordered_truncate,
 
 DECLARE_EVENT_CLASS(ext4__write_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
 		 unsigned int flags),
 
 	TP_ARGS(inode, pos, len, flags),
+=======
+	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len),
+
+	TP_ARGS(inode, pos, len),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
 		__field(	loff_t,	pos			)
 		__field(	unsigned int, len		)
+<<<<<<< HEAD
 		__field(	unsigned int, flags		)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -203,6 +409,7 @@ DECLARE_EVENT_CLASS(ext4__write_begin,
 		__entry->ino	= inode->i_ino;
 		__entry->pos	= pos;
 		__entry->len	= len;
+<<<<<<< HEAD
 		__entry->flags	= flags;
 	),
 
@@ -210,22 +417,42 @@ DECLARE_EVENT_CLASS(ext4__write_begin,
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  __entry->pos, __entry->len, __entry->flags)
+=======
+	),
+
+	TP_printk("dev %d,%d ino %lu pos %lld len %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->pos, __entry->len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(ext4__write_begin, ext4_write_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
 		 unsigned int flags),
 
 	TP_ARGS(inode, pos, len, flags)
+=======
+	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len),
+
+	TP_ARGS(inode, pos, len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(ext4__write_begin, ext4_da_write_begin,
 
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
 		 unsigned int flags),
 
 	TP_ARGS(inode, pos, len, flags)
+=======
+	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len),
+
+	TP_ARGS(inode, pos, len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(ext4__write_end,
@@ -256,6 +483,7 @@ DECLARE_EVENT_CLASS(ext4__write_end,
 		  __entry->pos, __entry->len, __entry->copied)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(ext4__write_end, ext4_ordered_write_end,
 
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
@@ -265,6 +493,9 @@ DEFINE_EVENT(ext4__write_end, ext4_ordered_write_end,
 );
 
 DEFINE_EVENT(ext4__write_end, ext4_writeback_write_end,
+=======
+DEFINE_EVENT(ext4__write_end, ext4_write_end,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
 		 unsigned int copied),
@@ -288,7 +519,11 @@ DEFINE_EVENT(ext4__write_end, ext4_da_write_end,
 	TP_ARGS(inode, pos, len, copied)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(ext4_da_writepages,
+=======
+TRACE_EVENT(ext4_writepages,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct inode *inode, struct writeback_control *wbc),
 
 	TP_ARGS(inode, wbc),
@@ -300,10 +535,17 @@ TRACE_EVENT(ext4_da_writepages,
 		__field(	long,	pages_skipped		)
 		__field(	loff_t,	range_start		)
 		__field(	loff_t,	range_end		)
+<<<<<<< HEAD
 		__field(	int,	sync_mode		)
 		__field(	char,	for_kupdate		)
 		__field(	char,	range_cyclic		)
 		__field(       pgoff_t,	writeback_index		)
+=======
+		__field(       pgoff_t,	writeback_index		)
+		__field(	int,	sync_mode		)
+		__field(	char,	for_kupdate		)
+		__field(	char,	range_cyclic		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -313,6 +555,7 @@ TRACE_EVENT(ext4_da_writepages,
 		__entry->pages_skipped	= wbc->pages_skipped;
 		__entry->range_start	= wbc->range_start;
 		__entry->range_end	= wbc->range_end;
+<<<<<<< HEAD
 		__entry->sync_mode	= wbc->sync_mode;
 		__entry->for_kupdate	= wbc->for_kupdate;
 		__entry->range_cyclic	= wbc->range_cyclic;
@@ -321,6 +564,16 @@ TRACE_EVENT(ext4_da_writepages,
 
 	TP_printk("dev %d,%d ino %lu nr_to_write %ld pages_skipped %ld "
 		  "range_start %lld range_end %lld sync_mode %d"
+=======
+		__entry->writeback_index = inode->i_mapping->writeback_index;
+		__entry->sync_mode	= wbc->sync_mode;
+		__entry->for_kupdate	= wbc->for_kupdate;
+		__entry->range_cyclic	= wbc->range_cyclic;
+	),
+
+	TP_printk("dev %d,%d ino %lu nr_to_write %ld pages_skipped %ld "
+		  "range_start %lld range_end %lld sync_mode %d "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "for_kupdate %d range_cyclic %d writeback_index %lu",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino, __entry->nr_to_write,
@@ -331,13 +584,21 @@ TRACE_EVENT(ext4_da_writepages,
 );
 
 TRACE_EVENT(ext4_da_write_pages,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, struct mpage_da_data *mpd),
 
 	TP_ARGS(inode, mpd),
+=======
+	TP_PROTO(struct inode *inode, pgoff_t first_page,
+		 struct writeback_control *wbc),
+
+	TP_ARGS(inode, first_page, wbc),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u64,	b_blocknr		)
 		__field(	__u32,	b_size			)
 		__field(	__u32,	b_state			)
@@ -345,11 +606,17 @@ TRACE_EVENT(ext4_da_write_pages,
 		__field(	int,	io_done			)
 		__field(	int,	pages_written		)
 		__field(	int,	sync_mode		)
+=======
+		__field(      pgoff_t,	first_page		)
+		__field(	 long,	nr_to_write		)
+		__field(	  int,	sync_mode		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->ino		= inode->i_ino;
+<<<<<<< HEAD
 		__entry->b_blocknr	= mpd->b_blocknr;
 		__entry->b_size		= mpd->b_size;
 		__entry->b_state	= mpd->b_state;
@@ -371,6 +638,48 @@ TRACE_EVENT(ext4_da_write_pages,
 );
 
 TRACE_EVENT(ext4_da_writepages_result,
+=======
+		__entry->first_page	= first_page;
+		__entry->nr_to_write	= wbc->nr_to_write;
+		__entry->sync_mode	= wbc->sync_mode;
+	),
+
+	TP_printk("dev %d,%d ino %lu first_page %lu nr_to_write %ld "
+		  "sync_mode %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->first_page,
+		  __entry->nr_to_write, __entry->sync_mode)
+);
+
+TRACE_EVENT(ext4_da_write_pages_extent,
+	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map),
+
+	TP_ARGS(inode, map),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	__u64,	lblk			)
+		__field(	__u32,	len			)
+		__field(	__u32,	flags			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->lblk		= map->m_lblk;
+		__entry->len		= map->m_len;
+		__entry->flags		= map->m_flags;
+	),
+
+	TP_printk("dev %d,%d ino %lu lblk %llu len %u flags %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->lblk, __entry->len,
+		  show_mflags(__entry->flags))
+);
+
+TRACE_EVENT(ext4_writepages_result,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct inode *inode, struct writeback_control *wbc,
 			int ret, int pages_written),
 
@@ -382,8 +691,13 @@ TRACE_EVENT(ext4_da_writepages_result,
 		__field(	int,	ret			)
 		__field(	int,	pages_written		)
 		__field(	long,	pages_skipped		)
+<<<<<<< HEAD
 		__field(	int,	sync_mode		)
 		__field(       pgoff_t,	writeback_index		)
+=======
+		__field(       pgoff_t,	writeback_index		)
+		__field(	int,	sync_mode		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -392,8 +706,13 @@ TRACE_EVENT(ext4_da_writepages_result,
 		__entry->ret		= ret;
 		__entry->pages_written	= pages_written;
 		__entry->pages_skipped	= wbc->pages_skipped;
+<<<<<<< HEAD
 		__entry->sync_mode	= wbc->sync_mode;
 		__entry->writeback_index = inode->i_mapping->writeback_index;
+=======
+		__entry->writeback_index = inode->i_mapping->writeback_index;
+		__entry->sync_mode	= wbc->sync_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu ret %d pages_written %d pages_skipped %ld "
@@ -405,6 +724,7 @@ TRACE_EVENT(ext4_da_writepages_result,
 		  (unsigned long) __entry->writeback_index)
 );
 
+<<<<<<< HEAD
 DECLARE_EVENT_CLASS(ext4__page_op,
 	TP_PROTO(struct page *page),
 
@@ -414,21 +734,42 @@ DECLARE_EVENT_CLASS(ext4__page_op,
 		__field(	pgoff_t, index			)
 		__field(	ino_t,	ino			)
 		__field(	dev_t,	dev			)
+=======
+DECLARE_EVENT_CLASS(ext4__folio_op,
+	TP_PROTO(struct inode *inode, struct folio *folio),
+
+	TP_ARGS(inode, folio),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	pgoff_t, index			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->index	= page->index;
 		__entry->ino	= page->mapping->host->i_ino;
 		__entry->dev	= page->mapping->host->i_sb->s_dev;
 	),
 
 	TP_printk("dev %d,%d ino %lu page_index %lu",
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->index	= folio->index;
+	),
+
+	TP_printk("dev %d,%d ino %lu folio_index %lu",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned long) __entry->index)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(ext4__page_op, ext4_writepage,
 
 	TP_PROTO(struct page *page),
@@ -474,6 +815,60 @@ TRACE_EVENT(ext4_invalidatepage,
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned long) __entry->index, __entry->offset)
+=======
+DEFINE_EVENT(ext4__folio_op, ext4_read_folio,
+
+	TP_PROTO(struct inode *inode, struct folio *folio),
+
+	TP_ARGS(inode, folio)
+);
+
+DEFINE_EVENT(ext4__folio_op, ext4_release_folio,
+
+	TP_PROTO(struct inode *inode, struct folio *folio),
+
+	TP_ARGS(inode, folio)
+);
+
+DECLARE_EVENT_CLASS(ext4_invalidate_folio_op,
+	TP_PROTO(struct folio *folio, size_t offset, size_t length),
+
+	TP_ARGS(folio, offset, length),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	pgoff_t, index			)
+		__field(	size_t, offset			)
+		__field(	size_t, length			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= folio->mapping->host->i_sb->s_dev;
+		__entry->ino	= folio->mapping->host->i_ino;
+		__entry->index	= folio->index;
+		__entry->offset	= offset;
+		__entry->length	= length;
+	),
+
+	TP_printk("dev %d,%d ino %lu folio_index %lu offset %zu length %zu",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  (unsigned long) __entry->index,
+		  __entry->offset, __entry->length)
+);
+
+DEFINE_EVENT(ext4_invalidate_folio_op, ext4_invalidate_folio,
+	TP_PROTO(struct folio *folio, size_t offset, size_t length),
+
+	TP_ARGS(folio, offset, length)
+);
+
+DEFINE_EVENT(ext4_invalidate_folio_op, ext4_journalled_invalidate_folio,
+	TP_PROTO(struct folio *folio, size_t offset, size_t length),
+
+	TP_ARGS(folio, offset, length)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_discard_blocks,
@@ -510,8 +905,13 @@ DECLARE_EVENT_CLASS(ext4__mb_new_pa,
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
 		__field(	__u64,	pa_pstart		)
+<<<<<<< HEAD
 		__field(	__u32,	pa_len			)
 		__field(	__u64,	pa_lstart		)
+=======
+		__field(	__u64,	pa_lstart		)
+		__field(	__u32,	pa_len			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	),
 
@@ -519,8 +919,13 @@ DECLARE_EVENT_CLASS(ext4__mb_new_pa,
 		__entry->dev		= ac->ac_sb->s_dev;
 		__entry->ino		= ac->ac_inode->i_ino;
 		__entry->pa_pstart	= pa->pa_pstart;
+<<<<<<< HEAD
 		__entry->pa_len		= pa->pa_len;
 		__entry->pa_lstart	= pa->pa_lstart;
+=======
+		__entry->pa_lstart	= pa->pa_lstart;
+		__entry->pa_len		= pa->pa_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu pstart %llu len %u lstart %llu",
@@ -596,6 +1001,7 @@ TRACE_EVENT(ext4_mb_release_group_pa,
 );
 
 TRACE_EVENT(ext4_discard_preallocations,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode),
 
 	TP_ARGS(inode),
@@ -603,17 +1009,36 @@ TRACE_EVENT(ext4_discard_preallocations,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+=======
+	TP_PROTO(struct inode *inode, unsigned int len),
+
+	TP_ARGS(inode, len),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	unsigned int,	len		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 	),
 
 	TP_printk("dev %d,%d ino %lu",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino)
+=======
+		__entry->len	= len;
+	),
+
+	TP_printk("dev %d,%d ino %lu len: %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_mb_discard_preallocations,
@@ -645,7 +1070,10 @@ TRACE_EVENT(ext4_request_blocks,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	unsigned int, flags		)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	unsigned int, len		)
 		__field(	__u32,  logical			)
 		__field(	__u32,	lleft			)
@@ -653,12 +1081,19 @@ TRACE_EVENT(ext4_request_blocks,
 		__field(	__u64,	goal			)
 		__field(	__u64,	pleft			)
 		__field(	__u64,	pright			)
+<<<<<<< HEAD
+=======
+		__field(	unsigned int, flags		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= ar->inode->i_sb->s_dev;
 		__entry->ino	= ar->inode->i_ino;
+<<<<<<< HEAD
 		__entry->flags	= ar->flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len	= ar->len;
 		__entry->logical = ar->logical;
 		__entry->goal	= ar->goal;
@@ -666,12 +1101,22 @@ TRACE_EVENT(ext4_request_blocks,
 		__entry->lright	= ar->lright;
 		__entry->pleft	= ar->pleft;
 		__entry->pright	= ar->pright;
+<<<<<<< HEAD
 	),
 
 	TP_printk("dev %d,%d ino %lu flags %u len %u lblk %u goal %llu "
 		  "lleft %u lright %u pleft %llu pright %llu ",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino, __entry->flags,
+=======
+		__entry->flags	= ar->flags;
+	),
+
+	TP_printk("dev %d,%d ino %lu flags %s len %u lblk %u goal %llu "
+		  "lleft %u lright %u pleft %llu pright %llu ",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, show_mballoc_flags(__entry->flags),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->len, __entry->logical, __entry->goal,
 		  __entry->lleft, __entry->lright, __entry->pleft,
 		  __entry->pright)
@@ -686,7 +1131,10 @@ TRACE_EVENT(ext4_allocate_blocks,
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
 		__field(	__u64,	block			)
+<<<<<<< HEAD
 		__field(	unsigned int, flags		)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	unsigned int, len		)
 		__field(	__u32,  logical			)
 		__field(	__u32,	lleft			)
@@ -694,13 +1142,20 @@ TRACE_EVENT(ext4_allocate_blocks,
 		__field(	__u64,	goal			)
 		__field(	__u64,	pleft			)
 		__field(	__u64,	pright			)
+<<<<<<< HEAD
+=======
+		__field(	unsigned int, flags		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= ar->inode->i_sb->s_dev;
 		__entry->ino	= ar->inode->i_ino;
 		__entry->block	= block;
+<<<<<<< HEAD
 		__entry->flags	= ar->flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len	= ar->len;
 		__entry->logical = ar->logical;
 		__entry->goal	= ar->goal;
@@ -708,12 +1163,22 @@ TRACE_EVENT(ext4_allocate_blocks,
 		__entry->lright	= ar->lright;
 		__entry->pleft	= ar->pleft;
 		__entry->pright	= ar->pright;
+<<<<<<< HEAD
 	),
 
 	TP_printk("dev %d,%d ino %lu flags %u len %u block %llu lblk %u "
 		  "goal %llu lleft %u lright %u pleft %llu pright %llu",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino, __entry->flags,
+=======
+		__entry->flags	= ar->flags;
+	),
+
+	TP_printk("dev %d,%d ino %lu flags %s len %u block %llu lblk %u "
+		  "goal %llu lleft %u lright %u pleft %llu pright %llu",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, show_mballoc_flags(__entry->flags),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->len, __entry->block, __entry->logical,
 		  __entry->goal,  __entry->lleft, __entry->lright,
 		  __entry->pleft, __entry->pright)
@@ -728,15 +1193,23 @@ TRACE_EVENT(ext4_free_blocks,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,	mode			)
 		__field(	__u64,	block			)
 		__field(	unsigned long,	count		)
 		__field(	int,	flags			)
+=======
+		__field(	__u64,	block			)
+		__field(	unsigned long,	count		)
+		__field(	int,	flags			)
+		__field(	__u16,	mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->ino		= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode		= inode->i_mode;
 		__entry->block		= block;
 		__entry->count		= count;
@@ -748,6 +1221,19 @@ TRACE_EVENT(ext4_free_blocks,
 		  (unsigned long) __entry->ino,
 		  __entry->mode, __entry->block, __entry->count,
 		  __entry->flags)
+=======
+		__entry->block		= block;
+		__entry->count		= count;
+		__entry->flags		= flags;
+		__entry->mode		= inode->i_mode;
+	),
+
+	TP_printk("dev %d,%d ino %lu mode 0%o block %llu count %lu flags %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->mode, __entry->block, __entry->count,
+		  show_free_flags(__entry->flags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_sync_file_enter,
@@ -765,10 +1251,17 @@ TRACE_EVENT(ext4_sync_file_enter,
 	TP_fast_assign(
 		struct dentry *dentry = file->f_path.dentry;
 
+<<<<<<< HEAD
 		__entry->dev		= dentry->d_inode->i_sb->s_dev;
 		__entry->ino		= dentry->d_inode->i_ino;
 		__entry->datasync	= datasync;
 		__entry->parent		= dentry->d_parent->d_inode->i_ino;
+=======
+		__entry->dev		= dentry->d_sb->s_dev;
+		__entry->ino		= d_inode(dentry)->i_ino;
+		__entry->datasync	= datasync;
+		__entry->parent		= d_inode(dentry->d_parent)->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu parent %lu datasync %d ",
@@ -783,6 +1276,7 @@ TRACE_EVENT(ext4_sync_file_exit,
 	TP_ARGS(inode, ret),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	int,	ret			)
 		__field(	ino_t,	ino			)
 		__field(	dev_t,	dev			)
@@ -792,6 +1286,17 @@ TRACE_EVENT(ext4_sync_file_exit,
 		__entry->ret		= ret;
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
+=======
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	int,	ret			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->ret		= ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu ret %d",
@@ -829,14 +1334,19 @@ TRACE_EVENT(ext4_alloc_da_blocks,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field( unsigned int,	data_blocks	)
 		__field( unsigned int,	meta_blocks	)
+=======
+		__field( unsigned int,	data_blocks		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
 		__entry->data_blocks = EXT4_I(inode)->i_reserved_data_blocks;
+<<<<<<< HEAD
 		__entry->meta_blocks = EXT4_I(inode)->i_reserved_meta_blocks;
 	),
 
@@ -844,6 +1354,14 @@ TRACE_EVENT(ext4_alloc_da_blocks,
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  __entry->data_blocks, __entry->meta_blocks)
+=======
+	),
+
+	TP_printk("dev %d,%d ino %lu reserved_data_blocks %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->data_blocks)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_mballoc_alloc,
@@ -854,12 +1372,15 @@ TRACE_EVENT(ext4_mballoc_alloc,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,	found			)
 		__field(	__u16,	groups			)
 		__field(	__u16,	buddy			)
 		__field(	__u16,	flags			)
 		__field(	__u16,	tail			)
 		__field(	__u8,	cr			)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	__u32, 	orig_logical		)
 		__field(	  int,	orig_start		)
 		__field(	__u32, 	orig_group		)
@@ -872,17 +1393,29 @@ TRACE_EVENT(ext4_mballoc_alloc,
 		__field(	  int,	result_start		)
 		__field(	__u32, 	result_group		)
 		__field(	  int,	result_len		)
+<<<<<<< HEAD
+=======
+		__field(	__u16,	found			)
+		__field(	__u16,	groups			)
+		__field(	__u16,	buddy			)
+		__field(	__u16,	flags			)
+		__field(	__u16,	tail			)
+		__field(	__u8,	cr			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= ac->ac_inode->i_sb->s_dev;
 		__entry->ino		= ac->ac_inode->i_ino;
+<<<<<<< HEAD
 		__entry->found		= ac->ac_found;
 		__entry->flags		= ac->ac_flags;
 		__entry->groups		= ac->ac_groups_scanned;
 		__entry->buddy		= ac->ac_buddy;
 		__entry->tail		= ac->ac_tail;
 		__entry->cr		= ac->ac_criteria;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->orig_logical	= ac->ac_o_ex.fe_logical;
 		__entry->orig_start	= ac->ac_o_ex.fe_start;
 		__entry->orig_group	= ac->ac_o_ex.fe_group;
@@ -895,10 +1428,23 @@ TRACE_EVENT(ext4_mballoc_alloc,
 		__entry->result_start	= ac->ac_f_ex.fe_start;
 		__entry->result_group	= ac->ac_f_ex.fe_group;
 		__entry->result_len	= ac->ac_f_ex.fe_len;
+<<<<<<< HEAD
 	),
 
 	TP_printk("dev %d,%d inode %lu orig %u/%d/%u@%u goal %u/%d/%u@%u "
 		  "result %u/%d/%u@%u blks %u grps %u cr %u flags 0x%04x "
+=======
+		__entry->found		= ac->ac_found;
+		__entry->flags		= ac->ac_flags;
+		__entry->groups		= ac->ac_groups_scanned;
+		__entry->buddy		= ac->ac_buddy;
+		__entry->tail		= ac->ac_tail;
+		__entry->cr		= ac->ac_criteria;
+	),
+
+	TP_printk("dev %d,%d inode %lu orig %u/%d/%u@%u goal %u/%d/%u@%u "
+		  "result %u/%d/%u@%u blks %u grps %u cr %s flags %s "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "tail %u broken %u",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
@@ -908,8 +1454,13 @@ TRACE_EVENT(ext4_mballoc_alloc,
 		  __entry->goal_len, __entry->goal_logical,
 		  __entry->result_group, __entry->result_start,
 		  __entry->result_len, __entry->result_logical,
+<<<<<<< HEAD
 		  __entry->found, __entry->groups, __entry->cr,
 		  __entry->flags, __entry->tail,
+=======
+		  __entry->found, __entry->groups, show_criteria(__entry->cr),
+		  show_mballoc_flags(__entry->flags), __entry->tail,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->buddy ? 1 << __entry->buddy : 0)
 );
 
@@ -1015,17 +1566,29 @@ TRACE_EVENT(ext4_forget,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,	mode			)
 		__field(	int,	is_metadata		)
 		__field(	__u64,	block			)
+=======
+		__field(	__u64,	block			)
+		__field(	int,	is_metadata		)
+		__field(	__u16,	mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode	= inode->i_mode;
 		__entry->is_metadata = is_metadata;
 		__entry->block	= block;
+=======
+		__entry->block	= block;
+		__entry->is_metadata = is_metadata;
+		__entry->mode	= inode->i_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu mode 0%o is_metadata %d block %llu",
@@ -1042,6 +1605,7 @@ TRACE_EVENT(ext4_da_update_reserve_space,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,	mode			)
 		__field(	__u64,	i_blocks		)
 		__field(	int,	used_blocks		)
@@ -1049,16 +1613,27 @@ TRACE_EVENT(ext4_da_update_reserve_space,
 		__field(	int,	reserved_meta_blocks	)
 		__field(	int,	allocated_meta_blocks	)
 		__field(	int,	quota_claim		)
+=======
+		__field(	__u64,	i_blocks		)
+		__field(	int,	used_blocks		)
+		__field(	int,	reserved_data_blocks	)
+		__field(	int,	quota_claim		)
+		__field(	__u16,	mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode	= inode->i_mode;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->i_blocks = inode->i_blocks;
 		__entry->used_blocks = used_blocks;
 		__entry->reserved_data_blocks =
 				EXT4_I(inode)->i_reserved_data_blocks;
+<<<<<<< HEAD
 		__entry->reserved_meta_blocks =
 				EXT4_I(inode)->i_reserved_meta_blocks;
 		__entry->allocated_meta_blocks =
@@ -1069,32 +1644,56 @@ TRACE_EVENT(ext4_da_update_reserve_space,
 	TP_printk("dev %d,%d ino %lu mode 0%o i_blocks %llu used_blocks %d "
 		  "reserved_data_blocks %d reserved_meta_blocks %d "
 		  "allocated_meta_blocks %d quota_claim %d",
+=======
+		__entry->quota_claim = quota_claim;
+		__entry->mode	= inode->i_mode;
+	),
+
+	TP_printk("dev %d,%d ino %lu mode 0%o i_blocks %llu used_blocks %d "
+		  "reserved_data_blocks %d quota_claim %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  __entry->mode, __entry->i_blocks,
 		  __entry->used_blocks, __entry->reserved_data_blocks,
+<<<<<<< HEAD
 		  __entry->reserved_meta_blocks, __entry->allocated_meta_blocks,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->quota_claim)
 );
 
 TRACE_EVENT(ext4_da_reserve_space,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, int md_needed),
 
 	TP_ARGS(inode, md_needed),
+=======
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,  mode			)
 		__field(	__u64,	i_blocks		)
 		__field(	int,	md_needed		)
 		__field(	int,	reserved_data_blocks	)
 		__field(	int,	reserved_meta_blocks	)
+=======
+		__field(	__u64,	i_blocks		)
+		__field(	int,	reserved_data_blocks	)
+		__field(	__u16,  mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode	= inode->i_mode;
 		__entry->i_blocks = inode->i_blocks;
 		__entry->md_needed = md_needed;
@@ -1109,6 +1708,19 @@ TRACE_EVENT(ext4_da_reserve_space,
 		  __entry->mode, __entry->i_blocks,
 		  __entry->md_needed, __entry->reserved_data_blocks,
 		  __entry->reserved_meta_blocks)
+=======
+		__entry->i_blocks = inode->i_blocks;
+		__entry->reserved_data_blocks = EXT4_I(inode)->i_reserved_data_blocks;
+		__entry->mode	= inode->i_mode;
+	),
+
+	TP_printk("dev %d,%d ino %lu mode 0%o i_blocks %llu "
+		  "reserved_data_blocks %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->mode, __entry->i_blocks,
+		  __entry->reserved_data_blocks)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_da_release_space,
@@ -1119,17 +1731,25 @@ TRACE_EVENT(ext4_da_release_space,
 	TP_STRUCT__entry(
 		__field(	dev_t,	dev			)
 		__field(	ino_t,	ino			)
+<<<<<<< HEAD
 		__field(	__u16,  mode			)
 		__field(	__u64,	i_blocks		)
 		__field(	int,	freed_blocks		)
 		__field(	int,	reserved_data_blocks	)
 		__field(	int,	reserved_meta_blocks	)
 		__field(	int,	allocated_meta_blocks	)
+=======
+		__field(	__u64,	i_blocks		)
+		__field(	int,	freed_blocks		)
+		__field(	int,	reserved_data_blocks	)
+		__field(	__u16,  mode			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
+<<<<<<< HEAD
 		__entry->mode	= inode->i_mode;
 		__entry->i_blocks = inode->i_blocks;
 		__entry->freed_blocks = freed_blocks;
@@ -1146,6 +1766,20 @@ TRACE_EVENT(ext4_da_release_space,
 		  __entry->mode, __entry->i_blocks,
 		  __entry->freed_blocks, __entry->reserved_data_blocks,
 		  __entry->reserved_meta_blocks, __entry->allocated_meta_blocks)
+=======
+		__entry->i_blocks = inode->i_blocks;
+		__entry->freed_blocks = freed_blocks;
+		__entry->reserved_data_blocks = EXT4_I(inode)->i_reserved_data_blocks;
+		__entry->mode	= inode->i_mode;
+	),
+
+	TP_printk("dev %d,%d ino %lu mode 0%o i_blocks %llu freed_blocks %d "
+		  "reserved_data_blocks %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->mode, __entry->i_blocks,
+		  __entry->freed_blocks, __entry->reserved_data_blocks)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(ext4__bitmap_load,
@@ -1183,6 +1817,7 @@ DEFINE_EVENT(ext4__bitmap_load, ext4_mb_buddy_bitmap_load,
 	TP_ARGS(sb, group)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(ext4__bitmap_load, ext4_read_block_bitmap_load,
 
 	TP_PROTO(struct super_block *sb, unsigned long group),
@@ -1190,6 +1825,8 @@ DEFINE_EVENT(ext4__bitmap_load, ext4_read_block_bitmap_load,
 	TP_ARGS(sb, group)
 );
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_EVENT(ext4__bitmap_load, ext4_load_inode_bitmap,
 
 	TP_PROTO(struct super_block *sb, unsigned long group),
@@ -1197,6 +1834,7 @@ DEFINE_EVENT(ext4__bitmap_load, ext4_load_inode_bitmap,
 	TP_ARGS(sb, group)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(ext4_direct_IO_enter,
 	TP_PROTO(struct inode *inode, loff_t offset, unsigned long len, int rw),
 
@@ -1256,30 +1894,98 @@ TRACE_EVENT(ext4_direct_IO_exit,
 );
 
 TRACE_EVENT(ext4_fallocate_enter,
+=======
+TRACE_EVENT(ext4_read_block_bitmap_load,
+	TP_PROTO(struct super_block *sb, unsigned long group, bool prefetch),
+
+	TP_ARGS(sb, group, prefetch),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	__u32,	group			)
+		__field(	bool,	prefetch		)
+
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->group	= group;
+		__entry->prefetch = prefetch;
+	),
+
+	TP_printk("dev %d,%d group %u prefetch %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->group, __entry->prefetch)
+);
+
+DECLARE_EVENT_CLASS(ext4__fallocate_mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct inode *inode, loff_t offset, loff_t len, int mode),
 
 	TP_ARGS(inode, offset, len, mode),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,	ino			)
 		__field(	dev_t,	dev			)
 		__field(	loff_t,	pos			)
 		__field(	loff_t,	len			)
+=======
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	loff_t,	offset			)
+		__field(	loff_t, len			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,	mode			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino	= inode->i_ino;
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->pos	= offset;
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->offset	= offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len	= len;
 		__entry->mode	= mode;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dev %d,%d ino %lu pos %lld len %lld mode %d",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino, __entry->pos,
 		  __entry->len, __entry->mode)
+=======
+	TP_printk("dev %d,%d ino %lu offset %lld len %lld mode %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->offset, __entry->len,
+		  show_falloc_mode(__entry->mode))
+);
+
+DEFINE_EVENT(ext4__fallocate_mode, ext4_fallocate_enter,
+
+	TP_PROTO(struct inode *inode, loff_t offset, loff_t len, int mode),
+
+	TP_ARGS(inode, offset, len, mode)
+);
+
+DEFINE_EVENT(ext4__fallocate_mode, ext4_punch_hole,
+
+	TP_PROTO(struct inode *inode, loff_t offset, loff_t len, int mode),
+
+	TP_ARGS(inode, offset, len, mode)
+);
+
+DEFINE_EVENT(ext4__fallocate_mode, ext4_zero_range,
+
+	TP_PROTO(struct inode *inode, loff_t offset, loff_t len, int mode),
+
+	TP_ARGS(inode, offset, len, mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_fallocate_exit,
@@ -1289,16 +1995,26 @@ TRACE_EVENT(ext4_fallocate_exit,
 	TP_ARGS(inode, offset, max_blocks, ret),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,	ino			)
 		__field(	dev_t,	dev			)
+=======
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	loff_t,	pos			)
 		__field(	unsigned int,	blocks		)
 		__field(	int, 	ret			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino	= inode->i_ino;
 		__entry->dev	= inode->i_sb->s_dev;
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->pos	= offset;
 		__entry->blocks	= max_blocks;
 		__entry->ret	= ret;
@@ -1317,6 +2033,7 @@ TRACE_EVENT(ext4_unlink_enter,
 	TP_ARGS(parent, dentry),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,	parent			)
 		__field(	ino_t,	ino			)
 		__field(	loff_t,	size			)
@@ -1328,6 +2045,19 @@ TRACE_EVENT(ext4_unlink_enter,
 		__entry->ino		= dentry->d_inode->i_ino;
 		__entry->size		= dentry->d_inode->i_size;
 		__entry->dev		= dentry->d_inode->i_sb->s_dev;
+=======
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	ino_t,	parent			)
+		__field(	loff_t,	size			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= dentry->d_sb->s_dev;
+		__entry->ino		= d_inode(dentry)->i_ino;
+		__entry->parent		= parent->i_ino;
+		__entry->size		= d_inode(dentry)->i_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu size %lld parent %lu",
@@ -1342,14 +2072,24 @@ TRACE_EVENT(ext4_unlink_exit,
 	TP_ARGS(dentry, ret),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,	ino			)
 		__field(	dev_t,	dev			)
+=======
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,	ret			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino		= dentry->d_inode->i_ino;
 		__entry->dev		= dentry->d_inode->i_sb->s_dev;
+=======
+		__entry->dev		= dentry->d_sb->s_dev;
+		__entry->ino		= d_inode(dentry)->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ret		= ret;
 	),
 
@@ -1365,14 +2105,24 @@ DECLARE_EVENT_CLASS(ext4__truncate,
 	TP_ARGS(inode),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,  	ino		)
 		__field(	dev_t,  	dev		)
+=======
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	__u64,		blocks		)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino    = inode->i_ino;
 		__entry->dev    = inode->i_sb->s_dev;
+=======
+		__entry->dev    = inode->i_sb->s_dev;
+		__entry->ino    = inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->blocks	= inode->i_blocks;
 	),
 
@@ -1395,7 +2145,11 @@ DEFINE_EVENT(ext4__truncate, ext4_truncate_exit,
 	TP_ARGS(inode)
 );
 
+<<<<<<< HEAD
 /* 'ux' is the uninitialized extent. */
+=======
+/* 'ux' is the unwritten extent. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map,
 		 struct ext4_extent *ux),
@@ -1403,8 +2157,13 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 	TP_ARGS(inode, map, ux),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
+=======
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	ext4_lblk_t,	m_lblk	)
 		__field(	unsigned,	m_len	)
 		__field(	ext4_lblk_t,	u_lblk	)
@@ -1413,8 +2172,13 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
+=======
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->m_lblk		= map->m_lblk;
 		__entry->m_len		= map->m_len;
 		__entry->u_lblk		= le32_to_cpu(ux->ee_block);
@@ -1431,7 +2195,11 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 );
 
 /*
+<<<<<<< HEAD
  * 'ux' is the uninitialized extent.
+=======
+ * 'ux' is the unwritten extent.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 'ix' is the initialized extent to which blocks are transferred.
  */
 TRACE_EVENT(ext4_ext_convert_to_initialized_fastpath,
@@ -1441,8 +2209,13 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_fastpath,
 	TP_ARGS(inode, map, ux, ix),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
+=======
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	ext4_lblk_t,	m_lblk	)
 		__field(	unsigned,	m_len	)
 		__field(	ext4_lblk_t,	u_lblk	)
@@ -1454,8 +2227,13 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_fastpath,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
+=======
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->m_lblk		= map->m_lblk;
 		__entry->m_len		= map->m_len;
 		__entry->u_lblk		= le32_to_cpu(ux->ee_block);
@@ -1483,25 +2261,42 @@ DECLARE_EVENT_CLASS(ext4__map_blocks_enter,
 	TP_ARGS(inode, lblk, len, flags),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,  	ino		)
 		__field(	dev_t,  	dev		)
+=======
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	ext4_lblk_t,	lblk		)
 		__field(	unsigned int,	len		)
 		__field(	unsigned int,	flags		)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino    = inode->i_ino;
 		__entry->dev    = inode->i_sb->s_dev;
+=======
+		__entry->dev    = inode->i_sb->s_dev;
+		__entry->ino    = inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->lblk	= lblk;
 		__entry->len	= len;
 		__entry->flags	= flags;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dev %d,%d ino %lu lblk %u len %u flags %u",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  __entry->lblk, __entry->len, __entry->flags)
+=======
+	TP_printk("dev %d,%d ino %lu lblk %u len %u flags %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->lblk, __entry->len, show_map_flags(__entry->flags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(ext4__map_blocks_enter, ext4_ext_map_blocks_enter,
@@ -1519,6 +2314,7 @@ DEFINE_EVENT(ext4__map_blocks_enter, ext4_ind_map_blocks_enter,
 );
 
 DECLARE_EVENT_CLASS(ext4__map_blocks_exit,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, ext4_lblk_t lblk,
 		 ext4_fsblk_t pblk, unsigned int len, int ret),
 
@@ -1530,10 +2326,26 @@ DECLARE_EVENT_CLASS(ext4__map_blocks_exit,
 		__field(	ext4_lblk_t,	lblk		)
 		__field(	ext4_fsblk_t,	pblk		)
 		__field(	unsigned int,	len		)
+=======
+	TP_PROTO(struct inode *inode, unsigned flags, struct ext4_map_blocks *map,
+		 int ret),
+
+	TP_ARGS(inode, flags, map, ret),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	unsigned int,	flags		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	unsigned int,	len		)
+		__field(	unsigned int,	mflags		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,		ret		)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino    = inode->i_ino;
 		__entry->dev    = inode->i_sb->s_dev;
 		__entry->lblk	= lblk;
@@ -1561,6 +2373,38 @@ DEFINE_EVENT(ext4__map_blocks_exit, ext4_ind_map_blocks_exit,
 		 ext4_fsblk_t pblk, unsigned len, int ret),
 
 	TP_ARGS(inode, lblk, pblk, len, ret)
+=======
+		__entry->dev    = inode->i_sb->s_dev;
+		__entry->ino    = inode->i_ino;
+		__entry->flags	= flags;
+		__entry->pblk	= map->m_pblk;
+		__entry->lblk	= map->m_lblk;
+		__entry->len	= map->m_len;
+		__entry->mflags	= map->m_flags;
+		__entry->ret	= ret;
+	),
+
+	TP_printk("dev %d,%d ino %lu flags %s lblk %u pblk %llu len %u "
+		  "mflags %s ret %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  show_map_flags(__entry->flags), __entry->lblk, __entry->pblk,
+		  __entry->len, show_mflags(__entry->mflags), __entry->ret)
+);
+
+DEFINE_EVENT(ext4__map_blocks_exit, ext4_ext_map_blocks_exit,
+	TP_PROTO(struct inode *inode, unsigned flags,
+		 struct ext4_map_blocks *map, int ret),
+
+	TP_ARGS(inode, flags, map, ret)
+);
+
+DEFINE_EVENT(ext4__map_blocks_exit, ext4_ind_map_blocks_exit,
+	TP_PROTO(struct inode *inode, unsigned flags,
+		 struct ext4_map_blocks *map, int ret),
+
+	TP_ARGS(inode, flags, map, ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_ext_load_extent,
@@ -1569,6 +2413,7 @@ TRACE_EVENT(ext4_ext_load_extent,
 	TP_ARGS(inode, lblk, pblk),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,		ino		)
 		__field(	dev_t,		dev		)
 		__field(	ext4_lblk_t,	lblk		)
@@ -1580,6 +2425,19 @@ TRACE_EVENT(ext4_ext_load_extent,
 		__entry->dev    = inode->i_sb->s_dev;
 		__entry->lblk	= lblk;
 		__entry->pblk	= pblk;
+=======
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	ext4_lblk_t,	lblk		)
+	),
+
+	TP_fast_assign(
+		__entry->dev    = inode->i_sb->s_dev;
+		__entry->ino    = inode->i_ino;
+		__entry->pblk	= pblk;
+		__entry->lblk	= lblk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %lu lblk %u pblk %llu",
@@ -1589,6 +2447,7 @@ TRACE_EVENT(ext4_ext_load_extent,
 );
 
 TRACE_EVENT(ext4_load_inode,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode),
 
 	TP_ARGS(inode),
@@ -1601,6 +2460,20 @@ TRACE_EVENT(ext4_load_inode,
 	TP_fast_assign(
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
+=======
+	TP_PROTO(struct super_block *sb, unsigned long ino),
+
+	TP_ARGS(sb, ino),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev		)
+		__field(	ino_t,	ino		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= sb->s_dev;
+		__entry->ino		= ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev %d,%d ino %ld",
@@ -1608,6 +2481,7 @@ TRACE_EVENT(ext4_load_inode,
 		  (unsigned long) __entry->ino)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(ext4_journal_start,
 	TP_PROTO(struct super_block *sb, int nblocks, unsigned long IP),
 
@@ -1628,6 +2502,91 @@ TRACE_EVENT(ext4_journal_start,
 	TP_printk("dev %d,%d nblocks %d caller %pF",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->nblocks, (void *)__entry->ip)
+=======
+TRACE_EVENT(ext4_journal_start_sb,
+	TP_PROTO(struct super_block *sb, int blocks, int rsv_blocks,
+		 int revoke_creds, int type, unsigned long IP),
+
+	TP_ARGS(sb, blocks, rsv_blocks, revoke_creds, type, IP),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	unsigned long,	ip		)
+		__field(	int,		blocks		)
+		__field(	int,		rsv_blocks	)
+		__field(	int,		revoke_creds	)
+		__field(	int,		type		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		 = sb->s_dev;
+		__entry->ip		 = IP;
+		__entry->blocks		 = blocks;
+		__entry->rsv_blocks	 = rsv_blocks;
+		__entry->revoke_creds	 = revoke_creds;
+		__entry->type		 = type;
+	),
+
+	TP_printk("dev %d,%d blocks %d, rsv_blocks %d, revoke_creds %d,"
+		  " type %d, caller %pS", MAJOR(__entry->dev),
+		  MINOR(__entry->dev), __entry->blocks, __entry->rsv_blocks,
+		  __entry->revoke_creds, __entry->type, (void *)__entry->ip)
+);
+
+TRACE_EVENT(ext4_journal_start_inode,
+	TP_PROTO(struct inode *inode, int blocks, int rsv_blocks,
+		 int revoke_creds, int type, unsigned long IP),
+
+	TP_ARGS(inode, blocks, rsv_blocks, revoke_creds, type, IP),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	ino		)
+		__field(	dev_t,		dev		)
+		__field(	unsigned long,	ip		)
+		__field(	int,		blocks		)
+		__field(	int,		rsv_blocks	)
+		__field(	int,		revoke_creds	)
+		__field(	int,		type		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		 = inode->i_sb->s_dev;
+		__entry->ip		 = IP;
+		__entry->blocks		 = blocks;
+		__entry->rsv_blocks	 = rsv_blocks;
+		__entry->revoke_creds	 = revoke_creds;
+		__entry->type		 = type;
+		__entry->ino		 = inode->i_ino;
+	),
+
+	TP_printk("dev %d,%d blocks %d, rsv_blocks %d, revoke_creds %d,"
+		  " type %d, ino %lu, caller %pS", MAJOR(__entry->dev),
+		  MINOR(__entry->dev), __entry->blocks, __entry->rsv_blocks,
+		  __entry->revoke_creds, __entry->type, __entry->ino,
+		  (void *)__entry->ip)
+);
+
+TRACE_EVENT(ext4_journal_start_reserved,
+	TP_PROTO(struct super_block *sb, int blocks, unsigned long IP),
+
+	TP_ARGS(sb, blocks, IP),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(unsigned long,	ip			)
+		__field(	  int,	blocks			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		 = sb->s_dev;
+		__entry->ip		 = IP;
+		__entry->blocks		 = blocks;
+	),
+
+	TP_printk("dev %d,%d blocks, %d caller %pS",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->blocks, (void *)__entry->ip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(ext4__trim,
@@ -1679,6 +2638,7 @@ DEFINE_EVENT(ext4__trim, ext4_trim_all_free,
 	TP_ARGS(sb, group, start, len)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(ext4_ext_handle_uninitialized_extents,
 	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map,
 		 unsigned int allocated, ext4_fsblk_t newblock),
@@ -1692,27 +2652,59 @@ TRACE_EVENT(ext4_ext_handle_uninitialized_extents,
 		__field(	ext4_fsblk_t,	pblk		)
 		__field(	unsigned int,	len		)
 		__field(	int,		flags		)
+=======
+TRACE_EVENT(ext4_ext_handle_unwritten_extents,
+	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map, int flags,
+		 unsigned int allocated, ext4_fsblk_t newblock),
+
+	TP_ARGS(inode, map, flags, allocated, newblock),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	int,		flags		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	unsigned int,	len		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	unsigned int,	allocated	)
 		__field(	ext4_fsblk_t,	newblk		)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->lblk		= map->m_lblk;
 		__entry->pblk		= map->m_pblk;
 		__entry->len		= map->m_len;
 		__entry->flags		= map->m_flags;
+=======
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->flags		= flags;
+		__entry->lblk		= map->m_lblk;
+		__entry->pblk		= map->m_pblk;
+		__entry->len		= map->m_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->allocated	= allocated;
 		__entry->newblk		= newblock;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dev %d,%d ino %lu m_lblk %u m_pblk %llu m_len %u flags %d"
+=======
+	TP_printk("dev %d,%d ino %lu m_lblk %u m_pblk %llu m_len %u flags %s "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "allocated %d newblock %llu",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->lblk, (unsigned long long) __entry->pblk,
+<<<<<<< HEAD
 		  __entry->len, __entry->flags,
+=======
+		  __entry->len, show_map_flags(__entry->flags),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  (unsigned int) __entry->allocated,
 		  (unsigned long long) __entry->newblk)
 );
@@ -1724,15 +2716,23 @@ TRACE_EVENT(ext4_get_implied_cluster_alloc_exit,
 
 	TP_STRUCT__entry(
 		__field(	dev_t,		dev	)
+<<<<<<< HEAD
 		__field(	ext4_lblk_t,	lblk	)
 		__field(	ext4_fsblk_t,	pblk	)
 		__field(	unsigned int,	len	)
 		__field(	unsigned int,	flags	)
+=======
+		__field(	unsigned int,	flags	)
+		__field(	ext4_lblk_t,	lblk	)
+		__field(	ext4_fsblk_t,	pblk	)
+		__field(	unsigned int,	len	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,		ret	)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= sb->s_dev;
+<<<<<<< HEAD
 		__entry->lblk	= map->m_lblk;
 		__entry->pblk	= map->m_pblk;
 		__entry->len	= map->m_len;
@@ -1862,6 +2862,19 @@ TRACE_EVENT(ext4_get_reserved_cluster_alloc,
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->lblk,
 		  __entry->len)
+=======
+		__entry->flags	= map->m_flags;
+		__entry->lblk	= map->m_lblk;
+		__entry->pblk	= map->m_pblk;
+		__entry->len	= map->m_len;
+		__entry->ret	= ret;
+	),
+
+	TP_printk("dev %d,%d m_lblk %u m_pblk %llu m_len %u m_flags %s ret %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->lblk, (unsigned long long) __entry->pblk,
+		  __entry->len, show_mflags(__entry->flags), __entry->ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_ext_show_extent,
@@ -1871,18 +2884,32 @@ TRACE_EVENT(ext4_ext_show_extent,
 	TP_ARGS(inode, lblk, pblk, len),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
 		__field(	ext4_lblk_t,	lblk	)
 		__field(	ext4_fsblk_t,	pblk	)
+=======
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+		__field(	ext4_fsblk_t,	pblk	)
+		__field(	ext4_lblk_t,	lblk	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	unsigned short,	len	)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino	= inode->i_ino;
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->lblk	= lblk;
 		__entry->pblk	= pblk;
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->pblk	= pblk;
+		__entry->lblk	= lblk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len	= len;
 	),
 
@@ -1895,6 +2922,7 @@ TRACE_EVENT(ext4_ext_show_extent,
 );
 
 TRACE_EVENT(ext4_remove_blocks,
+<<<<<<< HEAD
 	    TP_PROTO(struct inode *inode, struct ext4_extent *ex,
 		ext4_lblk_t from, ext4_fsblk_t to,
 		ext4_fsblk_t partial_cluster),
@@ -1925,6 +2953,42 @@ TRACE_EVENT(ext4_remove_blocks,
 
 	TP_printk("dev %d,%d ino %lu extent [%u(%llu), %u]"
 		  "from %u to %u partial_cluster %u",
+=======
+	TP_PROTO(struct inode *inode, struct ext4_extent *ex,
+		 ext4_lblk_t from, ext4_fsblk_t to,
+		 struct partial_cluster *pc),
+
+	TP_ARGS(inode, ex, from, to, pc),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+		__field(	ext4_lblk_t,	from	)
+		__field(	ext4_lblk_t,	to	)
+		__field(	ext4_fsblk_t,	ee_pblk	)
+		__field(	ext4_lblk_t,	ee_lblk	)
+		__field(	unsigned short,	ee_len	)
+		__field(	ext4_fsblk_t,	pc_pclu	)
+		__field(	ext4_lblk_t,	pc_lblk	)
+		__field(	int,		pc_state)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->from		= from;
+		__entry->to		= to;
+		__entry->ee_pblk	= ext4_ext_pblock(ex);
+		__entry->ee_lblk	= le32_to_cpu(ex->ee_block);
+		__entry->ee_len		= ext4_ext_get_actual_len(ex);
+		__entry->pc_pclu	= pc->pclu;
+		__entry->pc_lblk	= pc->lblk;
+		__entry->pc_state	= pc->state;
+	),
+
+	TP_printk("dev %d,%d ino %lu extent [%u(%llu), %u]"
+		  "from %u to %u partial [pclu %lld lblk %u state %d]",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->ee_lblk,
@@ -1932,11 +2996,18 @@ TRACE_EVENT(ext4_remove_blocks,
 		  (unsigned short) __entry->ee_len,
 		  (unsigned) __entry->from,
 		  (unsigned) __entry->to,
+<<<<<<< HEAD
 		  (unsigned) __entry->partial)
+=======
+		  (long long) __entry->pc_pclu,
+		  (unsigned int) __entry->pc_lblk,
+		  (int) __entry->pc_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_ext_rm_leaf,
 	TP_PROTO(struct inode *inode, ext4_lblk_t start,
+<<<<<<< HEAD
 		 struct ext4_extent *ex, ext4_fsblk_t partial_cluster),
 
 	TP_ARGS(inode, start, ex, partial_cluster),
@@ -1944,32 +3015,69 @@ TRACE_EVENT(ext4_ext_rm_leaf,
 	TP_STRUCT__entry(
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
+=======
+		 struct ext4_extent *ex,
+		 struct partial_cluster *pc),
+
+	TP_ARGS(inode, start, ex, pc),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	ext4_lblk_t,	start	)
 		__field(	ext4_lblk_t,	ee_lblk	)
 		__field(	ext4_fsblk_t,	ee_pblk	)
 		__field(	short,		ee_len	)
+<<<<<<< HEAD
 		__field(	ext4_fsblk_t,	partial	)
 	),
 
 	TP_fast_assign(
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
+=======
+		__field(	ext4_fsblk_t,	pc_pclu	)
+		__field(	ext4_lblk_t,	pc_lblk	)
+		__field(	int,		pc_state)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->start		= start;
 		__entry->ee_lblk	= le32_to_cpu(ex->ee_block);
 		__entry->ee_pblk	= ext4_ext_pblock(ex);
 		__entry->ee_len		= ext4_ext_get_actual_len(ex);
+<<<<<<< HEAD
 		__entry->partial	= partial_cluster;
 	),
 
 	TP_printk("dev %d,%d ino %lu start_lblk %u last_extent [%u(%llu), %u]"
 		  "partial_cluster %u",
+=======
+		__entry->pc_pclu	= pc->pclu;
+		__entry->pc_lblk	= pc->lblk;
+		__entry->pc_state	= pc->state;
+	),
+
+	TP_printk("dev %d,%d ino %lu start_lblk %u last_extent [%u(%llu), %u]"
+		  "partial [pclu %lld lblk %u state %d]",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->start,
 		  (unsigned) __entry->ee_lblk,
 		  (unsigned long long) __entry->ee_pblk,
 		  (unsigned short) __entry->ee_len,
+<<<<<<< HEAD
 		  (unsigned) __entry->partial)
+=======
+		  (long long) __entry->pc_pclu,
+		  (unsigned int) __entry->pc_lblk,
+		  (int) __entry->pc_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(ext4_ext_rm_idx,
@@ -1978,14 +3086,24 @@ TRACE_EVENT(ext4_ext_rm_idx,
 	TP_ARGS(inode, pblk),
 
 	TP_STRUCT__entry(
+<<<<<<< HEAD
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
+=======
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	ext4_fsblk_t,	pblk	)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino	= inode->i_ino;
 		__entry->dev	= inode->i_sb->s_dev;
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->pblk	= pblk;
 	),
 
@@ -1996,6 +3114,7 @@ TRACE_EVENT(ext4_ext_rm_idx,
 );
 
 TRACE_EVENT(ext4_ext_remove_space,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, ext4_lblk_t start, int depth),
 
 	TP_ARGS(inode, start, depth),
@@ -2004,10 +3123,23 @@ TRACE_EVENT(ext4_ext_remove_space,
 		__field(	ino_t,		ino	)
 		__field(	dev_t,		dev	)
 		__field(	ext4_lblk_t,	start	)
+=======
+	TP_PROTO(struct inode *inode, ext4_lblk_t start,
+		 ext4_lblk_t end, int depth),
+
+	TP_ARGS(inode, start, end, depth),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev	)
+		__field(	ino_t,		ino	)
+		__field(	ext4_lblk_t,	start	)
+		__field(	ext4_lblk_t,	end	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	int,		depth	)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino	= inode->i_ino;
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->start	= start;
@@ -2018,10 +3150,25 @@ TRACE_EVENT(ext4_ext_remove_space,
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->start,
+=======
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->start	= start;
+		__entry->end	= end;
+		__entry->depth	= depth;
+	),
+
+	TP_printk("dev %d,%d ino %lu since %u end %u depth %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  (unsigned) __entry->start,
+		  (unsigned) __entry->end,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->depth)
 );
 
 TRACE_EVENT(ext4_ext_remove_space_done,
+<<<<<<< HEAD
 	TP_PROTO(struct inode *inode, ext4_lblk_t start, int depth,
 		ext4_lblk_t partial, unsigned short eh_entries),
 
@@ -2033,10 +3180,27 @@ TRACE_EVENT(ext4_ext_remove_space_done,
 		__field(	ext4_lblk_t,	start		)
 		__field(	int,		depth		)
 		__field(	ext4_lblk_t,	partial		)
+=======
+	TP_PROTO(struct inode *inode, ext4_lblk_t start, ext4_lblk_t end,
+		 int depth, struct partial_cluster *pc, __le16 eh_entries),
+
+	TP_ARGS(inode, start, end, depth, pc, eh_entries),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	start		)
+		__field(	ext4_lblk_t,	end		)
+		__field(	int,		depth		)
+		__field(	ext4_fsblk_t,	pc_pclu		)
+		__field(	ext4_lblk_t,	pc_lblk		)
+		__field(	int,		pc_state	)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	unsigned short,	eh_entries	)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->ino		= inode->i_ino;
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->start		= start;
@@ -2046,15 +3210,849 @@ TRACE_EVENT(ext4_ext_remove_space_done,
 	),
 
 	TP_printk("dev %d,%d ino %lu since %u depth %d partial %u "
+=======
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->start		= start;
+		__entry->end		= end;
+		__entry->depth		= depth;
+		__entry->pc_pclu	= pc->pclu;
+		__entry->pc_lblk	= pc->lblk;
+		__entry->pc_state	= pc->state;
+		__entry->eh_entries	= le16_to_cpu(eh_entries);
+	),
+
+	TP_printk("dev %d,%d ino %lu since %u end %u depth %d "
+		  "partial [pclu %lld lblk %u state %d] "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "remaining_entries %u",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long) __entry->ino,
 		  (unsigned) __entry->start,
+<<<<<<< HEAD
 		  __entry->depth,
 		  (unsigned) __entry->partial,
 		  (unsigned short) __entry->eh_entries)
 );
 
+=======
+		  (unsigned) __entry->end,
+		  __entry->depth,
+		  (long long) __entry->pc_pclu,
+		  (unsigned int) __entry->pc_lblk,
+		  (int) __entry->pc_state,
+		  (unsigned short) __entry->eh_entries)
+);
+
+DECLARE_EVENT_CLASS(ext4__es_extent,
+	TP_PROTO(struct inode *inode, struct extent_status *es),
+
+	TP_ARGS(inode, es),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	ext4_lblk_t,	len		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	char, status	)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= es->es_lblk;
+		__entry->len	= es->es_len;
+		__entry->pblk	= ext4_es_show_pblock(es);
+		__entry->status	= ext4_es_status(es);
+	),
+
+	TP_printk("dev %d,%d ino %lu es [%u/%u) mapped %llu status %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->lblk, __entry->len,
+		  __entry->pblk, show_extent_status(__entry->status))
+);
+
+DEFINE_EVENT(ext4__es_extent, ext4_es_insert_extent,
+	TP_PROTO(struct inode *inode, struct extent_status *es),
+
+	TP_ARGS(inode, es)
+);
+
+DEFINE_EVENT(ext4__es_extent, ext4_es_cache_extent,
+	TP_PROTO(struct inode *inode, struct extent_status *es),
+
+	TP_ARGS(inode, es)
+);
+
+TRACE_EVENT(ext4_es_remove_extent,
+	TP_PROTO(struct inode *inode, ext4_lblk_t lblk, ext4_lblk_t len),
+
+	TP_ARGS(inode, lblk, len),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	ino_t,	ino			)
+		__field(	loff_t,	lblk			)
+		__field(	loff_t,	len			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= lblk;
+		__entry->len	= len;
+	),
+
+	TP_printk("dev %d,%d ino %lu es [%lld/%lld)",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->lblk, __entry->len)
+);
+
+TRACE_EVENT(ext4_es_find_extent_range_enter,
+	TP_PROTO(struct inode *inode, ext4_lblk_t lblk),
+
+	TP_ARGS(inode, lblk),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= lblk;
+	),
+
+	TP_printk("dev %d,%d ino %lu lblk %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->lblk)
+);
+
+TRACE_EVENT(ext4_es_find_extent_range_exit,
+	TP_PROTO(struct inode *inode, struct extent_status *es),
+
+	TP_ARGS(inode, es),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	ext4_lblk_t,	len		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	char, status	)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= es->es_lblk;
+		__entry->len	= es->es_len;
+		__entry->pblk	= ext4_es_show_pblock(es);
+		__entry->status	= ext4_es_status(es);
+	),
+
+	TP_printk("dev %d,%d ino %lu es [%u/%u) mapped %llu status %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->lblk, __entry->len,
+		  __entry->pblk, show_extent_status(__entry->status))
+);
+
+TRACE_EVENT(ext4_es_lookup_extent_enter,
+	TP_PROTO(struct inode *inode, ext4_lblk_t lblk),
+
+	TP_ARGS(inode, lblk),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= lblk;
+	),
+
+	TP_printk("dev %d,%d ino %lu lblk %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->lblk)
+);
+
+TRACE_EVENT(ext4_es_lookup_extent_exit,
+	TP_PROTO(struct inode *inode, struct extent_status *es,
+		 int found),
+
+	TP_ARGS(inode, es, found),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	ext4_lblk_t,	len		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	char,		status		)
+		__field(	int,		found		)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->lblk	= es->es_lblk;
+		__entry->len	= es->es_len;
+		__entry->pblk	= ext4_es_show_pblock(es);
+		__entry->status	= ext4_es_status(es);
+		__entry->found	= found;
+	),
+
+	TP_printk("dev %d,%d ino %lu found %d [%u/%u) %llu %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino, __entry->found,
+		  __entry->lblk, __entry->len,
+		  __entry->found ? __entry->pblk : 0,
+		  show_extent_status(__entry->found ? __entry->status : 0))
+);
+
+DECLARE_EVENT_CLASS(ext4__es_shrink_enter,
+	TP_PROTO(struct super_block *sb, int nr_to_scan, int cache_cnt),
+
+	TP_ARGS(sb, nr_to_scan, cache_cnt),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	int,	nr_to_scan		)
+		__field(	int,	cache_cnt		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= sb->s_dev;
+		__entry->nr_to_scan	= nr_to_scan;
+		__entry->cache_cnt	= cache_cnt;
+	),
+
+	TP_printk("dev %d,%d nr_to_scan %d cache_cnt %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->nr_to_scan, __entry->cache_cnt)
+);
+
+DEFINE_EVENT(ext4__es_shrink_enter, ext4_es_shrink_count,
+	TP_PROTO(struct super_block *sb, int nr_to_scan, int cache_cnt),
+
+	TP_ARGS(sb, nr_to_scan, cache_cnt)
+);
+
+DEFINE_EVENT(ext4__es_shrink_enter, ext4_es_shrink_scan_enter,
+	TP_PROTO(struct super_block *sb, int nr_to_scan, int cache_cnt),
+
+	TP_ARGS(sb, nr_to_scan, cache_cnt)
+);
+
+TRACE_EVENT(ext4_es_shrink_scan_exit,
+	TP_PROTO(struct super_block *sb, int nr_shrunk, int cache_cnt),
+
+	TP_ARGS(sb, nr_shrunk, cache_cnt),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	int,	nr_shrunk		)
+		__field(	int,	cache_cnt		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= sb->s_dev;
+		__entry->nr_shrunk	= nr_shrunk;
+		__entry->cache_cnt	= cache_cnt;
+	),
+
+	TP_printk("dev %d,%d nr_shrunk %d cache_cnt %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->nr_shrunk, __entry->cache_cnt)
+);
+
+TRACE_EVENT(ext4_collapse_range,
+	TP_PROTO(struct inode *inode, loff_t offset, loff_t len),
+
+	TP_ARGS(inode, offset, len),
+
+	TP_STRUCT__entry(
+		__field(dev_t,	dev)
+		__field(ino_t,	ino)
+		__field(loff_t,	offset)
+		__field(loff_t, len)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->offset	= offset;
+		__entry->len	= len;
+	),
+
+	TP_printk("dev %d,%d ino %lu offset %lld len %lld",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->offset, __entry->len)
+);
+
+TRACE_EVENT(ext4_insert_range,
+	TP_PROTO(struct inode *inode, loff_t offset, loff_t len),
+
+	TP_ARGS(inode, offset, len),
+
+	TP_STRUCT__entry(
+		__field(dev_t,	dev)
+		__field(ino_t,	ino)
+		__field(loff_t,	offset)
+		__field(loff_t, len)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->offset	= offset;
+		__entry->len	= len;
+	),
+
+	TP_printk("dev %d,%d ino %lu offset %lld len %lld",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->offset, __entry->len)
+);
+
+TRACE_EVENT(ext4_es_shrink,
+	TP_PROTO(struct super_block *sb, int nr_shrunk, u64 scan_time,
+		 int nr_skipped, int retried),
+
+	TP_ARGS(sb, nr_shrunk, scan_time, nr_skipped, retried),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	int,		nr_shrunk	)
+		__field(	unsigned long long, scan_time	)
+		__field(	int,		nr_skipped	)
+		__field(	int,		retried		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= sb->s_dev;
+		__entry->nr_shrunk	= nr_shrunk;
+		__entry->scan_time	= div_u64(scan_time, 1000);
+		__entry->nr_skipped	= nr_skipped;
+		__entry->retried	= retried;
+	),
+
+	TP_printk("dev %d,%d nr_shrunk %d, scan_time %llu "
+		  "nr_skipped %d retried %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->nr_shrunk,
+		  __entry->scan_time, __entry->nr_skipped, __entry->retried)
+);
+
+TRACE_EVENT(ext4_es_insert_delayed_block,
+	TP_PROTO(struct inode *inode, struct extent_status *es,
+		 bool allocated),
+
+	TP_ARGS(inode, es, allocated),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,		dev		)
+		__field(	ino_t,		ino		)
+		__field(	ext4_lblk_t,	lblk		)
+		__field(	ext4_lblk_t,	len		)
+		__field(	ext4_fsblk_t,	pblk		)
+		__field(	char,		status		)
+		__field(	bool,		allocated	)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= inode->i_sb->s_dev;
+		__entry->ino		= inode->i_ino;
+		__entry->lblk		= es->es_lblk;
+		__entry->len		= es->es_len;
+		__entry->pblk		= ext4_es_show_pblock(es);
+		__entry->status		= ext4_es_status(es);
+		__entry->allocated	= allocated;
+	),
+
+	TP_printk("dev %d,%d ino %lu es [%u/%u) mapped %llu status %s "
+		  "allocated %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long) __entry->ino,
+		  __entry->lblk, __entry->len,
+		  __entry->pblk, show_extent_status(__entry->status),
+		  __entry->allocated)
+);
+
+/* fsmap traces */
+DECLARE_EVENT_CLASS(ext4_fsmap_class,
+	TP_PROTO(struct super_block *sb, u32 keydev, u32 agno, u64 bno, u64 len,
+		 u64 owner),
+	TP_ARGS(sb, keydev, agno, bno, len, owner),
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(dev_t, keydev)
+		__field(u32, agno)
+		__field(u64, bno)
+		__field(u64, len)
+		__field(u64, owner)
+	),
+	TP_fast_assign(
+		__entry->dev = sb->s_bdev->bd_dev;
+		__entry->keydev = new_decode_dev(keydev);
+		__entry->agno = agno;
+		__entry->bno = bno;
+		__entry->len = len;
+		__entry->owner = owner;
+	),
+	TP_printk("dev %d:%d keydev %d:%d agno %u bno %llu len %llu owner %lld\n",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  MAJOR(__entry->keydev), MINOR(__entry->keydev),
+		  __entry->agno,
+		  __entry->bno,
+		  __entry->len,
+		  __entry->owner)
+)
+#define DEFINE_FSMAP_EVENT(name) \
+DEFINE_EVENT(ext4_fsmap_class, name, \
+	TP_PROTO(struct super_block *sb, u32 keydev, u32 agno, u64 bno, u64 len, \
+		 u64 owner), \
+	TP_ARGS(sb, keydev, agno, bno, len, owner))
+DEFINE_FSMAP_EVENT(ext4_fsmap_low_key);
+DEFINE_FSMAP_EVENT(ext4_fsmap_high_key);
+DEFINE_FSMAP_EVENT(ext4_fsmap_mapping);
+
+DECLARE_EVENT_CLASS(ext4_getfsmap_class,
+	TP_PROTO(struct super_block *sb, struct ext4_fsmap *fsmap),
+	TP_ARGS(sb, fsmap),
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(dev_t, keydev)
+		__field(u64, block)
+		__field(u64, len)
+		__field(u64, owner)
+		__field(u64, flags)
+	),
+	TP_fast_assign(
+		__entry->dev = sb->s_bdev->bd_dev;
+		__entry->keydev = new_decode_dev(fsmap->fmr_device);
+		__entry->block = fsmap->fmr_physical;
+		__entry->len = fsmap->fmr_length;
+		__entry->owner = fsmap->fmr_owner;
+		__entry->flags = fsmap->fmr_flags;
+	),
+	TP_printk("dev %d:%d keydev %d:%d block %llu len %llu owner %lld flags 0x%llx\n",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  MAJOR(__entry->keydev), MINOR(__entry->keydev),
+		  __entry->block,
+		  __entry->len,
+		  __entry->owner,
+		  __entry->flags)
+)
+#define DEFINE_GETFSMAP_EVENT(name) \
+DEFINE_EVENT(ext4_getfsmap_class, name, \
+	TP_PROTO(struct super_block *sb, struct ext4_fsmap *fsmap), \
+	TP_ARGS(sb, fsmap))
+DEFINE_GETFSMAP_EVENT(ext4_getfsmap_low_key);
+DEFINE_GETFSMAP_EVENT(ext4_getfsmap_high_key);
+DEFINE_GETFSMAP_EVENT(ext4_getfsmap_mapping);
+
+TRACE_EVENT(ext4_shutdown,
+	TP_PROTO(struct super_block *sb, unsigned long flags),
+
+	TP_ARGS(sb, flags),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(     unsigned,	flags			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->flags	= flags;
+	),
+
+	TP_printk("dev %d,%d flags %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->flags)
+);
+
+TRACE_EVENT(ext4_error,
+	TP_PROTO(struct super_block *sb, const char *function,
+		 unsigned int line),
+
+	TP_ARGS(sb, function, line),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field( const char *,	function		)
+		__field(     unsigned,	line			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->function = function;
+		__entry->line	= line;
+	),
+
+	TP_printk("dev %d,%d function %s line %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->function, __entry->line)
+);
+
+TRACE_EVENT(ext4_prefetch_bitmaps,
+	    TP_PROTO(struct super_block *sb, ext4_group_t group,
+		     ext4_group_t next, unsigned int prefetch_ios),
+
+	TP_ARGS(sb, group, next, prefetch_ios),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	__u32,	group			)
+		__field(	__u32,	next			)
+		__field(	__u32,	ios			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->group	= group;
+		__entry->next	= next;
+		__entry->ios	= prefetch_ios;
+	),
+
+	TP_printk("dev %d,%d group %u next %u ios %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->group, __entry->next, __entry->ios)
+);
+
+TRACE_EVENT(ext4_lazy_itable_init,
+	    TP_PROTO(struct super_block *sb, ext4_group_t group),
+
+	TP_ARGS(sb, group),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(	__u32,	group			)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->group	= group;
+	),
+
+	TP_printk("dev %d,%d group %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->group)
+);
+
+TRACE_EVENT(ext4_fc_replay_scan,
+	TP_PROTO(struct super_block *sb, int error, int off),
+
+	TP_ARGS(sb, error, off),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(int, error)
+		__field(int, off)
+	),
+
+	TP_fast_assign(
+		__entry->dev = sb->s_dev;
+		__entry->error = error;
+		__entry->off = off;
+	),
+
+	TP_printk("dev %d,%d error %d, off %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->error, __entry->off)
+);
+
+TRACE_EVENT(ext4_fc_replay,
+	TP_PROTO(struct super_block *sb, int tag, int ino, int priv1, int priv2),
+
+	TP_ARGS(sb, tag, ino, priv1, priv2),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(int, tag)
+		__field(int, ino)
+		__field(int, priv1)
+		__field(int, priv2)
+	),
+
+	TP_fast_assign(
+		__entry->dev = sb->s_dev;
+		__entry->tag = tag;
+		__entry->ino = ino;
+		__entry->priv1 = priv1;
+		__entry->priv2 = priv2;
+	),
+
+	TP_printk("dev %d,%d: tag %d, ino %d, data1 %d, data2 %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->tag, __entry->ino, __entry->priv1, __entry->priv2)
+);
+
+TRACE_EVENT(ext4_fc_commit_start,
+	TP_PROTO(struct super_block *sb, tid_t commit_tid),
+
+	TP_ARGS(sb, commit_tid),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(tid_t, tid)
+	),
+
+	TP_fast_assign(
+		__entry->dev = sb->s_dev;
+		__entry->tid = commit_tid;
+	),
+
+	TP_printk("dev %d,%d tid %u", MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->tid)
+);
+
+TRACE_EVENT(ext4_fc_commit_stop,
+	    TP_PROTO(struct super_block *sb, int nblks, int reason,
+		     tid_t commit_tid),
+
+	TP_ARGS(sb, nblks, reason, commit_tid),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(int, nblks)
+		__field(int, reason)
+		__field(int, num_fc)
+		__field(int, num_fc_ineligible)
+		__field(int, nblks_agg)
+		__field(tid_t, tid)
+	),
+
+	TP_fast_assign(
+		__entry->dev = sb->s_dev;
+		__entry->nblks = nblks;
+		__entry->reason = reason;
+		__entry->num_fc = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
+		__entry->num_fc_ineligible =
+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
+		__entry->nblks_agg = EXT4_SB(sb)->s_fc_stats.fc_numblks;
+		__entry->tid = commit_tid;
+	),
+
+	TP_printk("dev %d,%d nblks %d, reason %d, fc = %d, ineligible = %d, agg_nblks %d, tid %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->nblks, __entry->reason, __entry->num_fc,
+		  __entry->num_fc_ineligible, __entry->nblks_agg, __entry->tid)
+);
+
+#define FC_REASON_NAME_STAT(reason)					\
+	show_fc_reason(reason),						\
+	__entry->fc_ineligible_rc[reason]
+
+TRACE_EVENT(ext4_fc_stats,
+	TP_PROTO(struct super_block *sb),
+
+	TP_ARGS(sb),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
+		__field(unsigned long, fc_commits)
+		__field(unsigned long, fc_ineligible_commits)
+		__field(unsigned long, fc_numblks)
+	),
+
+	TP_fast_assign(
+		int i;
+
+		__entry->dev = sb->s_dev;
+		for (i = 0; i < EXT4_FC_REASON_MAX; i++) {
+			__entry->fc_ineligible_rc[i] =
+				EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
+		}
+		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
+		__entry->fc_ineligible_commits =
+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
+		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
+	),
+
+	TP_printk("dev %d,%d fc ineligible reasons:\n"
+		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u"
+		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_ENCRYPTED_FILENAME),
+		  __entry->fc_commits, __entry->fc_ineligible_commits,
+		  __entry->fc_numblks)
+);
+
+DECLARE_EVENT_CLASS(ext4_fc_track_dentry,
+
+	TP_PROTO(handle_t *handle, struct inode *inode,
+		 struct dentry *dentry, int ret),
+
+	TP_ARGS(handle, inode, dentry, ret),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(tid_t, t_tid)
+		__field(ino_t, i_ino)
+		__field(tid_t, i_sync_tid)
+		__field(int, error)
+	),
+
+	TP_fast_assign(
+		struct ext4_inode_info *ei = EXT4_I(inode);
+
+		__entry->dev = inode->i_sb->s_dev;
+		__entry->t_tid = handle->h_transaction->t_tid;
+		__entry->i_ino = inode->i_ino;
+		__entry->i_sync_tid = ei->i_sync_tid;
+		__entry->error = ret;
+	),
+
+	TP_printk("dev %d,%d, t_tid %u, ino %lu, i_sync_tid %u, error %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->t_tid, __entry->i_ino, __entry->i_sync_tid,
+		  __entry->error
+	)
+);
+
+#define DEFINE_EVENT_CLASS_DENTRY(__type)				\
+DEFINE_EVENT(ext4_fc_track_dentry, ext4_fc_track_##__type,		\
+	TP_PROTO(handle_t *handle, struct inode *inode,			\
+		 struct dentry *dentry, int ret),			\
+	TP_ARGS(handle, inode, dentry, ret)				\
+)
+
+DEFINE_EVENT_CLASS_DENTRY(create);
+DEFINE_EVENT_CLASS_DENTRY(link);
+DEFINE_EVENT_CLASS_DENTRY(unlink);
+
+TRACE_EVENT(ext4_fc_track_inode,
+	TP_PROTO(handle_t *handle, struct inode *inode, int ret),
+
+	TP_ARGS(handle, inode, ret),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(tid_t, t_tid)
+		__field(ino_t, i_ino)
+		__field(tid_t, i_sync_tid)
+		__field(int, error)
+	),
+
+	TP_fast_assign(
+		struct ext4_inode_info *ei = EXT4_I(inode);
+
+		__entry->dev = inode->i_sb->s_dev;
+		__entry->t_tid = handle->h_transaction->t_tid;
+		__entry->i_ino = inode->i_ino;
+		__entry->i_sync_tid = ei->i_sync_tid;
+		__entry->error = ret;
+	),
+
+	TP_printk("dev %d:%d, t_tid %u, inode %lu, i_sync_tid %u, error %d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->t_tid, __entry->i_ino, __entry->i_sync_tid,
+		  __entry->error)
+	);
+
+TRACE_EVENT(ext4_fc_track_range,
+	TP_PROTO(handle_t *handle, struct inode *inode,
+		 long start, long end, int ret),
+
+	TP_ARGS(handle, inode, start, end, ret),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(tid_t, t_tid)
+		__field(ino_t, i_ino)
+		__field(tid_t, i_sync_tid)
+		__field(long, start)
+		__field(long, end)
+		__field(int, error)
+	),
+
+	TP_fast_assign(
+		struct ext4_inode_info *ei = EXT4_I(inode);
+
+		__entry->dev = inode->i_sb->s_dev;
+		__entry->t_tid = handle->h_transaction->t_tid;
+		__entry->i_ino = inode->i_ino;
+		__entry->i_sync_tid = ei->i_sync_tid;
+		__entry->start = start;
+		__entry->end = end;
+		__entry->error = ret;
+	),
+
+	TP_printk("dev %d:%d, t_tid %u, inode %lu, i_sync_tid %u, error %d, start %ld, end %ld",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->t_tid, __entry->i_ino, __entry->i_sync_tid,
+		  __entry->error, __entry->start, __entry->end)
+	);
+
+TRACE_EVENT(ext4_fc_cleanup,
+	TP_PROTO(journal_t *journal, int full, tid_t tid),
+
+	TP_ARGS(journal, full, tid),
+
+	TP_STRUCT__entry(
+		__field(dev_t, dev)
+		__field(int, j_fc_off)
+		__field(int, full)
+		__field(tid_t, tid)
+	),
+
+	TP_fast_assign(
+		struct super_block *sb = journal->j_private;
+
+		__entry->dev = sb->s_dev;
+		__entry->j_fc_off = journal->j_fc_off;
+		__entry->full = full;
+		__entry->tid = tid;
+	),
+
+	TP_printk("dev %d,%d, j_fc_off %d, full %d, tid %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->j_fc_off, __entry->full, __entry->tid)
+	);
+
+TRACE_EVENT(ext4_update_sb,
+	TP_PROTO(struct super_block *sb, ext4_fsblk_t fsblk,
+		 unsigned int flags),
+
+	TP_ARGS(sb, fsblk, flags),
+
+	TP_STRUCT__entry(
+		__field(dev_t,		dev)
+		__field(ext4_fsblk_t,	fsblk)
+		__field(unsigned int,	flags)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= sb->s_dev;
+		__entry->fsblk	= fsblk;
+		__entry->flags	= flags;
+	),
+
+	TP_printk("dev %d,%d fsblk %llu flags %u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->fsblk, __entry->flags)
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_EXT4_H */
 
 /* This part must be outside protection */

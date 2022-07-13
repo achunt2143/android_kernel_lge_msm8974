@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Functions for assembling fcx enabled I/O control blocks.
  *
@@ -8,6 +12,10 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/module.h>
@@ -23,7 +31,11 @@
  */
 struct tcw *tcw_get_intrg(struct tcw *tcw)
 {
+<<<<<<< HEAD
 	return (struct tcw *) ((addr_t) tcw->intrg);
+=======
+	return dma32_to_virt(tcw->intrg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_get_intrg);
 
@@ -38,9 +50,15 @@ EXPORT_SYMBOL(tcw_get_intrg);
 void *tcw_get_data(struct tcw *tcw)
 {
 	if (tcw->r)
+<<<<<<< HEAD
 		return (void *) ((addr_t) tcw->input);
 	if (tcw->w)
 		return (void *) ((addr_t) tcw->output);
+=======
+		return dma64_to_virt(tcw->input);
+	if (tcw->w)
+		return dma64_to_virt(tcw->output);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL(tcw_get_data);
@@ -53,7 +71,11 @@ EXPORT_SYMBOL(tcw_get_data);
  */
 struct tccb *tcw_get_tccb(struct tcw *tcw)
 {
+<<<<<<< HEAD
 	return (struct tccb *) ((addr_t) tcw->tccb);
+=======
+	return dma64_to_virt(tcw->tccb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_get_tccb);
 
@@ -65,7 +87,11 @@ EXPORT_SYMBOL(tcw_get_tccb);
  */
 struct tsb *tcw_get_tsb(struct tcw *tcw)
 {
+<<<<<<< HEAD
 	return (struct tsb *) ((addr_t) tcw->tsb);
+=======
+	return dma64_to_virt(tcw->tsb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_get_tsb);
 
@@ -188,7 +214,11 @@ EXPORT_SYMBOL(tcw_finalize);
  */
 void tcw_set_intrg(struct tcw *tcw, struct tcw *intrg_tcw)
 {
+<<<<<<< HEAD
 	tcw->intrg = (u32) ((addr_t) intrg_tcw);
+=======
+	tcw->intrg = virt_to_dma32(intrg_tcw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_set_intrg);
 
@@ -206,11 +236,19 @@ EXPORT_SYMBOL(tcw_set_intrg);
 void tcw_set_data(struct tcw *tcw, void *data, int use_tidal)
 {
 	if (tcw->r) {
+<<<<<<< HEAD
 		tcw->input = (u64) ((addr_t) data);
 		if (use_tidal)
 			tcw->flags |= TCW_FLAGS_INPUT_TIDA;
 	} else if (tcw->w) {
 		tcw->output = (u64) ((addr_t) data);
+=======
+		tcw->input = virt_to_dma64(data);
+		if (use_tidal)
+			tcw->flags |= TCW_FLAGS_INPUT_TIDA;
+	} else if (tcw->w) {
+		tcw->output = virt_to_dma64(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (use_tidal)
 			tcw->flags |= TCW_FLAGS_OUTPUT_TIDA;
 	}
@@ -226,7 +264,11 @@ EXPORT_SYMBOL(tcw_set_data);
  */
 void tcw_set_tccb(struct tcw *tcw, struct tccb *tccb)
 {
+<<<<<<< HEAD
 	tcw->tccb = (u64) ((addr_t) tccb);
+=======
+	tcw->tccb = virt_to_dma64(tccb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_set_tccb);
 
@@ -239,7 +281,11 @@ EXPORT_SYMBOL(tcw_set_tccb);
  */
 void tcw_set_tsb(struct tcw *tcw, struct tsb *tsb)
 {
+<<<<<<< HEAD
 	tcw->tsb = (u64) ((addr_t) tsb);
+=======
+	tcw->tsb = virt_to_dma64(tsb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcw_set_tsb);
 
@@ -344,7 +390,11 @@ struct tidaw *tcw_add_tidaw(struct tcw *tcw, int num_tidaws, u8 flags,
 	memset(tidaw, 0, sizeof(struct tidaw));
 	tidaw->flags = flags;
 	tidaw->count = count;
+<<<<<<< HEAD
 	tidaw->addr = (u64) ((addr_t) addr);
+=======
+	tidaw->addr = virt_to_dma64(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tidaw;
 }
 EXPORT_SYMBOL(tcw_add_tidaw);

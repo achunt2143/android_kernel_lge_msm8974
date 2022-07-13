@@ -30,9 +30,15 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 
+<<<<<<< HEAD
 #include <mach/pxa25x.h>
 #include <mach/gumstix.h>
 #include <mach/pxafb.h>
+=======
+#include "pxa25x.h"
+#include "gumstix.h"
+#include <linux/platform_data/video-pxafb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 
@@ -293,8 +299,12 @@ static int am200_setup_irq(struct fb_info *info)
 	int ret;
 
 	ret = request_irq(PXA_GPIO_TO_IRQ(RDY_GPIO_PIN), am200_handle_irq,
+<<<<<<< HEAD
 				IRQF_DISABLED|IRQF_TRIGGER_FALLING,
 				"AM200", info->par);
+=======
+				IRQF_TRIGGER_FALLING, "AM200", info->par);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		dev_err(&am200_device->dev, "request_irq failed: %d\n", ret);
 
@@ -348,8 +358,22 @@ int __init am200_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	/* before anything else, we request notification for any fb
 	 * creation events */
+=======
+	/*
+	 * Before anything else, we request notification for any fb
+	 * creation events.
+	 *
+	 * FIXME: This is terrible and needs to be nuked. The notifier is used
+	 * to get at the fb base address from the boot splash fb driver, which
+	 * is then passed to metronomefb. Instaed of metronomfb or this board
+	 * support file here figuring this out on their own.
+	 *
+	 * See also the #ifdef in fbmem.c.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fb_register_client(&am200_fb_notif);
 
 	pxa2xx_mfp_config(ARRAY_AND_SIZE(am200_pin_config));

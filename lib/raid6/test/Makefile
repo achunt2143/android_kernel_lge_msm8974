@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # This is a simple Makefile to test some of the RAID-6 code
 # from userspace.
 #
 
+<<<<<<< HEAD
 CC	 = gcc
 OPTFLAGS = -O2			# Adjust as desired
 CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
@@ -10,6 +15,71 @@ LD	 = ld
 AWK	 = awk -f
 AR	 = ar
 RANLIB	 = ranlib
+=======
+pound := \#
+
+# Adjust as desired
+CC       = gcc
+OPTFLAGS = -O2
+CFLAGS   = -I.. -I ../../../include -g $(OPTFLAGS)
+LD       = ld
+AWK      = awk -f
+AR       = ar
+RANLIB   = ranlib
+OBJS     = int1.o int2.o int4.o int8.o int16.o int32.o recov.o algos.o tables.o
+
+ARCH := $(shell uname -m 2>/dev/null | sed -e /s/i.86/i386/)
+ifeq ($(ARCH),i386)
+        CFLAGS += -DCONFIG_X86_32
+        IS_X86 = yes
+endif
+ifeq ($(ARCH),x86_64)
+        CFLAGS += -DCONFIG_X86_64
+        IS_X86 = yes
+endif
+
+ifeq ($(ARCH),arm)
+        CFLAGS += -I../../../arch/arm/include -mfpu=neon
+        HAS_NEON = yes
+endif
+ifeq ($(ARCH),aarch64)
+        CFLAGS += -I../../../arch/arm64/include
+        HAS_NEON = yes
+endif
+
+ifeq ($(findstring ppc,$(ARCH)),ppc)
+        CFLAGS += -I../../../arch/powerpc/include
+        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
+                         gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
+endif
+
+ifeq ($(ARCH),loongarch64)
+        CFLAGS += -I../../../arch/loongarch/include -DCONFIG_LOONGARCH=1
+        CFLAGS += $(shell echo 'vld $$vr0, $$zero, 0' |         \
+                    gcc -c -x assembler - >/dev/null 2>&1 &&    \
+                    rm ./-.o && echo -DCONFIG_CPU_HAS_LSX=1)
+        CFLAGS += $(shell echo 'xvld $$xr0, $$zero, 0' |        \
+                    gcc -c -x assembler - >/dev/null 2>&1 &&    \
+                    rm ./-.o && echo -DCONFIG_CPU_HAS_LASX=1)
+endif
+
+ifeq ($(IS_X86),yes)
+        OBJS   += mmx.o sse1.o sse2.o avx2.o recov_ssse3.o recov_avx2.o avx512.o recov_avx512.o
+        CFLAGS += -DCONFIG_X86
+        CFLAGS += $(shell echo "vpmovm2b %k1, %zmm5" |          \
+                    gcc -c -x assembler - >/dev/null 2>&1 &&    \
+                    rm ./-.o && echo -DCONFIG_AS_AVX512=1)
+else ifeq ($(HAS_NEON),yes)
+        OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
+        CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
+else ifeq ($(HAS_ALTIVEC),yes)
+        CFLAGS += -DCONFIG_ALTIVEC
+        OBJS += altivec1.o altivec2.o altivec4.o altivec8.o \
+                vpermxor1.o vpermxor2.o vpermxor4.o vpermxor8.o
+else ifeq ($(ARCH),loongarch64)
+        OBJS += loongarch_simd.o recov_loongarch_simd.o
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -20,6 +90,7 @@ RANLIB	 = ranlib
 %.uc: ../%.uc
 	cp -f $< $@
 
+<<<<<<< HEAD
 all:	raid6.a raid6test
 
 raid6.a: int1.o int2.o int4.o int8.o int16.o int32.o mmx.o sse1.o sse2.o \
@@ -28,10 +99,33 @@ raid6.a: int1.o int2.o int4.o int8.o int16.o int32.o mmx.o sse1.o sse2.o \
 	 rm -f $@
 	 $(AR) cq $@ $^
 	 $(RANLIB) $@
+=======
+all: raid6.a raid6test
+
+raid6.a: $(OBJS)
+	rm -f $@
+	$(AR) cq $@ $^
+	$(RANLIB) $@
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 raid6test: test.c raid6.a
 	$(CC) $(CFLAGS) -o raid6test $^
 
+<<<<<<< HEAD
+=======
+neon1.c: neon.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=1 < neon.uc > $@
+
+neon2.c: neon.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=2 < neon.uc > $@
+
+neon4.c: neon.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=4 < neon.uc > $@
+
+neon8.c: neon.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=8 < neon.uc > $@
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 altivec1.c: altivec.uc ../unroll.awk
 	$(AWK) ../unroll.awk -vN=1 < altivec.uc > $@
 
@@ -44,6 +138,21 @@ altivec4.c: altivec.uc ../unroll.awk
 altivec8.c: altivec.uc ../unroll.awk
 	$(AWK) ../unroll.awk -vN=8 < altivec.uc > $@
 
+<<<<<<< HEAD
+=======
+vpermxor1.c: vpermxor.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=1 < vpermxor.uc > $@
+
+vpermxor2.c: vpermxor.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=2 < vpermxor.uc > $@
+
+vpermxor4.c: vpermxor.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=4 < vpermxor.uc > $@
+
+vpermxor8.c: vpermxor.uc ../unroll.awk
+	$(AWK) ../unroll.awk -vN=8 < vpermxor.uc > $@
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int1.c: int.uc ../unroll.awk
 	$(AWK) ../unroll.awk -vN=1 < int.uc > $@
 
@@ -66,7 +175,11 @@ tables.c: mktables
 	./mktables > tables.c
 
 clean:
+<<<<<<< HEAD
 	rm -f *.o *.a mktables mktables.c *.uc int*.c altivec*.c tables.c raid6test
+=======
+	rm -f *.o *.a mktables mktables.c *.uc int*.c altivec*.c vpermxor*.c neon*.c tables.c raid6test
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 spotless: clean
 	rm -f *~

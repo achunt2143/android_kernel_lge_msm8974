@@ -1,3 +1,4 @@
+<<<<<<< HEAD
  /*
  * Sun3 SCSI stuff by Erik Verbruggen (erik@bigmama.xtdnet.nl)
  *
@@ -587,3 +588,8 @@ static struct scsi_host_template driver_template = {
 #include "scsi_module.c"
 
 MODULE_LICENSE("GPL");
+=======
+#define SUN3_SCSI_VME
+
+#include "sun3_scsi.c"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

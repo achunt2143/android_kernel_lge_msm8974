@@ -101,7 +101,13 @@ static struct dsp56k_device {
 	int tx_wsize, rx_wsize;
 } dsp56k;
 
+<<<<<<< HEAD
 static struct class *dsp56k_class;
+=======
+static const struct class dsp56k_class = {
+	.name = "dsp56k",
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int dsp56k_reset(void)
 {
@@ -181,7 +187,11 @@ static int dsp56k_upload(u_char __user *bin, int len)
 static ssize_t dsp56k_read(struct file *file, char __user *buf, size_t count,
 			   loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct inode *inode = file->f_path.dentry->d_inode;
+=======
+	struct inode *inode = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dev = iminor(inode) & 0x0f;
 
 	switch(dev)
@@ -244,7 +254,11 @@ static ssize_t dsp56k_read(struct file *file, char __user *buf, size_t count,
 static ssize_t dsp56k_write(struct file *file, const char __user *buf, size_t count,
 			    loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct inode *inode = file->f_path.dentry->d_inode;
+=======
+	struct inode *inode = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dev = iminor(inode) & 0x0f;
 
 	switch(dev)
@@ -306,7 +320,11 @@ static ssize_t dsp56k_write(struct file *file, const char __user *buf, size_t co
 static long dsp56k_ioctl(struct file *file, unsigned int cmd,
 			 unsigned long arg)
 {
+<<<<<<< HEAD
 	int dev = iminor(file->f_path.dentry->d_inode) & 0x0f;
+=======
+	int dev = iminor(file_inode(file)) & 0x0f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *argp = (void __user *)arg;
 
 	switch(dev)
@@ -325,7 +343,11 @@ static long dsp56k_ioctl(struct file *file, unsigned int cmd,
 			if(get_user(bin, &binary->bin) < 0)
 				return -EFAULT;
 		
+<<<<<<< HEAD
 			if (len == 0) {
+=======
+			if (len <= 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;      /* nothing to upload?!? */
 			}
 			if (len > DSP56K_MAX_BINARY_LENGTH) {
@@ -383,7 +405,11 @@ static long dsp56k_ioctl(struct file *file, unsigned int cmd,
 			return put_user(status, &hf->status);
 		}
 		case DSP56K_HOST_CMD:
+<<<<<<< HEAD
 			if (arg > 31 || arg < 0)
+=======
+			if (arg > 31)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			mutex_lock(&dsp56k_mutex);
 			dsp56k_host_interface.cvr = (u_char)((arg & DSP56K_CVR_HV_MASK) |
@@ -406,15 +432,25 @@ static long dsp56k_ioctl(struct file *file, unsigned int cmd,
  * Do I need this function at all???
  */
 #if 0
+<<<<<<< HEAD
 static unsigned int dsp56k_poll(struct file *file, poll_table *wait)
 {
 	int dev = iminor(file->f_path.dentry->d_inode) & 0x0f;
+=======
+static __poll_t dsp56k_poll(struct file *file, poll_table *wait)
+{
+	int dev = iminor(file_inode(file)) & 0x0f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch(dev)
 	{
 	case DSP56K_DEV_56001:
 		/* poll_wait(file, ???, wait); */
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM | POLLOUT;
+=======
+		return EPOLLIN | EPOLLRDNORM | EPOLLOUT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		printk("DSP56k driver: Unknown minor device: %d\n", dev);
@@ -489,11 +525,19 @@ static const struct file_operations dsp56k_fops = {
 
 /****** Init and module functions ******/
 
+<<<<<<< HEAD
 static char banner[] __initdata = KERN_INFO "DSP56k driver installed\n";
 
 static int __init dsp56k_init_driver(void)
 {
 	int err = 0;
+=======
+static const char banner[] __initconst = KERN_INFO "DSP56k driver installed\n";
+
+static int __init dsp56k_init_driver(void)
+{
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if(!MACH_IS_ATARI || !ATARIHW_PRESENT(DSP56K)) {
 		printk("DSP56k driver: Hardware not present\n");
@@ -504,12 +548,19 @@ static int __init dsp56k_init_driver(void)
 		printk("DSP56k driver: Unable to register driver\n");
 		return -ENODEV;
 	}
+<<<<<<< HEAD
 	dsp56k_class = class_create(THIS_MODULE, "dsp56k");
 	if (IS_ERR(dsp56k_class)) {
 		err = PTR_ERR(dsp56k_class);
 		goto out_chrdev;
 	}
 	device_create(dsp56k_class, NULL, MKDEV(DSP56K_MAJOR, 0), NULL,
+=======
+	err = class_register(&dsp56k_class);
+	if (err)
+		goto out_chrdev;
+	device_create(&dsp56k_class, NULL, MKDEV(DSP56K_MAJOR, 0), NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      "dsp56k");
 
 	printk(banner);
@@ -524,8 +575,13 @@ module_init(dsp56k_init_driver);
 
 static void __exit dsp56k_cleanup_driver(void)
 {
+<<<<<<< HEAD
 	device_destroy(dsp56k_class, MKDEV(DSP56K_MAJOR, 0));
 	class_destroy(dsp56k_class);
+=======
+	device_destroy(&dsp56k_class, MKDEV(DSP56K_MAJOR, 0));
+	class_unregister(&dsp56k_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_chrdev(DSP56K_MAJOR, "dsp56k");
 }
 module_exit(dsp56k_cleanup_driver);

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  * sht15.c - support for the SHT15 Temperature and Humidity Sensor
  *
  * Portions Copyright (c) 2010-2011 Savoir-faire Linux Inc.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * sht15.c - support for the SHT15 Temperature and Humidity Sensor
+ *
+ * Portions Copyright (c) 2010-2012 Savoir-faire Linux Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *          Jerome Oufella <jerome.oufella@savoirfairelinux.com>
  *          Vivien Didelot <vivien.didelot@savoirfairelinux.com>
  *
@@ -9,16 +17,23 @@
  *
  * Copyright (c) 2007 Wouter Horre
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
  * For further information, see the Documentation/hwmon/sht15 file.
+=======
+ * For further information, see the Documentation/hwmon/sht15.rst file.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/hwmon.h>
@@ -29,10 +44,19 @@
 #include <linux/delay.h>
 #include <linux/jiffies.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/sht15.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/atomic.h>
+=======
+#include <linux/regulator/consumer.h>
+#include <linux/slab.h>
+#include <linux/atomic.h>
+#include <linux/bitrev.h>
+#include <linux/gpio/consumer.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Commands */
 #define SHT15_MEASURE_TEMP		0x03
@@ -53,6 +77,12 @@
 #define SHT15_STATUS_HEATER		0x04
 #define SHT15_STATUS_LOW_BATTERY	0x40
 
+<<<<<<< HEAD
+=======
+/* List of supported chips */
+enum sht15_chips { sht10, sht11, sht15, sht71, sht75 };
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Actions the driver may be doing */
 enum sht15_state {
 	SHT15_READING_NOTHING,
@@ -117,7 +147,12 @@ static const u8 sht15_crc8_table[] = {
 
 /**
  * struct sht15_data - device instance specific data
+<<<<<<< HEAD
  * @pdata:		platform data (gpio's etc).
+=======
+ * @sck:		clock GPIO line
+ * @data:		data GPIO line
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @read_work:		bh of interrupt handler.
  * @wait_queue:		wait queue for getting values from device.
  * @val_temp:		last temperature value read from device.
@@ -136,6 +171,7 @@ static const u8 sht15_crc8_table[] = {
  * @reg:		associated regulator (if specified).
  * @nb:			notifier block to handle notifications of voltage
  *                      changes.
+<<<<<<< HEAD
  * @supply_uV:		local copy of supply voltage used to allow use of
  *                      regulator consumer if available.
  * @supply_uV_valid:	indicates that an updated value has not yet been
@@ -146,6 +182,19 @@ static const u8 sht15_crc8_table[] = {
  */
 struct sht15_data {
 	struct sht15_platform_data	*pdata;
+=======
+ * @supply_uv:		local copy of supply voltage used to allow use of
+ *                      regulator consumer if available.
+ * @supply_uv_valid:	indicates that an updated value has not yet been
+ *			obtained from the regulator and so any calculations
+ *			based upon it will be invalid.
+ * @update_supply_work:	work struct that is used to update the supply_uv.
+ * @interrupt_handled:	flag used to indicate a handler has been scheduled.
+ */
+struct sht15_data {
+	struct gpio_desc		*sck;
+	struct gpio_desc		*data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct		read_work;
 	wait_queue_head_t		wait_queue;
 	uint16_t			val_temp;
@@ -163,13 +212,19 @@ struct sht15_data {
 	struct device			*hwmon_dev;
 	struct regulator		*reg;
 	struct notifier_block		nb;
+<<<<<<< HEAD
 	int				supply_uV;
 	bool				supply_uV_valid;
+=======
+	int				supply_uv;
+	bool				supply_uv_valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct		update_supply_work;
 	atomic_t			interrupt_handled;
 };
 
 /**
+<<<<<<< HEAD
  * sht15_reverse() - reverse a byte
  * @byte:    byte to reverse.
  */
@@ -186,6 +241,12 @@ static u8 sht15_reverse(u8 byte)
  * sht15_crc8() - compute crc8
  * @data:	sht15 specific data.
  * @value:	sht15 retrieved data.
+=======
+ * sht15_crc8() - compute crc8
+ * @data:	sht15 specific data.
+ * @value:	sht15 retrieved data.
+ * @len:	Length of retrieved data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This implements section 2 of the CRC datasheet.
  */
@@ -193,7 +254,11 @@ static u8 sht15_crc8(struct sht15_data *data,
 		const u8 *value,
 		int len)
 {
+<<<<<<< HEAD
 	u8 crc = sht15_reverse(data->val_status & 0x0F);
+=======
+	u8 crc = bitrev8(data->val_status & 0x0F);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len--) {
 		crc = sht15_crc8_table[*value ^ crc];
@@ -209,6 +274,7 @@ static u8 sht15_crc8(struct sht15_data *data,
  *
  * This implements section 3.4 of the data sheet
  */
+<<<<<<< HEAD
 static void sht15_connection_reset(struct sht15_data *data)
 {
 	int i;
@@ -223,6 +289,25 @@ static void sht15_connection_reset(struct sht15_data *data)
 		gpio_set_value(data->pdata->gpio_sck, 0);
 		ndelay(SHT15_TSCKL);
 	}
+=======
+static int sht15_connection_reset(struct sht15_data *data)
+{
+	int i, err;
+
+	err = gpiod_direction_output(data->data, 1);
+	if (err)
+		return err;
+	ndelay(SHT15_TSCKL);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSCKL);
+	for (i = 0; i < 9; ++i) {
+		gpiod_set_value(data->sck, 1);
+		ndelay(SHT15_TSCKH);
+		gpiod_set_value(data->sck, 0);
+		ndelay(SHT15_TSCKL);
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -232,11 +317,19 @@ static void sht15_connection_reset(struct sht15_data *data)
  */
 static inline void sht15_send_bit(struct sht15_data *data, int val)
 {
+<<<<<<< HEAD
 	gpio_set_value(data->pdata->gpio_data, val);
 	ndelay(SHT15_TSU);
 	gpio_set_value(data->pdata->gpio_sck, 1);
 	ndelay(SHT15_TSCKH);
 	gpio_set_value(data->pdata->gpio_sck, 0);
+=======
+	gpiod_set_value(data->data, val);
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSCKH);
+	gpiod_set_value(data->sck, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndelay(SHT15_TSCKL); /* clock low time */
 }
 
@@ -248,6 +341,7 @@ static inline void sht15_send_bit(struct sht15_data *data, int val)
  * conservative ones used in implementation. This implements
  * figure 12 on the data sheet.
  */
+<<<<<<< HEAD
 static void sht15_transmission_start(struct sht15_data *data)
 {
 	/* ensure data is high and output */
@@ -267,6 +361,32 @@ static void sht15_transmission_start(struct sht15_data *data)
 	ndelay(SHT15_TSU);
 	gpio_set_value(data->pdata->gpio_sck, 0);
 	ndelay(SHT15_TSCKL);
+=======
+static int sht15_transmission_start(struct sht15_data *data)
+{
+	int err;
+
+	/* ensure data is high and output */
+	err = gpiod_direction_output(data->data, 1);
+	if (err)
+		return err;
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSCKL);
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSCKH);
+	gpiod_set_value(data->data, 0);
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSCKL);
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSCKH);
+	gpiod_set_value(data->data, 1);
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSCKL);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -290,6 +410,7 @@ static void sht15_send_byte(struct sht15_data *data, u8 byte)
  */
 static int sht15_wait_for_response(struct sht15_data *data)
 {
+<<<<<<< HEAD
 	gpio_direction_input(data->pdata->gpio_data);
 	gpio_set_value(data->pdata->gpio_sck, 1);
 	ndelay(SHT15_TSCKH);
@@ -300,6 +421,24 @@ static int sht15_wait_for_response(struct sht15_data *data)
 		return -EIO;
 	}
 	gpio_set_value(data->pdata->gpio_sck, 0);
+=======
+	int err;
+
+	err = gpiod_direction_input(data->data);
+	if (err)
+		return err;
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSCKH);
+	if (gpiod_get_value(data->data)) {
+		gpiod_set_value(data->sck, 0);
+		dev_err(data->dev, "Command not acknowledged\n");
+		err = sht15_connection_reset(data);
+		if (err)
+			return err;
+		return -EIO;
+	}
+	gpiod_set_value(data->sck, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndelay(SHT15_TSCKL);
 	return 0;
 }
@@ -314,12 +453,22 @@ static int sht15_wait_for_response(struct sht15_data *data)
  */
 static int sht15_send_cmd(struct sht15_data *data, u8 cmd)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	sht15_transmission_start(data);
 	sht15_send_byte(data, cmd);
 	ret = sht15_wait_for_response(data);
 	return ret;
+=======
+	int err;
+
+	err = sht15_transmission_start(data);
+	if (err)
+		return err;
+	sht15_send_byte(data, cmd);
+	return sht15_wait_for_response(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -349,6 +498,7 @@ static int sht15_soft_reset(struct sht15_data *data)
  * Each byte of data is acknowledged by pulling the data line
  * low for one clock pulse.
  */
+<<<<<<< HEAD
 static void sht15_ack(struct sht15_data *data)
 {
 	gpio_direction_output(data->pdata->gpio_data, 0);
@@ -360,6 +510,23 @@ static void sht15_ack(struct sht15_data *data)
 	gpio_set_value(data->pdata->gpio_data, 1);
 
 	gpio_direction_input(data->pdata->gpio_data);
+=======
+static int sht15_ack(struct sht15_data *data)
+{
+	int err;
+
+	err = gpiod_direction_output(data->data, 0);
+	if (err)
+		return err;
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->data, 1);
+
+	return gpiod_direction_input(data->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -368,6 +535,7 @@ static void sht15_ack(struct sht15_data *data)
  *
  * This is basically a NAK (single clock pulse, data high).
  */
+<<<<<<< HEAD
 static void sht15_end_transmission(struct sht15_data *data)
 {
 	gpio_direction_output(data->pdata->gpio_data, 1);
@@ -376,6 +544,21 @@ static void sht15_end_transmission(struct sht15_data *data)
 	ndelay(SHT15_TSCKH);
 	gpio_set_value(data->pdata->gpio_sck, 0);
 	ndelay(SHT15_TSCKL);
+=======
+static int sht15_end_transmission(struct sht15_data *data)
+{
+	int err;
+
+	err = gpiod_direction_output(data->data, 1);
+	if (err)
+		return err;
+	ndelay(SHT15_TSU);
+	gpiod_set_value(data->sck, 1);
+	ndelay(SHT15_TSCKH);
+	gpiod_set_value(data->sck, 0);
+	ndelay(SHT15_TSCKL);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -389,10 +572,17 @@ static u8 sht15_read_byte(struct sht15_data *data)
 
 	for (i = 0; i < 8; ++i) {
 		byte <<= 1;
+<<<<<<< HEAD
 		gpio_set_value(data->pdata->gpio_sck, 1);
 		ndelay(SHT15_TSCKH);
 		byte |= !!gpio_get_value(data->pdata->gpio_data);
 		gpio_set_value(data->pdata->gpio_sck, 0);
+=======
+		gpiod_set_value(data->sck, 1);
+		ndelay(SHT15_TSCKH);
+		byte |= !!gpiod_get_value(data->data);
+		gpiod_set_value(data->sck, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ndelay(SHT15_TSCKL);
 	}
 	return byte;
@@ -407,6 +597,7 @@ static u8 sht15_read_byte(struct sht15_data *data)
  */
 static int sht15_send_status(struct sht15_data *data, u8 status)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = sht15_send_cmd(data, SHT15_WRITE_STATUS);
@@ -418,6 +609,21 @@ static int sht15_send_status(struct sht15_data *data, u8 status)
 	ret = sht15_wait_for_response(data);
 	if (ret)
 		return ret;
+=======
+	int err;
+
+	err = sht15_send_cmd(data, SHT15_WRITE_STATUS);
+	if (err)
+		return err;
+	err = gpiod_direction_output(data->data, 1);
+	if (err)
+		return err;
+	ndelay(SHT15_TSU);
+	sht15_send_byte(data, status);
+	err = sht15_wait_for_response(data);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->val_status = status;
 	return 0;
@@ -443,19 +649,33 @@ static int sht15_update_status(struct sht15_data *data)
 			|| !data->status_valid) {
 		ret = sht15_send_cmd(data, SHT15_READ_STATUS);
 		if (ret)
+<<<<<<< HEAD
 			goto error_ret;
+=======
+			goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = sht15_read_byte(data);
 
 		if (data->checksumming) {
 			sht15_ack(data);
+<<<<<<< HEAD
 			dev_checksum = sht15_reverse(sht15_read_byte(data));
+=======
+			dev_checksum = bitrev8(sht15_read_byte(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			checksum_vals[0] = SHT15_READ_STATUS;
 			checksum_vals[1] = status;
 			data->checksum_ok = (sht15_crc8(data, checksum_vals, 2)
 					== dev_checksum);
 		}
 
+<<<<<<< HEAD
 		sht15_end_transmission(data);
+=======
+		ret = sht15_end_transmission(data);
+		if (ret)
+			goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Perform checksum validation on the received data.
@@ -466,27 +686,45 @@ static int sht15_update_status(struct sht15_data *data)
 			previous_config = data->val_status & 0x07;
 			ret = sht15_soft_reset(data);
 			if (ret)
+<<<<<<< HEAD
 				goto error_ret;
+=======
+				goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (previous_config) {
 				ret = sht15_send_status(data, previous_config);
 				if (ret) {
 					dev_err(data->dev,
 						"CRC validation failed, unable "
 						"to restore device settings\n");
+<<<<<<< HEAD
 					goto error_ret;
 				}
 			}
 			ret = -EAGAIN;
 			goto error_ret;
+=======
+					goto unlock;
+				}
+			}
+			ret = -EAGAIN;
+			goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		data->val_status = status;
 		data->status_valid = true;
 		data->last_status = jiffies;
 	}
+<<<<<<< HEAD
 error_ret:
 	mutex_unlock(&data->read_lock);
 
+=======
+
+unlock:
+	mutex_unlock(&data->read_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -508,12 +746,23 @@ static int sht15_measurement(struct sht15_data *data,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	gpio_direction_input(data->pdata->gpio_data);
 	atomic_set(&data->interrupt_handled, 0);
 
 	enable_irq(gpio_to_irq(data->pdata->gpio_data));
 	if (gpio_get_value(data->pdata->gpio_data) == 0) {
 		disable_irq_nosync(gpio_to_irq(data->pdata->gpio_data));
+=======
+	ret = gpiod_direction_input(data->data);
+	if (ret)
+		return ret;
+	atomic_set(&data->interrupt_handled, 0);
+
+	enable_irq(gpiod_to_irq(data->data));
+	if (gpiod_get_value(data->data) == 0) {
+		disable_irq_nosync(gpiod_to_irq(data->data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Only relevant if the interrupt hasn't occurred. */
 		if (!atomic_read(&data->interrupt_handled))
 			schedule_work(&data->read_work);
@@ -521,9 +770,20 @@ static int sht15_measurement(struct sht15_data *data,
 	ret = wait_event_timeout(data->wait_queue,
 				 (data->state == SHT15_READING_NOTHING),
 				 msecs_to_jiffies(timeout_msecs));
+<<<<<<< HEAD
 	if (ret == 0) {/* timeout occurred */
 		disable_irq_nosync(gpio_to_irq(data->pdata->gpio_data));
 		sht15_connection_reset(data);
+=======
+	if (data->state != SHT15_READING_NOTHING) { /* I/O error occurred */
+		data->state = SHT15_READING_NOTHING;
+		return -EIO;
+	} else if (ret == 0) { /* timeout occurred */
+		disable_irq_nosync(gpiod_to_irq(data->data));
+		ret = sht15_connection_reset(data);
+		if (ret)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIME;
 	}
 
@@ -567,6 +827,7 @@ static int sht15_update_measurements(struct sht15_data *data)
 		data->state = SHT15_READING_HUMID;
 		ret = sht15_measurement(data, SHT15_MEASURE_RH, 160);
 		if (ret)
+<<<<<<< HEAD
 			goto error_ret;
 		data->state = SHT15_READING_TEMP;
 		ret = sht15_measurement(data, SHT15_MEASURE_TEMP, 400);
@@ -578,6 +839,19 @@ static int sht15_update_measurements(struct sht15_data *data)
 error_ret:
 	mutex_unlock(&data->read_lock);
 
+=======
+			goto unlock;
+		data->state = SHT15_READING_TEMP;
+		ret = sht15_measurement(data, SHT15_MEASURE_TEMP, 400);
+		if (ret)
+			goto unlock;
+		data->measurements_valid = true;
+		data->last_measurement = jiffies;
+	}
+
+unlock:
+	mutex_unlock(&data->read_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -595,8 +869,13 @@ static inline int sht15_calc_temp(struct sht15_data *data)
 
 	for (i = ARRAY_SIZE(temppoints) - 1; i > 0; i--)
 		/* Find pointer to interpolate */
+<<<<<<< HEAD
 		if (data->supply_uV > temppoints[i - 1].vdd) {
 			d1 = (data->supply_uV - temppoints[i - 1].vdd)
+=======
+		if (data->supply_uv > temppoints[i - 1].vdd) {
+			d1 = (data->supply_uv - temppoints[i - 1].vdd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				* (temppoints[i].d1 - temppoints[i - 1].d1)
 				/ (temppoints[i].vdd - temppoints[i - 1].vdd)
 				+ temppoints[i - 1].d1;
@@ -642,7 +921,11 @@ static inline int sht15_calc_humid(struct sht15_data *data)
 }
 
 /**
+<<<<<<< HEAD
  * sht15_show_status() - show status information in sysfs
+=======
+ * sht15_status_show() - show status information in sysfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	device.
  * @attr:	device attribute.
  * @buf:	sysfs buffer where information is written to.
@@ -651,9 +934,14 @@ static inline int sht15_calc_humid(struct sht15_data *data)
  * and heater_enable sysfs attributes.
  * Returns number of bytes written into buffer, negative errno on error.
  */
+<<<<<<< HEAD
 static ssize_t sht15_show_status(struct device *dev,
 				 struct device_attribute *attr,
 				 char *buf)
+=======
+static ssize_t sht15_status_show(struct device *dev,
+				 struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct sht15_data *data = dev_get_drvdata(dev);
@@ -665,7 +953,11 @@ static ssize_t sht15_show_status(struct device *dev,
 }
 
 /**
+<<<<<<< HEAD
  * sht15_store_heater() - change heater state via sysfs
+=======
+ * sht15_status_store() - change heater state via sysfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	device.
  * @attr:	device attribute.
  * @buf:	sysfs buffer to read the new heater state from.
@@ -674,7 +966,11 @@ static ssize_t sht15_show_status(struct device *dev,
  * Will be called on write access to heater_enable sysfs attribute.
  * Returns number of bytes actually decoded, negative errno on error.
  */
+<<<<<<< HEAD
 static ssize_t sht15_store_heater(struct device *dev,
+=======
+static ssize_t sht15_status_store(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
 {
@@ -700,7 +996,11 @@ static ssize_t sht15_store_heater(struct device *dev,
 }
 
 /**
+<<<<<<< HEAD
  * sht15_show_temp() - show temperature measurement value in sysfs
+=======
+ * sht15_temp_show() - show temperature measurement value in sysfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	device.
  * @attr:	device attribute.
  * @buf:	sysfs buffer where measurement values are written to.
@@ -708,9 +1008,14 @@ static ssize_t sht15_store_heater(struct device *dev,
  * Will be called on read access to temp1_input sysfs attribute.
  * Returns number of bytes written into buffer, negative errno on error.
  */
+<<<<<<< HEAD
 static ssize_t sht15_show_temp(struct device *dev,
 			       struct device_attribute *attr,
 			       char *buf)
+=======
+static ssize_t sht15_temp_show(struct device *dev,
+			       struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct sht15_data *data = dev_get_drvdata(dev);
@@ -723,7 +1028,11 @@ static ssize_t sht15_show_temp(struct device *dev,
 }
 
 /**
+<<<<<<< HEAD
  * sht15_show_humidity() - show humidity measurement value in sysfs
+=======
+ * sht15_humidity_show() - show humidity measurement value in sysfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	device.
  * @attr:	device attribute.
  * @buf:	sysfs buffer where measurement values are written to.
@@ -731,9 +1040,14 @@ static ssize_t sht15_show_temp(struct device *dev,
  * Will be called on read access to humidity1_input sysfs attribute.
  * Returns number of bytes written into buffer, negative errno on error.
  */
+<<<<<<< HEAD
 static ssize_t sht15_show_humidity(struct device *dev,
 				   struct device_attribute *attr,
 				   char *buf)
+=======
+static ssize_t sht15_humidity_show(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct sht15_data *data = dev_get_drvdata(dev);
@@ -743,7 +1057,11 @@ static ssize_t sht15_show_humidity(struct device *dev,
 	return ret ? ret : sprintf(buf, "%d\n", sht15_calc_humid(data));
 }
 
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev,
+=======
+static ssize_t name_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct device_attribute *attr,
 			 char *buf)
 {
@@ -751,6 +1069,7 @@ static ssize_t show_name(struct device *dev,
 	return sprintf(buf, "%s\n", pdev->name);
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO,
 			  sht15_show_temp, NULL, 0);
 static SENSOR_DEVICE_ATTR(humidity1_input, S_IRUGO,
@@ -762,6 +1081,16 @@ static SENSOR_DEVICE_ATTR(humidity1_fault, S_IRUGO, sht15_show_status, NULL,
 static SENSOR_DEVICE_ATTR(heater_enable, S_IRUGO | S_IWUSR, sht15_show_status,
 			  sht15_store_heater, SHT15_STATUS_HEATER);
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, sht15_temp, 0);
+static SENSOR_DEVICE_ATTR_RO(humidity1_input, sht15_humidity, 0);
+static SENSOR_DEVICE_ATTR_RO(temp1_fault, sht15_status,
+			     SHT15_STATUS_LOW_BATTERY);
+static SENSOR_DEVICE_ATTR_RO(humidity1_fault, sht15_status,
+			     SHT15_STATUS_LOW_BATTERY);
+static SENSOR_DEVICE_ATTR_RW(heater_enable, sht15_status, SHT15_STATUS_HEATER);
+static DEVICE_ATTR_RO(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *sht15_attrs[] = {
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_humidity1_input.dev_attr.attr,
@@ -799,15 +1128,25 @@ static void sht15_bh_read_data(struct work_struct *work_s)
 			       read_work);
 
 	/* Firstly, verify the line is low */
+<<<<<<< HEAD
 	if (gpio_get_value(data->pdata->gpio_data)) {
+=======
+	if (gpiod_get_value(data->data)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If not, then start the interrupt again - care here as could
 		 * have gone low in meantime so verify it hasn't!
 		 */
 		atomic_set(&data->interrupt_handled, 0);
+<<<<<<< HEAD
 		enable_irq(gpio_to_irq(data->pdata->gpio_data));
 		/* If still not occurred or another handler was scheduled */
 		if (gpio_get_value(data->pdata->gpio_data)
+=======
+		enable_irq(gpiod_to_irq(data->data));
+		/* If still not occurred or another handler was scheduled */
+		if (gpiod_get_value(data->data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    || atomic_read(&data->interrupt_handled))
 			return;
 	}
@@ -815,7 +1154,12 @@ static void sht15_bh_read_data(struct work_struct *work_s)
 	/* Read the data back from the device */
 	val = sht15_read_byte(data);
 	val <<= 8;
+<<<<<<< HEAD
 	sht15_ack(data);
+=======
+	if (sht15_ack(data))
+		goto wakeup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val |= sht15_read_byte(data);
 
 	if (data->checksumming) {
@@ -823,8 +1167,14 @@ static void sht15_bh_read_data(struct work_struct *work_s)
 		 * Ask the device for a checksum and read it back.
 		 * Note: the device sends the checksum byte reversed.
 		 */
+<<<<<<< HEAD
 		sht15_ack(data);
 		dev_checksum = sht15_reverse(sht15_read_byte(data));
+=======
+		if (sht15_ack(data))
+			goto wakeup;
+		dev_checksum = bitrev8(sht15_read_byte(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		checksum_vals[0] = (data->state == SHT15_READING_TEMP) ?
 			SHT15_MEASURE_TEMP : SHT15_MEASURE_RH;
 		checksum_vals[1] = (u8) (val >> 8);
@@ -834,7 +1184,12 @@ static void sht15_bh_read_data(struct work_struct *work_s)
 	}
 
 	/* Tell the device we are done */
+<<<<<<< HEAD
 	sht15_end_transmission(data);
+=======
+	if (sht15_end_transmission(data))
+		goto wakeup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (data->state) {
 	case SHT15_READING_TEMP:
@@ -848,6 +1203,10 @@ static void sht15_bh_read_data(struct work_struct *work_s)
 	}
 
 	data->state = SHT15_READING_NOTHING;
+<<<<<<< HEAD
+=======
+wakeup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&data->wait_queue);
 }
 
@@ -856,7 +1215,11 @@ static void sht15_update_voltage(struct work_struct *work_s)
 	struct sht15_data *data
 		= container_of(work_s, struct sht15_data,
 			       update_supply_work);
+<<<<<<< HEAD
 	data->supply_uV = regulator_get_voltage(data->reg);
+=======
+	data->supply_uv = regulator_get_voltage(data->reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -875,12 +1238,17 @@ static int sht15_invalidate_voltage(struct notifier_block *nb,
 	struct sht15_data *data = container_of(nb, struct sht15_data, nb);
 
 	if (event == REGULATOR_EVENT_VOLTAGE_CHANGE)
+<<<<<<< HEAD
 		data->supply_uV_valid = false;
+=======
+		data->supply_uv_valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	schedule_work(&data->update_supply_work);
 
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static int __devinit sht15_probe(struct platform_device *pdev)
 {
 	int ret;
@@ -892,6 +1260,24 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "kzalloc failed\n");
 		goto error_ret;
 	}
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id sht15_dt_match[] = {
+	{ .compatible = "sensirion,sht15" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, sht15_dt_match);
+#endif
+
+static int sht15_probe(struct platform_device *pdev)
+{
+	int ret;
+	struct sht15_data *data;
+
+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&data->read_work, sht15_bh_read_data);
 	INIT_WORK(&data->update_supply_work, sht15_update_voltage);
@@ -900,6 +1286,7 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 	data->dev = &pdev->dev;
 	init_waitqueue_head(&data->wait_queue);
 
+<<<<<<< HEAD
 	if (pdev->dev.platform_data == NULL) {
 		ret = -EINVAL;
 		dev_err(&pdev->dev, "no platform data supplied\n");
@@ -914,23 +1301,37 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 	if (data->pdata->low_resolution)
 		status |= SHT15_STATUS_LOW_RESOLUTION;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If a regulator is available,
 	 * query what the supply voltage actually is!
 	 */
+<<<<<<< HEAD
 	data->reg = regulator_get(data->dev, "vcc");
+=======
+	data->reg = devm_regulator_get_optional(data->dev, "vcc");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!IS_ERR(data->reg)) {
 		int voltage;
 
 		voltage = regulator_get_voltage(data->reg);
 		if (voltage)
+<<<<<<< HEAD
 			data->supply_uV = voltage;
+=======
+			data->supply_uv = voltage;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = regulator_enable(data->reg);
 		if (ret != 0) {
 			dev_err(&pdev->dev,
 				"failed to enable regulator: %d\n", ret);
+<<<<<<< HEAD
 			goto err_free_data;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -943,12 +1344,17 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev,
 				"regulator notifier request failed\n");
 			regulator_disable(data->reg);
+<<<<<<< HEAD
 			regulator_put(data->reg);
 			goto err_free_data;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Try requesting the GPIOs */
+<<<<<<< HEAD
 	ret = gpio_request(data->pdata->gpio_sck, "SHT15 sck");
 	if (ret) {
 		dev_err(&pdev->dev, "gpio request failed\n");
@@ -983,11 +1389,46 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 		if (ret)
 			goto err_release_irq;
 	}
+=======
+	data->sck = devm_gpiod_get(&pdev->dev, "clk", GPIOD_OUT_LOW);
+	if (IS_ERR(data->sck)) {
+		ret = PTR_ERR(data->sck);
+		dev_err(&pdev->dev, "clock line GPIO request failed\n");
+		goto err_release_reg;
+	}
+	data->data = devm_gpiod_get(&pdev->dev, "data", GPIOD_IN);
+	if (IS_ERR(data->data)) {
+		ret = PTR_ERR(data->data);
+		dev_err(&pdev->dev, "data line GPIO request failed\n");
+		goto err_release_reg;
+	}
+
+	ret = devm_request_irq(&pdev->dev, gpiod_to_irq(data->data),
+			       sht15_interrupt_fired,
+			       IRQF_TRIGGER_FALLING,
+			       "sht15 data",
+			       data);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to get irq for data line\n");
+		goto err_release_reg;
+	}
+	disable_irq_nosync(gpiod_to_irq(data->data));
+	ret = sht15_connection_reset(data);
+	if (ret)
+		goto err_release_reg;
+	ret = sht15_soft_reset(data);
+	if (ret)
+		goto err_release_reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = sysfs_create_group(&pdev->dev.kobj, &sht15_attr_group);
 	if (ret) {
 		dev_err(&pdev->dev, "sysfs create failed\n");
+<<<<<<< HEAD
 		goto err_release_irq;
+=======
+		goto err_release_reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	data->hwmon_dev = hwmon_device_register(data->dev);
@@ -1000,16 +1441,20 @@ static int __devinit sht15_probe(struct platform_device *pdev)
 
 err_release_sysfs_group:
 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
+<<<<<<< HEAD
 err_release_irq:
 	free_irq(gpio_to_irq(data->pdata->gpio_data), data);
 err_release_gpio_data:
 	gpio_free(data->pdata->gpio_data);
 err_release_gpio_sck:
 	gpio_free(data->pdata->gpio_sck);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_release_reg:
 	if (!IS_ERR(data->reg)) {
 		regulator_unregister_notifier(data->reg, &data->nb);
 		regulator_disable(data->reg);
+<<<<<<< HEAD
 		regulator_put(data->reg);
 	}
 err_free_data:
@@ -1122,3 +1567,50 @@ static void __exit sht15_exit(void)
 module_exit(sht15_exit);
 
 MODULE_LICENSE("GPL");
+=======
+	}
+	return ret;
+}
+
+static void sht15_remove(struct platform_device *pdev)
+{
+	struct sht15_data *data = platform_get_drvdata(pdev);
+	int ret;
+
+	hwmon_device_unregister(data->hwmon_dev);
+	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
+
+	ret = sht15_soft_reset(data);
+	if (ret)
+		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
+
+	if (!IS_ERR(data->reg)) {
+		regulator_unregister_notifier(data->reg, &data->nb);
+		regulator_disable(data->reg);
+	}
+}
+
+static const struct platform_device_id sht15_device_ids[] = {
+	{ "sht10", sht10 },
+	{ "sht11", sht11 },
+	{ "sht15", sht15 },
+	{ "sht71", sht71 },
+	{ "sht75", sht75 },
+	{ }
+};
+MODULE_DEVICE_TABLE(platform, sht15_device_ids);
+
+static struct platform_driver sht15_driver = {
+	.driver = {
+		.name = "sht15",
+		.of_match_table = of_match_ptr(sht15_dt_match),
+	},
+	.probe = sht15_probe,
+	.remove_new = sht15_remove,
+	.id_table = sht15_device_ids,
+};
+module_platform_driver(sht15_driver);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Sensirion SHT15 temperature and humidity sensor driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * V9FS FID Management
  *
  *  Copyright (C) 2007 by Latchesar Ionkov <lucho@ionkov.net>
  *  Copyright (C) 2005, 2006 by Eric Van Hensbergen <ericvh@gmail.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2
@@ -19,6 +24,8 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02111-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -26,7 +33,10 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/idr.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 
@@ -34,6 +44,7 @@
 #include "v9fs_vfs.h"
 #include "fid.h"
 
+<<<<<<< HEAD
 /**
  * v9fs_fid_add - add a fid to a dentry
  * @dentry: dentry that the fid is being added to
@@ -66,6 +77,92 @@ int v9fs_fid_add(struct dentry *dentry, struct p9_fid *fid)
 	return 0;
 }
 
+=======
+static inline void __add_fid(struct dentry *dentry, struct p9_fid *fid)
+{
+	hlist_add_head(&fid->dlist, (struct hlist_head *)&dentry->d_fsdata);
+}
+
+
+/**
+ * v9fs_fid_add - add a fid to a dentry
+ * @dentry: dentry that the fid is being added to
+ * @pfid: fid to add, NULLed out
+ *
+ */
+void v9fs_fid_add(struct dentry *dentry, struct p9_fid **pfid)
+{
+	struct p9_fid *fid = *pfid;
+
+	spin_lock(&dentry->d_lock);
+	__add_fid(dentry, fid);
+	spin_unlock(&dentry->d_lock);
+
+	*pfid = NULL;
+}
+
+static bool v9fs_is_writeable(int mode)
+{
+	if (mode & (P9_OWRITE|P9_ORDWR))
+		return true;
+	else
+		return false;
+}
+
+/**
+ * v9fs_fid_find_inode - search for an open fid off of the inode list
+ * @inode: return a fid pointing to a specific inode
+ * @want_writeable: only consider fids which are writeable
+ * @uid: return a fid belonging to the specified user
+ * @any: ignore uid as a selection criteria
+ *
+ */
+struct p9_fid *v9fs_fid_find_inode(struct inode *inode, bool want_writeable,
+	kuid_t uid, bool any)
+{
+	struct hlist_head *h;
+	struct p9_fid *fid, *ret = NULL;
+
+	p9_debug(P9_DEBUG_VFS, " inode: %p\n", inode);
+
+	spin_lock(&inode->i_lock);
+	h = (struct hlist_head *)&inode->i_private;
+	hlist_for_each_entry(fid, h, ilist) {
+		if (any || uid_eq(fid->uid, uid)) {
+			if (want_writeable && !v9fs_is_writeable(fid->mode)) {
+				p9_debug(P9_DEBUG_VFS, " mode: %x not writeable?\n",
+							fid->mode);
+				continue;
+			}
+			p9_fid_get(fid);
+			ret = fid;
+			break;
+		}
+	}
+	spin_unlock(&inode->i_lock);
+	return ret;
+}
+
+/**
+ * v9fs_open_fid_add - add an open fid to an inode
+ * @inode: inode that the fid is being added to
+ * @pfid: fid to add, NULLed out
+ *
+ */
+
+void v9fs_open_fid_add(struct inode *inode, struct p9_fid **pfid)
+{
+	struct p9_fid *fid = *pfid;
+
+	spin_lock(&inode->i_lock);
+	hlist_add_head(&fid->ilist, (struct hlist_head *)&inode->i_private);
+	spin_unlock(&inode->i_lock);
+
+	*pfid = NULL;
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * v9fs_fid_find - retrieve a fid that belongs to the specified uid
  * @dentry: dentry to look for fid in
@@ -74,6 +171,7 @@ int v9fs_fid_add(struct dentry *dentry, struct p9_fid *fid)
  *
  */
 
+<<<<<<< HEAD
 static struct p9_fid *v9fs_fid_find(struct dentry *dentry, u32 uid, int any)
 {
 	struct v9fs_dentry *dent;
@@ -92,6 +190,32 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, u32 uid, int any)
 			}
 		}
 		spin_unlock(&dent->lock);
+=======
+static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
+{
+	struct p9_fid *fid, *ret;
+
+	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p) uid %d any %d\n",
+		 dentry, dentry, from_kuid(&init_user_ns, uid),
+		 any);
+	ret = NULL;
+	/* we'll recheck under lock if there's anything to look in */
+	if (dentry->d_fsdata) {
+		struct hlist_head *h = (struct hlist_head *)&dentry->d_fsdata;
+
+		spin_lock(&dentry->d_lock);
+		hlist_for_each_entry(fid, h, dlist) {
+			if (any || uid_eq(fid->uid, uid)) {
+				ret = fid;
+				p9_fid_get(ret);
+				break;
+			}
+		}
+		spin_unlock(&dentry->d_lock);
+	} else {
+		if (dentry->d_inode)
+			ret = v9fs_fid_find_inode(dentry->d_inode, false, uid, any);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -103,21 +227,36 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, u32 uid, int any)
  * dentry names.
  */
 static int build_path_from_dentry(struct v9fs_session_info *v9ses,
+<<<<<<< HEAD
 				  struct dentry *dentry, char ***names)
 {
 	int n = 0, i;
 	char **wnames;
+=======
+				  struct dentry *dentry, const unsigned char ***names)
+{
+	int n = 0, i;
+	const unsigned char **wnames;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry *ds;
 
 	for (ds = dentry; !IS_ROOT(ds); ds = ds->d_parent)
 		n++;
 
+<<<<<<< HEAD
 	wnames = kmalloc(sizeof(char *) * n, GFP_KERNEL);
+=======
+	wnames = kmalloc_array(n, sizeof(char *), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wnames)
 		goto err_out;
 
 	for (ds = dentry, i = (n-1); i >= 0; i--, ds = ds->d_parent)
+<<<<<<< HEAD
 		wnames[i] = (char  *)ds->d_name.name;
+=======
+		wnames[i] = ds->d_name.name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*names = wnames;
 	return n;
@@ -126,6 +265,7 @@ err_out:
 }
 
 static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+<<<<<<< HEAD
 					       uid_t uid, int any)
 {
 	struct dentry *ds;
@@ -133,6 +273,15 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 	int i, n, l, clone, access;
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *fid, *old_fid = NULL;
+=======
+					       kuid_t uid, int any)
+{
+	struct dentry *ds;
+	const unsigned char **wnames, *uname;
+	int i, n, l, access;
+	struct v9fs_session_info *v9ses;
+	struct p9_fid *fid, *root_fid, *old_fid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	v9ses = v9fs_dentry2v9ses(dentry);
 	access = v9ses->flags & V9FS_ACCESS_MASK;
@@ -149,20 +298,36 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 	fid = v9fs_fid_find(ds, uid, any);
 	if (fid) {
 		/* Found the parent fid do a lookup with that */
+<<<<<<< HEAD
 		fid = p9_client_walk(fid, 1, (char **)&dentry->d_name.name, 1);
+=======
+		old_fid = fid;
+
+		fid = p9_client_walk(old_fid, 1, &dentry->d_name.name, 1);
+		p9_fid_put(old_fid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fid_out;
 	}
 	up_read(&v9ses->rename_sem);
 
 	/* start from the root and try to do a lookup */
+<<<<<<< HEAD
 	fid = v9fs_fid_find(dentry->d_sb->s_root, uid, any);
 	if (!fid) {
+=======
+	root_fid = v9fs_fid_find(dentry->d_sb->s_root, uid, any);
+	if (!root_fid) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* the user is not attached to the fs yet */
 		if (access == V9FS_ACCESS_SINGLE)
 			return ERR_PTR(-EPERM);
 
 		if (v9fs_proto_dotu(v9ses) || v9fs_proto_dotl(v9ses))
+<<<<<<< HEAD
 				uname = NULL;
+=======
+			uname = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			uname = v9ses->uname;
 
@@ -171,11 +336,21 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 		if (IS_ERR(fid))
 			return fid;
 
+<<<<<<< HEAD
 		v9fs_fid_add(dentry->d_sb->s_root, fid);
 	}
 	/* If we are root ourself just return that */
 	if (dentry->d_sb->s_root == dentry)
 		return fid;
+=======
+		root_fid = p9_fid_get(fid);
+		v9fs_fid_add(dentry->d_sb->s_root, &fid);
+	}
+	/* If we are root ourself just return that */
+	if (dentry->d_sb->s_root == dentry)
+		return root_fid;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Do a multipath walk with attached root.
 	 * When walking parent we need to make sure we
@@ -187,12 +362,18 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 		fid = ERR_PTR(n);
 		goto err_out;
 	}
+<<<<<<< HEAD
 	clone = 1;
+=======
+	fid = root_fid;
+	old_fid = root_fid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 0;
 	while (i < n) {
 		l = min(n - i, P9_MAXWELEM);
 		/*
 		 * We need to hold rename lock when doing a multipath
+<<<<<<< HEAD
 		 * walk to ensure none of the patch component change
 		 */
 		fid = p9_client_walk(fid, l, &wnames[i], clone);
@@ -216,6 +397,37 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 fid_out:
 	if (!IS_ERR(fid))
 		v9fs_fid_add(dentry, fid);
+=======
+		 * walk to ensure none of the path components change
+		 */
+		fid = p9_client_walk(old_fid, l, &wnames[i],
+				     old_fid == root_fid /* clone */);
+		/* non-cloning walk will return the same fid */
+		if (fid != old_fid) {
+			p9_fid_put(old_fid);
+			old_fid = fid;
+		}
+		if (IS_ERR(fid)) {
+			kfree(wnames);
+			goto err_out;
+		}
+		i += l;
+	}
+	kfree(wnames);
+fid_out:
+	if (!IS_ERR(fid)) {
+		spin_lock(&dentry->d_lock);
+		if (d_unhashed(dentry)) {
+			spin_unlock(&dentry->d_lock);
+			p9_fid_put(fid);
+			fid = ERR_PTR(-ENOENT);
+		} else {
+			__add_fid(dentry, fid);
+			p9_fid_get(fid);
+			spin_unlock(&dentry->d_lock);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	up_read(&v9ses->rename_sem);
 	return fid;
@@ -233,7 +445,11 @@ err_out:
 
 struct p9_fid *v9fs_fid_lookup(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	uid_t uid;
+=======
+	kuid_t uid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int  any, access;
 	struct v9fs_session_info *v9ses;
 
@@ -253,13 +469,18 @@ struct p9_fid *v9fs_fid_lookup(struct dentry *dentry)
 		break;
 
 	default:
+<<<<<<< HEAD
 		uid = ~0;
+=======
+		uid = INVALID_UID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		any = 0;
 		break;
 	}
 	return v9fs_fid_lookup_with_uid(dentry, uid, any);
 }
 
+<<<<<<< HEAD
 struct p9_fid *v9fs_fid_clone(struct dentry *dentry)
 {
 	struct p9_fid *fid, *ret;
@@ -307,3 +528,5 @@ struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
 error_out:
 	return fid;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

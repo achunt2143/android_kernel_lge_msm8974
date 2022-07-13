@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
@@ -5,6 +9,7 @@
  *
  *	Copyright (c) 2009 Takashi Iwai <tiwai@suse.de>
  *	Based on the patches by Rainer Zimmermann <mail@lightshed.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,11 +25,16 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
@@ -131,7 +141,11 @@ struct maya_vol_info {
 	unsigned char mux_bits[2];	/* extra bits for ADC mute */
 };
 
+<<<<<<< HEAD
 static struct maya_vol_info vol_info[WM_NUM_VOLS] = {
+=======
+static const struct maya_vol_info vol_info[WM_NUM_VOLS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[WM_VOL_HP] = {
 		.maxval = 80,
 		.regs = { WM8776_REG_HEADPHONE_L, WM8776_REG_HEADPHONE_R },
@@ -173,7 +187,11 @@ static int maya_vol_info(struct snd_kcontrol *kcontrol,
 			 struct snd_ctl_elem_info *uinfo)
 {
 	unsigned int idx = kcontrol->private_value;
+<<<<<<< HEAD
 	struct maya_vol_info *vol = &vol_info[idx];
+=======
+	const struct maya_vol_info *vol = &vol_info[idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 2;
@@ -204,7 +222,11 @@ static int maya_vol_put(struct snd_kcontrol *kcontrol,
 	struct snd_wm8776 *wm =
 		&chip->wm[snd_ctl_get_ioff(kcontrol, &ucontrol->id)];
 	unsigned int idx = kcontrol->private_value;
+<<<<<<< HEAD
 	struct maya_vol_info *vol = &vol_info[idx];
+=======
+	const struct maya_vol_info *vol = &vol_info[idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val, data;
 	int ch, changed = 0;
 
@@ -358,6 +380,7 @@ static void wm8776_select_input(struct snd_maya44 *chip, int idx, int line)
 static int maya_rec_src_info(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[] = { "Line", "Mic" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -369,6 +392,11 @@ static int maya_rec_src_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[] = { "Line", "Mic" };
+
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(texts), texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int maya_rec_src_get(struct snd_kcontrol *kcontrol,
@@ -407,11 +435,16 @@ static int maya_rec_src_put(struct snd_kcontrol *kcontrol,
 static int maya_pb_route_info(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[] = {
+=======
+	static const char * const texts[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"PCM Out", /* 0 */
 		"Input 1", "Input 2", "Input 3", "Input 4"
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = ARRAY_SIZE(texts);
@@ -421,6 +454,9 @@ static int maya_pb_route_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, ARRAY_SIZE(texts), texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int maya_pb_route_shift(int idx)
@@ -455,7 +491,11 @@ static int maya_pb_route_put(struct snd_kcontrol *kcontrol,
  * controls to be added
  */
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new maya_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new maya_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "Crossmix Playback Volume",
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -545,7 +585,11 @@ static struct snd_kcontrol_new maya_controls[] __devinitdata = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit maya44_add_controls(struct snd_ice1712 *ice)
+=======
+static int maya44_add_controls(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 
@@ -562,8 +606,13 @@ static int __devinit maya44_add_controls(struct snd_ice1712 *ice)
 /*
  * initialize a wm8776 chip
  */
+<<<<<<< HEAD
 static void __devinit wm8776_init(struct snd_ice1712 *ice,
 				  struct snd_wm8776 *wm, unsigned int addr)
+=======
+static void wm8776_init(struct snd_ice1712 *ice,
+			struct snd_wm8776 *wm, unsigned int addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short inits_wm8776[] = {
 		0x02, 0x100, /* R2: headphone L+R muted + update */
@@ -678,12 +727,20 @@ static void set_rate(struct snd_ice1712 *ice, unsigned int rate)
  * supported sample rates (to override the default one)
  */
 
+<<<<<<< HEAD
 static unsigned int rates[] = {
+=======
+static const unsigned int rates[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	32000, 44100, 48000, 64000, 88200, 96000, 176400, 192000
 };
 
 /* playback rates: 32..192 kHz */
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list dac_rates = {
+=======
+static const struct snd_pcm_hw_constraint_list dac_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(rates),
 	.list = rates,
 	.mask = 0
@@ -693,14 +750,22 @@ static struct snd_pcm_hw_constraint_list dac_rates = {
 /*
  * chip addresses on I2C bus
  */
+<<<<<<< HEAD
 static unsigned char wm8776_addr[2] __devinitdata = {
+=======
+static const unsigned char wm8776_addr[2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x34, 0x36, /* codec 0 & 1 */
 };
 
 /*
  * initialize the chip
  */
+<<<<<<< HEAD
 static int __devinit maya44_init(struct snd_ice1712 *ice)
+=======
+static int maya44_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct snd_maya44 *chip;
@@ -743,7 +808,11 @@ static int __devinit maya44_init(struct snd_ice1712 *ice)
  * hence the driver needs to sets up it properly.
  */
 
+<<<<<<< HEAD
 static unsigned char maya44_eeprom[] __devinitdata = {
+=======
+static const unsigned char maya44_eeprom[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x45,
 		/* clock xin1=49.152MHz, mpu401, 2 stereo ADCs+DACs */
 	[ICE_EEP2_ACLINK]      = 0x80,
@@ -765,7 +834,11 @@ static unsigned char maya44_eeprom[] __devinitdata = {
 };
 
 /* entry point */
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_vt1724_maya44_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_vt1724_maya44_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_MAYA44,
 		.name = "ESI Maya44",

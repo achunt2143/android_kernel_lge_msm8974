@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_GENERIC_IOCTL_H
 #define _ASM_GENERIC_IOCTL_H
 
@@ -69,12 +70,24 @@
 	 ((size) << _IOC_SIZESHIFT))
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_GENERIC_IOCTL_H
+#define _ASM_GENERIC_IOCTL_H
+
+#include <uapi/asm-generic/ioctl.h>
+
+#ifdef __CHECKER__
+#define _IOC_TYPECHECK(t) (sizeof(t))
+#else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* provoke compile error for invalid uses of size argument */
 extern unsigned int __invalid_size_argument_for_IOC;
 #define _IOC_TYPECHECK(t) \
 	((sizeof(t) == sizeof(t[1]) && \
 	  sizeof(t) < (1 << _IOC_SIZEBITS)) ? \
 	  sizeof(t) : __invalid_size_argument_for_IOC)
+<<<<<<< HEAD
 #else
 #define _IOC_TYPECHECK(t) (sizeof(t))
 #endif
@@ -102,4 +115,8 @@ extern unsigned int __invalid_size_argument_for_IOC;
 #define IOCSIZE_MASK	(_IOC_SIZEMASK << _IOC_SIZESHIFT)
 #define IOCSIZE_SHIFT	(_IOC_SIZESHIFT)
 
+=======
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_GENERIC_IOCTL_H */

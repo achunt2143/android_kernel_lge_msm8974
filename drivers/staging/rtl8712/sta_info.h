@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -33,7 +40,10 @@
 #define NUM_STA 32
 #define NUM_ACL 64
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* if mode ==0, then the sta is allowed once the addr is hit.
  * if mode ==1, then the sta is rejected once the addr is non-hit.
  */
@@ -48,7 +58,10 @@ struct wlan_acl_pool {
 };
 
 struct	stainfo_stats {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint	rx_pkts;
 	uint	rx_bytes;
 	u64	tx_pkts;
@@ -131,16 +144,28 @@ static inline u32 wifi_mac_hash(u8 *mac)
 	return x;
 }
 
+<<<<<<< HEAD
 u32 _r8712_init_sta_priv(struct sta_priv *pstapriv);
 u32 _r8712_free_sta_priv(struct sta_priv *pstapriv);
 struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv,
 				     u8 *hwaddr);
 void r8712_free_stainfo(struct _adapter *padapter , struct sta_info *psta);
+=======
+int _r8712_init_sta_priv(struct sta_priv *pstapriv);
+void _r8712_free_sta_priv(struct sta_priv *pstapriv);
+struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv,
+				     u8 *hwaddr);
+void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_free_all_stainfo(struct _adapter *padapter);
 struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
 void r8712_init_bcmc_stainfo(struct _adapter *padapter);
 struct sta_info *r8712_get_bcmc_stainfo(struct _adapter *padapter);
+<<<<<<< HEAD
 u8 r8712_access_ctrl(struct wlan_acl_pool *pacl_list, u8 * mac_addr);
+=======
+u8 r8712_access_ctrl(struct wlan_acl_pool *pacl_list, u8 *mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _STA_INFO_H_ */
 

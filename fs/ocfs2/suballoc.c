@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * suballoc.c
  *
  * metadata alloc and free
  * Inspired by ext3 block groups.
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -79,8 +87,11 @@ static u64 ocfs2_group_from_res(struct ocfs2_suballoc_result *res)
 	return ocfs2_which_suballoc_group(res->sr_blkno, res->sr_bit_offset);
 }
 
+<<<<<<< HEAD
 static inline void ocfs2_debug_bg(struct ocfs2_group_desc *bg);
 static inline void ocfs2_debug_suballoc_inode(struct ocfs2_dinode *fe);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u16 ocfs2_find_victim_chain(struct ocfs2_chain_list *cl);
 static int ocfs2_block_group_fill(handle_t *handle,
 				  struct inode *alloc_inode,
@@ -113,12 +124,15 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 				     struct ocfs2_suballoc_result *res);
 static int ocfs2_test_bg_bit_allocatable(struct buffer_head *bg_bh,
 					 int nr);
+<<<<<<< HEAD
 static inline int ocfs2_block_group_set_bits(handle_t *handle,
 					     struct inode *alloc_inode,
 					     struct ocfs2_group_desc *bg,
 					     struct buffer_head *group_bh,
 					     unsigned int bit_off,
 					     unsigned int num_bits);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_relink_block_group(handle_t *handle,
 				    struct inode *alloc_inode,
 				    struct buffer_head *fe_bh,
@@ -147,7 +161,11 @@ void ocfs2_free_ac_resource(struct ocfs2_alloc_context *ac)
 		if (ac->ac_which != OCFS2_AC_USE_LOCAL)
 			ocfs2_inode_unlock(inode, 1);
 
+<<<<<<< HEAD
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		iput(inode);
 		ac->ac_inode = NULL;
@@ -155,10 +173,15 @@ void ocfs2_free_ac_resource(struct ocfs2_alloc_context *ac)
 	brelse(ac->ac_bh);
 	ac->ac_bh = NULL;
 	ac->ac_resv = NULL;
+<<<<<<< HEAD
 	if (ac->ac_find_loc_priv) {
 		kfree(ac->ac_find_loc_priv);
 		ac->ac_find_loc_priv = NULL;
 	}
+=======
+	kfree(ac->ac_find_loc_priv);
+	ac->ac_find_loc_priv = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ocfs2_free_alloc_context(struct ocfs2_alloc_context *ac)
@@ -173,12 +196,21 @@ static u32 ocfs2_bits_per_group(struct ocfs2_chain_list *cl)
 }
 
 #define do_error(fmt, ...)						\
+<<<<<<< HEAD
 	do{								\
 		if (resize)					\
 			mlog(ML_ERROR, fmt "\n", ##__VA_ARGS__);	\
 		else							\
 			ocfs2_error(sb, fmt, ##__VA_ARGS__);		\
 	} while (0)
+=======
+do {									\
+	if (resize)							\
+		mlog(ML_ERROR, fmt, ##__VA_ARGS__);			\
+	else								\
+		return ocfs2_error(sb, fmt, ##__VA_ARGS__);		\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ocfs2_validate_gd_self(struct super_block *sb,
 				  struct buffer_head *bh,
@@ -187,6 +219,7 @@ static int ocfs2_validate_gd_self(struct super_block *sb,
 	struct ocfs2_group_desc *gd = (struct ocfs2_group_desc *)bh->b_data;
 
 	if (!OCFS2_IS_VALID_GROUP_DESC(gd)) {
+<<<<<<< HEAD
 		do_error("Group descriptor #%llu has bad signature %.*s",
 			 (unsigned long long)bh->b_blocknr, 7,
 			 gd->bg_signature);
@@ -225,6 +258,37 @@ static int ocfs2_validate_gd_self(struct super_block *sb,
 			 le16_to_cpu(gd->bg_bits),
 			 8 * le16_to_cpu(gd->bg_size));
 		return -EINVAL;
+=======
+		do_error("Group descriptor #%llu has bad signature %.*s\n",
+			 (unsigned long long)bh->b_blocknr, 7,
+			 gd->bg_signature);
+	}
+
+	if (le64_to_cpu(gd->bg_blkno) != bh->b_blocknr) {
+		do_error("Group descriptor #%llu has an invalid bg_blkno of %llu\n",
+			 (unsigned long long)bh->b_blocknr,
+			 (unsigned long long)le64_to_cpu(gd->bg_blkno));
+	}
+
+	if (le32_to_cpu(gd->bg_generation) != OCFS2_SB(sb)->fs_generation) {
+		do_error("Group descriptor #%llu has an invalid fs_generation of #%u\n",
+			 (unsigned long long)bh->b_blocknr,
+			 le32_to_cpu(gd->bg_generation));
+	}
+
+	if (le16_to_cpu(gd->bg_free_bits_count) > le16_to_cpu(gd->bg_bits)) {
+		do_error("Group descriptor #%llu has bit count %u but claims that %u are free\n",
+			 (unsigned long long)bh->b_blocknr,
+			 le16_to_cpu(gd->bg_bits),
+			 le16_to_cpu(gd->bg_free_bits_count));
+	}
+
+	if (le16_to_cpu(gd->bg_bits) > (8 * le16_to_cpu(gd->bg_size))) {
+		do_error("Group descriptor #%llu has bit count %u but max bitmap bits of %u\n",
+			 (unsigned long long)bh->b_blocknr,
+			 le16_to_cpu(gd->bg_bits),
+			 8 * le16_to_cpu(gd->bg_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -239,20 +303,33 @@ static int ocfs2_validate_gd_parent(struct super_block *sb,
 	struct ocfs2_group_desc *gd = (struct ocfs2_group_desc *)bh->b_data;
 
 	if (di->i_blkno != gd->bg_parent_dinode) {
+<<<<<<< HEAD
 		do_error("Group descriptor #%llu has bad parent "
 			 "pointer (%llu, expected %llu)",
 			 (unsigned long long)bh->b_blocknr,
 			 (unsigned long long)le64_to_cpu(gd->bg_parent_dinode),
 			 (unsigned long long)le64_to_cpu(di->i_blkno));
 		return -EINVAL;
+=======
+		do_error("Group descriptor #%llu has bad parent pointer (%llu, expected %llu)\n",
+			 (unsigned long long)bh->b_blocknr,
+			 (unsigned long long)le64_to_cpu(gd->bg_parent_dinode),
+			 (unsigned long long)le64_to_cpu(di->i_blkno));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	max_bits = le16_to_cpu(di->id2.i_chain.cl_cpg) * le16_to_cpu(di->id2.i_chain.cl_bpc);
 	if (le16_to_cpu(gd->bg_bits) > max_bits) {
+<<<<<<< HEAD
 		do_error("Group descriptor #%llu has bit count of %u",
 			 (unsigned long long)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_bits));
 		return -EINVAL;
+=======
+		do_error("Group descriptor #%llu has bit count of %u\n",
+			 (unsigned long long)bh->b_blocknr,
+			 le16_to_cpu(gd->bg_bits));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* In resize, we may meet the case bg_chain == cl_next_free_rec. */
@@ -260,10 +337,16 @@ static int ocfs2_validate_gd_parent(struct super_block *sb,
 	     le16_to_cpu(di->id2.i_chain.cl_next_free_rec)) ||
 	    ((le16_to_cpu(gd->bg_chain) ==
 	     le16_to_cpu(di->id2.i_chain.cl_next_free_rec)) && !resize)) {
+<<<<<<< HEAD
 		do_error("Group descriptor #%llu has bad chain %u",
 			 (unsigned long long)bh->b_blocknr,
 			 le16_to_cpu(gd->bg_chain));
 		return -EINVAL;
+=======
+		do_error("Group descriptor #%llu has bad chain %u\n",
+			 (unsigned long long)bh->b_blocknr,
+			 le16_to_cpu(gd->bg_chain));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -390,11 +473,18 @@ static int ocfs2_block_group_fill(handle_t *handle,
 	struct super_block * sb = alloc_inode->i_sb;
 
 	if (((unsigned long long) bg_bh->b_blocknr) != group_blkno) {
+<<<<<<< HEAD
 		ocfs2_error(alloc_inode->i_sb, "group block (%llu) != "
 			    "b_blocknr (%llu)",
 			    (unsigned long long)group_blkno,
 			    (unsigned long long) bg_bh->b_blocknr);
 		status = -EIO;
+=======
+		status = ocfs2_error(alloc_inode->i_sb,
+				     "group block (%llu) != b_blocknr (%llu)\n",
+				     (unsigned long long)group_blkno,
+				     (unsigned long long) bg_bh->b_blocknr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -409,7 +499,11 @@ static int ocfs2_block_group_fill(handle_t *handle,
 
 	memset(bg, 0, sb->s_blocksize);
 	strcpy(bg->bg_signature, OCFS2_GROUP_DESC_SIGNATURE);
+<<<<<<< HEAD
 	bg->bg_generation = cpu_to_le32(OCFS2_SB(sb)->fs_generation);
+=======
+	bg->bg_generation = cpu_to_le32(osb->fs_generation);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bg->bg_size = cpu_to_le16(ocfs2_group_bitmap_size(sb, 1,
 						osb->s_feature_incompat));
 	bg->bg_chain = cpu_to_le16(my_chain);
@@ -481,7 +575,11 @@ ocfs2_block_group_alloc_contig(struct ocfs2_super *osb, handle_t *handle,
 
 	bg_bh = sb_getblk(osb->sb, bg_blkno);
 	if (!bg_bh) {
+<<<<<<< HEAD
 		status = -EIO;
+=======
+		status = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto bail;
 	}
@@ -661,7 +759,11 @@ ocfs2_block_group_alloc_discontig(handle_t *handle,
 
 	bg_bh = sb_getblk(osb->sb, bg_blkno);
 	if (!bg_bh) {
+<<<<<<< HEAD
 		status = -EIO;
+=======
+		status = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto bail;
 	}
@@ -734,7 +836,11 @@ static int ocfs2_block_group_alloc(struct ocfs2_super *osb,
 
 	bg_bh = ocfs2_block_group_alloc_contig(osb, handle, alloc_inode,
 					       ac, cl);
+<<<<<<< HEAD
 	if (IS_ERR(bg_bh) && (PTR_ERR(bg_bh) == -ENOSPC))
+=======
+	if (PTR_ERR(bg_bh) == -ENOSPC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bg_bh = ocfs2_block_group_alloc_discontig(handle,
 							  alloc_inode,
 							  ac, cl);
@@ -777,6 +883,10 @@ static int ocfs2_block_group_alloc(struct ocfs2_super *osb,
 	spin_unlock(&OCFS2_I(alloc_inode)->ip_lock);
 	i_size_write(alloc_inode, le64_to_cpu(fe->i_size));
 	alloc_inode->i_blocks = ocfs2_inode_sector_count(alloc_inode);
+<<<<<<< HEAD
+=======
+	ocfs2_update_inode_fsync_trans(handle, alloc_inode, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = 0;
 
@@ -818,11 +928,19 @@ static int ocfs2_reserve_suballoc_bits(struct ocfs2_super *osb,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&alloc_inode->i_mutex);
 
 	status = ocfs2_inode_lock(alloc_inode, &bh, 1);
 	if (status < 0) {
 		mutex_unlock(&alloc_inode->i_mutex);
+=======
+	inode_lock(alloc_inode);
+
+	status = ocfs2_inode_lock(alloc_inode, &bh, 1);
+	if (status < 0) {
+		inode_unlock(alloc_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(alloc_inode);
 
 		mlog_errno(status);
@@ -839,9 +957,15 @@ static int ocfs2_reserve_suballoc_bits(struct ocfs2_super *osb,
 	BUG_ON(!OCFS2_IS_VALID_DINODE(fe));
 
 	if (!(fe->i_flags & cpu_to_le32(OCFS2_CHAIN_FL))) {
+<<<<<<< HEAD
 		ocfs2_error(alloc_inode->i_sb, "Invalid chain allocator %llu",
 			    (unsigned long long)le64_to_cpu(fe->i_blkno));
 		status = -EIO;
+=======
+		status = ocfs2_error(alloc_inode->i_sb,
+				     "Invalid chain allocator %llu\n",
+				     (unsigned long long)le64_to_cpu(fe->i_blkno));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -916,9 +1040,15 @@ static void __ocfs2_set_steal_slot(struct ocfs2_super *osb, int slot, int type)
 {
 	spin_lock(&osb->osb_lock);
 	if (type == INODE_ALLOC_SYSTEM_INODE)
+<<<<<<< HEAD
 		osb->s_inode_steal_slot = slot;
 	else if (type == EXTENT_ALLOC_SYSTEM_INODE)
 		osb->s_meta_steal_slot = slot;
+=======
+		osb->s_inode_steal_slot = (u16)slot;
+	else if (type == EXTENT_ALLOC_SYSTEM_INODE)
+		osb->s_meta_steal_slot = (u16)slot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&osb->osb_lock);
 }
 
@@ -1168,12 +1298,18 @@ int ocfs2_reserve_cluster_bitmap_bits(struct ocfs2_super *osb,
 					     GLOBAL_BITMAP_SYSTEM_INODE,
 					     OCFS2_INVALID_SLOT, NULL,
 					     ALLOC_NEW_GROUP);
+<<<<<<< HEAD
 	if (status < 0 && status != -ENOSPC) {
 		mlog_errno(status);
 		goto bail;
 	}
 
 bail:
+=======
+	if (status < 0 && status != -ENOSPC)
+		mlog_errno(status);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1185,7 +1321,12 @@ static int ocfs2_reserve_clusters_with_limit(struct ocfs2_super *osb,
 					     int flags,
 					     struct ocfs2_alloc_context **ac)
 {
+<<<<<<< HEAD
 	int status;
+=======
+	int status, ret = 0;
+	int retried = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*ac = kzalloc(sizeof(struct ocfs2_alloc_context), GFP_KERNEL);
 	if (!(*ac)) {
@@ -1210,7 +1351,38 @@ static int ocfs2_reserve_clusters_with_limit(struct ocfs2_super *osb,
 	}
 
 	if (status == -ENOSPC) {
+<<<<<<< HEAD
 		status = ocfs2_reserve_cluster_bitmap_bits(osb, *ac);
+=======
+retry:
+		status = ocfs2_reserve_cluster_bitmap_bits(osb, *ac);
+		/* Retry if there is sufficient space cached in truncate log */
+		if (status == -ENOSPC && !retried) {
+			retried = 1;
+			ocfs2_inode_unlock((*ac)->ac_inode, 1);
+			inode_unlock((*ac)->ac_inode);
+
+			ret = ocfs2_try_to_free_truncate_log(osb, bits_wanted);
+			if (ret == 1) {
+				iput((*ac)->ac_inode);
+				(*ac)->ac_inode = NULL;
+				goto retry;
+			}
+
+			if (ret < 0)
+				mlog_errno(ret);
+
+			inode_lock((*ac)->ac_inode);
+			ret = ocfs2_inode_lock((*ac)->ac_inode, NULL, 1);
+			if (ret < 0) {
+				mlog_errno(ret);
+				inode_unlock((*ac)->ac_inode);
+				iput((*ac)->ac_inode);
+				(*ac)->ac_inode = NULL;
+				goto bail;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0) {
 			if (status != -ENOSPC)
 				mlog_errno(status);
@@ -1264,21 +1436,39 @@ static int ocfs2_test_bg_bit_allocatable(struct buffer_head *bg_bh,
 					 int nr)
 {
 	struct ocfs2_group_desc *bg = (struct ocfs2_group_desc *) bg_bh->b_data;
+<<<<<<< HEAD
+=======
+	struct journal_head *jh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap))
 		return 0;
 
+<<<<<<< HEAD
 	if (!buffer_jbd(bg_bh))
 		return 1;
 
 	jbd_lock_bh_state(bg_bh);
 	bg = (struct ocfs2_group_desc *) bh2jh(bg_bh)->b_committed_data;
+=======
+	jh = jbd2_journal_grab_journal_head(bg_bh);
+	if (!jh)
+		return 1;
+
+	spin_lock(&jh->b_state_lock);
+	bg = (struct ocfs2_group_desc *) jh->b_committed_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bg)
 		ret = !ocfs2_test_bit(nr, (unsigned long *)bg->bg_bitmap);
 	else
 		ret = 1;
+<<<<<<< HEAD
 	jbd_unlock_bh_state(bg_bh);
+=======
+	spin_unlock(&jh->b_state_lock);
+	jbd2_journal_put_journal_head(jh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1343,7 +1533,11 @@ static int ocfs2_block_group_find_clear_bits(struct ocfs2_super *osb,
 	return status;
 }
 
+<<<<<<< HEAD
 static inline int ocfs2_block_group_set_bits(handle_t *handle,
+=======
+int ocfs2_block_group_set_bits(handle_t *handle,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     struct inode *alloc_inode,
 					     struct ocfs2_group_desc *bg,
 					     struct buffer_head *group_bh,
@@ -1375,12 +1569,20 @@ static inline int ocfs2_block_group_set_bits(handle_t *handle,
 
 	le16_add_cpu(&bg->bg_free_bits_count, -num_bits);
 	if (le16_to_cpu(bg->bg_free_bits_count) > le16_to_cpu(bg->bg_bits)) {
+<<<<<<< HEAD
 		ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit"
 			    " count %u but claims %u are freed. num_bits %d",
 			    (unsigned long long)le64_to_cpu(bg->bg_blkno),
 			    le16_to_cpu(bg->bg_bits),
 			    le16_to_cpu(bg->bg_free_bits_count), num_bits);
 		return -EROFS;
+=======
+		return ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit count %u but claims %u are freed. num_bits %d\n",
+				   (unsigned long long)le64_to_cpu(bg->bg_blkno),
+				   le16_to_cpu(bg->bg_bits),
+				   le16_to_cpu(bg->bg_free_bits_count),
+				   num_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	while(num_bits--)
 		ocfs2_set_bit(bit_off++, bitmap);
@@ -1388,8 +1590,11 @@ static inline int ocfs2_block_group_set_bits(handle_t *handle,
 	ocfs2_journal_dirty(handle, group_bh);
 
 bail:
+<<<<<<< HEAD
 	if (status)
 		mlog_errno(status);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1422,7 +1627,11 @@ static int ocfs2_relink_block_group(handle_t *handle,
 	int status;
 	/* there is a really tiny chance the journal calls could fail,
 	 * but we wouldn't want inconsistent blocks in *any* case. */
+<<<<<<< HEAD
 	u64 fe_ptr, bg_ptr, prev_bg_ptr;
+=======
+	u64 bg_ptr, prev_bg_ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_dinode *fe = (struct ocfs2_dinode *) fe_bh->b_data;
 	struct ocfs2_group_desc *bg = (struct ocfs2_group_desc *) bg_bh->b_data;
 	struct ocfs2_group_desc *prev_bg = (struct ocfs2_group_desc *) prev_bg_bh->b_data;
@@ -1437,41 +1646,60 @@ static int ocfs2_relink_block_group(handle_t *handle,
 		(unsigned long long)le64_to_cpu(bg->bg_blkno),
 		(unsigned long long)le64_to_cpu(prev_bg->bg_blkno));
 
+<<<<<<< HEAD
 	fe_ptr = le64_to_cpu(fe->id2.i_chain.cl_recs[chain].c_blkno);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bg_ptr = le64_to_cpu(bg->bg_next_group);
 	prev_bg_ptr = le64_to_cpu(prev_bg->bg_next_group);
 
 	status = ocfs2_journal_access_gd(handle, INODE_CACHE(alloc_inode),
 					 prev_bg_bh,
 					 OCFS2_JOURNAL_ACCESS_WRITE);
+<<<<<<< HEAD
 	if (status < 0) {
 		mlog_errno(status);
 		goto out_rollback;
 	}
+=======
+	if (status < 0)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prev_bg->bg_next_group = bg->bg_next_group;
 	ocfs2_journal_dirty(handle, prev_bg_bh);
 
 	status = ocfs2_journal_access_gd(handle, INODE_CACHE(alloc_inode),
 					 bg_bh, OCFS2_JOURNAL_ACCESS_WRITE);
+<<<<<<< HEAD
 	if (status < 0) {
 		mlog_errno(status);
 		goto out_rollback;
 	}
+=======
+	if (status < 0)
+		goto out_rollback_prev_bg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bg->bg_next_group = fe->id2.i_chain.cl_recs[chain].c_blkno;
 	ocfs2_journal_dirty(handle, bg_bh);
 
 	status = ocfs2_journal_access_di(handle, INODE_CACHE(alloc_inode),
 					 fe_bh, OCFS2_JOURNAL_ACCESS_WRITE);
+<<<<<<< HEAD
 	if (status < 0) {
 		mlog_errno(status);
 		goto out_rollback;
 	}
+=======
+	if (status < 0)
+		goto out_rollback_bg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fe->id2.i_chain.cl_recs[chain].c_blkno = bg->bg_blkno;
 	ocfs2_journal_dirty(handle, fe_bh);
 
+<<<<<<< HEAD
 out_rollback:
 	if (status < 0) {
 		fe->id2.i_chain.cl_recs[chain].c_blkno = cpu_to_le64(fe_ptr);
@@ -1482,6 +1710,18 @@ out_rollback:
 	if (status)
 		mlog_errno(status);
 	return status;
+=======
+out:
+	if (status < 0)
+		mlog_errno(status);
+	return status;
+
+out_rollback_bg:
+	bg->bg_next_group = cpu_to_le64(bg_ptr);
+out_rollback_prev_bg:
+	prev_bg->bg_next_group = cpu_to_le64(prev_bg_ptr);
+	goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ocfs2_block_group_reasonably_empty(struct ocfs2_group_desc *bg,
@@ -1527,7 +1767,11 @@ static int ocfs2_cluster_group_search(struct inode *inode,
 				OCFS2_I(inode)->ip_clusters, max_bits);
 		}
 
+<<<<<<< HEAD
 		ret = ocfs2_block_group_find_clear_bits(OCFS2_SB(inode->i_sb),
+=======
+		ret = ocfs2_block_group_find_clear_bits(osb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							group_bh, bits_wanted,
 							max_bits, res);
 		if (ret)
@@ -1595,7 +1839,11 @@ static int ocfs2_block_group_search(struct inode *inode,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ocfs2_alloc_dinode_update_counts(struct inode *inode,
+=======
+int ocfs2_alloc_dinode_update_counts(struct inode *inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       handle_t *handle,
 				       struct buffer_head *di_bh,
 				       u32 num_bits,
@@ -1622,6 +1870,24 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+void ocfs2_rollback_alloc_dinode_counts(struct inode *inode,
+				       struct buffer_head *di_bh,
+				       u32 num_bits,
+				       u16 chain)
+{
+	u32 tmp_used;
+	struct ocfs2_dinode *di = (struct ocfs2_dinode *) di_bh->b_data;
+	struct ocfs2_chain_list *cl;
+
+	cl = (struct ocfs2_chain_list *)&di->id2.i_chain;
+	tmp_used = le32_to_cpu(di->id1.bitmap1.i_used);
+	di->id1.bitmap1.i_used = cpu_to_le32(tmp_used - num_bits);
+	le32_add_cpu(&cl->cl_recs[chain].c_free, num_bits);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_bg_discontig_fix_by_rec(struct ocfs2_suballoc_result *res,
 					 struct ocfs2_extent_rec *rec,
 					 struct ocfs2_chain_list *cl)
@@ -1722,8 +1988,17 @@ static int ocfs2_search_one_group(struct ocfs2_alloc_context *ac,
 
 	ret = ocfs2_block_group_set_bits(handle, alloc_inode, gd, group_bh,
 					 res->sr_bit_offset, res->sr_bits);
+<<<<<<< HEAD
 	if (ret < 0)
 		mlog_errno(ret);
+=======
+	if (ret < 0) {
+		ocfs2_rollback_alloc_dinode_counts(alloc_inode, ac->ac_bh,
+					       res->sr_bits,
+					       le16_to_cpu(gd->bg_chain));
+		mlog_errno(ret);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_loc_only:
 	*bits_left = le16_to_cpu(gd->bg_free_bits_count);
@@ -1853,6 +2128,11 @@ static int ocfs2_search_chain(struct ocfs2_alloc_context *ac,
 					    res->sr_bit_offset,
 					    res->sr_bits);
 	if (status < 0) {
+<<<<<<< HEAD
+=======
+		ocfs2_rollback_alloc_dinode_counts(alloc_inode,
+					ac->ac_bh, res->sr_bits, chain);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto bail;
 	}
@@ -1898,6 +2178,7 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 
 	if (le32_to_cpu(fe->id1.bitmap1.i_used) >=
 	    le32_to_cpu(fe->id1.bitmap1.i_total)) {
+<<<<<<< HEAD
 		ocfs2_error(ac->ac_inode->i_sb,
 			    "Chain allocator dinode %llu has %u used "
 			    "bits but only %u total.",
@@ -1905,6 +2186,13 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 			    le32_to_cpu(fe->id1.bitmap1.i_used),
 			    le32_to_cpu(fe->id1.bitmap1.i_total));
 		status = -EIO;
+=======
+		status = ocfs2_error(ac->ac_inode->i_sb,
+				     "Chain allocator dinode %llu has %u used bits but only %u total\n",
+				     (unsigned long long)le64_to_cpu(fe->i_blkno),
+				     le32_to_cpu(fe->id1.bitmap1.i_used),
+				     le32_to_cpu(fe->id1.bitmap1.i_total));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -1932,7 +2220,14 @@ static int ocfs2_claim_suballoc_bits(struct ocfs2_alloc_context *ac,
 	status = ocfs2_search_chain(ac, handle, bits_wanted, min_bits,
 				    res, &bits_left);
 	if (!status) {
+<<<<<<< HEAD
 		hint = ocfs2_group_from_res(res);
+=======
+		if (ocfs2_is_cluster_bitmap(ac->ac_inode))
+			hint = res->sr_bg_blkno;
+		else
+			hint = ocfs2_group_from_res(res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto set_hint;
 	}
 	if (status < 0 && status != -ENOSPC) {
@@ -2106,7 +2401,11 @@ int ocfs2_find_new_inode_loc(struct inode *dir,
 
 	ac->ac_find_loc_priv = res;
 	*fe_blkno = res->sr_blkno;
+<<<<<<< HEAD
 
+=======
+	ocfs2_update_inode_fsync_trans(handle, dir, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (handle)
 		ocfs2_commit_trans(OCFS2_SB(dir->i_sb), handle);
@@ -2164,6 +2463,11 @@ int ocfs2_claim_new_inode_at_loc(handle_t *handle,
 					 res->sr_bit_offset,
 					 res->sr_bits);
 	if (ret < 0) {
+<<<<<<< HEAD
+=======
+		ocfs2_rollback_alloc_dinode_counts(ac->ac_inode,
+					       ac->ac_bh, res->sr_bits, chain);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(ret);
 		goto out;
 	}
@@ -2385,6 +2689,10 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 	int status;
 	unsigned int tmp;
 	struct ocfs2_group_desc *undo_bg = NULL;
+<<<<<<< HEAD
+=======
+	struct journal_head *jh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The caller got this descriptor from
 	 * ocfs2_read_group_descriptor().  Any corruption is a code bug. */
@@ -2403,10 +2711,17 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	if (undo_fn) {
 		jbd_lock_bh_state(group_bh);
 		undo_bg = (struct ocfs2_group_desc *)
 					bh2jh(group_bh)->b_committed_data;
+=======
+	jh = bh2jh(group_bh);
+	if (undo_fn) {
+		spin_lock(&jh->b_state_lock);
+		undo_bg = (struct ocfs2_group_desc *) jh->b_committed_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!undo_bg);
 	}
 
@@ -2420,6 +2735,7 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 	}
 	le16_add_cpu(&bg->bg_free_bits_count, num_bits);
 	if (le16_to_cpu(bg->bg_free_bits_count) > le16_to_cpu(bg->bg_bits)) {
+<<<<<<< HEAD
 		ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit"
 			    " count %u but claims %u are freed. num_bits %d",
 			    (unsigned long long)le64_to_cpu(bg->bg_blkno),
@@ -2430,6 +2746,19 @@ static int ocfs2_block_group_clear_bits(handle_t *handle,
 
 	if (undo_fn)
 		jbd_unlock_bh_state(group_bh);
+=======
+		if (undo_fn)
+			spin_unlock(&jh->b_state_lock);
+		return ocfs2_error(alloc_inode->i_sb, "Group descriptor # %llu has bit count %u but claims %u are freed. num_bits %d\n",
+				   (unsigned long long)le64_to_cpu(bg->bg_blkno),
+				   le16_to_cpu(bg->bg_bits),
+				   le16_to_cpu(bg->bg_free_bits_count),
+				   num_bits);
+	}
+
+	if (undo_fn)
+		spin_unlock(&jh->b_state_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, group_bh);
 bail:
@@ -2490,6 +2819,11 @@ static int _ocfs2_free_suballoc_bits(handle_t *handle,
 					 alloc_bh, OCFS2_JOURNAL_ACCESS_WRITE);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
+=======
+		ocfs2_block_group_set_bits(handle, alloc_inode, group, group_bh,
+				start_bit, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -2501,9 +2835,12 @@ static int _ocfs2_free_suballoc_bits(handle_t *handle,
 
 bail:
 	brelse(group_bh);
+<<<<<<< HEAD
 
 	if (status)
 		mlog_errno(status);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2544,16 +2881,26 @@ static int _ocfs2_free_clusters(handle_t *handle,
 	int status;
 	u16 bg_start_bit;
 	u64 bg_blkno;
+<<<<<<< HEAD
 	struct ocfs2_dinode *fe;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* You can't ever have a contiguous set of clusters
 	 * bigger than a block group bitmap so we never have to worry
 	 * about looping on them.
 	 * This is expensive. We can safely remove once this stuff has
 	 * gotten tested really well. */
+<<<<<<< HEAD
 	BUG_ON(start_blk != ocfs2_clusters_to_blocks(bitmap_inode->i_sb, ocfs2_blocks_to_clusters(bitmap_inode->i_sb, start_blk)));
 
 	fe = (struct ocfs2_dinode *) bitmap_bh->b_data;
+=======
+	BUG_ON(start_blk != ocfs2_clusters_to_blocks(bitmap_inode->i_sb,
+				ocfs2_blocks_to_clusters(bitmap_inode->i_sb,
+							 start_blk)));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_block_to_cluster_group(bitmap_inode, start_blk, &bg_blkno,
 				     &bg_start_bit);
@@ -2574,8 +2921,11 @@ static int _ocfs2_free_clusters(handle_t *handle,
 					 num_clusters);
 
 out:
+<<<<<<< HEAD
 	if (status)
 		mlog_errno(status);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2605,6 +2955,7 @@ int ocfs2_release_clusters(handle_t *handle,
 				    _ocfs2_clear_bit);
 }
 
+<<<<<<< HEAD
 static inline void ocfs2_debug_bg(struct ocfs2_group_desc *bg)
 {
 	printk("Block Group:\n");
@@ -2652,6 +3003,8 @@ static inline void ocfs2_debug_suballoc_inode(struct ocfs2_dinode *fe)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For a given allocation, determine which allocators will need to be
  * accessed, and lock them, reserving the appropriate number of bits.
@@ -2678,7 +3031,11 @@ int ocfs2_lock_allocators(struct inode *inode,
 
 	BUG_ON(clusters_to_add != 0 && data_ac == NULL);
 
+<<<<<<< HEAD
 	num_free_extents = ocfs2_num_free_extents(osb, et);
+=======
+	num_free_extents = ocfs2_num_free_extents(et);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (num_free_extents < 0) {
 		ret = num_free_extents;
 		mlog_errno(ret);
@@ -2869,9 +3226,18 @@ int ocfs2_test_inode_bit(struct ocfs2_super *osb, u64 blkno, int *res)
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	inode_alloc_inode =
 		ocfs2_get_system_file_inode(osb, INODE_ALLOC_SYSTEM_INODE,
 					    suballoc_slot);
+=======
+	if (suballoc_slot == (u16)OCFS2_INVALID_SLOT)
+		inode_alloc_inode = ocfs2_get_system_file_inode(osb,
+			GLOBAL_INODE_ALLOC_SYSTEM_INODE, suballoc_slot);
+	else
+		inode_alloc_inode = ocfs2_get_system_file_inode(osb,
+			INODE_ALLOC_SYSTEM_INODE, suballoc_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode_alloc_inode) {
 		/* the error code could be inaccurate, but we are not able to
 		 * get the correct one. */
@@ -2881,10 +3247,18 @@ int ocfs2_test_inode_bit(struct ocfs2_super *osb, u64 blkno, int *res)
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&inode_alloc_inode->i_mutex);
 	status = ocfs2_inode_lock(inode_alloc_inode, &alloc_bh, 0);
 	if (status < 0) {
 		mutex_unlock(&inode_alloc_inode->i_mutex);
+=======
+	inode_lock(inode_alloc_inode);
+	status = ocfs2_inode_lock(inode_alloc_inode, &alloc_bh, 0);
+	if (status < 0) {
+		inode_unlock(inode_alloc_inode);
+		iput(inode_alloc_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog(ML_ERROR, "lock on alloc inode on slot %u failed %d\n",
 		     (u32)suballoc_slot, status);
 		goto bail;
@@ -2896,7 +3270,11 @@ int ocfs2_test_inode_bit(struct ocfs2_super *osb, u64 blkno, int *res)
 		mlog(ML_ERROR, "test suballoc bit failed %d\n", status);
 
 	ocfs2_inode_unlock(inode_alloc_inode, 0);
+<<<<<<< HEAD
 	mutex_unlock(&inode_alloc_inode->i_mutex);
+=======
+	inode_unlock(inode_alloc_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iput(inode_alloc_inode);
 	brelse(alloc_bh);

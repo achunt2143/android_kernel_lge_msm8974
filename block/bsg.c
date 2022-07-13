@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * bsg.c - block layer implementation of the sg v4 interface
  *
@@ -8,25 +9,39 @@
  *  License version 2.  See the file "COPYING" in the main directory of this
  *  archive for more details.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * bsg.c - block layer implementation of the sg v4 interface
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/file.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/poll.h>
 #include <linux/cdev.h>
 #include <linux/jiffies.h>
 #include <linux/percpu.h>
 #include <linux/uio.h>
+=======
+#include <linux/cdev.h>
+#include <linux/jiffies.h>
+#include <linux/percpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/idr.h>
 #include <linux/bsg.h>
 #include <linux/slab.h>
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_ioctl.h>
+<<<<<<< HEAD
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_driver.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/sg.h>
 
 #define BSG_DESCRIPTION	"Block layer SCSI generic (bsg) driver"
@@ -34,6 +49,7 @@
 
 struct bsg_device {
 	struct request_queue *queue;
+<<<<<<< HEAD
 	spinlock_t lock;
 	struct list_head busy_list;
 	struct list_head done_list;
@@ -858,11 +874,67 @@ static int bsg_open(struct inode *inode, struct file *file)
 		return PTR_ERR(bd);
 
 	file->private_data = bd;
+=======
+	struct device device;
+	struct cdev cdev;
+	int max_queue;
+	unsigned int timeout;
+	unsigned int reserved_size;
+	bsg_sg_io_fn *sg_io_fn;
+};
+
+static inline struct bsg_device *to_bsg_device(struct inode *inode)
+{
+	return container_of(inode->i_cdev, struct bsg_device, cdev);
+}
+
+#define BSG_DEFAULT_CMDS	64
+#define BSG_MAX_DEVS		(1 << MINORBITS)
+
+static DEFINE_IDA(bsg_minor_ida);
+static const struct class bsg_class;
+static int bsg_major;
+
+static unsigned int bsg_timeout(struct bsg_device *bd, struct sg_io_v4 *hdr)
+{
+	unsigned int timeout = BLK_DEFAULT_SG_TIMEOUT;
+
+	if (hdr->timeout)
+		timeout = msecs_to_jiffies(hdr->timeout);
+	else if (bd->timeout)
+		timeout = bd->timeout;
+
+	return max_t(unsigned int, timeout, BLK_MIN_SG_TIMEOUT);
+}
+
+static int bsg_sg_io(struct bsg_device *bd, bool open_for_write,
+		     void __user *uarg)
+{
+	struct sg_io_v4 hdr;
+	int ret;
+
+	if (copy_from_user(&hdr, uarg, sizeof(hdr)))
+		return -EFAULT;
+	if (hdr.guard != 'Q')
+		return -EINVAL;
+	ret = bd->sg_io_fn(bd->queue, &hdr, open_for_write,
+			   bsg_timeout(bd, &hdr));
+	if (!ret && copy_to_user(uarg, &hdr, sizeof(hdr)))
+		return -EFAULT;
+	return ret;
+}
+
+static int bsg_open(struct inode *inode, struct file *file)
+{
+	if (!blk_get_queue(to_bsg_device(inode)->queue))
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int bsg_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct bsg_device *bd = file->private_data;
 
 	file->private_data = NULL;
@@ -885,10 +957,32 @@ static unsigned int bsg_poll(struct file *file, poll_table *wait)
 	spin_unlock_irq(&bd->lock);
 
 	return mask;
+=======
+	blk_put_queue(to_bsg_device(inode)->queue);
+	return 0;
+}
+
+static int bsg_get_command_q(struct bsg_device *bd, int __user *uarg)
+{
+	return put_user(READ_ONCE(bd->max_queue), uarg);
+}
+
+static int bsg_set_command_q(struct bsg_device *bd, int __user *uarg)
+{
+	int max_queue;
+
+	if (get_user(max_queue, uarg))
+		return -EFAULT;
+	if (max_queue < 1)
+		return -EINVAL;
+	WRITE_ONCE(bd->max_queue, max_queue);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
 	struct bsg_device *bd = file->private_data;
 	int __user *uarg = (int __user *) arg;
 	int ret;
@@ -912,11 +1006,28 @@ static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		spin_unlock_irq(&bd->lock);
 		return 0;
 	}
+=======
+	struct bsg_device *bd = to_bsg_device(file_inode(file));
+	struct request_queue *q = bd->queue;
+	void __user *uarg = (void __user *) arg;
+	int __user *intp = uarg;
+	int val;
+
+	switch (cmd) {
+	/*
+	 * Our own ioctls
+	 */
+	case SG_GET_COMMAND_Q:
+		return bsg_get_command_q(bd, uarg);
+	case SG_SET_COMMAND_Q:
+		return bsg_set_command_q(bd, uarg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * SCSI/sg ioctls
 	 */
 	case SG_GET_VERSION_NUM:
+<<<<<<< HEAD
 	case SCSI_IOCTL_GET_IDLUN:
 	case SCSI_IOCTL_GET_BUS_NUMBER:
 	case SG_SET_TIMEOUT:
@@ -964,20 +1075,63 @@ static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 #else
 		return -ENOTTY;
 #endif
+=======
+		return put_user(30527, intp);
+	case SCSI_IOCTL_GET_IDLUN:
+		return put_user(0, intp);
+	case SCSI_IOCTL_GET_BUS_NUMBER:
+		return put_user(0, intp);
+	case SG_SET_TIMEOUT:
+		if (get_user(val, intp))
+			return -EFAULT;
+		bd->timeout = clock_t_to_jiffies(val);
+		return 0;
+	case SG_GET_TIMEOUT:
+		return jiffies_to_clock_t(bd->timeout);
+	case SG_GET_RESERVED_SIZE:
+		return put_user(min(bd->reserved_size, queue_max_bytes(q)),
+				intp);
+	case SG_SET_RESERVED_SIZE:
+		if (get_user(val, intp))
+			return -EFAULT;
+		if (val < 0)
+			return -EINVAL;
+		bd->reserved_size =
+			min_t(unsigned int, val, queue_max_bytes(q));
+		return 0;
+	case SG_EMULATED_HOST:
+		return put_user(1, intp);
+	case SG_IO:
+		return bsg_sg_io(bd, file->f_mode & FMODE_WRITE, uarg);
+	case SCSI_IOCTL_SEND_COMMAND:
+		pr_warn_ratelimited("%s: calling unsupported SCSI_IOCTL_SEND_COMMAND\n",
+				current->comm);
+		return -EINVAL;
+	default:
+		return -ENOTTY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static const struct file_operations bsg_fops = {
+<<<<<<< HEAD
 	.read		=	bsg_read,
 	.write		=	bsg_write,
 	.poll		=	bsg_poll,
 	.open		=	bsg_open,
 	.release	=	bsg_release,
 	.unlocked_ioctl	=	bsg_ioctl,
+=======
+	.open		=	bsg_open,
+	.release	=	bsg_release,
+	.unlocked_ioctl	=	bsg_ioctl,
+	.compat_ioctl	=	compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		=	THIS_MODULE,
 	.llseek		=	default_llseek,
 };
 
+<<<<<<< HEAD
 void bsg_unregister_queue(struct request_queue *q)
 {
 	struct bsg_class_device *bcd = &q->bsg_dev;
@@ -1074,10 +1228,84 @@ EXPORT_SYMBOL_GPL(bsg_register_queue);
 static struct cdev bsg_cdev;
 
 static char *bsg_devnode(struct device *dev, umode_t *mode)
+=======
+static void bsg_device_release(struct device *dev)
+{
+	struct bsg_device *bd = container_of(dev, struct bsg_device, device);
+
+	ida_free(&bsg_minor_ida, MINOR(bd->device.devt));
+	kfree(bd);
+}
+
+void bsg_unregister_queue(struct bsg_device *bd)
+{
+	struct gendisk *disk = bd->queue->disk;
+
+	if (disk && disk->queue_kobj.sd)
+		sysfs_remove_link(&disk->queue_kobj, "bsg");
+	cdev_device_del(&bd->cdev, &bd->device);
+	put_device(&bd->device);
+}
+EXPORT_SYMBOL_GPL(bsg_unregister_queue);
+
+struct bsg_device *bsg_register_queue(struct request_queue *q,
+		struct device *parent, const char *name, bsg_sg_io_fn *sg_io_fn)
+{
+	struct bsg_device *bd;
+	int ret;
+
+	bd = kzalloc(sizeof(*bd), GFP_KERNEL);
+	if (!bd)
+		return ERR_PTR(-ENOMEM);
+	bd->max_queue = BSG_DEFAULT_CMDS;
+	bd->reserved_size = INT_MAX;
+	bd->queue = q;
+	bd->sg_io_fn = sg_io_fn;
+
+	ret = ida_alloc_max(&bsg_minor_ida, BSG_MAX_DEVS - 1, GFP_KERNEL);
+	if (ret < 0) {
+		if (ret == -ENOSPC)
+			dev_err(parent, "bsg: too many bsg devices\n");
+		kfree(bd);
+		return ERR_PTR(ret);
+	}
+	bd->device.devt = MKDEV(bsg_major, ret);
+	bd->device.class = &bsg_class;
+	bd->device.parent = parent;
+	bd->device.release = bsg_device_release;
+	dev_set_name(&bd->device, "%s", name);
+	device_initialize(&bd->device);
+
+	cdev_init(&bd->cdev, &bsg_fops);
+	bd->cdev.owner = THIS_MODULE;
+	ret = cdev_device_add(&bd->cdev, &bd->device);
+	if (ret)
+		goto out_put_device;
+
+	if (q->disk && q->disk->queue_kobj.sd) {
+		ret = sysfs_create_link(&q->disk->queue_kobj, &bd->device.kobj,
+					"bsg");
+		if (ret)
+			goto out_device_del;
+	}
+
+	return bd;
+
+out_device_del:
+	cdev_device_del(&bd->cdev, &bd->device);
+out_put_device:
+	put_device(&bd->device);
+	return ERR_PTR(ret);
+}
+EXPORT_SYMBOL_GPL(bsg_register_queue);
+
+static char *bsg_devnode(const struct device *dev, umode_t *mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "bsg/%s", dev_name(dev));
 }
 
+<<<<<<< HEAD
 static int __init bsg_init(void)
 {
 	int ret, i;
@@ -1099,10 +1327,26 @@ static int __init bsg_init(void)
 		goto destroy_kmemcache;
 	}
 	bsg_class->devnode = bsg_devnode;
+=======
+static const struct class bsg_class = {
+	.name		= "bsg",
+	.devnode	= bsg_devnode,
+};
+
+static int __init bsg_init(void)
+{
+	dev_t devid;
+	int ret;
+
+	ret = class_register(&bsg_class);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = alloc_chrdev_region(&devid, 0, BSG_MAX_DEVS, "bsg");
 	if (ret)
 		goto destroy_bsg_class;
+<<<<<<< HEAD
 
 	bsg_major = MAJOR(devid);
 
@@ -1120,6 +1364,16 @@ destroy_bsg_class:
 	class_destroy(bsg_class);
 destroy_kmemcache:
 	kmem_cache_destroy(bsg_cmd_cachep);
+=======
+	bsg_major = MAJOR(devid);
+
+	printk(KERN_INFO BSG_DESCRIPTION " version " BSG_VERSION
+	       " loaded (major %d)\n", bsg_major);
+	return 0;
+
+destroy_bsg_class:
+	class_unregister(&bsg_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 

@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Wrapper for decompressing LZ4-compressed kernel, initramfs, and initrd
  *
  * Copyright (C) 2013, LG Electronics, Kyungsik Lee <kyungsik.lee@lge.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef STATIC
@@ -31,10 +38,17 @@
 #define LZ4_DEFAULT_UNCOMPRESSED_CHUNK_SIZE (8 << 20)
 #define ARCHIVE_MAGICNUMBER 0x184C2102
 
+<<<<<<< HEAD
 STATIC inline int INIT unlz4(u8 *input, int in_len,
 				int (*fill) (void *, unsigned int),
 				int (*flush) (void *, unsigned int),
 				u8 *output, int *posp,
+=======
+STATIC inline int INIT unlz4(u8 *input, long in_len,
+				long (*fill)(void *, unsigned long),
+				long (*flush)(void *, unsigned long),
+				u8 *output, long *posp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				void (*error) (char *x))
 {
 	int ret = -1;
@@ -43,7 +57,11 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 	u8 *inp;
 	u8 *inp_start;
 	u8 *outp;
+<<<<<<< HEAD
 	int size = in_len;
+=======
+	long size = in_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef PREBOOT
 	size_t out_len = get_unaligned_le32(input + in_len);
 #endif
@@ -72,7 +90,11 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 		error("NULL input pointer and missing fill function");
 		goto exit_1;
 	} else {
+<<<<<<< HEAD
 		inp = large_malloc(lz4_compressbound(uncomp_chunksize));
+=======
+		inp = large_malloc(LZ4_compressBound(uncomp_chunksize));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!inp) {
 			error("Could not allocate input buffer");
 			goto exit_1;
@@ -83,6 +105,7 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 	if (posp)
 		*posp = 0;
 
+<<<<<<< HEAD
 	if (fill)
 		fill(inp, 4);
 
@@ -90,6 +113,22 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 	if (chunksize == ARCHIVE_MAGICNUMBER) {
 		inp += 4;
 		size -= 4;
+=======
+	if (fill) {
+		size = fill(inp, 4);
+		if (size < 4) {
+			error("data corrupted");
+			goto exit_2;
+		}
+	}
+
+	chunksize = get_unaligned_le32(inp);
+	if (chunksize == ARCHIVE_MAGICNUMBER) {
+		if (!fill) {
+			inp += 4;
+			size -= 4;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		error("invalid header");
 		goto exit_2;
@@ -100,6 +139,7 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 
 	for (;;) {
 
+<<<<<<< HEAD
 		if (fill)
 			fill(inp, 4);
 
@@ -107,22 +147,67 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 		if (chunksize == ARCHIVE_MAGICNUMBER) {
 			inp += 4;
 			size -= 4;
+=======
+		if (fill) {
+			size = fill(inp, 4);
+			if (size == 0)
+				break;
+			if (size < 4) {
+				error("data corrupted");
+				goto exit_2;
+			}
+		} else if (size < 4) {
+			/* empty or end-of-file */
+			goto exit_3;
+		}
+
+		chunksize = get_unaligned_le32(inp);
+		if (chunksize == ARCHIVE_MAGICNUMBER) {
+			if (!fill) {
+				inp += 4;
+				size -= 4;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (posp)
 				*posp += 4;
 			continue;
 		}
+<<<<<<< HEAD
 		inp += 4;
 		size -= 4;
+=======
+
+		if (!fill && chunksize == 0) {
+			/* empty or end-of-file */
+			goto exit_3;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (posp)
 			*posp += 4;
 
+<<<<<<< HEAD
 		if (fill) {
 			if (chunksize > lz4_compressbound(uncomp_chunksize)) {
 				error("chunk length is longer than allocated");
 				goto exit_2;
 			}
 			fill(inp, chunksize);
+=======
+		if (!fill) {
+			inp += 4;
+			size -= 4;
+		} else {
+			if (chunksize > LZ4_compressBound(uncomp_chunksize)) {
+				error("chunk length is longer than allocated");
+				goto exit_2;
+			}
+			size = fill(inp, chunksize);
+			if (size < chunksize) {
+				error("data corrupted");
+				goto exit_2;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 #ifdef PREBOOT
 		if (out_len >= uncomp_chunksize) {
@@ -130,17 +215,32 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 			out_len -= dest_len;
 		} else
 			dest_len = out_len;
+<<<<<<< HEAD
 		ret = lz4_decompress(inp, &chunksize, outp, dest_len);
 #else
 		dest_len = uncomp_chunksize;
 		ret = lz4_decompress_unknownoutputsize(inp, chunksize, outp,
 				&dest_len);
+=======
+
+		ret = LZ4_decompress_fast(inp, outp, dest_len);
+		chunksize = ret;
+#else
+		dest_len = uncomp_chunksize;
+
+		ret = LZ4_decompress_safe(inp, outp, chunksize, dest_len);
+		dest_len = ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		if (ret < 0) {
 			error("Decoding failed");
 			goto exit_2;
 		}
 
+<<<<<<< HEAD
+=======
+		ret = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (flush && flush(outp, dest_len) != dest_len)
 			goto exit_2;
 		if (output)
@@ -148,6 +248,7 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 		if (posp)
 			*posp += chunksize;
 
+<<<<<<< HEAD
 		size -= chunksize;
 
 		if (size == 0)
@@ -162,6 +263,22 @@ STATIC inline int INIT unlz4(u8 *input, int in_len,
 			inp = inp_start;
 	}
 
+=======
+		if (!fill) {
+			size -= chunksize;
+
+			if (size == 0)
+				break;
+			else if (size < 0) {
+				error("data corrupted");
+				goto exit_2;
+			}
+			inp += chunksize;
+		}
+	}
+
+exit_3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = 0;
 exit_2:
 	if (!input)
@@ -174,12 +291,21 @@ exit_0:
 }
 
 #ifdef PREBOOT
+<<<<<<< HEAD
 STATIC int INIT decompress(unsigned char *buf, int in_len,
 			      int(*fill)(void*, unsigned int),
 			      int(*flush)(void*, unsigned int),
 			      unsigned char *output,
 			      int *posp,
 			      void(*error)(char *x)
+=======
+STATIC int INIT __decompress(unsigned char *buf, long in_len,
+			      long (*fill)(void*, unsigned long),
+			      long (*flush)(void*, unsigned long),
+			      unsigned char *output, long out_len,
+			      long *posp,
+			      void (*error)(char *x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)
 {
 	return unlz4(buf, in_len - 4, fill, flush, output, posp, error);

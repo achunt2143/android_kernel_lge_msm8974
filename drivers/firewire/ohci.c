@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for OHCI 1394 controllers
  *
  * Copyright (C) 2003-2006 Kristian Hoegsberg <krh@bitplanet.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bitops.h>
@@ -54,6 +61,13 @@
 #include "core.h"
 #include "ohci.h"
 
+<<<<<<< HEAD
+=======
+#define ohci_info(ohci, f, args...)	dev_info(ohci->card.device, f, ##args)
+#define ohci_notice(ohci, f, args...)	dev_notice(ohci->card.device, f, ##args)
+#define ohci_err(ohci, f, args...)	dev_err(ohci->card.device, f, ##args)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DESCRIPTOR_OUTPUT_MORE		0
 #define DESCRIPTOR_OUTPUT_LAST		(1 << 12)
 #define DESCRIPTOR_INPUT_MORE		(2 << 12)
@@ -68,6 +82,11 @@
 #define DESCRIPTOR_BRANCH_ALWAYS	(3 << 2)
 #define DESCRIPTOR_WAIT			(3 << 0)
 
+<<<<<<< HEAD
+=======
+#define DESCRIPTOR_CMD			(0xf << 12)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct descriptor {
 	__le16 req_count;
 	__le16 control;
@@ -118,7 +137,11 @@ struct descriptor_buffer {
 	dma_addr_t buffer_bus;
 	size_t buffer_size;
 	size_t used;
+<<<<<<< HEAD
 	struct descriptor buffer[0];
+=======
+	struct descriptor buffer[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct context {
@@ -149,10 +172,18 @@ struct context {
 	struct descriptor *last;
 
 	/*
+<<<<<<< HEAD
 	 * The last descriptor in the DMA program.  It contains the branch
 	 * address that must be updated upon appending a new descriptor.
 	 */
 	struct descriptor *prev;
+=======
+	 * The last descriptor block in the DMA program. It contains the branch
+	 * address that must be updated upon appending a new descriptor.
+	 */
+	struct descriptor *prev;
+	int prev_z;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	descriptor_callback_t callback;
 
@@ -191,6 +222,10 @@ struct fw_ohci {
 	unsigned quirks;
 	unsigned int pri_req_max;
 	u32 bus_time;
+<<<<<<< HEAD
+=======
+	bool bus_time_running;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_root;
 	bool csr_state_setclear_abdicate;
 	int n_ir;
@@ -227,13 +262,22 @@ struct fw_ohci {
 	dma_addr_t next_config_rom_bus;
 	__be32     next_header;
 
+<<<<<<< HEAD
 	__le32    *self_id_cpu;
+=======
+	__le32    *self_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t self_id_bus;
 	struct work_struct bus_reset_work;
 
 	u32 self_id_buffer[512];
 };
 
+<<<<<<< HEAD
+=======
+static struct workqueue_struct *selfid_workqueue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct fw_ohci *fw_ohci(struct fw_card *card)
 {
 	return container_of(card, struct fw_ohci, card);
@@ -263,12 +307,17 @@ static inline struct fw_ohci *fw_ohci(struct fw_card *card)
 
 static char ohci_driver_name[] = KBUILD_MODNAME;
 
+<<<<<<< HEAD
+=======
+#define PCI_VENDOR_ID_PINNACLE_SYSTEMS	0x11bd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AGERE_FW643	0x5901
 #define PCI_DEVICE_ID_CREATIVE_SB1394	0x4001
 #define PCI_DEVICE_ID_JMICRON_JMB38X_FW	0x2380
 #define PCI_DEVICE_ID_TI_TSB12LV22	0x8009
 #define PCI_DEVICE_ID_TI_TSB12LV26	0x8020
 #define PCI_DEVICE_ID_TI_TSB82AA2	0x8025
+<<<<<<< HEAD
 #define PCI_VENDOR_ID_PINNACLE_SYSTEMS	0x11bd
 
 #define QUIRK_CYCLE_TIMER		1
@@ -277,6 +326,64 @@ static char ohci_driver_name[] = KBUILD_MODNAME;
 #define QUIRK_NO_1394A			8
 #define QUIRK_NO_MSI			16
 #define QUIRK_TI_SLLZ059		32
+=======
+#define PCI_DEVICE_ID_VIA_VT630X	0x3044
+#define PCI_REV_ID_VIA_VT6306		0x46
+#define PCI_DEVICE_ID_VIA_VT6315	0x3403
+
+#define QUIRK_CYCLE_TIMER		0x1
+#define QUIRK_RESET_PACKET		0x2
+#define QUIRK_BE_HEADERS		0x4
+#define QUIRK_NO_1394A			0x8
+#define QUIRK_NO_MSI			0x10
+#define QUIRK_TI_SLLZ059		0x20
+#define QUIRK_IR_WAKE			0x40
+
+// On PCI Express Root Complex in any type of AMD Ryzen machine, VIA VT6306/6307/6308 with Asmedia
+// ASM1083/1085 brings an inconvenience that the read accesses to 'Isochronous Cycle Timer' register
+// (at offset 0xf0 in PCI I/O space) often causes unexpected system reboot. The mechanism is not
+// clear, since the read access to the other registers is enough safe; e.g. 'Node ID' register,
+// while it is probable due to detection of any type of PCIe error.
+#define QUIRK_REBOOT_BY_CYCLE_TIMER_READ	0x80000000
+
+#if IS_ENABLED(CONFIG_X86)
+
+static bool has_reboot_by_cycle_timer_read_quirk(const struct fw_ohci *ohci)
+{
+	return !!(ohci->quirks & QUIRK_REBOOT_BY_CYCLE_TIMER_READ);
+}
+
+#define PCI_DEVICE_ID_ASMEDIA_ASM108X	0x1080
+
+static bool detect_vt630x_with_asm1083_on_amd_ryzen_machine(const struct pci_dev *pdev)
+{
+	const struct pci_dev *pcie_to_pci_bridge;
+
+	// Detect any type of AMD Ryzen machine.
+	if (!static_cpu_has(X86_FEATURE_ZEN))
+		return false;
+
+	// Detect VIA VT6306/6307/6308.
+	if (pdev->vendor != PCI_VENDOR_ID_VIA)
+		return false;
+	if (pdev->device != PCI_DEVICE_ID_VIA_VT630X)
+		return false;
+
+	// Detect Asmedia ASM1083/1085.
+	pcie_to_pci_bridge = pdev->bus->self;
+	if (pcie_to_pci_bridge->vendor != PCI_VENDOR_ID_ASMEDIA)
+		return false;
+	if (pcie_to_pci_bridge->device != PCI_DEVICE_ID_ASMEDIA_ASM108X)
+		return false;
+
+	return true;
+}
+
+#else
+#define has_reboot_by_cycle_timer_read_quirk(ohci) false
+#define detect_vt630x_with_asm1083_on_amd_ryzen_machine(pdev)	false
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* In case of multiple matches in ohci_quirks[], only the first one is used. */
 static const struct {
@@ -318,6 +425,18 @@ static const struct {
 	{PCI_VENDOR_ID_TI, PCI_ANY_ID, PCI_ANY_ID,
 		QUIRK_RESET_PACKET},
 
+<<<<<<< HEAD
+=======
+	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT630X, PCI_REV_ID_VIA_VT6306,
+		QUIRK_CYCLE_TIMER | QUIRK_IR_WAKE},
+
+	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT6315, 0,
+		QUIRK_CYCLE_TIMER /* FIXME: necessary? */ | QUIRK_NO_MSI},
+
+	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT6315, PCI_ANY_ID,
+		QUIRK_NO_MSI},
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VENDOR_ID_VIA, PCI_ANY_ID, PCI_ANY_ID,
 		QUIRK_CYCLE_TIMER | QUIRK_NO_MSI},
 };
@@ -328,10 +447,18 @@ module_param_named(quirks, param_quirks, int, 0644);
 MODULE_PARM_DESC(quirks, "Chip quirks (default = 0"
 	", nonatomic cycle timer = "	__stringify(QUIRK_CYCLE_TIMER)
 	", reset packet generation = "	__stringify(QUIRK_RESET_PACKET)
+<<<<<<< HEAD
 	", AR/selfID endianess = "	__stringify(QUIRK_BE_HEADERS)
 	", no 1394a enhancements = "	__stringify(QUIRK_NO_1394A)
 	", disable MSI = "		__stringify(QUIRK_NO_MSI)
 	", TI SLLZ059 erratum = "	__stringify(QUIRK_TI_SLLZ059)
+=======
+	", AR/selfID endianness = "	__stringify(QUIRK_BE_HEADERS)
+	", no 1394a enhancements = "	__stringify(QUIRK_NO_1394A)
+	", disable MSI = "		__stringify(QUIRK_NO_MSI)
+	", TI SLLZ059 erratum = "	__stringify(QUIRK_TI_SLLZ059)
+	", IR wake unreliable = "	__stringify(QUIRK_IR_WAKE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	")");
 
 #define OHCI_PARAM_DEBUG_AT_AR		1
@@ -348,6 +475,13 @@ MODULE_PARM_DESC(debug, "Verbose logging (default = 0"
 	", busReset events = "	__stringify(OHCI_PARAM_DEBUG_BUSRESETS)
 	", or a combination, or all = -1)");
 
+<<<<<<< HEAD
+=======
+static bool param_remote_dma;
+module_param_named(remote_dma, param_remote_dma, bool, 0444);
+MODULE_PARM_DESC(remote_dma, "Enable unfiltered remote DMA (default = N)");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void log_irqs(struct fw_ohci *ohci, u32 evt)
 {
 	if (likely(!(param_debug &
@@ -358,8 +492,12 @@ static void log_irqs(struct fw_ohci *ohci, u32 evt)
 	    !(evt & OHCI1394_busReset))
 		return;
 
+<<<<<<< HEAD
 	dev_notice(ohci->card.device,
 	    "IRQ %08x%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", evt,
+=======
+	ohci_notice(ohci, "IRQ %08x%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n", evt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    evt & OHCI1394_selfIDComplete	? " selfID"		: "",
 	    evt & OHCI1394_RQPkt		? " AR_req"		: "",
 	    evt & OHCI1394_RSPkt		? " AR_resp"		: "",
@@ -405,6 +543,7 @@ static void log_selfids(struct fw_ohci *ohci, int generation, int self_id_count)
 	if (likely(!(param_debug & OHCI_PARAM_DEBUG_SELFIDS)))
 		return;
 
+<<<<<<< HEAD
 	dev_notice(ohci->card.device,
 		   "%d selfIDs, generation %d, local node ID %04x\n",
 		   self_id_count, generation, ohci->node_id);
@@ -414,12 +553,25 @@ static void log_selfids(struct fw_ohci *ohci, int generation, int self_id_count)
 			dev_notice(ohci->card.device,
 			    "selfID 0: %08x, phy %d [%c%c%c] "
 			    "%s gc=%d %s %s%s%s\n",
+=======
+	ohci_notice(ohci, "%d selfIDs, generation %d, local node ID %04x\n",
+		    self_id_count, generation, ohci->node_id);
+
+	for (s = ohci->self_id_buffer; self_id_count--; ++s)
+		if ((*s & 1 << 23) == 0)
+			ohci_notice(ohci,
+			    "selfID 0: %08x, phy %d [%c%c%c] %s gc=%d %s %s%s%s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    *s, *s >> 24 & 63, _p(s, 6), _p(s, 4), _p(s, 2),
 			    speed[*s >> 14 & 3], *s >> 16 & 63,
 			    power[*s >> 8 & 7], *s >> 22 & 1 ? "L" : "",
 			    *s >> 11 & 1 ? "c" : "", *s & 2 ? "i" : "");
 		else
+<<<<<<< HEAD
 			dev_notice(ohci->card.device,
+=======
+			ohci_notice(ohci,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "selfID n: %08x, phy %d [%c%c%c%c%c%c%c%c]\n",
 			    *s, *s >> 24 & 63,
 			    _p(s, 16), _p(s, 14), _p(s, 12), _p(s, 10),
@@ -469,9 +621,14 @@ static void log_ar_at_event(struct fw_ohci *ohci,
 			evt = 0x1f;
 
 	if (evt == OHCI1394_evt_bus_reset) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device,
 			   "A%c evt_bus_reset, generation %d\n",
 			   dir, (header[2] >> 16) & 0xff);
+=======
+		ohci_notice(ohci, "A%c evt_bus_reset, generation %d\n",
+			    dir, (header[2] >> 16) & 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -490,6 +647,7 @@ static void log_ar_at_event(struct fw_ohci *ohci,
 
 	switch (tcode) {
 	case 0xa:
+<<<<<<< HEAD
 		dev_notice(ohci->card.device,
 			   "A%c %s, %s\n",
 			   dir, evts[evt], tcodes[tcode]);
@@ -516,6 +674,28 @@ static void log_ar_at_event(struct fw_ohci *ohci,
 			   dir, speed, header[0] >> 10 & 0x3f,
 			   header[1] >> 16, header[0] >> 16, evts[evt],
 			   tcodes[tcode], specific);
+=======
+		ohci_notice(ohci, "A%c %s, %s\n",
+			    dir, evts[evt], tcodes[tcode]);
+		break;
+	case 0xe:
+		ohci_notice(ohci, "A%c %s, PHY %08x %08x\n",
+			    dir, evts[evt], header[1], header[2]);
+		break;
+	case 0x0: case 0x1: case 0x4: case 0x5: case 0x9:
+		ohci_notice(ohci,
+			    "A%c spd %x tl %02x, %04x -> %04x, %s, %s, %04x%08x%s\n",
+			    dir, speed, header[0] >> 10 & 0x3f,
+			    header[1] >> 16, header[0] >> 16, evts[evt],
+			    tcodes[tcode], header[1] & 0xffff, header[2], specific);
+		break;
+	default:
+		ohci_notice(ohci,
+			    "A%c spd %x tl %02x, %04x -> %04x, %s, %s%s\n",
+			    dir, speed, header[0] >> 10 & 0x3f,
+			    header[1] >> 16, header[0] >> 16, evts[evt],
+			    tcodes[tcode], specific);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -562,7 +742,12 @@ static int read_phy_reg(struct fw_ohci *ohci, int addr)
 		if (i >= 3)
 			msleep(1);
 	}
+<<<<<<< HEAD
 	dev_err(ohci->card.device, "failed to read phy reg\n");
+=======
+	ohci_err(ohci, "failed to read phy reg %d\n", addr);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EBUSY;
 }
@@ -584,7 +769,12 @@ static int write_phy_reg(const struct fw_ohci *ohci, int addr, u32 val)
 		if (i >= 3)
 			msleep(1);
 	}
+<<<<<<< HEAD
 	dev_err(ohci->card.device, "failed to write phy reg\n");
+=======
+	ohci_err(ohci, "failed to write phy reg %d, val %u\n", addr, val);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EBUSY;
 }
@@ -667,6 +857,7 @@ static void ar_context_link_page(struct ar_context *ctx, unsigned int index)
 
 static void ar_context_release(struct ar_context *ctx)
 {
+<<<<<<< HEAD
 	unsigned int i;
 
 	if (ctx->buffer)
@@ -679,6 +870,21 @@ static void ar_context_release(struct ar_context *ctx)
 				       PAGE_SIZE, DMA_FROM_DEVICE);
 			__free_page(ctx->pages[i]);
 		}
+=======
+	struct device *dev = ctx->ohci->card.device;
+	unsigned int i;
+
+	if (!ctx->buffer)
+		return;
+
+	vunmap(ctx->buffer);
+
+	for (i = 0; i < AR_BUFFERS; i++) {
+		if (ctx->pages[i])
+			dma_free_pages(dev, PAGE_SIZE, ctx->pages[i],
+				       ar_buffer_bus(ctx, i), DMA_FROM_DEVICE);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
@@ -689,8 +895,12 @@ static void ar_context_abort(struct ar_context *ctx, const char *error_msg)
 		reg_write(ohci, CONTROL_CLEAR(ctx->regs), CONTEXT_RUN);
 		flush_writes(ohci);
 
+<<<<<<< HEAD
 		dev_err(ohci->card.device, "AR error: %s; DMA stopped\n",
 			error_msg);
+=======
+		ohci_err(ohci, "AR error: %s; DMA stopped\n", error_msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* FIXME: restart? */
 }
@@ -700,11 +910,14 @@ static inline unsigned int ar_next_buffer_index(unsigned int index)
 	return (index + 1) % AR_BUFFERS;
 }
 
+<<<<<<< HEAD
 static inline unsigned int ar_prev_buffer_index(unsigned int index)
 {
 	return (index - 1 + AR_BUFFERS) % AR_BUFFERS;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int ar_first_buffer_index(struct ar_context *ctx)
 {
 	return ar_next_buffer_index(ctx->last_buffer_index);
@@ -721,7 +934,11 @@ static unsigned int ar_search_last_active_buffer(struct ar_context *ctx,
 	__le16 res_count, next_res_count;
 
 	i = ar_first_buffer_index(ctx);
+<<<<<<< HEAD
 	res_count = ACCESS_ONCE(ctx->descriptors[i].res_count);
+=======
+	res_count = READ_ONCE(ctx->descriptors[i].res_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* A buffer that is not yet completely filled must be the last one. */
 	while (i != last && res_count == 0) {
@@ -729,8 +946,12 @@ static unsigned int ar_search_last_active_buffer(struct ar_context *ctx,
 		/* Peek at the next descriptor. */
 		next_i = ar_next_buffer_index(i);
 		rmb(); /* read descriptors in order */
+<<<<<<< HEAD
 		next_res_count = ACCESS_ONCE(
 				ctx->descriptors[next_i].res_count);
+=======
+		next_res_count = READ_ONCE(ctx->descriptors[next_i].res_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If the next descriptor is still empty, we must stop at this
 		 * descriptor.
@@ -746,8 +967,12 @@ static unsigned int ar_search_last_active_buffer(struct ar_context *ctx,
 			if (MAX_AR_PACKET_SIZE > PAGE_SIZE && i != last) {
 				next_i = ar_next_buffer_index(next_i);
 				rmb();
+<<<<<<< HEAD
 				next_res_count = ACCESS_ONCE(
 					ctx->descriptors[next_i].res_count);
+=======
+				next_res_count = READ_ONCE(ctx->descriptors[next_i].res_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (next_res_count != cpu_to_le16(PAGE_SIZE))
 					goto next_buffer_is_active;
 			}
@@ -972,6 +1197,10 @@ error:
 static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
 			   unsigned int descriptors_offset, u32 regs)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = ohci->card.device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 	dma_addr_t dma_addr;
 	struct page *pages[AR_BUFFERS + AR_WRAPAROUND_PAGES];
@@ -982,6 +1211,7 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
 	tasklet_init(&ctx->tasklet, ar_context_tasklet, (unsigned long)ctx);
 
 	for (i = 0; i < AR_BUFFERS; i++) {
+<<<<<<< HEAD
 		ctx->pages[i] = alloc_page(GFP_KERNEL | GFP_DMA32);
 		if (!ctx->pages[i])
 			goto out_of_memory;
@@ -993,14 +1223,27 @@ static int ar_context_init(struct ar_context *ctx, struct fw_ohci *ohci,
 			goto out_of_memory;
 		}
 		set_page_private(ctx->pages[i], dma_addr);
+=======
+		ctx->pages[i] = dma_alloc_pages(dev, PAGE_SIZE, &dma_addr,
+						DMA_FROM_DEVICE, GFP_KERNEL);
+		if (!ctx->pages[i])
+			goto out_of_memory;
+		set_page_private(ctx->pages[i], dma_addr);
+		dma_sync_single_for_device(dev, dma_addr, PAGE_SIZE,
+					   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < AR_BUFFERS; i++)
 		pages[i]              = ctx->pages[i];
 	for (i = 0; i < AR_WRAPAROUND_PAGES; i++)
 		pages[AR_BUFFERS + i] = ctx->pages[i];
+<<<<<<< HEAD
 	ctx->buffer = vm_map_ram(pages, AR_BUFFERS + AR_WRAPAROUND_PAGES,
 				 -1, PAGE_KERNEL);
+=======
+	ctx->buffer = vmap(pages, ARRAY_SIZE(pages), VM_MAP, PAGE_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ctx->buffer)
 		goto out_of_memory;
 
@@ -1102,7 +1345,11 @@ static void context_tasklet(unsigned long data)
 static int context_add_buffer(struct context *ctx)
 {
 	struct descriptor_buffer *desc;
+<<<<<<< HEAD
 	dma_addr_t uninitialized_var(bus_addr);
+=======
+	dma_addr_t bus_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offset;
 
 	/*
@@ -1112,13 +1359,27 @@ static int context_add_buffer(struct context *ctx)
 	if (ctx->total_allocation >= 16*1024*1024)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	desc = dma_alloc_coherent(ctx->ohci->card.device, PAGE_SIZE,
 			&bus_addr, GFP_ATOMIC);
+=======
+	desc = dmam_alloc_coherent(ctx->ohci->card.device, PAGE_SIZE, &bus_addr, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!desc)
 		return -ENOMEM;
 
 	offset = (void *)&desc->buffer - (void *)desc;
+<<<<<<< HEAD
 	desc->buffer_size = PAGE_SIZE - offset;
+=======
+	/*
+	 * Some controllers, like JMicron ones, always issue 0x20-byte DMA reads
+	 * for descriptors, even 0x10-byte ones. This can cause page faults when
+	 * an IOMMU is in use and the oversized read crosses a page boundary.
+	 * Work around this by always leaving at least 0x10 bytes of padding.
+	 */
+	desc->buffer_size = PAGE_SIZE - offset - 0x10;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->buffer_bus = bus_addr + offset;
 	desc->used = 0;
 
@@ -1156,6 +1417,10 @@ static int context_init(struct context *ctx, struct fw_ohci *ohci,
 	ctx->buffer_tail->used += sizeof(*ctx->buffer_tail->buffer);
 	ctx->last = ctx->buffer_tail->buffer;
 	ctx->prev = ctx->buffer_tail->buffer;
+<<<<<<< HEAD
+=======
+	ctx->prev_z = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1165,10 +1430,17 @@ static void context_release(struct context *ctx)
 	struct fw_card *card = &ctx->ohci->card;
 	struct descriptor_buffer *desc, *tmp;
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(desc, tmp, &ctx->buffer_list, list)
 		dma_free_coherent(card->device, PAGE_SIZE, desc,
 			desc->buffer_bus -
 			((void *)&desc->buffer - (void *)desc));
+=======
+	list_for_each_entry_safe(desc, tmp, &ctx->buffer_list, list) {
+		dmam_free_coherent(card->device, PAGE_SIZE, desc,
+				   desc->buffer_bus - ((void *)&desc->buffer - (void *)desc));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Must be called with ohci->lock held */
@@ -1220,14 +1492,43 @@ static void context_append(struct context *ctx,
 {
 	dma_addr_t d_bus;
 	struct descriptor_buffer *desc = ctx->buffer_tail;
+<<<<<<< HEAD
+=======
+	struct descriptor *d_branch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d_bus = desc->buffer_bus + (d - desc->buffer) * sizeof(*d);
 
 	desc->used += (z + extra) * sizeof(*d);
 
 	wmb(); /* finish init of new descriptors before branch_address update */
+<<<<<<< HEAD
 	ctx->prev->branch_address = cpu_to_le32(d_bus | z);
 	ctx->prev = find_branch_descriptor(d, z);
+=======
+
+	d_branch = find_branch_descriptor(ctx->prev, ctx->prev_z);
+	d_branch->branch_address = cpu_to_le32(d_bus | z);
+
+	/*
+	 * VT6306 incorrectly checks only the single descriptor at the
+	 * CommandPtr when the wake bit is written, so if it's a
+	 * multi-descriptor block starting with an INPUT_MORE, put a copy of
+	 * the branch address in the first descriptor.
+	 *
+	 * Not doing this for transmit contexts since not sure how it interacts
+	 * with skip addresses.
+	 */
+	if (unlikely(ctx->ohci->quirks & QUIRK_IR_WAKE) &&
+	    d_branch != ctx->prev &&
+	    (ctx->prev->control & cpu_to_le16(DESCRIPTOR_CMD)) ==
+	     cpu_to_le16(DESCRIPTOR_INPUT_MORE)) {
+		ctx->prev->branch_address = cpu_to_le32(d_bus | z);
+	}
+
+	ctx->prev = d;
+	ctx->prev_z = z;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void context_stop(struct context *ctx)
@@ -1247,7 +1548,11 @@ static void context_stop(struct context *ctx)
 		if (i)
 			udelay(10);
 	}
+<<<<<<< HEAD
 	dev_err(ohci->card.device, "DMA context still active (0x%08x)\n", reg);
+=======
+	ohci_err(ohci, "DMA context still active (0x%08x)\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct driver_data {
@@ -1264,7 +1569,11 @@ static int at_context_queue_packet(struct context *ctx,
 				   struct fw_packet *packet)
 {
 	struct fw_ohci *ohci = ctx->ohci;
+<<<<<<< HEAD
 	dma_addr_t d_bus, uninitialized_var(payload_bus);
+=======
+	dma_addr_t d_bus, payload_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct driver_data *driver_data;
 	struct descriptor *d, *last;
 	__le32 *header;
@@ -1280,7 +1589,11 @@ static int at_context_queue_packet(struct context *ctx,
 	d[0].res_count = cpu_to_le16(packet->timestamp);
 
 	/*
+<<<<<<< HEAD
 	 * The DMA format for asyncronous link packets is different
+=======
+	 * The DMA format for asynchronous link packets is different
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * from the IEEE1394 layout, so shift the fields around
 	 * accordingly.
 	 */
@@ -1470,7 +1783,11 @@ static int handle_at_packet(struct context *context,
 			packet->ack = RCODE_GENERATION;
 			break;
 		}
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		packet->ack = RCODE_SEND_ERROR;
@@ -1488,6 +1805,11 @@ static int handle_at_packet(struct context *context,
 #define HEADER_GET_DATA_LENGTH(q)	(((q) >> 16) & 0xffff)
 #define HEADER_GET_EXTENDED_TCODE(q)	(((q) >> 0) & 0xffff)
 
+<<<<<<< HEAD
+=======
+static u32 get_cycle_time(struct fw_ohci *ohci);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void handle_local_rom(struct fw_ohci *ohci,
 			     struct fw_packet *packet, u32 csr)
 {
@@ -1512,6 +1834,11 @@ static void handle_local_rom(struct fw_ohci *ohci,
 				 (void *) ohci->config_rom + i, length);
 	}
 
+<<<<<<< HEAD
+=======
+	// Timestamping on behalf of the hardware.
+	response.timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ohci));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_core_handle_response(&ohci->card, &response);
 }
 
@@ -1556,10 +1883,19 @@ static void handle_local_lock(struct fw_ohci *ohci,
 			goto out;
 		}
 
+<<<<<<< HEAD
 	dev_err(ohci->card.device, "swap not done (CSR lock timeout)\n");
 	fw_fill_response(&response, packet->header, RCODE_BUSY, NULL, 0);
 
  out:
+=======
+	ohci_err(ohci, "swap not done (CSR lock timeout)\n");
+	fw_fill_response(&response, packet->header, RCODE_BUSY, NULL, 0);
+
+ out:
+	// Timestamping on behalf of the hardware.
+	response.timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ohci));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_core_handle_response(&ohci->card, &response);
 }
 
@@ -1612,6 +1948,13 @@ static void at_context_transmit(struct context *ctx, struct fw_packet *packet)
 	if (HEADER_GET_DESTINATION(packet->header[0]) == ctx->ohci->node_id &&
 	    ctx->ohci->generation == packet->generation) {
 		spin_unlock_irqrestore(&ctx->ohci->lock, flags);
+<<<<<<< HEAD
+=======
+
+		// Timestamping on behalf of the hardware.
+		packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ctx->ohci));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle_local_request(ctx, packet);
 		return;
 	}
@@ -1619,9 +1962,18 @@ static void at_context_transmit(struct context *ctx, struct fw_packet *packet)
 	ret = at_context_queue_packet(ctx, packet);
 	spin_unlock_irqrestore(&ctx->ohci->lock, flags);
 
+<<<<<<< HEAD
 	if (ret < 0)
 		packet->callback(packet, &ctx->ohci->card, packet->ack);
 
+=======
+	if (ret < 0) {
+		// Timestamping on behalf of the hardware.
+		packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ctx->ohci));
+
+		packet->callback(packet, &ctx->ohci->card, packet->ack);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void detect_dead_context(struct fw_ohci *ohci,
@@ -1631,8 +1983,12 @@ static void detect_dead_context(struct fw_ohci *ohci,
 
 	ctl = reg_read(ohci, CONTROL_SET(regs));
 	if (ctl & CONTEXT_DEAD)
+<<<<<<< HEAD
 		dev_err(ohci->card.device,
 			"DMA context %s has stopped, error code: %s\n",
+=======
+		ohci_err(ohci, "DMA context %s has stopped, error code: %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name, evts[ctl & 0x1f]);
 }
 
@@ -1693,6 +2049,12 @@ static u32 get_cycle_time(struct fw_ohci *ohci)
 	s32 diff01, diff12;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (has_reboot_by_cycle_timer_read_quirk(ohci))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c2 = reg_read(ohci, OHCI1394_IsochronousCycleTimer);
 
 	if (ohci->quirks & QUIRK_CYCLE_TIMER) {
@@ -1726,6 +2088,16 @@ static u32 update_bus_time(struct fw_ohci *ohci)
 {
 	u32 cycle_time_seconds = get_cycle_time(ohci) >> 25;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(!ohci->bus_time_running)) {
+		reg_write(ohci, OHCI1394_IntMaskSet, OHCI1394_cycle64Seconds);
+		ohci->bus_time = (lower_32_bits(ktime_get_seconds()) & ~0x7f) |
+		                 (cycle_time_seconds & 0x40);
+		ohci->bus_time_running = true;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ohci->bus_time & 0x40) != (cycle_time_seconds & 0x40))
 		ohci->bus_time += 0x40;
 
@@ -1769,11 +2141,42 @@ static int get_self_id_pos(struct fw_ohci *ohci, u32 self_id,
 	return i;
 }
 
+<<<<<<< HEAD
+=======
+static int initiated_reset(struct fw_ohci *ohci)
+{
+	int reg;
+	int ret = 0;
+
+	mutex_lock(&ohci->phy_reg_mutex);
+	reg = write_phy_reg(ohci, 7, 0xe0); /* Select page 7 */
+	if (reg >= 0) {
+		reg = read_phy_reg(ohci, 8);
+		reg |= 0x40;
+		reg = write_phy_reg(ohci, 8, reg); /* set PMODE bit */
+		if (reg >= 0) {
+			reg = read_phy_reg(ohci, 12); /* read register 12 */
+			if (reg >= 0) {
+				if ((reg & 0x08) == 0x08) {
+					/* bit 3 indicates "initiated reset" */
+					ret = 0x2;
+				}
+			}
+		}
+	}
+	mutex_unlock(&ohci->phy_reg_mutex);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TI TSB82AA2B and TSB12LV26 do not receive the selfID of a locally
  * attached TSB41BA3D phy; see http://www.ti.com/litv/pdf/sllz059.
  * Construct the selfID from phy register contents.
+<<<<<<< HEAD
  * FIXME:  How to determine the selfID.i flag?
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int find_and_insert_self_id(struct fw_ohci *ohci, int self_id_count)
 {
@@ -1783,8 +2186,13 @@ static int find_and_insert_self_id(struct fw_ohci *ohci, int self_id_count)
 
 	reg = reg_read(ohci, OHCI1394_NodeID);
 	if (!(reg & OHCI1394_NodeID_idValid)) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device,
 			   "node ID not valid, new bus reset in progress\n");
+=======
+		ohci_notice(ohci,
+			    "node ID not valid, new bus reset in progress\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	self_id |= ((reg & 0x3f) << 24); /* phy ID */
@@ -1806,6 +2214,11 @@ static int find_and_insert_self_id(struct fw_ohci *ohci, int self_id_count)
 		self_id |= ((status & 0x3) << (6 - (i * 2)));
 	}
 
+<<<<<<< HEAD
+=======
+	self_id |= initiated_reset(ohci);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos = get_self_id_pos(ohci, self_id, self_id_count);
 	if (pos >= 0) {
 		memmove(&(ohci->self_id_buffer[pos+1]),
@@ -1821,21 +2234,35 @@ static void bus_reset_work(struct work_struct *work)
 {
 	struct fw_ohci *ohci =
 		container_of(work, struct fw_ohci, bus_reset_work);
+<<<<<<< HEAD
 	int self_id_count, i, j, reg;
 	int generation, new_generation;
 	unsigned long flags;
+=======
+	int self_id_count, generation, new_generation, i, j;
+	u32 reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *free_rom = NULL;
 	dma_addr_t free_rom_bus = 0;
 	bool is_new_root;
 
 	reg = reg_read(ohci, OHCI1394_NodeID);
 	if (!(reg & OHCI1394_NodeID_idValid)) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device,
 			   "node ID not valid, new bus reset in progress\n");
 		return;
 	}
 	if ((reg & OHCI1394_NodeID_nodeNumber) == 63) {
 		dev_notice(ohci->card.device, "malconfigured bus\n");
+=======
+		ohci_notice(ohci,
+			    "node ID not valid, new bus reset in progress\n");
+		return;
+	}
+	if ((reg & OHCI1394_NodeID_nodeNumber) == 63) {
+		ohci_notice(ohci, "malconfigured bus\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ohci->node_id = reg & (OHCI1394_NodeID_busNumber |
@@ -1849,7 +2276,11 @@ static void bus_reset_work(struct work_struct *work)
 
 	reg = reg_read(ohci, OHCI1394_SelfIDCount);
 	if (reg & OHCI1394_SelfIDCount_selfIDError) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device, "inconsistent self IDs\n");
+=======
+		ohci_notice(ohci, "self ID receive error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/*
@@ -1861,6 +2292,7 @@ static void bus_reset_work(struct work_struct *work)
 	self_id_count = (reg >> 3) & 0xff;
 
 	if (self_id_count > 252) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device, "inconsistent self IDs\n");
 		return;
 	}
@@ -1870,6 +2302,20 @@ static void bus_reset_work(struct work_struct *work)
 
 	for (i = 1, j = 0; j < self_id_count; i += 2, j++) {
 		if (ohci->self_id_cpu[i] != ~ohci->self_id_cpu[i + 1]) {
+=======
+		ohci_notice(ohci, "bad selfIDSize (%08x)\n", reg);
+		return;
+	}
+
+	generation = (cond_le32_to_cpu(ohci->self_id[0]) >> 16) & 0xff;
+	rmb();
+
+	for (i = 1, j = 0; j < self_id_count; i += 2, j++) {
+		u32 id  = cond_le32_to_cpu(ohci->self_id[i]);
+		u32 id2 = cond_le32_to_cpu(ohci->self_id[i + 1]);
+
+		if (id != ~id2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If the invalid data looks like a cycle start packet,
 			 * it's likely to be the result of the cycle master
@@ -1877,6 +2323,7 @@ static void bus_reset_work(struct work_struct *work)
 			 * so far are valid and should be processed so that the
 			 * bus manager can then correct the gap count.
 			 */
+<<<<<<< HEAD
 			if (cond_le32_to_cpu(ohci->self_id_cpu[i])
 							== 0xffff008f) {
 				dev_notice(ohci->card.device,
@@ -1891,19 +2338,41 @@ static void bus_reset_work(struct work_struct *work)
 		}
 		ohci->self_id_buffer[j] =
 				cond_le32_to_cpu(ohci->self_id_cpu[i]);
+=======
+			if (id == 0xffff008f) {
+				ohci_notice(ohci, "ignoring spurious self IDs\n");
+				self_id_count = j;
+				break;
+			}
+
+			ohci_notice(ohci, "bad self ID %d/%d (%08x != ~%08x)\n",
+				    j, self_id_count, id, id2);
+			return;
+		}
+		ohci->self_id_buffer[j] = id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ohci->quirks & QUIRK_TI_SLLZ059) {
 		self_id_count = find_and_insert_self_id(ohci, self_id_count);
 		if (self_id_count < 0) {
+<<<<<<< HEAD
 			dev_notice(ohci->card.device,
 				   "could not construct local self ID\n");
+=======
+			ohci_notice(ohci,
+				    "could not construct local self ID\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
 	if (self_id_count == 0) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device, "inconsistent self IDs\n");
+=======
+		ohci_notice(ohci, "no self IDs\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	rmb();
@@ -1924,19 +2393,31 @@ static void bus_reset_work(struct work_struct *work)
 
 	new_generation = (reg_read(ohci, OHCI1394_SelfIDCount) >> 16) & 0xff;
 	if (new_generation != generation) {
+<<<<<<< HEAD
 		dev_notice(ohci->card.device,
 			   "new bus reset, discarding self ids\n");
+=======
+		ohci_notice(ohci, "new bus reset, discarding self ids\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* FIXME: Document how the locking works. */
+<<<<<<< HEAD
 	spin_lock_irqsave(&ohci->lock, flags);
+=======
+	spin_lock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ohci->generation = -1; /* prevent AT packet queueing */
 	context_stop(&ohci->at_request_ctx);
 	context_stop(&ohci->at_response_ctx);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ohci->lock, flags);
+=======
+	spin_unlock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Per OHCI 1.2 draft, clause 7.2.3.3, hardware may leave unsent
@@ -1946,10 +2427,19 @@ static void bus_reset_work(struct work_struct *work)
 	at_context_flush(&ohci->at_request_ctx);
 	at_context_flush(&ohci->at_response_ctx);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&ohci->lock, flags);
 
 	ohci->generation = generation;
 	reg_write(ohci, OHCI1394_IntEventClear, OHCI1394_busReset);
+=======
+	spin_lock_irq(&ohci->lock);
+
+	ohci->generation = generation;
+	reg_write(ohci, OHCI1394_IntEventClear, OHCI1394_busReset);
+	if (param_debug & OHCI_PARAM_DEBUG_BUSRESETS)
+		reg_write(ohci, OHCI1394_IntMaskSet, OHCI1394_busReset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ohci->quirks & QUIRK_RESET_PACKET)
 		ohci->request_generation = generation;
@@ -1985,6 +2475,7 @@ static void bus_reset_work(struct work_struct *work)
 			  be32_to_cpu(ohci->next_header));
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_FIREWIRE_OHCI_REMOTE_DMA
 	reg_write(ohci, OHCI1394_PhyReqFilterHiSet, ~0);
 	reg_write(ohci, OHCI1394_PhyReqFilterLoSet, ~0);
@@ -1995,6 +2486,17 @@ static void bus_reset_work(struct work_struct *work)
 	if (free_rom)
 		dma_free_coherent(ohci->card.device, CONFIG_ROM_SIZE,
 				  free_rom, free_rom_bus);
+=======
+	if (param_remote_dma) {
+		reg_write(ohci, OHCI1394_PhyReqFilterHiSet, ~0);
+		reg_write(ohci, OHCI1394_PhyReqFilterLoSet, ~0);
+	}
+
+	spin_unlock_irq(&ohci->lock);
+
+	if (free_rom)
+		dmam_free_coherent(ohci->card.device, CONFIG_ROM_SIZE, free_rom, free_rom_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	log_selfids(ohci, generation, self_id_count);
 
@@ -2016,15 +2518,27 @@ static irqreturn_t irq_handler(int irq, void *data)
 		return IRQ_NONE;
 
 	/*
+<<<<<<< HEAD
 	 * busReset and postedWriteErr must not be cleared yet
+=======
+	 * busReset and postedWriteErr events must not be cleared yet
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * (OHCI 1.1 clauses 7.2.3.2 and 13.2.8.1)
 	 */
 	reg_write(ohci, OHCI1394_IntEventClear,
 		  event & ~(OHCI1394_busReset | OHCI1394_postedWriteErr));
 	log_irqs(ohci, event);
+<<<<<<< HEAD
 
 	if (event & OHCI1394_selfIDComplete)
 		queue_work(fw_workqueue, &ohci->bus_reset_work);
+=======
+	if (event & OHCI1394_busReset)
+		reg_write(ohci, OHCI1394_IntMaskClear, OHCI1394_busReset);
+
+	if (event & OHCI1394_selfIDComplete)
+		queue_work(selfid_workqueue, &ohci->bus_reset_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event & OHCI1394_RQPkt)
 		tasklet_schedule(&ohci->ar_request_ctx.tasklet);
@@ -2063,7 +2577,11 @@ static irqreturn_t irq_handler(int irq, void *data)
 	}
 
 	if (unlikely(event & OHCI1394_regAccessFail))
+<<<<<<< HEAD
 		dev_err(ohci->card.device, "register access failure\n");
+=======
+		ohci_err(ohci, "register access failure\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(event & OHCI1394_postedWriteErr)) {
 		reg_read(ohci, OHCI1394_PostedWriteAddressHi);
@@ -2071,13 +2589,21 @@ static irqreturn_t irq_handler(int irq, void *data)
 		reg_write(ohci, OHCI1394_IntEventClear,
 			  OHCI1394_postedWriteErr);
 		if (printk_ratelimit())
+<<<<<<< HEAD
 			dev_err(ohci->card.device, "PCI posted write error\n");
+=======
+			ohci_err(ohci, "PCI posted write error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (unlikely(event & OHCI1394_cycleTooLong)) {
 		if (printk_ratelimit())
+<<<<<<< HEAD
 			dev_notice(ohci->card.device,
 				   "isochronous cycle too long\n");
+=======
+			ohci_notice(ohci, "isochronous cycle too long\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg_write(ohci, OHCI1394_LinkControlSet,
 			  OHCI1394_LinkControl_cycleMaster);
 	}
@@ -2090,8 +2616,12 @@ static irqreturn_t irq_handler(int irq, void *data)
 		 * them at least two cycles later.  (FIXME?)
 		 */
 		if (printk_ratelimit())
+<<<<<<< HEAD
 			dev_notice(ohci->card.device,
 				   "isochronous cycle inconsistent\n");
+=======
+			ohci_notice(ohci, "isochronous cycle inconsistent\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (unlikely(event & OHCI1394_unrecoverableError))
@@ -2213,6 +2743,7 @@ static int ohci_enable(struct fw_card *card,
 		       const __be32 *config_rom, size_t length)
 {
 	struct fw_ohci *ohci = fw_ohci(card);
+<<<<<<< HEAD
 	struct pci_dev *dev = to_pci_dev(card->device);
 	u32 lps, seconds, version, irqs;
 	int i, ret;
@@ -2220,6 +2751,15 @@ static int ohci_enable(struct fw_card *card,
 	if (software_reset(ohci)) {
 		dev_err(card->device, "failed to reset ohci card\n");
 		return -EBUSY;
+=======
+	u32 lps, version, irqs;
+	int i, ret;
+
+	ret = software_reset(ohci);
+	if (ret < 0) {
+		ohci_err(ohci, "failed to reset ohci card\n");
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2229,7 +2769,16 @@ static int ohci_enable(struct fw_card *card,
 	 * will lock up the machine.  Wait 50msec to make sure we have
 	 * full link enabled.  However, with some cards (well, at least
 	 * a JMicron PCIe card), we have to try again sometimes.
+<<<<<<< HEAD
 	 */
+=======
+	 *
+	 * TI TSB82AA2 + TSB81BA3(A) cards signal LPS enabled early but
+	 * cannot actually use the phy at that time.  These need tens of
+	 * millisecods pause between LPS write and first phy access too.
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_write(ohci, OHCI1394_HCControlSet,
 		  OHCI1394_HCControl_LPS |
 		  OHCI1394_HCControl_postedWriteEnable);
@@ -2242,7 +2791,11 @@ static int ohci_enable(struct fw_card *card,
 	}
 
 	if (!lps) {
+<<<<<<< HEAD
 		dev_err(card->device, "failed to set Link Power Status\n");
+=======
+		ohci_err(ohci, "failed to set Link Power Status\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -2251,7 +2804,11 @@ static int ohci_enable(struct fw_card *card,
 		if (ret < 0)
 			return ret;
 		if (ret)
+<<<<<<< HEAD
 			dev_notice(card->device, "local TSB41BA3D phy\n");
+=======
+			ohci_notice(ohci, "local TSB41BA3D phy\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			ohci->quirks &= ~QUIRK_TI_SLLZ059;
 	}
@@ -2270,9 +2827,18 @@ static int ohci_enable(struct fw_card *card,
 		  (OHCI1394_MAX_PHYS_RESP_RETRIES << 8) |
 		  (200 << 16));
 
+<<<<<<< HEAD
 	seconds = lower_32_bits(get_seconds());
 	reg_write(ohci, OHCI1394_IsochronousCycleTimer, seconds << 25);
 	ohci->bus_time = seconds & ~0x3f;
+=======
+	ohci->bus_time_running = false;
+
+	for (i = 0; i < 32; i++)
+		if (ohci->ir_context_support & (1 << i))
+			reg_write(ohci, OHCI1394_IsoRcvContextControlClear(i),
+				  IR_CONTEXT_MULTI_CHANNEL_MODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	version = reg_read(ohci, OHCI1394_Version) & 0x00ff00ff;
 	if (version >= OHCI_VERSION_1_1) {
@@ -2287,7 +2853,11 @@ static int ohci_enable(struct fw_card *card,
 	reg_write(ohci, OHCI1394_FairnessControl, 0);
 	card->priority_budget_implemented = ohci->pri_req_max != 0;
 
+<<<<<<< HEAD
 	reg_write(ohci, OHCI1394_PhyUpperBound, 0x00010000);
+=======
+	reg_write(ohci, OHCI1394_PhyUpperBound, FW_MAX_PHYSICAL_RANGE >> 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_write(ohci, OHCI1394_IntEventClear, ~0);
 	reg_write(ohci, OHCI1394_IntMaskClear, ~0);
 
@@ -2320,10 +2890,15 @@ static int ohci_enable(struct fw_card *card,
 	 */
 
 	if (config_rom) {
+<<<<<<< HEAD
 		ohci->next_config_rom =
 			dma_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
 					   &ohci->next_config_rom_bus,
 					   GFP_KERNEL);
+=======
+		ohci->next_config_rom = dmam_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
+							    &ohci->next_config_rom_bus, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ohci->next_config_rom == NULL)
 			return -ENOMEM;
 
@@ -2346,6 +2921,7 @@ static int ohci_enable(struct fw_card *card,
 
 	reg_write(ohci, OHCI1394_AsReqFilterHiSet, 0x80000000);
 
+<<<<<<< HEAD
 	if (!(ohci->quirks & QUIRK_NO_MSI))
 		pci_enable_msi(dev);
 	if (request_irq(dev->irq, irq_handler,
@@ -2364,13 +2940,18 @@ static int ohci_enable(struct fw_card *card,
 		return -EIO;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irqs =	OHCI1394_reqTxComplete | OHCI1394_respTxComplete |
 		OHCI1394_RQPkt | OHCI1394_RSPkt |
 		OHCI1394_isochTx | OHCI1394_isochRx |
 		OHCI1394_postedWriteErr |
 		OHCI1394_selfIDComplete |
 		OHCI1394_regAccessFail |
+<<<<<<< HEAD
 		OHCI1394_cycle64Seconds |
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		OHCI1394_cycleInconsistent |
 		OHCI1394_unrecoverableError |
 		OHCI1394_cycleTooLong |
@@ -2402,9 +2983,14 @@ static int ohci_set_config_rom(struct fw_card *card,
 			       const __be32 *config_rom, size_t length)
 {
 	struct fw_ohci *ohci;
+<<<<<<< HEAD
 	unsigned long flags;
 	__be32 *next_config_rom;
 	dma_addr_t uninitialized_var(next_config_rom_bus);
+=======
+	__be32 *next_config_rom;
+	dma_addr_t next_config_rom_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ohci = fw_ohci(card);
 
@@ -2435,6 +3021,7 @@ static int ohci_set_config_rom(struct fw_card *card,
 	 * ohci->next_config_rom to NULL (see bus_reset_work).
 	 */
 
+<<<<<<< HEAD
 	next_config_rom =
 		dma_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
 				   &next_config_rom_bus, GFP_KERNEL);
@@ -2442,6 +3029,14 @@ static int ohci_set_config_rom(struct fw_card *card,
 		return -ENOMEM;
 
 	spin_lock_irqsave(&ohci->lock, flags);
+=======
+	next_config_rom = dmam_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
+					      &next_config_rom_bus, GFP_KERNEL);
+	if (next_config_rom == NULL)
+		return -ENOMEM;
+
+	spin_lock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If there is not an already pending config_rom update,
@@ -2467,12 +3062,22 @@ static int ohci_set_config_rom(struct fw_card *card,
 
 	reg_write(ohci, OHCI1394_ConfigROMmap, ohci->next_config_rom_bus);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ohci->lock, flags);
 
 	/* If we didn't use the DMA allocation, delete it. */
 	if (next_config_rom != NULL)
 		dma_free_coherent(ohci->card.device, CONFIG_ROM_SIZE,
 				  next_config_rom, next_config_rom_bus);
+=======
+	spin_unlock_irq(&ohci->lock);
+
+	/* If we didn't use the DMA allocation, delete it. */
+	if (next_config_rom != NULL) {
+		dmam_free_coherent(ohci->card.device, CONFIG_ROM_SIZE, next_config_rom,
+				   next_config_rom_bus);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now initiate a bus reset to have the changes take
@@ -2508,7 +3113,11 @@ static int ohci_cancel_packet(struct fw_card *card, struct fw_packet *packet)
 	struct driver_data *driver_data = packet->driver_data;
 	int ret = -ENOENT;
 
+<<<<<<< HEAD
 	tasklet_disable(&ctx->tasklet);
+=======
+	tasklet_disable_in_atomic(&ctx->tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (packet->ack != 0)
 		goto out;
@@ -2520,6 +3129,13 @@ static int ohci_cancel_packet(struct fw_card *card, struct fw_packet *packet)
 	log_ar_at_event(ohci, 'T', packet->speed, packet->header, 0x20);
 	driver_data->packet = NULL;
 	packet->ack = RCODE_CANCELLED;
+<<<<<<< HEAD
+=======
+
+	// Timestamping on behalf of the hardware.
+	packet->timestamp = cycle_time_to_ohci_tstamp(get_cycle_time(ohci));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	packet->callback(packet, &ohci->card, packet->ack);
 	ret = 0;
  out:
@@ -2531,13 +3147,22 @@ static int ohci_cancel_packet(struct fw_card *card, struct fw_packet *packet)
 static int ohci_enable_phys_dma(struct fw_card *card,
 				int node_id, int generation)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_FIREWIRE_OHCI_REMOTE_DMA
 	return 0;
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_ohci *ohci = fw_ohci(card);
 	unsigned long flags;
 	int n, ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (param_remote_dma)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * FIXME:  Make sure this bitmask is cleared when we clear the busReset
 	 * interrupt bit.  Clear physReqResourceAllBuses on bus reset.
@@ -2566,7 +3191,10 @@ static int ohci_enable_phys_dma(struct fw_card *card,
 	spin_unlock_irqrestore(&ohci->lock, flags);
 
 	return ret;
+<<<<<<< HEAD
 #endif /* CONFIG_FIREWIRE_OHCI_REMOTE_DMA */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 ohci_read_csr(struct fw_card *card, int csr_offset)
@@ -2660,7 +3288,12 @@ static void ohci_write_csr(struct fw_card *card, int csr_offset, u32 value)
 
 	case CSR_BUS_TIME:
 		spin_lock_irqsave(&ohci->lock, flags);
+<<<<<<< HEAD
 		ohci->bus_time = (ohci->bus_time & 0x7f) | (value & ~0x7f);
+=======
+		ohci->bus_time = (update_bus_time(ohci) & 0x40) |
+		                 (value & ~0x7f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&ohci->lock, flags);
 		break;
 
@@ -2762,7 +3395,11 @@ static int handle_ir_buffer_fill(struct context *context,
 	u32 buffer_dma;
 
 	req_count = le16_to_cpu(last->req_count);
+<<<<<<< HEAD
 	res_count = le16_to_cpu(ACCESS_ONCE(last->res_count));
+=======
+	res_count = le16_to_cpu(READ_ONCE(last->res_count));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	completed = req_count - res_count;
 	buffer_dma = le32_to_cpu(last->data_address);
 
@@ -2885,7 +3522,10 @@ static void set_multichannel_mask(struct fw_ohci *ohci, u64 channels)
 	reg_write(ohci, OHCI1394_IRMultiChanMaskLoClear, ~lo);
 	reg_write(ohci, OHCI1394_IRMultiChanMaskHiSet, hi);
 	reg_write(ohci, OHCI1394_IRMultiChanMaskLoSet, lo);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ohci->mc_channels = channels;
 }
 
@@ -2893,6 +3533,7 @@ static struct fw_iso_context *ohci_allocate_iso_context(struct fw_card *card,
 				int type, int channel, size_t header_size)
 {
 	struct fw_ohci *ohci = fw_ohci(card);
+<<<<<<< HEAD
 	struct iso_context *uninitialized_var(ctx);
 	descriptor_callback_t uninitialized_var(callback);
 	u64 *uninitialized_var(channels);
@@ -2901,6 +3542,15 @@ static struct fw_iso_context *ohci_allocate_iso_context(struct fw_card *card,
 	int index, ret = -EBUSY;
 
 	spin_lock_irqsave(&ohci->lock, flags);
+=======
+	struct iso_context *ctx;
+	descriptor_callback_t callback;
+	u64 *channels;
+	u32 *mask, regs;
+	int index, ret = -EBUSY;
+
+	spin_lock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case FW_ISO_CONTEXT_TRANSMIT:
@@ -2944,7 +3594,11 @@ static struct fw_iso_context *ohci_allocate_iso_context(struct fw_card *card,
 		ret = -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ohci->lock, flags);
+=======
+	spin_unlock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (index < 0)
 		return ERR_PTR(ret);
@@ -2970,7 +3624,11 @@ static struct fw_iso_context *ohci_allocate_iso_context(struct fw_card *card,
  out_with_header:
 	free_page((unsigned long)ctx->header);
  out:
+<<<<<<< HEAD
 	spin_lock_irqsave(&ohci->lock, flags);
+=======
+	spin_lock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case FW_ISO_CONTEXT_RECEIVE:
@@ -2983,7 +3641,11 @@ static struct fw_iso_context *ohci_allocate_iso_context(struct fw_card *card,
 	}
 	*mask |= 1 << index;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&ohci->lock, flags);
+=======
+	spin_unlock_irq(&ohci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ERR_PTR(ret);
 }
@@ -3015,7 +3677,11 @@ static int ohci_start_iso(struct fw_iso_context *base,
 
 	case FW_ISO_CONTEXT_RECEIVE_MULTICHANNEL:
 		control |= IR_CONTEXT_BUFFER_FILL|IR_CONTEXT_MULTI_CHANNEL_MODE;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FW_ISO_CONTEXT_RECEIVE:
 		index = ctx - ohci->ir_context_list;
 		match = (tags << 28) | (sync << 8) | ctx->base.channel;
@@ -3430,7 +4096,11 @@ static int ohci_flush_iso_completions(struct fw_iso_context *base)
 	struct iso_context *ctx = container_of(base, struct iso_context, base);
 	int ret = 0;
 
+<<<<<<< HEAD
 	tasklet_disable(&ctx->context.tasklet);
+=======
+	tasklet_disable_in_atomic(&ctx->context.tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_and_set_bit_lock(0, &ctx->flushing_completions)) {
 		context_tasklet((unsigned long)&ctx->context);
@@ -3450,7 +4120,11 @@ static int ohci_flush_iso_completions(struct fw_iso_context *base)
 		}
 
 		clear_bit_unlock(0, &ctx->flushing_completions);
+<<<<<<< HEAD
 		smp_mb__after_clear_bit();
+=======
+		smp_mb__after_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tasklet_enable(&ctx->context.tasklet);
@@ -3509,7 +4183,24 @@ static inline void pmac_ohci_on(struct pci_dev *dev) {}
 static inline void pmac_ohci_off(struct pci_dev *dev) {}
 #endif /* CONFIG_PPC_PMAC */
 
+<<<<<<< HEAD
 static int __devinit pci_probe(struct pci_dev *dev,
+=======
+static void release_ohci(struct device *dev, void *data)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct fw_ohci *ohci = pci_get_drvdata(pdev);
+
+	pmac_ohci_off(pdev);
+
+	ar_context_release(&ohci->ar_response_ctx);
+	ar_context_release(&ohci->ar_request_ctx);
+
+	dev_notice(dev, "removed fw-ohci device\n");
+}
+
+static int pci_probe(struct pci_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       const struct pci_device_id *ent)
 {
 	struct fw_ohci *ohci;
@@ -3523,6 +4214,7 @@ static int __devinit pci_probe(struct pci_dev *dev,
 		return -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	ohci = kzalloc(sizeof(*ohci), GFP_KERNEL);
 	if (ohci == NULL) {
 		err = -ENOMEM;
@@ -3537,17 +4229,35 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	if (err) {
 		dev_err(&dev->dev, "failed to enable OHCI hardware\n");
 		goto fail_free;
+=======
+	ohci = devres_alloc(release_ohci, sizeof(*ohci), GFP_KERNEL);
+	if (ohci == NULL)
+		return -ENOMEM;
+	fw_card_initialize(&ohci->card, &ohci_driver, &dev->dev);
+	pci_set_drvdata(dev, ohci);
+	pmac_ohci_on(dev);
+	devres_add(&dev->dev, ohci);
+
+	err = pcim_enable_device(dev);
+	if (err) {
+		dev_err(&dev->dev, "failed to enable OHCI hardware\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_set_master(dev);
 	pci_write_config_dword(dev, OHCI1394_PCI_HCI_Control, 0);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, ohci);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&ohci->lock);
 	mutex_init(&ohci->phy_reg_mutex);
 
 	INIT_WORK(&ohci->bus_reset_work, bus_reset_work);
 
+<<<<<<< HEAD
 	err = pci_request_region(dev, 0, ohci_driver_name);
 	if (err) {
 		dev_err(&dev->dev, "MMIO resource unavailable\n");
@@ -3560,6 +4270,20 @@ static int __devinit pci_probe(struct pci_dev *dev,
 		err = -ENXIO;
 		goto fail_iomem;
 	}
+=======
+	if (!(pci_resource_flags(dev, 0) & IORESOURCE_MEM) ||
+	    pci_resource_len(dev, 0) < OHCI1394_REGISTER_SIZE) {
+		ohci_err(ohci, "invalid MMIO resource\n");
+		return -ENXIO;
+	}
+
+	err = pcim_iomap_regions(dev, 1 << 0, ohci_driver_name);
+	if (err) {
+		ohci_err(ohci, "request and map MMIO resource unavailable\n");
+		return -ENXIO;
+	}
+	ohci->registers = pcim_iomap_table(dev)[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(ohci_quirks); i++)
 		if ((ohci_quirks[i].vendor == dev->vendor) &&
@@ -3573,6 +4297,12 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	if (param_quirks)
 		ohci->quirks = param_quirks;
 
+<<<<<<< HEAD
+=======
+	if (detect_vt630x_with_asm1083_on_amd_ryzen_machine(dev))
+		ohci->quirks |= QUIRK_REBOOT_BY_CYCLE_TIMER_READ;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Because dma_alloc_coherent() allocates at least one page,
 	 * we save space by using a common buffer for the AR request/
@@ -3580,6 +4310,7 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	 */
 	BUILD_BUG_ON(AR_BUFFERS * sizeof(struct descriptor) > PAGE_SIZE/4);
 	BUILD_BUG_ON(SELF_ID_BUF_SIZE > PAGE_SIZE/2);
+<<<<<<< HEAD
 	ohci->misc_buffer = dma_alloc_coherent(ohci->card.device,
 					       PAGE_SIZE,
 					       &ohci->misc_buffer_bus,
@@ -3588,26 +4319,48 @@ static int __devinit pci_probe(struct pci_dev *dev,
 		err = -ENOMEM;
 		goto fail_iounmap;
 	}
+=======
+	ohci->misc_buffer = dmam_alloc_coherent(&dev->dev, PAGE_SIZE, &ohci->misc_buffer_bus,
+						GFP_KERNEL);
+	if (!ohci->misc_buffer)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ar_context_init(&ohci->ar_request_ctx, ohci, 0,
 			      OHCI1394_AsReqRcvContextControlSet);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail_misc_buf;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ar_context_init(&ohci->ar_response_ctx, ohci, PAGE_SIZE/4,
 			      OHCI1394_AsRspRcvContextControlSet);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail_arreq_ctx;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = context_init(&ohci->at_request_ctx, ohci,
 			   OHCI1394_AsReqTrContextControlSet, handle_at_packet);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail_arrsp_ctx;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = context_init(&ohci->at_response_ctx, ohci,
 			   OHCI1394_AsRspTrContextControlSet, handle_at_packet);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail_atreq_ctx;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg_write(ohci, OHCI1394_IsoRecvIntMaskSet, ~0);
 	ohci->ir_context_channels = ~0ULL;
@@ -3616,19 +4369,30 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	ohci->ir_context_mask = ohci->ir_context_support;
 	ohci->n_ir = hweight32(ohci->ir_context_mask);
 	size = sizeof(struct iso_context) * ohci->n_ir;
+<<<<<<< HEAD
 	ohci->ir_context_list = kzalloc(size, GFP_KERNEL);
+=======
+	ohci->ir_context_list = devm_kzalloc(&dev->dev, size, GFP_KERNEL);
+	if (!ohci->ir_context_list)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg_write(ohci, OHCI1394_IsoXmitIntMaskSet, ~0);
 	ohci->it_context_support = reg_read(ohci, OHCI1394_IsoXmitIntMaskSet);
 	/* JMicron JMB38x often shows 0 at first read, just ignore it */
 	if (!ohci->it_context_support) {
+<<<<<<< HEAD
 		dev_notice(&dev->dev, "overriding IsoXmitIntMask\n");
+=======
+		ohci_notice(ohci, "overriding IsoXmitIntMask\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci->it_context_support = 0xf;
 	}
 	reg_write(ohci, OHCI1394_IsoXmitIntMaskClear, ~0);
 	ohci->it_context_mask = ohci->it_context_support;
 	ohci->n_it = hweight32(ohci->it_context_mask);
 	size = sizeof(struct iso_context) * ohci->n_it;
+<<<<<<< HEAD
 	ohci->it_context_list = kzalloc(size, GFP_KERNEL);
 
 	if (ohci->it_context_list == NULL || ohci->ir_context_list == NULL) {
@@ -3637,6 +4401,13 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	}
 
 	ohci->self_id_cpu = ohci->misc_buffer     + PAGE_SIZE/2;
+=======
+	ohci->it_context_list = devm_kzalloc(&dev->dev, size, GFP_KERNEL);
+	if (!ohci->it_context_list)
+		return -ENOMEM;
+
+	ohci->self_id     = ohci->misc_buffer     + PAGE_SIZE/2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ohci->self_id_bus = ohci->misc_buffer_bus + PAGE_SIZE/2;
 
 	bus_options = reg_read(ohci, OHCI1394_BusOptions);
@@ -3645,6 +4416,7 @@ static int __devinit pci_probe(struct pci_dev *dev,
 	guid = ((u64) reg_read(ohci, OHCI1394_GUIDHi) << 32) |
 		reg_read(ohci, OHCI1394_GUIDLo);
 
+<<<<<<< HEAD
 	err = fw_card_add(&ohci->card, max_receive, link_speed, guid);
 	if (err)
 		goto fail_contexts;
@@ -3683,17 +4455,59 @@ static int __devinit pci_probe(struct pci_dev *dev,
  fail:
 	if (err == -ENOMEM)
 		dev_err(&dev->dev, "out of memory\n");
+=======
+	if (!(ohci->quirks & QUIRK_NO_MSI))
+		pci_enable_msi(dev);
+	err = devm_request_irq(&dev->dev, dev->irq, irq_handler,
+			       pci_dev_msi_enabled(dev) ? 0 : IRQF_SHARED, ohci_driver_name, ohci);
+	if (err < 0) {
+		ohci_err(ohci, "failed to allocate interrupt %d\n", dev->irq);
+		goto fail_msi;
+	}
+
+	err = fw_card_add(&ohci->card, max_receive, link_speed, guid);
+	if (err)
+		goto fail_msi;
+
+	version = reg_read(ohci, OHCI1394_Version) & 0x00ff00ff;
+	ohci_notice(ohci,
+		    "added OHCI v%x.%x device as card %d, "
+		    "%d IR + %d IT contexts, quirks 0x%x%s\n",
+		    version >> 16, version & 0xff, ohci->card.index,
+		    ohci->n_ir, ohci->n_it, ohci->quirks,
+		    reg_read(ohci, OHCI1394_PhyUpperBound) ?
+			", physUB" : "");
+
+	return 0;
+
+ fail_msi:
+	devm_free_irq(&dev->dev, dev->irq, ohci);
+	pci_disable_msi(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 static void pci_remove(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	struct fw_ohci *ohci;
 
 	ohci = pci_get_drvdata(dev);
 	reg_write(ohci, OHCI1394_IntMaskClear, ~0);
 	flush_writes(ohci);
+=======
+	struct fw_ohci *ohci = pci_get_drvdata(dev);
+
+	/*
+	 * If the removal is happening from the suspend state, LPS won't be
+	 * enabled and host registers (eg., IntMaskClear) won't be accessible.
+	 */
+	if (reg_read(ohci, OHCI1394_HCControlSet) & OHCI1394_HCControl_LPS) {
+		reg_write(ohci, OHCI1394_IntMaskClear, ~0);
+		flush_writes(ohci);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_work_sync(&ohci->bus_reset_work);
 	fw_core_remove_card(&ohci->card);
 
@@ -3703,6 +4517,7 @@ static void pci_remove(struct pci_dev *dev)
 	 */
 
 	software_reset(ohci);
+<<<<<<< HEAD
 	free_irq(dev->irq, ohci);
 
 	if (ohci->next_config_rom && ohci->next_config_rom != ohci->config_rom)
@@ -3727,6 +4542,13 @@ static void pci_remove(struct pci_dev *dev)
 	pmac_ohci_off(dev);
 
 	dev_notice(&dev->dev, "removed fw-ohci device\n");
+=======
+
+	devm_free_irq(&dev->dev, dev->irq, ohci);
+	pci_disable_msi(dev);
+
+	dev_notice(&dev->dev, "removing fw-ohci device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -3736,16 +4558,26 @@ static int pci_suspend(struct pci_dev *dev, pm_message_t state)
 	int err;
 
 	software_reset(ohci);
+<<<<<<< HEAD
 	free_irq(dev->irq, ohci);
 	pci_disable_msi(dev);
 	err = pci_save_state(dev);
 	if (err) {
 		dev_err(&dev->dev, "pci_save_state failed\n");
+=======
+	err = pci_save_state(dev);
+	if (err) {
+		ohci_err(ohci, "pci_save_state failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	err = pci_set_power_state(dev, pci_choose_state(dev, state));
 	if (err)
+<<<<<<< HEAD
 		dev_err(&dev->dev, "pci_set_power_state failed with %d\n", err);
+=======
+		ohci_err(ohci, "pci_set_power_state failed with %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmac_ohci_off(dev);
 
 	return 0;
@@ -3761,7 +4593,11 @@ static int pci_resume(struct pci_dev *dev)
 	pci_restore_state(dev);
 	err = pci_enable_device(dev);
 	if (err) {
+<<<<<<< HEAD
 		dev_err(&dev->dev, "pci_enable_device failed\n");
+=======
+		ohci_err(ohci, "pci_enable_device failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -3800,6 +4636,7 @@ static struct pci_driver fw_ohci_pci_driver = {
 #endif
 };
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Kristian Hoegsberg <krh@bitplanet.net>");
 MODULE_DESCRIPTION("Driver for PCI OHCI IEEE1394 controllers");
 MODULE_LICENSE("GPL");
@@ -3811,13 +4648,35 @@ MODULE_ALIAS("ohci1394");
 
 static int __init fw_ohci_init(void)
 {
+=======
+static int __init fw_ohci_init(void)
+{
+	selfid_workqueue = alloc_workqueue(KBUILD_MODNAME, WQ_MEM_RECLAIM, 0);
+	if (!selfid_workqueue)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pci_register_driver(&fw_ohci_pci_driver);
 }
 
 static void __exit fw_ohci_cleanup(void)
 {
 	pci_unregister_driver(&fw_ohci_pci_driver);
+<<<<<<< HEAD
+=======
+	destroy_workqueue(selfid_workqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(fw_ohci_init);
 module_exit(fw_ohci_cleanup);
+<<<<<<< HEAD
+=======
+
+MODULE_AUTHOR("Kristian Hoegsberg <krh@bitplanet.net>");
+MODULE_DESCRIPTION("Driver for PCI OHCI IEEE1394 controllers");
+MODULE_LICENSE("GPL");
+
+/* Provide a module alias so root-on-sbp2 initrds don't break. */
+MODULE_ALIAS("ohci1394");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

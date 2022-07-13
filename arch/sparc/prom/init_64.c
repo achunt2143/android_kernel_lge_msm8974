@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * init.c:  Initialize internal variables used by the PROM
  *          library functions.
@@ -22,6 +26,7 @@ int prom_stdout;
 phandle prom_chosen_node;
 
 /* You must call prom_init() before you attempt to use any of the
+<<<<<<< HEAD
  * routines in the prom library.  It returns 0 on success, 1 on
  * failure.  It gets passed the pointer to the PROM vector.
  */
@@ -33,6 +38,19 @@ void __init prom_init(void *cif_handler, void *cif_stack)
 	phandle node;
 
 	prom_cif_init(cif_handler, cif_stack);
+=======
+ * routines in the prom library.
+ * It gets passed the pointer to the PROM vector.
+ */
+
+extern void prom_cif_init(void *);
+
+void __init prom_init(void *cif_handler)
+{
+	phandle node;
+
+	prom_cif_init(cif_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prom_chosen_node = prom_finddevice(prom_chosen_path);
 	if (!prom_chosen_node || (s32)prom_chosen_node == -1)

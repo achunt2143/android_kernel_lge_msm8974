@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_SEQ_KERNEL_H
 #define __SOUND_SEQ_KERNEL_H
 
 /*
  *  Main kernel header file for the ALSA sequencer
  *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,15 +28,25 @@
  */
 #include <linux/time.h>
 #include "asequencer.h"
+=======
+ */
+#include <linux/time.h>
+#include <sound/asequencer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct snd_seq_real_time snd_seq_real_time_t;
 typedef union snd_seq_timestamp snd_seq_timestamp_t;
 
+<<<<<<< HEAD
 /* maximum number of events dequeued per schedule interval */
 #define SNDRV_SEQ_MAX_DEQUEUE		50
 
 /* maximum number of queues */
 #define SNDRV_SEQ_MAX_QUEUES		8
+=======
+/* maximum number of queues */
+#define SNDRV_SEQ_MAX_QUEUES		32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* max number of concurrent clients */
 #define SNDRV_SEQ_MAX_CLIENTS 		192
@@ -42,9 +57,12 @@ typedef union snd_seq_timestamp snd_seq_timestamp_t;
 /* max number of events in memory pool */
 #define SNDRV_SEQ_MAX_EVENTS		2000
 
+<<<<<<< HEAD
 /* default number of events in memory chunk */
 #define SNDRV_SEQ_DEFAULT_CHUNK_EVENTS	64
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* default number of events in memory pool */
 #define SNDRV_SEQ_DEFAULT_EVENTS	500
 
@@ -55,7 +73,12 @@ typedef union snd_seq_timestamp snd_seq_timestamp_t;
 #define SNDRV_SEQ_DEFAULT_CLIENT_EVENTS	200
 
 /* max delivery path length */
+<<<<<<< HEAD
 #define SNDRV_SEQ_MAX_HOPS		10
+=======
+/* NOTE: this shouldn't be greater than MAX_LOCKDEP_SUBCLASSES */
+#define SNDRV_SEQ_MAX_HOPS		8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* max size of event size */
 #define SNDRV_SEQ_MAX_EVENT_LEN		0x3fffffff
@@ -70,7 +93,10 @@ struct snd_seq_port_callback {
 	int (*unuse)(void *private_data, struct snd_seq_port_subscribe *info);
 	int (*event_input)(struct snd_seq_event *ev, int direct, void *private_data, int atomic, int hop);
 	void (*private_free)(void *private_data);
+<<<<<<< HEAD
 	unsigned int callback_all;	/* call subscribe callbacks at each connection/disconnection */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*...*/
 };
 
@@ -79,7 +105,12 @@ __printf(3, 4)
 int snd_seq_create_kernel_client(struct snd_card *card, int client_index,
 				 const char *name_fmt, ...);
 int snd_seq_delete_kernel_client(int client);
+<<<<<<< HEAD
 int snd_seq_kernel_client_enqueue(int client, struct snd_seq_event *ev, int atomic, int hop);
+=======
+int snd_seq_kernel_client_enqueue(int client, struct snd_seq_event *ev,
+				  struct file *file, bool blocking);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_seq_kernel_client_dispatch(int client, struct snd_seq_event *ev, int atomic, int hop);
 int snd_seq_kernel_client_ctl(int client, unsigned int cmd, void *arg);
 
@@ -90,9 +121,25 @@ int snd_seq_kernel_client_ctl(int client, unsigned int cmd, void *arg);
 typedef int (*snd_seq_dump_func_t)(void *ptr, void *buf, int count);
 int snd_seq_expand_var_event(const struct snd_seq_event *event, int count, char *buf,
 			     int in_kernel, int size_aligned);
+<<<<<<< HEAD
 int snd_seq_dump_var_event(const struct snd_seq_event *event,
 			   snd_seq_dump_func_t func, void *private_data);
 
+=======
+int snd_seq_expand_var_event_at(const struct snd_seq_event *event, int count,
+				char *buf, int offset);
+int snd_seq_dump_var_event(const struct snd_seq_event *event,
+			   snd_seq_dump_func_t func, void *private_data);
+
+/* size of the event packet; it can be greater than snd_seq_event size */
+static inline size_t snd_seq_event_packet_size(struct snd_seq_event *ev)
+{
+	if (snd_seq_ev_is_ump(ev))
+		return sizeof(struct snd_seq_ump_event);
+	return sizeof(struct snd_seq_event);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* interface for OSS emulation */
 int snd_seq_set_queue_tempo(int client, struct snd_seq_queue_tempo *tempo);
 
@@ -106,11 +153,19 @@ int snd_seq_event_port_attach(int client, struct snd_seq_port_callback *pcbp,
 int snd_seq_event_port_detach(int client, int port);
 
 #ifdef CONFIG_MODULES
+<<<<<<< HEAD
 void snd_seq_autoload_lock(void);
 void snd_seq_autoload_unlock(void);
 #else
 #define snd_seq_autoload_lock()
 #define snd_seq_autoload_unlock()
+=======
+void snd_seq_autoload_init(void);
+void snd_seq_autoload_exit(void);
+#else
+#define snd_seq_autoload_init()
+#define snd_seq_autoload_exit()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __SOUND_SEQ_KERNEL_H */

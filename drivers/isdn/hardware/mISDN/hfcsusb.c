@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* hfcsusb.c
  * mISDN driver for Colognechip HFC-S USB chip
  *
  * Copyright 2001 by Peter Sprenger (sprenger@moving-bytes.de)
  * Copyright 2008 by Martin Bachem (info@bachem-it.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -19,6 +24,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * module params
  *   debug=<n>, default=0, with n=0xHHHHGGGG
  *      H - l1 driver flags described in hfcsusb.h
@@ -60,7 +67,11 @@ static void hfcsusb_start_endpoint(struct hfcsusb *hw, int channel);
 static void hfcsusb_stop_endpoint(struct hfcsusb *hw, int channel);
 static int  hfcsusb_setup_bch(struct bchannel *bch, int protocol);
 static void deactivate_bchannel(struct bchannel *bch);
+<<<<<<< HEAD
 static void hfcsusb_ph_info(struct hfcsusb *hw);
+=======
+static int  hfcsusb_ph_info(struct hfcsusb *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* start next background transfer for control channel */
 static void
@@ -226,6 +237,7 @@ hfcusb_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 		if (debug & DBG_HFC_CALL_TRACE)
 			printk(KERN_DEBUG "%s: %s PH_DATA_REQ ret(%i)\n",
 			       hw->name, __func__, ret);
+<<<<<<< HEAD
 		if (ret > 0) {
 			/*
 			 * other l1 drivers don't send early confirms on
@@ -239,6 +251,14 @@ hfcusb_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 	case PH_ACTIVATE_REQ:
 		if (!test_and_set_bit(FLG_ACTIVE, &bch->Flags)) {
 			hfcsusb_start_endpoint(hw, bch->nr);
+=======
+		if (ret > 0)
+			ret = 0;
+		return ret;
+	case PH_ACTIVATE_REQ:
+		if (!test_and_set_bit(FLG_ACTIVE, &bch->Flags)) {
+			hfcsusb_start_endpoint(hw, bch->nr - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = hfcsusb_setup_bch(bch, ch->protocol);
 		} else
 			ret = 0;
@@ -262,15 +282,26 @@ hfcusb_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
  * send full D/B channel status information
  * as MPH_INFORMATION_IND
  */
+<<<<<<< HEAD
 static void
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hfcsusb_ph_info(struct hfcsusb *hw)
 {
 	struct ph_info *phi;
 	struct dchannel *dch = &hw->dch;
 	int i;
 
+<<<<<<< HEAD
 	phi = kzalloc(sizeof(struct ph_info) +
 		      dch->dev.nrbchan * sizeof(struct ph_info_ch), GFP_ATOMIC);
+=======
+	phi = kzalloc(struct_size(phi, bch, dch->dev.nrbchan), GFP_ATOMIC);
+	if (!phi)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phi->dch.ch.protocol = hw->protocol;
 	phi->dch.ch.Flags = dch->Flags;
 	phi->dch.state = dch->state;
@@ -280,9 +311,16 @@ hfcsusb_ph_info(struct hfcsusb *hw)
 		phi->bch[i].Flags = hw->bch[i].Flags;
 	}
 	_queue_data(&dch->dev.D, MPH_INFORMATION_IND, MISDN_ID_ANY,
+<<<<<<< HEAD
 		    sizeof(struct ph_info_dch) + dch->dev.nrbchan *
 		    sizeof(struct ph_info_ch), phi, GFP_ATOMIC);
 	kfree(phi);
+=======
+		    struct_size(phi, bch, dch->dev.nrbchan), phi, GFP_ATOMIC);
+	kfree(phi);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -344,20 +382,39 @@ hfcusb_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
 		test_and_clear_bit(FLG_L2_ACTIVATED, &dch->Flags);
 
 		if (hw->protocol == ISDN_P_NT_S0) {
+<<<<<<< HEAD
 			hfcsusb_ph_command(hw, HFC_L1_DEACTIVATE_NT);
 			spin_lock_irqsave(&hw->lock, flags);
 			skb_queue_purge(&dch->squeue);
 			if (dch->tx_skb) {
 				dev_kfree_skb(dch->tx_skb);
+=======
+			struct sk_buff_head free_queue;
+
+			__skb_queue_head_init(&free_queue);
+			hfcsusb_ph_command(hw, HFC_L1_DEACTIVATE_NT);
+			spin_lock_irqsave(&hw->lock, flags);
+			skb_queue_splice_init(&dch->squeue, &free_queue);
+			if (dch->tx_skb) {
+				__skb_queue_tail(&free_queue, dch->tx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dch->tx_skb = NULL;
 			}
 			dch->tx_idx = 0;
 			if (dch->rx_skb) {
+<<<<<<< HEAD
 				dev_kfree_skb(dch->rx_skb);
+=======
+				__skb_queue_tail(&free_queue, dch->rx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dch->rx_skb = NULL;
 			}
 			test_and_clear_bit(FLG_TX_BUSY, &dch->Flags);
 			spin_unlock_irqrestore(&hw->lock, flags);
+<<<<<<< HEAD
+=======
+			__skb_queue_purge(&free_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef FIXME
 			if (test_and_clear_bit(FLG_L1_BUSY, &dch->Flags))
 				dchannel_sched_event(&hc->dch, D_CLEARBUSY);
@@ -367,8 +424,12 @@ hfcusb_l2l1D(struct mISDNchannel *ch, struct sk_buff *skb)
 			ret = l1_event(dch->l1, hh->prim);
 		break;
 	case MPH_INFORMATION_REQ:
+<<<<<<< HEAD
 		hfcsusb_ph_info(hw);
 		ret = 0;
+=======
+		ret = hfcsusb_ph_info(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -423,8 +484,12 @@ hfc_l1callback(struct dchannel *dch, u_int cmd)
 			       hw->name, __func__, cmd);
 		return -1;
 	}
+<<<<<<< HEAD
 	hfcsusb_ph_info(hw);
 	return 0;
+=======
+	return hfcsusb_ph_info(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -498,6 +563,7 @@ open_bchannel(struct hfcsusb *hw, struct channel_req *rq)
 	bch = &hw->bch[rq->adr.channel - 1];
 	if (test_and_set_bit(FLG_OPEN, &bch->Flags))
 		return -EBUSY; /* b-channel can be only open once */
+<<<<<<< HEAD
 	test_and_clear_bit(FLG_FILLEMPTY, &bch->Flags);
 	bch->ch.protocol = rq->protocol;
 	rq->ch = &bch->ch;
@@ -508,6 +574,11 @@ open_bchannel(struct hfcsusb *hw, struct channel_req *rq)
 	else
 		hfcsusb_start_endpoint(hw, HFC_CHAN_B2);
 
+=======
+	bch->ch.protocol = rq->protocol;
+	rq->ch = &bch->ch;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!try_module_get(THIS_MODULE))
 		printk(KERN_WARNING "%s: %s:cannot get module\n",
 		       hw->name, __func__);
@@ -701,7 +772,11 @@ ph_state(struct dchannel *dch)
 }
 
 /*
+<<<<<<< HEAD
  * disable/enable BChannel for desired protocoll
+=======
+ * disable/enable BChannel for desired protocol
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 hfcsusb_setup_bch(struct bchannel *bch, int protocol)
@@ -722,7 +797,11 @@ hfcsusb_setup_bch(struct bchannel *bch, int protocol)
 	switch (protocol) {
 	case (-1):	/* used for init */
 		bch->state = -1;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case (ISDN_P_NONE):
 		if (bch->state == ISDN_P_NONE)
 			return 0; /* already in idle state */
@@ -773,8 +852,12 @@ hfcsusb_setup_bch(struct bchannel *bch, int protocol)
 			handle_led(hw, (bch->nr == 1) ? LED_B1_OFF :
 				   LED_B2_OFF);
 	}
+<<<<<<< HEAD
 	hfcsusb_ph_info(hw);
 	return 0;
+=======
+	return hfcsusb_ph_info(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -819,6 +902,7 @@ hfcsusb_ph_command(struct hfcsusb *hw, u_char command)
 static int
 channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 {
+<<<<<<< HEAD
 	int	ret = 0;
 
 	switch (cq->op) {
@@ -837,6 +921,9 @@ channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 		break;
 	}
 	return ret;
+=======
+	return mISDN_ctrl_bchannel(bch, cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* collect data from incoming interrupt or isochron USB data */
@@ -850,6 +937,10 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 	int		fifon = fifo->fifonum;
 	int		i;
 	int		hdlc = 0;
+<<<<<<< HEAD
+=======
+	unsigned long	flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (debug & DBG_HFC_CALL_TRACE)
 		printk(KERN_DEBUG "%s: %s: fifo(%i) len(%i) "
@@ -866,14 +957,36 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&hw->lock);
+=======
+	spin_lock_irqsave(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fifo->dch) {
 		rx_skb = fifo->dch->rx_skb;
 		maxlen = fifo->dch->maxlen;
 		hdlc = 1;
 	}
 	if (fifo->bch) {
+<<<<<<< HEAD
 		rx_skb = fifo->bch->rx_skb;
+=======
+		if (test_bit(FLG_RX_OFF, &fifo->bch->Flags)) {
+			fifo->bch->dropcnt += len;
+			spin_unlock_irqrestore(&hw->lock, flags);
+			return;
+		}
+		maxlen = bchannel_get_rxbuf(fifo->bch, len);
+		rx_skb = fifo->bch->rx_skb;
+		if (maxlen < 0) {
+			if (rx_skb)
+				skb_trim(rx_skb, 0);
+			pr_warn("%s.B%d: No bufferspace for %d bytes\n",
+				hw->name, fifo->bch->nr, len);
+			spin_unlock_irqrestore(&hw->lock, flags);
+			return;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		maxlen = fifo->bch->maxlen;
 		hdlc = test_bit(FLG_HDLC, &fifo->bch->Flags);
 	}
@@ -883,6 +996,7 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 		hdlc = 1;
 	}
 
+<<<<<<< HEAD
 	if (!rx_skb) {
 		rx_skb = mI_alloc_skb(maxlen, GFP_ATOMIC);
 		if (rx_skb) {
@@ -902,12 +1016,31 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 	}
 
 	if (fifo->dch || fifo->ech) {
+=======
+	if (fifo->dch || fifo->ech) {
+		if (!rx_skb) {
+			rx_skb = mI_alloc_skb(maxlen, GFP_ATOMIC);
+			if (rx_skb) {
+				if (fifo->dch)
+					fifo->dch->rx_skb = rx_skb;
+				if (fifo->ech)
+					fifo->ech->rx_skb = rx_skb;
+				skb_trim(rx_skb, 0);
+			} else {
+				printk(KERN_DEBUG "%s: %s: No mem for rx_skb\n",
+				       hw->name, __func__);
+				spin_unlock_irqrestore(&hw->lock, flags);
+				return;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* D/E-Channel SKB range check */
 		if ((rx_skb->len + len) >= MAX_DFRAME_LEN_L1) {
 			printk(KERN_DEBUG "%s: %s: sbk mem exceeded "
 			       "for fifo(%d) HFCUSB_D_RX\n",
 			       hw->name, __func__, fifon);
 			skb_trim(rx_skb, 0);
+<<<<<<< HEAD
 			spin_unlock(&hw->lock);
 			return;
 		}
@@ -919,11 +1052,18 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 			       hw->name, __func__, fifon);
 			skb_trim(rx_skb, 0);
 			spin_unlock(&hw->lock);
+=======
+			spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
+<<<<<<< HEAD
 	memcpy(skb_put(rx_skb, len), data, len);
+=======
+	skb_put_data(rx_skb, data, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hdlc) {
 		/* we have a complete hdlc packet */
@@ -948,7 +1088,12 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 				if (fifo->dch)
 					recv_Dchannel(fifo->dch);
 				if (fifo->bch)
+<<<<<<< HEAD
 					recv_Bchannel(fifo->bch, MISDN_ID_ANY);
+=======
+					recv_Bchannel(fifo->bch, MISDN_ID_ANY,
+						      0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (fifo->ech)
 					recv_Echannel(fifo->ech,
 						      &hw->dch);
@@ -969,10 +1114,16 @@ hfcsusb_rx_frame(struct usb_fifo *fifo, __u8 *data, unsigned int len,
 		}
 	} else {
 		/* deliver transparent data to layer2 */
+<<<<<<< HEAD
 		if (rx_skb->len >= poll)
 			recv_Bchannel(fifo->bch, MISDN_ID_ANY);
 	}
 	spin_unlock(&hw->lock);
+=======
+		recv_Bchannel(fifo->bch, MISDN_ID_ANY, false);
+	}
+	spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1009,10 +1160,15 @@ rx_iso_complete(struct urb *urb)
 	__u8 *buf;
 	static __u8 eof[8];
 	__u8 s0_state;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fifon = fifo->fifonum;
 	status = urb->status;
 
+<<<<<<< HEAD
 	spin_lock(&hw->lock);
 	if (fifo->stop_gracefull) {
 		fifo->stop_gracefull = 0;
@@ -1021,6 +1177,16 @@ rx_iso_complete(struct urb *urb)
 		return;
 	}
 	spin_unlock(&hw->lock);
+=======
+	spin_lock_irqsave(&hw->lock, flags);
+	if (fifo->stop_gracefull) {
+		fifo->stop_gracefull = 0;
+		fifo->active = 0;
+		spin_unlock_irqrestore(&hw->lock, flags);
+		return;
+	}
+	spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ISO transfer only partially completed,
@@ -1126,6 +1292,7 @@ rx_int_complete(struct urb *urb)
 	struct usb_fifo *fifo = (struct usb_fifo *) urb->context;
 	struct hfcsusb *hw = fifo->hw;
 	static __u8 eof[8];
+<<<<<<< HEAD
 
 	spin_lock(&hw->lock);
 	if (fifo->stop_gracefull) {
@@ -1135,6 +1302,18 @@ rx_int_complete(struct urb *urb)
 		return;
 	}
 	spin_unlock(&hw->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&hw->lock, flags);
+	if (fifo->stop_gracefull) {
+		fifo->stop_gracefull = 0;
+		fifo->active = 0;
+		spin_unlock_irqrestore(&hw->lock, flags);
+		return;
+	}
+	spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fifon = fifo->fifonum;
 	if ((!fifo->active) || (urb->status)) {
@@ -1200,6 +1379,7 @@ tx_iso_complete(struct urb *urb)
 	int k, tx_offset, num_isoc_packets, sink, remain, current_len,
 		errcode, hdlc, i;
 	int *tx_idx;
+<<<<<<< HEAD
 	int frame_complete, fifon, status;
 	__u8 threshbit;
 
@@ -1208,6 +1388,17 @@ tx_iso_complete(struct urb *urb)
 		fifo->stop_gracefull = 0;
 		fifo->active = 0;
 		spin_unlock(&hw->lock);
+=======
+	int frame_complete, fifon, status, fillempty = 0;
+	__u8 threshbit, *p;
+	unsigned long flags;
+
+	spin_lock_irqsave(&hw->lock, flags);
+	if (fifo->stop_gracefull) {
+		fifo->stop_gracefull = 0;
+		fifo->active = 0;
+		spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1219,10 +1410,20 @@ tx_iso_complete(struct urb *urb)
 		tx_skb = fifo->bch->tx_skb;
 		tx_idx = &fifo->bch->tx_idx;
 		hdlc = test_bit(FLG_HDLC, &fifo->bch->Flags);
+<<<<<<< HEAD
 	} else {
 		printk(KERN_DEBUG "%s: %s: neither BCH nor DCH\n",
 		       hw->name, __func__);
 		spin_unlock(&hw->lock);
+=======
+		if (!tx_skb && !hdlc &&
+		    test_bit(FLG_FILLEMPTY, &fifo->bch->Flags))
+			fillempty = 1;
+	} else {
+		printk(KERN_DEBUG "%s: %s: neither BCH nor DCH\n",
+		       hw->name, __func__);
+		spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1277,6 +1478,11 @@ tx_iso_complete(struct urb *urb)
 			/* Generate next ISO Packets */
 			if (tx_skb)
 				remain = tx_skb->len - *tx_idx;
+<<<<<<< HEAD
+=======
+			else if (fillempty)
+				remain = 15; /* > not complete */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				remain = 0;
 
@@ -1307,15 +1513,31 @@ tx_iso_complete(struct urb *urb)
 				}
 
 				/* copy tx data to iso-urb buffer */
+<<<<<<< HEAD
 				memcpy(context_iso_urb->buffer + tx_offset + 1,
 				       (tx_skb->data + *tx_idx), current_len);
 				*tx_idx += current_len;
 
+=======
+				p = context_iso_urb->buffer + tx_offset + 1;
+				if (fillempty) {
+					memset(p, fifo->bch->fill[0],
+					       current_len);
+				} else {
+					memcpy(p, (tx_skb->data + *tx_idx),
+					       current_len);
+					*tx_idx += current_len;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				urb->iso_frame_desc[k].offset = tx_offset;
 				urb->iso_frame_desc[k].length = current_len + 1;
 
 				/* USB data log for every D ISO out */
+<<<<<<< HEAD
 				if ((fifon == HFCUSB_D_RX) &&
+=======
+				if ((fifon == HFCUSB_D_RX) && !fillempty &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (debug & DBG_HFC_USB_VERBOSE)) {
 					printk(KERN_DEBUG
 					       "%s: %s (%d/%d) offs(%d) len(%d) ",
@@ -1360,17 +1582,26 @@ tx_iso_complete(struct urb *urb)
 					printk("\n");
 				}
 
+<<<<<<< HEAD
 				dev_kfree_skb(tx_skb);
+=======
+				dev_consume_skb_irq(tx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tx_skb = NULL;
 				if (fifo->dch && get_next_dframe(fifo->dch))
 					tx_skb = fifo->dch->tx_skb;
 				else if (fifo->bch &&
+<<<<<<< HEAD
 					 get_next_bframe(fifo->bch)) {
 					if (test_bit(FLG_TRANSPARENT,
 						     &fifo->bch->Flags))
 						confirm_Bsend(fifo->bch);
 					tx_skb = fifo->bch->tx_skb;
 				}
+=======
+					 get_next_bframe(fifo->bch))
+					tx_skb = fifo->bch->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		errcode = usb_submit_urb(urb, GFP_ATOMIC);
@@ -1399,7 +1630,11 @@ tx_iso_complete(struct urb *urb)
 			       hw->name, __func__,
 			       symbolic(urb_errlist, status), status, fifon);
 	}
+<<<<<<< HEAD
 	spin_unlock(&hw->lock);
+=======
+	spin_unlock_irqrestore(&hw->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1426,6 +1661,10 @@ start_isoc_chain(struct usb_fifo *fifo, int num_packets_per_urb,
 				printk(KERN_DEBUG
 				       "%s: %s: alloc urb for fifo %i failed",
 				       hw->name, __func__, fifo->fifonum);
+<<<<<<< HEAD
+=======
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			fifo->iso[i].owner_fifo = (struct usb_fifo *) fifo;
 			fifo->iso[i].indx = i;
@@ -1590,7 +1829,11 @@ reset_hfcsusb(struct hfcsusb *hw)
 	write_reg(hw, HFCUSB_USB_SIZE, (hw->packet_size / 8) |
 		  ((hw->packet_size / 8) << 4));
 
+<<<<<<< HEAD
 	/* set USB_SIZE_I to match the the wMaxPacketSize for ISO transfers */
+=======
+	/* set USB_SIZE_I to match the wMaxPacketSize for ISO transfers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_reg(hw, HFCUSB_USB_SIZE_I, hw->iso_packet_size);
 
 	/* enable PCM/GCI master mode */
@@ -1724,13 +1967,32 @@ hfcsusb_stop_endpoint(struct hfcsusb *hw, int channel)
 static int
 setup_hfcsusb(struct hfcsusb *hw)
 {
+<<<<<<< HEAD
 	u_char b;
+=======
+	void *dmabuf = kmalloc(sizeof(u_char), GFP_KERNEL);
+	u_char b;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (debug & DBG_HFC_CALL_TRACE)
 		printk(KERN_DEBUG "%s: %s\n", hw->name, __func__);
 
+<<<<<<< HEAD
 	/* check the chip id */
 	if (read_reg_atomic(hw, HFCUSB_CHIP_ID, &b) != 1) {
+=======
+	if (!dmabuf)
+		return -ENOMEM;
+
+	ret = read_reg_atomic(hw, HFCUSB_CHIP_ID, dmabuf);
+
+	memcpy(&b, dmabuf, sizeof(u_char));
+	kfree(dmabuf);
+
+	/* check the chip id */
+	if (ret != 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "%s: %s: cannot read chip id\n",
 		       hw->name, __func__);
 		return 1;
@@ -1812,7 +2074,11 @@ deactivate_bchannel(struct bchannel *bch)
 	mISDN_clear_bchannel(bch);
 	spin_unlock_irqrestore(&hw->lock, flags);
 	hfcsusb_setup_bch(bch, ISDN_P_NONE);
+<<<<<<< HEAD
 	hfcsusb_stop_endpoint(hw, bch->nr);
+=======
+	hfcsusb_stop_endpoint(hw, bch->nr - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1836,8 +2102,12 @@ hfc_bctrl(struct mISDNchannel *ch, u_int cmd, void *arg)
 
 	case CLOSE_CHANNEL:
 		test_and_clear_bit(FLG_OPEN, &bch->Flags);
+<<<<<<< HEAD
 		if (test_bit(FLG_ACTIVE, &bch->Flags))
 			deactivate_bchannel(bch);
+=======
+		deactivate_bchannel(bch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->protocol = ISDN_P_NONE;
 		ch->peer = NULL;
 		module_put(THIS_MODULE);
@@ -1883,7 +2153,11 @@ setup_instance(struct hfcsusb *hw, struct device *parent)
 		hw->bch[i].nr = i + 1;
 		set_channelmap(i + 1, hw->dch.dev.channelmap);
 		hw->bch[i].debug = debug;
+<<<<<<< HEAD
 		mISDN_initbchannel(&hw->bch[i], MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(&hw->bch[i], MAX_DATA_MEM, poll >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->bch[i].hw = hw;
 		hw->bch[i].ch.send = hfcusb_l2l1B;
 		hw->bch[i].ch.ctrl = hfc_bctrl;
@@ -1988,6 +2262,12 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 				/* get endpoint base */
 				idx = ((ep_addr & 0x7f) - 1) * 2;
+<<<<<<< HEAD
+=======
+				if (idx > 15)
+					return -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ep_addr & 0x80)
 					idx++;
 				attr = ep->desc.bmAttributes;
@@ -2109,6 +2389,7 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	/* create the control pipes needed for register access */
 	hw->ctrl_in_pipe = usb_rcvctrlpipe(hw->dev, 0);
 	hw->ctrl_out_pipe = usb_sndctrlpipe(hw->dev, 0);
+<<<<<<< HEAD
 	hw->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
 
 	driver_info =
@@ -2116,6 +2397,23 @@ hfcsusb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	printk(KERN_DEBUG "%s: %s: detected \"%s\" (%s, if=%d alt=%d)\n",
 	       hw->name, __func__, driver_info->vend_name,
 	       conf_str[small_match], ifnum, alt_used);
+=======
+
+	driver_info = (struct hfcsusb_vdata *)
+		      hfcsusb_idtab[vend_idx].driver_info;
+
+	hw->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!hw->ctrl_urb) {
+		pr_warn("%s: No memory for control urb\n",
+			driver_info->vend_name);
+		kfree(hw);
+		return -ENOMEM;
+	}
+
+	pr_info("%s: %s: detected \"%s\" (%s, if=%d alt=%d)\n",
+		hw->name, __func__, driver_info->vend_name,
+		conf_str[small_match], ifnum, alt_used);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (setup_instance(hw, dev->dev.parent))
 		return -EIO;
@@ -2151,6 +2449,10 @@ static struct usb_driver hfcsusb_drv = {
 	.id_table = hfcsusb_idtab,
 	.probe = hfcsusb_probe,
 	.disconnect = hfcsusb_disconnect,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(hfcsusb_drv);

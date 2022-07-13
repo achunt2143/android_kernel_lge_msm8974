@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 obj-$(CONFIG_INFINIBAND)		+= core/
 obj-$(CONFIG_INFINIBAND_MTHCA)		+= hw/mthca/
 obj-$(CONFIG_INFINIBAND_IPATH)		+= hw/ipath/
@@ -12,3 +13,10 @@ obj-$(CONFIG_INFINIBAND_IPOIB)		+= ulp/ipoib/
 obj-$(CONFIG_INFINIBAND_SRP)		+= ulp/srp/
 obj-$(CONFIG_INFINIBAND_SRPT)		+= ulp/srpt/
 obj-$(CONFIG_INFINIBAND_ISER)		+= ulp/iser/
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+obj-$(CONFIG_INFINIBAND)		+= core/
+obj-$(CONFIG_INFINIBAND)		+= hw/
+obj-$(CONFIG_INFINIBAND)		+= ulp/
+obj-$(CONFIG_INFINIBAND)		+= sw/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

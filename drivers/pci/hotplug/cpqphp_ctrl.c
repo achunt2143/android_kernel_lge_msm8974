@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compaq Hot Plug Controller Driver
  *
@@ -7,6 +11,7 @@
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -22,6 +27,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>
  *
  */
@@ -39,15 +46,25 @@
 #include <linux/kthread.h>
 #include "cpqphp.h"
 
+<<<<<<< HEAD
 static u32 configure_new_device(struct controller* ctrl, struct pci_func *func,
 			u8 behind_bridge, struct resource_lists *resources);
 static int configure_new_function(struct controller* ctrl, struct pci_func *func,
+=======
+static u32 configure_new_device(struct controller *ctrl, struct pci_func *func,
+			u8 behind_bridge, struct resource_lists *resources);
+static int configure_new_function(struct controller *ctrl, struct pci_func *func,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 behind_bridge, struct resource_lists *resources);
 static void interrupt_event_handler(struct controller *ctrl);
 
 
 static struct task_struct *cpqhp_event_thread;
+<<<<<<< HEAD
 static unsigned long pushbutton_pending;	/* = 0 */
+=======
+static struct timer_list *pushbutton_pending;	/* = NULL */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* delay is in jiffies to wait for */
 static void long_delay(int delay)
@@ -64,7 +81,11 @@ static void long_delay(int delay)
 
 /* FIXME: The following line needs to be somewhere else... */
 #define WRONG_BUS_FREQUENCY 0x07
+<<<<<<< HEAD
 static u8 handle_switch_change(u8 change, struct controller * ctrl)
+=======
+static u8 handle_switch_change(u8 change, struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int hp_slot;
 	u8 rc = 0;
@@ -138,7 +159,11 @@ static struct slot *cpqhp_find_slot(struct controller *ctrl, u8 device)
 }
 
 
+<<<<<<< HEAD
 static u8 handle_presence_change(u16 change, struct controller * ctrl)
+=======
+static u8 handle_presence_change(u16 change, struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int hp_slot;
 	u8 rc = 0;
@@ -155,7 +180,11 @@ static u8 handle_presence_change(u16 change, struct controller * ctrl)
 	 * Presence Change
 	 */
 	dbg("cpqsbd:  Presence/Notify input change.\n");
+<<<<<<< HEAD
 	dbg("         Changed bits are 0x%4.4x\n", change );
+=======
+	dbg("         Changed bits are 0x%4.4x\n", change);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (hp_slot = 0; hp_slot < 6; hp_slot++) {
 		if (change & (0x0101 << hp_slot)) {
@@ -232,7 +261,11 @@ static u8 handle_presence_change(u16 change, struct controller * ctrl)
 }
 
 
+<<<<<<< HEAD
 static u8 handle_power_fault(u8 change, struct controller * ctrl)
+=======
+static u8 handle_power_fault(u8 change, struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int hp_slot;
 	u8 rc = 0;
@@ -276,9 +309,15 @@ static u8 handle_power_fault(u8 change, struct controller * ctrl)
 				taskInfo->event_type = INT_POWER_FAULT;
 
 				if (ctrl->rev < 4) {
+<<<<<<< HEAD
 					amber_LED_on (ctrl, hp_slot);
 					green_LED_off (ctrl, hp_slot);
 					set_SOGO (ctrl);
+=======
+					amber_LED_on(ctrl, hp_slot);
+					green_LED_off(ctrl, hp_slot);
+					set_SOGO(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					/* this is a fatal condition, we want
 					 * to crash the machine to protect from
@@ -438,7 +477,11 @@ static struct pci_resource *do_pre_bridge_resource_split(struct pci_resource **h
 
 	node = *head;
 
+<<<<<<< HEAD
 	if (node->length & (alignment -1)) {
+=======
+	if (node->length & (alignment - 1)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this one isn't an aligned length, so we'll make a new entry
 		 * and split it up.
 		 */
@@ -533,7 +576,11 @@ error:
  * @head: list to search
  * @size: size of node to find, must be a power of two.
  *
+<<<<<<< HEAD
  * Description: This function sorts the resource list by size and then returns
+=======
+ * Description: This function sorts the resource list by size and then
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * returns the first node of "size" length that is not in the ISA aliasing
  * window.  If it finds a node larger than "size" it will split it up.
  */
@@ -705,11 +752,19 @@ static struct pci_resource *get_max_resource(struct pci_resource **head, u32 siz
 		if (temp == max) {
 			*head = max->next;
 		} else {
+<<<<<<< HEAD
 			while (temp && temp->next != max) {
 				temp = temp->next;
 			}
 
 			temp->next = max->next;
+=======
+			while (temp && temp->next != max)
+				temp = temp->next;
+
+			if (temp)
+				temp->next = max->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		max->next = NULL;
@@ -835,13 +890,22 @@ int cpqhp_resource_sort_and_combine(struct pci_resource **head)
 	if (!(*head))
 		return 1;
 
+<<<<<<< HEAD
 	dbg("*head->next = %p\n",(*head)->next);
+=======
+	dbg("*head->next = %p\n", (*head)->next);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(*head)->next)
 		return 0;	/* only one item on the list, already sorted! */
 
+<<<<<<< HEAD
 	dbg("*head->base = 0x%x\n",(*head)->base);
 	dbg("*head->next->base = 0x%x\n",(*head)->next->base);
+=======
+	dbg("*head->base = 0x%x\n", (*head)->base);
+	dbg("*head->next->base = 0x%x\n", (*head)->next->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (out_of_order) {
 		out_of_order = 0;
 
@@ -895,16 +959,24 @@ irqreturn_t cpqhp_ctrl_intr(int IRQ, void *data)
 	u8 reset;
 	u16 misc;
 	u32 Diff;
+<<<<<<< HEAD
 	u32 temp_dword;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	misc = readw(ctrl->hpc_reg + MISC);
 	/*
 	 * Check to see if it was our interrupt
 	 */
+<<<<<<< HEAD
 	if (!(misc & 0x000C)) {
 		return IRQ_NONE;
 	}
+=======
+	if (!(misc & 0x000C))
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (misc & 0x0004) {
 		/*
@@ -918,7 +990,11 @@ irqreturn_t cpqhp_ctrl_intr(int IRQ, void *data)
 		/* Read to clear posted writes */
 		misc = readw(ctrl->hpc_reg + MISC);
 
+<<<<<<< HEAD
 		dbg ("%s - waking up\n", __func__);
+=======
+		dbg("%s - waking up\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible(&ctrl->queue);
 	}
 
@@ -932,7 +1008,11 @@ irqreturn_t cpqhp_ctrl_intr(int IRQ, void *data)
 		writel(Diff, ctrl->hpc_reg + INT_INPUT_CLEAR);
 
 		/* Read it back to clear any posted writes */
+<<<<<<< HEAD
 		temp_dword = readl(ctrl->hpc_reg + INT_INPUT_CLEAR);
+=======
+		readl(ctrl->hpc_reg + INT_INPUT_CLEAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!Diff)
 			/* Clear all interrupts */
@@ -996,7 +1076,11 @@ struct pci_func *cpqhp_slot_create(u8 busnumber)
  *
  * Returns %0 if successful, !0 otherwise.
  */
+<<<<<<< HEAD
 static int slot_remove(struct pci_func * old_slot)
+=======
+static int slot_remove(struct pci_func *old_slot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_func *next;
 
@@ -1108,7 +1192,11 @@ struct pci_func *cpqhp_slot_find(u8 bus, u8 device, u8 index)
 
 /* DJZ: I don't think is_bridge will work as is.
  * FIXME */
+<<<<<<< HEAD
 static int is_bridge(struct pci_func * func)
+=======
+static int is_bridge(struct pci_func *func)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Check the header type */
 	if (((func->config_space[0x03] >> 16) & 0xFF) == 0x01)
@@ -1142,12 +1230,19 @@ static u8 set_controller_speed(struct controller *ctrl, u8 adapter_speed, u8 hp_
 	/* We don't allow freq/mode changes if we find another adapter running
 	 * in another slot on this controller
 	 */
+<<<<<<< HEAD
 	for(slot = ctrl->slot; slot; slot = slot->next) {
 		if (slot->device == (hp_slot + ctrl->slot_device_offset))
 			continue;
 		if (!slot->hotplug_slot || !slot->hotplug_slot->info)
 			continue;
 		if (slot->hotplug_slot->info->adapter_status == 0)
+=======
+	for (slot = ctrl->slot; slot; slot = slot->next) {
+		if (slot->device == (hp_slot + ctrl->slot_device_offset))
+			continue;
+		if (get_presence_status(ctrl, slot) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		/* If another adapter is running on the same segment but at a
 		 * lower speed/mode, we allow the new adapter to function at
@@ -1192,7 +1287,11 @@ static u8 set_controller_speed(struct controller *ctrl, u8 adapter_speed, u8 hp_
 
 	reg16 = readw(ctrl->hpc_reg + NEXT_CURR_FREQ);
 	reg16 &= ~0x000F;
+<<<<<<< HEAD
 	switch(adapter_speed) {
+=======
+	switch (adapter_speed) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case(PCI_SPEED_133MHz_PCIX):
 			reg = 0x75;
 			reg16 |= 0xB;
@@ -1219,7 +1318,11 @@ static u8 set_controller_speed(struct controller *ctrl, u8 adapter_speed, u8 hp_
 
 	mdelay(5);
 
+<<<<<<< HEAD
 	/* Reenable interrupts */
+=======
+	/* Re-enable interrupts */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0, ctrl->hpc_reg + INT_MASK);
 
 	pci_write_config_byte(ctrl->pci_dev, 0x41, reg);
@@ -1231,7 +1334,11 @@ static u8 set_controller_speed(struct controller *ctrl, u8 adapter_speed, u8 hp_
 
 	/* Only if mode change...*/
 	if (((bus->cur_bus_speed == PCI_SPEED_66MHz) && (adapter_speed == PCI_SPEED_66MHz_PCIX)) ||
+<<<<<<< HEAD
 		((bus->cur_bus_speed == PCI_SPEED_66MHz_PCIX) && (adapter_speed == PCI_SPEED_66MHz))) 
+=======
+		((bus->cur_bus_speed == PCI_SPEED_66MHz_PCIX) && (adapter_speed == PCI_SPEED_66MHz)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_SOGO(ctrl);
 
 	wait_for_ctrl_irq(ctrl);
@@ -1286,18 +1393,30 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 	/*
 	 * The board is already on
 	 */
+<<<<<<< HEAD
 	else if (is_slot_enabled (ctrl, hp_slot))
+=======
+	else if (is_slot_enabled(ctrl, hp_slot))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = CARD_FUNCTIONING;
 	else {
 		mutex_lock(&ctrl->crit_sect);
 
 		/* turn on board without attaching to the bus */
+<<<<<<< HEAD
 		enable_slot_power (ctrl, hp_slot);
+=======
+		enable_slot_power(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Change bits in slot power register to force another shift out
 		 * NOTE: this is to work around the timer bug */
@@ -1308,7 +1427,11 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		adapter_speed = get_adapter_speed(ctrl, hp_slot);
 		if (bus->cur_bus_speed != adapter_speed)
@@ -1316,12 +1439,20 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 				rc = WRONG_BUS_FREQUENCY;
 
 		/* turn off board without attaching to the bus */
+<<<<<<< HEAD
 		disable_slot_power (ctrl, hp_slot);
+=======
+		disable_slot_power(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&ctrl->crit_sect);
 
@@ -1330,15 +1461,26 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 
 		mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 		slot_enable (ctrl, hp_slot);
 		green_LED_blink (ctrl, hp_slot);
 
 		amber_LED_off (ctrl, hp_slot);
+=======
+		slot_enable(ctrl, hp_slot);
+		green_LED_blink(ctrl, hp_slot);
+
+		amber_LED_off(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&ctrl->crit_sect);
 
@@ -1367,14 +1509,24 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 
 			mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 			amber_LED_on (ctrl, hp_slot);
 			green_LED_off (ctrl, hp_slot);
 			slot_disable (ctrl, hp_slot);
+=======
+			amber_LED_on(ctrl, hp_slot);
+			green_LED_off(ctrl, hp_slot);
+			slot_disable(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_SOGO(ctrl);
 
 			/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 			wait_for_ctrl_irq (ctrl);
+=======
+			wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			mutex_unlock(&ctrl->crit_sect);
 
@@ -1393,14 +1545,24 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 
 			mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 			amber_LED_on (ctrl, hp_slot);
 			green_LED_off (ctrl, hp_slot);
 			slot_disable (ctrl, hp_slot);
+=======
+			amber_LED_on(ctrl, hp_slot);
+			green_LED_off(ctrl, hp_slot);
+			slot_disable(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_SOGO(ctrl);
 
 			/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 			wait_for_ctrl_irq (ctrl);
+=======
+			wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			mutex_unlock(&ctrl->crit_sect);
 		}
@@ -1429,7 +1591,10 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	u32 rc = 0;
 	struct pci_func *new_slot = NULL;
 	struct pci_bus *bus = ctrl->pci_bus;
+<<<<<<< HEAD
 	struct slot *p_slot;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource_lists res_lists;
 
 	hp_slot = func->device - ctrl->slot_device_offset;
@@ -1444,7 +1609,11 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	set_SOGO(ctrl);
 
 	/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 	wait_for_ctrl_irq (ctrl);
+=======
+	wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Change bits in slot power register to force another shift out
 	 * NOTE: this is to work around the timer bug
@@ -1456,7 +1625,11 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	set_SOGO(ctrl);
 
 	/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 	wait_for_ctrl_irq (ctrl);
+=======
+	wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter_speed = get_adapter_speed(ctrl, hp_slot);
 	if (bus->cur_bus_speed != adapter_speed)
@@ -1464,7 +1637,11 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 			rc = WRONG_BUS_FREQUENCY;
 
 	/* turn off board without attaching to the bus */
+<<<<<<< HEAD
 	disable_slot_power (ctrl, hp_slot);
+=======
+	disable_slot_power(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_SOGO(ctrl);
 
@@ -1476,7 +1653,11 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	p_slot = cpqhp_find_slot(ctrl, hp_slot + ctrl->slot_device_offset);
+=======
+	cpqhp_find_slot(ctrl, hp_slot + ctrl->slot_device_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* turn on board and blink green LED */
 
@@ -1485,6 +1666,7 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	dbg("%s: after down\n", __func__);
 
 	dbg("%s: before slot_enable\n", __func__);
+<<<<<<< HEAD
 	slot_enable (ctrl, hp_slot);
 
 	dbg("%s: before green_LED_blink\n", __func__);
@@ -1492,13 +1674,26 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 
 	dbg("%s: before amber_LED_blink\n", __func__);
 	amber_LED_off (ctrl, hp_slot);
+=======
+	slot_enable(ctrl, hp_slot);
+
+	dbg("%s: before green_LED_blink\n", __func__);
+	green_LED_blink(ctrl, hp_slot);
+
+	dbg("%s: before amber_LED_blink\n", __func__);
+	amber_LED_off(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("%s: before set_SOGO\n", __func__);
 	set_SOGO(ctrl);
 
 	/* Wait for SOBS to be unset */
 	dbg("%s: before wait_for_ctrl_irq\n", __func__);
+<<<<<<< HEAD
 	wait_for_ctrl_irq (ctrl);
+=======
+	wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg("%s: after wait_for_ctrl_irq\n", __func__);
 
 	dbg("%s: before up\n", __func__);
@@ -1521,7 +1716,11 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	} else {
 		/* Get vendor/device ID u32 */
 		ctrl->pci_bus->number = func->bus;
+<<<<<<< HEAD
 		rc = pci_bus_read_config_dword (ctrl->pci_bus, PCI_DEVFN(func->device, func->function), PCI_VENDOR_ID, &temp_register);
+=======
+		rc = pci_bus_read_config_dword(ctrl->pci_bus, PCI_DEVFN(func->device, func->function), PCI_VENDOR_ID, &temp_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dbg("%s: pci_read_config_dword returns %d\n", __func__, rc);
 		dbg("%s: temp_register is %x\n", __func__, temp_register);
 
@@ -1558,14 +1757,24 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 		if (rc) {
 			mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 			amber_LED_on (ctrl, hp_slot);
 			green_LED_off (ctrl, hp_slot);
 			slot_disable (ctrl, hp_slot);
+=======
+			amber_LED_on(ctrl, hp_slot);
+			green_LED_off(ctrl, hp_slot);
+			slot_disable(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_SOGO(ctrl);
 
 			/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 			wait_for_ctrl_irq (ctrl);
+=======
+			wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			mutex_unlock(&ctrl->crit_sect);
 			return rc;
@@ -1590,25 +1799,43 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 
 		mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 		green_LED_on (ctrl, hp_slot);
+=======
+		green_LED_on(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&ctrl->crit_sect);
 	} else {
 		mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 		amber_LED_on (ctrl, hp_slot);
 		green_LED_off (ctrl, hp_slot);
 		slot_disable (ctrl, hp_slot);
+=======
+		amber_LED_on(ctrl, hp_slot);
+		green_LED_off(ctrl, hp_slot);
+		slot_disable(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&ctrl->crit_sect);
 
@@ -1624,14 +1851,21 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
  * @replace_flag: whether replacing or adding a new device
  * @ctrl: target controller
  */
+<<<<<<< HEAD
 static u32 remove_board(struct pci_func * func, u32 replace_flag, struct controller * ctrl)
+=======
+static u32 remove_board(struct pci_func *func, u32 replace_flag, struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index;
 	u8 skip = 0;
 	u8 device;
 	u8 hp_slot;
 	u8 temp_byte;
+<<<<<<< HEAD
 	u32 rc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource_lists res_lists;
 	struct pci_func *temp_func;
 
@@ -1646,7 +1880,11 @@ static u32 remove_board(struct pci_func * func, u32 replace_flag, struct control
 	/* When we get here, it is safe to change base address registers.
 	 * We will attempt to save the base address register lengths */
 	if (replace_flag || !ctrl->add_support)
+<<<<<<< HEAD
 		rc = cpqhp_save_base_addr_length(ctrl, func);
+=======
+		cpqhp_save_base_addr_length(ctrl, func);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (!func->bus_head && !func->mem_head &&
 		 !func->p_mem_head && !func->io_head) {
 		/* Here we check to see if we've saved any of the board's
@@ -1664,7 +1902,11 @@ static u32 remove_board(struct pci_func * func, u32 replace_flag, struct control
 		}
 
 		if (!skip)
+<<<<<<< HEAD
 			rc = cpqhp_save_used_resources(ctrl, func);
+=======
+			cpqhp_save_used_resources(ctrl, func);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Change status to shutdown */
 	if (func->is_a_board)
@@ -1673,8 +1915,13 @@ static u32 remove_board(struct pci_func * func, u32 replace_flag, struct control
 
 	mutex_lock(&ctrl->crit_sect);
 
+<<<<<<< HEAD
 	green_LED_off (ctrl, hp_slot);
 	slot_disable (ctrl, hp_slot);
+=======
+	green_LED_off(ctrl, hp_slot);
+	slot_disable(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_SOGO(ctrl);
 
@@ -1684,7 +1931,11 @@ static u32 remove_board(struct pci_func * func, u32 replace_flag, struct control
 	writeb(temp_byte, ctrl->hpc_reg + SLOT_SERR);
 
 	/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 	wait_for_ctrl_irq (ctrl);
+=======
+	wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&ctrl->crit_sect);
 
@@ -1733,15 +1984,26 @@ static u32 remove_board(struct pci_func * func, u32 replace_flag, struct control
 	return 0;
 }
 
+<<<<<<< HEAD
 static void pushbutton_helper_thread(unsigned long data)
 {
 	pushbutton_pending = data;
+=======
+static void pushbutton_helper_thread(struct timer_list *t)
+{
+	pushbutton_pending = t;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_process(cpqhp_event_thread);
 }
 
 
 /* this is the main worker thread */
+<<<<<<< HEAD
 static int event_thread(void* data)
+=======
+static int event_thread(void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct controller *ctrl;
 
@@ -1756,7 +2018,11 @@ static int event_thread(void* data)
 		if (pushbutton_pending)
 			cpqhp_pushbutton_thread(pushbutton_pending);
 		else
+<<<<<<< HEAD
 			for (ctrl = cpqhp_ctrl_list; ctrl; ctrl=ctrl->next)
+=======
+			for (ctrl = cpqhp_ctrl_list; ctrl; ctrl = ctrl->next)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				interrupt_event_handler(ctrl);
 	}
 	dbg("event_thread signals exit\n");
@@ -1767,7 +2033,11 @@ int cpqhp_event_start_thread(void)
 {
 	cpqhp_event_thread = kthread_run(event_thread, NULL, "phpd_event");
 	if (IS_ERR(cpqhp_event_thread)) {
+<<<<<<< HEAD
 		err ("Can't start up our event thread\n");
+=======
+		err("Can't start up our event thread\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(cpqhp_event_thread);
 	}
 
@@ -1781,6 +2051,7 @@ void cpqhp_event_stop_thread(void)
 }
 
 
+<<<<<<< HEAD
 static int update_slot_info(struct controller *ctrl, struct slot *slot)
 {
 	struct hotplug_slot_info *info;
@@ -1802,6 +2073,11 @@ static int update_slot_info(struct controller *ctrl, struct slot *slot)
 static void interrupt_event_handler(struct controller *ctrl)
 {
 	int loop = 0;
+=======
+static void interrupt_event_handler(struct controller *ctrl)
+{
+	int loop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int change = 1;
 	struct pci_func *func;
 	u8 hp_slot;
@@ -1828,7 +2104,11 @@ static void interrupt_event_handler(struct controller *ctrl)
 
 				if (ctrl->event_queue[loop].event_type == INT_BUTTON_PRESS) {
 					dbg("button pressed\n");
+<<<<<<< HEAD
 				} else if (ctrl->event_queue[loop].event_type == 
+=======
+				} else if (ctrl->event_queue[loop].event_type ==
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   INT_BUTTON_CANCEL) {
 					dbg("button cancel\n");
 					del_timer(&p_slot->task_event);
@@ -1838,23 +2118,39 @@ static void interrupt_event_handler(struct controller *ctrl)
 					if (p_slot->state == BLINKINGOFF_STATE) {
 						/* slot is on */
 						dbg("turn on green LED\n");
+<<<<<<< HEAD
 						green_LED_on (ctrl, hp_slot);
 					} else if (p_slot->state == BLINKINGON_STATE) {
 						/* slot is off */
 						dbg("turn off green LED\n");
 						green_LED_off (ctrl, hp_slot);
+=======
+						green_LED_on(ctrl, hp_slot);
+					} else if (p_slot->state == BLINKINGON_STATE) {
+						/* slot is off */
+						dbg("turn off green LED\n");
+						green_LED_off(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 					info(msg_button_cancel, p_slot->number);
 
 					p_slot->state = STATIC_STATE;
 
+<<<<<<< HEAD
 					amber_LED_off (ctrl, hp_slot);
+=======
+					amber_LED_off(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					set_SOGO(ctrl);
 
 					/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 					wait_for_ctrl_irq (ctrl);
+=======
+					wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					mutex_unlock(&ctrl->crit_sect);
 				}
@@ -1862,7 +2158,11 @@ static void interrupt_event_handler(struct controller *ctrl)
 				else if (ctrl->event_queue[loop].event_type == INT_BUTTON_RELEASE) {
 					dbg("button release\n");
 
+<<<<<<< HEAD
 					if (is_slot_enabled (ctrl, hp_slot)) {
+=======
+					if (is_slot_enabled(ctrl, hp_slot)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						dbg("slot is on\n");
 						p_slot->state = BLINKINGOFF_STATE;
 						info(msg_button_off, p_slot->number);
@@ -1875,22 +2175,39 @@ static void interrupt_event_handler(struct controller *ctrl)
 
 					dbg("blink green LED and turn off amber\n");
 
+<<<<<<< HEAD
 					amber_LED_off (ctrl, hp_slot);
 					green_LED_blink (ctrl, hp_slot);
+=======
+					amber_LED_off(ctrl, hp_slot);
+					green_LED_blink(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					set_SOGO(ctrl);
 
 					/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 					wait_for_ctrl_irq (ctrl);
 
 					mutex_unlock(&ctrl->crit_sect);
 					init_timer(&p_slot->task_event);
+=======
+					wait_for_ctrl_irq(ctrl);
+
+					mutex_unlock(&ctrl->crit_sect);
+					timer_setup(&p_slot->task_event,
+						    pushbutton_helper_thread,
+						    0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					p_slot->hp_slot = hp_slot;
 					p_slot->ctrl = ctrl;
 /*					p_slot->physical_slot = physical_slot; */
 					p_slot->task_event.expires = jiffies + 5 * HZ;   /* 5 second delay */
+<<<<<<< HEAD
 					p_slot->task_event.function = pushbutton_helper_thread;
 					p_slot->task_event.data = (u32) p_slot;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					dbg("add_timer p_slot = %p\n", p_slot);
 					add_timer(&p_slot->task_event);
@@ -1898,10 +2215,13 @@ static void interrupt_event_handler(struct controller *ctrl)
 				/***********POWER FAULT */
 				else if (ctrl->event_queue[loop].event_type == INT_POWER_FAULT) {
 					dbg("power fault\n");
+<<<<<<< HEAD
 				} else {
 					/* refresh notification */
 					if (p_slot)
 						update_slot_info(ctrl, p_slot);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				ctrl->event_queue[loop].event_type = 0;
@@ -1910,18 +2230,26 @@ static void interrupt_event_handler(struct controller *ctrl)
 			}
 		}		/* End of FOR loop */
 	}
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
  * cpqhp_pushbutton_thread - handle pushbutton events
+<<<<<<< HEAD
  * @slot: target slot (struct)
+=======
+ * @t: pointer to struct timer_list which holds all timer-related callbacks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Scheduled procedure to handle blocking stuff for the pushbuttons.
  * Handles all pending events and exits.
  */
+<<<<<<< HEAD
 void cpqhp_pushbutton_thread(unsigned long slot)
 {
 	u8 hp_slot;
@@ -1935,6 +2263,18 @@ void cpqhp_pushbutton_thread(unsigned long slot)
 
 	device = p_slot->device;
 
+=======
+void cpqhp_pushbutton_thread(struct timer_list *t)
+{
+	u8 hp_slot;
+	struct pci_func *func;
+	struct slot *p_slot = from_timer(p_slot, t, task_event);
+	struct controller *ctrl = (struct controller *) p_slot->ctrl;
+
+	pushbutton_pending = NULL;
+	hp_slot = p_slot->hp_slot;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_slot_enabled(ctrl, hp_slot)) {
 		p_slot->state = POWEROFF_STATE;
 		/* power Down board */
@@ -1942,7 +2282,11 @@ void cpqhp_pushbutton_thread(unsigned long slot)
 		dbg("In power_down_board, func = %p, ctrl = %p\n", func, ctrl);
 		if (!func) {
 			dbg("Error! func NULL in %s\n", __func__);
+<<<<<<< HEAD
 			return ;
+=======
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (cpqhp_process_SS(ctrl, func) != 0) {
@@ -1964,7 +2308,11 @@ void cpqhp_pushbutton_thread(unsigned long slot)
 		dbg("In add_board, func = %p, ctrl = %p\n", func, ctrl);
 		if (!func) {
 			dbg("Error! func NULL in %s\n", __func__);
+<<<<<<< HEAD
 			return ;
+=======
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (ctrl != NULL) {
@@ -1975,14 +2323,21 @@ void cpqhp_pushbutton_thread(unsigned long slot)
 				set_SOGO(ctrl);
 
 				/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 				wait_for_ctrl_irq (ctrl);
+=======
+				wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 		p_slot->state = STATIC_STATE;
 	}
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1992,23 +2347,35 @@ int cpqhp_process_SI(struct controller *ctrl, struct pci_func *func)
 	u16 temp_word;
 	u32 tempdword;
 	int rc;
+<<<<<<< HEAD
 	struct slot* p_slot;
 	int physical_slot = 0;
+=======
+	struct slot *p_slot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tempdword = 0;
 
 	device = func->device;
 	hp_slot = device - ctrl->slot_device_offset;
 	p_slot = cpqhp_find_slot(ctrl, device);
+<<<<<<< HEAD
 	if (p_slot)
 		physical_slot = p_slot->number;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check to see if the interlock is closed */
 	tempdword = readl(ctrl->hpc_reg + INT_INPUT_CLEAR);
 
+<<<<<<< HEAD
 	if (tempdword & (0x01 << hp_slot)) {
 		return 1;
 	}
+=======
+	if (tempdword & (0x01 << hp_slot))
+		return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (func->is_a_board) {
 		rc = board_replaced(func, ctrl);
@@ -2070,12 +2437,17 @@ int cpqhp_process_SI(struct controller *ctrl, struct pci_func *func)
 		}
 	}
 
+<<<<<<< HEAD
 	if (rc) {
 		dbg("%s: rc = %d\n", __func__, rc);
 	}
 
 	if (p_slot)
 		update_slot_info(ctrl, p_slot);
+=======
+	if (rc)
+		dbg("%s: rc = %d\n", __func__, rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -2088,16 +2460,24 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func)
 	u8 replace_flag;
 	u32 rc = 0;
 	unsigned int devfn;
+<<<<<<< HEAD
 	struct slot* p_slot;
 	struct pci_bus *pci_bus = ctrl->pci_bus;
 	int physical_slot=0;
+=======
+	struct slot *p_slot;
+	struct pci_bus *pci_bus = ctrl->pci_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	device = func->device;
 	func = cpqhp_slot_find(ctrl->bus, device, index++);
 	p_slot = cpqhp_find_slot(ctrl, device);
+<<<<<<< HEAD
 	if (p_slot) {
 		physical_slot = p_slot->number;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure there are no video controllers here */
 	while (func && !rc) {
@@ -2105,7 +2485,11 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func)
 		devfn = PCI_DEVFN(func->device, func->function);
 
 		/* Check the Class Code */
+<<<<<<< HEAD
 		rc = pci_bus_read_config_byte (pci_bus, devfn, 0x0B, &class_code);
+=======
+		rc = pci_bus_read_config_byte(pci_bus, devfn, 0x0B, &class_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 
@@ -2114,13 +2498,22 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func)
 			rc = REMOVE_NOT_SUPPORTED;
 		} else {
 			/* See if it's a bridge */
+<<<<<<< HEAD
 			rc = pci_bus_read_config_byte (pci_bus, devfn, PCI_HEADER_TYPE, &header_type);
+=======
+			rc = pci_bus_read_config_byte(pci_bus, devfn, PCI_HEADER_TYPE, &header_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return rc;
 
 			/* If it's a bridge, check the VGA Enable bit */
+<<<<<<< HEAD
 			if ((header_type & 0x7F) == PCI_HEADER_TYPE_BRIDGE) {
 				rc = pci_bus_read_config_byte (pci_bus, devfn, PCI_BRIDGE_CONTROL, &BCR);
+=======
+			if ((header_type & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_BRIDGE) {
+				rc = pci_bus_read_config_byte(pci_bus, devfn, PCI_BRIDGE_CONTROL, &BCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (rc)
 					return rc;
 
@@ -2143,9 +2536,12 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func)
 		rc = 1;
 	}
 
+<<<<<<< HEAD
 	if (p_slot)
 		update_slot_info(ctrl, p_slot);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -2222,7 +2618,11 @@ int cpqhp_hardware_test(struct controller *ctrl, int test_num)
 			set_SOGO(ctrl);
 
 			/* Wait for SOGO interrupt */
+<<<<<<< HEAD
 			wait_for_ctrl_irq (ctrl);
+=======
+			wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Get ready for next iteration */
 			long_delay((3*HZ)/10);
@@ -2232,7 +2632,11 @@ int cpqhp_hardware_test(struct controller *ctrl, int test_num)
 			set_SOGO(ctrl);
 
 			/* Wait for SOGO interrupt */
+<<<<<<< HEAD
 			wait_for_ctrl_irq (ctrl);
+=======
+			wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Get ready for next iteration */
 			long_delay((3*HZ)/10);
@@ -2248,7 +2652,11 @@ int cpqhp_hardware_test(struct controller *ctrl, int test_num)
 		set_SOGO(ctrl);
 
 		/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 		wait_for_ctrl_irq (ctrl);
+=======
+		wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 2:
 		/* Do other stuff here! */
@@ -2270,8 +2678,13 @@ int cpqhp_hardware_test(struct controller *ctrl, int test_num)
  *
  * Returns 0 if success.
  */
+<<<<<<< HEAD
 static u32 configure_new_device(struct controller * ctrl, struct pci_func * func,
 				 u8 behind_bridge, struct resource_lists * resources)
+=======
+static u32 configure_new_device(struct controller  *ctrl, struct pci_func  *func,
+				 u8 behind_bridge, struct resource_lists  *resources)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 temp_byte, function, max_functions, stop_it;
 	int rc;
@@ -2284,7 +2697,11 @@ static u32 configure_new_device(struct controller * ctrl, struct pci_func * func
 	dbg("%s\n", __func__);
 	/* Check for Multi-function device */
 	ctrl->pci_bus->number = func->bus;
+<<<<<<< HEAD
 	rc = pci_bus_read_config_byte (ctrl->pci_bus, PCI_DEVFN(func->device, func->function), 0x0E, &temp_byte);
+=======
+	rc = pci_bus_read_config_byte(ctrl->pci_bus, PCI_DEVFN(func->device, func->function), 0x0E, &temp_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		dbg("%s: rc = %d\n", __func__, rc);
 		return rc;
@@ -2301,7 +2718,11 @@ static u32 configure_new_device(struct controller * ctrl, struct pci_func * func
 		rc = configure_new_function(ctrl, new_slot, behind_bridge, resources);
 
 		if (rc) {
+<<<<<<< HEAD
 			dbg("configure_new_function failed %d\n",rc);
+=======
+			dbg("configure_new_function failed %d\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			index = 0;
 
 			while (new_slot) {
@@ -2322,9 +2743,15 @@ static u32 configure_new_device(struct controller * ctrl, struct pci_func * func
 		 * and creates a board structure */
 
 		while ((function < max_functions) && (!stop_it)) {
+<<<<<<< HEAD
 			pci_bus_read_config_dword (ctrl->pci_bus, PCI_DEVFN(func->device, function), 0x00, &ID);
 
 			if (ID == 0xFFFFFFFF) {
+=======
+			pci_bus_read_config_dword(ctrl->pci_bus, PCI_DEVFN(func->device, function), 0x00, &ID);
+
+			if (PCI_POSSIBLE_ERROR(ID)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				function++;
 			} else {
 				/* Setup slot structure. */
@@ -2405,18 +2832,30 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	if ((temp_byte & 0x7F) == PCI_HEADER_TYPE_BRIDGE) {
+=======
+	if ((temp_byte & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_BRIDGE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set Primary bus */
 		dbg("set Primary bus = %d\n", func->bus);
 		rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_PRIMARY_BUS, func->bus);
 		if (rc)
 			return rc;
 
+<<<<<<< HEAD
 		/* find range of busses to use */
 		dbg("find ranges of buses to use\n");
 		bus_node = get_max_resource(&(resources->bus_head), 1);
 
 		/* If we don't have any busses to allocate, we can't continue */
+=======
+		/* find range of buses to use */
+		dbg("find ranges of buses to use\n");
+		bus_node = get_max_resource(&(resources->bus_head), 1);
+
+		/* If we don't have any buses to allocate, we can't continue */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!bus_node)
 			return -ENOMEM;
 
@@ -2520,6 +2959,7 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 		/* If we have IO resources copy them and fill in the bridge's
 		 * IO range registers */
+<<<<<<< HEAD
 		if (io_node) {
 			memcpy(hold_IO_node, io_node, sizeof(struct pci_resource));
 			io_node->next = NULL;
@@ -2558,16 +2998,47 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 			kfree(hold_mem_node);
 			hold_mem_node = NULL;
 		}
+=======
+		memcpy(hold_IO_node, io_node, sizeof(struct pci_resource));
+		io_node->next = NULL;
+
+		/* set IO base and Limit registers */
+		temp_byte = io_node->base >> 8;
+		rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_IO_BASE, temp_byte);
+
+		temp_byte = (io_node->base + io_node->length - 1) >> 8;
+		rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_IO_LIMIT, temp_byte);
+
+		/* Copy the memory resources and fill in the bridge's memory
+		 * range registers.
+		 */
+		memcpy(hold_mem_node, mem_node, sizeof(struct pci_resource));
+		mem_node->next = NULL;
+
+		/* set Mem base and Limit registers */
+		temp_word = mem_node->base >> 16;
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_MEMORY_BASE, temp_word);
+
+		temp_word = (mem_node->base + mem_node->length - 1) >> 16;
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memcpy(hold_p_mem_node, p_mem_node, sizeof(struct pci_resource));
 		p_mem_node->next = NULL;
 
 		/* set Pre Mem base and Limit registers */
 		temp_word = p_mem_node->base >> 16;
+<<<<<<< HEAD
 		rc = pci_bus_write_config_word (pci_bus, devfn, PCI_PREF_MEMORY_BASE, temp_word);
 
 		temp_word = (p_mem_node->base + p_mem_node->length - 1) >> 16;
 		rc = pci_bus_write_config_word (pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+=======
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_PREF_MEMORY_BASE, temp_word);
+
+		temp_word = (p_mem_node->base + p_mem_node->length - 1) >> 16;
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Adjust this to compensate for extra adjustment in first loop
 		 */
@@ -2581,10 +3052,17 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 			ID = 0xFFFFFFFF;
 			pci_bus->number = hold_bus_node->base;
+<<<<<<< HEAD
 			pci_bus_read_config_dword (pci_bus, PCI_DEVFN(device, 0), 0x00, &ID);
 			pci_bus->number = func->bus;
 
 			if (ID != 0xFFFFFFFF) {	  /*  device present */
+=======
+			pci_bus_read_config_dword(pci_bus, PCI_DEVFN(device, 0), 0x00, &ID);
+			pci_bus->number = func->bus;
+
+			if (!PCI_POSSIBLE_ERROR(ID)) {	  /*  device present */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Setup slot structure. */
 				new_slot = cpqhp_slot_create(hold_bus_node->base);
 
@@ -2600,7 +3078,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 				new_slot->status = 0;
 
 				rc = configure_new_device(ctrl, new_slot, 1, &temp_resources);
+<<<<<<< HEAD
 				dbg("configure_new_device rc=0x%x\n",rc);
+=======
+				dbg("configure_new_device rc=0x%x\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}	/* End of IF (device in slot?) */
 		}		/* End of FOR loop */
 
@@ -2627,7 +3109,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 		/* Return unused bus resources
 		 * First use the temporary node to store information for
 		 * the board */
+<<<<<<< HEAD
 		if (hold_bus_node && bus_node && temp_resources.bus_head) {
+=======
+		if (bus_node && temp_resources.bus_head) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hold_bus_node->length = bus_node->base - hold_bus_node->base;
 
 			hold_bus_node->next = func->bus_head;
@@ -2636,7 +3122,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 			temp_byte = temp_resources.bus_head->base - 1;
 
 			/* set subordinate bus */
+<<<<<<< HEAD
 			rc = pci_bus_write_config_byte (pci_bus, devfn, PCI_SUBORDINATE_BUS, temp_byte);
+=======
+			rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_SUBORDINATE_BUS, temp_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (temp_resources.bus_head->length == 0) {
 				kfree(temp_resources.bus_head);
@@ -2657,7 +3147,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 				hold_IO_node->base = io_node->base + io_node->length;
 
 				temp_byte = (hold_IO_node->base) >> 8;
+<<<<<<< HEAD
 				rc = pci_bus_write_config_word (pci_bus, devfn, PCI_IO_BASE, temp_byte);
+=======
+				rc = pci_bus_write_config_word(pci_bus, devfn, PCI_IO_BASE, temp_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				return_resource(&(resources->io_head), io_node);
 			}
@@ -2676,13 +3170,21 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					func->io_head = hold_IO_node;
 
 					temp_byte = (io_node->base - 1) >> 8;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_byte (pci_bus, devfn, PCI_IO_LIMIT, temp_byte);
+=======
+					rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_IO_LIMIT, temp_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					return_resource(&(resources->io_head), io_node);
 				} else {
 					/* it doesn't need any IO */
 					temp_word = 0x0000;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_word (pci_bus, devfn, PCI_IO_LIMIT, temp_word);
+=======
+					rc = pci_bus_write_config_word(pci_bus, devfn, PCI_IO_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					return_resource(&(resources->io_head), io_node);
 					kfree(hold_IO_node);
@@ -2708,7 +3210,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 				hold_mem_node->base = mem_node->base + mem_node->length;
 
 				temp_word = (hold_mem_node->base) >> 16;
+<<<<<<< HEAD
 				rc = pci_bus_write_config_word (pci_bus, devfn, PCI_MEMORY_BASE, temp_word);
+=======
+				rc = pci_bus_write_config_word(pci_bus, devfn, PCI_MEMORY_BASE, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				return_resource(&(resources->mem_head), mem_node);
 			}
@@ -2727,14 +3233,22 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 					/* configure end address */
 					temp_word = (mem_node->base - 1) >> 16;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_word (pci_bus, devfn, PCI_MEMORY_LIMIT, temp_word);
+=======
+					rc = pci_bus_write_config_word(pci_bus, devfn, PCI_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					/* Return unused resources to the pool */
 					return_resource(&(resources->mem_head), mem_node);
 				} else {
 					/* it doesn't need any Mem */
 					temp_word = 0x0000;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_word (pci_bus, devfn, PCI_MEMORY_LIMIT, temp_word);
+=======
+					rc = pci_bus_write_config_word(pci_bus, devfn, PCI_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					return_resource(&(resources->mem_head), mem_node);
 					kfree(hold_mem_node);
@@ -2751,7 +3265,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 		}
 		/* If we have prefetchable memory space available and there
 		 * is some left at the end, return the unused portion */
+<<<<<<< HEAD
 		if (hold_p_mem_node && temp_resources.p_mem_head) {
+=======
+		if (temp_resources.p_mem_head) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p_mem_node = do_pre_bridge_resource_split(&(temp_resources.p_mem_head),
 								  &hold_p_mem_node, 0x100000);
 
@@ -2760,7 +3278,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 				hold_p_mem_node->base = p_mem_node->base + p_mem_node->length;
 
 				temp_word = (hold_p_mem_node->base) >> 16;
+<<<<<<< HEAD
 				rc = pci_bus_write_config_word (pci_bus, devfn, PCI_PREF_MEMORY_BASE, temp_word);
+=======
+				rc = pci_bus_write_config_word(pci_bus, devfn, PCI_PREF_MEMORY_BASE, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				return_resource(&(resources->p_mem_head), p_mem_node);
 			}
@@ -2779,13 +3301,21 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					func->p_mem_head = hold_p_mem_node;
 
 					temp_word = (p_mem_node->base - 1) >> 16;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_word (pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+=======
+					rc = pci_bus_write_config_word(pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					return_resource(&(resources->p_mem_head), p_mem_node);
 				} else {
 					/* it doesn't need any PMem */
 					temp_word = 0x0000;
+<<<<<<< HEAD
 					rc = pci_bus_write_config_word (pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+=======
+					rc = pci_bus_write_config_word(pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, temp_word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					return_resource(&(resources->p_mem_head), p_mem_node);
 					kfree(hold_p_mem_node);
@@ -2811,16 +3341,27 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					 *   PCI_COMMAND_INVALIDATE |
 					 *   PCI_COMMAND_PARITY |
 					 *   PCI_COMMAND_SERR */
+<<<<<<< HEAD
 		rc = pci_bus_write_config_word (pci_bus, devfn, PCI_COMMAND, command);
+=======
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_COMMAND, command);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* set Bridge Control Register */
 		command = 0x07;		/* = PCI_BRIDGE_CTL_PARITY |
 					 *   PCI_BRIDGE_CTL_SERR |
 					 *   PCI_BRIDGE_CTL_NO_ISA */
+<<<<<<< HEAD
 		rc = pci_bus_write_config_word (pci_bus, devfn, PCI_BRIDGE_CONTROL, command);
 	} else if ((temp_byte & 0x7F) == PCI_HEADER_TYPE_NORMAL) {
 		/* Standard device */
 		rc = pci_bus_read_config_byte (pci_bus, devfn, 0x0B, &class_code);
+=======
+		rc = pci_bus_write_config_word(pci_bus, devfn, PCI_BRIDGE_CONTROL, command);
+	} else if ((temp_byte & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_NORMAL) {
+		/* Standard device */
+		rc = pci_bus_read_config_byte(pci_bus, devfn, 0x0B, &class_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (class_code == PCI_BASE_CLASS_DISPLAY) {
 			/* Display (video) adapter (not supported) */
@@ -2831,9 +3372,15 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 			temp_register = 0xFFFFFFFF;
 
 			dbg("CND: bus=%d, devfn=%d, offset=%d\n", pci_bus->number, devfn, cloop);
+<<<<<<< HEAD
 			rc = pci_bus_write_config_dword (pci_bus, devfn, cloop, temp_register);
 
 			rc = pci_bus_read_config_dword (pci_bus, devfn, cloop, &temp_register);
+=======
+			rc = pci_bus_write_config_dword(pci_bus, devfn, cloop, temp_register);
+
+			rc = pci_bus_read_config_dword(pci_bus, devfn, cloop, &temp_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dbg("CND: base = 0x%x\n", temp_register);
 
 			if (temp_register) {	  /* If this register is implemented */
@@ -2846,11 +3393,17 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 					dbg("CND:      length = 0x%x\n", base);
 					io_node = get_io_resource(&(resources->io_head), base);
+<<<<<<< HEAD
+=======
+					if (!io_node)
+						return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dbg("Got io_node start = %8.8x, length = %8.8x next (%p)\n",
 					    io_node->base, io_node->length, io_node->next);
 					dbg("func (%p) io_head (%p)\n", func, func->io_head);
 
 					/* allocate the resource to the board */
+<<<<<<< HEAD
 					if (io_node) {
 						base = io_node->base;
 
@@ -2858,6 +3411,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 						func->io_head = io_node;
 					} else
 						return -ENOMEM;
+=======
+					base = io_node->base;
+					io_node->next = func->io_head;
+					func->io_head = io_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else if ((temp_register & 0x0BL) == 0x08) {
 					/* Map prefetchable memory */
 					base = temp_register & 0xFFFFFFF0;
@@ -2890,6 +3448,7 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 						func->mem_head = mem_node;
 					} else
 						return -ENOMEM;
+<<<<<<< HEAD
 				} else if ((temp_register & 0x0BL) == 0x04) {
 					/* Map memory */
 					base = temp_register & 0xFFFFFFF0;
@@ -2911,6 +3470,10 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					return 1;
 				} else {
 					/* Requesting space below 1M */
+=======
+				} else {
+					/* Reserved bits or requesting space below 1M */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return NOT_ENOUGH_RESOURCES;
 				}
 
@@ -2931,12 +3494,20 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 		}		/* End of base register loop */
 		if (cpqhp_legacy_mode) {
 			/* Figure out which interrupt pin this function uses */
+<<<<<<< HEAD
 			rc = pci_bus_read_config_byte (pci_bus, devfn,
+=======
+			rc = pci_bus_read_config_byte(pci_bus, devfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PCI_INTERRUPT_PIN, &temp_byte);
 
 			/* If this function needs an interrupt and we are behind
 			 * a bridge and the pin is tied to something that's
+<<<<<<< HEAD
 			 * alread mapped, set this one the same */
+=======
+			 * already mapped, set this one the same */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (temp_byte && resources->irqs &&
 			    (resources->irqs->valid_INT &
 			     (0x01 << ((temp_byte + resources->irqs->barber_pole - 1) & 0x03)))) {
@@ -2945,7 +3516,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					resources->irqs->barber_pole - 1) & 0x03];
 			} else {
 				/* Program IRQ based on card type */
+<<<<<<< HEAD
 				rc = pci_bus_read_config_byte (pci_bus, devfn, 0x0B, &class_code);
+=======
+				rc = pci_bus_read_config_byte(pci_bus, devfn, 0x0B, &class_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (class_code == PCI_BASE_CLASS_STORAGE)
 					IRQ = cpqhp_disk_irq;
@@ -2954,7 +3529,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 			}
 
 			/* IRQ Line */
+<<<<<<< HEAD
 			rc = pci_bus_write_config_byte (pci_bus, devfn, PCI_INTERRUPT_LINE, IRQ);
+=======
+			rc = pci_bus_write_config_byte(pci_bus, devfn, PCI_INTERRUPT_LINE, IRQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!behind_bridge) {
@@ -2990,7 +3569,11 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 					 *   PCI_COMMAND_INVALIDATE |
 					 *   PCI_COMMAND_PARITY |
 					 *   PCI_COMMAND_SERR */
+<<<<<<< HEAD
 		rc = pci_bus_write_config_word (pci_bus, devfn,
+=======
+		rc = pci_bus_write_config_word(pci_bus, devfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					PCI_COMMAND, temp_word);
 	} else {		/* End of Not-A-Bridge else */
 		/* It's some strange type of PCI adapter (Cardbus?) */
@@ -3001,11 +3584,20 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 	return 0;
 free_and_out:
+<<<<<<< HEAD
 	cpqhp_destroy_resource_list (&temp_resources);
 
 	return_resource(&(resources-> bus_head), hold_bus_node);
 	return_resource(&(resources-> io_head), hold_IO_node);
 	return_resource(&(resources-> mem_head), hold_mem_node);
 	return_resource(&(resources-> p_mem_head), hold_p_mem_node);
+=======
+	cpqhp_destroy_resource_list(&temp_resources);
+
+	return_resource(&(resources->bus_head), hold_bus_node);
+	return_resource(&(resources->io_head), hold_IO_node);
+	return_resource(&(resources->mem_head), hold_mem_node);
+	return_resource(&(resources->p_mem_head), hold_p_mem_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }

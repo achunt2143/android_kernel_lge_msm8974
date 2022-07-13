@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*-
  *
  * (C) 2003 zecke@handhelds.org
  *
+<<<<<<< HEAD
  * GPL version 2
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * based on arch/arm/kernel/apm.c
  * factor out the information needed by architectures to provide
  * apm status

@@ -12,7 +12,10 @@
 
 #include <linux/kernel.h>
 #include <linux/mii.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/pci.h>
 #include "tulip.h"
@@ -320,6 +323,7 @@ void tulip_select_media(struct net_device *dev, int startup)
 			break;
 		}
 		case 5: case 6: {
+<<<<<<< HEAD
 			u16 setup[5];
 
 			new_csr6 = 0; /* FIXME */
@@ -327,6 +331,10 @@ void tulip_select_media(struct net_device *dev, int startup)
 			for (i = 0; i < 5; i++)
 				setup[i] = get_u16(&p[i*2 + 1]);
 
+=======
+			new_csr6 = 0; /* FIXME */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (startup && mtable->has_reset) {
 				struct medialeaf *rleaf = &mtable->mleaf[mtable->has_reset];
 				unsigned char *rst = rleaf->leafdata;
@@ -368,7 +376,11 @@ void tulip_select_media(struct net_device *dev, int startup)
 			iowrite32(0x33, ioaddr + CSR12);
 			new_csr6 = 0x01860000;
 			/* Trigger autonegotiation. */
+<<<<<<< HEAD
 			iowrite32(startup ? 0x0201F868 : 0x0001F868, ioaddr + 0xB8);
+=======
+			iowrite32(0x0001F868, ioaddr + 0xB8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			iowrite32(0x32, ioaddr + CSR12);
 			new_csr6 = 0x00420000;
@@ -447,7 +459,11 @@ int tulip_check_duplex(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __devinit tulip_find_mii (struct net_device *dev, int board_idx)
+=======
+void tulip_find_mii(struct net_device *dev, int board_idx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tulip_private *tp = netdev_priv(dev);
 	int phyn, phy_idx = 0;
@@ -458,7 +474,11 @@ void __devinit tulip_find_mii (struct net_device *dev, int board_idx)
 	/* Find the connected MII xcvrs.
 	   Doing this in open() would allow detecting external xcvrs later,
 	   but takes much time. */
+<<<<<<< HEAD
 	for (phyn = 1; phyn <= 32 && phy_idx < sizeof (tp->phys); phyn++) {
+=======
+	for (phyn = 1; phyn <= 32 && phy_idx < ARRAY_SIZE(tp->phys); phyn++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int phy = phyn & 0x1f;
 		int mii_status = tulip_mdio_read (dev, phy, MII_BMSR);
 		if ((mii_status & 0x8301) == 0x8001 ||

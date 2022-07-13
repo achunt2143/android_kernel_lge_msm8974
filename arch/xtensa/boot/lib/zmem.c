@@ -1,15 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/zlib.h>
 
 /* bits taken from ppc */
 
 extern void *avail_ram, *end_avail;
+<<<<<<< HEAD
 
 void exit (void)
+=======
+void gunzip(void *dst, int dstlen, unsigned char *src, int *lenp);
+
+static void exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
   for (;;);
 }
 
+<<<<<<< HEAD
 void *zalloc(unsigned size)
+=======
+static void *zalloc(unsigned int size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         void *p = avail_ram;
 

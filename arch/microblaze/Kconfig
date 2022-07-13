@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config MICROBLAZE
 	def_bool y
 	select HAVE_MEMBLOCK
@@ -37,6 +38,72 @@ config ARCH_POPULATES_NODE_MAP
 
 config RWSEM_XCHGADD_ALGORITHM
 	bool
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config MICROBLAZE
+	def_bool y
+	select ARCH_32BIT_OFF_T
+	select ARCH_NO_SWAP
+	select ARCH_HAS_DMA_PREP_COHERENT
+	select ARCH_HAS_GCOV_PROFILE_ALL
+	select ARCH_HAS_SYNC_DMA_FOR_CPU
+	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+	select ARCH_MIGHT_HAVE_PC_PARPORT
+	select ARCH_WANT_IPC_PARSE_VERSION
+	select BUILDTIME_TABLE_SORT
+	select TIMER_OF
+	select CLONE_BACKWARDS3
+	select COMMON_CLK
+	select DMA_DIRECT_REMAP
+	select GENERIC_ATOMIC64
+	select GENERIC_CPU_DEVICES
+	select GENERIC_IDLE_POLL_SETUP
+	select GENERIC_IRQ_PROBE
+	select GENERIC_IRQ_SHOW
+	select GENERIC_PCI_IOMAP
+	select GENERIC_SCHED_CLOCK
+	select HAS_IOPORT if PCI
+	select HAVE_ARCH_HASH
+	select HAVE_ARCH_KGDB
+	select HAVE_ARCH_SECCOMP
+	select HAVE_DEBUG_KMEMLEAK
+	select HAVE_DMA_CONTIGUOUS
+	select HAVE_DYNAMIC_FTRACE
+	select HAVE_FTRACE_MCOUNT_RECORD
+	select HAVE_FUNCTION_GRAPH_TRACER
+	select HAVE_FUNCTION_TRACER
+	select HAVE_PAGE_SIZE_4KB
+	select HAVE_PCI
+	select IRQ_DOMAIN
+	select XILINX_INTC
+	select MODULES_USE_ELF_RELA
+	select OF
+	select OF_EARLY_FLATTREE
+	select PCI_DOMAINS_GENERIC if PCI
+	select PCI_SYSCALL if PCI
+	select CPU_NO_EFFICIENT_FFS
+	select MMU_GATHER_NO_RANGE
+	select SPARSE_IRQ
+	select ZONE_DMA
+	select TRACE_IRQFLAGS_SUPPORT
+	select GENERIC_IRQ_MULTI_HANDLER
+
+# Endianness selection
+choice
+	prompt "Endianness selection"
+	default CPU_LITTLE_ENDIAN
+	help
+	  microblaze architectures can be configured for either little or
+	  big endian formats. Be sure to select the appropriate mode.
+
+config CPU_BIG_ENDIAN
+	bool "Big endian"
+
+config CPU_LITTLE_ENDIAN
+	bool "Little endian"
+
+endchoice
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_HAS_ILOG2_U32
 	def_bool n
@@ -50,6 +117,7 @@ config GENERIC_HWEIGHT
 config GENERIC_CALIBRATE_DELAY
 	def_bool y
 
+<<<<<<< HEAD
 config GENERIC_TIME_VSYSCALL
 	def_bool n
 
@@ -59,6 +127,8 @@ config GENERIC_CLOCKEVENTS
 config GENERIC_GPIO
 	bool
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GENERIC_CSUM
 	def_bool y
 
@@ -68,6 +138,7 @@ config STACKTRACE_SUPPORT
 config LOCKDEP_SUPPORT
 	def_bool y
 
+<<<<<<< HEAD
 config HAVE_LATENCYTOP_SUPPORT
 	def_bool y
 
@@ -93,6 +164,16 @@ config NO_MMU
 	bool
 	depends on !MMU
 	default y
+=======
+source "arch/microblaze/Kconfig.platform"
+
+menu "Processor type and features"
+
+source "kernel/Kconfig.hz"
+
+config MMU
+	def_bool y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 comment "Boot options"
 
@@ -117,6 +198,7 @@ config CMDLINE_FORCE
 	  Set this to have arguments from the default kernel command string
 	  override those passed by the boot loader.
 
+<<<<<<< HEAD
 config SECCOMP
 	bool "Enable seccomp to safely compute untrusted bytecode"
 	depends on PROC_FS
@@ -137,6 +219,15 @@ config SECCOMP
 endmenu
 
 menu "Advanced setup"
+=======
+endmenu
+
+menu "Kernel features"
+
+config NR_CPUS
+	int
+	default "1"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ADVANCED_OPTIONS
 	bool "Prompt for advanced kernel configuration options"
@@ -151,6 +242,7 @@ config ADVANCED_OPTIONS
 comment "Default settings for advanced configuration options are used"
 	depends on !ADVANCED_OPTIONS
 
+<<<<<<< HEAD
 config XILINX_UNCACHED_SHADOW
 	bool "Are you using uncached shadow for RAM ?"
 	depends on ADVANCED_OPTIONS && !MMU
@@ -163,6 +255,11 @@ config XILINX_UNCACHED_SHADOW
 config HIGHMEM
 	bool "High memory support"
 	depends on MMU
+=======
+config HIGHMEM
+	bool "High memory support"
+	select KMAP_LOCAL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The address space of Microblaze processors is only 4 Gigabytes large
 	  and it has to accommodate user address space, kernel address
@@ -175,7 +272,11 @@ config HIGHMEM
 
 config LOWMEM_SIZE_BOOL
 	bool "Set maximum low memory"
+<<<<<<< HEAD
 	depends on ADVANCED_OPTIONS && MMU
+=======
+	depends on ADVANCED_OPTIONS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option allows you to set the maximum amount of memory which
 	  will be used as "low memory", that is, memory which the kernel can
@@ -213,12 +314,20 @@ config KERNEL_START_BOOL
 
 config KERNEL_START
 	hex "Virtual address of kernel base" if KERNEL_START_BOOL
+<<<<<<< HEAD
 	default "0xc0000000" if MMU
 	default KERNEL_BASE_ADDR if !MMU
 
 config TASK_SIZE_BOOL
 	bool "Set custom user task size"
 	depends on ADVANCED_OPTIONS && MMU
+=======
+	default "0xc0000000"
+
+config TASK_SIZE_BOOL
+	bool "Set custom user task size"
+	depends on ADVANCED_OPTIONS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option allows you to set the amount of virtual address space
 	  allocated to user tasks.  This can be useful in optimizing the
@@ -230,6 +339,7 @@ config TASK_SIZE
 	hex "Size of user task space" if TASK_SIZE_BOOL
 	default "0x80000000"
 
+<<<<<<< HEAD
 choice
 	prompt "Page size"
 	default MICROBLAZE_4K_PAGES
@@ -306,3 +416,16 @@ source "security/Kconfig"
 source "crypto/Kconfig"
 
 source "lib/Kconfig"
+=======
+config MB_MANAGER
+	bool "Support for Microblaze Manager"
+	depends on ADVANCED_OPTIONS
+	help
+	  This option enables API for configuring the MicroBlaze manager
+	  control register, which is consumed by the break handler to
+	  block the break.
+
+	  Say N here unless you know what you are doing.
+
+endmenu
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

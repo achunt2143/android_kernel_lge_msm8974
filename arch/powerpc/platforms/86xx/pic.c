@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Freescale Semiconductor, Inc.
  *
@@ -5,23 +6,44 @@
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright 2008 Freescale Semiconductor, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mpic.h>
 #include <asm/i8259.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_I8259
 static void mpc86xx_8259_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+#include "mpc86xx.h"
+
+#ifdef CONFIG_PPC_I8259
+static void mpc86xx_8259_cascade(struct irq_desc *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	unsigned int cascade_irq = i8259_irq();
 
+<<<<<<< HEAD
 	if (cascade_irq != NO_IRQ)
+=======
+	if (cascade_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		generic_handle_irq(cascade_irq);
 
 	chip->irq_eoi(&desc->irq_data);
@@ -57,7 +79,11 @@ void __init mpc86xx_init_irq(void)
 	}
 
 	cascade_irq = irq_of_parse_and_map(cascade_node, 0);
+<<<<<<< HEAD
 	if (cascade_irq == NO_IRQ) {
+=======
+	if (!cascade_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "Failed to map cascade interrupt\n");
 		return;
 	}

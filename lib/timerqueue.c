@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Generic Timer-queue
  *
@@ -6,6 +10,7 @@
  *
  *  NOTE: All of the following functions need to be serialized
  *  to avoid races. No locking is done by this library code.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
@@ -27,12 +34,24 @@
 #include <linux/rbtree.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
+=======
+#define __node_2_tq(_n) \
+	rb_entry((_n), struct timerqueue_node, node)
+
+static inline bool __timerqueue_less(struct rb_node *a, const struct rb_node *b)
+{
+	return __node_2_tq(a)->expires < __node_2_tq(b)->expires;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * timerqueue_add - Adds timer to timerqueue.
  *
  * @head: head of timerqueue
  * @node: timer node to be added
  *
+<<<<<<< HEAD
  * Adds the timer node to the timerqueue, sorted by the
  * node's expires value.
  */
@@ -58,6 +77,18 @@ void timerqueue_add(struct timerqueue_head *head, struct timerqueue_node *node)
 
 	if (!head->next || node->expires.tv64 < head->next->expires.tv64)
 		head->next = node;
+=======
+ * Adds the timer node to the timerqueue, sorted by the node's expires
+ * value. Returns true if the newly added timer is the first expiring timer in
+ * the queue.
+ */
+bool timerqueue_add(struct timerqueue_head *head, struct timerqueue_node *node)
+{
+	/* Make sure we don't add nodes that are already added */
+	WARN_ON_ONCE(!RB_EMPTY_NODE(&node->node));
+
+	return rb_add_cached(&node->node, &head->rb_root, __timerqueue_less);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(timerqueue_add);
 
@@ -67,6 +98,7 @@ EXPORT_SYMBOL_GPL(timerqueue_add);
  * @head: head of timerqueue
  * @node: timer node to be removed
  *
+<<<<<<< HEAD
  * Removes the timer node from the timerqueue.
  */
 void timerqueue_del(struct timerqueue_head *head, struct timerqueue_node *node)
@@ -82,6 +114,19 @@ void timerqueue_del(struct timerqueue_head *head, struct timerqueue_node *node)
 	}
 	rb_erase(&node->node, &head->head);
 	RB_CLEAR_NODE(&node->node);
+=======
+ * Removes the timer node from the timerqueue. Returns true if the queue is
+ * not empty after the remove.
+ */
+bool timerqueue_del(struct timerqueue_head *head, struct timerqueue_node *node)
+{
+	WARN_ON_ONCE(RB_EMPTY_NODE(&node->node));
+
+	rb_erase_cached(&node->node, &head->rb_root);
+	RB_CLEAR_NODE(&node->node);
+
+	return !RB_EMPTY_ROOT(&head->rb_root.rb_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(timerqueue_del);
 

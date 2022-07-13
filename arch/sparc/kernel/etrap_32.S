@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * etrap.S: Sparc trap window preparation for entry into the
  *          Linux kernel.
@@ -216,9 +220,13 @@ tsetup_patch6:
 	/* Call MMU-architecture dependent stack checking
 	 * routine.
 	 */
+<<<<<<< HEAD
 	.globl	tsetup_mmu_patchme
 tsetup_mmu_patchme:
 	b	tsetup_sun4c_stackchk
+=======
+	b	tsetup_srmmu_stackchk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 andcc	%sp, 0x7, %g0
 
 	/* Architecture specific stack checking routines.  When either
@@ -228,6 +236,7 @@ tsetup_mmu_patchme:
 	 */
 #define glob_tmp     g1
 
+<<<<<<< HEAD
 tsetup_sun4c_stackchk:
 	/* Done by caller: andcc %sp, 0x7, %g0 */
 	bne	trap_setup_user_stack_is_bolixed
@@ -274,6 +283,8 @@ tsetup_sun4c_onepage:
 	jmpl	%t_retpc + 0x8, %g0
 	 mov	%t_kstack, %sp
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl	tsetup_srmmu_stackchk
 tsetup_srmmu_stackchk:
 	/* Check results of callers andcc %sp, 0x7, %g0 */
@@ -282,7 +293,12 @@ tsetup_srmmu_stackchk:
 
 	cmp	%glob_tmp, %sp
 	bleu,a	1f
+<<<<<<< HEAD
 	 lda	[%g0] ASI_M_MMUREGS, %glob_tmp		! read MMU control
+=======
+LEON_PI( lda	[%g0] ASI_LEON_MMUREGS, %glob_tmp)	! read MMU control
+SUN_PI_( lda	[%g0] ASI_M_MMUREGS, %glob_tmp)		! read MMU control
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 trap_setup_user_stack_is_bolixed:
 	/* From user/kernel into invalid window w/bad user
@@ -297,18 +313,37 @@ trap_setup_user_stack_is_bolixed:
 1:
 	/* Clear the fault status and turn on the no_fault bit. */
 	or	%glob_tmp, 0x2, %glob_tmp		! or in no_fault bit
+<<<<<<< HEAD
 	sta	%glob_tmp, [%g0] ASI_M_MMUREGS		! set it
+=======
+LEON_PI(sta	%glob_tmp, [%g0] ASI_LEON_MMUREGS)		! set it
+SUN_PI_(sta	%glob_tmp, [%g0] ASI_M_MMUREGS)		! set it
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Dump the registers and cross fingers. */
 	STORE_WINDOW(sp)
 
 	/* Clear the no_fault bit and check the status. */
 	andn	%glob_tmp, 0x2, %glob_tmp
+<<<<<<< HEAD
 	sta	%glob_tmp, [%g0] ASI_M_MMUREGS
 	mov	AC_M_SFAR, %glob_tmp
 	lda	[%glob_tmp] ASI_M_MMUREGS, %g0
 	mov	AC_M_SFSR, %glob_tmp
 	lda	[%glob_tmp] ASI_M_MMUREGS, %glob_tmp	! save away status of winstore
+=======
+LEON_PI(sta	%glob_tmp, [%g0] ASI_LEON_MMUREGS)
+SUN_PI_(sta	%glob_tmp, [%g0] ASI_M_MMUREGS)
+
+	mov	AC_M_SFAR, %glob_tmp
+LEON_PI(lda	[%glob_tmp] ASI_LEON_MMUREGS, %g0)
+SUN_PI_(lda	[%glob_tmp] ASI_M_MMUREGS, %g0)
+
+	mov	AC_M_SFSR, %glob_tmp
+LEON_PI(lda	[%glob_tmp] ASI_LEON_MMUREGS, %glob_tmp)! save away status of winstore
+SUN_PI_(lda	[%glob_tmp] ASI_M_MMUREGS, %glob_tmp)	! save away status of winstore
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andcc	%glob_tmp, 0x2, %g0			! did we fault?
 	bne	trap_setup_user_stack_is_bolixed	! failure
 	 nop

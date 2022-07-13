@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __LINUX_FBIO_H
 #define __LINUX_FBIO_H
 
@@ -220,6 +221,16 @@ struct fb_clut32 {
 #define LEO_GETGAMMA	_IOR('L', 69, int) /* Not yet implemented */
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_FBIO_H
+#define __LINUX_FBIO_H
+
+#include <uapi/asm/fbio.h>
+
+#define FBIOPUTCMAP_SPARC _IOW('F', 3, struct fbcmap)
+#define FBIOGETCMAP_SPARC _IOW('F', 4, struct fbcmap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Addresses on the fd of a cgsix that are mappable */
 #define CG6_FBC    0x70000000
 #define CG6_TEC    0x70001000
@@ -260,6 +271,7 @@ struct fb_clut32 {
 #define CG14_CLUT3       0x6000  /* Color Look Up Table */
 #define CG14_AUTO	 0xf000
 
+<<<<<<< HEAD
 #endif /* KERNEL */
 
 /* These are exported to userland for applications to use */
@@ -301,6 +313,8 @@ struct fb_clut32 {
 #define LEO_UNK2_MAP           0x0100a000
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct  fbcmap32 {
 	int             index;          /* first element (0 origin) */
 	int             count;
@@ -325,6 +339,9 @@ struct fbcursor32 {
 
 #define FBIOSCURSOR32	_IOW('F', 24, struct fbcursor32)
 #define FBIOGCURSOR32	_IOW('F', 25, struct fbcursor32)
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_FBIO_H */

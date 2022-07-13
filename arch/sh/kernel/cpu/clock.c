@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/clock.c - SuperH clock framework
  *
@@ -9,10 +13,13 @@
  *	Written by Tuukka Tikkanen <tuukka.tikkanen@elektrobit.com>
  *
  *  Modified for omap shared clock framework by Tony Lindgren <tony@atomide.com>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -24,11 +31,19 @@ int __init clk_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_COMMON_CLK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = arch_clk_init();
 	if (unlikely(ret)) {
 		pr_err("%s: CPU clock registration failed.\n", __func__);
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sh_mv.mv_clk_init) {
 		ret = sh_mv.mv_clk_init();
@@ -39,11 +54,19 @@ int __init clk_init(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_COMMON_CLK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Kick the child clocks.. */
 	recalculate_root_clocks();
 
 	/* Enable the necessary init clocks */
 	clk_enable_init_clocks();
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

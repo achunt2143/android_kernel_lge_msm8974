@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2001-2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2001-2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_SYSCTL_H__
 #define __XFS_SYSCTL_H__
@@ -47,6 +54,10 @@ typedef struct xfs_param {
 	xfs_sysctl_val_t rotorstep;	/* inode32 AG rotoring control knob */
 	xfs_sysctl_val_t inherit_nodfrg;/* Inherit the "nodefrag" inode flag. */
 	xfs_sysctl_val_t fstrm_timer;	/* Filestream dir-AG assoc'n timeout. */
+<<<<<<< HEAD
+=======
+	xfs_sysctl_val_t blockgc_timer;	/* Interval between blockgc scans */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } xfs_param_t;
 
 /*
@@ -91,6 +102,23 @@ enum {
 
 extern xfs_param_t	xfs_params;
 
+<<<<<<< HEAD
+=======
+struct xfs_globals {
+#ifdef DEBUG
+	int	pwork_threads;		/* parallel workqueue threads */
+	bool	larp;			/* log attribute replay */
+#endif
+	int	bload_leaf_slack;	/* btree bulk load leaf slack */
+	int	bload_node_slack;	/* btree bulk load node slack */
+	int	log_recovery_delay;	/* log recovery delay (secs) */
+	int	mount_delay;		/* mount setup delay (secs) */
+	bool	bug_on_assert;		/* BUG() the kernel on assert failure */
+	bool	always_cow;		/* use COW fork for all overwrites */
+};
+extern struct xfs_globals	xfs_globals;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SYSCTL
 extern int xfs_sysctl_register(void);
 extern void xfs_sysctl_unregister(void);

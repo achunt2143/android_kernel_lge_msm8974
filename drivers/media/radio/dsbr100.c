@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* A driver for the D-Link DSB-R100 USB radio and Gemtek USB Radio 21.
  The device plugs into both the USB and an analog audio input, so this thing
  only deals with initialisation and frequency setting, the
@@ -87,6 +88,29 @@
 
  Version 0.01: Markus: initial release
 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* A driver for the D-Link DSB-R100 USB radio and Gemtek USB Radio 21.
+ * The device plugs into both the USB and an analog audio input, so this thing
+ * only deals with initialisation and frequency setting, the
+ * audio data has to be handled by a sound driver.
+ *
+ * Major issue: I can't find out where the device reports the signal
+ * strength, and indeed the windows software appearantly just looks
+ * at the stereo indicator as well.  So, scanning will only find
+ * stereo stations.  Sad, but I can't help it.
+ *
+ * Also, the windows program sends oodles of messages over to the
+ * device, and I couldn't figure out their meaning.  My suspicion
+ * is that they don't have any:-)
+ *
+ * You might find some interesting stuff about this module at
+ * http://unimut.fsk.uni-heidelberg.de/unimut/demi/dsbr
+ *
+ * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
+ *
+ * Copyright (c) 2000 Markus Demleitner <msdemlei@cl.uni-heidelberg.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
@@ -95,17 +119,32 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/videodev2.h>
+<<<<<<< HEAD
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <linux/usb.h>
+=======
+#include <linux/usb.h>
+#include <media/v4l2-device.h>
+#include <media/v4l2-ioctl.h>
+#include <media/v4l2-ctrls.h>
+#include <media/v4l2-event.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Version Information
  */
+<<<<<<< HEAD
 #define DRIVER_VERSION "0.4.7"
 
 #define DRIVER_AUTHOR "Markus Demleitner <msdemlei@tucana.harvard.edu>"
 #define DRIVER_DESC "D-Link DSB-R100 USB FM radio driver"
+=======
+MODULE_AUTHOR("Markus Demleitner <msdemlei@tucana.harvard.edu>");
+MODULE_DESCRIPTION("D-Link DSB-R100 USB FM radio driver");
+MODULE_LICENSE("GPL");
+MODULE_VERSION("1.1.0");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DSB100_VENDOR 0x04b4
 #define DSB100_PRODUCT 0x1002
@@ -122,6 +161,7 @@ devices, that would be 76 and 91.  */
 #define FREQ_MAX 108.0
 #define FREQ_MUL 16000
 
+<<<<<<< HEAD
 /* defines for radio->status */
 #define STARTED	0
 #define STOPPED	1
@@ -135,6 +175,10 @@ static int usb_dsbr100_suspend(struct usb_interface *intf,
 						pm_message_t message);
 static int usb_dsbr100_resume(struct usb_interface *intf);
 
+=======
+#define v4l2_dev_to_radio(d) container_of(d, struct dsbr100_device, v4l2_dev)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 
@@ -143,10 +187,15 @@ struct dsbr100_device {
 	struct usb_device *usbdev;
 	struct video_device videodev;
 	struct v4l2_device v4l2_dev;
+<<<<<<< HEAD
+=======
+	struct v4l2_ctrl_handler hdl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 *transfer_buffer;
 	struct mutex v4l2_lock;
 	int curfreq;
+<<<<<<< HEAD
 	int stereo;
 	int status;
 };
@@ -168,10 +217,15 @@ static struct usb_driver usb_dsbr100_driver = {
 	.resume			= usb_dsbr100_resume,
 	.reset_resume		= usb_dsbr100_resume,
 	.supports_autosuspend	= 0,
+=======
+	bool stereo;
+	bool muted;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Low-level device interface begins here */
 
+<<<<<<< HEAD
 /* switch on radio */
 static int dsbr100_start(struct dsbr100_device *radio)
 {
@@ -190,11 +244,45 @@ static int dsbr100_start(struct dsbr100_device *radio)
 	}
 
 	retval = usb_control_msg(radio->usbdev,
+=======
+/* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
+static int dsbr100_setfreq(struct dsbr100_device *radio, unsigned freq)
+{
+	unsigned f = (freq / 16 * 80) / 1000 + 856;
+	int retval = 0;
+
+	if (!radio->muted) {
+		retval = usb_control_msg(radio->usbdev,
+				usb_rcvctrlpipe(radio->usbdev, 0),
+				DSB100_TUNE,
+				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+				(f >> 8) & 0x00ff, f & 0xff,
+				radio->transfer_buffer, 8, 300);
+		if (retval >= 0)
+			mdelay(1);
+	}
+
+	if (retval >= 0) {
+		radio->curfreq = freq;
+		return 0;
+	}
+	dev_err(&radio->usbdev->dev,
+		"%s - usb_control_msg returned %i, request %i\n",
+			__func__, retval, DSB100_TUNE);
+	return retval;
+}
+
+/* switch on radio */
+static int dsbr100_start(struct dsbr100_device *radio)
+{
+	int retval = usb_control_msg(radio->usbdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_rcvctrlpipe(radio->usbdev, 0),
 		DSB100_ONOFF,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
 		0x01, 0x00, radio->transfer_buffer, 8, 300);
 
+<<<<<<< HEAD
 	if (retval < 0) {
 		request = DSB100_ONOFF;
 		goto usb_control_msg_failed;
@@ -207,6 +295,13 @@ usb_control_msg_failed:
 	dev_err(&radio->usbdev->dev,
 		"%s - usb_control_msg returned %i, request %i\n",
 			__func__, retval, request);
+=======
+	if (retval >= 0)
+		return dsbr100_setfreq(radio, radio->curfreq);
+	dev_err(&radio->usbdev->dev,
+		"%s - usb_control_msg returned %i, request %i\n",
+			__func__, retval, DSB100_ONOFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 
 }
@@ -214,6 +309,7 @@ usb_control_msg_failed:
 /* switch off radio */
 static int dsbr100_stop(struct dsbr100_device *radio)
 {
+<<<<<<< HEAD
 	int retval;
 	int request;
 
@@ -229,11 +325,15 @@ static int dsbr100_stop(struct dsbr100_device *radio)
 	}
 
 	retval = usb_control_msg(radio->usbdev,
+=======
+	int retval = usb_control_msg(radio->usbdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_rcvctrlpipe(radio->usbdev, 0),
 		DSB100_ONOFF,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
 		0x00, 0x00, radio->transfer_buffer, 8, 300);
 
+<<<<<<< HEAD
 	if (retval < 0) {
 		request = DSB100_ONOFF;
 		goto usb_control_msg_failed;
@@ -246,10 +346,18 @@ usb_control_msg_failed:
 	dev_err(&radio->usbdev->dev,
 		"%s - usb_control_msg returned %i, request %i\n",
 			__func__, retval, request);
+=======
+	if (retval >= 0)
+		return 0;
+	dev_err(&radio->usbdev->dev,
+		"%s - usb_control_msg returned %i, request %i\n",
+			__func__, retval, DSB100_ONOFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 
 }
 
+<<<<<<< HEAD
 /* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
 static int dsbr100_setfreq(struct dsbr100_device *radio)
 {
@@ -302,10 +410,13 @@ usb_control_msg_failed:
 	return retval;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* return the device status.  This is, in effect, just whether it
 sees a stereo signal or not.  Pity. */
 static void dsbr100_getstat(struct dsbr100_device *radio)
 {
+<<<<<<< HEAD
 	int retval;
 
 	retval = usb_control_msg(radio->usbdev,
@@ -316,6 +427,16 @@ static void dsbr100_getstat(struct dsbr100_device *radio)
 
 	if (retval < 0) {
 		radio->stereo = -1;
+=======
+	int retval = usb_control_msg(radio->usbdev,
+		usb_rcvctrlpipe(radio->usbdev, 0),
+		USB_REQ_GET_STATUS,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+		0x00, 0x24, radio->transfer_buffer, 8, 300);
+
+	if (retval < 0) {
+		radio->stereo = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&radio->usbdev->dev,
 			"%s - usb_control_msg returned %i, request %i\n",
 				__func__, retval, USB_REQ_GET_STATUS);
@@ -329,10 +450,16 @@ static int vidioc_querycap(struct file *file, void *priv,
 {
 	struct dsbr100_device *radio = video_drvdata(file);
 
+<<<<<<< HEAD
 	strlcpy(v->driver, "dsbr100", sizeof(v->driver));
 	strlcpy(v->card, "D-Link R-100 USB FM Radio", sizeof(v->card));
 	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
 	v->capabilities = V4L2_CAP_TUNER;
+=======
+	strscpy(v->driver, "dsbr100", sizeof(v->driver));
+	strscpy(v->card, "D-Link R-100 USB FM Radio", sizeof(v->card));
+	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -345,6 +472,7 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 		return -EINVAL;
 
 	dsbr100_getstat(radio);
+<<<<<<< HEAD
 	strcpy(v->name, "FM");
 	v->type = V4L2_TUNER_RADIO;
 	v->rangelow = FREQ_MIN * FREQ_MUL;
@@ -356,16 +484,32 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	else
 		v->audmode = V4L2_TUNER_MODE_MONO;
 	v->signal = 0xffff;     /* We can't get the signal strength */
+=======
+	strscpy(v->name, "FM", sizeof(v->name));
+	v->type = V4L2_TUNER_RADIO;
+	v->rangelow = FREQ_MIN * FREQ_MUL;
+	v->rangehigh = FREQ_MAX * FREQ_MUL;
+	v->rxsubchans = radio->stereo ? V4L2_TUNER_SUB_STEREO :
+		V4L2_TUNER_SUB_MONO;
+	v->capability = V4L2_TUNER_CAP_LOW | V4L2_TUNER_CAP_STEREO;
+	v->audmode = V4L2_TUNER_MODE_STEREO;
+	v->signal = radio->stereo ? 0xffff : 0;     /* We can't get the signal strength */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int vidioc_s_tuner(struct file *file, void *priv,
+<<<<<<< HEAD
 				struct v4l2_tuner *v)
+=======
+				const struct v4l2_tuner *v)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return v->index ? -EINVAL : 0;
 }
 
 static int vidioc_s_frequency(struct file *file, void *priv,
+<<<<<<< HEAD
 				struct v4l2_frequency *f)
 {
 	struct dsbr100_device *radio = video_drvdata(file);
@@ -377,6 +521,17 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	if (retval < 0)
 		dev_warn(&radio->usbdev->dev, "Set frequency failed\n");
 	return 0;
+=======
+				const struct v4l2_frequency *f)
+{
+	struct dsbr100_device *radio = video_drvdata(file);
+
+	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
+		return -EINVAL;
+
+	return dsbr100_setfreq(radio, clamp_t(unsigned, f->frequency,
+			FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vidioc_g_frequency(struct file *file, void *priv,
@@ -384,11 +539,17 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 {
 	struct dsbr100_device *radio = video_drvdata(file);
 
+<<<<<<< HEAD
+=======
+	if (f->tuner)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f->type = V4L2_TUNER_RADIO;
 	f->frequency = radio->curfreq;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vidioc_queryctrl(struct file *file, void *priv,
 				struct v4l2_queryctrl *qc)
 {
@@ -409,10 +570,22 @@ static int vidioc_g_ctrl(struct file *file, void *priv,
 	case V4L2_CID_AUDIO_MUTE:
 		ctrl->value = radio->status;
 		return 0;
+=======
+static int usb_dsbr100_s_ctrl(struct v4l2_ctrl *ctrl)
+{
+	struct dsbr100_device *radio =
+		container_of(ctrl->handler, struct dsbr100_device, hdl);
+
+	switch (ctrl->id) {
+	case V4L2_CID_AUDIO_MUTE:
+		radio->muted = ctrl->val;
+		return radio->muted ? dsbr100_stop(radio) : dsbr100_start(radio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int vidioc_s_ctrl(struct file *file, void *priv,
 				struct v4l2_control *ctrl)
 {
@@ -468,6 +641,8 @@ static int vidioc_s_audio(struct file *file, void *priv,
 {
 	return a->index ? -EINVAL : 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* USB subsystem interface begins here */
 
@@ -481,8 +656,22 @@ static void usb_dsbr100_disconnect(struct usb_interface *intf)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
 
+<<<<<<< HEAD
 	v4l2_device_get(&radio->v4l2_dev);
 	mutex_lock(&radio->v4l2_lock);
+=======
+	mutex_lock(&radio->v4l2_lock);
+	/*
+	 * Disconnect is also called on unload, and in that case we need to
+	 * mute the device. This call will silently fail if it is called
+	 * after a physical disconnect.
+	 */
+	usb_control_msg(radio->usbdev,
+		usb_rcvctrlpipe(radio->usbdev, 0),
+		DSB100_ONOFF,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+		0x00, 0x00, radio->transfer_buffer, 8, 300);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(intf, NULL);
 	video_unregister_device(&radio->videodev);
 	v4l2_device_disconnect(&radio->v4l2_dev);
@@ -495,6 +684,7 @@ static void usb_dsbr100_disconnect(struct usb_interface *intf)
 static int usb_dsbr100_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	int retval;
 
 	mutex_lock(&radio->v4l2_lock);
@@ -514,6 +704,15 @@ static int usb_dsbr100_suspend(struct usb_interface *intf, pm_message_t message)
 
 	dev_info(&intf->dev, "going into suspend..\n");
 
+=======
+
+	mutex_lock(&radio->v4l2_lock);
+	if (!radio->muted && dsbr100_stop(radio) < 0)
+		dev_warn(&intf->dev, "dsbr100_stop failed\n");
+	mutex_unlock(&radio->v4l2_lock);
+
+	dev_info(&intf->dev, "going into suspend..\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -521,6 +720,7 @@ static int usb_dsbr100_suspend(struct usb_interface *intf, pm_message_t message)
 static int usb_dsbr100_resume(struct usb_interface *intf)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	int retval;
 
 	mutex_lock(&radio->v4l2_lock);
@@ -533,6 +733,15 @@ static int usb_dsbr100_resume(struct usb_interface *intf)
 
 	dev_info(&intf->dev, "coming out of suspend..\n");
 
+=======
+
+	mutex_lock(&radio->v4l2_lock);
+	if (!radio->muted && dsbr100_start(radio) < 0)
+		dev_warn(&intf->dev, "dsbr100_start failed\n");
+	mutex_unlock(&radio->v4l2_lock);
+
+	dev_info(&intf->dev, "coming out of suspend..\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -541,15 +750,32 @@ static void usb_dsbr100_release(struct v4l2_device *v4l2_dev)
 {
 	struct dsbr100_device *radio = v4l2_dev_to_radio(v4l2_dev);
 
+<<<<<<< HEAD
+=======
+	v4l2_ctrl_handler_free(&radio->hdl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v4l2_device_unregister(&radio->v4l2_dev);
 	kfree(radio->transfer_buffer);
 	kfree(radio);
 }
 
+<<<<<<< HEAD
+=======
+static const struct v4l2_ctrl_ops usb_dsbr100_ctrl_ops = {
+	.s_ctrl = usb_dsbr100_s_ctrl,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* File system interface */
 static const struct v4l2_file_operations usb_dsbr100_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= video_ioctl2,
+<<<<<<< HEAD
+=======
+	.open           = v4l2_fh_open,
+	.release        = v4l2_fh_release,
+	.poll		= v4l2_ctrl_poll,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct v4l2_ioctl_ops usb_dsbr100_ioctl_ops = {
@@ -558,6 +784,7 @@ static const struct v4l2_ioctl_ops usb_dsbr100_ioctl_ops = {
 	.vidioc_s_tuner     = vidioc_s_tuner,
 	.vidioc_g_frequency = vidioc_g_frequency,
 	.vidioc_s_frequency = vidioc_s_frequency,
+<<<<<<< HEAD
 	.vidioc_queryctrl   = vidioc_queryctrl,
 	.vidioc_g_ctrl      = vidioc_g_ctrl,
 	.vidioc_s_ctrl      = vidioc_s_ctrl,
@@ -565,6 +792,11 @@ static const struct v4l2_ioctl_ops usb_dsbr100_ioctl_ops = {
 	.vidioc_s_audio     = vidioc_s_audio,
 	.vidioc_g_input     = vidioc_g_input,
 	.vidioc_s_input     = vidioc_s_input,
+=======
+	.vidioc_log_status  = v4l2_ctrl_log_status,
+	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
+	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* check if the device is present and register with v4l and usb if it is */
@@ -593,6 +825,7 @@ static int usb_dsbr100_probe(struct usb_interface *intf,
 	retval = v4l2_device_register(&intf->dev, v4l2_dev);
 	if (retval < 0) {
 		v4l2_err(v4l2_dev, "couldn't register v4l2_device\n");
+<<<<<<< HEAD
 		kfree(radio->transfer_buffer);
 		kfree(radio);
 		return retval;
@@ -600,11 +833,28 @@ static int usb_dsbr100_probe(struct usb_interface *intf,
 
 	mutex_init(&radio->v4l2_lock);
 	strlcpy(radio->videodev.name, v4l2_dev->name, sizeof(radio->videodev.name));
+=======
+		goto err_reg_dev;
+	}
+
+	v4l2_ctrl_handler_init(&radio->hdl, 1);
+	v4l2_ctrl_new_std(&radio->hdl, &usb_dsbr100_ctrl_ops,
+			  V4L2_CID_AUDIO_MUTE, 0, 1, 1, 1);
+	if (radio->hdl.error) {
+		retval = radio->hdl.error;
+		v4l2_err(v4l2_dev, "couldn't register control\n");
+		goto err_reg_ctrl;
+	}
+	mutex_init(&radio->v4l2_lock);
+	strscpy(radio->videodev.name, v4l2_dev->name,
+		sizeof(radio->videodev.name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radio->videodev.v4l2_dev = v4l2_dev;
 	radio->videodev.fops = &usb_dsbr100_fops;
 	radio->videodev.ioctl_ops = &usb_dsbr100_ioctl_ops;
 	radio->videodev.release = video_device_release_empty;
 	radio->videodev.lock = &radio->v4l2_lock;
+<<<<<<< HEAD
 
 	radio->usbdev = interface_to_usbdev(intf);
 	radio->curfreq = FREQ_MIN * FREQ_MUL;
@@ -630,3 +880,48 @@ MODULE_AUTHOR( DRIVER_AUTHOR );
 MODULE_DESCRIPTION( DRIVER_DESC );
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRIVER_VERSION);
+=======
+	radio->videodev.ctrl_handler = &radio->hdl;
+	radio->videodev.device_caps = V4L2_CAP_RADIO | V4L2_CAP_TUNER;
+
+	radio->usbdev = interface_to_usbdev(intf);
+	radio->curfreq = FREQ_MIN * FREQ_MUL;
+	radio->muted = true;
+
+	video_set_drvdata(&radio->videodev, radio);
+	usb_set_intfdata(intf, radio);
+
+	retval = video_register_device(&radio->videodev, VFL_TYPE_RADIO, radio_nr);
+	if (retval == 0)
+		return 0;
+	v4l2_err(v4l2_dev, "couldn't register video device\n");
+
+err_reg_ctrl:
+	v4l2_ctrl_handler_free(&radio->hdl);
+	v4l2_device_unregister(v4l2_dev);
+err_reg_dev:
+	kfree(radio->transfer_buffer);
+	kfree(radio);
+	return retval;
+}
+
+static const struct usb_device_id usb_dsbr100_device_table[] = {
+	{ USB_DEVICE(DSB100_VENDOR, DSB100_PRODUCT) },
+	{ }						/* Terminating entry */
+};
+
+MODULE_DEVICE_TABLE(usb, usb_dsbr100_device_table);
+
+/* USB subsystem interface */
+static struct usb_driver usb_dsbr100_driver = {
+	.name			= "dsbr100",
+	.probe			= usb_dsbr100_probe,
+	.disconnect		= usb_dsbr100_disconnect,
+	.id_table		= usb_dsbr100_device_table,
+	.suspend		= usb_dsbr100_suspend,
+	.resume			= usb_dsbr100_resume,
+	.reset_resume		= usb_dsbr100_resume,
+};
+
+module_usb_driver(usb_dsbr100_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

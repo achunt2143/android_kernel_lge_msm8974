@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP44xx PRM instance offset macros
  *
@@ -14,10 +18,13 @@
  * authors above to ensure that the autogeneration scripts are kept
  * up-to-date with the file contents.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX This file needs to be updated to align on one of "OMAP4", "OMAP44XX",
  *     or "OMAP4430".
  */
@@ -25,7 +32,11 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM44XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRM44XX_H
 
+<<<<<<< HEAD
 #include "prcm-common.h"
+=======
+#include "prm44xx_54xx.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "prm.h"
 
 #define OMAP4430_PRM_BASE		0x4a306000
@@ -54,13 +65,17 @@
 #define OMAP4430_PRM_EMU_INST		0x1900
 #define OMAP4430_PRM_EMU_CM_INST	0x1a00
 #define OMAP4430_PRM_DEVICE_INST	0x1b00
+<<<<<<< HEAD
 #define OMAP4430_PRM_INSTR_INST		0x1f00
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PRM clockdomain register offsets (from instance start) */
 #define OMAP4430_PRM_WKUP_CM_WKUP_CDOFFS	0x0000
 #define OMAP4430_PRM_EMU_CM_EMU_CDOFFS		0x0000
 
 /* OMAP4 specific register offsets */
+<<<<<<< HEAD
 #define OMAP4_RM_RSTCTRL				0x0000
 #define OMAP4_RM_RSTTIME				0x0004
 #define OMAP4_RM_RSTST					0x0008
@@ -770,5 +785,60 @@ extern void omap44xx_prm_save_and_clear_irqen(u32 *saved_mask);
 extern void omap44xx_prm_restore_irqen(u32 *saved_mask);
 
 # endif
+=======
+#define OMAP4_RM_RSTST					0x0004
+#define OMAP4_PM_PWSTCTRL				0x0000
+#define OMAP4_PM_PWSTST					0x0004
+
+/* PRM.OCP_SOCKET_PRM register offsets */
+#define OMAP4_REVISION_PRM_OFFSET			0x0000
+#define OMAP4_PRM_IRQSTATUS_MPU_OFFSET			0x0010
+#define OMAP4430_PRM_IRQSTATUS_MPU			OMAP44XX_PRM_REGADDR(OMAP4430_PRM_OCP_SOCKET_INST, 0x0010)
+#define OMAP4_PRM_IRQSTATUS_MPU_2_OFFSET		0x0014
+#define OMAP4_PRM_IRQENABLE_MPU_OFFSET			0x0018
+#define OMAP4430_PRM_IRQENABLE_MPU			OMAP44XX_PRM_REGADDR(OMAP4430_PRM_OCP_SOCKET_INST, 0x0018)
+
+/* PRM.MPU_PRM register offsets */
+#define OMAP4_RM_MPU_MPU_CONTEXT_OFFSET			0x0024
+
+/* PRM.DEVICE_PRM register offsets */
+#define OMAP4_PRM_RSTCTRL_OFFSET			0x0000
+#define OMAP4_PRM_VOLTCTRL_OFFSET			0x0010
+#define OMAP4_PRM_IO_PMCTRL_OFFSET			0x0020
+#define OMAP4_PRM_VOLTSETUP_CORE_OFF_OFFSET		0x0028
+#define OMAP4_PRM_VOLTSETUP_MPU_OFF_OFFSET		0x002c
+#define OMAP4_PRM_VOLTSETUP_IVA_OFF_OFFSET		0x0030
+#define OMAP4_PRM_VOLTSETUP_CORE_RET_SLEEP_OFFSET	0x0034
+#define OMAP4_PRM_VOLTSETUP_MPU_RET_SLEEP_OFFSET	0x0038
+#define OMAP4_PRM_VOLTSETUP_IVA_RET_SLEEP_OFFSET	0x003c
+#define OMAP4_PRM_VP_CORE_CONFIG_OFFSET			0x0040
+#define OMAP4_PRM_VP_CORE_STATUS_OFFSET			0x0044
+#define OMAP4_PRM_VP_CORE_VLIMITTO_OFFSET		0x0048
+#define OMAP4_PRM_VP_CORE_VOLTAGE_OFFSET		0x004c
+#define OMAP4_PRM_VP_CORE_VSTEPMAX_OFFSET		0x0050
+#define OMAP4_PRM_VP_CORE_VSTEPMIN_OFFSET		0x0054
+#define OMAP4_PRM_VP_MPU_CONFIG_OFFSET			0x0058
+#define OMAP4_PRM_VP_MPU_STATUS_OFFSET			0x005c
+#define OMAP4_PRM_VP_MPU_VLIMITTO_OFFSET		0x0060
+#define OMAP4_PRM_VP_MPU_VOLTAGE_OFFSET			0x0064
+#define OMAP4_PRM_VP_MPU_VSTEPMAX_OFFSET		0x0068
+#define OMAP4_PRM_VP_MPU_VSTEPMIN_OFFSET		0x006c
+#define OMAP4_PRM_VP_IVA_CONFIG_OFFSET			0x0070
+#define OMAP4_PRM_VP_IVA_STATUS_OFFSET			0x0074
+#define OMAP4_PRM_VP_IVA_VLIMITTO_OFFSET		0x0078
+#define OMAP4_PRM_VP_IVA_VOLTAGE_OFFSET			0x007c
+#define OMAP4_PRM_VP_IVA_VSTEPMAX_OFFSET		0x0080
+#define OMAP4_PRM_VP_IVA_VSTEPMIN_OFFSET		0x0084
+#define OMAP4_PRM_VC_SMPS_SA_OFFSET			0x0088
+#define OMAP4_PRM_VC_VAL_SMPS_RA_VOL_OFFSET		0x008c
+#define OMAP4_PRM_VC_VAL_SMPS_RA_CMD_OFFSET		0x0090
+#define OMAP4_PRM_VC_VAL_CMD_VDD_CORE_L_OFFSET		0x0094
+#define OMAP4_PRM_VC_VAL_CMD_VDD_MPU_L_OFFSET		0x0098
+#define OMAP4_PRM_VC_VAL_CMD_VDD_IVA_L_OFFSET		0x009c
+#define OMAP4_PRM_VC_VAL_BYPASS_OFFSET			0x00a0
+#define OMAP4_PRM_VC_CFG_CHANNEL_OFFSET			0x00a4
+#define OMAP4_PRM_VC_CFG_I2C_MODE_OFFSET		0x00a8
+#define OMAP4_PRM_VC_CFG_I2C_CLK_OFFSET			0x00ac
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

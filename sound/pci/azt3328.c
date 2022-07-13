@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  azt3328.c - driver for Aztech AZF3328 based soundcards (e.g. PCI168).
  *  Copyright (C) 2002, 2005 - 2011 by Andreas Mohr <andi AT lisas.de>
  *
@@ -16,6 +20,7 @@
  *   despite the high level of Internet ignorance - as usual :-P -
  *   about very good support for this card - on Linux!)
  *
+<<<<<<< HEAD
  * GPL LICENSE
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +36,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTES
  *  Since Aztech does not provide any chipset documentation,
  *  even on repeated request to various addresses,
@@ -179,7 +186,11 @@
  *  - use MMIO (memory-mapped I/O)? Slightly faster access, e.g. for gameport.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/bug.h> /* WARN_ONCE */
 #include <linux/pci.h>
@@ -210,9 +221,14 @@
 MODULE_AUTHOR("Andreas Mohr <andi AT lisas.de>");
 MODULE_DESCRIPTION("Aztech AZF3328 (PCI168)");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Aztech,AZF3328}}");
 
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_GAMEPORT 1
 #endif
 
@@ -238,6 +254,7 @@ MODULE_SUPPORTED_DEVICE("{{Aztech,AZF3328}}");
     2>/dev/null
 */
 
+<<<<<<< HEAD
 #define DEBUG_MISC	0
 #define DEBUG_CALLS	0
 #define DEBUG_MIXER	0
@@ -293,6 +310,8 @@ MODULE_SUPPORTED_DEVICE("{{Aztech,AZF3328}}");
 #define snd_azf3328_dbgpm(format, args...)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for AZF3328 soundcard.");
@@ -365,7 +384,10 @@ struct snd_azf3328 {
 	 * CONFIG_PM register storage below, but that's slightly difficult. */
 	u16 shadow_reg_ctrl_6AH;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* register value containers for power management
 	 * Note: not always full I/O range preserved (similar to Win driver!) */
 	u32 saved_regs_ctrl[AZF_ALIGN(AZF_IO_SIZE_CTRL_PM) / 4];
@@ -373,10 +395,16 @@ struct snd_azf3328 {
 	u32 saved_regs_mpu[AZF_ALIGN(AZF_IO_SIZE_MPU_PM) / 4];
 	u32 saved_regs_opl3[AZF_ALIGN(AZF_IO_SIZE_OPL3_PM) / 4];
 	u32 saved_regs_mixer[AZF_ALIGN(AZF_IO_SIZE_MIXER_PM) / 4];
+<<<<<<< HEAD
 #endif
 };
 
 static DEFINE_PCI_DEVICE_TABLE(snd_azf3328_ids) = {
+=======
+};
+
+static const struct pci_device_id snd_azf3328_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x122D, 0x50DC, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },   /* PCI168/3328 */
 	{ 0x122D, 0x80DA, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },   /* 3328 */
 	{ 0, }
@@ -434,6 +462,7 @@ snd_azf3328_codec_inw(const struct snd_azf3328_codec_data *codec, unsigned reg)
 }
 
 static inline void
+<<<<<<< HEAD
 snd_azf3328_codec_outl(const struct snd_azf3328_codec_data *codec,
 		       unsigned reg,
 		       u32 value
@@ -443,6 +472,8 @@ snd_azf3328_codec_outl(const struct snd_azf3328_codec_data *codec,
 }
 
 static inline void
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_azf3328_codec_outl_multi(const struct snd_azf3328_codec_data *codec,
 			     unsigned reg, const void *buffer, int count
 )
@@ -475,6 +506,15 @@ snd_azf3328_ctrl_inb(const struct snd_azf3328 *chip, unsigned reg)
 	return inb(chip->ctrl_io + reg);
 }
 
+<<<<<<< HEAD
+=======
+static inline u16
+snd_azf3328_ctrl_inw(const struct snd_azf3328 *chip, unsigned reg)
+{
+	return inw(chip->ctrl_io + reg);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 snd_azf3328_ctrl_outw(const struct snd_azf3328 *chip, unsigned reg, u16 value)
 {
@@ -578,11 +618,20 @@ snd_azf3328_mixer_reset(const struct snd_azf3328 *chip)
 #ifdef AZF_USE_AC97_LAYER
 
 static inline void
+<<<<<<< HEAD
 snd_azf3328_mixer_ac97_map_unsupported(unsigned short reg, const char *mode)
 {
 	/* need to add some more or less clever emulation? */
 	printk(KERN_WARNING
 		"azt3328: missing %s emulation for AC97 register 0x%02x!\n",
+=======
+snd_azf3328_mixer_ac97_map_unsupported(const struct snd_azf3328 *chip,
+				       unsigned short reg, const char *mode)
+{
+	/* need to add some more or less clever emulation? */
+	dev_warn(chip->card->dev,
+		"missing %s emulation for AC97 register 0x%02x!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode, reg);
 }
 
@@ -715,6 +764,7 @@ snd_azf3328_mixer_ac97_read(struct snd_ac97 *ac97, unsigned short reg_ac97)
 	const struct snd_azf3328 *chip = ac97->private_data;
 	unsigned short reg_azf = snd_azf3328_mixer_ac97_map_reg_idx(reg_ac97);
 	unsigned short reg_val = 0;
+<<<<<<< HEAD
 	bool unsupported = 0;
 
 	snd_azf3328_dbgmixer(
@@ -723,6 +773,14 @@ snd_azf3328_mixer_ac97_read(struct snd_ac97 *ac97, unsigned short reg_ac97)
 	);
 	if (reg_azf & AZF_AC97_REG_UNSUPPORTED)
 		unsupported = 1;
+=======
+	bool unsupported = false;
+
+	dev_dbg(chip->card->dev, "snd_azf3328_mixer_ac97_read reg_ac97 %u\n",
+		reg_ac97);
+	if (reg_azf & AZF_AC97_REG_UNSUPPORTED)
+		unsupported = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		if (reg_azf & AZF_AC97_REG_REAL_IO_READ)
 			reg_val = snd_azf3328_mixer_inw(chip,
@@ -759,13 +817,21 @@ snd_azf3328_mixer_ac97_read(struct snd_ac97 *ac97, unsigned short reg_ac97)
 				reg_val = azf_emulated_ac97_vendor_id & 0xffff;
 				break;
 			default:
+<<<<<<< HEAD
 				unsupported = 1;
+=======
+				unsupported = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 	}
 	if (unsupported)
+<<<<<<< HEAD
 		snd_azf3328_mixer_ac97_map_unsupported(reg_ac97, "read");
+=======
+		snd_azf3328_mixer_ac97_map_unsupported(chip, reg_ac97, "read");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return reg_val;
 }
@@ -776,6 +842,7 @@ snd_azf3328_mixer_ac97_write(struct snd_ac97 *ac97,
 {
 	const struct snd_azf3328 *chip = ac97->private_data;
 	unsigned short reg_azf = snd_azf3328_mixer_ac97_map_reg_idx(reg_ac97);
+<<<<<<< HEAD
 	bool unsupported = 0;
 
 	snd_azf3328_dbgmixer(
@@ -784,6 +851,15 @@ snd_azf3328_mixer_ac97_write(struct snd_ac97 *ac97,
 	);
 	if (reg_azf & AZF_AC97_REG_UNSUPPORTED)
 		unsupported = 1;
+=======
+	bool unsupported = false;
+
+	dev_dbg(chip->card->dev,
+		"snd_azf3328_mixer_ac97_write reg_ac97 %u val %u\n",
+		reg_ac97, val);
+	if (reg_azf & AZF_AC97_REG_UNSUPPORTED)
+		unsupported = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		if (reg_azf & AZF_AC97_REG_REAL_IO_WRITE)
 			snd_azf3328_mixer_outw(
@@ -808,21 +884,36 @@ snd_azf3328_mixer_ac97_write(struct snd_ac97 *ac97,
 				 */
 				break;
 			default:
+<<<<<<< HEAD
 				unsupported = 1;
+=======
+				unsupported = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 	}
 	if (unsupported)
+<<<<<<< HEAD
 		snd_azf3328_mixer_ac97_map_unsupported(reg_ac97, "write");
 }
 
 static int __devinit
+=======
+		snd_azf3328_mixer_ac97_map_unsupported(chip, reg_ac97, "write");
+}
+
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_azf3328_mixer_new(struct snd_azf3328 *chip)
 {
 	struct snd_ac97_bus *bus;
 	struct snd_ac97_template ac97;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_azf3328_mixer_ac97_write,
 		.read = snd_azf3328_mixer_ac97_read,
 	};
@@ -850,7 +941,11 @@ snd_azf3328_mixer_new(struct snd_azf3328 *chip)
 		 * due to this card being a very quirky AC97 "lookalike".
 		 */
 	if (rc)
+<<<<<<< HEAD
 		printk(KERN_ERR "azt3328: AC97 init failed, err %d!\n", rc);
+=======
+		dev_err(chip->card->dev, "AC97 init failed, err %d!\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we return an error here, then snd_card_free() should
 	 * free up any ac97 codecs that got created, as well as the bus.
@@ -870,8 +965,11 @@ snd_azf3328_mixer_write_volume_gradually(const struct snd_azf3328 *chip,
 	unsigned char curr_vol_left = 0, curr_vol_right = 0;
 	int left_change = 0, right_change = 0;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chan_sel & SET_CHAN_LEFT) {
 		curr_vol_left  = inb(portbase + 1);
 
@@ -912,7 +1010,10 @@ snd_azf3328_mixer_write_volume_gradually(const struct snd_azf3328 *chip,
 		if (delay)
 			mdelay(delay);
 	} while ((left_change) || (right_change));
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -990,14 +1091,20 @@ snd_azf3328_info_mixer(struct snd_kcontrol *kcontrol,
 {
 	struct azf3328_mixer_reg reg;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_azf3328_mixer_reg_decode(&reg, kcontrol->private_value);
 	uinfo->type = reg.mask == 1 ?
 		SNDRV_CTL_ELEM_TYPE_BOOLEAN : SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = reg.stereo + 1;
 	uinfo->value.integer.min = 0;
 	uinfo->value.integer.max = reg.mask;
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1009,7 +1116,10 @@ snd_azf3328_get_mixer(struct snd_kcontrol *kcontrol,
 	struct azf3328_mixer_reg reg;
 	u16 oreg, val;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_azf3328_mixer_reg_decode(&reg, kcontrol->private_value);
 
 	oreg = snd_azf3328_mixer_inw(chip, reg.reg);
@@ -1023,12 +1133,20 @@ snd_azf3328_get_mixer(struct snd_kcontrol *kcontrol,
 			val = reg.mask - val;
 		ucontrol->value.integer.value[1] = val;
 	}
+<<<<<<< HEAD
 	snd_azf3328_dbgmixer("get: %02x is %04x -> vol %02lx|%02lx "
 			     "(shift %02d|%02d, mask %02x, inv. %d, stereo %d)\n",
 		reg.reg, oreg,
 		ucontrol->value.integer.value[0], ucontrol->value.integer.value[1],
 		reg.lchan_shift, reg.rchan_shift, reg.mask, reg.invert, reg.stereo);
 	snd_azf3328_dbgcallleave();
+=======
+	dev_dbg(chip->card->dev,
+		"get: %02x is %04x -> vol %02lx|%02lx (shift %02d|%02d, mask %02x, inv. %d, stereo %d)\n",
+		reg.reg, oreg,
+		ucontrol->value.integer.value[0], ucontrol->value.integer.value[1],
+		reg.lchan_shift, reg.rchan_shift, reg.mask, reg.invert, reg.stereo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1040,7 +1158,10 @@ snd_azf3328_put_mixer(struct snd_kcontrol *kcontrol,
 	struct azf3328_mixer_reg reg;
 	u16 oreg, nreg, val;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_azf3328_mixer_reg_decode(&reg, kcontrol->private_value);
 	oreg = snd_azf3328_mixer_inw(chip, reg.reg);
 	val = ucontrol->value.integer.value[0] & reg.mask;
@@ -1064,12 +1185,20 @@ snd_azf3328_put_mixer(struct snd_kcontrol *kcontrol,
 	else
         	snd_azf3328_mixer_outw(chip, reg.reg, nreg);
 
+<<<<<<< HEAD
 	snd_azf3328_dbgmixer("put: %02x to %02lx|%02lx, "
 			     "oreg %04x; shift %02d|%02d -> nreg %04x; after: %04x\n",
 		reg.reg, ucontrol->value.integer.value[0], ucontrol->value.integer.value[1],
 		oreg, reg.lchan_shift, reg.rchan_shift,
 		nreg, snd_azf3328_mixer_inw(chip, reg.reg));
 	snd_azf3328_dbgcallleave();
+=======
+	dev_dbg(chip->card->dev,
+		"put: %02x to %02lx|%02lx, oreg %04x; shift %02d|%02d -> nreg %04x; after: %04x\n",
+		reg.reg, ucontrol->value.integer.value[0], ucontrol->value.integer.value[1],
+		oreg, reg.lchan_shift, reg.rchan_shift,
+		nreg, snd_azf3328_mixer_inw(chip, reg.reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (nreg != oreg);
 }
 
@@ -1094,11 +1223,14 @@ snd_azf3328_info_mixer_enum(struct snd_kcontrol *kcontrol,
 	const char * const *p = NULL;
 
 	snd_azf3328_mixer_reg_decode(&reg, kcontrol->private_value);
+<<<<<<< HEAD
         uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
         uinfo->count = (reg.reg == IDX_MIXER_REC_SELECT) ? 2 : 1;
         uinfo->value.enumerated.items = reg.enum_c;
         if (uinfo->value.enumerated.item > reg.enum_c - 1U)
                 uinfo->value.enumerated.item = reg.enum_c - 1U;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg.reg == IDX_MIXER_ADVCTL2) {
 		switch(reg.lchan_shift) {
 		case 8: /* modem out sel */
@@ -1111,12 +1243,21 @@ snd_azf3328_info_mixer_enum(struct snd_kcontrol *kcontrol,
 			p = texts4;
 			break;
 		}
+<<<<<<< HEAD
 	} else
 	if (reg.reg == IDX_MIXER_REC_SELECT)
 		p = texts3;
 
 	strcpy(uinfo->value.enumerated.name, p[uinfo->value.enumerated.item]);
         return 0;
+=======
+	} else if (reg.reg == IDX_MIXER_REC_SELECT)
+		p = texts3;
+
+	return snd_ctl_enum_info(uinfo,
+				 (reg.reg == IDX_MIXER_REC_SELECT) ? 2 : 1,
+				 reg.enum_c, p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1135,7 +1276,12 @@ snd_azf3328_get_mixer_enum(struct snd_kcontrol *kcontrol,
 	} else
         	ucontrol->value.enumerated.item[0] = (val >> reg.lchan_shift) & (reg.enum_c - 1);
 
+<<<<<<< HEAD
 	snd_azf3328_dbgmixer("get_enum: %02x is %04x -> %d|%d (shift %02d, enum_c %d)\n",
+=======
+	dev_dbg(chip->card->dev,
+		"get_enum: %02x is %04x -> %d|%d (shift %02d, enum_c %d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg.reg, val, ucontrol->value.enumerated.item[0], ucontrol->value.enumerated.item[1],
 		reg.lchan_shift, reg.enum_c);
         return 0;
@@ -1167,11 +1313,20 @@ snd_azf3328_put_mixer_enum(struct snd_kcontrol *kcontrol,
 	snd_azf3328_mixer_outw(chip, reg.reg, val);
 	nreg = val;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgmixer("put_enum: %02x to %04x, oreg %04x\n", reg.reg, val, oreg);
 	return (nreg != oreg);
 }
 
 static struct snd_kcontrol_new snd_azf3328_mixer_controls[] __devinitdata = {
+=======
+	dev_dbg(chip->card->dev,
+		"put_enum: %02x to %04x, oreg %04x\n", reg.reg, val, oreg);
+	return (nreg != oreg);
+}
+
+static const struct snd_kcontrol_new snd_azf3328_mixer_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AZF3328_MIXER_SWITCH("Master Playback Switch", IDX_MIXER_PLAY_MASTER, 15, 1),
 	AZF3328_MIXER_VOL_STEREO("Master Playback Volume", IDX_MIXER_PLAY_MASTER, 0x1f, 1),
 	AZF3328_MIXER_SWITCH("PCM Playback Switch", IDX_MIXER_WAVEOUT, 15, 1),
@@ -1229,7 +1384,11 @@ static struct snd_kcontrol_new snd_azf3328_mixer_controls[] __devinitdata = {
 #endif
 };
 
+<<<<<<< HEAD
 static u16 __devinitdata snd_azf3328_init_values[][2] = {
+=======
+static const u16 snd_azf3328_init_values[][2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         { IDX_MIXER_PLAY_MASTER,	MIXER_MUTE_MASK|0x1f1f },
         { IDX_MIXER_MODEMOUT,		MIXER_MUTE_MASK|0x1f1f },
 	{ IDX_MIXER_BASSTREBLE,		0x0000 },
@@ -1245,7 +1404,11 @@ static u16 __devinitdata snd_azf3328_init_values[][2] = {
         { IDX_MIXER_REC_VOLUME,		MIXER_MUTE_MASK|0x0707 },
 };
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_azf3328_mixer_new(struct snd_azf3328 *chip)
 {
 	struct snd_card *card;
@@ -1253,7 +1416,10 @@ snd_azf3328_mixer_new(struct snd_azf3328 *chip)
 	unsigned int idx;
 	int err;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(!chip || !chip->card))
 		return -EINVAL;
 
@@ -1273,17 +1439,26 @@ snd_azf3328_mixer_new(struct snd_azf3328 *chip)
 	sw = snd_azf3328_mixer_controls;
 	for (idx = 0; idx < ARRAY_SIZE(snd_azf3328_mixer_controls);
 			++idx, ++sw) {
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(chip->card, snd_ctl_new1(sw, chip))) < 0)
+=======
+		err = snd_ctl_add(chip->card, snd_ctl_new1(sw, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	snd_component_add(card, "AZF3328 mixer");
 	strcpy(card->mixername, "AZF3328 mixer");
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif /* AZF_USE_AC97_LAYER */
 
+<<<<<<< HEAD
 static int
 snd_azf3328_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *hw_params)
@@ -1304,6 +1479,8 @@ snd_azf3328_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 snd_azf3328_codec_setfmt(struct snd_azf3328_codec_data *codec,
 			       enum azf_freq_t bitrate,
@@ -1315,7 +1492,10 @@ snd_azf3328_codec_setfmt(struct snd_azf3328_codec_data *codec,
 	u16 val = 0xff00;
 	u8 freq = 0;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (bitrate) {
 	case AZF_FREQ_4000:  freq = SOUNDFORMAT_FREQ_SUSPECTED_4000; break;
 	case AZF_FREQ_4800:  freq = SOUNDFORMAT_FREQ_SUSPECTED_4800; break;
@@ -1332,7 +1512,11 @@ snd_azf3328_codec_setfmt(struct snd_azf3328_codec_data *codec,
 	case AZF_FREQ_32000: freq = SOUNDFORMAT_FREQ_32000; break;
 	default:
 		snd_printk(KERN_WARNING "unknown bitrate %d, assuming 44.1kHz!\n", bitrate);
+<<<<<<< HEAD
 		/* fall-through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AZF_FREQ_44100: freq = SOUNDFORMAT_FREQ_44100; break;
 	case AZF_FREQ_48000: freq = SOUNDFORMAT_FREQ_48000; break;
 	case AZF_FREQ_66200: freq = SOUNDFORMAT_FREQ_SUSPECTED_66200; break;
@@ -1379,7 +1563,10 @@ snd_azf3328_codec_setfmt(struct snd_azf3328_codec_data *codec,
 		);
 
 	spin_unlock_irqrestore(codec->lock, flags);
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -1404,15 +1591,25 @@ snd_azf3328_ctrl_reg_6AH_update(struct snd_azf3328 *chip,
 		chip->shadow_reg_ctrl_6AH |= bitmask;
 	else
 		chip->shadow_reg_ctrl_6AH &= ~bitmask;
+<<<<<<< HEAD
 	snd_azf3328_dbgcodec("6AH_update mask 0x%04x do_mask %d: val 0x%04x\n",
 			bitmask, do_mask, chip->shadow_reg_ctrl_6AH);
+=======
+	dev_dbg(chip->card->dev,
+		"6AH_update mask 0x%04x do_mask %d: val 0x%04x\n",
+		bitmask, do_mask, chip->shadow_reg_ctrl_6AH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_azf3328_ctrl_outw(chip, IDX_IO_6AH, chip->shadow_reg_ctrl_6AH);
 }
 
 static inline void
 snd_azf3328_ctrl_enable_codecs(struct snd_azf3328 *chip, bool enable)
 {
+<<<<<<< HEAD
 	snd_azf3328_dbgcodec("codec_enable %d\n", enable);
+=======
+	dev_dbg(chip->card->dev, "codec_enable %d\n", enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* no idea what exactly is being done here, but I strongly assume it's
 	 * PM related */
 	snd_azf3328_ctrl_reg_6AH_update(
@@ -1429,7 +1626,11 @@ snd_azf3328_ctrl_codec_activity(struct snd_azf3328 *chip,
 	struct snd_azf3328_codec_data *codec = &chip->codecs[codec_type];
 	bool need_change = (codec->running != enable);
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcodec(
+=======
+	dev_dbg(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"codec_activity: %s codec, enable %d, need_change %d\n",
 				codec->name, enable, need_change
 	);
@@ -1457,8 +1658,13 @@ snd_azf3328_ctrl_codec_activity(struct snd_azf3328 *chip,
 					.running)
 			     &&  (!chip->codecs[peer_codecs[codec_type].other2]
 					.running));
+<<<<<<< HEAD
 		 }
 		 if (call_function)
+=======
+		}
+		if (call_function)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_azf3328_ctrl_enable_codecs(chip, enable);
 
 		/* ...and adjust clock, too
@@ -1470,6 +1676,7 @@ snd_azf3328_ctrl_codec_activity(struct snd_azf3328 *chip,
 }
 
 static void
+<<<<<<< HEAD
 snd_azf3328_codec_setdmaa(struct snd_azf3328_codec_data *codec,
 				unsigned long addr,
 				unsigned int period_bytes,
@@ -1477,6 +1684,15 @@ snd_azf3328_codec_setdmaa(struct snd_azf3328_codec_data *codec,
 )
 {
 	snd_azf3328_dbgcallenter();
+=======
+snd_azf3328_codec_setdmaa(struct snd_azf3328 *chip,
+			  struct snd_azf3328_codec_data *codec,
+			  unsigned long addr,
+			  unsigned int period_bytes,
+			  unsigned int buffer_bytes
+)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ONCE(period_bytes & 1, "odd period length!?\n");
 	WARN_ONCE(buffer_bytes != 2 * period_bytes,
 		 "missed our input expectations! %u vs. %u\n",
@@ -1492,14 +1708,22 @@ snd_azf3328_codec_setdmaa(struct snd_azf3328_codec_data *codec,
 			u32 dma_start_1;
 			u32 dma_start_2;
 			u32 dma_lengths;
+<<<<<<< HEAD
 		} __attribute__((packed)) setup_io;
+=======
+		} __packed setup_io;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		area_length = buffer_bytes/2;
 
 		setup_io.dma_start_1 = addr;
 		setup_io.dma_start_2 = addr+area_length;
 
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec(
+=======
+		dev_dbg(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"setdma: buffers %08x[%u] / %08x[%u], %u, %u\n",
 				setup_io.dma_start_1, area_length,
 				setup_io.dma_start_2, area_length,
@@ -1522,7 +1746,10 @@ snd_azf3328_codec_setdmaa(struct snd_azf3328_codec_data *codec,
 		);
 		spin_unlock_irqrestore(codec->lock, flags);
 	}
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1535,8 +1762,11 @@ snd_azf3328_pcm_prepare(struct snd_pcm_substream *substream)
 	unsigned int count = snd_pcm_lib_period_bytes(substream);
 #endif
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	codec->dma_base = runtime->dma_addr;
 
 #if 0
@@ -1544,10 +1774,16 @@ snd_azf3328_pcm_prepare(struct snd_pcm_substream *substream)
 		runtime->rate,
 		snd_pcm_format_width(runtime->format),
 		runtime->channels);
+<<<<<<< HEAD
 	snd_azf3328_codec_setdmaa(codec,
 					runtime->dma_addr, count, size);
 #endif
 	snd_azf3328_dbgcallleave();
+=======
+	snd_azf3328_codec_setdmaa(chip, codec,
+					runtime->dma_addr, count, size);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1559,6 +1795,7 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	struct snd_azf3328_codec_data *codec = runtime->private_data;
 	int result = 0;
 	u16 flags1;
+<<<<<<< HEAD
 	bool previously_muted = 0;
 	bool is_main_mixer_playback_codec = (AZF_CODEC_PLAYBACK == codec->type);
 
@@ -1567,6 +1804,14 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		snd_azf3328_dbgcodec("START %s\n", codec->name);
+=======
+	bool previously_muted = false;
+	bool is_main_mixer_playback_codec = (AZF_CODEC_PLAYBACK == codec->type);
+
+	switch (cmd) {
+	case SNDRV_PCM_TRIGGER_START:
+		dev_dbg(chip->card->dev, "START PCM %s\n", codec->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (is_main_mixer_playback_codec) {
 			/* mute WaveOut (avoid clicking during setup) */
@@ -1593,7 +1838,11 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_IRQTYPE, 0xffff);
 		spin_unlock(codec->lock);
 
+<<<<<<< HEAD
 		snd_azf3328_codec_setdmaa(codec, runtime->dma_addr,
+=======
+		snd_azf3328_codec_setdmaa(chip, codec, runtime->dma_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_pcm_lib_period_bytes(substream),
 			snd_pcm_lib_buffer_bytes(substream)
 		);
@@ -1633,10 +1882,17 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 				);
 		}
 
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec("STARTED %s\n", codec->name);
 		break;
 	case SNDRV_PCM_TRIGGER_RESUME:
 		snd_azf3328_dbgcodec("RESUME %s\n", codec->name);
+=======
+		dev_dbg(chip->card->dev, "PCM STARTED %s\n", codec->name);
+		break;
+	case SNDRV_PCM_TRIGGER_RESUME:
+		dev_dbg(chip->card->dev, "PCM RESUME %s\n", codec->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* resume codec if we were active */
 		spin_lock(codec->lock);
 		if (codec->running)
@@ -1648,7 +1904,11 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		spin_unlock(codec->lock);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec("STOP %s\n", codec->name);
+=======
+		dev_dbg(chip->card->dev, "PCM STOP %s\n", codec->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (is_main_mixer_playback_codec) {
 			/* mute WaveOut (avoid clicking during setup) */
@@ -1684,10 +1944,17 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 				);
 		}
 
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec("STOPPED %s\n", codec->name);
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 		snd_azf3328_dbgcodec("SUSPEND %s\n", codec->name);
+=======
+		dev_dbg(chip->card->dev, "PCM STOPPED %s\n", codec->name);
+		break;
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+		dev_dbg(chip->card->dev, "PCM SUSPEND %s\n", codec->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* make sure codec is stopped */
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_DMA_FLAGS,
 			snd_azf3328_codec_inw(
@@ -1696,6 +1963,7 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		);
 		break;
         case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "FIXME: SNDRV_PCM_TRIGGER_PAUSE_PUSH NIY!\n");
                 break;
         case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
@@ -1707,6 +1975,18 @@ snd_azf3328_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	}
 
 	snd_azf3328_dbgcallleave();
+=======
+		WARN(1, "FIXME: SNDRV_PCM_TRIGGER_PAUSE_PUSH NIY!\n");
+                break;
+        case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		WARN(1, "FIXME: SNDRV_PCM_TRIGGER_PAUSE_RELEASE NIY!\n");
+                break;
+        default:
+		WARN(1, "FIXME: unknown trigger mode!\n");
+                return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -1728,8 +2008,13 @@ snd_azf3328_pcm_pointer(struct snd_pcm_substream *substream
 	result -= codec->dma_base;
 #endif
 	frmres = bytes_to_frames( substream->runtime, result);
+<<<<<<< HEAD
 	snd_azf3328_dbgcodec("%08li %s @ 0x%8lx, frames %8ld\n",
 				jiffies, codec->name, result, frmres);
+=======
+	dev_dbg(substream->pcm->card->dev, "%08li %s @ 0x%8lx, frames %8ld\n",
+		jiffies, codec->name, result, frmres);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return frmres;
 }
 
@@ -1792,7 +2077,11 @@ snd_azf3328_gameport_interrupt(struct snd_azf3328 *chip)
 	 * skeleton handler only
 	 * (we do not want axis reading in interrupt handler - too much load!)
 	 */
+<<<<<<< HEAD
 	snd_azf3328_dbggame("gameport irq\n");
+=======
+	dev_dbg(chip->card->dev, "gameport irq\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	 /* this should ACK the gameport IRQ properly, hopefully. */
 	snd_azf3328_game_inw(chip, IDX_GAME_AXIS_VALUE);
@@ -1804,7 +2093,11 @@ snd_azf3328_gameport_open(struct gameport *gameport, int mode)
 	struct snd_azf3328 *chip = gameport_get_port_data(gameport);
 	int res;
 
+<<<<<<< HEAD
 	snd_azf3328_dbggame("gameport_open, mode %d\n", mode);
+=======
+	dev_dbg(chip->card->dev, "gameport_open, mode %d\n", mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mode) {
 	case GAMEPORT_MODE_COOKED:
 	case GAMEPORT_MODE_RAW:
@@ -1827,7 +2120,11 @@ snd_azf3328_gameport_close(struct gameport *gameport)
 {
 	struct snd_azf3328 *chip = gameport_get_port_data(gameport);
 
+<<<<<<< HEAD
 	snd_azf3328_dbggame("gameport_close\n");
+=======
+	dev_dbg(chip->card->dev, "gameport_close\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_azf3328_gameport_set_counter_frequency(chip,
 				GAME_HWCFG_ADC_COUNTER_FREQ_1_200);
 	snd_azf3328_gameport_axis_circuit_enable(chip, 0);
@@ -1892,21 +2189,34 @@ snd_azf3328_gameport_cooked_read(struct gameport *gameport,
 			axes[i] = -1;
 	}
 
+<<<<<<< HEAD
 	snd_azf3328_dbggame("cooked_read: axes %d %d %d %d buttons %d\n",
 		axes[0], axes[1], axes[2], axes[3], *buttons
 	);
+=======
+	dev_dbg(chip->card->dev, "cooked_read: axes %d %d %d %d buttons %d\n",
+		axes[0], axes[1], axes[2], axes[3], *buttons);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_azf3328_gameport(struct snd_azf3328 *chip, int dev)
 {
 	struct gameport *gp;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "azt3328: cannot alloc memory for gameport\n");
+=======
+		dev_err(chip->card->dev, "cannot alloc memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1950,13 +2260,18 @@ snd_azf3328_gameport_free(struct snd_azf3328 *chip) { }
 static inline void
 snd_azf3328_gameport_interrupt(struct snd_azf3328 *chip)
 {
+<<<<<<< HEAD
 	printk(KERN_WARNING "huh, game port IRQ occurred!?\n");
+=======
+	dev_warn(chip->card->dev, "huh, game port IRQ occurred!?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* SUPPORT_GAMEPORT */
 
 /******************************************************************/
 
 static inline void
+<<<<<<< HEAD
 snd_azf3328_irq_log_unknown_type(u8 which)
 {
 	snd_azf3328_dbgcodec(
@@ -1967,6 +2282,18 @@ snd_azf3328_irq_log_unknown_type(u8 which)
 
 static inline void
 snd_azf3328_pcm_interrupt(const struct snd_azf3328_codec_data *first_codec,
+=======
+snd_azf3328_irq_log_unknown_type(struct snd_azf3328 *chip, u8 which)
+{
+	dev_dbg(chip->card->dev,
+		"unknown IRQ type (%x) occurred, please report!\n",
+		which);
+}
+
+static inline void
+snd_azf3328_pcm_interrupt(struct snd_azf3328 *chip,
+			  const struct snd_azf3328_codec_data *first_codec,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  u8 status
 )
 {
@@ -1990,6 +2317,7 @@ snd_azf3328_pcm_interrupt(const struct snd_azf3328_codec_data *first_codec,
 
 		if (codec->substream) {
 			snd_pcm_period_elapsed(codec->substream);
+<<<<<<< HEAD
 			snd_azf3328_dbgcodec("%s period done (#%x), @ %x\n",
 				codec->name,
 				which,
@@ -2001,6 +2329,17 @@ snd_azf3328_pcm_interrupt(const struct snd_azf3328_codec_data *first_codec,
 			printk(KERN_WARNING "azt3328: irq handler problem!\n");
 		if (which & IRQ_SOMETHING)
 			snd_azf3328_irq_log_unknown_type(which);
+=======
+			dev_dbg(chip->card->dev, "%s period done (#%x), @ %x\n",
+				codec->name,
+				which,
+				snd_azf3328_codec_inl(
+					codec, IDX_IO_CODEC_DMA_CURRPOS));
+		} else
+			dev_warn(chip->card->dev, "irq handler problem!\n");
+		if (which & IRQ_SOMETHING)
+			snd_azf3328_irq_log_unknown_type(chip, which);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2009,9 +2348,13 @@ snd_azf3328_interrupt(int irq, void *dev_id)
 {
 	struct snd_azf3328 *chip = dev_id;
 	u8 status;
+<<<<<<< HEAD
 #if DEBUG_CODEC
 	static unsigned long irq_count;
 #endif
+=======
+	static unsigned long irq_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = snd_azf3328_ctrl_inb(chip, IDX_IO_IRQSTATUS);
 
@@ -2022,6 +2365,7 @@ snd_azf3328_interrupt(int irq, void *dev_id)
 	))
 		return IRQ_NONE; /* must be interrupt for another device */
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcodec(
 		"irq_count %ld! IDX_IO_IRQSTATUS %04x\n",
 			irq_count++ /* debug-only */,
@@ -2030,6 +2374,15 @@ snd_azf3328_interrupt(int irq, void *dev_id)
 
 	if (status & IRQ_TIMER) {
 		/* snd_azf3328_dbgcodec("timer %ld\n",
+=======
+	dev_dbg(chip->card->dev,
+		"irq_count %ld! IDX_IO_IRQSTATUS %04x\n",
+			irq_count++ /* debug-only */,
+			status);
+
+	if (status & IRQ_TIMER) {
+		/* dev_dbg(chip->card->dev, "timer %ld\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_azf3328_codec_inl(chip, IDX_IO_TIMER_VALUE)
 				& TIMER_VALUE_MASK
 		); */
@@ -2039,11 +2392,19 @@ snd_azf3328_interrupt(int irq, void *dev_id)
                 spin_lock(&chip->reg_lock);
 		snd_azf3328_ctrl_outb(chip, IDX_IO_TIMER_VALUE + 3, 0x07);
 		spin_unlock(&chip->reg_lock);
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec("azt3328: timer IRQ\n");
 	}
 
 	if (status & (IRQ_PLAYBACK|IRQ_RECORDING|IRQ_I2S_OUT))
 		snd_azf3328_pcm_interrupt(chip->codecs, status);
+=======
+		dev_dbg(chip->card->dev, "timer IRQ\n");
+	}
+
+	if (status & (IRQ_PLAYBACK|IRQ_RECORDING|IRQ_I2S_OUT))
+		snd_azf3328_pcm_interrupt(chip, chip->codecs, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status & IRQ_GAMEPORT)
 		snd_azf3328_gameport_interrupt(chip);
@@ -2055,7 +2416,11 @@ snd_azf3328_interrupt(int irq, void *dev_id)
 
 		/* hmm, do we have to ack the IRQ here somehow?
 		 * If so, then I don't know how yet... */
+<<<<<<< HEAD
 		snd_azf3328_dbgcodec("azt3328: MPU401 IRQ\n");
+=======
+		dev_dbg(chip->card->dev, "MPU401 IRQ\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return IRQ_HANDLED;
 }
@@ -2099,7 +2464,11 @@ static const struct snd_pcm_hardware snd_azf3328_hardware =
 };
 
 
+<<<<<<< HEAD
 static unsigned int snd_azf3328_fixed_rates[] = {
+=======
+static const unsigned int snd_azf3328_fixed_rates[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AZF_FREQ_4000,
 	AZF_FREQ_4800,
 	AZF_FREQ_5512,
@@ -2116,7 +2485,11 @@ static unsigned int snd_azf3328_fixed_rates[] = {
 	AZF_FREQ_66200
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list snd_azf3328_hw_constraints_rates = {
+=======
+static const struct snd_pcm_hw_constraint_list snd_azf3328_hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(snd_azf3328_fixed_rates),
 	.list = snd_azf3328_fixed_rates,
 	.mask = 0,
@@ -2133,7 +2506,10 @@ snd_azf3328_pcm_open(struct snd_pcm_substream *substream,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_azf3328_codec_data *codec = &chip->codecs[codec_type];
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	codec->substream = substream;
 
 	/* same parameters for all our codecs - at least we think so... */
@@ -2142,7 +2518,10 @@ snd_azf3328_pcm_open(struct snd_pcm_substream *substream,
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
 				   &snd_azf3328_hw_constraints_rates);
 	runtime->private_data = codec;
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2171,57 +2550,90 @@ snd_azf3328_pcm_close(struct snd_pcm_substream *substream
 	struct snd_azf3328_codec_data *codec =
 		substream->runtime->private_data;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 	codec->substream = NULL;
 	snd_azf3328_dbgcallleave();
+=======
+	codec->substream = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /******************************************************************/
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_playback_ops = {
 	.open =		snd_azf3328_pcm_playback_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_azf3328_hw_params,
 	.hw_free =	snd_azf3328_hw_free,
+=======
+static const struct snd_pcm_ops snd_azf3328_playback_ops = {
+	.open =		snd_azf3328_pcm_playback_open,
+	.close =	snd_azf3328_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_azf3328_pcm_prepare,
 	.trigger =	snd_azf3328_pcm_trigger,
 	.pointer =	snd_azf3328_pcm_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_capture_ops = {
 	.open =		snd_azf3328_pcm_capture_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_azf3328_hw_params,
 	.hw_free =	snd_azf3328_hw_free,
+=======
+static const struct snd_pcm_ops snd_azf3328_capture_ops = {
+	.open =		snd_azf3328_pcm_capture_open,
+	.close =	snd_azf3328_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_azf3328_pcm_prepare,
 	.trigger =	snd_azf3328_pcm_trigger,
 	.pointer =	snd_azf3328_pcm_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_azf3328_i2s_out_ops = {
 	.open =		snd_azf3328_pcm_i2s_out_open,
 	.close =	snd_azf3328_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_azf3328_hw_params,
 	.hw_free =	snd_azf3328_hw_free,
+=======
+static const struct snd_pcm_ops snd_azf3328_i2s_out_ops = {
+	.open =		snd_azf3328_pcm_i2s_out_open,
+	.close =	snd_azf3328_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_azf3328_pcm_prepare,
 	.trigger =	snd_azf3328_pcm_trigger,
 	.pointer =	snd_azf3328_pcm_pointer
 };
 
+<<<<<<< HEAD
 static int __devinit
 snd_azf3328_pcm(struct snd_azf3328 *chip)
 {
 enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS }; /* pcm devices */
+=======
+static int
+snd_azf3328_pcm(struct snd_azf3328 *chip)
+{
+	/* pcm devices */
+	enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_pcm_new(chip->card, "AZF3328 DSP", AZF_PCMDEV_STD,
 								1, 1, &pcm);
 	if (err < 0)
@@ -2238,9 +2650,14 @@ enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS }; /* pcm devices */
 	chip->pcm[AZF_CODEC_PLAYBACK] = pcm;
 	chip->pcm[AZF_CODEC_CAPTURE] = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						snd_dma_pci_data(chip->pci),
 							64*1024, 64*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+				       64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_pcm_new(chip->card, "AZF3328 I2S OUT", AZF_PCMDEV_I2S_OUT,
 								1, 0, &pcm);
@@ -2254,11 +2671,17 @@ enum { AZF_PCMDEV_STD, AZF_PCMDEV_I2S_OUT, NUM_AZF_PCMDEVS }; /* pcm devices */
 	strcpy(pcm->name, chip->card->shortname);
 	chip->pcm[AZF_CODEC_I2S_OUT] = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						snd_dma_pci_data(chip->pci),
 							64*1024, 64*1024);
 
 	snd_azf3328_dbgcallleave();
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+				       64*1024, 64*1024);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2281,7 +2704,10 @@ snd_azf3328_timer_start(struct snd_timer *timer)
 	unsigned long flags;
 	unsigned int delay;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip = snd_timer_chip(timer);
 	delay = ((timer->sticks * seqtimer_scaling) - 1) & TIMER_VALUE_MASK;
 	if (delay < 49) {
@@ -2289,15 +2715,25 @@ snd_azf3328_timer_start(struct snd_timer *timer)
 		 * this timing tweak
 		 * (we need to do it to avoid a lockup, though) */
 
+<<<<<<< HEAD
 		snd_azf3328_dbgtimer("delay was too low (%d)!\n", delay);
 		delay = 49; /* minimum time is 49 ticks */
 	}
 	snd_azf3328_dbgtimer("setting timer countdown value %d\n", delay);
+=======
+		dev_dbg(chip->card->dev, "delay was too low (%d)!\n", delay);
+		delay = 49; /* minimum time is 49 ticks */
+	}
+	dev_dbg(chip->card->dev, "setting timer countdown value %d\n", delay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	delay |= TIMER_COUNTDOWN_ENABLE | TIMER_IRQ_ENABLE;
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	snd_azf3328_ctrl_outl(chip, IDX_IO_TIMER_VALUE, delay);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2307,7 +2743,10 @@ snd_azf3328_timer_stop(struct snd_timer *timer)
 	struct snd_azf3328 *chip;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip = snd_timer_chip(timer);
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	/* disable timer countdown and interrupt */
@@ -2319,7 +2758,10 @@ snd_azf3328_timer_stop(struct snd_timer *timer)
 	   the hardware/ALSA interrupt activity. */
 	snd_azf3328_ctrl_outb(chip, IDX_IO_TIMER_VALUE + 3, 0x04);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2328,10 +2770,15 @@ static int
 snd_azf3328_timer_precise_resolution(struct snd_timer *timer,
 					       unsigned long *num, unsigned long *den)
 {
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 	*num = 1;
 	*den = 1024000 / seqtimer_scaling;
 	snd_azf3328_dbgcallleave();
+=======
+	*num = 1;
+	*den = 1024000 / seqtimer_scaling;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2344,14 +2791,21 @@ static struct snd_timer_hardware snd_azf3328_timer_hw = {
 	.precise_resolution = snd_azf3328_timer_precise_resolution,
 };
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_azf3328_timer(struct snd_azf3328 *chip, int device)
 {
 	struct snd_timer *timer = NULL;
 	struct snd_timer_id tid;
 	int err;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tid.dev_class = SNDRV_TIMER_CLASS_CARD;
 	tid.dev_sclass = SNDRV_TIMER_SCLASS_NONE;
 	tid.card = chip->card->number;
@@ -2376,22 +2830,33 @@ snd_azf3328_timer(struct snd_azf3328 *chip, int device)
 	err = 0;
 
 out:
+<<<<<<< HEAD
 	snd_azf3328_dbgcallleave();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /******************************************************************/
 
+<<<<<<< HEAD
 static int
 snd_azf3328_free(struct snd_azf3328 *chip)
 {
 	if (chip->irq < 0)
 		goto __end_hw;
+=======
+static void
+snd_azf3328_free(struct snd_card *card)
+{
+	struct snd_azf3328 *chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_azf3328_mixer_reset(chip);
 
 	snd_azf3328_timer_stop(chip->timer);
 	snd_azf3328_gameport_free(chip);
+<<<<<<< HEAD
 
 	if (chip->irq >= 0)
 		synchronize_irq(chip->irq);
@@ -2410,6 +2875,8 @@ snd_azf3328_dev_free(struct snd_device *device)
 {
 	struct snd_azf3328 *chip = device->device_data;
 	return snd_azf3328_free(chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if 0
@@ -2438,6 +2905,7 @@ snd_azf3328_test_bit(unsigned unsigned reg, int bit)
 static inline void
 snd_azf3328_debug_show_ports(const struct snd_azf3328 *chip)
 {
+<<<<<<< HEAD
 #if DEBUG_MISC
 	u16 tmp;
 
@@ -2449,11 +2917,24 @@ snd_azf3328_debug_show_ports(const struct snd_azf3328 *chip)
 	);
 
 	snd_azf3328_dbgmisc("game %02x %02x %02x %02x %02x %02x\n",
+=======
+	u16 tmp;
+
+	dev_dbg(chip->card->dev,
+		"ctrl_io 0x%lx, game_io 0x%lx, mpu_io 0x%lx, "
+		"opl3_io 0x%lx, mixer_io 0x%lx, irq %d\n",
+		chip->ctrl_io, chip->game_io, chip->mpu_io,
+		chip->opl3_io, chip->mixer_io, chip->irq);
+
+	dev_dbg(chip->card->dev,
+		"game %02x %02x %02x %02x %02x %02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_azf3328_game_inb(chip, 0),
 		snd_azf3328_game_inb(chip, 1),
 		snd_azf3328_game_inb(chip, 2),
 		snd_azf3328_game_inb(chip, 3),
 		snd_azf3328_game_inb(chip, 4),
+<<<<<<< HEAD
 		snd_azf3328_game_inb(chip, 5)
 	);
 
@@ -2466,6 +2947,21 @@ snd_azf3328_debug_show_ports(const struct snd_azf3328 *chip)
 
 	for (tmp = 0; tmp <= 0x01; tmp += 1)
 		snd_azf3328_dbgmisc(
+=======
+		snd_azf3328_game_inb(chip, 5));
+
+	for (tmp = 0; tmp < 0x07; tmp += 1)
+		dev_dbg(chip->card->dev,
+			"mpu_io 0x%04x\n", inb(chip->mpu_io + tmp));
+
+	for (tmp = 0; tmp <= 0x07; tmp += 1)
+		dev_dbg(chip->card->dev,
+			"0x%02x: game200 0x%04x, game208 0x%04x\n",
+			tmp, inb(0x200 + tmp), inb(0x208 + tmp));
+
+	for (tmp = 0; tmp <= 0x01; tmp += 1)
+		dev_dbg(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"0x%02x: mpu300 0x%04x, mpu310 0x%04x, mpu320 0x%04x, "
 			"mpu330 0x%04x opl388 0x%04x opl38c 0x%04x\n",
 				tmp,
@@ -2474,6 +2970,7 @@ snd_azf3328_debug_show_ports(const struct snd_azf3328 *chip)
 				inb(0x320 + tmp),
 				inb(0x330 + tmp),
 				inb(0x388 + tmp),
+<<<<<<< HEAD
 				inb(0x38c + tmp)
 		);
 
@@ -2500,10 +2997,33 @@ snd_azf3328_create(struct snd_card *card,
 	static struct snd_device_ops ops = {
 		.dev_free =     snd_azf3328_dev_free,
 	};
+=======
+				inb(0x38c + tmp));
+
+	for (tmp = 0; tmp < AZF_IO_SIZE_CTRL; tmp += 2)
+		dev_dbg(chip->card->dev,
+			"ctrl 0x%02x: 0x%04x\n",
+			tmp, snd_azf3328_ctrl_inw(chip, tmp));
+
+	for (tmp = 0; tmp < AZF_IO_SIZE_MIXER; tmp += 2)
+		dev_dbg(chip->card->dev,
+			"mixer 0x%02x: 0x%04x\n",
+			tmp, snd_azf3328_mixer_inw(chip, tmp));
+}
+
+static int
+snd_azf3328_create(struct snd_card *card,
+		   struct pci_dev *pci,
+		   unsigned long device_type)
+{
+	struct snd_azf3328 *chip = card->private_data;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 dma_init;
 	enum snd_azf3328_codec_type codec_type;
 	struct snd_azf3328_codec_data *codec_setup;
 
+<<<<<<< HEAD
 	*rchip = NULL;
 
 	err = pci_enable_device(pci);
@@ -2515,12 +3035,19 @@ snd_azf3328_create(struct snd_card *card,
 		err = -ENOMEM;
 		goto out_err;
 	}
+=======
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
 
 	/* check if we can restrict PCI DMA transfers to 24 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(24)) < 0 ||
 	    pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(24)) < 0) {
 		snd_printk(KERN_ERR "architecture does not support "
@@ -2528,11 +3055,22 @@ snd_azf3328_create(struct snd_card *card,
 		);
 		err = -ENXIO;
 		goto out_err;
+=======
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) {
+		dev_err(card->dev,
+			"architecture does not support 24bit PCI busmaster DMA\n"
+		);
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = pci_request_regions(pci, "Aztech AZF3328");
 	if (err < 0)
+<<<<<<< HEAD
 		goto out_err;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->ctrl_io  = pci_resource_start(pci, 0);
 	chip->game_io  = pci_resource_start(pci, 1);
@@ -2558,6 +3096,7 @@ snd_azf3328_create(struct snd_card *card,
 	codec_setup->type = AZF_CODEC_I2S_OUT;
 	codec_setup->name = "I2S_OUT";
 
+<<<<<<< HEAD
 	if (request_irq(pci->irq, snd_azf3328_interrupt,
 			IRQF_SHARED, KBUILD_MODNAME, chip)) {
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
@@ -2578,6 +3117,24 @@ snd_azf3328_create(struct snd_card *card,
 	err = snd_azf3328_mixer_new(chip);
 	if (err < 0)
 		goto out_err;
+=======
+	if (devm_request_irq(&pci->dev, pci->irq, snd_azf3328_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_azf3328_free;
+	pci_set_master(pci);
+
+	snd_azf3328_debug_show_ports(chip);
+
+	/* create mixer interface & switches */
+	err = snd_azf3328_mixer_new(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* standard codec init stuff */
 		/* default DMA init value */
@@ -2590,7 +3147,11 @@ snd_azf3328_create(struct snd_card *card,
 
 		/* shutdown codecs to reduce power / noise */
 			/* have ...ctrl_codec_activity() act properly */
+<<<<<<< HEAD
 		codec->running = 1;
+=======
+		codec->running = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_azf3328_ctrl_codec_activity(chip, codec_type, 0);
 
 		spin_lock_irq(codec->lock);
@@ -2599,6 +3160,7 @@ snd_azf3328_create(struct snd_card *card,
 		spin_unlock_irq(codec->lock);
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	*rchip = chip;
@@ -2617,6 +3179,13 @@ out:
 
 static int __devinit
 snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+=======
+	return 0;
+}
+
+static int
+__snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -2624,6 +3193,7 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	struct snd_opl3 *opl3;
 	int err;
 
+<<<<<<< HEAD
 	snd_azf3328_dbgcallenter();
 	if (dev >= SNDRV_CARDS) {
 		err = -ENODEV;
@@ -2638,15 +3208,35 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		goto out;
+=======
+	if (dev >= SNDRV_CARDS)
+		return -ENODEV;
+	if (!enable[dev]) {
+		dev++;
+		return -ENOENT;
+	}
+
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "AZF3328");
 	strcpy(card->shortname, "Aztech AZF3328 (PCI168)");
 
+<<<<<<< HEAD
 	err = snd_azf3328_create(card, pci, pci_id->driver_data, &chip);
 	if (err < 0)
 		goto out_err;
 
 	card->private_data = chip;
+=======
+	err = snd_azf3328_create(card, pci, pci_id->driver_data);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* chose to use MPU401_HW_AZT2320 ID instead of MPU401_HW_MPU401,
 	   since our hardware ought to be similar, thus use same ID. */
@@ -2657,14 +3247,22 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		-1, &chip->rmidi
 	);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "azf3328: no MPU-401 device at 0x%lx?\n",
 				chip->mpu_io
 		);
 		goto out_err;
+=======
+		dev_err(card->dev, "no MPU-401 device at 0x%lx?\n",
+				chip->mpu_io
+		);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = snd_azf3328_timer(chip, 0);
 	if (err < 0)
+<<<<<<< HEAD
 		goto out_err;
 
 	err = snd_azf3328_pcm(chip);
@@ -2674,16 +3272,34 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	if (snd_opl3_create(card, chip->opl3_io, chip->opl3_io+2,
 			    OPL3_HW_AUTO, 1, &opl3) < 0) {
 		snd_printk(KERN_ERR "azf3328: no OPL3 device at 0x%lx-0x%lx?\n",
+=======
+		return err;
+
+	err = snd_azf3328_pcm(chip);
+	if (err < 0)
+		return err;
+
+	if (snd_opl3_create(card, chip->opl3_io, chip->opl3_io+2,
+			    OPL3_HW_AUTO, 1, &opl3) < 0) {
+		dev_err(card->dev, "no OPL3 device at 0x%lx-0x%lx?\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   chip->opl3_io, chip->opl3_io+2
 		);
 	} else {
 		/* need to use IDs 1, 2 since ID 0 is snd_azf3328_timer above */
 		err = snd_opl3_timer_new(opl3, 1, 2);
 		if (err < 0)
+<<<<<<< HEAD
 			goto out_err;
 		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
 		if (err < 0)
 			goto out_err;
+=======
+			return err;
+		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		opl3->private_data = chip;
 	}
 
@@ -2692,6 +3308,7 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 
 	err = snd_card_register(card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto out_err;
 
 #ifdef MODULE
@@ -2701,12 +3318,27 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 "azt3328: Feel free to contact andi AT lisas.de for bug reports etc.!\n"
 "azt3328: User-scalable sequencer timer set to %dHz (1024000Hz / %d).\n",
 	1024000 / seqtimer_scaling, seqtimer_scaling);
+=======
+		return err;
+
+#ifdef MODULE
+	dev_info(card->dev,
+		 "Sound driver for Aztech AZF3328-based soundcards such as PCI168.\n");
+	dev_info(card->dev,
+		 "Hardware was completely undocumented, unfortunately.\n");
+	dev_info(card->dev,
+		 "Feel free to contact andi AT lisas.de for bug reports etc.!\n");
+	dev_info(card->dev,
+		 "User-scalable sequencer timer set to %dHz (1024000Hz / %d).\n",
+		 1024000 / seqtimer_scaling, seqtimer_scaling);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	snd_azf3328_gameport(chip, dev);
 
 	pci_set_drvdata(pci, card);
 	dev++;
+<<<<<<< HEAD
 
 	err = 0;
 	goto out;
@@ -2732,12 +3364,30 @@ snd_azf3328_remove(struct pci_dev *pci)
 #ifdef CONFIG_PM
 static inline void
 snd_azf3328_suspend_regs(unsigned long io_addr, unsigned count, u32 *saved_regs)
+=======
+	return 0;
+}
+
+static int
+snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_azf3328_probe(pci, pci_id));
+}
+
+static inline void
+snd_azf3328_suspend_regs(const struct snd_azf3328 *chip,
+			 unsigned long io_addr, unsigned count, u32 *saved_regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned reg;
 
 	for (reg = 0; reg < count; ++reg) {
 		*saved_regs = inl(io_addr);
+<<<<<<< HEAD
 		snd_azf3328_dbgpm("suspend: io 0x%04lx: 0x%08x\n",
+=======
+		dev_dbg(chip->card->dev, "suspend: io 0x%04lx: 0x%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			io_addr, *saved_regs);
 		++saved_regs;
 		io_addr += sizeof(*saved_regs);
@@ -2745,7 +3395,12 @@ snd_azf3328_suspend_regs(unsigned long io_addr, unsigned count, u32 *saved_regs)
 }
 
 static inline void
+<<<<<<< HEAD
 snd_azf3328_resume_regs(const u32 *saved_regs,
+=======
+snd_azf3328_resume_regs(const struct snd_azf3328 *chip,
+			const u32 *saved_regs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long io_addr,
 			unsigned count
 )
@@ -2754,7 +3409,12 @@ snd_azf3328_resume_regs(const u32 *saved_regs,
 
 	for (reg = 0; reg < count; ++reg) {
 		outl(*saved_regs, io_addr);
+<<<<<<< HEAD
 		snd_azf3328_dbgpm("resume: io 0x%04lx: 0x%08x --> 0x%08x\n",
+=======
+		dev_dbg(chip->card->dev,
+			"resume: io 0x%04lx: 0x%08x --> 0x%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			io_addr, *saved_regs, inl(io_addr));
 		++saved_regs;
 		io_addr += sizeof(*saved_regs);
@@ -2767,7 +3427,11 @@ snd_azf3328_suspend_ac97(struct snd_azf3328 *chip)
 #ifdef AZF_USE_AC97_LAYER
 	snd_ac97_suspend(chip->ac97);
 #else
+<<<<<<< HEAD
 	snd_azf3328_suspend_regs(chip->mixer_io,
+=======
+	snd_azf3328_suspend_regs(chip, chip->mixer_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ARRAY_SIZE(chip->saved_regs_mixer), chip->saved_regs_mixer);
 
 	/* make sure to disable master volume etc. to prevent looping sound */
@@ -2782,7 +3446,11 @@ snd_azf3328_resume_ac97(const struct snd_azf3328 *chip)
 #ifdef AZF_USE_AC97_LAYER
 	snd_ac97_resume(chip->ac97);
 #else
+<<<<<<< HEAD
 	snd_azf3328_resume_regs(chip->saved_regs_mixer, chip->mixer_io,
+=======
+	snd_azf3328_resume_regs(chip, chip->saved_regs_mixer, chip->mixer_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ARRAY_SIZE(chip->saved_regs_mixer));
 
 	/* unfortunately with 32bit transfers, IDX_MIXER_PLAY_MASTER (0x02)
@@ -2794,14 +3462,21 @@ snd_azf3328_resume_ac97(const struct snd_azf3328 *chip)
 }
 
 static int
+<<<<<<< HEAD
 snd_azf3328_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+snd_azf3328_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_azf3328 *chip = card->private_data;
 	u16 *saved_regs_ctrl_u16;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 
+<<<<<<< HEAD
 	/* same pcm object for playback/capture */
 	snd_pcm_suspend_all(chip->pcm[AZF_CODEC_PLAYBACK]);
 	snd_pcm_suspend_all(chip->pcm[AZF_CODEC_I2S_OUT]);
@@ -2809,12 +3484,18 @@ snd_azf3328_suspend(struct pci_dev *pci, pm_message_t state)
 	snd_azf3328_suspend_ac97(chip);
 
 	snd_azf3328_suspend_regs(chip->ctrl_io,
+=======
+	snd_azf3328_suspend_ac97(chip);
+
+	snd_azf3328_suspend_regs(chip, chip->ctrl_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ARRAY_SIZE(chip->saved_regs_ctrl), chip->saved_regs_ctrl);
 
 	/* manually store the one currently relevant write-only reg, too */
 	saved_regs_ctrl_u16 = (u16 *)chip->saved_regs_ctrl;
 	saved_regs_ctrl_u16[IDX_IO_6AH / 2] = chip->shadow_reg_ctrl_6AH;
 
+<<<<<<< HEAD
 	snd_azf3328_suspend_regs(chip->game_io,
 		ARRAY_SIZE(chip->saved_regs_game), chip->saved_regs_game);
 	snd_azf3328_suspend_regs(chip->mpu_io,
@@ -2825,10 +3506,19 @@ snd_azf3328_suspend(struct pci_dev *pci, pm_message_t state)
 	pci_disable_device(pci);
 	pci_save_state(pci);
 	pci_set_power_state(pci, pci_choose_state(pci, state));
+=======
+	snd_azf3328_suspend_regs(chip, chip->game_io,
+		ARRAY_SIZE(chip->saved_regs_game), chip->saved_regs_game);
+	snd_azf3328_suspend_regs(chip, chip->mpu_io,
+		ARRAY_SIZE(chip->saved_regs_mpu), chip->saved_regs_mpu);
+	snd_azf3328_suspend_regs(chip, chip->opl3_io,
+		ARRAY_SIZE(chip->saved_regs_opl3), chip->saved_regs_opl3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 snd_azf3328_resume(struct pci_dev *pci)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
@@ -2849,16 +3539,33 @@ snd_azf3328_resume(struct pci_dev *pci)
 	snd_azf3328_resume_regs(chip->saved_regs_mpu, chip->mpu_io,
 					ARRAY_SIZE(chip->saved_regs_mpu));
 	snd_azf3328_resume_regs(chip->saved_regs_opl3, chip->opl3_io,
+=======
+snd_azf3328_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	const struct snd_azf3328 *chip = card->private_data;
+
+	snd_azf3328_resume_regs(chip, chip->saved_regs_game, chip->game_io,
+					ARRAY_SIZE(chip->saved_regs_game));
+	snd_azf3328_resume_regs(chip, chip->saved_regs_mpu, chip->mpu_io,
+					ARRAY_SIZE(chip->saved_regs_mpu));
+	snd_azf3328_resume_regs(chip, chip->saved_regs_opl3, chip->opl3_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ARRAY_SIZE(chip->saved_regs_opl3));
 
 	snd_azf3328_resume_ac97(chip);
 
+<<<<<<< HEAD
 	snd_azf3328_resume_regs(chip->saved_regs_ctrl, chip->ctrl_io,
+=======
+	snd_azf3328_resume_regs(chip, chip->saved_regs_ctrl, chip->ctrl_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ARRAY_SIZE(chip->saved_regs_ctrl));
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 
@@ -2893,3 +3600,18 @@ alsa_card_azf3328_exit(void)
 
 module_init(alsa_card_azf3328_init)
 module_exit(alsa_card_azf3328_exit)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_azf3328_pm, snd_azf3328_suspend, snd_azf3328_resume);
+
+static struct pci_driver azf3328_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_azf3328_ids,
+	.probe = snd_azf3328_probe,
+	.driver = {
+		.pm = &snd_azf3328_pm,
+	},
+};
+
+module_pci_driver(azf3328_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

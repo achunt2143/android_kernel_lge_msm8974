@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  * OpenCores tiny SPI master driver
  *
  * http://opencores.org/project,tiny_spi
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * OpenCores tiny SPI host driver
+ *
+ * https://opencores.org/project,tiny_spi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2011 Thomas Chou <thomas@wytron.com.tw>
  *
@@ -9,6 +17,7 @@
  * Copyright (c) 2006 Ben Dooks
  * Copyright (c) 2006 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +25,10 @@
  */
 
 #include <linux/init.h>
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -24,7 +37,10 @@
 #include <linux/spi/spi_bitbang.h>
 #include <linux/spi/spi_oc_tiny.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of.h>
 
 #define DRV_NAME "spi_oc_tiny"
@@ -54,13 +70,20 @@ struct tiny_spi {
 	unsigned int txc, rxc;
 	const u8 *txp;
 	u8 *rxp;
+<<<<<<< HEAD
 	unsigned int gpio_cs_count;
 	int *gpio_cs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct tiny_spi *tiny_spi_to_hw(struct spi_device *sdev)
 {
+<<<<<<< HEAD
 	return spi_master_get_devdata(sdev->master);
+=======
+	return spi_controller_get_devdata(sdev->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int tiny_spi_baud(struct spi_device *spi, unsigned int hz)
@@ -70,6 +93,7 @@ static unsigned int tiny_spi_baud(struct spi_device *spi, unsigned int hz)
 	return min(DIV_ROUND_UP(hw->freq, hz * 2), (1U << hw->baudwidth)) - 1;
 }
 
+<<<<<<< HEAD
 static void tiny_spi_chipselect(struct spi_device *spi, int is_active)
 {
 	struct tiny_spi *hw = tiny_spi_to_hw(spi);
@@ -80,6 +104,8 @@ static void tiny_spi_chipselect(struct spi_device *spi, int is_active)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tiny_spi_setup_transfer(struct spi_device *spi,
 				   struct spi_transfer *t)
 {
@@ -103,7 +129,11 @@ static int tiny_spi_setup(struct spi_device *spi)
 		hw->speed_hz = spi->max_speed_hz;
 		hw->baud = tiny_spi_baud(spi, hw->speed_hz);
 	}
+<<<<<<< HEAD
 	hw->mode = spi->mode & (SPI_CPOL | SPI_CPHA);
+=======
+	hw->mode = spi->mode & SPI_MODE_X_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -129,7 +159,11 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 	unsigned int i;
 
 	if (hw->irq >= 0) {
+<<<<<<< HEAD
 		/* use intrrupt driven data transfer */
+=======
+		/* use interrupt driven data transfer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->len = t->len;
 		hw->txp = t->tx_buf;
 		hw->rxp = t->rx_buf;
@@ -153,6 +187,7 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 		}
 
 		wait_for_completion(&hw->done);
+<<<<<<< HEAD
 	} else if (txp && rxp) {
 		/* we need to tighten the transfer loop */
 		writeb(*txp++, hw->base + TINY_SPI_TXDATA);
@@ -209,6 +244,24 @@ static int tiny_spi_txrx_bufs(struct spi_device *spi, struct spi_transfer *t)
 		}
 		tiny_spi_wait_txe(hw);
 	}
+=======
+	} else {
+		/* we need to tighten the transfer loop */
+		writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
+		for (i = 1; i < t->len; i++) {
+			writeb(txp ? *txp++ : 0, hw->base + TINY_SPI_TXDATA);
+
+			if (rxp || (i != t->len - 1))
+				tiny_spi_wait_txr(hw);
+			if (rxp)
+				*rxp++ = readb(hw->base + TINY_SPI_TXDATA);
+		}
+		tiny_spi_wait_txe(hw);
+		if (rxp)
+			*rxp++ = readb(hw->base + TINY_SPI_RXDATA);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return t->len;
 }
 
@@ -243,6 +296,7 @@ static irqreturn_t tiny_spi_irq(int irq, void *dev)
 #ifdef CONFIG_OF
 #include <linux/of_gpio.h>
 
+<<<<<<< HEAD
 static int __devinit tiny_spi_of_probe(struct platform_device *pdev)
 {
 	struct tiny_spi *hw = platform_get_drvdata(pdev);
@@ -278,11 +332,31 @@ static int __devinit tiny_spi_of_probe(struct platform_device *pdev)
 }
 #else /* !CONFIG_OF */
 static int __devinit tiny_spi_of_probe(struct platform_device *pdev)
+=======
+static int tiny_spi_of_probe(struct platform_device *pdev)
+{
+	struct tiny_spi *hw = platform_get_drvdata(pdev);
+	struct device_node *np = pdev->dev.of_node;
+	u32 val;
+
+	if (!np)
+		return 0;
+	hw->bitbang.ctlr->dev.of_node = pdev->dev.of_node;
+	if (!of_property_read_u32(np, "clock-frequency", &val))
+		hw->freq = val;
+	if (!of_property_read_u32(np, "baud-width", &val))
+		hw->baudwidth = val;
+	return 0;
+}
+#else /* !CONFIG_OF */
+static int tiny_spi_of_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif /* CONFIG_OF */
 
+<<<<<<< HEAD
 static int __devinit tiny_spi_probe(struct platform_device *pdev)
 {
 	struct tiny_spi_platform_data *platp = pdev->dev.platform_data;
@@ -324,6 +398,39 @@ static int __devinit tiny_spi_probe(struct platform_device *pdev)
 					resource_size(res));
 	if (!hw->base)
 		goto exit_busy;
+=======
+static int tiny_spi_probe(struct platform_device *pdev)
+{
+	struct tiny_spi_platform_data *platp = dev_get_platdata(&pdev->dev);
+	struct tiny_spi *hw;
+	struct spi_controller *host;
+	int err = -ENODEV;
+
+	host = spi_alloc_host(&pdev->dev, sizeof(struct tiny_spi));
+	if (!host)
+		return err;
+
+	/* setup the host state. */
+	host->bus_num = pdev->id;
+	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
+	host->setup = tiny_spi_setup;
+	host->use_gpio_descriptors = true;
+
+	hw = spi_controller_get_devdata(host);
+	platform_set_drvdata(pdev, hw);
+
+	/* setup the state for the bitbang driver */
+	hw->bitbang.ctlr = host;
+	hw->bitbang.setup_transfer = tiny_spi_setup_transfer;
+	hw->bitbang.txrx_bufs = tiny_spi_txrx_bufs;
+
+	/* find and map our resources */
+	hw->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(hw->base)) {
+		err = PTR_ERR(hw->base);
+		goto exit;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* irq is optional */
 	hw->irq = platform_get_irq(pdev, 0);
 	if (hw->irq >= 0) {
@@ -335,10 +442,13 @@ static int __devinit tiny_spi_probe(struct platform_device *pdev)
 	}
 	/* find platform data */
 	if (platp) {
+<<<<<<< HEAD
 		hw->gpio_cs_count = platp->gpio_cs_count;
 		hw->gpio_cs = platp->gpio_cs;
 		if (platp->gpio_cs_count && !platp->gpio_cs)
 			goto exit_busy;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->freq = platp->freq;
 		hw->baudwidth = platp->baudwidth;
 	} else {
@@ -346,6 +456,7 @@ static int __devinit tiny_spi_probe(struct platform_device *pdev)
 		if (err)
 			goto exit;
 	}
+<<<<<<< HEAD
 	for (i = 0; i < hw->gpio_cs_count; i++) {
 		err = gpio_request(hw->gpio_cs[i], dev_name(&pdev->dev));
 		if (err)
@@ -353,6 +464,8 @@ static int __devinit tiny_spi_probe(struct platform_device *pdev)
 		gpio_direction_output(hw->gpio_cs[i], 1);
 	}
 	hw->bitbang.master->num_chipselect = max(1U, hw->gpio_cs_count);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register our spi controller */
 	err = spi_bitbang_start(&hw->bitbang);
@@ -362,6 +475,7 @@ static int __devinit tiny_spi_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 exit_gpio:
 	while (i-- > 0)
 		gpio_free(hw->gpio_cs[i]);
@@ -385,6 +499,20 @@ static int __devexit tiny_spi_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 	spi_master_put(master);
 	return 0;
+=======
+exit:
+	spi_controller_put(host);
+	return err;
+}
+
+static void tiny_spi_remove(struct platform_device *pdev)
+{
+	struct tiny_spi *hw = platform_get_drvdata(pdev);
+	struct spi_controller *host = hw->bitbang.ctlr;
+
+	spi_bitbang_stop(&hw->bitbang);
+	spi_controller_put(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_OF
@@ -393,18 +521,29 @@ static const struct of_device_id tiny_spi_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, tiny_spi_match);
+<<<<<<< HEAD
 #else /* CONFIG_OF */
 #define tiny_spi_match NULL
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_OF */
 
 static struct platform_driver tiny_spi_driver = {
 	.probe = tiny_spi_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(tiny_spi_remove),
 	.driver = {
 		.name = DRV_NAME,
 		.owner = THIS_MODULE,
 		.pm = NULL,
 		.of_match_table = tiny_spi_match,
+=======
+	.remove_new = tiny_spi_remove,
+	.driver = {
+		.name = DRV_NAME,
+		.pm = NULL,
+		.of_match_table = of_match_ptr(tiny_spi_match),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(tiny_spi_driver);

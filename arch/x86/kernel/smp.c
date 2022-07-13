@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Intel SMP support routines.
  *
@@ -6,9 +10,12 @@
  *      (c) 2002,2003 Andi Kleen, SuSE Labs.
  *
  *	i386 and x86_64 integration by Glauber Costa <gcosta@redhat.com>
+<<<<<<< HEAD
  *
  *	This code is released under the GNU General Public License version 2 or
  *	later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -23,13 +30,28 @@
 #include <linux/interrupt.h>
 #include <linux/cpu.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/kexec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mtrr.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/proto.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
 #include <asm/nmi.h>
+=======
+#include <asm/cpu.h>
+#include <asm/idtentry.h>
+#include <asm/nmi.h>
+#include <asm/mce.h>
+#include <asm/trace/irq_vectors.h>
+#include <asm/kexec.h>
+#include <asm/reboot.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Some notes on x86 processor bugs affecting SMP operation:
  *
@@ -63,7 +85,11 @@
  *	5AP.	symmetric IO mode (normal Linux operation) not affected.
  *		'noapic' mode has vector 0xf filled out properly.
  *	6AP.	'noapic' mode might be affected - fixed in later steppings
+<<<<<<< HEAD
  *	7AP.	We do not assume writes to the LVT deassering IRQs
+=======
+ *	7AP.	We do not assume writes to the LVT deasserting IRQs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	8AP.	We do not enable low power mode (deep sleep) during MP bootup
  *	9AP.	We do not use mixed mode
  *
@@ -109,6 +135,7 @@
  *	about nothing of note with C stepping upwards.
  */
 
+<<<<<<< HEAD
 /*
  * this function sends a 'reschedule' IPI to another CPU.
  * it goes straight through and wastes no time serializing
@@ -150,6 +177,10 @@ void native_send_call_func_ipi(const struct cpumask *mask)
 }
 
 static atomic_t stopping_cpu = ATOMIC_INIT(-1);
+=======
+static atomic_t stopping_cpu = ATOMIC_INIT(-1);
+static bool smp_no_nmi_ipi = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int smp_stop_nmi_callback(unsigned int val, struct pt_regs *regs)
 {
@@ -157,11 +188,16 @@ static int smp_stop_nmi_callback(unsigned int val, struct pt_regs *regs)
 	if (raw_smp_processor_id() == atomic_read(&stopping_cpu))
 		return NMI_HANDLED;
 
+<<<<<<< HEAD
+=======
+	cpu_emergency_disable_virtualization();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stop_this_cpu(NULL);
 
 	return NMI_HANDLED;
 }
 
+<<<<<<< HEAD
 static void native_nmi_stop_other_cpus(int wait)
 {
 	unsigned long flags;
@@ -219,10 +255,33 @@ static void native_irq_stop_other_cpus(int wait)
 {
 	unsigned long flags;
 	unsigned long timeout;
+=======
+/*
+ * this function calls the 'stop' function on all other CPUs in the system.
+ */
+DEFINE_IDTENTRY_SYSVEC(sysvec_reboot)
+{
+	apic_eoi();
+	cpu_emergency_disable_virtualization();
+	stop_this_cpu(NULL);
+}
+
+static int register_stop_handler(void)
+{
+	return register_nmi_handler(NMI_LOCAL, smp_stop_nmi_callback,
+				    NMI_FLAG_FIRST, "smp_stop");
+}
+
+static void native_stop_other_cpus(int wait)
+{
+	unsigned int old_cpu, this_cpu;
+	unsigned long flags, timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reboot_force)
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * Use an own vector here because smp_call_function
 	 * does lots of things not suitable in a panic situation.
@@ -241,11 +300,86 @@ static void native_irq_stop_other_cpus(int wait)
 		 */
 		timeout = USEC_PER_SEC;
 		while (num_online_cpus() > 1 && (wait || timeout--))
+=======
+	/* Only proceed if this is the first CPU to reach this code */
+	old_cpu = -1;
+	this_cpu = smp_processor_id();
+	if (!atomic_try_cmpxchg(&stopping_cpu, &old_cpu, this_cpu))
+		return;
+
+	/* For kexec, ensure that offline CPUs are out of MWAIT and in HLT */
+	if (kexec_in_progress)
+		smp_kick_mwait_play_dead();
+
+	/*
+	 * 1) Send an IPI on the reboot vector to all other CPUs.
+	 *
+	 *    The other CPUs should react on it after leaving critical
+	 *    sections and re-enabling interrupts. They might still hold
+	 *    locks, but there is nothing which can be done about that.
+	 *
+	 * 2) Wait for all other CPUs to report that they reached the
+	 *    HLT loop in stop_this_cpu()
+	 *
+	 * 3) If #2 timed out send an NMI to the CPUs which did not
+	 *    yet report
+	 *
+	 * 4) Wait for all other CPUs to report that they reached the
+	 *    HLT loop in stop_this_cpu()
+	 *
+	 * #3 can obviously race against a CPU reaching the HLT loop late.
+	 * That CPU will have reported already and the "have all CPUs
+	 * reached HLT" condition will be true despite the fact that the
+	 * other CPU is still handling the NMI. Again, there is no
+	 * protection against that as "disabled" APICs still respond to
+	 * NMIs.
+	 */
+	cpumask_copy(&cpus_stop_mask, cpu_online_mask);
+	cpumask_clear_cpu(this_cpu, &cpus_stop_mask);
+
+	if (!cpumask_empty(&cpus_stop_mask)) {
+		apic_send_IPI_allbutself(REBOOT_VECTOR);
+
+		/*
+		 * Don't wait longer than a second for IPI completion. The
+		 * wait request is not checked here because that would
+		 * prevent an NMI shutdown attempt in case that not all
+		 * CPUs reach shutdown state.
+		 */
+		timeout = USEC_PER_SEC;
+		while (!cpumask_empty(&cpus_stop_mask) && timeout--)
+			udelay(1);
+	}
+
+	/* if the REBOOT_VECTOR didn't work, try with the NMI */
+	if (!cpumask_empty(&cpus_stop_mask)) {
+		/*
+		 * If NMI IPI is enabled, try to register the stop handler
+		 * and send the IPI. In any case try to wait for the other
+		 * CPUs to stop.
+		 */
+		if (!smp_no_nmi_ipi && !register_stop_handler()) {
+			unsigned int cpu;
+
+			pr_emerg("Shutting down cpus with NMI\n");
+
+			for_each_cpu(cpu, &cpus_stop_mask)
+				__apic_send_IPI(cpu, NMI_VECTOR);
+		}
+		/*
+		 * Don't wait longer than 10 ms if the caller didn't
+		 * request it. If wait is true, the machine hangs here if
+		 * one or more CPUs do not reach shutdown state.
+		 */
+		timeout = USEC_PER_MSEC * 10;
+		while (!cpumask_empty(&cpus_stop_mask) && (wait || timeout--))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(1);
 	}
 
 	local_irq_save(flags);
 	disable_local_APIC();
+<<<<<<< HEAD
 	local_irq_restore(flags);
 }
 
@@ -283,12 +417,58 @@ void smp_call_function_single_interrupt(struct pt_regs *regs)
 	generic_smp_call_function_single_interrupt();
 	inc_irq_stat(irq_call_count);
 	irq_exit();
+=======
+	mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
+	local_irq_restore(flags);
+
+	/*
+	 * Ensure that the cpus_stop_mask cache lines are invalidated on
+	 * the other CPUs. See comment vs. SME in stop_this_cpu().
+	 */
+	cpumask_clear(&cpus_stop_mask);
+}
+
+/*
+ * Reschedule call back. KVM uses this interrupt to force a cpu out of
+ * guest mode.
+ */
+DEFINE_IDTENTRY_SYSVEC_SIMPLE(sysvec_reschedule_ipi)
+{
+	apic_eoi();
+	trace_reschedule_entry(RESCHEDULE_VECTOR);
+	inc_irq_stat(irq_resched_count);
+	scheduler_ipi();
+	trace_reschedule_exit(RESCHEDULE_VECTOR);
+}
+
+DEFINE_IDTENTRY_SYSVEC(sysvec_call_function)
+{
+	apic_eoi();
+	trace_call_function_entry(CALL_FUNCTION_VECTOR);
+	inc_irq_stat(irq_call_count);
+	generic_smp_call_function_interrupt();
+	trace_call_function_exit(CALL_FUNCTION_VECTOR);
+}
+
+DEFINE_IDTENTRY_SYSVEC(sysvec_call_function_single)
+{
+	apic_eoi();
+	trace_call_function_single_entry(CALL_FUNCTION_SINGLE_VECTOR);
+	inc_irq_stat(irq_call_count);
+	generic_smp_call_function_single_interrupt();
+	trace_call_function_single_exit(CALL_FUNCTION_SINGLE_VECTOR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nonmi_ipi_setup(char *str)
 {
+<<<<<<< HEAD
         native_smp_disable_nmi_ipi();
         return 1;
+=======
+	smp_no_nmi_ipi = true;
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 __setup("nonmi_ipi", nonmi_ipi_setup);
@@ -298,11 +478,21 @@ struct smp_ops smp_ops = {
 	.smp_prepare_cpus	= native_smp_prepare_cpus,
 	.smp_cpus_done		= native_smp_cpus_done,
 
+<<<<<<< HEAD
 	.stop_other_cpus	= native_nmi_stop_other_cpus,
 	.smp_send_reschedule	= native_smp_send_reschedule,
 
 	.cpu_up			= native_cpu_up,
 	.cpu_die		= native_cpu_die,
+=======
+	.stop_other_cpus	= native_stop_other_cpus,
+#if defined(CONFIG_CRASH_DUMP)
+	.crash_stop_other_cpus	= kdump_nmi_shootdown_cpus,
+#endif
+	.smp_send_reschedule	= native_smp_send_reschedule,
+
+	.kick_ap_alive		= native_kick_ap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cpu_disable		= native_cpu_disable,
 	.play_dead		= native_play_dead,
 

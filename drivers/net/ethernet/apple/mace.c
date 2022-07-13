@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Network device driver for the MACE ethernet controller on
  * Apple Powermacs.  Assumes it's under a DBDMA controller.
@@ -18,10 +22,16 @@
 #include <linux/spinlock.h>
 #include <linux/bitrev.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
 #include <asm/dbdma.h>
 #include <asm/io.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/dbdma.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macio.h>
 
 #include "mace.h"
@@ -78,7 +88,11 @@ struct mace_data {
 
 static int mace_open(struct net_device *dev);
 static int mace_close(struct net_device *dev);
+<<<<<<< HEAD
 static int mace_xmit_start(struct sk_buff *skb, struct net_device *dev);
+=======
+static netdev_tx_t mace_xmit_start(struct sk_buff *skb, struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mace_set_multicast(struct net_device *dev);
 static void mace_reset(struct net_device *dev);
 static int mace_set_address(struct net_device *dev, void *addr);
@@ -86,10 +100,17 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id);
 static irqreturn_t mace_txdma_intr(int irq, void *dev_id);
 static irqreturn_t mace_rxdma_intr(int irq, void *dev_id);
 static void mace_set_timeout(struct net_device *dev);
+<<<<<<< HEAD
 static void mace_tx_timeout(unsigned long data);
 static inline void dbdma_reset(volatile struct dbdma_regs __iomem *dma);
 static inline void mace_clean_rings(struct mace_data *mp);
 static void __mace_set_address(struct net_device *dev, void *addr);
+=======
+static void mace_tx_timeout(struct timer_list *t);
+static inline void dbdma_reset(volatile struct dbdma_regs __iomem *dma);
+static inline void mace_clean_rings(struct mace_data *mp);
+static void __mace_set_address(struct net_device *dev, const void *addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If we can't get a skbuff when we need it, we use this area for DMA.
@@ -102,21 +123,37 @@ static const struct net_device_ops mace_netdev_ops = {
 	.ndo_start_xmit		= mace_xmit_start,
 	.ndo_set_rx_mode	= mace_set_multicast,
 	.ndo_set_mac_address	= mace_set_address,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
 static int __devinit mace_probe(struct macio_dev *mdev, const struct of_device_id *match)
+=======
+	.ndo_validate_addr	= eth_validate_addr,
+};
+
+static int mace_probe(struct macio_dev *mdev, const struct of_device_id *match)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *mace = macio_get_of_node(mdev);
 	struct net_device *dev;
 	struct mace_data *mp;
 	const unsigned char *addr;
+<<<<<<< HEAD
 	int j, rev, rc = -EBUSY;
 
 	if (macio_resource_count(mdev) != 3 || macio_irq_count(mdev) != 3) {
 		printk(KERN_ERR "can't use MACE %s: need 3 addrs and 3 irqs\n",
 		       mace->full_name);
+=======
+	u8 macaddr[ETH_ALEN];
+	int j, rev, rc = -EBUSY;
+
+	if (macio_resource_count(mdev) != 3 || macio_irq_count(mdev) != 3) {
+		printk(KERN_ERR "can't use MACE %pOF: need 3 addrs and 3 irqs\n",
+		       mace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -124,8 +161,13 @@ static int __devinit mace_probe(struct macio_dev *mdev, const struct of_device_i
 	if (addr == NULL) {
 		addr = of_get_property(mace, "local-mac-address", NULL);
 		if (addr == NULL) {
+<<<<<<< HEAD
 			printk(KERN_ERR "Can't get mac-address for MACE %s\n",
 			       mace->full_name);
+=======
+			printk(KERN_ERR "Can't get mac-address for MACE %pOF\n",
+			       mace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
@@ -167,8 +209,14 @@ static int __devinit mace_probe(struct macio_dev *mdev, const struct of_device_i
 
 	rev = addr[0] == 0 && addr[1] == 0xA0;
 	for (j = 0; j < 6; ++j) {
+<<<<<<< HEAD
 		dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
 	}
+=======
+		macaddr[j] = rev ? bitrev8(addr[j]): addr[j];
+	}
+	eth_hw_addr_set(dev, macaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->chipid = (in_8(&mp->mace->chipid_hi) << 8) |
 			in_8(&mp->mace->chipid_lo);
 
@@ -197,7 +245,11 @@ static int __devinit mace_probe(struct macio_dev *mdev, const struct of_device_i
 
 	memset((char *) mp->tx_cmds, 0,
 	       (NCMDS_TX*N_TX_RING + N_RX_RING + 2) * sizeof(struct dbdma_cmd));
+<<<<<<< HEAD
 	init_timer(&mp->tx_timeout);
+=======
+	timer_setup(&mp->tx_timeout, mace_tx_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&mp->lock);
 	mp->timeout_active = 0;
 
@@ -271,7 +323,11 @@ static int __devinit mace_probe(struct macio_dev *mdev, const struct of_device_i
 	return rc;
 }
 
+<<<<<<< HEAD
 static int __devexit mace_remove(struct macio_dev *mdev)
+=======
+static void mace_remove(struct macio_dev *mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = macio_get_drvdata(mdev);
 	struct mace_data *mp;
@@ -295,8 +351,11 @@ static int __devexit mace_remove(struct macio_dev *mdev)
 	free_netdev(dev);
 
 	macio_release_resources(mdev);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dbdma_reset(volatile struct dbdma_regs __iomem *dma)
@@ -310,7 +369,11 @@ static void dbdma_reset(volatile struct dbdma_regs __iomem *dma)
      * way on some machines.
      */
     for (i = 200; i > 0; --i)
+<<<<<<< HEAD
 	if (ld_le32(&dma->control) & RUN)
+=======
+	if (le32_to_cpu(dma->control) & RUN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    udelay(1);
 }
 
@@ -364,6 +427,7 @@ static void mace_reset(struct net_device *dev)
 	out_8(&mb->iac, 0);
 
     if (mp->port_aaui)
+<<<<<<< HEAD
     	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
     else
     	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
@@ -374,18 +438,44 @@ static void __mace_set_address(struct net_device *dev, void *addr)
     struct mace_data *mp = netdev_priv(dev);
     volatile struct mace __iomem *mb = mp->mace;
     unsigned char *p = addr;
+=======
+	out_8(&mb->plscc, PORTSEL_AUI + ENPLSIO);
+    else
+	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
+}
+
+static void __mace_set_address(struct net_device *dev, const void *addr)
+{
+    struct mace_data *mp = netdev_priv(dev);
+    volatile struct mace __iomem *mb = mp->mace;
+    const unsigned char *p = addr;
+    u8 macaddr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i;
 
     /* load up the hardware address */
     if (mp->chipid == BROKEN_ADDRCHG_REV)
+<<<<<<< HEAD
     	out_8(&mb->iac, PHYADDR);
     else {
     	out_8(&mb->iac, ADDRCHG | PHYADDR);
+=======
+	out_8(&mb->iac, PHYADDR);
+    else {
+	out_8(&mb->iac, ADDRCHG | PHYADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((in_8(&mb->iac) & ADDRCHG) != 0)
 	    ;
     }
     for (i = 0; i < 6; ++i)
+<<<<<<< HEAD
 	out_8(&mb->padr, dev->dev_addr[i] = p[i]);
+=======
+        out_8(&mb->padr, macaddr[i] = p[i]);
+
+    eth_hw_addr_set(dev, macaddr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (mp->chipid != BROKEN_ADDRCHG_REV)
         out_8(&mb->iac, 0);
 }
@@ -452,21 +542,36 @@ static int mace_open(struct net_device *dev)
 	    data = skb->data;
 	}
 	mp->rx_bufs[i] = skb;
+<<<<<<< HEAD
 	st_le16(&cp->req_count, RX_BUFLEN);
 	st_le16(&cp->command, INPUT_LAST + INTR_ALWAYS);
 	st_le32(&cp->phy_addr, virt_to_bus(data));
+=======
+	cp->req_count = cpu_to_le16(RX_BUFLEN);
+	cp->command = cpu_to_le16(INPUT_LAST + INTR_ALWAYS);
+	cp->phy_addr = cpu_to_le32(virt_to_bus(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->xfer_status = 0;
 	++cp;
     }
     mp->rx_bufs[i] = NULL;
+<<<<<<< HEAD
     st_le16(&cp->command, DBDMA_STOP);
+=======
+    cp->command = cpu_to_le16(DBDMA_STOP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     mp->rx_fill = i;
     mp->rx_empty = 0;
 
     /* Put a branch back to the beginning of the receive command list */
     ++cp;
+<<<<<<< HEAD
     st_le16(&cp->command, DBDMA_NOP + BR_ALWAYS);
     st_le32(&cp->cmd_dep, virt_to_bus(mp->rx_cmds));
+=======
+    cp->command = cpu_to_le16(DBDMA_NOP + BR_ALWAYS);
+    cp->cmd_dep = cpu_to_le32(virt_to_bus(mp->rx_cmds));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* start rx dma */
     out_le32(&rd->control, (RUN|PAUSE|FLUSH|WAKE) << 16); /* clear run bit */
@@ -475,8 +580,13 @@ static int mace_open(struct net_device *dev)
 
     /* put a branch at the end of the tx command list */
     cp = mp->tx_cmds + NCMDS_TX * N_TX_RING;
+<<<<<<< HEAD
     st_le16(&cp->command, DBDMA_NOP + BR_ALWAYS);
     st_le32(&cp->cmd_dep, virt_to_bus(mp->tx_cmds));
+=======
+    cp->command = cpu_to_le16(DBDMA_NOP + BR_ALWAYS);
+    cp->cmd_dep = cpu_to_le32(virt_to_bus(mp->tx_cmds));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* reset tx dma */
     out_le32(&td->control, (RUN|PAUSE|FLUSH|WAKE) << 16);
@@ -507,8 +617,13 @@ static int mace_close(struct net_device *dev)
     out_8(&mb->imr, 0xff);		/* disable all intrs */
 
     /* disable rx and tx dma */
+<<<<<<< HEAD
     st_le32(&rd->control, (RUN|PAUSE|FLUSH|WAKE) << 16); /* clear run bit */
     st_le32(&td->control, (RUN|PAUSE|FLUSH|WAKE) << 16); /* clear run bit */
+=======
+    rd->control = cpu_to_le32((RUN|PAUSE|FLUSH|WAKE) << 16); /* clear run bit */
+    td->control = cpu_to_le32((RUN|PAUSE|FLUSH|WAKE) << 16); /* clear run bit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     mace_clean_rings(mp);
 
@@ -522,13 +637,20 @@ static inline void mace_set_timeout(struct net_device *dev)
     if (mp->timeout_active)
 	del_timer(&mp->tx_timeout);
     mp->tx_timeout.expires = jiffies + TX_TIMEOUT;
+<<<<<<< HEAD
     mp->tx_timeout.function = mace_tx_timeout;
     mp->tx_timeout.data = (unsigned long) dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     add_timer(&mp->tx_timeout);
     mp->timeout_active = 1;
 }
 
+<<<<<<< HEAD
 static int mace_xmit_start(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t mace_xmit_start(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     struct mace_data *mp = netdev_priv(dev);
     volatile struct dbdma_regs __iomem *td = mp->tx_dma;
@@ -558,8 +680,13 @@ static int mace_xmit_start(struct sk_buff *skb, struct net_device *dev)
     }
     mp->tx_bufs[fill] = skb;
     cp = mp->tx_cmds + NCMDS_TX * fill;
+<<<<<<< HEAD
     st_le16(&cp->req_count, len);
     st_le32(&cp->phy_addr, virt_to_bus(skb->data));
+=======
+    cp->req_count = cpu_to_le16(len);
+    cp->phy_addr = cpu_to_le32(virt_to_bus(skb->data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     np = mp->tx_cmds + NCMDS_TX * next;
     out_le16(&np->command, DBDMA_STOP);
@@ -691,7 +818,11 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	    out_8(&mb->xmtfc, AUTO_PAD_XMIT);
 	    continue;
 	}
+<<<<<<< HEAD
 	dstat = ld_le32(&td->status);
+=======
+	dstat = le32_to_cpu(td->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* stop DMA controller */
 	out_le32(&td->control, RUN << 16);
 	/*
@@ -720,11 +851,19 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	    mace_reset(dev);
 		/*
 		 * XXX mace likes to hang the machine after a xmtfs error.
+<<<<<<< HEAD
 		 * This is hard to reproduce, reseting *may* help
 		 */
 	}
 	cp = mp->tx_cmds + NCMDS_TX * i;
 	stat = ld_le16(&cp->xfer_status);
+=======
+		 * This is hard to reproduce, resetting *may* help
+		 */
+	}
+	cp = mp->tx_cmds + NCMDS_TX * i;
+	stat = le16_to_cpu(cp->xfer_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((fs & (UFLO|LCOL|LCAR|RTRY)) || (dstat & DEAD) || xcount == 0) {
 	    /*
 	     * Check whether there were in fact 2 bytes written to
@@ -767,7 +906,11 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	    dev->stats.tx_bytes += mp->tx_bufs[i]->len;
 	    ++dev->stats.tx_packets;
 	}
+<<<<<<< HEAD
 	dev_kfree_skb_irq(mp->tx_bufs[i]);
+=======
+	dev_consume_skb_irq(mp->tx_bufs[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	--mp->tx_active;
 	if (++i >= N_TX_RING)
 	    i = 0;
@@ -802,10 +945,17 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void mace_tx_timeout(unsigned long data)
 {
     struct net_device *dev = (struct net_device *) data;
     struct mace_data *mp = netdev_priv(dev);
+=======
+static void mace_tx_timeout(struct timer_list *t)
+{
+    struct mace_data *mp = from_timer(mp, t, tx_timeout);
+    struct net_device *dev = macio_get_drvdata(mp->mdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     volatile struct mace __iomem *mb = mp->mace;
     volatile struct dbdma_regs __iomem *td = mp->tx_dma;
     volatile struct dbdma_regs __iomem *rd = mp->rx_dma;
@@ -830,7 +980,11 @@ static void mace_tx_timeout(unsigned long data)
     mace_reset(dev);
 
     /* restart rx dma */
+<<<<<<< HEAD
     cp = bus_to_virt(ld_le32(&rd->cmdptr));
+=======
+    cp = bus_to_virt(le32_to_cpu(rd->cmdptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     dbdma_reset(rd);
     out_le16(&cp->xfer_status, 0);
     out_le32(&rd->cmdptr, virt_to_bus(cp));
@@ -843,7 +997,11 @@ static void mace_tx_timeout(unsigned long data)
     if (mp->tx_bad_runt) {
 	mp->tx_bad_runt = 0;
     } else if (i != mp->tx_fill) {
+<<<<<<< HEAD
 	dev_kfree_skb(mp->tx_bufs[i]);
+=======
+	dev_kfree_skb_irq(mp->tx_bufs[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (++i >= N_TX_RING)
 	    i = 0;
 	mp->tx_empty = i;
@@ -889,20 +1047,32 @@ static irqreturn_t mace_rxdma_intr(int irq, void *dev_id)
     spin_lock_irqsave(&mp->lock, flags);
     for (i = mp->rx_empty; i != mp->rx_fill; ) {
 	cp = mp->rx_cmds + i;
+<<<<<<< HEAD
 	stat = ld_le16(&cp->xfer_status);
+=======
+	stat = le16_to_cpu(cp->xfer_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((stat & ACTIVE) == 0) {
 	    next = i + 1;
 	    if (next >= N_RX_RING)
 		next = 0;
 	    np = mp->rx_cmds + next;
 	    if (next != mp->rx_fill &&
+<<<<<<< HEAD
 		(ld_le16(&np->xfer_status) & ACTIVE) != 0) {
+=======
+		(le16_to_cpu(np->xfer_status) & ACTIVE) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "mace: lost a status word\n");
 		++mace_lost_status;
 	    } else
 		break;
 	}
+<<<<<<< HEAD
 	nb = ld_le16(&cp->req_count) - ld_le16(&cp->res_count);
+=======
+	nb = le16_to_cpu(cp->req_count) - le16_to_cpu(cp->res_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_le16(&cp->command, DBDMA_STOP);
 	/* got a packet, have a look at it */
 	skb = mp->rx_bufs[i];
@@ -962,6 +1132,7 @@ static irqreturn_t mace_rxdma_intr(int irq, void *dev_id)
 		mp->rx_bufs[i] = skb;
 	    }
 	}
+<<<<<<< HEAD
 	st_le16(&cp->req_count, RX_BUFLEN);
 	data = skb? skb->data: dummy_buf;
 	st_le32(&cp->phy_addr, virt_to_bus(data));
@@ -969,6 +1140,15 @@ static irqreturn_t mace_rxdma_intr(int irq, void *dev_id)
 	out_le16(&cp->command, INPUT_LAST + INTR_ALWAYS);
 #if 0
 	if ((ld_le32(&rd->status) & ACTIVE) != 0) {
+=======
+	cp->req_count = cpu_to_le16(RX_BUFLEN);
+	data = skb? skb->data: dummy_buf;
+	cp->phy_addr = cpu_to_le32(virt_to_bus(data));
+	out_le16(&cp->xfer_status, 0);
+	out_le16(&cp->command, INPUT_LAST + INTR_ALWAYS);
+#if 0
+	if ((le32_to_cpu(rd->status) & ACTIVE) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    out_le32(&rd->control, (PAUSE << 16) | PAUSE);
 	    while ((in_le32(&rd->status) & ACTIVE) != 0)
 		;
@@ -984,7 +1164,11 @@ static irqreturn_t mace_rxdma_intr(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct of_device_id mace_match[] =
+=======
+static const struct of_device_id mace_match[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 	.name 		= "mace",

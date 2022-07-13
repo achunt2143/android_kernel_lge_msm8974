@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
@@ -5,11 +6,22 @@
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License version 2.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
+ * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BMAP_DOT_H__
 #define __BMAP_DOT_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/iomap.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "inode.h"
 
 struct inode;
@@ -44,6 +56,7 @@ static inline void gfs2_write_calc_reserv(const struct gfs2_inode *ip,
 	}
 }
 
+<<<<<<< HEAD
 extern int gfs2_unstuff_dinode(struct gfs2_inode *ip, struct page *page);
 extern int gfs2_block_map(struct inode *inode, sector_t lblock,
 			  struct buffer_head *bh, int create);
@@ -55,5 +68,29 @@ extern int gfs2_truncatei_resume(struct gfs2_inode *ip);
 extern int gfs2_file_dealloc(struct gfs2_inode *ip);
 extern int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
 				     unsigned int len);
+=======
+extern const struct iomap_ops gfs2_iomap_ops;
+extern const struct iomap_writeback_ops gfs2_writeback_ops;
+
+int gfs2_unstuff_dinode(struct gfs2_inode *ip);
+int gfs2_block_map(struct inode *inode, sector_t lblock,
+		   struct buffer_head *bh, int create);
+int gfs2_iomap_get(struct inode *inode, loff_t pos, loff_t length,
+		   struct iomap *iomap);
+int gfs2_iomap_alloc(struct inode *inode, loff_t pos, loff_t length,
+		     struct iomap *iomap);
+int gfs2_get_extent(struct inode *inode, u64 lblock, u64 *dblock,
+		    unsigned int *extlen);
+int gfs2_alloc_extent(struct inode *inode, u64 lblock, u64 *dblock,
+		      unsigned *extlen, bool *new);
+int gfs2_setattr_size(struct inode *inode, u64 size);
+int gfs2_truncatei_resume(struct gfs2_inode *ip);
+int gfs2_file_dealloc(struct gfs2_inode *ip);
+int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
+			      unsigned int len);
+int gfs2_map_journal_extents(struct gfs2_sbd *sdp, struct gfs2_jdesc *jd);
+void gfs2_free_journal_extents(struct gfs2_jdesc *jd);
+int __gfs2_punch_hole(struct file *file, loff_t offset, loff_t length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __BMAP_DOT_H__ */

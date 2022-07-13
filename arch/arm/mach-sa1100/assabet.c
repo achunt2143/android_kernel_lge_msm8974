@@ -1,25 +1,50 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/assabet.c
  *
  * Author: Nicolas Pitre
  *
  * This file contains all Assabet-specific tweaks.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/ioport.h>
 #include <linux/serial_core.h>
+=======
+#include <linux/gpio/driver.h>
+#include <linux/gpio/gpio-reg.h>
+#include <linux/gpio/machine.h>
+#include <linux/gpio_keys.h>
+#include <linux/ioport.h>
+#include <linux/platform_data/sa11x0-serial.h>
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+#include <linux/serial_core.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/ucb1x00.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/delay.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/leds.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <video/sa1100fb.h>
 
@@ -28,16 +53,25 @@
 #include <asm/setup.h>
 #include <asm/page.h>
 #include <asm/pgtable-hwdef.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
+<<<<<<< HEAD
 #include <asm/mach/irda.h>
 #include <asm/mach/map.h>
 #include <asm/mach/serial_sa1100.h>
 #include <mach/assabet.h>
 #include <mach/mcp.h>
+=======
+#include <asm/mach/map.h>
+#include <mach/assabet.h>
+#include <linux/platform_data/mfd-mcp-sa11x0.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/irqs.h>
 
 #include "generic.h"
@@ -58,6 +92,7 @@
 unsigned long SCR_value = ASSABET_SCR_INIT;
 EXPORT_SYMBOL(SCR_value);
 
+<<<<<<< HEAD
 static unsigned long BCR_value = ASSABET_BCR_DB1110;
 
 void ASSABET_BCR_frob(unsigned int mask, unsigned int val)
@@ -78,6 +113,182 @@ static void assabet_ucb1x00_reset(enum ucb1x00_reset state)
 		ASSABET_BCR_set(ASSABET_BCR_CODEC_RST);
 }
 
+=======
+static struct gpio_chip *assabet_bcr_gc;
+
+static const char *assabet_names[] = {
+	"cf_pwr", "cf_gfx_reset", "nsoft_reset", "irda_fsel",
+	"irda_md0", "irda_md1", "stereo_loopback", "ncf_bus_on",
+	"audio_pwr_on", "light_pwr_on", "lcd16data", "lcd_pwr_on",
+	"rs232_on", "nred_led", "ngreen_led", "vib_on",
+	"com_dtr", "com_rts", "radio_wake_mod", "i2c_enab",
+	"tvir_enab", "qmute", "radio_pwr_on", "spkr_off",
+	"rs232_valid", "com_dcd", "com_cts", "com_dsr",
+	"radio_cts", "radio_dsr", "radio_dcd", "radio_ri",
+};
+
+/* The old deprecated interface */
+void ASSABET_BCR_frob(unsigned int mask, unsigned int val)
+{
+	unsigned long m = mask, v = val;
+
+	assabet_bcr_gc->set_multiple(assabet_bcr_gc, &m, &v);
+}
+EXPORT_SYMBOL(ASSABET_BCR_frob);
+
+static void __init assabet_init_gpio(void __iomem *reg, u32 def_val)
+{
+	struct gpio_chip *gc;
+
+	writel_relaxed(def_val, reg);
+
+	gc = gpio_reg_init(NULL, reg, -1, 32, "assabet", 0xff000000, def_val,
+			   assabet_names, NULL, NULL);
+
+	if (IS_ERR(gc))
+		return;
+
+	assabet_bcr_gc = gc;
+}
+
+/*
+ * The codec reset goes to three devices, so we need to release
+ * the rest when any one of these requests it.  However, that
+ * causes the ADV7171 to consume around 100mA - more than half
+ * the LCD-blanked power.
+ *
+ * With the ADV7171, LCD and backlight enabled, we go over
+ * budget on the MAX846 Li-Ion charger, and if no Li-Ion battery
+ * is connected, the Assabet crashes.
+ */
+#define RST_UCB1X00 (1 << 0)
+#define RST_UDA1341 (1 << 1)
+#define RST_ADV7171 (1 << 2)
+
+#define SDA GPIO_GPIO(15)
+#define SCK GPIO_GPIO(18)
+#define MOD GPIO_GPIO(17)
+
+static void adv7171_start(void)
+{
+	GPSR = SCK;
+	udelay(1);
+	GPSR = SDA;
+	udelay(2);
+	GPCR = SDA;
+}
+
+static void adv7171_stop(void)
+{
+	GPSR = SCK;
+	udelay(2);
+	GPSR = SDA;
+	udelay(1);
+}
+
+static void adv7171_send(unsigned byte)
+{
+	unsigned i;
+
+	for (i = 0; i < 8; i++, byte <<= 1) {
+		GPCR = SCK;
+		udelay(1);
+		if (byte & 0x80)
+			GPSR = SDA;
+		else
+			GPCR = SDA;
+		udelay(1);
+		GPSR = SCK;
+		udelay(1);
+	}
+	GPCR = SCK;
+	udelay(1);
+	GPSR = SDA;
+	udelay(1);
+	GPDR &= ~SDA;
+	GPSR = SCK;
+	udelay(1);
+	if (GPLR & SDA)
+		printk(KERN_WARNING "No ACK from ADV7171\n");
+	udelay(1);
+	GPCR = SCK | SDA;
+	udelay(1);
+	GPDR |= SDA;
+	udelay(1);
+}
+
+static void adv7171_write(unsigned reg, unsigned val)
+{
+	unsigned gpdr = GPDR;
+	unsigned gplr = GPLR;
+
+	ASSABET_BCR_frob(ASSABET_BCR_AUDIO_ON, ASSABET_BCR_AUDIO_ON);
+	udelay(100);
+
+	GPCR = SDA | SCK | MOD; /* clear L3 mode to ensure UDA1341 doesn't respond */
+	GPDR = (GPDR | SCK | MOD) & ~SDA;
+	udelay(10);
+	if (!(GPLR & SDA))
+		printk(KERN_WARNING "Something dragging SDA down?\n");
+	GPDR |= SDA;
+
+	adv7171_start();
+	adv7171_send(0x54);
+	adv7171_send(reg);
+	adv7171_send(val);
+	adv7171_stop();
+
+	/* Restore GPIO state for L3 bus */
+	GPSR = gplr & (SDA | SCK | MOD);
+	GPCR = (~gplr) & (SDA | SCK | MOD);
+	GPDR = gpdr;
+}
+
+static void adv7171_sleep(void)
+{
+	/* Put the ADV7171 into sleep mode */
+	adv7171_write(0x04, 0x40);
+}
+
+static unsigned codec_nreset;
+
+static void assabet_codec_reset(unsigned mask, int set)
+{
+	unsigned long flags;
+	bool old;
+
+	local_irq_save(flags);
+	old = !codec_nreset;
+	if (set)
+		codec_nreset &= ~mask;
+	else
+		codec_nreset |= mask;
+
+	if (old != !codec_nreset) {
+		if (codec_nreset) {
+			ASSABET_BCR_set(ASSABET_BCR_NCODEC_RST);
+			adv7171_sleep();
+		} else {
+			ASSABET_BCR_clear(ASSABET_BCR_NCODEC_RST);
+		}
+	}
+	local_irq_restore(flags);
+}
+
+static void assabet_ucb1x00_reset(enum ucb1x00_reset state)
+{
+	int set = state == UCB_RST_REMOVE || state == UCB_RST_SUSPEND ||
+		state == UCB_RST_PROBE_FAIL;
+	assabet_codec_reset(RST_UCB1X00, set);
+}
+
+void assabet_uda1341_reset(int set)
+{
+	assabet_codec_reset(RST_UDA1341, set);
+}
+EXPORT_SYMBOL(assabet_uda1341_reset);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Assabet flash support code.
@@ -139,6 +350,7 @@ static struct resource assabet_flash_resources[] = {
 };
 
 
+<<<<<<< HEAD
 /*
  * Assabet IrDA support code.
  */
@@ -177,6 +389,12 @@ static struct irda_platform_data assabet_irda_data = {
 static struct ucb1x00_plat_data assabet_ucb1x00_data = {
 	.reset		= assabet_ucb1x00_reset,
 	.gpio_base	= -1,
+=======
+static struct ucb1x00_plat_data assabet_ucb1x00_data = {
+	.reset		= assabet_ucb1x00_reset,
+	.gpio_base	= -1,
+	.can_wakeup	= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct mcp_plat_data assabet_mcp_data = {
@@ -287,6 +505,112 @@ static struct resource neponset_resources[] = {
 };
 #endif
 
+<<<<<<< HEAD
+=======
+static struct gpiod_lookup_table assabet_cf_gpio_table = {
+	.dev_id = "sa11x0-pcmcia.1",
+	.table = {
+		GPIO_LOOKUP("gpio", 21, "ready", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("gpio", 22, "detect", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("gpio", 24, "bvd2", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("gpio", 25, "bvd1", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("assabet", 1, "reset", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("assabet", 7, "bus-enable", GPIO_ACTIVE_LOW),
+		{ },
+	},
+};
+
+static struct regulator_consumer_supply assabet_cf_vcc_consumers[] = {
+	REGULATOR_SUPPLY("vcc", "sa11x0-pcmcia.1"),
+};
+
+static struct fixed_voltage_config assabet_cf_vcc_pdata __initdata = {
+	.supply_name = "cf-power",
+	.microvolts = 3300000,
+};
+
+static struct gpiod_lookup_table assabet_cf_vcc_gpio_table = {
+	.dev_id = "reg-fixed-voltage.0",
+	.table = {
+		GPIO_LOOKUP("assabet", 0, NULL, GPIO_ACTIVE_HIGH),
+		{ },
+	},
+};
+
+static struct gpiod_lookup_table assabet_leds_gpio_table = {
+	.dev_id = "leds-gpio",
+	.table = {
+		GPIO_LOOKUP("assabet", 13, NULL, GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 14, NULL, GPIO_ACTIVE_LOW),
+		{ },
+	},
+};
+
+static struct gpio_led assabet_leds[] __initdata = {
+	{
+		.name = "assabet:red",
+		.default_trigger = "cpu0",
+		.default_state = LEDS_GPIO_DEFSTATE_KEEP,
+	}, {
+		.name = "assabet:green",
+		.default_trigger = "heartbeat",
+		.default_state = LEDS_GPIO_DEFSTATE_KEEP,
+	},
+};
+
+static const struct gpio_led_platform_data assabet_leds_pdata __initconst = {
+	.num_leds = ARRAY_SIZE(assabet_leds),
+	.leds = assabet_leds,
+};
+
+static struct gpio_keys_button assabet_keys_buttons[] = {
+	{
+		.gpio = 0,
+		.irq = IRQ_GPIO0,
+		.desc = "gpio0",
+		.wakeup = 1,
+		.can_disable = 1,
+		.debounce_interval = 5,
+	}, {
+		.gpio = 1,
+		.irq = IRQ_GPIO1,
+		.desc = "gpio1",
+		.wakeup = 1,
+		.can_disable = 1,
+		.debounce_interval = 5,
+	},
+};
+
+static const struct gpio_keys_platform_data assabet_keys_pdata = {
+	.buttons = assabet_keys_buttons,
+	.nbuttons = ARRAY_SIZE(assabet_keys_buttons),
+	.rep = 0,
+};
+
+static struct gpiod_lookup_table assabet_uart1_gpio_table = {
+	.dev_id = "sa11x0-uart.1",
+	.table = {
+		GPIO_LOOKUP("assabet", 16, "dtr", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 17, "rts", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 25, "dcd", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 26, "cts", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 27, "dsr", GPIO_ACTIVE_LOW),
+		{ },
+	},
+};
+
+static struct gpiod_lookup_table assabet_uart3_gpio_table = {
+	.dev_id = "sa11x0-uart.3",
+	.table = {
+		GPIO_LOOKUP("assabet", 28, "cts", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 29, "dsr", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 30, "dcd", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("assabet", 31, "rng", GPIO_ACTIVE_LOW),
+		{ },
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init assabet_init(void)
 {
 	/*
@@ -325,6 +649,7 @@ static void __init assabet_init(void)
 	sa11x0_ppc_configure_mcp();
 
 	if (machine_has_neponset()) {
+<<<<<<< HEAD
 		/*
 		 * Angel sets this, but other bootloaders may not.
 		 *
@@ -333,6 +658,8 @@ static void __init assabet_init(void)
 		 */
 		ASSABET_BCR = BCR_value = ASSABET_BCR_DB1111;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_ASSABET_NEPONSET
 		printk( "Warning: Neponset detected but full support "
 			"hasn't been configured in the kernel\n" );
@@ -340,8 +667,31 @@ static void __init assabet_init(void)
 		platform_device_register_simple("neponset", 0,
 			neponset_resources, ARRAY_SIZE(neponset_resources));
 #endif
+<<<<<<< HEAD
 	}
 
+=======
+	} else {
+		gpiod_add_lookup_table(&assabet_uart1_gpio_table);
+		gpiod_add_lookup_table(&assabet_uart3_gpio_table);
+		gpiod_add_lookup_table(&assabet_cf_vcc_gpio_table);
+
+		sa11x0_register_fixed_regulator(0, &assabet_cf_vcc_pdata,
+					assabet_cf_vcc_consumers,
+					ARRAY_SIZE(assabet_cf_vcc_consumers),
+					true);
+
+	}
+
+	platform_device_register_resndata(NULL, "gpio-keys", 0,
+					  NULL, 0,
+					  &assabet_keys_pdata,
+					  sizeof(assabet_keys_pdata));
+
+	gpiod_add_lookup_table(&assabet_leds_gpio_table);
+	gpio_led_register_device(-1, &assabet_leds_pdata);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ASSABET_PAL_VIDEO
 	sa11x0_register_lcd(&lq039q2ds54_info);
 #else
@@ -349,8 +699,15 @@ static void __init assabet_init(void)
 #endif
 	sa11x0_register_mtd(&assabet_flash_data, assabet_flash_resources,
 			    ARRAY_SIZE(assabet_flash_resources));
+<<<<<<< HEAD
 	sa11x0_register_irda(&assabet_irda_data);
 	sa11x0_register_mcp(&assabet_mcp_data);
+=======
+	sa11x0_register_mcp(&assabet_mcp_data);
+
+	if (!machine_has_neponset())
+		sa11x0_register_pcmcia(1, &assabet_cf_gpio_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -362,11 +719,19 @@ static void __init assabet_init(void)
 static void __init map_sa1100_gpio_regs( void )
 {
 	unsigned long phys = __PREG(GPLR) & PMD_MASK;
+<<<<<<< HEAD
 	unsigned long virt = io_p2v(phys);
 	int prot = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_DOMAIN(DOMAIN_IO);
 	pmd_t *pmd;
 
 	pmd = pmd_offset(pud_offset(pgd_offset_k(virt), virt), virt);
+=======
+	unsigned long virt = (unsigned long)io_p2v(phys);
+	int prot = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_DOMAIN(DOMAIN_IO);
+	pmd_t *pmd;
+
+	pmd = pmd_off_k(virt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pmd = __pmd(phys | prot);
 	flush_pmd_entry(pmd);
 }
@@ -399,7 +764,11 @@ static void __init get_assabet_scr(void)
 }
 
 static void __init
+<<<<<<< HEAD
 fixup_assabet(struct tag *tags, char **cmdline, struct meminfo *mi)
+=======
+fixup_assabet(struct tag *tags, char **cmdline)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This must be done before any call to machine_has_neponset() */
 	map_sa1100_gpio_regs();
@@ -414,6 +783,7 @@ static void assabet_uart_pm(struct uart_port *port, u_int state, u_int oldstate)
 {
 	if (port->mapbase == _Ser1UTCR0) {
 		if (state)
+<<<<<<< HEAD
 			ASSABET_BCR_clear(ASSABET_BCR_RS232EN |
 					  ASSABET_BCR_COM_RTS |
 					  ASSABET_BCR_COM_DTR);
@@ -482,6 +852,15 @@ static u_int assabet_get_mctrl(struct uart_port *port)
 static struct sa1100_port_fns assabet_port_fns __initdata = {
 	.set_mctrl	= assabet_set_mctrl,
 	.get_mctrl	= assabet_get_mctrl,
+=======
+			ASSABET_BCR_clear(ASSABET_BCR_RS232EN);
+		else
+			ASSABET_BCR_set(ASSABET_BCR_RS232EN);
+	}
+}
+
+static struct sa1100_port_fns assabet_port_fns __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pm		= assabet_uart_pm,
 };
 
@@ -532,15 +911,43 @@ static void __init assabet_map_io(void)
 	sa1100_register_uart(2, 3);
 }
 
+<<<<<<< HEAD
+=======
+static void __init assabet_init_irq(void)
+{
+	u32 def_val;
+
+	sa1100_init_irq();
+
+	if (machine_has_neponset())
+		def_val = ASSABET_BCR_DB1111;
+	else
+		def_val = ASSABET_BCR_DB1110;
+
+	/*
+	 * Angel sets this, but other bootloaders may not.
+	 *
+	 * This must precede any driver calls to BCR_set() or BCR_clear().
+	 */
+	assabet_init_gpio((void *)&ASSABET_BCR, def_val);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MACHINE_START(ASSABET, "Intel-Assabet")
 	.atag_offset	= 0x100,
 	.fixup		= fixup_assabet,
 	.map_io		= assabet_map_io,
 	.nr_irqs	= SA1100_NR_IRQS,
+<<<<<<< HEAD
 	.init_irq	= sa1100_init_irq,
 	.timer		= &sa1100_timer,
 	.init_machine	= assabet_init,
+=======
+	.init_irq	= assabet_init_irq,
+	.init_time	= sa1100_timer_init,
+	.init_machine	= assabet_init,
+	.init_late	= sa11x0_init_late,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SA1111
 	.dma_zone_size	= SZ_1M,
 #endif

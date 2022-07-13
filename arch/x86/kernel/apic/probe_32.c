@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Default generic APIC driver. This handles up to 8 CPUs.
  *
  * Copyright 2003 Andi Kleen, SuSE Labs.
+<<<<<<< HEAD
  * Subject to the GNU Public License, v.2
  *
  * Generic x86 APIC driver probe layer.
@@ -79,6 +84,31 @@ static void default_vector_allocation_domain(int cpu, struct cpumask *retmask)
 	 */
 	cpumask_clear(retmask);
 	cpumask_bits(retmask)[0] = APIC_ALL_CPUS;
+=======
+ *
+ * Generic x86 APIC driver probe layer.
+ */
+#include <linux/export.h>
+#include <linux/errno.h>
+#include <linux/smp.h>
+
+#include <xen/xen.h>
+
+#include <asm/io_apic.h>
+#include <asm/apic.h>
+#include <asm/acpi.h>
+
+#include "local.h"
+
+static u32 default_get_apic_id(u32 x)
+{
+	unsigned int ver = GET_APIC_VERSION(apic_read(APIC_LVR));
+
+	if (APIC_XAPIC(ver) || boot_cpu_has(X86_FEATURE_EXTD_APICID))
+		return (x >> 24) & 0xFF;
+	else
+		return (x >> 24) & 0x0F;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* should be called last. */
@@ -87,6 +117,7 @@ static int probe_default(void)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct apic apic_default = {
 
 	.name				= "default",
@@ -126,12 +157,33 @@ static struct apic apic_default = {
 	.cpu_mask_to_apicid		= default_cpu_mask_to_apicid,
 	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
 
+=======
+static struct apic apic_default __ro_after_init = {
+
+	.name				= "default",
+	.probe				= probe_default,
+
+	.dest_mode_logical		= true,
+
+	.disable_esr			= 0,
+
+	.init_apic_ldr			= default_init_apic_ldr,
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= 0xFE,
+	.get_apic_id			= default_get_apic_id,
+
+	.calc_dest_apicid		= apic_flat_calc_apicid,
+
+	.send_IPI			= default_send_IPI_single,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_IPI_mask			= default_send_IPI_mask_logical,
 	.send_IPI_mask_allbutself	= default_send_IPI_mask_allbutself_logical,
 	.send_IPI_allbutself		= default_send_IPI_allbutself,
 	.send_IPI_all			= default_send_IPI_all,
 	.send_IPI_self			= default_send_IPI_self,
 
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 
@@ -148,11 +200,24 @@ static struct apic apic_default = {
 	.safe_wait_icr_idle		= native_safe_apic_wait_icr_idle,
 
 	.x86_32_early_logical_apicid	= default_x86_32_early_logical_apicid,
+=======
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+	.wait_icr_idle			= apic_mem_wait_icr_idle,
+	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 apic_driver(apic_default);
 
+<<<<<<< HEAD
 struct apic *apic = &apic_default;
+=======
+struct apic *apic __ro_after_init = &apic_default;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(apic);
 
 static int cmdline_apic __initdata;
@@ -165,7 +230,11 @@ static int __init parse_apic(char *arg)
 
 	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {
 		if (!strcmp((*drv)->name, arg)) {
+<<<<<<< HEAD
 			apic = *drv;
+=======
+			apic_install_driver(*drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmdline_apic = 1;
 			return 0;
 		}
@@ -176,6 +245,7 @@ static int __init parse_apic(char *arg)
 }
 early_param("apic", parse_apic);
 
+<<<<<<< HEAD
 void __init default_setup_apic_routing(void)
 {
 	int version = apic_version[boot_cpu_physical_apicid];
@@ -210,13 +280,49 @@ void __init default_setup_apic_routing(void)
 }
 
 void __init generic_apic_probe(void)
+=======
+void __init x86_32_probe_bigsmp_early(void)
+{
+	if (nr_cpu_ids <= 8 || xen_pv_domain())
+		return;
+
+	if (IS_ENABLED(CONFIG_X86_BIGSMP)) {
+		switch (boot_cpu_data.x86_vendor) {
+		case X86_VENDOR_INTEL:
+			if (!APIC_XAPIC(boot_cpu_apic_version))
+				break;
+			/* P4 and above */
+			fallthrough;
+		case X86_VENDOR_HYGON:
+		case X86_VENDOR_AMD:
+			if (apic_bigsmp_possible(cmdline_apic))
+				return;
+			break;
+		}
+	}
+	pr_info("Limiting to 8 possible CPUs\n");
+	set_nr_cpu_ids(8);
+}
+
+void __init x86_32_install_bigsmp(void)
+{
+	if (nr_cpu_ids > 8 && !xen_pv_domain())
+		apic_bigsmp_force();
+}
+
+void __init x86_32_probe_apic(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!cmdline_apic) {
 		struct apic **drv;
 
 		for (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {
 			if ((*drv)->probe()) {
+<<<<<<< HEAD
 				apic = *drv;
+=======
+				apic_install_driver(*drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -224,6 +330,7 @@ void __init generic_apic_probe(void)
 		if (drv == __apicdrivers_end)
 			panic("Didn't find an APIC driver");
 	}
+<<<<<<< HEAD
 	printk(KERN_INFO "Using APIC driver %s\n", apic->name);
 }
 
@@ -268,4 +375,6 @@ int __init default_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 		return 1;
 	}
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA modem driver for VIA VT82xx (South Bridge)
  *
@@ -6,6 +10,7 @@
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
  *	                   Tjeerd.Mulder <Tjeerd.Mulder@fujitsu-siemens.com>
  *                    2002 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -31,7 +38,11 @@
  *      modems.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -52,7 +63,10 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("VIA VT82xx modem");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{VIA,VT82C686A/B/C modem,pci}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = -2; /* Exclude the first card */
 static char *id = SNDRV_DEFAULT_STR1;	/* ID for this card */
@@ -260,7 +274,11 @@ struct via82xx_modem {
 	struct snd_info_entry *proc_entry;
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_via82xx_modem_ids) = {
+=======
+static const struct pci_device_id snd_via82xx_modem_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(VIA, 0x3068), TYPE_CARD_VIA82XX_MODEM, },
 	{ 0, }
 };
@@ -281,18 +299,32 @@ static int build_via_table(struct viadev *dev, struct snd_pcm_substream *substre
 {
 	unsigned int i, idx, ofs, rest;
 	struct via82xx_modem *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
+=======
+	__le32 *pgtbl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->table.area == NULL) {
 		/* the start of each lists must be aligned to 8 bytes,
 		 * but the kernel pages are much bigger, so we don't care
 		 */
+<<<<<<< HEAD
 		if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
+=======
+		if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					PAGE_ALIGN(VIA_TABLE_SIZE * 2 * 8),
 					&dev->table) < 0)
 			return -ENOMEM;
 	}
 	if (! dev->idx_table) {
+<<<<<<< HEAD
 		dev->idx_table = kmalloc(sizeof(*dev->idx_table) * VIA_TABLE_SIZE, GFP_KERNEL);
+=======
+		dev->idx_table = kmalloc_array(VIA_TABLE_SIZE,
+					       sizeof(*dev->idx_table),
+					       GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! dev->idx_table)
 			return -ENOMEM;
 	}
@@ -300,6 +332,10 @@ static int build_via_table(struct viadev *dev, struct snd_pcm_substream *substre
 	/* fill the entries */
 	idx = 0;
 	ofs = 0;
+<<<<<<< HEAD
+=======
+	pgtbl = (__le32 *)dev->table.area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < periods; i++) {
 		rest = fragsize;
 		/* fill descriptors for a period.
@@ -312,11 +348,19 @@ static int build_via_table(struct viadev *dev, struct snd_pcm_substream *substre
 			unsigned int addr;
 
 			if (idx >= VIA_TABLE_SIZE) {
+<<<<<<< HEAD
 				snd_printk(KERN_ERR "via82xx: too much table size!\n");
 				return -EINVAL;
 			}
 			addr = snd_pcm_sgbuf_get_addr(substream, ofs);
 			((u32 *)dev->table.area)[idx << 1] = cpu_to_le32(addr);
+=======
+				dev_err(&pci->dev, "too much table size!\n");
+				return -EINVAL;
+			}
+			addr = snd_pcm_sgbuf_get_addr(substream, ofs);
+			pgtbl[idx << 1] = cpu_to_le32(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = PAGE_SIZE - (ofs % PAGE_SIZE);
 			if (rest < r)
 				r = rest;
@@ -329,10 +373,18 @@ static int build_via_table(struct viadev *dev, struct snd_pcm_substream *substre
 			} else
 				flag = 0; /* period continues to the next */
 			/*
+<<<<<<< HEAD
 			printk(KERN_DEBUG "via: tbl %d: at %d  size %d "
 			       "(rest %d)\n", idx, ofs, r, rest);
 			*/
 			((u32 *)dev->table.area)[(idx<<1) + 1] = cpu_to_le32(r | flag);
+=======
+			dev_dbg(&pci->dev,
+				"tbl %d: at %d  size %d (rest %d)\n",
+				idx, ofs, r, rest);
+			*/
+			pgtbl[(idx<<1) + 1] = cpu_to_le32(r | flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->idx_table[idx].offset = ofs;
 			dev->idx_table[idx].size = r;
 			ofs += r;
@@ -379,10 +431,18 @@ static int snd_via82xx_codec_ready(struct via82xx_modem *chip, int secondary)
 	
 	while (timeout-- > 0) {
 		udelay(1);
+<<<<<<< HEAD
 		if (!((val = snd_via82xx_codec_xread(chip)) & VIA_REG_AC97_BUSY))
 			return val & 0xffff;
 	}
 	snd_printk(KERN_ERR "codec_ready: codec %i is not ready [0x%x]\n",
+=======
+		val = snd_via82xx_codec_xread(chip);
+		if (!(val & VIA_REG_AC97_BUSY))
+			return val & 0xffff;
+	}
+	dev_err(chip->card->dev, "codec_ready: codec %i is not ready [0x%x]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   secondary, snd_via82xx_codec_xread(chip));
 	return -EIO;
 }
@@ -407,7 +467,11 @@ static int snd_via82xx_codec_valid(struct via82xx_modem *chip, int secondary)
 static void snd_via82xx_codec_wait(struct snd_ac97 *ac97)
 {
 	struct via82xx_modem *chip = ac97->private_data;
+<<<<<<< HEAD
 	int err;
+=======
+	__always_unused int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_via82xx_codec_ready(chip, ac97->num);
 	/* here we need to wait fairly for long time.. */
 	msleep(500);
@@ -443,7 +507,12 @@ static unsigned short snd_via82xx_codec_read(struct snd_ac97 *ac97, unsigned sho
 	xval |= (reg & 0x7f) << VIA_REG_AC97_CMD_SHIFT;
       	while (1) {
       		if (again++ > 3) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "codec_read: codec %i is not valid [0x%x]\n",
+=======
+			dev_err(chip->card->dev,
+				"codec_read: codec %i is not valid [0x%x]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ac97->num, snd_via82xx_codec_xread(chip));
 		      	return 0xffff;
 		}
@@ -560,7 +629,13 @@ static int snd_via82xx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	((pos) < viadev->lastpos && ((pos) >= viadev->bufsize2 ||\
 				     viadev->lastpos < viadev->bufsize2))
 
+<<<<<<< HEAD
 static inline unsigned int calc_linear_pos(struct viadev *viadev, unsigned int idx,
+=======
+static inline unsigned int calc_linear_pos(struct via82xx_modem *chip,
+					   struct viadev *viadev,
+					   unsigned int idx,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   unsigned int count)
 {
 	unsigned int size, res;
@@ -570,20 +645,36 @@ static inline unsigned int calc_linear_pos(struct viadev *viadev, unsigned int i
 
 	/* check the validity of the calculated position */
 	if (size < count) {
+<<<<<<< HEAD
 		snd_printd(KERN_ERR "invalid via82xx_cur_ptr (size = %d, count = %d)\n",
+=======
+		dev_err(chip->card->dev,
+			"invalid via82xx_cur_ptr (size = %d, count = %d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   (int)size, (int)count);
 		res = viadev->lastpos;
 	} else if (check_invalid_pos(viadev, res)) {
 #ifdef POINTER_DEBUG
+<<<<<<< HEAD
 		printk(KERN_DEBUG "fail: idx = %i/%i, lastpos = 0x%x, "
 		       "bufsize2 = 0x%x, offsize = 0x%x, size = 0x%x, "
 		       "count = 0x%x\n", idx, viadev->tbl_entries, viadev->lastpos,
+=======
+		dev_dbg(chip->card->dev,
+			"fail: idx = %i/%i, lastpos = 0x%x, bufsize2 = 0x%x, offsize = 0x%x, size = 0x%x, count = 0x%x\n",
+			idx, viadev->tbl_entries, viadev->lastpos,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       viadev->bufsize2, viadev->idx_table[idx].offset,
 		       viadev->idx_table[idx].size, count);
 #endif
 		if (count && size < count) {
+<<<<<<< HEAD
 			snd_printd(KERN_ERR "invalid via82xx_cur_ptr, "
 				   "using last valid pointer\n");
+=======
+			dev_dbg(chip->card->dev,
+				"invalid via82xx_cur_ptr, using last valid pointer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = viadev->lastpos;
 		} else {
 			if (! count)
@@ -595,8 +686,13 @@ static inline unsigned int calc_linear_pos(struct viadev *viadev, unsigned int i
 				 */
 				res = viadev->idx_table[idx].offset + size;
 			if (check_invalid_pos(viadev, res)) {
+<<<<<<< HEAD
 				snd_printd(KERN_ERR "invalid via82xx_cur_ptr (2), "
 					   "using last valid pointer\n");
+=======
+				dev_dbg(chip->card->dev,
+					"invalid via82xx_cur_ptr (2), using last valid pointer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res = viadev->lastpos;
 			}
 		}
@@ -632,7 +728,11 @@ static snd_pcm_uframes_t snd_via686_pcm_pointer(struct snd_pcm_substream *substr
 	else /* CURR_PTR holds the address + 8 */
 		idx = ((ptr - (unsigned int)viadev->table.addr) / 8 - 1) %
 			viadev->tbl_entries;
+<<<<<<< HEAD
 	res = calc_linear_pos(viadev, idx, count);
+=======
+	res = calc_linear_pos(chip, viadev, idx, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&chip->reg_lock);
 
 	return bytes_to_frames(substream->runtime, res);
@@ -649,9 +749,12 @@ static int snd_via82xx_hw_params(struct snd_pcm_substream *substream,
 	struct viadev *viadev = substream->runtime->private_data;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
 	if (err < 0)
 		return err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = build_via_table(viadev, substream, chip->pci,
 			      params_periods(hw_params),
 			      params_period_bytes(hw_params));
@@ -674,7 +777,10 @@ static int snd_via82xx_hw_free(struct snd_pcm_substream *substream)
 	struct viadev *viadev = substream->runtime->private_data;
 
 	clean_via_table(viadev, substream, chip->pci);
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -709,7 +815,11 @@ static int snd_via82xx_pcm_prepare(struct snd_pcm_substream *substream)
 /*
  * pcm hardware definition, identical for both playback and capture
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_via82xx_hw =
+=======
+static const struct snd_pcm_hardware snd_via82xx_hw =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -739,8 +849,13 @@ static int snd_via82xx_modem_pcm_open(struct via82xx_modem *chip, struct viadev 
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
+<<<<<<< HEAD
         static unsigned int rates[] = { 8000,  9600, 12000, 16000 };
         static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+=======
+	static const unsigned int rates[] = { 8000,  9600, 12000, 16000 };
+	static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 .count = ARRAY_SIZE(rates),
                 .list = rates,
                 .mask = 0,
@@ -748,13 +863,24 @@ static int snd_via82xx_modem_pcm_open(struct via82xx_modem *chip, struct viadev 
 
 	runtime->hw = snd_via82xx_hw;
 	
+<<<<<<< HEAD
         if ((err = snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
 					      &hw_constraints_rates)) < 0)
+=======
+	err = snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
+					 &hw_constraints_rates);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return err;
 
 	/* we may remove following constaint when we modify table entries
 	   in interrupt */
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
+=======
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	runtime->private_data = viadev;
@@ -799,15 +925,22 @@ static int snd_via82xx_pcm_close(struct snd_pcm_substream *substream)
 
 
 /* via686 playback callbacks */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_via686_playback_ops = {
 	.open =		snd_via82xx_playback_open,
 	.close =	snd_via82xx_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_via686_playback_ops = {
+	.open =		snd_via82xx_playback_open,
+	.close =	snd_via82xx_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_via82xx_hw_params,
 	.hw_free =	snd_via82xx_hw_free,
 	.prepare =	snd_via82xx_pcm_prepare,
 	.trigger =	snd_via82xx_pcm_trigger,
 	.pointer =	snd_via686_pcm_pointer,
+<<<<<<< HEAD
 	.page =		snd_pcm_sgbuf_ops_page,
 };
 
@@ -816,12 +949,23 @@ static struct snd_pcm_ops snd_via686_capture_ops = {
 	.open =		snd_via82xx_capture_open,
 	.close =	snd_via82xx_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+};
+
+/* via686 capture callbacks */
+static const struct snd_pcm_ops snd_via686_capture_ops = {
+	.open =		snd_via82xx_capture_open,
+	.close =	snd_via82xx_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_via82xx_hw_params,
 	.hw_free =	snd_via82xx_hw_free,
 	.prepare =	snd_via82xx_pcm_prepare,
 	.trigger =	snd_via82xx_pcm_trigger,
 	.pointer =	snd_via686_pcm_pointer,
+<<<<<<< HEAD
 	.page =		snd_pcm_sgbuf_ops_page,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -836,7 +980,11 @@ static void init_viadev(struct via82xx_modem *chip, int idx, unsigned int reg_of
 /*
  * create a pcm instance for via686a/b
  */
+<<<<<<< HEAD
 static int __devinit snd_via686_pcm_new(struct via82xx_modem *chip)
+=======
+static int snd_via686_pcm_new(struct via82xx_modem *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -858,11 +1006,16 @@ static int __devinit snd_via686_pcm_new(struct via82xx_modem *chip)
 	init_viadev(chip, 0, VIA_REG_MO_STATUS, 0);
 	init_viadev(chip, 1, VIA_REG_MI_STATUS, 1);
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 							 snd_dma_pci_data(chip->pci),
 							 64*1024, 128*1024)) < 0)
 		return err;
 
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
+				       &chip->pci->dev, 64*1024, 128*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -885,17 +1038,30 @@ static void snd_via82xx_mixer_free_ac97(struct snd_ac97 *ac97)
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_via82xx_mixer_new(struct via82xx_modem *chip)
 {
 	struct snd_ac97_template ac97;
 	int err;
 	static struct snd_ac97_bus_ops ops = {
+=======
+static int snd_via82xx_mixer_new(struct via82xx_modem *chip)
+{
+	struct snd_ac97_template ac97;
+	int err;
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_via82xx_codec_write,
 		.read = snd_via82xx_codec_read,
 		.wait = snd_via82xx_codec_wait,
 	};
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, chip, &chip->ac97_bus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, chip, &chip->ac97_bus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	chip->ac97_bus->private_free = snd_via82xx_mixer_free_ac97_bus;
 	chip->ac97_bus->clock = chip->ac97_clock;
@@ -907,7 +1073,12 @@ static int __devinit snd_via82xx_mixer_new(struct via82xx_modem *chip)
 	ac97.scaps = AC97_SCAP_SKIP_AUDIO | AC97_SCAP_POWER_SAVE;
 	ac97.num = chip->ac97_secondary;
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97)) < 0)
+=======
+	err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
@@ -928,12 +1099,19 @@ static void snd_via82xx_proc_read(struct snd_info_entry *entry, struct snd_info_
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit snd_via82xx_proc_init(struct via82xx_modem *chip)
 {
 	struct snd_info_entry *entry;
 
 	if (! snd_card_proc_new(chip->card, "via82xx", &entry))
 		snd_info_set_text_ops(entry, chip, snd_via82xx_proc_read);
+=======
+static void snd_via82xx_proc_init(struct via82xx_modem *chip)
+{
+	snd_card_ro_proc_new(chip->card, "via82xx", chip,
+			     snd_via82xx_proc_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -990,8 +1168,15 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
 		schedule_timeout_uninterruptible(1);
 	} while (time_before(jiffies, end_time));
 
+<<<<<<< HEAD
 	if ((val = snd_via82xx_codec_xread(chip)) & VIA_REG_AC97_BUSY)
 		snd_printk(KERN_ERR "AC'97 codec is not ready [0x%x]\n", val);
+=======
+	val = snd_via82xx_codec_xread(chip);
+	if (val & VIA_REG_AC97_BUSY)
+		dev_err(chip->card->dev,
+			"AC'97 codec is not ready [0x%x]\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_via82xx_codec_xwrite(chip, VIA_REG_AC97_READ |
 				 VIA_REG_AC97_SECONDARY_VALID |
@@ -1001,7 +1186,12 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
 				 VIA_REG_AC97_SECONDARY_VALID |
 				 (VIA_REG_AC97_CODEC_ID_SECONDARY << VIA_REG_AC97_CODEC_ID_SHIFT));
 	do {
+<<<<<<< HEAD
 		if ((val = snd_via82xx_codec_xread(chip)) & VIA_REG_AC97_SECONDARY_VALID) {
+=======
+		val = snd_via82xx_codec_xread(chip);
+		if (val & VIA_REG_AC97_SECONDARY_VALID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->ac97_secondary = 1;
 			goto __ac97_ok2;
 		}
@@ -1019,6 +1209,7 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 /*
  * power management
@@ -1026,10 +1217,19 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
 static int snd_via82xx_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+/*
+ * power management
+ */
+static int snd_via82xx_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct via82xx_modem *chip = card->private_data;
 	int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	for (i = 0; i < 2; i++)
 		snd_pcm_suspend_all(chip->pcms[i]);
 	for (i = 0; i < chip->num_devs; i++)
@@ -1059,6 +1259,20 @@ static int snd_via82xx_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	for (i = 0; i < chip->num_devs; i++)
+		snd_via82xx_channel_reset(chip, &chip->devs[i]);
+	snd_ac97_suspend(chip->ac97);
+	return 0;
+}
+
+static int snd_via82xx_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct via82xx_modem *chip = card->private_data;
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_via82xx_chip_init(chip);
 
 	snd_ac97_resume(chip->ac97);
@@ -1069,6 +1283,7 @@ static int snd_via82xx_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 static int snd_via82xx_free(struct via82xx_modem *chip)
@@ -1117,11 +1332,40 @@ static int __devinit snd_via82xx_create(struct snd_card *card,
 		return -ENOMEM;
 	}
 
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_via82xx_pm, snd_via82xx_suspend, snd_via82xx_resume);
+
+static void snd_via82xx_free(struct snd_card *card)
+{
+	struct via82xx_modem *chip = card->private_data;
+	unsigned int i;
+
+	/* disable interrupts */
+	for (i = 0; i < chip->num_devs; i++)
+		snd_via82xx_channel_reset(chip, &chip->devs[i]);
+}
+
+static int snd_via82xx_create(struct snd_card *card,
+			      struct pci_dev *pci,
+			      int chip_type,
+			      int revision,
+			      unsigned int ac97_clock)
+{
+	struct via82xx_modem *chip = card->private_data;
+	int err;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
 
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, card->driver)) < 0) {
 		kfree(chip);
 		pci_disable_device(pci);
@@ -1148,21 +1392,49 @@ static int __devinit snd_via82xx_create(struct snd_card *card,
 		snd_via82xx_free(chip);
 		return err;
 	}
+=======
+	err = pci_request_regions(pci, card->driver);
+	if (err < 0)
+		return err;
+	chip->port = pci_resource_start(pci, 0);
+	if (devm_request_irq(&pci->dev, pci->irq, snd_via82xx_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_via82xx_free;
+	if (ac97_clock >= 8000 && ac97_clock <= 48000)
+		chip->ac97_clock = ac97_clock;
+
+	err = snd_via82xx_chip_init(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The 8233 ac97 controller does not implement the master bit
 	 * in the pci command register. IMHO this is a violation of the PCI spec.
 	 * We call pci_set_master here because it does not hurt. */
 	pci_set_master(pci);
+<<<<<<< HEAD
 
 	snd_card_set_dev(card, &pci->dev);
 
 	*r_via = chip;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 				       const struct pci_device_id *pci_id)
+=======
+static int __snd_via82xx_probe(struct pci_dev *pci,
+			       const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct via82xx_modem *chip;
@@ -1170,9 +1442,17 @@ static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 	unsigned int i;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index, id, THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card_type = pci_id->driver_data;
 	switch (card_type) {
@@ -1181,6 +1461,7 @@ static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 		sprintf(card->shortname, "VIA 82XX modem");
 		break;
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "invalid card type %d\n", card_type);
 		err = -EINVAL;
 		goto __error;
@@ -1195,6 +1476,23 @@ static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 
 	if ((err = snd_via686_pcm_new(chip)) < 0 )
 		goto __error;
+=======
+		dev_err(card->dev, "invalid card type %d\n", card_type);
+		return -EINVAL;
+	}
+		
+	err = snd_via82xx_create(card, pci, chip_type, pci->revision,
+				 ac97_clock);
+	if (err < 0)
+		return err;
+	err = snd_via82xx_mixer_new(chip);
+	if (err < 0)
+		return err;
+
+	err = snd_via686_pcm_new(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable interrupts */
 	for (i = 0; i < chip->num_devs; i++)
@@ -1205,6 +1503,7 @@ static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 
 	snd_via82xx_proc_init(chip);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -1246,3 +1545,28 @@ static void __exit alsa_card_via82xx_exit(void)
 
 module_init(alsa_card_via82xx_init)
 module_exit(alsa_card_via82xx_exit)
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+	pci_set_drvdata(pci, card);
+	return 0;
+}
+
+static int snd_via82xx_probe(struct pci_dev *pci,
+			     const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
+}
+
+static struct pci_driver via82xx_modem_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_via82xx_modem_ids,
+	.probe = snd_via82xx_probe,
+	.driver = {
+		.pm = &snd_via82xx_pm,
+	},
+};
+
+module_pci_driver(via82xx_modem_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

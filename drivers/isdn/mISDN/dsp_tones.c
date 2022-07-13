@@ -457,9 +457,15 @@ dsp_tone_hw_message(struct dsp *dsp, u8 *sample, int len)
  * timer expires *
  *****************/
 void
+<<<<<<< HEAD
 dsp_tone_timeout(void *arg)
 {
 	struct dsp *dsp = arg;
+=======
+dsp_tone_timeout(struct timer_list *t)
+{
+	struct dsp *dsp = from_timer(dsp, t, tone.tl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dsp_tone *tone = &dsp->tone;
 	struct pattern *pat = (struct pattern *)tone->pattern;
 	int index = tone->index;
@@ -478,7 +484,10 @@ dsp_tone_timeout(void *arg)
 	else
 		dsp_tone_hw_message(dsp, pat->data[index], *(pat->siz[index]));
 	/* set timer */
+<<<<<<< HEAD
 	init_timer(&tone->tl);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tone->tl.expires = jiffies + (pat->seq[index] * HZ) / 8000;
 	add_timer(&tone->tl);
 }
@@ -541,7 +550,10 @@ dsp_tone(struct dsp *dsp, int tone)
 		/* set timer */
 		if (timer_pending(&tonet->tl))
 			del_timer(&tonet->tl);
+<<<<<<< HEAD
 		init_timer(&tonet->tl);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tonet->tl.expires = jiffies + (pat->seq[0] * HZ) / 8000;
 		add_timer(&tonet->tl);
 	} else {

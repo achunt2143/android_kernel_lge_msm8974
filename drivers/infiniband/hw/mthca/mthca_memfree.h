@@ -68,7 +68,11 @@ struct mthca_icm_table {
 	int               lowmem;
 	int               coherent;
 	struct mutex      mutex;
+<<<<<<< HEAD
 	struct mthca_icm *icm[0];
+=======
+	struct mthca_icm *icm[] __counted_by(num_icm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mthca_icm_iter {

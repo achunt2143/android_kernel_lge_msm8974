@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $(CROSS_COMPILE)cc -Wall -Wextra -g -lpthread -o testusb testusb.c */
 
 /*
  * Copyright (c) 2002 by David Brownell
  * Copyright (c) 2010 by Samsung Electronics
  * Author: Michal Nazarewicz <mina86@mina86.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -109,7 +116,14 @@ struct usb_interface_descriptor {
 enum usb_device_speed {
 	USB_SPEED_UNKNOWN = 0,			/* enumerating */
 	USB_SPEED_LOW, USB_SPEED_FULL,		/* usb 1.1 */
+<<<<<<< HEAD
 	USB_SPEED_HIGH				/* usb 2.0 */
+=======
+	USB_SPEED_HIGH,				/* usb 2.0 */
+	USB_SPEED_WIRELESS,			/* wireless (usb 2.5) */
+	USB_SPEED_SUPER,			/* usb 3.0 */
+	USB_SPEED_SUPER_PLUS,			/* usb 3.1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-------------------------------------------------------------------------*/
@@ -117,11 +131,22 @@ enum usb_device_speed {
 static char *speed (enum usb_device_speed s)
 {
 	switch (s) {
+<<<<<<< HEAD
 	case USB_SPEED_UNKNOWN:	return "unknown";
 	case USB_SPEED_LOW:	return "low";
 	case USB_SPEED_FULL:	return "full";
 	case USB_SPEED_HIGH:	return "high";
 	default:		return "??";
+=======
+	case USB_SPEED_UNKNOWN:		return "unknown";
+	case USB_SPEED_LOW:		return "low";
+	case USB_SPEED_FULL:		return "full";
+	case USB_SPEED_HIGH:		return "high";
+	case USB_SPEED_WIRELESS:	return "wireless";
+	case USB_SPEED_SUPER:		return "super";
+	case USB_SPEED_SUPER_PLUS:	return "super-plus";
+	default:			return "??";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -253,9 +278,12 @@ static int find_testdev(const char *name, const struct stat *sb, int flag)
 
 	if (flag != FTW_F)
 		return 0;
+<<<<<<< HEAD
 	/* ignore /proc/bus/usb/{devices,drivers} */
 	if (strrchr(name, '/')[1] == 'd')
 		return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fd = fopen(name, "rb");
 	if (!fd) {
@@ -281,6 +309,7 @@ nomem:
 	}
 
 	entry->ifnum = ifnum;
+<<<<<<< HEAD
 
 	/* FIXME ask usbfs what speed; update USBDEVFS_CONNECTINFO so
 	 * it tells about high speed etc */
@@ -288,6 +317,8 @@ nomem:
 	fprintf(stderr, "%s speed\t%s\t%u\n",
 		speed(entry->speed), entry->name, entry->ifnum);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->next = testdevs;
 	testdevs = entry;
 	return 0;
@@ -316,6 +347,17 @@ static void *handle_testdev (void *arg)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	status  =  ioctl(fd, USBDEVFS_GET_SPEED, NULL);
+	if (status < 0)
+		fprintf(stderr, "USBDEVFS_GET_SPEED failed %d\n", status);
+	else
+		dev->speed = status;
+	fprintf(stderr, "%s speed\t%s\t%u\n",
+			speed(dev->speed), dev->name, dev->ifnum);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 restart:
 	for (i = 0; i < TEST_CASES; i++) {
 		if (dev->test != -1 && dev->test != i)
@@ -354,6 +396,7 @@ restart:
 	return arg;
 }
 
+<<<<<<< HEAD
 static const char *usbfs_dir_find(void)
 {
 	static char usbfs_path_0[] = "/dev/usb/devices";
@@ -375,6 +418,14 @@ static const char *usbfs_dir_find(void)
 			return *it;
 		}
 	} while (++it != end);
+=======
+static const char *usb_dir_find(void)
+{
+	static char udev_usb_path[] = "/dev/bus/usb";
+
+	if (access(udev_usb_path, F_OK) == 0)
+		return udev_usb_path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -398,7 +449,11 @@ int main (int argc, char **argv)
 	int			c;
 	struct testdev		*entry;
 	char			*device;
+<<<<<<< HEAD
 	const char		*usbfs_dir = NULL;
+=======
+	const char		*usb_dir = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			all = 0, forever = 0, not = 0;
 	int			test = -1 /* all */;
 	struct usbtest_param	param;
@@ -406,6 +461,7 @@ int main (int argc, char **argv)
 	/* pick defaults that works with all speeds, without short packets.
 	 *
 	 * Best per-frame data rates:
+<<<<<<< HEAD
 	 *     high speed, bulk       512 * 13 * 8 = 53248
 	 *                 interrupt 1024 *  3 * 8 = 24576
 	 *     full speed, bulk/intr   64 * 19     =  1216
@@ -415,18 +471,40 @@ int main (int argc, char **argv)
 	param.iterations = 1000;
 	param.length = 512;
 	param.vary = 512;
+=======
+	 *     super speed,bulk      1024 * 16 * 8 = 131072
+	 *                 interrupt 1024 *  3 * 8 =  24576
+	 *     high speed, bulk       512 * 13 * 8 =  53248
+	 *                 interrupt 1024 *  3 * 8 =  24576
+	 *     full speed, bulk/intr   64 * 19     =   1216
+	 *                 interrupt   64 *  1     =     64
+	 *      low speed, interrupt    8 *  1     =      8
+	 */
+	param.iterations = 1000;
+	param.length = 1024;
+	param.vary = 1024;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	param.sglen = 32;
 
 	/* for easy use when hotplugging */
 	device = getenv ("DEVICE");
 
+<<<<<<< HEAD
 	while ((c = getopt (argc, argv, "D:aA:c:g:hns:t:v:")) != EOF)
+=======
+	while ((c = getopt (argc, argv, "D:aA:c:g:hlns:t:v:")) != EOF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (c) {
 	case 'D':	/* device, if only one */
 		device = optarg;
 		continue;
+<<<<<<< HEAD
 	case 'A':	/* use all devices with specified usbfs dir */
 		usbfs_dir = optarg;
+=======
+	case 'A':	/* use all devices with specified USB dir */
+		usb_dir = optarg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FALL THROUGH */
 	case 'a':	/* use all devices */
 		device = NULL;
@@ -463,16 +541,35 @@ int main (int argc, char **argv)
 	case 'h':
 	default:
 usage:
+<<<<<<< HEAD
 		fprintf (stderr, "usage: %s [-n] [-D dev | -a | -A usbfs-dir]\n"
 			"\t[-c iterations]  [-t testnum]\n"
 			"\t[-s packetsize] [-g sglen] [-v vary]\n",
 			argv [0]);
+=======
+		fprintf (stderr,
+			"usage: %s [options]\n"
+			"Options:\n"
+			"\t-D dev		only test specific device\n"
+			"\t-A usb-dir\n"
+			"\t-a		test all recognized devices\n"
+			"\t-l		loop forever(for stress test)\n"
+			"\t-t testnum	only run specified case\n"
+			"\t-n		no test running, show devices to be tested\n"
+			"Case arguments:\n"
+			"\t-c iterations		default 1000\n"
+			"\t-s transfer length	default 1024\n"
+			"\t-g sglen		default 32\n"
+			"\t-v vary			default 1024\n",
+			argv[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	if (optind != argc)
 		goto usage;
 	if (!all && !device) {
 		fprintf (stderr, "must specify '-a' or '-D dev', "
+<<<<<<< HEAD
 			"or DEVICE=/proc/bus/usb/BBB/DDD in env\n");
 		goto usage;
 	}
@@ -482,13 +579,29 @@ usage:
 		usbfs_dir = usbfs_dir_find();
 		if (!usbfs_dir) {
 			fputs ("usbfs files are missing\n", stderr);
+=======
+			"or DEVICE=/dev/bus/usb/BBB/DDD in env\n");
+		goto usage;
+	}
+
+	/* Find usb device subdirectory */
+	if (!usb_dir) {
+		usb_dir = usb_dir_find();
+		if (!usb_dir) {
+			fputs ("USB device files are missing\n", stderr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 	}
 
 	/* collect and list the test devices */
+<<<<<<< HEAD
 	if (ftw (usbfs_dir, find_testdev, 3) != 0) {
 		fputs ("ftw failed; is usbfs missing?\n", stderr);
+=======
+	if (ftw (usb_dir, find_testdev, 3) != 0) {
+		fputs ("ftw failed; are USB device files missing?\n", stderr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -499,7 +612,11 @@ usage:
 	}
 	if (not)
 		return 0;
+<<<<<<< HEAD
 	if (testdevs && testdevs->next == 0 && !device)
+=======
+	if (testdevs && !testdevs->next && !device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device = testdevs->name;
 	for (entry = testdevs; entry; entry = entry->next) {
 		int	status;
@@ -514,10 +631,15 @@ usage:
 			return handle_testdev (entry) != entry;
 		}
 		status = pthread_create (&entry->thread, 0, handle_testdev, entry);
+<<<<<<< HEAD
 		if (status) {
 			perror ("pthread_create");
 			continue;
 		}
+=======
+		if (status)
+			perror ("pthread_create");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (device) {
 		struct testdev		dev;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if MMU
 
 comment "Bus Support"
@@ -28,8 +32,13 @@ config ZORRO
 	  Linux use these.
 
 config AMIGA_PCMCIA
+<<<<<<< HEAD
 	bool "Amiga 1200/600 PCMCIA support (EXPERIMENTAL)"
 	depends on AMIGA && EXPERIMENTAL
+=======
+	bool "Amiga 1200/600 PCMCIA support"
+	depends on AMIGA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include support in the kernel for pcmcia on Amiga 1200 and Amiga
 	  600. If you intend to use pcmcia cards say Y; otherwise say N.
@@ -45,14 +54,27 @@ config ISA
 	  (MCA) or VESA.  ISA is an older system, now being displaced by PCI;
 	  newer boards don't support it.  If you have ISA, say Y, otherwise N.
 
+<<<<<<< HEAD
 config GENERIC_ISA_DMA
 	def_bool ISA
 
 source "drivers/pci/Kconfig"
+=======
+config ATARI_ROM_ISA
+	bool "Atari ROM port ISA adapter support"
+	depends on ATARI
+	help
+	  This option enables support for the ROM port ISA adapter used to
+	  operate ISA cards on Atari. Only 8  bit cards are supported, and
+	  no interrupt lines are connected.
+	  The only driver currently using this adapter is the EtherNEC
+	  driver for RTL8019AS based NE2000 compatible network cards.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 source "drivers/zorro/Kconfig"
 
 endif
+<<<<<<< HEAD
 
 if !MMU
 
@@ -62,3 +84,5 @@ config ISA_DMA_API
 source "drivers/pcmcia/Kconfig"
 
 endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

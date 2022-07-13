@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,11 +23,14 @@
  *
  * File: channel.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "card.h"
 
@@ -54,5 +62,12 @@ void set_channel_map_info(void *pDeviceHandler, unsigned int uChannelIndex,
 void clear_channel_map_info(void *pDeviceHandler);
 unsigned char auto_channel_select(void *pDeviceHandler, CARD_PHY_TYPE ePHYType);
 
+=======
+#include "card.h"
+
+void vnt_init_bands(struct vnt_private *priv);
+
+bool set_channel(struct vnt_private *priv, struct ieee80211_channel *ch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _CHANNEL_H_ */

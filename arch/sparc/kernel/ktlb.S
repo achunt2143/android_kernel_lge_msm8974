@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* arch/sparc64/kernel/ktlb.S: Kernel mapping TLB miss handling.
  *
  * Copyright (C) 1995, 1997, 2005, 2008 David S. Miller <davem@davemloft.net>
@@ -6,10 +10,17 @@
  * Copyright (C) 1996,98,99 Jakub Jelinek  (jj@sunsite.mff.cuni.cz)
  */
 
+<<<<<<< HEAD
 #include <asm/head.h>
 #include <asm/asi.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/head.h>
+#include <asm/asi.h>
+#include <asm/page.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tsb.h>
 
 	.text
@@ -20,6 +31,13 @@ kvmap_itlb:
 	mov		TLB_TAG_ACCESS, %g4
 	ldxa		[%g4] ASI_IMMU, %g4
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g4 here.
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* sun4v_itlb_miss branches here with the missing virtual
 	 * address already loaded into %g4
 	 */
@@ -47,6 +65,7 @@ kvmap_itlb_vmalloc_addr:
 	KERN_PGTABLE_WALK(%g4, %g5, %g2, kvmap_itlb_longpath)
 
 	TSB_LOCK_TAG(%g1, %g2, %g7)
+<<<<<<< HEAD
 
 	/* Load and check PTE.  */
 	ldxa		[%g5] ASI_PHYS_USE_EC, %g5
@@ -55,6 +74,8 @@ kvmap_itlb_vmalloc_addr:
 	brgez,a,pn	%g5, kvmap_itlb_longpath
 	 TSB_STORE(%g1, %g7)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TSB_WRITE(%g1, %g5, %g6)
 
 	/* fallthrough to TLB load */
@@ -118,6 +139,15 @@ kvmap_dtlb_obp:
 	ba,pt		%xcc, kvmap_dtlb_load
 	 nop
 
+<<<<<<< HEAD
+=======
+kvmap_linear_early:
+	sethi		%hi(kern_linear_pte_xor), %g7
+	ldx		[%g7 + %lo(kern_linear_pte_xor)], %g2
+	ba,pt		%xcc, kvmap_dtlb_tsb4m_load
+	 xor		%g2, %g4, %g5
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align		32
 kvmap_dtlb_tsb4m_load:
 	TSB_LOCK_TAG(%g1, %g2, %g7)
@@ -130,6 +160,13 @@ kvmap_dtlb:
 	mov		TLB_TAG_ACCESS, %g4
 	ldxa		[%g4] ASI_DMMU, %g4
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g4 here.
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* sun4v_dtlb_miss branches here with the missing virtual
 	 * address already loaded into %g4
 	 */
@@ -146,6 +183,7 @@ kvmap_dtlb_4v:
 	/* Correct TAG_TARGET is already in %g6, check 4mb TSB.  */
 	KERN_TSB4M_LOOKUP_TL1(%g6, %g5, %g1, %g2, %g3, kvmap_dtlb_load)
 #endif
+<<<<<<< HEAD
 	/* TSB entry address left in %g1, lookup linear PTE.
 	 * Must preserve %g1 and %g6 (TAG).
 	 */
@@ -217,11 +255,20 @@ valid_addr_bitmap_patch:
 kvmap_linear_patch:
 	ba,pt		%xcc, kvmap_dtlb_tsb4m_load
 	 xor		%g2, %g4, %g5
+=======
+	/* Linear mapping TSB lookup failed.  Fallthrough to kernel
+	 * page table based lookup.
+	 */
+	.globl		kvmap_linear_patch
+kvmap_linear_patch:
+	ba,a,pt		%xcc, kvmap_linear_early
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 kvmap_dtlb_vmalloc_addr:
 	KERN_PGTABLE_WALK(%g4, %g5, %g2, kvmap_dtlb_longpath)
 
 	TSB_LOCK_TAG(%g1, %g2, %g7)
+<<<<<<< HEAD
 
 	/* Load and check PTE.  */
 	ldxa		[%g5] ASI_PHYS_USE_EC, %g5
@@ -230,6 +277,8 @@ kvmap_dtlb_vmalloc_addr:
 	brgez,a,pn	%g5, kvmap_dtlb_longpath
 	 TSB_STORE(%g1, %g7)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TSB_WRITE(%g1, %g5, %g6)
 
 	/* fallthrough to TLB load */
@@ -261,6 +310,7 @@ kvmap_dtlb_load:
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
 kvmap_vmemmap:
+<<<<<<< HEAD
 	sub		%g4, %g5, %g5
 	srlx		%g5, 22, %g5
 	sethi		%hi(vmemmap_table), %g1
@@ -268,6 +318,10 @@ kvmap_vmemmap:
 	or		%g1, %lo(vmemmap_table), %g1
 	ba,pt		%xcc, kvmap_dtlb_load
 	 ldx		[%g1 + %g5], %g5
+=======
+	KERN_PGTABLE_WALK(%g4, %g5, %g2, kvmap_dtlb_longpath)
+	ba,a,pt		%xcc, kvmap_dtlb_load
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 kvmap_dtlb_nonlinear:
@@ -279,8 +333,13 @@ kvmap_dtlb_nonlinear:
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
 	/* Do not use the TSB for vmemmap.  */
+<<<<<<< HEAD
 	mov		(VMEMMAP_BASE >> 40), %g5
 	sllx		%g5, 40, %g5
+=======
+	sethi		%hi(VMEMMAP_BASE), %g5
+	ldx		[%g5 + %lo(VMEMMAP_BASE)], %g5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp		%g4,%g5
 	bgeu,pn		%xcc, kvmap_vmemmap
 	 nop
@@ -292,8 +351,13 @@ kvmap_dtlb_tsbmiss:
 	sethi		%hi(MODULES_VADDR), %g5
 	cmp		%g4, %g5
 	blu,pn		%xcc, kvmap_dtlb_longpath
+<<<<<<< HEAD
 	 mov		(VMALLOC_END >> 40), %g5
 	sllx		%g5, 40, %g5
+=======
+	 sethi		%hi(VMALLOC_END), %g5
+	ldx		[%g5 + %lo(VMALLOC_END)], %g5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp		%g4, %g5
 	bgeu,pn		%xcc, kvmap_dtlb_longpath
 	 nop
@@ -331,6 +395,13 @@ kvmap_dtlb_longpath:
 	nop
 	.previous
 
+<<<<<<< HEAD
+=======
+	/* The kernel executes in context zero, therefore we do not
+	 * need to clear the context ID bits out of %g5 here.
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be,pt	%xcc, sparc64_realfault_common
 	 mov	FAULT_CODE_DTLB, %g4
 	ba,pt	%xcc, winfix_trampoline

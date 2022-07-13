@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -17,6 +18,11 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2005 Oracle.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef O2CLUSTER_MASKLOG_H
@@ -162,6 +168,7 @@ extern struct mlog_bits mlog_and_bits, mlog_not_bits;
 
 #endif
 
+<<<<<<< HEAD
 /*
  * smp_processor_id() "helpfully" screams when called outside preemptible
  * regions in current kernels.  sles doesn't have the variants that don't
@@ -202,6 +209,41 @@ extern struct mlog_bits mlog_and_bits, mlog_not_bits;
 	    _st != AOP_TRUNCATED_PAGE && _st != -ENOSPC)		\
 		mlog(ML_ERROR, "status = %lld\n", (long long)_st);	\
 } while (0)
+=======
+__printf(4, 5)
+void __mlog_printk(const u64 *m, const char *func, int line,
+		   const char *fmt, ...);
+
+/*
+ * Testing before the __mlog_printk call lets the compiler eliminate the
+ * call completely when (m & ML_ALLOWED_BITS) is 0.
+ */
+#define mlog(mask, fmt, ...)						\
+do {									\
+	u64 _m = MLOG_MASK_PREFIX | (mask);				\
+	if (_m & ML_ALLOWED_BITS)					\
+		__mlog_printk(&_m, __func__, __LINE__, fmt,		\
+			      ##__VA_ARGS__);				\
+} while (0)
+
+#define mlog_ratelimited(mask, fmt, ...)				\
+do {									\
+	static DEFINE_RATELIMIT_STATE(_rs,				\
+				      DEFAULT_RATELIMIT_INTERVAL,	\
+				      DEFAULT_RATELIMIT_BURST);		\
+	if (__ratelimit(&_rs))						\
+		mlog(mask, fmt, ##__VA_ARGS__);				\
+} while (0)
+
+#define mlog_errno(st) ({						\
+	int _st = (st);							\
+	if (_st != -ERESTARTSYS && _st != -EINTR &&			\
+	    _st != AOP_TRUNCATED_PAGE && _st != -ENOSPC &&		\
+	    _st != -EDQUOT)						\
+		mlog(ML_ERROR, "status = %lld\n", (long long)_st);	\
+	_st;								\
+})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define mlog_bug_on_msg(cond, fmt, args...) do {			\
 	if (cond) {							\

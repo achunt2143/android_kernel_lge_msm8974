@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __ASSEMBLY__
 
 /* kfr2r09 board specific boot code:
@@ -6,7 +10,11 @@
  */
 
 #include <asm/romimage-macros.h>
+<<<<<<< HEAD
 #include "partner-jet-setup.txt"
+=======
+#include <mach/partner-jet-setup.txt>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* execute icbi after enabling cache */
 	mov.l	1f, r0

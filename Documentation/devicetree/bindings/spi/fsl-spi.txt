@@ -4,7 +4,11 @@ Required properties:
 - cell-index : QE SPI subblock index.
 		0: QE subblock SPI1
 		1: QE subblock SPI2
+<<<<<<< HEAD
 - compatible : should be "fsl,spi".
+=======
+- compatible : should be "fsl,spi" or "aeroflexgaisler,spictrl".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 - mode : the SPI operation mode, it can be "cpu" or "cpu-qe".
 - reg : Offset and length of the register set for the device
 - interrupts : <a b> where a is the interrupt number and b is a
@@ -12,6 +16,7 @@ Required properties:
   information for the interrupt.  This should be encoded based on
   the information in section 2) depending on the type of interrupt
   controller you have.
+<<<<<<< HEAD
 - interrupt-parent : the phandle for the interrupt controller that
   services interrupts for this device.
 
@@ -19,6 +24,18 @@ Optional properties:
 - gpios : specifies the gpio pins to be used for chipselects.
   The gpios will be referred to as reg = <index> in the SPI child nodes.
   If unspecified, a single SPI device without a chip select can be used.
+=======
+- clock-frequency : input clock frequency to non FSL_SOC cores
+
+Optional properties:
+- cs-gpios : specifies the gpio pins to be used for chipselects.
+  The gpios will be referred to as reg = <index> in the SPI child nodes.
+  If unspecified, a single SPI device without a chip select can be used.
+- fsl,spisel_boot : for the MPC8306 and MPC8309, specifies that the
+  SPISEL_BOOT signal is used as chip select for a slave device. Use
+  reg = <number of gpios> in the corresponding child node, i.e. 0 if
+  the cs-gpios property is not present.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Example:
 	spi@4c0 {
@@ -28,8 +45,13 @@ Example:
 		interrupts = <82 0>;
 		interrupt-parent = <700>;
 		mode = "cpu";
+<<<<<<< HEAD
 		gpios = <&gpio 18 1	// device reg=<0>
 			 &gpio 19 1>;	// device reg=<1>
+=======
+		cs-gpios = <&gpio 18 1		// device reg=<0>
+			    &gpio 19 1>;	// device reg=<1>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 
@@ -41,6 +63,13 @@ Required properties:
 - interrupts : should contain eSPI interrupt, the device has one interrupt.
 - fsl,espi-num-chipselects : the number of the chipselect signals.
 
+<<<<<<< HEAD
+=======
+Optional properties:
+- fsl,csbef: chip select assertion time in bits before frame starts
+- fsl,csaft: chip select negation time in bits after frame ends
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Example:
 	spi@110000 {
 		#address-cells = <1>;
@@ -50,4 +79,9 @@ Example:
 		interrupts = <53 0x2>;
 		interrupt-parent = <&mpic>;
 		fsl,espi-num-chipselects = <4>;
+<<<<<<< HEAD
+=======
+		fsl,csbef = <1>;
+		fsl,csaft = <1>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};

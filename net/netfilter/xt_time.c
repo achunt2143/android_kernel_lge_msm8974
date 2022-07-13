@@ -5,10 +5,20 @@
  *	based on ipt_time by Fabrice MARIE <fabrice@netfilter.org>
  *	This is a module which is used for time matching
  *	It is using some modified code from dietlibc (localtime() function)
+<<<<<<< HEAD
  *	that you can find at http://www.fefe.de/dietlibc/
  *	This file is distributed under the terms of the GNU General Public
  *	License (GPL). Copies of the GPL can be obtained from gnu.org/gpl.
  */
+=======
+ *	that you can find at https://www.fefe.de/dietlibc/
+ *	This file is distributed under the terms of the GNU General Public
+ *	License (GPL). Copies of the GPL can be obtained from gnu.org/gpl.
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ktime.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -42,6 +52,10 @@ static const u_int16_t days_since_leapyear[] = {
  */
 enum {
 	DSE_FIRST = 2039,
+<<<<<<< HEAD
+=======
+	SECONDS_PER_DAY = 86400,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 static const u_int16_t days_since_epoch[] = {
 	/* 2039 - 2030 */
@@ -73,12 +87,20 @@ static inline bool is_leap(unsigned int y)
  * This is done in three separate functions so that the most expensive
  * calculations are done last, in case a "simple match" can be found earlier.
  */
+<<<<<<< HEAD
 static inline unsigned int localtime_1(struct xtm *r, time_t time)
+=======
+static inline unsigned int localtime_1(struct xtm *r, time64_t time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int v, w;
 
 	/* Each day has 86400s, so finding the hour/minute is actually easy. */
+<<<<<<< HEAD
 	v         = time % 86400;
+=======
+	div_u64_rem(time, SECONDS_PER_DAY, &v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->second = v % 60;
 	w         = v / 60;
 	r->minute = w % 60;
@@ -86,13 +108,21 @@ static inline unsigned int localtime_1(struct xtm *r, time_t time)
 	return v;
 }
 
+<<<<<<< HEAD
 static inline void localtime_2(struct xtm *r, time_t time)
+=======
+static inline void localtime_2(struct xtm *r, time64_t time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Here comes the rest (weekday, monthday). First, divide the SSTE
 	 * by seconds-per-day to get the number of _days_ since the epoch.
 	 */
+<<<<<<< HEAD
 	r->dse = time / 86400;
+=======
+	r->dse = div_u64(time, SECONDS_PER_DAY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * 1970-01-01 (w=0) was a Thursday (4).
@@ -101,7 +131,11 @@ static inline void localtime_2(struct xtm *r, time_t time)
 	r->weekday = (4 + r->dse - 1) % 7 + 1;
 }
 
+<<<<<<< HEAD
 static void localtime_3(struct xtm *r, time_t time)
+=======
+static void localtime_3(struct xtm *r, time64_t time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int year, i, w = r->dse;
 
@@ -156,6 +190,7 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct xt_time_info *info = par->matchinfo;
 	unsigned int packet_time;
 	struct xtm current_time;
+<<<<<<< HEAD
 	s64 stamp;
 
 	/*
@@ -172,6 +207,29 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 
 	stamp = ktime_to_ns(skb->tstamp);
 	stamp = div_s64(stamp, NSEC_PER_SEC);
+=======
+	time64_t stamp;
+
+	/*
+	 * We need real time here, but we can neither use skb->tstamp
+	 * nor __net_timestamp().
+	 *
+	 * skb->tstamp and skb->skb_mstamp_ns overlap, however, they
+	 * use different clock types (real vs monotonic).
+	 *
+	 * Suppose you have two rules:
+	 *	1. match before 13:00
+	 *	2. match after 13:00
+	 *
+	 * If you match against processing time (ktime_get_real_seconds) it
+	 * may happen that the same packet matches both rules if
+	 * it arrived at the right moment before 13:00, so it would be
+	 * better to check skb->tstamp and set it via __net_timestamp()
+	 * if needed.  This however breaks outgoing packets tx timestamp,
+	 * and causes them to get delayed forever by fq packet scheduler.
+	 */
+	stamp = ktime_get_real_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->flags & XT_TIME_LOCAL_TZ)
 		/* Adjust for local timezone */
@@ -184,6 +242,12 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	 *   - 'now' is in the weekday mask
 	 *   - 'now' is in the daytime range time_start..time_end
 	 * (and by default, libxt_time will set these so as to match)
+<<<<<<< HEAD
+=======
+	 *
+	 * note: info->date_start/stop are unsigned 32-bit values that
+	 *	 can hold values beyond y2038, but not after y2106.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	if (stamp < info->date_start || stamp > info->date_stop)
@@ -199,6 +263,21 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		if (packet_time < info->daytime_start &&
 		    packet_time > info->daytime_stop)
 			return false;
+<<<<<<< HEAD
+=======
+
+		/** if user asked to ignore 'next day', then e.g.
+		 *  '1 PM Wed, August 1st' should be treated
+		 *  like 'Tue 1 PM July 31st'.
+		 *
+		 * This also causes
+		 * 'Monday, "23:00 to 01:00", to match for 2 hours, starting
+		 * Monday 23:00 to Tuesday 01:00.
+		 */
+		if ((info->flags & XT_TIME_CONTIGUOUS) &&
+		     packet_time <= info->daytime_stop)
+			stamp -= SECONDS_PER_DAY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	localtime_2(&current_time, stamp);
@@ -222,11 +301,28 @@ static int time_mt_check(const struct xt_mtchk_param *par)
 
 	if (info->daytime_start > XT_TIME_MAX_DAYTIME ||
 	    info->daytime_stop > XT_TIME_MAX_DAYTIME) {
+<<<<<<< HEAD
 		pr_info("invalid argument - start or "
 			"stop time greater than 23:59:59\n");
 		return -EDOM;
 	}
 
+=======
+		pr_info_ratelimited("invalid argument - start or stop time greater than 23:59:59\n");
+		return -EDOM;
+	}
+
+	if (info->flags & ~XT_TIME_ALL_FLAGS) {
+		pr_info_ratelimited("unknown flags 0x%x\n",
+				    info->flags & ~XT_TIME_ALL_FLAGS);
+		return -EINVAL;
+	}
+
+	if ((info->flags & XT_TIME_CONTIGUOUS) &&
+	     info->daytime_start < info->daytime_stop)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -244,6 +340,7 @@ static int __init time_mt_init(void)
 	int minutes = sys_tz.tz_minuteswest;
 
 	if (minutes < 0) /* east of Greenwich */
+<<<<<<< HEAD
 		printk(KERN_INFO KBUILD_MODNAME
 		       ": kernel timezone is +%02d%02d\n",
 		       -minutes / 60, -minutes % 60);
@@ -251,6 +348,13 @@ static int __init time_mt_init(void)
 		printk(KERN_INFO KBUILD_MODNAME
 		       ": kernel timezone is -%02d%02d\n",
 		       minutes / 60, minutes % 60);
+=======
+		pr_info("kernel timezone is +%02d%02d\n",
+			-minutes / 60, -minutes % 60);
+	else /* west of Greenwich */
+		pr_info("kernel timezone is -%02d%02d\n",
+			minutes / 60, minutes % 60);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return xt_register_match(&xt_time_mt_reg);
 }

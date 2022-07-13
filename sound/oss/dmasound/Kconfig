@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config DMASOUND_ATARI
 	tristate "Atari DMA sound support"
 	depends on ATARI && SOUND
@@ -10,7 +14,11 @@ config DMASOUND_ATARI
 	  This driver is also available as a module ( = code which can be
 	  inserted in and removed from the running kernel whenever you
 	  want). If you want to compile it as a module, say M here and read
+<<<<<<< HEAD
 	  <file:Documentation/kbuild/modules.txt>.
+=======
+	  <file:Documentation/kbuild/modules.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DMASOUND_PAULA
 	tristate "Amiga DMA sound support"
@@ -24,7 +32,11 @@ config DMASOUND_PAULA
 	  This driver is also available as a module ( = code which can be
 	  inserted in and removed from the running kernel whenever you
 	  want). If you want to compile it as a module, say M here and read
+<<<<<<< HEAD
 	  <file:Documentation/kbuild/modules.txt>.
+=======
+	  <file:Documentation/kbuild/modules.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DMASOUND_Q40
 	tristate "Q40 sound support"
@@ -38,7 +50,11 @@ config DMASOUND_Q40
 	  This driver is also available as a module ( = code which can be
 	  inserted in and removed from the running kernel whenever you
 	  want). If you want to compile it as a module, say M here and read
+<<<<<<< HEAD
 	  <file:Documentation/kbuild/modules.txt>.
+=======
+	  <file:Documentation/kbuild/modules.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DMASOUND
 	tristate

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -42,6 +47,10 @@
  */
 
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -52,18 +61,30 @@ ACPI_MODULE_NAME("rsxface")
 
 /* Local macros for 16,32-bit to 64-bit conversion */
 #define ACPI_COPY_FIELD(out, in, field)  ((out)->field = (in)->field)
+<<<<<<< HEAD
 #define ACPI_COPY_ADDRESS(out, in)                      \
+=======
+#define ACPI_COPY_ADDRESS(out, in)                       \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_COPY_FIELD(out, in, resource_type);             \
 	ACPI_COPY_FIELD(out, in, producer_consumer);         \
 	ACPI_COPY_FIELD(out, in, decode);                    \
 	ACPI_COPY_FIELD(out, in, min_address_fixed);         \
 	ACPI_COPY_FIELD(out, in, max_address_fixed);         \
 	ACPI_COPY_FIELD(out, in, info);                      \
+<<<<<<< HEAD
 	ACPI_COPY_FIELD(out, in, granularity);               \
 	ACPI_COPY_FIELD(out, in, minimum);                   \
 	ACPI_COPY_FIELD(out, in, maximum);                   \
 	ACPI_COPY_FIELD(out, in, translation_offset);        \
 	ACPI_COPY_FIELD(out, in, address_length);            \
+=======
+	ACPI_COPY_FIELD(out, in, address.granularity);       \
+	ACPI_COPY_FIELD(out, in, address.minimum);           \
+	ACPI_COPY_FIELD(out, in, address.maximum);           \
+	ACPI_COPY_FIELD(out, in, address.translation_offset); \
+	ACPI_COPY_FIELD(out, in, address.address_length);    \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_COPY_FIELD(out, in, resource_source);
 /* Local prototypes */
 static acpi_status
@@ -79,7 +100,11 @@ acpi_rs_validate_parameters(acpi_handle device_handle,
  * FUNCTION:    acpi_rs_validate_parameters
  *
  * PARAMETERS:  device_handle   - Handle to a device
+<<<<<<< HEAD
  *              Buffer          - Pointer to a data buffer
+=======
+ *              buffer          - Pointer to a data buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_node     - Pointer to where the device node is returned
  *
  * RETURN:      Status
@@ -219,7 +244,11 @@ acpi_get_current_resources(acpi_handle device_handle,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_get_current_resources)
+<<<<<<< HEAD
 #ifdef ACPI_FUTURE_USAGE
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_get_possible_resources
@@ -261,7 +290,11 @@ acpi_get_possible_resources(acpi_handle device_handle,
 }
 
 ACPI_EXPORT_SYMBOL(acpi_get_possible_resources)
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_set_current_resources
@@ -351,8 +384,13 @@ ACPI_EXPORT_SYMBOL(acpi_get_event_resources)
  *
  * FUNCTION:    acpi_resource_to_address64
  *
+<<<<<<< HEAD
  * PARAMETERS:  Resource        - Pointer to a resource
  *              Out             - Pointer to the users's return buffer
+=======
+ * PARAMETERS:  resource        - Pointer to a resource
+ *              out             - Pointer to the users's return buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                (a struct acpi_resource_address64)
  *
  * RETURN:      Status
@@ -397,11 +435,20 @@ acpi_resource_to_address64(struct acpi_resource *resource,
 
 		/* Simple copy for 64 bit source */
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(out, &resource->data,
 			    sizeof(struct acpi_resource_address64));
 		break;
 
 	default:
+=======
+		memcpy(out, &resource->data,
+		       sizeof(struct acpi_resource_address64));
+		break;
+
+	default:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -415,15 +462,25 @@ ACPI_EXPORT_SYMBOL(acpi_resource_to_address64)
  * FUNCTION:    acpi_get_vendor_resource
  *
  * PARAMETERS:  device_handle   - Handle for the parent device object
+<<<<<<< HEAD
  *              Name            - Method name for the parent resource
  *                                (METHOD_NAME__CRS or METHOD_NAME__PRS)
  *              Uuid            - Pointer to the UUID to be matched.
+=======
+ *              name            - Method name for the parent resource
+ *                                (METHOD_NAME__CRS or METHOD_NAME__PRS)
+ *              uuid            - Pointer to the UUID to be matched.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                includes both subtype and 16-byte UUID
  *              ret_buffer      - Where the vendor resource is returned
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: Walk a resource template for the specified evice to find a
+=======
+ * DESCRIPTION: Walk a resource template for the specified device to find a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              vendor-defined resource that matches the supplied UUID and
  *              UUID subtype. Returns a struct acpi_resource of type Vendor.
  *
@@ -431,8 +488,13 @@ ACPI_EXPORT_SYMBOL(acpi_resource_to_address64)
 acpi_status
 acpi_get_vendor_resource(acpi_handle device_handle,
 			 char *name,
+<<<<<<< HEAD
 			 struct acpi_vendor_uuid * uuid,
 			 struct acpi_buffer * ret_buffer)
+=======
+			 struct acpi_vendor_uuid *uuid,
+			 struct acpi_buffer *ret_buffer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_vendor_walk_info info;
 	acpi_status status;
@@ -497,7 +559,11 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
 	 */
 	if ((vendor->byte_length < (ACPI_UUID_LENGTH + 1)) ||
 	    (vendor->uuid_subtype != info->uuid->subtype) ||
+<<<<<<< HEAD
 	    (ACPI_MEMCMP(vendor->uuid, info->uuid->data, ACPI_UUID_LENGTH))) {
+=======
+	    (memcmp(vendor->uuid, info->uuid->data, ACPI_UUID_LENGTH))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_OK);
 	}
 
@@ -511,7 +577,11 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
 
 	/* Found the correct resource, copy and return it */
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(buffer->pointer, resource, resource->length);
+=======
+	memcpy(buffer->pointer, resource, resource->length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer->length = resource->length;
 
 	/* Found the desired descriptor, terminate resource walk */
@@ -522,6 +592,7 @@ acpi_rs_match_vendor_resource(struct acpi_resource *resource, void *context)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_walk_resources
  *
  * PARAMETERS:  device_handle   - Handle to the device object for the
@@ -573,18 +644,69 @@ acpi_walk_resources(acpi_handle device_handle,
 	resource = ACPI_CAST_PTR(struct acpi_resource, buffer.pointer);
 	resource_end =
 	    ACPI_ADD_PTR(struct acpi_resource, buffer.pointer, buffer.length);
+=======
+ * FUNCTION:    acpi_walk_resource_buffer
+ *
+ * PARAMETERS:  buffer          - Formatted buffer returned by one of the
+ *                                various Get*Resource functions
+ *              user_function   - Called for each resource
+ *              context         - Passed to user_function
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walks the input resource template. The user_function is called
+ *              once for each resource in the list.
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_walk_resource_buffer(struct acpi_buffer *buffer,
+			  acpi_walk_resource_callback user_function,
+			  void *context)
+{
+	acpi_status status = AE_OK;
+	struct acpi_resource *resource;
+	struct acpi_resource *resource_end;
+
+	ACPI_FUNCTION_TRACE(acpi_walk_resource_buffer);
+
+	/* Parameter validation */
+
+	if (!buffer || !buffer->pointer || !user_function) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	/* Buffer contains the resource list and length */
+
+	resource = ACPI_CAST_PTR(struct acpi_resource, buffer->pointer);
+	resource_end =
+	    ACPI_ADD_PTR(struct acpi_resource, buffer->pointer, buffer->length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Walk the resource list until the end_tag is found (or buffer end) */
 
 	while (resource < resource_end) {
 
+<<<<<<< HEAD
 		/* Sanity check the resource */
+=======
+		/* Sanity check the resource type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (resource->type > ACPI_RESOURCE_TYPE_MAX) {
 			status = AE_AML_INVALID_RESOURCE_TYPE;
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		/* Sanity check the length. It must not be zero, or we loop forever */
+
+		if (!resource->length) {
+			return_ACPI_STATUS(AE_AML_BAD_RESOURCE_LENGTH);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Invoke the user function, abort on any error returned */
 
 		status = user_function(resource, context);
@@ -606,11 +728,72 @@ acpi_walk_resources(acpi_handle device_handle,
 
 		/* Get the next resource descriptor */
 
+<<<<<<< HEAD
 		resource =
 		    ACPI_ADD_PTR(struct acpi_resource, resource,
 				 resource->length);
 	}
 
+=======
+		resource = ACPI_NEXT_RESOURCE(resource);
+	}
+
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_walk_resource_buffer)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_walk_resources
+ *
+ * PARAMETERS:  device_handle   - Handle to the device object for the
+ *                                device we are querying
+ *              name            - Method name of the resources we want.
+ *                                (METHOD_NAME__CRS, METHOD_NAME__PRS, or
+ *                                METHOD_NAME__AEI or METHOD_NAME__DMA)
+ *              user_function   - Called for each resource
+ *              context         - Passed to user_function
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieves the current or possible resource list for the
+ *              specified device. The user_function is called once for
+ *              each resource in the list.
+ *
+ ******************************************************************************/
+acpi_status
+acpi_walk_resources(acpi_handle device_handle,
+		    char *name,
+		    acpi_walk_resource_callback user_function, void *context)
+{
+	acpi_status status;
+	struct acpi_buffer buffer;
+
+	ACPI_FUNCTION_TRACE(acpi_walk_resources);
+
+	/* Parameter validation */
+
+	if (!device_handle || !user_function || !name ||
+	    (!ACPI_COMPARE_NAMESEG(name, METHOD_NAME__CRS) &&
+	     !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__PRS) &&
+	     !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__AEI) &&
+	     !ACPI_COMPARE_NAMESEG(name, METHOD_NAME__DMA))) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	/* Get the _CRS/_PRS/_AEI/_DMA resource list */
+
+	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
+	status = acpi_rs_get_method_data(device_handle, name, &buffer);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Walk the resource list and cleanup */
+
+	status = acpi_walk_resource_buffer(&buffer, user_function, context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_FREE(buffer.pointer);
 	return_ACPI_STATUS(status);
 }

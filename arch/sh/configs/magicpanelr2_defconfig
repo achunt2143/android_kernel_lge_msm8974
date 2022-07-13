@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 CONFIG_EXPERIMENTAL=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_SYSVIPC=y
 CONFIG_POSIX_MQUEUE=y
@@ -9,14 +12,20 @@ CONFIG_RELAY=y
 CONFIG_BLK_DEV_INITRD=y
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
 CONFIG_KALLSYMS_ALL=y
+<<<<<<< HEAD
 CONFIG_SLAB=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_MODULES=y
 CONFIG_MODULE_UNLOAD=y
 CONFIG_MODVERSIONS=y
 CONFIG_MODULE_SRCVERSION_ALL=y
 # CONFIG_BLK_DEV_BSG is not set
+<<<<<<< HEAD
 # CONFIG_IOSCHED_DEADLINE is not set
 # CONFIG_IOSCHED_CFQ is not set
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_CPU_SUBTYPE_SH7720=y
 CONFIG_MEMORY_START=0x0C000000
 CONFIG_MEMORY_SIZE=0x03F00000
@@ -35,6 +44,7 @@ CONFIG_IP_PNP_DHCP=y
 # CONFIG_INET_XFRM_MODE_TRANSPORT is not set
 # CONFIG_INET_XFRM_MODE_TUNNEL is not set
 # CONFIG_INET_XFRM_MODE_BEET is not set
+<<<<<<< HEAD
 # CONFIG_INET_LRO is not set
 # CONFIG_IPV6 is not set
 CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
@@ -45,6 +55,14 @@ CONFIG_MTD_PARTITIONS=y
 CONFIG_MTD_REDBOOT_PARTS=y
 CONFIG_MTD_CMDLINE_PARTS=y
 CONFIG_MTD_CHAR=y
+=======
+# CONFIG_IPV6 is not set
+# CONFIG_STANDALONE is not set
+# CONFIG_PREVENT_FIRMWARE_BUILD is not set
+CONFIG_MTD=y
+CONFIG_MTD_REDBOOT_PARTS=y
+CONFIG_MTD_CMDLINE_PARTS=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_MTD_BLOCK=y
 CONFIG_MTD_CFI=y
 CONFIG_MTD_CFI_AMDSTD=y
@@ -55,8 +73,11 @@ CONFIG_NETDEVICES=y
 CONFIG_SMSC_PHY=y
 CONFIG_NET_ETHERNET=y
 CONFIG_SMSC911X=y
+<<<<<<< HEAD
 # CONFIG_NETDEV_1000 is not set
 # CONFIG_NETDEV_10000 is not set
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_INPUT_EVDEV=y
 # CONFIG_MOUSE_PS2 is not set
 CONFIG_SERIAL_8250=y
@@ -68,7 +89,10 @@ CONFIG_SERIAL_SH_SCI=y
 CONFIG_SERIAL_SH_SCI_CONSOLE=y
 # CONFIG_HW_RANDOM is not set
 # CONFIG_HWMON is not set
+<<<<<<< HEAD
 # CONFIG_HID_SUPPORT is not set
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_USB_SUPPORT is not set
 CONFIG_RTC_CLASS=y
 # CONFIG_RTC_HCTOSYS is not set
@@ -94,9 +118,14 @@ CONFIG_MAGIC_SYSRQ=y
 CONFIG_DEBUG_KERNEL=y
 # CONFIG_SCHED_DEBUG is not set
 CONFIG_DEBUG_KOBJECT=y
+<<<<<<< HEAD
 CONFIG_DEBUG_INFO=y
 CONFIG_FRAME_POINTER=y
 # CONFIG_RCU_CPU_STALL_DETECTOR is not set
 CONFIG_SYSCTL_SYSCALL_CHECK=y
+=======
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+CONFIG_FRAME_POINTER=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_CRC_CCITT=m
 CONFIG_CRC16=m

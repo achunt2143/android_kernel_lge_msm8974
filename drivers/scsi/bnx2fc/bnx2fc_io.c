@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 /* bnx2fc_io.c: Broadcom NetXtreme II Linux FCoE offload driver.
  * IO manager and SCSI IO processing.
  *
  * Copyright (c) 2008 - 2011 Broadcom Corporation
+=======
+/* bnx2fc_io.c: QLogic Linux FCoE offload driver.
+ * IO manager and SCSI IO processing.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2016 QLogic Corporation
+ * Copyright (c) 2016-2017 Cavium Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +31,11 @@ static void bnx2fc_unmap_sg_list(struct bnx2fc_cmd *io_req);
 static void bnx2fc_free_mp_resc(struct bnx2fc_cmd *io_req);
 static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 				 struct fcoe_fcp_rsp_payload *fcp_rsp,
+<<<<<<< HEAD
 				 u8 num_rq);
+=======
+				 u8 num_rq, unsigned char *rq_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void bnx2fc_cmd_timer_set(struct bnx2fc_cmd *io_req,
 			  unsigned int timer_msec)
@@ -39,11 +52,16 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 {
 	struct bnx2fc_cmd *io_req = container_of(work, struct bnx2fc_cmd,
 						 timeout_work.work);
+<<<<<<< HEAD
 	struct fc_lport *lport;
 	struct fc_rport_priv *rdata;
 	u8 cmd_type = io_req->cmd_type;
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	int logo_issued;
+=======
+	u8 cmd_type = io_req->cmd_type;
+	struct bnx2fc_rport *tgt = io_req->tgt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	BNX2FC_IO_DBG(io_req, "cmd_timeout, cmd_type = %d,"
@@ -71,11 +89,16 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 							&io_req->req_flags)) {
 			/* Handle eh_abort timeout */
 			BNX2FC_IO_DBG(io_req, "eh_abort timed out\n");
+<<<<<<< HEAD
 			complete(&io_req->tm_done);
+=======
+			complete(&io_req->abts_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (test_bit(BNX2FC_FLAG_ISSUE_ABTS,
 				    &io_req->req_flags)) {
 			/* Handle internally generated ABTS timeout */
 			BNX2FC_IO_DBG(io_req, "ABTS timed out refcnt = %d\n",
+<<<<<<< HEAD
 					io_req->refcount.refcount.counter);
 			if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 					       &io_req->req_flags))) {
@@ -98,6 +121,19 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+					kref_read(&io_req->refcount));
+			if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
+					       &io_req->req_flags))) {
+				/*
+				 * Cleanup and return original command to
+				 * mid-layer.
+				 */
+				bnx2fc_initiate_cleanup(io_req);
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		} else {
@@ -115,6 +151,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 				rc = bnx2fc_initiate_abts(io_req);
 				if (rc == SUCCESS)
 					goto done;
+<<<<<<< HEAD
 				/*
 				 * Explicitly logo the target if
 				 * abts initiation fails
@@ -137,6 +174,12 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			} else {
 				BNX2FC_IO_DBG(io_req, "IO already in "
@@ -151,6 +194,7 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 
 			if (!test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 					      &io_req->req_flags)) {
+<<<<<<< HEAD
 				lport = io_req->port->lport;
 				rdata = io_req->tgt->rdata;
 				logo_issued = test_and_set_bit(
@@ -167,6 +211,11 @@ static void bnx2fc_cmd_timeout(struct work_struct *work)
 					lport->tt.rport_logoff(rdata);
 					mutex_unlock(&lport->disc.disc_mutex);
 				}
+=======
+				kref_put(&io_req->refcount, bnx2fc_cmd_release);
+				spin_unlock_bh(&tgt->tgt_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		} else {
@@ -223,24 +272,50 @@ static void bnx2fc_scsi_done(struct bnx2fc_cmd *io_req, int err_code)
 
 	bnx2fc_unmap_sg_list(io_req);
 	io_req->sc_cmd = NULL;
+<<<<<<< HEAD
+=======
+
+	/* Sanity checks before returning command to mid-layer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sc_cmd) {
 		printk(KERN_ERR PFX "scsi_done - sc_cmd NULL. "
 				    "IO(0x%x) already cleaned up\n",
 		       io_req->xid);
 		return;
 	}
+<<<<<<< HEAD
+=======
+	if (!sc_cmd->device) {
+		pr_err(PFX "0x%x: sc_cmd->device is NULL.\n", io_req->xid);
+		return;
+	}
+	if (!sc_cmd->device->host) {
+		pr_err(PFX "0x%x: sc_cmd->device->host is NULL.\n",
+		    io_req->xid);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sc_cmd->result = err_code << 16;
 
 	BNX2FC_IO_DBG(io_req, "sc=%p, result=0x%x, retries=%d, allowed=%d\n",
 		sc_cmd, host_byte(sc_cmd->result), sc_cmd->retries,
 		sc_cmd->allowed);
 	scsi_set_resid(sc_cmd, scsi_bufflen(sc_cmd));
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = NULL;
 	sc_cmd->scsi_done(sc_cmd);
 }
 
 struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 						u16 min_xid, u16 max_xid)
+=======
+	bnx2fc_priv(sc_cmd)->io_req = NULL;
+	scsi_done(sc_cmd);
+}
+
+struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_cmd_mgr *cmgr;
 	struct io_bdt *bdt_info;
@@ -252,6 +327,11 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 	int num_ios, num_pri_ios;
 	size_t bd_tbl_sz;
 	int arr_sz = num_possible_cpus() + 1;
+<<<<<<< HEAD
+=======
+	u16 min_xid = BNX2FC_MIN_XID;
+	u16 max_xid = hba->max_xid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (max_xid <= min_xid || max_xid == FC_XID_UNKNOWN) {
 		printk(KERN_ERR PFX "cmd_mgr_alloc: Invalid min_xid 0x%x \
@@ -270,13 +350,20 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	cmgr->free_list = kzalloc(sizeof(*cmgr->free_list) *
 				  arr_sz, GFP_KERNEL);
+=======
+	cmgr->hba = hba;
+	cmgr->free_list = kcalloc(arr_sz, sizeof(*cmgr->free_list),
+				  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cmgr->free_list) {
 		printk(KERN_ERR PFX "failed to alloc free_list\n");
 		goto mem_err;
 	}
 
+<<<<<<< HEAD
 	cmgr->free_list_lock = kzalloc(sizeof(*cmgr->free_list_lock) *
 				       arr_sz, GFP_KERNEL);
 	if (!cmgr->free_list_lock) {
@@ -285,6 +372,17 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 	}
 
 	cmgr->hba = hba;
+=======
+	cmgr->free_list_lock = kcalloc(arr_sz, sizeof(*cmgr->free_list_lock),
+				       GFP_KERNEL);
+	if (!cmgr->free_list_lock) {
+		printk(KERN_ERR PFX "failed to alloc free_list_lock\n");
+		kfree(cmgr->free_list);
+		cmgr->free_list = NULL;
+		goto mem_err;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmgr->cmds = (struct bnx2fc_cmd **)(cmgr + 1);
 
 	for (i = 0; i < arr_sz; i++)  {
@@ -298,7 +396,11 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 	 * of slow path requests.
 	 */
 	xid = BNX2FC_MIN_XID;
+<<<<<<< HEAD
 	num_pri_ios = num_ios - BNX2FC_ELSTM_XIDS;
+=======
+	num_pri_ios = num_ios - hba->elstm_xids;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < num_ios; i++) {
 		io_req = kzalloc(sizeof(*io_req), GFP_KERNEL);
 
@@ -323,7 +425,11 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 
 	/* Allocate pool of io_bdts - one for each bnx2fc_cmd */
 	mem_size = num_ios * sizeof(struct io_bdt *);
+<<<<<<< HEAD
 	cmgr->io_bdt_pool = kmalloc(mem_size, GFP_KERNEL);
+=======
+	cmgr->io_bdt_pool = kzalloc(mem_size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cmgr->io_bdt_pool) {
 		printk(KERN_ERR PFX "failed to alloc io_bdt_pool\n");
 		goto mem_err;
@@ -367,7 +473,11 @@ void bnx2fc_cmd_mgr_free(struct bnx2fc_cmd_mgr *cmgr)
 	struct bnx2fc_hba *hba = cmgr->hba;
 	size_t bd_tbl_sz;
 	u16 min_xid = BNX2FC_MIN_XID;
+<<<<<<< HEAD
 	u16 max_xid = BNX2FC_MAX_XID;
+=======
+	u16 max_xid = hba->max_xid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_ios;
 	int i;
 
@@ -405,11 +515,18 @@ free_cmd_pool:
 		goto free_cmgr;
 
 	for (i = 0; i < num_possible_cpus() + 1; i++)  {
+<<<<<<< HEAD
 		struct list_head *list;
 		struct list_head *tmp;
 
 		list_for_each_safe(list, tmp, &cmgr->free_list[i]) {
 			struct bnx2fc_cmd *io_req = (struct bnx2fc_cmd *)list;
+=======
+		struct bnx2fc_cmd *tmp, *io_req;
+
+		list_for_each_entry_safe(io_req, tmp,
+					 &cmgr->free_list[i], link) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&io_req->link);
 			kfree(io_req);
 		}
@@ -501,7 +618,11 @@ struct bnx2fc_cmd *bnx2fc_cmd_alloc(struct bnx2fc_rport *tgt)
 	u32 free_sqes;
 	u32 max_sqes;
 	u16 xid;
+<<<<<<< HEAD
 	int index = get_cpu();
+=======
+	int index = raw_smp_processor_id();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_sqes = BNX2FC_SCSI_MAX_SQES;
 	/*
@@ -514,7 +635,10 @@ struct bnx2fc_cmd *bnx2fc_cmd_alloc(struct bnx2fc_rport *tgt)
 	    (tgt->num_active_ios.counter  >= max_sqes) ||
 	    (free_sqes + max_sqes <= BNX2FC_SQ_WQES_MAX)) {
 		spin_unlock_bh(&cmd_mgr->free_list_lock[index]);
+<<<<<<< HEAD
 		put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -527,7 +651,10 @@ struct bnx2fc_cmd *bnx2fc_cmd_alloc(struct bnx2fc_rport *tgt)
 	atomic_inc(&tgt->num_active_ios);
 	atomic_dec(&tgt->free_sqes);
 	spin_unlock_bh(&cmd_mgr->free_list_lock[index]);
+<<<<<<< HEAD
 	put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&io_req->link);
 
@@ -594,13 +721,21 @@ static void bnx2fc_free_mp_resc(struct bnx2fc_cmd *io_req)
 		mp_req->mp_resp_bd = NULL;
 	}
 	if (mp_req->req_buf) {
+<<<<<<< HEAD
 		dma_free_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+		dma_free_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     mp_req->req_buf,
 				     mp_req->req_buf_dma);
 		mp_req->req_buf = NULL;
 	}
 	if (mp_req->resp_buf) {
+<<<<<<< HEAD
 		dma_free_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+		dma_free_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     mp_req->resp_buf,
 				     mp_req->resp_buf_dma);
 		mp_req->resp_buf = NULL;
@@ -620,9 +755,19 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	mp_req = (struct bnx2fc_mp_req *)&(io_req->mp_req);
 	memset(mp_req, 0, sizeof(struct bnx2fc_mp_req));
 
+<<<<<<< HEAD
 	mp_req->req_len = sizeof(struct fcp_cmnd);
 	io_req->data_xfer_len = mp_req->req_len;
 	mp_req->req_buf = dma_alloc_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+	if (io_req->cmd_type != BNX2FC_ELS) {
+		mp_req->req_len = sizeof(struct fcp_cmnd);
+		io_req->data_xfer_len = mp_req->req_len;
+	} else
+		mp_req->req_len = io_req->data_xfer_len;
+
+	mp_req->req_buf = dma_alloc_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     &mp_req->req_buf_dma,
 					     GFP_ATOMIC);
 	if (!mp_req->req_buf) {
@@ -631,7 +776,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 		return FAILED;
 	}
 
+<<<<<<< HEAD
 	mp_req->resp_buf = dma_alloc_coherent(&hba->pcidev->dev, PAGE_SIZE,
+=======
+	mp_req->resp_buf = dma_alloc_coherent(&hba->pcidev->dev, CNIC_PAGE_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      &mp_req->resp_buf_dma,
 					      GFP_ATOMIC);
 	if (!mp_req->resp_buf) {
@@ -639,8 +788,13 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 		bnx2fc_free_mp_resc(io_req);
 		return FAILED;
 	}
+<<<<<<< HEAD
 	memset(mp_req->req_buf, 0, PAGE_SIZE);
 	memset(mp_req->resp_buf, 0, PAGE_SIZE);
+=======
+	memset(mp_req->req_buf, 0, CNIC_PAGE_SIZE);
+	memset(mp_req->resp_buf, 0, CNIC_PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate and map mp_req_bd and mp_resp_bd */
 	sz = sizeof(struct fcoe_bd_ctx);
@@ -655,7 +809,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	mp_req->mp_resp_bd = dma_alloc_coherent(&hba->pcidev->dev, sz,
 						 &mp_req->mp_resp_bd_dma,
 						 GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!mp_req->mp_req_bd) {
+=======
+	if (!mp_req->mp_resp_bd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "unable to alloc MP resp bd\n");
 		bnx2fc_free_mp_resc(io_req);
 		return FAILED;
@@ -665,7 +823,11 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	mp_req_bd = mp_req->mp_req_bd;
 	mp_req_bd->buf_addr_lo = (u32)addr & 0xffffffff;
 	mp_req_bd->buf_addr_hi = (u32)((u64)addr >> 32);
+<<<<<<< HEAD
 	mp_req_bd->buf_len = PAGE_SIZE;
+=======
+	mp_req_bd->buf_len = CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp_req_bd->flags = 0;
 
 	/*
@@ -677,17 +839,28 @@ int bnx2fc_init_mp_req(struct bnx2fc_cmd *io_req)
 	addr = mp_req->resp_buf_dma;
 	mp_resp_bd->buf_addr_lo = (u32)addr & 0xffffffff;
 	mp_resp_bd->buf_addr_hi = (u32)((u64)addr >> 32);
+<<<<<<< HEAD
 	mp_resp_bd->buf_len = PAGE_SIZE;
+=======
+	mp_resp_bd->buf_len = CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp_resp_bd->flags = 0;
 
 	return SUCCESS;
 }
 
+<<<<<<< HEAD
 static int bnx2fc_initiate_tmf(struct scsi_cmnd *sc_cmd, u8 tm_flags)
 {
 	struct fc_lport *lport;
 	struct fc_rport *rport = starget_to_rport(scsi_target(sc_cmd->device));
 	struct fc_rport_libfc_priv *rp = rport->dd_data;
+=======
+static int bnx2fc_initiate_tmf(struct fc_lport *lport, struct fc_rport *rport,
+			       u64 tm_lun, u8 tm_flags)
+{
+	struct fc_rport_libfc_priv *rp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_port *port;
 	struct bnx2fc_interface *interface;
 	struct bnx2fc_rport *tgt;
@@ -695,7 +868,10 @@ static int bnx2fc_initiate_tmf(struct scsi_cmnd *sc_cmd, u8 tm_flags)
 	struct bnx2fc_mp_req *tm_req;
 	struct fcoe_task_ctx_entry *task;
 	struct fcoe_task_ctx_entry *task_page;
+<<<<<<< HEAD
 	struct Scsi_Host *host = sc_cmd->device->host;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_frame_header *fc_hdr;
 	struct fcp_cmnd *fcp_cmnd;
 	int task_idx, index;
@@ -704,7 +880,10 @@ static int bnx2fc_initiate_tmf(struct scsi_cmnd *sc_cmd, u8 tm_flags)
 	u32 sid, did;
 	unsigned long start = jiffies;
 
+<<<<<<< HEAD
 	lport = shost_priv(host);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port = lport_priv(lport);
 	interface = port->priv;
 
@@ -713,8 +892,14 @@ static int bnx2fc_initiate_tmf(struct scsi_cmnd *sc_cmd, u8 tm_flags)
 		rc = FAILED;
 		goto tmf_err;
 	}
+<<<<<<< HEAD
 
 	rc = fc_block_scsi_eh(sc_cmd);
+=======
+	rp = rport->dd_data;
+
+	rc = fc_block_rport(rport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -743,7 +928,11 @@ retry_tmf:
 		goto retry_tmf;
 	}
 	/* Initialize rest of io_req fields */
+<<<<<<< HEAD
 	io_req->sc_cmd = sc_cmd;
+=======
+	io_req->sc_cmd = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io_req->port = port;
 	io_req->tgt = tgt;
 
@@ -761,11 +950,20 @@ retry_tmf:
 	/* Set TM flags */
 	io_req->io_req_flags = 0;
 	tm_req->tm_flags = tm_flags;
+<<<<<<< HEAD
+=======
+	tm_req->tm_lun = tm_lun;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill FCP_CMND */
 	bnx2fc_build_fcp_cmnd(io_req, (struct fcp_cmnd *)tm_req->req_buf);
 	fcp_cmnd = (struct fcp_cmnd *)tm_req->req_buf;
+<<<<<<< HEAD
 	memset(fcp_cmnd->fc_cdb, 0,  sc_cmd->cmd_len);
+=======
+	int_to_scsilun(tm_lun, &fcp_cmnd->fc_lun);
+	memset(fcp_cmnd->fc_cdb, 0,  BNX2FC_MAX_CMD_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcp_cmnd->fc_dl = 0;
 
 	/* Fill FC header */
@@ -788,8 +986,11 @@ retry_tmf:
 	task = &(task_page[index]);
 	bnx2fc_init_mp_task(io_req, task);
 
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = (char *)io_req;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Obtain free SQ entry */
 	spin_lock_bh(&tgt->tgt_lock);
 	bnx2fc_add_2_sq(tgt, xid);
@@ -798,13 +999,19 @@ retry_tmf:
 	io_req->on_tmf_queue = 1;
 	list_add_tail(&io_req->link, &tgt->active_tm_queue);
 
+<<<<<<< HEAD
 	init_completion(&io_req->tm_done);
 	io_req->wait_for_comp = 1;
+=======
+	init_completion(&io_req->abts_done);
+	io_req->wait_for_abts_comp = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ring doorbell */
 	bnx2fc_ring_doorbell(tgt);
 	spin_unlock_bh(&tgt->tgt_lock);
 
+<<<<<<< HEAD
 	rc = wait_for_completion_timeout(&io_req->tm_done,
 					 BNX2FC_TM_TIMEOUT * HZ);
 	spin_lock_bh(&tgt->tgt_lock);
@@ -812,6 +1019,30 @@ retry_tmf:
 	io_req->wait_for_comp = 0;
 	if (!(test_bit(BNX2FC_FLAG_TM_COMPL, &io_req->req_flags)))
 		set_bit(BNX2FC_FLAG_TM_TIMEOUT, &io_req->req_flags);
+=======
+	rc = wait_for_completion_timeout(&io_req->abts_done,
+					 interface->tm_timeout * HZ);
+	spin_lock_bh(&tgt->tgt_lock);
+
+	io_req->wait_for_abts_comp = 0;
+	if (!(test_bit(BNX2FC_FLAG_TM_COMPL, &io_req->req_flags))) {
+		set_bit(BNX2FC_FLAG_TM_TIMEOUT, &io_req->req_flags);
+		if (io_req->on_tmf_queue) {
+			list_del_init(&io_req->link);
+			io_req->on_tmf_queue = 0;
+		}
+		io_req->wait_for_cleanup_comp = 1;
+		init_completion(&io_req->cleanup_done);
+		bnx2fc_initiate_cleanup(io_req);
+		spin_unlock_bh(&tgt->tgt_lock);
+		rc = wait_for_completion_timeout(&io_req->cleanup_done,
+						 BNX2FC_FW_TIMEOUT);
+		spin_lock_bh(&tgt->tgt_lock);
+		io_req->wait_for_cleanup_comp = 0;
+		if (!rc)
+			kref_put(&io_req->refcount, bnx2fc_cmd_release);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_bh(&tgt->tgt_lock);
 
@@ -872,7 +1103,11 @@ int bnx2fc_initiate_abts(struct bnx2fc_cmd *io_req)
 
 	abts_io_req = bnx2fc_elstm_alloc(tgt, BNX2FC_ABTS);
 	if (!abts_io_req) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "abts: couldnt allocate cmd\n");
+=======
+		printk(KERN_ERR PFX "abts: couldn't allocate cmd\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = FAILED;
 		goto abts_err;
 	}
@@ -938,7 +1173,10 @@ abts_err:
 int bnx2fc_initiate_seq_cleanup(struct bnx2fc_cmd *orig_io_req, u32 offset,
 				enum fc_rctl r_ctl)
 {
+<<<<<<< HEAD
 	struct fc_lport *lport;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2fc_rport *tgt = orig_io_req->tgt;
 	struct bnx2fc_interface *interface;
 	struct fcoe_port *port;
@@ -956,7 +1194,10 @@ int bnx2fc_initiate_seq_cleanup(struct bnx2fc_cmd *orig_io_req, u32 offset,
 
 	port = orig_io_req->port;
 	interface = port->priv;
+<<<<<<< HEAD
 	lport = port->lport;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cb_arg = kzalloc(sizeof(struct bnx2fc_els_cb_arg), GFP_ATOMIC);
 	if (!cb_arg) {
@@ -967,7 +1208,11 @@ int bnx2fc_initiate_seq_cleanup(struct bnx2fc_cmd *orig_io_req, u32 offset,
 
 	seq_clnp_req = bnx2fc_elstm_alloc(tgt, BNX2FC_SEQ_CLEANUP);
 	if (!seq_clnp_req) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "cleanup: couldnt allocate cmd\n");
+=======
+		printk(KERN_ERR PFX "cleanup: couldn't allocate cmd\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		kfree(cb_arg);
 		goto cleanup_err;
@@ -1007,7 +1252,10 @@ cleanup_err:
 
 int bnx2fc_initiate_cleanup(struct bnx2fc_cmd *io_req)
 {
+<<<<<<< HEAD
 	struct fc_lport *lport;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	struct bnx2fc_interface *interface;
 	struct fcoe_port *port;
@@ -1023,11 +1271,18 @@ int bnx2fc_initiate_cleanup(struct bnx2fc_cmd *io_req)
 
 	port = io_req->port;
 	interface = port->priv;
+<<<<<<< HEAD
 	lport = port->lport;
 
 	cleanup_io_req = bnx2fc_elstm_alloc(tgt, BNX2FC_CLEANUP);
 	if (!cleanup_io_req) {
 		printk(KERN_ERR PFX "cleanup: couldnt allocate cmd\n");
+=======
+
+	cleanup_io_req = bnx2fc_elstm_alloc(tgt, BNX2FC_CLEANUP);
+	if (!cleanup_io_req) {
+		printk(KERN_ERR PFX "cleanup: couldn't allocate cmd\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -1;
 		goto cleanup_err;
 	}
@@ -1056,6 +1311,12 @@ int bnx2fc_initiate_cleanup(struct bnx2fc_cmd *io_req)
 	/* Obtain free SQ entry */
 	bnx2fc_add_2_sq(tgt, xid);
 
+<<<<<<< HEAD
+=======
+	/* Set flag that cleanup request is pending with the firmware */
+	set_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ, &io_req->req_flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Ring doorbell */
 	bnx2fc_ring_doorbell(tgt);
 
@@ -1073,7 +1334,14 @@ cleanup_err:
  */
 int bnx2fc_eh_target_reset(struct scsi_cmnd *sc_cmd)
 {
+<<<<<<< HEAD
 	return bnx2fc_initiate_tmf(sc_cmd, FCP_TMF_TGT_RESET);
+=======
+	struct fc_rport *rport = starget_to_rport(scsi_target(sc_cmd->device));
+	struct fc_lport *lport = shost_priv(rport_to_shost(rport));
+
+	return bnx2fc_initiate_tmf(lport, rport, 0, FCP_TMF_TGT_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1086,7 +1354,49 @@ int bnx2fc_eh_target_reset(struct scsi_cmnd *sc_cmd)
  */
 int bnx2fc_eh_device_reset(struct scsi_cmnd *sc_cmd)
 {
+<<<<<<< HEAD
 	return bnx2fc_initiate_tmf(sc_cmd, FCP_TMF_LUN_RESET);
+=======
+	struct fc_rport *rport = starget_to_rport(scsi_target(sc_cmd->device));
+	struct fc_lport *lport = shost_priv(rport_to_shost(rport));
+
+	return bnx2fc_initiate_tmf(lport, rport, sc_cmd->device->lun,
+				   FCP_TMF_LUN_RESET);
+}
+
+static int bnx2fc_abts_cleanup(struct bnx2fc_cmd *io_req)
+	__must_hold(&tgt->tgt_lock)
+{
+	struct bnx2fc_rport *tgt = io_req->tgt;
+	unsigned int time_left;
+
+	init_completion(&io_req->cleanup_done);
+	io_req->wait_for_cleanup_comp = 1;
+	bnx2fc_initiate_cleanup(io_req);
+
+	spin_unlock_bh(&tgt->tgt_lock);
+
+	/*
+	 * Can't wait forever on cleanup response lest we let the SCSI error
+	 * handler wait forever
+	 */
+	time_left = wait_for_completion_timeout(&io_req->cleanup_done,
+						BNX2FC_FW_TIMEOUT);
+	if (!time_left) {
+		BNX2FC_IO_DBG(io_req, "%s(): Wait for cleanup timed out.\n",
+			      __func__);
+
+		/*
+		 * Put the extra reference to the SCSI command since it would
+		 * not have been returned in this case.
+		 */
+		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+	}
+
+	spin_lock_bh(&tgt->tgt_lock);
+	io_req->wait_for_cleanup_comp = 0;
+	return SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1103,12 +1413,18 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	struct fc_rport_libfc_priv *rp = rport->dd_data;
 	struct bnx2fc_cmd *io_req;
 	struct fc_lport *lport;
+<<<<<<< HEAD
 	struct fc_rport_priv *rdata;
 	struct bnx2fc_rport *tgt;
 	int logo_issued;
 	int wait_cnt = 0;
 	int rc = FAILED;
 
+=======
+	struct bnx2fc_rport *tgt;
+	int rc;
+	unsigned int time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = fc_block_scsi_eh(sc_cmd);
 	if (rc)
@@ -1117,7 +1433,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	lport = shost_priv(sc_cmd->device->host);
 	if ((lport->state != LPORT_ST_READY) || !(lport->link_up)) {
 		printk(KERN_ERR PFX "eh_abort: link not ready\n");
+<<<<<<< HEAD
 		return rc;
+=======
+		return FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tgt = (struct bnx2fc_rport *)&rp[1];
@@ -1125,7 +1445,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	BNX2FC_TGT_DBG(tgt, "Entered bnx2fc_eh_abort\n");
 
 	spin_lock_bh(&tgt->tgt_lock);
+<<<<<<< HEAD
 	io_req = (struct bnx2fc_cmd *)sc_cmd->SCp.ptr;
+=======
+	io_req = bnx2fc_priv(sc_cmd)->io_req;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!io_req) {
 		/* Command might have just completed */
 		printk(KERN_ERR PFX "eh_abort: io_req is NULL\n");
@@ -1133,7 +1457,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		return SUCCESS;
 	}
 	BNX2FC_IO_DBG(io_req, "eh_abort - refcnt = %d\n",
+<<<<<<< HEAD
 		      io_req->refcount.refcount.counter);
+=======
+		      kref_read(&io_req->refcount));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hold IO request across abort processing */
 	kref_get(&io_req->refcount);
@@ -1158,6 +1486,7 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		printk(KERN_ERR PFX "eh_abort: io_req (xid = 0x%x) "
 				"not on active_q\n", io_req->xid);
 		/*
+<<<<<<< HEAD
 		 * This condition can happen only due to the FW bug,
 		 * where we do not receive cleanup response from
 		 * the FW. Handle this case gracefully by erroring
@@ -1168,6 +1497,13 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		spin_unlock_bh(&tgt->tgt_lock);
 		return SUCCESS;
+=======
+		 * The IO is still with the FW.
+		 * Return failure and let SCSI-ml retry eh_abort.
+		 */
+		spin_unlock_bh(&tgt->tgt_lock);
+		return FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1182,6 +1518,7 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 	/* Move IO req to retire queue */
 	list_add_tail(&io_req->link, &tgt->io_retire_queue);
 
+<<<<<<< HEAD
 	init_completion(&io_req->tm_done);
 	io_req->wait_for_comp = 1;
 
@@ -1193,11 +1530,18 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		set_bit(BNX2FC_FLAG_EH_ABORT, &io_req->req_flags);
 		rc = bnx2fc_initiate_abts(io_req);
 	} else {
+=======
+	init_completion(&io_req->abts_done);
+	init_completion(&io_req->cleanup_done);
+
+	if (test_and_set_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "eh_abort: io_req (xid = 0x%x) "
 				"already in abts processing\n", io_req->xid);
 		if (cancel_delayed_work(&io_req->timeout_work))
 			kref_put(&io_req->refcount,
 				 bnx2fc_cmd_release); /* drop timer hold */
+<<<<<<< HEAD
 		bnx2fc_initiate_cleanup(io_req);
 
 		spin_unlock_bh(&tgt->tgt_lock);
@@ -1248,6 +1592,65 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		printk(KERN_ERR PFX "abort failed, xid = 0x%x\n",
 		       io_req->xid);
 		rc = FAILED;
+=======
+		/*
+		 * We don't want to hold off the upper layer timer so simply
+		 * cleanup the command and return that I/O was successfully
+		 * aborted.
+		 */
+		bnx2fc_abts_cleanup(io_req);
+		/* This only occurs when an task abort was requested while ABTS
+		   is in progress.  Setting the IO_CLEANUP flag will skip the
+		   RRQ process in the case when the fw generated SCSI_CMD cmpl
+		   was a result from the ABTS request rather than the CLEANUP
+		   request */
+		set_bit(BNX2FC_FLAG_IO_CLEANUP,	&io_req->req_flags);
+		rc = FAILED;
+		goto done;
+	}
+
+	/* Cancel the current timer running on this io_req */
+	if (cancel_delayed_work(&io_req->timeout_work))
+		kref_put(&io_req->refcount,
+			 bnx2fc_cmd_release); /* drop timer hold */
+	set_bit(BNX2FC_FLAG_EH_ABORT, &io_req->req_flags);
+	io_req->wait_for_abts_comp = 1;
+	rc = bnx2fc_initiate_abts(io_req);
+	if (rc == FAILED) {
+		io_req->wait_for_cleanup_comp = 1;
+		bnx2fc_initiate_cleanup(io_req);
+		spin_unlock_bh(&tgt->tgt_lock);
+		wait_for_completion(&io_req->cleanup_done);
+		spin_lock_bh(&tgt->tgt_lock);
+		io_req->wait_for_cleanup_comp = 0;
+		goto done;
+	}
+	spin_unlock_bh(&tgt->tgt_lock);
+
+	/* Wait 2 * RA_TOV + 1 to be sure timeout function hasn't fired */
+	time_left = wait_for_completion_timeout(&io_req->abts_done,
+					msecs_to_jiffies(2 * rp->r_a_tov + 1));
+	if (time_left)
+		BNX2FC_IO_DBG(io_req,
+			      "Timed out in eh_abort waiting for abts_done");
+
+	spin_lock_bh(&tgt->tgt_lock);
+	io_req->wait_for_abts_comp = 0;
+	if (test_bit(BNX2FC_FLAG_IO_COMPL, &io_req->req_flags)) {
+		BNX2FC_IO_DBG(io_req, "IO completed in a different context\n");
+		rc = SUCCESS;
+	} else if (!(test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
+				      &io_req->req_flags))) {
+		/* Let the scsi-ml try to recover this command */
+		printk(KERN_ERR PFX "abort failed, xid = 0x%x\n",
+		       io_req->xid);
+		/*
+		 * Cleanup firmware residuals before returning control back
+		 * to SCSI ML.
+		 */
+		rc = bnx2fc_abts_cleanup(io_req);
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * We come here even when there was a race condition
@@ -1259,7 +1662,11 @@ int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd)
 		bnx2fc_scsi_done(io_req, DID_ABORT);
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	}
+<<<<<<< HEAD
 
+=======
+done:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* release the reference taken in eh_abort */
 	kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	spin_unlock_bh(&tgt->tgt_lock);
@@ -1307,11 +1714,38 @@ void bnx2fc_process_cleanup_compl(struct bnx2fc_cmd *io_req,
 {
 	BNX2FC_IO_DBG(io_req, "Entered process_cleanup_compl "
 			      "refcnt = %d, cmd_type = %d\n",
+<<<<<<< HEAD
 		   io_req->refcount.refcount.counter, io_req->cmd_type);
 	bnx2fc_scsi_done(io_req, DID_ERROR);
 	kref_put(&io_req->refcount, bnx2fc_cmd_release);
 	if (io_req->wait_for_comp)
 		complete(&io_req->tm_done);
+=======
+		   kref_read(&io_req->refcount), io_req->cmd_type);
+	/*
+	 * Test whether there is a cleanup request pending. If not just
+	 * exit.
+	 */
+	if (!test_and_clear_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ,
+				&io_req->req_flags))
+		return;
+	/*
+	 * If we receive a cleanup completion for this request then the
+	 * firmware will not give us an abort completion for this request
+	 * so clear any ABTS pending flags.
+	 */
+	if (test_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags) &&
+	    !test_bit(BNX2FC_FLAG_ABTS_DONE, &io_req->req_flags)) {
+		set_bit(BNX2FC_FLAG_ABTS_DONE, &io_req->req_flags);
+		if (io_req->wait_for_abts_comp)
+			complete(&io_req->abts_done);
+	}
+
+	bnx2fc_scsi_done(io_req, DID_ERROR);
+	kref_put(&io_req->refcount, bnx2fc_cmd_release);
+	if (io_req->wait_for_cleanup_comp)
+		complete(&io_req->cleanup_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
@@ -1326,7 +1760,11 @@ void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
 	BNX2FC_IO_DBG(io_req, "Entered process_abts_compl xid = 0x%x"
 			      "refcnt = %d, cmd_type = %d\n",
 		   io_req->xid,
+<<<<<<< HEAD
 		   io_req->refcount.refcount.counter, io_req->cmd_type);
+=======
+		   kref_read(&io_req->refcount), io_req->cmd_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_set_bit(BNX2FC_FLAG_ABTS_DONE,
 				       &io_req->req_flags)) {
@@ -1335,6 +1773,19 @@ void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If we receive an ABTS completion here then we will not receive
+	 * a cleanup completion so clear any cleanup pending flags.
+	 */
+	if (test_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ, &io_req->req_flags)) {
+		clear_bit(BNX2FC_FLAG_ISSUE_CLEANUP_REQ, &io_req->req_flags);
+		if (io_req->wait_for_cleanup_comp)
+			complete(&io_req->cleanup_done);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do not issue RRQ as this IO is already cleanedup */
 	if (test_and_set_bit(BNX2FC_FLAG_IO_CLEANUP,
 				&io_req->req_flags))
@@ -1379,10 +1830,17 @@ void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
 	bnx2fc_cmd_timer_set(io_req, r_a_tov);
 
 io_compl:
+<<<<<<< HEAD
 	if (io_req->wait_for_comp) {
 		if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
 				       &io_req->req_flags))
 			complete(&io_req->tm_done);
+=======
+	if (io_req->wait_for_abts_comp) {
+		if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
+				       &io_req->req_flags))
+			complete(&io_req->abts_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * We end up here when ABTS is issued as
@@ -1406,6 +1864,7 @@ io_compl:
 
 static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 {
+<<<<<<< HEAD
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	struct list_head *list;
@@ -1414,6 +1873,13 @@ static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 	int tm_lun = sc_cmd->device->lun;
 	int rc = 0;
 	int lun;
+=======
+	struct bnx2fc_rport *tgt = io_req->tgt;
+	struct bnx2fc_cmd *cmd, *tmp;
+	struct bnx2fc_mp_req *tm_req = &io_req->mp_req;
+	u64 lun;
+	int rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* called with tgt_lock held */
 	BNX2FC_IO_DBG(io_req, "Entered bnx2fc_lun_reset_cmpl\n");
@@ -1421,11 +1887,20 @@ static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 	 * Walk thru the active_ios queue and ABORT the IO
 	 * that matches with the LUN that was reset
 	 */
+<<<<<<< HEAD
 	list_for_each_safe(list, tmp, &tgt->active_cmd_queue) {
 		BNX2FC_TGT_DBG(tgt, "LUN RST cmpl: scan for pending IOs\n");
 		cmd = (struct bnx2fc_cmd *)list;
 		lun = cmd->sc_cmd->device->lun;
 		if (lun == tm_lun) {
+=======
+	list_for_each_entry_safe(cmd, tmp, &tgt->active_cmd_queue, link) {
+		BNX2FC_TGT_DBG(tgt, "LUN RST cmpl: scan for pending IOs\n");
+		if (!cmd->sc_cmd)
+			continue;
+		lun = cmd->sc_cmd->device->lun;
+		if (lun == tm_req->tm_lun) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Initiate ABTS on this cmd */
 			if (!test_and_set_bit(BNX2FC_FLAG_ISSUE_ABTS,
 					      &cmd->req_flags)) {
@@ -1448,9 +1923,13 @@ static void bnx2fc_lun_reset_cmpl(struct bnx2fc_cmd *io_req)
 static void bnx2fc_tgt_reset_cmpl(struct bnx2fc_cmd *io_req)
 {
 	struct bnx2fc_rport *tgt = io_req->tgt;
+<<<<<<< HEAD
 	struct list_head *list;
 	struct list_head *tmp;
 	struct bnx2fc_cmd *cmd;
+=======
+	struct bnx2fc_cmd *cmd, *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	/* called with tgt_lock held */
@@ -1459,9 +1938,14 @@ static void bnx2fc_tgt_reset_cmpl(struct bnx2fc_cmd *io_req)
 	 * Walk thru the active_ios queue and ABORT the IO
 	 * that matches with the LUN that was reset
 	 */
+<<<<<<< HEAD
 	list_for_each_safe(list, tmp, &tgt->active_cmd_queue) {
 		BNX2FC_TGT_DBG(tgt, "TGT RST cmpl: scan for pending IOs\n");
 		cmd = (struct bnx2fc_cmd *)list;
+=======
+	list_for_each_entry_safe(cmd, tmp, &tgt->active_cmd_queue, link) {
+		BNX2FC_TGT_DBG(tgt, "TGT RST cmpl: scan for pending IOs\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Initiate ABTS */
 		if (!test_and_set_bit(BNX2FC_FLAG_ISSUE_ABTS,
 							&cmd->req_flags)) {
@@ -1480,7 +1964,12 @@ static void bnx2fc_tgt_reset_cmpl(struct bnx2fc_cmd *io_req)
 }
 
 void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
+<<<<<<< HEAD
 			     struct fcoe_task_ctx_entry *task, u8 num_rq)
+=======
+			     struct fcoe_task_ctx_entry *task, u8 num_rq,
+				  unsigned char *rq_data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_mp_req *tm_req;
 	struct fc_frame_header *fc_hdr;
@@ -1519,7 +2008,11 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	if (fc_hdr->fh_r_ctl == FC_RCTL_DD_CMD_STATUS) {
 		bnx2fc_parse_fcp_rsp(io_req,
 				     (struct fcoe_fcp_rsp_payload *)
+<<<<<<< HEAD
 				     rsp_buf, num_rq);
+=======
+				     rsp_buf, num_rq, rq_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (io_req->fcp_rsp_code == 0) {
 			/* TM successful */
 			if (tm_req->tm_flags & FCP_TMF_LUN_RESET)
@@ -1531,6 +2024,7 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 		printk(KERN_ERR PFX "tmf's fc_hdr r_ctl = 0x%x\n",
 			fc_hdr->fh_r_ctl);
 	}
+<<<<<<< HEAD
 	if (!sc_cmd->SCp.ptr) {
 		printk(KERN_ERR PFX "tm_compl: SCp.ptr is NULL\n");
 		return;
@@ -1557,6 +2051,39 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	sc_cmd = io_req->sc_cmd;
 	io_req->sc_cmd = NULL;
 
+=======
+	if (sc_cmd) {
+		if (!bnx2fc_priv(sc_cmd)->io_req) {
+			printk(KERN_ERR PFX "tm_compl: io_req is NULL\n");
+			return;
+		}
+		switch (io_req->fcp_status) {
+		case FC_GOOD:
+			if (io_req->cdb_status == 0) {
+				/* Good IO completion */
+				sc_cmd->result = DID_OK << 16;
+			} else {
+				/* Transport status is good, SCSI status not good */
+				sc_cmd->result = (DID_OK << 16) | io_req->cdb_status;
+			}
+			if (io_req->fcp_resid)
+				scsi_set_resid(sc_cmd, io_req->fcp_resid);
+			break;
+
+		default:
+			BNX2FC_IO_DBG(io_req, "process_tm_compl: fcp_status = %d\n",
+				      io_req->fcp_status);
+			break;
+		}
+
+		sc_cmd = io_req->sc_cmd;
+		io_req->sc_cmd = NULL;
+
+		bnx2fc_priv(sc_cmd)->io_req = NULL;
+		scsi_done(sc_cmd);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check if the io_req exists in tgt's tmf_q */
 	if (io_req->on_tmf_queue) {
 
@@ -1568,6 +2095,7 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 		return;
 	}
 
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = NULL;
 	sc_cmd->scsi_done(sc_cmd);
 
@@ -1575,6 +2103,12 @@ void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 	if (io_req->wait_for_comp) {
 		BNX2FC_IO_DBG(io_req, "tm_compl - wake up the waiter\n");
 		complete(&io_req->tm_done);
+=======
+	kref_put(&io_req->refcount, bnx2fc_cmd_release);
+	if (io_req->wait_for_abts_comp) {
+		BNX2FC_IO_DBG(io_req, "tm_compl - wake up the waiter\n");
+		complete(&io_req->abts_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1618,6 +2152,14 @@ static int bnx2fc_map_sg(struct bnx2fc_cmd *io_req)
 	u64 addr;
 	int i;
 
+<<<<<<< HEAD
+=======
+	WARN_ON(scsi_sg_count(sc) > BNX2FC_MAX_BDS_PER_CMD);
+	/*
+	 * Use dma_map_sg directly to ensure we're using the correct
+	 * dev struct off of pcidev.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_count = dma_map_sg(&hba->pcidev->dev, scsi_sglist(sc),
 			      scsi_sg_count(sc), sc->sc_data_direction);
 	scsi_for_each_sg(sc, sg, sg_count, i) {
@@ -1661,15 +2203,41 @@ static int bnx2fc_build_bd_list_from_sg(struct bnx2fc_cmd *io_req)
 	}
 	io_req->bd_tbl->bd_valid = bd_count;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Return the command to ML if BD count exceeds the max number
+	 * that can be handled by FW.
+	 */
+	if (bd_count > BNX2FC_FW_MAX_BDS_PER_CMD) {
+		pr_err("bd_count = %d exceeded FW supported max BD(255), task_id = 0x%x\n",
+		       bd_count, io_req->xid);
+		return -ENOMEM;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void bnx2fc_unmap_sg_list(struct bnx2fc_cmd *io_req)
 {
 	struct scsi_cmnd *sc = io_req->sc_cmd;
+<<<<<<< HEAD
 
 	if (io_req->bd_tbl->bd_valid && sc) {
 		scsi_dma_unmap(sc);
+=======
+	struct bnx2fc_interface *interface = io_req->port->priv;
+	struct bnx2fc_hba *hba = interface->hba;
+
+	/*
+	 * Use dma_unmap_sg directly to ensure we're using the correct
+	 * dev struct off of pcidev.
+	 */
+	if (io_req->bd_tbl->bd_valid && sc && scsi_sg_count(sc)) {
+		dma_unmap_sg(&hba->pcidev->dev, scsi_sglist(sc),
+		    scsi_sg_count(sc), sc->sc_data_direction);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		io_req->bd_tbl->bd_valid = 0;
 	}
 }
@@ -1677,6 +2245,7 @@ static void bnx2fc_unmap_sg_list(struct bnx2fc_cmd *io_req)
 void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 				  struct fcp_cmnd *fcp_cmnd)
 {
+<<<<<<< HEAD
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
 	char tag[2];
 
@@ -1687,10 +2256,16 @@ void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 	fcp_cmnd->fc_dl = htonl(io_req->data_xfer_len);
 	memcpy(fcp_cmnd->fc_cdb, sc_cmd->cmnd, sc_cmd->cmd_len);
 
+=======
+	memset(fcp_cmnd, 0, sizeof(struct fcp_cmnd));
+
+	fcp_cmnd->fc_dl = htonl(io_req->data_xfer_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcp_cmnd->fc_cmdref = 0;
 	fcp_cmnd->fc_pri_ta = 0;
 	fcp_cmnd->fc_tm_flags = io_req->mp_req.tm_flags;
 	fcp_cmnd->fc_flags = io_req->io_req_flags;
+<<<<<<< HEAD
 
 	if (scsi_populate_tag_msg(sc_cmd, tag)) {
 		switch (tag[0]) {
@@ -1707,10 +2282,14 @@ void bnx2fc_build_fcp_cmnd(struct bnx2fc_cmd *io_req,
 	} else {
 		fcp_cmnd->fc_pri_ta = 0;
 	}
+=======
+	fcp_cmnd->fc_pri_ta = FCP_PTA_SIMPLE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 				 struct fcoe_fcp_rsp_payload *fcp_rsp,
+<<<<<<< HEAD
 				 u8 num_rq)
 {
 	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
@@ -1720,15 +2299,32 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 	int i;
 	unsigned char *rq_data;
 	unsigned char *dummy;
+=======
+				 u8 num_rq, unsigned char *rq_data)
+{
+	struct scsi_cmnd *sc_cmd = io_req->sc_cmd;
+	u8 rsp_flags = fcp_rsp->fcp_flags.flags;
+	u32 rq_buff_len = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fcp_sns_len = 0;
 	int fcp_rsp_len = 0;
 
 	io_req->fcp_status = FC_GOOD;
+<<<<<<< HEAD
 	io_req->fcp_resid = fcp_rsp->fcp_resid;
 
 	io_req->scsi_comp_flags = rsp_flags;
 	CMD_SCSI_STATUS(sc_cmd) = io_req->cdb_status =
 				fcp_rsp->scsi_status_code;
+=======
+	io_req->fcp_resid = 0;
+	if (rsp_flags & (FCOE_FCP_RSP_FLAGS_FCP_RESID_OVER |
+	    FCOE_FCP_RSP_FLAGS_FCP_RESID_UNDER))
+		io_req->fcp_resid = fcp_rsp->fcp_resid;
+
+	io_req->scsi_comp_flags = rsp_flags;
+	io_req->cdb_status = fcp_rsp->scsi_status_code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fetch fcp_rsp_info and fcp_sns_info if available */
 	if (num_rq) {
@@ -1762,6 +2358,7 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 			rq_buff_len =  num_rq * BNX2FC_RQ_BUF_SZ;
 		}
 
+<<<<<<< HEAD
 		rq_data = bnx2fc_get_next_rqe(tgt, 1);
 
 		if (num_rq > 1) {
@@ -1770,11 +2367,17 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 				dummy = bnx2fc_get_next_rqe(tgt, 1);
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* fetch fcp_rsp_code */
 		if ((fcp_rsp_len == 4) || (fcp_rsp_len == 8)) {
 			/* Only for task management function */
 			io_req->fcp_rsp_code = rq_data[3];
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "fcp_rsp_code = %d\n",
+=======
+			BNX2FC_IO_DBG(io_req, "fcp_rsp_code = %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				io_req->fcp_rsp_code);
 		}
 
@@ -1790,9 +2393,12 @@ static void bnx2fc_parse_fcp_rsp(struct bnx2fc_cmd *io_req,
 		if (fcp_sns_len)
 			memcpy(sc_cmd->sense_buffer, rq_data, fcp_sns_len);
 
+<<<<<<< HEAD
 		/* return RQ entries */
 		for (i = 0; i < num_rq; i++)
 			bnx2fc_return_rqe(tgt, 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1818,7 +2424,11 @@ int bnx2fc_queuecommand(struct Scsi_Host *host,
 	rval = fc_remote_port_chkready(rport);
 	if (rval) {
 		sc_cmd->result = rval;
+<<<<<<< HEAD
 		sc_cmd->scsi_done(sc_cmd);
+=======
+		scsi_done(sc_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1838,32 +2448,66 @@ int bnx2fc_queuecommand(struct Scsi_Host *host,
 		rc = SCSI_MLQUEUE_TARGET_BUSY;
 		goto exit_qcmd;
 	}
+<<<<<<< HEAD
+=======
+	if (tgt->retry_delay_timestamp) {
+		if (time_after(jiffies, tgt->retry_delay_timestamp)) {
+			tgt->retry_delay_timestamp = 0;
+		} else {
+			/* If retry_delay timer is active, flow off the ML */
+			rc = SCSI_MLQUEUE_TARGET_BUSY;
+			goto exit_qcmd;
+		}
+	}
+
+	spin_lock_bh(&tgt->tgt_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	io_req = bnx2fc_cmd_alloc(tgt);
 	if (!io_req) {
 		rc = SCSI_MLQUEUE_HOST_BUSY;
+<<<<<<< HEAD
 		goto exit_qcmd;
+=======
+		goto exit_qcmd_tgtlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	io_req->sc_cmd = sc_cmd;
 
 	if (bnx2fc_post_io_req(tgt, io_req)) {
 		printk(KERN_ERR PFX "Unable to post io_req\n");
 		rc = SCSI_MLQUEUE_HOST_BUSY;
+<<<<<<< HEAD
 		goto exit_qcmd;
 	}
+=======
+		goto exit_qcmd_tgtlock;
+	}
+
+exit_qcmd_tgtlock:
+	spin_unlock_bh(&tgt->tgt_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit_qcmd:
 	return rc;
 }
 
 void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 				   struct fcoe_task_ctx_entry *task,
+<<<<<<< HEAD
 				   u8 num_rq)
+=======
+				   u8 num_rq, unsigned char *rq_data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fcoe_fcp_rsp_payload *fcp_rsp;
 	struct bnx2fc_rport *tgt = io_req->tgt;
 	struct scsi_cmnd *sc_cmd;
+<<<<<<< HEAD
 	struct Scsi_Host *host;
 
+=======
+	u16 scope = 0, qualifier = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* scsi_cmd_cmpl is called with tgt lock held */
 
@@ -1871,6 +2515,16 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		/* we will not receive ABTS response for this IO */
 		BNX2FC_IO_DBG(io_req, "Timer context finished processing "
 			   "this scsi cmd\n");
+<<<<<<< HEAD
+=======
+		if (test_and_clear_bit(BNX2FC_FLAG_IO_CLEANUP,
+				       &io_req->req_flags)) {
+			BNX2FC_IO_DBG(io_req,
+				      "Actual completion after cleanup request cleaning up\n");
+			bnx2fc_process_cleanup_compl(io_req, task, num_rq);
+		}
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Cancel the timeout_work, as we received IO completion */
@@ -1889,11 +2543,18 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		   &(task->rxwr_only.union_ctx.comp_info.fcp_rsp.payload);
 
 	/* parse fcp_rsp and obtain sense data from RQ if available */
+<<<<<<< HEAD
 	bnx2fc_parse_fcp_rsp(io_req, fcp_rsp, num_rq);
 
 	host = sc_cmd->device->host;
 	if (!sc_cmd->SCp.ptr) {
 		printk(KERN_ERR PFX "SCp.ptr is NULL\n");
+=======
+	bnx2fc_parse_fcp_rsp(io_req, fcp_rsp, num_rq, rq_data);
+
+	if (!bnx2fc_priv(sc_cmd)->io_req) {
+		printk(KERN_ERR PFX "io_req is NULL\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1908,10 +2569,17 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 		 * between command abort and (late) completion.
 		 */
 		BNX2FC_IO_DBG(io_req, "xid not on active_cmd_queue\n");
+<<<<<<< HEAD
 		if (io_req->wait_for_comp)
 			if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
 					       &io_req->req_flags))
 				complete(&io_req->tm_done);
+=======
+		if (io_req->wait_for_abts_comp)
+			if (test_and_clear_bit(BNX2FC_FLAG_EH_ABORT,
+					       &io_req->req_flags))
+				complete(&io_req->abts_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bnx2fc_unmap_sg_list(io_req);
@@ -1928,6 +2596,36 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 				 " fcp_resid = 0x%x\n",
 				io_req->cdb_status, io_req->fcp_resid);
 			sc_cmd->result = (DID_OK << 16) | io_req->cdb_status;
+<<<<<<< HEAD
+=======
+
+			if (io_req->cdb_status == SAM_STAT_TASK_SET_FULL ||
+			    io_req->cdb_status == SAM_STAT_BUSY) {
+				/* Newer array firmware with BUSY or
+				 * TASK_SET_FULL may return a status that needs
+				 * the scope bits masked.
+				 * Or a huge delay timestamp up to 27 minutes
+				 * can result.
+				 */
+				if (fcp_rsp->retry_delay_timer) {
+					/* Upper 2 bits */
+					scope = fcp_rsp->retry_delay_timer
+						& 0xC000;
+					/* Lower 14 bits */
+					qualifier = fcp_rsp->retry_delay_timer
+						& 0x3FFF;
+				}
+				if (scope > 0 && qualifier > 0 &&
+					qualifier <= 0x3FEF) {
+					/* Set the jiffies +
+					 * retry_delay_timer * 100ms
+					 * for the rport/tgt
+					 */
+					tgt->retry_delay_timestamp = jiffies +
+						(qualifier * HZ / 10);
+				}
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (io_req->fcp_resid)
 			scsi_set_resid(sc_cmd, io_req->fcp_resid);
@@ -1937,8 +2635,13 @@ void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 			io_req->fcp_status);
 		break;
 	}
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = NULL;
 	sc_cmd->scsi_done(sc_cmd);
+=======
+	bnx2fc_priv(sc_cmd)->io_req = NULL;
+	scsi_done(sc_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_put(&io_req->refcount, bnx2fc_cmd_release);
 }
 
@@ -1952,15 +2655,24 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	struct bnx2fc_interface *interface = port->priv;
 	struct bnx2fc_hba *hba = interface->hba;
 	struct fc_lport *lport = port->lport;
+<<<<<<< HEAD
 	struct fcoe_dev_stats *stats;
 	int task_idx, index;
 	u16 xid;
 
+=======
+	int task_idx, index;
+	u16 xid;
+
+	/* bnx2fc_post_io_req() is called with the tgt_lock held */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize rest of io_req fields */
 	io_req->cmd_type = BNX2FC_SCSI_CMD;
 	io_req->port = port;
 	io_req->tgt = tgt;
 	io_req->data_xfer_len = scsi_bufflen(sc_cmd);
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = (char *)io_req;
 
 	stats = per_cpu_ptr(lport->dev_stats, get_cpu());
@@ -1977,15 +2689,35 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 		stats->ControlRequests++;
 	}
 	put_cpu();
+=======
+	bnx2fc_priv(sc_cmd)->io_req = io_req;
+
+	if (sc_cmd->sc_data_direction == DMA_FROM_DEVICE) {
+		io_req->io_req_flags = BNX2FC_READ;
+		this_cpu_inc(lport->stats->InputRequests);
+		this_cpu_add(lport->stats->InputBytes, io_req->data_xfer_len);
+	} else if (sc_cmd->sc_data_direction == DMA_TO_DEVICE) {
+		io_req->io_req_flags = BNX2FC_WRITE;
+		this_cpu_inc(lport->stats->OutputRequests);
+		this_cpu_add(lport->stats->OutputBytes, io_req->data_xfer_len);
+	} else {
+		io_req->io_req_flags = 0;
+		this_cpu_inc(lport->stats->ControlRequests);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xid = io_req->xid;
 
 	/* Build buffer descriptor list for firmware from sg list */
 	if (bnx2fc_build_bd_list_from_sg(io_req)) {
 		printk(KERN_ERR PFX "BD list creation failed\n");
+<<<<<<< HEAD
 		spin_lock_bh(&tgt->tgt_lock);
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
@@ -1997,19 +2729,28 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 	task = &(task_page[index]);
 	bnx2fc_init_task(io_req, task);
 
+<<<<<<< HEAD
 	spin_lock_bh(&tgt->tgt_lock);
 
 	if (tgt->flush_in_prog) {
 		printk(KERN_ERR PFX "Flush in progress..Host Busy\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+	if (tgt->flush_in_prog) {
+		printk(KERN_ERR PFX "Flush in progress..Host Busy\n");
+		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
 	if (!test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags)) {
 		printk(KERN_ERR PFX "Session not ready...post_io\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
+<<<<<<< HEAD
 		spin_unlock_bh(&tgt->tgt_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
@@ -2027,6 +2768,9 @@ int bnx2fc_post_io_req(struct bnx2fc_rport *tgt,
 
 	/* Ring doorbell */
 	bnx2fc_ring_doorbell(tgt);
+<<<<<<< HEAD
 	spin_unlock_bh(&tgt->tgt_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

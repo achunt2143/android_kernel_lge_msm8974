@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * net/sched/em_cmp.c	Simple packet data comparison ematch
  *
@@ -6,6 +7,12 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * net/sched/em_cmp.c	Simple packet data comparison ematch
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  */
 
@@ -45,7 +52,11 @@ static int em_cmp_match(struct sk_buff *skb, struct tcf_ematch *em,
 		break;
 
 	case TCF_EM_ALIGN_U32:
+<<<<<<< HEAD
 		/* Worth checking boundries? The branching seems
+=======
+		/* Worth checking boundaries? The branching seems
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * to get worse. Visit again.
 		 */
 		val = get_unaligned_be32(ptr);
@@ -91,6 +102,10 @@ static void __exit exit_em_cmp(void)
 	tcf_em_unregister(&em_cmp_ops);
 }
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ematch classifier for basic data types(8/16/32 bit) against skb data");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_init(init_em_cmp);

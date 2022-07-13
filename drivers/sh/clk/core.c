@@ -63,12 +63,20 @@ void clk_rate_table_build(struct clk *clk,
 		else
 			freq = clk->parent->rate * mult / div;
 
+<<<<<<< HEAD
 		freq_table[i].index = i;
+=======
+		freq_table[i].driver_data = i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		freq_table[i].frequency = freq;
 	}
 
 	/* Termination entry */
+<<<<<<< HEAD
 	freq_table[i].index = i;
+=======
+	freq_table[i].driver_data = i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	freq_table[i].frequency = CPUFREQ_TABLE_END;
 }
 
@@ -196,6 +204,7 @@ int clk_rate_table_find(struct clk *clk,
 			struct cpufreq_frequency_table *freq_table,
 			unsigned long rate)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
@@ -207,6 +216,14 @@ int clk_rate_table_find(struct clk *clk,
 		if (freq == rate)
 			return i;
 	}
+=======
+	struct cpufreq_frequency_table *pos;
+	int idx;
+
+	cpufreq_for_each_valid_entry_idx(pos, freq_table, idx)
+		if (pos->frequency == rate)
+			return idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ENOENT;
 }
@@ -300,7 +317,11 @@ int clk_enable(struct clk *clk)
 	int ret;
 
 	if (!clk)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&clock_lock, flags);
 	ret = __clk_enable(clk);
@@ -373,7 +394,11 @@ static int clk_establish_mapping(struct clk *clk)
 	if (!mapping->base && mapping->phys) {
 		kref_init(&mapping->ref);
 
+<<<<<<< HEAD
 		mapping->base = ioremap_nocache(mapping->phys, mapping->len);
+=======
+		mapping->base = ioremap(mapping->phys, mapping->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(!mapping->base))
 			return -ENXIO;
 	} else if (mapping->base) {
@@ -475,6 +500,12 @@ void clk_enable_init_clocks(void)
 
 unsigned long clk_get_rate(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return clk->rate;
 }
 EXPORT_SYMBOL_GPL(clk_get_rate);
@@ -484,6 +515,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	int ret = -EOPNOTSUPP;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&clock_lock, flags);
 
 	if (likely(clk->ops && clk->ops->set_rate)) {
@@ -541,12 +578,24 @@ EXPORT_SYMBOL_GPL(clk_set_parent);
 
 struct clk *clk_get_parent(struct clk *clk)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return clk->parent;
 }
 EXPORT_SYMBOL_GPL(clk_get_parent);
 
 long clk_round_rate(struct clk *clk, unsigned long rate)
 {
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(clk->ops && clk->ops->round_rate)) {
 		unsigned long flags, rounded;
 
@@ -561,6 +610,7 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 }
 EXPORT_SYMBOL_GPL(clk_round_rate);
 
+<<<<<<< HEAD
 long clk_round_parent(struct clk *clk, unsigned long target,
 		      unsigned long *best_freq, unsigned long *parent_freq,
 		      unsigned int div_min, unsigned int div_max)
@@ -653,6 +703,8 @@ long clk_round_parent(struct clk *clk, unsigned long target,
 }
 EXPORT_SYMBOL_GPL(clk_round_parent);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static void clks_core_resume(void)
 {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm4_input.c
  *
@@ -16,6 +20,7 @@
 #include <linux/netfilter_ipv4.h>
 #include <net/ip.h>
 #include <net/xfrm.h>
+<<<<<<< HEAD
 
 int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb)
 {
@@ -25,18 +30,42 @@ int xfrm4_extract_input(struct xfrm_state *x, struct sk_buff *skb)
 static inline int xfrm4_rcv_encap_finish(struct sk_buff *skb)
 {
 	if (skb_dst(skb) == NULL) {
+=======
+#include <net/protocol.h>
+#include <net/gro.h>
+
+static int xfrm4_rcv_encap_finish2(struct net *net, struct sock *sk,
+				   struct sk_buff *skb)
+{
+	return dst_input(skb);
+}
+
+static inline int xfrm4_rcv_encap_finish(struct net *net, struct sock *sk,
+					 struct sk_buff *skb)
+{
+	if (!skb_dst(skb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct iphdr *iph = ip_hdr(skb);
 
 		if (ip_route_input_noref(skb, iph->daddr, iph->saddr,
 					 iph->tos, skb->dev))
 			goto drop;
 	}
+<<<<<<< HEAD
 	return dst_input(skb);
+=======
+
+	if (xfrm_trans_queue(skb, xfrm4_rcv_encap_finish2))
+		goto drop;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 drop:
 	kfree_skb(skb);
 	return NET_RX_DROP;
 }
 
+<<<<<<< HEAD
 int xfrm4_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
 		    int encap_type)
 {
@@ -48,6 +77,11 @@ EXPORT_SYMBOL(xfrm4_rcv_encap);
 
 int xfrm4_transport_finish(struct sk_buff *skb, int async)
 {
+=======
+int xfrm4_transport_finish(struct sk_buff *skb, int async)
+{
+	struct xfrm_offload *xo = xfrm_offload(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iphdr *iph = ip_hdr(skb);
 
 	iph->protocol = XFRM_MODE_SKB_CB(skb)->protocol;
@@ -57,15 +91,35 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
 		return -iph->protocol;
 #endif
 
+<<<<<<< HEAD
 	__skb_push(skb, skb->data - skb_network_header(skb));
 	iph->tot_len = htons(skb->len);
 	ip_send_check(iph);
 
 	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING, skb, skb->dev, NULL,
+=======
+	__skb_push(skb, -skb_network_offset(skb));
+	iph->tot_len = htons(skb->len);
+	ip_send_check(iph);
+
+	if (xo && (xo->flags & XFRM_GRO)) {
+		/* The full l2 header needs to be preserved so that re-injecting the packet at l2
+		 * works correctly in the presence of vlan tags.
+		 */
+		skb_mac_header_rebuild_full(skb, xo->orig_mac_len);
+		skb_reset_network_header(skb);
+		skb_reset_transport_header(skb);
+		return 0;
+	}
+
+	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm4_rcv_encap_finish);
 	return 0;
 }
 
+<<<<<<< HEAD
 /* If it's a keepalive packet, then just eat it.
  * If it's an encapsulated packet, then pass it to the
  * IPsec xfrm input.
@@ -74,16 +128,27 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
  * Returns <0 if skb should be resubmitted (-ret is protocol)
  */
 int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+=======
+static int __xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb, bool pull)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct udp_sock *up = udp_sk(sk);
 	struct udphdr *uh;
 	struct iphdr *iph;
 	int iphlen, len;
+<<<<<<< HEAD
 
 	__u8 *udpdata;
 	__be32 *udpdata32;
 	__u16 encap_type = up->encap_type;
 
+=======
+	__u8 *udpdata;
+	__be32 *udpdata32;
+	u16 encap_type;
+
+	encap_type = READ_ONCE(up->encap_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if this is not encapsulated socket, then just return now */
 	if (!encap_type)
 		return 1;
@@ -104,7 +169,11 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 	case UDP_ENCAP_ESPINUDP:
 		/* Check if this is a keepalive packet.  If so, eat it. */
 		if (len == 1 && udpdata[0] == 0xff) {
+<<<<<<< HEAD
 			goto drop;
+=======
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
 			/* ESP Packet without Non-ESP header */
 			len = sizeof(struct udphdr);
@@ -115,7 +184,11 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 	case UDP_ENCAP_ESPINUDP_NON_IKE:
 		/* Check if this is a keepalive packet.  If so, eat it. */
 		if (len == 1 && udpdata[0] == 0xff) {
+<<<<<<< HEAD
 			goto drop;
+=======
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
 			   udpdata32[0] == 0 && udpdata32[1] == 0) {
 
@@ -132,8 +205,13 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 	 * header and optional ESP marker bytes) and then modify the
 	 * protocol to ESP, and then call into the transform receiver.
 	 */
+<<<<<<< HEAD
 	if (skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
 		goto drop;
+=======
+	if (skb_unclone(skb, GFP_ATOMIC))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now we can update and verify the packet length... */
 	iph = ip_hdr(skb);
@@ -141,13 +219,18 @@ int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
 	iph->tot_len = htons(ntohs(iph->tot_len) - len);
 	if (skb->len < iphlen + len) {
 		/* packet is too small!?! */
+<<<<<<< HEAD
 		goto drop;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* pull the data buffer up to the ESP header and set the
 	 * transport header to point to ESP.  Keep UDP on the stack
 	 * for later.
 	 */
+<<<<<<< HEAD
 	__skb_pull(skb, len);
 	skb_reset_transport_header(skb);
 
@@ -159,6 +242,84 @@ drop:
 	return 0;
 }
 
+=======
+	if (pull) {
+		__skb_pull(skb, len);
+		skb_reset_transport_header(skb);
+	} else {
+		skb_set_transport_header(skb, len);
+	}
+
+	/* process ESP */
+	return 0;
+}
+
+/* If it's a keepalive packet, then just eat it.
+ * If it's an encapsulated packet, then pass it to the
+ * IPsec xfrm input.
+ * Returns 0 if skb passed to xfrm or was dropped.
+ * Returns >0 if skb should be passed to UDP.
+ * Returns <0 if skb should be resubmitted (-ret is protocol)
+ */
+int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
+{
+	int ret;
+
+	ret = __xfrm4_udp_encap_rcv(sk, skb, true);
+	if (!ret)
+		return xfrm4_rcv_encap(skb, IPPROTO_ESP, 0,
+				       udp_sk(sk)->encap_type);
+
+	if (ret < 0) {
+		kfree_skb(skb);
+		return 0;
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL(xfrm4_udp_encap_rcv);
+
+struct sk_buff *xfrm4_gro_udp_encap_rcv(struct sock *sk, struct list_head *head,
+					struct sk_buff *skb)
+{
+	int offset = skb_gro_offset(skb);
+	const struct net_offload *ops;
+	struct sk_buff *pp = NULL;
+	int ret;
+
+	offset = offset - sizeof(struct udphdr);
+
+	if (!pskb_pull(skb, offset))
+		return NULL;
+
+	rcu_read_lock();
+	ops = rcu_dereference(inet_offloads[IPPROTO_ESP]);
+	if (!ops || !ops->callbacks.gro_receive)
+		goto out;
+
+	ret = __xfrm4_udp_encap_rcv(sk, skb, false);
+	if (ret)
+		goto out;
+
+	skb_push(skb, offset);
+	NAPI_GRO_CB(skb)->proto = IPPROTO_UDP;
+
+	pp = call_gro_receive(ops->callbacks.gro_receive, head, skb);
+	rcu_read_unlock();
+
+	return pp;
+
+out:
+	rcu_read_unlock();
+	skb_push(skb, offset);
+	NAPI_GRO_CB(skb)->same_flow = 0;
+	NAPI_GRO_CB(skb)->flush = 1;
+
+	return NULL;
+}
+EXPORT_SYMBOL(xfrm4_gro_udp_encap_rcv);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xfrm4_rcv(struct sk_buff *skb)
 {
 	return xfrm4_rcv_spi(skb, ip_hdr(skb)->protocol, 0);

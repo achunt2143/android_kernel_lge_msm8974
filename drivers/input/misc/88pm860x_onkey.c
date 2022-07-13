@@ -26,6 +26,10 @@
 #include <linux/interrupt.h>
 #include <linux/mfd/88pm860x.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PM8607_WAKEUP		0x0b
 
@@ -56,19 +60,31 @@ static irqreturn_t pm860x_onkey_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit pm860x_onkey_probe(struct platform_device *pdev)
+=======
+static int pm860x_onkey_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
 	struct pm860x_onkey_info *info;
 	int irq, ret;
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq < 0) {
 		dev_err(&pdev->dev, "No IRQ resource!\n");
 		return -EINVAL;
 	}
 
 	info = kzalloc(sizeof(struct pm860x_onkey_info), GFP_KERNEL);
+=======
+	if (irq < 0)
+		return -EINVAL;
+
+	info = devm_kzalloc(&pdev->dev, sizeof(struct pm860x_onkey_info),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 	info->chip = chip;
@@ -76,11 +92,18 @@ static int __devinit pm860x_onkey_probe(struct platform_device *pdev)
 	info->dev = &pdev->dev;
 	info->irq = irq;
 
+<<<<<<< HEAD
 	info->idev = input_allocate_device();
 	if (!info->idev) {
 		dev_err(chip->dev, "Failed to allocate input dev\n");
 		ret = -ENOMEM;
 		goto out;
+=======
+	info->idev = devm_input_allocate_device(&pdev->dev);
+	if (!info->idev) {
+		dev_err(chip->dev, "Failed to allocate input dev\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	info->idev->name = "88pm860x_on";
@@ -93,6 +116,7 @@ static int __devinit pm860x_onkey_probe(struct platform_device *pdev)
 	ret = input_register_device(info->idev);
 	if (ret) {
 		dev_err(chip->dev, "Can't register input device: %d\n", ret);
+<<<<<<< HEAD
 		goto out_reg;
 	}
 
@@ -102,12 +126,25 @@ static int __devinit pm860x_onkey_probe(struct platform_device *pdev)
 		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
 			info->irq, ret);
 		goto out_irq;
+=======
+		return ret;
+	}
+
+	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					pm860x_onkey_handler, IRQF_ONESHOT,
+					"onkey", info);
+	if (ret < 0) {
+		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
+			info->irq, ret);
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, info);
 	device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
+<<<<<<< HEAD
 
 out_irq:
 	input_unregister_device(info->idev);
@@ -132,6 +169,10 @@ static int __devexit pm860x_onkey_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pm860x_onkey_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -150,18 +191,30 @@ static int pm860x_onkey_resume(struct device *dev)
 		chip->wakeup_flag &= ~(1 << PM8607_IRQ_ONKEY);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(pm860x_onkey_pm_ops, pm860x_onkey_suspend, pm860x_onkey_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(pm860x_onkey_pm_ops,
+				pm860x_onkey_suspend, pm860x_onkey_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver pm860x_onkey_driver = {
 	.driver		= {
 		.name	= "88pm860x-onkey",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &pm860x_onkey_pm_ops,
 	},
 	.probe		= pm860x_onkey_probe,
 	.remove		= __devexit_p(pm860x_onkey_remove),
+=======
+		.pm	= pm_sleep_ptr(&pm860x_onkey_pm_ops),
+	},
+	.probe		= pm860x_onkey_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(pm860x_onkey_driver);
 

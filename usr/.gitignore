@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Generated files
 #
@@ -8,3 +9,9 @@ initramfs_data.cpio.bz2
 initramfs_data.cpio.lzma
 initramfs_list
 include
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+/gen_init_cpio
+/initramfs_data.cpio
+/initramfs_inc_data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

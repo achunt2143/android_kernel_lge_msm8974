@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/irq.c
  *
@@ -8,10 +12,13 @@
  *  Dynamic Tick Timer written by Tony Lindgren <tony@atomide.com> and
  *  Tuukka Tikkanen <tuukka.tikkanen@elektrobit.com>.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains the code used by various IRQ handling routines:
  *  asking for different IRQ's should be done through these routines
  *  instead of just grabbing them. Thus setups with different IRQ numbers
@@ -21,11 +28,18 @@
  *  IRQ's are in fact implemented a bit like signal handlers for the kernel.
  *  Naturally it's not a 1:1 relation, but there are similarities.
  */
+<<<<<<< HEAD
 #include <linux/kernel_stat.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqchip.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/random.h>
 #include <linux/smp.h>
 #include <linux/init.h>
@@ -34,12 +48,22 @@
 #include <linux/list.h>
 #include <linux/kallsyms.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+
+#include <asm/hardware/cache-l2x0.h>
+#include <asm/hardware/cache-uniphier.h>
+#include <asm/outercache.h>
+#include <asm/softirq_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/exception.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 #include <asm/perftypes.h>
 
 /*
@@ -51,6 +75,50 @@
 
 unsigned long irq_err_count;
 
+=======
+#include "reboot.h"
+
+unsigned long irq_err_count;
+
+#ifdef CONFIG_IRQSTACKS
+
+asmlinkage DEFINE_PER_CPU_READ_MOSTLY(u8 *, irq_stack_ptr);
+
+static void __init init_irq_stacks(void)
+{
+	u8 *stack;
+	int cpu;
+
+	for_each_possible_cpu(cpu) {
+		if (!IS_ENABLED(CONFIG_VMAP_STACK))
+			stack = (u8 *)__get_free_pages(GFP_KERNEL,
+						       THREAD_SIZE_ORDER);
+		else
+			stack = __vmalloc_node(THREAD_SIZE, THREAD_ALIGN,
+					       THREADINFO_GFP, NUMA_NO_NODE,
+					       __builtin_return_address(0));
+
+		if (WARN_ON(!stack))
+			break;
+		per_cpu(irq_stack_ptr, cpu) = &stack[THREAD_SIZE];
+	}
+}
+
+#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+static void ____do_softirq(void *arg)
+{
+	__do_softirq();
+}
+
+void do_softirq_own_stack(void)
+{
+	call_with_stack(____do_softirq, NULL,
+			__this_cpu_read(irq_stack_ptr));
+}
+#endif
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int arch_show_interrupts(struct seq_file *p, int prec)
 {
 #ifdef CONFIG_FIQ
@@ -71,15 +139,20 @@ int arch_show_interrupts(struct seq_file *p, int prec)
  */
 void handle_IRQ(unsigned int irq, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct pt_regs *old_regs = set_irq_regs(regs);
 
 	perf_mon_interrupt_in();
 	irq_enter();
+=======
+	struct irq_desc *desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some hardware gives randomly wrong interrupts.  Rather
 	 * than crashing, do something sensible.
 	 */
+<<<<<<< HEAD
 	if (unlikely(irq >= nr_irqs)) {
 		if (printk_ratelimit())
 			printk(KERN_WARNING "Bad IRQ%u\n", irq);
@@ -122,11 +195,47 @@ void set_irq_flags(unsigned int irq, unsigned int iflags)
 		clr |= IRQ_NOAUTOEN;
 	/* Order is clear bits in "clr" then set bits in "set" */
 	irq_modify_status(irq, clr, set & ~clr);
+=======
+	if (unlikely(!irq || irq >= nr_irqs))
+		desc = NULL;
+	else
+		desc = irq_to_desc(irq);
+
+	if (likely(desc))
+		handle_irq_desc(desc);
+	else
+		ack_bad_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init init_IRQ(void)
 {
+<<<<<<< HEAD
 	machine_desc->init_irq();
+=======
+	int ret;
+
+#ifdef CONFIG_IRQSTACKS
+	init_irq_stacks();
+#endif
+
+	if (IS_ENABLED(CONFIG_OF) && !machine_desc->init_irq)
+		irqchip_init();
+	else
+		machine_desc->init_irq();
+
+	if (IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_CACHE_L2X0) &&
+	    (machine_desc->l2c_aux_mask || machine_desc->l2c_aux_val)) {
+		if (!outer_cache.write_sec)
+			outer_cache.write_sec = machine_desc->l2c_write_sec;
+		ret = l2x0_of_init(machine_desc->l2c_aux_val,
+				   machine_desc->l2c_aux_mask);
+		if (ret && ret != -ENODEV)
+			pr_err("L2C: failed to init: %d\n", ret);
+	}
+
+	uniphier_cache_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SPARSE_IRQ
@@ -136,6 +245,7 @@ int __init arch_probe_nr_irqs(void)
 	return nr_irqs;
 }
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_HOTPLUG_CPU
 
@@ -198,3 +308,5 @@ void migrate_irqs(void)
 	local_irq_restore(flags);
 }
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

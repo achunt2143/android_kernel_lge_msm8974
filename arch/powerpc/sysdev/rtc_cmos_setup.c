@@ -14,8 +14,13 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mc146818rtc.h>
+<<<<<<< HEAD
 
 #include <asm/prom.h>
+=======
+#include <linux/of_address.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int  __init add_rtc(void)
 {
@@ -62,10 +67,14 @@ static int  __init add_rtc(void)
 	pd = platform_device_register_simple("rtc_cmos", -1,
 					     &res[0], num_res);
 
+<<<<<<< HEAD
 	if (IS_ERR(pd))
 		return PTR_ERR(pd);
 
 	return 0;
+=======
+	return PTR_ERR_OR_ZERO(pd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 fs_initcall(add_rtc);
 

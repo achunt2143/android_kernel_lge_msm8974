@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for the GF1 MIDI interface - like UART 6850
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+ *  Routines for the GF1 MIDI interface - like UART 6850
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -28,7 +35,12 @@
 static void snd_gf1_interrupt_midi_in(struct snd_gus_card * gus)
 {
 	int count;
+<<<<<<< HEAD
 	unsigned char stat, data, byte;
+=======
+	unsigned char stat, byte;
+	__always_unused unsigned char data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	count = 10;
@@ -227,28 +239,45 @@ static void snd_gf1_uart_output_trigger(struct snd_rawmidi_substream *substream,
 	spin_unlock_irqrestore(&gus->uart_cmd_lock, flags);
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_gf1_uart_output =
+=======
+static const struct snd_rawmidi_ops snd_gf1_uart_output =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_gf1_uart_output_open,
 	.close =	snd_gf1_uart_output_close,
 	.trigger =	snd_gf1_uart_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_gf1_uart_input =
+=======
+static const struct snd_rawmidi_ops snd_gf1_uart_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_gf1_uart_input_open,
 	.close =	snd_gf1_uart_input_close,
 	.trigger =	snd_gf1_uart_input_trigger,
 };
 
+<<<<<<< HEAD
 int snd_gf1_rawmidi_new(struct snd_gus_card * gus, int device, struct snd_rawmidi ** rrawmidi)
+=======
+int snd_gf1_rawmidi_new(struct snd_gus_card *gus, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
 	if ((err = snd_rawmidi_new(gus->card, "GF1", device, 1, 1, &rmidi)) < 0)
+=======
+	err = snd_rawmidi_new(gus->card, "GF1", device, 1, 1, &rmidi);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(rmidi->name, gus->interwave ? "AMD InterWave" : "GF1");
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_gf1_uart_output);
@@ -256,7 +285,10 @@ int snd_gf1_rawmidi_new(struct snd_gus_card * gus, int device, struct snd_rawmid
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = gus;
 	gus->midi_uart = rmidi;
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = rmidi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }

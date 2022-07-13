@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 time and rtc routines.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,18 +21,27 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 #include <asm/firmware.h>
 #include <asm/rtc.h>
+=======
+#include <linux/rtc.h>
+
+#include <asm/firmware.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/lv1call.h>
 #include <asm/ps3.h>
 
 #include "platform.h"
 
+<<<<<<< HEAD
 #define dump_tm(_a) _dump_tm(_a, __func__, __LINE__)
 static void _dump_tm(const struct rtc_time *tm, const char* func, int line)
 {
@@ -52,6 +66,8 @@ static void __maybe_unused _dump_time(int time, const char *func,
 	_dump_tm(&tm, func, line);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init ps3_calibrate_decr(void)
 {
 	int result;
@@ -76,7 +92,11 @@ static u64 read_rtc(void)
 	return rtc_val;
 }
 
+<<<<<<< HEAD
 unsigned long __init ps3_get_boot_time(void)
+=======
+time64_t __init ps3_get_boot_time(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return read_rtc() + ps3_os_area_get_rtc_diff();
 }
@@ -89,6 +109,7 @@ static int __init ps3_rtc_init(void)
 		return -ENODEV;
 
 	pdev = platform_device_register_simple("rtc-ps3", -1, NULL, 0);
+<<<<<<< HEAD
 	if (IS_ERR(pdev))
 		return PTR_ERR(pdev);
 
@@ -96,3 +117,9 @@ static int __init ps3_rtc_init(void)
 }
 
 module_init(ps3_rtc_init);
+=======
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+device_initcall(ps3_rtc_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

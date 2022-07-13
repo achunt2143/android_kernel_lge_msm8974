@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctamixer.h
  *
  * @Brief
@@ -13,7 +20,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 21 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTAMIXER_H
@@ -21,6 +31,10 @@
 
 #include "ctresource.h"
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <sound/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the descriptor of a summation node resource */
 struct sum {
@@ -35,6 +49,10 @@ struct sum_desc {
 
 struct sum_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t mgr_lock;
 
 	 /* request one sum resource */
@@ -45,8 +63,13 @@ struct sum_mgr {
 };
 
 /* Constructor and destructor of daio resource manager */
+<<<<<<< HEAD
 int sum_mgr_create(void *hw, struct sum_mgr **rsum_mgr);
 int sum_mgr_destroy(struct sum_mgr *sum_mgr);
+=======
+int sum_mgr_create(struct hw *hw, void **ptr);
+int sum_mgr_destroy(void *ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the descriptor of a amixer resource */
 struct amixer_rsc_ops;
@@ -56,7 +79,11 @@ struct amixer {
 	unsigned char idx[8];
 	struct rsc *input;	/* pointer to a resource acting as source */
 	struct sum *sum;	/* Put amixer output to this summation node */
+<<<<<<< HEAD
 	struct amixer_rsc_ops *ops;	/* AMixer specific operations */
+=======
+	const struct amixer_rsc_ops *ops;	/* AMixer specific operations */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct amixer_rsc_ops {
@@ -79,6 +106,10 @@ struct amixer_desc {
 
 struct amixer_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t mgr_lock;
 
 	 /* request one amixer resource */
@@ -90,7 +121,12 @@ struct amixer_mgr {
 };
 
 /* Constructor and destructor of amixer resource manager */
+<<<<<<< HEAD
 int amixer_mgr_create(void *hw, struct amixer_mgr **ramixer_mgr);
 int amixer_mgr_destroy(struct amixer_mgr *amixer_mgr);
+=======
+int amixer_mgr_create(struct hw *hw, void **ramixer_mgr);
+int amixer_mgr_destroy(void *amixer_mgr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CTAMIXER_H */

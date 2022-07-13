@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AMD NUMA support.
  * Discover the memory map and associated nodes.
@@ -9,10 +13,15 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/nodemask.h>
 #include <linux/memblock.h>
 #include <linux/bootmem.h>
+=======
+#include <linux/nodemask.h>
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <linux/pci_ids.h>
@@ -20,7 +29,11 @@
 #include <asm/types.h>
 #include <asm/mmzone.h>
 #include <asm/proto.h>
+<<<<<<< HEAD
 #include <asm/e820.h>
+=======
+#include <asm/e820/api.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-direct.h>
 #include <asm/numa.h>
 #include <asm/mpspec.h>
@@ -53,6 +66,7 @@ static __init int find_northbridge(void)
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 static __init void early_get_boot_cpu_id(void)
 {
 	/*
@@ -77,6 +91,15 @@ int __init amd_numa_init(void)
 	int i, j, nb;
 	u32 nodeid, reg;
 	unsigned int bits, cores, apicid_base;
+=======
+int __init amd_numa_init(void)
+{
+	unsigned int numnodes, cores, apicid;
+	u64 prevbase, start = PFN_PHYS(0);
+	u64 end = PFN_PHYS(max_pfn);
+	u32 nodeid, reg;
+	int i, j, nb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!early_pci_allowed())
 		return -EINVAL;
@@ -130,9 +153,14 @@ int __init amd_numa_init(void)
 		}
 
 		limit >>= 16;
+<<<<<<< HEAD
 		limit <<= 24;
 		limit |= (1<<24)-1;
 		limit++;
+=======
+		limit++;
+		limit <<= 24;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (limit > end)
 			limit = end;
@@ -171,6 +199,7 @@ int __init amd_numa_init(void)
 		node_set(nodeid, numa_nodes_parsed);
 	}
 
+<<<<<<< HEAD
 	if (!nodes_weight(numa_nodes_parsed))
 		return -ENOENT;
 
@@ -193,5 +222,24 @@ int __init amd_numa_init(void)
 		for (j = apicid_base; j < cores + apicid_base; j++)
 			set_apicid_to_node((i << bits) + j, i);
 
+=======
+	if (nodes_empty(numa_nodes_parsed))
+		return -ENOENT;
+
+	/*
+	 * We seem to have valid NUMA configuration. Map apicids to nodes
+	 * using the size of the core domain in the APIC space.
+	 */
+	cores = topology_get_domain_size(TOPO_CORE_DOMAIN);
+
+	apicid = boot_cpu_physical_apicid;
+	if (apicid > 0)
+		pr_info("BSP APIC ID: %02x\n", apicid);
+
+	for_each_node_mask(i, numa_nodes_parsed) {
+		for (j = 0; j < cores; j++, apicid++)
+			set_apicid_to_node(apicid, i);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

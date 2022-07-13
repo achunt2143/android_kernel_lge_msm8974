@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Remote processor messaging
  *
@@ -30,6 +31,15 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+/* SPDX-License-Identifier: BSD-3-Clause */
+/*
+ * Remote processor messaging
+ *
+ * Copyright (C) 2011-2020 Texas Instruments, Inc.
+ * Copyright (C) 2011 Google, Inc.
+ * All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _OMAP_RPMSG_H
@@ -56,6 +66,25 @@
  *
  * @RP_MBOX_ABORT_REQUEST: a "please crash" request, used for testing the
  * recovery mechanism (to some extent).
+<<<<<<< HEAD
+=======
+ *
+ * @RP_MBOX_SUSPEND_AUTO: auto suspend request for the remote processor
+ *
+ * @RP_MBOX_SUSPEND_SYSTEM: system suspend request for the remote processor
+ *
+ * @RP_MBOX_SUSPEND_ACK: successful response from remote processor for a
+ * suspend request
+ *
+ * @RP_MBOX_SUSPEND_CANCEL: a cancel suspend response from a remote processor
+ * on a suspend request
+ *
+ * Introduce new message definitions if any here.
+ *
+ * @RP_MBOX_END_MSG: Indicates end of known/defined messages from remote core
+ * This should be the last definition.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum omap_rp_mbox_messages {
 	RP_MBOX_READY		= 0xFFFFFF00,
@@ -64,6 +93,14 @@ enum omap_rp_mbox_messages {
 	RP_MBOX_ECHO_REQUEST	= 0xFFFFFF03,
 	RP_MBOX_ECHO_REPLY	= 0xFFFFFF04,
 	RP_MBOX_ABORT_REQUEST	= 0xFFFFFF05,
+<<<<<<< HEAD
+=======
+	RP_MBOX_SUSPEND_AUTO	= 0xFFFFFF10,
+	RP_MBOX_SUSPEND_SYSTEM	= 0xFFFFFF11,
+	RP_MBOX_SUSPEND_ACK	= 0xFFFFFF12,
+	RP_MBOX_SUSPEND_CANCEL	= 0xFFFFFF13,
+	RP_MBOX_END_MSG		= 0xFFFFFF14,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* _OMAP_RPMSG_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/inotify_user.c - inotify support for userspace
  *
@@ -10,6 +14,7 @@
  *
  * Copyright (C) 2009 Eric Paris <Red Hat Inc>
  * inotify was largely rewriten to make use of the fsnotify infrastructure
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,17 +25,27 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/file.h>
 #include <linux/fs.h> /* struct inode */
 #include <linux/fsnotify_backend.h>
 #include <linux/idr.h>
+<<<<<<< HEAD
 #include <linux/init.h> /* module_init */
 #include <linux/inotify.h>
 #include <linux/kernel.h> /* roundup() */
 #include <linux/namei.h> /* LOOKUP_FOLLOW */
 #include <linux/sched.h> /* struct user */
+=======
+#include <linux/init.h> /* fs_initcall */
+#include <linux/inotify.h>
+#include <linux/kernel.h> /* roundup() */
+#include <linux/namei.h> /* LOOKUP_FOLLOW */
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h> /* struct kmem_cache */
 #include <linux/syscalls.h>
 #include <linux/types.h>
@@ -38,6 +53,7 @@
 #include <linux/uaccess.h>
 #include <linux/poll.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 
 #include "inotify.h"
 
@@ -50,11 +66,35 @@ static int inotify_max_user_watches __read_mostly;
 
 static struct kmem_cache *inotify_inode_mark_cachep __read_mostly;
 struct kmem_cache *event_priv_cachep __read_mostly;
+=======
+#include <linux/memcontrol.h>
+#include <linux/security.h>
+
+#include "inotify.h"
+#include "../fdinfo.h"
+
+#include <asm/ioctls.h>
+
+/*
+ * An inotify watch requires allocating an inotify_inode_mark structure as
+ * well as pinning the watched inode. Doubling the size of a VFS inode
+ * should be more than enough to cover the additional filesystem inode
+ * size increase.
+ */
+#define INOTIFY_WATCH_COST	(sizeof(struct inotify_inode_mark) + \
+				 2 * sizeof(struct inode))
+
+/* configurable via /proc/sys/fs/inotify/ */
+static int inotify_max_queued_events __read_mostly;
+
+struct kmem_cache *inotify_inode_mark_cachep __ro_after_init;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SYSCTL
 
 #include <linux/sysctl.h>
 
+<<<<<<< HEAD
 static int zero;
 
 ctl_table inotify_table[] = {
@@ -73,6 +113,29 @@ ctl_table inotify_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &zero,
+=======
+static long it_zero = 0;
+static long it_int_max = INT_MAX;
+
+static struct ctl_table inotify_table[] = {
+	{
+		.procname	= "max_user_instances",
+		.data		= &init_user_ns.ucount_max[UCOUNT_INOTIFY_INSTANCES],
+		.maxlen		= sizeof(long),
+		.mode		= 0644,
+		.proc_handler	= proc_doulongvec_minmax,
+		.extra1		= &it_zero,
+		.extra2		= &it_int_max,
+	},
+	{
+		.procname	= "max_user_watches",
+		.data		= &init_user_ns.ucount_max[UCOUNT_INOTIFY_WATCHES],
+		.maxlen		= sizeof(long),
+		.mode		= 0644,
+		.proc_handler	= proc_doulongvec_minmax,
+		.extra1		= &it_zero,
+		.extra2		= &it_int_max,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "max_queued_events",
@@ -80,6 +143,7 @@ ctl_table inotify_table[] = {
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
+<<<<<<< HEAD
 		.extra1		= &zero
 	},
 	{ }
@@ -87,10 +151,27 @@ ctl_table inotify_table[] = {
 #endif /* CONFIG_SYSCTL */
 
 static inline __u32 inotify_arg_to_mask(u32 arg)
+=======
+		.extra1		= SYSCTL_ZERO
+	},
+};
+
+static void __init inotify_sysctls_init(void)
+{
+	register_sysctl("fs/inotify", inotify_table);
+}
+
+#else
+#define inotify_sysctls_init() do { } while (0)
+#endif /* CONFIG_SYSCTL */
+
+static inline __u32 inotify_arg_to_mask(struct inode *inode, u32 arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u32 mask;
 
 	/*
+<<<<<<< HEAD
 	 * everything should accept their own ignored, cares about children,
 	 * and should receive events when the inode is unmounted
 	 */
@@ -98,16 +179,46 @@ static inline __u32 inotify_arg_to_mask(u32 arg)
 
 	/* mask off the flags used to open the fd */
 	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
+=======
+	 * Everything should receive events when the inode is unmounted.
+	 * All directories care about children.
+	 */
+	mask = (FS_UNMOUNT);
+	if (S_ISDIR(inode->i_mode))
+		mask |= FS_EVENT_ON_CHILD;
+
+	/* mask off the flags used to open the fd */
+	mask |= (arg & INOTIFY_USER_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
 
+<<<<<<< HEAD
+=======
+#define INOTIFY_MARK_FLAGS \
+	(FSNOTIFY_MARK_FLAG_EXCL_UNLINK | FSNOTIFY_MARK_FLAG_IN_ONESHOT)
+
+static inline unsigned int inotify_arg_to_flags(u32 arg)
+{
+	unsigned int flags = 0;
+
+	if (arg & IN_EXCL_UNLINK)
+		flags |= FSNOTIFY_MARK_FLAG_EXCL_UNLINK;
+	if (arg & IN_ONESHOT)
+		flags |= FSNOTIFY_MARK_FLAG_IN_ONESHOT;
+
+	return flags;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 inotify_mask_to_arg(__u32 mask)
 {
 	return mask & (IN_ALL_EVENTS | IN_ISDIR | IN_UNMOUNT | IN_IGNORED |
 		       IN_Q_OVERFLOW);
 }
 
+<<<<<<< HEAD
 /* intofiy userspace file descriptor functions */
 static unsigned int inotify_poll(struct file *file, poll_table *wait)
 {
@@ -119,16 +230,46 @@ static unsigned int inotify_poll(struct file *file, poll_table *wait)
 	if (!fsnotify_notify_queue_is_empty(group))
 		ret = POLLIN | POLLRDNORM;
 	mutex_unlock(&group->notification_mutex);
+=======
+/* inotify userspace file descriptor functions */
+static __poll_t inotify_poll(struct file *file, poll_table *wait)
+{
+	struct fsnotify_group *group = file->private_data;
+	__poll_t ret = 0;
+
+	poll_wait(file, &group->notification_waitq, wait);
+	spin_lock(&group->notification_lock);
+	if (!fsnotify_notify_queue_is_empty(group))
+		ret = EPOLLIN | EPOLLRDNORM;
+	spin_unlock(&group->notification_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int round_event_name_len(struct fsnotify_event *fsn_event)
+{
+	struct inotify_event_info *event;
+
+	event = INOTIFY_E(fsn_event);
+	if (!event->name_len)
+		return 0;
+	return roundup(event->name_len + 1, sizeof(struct inotify_event));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Get an inotify_kernel_event if one exists and is small
  * enough to fit in "count". Return an error pointer if
  * not large enough.
  *
+<<<<<<< HEAD
  * Called with the group->notification_mutex held.
+=======
+ * Called with the group->notification_lock held.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 					    size_t count)
@@ -136,6 +277,7 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	size_t event_size = sizeof(struct inotify_event);
 	struct fsnotify_event *event;
 
+<<<<<<< HEAD
 	if (fsnotify_notify_queue_is_empty(group))
 		return NULL;
 
@@ -152,6 +294,21 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
 	/* held the notification_mutex the whole time, so this is the
 	 * same event we peeked above */
 	fsnotify_remove_notify_event(group);
+=======
+	event = fsnotify_peek_first_event(group);
+	if (!event)
+		return NULL;
+
+	pr_debug("%s: group=%p event=%p\n", __func__, group, event);
+
+	event_size += round_event_name_len(event);
+	if (event_size > count)
+		return ERR_PTR(-EINVAL);
+
+	/* held the notification_lock the whole time, so this is the
+	 * same event we peeked above */
+	fsnotify_remove_first_event(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return event;
 }
@@ -163,6 +320,7 @@ static struct fsnotify_event *get_one_event(struct fsnotify_group *group,
  * buffer we had in "get_one_event()" above.
  */
 static ssize_t copy_event_to_user(struct fsnotify_group *group,
+<<<<<<< HEAD
 				  struct fsnotify_event *event,
 				  char __user *buf)
 {
@@ -197,6 +355,29 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	inotify_event.len = name_len;
 
 	inotify_event.mask = inotify_mask_to_arg(event->mask);
+=======
+				  struct fsnotify_event *fsn_event,
+				  char __user *buf)
+{
+	struct inotify_event inotify_event;
+	struct inotify_event_info *event;
+	size_t event_size = sizeof(struct inotify_event);
+	size_t name_len;
+	size_t pad_name_len;
+
+	pr_debug("%s: group=%p event=%p\n", __func__, group, fsn_event);
+
+	event = INOTIFY_E(fsn_event);
+	name_len = event->name_len;
+	/*
+	 * round up name length so it is a multiple of event_size
+	 * plus an extra byte for the terminating '\0'.
+	 */
+	pad_name_len = round_event_name_len(fsn_event);
+	inotify_event.len = pad_name_len;
+	inotify_event.mask = inotify_mask_to_arg(event->mask);
+	inotify_event.wd = event->wd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inotify_event.cookie = event->sync_cookie;
 
 	/* send the main event */
@@ -208,6 +389,7 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	/*
 	 * fsnotify only stores the pathname, so here we have to send the pathname
 	 * and then pad that pathname out to a multiple of sizeof(inotify_event)
+<<<<<<< HEAD
 	 * with zeros.  I get my zeros from the nul_inotify_event.
 	 */
 	if (name_len) {
@@ -222,6 +404,20 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 			return -EFAULT;
 		buf += len_to_zero;
 		event_size += name_len;
+=======
+	 * with zeros.
+	 */
+	if (pad_name_len) {
+		/* copy the path name */
+		if (copy_to_user(buf, event->name, name_len))
+			return -EFAULT;
+		buf += name_len;
+
+		/* fill userspace with 0's */
+		if (clear_user(buf, pad_name_len - name_len))
+			return -EFAULT;
+		event_size += pad_name_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return event_size;
@@ -234,17 +430,29 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 	struct fsnotify_event *kevent;
 	char __user *start;
 	int ret;
+<<<<<<< HEAD
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start = buf;
 	group = file->private_data;
 
+<<<<<<< HEAD
 	while (1) {
 		prepare_to_wait(&group->notification_waitq, &wait, TASK_INTERRUPTIBLE);
 
 		mutex_lock(&group->notification_mutex);
 		kevent = get_one_event(group, count);
 		mutex_unlock(&group->notification_mutex);
+=======
+	add_wait_queue(&group->notification_waitq, &wait);
+	while (1) {
+		spin_lock(&group->notification_lock);
+		kevent = get_one_event(group, count);
+		spin_unlock(&group->notification_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pr_debug("%s: group=%p kevent=%p\n", __func__, group, kevent);
 
@@ -253,7 +461,11 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 			if (IS_ERR(kevent))
 				break;
 			ret = copy_event_to_user(group, kevent, buf);
+<<<<<<< HEAD
 			fsnotify_put_event(kevent);
+=======
+			fsnotify_destroy_event(group, kevent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0)
 				break;
 			buf += ret;
@@ -264,22 +476,34 @@ static ssize_t inotify_read(struct file *file, char __user *buf,
 		ret = -EAGAIN;
 		if (file->f_flags & O_NONBLOCK)
 			break;
+<<<<<<< HEAD
 		ret = -EINTR;
+=======
+		ret = -ERESTARTSYS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current))
 			break;
 
 		if (start != buf)
 			break;
 
+<<<<<<< HEAD
 		schedule();
 	}
 
 	finish_wait(&group->notification_waitq, &wait);
+=======
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+	}
+	remove_wait_queue(&group->notification_waitq, &wait);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (start != buf && ret != -EFAULT)
 		ret = buf - start;
 	return ret;
 }
 
+<<<<<<< HEAD
 static int inotify_fasync(int fd, struct file *file, int on)
 {
 	struct fsnotify_group *group = file->private_data;
@@ -287,16 +511,23 @@ static int inotify_fasync(int fd, struct file *file, int on)
 	return fasync_helper(fd, file, on, &group->inotify_data.fa) >= 0 ? 0 : -EIO;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int inotify_release(struct inode *ignored, struct file *file)
 {
 	struct fsnotify_group *group = file->private_data;
 
 	pr_debug("%s: group=%p\n", __func__, group);
 
+<<<<<<< HEAD
 	fsnotify_clear_marks_by_group(group);
 
 	/* free this group, matching get was inotify_init->fsnotify_obtain_group */
 	fsnotify_put_group(group);
+=======
+	/* free this group, matching get was inotify_init->fsnotify_obtain_group */
+	fsnotify_destroy_group(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -305,8 +536,12 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 			  unsigned long arg)
 {
 	struct fsnotify_group *group;
+<<<<<<< HEAD
 	struct fsnotify_event_holder *holder;
 	struct fsnotify_event *event;
+=======
+	struct fsnotify_event *fsn_event;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *p;
 	int ret = -ENOTTY;
 	size_t send_len = 0;
@@ -318,6 +553,7 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case FIONREAD:
+<<<<<<< HEAD
 		mutex_lock(&group->notification_mutex);
 		list_for_each_entry(holder, &group->notification_list, event_list) {
 			event = holder->event;
@@ -329,15 +565,47 @@ static long inotify_ioctl(struct file *file, unsigned int cmd,
 		mutex_unlock(&group->notification_mutex);
 		ret = put_user(send_len, (int __user *) p);
 		break;
+=======
+		spin_lock(&group->notification_lock);
+		list_for_each_entry(fsn_event, &group->notification_list,
+				    list) {
+			send_len += sizeof(struct inotify_event);
+			send_len += round_event_name_len(fsn_event);
+		}
+		spin_unlock(&group->notification_lock);
+		ret = put_user(send_len, (int __user *) p);
+		break;
+#ifdef CONFIG_CHECKPOINT_RESTORE
+	case INOTIFY_IOC_SETNEXTWD:
+		ret = -EINVAL;
+		if (arg >= 1 && arg <= INT_MAX) {
+			struct inotify_group_private_data *data;
+
+			data = &group->inotify_data;
+			spin_lock(&data->idr_lock);
+			idr_set_cursor(&data->idr, (unsigned int)arg);
+			spin_unlock(&data->idr_lock);
+			ret = 0;
+		}
+		break;
+#endif /* CONFIG_CHECKPOINT_RESTORE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
 static const struct file_operations inotify_fops = {
+<<<<<<< HEAD
 	.poll		= inotify_poll,
 	.read		= inotify_read,
 	.fasync		= inotify_fasync,
+=======
+	.show_fdinfo	= inotify_show_fdinfo,
+	.poll		= inotify_poll,
+	.read		= inotify_read,
+	.fasync		= fsnotify_fasync,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= inotify_release,
 	.unlocked_ioctl	= inotify_ioctl,
 	.compat_ioctl	= inotify_ioctl,
@@ -348,7 +616,12 @@ static const struct file_operations inotify_fops = {
 /*
  * find_inode - resolve a user-given path to a specific inode
  */
+<<<<<<< HEAD
 static int inotify_find_inode(const char __user *dirname, struct path *path, unsigned flags)
+=======
+static int inotify_find_inode(const char __user *dirname, struct path *path,
+						unsigned int flags, __u64 mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -356,18 +629,35 @@ static int inotify_find_inode(const char __user *dirname, struct path *path, uns
 	if (error)
 		return error;
 	/* you can only watch an inode if you have read permissions on it */
+<<<<<<< HEAD
 	error = inode_permission2(path->mnt, path->dentry->d_inode, MAY_READ);
 	if (error)
 		path_put(path);
+=======
+	error = path_permission(path, MAY_READ);
+	if (error) {
+		path_put(path);
+		return error;
+	}
+	error = security_path_notify(path, mask,
+				FSNOTIFY_OBJ_TYPE_INODE);
+	if (error)
+		path_put(path);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 static int inotify_add_to_idr(struct idr *idr, spinlock_t *idr_lock,
+<<<<<<< HEAD
 			      int *last_wd,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct inotify_inode_mark *i_mark)
 {
 	int ret;
 
+<<<<<<< HEAD
 	do {
 		if (unlikely(!idr_pre_get(idr, GFP_KERNEL)))
 			return -ENOMEM;
@@ -384,6 +674,21 @@ static int inotify_add_to_idr(struct idr *idr, spinlock_t *idr_lock,
 	} while (ret == -EAGAIN);
 
 	return ret;
+=======
+	idr_preload(GFP_KERNEL);
+	spin_lock(idr_lock);
+
+	ret = idr_alloc_cyclic(idr, i_mark, 1, 0, GFP_NOWAIT);
+	if (ret >= 0) {
+		/* we added the mark to the idr, take a reference */
+		i_mark->wd = ret;
+		fsnotify_get_mark(&i_mark->fsn_mark);
+	}
+
+	spin_unlock(idr_lock);
+	idr_preload_end();
+	return ret < 0 ? ret : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct inotify_inode_mark *inotify_idr_find_locked(struct fsnotify_group *group,
@@ -401,7 +706,11 @@ static struct inotify_inode_mark *inotify_idr_find_locked(struct fsnotify_group 
 
 		fsnotify_get_mark(fsn_mark);
 		/* One ref for being in the idr, one ref we just took */
+<<<<<<< HEAD
 		BUG_ON(atomic_read(&fsn_mark->refcnt) < 2);
+=======
+		BUG_ON(refcount_read(&fsn_mark->refcnt) < 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return i_mark;
@@ -420,6 +729,7 @@ static struct inotify_inode_mark *inotify_idr_find(struct fsnotify_group *group,
 	return i_mark;
 }
 
+<<<<<<< HEAD
 static void do_inotify_remove_from_idr(struct fsnotify_group *group,
 				       struct inotify_inode_mark *i_mark)
 {
@@ -435,6 +745,8 @@ static void do_inotify_remove_from_idr(struct fsnotify_group *group,
 	fsnotify_put_mark(&i_mark->fsn_mark);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Remove the mark from the idr (if present) and drop the reference
  * on the mark because it was in the idr.
@@ -442,6 +754,10 @@ static void do_inotify_remove_from_idr(struct fsnotify_group *group,
 static void inotify_remove_from_idr(struct fsnotify_group *group,
 				    struct inotify_inode_mark *i_mark)
 {
+<<<<<<< HEAD
+=======
+	struct idr *idr = &group->inotify_data.idr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t *idr_lock = &group->inotify_data.idr_lock;
 	struct inotify_inode_mark *found_i_mark = NULL;
 	int wd;
@@ -454,18 +770,28 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	 * if it wasn't....
 	 */
 	if (wd == -1) {
+<<<<<<< HEAD
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
+			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* Lets look in the idr to see if we find it */
 	found_i_mark = inotify_idr_find_locked(group, wd);
 	if (unlikely(!found_i_mark)) {
+<<<<<<< HEAD
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
+			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -476,17 +802,25 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 	 */
 	if (unlikely(found_i_mark != i_mark)) {
 		WARN_ONCE(1, "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p "
+<<<<<<< HEAD
 			"mark->inode=%p found_i_mark=%p found_i_mark->wd=%d "
 			"found_i_mark->group=%p found_i_mark->inode=%p\n",
 			__func__, i_mark, i_mark->wd, i_mark->fsn_mark.group,
 			i_mark->fsn_mark.i.inode, found_i_mark, found_i_mark->wd,
 			found_i_mark->fsn_mark.group,
 			found_i_mark->fsn_mark.i.inode);
+=======
+			"found_i_mark=%p found_i_mark->wd=%d "
+			"found_i_mark->group=%p\n", __func__, i_mark,
+			i_mark->wd, i_mark->fsn_mark.group, found_i_mark,
+			found_i_mark->wd, found_i_mark->fsn_mark.group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/*
 	 * One ref for being in the idr
+<<<<<<< HEAD
 	 * one ref held by the caller trying to kill us
 	 * one ref grabbed by inotify_idr_find
 	 */
@@ -494,10 +828,18 @@ static void inotify_remove_from_idr(struct fsnotify_group *group,
 		printk(KERN_ERR "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p"
 			" i_mark->inode=%p\n", __func__, i_mark, i_mark->wd,
 			i_mark->fsn_mark.group, i_mark->fsn_mark.i.inode);
+=======
+	 * one ref grabbed by inotify_idr_find
+	 */
+	if (unlikely(refcount_read(&i_mark->fsn_mark.refcnt) < 2)) {
+		printk(KERN_ERR "%s: i_mark=%p i_mark->wd=%d i_mark->group=%p\n",
+			 __func__, i_mark, i_mark->wd, i_mark->fsn_mark.group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* we can't really recover with bad ref cnting.. */
 		BUG();
 	}
 
+<<<<<<< HEAD
 	do_inotify_remove_from_idr(group, i_mark);
 out:
 	/* match the ref taken by inotify_idr_find_locked() */
@@ -505,6 +847,17 @@ out:
 		fsnotify_put_mark(&found_i_mark->fsn_mark);
 	i_mark->wd = -1;
 	spin_unlock(idr_lock);
+=======
+	idr_remove(idr, wd);
+	/* Removed from the idr, drop that ref. */
+	fsnotify_put_mark(&i_mark->fsn_mark);
+out:
+	i_mark->wd = -1;
+	spin_unlock(idr_lock);
+	/* match the ref taken by inotify_idr_find_locked() */
+	if (found_i_mark)
+		fsnotify_put_mark(&found_i_mark->fsn_mark);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -514,6 +867,7 @@ void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
 				    struct fsnotify_group *group)
 {
 	struct inotify_inode_mark *i_mark;
+<<<<<<< HEAD
 	struct fsnotify_event *ignored_event, *notify_event;
 	struct inotify_event_private_data *event_priv;
 	struct fsnotify_event_private_data *fsn_event_priv;
@@ -564,6 +918,18 @@ static void inotify_free_mark(struct fsnotify_mark *fsn_mark)
 	i_mark = container_of(fsn_mark, struct inotify_inode_mark, fsn_mark);
 
 	kmem_cache_free(inotify_inode_mark_cachep, i_mark);
+=======
+
+	/* Queue ignore event for the watch */
+	inotify_handle_inode_event(fsn_mark, FS_IN_IGNORED, NULL, NULL, NULL,
+				   0);
+
+	i_mark = container_of(fsn_mark, struct inotify_inode_mark, fsn_mark);
+	/* remove this mark from the idr */
+	inotify_remove_from_idr(group, i_mark);
+
+	dec_inotify_watches(group->inotify_data.ucounts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int inotify_update_existing_watch(struct fsnotify_group *group,
@@ -573,6 +939,7 @@ static int inotify_update_existing_watch(struct fsnotify_group *group,
 	struct fsnotify_mark *fsn_mark;
 	struct inotify_inode_mark *i_mark;
 	__u32 old_mask, new_mask;
+<<<<<<< HEAD
 	__u32 mask;
 	int add = (arg & IN_MASK_ADD);
 	int ret;
@@ -582,10 +949,24 @@ static int inotify_update_existing_watch(struct fsnotify_group *group,
 	fsn_mark = fsnotify_find_inode_mark(group, inode);
 	if (!fsn_mark)
 		return -ENOENT;
+=======
+	int replace = !(arg & IN_MASK_ADD);
+	int create = (arg & IN_MASK_CREATE);
+	int ret;
+
+	fsn_mark = fsnotify_find_mark(&inode->i_fsnotify_marks, group);
+	if (!fsn_mark)
+		return -ENOENT;
+	else if (create) {
+		ret = -EEXIST;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i_mark = container_of(fsn_mark, struct inotify_inode_mark, fsn_mark);
 
 	spin_lock(&fsn_mark->lock);
+<<<<<<< HEAD
 
 	old_mask = fsn_mark->mask;
 	if (add)
@@ -594,6 +975,16 @@ static int inotify_update_existing_watch(struct fsnotify_group *group,
 		fsnotify_set_mark_mask_locked(fsn_mark, mask);
 	new_mask = fsn_mark->mask;
 
+=======
+	old_mask = fsn_mark->mask;
+	if (replace) {
+		fsn_mark->mask = 0;
+		fsn_mark->flags &= ~INOTIFY_MARK_FLAGS;
+	}
+	fsn_mark->mask |= inotify_arg_to_mask(inode, arg);
+	fsn_mark->flags |= inotify_arg_to_flags(arg);
+	new_mask = fsn_mark->mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&fsn_mark->lock);
 
 	if (old_mask != new_mask) {
@@ -604,13 +995,21 @@ static int inotify_update_existing_watch(struct fsnotify_group *group,
 
 		/* update the inode with this new fsn_mark */
 		if (dropped || do_inode)
+<<<<<<< HEAD
 			fsnotify_recalc_inode_mask(inode);
+=======
+			fsnotify_recalc_mask(inode->i_fsnotify_marks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	}
 
 	/* return the wd */
 	ret = i_mark->wd;
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* match the get from fsnotify_find_mark() */
 	fsnotify_put_mark(fsn_mark);
 
@@ -622,17 +1021,24 @@ static int inotify_new_watch(struct fsnotify_group *group,
 			     u32 arg)
 {
 	struct inotify_inode_mark *tmp_i_mark;
+<<<<<<< HEAD
 	__u32 mask;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	struct idr *idr = &group->inotify_data.idr;
 	spinlock_t *idr_lock = &group->inotify_data.idr_lock;
 
+<<<<<<< HEAD
 	mask = inotify_arg_to_mask(arg);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp_i_mark = kmem_cache_alloc(inotify_inode_mark_cachep, GFP_KERNEL);
 	if (unlikely(!tmp_i_mark))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	fsnotify_init_mark(&tmp_i_mark->fsn_mark, inotify_free_mark);
 	tmp_i_mark->fsn_mark.mask = mask;
 	tmp_i_mark->wd = -1;
@@ -648,14 +1054,37 @@ static int inotify_new_watch(struct fsnotify_group *group,
 
 	/* we are on the idr, now get on the inode */
 	ret = fsnotify_add_mark(&tmp_i_mark->fsn_mark, group, inode, NULL, 0);
+=======
+	fsnotify_init_mark(&tmp_i_mark->fsn_mark, group);
+	tmp_i_mark->fsn_mark.mask = inotify_arg_to_mask(inode, arg);
+	tmp_i_mark->fsn_mark.flags = inotify_arg_to_flags(arg);
+	tmp_i_mark->wd = -1;
+
+	ret = inotify_add_to_idr(idr, idr_lock, tmp_i_mark);
+	if (ret)
+		goto out_err;
+
+	/* increment the number of watches the user has */
+	if (!inc_inotify_watches(group->inotify_data.ucounts)) {
+		inotify_remove_from_idr(group, tmp_i_mark);
+		ret = -ENOSPC;
+		goto out_err;
+	}
+
+	/* we are on the idr, now get on the inode */
+	ret = fsnotify_add_inode_mark_locked(&tmp_i_mark->fsn_mark, inode, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		/* we failed to get on the inode, get off the idr */
 		inotify_remove_from_idr(group, tmp_i_mark);
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	/* increment the number of watches the user has */
 	atomic_inc(&group->inotify_data.user->inotify_watches);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* return the watch descriptor for this new mark */
 	ret = tmp_i_mark->wd;
@@ -671,12 +1100,17 @@ static int inotify_update_watch(struct fsnotify_group *group, struct inode *inod
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 retry:
+=======
+	fsnotify_group_lock(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* try to update and existing watch with the new arg */
 	ret = inotify_update_existing_watch(group, inode, arg);
 	/* no mark present, try to add a new one */
 	if (ret == -ENOENT)
 		ret = inotify_new_watch(group, inode, arg);
+<<<<<<< HEAD
 	/*
 	 * inotify_new_watch could race with another thread which did an
 	 * inotify_new_watch between the update_existing and the add watch
@@ -684,6 +1118,9 @@ retry:
 	 */
 	if (ret == -EEXIST)
 		goto retry;
+=======
+	fsnotify_group_unlock(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -691,6 +1128,7 @@ retry:
 static struct fsnotify_group *inotify_new_group(unsigned int max_events)
 {
 	struct fsnotify_group *group;
+<<<<<<< HEAD
 
 	group = fsnotify_alloc_group(&inotify_fsnotify_ops);
 	if (IS_ERR(group))
@@ -707,6 +1145,38 @@ static struct fsnotify_group *inotify_new_group(unsigned int max_events)
 	if (atomic_inc_return(&group->inotify_data.user->inotify_devs) >
 	    inotify_max_user_instances) {
 		fsnotify_put_group(group);
+=======
+	struct inotify_event_info *oevent;
+
+	group = fsnotify_alloc_group(&inotify_fsnotify_ops,
+				     FSNOTIFY_GROUP_USER);
+	if (IS_ERR(group))
+		return group;
+
+	oevent = kmalloc(sizeof(struct inotify_event_info), GFP_KERNEL_ACCOUNT);
+	if (unlikely(!oevent)) {
+		fsnotify_destroy_group(group);
+		return ERR_PTR(-ENOMEM);
+	}
+	group->overflow_event = &oevent->fse;
+	fsnotify_init_event(group->overflow_event);
+	oevent->mask = FS_Q_OVERFLOW;
+	oevent->wd = -1;
+	oevent->sync_cookie = 0;
+	oevent->name_len = 0;
+
+	group->max_events = max_events;
+	group->memcg = get_mem_cgroup_from_mm(current->mm);
+
+	spin_lock_init(&group->inotify_data.idr_lock);
+	idr_init(&group->inotify_data.idr);
+	group->inotify_data.ucounts = inc_ucount(current_user_ns(),
+						 current_euid(),
+						 UCOUNT_INOTIFY_INSTANCES);
+
+	if (!group->inotify_data.ucounts) {
+		fsnotify_destroy_group(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-EMFILE);
 	}
 
@@ -715,7 +1185,11 @@ static struct fsnotify_group *inotify_new_group(unsigned int max_events)
 
 
 /* inotify syscalls */
+<<<<<<< HEAD
 SYSCALL_DEFINE1(inotify_init1, int, flags)
+=======
+static int do_inotify_init(int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsnotify_group *group;
 	int ret;
@@ -735,14 +1209,29 @@ SYSCALL_DEFINE1(inotify_init1, int, flags)
 	ret = anon_inode_getfd("inotify", &inotify_fops, group,
 				  O_RDONLY | flags);
 	if (ret < 0)
+<<<<<<< HEAD
 		fsnotify_put_group(group);
+=======
+		fsnotify_destroy_group(group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 SYSCALL_DEFINE0(inotify_init)
 {
 	return sys_inotify_init1(0);
+=======
+SYSCALL_DEFINE1(inotify_init1, int, flags)
+{
+	return do_inotify_init(flags);
+}
+
+SYSCALL_DEFINE0(inotify_init)
+{
+	return do_inotify_init(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
@@ -751,6 +1240,7 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	struct fsnotify_group *group;
 	struct inode *inode;
 	struct path path;
+<<<<<<< HEAD
 	struct file *filp;
 	struct path alteredpath;
 	struct path *canonical_path = &path;
@@ -767,6 +1257,40 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 
 	/* verify that this is indeed an inotify instance */
 	if (unlikely(filp->f_op != &inotify_fops)) {
+=======
+	struct fd f;
+	int ret;
+	unsigned flags = 0;
+
+	/*
+	 * We share a lot of code with fs/dnotify.  We also share
+	 * the bit layout between inotify's IN_* and the fsnotify
+	 * FS_*.  This check ensures that only the inotify IN_*
+	 * bits get passed in and set in watches/events.
+	 */
+	if (unlikely(mask & ~ALL_INOTIFY_BITS))
+		return -EINVAL;
+	/*
+	 * Require at least one valid bit set in the mask.
+	 * Without _something_ set, we would have no events to
+	 * watch for.
+	 */
+	if (unlikely(!(mask & ALL_INOTIFY_BITS)))
+		return -EINVAL;
+
+	f = fdget(fd);
+	if (unlikely(!f.file))
+		return -EBADF;
+
+	/* IN_MASK_ADD and IN_MASK_CREATE don't make sense together */
+	if (unlikely((mask & IN_MASK_ADD) && (mask & IN_MASK_CREATE))) {
+		ret = -EINVAL;
+		goto fput_and_out;
+	}
+
+	/* verify that this is indeed an inotify instance */
+	if (unlikely(f.file->f_op != &inotify_fops)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto fput_and_out;
 	}
@@ -776,6 +1300,7 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	if (mask & IN_ONLYDIR)
 		flags |= LOOKUP_DIRECTORY;
 
+<<<<<<< HEAD
 	ret = inotify_find_inode(pathname, &path, flags);
 	if (ret)
 		goto fput_and_out;
@@ -798,6 +1323,22 @@ SYSCALL_DEFINE3(inotify_add_watch, int, fd, const char __user *, pathname,
 	path_put(canonical_path);
 fput_and_out:
 	fput_light(filp, fput_needed);
+=======
+	ret = inotify_find_inode(pathname, &path, flags,
+			(mask & IN_ALL_EVENTS));
+	if (ret)
+		goto fput_and_out;
+
+	/* inode held in place by reference to path; group by fget on fd */
+	inode = path.dentry->d_inode;
+	group = f.file->private_data;
+
+	/* create/update an inode mark */
+	ret = inotify_update_watch(group, inode, mask);
+	path_put(&path);
+fput_and_out:
+	fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -805,6 +1346,7 @@ SYSCALL_DEFINE2(inotify_rm_watch, int, fd, __s32, wd)
 {
 	struct fsnotify_group *group;
 	struct inotify_inode_mark *i_mark;
+<<<<<<< HEAD
 	struct file *filp;
 	int ret = 0, fput_needed;
 
@@ -820,19 +1362,42 @@ SYSCALL_DEFINE2(inotify_rm_watch, int, fd, __s32, wd)
 	group = filp->private_data;
 
 	ret = -EINVAL;
+=======
+	struct fd f;
+	int ret = -EINVAL;
+
+	f = fdget(fd);
+	if (unlikely(!f.file))
+		return -EBADF;
+
+	/* verify that this is indeed an inotify instance */
+	if (unlikely(f.file->f_op != &inotify_fops))
+		goto out;
+
+	group = f.file->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i_mark = inotify_idr_find(group, wd);
 	if (unlikely(!i_mark))
 		goto out;
 
 	ret = 0;
 
+<<<<<<< HEAD
 	fsnotify_destroy_mark(&i_mark->fsn_mark);
+=======
+	fsnotify_destroy_mark(&i_mark->fsn_mark, group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* match ref taken by inotify_idr_find */
 	fsnotify_put_mark(&i_mark->fsn_mark);
 
 out:
+<<<<<<< HEAD
 	fput_light(filp, fput_needed);
+=======
+	fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -843,6 +1408,21 @@ out:
  */
 static int __init inotify_user_setup(void)
 {
+<<<<<<< HEAD
+=======
+	unsigned long watches_max;
+	struct sysinfo si;
+
+	si_meminfo(&si);
+	/*
+	 * Allow up to 1% of addressable memory to be allocated for inotify
+	 * watches (per user) limited to the range [8192, 1048576].
+	 */
+	watches_max = (((si.totalram - si.totalhigh) / 100) << PAGE_SHIFT) /
+			INOTIFY_WATCH_COST;
+	watches_max = clamp(watches_max, 8192UL, 1048576UL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUILD_BUG_ON(IN_ACCESS != FS_ACCESS);
 	BUILD_BUG_ON(IN_MODIFY != FS_MODIFY);
 	BUILD_BUG_ON(IN_ATTRIB != FS_ATTRIB);
@@ -858,6 +1438,7 @@ static int __init inotify_user_setup(void)
 	BUILD_BUG_ON(IN_UNMOUNT != FS_UNMOUNT);
 	BUILD_BUG_ON(IN_Q_OVERFLOW != FS_Q_OVERFLOW);
 	BUILD_BUG_ON(IN_IGNORED != FS_IN_IGNORED);
+<<<<<<< HEAD
 	BUILD_BUG_ON(IN_EXCL_UNLINK != FS_EXCL_UNLINK);
 	BUILD_BUG_ON(IN_ISDIR != FS_ISDIR);
 	BUILD_BUG_ON(IN_ONESHOT != FS_IN_ONESHOT);
@@ -874,3 +1455,20 @@ static int __init inotify_user_setup(void)
 	return 0;
 }
 module_init(inotify_user_setup);
+=======
+	BUILD_BUG_ON(IN_ISDIR != FS_ISDIR);
+
+	BUILD_BUG_ON(HWEIGHT32(ALL_INOTIFY_BITS) != 22);
+
+	inotify_inode_mark_cachep = KMEM_CACHE(inotify_inode_mark,
+					       SLAB_PANIC|SLAB_ACCOUNT);
+
+	inotify_max_queued_events = 16384;
+	init_user_ns.ucount_max[UCOUNT_INOTIFY_INSTANCES] = 128;
+	init_user_ns.ucount_max[UCOUNT_INOTIFY_WATCHES] = watches_max;
+	inotify_sysctls_init();
+
+	return 0;
+}
+fs_initcall(inotify_user_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

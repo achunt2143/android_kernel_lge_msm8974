@@ -1,15 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/user.h>
 #include <linux/regset.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/syscalls.h>
+#include <linux/nospec.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/desc.h>
 #include <asm/ldt.h>
 #include <asm/processor.h>
 #include <asm/proto.h>
+<<<<<<< HEAD
 #include <asm/syscalls.h>
+=======
+#include <asm/gsseg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "tls.h"
 
@@ -93,7 +108,11 @@ static void set_tls_desc(struct task_struct *p, int idx,
 
 	while (n-- > 0) {
 		if (LDT_empty(info) || LDT_zero(info))
+<<<<<<< HEAD
 			desc->a = desc->b = 0;
+=======
+			memset(desc, 0, sizeof(*desc));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			fill_ldt(desc, info);
 		++info;
@@ -114,6 +133,10 @@ int do_set_thread_area(struct task_struct *p, int idx,
 		       int can_allocate)
 {
 	struct user_desc info;
+<<<<<<< HEAD
+=======
+	unsigned short __maybe_unused sel, modified_sel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&info, u_info, sizeof(info)))
 		return -EFAULT;
@@ -141,6 +164,7 @@ int do_set_thread_area(struct task_struct *p, int idx,
 
 	set_tls_desc(p, idx, &info, 1);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -149,6 +173,49 @@ asmlinkage int sys_set_thread_area(struct user_desc __user *u_info)
 	int ret = do_set_thread_area(current, -1, u_info, 1);
 	asmlinkage_protect(1, ret, u_info);
 	return ret;
+=======
+	/*
+	 * If DS, ES, FS, or GS points to the modified segment, forcibly
+	 * refresh it.  Only needed on x86_64 because x86_32 reloads them
+	 * on return to user mode.
+	 */
+	modified_sel = (idx << 3) | 3;
+
+	if (p == current) {
+#ifdef CONFIG_X86_64
+		savesegment(ds, sel);
+		if (sel == modified_sel)
+			loadsegment(ds, sel);
+
+		savesegment(es, sel);
+		if (sel == modified_sel)
+			loadsegment(es, sel);
+
+		savesegment(fs, sel);
+		if (sel == modified_sel)
+			loadsegment(fs, sel);
+#endif
+
+		savesegment(gs, sel);
+		if (sel == modified_sel)
+			load_gs_index(sel);
+	} else {
+#ifdef CONFIG_X86_64
+		if (p->thread.fsindex == modified_sel)
+			p->thread.fsbase = info.base_addr;
+
+		if (p->thread.gsindex == modified_sel)
+			p->thread.gsbase = info.base_addr;
+#endif
+	}
+
+	return 0;
+}
+
+SYSCALL_DEFINE1(set_thread_area, struct user_desc __user *, u_info)
+{
+	return do_set_thread_area(current, -1, u_info, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -179,6 +246,10 @@ int do_get_thread_area(struct task_struct *p, int idx,
 		       struct user_desc __user *u_info)
 {
 	struct user_desc info;
+<<<<<<< HEAD
+=======
+	int index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (idx == -1 && get_user(idx, &u_info->entry_number))
 		return -EFAULT;
@@ -186,19 +257,33 @@ int do_get_thread_area(struct task_struct *p, int idx,
 	if (idx < GDT_ENTRY_TLS_MIN || idx > GDT_ENTRY_TLS_MAX)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	fill_user_desc(&info, idx,
 		       &p->thread.tls_array[idx - GDT_ENTRY_TLS_MIN]);
+=======
+	index = idx - GDT_ENTRY_TLS_MIN;
+	index = array_index_nospec(index,
+			GDT_ENTRY_TLS_MAX - GDT_ENTRY_TLS_MIN + 1);
+
+	fill_user_desc(&info, idx, &p->thread.tls_array[index]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_to_user(u_info, &info, sizeof(info)))
 		return -EFAULT;
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage int sys_get_thread_area(struct user_desc __user *u_info)
 {
 	int ret = do_get_thread_area(current, -1, u_info);
 	asmlinkage_protect(1, ret, u_info);
 	return ret;
+=======
+SYSCALL_DEFINE1(get_thread_area, struct user_desc __user *, u_info)
+{
+	return do_get_thread_area(current, -1, u_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int regset_tls_active(struct task_struct *target,
@@ -212,6 +297,7 @@ int regset_tls_active(struct task_struct *target,
 }
 
 int regset_tls_get(struct task_struct *target, const struct user_regset *regset,
+<<<<<<< HEAD
 		   unsigned int pos, unsigned int count,
 		   void *kbuf, void __user *ubuf)
 {
@@ -242,6 +328,18 @@ int regset_tls_get(struct task_struct *target, const struct user_regset *regset,
 		}
 	}
 
+=======
+		   struct membuf to)
+{
+	const struct desc_struct *tls;
+	struct user_desc v;
+	int pos;
+
+	for (pos = 0, tls = target->thread.tls_array; to.left; pos++, tls++) {
+		fill_user_desc(&v, GDT_ENTRY_TLS_MIN + pos, tls);
+		membuf_write(&to, &v, sizeof(v));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

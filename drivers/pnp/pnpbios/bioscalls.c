@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bioscalls.c - the lowlevel layer of the PnPBIOS driver
  */
@@ -21,7 +25,11 @@
 
 #include "pnpbios.h"
 
+<<<<<<< HEAD
 static struct {
+=======
+__visible struct {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 offset;
 	u16 segment;
 } pnp_bios_callpoint;
@@ -37,10 +45,18 @@ static struct {
  * kernel begins at offset 3GB...
  */
 
+<<<<<<< HEAD
 asmlinkage void pnp_bios_callfunc(void);
 
 __asm__(".text			\n"
 	__ALIGN_STR "\n"
+=======
+asmlinkage __visible void pnp_bios_callfunc(void);
+
+__asm__(".text			\n"
+	__ALIGN_STR "\n"
+	".globl pnp_bios_callfunc\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"pnp_bios_callfunc:\n"
 	"	pushl %edx	\n"
 	"	pushl %ecx	\n"
@@ -53,12 +69,20 @@ __asm__(".text			\n"
 
 #define Q2_SET_SEL(cpu, selname, address, size) \
 do { \
+<<<<<<< HEAD
 	struct desc_struct *gdt = get_cpu_gdt_table((cpu)); \
+=======
+	struct desc_struct *gdt = get_cpu_gdt_rw((cpu)); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_desc_base(&gdt[(selname) >> 3], (u32)(address)); \
 	set_desc_limit(&gdt[(selname) >> 3], (size) - 1); \
 } while(0)
 
+<<<<<<< HEAD
 static struct desc_struct bad_bios_desc = GDT_ENTRY_INIT(0x4092,
+=======
+static struct desc_struct bad_bios_desc = GDT_ENTRY_INIT(DESC_DATA32_BIOS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long)__va(0x400UL), PAGE_SIZE - 0x400 - 1);
 
 /*
@@ -66,11 +90,19 @@ static struct desc_struct bad_bios_desc = GDT_ENTRY_INIT(0x4092,
  * after PnP BIOS oopses.
  */
 
+<<<<<<< HEAD
 u32 pnp_bios_fault_esp;
 u32 pnp_bios_fault_eip;
 u32 pnp_bios_is_utter_crap = 0;
 
 static spinlock_t pnp_bios_lock;
+=======
+__visible u32 pnp_bios_fault_esp;
+__visible u32 pnp_bios_fault_eip;
+__visible u32 pnp_bios_is_utter_crap = 0;
+
+static DEFINE_SPINLOCK(pnp_bios_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Support Functions
@@ -94,8 +126,13 @@ static inline u16 call_pnp_bios(u16 func, u16 arg1, u16 arg2, u16 arg3,
 		return PNP_FUNCTION_NOT_SUPPORTED;
 
 	cpu = get_cpu();
+<<<<<<< HEAD
 	save_desc_40 = get_cpu_gdt_table(cpu)[0x40 / 8];
 	get_cpu_gdt_table(cpu)[0x40 / 8] = bad_bios_desc;
+=======
+	save_desc_40 = get_cpu_gdt_rw(cpu)[0x40 / 8];
+	get_cpu_gdt_rw(cpu)[0x40 / 8] = bad_bios_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* On some boxes IRQ's during PnP BIOS calls are deadly.  */
 	spin_lock_irqsave(&pnp_bios_lock, flags);
@@ -133,7 +170,11 @@ static inline u16 call_pnp_bios(u16 func, u16 arg1, u16 arg2, u16 arg3,
 			     :"memory");
 	spin_unlock_irqrestore(&pnp_bios_lock, flags);
 
+<<<<<<< HEAD
 	get_cpu_gdt_table(cpu)[0x40 / 8] = save_desc_40;
+=======
+	get_cpu_gdt_rw(cpu)[0x40 / 8] = save_desc_40;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cpu();
 
 	/* If we get here and this is set then the PnP BIOS faulted on us. */
@@ -471,12 +512,19 @@ void pnpbios_calls_init(union pnp_bios_install_struct *header)
 {
 	int i;
 
+<<<<<<< HEAD
 	spin_lock_init(&pnp_bios_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_bios_callpoint.offset = header->fields.pm16offset;
 	pnp_bios_callpoint.segment = PNP_CS16;
 
 	for_each_possible_cpu(i) {
+<<<<<<< HEAD
 		struct desc_struct *gdt = get_cpu_gdt_table(i);
+=======
+		struct desc_struct *gdt = get_cpu_gdt_rw(i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!gdt)
 			continue;
 		set_desc_base(&gdt[GDT_ENTRY_PNPBIOS_CS32],

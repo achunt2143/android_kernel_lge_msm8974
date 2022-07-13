@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_HWRPB_H
 #define __ALPHA_HWRPB_H
 
@@ -151,7 +155,11 @@ struct memdesc_struct {
 	unsigned long chksum;
 	unsigned long optional_pa;
 	unsigned long numclusters;
+<<<<<<< HEAD
 	struct memclust_struct cluster[0];
+=======
+	struct memclust_struct cluster[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dsr_struct {

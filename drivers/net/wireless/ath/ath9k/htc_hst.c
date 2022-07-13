@@ -14,6 +14,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "htc.h"
 
 static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
@@ -24,11 +29,19 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
 	struct htc_endpoint *endpoint = &target->endpoint[epid];
 	int status;
 
+<<<<<<< HEAD
 	hdr = (struct htc_frame_hdr *)
 		skb_push(skb, sizeof(struct htc_frame_hdr));
 	hdr->endpoint_id = epid;
 	hdr->flags = flags;
 	hdr->payload_len = cpu_to_be16(len);
+=======
+	hdr = skb_push(skb, sizeof(struct htc_frame_hdr));
+	hdr->endpoint_id = epid;
+	hdr->flags = flags;
+	hdr->payload_len = cpu_to_be16(len);
+	memset(hdr->control, 0, sizeof(hdr->control));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
 
@@ -87,7 +100,11 @@ static void htc_process_target_rdy(struct htc_target *target,
 				   void *buf)
 {
 	struct htc_endpoint *endpoint;
+<<<<<<< HEAD
 	struct htc_ready_msg *htc_ready_msg = (struct htc_ready_msg *) buf;
+=======
+	struct htc_ready_msg *htc_ready_msg = buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	target->credit_size = be16_to_cpu(htc_ready_msg->credit_size);
 
@@ -112,6 +129,18 @@ static void htc_process_conn_rsp(struct htc_target *target,
 
 	if (svc_rspmsg->status == HTC_SERVICE_SUCCESS) {
 		epid = svc_rspmsg->endpoint_id;
+<<<<<<< HEAD
+=======
+
+		/* Check that the received epid for the endpoint to attach
+		 * a new service is valid. ENDPOINT0 can't be used here as it
+		 * is already reserved for HTC_CTRL_RSVD_SVC service and thus
+		 * should not be modified.
+		 */
+		if (epid <= ENDPOINT0 || epid >= ENDPOINT_MAX)
+			return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		service_id = be16_to_cpu(svc_rspmsg->service_id);
 		max_msglen = be16_to_cpu(svc_rspmsg->max_msg_len);
 		endpoint = &target->endpoint[epid];
@@ -144,7 +173,12 @@ static int htc_config_pipe_credits(struct htc_target *target)
 {
 	struct sk_buff *skb;
 	struct htc_config_pipe_msg *cp_msg;
+<<<<<<< HEAD
 	int ret, time_left;
+=======
+	int ret;
+	unsigned long time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(50 + sizeof(struct htc_frame_hdr), GFP_ATOMIC);
 	if (!skb) {
@@ -153,8 +187,12 @@ static int htc_config_pipe_credits(struct htc_target *target)
 	}
 	skb_reserve(skb, sizeof(struct htc_frame_hdr));
 
+<<<<<<< HEAD
 	cp_msg = (struct htc_config_pipe_msg *)
 		skb_put(skb, sizeof(struct htc_config_pipe_msg));
+=======
+	cp_msg = skb_put(skb, sizeof(struct htc_config_pipe_msg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cp_msg->message_id = cpu_to_be16(HTC_MSG_CONFIG_PIPE_ID);
 	cp_msg->pipe_id = USB_WLAN_TX_PIPE;
@@ -182,7 +220,12 @@ static int htc_setup_complete(struct htc_target *target)
 {
 	struct sk_buff *skb;
 	struct htc_comp_msg *comp_msg;
+<<<<<<< HEAD
 	int ret = 0, time_left;
+=======
+	int ret = 0;
+	unsigned long time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(50 + sizeof(struct htc_frame_hdr), GFP_ATOMIC);
 	if (!skb) {
@@ -191,8 +234,12 @@ static int htc_setup_complete(struct htc_target *target)
 	}
 	skb_reserve(skb, sizeof(struct htc_frame_hdr));
 
+<<<<<<< HEAD
 	comp_msg = (struct htc_comp_msg *)
 		skb_put(skb, sizeof(struct htc_comp_msg));
+=======
+	comp_msg = skb_put(skb, sizeof(struct htc_comp_msg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	comp_msg->msg_id = cpu_to_be16(HTC_MSG_SETUP_COMPLETE_ID);
 
 	target->htc_flags |= HTC_OP_START_WAIT;
@@ -234,13 +281,23 @@ int htc_connect_service(struct htc_target *target,
 	struct sk_buff *skb;
 	struct htc_endpoint *endpoint;
 	struct htc_conn_svc_msg *conn_msg;
+<<<<<<< HEAD
 	int ret, time_left;
+=======
+	int ret;
+	unsigned long time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find an available endpoint */
 	endpoint = get_next_avail_ep(target->endpoint);
 	if (!endpoint) {
+<<<<<<< HEAD
 		dev_err(target->dev, "Endpoint is not available for"
 			"service %d\n", service_connreq->service_id);
+=======
+		dev_err(target->dev, "Endpoint is not available for service %d\n",
+			service_connreq->service_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -260,14 +317,25 @@ int htc_connect_service(struct htc_target *target,
 
 	skb_reserve(skb, sizeof(struct htc_frame_hdr));
 
+<<<<<<< HEAD
 	conn_msg = (struct htc_conn_svc_msg *)
 			skb_put(skb, sizeof(struct htc_conn_svc_msg));
+=======
+	conn_msg = skb_put(skb, sizeof(struct htc_conn_svc_msg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	conn_msg->service_id = cpu_to_be16(service_connreq->service_id);
 	conn_msg->msg_id = cpu_to_be16(HTC_MSG_CONNECT_SERVICE_ID);
 	conn_msg->con_flags = cpu_to_be16(service_connreq->con_flags);
 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
 
+<<<<<<< HEAD
+=======
+	/* To prevent infoleak */
+	conn_msg->svc_meta_len = 0;
+	conn_msg->pad = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
 	if (ret)
 		goto err;
@@ -335,6 +403,11 @@ void ath9k_htc_txcompletion_cb(struct htc_target *htc_handle,
 
 	if (skb) {
 		htc_hdr = (struct htc_frame_hdr *) skb->data;
+<<<<<<< HEAD
+=======
+		if (htc_hdr->endpoint_id >= ARRAY_SIZE(htc_handle->endpoint))
+			goto ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		endpoint = &htc_handle->endpoint[htc_hdr->endpoint_id];
 		skb_pull(skb, sizeof(struct htc_frame_hdr));
 
@@ -349,18 +422,50 @@ void ath9k_htc_txcompletion_cb(struct htc_target *htc_handle,
 
 	return;
 ret:
+<<<<<<< HEAD
 	/* HTC-generated packets are freed here. */
 	if (htc_hdr && htc_hdr->endpoint_id != ENDPOINT0)
 		dev_kfree_skb_any(skb);
 	else
 		kfree_skb(skb);
+=======
+	kfree_skb(skb);
+}
+
+static void ath9k_htc_fw_panic_report(struct htc_target *htc_handle,
+				      struct sk_buff *skb, u32 len)
+{
+	uint32_t *pattern = (uint32_t *)skb->data;
+
+	if (*pattern == 0x33221199 && len >= sizeof(struct htc_panic_bad_vaddr)) {
+		struct htc_panic_bad_vaddr *htc_panic;
+		htc_panic = (struct htc_panic_bad_vaddr *) skb->data;
+		dev_err(htc_handle->dev, "ath: firmware panic! "
+			"exccause: 0x%08x; pc: 0x%08x; badvaddr: 0x%08x.\n",
+			htc_panic->exccause, htc_panic->pc,
+			htc_panic->badvaddr);
+		return;
+	}
+	if (*pattern == 0x33221299) {
+		struct htc_panic_bad_epid *htc_panic;
+		htc_panic = (struct htc_panic_bad_epid *) skb->data;
+		dev_err(htc_handle->dev, "ath: firmware panic! "
+			"bad epid: 0x%08x\n", htc_panic->epid);
+		return;
+	}
+	dev_err(htc_handle->dev, "ath: unknown panic pattern!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * HTC Messages are handled directly here and the obtained SKB
  * is freed.
  *
+<<<<<<< HEAD
  * Service messages (Data, WMI) passed to the corresponding
+=======
+ * Service messages (Data, WMI) are passed to the corresponding
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * endpoint RX handlers, which have to free the SKB.
  */
 void ath9k_htc_rx_msg(struct htc_target *htc_handle,
@@ -374,10 +479,33 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
 	if (!htc_handle || !skb)
 		return;
 
+<<<<<<< HEAD
 	htc_hdr = (struct htc_frame_hdr *) skb->data;
 	epid = htc_hdr->endpoint_id;
 
 	if (epid >= ENDPOINT_MAX) {
+=======
+	/* A valid message requires len >= 8.
+	 *
+	 *   sizeof(struct htc_frame_hdr) == 8
+	 *   sizeof(struct htc_ready_msg) == 8
+	 *   sizeof(struct htc_panic_bad_vaddr) == 16
+	 *   sizeof(struct htc_panic_bad_epid) == 8
+	 */
+	if (unlikely(len < sizeof(struct htc_frame_hdr)))
+		goto invalid;
+	htc_hdr = (struct htc_frame_hdr *) skb->data;
+	epid = htc_hdr->endpoint_id;
+
+	if (epid == 0x99) {
+		ath9k_htc_fw_panic_report(htc_handle, skb, len);
+		kfree_skb(skb);
+		return;
+	}
+
+	if (epid < 0 || epid >= ENDPOINT_MAX) {
+invalid:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pipe_id != USB_REG_IN_PIPE)
 			dev_kfree_skb_any(skb);
 		else
@@ -389,21 +517,45 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
 
 		/* Handle trailer */
 		if (htc_hdr->flags & HTC_FLAGS_RECV_TRAILER) {
+<<<<<<< HEAD
 			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000)
 				/* Move past the Watchdog pattern */
 				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
 		}
 
 		/* Get the message ID */
+=======
+			if (be32_to_cpu(*(__be32 *) skb->data) == 0x00C60000) {
+				/* Move past the Watchdog pattern */
+				htc_hdr = (struct htc_frame_hdr *)(skb->data + 4);
+				len -= 4;
+			}
+		}
+
+		/* Get the message ID */
+		if (unlikely(len < sizeof(struct htc_frame_hdr) + sizeof(__be16)))
+			goto invalid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg_id = (__be16 *) ((void *) htc_hdr +
 				     sizeof(struct htc_frame_hdr));
 
 		/* Now process HTC messages */
 		switch (be16_to_cpu(*msg_id)) {
 		case HTC_MSG_READY_ID:
+<<<<<<< HEAD
 			htc_process_target_rdy(htc_handle, htc_hdr);
 			break;
 		case HTC_MSG_CONNECT_SERVICE_RESPONSE_ID:
+=======
+			if (unlikely(len < sizeof(struct htc_ready_msg)))
+				goto invalid;
+			htc_process_target_rdy(htc_handle, htc_hdr);
+			break;
+		case HTC_MSG_CONNECT_SERVICE_RESPONSE_ID:
+			if (unlikely(len < sizeof(struct htc_frame_hdr) +
+				     sizeof(struct htc_conn_svc_rspmsg)))
+				goto invalid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			htc_process_conn_rsp(htc_handle, htc_hdr);
 			break;
 		default:
@@ -422,6 +574,11 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
 		if (endpoint->ep_callbacks.rx)
 			endpoint->ep_callbacks.rx(endpoint->ep_callbacks.priv,
 						  skb, epid);
+<<<<<<< HEAD
+=======
+		else
+			goto invalid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -463,7 +620,11 @@ int ath9k_htc_hw_init(struct htc_target *target,
 		      char *product, u32 drv_info)
 {
 	if (ath9k_htc_probe_device(target, dev, devid, product, drv_info)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to initialize the device\n");
+=======
+		pr_err("Failed to initialize the device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 

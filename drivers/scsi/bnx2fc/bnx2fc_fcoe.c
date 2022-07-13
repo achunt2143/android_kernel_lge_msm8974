@@ -1,9 +1,19 @@
+<<<<<<< HEAD
 /* bnx2fc_fcoe.c: Broadcom NetXtreme II Linux FCoE offload driver.
+=======
+/* bnx2fc_fcoe.c: QLogic Linux FCoE offload driver.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains the code that interacts with libfc, libfcoe,
  * cnic modules to create FCoE instances, send/receive non-offloaded
  * FIP/FCoE packets, listen to link events etc.
  *
+<<<<<<< HEAD
  * Copyright (c) 2008 - 2011 Broadcom Corporation
+=======
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2016 QLogic Corporation
+ * Copyright (c) 2016-2017 Cavium Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +24,11 @@
 
 #include "bnx2fc.h"
 
+<<<<<<< HEAD
+=======
+#include <linux/ethtool.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct list_head adapter_list;
 static struct list_head if_list;
 static u32 adapter_count;
@@ -22,16 +37,28 @@ DEFINE_PER_CPU(struct bnx2fc_percpu_s, bnx2fc_percpu);
 
 #define DRV_MODULE_NAME		"bnx2fc"
 #define DRV_MODULE_VERSION	BNX2FC_VERSION
+<<<<<<< HEAD
 #define DRV_MODULE_RELDATE	"Jan 22, 2011"
 
 
 static char version[] __devinitdata =
 		"Broadcom NetXtreme II FCoE Driver " DRV_MODULE_NAME \
+=======
+#define DRV_MODULE_RELDATE	"October 15, 2015"
+
+
+static char version[] =
+		"QLogic FCoE Driver " DRV_MODULE_NAME \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		" v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 
 MODULE_AUTHOR("Bhanu Prakash Gollapudi <bprakash@broadcom.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Broadcom NetXtreme II BCM57710 FCoE Driver");
+=======
+MODULE_DESCRIPTION("QLogic FCoE Driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
@@ -48,32 +75,57 @@ struct workqueue_struct *bnx2fc_wq;
  * Here the io threads are per cpu but the l2 thread is just one
  */
 struct fcoe_percpu_s bnx2fc_global;
+<<<<<<< HEAD
 DEFINE_SPINLOCK(bnx2fc_global_lock);
+=======
+static DEFINE_SPINLOCK(bnx2fc_global_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct cnic_ulp_ops bnx2fc_cnic_cb;
 static struct libfc_function_template bnx2fc_libfc_fcn_templ;
 static struct scsi_host_template bnx2fc_shost_template;
 static struct fc_function_template bnx2fc_transport_function;
+<<<<<<< HEAD
 static struct fc_function_template bnx2fc_vport_xport_function;
 static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode);
+=======
+static struct fcoe_sysfs_function_template bnx2fc_fcoe_sysfs_templ;
+static struct fc_function_template bnx2fc_vport_xport_function;
+static int bnx2fc_create(struct net_device *netdev, enum fip_mode fip_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __bnx2fc_destroy(struct bnx2fc_interface *interface);
 static int bnx2fc_destroy(struct net_device *net_device);
 static int bnx2fc_enable(struct net_device *netdev);
 static int bnx2fc_disable(struct net_device *netdev);
 
+<<<<<<< HEAD
+=======
+/* fcoe_syfs control interface handlers */
+static int bnx2fc_ctlr_alloc(struct net_device *netdev);
+static int bnx2fc_ctlr_enabled(struct fcoe_ctlr_device *cdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bnx2fc_recv_frame(struct sk_buff *skb);
 
 static void bnx2fc_start_disc(struct bnx2fc_interface *interface);
 static int bnx2fc_shost_config(struct fc_lport *lport, struct device *dev);
 static int bnx2fc_lport_config(struct fc_lport *lport);
+<<<<<<< HEAD
 static int bnx2fc_em_config(struct fc_lport *lport);
+=======
+static int bnx2fc_em_config(struct fc_lport *lport, struct bnx2fc_hba *hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2fc_bind_adapter_devices(struct bnx2fc_hba *hba);
 static void bnx2fc_unbind_adapter_devices(struct bnx2fc_hba *hba);
 static int bnx2fc_bind_pcidev(struct bnx2fc_hba *hba);
 static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
 static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 				  struct device *parent, int npiv);
+<<<<<<< HEAD
 static void bnx2fc_destroy_work(struct work_struct *work);
+=======
+static void bnx2fc_port_destroy(struct fcoe_port *port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
 static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
@@ -91,6 +143,7 @@ static void __exit bnx2fc_mod_exit(void);
 
 unsigned int bnx2fc_debug_level;
 module_param_named(debug_logging, bnx2fc_debug_level, int, S_IRUGO|S_IWUSR);
+<<<<<<< HEAD
 
 static int bnx2fc_cpu_callback(struct notifier_block *nfb,
 			     unsigned long action, void *hcpu);
@@ -98,6 +151,37 @@ static int bnx2fc_cpu_callback(struct notifier_block *nfb,
 static struct notifier_block bnx2fc_cpu_notifier = {
 	.notifier_call = bnx2fc_cpu_callback,
 };
+=======
+MODULE_PARM_DESC(debug_logging,
+		"Option to enable extended logging,\n"
+		"\t\tDefault is 0 - no logging.\n"
+		"\t\t0x01 - SCSI cmd error, cleanup.\n"
+		"\t\t0x02 - Session setup, cleanup, etc.\n"
+		"\t\t0x04 - lport events, link, mtu, etc.\n"
+		"\t\t0x08 - ELS logs.\n"
+		"\t\t0x10 - fcoe L2 fame related logs.\n"
+		"\t\t0xff - LOG all messages.");
+
+static uint bnx2fc_devloss_tmo;
+module_param_named(devloss_tmo, bnx2fc_devloss_tmo, uint, S_IRUGO);
+MODULE_PARM_DESC(devloss_tmo, " Change devloss_tmo for the remote ports "
+	"attached via bnx2fc.");
+
+static uint bnx2fc_max_luns = BNX2FC_MAX_LUN;
+module_param_named(max_luns, bnx2fc_max_luns, uint, S_IRUGO);
+MODULE_PARM_DESC(max_luns, " Change the default max_lun per SCSI host. Default "
+	"0xffff.");
+
+static uint bnx2fc_queue_depth;
+module_param_named(queue_depth, bnx2fc_queue_depth, uint, S_IRUGO);
+MODULE_PARM_DESC(queue_depth, " Change the default queue depth of SCSI devices "
+	"attached via bnx2fc.");
+
+static uint bnx2fc_log_fka;
+module_param_named(log_fka, bnx2fc_log_fka, uint, S_IRUGO|S_IWUSR);
+MODULE_PARM_DESC(log_fka, " Print message to kernel log when fcoe is "
+	"initiating a FIP keep alive when debug logging is enabled.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct net_device *bnx2fc_netdev(const struct fc_lport *lport)
 {
@@ -105,6 +189,7 @@ static inline struct net_device *bnx2fc_netdev(const struct fc_lport *lport)
 		((struct fcoe_port *)lport_priv(lport))->priv)->netdev;
 }
 
+<<<<<<< HEAD
 /**
  * bnx2fc_get_lesb() - Fill the FCoE Link Error Status Block
  * @lport: the local port
@@ -116,6 +201,16 @@ static void bnx2fc_get_lesb(struct fc_lport *lport,
 	struct net_device *netdev = bnx2fc_netdev(lport);
 
 	__fcoe_get_lesb(lport, fc_lesb, netdev);
+=======
+static void bnx2fc_fcf_get_vlan_id(struct fcoe_fcf_device *fcf_dev)
+{
+	struct fcoe_ctlr_device *ctlr_dev =
+		fcoe_fcf_dev_to_ctlr_dev(fcf_dev);
+	struct fcoe_ctlr *ctlr = fcoe_ctlr_device_priv(ctlr_dev);
+	struct bnx2fc_interface *fcoe = fcoe_ctlr_priv(ctlr);
+
+	fcf_dev->vlan_id = fcoe->vlan_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2fc_clean_rx_queue(struct fc_lport *lp)
@@ -124,15 +219,22 @@ static void bnx2fc_clean_rx_queue(struct fc_lport *lp)
 	struct fcoe_rcv_info *fr;
 	struct sk_buff_head *list;
 	struct sk_buff *skb, *next;
+<<<<<<< HEAD
 	struct sk_buff *head;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bg = &bnx2fc_global;
 	spin_lock_bh(&bg->fcoe_rx_list.lock);
 	list = &bg->fcoe_rx_list;
+<<<<<<< HEAD
 	head = list->next;
 	for (skb = head; skb != (struct sk_buff *)list;
 	     skb = next) {
 		next = skb->next;
+=======
+	skb_queue_walk_safe(list, skb, next) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fr = fcoe_dev_from_skb(skb);
 		if (fr->fr_dev == lp) {
 			__skb_unlink(skb, list);
@@ -244,11 +346,18 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 	struct sk_buff		*skb;
 	struct fc_frame_header	*fh;
 	struct bnx2fc_interface	*interface;
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr        *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2fc_hba *hba;
 	struct fcoe_port	*port;
 	struct fcoe_hdr		*hp;
 	struct bnx2fc_rport	*tgt;
+<<<<<<< HEAD
 	struct fcoe_dev_stats	*stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			sof, eof;
 	u32			crc;
 	unsigned int		hlen, tlen, elen;
@@ -256,6 +365,10 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 
 	port = (struct fcoe_port *)lport_priv(lport);
 	interface = port->priv;
+<<<<<<< HEAD
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hba = interface->hba;
 
 	fh = fc_frame_header_get(fp);
@@ -268,12 +381,20 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 	}
 
 	if (unlikely(fh->fh_r_ctl == FC_RCTL_ELS_REQ)) {
+<<<<<<< HEAD
 		if (!interface->ctlr.sel_fcf) {
+=======
+		if (!ctlr->sel_fcf) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNX2FC_HBA_DBG(lport, "FCF not selected yet!\n");
 			kfree_skb(skb);
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (fcoe_ctlr_els_send(&interface->ctlr, lport, skb))
+=======
+		if (fcoe_ctlr_els_send(ctlr, lport, skb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 
@@ -322,9 +443,15 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 			return -ENOMEM;
 		}
 		frag = &skb_shinfo(skb)->frags[skb_shinfo(skb)->nr_frags - 1];
+<<<<<<< HEAD
 		cp = kmap_atomic(skb_frag_page(frag)) + frag->page_offset;
 	} else {
 		cp = (struct fcoe_crc_eof *)skb_put(skb, tlen);
+=======
+		cp = kmap_atomic(skb_frag_page(frag)) + skb_frag_off(frag);
+	} else {
+		cp = skb_put(skb, tlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(cp, 0, sizeof(*cp));
@@ -346,6 +473,7 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 	/* fill up mac and fcoe headers */
 	eh = eth_hdr(skb);
 	eh->h_proto = htons(ETH_P_FCOE);
+<<<<<<< HEAD
 	if (interface->ctlr.map_dest)
 		fc_fcoe_set_mac(eh->h_dest, fh->fh_d_id);
 	else
@@ -354,6 +482,16 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 
 	if (unlikely(interface->ctlr.flogi_oxid != FC_XID_UNKNOWN))
 		memcpy(eh->h_source, interface->ctlr.ctl_src_addr, ETH_ALEN);
+=======
+	if (ctlr->map_dest)
+		fc_fcoe_set_mac(eh->h_dest, fh->fh_d_id);
+	else
+		/* insert GW address */
+		memcpy(eh->h_dest, ctlr->dest_addr, ETH_ALEN);
+
+	if (unlikely(ctlr->flogi_oxid != FC_XID_UNKNOWN))
+		memcpy(eh->h_source, ctlr->ctl_src_addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		memcpy(eh->h_source, port->data_src_addr, ETH_ALEN);
 
@@ -373,10 +511,15 @@ static int bnx2fc_xmit(struct fc_lport *lport, struct fc_frame *fp)
 	}
 
 	/*update tx stats */
+<<<<<<< HEAD
 	stats = per_cpu_ptr(lport->dev_stats, get_cpu());
 	stats->TxFrames++;
 	stats->TxWords += wlen;
 	put_cpu();
+=======
+	this_cpu_inc(lport->stats->TxFrames);
+	this_cpu_add(lport->stats->TxWords, wlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send down to lld */
 	fr_dev(fp) = lport;
@@ -403,6 +546,7 @@ static int bnx2fc_rcv(struct sk_buff *skb, struct net_device *dev,
 {
 	struct fc_lport *lport;
 	struct bnx2fc_interface *interface;
+<<<<<<< HEAD
 	struct fc_frame_header *fh;
 	struct fcoe_rcv_info *fr;
 	struct fcoe_percpu_s *bg;
@@ -412,17 +556,33 @@ static int bnx2fc_rcv(struct sk_buff *skb, struct net_device *dev,
 	interface = container_of(ptype, struct bnx2fc_interface,
 				 fcoe_packet_type);
 	lport = interface->ctlr.lp;
+=======
+	struct fcoe_ctlr *ctlr;
+	struct fcoe_rcv_info *fr;
+	struct fcoe_percpu_s *bg;
+
+	interface = container_of(ptype, struct bnx2fc_interface,
+				 fcoe_packet_type);
+	ctlr = bnx2fc_to_ctlr(interface);
+	lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(lport == NULL)) {
 		printk(KERN_ERR PFX "bnx2fc_rcv: lport is NULL\n");
 		goto err;
 	}
 
+<<<<<<< HEAD
 	tmp_skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!tmp_skb)
 		goto err;
 
 	skb = tmp_skb;
+=======
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb)
+		return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(eth_hdr(skb)->h_proto != htons(ETH_P_FCOE))) {
 		printk(KERN_ERR PFX "bnx2fc_rcv: Wrong FC type frame\n");
@@ -438,9 +598,12 @@ static int bnx2fc_rcv(struct sk_buff *skb, struct net_device *dev,
 		goto err;
 
 	skb_set_transport_header(skb, sizeof(struct fcoe_hdr));
+<<<<<<< HEAD
 	fh = (struct fc_frame_header *) skb_transport_header(skb);
 
 	oxid = ntohs(fh->fh_ox_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fr = fcoe_dev_from_skb(skb);
 	fr->fr_dev = lport;
@@ -450,7 +613,11 @@ static int bnx2fc_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	__skb_queue_tail(&bg->fcoe_rx_list, skb);
 	if (bg->fcoe_rx_list.qlen == 1)
+<<<<<<< HEAD
 		wake_up_process(bg->thread);
+=======
+		wake_up_process(bg->kthread);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&bg->fcoe_rx_list.lock);
 
@@ -465,7 +632,11 @@ static int bnx2fc_l2_rcv_thread(void *arg)
 	struct fcoe_percpu_s *bg = arg;
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	set_user_nice(current, -20);
+=======
+	set_user_nice(current, MIN_NICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_state(TASK_INTERRUPTIBLE);
 	while (!kthread_should_stop()) {
 		schedule();
@@ -485,18 +656,34 @@ static int bnx2fc_l2_rcv_thread(void *arg)
 
 static void bnx2fc_recv_frame(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	u32 fr_len;
 	struct fc_lport *lport;
 	struct fcoe_rcv_info *fr;
 	struct fcoe_dev_stats *stats;
+=======
+	u64 crc_err;
+	u32 fr_len, fr_crc;
+	struct fc_lport *lport;
+	struct fcoe_rcv_info *fr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_frame_header *fh;
 	struct fcoe_crc_eof crc_eof;
 	struct fc_frame *fp;
 	struct fc_lport *vn_port;
+<<<<<<< HEAD
 	struct fcoe_port *port;
 	u8 *mac = NULL;
 	u8 *dest_mac = NULL;
 	struct fcoe_hdr *hp;
+=======
+	struct fcoe_port *port, *phys_port;
+	u8 *mac = NULL;
+	u8 *dest_mac = NULL;
+	struct fcoe_hdr *hp;
+	struct bnx2fc_interface *interface;
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fr = fcoe_dev_from_skb(skb);
 	lport = fr->fr_dev;
@@ -517,27 +704,39 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 	skb_pull(skb, sizeof(struct fcoe_hdr));
 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
 
+<<<<<<< HEAD
 	stats = per_cpu_ptr(lport->dev_stats, get_cpu());
 	stats->RxFrames++;
 	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
+=======
+	this_cpu_inc(lport->stats->RxFrames);
+	this_cpu_add(lport->stats->RxWords, fr_len / FCOE_WORD_TO_BYTE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fp = (struct fc_frame *)skb;
 	fc_frame_init(fp);
 	fr_dev(fp) = lport;
 	fr_sof(fp) = hp->fcoe_sof;
 	if (skb_copy_bits(skb, fr_len, &crc_eof, sizeof(crc_eof))) {
+<<<<<<< HEAD
 		put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return;
 	}
 	fr_eof(fp) = crc_eof.fcoe_eof;
 	fr_crc(fp) = crc_eof.fcoe_crc32;
 	if (pskb_trim(skb, fr_len)) {
+<<<<<<< HEAD
 		put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return;
 	}
 
+<<<<<<< HEAD
 	fh = fc_frame_header_get(fp);
 
 	vn_port = fc_vport_id_lookup(lport, ntoh24(fh->fh_d_id));
@@ -547,6 +746,34 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 		    != 0) {
 			BNX2FC_HBA_DBG(lport, "fpma mismatch\n");
 			put_cpu();
+=======
+	phys_port = lport_priv(lport);
+	interface = phys_port->priv;
+	ctlr = bnx2fc_to_ctlr(interface);
+
+	fh = fc_frame_header_get(fp);
+
+	if (ntoh24(&dest_mac[3]) != ntoh24(fh->fh_d_id)) {
+		BNX2FC_HBA_DBG(lport, "FC frame d_id mismatch with MAC %pM.\n",
+		    dest_mac);
+		kfree_skb(skb);
+		return;
+	}
+
+	vn_port = fc_vport_id_lookup(lport, ntoh24(fh->fh_d_id));
+	if (vn_port) {
+		port = lport_priv(vn_port);
+		if (!ether_addr_equal(port->data_src_addr, dest_mac)) {
+			BNX2FC_HBA_DBG(lport, "fpma mismatch\n");
+			kfree_skb(skb);
+			return;
+		}
+	}
+	if (ctlr->state) {
+		if (!ether_addr_equal(mac, ctlr->dest_addr)) {
+			BNX2FC_HBA_DBG(lport, "Wrong source address: mac:%pM dest_addr:%pM.\n",
+			    mac, ctlr->dest_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree_skb(skb);
 			return;
 		}
@@ -554,7 +781,10 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 	if (fh->fh_r_ctl == FC_RCTL_DD_SOL_DATA &&
 	    fh->fh_type == FC_TYPE_FCP) {
 		/* Drop FCP data. We dont this in L2 path */
+<<<<<<< HEAD
 		put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return;
 	}
@@ -564,7 +794,10 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 		case ELS_LOGO:
 			if (ntoh24(fh->fh_s_id) == FC_FID_FLOGI) {
 				/* drop non-FIP LOGO */
+<<<<<<< HEAD
 				put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree_skb(skb);
 				return;
 			}
@@ -574,11 +807,15 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 
 	if (fh->fh_r_ctl == FC_RCTL_BA_ABTS) {
 		/* Drop incoming ABTS */
+<<<<<<< HEAD
 		put_cpu();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return;
 	}
 
+<<<<<<< HEAD
 	if (le32_to_cpu(fr_crc(fp)) !=
 			~crc32(~0, skb->data, fr_len)) {
 		if (stats->InvalidCRCCount < 5)
@@ -590,6 +827,30 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
 		return;
 	}
 	put_cpu();
+=======
+	/*
+	 * If the destination ID from the frame header does not match what we
+	 * have on record for lport and the search for a NPIV port came up
+	 * empty then this is not addressed to our port so simply drop it.
+	 */
+	if (lport->port_id != ntoh24(fh->fh_d_id) && !vn_port) {
+		BNX2FC_HBA_DBG(lport, "Dropping frame due to destination mismatch: lport->port_id=%x fh->d_id=%x.\n",
+		    lport->port_id, ntoh24(fh->fh_d_id));
+		kfree_skb(skb);
+		return;
+	}
+
+	fr_crc = le32_to_cpu(fr_crc(fp));
+
+	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
+		crc_err = this_cpu_inc_return(lport->stats->InvalidCRCCount);
+		if (crc_err < 5)
+			printk(KERN_WARNING PFX "dropping frame with "
+			       "CRC error\n");
+		kfree_skb(skb);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_exch_recv(lport, fp);
 }
 
@@ -598,13 +859,21 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
  *
  * @arg:	ptr to bnx2fc_percpu_info structure
  */
+<<<<<<< HEAD
 int bnx2fc_percpu_io_thread(void *arg)
+=======
+static int bnx2fc_percpu_io_thread(void *arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_percpu_s *p = arg;
 	struct bnx2fc_work *work, *tmp;
 	LIST_HEAD(work_list);
 
+<<<<<<< HEAD
 	set_user_nice(current, -20);
+=======
+	set_user_nice(current, MIN_NICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_state(TASK_INTERRUPTIBLE);
 	while (!kthread_should_stop()) {
 		schedule();
@@ -615,7 +884,14 @@ int bnx2fc_percpu_io_thread(void *arg)
 
 			list_for_each_entry_safe(work, tmp, &work_list, list) {
 				list_del_init(&work->list);
+<<<<<<< HEAD
 				bnx2fc_process_cq_compl(work->tgt, work->wqe);
+=======
+				bnx2fc_process_cq_compl(work->tgt, work->wqe,
+							work->rq_data,
+							work->num_rq,
+							work->task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(work);
 			}
 
@@ -643,10 +919,16 @@ static struct fc_host_statistics *bnx2fc_get_host_stats(struct Scsi_Host *shost)
 	if (!fw_stats)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&hba->hba_stats_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2fc_stats = fc_get_host_stats(shost);
 
 	init_completion(&hba->stat_req_done);
 	if (bnx2fc_send_stat_req(hba))
+<<<<<<< HEAD
 		return bnx2fc_stats;
 	rc = wait_for_completion_timeout(&hba->stat_req_done, (2 * HZ));
 	if (!rc) {
@@ -658,6 +940,24 @@ static struct fc_host_statistics *bnx2fc_get_host_stats(struct Scsi_Host *shost)
 	bnx2fc_stats->tx_words += (fw_stats->tx_stat.fcoe_tx_byte_cnt) / 4;
 	bnx2fc_stats->rx_frames += fw_stats->rx_stat0.fcoe_rx_pkt_cnt;
 	bnx2fc_stats->rx_words += (fw_stats->rx_stat0.fcoe_rx_byte_cnt) / 4;
+=======
+		goto unlock_stats_mutex;
+	rc = wait_for_completion_timeout(&hba->stat_req_done, (2 * HZ));
+	if (!rc) {
+		BNX2FC_HBA_DBG(lport, "FW stat req timed out\n");
+		goto unlock_stats_mutex;
+	}
+	BNX2FC_STATS(hba, rx_stat2, fc_crc_cnt);
+	bnx2fc_stats->invalid_crc_count += hba->bfw_stats.fc_crc_cnt;
+	BNX2FC_STATS(hba, tx_stat, fcoe_tx_pkt_cnt);
+	bnx2fc_stats->tx_frames += hba->bfw_stats.fcoe_tx_pkt_cnt;
+	BNX2FC_STATS(hba, tx_stat, fcoe_tx_byte_cnt);
+	bnx2fc_stats->tx_words += ((hba->bfw_stats.fcoe_tx_byte_cnt) / 4);
+	BNX2FC_STATS(hba, rx_stat0, fcoe_rx_pkt_cnt);
+	bnx2fc_stats->rx_frames += hba->bfw_stats.fcoe_rx_pkt_cnt;
+	BNX2FC_STATS(hba, rx_stat0, fcoe_rx_byte_cnt);
+	bnx2fc_stats->rx_words += ((hba->bfw_stats.fcoe_rx_byte_cnt) / 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2fc_stats->dumped_frames = 0;
 	bnx2fc_stats->lip_count = 0;
@@ -666,6 +966,14 @@ static struct fc_host_statistics *bnx2fc_get_host_stats(struct Scsi_Host *shost)
 	bnx2fc_stats->loss_of_signal_count = 0;
 	bnx2fc_stats->prim_seq_protocol_err_count = 0;
 
+<<<<<<< HEAD
+=======
+	memcpy(&hba->prev_stats, hba->stats_buffer,
+	       sizeof(struct fcoe_statistics_params));
+
+unlock_stats_mutex:
+	mutex_unlock(&hba->hba_stats_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2fc_stats;
 }
 
@@ -673,11 +981,19 @@ static int bnx2fc_shost_config(struct fc_lport *lport, struct device *dev)
 {
 	struct fcoe_port *port = lport_priv(lport);
 	struct bnx2fc_interface *interface = port->priv;
+<<<<<<< HEAD
+=======
+	struct bnx2fc_hba *hba = interface->hba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = lport->host;
 	int rc = 0;
 
 	shost->max_cmd_len = BNX2FC_MAX_CMD_LEN;
+<<<<<<< HEAD
 	shost->max_lun = BNX2FC_MAX_LUN;
+=======
+	shost->max_lun = bnx2fc_max_luns;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shost->max_id = BNX2FC_MAX_FCP_TGT;
 	shost->max_channel = 0;
 	if (lport->vport)
@@ -693,13 +1009,20 @@ static int bnx2fc_shost_config(struct fc_lport *lport, struct device *dev)
 	}
 	if (!lport->vport)
 		fc_host_max_npiv_vports(lport->host) = USHRT_MAX;
+<<<<<<< HEAD
 	sprintf(fc_host_symbolic_name(lport->host), "%s v%s over %s",
 		BNX2FC_NAME, BNX2FC_VERSION,
+=======
+	snprintf(fc_host_symbolic_name(lport->host), 256,
+		 "%s (QLogic %s) v%s over %s",
+		BNX2FC_NAME, hba->chip_num, BNX2FC_VERSION,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		interface->netdev->name);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void bnx2fc_link_speed_update(struct fc_lport *lport)
 {
 	struct fcoe_port *port = lport_priv(lport);
@@ -729,6 +1052,8 @@ static void bnx2fc_link_speed_update(struct fc_lport *lport)
 		}
 	}
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2fc_link_ok(struct fc_lport *lport)
 {
 	struct fcoe_port *port = lport_priv(lport);
@@ -765,11 +1090,19 @@ static int bnx2fc_net_config(struct fc_lport *lport, struct net_device *netdev)
 {
 	struct bnx2fc_hba *hba;
 	struct bnx2fc_interface *interface;
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_port *port;
 	u64 wwnn, wwpn;
 
 	port = lport_priv(lport);
 	interface = port->priv;
+<<<<<<< HEAD
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hba = interface->hba;
 
 	/* require support for get_pauseparam ethtool op. */
@@ -782,6 +1115,7 @@ static int bnx2fc_net_config(struct fc_lport *lport, struct net_device *netdev)
 
 	skb_queue_head_init(&port->fcoe_pending_queue);
 	port->fcoe_pending_queue_active = 0;
+<<<<<<< HEAD
 	setup_timer(&port->timer, fcoe_queue_timer, (unsigned long) lport);
 
 	bnx2fc_link_speed_update(lport);
@@ -789,12 +1123,25 @@ static int bnx2fc_net_config(struct fc_lport *lport, struct net_device *netdev)
 	if (!lport->vport) {
 		if (fcoe_get_wwn(netdev, &wwnn, NETDEV_FCOE_WWNN))
 			wwnn = fcoe_wwn_from_mac(interface->ctlr.ctl_src_addr,
+=======
+	timer_setup(&port->timer, fcoe_queue_timer, 0);
+
+	fcoe_link_speed_update(lport);
+
+	if (!lport->vport) {
+		if (fcoe_get_wwn(netdev, &wwnn, NETDEV_FCOE_WWNN))
+			wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 1, 0);
 		BNX2FC_HBA_DBG(lport, "WWNN = 0x%llx\n", wwnn);
 		fc_set_wwnn(lport, wwnn);
 
 		if (fcoe_get_wwn(netdev, &wwpn, NETDEV_FCOE_WWPN))
+<<<<<<< HEAD
 			wwpn = fcoe_wwn_from_mac(interface->ctlr.ctl_src_addr,
+=======
+			wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 2, 0);
 
 		BNX2FC_HBA_DBG(lport, "WWPN = 0x%llx\n", wwpn);
@@ -804,9 +1151,15 @@ static int bnx2fc_net_config(struct fc_lport *lport, struct net_device *netdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void bnx2fc_destroy_timer(unsigned long data)
 {
 	struct bnx2fc_hba *hba = (struct bnx2fc_hba *)data;
+=======
+static void bnx2fc_destroy_timer(struct timer_list *t)
+{
+	struct bnx2fc_hba *hba = from_timer(hba, t, destroy_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_ERR PFX "ERROR:bnx2fc_destroy_timer - "
 	       "Destroy compl not received!!\n");
@@ -828,9 +1181,17 @@ static void bnx2fc_indicate_netevent(void *context, unsigned long event,
 				     u16 vlan_id)
 {
 	struct bnx2fc_hba *hba = (struct bnx2fc_hba *)context;
+<<<<<<< HEAD
 	struct fc_lport *lport;
 	struct fc_lport *vport;
 	struct bnx2fc_interface *interface, *tmp;
+=======
+	struct fcoe_ctlr_device *cdev;
+	struct fc_lport *lport;
+	struct fc_lport *vport;
+	struct bnx2fc_interface *interface, *tmp;
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int wait_for_upload = 0;
 	u32 link_possible = 1;
 
@@ -871,7 +1232,10 @@ static void bnx2fc_indicate_netevent(void *context, unsigned long event,
 		return;
 
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Unkonwn netevent %ld", event);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -881,6 +1245,7 @@ static void bnx2fc_indicate_netevent(void *context, unsigned long event,
 		if (interface->hba != hba)
 			continue;
 
+<<<<<<< HEAD
 		lport = interface->ctlr.lp;
 		BNX2FC_HBA_DBG(lport, "netevent handler - event=%s %ld\n",
 				interface->netdev->name, event);
@@ -909,6 +1274,52 @@ static void bnx2fc_indicate_netevent(void *context, unsigned long event,
 			put_cpu();
 			fcoe_clean_pending_queue(lport);
 			wait_for_upload = 1;
+=======
+		ctlr = bnx2fc_to_ctlr(interface);
+		lport = ctlr->lp;
+		BNX2FC_HBA_DBG(lport, "netevent handler - event=%s %ld\n",
+				interface->netdev->name, event);
+
+		fcoe_link_speed_update(lport);
+
+		cdev = fcoe_ctlr_to_ctlr_dev(ctlr);
+
+		if (link_possible && !bnx2fc_link_ok(lport)) {
+			switch (cdev->enabled) {
+			case FCOE_CTLR_DISABLED:
+				pr_info("Link up while interface is disabled.\n");
+				break;
+			case FCOE_CTLR_ENABLED:
+			case FCOE_CTLR_UNUSED:
+				/* Reset max recv frame size to default */
+				fc_set_mfs(lport, BNX2FC_MFS);
+				/*
+				 * ctlr link up will only be handled during
+				 * enable to avoid sending discovery
+				 * solicitation on a stale vlan
+				 */
+				if (interface->enabled)
+					fcoe_ctlr_link_up(ctlr);
+			}
+		} else if (fcoe_ctlr_link_down(ctlr)) {
+			switch (cdev->enabled) {
+			case FCOE_CTLR_DISABLED:
+				pr_info("Link down while interface is disabled.\n");
+				break;
+			case FCOE_CTLR_ENABLED:
+			case FCOE_CTLR_UNUSED:
+				mutex_lock(&lport->lp_mutex);
+				list_for_each_entry(vport, &lport->vports, list)
+					fc_host_port_type(vport->host) =
+					FC_PORTTYPE_UNKNOWN;
+				mutex_unlock(&lport->lp_mutex);
+				fc_host_port_type(lport->host) =
+					FC_PORTTYPE_UNKNOWN;
+				this_cpu_inc(lport->stats->LinkFailureCount);
+				fcoe_clean_pending_queue(lport);
+				wait_for_upload = 1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	mutex_unlock(&bnx2fc_dev_lock);
@@ -939,6 +1350,7 @@ static int bnx2fc_libfc_config(struct fc_lport *lport)
 		sizeof(struct libfc_function_template));
 	fc_elsct_init(lport);
 	fc_exch_init(lport);
+<<<<<<< HEAD
 	fc_rport_init(lport);
 	fc_disc_init(lport);
 	return 0;
@@ -954,6 +1366,24 @@ static int bnx2fc_em_config(struct fc_lport *lport)
 		max_xid = FCOE_MAX_XID;
 	if (!fc_exch_mgr_alloc(lport, FC_CLASS_3, FCOE_MIN_XID,
 				max_xid, NULL)) {
+=======
+	fc_disc_init(lport);
+	fc_disc_config(lport, lport);
+	return 0;
+}
+
+static int bnx2fc_em_config(struct fc_lport *lport, struct bnx2fc_hba *hba)
+{
+	int fcoe_min_xid, fcoe_max_xid;
+
+	fcoe_min_xid = hba->max_xid + 1;
+	if (nr_cpu_ids <= 2)
+		fcoe_max_xid = hba->max_xid + FCOE_XIDS_PER_CPU_OFFSET;
+	else
+		fcoe_max_xid = hba->max_xid + FCOE_MAX_XID_OFFSET;
+	if (!fc_exch_mgr_alloc(lport, FC_CLASS_3, fcoe_min_xid,
+			       fcoe_max_xid, NULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "em_config:fc_exch_mgr_alloc failed\n");
 		return -ENOMEM;
 	}
@@ -1002,18 +1432,31 @@ static int bnx2fc_fip_recv(struct sk_buff *skb, struct net_device *dev,
 			   struct net_device *orig_dev)
 {
 	struct bnx2fc_interface *interface;
+<<<<<<< HEAD
 	interface = container_of(ptype, struct bnx2fc_interface,
 				 fip_packet_type);
 	fcoe_ctlr_recv(&interface->ctlr, skb);
+=======
+	struct fcoe_ctlr *ctlr;
+	interface = container_of(ptype, struct bnx2fc_interface,
+				 fip_packet_type);
+	ctlr = bnx2fc_to_ctlr(interface);
+	fcoe_ctlr_recv(ctlr, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * bnx2fc_update_src_mac - Update Ethernet MAC filters.
  *
+<<<<<<< HEAD
  * @fip: FCoE controller.
  * @old: Unicast MAC address to delete if the MAC is non-zero.
  * @new: Unicast MAC address to add.
+=======
+ * @lport: The local port
+ * @addr: Location of data to copy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Remove any previously-set unicast MAC filter.
  * Add secondary FCoE MAC address filter for our OUI.
@@ -1046,6 +1489,23 @@ static u8 *bnx2fc_get_src_mac(struct fc_lport *lport)
  */
 static void bnx2fc_fip_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	struct fip_header *fiph;
+	struct ethhdr *eth_hdr;
+	u16 op;
+	u8 sub;
+
+	fiph = (struct fip_header *) ((void *)skb->data + 2 * ETH_ALEN + 2);
+	eth_hdr = (struct ethhdr *)skb_mac_header(skb);
+	op = ntohs(fiph->fip_op);
+	sub = fiph->fip_subcode;
+
+	if (op == FIP_OP_CTRL && sub == FIP_SC_SOL && bnx2fc_log_fka)
+		BNX2FC_MISC_DBG("Sending FKA from %pM to %pM.\n",
+		    eth_hdr->h_source, eth_hdr->h_dest);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->dev = bnx2fc_from_ctlr(fip)->netdev;
 	dev_queue_xmit(skb);
 }
@@ -1081,12 +1541,22 @@ static int bnx2fc_vport_create(struct fc_vport *vport, bool disabled)
 	mutex_unlock(&bnx2fc_dev_lock);
 	rtnl_unlock();
 
+<<<<<<< HEAD
 	if (IS_ERR(vn_port)) {
+=======
+	if (!vn_port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "bnx2fc_vport_create (%s) failed\n",
 			netdev->name);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (bnx2fc_devloss_tmo)
+		fc_host_dev_loss_tmo(vn_port->host) = bnx2fc_devloss_tmo;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (disabled) {
 		fc_vport_set_state(vport, FC_VPORT_DISABLED);
 	} else {
@@ -1137,8 +1607,13 @@ static int bnx2fc_vport_destroy(struct fc_vport *vport)
 	mutex_unlock(&n_port->lp_mutex);
 	bnx2fc_free_vport(interface->hba, port->lport);
 	bnx2fc_port_shutdown(port->lport);
+<<<<<<< HEAD
 	bnx2fc_interface_put(interface);
 	queue_work(bnx2fc_wq, &port->destroy_work);
+=======
+	bnx2fc_port_destroy(port);
+	bnx2fc_interface_put(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1162,6 +1637,10 @@ static int bnx2fc_interface_setup(struct bnx2fc_interface *interface)
 {
 	struct net_device *netdev = interface->netdev;
 	struct net_device *physdev = interface->hba->phys_dev;
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netdev_hw_addr *ha;
 	int sel_san_mac = 0;
 
@@ -1176,7 +1655,11 @@ static int bnx2fc_interface_setup(struct bnx2fc_interface *interface)
 
 		if ((ha->type == NETDEV_HW_ADDR_T_SAN) &&
 		    (is_valid_ether_addr(ha->addr))) {
+<<<<<<< HEAD
 			memcpy(interface->ctlr.ctl_src_addr, ha->addr,
+=======
+			memcpy(ctlr->ctl_src_addr, ha->addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       ETH_ALEN);
 			sel_san_mac = 1;
 			BNX2FC_MISC_DBG("Found SAN MAC\n");
@@ -1231,19 +1714,36 @@ static void bnx2fc_release_transport(void)
 
 static void bnx2fc_interface_release(struct kref *kref)
 {
+<<<<<<< HEAD
 	struct bnx2fc_interface *interface;
+=======
+	struct fcoe_ctlr_device *ctlr_dev;
+	struct bnx2fc_interface *interface;
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev;
 
 	interface = container_of(kref, struct bnx2fc_interface, kref);
 	BNX2FC_MISC_DBG("Interface is being released\n");
 
+<<<<<<< HEAD
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+	ctlr_dev = fcoe_ctlr_to_ctlr_dev(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev = interface->netdev;
 
 	/* tear-down FIP controller */
 	if (test_and_clear_bit(BNX2FC_CTLR_INIT_DONE, &interface->if_flags))
+<<<<<<< HEAD
 		fcoe_ctlr_destroy(&interface->ctlr);
 
 	kfree(interface);
+=======
+		fcoe_ctlr_destroy(ctlr);
+
+	fcoe_ctlr_device_delete(ctlr_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_put(netdev);
 	module_put(THIS_MODULE);
@@ -1281,6 +1781,10 @@ static void bnx2fc_hba_destroy(struct bnx2fc_hba *hba)
 static struct bnx2fc_hba *bnx2fc_hba_create(struct cnic_dev *cnic)
 {
 	struct bnx2fc_hba *hba;
+<<<<<<< HEAD
+=======
+	struct fcoe_capabilities *fcoe_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	hba = kzalloc(sizeof(*hba), GFP_KERNEL);
@@ -1290,8 +1794,20 @@ static struct bnx2fc_hba *bnx2fc_hba_create(struct cnic_dev *cnic)
 	}
 	spin_lock_init(&hba->hba_lock);
 	mutex_init(&hba->hba_mutex);
+<<<<<<< HEAD
 
 	hba->cnic = cnic;
+=======
+	mutex_init(&hba->hba_stats_mutex);
+
+	hba->cnic = cnic;
+
+	hba->max_tasks = cnic->max_fcoe_exchanges;
+	hba->elstm_xids = (hba->max_tasks / 2);
+	hba->max_outstanding_cmds = hba->elstm_xids;
+	hba->max_xid = (hba->max_tasks - 1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = bnx2fc_bind_pcidev(hba);
 	if (rc) {
 		printk(KERN_ERR PFX "create_adapter:  bind error\n");
@@ -1301,7 +1817,11 @@ static struct bnx2fc_hba *bnx2fc_hba_create(struct cnic_dev *cnic)
 	hba->next_conn_id = 0;
 
 	hba->tgt_ofld_list =
+<<<<<<< HEAD
 		kzalloc(sizeof(struct bnx2fc_rport *) * BNX2FC_NUM_MAX_SESS,
+=======
+		kcalloc(BNX2FC_NUM_MAX_SESS, sizeof(struct bnx2fc_rport *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			GFP_KERNEL);
 	if (!hba->tgt_ofld_list) {
 		printk(KERN_ERR PFX "Unable to allocate tgt offload list\n");
@@ -1310,12 +1830,34 @@ static struct bnx2fc_hba *bnx2fc_hba_create(struct cnic_dev *cnic)
 
 	hba->num_ofld_sess = 0;
 
+<<<<<<< HEAD
 	hba->cmd_mgr = bnx2fc_cmd_mgr_alloc(hba, BNX2FC_MIN_XID,
 						BNX2FC_MAX_XID);
+=======
+	hba->cmd_mgr = bnx2fc_cmd_mgr_alloc(hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hba->cmd_mgr) {
 		printk(KERN_ERR PFX "em_config:bnx2fc_cmd_mgr_alloc failed\n");
 		goto cmgr_err;
 	}
+<<<<<<< HEAD
+=======
+	fcoe_cap = &hba->fcoe_cap;
+
+	fcoe_cap->capability1 = BNX2FC_TM_MAX_SQES <<
+					FCOE_IOS_PER_CONNECTION_SHIFT;
+	fcoe_cap->capability1 |= BNX2FC_NUM_MAX_SESS <<
+					FCOE_LOGINS_PER_PORT_SHIFT;
+	fcoe_cap->capability2 = hba->max_outstanding_cmds <<
+					FCOE_NUMBER_OF_EXCHANGES_SHIFT;
+	fcoe_cap->capability2 |= BNX2FC_MAX_NPIV <<
+					FCOE_NPIV_WWN_PER_PORT_SHIFT;
+	fcoe_cap->capability3 = BNX2FC_NUM_MAX_SESS <<
+					FCOE_TARGETS_SUPPORTED_SHIFT;
+	fcoe_cap->capability3 |= hba->max_outstanding_cmds <<
+					FCOE_OUTSTANDING_COMMANDS_SHIFT;
+	fcoe_cap->capability4 = FCOE_CAPABILITY4_STATEFUL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_waitqueue_head(&hba->shutdown_wait);
 	init_waitqueue_head(&hba->destroy_wait);
@@ -1332,6 +1874,7 @@ bind_err:
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct bnx2fc_interface *bnx2fc_interface_create(struct bnx2fc_hba *hba,
 				      struct net_device *netdev,
 				      enum fip_state fip_mode)
@@ -1344,25 +1887,61 @@ struct bnx2fc_interface *bnx2fc_interface_create(struct bnx2fc_hba *hba,
 		printk(KERN_ERR PFX "Unable to allocate interface structure\n");
 		return NULL;
 	}
+=======
+static struct bnx2fc_interface *
+bnx2fc_interface_create(struct bnx2fc_hba *hba,
+			struct net_device *netdev,
+			enum fip_mode fip_mode)
+{
+	struct fcoe_ctlr_device *ctlr_dev;
+	struct bnx2fc_interface *interface;
+	struct fcoe_ctlr *ctlr;
+	int size;
+	int rc = 0;
+
+	size = (sizeof(*interface) + sizeof(struct fcoe_ctlr));
+	ctlr_dev = fcoe_ctlr_device_add(&netdev->dev, &bnx2fc_fcoe_sysfs_templ,
+					 size);
+	if (!ctlr_dev) {
+		printk(KERN_ERR PFX "Unable to allocate interface structure\n");
+		return NULL;
+	}
+	ctlr = fcoe_ctlr_device_priv(ctlr_dev);
+	ctlr->cdev = ctlr_dev;
+	interface = fcoe_ctlr_priv(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_hold(netdev);
 	kref_init(&interface->kref);
 	interface->hba = hba;
 	interface->netdev = netdev;
 
 	/* Initialize FIP */
+<<<<<<< HEAD
 	fcoe_ctlr_init(&interface->ctlr, fip_mode);
 	interface->ctlr.send = bnx2fc_fip_send;
 	interface->ctlr.update_mac = bnx2fc_update_src_mac;
 	interface->ctlr.get_src_addr = bnx2fc_get_src_mac;
+=======
+	fcoe_ctlr_init(ctlr, fip_mode);
+	ctlr->send = bnx2fc_fip_send;
+	ctlr->update_mac = bnx2fc_update_src_mac;
+	ctlr->get_src_addr = bnx2fc_get_src_mac;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(BNX2FC_CTLR_INIT_DONE, &interface->if_flags);
 
 	rc = bnx2fc_interface_setup(interface);
 	if (!rc)
 		return interface;
 
+<<<<<<< HEAD
 	fcoe_ctlr_destroy(&interface->ctlr);
 	dev_put(netdev);
 	kfree(interface);
+=======
+	fcoe_ctlr_destroy(ctlr);
+	dev_put(netdev);
+	fcoe_ctlr_device_delete(ctlr_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1380,21 +1959,37 @@ struct bnx2fc_interface *bnx2fc_interface_create(struct bnx2fc_hba *hba,
 static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 				  struct device *parent, int npiv)
 {
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr        *ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport		*lport, *n_port;
 	struct fcoe_port	*port;
 	struct Scsi_Host	*shost;
 	struct fc_vport		*vport = dev_to_vport(parent);
 	struct bnx2fc_lport	*blport;
+<<<<<<< HEAD
 	struct bnx2fc_hba	*hba;
+=======
+	struct bnx2fc_hba	*hba = interface->hba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			rc = 0;
 
 	blport = kzalloc(sizeof(struct bnx2fc_lport), GFP_KERNEL);
 	if (!blport) {
+<<<<<<< HEAD
 		BNX2FC_HBA_DBG(interface->ctlr.lp, "Unable to alloc blport\n");
+=======
+		BNX2FC_HBA_DBG(ctlr->lp, "Unable to alloc blport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	/* Allocate Scsi_Host structure */
+<<<<<<< HEAD
+=======
+	bnx2fc_shost_template.can_queue = hba->max_outstanding_cmds;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!npiv)
 		lport = libfc_host_alloc(&bnx2fc_shost_template, sizeof(*port));
 	else
@@ -1408,7 +2003,11 @@ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 	port = lport_priv(lport);
 	port->lport = lport;
 	port->priv = interface;
+<<<<<<< HEAD
 	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
+=======
+	port->get_netdev = bnx2fc_netdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Configure fcoe_port */
 	rc = bnx2fc_lport_config(lport);
@@ -1430,7 +2029,11 @@ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 
 	rc = bnx2fc_shost_config(lport, parent);
 	if (rc) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Couldnt configure shost for %s\n",
+=======
+		printk(KERN_ERR PFX "Couldn't configure shost for %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			interface->netdev->name);
 		goto lp_config_err;
 	}
@@ -1438,14 +2041,27 @@ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 	/* Initialize the libfc library */
 	rc = bnx2fc_libfc_config(lport);
 	if (rc) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Couldnt configure libfc\n");
+=======
+		printk(KERN_ERR PFX "Couldn't configure libfc\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto shost_err;
 	}
 	fc_host_port_type(lport->host) = FC_PORTTYPE_UNKNOWN;
 
+<<<<<<< HEAD
 	/* Allocate exchange manager */
 	if (!npiv)
 		rc = bnx2fc_em_config(lport);
+=======
+	if (bnx2fc_devloss_tmo)
+		fc_host_dev_loss_tmo(shost) = bnx2fc_devloss_tmo;
+
+	/* Allocate exchange manager */
+	if (!npiv)
+		rc = bnx2fc_em_config(lport, hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		shost = vport_to_shost(vport);
 		n_port = shost_priv(shost);
@@ -1459,7 +2075,10 @@ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
 
 	bnx2fc_interface_get(interface);
 
+<<<<<<< HEAD
 	hba = interface->hba;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&hba->hba_lock);
 	blport->lport = lport;
 	list_add_tail(&blport->list, &hba->vports);
@@ -1486,7 +2105,12 @@ static void bnx2fc_net_cleanup(struct bnx2fc_interface *interface)
 
 static void bnx2fc_interface_cleanup(struct bnx2fc_interface *interface)
 {
+<<<<<<< HEAD
 	struct fc_lport *lport = interface->ctlr.lp;
+=======
+	struct fcoe_ctlr *ctlr = bnx2fc_to_ctlr(interface);
+	struct fc_lport *lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_port *port = lport_priv(lport);
 	struct bnx2fc_hba *hba = interface->hba;
 
@@ -1526,21 +2150,35 @@ static void bnx2fc_if_destroy(struct fc_lport *lport)
 
 static void __bnx2fc_destroy(struct bnx2fc_interface *interface)
 {
+<<<<<<< HEAD
 	struct fc_lport *lport = interface->ctlr.lp;
+=======
+	struct fcoe_ctlr *ctlr = bnx2fc_to_ctlr(interface);
+	struct fc_lport *lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_port *port = lport_priv(lport);
 
 	bnx2fc_interface_cleanup(interface);
 	bnx2fc_stop(interface);
 	list_del(&interface->list);
+<<<<<<< HEAD
 	bnx2fc_interface_put(interface);
 	queue_work(bnx2fc_wq, &port->destroy_work);
+=======
+	bnx2fc_port_destroy(port);
+	bnx2fc_interface_put(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * bnx2fc_destroy - Destroy a bnx2fc FCoE interface
  *
+<<<<<<< HEAD
  * @buffer: The name of the Ethernet interface to be destroyed
  * @kp:     The associated kernel parameter
+=======
+ * @netdev: The net device that the FCoE interface is on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called from sysfs.
  *
@@ -1550,13 +2188,22 @@ static int bnx2fc_destroy(struct net_device *netdev)
 {
 	struct bnx2fc_interface *interface = NULL;
 	struct workqueue_struct *timer_work_queue;
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	rtnl_lock();
 	mutex_lock(&bnx2fc_dev_lock);
 
 	interface = bnx2fc_interface_lookup(netdev);
+<<<<<<< HEAD
 	if (!interface || !interface->ctlr.lp) {
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+	if (!interface || !ctlr->lp) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		printk(KERN_ERR PFX "bnx2fc_destroy: interface or lport not found\n");
 		goto netdev_err;
@@ -1572,6 +2219,7 @@ netdev_err:
 	return rc;
 }
 
+<<<<<<< HEAD
 static void bnx2fc_destroy_work(struct work_struct *work)
 {
 	struct fcoe_port *port;
@@ -1581,6 +2229,14 @@ static void bnx2fc_destroy_work(struct work_struct *work)
 	lport = port->lport;
 
 	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
+=======
+static void bnx2fc_port_destroy(struct fcoe_port *port)
+{
+	struct fc_lport *lport;
+
+	lport = port->lport;
+	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bnx2fc_if_destroy(lport);
 }
@@ -1614,32 +2270,117 @@ mem_err:
 static int bnx2fc_bind_pcidev(struct bnx2fc_hba *hba)
 {
 	struct cnic_dev *cnic;
+<<<<<<< HEAD
+=======
+	struct pci_dev *pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hba->cnic) {
 		printk(KERN_ERR PFX "cnic is NULL\n");
 		return -ENODEV;
 	}
 	cnic = hba->cnic;
+<<<<<<< HEAD
 	hba->pcidev = cnic->pcidev;
 	if (hba->pcidev)
 		pci_dev_get(hba->pcidev);
 
+=======
+	pdev = hba->pcidev = cnic->pcidev;
+	if (!hba->pcidev)
+		return -ENODEV;
+
+	switch (pdev->device) {
+	case PCI_DEVICE_ID_NX2_57710:
+		strscpy(hba->chip_num, "BCM57710", sizeof(hba->chip_num));
+		break;
+	case PCI_DEVICE_ID_NX2_57711:
+		strscpy(hba->chip_num, "BCM57711", sizeof(hba->chip_num));
+		break;
+	case PCI_DEVICE_ID_NX2_57712:
+	case PCI_DEVICE_ID_NX2_57712_MF:
+	case PCI_DEVICE_ID_NX2_57712_VF:
+		strscpy(hba->chip_num, "BCM57712", sizeof(hba->chip_num));
+		break;
+	case PCI_DEVICE_ID_NX2_57800:
+	case PCI_DEVICE_ID_NX2_57800_MF:
+	case PCI_DEVICE_ID_NX2_57800_VF:
+		strscpy(hba->chip_num, "BCM57800", sizeof(hba->chip_num));
+		break;
+	case PCI_DEVICE_ID_NX2_57810:
+	case PCI_DEVICE_ID_NX2_57810_MF:
+	case PCI_DEVICE_ID_NX2_57810_VF:
+		strscpy(hba->chip_num, "BCM57810", sizeof(hba->chip_num));
+		break;
+	case PCI_DEVICE_ID_NX2_57840:
+	case PCI_DEVICE_ID_NX2_57840_MF:
+	case PCI_DEVICE_ID_NX2_57840_VF:
+	case PCI_DEVICE_ID_NX2_57840_2_20:
+	case PCI_DEVICE_ID_NX2_57840_4_10:
+		strscpy(hba->chip_num, "BCM57840", sizeof(hba->chip_num));
+		break;
+	default:
+		pr_err(PFX "Unknown device id 0x%x\n", pdev->device);
+		break;
+	}
+	pci_dev_get(hba->pcidev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba)
 {
+<<<<<<< HEAD
 	if (hba->pcidev)
 		pci_dev_put(hba->pcidev);
 	hba->pcidev = NULL;
 }
 
+=======
+	if (hba->pcidev) {
+		hba->chip_num[0] = '\0';
+		pci_dev_put(hba->pcidev);
+	}
+	hba->pcidev = NULL;
+}
+
+/**
+ * bnx2fc_ulp_get_stats - cnic callback to populate FCoE stats
+ *
+ * @handle:    transport handle pointing to adapter structure
+ */
+static int bnx2fc_ulp_get_stats(void *handle)
+{
+	struct bnx2fc_hba *hba = handle;
+	struct cnic_dev *cnic;
+	struct fcoe_stats_info *stats_addr;
+
+	if (!hba)
+		return -EINVAL;
+
+	cnic = hba->cnic;
+	stats_addr = &cnic->stats_addr->fcoe_stat;
+	if (!stats_addr)
+		return -EINVAL;
+
+	strscpy(stats_addr->version, BNX2FC_VERSION,
+		sizeof(stats_addr->version));
+	stats_addr->txq_size = BNX2FC_SQ_WQES_MAX;
+	stats_addr->rxq_size = BNX2FC_CQ_WQES_MAX;
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /**
  * bnx2fc_ulp_start - cnic callback to initialize & start adapter instance
  *
+<<<<<<< HEAD
  * @handle:	transport handle pointing to adapter struture
+=======
+ * @handle:	transport handle pointing to adapter structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function maps adapter structure to pcidev structure and initiates
  *	firmware handshake to enable/initialize on-chip FCoE components.
@@ -1653,6 +2394,10 @@ static void bnx2fc_ulp_start(void *handle)
 {
 	struct bnx2fc_hba *hba = handle;
 	struct bnx2fc_interface *interface;
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 
 	mutex_lock(&bnx2fc_dev_lock);
@@ -1664,7 +2409,12 @@ static void bnx2fc_ulp_start(void *handle)
 
 	list_for_each_entry(interface, &if_list, list) {
 		if (interface->hba == hba) {
+<<<<<<< HEAD
 			lport = interface->ctlr.lp;
+=======
+			ctlr = bnx2fc_to_ctlr(interface);
+			lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Kick off Fabric discovery*/
 			printk(KERN_ERR PFX "ulp_init: start discovery\n");
 			lport->tt.frame_send = bnx2fc_xmit;
@@ -1684,13 +2434,21 @@ static void bnx2fc_port_shutdown(struct fc_lport *lport)
 
 static void bnx2fc_stop(struct bnx2fc_interface *interface)
 {
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 	struct fc_lport *vport;
 
 	if (!test_bit(BNX2FC_FLAG_FW_INIT_DONE, &interface->hba->flags))
 		return;
 
+<<<<<<< HEAD
 	lport = interface->ctlr.lp;
+=======
+	lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2fc_port_shutdown(lport);
 
 	mutex_lock(&lport->lp_mutex);
@@ -1699,7 +2457,11 @@ static void bnx2fc_stop(struct bnx2fc_interface *interface)
 					FC_PORTTYPE_UNKNOWN;
 	mutex_unlock(&lport->lp_mutex);
 	fc_host_port_type(lport->host) = FC_PORTTYPE_UNKNOWN;
+<<<<<<< HEAD
 	fcoe_ctlr_link_down(&interface->ctlr);
+=======
+	fcoe_ctlr_link_down(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcoe_clean_pending_queue(lport);
 }
 
@@ -1752,11 +2514,18 @@ static void bnx2fc_fw_destroy(struct bnx2fc_hba *hba)
 {
 	if (test_and_clear_bit(BNX2FC_FLAG_FW_INIT_DONE, &hba->flags)) {
 		if (bnx2fc_send_fw_fcoe_destroy_msg(hba) == 0) {
+<<<<<<< HEAD
 			init_timer(&hba->destroy_timer);
 			hba->destroy_timer.expires = BNX2FC_FW_TIMEOUT +
 								jiffies;
 			hba->destroy_timer.function = bnx2fc_destroy_timer;
 			hba->destroy_timer.data = (unsigned long)hba;
+=======
+			timer_setup(&hba->destroy_timer, bnx2fc_destroy_timer,
+				    0);
+			hba->destroy_timer.expires = BNX2FC_FW_TIMEOUT +
+								jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			add_timer(&hba->destroy_timer);
 			wait_event_interruptible(hba->destroy_wait,
 					test_bit(BNX2FC_FLAG_DESTROY_CMPL,
@@ -1811,6 +2580,10 @@ exit:
 
 static void bnx2fc_start_disc(struct bnx2fc_interface *interface)
 {
+<<<<<<< HEAD
+=======
+	struct fcoe_ctlr *ctlr = bnx2fc_to_ctlr(interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 	int wait_cnt = 0;
 
@@ -1821,18 +2594,30 @@ static void bnx2fc_start_disc(struct bnx2fc_interface *interface)
 		return;
 	}
 
+<<<<<<< HEAD
 	lport = interface->ctlr.lp;
+=======
+	lport = ctlr->lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BNX2FC_HBA_DBG(lport, "calling fc_fabric_login\n");
 
 	if (!bnx2fc_link_ok(lport) && interface->enabled) {
 		BNX2FC_HBA_DBG(lport, "ctlr_link_up\n");
+<<<<<<< HEAD
 		fcoe_ctlr_link_up(&interface->ctlr);
+=======
+		fcoe_ctlr_link_up(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_host_port_type(lport->host) = FC_PORTTYPE_NPORT;
 		set_bit(ADAPTER_STATE_READY, &interface->hba->adapter_state);
 	}
 
 	/* wait for the FCF to be selected before issuing FLOGI */
+<<<<<<< HEAD
 	while (!interface->ctlr.sel_fcf) {
+=======
+	while (!ctlr->sel_fcf) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(250);
 		/* give up after 3 secs */
 		if (++wait_cnt > 12)
@@ -1877,12 +2662,21 @@ static void bnx2fc_ulp_init(struct cnic_dev *dev)
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	pr_info(PFX "FCoE initialized for %s.\n", dev->netdev->name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Add HBA to the adapter list */
 	mutex_lock(&bnx2fc_dev_lock);
 	list_add_tail(&hba->list, &adapter_list);
 	adapter_count++;
 	mutex_unlock(&bnx2fc_dev_lock);
 
+<<<<<<< HEAD
+=======
+	dev->fcoe_cap = &hba->fcoe_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic);
 	rc = dev->register_device(dev, CNIC_ULP_FCOE,
 						(void *) hba);
@@ -1892,16 +2686,45 @@ static void bnx2fc_ulp_init(struct cnic_dev *dev)
 		set_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic);
 }
 
+<<<<<<< HEAD
 
 static int bnx2fc_disable(struct net_device *netdev)
 {
 	struct bnx2fc_interface *interface;
+=======
+/* Assumes rtnl_lock and the bnx2fc_dev_lock are already taken */
+static int __bnx2fc_disable(struct fcoe_ctlr *ctlr)
+{
+	struct bnx2fc_interface *interface = fcoe_ctlr_priv(ctlr);
+
+	if (interface->enabled) {
+		if (!ctlr->lp) {
+			pr_err(PFX "__bnx2fc_disable: lport not found\n");
+			return -ENODEV;
+		} else {
+			interface->enabled = false;
+			fcoe_ctlr_link_down(ctlr);
+			fcoe_clean_pending_queue(ctlr->lp);
+		}
+	}
+	return 0;
+}
+
+/*
+ * Deperecated: Use bnx2fc_enabled()
+ */
+static int bnx2fc_disable(struct net_device *netdev)
+{
+	struct bnx2fc_interface *interface;
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	rtnl_lock();
 	mutex_lock(&bnx2fc_dev_lock);
 
 	interface = bnx2fc_interface_lookup(netdev);
+<<<<<<< HEAD
 	if (!interface || !interface->ctlr.lp) {
 		rc = -ENODEV;
 		printk(KERN_ERR PFX "bnx2fc_disable: interface or lport not found\n");
@@ -1911,27 +2734,158 @@ static int bnx2fc_disable(struct net_device *netdev)
 		fcoe_clean_pending_queue(interface->ctlr.lp);
 	}
 
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+
+	if (!interface) {
+		rc = -ENODEV;
+		pr_err(PFX "bnx2fc_disable: interface not found\n");
+	} else {
+		rc = __bnx2fc_disable(ctlr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bnx2fc_dev_lock);
 	rtnl_unlock();
 	return rc;
 }
 
+<<<<<<< HEAD
 
 static int bnx2fc_enable(struct net_device *netdev)
 {
 	struct bnx2fc_interface *interface;
+=======
+static uint bnx2fc_npiv_create_vports(struct fc_lport *lport,
+				      struct cnic_fc_npiv_tbl *npiv_tbl)
+{
+	struct fc_vport_identifiers vpid;
+	uint i, created = 0;
+	u64 wwnn = 0;
+	char wwpn_str[32];
+	char wwnn_str[32];
+
+	if (npiv_tbl->count > MAX_NPIV_ENTRIES) {
+		BNX2FC_HBA_DBG(lport, "Exceeded count max of npiv table\n");
+		goto done;
+	}
+
+	/* Sanity check the first entry to make sure it's not 0 */
+	if (wwn_to_u64(npiv_tbl->wwnn[0]) == 0 &&
+	    wwn_to_u64(npiv_tbl->wwpn[0]) == 0) {
+		BNX2FC_HBA_DBG(lport, "First NPIV table entries invalid.\n");
+		goto done;
+	}
+
+	vpid.roles = FC_PORT_ROLE_FCP_INITIATOR;
+	vpid.vport_type = FC_PORTTYPE_NPIV;
+	vpid.disable = false;
+
+	for (i = 0; i < npiv_tbl->count; i++) {
+		wwnn = wwn_to_u64(npiv_tbl->wwnn[i]);
+		if (wwnn == 0) {
+			/*
+			 * If we get a 0 element from for the WWNN then assume
+			 * the WWNN should be the same as the physical port.
+			 */
+			wwnn = lport->wwnn;
+		}
+		vpid.node_name = wwnn;
+		vpid.port_name = wwn_to_u64(npiv_tbl->wwpn[i]);
+		scnprintf(vpid.symbolic_name, sizeof(vpid.symbolic_name),
+		    "NPIV[%u]:%016llx-%016llx",
+		    created, vpid.port_name, vpid.node_name);
+		fcoe_wwn_to_str(vpid.node_name, wwnn_str, sizeof(wwnn_str));
+		fcoe_wwn_to_str(vpid.port_name, wwpn_str, sizeof(wwpn_str));
+		BNX2FC_HBA_DBG(lport, "Creating vport %s:%s.\n", wwnn_str,
+		    wwpn_str);
+		if (fc_vport_create(lport->host, 0, &vpid))
+			created++;
+		else
+			BNX2FC_HBA_DBG(lport, "Failed to create vport\n");
+	}
+done:
+	return created;
+}
+
+static int __bnx2fc_enable(struct fcoe_ctlr *ctlr)
+{
+	struct bnx2fc_interface *interface = fcoe_ctlr_priv(ctlr);
+	struct bnx2fc_hba *hba;
+	struct cnic_fc_npiv_tbl *npiv_tbl;
+	struct fc_lport *lport;
+
+	if (!interface->enabled) {
+		if (!ctlr->lp) {
+			pr_err(PFX "__bnx2fc_enable: lport not found\n");
+			return -ENODEV;
+		} else if (!bnx2fc_link_ok(ctlr->lp)) {
+			fcoe_ctlr_link_up(ctlr);
+			interface->enabled = true;
+		}
+	}
+
+	/* Create static NPIV ports if any are contained in NVRAM */
+	hba = interface->hba;
+	lport = ctlr->lp;
+
+	if (!hba)
+		goto done;
+
+	if (!hba->cnic)
+		goto done;
+
+	if (!lport)
+		goto done;
+
+	if (!lport->host)
+		goto done;
+
+	if (!hba->cnic->get_fc_npiv_tbl)
+		goto done;
+
+	npiv_tbl = kzalloc(sizeof(struct cnic_fc_npiv_tbl), GFP_KERNEL);
+	if (!npiv_tbl)
+		goto done;
+
+	if (hba->cnic->get_fc_npiv_tbl(hba->cnic, npiv_tbl))
+		goto done_free;
+
+	bnx2fc_npiv_create_vports(lport, npiv_tbl);
+done_free:
+	kfree(npiv_tbl);
+done:
+	return 0;
+}
+
+/*
+ * Deprecated: Use bnx2fc_enabled()
+ */
+static int bnx2fc_enable(struct net_device *netdev)
+{
+	struct bnx2fc_interface *interface;
+	struct fcoe_ctlr *ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	rtnl_lock();
 	mutex_lock(&bnx2fc_dev_lock);
 
 	interface = bnx2fc_interface_lookup(netdev);
+<<<<<<< HEAD
 	if (!interface || !interface->ctlr.lp) {
 		rc = -ENODEV;
 		printk(KERN_ERR PFX "bnx2fc_enable: interface or lport not found\n");
 	} else if (!bnx2fc_link_ok(interface->ctlr.lp)) {
 		fcoe_ctlr_link_up(&interface->ctlr);
 		interface->enabled = true;
+=======
+	ctlr = bnx2fc_to_ctlr(interface);
+	if (!interface) {
+		rc = -ENODEV;
+		pr_err(PFX "bnx2fc_enable: interface not found\n");
+	} else {
+		rc = __bnx2fc_enable(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&bnx2fc_dev_lock);
@@ -1940,6 +2894,7 @@ static int bnx2fc_enable(struct net_device *netdev)
 }
 
 /**
+<<<<<<< HEAD
  * bnx2fc_create - Create bnx2fc FCoE interface
  *
  * @buffer: The name of Ethernet interface to create on
@@ -1958,6 +2913,65 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 	struct ethtool_drvinfo drvinfo;
 	int rc = 0;
 	int vlan_id;
+=======
+ * bnx2fc_ctlr_enabled() - Enable or disable an FCoE Controller
+ * @cdev: The FCoE Controller that is being enabled or disabled
+ *
+ * fcoe_sysfs will ensure that the state of 'enabled' has
+ * changed, so no checking is necessary here. This routine simply
+ * calls fcoe_enable or fcoe_disable, both of which are deprecated.
+ * When those routines are removed the functionality can be merged
+ * here.
+ */
+static int bnx2fc_ctlr_enabled(struct fcoe_ctlr_device *cdev)
+{
+	struct fcoe_ctlr *ctlr = fcoe_ctlr_device_priv(cdev);
+
+	switch (cdev->enabled) {
+	case FCOE_CTLR_ENABLED:
+		return __bnx2fc_enable(ctlr);
+	case FCOE_CTLR_DISABLED:
+		return __bnx2fc_disable(ctlr);
+	case FCOE_CTLR_UNUSED:
+	default:
+		return -ENOTSUPP;
+	}
+}
+
+enum bnx2fc_create_link_state {
+	BNX2FC_CREATE_LINK_DOWN,
+	BNX2FC_CREATE_LINK_UP,
+};
+
+/**
+ * _bnx2fc_create() - Create bnx2fc FCoE interface
+ * @netdev  :   The net_device object the Ethernet interface to create on
+ * @fip_mode:   The FIP mode for this creation
+ * @link_state: The ctlr link state on creation
+ *
+ * Called from either the libfcoe 'create' module parameter
+ * via fcoe_create or from fcoe_syfs's ctlr_create file.
+ *
+ * libfcoe's 'create' module parameter is deprecated so some
+ * consolidation of code can be done when that interface is
+ * removed.
+ *
+ * Returns: 0 for success
+ */
+static int _bnx2fc_create(struct net_device *netdev,
+			  enum fip_mode fip_mode,
+			  enum bnx2fc_create_link_state link_state)
+{
+	struct fcoe_ctlr_device *cdev;
+	struct fcoe_ctlr *ctlr;
+	struct bnx2fc_interface *interface;
+	struct bnx2fc_hba *hba;
+	struct net_device *phys_dev = netdev;
+	struct fc_lport *lport;
+	struct ethtool_drvinfo drvinfo;
+	int rc = 0;
+	int vlan_id = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BNX2FC_MISC_DBG("Entered bnx2fc_create\n");
 	if (fip_mode != FIP_MODE_FABRIC) {
@@ -1975,6 +2989,7 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 	}
 
 	/* obtain physical netdev */
+<<<<<<< HEAD
 	if (netdev->priv_flags & IFF_802_1Q_VLAN) {
 		phys_dev = vlan_dev_real_dev(netdev);
 		vlan_id = vlan_dev_vlan_id(netdev);
@@ -1983,6 +2998,11 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 		rc = -EINVAL;
 		goto netdev_err;
 	}
+=======
+	if (is_vlan_dev(netdev))
+		phys_dev = vlan_dev_real_dev(netdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* verify if the physical device is a netxtreme2 device */
 	if (phys_dev->ethtool_ops && phys_dev->ethtool_ops->get_drvinfo) {
 		memset(&drvinfo, 0, sizeof(drvinfo));
@@ -2014,11 +3034,27 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 	interface = bnx2fc_interface_create(hba, netdev, fip_mode);
 	if (!interface) {
 		printk(KERN_ERR PFX "bnx2fc_interface_create failed\n");
+<<<<<<< HEAD
 		goto ifput_err;
 	}
 
 	interface->vlan_id = vlan_id;
 	interface->vlan_enabled = 1;
+=======
+		rc = -ENOMEM;
+		goto netdev_err;
+	}
+
+	if (is_vlan_dev(netdev)) {
+		vlan_id = vlan_dev_vlan_id(netdev);
+		interface->vlan_enabled = 1;
+	}
+
+	ctlr = bnx2fc_to_ctlr(interface);
+	cdev = fcoe_ctlr_to_ctlr_dev(ctlr);
+	interface->vlan_id = vlan_id;
+	interface->tm_timeout = BNX2FC_TM_TIMEOUT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	interface->timer_work_queue =
 			create_singlethread_workqueue("bnx2fc_timer_wq");
@@ -2028,7 +3064,11 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 		goto ifput_err;
 	}
 
+<<<<<<< HEAD
 	lport = bnx2fc_if_create(interface, &interface->hba->pcidev->dev, 0);
+=======
+	lport = bnx2fc_if_create(interface, &cdev->dev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lport) {
 		printk(KERN_ERR PFX "Failed to create interface (%s)\n",
 			netdev->name);
@@ -2042,17 +3082,37 @@ static int bnx2fc_create(struct net_device *netdev, enum fip_state fip_mode)
 	lport->boot_time = jiffies;
 
 	/* Make this master N_port */
+<<<<<<< HEAD
 	interface->ctlr.lp = lport;
 
 	if (!bnx2fc_link_ok(lport)) {
 		fcoe_ctlr_link_up(&interface->ctlr);
+=======
+	ctlr->lp = lport;
+
+	if (link_state == BNX2FC_CREATE_LINK_UP)
+		cdev->enabled = FCOE_CTLR_ENABLED;
+	else
+		cdev->enabled = FCOE_CTLR_DISABLED;
+
+	if (link_state == BNX2FC_CREATE_LINK_UP &&
+	    !bnx2fc_link_ok(lport)) {
+		fcoe_ctlr_link_up(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_host_port_type(lport->host) = FC_PORTTYPE_NPORT;
 		set_bit(ADAPTER_STATE_READY, &interface->hba->adapter_state);
 	}
 
 	BNX2FC_HBA_DBG(lport, "create: START DISC\n");
 	bnx2fc_start_disc(interface);
+<<<<<<< HEAD
 	interface->enabled = true;
+=======
+
+	if (link_state == BNX2FC_CREATE_LINK_UP)
+		interface->enabled = true;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Release from kref_init in bnx2fc_interface_setup, on success
 	 * lport should be holding a reference taken in bnx2fc_if_create
@@ -2078,6 +3138,40 @@ mod_err:
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * bnx2fc_create() - Create a bnx2fc interface
+ * @netdev  : The net_device object the Ethernet interface to create on
+ * @fip_mode: The FIP mode for this creation
+ *
+ * Called from fcoe transport
+ *
+ * Returns: 0 for success
+ */
+static int bnx2fc_create(struct net_device *netdev, enum fip_mode fip_mode)
+{
+	return _bnx2fc_create(netdev, fip_mode, BNX2FC_CREATE_LINK_UP);
+}
+
+/**
+ * bnx2fc_ctlr_alloc() - Allocate a bnx2fc interface from fcoe_sysfs
+ * @netdev: The net_device to be used by the allocated FCoE Controller
+ *
+ * This routine is called from fcoe_sysfs. It will start the fcoe_ctlr
+ * in a link_down state. The allows the user an opportunity to configure
+ * the FCoE Controller from sysfs before enabling the FCoE Controller.
+ *
+ * Creating in with this routine starts the FCoE Controller in Fabric
+ * mode. The user can change to VN2VN or another mode before enabling.
+ */
+static int bnx2fc_ctlr_alloc(struct net_device *netdev)
+{
+	return _bnx2fc_create(netdev, FIP_MODE_FABRIC,
+			      BNX2FC_CREATE_LINK_DOWN);
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bnx2fc_find_hba_for_cnic - maps cnic instance to bnx2fc hba instance
  *
  * @cnic:	Pointer to cnic device instance
@@ -2085,6 +3179,7 @@ mod_err:
  **/
 static struct bnx2fc_hba *bnx2fc_find_hba_for_cnic(struct cnic_dev *cnic)
 {
+<<<<<<< HEAD
 	struct list_head *list;
 	struct list_head *temp;
 	struct bnx2fc_hba *hba;
@@ -2092,6 +3187,12 @@ static struct bnx2fc_hba *bnx2fc_find_hba_for_cnic(struct cnic_dev *cnic)
 	/* Called with bnx2fc_dev_lock held */
 	list_for_each_safe(list, temp, &adapter_list) {
 		hba = (struct bnx2fc_hba *)list;
+=======
+	struct bnx2fc_hba *hba;
+
+	/* Called with bnx2fc_dev_lock held */
+	list_for_each_entry(hba, &adapter_list, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hba->cnic == cnic)
 			return hba;
 	}
@@ -2128,7 +3229,11 @@ static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device
 /**
  * bnx2fc_ulp_exit - shuts down adapter instance and frees all resources
  *
+<<<<<<< HEAD
  * @dev		cnic device handle
+=======
+ * @dev:	cnic device handle
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void bnx2fc_ulp_exit(struct cnic_dev *dev)
 {
@@ -2168,6 +3273,14 @@ static void bnx2fc_ulp_exit(struct cnic_dev *dev)
 	bnx2fc_hba_destroy(hba);
 }
 
+<<<<<<< HEAD
+=======
+static void bnx2fc_rport_terminate_io(struct fc_rport *rport)
+{
+	/* This is a no-op */
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2fc_fcoe_reset - Resets the fcoe
  *
@@ -2185,6 +3298,7 @@ static int bnx2fc_fcoe_reset(struct Scsi_Host *shost)
 
 static bool bnx2fc_match(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	mutex_lock(&bnx2fc_dev_lock);
 	if (netdev->priv_flags & IFF_802_1Q_VLAN) {
 		struct net_device *phys_dev = vlan_dev_real_dev(netdev);
@@ -2194,6 +3308,19 @@ static bool bnx2fc_match(struct net_device *netdev)
 			return true;
 		}
 	}
+=======
+	struct net_device *phys_dev = netdev;
+
+	mutex_lock(&bnx2fc_dev_lock);
+	if (is_vlan_dev(netdev))
+		phys_dev = vlan_dev_real_dev(netdev);
+
+	if (bnx2fc_hba_lookup(phys_dev)) {
+		mutex_unlock(&bnx2fc_dev_lock);
+		return true;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bnx2fc_dev_lock);
 	return false;
 }
@@ -2203,6 +3330,10 @@ static struct fcoe_transport bnx2fc_transport = {
 	.name = {"bnx2fc"},
 	.attached = false,
 	.list = LIST_HEAD_INIT(bnx2fc_transport.list),
+<<<<<<< HEAD
+=======
+	.alloc = bnx2fc_ctlr_alloc,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match = bnx2fc_match,
 	.create = bnx2fc_create,
 	.destroy = bnx2fc_destroy,
@@ -2211,18 +3342,27 @@ static struct fcoe_transport bnx2fc_transport = {
 };
 
 /**
+<<<<<<< HEAD
  * bnx2fc_percpu_thread_create - Create a receive thread for an
  *				 online CPU
  *
  * @cpu: cpu index for the online cpu
  */
 static void bnx2fc_percpu_thread_create(unsigned int cpu)
+=======
+ * bnx2fc_cpu_online - Create a receive thread for an  online CPU
+ *
+ * @cpu: cpu index for the online cpu
+ */
+static int bnx2fc_cpu_online(unsigned int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_percpu_s *p;
 	struct task_struct *thread;
 
 	p = &per_cpu(bnx2fc_percpu, cpu);
 
+<<<<<<< HEAD
 	thread = kthread_create(bnx2fc_percpu_io_thread,
 				(void *)p,
 				"bnx2fc_thread/%d", cpu);
@@ -2235,6 +3375,22 @@ static void bnx2fc_percpu_thread_create(unsigned int cpu)
 }
 
 static void bnx2fc_percpu_thread_destroy(unsigned int cpu)
+=======
+	thread = kthread_create_on_node(bnx2fc_percpu_io_thread,
+					(void *)p, cpu_to_node(cpu),
+					"bnx2fc_thread/%d", cpu);
+	if (IS_ERR(thread))
+		return PTR_ERR(thread);
+
+	/* bind thread to the cpu */
+	kthread_bind(thread, cpu);
+	p->iothread = thread;
+	wake_up_process(thread);
+	return 0;
+}
+
+static int bnx2fc_cpu_offline(unsigned int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_percpu_s *p;
 	struct task_struct *thread;
@@ -2248,11 +3404,19 @@ static void bnx2fc_percpu_thread_destroy(unsigned int cpu)
 	thread = p->iothread;
 	p->iothread = NULL;
 
+<<<<<<< HEAD
 
 	/* Free all work in the list */
 	list_for_each_entry_safe(work, tmp, &p->work_list, list) {
 		list_del_init(&work->list);
 		bnx2fc_process_cq_compl(work->tgt, work->wqe);
+=======
+	/* Free all work in the list */
+	list_for_each_entry_safe(work, tmp, &p->work_list, list) {
+		list_del_init(&work->list);
+		bnx2fc_process_cq_compl(work->tgt, work->wqe, work->rq_data,
+					work->num_rq, work->task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(work);
 	}
 
@@ -2260,6 +3424,7 @@ static void bnx2fc_percpu_thread_destroy(unsigned int cpu)
 
 	if (thread)
 		kthread_stop(thread);
+<<<<<<< HEAD
 }
 
 /**
@@ -2295,6 +3460,22 @@ static int bnx2fc_cpu_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
+=======
+	return 0;
+}
+
+static int bnx2fc_slave_configure(struct scsi_device *sdev)
+{
+	if (!bnx2fc_queue_depth)
+		return 0;
+
+	scsi_change_queue_depth(sdev, bnx2fc_queue_depth);
+	return 0;
+}
+
+static enum cpuhp_state bnx2fc_online_state;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2fc_mod_init - module init entry point
  *
@@ -2337,16 +3518,27 @@ static int __init bnx2fc_mod_init(void)
 
 	bg = &bnx2fc_global;
 	skb_queue_head_init(&bg->fcoe_rx_list);
+<<<<<<< HEAD
 	l2_thread = kthread_create(bnx2fc_l2_rcv_thread,
 				   (void *)bg,
 				   "bnx2fc_l2_thread");
+=======
+	l2_thread = kthread_run(bnx2fc_l2_rcv_thread,
+				(void *)bg,
+				"bnx2fc_l2_thread");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(l2_thread)) {
 		rc = PTR_ERR(l2_thread);
 		goto free_wq;
 	}
+<<<<<<< HEAD
 	wake_up_process(l2_thread);
 	spin_lock_bh(&bg->fcoe_rx_list.lock);
 	bg->thread = l2_thread;
+=======
+	spin_lock_bh(&bg->fcoe_rx_list.lock);
+	bg->kthread = l2_thread;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&bg->fcoe_rx_list.lock);
 
 	for_each_possible_cpu(cpu) {
@@ -2355,6 +3547,7 @@ static int __init bnx2fc_mod_init(void)
 		spin_lock_init(&p->fp_work_lock);
 	}
 
+<<<<<<< HEAD
 	for_each_online_cpu(cpu) {
 		bnx2fc_percpu_thread_create(cpu);
 	}
@@ -2366,6 +3559,19 @@ static int __init bnx2fc_mod_init(void)
 
 	return 0;
 
+=======
+	rc = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "scsi/bnx2fc:online",
+			       bnx2fc_cpu_online, bnx2fc_cpu_offline);
+	if (rc < 0)
+		goto stop_thread;
+	bnx2fc_online_state = rc;
+
+	cnic_register_driver(CNIC_ULP_FCOE, &bnx2fc_cnic_cb);
+	return 0;
+
+stop_thread:
+	kthread_stop(l2_thread);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_wq:
 	destroy_workqueue(bnx2fc_wq);
 release_bt:
@@ -2383,7 +3589,10 @@ static void __exit bnx2fc_mod_exit(void)
 	struct fcoe_percpu_s *bg;
 	struct task_struct *l2_thread;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	unsigned int cpu = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * NOTE: Since cnic calls register_driver routine rtnl_lock,
@@ -2392,8 +3601,12 @@ static void __exit bnx2fc_mod_exit(void)
 	 * held.
 	 */
 	mutex_lock(&bnx2fc_dev_lock);
+<<<<<<< HEAD
 	list_splice(&adapter_list, &to_be_deleted);
 	INIT_LIST_HEAD(&adapter_list);
+=======
+	list_splice_init(&adapter_list, &to_be_deleted);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter_count = 0;
 	mutex_unlock(&bnx2fc_dev_lock);
 
@@ -2415,8 +3628,13 @@ static void __exit bnx2fc_mod_exit(void)
 	/* Destroy global thread */
 	bg = &bnx2fc_global;
 	spin_lock_bh(&bg->fcoe_rx_list.lock);
+<<<<<<< HEAD
 	l2_thread = bg->thread;
 	bg->thread = NULL;
+=======
+	l2_thread = bg->kthread;
+	bg->kthread = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((skb = __skb_dequeue(&bg->fcoe_rx_list)) != NULL)
 		kfree_skb(skb);
 
@@ -2425,12 +3643,16 @@ static void __exit bnx2fc_mod_exit(void)
 	if (l2_thread)
 		kthread_stop(l2_thread);
 
+<<<<<<< HEAD
 	unregister_hotcpu_notifier(&bnx2fc_cpu_notifier);
 
 	/* Destroy per cpu threads */
 	for_each_online_cpu(cpu) {
 		bnx2fc_percpu_thread_destroy(cpu);
 	}
+=======
+	cpuhp_remove_state(bnx2fc_online_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	destroy_workqueue(bnx2fc_wq);
 	/*
@@ -2446,6 +3668,22 @@ static void __exit bnx2fc_mod_exit(void)
 module_init(bnx2fc_mod_init);
 module_exit(bnx2fc_mod_exit);
 
+<<<<<<< HEAD
+=======
+static struct fcoe_sysfs_function_template bnx2fc_fcoe_sysfs_templ = {
+	.set_fcoe_ctlr_enabled = bnx2fc_ctlr_enabled,
+	.get_fcoe_ctlr_link_fail = fcoe_ctlr_get_lesb,
+	.get_fcoe_ctlr_vlink_fail = fcoe_ctlr_get_lesb,
+	.get_fcoe_ctlr_miss_fka = fcoe_ctlr_get_lesb,
+	.get_fcoe_ctlr_symb_err = fcoe_ctlr_get_lesb,
+	.get_fcoe_ctlr_err_block = fcoe_ctlr_get_lesb,
+	.get_fcoe_ctlr_fcs_error = fcoe_ctlr_get_lesb,
+
+	.get_fcoe_fcf_selected = fcoe_fcf_get_selected,
+	.get_fcoe_fcf_vlan_id = bnx2fc_fcf_get_vlan_id,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct fc_function_template bnx2fc_transport_function = {
 	.show_host_node_name = 1,
 	.show_host_port_name = 1,
@@ -2478,7 +3716,11 @@ static struct fc_function_template bnx2fc_transport_function = {
 
 	.issue_fc_host_lip = bnx2fc_fcoe_reset,
 
+<<<<<<< HEAD
 	.terminate_rport_io = fc_rport_terminate_io,
+=======
+	.terminate_rport_io = bnx2fc_rport_terminate_io,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.vport_create = bnx2fc_vport_create,
 	.vport_delete = bnx2fc_vport_destroy,
@@ -2520,18 +3762,75 @@ static struct fc_function_template bnx2fc_vport_xport_function = {
 	.bsg_request = fc_lport_bsg_request,
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+ * Additional scsi_host attributes.
+ */
+static ssize_t
+bnx2fc_tm_timeout_show(struct device *dev, struct device_attribute *attr,
+	char *buf)
+{
+	struct Scsi_Host *shost = class_to_shost(dev);
+	struct fc_lport *lport = shost_priv(shost);
+	struct fcoe_port *port = lport_priv(lport);
+	struct bnx2fc_interface *interface = port->priv;
+
+	sprintf(buf, "%u\n", interface->tm_timeout);
+	return strlen(buf);
+}
+
+static ssize_t
+bnx2fc_tm_timeout_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct Scsi_Host *shost = class_to_shost(dev);
+	struct fc_lport *lport = shost_priv(shost);
+	struct fcoe_port *port = lport_priv(lport);
+	struct bnx2fc_interface *interface = port->priv;
+	int rval, val;
+
+	rval = kstrtouint(buf, 10, &val);
+	if (rval)
+		return rval;
+	if (val > 255)
+		return -ERANGE;
+
+	interface->tm_timeout = (u8)val;
+	return strlen(buf);
+}
+
+static DEVICE_ATTR(tm_timeout, S_IRUGO|S_IWUSR, bnx2fc_tm_timeout_show,
+	bnx2fc_tm_timeout_store);
+
+static struct attribute *bnx2fc_host_attrs[] = {
+	&dev_attr_tm_timeout.attr,
+	NULL,
+};
+
+ATTRIBUTE_GROUPS(bnx2fc_host);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scsi_host_template structure used while registering with SCSI-ml
  */
 static struct scsi_host_template bnx2fc_shost_template = {
 	.module			= THIS_MODULE,
+<<<<<<< HEAD
 	.name			= "Broadcom Offload FCoE Initiator",
 	.queuecommand		= bnx2fc_queuecommand,
+=======
+	.name			= "QLogic Offload FCoE Initiator",
+	.queuecommand		= bnx2fc_queuecommand,
+	.eh_timed_out		= fc_eh_timed_out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler	= bnx2fc_eh_abort,	  /* abts */
 	.eh_device_reset_handler = bnx2fc_eh_device_reset, /* lun reset */
 	.eh_target_reset_handler = bnx2fc_eh_target_reset, /* tgt reset */
 	.eh_host_reset_handler	= fc_eh_host_reset,
 	.slave_alloc		= fc_slave_alloc,
+<<<<<<< HEAD
 	.change_queue_depth	= fc_change_queue_depth,
 	.change_queue_type	= fc_change_queue_type,
 	.this_id		= -1,
@@ -2540,6 +3839,18 @@ static struct scsi_host_template bnx2fc_shost_template = {
 	.use_clustering		= ENABLE_CLUSTERING,
 	.sg_tablesize		= BNX2FC_MAX_BDS_PER_CMD,
 	.max_sectors		= 512,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+	.this_id		= -1,
+	.cmd_per_lun		= 3,
+	.sg_tablesize		= BNX2FC_MAX_BDS_PER_CMD,
+	.dma_boundary           = 0x7fff,
+	.max_sectors		= 0x3fbf,
+	.track_queue_depth	= 1,
+	.slave_configure	= bnx2fc_slave_configure,
+	.shost_groups		= bnx2fc_host_groups,
+	.cmd_size		= sizeof(struct bnx2fc_priv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct libfc_function_template bnx2fc_libfc_fcn_templ = {
@@ -2547,11 +3858,19 @@ static struct libfc_function_template bnx2fc_libfc_fcn_templ = {
 	.elsct_send		= bnx2fc_elsct_send,
 	.fcp_abort_io		= bnx2fc_abort_io,
 	.fcp_cleanup		= bnx2fc_cleanup,
+<<<<<<< HEAD
 	.get_lesb		= bnx2fc_get_lesb,
 	.rport_event_callback	= bnx2fc_rport_event_handler,
 };
 
 /**
+=======
+	.get_lesb		= fcoe_get_lesb,
+	.rport_event_callback	= bnx2fc_rport_event_handler,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bnx2fc_cnic_cb - global template of bnx2fc - cnic driver interface
  *			structure carrying callback function pointers
  */
@@ -2563,4 +3882,8 @@ static struct cnic_ulp_ops bnx2fc_cnic_cb = {
 	.cnic_stop		= bnx2fc_ulp_stop,
 	.indicate_kcqes		= bnx2fc_indicate_kcqe,
 	.indicate_netevent	= bnx2fc_indicate_netevent,
+<<<<<<< HEAD
+=======
+	.cnic_get_stats		= bnx2fc_ulp_get_stats,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -39,12 +44,20 @@
 #define IXGBE_82598_VFT_TBL_SIZE 128
 #define IXGBE_82598_RX_PB_SIZE	 512
 
+<<<<<<< HEAD
 static s32 ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
                                          ixgbe_link_speed speed,
                                          bool autoneg,
                                          bool autoneg_wait_to_complete);
 static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
                                        u8 *eeprom_data);
+=======
+static int ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
+					 ixgbe_link_speed speed,
+					 bool autoneg_wait_to_complete);
+static int ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
+				       u8 *eeprom_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *  ixgbe_set_pcie_completion_timeout - set pci-e completion timeout
@@ -58,10 +71,19 @@ static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
  **/
 static void ixgbe_set_pcie_completion_timeout(struct ixgbe_hw *hw)
 {
+<<<<<<< HEAD
 	struct ixgbe_adapter *adapter = hw->back;
 	u32 gcr = IXGBE_READ_REG(hw, IXGBE_GCR);
 	u16 pcie_devctl2;
 
+=======
+	u32 gcr = IXGBE_READ_REG(hw, IXGBE_GCR);
+	u16 pcie_devctl2;
+
+	if (ixgbe_removed(hw->hw_addr))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* only take action if timeout value is defaulted to 0 */
 	if (gcr & IXGBE_GCR_CMPL_TMOUT_MASK)
 		goto out;
@@ -80,17 +102,24 @@ static void ixgbe_set_pcie_completion_timeout(struct ixgbe_hw *hw)
 	 * directly in order to set the completion timeout value for
 	 * 16ms to 55ms
 	 */
+<<<<<<< HEAD
 	pci_read_config_word(adapter->pdev,
 	                     IXGBE_PCI_DEVICE_CONTROL2, &pcie_devctl2);
 	pcie_devctl2 |= IXGBE_PCI_DEVICE_CONTROL2_16ms;
 	pci_write_config_word(adapter->pdev,
 	                      IXGBE_PCI_DEVICE_CONTROL2, pcie_devctl2);
+=======
+	pcie_devctl2 = ixgbe_read_pci_cfg_word(hw, IXGBE_PCI_DEVICE_CONTROL2);
+	pcie_devctl2 |= IXGBE_PCI_DEVICE_CONTROL2_16ms;
+	ixgbe_write_pci_cfg_word(hw, IXGBE_PCI_DEVICE_CONTROL2, pcie_devctl2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	/* disable completion timeout resend */
 	gcr &= ~IXGBE_GCR_CMPL_TMOUT_RESEND;
 	IXGBE_WRITE_REG(hw, IXGBE_GCR, gcr);
 }
 
+<<<<<<< HEAD
 /**
  *  ixgbe_get_pcie_msix_count_82598 - Gets MSI-X vector count
  *  @hw: pointer to hardware structure
@@ -115,6 +144,9 @@ static u16 ixgbe_get_pcie_msix_count_82598(struct ixgbe_hw *hw)
 /**
  */
 static s32 ixgbe_get_invariants_82598(struct ixgbe_hw *hw)
+=======
+static int ixgbe_get_invariants_82598(struct ixgbe_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ixgbe_mac_info *mac = &hw->mac;
 
@@ -124,9 +156,16 @@ static s32 ixgbe_get_invariants_82598(struct ixgbe_hw *hw)
 	mac->mcft_size = IXGBE_82598_MC_TBL_SIZE;
 	mac->vft_size = IXGBE_82598_VFT_TBL_SIZE;
 	mac->num_rar_entries = IXGBE_82598_RAR_ENTRIES;
+<<<<<<< HEAD
 	mac->max_rx_queues = IXGBE_82598_MAX_RX_QUEUES;
 	mac->max_tx_queues = IXGBE_82598_MAX_TX_QUEUES;
 	mac->max_msix_vectors = ixgbe_get_pcie_msix_count_82598(hw);
+=======
+	mac->rx_pb_size = IXGBE_82598_RX_PB_SIZE;
+	mac->max_rx_queues = IXGBE_82598_MAX_RX_QUEUES;
+	mac->max_tx_queues = IXGBE_82598_MAX_TX_QUEUES;
+	mac->max_msix_vectors = ixgbe_get_pcie_msix_count_generic(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -140,12 +179,21 @@ static s32 ixgbe_get_invariants_82598(struct ixgbe_hw *hw)
  *  not known.  Perform the SFP init if necessary.
  *
  **/
+<<<<<<< HEAD
 static s32 ixgbe_init_phy_ops_82598(struct ixgbe_hw *hw)
 {
 	struct ixgbe_mac_info *mac = &hw->mac;
 	struct ixgbe_phy_info *phy = &hw->phy;
 	s32 ret_val = 0;
 	u16 list_offset, data_offset;
+=======
+static int ixgbe_init_phy_ops_82598(struct ixgbe_hw *hw)
+{
+	struct ixgbe_mac_info *mac = &hw->mac;
+	struct ixgbe_phy_info *phy = &hw->phy;
+	u16 list_offset, data_offset;
+	int ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Identify the PHY */
 	phy->ops.identify(hw);
@@ -161,14 +209,18 @@ static s32 ixgbe_init_phy_ops_82598(struct ixgbe_hw *hw)
 	case ixgbe_phy_tn:
 		phy->ops.setup_link = &ixgbe_setup_phy_link_tnx;
 		phy->ops.check_link = &ixgbe_check_phy_link_tnx;
+<<<<<<< HEAD
 		phy->ops.get_firmware_version =
 		             &ixgbe_get_phy_firmware_version_tnx;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ixgbe_phy_nl:
 		phy->ops.reset = &ixgbe_reset_phy_nl;
 
 		/* Call SFP+ identify routine to get the SFP+ module type */
 		ret_val = phy->ops.identify_sfp(hw);
+<<<<<<< HEAD
 		if (ret_val != 0)
 			goto out;
 		else if (hw->phy.sfp_type == ixgbe_sfp_type_unknown) {
@@ -184,13 +236,30 @@ static s32 ixgbe_init_phy_ops_82598(struct ixgbe_hw *hw)
 			ret_val = IXGBE_ERR_SFP_NOT_SUPPORTED;
 			goto out;
 		}
+=======
+		if (ret_val)
+			return ret_val;
+		if (hw->phy.sfp_type == ixgbe_sfp_type_unknown)
+			return -EOPNOTSUPP;
+
+		/* Check to see if SFP+ module is supported */
+		ret_val = ixgbe_get_sfp_init_sequence_offsets(hw,
+							    &list_offset,
+							    &data_offset);
+		if (ret_val)
+			return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 out:
 	return ret_val;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -198,6 +267,7 @@ out:
  *  @hw: pointer to hardware structure
  *
  *  Starts the hardware using the generic start_hw function.
+<<<<<<< HEAD
  *  Disables relaxed ordering Then set pcie completion timeout
  *
  **/
@@ -232,6 +302,24 @@ static s32 ixgbe_start_hw_82598(struct ixgbe_hw *hw)
 		ixgbe_set_pcie_completion_timeout(hw);
 
 	return ret_val;
+=======
+ *  Disables relaxed ordering for archs other than SPARC
+ *  Then set pcie completion timeout
+ *
+ **/
+static int ixgbe_start_hw_82598(struct ixgbe_hw *hw)
+{
+	int ret_val;
+
+	ret_val = ixgbe_start_hw_generic(hw);
+	if (ret_val)
+		return ret_val;
+
+	/* set the completion timeout for interface */
+	ixgbe_set_pcie_completion_timeout(hw);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -242,11 +330,18 @@ static s32 ixgbe_start_hw_82598(struct ixgbe_hw *hw)
  *
  *  Determines the link capabilities by reading the AUTOC register.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_get_link_capabilities_82598(struct ixgbe_hw *hw,
                                              ixgbe_link_speed *speed,
                                              bool *autoneg)
 {
 	s32 status = 0;
+=======
+static int ixgbe_get_link_capabilities_82598(struct ixgbe_hw *hw,
+					     ixgbe_link_speed *speed,
+					     bool *autoneg)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 autoc = 0;
 
 	/*
@@ -286,11 +381,18 @@ static s32 ixgbe_get_link_capabilities_82598(struct ixgbe_hw *hw,
 		break;
 
 	default:
+<<<<<<< HEAD
 		status = IXGBE_ERR_LINK_SETUP;
 		break;
 	}
 
 	return status;
+=======
+		return -EIO;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -301,14 +403,22 @@ static s32 ixgbe_get_link_capabilities_82598(struct ixgbe_hw *hw,
  **/
 static enum ixgbe_media_type ixgbe_get_media_type_82598(struct ixgbe_hw *hw)
 {
+<<<<<<< HEAD
 	enum ixgbe_media_type media_type;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Detect if there is a copper PHY attached. */
 	switch (hw->phy.type) {
 	case ixgbe_phy_cu_unknown:
 	case ixgbe_phy_tn:
+<<<<<<< HEAD
 		media_type = ixgbe_media_type_copper;
 		goto out;
+=======
+		return ixgbe_media_type_copper;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -318,14 +428,20 @@ static enum ixgbe_media_type ixgbe_get_media_type_82598(struct ixgbe_hw *hw)
 	case IXGBE_DEV_ID_82598:
 	case IXGBE_DEV_ID_82598_BX:
 		/* Default device ID is mezzanine card KX/KX4 */
+<<<<<<< HEAD
 		media_type = ixgbe_media_type_backplane;
 		break;
+=======
+		return ixgbe_media_type_backplane;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IXGBE_DEV_ID_82598AF_DUAL_PORT:
 	case IXGBE_DEV_ID_82598AF_SINGLE_PORT:
 	case IXGBE_DEV_ID_82598_DA_DUAL_PORT:
 	case IXGBE_DEV_ID_82598_SR_DUAL_PORT_EM:
 	case IXGBE_DEV_ID_82598EB_XF_LR:
 	case IXGBE_DEV_ID_82598EB_SFP_LOM:
+<<<<<<< HEAD
 		media_type = ixgbe_media_type_fiber;
 		break;
 	case IXGBE_DEV_ID_82598EB_CX4:
@@ -342,11 +458,27 @@ static enum ixgbe_media_type ixgbe_get_media_type_82598(struct ixgbe_hw *hw)
 	}
 out:
 	return media_type;
+=======
+		return ixgbe_media_type_fiber;
+
+	case IXGBE_DEV_ID_82598EB_CX4:
+	case IXGBE_DEV_ID_82598_CX4_DUAL_PORT:
+		return ixgbe_media_type_cx4;
+
+	case IXGBE_DEV_ID_82598AT:
+	case IXGBE_DEV_ID_82598AT2:
+		return ixgbe_media_type_copper;
+
+	default:
+		return ixgbe_media_type_unknown;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *  ixgbe_fc_enable_82598 - Enable flow control
  *  @hw: pointer to hardware structure
+<<<<<<< HEAD
  *  @packetbuf_num: packet buffer number (0-7)
  *
  *  Enable flow control according to the current settings.
@@ -365,6 +497,37 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 		goto out;
 
 #endif /* CONFIG_DCB */
+=======
+ *
+ *  Enable flow control according to the current settings.
+ **/
+static int ixgbe_fc_enable_82598(struct ixgbe_hw *hw)
+{
+	u32 fctrl_reg;
+	u32 rmcs_reg;
+	u32 reg;
+	u32 fcrtl, fcrth;
+	u32 link_speed = 0;
+	int i;
+	bool link_up;
+
+	/* Validate the water mark configuration */
+	if (!hw->fc.pause_time)
+		return -EINVAL;
+
+	/* Low water mark of zero causes XOFF floods */
+	for (i = 0; i < MAX_TRAFFIC_CLASS; i++) {
+		if ((hw->fc.current_mode & ixgbe_fc_tx_pause) &&
+		    hw->fc.high_water[i]) {
+			if (!hw->fc.low_water[i] ||
+			    hw->fc.low_water[i] >= hw->fc.high_water[i]) {
+				hw_dbg(hw, "Invalid water mark configuration\n");
+				return -EINVAL;
+			}
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * On 82598 having Rx FC on causes resets while doing 1G
 	 * so if it's on turn it off once we know link_speed. For
@@ -386,9 +549,13 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 	}
 
 	/* Negotiate the fc mode to use */
+<<<<<<< HEAD
 	ret_val = ixgbe_fc_autoneg(hw);
 	if (ret_val == IXGBE_ERR_FLOW_CONTROL)
 		goto out;
+=======
+	hw->mac.ops.fc_autoneg(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable any previous flow control settings */
 	fctrl_reg = IXGBE_READ_REG(hw, IXGBE_FCTRL);
@@ -405,9 +572,12 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 	 * 2: Tx flow control is enabled (we can send pause frames but
 	 *     we do not support receiving pause frames).
 	 * 3: Both Rx and Tx flow control (symmetric) are enabled.
+<<<<<<< HEAD
 #ifdef CONFIG_DCB
 	 * 4: Priority Flow Control is enabled.
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * other: Invalid.
 	 */
 	switch (hw->fc.current_mode) {
@@ -440,6 +610,7 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 		fctrl_reg |= IXGBE_FCTRL_RFCE;
 		rmcs_reg |= IXGBE_RMCS_TFCE_802_3X;
 		break;
+<<<<<<< HEAD
 #ifdef CONFIG_DCB
 	case ixgbe_fc_pfc:
 		goto out;
@@ -450,6 +621,11 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 		ret_val = IXGBE_ERR_CONFIG;
 		goto out;
 		break;
+=======
+	default:
+		hw_dbg(hw, "Flow control param set incorrectly\n");
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set 802.3x based flow control settings. */
@@ -458,6 +634,7 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 	IXGBE_WRITE_REG(hw, IXGBE_RMCS, rmcs_reg);
 
 	/* Set up and enable Rx high/low water mark thresholds, enable XON. */
+<<<<<<< HEAD
 	if (hw->fc.current_mode & ixgbe_fc_tx_pause) {
 		reg = hw->fc.low_water << 6;
 		if (hw->fc.send_xon)
@@ -483,15 +660,45 @@ static s32 ixgbe_fc_enable_82598(struct ixgbe_hw *hw, s32 packetbuf_num)
 
 out:
 	return ret_val;
+=======
+	for (i = 0; i < MAX_TRAFFIC_CLASS; i++) {
+		if ((hw->fc.current_mode & ixgbe_fc_tx_pause) &&
+		    hw->fc.high_water[i]) {
+			fcrtl = (hw->fc.low_water[i] << 10) | IXGBE_FCRTL_XONE;
+			fcrth = (hw->fc.high_water[i] << 10) | IXGBE_FCRTH_FCEN;
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTL(i), fcrtl);
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTH(i), fcrth);
+		} else {
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTL(i), 0);
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTH(i), 0);
+		}
+
+	}
+
+	/* Configure pause time (2 TCs per register) */
+	reg = hw->fc.pause_time * 0x00010001;
+	for (i = 0; i < (MAX_TRAFFIC_CLASS / 2); i++)
+		IXGBE_WRITE_REG(hw, IXGBE_FCTTV(i), reg);
+
+	/* Configure flow control refresh threshold value */
+	IXGBE_WRITE_REG(hw, IXGBE_FCRTV, hw->fc.pause_time / 2);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *  ixgbe_start_mac_link_82598 - Configures MAC link settings
  *  @hw: pointer to hardware structure
+<<<<<<< HEAD
+=======
+ *  @autoneg_wait_to_complete: true when waiting for completion is needed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Configures link settings based on values in the ixgbe_hw struct.
  *  Restarts the link.  Performs autonegotiation if needed.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_start_mac_link_82598(struct ixgbe_hw *hw,
                                       bool autoneg_wait_to_complete)
 {
@@ -499,6 +706,15 @@ static s32 ixgbe_start_mac_link_82598(struct ixgbe_hw *hw,
 	u32 links_reg;
 	u32 i;
 	s32 status = 0;
+=======
+static int ixgbe_start_mac_link_82598(struct ixgbe_hw *hw,
+				      bool autoneg_wait_to_complete)
+{
+	int status = 0;
+	u32 autoc_reg;
+	u32 links_reg;
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restart link */
 	autoc_reg = IXGBE_READ_REG(hw, IXGBE_AUTOC);
@@ -519,7 +735,11 @@ static s32 ixgbe_start_mac_link_82598(struct ixgbe_hw *hw,
 				msleep(100);
 			}
 			if (!(links_reg & IXGBE_LINKS_KX_AN_COMP)) {
+<<<<<<< HEAD
 				status = IXGBE_ERR_AUTONEG_NOT_COMPLETE;
+=======
+				status = -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hw_dbg(hw, "Autonegotiation did not complete.\n");
 			}
 		}
@@ -538,7 +758,11 @@ static s32 ixgbe_start_mac_link_82598(struct ixgbe_hw *hw,
  *  Function indicates success when phy link is available. If phy is not ready
  *  within 5 seconds of MAC indicating link, the function returns error.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_validate_link_ready(struct ixgbe_hw *hw)
+=======
+static int ixgbe_validate_link_ready(struct ixgbe_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 timeout;
 	u16 an_reg;
@@ -559,7 +783,11 @@ static s32 ixgbe_validate_link_ready(struct ixgbe_hw *hw)
 
 	if (timeout == IXGBE_VALIDATE_LINK_READY_TIMEOUT) {
 		hw_dbg(hw, "Link was indicated but link is down\n");
+<<<<<<< HEAD
 		return IXGBE_ERR_LINK_SETUP;
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -574,9 +802,15 @@ static s32 ixgbe_validate_link_ready(struct ixgbe_hw *hw)
  *
  *  Reads the links register to determine if link is up and the current speed
  **/
+<<<<<<< HEAD
 static s32 ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
                                       ixgbe_link_speed *speed, bool *link_up,
                                       bool link_up_wait_to_complete)
+=======
+static int ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
+				      ixgbe_link_speed *speed, bool *link_up,
+				      bool link_up_wait_to_complete)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 links_reg;
 	u32 i;
@@ -592,7 +826,11 @@ static s32 ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
 		hw->phy.ops.read_reg(hw, 0xC79F, MDIO_MMD_PMAPMD, &link_reg);
 		hw->phy.ops.read_reg(hw, 0xC79F, MDIO_MMD_PMAPMD, &link_reg);
 		hw->phy.ops.read_reg(hw, 0xC00C, MDIO_MMD_PMAPMD,
+<<<<<<< HEAD
 		                     &adapt_comp_reg);
+=======
+				     &adapt_comp_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (link_up_wait_to_complete) {
 			for (i = 0; i < IXGBE_LINK_UP_TIME; i++) {
 				if ((link_reg & 1) &&
@@ -604,11 +842,19 @@ static s32 ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
 				}
 				msleep(100);
 				hw->phy.ops.read_reg(hw, 0xC79F,
+<<<<<<< HEAD
 				                     MDIO_MMD_PMAPMD,
 				                     &link_reg);
 				hw->phy.ops.read_reg(hw, 0xC00C,
 				                     MDIO_MMD_PMAPMD,
 				                     &adapt_comp_reg);
+=======
+						     MDIO_MMD_PMAPMD,
+						     &link_reg);
+				hw->phy.ops.read_reg(hw, 0xC00C,
+						     MDIO_MMD_PMAPMD,
+						     &adapt_comp_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			if ((link_reg & 1) && ((adapt_comp_reg & 1) == 0))
@@ -618,7 +864,11 @@ static s32 ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
 		}
 
 		if (!*link_up)
+<<<<<<< HEAD
 			goto out;
+=======
+			return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	links_reg = IXGBE_READ_REG(hw, IXGBE_LINKS);
@@ -649,7 +899,10 @@ static s32 ixgbe_check_mac_link_82598(struct ixgbe_hw *hw,
 	    (ixgbe_validate_link_ready(hw) != 0))
 		*link_up = false;
 
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -657,16 +910,27 @@ out:
  *  ixgbe_setup_mac_link_82598 - Set MAC link speed
  *  @hw: pointer to hardware structure
  *  @speed: new link speed
+<<<<<<< HEAD
  *  @autoneg: true if auto-negotiation enabled
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @autoneg_wait_to_complete: true when waiting for completion is needed
  *
  *  Set the link speed in the AUTOC register and restarts link.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
                                            ixgbe_link_speed speed, bool autoneg,
                                            bool autoneg_wait_to_complete)
 {
 	s32              status            = 0;
+=======
+static int ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
+				      ixgbe_link_speed speed,
+				      bool autoneg_wait_to_complete)
+{
+	bool		 autoneg	   = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ixgbe_link_speed link_capabilities = IXGBE_LINK_SPEED_UNKNOWN;
 	u32              curr_autoc        = IXGBE_READ_REG(hw, IXGBE_AUTOC);
 	u32              autoc             = curr_autoc;
@@ -677,11 +941,19 @@ static s32 ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
 	speed &= link_capabilities;
 
 	if (speed == IXGBE_LINK_SPEED_UNKNOWN)
+<<<<<<< HEAD
 		status = IXGBE_ERR_LINK_SETUP;
 
 	/* Set KX4/KX support according to speed requested */
 	else if (link_mode == IXGBE_AUTOC_LMS_KX4_AN ||
 	         link_mode == IXGBE_AUTOC_LMS_KX4_AN_1G_AN) {
+=======
+		return -EINVAL;
+
+	/* Set KX4/KX support according to speed requested */
+	else if (link_mode == IXGBE_AUTOC_LMS_KX4_AN ||
+		 link_mode == IXGBE_AUTOC_LMS_KX4_AN_1G_AN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		autoc &= ~IXGBE_AUTOC_KX4_KX_SUPP_MASK;
 		if (speed & IXGBE_LINK_SPEED_10GB_FULL)
 			autoc |= IXGBE_AUTOC_KX4_SUPP;
@@ -691,6 +963,7 @@ static s32 ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
 			IXGBE_WRITE_REG(hw, IXGBE_AUTOC, autoc);
 	}
 
+<<<<<<< HEAD
 	if (status == 0) {
 		/*
 		 * Setup and restart the link based on the new values in
@@ -702,6 +975,13 @@ static s32 ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
 	}
 
 	return status;
+=======
+	/* Setup and restart the link based on the new values in
+	 * ixgbe_hw This will write the AUTOC register based on the new
+	 * stored values
+	 */
+	return ixgbe_start_mac_link_82598(hw, autoneg_wait_to_complete);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -709,11 +989,15 @@ static s32 ixgbe_setup_mac_link_82598(struct ixgbe_hw *hw,
  *  ixgbe_setup_copper_link_82598 - Set the PHY autoneg advertised field
  *  @hw: pointer to hardware structure
  *  @speed: new link speed
+<<<<<<< HEAD
  *  @autoneg: true if autonegotiation enabled
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @autoneg_wait_to_complete: true if waiting is needed to complete
  *
  *  Sets the link speed in the AUTOC register in the MAC and restarts link.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
                                                ixgbe_link_speed speed,
                                                bool autoneg,
@@ -724,6 +1008,17 @@ static s32 ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
 	/* Setup the PHY according to input speed */
 	status = hw->phy.ops.setup_link_speed(hw, speed, autoneg,
 	                                      autoneg_wait_to_complete);
+=======
+static int ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
+					 ixgbe_link_speed speed,
+					 bool autoneg_wait_to_complete)
+{
+	int status;
+
+	/* Setup the PHY according to input speed */
+	status = hw->phy.ops.setup_link_speed(hw, speed,
+					      autoneg_wait_to_complete);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set up MAC */
 	ixgbe_start_mac_link_82598(hw, autoneg_wait_to_complete);
 
@@ -738,6 +1033,7 @@ static s32 ixgbe_setup_copper_link_82598(struct ixgbe_hw *hw,
  *  clears all interrupts, performing a PHY reset, and performing a link (MAC)
  *  reset.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
 {
 	s32 status = 0;
@@ -752,6 +1048,22 @@ static s32 ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
 	status = hw->mac.ops.stop_adapter(hw);
 	if (status != 0)
 		goto reset_hw_out;
+=======
+static int ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
+{
+	int phy_status = 0;
+	u8  analog_val;
+	u32 gheccr;
+	int status;
+	u32 autoc;
+	u32 ctrl;
+	u32 i;
+
+	/* Call adapter stop to disable tx/rx and clear interrupts */
+	status = hw->mac.ops.stop_adapter(hw);
+	if (status)
+		return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Power up the Atlas Tx lanes if they are currently powered down.
@@ -762,6 +1074,7 @@ static s32 ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
 	if (analog_val & IXGBE_ATLAS_PDN_TX_REG_EN) {
 		/* Enable Tx Atlas so packets can be transmitted again */
 		hw->mac.ops.read_analog_reg8(hw, IXGBE_ATLAS_PDN_LPBK,
+<<<<<<< HEAD
 		                             &analog_val);
 		analog_val &= ~IXGBE_ATLAS_PDN_TX_REG_EN;
 		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_LPBK,
@@ -784,6 +1097,30 @@ static s32 ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
 		analog_val &= ~IXGBE_ATLAS_PDN_TX_AN_QL_ALL;
 		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_AN,
 		                              analog_val);
+=======
+					     &analog_val);
+		analog_val &= ~IXGBE_ATLAS_PDN_TX_REG_EN;
+		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_LPBK,
+					      analog_val);
+
+		hw->mac.ops.read_analog_reg8(hw, IXGBE_ATLAS_PDN_10G,
+					     &analog_val);
+		analog_val &= ~IXGBE_ATLAS_PDN_TX_10G_QL_ALL;
+		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_10G,
+					      analog_val);
+
+		hw->mac.ops.read_analog_reg8(hw, IXGBE_ATLAS_PDN_1G,
+					     &analog_val);
+		analog_val &= ~IXGBE_ATLAS_PDN_TX_1G_QL_ALL;
+		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_1G,
+					      analog_val);
+
+		hw->mac.ops.read_analog_reg8(hw, IXGBE_ATLAS_PDN_AN,
+					     &analog_val);
+		analog_val &= ~IXGBE_ATLAS_PDN_TX_AN_QL_ALL;
+		hw->mac.ops.write_analog_reg8(hw, IXGBE_ATLAS_PDN_AN,
+					      analog_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Reset PHY */
@@ -792,9 +1129,15 @@ static s32 ixgbe_reset_hw_82598(struct ixgbe_hw *hw)
 
 		/* Init PHY and function pointers, perform SFP setup */
 		phy_status = hw->phy.ops.init(hw);
+<<<<<<< HEAD
 		if (phy_status == IXGBE_ERR_SFP_NOT_SUPPORTED)
 			goto reset_hw_out;
 		if (phy_status == IXGBE_ERR_SFP_NOT_PRESENT)
+=======
+		if (phy_status == -EOPNOTSUPP)
+			return phy_status;
+		if (phy_status == -ENOENT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto mac_reset_top;
 
 		hw->phy.ops.reset(hw);
@@ -808,6 +1151,7 @@ mac_reset_top:
 	ctrl = IXGBE_READ_REG(hw, IXGBE_CTRL) | IXGBE_CTRL_RST;
 	IXGBE_WRITE_REG(hw, IXGBE_CTRL, ctrl);
 	IXGBE_WRITE_FLUSH(hw);
+<<<<<<< HEAD
 
 	/* Poll for reset bit to self-clear indicating reset is complete */
 	for (i = 0; i < 10; i++) {
@@ -818,6 +1162,19 @@ mac_reset_top:
 	}
 	if (ctrl & IXGBE_CTRL_RST) {
 		status = IXGBE_ERR_RESET_FAILED;
+=======
+	usleep_range(1000, 1200);
+
+	/* Poll for reset bit to self-clear indicating reset is complete */
+	for (i = 0; i < 10; i++) {
+		ctrl = IXGBE_READ_REG(hw, IXGBE_CTRL);
+		if (!(ctrl & IXGBE_CTRL_RST))
+			break;
+		udelay(1);
+	}
+	if (ctrl & IXGBE_CTRL_RST) {
+		status = -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw_dbg(hw, "Reset polling failed to complete.\n");
 	}
 
@@ -834,7 +1191,11 @@ mac_reset_top:
 	}
 
 	gheccr = IXGBE_READ_REG(hw, IXGBE_GHECCR);
+<<<<<<< HEAD
 	gheccr &= ~((1 << 21) | (1 << 18) | (1 << 9) | (1 << 6));
+=======
+	gheccr &= ~(BIT(21) | BIT(18) | BIT(9) | BIT(6));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_REG(hw, IXGBE_GHECCR, gheccr);
 
 	/*
@@ -859,7 +1220,10 @@ mac_reset_top:
 	 */
 	hw->mac.ops.init_rx_addrs(hw);
 
+<<<<<<< HEAD
 reset_hw_out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (phy_status)
 		status = phy_status;
 
@@ -872,7 +1236,11 @@ reset_hw_out:
  *  @rar: receive address register index to associate with a VMDq index
  *  @vmdq: VMDq set index
  **/
+<<<<<<< HEAD
 static s32 ixgbe_set_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
+=======
+static int ixgbe_set_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 rar_high;
 	u32 rar_entries = hw->mac.num_rar_entries;
@@ -880,12 +1248,20 @@ static s32 ixgbe_set_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
 	/* Make sure we are using a valid rar index range */
 	if (rar >= rar_entries) {
 		hw_dbg(hw, "RAR index %d is out of range.\n", rar);
+<<<<<<< HEAD
 		return IXGBE_ERR_INVALID_ARGUMENT;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rar_high = IXGBE_READ_REG(hw, IXGBE_RAH(rar));
 	rar_high &= ~IXGBE_RAH_VIND_MASK;
+<<<<<<< HEAD
 	rar_high |= ((vmdq << IXGBE_RAH_VIND_SHIFT) & IXGBE_RAH_VIND_MASK);
+=======
+	rar_high |= FIELD_PREP(IXGBE_RAH_VIND_MASK, vmdq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_REG(hw, IXGBE_RAH(rar), rar_high);
 	return 0;
 }
@@ -896,7 +1272,11 @@ static s32 ixgbe_set_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
  *  @rar: receive address register index to associate with a VMDq index
  *  @vmdq: VMDq clear index (not used in 82598, but elsewhere)
  **/
+<<<<<<< HEAD
 static s32 ixgbe_clear_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
+=======
+static int ixgbe_clear_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 rar_high;
 	u32 rar_entries = hw->mac.num_rar_entries;
@@ -905,7 +1285,11 @@ static s32 ixgbe_clear_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
 	/* Make sure we are using a valid rar index range */
 	if (rar >= rar_entries) {
 		hw_dbg(hw, "RAR index %d is out of range.\n", rar);
+<<<<<<< HEAD
 		return IXGBE_ERR_INVALID_ARGUMENT;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rar_high = IXGBE_READ_REG(hw, IXGBE_RAH(rar));
@@ -923,11 +1307,20 @@ static s32 ixgbe_clear_vmdq_82598(struct ixgbe_hw *hw, u32 rar, u32 vmdq)
  *  @vlan: VLAN id to write to VLAN filter
  *  @vind: VMDq output index that maps queue to VLAN id in VFTA
  *  @vlan_on: boolean flag to turn on/off VLAN in VFTA
+<<<<<<< HEAD
  *
  *  Turn on/off specified VLAN in the VLAN filter table.
  **/
 static s32 ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
 				bool vlan_on)
+=======
+ *  @vlvf_bypass: boolean flag - unused
+ *
+ *  Turn on/off specified VLAN in the VLAN filter table.
+ **/
+static int ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
+				bool vlan_on, bool vlvf_bypass)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 regindex;
 	u32 bitindex;
@@ -935,7 +1328,11 @@ static s32 ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
 	u32 vftabyte;
 
 	if (vlan > 4095)
+<<<<<<< HEAD
 		return IXGBE_ERR_PARAM;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine 32-bit word position in array */
 	regindex = (vlan >> 5) & 0x7F;   /* upper seven bits */
@@ -956,10 +1353,17 @@ static s32 ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
 	bits = IXGBE_READ_REG(hw, IXGBE_VFTA(regindex));
 	if (vlan_on)
 		/* Turn on this VLAN id */
+<<<<<<< HEAD
 		bits |= (1 << bitindex);
 	else
 		/* Turn off this VLAN id */
 		bits &= ~(1 << bitindex);
+=======
+		bits |= BIT(bitindex);
+	else
+		/* Turn off this VLAN id */
+		bits &= ~BIT(bitindex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_REG(hw, IXGBE_VFTA(regindex), bits);
 
 	return 0;
@@ -969,9 +1373,15 @@ static s32 ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
  *  ixgbe_clear_vfta_82598 - Clear VLAN filter table
  *  @hw: pointer to hardware structure
  *
+<<<<<<< HEAD
  *  Clears the VLAN filer table, and the VMDq index associated with the filter
  **/
 static s32 ixgbe_clear_vfta_82598(struct ixgbe_hw *hw)
+=======
+ *  Clears the VLAN filter table, and the VMDq index associated with the filter
+ **/
+static int ixgbe_clear_vfta_82598(struct ixgbe_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 offset;
 	u32 vlanbyte;
@@ -982,7 +1392,11 @@ static s32 ixgbe_clear_vfta_82598(struct ixgbe_hw *hw)
 	for (vlanbyte = 0; vlanbyte < 4; vlanbyte++)
 		for (offset = 0; offset < hw->mac.vft_size; offset++)
 			IXGBE_WRITE_REG(hw, IXGBE_VFTAVIND(vlanbyte, offset),
+<<<<<<< HEAD
 			                0);
+=======
+					0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -995,12 +1409,20 @@ static s32 ixgbe_clear_vfta_82598(struct ixgbe_hw *hw)
  *
  *  Performs read operation to Atlas analog register specified.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_read_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 *val)
+=======
+static int ixgbe_read_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 *val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32  atlas_ctl;
 
 	IXGBE_WRITE_REG(hw, IXGBE_ATLASCTL,
+<<<<<<< HEAD
 	                IXGBE_ATLASCTL_WRITE_CMD | (reg << 8));
+=======
+			IXGBE_ATLASCTL_WRITE_CMD | (reg << 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_FLUSH(hw);
 	udelay(10);
 	atlas_ctl = IXGBE_READ_REG(hw, IXGBE_ATLASCTL);
@@ -1017,7 +1439,11 @@ static s32 ixgbe_read_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 *val)
  *
  *  Performs write operation to Atlas analog register specified.
  **/
+<<<<<<< HEAD
 static s32 ixgbe_write_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 val)
+=======
+static int ixgbe_write_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32  atlas_ctl;
 
@@ -1030,6 +1456,7 @@ static s32 ixgbe_write_analog_reg8_82598(struct ixgbe_hw *hw, u32 reg, u8 val)
 }
 
 /**
+<<<<<<< HEAD
  *  ixgbe_read_i2c_eeprom_82598 - Reads 8 bit word over I2C interface.
  *  @hw: pointer to hardware structure
  *  @byte_offset: EEPROM byte offset to read
@@ -1046,12 +1473,41 @@ static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
 	u16 sfp_stat = 0;
 	u32 i;
 
+=======
+ *  ixgbe_read_i2c_phy_82598 - Reads 8 bit word over I2C interface.
+ *  @hw: pointer to hardware structure
+ *  @dev_addr: address to read from
+ *  @byte_offset: byte offset to read from dev_addr
+ *  @eeprom_data: value read
+ *
+ *  Performs 8 byte read operation to SFP module's data over I2C interface.
+ **/
+static int ixgbe_read_i2c_phy_82598(struct ixgbe_hw *hw, u8 dev_addr,
+				    u8 byte_offset, u8 *eeprom_data)
+{
+	u16 sfp_addr = 0;
+	u16 sfp_data = 0;
+	u16 sfp_stat = 0;
+	int status = 0;
+	u16 gssr;
+	u32 i;
+
+	if (IXGBE_READ_REG(hw, IXGBE_STATUS) & IXGBE_STATUS_LAN_ID_1)
+		gssr = IXGBE_GSSR_PHY1_SM;
+	else
+		gssr = IXGBE_GSSR_PHY0_SM;
+
+	if (hw->mac.ops.acquire_swfw_sync(hw, gssr) != 0)
+		return -EBUSY;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy.type == ixgbe_phy_nl) {
 		/*
 		 * phy SDA/SCL registers are at addresses 0xC30A to
 		 * 0xC30D.  These registers are used to talk to the SFP+
 		 * module's EEPROM through the SDA/SCL (I2C) interface.
 		 */
+<<<<<<< HEAD
 		sfp_addr = (IXGBE_I2C_EEPROM_DEV_ADDR << 8) + byte_offset;
 		sfp_addr = (sfp_addr | IXGBE_I2C_EEPROM_READ_MASK);
 		hw->phy.ops.write_reg(hw,
@@ -1065,6 +1521,21 @@ static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
 			                     IXGBE_MDIO_PMA_PMD_SDA_SCL_STAT,
 			                     MDIO_MMD_PMAPMD,
 			                     &sfp_stat);
+=======
+		sfp_addr = (dev_addr << 8) + byte_offset;
+		sfp_addr = (sfp_addr | IXGBE_I2C_EEPROM_READ_MASK);
+		hw->phy.ops.write_reg_mdi(hw,
+					  IXGBE_MDIO_PMA_PMD_SDA_SCL_ADDR,
+					  MDIO_MMD_PMAPMD,
+					  sfp_addr);
+
+		/* Poll status */
+		for (i = 0; i < 100; i++) {
+			hw->phy.ops.read_reg_mdi(hw,
+						IXGBE_MDIO_PMA_PMD_SDA_SCL_STAT,
+						MDIO_MMD_PMAPMD,
+						&sfp_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sfp_stat = sfp_stat & IXGBE_I2C_EEPROM_STATUS_MASK;
 			if (sfp_stat != IXGBE_I2C_EEPROM_STATUS_IN_PROGRESS)
 				break;
@@ -1073,11 +1544,16 @@ static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
 
 		if (sfp_stat != IXGBE_I2C_EEPROM_STATUS_PASS) {
 			hw_dbg(hw, "EEPROM read did not pass.\n");
+<<<<<<< HEAD
 			status = IXGBE_ERR_SFP_NOT_PRESENT;
+=======
+			status = -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		/* Read data */
+<<<<<<< HEAD
 		hw->phy.ops.read_reg(hw, IXGBE_MDIO_PMA_PMD_SDA_SCL_DATA,
 		                     MDIO_MMD_PMAPMD, &sfp_data);
 
@@ -1088,10 +1564,23 @@ static s32 ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
 	}
 
 out:
+=======
+		hw->phy.ops.read_reg_mdi(hw, IXGBE_MDIO_PMA_PMD_SDA_SCL_DATA,
+					MDIO_MMD_PMAPMD, &sfp_data);
+
+		*eeprom_data = (u8)(sfp_data >> 8);
+	} else {
+		status = -EIO;
+	}
+
+out:
+	hw->mac.ops.release_swfw_sync(hw, gssr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /**
+<<<<<<< HEAD
  *  ixgbe_get_supported_physical_layer_82598 - Returns physical layer type
  *  @hw: pointer to hardware structure
  *
@@ -1189,6 +1678,35 @@ static u32 ixgbe_get_supported_physical_layer_82598(struct ixgbe_hw *hw)
 
 out:
 	return physical_layer;
+=======
+ *  ixgbe_read_i2c_eeprom_82598 - Reads 8 bit word over I2C interface.
+ *  @hw: pointer to hardware structure
+ *  @byte_offset: EEPROM byte offset to read
+ *  @eeprom_data: value read
+ *
+ *  Performs 8 byte read operation to SFP module's EEPROM over I2C interface.
+ **/
+static int ixgbe_read_i2c_eeprom_82598(struct ixgbe_hw *hw, u8 byte_offset,
+				       u8 *eeprom_data)
+{
+	return ixgbe_read_i2c_phy_82598(hw, IXGBE_I2C_EEPROM_DEV_ADDR,
+					byte_offset, eeprom_data);
+}
+
+/**
+ *  ixgbe_read_i2c_sff8472_82598 - Reads 8 bit word over I2C interface.
+ *  @hw: pointer to hardware structure
+ *  @byte_offset: byte offset at address 0xA2
+ *  @sff8472_data: value read
+ *
+ *  Performs 8 byte read operation to SFP module's SFF-8472 data over I2C
+ **/
+static int ixgbe_read_i2c_sff8472_82598(struct ixgbe_hw *hw, u8 byte_offset,
+					u8 *sff8472_data)
+{
+	return ixgbe_read_i2c_phy_82598(hw, IXGBE_I2C_EEPROM_DEV_ADDR2,
+					byte_offset, sff8472_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1224,6 +1742,7 @@ static void ixgbe_set_lan_id_multi_port_pcie_82598(struct ixgbe_hw *hw)
 }
 
 /**
+<<<<<<< HEAD
  * ixgbe_set_rxpba_82598 - Configure packet buffers
  * @hw: pointer to hardware structure
  * @dcb_config: pointer to ixgbe_dcb_config structure
@@ -1232,6 +1751,16 @@ static void ixgbe_set_lan_id_multi_port_pcie_82598(struct ixgbe_hw *hw)
  */
 static void ixgbe_set_rxpba_82598(struct ixgbe_hw *hw, int num_pb, u32 headroom,
 				  int strategy)
+=======
+ * ixgbe_set_rxpba_82598 - Initialize RX packet buffer
+ * @hw: pointer to hardware structure
+ * @num_pb: number of packet buffers to allocate
+ * @headroom: reserve n KB of headroom
+ * @strategy: packet buffer allocation strategy
+ **/
+static void ixgbe_set_rxpba_82598(struct ixgbe_hw *hw, int num_pb,
+				  u32 headroom, int strategy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 rxpktsize = IXGBE_RXPBSIZE_64KB;
 	u8  i = 0;
@@ -1248,7 +1777,11 @@ static void ixgbe_set_rxpba_82598(struct ixgbe_hw *hw, int num_pb, u32 headroom,
 			IXGBE_WRITE_REG(hw, IXGBE_RXPBSIZE(i), rxpktsize);
 		/* Setup the last four at 48KB...don't re-init i */
 		rxpktsize = IXGBE_RXPBSIZE_48KB;
+<<<<<<< HEAD
 		/* Fall Through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PBA_STRATEGY_EQUAL:
 	default:
 		/* Divide the remaining Rx packet buffer evenly among the TCs */
@@ -1260,17 +1793,26 @@ static void ixgbe_set_rxpba_82598(struct ixgbe_hw *hw, int num_pb, u32 headroom,
 	/* Setup Tx packet buffer sizes */
 	for (i = 0; i < IXGBE_MAX_PACKET_BUFFERS; i++)
 		IXGBE_WRITE_REG(hw, IXGBE_TXPBSIZE(i), IXGBE_TXPBSIZE_40KB);
+<<<<<<< HEAD
 
 	return;
 }
 
 static struct ixgbe_mac_operations mac_ops_82598 = {
+=======
+}
+
+static const struct ixgbe_mac_operations mac_ops_82598 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_hw		= &ixgbe_init_hw_generic,
 	.reset_hw		= &ixgbe_reset_hw_82598,
 	.start_hw		= &ixgbe_start_hw_82598,
 	.clear_hw_cntrs		= &ixgbe_clear_hw_cntrs_generic,
 	.get_media_type		= &ixgbe_get_media_type_82598,
+<<<<<<< HEAD
 	.get_supported_physical_layer = &ixgbe_get_supported_physical_layer_82598,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_rx_dma          = &ixgbe_enable_rx_dma_generic,
 	.get_mac_addr		= &ixgbe_get_mac_addr_generic,
 	.stop_adapter		= &ixgbe_stop_adapter_generic,
@@ -1284,6 +1826,10 @@ static struct ixgbe_mac_operations mac_ops_82598 = {
 	.get_link_capabilities	= &ixgbe_get_link_capabilities_82598,
 	.led_on			= &ixgbe_led_on_generic,
 	.led_off		= &ixgbe_led_off_generic,
+<<<<<<< HEAD
+=======
+	.init_led_link_act	= ixgbe_init_led_link_act_generic,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.blink_led_start	= &ixgbe_blink_led_start_generic,
 	.blink_led_stop		= &ixgbe_blink_led_stop_generic,
 	.set_rar		= &ixgbe_set_rar_generic,
@@ -1297,12 +1843,30 @@ static struct ixgbe_mac_operations mac_ops_82598 = {
 	.clear_vfta		= &ixgbe_clear_vfta_82598,
 	.set_vfta		= &ixgbe_set_vfta_82598,
 	.fc_enable		= &ixgbe_fc_enable_82598,
+<<<<<<< HEAD
 	.set_fw_drv_ver         = NULL,
 	.acquire_swfw_sync      = &ixgbe_acquire_swfw_sync,
 	.release_swfw_sync      = &ixgbe_release_swfw_sync,
 };
 
 static struct ixgbe_eeprom_operations eeprom_ops_82598 = {
+=======
+	.setup_fc		= ixgbe_setup_fc_generic,
+	.fc_autoneg		= ixgbe_fc_autoneg,
+	.set_fw_drv_ver         = NULL,
+	.acquire_swfw_sync      = &ixgbe_acquire_swfw_sync,
+	.release_swfw_sync      = &ixgbe_release_swfw_sync,
+	.init_swfw_sync		= NULL,
+	.get_thermal_sensor_data = NULL,
+	.init_thermal_sensor_thresh = NULL,
+	.prot_autoc_read	= &prot_autoc_read_generic,
+	.prot_autoc_write	= &prot_autoc_write_generic,
+	.enable_rx		= &ixgbe_enable_rx_generic,
+	.disable_rx		= &ixgbe_disable_rx_generic,
+};
+
+static const struct ixgbe_eeprom_operations eeprom_ops_82598 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_params		= &ixgbe_init_eeprom_params_generic,
 	.read			= &ixgbe_read_eerd_generic,
 	.write			= &ixgbe_write_eeprom_generic,
@@ -1313,13 +1877,20 @@ static struct ixgbe_eeprom_operations eeprom_ops_82598 = {
 	.update_checksum	= &ixgbe_update_eeprom_checksum_generic,
 };
 
+<<<<<<< HEAD
 static struct ixgbe_phy_operations phy_ops_82598 = {
 	.identify		= &ixgbe_identify_phy_generic,
 	.identify_sfp		= &ixgbe_identify_sfp_module_generic,
+=======
+static const struct ixgbe_phy_operations phy_ops_82598 = {
+	.identify		= &ixgbe_identify_phy_generic,
+	.identify_sfp		= &ixgbe_identify_module_generic,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init			= &ixgbe_init_phy_ops_82598,
 	.reset			= &ixgbe_reset_phy_generic,
 	.read_reg		= &ixgbe_read_phy_reg_generic,
 	.write_reg		= &ixgbe_write_phy_reg_generic,
+<<<<<<< HEAD
 	.setup_link		= &ixgbe_setup_phy_link_generic,
 	.setup_link_speed	= &ixgbe_setup_phy_link_speed_generic,
 	.read_i2c_eeprom	= &ixgbe_read_i2c_eeprom_82598,
@@ -1327,10 +1898,27 @@ static struct ixgbe_phy_operations phy_ops_82598 = {
 };
 
 struct ixgbe_info ixgbe_82598_info = {
+=======
+	.read_reg_mdi		= &ixgbe_read_phy_reg_mdi,
+	.write_reg_mdi		= &ixgbe_write_phy_reg_mdi,
+	.setup_link		= &ixgbe_setup_phy_link_generic,
+	.setup_link_speed	= &ixgbe_setup_phy_link_speed_generic,
+	.read_i2c_sff8472	= &ixgbe_read_i2c_sff8472_82598,
+	.read_i2c_eeprom	= &ixgbe_read_i2c_eeprom_82598,
+	.check_overtemp		= &ixgbe_tn_check_overtemp,
+};
+
+const struct ixgbe_info ixgbe_82598_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mac			= ixgbe_mac_82598EB,
 	.get_invariants		= &ixgbe_get_invariants_82598,
 	.mac_ops		= &mac_ops_82598,
 	.eeprom_ops		= &eeprom_ops_82598,
 	.phy_ops		= &phy_ops_82598,
+<<<<<<< HEAD
 };
 
+=======
+	.mvals			= ixgbe_mvals_8259X,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

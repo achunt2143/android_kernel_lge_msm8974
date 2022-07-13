@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2002-2004, Instant802 Networks, Inc.
  * Copyright 2005, Devicescape Software, Inc.
@@ -5,6 +6,13 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2002-2004, Instant802 Networks, Inc.
+ * Copyright 2005, Devicescape Software, Inc.
+ * Copyright (C) 2016 Intel Deutschland GmbH
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -142,6 +150,7 @@ static void tkip_mixing_phase2(const u8 *tk, struct tkip_ctx *ctx,
 /* Add TKIP IV and Ext. IV at @pos. @iv0, @iv1, and @iv2 are the first octets
  * of the IV. Returns pointer to the octet following IVs (i.e., beginning of
  * the packet payload). */
+<<<<<<< HEAD
 u8 *ieee80211_tkip_add_iv(u8 *pos, struct ieee80211_key *key)
 {
 	lockdep_assert_held(&key->u.tkip.txlock);
@@ -151,6 +160,16 @@ u8 *ieee80211_tkip_add_iv(u8 *pos, struct ieee80211_key *key)
 	put_unaligned_le32(key->u.tkip.tx.iv32, pos);
 	return pos + 4;
 }
+=======
+u8 *ieee80211_tkip_add_iv(u8 *pos, struct ieee80211_key_conf *keyconf, u64 pn)
+{
+	pos = write_tkip_iv(pos, TKIP_PN_TO_IV16(pn));
+	*pos++ = (keyconf->keyidx << 6) | (1 << 5) /* Ext IV */;
+	put_unaligned_le32(TKIP_PN_TO_IV32(pn), pos);
+	return pos + 4;
+}
+EXPORT_SYMBOL_GPL(ieee80211_tkip_add_iv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ieee80211_compute_tkip_p1k(struct ieee80211_key *key, u32 iv32)
 {
@@ -177,17 +196,29 @@ void ieee80211_get_tkip_p1k_iv(struct ieee80211_key_conf *keyconf,
 	struct ieee80211_key *key = (struct ieee80211_key *)
 			container_of(keyconf, struct ieee80211_key, conf);
 	struct tkip_ctx *ctx = &key->u.tkip.tx;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&key->u.tkip.txlock, flags);
 	ieee80211_compute_tkip_p1k(key, iv32);
 	memcpy(p1k, ctx->p1k, sizeof(ctx->p1k));
 	spin_unlock_irqrestore(&key->u.tkip.txlock, flags);
+=======
+
+	spin_lock_bh(&key->u.tkip.txlock);
+	ieee80211_compute_tkip_p1k(key, iv32);
+	memcpy(p1k, ctx->p1k, sizeof(ctx->p1k));
+	spin_unlock_bh(&key->u.tkip.txlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_get_tkip_p1k_iv);
 
 void ieee80211_get_tkip_rx_p1k(struct ieee80211_key_conf *keyconf,
+<<<<<<< HEAD
                                const u8 *ta, u32 iv32, u16 *p1k)
+=======
+			       const u8 *ta, u32 iv32, u16 *p1k)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u8 *tk = &keyconf->key[NL80211_TKIP_DATA_OFFSET_ENCR_KEY];
 	struct tkip_ctx ctx;
@@ -208,12 +239,20 @@ void ieee80211_get_tkip_p2k(struct ieee80211_key_conf *keyconf,
 	const u8 *data = (u8 *)hdr + ieee80211_hdrlen(hdr->frame_control);
 	u32 iv32 = get_unaligned_le32(&data[4]);
 	u16 iv16 = data[2] | (data[0] << 8);
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&key->u.tkip.txlock, flags);
 	ieee80211_compute_tkip_p1k(key, iv32);
 	tkip_mixing_phase2(tk, ctx, iv16, p2k);
 	spin_unlock_irqrestore(&key->u.tkip.txlock, flags);
+=======
+
+	spin_lock(&key->u.tkip.txlock);
+	ieee80211_compute_tkip_p1k(key, iv32);
+	tkip_mixing_phase2(tk, ctx, iv16, p2k);
+	spin_unlock(&key->u.tkip.txlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_get_tkip_p2k);
 
@@ -224,7 +263,11 @@ EXPORT_SYMBOL(ieee80211_get_tkip_p2k);
  * @payload_len is the length of payload (_not_ including IV/ICV length).
  * @ta is the transmitter addresses.
  */
+<<<<<<< HEAD
 int ieee80211_tkip_encrypt_data(struct crypto_cipher *tfm,
+=======
+int ieee80211_tkip_encrypt_data(struct arc4_ctx *ctx,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct ieee80211_key *key,
 				struct sk_buff *skb,
 				u8 *payload, size_t payload_len)
@@ -233,7 +276,11 @@ int ieee80211_tkip_encrypt_data(struct crypto_cipher *tfm,
 
 	ieee80211_get_tkip_p2k(&key->conf, skb, rc4key);
 
+<<<<<<< HEAD
 	return ieee80211_wep_encrypt_data(tfm, rc4key, 16,
+=======
+	return ieee80211_wep_encrypt_data(ctx, rc4key, 16,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  payload, payload_len);
 }
 
@@ -241,7 +288,11 @@ int ieee80211_tkip_encrypt_data(struct crypto_cipher *tfm,
  * beginning of the buffer containing IEEE 802.11 header payload, i.e.,
  * including IV, Ext. IV, real data, Michael MIC, ICV. @payload_len is the
  * length of payload, including IV, Ext. IV, MIC, ICV.  */
+<<<<<<< HEAD
 int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
+=======
+int ieee80211_tkip_decrypt_data(struct arc4_ctx *ctx,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct ieee80211_key *key,
 				u8 *payload, size_t payload_len, u8 *ta,
 				u8 *ra, int only_iv, int queue,
@@ -252,6 +303,10 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 	u8 rc4key[16], keyid, *pos = payload;
 	int res;
 	const u8 *tk = &key->conf.key[NL80211_TKIP_DATA_OFFSET_ENCR_KEY];
+<<<<<<< HEAD
+=======
+	struct tkip_ctx_rx *rx_ctx = &key->u.tkip.rx[queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (payload_len < 12)
 		return -1;
@@ -260,6 +315,7 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 	keyid = pos[3];
 	iv32 = get_unaligned_le32(pos + 4);
 	pos += 8;
+<<<<<<< HEAD
 #ifdef CONFIG_MAC80211_TKIP_DEBUG
 	{
 		int i;
@@ -271,6 +327,8 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 		       iv16, iv32);
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(keyid & (1 << 5)))
 		return TKIP_DECRYPT_NO_EXT_IV;
@@ -278,6 +336,7 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 	if ((keyid >> 6) != key->conf.keyidx)
 		return TKIP_DECRYPT_INVALID_KEYIDX;
 
+<<<<<<< HEAD
 	if (key->u.tkip.rx[queue].state != TKIP_STATE_NOT_INIT &&
 	    (iv32 < key->u.tkip.rx[queue].iv32 ||
 	     (iv32 == key->u.tkip.rx[queue].iv32 &&
@@ -322,12 +381,46 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 	if (key->local->ops->update_tkip_key &&
 	    key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE &&
 	    key->u.tkip.rx[queue].state != TKIP_STATE_PHASE1_HW_UPLOADED) {
+=======
+	/* Reject replays if the received TSC is smaller than or equal to the
+	 * last received value in a valid message, but with an exception for
+	 * the case where a new key has been set and no valid frame using that
+	 * key has yet received and the local RSC was initialized to 0. This
+	 * exception allows the very first frame sent by the transmitter to be
+	 * accepted even if that transmitter were to use TSC 0 (IEEE 802.11
+	 * described TSC to be initialized to 1 whenever a new key is taken into
+	 * use).
+	 */
+	if (iv32 < rx_ctx->iv32 ||
+	    (iv32 == rx_ctx->iv32 &&
+	     (iv16 < rx_ctx->iv16 ||
+	      (iv16 == rx_ctx->iv16 &&
+	       (rx_ctx->iv32 || rx_ctx->iv16 ||
+		rx_ctx->ctx.state != TKIP_STATE_NOT_INIT)))))
+		return TKIP_DECRYPT_REPLAY;
+
+	if (only_iv) {
+		res = TKIP_DECRYPT_OK;
+		rx_ctx->ctx.state = TKIP_STATE_PHASE1_HW_UPLOADED;
+		goto done;
+	}
+
+	if (rx_ctx->ctx.state == TKIP_STATE_NOT_INIT ||
+	    rx_ctx->iv32 != iv32) {
+		/* IV16 wrapped around - perform TKIP phase 1 */
+		tkip_mixing_phase1(tk, &rx_ctx->ctx, ta, iv32);
+	}
+	if (key->local->ops->update_tkip_key &&
+	    key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE &&
+	    rx_ctx->ctx.state != TKIP_STATE_PHASE1_HW_UPLOADED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ieee80211_sub_if_data *sdata = key->sdata;
 
 		if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
 			sdata = container_of(key->sdata->bss,
 					struct ieee80211_sub_if_data, u.ap);
 		drv_update_tkip_key(key->local, sdata, &key->conf, key->sta,
+<<<<<<< HEAD
 				iv32, key->u.tkip.rx[queue].p1k);
 		key->u.tkip.rx[queue].state = TKIP_STATE_PHASE1_HW_UPLOADED;
 	}
@@ -344,6 +437,15 @@ int ieee80211_tkip_decrypt_data(struct crypto_cipher *tfm,
 #endif
 
 	res = ieee80211_wep_decrypt_data(tfm, rc4key, 16, pos, payload_len - 12);
+=======
+				iv32, rx_ctx->ctx.p1k);
+		rx_ctx->ctx.state = TKIP_STATE_PHASE1_HW_UPLOADED;
+	}
+
+	tkip_mixing_phase2(tk, &rx_ctx->ctx, iv16, rc4key);
+
+	res = ieee80211_wep_decrypt_data(ctx, rc4key, 16, pos, payload_len - 12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  done:
 	if (res == TKIP_DECRYPT_OK) {
 		/*

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_PAGE_64_H
 #define _ASM_POWERPC_PAGE_64_H
 
 /*
  * Copyright (C) 2001 PPC64 Team, IBM Corp
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,6 +15,12 @@
  * 2 of the License, or (at your option) any later version.
  */
 
+=======
+ */
+
+#include <asm/asm-const.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We always define HW_PAGE_SHIFT to 12 as use of 64K pages remains Linux
  * specific, every notion of page number shared with the firmware, TCEs,
@@ -42,6 +53,7 @@
 
 typedef unsigned long pte_basic_t;
 
+<<<<<<< HEAD
 static __inline__ void clear_page(void *addr)
 {
 	unsigned long lines, line_size;
@@ -56,6 +68,42 @@ static __inline__ void clear_page(void *addr)
 	bdnz+	1b"
         : "=r" (addr)
         : "r" (lines), "0" (addr), "r" (line_size)
+=======
+static inline void clear_page(void *addr)
+{
+	unsigned long iterations;
+	unsigned long onex, twox, fourx, eightx;
+
+	iterations = ppc64_caches.l1d.blocks_per_page / 8;
+
+	/*
+	 * Some verisions of gcc use multiply instructions to
+	 * calculate the offsets so lets give it a hand to
+	 * do better.
+	 */
+	onex = ppc64_caches.l1d.block_size;
+	twox = onex << 1;
+	fourx = onex << 2;
+	eightx = onex << 3;
+
+	asm volatile(
+	"mtctr	%1	# clear_page\n\
+	.balign	16\n\
+1:	dcbz	0,%0\n\
+	dcbz	%3,%0\n\
+	dcbz	%4,%0\n\
+	dcbz	%5,%0\n\
+	dcbz	%6,%0\n\
+	dcbz	%7,%0\n\
+	dcbz	%8,%0\n\
+	dcbz	%9,%0\n\
+	add	%0,%0,%10\n\
+	bdnz+	1b"
+	: "=&r" (addr)
+	: "r" (iterations), "0" (addr), "b" (onex), "b" (twox),
+		"b" (twox+onex), "b" (fourx), "b" (fourx+onex),
+		"b" (twox+fourx), "b" (eightx-onex), "r" (eightx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "ctr", "memory");
 }
 
@@ -66,6 +114,7 @@ extern u64 ppc64_pft_size;
 
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_MM_SLICES
 
 #define SLICE_LOW_SHIFT		28
@@ -136,6 +185,8 @@ do {						\
 
 #endif /* !CONFIG_HUGETLB_PAGE */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VM_DATA_DEFAULT_FLAGS \
 	(is_32bit_task() ? \
 	 VM_DATA_DEFAULT_FLAGS32 : VM_DATA_DEFAULT_FLAGS64)
@@ -146,11 +197,16 @@ do {						\
  * stack by default, so in the absence of a PT_GNU_STACK program header
  * we turn execute permission off.
  */
+<<<<<<< HEAD
 #define VM_STACK_DEFAULT_FLAGS32	(VM_READ | VM_WRITE | VM_EXEC | \
 					 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
 
 #define VM_STACK_DEFAULT_FLAGS64	(VM_READ | VM_WRITE | \
 					 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+=======
+#define VM_STACK_DEFAULT_FLAGS32	VM_DATA_FLAGS_EXEC
+#define VM_STACK_DEFAULT_FLAGS64	VM_DATA_FLAGS_NON_EXEC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VM_STACK_DEFAULT_FLAGS \
 	(is_32bit_task() ? \

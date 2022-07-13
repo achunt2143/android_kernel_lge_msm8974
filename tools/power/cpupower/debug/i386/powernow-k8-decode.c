@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  *  (C) 2004 Bruno Ducrot <ducrot@poupinou.org>
  *
  *  Licensed under the terms of the GNU GPL License version 2.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  (C) 2004 Bruno Ducrot <ducrot@poupinou.org>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on code found in
  * linux/arch/i386/kernel/cpu/cpufreq/powernow-k8.c
  * and originally developed by Paul Devriendt

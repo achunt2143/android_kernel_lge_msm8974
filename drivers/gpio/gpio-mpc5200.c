@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC52xx gpio driver
  *
  * Copyright (c) 2008 Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -15,17 +20,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/of.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/of_gpio.h>
 #include <linux/io.h>
 #include <linux/of_platform.h>
 #include <linux/module.h>
 
 #include <asm/gpio.h>
+=======
+#include <linux/gpio/legacy-of-mm-gpiochip.h>
+#include <linux/io.h>
+#include <linux/platform_device.h>
+#include <linux/module.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpc52xx.h>
 #include <sysdev/fsl_soc.h>
 
@@ -71,8 +86,12 @@ static inline void
 __mpc52xx_wkup_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_gpio_wkup __iomem *regs = mm_gc->regs;
 
 	if (val)
@@ -100,8 +119,12 @@ mpc52xx_wkup_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 static int mpc52xx_wkup_gpio_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_gpio_wkup __iomem *regs = mm_gc->regs;
 	unsigned long flags;
 
@@ -125,8 +148,12 @@ mpc52xx_wkup_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
 	struct mpc52xx_gpio_wkup __iomem *regs = mm_gc->regs;
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&gpio_lock, flags);
@@ -148,17 +175,30 @@ mpc52xx_wkup_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit mpc52xx_wkup_gpiochip_probe(struct platform_device *ofdev)
+=======
+static int mpc52xx_wkup_gpiochip_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_gpiochip *chip;
 	struct mpc52xx_gpio_wkup __iomem *regs;
 	struct gpio_chip *gc;
 	int ret;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
+=======
+	chip = devm_kzalloc(&ofdev->dev, sizeof(*chip), GFP_KERNEL);
+	if (!chip)
+		return -ENOMEM;
+
+	platform_set_drvdata(ofdev, chip);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gc = &chip->mmchip.gc;
 
 	gc->ngpio            = 8;
@@ -167,7 +207,11 @@ static int __devinit mpc52xx_wkup_gpiochip_probe(struct platform_device *ofdev)
 	gc->get              = mpc52xx_wkup_gpio_get;
 	gc->set              = mpc52xx_wkup_gpio_set;
 
+<<<<<<< HEAD
 	ret = of_mm_gpiochip_add(ofdev->dev.of_node, &chip->mmchip);
+=======
+	ret = of_mm_gpiochip_add_data(ofdev->dev.of_node, &chip->mmchip, chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -179,9 +223,17 @@ static int __devinit mpc52xx_wkup_gpiochip_probe(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mpc52xx_gpiochip_remove(struct platform_device *ofdev)
 {
 	return -EBUSY;
+=======
+static void mpc52xx_gpiochip_remove(struct platform_device *ofdev)
+{
+	struct mpc52xx_gpiochip *chip = platform_get_drvdata(ofdev);
+
+	of_mm_gpiochip_remove(&chip->mmchip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id mpc52xx_wkup_gpiochip_match[] = {
@@ -192,11 +244,18 @@ static const struct of_device_id mpc52xx_wkup_gpiochip_match[] = {
 static struct platform_driver mpc52xx_wkup_gpiochip_driver = {
 	.driver = {
 		.name = "mpc5200-gpio-wkup",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = mpc52xx_wkup_gpiochip_match,
 	},
 	.probe = mpc52xx_wkup_gpiochip_probe,
 	.remove = mpc52xx_gpiochip_remove,
+=======
+		.of_match_table = mpc52xx_wkup_gpiochip_match,
+	},
+	.probe = mpc52xx_wkup_gpiochip_probe,
+	.remove_new = mpc52xx_gpiochip_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -231,8 +290,12 @@ static inline void
 __mpc52xx_simple_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_gpio __iomem *regs = mm_gc->regs;
 
 	if (val)
@@ -259,8 +322,12 @@ mpc52xx_simple_gpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 static int mpc52xx_simple_gpio_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_gpio __iomem *regs = mm_gc->regs;
 	unsigned long flags;
 
@@ -283,8 +350,12 @@ static int
 mpc52xx_simple_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct of_mm_gpio_chip *mm_gc = to_of_mm_gpio_chip(gc);
+<<<<<<< HEAD
 	struct mpc52xx_gpiochip *chip = container_of(mm_gc,
 			struct mpc52xx_gpiochip, mmchip);
+=======
+	struct mpc52xx_gpiochip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_gpio __iomem *regs = mm_gc->regs;
 	unsigned long flags;
 
@@ -308,17 +379,30 @@ mpc52xx_simple_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit mpc52xx_simple_gpiochip_probe(struct platform_device *ofdev)
+=======
+static int mpc52xx_simple_gpiochip_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_gpiochip *chip;
 	struct gpio_chip *gc;
 	struct mpc52xx_gpio __iomem *regs;
 	int ret;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
+=======
+	chip = devm_kzalloc(&ofdev->dev, sizeof(*chip), GFP_KERNEL);
+	if (!chip)
+		return -ENOMEM;
+
+	platform_set_drvdata(ofdev, chip);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gc = &chip->mmchip.gc;
 
 	gc->ngpio            = 32;
@@ -327,7 +411,11 @@ static int __devinit mpc52xx_simple_gpiochip_probe(struct platform_device *ofdev
 	gc->get              = mpc52xx_simple_gpio_get;
 	gc->set              = mpc52xx_simple_gpio_set;
 
+<<<<<<< HEAD
 	ret = of_mm_gpiochip_add(ofdev->dev.of_node, &chip->mmchip);
+=======
+	ret = of_mm_gpiochip_add_data(ofdev->dev.of_node, &chip->mmchip, chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -347,15 +435,28 @@ static const struct of_device_id mpc52xx_simple_gpiochip_match[] = {
 static struct platform_driver mpc52xx_simple_gpiochip_driver = {
 	.driver = {
 		.name = "mpc5200-gpio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = mpc52xx_simple_gpiochip_match,
 	},
 	.probe = mpc52xx_simple_gpiochip_probe,
 	.remove = mpc52xx_gpiochip_remove,
+=======
+		.of_match_table = mpc52xx_simple_gpiochip_match,
+	},
+	.probe = mpc52xx_simple_gpiochip_probe,
+	.remove_new = mpc52xx_gpiochip_remove,
+};
+
+static struct platform_driver * const drivers[] = {
+	&mpc52xx_wkup_gpiochip_driver,
+	&mpc52xx_simple_gpiochip_driver,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mpc52xx_gpio_init(void)
 {
+<<<<<<< HEAD
 	if (platform_driver_register(&mpc52xx_wkup_gpiochip_driver))
 		printk(KERN_ERR "Unable to register wakeup GPIO driver\n");
 
@@ -370,6 +471,19 @@ static int __init mpc52xx_gpio_init(void)
 subsys_initcall(mpc52xx_gpio_init);
 
 /* No exit call at the moment as we cannot unregister of gpio chips */
+=======
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+}
+
+/* Make sure we get initialised before anyone else tries to use us */
+subsys_initcall(mpc52xx_gpio_init);
+
+static void __exit mpc52xx_gpio_exit(void)
+{
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+}
+module_exit(mpc52xx_gpio_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Freescale MPC52xx gpio driver");
 MODULE_AUTHOR("Sascha Hauer <s.hauer@pengutronix.de");

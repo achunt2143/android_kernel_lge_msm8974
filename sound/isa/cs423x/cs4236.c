@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Driver for generic CS4232/CS4235/CS4236/CS4236B/CS4237B/CS4238B/CS4239 chips
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Driver for generic CS4232/CS4235/CS4236/CS4236B/CS4237B/CS4238B/CS4239 chips
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -33,6 +40,7 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cirrus Logic CS4232-9");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Turtle Beach,TBS-2000},"
 		"{Turtle Beach,Tropez Plus},"
 		"{SIC CrystalWave 32},"
@@ -67,6 +75,8 @@ MODULE_SUPPORTED_DEVICE("{{Turtle Beach,TBS-2000},"
 		"{Turtle Beach,Malibu},"
 		"{Unknown,Digital PC 5000 Onboard}}");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("snd_cs4232");
 
 #define IDENT "CS4232+"
@@ -98,6 +108,7 @@ MODULE_PARM_DESC(enable, "Enable " IDENT " soundcard.");
 module_param_array(isapnp, bool, NULL, 0444);
 MODULE_PARM_DESC(isapnp, "ISA PnP detection for specified soundcard.");
 #endif
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for " IDENT " driver.");
 module_param_array(cport, long, NULL, 0444);
@@ -115,6 +126,25 @@ MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " IDENT " driver.");
 module_param_array(dma1, int, NULL, 0444);
 MODULE_PARM_DESC(dma1, "DMA1 # for " IDENT " driver.");
 module_param_array(dma2, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for " IDENT " driver.");
+module_param_hw_array(cport, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(cport, "Control port # for " IDENT " driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for " IDENT " driver.");
+module_param_hw_array(fm_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(fm_port, "FM port # for " IDENT " driver.");
+module_param_hw_array(sb_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(sb_port, "SB port # for " IDENT " driver (optional).");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for " IDENT " driver.");
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " IDENT " driver.");
+module_param_hw_array(dma1, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma1, "DMA1 # for " IDENT " driver.");
+module_param_hw_array(dma2, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "DMA2 # for " IDENT " driver.");
 
 #ifdef CONFIG_PNP
@@ -125,7 +155,10 @@ static int pnp_registered;
 
 struct snd_card_cs4236 {
 	struct snd_wss *chip;
+<<<<<<< HEAD
 	struct resource *res_sb_port;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PNP
 	struct pnp_dev *wss;
 	struct pnp_dev *ctrl;
@@ -149,7 +182,11 @@ static const struct pnp_device_id snd_cs423x_pnpbiosids[] = {
 MODULE_DEVICE_TABLE(pnp, snd_cs423x_pnpbiosids);
 
 #define CS423X_ISAPNP_DRIVER	"cs4232_isapnp"
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_cs423x_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_cs423x_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Philips PCA70PS */
 	{ .id = "CSC0d32", .devs = { { "CSC0000" }, { "CSC0010" }, { "PNPb006" } } },
 	/* TerraTec Maestro 32/96 (CS4232) */
@@ -251,7 +288,11 @@ static struct pnp_card_device_id snd_cs423x_pnpids[] = {
 MODULE_DEVICE_TABLE(pnp_card, snd_cs423x_pnpids);
 
 /* WSS initialization */
+<<<<<<< HEAD
 static int __devinit snd_cs423x_pnp_init_wss(int dev, struct pnp_dev *pdev)
+=======
+static int snd_cs423x_pnp_init_wss(int dev, struct pnp_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pnp_activate_dev(pdev) < 0) {
 		printk(KERN_ERR IDENT " WSS PnP configure failed for WSS (out of resources?)\n");
@@ -272,7 +313,11 @@ static int __devinit snd_cs423x_pnp_init_wss(int dev, struct pnp_dev *pdev)
 }
 
 /* CTRL initialization */
+<<<<<<< HEAD
 static int __devinit snd_cs423x_pnp_init_ctrl(int dev, struct pnp_dev *pdev)
+=======
+static int snd_cs423x_pnp_init_ctrl(int dev, struct pnp_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pnp_activate_dev(pdev) < 0) {
 		printk(KERN_ERR IDENT " CTRL PnP configure failed for WSS (out of resources?)\n");
@@ -284,7 +329,11 @@ static int __devinit snd_cs423x_pnp_init_ctrl(int dev, struct pnp_dev *pdev)
 }
 
 /* MPU initialization */
+<<<<<<< HEAD
 static int __devinit snd_cs423x_pnp_init_mpu(int dev, struct pnp_dev *pdev)
+=======
+static int snd_cs423x_pnp_init_mpu(int dev, struct pnp_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pnp_activate_dev(pdev) < 0) {
 		printk(KERN_ERR IDENT " MPU401 PnP configure failed for WSS (out of resources?)\n");
@@ -293,7 +342,12 @@ static int __devinit snd_cs423x_pnp_init_mpu(int dev, struct pnp_dev *pdev)
 	} else {
 		mpu_port[dev] = pnp_port_start(pdev, 0);
 		if (mpu_irq[dev] >= 0 &&
+<<<<<<< HEAD
 		    pnp_irq_valid(pdev, 0) && pnp_irq(pdev, 0) >= 0) {
+=======
+		    pnp_irq_valid(pdev, 0) &&
+		    pnp_irq(pdev, 0) != (resource_size_t)-1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mpu_irq[dev] = pnp_irq(pdev, 0);
 		} else {
 			mpu_irq[dev] = -1;	/* disable interrupt */
@@ -303,9 +357,15 @@ static int __devinit snd_cs423x_pnp_init_mpu(int dev, struct pnp_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_cs423x_pnp(int dev, struct snd_card_cs4236 *acard,
 					 struct pnp_dev *pdev,
 					 struct pnp_dev *cdev)
+=======
+static int snd_card_cs423x_pnp(int dev, struct snd_card_cs4236 *acard,
+			       struct pnp_dev *pdev,
+			       struct pnp_dev *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acard->wss = pdev;
 	if (snd_cs423x_pnp_init_wss(dev, acard->wss) < 0)
@@ -317,9 +377,15 @@ static int __devinit snd_card_cs423x_pnp(int dev, struct snd_card_cs4236 *acard,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_cs423x_pnpc(int dev, struct snd_card_cs4236 *acard,
 					  struct pnp_card_link *card,
 					  const struct pnp_card_device_id *id)
+=======
+static int snd_card_cs423x_pnpc(int dev, struct snd_card_cs4236 *acard,
+				struct pnp_card_link *card,
+				const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acard->wss = pnp_request_card_device(card, id->devs[0].id, NULL);
 	if (acard->wss == NULL)
@@ -357,6 +423,7 @@ static int __devinit snd_card_cs423x_pnpc(int dev, struct snd_card_cs4236 *acard
 #define is_isapnp_selected(dev)		0
 #endif
 
+<<<<<<< HEAD
 static void snd_card_cs4236_free(struct snd_card *card)
 {
 	struct snd_card_cs4236 *acard = card->private_data;
@@ -365,33 +432,60 @@ static void snd_card_cs4236_free(struct snd_card *card)
 }
 
 static int snd_cs423x_card_new(int dev, struct snd_card **cardp)
+=======
+static int snd_cs423x_card_new(struct device *pdev, int dev,
+			       struct snd_card **cardp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_card_cs4236), &card);
 	if (err < 0)
 		return err;
 	card->private_free = snd_card_cs4236_free;
+=======
+	err = snd_devm_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_card_cs4236), &card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cardp = card;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 {
 	struct snd_card_cs4236 *acard;
 	struct snd_pcm *pcm;
+=======
+static int snd_cs423x_probe(struct snd_card *card, int dev)
+{
+	struct snd_card_cs4236 *acard;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_wss *chip;
 	struct snd_opl3 *opl3;
 	int err;
 
 	acard = card->private_data;
+<<<<<<< HEAD
 	if (sb_port[dev] > 0 && sb_port[dev] != SNDRV_AUTO_PORT)
 		if ((acard->res_sb_port = request_region(sb_port[dev], 16, IDENT " SB")) == NULL) {
 			printk(KERN_ERR IDENT ": unable to register SB port at 0x%lx\n", sb_port[dev]);
 			return -EBUSY;
 		}
+=======
+	if (sb_port[dev] > 0 && sb_port[dev] != SNDRV_AUTO_PORT) {
+		if (!devm_request_region(card->dev, sb_port[dev], 16,
+					 IDENT " SB")) {
+			printk(KERN_ERR IDENT ": unable to register SB port at 0x%lx\n", sb_port[dev]);
+			return -EBUSY;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_cs4236_create(card, port[dev], cport[dev],
 			     irq[dev],
@@ -403,7 +497,11 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 	acard->chip = chip;
 	if (chip->hardware & WSS_HW_CS4236B_MASK) {
 
+<<<<<<< HEAD
 		err = snd_cs4236_pcm(chip, 0, &pcm);
+=======
+		err = snd_cs4236_pcm(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 
@@ -411,7 +509,11 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 		if (err < 0)
 			return err;
 	} else {
+<<<<<<< HEAD
 		err = snd_wss_pcm(chip, 0, &pcm);
+=======
+		err = snd_wss_pcm(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 
@@ -419,6 +521,7 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 		if (err < 0)
 			return err;
 	}
+<<<<<<< HEAD
 	strcpy(card->driver, pcm->name);
 	strcpy(card->shortname, pcm->name);
 	sprintf(card->longname, "%s at 0x%lx, irq %i, dma %i",
@@ -430,6 +533,21 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 		sprintf(card->longname + strlen(card->longname), "&%d", dma2[dev]);
 
 	err = snd_wss_timer(chip, 0, NULL);
+=======
+	strscpy(card->driver, chip->pcm->name, sizeof(card->driver));
+	strscpy(card->shortname, chip->pcm->name, sizeof(card->shortname));
+	if (dma2[dev] < 0)
+		scnprintf(card->longname, sizeof(card->longname),
+			  "%s at 0x%lx, irq %i, dma %i",
+			  chip->pcm->name, chip->port, irq[dev], dma1[dev]);
+	else
+		scnprintf(card->longname, sizeof(card->longname),
+			  "%s at 0x%lx, irq %i, dma %i&%d",
+			  chip->pcm->name, chip->port, irq[dev], dma1[dev],
+			  dma2[dev]);
+
+	err = snd_wss_timer(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -439,7 +557,12 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 				    OPL3_HW_OPL3_CS, 0, &opl3) < 0) {
 			printk(KERN_WARNING IDENT ": OPL3 not detected\n");
 		} else {
+<<<<<<< HEAD
 			if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0)
+=======
+			err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
@@ -456,8 +579,13 @@ static int __devinit snd_cs423x_probe(struct snd_card *card, int dev)
 	return snd_card_register(card);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cs423x_isa_match(struct device *pdev,
 					  unsigned int dev)
+=======
+static int snd_cs423x_isa_match(struct device *pdev,
+				unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev] || is_isapnp_selected(dev))
 		return 0;
@@ -481,12 +609,18 @@ static int __devinit snd_cs423x_isa_match(struct device *pdev,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cs423x_isa_probe(struct device *pdev,
 					  unsigned int dev)
+=======
+static int snd_cs423x_isa_probe(struct device *pdev,
+				unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_cs423x_card_new(dev, &card);
 	if (err < 0)
 		return err;
@@ -496,10 +630,19 @@ static int __devinit snd_cs423x_isa_probe(struct device *pdev,
 		return err;
 	}
 
+=======
+	err = snd_cs423x_card_new(pdev, dev, &card);
+	if (err < 0)
+		return err;
+	err = snd_cs423x_probe(card, dev);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(pdev, card);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit snd_cs423x_isa_remove(struct device *pdev,
 					   unsigned int dev)
 {
@@ -508,6 +651,8 @@ static int __devexit snd_cs423x_isa_remove(struct device *pdev,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_cs423x_suspend(struct snd_card *card)
 {
@@ -540,7 +685,10 @@ static int snd_cs423x_isa_resume(struct device *dev, unsigned int n)
 static struct isa_driver cs423x_isa_driver = {
 	.match		= snd_cs423x_isa_match,
 	.probe		= snd_cs423x_isa_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_cs423x_isa_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cs423x_isa_suspend,
 	.resume		= snd_cs423x_isa_resume,
@@ -552,13 +700,22 @@ static struct isa_driver cs423x_isa_driver = {
 
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static int __devinit snd_cs423x_pnpbios_detect(struct pnp_dev *pdev,
 					       const struct pnp_device_id *id)
+=======
+static int snd_cs423x_pnpbios_detect(struct pnp_dev *pdev,
+				     const struct pnp_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	int err;
 	struct snd_card *card;
+<<<<<<< HEAD
 	struct pnp_dev *cdev;
+=======
+	struct pnp_dev *cdev, *iter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char cid[PNP_ID_LEN];
 
 	if (pnp_device_is_isapnp(pdev))
@@ -574,16 +731,27 @@ static int __devinit snd_cs423x_pnpbios_detect(struct pnp_dev *pdev,
 	strcpy(cid, pdev->id[0].id);
 	cid[5] = '1';
 	cdev = NULL;
+<<<<<<< HEAD
 	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
 		if (!strcmp(cdev->id[0].id, cid))
 			break;
 	}
 	err = snd_cs423x_card_new(dev, &card);
+=======
+	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
+		if (!strcmp(iter->id[0].id, cid)) {
+			cdev = iter;
+			break;
+		}
+	}
+	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 	if (err < 0) {
 		printk(KERN_ERR "PnP BIOS detection failed for " IDENT "\n");
+<<<<<<< HEAD
 		snd_card_free(card);
 		return err;
 	}
@@ -592,17 +760,27 @@ static int __devinit snd_cs423x_pnpbios_detect(struct pnp_dev *pdev,
 		snd_card_free(card);
 		return err;
 	}
+=======
+		return err;
+	}
+	err = snd_cs423x_probe(card, dev);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_drvdata(pdev, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_cs423x_pnp_remove(struct pnp_dev *pdev)
 {
 	snd_card_free(pnp_get_drvdata(pdev));
 	pnp_set_drvdata(pdev, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_cs423x_pnp_suspend(struct pnp_dev *pdev, pm_message_t state)
 {
@@ -619,15 +797,23 @@ static struct pnp_driver cs423x_pnp_driver = {
 	.name = "cs423x-pnpbios",
 	.id_table = snd_cs423x_pnpbiosids,
 	.probe = snd_cs423x_pnpbios_detect,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_cs423x_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cs423x_pnp_suspend,
 	.resume		= snd_cs423x_pnp_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit snd_cs423x_pnpc_detect(struct pnp_card_link *pcard,
 					    const struct pnp_card_device_id *pid)
+=======
+static int snd_cs423x_pnpc_detect(struct pnp_card_link *pcard,
+				  const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -640,6 +826,7 @@ static int __devinit snd_cs423x_pnpc_detect(struct pnp_card_link *pcard,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	res = snd_cs423x_card_new(dev, &card);
 	if (res < 0)
 		return res;
@@ -654,17 +841,34 @@ static int __devinit snd_cs423x_pnpc_detect(struct pnp_card_link *pcard,
 		snd_card_free(card);
 		return res;
 	}
+=======
+	res = snd_cs423x_card_new(&pcard->card->dev, dev, &card);
+	if (res < 0)
+		return res;
+	res = snd_card_cs423x_pnpc(dev, card->private_data, pcard, pid);
+	if (res < 0) {
+		printk(KERN_ERR "isapnp detection failed and probing for " IDENT
+		       " is not supported\n");
+		return res;
+	}
+	res = snd_cs423x_probe(card, dev);
+	if (res < 0)
+		return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_cs423x_pnpc_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_cs423x_pnpc_suspend(struct pnp_card_link *pcard, pm_message_t state)
 {
@@ -682,7 +886,10 @@ static struct pnp_card_driver cs423x_pnpc_driver = {
 	.name = CS423X_ISAPNP_DRIVER,
 	.id_table = snd_cs423x_pnpids,
 	.probe = snd_cs423x_pnpc_detect,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_cs423x_pnpc_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cs423x_pnpc_suspend,
 	.resume		= snd_cs423x_pnpc_resume,

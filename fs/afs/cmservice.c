@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AFS Cache Manager Service
  *
  * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -16,6 +23,7 @@
 #include <linux/ip.h>
 #include "internal.h"
 #include "afs_cm.h"
+<<<<<<< HEAD
 
 #if 0
 struct workqueue_struct *afs_cm_workqueue;
@@ -31,6 +39,26 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *, struct sk_buff *, bool);
 static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *,
 						 struct sk_buff *, bool);
 static void afs_cm_destructor(struct afs_call *);
+=======
+#include "protocol_yfs.h"
+#define RXRPC_TRACE_ONLY_DEFINE_ENUMS
+#include <trace/events/rxrpc.h>
+
+static int afs_deliver_cb_init_call_back_state(struct afs_call *);
+static int afs_deliver_cb_init_call_back_state3(struct afs_call *);
+static int afs_deliver_cb_probe(struct afs_call *);
+static int afs_deliver_cb_callback(struct afs_call *);
+static int afs_deliver_cb_probe_uuid(struct afs_call *);
+static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *);
+static void afs_cm_destructor(struct afs_call *);
+static void SRXAFSCB_CallBack(struct work_struct *);
+static void SRXAFSCB_InitCallBackState(struct work_struct *);
+static void SRXAFSCB_Probe(struct work_struct *);
+static void SRXAFSCB_ProbeUuid(struct work_struct *);
+static void SRXAFSCB_TellMeAboutYourself(struct work_struct *);
+
+static int afs_deliver_yfs_cb_callback(struct afs_call *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CB.CallBack operation type
@@ -38,8 +66,13 @@ static void afs_cm_destructor(struct afs_call *);
 static const struct afs_call_type afs_SRXCBCallBack = {
 	.name		= "CB.CallBack",
 	.deliver	= afs_deliver_cb_callback,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_CallBack,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -48,8 +81,13 @@ static const struct afs_call_type afs_SRXCBCallBack = {
 static const struct afs_call_type afs_SRXCBInitCallBackState = {
 	.name		= "CB.InitCallBackState",
 	.deliver	= afs_deliver_cb_init_call_back_state,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_InitCallBackState,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -58,8 +96,13 @@ static const struct afs_call_type afs_SRXCBInitCallBackState = {
 static const struct afs_call_type afs_SRXCBInitCallBackState3 = {
 	.name		= "CB.InitCallBackState3",
 	.deliver	= afs_deliver_cb_init_call_back_state3,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_InitCallBackState,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -68,8 +111,13 @@ static const struct afs_call_type afs_SRXCBInitCallBackState3 = {
 static const struct afs_call_type afs_SRXCBProbe = {
 	.name		= "CB.Probe",
 	.deliver	= afs_deliver_cb_probe,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_Probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -78,8 +126,13 @@ static const struct afs_call_type afs_SRXCBProbe = {
 static const struct afs_call_type afs_SRXCBProbeUuid = {
 	.name		= "CB.ProbeUuid",
 	.deliver	= afs_deliver_cb_probe_uuid,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_ProbeUuid,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -88,8 +141,23 @@ static const struct afs_call_type afs_SRXCBProbeUuid = {
 static const struct afs_call_type afs_SRXCBTellMeAboutYourself = {
 	.name		= "CB.TellMeAboutYourself",
 	.deliver	= afs_deliver_cb_tell_me_about_yourself,
+<<<<<<< HEAD
 	.abort_to_error	= afs_abort_to_error,
 	.destructor	= afs_cm_destructor,
+=======
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_TellMeAboutYourself,
+};
+
+/*
+ * YFS CB.CallBack operation type
+ */
+static const struct afs_call_type afs_SRXYFSCB_CallBack = {
+	.name		= "YFSCB.CallBack",
+	.deliver	= afs_deliver_yfs_cb_callback,
+	.destructor	= afs_cm_destructor,
+	.work		= SRXAFSCB_CallBack,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -98,11 +166,17 @@ static const struct afs_call_type afs_SRXCBTellMeAboutYourself = {
  */
 bool afs_cm_incoming_call(struct afs_call *call)
 {
+<<<<<<< HEAD
 	u32 operation_id = ntohl(call->operation_ID);
 
 	_enter("{CB.OP %u}", operation_id);
 
 	switch (operation_id) {
+=======
+	_enter("{%u, CB.OP %u}", call->service_id, call->operation_ID);
+
+	switch (call->operation_ID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CBCallBack:
 		call->type = &afs_SRXCBCallBack;
 		return true;
@@ -115,15 +189,30 @@ bool afs_cm_incoming_call(struct afs_call *call)
 	case CBProbe:
 		call->type = &afs_SRXCBProbe;
 		return true;
+<<<<<<< HEAD
 	case CBTellMeAboutYourself:
 		call->type = &afs_SRXCBTellMeAboutYourself;
 		return true;
+=======
+	case CBProbeUuid:
+		call->type = &afs_SRXCBProbeUuid;
+		return true;
+	case CBTellMeAboutYourself:
+		call->type = &afs_SRXCBTellMeAboutYourself;
+		return true;
+	case YFSCBCallBack:
+		if (call->service_id != YFS_CM_SERVICE)
+			return false;
+		call->type = &afs_SRXYFSCB_CallBack;
+		return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return false;
 	}
 }
 
 /*
+<<<<<<< HEAD
  * clean up a cache manager call
  */
 static void afs_cm_destructor(struct afs_call *call)
@@ -132,12 +221,76 @@ static void afs_cm_destructor(struct afs_call *call)
 
 	afs_put_server(call->server);
 	call->server = NULL;
+=======
+ * Find the server record by peer address and record a probe to the cache
+ * manager from a server.
+ */
+static int afs_find_cm_server_by_peer(struct afs_call *call)
+{
+	struct sockaddr_rxrpc srx;
+	struct afs_server *server;
+	struct rxrpc_peer *peer;
+
+	peer = rxrpc_kernel_get_call_peer(call->net->socket, call->rxcall);
+
+	server = afs_find_server(call->net, peer);
+	if (!server) {
+		trace_afs_cm_no_server(call, &srx);
+		return 0;
+	}
+
+	call->server = server;
+	return 0;
+}
+
+/*
+ * Find the server record by server UUID and record a probe to the cache
+ * manager from a server.
+ */
+static int afs_find_cm_server_by_uuid(struct afs_call *call,
+				      struct afs_uuid *uuid)
+{
+	struct afs_server *server;
+
+	rcu_read_lock();
+	server = afs_find_server_by_uuid(call->net, call->request);
+	rcu_read_unlock();
+	if (!server) {
+		trace_afs_cm_no_server_u(call, call->request);
+		return 0;
+	}
+
+	call->server = server;
+	return 0;
+}
+
+/*
+ * Clean up a cache manager call.
+ */
+static void afs_cm_destructor(struct afs_call *call)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(call->buffer);
 	call->buffer = NULL;
 }
 
 /*
+<<<<<<< HEAD
  * allow the fileserver to see if the cache manager is still alive
+=======
+ * Abort a service call from within an action function.
+ */
+static void afs_abort_service_call(struct afs_call *call, u32 abort_code, int error,
+				   enum rxrpc_abort_reason why)
+{
+	rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
+				abort_code, error, why);
+	afs_set_call_complete(call, error, 0);
+}
+
+/*
+ * The server supplied a list of callbacks that it wanted to break.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void SRXAFSCB_CallBack(struct work_struct *work)
 {
@@ -145,6 +298,7 @@ static void SRXAFSCB_CallBack(struct work_struct *work)
 
 	_enter("");
 
+<<<<<<< HEAD
 	/* be sure to send the reply *before* attempting to spam the AFS server
 	 * with FSFetchStatus requests on the vnodes with broken callbacks lest
 	 * the AFS server get into a vicious cycle of trying to break further
@@ -153,12 +307,29 @@ static void SRXAFSCB_CallBack(struct work_struct *work)
 	afs_send_empty_reply(call);
 
 	afs_break_callbacks(call->server, call->count, call->request);
+=======
+	/* We need to break the callbacks before sending the reply as the
+	 * server holds up change visibility till it receives our reply so as
+	 * to maintain cache coherency.
+	 */
+	if (call->server) {
+		trace_afs_server(call->server->debug_id,
+				 refcount_read(&call->server->ref),
+				 atomic_read(&call->server->active),
+				 afs_server_trace_callback);
+		afs_break_callbacks(call->server, call->count, call->request);
+	}
+
+	afs_send_empty_reply(call);
+	afs_put_call(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave("");
 }
 
 /*
  * deliver request data to a CB.CallBack call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 				   bool last)
 {
@@ -185,10 +356,33 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		case -EAGAIN:	return 0;
 		default:	return ret;
 		}
+=======
+static int afs_deliver_cb_callback(struct afs_call *call)
+{
+	struct afs_callback_break *cb;
+	__be32 *bp;
+	int ret, loop;
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		afs_extract_to_tmp(call);
+		call->unmarshall++;
+
+		/* extract the FID array and its count in two steps */
+		fallthrough;
+	case 1:
+		_debug("extract FID count");
+		ret = afs_extract_data(call, true);
+		if (ret < 0)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		call->count = ntohl(call->tmp);
 		_debug("FID count: %u", call->count);
 		if (call->count > AFSCBMAX)
+<<<<<<< HEAD
 			return -EBADMSG;
 
 		call->buffer = kmalloc(call->count * 3 * 4, GFP_KERNEL);
@@ -210,6 +404,27 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 		_debug("unmarshall FID array");
 		call->request = kcalloc(call->count,
 					sizeof(struct afs_callback),
+=======
+			return afs_protocol_error(call, afs_eproto_cb_fid_count);
+
+		call->buffer = kmalloc(array3_size(call->count, 3, 4),
+				       GFP_KERNEL);
+		if (!call->buffer)
+			return -ENOMEM;
+		afs_extract_to_buf(call, call->count * 3 * 4);
+		call->unmarshall++;
+
+		fallthrough;
+	case 2:
+		_debug("extract FID array");
+		ret = afs_extract_data(call, true);
+		if (ret < 0)
+			return ret;
+
+		_debug("unmarshall FID array");
+		call->request = kcalloc(call->count,
+					sizeof(struct afs_callback_break),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 		if (!call->request)
 			return -ENOMEM;
@@ -220,6 +435,7 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 			cb->fid.vid	= ntohl(*bp++);
 			cb->fid.vnode	= ntohl(*bp++);
 			cb->fid.unique	= ntohl(*bp++);
+<<<<<<< HEAD
 			cb->type	= AFSCM_CB_UNTYPED;
 		}
 
@@ -291,6 +507,51 @@ static int afs_deliver_cb_callback(struct afs_call *call, struct sk_buff *skb,
 	INIT_WORK(&call->work, SRXAFSCB_CallBack);
 	queue_work(afs_wq, &call->work);
 	return 0;
+=======
+		}
+
+		afs_extract_to_tmp(call);
+		call->unmarshall++;
+
+		/* extract the callback array and its count in two steps */
+		fallthrough;
+	case 3:
+		_debug("extract CB count");
+		ret = afs_extract_data(call, true);
+		if (ret < 0)
+			return ret;
+
+		call->count2 = ntohl(call->tmp);
+		_debug("CB count: %u", call->count2);
+		if (call->count2 != call->count && call->count2 != 0)
+			return afs_protocol_error(call, afs_eproto_cb_count);
+		call->iter = &call->def_iter;
+		iov_iter_discard(&call->def_iter, ITER_DEST, call->count2 * 3 * 4);
+		call->unmarshall++;
+
+		fallthrough;
+	case 4:
+		_debug("extract discard %zu/%u",
+		       iov_iter_count(call->iter), call->count2 * 3 * 4);
+
+		ret = afs_extract_data(call, false);
+		if (ret < 0)
+			return ret;
+
+		call->unmarshall++;
+		fallthrough;
+
+	case 5:
+		break;
+	}
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+
+	/* we'll need the file server record as that tells us which set of
+	 * vnodes to operate upon */
+	return afs_find_cm_server_by_peer(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -302,14 +563,22 @@ static void SRXAFSCB_InitCallBackState(struct work_struct *work)
 
 	_enter("{%p}", call->server);
 
+<<<<<<< HEAD
 	afs_init_callback_state(call->server);
 	afs_send_empty_reply(call);
+=======
+	if (call->server)
+		afs_init_callback_state(call->server);
+	afs_send_empty_reply(call);
+	afs_put_call(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave("");
 }
 
 /*
  * deliver request data to a CB.InitCallBackState call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_init_call_back_state(struct afs_call *call,
 					       struct sk_buff *skb,
 					       bool last)
@@ -338,11 +607,28 @@ static int afs_deliver_cb_init_call_back_state(struct afs_call *call,
 	INIT_WORK(&call->work, SRXAFSCB_InitCallBackState);
 	queue_work(afs_wq, &call->work);
 	return 0;
+=======
+static int afs_deliver_cb_init_call_back_state(struct afs_call *call)
+{
+	int ret;
+
+	_enter("");
+
+	afs_extract_discard(call, 0);
+	ret = afs_extract_data(call, false);
+	if (ret < 0)
+		return ret;
+
+	/* we'll need the file server record as that tells us which set of
+	 * vnodes to operate upon */
+	return afs_find_cm_server_by_peer(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * deliver request data to a CB.InitCallBackState3 call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_init_call_back_state3(struct afs_call *call,
 						struct sk_buff *skb,
 						bool last)
@@ -433,12 +719,16 @@ static void SRXAFSCB_ProbeUuid(struct work_struct *work)
  */
 static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 				     bool last)
+=======
+static int afs_deliver_cb_init_call_back_state3(struct afs_call *call)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct afs_uuid *r;
 	unsigned loop;
 	__be32 *b;
 	int ret;
 
+<<<<<<< HEAD
 	_enter("{%u},{%u},%d", call->unmarshall, skb->len, last);
 
 	if (skb->len > 0)
@@ -458,6 +748,24 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 		_debug("extract UUID");
 		ret = afs_extract_data(call, skb, last, call->buffer,
 				       11 * sizeof(__be32));
+=======
+	_enter("");
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		call->buffer = kmalloc_array(11, sizeof(__be32), GFP_KERNEL);
+		if (!call->buffer)
+			return -ENOMEM;
+		afs_extract_to_buf(call, 11 * sizeof(__be32));
+		call->unmarshall++;
+
+		fallthrough;
+	case 1:
+		_debug("extract UUID");
+		ret = afs_extract_data(call, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ret) {
 		case 0:		break;
 		case -EAGAIN:	return 0;
@@ -471,15 +779,22 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 
 		b = call->buffer;
 		r = call->request;
+<<<<<<< HEAD
 		r->time_low			= ntohl(b[0]);
 		r->time_mid			= ntohl(b[1]);
 		r->time_hi_and_version		= ntohl(b[2]);
+=======
+		r->time_low			= b[0];
+		r->time_mid			= htons(ntohl(b[1]));
+		r->time_hi_and_version		= htons(ntohl(b[2]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r->clock_seq_hi_and_reserved 	= ntohl(b[3]);
 		r->clock_seq_low		= ntohl(b[4]);
 
 		for (loop = 0; loop < 6; loop++)
 			r->node[loop] = ntohl(b[loop + 5]);
 
+<<<<<<< HEAD
 		call->offset = 0;
 		call->unmarshall++;
 
@@ -498,6 +813,131 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
 	INIT_WORK(&call->work, SRXAFSCB_ProbeUuid);
 	queue_work(afs_wq, &call->work);
 	return 0;
+=======
+		call->unmarshall++;
+		fallthrough;
+
+	case 2:
+		break;
+	}
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+
+	/* we'll need the file server record as that tells us which set of
+	 * vnodes to operate upon */
+	return afs_find_cm_server_by_uuid(call, call->request);
+}
+
+/*
+ * allow the fileserver to see if the cache manager is still alive
+ */
+static void SRXAFSCB_Probe(struct work_struct *work)
+{
+	struct afs_call *call = container_of(work, struct afs_call, work);
+
+	_enter("");
+	afs_send_empty_reply(call);
+	afs_put_call(call);
+	_leave("");
+}
+
+/*
+ * deliver request data to a CB.Probe call
+ */
+static int afs_deliver_cb_probe(struct afs_call *call)
+{
+	int ret;
+
+	_enter("");
+
+	afs_extract_discard(call, 0);
+	ret = afs_extract_data(call, false);
+	if (ret < 0)
+		return ret;
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+	return afs_find_cm_server_by_peer(call);
+}
+
+/*
+ * Allow the fileserver to quickly find out if the cache manager has been
+ * rebooted.
+ */
+static void SRXAFSCB_ProbeUuid(struct work_struct *work)
+{
+	struct afs_call *call = container_of(work, struct afs_call, work);
+	struct afs_uuid *r = call->request;
+
+	_enter("");
+
+	if (memcmp(r, &call->net->uuid, sizeof(call->net->uuid)) == 0)
+		afs_send_empty_reply(call);
+	else
+		afs_abort_service_call(call, 1, 1, afs_abort_probeuuid_negative);
+
+	afs_put_call(call);
+	_leave("");
+}
+
+/*
+ * deliver request data to a CB.ProbeUuid call
+ */
+static int afs_deliver_cb_probe_uuid(struct afs_call *call)
+{
+	struct afs_uuid *r;
+	unsigned loop;
+	__be32 *b;
+	int ret;
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		call->buffer = kmalloc_array(11, sizeof(__be32), GFP_KERNEL);
+		if (!call->buffer)
+			return -ENOMEM;
+		afs_extract_to_buf(call, 11 * sizeof(__be32));
+		call->unmarshall++;
+
+		fallthrough;
+	case 1:
+		_debug("extract UUID");
+		ret = afs_extract_data(call, false);
+		switch (ret) {
+		case 0:		break;
+		case -EAGAIN:	return 0;
+		default:	return ret;
+		}
+
+		_debug("unmarshall UUID");
+		call->request = kmalloc(sizeof(struct afs_uuid), GFP_KERNEL);
+		if (!call->request)
+			return -ENOMEM;
+
+		b = call->buffer;
+		r = call->request;
+		r->time_low			= b[0];
+		r->time_mid			= htons(ntohl(b[1]));
+		r->time_hi_and_version		= htons(ntohl(b[2]));
+		r->clock_seq_hi_and_reserved 	= ntohl(b[3]);
+		r->clock_seq_low		= ntohl(b[4]);
+
+		for (loop = 0; loop < 6; loop++)
+			r->node[loop] = ntohl(b[loop + 5]);
+
+		call->unmarshall++;
+		fallthrough;
+
+	case 2:
+		break;
+	}
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+	return afs_find_cm_server_by_peer(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -505,9 +945,14 @@ static int afs_deliver_cb_probe_uuid(struct afs_call *call, struct sk_buff *skb,
  */
 static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct afs_interface *ifs;
 	struct afs_call *call = container_of(work, struct afs_call, work);
 	int loop, nifs;
+=======
+	struct afs_call *call = container_of(work, struct afs_call, work);
+	int loop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct {
 		struct /* InterfaceAddr */ {
@@ -525,6 +970,7 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 
 	_enter("");
 
+<<<<<<< HEAD
 	nifs = 0;
 	ifs = kcalloc(32, sizeof(*ifs), GFP_KERNEL);
 	if (ifs) {
@@ -555,17 +1001,33 @@ static void SRXAFSCB_TellMeAboutYourself(struct work_struct *work)
 		}
 		kfree(ifs);
 	}
+=======
+	memset(&reply, 0, sizeof(reply));
+
+	reply.ia.uuid[0] = call->net->uuid.time_low;
+	reply.ia.uuid[1] = htonl(ntohs(call->net->uuid.time_mid));
+	reply.ia.uuid[2] = htonl(ntohs(call->net->uuid.time_hi_and_version));
+	reply.ia.uuid[3] = htonl((s8) call->net->uuid.clock_seq_hi_and_reserved);
+	reply.ia.uuid[4] = htonl((s8) call->net->uuid.clock_seq_low);
+	for (loop = 0; loop < 6; loop++)
+		reply.ia.uuid[loop + 5] = htonl((s8) call->net->uuid.node[loop]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reply.cap.capcount = htonl(1);
 	reply.cap.caps[0] = htonl(AFS_CAP_ERROR_TRANSLATION);
 	afs_send_simple_reply(call, &reply, sizeof(reply));
+<<<<<<< HEAD
 
+=======
+	afs_put_call(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave("");
 }
 
 /*
  * deliver request data to a CB.TellMeAboutYourself call
  */
+<<<<<<< HEAD
 static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call,
 						 struct sk_buff *skb, bool last)
 {
@@ -582,4 +1044,98 @@ static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call,
 	INIT_WORK(&call->work, SRXAFSCB_TellMeAboutYourself);
 	queue_work(afs_wq, &call->work);
 	return 0;
+=======
+static int afs_deliver_cb_tell_me_about_yourself(struct afs_call *call)
+{
+	int ret;
+
+	_enter("");
+
+	afs_extract_discard(call, 0);
+	ret = afs_extract_data(call, false);
+	if (ret < 0)
+		return ret;
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+	return afs_find_cm_server_by_peer(call);
+}
+
+/*
+ * deliver request data to a YFS CB.CallBack call
+ */
+static int afs_deliver_yfs_cb_callback(struct afs_call *call)
+{
+	struct afs_callback_break *cb;
+	struct yfs_xdr_YFSFid *bp;
+	size_t size;
+	int ret, loop;
+
+	_enter("{%u}", call->unmarshall);
+
+	switch (call->unmarshall) {
+	case 0:
+		afs_extract_to_tmp(call);
+		call->unmarshall++;
+
+		/* extract the FID array and its count in two steps */
+		fallthrough;
+	case 1:
+		_debug("extract FID count");
+		ret = afs_extract_data(call, true);
+		if (ret < 0)
+			return ret;
+
+		call->count = ntohl(call->tmp);
+		_debug("FID count: %u", call->count);
+		if (call->count > YFSCBMAX)
+			return afs_protocol_error(call, afs_eproto_cb_fid_count);
+
+		size = array_size(call->count, sizeof(struct yfs_xdr_YFSFid));
+		call->buffer = kmalloc(size, GFP_KERNEL);
+		if (!call->buffer)
+			return -ENOMEM;
+		afs_extract_to_buf(call, size);
+		call->unmarshall++;
+
+		fallthrough;
+	case 2:
+		_debug("extract FID array");
+		ret = afs_extract_data(call, false);
+		if (ret < 0)
+			return ret;
+
+		_debug("unmarshall FID array");
+		call->request = kcalloc(call->count,
+					sizeof(struct afs_callback_break),
+					GFP_KERNEL);
+		if (!call->request)
+			return -ENOMEM;
+
+		cb = call->request;
+		bp = call->buffer;
+		for (loop = call->count; loop > 0; loop--, cb++) {
+			cb->fid.vid	= xdr_to_u64(bp->volume);
+			cb->fid.vnode	= xdr_to_u64(bp->vnode.lo);
+			cb->fid.vnode_hi = ntohl(bp->vnode.hi);
+			cb->fid.unique	= ntohl(bp->vnode.unique);
+			bp++;
+		}
+
+		afs_extract_to_tmp(call);
+		call->unmarshall++;
+		fallthrough;
+
+	case 3:
+		break;
+	}
+
+	if (!afs_check_call_state(call, AFS_CALL_SV_REPLYING))
+		return afs_io_error(call, afs_io_error_cm_reply);
+
+	/* We'll need the file server record as that tells us which set of
+	 * vnodes to operate upon.
+	 */
+	return afs_find_cm_server_by_peer(call);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright © 2011 Tony Breeds IBM Corporation
  *
@@ -13,11 +17,14 @@
  *    Copyright 2007 David Gibson, IBM Corporation.
  *    Copyright 2010 Ben. Herrenschmidt, IBM Corporation.
  *    Copyright © 2011 David Kleikamp IBM Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <stdarg.h>
 #include <stddef.h>
@@ -80,7 +87,11 @@ static void ibm_currituck_fixups(void)
 	}
 }
 
+<<<<<<< HEAD
 #define SPRN_PIR	0x11E	/* Processor Indentification Register */
+=======
+#define SPRN_PIR	0x11E	/* Processor Identification Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void platform_init(void)
 {
 	unsigned long end_of_ram, avail_ram;

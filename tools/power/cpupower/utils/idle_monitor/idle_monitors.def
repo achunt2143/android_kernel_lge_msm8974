@@ -2,6 +2,12 @@
 DEF(amd_fam14h)
 DEF(intel_nhm)
 DEF(intel_snb)
+<<<<<<< HEAD
 DEF(mperf)
+=======
+DEF(intel_hsw_ext)
+DEF(mperf)
+DEF(rapl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 DEF(cpuidle_sysfs)

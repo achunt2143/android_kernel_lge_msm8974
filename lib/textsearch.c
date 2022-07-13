@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * lib/textsearch.c	Generic text search interface
  *
@@ -6,11 +7,24 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * lib/textsearch.c	Generic text search interface
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  * 		Pablo Neira Ayuso <pablo@netfilter.org>
  *
  * ==========================================================================
+<<<<<<< HEAD
  *
+=======
+ */
+
+/**
+ * DOC: ts_intro
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * INTRODUCTION
  *
  *   The textsearch infrastructure provides text searching facilities for
@@ -19,7 +33,13 @@
  *
  * ARCHITECTURE
  *
+<<<<<<< HEAD
  *      User
+=======
+ * .. code-block:: none
+ *
+ *     User
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     +----------------+
  *     |        finish()|<--------------(6)-----------------+
  *     |get_next_block()|<--------------(5)---------------+ |
@@ -33,6 +53,7 @@
  *     |             (3)|----->| find()/next() |-----------+          |
  *     |             (7)|----->| destroy()     |----------------------+
  *     +----------------+      +---------------+
+<<<<<<< HEAD
  *  
  *   (1) User configures a search by calling _prepare() specifying the
  *       search parameters such as the pattern and algorithm name.
@@ -41,13 +62,27 @@
  *   (3) User starts the search(es) by calling _find() or _next() to
  *       fetch subsequent occurrences. A state variable is provided
  *       to the algorithm to store persistent variables.
+=======
+ *
+ *   (1) User configures a search by calling textsearch_prepare() specifying
+ *       the search parameters such as the pattern and algorithm name.
+ *   (2) Core requests the algorithm to allocate and initialize a search
+ *       configuration according to the specified parameters.
+ *   (3) User starts the search(es) by calling textsearch_find() or
+ *       textsearch_next() to fetch subsequent occurrences. A state variable
+ *       is provided to the algorithm to store persistent variables.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   (4) Core eventually resets the search offset and forwards the find()
  *       request to the algorithm.
  *   (5) Algorithm calls get_next_block() provided by the user continuously
  *       to fetch the data to be searched in block by block.
  *   (6) Algorithm invokes finish() after the last call to get_next_block
  *       to clean up any leftovers from get_next_block. (Optional)
+<<<<<<< HEAD
  *   (7) User destroys the configuration by calling _destroy().
+=======
+ *   (7) User destroys the configuration by calling textsearch_destroy().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   (8) Core notifies the algorithm to destroy algorithm specific
  *       allocations. (Optional)
  *
@@ -62,9 +97,16 @@
  *   amount of times and even in parallel as long as a separate struct
  *   ts_state variable is provided to every instance.
  *
+<<<<<<< HEAD
  *   The actual search is performed by either calling textsearch_find_-
  *   continuous() for linear data or by providing an own get_next_block()
  *   implementation and calling textsearch_find(). Both functions return
+=======
+ *   The actual search is performed by either calling
+ *   textsearch_find_continuous() for linear data or by providing
+ *   an own get_next_block() implementation and
+ *   calling textsearch_find(). Both functions return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   the position of the first occurrence of the pattern or UINT_MAX if
  *   no match was found. Subsequent occurrences can be found by calling
  *   textsearch_next() regardless of the linearity of the data.
@@ -72,7 +114,11 @@
  *   Once you're done using a configuration it must be given back via
  *   textsearch_destroy.
  *
+<<<<<<< HEAD
  * EXAMPLE
+=======
+ * EXAMPLE::
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   int pos;
  *   struct ts_config *conf;
@@ -92,8 +138,13 @@
  *       panic("Oh my god, dancing chickens at %d\n", pos);
  *
  *   textsearch_destroy(conf);
+<<<<<<< HEAD
  * ==========================================================================
  */
+=======
+ */
+/* ========================================================================== */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -159,6 +210,10 @@ errout:
 	spin_unlock(&ts_mod_lock);
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(textsearch_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * textsearch_unregister - unregister a textsearch module
@@ -190,6 +245,10 @@ out:
 	spin_unlock(&ts_mod_lock);
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(textsearch_unregister);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ts_linear_state
 {
@@ -223,7 +282,11 @@ static unsigned int get_linear_data(unsigned int consumed, const u8 **dst,
  *
  * Returns the position of first occurrence of the pattern or
  * %UINT_MAX if no occurrence was found.
+<<<<<<< HEAD
  */ 
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int textsearch_find_continuous(struct ts_config *conf,
 					struct ts_state *state,
 					const void *data, unsigned int len)
@@ -236,6 +299,10 @@ unsigned int textsearch_find_continuous(struct ts_config *conf,
 
 	return textsearch_find(conf, state);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(textsearch_find_continuous);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * textsearch_prepare - Prepare a search
@@ -246,9 +313,13 @@ unsigned int textsearch_find_continuous(struct ts_config *conf,
  * @flags: search flags
  *
  * Looks up the search algorithm module and creates a new textsearch
+<<<<<<< HEAD
  * configuration for the specified pattern. Upon completion all
  * necessary refcnts are held and the configuration must be put back
  * using textsearch_put() after usage.
+=======
+ * configuration for the specified pattern.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: The format of the pattern may not be compatible between
  *       the various search algorithms.
@@ -298,6 +369,10 @@ errout:
 		
 	return ERR_PTR(err);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(textsearch_prepare);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * textsearch_destroy - destroy a search configuration
@@ -316,9 +391,12 @@ void textsearch_destroy(struct ts_config *conf)
 
 	kfree(conf);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(textsearch_register);
 EXPORT_SYMBOL(textsearch_unregister);
 EXPORT_SYMBOL(textsearch_prepare);
 EXPORT_SYMBOL(textsearch_find_continuous);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(textsearch_destroy);

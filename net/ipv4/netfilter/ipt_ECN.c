@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* iptables module for the IPv4 and TCP ECN bits, Version 1.5
  *
  * (C) 2002 by Harald Welte <laforge@netfilter.org>
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* iptables module for the IPv4 and TCP ECN bits, Version 1.5
+ *
+ * (C) 2002 by Harald Welte <laforge@netfilter.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
@@ -32,7 +39,11 @@ set_ect_ip(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 
 	if ((iph->tos & IPT_ECN_IP_MASK) != (einfo->ip_ect & IPT_ECN_IP_MASK)) {
 		__u8 oldtos;
+<<<<<<< HEAD
 		if (!skb_make_writable(skb, sizeof(struct iphdr)))
+=======
+		if (skb_ensure_writable(skb, sizeof(struct iphdr)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		iph = ip_hdr(skb);
 		oldtos = iph->tos;
@@ -61,7 +72,11 @@ set_ect_tcp(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 	     tcph->cwr == einfo->proto.tcp.cwr))
 		return true;
 
+<<<<<<< HEAD
 	if (!skb_make_writable(skb, ip_hdrlen(skb) + sizeof(*tcph)))
+=======
+	if (skb_ensure_writable(skb, ip_hdrlen(skb) + sizeof(*tcph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	tcph = (void *)ip_hdr(skb) + ip_hdrlen(skb);
 
@@ -72,7 +87,11 @@ set_ect_tcp(struct sk_buff *skb, const struct ipt_ECN_info *einfo)
 		tcph->cwr = einfo->proto.tcp.cwr;
 
 	inet_proto_csum_replace2(&tcph->check, skb,
+<<<<<<< HEAD
 				 oldval, ((__be16 *)tcph)[6], 0);
+=======
+				 oldval, ((__be16 *)tcph)[6], false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -98,6 +117,7 @@ static int ecn_tg_check(const struct xt_tgchk_param *par)
 	const struct ipt_ECN_info *einfo = par->targinfo;
 	const struct ipt_entry *e = par->entryinfo;
 
+<<<<<<< HEAD
 	if (einfo->operation & IPT_ECN_OP_MASK) {
 		pr_info("unsupported ECN operation %x\n", einfo->operation);
 		return -EINVAL;
@@ -109,6 +129,17 @@ static int ecn_tg_check(const struct xt_tgchk_param *par)
 	if ((einfo->operation & (IPT_ECN_OP_SET_ECE|IPT_ECN_OP_SET_CWR)) &&
 	    (e->ip.proto != IPPROTO_TCP || (e->ip.invflags & XT_INV_PROTO))) {
 		pr_info("cannot use TCP operations on a non-tcp rule\n");
+=======
+	if (einfo->operation & IPT_ECN_OP_MASK)
+		return -EINVAL;
+
+	if (einfo->ip_ect & ~IPT_ECN_IP_MASK)
+		return -EINVAL;
+
+	if ((einfo->operation & (IPT_ECN_OP_SET_ECE|IPT_ECN_OP_SET_CWR)) &&
+	    (e->ip.proto != IPPROTO_TCP || (e->ip.invflags & XT_INV_PROTO))) {
+		pr_info_ratelimited("cannot use operation on non-tcp rule\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;

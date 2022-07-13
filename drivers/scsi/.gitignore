@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 53c700_d.h
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+53c700_d.h
+scsi_devinfo_tbl.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

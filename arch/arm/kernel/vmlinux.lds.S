@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ld script to make ARM Linux kernel
  * taken from the i386 version by Russell King
  * Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
+<<<<<<< HEAD
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/cache.h>
 #include <asm/thread_info.h>
@@ -40,6 +45,18 @@
 #define ARM_EXIT_KEEP(x)
 #define ARM_EXIT_DISCARD(x)	x
 #endif
+=======
+#ifdef CONFIG_XIP_KERNEL
+#include "vmlinux-xip.lds.S"
+#else
+
+#include <linux/pgtable.h>
+#include <asm/vmlinux.lds.h>
+#include <asm/cache.h>
+#include <asm/thread_info.h>
+#include <asm/page.h>
+#include <asm/mpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 OUTPUT_ARCH(arm)
 ENTRY(stext)
@@ -62,6 +79,7 @@ SECTIONS
 	 * unwind sections get included.
 	 */
 	/DISCARD/ : {
+<<<<<<< HEAD
 		*(.ARM.exidx.exit.text)
 		*(.ARM.extab.exit.text)
 		ARM_CPU_DISCARD(*(.ARM.exidx.cpuexit.text))
@@ -89,10 +107,24 @@ SECTIONS
 #else
 	. = PAGE_OFFSET + TEXT_OFFSET;
 #endif
+=======
+		ARM_DISCARD
+#ifndef CONFIG_SMP_ON_UP
+		*(.alt.smp.init)
+#endif
+#ifndef CONFIG_ARM_UNWIND
+		*(.ARM.exidx) *(.ARM.exidx.*)
+		*(.ARM.extab) *(.ARM.extab.*)
+#endif
+	}
+
+	. = KERNEL_OFFSET + TEXT_OFFSET;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.head.text : {
 		_text = .;
 		HEAD_TEXT
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_STRICT_MEMORY_RWX
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
@@ -145,11 +177,46 @@ SECTIONS
 
 #ifndef CONFIG_XIP_KERNEL
 #ifdef CONFIG_STRICT_MEMORY_RWX
+=======
+
+#ifdef CONFIG_STRICT_KERNEL_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+
+#ifdef CONFIG_ARM_MPU
+	. = ALIGN(PMSAv8_MINALIGN);
+#endif
+	.text : {			/* Real text segment		*/
+		_stext = .;		/* Text and read-only data	*/
+		ARM_TEXT
+	}
+
+#ifdef CONFIG_DEBUG_ALIGN_RODATA
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+	_etext = .;			/* End of text section */
+
+	RO_DATA(PAGE_SIZE)
+
+	. = ALIGN(4);
+	__ex_table : AT(ADDR(__ex_table) - LOAD_OFFSET) {
+		__start___ex_table = .;
+		ARM_MMU_KEEP(*(__ex_table))
+		__stop___ex_table = .;
+	}
+
+#ifdef CONFIG_ARM_UNWIND
+	ARM_UNWIND_SECTIONS
+#endif
+
+#ifdef CONFIG_STRICT_KERNEL_RWX
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(1<<SECTION_SHIFT);
 #else
 	. = ALIGN(PAGE_SIZE);
 #endif
 	__init_begin = .;
+<<<<<<< HEAD
 #endif
 	/*
 	 * The vectors and stubs are relocatable code, and the
@@ -169,6 +236,10 @@ SECTIONS
 	. = __stubs_start + SIZEOF(.stubs);
 	__stubs_end = .;
 
+=======
+
+	ARM_VECTORS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_TEXT_SECTION(8)
 	.exit.text : {
 		ARM_EXIT_KEEP(EXIT_TEXT)
@@ -176,9 +247,12 @@ SECTIONS
 	.init.proc.info : {
 		ARM_CPU_DISCARD(PROC_INFO)
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_STRICT_MEMORY_RWX
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init.arch.info : {
 		__arch_info_begin = .;
 		*(.arch.info.init)
@@ -201,6 +275,7 @@ SECTIONS
 		*(.pv_table)
 		__pv_table_end = .;
 	}
+<<<<<<< HEAD
 	.init.data : {
 #ifndef CONFIG_XIP_KERNEL
 		INIT_DATA
@@ -341,10 +416,68 @@ SECTIONS
 	.comment 0 : { *(.comment) }
 }
 
+=======
+
+	INIT_DATA_SECTION(16)
+
+	.exit.data : {
+		ARM_EXIT_KEEP(EXIT_DATA)
+	}
+
+#ifdef CONFIG_SMP
+	PERCPU_SECTION(L1_CACHE_BYTES)
+#endif
+
+#ifdef CONFIG_HAVE_TCM
+	ARM_TCM
+#endif
+
+#ifdef CONFIG_STRICT_KERNEL_RWX
+	. = ALIGN(1<<SECTION_SHIFT);
+#else
+	. = ALIGN(THREAD_ALIGN);
+#endif
+	__init_end = .;
+
+	_sdata = .;
+	RW_DATA(L1_CACHE_BYTES, PAGE_SIZE, THREAD_ALIGN)
+	_edata = .;
+
+	BSS_SECTION(0, 0, 0)
+#ifdef CONFIG_ARM_MPU
+	. = ALIGN(PMSAv8_MINALIGN);
+#endif
+	_end = .;
+
+	STABS_DEBUG
+	DWARF_DEBUG
+	ARM_DETAILS
+
+	ARM_ASSERTS
+}
+
+#ifdef CONFIG_STRICT_KERNEL_RWX
+/*
+ * Without CONFIG_DEBUG_ALIGN_RODATA, __start_rodata_section_aligned will
+ * be the first section-aligned location after __start_rodata. Otherwise,
+ * it will be equal to __start_rodata.
+ */
+__start_rodata_section_aligned = ALIGN(__start_rodata, 1 << SECTION_SHIFT);
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These must never be empty
  * If you have to comment these two assert statements out, your
  * binutils is too old (for other reasons as well)
  */
 ASSERT((__proc_info_end - __proc_info_begin), "missing CPU support")
+<<<<<<< HEAD
 ASSERT((__arch_info_end - __arch_info_begin), "no machine record defined")
+=======
+#ifndef CONFIG_COMPILE_TEST
+ASSERT((__arch_info_end - __arch_info_begin), "no machine record defined")
+#endif
+
+#endif /* CONFIG_XIP_KERNEL */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

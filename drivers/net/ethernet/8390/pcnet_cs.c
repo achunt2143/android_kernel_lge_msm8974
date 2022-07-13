@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*======================================================================
 
     A PCMCIA ethernet driver for NS8390-based cards
@@ -17,9 +21,13 @@
 
     Written 1992,1993 by Donald Becker.
     Copyright 1993 United States Government as represented by the
+<<<<<<< HEAD
     Director, National Security Agency.  This software may be used and
     distributed according to the terms of the GNU General Public License,
     incorporated herein by reference.
+=======
+    Director, National Security Agency.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     Donald Becker may be reached at becker@scyld.com
 
     Based also on Keith Moore's changes to Don Becker's code, for IBM
@@ -32,7 +40,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/string.h>
 #include <linux/timer.h>
@@ -50,7 +61,11 @@
 
 #include <asm/io.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCNET_CMD	0x00
 #define PCNET_DATAPORT	0x10	/* NatSemi-defined port window offset. */
@@ -68,7 +83,10 @@
 
 static const char *if_names[] = { "auto", "10baseT", "10base2"};
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*====================================================================*/
 
 /* Module parameters */
@@ -100,7 +118,11 @@ static int pcnet_open(struct net_device *dev);
 static int pcnet_close(struct net_device *dev);
 static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 static irqreturn_t ei_irq_wrapper(int irq, void *dev_id);
+<<<<<<< HEAD
 static void ei_watchdog(u_long arg);
+=======
+static void ei_watchdog(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pcnet_reset_8390(struct net_device *dev);
 static int set_config(struct net_device *dev, struct ifmap *map);
 static int setup_shmem_window(struct pcmcia_device *link, int start_pg,
@@ -112,11 +134,19 @@ static void pcnet_detach(struct pcmcia_device *p_dev);
 
 /*====================================================================*/
 
+<<<<<<< HEAD
 typedef struct hw_info_t {
     u_int	offset;
     u_char	a0, a1, a2;
     u_int	flags;
 } hw_info_t;
+=======
+struct hw_info {
+    u_int	offset;
+    u_char	a0, a1, a2;
+    u_int	flags;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DELAY_OUTPUT	0x01
 #define HAS_MISC_REG	0x02
@@ -133,7 +163,11 @@ typedef struct hw_info_t {
 #define MII_PHYID_REG1		0x02
 #define MII_PHYID_REG2		0x03
 
+<<<<<<< HEAD
 static hw_info_t hw_info[] = {
+=======
+static struct hw_info hw_info[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     { /* Accton EN2212 */ 0x0ff0, 0x00, 0x00, 0xe8, DELAY_OUTPUT },
     { /* Allied Telesis LA-PCM */ 0x0ff0, 0x00, 0x00, 0xf4, 0 },
     { /* APEX MultiCard */ 0x03f4, 0x00, 0x20, 0xe5, 0 },
@@ -197,11 +231,19 @@ static hw_info_t hw_info[] = {
 
 #define NR_INFO		ARRAY_SIZE(hw_info)
 
+<<<<<<< HEAD
 static hw_info_t default_info = { 0, 0, 0, 0, 0 };
 static hw_info_t dl10019_info = { 0, 0, 0, 0, IS_DL10019|HAS_MII };
 static hw_info_t dl10022_info = { 0, 0, 0, 0, IS_DL10022|HAS_MII };
 
 typedef struct pcnet_dev_t {
+=======
+static struct hw_info default_info = { 0, 0, 0, 0, 0 };
+static struct hw_info dl10019_info = { 0, 0, 0, 0, IS_DL10019|HAS_MII };
+static struct hw_info dl10022_info = { 0, 0, 0, 0, IS_DL10022|HAS_MII };
+
+struct pcnet_dev {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcmcia_device	*p_dev;
     u_int		flags;
     void		__iomem *base;
@@ -211,12 +253,21 @@ typedef struct pcnet_dev_t {
     u_char		eth_phy, pna_phy;
     u_short		link_status;
     u_long		mii_reset;
+<<<<<<< HEAD
 } pcnet_dev_t;
 
 static inline pcnet_dev_t *PRIV(struct net_device *dev)
 {
 	char *p = netdev_priv(dev);
 	return (pcnet_dev_t *)(p + sizeof(struct ei_device));
+=======
+};
+
+static inline struct pcnet_dev *PRIV(struct net_device *dev)
+{
+	char *p = netdev_priv(dev);
+	return (struct pcnet_dev *)(p + sizeof(struct ei_device));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops pcnet_netdev_ops = {
@@ -225,10 +276,16 @@ static const struct net_device_ops pcnet_netdev_ops = {
 	.ndo_set_config		= set_config,
 	.ndo_start_xmit 	= ei_start_xmit,
 	.ndo_get_stats		= ei_get_stats,
+<<<<<<< HEAD
 	.ndo_do_ioctl 		= ei_ioctl,
 	.ndo_set_rx_mode	= ei_set_multicast_list,
 	.ndo_tx_timeout 	= ei_tx_timeout,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= ei_ioctl,
+	.ndo_set_rx_mode	= ei_set_multicast_list,
+	.ndo_tx_timeout 	= ei_tx_timeout,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -238,13 +295,21 @@ static const struct net_device_ops pcnet_netdev_ops = {
 
 static int pcnet_probe(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info;
+=======
+    struct pcnet_dev *info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct net_device *dev;
 
     dev_dbg(&link->dev, "pcnet_attach()\n");
 
     /* Create new ethernet device */
+<<<<<<< HEAD
     dev = __alloc_ei_netdev(sizeof(pcnet_dev_t));
+=======
+    dev = __alloc_ei_netdev(sizeof(struct pcnet_dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!dev) return -ENOMEM;
     info = PRIV(dev);
     info->p_dev = link;
@@ -277,10 +342,18 @@ static void pcnet_detach(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_hwinfo(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
     u_char __iomem *base, *virt;
+=======
+static struct hw_info *get_hwinfo(struct pcmcia_device *link)
+{
+    struct net_device *dev = link->priv;
+    u_char __iomem *base, *virt;
+    u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, j;
 
     /* Allocate a small memory window */
@@ -292,6 +365,14 @@ static hw_info_t *get_hwinfo(struct pcmcia_device *link)
 
     virt = ioremap(link->resource[2]->start,
 	    resource_size(link->resource[2]));
+<<<<<<< HEAD
+=======
+    if (unlikely(!virt)) {
+	    pcmcia_release_window(link, link->resource[2]);
+	    return NULL;
+    }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     for (i = 0; i < NR_INFO; i++) {
 	pcmcia_map_mem_page(link, link->resource[2],
 		hw_info[i].offset & ~(resource_size(link->resource[2])-1));
@@ -300,7 +381,12 @@ static hw_info_t *get_hwinfo(struct pcmcia_device *link)
 	    (readb(base+2) == hw_info[i].a1) &&
 	    (readb(base+4) == hw_info[i].a2)) {
 		for (j = 0; j < 6; j++)
+<<<<<<< HEAD
 		    dev->dev_addr[j] = readb(base + (j<<1));
+=======
+			addr[j] = readb(base + (j<<1));
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
     }
@@ -318,10 +404,18 @@ static hw_info_t *get_hwinfo(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_prom(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
+=======
+static struct hw_info *get_prom(struct pcmcia_device *link)
+{
+    struct net_device *dev = link->priv;
+    unsigned int ioaddr = dev->base_addr;
+    u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     u_char prom[32];
     int i, j;
 
@@ -360,7 +454,12 @@ static hw_info_t *get_prom(struct pcmcia_device *link)
     }
     if ((i < NR_INFO) || ((prom[28] == 0x57) && (prom[30] == 0x57))) {
 	for (j = 0; j < 6; j++)
+<<<<<<< HEAD
 	    dev->dev_addr[j] = prom[j<<1];
+=======
+	    addr[j] = prom[j<<1];
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (i < NR_INFO) ? hw_info+i : &default_info;
     }
     return NULL;
@@ -372,9 +471,16 @@ static hw_info_t *get_prom(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_dl10019(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
+=======
+static struct hw_info *get_dl10019(struct pcmcia_device *link)
+{
+    struct net_device *dev = link->priv;
+    u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i;
     u_char sum;
 
@@ -383,7 +489,12 @@ static hw_info_t *get_dl10019(struct pcmcia_device *link)
     if (sum != 0xff)
 	return NULL;
     for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 	dev->dev_addr[i] = inb_p(dev->base_addr + 0x14 + i);
+=======
+	addr[i] = inb_p(dev->base_addr + 0x14 + i);
+    eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     i = inb(dev->base_addr + 0x1f);
     return ((i == 0x91)||(i == 0x99)) ? &dl10022_info : &dl10019_info;
 }
@@ -394,10 +505,18 @@ static hw_info_t *get_dl10019(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_ax88190(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
+=======
+static struct hw_info *get_ax88190(struct pcmcia_device *link)
+{
+    struct net_device *dev = link->priv;
+    unsigned int ioaddr = dev->base_addr;
+    u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, j;
 
     /* Not much of a test, but the alternatives are messy */
@@ -411,9 +530,16 @@ static hw_info_t *get_ax88190(struct pcmcia_device *link)
 
     for (i = 0; i < 6; i += 2) {
 	j = inw(ioaddr + PCNET_DATAPORT);
+<<<<<<< HEAD
 	dev->dev_addr[i] = j & 0xff;
 	dev->dev_addr[i+1] = j >> 8;
     }
+=======
+	addr[i] = j & 0xff;
+	addr[i+1] = j >> 8;
+    }
+    eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return NULL;
 }
 
@@ -425,9 +551,16 @@ static hw_info_t *get_ax88190(struct pcmcia_device *link)
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static hw_info_t *get_hwired(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
+=======
+static struct hw_info *get_hwired(struct pcmcia_device *link)
+{
+    struct net_device *dev = link->priv;
+    u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i;
 
     for (i = 0; i < 6; i++)
@@ -436,7 +569,12 @@ static hw_info_t *get_hwired(struct pcmcia_device *link)
 	return NULL;
 
     for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 	dev->dev_addr[i] = hw_addr[i];
+=======
+	addr[i] = hw_addr[i];
+    eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return &default_info;
 } /* get_hwired */
@@ -490,12 +628,21 @@ static int pcnet_confcheck(struct pcmcia_device *p_dev, void *priv_data)
 	return try_io_port(p_dev);
 }
 
+<<<<<<< HEAD
 static hw_info_t *pcnet_try_config(struct pcmcia_device *link,
 				   int *has_shmem, int try)
 {
 	struct net_device *dev = link->priv;
 	hw_info_t *local_hw_info;
 	pcnet_dev_t *info = PRIV(dev);
+=======
+static struct hw_info *pcnet_try_config(struct pcmcia_device *link,
+					int *has_shmem, int try)
+{
+	struct net_device *dev = link->priv;
+	struct hw_info *local_hw_info;
+	struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int priv = try;
 	int ret;
 
@@ -554,10 +701,17 @@ static hw_info_t *pcnet_try_config(struct pcmcia_device *link,
 static int pcnet_config(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
     int start_pg, stop_pg, cm_offset;
     int has_shmem = 0;
     hw_info_t *local_hw_info;
+=======
+    struct pcnet_dev *info = PRIV(dev);
+    int start_pg, stop_pg, cm_offset;
+    int has_shmem = 0;
+    struct hw_info *local_hw_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     dev_dbg(&link->dev, "pcnet_config\n");
 
@@ -616,7 +770,11 @@ static int pcnet_config(struct pcmcia_device *link)
     if (info->flags & (IS_DL10019|IS_DL10022)) {
 	u_char id = inb(dev->base_addr + 0x1a);
 	netdev_info(dev, "NE2000 (DL100%d rev %02x): ",
+<<<<<<< HEAD
 	       (info->flags & IS_DL10022) ? 22 : 19, id);
+=======
+		    (info->flags & IS_DL10022) ? 22 : 19, id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->pna_phy)
 	    pr_cont("PNA, ");
     } else {
@@ -637,7 +795,11 @@ failed:
 
 static void pcnet_release(struct pcmcia_device *link)
 {
+<<<<<<< HEAD
 	pcnet_dev_t *info = PRIV(link->priv);
+=======
+	struct pcnet_dev *info = PRIV(link->priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&link->dev, "pcnet_release\n");
 
@@ -834,7 +996,11 @@ static void write_asic(unsigned int ioaddr, int location, short asic_data)
 static void set_misc_reg(struct net_device *dev)
 {
     unsigned int nic_base = dev->base_addr;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     u_char tmp;
 
     if (info->flags & HAS_MISC_REG) {
@@ -871,7 +1037,11 @@ static void set_misc_reg(struct net_device *dev)
 
 static void mii_phy_probe(struct net_device *dev)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned int mii_addr = dev->base_addr + DLINK_GPIO;
     int i;
     u_int tmp, phyid;
@@ -896,7 +1066,11 @@ static void mii_phy_probe(struct net_device *dev)
 static int pcnet_open(struct net_device *dev)
 {
     int ret;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct pcmcia_device *link = info->p_dev;
     unsigned int nic_base = dev->base_addr;
 
@@ -916,11 +1090,16 @@ static int pcnet_open(struct net_device *dev)
 
     info->phy_id = info->eth_phy;
     info->link_status = 0x00;
+<<<<<<< HEAD
     init_timer(&info->watchdog);
     info->watchdog.function = ei_watchdog;
     info->watchdog.data = (u_long)dev;
     info->watchdog.expires = jiffies + HZ;
     add_timer(&info->watchdog);
+=======
+    timer_setup(&info->watchdog, ei_watchdog, 0);
+    mod_timer(&info->watchdog, jiffies + HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return ei_open(dev);
 } /* pcnet_open */
@@ -929,7 +1108,11 @@ static int pcnet_open(struct net_device *dev)
 
 static int pcnet_close(struct net_device *dev)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct pcmcia_device *link = info->p_dev;
 
     dev_dbg(&link->dev, "pcnet_close('%s')\n", dev->name);
@@ -980,7 +1163,11 @@ static void pcnet_reset_8390(struct net_device *dev)
 
 static int set_config(struct net_device *dev, struct ifmap *map)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if ((map->port != (u_char)(-1)) && (map->port != dev->if_port)) {
 	if (!(info->flags & HAS_MISC_REG))
 	    return -EOPNOTSUPP;
@@ -998,7 +1185,11 @@ static int set_config(struct net_device *dev, struct ifmap *map)
 static irqreturn_t ei_irq_wrapper(int irq, void *dev_id)
 {
     struct net_device *dev = dev_id;
+<<<<<<< HEAD
     pcnet_dev_t *info;
+=======
+    struct pcnet_dev *info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     irqreturn_t ret = ei_interrupt(irq, dev_id);
 
     if (ret == IRQ_HANDLED) {
@@ -1008,10 +1199,17 @@ static irqreturn_t ei_irq_wrapper(int irq, void *dev_id)
     return ret;
 }
 
+<<<<<<< HEAD
 static void ei_watchdog(u_long arg)
 {
     struct net_device *dev = (struct net_device *)arg;
     pcnet_dev_t *info = PRIV(dev);
+=======
+static void ei_watchdog(struct timer_list *t)
+{
+    struct pcnet_dev *info = from_timer(info, t, watchdog);
+    struct net_device *dev = info->p_dev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned int nic_base = dev->base_addr;
     unsigned int mii_addr = nic_base + DLINK_GPIO;
     u_short link;
@@ -1063,9 +1261,15 @@ static void ei_watchdog(u_long arg)
 	    if (info->phy_id == info->eth_phy) {
 		if (p)
 		    netdev_info(dev, "autonegotiation complete: "
+<<<<<<< HEAD
 			   "%sbaseT-%cD selected\n",
 			   ((p & 0x0180) ? "100" : "10"),
 			   ((p & 0x0140) ? 'F' : 'H'));
+=======
+				"%sbaseT-%cD selected\n",
+				((p & 0x0180) ? "100" : "10"),
+				((p & 0x0140) ? 'F' : 'H'));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 		    netdev_info(dev, "link partner did not autonegotiate\n");
 	    }
@@ -1081,7 +1285,11 @@ static void ei_watchdog(u_long arg)
 	    mdio_write(mii_addr, info->phy_id, 0, 0x0400);
 	    info->phy_id ^= info->pna_phy ^ info->eth_phy;
 	    netdev_info(dev, "switched to %s transceiver\n",
+<<<<<<< HEAD
 		   (info->phy_id == info->eth_phy) ? "ethernet" : "PNA");
+=======
+			(info->phy_id == info->eth_phy) ? "ethernet" : "PNA");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    mdio_write(mii_addr, info->phy_id, 0,
 		       (info->phy_id == info->eth_phy) ? 0x1000 : 0);
 	    info->link_status = 0;
@@ -1099,7 +1307,11 @@ reschedule:
 
 static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct mii_ioctl_data *data = if_mii(rq);
     unsigned int mii_addr = dev->base_addr + DLINK_GPIO;
 
@@ -1109,6 +1321,10 @@ static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
     switch (cmd) {
     case SIOCGMIIPHY:
 	data->phy_id = info->phy_id;
+<<<<<<< HEAD
+=======
+	fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     case SIOCGMIIREG:		/* Read MII PHY register. */
 	data->val_out = mdio_read(mii_addr, data->phy_id, data->reg_num & 0x1f);
 	return 0;
@@ -1128,9 +1344,15 @@ static void dma_get_8390_hdr(struct net_device *dev,
     unsigned int nic_base = dev->base_addr;
 
     if (ei_status.dmaing) {
+<<<<<<< HEAD
 	netdev_notice(dev, "DMAing conflict in dma_block_input."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+	netdev_err(dev, "DMAing conflict in dma_block_input."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
     }
 
@@ -1159,6 +1381,7 @@ static void dma_block_input(struct net_device *dev, int count,
     unsigned int nic_base = dev->base_addr;
     int xfer_count = count;
     char *buf = skb->data;
+<<<<<<< HEAD
 
     if ((ei_debug > 4) && (count != 4))
 	netdev_dbg(dev, "[bi=%d]\n", count+4);
@@ -1166,6 +1389,16 @@ static void dma_block_input(struct net_device *dev, int count,
 	netdev_notice(dev, "DMAing conflict in dma_block_input."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+    struct ei_device *ei_local = netdev_priv(dev);
+
+    if ((netif_msg_rx_status(ei_local)) && (count != 4))
+	netdev_dbg(dev, "[bi=%d]\n", count+4);
+    if (ei_status.dmaing) {
+	netdev_err(dev, "DMAing conflict in dma_block_input."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
     }
     ei_status.dmaing |= 0x01;
@@ -1177,13 +1410,25 @@ static void dma_block_input(struct net_device *dev, int count,
     outb_p(E8390_RREAD+E8390_START, nic_base + PCNET_CMD);
 
     insw(nic_base + PCNET_DATAPORT,buf,count>>1);
+<<<<<<< HEAD
     if (count & 0x01)
 	buf[count-1] = inb(nic_base + PCNET_DATAPORT), xfer_count++;
+=======
+    if (count & 0x01) {
+	buf[count-1] = inb(nic_base + PCNET_DATAPORT);
+	xfer_count++;
+    }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* This was for the ALPHA version only, but enough people have been
        encountering problems that it is still here. */
 #ifdef PCMCIA_DEBUG
+<<<<<<< HEAD
     if (ei_debug > 4) {		/* DMA termination address check... */
+=======
+      /* DMA termination address check... */
+    if (netif_msg_rx_status(ei_local)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int addr, tries = 20;
 	do {
 	    /* DON'T check for 'inb_p(EN0_ISR) & ENISR_RDC' here
@@ -1196,8 +1441,13 @@ static void dma_block_input(struct net_device *dev, int count,
 	} while (--tries > 0);
 	if (tries <= 0)
 	    netdev_notice(dev, "RX transfer address mismatch,"
+<<<<<<< HEAD
 		   "%#4.4x (expected) vs. %#4.4x (actual).\n",
 		   ring_offset + xfer_count, addr);
+=======
+			  "%#4.4x (expected) vs. %#4.4x (actual).\n",
+			  ring_offset + xfer_count, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 #endif
     outb_p(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
@@ -1210,15 +1460,26 @@ static void dma_block_output(struct net_device *dev, int count,
 			     const u_char *buf, const int start_page)
 {
     unsigned int nic_base = dev->base_addr;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
 #ifdef PCMCIA_DEBUG
     int retries = 0;
+=======
+    struct pcnet_dev *info = PRIV(dev);
+#ifdef PCMCIA_DEBUG
+    int retries = 0;
+    struct ei_device *ei_local = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
     u_long dma_start;
 
 #ifdef PCMCIA_DEBUG
+<<<<<<< HEAD
     if (ei_debug > 4)
 	netdev_dbg(dev, "[bo=%d]\n", count);
+=======
+    netif_dbg(ei_local, tx_queued, dev, "[bo=%d]\n", count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
     /* Round the count up for word writes.  Do we need to do this?
@@ -1227,9 +1488,15 @@ static void dma_block_output(struct net_device *dev, int count,
     if (count & 0x01)
 	count++;
     if (ei_status.dmaing) {
+<<<<<<< HEAD
 	netdev_notice(dev, "DMAing conflict in dma_block_output."
 	       "[DMAstat:%1x][irqlock:%1x]\n",
 	       ei_status.dmaing, ei_status.irqlock);
+=======
+	netdev_err(dev, "DMAing conflict in dma_block_output."
+		   "[DMAstat:%1x][irqlock:%1x]\n",
+		   ei_status.dmaing, ei_status.irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
     }
     ei_status.dmaing |= 0x01;
@@ -1256,7 +1523,12 @@ static void dma_block_output(struct net_device *dev, int count,
 #ifdef PCMCIA_DEBUG
     /* This was for the ALPHA version only, but enough people have been
        encountering problems that it is still here. */
+<<<<<<< HEAD
     if (ei_debug > 4) {	/* DMA termination address check... */
+=======
+    /* DMA termination address check... */
+    if (netif_msg_tx_queued(ei_local)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int addr, tries = 20;
 	do {
 	    int high = inb_p(nic_base + EN0_RSARHI);
@@ -1267,8 +1539,13 @@ static void dma_block_output(struct net_device *dev, int count,
 	} while (--tries > 0);
 	if (tries <= 0) {
 	    netdev_notice(dev, "Tx packet transfer address mismatch,"
+<<<<<<< HEAD
 		   "%#4.4x (expected) vs. %#4.4x (actual).\n",
 		   (start_page << 8) + count, addr);
+=======
+			  "%#4.4x (expected) vs. %#4.4x (actual).\n",
+			  (start_page << 8) + count, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    if (retries++ == 0)
 		goto retry;
 	}
@@ -1277,10 +1554,17 @@ static void dma_block_output(struct net_device *dev, int count,
 
     while ((inb_p(nic_base + EN0_ISR) & ENISR_RDC) == 0)
 	if (time_after(jiffies, dma_start + PCNET_RDC_TIMEOUT)) {
+<<<<<<< HEAD
 	    netdev_notice(dev, "timeout waiting for Tx RDC.\n");
 	    pcnet_reset_8390(dev);
 	    NS8390_init(dev, 1);
 	    break;
+=======
+		netdev_warn(dev, "timeout waiting for Tx RDC.\n");
+		pcnet_reset_8390(dev);
+		NS8390_init(dev, 1);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
     outb_p(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
@@ -1398,7 +1682,11 @@ static int setup_shmem_window(struct pcmcia_device *link, int start_pg,
 			      int stop_pg, int cm_offset)
 {
     struct net_device *dev = link->priv;
+<<<<<<< HEAD
     pcnet_dev_t *info = PRIV(dev);
+=======
+    struct pcnet_dev *info = PRIV(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, window_size, offset, ret;
 
     window_size = (stop_pg - start_pg) << 8;
@@ -1425,6 +1713,14 @@ static int setup_shmem_window(struct pcmcia_device *link, int start_pg,
     /* Try scribbling on the buffer */
     info->base = ioremap(link->resource[3]->start,
 			resource_size(link->resource[3]));
+<<<<<<< HEAD
+=======
+    if (unlikely(!info->base)) {
+	    ret = -ENOMEM;
+	    goto failed;
+    }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     for (i = 0; i < (TX_PAGES<<8); i += 2)
 	__raw_writew((i>>1), info->base+offset+i);
     udelay(100);
@@ -1499,6 +1795,10 @@ static const struct pcmcia_device_id pcnet_ids[] = {
 	PCMCIA_DEVICE_MANF_CARD(0x026f, 0x030a),
 	PCMCIA_DEVICE_MANF_CARD(0x0274, 0x1103),
 	PCMCIA_DEVICE_MANF_CARD(0x0274, 0x1121),
+<<<<<<< HEAD
+=======
+	PCMCIA_DEVICE_MANF_CARD(0xc001, 0x0009),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID12("2408LAN", "Ethernet", 0x352fff7f, 0x00b2e941),
 	PCMCIA_DEVICE_PROD_ID1234("Socket", "CF 10/100 Ethernet Card", "Revision B", "05/11/06", 0xb38bcc2e, 0x4de88352, 0xeaca6c8d, 0x7e57c22e),
 	PCMCIA_DEVICE_PROD_ID123("Cardwell", "PCMCIA", "ETHERNET", 0x9533672e, 0x281f1c5d, 0x3ff7175b),
@@ -1516,7 +1816,11 @@ static const struct pcmcia_device_id pcnet_ids[] = {
 	PCMCIA_DEVICE_PROD_ID12("ACCTON", "EN2216-PCMCIA-ETHERNET", 0xdfc6b5b2, 0x5542bfff),
 	PCMCIA_DEVICE_PROD_ID12("Allied Telesis, K.K.", "CentreCOM LA100-PCM-T V2 100/10M LAN PC Card", 0xbb7fbdd7, 0xcd91cc68),
 	PCMCIA_DEVICE_PROD_ID12("Allied Telesis K.K.", "LA100-PCM V2", 0x36634a66, 0xc6d05997),
+<<<<<<< HEAD
   	PCMCIA_DEVICE_PROD_ID12("Allied Telesis, K.K.", "CentreCOM LA-PCM_V2", 0xbb7fBdd7, 0x28e299f8),
+=======
+	PCMCIA_DEVICE_PROD_ID12("Allied Telesis, K.K.", "CentreCOM LA-PCM_V2", 0xbb7fBdd7, 0x28e299f8),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID12("Allied Telesis K.K.", "LA-PCM V3", 0x36634a66, 0x62241d96),
 	PCMCIA_DEVICE_PROD_ID12("AmbiCom", "AMB8010", 0x5070a7f9, 0x82f96e96),
 	PCMCIA_DEVICE_PROD_ID12("AmbiCom", "AMB8610", 0x5070a7f9, 0x86741224),
@@ -1694,6 +1998,7 @@ static struct pcmcia_driver pcnet_driver = {
 	.suspend	= pcnet_suspend,
 	.resume		= pcnet_resume,
 };
+<<<<<<< HEAD
 
 static int __init init_pcnet_cs(void)
 {
@@ -1707,3 +2012,6 @@ static void __exit exit_pcnet_cs(void)
 
 module_init(init_pcnet_cs);
 module_exit(exit_pcnet_cs);
+=======
+module_pcmcia_driver(pcnet_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

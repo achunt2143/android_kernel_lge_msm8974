@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -22,11 +26,14 @@
  *		specify d0 and d1 as scratch registers. Letting gcc
  *		choose these registers itself solves the problem.
  *
+<<<<<<< HEAD
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 1998/8/31	Andreas Schwab:
  *		Zero out rest of buffer on exception in
  *		csum_partial_copy_from_user.
@@ -133,8 +140,12 @@ EXPORT_SYMBOL(csum_partial);
  */
 
 __wsum
+<<<<<<< HEAD
 csum_partial_copy_from_user(const void __user *src, void *dst,
 			    int len, __wsum sum, int *csum_err)
+=======
+csum_and_copy_from_user(const void __user *src, void *dst, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * GCC doesn't like more than 10 operands for the asm
@@ -142,6 +153,10 @@ csum_partial_copy_from_user(const void __user *src, void *dst,
 	 * code.
 	 */
 	unsigned long tmp1, tmp2;
+<<<<<<< HEAD
+=======
+	__wsum sum = ~0U;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__asm__("movel %2,%4\n\t"
 		"btst #1,%4\n\t"	/* Check alignment */
@@ -240,6 +255,7 @@ csum_partial_copy_from_user(const void __user *src, void *dst,
 		"clrl %5\n\t"
 		"addxl %5,%0\n\t"	/* add X bit */
 	     "7:\t"
+<<<<<<< HEAD
 		"clrl %5\n"		/* no error - clear return value */
 	     "8:\n"
 		".section .fixup,\"ax\"\n"
@@ -309,12 +325,35 @@ csum_partial_copy_from_user(const void __user *src, void *dst,
 		".long 19b,99b\n"
 		".long 20b,100b\n"
 		".long 21b,101b\n"
+=======
+		".section .fixup,\"ax\"\n"
+		".even\n"
+		/* If any exception occurs, return 0 */
+	     "90:\t"
+		"clrl %0\n"
+		"jra 7b\n"
+		".previous\n"
+		".section __ex_table,\"a\"\n"
+		".long 10b,90b\n"
+		".long 11b,90b\n"
+		".long 12b,90b\n"
+		".long 13b,90b\n"
+		".long 14b,90b\n"
+		".long 15b,90b\n"
+		".long 16b,90b\n"
+		".long 17b,90b\n"
+		".long 18b,90b\n"
+		".long 19b,90b\n"
+		".long 20b,90b\n"
+		".long 21b,90b\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		".previous"
 		: "=d" (sum), "=d" (len), "=a" (src), "=a" (dst),
 		  "=&d" (tmp1), "=d" (tmp2)
 		: "0" (sum), "1" (len), "2" (src), "3" (dst)
 	    );
 
+<<<<<<< HEAD
 	*csum_err = tmp2;
 
 	return(sum);
@@ -322,15 +361,27 @@ csum_partial_copy_from_user(const void __user *src, void *dst,
 
 EXPORT_SYMBOL(csum_partial_copy_from_user);
 
+=======
+	return sum;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * copy from kernel space while checksumming, otherwise like csum_partial
  */
 
 __wsum
+<<<<<<< HEAD
 csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
 {
 	unsigned long tmp1, tmp2;
+=======
+csum_partial_copy_nocheck(const void *src, void *dst, int len)
+{
+	unsigned long tmp1, tmp2;
+	__wsum sum = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__("movel %2,%4\n\t"
 		"btst #1,%4\n\t"	/* Check alignment */
 		"jeq 2f\n\t"

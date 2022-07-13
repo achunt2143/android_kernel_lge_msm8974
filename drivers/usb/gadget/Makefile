@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # USB peripheral controller drivers
 #
@@ -77,3 +78,17 @@ obj-$(CONFIG_USB_G_NCM)		+= g_ncm.o
 obj-$(CONFIG_USB_G_ACM_MS)	+= g_acm_ms.o
 obj-$(CONFIG_USB_GADGET_TARGET)	+= tcm_usb_gadget.o
 obj-$(CONFIG_USB_G_ANDROID)	+= g_android.o
+=======
+# SPDX-License-Identifier: GPL-2.0
+#
+# USB peripheral controller drivers
+#
+subdir-ccflags-$(CONFIG_USB_GADGET_DEBUG)	:= -DDEBUG
+subdir-ccflags-$(CONFIG_USB_GADGET_VERBOSE)	+= -DVERBOSE_DEBUG
+
+obj-$(CONFIG_USB_LIBCOMPOSITE)	+= libcomposite.o
+libcomposite-y			:= usbstring.o config.o epautoconf.o
+libcomposite-y			+= composite.o functions.o configfs.o u_f.o
+
+obj-$(CONFIG_USB_GADGET)	+= udc/ function/ legacy/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

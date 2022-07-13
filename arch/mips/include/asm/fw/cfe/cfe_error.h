@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2000, 2001, 2002 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -25,7 +31,11 @@
  */
 
 #define CFE_OK			 0
+<<<<<<< HEAD
 #define CFE_ERR                 -1	/* generic error */
+=======
+#define CFE_ERR			-1	/* generic error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFE_ERR_INV_COMMAND	-2
 #define CFE_ERR_EOF		-3
 #define CFE_ERR_IOERR		-4
@@ -37,12 +47,21 @@
 #define CFE_ERR_ENVREADONLY	-10
 
 #define CFE_ERR_NOTELF		-11
+<<<<<<< HEAD
 #define CFE_ERR_NOT32BIT 	-12
 #define CFE_ERR_WRONGENDIAN 	-13
 #define CFE_ERR_BADELFVERS 	-14
 #define CFE_ERR_NOTMIPS 	-15
 #define CFE_ERR_BADELFFMT 	-16
 #define CFE_ERR_BADADDR 	-17
+=======
+#define CFE_ERR_NOT32BIT	-12
+#define CFE_ERR_WRONGENDIAN	-13
+#define CFE_ERR_BADELFVERS	-14
+#define CFE_ERR_NOTMIPS		-15
+#define CFE_ERR_BADELFFMT	-16
+#define CFE_ERR_BADADDR		-17
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CFE_ERR_FILENOTFOUND	-18
 #define CFE_ERR_UNSUPPORTED	-19
@@ -73,8 +92,13 @@
 
 #define CFE_ERR_NOTREADY	-36
 
+<<<<<<< HEAD
 #define CFE_ERR_GETMEM          -37
 #define CFE_ERR_SETMEM          -38
+=======
+#define CFE_ERR_GETMEM		-37
+#define CFE_ERR_SETMEM		-38
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CFE_ERR_NOTCONN		-39
 #define CFE_ERR_ADDRINUSE	-40

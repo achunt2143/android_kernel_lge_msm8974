@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,12 +46,22 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdispat.h"
+<<<<<<< HEAD
+=======
+#include "acconvert.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psargs")
@@ -87,7 +102,11 @@ acpi_ps_get_next_package_length(struct acpi_parse_state *parser_state)
 	 * used to encode the package length, either 0,1,2, or 3
 	 */
 	byte_count = (aml[0] >> 6);
+<<<<<<< HEAD
 	parser_state->aml += ((acpi_size) byte_count + 1);
+=======
+	parser_state->aml += ((acpi_size)byte_count + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get bytes 3, 2, 1 as needed */
 
@@ -120,7 +139,11 @@ acpi_ps_get_next_package_length(struct acpi_parse_state *parser_state)
  * RETURN:      Pointer to end-of-package +1
  *
  * DESCRIPTION: Get next package length and return a pointer past the end of
+<<<<<<< HEAD
  *              the package.  Consumes the package length field
+=======
+ *              the package. Consumes the package length field
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -147,8 +170,13 @@ u8 *acpi_ps_get_next_package_end(struct acpi_parse_state *parser_state)
  * RETURN:      Pointer to the start of the name string (pointer points into
  *              the AML.
  *
+<<<<<<< HEAD
  * DESCRIPTION: Get next raw namestring within the AML stream.  Handles all name
  *              prefix characters.  Set parser state to point past the string.
+=======
+ * DESCRIPTION: Get next raw namestring within the AML stream. Handles all name
+ *              prefix characters. Set parser state to point past the string.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              (Name is consumed from the AML.)
  *
  ******************************************************************************/
@@ -162,7 +190,11 @@ char *acpi_ps_get_next_namestring(struct acpi_parse_state *parser_state)
 
 	/* Point past any namestring prefix characters (backslash or carat) */
 
+<<<<<<< HEAD
 	while (acpi_ps_is_prefix_char(*end)) {
+=======
+	while (ACPI_IS_ROOT_PREFIX(*end) || ACPI_IS_PARENT_PREFIX(*end)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		end++;
 	}
 
@@ -183,6 +215,7 @@ char *acpi_ps_get_next_namestring(struct acpi_parse_state *parser_state)
 
 		/* Two name segments */
 
+<<<<<<< HEAD
 		end += 1 + (2 * ACPI_NAME_SIZE);
 		break;
 
@@ -191,13 +224,27 @@ char *acpi_ps_get_next_namestring(struct acpi_parse_state *parser_state)
 		/* Multiple name segments, 4 chars each, count in next byte */
 
 		end += 2 + (*(end + 1) * ACPI_NAME_SIZE);
+=======
+		end += 1 + (2 * ACPI_NAMESEG_SIZE);
+		break;
+
+	case AML_MULTI_NAME_PREFIX:
+
+		/* Multiple name segments, 4 chars each, count in next byte */
+
+		end += 2 + (*(end + 1) * ACPI_NAMESEG_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 
 		/* Single name segment */
 
+<<<<<<< HEAD
 		end += ACPI_NAME_SIZE;
+=======
+		end += ACPI_NAMESEG_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -210,7 +257,11 @@ char *acpi_ps_get_next_namestring(struct acpi_parse_state *parser_state)
  * FUNCTION:    acpi_ps_get_next_namepath
  *
  * PARAMETERS:  parser_state        - Current parser state object
+<<<<<<< HEAD
  *              Arg                 - Where the namepath will be stored
+=======
+ *              arg                 - Where the namepath will be stored
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              arg_count           - If the namepath points to a control method
  *                                    the method's argument is returned here.
  *              possible_method_call - Whether the namepath can possibly be the
@@ -220,7 +271,11 @@ char *acpi_ps_get_next_namestring(struct acpi_parse_state *parser_state)
  *
  * DESCRIPTION: Get next name (if method call, return # of required args).
  *              Names are looked up in the internal namespace to determine
+<<<<<<< HEAD
  *              if the name represents a control method.  If a method
+=======
+ *              if the name represents a control method. If a method
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              is found, the number of arguments to the method is returned.
  *              This information is critical for parsing to continue correctly.
  *
@@ -269,25 +324,47 @@ acpi_ps_get_next_namepath(struct acpi_walk_state *walk_state,
 	 */
 	if (ACPI_SUCCESS(status) &&
 	    possible_method_call && (node->type == ACPI_TYPE_METHOD)) {
+<<<<<<< HEAD
 		if (walk_state->opcode == AML_UNLOAD_OP) {
 			/*
 			 * acpi_ps_get_next_namestring has increased the AML pointer,
 			 * so we need to restore the saved AML pointer for method call.
+=======
+		if ((GET_CURRENT_ARG_TYPE(walk_state->arg_types) ==
+		     ARGP_SUPERNAME)
+		    || (GET_CURRENT_ARG_TYPE(walk_state->arg_types) ==
+			ARGP_TARGET)) {
+			/*
+			 * acpi_ps_get_next_namestring has increased the AML pointer past
+			 * the method invocation namestring, so we need to restore the
+			 * saved AML pointer back to the original method invocation
+			 * namestring.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			walk_state->parser_state.aml = start;
 			walk_state->arg_count = 1;
 			acpi_ps_init_op(arg, AML_INT_METHODCALL_OP);
+<<<<<<< HEAD
 			return_ACPI_STATUS(AE_OK);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* This name is actually a control method invocation */
 
 		method_desc = acpi_ns_get_attached_object(node);
 		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+<<<<<<< HEAD
 				  "Control Method - %p Desc %p Path=%p\n", node,
 				  method_desc, path));
 
 		name_op = acpi_ps_alloc_op(AML_INT_NAMEPATH_OP);
+=======
+				  "Control Method invocation %4.4s - %p Desc %p Path=%p\n",
+				  node->name.ascii, node, method_desc, path));
+
+		name_op = acpi_ps_alloc_op(AML_INT_NAMEPATH_OP, start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!name_op) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -335,7 +412,11 @@ acpi_ps_get_next_namepath(struct acpi_walk_state *walk_state,
 		/* 2) not_found during a cond_ref_of(x) is ok by definition */
 
 		else if (walk_state->op->common.aml_opcode ==
+<<<<<<< HEAD
 			 AML_COND_REF_OF_OP) {
+=======
+			 AML_CONDITIONAL_REF_OF_OP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_OK;
 		}
 
@@ -348,7 +429,11 @@ acpi_ps_get_next_namepath(struct acpi_walk_state *walk_state,
 			 ((arg->common.parent->common.aml_opcode ==
 			   AML_PACKAGE_OP)
 			  || (arg->common.parent->common.aml_opcode ==
+<<<<<<< HEAD
 			      AML_VAR_PACKAGE_OP))) {
+=======
+			      AML_VARIABLE_PACKAGE_OP))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_OK;
 		}
 	}
@@ -356,7 +441,11 @@ acpi_ps_get_next_namepath(struct acpi_walk_state *walk_state,
 	/* Final exception check (may have been changed from code above) */
 
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_ERROR_NAMESPACE(path, status);
+=======
+		ACPI_ERROR_NAMESPACE(walk_state->scope_info, path, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((walk_state->parse_flags & ACPI_PARSE_MODE_MASK) ==
 		    ACPI_PARSE_EXECUTE) {
@@ -379,7 +468,11 @@ acpi_ps_get_next_namepath(struct acpi_walk_state *walk_state,
  *
  * PARAMETERS:  parser_state        - Current parser state object
  *              arg_type            - The argument type (AML_*_ARG)
+<<<<<<< HEAD
  *              Arg                 - Where the argument is returned
+=======
+ *              arg                 - Where the argument is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -484,7 +577,11 @@ acpi_ps_get_next_simple_arg(struct acpi_parse_state *parser_state,
 static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 						       *parser_state)
 {
+<<<<<<< HEAD
 	u32 aml_offset;
+=======
+	u8 *aml;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_parse_object *field;
 	union acpi_parse_object *arg = NULL;
 	u16 opcode;
@@ -498,8 +595,13 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 
 	ACPI_FUNCTION_TRACE(ps_get_next_field);
 
+<<<<<<< HEAD
 	aml_offset =
 	    (u32)ACPI_PTR_DIFF(parser_state->aml, parser_state->aml_start);
+=======
+	ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+	aml = parser_state->aml;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine field type */
 
@@ -536,15 +638,25 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 
 	/* Allocate a new field op */
 
+<<<<<<< HEAD
 	field = acpi_ps_alloc_op(opcode);
+=======
+	field = acpi_ps_alloc_op(opcode, aml);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!field) {
 		return_PTR(NULL);
 	}
 
+<<<<<<< HEAD
 	field->common.aml_offset = aml_offset;
 
 	/* Decode the field type */
 
+=======
+	/* Decode the field type */
+
+	ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (opcode) {
 	case AML_INT_NAMEDFIELD_OP:
 
@@ -552,7 +664,27 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 
 		ACPI_MOVE_32_TO_32(&name, parser_state->aml);
 		acpi_ps_set_name(field, name);
+<<<<<<< HEAD
 		parser_state->aml += ACPI_NAME_SIZE;
+=======
+		parser_state->aml += ACPI_NAMESEG_SIZE;
+
+		ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+
+#ifdef ACPI_ASL_COMPILER
+		/*
+		 * Because the package length isn't represented as a parse tree object,
+		 * take comments surrounding this and add to the previously created
+		 * parse node.
+		 */
+		if (field->common.inline_comment) {
+			field->common.name_comment =
+			    field->common.inline_comment;
+		}
+		field->common.inline_comment = acpi_gbl_current_inline_comment;
+		acpi_gbl_current_inline_comment = NULL;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Get the length which is encoded as a package length */
 
@@ -604,20 +736,39 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 		 * Argument for Connection operator can be either a Buffer
 		 * (resource descriptor), or a name_string.
 		 */
+<<<<<<< HEAD
 		if (ACPI_GET8(parser_state->aml) == AML_BUFFER_OP) {
 			parser_state->aml++;
 
+=======
+		aml = parser_state->aml;
+		if (ACPI_GET8(parser_state->aml) == AML_BUFFER_OP) {
+			parser_state->aml++;
+
+			ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pkg_end = parser_state->aml;
 			pkg_length =
 			    acpi_ps_get_next_package_length(parser_state);
 			pkg_end += pkg_length;
 
+<<<<<<< HEAD
+=======
+			ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (parser_state->aml < pkg_end) {
 
 				/* Non-empty list */
 
+<<<<<<< HEAD
 				arg = acpi_ps_alloc_op(AML_INT_BYTELIST_OP);
 				if (!arg) {
+=======
+				arg =
+				    acpi_ps_alloc_op(AML_INT_BYTELIST_OP, aml);
+				if (!arg) {
+					acpi_ps_free_op(field);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return_PTR(NULL);
 				}
 
@@ -626,32 +777,55 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 				opcode = ACPI_GET8(parser_state->aml);
 				parser_state->aml++;
 
+<<<<<<< HEAD
 				switch (opcode) {
 				case AML_BYTE_OP:	/* AML_BYTEDATA_ARG */
+=======
+				ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+				switch (opcode) {
+				case AML_BYTE_OP:	/* AML_BYTEDATA_ARG */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buffer_length =
 					    ACPI_GET8(parser_state->aml);
 					parser_state->aml += 1;
 					break;
 
 				case AML_WORD_OP:	/* AML_WORDDATA_ARG */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buffer_length =
 					    ACPI_GET16(parser_state->aml);
 					parser_state->aml += 2;
 					break;
 
 				case AML_DWORD_OP:	/* AML_DWORDATA_ARG */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buffer_length =
 					    ACPI_GET32(parser_state->aml);
 					parser_state->aml += 4;
 					break;
 
 				default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buffer_length = 0;
 					break;
 				}
 
 				/* Fill in bytelist data */
 
+<<<<<<< HEAD
+=======
+				ASL_CV_CAPTURE_COMMENTS_ONLY(parser_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				arg->named.value.size = buffer_length;
 				arg->named.data = parser_state->aml;
 			}
@@ -660,8 +834,14 @@ static union acpi_parse_object *acpi_ps_get_next_field(struct acpi_parse_state
 
 			parser_state->aml = pkg_end;
 		} else {
+<<<<<<< HEAD
 			arg = acpi_ps_alloc_op(AML_INT_NAMEPATH_OP);
 			if (!arg) {
+=======
+			arg = acpi_ps_alloc_op(AML_INT_NAMEPATH_OP, aml);
+			if (!arg) {
+				acpi_ps_free_op(field);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return_PTR(NULL);
 			}
 
@@ -714,6 +894,13 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 
 	ACPI_FUNCTION_TRACE_PTR(ps_get_next_arg, parser_state);
 
+<<<<<<< HEAD
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+			  "Expected argument type ARGP: %s (%2.2X)\n",
+			  acpi_ut_get_argument_type_name(arg_type), arg_type));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (arg_type) {
 	case ARGP_BYTEDATA:
 	case ARGP_WORDDATA:
@@ -724,10 +911,18 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 
 		/* Constants, strings, and namestrings are all the same size */
 
+<<<<<<< HEAD
 		arg = acpi_ps_alloc_op(AML_BYTE_OP);
 		if (!arg) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
+=======
+		arg = acpi_ps_alloc_op(AML_BYTE_OP, parser_state->aml);
+		if (!arg) {
+			return_ACPI_STATUS(AE_NO_MEMORY);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ps_get_next_simple_arg(parser_state, arg_type, arg);
 		break;
 
@@ -771,7 +966,12 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 
 			/* Non-empty list */
 
+<<<<<<< HEAD
 			arg = acpi_ps_alloc_op(AML_INT_BYTELIST_OP);
+=======
+			arg = acpi_ps_alloc_op(AML_INT_BYTELIST_OP,
+					       parser_state->aml);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!arg) {
 				return_ACPI_STATUS(AE_NO_MEMORY);
 			}
@@ -789,22 +989,44 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 		}
 		break;
 
+<<<<<<< HEAD
 	case ARGP_TARGET:
 	case ARGP_SUPERNAME:
 	case ARGP_SIMPLENAME:
+=======
+	case ARGP_SIMPLENAME:
+	case ARGP_NAME_OR_REF:
+
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "**** SimpleName/NameOrRef: %s (%2.2X)\n",
+				  acpi_ut_get_argument_type_name(arg_type),
+				  arg_type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		subop = acpi_ps_peek_opcode(parser_state);
 		if (subop == 0 ||
 		    acpi_ps_is_leading_char(subop) ||
+<<<<<<< HEAD
 		    acpi_ps_is_prefix_char(subop)) {
 
 			/* null_name or name_string */
 
 			arg = acpi_ps_alloc_op(AML_INT_NAMEPATH_OP);
+=======
+		    ACPI_IS_ROOT_PREFIX(subop) ||
+		    ACPI_IS_PARENT_PREFIX(subop)) {
+
+			/* null_name or name_string */
+
+			arg =
+			    acpi_ps_alloc_op(AML_INT_NAMEPATH_OP,
+					     parser_state->aml);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!arg) {
 				return_ACPI_STATUS(AE_NO_MEMORY);
 			}
 
+<<<<<<< HEAD
 			/* To support super_name arg of Unload */
 
 			if (walk_state->opcode == AML_UNLOAD_OP) {
@@ -827,6 +1049,55 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 				    acpi_ps_get_next_namepath(walk_state,
 							      parser_state, arg,
 							      0);
+=======
+			status =
+			    acpi_ps_get_next_namepath(walk_state, parser_state,
+						      arg,
+						      ACPI_NOT_METHOD_CALL);
+		} else {
+			/* Single complex argument, nothing returned */
+
+			walk_state->arg_count = 1;
+		}
+		break;
+
+	case ARGP_TARGET:
+	case ARGP_SUPERNAME:
+
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "**** Target/Supername: %s (%2.2X)\n",
+				  acpi_ut_get_argument_type_name(arg_type),
+				  arg_type));
+
+		subop = acpi_ps_peek_opcode(parser_state);
+		if (subop == 0 ||
+		    acpi_ps_is_leading_char(subop) ||
+		    ACPI_IS_ROOT_PREFIX(subop) ||
+		    ACPI_IS_PARENT_PREFIX(subop)) {
+
+			/* NULL target (zero). Convert to a NULL namepath */
+
+			arg =
+			    acpi_ps_alloc_op(AML_INT_NAMEPATH_OP,
+					     parser_state->aml);
+			if (!arg) {
+				return_ACPI_STATUS(AE_NO_MEMORY);
+			}
+
+			status =
+			    acpi_ps_get_next_namepath(walk_state, parser_state,
+						      arg,
+						      ACPI_POSSIBLE_METHOD_CALL);
+
+			if (arg->common.aml_opcode == AML_INT_METHODCALL_OP) {
+
+				/* Free method call op and corresponding namestring sub-ob */
+
+				acpi_ps_free_op(arg->common.value.arg);
+				acpi_ps_free_op(arg);
+				arg = NULL;
+				walk_state->arg_count = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/* Single complex argument, nothing returned */
@@ -838,6 +1109,14 @@ acpi_ps_get_next_arg(struct acpi_walk_state *walk_state,
 	case ARGP_DATAOBJ:
 	case ARGP_TERMARG:
 
+<<<<<<< HEAD
+=======
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "**** TermArg/DataObj: %s (%2.2X)\n",
+				  acpi_ut_get_argument_type_name(arg_type),
+				  arg_type));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Single complex argument, nothing returned */
 
 		walk_state->arg_count = 1;

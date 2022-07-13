@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC85xx DS Board Setup
  *
@@ -5,11 +9,14 @@
  * Roy Zang <tie-fei.zang@freescale.com>
  * 	- Add PCI/PCI Exprees support
  * Copyright 2007 Freescale Semiconductor Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -19,18 +26,30 @@
 #include <linux/delay.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/memblock.h>
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <mm/mmu_decl.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 #include <asm/i8259.h>
 #include <asm/swiotlb.h>
+<<<<<<< HEAD
+=======
+#include <asm/ppc-pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
@@ -38,6 +57,7 @@
 
 #include "mpc85xx.h"
 
+<<<<<<< HEAD
 #undef DEBUG
 
 #ifdef DEBUG
@@ -135,11 +155,32 @@ static int mpc85xx_exclude_device(struct pci_controller *hose,
 }
 #endif	/* CONFIG_PCI */
 
+=======
+static void __init mpc85xx_ds_pic_init(void)
+{
+	struct mpic *mpic;
+	int flags = MPIC_BIG_ENDIAN | MPIC_SINGLE_DEST_CPU;
+
+	if (of_machine_is_compatible("fsl,MPC8572DS-CAMP"))
+		flags |= MPIC_NO_RESET;
+
+	mpic = mpic_alloc(NULL, 0, flags, 0, 256, " OpenPIC  ");
+
+	if (WARN_ON(!mpic))
+		return;
+
+	mpic_init(mpic);
+
+	mpc85xx_8259_init();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup the architecture
  */
 static void __init mpc85xx_ds_setup_arch(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	struct device_node *np;
 	struct pci_controller *hose;
@@ -245,24 +286,54 @@ static int __init p2020_ds_probe(void)
 define_machine(mpc8544_ds) {
 	.name			= "MPC8544 DS",
 	.probe			= mpc8544_ds_probe,
+=======
+	if (ppc_md.progress)
+		ppc_md.progress("mpc85xx_ds_setup_arch()", 0);
+
+	swiotlb_detect_4g();
+	fsl_pci_assign_primary();
+	uli_init();
+	mpc85xx_smp_init();
+
+	pr_info("MPC85xx DS board from Freescale Semiconductor\n");
+}
+
+machine_arch_initcall(mpc8544_ds, mpc85xx_common_publish_devices);
+machine_arch_initcall(mpc8572_ds, mpc85xx_common_publish_devices);
+
+define_machine(mpc8544_ds) {
+	.name			= "MPC8544 DS",
+	.compatible		= "MPC8544DS",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= mpc85xx_ds_setup_arch,
 	.init_IRQ		= mpc85xx_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };
 
 define_machine(mpc8572_ds) {
 	.name			= "MPC8572 DS",
+<<<<<<< HEAD
 	.probe			= mpc8572_ds_probe,
+=======
+	.compatible		= "fsl,MPC8572DS",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= mpc85xx_ds_setup_arch,
 	.init_IRQ		= mpc85xx_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
@@ -281,5 +352,10 @@ define_machine(p2020_ds) {
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

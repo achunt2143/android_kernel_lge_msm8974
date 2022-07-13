@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/vfp/vfphw.S
  *
  *  Copyright (C) 2004 ARM Limited.
  *  Written by Deep Blue Solutions Limited.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -29,11 +34,22 @@
 1:	ldmfd	sp!, {r0-r3, ip, lr}
 #endif
 	.endm
+=======
+ */
+#include <linux/init.h>
+#include <linux/linkage.h>
+#include <asm/thread_info.h>
+#include <asm/vfpmacros.h>
+#include <linux/kern_levels.h>
+#include <asm/assembler.h>
+#include <asm/asm-offsets.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.macro  DBGSTR1, str, arg
 #ifdef DEBUG
 	stmfd	sp!, {r0-r3, ip, lr}
 	mov	r1, \arg
+<<<<<<< HEAD
 	add	r0, pc, #4
 	bl	printk
 	b	1f
@@ -229,6 +245,38 @@ process_exception:
 					@ required. If not, the user code will
 					@ retry the faulted instruction
 ENDPROC(vfp_support_entry)
+=======
+	ldr	r0, =1f
+	bl	_printk
+	ldmfd	sp!, {r0-r3, ip, lr}
+
+	.pushsection .rodata, "a"
+1:	.ascii	KERN_DEBUG "VFP: \str\n"
+	.byte	0
+	.previous
+#endif
+	.endm
+
+ENTRY(vfp_load_state)
+	@ Load the current VFP state
+	@ r0 - load location
+	@ returns FPEXC
+	DBGSTR1	"load VFP state %p", r0
+					@ Load the saved state back into the VFP
+	VFPFLDMIA r0, r1		@ reload the working registers while
+					@ FPEXC is in a safe state
+	ldmia	r0, {r0-r3}		@ load FPEXC, FPSCR, FPINST, FPINST2
+	tst	r0, #FPEXC_EX		@ is there additional state to restore?
+	beq	1f
+	VFPFMXR	FPINST, r2		@ restore FPINST (only if FPEXC.EX is set)
+	tst	r0, #FPEXC_FP2V		@ is there an FPINST2 to write?
+	beq	1f
+	VFPFMXR	FPINST2, r3		@ FPINST2 if needed (and present)
+1:
+	VFPFMXR	FPSCR, r1		@ restore status
+	ret	lr
+ENDPROC(vfp_load_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(vfp_save_state)
 	@ Save the current VFP state
@@ -245,6 +293,7 @@ ENTRY(vfp_save_state)
 	VFPFMRX	r12, FPINST2		@ FPINST2 if needed (and present)
 1:
 	stmia	r0, {r1, r2, r3, r12}	@ save FPEXC, FPSCR, FPINST, FPINST2
+<<<<<<< HEAD
 	mov	pc, lr
 ENDPROC(vfp_save_state)
 
@@ -252,11 +301,20 @@ ENDPROC(vfp_save_state)
 vfp_current_hw_state_address:
 	.word	vfp_current_hw_state
 
+=======
+	ret	lr
+ENDPROC(vfp_save_state)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.macro	tbl_branch, base, tmp, shift
 #ifdef CONFIG_THUMB2_KERNEL
 	adr	\tmp, 1f
 	add	\tmp, \tmp, \base, lsl \shift
+<<<<<<< HEAD
 	mov	pc, \tmp
+=======
+	ret	\tmp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	add	pc, pc, \base, lsl \shift
 	mov	r0, r0
@@ -266,40 +324,78 @@ vfp_current_hw_state_address:
 
 ENTRY(vfp_get_float)
 	tbl_branch r0, r3, #3
+<<<<<<< HEAD
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	mrc	p10, 0, r0, c\dr, c0, 0	@ fmrs	r0, s0
 	mov	pc, lr
 	.org	1b + 8
 1:	mrc	p10, 0, r0, c\dr, c0, 4	@ fmrs	r0, s1
 	mov	pc, lr
+=======
+	.fpu	vfpv2
+	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+1:	vmov	r0, s\dr
+	ret	lr
+	.org	1b + 8
+	.endr
+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+1:	vmov	r0, s\dr
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.org	1b + 8
 	.endr
 ENDPROC(vfp_get_float)
 
 ENTRY(vfp_put_float)
 	tbl_branch r1, r3, #3
+<<<<<<< HEAD
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	mcr	p10, 0, r0, c\dr, c0, 0	@ fmsr	r0, s0
 	mov	pc, lr
 	.org	1b + 8
 1:	mcr	p10, 0, r0, c\dr, c0, 4	@ fmsr	r0, s1
 	mov	pc, lr
+=======
+	.fpu	vfpv2
+	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+1:	vmov	s\dr, r0
+	ret	lr
+	.org	1b + 8
+	.endr
+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+1:	vmov	s\dr, r0
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.org	1b + 8
 	.endr
 ENDPROC(vfp_put_float)
 
 ENTRY(vfp_get_double)
 	tbl_branch r0, r3, #3
+<<<<<<< HEAD
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	fmrrd	r0, r1, d\dr
 	mov	pc, lr
+=======
+	.fpu	vfpv2
+	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+1:	vmov	r0, r1, d\dr
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.org	1b + 8
 	.endr
 #ifdef CONFIG_VFPv3
 	@ d16 - d31 registers
+<<<<<<< HEAD
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	mrrc	p11, 3, r0, r1, c\dr	@ fmrrd	r0, r1, d\dr
 	mov	pc, lr
+=======
+	.fpu	vfpv3
+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+1:	vmov	r0, r1, d\dr
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.org	1b + 8
 	.endr
 #endif
@@ -307,11 +403,16 @@ ENTRY(vfp_get_double)
 	@ virtual register 16 (or 32 if VFPv3) for compare with zero
 	mov	r0, #0
 	mov	r1, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(vfp_get_double)
 
 ENTRY(vfp_put_double)
 	tbl_branch r2, r3, #3
+<<<<<<< HEAD
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	fmdrr	d\dr, r0, r1
 	mov	pc, lr
@@ -322,6 +423,20 @@ ENTRY(vfp_put_double)
 	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 1:	mcrr	p11, 3, r0, r1, c\dr	@ fmdrr	r0, r1, d\dr
 	mov	pc, lr
+=======
+	.fpu	vfpv2
+	.irp	dr,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+1:	vmov	d\dr, r0, r1
+	ret	lr
+	.org	1b + 8
+	.endr
+#ifdef CONFIG_VFPv3
+	.fpu	vfpv3
+	@ d16 - d31 registers
+	.irp	dr,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
+1:	vmov	d\dr, r0, r1
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.org	1b + 8
 	.endr
 #endif

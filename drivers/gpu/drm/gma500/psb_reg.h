@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  *
  * Copyright (c) (2005-2007) Imagination Technologies Limited.
  * Copyright (c) 2007, Intel Corporation.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA..
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **************************************************************************/
 
 #ifndef _PSB_REG_H_
@@ -562,6 +569,7 @@
 #define PSB_PM_SSC			0x20
 #define PSB_PM_SSS			0x30
 #define PSB_PWRGT_DISPLAY_MASK		0xc /*on a different BA than video/gfx*/
+<<<<<<< HEAD
 #define MDFLD_PWRGT_DISPLAY_A_CNTR	0x0000000c
 #define MDFLD_PWRGT_DISPLAY_B_CNTR	0x0000c000
 #define MDFLD_PWRGT_DISPLAY_C_CNTR	0x00030000
@@ -579,4 +587,9 @@
 #define MDFLD_PWRGT_DISP_MIPI_STS	0x000c0000
 #define MDFLD_PWRGT_DISPLAY_STS_A0    (MDFLD_PWRGT_DISPLAY_A_STS | MDFLD_PWRGT_DISPLAY_B_STS | MDFLD_PWRGT_DISPLAY_C_STS | MDFLD_PWRGT_DISP_MIPI_STS) /* 0x000fc00c */
 #define MDFLD_PWRGT_DISPLAY_STS_B0    (MDFLD_PWRGT_DISPLAY_A_STS_B0 | MDFLD_PWRGT_DISPLAY_B_STS_B0 | MDFLD_PWRGT_DISPLAY_C_STS_B0 | MDFLD_PWRGT_DISP_MIPI_STS) /* 0x000fc00c */
+=======
+/* Display SSS register bits are different in A0 vs. B0 */
+#define PSB_PWRGT_GFX_MASK		0x3
+#define PSB_PWRGT_GFX_MASK_B0		0xc3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

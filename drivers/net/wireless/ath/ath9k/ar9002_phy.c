@@ -119,6 +119,10 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 				aModeRefSel = 2;
 			if (aModeRefSel)
 				break;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:
 		default:
 			aModeRefSel = 0;
@@ -152,7 +156,10 @@ static int ar9002_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	REG_WRITE(ah, AR_PHY_SYNTH_CONTROL, reg32);
 
 	ah->curchan = chan;
+<<<<<<< HEAD
 	ah->curchan_rad_index = -1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -170,11 +177,16 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 {
 	int bb_spur = AR_NO_SPUR;
 	int freq;
+<<<<<<< HEAD
 	int bin, cur_bin;
+=======
+	int bin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bb_spur_off, spur_subchannel_sd;
 	int spur_freq_sd;
 	int spur_delta_phase;
 	int denominator;
+<<<<<<< HEAD
 	int upper, lower, cur_vit_mask;
 	int tmp, newVal;
 	int i;
@@ -203,6 +215,18 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 	freq = centers.synth_center;
 
 	ah->config.spurmode = SPUR_ENABLE_EEPROM;
+=======
+	int tmp, newVal;
+	int i;
+	struct chan_centers centers;
+
+	int cur_bb_spur;
+	bool is2GHz = IS_CHAN_2GHZ(chan);
+
+	ath9k_hw_get_channel_centers(ah, chan, &centers);
+	freq = centers.synth_center;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < AR_EEPROM_MODAL_SPURS; i++) {
 		cur_bb_spur = ah->eep_ops->get_spur_channel(ah, i, is2GHz);
 
@@ -290,6 +314,7 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 	newVal = spur_subchannel_sd << AR_PHY_SFCORR_SPUR_SUBCHNL_SD_S;
 	REG_WRITE(ah, AR_PHY_SFCORR_EXT, newVal);
 
+<<<<<<< HEAD
 	cur_bin = -6000;
 	upper = bin + 100;
 	lower = bin - 100;
@@ -419,6 +444,9 @@ static void ar9002_hw_spur_mitigate(struct ath_hw *ah,
 		| (mask_p[47] << 2) | (mask_p[46] << 0);
 	REG_WRITE(ah, AR_PHY_BIN_MASK2_4, tmp_mask);
 	REG_WRITE(ah, AR_PHY_MASK2_P_61_45, tmp_mask);
+=======
+	ar5008_hw_cmn_spur_mitigate(ah, chan, bin);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REGWRITE_BUFFER_FLUSH(ah);
 }
@@ -427,10 +455,17 @@ static void ar9002_olc_init(struct ath_hw *ah)
 {
 	u32 i;
 
+<<<<<<< HEAD
 	if (!OLC_FOR_AR9280_20_LATER)
 		return;
 
 	if (OLC_FOR_AR9287_10_LATER) {
+=======
+	if (!OLC_FOR_AR9280_20_LATER(ah))
+		return;
+
+	if (OLC_FOR_AR9287_10_LATER(ah)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_SET_BIT(ah, AR_PHY_TX_PWRCTRL9,
 				AR_PHY_TX_PWRCTRL9_RES_DC_REMOVAL);
 		ath9k_hw_analog_shift_rmw(ah, AR9287_AN_TXPC0,
@@ -486,7 +521,11 @@ static void ar9002_hw_do_getnf(struct ath_hw *ah,
 	if (IS_CHAN_HT40(ah->curchan))
 		nfarray[3] = sign_extend32(nf, 8);
 
+<<<<<<< HEAD
 	if (AR_SREV_9285(ah) || AR_SREV_9271(ah))
+=======
+	if (!(ah->rxchainmask & BIT(1)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	nf = MS(REG_READ(ah, AR_PHY_CH1_CCA), AR9280_PHY_CH1_MINCCA_PWR);
@@ -533,6 +572,10 @@ static void ar9002_hw_antdiv_comb_conf_get(struct ath_hw *ah,
 				 AR_PHY_9285_ANT_DIV_ALT_LNACONF_S;
 	antconf->fast_div_bias = (regval & AR_PHY_9285_FAST_DIV_BIAS) >>
 				  AR_PHY_9285_FAST_DIV_BIAS_S;
+<<<<<<< HEAD
+=======
+	antconf->lna1_lna2_switch_delta = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	antconf->lna1_lna2_delta = -3;
 	antconf->div_group = 0;
 }
@@ -556,14 +599,181 @@ static void ar9002_hw_antdiv_comb_conf_set(struct ath_hw *ah,
 	REG_WRITE(ah, AR_PHY_MULTICHAIN_GAIN_CTL, regval);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
+
+static void ar9002_hw_set_bt_ant_diversity(struct ath_hw *ah, bool enable)
+{
+	struct ath_btcoex_hw *btcoex = &ah->btcoex_hw;
+	u8 antdiv_ctrl1, antdiv_ctrl2;
+	u32 regval;
+
+	if (enable) {
+		antdiv_ctrl1 = ATH_BT_COEX_ANTDIV_CONTROL1_ENABLE;
+		antdiv_ctrl2 = ATH_BT_COEX_ANTDIV_CONTROL2_ENABLE;
+
+		/*
+		 * Don't disable BT ant to allow BB to control SWCOM.
+		 */
+		btcoex->bt_coex_mode2 &= (~(AR_BT_DISABLE_BT_ANT));
+		REG_WRITE(ah, AR_BT_COEX_MODE2, btcoex->bt_coex_mode2);
+
+		REG_WRITE(ah, AR_PHY_SWITCH_COM, ATH_BT_COEX_ANT_DIV_SWITCH_COM);
+		REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0, 0, 0xf0000000);
+	} else {
+		/*
+		 * Disable antenna diversity, use LNA1 only.
+		 */
+		antdiv_ctrl1 = ATH_BT_COEX_ANTDIV_CONTROL1_FIXED_A;
+		antdiv_ctrl2 = ATH_BT_COEX_ANTDIV_CONTROL2_FIXED_A;
+
+		/*
+		 * Disable BT Ant. to allow concurrent BT and WLAN receive.
+		 */
+		btcoex->bt_coex_mode2 |= AR_BT_DISABLE_BT_ANT;
+		REG_WRITE(ah, AR_BT_COEX_MODE2, btcoex->bt_coex_mode2);
+
+		/*
+		 * Program SWCOM table to make sure RF switch always parks
+		 * at BT side.
+		 */
+		REG_WRITE(ah, AR_PHY_SWITCH_COM, 0);
+		REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0, 0, 0xf0000000);
+	}
+
+	regval = REG_READ(ah, AR_PHY_MULTICHAIN_GAIN_CTL);
+	regval &= (~(AR_PHY_9285_ANT_DIV_CTL_ALL));
+        /*
+	 * Clear ant_fast_div_bias [14:9] since for WB195,
+	 * the main LNA is always LNA1.
+	 */
+	regval &= (~(AR_PHY_9285_FAST_DIV_BIAS));
+	regval |= SM(antdiv_ctrl1, AR_PHY_9285_ANT_DIV_CTL);
+	regval |= SM(antdiv_ctrl2, AR_PHY_9285_ANT_DIV_ALT_LNACONF);
+	regval |= SM((antdiv_ctrl2 >> 2), AR_PHY_9285_ANT_DIV_MAIN_LNACONF);
+	regval |= SM((antdiv_ctrl1 >> 1), AR_PHY_9285_ANT_DIV_ALT_GAINTB);
+	regval |= SM((antdiv_ctrl1 >> 2), AR_PHY_9285_ANT_DIV_MAIN_GAINTB);
+	REG_WRITE(ah, AR_PHY_MULTICHAIN_GAIN_CTL, regval);
+
+	regval = REG_READ(ah, AR_PHY_CCK_DETECT);
+	regval &= (~AR_PHY_CCK_DETECT_BB_ENABLE_ANT_FAST_DIV);
+	regval |= SM((antdiv_ctrl1 >> 3), AR_PHY_CCK_DETECT_BB_ENABLE_ANT_FAST_DIV);
+	REG_WRITE(ah, AR_PHY_CCK_DETECT, regval);
+}
+
+#endif
+
+static void ar9002_hw_spectral_scan_config(struct ath_hw *ah,
+				    struct ath_spec_scan *param)
+{
+	u32 repeat_bit;
+	u8 count;
+
+	if (!param->enabled) {
+		REG_CLR_BIT(ah, AR_PHY_SPECTRAL_SCAN,
+			    AR_PHY_SPECTRAL_SCAN_ENABLE);
+		return;
+	}
+	REG_SET_BIT(ah, AR_PHY_RADAR_0, AR_PHY_RADAR_0_FFT_ENA);
+	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, AR_PHY_SPECTRAL_SCAN_ENABLE);
+
+	if (AR_SREV_9280(ah))
+		repeat_bit = AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT;
+	else
+		repeat_bit = AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT_KIWI;
+
+	if (param->short_repeat)
+		REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, repeat_bit);
+	else
+		REG_CLR_BIT(ah, AR_PHY_SPECTRAL_SCAN, repeat_bit);
+
+	/* on AR92xx, the highest bit of count will make the chip send
+	 * spectral samples endlessly. Check if this really was intended,
+	 * and fix otherwise.
+	 */
+	count = param->count;
+	if (param->endless) {
+		if (AR_SREV_9280(ah))
+			count = 0x80;
+		else
+			count = 0;
+	} else if (count & 0x80)
+		count = 0x7f;
+	else if (!count)
+		count = 1;
+
+	if (AR_SREV_9280(ah)) {
+		REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+			      AR_PHY_SPECTRAL_SCAN_COUNT, count);
+	} else {
+		REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+			      AR_PHY_SPECTRAL_SCAN_COUNT_KIWI, count);
+		REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
+			    AR_PHY_SPECTRAL_SCAN_PHYERR_MASK_SELECT);
+	}
+
+	REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+		      AR_PHY_SPECTRAL_SCAN_PERIOD, param->period);
+	REG_RMW_FIELD(ah, AR_PHY_SPECTRAL_SCAN,
+		      AR_PHY_SPECTRAL_SCAN_FFT_PERIOD, param->fft_period);
+
+	return;
+}
+
+static void ar9002_hw_spectral_scan_trigger(struct ath_hw *ah)
+{
+	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN, AR_PHY_SPECTRAL_SCAN_ENABLE);
+	/* Activate spectral scan */
+	REG_SET_BIT(ah, AR_PHY_SPECTRAL_SCAN,
+		    AR_PHY_SPECTRAL_SCAN_ACTIVE);
+}
+
+static void ar9002_hw_spectral_scan_wait(struct ath_hw *ah)
+{
+	struct ath_common *common = ath9k_hw_common(ah);
+
+	/* Poll for spectral scan complete */
+	if (!ath9k_hw_wait(ah, AR_PHY_SPECTRAL_SCAN,
+			   AR_PHY_SPECTRAL_SCAN_ACTIVE,
+			   0, AH_WAIT_TIMEOUT)) {
+		ath_err(common, "spectral scan wait failed\n");
+		return;
+	}
+}
+
+static void ar9002_hw_tx99_start(struct ath_hw *ah, u32 qnum)
+{
+	REG_SET_BIT(ah, 0x9864, 0x7f000);
+	REG_SET_BIT(ah, 0x9924, 0x7f00fe);
+	REG_CLR_BIT(ah, AR_DIAG_SW, AR_DIAG_RX_DIS);
+	REG_WRITE(ah, AR_CR, AR_CR_RXD);
+	REG_WRITE(ah, AR_DLCL_IFS(qnum), 0);
+	REG_WRITE(ah, AR_D_GBL_IFS_SIFS, 20);
+	REG_WRITE(ah, AR_D_GBL_IFS_EIFS, 20);
+	REG_WRITE(ah, AR_D_FPCTL, 0x10|qnum);
+	REG_WRITE(ah, AR_TIME_OUT, 0x00000400);
+	REG_WRITE(ah, AR_DRETRY_LIMIT(qnum), 0xffffffff);
+	REG_SET_BIT(ah, AR_QMISC(qnum), AR_Q_MISC_DCU_EARLY_TERM_REQ);
+}
+
+static void ar9002_hw_tx99_stop(struct ath_hw *ah)
+{
+	REG_SET_BIT(ah, AR_DIAG_SW, AR_DIAG_RX_DIS);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ar9002_hw_attach_phy_ops(struct ath_hw *ah)
 {
 	struct ath_hw_private_ops *priv_ops = ath9k_hw_private_ops(ah);
 	struct ath_hw_ops *ops = ath9k_hw_ops(ah);
 
 	priv_ops->set_rf_regs = NULL;
+<<<<<<< HEAD
 	priv_ops->rf_alloc_ext_banks = NULL;
 	priv_ops->rf_free_ext_banks = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv_ops->rf_set_freq = ar9002_hw_set_channel;
 	priv_ops->spur_mitigate_freq = ar9002_hw_spur_mitigate;
 	priv_ops->olc_init = ar9002_olc_init;
@@ -572,6 +782,18 @@ void ar9002_hw_attach_phy_ops(struct ath_hw *ah)
 
 	ops->antdiv_comb_conf_get = ar9002_hw_antdiv_comb_conf_get;
 	ops->antdiv_comb_conf_set = ar9002_hw_antdiv_comb_conf_set;
+<<<<<<< HEAD
+=======
+	ops->spectral_scan_config = ar9002_hw_spectral_scan_config;
+	ops->spectral_scan_trigger = ar9002_hw_spectral_scan_trigger;
+	ops->spectral_scan_wait = ar9002_hw_spectral_scan_wait;
+
+#ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
+	ops->set_bt_ant_diversity = ar9002_hw_set_bt_ant_diversity;
+#endif
+	ops->tx99_start = ar9002_hw_tx99_start;
+	ops->tx99_stop = ar9002_hw_tx99_stop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar9002_hw_set_nf_limits(ah);
 }

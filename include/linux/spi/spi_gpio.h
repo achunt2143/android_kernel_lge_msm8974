@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_SPI_GPIO_H
 #define __LINUX_SPI_GPIO_H
 
@@ -7,6 +11,7 @@
  *   - id the same as the SPI bus number it implements
  *   - dev.platform data pointing to a struct spi_gpio_platform_data
  *
+<<<<<<< HEAD
  * Or, see the driver code for information about speedups that are
  * possible on platforms that support inlined access for GPIOs (no
  * spi_gpio_platform_data is used).
@@ -31,11 +36,15 @@
  *
  * If the MISO or MOSI pin is not available then it should be set to
  * SPI_GPIO_NO_MISO or SPI_GPIO_NO_MOSI.
+=======
+ * Use spi_board_info with these busses in the usual way.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the bitbanged bus is later switched to a "native" controller,
  * that platform_device and controller_data should be removed.
  */
 
+<<<<<<< HEAD
 #define SPI_GPIO_NO_CHIPSELECT		((unsigned long)-1l)
 #define SPI_GPIO_NO_MISO		((unsigned long)-1l)
 #define SPI_GPIO_NO_MOSI		((unsigned long)-1l)
@@ -65,6 +74,13 @@ struct spi_gpio_platform_data {
 	unsigned	mosi;
 	unsigned	miso;
 
+=======
+/**
+ * struct spi_gpio_platform_data - parameter for bitbanged SPI host controller
+ * @num_chipselect: how many target devices to allow
+ */
+struct spi_gpio_platform_data {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16		num_chipselect;
 };
 

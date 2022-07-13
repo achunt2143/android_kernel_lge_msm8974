@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Input device TTY line discipline
  *
@@ -7,6 +11,7 @@
  * 'serial io port' abstraction that the input device drivers use.
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
@@ -14,6 +19,10 @@
  */
 
 #include <asm/uaccess.h>
+=======
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -71,10 +80,14 @@ static void serport_serio_close(struct serio *serio)
 
 	spin_lock_irqsave(&serport->lock, flags);
 	clear_bit(SERPORT_ACTIVE, &serport->flags);
+<<<<<<< HEAD
 	set_bit(SERPORT_DEAD, &serport->flags);
 	spin_unlock_irqrestore(&serport->lock, flags);
 
 	wake_up_interruptible(&serport->wait);
+=======
+	spin_unlock_irqrestore(&serport->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -110,7 +123,11 @@ static int serport_ldisc_open(struct tty_struct *tty)
 
 static void serport_ldisc_close(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct serport *serport = (struct serport *) tty->disc_data;
+=======
+	struct serport *serport = tty->disc_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(serport);
 }
@@ -121,11 +138,20 @@ static void serport_ldisc_close(struct tty_struct *tty)
  * 'interrupt' routine.
  */
 
+<<<<<<< HEAD
 static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *cp, char *fp, int count)
 {
 	struct serport *serport = (struct serport*) tty->disc_data;
 	unsigned long flags;
 	unsigned int ch_flags;
+=======
+static void serport_ldisc_receive(struct tty_struct *tty, const u8 *cp,
+				  const u8 *fp, size_t count)
+{
+	struct serport *serport = tty->disc_data;
+	unsigned long flags;
+	unsigned int ch_flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	spin_lock_irqsave(&serport->lock, flags);
@@ -134,6 +160,7 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
 		goto out;
 
 	for (i = 0; i < count; i++) {
+<<<<<<< HEAD
 		switch (fp[i]) {
 		case TTY_FRAME:
 			ch_flags = SERIO_FRAME;
@@ -146,6 +173,22 @@ static void serport_ldisc_receive(struct tty_struct *tty, const unsigned char *c
 		default:
 			ch_flags = 0;
 			break;
+=======
+		if (fp) {
+			switch (fp[i]) {
+			case TTY_FRAME:
+				ch_flags = SERIO_FRAME;
+				break;
+
+			case TTY_PARITY:
+				ch_flags = SERIO_PARITY;
+				break;
+
+			default:
+				ch_flags = 0;
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		serio_interrupt(serport->serio, cp[i], ch_flags);
@@ -161,11 +204,20 @@ out:
  * returning 0 characters.
  */
 
+<<<<<<< HEAD
 static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, unsigned char __user * buf, size_t nr)
 {
 	struct serport *serport = (struct serport*) tty->disc_data;
 	struct serio *serio;
 	char name[64];
+=======
+static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file,
+				  u8 *kbuf, size_t nr, void **cookie,
+				  unsigned long offset)
+{
+	struct serport *serport = tty->disc_data;
+	struct serio *serio;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_set_bit(SERPORT_BUSY, &serport->flags))
 		return -EBUSY;
@@ -174,8 +226,13 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, u
 	if (!serio)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	strlcpy(serio->name, "Serial port", sizeof(serio->name));
 	snprintf(serio->phys, sizeof(serio->phys), "%s/serio0", tty_name(tty, name));
+=======
+	strscpy(serio->name, "Serial port", sizeof(serio->name));
+	snprintf(serio->phys, sizeof(serio->phys), "%s/serio0", tty_name(tty));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->id = serport->id;
 	serio->id.type = SERIO_RS232;
 	serio->write = serport_serio_write;
@@ -185,7 +242,11 @@ static ssize_t serport_ldisc_read(struct tty_struct * tty, struct file * file, u
 	serio->dev.parent = tty->dev;
 
 	serio_register_port(serport->serio);
+<<<<<<< HEAD
 	printk(KERN_INFO "serio: Serial port %s\n", tty_name(tty, name));
+=======
+	printk(KERN_INFO "serio: Serial port %s\n", tty_name(tty));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_event_interruptible(serport->wait, test_bit(SERPORT_DEAD, &serport->flags));
 	serio_unregister_port(serport->serio);
@@ -210,8 +271,13 @@ static void serport_set_type(struct tty_struct *tty, unsigned long type)
  * serport_ldisc_ioctl() allows to set the port protocol, and device ID
  */
 
+<<<<<<< HEAD
 static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
 			       unsigned int cmd, unsigned long arg)
+=======
+static int serport_ldisc_ioctl(struct tty_struct *tty, unsigned int cmd,
+			       unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cmd == SPIOCSTYPE) {
 		unsigned long type;
@@ -228,8 +294,12 @@ static int serport_ldisc_ioctl(struct tty_struct *tty, struct file *file,
 
 #ifdef CONFIG_COMPAT
 #define COMPAT_SPIOCSTYPE	_IOW('q', 0x01, compat_ulong_t)
+<<<<<<< HEAD
 static long serport_ldisc_compat_ioctl(struct tty_struct *tty,
 				       struct file *file,
+=======
+static int serport_ldisc_compat_ioctl(struct tty_struct *tty,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       unsigned int cmd, unsigned long arg)
 {
 	if (cmd == COMPAT_SPIOCSTYPE) {
@@ -247,9 +317,27 @@ static long serport_ldisc_compat_ioctl(struct tty_struct *tty,
 }
 #endif
 
+<<<<<<< HEAD
 static void serport_ldisc_write_wakeup(struct tty_struct * tty)
 {
 	struct serport *serport = (struct serport *) tty->disc_data;
+=======
+static void serport_ldisc_hangup(struct tty_struct *tty)
+{
+	struct serport *serport = tty->disc_data;
+	unsigned long flags;
+
+	spin_lock_irqsave(&serport->lock, flags);
+	set_bit(SERPORT_DEAD, &serport->flags);
+	spin_unlock_irqrestore(&serport->lock, flags);
+
+	wake_up_interruptible(&serport->wait);
+}
+
+static void serport_ldisc_write_wakeup(struct tty_struct * tty)
+{
+	struct serport *serport = tty->disc_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&serport->lock, flags);
@@ -264,6 +352,10 @@ static void serport_ldisc_write_wakeup(struct tty_struct * tty)
 
 static struct tty_ldisc_ops serport_ldisc = {
 	.owner =	THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.num =		N_MOUSE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"input",
 	.open =		serport_ldisc_open,
 	.close =	serport_ldisc_close,
@@ -273,6 +365,10 @@ static struct tty_ldisc_ops serport_ldisc = {
 	.compat_ioctl =	serport_ldisc_compat_ioctl,
 #endif
 	.receive_buf =	serport_ldisc_receive,
+<<<<<<< HEAD
+=======
+	.hangup =	serport_ldisc_hangup,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_wakeup =	serport_ldisc_write_wakeup
 };
 
@@ -283,7 +379,11 @@ static struct tty_ldisc_ops serport_ldisc = {
 static int __init serport_init(void)
 {
 	int retval;
+<<<<<<< HEAD
 	retval = tty_register_ldisc(N_MOUSE, &serport_ldisc);
+=======
+	retval = tty_register_ldisc(&serport_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		printk(KERN_ERR "serport.c: Error registering line discipline.\n");
 
@@ -292,7 +392,11 @@ static int __init serport_init(void)
 
 static void __exit serport_exit(void)
 {
+<<<<<<< HEAD
 	tty_unregister_ldisc(N_MOUSE);
+=======
+	tty_unregister_ldisc(&serport_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(serport_init);

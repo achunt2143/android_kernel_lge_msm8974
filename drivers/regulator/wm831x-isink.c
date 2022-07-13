@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm831x-isink.c  --  Current sink driver for the WM831x series
  *
@@ -10,6 +11,15 @@
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// wm831x-isink.c  --  Current sink driver for the WM831x series
+//
+// Copyright 2009 Wolfson Microelectronics PLC.
+//
+// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -92,6 +102,7 @@ static int wm831x_isink_is_enabled(struct regulator_dev *rdev)
 		return 0;
 }
 
+<<<<<<< HEAD
 static int wm831x_isink_set_current(struct regulator_dev *rdev,
 				    int min_uA, int max_uA)
 {
@@ -134,6 +145,14 @@ static struct regulator_ops wm831x_isink_ops = {
 	.disable = wm831x_isink_disable,
 	.set_current_limit = wm831x_isink_set_current,
 	.get_current_limit = wm831x_isink_get_current,
+=======
+static const struct regulator_ops wm831x_isink_ops = {
+	.is_enabled = wm831x_isink_is_enabled,
+	.enable = wm831x_isink_enable,
+	.disable = wm831x_isink_disable,
+	.set_current_limit = regulator_set_current_limit_regmap,
+	.get_current_limit = regulator_get_current_limit_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t wm831x_isink_irq(int irq, void *data)
@@ -148,12 +167,22 @@ static irqreturn_t wm831x_isink_irq(int irq, void *data)
 }
 
 
+<<<<<<< HEAD
 static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
 	struct wm831x_pdata *pdata = wm831x->dev->platform_data;
 	struct wm831x_isink *isink;
 	int id = pdev->id % ARRAY_SIZE(pdata->isink);
+=======
+static int wm831x_isink_probe(struct platform_device *pdev)
+{
+	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
+	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+	struct wm831x_isink *isink;
+	int id = pdev->id % ARRAY_SIZE(pdata->isink);
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 	int ret, irq;
 
@@ -164,6 +193,7 @@ static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 
 	isink = devm_kzalloc(&pdev->dev, sizeof(struct wm831x_isink),
 			     GFP_KERNEL);
+<<<<<<< HEAD
 	if (isink == NULL) {
 		dev_err(&pdev->dev, "Unable to allocate private data\n");
 		return -ENOMEM;
@@ -174,6 +204,16 @@ static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (res == NULL) {
 		dev_err(&pdev->dev, "No I/O resource\n");
+=======
+	if (!isink)
+		return -ENOMEM;
+
+	isink->wm831x = wm831x;
+
+	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+	if (res == NULL) {
+		dev_err(&pdev->dev, "No REG resource\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto err;
 	}
@@ -188,9 +228,24 @@ static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 	isink->desc.ops = &wm831x_isink_ops;
 	isink->desc.type = REGULATOR_CURRENT;
 	isink->desc.owner = THIS_MODULE;
+<<<<<<< HEAD
 
 	isink->regulator = regulator_register(&isink->desc, &pdev->dev,
 					     pdata->isink[id], isink, NULL);
+=======
+	isink->desc.curr_table = wm831x_isinkv_values,
+	isink->desc.n_current_limits = ARRAY_SIZE(wm831x_isinkv_values),
+	isink->desc.csel_reg = isink->reg,
+	isink->desc.csel_mask = WM831X_CS1_ISEL_MASK,
+
+	config.dev = pdev->dev.parent;
+	config.init_data = pdata->isink[id];
+	config.driver_data = isink;
+	config.regmap = wm831x->regmap;
+
+	isink->regulator = devm_regulator_register(&pdev->dev, &isink->desc,
+						   &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(isink->regulator)) {
 		ret = PTR_ERR(isink->regulator);
 		dev_err(wm831x->dev, "Failed to register ISINK%d: %d\n",
@@ -198,6 +253,7 @@ static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	irq = platform_get_irq(pdev, 0);
 	ret = request_threaded_irq(irq, NULL, wm831x_isink_irq,
 				   IRQF_TRIGGER_RISING, isink->name, isink);
@@ -205,18 +261,34 @@ static __devinit int wm831x_isink_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to request ISINK IRQ %d: %d\n",
 			irq, ret);
 		goto err_regulator;
+=======
+	irq = wm831x_irq(wm831x, platform_get_irq(pdev, 0));
+	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+					wm831x_isink_irq,
+					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+					isink->name,
+					isink);
+	if (ret != 0) {
+		dev_err(&pdev->dev, "Failed to request ISINK IRQ %d: %d\n",
+			irq, ret);
+		goto err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, isink);
 
 	return 0;
 
+<<<<<<< HEAD
 err_regulator:
 	regulator_unregister(isink->regulator);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int wm831x_isink_remove(struct platform_device *pdev)
 {
 	struct wm831x_isink *isink = platform_get_drvdata(pdev);
@@ -236,6 +308,13 @@ static struct platform_driver wm831x_isink_driver = {
 	.driver		= {
 		.name	= "wm831x-isink",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver wm831x_isink_driver = {
+	.probe = wm831x_isink_probe,
+	.driver		= {
+		.name	= "wm831x-isink",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

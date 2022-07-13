@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_TEA6330T_H
 #define __SOUND_TEA6330T_H
 
 /*
  *  Routines for control of TEA6330T circuit.
  *  Sound fader control circuit for car radios.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +28,11 @@
  */
 
 #include "i2c.h"		/* generic i2c support */
+=======
+ */
+
+#include <sound/i2c.h>		/* generic i2c support */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_tea6330t_detect(struct snd_i2c_bus *bus, int equalizer);
 int snd_tea6330t_update_mixer(struct snd_card *card, struct snd_i2c_bus *bus,

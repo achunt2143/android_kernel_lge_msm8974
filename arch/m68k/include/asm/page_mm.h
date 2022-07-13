@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_PAGE_MM_H
 #define _M68K_PAGE_MM_H
 
@@ -6,15 +10,19 @@
 #include <linux/compiler.h>
 #include <asm/module.h>
 
+<<<<<<< HEAD
 #define get_user_page(vaddr)		__get_free_page(GFP_KERNEL)
 #define free_user_page(page, addr)	free_page(addr)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We don't need to check for alignment etc.
  */
 #ifdef CPU_M68040_OR_M68060_ONLY
 static inline void copy_page(void *to, void *from)
 {
+<<<<<<< HEAD
   unsigned long tmp;
 
   __asm__ __volatile__("1:\t"
@@ -26,6 +34,18 @@ static inline void copy_page(void *to, void *from)
 		       : "=a" (to), "=a" (from), "=d" (tmp)
 		       : "0" (to), "1" (from) , "2" (PAGE_SIZE / 32 - 1)
 		       );
+=======
+	unsigned long tmp;
+
+	__asm__ __volatile__("1:\t"
+			     ".chip 68040\n\t"
+			     "move16 %1@+,%0@+\n\t"
+			     "move16 %1@+,%0@+\n\t"
+			     ".chip 68k\n\t"
+			     "dbra  %2,1b\n\t"
+			     : "=a" (to), "=a" (from), "=d" (tmp)
+			     : "0" (to), "1" (from), "2" (PAGE_SIZE / 32 - 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void clear_page(void *page)
@@ -97,16 +117,26 @@ static inline void *__va(unsigned long paddr)
 #define __pa(x) ___pa((unsigned long)(x))
 static inline unsigned long ___pa(unsigned long x)
 {
+<<<<<<< HEAD
      if(x == 0)
 	  return 0;
      if(x >= PAGE_OFFSET)
         return (x-PAGE_OFFSET);
      else
         return (x+0x2000000);
+=======
+	if (x == 0)
+		return 0;
+	if (x >= PAGE_OFFSET)
+		return (x - PAGE_OFFSET);
+	else
+		return (x + 0x2000000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void *__va(unsigned long x)
 {
+<<<<<<< HEAD
      if(x == 0)
 	  return (void *)0;
 
@@ -114,6 +144,15 @@ static inline void *__va(unsigned long x)
         return (void *)(x+PAGE_OFFSET);
      else
         return (void *)(x-0x2000000);
+=======
+	if (x == 0)
+		return (void *)0;
+
+	if (x < 0x2000000)
+		return (void *)(x + PAGE_OFFSET);
+	else
+		return (void *)(x - 0x2000000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif	/* CONFIG_SUN3 */
 
@@ -123,6 +162,7 @@ static inline void *__va(unsigned long x)
  * TODO: implement (fast) pfn<->pgdat_idx conversion functions, this makes lots
  * of the shifts unnecessary.
  */
+<<<<<<< HEAD
 #define virt_to_pfn(kaddr)	(__pa(kaddr) >> PAGE_SHIFT)
 #define pfn_to_virt(pfn)	__va((pfn) << PAGE_SHIFT)
 
@@ -147,6 +187,19 @@ static inline __attribute_const__ int __virt_to_node_shift(void)
 
 #define __virt_to_node(addr)	(pg_data_table[(unsigned long)(addr) >> __virt_to_node_shift()])
 #endif
+=======
+static inline unsigned long virt_to_pfn(const void *kaddr)
+{
+	return __pa(kaddr) >> PAGE_SHIFT;
+}
+
+static inline void *pfn_to_virt(unsigned long pfn)
+{
+	return __va(pfn << PAGE_SHIFT);
+}
+
+extern int m68k_virt_to_node_shift;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define virt_to_page(addr) ({						\
 	pfn_to_page(virt_to_pfn(addr));					\
@@ -155,6 +208,7 @@ static inline __attribute_const__ int __virt_to_node_shift(void)
 	pfn_to_virt(page_to_pfn(page));					\
 })
 
+<<<<<<< HEAD
 #define pfn_to_page(pfn) ({						\
 	unsigned long __pfn = (pfn);					\
 	struct pglist_data *pgdat;					\
@@ -169,11 +223,19 @@ static inline __attribute_const__ int __virt_to_node_shift(void)
 })
 
 #define virt_addr_valid(kaddr)	((void *)(kaddr) >= (void *)PAGE_OFFSET && (void *)(kaddr) < high_memory)
+=======
+#define ARCH_PFN_OFFSET (m68k_memory[0].addr >> PAGE_SHIFT)
+
+#define virt_addr_valid(kaddr)	((unsigned long)(kaddr) >= PAGE_OFFSET && (unsigned long)(kaddr) < (unsigned long)high_memory)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pfn_valid(pfn)		virt_addr_valid(pfn_to_virt(pfn))
 
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_PAGE_MM_H */

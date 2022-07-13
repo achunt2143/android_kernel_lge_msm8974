@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
  *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -28,6 +35,7 @@
  *	(ML)	= only defined for Monalisa
  */
 
+<<<<<<< HEAD
 /*
  * Configuration Space header
  */
@@ -71,6 +79,8 @@
 #define PCI_VPD_ADR_REG	0x52	/* 16 bit (ML)	VPD Address Register */
 #define PCI_VPD_DAT_REG	0x54	/* 32 bit (ML)	VPD Data Register */
 /* Byte 58..ff:	Reserved */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * I2C Address (PCI Config)
@@ -81,6 +91,7 @@
 #define I2C_ADDR_VPD	0xA0	/* I2C address for the VPD EEPROM */ 
 
 /*
+<<<<<<< HEAD
  * Define Bits and Values of the registers
  */
 /*	PCI_VENDOR_ID	16 bit	Vendor ID */
@@ -257,6 +268,8 @@
 /*	PCI_VPD_DAT_REG		32 bit (ML)	VPD Data Register */
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Control Register File:
  *	Bank 0
  */
@@ -882,6 +895,7 @@
 #define	T3_MUX		(3<<2)	/* Bit 3..2:	Mux position */
 #define	T3_VRAM		(3<<0)	/* Bit 1..0:	Virtual RAM buffer Address */
 
+<<<<<<< HEAD
 /* PCI card IDs */
 /*
  * Note: The following 4 byte definitions shall not be used! Use OEM Concept!
@@ -896,6 +910,8 @@
 #define PCI_NW_CLASS	0x02		/* PCI class code: network device */
 #define PCI_SUB_CLASS	0x02		/* PCI subclass ID: FDDI device */
 #define PCI_PROG_INTFC	0x00		/* PCI programming Interface (=0) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * address transmission from logical to physical offset address on board

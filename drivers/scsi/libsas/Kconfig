@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Kernel configuration file for the SAS Class
 #
 # Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
 # Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
 #
+<<<<<<< HEAD
 # This file is licensed under GPLv2.
 #
 # This program is free software; you can redistribute it and/or
@@ -21,6 +26,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 #
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SCSI_SAS_LIBSAS
 	tristate "SAS Domain Transport Attributes"
@@ -34,6 +41,10 @@ config SCSI_SAS_ATA
 	bool "ATA support for libsas (requires libata)"
 	depends on SCSI_SAS_LIBSAS
 	depends on ATA = y || ATA = SCSI_SAS_LIBSAS
+<<<<<<< HEAD
+=======
+	select SATA_HOST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 		Builds in ATA support into libsas.  Will necessitate
 		the loading of libata along with libsas.

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FM Driver for Connectivity chip of Texas Instruments.
  *  FM Common module header file
  *
  *  Copyright (C) 2011 Texas Instruments
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _FMDRV_COMMON_H
@@ -172,6 +179,7 @@ struct fm_event_msg_hdr {
 #define FM_DISABLE  0
 
 /* FLAG_GET register bits */
+<<<<<<< HEAD
 #define FM_FR_EVENT		(1 << 0)
 #define FM_BL_EVENT		(1 << 1)
 #define FM_RDS_EVENT		(1 << 2)
@@ -184,6 +192,20 @@ struct fm_event_msg_hdr {
 #define FM_STIC_EVENT		(1 << 9)
 #define FM_MAL_EVENT		(1 << 10)
 #define FM_POW_ENB_EVENT	(1 << 11)
+=======
+#define FM_FR_EVENT		BIT(0)
+#define FM_BL_EVENT		BIT(1)
+#define FM_RDS_EVENT		BIT(2)
+#define FM_BBLK_EVENT		BIT(3)
+#define FM_LSYNC_EVENT		BIT(4)
+#define FM_LEV_EVENT		BIT(5)
+#define FM_IFFR_EVENT		BIT(6)
+#define FM_PI_EVENT		BIT(7)
+#define FM_PD_EVENT		BIT(8)
+#define FM_STIC_EVENT		BIT(9)
+#define FM_MAL_EVENT		BIT(10)
+#define FM_POW_ENB_EVENT	BIT(11)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Firmware files of FM. ASIC ID and ASIC version will be appened to this,
@@ -281,6 +303,7 @@ struct fm_event_msg_hdr {
  * Represents an RDS group type & version.
  * There are 15 groups, each group has 2 versions: A and B.
  */
+<<<<<<< HEAD
 #define FM_RDS_GROUP_TYPE_MASK_0A	    ((unsigned long)1<<0)
 #define FM_RDS_GROUP_TYPE_MASK_0B	    ((unsigned long)1<<1)
 #define FM_RDS_GROUP_TYPE_MASK_1A	    ((unsigned long)1<<2)
@@ -320,6 +343,47 @@ struct fm_event_msg_hdr {
 #define FM_RDS_MAX_AF_JAPAN	        140
 #define FM_RDS_1_AF_FOLLOWS	        225
 #define FM_RDS_25_AF_FOLLOWS	        249
+=======
+#define FM_RDS_GROUP_TYPE_MASK_0A	    BIT(0)
+#define FM_RDS_GROUP_TYPE_MASK_0B	    BIT(1)
+#define FM_RDS_GROUP_TYPE_MASK_1A	    BIT(2)
+#define FM_RDS_GROUP_TYPE_MASK_1B	    BIT(3)
+#define FM_RDS_GROUP_TYPE_MASK_2A	    BIT(4)
+#define FM_RDS_GROUP_TYPE_MASK_2B	    BIT(5)
+#define FM_RDS_GROUP_TYPE_MASK_3A	    BIT(6)
+#define FM_RDS_GROUP_TYPE_MASK_3B	    BIT(7)
+#define FM_RDS_GROUP_TYPE_MASK_4A	    BIT(8)
+#define FM_RDS_GROUP_TYPE_MASK_4B	    BIT(9)
+#define FM_RDS_GROUP_TYPE_MASK_5A	    BIT(10)
+#define FM_RDS_GROUP_TYPE_MASK_5B	    BIT(11)
+#define FM_RDS_GROUP_TYPE_MASK_6A	    BIT(12)
+#define FM_RDS_GROUP_TYPE_MASK_6B	    BIT(13)
+#define FM_RDS_GROUP_TYPE_MASK_7A	    BIT(14)
+#define FM_RDS_GROUP_TYPE_MASK_7B	    BIT(15)
+#define FM_RDS_GROUP_TYPE_MASK_8A	    BIT(16)
+#define FM_RDS_GROUP_TYPE_MASK_8B	    BIT(17)
+#define FM_RDS_GROUP_TYPE_MASK_9A	    BIT(18)
+#define FM_RDS_GROUP_TYPE_MASK_9B	    BIT(19)
+#define FM_RDS_GROUP_TYPE_MASK_10A	    BIT(20)
+#define FM_RDS_GROUP_TYPE_MASK_10B	    BIT(21)
+#define FM_RDS_GROUP_TYPE_MASK_11A	    BIT(22)
+#define FM_RDS_GROUP_TYPE_MASK_11B	    BIT(23)
+#define FM_RDS_GROUP_TYPE_MASK_12A	    BIT(24)
+#define FM_RDS_GROUP_TYPE_MASK_12B	    BIT(25)
+#define FM_RDS_GROUP_TYPE_MASK_13A	    BIT(26)
+#define FM_RDS_GROUP_TYPE_MASK_13B	    BIT(27)
+#define FM_RDS_GROUP_TYPE_MASK_14A	    BIT(28)
+#define FM_RDS_GROUP_TYPE_MASK_14B	    BIT(29)
+#define FM_RDS_GROUP_TYPE_MASK_15A	    BIT(30)
+#define FM_RDS_GROUP_TYPE_MASK_15B	    BIT(31)
+
+/* RX Alternate Frequency info */
+#define FM_RDS_MIN_AF			  1
+#define FM_RDS_MAX_AF			204
+#define FM_RDS_MAX_AF_JAPAN		140
+#define FM_RDS_1_AF_FOLLOWS		225
+#define FM_RDS_25_AF_FOLLOWS		249
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RDS system type (RDS/RBDS) */
 #define FM_RDS_SYSTEM_RDS		0

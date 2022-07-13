@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VX soundcards
  *
  * Hardware core part
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -27,11 +34,18 @@
 #include <linux/device.h>
 #include <linux/firmware.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/asoundef.h>
 #include <sound/info.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/vx_core.h>
 #include "vx_cmd.h"
 
@@ -52,15 +66,23 @@ MODULE_LICENSE("GPL");
 int snd_vx_check_reg_bit(struct vx_core *chip, int reg, int mask, int bit, int time)
 {
 	unsigned long end_time = jiffies + (time * HZ + 999) / 1000;
+<<<<<<< HEAD
 #ifdef CONFIG_SND_DEBUG
 	static char *reg_names[VX_REG_MAX] = {
+=======
+	static const char * const reg_names[VX_REG_MAX] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"ICR", "CVR", "ISR", "IVR", "RXH", "RXM", "RXL",
 		"DMA", "CDSP", "RFREQ", "RUER/V2", "DATA", "MEMIRQ",
 		"ACQ", "BIT0", "BIT1", "MIC0", "MIC1", "MIC2",
 		"MIC3", "INTCSR", "CNTRL", "GPIOC",
 		"LOFREQ", "HIFREQ", "CSUER", "RUER"
 	};
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		if ((snd_vx_inb(chip, reg) & mask) == bit)
 			return 0;
@@ -118,12 +140,17 @@ static int vx_reset_chk(struct vx_core *chip)
  *
  * returns 0 if successful, or a negative error code.
  * the error code can be VX-specific, retrieved via vx_get_error().
+<<<<<<< HEAD
  * NB: call with spinlock held!
+=======
+ * NB: call with mutex held!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int vx_transfer_end(struct vx_core *chip, int cmd)
 {
 	int err;
 
+<<<<<<< HEAD
 	if ((err = vx_reset_chk(chip)) < 0)
 		return err;
 
@@ -138,6 +165,27 @@ static int vx_transfer_end(struct vx_core *chip, int cmd)
 	/* If error, Read RX */
 	if ((err = vx_inb(chip, ISR)) & ISR_ERR) {
 		if ((err = vx_wait_for_rx_full(chip)) < 0) {
+=======
+	err = vx_reset_chk(chip);
+	if (err < 0)
+		return err;
+
+	/* irq MESS_READ/WRITE_END */
+	err = vx_send_irq_dsp(chip, cmd);
+	if (err < 0)
+		return err;
+
+	/* Wait CHK = 1 */
+	err = vx_wait_isr_bit(chip, ISR_CHK);
+	if (err < 0)
+		return err;
+
+	/* If error, Read RX */
+	err = vx_inb(chip, ISR);
+	if (err & ISR_ERR) {
+		err = vx_wait_for_rx_full(chip);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printd(KERN_DEBUG "transfer_end: error in rx_full\n");
 			return err;
 		}
@@ -156,7 +204,11 @@ static int vx_transfer_end(struct vx_core *chip, int cmd)
  *
  * returns 0 if successful, or a negative error code.
  * the error code can be VX-specific, retrieved via vx_get_error().
+<<<<<<< HEAD
  * NB: call with spinlock held!
+=======
+ * NB: call with mutex held!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int vx_read_status(struct vx_core *chip, struct vx_rmh *rmh)
 {
@@ -206,7 +258,11 @@ static int vx_read_status(struct vx_core *chip, struct vx_rmh *rmh)
 
 	if (size < 1)
 		return 0;
+<<<<<<< HEAD
 	if (snd_BUG_ON(size > SIZE_MAX_STATUS))
+=======
+	if (snd_BUG_ON(size >= SIZE_MAX_STATUS))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	for (i = 1; i <= size; i++) {
@@ -237,7 +293,11 @@ static int vx_read_status(struct vx_core *chip, struct vx_rmh *rmh)
  * returns 0 if successful, or a negative error code.
  * the error code can be VX-specific, retrieved via vx_get_error().
  * 
+<<<<<<< HEAD
  * this function doesn't call spinlock at all.
+=======
+ * this function doesn't call mutex lock at all.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 {
@@ -246,7 +306,12 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	if ((err = vx_reset_chk(chip)) < 0) {
+=======
+	err = vx_reset_chk(chip);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd(KERN_DEBUG "vx_send_msg: vx_reset_chk error\n");
 		return err;
 	}
@@ -257,8 +322,13 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 	if (rmh->LgCmd > 1) {
 		printk(KERN_DEBUG "  ");
 		for (i = 1; i < rmh->LgCmd; i++)
+<<<<<<< HEAD
 			printk("0x%06x ", rmh->Cmd[i]);
 		printk("\n");
+=======
+			printk(KERN_CONT "0x%06x ", rmh->Cmd[i]);
+		printk(KERN_CONT "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	/* Check bit M is set according to length of the command */
@@ -268,7 +338,12 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 		rmh->Cmd[0] &= MASK_1_WORD_COMMAND;
 
 	/* Wait for TX empty */
+<<<<<<< HEAD
 	if ((err = vx_wait_isr_bit(chip, ISR_TX_EMPTY)) < 0) {
+=======
+	err = vx_wait_isr_bit(chip, ISR_TX_EMPTY);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd(KERN_DEBUG "vx_send_msg: wait tx empty error\n");
 		return err;
 	}
@@ -279,18 +354,33 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 	vx_outb(chip, TXL, rmh->Cmd[0] & 0xff);
 
 	/* Trigger irq MESSAGE */
+<<<<<<< HEAD
 	if ((err = vx_send_irq_dsp(chip, IRQ_MESSAGE)) < 0) {
+=======
+	err = vx_send_irq_dsp(chip, IRQ_MESSAGE);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd(KERN_DEBUG "vx_send_msg: send IRQ_MESSAGE error\n");
 		return err;
 	}
 
 	/* Wait for CHK = 1 */
+<<<<<<< HEAD
 	if ((err = vx_wait_isr_bit(chip, ISR_CHK)) < 0)
+=======
+	err = vx_wait_isr_bit(chip, ISR_CHK);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* If error, get error value from RX */
 	if (vx_inb(chip, ISR) & ISR_ERR) {
+<<<<<<< HEAD
 		if ((err = vx_wait_for_rx_full(chip)) < 0) {
+=======
+		err = vx_wait_for_rx_full(chip);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printd(KERN_DEBUG "vx_send_msg: rx_full read error\n");
 			return err;
 		}
@@ -306,7 +396,12 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 	if (rmh->LgCmd > 1) {
 		for (i = 1; i < rmh->LgCmd; i++) {
 			/* Wait for TX ready */
+<<<<<<< HEAD
 			if ((err = vx_wait_isr_bit(chip, ISR_TX_READY)) < 0) {
+=======
+			err = vx_wait_isr_bit(chip, ISR_TX_READY);
+			if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_printd(KERN_DEBUG "vx_send_msg: tx_ready error\n");
 				return err;
 			}
@@ -317,13 +412,23 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 			vx_outb(chip, TXL, rmh->Cmd[i] & 0xff);
 
 			/* Trigger irq MESS_READ_NEXT */
+<<<<<<< HEAD
 			if ((err = vx_send_irq_dsp(chip, IRQ_MESS_READ_NEXT)) < 0) {
+=======
+			err = vx_send_irq_dsp(chip, IRQ_MESS_READ_NEXT);
+			if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_printd(KERN_DEBUG "vx_send_msg: IRQ_READ_NEXT error\n");
 				return err;
 			}
 		}
 		/* Wait for TX empty */
+<<<<<<< HEAD
 		if ((err = vx_wait_isr_bit(chip, ISR_TX_READY)) < 0) {
+=======
+		err = vx_wait_isr_bit(chip, ISR_TX_READY);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printd(KERN_DEBUG "vx_send_msg: TX_READY error\n");
 			return err;
 		}
@@ -338,7 +443,11 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 
 
 /*
+<<<<<<< HEAD
  * vx_send_msg - send a DSP message with spinlock
+=======
+ * vx_send_msg - send a DSP message with mutex
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rmh: the rmh record to send and receive
  *
  * returns 0 if successful, or a negative error code.
@@ -346,12 +455,20 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
  */
 int vx_send_msg(struct vx_core *chip, struct vx_rmh *rmh)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int err;
 
 	spin_lock_irqsave(&chip->lock, flags);
 	err = vx_send_msg_nolock(chip, rmh);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	int err;
+
+	mutex_lock(&chip->lock);
+	err = vx_send_msg_nolock(chip, rmh);
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -363,7 +480,11 @@ int vx_send_msg(struct vx_core *chip, struct vx_rmh *rmh)
  * returns 0 if successful, or a negative error code.
  * the error code can be VX-specific, retrieved via vx_get_error().
  *
+<<<<<<< HEAD
  * this function doesn't call spinlock at all.
+=======
+ * this function doesn't call mutex at all.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * unlike RMH, no command is sent to DSP.
  */
@@ -377,6 +498,7 @@ int vx_send_rih_nolock(struct vx_core *chip, int cmd)
 #if 0
 	printk(KERN_DEBUG "send_rih: cmd = 0x%x\n", cmd);
 #endif
+<<<<<<< HEAD
 	if ((err = vx_reset_chk(chip)) < 0)
 		return err;
 	/* send the IRQ */
@@ -388,6 +510,23 @@ int vx_send_rih_nolock(struct vx_core *chip, int cmd)
 	/* If error, read RX */
 	if (vx_inb(chip, ISR) & ISR_ERR) {
 		if ((err = vx_wait_for_rx_full(chip)) < 0)
+=======
+	err = vx_reset_chk(chip);
+	if (err < 0)
+		return err;
+	/* send the IRQ */
+	err = vx_send_irq_dsp(chip, cmd);
+	if (err < 0)
+		return err;
+	/* Wait CHK = 1 */
+	err = vx_wait_isr_bit(chip, ISR_CHK);
+	if (err < 0)
+		return err;
+	/* If error, read RX */
+	if (vx_inb(chip, ISR) & ISR_ERR) {
+		err = vx_wait_for_rx_full(chip);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		err = vx_inb(chip, RXH) << 16;
 		err |= vx_inb(chip, RXM) << 8;
@@ -399,26 +538,43 @@ int vx_send_rih_nolock(struct vx_core *chip, int cmd)
 
 
 /*
+<<<<<<< HEAD
  * vx_send_rih - send an RIH with spinlock
+=======
+ * vx_send_rih - send an RIH with mutex
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd: the command to send
  *
  * see vx_send_rih_nolock().
  */
 int vx_send_rih(struct vx_core *chip, int cmd)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int err;
 
 	spin_lock_irqsave(&chip->lock, flags);
 	err = vx_send_rih_nolock(chip, cmd);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	int err;
+
+	mutex_lock(&chip->lock);
+	err = vx_send_rih_nolock(chip, cmd);
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 #define END_OF_RESET_WAIT_TIME		500	/* us */
 
 /**
+<<<<<<< HEAD
  * snd_vx_boot_xilinx - boot up the xilinx interface
+=======
+ * snd_vx_load_boot_image - boot up the xilinx interface
+ * @chip: VX core instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @boot: the boot record to load
  */
 int snd_vx_load_boot_image(struct vx_core *chip, const struct firmware *boot)
@@ -483,18 +639,27 @@ static int vx_test_irq_src(struct vx_core *chip, unsigned int *ret)
 	int err;
 
 	vx_init_rmh(&chip->irq_rmh, CMD_TEST_IT);
+<<<<<<< HEAD
 	spin_lock(&chip->lock);
+=======
+	mutex_lock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = vx_send_msg_nolock(chip, &chip->irq_rmh);
 	if (err < 0)
 		*ret = 0;
 	else
 		*ret = chip->irq_rmh.Stat[0];
+<<<<<<< HEAD
 	spin_unlock(&chip->lock);
+=======
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 
 /*
+<<<<<<< HEAD
  * vx_interrupt - soft irq handler
  */
 static void vx_interrupt(unsigned long private_data)
@@ -507,6 +672,20 @@ static void vx_interrupt(unsigned long private_data)
 
 	if (vx_test_irq_src(chip, &events) < 0)
 		return;
+=======
+ * snd_vx_threaded_irq_handler - threaded irq handler
+ */
+irqreturn_t snd_vx_threaded_irq_handler(int irq, void *dev)
+{
+	struct vx_core *chip = dev;
+	unsigned int events;
+		
+	if (chip->chip_status & VX_STAT_IS_STALE)
+		return IRQ_HANDLED;
+
+	if (vx_test_irq_src(chip, &events) < 0)
+		return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
 #if 0
 	if (events & 0x000800)
@@ -520,14 +699,24 @@ static void vx_interrupt(unsigned long private_data)
 	 */
 	if (events & FATAL_DSP_ERROR) {
 		snd_printk(KERN_ERR "vx_core: fatal DSP error!!\n");
+<<<<<<< HEAD
 		return;
+=======
+		return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* The start on time code conditions are filled (ie the time code
 	 * received by the board is equal to one of those given to it).
 	 */
+<<<<<<< HEAD
 	if (events & TIME_CODE_EVENT_PENDING)
 		; /* so far, nothing to do yet */
+=======
+	if (events & TIME_CODE_EVENT_PENDING) {
+		; /* so far, nothing to do yet */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The frequency has changed on the board (UER mode). */
 	if (events & FREQUENCY_CHANGE_EVENT_PENDING)
@@ -535,11 +724,22 @@ static void vx_interrupt(unsigned long private_data)
 
 	/* update the pcm streams */
 	vx_pcm_update_intr(chip, events);
+<<<<<<< HEAD
 }
 
 
 /**
  * snd_vx_irq_handler - interrupt handler
+=======
+	return IRQ_HANDLED;
+}
+EXPORT_SYMBOL(snd_vx_threaded_irq_handler);
+
+/**
+ * snd_vx_irq_handler - interrupt handler
+ * @irq: irq number
+ * @dev: VX core instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 irqreturn_t snd_vx_irq_handler(int irq, void *dev)
 {
@@ -549,8 +749,13 @@ irqreturn_t snd_vx_irq_handler(int irq, void *dev)
 	    (chip->chip_status & VX_STAT_IS_STALE))
 		return IRQ_NONE;
 	if (! vx_test_and_ack(chip))
+<<<<<<< HEAD
 		tasklet_schedule(&chip->tq);
 	return IRQ_HANDLED;
+=======
+		return IRQ_WAKE_THREAD;
+	return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(snd_vx_irq_handler);
@@ -600,6 +805,7 @@ static void vx_reset_board(struct vx_core *chip, int cold_reset)
 static void vx_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 {
 	struct vx_core *chip = entry->private_data;
+<<<<<<< HEAD
 	static char *audio_src_vxp[] = { "Line", "Mic", "Digital" };
 	static char *audio_src_vx2[] = { "Analog", "Analog", "Digital" };
 	static char *clock_mode[] = { "Auto", "Internal", "External" };
@@ -611,6 +817,19 @@ static void vx_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *b
 		    chip->chip_status & VX_STAT_XILINX_LOADED ? "Loaded" : "No");
 	snd_iprintf(buffer, "Device Initialized: %s\n",
 		    chip->chip_status & VX_STAT_DEVICE_INIT ? "Yes" : "No");
+=======
+	static const char * const audio_src_vxp[] = { "Line", "Mic", "Digital" };
+	static const char * const audio_src_vx2[] = { "Analog", "Analog", "Digital" };
+	static const char * const clock_mode[] = { "Auto", "Internal", "External" };
+	static const char * const clock_src[] = { "Internal", "External" };
+	static const char * const uer_type[] = { "Consumer", "Professional", "Not Present" };
+	
+	snd_iprintf(buffer, "%s\n", chip->card->longname);
+	snd_iprintf(buffer, "Xilinx Firmware: %s\n",
+		    (chip->chip_status & VX_STAT_XILINX_LOADED) ? "Loaded" : "No");
+	snd_iprintf(buffer, "Device Initialized: %s\n",
+		    (chip->chip_status & VX_STAT_DEVICE_INIT) ? "Yes" : "No");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "DSP audio info:");
 	if (chip->audio_info & VX_AUDIO_INFO_REAL_TIME)
 		snd_iprintf(buffer, " realtime");
@@ -642,15 +861,24 @@ static void vx_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *b
 
 static void vx_proc_init(struct vx_core *chip)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 
 	if (! snd_card_proc_new(chip->card, "vx-status", &entry))
 		snd_info_set_text_ops(entry, chip, vx_proc_read);
+=======
+	snd_card_ro_proc_new(chip->card, "vx-status", chip, vx_proc_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
  * snd_vx_dsp_boot - load the DSP boot
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+ * @boot: firmware data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_vx_dsp_boot(struct vx_core *chip, const struct firmware *boot)
 {
@@ -660,7 +888,12 @@ int snd_vx_dsp_boot(struct vx_core *chip, const struct firmware *boot)
 	vx_reset_board(chip, cold_reset);
 	vx_validate_irq(chip, 0);
 
+<<<<<<< HEAD
 	if ((err = snd_vx_load_boot_image(chip, boot)) < 0)
+=======
+	err = snd_vx_load_boot_image(chip, boot);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	msleep(10);
 
@@ -671,6 +904,11 @@ EXPORT_SYMBOL(snd_vx_dsp_boot);
 
 /**
  * snd_vx_dsp_load - load the DSP image
+<<<<<<< HEAD
+=======
+ * @chip: VX core instance
+ * @dsp: firmware data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_vx_dsp_load(struct vx_core *chip, const struct firmware *dsp)
 {
@@ -688,7 +926,12 @@ int snd_vx_dsp_load(struct vx_core *chip, const struct firmware *dsp)
 	for (i = 0; i < dsp->size; i += 3) {
 		image = dsp->data + i;
 		/* Wait DSP ready for a new read */
+<<<<<<< HEAD
 		if ((err = vx_wait_isr_bit(chip, ISR_TX_EMPTY)) < 0) {
+=======
+		err = vx_wait_isr_bit(chip, ISR_TX_EMPTY);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR
 			       "dsp loading error at position %d\n", i);
 			return err;
@@ -708,7 +951,12 @@ int snd_vx_dsp_load(struct vx_core *chip, const struct firmware *dsp)
 
 	msleep(200);
 
+<<<<<<< HEAD
 	if ((err = vx_wait_isr_bit(chip, ISR_CHK)) < 0)
+=======
+	err = vx_wait_isr_bit(chip, ISR_CHK);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	vx_toggle_dac_mute(chip, 0);
@@ -725,6 +973,7 @@ EXPORT_SYMBOL(snd_vx_dsp_load);
 /*
  * suspend
  */
+<<<<<<< HEAD
 int snd_vx_suspend(struct vx_core *chip, pm_message_t state)
 {
 	unsigned int i;
@@ -733,6 +982,12 @@ int snd_vx_suspend(struct vx_core *chip, pm_message_t state)
 	chip->chip_status |= VX_STAT_IN_SUSPEND;
 	for (i = 0; i < chip->hw->num_codecs; i++)
 		snd_pcm_suspend_all(chip->pcm[i]);
+=======
+int snd_vx_suspend(struct vx_core *chip)
+{
+	snd_power_change_state(chip->card, SNDRV_CTL_POWER_D3hot);
+	chip->chip_status |= VX_STAT_IN_SUSPEND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -768,17 +1023,41 @@ int snd_vx_resume(struct vx_core *chip)
 EXPORT_SYMBOL(snd_vx_resume);
 #endif
 
+<<<<<<< HEAD
 /**
  * snd_vx_create - constructor for struct vx_core
  * @hw: hardware specific record
+=======
+static void snd_vx_release(struct device *dev, void *data)
+{
+	snd_vx_free_firmware(data);
+}
+
+/**
+ * snd_vx_create - constructor for struct vx_core
+ * @card: card instance
+ * @hw: hardware specific record
+ * @ops: VX ops pointer
+ * @extra_size: extra byte size to allocate appending to chip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * this function allocates the instance and prepare for the hardware
  * initialization.
  *
+<<<<<<< HEAD
  * return the instance pointer if successful, NULL in error.
  */
 struct vx_core *snd_vx_create(struct snd_card *card, struct snd_vx_hardware *hw,
 			      struct snd_vx_ops *ops,
+=======
+ * The object is managed via devres, and will be automatically released.
+ *
+ * return the instance pointer if successful, NULL in error.
+ */
+struct vx_core *snd_vx_create(struct snd_card *card,
+			      const struct snd_vx_hardware *hw,
+			      const struct snd_vx_ops *ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int extra_size)
 {
 	struct vx_core *chip;
@@ -786,6 +1065,7 @@ struct vx_core *snd_vx_create(struct snd_card *card, struct snd_vx_hardware *hw,
 	if (snd_BUG_ON(!card || !hw || !ops))
 		return NULL;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip) + extra_size, GFP_KERNEL);
 	if (! chip) {
 		snd_printk(KERN_ERR "vx_core: no memory\n");
@@ -793,11 +1073,21 @@ struct vx_core *snd_vx_create(struct snd_card *card, struct snd_vx_hardware *hw,
 	}
 	spin_lock_init(&chip->lock);
 	spin_lock_init(&chip->irq_lock);
+=======
+	chip = devres_alloc(snd_vx_release, sizeof(*chip) + extra_size,
+			    GFP_KERNEL);
+	if (!chip)
+		return NULL;
+	mutex_init(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->irq = -1;
 	chip->hw = hw;
 	chip->type = hw->type;
 	chip->ops = ops;
+<<<<<<< HEAD
 	tasklet_init(&chip->tq, vx_interrupt, (unsigned long)chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&chip->mixer_mutex);
 
 	chip->card = card;
@@ -811,6 +1101,7 @@ struct vx_core *snd_vx_create(struct snd_card *card, struct snd_vx_hardware *hw,
 }
 
 EXPORT_SYMBOL(snd_vx_create);
+<<<<<<< HEAD
 
 /*
  * module entries
@@ -826,3 +1117,5 @@ static void __exit alsa_vx_core_exit(void)
 
 module_init(alsa_vx_core_init)
 module_exit(alsa_vx_core_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

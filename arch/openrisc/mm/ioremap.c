@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC ioremap.c
  *
@@ -8,25 +12,36 @@
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/vmalloc.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 #include <asm/kmap_types.h>
 #include <asm/fixmap.h>
 #include <asm/bug.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/pgalloc.h>
+#include <asm/fixmap.h>
+#include <asm/bug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <asm/tlbflush.h>
 
 extern int mem_init_done;
 
+<<<<<<< HEAD
 static unsigned int fixmaps_used __initdata;
 
 /*
@@ -108,6 +123,9 @@ void iounmap(void *addr)
 }
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * OK, this one's a bit tricky... ioremap can get called before memory is
  * initialized (early serial console does this) and will want to alloc a page
  * for its mapping.  No userspace pages will ever get allocated before memory
@@ -116,12 +134,17 @@ void iounmap(void *addr)
  * the memblock infrastructure.
  */
 
+<<<<<<< HEAD
 pte_t __init_refok *pte_alloc_one_kernel(struct mm_struct *mm,
 					 unsigned long address)
+=======
+pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pte_t *pte;
 
 	if (likely(mem_init_done)) {
+<<<<<<< HEAD
 		pte = (pte_t *) __get_free_page(GFP_KERNEL | __GFP_REPEAT);
 	} else {
 		pte = (pte_t *) alloc_bootmem_low_pages(PAGE_SIZE);
@@ -133,5 +156,15 @@ pte_t __init_refok *pte_alloc_one_kernel(struct mm_struct *mm,
 
 	if (pte)
 		clear_page(pte);
+=======
+		pte = (pte_t *)get_zeroed_page(GFP_KERNEL);
+	} else {
+		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+		if (!pte)
+			panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
+			      __func__, PAGE_SIZE, PAGE_SIZE);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pte;
 }

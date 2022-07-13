@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/tape_std.c
  *    standard tape device functions for ibm tapes.
  *
  *  S390 and zSeries version
  *    Copyright (C) 2001,2002 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *    standard tape device functions for ibm tapes.
+ *
+ *  S390 and zSeries version
+ *    Copyright IBM Corp. 2001, 2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Carsten Otte <cotte@de.ibm.com>
  *		 Michael Holzheu <holzheu@de.ibm.com>
  *		 Tuan Ngo-Anh <ngoanh@de.ibm.com>
@@ -33,6 +42,7 @@
  * tape_std_assign
  */
 static void
+<<<<<<< HEAD
 tape_std_assign_timeout(unsigned long data)
 {
 	struct tape_request *	request;
@@ -41,6 +51,14 @@ tape_std_assign_timeout(unsigned long data)
 
 	request = (struct tape_request *) data;
 	device = request->device;
+=======
+tape_std_assign_timeout(struct timer_list *t)
+{
+	struct tape_request *	request = from_timer(request, t, timer);
+	struct tape_device *	device = request->device;
+	int rc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!device);
 
 	DBF_EVENT(3, "%08x: Assignment timeout. Device busy.\n",
@@ -55,7 +73,10 @@ int
 tape_std_assign(struct tape_device *device)
 {
 	int                  rc;
+<<<<<<< HEAD
 	struct timer_list    timeout;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tape_request *request;
 
 	request = tape_alloc_request(2, 11);
@@ -71,6 +92,7 @@ tape_std_assign(struct tape_device *device)
 	 * to another host (actually this shouldn't happen but it does).
 	 * So we set up a timeout for this call.
 	 */
+<<<<<<< HEAD
 	init_timer_on_stack(&timeout);
 	timeout.function = tape_std_assign_timeout;
 	timeout.data     = (unsigned long) request;
@@ -80,6 +102,14 @@ tape_std_assign(struct tape_device *device)
 	rc = tape_do_io_interruptible(device, request);
 
 	del_timer(&timeout);
+=======
+	timer_setup(&request->timer, tape_std_assign_timeout, 0);
+	mod_timer(&request->timer, jiffies + msecs_to_jiffies(2000));
+
+	rc = tape_do_io_interruptible(device, request);
+
+	del_timer_sync(&request->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc != 0) {
 		DBF_EVENT(3, "%08x: assign failed - device might be busy\n",

@@ -1,11 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2002-2005, Instant802 Networks, Inc.
  * Copyright 2005, Devicescape Software, Inc.
  * Copyright (c) 2006 Jiri Benc <jbenc@suse.cz>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * Copyright (C) 2022 Intel Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef IEEE80211_RATE_H
@@ -17,10 +25,17 @@
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
 #include "sta_info.h"
+<<<<<<< HEAD
 
 struct rate_control_ref {
 	struct ieee80211_local *local;
 	struct rate_control_ops *ops;
+=======
+#include "driver-ops.h"
+
+struct rate_control_ref {
+	const struct rate_control_ops *ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *priv;
 };
 
@@ -28,6 +43,7 @@ void rate_control_get_rate(struct ieee80211_sub_if_data *sdata,
 			   struct sta_info *sta,
 			   struct ieee80211_tx_rate_control *txrc);
 
+<<<<<<< HEAD
 static inline void rate_control_tx_status(struct ieee80211_local *local,
 					  struct ieee80211_supported_band *sband,
 					  struct sta_info *sta,
@@ -80,6 +96,23 @@ static inline void *rate_control_alloc_sta(struct rate_control_ref *ref,
 					   gfp_t gfp)
 {
 	return ref->ops->alloc_sta(ref->priv, sta, gfp);
+=======
+void rate_control_tx_status(struct ieee80211_local *local,
+			    struct ieee80211_tx_status *st);
+
+void rate_control_rate_init(struct sta_info *sta);
+void rate_control_rate_update(struct ieee80211_local *local,
+			      struct ieee80211_supported_band *sband,
+			      struct sta_info *sta,
+			      unsigned int link_id,
+			      u32 changed);
+
+static inline void *rate_control_alloc_sta(struct rate_control_ref *ref,
+					   struct sta_info *sta, gfp_t gfp)
+{
+	spin_lock_init(&sta->rate_ctrl_lock);
+	return ref->ops->alloc_sta(ref->priv, &sta->sta, gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void rate_control_free_sta(struct sta_info *sta)
@@ -95,6 +128,7 @@ static inline void rate_control_add_sta_debugfs(struct sta_info *sta)
 {
 #ifdef CONFIG_MAC80211_DEBUGFS
 	struct rate_control_ref *ref = sta->rate_ctrl;
+<<<<<<< HEAD
 	if (ref && sta->debugfs.dir && ref->ops->add_sta_debugfs)
 		ref->ops->add_sta_debugfs(ref->priv, sta->rate_ctrl_priv,
 					  sta->debugfs.dir);
@@ -110,6 +144,39 @@ static inline void rate_control_remove_sta_debugfs(struct sta_info *sta)
 #endif
 }
 
+=======
+	if (ref && sta->debugfs_dir && ref->ops->add_sta_debugfs)
+		ref->ops->add_sta_debugfs(ref->priv, sta->rate_ctrl_priv,
+					  sta->debugfs_dir);
+#endif
+}
+
+extern const struct file_operations rcname_ops;
+
+static inline void rate_control_add_debugfs(struct ieee80211_local *local)
+{
+#ifdef CONFIG_MAC80211_DEBUGFS
+	struct dentry *debugfsdir;
+
+	if (!local->rate_ctrl)
+		return;
+
+	if (!local->rate_ctrl->ops->add_debugfs)
+		return;
+
+	debugfsdir = debugfs_create_dir("rc", local->hw.wiphy->debugfsdir);
+	local->debugfs.rcdir = debugfsdir;
+	debugfs_create_file("name", 0400, debugfsdir,
+			    local->rate_ctrl, &rcname_ops);
+
+	local->rate_ctrl->ops->add_debugfs(&local->hw, local->rate_ctrl->priv,
+					   debugfsdir);
+#endif
+}
+
+void ieee80211_check_rate_mask(struct ieee80211_link_data *link);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Get a reference to the rate control algorithm. If `name' is NULL, get the
  * first available algorithm. */
 int ieee80211_init_rate_ctrl_alg(struct ieee80211_local *local,
@@ -118,6 +185,7 @@ void rate_control_deinitialize(struct ieee80211_local *local);
 
 
 /* Rate control algorithms */
+<<<<<<< HEAD
 #ifdef CONFIG_MAC80211_RC_PID
 extern int rc80211_pid_init(void);
 extern void rc80211_pid_exit(void);
@@ -134,6 +202,11 @@ static inline void rc80211_pid_exit(void)
 #ifdef CONFIG_MAC80211_RC_MINSTREL
 extern int rc80211_minstrel_init(void);
 extern void rc80211_minstrel_exit(void);
+=======
+#ifdef CONFIG_MAC80211_RC_MINSTREL
+int rc80211_minstrel_init(void);
+void rc80211_minstrel_exit(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int rc80211_minstrel_init(void)
 {
@@ -144,6 +217,7 @@ static inline void rc80211_minstrel_exit(void)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MAC80211_RC_MINSTREL_HT
 extern int rc80211_minstrel_ht_init(void);
 extern void rc80211_minstrel_ht_exit(void);
@@ -157,5 +231,7 @@ static inline void rc80211_minstrel_ht_exit(void)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* IEEE80211_RATE_H */

@@ -14,6 +14,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
+<<<<<<< HEAD
 
 #ifndef CN_PROC_H
 #define CN_PROC_H
@@ -119,6 +120,13 @@ struct proc_event {
 };
 
 #ifdef __KERNEL__
+=======
+#ifndef CN_PROC_H
+#define CN_PROC_H
+
+#include <uapi/linux/cn_proc.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_EVENTS
 void proc_fork_connector(struct task_struct *task);
 void proc_exec_connector(struct task_struct *task);
@@ -126,6 +134,10 @@ void proc_id_connector(struct task_struct *task, int which_id);
 void proc_sid_connector(struct task_struct *task);
 void proc_ptrace_connector(struct task_struct *task, int which_id);
 void proc_comm_connector(struct task_struct *task);
+<<<<<<< HEAD
+=======
+void proc_coredump_connector(struct task_struct *task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void proc_exit_connector(struct task_struct *task);
 #else
 static inline void proc_fork_connector(struct task_struct *task)
@@ -148,8 +160,17 @@ static inline void proc_ptrace_connector(struct task_struct *task,
 					 int ptrace_id)
 {}
 
+<<<<<<< HEAD
 static inline void proc_exit_connector(struct task_struct *task)
 {}
 #endif	/* CONFIG_PROC_EVENTS */
 #endif	/* __KERNEL__ */
+=======
+static inline void proc_coredump_connector(struct task_struct *task)
+{}
+
+static inline void proc_exit_connector(struct task_struct *task)
+{}
+#endif	/* CONFIG_PROC_EVENTS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CN_PROC_H */

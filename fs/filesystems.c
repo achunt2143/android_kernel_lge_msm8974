@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/filesystems.c
  *
@@ -14,7 +18,12 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/fs_parser.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Handling of filesystem drivers list.
@@ -33,9 +42,16 @@ static struct file_system_type *file_systems;
 static DEFINE_RWLOCK(file_systems_lock);
 
 /* WARNING: This can be used only if we _already_ own a reference */
+<<<<<<< HEAD
 void get_filesystem(struct file_system_type *fs)
 {
 	__module_get(fs->owner);
+=======
+struct file_system_type *get_filesystem(struct file_system_type *fs)
+{
+	__module_get(fs->owner);
+	return fs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void put_filesystem(struct file_system_type *fs)
@@ -46,9 +62,15 @@ void put_filesystem(struct file_system_type *fs)
 static struct file_system_type **find_filesystem(const char *name, unsigned len)
 {
 	struct file_system_type **p;
+<<<<<<< HEAD
 	for (p=&file_systems; *p; p=&(*p)->next)
 		if (strlen((*p)->name) == len &&
 		    strncmp((*p)->name, name, len) == 0)
+=======
+	for (p = &file_systems; *p; p = &(*p)->next)
+		if (strncmp((*p)->name, name, len) == 0 &&
+		    !(*p)->name[len])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	return p;
 }
@@ -71,6 +93,13 @@ int register_filesystem(struct file_system_type * fs)
 	int res = 0;
 	struct file_system_type ** p;
 
+<<<<<<< HEAD
+=======
+	if (fs->parameters &&
+	    !fs_validate_description(fs->name, fs->parameters))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(strchr(fs->name, '.'));
 	if (fs->next)
 		return -EBUSY;
@@ -121,6 +150,10 @@ int unregister_filesystem(struct file_system_type * fs)
 
 EXPORT_SYMBOL(unregister_filesystem);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SYSFS_SYSCALL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fs_index(const char __user * __name)
 {
 	struct file_system_type * tmp;
@@ -199,6 +232,7 @@ SYSCALL_DEFINE3(sysfs, int, option, unsigned long, arg1, unsigned long, arg2)
 	}
 	return retval;
 }
+<<<<<<< HEAD
 
 int __init get_filesystem_list(char *buf)
 {
@@ -215,6 +249,32 @@ int __init get_filesystem_list(char *buf)
 	}
 	read_unlock(&file_systems_lock);
 	return len;
+=======
+#endif
+
+int __init list_bdev_fs_names(char *buf, size_t size)
+{
+	struct file_system_type *p;
+	size_t len;
+	int count = 0;
+
+	read_lock(&file_systems_lock);
+	for (p = file_systems; p; p = p->next) {
+		if (!(p->fs_flags & FS_REQUIRES_DEV))
+			continue;
+		len = strlen(p->name) + 1;
+		if (len > size) {
+			pr_warn("%s: truncating file system list\n", __func__);
+			break;
+		}
+		memcpy(buf, p->name, len);
+		buf += len;
+		size -= len;
+		count++;
+	}
+	read_unlock(&file_systems_lock);
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PROC_FS
@@ -234,6 +294,7 @@ static int filesystems_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int filesystems_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, filesystems_proc_show, NULL);
@@ -249,6 +310,11 @@ static const struct file_operations filesystems_proc_fops = {
 static int __init proc_filesystems_init(void)
 {
 	proc_create("filesystems", 0, NULL, &filesystems_proc_fops);
+=======
+static int __init proc_filesystems_init(void)
+{
+	proc_create_single("filesystems", 0, NULL, filesystems_proc_show);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 module_init(proc_filesystems_init);
@@ -273,8 +339,17 @@ struct file_system_type *get_fs_type(const char *name)
 	int len = dot ? dot - name : strlen(name);
 
 	fs = __get_fs_type(name, len);
+<<<<<<< HEAD
 	if (!fs && (request_module("fs-%.*s", len, name) == 0))
 		fs = __get_fs_type(name, len);
+=======
+	if (!fs && (request_module("fs-%.*s", len, name) == 0)) {
+		fs = __get_fs_type(name, len);
+		if (!fs)
+			pr_warn_once("request_module fs-%.*s succeeded, but still no fs?\n",
+				     len, name);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dot && fs && !(fs->fs_flags & FS_HAS_SUBTYPE)) {
 		put_filesystem(fs);

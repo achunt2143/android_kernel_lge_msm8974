@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/securityfs_if.c
  *
@@ -20,6 +24,10 @@ static bool tomoyo_check_task_acl(struct tomoyo_request_info *r,
 {
 	const struct tomoyo_task_acl *acl = container_of(ptr, typeof(*acl),
 							 head);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !tomoyo_pathcmp(r->param.task.domainname, acl->domainname);
 }
 
@@ -41,6 +49,7 @@ static ssize_t tomoyo_write_self(struct file *file, const char __user *buf,
 {
 	char *data;
 	int error;
+<<<<<<< HEAD
 	if (!count || count >= TOMOYO_EXEC_TMPSIZE - 10)
 		return -ENOMEM;
 	data = kzalloc(count + 1, GFP_NOFS);
@@ -50,11 +59,23 @@ static ssize_t tomoyo_write_self(struct file *file, const char __user *buf,
 		error = -EFAULT;
 		goto out;
 	}
+=======
+
+	if (!count || count >= TOMOYO_EXEC_TMPSIZE - 10)
+		return -ENOMEM;
+	data = memdup_user_nul(buf, count);
+	if (IS_ERR(data))
+		return PTR_ERR(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tomoyo_normalize_line(data);
 	if (tomoyo_correct_domain(data)) {
 		const int idx = tomoyo_read_lock();
 		struct tomoyo_path_info name;
 		struct tomoyo_request_info r;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		name.name = data;
 		tomoyo_fill_path_info(&name);
 		/* Check "task manual_domain_transition" permission. */
@@ -70,6 +91,7 @@ static ssize_t tomoyo_write_self(struct file *file, const char __user *buf,
 			if (!new_domain) {
 				error = -ENOENT;
 			} else {
+<<<<<<< HEAD
 				struct cred *cred = prepare_creds();
 				if (!cred) {
 					error = -ENOMEM;
@@ -82,12 +104,25 @@ static ssize_t tomoyo_write_self(struct file *file, const char __user *buf,
 					commit_creds(cred);
 					error = 0;
 				}
+=======
+				struct tomoyo_task *s = tomoyo_task(current);
+				struct tomoyo_domain_info *old_domain =
+					s->domain_info;
+
+				s->domain_info = new_domain;
+				atomic_inc(&new_domain->users);
+				atomic_dec(&old_domain->users);
+				error = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		tomoyo_read_unlock(idx);
 	} else
 		error = -EINVAL;
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data);
 	return error ? error : count;
 }
@@ -108,6 +143,10 @@ static ssize_t tomoyo_read_self(struct file *file, char __user *buf,
 	const char *domain = tomoyo_domain()->domainname->name;
 	loff_t len = strlen(domain);
 	loff_t pos = *ppos;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pos >= len || !count)
 		return 0;
 	len -= pos;
@@ -135,8 +174,13 @@ static const struct file_operations tomoyo_self_operations = {
  */
 static int tomoyo_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	const int key = ((u8 *) file->f_path.dentry->d_inode->i_private)
 		- ((u8 *) NULL);
+=======
+	const u8 key = (uintptr_t) file_inode(file)->i_private;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tomoyo_open_control(key, file);
 }
 
@@ -146,11 +190,19 @@ static int tomoyo_open(struct inode *inode, struct file *file)
  * @inode: Pointer to "struct inode".
  * @file:  Pointer to "struct file".
  *
+<<<<<<< HEAD
  * Returns 0 on success, negative value otherwise.
  */
 static int tomoyo_release(struct inode *inode, struct file *file)
 {
 	return tomoyo_close_control(file->private_data);
+=======
+ */
+static int tomoyo_release(struct inode *inode, struct file *file)
+{
+	tomoyo_close_control(file->private_data);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -159,10 +211,17 @@ static int tomoyo_release(struct inode *inode, struct file *file)
  * @file: Pointer to "struct file".
  * @wait: Pointer to "poll_table". Maybe NULL.
  *
+<<<<<<< HEAD
  * Returns POLLIN | POLLRDNORM | POLLOUT | POLLWRNORM if ready to read/write,
  * POLLOUT | POLLWRNORM otherwise.
  */
 static unsigned int tomoyo_poll(struct file *file, poll_table *wait)
+=======
+ * Returns EPOLLIN | EPOLLRDNORM | EPOLLOUT | EPOLLWRNORM if ready to read/write,
+ * EPOLLOUT | EPOLLWRNORM otherwise.
+ */
+static __poll_t tomoyo_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return tomoyo_poll_control(file, wait);
 }
@@ -228,7 +287,11 @@ static const struct file_operations tomoyo_operations = {
 static void __init tomoyo_create_entry(const char *name, const umode_t mode,
 				       struct dentry *parent, const u8 key)
 {
+<<<<<<< HEAD
 	securityfs_create_file(name, mode, parent, ((u8 *) NULL) + key,
+=======
+	securityfs_create_file(name, mode, parent, (void *) (uintptr_t) key,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       &tomoyo_operations);
 }
 
@@ -239,10 +302,21 @@ static void __init tomoyo_create_entry(const char *name, const umode_t mode,
  */
 static int __init tomoyo_initerface_init(void)
 {
+<<<<<<< HEAD
 	struct dentry *tomoyo_dir;
 
 	/* Don't create securityfs entries unless registered. */
 	if (current_cred()->security != &tomoyo_kernel_domain)
+=======
+	struct tomoyo_domain_info *domain;
+	struct dentry *tomoyo_dir;
+
+	if (!tomoyo_enabled)
+		return 0;
+	domain = tomoyo_domain();
+	/* Don't create securityfs entries unless registered. */
+	if (domain != &tomoyo_kernel_domain)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	tomoyo_dir = securityfs_create_dir("tomoyo", NULL);

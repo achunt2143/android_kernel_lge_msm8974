@@ -59,6 +59,7 @@ static struct platform_device pcit_cplus_serial8250_device = {
 };
 
 static struct resource pcit_cmos_rsrc[] = {
+<<<<<<< HEAD
         {
                 .start = 0x70,
                 .end   = 0x71,
@@ -75,6 +76,24 @@ static struct platform_device pcit_cmos_device = {
         .name           = "rtc_cmos",
         .num_resources  = ARRAY_SIZE(pcit_cmos_rsrc),
         .resource       = pcit_cmos_rsrc
+=======
+	{
+		.start = 0x70,
+		.end   = 0x71,
+		.flags = IORESOURCE_IO
+	},
+	{
+		.start = 8,
+		.end   = 8,
+		.flags = IORESOURCE_IRQ
+	}
+};
+
+static struct platform_device pcit_cmos_device = {
+	.name		= "rtc_cmos",
+	.num_resources	= ARRAY_SIZE(pcit_cmos_rsrc),
+	.resource	= pcit_cmos_rsrc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device pcit_pcspeaker_pdev = {
@@ -128,6 +147,7 @@ static struct resource pcit_io_resources[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct resource sni_mem_resource = {
 	.start	= 0x18000000UL,
 	.end	= 0x1fbfffffUL,
@@ -135,6 +155,8 @@ static struct resource sni_mem_resource = {
 	.flags	= IORESOURCE_MEM
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init sni_pcit_resource_init(void)
 {
 	int i;
@@ -147,14 +169,31 @@ static void __init sni_pcit_resource_init(void)
 
 extern struct pci_ops sni_pcit_ops;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI
+static struct resource sni_mem_resource = {
+	.start	= 0x18000000UL,
+	.end	= 0x1fbfffffUL,
+	.name	= "PCIT PCI MEM",
+	.flags	= IORESOURCE_MEM
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_controller sni_pcit_controller = {
 	.pci_ops	= &sni_pcit_ops,
 	.mem_resource	= &sni_mem_resource,
 	.mem_offset	= 0x00000000UL,
 	.io_resource	= &sni_io_resource,
 	.io_offset	= 0x00000000UL,
+<<<<<<< HEAD
 	.io_map_base    = SNI_PORT_BASE
 };
+=======
+	.io_map_base	= SNI_PORT_BASE
+};
+#endif /* CONFIG_PCI */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void enable_pcit_irq(struct irq_data *d)
 {
@@ -242,7 +281,13 @@ void __init sni_pcit_irq_init(void)
 	*(volatile u32 *)SNI_PCIT_INT_REG = 0;
 	sni_hwint = sni_pcit_hwint;
 	change_c0_status(ST0_IM, IE_IRQ1);
+<<<<<<< HEAD
 	setup_irq(SNI_PCIT_INT_START + 6, &sni_isa_irq);
+=======
+	if (request_irq(SNI_PCIT_INT_START + 6, sni_isa_irq_handler, 0, "ISA",
+			NULL))
+		pr_err("Failed to register ISA interrupt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init sni_pcit_cplus_irq_init(void)
@@ -255,7 +300,13 @@ void __init sni_pcit_cplus_irq_init(void)
 	*(volatile u32 *)SNI_PCIT_INT_REG = 0x40000000;
 	sni_hwint = sni_pcit_hwint_cplus;
 	change_c0_status(ST0_IM, IE_IRQ0);
+<<<<<<< HEAD
 	setup_irq(MIPS_CPU_IRQ_BASE + 3, &sni_isa_irq);
+=======
+	if (request_irq(MIPS_CPU_IRQ_BASE + 3, sni_isa_irq_handler, 0, "ISA",
+			NULL))
+		pr_err("Failed to register ISA interrupt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init sni_pcit_init(void)
@@ -272,6 +323,7 @@ static int __init snirm_pcit_setup_devinit(void)
 {
 	switch (sni_brd_type) {
 	case SNI_BRD_PCI_TOWER:
+<<<<<<< HEAD
 	        platform_device_register(&pcit_serial8250_device);
 	        platform_device_register(&pcit_cmos_device);
 		platform_device_register(&pcit_pcspeaker_pdev);
@@ -282,6 +334,18 @@ static int __init snirm_pcit_setup_devinit(void)
 	        platform_device_register(&pcit_cmos_device);
 		platform_device_register(&pcit_pcspeaker_pdev);
 	        break;
+=======
+		platform_device_register(&pcit_serial8250_device);
+		platform_device_register(&pcit_cmos_device);
+		platform_device_register(&pcit_pcspeaker_pdev);
+		break;
+
+	case SNI_BRD_PCI_TOWER_CPLUS:
+		platform_device_register(&pcit_cplus_serial8250_device);
+		platform_device_register(&pcit_cmos_device);
+		platform_device_register(&pcit_pcspeaker_pdev);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }

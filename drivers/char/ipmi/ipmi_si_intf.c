@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi_si.c
  *
@@ -10,6 +14,7 @@
  *
  * Copyright 2002 MontaVista Software Inc.
  * Copyright 2006 IBM Corp., Christian Krafft <krafft@de.ibm.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the
@@ -31,6 +36,8 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -39,6 +46,11 @@
  * and drives the real SMI state machine.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "ipmi_si: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/sched.h>
@@ -49,8 +61,11 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/ioport.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/notifier.h>
 #include <linux/mutex.h>
 #include <linux/kthread.h>
@@ -59,6 +74,7 @@
 #include <linux/rcupdate.h>
 #include <linux/ipmi.h>
 #include <linux/ipmi_smi.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include "ipmi_si_sm.h"
 #include <linux/init.h>
@@ -72,6 +88,12 @@
 #include <linux/of_irq.h>
 
 #define PFX "ipmi_si: "
+=======
+#include "ipmi_si.h"
+#include "ipmi_si_sm.h"
+#include <linux/string.h>
+#include <linux/ctype.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Measure times between events in the driver. */
 #undef DEBUG_TIMING
@@ -88,12 +110,18 @@ enum si_intf_state {
 	SI_GETTING_FLAGS,
 	SI_GETTING_EVENTS,
 	SI_CLEARING_FLAGS,
+<<<<<<< HEAD
 	SI_CLEARING_FLAGS_THEN_SET_IRQ,
 	SI_GETTING_MESSAGES,
 	SI_ENABLE_INTERRUPTS1,
 	SI_ENABLE_INTERRUPTS2,
 	SI_DISABLE_INTERRUPTS1,
 	SI_DISABLE_INTERRUPTS2
+=======
+	SI_GETTING_MESSAGES,
+	SI_CHECKING_ENABLES,
+	SI_SETTING_ENABLES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME - add watchdog stuff. */
 };
 
@@ -102,6 +130,7 @@ enum si_intf_state {
 #define IPMI_BT_INTMASK_CLEAR_IRQ_BIT	2
 #define IPMI_BT_INTMASK_ENABLE_IRQ_BIT	1
 
+<<<<<<< HEAD
 enum si_type {
     SI_KCS, SI_SMIC, SI_BT
 };
@@ -114,6 +143,12 @@ static char *ipmi_addr_src_to_str[] = { NULL, "hotmod", "hardcoded", "SPMI",
 #define DEVICE_NAME "ipmi_si"
 
 static struct platform_driver ipmi_driver;
+=======
+/* 'invalid' to allow a firmware-specified interface to be disabled */
+const char *const si_to_str[] = { "invalid", "kcs", "smic", "bt", NULL };
+
+static bool initialized;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Indexes into stats[] in smi_info below.
@@ -155,7 +190,11 @@ enum si_stat_indexes {
 	/* Number of watchdog pretimeouts. */
 	SI_STAT_watchdog_pretimeouts,
 
+<<<<<<< HEAD
 	/* Number of asyncronous messages received. */
+=======
+	/* Number of asynchronous messages received. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SI_STAT_incoming_messages,
 
 
@@ -164,6 +203,7 @@ enum si_stat_indexes {
 };
 
 struct smi_info {
+<<<<<<< HEAD
 	int                    intf_num;
 	ipmi_smi_t             intf;
 	struct si_sm_data      *si_sm;
@@ -172,6 +212,14 @@ struct smi_info {
 	spinlock_t             si_lock;
 	struct list_head       xmit_msgs;
 	struct list_head       hp_xmit_msgs;
+=======
+	int                    si_num;
+	struct ipmi_smi        *intf;
+	struct si_sm_data      *si_sm;
+	const struct si_sm_handlers *handlers;
+	spinlock_t             si_lock;
+	struct ipmi_smi_msg    *waiting_msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipmi_smi_msg    *curr_msg;
 	enum si_intf_state     si_state;
 
@@ -180,6 +228,7 @@ struct smi_info {
 	 * IPMI
 	 */
 	struct si_sm_io io;
+<<<<<<< HEAD
 	int (*io_setup)(struct smi_info *info);
 	void (*io_cleanup)(struct smi_info *info);
 	int (*irq_setup)(struct smi_info *info);
@@ -188,6 +237,8 @@ struct smi_info {
 	enum ipmi_addr_src addr_source; /* ACPI, PCI, SMBIOS, hardcode, etc. */
 	void (*addr_source_cleanup)(struct smi_info *info);
 	void *addr_source_data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Per-OEM handler, called from handle_flags().  Returns 1
@@ -213,7 +264,11 @@ struct smi_info {
 	unsigned char       msg_flags;
 
 	/* Does the BMC have an event buffer? */
+<<<<<<< HEAD
 	char		    has_event_buffer;
+=======
+	bool		    has_event_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If set to true, this will request events the next time the
@@ -226,6 +281,7 @@ struct smi_info {
 	 * call.  Generally used after a panic to make sure stuff goes
 	 * out.
 	 */
+<<<<<<< HEAD
 	int                 run_to_completion;
 
 	/* The I/O port of an SI interface. */
@@ -240,18 +296,32 @@ struct smi_info {
 
 	/* zero if no irq; */
 	int                 irq;
+=======
+	bool                run_to_completion;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The timer for this si. */
 	struct timer_list   si_timer;
 
+<<<<<<< HEAD
+=======
+	/* This flag is set, if the timer can be set */
+	bool		    timer_can_start;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This flag is set, if the timer is running (timer_pending() isn't enough) */
 	bool		    timer_running;
 
 	/* The time (in jiffies) the last timeout occurred at. */
 	unsigned long       last_timeout_jiffies;
 
+<<<<<<< HEAD
 	/* Used to gracefully stop the timer without race conditions. */
 	atomic_t            stop_operation;
+=======
+	/* Are we waiting for the events, pretimeouts, received msgs? */
+	atomic_t            need_watch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The driver will disable interrupts when it gets into a
@@ -259,11 +329,46 @@ struct smi_info {
 	 * memory.  Once that situation clears up, it will re-enable
 	 * interrupts.
 	 */
+<<<<<<< HEAD
 	int interrupt_disabled;
+=======
+	bool interrupt_disabled;
+
+	/*
+	 * Does the BMC support events?
+	 */
+	bool supports_event_msg_buff;
+
+	/*
+	 * Can we disable interrupts the global enables receive irq
+	 * bit?  There are currently two forms of brokenness, some
+	 * systems cannot disable the bit (which is technically within
+	 * the spec but a bad idea) and some systems have the bit
+	 * forced to zero even though interrupts work (which is
+	 * clearly outside the spec).  The next bool tells which form
+	 * of brokenness is present.
+	 */
+	bool cannot_disable_irq;
+
+	/*
+	 * Some systems are broken and cannot set the irq enable
+	 * bit, even if they support interrupts.
+	 */
+	bool irq_enable_broken;
+
+	/* Is the driver in maintenance mode? */
+	bool in_maintenance_mode;
+
+	/*
+	 * Did we get an attention that we did not handle?
+	 */
+	bool got_attn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* From the get device id response... */
 	struct ipmi_device_id device_id;
 
+<<<<<<< HEAD
 	/* Driver model stuff. */
 	struct device *dev;
 	struct platform_device *pdev;
@@ -276,6 +381,10 @@ struct smi_info {
 
 	/* Slave address, could be reported from DMI. */
 	unsigned char slave_addr;
+=======
+	/* Have we added the device group to the device? */
+	bool dev_group_added;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Counters and things for the proc filesystem. */
 	atomic_t stats[SI_NUM_STATS];
@@ -283,7 +392,10 @@ struct smi_info {
 	struct task_struct *thread;
 
 	struct list_head link;
+<<<<<<< HEAD
 	union ipmi_smi_info_union addr_info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define smi_inc_stat(smi, stat) \
@@ -291,6 +403,7 @@ struct smi_info {
 #define smi_get_stat(smi, stat) \
 	((unsigned int) atomic_read(&(smi)->stats[SI_STAT_ ## stat]))
 
+<<<<<<< HEAD
 #define SI_MAX_PARMS 4
 
 static int force_kipmid[SI_MAX_PARMS];
@@ -312,6 +425,34 @@ static int try_smi_init(struct smi_info *smi);
 static void cleanup_one_si(struct smi_info *to_clean);
 static void cleanup_ipmi_si(void);
 
+=======
+#define IPMI_MAX_INTFS 4
+static int force_kipmid[IPMI_MAX_INTFS];
+static int num_force_kipmid;
+
+static unsigned int kipmid_max_busy_us[IPMI_MAX_INTFS];
+static int num_max_busy_us;
+
+static bool unload_when_empty = true;
+
+static int try_smi_init(struct smi_info *smi);
+static void cleanup_one_si(struct smi_info *smi_info);
+static void cleanup_ipmi_si(void);
+
+#ifdef DEBUG_TIMING
+void debug_timestamp(struct smi_info *smi_info, char *msg)
+{
+	struct timespec64 t;
+
+	ktime_get_ts64(&t);
+	dev_dbg(smi_info->io.dev, "**%s: %lld.%9.9ld\n",
+		msg, t.tv_sec, t.tv_nsec);
+}
+#else
+#define debug_timestamp(smi_info, x)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ATOMIC_NOTIFIER_HEAD(xaction_notifier_list);
 static int register_xaction_notifier(struct notifier_block *nb)
 {
@@ -346,6 +487,7 @@ static void return_hosed_msg(struct smi_info *smi_info, int cCode)
 static enum si_sm_result start_next_msg(struct smi_info *smi_info)
 {
 	int              rv;
+<<<<<<< HEAD
 	struct list_head *entry = NULL;
 #ifdef DEBUG_TIMING
 	struct timeval t;
@@ -359,11 +501,16 @@ static enum si_sm_result start_next_msg(struct smi_info *smi_info)
 	}
 
 	if (!entry) {
+=======
+
+	if (!smi_info->waiting_msg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smi_info->curr_msg = NULL;
 		rv = SI_SM_IDLE;
 	} else {
 		int err;
 
+<<<<<<< HEAD
 		list_del(entry);
 		smi_info->curr_msg = list_entry(entry,
 						struct ipmi_smi_msg,
@@ -372,6 +519,11 @@ static enum si_sm_result start_next_msg(struct smi_info *smi_info)
 		do_gettimeofday(&t);
 		printk(KERN_DEBUG "**Start2: %d.%9.9d\n", t.tv_sec, t.tv_usec);
 #endif
+=======
+		smi_info->curr_msg = smi_info->waiting_msg;
+		smi_info->waiting_msg = NULL;
+		debug_timestamp(smi_info, "Start2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = atomic_notifier_call_chain(&xaction_notifier_list,
 				0, smi_info);
 		if (err & NOTIFY_STOP_MASK) {
@@ -387,6 +539,7 @@ static enum si_sm_result start_next_msg(struct smi_info *smi_info)
 
 		rv = SI_SM_CALL_WITHOUT_DELAY;
 	}
+<<<<<<< HEAD
  out:
 	return rv;
 }
@@ -407,14 +560,49 @@ static void start_enable_irq(struct smi_info *smi_info)
 }
 
 static void start_disable_irq(struct smi_info *smi_info)
+=======
+out:
+	return rv;
+}
+
+static void smi_mod_timer(struct smi_info *smi_info, unsigned long new_val)
+{
+	if (!smi_info->timer_can_start)
+		return;
+	smi_info->last_timeout_jiffies = jiffies;
+	mod_timer(&smi_info->si_timer, new_val);
+	smi_info->timer_running = true;
+}
+
+/*
+ * Start a new message and (re)start the timer and thread.
+ */
+static void start_new_msg(struct smi_info *smi_info, unsigned char *msg,
+			  unsigned int size)
+{
+	smi_mod_timer(smi_info, jiffies + SI_TIMEOUT_JIFFIES);
+
+	if (smi_info->thread)
+		wake_up_process(smi_info->thread);
+
+	smi_info->handlers->start_transaction(smi_info->si_sm, msg, size);
+}
+
+static void start_check_enables(struct smi_info *smi_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char msg[2];
 
 	msg[0] = (IPMI_NETFN_APP_REQUEST << 2);
 	msg[1] = IPMI_GET_BMC_GLOBAL_ENABLES_CMD;
 
+<<<<<<< HEAD
 	smi_info->handlers->start_transaction(smi_info->si_sm, msg, 2);
 	smi_info->si_state = SI_DISABLE_INTERRUPTS1;
+=======
+	start_new_msg(smi_info, msg, 2);
+	smi_info->si_state = SI_CHECKING_ENABLES;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void start_clear_flags(struct smi_info *smi_info)
@@ -426,6 +614,7 @@ static void start_clear_flags(struct smi_info *smi_info)
 	msg[1] = IPMI_CLEAR_MSG_FLAGS_CMD;
 	msg[2] = WDT_PRE_TIMEOUT_INT;
 
+<<<<<<< HEAD
 	smi_info->handlers->start_transaction(smi_info->si_sm, msg, 3);
 	smi_info->si_state = SI_CLEARING_FLAGS;
 }
@@ -435,6 +624,32 @@ static void smi_mod_timer(struct smi_info *smi_info, unsigned long new_val)
 	smi_info->last_timeout_jiffies = jiffies;
 	mod_timer(&smi_info->si_timer, new_val);
 	smi_info->timer_running = true;
+=======
+	start_new_msg(smi_info, msg, 3);
+	smi_info->si_state = SI_CLEARING_FLAGS;
+}
+
+static void start_getting_msg_queue(struct smi_info *smi_info)
+{
+	smi_info->curr_msg->data[0] = (IPMI_NETFN_APP_REQUEST << 2);
+	smi_info->curr_msg->data[1] = IPMI_GET_MSG_CMD;
+	smi_info->curr_msg->data_size = 2;
+
+	start_new_msg(smi_info, smi_info->curr_msg->data,
+		      smi_info->curr_msg->data_size);
+	smi_info->si_state = SI_GETTING_MESSAGES;
+}
+
+static void start_getting_events(struct smi_info *smi_info)
+{
+	smi_info->curr_msg->data[0] = (IPMI_NETFN_APP_REQUEST << 2);
+	smi_info->curr_msg->data[1] = IPMI_READ_EVENT_MSG_BUFFER_CMD;
+	smi_info->curr_msg->data_size = 2;
+
+	start_new_msg(smi_info, smi_info->curr_msg->data,
+		      smi_info->curr_msg->data_size);
+	smi_info->si_state = SI_GETTING_EVENTS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -442,6 +657,7 @@ static void smi_mod_timer(struct smi_info *smi_info, unsigned long new_val)
  * allocate messages, we just leave them in the BMC and run the system
  * polled until we can allocate some memory.  Once we have some
  * memory, we will re-enable the interrupt.
+<<<<<<< HEAD
  */
 static inline void disable_si_irq(struct smi_info *smi_info)
 {
@@ -459,11 +675,60 @@ static inline void enable_si_irq(struct smi_info *smi_info)
 		start_enable_irq(smi_info);
 		smi_info->interrupt_disabled = 0;
 	}
+=======
+ *
+ * Note that we cannot just use disable_irq(), since the interrupt may
+ * be shared.
+ */
+static inline bool disable_si_irq(struct smi_info *smi_info)
+{
+	if ((smi_info->io.irq) && (!smi_info->interrupt_disabled)) {
+		smi_info->interrupt_disabled = true;
+		start_check_enables(smi_info);
+		return true;
+	}
+	return false;
+}
+
+static inline bool enable_si_irq(struct smi_info *smi_info)
+{
+	if ((smi_info->io.irq) && (smi_info->interrupt_disabled)) {
+		smi_info->interrupt_disabled = false;
+		start_check_enables(smi_info);
+		return true;
+	}
+	return false;
+}
+
+/*
+ * Allocate a message.  If unable to allocate, start the interrupt
+ * disable process and return NULL.  If able to allocate but
+ * interrupts are disabled, free the message and return NULL after
+ * starting the interrupt enable process.
+ */
+static struct ipmi_smi_msg *alloc_msg_handle_irq(struct smi_info *smi_info)
+{
+	struct ipmi_smi_msg *msg;
+
+	msg = ipmi_alloc_smi_msg();
+	if (!msg) {
+		if (!disable_si_irq(smi_info))
+			smi_info->si_state = SI_NORMAL;
+	} else if (enable_si_irq(smi_info)) {
+		ipmi_free_smi_msg(msg);
+		msg = NULL;
+	}
+	return msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void handle_flags(struct smi_info *smi_info)
 {
+<<<<<<< HEAD
  retry:
+=======
+retry:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smi_info->msg_flags & WDT_PRE_TIMEOUT_INT) {
 		/* Watchdog pre-timeout */
 		smi_inc_stat(smi_info, watchdog_pretimeouts);
@@ -473,6 +738,7 @@ static void handle_flags(struct smi_info *smi_info)
 		ipmi_smi_watchdog_pretimeout(smi_info->intf);
 	} else if (smi_info->msg_flags & RECEIVE_MSG_AVAIL) {
 		/* Messages available. */
+<<<<<<< HEAD
 		smi_info->curr_msg = ipmi_alloc_smi_msg();
 		if (!smi_info->curr_msg) {
 			disable_si_irq(smi_info);
@@ -509,6 +775,20 @@ static void handle_flags(struct smi_info *smi_info)
 			smi_info->curr_msg->data,
 			smi_info->curr_msg->data_size);
 		smi_info->si_state = SI_GETTING_EVENTS;
+=======
+		smi_info->curr_msg = alloc_msg_handle_irq(smi_info);
+		if (!smi_info->curr_msg)
+			return;
+
+		start_getting_msg_queue(smi_info);
+	} else if (smi_info->msg_flags & EVENT_MSG_BUFFER_FULL) {
+		/* Events available. */
+		smi_info->curr_msg = alloc_msg_handle_irq(smi_info);
+		if (!smi_info->curr_msg)
+			return;
+
+		start_getting_events(smi_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (smi_info->msg_flags & OEM_DATA_AVAIL &&
 		   smi_info->oem_data_avail_handler) {
 		if (smi_info->oem_data_avail_handler(smi_info))
@@ -517,6 +797,7 @@ static void handle_flags(struct smi_info *smi_info)
 		smi_info->si_state = SI_NORMAL;
 }
 
+<<<<<<< HEAD
 static void handle_transaction_done(struct smi_info *smi_info)
 {
 	struct ipmi_smi_msg *msg;
@@ -526,6 +807,58 @@ static void handle_transaction_done(struct smi_info *smi_info)
 	do_gettimeofday(&t);
 	printk(KERN_DEBUG "**Done: %d.%9.9d\n", t.tv_sec, t.tv_usec);
 #endif
+=======
+/*
+ * Global enables we care about.
+ */
+#define GLOBAL_ENABLES_MASK (IPMI_BMC_EVT_MSG_BUFF | IPMI_BMC_RCV_MSG_INTR | \
+			     IPMI_BMC_EVT_MSG_INTR)
+
+static u8 current_global_enables(struct smi_info *smi_info, u8 base,
+				 bool *irq_on)
+{
+	u8 enables = 0;
+
+	if (smi_info->supports_event_msg_buff)
+		enables |= IPMI_BMC_EVT_MSG_BUFF;
+
+	if (((smi_info->io.irq && !smi_info->interrupt_disabled) ||
+	     smi_info->cannot_disable_irq) &&
+	    !smi_info->irq_enable_broken)
+		enables |= IPMI_BMC_RCV_MSG_INTR;
+
+	if (smi_info->supports_event_msg_buff &&
+	    smi_info->io.irq && !smi_info->interrupt_disabled &&
+	    !smi_info->irq_enable_broken)
+		enables |= IPMI_BMC_EVT_MSG_INTR;
+
+	*irq_on = enables & (IPMI_BMC_EVT_MSG_INTR | IPMI_BMC_RCV_MSG_INTR);
+
+	return enables;
+}
+
+static void check_bt_irq(struct smi_info *smi_info, bool irq_on)
+{
+	u8 irqstate = smi_info->io.inputb(&smi_info->io, IPMI_BT_INTMASK_REG);
+
+	irqstate &= IPMI_BT_INTMASK_ENABLE_IRQ_BIT;
+
+	if ((bool)irqstate == irq_on)
+		return;
+
+	if (irq_on)
+		smi_info->io.outputb(&smi_info->io, IPMI_BT_INTMASK_REG,
+				     IPMI_BT_INTMASK_ENABLE_IRQ_BIT);
+	else
+		smi_info->io.outputb(&smi_info->io, IPMI_BT_INTMASK_REG, 0);
+}
+
+static void handle_transaction_done(struct smi_info *smi_info)
+{
+	struct ipmi_smi_msg *msg;
+
+	debug_timestamp(smi_info, "Done");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (smi_info->si_state) {
 	case SI_NORMAL:
 		if (!smi_info->curr_msg)
@@ -571,7 +904,10 @@ static void handle_transaction_done(struct smi_info *smi_info)
 	}
 
 	case SI_CLEARING_FLAGS:
+<<<<<<< HEAD
 	case SI_CLEARING_FLAGS_THEN_SET_IRQ:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		unsigned char msg[3];
 
@@ -579,6 +915,7 @@ static void handle_transaction_done(struct smi_info *smi_info)
 		smi_info->handlers->get_result(smi_info->si_sm, msg, 3);
 		if (msg[2] != 0) {
 			/* Error clearing flags */
+<<<<<<< HEAD
 			dev_warn(smi_info->dev,
 				 "Error clearing flags: %2.2x\n", msg[2]);
 		}
@@ -586,6 +923,12 @@ static void handle_transaction_done(struct smi_info *smi_info)
 			start_enable_irq(smi_info);
 		else
 			smi_info->si_state = SI_NORMAL;
+=======
+			dev_warn_ratelimited(smi_info->io.dev,
+				 "Error clearing flags: %2.2x\n", msg[2]);
+		}
+		smi_info->si_state = SI_NORMAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -665,13 +1008,22 @@ static void handle_transaction_done(struct smi_info *smi_info)
 		break;
 	}
 
+<<<<<<< HEAD
 	case SI_ENABLE_INTERRUPTS1:
 	{
 		unsigned char msg[4];
+=======
+	case SI_CHECKING_ENABLES:
+	{
+		unsigned char msg[4];
+		u8 enables;
+		bool irq_on;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We got the flags from the SMI, now handle them. */
 		smi_info->handlers->get_result(smi_info->si_sm, msg, 4);
 		if (msg[2] != 0) {
+<<<<<<< HEAD
 			dev_warn(smi_info->dev, "Could not enable interrupts"
 				 ", failed get, using polled mode.\n");
 			smi_info->si_state = SI_NORMAL;
@@ -684,10 +1036,41 @@ static void handle_transaction_done(struct smi_info *smi_info)
 			smi_info->handlers->start_transaction(
 				smi_info->si_sm, msg, 3);
 			smi_info->si_state = SI_ENABLE_INTERRUPTS2;
+=======
+			dev_warn_ratelimited(smi_info->io.dev,
+				"Couldn't get irq info: %x,\n"
+				"Maybe ok, but ipmi might run very slowly.\n",
+				msg[2]);
+			smi_info->si_state = SI_NORMAL;
+			break;
+		}
+		enables = current_global_enables(smi_info, 0, &irq_on);
+		if (smi_info->io.si_type == SI_BT)
+			/* BT has its own interrupt enable bit. */
+			check_bt_irq(smi_info, irq_on);
+		if (enables != (msg[3] & GLOBAL_ENABLES_MASK)) {
+			/* Enables are not correct, fix them. */
+			msg[0] = (IPMI_NETFN_APP_REQUEST << 2);
+			msg[1] = IPMI_SET_BMC_GLOBAL_ENABLES_CMD;
+			msg[2] = enables | (msg[3] & ~GLOBAL_ENABLES_MASK);
+			smi_info->handlers->start_transaction(
+				smi_info->si_sm, msg, 3);
+			smi_info->si_state = SI_SETTING_ENABLES;
+		} else if (smi_info->supports_event_msg_buff) {
+			smi_info->curr_msg = ipmi_alloc_smi_msg();
+			if (!smi_info->curr_msg) {
+				smi_info->si_state = SI_NORMAL;
+				break;
+			}
+			start_getting_events(smi_info);
+		} else {
+			smi_info->si_state = SI_NORMAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
 
+<<<<<<< HEAD
 	case SI_ENABLE_INTERRUPTS2:
 	{
 		unsigned char msg[4];
@@ -739,6 +1122,30 @@ static void handle_transaction_done(struct smi_info *smi_info)
 		smi_info->si_state = SI_NORMAL;
 		break;
 	}
+=======
+	case SI_SETTING_ENABLES:
+	{
+		unsigned char msg[4];
+
+		smi_info->handlers->get_result(smi_info->si_sm, msg, 4);
+		if (msg[2] != 0)
+			dev_warn_ratelimited(smi_info->io.dev,
+				 "Could not set the global enables: 0x%x.\n",
+				 msg[2]);
+
+		if (smi_info->supports_event_msg_buff) {
+			smi_info->curr_msg = ipmi_alloc_smi_msg();
+			if (!smi_info->curr_msg) {
+				smi_info->si_state = SI_NORMAL;
+				break;
+			}
+			start_getting_events(smi_info);
+		} else {
+			smi_info->si_state = SI_NORMAL;
+		}
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -752,7 +1159,11 @@ static enum si_sm_result smi_event_handler(struct smi_info *smi_info,
 {
 	enum si_sm_result si_sm_result;
 
+<<<<<<< HEAD
  restart:
+=======
+restart:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * There used to be a loop here that waited a little while
 	 * (around 25us) before giving up.  That turned out to be
@@ -770,7 +1181,11 @@ static enum si_sm_result smi_event_handler(struct smi_info *smi_info,
 		smi_inc_stat(smi_info, complete_transactions);
 
 		handle_transaction_done(smi_info);
+<<<<<<< HEAD
 		si_sm_result = smi_info->handlers->event(smi_info->si_sm, 0);
+=======
+		goto restart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (si_sm_result == SI_SM_HOSED) {
 		smi_inc_stat(smi_info, hosed_count);
 
@@ -787,13 +1202,18 @@ static enum si_sm_result smi_event_handler(struct smi_info *smi_info,
 			 */
 			return_hosed_msg(smi_info, IPMI_ERR_UNSPECIFIED);
 		}
+<<<<<<< HEAD
 		si_sm_result = smi_info->handlers->event(smi_info->si_sm, 0);
+=======
+		goto restart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * We prefer handling attn over new messages.  But don't do
 	 * this if there is not yet an upper layer to handle anything.
 	 */
+<<<<<<< HEAD
 	if (likely(smi_info->intf) && si_sm_result == SI_SM_ATTN) {
 		unsigned char msg[2];
 
@@ -813,6 +1233,35 @@ static enum si_sm_result smi_event_handler(struct smi_info *smi_info,
 			smi_info->si_sm, msg, 2);
 		smi_info->si_state = SI_GETTING_FLAGS;
 		goto restart;
+=======
+	if (si_sm_result == SI_SM_ATTN || smi_info->got_attn) {
+		unsigned char msg[2];
+
+		if (smi_info->si_state != SI_NORMAL) {
+			/*
+			 * We got an ATTN, but we are doing something else.
+			 * Handle the ATTN later.
+			 */
+			smi_info->got_attn = true;
+		} else {
+			smi_info->got_attn = false;
+			smi_inc_stat(smi_info, attentions);
+
+			/*
+			 * Got a attn, send down a get message flags to see
+			 * what's causing it.  It would be better to handle
+			 * this in the upper layer, but due to the way
+			 * interrupts work with the SMI, that's not really
+			 * possible.
+			 */
+			msg[0] = (IPMI_NETFN_APP_REQUEST << 2);
+			msg[1] = IPMI_GET_MSG_FLAGS_CMD;
+
+			start_new_msg(smi_info, msg, 2);
+			smi_info->si_state = SI_GETTING_FLAGS;
+			goto restart;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If we are currently idle, try to start the next message. */
@@ -832,6 +1281,7 @@ static enum si_sm_result smi_event_handler(struct smi_info *smi_info,
 		 */
 		atomic_set(&smi_info->req_events, 0);
 
+<<<<<<< HEAD
 		smi_info->curr_msg = ipmi_alloc_smi_msg();
 		if (!smi_info->curr_msg)
 			goto out;
@@ -904,6 +1354,38 @@ static void sender(void                *send_info,
 	else
 		list_add_tail(&msg->link, &smi_info->xmit_msgs);
 
+=======
+		/*
+		 * Take this opportunity to check the interrupt and
+		 * message enable state for the BMC.  The BMC can be
+		 * asynchronously reset, and may thus get interrupts
+		 * disable and messages disabled.
+		 */
+		if (smi_info->supports_event_msg_buff || smi_info->io.irq) {
+			start_check_enables(smi_info);
+		} else {
+			smi_info->curr_msg = alloc_msg_handle_irq(smi_info);
+			if (!smi_info->curr_msg)
+				goto out;
+
+			start_getting_events(smi_info);
+		}
+		goto restart;
+	}
+
+	if (si_sm_result == SI_SM_IDLE && smi_info->timer_running) {
+		/* Ok it if fails, the timer will just go off. */
+		if (del_timer(&smi_info->si_timer))
+			smi_info->timer_running = false;
+	}
+
+out:
+	return si_sm_result;
+}
+
+static void check_start_timer_thread(struct smi_info *smi_info)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smi_info->si_state == SI_NORMAL && smi_info->curr_msg == NULL) {
 		smi_mod_timer(smi_info, jiffies + SI_TIMEOUT_JIFFIES);
 
@@ -913,6 +1395,7 @@ static void sender(void                *send_info,
 		start_next_msg(smi_info);
 		smi_event_handler(smi_info, 0);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&smi_info->si_lock, flags);
 }
 
@@ -968,6 +1451,90 @@ static int ipmi_thread_busy_wait(enum si_sm_result smi_result,
 		}
 	}
 	return 1;
+=======
+}
+
+static void flush_messages(void *send_info)
+{
+	struct smi_info *smi_info = send_info;
+	enum si_sm_result result;
+
+	/*
+	 * Currently, this function is called only in run-to-completion
+	 * mode.  This means we are single-threaded, no need for locks.
+	 */
+	result = smi_event_handler(smi_info, 0);
+	while (result != SI_SM_IDLE) {
+		udelay(SI_SHORT_TIMEOUT_USEC);
+		result = smi_event_handler(smi_info, SI_SHORT_TIMEOUT_USEC);
+	}
+}
+
+static void sender(void                *send_info,
+		   struct ipmi_smi_msg *msg)
+{
+	struct smi_info   *smi_info = send_info;
+	unsigned long     flags;
+
+	debug_timestamp(smi_info, "Enqueue");
+
+	if (smi_info->run_to_completion) {
+		/*
+		 * If we are running to completion, start it.  Upper
+		 * layer will call flush_messages to clear it out.
+		 */
+		smi_info->waiting_msg = msg;
+		return;
+	}
+
+	spin_lock_irqsave(&smi_info->si_lock, flags);
+	/*
+	 * The following two lines don't need to be under the lock for
+	 * the lock's sake, but they do need SMP memory barriers to
+	 * avoid getting things out of order.  We are already claiming
+	 * the lock, anyway, so just do it under the lock to avoid the
+	 * ordering problem.
+	 */
+	BUG_ON(smi_info->waiting_msg);
+	smi_info->waiting_msg = msg;
+	check_start_timer_thread(smi_info);
+	spin_unlock_irqrestore(&smi_info->si_lock, flags);
+}
+
+static void set_run_to_completion(void *send_info, bool i_run_to_completion)
+{
+	struct smi_info   *smi_info = send_info;
+
+	smi_info->run_to_completion = i_run_to_completion;
+	if (i_run_to_completion)
+		flush_messages(smi_info);
+}
+
+/*
+ * Use -1 as a special constant to tell that we are spinning in kipmid
+ * looking for something and not delaying between checks
+ */
+#define IPMI_TIME_NOT_BUSY ns_to_ktime(-1ull)
+static inline bool ipmi_thread_busy_wait(enum si_sm_result smi_result,
+					 const struct smi_info *smi_info,
+					 ktime_t *busy_until)
+{
+	unsigned int max_busy_us = 0;
+
+	if (smi_info->si_num < num_max_busy_us)
+		max_busy_us = kipmid_max_busy_us[smi_info->si_num];
+	if (max_busy_us == 0 || smi_result != SI_SM_CALL_WITH_DELAY)
+		*busy_until = IPMI_TIME_NOT_BUSY;
+	else if (*busy_until == IPMI_TIME_NOT_BUSY) {
+		*busy_until = ktime_get() + max_busy_us * NSEC_PER_USEC;
+	} else {
+		if (unlikely(ktime_get() > *busy_until)) {
+			*busy_until = IPMI_TIME_NOT_BUSY;
+			return false;
+		}
+	}
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -978,17 +1545,27 @@ static int ipmi_thread_busy_wait(enum si_sm_result smi_result,
  * that are not BT and do not have interrupts.  It starts spinning
  * when an operation is complete or until max_busy tells it to stop
  * (if that is enabled).  See the paragraph on kimid_max_busy_us in
+<<<<<<< HEAD
  * Documentation/IPMI.txt for details.
+=======
+ * Documentation/driver-api/ipmi.rst for details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ipmi_thread(void *data)
 {
 	struct smi_info *smi_info = data;
 	unsigned long flags;
 	enum si_sm_result smi_result;
+<<<<<<< HEAD
 	struct timespec busy_until;
 
 	ipmi_si_set_not_busy(&busy_until);
 	set_user_nice(current, 19);
+=======
+	ktime_t busy_until = IPMI_TIME_NOT_BUSY;
+
+	set_user_nice(current, MAX_NICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!kthread_should_stop()) {
 		int busy_wait;
 
@@ -1008,6 +1585,7 @@ static int ipmi_thread(void *data)
 		spin_unlock_irqrestore(&(smi_info->si_lock), flags);
 		busy_wait = ipmi_thread_busy_wait(smi_result, smi_info,
 						  &busy_until);
+<<<<<<< HEAD
 		if (smi_result == SI_SM_CALL_WITHOUT_DELAY)
 			; /* do nothing */
 		else if (smi_result == SI_SM_CALL_WITH_DELAY && busy_wait)
@@ -1016,6 +1594,32 @@ static int ipmi_thread(void *data)
 			schedule_timeout_interruptible(100);
 		else
 			schedule_timeout_interruptible(1);
+=======
+		if (smi_result == SI_SM_CALL_WITHOUT_DELAY) {
+			; /* do nothing */
+		} else if (smi_result == SI_SM_CALL_WITH_DELAY && busy_wait) {
+			/*
+			 * In maintenance mode we run as fast as
+			 * possible to allow firmware updates to
+			 * complete as fast as possible, but normally
+			 * don't bang on the scheduler.
+			 */
+			if (smi_info->in_maintenance_mode)
+				schedule();
+			else
+				usleep_range(100, 200);
+		} else if (smi_result == SI_SM_IDLE) {
+			if (atomic_read(&smi_info->need_watch)) {
+				schedule_timeout_interruptible(100);
+			} else {
+				/* Wait to be woken up when we are needed. */
+				__set_current_state(TASK_INTERRUPTIBLE);
+				schedule();
+			}
+		} else {
+			schedule_timeout_interruptible(1);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1025,7 +1629,11 @@ static void poll(void *send_info)
 {
 	struct smi_info *smi_info = send_info;
 	unsigned long flags = 0;
+<<<<<<< HEAD
 	int run_to_completion = smi_info->run_to_completion;
+=======
+	bool run_to_completion = smi_info->run_to_completion;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure there is some delay in the poll loop so we can
@@ -1043,23 +1651,48 @@ static void request_events(void *send_info)
 {
 	struct smi_info *smi_info = send_info;
 
+<<<<<<< HEAD
 	if (atomic_read(&smi_info->stop_operation) ||
 				!smi_info->has_event_buffer)
+=======
+	if (!smi_info->has_event_buffer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	atomic_set(&smi_info->req_events, 1);
 }
 
+<<<<<<< HEAD
 static int initialized;
 
 static void smi_timeout(unsigned long data)
 {
 	struct smi_info   *smi_info = (struct smi_info *) data;
+=======
+static void set_need_watch(void *send_info, unsigned int watch_mask)
+{
+	struct smi_info *smi_info = send_info;
+	unsigned long flags;
+	int enable;
+
+	enable = !!watch_mask;
+
+	atomic_set(&smi_info->need_watch, enable);
+	spin_lock_irqsave(&smi_info->si_lock, flags);
+	check_start_timer_thread(smi_info);
+	spin_unlock_irqrestore(&smi_info->si_lock, flags);
+}
+
+static void smi_timeout(struct timer_list *t)
+{
+	struct smi_info   *smi_info = from_timer(smi_info, t, si_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum si_sm_result smi_result;
 	unsigned long     flags;
 	unsigned long     jiffies_now;
 	long              time_diff;
 	long		  timeout;
+<<<<<<< HEAD
 #ifdef DEBUG_TIMING
 	struct timeval    t;
 #endif
@@ -1069,12 +1702,22 @@ static void smi_timeout(unsigned long data)
 	do_gettimeofday(&t);
 	printk(KERN_DEBUG "**Timer: %d.%9.9d\n", t.tv_sec, t.tv_usec);
 #endif
+=======
+
+	spin_lock_irqsave(&(smi_info->si_lock), flags);
+	debug_timestamp(smi_info, "Timer");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jiffies_now = jiffies;
 	time_diff = (((long)jiffies_now - (long)smi_info->last_timeout_jiffies)
 		     * SI_USEC_PER_JIFFY);
 	smi_result = smi_event_handler(smi_info, time_diff);
 
+<<<<<<< HEAD
 	if ((smi_info->irq) && (!smi_info->interrupt_disabled)) {
+=======
+	if ((smi_info->io.irq) && (!smi_info->interrupt_disabled)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Running with interrupts, only do long timeouts. */
 		timeout = jiffies + SI_TIMEOUT_JIFFIES;
 		smi_inc_stat(smi_info, long_timeouts);
@@ -1093,7 +1736,11 @@ static void smi_timeout(unsigned long data)
 		timeout = jiffies + SI_TIMEOUT_JIFFIES;
 	}
 
+<<<<<<< HEAD
  do_mod_timer:
+=======
+do_mod_timer:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (smi_result != SI_SM_IDLE)
 		smi_mod_timer(smi_info, timeout);
 	else
@@ -1101,6 +1748,7 @@ static void smi_timeout(unsigned long data)
 	spin_unlock_irqrestore(&(smi_info->si_lock), flags);
 }
 
+<<<<<<< HEAD
 static irqreturn_t si_irq_handler(int irq, void *data)
 {
 	struct smi_info *smi_info = data;
@@ -1108,20 +1756,38 @@ static irqreturn_t si_irq_handler(int irq, void *data)
 #ifdef DEBUG_TIMING
 	struct timeval  t;
 #endif
+=======
+irqreturn_t ipmi_si_irq_handler(int irq, void *data)
+{
+	struct smi_info *smi_info = data;
+	unsigned long   flags;
+
+	if (smi_info->io.si_type == SI_BT)
+		/* We need to clear the IRQ flag for the BT interface. */
+		smi_info->io.outputb(&smi_info->io, IPMI_BT_INTMASK_REG,
+				     IPMI_BT_INTMASK_CLEAR_IRQ_BIT
+				     | IPMI_BT_INTMASK_ENABLE_IRQ_BIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&(smi_info->si_lock), flags);
 
 	smi_inc_stat(smi_info, interrupts);
 
+<<<<<<< HEAD
 #ifdef DEBUG_TIMING
 	do_gettimeofday(&t);
 	printk(KERN_DEBUG "**Interrupt: %d.%9.9d\n", t.tv_sec, t.tv_usec);
 #endif
+=======
+	debug_timestamp(smi_info, "Interrupt");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smi_event_handler(smi_info, 0);
 	spin_unlock_irqrestore(&(smi_info->si_lock), flags);
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static irqreturn_t si_bt_irq_handler(int irq, void *data)
 {
 	struct smi_info *smi_info = data;
@@ -1134,12 +1800,17 @@ static irqreturn_t si_bt_irq_handler(int irq, void *data)
 
 static int smi_start_processing(void       *send_info,
 				ipmi_smi_t intf)
+=======
+static int smi_start_processing(void            *send_info,
+				struct ipmi_smi *intf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smi_info *new_smi = send_info;
 	int             enable = 0;
 
 	new_smi->intf = intf;
 
+<<<<<<< HEAD
 	/* Try to claim any interrupts. */
 	if (new_smi->irq_setup)
 		new_smi->irq_setup(new_smi);
@@ -1153,20 +1824,49 @@ static int smi_start_processing(void       *send_info,
 	 */
 	if (new_smi->intf_num < num_force_kipmid)
 		enable = force_kipmid[new_smi->intf_num];
+=======
+	/* Set up the timer that drives the interface. */
+	timer_setup(&new_smi->si_timer, smi_timeout, 0);
+	new_smi->timer_can_start = true;
+	smi_mod_timer(new_smi, jiffies + SI_TIMEOUT_JIFFIES);
+
+	/* Try to claim any interrupts. */
+	if (new_smi->io.irq_setup) {
+		new_smi->io.irq_handler_data = new_smi;
+		new_smi->io.irq_setup(&new_smi->io);
+	}
+
+	/*
+	 * Check if the user forcefully enabled the daemon.
+	 */
+	if (new_smi->si_num < num_force_kipmid)
+		enable = force_kipmid[new_smi->si_num];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The BT interface is efficient enough to not need a thread,
 	 * and there is no need for a thread if we have interrupts.
 	 */
+<<<<<<< HEAD
 	else if ((new_smi->si_type != SI_BT) && (!new_smi->irq))
+=======
+	else if ((new_smi->io.si_type != SI_BT) && (!new_smi->io.irq))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable = 1;
 
 	if (enable) {
 		new_smi->thread = kthread_run(ipmi_thread, new_smi,
+<<<<<<< HEAD
 					      "kipmi%d", new_smi->intf_num);
 		if (IS_ERR(new_smi->thread)) {
 			dev_notice(new_smi->dev, "Could not start"
 				   " kernel thread due to error %ld, only using"
 				   " timers to drive the interface\n",
+=======
+					      "kipmi%d", new_smi->si_num);
+		if (IS_ERR(new_smi->thread)) {
+			dev_notice(new_smi->io.dev,
+				   "Could not start kernel thread due to error %ld, only using timers to drive the interface\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   PTR_ERR(new_smi->thread));
 			new_smi->thread = NULL;
 		}
@@ -1179,20 +1879,32 @@ static int get_smi_info(void *send_info, struct ipmi_smi_info *data)
 {
 	struct smi_info *smi = send_info;
 
+<<<<<<< HEAD
 	data->addr_src = smi->addr_source;
 	data->dev = smi->dev;
 	data->addr_info = smi->addr_info;
 	get_device(smi->dev);
+=======
+	data->addr_src = smi->io.addr_source;
+	data->dev = smi->io.dev;
+	data->addr_info = smi->io.addr_info;
+	get_device(smi->io.dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void set_maintenance_mode(void *send_info, int enable)
+=======
+static void set_maintenance_mode(void *send_info, bool enable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smi_info   *smi_info = send_info;
 
 	if (!enable)
 		atomic_set(&smi_info->req_events, 0);
+<<<<<<< HEAD
 }
 
 static struct ipmi_smi_handlers handlers = {
@@ -1211,10 +1923,31 @@ static struct ipmi_smi_handlers handlers = {
  * a default IO port, and 1 ACPI/SPMI address.  That sets SI_MAX_DRIVERS.
  */
 
+=======
+	smi_info->in_maintenance_mode = enable;
+}
+
+static void shutdown_smi(void *send_info);
+static const struct ipmi_smi_handlers handlers = {
+	.owner                  = THIS_MODULE,
+	.start_processing       = smi_start_processing,
+	.shutdown               = shutdown_smi,
+	.get_smi_info		= get_smi_info,
+	.sender			= sender,
+	.request_events		= request_events,
+	.set_need_watch		= set_need_watch,
+	.set_maintenance_mode   = set_maintenance_mode,
+	.set_run_to_completion  = set_run_to_completion,
+	.flush_messages		= flush_messages,
+	.poll			= poll,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(smi_infos);
 static DEFINE_MUTEX(smi_infos_lock);
 static int smi_num; /* Used to sequence the SMIs */
 
+<<<<<<< HEAD
 #define DEFAULT_REGSPACING	1
 #define DEFAULT_REGSIZE		1
 
@@ -1348,11 +2081,67 @@ static int std_irq_setup(struct smi_info *info)
 	} else {
 		info->irq_cleanup = std_irq_cleanup;
 		dev_info(info->dev, "Using irq %d\n", info->irq);
+=======
+static const char * const addr_space_to_str[] = { "i/o", "mem" };
+
+module_param_array(force_kipmid, int, &num_force_kipmid, 0);
+MODULE_PARM_DESC(force_kipmid,
+		 "Force the kipmi daemon to be enabled (1) or disabled(0).  Normally the IPMI driver auto-detects this, but the value may be overridden by this parm.");
+module_param(unload_when_empty, bool, 0);
+MODULE_PARM_DESC(unload_when_empty,
+		 "Unload the module if no interfaces are specified or found, default is 1.  Setting to 0 is useful for hot add of devices using hotmod.");
+module_param_array(kipmid_max_busy_us, uint, &num_max_busy_us, 0644);
+MODULE_PARM_DESC(kipmid_max_busy_us,
+		 "Max time (in microseconds) to busy-wait for IPMI data before sleeping. 0 (default) means to wait forever. Set to 100-500 if kipmid is using up a lot of CPU time.");
+
+void ipmi_irq_finish_setup(struct si_sm_io *io)
+{
+	if (io->si_type == SI_BT)
+		/* Enable the interrupt in the BT interface. */
+		io->outputb(io, IPMI_BT_INTMASK_REG,
+			    IPMI_BT_INTMASK_ENABLE_IRQ_BIT);
+}
+
+void ipmi_irq_start_cleanup(struct si_sm_io *io)
+{
+	if (io->si_type == SI_BT)
+		/* Disable the interrupt in the BT interface. */
+		io->outputb(io, IPMI_BT_INTMASK_REG, 0);
+}
+
+static void std_irq_cleanup(struct si_sm_io *io)
+{
+	ipmi_irq_start_cleanup(io);
+	free_irq(io->irq, io->irq_handler_data);
+}
+
+int ipmi_std_irq_setup(struct si_sm_io *io)
+{
+	int rv;
+
+	if (!io->irq)
+		return 0;
+
+	rv = request_irq(io->irq,
+			 ipmi_si_irq_handler,
+			 IRQF_SHARED,
+			 SI_DEVICE_NAME,
+			 io->irq_handler_data);
+	if (rv) {
+		dev_warn(io->dev, "%s unable to claim interrupt %d, running polled\n",
+			 SI_DEVICE_NAME, io->irq);
+		io->irq = 0;
+	} else {
+		io->irq_cleanup = std_irq_cleanup;
+		ipmi_irq_finish_setup(io);
+		dev_info(io->dev, "Using irq %d\n", io->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rv;
 }
 
+<<<<<<< HEAD
 static unsigned char port_inb(struct si_sm_io *io, unsigned int offset)
 {
 	unsigned int addr = io->addr_data;
@@ -2658,6 +3447,8 @@ static struct platform_driver ipmi_driver = {
 	.remove		= __devexit_p(ipmi_remove),
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wait_for_msg_done(struct smi_info *smi_info)
 {
 	enum si_sm_result     smi_result;
@@ -2691,6 +3482,10 @@ static int try_get_dev_id(struct smi_info *smi_info)
 	unsigned char         *resp;
 	unsigned long         resp_len;
 	int                   rv = 0;
+<<<<<<< HEAD
+=======
+	unsigned int          retry_count = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	resp = kmalloc(IPMI_MAX_MSG_LENGTH, GFP_KERNEL);
 	if (!resp)
@@ -2702,6 +3497,11 @@ static int try_get_dev_id(struct smi_info *smi_info)
 	 */
 	msg[0] = IPMI_NETFN_APP_REQUEST << 2;
 	msg[1] = IPMI_GET_DEVICE_ID_CMD;
+<<<<<<< HEAD
+=======
+
+retry:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smi_info->handlers->start_transaction(smi_info->si_sm, msg, 2);
 
 	rv = wait_for_msg_done(smi_info);
@@ -2712,13 +3512,201 @@ static int try_get_dev_id(struct smi_info *smi_info)
 						  resp, IPMI_MAX_MSG_LENGTH);
 
 	/* Check and record info from the get device id, in case we need it. */
+<<<<<<< HEAD
 	rv = ipmi_demangle_device_id(resp, resp_len, &smi_info->device_id);
 
  out:
+=======
+	rv = ipmi_demangle_device_id(resp[0] >> 2, resp[1],
+			resp + 2, resp_len - 2, &smi_info->device_id);
+	if (rv) {
+		/* record completion code */
+		unsigned char cc = *(resp + 2);
+
+		if (cc != IPMI_CC_NO_ERROR &&
+		    ++retry_count <= GET_DEVICE_ID_MAX_RETRY) {
+			dev_warn_ratelimited(smi_info->io.dev,
+			    "BMC returned 0x%2.2x, retry get bmc device id\n",
+			    cc);
+			goto retry;
+		}
+	}
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(resp);
 	return rv;
 }
 
+<<<<<<< HEAD
+=======
+static int get_global_enables(struct smi_info *smi_info, u8 *enables)
+{
+	unsigned char         msg[3];
+	unsigned char         *resp;
+	unsigned long         resp_len;
+	int                   rv;
+
+	resp = kmalloc(IPMI_MAX_MSG_LENGTH, GFP_KERNEL);
+	if (!resp)
+		return -ENOMEM;
+
+	msg[0] = IPMI_NETFN_APP_REQUEST << 2;
+	msg[1] = IPMI_GET_BMC_GLOBAL_ENABLES_CMD;
+	smi_info->handlers->start_transaction(smi_info->si_sm, msg, 2);
+
+	rv = wait_for_msg_done(smi_info);
+	if (rv) {
+		dev_warn(smi_info->io.dev,
+			 "Error getting response from get global enables command: %d\n",
+			 rv);
+		goto out;
+	}
+
+	resp_len = smi_info->handlers->get_result(smi_info->si_sm,
+						  resp, IPMI_MAX_MSG_LENGTH);
+
+	if (resp_len < 4 ||
+			resp[0] != (IPMI_NETFN_APP_REQUEST | 1) << 2 ||
+			resp[1] != IPMI_GET_BMC_GLOBAL_ENABLES_CMD   ||
+			resp[2] != 0) {
+		dev_warn(smi_info->io.dev,
+			 "Invalid return from get global enables command: %ld %x %x %x\n",
+			 resp_len, resp[0], resp[1], resp[2]);
+		rv = -EINVAL;
+		goto out;
+	} else {
+		*enables = resp[3];
+	}
+
+out:
+	kfree(resp);
+	return rv;
+}
+
+/*
+ * Returns 1 if it gets an error from the command.
+ */
+static int set_global_enables(struct smi_info *smi_info, u8 enables)
+{
+	unsigned char         msg[3];
+	unsigned char         *resp;
+	unsigned long         resp_len;
+	int                   rv;
+
+	resp = kmalloc(IPMI_MAX_MSG_LENGTH, GFP_KERNEL);
+	if (!resp)
+		return -ENOMEM;
+
+	msg[0] = IPMI_NETFN_APP_REQUEST << 2;
+	msg[1] = IPMI_SET_BMC_GLOBAL_ENABLES_CMD;
+	msg[2] = enables;
+	smi_info->handlers->start_transaction(smi_info->si_sm, msg, 3);
+
+	rv = wait_for_msg_done(smi_info);
+	if (rv) {
+		dev_warn(smi_info->io.dev,
+			 "Error getting response from set global enables command: %d\n",
+			 rv);
+		goto out;
+	}
+
+	resp_len = smi_info->handlers->get_result(smi_info->si_sm,
+						  resp, IPMI_MAX_MSG_LENGTH);
+
+	if (resp_len < 3 ||
+			resp[0] != (IPMI_NETFN_APP_REQUEST | 1) << 2 ||
+			resp[1] != IPMI_SET_BMC_GLOBAL_ENABLES_CMD) {
+		dev_warn(smi_info->io.dev,
+			 "Invalid return from set global enables command: %ld %x %x\n",
+			 resp_len, resp[0], resp[1]);
+		rv = -EINVAL;
+		goto out;
+	}
+
+	if (resp[2] != 0)
+		rv = 1;
+
+out:
+	kfree(resp);
+	return rv;
+}
+
+/*
+ * Some BMCs do not support clearing the receive irq bit in the global
+ * enables (even if they don't support interrupts on the BMC).  Check
+ * for this and handle it properly.
+ */
+static void check_clr_rcv_irq(struct smi_info *smi_info)
+{
+	u8 enables = 0;
+	int rv;
+
+	rv = get_global_enables(smi_info, &enables);
+	if (!rv) {
+		if ((enables & IPMI_BMC_RCV_MSG_INTR) == 0)
+			/* Already clear, should work ok. */
+			return;
+
+		enables &= ~IPMI_BMC_RCV_MSG_INTR;
+		rv = set_global_enables(smi_info, enables);
+	}
+
+	if (rv < 0) {
+		dev_err(smi_info->io.dev,
+			"Cannot check clearing the rcv irq: %d\n", rv);
+		return;
+	}
+
+	if (rv) {
+		/*
+		 * An error when setting the event buffer bit means
+		 * clearing the bit is not supported.
+		 */
+		dev_warn(smi_info->io.dev,
+			 "The BMC does not support clearing the recv irq bit, compensating, but the BMC needs to be fixed.\n");
+		smi_info->cannot_disable_irq = true;
+	}
+}
+
+/*
+ * Some BMCs do not support setting the interrupt bits in the global
+ * enables even if they support interrupts.  Clearly bad, but we can
+ * compensate.
+ */
+static void check_set_rcv_irq(struct smi_info *smi_info)
+{
+	u8 enables = 0;
+	int rv;
+
+	if (!smi_info->io.irq)
+		return;
+
+	rv = get_global_enables(smi_info, &enables);
+	if (!rv) {
+		enables |= IPMI_BMC_RCV_MSG_INTR;
+		rv = set_global_enables(smi_info, enables);
+	}
+
+	if (rv < 0) {
+		dev_err(smi_info->io.dev,
+			"Cannot check setting the rcv irq: %d\n", rv);
+		return;
+	}
+
+	if (rv) {
+		/*
+		 * An error when setting the event buffer bit means
+		 * setting the bit is not supported.
+		 */
+		dev_warn(smi_info->io.dev,
+			 "The BMC does not support setting the recv irq bit, compensating, but the BMC needs to be fixed.\n");
+		smi_info->cannot_disable_irq = true;
+		smi_info->irq_enable_broken = true;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int try_enable_event_buffer(struct smi_info *smi_info)
 {
 	unsigned char         msg[3];
@@ -2736,9 +3724,13 @@ static int try_enable_event_buffer(struct smi_info *smi_info)
 
 	rv = wait_for_msg_done(smi_info);
 	if (rv) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "Error getting response from get"
 		       " global enables command, the event buffer is not"
 		       " enabled.\n");
+=======
+		pr_warn("Error getting response from get global enables command, the event buffer is not enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2749,15 +3741,27 @@ static int try_enable_event_buffer(struct smi_info *smi_info)
 			resp[0] != (IPMI_NETFN_APP_REQUEST | 1) << 2 ||
 			resp[1] != IPMI_GET_BMC_GLOBAL_ENABLES_CMD   ||
 			resp[2] != 0) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "Invalid return from get global"
 		       " enables command, cannot enable the event buffer.\n");
+=======
+		pr_warn("Invalid return from get global enables command, cannot enable the event buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -EINVAL;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (resp[3] & IPMI_BMC_EVT_MSG_BUFF)
 		/* buffer is already enabled, nothing to do. */
 		goto out;
+=======
+	if (resp[3] & IPMI_BMC_EVT_MSG_BUFF) {
+		/* buffer is already enabled, nothing to do. */
+		smi_info->supports_event_msg_buff = true;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msg[0] = IPMI_NETFN_APP_REQUEST << 2;
 	msg[1] = IPMI_SET_BMC_GLOBAL_ENABLES_CMD;
@@ -2766,9 +3770,13 @@ static int try_enable_event_buffer(struct smi_info *smi_info)
 
 	rv = wait_for_msg_done(smi_info);
 	if (rv) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "Error getting response from set"
 		       " global, enables command, the event buffer is not"
 		       " enabled.\n");
+=======
+		pr_warn("Error getting response from set global, enables command, the event buffer is not enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2778,8 +3786,12 @@ static int try_enable_event_buffer(struct smi_info *smi_info)
 	if (resp_len < 3 ||
 			resp[0] != (IPMI_NETFN_APP_REQUEST | 1) << 2 ||
 			resp[1] != IPMI_SET_BMC_GLOBAL_ENABLES_CMD) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX "Invalid return from get global,"
 		       "enables command, not enable the event buffer.\n");
+=======
+		pr_warn("Invalid return from get global, enables command, not enable the event buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -EINVAL;
 		goto out;
 	}
@@ -2790,11 +3802,19 @@ static int try_enable_event_buffer(struct smi_info *smi_info)
 		 * that the event buffer is not supported.
 		 */
 		rv = -ENOENT;
+<<<<<<< HEAD
  out:
+=======
+	else
+		smi_info->supports_event_msg_buff = true;
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(resp);
 	return rv;
 }
 
+<<<<<<< HEAD
 static int smi_type_proc_show(struct seq_file *m, void *v)
 {
 	struct smi_info *smi = m->private;
@@ -2883,6 +3903,91 @@ static const struct file_operations smi_params_proc_ops = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= single_release,
+=======
+#define IPMI_SI_ATTR(name) \
+static ssize_t name##_show(struct device *dev,			\
+			   struct device_attribute *attr,		\
+			   char *buf)					\
+{									\
+	struct smi_info *smi_info = dev_get_drvdata(dev);		\
+									\
+	return sysfs_emit(buf, "%u\n", smi_get_stat(smi_info, name));	\
+}									\
+static DEVICE_ATTR_RO(name)
+
+static ssize_t type_show(struct device *dev,
+			 struct device_attribute *attr,
+			 char *buf)
+{
+	struct smi_info *smi_info = dev_get_drvdata(dev);
+
+	return sysfs_emit(buf, "%s\n", si_to_str[smi_info->io.si_type]);
+}
+static DEVICE_ATTR_RO(type);
+
+static ssize_t interrupts_enabled_show(struct device *dev,
+				       struct device_attribute *attr,
+				       char *buf)
+{
+	struct smi_info *smi_info = dev_get_drvdata(dev);
+	int enabled = smi_info->io.irq && !smi_info->interrupt_disabled;
+
+	return sysfs_emit(buf, "%d\n", enabled);
+}
+static DEVICE_ATTR_RO(interrupts_enabled);
+
+IPMI_SI_ATTR(short_timeouts);
+IPMI_SI_ATTR(long_timeouts);
+IPMI_SI_ATTR(idles);
+IPMI_SI_ATTR(interrupts);
+IPMI_SI_ATTR(attentions);
+IPMI_SI_ATTR(flag_fetches);
+IPMI_SI_ATTR(hosed_count);
+IPMI_SI_ATTR(complete_transactions);
+IPMI_SI_ATTR(events);
+IPMI_SI_ATTR(watchdog_pretimeouts);
+IPMI_SI_ATTR(incoming_messages);
+
+static ssize_t params_show(struct device *dev,
+			   struct device_attribute *attr,
+			   char *buf)
+{
+	struct smi_info *smi_info = dev_get_drvdata(dev);
+
+	return sysfs_emit(buf,
+			"%s,%s,0x%lx,rsp=%d,rsi=%d,rsh=%d,irq=%d,ipmb=%d\n",
+			si_to_str[smi_info->io.si_type],
+			addr_space_to_str[smi_info->io.addr_space],
+			smi_info->io.addr_data,
+			smi_info->io.regspacing,
+			smi_info->io.regsize,
+			smi_info->io.regshift,
+			smi_info->io.irq,
+			smi_info->io.slave_addr);
+}
+static DEVICE_ATTR_RO(params);
+
+static struct attribute *ipmi_si_dev_attrs[] = {
+	&dev_attr_type.attr,
+	&dev_attr_interrupts_enabled.attr,
+	&dev_attr_short_timeouts.attr,
+	&dev_attr_long_timeouts.attr,
+	&dev_attr_idles.attr,
+	&dev_attr_interrupts.attr,
+	&dev_attr_attentions.attr,
+	&dev_attr_flag_fetches.attr,
+	&dev_attr_hosed_count.attr,
+	&dev_attr_complete_transactions.attr,
+	&dev_attr_events.attr,
+	&dev_attr_watchdog_pretimeouts.attr,
+	&dev_attr_incoming_messages.attr,
+	&dev_attr_params.attr,
+	NULL
+};
+
+static const struct attribute_group ipmi_si_dev_attr_group = {
+	.attrs		= ipmi_si_dev_attrs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3006,7 +4111,11 @@ setup_dell_poweredge_bt_xaction_handler(struct smi_info *smi_info)
 {
 	struct ipmi_device_id *id = &smi_info->device_id;
 	if (id->manufacturer_id == DELL_IANA_MFR_ID &&
+<<<<<<< HEAD
 	    smi_info->si_type == SI_BT)
+=======
+	    smi_info->io.si_type == SI_BT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		register_xaction_notifier(&dell_poweredge_bt_xaction_notifier);
 }
 
@@ -3028,6 +4137,7 @@ static void setup_xaction_handlers(struct smi_info *smi_info)
 	setup_dell_poweredge_bt_xaction_handler(smi_info);
 }
 
+<<<<<<< HEAD
 static inline void wait_for_timer_and_thread(struct smi_info *smi_info)
 {
 	if (smi_info->intf) {
@@ -3098,10 +4208,31 @@ static void __devinit default_find_bmc(void)
 }
 
 static int is_new_interface(struct smi_info *info)
+=======
+static void check_for_broken_irqs(struct smi_info *smi_info)
+{
+	check_clr_rcv_irq(smi_info);
+	check_set_rcv_irq(smi_info);
+}
+
+static inline void stop_timer_and_thread(struct smi_info *smi_info)
+{
+	if (smi_info->thread != NULL) {
+		kthread_stop(smi_info->thread);
+		smi_info->thread = NULL;
+	}
+
+	smi_info->timer_can_start = false;
+	del_timer_sync(&smi_info->si_timer);
+}
+
+static struct smi_info *find_dup_si(struct smi_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smi_info *e;
 
 	list_for_each_entry(e, &smi_infos, link) {
+<<<<<<< HEAD
 		if (e->io.addr_type != info->io.addr_type)
 			continue;
 		if (e->io.addr_data == info->io.addr_data)
@@ -3134,16 +4265,107 @@ static int add_smi(struct smi_info *new_smi)
 
 	list_add_tail(&new_smi->link, &smi_infos);
 
+=======
+		if (e->io.addr_space != info->io.addr_space)
+			continue;
+		if (e->io.addr_data == info->io.addr_data) {
+			/*
+			 * This is a cheap hack, ACPI doesn't have a defined
+			 * slave address but SMBIOS does.  Pick it up from
+			 * any source that has it available.
+			 */
+			if (info->io.slave_addr && !e->io.slave_addr)
+				e->io.slave_addr = info->io.slave_addr;
+			return e;
+		}
+	}
+
+	return NULL;
+}
+
+int ipmi_si_add_smi(struct si_sm_io *io)
+{
+	int rv = 0;
+	struct smi_info *new_smi, *dup;
+
+	/*
+	 * If the user gave us a hard-coded device at the same
+	 * address, they presumably want us to use it and not what is
+	 * in the firmware.
+	 */
+	if (io->addr_source != SI_HARDCODED && io->addr_source != SI_HOTMOD &&
+	    ipmi_si_hardcode_match(io->addr_space, io->addr_data)) {
+		dev_info(io->dev,
+			 "Hard-coded device at this address already exists");
+		return -ENODEV;
+	}
+
+	if (!io->io_setup) {
+		if (io->addr_space == IPMI_IO_ADDR_SPACE) {
+			io->io_setup = ipmi_si_port_setup;
+		} else if (io->addr_space == IPMI_MEM_ADDR_SPACE) {
+			io->io_setup = ipmi_si_mem_setup;
+		} else {
+			return -EINVAL;
+		}
+	}
+
+	new_smi = kzalloc(sizeof(*new_smi), GFP_KERNEL);
+	if (!new_smi)
+		return -ENOMEM;
+	spin_lock_init(&new_smi->si_lock);
+
+	new_smi->io = *io;
+
+	mutex_lock(&smi_infos_lock);
+	dup = find_dup_si(new_smi);
+	if (dup) {
+		if (new_smi->io.addr_source == SI_ACPI &&
+		    dup->io.addr_source == SI_SMBIOS) {
+			/* We prefer ACPI over SMBIOS. */
+			dev_info(dup->io.dev,
+				 "Removing SMBIOS-specified %s state machine in favor of ACPI\n",
+				 si_to_str[new_smi->io.si_type]);
+			cleanup_one_si(dup);
+		} else {
+			dev_info(new_smi->io.dev,
+				 "%s-specified %s state machine: duplicate\n",
+				 ipmi_addr_src_to_str(new_smi->io.addr_source),
+				 si_to_str[new_smi->io.si_type]);
+			rv = -EBUSY;
+			kfree(new_smi);
+			goto out_err;
+		}
+	}
+
+	pr_info("Adding %s-specified %s state machine\n",
+		ipmi_addr_src_to_str(new_smi->io.addr_source),
+		si_to_str[new_smi->io.si_type]);
+
+	list_add_tail(&new_smi->link, &smi_infos);
+
+	if (initialized)
+		rv = try_smi_init(new_smi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_err:
 	mutex_unlock(&smi_infos_lock);
 	return rv;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Try to start up an interface.  Must be called with smi_infos_lock
+ * held, primarily to keep smi_num consistent, we only one to do these
+ * one at a time.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int try_smi_init(struct smi_info *new_smi)
 {
 	int rv = 0;
 	int i;
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "Trying %s-specified %s state"
 	       " machine at %s address 0x%lx, slave address 0x%x,"
 	       " irq %d\n",
@@ -3154,6 +4376,16 @@ static int try_smi_init(struct smi_info *new_smi)
 	       new_smi->slave_addr, new_smi->irq);
 
 	switch (new_smi->si_type) {
+=======
+	pr_info("Trying %s-specified %s state machine at %s address 0x%lx, slave address 0x%x, irq %d\n",
+		ipmi_addr_src_to_str(new_smi->io.addr_source),
+		si_to_str[new_smi->io.si_type],
+		addr_space_to_str[new_smi->io.addr_space],
+		new_smi->io.addr_data,
+		new_smi->io.slave_addr, new_smi->io.irq);
+
+	switch (new_smi->io.si_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SI_KCS:
 		new_smi->handlers = &kcs_smi_handlers;
 		break;
@@ -3172,6 +4404,7 @@ static int try_smi_init(struct smi_info *new_smi)
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	/* Allocate the state machine's data and initialize it. */
 	new_smi->si_sm = kmalloc(new_smi->handlers->size(), GFP_KERNEL);
 	if (!new_smi->si_sm) {
@@ -3187,13 +4420,43 @@ static int try_smi_init(struct smi_info *new_smi)
 	rv = new_smi->io_setup(new_smi);
 	if (rv) {
 		printk(KERN_ERR PFX "Could not set up I/O space\n");
+=======
+	new_smi->si_num = smi_num;
+
+	/* Do this early so it's available for logs. */
+	if (!new_smi->io.dev) {
+		pr_err("IPMI interface added with no device\n");
+		rv = -EIO;
+		goto out_err;
+	}
+
+	/* Allocate the state machine's data and initialize it. */
+	new_smi->si_sm = kmalloc(new_smi->handlers->size(), GFP_KERNEL);
+	if (!new_smi->si_sm) {
+		rv = -ENOMEM;
+		goto out_err;
+	}
+	new_smi->io.io_size = new_smi->handlers->init_data(new_smi->si_sm,
+							   &new_smi->io);
+
+	/* Now that we know the I/O size, we can set up the I/O. */
+	rv = new_smi->io.io_setup(&new_smi->io);
+	if (rv) {
+		dev_err(new_smi->io.dev, "Could not set up I/O space\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
 	/* Do low-level detection first. */
 	if (new_smi->handlers->detect(new_smi->si_sm)) {
+<<<<<<< HEAD
 		if (new_smi->addr_source)
 			printk(KERN_INFO PFX "Interface detection failed\n");
+=======
+		if (new_smi->io.addr_source)
+			dev_err(new_smi->io.dev,
+				"Interface detection failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -ENODEV;
 		goto out_err;
 	}
@@ -3204,14 +4467,21 @@ static int try_smi_init(struct smi_info *new_smi)
 	 */
 	rv = try_get_dev_id(new_smi);
 	if (rv) {
+<<<<<<< HEAD
 		if (new_smi->addr_source)
 			printk(KERN_INFO PFX "There appears to be no BMC"
 			       " at this location\n");
+=======
+		if (new_smi->io.addr_source)
+			dev_err(new_smi->io.dev,
+			       "There appears to be no BMC at this location\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
 	setup_oem_data_handler(new_smi);
 	setup_xaction_handlers(new_smi);
+<<<<<<< HEAD
 
 	INIT_LIST_HEAD(&(new_smi->xmit_msgs));
 	INIT_LIST_HEAD(&(new_smi->hp_xmit_msgs));
@@ -3229,12 +4499,30 @@ static int try_smi_init(struct smi_info *new_smi)
 	rv = try_enable_event_buffer(new_smi);
 	if (rv == 0)
 		new_smi->has_event_buffer = 1;
+=======
+	check_for_broken_irqs(new_smi);
+
+	new_smi->waiting_msg = NULL;
+	new_smi->curr_msg = NULL;
+	atomic_set(&new_smi->req_events, 0);
+	new_smi->run_to_completion = false;
+	for (i = 0; i < SI_NUM_STATS; i++)
+		atomic_set(&new_smi->stats[i], 0);
+
+	new_smi->interrupt_disabled = true;
+	atomic_set(&new_smi->need_watch, 0);
+
+	rv = try_enable_event_buffer(new_smi);
+	if (rv == 0)
+		new_smi->has_event_buffer = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start clearing the flags before we enable interrupts or the
 	 * timer to avoid racing with the timer.
 	 */
 	start_clear_flags(new_smi);
+<<<<<<< HEAD
 	/* IRQ is defined to be set when non-zero. */
 	if (new_smi->irq)
 		new_smi->si_state = SI_CLEARING_FLAGS_THEN_SET_IRQ;
@@ -3349,20 +4637,77 @@ static int try_smi_init(struct smi_info *new_smi)
 		platform_device_unregister(new_smi->pdev);
 		new_smi->dev_registered = 0;
 	}
+=======
+
+	/*
+	 * IRQ is defined to be set when non-zero.  req_events will
+	 * cause a global flags check that will enable interrupts.
+	 */
+	if (new_smi->io.irq) {
+		new_smi->interrupt_disabled = false;
+		atomic_set(&new_smi->req_events, 1);
+	}
+
+	dev_set_drvdata(new_smi->io.dev, new_smi);
+	rv = device_add_group(new_smi->io.dev, &ipmi_si_dev_attr_group);
+	if (rv) {
+		dev_err(new_smi->io.dev,
+			"Unable to add device attributes: error %d\n",
+			rv);
+		goto out_err;
+	}
+	new_smi->dev_group_added = true;
+
+	rv = ipmi_register_smi(&handlers,
+			       new_smi,
+			       new_smi->io.dev,
+			       new_smi->io.slave_addr);
+	if (rv) {
+		dev_err(new_smi->io.dev,
+			"Unable to register device: error %d\n",
+			rv);
+		goto out_err;
+	}
+
+	/* Don't increment till we know we have succeeded. */
+	smi_num++;
+
+	dev_info(new_smi->io.dev, "IPMI %s interface initialized\n",
+		 si_to_str[new_smi->io.si_type]);
+
+	WARN_ON(new_smi->io.dev->init_name != NULL);
+
+ out_err:
+	if (rv && new_smi->io.io_cleanup) {
+		new_smi->io.io_cleanup(&new_smi->io);
+		new_smi->io.io_cleanup = NULL;
+	}
+
+	if (rv && new_smi->si_sm) {
+		kfree(new_smi->si_sm);
+		new_smi->si_sm = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rv;
 }
 
+<<<<<<< HEAD
 static int __devinit init_ipmi_si(void)
 {
 	int  i;
 	char *str;
 	int  rv;
+=======
+static int __init init_ipmi_si(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct smi_info *e;
 	enum ipmi_addr_src type = SI_INVALID;
 
 	if (initialized)
 		return 0;
+<<<<<<< HEAD
 	initialized = 1;
 
 	rv = platform_driver_register(&ipmi_driver);
@@ -3413,44 +4758,83 @@ static int __devinit init_ipmi_si(void)
 #ifdef CONFIG_ACPI
 	spmi_find_bmc();
 #endif
+=======
+
+	ipmi_hardcode_init();
+
+	pr_info("IPMI System Interface driver\n");
+
+	ipmi_si_platform_init();
+
+	ipmi_si_pci_init();
+
+	ipmi_si_parisc_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We prefer devices with interrupts, but in the case of a machine
 	   with multiple BMCs we assume that there will be several instances
 	   of a given type so if we succeed in registering a type then also
 	   try to register everything else of the same type */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&smi_infos_lock);
 	list_for_each_entry(e, &smi_infos, link) {
 		/* Try to register a device if it has an IRQ and we either
 		   haven't successfully registered a device yet or this
 		   device has the same type as one we successfully registered */
+<<<<<<< HEAD
 		if (e->irq && (!type || e->addr_source == type)) {
 			if (!try_smi_init(e)) {
 				type = e->addr_source;
+=======
+		if (e->io.irq && (!type || e->io.addr_source == type)) {
+			if (!try_smi_init(e)) {
+				type = e->io.addr_source;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
 	/* type will only have been set if we successfully registered an si */
+<<<<<<< HEAD
 	if (type) {
 		mutex_unlock(&smi_infos_lock);
 		return 0;
 	}
+=======
+	if (type)
+		goto skip_fallback_noirq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fall back to the preferred device */
 
 	list_for_each_entry(e, &smi_infos, link) {
+<<<<<<< HEAD
 		if (!e->irq && (!type || e->addr_source == type)) {
 			if (!try_smi_init(e)) {
 				type = e->addr_source;
 			}
 		}
 	}
+=======
+		if (!e->io.irq && (!type || e->io.addr_source == type)) {
+			if (!try_smi_init(e)) {
+				type = e->io.addr_source;
+			}
+		}
+	}
+
+skip_fallback_noirq:
+	initialized = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&smi_infos_lock);
 
 	if (type)
 		return 0;
 
+<<<<<<< HEAD
 	if (si_trydefaults) {
 		mutex_lock(&smi_infos_lock);
 		if (list_empty(&smi_infos)) {
@@ -3461,12 +4845,18 @@ static int __devinit init_ipmi_si(void)
 			mutex_unlock(&smi_infos_lock);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&smi_infos_lock);
 	if (unload_when_empty && list_empty(&smi_infos)) {
 		mutex_unlock(&smi_infos_lock);
 		cleanup_ipmi_si();
+<<<<<<< HEAD
 		printk(KERN_WARNING PFX
 		       "Unable to find any System Interface(s)\n");
+=======
+		pr_warn("Unable to find any System Interface(s)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	} else {
 		mutex_unlock(&smi_infos_lock);
@@ -3475,6 +4865,7 @@ static int __devinit init_ipmi_si(void)
 }
 module_init(init_ipmi_si);
 
+<<<<<<< HEAD
 static void cleanup_one_si(struct smi_info *to_clean)
 {
 	int           rv = 0;
@@ -3543,6 +4934,126 @@ static void cleanup_one_si(struct smi_info *to_clean)
 		platform_device_unregister(to_clean->pdev);
 
 	kfree(to_clean);
+=======
+static void wait_msg_processed(struct smi_info *smi_info)
+{
+	unsigned long jiffies_now;
+	long time_diff;
+
+	while (smi_info->curr_msg || (smi_info->si_state != SI_NORMAL)) {
+		jiffies_now = jiffies;
+		time_diff = (((long)jiffies_now - (long)smi_info->last_timeout_jiffies)
+		     * SI_USEC_PER_JIFFY);
+		smi_event_handler(smi_info, time_diff);
+		schedule_timeout_uninterruptible(1);
+	}
+}
+
+static void shutdown_smi(void *send_info)
+{
+	struct smi_info *smi_info = send_info;
+
+	if (smi_info->dev_group_added) {
+		device_remove_group(smi_info->io.dev, &ipmi_si_dev_attr_group);
+		smi_info->dev_group_added = false;
+	}
+	if (smi_info->io.dev)
+		dev_set_drvdata(smi_info->io.dev, NULL);
+
+	/*
+	 * Make sure that interrupts, the timer and the thread are
+	 * stopped and will not run again.
+	 */
+	smi_info->interrupt_disabled = true;
+	if (smi_info->io.irq_cleanup) {
+		smi_info->io.irq_cleanup(&smi_info->io);
+		smi_info->io.irq_cleanup = NULL;
+	}
+	stop_timer_and_thread(smi_info);
+
+	/*
+	 * Wait until we know that we are out of any interrupt
+	 * handlers might have been running before we freed the
+	 * interrupt.
+	 */
+	synchronize_rcu();
+
+	/*
+	 * Timeouts are stopped, now make sure the interrupts are off
+	 * in the BMC.  Note that timers and CPU interrupts are off,
+	 * so no need for locks.
+	 */
+	wait_msg_processed(smi_info);
+
+	if (smi_info->handlers)
+		disable_si_irq(smi_info);
+
+	wait_msg_processed(smi_info);
+
+	if (smi_info->handlers)
+		smi_info->handlers->cleanup(smi_info->si_sm);
+
+	if (smi_info->io.io_cleanup) {
+		smi_info->io.io_cleanup(&smi_info->io);
+		smi_info->io.io_cleanup = NULL;
+	}
+
+	kfree(smi_info->si_sm);
+	smi_info->si_sm = NULL;
+
+	smi_info->intf = NULL;
+}
+
+/*
+ * Must be called with smi_infos_lock held, to serialize the
+ * smi_info->intf check.
+ */
+static void cleanup_one_si(struct smi_info *smi_info)
+{
+	if (!smi_info)
+		return;
+
+	list_del(&smi_info->link);
+	ipmi_unregister_smi(smi_info->intf);
+	kfree(smi_info);
+}
+
+void ipmi_si_remove_by_dev(struct device *dev)
+{
+	struct smi_info *e;
+
+	mutex_lock(&smi_infos_lock);
+	list_for_each_entry(e, &smi_infos, link) {
+		if (e->io.dev == dev) {
+			cleanup_one_si(e);
+			break;
+		}
+	}
+	mutex_unlock(&smi_infos_lock);
+}
+
+struct device *ipmi_si_remove_by_data(int addr_space, enum si_type si_type,
+				      unsigned long addr)
+{
+	/* remove */
+	struct smi_info *e, *tmp_e;
+	struct device *dev = NULL;
+
+	mutex_lock(&smi_infos_lock);
+	list_for_each_entry_safe(e, tmp_e, &smi_infos, link) {
+		if (e->io.addr_space != addr_space)
+			continue;
+		if (e->io.si_type != si_type)
+			continue;
+		if (e->io.addr_data == addr) {
+			dev = get_device(e->io.dev);
+			cleanup_one_si(e);
+		}
+	}
+	mutex_unlock(&smi_infos_lock);
+
+	return dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cleanup_ipmi_si(void)
@@ -3552,6 +5063,7 @@ static void cleanup_ipmi_si(void)
 	if (!initialized)
 		return;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	if (pci_registered)
 		pci_unregister_driver(&ipmi_pci_driver);
@@ -3562,11 +5074,19 @@ static void cleanup_ipmi_si(void)
 #endif
 
 	platform_driver_unregister(&ipmi_driver);
+=======
+	ipmi_si_pci_shutdown();
+
+	ipmi_si_parisc_shutdown();
+
+	ipmi_si_platform_shutdown();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&smi_infos_lock);
 	list_for_each_entry_safe(e, tmp_e, &smi_infos, link)
 		cleanup_one_si(e);
 	mutex_unlock(&smi_infos_lock);
+<<<<<<< HEAD
 }
 module_exit(cleanup_ipmi_si);
 
@@ -3574,3 +5094,15 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Corey Minyard <minyard@mvista.com>");
 MODULE_DESCRIPTION("Interface to the IPMI driver for the KCS, SMIC, and BT"
 		   " system interfaces.");
+=======
+
+	ipmi_si_hardcode_exit();
+	ipmi_si_hotmod_exit();
+}
+module_exit(cleanup_ipmi_si);
+
+MODULE_ALIAS("platform:dmi-ipmi-si");
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Corey Minyard <minyard@mvista.com>");
+MODULE_DESCRIPTION("Interface to the IPMI driver for the KCS, SMIC, and BT system interfaces.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

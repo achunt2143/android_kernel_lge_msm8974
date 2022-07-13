@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for IDT RC323434 CPU.
  */
@@ -16,4 +20,8 @@ static inline void rc32434_sync(void)
 	__asm__ volatile ("sync");
 }
 
+<<<<<<< HEAD
 #endif  /* _ASM_RC32434_RC32434_H_ */
+=======
+#endif	/* _ASM_RC32434_RC32434_H_ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -34,10 +45,17 @@
 
 #define BFA_TRC_TS(_trcm)                               \
 	({                                              \
+<<<<<<< HEAD
 		struct timeval tv;                      \
 							\
 		do_gettimeofday(&tv);                   \
 		(tv.tv_sec*1000000+tv.tv_usec);         \
+=======
+		struct timespec64 ts;                   \
+							\
+		ktime_get_ts64(&ts);                    \
+		(ts.tv_sec*1000000+ts.tv_nsec / 1000);  \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	})
 
 #ifndef BFA_TRC_TS
@@ -107,6 +125,7 @@ bfa_trc_stop(struct bfa_trc_mod_s *trcm)
 	trcm->stopped = 1;
 }
 
+<<<<<<< HEAD
 static inline void
 __bfa_trc(struct bfa_trc_mod_s *trcm, int fileno, int line, u64 data)
 {
@@ -145,6 +164,13 @@ __bfa_trc32(struct bfa_trc_mod_s *trcm, int fileno, int line, u32 data)
 	if (trcm->tail == trcm->head)
 		trcm->head = (trcm->head + 1) & (BFA_TRC_MAX - 1);
 }
+=======
+void
+__bfa_trc(struct bfa_trc_mod_s *trcm, int fileno, int line, u64 data);
+
+void
+__bfa_trc32(struct bfa_trc_mod_s *trcm, int fileno, int line, u32 data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define bfa_sm_fault(__mod, __event)	do {				\
 	bfa_trc(__mod, (((u32)0xDEAD << 16) | __event));		\
@@ -168,7 +194,11 @@ __bfa_trc32(struct bfa_trc_mod_s *trcm, int fileno, int line, u32 data)
 /*
  * bfa_q_deq - dequeue an element from head of the queue
  */
+<<<<<<< HEAD
 #define bfa_q_deq(_q, _qe) {						\
+=======
+#define bfa_q_deq(_q, _qe) do {						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!list_empty(_q)) {						\
 		(*((struct list_head **) (_qe))) = bfa_q_next(_q);	\
 		bfa_q_prev(bfa_q_next(*((struct list_head **) _qe))) =	\
@@ -177,7 +207,11 @@ __bfa_trc32(struct bfa_trc_mod_s *trcm, int fileno, int line, u32 data)
 	} else {							\
 		*((struct list_head **) (_qe)) = (struct list_head *) NULL;\
 	}								\
+<<<<<<< HEAD
 }
+=======
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * bfa_q_deq_tail - dequeue an element from tail of the queue
@@ -227,10 +261,17 @@ typedef void (*bfa_sm_t)(void *sm, int event);
 #define bfa_sm_state_decl(oc, st, otype, etype)		\
 	static void oc ## _sm_ ## st(otype * fsm, etype event)
 
+<<<<<<< HEAD
 #define bfa_sm_set_state(_sm, _state)	((_sm)->sm = (bfa_sm_t)(_state))
 #define bfa_sm_send_event(_sm, _event)	((_sm)->sm((_sm), (_event)))
 #define bfa_sm_get_state(_sm)		((_sm)->sm)
 #define bfa_sm_cmp_state(_sm, _state)	((_sm)->sm == (bfa_sm_t)(_state))
+=======
+#define bfa_sm_set_state(_sm, _state)	((_sm)->sm = (_state))
+#define bfa_sm_send_event(_sm, _event)	((_sm)->sm((_sm), (_event)))
+#define bfa_sm_get_state(_sm)		((_sm)->sm)
+#define bfa_sm_cmp_state(_sm, _state)	((_sm)->sm == (_state))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For converting from state machine function to state encoding.
@@ -240,7 +281,11 @@ struct bfa_sm_table_s {
 	int		state;	/*  state machine encoding	*/
 	char		*name;	/*  state name for display	*/
 };
+<<<<<<< HEAD
 #define BFA_SM(_sm)	((bfa_sm_t)(_sm))
+=======
+#define BFA_SM(_sm)	(_sm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * State machine with entry actions.
@@ -258,12 +303,17 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
 
 #define bfa_fsm_set_state(_fsm, _state) do {	\
+<<<<<<< HEAD
 	(_fsm)->fsm = (bfa_fsm_t)(_state);      \
+=======
+	(_fsm)->fsm = (_state);      \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_state ## _entry(_fsm);      \
 } while (0)
 
 #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
 #define bfa_fsm_get_state(_fsm)			((_fsm)->fsm)
+<<<<<<< HEAD
 #define bfa_fsm_cmp_state(_fsm, _state)		\
 	((_fsm)->fsm == (bfa_fsm_t)(_state))
 
@@ -276,6 +326,9 @@ bfa_sm_to_state(struct bfa_sm_table_s *smt, bfa_sm_t sm)
 		i++;
 	return smt[i].state;
 }
+=======
+#define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * @ Generic wait counter.

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi_si_sm.h
  *
@@ -11,6 +15,7 @@
  *         source@mvista.com
  *
  * Copyright 2002 MontaVista Software Inc.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the
@@ -34,12 +39,22 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+=======
+ */
+
+#ifndef __IPMI_SI_SM_H__
+#define __IPMI_SI_SM_H__
+
+#include "ipmi_si.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is defined by the state machines themselves, it is an opaque
  * data type for them to use.
  */
 struct si_sm_data;
 
+<<<<<<< HEAD
 /*
  * The structure for doing I/O in the state machine.  The state
  * machine doesn't have the actual I/O routines, they are done through
@@ -63,6 +78,8 @@ struct si_sm_io {
 	long addr_data;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Results of SMI events. */
 enum si_sm_result {
 	SI_SM_CALL_WITHOUT_DELAY, /* Call the driver again immediately */
@@ -135,7 +152,15 @@ struct si_sm_handlers {
 };
 
 /* Current state machines that we can use. */
+<<<<<<< HEAD
 extern struct si_sm_handlers kcs_smi_handlers;
 extern struct si_sm_handlers smic_smi_handlers;
 extern struct si_sm_handlers bt_smi_handlers;
 
+=======
+extern const struct si_sm_handlers kcs_smi_handlers;
+extern const struct si_sm_handlers smic_smi_handlers;
+extern const struct si_sm_handlers bt_smi_handlers;
+
+#endif /* __IPMI_SI_SM_H__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

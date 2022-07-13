@@ -124,8 +124,13 @@ Port-Write Unit:
 		A single IRQ that handles port-write conditions is
 		specified by this property.  (Typically shared with error).
 
+<<<<<<< HEAD
    Note: All other standard properties (see the ePAPR) are allowed
    but are optional.
+=======
+   Note: All other standard properties (see the Devicetree Specification)
+   are allowed but are optional.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Example:
 	rmu: rmu@d3000 {

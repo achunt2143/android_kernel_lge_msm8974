@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Bus error event handling code for 5000-series systems equipped
  *	with parity error detection logic, i.e. DECstation/DECsystem
@@ -6,11 +10,14 @@
  *	(KN04-CA) systems.
  *
  *	Copyright (c) 2005  Maciej W. Rozycki
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -19,6 +26,10 @@
 #include <linux/types.h>
 
 #include <asm/addrspace.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu-type.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq_regs.h>
 #include <asm/ptrace.h>
 #include <asm/traps.h>
@@ -128,8 +139,13 @@ void __init dec_kn02xa_be_init(void)
 {
 	volatile u32 *mbcs = (void *)CKSEG1ADDR(KN4K_SLOT_BASE + KN4K_MB_CSR);
 
+<<<<<<< HEAD
         /* For KN04 we need to make sure EE (?) is enabled in the MB.  */
         if (current_cpu_type() == CPU_R4000SC)
+=======
+	/* For KN04 we need to make sure EE (?) is enabled in the MB.  */
+	if (current_cpu_type() == CPU_R4000SC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*mbcs |= KN4K_MB_CSR_EE;
 	fast_iob();
 

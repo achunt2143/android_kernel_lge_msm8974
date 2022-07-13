@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  *  Copyright 2008 ioogle, Inc.  All rights reserved.
  *	Released under GPL v2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  Copyright 2008 ioogle, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Libata transport class.
  *
@@ -9,7 +15,11 @@
  * and various sysfs attributes to expose these topologies and management
  * interfaces to user-space.
  *
+<<<<<<< HEAD
  * There are 3 objects defined in in this class:
+=======
+ * There are 3 objects defined in this class:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * - ata_port
  * - ata_link
  * - ata_device
@@ -37,7 +47,11 @@
 #include "libata.h"
 #include "libata-transport.h"
 
+<<<<<<< HEAD
 #define ATA_PORT_ATTRS		2
+=======
+#define ATA_PORT_ATTRS		3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATA_LINK_ATTRS		3
 #define ATA_DEV_ATTRS		9
 
@@ -143,6 +157,10 @@ static struct {
 	{ ATA_DEV_PMP_UNSUP,		"pmp" },
 	{ ATA_DEV_SEMB,			"semb" },
 	{ ATA_DEV_SEMB_UNSUP,		"semb" },
+<<<<<<< HEAD
+=======
+	{ ATA_DEV_ZAC,			"zac" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ATA_DEV_NONE,			"none" }
 };
 ata_bitfield_name_search(class, ata_class_names)
@@ -162,7 +180,11 @@ static struct {
 	{ AC_ERR_INVALID,		"InvalidArg" },
 	{ AC_ERR_OTHER,			"Unknown" },
 	{ AC_ERR_NODEV_HINT,		"NoDeviceHint" },
+<<<<<<< HEAD
 	{ AC_ERR_NCQ,		 	"NCQError" }
+=======
+	{ AC_ERR_NCQ,			"NCQError" }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 ata_bitfield_name_match(err, ata_err_names)
 
@@ -195,7 +217,11 @@ static struct {
 	{ XFER_PIO_0,			"XFER_PIO_0" },
 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
 };
+<<<<<<< HEAD
 ata_bitfield_name_match(xfer,ata_xfer_names)
+=======
+ata_bitfield_name_search(xfer, ata_xfer_names)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ATA Port attributes
@@ -207,7 +233,11 @@ show_ata_port_##name(struct device *dev,				\
 {									\
 	struct ata_port *ap = transport_class_to_port(dev);		\
 									\
+<<<<<<< HEAD
 	return snprintf(buf, 20, format_string, cast ap->field);	\
+=======
+	return scnprintf(buf, 20, format_string, cast ap->field);	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define ata_port_simple_attr(field, name, format_string, type)		\
@@ -216,13 +246,22 @@ static DEVICE_ATTR(name, S_IRUGO, show_ata_port_##name, NULL)
 
 ata_port_simple_attr(nr_pmp_links, nr_pmp_links, "%d\n", int);
 ata_port_simple_attr(stats.idle_irq, idle_irq, "%ld\n", unsigned long);
+<<<<<<< HEAD
+=======
+ata_port_simple_attr(local_port_no, port_no, "%u\n", unsigned int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DECLARE_TRANSPORT_CLASS(ata_port_class,
 			       "ata_port", NULL, NULL, NULL);
 
 static void ata_tport_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+	struct ata_port *ap = tdev_to_port(dev);
+	ata_host_put(ap->host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -232,7 +271,11 @@ static void ata_tport_release(struct device *dev)
  * Returns:
  *	%1 if the device represents a ATA Port, %0 else
  */
+<<<<<<< HEAD
 int ata_is_port(const struct device *dev)
+=======
+static int ata_is_port(const struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->release == ata_tport_release;
 }
@@ -247,7 +290,11 @@ static int ata_tport_match(struct attribute_container *cont,
 
 /**
  * ata_tport_delete  --  remove ATA PORT
+<<<<<<< HEAD
  * @port:	ATA PORT to remove
+=======
+ * @ap:	ATA PORT to remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Removes the specified ATA PORT.  Remove the associated link as well.
  */
@@ -263,6 +310,13 @@ void ata_tport_delete(struct ata_port *ap)
 	put_device(dev);
 }
 
+<<<<<<< HEAD
+=======
+static const struct device_type ata_port_sas_type = {
+	.name = ATA_PORT_TYPE_NAME,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** ata_tport_add - initialize a transport ATA port structure
  *
  * @parent:	parent device
@@ -280,12 +334,26 @@ int ata_tport_add(struct device *parent,
 	struct device *dev = &ap->tdev;
 
 	device_initialize(dev);
+<<<<<<< HEAD
 	dev->type = &ata_port_type;
 
 	dev->parent = get_device(parent);
 	dev->release = ata_tport_release;
 	dev_set_name(dev, "ata%d", ap->print_id);
 	transport_setup_device(dev);
+=======
+	if (ap->flags & ATA_FLAG_SAS_HOST)
+		dev->type = &ata_port_sas_type;
+	else
+		dev->type = &ata_port_type;
+
+	dev->parent = parent;
+	ata_host_get(ap->host);
+	dev->release = ata_tport_release;
+	dev_set_name(dev, "ata%d", ap->print_id);
+	transport_setup_device(dev);
+	ata_acpi_bind_port(ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = device_add(dev);
 	if (error) {
 		goto tport_err;
@@ -296,7 +364,13 @@ int ata_tport_add(struct device *parent,
 	pm_runtime_enable(dev);
 	pm_runtime_forbid(dev);
 
+<<<<<<< HEAD
 	transport_add_device(dev);
+=======
+	error = transport_add_device(dev);
+	if (error)
+		goto tport_transport_add_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_configure_device(dev);
 
 	error = ata_tlink_add(&ap->link);
@@ -307,6 +381,10 @@ int ata_tport_add(struct device *parent,
 
  tport_link_err:
 	transport_remove_device(dev);
+<<<<<<< HEAD
+=======
+ tport_transport_add_err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_del(dev);
 
  tport_err:
@@ -315,13 +393,50 @@ int ata_tport_add(struct device *parent,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ *     ata_port_classify - determine device type based on ATA-spec signature
+ *     @ap: ATA port device on which the classification should be run
+ *     @tf: ATA taskfile register set for device to be identified
+ *
+ *     A wrapper around ata_dev_classify() to provide additional logging
+ *
+ *     RETURNS:
+ *     Device type, %ATA_DEV_ATA, %ATA_DEV_ATAPI, %ATA_DEV_PMP,
+ *     %ATA_DEV_ZAC, or %ATA_DEV_UNKNOWN the event of failure.
+ */
+unsigned int ata_port_classify(struct ata_port *ap,
+			       const struct ata_taskfile *tf)
+{
+	int i;
+	unsigned int class = ata_dev_classify(tf);
+
+	/* Start with index '1' to skip the 'unknown' entry */
+	for (i = 1; i < ARRAY_SIZE(ata_class_names); i++) {
+		if (ata_class_names[i].value == class) {
+			ata_port_dbg(ap, "found %s device by sig\n",
+				     ata_class_names[i].name);
+			return class;
+		}
+	}
+
+	ata_port_info(ap, "found unknown device (class %u)\n", class);
+	return class;
+}
+EXPORT_SYMBOL_GPL(ata_port_classify);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ATA link attributes
  */
 static int noop(int x) { return x; }
 
+<<<<<<< HEAD
 #define ata_link_show_linkspeed(field, format)			        \
+=======
+#define ata_link_show_linkspeed(field, format)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t								\
 show_ata_link_##field(struct device *dev,				\
 		      struct device_attribute *attr, char *buf)		\
@@ -345,7 +460,10 @@ static DECLARE_TRANSPORT_CLASS(ata_link_class,
 
 static void ata_tlink_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -355,7 +473,11 @@ static void ata_tlink_release(struct device *dev)
  * Returns:
  *	%1 if the device represents a ATA link, %0 else
  */
+<<<<<<< HEAD
 int ata_is_link(const struct device *dev)
+=======
+static int ata_is_link(const struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->release == ata_tlink_release;
 }
@@ -371,7 +493,11 @@ static int ata_tlink_match(struct attribute_container *cont,
 
 /**
  * ata_tlink_delete  --  remove ATA LINK
+<<<<<<< HEAD
  * @port:	ATA LINK to remove
+=======
+ * @link:	ATA LINK to remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Removes the specified ATA LINK.  remove associated ATA device(s) as well.
  */
@@ -407,11 +533,19 @@ int ata_tlink_add(struct ata_link *link)
 	int error;
 
 	device_initialize(dev);
+<<<<<<< HEAD
 	dev->parent = get_device(&ap->tdev);
 	dev->release = ata_tlink_release;
 	if (ata_is_host_link(link))
 		dev_set_name(dev, "link%d", ap->print_id);
         else
+=======
+	dev->parent = &ap->tdev;
+	dev->release = ata_tlink_release;
+	if (ata_is_host_link(link))
+		dev_set_name(dev, "link%d", ap->print_id);
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_set_name(dev, "link%d.%d", ap->print_id, link->pmp);
 
 	transport_setup_device(dev);
@@ -421,7 +555,13 @@ int ata_tlink_add(struct ata_link *link)
 		goto tlink_err;
 	}
 
+<<<<<<< HEAD
 	transport_add_device(dev);
+=======
+	error = transport_add_device(dev);
+	if (error)
+		goto tlink_transport_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_configure_device(dev);
 
 	ata_for_each_dev(ata_dev, link, ALL) {
@@ -436,6 +576,10 @@ int ata_tlink_add(struct ata_link *link)
 		ata_tdev_delete(ata_dev);
 	}
 	transport_remove_device(dev);
+<<<<<<< HEAD
+=======
+  tlink_transport_err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_del(dev);
   tlink_err:
 	transport_destroy_device(dev);
@@ -467,19 +611,32 @@ ata_dev_attr(xfer, dma_mode);
 ata_dev_attr(xfer, xfer_mode);
 
 
+<<<<<<< HEAD
 #define ata_dev_show_simple(field, format_string, cast)		\
+=======
+#define ata_dev_show_simple(field, format_string, cast)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t								\
 show_ata_dev_##field(struct device *dev,				\
 		     struct device_attribute *attr, char *buf)		\
 {									\
 	struct ata_device *ata_dev = transport_class_to_dev(dev);	\
 									\
+<<<<<<< HEAD
 	return snprintf(buf, 20, format_string, cast ata_dev->field);	\
 }
 
 #define ata_dev_simple_attr(field, format_string, type)	\
 	ata_dev_show_simple(field, format_string, (type))	\
 static DEVICE_ATTR(field, S_IRUGO, 			\
+=======
+	return scnprintf(buf, 20, format_string, cast ata_dev->field);	\
+}
+
+#define ata_dev_simple_attr(field, format_string, type)		\
+	ata_dev_show_simple(field, format_string, (type))	\
+	static DEVICE_ATTR(field, S_IRUGO,			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   show_ata_dev_##field, NULL)
 
 ata_dev_simple_attr(spdn_cnt, "%d\n", int);
@@ -492,12 +649,22 @@ struct ata_show_ering_arg {
 static int ata_show_ering(struct ata_ering_entry *ent, void *void_arg)
 {
 	struct ata_show_ering_arg* arg = void_arg;
+<<<<<<< HEAD
 	struct timespec time;
 
 	jiffies_to_timespec(ent->timestamp,&time);
 	arg->written += sprintf(arg->buf + arg->written,
 			       "[%5lu.%06lu]",
 			       time.tv_sec, time.tv_nsec);
+=======
+	u64 seconds;
+	u32 rem;
+
+	seconds = div_u64_rem(ent->timestamp, HZ, &rem);
+	arg->written += sprintf(arg->buf + arg->written,
+				"[%5llu.%09lu]", seconds,
+				rem * NSEC_PER_SEC / HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arg->written += get_ata_err_names(ent->err_mask,
 					  arg->buf + arg->written);
 	return 0;
@@ -527,7 +694,11 @@ show_ata_dev_id(struct device *dev,
 	if (ata_dev->class == ATA_DEV_PMP)
 		return 0;
 	for(i=0;i<ATA_ID_WORDS;i++)  {
+<<<<<<< HEAD
 		written += snprintf(buf+written, 20, "%04x%c",
+=======
+		written += scnprintf(buf+written, 20, "%04x%c",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ata_dev->id[i],
 				    ((i+1) & 7) ? ' ' : '\n');
 	}
@@ -546,7 +717,11 @@ show_ata_dev_gscr(struct device *dev,
 	if (ata_dev->class != ATA_DEV_PMP)
 		return 0;
 	for(i=0;i<SATA_PMP_GSCR_DWORDS;i++)  {
+<<<<<<< HEAD
 		written += snprintf(buf+written, 20, "%08x%c",
+=======
+		written += scnprintf(buf+written, 20, "%08x%c",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ata_dev->gscr[i],
 				    ((i+1) & 3) ? ' ' : '\n');
 	}
@@ -557,12 +732,41 @@ show_ata_dev_gscr(struct device *dev,
 
 static DEVICE_ATTR(gscr, S_IRUGO, show_ata_dev_gscr, NULL);
 
+<<<<<<< HEAD
+=======
+static ssize_t
+show_ata_dev_trim(struct device *dev,
+		  struct device_attribute *attr, char *buf)
+{
+	struct ata_device *ata_dev = transport_class_to_dev(dev);
+	unsigned char *mode;
+
+	if (!ata_id_has_trim(ata_dev->id))
+		mode = "unsupported";
+	else if (ata_dev->horkage & ATA_HORKAGE_NOTRIM)
+		mode = "forced_unsupported";
+	else if (ata_dev->horkage & ATA_HORKAGE_NO_NCQ_TRIM)
+			mode = "forced_unqueued";
+	else if (ata_fpdma_dsm_supported(ata_dev))
+		mode = "queued";
+	else
+		mode = "unqueued";
+
+	return scnprintf(buf, 20, "%s\n", mode);
+}
+
+static DEVICE_ATTR(trim, S_IRUGO, show_ata_dev_trim, NULL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DECLARE_TRANSPORT_CLASS(ata_dev_class,
 			       "ata_device", NULL, NULL, NULL);
 
 static void ata_tdev_release(struct device *dev)
 {
+<<<<<<< HEAD
 	put_device(dev->parent);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -572,7 +776,11 @@ static void ata_tdev_release(struct device *dev)
  * Returns:
  *	%1 if the device represents a ATA device, %0 else
  */
+<<<<<<< HEAD
 int ata_is_ata_dev(const struct device *dev)
+=======
+static int ata_is_ata_dev(const struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->release == ata_tdev_release;
 }
@@ -604,7 +812,11 @@ static void ata_tdev_free(struct ata_device *dev)
 
 /**
  * ata_tdev_delete  --  remove ATA device
+<<<<<<< HEAD
  * @port:	ATA PORT to remove
+=======
+ * @ata_dev:	ATA device to remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Removes the specified ATA device.
  */
@@ -635,6 +847,7 @@ static int ata_tdev_add(struct ata_device *ata_dev)
 	int error;
 
 	device_initialize(dev);
+<<<<<<< HEAD
 	dev->parent = get_device(&link->tdev);
 	dev->release = ata_tdev_release;
 	if (ata_is_host_link(link))
@@ -643,13 +856,34 @@ static int ata_tdev_add(struct ata_device *ata_dev)
 		dev_set_name(dev, "dev%d.%d.0", ap->print_id, link->pmp);
 
 	transport_setup_device(dev);
+=======
+	dev->parent = &link->tdev;
+	dev->release = ata_tdev_release;
+	if (ata_is_host_link(link))
+		dev_set_name(dev, "dev%d.%d", ap->print_id,ata_dev->devno);
+	else
+		dev_set_name(dev, "dev%d.%d.0", ap->print_id, link->pmp);
+
+	transport_setup_device(dev);
+	ata_acpi_bind_dev(ata_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = device_add(dev);
 	if (error) {
 		ata_tdev_free(ata_dev);
 		return error;
 	}
 
+<<<<<<< HEAD
 	transport_add_device(dev);
+=======
+	error = transport_add_device(dev);
+	if (error) {
+		device_del(dev);
+		ata_tdev_free(ata_dev);
+		return error;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_configure_device(dev);
 	return 0;
 }
@@ -660,7 +894,11 @@ static int ata_tdev_add(struct ata_device *ata_dev)
  */
 
 #define SETUP_TEMPLATE(attrb, field, perm, test)			\
+<<<<<<< HEAD
 	i->private_##attrb[count] = dev_attr_##field;		       	\
+=======
+	i->private_##attrb[count] = dev_attr_##field;			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i->private_##attrb[count].attr.mode = perm;			\
 	i->attrb[count] = &i->private_##attrb[count];			\
 	if (test)							\
@@ -688,7 +926,10 @@ struct scsi_transport_template *ata_attach_transport(void)
 		return NULL;
 
 	i->t.eh_strategy_handler	= ata_scsi_error;
+<<<<<<< HEAD
 	i->t.eh_timed_out		= ata_scsi_timed_out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i->t.user_scan			= ata_scsi_user_scan;
 
 	i->t.host_attrs.ac.attrs = &i->port_attrs[0];
@@ -709,6 +950,10 @@ struct scsi_transport_template *ata_attach_transport(void)
 	count = 0;
 	SETUP_PORT_ATTRIBUTE(nr_pmp_links);
 	SETUP_PORT_ATTRIBUTE(idle_irq);
+<<<<<<< HEAD
+=======
+	SETUP_PORT_ATTRIBUTE(port_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(count > ATA_PORT_ATTRS);
 	i->port_attrs[count] = NULL;
 
@@ -728,6 +973,10 @@ struct scsi_transport_template *ata_attach_transport(void)
 	SETUP_DEV_ATTRIBUTE(ering);
 	SETUP_DEV_ATTRIBUTE(id);
 	SETUP_DEV_ATTRIBUTE(gscr);
+<<<<<<< HEAD
+=======
+	SETUP_DEV_ATTRIBUTE(trim);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(count > ATA_DEV_ATTRS);
 	i->dev_attrs[count] = NULL;
 

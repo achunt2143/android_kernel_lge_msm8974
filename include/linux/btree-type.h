@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __BTREE_TP(pfx, type, sfx)	pfx ## type ## sfx
 #define _BTREE_TP(pfx, type, sfx)	__BTREE_TP(pfx, type, sfx)
 #define BTREE_TP(pfx)			_BTREE_TP(pfx, BTREE_TYPE_SUFFIX,)

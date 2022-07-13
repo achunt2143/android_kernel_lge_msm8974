@@ -21,13 +21,25 @@
 #include <linux/kernel.h>
 #include <linux/tty.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/sa11x0-serial.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/mfd/ucb1x00.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/timer.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/pda_power.h>
+=======
+#include <linux/gpio_keys.h>
+#include <linux/input.h>
+#include <linux/gpio.h>
+#include <linux/gpio/machine.h>
+#include <linux/power/gpio-charger.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <video/sa1100fb.h>
 
@@ -40,12 +52,19 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 #include <asm/mach/map.h>
+<<<<<<< HEAD
 #include <asm/mach/serial_sa1100.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/hardware/scoop.h>
 #include <asm/mach/sharpsl_param.h>
 #include <asm/hardware/locomo.h>
+<<<<<<< HEAD
 #include <mach/mcp.h>
+=======
+#include <linux/platform_data/mfd-mcp-sa11x0.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/irqs.h>
 
 #include "generic.h"
@@ -94,6 +113,7 @@ static struct mcp_plat_data collie_mcp_data = {
 	.codec_pdata	= &collie_ucb1x00_data,
 };
 
+<<<<<<< HEAD
 /*
  * Collie AC IN
  */
@@ -124,20 +144,60 @@ static int collie_power_ac_online(void)
 {
 	return gpio_get_value(COLLIE_GPIO_AC_IN) == 2;
 }
+=======
+/* Battery management GPIOs */
+static struct gpiod_lookup_table collie_battery_gpiod_table = {
+	/* the MCP codec mcp0 has the ucb1x00 as attached device */
+	.dev_id = "ucb1x00",
+	.table = {
+		/* This is found on the main GPIO on the SA1100 */
+		GPIO_LOOKUP("gpio", COLLIE_GPIO_CO,
+			    "main battery full", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("gpio", COLLIE_GPIO_MAIN_BAT_LOW,
+			    "main battery low", GPIO_ACTIVE_HIGH),
+		/*
+		 * This is GPIO 0 on the Scoop expander, which is registered
+		 * from common/scoop.c with this gpio chip label.
+		 */
+		GPIO_LOOKUP("sharp-scoop", 0,
+			    "main charge on", GPIO_ACTIVE_HIGH),
+		{ },
+	},
+};
+
+/*
+ * Collie AC IN
+ */
+static struct gpiod_lookup_table collie_power_gpiod_table = {
+	.dev_id = "gpio-charger",
+	.table = {
+		GPIO_LOOKUP("gpio", COLLIE_GPIO_AC_IN,
+			    NULL, GPIO_ACTIVE_HIGH),
+		{ },
+	},
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *collie_ac_supplied_to[] = {
 	"main-battery",
 	"backup-battery",
 };
 
+<<<<<<< HEAD
 static struct pda_power_pdata collie_power_data = {
 	.init			= collie_power_init,
 	.is_ac_online		= collie_power_ac_online,
 	.exit			= collie_power_exit,
+=======
+static struct gpio_charger_platform_data collie_power_data = {
+	.name			= "charger",
+	.type			= POWER_SUPPLY_TYPE_MAINS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.supplied_to		= collie_ac_supplied_to,
 	.num_supplicants	= ARRAY_SIZE(collie_ac_supplied_to),
 };
 
+<<<<<<< HEAD
 static struct resource collie_power_resource[] = {
 	{
 		.name		= "ac",
@@ -153,6 +213,12 @@ static struct platform_device collie_power_device = {
 	.dev.platform_data	= &collie_power_data,
 	.resource		= collie_power_resource,
 	.num_resources		= ARRAY_SIZE(collie_power_resource),
+=======
+static struct platform_device collie_power_device = {
+	.name			= "gpio-charger",
+	.id			= -1,
+	.dev.platform_data	= &collie_power_data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SHARP_LOCOMO
@@ -200,18 +266,24 @@ static int collie_uart_probe(struct locomo_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int collie_uart_remove(struct locomo_dev *dev)
 {
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct locomo_driver collie_uart_driver = {
 	.drv = {
 		.name = "collie_uart",
 	},
 	.devid	= LOCOMO_DEVID_UART,
 	.probe	= collie_uart_probe,
+<<<<<<< HEAD
 	.remove	= collie_uart_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init collie_uart_init(void)
@@ -242,10 +314,49 @@ struct platform_device collie_locomo_device = {
 	.resource	= locomo_resources,
 };
 
+<<<<<<< HEAD
+=======
+static struct gpio_keys_button collie_gpio_keys[] = {
+	{
+		.type	= EV_PWR,
+		.code	= KEY_RESERVED,
+		.gpio	= COLLIE_GPIO_ON_KEY,
+		.desc	= "On key",
+		.wakeup	= 1,
+		.active_low = 1,
+	},
+	{
+		.type	= EV_PWR,
+		.code	= KEY_WAKEUP,
+		.gpio	= COLLIE_GPIO_WAKEUP,
+		.desc	= "Sync",
+		.wakeup = 1,
+		.active_low = 1,
+	},
+};
+
+static struct gpio_keys_platform_data collie_gpio_keys_data = {
+	.buttons	= collie_gpio_keys,
+	.nbuttons	= ARRAY_SIZE(collie_gpio_keys),
+};
+
+static struct platform_device collie_gpio_keys_device = {
+	.name	= "gpio-keys",
+	.id	= -1,
+	.dev	= {
+		.platform_data = &collie_gpio_keys_data,
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device *devices[] __initdata = {
 	&collie_locomo_device,
 	&colliescoop_device,
 	&collie_power_device,
+<<<<<<< HEAD
+=======
+	&collie_gpio_keys_device,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct mtd_partition collie_partitions[] = {
@@ -262,6 +373,14 @@ static struct mtd_partition collie_partitions[] = {
 		.name		= "rootfs",
 		.offset 	= MTDPART_OFS_APPEND,
 		.size		= 0x00e20000,
+<<<<<<< HEAD
+=======
+	}, {
+		.name		= "bootblock",
+		.offset		= MTDPART_OFS_APPEND,
+		.size		= 0x00020000,
+		.mask_flags	= MTD_WRITEABLE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -337,8 +456,12 @@ static void __init collie_init(void)
 		PPC_LDD6 | PPC_LDD7 | PPC_L_PCLK | PPC_L_LCLK | PPC_L_FCLK | PPC_L_BIAS |
 		PPC_TXD1 | PPC_TXD2 | PPC_TXD3 | PPC_TXD4 | PPC_SCLK | PPC_SFRM;
 
+<<<<<<< HEAD
 	PWER = _COLLIE_GPIO_AC_IN | _COLLIE_GPIO_CO | _COLLIE_GPIO_ON_KEY |
 		_COLLIE_GPIO_WAKEUP | _COLLIE_GPIO_nREMOCON_INT | PWER_RTC;
+=======
+	PWER = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PGSR = _COLLIE_GPIO_nREMOCON_ON;
 
@@ -348,14 +471,23 @@ static void __init collie_init(void)
 
 	GPSR |= _COLLIE_GPIO_UCB1x00_RESET;
 
+<<<<<<< HEAD
 	collie_power_resource[0].start = gpio_to_irq(COLLIE_GPIO_AC_IN);
 	collie_power_resource[0].end = gpio_to_irq(COLLIE_GPIO_AC_IN);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sa11x0_ppc_configure_mcp();
 
 
 	platform_scoop_config = &collie_pcmcia_config;
 
+<<<<<<< HEAD
+=======
+	gpiod_add_lookup_table(&collie_power_gpiod_table);
+	gpiod_add_lookup_table(&collie_battery_gpiod_table);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = platform_add_devices(devices, ARRAY_SIZE(devices));
 	if (ret) {
 		printk(KERN_WARNING "collie: Unable to register LoCoMo device\n");
@@ -399,7 +531,13 @@ MACHINE_START(COLLIE, "Sharp-Collie")
 	.map_io		= collie_map_io,
 	.nr_irqs	= SA1100_NR_IRQS,
 	.init_irq	= sa1100_init_irq,
+<<<<<<< HEAD
 	.timer		= &sa1100_timer,
 	.init_machine	= collie_init,
+=======
+	.init_time	= sa1100_timer_init,
+	.init_machine	= collie_init,
+	.init_late	= sa11x0_init_late,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= sa11x0_restart,
 MACHINE_END

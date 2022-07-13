@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: newport.h,v 1.5 1999/08/04 06:01:51 ulfc Exp $
  *
  * newport.h: Defines and register layout for NEWPORT graphics

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * w6692.c     mISDN driver for Winbond w6692 based cards
  *
@@ -5,6 +9,7 @@
  *             based on the w6692 I4L driver from Petr Novak <petr.novak@i.cz>
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -52,10 +59,14 @@ static const struct w6692map  w6692_map[] =
 	{W6692_USR, "USR W6692"}
 };
 
+<<<<<<< HEAD
 #ifndef PCI_VENDOR_ID_USR
 #define PCI_VENDOR_ID_USR	0x16ec
 #define PCI_DEVICE_ID_USR_6692	0x3409
 #endif
+=======
+#define PCI_DEVICE_ID_USR_6692	0x3409
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct w6692_ch {
 	struct bchannel		bch;
@@ -101,7 +112,11 @@ _set_debug(struct w6692_hw *card)
 }
 
 static int
+<<<<<<< HEAD
 set_debug(const char *val, struct kernel_param *kp)
+=======
+set_debug(const char *val, const struct kernel_param *kp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct w6692_hw *card;
@@ -311,7 +326,10 @@ W6692_fill_Dfifo(struct w6692_hw *card)
 		pr_debug("%s: fill_Dfifo dbusytimer running\n", card->name);
 		del_timer(&dch->timer);
 	}
+<<<<<<< HEAD
 	init_timer(&dch->timer);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dch->timer.expires = jiffies + ((DBUSY_TIMER_VALUE * HZ) / 1000);
 	add_timer(&dch->timer);
 	if (debug & DEBUG_HW_DFIFO) {
@@ -373,8 +391,12 @@ handle_rxD(struct w6692_hw *card) {
 			card->dch.err_rx++;
 #endif
 		}
+<<<<<<< HEAD
 		if (card->dch.rx_skb)
 			dev_kfree_skb(card->dch.rx_skb);
+=======
+		dev_kfree_skb(card->dch.rx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->dch.rx_skb = NULL;
 		WriteW6692(card, W_D_CMDR, W_D_CMDR_RACK | W_D_CMDR_RRST);
 	} else {
@@ -393,8 +415,12 @@ handle_txD(struct w6692_hw *card) {
 	if (card->dch.tx_skb && card->dch.tx_idx < card->dch.tx_skb->len) {
 		W6692_fill_Dfifo(card);
 	} else {
+<<<<<<< HEAD
 		if (card->dch.tx_skb)
 			dev_kfree_skb(card->dch.tx_skb);
+=======
+		dev_kfree_skb(card->dch.tx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_next_dframe(&card->dch))
 			W6692_fill_Dfifo(card);
 	}
@@ -465,6 +491,10 @@ W6692_empty_Bfifo(struct w6692_ch *wch, int count)
 {
 	struct w6692_hw *card = wch->bch.hw;
 	u8 *ptr;
+<<<<<<< HEAD
+=======
+	int maxlen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: empty_Bfifo %d\n", card->name, count);
 	if (unlikely(wch->bch.state == ISDN_P_NONE)) {
@@ -474,6 +504,7 @@ W6692_empty_Bfifo(struct w6692_ch *wch, int count)
 			skb_trim(wch->bch.rx_skb, 0);
 		return;
 	}
+<<<<<<< HEAD
 	if (!wch->bch.rx_skb) {
 		wch->bch.rx_skb = mI_alloc_skb(wch->bch.maxlen, GFP_ATOMIC);
 		if (unlikely(!wch->bch.rx_skb)) {
@@ -488,6 +519,20 @@ W6692_empty_Bfifo(struct w6692_ch *wch, int count)
 			 card->name);
 		WriteW6692B(wch, W_B_CMDR, W_B_CMDR_RACK | W_B_CMDR_RACT);
 		skb_trim(wch->bch.rx_skb, 0);
+=======
+	if (test_bit(FLG_RX_OFF, &wch->bch.Flags)) {
+		wch->bch.dropcnt += count;
+		WriteW6692B(wch, W_B_CMDR, W_B_CMDR_RACK | W_B_CMDR_RACT);
+		return;
+	}
+	maxlen = bchannel_get_rxbuf(&wch->bch, count);
+	if (maxlen < 0) {
+		WriteW6692B(wch, W_B_CMDR, W_B_CMDR_RACK | W_B_CMDR_RACT);
+		if (wch->bch.rx_skb)
+			skb_trim(wch->bch.rx_skb, 0);
+		pr_warn("%s.B%d: No bufferspace for %d bytes\n",
+			card->name, wch->bch.nr, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ptr = skb_put(wch->bch.rx_skb, count);
@@ -504,6 +549,7 @@ static void
 W6692_fill_Bfifo(struct w6692_ch *wch)
 {
 	struct w6692_hw *card = wch->bch.hw;
+<<<<<<< HEAD
 	int count;
 	u8 *ptr, cmd = W_B_CMDR_RACT | W_B_CMDR_XMS;
 
@@ -514,6 +560,24 @@ W6692_fill_Bfifo(struct w6692_ch *wch)
 	if (count <= 0)
 		return;
 	ptr = wch->bch.tx_skb->data + wch->bch.tx_idx;
+=======
+	int count, fillempty = 0;
+	u8 *ptr, cmd = W_B_CMDR_RACT | W_B_CMDR_XMS;
+
+	pr_debug("%s: fill Bfifo\n", card->name);
+	if (!wch->bch.tx_skb) {
+		if (!test_bit(FLG_TX_EMPTY, &wch->bch.Flags))
+			return;
+		ptr = wch->bch.fill;
+		count = W_B_FIFO_THRESH;
+		fillempty = 1;
+	} else {
+		count = wch->bch.tx_skb->len - wch->bch.tx_idx;
+		if (count <= 0)
+			return;
+		ptr = wch->bch.tx_skb->data + wch->bch.tx_idx;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count > W_B_FIFO_THRESH)
 		count = W_B_FIFO_THRESH;
 	else if (test_bit(FLG_HDLC, &wch->bch.Flags))
@@ -522,9 +586,22 @@ W6692_fill_Bfifo(struct w6692_ch *wch)
 	pr_debug("%s: fill Bfifo%d/%d\n", card->name,
 		 count, wch->bch.tx_idx);
 	wch->bch.tx_idx += count;
+<<<<<<< HEAD
 	outsb(wch->addr + W_B_XFIFO, ptr, count);
 	WriteW6692B(wch, W_B_CMDR, cmd);
 	if (debug & DEBUG_HW_DFIFO) {
+=======
+	if (fillempty) {
+		while (count > 0) {
+			outsb(wch->addr + W_B_XFIFO, ptr, MISDN_BCH_FILL_SIZE);
+			count -= MISDN_BCH_FILL_SIZE;
+		}
+	} else {
+		outsb(wch->addr + W_B_XFIFO, ptr, count);
+	}
+	WriteW6692B(wch, W_B_CMDR, cmd);
+	if ((debug & DEBUG_HW_BFIFO) && !fillempty) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(card->log, 63, "B%1d-send %s %d ",
 			 wch->bch.nr, card->name, count);
 		print_hex_dump_bytes(card->log, DUMP_PREFIX_OFFSET, ptr, count);
@@ -638,6 +715,7 @@ w6692_mode(struct w6692_ch *wch, u32 pr)
 static void
 send_next(struct w6692_ch *wch)
 {
+<<<<<<< HEAD
 	if (wch->bch.tx_skb && wch->bch.tx_idx < wch->bch.tx_skb->len)
 		W6692_fill_Bfifo(wch);
 	else {
@@ -649,6 +727,18 @@ send_next(struct w6692_ch *wch)
 		}
 		if (get_next_bframe(&wch->bch))
 			W6692_fill_Bfifo(wch);
+=======
+	if (wch->bch.tx_skb && wch->bch.tx_idx < wch->bch.tx_skb->len) {
+		W6692_fill_Bfifo(wch);
+	} else {
+		dev_kfree_skb(wch->bch.tx_skb);
+		if (get_next_bframe(&wch->bch)) {
+			W6692_fill_Bfifo(wch);
+			test_and_clear_bit(FLG_TX_EMPTY, &wch->bch.Flags);
+		} else if (test_bit(FLG_TX_EMPTY, &wch->bch.Flags)) {
+			W6692_fill_Bfifo(wch);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -698,7 +788,11 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 			if (count == 0)
 				count = W_B_FIFO_THRESH;
 			W6692_empty_Bfifo(wch, count);
+<<<<<<< HEAD
 			recv_Bchannel(&wch->bch, 0);
+=======
+			recv_Bchannel(&wch->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (stat & W_B_EXI_RMR) {
@@ -714,9 +808,14 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 				    W_B_CMDR_RRST | W_B_CMDR_RACT);
 		} else {
 			W6692_empty_Bfifo(wch, W_B_FIFO_THRESH);
+<<<<<<< HEAD
 			if (test_bit(FLG_TRANSPARENT, &wch->bch.Flags) &&
 			    wch->bch.rx_skb && (wch->bch.rx_skb->len > 0))
 				recv_Bchannel(&wch->bch, 0);
+=======
+			if (test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
+				recv_Bchannel(&wch->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (stat & W_B_EXI_RDOV) {
@@ -738,8 +837,13 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 				 wch->bch.nr, star);
 		}
 		if (star & W_B_STAR_XDOW) {
+<<<<<<< HEAD
 			pr_debug("%s: B%d XDOW proto=%x\n", card->name,
 				 wch->bch.nr, wch->bch.state);
+=======
+			pr_warn("%s: B%d XDOW proto=%x\n", card->name,
+				wch->bch.nr, wch->bch.state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef ERROR_STATISTIC
 			wch->bch.err_xdu++;
 #endif
@@ -752,6 +856,7 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 			}
 		}
 		send_next(wch);
+<<<<<<< HEAD
 		if (stat & W_B_EXI_XDUN)
 			return; /* handle XDOW only once */
 	}
@@ -766,6 +871,23 @@ W6692B_interrupt(struct w6692_hw *card, int ch)
 		if (wch->bch.tx_skb) {
 			if (!test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
 				wch->bch.tx_idx = 0;
+=======
+		if (star & W_B_STAR_XDOW)
+			return; /* handle XDOW only once */
+	}
+	if (stat & W_B_EXI_XDUN) {
+		pr_warn("%s: B%d XDUN proto=%x\n", card->name,
+			wch->bch.nr, wch->bch.state);
+#ifdef ERROR_STATISTIC
+		wch->bch.err_xdu++;
+#endif
+		/* resend - no XRST needed */
+		if (wch->bch.tx_skb) {
+			if (!test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
+				wch->bch.tx_idx = 0;
+		} else if (test_bit(FLG_FILLEMPTY, &wch->bch.Flags)) {
+			test_and_set_bit(FLG_TX_EMPTY, &wch->bch.Flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		send_next(wch);
 	}
@@ -807,8 +929,14 @@ w6692_irq(int intno, void *dev_id)
 }
 
 static void
+<<<<<<< HEAD
 dbusy_timer_handler(struct dchannel *dch)
 {
+=======
+dbusy_timer_handler(struct timer_list *t)
+{
+	struct dchannel *dch = from_timer(dch, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct w6692_hw	*card = dch->hw;
 	int		rbch, star;
 	u_long		flags;
@@ -836,6 +964,7 @@ dbusy_timer_handler(struct dchannel *dch)
 	}
 }
 
+<<<<<<< HEAD
 void initW6692(struct w6692_hw *card)
 {
 	u8	val;
@@ -843,6 +972,13 @@ void initW6692(struct w6692_hw *card)
 	card->dch.timer.function = (void *)dbusy_timer_handler;
 	card->dch.timer.data = (u_long)&card->dch;
 	init_timer(&card->dch.timer);
+=======
+static void initW6692(struct w6692_hw *card)
+{
+	u8	val;
+
+	timer_setup(&card->dch.timer, dbusy_timer_handler, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w6692_mode(&card->bc[0], ISDN_P_NONE);
 	w6692_mode(&card->bc[1], ISDN_P_NONE);
 	WriteW6692(card, W_D_CTL, 0x00);
@@ -944,14 +1080,19 @@ w6692_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 	struct w6692_hw *card = bch->hw;
 	int ret = -EINVAL;
 	struct mISDNhead *hh = mISDN_HEAD_P(skb);
+<<<<<<< HEAD
 	u32 id;
 	u_long flags;
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hh->prim) {
 	case PH_DATA_REQ:
 		spin_lock_irqsave(&card->lock, flags);
 		ret = bchannel_senddata(bch, skb);
 		if (ret > 0) { /* direct TX */
+<<<<<<< HEAD
 			id = hh->id; /* skb can be freed */
 			ret = 0;
 			W6692_fill_Bfifo(bc);
@@ -960,6 +1101,12 @@ w6692_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 				queue_ch_frame(ch, PH_DATA_CNF, id, NULL);
 		} else
 			spin_unlock_irqrestore(&card->lock, flags);
+=======
+			ret = 0;
+			W6692_fill_Bfifo(bc);
+		}
+		spin_unlock_irqrestore(&card->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	case PH_ACTIVATE_REQ:
 		spin_lock_irqsave(&card->lock, flags);
@@ -994,6 +1141,7 @@ w6692_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 static int
 channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 {
+<<<<<<< HEAD
 	int	ret = 0;
 
 	switch (cq->op) {
@@ -1008,6 +1156,9 @@ channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 		break;
 	}
 	return ret;
+=======
+	return mISDN_ctrl_bchannel(bch, cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1022,7 +1173,10 @@ open_bchannel(struct w6692_hw *card, struct channel_req *rq)
 	bch = &card->bc[rq->adr.channel - 1].bch;
 	if (test_and_set_bit(FLG_OPEN, &bch->Flags))
 		return -EBUSY; /* b-channel can be only open once */
+<<<<<<< HEAD
 	test_and_clear_bit(FLG_FILLEMPTY, &bch->Flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bch->ch.protocol = rq->protocol;
 	rq->ch = &bch->ch;
 	return 0;
@@ -1035,7 +1189,14 @@ channel_ctrl(struct w6692_hw *card, struct mISDN_ctrl_req *cq)
 
 	switch (cq->op) {
 	case MISDN_CTRL_GETOP:
+<<<<<<< HEAD
 		cq->op = 0;
+=======
+		cq->op = MISDN_CTRL_L1_TIMER3;
+		break;
+	case MISDN_CTRL_L1_TIMER3:
+		ret = l1_event(card->dch.l1, HW_TIMER3_VALUE | (cq->p1 & 0xff));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		pr_info("%s: unknown CTRL OP %x\n", card->name, cq->op);
@@ -1058,6 +1219,7 @@ w6692_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	switch (cmd) {
 	case CLOSE_CHANNEL:
 		test_and_clear_bit(FLG_OPEN, &bch->Flags);
+<<<<<<< HEAD
 		if (test_bit(FLG_ACTIVE, &bch->Flags)) {
 			spin_lock_irqsave(&card->lock, flags);
 			mISDN_freebchannel(bch);
@@ -1067,6 +1229,13 @@ w6692_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 			skb_queue_purge(&bch->rqueue);
 			bch->rcount = 0;
 		}
+=======
+		cancel_work_sync(&bch->workq);
+		spin_lock_irqsave(&card->lock, flags);
+		mISDN_clear_bchannel(bch);
+		w6692_mode(bc, ISDN_P_NONE);
+		spin_unlock_irqrestore(&card->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->protocol = ISDN_P_NONE;
 		ch->peer = NULL;
 		module_put(THIS_MODULE);
@@ -1184,10 +1353,17 @@ w6692_l1callback(struct dchannel *dch, u32 cmd)
 }
 
 static int
+<<<<<<< HEAD
 open_dchannel(struct w6692_hw *card, struct channel_req *rq)
 {
 	pr_debug("%s: %s dev(%d) open from %p\n", card->name, __func__,
 		 card->dch.dev.id, __builtin_return_address(1));
+=======
+open_dchannel(struct w6692_hw *card, struct channel_req *rq, void *caller)
+{
+	pr_debug("%s: %s dev(%d) open from %p\n", card->name, __func__,
+		 card->dch.dev.id, caller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
@@ -1215,7 +1391,11 @@ w6692_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	case OPEN_CHANNEL:
 		rq = arg;
 		if (rq->protocol == ISDN_P_TE_S0)
+<<<<<<< HEAD
 			err = open_dchannel(card, rq);
+=======
+			err = open_dchannel(card, rq, __builtin_return_address(0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			err = open_bchannel(card, rq);
 		if (err)
@@ -1320,7 +1500,12 @@ setup_instance(struct w6692_hw *card)
 	card->dch.hw = card;
 	card->dch.dev.nrbchan = 2;
 	for (i = 0; i < 2; i++) {
+<<<<<<< HEAD
 		mISDN_initbchannel(&card->bc[i].bch, MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(&card->bc[i].bch, MAX_DATA_MEM,
+				   W_B_FIFO_THRESH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->bc[i].bch.hw = card;
 		card->bc[i].bch.nr = i + 1;
 		card->bc[i].bch.ch.nr = i + 1;
@@ -1362,7 +1547,11 @@ error_setup:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 w6692_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int		err = -ENOMEM;
@@ -1394,7 +1583,11 @@ w6692_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 w6692_remove_pci(struct pci_dev *pdev)
 {
 	struct w6692_hw	*card = pci_get_drvdata(pdev);
@@ -1406,7 +1599,11 @@ w6692_remove_pci(struct pci_dev *pdev)
 			pr_notice("%s: drvdata already removed\n", __func__);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id w6692_ids[] = {
+=======
+static const struct pci_device_id w6692_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_DYNALINK, PCI_DEVICE_ID_DYNALINK_IS64PH,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, (ulong)&w6692_map[0]},
 	{ PCI_VENDOR_ID_WINBOND2, PCI_DEVICE_ID_WINBOND2_6692,
@@ -1421,7 +1618,11 @@ MODULE_DEVICE_TABLE(pci, w6692_ids);
 static struct pci_driver w6692_driver = {
 	.name =  "w6692",
 	.probe = w6692_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(w6692_remove_pci),
+=======
+	.remove = w6692_remove_pci,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = w6692_ids,
 };
 

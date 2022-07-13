@@ -52,11 +52,19 @@ struct iwcm_id_private {
 	wait_queue_head_t connect_wait;
 	struct list_head work_list;
 	spinlock_t lock;
+<<<<<<< HEAD
 	atomic_t refcount;
 	struct list_head work_free_list;
 };
 
 #define IWCM_F_CALLBACK_DESTROY   1
+=======
+	refcount_t refcount;
+	struct list_head work_free_list;
+};
+
+#define IWCM_F_DROP_EVENTS	  1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IWCM_F_CONNECT_WAIT       2
 
 #endif /* IWCM_H */

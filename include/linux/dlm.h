@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
@@ -73,6 +78,16 @@ struct dlm_lksb {
 #define DLM_LSFL_NEWEXCL     	0x00000008
 
 #ifdef __KERNEL__
+=======
+**
+*******************************************************************************
+******************************************************************************/
+#ifndef __DLM_DOT_H__
+#define __DLM_DOT_H__
+
+#include <uapi/linux/dlm.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dlm_slot {
 	int nodeid; /* 1 to MAX_INT */
@@ -113,12 +128,15 @@ struct dlm_lockspace_ops {
  *   The dlm should not use a resource directory, but statically assign
  *   resource mastery to nodes based on the name hash that is otherwise
  *   used to select the directory node.  Must be the same on all nodes.
+<<<<<<< HEAD
  * DLM_LSFL_TIMEWARN
  *   The dlm should emit netlink messages if locks have been waiting
  *   for a configurable amount of time.  (Unused.)
  * DLM_LSFL_FS
  *   The lockspace user is in the kernel (i.e. filesystem).  Enables
  *   direct bast/cast callbacks.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * DLM_LSFL_NEWEXCL
  *   dlm_new_lockspace() should return -EEXIST if the lockspace exists.
  *
@@ -156,7 +174,11 @@ int dlm_release_lockspace(dlm_lockspace_t *lockspace, int force);
 /*
  * dlm_lock
  *
+<<<<<<< HEAD
  * Make an asyncronous request to acquire or convert a lock on a named
+=======
+ * Make an asynchronous request to acquire or convert a lock on a named
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * resource.
  *
  * lockspace: context for the request
@@ -194,7 +216,11 @@ int dlm_lock(dlm_lockspace_t *lockspace,
 	     int mode,
 	     struct dlm_lksb *lksb,
 	     uint32_t flags,
+<<<<<<< HEAD
 	     void *name,
+=======
+	     const void *name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     unsigned int namelen,
 	     uint32_t parent_lkid,
 	     void (*lockast) (void *astarg),
@@ -227,7 +253,11 @@ int dlm_unlock(dlm_lockspace_t *lockspace,
 	       struct dlm_lksb *lksb,
 	       void *astarg);
 
+<<<<<<< HEAD
 #endif				/* __KERNEL__ */
 
 #endif				/* __DLM_DOT_H__ */
 
+=======
+#endif				/* __DLM_DOT_H__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

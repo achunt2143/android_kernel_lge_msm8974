@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System call table for UML/i386, copied from arch/x86/kernel/syscall_*.c
  * with some changes for UML.
@@ -6,9 +10,13 @@
 #include <linux/linkage.h>
 #include <linux/sys.h>
 #include <linux/cache.h>
+<<<<<<< HEAD
 #include <generated/user_constants.h>
 
 #define __NO_STUBS
+=======
+#include <asm/syscall.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Below you can see, in terms of #define's, the differences between the x86-64
@@ -22,6 +30,7 @@
 #define sys_vm86old sys_ni_syscall
 #define sys_vm86 sys_ni_syscall
 
+<<<<<<< HEAD
 #define old_mmap sys_old_mmap
 
 #define ptregs_fork sys_fork
@@ -49,6 +58,19 @@ const sys_call_ptr_t sys_call_table[] ____cacheline_aligned = {
 	 * when the & below is removed.
 	 */
 	[0 ... __NR_syscall_max] = &sys_ni_syscall,
+=======
+#define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, native)
+
+#define __SYSCALL(nr, sym) extern asmlinkage long sym(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+#include <asm/syscalls_32.h>
+
+#undef __SYSCALL
+#define __SYSCALL(nr, sym) sym,
+
+extern asmlinkage long sys_ni_syscall(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+
+const sys_call_ptr_t sys_call_table[] ____cacheline_aligned = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/syscalls_32.h>
 };
 

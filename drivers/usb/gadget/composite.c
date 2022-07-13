@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * composite.c - infrastructure for Composite USB Gadgets
  *
  * Copyright (C) 2006-2008 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* #define VERBOSE_DEBUG */
@@ -17,10 +24,39 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/utsname.h>
+<<<<<<< HEAD
 
 #include <linux/usb/composite.h>
 #include <asm/unaligned.h>
 
+=======
+#include <linux/bitfield.h>
+#include <linux/uuid.h>
+
+#include <linux/usb/composite.h>
+#include <linux/usb/otg.h>
+#include <linux/usb/webusb.h>
+#include <asm/unaligned.h>
+
+#include "u_os_desc.h"
+
+/**
+ * struct usb_os_string - represents OS String to be reported by a gadget
+ * @bLength: total length of the entire descritor, always 0x12
+ * @bDescriptorType: USB_DT_STRING
+ * @qwSignature: the OS String proper
+ * @bMS_VendorCode: code used by the host for subsequent requests
+ * @bPad: not used, must be zero
+ */
+struct usb_os_string {
+	__u8	bLength;
+	__u8	bDescriptorType;
+	__u8	qwSignature[OS_STRING_QW_SIGN_LEN];
+	__u8	bMS_VendorCode;
+	__u8	bPad;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The code in this file is utility code, used to build a gadget driver
  * from one or more "function" drivers, one or more "configuration"
@@ -28,6 +64,7 @@
  * with the relevant device-wide data.
  */
 
+<<<<<<< HEAD
 /* big enough to hold our biggest descriptor */
 #define USB_BUFSIZ	4096
 
@@ -80,12 +117,82 @@ next_ep_desc(struct usb_descriptor_header **t)
 {
 	for (; *t; t++) {
 		if ((*t)->bDescriptorType == USB_DT_ENDPOINT)
+=======
+static struct usb_gadget_strings **get_containers_gs(
+		struct usb_gadget_string_container *uc)
+{
+	return (struct usb_gadget_strings **)uc->stash;
+}
+
+/**
+ * function_descriptors() - get function descriptors for speed
+ * @f: the function
+ * @speed: the speed
+ *
+ * Returns the descriptors or NULL if not set.
+ */
+static struct usb_descriptor_header **
+function_descriptors(struct usb_function *f,
+		     enum usb_device_speed speed)
+{
+	struct usb_descriptor_header **descriptors;
+
+	/*
+	 * NOTE: we try to help gadget drivers which might not be setting
+	 * max_speed appropriately.
+	 */
+
+	switch (speed) {
+	case USB_SPEED_SUPER_PLUS:
+		descriptors = f->ssp_descriptors;
+		if (descriptors)
+			break;
+		fallthrough;
+	case USB_SPEED_SUPER:
+		descriptors = f->ss_descriptors;
+		if (descriptors)
+			break;
+		fallthrough;
+	case USB_SPEED_HIGH:
+		descriptors = f->hs_descriptors;
+		if (descriptors)
+			break;
+		fallthrough;
+	default:
+		descriptors = f->fs_descriptors;
+	}
+
+	/*
+	 * if we can't find any descriptors at all, then this gadget deserves to
+	 * Oops with a NULL pointer dereference
+	 */
+
+	return descriptors;
+}
+
+/**
+ * next_desc() - advance to the next desc_type descriptor
+ * @t: currect pointer within descriptor array
+ * @desc_type: descriptor type
+ *
+ * Return: next desc_type descriptor or NULL
+ *
+ * Iterate over @t until either desc_type descriptor found or
+ * NULL (that indicates end of list) encountered
+ */
+static struct usb_descriptor_header**
+next_desc(struct usb_descriptor_header **t, u8 desc_type)
+{
+	for (; *t; t++) {
+		if ((*t)->bDescriptorType == desc_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return t;
 	}
 	return NULL;
 }
 
 /*
+<<<<<<< HEAD
  * for_each_ep_desc()- iterate over endpoint descriptors in the
  *		descriptors list
  * @start:	pointer within descriptor array.
@@ -94,6 +201,155 @@ next_ep_desc(struct usb_descriptor_header **t)
 #define for_each_ep_desc(start, ep_desc) \
 	for (ep_desc = next_ep_desc(start); \
 	      ep_desc; ep_desc = next_ep_desc(ep_desc+1))
+=======
+ * for_each_desc() - iterate over desc_type descriptors in the
+ * descriptors list
+ * @start: pointer within descriptor array.
+ * @iter_desc: desc_type descriptor to use as the loop cursor
+ * @desc_type: wanted descriptr type
+ */
+#define for_each_desc(start, iter_desc, desc_type) \
+	for (iter_desc = next_desc(start, desc_type); \
+	     iter_desc; iter_desc = next_desc(iter_desc + 1, desc_type))
+
+/**
+ * config_ep_by_speed_and_alt() - configures the given endpoint
+ * according to gadget speed.
+ * @g: pointer to the gadget
+ * @f: usb function
+ * @_ep: the endpoint to configure
+ * @alt: alternate setting number
+ *
+ * Return: error code, 0 on success
+ *
+ * This function chooses the right descriptors for a given
+ * endpoint according to gadget speed and saves it in the
+ * endpoint desc field. If the endpoint already has a descriptor
+ * assigned to it - overwrites it with currently corresponding
+ * descriptor. The endpoint maxpacket field is updated according
+ * to the chosen descriptor.
+ * Note: the supplied function should hold all the descriptors
+ * for supported speeds
+ */
+int config_ep_by_speed_and_alt(struct usb_gadget *g,
+				struct usb_function *f,
+				struct usb_ep *_ep,
+				u8 alt)
+{
+	struct usb_endpoint_descriptor *chosen_desc = NULL;
+	struct usb_interface_descriptor *int_desc = NULL;
+	struct usb_descriptor_header **speed_desc = NULL;
+
+	struct usb_ss_ep_comp_descriptor *comp_desc = NULL;
+	int want_comp_desc = 0;
+
+	struct usb_descriptor_header **d_spd; /* cursor for speed desc */
+	struct usb_composite_dev *cdev;
+	bool incomplete_desc = false;
+
+	if (!g || !f || !_ep)
+		return -EIO;
+
+	/* select desired speed */
+	switch (g->speed) {
+	case USB_SPEED_SUPER_PLUS:
+		if (f->ssp_descriptors) {
+			speed_desc = f->ssp_descriptors;
+			want_comp_desc = 1;
+			break;
+		}
+		incomplete_desc = true;
+		fallthrough;
+	case USB_SPEED_SUPER:
+		if (f->ss_descriptors) {
+			speed_desc = f->ss_descriptors;
+			want_comp_desc = 1;
+			break;
+		}
+		incomplete_desc = true;
+		fallthrough;
+	case USB_SPEED_HIGH:
+		if (f->hs_descriptors) {
+			speed_desc = f->hs_descriptors;
+			break;
+		}
+		incomplete_desc = true;
+		fallthrough;
+	default:
+		speed_desc = f->fs_descriptors;
+	}
+
+	cdev = get_gadget_data(g);
+	if (incomplete_desc)
+		WARNING(cdev,
+			"%s doesn't hold the descriptors for current speed\n",
+			f->name);
+
+	/* find correct alternate setting descriptor */
+	for_each_desc(speed_desc, d_spd, USB_DT_INTERFACE) {
+		int_desc = (struct usb_interface_descriptor *)*d_spd;
+
+		if (int_desc->bAlternateSetting == alt) {
+			speed_desc = d_spd;
+			goto intf_found;
+		}
+	}
+	return -EIO;
+
+intf_found:
+	/* find descriptors */
+	for_each_desc(speed_desc, d_spd, USB_DT_ENDPOINT) {
+		chosen_desc = (struct usb_endpoint_descriptor *)*d_spd;
+		if (chosen_desc->bEndpointAddress == _ep->address)
+			goto ep_found;
+	}
+	return -EIO;
+
+ep_found:
+	/* commit results */
+	_ep->maxpacket = usb_endpoint_maxp(chosen_desc);
+	_ep->desc = chosen_desc;
+	_ep->comp_desc = NULL;
+	_ep->maxburst = 0;
+	_ep->mult = 1;
+
+	if (g->speed == USB_SPEED_HIGH && (usb_endpoint_xfer_isoc(_ep->desc) ||
+				usb_endpoint_xfer_int(_ep->desc)))
+		_ep->mult = usb_endpoint_maxp_mult(_ep->desc);
+
+	if (!want_comp_desc)
+		return 0;
+
+	/*
+	 * Companion descriptor should follow EP descriptor
+	 * USB 3.0 spec, #9.6.7
+	 */
+	comp_desc = (struct usb_ss_ep_comp_descriptor *)*(++d_spd);
+	if (!comp_desc ||
+	    (comp_desc->bDescriptorType != USB_DT_SS_ENDPOINT_COMP))
+		return -EIO;
+	_ep->comp_desc = comp_desc;
+	if (g->speed >= USB_SPEED_SUPER) {
+		switch (usb_endpoint_type(_ep->desc)) {
+		case USB_ENDPOINT_XFER_ISOC:
+			/* mult: bits 1:0 of bmAttributes */
+			_ep->mult = (comp_desc->bmAttributes & 0x3) + 1;
+			fallthrough;
+		case USB_ENDPOINT_XFER_BULK:
+		case USB_ENDPOINT_XFER_INT:
+			_ep->maxburst = comp_desc->bMaxBurst + 1;
+			break;
+		default:
+			if (comp_desc->bMaxBurst != 0)
+				ERROR(cdev, "ep0 bMaxBurst must be 0\n");
+			_ep->maxburst = 1;
+			break;
+		}
+	}
+	return 0;
+}
+EXPORT_SYMBOL_GPL(config_ep_by_speed_and_alt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * config_ep_by_speed() - configures the given endpoint
@@ -117,6 +373,7 @@ int config_ep_by_speed(struct usb_gadget *g,
 			struct usb_function *f,
 			struct usb_ep *_ep)
 {
+<<<<<<< HEAD
 	struct usb_composite_dev	*cdev = get_gadget_data(g);
 	struct usb_endpoint_descriptor *chosen_desc = NULL;
 	struct usb_descriptor_header **speed_desc = NULL;
@@ -192,6 +449,11 @@ ep_found:
 	}
 	return 0;
 }
+=======
+	return config_ep_by_speed_and_alt(g, f, _ep, 0);
+}
+EXPORT_SYMBOL_GPL(config_ep_by_speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_add_function() - add a function to a configuration
@@ -222,6 +484,15 @@ int usb_add_function(struct usb_configuration *config,
 	function->config = config;
 	list_add_tail(&function->list, &config->functions);
 
+<<<<<<< HEAD
+=======
+	if (function->bind_deactivated) {
+		value = usb_function_deactivate(function);
+		if (value)
+			goto done;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* REVISIT *require* function->bind? */
 	if (function->bind) {
 		value = function->bind(config, function);
@@ -243,6 +514,11 @@ int usb_add_function(struct usb_configuration *config,
 		config->highspeed = true;
 	if (!config->superspeed && function->ss_descriptors)
 		config->superspeed = true;
+<<<<<<< HEAD
+=======
+	if (!config->superspeed_plus && function->ssp_descriptors)
+		config->superspeed_plus = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	if (value)
@@ -250,6 +526,25 @@ done:
 				function->name, function, value);
 	return value;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(usb_add_function);
+
+void usb_remove_function(struct usb_configuration *c, struct usb_function *f)
+{
+	if (f->disable)
+		f->disable(f);
+
+	bitmap_zero(f->endpoints, 32);
+	list_del(&f->list);
+	if (f->unbind)
+		f->unbind(c, f);
+
+	if (f->bind_deactivated)
+		usb_function_activate(f);
+}
+EXPORT_SYMBOL_GPL(usb_remove_function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_function_deactivate - prevent function and gadget enumeration
@@ -278,14 +573,26 @@ int usb_function_deactivate(struct usb_function *function)
 
 	spin_lock_irqsave(&cdev->lock, flags);
 
+<<<<<<< HEAD
 	if (cdev->deactivations == 0)
 		status = usb_gadget_disconnect(cdev->gadget);
+=======
+	if (cdev->deactivations == 0) {
+		spin_unlock_irqrestore(&cdev->lock, flags);
+		status = usb_gadget_deactivate(cdev->gadget);
+		spin_lock_irqsave(&cdev->lock, flags);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == 0)
 		cdev->deactivations++;
 
 	spin_unlock_irqrestore(&cdev->lock, flags);
 	return status;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(usb_function_deactivate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_function_activate - allow function and gadget enumeration
@@ -300,14 +607,22 @@ int usb_function_deactivate(struct usb_function *function)
 int usb_function_activate(struct usb_function *function)
 {
 	struct usb_composite_dev	*cdev = function->config->cdev;
+<<<<<<< HEAD
 	int				status = 0;
 
 	spin_lock(&cdev->lock);
+=======
+	unsigned long			flags;
+	int				status = 0;
+
+	spin_lock_irqsave(&cdev->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WARN_ON(cdev->deactivations == 0))
 		status = -EINVAL;
 	else {
 		cdev->deactivations--;
+<<<<<<< HEAD
 		if (cdev->deactivations == 0)
 			status = usb_gadget_connect(cdev->gadget);
 	}
@@ -315,6 +630,19 @@ int usb_function_activate(struct usb_function *function)
 	spin_unlock(&cdev->lock);
 	return status;
 }
+=======
+		if (cdev->deactivations == 0) {
+			spin_unlock_irqrestore(&cdev->lock, flags);
+			status = usb_gadget_activate(cdev->gadget);
+			spin_lock_irqsave(&cdev->lock, flags);
+		}
+	}
+
+	spin_unlock_irqrestore(&cdev->lock, flags);
+	return status;
+}
+EXPORT_SYMBOL_GPL(usb_function_activate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_interface_id() - allocate an unused interface ID
@@ -351,16 +679,102 @@ int usb_interface_id(struct usb_configuration *config,
 	}
 	return -ENODEV;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(usb_interface_id);
+
+/**
+ * usb_func_wakeup - sends function wake notification to the host.
+ * @func: function that sends the remote wakeup notification.
+ *
+ * Applicable to devices operating at enhanced superspeed when usb
+ * functions are put in function suspend state and armed for function
+ * remote wakeup. On completion, function wake notification is sent. If
+ * the device is in low power state it tries to bring the device to active
+ * state before sending the wake notification. Since it is a synchronous
+ * call, caller must take care of not calling it in interrupt context.
+ * For devices operating at lower speeds  returns negative errno.
+ *
+ * Returns zero on success, else negative errno.
+ */
+int usb_func_wakeup(struct usb_function *func)
+{
+	struct usb_gadget	*gadget = func->config->cdev->gadget;
+	int			id;
+
+	if (!gadget->ops->func_wakeup)
+		return -EOPNOTSUPP;
+
+	if (!func->func_wakeup_armed) {
+		ERROR(func->config->cdev, "not armed for func remote wakeup\n");
+		return -EINVAL;
+	}
+
+	for (id = 0; id < MAX_CONFIG_INTERFACES; id++)
+		if (func->config->interface[id] == func)
+			break;
+
+	if (id == MAX_CONFIG_INTERFACES) {
+		ERROR(func->config->cdev, "Invalid function\n");
+		return -EINVAL;
+	}
+
+	return gadget->ops->func_wakeup(gadget, id);
+}
+EXPORT_SYMBOL_GPL(usb_func_wakeup);
+
+static u8 encode_bMaxPower(enum usb_device_speed speed,
+		struct usb_configuration *c)
+{
+	unsigned val;
+
+	if (c->MaxPower || (c->bmAttributes & USB_CONFIG_ATT_SELFPOWER))
+		val = c->MaxPower;
+	else
+		val = CONFIG_USB_GADGET_VBUS_DRAW;
+	if (!val)
+		return 0;
+	if (speed < USB_SPEED_SUPER)
+		return min(val, 500U) / 2;
+	else
+		/*
+		 * USB 3.x supports up to 900mA, but since 900 isn't divisible
+		 * by 8 the integral division will effectively cap to 896mA.
+		 */
+		return min(val, 900U) / 8;
+}
+
+void check_remote_wakeup_config(struct usb_gadget *g,
+				struct usb_configuration *c)
+{
+	if (USB_CONFIG_ATT_WAKEUP & c->bmAttributes) {
+		/* Reset the rw bit if gadget is not capable of it */
+		if (!g->wakeup_capable && g->ops->set_remote_wakeup) {
+			WARN(c->cdev, "Clearing wakeup bit for config c.%d\n",
+			     c->bConfigurationValue);
+			c->bmAttributes &= ~USB_CONFIG_ATT_WAKEUP;
+		}
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int config_buf(struct usb_configuration *config,
 		enum usb_device_speed speed, void *buf, u8 type)
 {
 	struct usb_config_descriptor	*c = buf;
 	void				*next = buf + USB_DT_CONFIG_SIZE;
+<<<<<<< HEAD
 	int				len = USB_BUFSIZ - USB_DT_CONFIG_SIZE;
 	struct usb_function		*f;
 	int				status;
 
+=======
+	int				len;
+	struct usb_function		*f;
+	int				status;
+
+	len = USB_COMP_EP0_BUFSIZ - USB_DT_CONFIG_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* write the config descriptor */
 	c = buf;
 	c->bLength = USB_DT_CONFIG_SIZE;
@@ -370,8 +784,12 @@ static int config_buf(struct usb_configuration *config,
 	c->bConfigurationValue = config->bConfigurationValue;
 	c->iConfiguration = config->iConfiguration;
 	c->bmAttributes = USB_CONFIG_ATT_ONE | config->bmAttributes;
+<<<<<<< HEAD
 	c->bMaxPower = config->bMaxPower ? :
 		(CONFIG_USB_GADGET_VBUS_DRAW / config->cdev->vbus_draw_units);
+=======
+	c->bMaxPower = encode_bMaxPower(speed, config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* There may be e.g. OTG descriptors */
 	if (config->descriptors) {
@@ -387,6 +805,7 @@ static int config_buf(struct usb_configuration *config,
 	list_for_each_entry(f, &config->functions, list) {
 		struct usb_descriptor_header **descriptors;
 
+<<<<<<< HEAD
 		switch (speed) {
 		case USB_SPEED_SUPER:
 			descriptors = f->ss_descriptors;
@@ -398,6 +817,9 @@ static int config_buf(struct usb_configuration *config,
 			descriptors = f->fs_descriptors;
 		}
 
+=======
+		descriptors = function_descriptors(f, speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!descriptors)
 			continue;
 		status = usb_descriptor_fillbuf(next, len,
@@ -417,10 +839,18 @@ static int config_desc(struct usb_composite_dev *cdev, unsigned w_value)
 {
 	struct usb_gadget		*gadget = cdev->gadget;
 	struct usb_configuration	*c;
+<<<<<<< HEAD
 	u8				type = w_value >> 8;
 	enum usb_device_speed		speed = USB_SPEED_UNKNOWN;
 
 	if (gadget->speed == USB_SPEED_SUPER)
+=======
+	struct list_head		*pos;
+	u8				type = w_value >> 8;
+	enum usb_device_speed		speed = USB_SPEED_UNKNOWN;
+
+	if (gadget->speed >= USB_SPEED_SUPER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		speed = gadget->speed;
 	else if (gadget_is_dualspeed(gadget)) {
 		int	hs = 0;
@@ -435,9 +865,32 @@ static int config_desc(struct usb_composite_dev *cdev, unsigned w_value)
 
 	/* This is a lookup by config *INDEX* */
 	w_value &= 0xff;
+<<<<<<< HEAD
 	list_for_each_entry(c, &cdev->configs, list) {
 		/* ignore configs that won't work at this speed */
 		switch (speed) {
+=======
+
+	pos = &cdev->configs;
+	c = cdev->os_desc_config;
+	if (c)
+		goto check_config;
+
+	while ((pos = pos->next) !=  &cdev->configs) {
+		c = list_entry(pos, typeof(*c), list);
+
+		/* skip OS Descriptors config which is handled separately */
+		if (c == cdev->os_desc_config)
+			continue;
+
+check_config:
+		/* ignore configs that won't work at this speed */
+		switch (speed) {
+		case USB_SPEED_SUPER_PLUS:
+			if (!c->superspeed_plus)
+				continue;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case USB_SPEED_SUPER:
 			if (!c->superspeed)
 				continue;
@@ -465,18 +918,34 @@ static int count_configs(struct usb_composite_dev *cdev, unsigned type)
 	unsigned			count = 0;
 	int				hs = 0;
 	int				ss = 0;
+<<<<<<< HEAD
+=======
+	int				ssp = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gadget_is_dualspeed(gadget)) {
 		if (gadget->speed == USB_SPEED_HIGH)
 			hs = 1;
 		if (gadget->speed == USB_SPEED_SUPER)
 			ss = 1;
+<<<<<<< HEAD
+=======
+		if (gadget->speed == USB_SPEED_SUPER_PLUS)
+			ssp = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (type == USB_DT_DEVICE_QUALIFIER)
 			hs = !hs;
 	}
 	list_for_each_entry(c, &cdev->configs, list) {
 		/* ignore configs that won't work at this speed */
+<<<<<<< HEAD
 		if (ss) {
+=======
+		if (ssp) {
+			if (!c->superspeed_plus)
+				continue;
+		} else if (ss) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!c->superspeed)
 				continue;
 		} else if (hs) {
@@ -503,9 +972,15 @@ static int count_configs(struct usb_composite_dev *cdev, unsigned type)
 static int bos_desc(struct usb_composite_dev *cdev)
 {
 	struct usb_ext_cap_descriptor	*usb_ext;
+<<<<<<< HEAD
 	struct usb_ss_cap_descriptor	*ss_cap;
 	struct usb_dcd_config_params	dcd_config_params;
 	struct usb_bos_descriptor	*bos = cdev->req->buf;
+=======
+	struct usb_dcd_config_params	dcd_config_params;
+	struct usb_bos_descriptor	*bos = cdev->req->buf;
+	unsigned int			besl = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bos->bLength = USB_DT_BOS_SIZE;
 	bos->bDescriptorType = USB_DT_BOS;
@@ -513,6 +988,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 	bos->wTotalLength = cpu_to_le16(USB_DT_BOS_SIZE);
 	bos->bNumDeviceCaps = 0;
 
+<<<<<<< HEAD
 	/*
 	 * A SuperSpeed device shall include the USB2.0 extension descriptor
 	 * and shall support LPM when operating in USB2.0 HS mode, as well as
@@ -531,6 +1007,53 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		 * The Superspeed USB Capability descriptor shall be
 		 * implemented by all SuperSpeed devices.
 		 */
+=======
+	/* Get Controller configuration */
+	if (cdev->gadget->ops->get_config_params) {
+		cdev->gadget->ops->get_config_params(cdev->gadget,
+						     &dcd_config_params);
+	} else {
+		dcd_config_params.besl_baseline =
+			USB_DEFAULT_BESL_UNSPECIFIED;
+		dcd_config_params.besl_deep =
+			USB_DEFAULT_BESL_UNSPECIFIED;
+		dcd_config_params.bU1devExitLat =
+			USB_DEFAULT_U1_DEV_EXIT_LAT;
+		dcd_config_params.bU2DevExitLat =
+			cpu_to_le16(USB_DEFAULT_U2_DEV_EXIT_LAT);
+	}
+
+	if (dcd_config_params.besl_baseline != USB_DEFAULT_BESL_UNSPECIFIED)
+		besl = USB_BESL_BASELINE_VALID |
+			USB_SET_BESL_BASELINE(dcd_config_params.besl_baseline);
+
+	if (dcd_config_params.besl_deep != USB_DEFAULT_BESL_UNSPECIFIED)
+		besl |= USB_BESL_DEEP_VALID |
+			USB_SET_BESL_DEEP(dcd_config_params.besl_deep);
+
+	/*
+	 * A SuperSpeed device shall include the USB2.0 extension descriptor
+	 * and shall support LPM when operating in USB2.0 HS mode.
+	 */
+	if (cdev->gadget->lpm_capable) {
+		usb_ext = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
+		bos->bNumDeviceCaps++;
+		le16_add_cpu(&bos->wTotalLength, USB_DT_USB_EXT_CAP_SIZE);
+		usb_ext->bLength = USB_DT_USB_EXT_CAP_SIZE;
+		usb_ext->bDescriptorType = USB_DT_DEVICE_CAPABILITY;
+		usb_ext->bDevCapabilityType = USB_CAP_TYPE_EXT;
+		usb_ext->bmAttributes = cpu_to_le32(USB_LPM_SUPPORT |
+							USB_BESL_SUPPORT | besl);
+	}
+
+	/*
+	 * The Superspeed USB Capability descriptor shall be implemented by all
+	 * SuperSpeed devices.
+	 */
+	if (gadget_is_superspeed(cdev->gadget)) {
+		struct usb_ss_cap_descriptor *ss_cap;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ss_cap = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
 		bos->bNumDeviceCaps++;
 		le16_add_cpu(&bos->wTotalLength, USB_DT_USB_SS_CAP_SIZE);
@@ -539,6 +1062,7 @@ static int bos_desc(struct usb_composite_dev *cdev)
 		ss_cap->bDevCapabilityType = USB_SS_CAP_TYPE;
 		ss_cap->bmAttributes = 0; /* LTM is not supported yet */
 		ss_cap->wSpeedSupported = cpu_to_le16(USB_LOW_SPEED_OPERATION |
+<<<<<<< HEAD
 					USB_FULL_SPEED_OPERATION |
 					USB_HIGH_SPEED_OPERATION |
 					USB_5GBPS_OPERATION);
@@ -554,10 +1078,126 @@ static int bos_desc(struct usb_composite_dev *cdev)
 			dcd_config_params.bU2DevExitLat =
 				cpu_to_le16(USB_DEFAULT_U2_DEV_EXIT_LAT);
 		}
+=======
+						      USB_FULL_SPEED_OPERATION |
+						      USB_HIGH_SPEED_OPERATION |
+						      USB_5GBPS_OPERATION);
+		ss_cap->bFunctionalitySupport = USB_LOW_SPEED_OPERATION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ss_cap->bU1devExitLat = dcd_config_params.bU1devExitLat;
 		ss_cap->bU2DevExitLat = dcd_config_params.bU2DevExitLat;
 	}
 
+<<<<<<< HEAD
+=======
+	/* The SuperSpeedPlus USB Device Capability descriptor */
+	if (gadget_is_superspeed_plus(cdev->gadget)) {
+		struct usb_ssp_cap_descriptor *ssp_cap;
+		u8 ssac = 1;
+		u8 ssic;
+		int i;
+
+		if (cdev->gadget->max_ssp_rate == USB_SSP_GEN_2x2)
+			ssac = 3;
+
+		/*
+		 * Paired RX and TX sublink speed attributes share
+		 * the same SSID.
+		 */
+		ssic = (ssac + 1) / 2 - 1;
+
+		ssp_cap = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
+		bos->bNumDeviceCaps++;
+
+		le16_add_cpu(&bos->wTotalLength, USB_DT_USB_SSP_CAP_SIZE(ssac));
+		ssp_cap->bLength = USB_DT_USB_SSP_CAP_SIZE(ssac);
+		ssp_cap->bDescriptorType = USB_DT_DEVICE_CAPABILITY;
+		ssp_cap->bDevCapabilityType = USB_SSP_CAP_TYPE;
+		ssp_cap->bReserved = 0;
+		ssp_cap->wReserved = 0;
+
+		ssp_cap->bmAttributes =
+			cpu_to_le32(FIELD_PREP(USB_SSP_SUBLINK_SPEED_ATTRIBS, ssac) |
+				    FIELD_PREP(USB_SSP_SUBLINK_SPEED_IDS, ssic));
+
+		ssp_cap->wFunctionalitySupport =
+			cpu_to_le16(FIELD_PREP(USB_SSP_MIN_SUBLINK_SPEED_ATTRIBUTE_ID, 0) |
+				    FIELD_PREP(USB_SSP_MIN_RX_LANE_COUNT, 1) |
+				    FIELD_PREP(USB_SSP_MIN_TX_LANE_COUNT, 1));
+
+		/*
+		 * Use 1 SSID if the gadget supports up to gen2x1 or not
+		 * specified:
+		 * - SSID 0 for symmetric RX/TX sublink speed of 10 Gbps.
+		 *
+		 * Use 1 SSID if the gadget supports up to gen1x2:
+		 * - SSID 0 for symmetric RX/TX sublink speed of 5 Gbps.
+		 *
+		 * Use 2 SSIDs if the gadget supports up to gen2x2:
+		 * - SSID 0 for symmetric RX/TX sublink speed of 5 Gbps.
+		 * - SSID 1 for symmetric RX/TX sublink speed of 10 Gbps.
+		 */
+		for (i = 0; i < ssac + 1; i++) {
+			u8 ssid;
+			u8 mantissa;
+			u8 type;
+
+			ssid = i >> 1;
+
+			if (cdev->gadget->max_ssp_rate == USB_SSP_GEN_2x1 ||
+			    cdev->gadget->max_ssp_rate == USB_SSP_GEN_UNKNOWN)
+				mantissa = 10;
+			else
+				mantissa = 5 << ssid;
+
+			if (i % 2)
+				type = USB_SSP_SUBLINK_SPEED_ST_SYM_TX;
+			else
+				type = USB_SSP_SUBLINK_SPEED_ST_SYM_RX;
+
+			ssp_cap->bmSublinkSpeedAttr[i] =
+				cpu_to_le32(FIELD_PREP(USB_SSP_SUBLINK_SPEED_SSID, ssid) |
+					    FIELD_PREP(USB_SSP_SUBLINK_SPEED_LSE,
+						       USB_SSP_SUBLINK_SPEED_LSE_GBPS) |
+					    FIELD_PREP(USB_SSP_SUBLINK_SPEED_ST, type) |
+					    FIELD_PREP(USB_SSP_SUBLINK_SPEED_LP,
+						       USB_SSP_SUBLINK_SPEED_LP_SSP) |
+					    FIELD_PREP(USB_SSP_SUBLINK_SPEED_LSM, mantissa));
+		}
+	}
+
+	/* The WebUSB Platform Capability descriptor */
+	if (cdev->use_webusb) {
+		struct usb_plat_dev_cap_descriptor *webusb_cap;
+		struct usb_webusb_cap_data *webusb_cap_data;
+		guid_t webusb_uuid = WEBUSB_UUID;
+
+		webusb_cap = cdev->req->buf + le16_to_cpu(bos->wTotalLength);
+		webusb_cap_data = (struct usb_webusb_cap_data *) webusb_cap->CapabilityData;
+		bos->bNumDeviceCaps++;
+		le16_add_cpu(&bos->wTotalLength,
+			USB_DT_USB_PLAT_DEV_CAP_SIZE(USB_WEBUSB_CAP_DATA_SIZE));
+
+		webusb_cap->bLength = USB_DT_USB_PLAT_DEV_CAP_SIZE(USB_WEBUSB_CAP_DATA_SIZE);
+		webusb_cap->bDescriptorType = USB_DT_DEVICE_CAPABILITY;
+		webusb_cap->bDevCapabilityType = USB_PLAT_DEV_CAP_TYPE;
+		webusb_cap->bReserved = 0;
+		export_guid(webusb_cap->UUID, &webusb_uuid);
+
+		if (cdev->bcd_webusb_version != 0)
+			webusb_cap_data->bcdVersion = cpu_to_le16(cdev->bcd_webusb_version);
+		else
+			webusb_cap_data->bcdVersion = WEBUSB_VERSION_1_00;
+
+		webusb_cap_data->bVendorCode = cdev->b_webusb_vendor_code;
+
+		if (strnlen(cdev->landing_page, sizeof(cdev->landing_page)) > 0)
+			webusb_cap_data->iLandingPage = WEBUSB_LANDING_PAGE_PRESENT;
+		else
+			webusb_cap_data->iLandingPage = WEBUSB_LANDING_PAGE_NOT_PRESENT;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return le16_to_cpu(bos->wTotalLength);
 }
 
@@ -590,6 +1230,12 @@ static void reset_config(struct usb_composite_dev *cdev)
 		if (f->disable)
 			f->disable(f);
 
+<<<<<<< HEAD
+=======
+		/* Section 9.1.1.6, disable remote wakeup when device is reset */
+		f->func_wakeup_armed = false;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bitmap_zero(f->endpoints, 32);
 	}
 	cdev->config = NULL;
@@ -600,11 +1246,16 @@ static int set_config(struct usb_composite_dev *cdev,
 		const struct usb_ctrlrequest *ctrl, unsigned number)
 {
 	struct usb_gadget	*gadget = cdev->gadget;
+<<<<<<< HEAD
 	struct usb_configuration *c = NULL;
+=======
+	struct usb_configuration *c = NULL, *iter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			result = -EINVAL;
 	unsigned		power = gadget_is_otg(gadget) ? 8 : 100;
 	int			tmp;
 
+<<<<<<< HEAD
 	/*
 	 * ignore 2nd time SET_CONFIGURATION
 	 * only for same config value twice.
@@ -628,6 +1279,22 @@ static int set_config(struct usb_composite_dev *cdev,
 				result = 0;
 				break;
 			}
+=======
+	if (number) {
+		list_for_each_entry(iter, &cdev->configs, list) {
+			if (iter->bConfigurationValue != number)
+				continue;
+			/*
+			 * We disable the FDs of the previous
+			 * configuration only if the new configuration
+			 * is a valid one
+			 */
+			if (cdev->config)
+				reset_config(cdev);
+			c = iter;
+			result = 0;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (result < 0)
 			goto done;
@@ -637,13 +1304,23 @@ static int set_config(struct usb_composite_dev *cdev,
 		result = 0;
 	}
 
+<<<<<<< HEAD
 	INFO(cdev, "%s config #%d: %s\n",
 	     usb_speed_string(gadget->speed),
 	     number, c ? c->label : "unconfigured");
+=======
+	DBG(cdev, "%s config #%d: %s\n",
+	    usb_speed_string(gadget->speed),
+	    number, c ? c->label : "unconfigured");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!c)
 		goto done;
 
+<<<<<<< HEAD
+=======
+	usb_gadget_set_state(gadget, USB_STATE_CONFIGURED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdev->config = c;
 
 	/* Initialize all interfaces by setting them to altsetting zero. */
@@ -660,6 +1337,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		 * function's setup callback instead of the current
 		 * configuration's setup callback.
 		 */
+<<<<<<< HEAD
 		switch (gadget->speed) {
 		case USB_SPEED_SUPER:
 			descriptors = f->ss_descriptors;
@@ -670,6 +1348,9 @@ static int set_config(struct usb_composite_dev *cdev,
 		default:
 			descriptors = f->fs_descriptors;
 		}
+=======
+		descriptors = function_descriptors(f, gadget->speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (; *descriptors; ++descriptors) {
 			struct usb_endpoint_descriptor *ep;
@@ -704,15 +1385,66 @@ static int set_config(struct usb_composite_dev *cdev,
 	}
 
 	/* when we return, be sure our power usage is valid */
+<<<<<<< HEAD
 	power = c->bMaxPower ? (cdev->vbus_draw_units * c->bMaxPower) :
 			CONFIG_USB_GADGET_VBUS_DRAW;
 done:
+=======
+	if (c->MaxPower || (c->bmAttributes & USB_CONFIG_ATT_SELFPOWER))
+		power = c->MaxPower;
+	else
+		power = CONFIG_USB_GADGET_VBUS_DRAW;
+
+	if (gadget->speed < USB_SPEED_SUPER)
+		power = min(power, 500U);
+	else
+		power = min(power, 900U);
+
+	if (USB_CONFIG_ATT_WAKEUP & c->bmAttributes)
+		usb_gadget_set_remote_wakeup(gadget, 1);
+	else
+		usb_gadget_set_remote_wakeup(gadget, 0);
+done:
+	if (power <= USB_SELF_POWER_VBUS_MAX_DRAW)
+		usb_gadget_set_selfpowered(gadget);
+	else
+		usb_gadget_clear_selfpowered(gadget);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_gadget_vbus_draw(gadget, power);
 	if (result >= 0 && cdev->delayed_status)
 		result = USB_GADGET_DELAYED_STATUS;
 	return result;
 }
 
+<<<<<<< HEAD
+=======
+int usb_add_config_only(struct usb_composite_dev *cdev,
+		struct usb_configuration *config)
+{
+	struct usb_configuration *c;
+
+	if (!config->bConfigurationValue)
+		return -EINVAL;
+
+	/* Prevent duplicate configuration identifiers */
+	list_for_each_entry(c, &cdev->configs, list) {
+		if (c->bConfigurationValue == config->bConfigurationValue)
+			return -EBUSY;
+	}
+
+	config->cdev = cdev;
+	list_add_tail(&config->list, &cdev->configs);
+
+	INIT_LIST_HEAD(&config->functions);
+	config->next_interface_id = 0;
+	memset(config->interface, 0, sizeof(config->interface));
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(usb_add_config_only);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * usb_add_config() - add a configuration to a device.
  * @cdev: wraps the USB gadget
@@ -733,12 +1465,19 @@ int usb_add_config(struct usb_composite_dev *cdev,
 		int (*bind)(struct usb_configuration *))
 {
 	int				status = -EINVAL;
+<<<<<<< HEAD
 	struct usb_configuration	*c;
+=======
+
+	if (!bind)
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG(cdev, "adding config #%u '%s'/%p\n",
 			config->bConfigurationValue,
 			config->label, config);
 
+<<<<<<< HEAD
 	if (!config->bConfigurationValue || !bind)
 		goto done;
 
@@ -759,13 +1498,44 @@ int usb_add_config(struct usb_composite_dev *cdev,
 
 	status = bind(config);
 	if (status < 0) {
+=======
+	status = usb_add_config_only(cdev, config);
+	if (status)
+		goto done;
+
+	status = bind(config);
+
+	if (status == 0)
+		status = usb_gadget_check_config(cdev->gadget);
+
+	if (status < 0) {
+		while (!list_empty(&config->functions)) {
+			struct usb_function		*f;
+
+			f = list_first_entry(&config->functions,
+					struct usb_function, list);
+			list_del(&f->list);
+			if (f->unbind) {
+				DBG(cdev, "unbind function '%s'/%p\n",
+					f->name, f);
+				f->unbind(config, f);
+				/* may free memory for "f" */
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&config->list);
 		config->cdev = NULL;
 	} else {
 		unsigned	i;
 
+<<<<<<< HEAD
 		DBG(cdev, "cfg %d/%p speeds:%s%s%s\n",
 			config->bConfigurationValue, config,
+=======
+		DBG(cdev, "cfg %d/%p speeds:%s%s%s%s\n",
+			config->bConfigurationValue, config,
+			config->superspeed_plus ? " superplus" : "",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			config->superspeed ? " super" : "",
 			config->highspeed ? " high" : "",
 			config->fullspeed
@@ -784,9 +1554,13 @@ int usb_add_config(struct usb_composite_dev *cdev,
 		}
 	}
 
+<<<<<<< HEAD
 	/* set_alt(), or next bind(), sets up
 	 * ep->driver_data as needed.
 	 */
+=======
+	/* set_alt(), or next bind(), sets up ep->claimed as needed */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_ep_autoconfig_reset(cdev->gadget);
 
 done:
@@ -795,8 +1569,14 @@ done:
 				config->bConfigurationValue, status);
 	return status;
 }
+<<<<<<< HEAD
 
 static int unbind_config(struct usb_composite_dev *cdev,
+=======
+EXPORT_SYMBOL_GPL(usb_add_config);
+
+static void remove_config(struct usb_composite_dev *cdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct usb_configuration *config)
 {
 	while (!list_empty(&config->functions)) {
@@ -804,6 +1584,7 @@ static int unbind_config(struct usb_composite_dev *cdev,
 
 		f = list_first_entry(&config->functions,
 				struct usb_function, list);
+<<<<<<< HEAD
 		list_del(&f->list);
 		if (f->unbind) {
 			DBG(cdev, "unbind function '%s'/%p\n", f->name, f);
@@ -811,12 +1592,21 @@ static int unbind_config(struct usb_composite_dev *cdev,
 			/* may free memory for "f" */
 		}
 	}
+=======
+
+		usb_remove_function(config, f);
+	}
+	list_del(&config->list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (config->unbind) {
 		DBG(cdev, "unbind config '%s'/%p\n", config->label, config);
 		config->unbind(config);
 			/* may free memory for "c" */
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -828,13 +1618,18 @@ static int unbind_config(struct usb_composite_dev *cdev,
  * to disconnect the device from the host and make sure the host will not
  * try to enumerate the device while we are changing the config list.
  */
+<<<<<<< HEAD
 int usb_remove_config(struct usb_composite_dev *cdev,
+=======
+void usb_remove_config(struct usb_composite_dev *cdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct usb_configuration *config)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&cdev->lock, flags);
 
+<<<<<<< HEAD
 	if (WARN_ON(!config->cdev)) {
 		spin_unlock_irqrestore(&cdev->lock, flags);
 		return 0;
@@ -848,26 +1643,46 @@ int usb_remove_config(struct usb_composite_dev *cdev,
 	spin_unlock_irqrestore(&cdev->lock, flags);
 
 	return unbind_config(cdev, config);
+=======
+	if (cdev->config == config)
+		reset_config(cdev);
+
+	spin_unlock_irqrestore(&cdev->lock, flags);
+
+	remove_config(cdev, config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
 /* We support strings in multiple languages ... string descriptor zero
  * says which languages are supported.  The typical case will be that
+<<<<<<< HEAD
  * only one language (probably English) is used, with I18N handled on
+=======
+ * only one language (probably English) is used, with i18n handled on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the host side.
  */
 
 static void collect_langs(struct usb_gadget_strings **sp, __le16 *buf)
 {
 	const struct usb_gadget_strings	*s;
+<<<<<<< HEAD
 	u16				language;
+=======
+	__le16				language;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16				*tmp;
 
 	while (*sp) {
 		s = *sp;
 		language = cpu_to_le16(s->language);
+<<<<<<< HEAD
 		for (tmp = buf; *tmp && tmp < &buf[126]; tmp++) {
+=======
+		for (tmp = buf; *tmp && tmp < &buf[USB_MAX_STRING_LEN]; tmp++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*tmp == language)
 				goto repeat;
 		}
@@ -901,12 +1716,22 @@ static int lookup_string(
 static int get_string(struct usb_composite_dev *cdev,
 		void *buf, u16 language, int id)
 {
+<<<<<<< HEAD
 	struct usb_configuration	*c;
 	struct usb_function		*f;
 	int				len;
 	const char			*str;
 
 	/* Yes, not only is USB's I18N support probably more than most
+=======
+	struct usb_composite_driver	*composite = cdev->driver;
+	struct usb_gadget_string_container *uc;
+	struct usb_configuration	*c;
+	struct usb_function		*f;
+	int				len;
+
+	/* Yes, not only is USB's i18n support probably more than most
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * folk will ever care about ... also, it's all supported here.
 	 * (Except for UTF8 support for Unicode's "Astral Planes".)
 	 */
@@ -934,8 +1759,19 @@ static int get_string(struct usb_composite_dev *cdev,
 					collect_langs(sp, s->wData);
 			}
 		}
+<<<<<<< HEAD
 
 		for (len = 0; len <= 126 && s->wData[len]; len++)
+=======
+		list_for_each_entry(uc, &cdev->gstrings, list) {
+			struct usb_gadget_strings **sp;
+
+			sp = get_containers_gs(uc);
+			collect_langs(sp, s->wData);
+		}
+
+		for (len = 0; len <= USB_MAX_STRING_LEN && s->wData[len]; len++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (!len)
 			return -EINVAL;
@@ -944,6 +1780,7 @@ static int get_string(struct usb_composite_dev *cdev,
 		return s->bLength;
 	}
 
+<<<<<<< HEAD
 	/* Otherwise, look up and return a specified string.  First
 	 * check if the string has not been overridden.
 	 */
@@ -962,6 +1799,28 @@ static int get_string(struct usb_composite_dev *cdev,
 			.strings  = &(struct usb_string) { 0xff, str }
 		};
 		return usb_gadget_get_string(&strings, 0xff, buf);
+=======
+	if (cdev->use_os_string && language == 0 && id == OS_STRING_IDX) {
+		struct usb_os_string *b = buf;
+		b->bLength = sizeof(*b);
+		b->bDescriptorType = USB_DT_STRING;
+		compiletime_assert(
+			sizeof(b->qwSignature) == sizeof(cdev->qw_sign),
+			"qwSignature size must be equal to qw_sign");
+		memcpy(&b->qwSignature, cdev->qw_sign, sizeof(b->qwSignature));
+		b->bMS_VendorCode = cdev->b_vendor_code;
+		b->bPad = 0;
+		return sizeof(*b);
+	}
+
+	list_for_each_entry(uc, &cdev->gstrings, list) {
+		struct usb_gadget_strings **sp;
+
+		sp = get_containers_gs(uc);
+		len = lookup_string(sp, buf, language, id);
+		if (len > 0)
+			return len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* String IDs are device-scoped, so we look up each string
@@ -1015,9 +1874,16 @@ int usb_string_id(struct usb_composite_dev *cdev)
 	}
 	return -ENODEV;
 }
+<<<<<<< HEAD
 
 /**
  * usb_string_ids() - allocate unused string IDs in batch
+=======
+EXPORT_SYMBOL_GPL(usb_string_id);
+
+/**
+ * usb_string_ids_tab() - allocate unused string IDs in batch
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: the device whose string descriptor IDs are being allocated
  * @str: an array of usb_string objects to assign numbers to
  * Context: single threaded during gadget setup
@@ -1046,6 +1912,123 @@ int usb_string_ids_tab(struct usb_composite_dev *cdev, struct usb_string *str)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(usb_string_ids_tab);
+
+static struct usb_gadget_string_container *copy_gadget_strings(
+		struct usb_gadget_strings **sp, unsigned n_gstrings,
+		unsigned n_strings)
+{
+	struct usb_gadget_string_container *uc;
+	struct usb_gadget_strings **gs_array;
+	struct usb_gadget_strings *gs;
+	struct usb_string *s;
+	unsigned mem;
+	unsigned n_gs;
+	unsigned n_s;
+	void *stash;
+
+	mem = sizeof(*uc);
+	mem += sizeof(void *) * (n_gstrings + 1);
+	mem += sizeof(struct usb_gadget_strings) * n_gstrings;
+	mem += sizeof(struct usb_string) * (n_strings + 1) * (n_gstrings);
+	uc = kmalloc(mem, GFP_KERNEL);
+	if (!uc)
+		return ERR_PTR(-ENOMEM);
+	gs_array = get_containers_gs(uc);
+	stash = uc->stash;
+	stash += sizeof(void *) * (n_gstrings + 1);
+	for (n_gs = 0; n_gs < n_gstrings; n_gs++) {
+		struct usb_string *org_s;
+
+		gs_array[n_gs] = stash;
+		gs = gs_array[n_gs];
+		stash += sizeof(struct usb_gadget_strings);
+		gs->language = sp[n_gs]->language;
+		gs->strings = stash;
+		org_s = sp[n_gs]->strings;
+
+		for (n_s = 0; n_s < n_strings; n_s++) {
+			s = stash;
+			stash += sizeof(struct usb_string);
+			if (org_s->s)
+				s->s = org_s->s;
+			else
+				s->s = "";
+			org_s++;
+		}
+		s = stash;
+		s->s = NULL;
+		stash += sizeof(struct usb_string);
+
+	}
+	gs_array[n_gs] = NULL;
+	return uc;
+}
+
+/**
+ * usb_gstrings_attach() - attach gadget strings to a cdev and assign ids
+ * @cdev: the device whose string descriptor IDs are being allocated
+ * and attached.
+ * @sp: an array of usb_gadget_strings to attach.
+ * @n_strings: number of entries in each usb_strings array (sp[]->strings)
+ *
+ * This function will create a deep copy of usb_gadget_strings and usb_string
+ * and attach it to the cdev. The actual string (usb_string.s) will not be
+ * copied but only a referenced will be made. The struct usb_gadget_strings
+ * array may contain multiple languages and should be NULL terminated.
+ * The ->language pointer of each struct usb_gadget_strings has to contain the
+ * same amount of entries.
+ * For instance: sp[0] is en-US, sp[1] is es-ES. It is expected that the first
+ * usb_string entry of es-ES contains the translation of the first usb_string
+ * entry of en-US. Therefore both entries become the same id assign.
+ */
+struct usb_string *usb_gstrings_attach(struct usb_composite_dev *cdev,
+		struct usb_gadget_strings **sp, unsigned n_strings)
+{
+	struct usb_gadget_string_container *uc;
+	struct usb_gadget_strings **n_gs;
+	unsigned n_gstrings = 0;
+	unsigned i;
+	int ret;
+
+	for (i = 0; sp[i]; i++)
+		n_gstrings++;
+
+	if (!n_gstrings)
+		return ERR_PTR(-EINVAL);
+
+	uc = copy_gadget_strings(sp, n_gstrings, n_strings);
+	if (IS_ERR(uc))
+		return ERR_CAST(uc);
+
+	n_gs = get_containers_gs(uc);
+	ret = usb_string_ids_tab(cdev, n_gs[0]->strings);
+	if (ret)
+		goto err;
+
+	for (i = 1; i < n_gstrings; i++) {
+		struct usb_string *m_s;
+		struct usb_string *s;
+		unsigned n;
+
+		m_s = n_gs[0]->strings;
+		s = n_gs[i]->strings;
+		for (n = 0; n < n_strings; n++) {
+			s->id = m_s->id;
+			s++;
+			m_s++;
+		}
+	}
+	list_add_tail(&uc->list, &cdev->gstrings);
+	return n_gs[0]->strings;
+err:
+	kfree(uc);
+	return ERR_PTR(ret);
+}
+EXPORT_SYMBOL_GPL(usb_gstrings_attach);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_string_ids_n() - allocate unused string IDs in batch
@@ -1074,16 +2057,215 @@ int usb_string_ids_n(struct usb_composite_dev *c, unsigned n)
 	c->next_string_id += n;
 	return next + 1;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL_GPL(usb_string_ids_n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
 static void composite_setup_complete(struct usb_ep *ep, struct usb_request *req)
 {
+<<<<<<< HEAD
+=======
+	struct usb_composite_dev *cdev;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (req->status || req->actual != req->length)
 		DBG((struct usb_composite_dev *) ep->driver_data,
 				"setup complete --> %d, %d/%d\n",
 				req->status, req->actual, req->length);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * REVIST The same ep0 requests are shared with function drivers
+	 * so they don't have to maintain the same ->complete() stubs.
+	 *
+	 * Because of that, we need to check for the validity of ->context
+	 * here, even though we know we've set it to something useful.
+	 */
+	if (!req->context)
+		return;
+
+	cdev = req->context;
+
+	if (cdev->req == req)
+		cdev->setup_pending = false;
+	else if (cdev->os_desc_req == req)
+		cdev->os_desc_pending = false;
+	else
+		WARN(1, "unknown request %p\n", req);
+}
+
+static int composite_ep0_queue(struct usb_composite_dev *cdev,
+		struct usb_request *req, gfp_t gfp_flags)
+{
+	int ret;
+
+	ret = usb_ep_queue(cdev->gadget->ep0, req, gfp_flags);
+	if (ret == 0) {
+		if (cdev->req == req)
+			cdev->setup_pending = true;
+		else if (cdev->os_desc_req == req)
+			cdev->os_desc_pending = true;
+		else
+			WARN(1, "unknown request %p\n", req);
+	}
+
+	return ret;
+}
+
+static int count_ext_compat(struct usb_configuration *c)
+{
+	int i, res;
+
+	res = 0;
+	for (i = 0; i < c->next_interface_id; ++i) {
+		struct usb_function *f;
+		int j;
+
+		f = c->interface[i];
+		for (j = 0; j < f->os_desc_n; ++j) {
+			struct usb_os_desc *d;
+
+			if (i != f->os_desc_table[j].if_id)
+				continue;
+			d = f->os_desc_table[j].os_desc;
+			if (d && d->ext_compat_id)
+				++res;
+		}
+	}
+	BUG_ON(res > 255);
+	return res;
+}
+
+static int fill_ext_compat(struct usb_configuration *c, u8 *buf)
+{
+	int i, count;
+
+	count = 16;
+	buf += 16;
+	for (i = 0; i < c->next_interface_id; ++i) {
+		struct usb_function *f;
+		int j;
+
+		f = c->interface[i];
+		for (j = 0; j < f->os_desc_n; ++j) {
+			struct usb_os_desc *d;
+
+			if (i != f->os_desc_table[j].if_id)
+				continue;
+			d = f->os_desc_table[j].os_desc;
+			if (d && d->ext_compat_id) {
+				*buf++ = i;
+				*buf++ = 0x01;
+				memcpy(buf, d->ext_compat_id, 16);
+				buf += 22;
+			} else {
+				++buf;
+				*buf = 0x01;
+				buf += 23;
+			}
+			count += 24;
+			if (count + 24 >= USB_COMP_EP0_OS_DESC_BUFSIZ)
+				return count;
+		}
+	}
+
+	return count;
+}
+
+static int count_ext_prop(struct usb_configuration *c, int interface)
+{
+	struct usb_function *f;
+	int j;
+
+	f = c->interface[interface];
+	for (j = 0; j < f->os_desc_n; ++j) {
+		struct usb_os_desc *d;
+
+		if (interface != f->os_desc_table[j].if_id)
+			continue;
+		d = f->os_desc_table[j].os_desc;
+		if (d && d->ext_compat_id)
+			return d->ext_prop_count;
+	}
+	return 0;
+}
+
+static int len_ext_prop(struct usb_configuration *c, int interface)
+{
+	struct usb_function *f;
+	struct usb_os_desc *d;
+	int j, res;
+
+	res = 10; /* header length */
+	f = c->interface[interface];
+	for (j = 0; j < f->os_desc_n; ++j) {
+		if (interface != f->os_desc_table[j].if_id)
+			continue;
+		d = f->os_desc_table[j].os_desc;
+		if (d)
+			return min(res + d->ext_prop_len, 4096);
+	}
+	return res;
+}
+
+static int fill_ext_prop(struct usb_configuration *c, int interface, u8 *buf)
+{
+	struct usb_function *f;
+	struct usb_os_desc *d;
+	struct usb_os_desc_ext_prop *ext_prop;
+	int j, count, n, ret;
+
+	f = c->interface[interface];
+	count = 10; /* header length */
+	buf += 10;
+	for (j = 0; j < f->os_desc_n; ++j) {
+		if (interface != f->os_desc_table[j].if_id)
+			continue;
+		d = f->os_desc_table[j].os_desc;
+		if (d)
+			list_for_each_entry(ext_prop, &d->ext_prop, entry) {
+				n = ext_prop->data_len +
+					ext_prop->name_len + 14;
+				if (count + n >= USB_COMP_EP0_OS_DESC_BUFSIZ)
+					return count;
+				usb_ext_prop_put_size(buf, n);
+				usb_ext_prop_put_type(buf, ext_prop->type);
+				ret = usb_ext_prop_put_name(buf, ext_prop->name,
+							    ext_prop->name_len);
+				if (ret < 0)
+					return ret;
+				switch (ext_prop->type) {
+				case USB_EXT_PROP_UNICODE:
+				case USB_EXT_PROP_UNICODE_ENV:
+				case USB_EXT_PROP_UNICODE_LINK:
+					usb_ext_prop_put_unicode(buf, ret,
+							 ext_prop->data,
+							 ext_prop->data_len);
+					break;
+				case USB_EXT_PROP_BINARY:
+					usb_ext_prop_put_binary(buf, ret,
+							ext_prop->data,
+							ext_prop->data_len);
+					break;
+				case USB_EXT_PROP_LE32:
+					/* not implemented */
+				case USB_EXT_PROP_BE32:
+					/* not implemented */
+				default:
+					return -EINVAL;
+				}
+				buf += n;
+				count += n;
+			}
+	}
+
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1093,7 +2275,11 @@ static void composite_setup_complete(struct usb_ep *ep, struct usb_request *req)
  * housekeeping for the gadget function we're implementing.  Most of
  * the work is in config and function specific setup.
  */
+<<<<<<< HEAD
 static int
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 {
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
@@ -1105,22 +2291,53 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 	u16				w_value = le16_to_cpu(ctrl->wValue);
 	u16				w_length = le16_to_cpu(ctrl->wLength);
 	struct usb_function		*f = NULL;
+<<<<<<< HEAD
 	u8				endp;
 	struct usb_configuration *c;
 
 
 	if (w_length > USB_BUFSIZ)
 		return value;
+=======
+	struct usb_function		*iter;
+	u8				endp;
+
+	if (w_length > USB_COMP_EP0_BUFSIZ) {
+		if (ctrl->bRequestType & USB_DIR_IN) {
+			/* Cast away the const, we are going to overwrite on purpose. */
+			__le16 *temp = (__le16 *)&ctrl->wLength;
+
+			*temp = cpu_to_le16(USB_COMP_EP0_BUFSIZ);
+			w_length = USB_COMP_EP0_BUFSIZ;
+		} else {
+			goto done;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* partial re-init of the response message; the function or the
 	 * gadget might need to intercept e.g. a control-OUT completion
 	 * when we delegate to it.
 	 */
 	req->zero = 0;
+<<<<<<< HEAD
+=======
+	req->context = cdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->complete = composite_setup_complete;
 	req->length = 0;
 	gadget->ep0->driver_data = cdev;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Don't let non-standard requests match any of the cases below
+	 * by accident.
+	 */
+	if ((ctrl->bRequestType & USB_TYPE_MASK) != USB_TYPE_STANDARD)
+		goto unknown;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ctrl->bRequest) {
 
 	/* we handle all standard USB descriptors */
@@ -1134,6 +2351,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 				count_configs(cdev, USB_DT_DEVICE);
 			cdev->desc.bMaxPacketSize0 =
 				cdev->gadget->ep0->maxpacket;
+<<<<<<< HEAD
 			cdev->vbus_draw_units = 2;
 			if (gadget_is_superspeed(gadget)) {
 				if (gadget->speed >= USB_SPEED_SUPER) {
@@ -1148,6 +2366,20 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			} else if (gadget->l1_supported) {
 				cdev->desc.bcdUSB = cpu_to_le16(0x0201);
 				DBG(cdev, "Config HS device with LPM(L1)\n");
+=======
+			if (gadget_is_superspeed(gadget)) {
+				if (gadget->speed >= USB_SPEED_SUPER) {
+					cdev->desc.bcdUSB = cpu_to_le16(0x0320);
+					cdev->desc.bMaxPacketSize0 = 9;
+				} else {
+					cdev->desc.bcdUSB = cpu_to_le16(0x0210);
+				}
+			} else {
+				if (gadget->lpm_capable || cdev->use_webusb)
+					cdev->desc.bcdUSB = cpu_to_le16(0x0201);
+				else
+					cdev->desc.bcdUSB = cpu_to_le16(0x0200);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			value = min(w_length, (u16) sizeof cdev->desc);
@@ -1165,12 +2397,17 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			if (!gadget_is_dualspeed(gadget) ||
 			    gadget->speed >= USB_SPEED_SUPER)
 				break;
+<<<<<<< HEAD
 			/* FALLTHROUGH */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case USB_DT_CONFIG:
 			value = config_desc(cdev, w_value);
 			if (value >= 0)
 				value = min(w_length, (u16) value);
 			break;
+<<<<<<< HEAD
 		case USB_DT_OTG:
 			if (!gadget_is_otg(gadget))
 				break;
@@ -1181,6 +2418,8 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 						USB_BUFSIZ, c->descriptors,
 						USB_DT_OTG);
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case USB_DT_STRING:
 			value = get_string(cdev, req->buf,
 					w_index, w_value & 0xff);
@@ -1189,11 +2428,44 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			break;
 		case USB_DT_BOS:
 			if (gadget_is_superspeed(gadget) ||
+<<<<<<< HEAD
 				gadget->l1_supported) {
+=======
+			    gadget->lpm_capable || cdev->use_webusb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				value = bos_desc(cdev);
 				value = min(w_length, (u16) value);
 			}
 			break;
+<<<<<<< HEAD
+=======
+		case USB_DT_OTG:
+			if (gadget_is_otg(gadget)) {
+				struct usb_configuration *config;
+				int otg_desc_len = 0;
+
+				if (cdev->config)
+					config = cdev->config;
+				else
+					config = list_first_entry(
+							&cdev->configs,
+						struct usb_configuration, list);
+				if (!config)
+					goto done;
+
+				if (gadget->otg_caps &&
+					(gadget->otg_caps->otg_rev >= 0x0200))
+					otg_desc_len += sizeof(
+						struct usb_otg20_descriptor);
+				else
+					otg_desc_len += sizeof(
+						struct usb_otg_descriptor);
+
+				value = min_t(int, w_length, otg_desc_len);
+				memcpy(req->buf, config->descriptors[0], value);
+			}
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -1223,9 +2495,13 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		value = min(w_length, (u16) 1);
 		break;
 
+<<<<<<< HEAD
 	/* function drivers must handle get/set altsetting; if there's
 	 * no get() method, we know only altsetting zero works.
 	 */
+=======
+	/* function drivers must handle get/set altsetting */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case USB_REQ_SET_INTERFACE:
 		if (ctrl->bRequestType != USB_RECIP_INTERFACE)
 			goto unknown;
@@ -1234,6 +2510,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		f = cdev->config->interface[intf];
 		if (!f)
 			break;
+<<<<<<< HEAD
 		if (w_value && !f->set_alt)
 			break;
 		/*
@@ -1245,6 +2522,18 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			value = 0;
 			break;
 		}
+=======
+
+		/*
+		 * If there's no get_alt() method, we know only altsetting zero
+		 * works. There is no need to check if set_alt() is not NULL
+		 * as we check this in usb_add_function().
+		 */
+		if (w_value && !f->get_alt)
+			break;
+
+		spin_lock(&cdev->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		value = f->set_alt(f, w_index, w_value);
 		if (value == USB_GADGET_DELAYED_STATUS) {
 			DBG(cdev,
@@ -1254,6 +2543,10 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			DBG(cdev, "delayed_status count %d\n",
 					cdev->delayed_status);
 		}
+<<<<<<< HEAD
+=======
+		spin_unlock(&cdev->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case USB_REQ_GET_INTERFACE:
 		if (ctrl->bRequestType != (USB_DIR_IN|USB_RECIP_INTERFACE))
@@ -1270,6 +2563,7 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		*((u8 *)req->buf) = value;
 		value = min(w_length, (u16) 1);
 		break;
+<<<<<<< HEAD
 
 	/*
 	 * USB 3.0 additions:
@@ -1279,6 +2573,26 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 	 * interface of the function
 	 */
 	case USB_REQ_GET_STATUS:
+=======
+	case USB_REQ_GET_STATUS:
+		if (gadget_is_otg(gadget) && gadget->hnp_polling_support &&
+						(w_index == OTG_STS_SELECTOR)) {
+			if (ctrl->bRequestType != (USB_DIR_IN |
+							USB_RECIP_DEVICE))
+				goto unknown;
+			*((u8 *)req->buf) = gadget->host_request_flag;
+			value = 1;
+			break;
+		}
+
+		/*
+		 * USB 3.0 additions:
+		 * Function driver should handle get_status request. If such cb
+		 * wasn't supplied we respond with default value = 0
+		 * Note: function driver should supply such cb only for the
+		 * first interface of the function
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!gadget_is_superspeed(gadget))
 			goto unknown;
 		if (ctrl->bRequestType != (USB_DIR_IN | USB_RECIP_INTERFACE))
@@ -1290,9 +2604,26 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		f = cdev->config->interface[intf];
 		if (!f)
 			break;
+<<<<<<< HEAD
 		status = f->get_status ? f->get_status(f) : 0;
 		if (status < 0)
 			break;
+=======
+
+		if (f->get_status) {
+			status = f->get_status(f);
+			if (status < 0)
+				break;
+		} else {
+			/* Set D0 and D1 bits based on func wakeup capability */
+			if (f->config->bmAttributes & USB_CONFIG_ATT_WAKEUP) {
+				status |= USB_INTRF_STAT_FUNC_RW_CAP;
+				if (f->func_wakeup_armed)
+					status |= USB_INTRF_STAT_FUNC_RW;
+			}
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_unaligned_le16(status & 0x0000ffff, req->buf);
 		break;
 	/*
@@ -1314,8 +2645,49 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			if (!f)
 				break;
 			value = 0;
+<<<<<<< HEAD
 			if (f->func_suspend)
 				value = f->func_suspend(f, w_index >> 8);
+=======
+			if (f->func_suspend) {
+				value = f->func_suspend(f, w_index >> 8);
+			/* SetFeature(FUNCTION_SUSPEND) */
+			} else if (ctrl->bRequest == USB_REQ_SET_FEATURE) {
+				if (!(f->config->bmAttributes &
+				      USB_CONFIG_ATT_WAKEUP) &&
+				     (w_index & USB_INTRF_FUNC_SUSPEND_RW))
+					break;
+
+				f->func_wakeup_armed = !!(w_index &
+							  USB_INTRF_FUNC_SUSPEND_RW);
+
+				if (w_index & USB_INTRF_FUNC_SUSPEND_LP) {
+					if (f->suspend && !f->func_suspended) {
+						f->suspend(f);
+						f->func_suspended = true;
+					}
+				/*
+				 * Handle cases where host sends function resume
+				 * through SetFeature(FUNCTION_SUSPEND) but low power
+				 * bit reset
+				 */
+				} else {
+					if (f->resume && f->func_suspended) {
+						f->resume(f);
+						f->func_suspended = false;
+					}
+				}
+			/* ClearFeature(FUNCTION_SUSPEND) */
+			} else if (ctrl->bRequest == USB_REQ_CLEAR_FEATURE) {
+				f->func_wakeup_armed = false;
+
+				if (f->resume && f->func_suspended) {
+					f->resume(f);
+					f->func_suspended = false;
+				}
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (value < 0) {
 				ERROR(cdev,
 				      "func_suspend() returned error %d\n",
@@ -1327,6 +2699,118 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 		break;
 	default:
 unknown:
+<<<<<<< HEAD
+=======
+		/*
+		 * OS descriptors handling
+		 */
+		if (cdev->use_os_string && cdev->os_desc_config &&
+		    (ctrl->bRequestType & USB_TYPE_VENDOR) &&
+		    ctrl->bRequest == cdev->b_vendor_code) {
+			struct usb_configuration	*os_desc_cfg;
+			u8				*buf;
+			int				interface;
+			int				count = 0;
+
+			req = cdev->os_desc_req;
+			req->context = cdev;
+			req->complete = composite_setup_complete;
+			buf = req->buf;
+			os_desc_cfg = cdev->os_desc_config;
+			w_length = min_t(u16, w_length, USB_COMP_EP0_OS_DESC_BUFSIZ);
+			memset(buf, 0, w_length);
+			buf[5] = 0x01;
+			switch (ctrl->bRequestType & USB_RECIP_MASK) {
+			case USB_RECIP_DEVICE:
+				if (w_index != 0x4 || (w_value & 0xff))
+					break;
+				buf[6] = w_index;
+				/* Number of ext compat interfaces */
+				count = count_ext_compat(os_desc_cfg);
+				buf[8] = count;
+				count *= 24; /* 24 B/ext compat desc */
+				count += 16; /* header */
+				put_unaligned_le32(count, buf);
+				value = w_length;
+				if (w_length > 0x10) {
+					value = fill_ext_compat(os_desc_cfg, buf);
+					value = min_t(u16, w_length, value);
+				}
+				break;
+			case USB_RECIP_INTERFACE:
+				if (w_index != 0x5 || (w_value & 0xff))
+					break;
+				interface = w_value >> 8;
+				if (interface >= MAX_CONFIG_INTERFACES ||
+				    !os_desc_cfg->interface[interface])
+					break;
+				buf[6] = w_index;
+				count = count_ext_prop(os_desc_cfg,
+					interface);
+				put_unaligned_le16(count, buf + 8);
+				count = len_ext_prop(os_desc_cfg,
+					interface);
+				put_unaligned_le32(count, buf);
+				value = w_length;
+				if (w_length > 0x0A) {
+					value = fill_ext_prop(os_desc_cfg,
+							      interface, buf);
+					if (value >= 0)
+						value = min_t(u16, w_length, value);
+				}
+				break;
+			}
+
+			goto check_value;
+		}
+
+		/*
+		 * WebUSB URL descriptor handling, following:
+		 * https://wicg.github.io/webusb/#device-requests
+		 */
+		if (cdev->use_webusb &&
+		    ctrl->bRequestType == (USB_DIR_IN | USB_TYPE_VENDOR) &&
+		    w_index == WEBUSB_GET_URL &&
+		    w_value == WEBUSB_LANDING_PAGE_PRESENT &&
+		    ctrl->bRequest == cdev->b_webusb_vendor_code) {
+			unsigned int	landing_page_length;
+			unsigned int	landing_page_offset;
+			struct webusb_url_descriptor *url_descriptor =
+					(struct webusb_url_descriptor *)cdev->req->buf;
+
+			url_descriptor->bDescriptorType = WEBUSB_URL_DESCRIPTOR_TYPE;
+
+			if (strncasecmp(cdev->landing_page, "https://",  8) == 0) {
+				landing_page_offset = 8;
+				url_descriptor->bScheme = WEBUSB_URL_SCHEME_HTTPS;
+			} else if (strncasecmp(cdev->landing_page, "http://", 7) == 0) {
+				landing_page_offset = 7;
+				url_descriptor->bScheme = WEBUSB_URL_SCHEME_HTTP;
+			} else {
+				landing_page_offset = 0;
+				url_descriptor->bScheme = WEBUSB_URL_SCHEME_NONE;
+			}
+
+			landing_page_length = strnlen(cdev->landing_page,
+				sizeof(url_descriptor->URL)
+				- WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH + landing_page_offset);
+
+			if (w_length < WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH + landing_page_length)
+				landing_page_length = w_length
+				- WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH + landing_page_offset;
+
+			memcpy(url_descriptor->URL,
+				cdev->landing_page + landing_page_offset,
+				landing_page_length - landing_page_offset);
+			url_descriptor->bLength = landing_page_length
+				- landing_page_offset + WEBUSB_URL_DESCRIPTOR_HEADER_LENGTH;
+
+			value = url_descriptor->bLength;
+
+			goto check_value;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		VDBG(cdev,
 			"non-core control req%02x.%02x v%04x i%04x l%d\n",
 			ctrl->bRequestType, ctrl->bRequest,
@@ -1335,11 +2819,30 @@ unknown:
 		/* functions always handle their interfaces and endpoints...
 		 * punt other recipients (other, WUSB, ...) to the current
 		 * configuration code.
+<<<<<<< HEAD
 		 *
 		 * REVISIT it could make sense to let the composite device
 		 * take such requests too, if that's ever needed:  to work
 		 * in config 0, etc.
 		 */
+=======
+		 */
+		if (cdev->config) {
+			list_for_each_entry(f, &cdev->config->functions, list)
+				if (f->req_match &&
+				    f->req_match(f, ctrl, false))
+					goto try_fun_setup;
+		} else {
+			struct usb_configuration *c;
+			list_for_each_entry(c, &cdev->configs, list)
+				list_for_each_entry(f, &c->functions, list)
+					if (f->req_match &&
+					    f->req_match(f, ctrl, true))
+						goto try_fun_setup;
+		}
+		f = NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ctrl->bRequestType & USB_RECIP_MASK) {
 		case USB_RECIP_INTERFACE:
 			if (!cdev->config || intf >= MAX_CONFIG_INTERFACES)
@@ -1348,6 +2851,7 @@ unknown:
 			break;
 
 		case USB_RECIP_ENDPOINT:
+<<<<<<< HEAD
 			endp = ((w_index & 0x80) >> 3) | (w_index & 0x0f);
 			list_for_each_entry(f, &cdev->config->functions, list) {
 				if (test_bit(endp, f->endpoints))
@@ -1358,12 +2862,27 @@ unknown:
 			break;
 		}
 
+=======
+			if (!cdev->config)
+				break;
+			endp = ((w_index & 0x80) >> 3) | (w_index & 0x0f);
+			list_for_each_entry(iter, &cdev->config->functions, list) {
+				if (test_bit(endp, iter->endpoints)) {
+					f = iter;
+					break;
+				}
+			}
+			break;
+		}
+try_fun_setup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (f && f->setup)
 			value = f->setup(f, ctrl);
 		else {
 			struct usb_configuration	*c;
 
 			c = cdev->config;
+<<<<<<< HEAD
 			if (c && c->setup)
 				value = c->setup(c, ctrl);
 		}
@@ -1374,16 +2893,44 @@ unknown:
 			cdev->delayed_status++;
 			DBG(cdev, "delayed_status count %d\n",
 					cdev->delayed_status);
+=======
+			if (!c)
+				goto done;
+
+			/* try current config's setup */
+			if (c->setup) {
+				value = c->setup(c, ctrl);
+				goto done;
+			}
+
+			/* try the only function in the current config */
+			if (!list_is_singular(&c->functions))
+				goto done;
+			f = list_first_entry(&c->functions, struct usb_function,
+					     list);
+			if (f->setup)
+				value = f->setup(f, ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		goto done;
 	}
 
+<<<<<<< HEAD
 	/* respond with data transfer before status phase? */
 	if (value >= 0 && value != USB_GADGET_DELAYED_STATUS) {
 		req->length = value;
 		req->zero = value < w_length;
 		value = usb_ep_queue(gadget->ep0, req, GFP_ATOMIC);
+=======
+check_value:
+	/* respond with data transfer before status phase? */
+	if (value >= 0 && value != USB_GADGET_DELAYED_STATUS) {
+		req->length = value;
+		req->context = cdev;
+		req->zero = value < w_length;
+		value = composite_ep0_queue(cdev, req, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (value < 0) {
 			DBG(cdev, "ep_queue --> %d\n", value);
 			req->status = 0;
@@ -1400,7 +2947,11 @@ done:
 	return value;
 }
 
+<<<<<<< HEAD
 static void composite_disconnect(struct usb_gadget *gadget)
+=======
+static void __composite_disconnect(struct usb_gadget *gadget)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	unsigned long			flags;
@@ -1409,6 +2960,7 @@ static void composite_disconnect(struct usb_gadget *gadget)
 	 * disconnect callbacks?
 	 */
 	spin_lock_irqsave(&cdev->lock, flags);
+<<<<<<< HEAD
 	if (cdev->config)
 		reset_config(cdev);
 	if (composite->disconnect)
@@ -1425,12 +2977,44 @@ static void composite_disconnect(struct usb_gadget *gadget)
 static ssize_t composite_show_suspended(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
+=======
+	cdev->suspended = 0;
+	if (cdev->config)
+		reset_config(cdev);
+	if (cdev->driver->disconnect)
+		cdev->driver->disconnect(cdev);
+	spin_unlock_irqrestore(&cdev->lock, flags);
+}
+
+void composite_disconnect(struct usb_gadget *gadget)
+{
+	usb_gadget_vbus_draw(gadget, 0);
+	__composite_disconnect(gadget);
+}
+
+void composite_reset(struct usb_gadget *gadget)
+{
+	/*
+	 * Section 1.4.13 Standard Downstream Port of the USB battery charging
+	 * specification v1.2 states that a device connected on a SDP shall only
+	 * draw at max 100mA while in a connected, but unconfigured state.
+	 */
+	usb_gadget_vbus_draw(gadget, 100);
+	__composite_disconnect(gadget);
+}
+
+/*-------------------------------------------------------------------------*/
+
+static ssize_t suspended_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_gadget *gadget = dev_to_usb_gadget(dev);
 	struct usb_composite_dev *cdev = get_gadget_data(gadget);
 
 	return sprintf(buf, "%d\n", cdev->suspended);
 }
+<<<<<<< HEAD
 
 static DEVICE_ATTR(suspended, 0444, composite_show_suspended, NULL);
 
@@ -1438,6 +3022,15 @@ static void
 composite_unbind(struct usb_gadget *gadget)
 {
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
+=======
+static DEVICE_ATTR_RO(suspended);
+
+static void __composite_unbind(struct usb_gadget *gadget, bool unbind_driver)
+{
+	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
+	struct usb_gadget_strings	*gstr = cdev->driver->strings[0];
+	struct usb_string		*dev_str = gstr->strings;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* composite_disconnect() must already have been called
 	 * by the underlying peripheral controller driver!
@@ -1450,6 +3043,7 @@ composite_unbind(struct usb_gadget *gadget)
 		struct usb_configuration	*c;
 		c = list_first_entry(&cdev->configs,
 				struct usb_configuration, list);
+<<<<<<< HEAD
 		list_del(&c->list);
 		unbind_config(cdev, c);
 	}
@@ -1492,10 +3086,76 @@ static int composite_bind(struct usb_gadget *gadget)
 	cdev->gadget = gadget;
 	set_gadget_data(gadget, cdev);
 	INIT_LIST_HEAD(&cdev->configs);
+=======
+		remove_config(cdev, c);
+	}
+	if (cdev->driver->unbind && unbind_driver)
+		cdev->driver->unbind(cdev);
+
+	composite_dev_cleanup(cdev);
+
+	if (dev_str[USB_GADGET_MANUFACTURER_IDX].s == cdev->def_manufacturer)
+		dev_str[USB_GADGET_MANUFACTURER_IDX].s = "";
+
+	kfree(cdev->def_manufacturer);
+	kfree(cdev);
+	set_gadget_data(gadget, NULL);
+}
+
+static void composite_unbind(struct usb_gadget *gadget)
+{
+	__composite_unbind(gadget, true);
+}
+
+static void update_unchanged_dev_desc(struct usb_device_descriptor *new,
+		const struct usb_device_descriptor *old)
+{
+	__le16 idVendor;
+	__le16 idProduct;
+	__le16 bcdDevice;
+	u8 iSerialNumber;
+	u8 iManufacturer;
+	u8 iProduct;
+
+	/*
+	 * these variables may have been set in
+	 * usb_composite_overwrite_options()
+	 */
+	idVendor = new->idVendor;
+	idProduct = new->idProduct;
+	bcdDevice = new->bcdDevice;
+	iSerialNumber = new->iSerialNumber;
+	iManufacturer = new->iManufacturer;
+	iProduct = new->iProduct;
+
+	*new = *old;
+	if (idVendor)
+		new->idVendor = idVendor;
+	if (idProduct)
+		new->idProduct = idProduct;
+	if (bcdDevice)
+		new->bcdDevice = bcdDevice;
+	else
+		new->bcdDevice = cpu_to_le16(get_default_bcdDevice());
+	if (iSerialNumber)
+		new->iSerialNumber = iSerialNumber;
+	if (iManufacturer)
+		new->iManufacturer = iManufacturer;
+	if (iProduct)
+		new->iProduct = iProduct;
+}
+
+int composite_dev_prepare(struct usb_composite_driver *composite,
+		struct usb_composite_dev *cdev)
+{
+	struct usb_gadget *gadget = cdev->gadget;
+	int ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* preallocate control response and buffer */
 	cdev->req = usb_ep_alloc_request(gadget->ep0, GFP_KERNEL);
 	if (!cdev->req)
+<<<<<<< HEAD
 		goto fail;
 	cdev->req->buf = kmalloc(USB_BUFSIZ, GFP_KERNEL);
 	if (!cdev->req->buf)
@@ -1504,6 +3164,22 @@ static int composite_bind(struct usb_gadget *gadget)
 	gadget->ep0->driver_data = cdev;
 
 	cdev->bufsiz = USB_BUFSIZ;
+=======
+		return -ENOMEM;
+
+	cdev->req->buf = kzalloc(USB_COMP_EP0_BUFSIZ, GFP_KERNEL);
+	if (!cdev->req->buf)
+		goto fail;
+
+	ret = device_create_file(&gadget->dev, &dev_attr_suspended);
+	if (ret)
+		goto fail_dev;
+
+	cdev->req->complete = composite_setup_complete;
+	cdev->req->context = cdev;
+	gadget->ep0->driver_data = cdev;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdev->driver = composite;
 
 	/*
@@ -1518,12 +3194,116 @@ static int composite_bind(struct usb_gadget *gadget)
 	 * we force endpoints to start unassigned; few controller
 	 * drivers will zero ep->driver_data.
 	 */
+<<<<<<< HEAD
 	usb_ep_autoconfig_reset(cdev->gadget);
+=======
+	usb_ep_autoconfig_reset(gadget);
+	return 0;
+fail_dev:
+	kfree(cdev->req->buf);
+fail:
+	usb_ep_free_request(gadget->ep0, cdev->req);
+	cdev->req = NULL;
+	return ret;
+}
+
+int composite_os_desc_req_prepare(struct usb_composite_dev *cdev,
+				  struct usb_ep *ep0)
+{
+	int ret = 0;
+
+	cdev->os_desc_req = usb_ep_alloc_request(ep0, GFP_KERNEL);
+	if (!cdev->os_desc_req) {
+		ret = -ENOMEM;
+		goto end;
+	}
+
+	cdev->os_desc_req->buf = kmalloc(USB_COMP_EP0_OS_DESC_BUFSIZ,
+					 GFP_KERNEL);
+	if (!cdev->os_desc_req->buf) {
+		ret = -ENOMEM;
+		usb_ep_free_request(ep0, cdev->os_desc_req);
+		goto end;
+	}
+	cdev->os_desc_req->context = cdev;
+	cdev->os_desc_req->complete = composite_setup_complete;
+end:
+	return ret;
+}
+
+void composite_dev_cleanup(struct usb_composite_dev *cdev)
+{
+	struct usb_gadget_string_container *uc, *tmp;
+	struct usb_ep			   *ep, *tmp_ep;
+
+	list_for_each_entry_safe(uc, tmp, &cdev->gstrings, list) {
+		list_del(&uc->list);
+		kfree(uc);
+	}
+	if (cdev->os_desc_req) {
+		if (cdev->os_desc_pending)
+			usb_ep_dequeue(cdev->gadget->ep0, cdev->os_desc_req);
+
+		kfree(cdev->os_desc_req->buf);
+		cdev->os_desc_req->buf = NULL;
+		usb_ep_free_request(cdev->gadget->ep0, cdev->os_desc_req);
+		cdev->os_desc_req = NULL;
+	}
+	if (cdev->req) {
+		if (cdev->setup_pending)
+			usb_ep_dequeue(cdev->gadget->ep0, cdev->req);
+
+		kfree(cdev->req->buf);
+		cdev->req->buf = NULL;
+		usb_ep_free_request(cdev->gadget->ep0, cdev->req);
+		cdev->req = NULL;
+	}
+	cdev->next_string_id = 0;
+	device_remove_file(&cdev->gadget->dev, &dev_attr_suspended);
+
+	/*
+	 * Some UDC backends have a dynamic EP allocation scheme.
+	 *
+	 * In that case, the dispose() callback is used to notify the
+	 * backend that the EPs are no longer in use.
+	 *
+	 * Note: The UDC backend can remove the EP from the ep_list as
+	 *	 a result, so we need to use the _safe list iterator.
+	 */
+	list_for_each_entry_safe(ep, tmp_ep,
+				 &cdev->gadget->ep_list, ep_list) {
+		if (ep->ops->dispose)
+			ep->ops->dispose(ep);
+	}
+}
+
+static int composite_bind(struct usb_gadget *gadget,
+		struct usb_gadget_driver *gdriver)
+{
+	struct usb_composite_dev	*cdev;
+	struct usb_composite_driver	*composite = to_cdriver(gdriver);
+	int				status = -ENOMEM;
+
+	cdev = kzalloc(sizeof *cdev, GFP_KERNEL);
+	if (!cdev)
+		return status;
+
+	spin_lock_init(&cdev->lock);
+	cdev->gadget = gadget;
+	set_gadget_data(gadget, cdev);
+	INIT_LIST_HEAD(&cdev->configs);
+	INIT_LIST_HEAD(&cdev->gstrings);
+
+	status = composite_dev_prepare(composite, cdev);
+	if (status)
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* composite gadget needs to assign strings for whole device (like
 	 * serial number), register function drivers, potentially update
 	 * power state and consumption, etc
 	 */
+<<<<<<< HEAD
 	status = composite_gadget_bind(cdev);
 	if (status < 0)
 		goto fail;
@@ -1560,28 +3340,52 @@ static int composite_bind(struct usb_gadget *gadget)
 	if (iSerialNumber)
 		cdev->serial_override =
 			override_id(cdev, &cdev->desc.iSerialNumber);
+=======
+	status = composite->bind(cdev);
+	if (status < 0)
+		goto fail;
+
+	if (cdev->use_os_string) {
+		status = composite_os_desc_req_prepare(cdev, gadget->ep0);
+		if (status)
+			goto fail;
+	}
+
+	update_unchanged_dev_desc(&cdev->desc, composite->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* has userspace failed to provide a serial number? */
 	if (composite->needs_serial && !cdev->desc.iSerialNumber)
 		WARNING(cdev, "userspace failed to provide iSerialNumber\n");
 
+<<<<<<< HEAD
 	/* finish up */
 	status = device_create_file(&gadget->dev, &dev_attr_suspended);
 	if (status)
 		goto fail;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INFO(cdev, "%s ready\n", composite->name);
 	return 0;
 
 fail:
+<<<<<<< HEAD
 	composite_unbind(gadget);
+=======
+	__composite_unbind(gadget, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void
 composite_suspend(struct usb_gadget *gadget)
+=======
+void composite_suspend(struct usb_gadget *gadget)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	struct usb_function		*f;
@@ -1596,6 +3400,7 @@ composite_suspend(struct usb_gadget *gadget)
 				f->suspend(f);
 		}
 	}
+<<<<<<< HEAD
 	if (composite->suspend)
 		composite->suspend(cdev);
 
@@ -1610,11 +3415,28 @@ composite_resume(struct usb_gadget *gadget)
 	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
 	struct usb_function		*f;
 	u8				maxpower;
+=======
+	if (cdev->driver->suspend)
+		cdev->driver->suspend(cdev);
+
+	cdev->suspended = 1;
+
+	usb_gadget_set_selfpowered(gadget);
+	usb_gadget_vbus_draw(gadget, 2);
+}
+
+void composite_resume(struct usb_gadget *gadget)
+{
+	struct usb_composite_dev	*cdev = get_gadget_data(gadget);
+	struct usb_function		*f;
+	unsigned			maxpower;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* REVISIT:  should we have config level
 	 * suspend/resume callbacks?
 	 */
 	DBG(cdev, "resume\n");
+<<<<<<< HEAD
 	if (composite->resume)
 		composite->resume(cdev);
 	if (cdev->config) {
@@ -1628,6 +3450,36 @@ composite_resume(struct usb_gadget *gadget)
 		usb_gadget_vbus_draw(gadget, maxpower ?
 			(cdev->vbus_draw_units * maxpower) :
 			CONFIG_USB_GADGET_VBUS_DRAW);
+=======
+	if (cdev->driver->resume)
+		cdev->driver->resume(cdev);
+	if (cdev->config) {
+		list_for_each_entry(f, &cdev->config->functions, list) {
+			/*
+			 * Check for func_suspended flag to see if the function is
+			 * in USB3 FUNCTION_SUSPEND state. In this case resume is
+			 * done via FUNCTION_SUSPEND feature selector.
+			 */
+			if (f->resume && !f->func_suspended)
+				f->resume(f);
+		}
+
+		maxpower = cdev->config->MaxPower ?
+			cdev->config->MaxPower : CONFIG_USB_GADGET_VBUS_DRAW;
+		if (gadget->speed < USB_SPEED_SUPER)
+			maxpower = min(maxpower, 500U);
+		else
+			maxpower = min(maxpower, 900U);
+
+		if (maxpower > USB_SELF_POWER_VBUS_MAX_DRAW)
+			usb_gadget_clear_selfpowered(gadget);
+
+		usb_gadget_vbus_draw(gadget, maxpower);
+	} else {
+		maxpower = CONFIG_USB_GADGET_VBUS_DRAW;
+		maxpower = min(maxpower, 100U);
+		usb_gadget_vbus_draw(gadget, maxpower);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cdev->suspended = 0;
@@ -1635,10 +3487,19 @@ composite_resume(struct usb_gadget *gadget)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static struct usb_gadget_driver composite_driver = {
 	.unbind		= composite_unbind,
 
 	.setup		= composite_setup,
+=======
+static const struct usb_gadget_driver composite_driver_template = {
+	.bind		= composite_bind,
+	.unbind		= composite_unbind,
+
+	.setup		= composite_setup,
+	.reset		= composite_reset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.disconnect	= composite_disconnect,
 
 	.suspend	= composite_suspend,
@@ -1652,10 +3513,14 @@ static struct usb_gadget_driver composite_driver = {
 /**
  * usb_composite_probe() - register a composite driver
  * @driver: the driver to register
+<<<<<<< HEAD
  * @bind: the callback used to allocate resources that are shared across the
  *	whole device, such as string IDs, and add its configurations using
  *	@usb_add_config().  This may fail by returning a negative errno
  *	value; it should return zero on successful initialization.
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Context: single threaded during gadget setup
  *
  * This function is used to register drivers using the composite driver
@@ -1668,16 +3533,25 @@ static struct usb_gadget_driver composite_driver = {
  * while it was binding.  That would usually be done in order to wait for
  * some userspace participation.
  */
+<<<<<<< HEAD
 int usb_composite_probe(struct usb_composite_driver *driver,
 			       int (*bind)(struct usb_composite_dev *cdev))
 {
 	int retval;
 
 	if (!driver || !driver->dev || !bind)
+=======
+int usb_composite_probe(struct usb_composite_driver *driver)
+{
+	struct usb_gadget_driver *gadget_driver;
+
+	if (!driver || !driver->dev || !driver->bind)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (!driver->name)
 		driver->name = "composite";
+<<<<<<< HEAD
 	if (!driver->iProduct)
 		driver->iProduct = driver->name;
 	composite_driver.function =  (char *) driver->name;
@@ -1691,6 +3565,19 @@ int usb_composite_probe(struct usb_composite_driver *driver,
 		composite = NULL;
 	return retval;
 }
+=======
+
+	driver->gadget_driver = composite_driver_template;
+	gadget_driver = &driver->gadget_driver;
+
+	gadget_driver->function =  (char *) driver->name;
+	gadget_driver->driver.name = driver->name;
+	gadget_driver->max_speed = driver->max_speed;
+
+	return usb_gadget_register_driver(gadget_driver);
+}
+EXPORT_SYMBOL_GPL(usb_composite_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_composite_unregister() - unregister a composite driver
@@ -1701,10 +3588,16 @@ int usb_composite_probe(struct usb_composite_driver *driver,
  */
 void usb_composite_unregister(struct usb_composite_driver *driver)
 {
+<<<<<<< HEAD
 	if (composite != driver)
 		return;
 	usb_gadget_unregister_driver(&composite_driver);
 }
+=======
+	usb_gadget_unregister_driver(&driver->gadget_driver);
+}
+EXPORT_SYMBOL_GPL(usb_composite_unregister);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_composite_setup_continue() - Continue with the control transfer
@@ -1731,7 +3624,12 @@ void usb_composite_setup_continue(struct usb_composite_dev *cdev)
 	} else if (--cdev->delayed_status == 0) {
 		DBG(cdev, "%s: Completing delayed status\n", __func__);
 		req->length = 0;
+<<<<<<< HEAD
 		value = usb_ep_queue(cdev->gadget->ep0, req, GFP_ATOMIC);
+=======
+		req->context = cdev;
+		value = composite_ep0_queue(cdev, req, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (value < 0) {
 			DBG(cdev, "ep_queue --> %d\n", value);
 			req->status = 0;
@@ -1741,4 +3639,54 @@ void usb_composite_setup_continue(struct usb_composite_dev *cdev)
 
 	spin_unlock_irqrestore(&cdev->lock, flags);
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL_GPL(usb_composite_setup_continue);
+
+static char *composite_default_mfr(struct usb_gadget *gadget)
+{
+	return kasprintf(GFP_KERNEL, "%s %s with %s", init_utsname()->sysname,
+			 init_utsname()->release, gadget->name);
+}
+
+void usb_composite_overwrite_options(struct usb_composite_dev *cdev,
+		struct usb_composite_overwrite *covr)
+{
+	struct usb_device_descriptor	*desc = &cdev->desc;
+	struct usb_gadget_strings	*gstr = cdev->driver->strings[0];
+	struct usb_string		*dev_str = gstr->strings;
+
+	if (covr->idVendor)
+		desc->idVendor = cpu_to_le16(covr->idVendor);
+
+	if (covr->idProduct)
+		desc->idProduct = cpu_to_le16(covr->idProduct);
+
+	if (covr->bcdDevice)
+		desc->bcdDevice = cpu_to_le16(covr->bcdDevice);
+
+	if (covr->serial_number) {
+		desc->iSerialNumber = dev_str[USB_GADGET_SERIAL_IDX].id;
+		dev_str[USB_GADGET_SERIAL_IDX].s = covr->serial_number;
+	}
+	if (covr->manufacturer) {
+		desc->iManufacturer = dev_str[USB_GADGET_MANUFACTURER_IDX].id;
+		dev_str[USB_GADGET_MANUFACTURER_IDX].s = covr->manufacturer;
+
+	} else if (!strlen(dev_str[USB_GADGET_MANUFACTURER_IDX].s)) {
+		desc->iManufacturer = dev_str[USB_GADGET_MANUFACTURER_IDX].id;
+		cdev->def_manufacturer = composite_default_mfr(cdev->gadget);
+		dev_str[USB_GADGET_MANUFACTURER_IDX].s = cdev->def_manufacturer;
+	}
+
+	if (covr->product) {
+		desc->iProduct = dev_str[USB_GADGET_PRODUCT_IDX].id;
+		dev_str[USB_GADGET_PRODUCT_IDX].s = covr->product;
+	}
+}
+EXPORT_SYMBOL_GPL(usb_composite_overwrite_options);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("David Brownell");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

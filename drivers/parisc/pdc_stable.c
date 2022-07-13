@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  *    Interfaces to retrieve and set PDC Stable options (firmware)
  *
  *    Copyright (C) 2005-2006 Thibaut VARENE <varenet@parisc-linux.org>
  *
+<<<<<<< HEAD
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License, version 2, as
  *    published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    DEV NOTE: the PDC Procedures reference states that:
  *    "A minimum of 96 bytes of Stable Storage is required. Providing more than
  *    96 bytes of Stable Storage is optional [...]. Failure to provide the
@@ -27,7 +34,11 @@
  *    all) PA-RISC machines should have them. Anyway, for safety reasons, the
  *    following code can deal with just 96 bytes of Stable Storage, and all
  *    sizes between 96 and 192 bytes (provided they are multiple of struct
+<<<<<<< HEAD
  *    device_path size, eg: 128, 160 and 192) to provide full information.
+=======
+ *    pdc_module_path size, eg: 128, 160 and 192) to provide full information.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    One last word: there's one path we can always count on: the primary path.
  *    Anything above 224 bytes is used for 'osdep2' OS-dependent storage area.
  *
@@ -68,7 +79,11 @@
 
 #include <asm/pdc.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hardware.h>
 
 #define PDCS_VERSION	"0.30"
@@ -101,7 +116,11 @@ struct pdcspath_entry {
 	short ready;			/* entry record is valid if != 0 */
 	unsigned long addr;		/* entry address in stable storage */
 	char *name;			/* entry name */
+<<<<<<< HEAD
 	struct device_path devpath;	/* device path in parisc representation */
+=======
+	struct pdc_module_path devpath;	/* device path in parisc representation */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;		/* corresponding device */
 	struct kobject kobj;
 };
@@ -151,7 +170,11 @@ struct pdcspath_attribute paths_attr_##_name = { \
 static int
 pdcspath_fetch(struct pdcspath_entry *entry)
 {
+<<<<<<< HEAD
 	struct device_path *devpath;
+=======
+	struct pdc_module_path *devpath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!entry)
 		return -EINVAL;
@@ -166,7 +189,11 @@ pdcspath_fetch(struct pdcspath_entry *entry)
 		return -EIO;
 		
 	/* Find the matching device.
+<<<<<<< HEAD
 	   NOTE: hardware_path overlays with device_path, so the nice cast can
+=======
+	   NOTE: hardware_path overlays with pdc_module_path, so the nice cast can
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   be used */
 	entry->dev = hwpath_to_device((struct hardware_path *)devpath);
 
@@ -192,7 +219,11 @@ pdcspath_fetch(struct pdcspath_entry *entry)
 static void
 pdcspath_store(struct pdcspath_entry *entry)
 {
+<<<<<<< HEAD
 	struct device_path *devpath;
+=======
+	struct pdc_module_path *devpath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!entry);
 
@@ -212,12 +243,19 @@ pdcspath_store(struct pdcspath_entry *entry)
 			entry, devpath, entry->addr);
 
 	/* addr, devpath and count must be word aligned */
+<<<<<<< HEAD
 	if (pdc_stable_write(entry->addr, devpath, sizeof(*devpath)) != PDC_OK) {
 		printk(KERN_ERR "%s: an error occurred when writing to PDC.\n"
 				"It is likely that the Stable Storage data has been corrupted.\n"
 				"Please check it carefully upon next reboot.\n", __func__);
 		WARN_ON(1);
 	}
+=======
+	if (pdc_stable_write(entry->addr, devpath, sizeof(*devpath)) != PDC_OK)
+		WARN(1, KERN_ERR "%s: an error occurred when writing to PDC.\n"
+				"It is likely that the Stable Storage data has been corrupted.\n"
+				"Please check it carefully upon next reboot.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	/* kobject is already registered */
 	entry->ready = 2;
@@ -236,7 +274,11 @@ static ssize_t
 pdcspath_hwpath_read(struct pdcspath_entry *entry, char *buf)
 {
 	char *out = buf;
+<<<<<<< HEAD
 	struct device_path *devpath;
+=======
+	struct pdc_module_path *devpath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short i;
 
 	if (!entry || !buf)
@@ -251,11 +293,19 @@ pdcspath_hwpath_read(struct pdcspath_entry *entry, char *buf)
 		return -ENODATA;
 	
 	for (i = 0; i < 6; i++) {
+<<<<<<< HEAD
 		if (devpath->bc[i] >= 128)
 			continue;
 		out += sprintf(out, "%u/", (unsigned char)devpath->bc[i]);
 	}
 	out += sprintf(out, "%u\n", (unsigned char)devpath->mod);
+=======
+		if (devpath->path.bc[i] < 0)
+			continue;
+		out += sprintf(out, "%d/", devpath->path.bc[i]);
+	}
+	out += sprintf(out, "%u\n", (unsigned char)devpath->path.mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	return out - buf;
 }
@@ -280,7 +330,11 @@ pdcspath_hwpath_write(struct pdcspath_entry *entry, const char *buf, size_t coun
 {
 	struct hardware_path hwpath;
 	unsigned short i;
+<<<<<<< HEAD
 	char in[count+1], *temp;
+=======
+	char in[64], *temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	int ret;
 
@@ -288,8 +342,13 @@ pdcspath_hwpath_write(struct pdcspath_entry *entry, const char *buf, size_t coun
 		return -EINVAL;
 
 	/* We'll use a local copy of buf */
+<<<<<<< HEAD
 	memset(in, 0, count+1);
 	strncpy(in, buf, count);
+=======
+	count = min_t(size_t, count, sizeof(in)-1);
+	strscpy(in, buf, count + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Let's clean up the target. 0xff is a blank pattern */
 	memset(&hwpath, 0xff, sizeof(hwpath));
@@ -310,12 +369,20 @@ pdcspath_hwpath_write(struct pdcspath_entry *entry, const char *buf, size_t coun
 	for (i=5; ((temp = strrchr(in, '/'))) && (temp-in > 0) && (likely(i)); i--) {
 		hwpath.bc[i] = simple_strtoul(temp+1, NULL, 10);
 		in[temp-in] = '\0';
+<<<<<<< HEAD
 		DPRINTK("%s: bc[%d]: %d\n", __func__, i, hwpath.bc[i]);
+=======
+		DPRINTK("%s: bc[%d]: %d\n", __func__, i, hwpath.path.bc[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	
 	/* Store the final field */		
 	hwpath.bc[i] = simple_strtoul(in, NULL, 10);
+<<<<<<< HEAD
 	DPRINTK("%s: bc[%d]: %d\n", __func__, i, hwpath.bc[i]);
+=======
+	DPRINTK("%s: bc[%d]: %d\n", __func__, i, hwpath.path.bc[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Now we check that the user isn't trying to lure us */
 	if (!(dev = hwpath_to_device((struct hardware_path *)&hwpath))) {
@@ -334,11 +401,19 @@ pdcspath_hwpath_write(struct pdcspath_entry *entry, const char *buf, size_t coun
 	
 	/* Update the symlink to the real device */
 	sysfs_remove_link(&entry->kobj, "device");
+<<<<<<< HEAD
 	ret = sysfs_create_link(&entry->kobj, &entry->dev->kobj, "device");
 	WARN_ON(ret);
 
 	write_unlock(&entry->rw_lock);
 	
+=======
+	write_unlock(&entry->rw_lock);
+
+	ret = sysfs_create_link(&entry->kobj, &entry->dev->kobj, "device");
+	WARN_ON(ret);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO PDCS_PREFIX ": changed \"%s\" path to \"%s\"\n",
 		entry->name, buf);
 	
@@ -356,7 +431,11 @@ static ssize_t
 pdcspath_layer_read(struct pdcspath_entry *entry, char *buf)
 {
 	char *out = buf;
+<<<<<<< HEAD
 	struct device_path *devpath;
+=======
+	struct pdc_module_path *devpath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short i;
 
 	if (!entry || !buf)
@@ -395,14 +474,23 @@ pdcspath_layer_write(struct pdcspath_entry *entry, const char *buf, size_t count
 {
 	unsigned int layers[6]; /* device-specific info (ctlr#, unit#, ...) */
 	unsigned short i;
+<<<<<<< HEAD
 	char in[count+1], *temp;
+=======
+	char in[64], *temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!entry || !buf || !count)
 		return -EINVAL;
 
 	/* We'll use a local copy of buf */
+<<<<<<< HEAD
 	memset(in, 0, count+1);
 	strncpy(in, buf, count);
+=======
+	count = min_t(size_t, count, sizeof(in)-1);
+	strscpy(in, buf, count + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Let's clean up the target. 0 is a blank pattern */
 	memset(&layers, 0, sizeof(layers));
@@ -495,11 +583,19 @@ static struct attribute *paths_subsys_attrs[] = {
 	&paths_attr_layer.attr,
 	NULL,
 };
+<<<<<<< HEAD
+=======
+ATTRIBUTE_GROUPS(paths_subsys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Specific kobject type for our PDC paths */
 static struct kobj_type ktype_pdcspath = {
 	.sysfs_ops = &pdcspath_attr_ops,
+<<<<<<< HEAD
 	.default_attrs = paths_subsys_attrs,
+=======
+	.default_groups = paths_subsys_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* We hard define the 4 types of path we expect to find */
@@ -523,6 +619,11 @@ static struct pdcspath_entry *pdcspath_entries[] = {
 
 /**
  * pdcs_size_read - Stable Storage size output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  */
 static ssize_t pdcs_size_read(struct kobject *kobj,
@@ -542,6 +643,11 @@ static ssize_t pdcs_size_read(struct kobject *kobj,
 
 /**
  * pdcs_auto_read - Stable Storage autoboot/search flag output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  * @knob: The PF_AUTOBOOT or PF_AUTOSEARCH flag
  */
@@ -559,7 +665,11 @@ static ssize_t pdcs_auto_read(struct kobject *kobj,
 	pathentry = &pdcspath_entry_primary;
 
 	read_lock(&pathentry->rw_lock);
+<<<<<<< HEAD
 	out += sprintf(out, "%s\n", (pathentry->devpath.flags & knob) ?
+=======
+	out += sprintf(out, "%s\n", (pathentry->devpath.path.flags & knob) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"On" : "Off");
 	read_unlock(&pathentry->rw_lock);
 
@@ -568,6 +678,11 @@ static ssize_t pdcs_auto_read(struct kobject *kobj,
 
 /**
  * pdcs_autoboot_read - Stable Storage autoboot flag output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  */
 static ssize_t pdcs_autoboot_read(struct kobject *kobj,
@@ -578,6 +693,11 @@ static ssize_t pdcs_autoboot_read(struct kobject *kobj,
 
 /**
  * pdcs_autosearch_read - Stable Storage autoboot flag output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  */
 static ssize_t pdcs_autosearch_read(struct kobject *kobj,
@@ -588,6 +708,11 @@ static ssize_t pdcs_autosearch_read(struct kobject *kobj,
 
 /**
  * pdcs_timer_read - Stable Storage timer count output (in seconds).
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  *
  * The value of the timer field correponds to a number of seconds in powers of 2.
@@ -606,8 +731,13 @@ static ssize_t pdcs_timer_read(struct kobject *kobj,
 
 	/* print the timer value in seconds */
 	read_lock(&pathentry->rw_lock);
+<<<<<<< HEAD
 	out += sprintf(out, "%u\n", (pathentry->devpath.flags & PF_TIMER) ?
 				(1 << (pathentry->devpath.flags & PF_TIMER)) : 0);
+=======
+	out += sprintf(out, "%u\n", (pathentry->devpath.path.flags & PF_TIMER) ?
+				(1 << (pathentry->devpath.path.flags & PF_TIMER)) : 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&pathentry->rw_lock);
 
 	return out - buf;
@@ -615,6 +745,11 @@ static ssize_t pdcs_timer_read(struct kobject *kobj,
 
 /**
  * pdcs_osid_read - Stable Storage OS ID register output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  */
 static ssize_t pdcs_osid_read(struct kobject *kobj,
@@ -633,6 +768,11 @@ static ssize_t pdcs_osid_read(struct kobject *kobj,
 
 /**
  * pdcs_osdep1_read - Stable Storage OS-Dependent data area 1 output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  *
  * This can hold 16 bytes of OS-Dependent data.
@@ -659,6 +799,11 @@ static ssize_t pdcs_osdep1_read(struct kobject *kobj,
 
 /**
  * pdcs_diagnostic_read - Stable Storage Diagnostic register output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  *
  * I have NFC how to interpret the content of that register ;-).
@@ -683,6 +828,11 @@ static ssize_t pdcs_diagnostic_read(struct kobject *kobj,
 
 /**
  * pdcs_fastsize_read - Stable Storage FastSize register output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  *
  * This register holds the amount of system RAM to be tested during boot sequence.
@@ -711,6 +861,11 @@ static ssize_t pdcs_fastsize_read(struct kobject *kobj,
 
 /**
  * pdcs_osdep2_read - Stable Storage OS-Dependent data area 2 output.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The output buffer to write to.
  *
  * This can hold pdcs_size - 224 bytes of OS-Dependent data, when available.
@@ -743,6 +898,11 @@ static ssize_t pdcs_osdep2_read(struct kobject *kobj,
 
 /**
  * pdcs_auto_write - This function handles autoboot/search flag modifying.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The input buffer to read from.
  * @count: The number of bytes to be read.
  * @knob: The PF_AUTOBOOT or PF_AUTOSEARCH flag
@@ -757,7 +917,11 @@ static ssize_t pdcs_auto_write(struct kobject *kobj,
 {
 	struct pdcspath_entry *pathentry;
 	unsigned char flags;
+<<<<<<< HEAD
 	char in[count+1], *temp;
+=======
+	char in[8], *temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char c;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -767,15 +931,24 @@ static ssize_t pdcs_auto_write(struct kobject *kobj,
 		return -EINVAL;
 
 	/* We'll use a local copy of buf */
+<<<<<<< HEAD
 	memset(in, 0, count+1);
 	strncpy(in, buf, count);
+=======
+	count = min_t(size_t, count, sizeof(in)-1);
+	strscpy(in, buf, count + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Current flags are stored in primary boot path entry */
 	pathentry = &pdcspath_entry_primary;
 	
 	/* Be nice to the existing flag record */
 	read_lock(&pathentry->rw_lock);
+<<<<<<< HEAD
 	flags = pathentry->devpath.flags;
+=======
+	flags = pathentry->devpath.path.flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&pathentry->rw_lock);
 	
 	DPRINTK("%s: flags before: 0x%X\n", __func__, flags);
@@ -796,7 +969,11 @@ static ssize_t pdcs_auto_write(struct kobject *kobj,
 	write_lock(&pathentry->rw_lock);
 	
 	/* Change the path entry flags first */
+<<<<<<< HEAD
 	pathentry->devpath.flags = flags;
+=======
+	pathentry->devpath.path.flags = flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	/* Now, dive in. Write back to the hardware */
 	pdcspath_store(pathentry);
@@ -815,6 +992,11 @@ parse_error:
 
 /**
  * pdcs_autoboot_write - This function handles autoboot flag modifying.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The input buffer to read from.
  * @count: The number of bytes to be read.
  *
@@ -831,6 +1013,11 @@ static ssize_t pdcs_autoboot_write(struct kobject *kobj,
 
 /**
  * pdcs_autosearch_write - This function handles autosearch flag modifying.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The input buffer to read from.
  * @count: The number of bytes to be read.
  *
@@ -847,6 +1034,11 @@ static ssize_t pdcs_autosearch_write(struct kobject *kobj,
 
 /**
  * pdcs_osdep1_write - Stable Storage OS-Dependent data area 1 input.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The input buffer to read from.
  * @count: The number of bytes to be read.
  *
@@ -884,6 +1076,11 @@ static ssize_t pdcs_osdep1_write(struct kobject *kobj,
 
 /**
  * pdcs_osdep2_write - Stable Storage OS-Dependent data area 2 input.
+<<<<<<< HEAD
+=======
+ * @kobj: The kobject used to share data with userspace.
+ * @attr: The kobject attributes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: The input buffer to read from.
  * @count: The number of bytes to be read.
  *
@@ -953,7 +1150,11 @@ static struct attribute *pdcs_subsys_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group pdcs_attr_group = {
+=======
+static const struct attribute_group pdcs_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = pdcs_subsys_attrs,
 };
 
@@ -991,12 +1192,23 @@ pdcs_register_pathentries(void)
 		entry->kobj.kset = paths_kset;
 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
 					   "%s", entry->name);
+<<<<<<< HEAD
 		if (err)
 			return err;
+=======
+		if (err) {
+			kobject_put(&entry->kobj);
+			return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* kobject is now registered */
 		write_lock(&entry->rw_lock);
 		entry->ready = 2;
+<<<<<<< HEAD
+=======
+		write_unlock(&entry->rw_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 		/* Add a nice symlink to the real device */
 		if (entry->dev) {
@@ -1004,7 +1216,10 @@ pdcs_register_pathentries(void)
 			WARN_ON(err);
 		}
 
+<<<<<<< HEAD
 		write_unlock(&entry->rw_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_uevent(&entry->kobj, KOBJ_ADD);
 	}
 	
@@ -1035,7 +1250,11 @@ pdcs_unregister_pathentries(void)
 static int __init
 pdc_stable_init(void)
 {
+<<<<<<< HEAD
 	int rc = 0, error = 0;
+=======
+	int rc = 0, error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 result;
 
 	/* find the size of the stable storage */
@@ -1064,6 +1283,13 @@ pdc_stable_init(void)
 
 	/* Don't forget the root entries */
 	error = sysfs_create_group(stable_kobj, &pdcs_attr_group);
+<<<<<<< HEAD
+=======
+	if (error) {
+		rc = -ENOMEM;
+		goto fail_ksetreg;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register the paths kset as a child of the stable kset */
 	paths_kset = kset_create_and_add("paths", NULL, stable_kobj);

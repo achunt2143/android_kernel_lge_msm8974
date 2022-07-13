@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*    Signal support for 32-bit kernel builds
  *
  *    Copyright (C) 2001 Matthew Wilcox <willy at parisc-linux.org>
@@ -5,6 +9,7 @@
  *
  *    Code was mostly borrowed from kernel/signal.c.
  *    See kernel/signal.c for additional Copyrights.
+<<<<<<< HEAD
  *
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/compat.h>
@@ -31,10 +38,16 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include "signal32.h"
 #include "sys32.h"
+=======
+#include <linux/uaccess.h>
+
+#include "signal32.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUG_COMPAT_SIG 0 
 #define DEBUG_COMPAT_SIG_LEVEL 2
@@ -47,6 +60,7 @@
 #define DBG(LEVEL, ...)
 #endif
 
+<<<<<<< HEAD
 #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
 
 inline void
@@ -185,6 +199,8 @@ do_sigaltstack32 (const compat_stack_t __user *uss32, compat_stack_t __user *uos
 	return ret;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long
 restore_sigcontext32(struct compat_sigcontext __user *sc, struct compat_regfile __user * rf,
 		struct pt_regs *regs)
@@ -399,6 +415,7 @@ setup_sigcontext32(struct compat_sigcontext __user *sc, struct compat_regfile __
 
 	return err;
 }
+<<<<<<< HEAD
 
 int
 copy_siginfo_from_user32 (siginfo_t *to, compat_siginfo_t __user *from)
@@ -520,3 +537,5 @@ asmlinkage long compat_sys_rt_sigqueueinfo(int pid, int sig,
 	return kill_proc_info(sig, &info, pid);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

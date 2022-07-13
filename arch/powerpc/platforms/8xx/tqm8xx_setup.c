@@ -24,10 +24,16 @@
 #include <linux/device.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #include <linux/fs_enet_pd.h>
 #include <linux/fs_uart_pd.h>
 #include <linux/fsl_devices.h>
 #include <linux/mii.h>
+=======
+#include <linux/fsl_devices.h>
+#include <linux/mii.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 
 #include <asm/delay.h>
@@ -36,6 +42,7 @@
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
 #include <asm/8xx_immap.h>
 #include <asm/cpm1.h>
@@ -43,12 +50,24 @@
 #include <asm/udbg.h>
 
 #include "mpc8xx.h"
+=======
+#include <asm/8xx_immap.h>
+#include <asm/cpm1.h>
+#include <asm/udbg.h>
+
+#include "mpc8xx.h"
+#include "pic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpm_pin {
 	int port, pin, flags;
 };
 
+<<<<<<< HEAD
 static struct __initdata cpm_pin tqm8xx_pins[] = {
+=======
+static struct cpm_pin tqm8xx_pins[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SMC1 */
 	{CPM_PORTB, 24, CPM_PIN_INPUT}, /* RX */
 	{CPM_PORTB, 25, CPM_PIN_INPUT | CPM_PIN_SECONDARY}, /* TX */
@@ -63,7 +82,11 @@ static struct __initdata cpm_pin tqm8xx_pins[] = {
 	{CPM_PORTC, 11, CPM_PIN_INPUT | CPM_PIN_SECONDARY | CPM_PIN_GPIO},
 };
 
+<<<<<<< HEAD
 static struct __initdata cpm_pin tqm8xx_fec_pins[] = {
+=======
+static struct cpm_pin tqm8xx_fec_pins[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* MII */
 	{CPM_PORTD, 3, CPM_PIN_OUTPUT},
 	{CPM_PORTD, 4, CPM_PIN_OUTPUT},
@@ -104,6 +127,12 @@ static void __init init_ioports(void)
 	if (dnode == NULL)
 		return;
 	prop = of_find_property(dnode, "ethernet1", &len);
+<<<<<<< HEAD
+=======
+
+	of_node_put(dnode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prop == NULL)
 		return;
 
@@ -117,6 +146,7 @@ static void __init tqm8xx_setup_arch(void)
 	init_ioports();
 }
 
+<<<<<<< HEAD
 static int __init tqm8xx_probe(void)
 {
 	unsigned long node = of_get_flat_dt_root();
@@ -125,6 +155,9 @@ static int __init tqm8xx_probe(void)
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },
@@ -142,9 +175,15 @@ machine_device_initcall(tqm8xx, declare_of_platform_devices);
 
 define_machine(tqm8xx) {
 	.name			= "TQM8xx",
+<<<<<<< HEAD
 	.probe			= tqm8xx_probe,
 	.setup_arch		= tqm8xx_setup_arch,
 	.init_IRQ		= mpc8xx_pics_init,
+=======
+	.compatible		= "tqc,tqm8xx",
+	.setup_arch		= tqm8xx_setup_arch,
+	.init_IRQ		= mpc8xx_pic_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_irq		= mpc8xx_get_irq,
 	.restart		= mpc8xx_restart,
 	.calibrate_decr		= mpc8xx_calibrate_decr,

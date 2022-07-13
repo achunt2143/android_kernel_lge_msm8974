@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IndyDog	0.3	A Hardware Watchdog Device for SGI IP22
  *
  *	(c) Copyright 2002 Guido Guenther <agx@sigxcpu.org>,
  *						All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	based on softdog.c by Alan Cox <alan@lxorguk.ukuu.org.uk>
  */
 
@@ -41,17 +48,23 @@ MODULE_PARM_DESC(nowayout,
 
 static void indydog_start(void)
 {
+<<<<<<< HEAD
 	u32 mc_ctrl0;
 
 	spin_lock(&indydog_lock);
 	mc_ctrl0 = sgimc->cpuctrl0;
 	mc_ctrl0 = sgimc->cpuctrl0 | SGIMC_CCTRL0_WDOG;
 	sgimc->cpuctrl0 = mc_ctrl0;
+=======
+	spin_lock(&indydog_lock);
+	sgimc->cpuctrl0 |= SGIMC_CCTRL0_WDOG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&indydog_lock);
 }
 
 static void indydog_stop(void)
 {
+<<<<<<< HEAD
 	u32 mc_ctrl0;
 
 	spin_lock(&indydog_lock);
@@ -59,6 +72,10 @@ static void indydog_stop(void)
 	mc_ctrl0 = sgimc->cpuctrl0;
 	mc_ctrl0 &= ~SGIMC_CCTRL0_WDOG;
 	sgimc->cpuctrl0 = mc_ctrl0;
+=======
+	spin_lock(&indydog_lock);
+	sgimc->cpuctrl0 &= ~SGIMC_CCTRL0_WDOG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&indydog_lock);
 
 	pr_info("Stopped watchdog timer\n");
@@ -86,7 +103,11 @@ static int indydog_open(struct inode *inode, struct file *file)
 
 	pr_info("Started watchdog timer\n");
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int indydog_release(struct inode *inode, struct file *file)
@@ -165,6 +186,10 @@ static const struct file_operations indydog_fops = {
 	.llseek		= no_llseek,
 	.write		= indydog_write,
 	.unlocked_ioctl	= indydog_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= indydog_open,
 	.release	= indydog_release,
 };
@@ -214,4 +239,7 @@ module_exit(watchdog_exit);
 MODULE_AUTHOR("Guido Guenther <agx@sigxcpu.org>");
 MODULE_DESCRIPTION("Hardware Watchdog Device for SGI IP22");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

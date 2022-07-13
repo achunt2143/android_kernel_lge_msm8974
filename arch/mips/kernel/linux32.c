@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Conversion between 32-bit and 64-bit native system calls.
  *
  * Copyright (C) 2000 Silicon Graphics, Inc.
  * Written by Ulf Carlsson (ulfc@engr.sgi.com)
+<<<<<<< HEAD
  * sys32_execve from ia64/ia32 code, Feb 2000, Kanoj Sarcar (kanoj@sgi.com)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/compiler.h>
 #include <linux/mm.h>
@@ -27,7 +34,10 @@
 #include <linux/utsname.h>
 #include <linux/personality.h>
 #include <linux/dnotify.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/binfmts.h>
 #include <linux/security.h>
 #include <linux/compat.h>
@@ -40,6 +50,7 @@
 
 #include <asm/compat-signal.h>
 #include <asm/sim.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/mmu_context.h>
 #include <asm/mman.h>
@@ -54,6 +65,12 @@
  */
 #define A(__x) ((unsigned long)(__x))
 #define AA(__x) ((unsigned long)((int)__x))
+=======
+#include <linux/uaccess.h>
+#include <asm/mmu_context.h>
+#include <asm/mman.h>
+#include <asm/syscalls.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __MIPSEB__
 #define merge_64(r1, r2) ((((r1) & 0xffffffffUL) << 32) + ((r2) & 0xffffffffUL))
@@ -62,6 +79,7 @@
 #define merge_64(r1, r2) ((((r2) & 0xffffffffUL) << 32) + ((r1) & 0xffffffffUL))
 #endif
 
+<<<<<<< HEAD
 SYSCALL_DEFINE6(32_mmap2, unsigned long, addr, unsigned long, len,
 	unsigned long, prot, unsigned long, flags, unsigned long, fd,
 	unsigned long, pgoff)
@@ -109,12 +127,22 @@ SYSCALL_DEFINE4(32_truncate64, const char __user *, path,
 	unsigned long, __dummy, unsigned long, a2, unsigned long, a3)
 {
 	return sys_truncate(path, merge_64(a2, a3));
+=======
+SYSCALL_DEFINE4(32_truncate64, const char __user *, path,
+	unsigned long, __dummy, unsigned long, a2, unsigned long, a3)
+{
+	return ksys_truncate(path, merge_64(a2, a3));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE4(32_ftruncate64, unsigned long, fd, unsigned long, __dummy,
 	unsigned long, a2, unsigned long, a3)
 {
+<<<<<<< HEAD
 	return sys_ftruncate(fd, merge_64(a2, a3));
+=======
+	return ksys_ftruncate(fd, merge_64(a2, a3));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE5(32_llseek, unsigned int, fd, unsigned int, offset_high,
@@ -126,17 +154,26 @@ SYSCALL_DEFINE5(32_llseek, unsigned int, fd, unsigned int, offset_high,
 
 /* From the Single Unix Spec: pread & pwrite act like lseek to pos + op +
    lseek back to original location.  They fail just like lseek does on
+<<<<<<< HEAD
    non-seekable files.  */
+=======
+   non-seekable files.	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SYSCALL_DEFINE6(32_pread, unsigned long, fd, char __user *, buf, size_t, count,
 	unsigned long, unused, unsigned long, a4, unsigned long, a5)
 {
+<<<<<<< HEAD
 	return sys_pread64(fd, buf, count, merge_64(a4, a5));
+=======
+	return ksys_pread64(fd, buf, count, merge_64(a4, a5));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE6(32_pwrite, unsigned int, fd, const char __user *, buf,
 	size_t, count, u32, unused, u64, a4, u64, a5)
 {
+<<<<<<< HEAD
 	return sys_pwrite64(fd, buf, count, merge_64(a4, a5));
 }
 
@@ -249,6 +286,11 @@ SYSCALL_DEFINE5(n32_msgrcv, int, msqid, u32, msgp, size_t, msgsz,
 }
 #endif
 
+=======
+	return ksys_pwrite64(fd, buf, count, merge_64(a4, a5));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE1(32_personality, unsigned long, personality)
 {
 	unsigned int p = personality & 0xffffffff;
@@ -263,6 +305,7 @@ SYSCALL_DEFINE1(32_personality, unsigned long, personality)
 	return ret;
 }
 
+<<<<<<< HEAD
 SYSCALL_DEFINE4(32_sendfile, long, out_fd, long, in_fd,
 	compat_off_t __user *, offset, s32, count)
 {
@@ -287,6 +330,12 @@ asmlinkage ssize_t sys32_readahead(int fd, u32 pad0, u64 a2, u64 a3,
                                    size_t count)
 {
 	return sys_readahead(fd, merge_64(a2, a3), count);
+=======
+asmlinkage ssize_t sys32_readahead(int fd, u32 pad0, u64 a2, u64 a3,
+				   size_t count)
+{
+	return ksys_readahead(fd, merge_64(a2, a3), count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage long sys32_sync_file_range(int fd, int __pad,
@@ -294,7 +343,11 @@ asmlinkage long sys32_sync_file_range(int fd, int __pad,
 	unsigned long a4, unsigned long a5,
 	int flags)
 {
+<<<<<<< HEAD
 	return sys_sync_file_range(fd,
+=======
+	return ksys_sync_file_range(fd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			merge_64(a2, a3), merge_64(a4, a5),
 			flags);
 }
@@ -304,7 +357,11 @@ asmlinkage long sys32_fadvise64_64(int fd, int __pad,
 	unsigned long a4, unsigned long a5,
 	int flags)
 {
+<<<<<<< HEAD
 	return sys_fadvise64_64(fd,
+=======
+	return ksys_fadvise64_64(fd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			merge_64(a2, a3), merge_64(a4, a5),
 			flags);
 }
@@ -312,6 +369,7 @@ asmlinkage long sys32_fadvise64_64(int fd, int __pad,
 asmlinkage long sys32_fallocate(int fd, int mode, unsigned offset_a2,
 	unsigned offset_a3, unsigned len_a4, unsigned len_a5)
 {
+<<<<<<< HEAD
 	return sys_fallocate(fd, mode, merge_64(offset_a2, offset_a3),
 	                     merge_64(len_a4, len_a5));
 }
@@ -355,4 +413,8 @@ SYSCALL_DEFINE6(32_futex, u32 __user *, uaddr, int, op, u32, val,
 		u32, val3)
 {
 	return compat_sys_futex(uaddr, op, val, utime, uaddr2, val3);
+=======
+	return ksys_fallocate(fd, mode, merge_64(offset_a2, offset_a3),
+			      merge_64(len_a4, len_a5));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Battery and Power Management code for the Sharp SL-C7xx and SL-Cxx00
  * series of PDAs
@@ -5,11 +9,14 @@
  * Copyright (c) 2004-2005 Richard Purdie
  *
  * Based on code written by Sharp for 2.4 kernels
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -27,10 +34,17 @@
 #include <linux/io.h>
 
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/pm.h>
 #include <mach/pxa2xx-regs.h>
 #include <mach/regs-rtc.h>
 #include <mach/sharpsl_pm.h>
+=======
+#include "pm.h"
+#include "pxa2xx-regs.h"
+#include "regs-rtc.h"
+#include "sharpsl_pm.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Constants
@@ -55,7 +69,10 @@
 #ifdef CONFIG_PM
 static int sharpsl_off_charge_battery(void);
 static int sharpsl_check_battery_voltage(void);
+<<<<<<< HEAD
 static int sharpsl_fatal_check(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 static int sharpsl_check_battery_temp(void);
 static int sharpsl_ac_check(void);
@@ -175,10 +192,13 @@ extern int max1111_read_channel(int);
  */
 int sharpsl_pm_pxa_read_max1111(int channel)
 {
+<<<<<<< HEAD
 	/* Ugly, better move this function into another module */
 	if (machine_is_tosa())
 	    return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* max1111 accepts channels from 0-3, however,
 	 * it is encoded from 0-7 here in the code.
 	 */
@@ -225,8 +245,11 @@ void sharpsl_battery_kick(void)
 {
 	schedule_delayed_work(&sharpsl_bat, msecs_to_jiffies(125));
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(sharpsl_battery_kick);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sharpsl_battery_thread(struct work_struct *private_)
 {
@@ -342,7 +365,11 @@ static void sharpsl_charge_toggle(struct work_struct *private_)
 	sharpsl_pm.charge_start_time = jiffies;
 }
 
+<<<<<<< HEAD
 static void sharpsl_ac_timer(unsigned long data)
+=======
+static void sharpsl_ac_timer(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int acin = sharpsl_pm.machinfo->read_devdata(SHARPSL_STATUS_ACIN);
 
@@ -367,7 +394,11 @@ static irqreturn_t sharpsl_ac_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void sharpsl_chrg_full_timer(unsigned long data)
+=======
+static void sharpsl_chrg_full_timer(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev_dbg(sharpsl_pm.dev, "Charge Full at time: %lx\n", jiffies);
 
@@ -579,8 +610,13 @@ static int sharpsl_ac_check(void)
 static int sharpsl_pm_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	sharpsl_pm.flags |= SHARPSL_SUSPENDED;
+<<<<<<< HEAD
 	flush_delayed_work_sync(&toggle_charger);
 	flush_delayed_work_sync(&sharpsl_bat);
+=======
+	flush_delayed_work(&toggle_charger);
+	flush_delayed_work(&sharpsl_bat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sharpsl_pm.charge_mode == CHRG_ON)
 		sharpsl_pm.flags |= SHARPSL_DO_OFFLINE_CHRG;
@@ -686,6 +722,7 @@ static int corgi_pxa_pm_enter(suspend_state_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Check for fatal battery errors
  * Fatal returns -1
@@ -733,6 +770,8 @@ static int sharpsl_fatal_check(void)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sharpsl_off_charge_error(void)
 {
 	dev_err(sharpsl_pm.dev, "Offline Charger: Error occurred.\n");
@@ -792,7 +831,11 @@ static int sharpsl_off_charge_battery(void)
 		time = RCNR;
 		while (1) {
 			/* Check if any wakeup event had occurred */
+<<<<<<< HEAD
 			if (sharpsl_pm.machinfo->charger_wakeup() != 0)
+=======
+			if (sharpsl_pm.machinfo->charger_wakeup())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			/* Check for timeout */
 			if ((RCNR - time) > SHARPSL_WAIT_CO_TIME)
@@ -850,8 +893,13 @@ static ssize_t battery_voltage_show(struct device *dev, struct device_attribute 
 	return sprintf(buf, "%d\n", sharpsl_pm.battstat.mainbat_voltage);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(battery_percentage, 0444, battery_percentage_show, NULL);
 static DEVICE_ATTR(battery_voltage, 0444, battery_voltage_show, NULL);
+=======
+static DEVICE_ATTR_RO(battery_percentage);
+static DEVICE_ATTR_RO(battery_voltage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void (*apm_get_power_status)(struct apm_power_info *);
 
@@ -877,9 +925,15 @@ static const struct platform_suspend_ops sharpsl_pm_ops = {
 };
 #endif
 
+<<<<<<< HEAD
 static int __devinit sharpsl_pm_probe(struct platform_device *pdev)
 {
 	int ret;
+=======
+static int sharpsl_pm_probe(struct platform_device *pdev)
+{
+	int ret, irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pdev->dev.platform_data)
 		return -EINVAL;
@@ -889,11 +943,17 @@ static int __devinit sharpsl_pm_probe(struct platform_device *pdev)
 	sharpsl_pm.charge_mode = CHRG_OFF;
 	sharpsl_pm.flags = 0;
 
+<<<<<<< HEAD
 	init_timer(&sharpsl_pm.ac_timer);
 	sharpsl_pm.ac_timer.function = sharpsl_ac_timer;
 
 	init_timer(&sharpsl_pm.chrg_full_timer);
 	sharpsl_pm.chrg_full_timer.function = sharpsl_chrg_full_timer;
+=======
+	timer_setup(&sharpsl_pm.ac_timer, sharpsl_ac_timer, 0);
+
+	timer_setup(&sharpsl_pm.chrg_full_timer, sharpsl_chrg_full_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	led_trigger_register_simple("sharpsl-charge", &sharpsl_charge_led_trigger);
 
@@ -907,6 +967,7 @@ static int __devinit sharpsl_pm_probe(struct platform_device *pdev)
 	gpio_direction_input(sharpsl_pm.machinfo->gpio_batlock);
 
 	/* Register interrupt handlers */
+<<<<<<< HEAD
 	if (request_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_acin), sharpsl_ac_isr, IRQF_DISABLED | IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "AC Input Detect", sharpsl_ac_isr)) {
 		dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_acin));
 	}
@@ -918,13 +979,35 @@ static int __devinit sharpsl_pm_probe(struct platform_device *pdev)
 	if (sharpsl_pm.machinfo->gpio_fatal) {
 		if (request_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_fatal), sharpsl_fatal_isr, IRQF_DISABLED | IRQF_TRIGGER_FALLING, "Fatal Battery", sharpsl_fatal_isr)) {
 			dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_fatal));
+=======
+	irq = gpio_to_irq(sharpsl_pm.machinfo->gpio_acin);
+	if (request_irq(irq, sharpsl_ac_isr, IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING, "AC Input Detect", sharpsl_ac_isr)) {
+		dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", irq);
+	}
+
+	irq = gpio_to_irq(sharpsl_pm.machinfo->gpio_batlock);
+	if (request_irq(irq, sharpsl_fatal_isr, IRQF_TRIGGER_FALLING, "Battery Cover", sharpsl_fatal_isr)) {
+		dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", irq);
+	}
+
+	if (sharpsl_pm.machinfo->gpio_fatal) {
+		irq = gpio_to_irq(sharpsl_pm.machinfo->gpio_fatal);
+		if (request_irq(irq, sharpsl_fatal_isr, IRQF_TRIGGER_FALLING, "Fatal Battery", sharpsl_fatal_isr)) {
+			dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (sharpsl_pm.machinfo->batfull_irq) {
 		/* Register interrupt handler. */
+<<<<<<< HEAD
 		if (request_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_batfull), sharpsl_chrg_full_isr, IRQF_DISABLED | IRQF_TRIGGER_RISING, "CO", sharpsl_chrg_full_isr)) {
 			dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_batfull));
+=======
+		irq = gpio_to_irq(sharpsl_pm.machinfo->gpio_batfull);
+		if (request_irq(irq, sharpsl_chrg_full_isr, IRQF_TRIGGER_RISING, "CO", sharpsl_chrg_full_isr)) {
+			dev_err(sharpsl_pm.dev, "Could not get irq %d.\n", irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -944,7 +1027,11 @@ static int __devinit sharpsl_pm_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sharpsl_pm_remove(struct platform_device *pdev)
+=======
+static void sharpsl_pm_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	suspend_set_ops(NULL);
 
@@ -953,6 +1040,7 @@ static int sharpsl_pm_remove(struct platform_device *pdev)
 
 	led_trigger_unregister_simple(sharpsl_charge_led_trigger);
 
+<<<<<<< HEAD
 	free_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_acin), sharpsl_ac_isr);
 	free_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_batlock), sharpsl_fatal_isr);
 
@@ -961,6 +1049,16 @@ static int sharpsl_pm_remove(struct platform_device *pdev)
 
 	if (sharpsl_pm.machinfo->batfull_irq)
 		free_irq(PXA_GPIO_TO_IRQ(sharpsl_pm.machinfo->gpio_batfull), sharpsl_chrg_full_isr);
+=======
+	free_irq(gpio_to_irq(sharpsl_pm.machinfo->gpio_acin), sharpsl_ac_isr);
+	free_irq(gpio_to_irq(sharpsl_pm.machinfo->gpio_batlock), sharpsl_fatal_isr);
+
+	if (sharpsl_pm.machinfo->gpio_fatal)
+		free_irq(gpio_to_irq(sharpsl_pm.machinfo->gpio_fatal), sharpsl_fatal_isr);
+
+	if (sharpsl_pm.machinfo->batfull_irq)
+		free_irq(gpio_to_irq(sharpsl_pm.machinfo->gpio_batfull), sharpsl_chrg_full_isr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gpio_free(sharpsl_pm.machinfo->gpio_batlock);
 	gpio_free(sharpsl_pm.machinfo->gpio_batfull);
@@ -971,13 +1069,20 @@ static int sharpsl_pm_remove(struct platform_device *pdev)
 
 	del_timer_sync(&sharpsl_pm.chrg_full_timer);
 	del_timer_sync(&sharpsl_pm.ac_timer);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sharpsl_pm_driver = {
 	.probe		= sharpsl_pm_probe,
+<<<<<<< HEAD
 	.remove		= sharpsl_pm_remove,
+=======
+	.remove_new	= sharpsl_pm_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= sharpsl_pm_suspend,
 	.resume		= sharpsl_pm_resume,
 	.driver		= {
@@ -985,7 +1090,11 @@ static struct platform_driver sharpsl_pm_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit sharpsl_pm_init(void)
+=======
+static int sharpsl_pm_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return platform_driver_register(&sharpsl_pm_driver);
 }

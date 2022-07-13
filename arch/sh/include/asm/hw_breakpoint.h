@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_HW_BREAKPOINT_H
 #define __ASM_SH_HW_BREAKPOINT_H
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_HW_BREAKPOINT_H
+#define __ASM_SH_HW_BREAKPOINT_H
+
+#include <uapi/asm/hw_breakpoint.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __ARCH_HW_BREAKPOINT_H
 
 #include <linux/kdebug.h>
 #include <linux/types.h>
 
 struct arch_hw_breakpoint {
+<<<<<<< HEAD
 	char		*name; /* Contains name of the symbol to set bkpt */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	address;
 	u16		len;
 	u16		type;
@@ -39,6 +51,10 @@ struct sh_ubc {
 	struct clk	*clk;	/* optional interface clock / MSTP bit */
 };
 
+<<<<<<< HEAD
+=======
+struct perf_event_attr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct perf_event;
 struct task_struct;
 struct pmu;
@@ -46,6 +62,7 @@ struct pmu;
 /* Maximum number of UBC channels */
 #define HBP_NUM		2
 
+<<<<<<< HEAD
 static inline int hw_breakpoint_slots(int type)
 {
 	return HBP_NUM;
@@ -54,6 +71,15 @@ static inline int hw_breakpoint_slots(int type)
 /* arch/sh/kernel/hw_breakpoint.c */
 extern int arch_check_bp_in_kernelspace(struct perf_event *bp);
 extern int arch_validate_hwbkpt_settings(struct perf_event *bp);
+=======
+#define hw_breakpoint_slots(type) (HBP_NUM)
+
+/* arch/sh/kernel/hw_breakpoint.c */
+extern int arch_check_bp_in_kernelspace(struct arch_hw_breakpoint *hw);
+extern int hw_breakpoint_arch_parse(struct perf_event *bp,
+				    const struct perf_event_attr *attr,
+				    struct arch_hw_breakpoint *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int hw_breakpoint_exceptions_notify(struct notifier_block *unused,
 					   unsigned long val, void *data);
 
@@ -66,5 +92,8 @@ extern int register_sh_ubc(struct sh_ubc *);
 
 extern struct pmu perf_ops_bp;
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_HW_BREAKPOINT_H */

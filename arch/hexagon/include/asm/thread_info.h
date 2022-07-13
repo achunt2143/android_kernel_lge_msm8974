@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Thread support for the Hexagon architecture
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_THREAD_INFO_H
@@ -31,6 +38,7 @@
 
 #define THREAD_SHIFT		12
 #define THREAD_SIZE		(1<<THREAD_SHIFT)
+<<<<<<< HEAD
 
 #if THREAD_SHIFT >= PAGE_SHIFT
 #define THREAD_SIZE_ORDER	(THREAD_SHIFT - PAGE_SHIFT)
@@ -47,6 +55,12 @@ typedef struct {
 	unsigned long seg;
 } mm_segment_t;
 
+=======
+#define THREAD_SIZE_ORDER	(THREAD_SHIFT - PAGE_SHIFT)
+
+#ifndef __ASSEMBLY__
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is union'd with the "bottom" of the kernel stack.
  * It keeps track of thread info which is handy for routines
@@ -55,16 +69,25 @@ typedef struct {
 
 struct thread_info {
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain      *exec_domain;   /* execution domain */
 	unsigned long		flags;          /* low level flags */
 	__u32                   cpu;            /* current cpu */
 	int                     preempt_count;  /* 0=>preemptible,<0=>BUG */
 	mm_segment_t            addr_limit;     /* segmentation sux */
+=======
+	unsigned long		flags;          /* low level flags */
+	__u32                   cpu;            /* current cpu */
+	int                     preempt_count;  /* 0=>preemptible,<0=>BUG */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * used for syscalls somehow;
 	 * seems to have a function pointer and four arguments
 	 */
+<<<<<<< HEAD
 	struct restart_block    restart_block;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Points to the current pt_regs frame  */
 	struct pt_regs		*regs;
 	/*
@@ -81,15 +104,19 @@ struct thread_info {
 
 #endif  /* __ASSEMBLY__  */
 
+<<<<<<< HEAD
 /*  looks like "linux/hardirq.h" uses this.  */
 
 #define PREEMPT_ACTIVE		0x10000000
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 #define INIT_THREAD_INFO(tsk)                   \
 {                                               \
 	.task           = &tsk,                 \
+<<<<<<< HEAD
 	.exec_domain    = &default_exec_domain, \
 	.flags          = 0,                    \
 	.cpu            = 0,                    \
@@ -98,13 +125,21 @@ struct thread_info {
 	.restart_block = {                      \
 		.fn = do_no_restart_syscall,    \
 	},                                      \
+=======
+	.flags          = 0,                    \
+	.cpu            = 0,                    \
+	.preempt_count  = 1,                    \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sp = 0,				\
 	.regs = NULL,			\
 }
 
+<<<<<<< HEAD
 #define init_thread_info        (init_thread_union.thread_info)
 #define init_stack              (init_thread_union.stack)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tacky preprocessor trickery */
 #define	qqstr(s) qstr(s)
 #define qstr(s) #s
@@ -128,10 +163,16 @@ register struct thread_info *__current_thread_info asm(QUOTED_THREADINFO_REG);
 #define TIF_SIGPENDING          2       /* signal pending */
 #define TIF_NEED_RESCHED        3       /* rescheduling necessary */
 #define TIF_SINGLESTEP          4       /* restore ss @ return to usr mode */
+<<<<<<< HEAD
 #define TIF_IRET                5       /* return with iret */
 #define TIF_RESTORE_SIGMASK     6       /* restore sig mask in do_signal() */
 /* true if poll_idle() is polling TIF_NEED_RESCHED */
 #define TIF_POLLING_NRFLAG      16
+=======
+#define TIF_RESTORE_SIGMASK     6       /* restore sig mask in do_signal() */
+#define TIF_NOTIFY_SIGNAL	7       /* signal notifications exist */
+/* true if poll_idle() is polling TIF_NEED_RESCHED */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIF_MEMDIE              17      /* OOM killer killed process */
 
 #define _TIF_SYSCALL_TRACE      (1 << TIF_SYSCALL_TRACE)
@@ -139,9 +180,13 @@ register struct thread_info *__current_thread_info asm(QUOTED_THREADINFO_REG);
 #define _TIF_SIGPENDING         (1 << TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED       (1 << TIF_NEED_RESCHED)
 #define _TIF_SINGLESTEP         (1 << TIF_SINGLESTEP)
+<<<<<<< HEAD
 #define _TIF_IRET               (1 << TIF_IRET)
 #define _TIF_RESTORE_SIGMASK    (1 << TIF_RESTORE_SIGMASK)
 #define _TIF_POLLING_NRFLAG     (1 << TIF_POLLING_NRFLAG)
+=======
+#define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* work to do on interrupt/exception return - All but TIF_SYSCALL_TRACE */
 #define _TIF_WORK_MASK          (0x0000FFFF & ~_TIF_SYSCALL_TRACE)

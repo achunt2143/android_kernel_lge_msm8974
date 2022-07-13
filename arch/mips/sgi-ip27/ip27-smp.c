@@ -8,15 +8,27 @@
  */
 #include <linux/init.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/nodemask.h>
 #include <asm/page.h>
 #include <asm/processor.h>
+=======
+#include <linux/sched/task_stack.h>
+#include <linux/topology.h>
+#include <linux/nodemask.h>
+
+#include <asm/page.h>
+#include <asm/processor.h>
+#include <asm/ptrace.h>
+#include <asm/sn/agent.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sn/arch.h>
 #include <asm/sn/gda.h>
 #include <asm/sn/intr.h>
 #include <asm/sn/klconfig.h>
 #include <asm/sn/launch.h>
 #include <asm/sn/mapped_kernel.h>
+<<<<<<< HEAD
 #include <asm/sn/sn_private.h>
 #include <asm/sn/types.h>
 #include <asm/sn/sn0/hubpi.h>
@@ -60,6 +72,17 @@ static int do_cpumask(cnodeid_t cnode, nasid_t nasid, int highest)
 	lboard_t *brd;
 	klcpu_t *acpu;
 	int cpus_found = 0;
+=======
+#include <asm/sn/types.h>
+
+#include "ip27-common.h"
+
+static int node_scan_cpus(nasid_t nasid, int highest)
+{
+	static int cpus_found;
+	lboard_t *brd;
+	klcpu_t *acpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpuid_t cpuid;
 
 	brd = find_lboard((lboard_t *)KL_CONFIG_INFO(nasid), KLTYPE_IP27);
@@ -68,6 +91,7 @@ static int do_cpumask(cnodeid_t cnode, nasid_t nasid, int highest)
 		acpu = (klcpu_t *)find_first_component(brd, KLSTRUCT_CPU);
 		while (acpu) {
 			cpuid = acpu->cpu_info.virtid;
+<<<<<<< HEAD
 			/* cnode is not valid for completely disabled brds */
 			if (get_actual_nasid(brd) == brd->brd_nasid)
 				cpuid_to_compact_node[cpuid] = cnode;
@@ -80,6 +104,19 @@ static int do_cpumask(cnodeid_t cnode, nasid_t nasid, int highest)
 				alloc_cpupda(cpuid, tot_cpus_found);
 				cpus_found++;
 				tot_cpus_found++;
+=======
+			/* Only let it join in if it's marked enabled */
+			if ((acpu->cpu_info.flags & KLINFO_ENABLE) &&
+			    (cpus_found != NR_CPUS)) {
+				if (cpuid > highest)
+					highest = cpuid;
+				set_cpu_possible(cpuid, true);
+				cputonasid(cpus_found) = nasid;
+				cputoslice(cpus_found) = acpu->cpu_info.physid;
+				sn_cpu_info[cpus_found].p_speed =
+							acpu->cpu_speed;
+				cpus_found++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			acpu = (klcpu_t *)find_component(brd, (klinfo_t *)acpu,
 								KLSTRUCT_CPU);
@@ -99,6 +136,7 @@ void cpu_node_probe(void)
 	int i, highest = 0;
 	gda_t *gdap = GDA;
 
+<<<<<<< HEAD
 	/*
 	 * Initialize the arrays to invalid nodeid (-1)
 	 */
@@ -122,6 +160,15 @@ void cpu_node_probe(void)
 		nasid_to_compact_node[nasid] = i;
 		node_set_online(num_online_nodes());
 		highest = do_cpumask(i, nasid, highest);
+=======
+	nodes_clear(node_online_map);
+	for (i = 0; i < MAX_NUMNODES; i++) {
+		nasid_t nasid = gdap->g_nasidtable[i];
+		if (nasid == INVALID_NASID)
+			break;
+		node_set_online(nasid);
+		highest = node_scan_cpus(nasid, highest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk("Discovered %d cpus on %d nodes\n", highest + 1, num_online_nodes());
@@ -158,11 +205,18 @@ static void ip27_send_ipi_single(int destid, unsigned int action)
 	irq += cputoslice(destid);
 
 	/*
+<<<<<<< HEAD
 	 * Convert the compact hub number to the NASID to get the correct
 	 * part of the address space.  Then set the interrupt bit associated
 	 * with the CPU we want to send the interrupt to.
 	 */
 	REMOTE_HUB_SEND_INTR(COMPACT_TO_NASID_NODEID(cpu_to_node(destid)), irq);
+=======
+	 * Set the interrupt bit associated with the CPU we want to
+	 * send the interrupt to.
+	 */
+	REMOTE_HUB_SEND_INTR(cpu_to_node(destid), irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ip27_send_ipi_mask(const struct cpumask *mask, unsigned int action)
@@ -173,19 +227,29 @@ static void ip27_send_ipi_mask(const struct cpumask *mask, unsigned int action)
 		ip27_send_ipi_single(i, action);
 }
 
+<<<<<<< HEAD
 static void __cpuinit ip27_init_secondary(void)
+=======
+static void ip27_init_cpu(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	per_cpu_init();
 }
 
+<<<<<<< HEAD
 static void __cpuinit ip27_smp_finish(void)
 {
 	extern void hub_rt_clock_event_init(void);
 
+=======
+static void ip27_smp_finish(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hub_rt_clock_event_init();
 	local_irq_enable();
 }
 
+<<<<<<< HEAD
 static void __init ip27_cpus_done(void)
 {
 }
@@ -196,6 +260,14 @@ static void __init ip27_cpus_done(void)
  * struct so that current_thread_info() will work.
  */
 static void __cpuinit ip27_boot_secondary(int cpu, struct task_struct *idle)
+=======
+/*
+ * Launch a slave into smp_bootstrap().	 It doesn't take an argument, and we
+ * set sp to the kernel stack of the newly created idle process, gp to the proc
+ * struct so that current_thread_info() will work.
+ */
+static int ip27_boot_secondary(int cpu, struct task_struct *idle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long gp = (unsigned long)task_thread_info(idle);
 	unsigned long sp = __KSTK_TOS(idle);
@@ -203,27 +275,47 @@ static void __cpuinit ip27_boot_secondary(int cpu, struct task_struct *idle)
 	LAUNCH_SLAVE(cputonasid(cpu), cputoslice(cpu),
 		(launch_proc_t)MAPPED_KERN_RW_TO_K0(smp_bootstrap),
 		0, (void *) sp, (void *) gp);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init ip27_smp_setup(void)
 {
+<<<<<<< HEAD
 	cnodeid_t	cnode;
 
 	for_each_online_node(cnode) {
 		if (cnode == 0)
 			continue;
 		intr_clear_all(COMPACT_TO_NASID_NODEID(cnode));
+=======
+	nasid_t nasid;
+
+	for_each_online_node(nasid) {
+		if (nasid == 0)
+			continue;
+		intr_clear_all(nasid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	replicate_kernel_text();
 
 	/*
+<<<<<<< HEAD
 	 * Assumption to be fixed: we're always booted on logical / physical
 	 * processor 0.  While we're always running on logical processor 0
 	 * this still means this is physical processor zero; it might for
 	 * example be disabled in the firmware.
 	 */
 	alloc_cpupda(0, 0);
+=======
+	 * PROM sets up system, that boot cpu is always first CPU on nasid 0
+	 */
+	cputonasid(0) = 0;
+	cputoslice(0) = LOCAL_HUB_L(PI_CPU_NUM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init ip27_prepare_cpus(unsigned int max_cpus)
@@ -231,6 +323,7 @@ static void __init ip27_prepare_cpus(unsigned int max_cpus)
 	/* We already did everything necessary earlier */
 }
 
+<<<<<<< HEAD
 struct plat_smp_ops ip27_smp_ops = {
 	.send_ipi_single	= ip27_send_ipi_single,
 	.send_ipi_mask		= ip27_send_ipi_mask,
@@ -240,4 +333,15 @@ struct plat_smp_ops ip27_smp_ops = {
 	.boot_secondary		= ip27_boot_secondary,
 	.smp_setup		= ip27_smp_setup,
 	.prepare_cpus		= ip27_prepare_cpus,
+=======
+const struct plat_smp_ops ip27_smp_ops = {
+	.send_ipi_single	= ip27_send_ipi_single,
+	.send_ipi_mask		= ip27_send_ipi_mask,
+	.init_secondary		= ip27_init_cpu,
+	.smp_finish		= ip27_smp_finish,
+	.boot_secondary		= ip27_boot_secondary,
+	.smp_setup		= ip27_smp_setup,
+	.prepare_cpus		= ip27_prepare_cpus,
+	.prepare_boot_cpu	= ip27_init_cpu,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_schizo.c: SCHIZO/TOMATILLO specific PCI controller support.
  *
  * Copyright (C) 2001, 2002, 2003, 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -10,7 +14,15 @@
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+#include <linux/property.h>
+#include <linux/numa.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/iommu.h>
 #include <asm/irq.h>
@@ -140,7 +152,11 @@ static void __schizo_check_stc_error_pbm(struct pci_pbm_info *pbm,
 
 	/* This is __REALLY__ dangerous.  When we put the
 	 * streaming buffer into diagnostic mode to probe
+<<<<<<< HEAD
 	 * it's tags and error status, we _must_ clear all
+=======
+	 * its tags and error status, we _must_ clear all
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * of the line tag valid bits before re-enabling
 	 * the streaming buffer.  If any dirty data lives
 	 * in the STC when we do this, we will end up
@@ -270,7 +286,11 @@ static void schizo_check_iommu_error_pbm(struct pci_pbm_info *pbm,
 		       pbm->name, type_string);
 
 		/* Put the IOMMU into diagnostic mode and probe
+<<<<<<< HEAD
 		 * it's TLB for entries with error status.
+=======
+		 * its TLB for entries with error status.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 * It is very possible for another DVMA to occur
 		 * while we do this probe, and corrupt the system
@@ -581,7 +601,11 @@ static irqreturn_t schizo_pcierr_intr_other(struct pci_pbm_info *pbm)
 {
 	unsigned long csr_reg, csr, csr_error_bits;
 	irqreturn_t ret = IRQ_NONE;
+<<<<<<< HEAD
 	u16 stat;
+=======
+	u32 stat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	csr_reg = pbm->pbm_regs + SCHIZO_PCI_CTRL;
 	csr = upa_readq(csr_reg);
@@ -617,7 +641,11 @@ static irqreturn_t schizo_pcierr_intr_other(struct pci_pbm_info *pbm)
 			       pbm->name);
 		ret = IRQ_HANDLED;
 	}
+<<<<<<< HEAD
 	pci_read_config_word(pbm->pci_bus->self, PCI_STATUS, &stat);
+=======
+	pbm->pci_ops->read(pbm->pci_bus, 0, PCI_STATUS, 2, &stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (stat & (PCI_STATUS_PARITY |
 		    PCI_STATUS_SIG_TARGET_ABORT |
 		    PCI_STATUS_REC_TARGET_ABORT |
@@ -625,7 +653,11 @@ static irqreturn_t schizo_pcierr_intr_other(struct pci_pbm_info *pbm)
 		    PCI_STATUS_SIG_SYSTEM_ERROR)) {
 		printk("%s: PCI bus error, PCI_STATUS[%04x]\n",
 		       pbm->name, stat);
+<<<<<<< HEAD
 		pci_write_config_word(pbm->pci_bus->self, PCI_STATUS, 0xffff);
+=======
+		pbm->pci_ops->write(pbm->pci_bus, 0, PCI_STATUS, 2, 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = IRQ_HANDLED;
 	}
 	return ret;
@@ -1064,8 +1096,12 @@ static void pbm_config_busmastering(struct pci_pbm_info *pbm)
 	pci_config_write8(addr, 64);
 }
 
+<<<<<<< HEAD
 static void __devinit schizo_scan_bus(struct pci_pbm_info *pbm,
 				      struct device *parent)
+=======
+static void schizo_scan_bus(struct pci_pbm_info *pbm, struct device *parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pbm_config_busmastering(pbm);
 	pbm->is_66mhz_capable =
@@ -1269,7 +1305,11 @@ static void schizo_pbm_hw_init(struct pci_pbm_info *pbm)
 	    pbm->chip_version >= 0x2)
 		tmp |= 0x3UL << SCHIZO_PCICTRL_PTO_SHIFT;
 
+<<<<<<< HEAD
 	if (!of_find_property(pbm->op->dev.of_node, "no-bus-parking", NULL))
+=======
+	if (!of_property_read_bool(pbm->op->dev.of_node, "no-bus-parking"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp |= SCHIZO_PCICTRL_PARK;
 	else
 		tmp &= ~SCHIZO_PCICTRL_PARK;
@@ -1307,9 +1347,15 @@ static void schizo_pbm_hw_init(struct pci_pbm_info *pbm)
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit schizo_pbm_init(struct pci_pbm_info *pbm,
 				     struct platform_device *op, u32 portid,
 				     int chip_type)
+=======
+static int schizo_pbm_init(struct pci_pbm_info *pbm,
+			   struct platform_device *op, u32 portid,
+			   int chip_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct linux_prom64_registers *regs;
 	struct device_node *dp = op->dev.of_node;
@@ -1347,7 +1393,11 @@ static int __devinit schizo_pbm_init(struct pci_pbm_info *pbm,
 	pbm->next = pci_pbm_root;
 	pci_pbm_root = pbm;
 
+<<<<<<< HEAD
 	pbm->numa_node = -1;
+=======
+	pbm->numa_node = NUMA_NO_NODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pbm->pci_ops = &sun4u_pci_ops;
 	pbm->config_space_reg_bits = 8;
@@ -1400,8 +1450,12 @@ static inline int portid_compare(u32 x, u32 y, int chip_type)
 	return (x == y);
 }
 
+<<<<<<< HEAD
 static struct pci_pbm_info * __devinit schizo_find_sibling(u32 portid,
 							   int chip_type)
+=======
+static struct pci_pbm_info *schizo_find_sibling(u32 portid, int chip_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_pbm_info *pbm;
 
@@ -1412,7 +1466,11 @@ static struct pci_pbm_info * __devinit schizo_find_sibling(u32 portid,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit __schizo_init(struct platform_device *op, unsigned long chip_type)
+=======
+static int __schizo_init(struct platform_device *op, unsigned long chip_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	struct pci_pbm_info *pbm;
@@ -1459,6 +1517,7 @@ out_err:
 	return err;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id schizo_match[];
 static int __devinit schizo_probe(struct platform_device *op)
 {
@@ -1468,6 +1527,15 @@ static int __devinit schizo_probe(struct platform_device *op)
 	if (!match)
 		return -EINVAL;
 	return __schizo_init(op, (unsigned long)match->data);
+=======
+static int schizo_probe(struct platform_device *op)
+{
+	unsigned long chip_type = (unsigned long)device_get_match_data(&op->dev);
+
+	if (!chip_type)
+		return -EINVAL;
+	return __schizo_init(op, chip_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The ordering of this table is very important.  Some Tomatillo
@@ -1497,7 +1565,10 @@ static const struct of_device_id schizo_match[] = {
 static struct platform_driver schizo_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = schizo_match,
 	},
 	.probe		= schizo_probe,

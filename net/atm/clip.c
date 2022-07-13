@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/clip.c - RFC1577 Classical IP over ATM */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -60,7 +64,11 @@ static int to_atmarpd(enum atmarp_ctrl_type type, int itf, __be32 ip)
 	skb = alloc_skb(sizeof(struct atmarp_ctrl), GFP_ATOMIC);
 	if (!skb)
 		return -ENOMEM;
+<<<<<<< HEAD
 	ctrl = (struct atmarp_ctrl *)skb_put(skb, sizeof(struct atmarp_ctrl));
+=======
+	ctrl = skb_put(skb, sizeof(struct atmarp_ctrl));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl->type = type;
 	ctrl->itf_num = itf;
 	ctrl->ip = ip;
@@ -68,7 +76,11 @@ static int to_atmarpd(enum atmarp_ctrl_type type, int itf, __be32 ip)
 
 	sk = sk_atm(atmarpd);
 	skb_queue_tail(&sk->sk_receive_queue, skb);
+<<<<<<< HEAD
 	sk->sk_data_ready(sk, skb->len);
+=======
+	sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -88,7 +100,11 @@ static void unlink_clip_vcc(struct clip_vcc *clip_vcc)
 	struct clip_vcc **walk;
 
 	if (!entry) {
+<<<<<<< HEAD
 		pr_crit("!clip_vcc->entry (clip_vcc %p)\n", clip_vcc);
+=======
+		pr_err("!clip_vcc->entry (clip_vcc %p)\n", clip_vcc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	netif_tx_lock_bh(entry->neigh->dev);	/* block clip_start_xmit() */
@@ -106,12 +122,21 @@ static void unlink_clip_vcc(struct clip_vcc *clip_vcc)
 			entry->expires = jiffies - 1;
 			/* force resolution or expiration */
 			error = neigh_update(entry->neigh, NULL, NUD_NONE,
+<<<<<<< HEAD
 					     NEIGH_UPDATE_F_ADMIN);
 			if (error)
 				pr_crit("neigh_update failed with %d\n", error);
 			goto out;
 		}
 	pr_crit("ATMARP: failed (entry %p, vcc 0x%p)\n", entry, clip_vcc);
+=======
+					     NEIGH_UPDATE_F_ADMIN, 0);
+			if (error)
+				pr_err("neigh_update failed with %d\n", error);
+			goto out;
+		}
+	pr_err("ATMARP: failed (entry %p, vcc 0x%p)\n", entry, clip_vcc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	netif_tx_unlock_bh(entry->neigh->dev);
 }
@@ -137,11 +162,19 @@ static int neigh_check_cb(struct neighbour *n)
 	if (entry->vccs || time_before(jiffies, entry->expires))
 		return 0;
 
+<<<<<<< HEAD
 	if (atomic_read(&n->refcnt) > 1) {
 		struct sk_buff *skb;
 
 		pr_debug("destruction postponed with ref %d\n",
 			 atomic_read(&n->refcnt));
+=======
+	if (refcount_read(&n->refcnt) > 1) {
+		struct sk_buff *skb;
+
+		pr_debug("destruction postponed with ref %d\n",
+			 refcount_read(&n->refcnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while ((skb = skb_dequeue(&n->arp_queue)) != NULL)
 			dev_kfree_skb(skb);
@@ -153,7 +186,11 @@ static int neigh_check_cb(struct neighbour *n)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void idle_timer_check(unsigned long dummy)
+=======
+static void idle_timer_check(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	write_lock(&arp_tbl.lock);
 	__neigh_for_each_release(&arp_tbl, neigh_check_cb);
@@ -286,7 +323,11 @@ static const struct neigh_ops clip_neigh_ops = {
 	.connected_output =	neigh_direct_output,
 };
 
+<<<<<<< HEAD
 static int clip_constructor(struct neighbour *neigh)
+=======
+static int clip_constructor(struct net_device *dev, struct neighbour *neigh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atmarp_entry *entry = neighbour_priv(neigh);
 
@@ -345,8 +386,13 @@ static netdev_tx_t clip_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_OK;
 	}
 	rt = (struct rtable *) dst;
+<<<<<<< HEAD
 	if (rt->rt_gateway)
 		daddr = &rt->rt_gateway;
+=======
+	if (rt->rt_gw_family == AF_INET)
+		daddr = &rt->rt_gw4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		daddr = &ip_hdr(skb)->daddr;
 	n = dst_neigh_lookup(dst, daddr);
@@ -381,13 +427,21 @@ static netdev_tx_t clip_start_xmit(struct sk_buff *skb,
 		memcpy(here, llc_oui, sizeof(llc_oui));
 		((__be16 *) here)[3] = skb->protocol;
 	}
+<<<<<<< HEAD
 	atomic_add(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc);
 	ATM_SKB(skb)->atm_options = vcc->atm_options;
+=======
+	atm_account_tx(vcc, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->vccs->last_use = jiffies;
 	pr_debug("atm_skb(%p)->vcc(%p)->dev(%p)\n", skb, vcc, vcc->dev);
 	old = xchg(&entry->vccs->xoff, 1);	/* assume XOFF ... */
 	if (old) {
+<<<<<<< HEAD
 		pr_warning("XOFF->XOFF transition\n");
+=======
+		pr_warn("XOFF->XOFF transition\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release_neigh;
 	}
 	dev->stats.tx_packets++;
@@ -450,7 +504,11 @@ static int clip_setentry(struct atm_vcc *vcc, __be32 ip)
 	struct rtable *rt;
 
 	if (vcc->push != clip_push) {
+<<<<<<< HEAD
 		pr_warning("non-CLIP VCC\n");
+=======
+		pr_warn("non-CLIP VCC\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADF;
 	}
 	clip_vcc = CLIP_VCC(vcc);
@@ -481,7 +539,11 @@ static int clip_setentry(struct atm_vcc *vcc, __be32 ip)
 		link_vcc(clip_vcc, entry);
 	}
 	error = neigh_update(neigh, llc_oui, NUD_PERMANENT,
+<<<<<<< HEAD
 			     NEIGH_UPDATE_F_OVERRIDE | NEIGH_UPDATE_F_ADMIN);
+=======
+			     NEIGH_UPDATE_F_OVERRIDE | NEIGH_UPDATE_F_ADMIN, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	neigh_release(neigh);
 	return error;
 }
@@ -504,7 +566,11 @@ static void clip_setup(struct net_device *dev)
 	/* without any more elaborate queuing. 100 is a reasonable */
 	/* compromise between decent burst-tolerance and protection */
 	/* against memory hogs. */
+<<<<<<< HEAD
 	dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
+=======
+	netif_keep_dst(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clip_create(int number)
@@ -523,7 +589,12 @@ static int clip_create(int number)
 			if (PRIV(dev)->number >= number)
 				number = PRIV(dev)->number + 1;
 	}
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(struct clip_priv), "", clip_setup);
+=======
+	dev = alloc_netdev(sizeof(struct clip_priv), "", NET_NAME_UNKNOWN,
+			   clip_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 	clip_priv = PRIV(dev);
@@ -542,9 +613,15 @@ static int clip_create(int number)
 }
 
 static int clip_device_event(struct notifier_block *this, unsigned long event,
+<<<<<<< HEAD
 			     void *arg)
 {
 	struct net_device *dev = arg;
+=======
+			     void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -578,6 +655,10 @@ static int clip_inet_event(struct notifier_block *this, unsigned long event,
 			   void *ifa)
 {
 	struct in_device *in_dev;
+<<<<<<< HEAD
+=======
+	struct netdev_notifier_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	in_dev = ((struct in_ifaddr *)ifa)->ifa_dev;
 	/*
@@ -586,7 +667,12 @@ static int clip_inet_event(struct notifier_block *this, unsigned long event,
 	 */
 	if (event != NETDEV_UP)
 		return NOTIFY_DONE;
+<<<<<<< HEAD
 	return clip_device_event(this, NETDEV_CHANGE, in_dev->dev);
+=======
+	netdev_notifier_info_init(&info, in_dev->dev);
+	return clip_device_event(this, NETDEV_CHANGE, &info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block clip_dev_notifier = {
@@ -614,7 +700,11 @@ static void atmarpd_close(struct atm_vcc *vcc)
 	module_put(THIS_MODULE);
 }
 
+<<<<<<< HEAD
 static struct atmdev_ops atmarpd_dev_ops = {
+=======
+static const struct atmdev_ops atmarpd_dev_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.close = atmarpd_close
 };
 
@@ -764,7 +854,11 @@ static void atmarp_info(struct seq_file *seq, struct neighbour *n,
 			seq_printf(seq, "(resolving)\n");
 		else
 			seq_printf(seq, "(expired, ref %d)\n",
+<<<<<<< HEAD
 				   atomic_read(&entry->neigh->refcnt));
+=======
+				   refcount_read(&entry->neigh->refcnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!svc) {
 		seq_printf(seq, "%d.%d.%d\n",
 			   clip_vcc->vcc->dev->number,
@@ -860,6 +954,7 @@ static const struct seq_operations arp_seq_ops = {
 	.stop	= neigh_seq_stop,
 	.show	= clip_seq_show,
 };
+<<<<<<< HEAD
 
 static int arp_seq_open(struct inode *inode, struct file *file)
 {
@@ -874,6 +969,8 @@ static const struct file_operations arp_seq_fops = {
 	.release	= seq_release_net,
 	.owner		= THIS_MODULE
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void atm_clip_exit_noproc(void);
@@ -884,13 +981,22 @@ static int __init atm_clip_init(void)
 	register_netdevice_notifier(&clip_dev_notifier);
 	register_inetaddr_notifier(&clip_inet_notifier);
 
+<<<<<<< HEAD
 	setup_timer(&idle_timer, idle_timer_check, 0);
+=======
+	timer_setup(&idle_timer, idle_timer_check, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PROC_FS
 	{
 		struct proc_dir_entry *p;
 
+<<<<<<< HEAD
 		p = proc_create("arp", S_IRUGO, atm_proc_root, &arp_seq_fops);
+=======
+		p = proc_create_net("arp", 0444, atm_proc_root, &arp_seq_ops,
+				sizeof(struct clip_seq_state));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!p) {
 			pr_err("Unable to initialize /proc/net/atm/arp\n");
 			atm_clip_exit_noproc();

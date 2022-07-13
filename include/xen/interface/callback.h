@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * callback.h
  *
  * Register guest OS callbacks with Xen.
  *
+<<<<<<< HEAD
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
@@ -21,13 +26,19 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2006, Ian Campbell
  */
 
 #ifndef __XEN_PUBLIC_CALLBACK_H__
 #define __XEN_PUBLIC_CALLBACK_H__
 
+<<<<<<< HEAD
 #include "xen.h"
+=======
+#include <xen/interface/xen.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Prototype for this hypercall is:
@@ -36,7 +47,11 @@
  * @extra_args == Operation-specific extra arguments (NULL if none).
  */
 
+<<<<<<< HEAD
 /* ia64, x86: Callback for event delivery. */
+=======
+/* x86: Callback for event delivery. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CALLBACKTYPE_event                 0
 
 /* x86: Failsafe callback when guest state cannot be restored by Xen. */

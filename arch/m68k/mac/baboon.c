@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Baboon Custom IC Management
  *
@@ -14,15 +18,22 @@
 #include <asm/macints.h>
 #include <asm/mac_baboon.h>
 
+<<<<<<< HEAD
 /* #define DEBUG_IRQS */
+=======
+#include "mac.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int baboon_present;
 static volatile struct baboon *baboon;
 
+<<<<<<< HEAD
 #if 0
 extern int macide_ack_intr(struct ata_channel *);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Baboon initialization.
  */
@@ -38,6 +49,7 @@ void __init baboon_init(void)
 	baboon = (struct baboon *) BABOON_BASE;
 	baboon_present = 1;
 
+<<<<<<< HEAD
 	printk("Baboon detected at %p\n", baboon);
 }
 
@@ -75,6 +87,32 @@ static void baboon_irq(unsigned int irq, struct irq_desc *desc)
 	/* for now we need to smash all interrupts */
 	baboon->mb_ifr &= ~events;
 #endif
+=======
+	pr_debug("Baboon detected at %p\n", baboon);
+}
+
+/*
+ * Baboon interrupt handler.
+ * XXX how do you clear a pending IRQ? is it even necessary?
+ */
+
+static void baboon_irq(struct irq_desc *desc)
+{
+	short events, irq_bit;
+	int irq_num;
+
+	events = baboon->mb_ifr & 0x07;
+	irq_num = IRQ_BABOON_0;
+	irq_bit = 1;
+	do {
+		if (events & irq_bit) {
+			events &= ~irq_bit;
+			generic_handle_irq(irq_num);
+		}
+		++irq_num;
+		irq_bit <<= 1;
+	} while (events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -97,18 +135,24 @@ void __init baboon_register_interrupts(void)
 
 void baboon_irq_enable(int irq)
 {
+<<<<<<< HEAD
 #ifdef DEBUG_IRQUSE
 	printk("baboon_irq_enable(%d)\n", irq);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac_irq_enable(irq_get_irq_data(IRQ_NUBUS_C));
 }
 
 void baboon_irq_disable(int irq)
 {
+<<<<<<< HEAD
 #ifdef DEBUG_IRQUSE
 	printk("baboon_irq_disable(%d)\n", irq);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac_irq_disable(irq_get_irq_data(IRQ_NUBUS_C));
 }

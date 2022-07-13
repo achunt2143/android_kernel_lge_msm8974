@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_COMPAT_H
 #define _ASM_POWERPC_COMPAT_H
 #ifdef __KERNEL__
@@ -7,6 +11,7 @@
 #include <linux/types.h>
 #include <linux/sched.h>
 
+<<<<<<< HEAD
 #define COMPAT_USER_HZ		100
 #define COMPAT_UTS_MACHINE	"ppc\0\0"
 
@@ -48,6 +53,22 @@ struct compat_timeval {
 	compat_time_t	tv_sec;
 	s32		tv_usec;
 };
+=======
+#define compat_ipc_pid_t compat_ipc_pid_t
+typedef u16		compat_ipc_pid_t;
+
+#define compat_ipc64_perm compat_ipc64_perm
+
+#include <asm-generic/compat.h>
+
+#ifdef __BIG_ENDIAN__
+#define COMPAT_UTS_MACHINE	"ppc\0\0"
+#else
+#define COMPAT_UTS_MACHINE	"ppcle\0\0"
+#endif
+
+typedef s16		compat_nlink_t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct compat_stat {
 	compat_dev_t	st_dev;
@@ -60,15 +81,24 @@ struct compat_stat {
 	compat_off_t	st_size;
 	compat_off_t	st_blksize;
 	compat_off_t	st_blocks;
+<<<<<<< HEAD
 	compat_time_t	st_atime;
 	u32		st_atime_nsec;
 	compat_time_t	st_mtime;
 	u32		st_mtime_nsec;
 	compat_time_t	st_ctime;
+=======
+	old_time32_t	st_atime;
+	u32		st_atime_nsec;
+	old_time32_t	st_mtime;
+	u32		st_mtime_nsec;
+	old_time32_t	st_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		st_ctime_nsec;
 	u32		__unused4[2];
 };
 
+<<<<<<< HEAD
 struct compat_flock {
 	short		l_type;
 	short		l_whence;
@@ -150,6 +180,8 @@ static inline void __user *arch_compat_alloc_user_space(long len)
 	return (void __user *) (usp - len);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipc64_perm is actually 32/64bit clean but since the compat layer refers to
  * it we may as well define it.
@@ -169,10 +201,17 @@ struct compat_ipc64_perm {
 
 struct compat_semid64_ds {
 	struct compat_ipc64_perm sem_perm;
+<<<<<<< HEAD
 	unsigned int __unused1;
 	compat_time_t sem_otime;
 	unsigned int __unused2;
 	compat_time_t sem_ctime;
+=======
+	unsigned int sem_otime_high;
+	unsigned int sem_otime;
+	unsigned int sem_ctime_high;
+	unsigned int sem_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat_ulong_t sem_nsems;
 	compat_ulong_t __unused3;
 	compat_ulong_t __unused4;
@@ -180,12 +219,21 @@ struct compat_semid64_ds {
 
 struct compat_msqid64_ds {
 	struct compat_ipc64_perm msg_perm;
+<<<<<<< HEAD
 	unsigned int __unused1;
 	compat_time_t msg_stime;
 	unsigned int __unused2;
 	compat_time_t msg_rtime;
 	unsigned int __unused3;
 	compat_time_t msg_ctime;
+=======
+	unsigned int msg_stime_high;
+	unsigned int msg_stime;
+	unsigned int msg_rtime_high;
+	unsigned int msg_rtime;
+	unsigned int msg_ctime_high;
+	unsigned int msg_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat_ulong_t msg_cbytes;
 	compat_ulong_t msg_qnum;
 	compat_ulong_t msg_qbytes;
@@ -197,12 +245,21 @@ struct compat_msqid64_ds {
 
 struct compat_shmid64_ds {
 	struct compat_ipc64_perm shm_perm;
+<<<<<<< HEAD
 	unsigned int __unused1;
 	compat_time_t shm_atime;
 	unsigned int __unused2;
 	compat_time_t shm_dtime;
 	unsigned int __unused3;
 	compat_time_t shm_ctime;
+=======
+	unsigned int shm_atime_high;
+	unsigned int shm_atime;
+	unsigned int shm_dtime_high;
+	unsigned int shm_dtime;
+	unsigned int shm_ctime_high;
+	unsigned int shm_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int __unused4;
 	compat_size_t shm_segsz;
 	compat_pid_t shm_cpid;

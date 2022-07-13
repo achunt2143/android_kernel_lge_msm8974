@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2/3 clockdomain common data
  *
@@ -88,6 +92,7 @@ struct clockdomain wkup_common_clkdm = {
 	.name		= "wkup_clkdm",
 	.pwrdm		= { .name = "wkup_pwrdm" },
 	.dep_bit	= OMAP_EN_WKUP_SHIFT,
+<<<<<<< HEAD
 };
 
 struct clockdomain prm_common_clkdm = {
@@ -98,4 +103,7 @@ struct clockdomain prm_common_clkdm = {
 struct clockdomain cm_common_clkdm = {
 	.name		= "cm_clkdm",
 	.pwrdm		= { .name = "core_pwrdm" },
+=======
+	.flags		= CLKDM_ACTIVE_WITH_MPU,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 #include <linux/init.h>
@@ -11,6 +15,7 @@ static int __init topology_init(void)
 {
 	int i, ret;
 
+<<<<<<< HEAD
 #ifdef CONFIG_NUMA
 	for_each_online_node(i)
 		register_one_node(i);
@@ -20,6 +25,12 @@ static int __init topology_init(void)
 		struct cpu *c = &per_cpu(cpu_devices, i);
 
 		c->hotpluggable = 1;
+=======
+	for_each_present_cpu(i) {
+		struct cpu *c = &per_cpu(cpu_devices, i);
+
+		c->hotpluggable = !!i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = register_cpu(c, i);
 		if (ret)
 			printk(KERN_WARNING "topology_init: register_cpu %d "

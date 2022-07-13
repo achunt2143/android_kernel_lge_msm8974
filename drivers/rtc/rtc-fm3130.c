@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rtc-fm3130.c - RTC driver for Ramtron FM3130 I2C chip.
  *
  *  Copyright (C) 2008 Sergey Lapin
  *  Based on ds1307 driver by James Chapman and David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -47,7 +54,11 @@
 
 struct fm3130 {
 	u8			reg_addr_time;
+<<<<<<< HEAD
 	u8 			reg_addr_alarm;
+=======
+	u8			reg_addr_alarm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			regs[15];
 	struct i2c_msg		msg[4];
 	struct i2c_client	*client;
@@ -107,8 +118,12 @@ static int fm3130_get_time(struct device *dev, struct rtc_time *t)
 	fm3130_rtc_mode(dev, FM3130_MODE_READ);
 
 	/* read the RTC date and time registers all at once */
+<<<<<<< HEAD
 	tmp = i2c_transfer(to_i2c_adapter(fm3130->client->dev.parent),
 			fm3130->msg, 2);
+=======
+	tmp = i2c_transfer(fm3130->client->adapter, fm3130->msg, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp != 2) {
 		dev_err(dev, "%s error %d\n", "read", tmp);
 		return -EIO;
@@ -116,6 +131,7 @@ static int fm3130_get_time(struct device *dev, struct rtc_time *t)
 
 	fm3130_rtc_mode(dev, FM3130_MODE_NORMAL);
 
+<<<<<<< HEAD
 	dev_dbg(dev, "%s: %02x %02x %02x %02x %02x %02x %02x %02x"
 			"%02x %02x %02x %02x %02x %02x %02x\n",
 			"read",
@@ -127,6 +143,9 @@ static int fm3130_get_time(struct device *dev, struct rtc_time *t)
 			fm3130->regs[0xa], fm3130->regs[0xb],
 			fm3130->regs[0xc], fm3130->regs[0xd],
 			fm3130->regs[0xe]);
+=======
+	dev_dbg(dev, "%s: %15ph\n", "read", fm3130->regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t->tm_sec = bcd2bin(fm3130->regs[FM3130_RTC_SECONDS] & 0x7f);
 	t->tm_min = bcd2bin(fm3130->regs[FM3130_RTC_MINUTES] & 0x7f);
@@ -146,8 +165,12 @@ static int fm3130_get_time(struct device *dev, struct rtc_time *t)
 		t->tm_hour, t->tm_mday,
 		t->tm_mon, t->tm_year, t->tm_wday);
 
+<<<<<<< HEAD
 	/* initial clock setting can be undefined */
 	return rtc_valid_tm(t);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -175,12 +198,16 @@ static int fm3130_set_time(struct device *dev, struct rtc_time *t)
 	tmp = t->tm_year - 100;
 	buf[FM3130_RTC_YEARS] = bin2bcd(tmp);
 
+<<<<<<< HEAD
 	dev_dbg(dev, "%s: %02x %02x %02x %02x %02x %02x %02x"
 		"%02x %02x %02x %02x %02x %02x %02x %02x\n",
 		"write", buf[0], buf[1], buf[2], buf[3],
 		buf[4], buf[5], buf[6], buf[7],
 		buf[8], buf[9], buf[0xa], buf[0xb],
 		buf[0xc], buf[0xd], buf[0xe]);
+=======
+	dev_dbg(dev, "%s: %15ph\n", "write", buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fm3130_rtc_mode(dev, FM3130_MODE_WRITE);
 
@@ -216,8 +243,12 @@ static int fm3130_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	}
 
 	/* read the RTC alarm registers all at once */
+<<<<<<< HEAD
 	tmp = i2c_transfer(to_i2c_adapter(fm3130->client->dev.parent),
 			&fm3130->msg[2], 2);
+=======
+	tmp = i2c_transfer(fm3130->client->adapter, &fm3130->msg[2], 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp != 2) {
 		dev_err(dev, "%s error %d\n", "read", tmp);
 		return -EIO;
@@ -361,19 +392,31 @@ static const struct rtc_class_ops fm3130_rtc_ops = {
 
 static struct i2c_driver fm3130_driver;
 
+<<<<<<< HEAD
 static int __devinit fm3130_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
+=======
+static int fm3130_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fm3130		*fm3130;
 	int			err = -ENODEV;
 	int			tmp;
+<<<<<<< HEAD
 	struct i2c_adapter	*adapter = to_i2c_adapter(client->dev.parent);
+=======
+	struct i2c_adapter	*adapter = client->adapter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter,
 			I2C_FUNC_I2C | I2C_FUNC_SMBUS_WRITE_BYTE_DATA))
 		return -EIO;
 
+<<<<<<< HEAD
 	fm3130 = kzalloc(sizeof(struct fm3130), GFP_KERNEL);
+=======
+	fm3130 = devm_kzalloc(&client->dev, sizeof(struct fm3130), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!fm3130)
 		return -ENOMEM;
@@ -410,7 +453,11 @@ static int __devinit fm3130_probe(struct i2c_client *client,
 
 	tmp = i2c_transfer(adapter, fm3130->msg, 4);
 	if (tmp != 4) {
+<<<<<<< HEAD
 		pr_debug("read error %d\n", tmp);
+=======
+		dev_dbg(&client->dev, "read error %d\n", tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EIO;
 		goto exit_free;
 	}
@@ -517,6 +564,7 @@ bad_alarm:
 bad_clock:
 
 	if (!fm3130->data_valid || !fm3130->alarm_valid)
+<<<<<<< HEAD
 		dev_dbg(&client->dev,
 				"%s: %02x %02x %02x %02x %02x %02x %02x %02x"
 				"%02x %02x %02x %02x %02x %02x %02x\n",
@@ -533,6 +581,14 @@ bad_clock:
 	/* We won't bail out here because we just got invalid data.
 	   Time setting from u-boot doesn't work anyway */
 	fm3130->rtc = rtc_device_register(client->name, &client->dev,
+=======
+		dev_dbg(&client->dev, "%s: %15ph\n", "bogus registers",
+			fm3130->regs);
+
+	/* We won't bail out here because we just got invalid data.
+	   Time setting from u-boot doesn't work anyway */
+	fm3130->rtc = devm_rtc_device_register(&client->dev, client->name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&fm3130_rtc_ops, THIS_MODULE);
 	if (IS_ERR(fm3130->rtc)) {
 		err = PTR_ERR(fm3130->rtc);
@@ -542,6 +598,7 @@ bad_clock:
 	}
 	return 0;
 exit_free:
+<<<<<<< HEAD
 	kfree(fm3130);
 	return err;
 }
@@ -562,6 +619,16 @@ static struct i2c_driver fm3130_driver = {
 	},
 	.probe		= fm3130_probe,
 	.remove		= __devexit_p(fm3130_remove),
+=======
+	return err;
+}
+
+static struct i2c_driver fm3130_driver = {
+	.driver = {
+		.name	= "rtc-fm3130",
+	},
+	.probe		= fm3130_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= fm3130_id,
 };
 

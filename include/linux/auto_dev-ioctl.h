@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Red Hat, Inc. All rights reserved.
  * Copyright 2008 Ian Kent <raven@themaw.net>
@@ -5,11 +6,18 @@
  * This file is part of the Linux kernel and is made available under
  * the terms of the GNU General Public License, version 2, or at your
  * option, any later version, incorporated herein by reference.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright 2008 Red Hat, Inc. All rights reserved.
+ * Copyright 2008 Ian Kent <raven@themaw.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_AUTO_DEV_IOCTL_H
 #define _LINUX_AUTO_DEV_IOCTL_H
 
+<<<<<<< HEAD
 #include <linux/auto_fs.h>
 
 #ifdef __KERNEL__
@@ -226,4 +234,7 @@ enum {
 	_IOWR(AUTOFS_IOCTL, \
 	      AUTOFS_DEV_IOCTL_ISMOUNTPOINT_CMD, struct autofs_dev_ioctl)
 
+=======
+#include <uapi/linux/auto_dev-ioctl.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_AUTO_DEV_IOCTL_H */

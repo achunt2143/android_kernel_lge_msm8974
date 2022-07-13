@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: MIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mkregtable
 *_reg_safe.h
 

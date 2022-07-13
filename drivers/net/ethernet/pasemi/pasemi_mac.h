@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 PA Semi, Inc
  *
  * Driver for the PA6T-1682M onchip 1G/10G Ethernet MACs, soft state and
  * hardware register layouts.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef PASEMI_MAC_H
@@ -32,7 +39,10 @@
 #define CS_RING_SIZE (TX_RING_SIZE*2)
 
 
+<<<<<<< HEAD
 #define MAX_LRO_DESCRIPTORS 8
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_CS	2
 
 struct pasemi_mac_txring {
@@ -72,7 +82,10 @@ struct pasemi_mac {
 	struct pci_dev *pdev;
 	struct pci_dev *dma_pdev;
 	struct pci_dev *iob_pdev;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct napi_struct napi;
 
 	int		bufsz; /* RX ring buffer size */
@@ -83,12 +96,18 @@ struct pasemi_mac {
 #define MAC_TYPE_GMAC	1
 #define MAC_TYPE_XAUI	2
 
+<<<<<<< HEAD
 	u8		mac_addr[6];
 
 	struct net_lro_mgr	lro_mgr;
 	struct net_lro_desc	lro_desc[MAX_LRO_DESCRIPTORS];
 	struct timer_list	rxtimer;
 	unsigned int		lro_max_aggr;
+=======
+	u8		mac_addr[ETH_ALEN];
+
+	struct timer_list	rxtimer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct pasemi_mac_txring *tx;
 	struct pasemi_mac_rxring *rx;

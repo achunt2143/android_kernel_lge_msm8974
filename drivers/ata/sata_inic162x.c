@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sata_inic162x.c - Driver for Initio 162x SATA controllers
  *
  * Copyright 2006  SUSE Linux Products GmbH
  * Copyright 2006  Tejun Heo <teheo@novell.com>
  *
+<<<<<<< HEAD
  * This file is released under GPL v2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * **** WARNING ****
  *
  * This driver never worked properly and unfortunately data corruption is
@@ -146,7 +153,11 @@ enum {
 
 	/* PORT_IDMA_CTL bits */
 	IDMA_CTL_RST_ATA	= (1 << 2),  /* hardreset ATA bus */
+<<<<<<< HEAD
 	IDMA_CTL_RST_IDMA	= (1 << 5),  /* reset IDMA machinary */
+=======
+	IDMA_CTL_RST_IDMA	= (1 << 5),  /* reset IDMA machinery */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IDMA_CTL_GO		= (1 << 7),  /* IDMA mode go */
 	IDMA_CTL_ATA_NIEN	= (1 << 8),  /* ATA IRQ disable */
 
@@ -243,10 +254,24 @@ struct inic_port_priv {
 	dma_addr_t	cpb_tbl_dma;
 };
 
+<<<<<<< HEAD
 static struct scsi_host_template inic_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize	= LIBATA_MAX_PRD,	/* maybe it can be larger? */
 	.dma_boundary	= INIC_DMA_BOUNDARY,
+=======
+static const struct scsi_host_template inic_sht = {
+	ATA_BASE_SHT(DRV_NAME),
+	.sg_tablesize		= LIBATA_MAX_PRD, /* maybe it can be larger? */
+
+	/*
+	 * This controller is braindamaged.  dma_boundary is 0xffff like others
+	 * but it will lock up the whole machine HARD if 65536 byte PRD entry
+	 * is fed.  Reduce maximum segment size.
+	 */
+	.dma_boundary		= INIC_DMA_BOUNDARY,
+	.max_segment_size	= 65536 - 512,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int scr_map[] = {
@@ -285,12 +310,18 @@ static void inic_reset_port(void __iomem *port_base)
 static int inic_scr_read(struct ata_link *link, unsigned sc_reg, u32 *val)
 {
 	void __iomem *scr_addr = inic_port_base(link->ap) + PORT_SCR;
+<<<<<<< HEAD
 	void __iomem *addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(sc_reg >= ARRAY_SIZE(scr_map)))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	addr = scr_addr + scr_map[sc_reg] * 4;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*val = readl(scr_addr + scr_map[sc_reg] * 4);
 
 	/* this controller has stuck DIAG.N, ignore it */
@@ -474,7 +505,11 @@ static void inic_fill_sg(struct inic_prd *prd, struct ata_queued_cmd *qc)
 	prd[-1].flags |= PRD_END;
 }
 
+<<<<<<< HEAD
 static void inic_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors inic_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inic_port_priv *pp = qc->ap->private_data;
 	struct inic_pkt *pkt = pp->pkt;
@@ -484,8 +519,11 @@ static void inic_qc_prep(struct ata_queued_cmd *qc)
 	bool is_data = ata_is_data(qc->tf.protocol);
 	unsigned int cdb_len = 0;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_atapi)
 		cdb_len = qc->dev->cdb_len;
 
@@ -534,6 +572,11 @@ static void inic_qc_prep(struct ata_queued_cmd *qc)
 		inic_fill_sg(prd, qc);
 
 	pp->cpb_tbl[0] = pp->pkt_dma;
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int inic_qc_issue(struct ata_queued_cmd *qc)
@@ -553,16 +596,27 @@ static void inic_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	void __iomem *port_base = inic_port_base(ap);
 
+<<<<<<< HEAD
 	tf->feature	= readb(port_base + PORT_TF_FEATURE);
+=======
+	tf->error	= readb(port_base + PORT_TF_FEATURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect	= readb(port_base + PORT_TF_NSECT);
 	tf->lbal	= readb(port_base + PORT_TF_LBAL);
 	tf->lbam	= readb(port_base + PORT_TF_LBAM);
 	tf->lbah	= readb(port_base + PORT_TF_LBAH);
 	tf->device	= readb(port_base + PORT_TF_DEVICE);
+<<<<<<< HEAD
 	tf->command	= readb(port_base + PORT_TF_COMMAND);
 }
 
 static bool inic_qc_fill_rtf(struct ata_queued_cmd *qc)
+=======
+	tf->status	= readb(port_base + PORT_TF_COMMAND);
+}
+
+static void inic_qc_fill_rtf(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_taskfile *rtf = &qc->result_tf;
 	struct ata_taskfile tf;
@@ -576,12 +630,19 @@ static bool inic_qc_fill_rtf(struct ata_queued_cmd *qc)
 	 */
 	inic_tf_read(qc->ap, &tf);
 
+<<<<<<< HEAD
 	if (!(tf.command & ATA_ERR))
 		return false;
 
 	rtf->command = tf.command;
 	rtf->feature = tf.feature;
 	return true;
+=======
+	if (tf.status & ATA_ERR) {
+		rtf->status = tf.status;
+		rtf->error = tf.error;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void inic_freeze(struct ata_port *ap)
@@ -617,7 +678,11 @@ static int inic_hardreset(struct ata_link *link, unsigned int *class,
 	struct ata_port *ap = link->ap;
 	void __iomem *port_base = inic_port_base(ap);
 	void __iomem *idma_ctl = port_base + PORT_IDMA_CTL;
+<<<<<<< HEAD
 	const unsigned long *timing = sata_ehc_deb_timing(&link->eh_context);
+=======
+	const unsigned int *timing = sata_ehc_deb_timing(&link->eh_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* hammer it into sane state */
@@ -651,7 +716,11 @@ static int inic_hardreset(struct ata_link *link, unsigned int *class,
 		}
 
 		inic_tf_read(ap, &tf);
+<<<<<<< HEAD
 		*class = ata_dev_classify(&tf);
+=======
+		*class = ata_port_classify(ap, &tf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -668,7 +737,11 @@ static void inic_error_handler(struct ata_port *ap)
 static void inic_post_internal_cmd(struct ata_queued_cmd *qc)
 {
 	/* make DMA engine forget about the failed command */
+<<<<<<< HEAD
 	if (qc->flags & ATA_QCFLAG_FAILED)
+=======
+	if (qc->flags & ATA_QCFLAG_EH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inic_reset_port(inic_port_base(qc->ap));
 }
 
@@ -739,7 +812,11 @@ static struct ata_port_operations inic_port_ops = {
 	.port_start		= inic_port_start,
 };
 
+<<<<<<< HEAD
 static struct ata_port_info inic_port_info = {
+=======
+static const struct ata_port_info inic_port_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags			= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA,
 	.pio_mask		= ATA_PIO4,
 	.mwdma_mask		= ATA_MWDMA2,
@@ -787,10 +864,17 @@ static int init_controller(void __iomem *mmio_base, u16 hctl)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int inic_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int inic_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inic_host_priv *hpriv = host->private_data;
 	int rc;
 
@@ -858,12 +942,17 @@ static int inic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	/* Set dma_mask.  This devices doesn't support 64bit addressing. */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		dev_err(&pdev->dev, "32-bit DMA enable failed\n");
 		return rc;
 	}
 
+<<<<<<< HEAD
 	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
 	if (rc) {
 		dev_err(&pdev->dev, "32-bit consistent DMA enable failed\n");
@@ -881,6 +970,8 @@ static int inic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return rc;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = init_controller(hpriv->mmio_base, hpriv->cached_hctl);
 	if (rc) {
 		dev_err(&pdev->dev, "failed to initialize controller\n");
@@ -900,7 +991,11 @@ static const struct pci_device_id inic_pci_tbl[] = {
 static struct pci_driver inic_pci_driver = {
 	.name 		= DRV_NAME,
 	.id_table	= inic_pci_tbl,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= inic_pci_device_resume,
 #endif
@@ -908,6 +1003,7 @@ static struct pci_driver inic_pci_driver = {
 	.remove		= ata_pci_remove_one,
 };
 
+<<<<<<< HEAD
 static int __init inic_init(void)
 {
 	return pci_register_driver(&inic_pci_driver);
@@ -917,12 +1013,18 @@ static void __exit inic_exit(void)
 {
 	pci_unregister_driver(&inic_pci_driver);
 }
+=======
+module_pci_driver(inic_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Tejun Heo");
 MODULE_DESCRIPTION("low-level driver for Initio 162x SATA");
 MODULE_LICENSE("GPL v2");
 MODULE_DEVICE_TABLE(pci, inic_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(inic_init);
 module_exit(inic_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

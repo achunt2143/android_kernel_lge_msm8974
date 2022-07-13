@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Gravis/Kensington GrIP protocol joystick and gamepad driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +34,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+#include <linux/kernel.h>
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/gameport.h>
 #include <linux/input.h>
@@ -424,6 +433,7 @@ static struct gameport_driver grip_drv = {
 	.disconnect	= grip_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init grip_init(void)
 {
 	return gameport_register_driver(&grip_drv);
@@ -436,3 +446,6 @@ static void __exit grip_exit(void)
 
 module_init(grip_init);
 module_exit(grip_exit);
+=======
+module_gameport_driver(grip_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

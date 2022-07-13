@@ -1,12 +1,21 @@
+<<<<<<< HEAD
 /*
  *  sata_sx4.c - Promise SATA
  *
  *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  sata_sx4.c - Promise SATA
+ *
+ *  Maintained by:  Tejun Heo <tj@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  		    Please ALWAYS copy linux-ide@vger.kernel.org
  *		    on emails.
  *
  *  Copyright 2003-2004 Red Hat, Inc.
  *
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +37,12 @@
  *
  *  Hardware documentation available under NDA.
  *
+=======
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+ *
+ *  Hardware documentation available under NDA.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -82,7 +97,10 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -95,6 +113,12 @@
 #define DRV_NAME	"sata_sx4"
 #define DRV_VERSION	"0.12"
 
+<<<<<<< HEAD
+=======
+static int dimm_test;
+module_param(dimm_test, int, 0644);
+MODULE_PARM_DESC(dimm_test, "Enable DIMM test during startup (1 = enabled)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	PDC_MMIO_BAR		= 3,
@@ -219,7 +243,11 @@ static void pdc_error_handler(struct ata_port *ap);
 static void pdc_freeze(struct ata_port *ap);
 static void pdc_thaw(struct ata_port *ap);
 static int pdc_port_start(struct ata_port *ap);
+<<<<<<< HEAD
 static void pdc20621_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors pdc20621_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pdc_tf_load_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static void pdc_exec_command_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static unsigned int pdc20621_dimm_init(struct ata_host *host);
@@ -228,10 +256,15 @@ static unsigned int pdc20621_i2c_read(struct ata_host *host,
 				      u32 device, u32 subaddr, u32 *pdata);
 static int pdc20621_prog_dimm0(struct ata_host *host);
 static unsigned int pdc20621_prog_dimm_global(struct ata_host *host);
+<<<<<<< HEAD
 #ifdef ATA_VERBOSE_DEBUG
 static void pdc20621_get_from_dimm(struct ata_host *host,
 				   void *psource, u32 offset, u32 size);
 #endif
+=======
+static void pdc20621_get_from_dimm(struct ata_host *host,
+				   void *psource, u32 offset, u32 size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pdc20621_put_to_dimm(struct ata_host *host,
 				 void *psource, u32 offset, u32 size);
 static void pdc20621_irq_clear(struct ata_port *ap);
@@ -242,13 +275,20 @@ static void pdc_post_internal_cmd(struct ata_queued_cmd *qc);
 static int pdc_check_atapi_dma(struct ata_queued_cmd *qc);
 
 
+<<<<<<< HEAD
 static struct scsi_host_template pdc_sata_sht = {
+=======
+static const struct scsi_host_template pdc_sata_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= LIBATA_MAX_PRD,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
 };
 
+<<<<<<< HEAD
 /* TODO: inherit from base port_ops after converting to new EH */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ata_port_operations pdc_20621_ops = {
 	.inherits		= &ata_sff_port_ops,
 
@@ -315,9 +355,14 @@ static int pdc_port_start(struct ata_port *ap)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void pdc20621_ata_sg(struct ata_taskfile *tf, u8 *buf,
 				   unsigned int portno,
 					   unsigned int total_len)
+=======
+static inline void pdc20621_ata_sg(u8 *buf, unsigned int portno,
+				   unsigned int total_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 addr;
 	unsigned int dw = PDC_DIMM_APKT_PRD >> 2;
@@ -326,6 +371,7 @@ static inline void pdc20621_ata_sg(struct ata_taskfile *tf, u8 *buf,
 	/* output ATA packet S/G table */
 	addr = PDC_20621_DIMM_BASE + PDC_20621_DIMM_DATA +
 	       (PDC_DIMM_DATA_STEP * portno);
+<<<<<<< HEAD
 	VPRINTK("ATA sg addr 0x%x, %d\n", addr, addr);
 	buf32[dw] = cpu_to_le32(addr);
 	buf32[dw + 1] = cpu_to_le32(total_len | ATA_PRD_EOT);
@@ -340,6 +386,15 @@ static inline void pdc20621_ata_sg(struct ata_taskfile *tf, u8 *buf,
 static inline void pdc20621_host_sg(struct ata_taskfile *tf, u8 *buf,
 				    unsigned int portno,
 					    unsigned int total_len)
+=======
+
+	buf32[dw] = cpu_to_le32(addr);
+	buf32[dw + 1] = cpu_to_le32(total_len | ATA_PRD_EOT);
+}
+
+static inline void pdc20621_host_sg(u8 *buf, unsigned int portno,
+				    unsigned int total_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 addr;
 	unsigned int dw = PDC_DIMM_HPKT_PRD >> 2;
@@ -351,12 +406,15 @@ static inline void pdc20621_host_sg(struct ata_taskfile *tf, u8 *buf,
 
 	buf32[dw] = cpu_to_le32(addr);
 	buf32[dw + 1] = cpu_to_le32(total_len | ATA_PRD_EOT);
+<<<<<<< HEAD
 
 	VPRINTK("HOST PSG @ %x == (0x%x, 0x%x)\n",
 		PDC_20621_DIMM_BASE +
 		       (PDC_DIMM_WINDOW_STEP * portno) +
 		       PDC_DIMM_HPKT_PRD,
 		buf32[dw], buf32[dw + 1]);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int pdc20621_ata_pkt(struct ata_taskfile *tf,
@@ -370,7 +428,10 @@ static inline unsigned int pdc20621_ata_pkt(struct ata_taskfile *tf,
 	unsigned int dimm_sg = PDC_20621_DIMM_BASE +
 			       (PDC_DIMM_WINDOW_STEP * portno) +
 			       PDC_DIMM_APKT_PRD;
+<<<<<<< HEAD
 	VPRINTK("ENTER, dimm_sg == 0x%x, %d\n", dimm_sg, dimm_sg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = PDC_DIMM_ATA_PKT;
 
@@ -425,8 +486,11 @@ static inline void pdc20621_host_pkt(struct ata_taskfile *tf, u8 *buf,
 	unsigned int dimm_sg = PDC_20621_DIMM_BASE +
 			       (PDC_DIMM_WINDOW_STEP * portno) +
 			       PDC_DIMM_HPKT_PRD;
+<<<<<<< HEAD
 	VPRINTK("ENTER, dimm_sg == 0x%x, %d\n", dimm_sg, dimm_sg);
 	VPRINTK("host_sg == 0x%x, %d\n", host_sg, host_sg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dw = PDC_DIMM_HOST_PKT >> 2;
 
@@ -443,6 +507,7 @@ static inline void pdc20621_host_pkt(struct ata_taskfile *tf, u8 *buf,
 	buf32[dw + 1] = cpu_to_le32(host_sg);
 	buf32[dw + 2] = cpu_to_le32(dimm_sg);
 	buf32[dw + 3] = 0;
+<<<<<<< HEAD
 
 	VPRINTK("HOST PKT @ %x == (0x%x 0x%x 0x%x 0x%x)\n",
 		PDC_20621_DIMM_BASE + (PDC_DIMM_WINDOW_STEP * portno) +
@@ -451,6 +516,8 @@ static inline void pdc20621_host_pkt(struct ata_taskfile *tf, u8 *buf,
 		buf32[dw + 1],
 		buf32[dw + 2],
 		buf32[dw + 3]);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pdc20621_dma_prep(struct ata_queued_cmd *qc)
@@ -466,8 +533,11 @@ static void pdc20621_dma_prep(struct ata_queued_cmd *qc)
 
 	WARN_ON(!(qc->flags & ATA_QCFLAG_DMAMAP));
 
+<<<<<<< HEAD
 	VPRINTK("ata%u: ENTER\n", ap->print_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hard-code chip #0 */
 	mmio += PDC_CHIP0_OFS;
 
@@ -486,10 +556,17 @@ static void pdc20621_dma_prep(struct ata_queued_cmd *qc)
 	/*
 	 * Build ATA, host DMA packets
 	 */
+<<<<<<< HEAD
 	pdc20621_host_sg(&qc->tf, &pp->dimm_buf[0], portno, total_len);
 	pdc20621_host_pkt(&qc->tf, &pp->dimm_buf[0], portno);
 
 	pdc20621_ata_sg(&qc->tf, &pp->dimm_buf[0], portno, total_len);
+=======
+	pdc20621_host_sg(&pp->dimm_buf[0], portno, total_len);
+	pdc20621_host_pkt(&qc->tf, &pp->dimm_buf[0], portno);
+
+	pdc20621_ata_sg(&pp->dimm_buf[0], portno, total_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = pdc20621_ata_pkt(&qc->tf, qc->dev->devno, &pp->dimm_buf[0], portno);
 
 	if (qc->tf.flags & ATA_TFLAG_LBA48)
@@ -511,7 +588,12 @@ static void pdc20621_dma_prep(struct ata_queued_cmd *qc)
 
 	readl(dimm_mmio);	/* MMIO PCI posting flush */
 
+<<<<<<< HEAD
 	VPRINTK("ata pkt buf ofs %u, prd size %u, mmio copied\n", i, sgt_len);
+=======
+	ata_port_dbg(ap, "ata pkt buf ofs %u, prd size %u, mmio copied\n",
+		     i, sgt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pdc20621_nodata_prep(struct ata_queued_cmd *qc)
@@ -523,8 +605,11 @@ static void pdc20621_nodata_prep(struct ata_queued_cmd *qc)
 	unsigned int portno = ap->port_no;
 	unsigned int i;
 
+<<<<<<< HEAD
 	VPRINTK("ata%u: ENTER\n", ap->print_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hard-code chip #0 */
 	mmio += PDC_CHIP0_OFS;
 
@@ -546,10 +631,17 @@ static void pdc20621_nodata_prep(struct ata_queued_cmd *qc)
 
 	readl(dimm_mmio);	/* MMIO PCI posting flush */
 
+<<<<<<< HEAD
 	VPRINTK("ata pkt buf ofs %u, mmio copied\n", i);
 }
 
 static void pdc20621_qc_prep(struct ata_queued_cmd *qc)
+=======
+	ata_port_dbg(ap, "ata pkt buf ofs %u, mmio copied\n", i);
+}
+
+static enum ata_completion_errors pdc20621_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (qc->tf.protocol) {
 	case ATA_PROT_DMA:
@@ -561,6 +653,11 @@ static void pdc20621_qc_prep(struct ata_queued_cmd *qc)
 	default:
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __pdc20621_push_hdma(struct ata_queued_cmd *qc,
@@ -618,7 +715,10 @@ static void pdc20621_pop_hdma(struct ata_queued_cmd *qc)
 	pp->hdma_cons++;
 }
 
+<<<<<<< HEAD
 #ifdef ATA_VERBOSE_DEBUG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pdc20621_dump_hdma(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
@@ -628,6 +728,7 @@ static void pdc20621_dump_hdma(struct ata_queued_cmd *qc)
 	dimm_mmio += (port_no * PDC_DIMM_WINDOW_STEP);
 	dimm_mmio += PDC_DIMM_HOST_PKT;
 
+<<<<<<< HEAD
 	printk(KERN_ERR "HDMA[0] == 0x%08X\n", readl(dimm_mmio));
 	printk(KERN_ERR "HDMA[1] == 0x%08X\n", readl(dimm_mmio + 4));
 	printk(KERN_ERR "HDMA[2] == 0x%08X\n", readl(dimm_mmio + 8));
@@ -636,6 +737,12 @@ static void pdc20621_dump_hdma(struct ata_queued_cmd *qc)
 #else
 static inline void pdc20621_dump_hdma(struct ata_queued_cmd *qc) { }
 #endif /* ATA_VERBOSE_DEBUG */
+=======
+	ata_port_dbg(ap, "HDMA 0x%08X 0x%08X 0x%08X 0x%08X\n",
+		     readl(dimm_mmio), readl(dimm_mmio + 4),
+		     readl(dimm_mmio + 8), readl(dimm_mmio + 12));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pdc20621_packet_start(struct ata_queued_cmd *qc)
 {
@@ -650,8 +757,11 @@ static void pdc20621_packet_start(struct ata_queued_cmd *qc)
 	/* hard-code chip #0 */
 	mmio += PDC_CHIP0_OFS;
 
+<<<<<<< HEAD
 	VPRINTK("ata%u: ENTER\n", ap->print_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();			/* flush PRD, pkt writes */
 
 	port_ofs = PDC_20621_DIMM_BASE + (PDC_DIMM_WINDOW_STEP * port_no);
@@ -662,7 +772,11 @@ static void pdc20621_packet_start(struct ata_queued_cmd *qc)
 
 		pdc20621_dump_hdma(qc);
 		pdc20621_push_hdma(qc, seq, port_ofs + PDC_DIMM_HOST_PKT);
+<<<<<<< HEAD
 		VPRINTK("queued ofs 0x%x (%u), seq %u\n",
+=======
+		ata_port_dbg(ap, "queued ofs 0x%x (%u), seq %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port_ofs + PDC_DIMM_HOST_PKT,
 			port_ofs + PDC_DIMM_HOST_PKT,
 			seq);
@@ -673,7 +787,11 @@ static void pdc20621_packet_start(struct ata_queued_cmd *qc)
 		writel(port_ofs + PDC_DIMM_ATA_PKT,
 		       ap->ioaddr.cmd_addr + PDC_PKT_SUBMIT);
 		readl(ap->ioaddr.cmd_addr + PDC_PKT_SUBMIT);
+<<<<<<< HEAD
 		VPRINTK("submitted ofs 0x%x (%u), seq %u\n",
+=======
+		ata_port_dbg(ap, "submitted ofs 0x%x (%u), seq %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port_ofs + PDC_DIMM_ATA_PKT,
 			port_ofs + PDC_DIMM_ATA_PKT,
 			seq);
@@ -686,7 +804,11 @@ static unsigned int pdc20621_qc_issue(struct ata_queued_cmd *qc)
 	case ATA_PROT_NODATA:
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
 			break;
+<<<<<<< HEAD
 		/*FALLTHROUGH*/
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_PROT_DMA:
 		pdc20621_packet_start(qc);
 		return 0;
@@ -713,14 +835,21 @@ static inline unsigned int pdc20621_host_intr(struct ata_port *ap,
 	u8 status;
 	unsigned int handled = 0;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((qc->tf.protocol == ATA_PROT_DMA) &&	/* read */
 	    (!(qc->tf.flags & ATA_TFLAG_WRITE))) {
 
 		/* step two - DMA from DIMM to host */
 		if (doing_hdma) {
+<<<<<<< HEAD
 			VPRINTK("ata%u: read hdma, 0x%x 0x%x\n", ap->print_id,
+=======
+			ata_port_dbg(ap, "read hdma, 0x%x 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				readl(mmio + 0x104), readl(mmio + PDC_HDMA_CTLSTAT));
 			/* get drive status; clear intr; complete txn */
 			qc->err_mask |= ac_err_mask(ata_wait_idle(ap));
@@ -731,7 +860,11 @@ static inline unsigned int pdc20621_host_intr(struct ata_port *ap,
 		/* step one - exec ATA command */
 		else {
 			u8 seq = (u8) (port_no + 1 + 4);
+<<<<<<< HEAD
 			VPRINTK("ata%u: read ata, 0x%x 0x%x\n", ap->print_id,
+=======
+			ata_port_dbg(ap, "read ata, 0x%x 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				readl(mmio + 0x104), readl(mmio + PDC_HDMA_CTLSTAT));
 
 			/* submit hdma pkt */
@@ -746,7 +879,11 @@ static inline unsigned int pdc20621_host_intr(struct ata_port *ap,
 		/* step one - DMA from host to DIMM */
 		if (doing_hdma) {
 			u8 seq = (u8) (port_no + 1);
+<<<<<<< HEAD
 			VPRINTK("ata%u: write hdma, 0x%x 0x%x\n", ap->print_id,
+=======
+			ata_port_dbg(ap, "write hdma, 0x%x 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				readl(mmio + 0x104), readl(mmio + PDC_HDMA_CTLSTAT));
 
 			/* submit ata pkt */
@@ -759,7 +896,11 @@ static inline unsigned int pdc20621_host_intr(struct ata_port *ap,
 
 		/* step two - execute ATA command */
 		else {
+<<<<<<< HEAD
 			VPRINTK("ata%u: write ata, 0x%x 0x%x\n", ap->print_id,
+=======
+			ata_port_dbg(ap, "write ata, 0x%x 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				readl(mmio + 0x104), readl(mmio + PDC_HDMA_CTLSTAT));
 			/* get drive status; clear intr; complete txn */
 			qc->err_mask |= ac_err_mask(ata_wait_idle(ap));
@@ -772,7 +913,11 @@ static inline unsigned int pdc20621_host_intr(struct ata_port *ap,
 	} else if (qc->tf.protocol == ATA_PROT_NODATA) {
 
 		status = ata_sff_busy_wait(ap, ATA_BUSY | ATA_DRQ, 1000);
+<<<<<<< HEAD
 		DPRINTK("BUS_NODATA (drv_stat 0x%X)\n", status);
+=======
+		ata_port_dbg(ap, "BUS_NODATA (drv_stat 0x%X)\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc->err_mask |= ac_err_mask(status);
 		ata_qc_complete(qc);
 		handled = 1;
@@ -798,18 +943,24 @@ static irqreturn_t pdc20621_interrupt(int irq, void *dev_instance)
 	unsigned int handled = 0;
 	void __iomem *mmio_base;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	if (!host || !host->iomap[PDC_MMIO_BAR]) {
 		VPRINTK("QUICK EXIT\n");
 		return IRQ_NONE;
 	}
+=======
+	if (!host || !host->iomap[PDC_MMIO_BAR])
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmio_base = host->iomap[PDC_MMIO_BAR];
 
 	/* reading should also clear interrupts */
 	mmio_base += PDC_CHIP0_OFS;
 	mask = readl(mmio_base + PDC_20621_SEQMASK);
+<<<<<<< HEAD
 	VPRINTK("mask == 0x%x\n", mask);
 
 	if (mask == 0xffffffff) {
@@ -821,6 +972,15 @@ static irqreturn_t pdc20621_interrupt(int irq, void *dev_instance)
 		VPRINTK("QUICK EXIT 3\n");
 		return IRQ_NONE;
 	}
+=======
+
+	if (mask == 0xffffffff)
+		return IRQ_NONE;
+
+	mask &= 0xffff;		/* only 16 tags possible */
+	if (!mask)
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&host->lock);
 
@@ -833,7 +993,12 @@ static irqreturn_t pdc20621_interrupt(int irq, void *dev_instance)
 		else
 			ap = host->ports[port_no];
 		tmp = mask & (1 << i);
+<<<<<<< HEAD
 		VPRINTK("seq %u, port_no %u, ap %p, tmp %x\n", i, port_no, ap, tmp);
+=======
+		if (ap)
+			ata_port_dbg(ap, "seq %u, tmp %x\n", i, tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp && ap) {
 			struct ata_queued_cmd *qc;
 
@@ -846,10 +1011,13 @@ static irqreturn_t pdc20621_interrupt(int irq, void *dev_instance)
 
 	spin_unlock(&host->lock);
 
+<<<<<<< HEAD
 	VPRINTK("mask == 0x%x\n", mask);
 
 	VPRINTK("EXIT\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_RETVAL(handled);
 }
 
@@ -917,7 +1085,11 @@ static int pdc_softreset(struct ata_link *link, unsigned int *class,
 
 static void pdc_error_handler(struct ata_port *ap)
 {
+<<<<<<< HEAD
 	if (!(ap->pflags & ATA_PFLAG_FROZEN))
+=======
+	if (!ata_port_is_frozen(ap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdc_reset_port(ap);
 
 	ata_sff_error_handler(ap);
@@ -928,7 +1100,11 @@ static void pdc_post_internal_cmd(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 
 	/* make DMA engine forget about the failed command */
+<<<<<<< HEAD
 	if (qc->flags & ATA_QCFLAG_FAILED)
+=======
+	if (qc->flags & ATA_QCFLAG_EH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdc_reset_port(ap);
 }
 
@@ -996,7 +1172,10 @@ static void pdc_sata_setup_port(struct ata_ioports *port, void __iomem *base)
 }
 
 
+<<<<<<< HEAD
 #ifdef ATA_VERBOSE_DEBUG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 				   u32 offset, u32 size)
 {
@@ -1021,10 +1200,15 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 
 	offset -= (idx * window_size);
 	idx++;
+<<<<<<< HEAD
 	dist = ((long) (window_size - (offset + size))) >= 0 ? size :
 		(long) (window_size - offset);
 	memcpy_fromio((char *) psource, (char *) (dimm_mmio + offset / 4),
 		      dist);
+=======
+	dist = min(size, window_size - offset);
+	memcpy_fromio(psource, dimm_mmio + offset / 4, dist);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psource += dist;
 	size -= dist;
@@ -1033,8 +1217,12 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 		readl(mmio + PDC_GENERAL_CTLR);
 		writel(((idx) << page_mask), mmio + PDC_DIMM_WINDOW_CTLR);
 		readl(mmio + PDC_DIMM_WINDOW_CTLR);
+<<<<<<< HEAD
 		memcpy_fromio((char *) psource, (char *) (dimm_mmio),
 			      window_size / 4);
+=======
+		memcpy_fromio(psource, dimm_mmio, window_size / 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psource += window_size;
 		size -= window_size;
 		idx++;
@@ -1045,11 +1233,17 @@ static void pdc20621_get_from_dimm(struct ata_host *host, void *psource,
 		readl(mmio + PDC_GENERAL_CTLR);
 		writel(((idx) << page_mask), mmio + PDC_DIMM_WINDOW_CTLR);
 		readl(mmio + PDC_DIMM_WINDOW_CTLR);
+<<<<<<< HEAD
 		memcpy_fromio((char *) psource, (char *) (dimm_mmio),
 			      size / 4);
 	}
 }
 #endif
+=======
+		memcpy_fromio(psource, dimm_mmio, size / 4);
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static void pdc20621_put_to_dimm(struct ata_host *host, void *psource,
@@ -1073,8 +1267,12 @@ static void pdc20621_put_to_dimm(struct ata_host *host, void *psource,
 	readl(mmio + PDC_DIMM_WINDOW_CTLR);
 	offset -= (idx * window_size);
 	idx++;
+<<<<<<< HEAD
 	dist = ((long)(s32)(window_size - (offset + size))) >= 0 ? size :
 		(long) (window_size - offset);
+=======
+	dist = min(size, window_size - offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy_toio(dimm_mmio + offset / 4, psource, dist);
 	writel(0x01, mmio + PDC_GENERAL_CTLR);
 	readl(mmio + PDC_GENERAL_CTLR);
@@ -1244,13 +1442,27 @@ static unsigned int pdc20621_prog_dimm_global(struct ata_host *host)
 	readl(mmio + PDC_SDRAM_CONTROL);
 
 	/* Turn on for ECC */
+<<<<<<< HEAD
 	pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
 			  PDC_DIMM_SPD_TYPE, &spd0);
+=======
+	if (!pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
+			       PDC_DIMM_SPD_TYPE, &spd0)) {
+		dev_err(host->dev,
+			"Failed in i2c read: device=%#x, subaddr=%#x\n",
+			PDC_DIMM0_SPD_DEV_ADDRESS, PDC_DIMM_SPD_TYPE);
+		return 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (spd0 == 0x02) {
 		data |= (0x01 << 16);
 		writel(data, mmio + PDC_SDRAM_CONTROL);
 		readl(mmio + PDC_SDRAM_CONTROL);
+<<<<<<< HEAD
 		printk(KERN_ERR "Local DIMM ECC Enabled\n");
+=======
+		dev_err(host->dev, "Local DIMM ECC Enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* DIMM Initialization Select/Enable (bit 18/19) */
@@ -1290,7 +1502,11 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 	/* Initialize Time Period Register */
 	writel(0xffffffff, mmio + PDC_TIME_PERIOD);
 	time_period = readl(mmio + PDC_TIME_PERIOD);
+<<<<<<< HEAD
 	VPRINTK("Time Period Register (0x40): 0x%x\n", time_period);
+=======
+	dev_dbg(host->dev, "Time Period Register (0x40): 0x%x\n", time_period);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable timer */
 	writel(PDC_TIMER_DEFAULT, mmio + PDC_TIME_CONTROL);
@@ -1305,7 +1521,11 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 	*/
 
 	tcount = readl(mmio + PDC_TIME_COUNTER);
+<<<<<<< HEAD
 	VPRINTK("Time Counter Register (0x44): 0x%x\n", tcount);
+=======
+	dev_dbg(host->dev, "Time Counter Register (0x44): 0x%x\n", tcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	   If SX4 is on PCI-X bus, after 3 seconds, the timer counter
@@ -1313,6 +1533,7 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 	*/
 	if (tcount >= PCI_X_TCOUNT) {
 		ticks = (time_period - tcount);
+<<<<<<< HEAD
 		VPRINTK("Num counters 0x%x (%d)\n", ticks, ticks);
 
 		clock = (ticks / 300000);
@@ -1324,6 +1545,21 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 		/* PLL F Param (bit 22:16) */
 		fparam = (1400000 / clock) - 2;
 		VPRINTK("PLL F Param: 0x%x (%d)\n", fparam, fparam);
+=======
+		dev_dbg(host->dev, "Num counters 0x%x (%d)\n", ticks, ticks);
+
+		clock = (ticks / 300000);
+		dev_dbg(host->dev, "10 * Internal clk = 0x%x (%d)\n",
+			clock, clock);
+
+		clock = (clock * 33);
+		dev_dbg(host->dev, "10 * Internal clk * 33 = 0x%x (%d)\n",
+			clock, clock);
+
+		/* PLL F Param (bit 22:16) */
+		fparam = (1400000 / clock) - 2;
+		dev_dbg(host->dev, "PLL F Param: 0x%x (%d)\n", fparam, fparam);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* OD param = 0x2 (bit 31:30), R param = 0x5 (bit 29:25) */
 		pci_status = (0x8a001824 | (fparam << 16));
@@ -1331,7 +1567,11 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 		pci_status = PCI_PLL_INIT;
 
 	/* Initialize PLL. */
+<<<<<<< HEAD
 	VPRINTK("pci_status: 0x%x\n", pci_status);
+=======
+	dev_dbg(host->dev, "pci_status: 0x%x\n", pci_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(pci_status, mmio + PDC_CTL_STATUS);
 	readl(mmio + PDC_CTL_STATUS);
 
@@ -1340,6 +1580,7 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 	   and program the DIMM Module Controller.
 	*/
 	if (!(speed = pdc20621_detect_dimm(host))) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Detect Local DIMM Fail\n");
 		return 1;	/* DIMM error */
 	}
@@ -1357,6 +1598,25 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 
 #ifdef ATA_VERBOSE_DEBUG
 	{
+=======
+		dev_err(host->dev, "Detect Local DIMM Fail\n");
+		return 1;	/* DIMM error */
+	}
+	dev_dbg(host->dev, "Local DIMM Speed = %d\n", speed);
+
+	/* Programming DIMM0 Module Control Register (index_CID0:80h) */
+	size = pdc20621_prog_dimm0(host);
+	dev_dbg(host->dev, "Local DIMM Size = %dMB\n", size);
+
+	/* Programming DIMM Module Global Control Register (index_CID0:88h) */
+	if (pdc20621_prog_dimm_global(host)) {
+		dev_err(host->dev,
+			"Programming DIMM Module Global Control Register Fail\n");
+		return 1;
+	}
+
+	if (dimm_test) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 test_parttern1[40] =
 			{0x55,0xAA,'P','r','o','m','i','s','e',' ',
 			'N','o','t',' ','Y','e','t',' ',
@@ -1370,6 +1630,7 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 
 		pdc20621_put_to_dimm(host, test_parttern1, 0x10040, 40);
 		pdc20621_get_from_dimm(host, test_parttern2, 0x40, 40);
+<<<<<<< HEAD
 		printk(KERN_ERR "%x, %x, %s\n", test_parttern2[0],
 		       test_parttern2[1], &(test_parttern2[2]));
 		pdc20621_get_from_dimm(host, test_parttern2, 0x10040,
@@ -1394,13 +1655,51 @@ static unsigned int pdc20621_dimm_init(struct ata_host *host)
 		addr = 0;
 		length = size * 1024 * 1024;
 		buf = kzalloc(ECC_ERASE_BUF_SZ, GFP_KERNEL);
+=======
+		dev_info(host->dev, "DIMM test pattern 1: %x, %x, %s\n", test_parttern2[0],
+		       test_parttern2[1], &(test_parttern2[2]));
+		pdc20621_get_from_dimm(host, test_parttern2, 0x10040,
+				       40);
+		dev_info(host->dev, "DIMM test pattern 2: %x, %x, %s\n",
+			 test_parttern2[0],
+			 test_parttern2[1], &(test_parttern2[2]));
+
+		pdc20621_put_to_dimm(host, test_parttern1, 0x40, 40);
+		pdc20621_get_from_dimm(host, test_parttern2, 0x40, 40);
+		dev_info(host->dev, "DIMM test pattern 3: %x, %x, %s\n",
+			 test_parttern2[0],
+			 test_parttern2[1], &(test_parttern2[2]));
+	}
+
+	/* ECC initiliazation. */
+
+	if (!pdc20621_i2c_read(host, PDC_DIMM0_SPD_DEV_ADDRESS,
+			       PDC_DIMM_SPD_TYPE, &spd0)) {
+		dev_err(host->dev,
+			"Failed in i2c read: device=%#x, subaddr=%#x\n",
+		       PDC_DIMM0_SPD_DEV_ADDRESS, PDC_DIMM_SPD_TYPE);
+		return 1;
+	}
+	if (spd0 == 0x02) {
+		void *buf;
+		dev_dbg(host->dev, "Start ECC initialization\n");
+		addr = 0;
+		length = size * 1024 * 1024;
+		buf = kzalloc(ECC_ERASE_BUF_SZ, GFP_KERNEL);
+		if (!buf)
+			return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (addr < length) {
 			pdc20621_put_to_dimm(host, buf, addr,
 					     ECC_ERASE_BUF_SZ);
 			addr += ECC_ERASE_BUF_SZ;
 		}
 		kfree(buf);
+<<<<<<< HEAD
 		VPRINTK("Finish ECC initialization\n");
+=======
+		dev_dbg(host->dev, "Finish ECC initialization\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1482,10 +1781,14 @@ static int pdc_sata_init_one(struct pci_dev *pdev,
 	}
 
 	/* configure and activate */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -1498,6 +1801,7 @@ static int pdc_sata_init_one(struct pci_dev *pdev,
 				 IRQF_SHARED, &pdc_sata_sht);
 }
 
+<<<<<<< HEAD
 
 static int __init pdc_sata_init(void)
 {
@@ -1510,12 +1814,18 @@ static void __exit pdc_sata_exit(void)
 	pci_unregister_driver(&pdc_sata_pci_driver);
 }
 
+=======
+module_pci_driver(pdc_sata_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jeff Garzik");
 MODULE_DESCRIPTION("Promise SATA low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, pdc_sata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(pdc_sata_init);
 module_exit(pdc_sata_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

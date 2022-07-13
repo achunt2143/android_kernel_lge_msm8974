@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/sysctl.c
  *
@@ -9,6 +13,7 @@
 #include <linux/fs.h>
 #include <linux/sysctl.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/nfs4.h>
 #include <linux/nfs_idmap.h>
 #include <linux/nfs_fs.h>
@@ -40,6 +45,13 @@ static ctl_table nfs_cb_sysctls[] = {
 		.proc_handler = proc_dointvec_jiffies,
 	},
 #endif
+=======
+#include <linux/nfs_fs.h>
+
+static struct ctl_table_header *nfs_callback_sysctl_table;
+
+static struct ctl_table nfs_cb_sysctls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "nfs_mountpoint_timeout",
 		.data		= &nfs_mountpoint_expiry_timeout,
@@ -54,6 +66,7 @@ static ctl_table nfs_cb_sysctls[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+<<<<<<< HEAD
 	{ }
 };
 
@@ -73,11 +86,17 @@ static ctl_table nfs_cb_sysctl_root[] = {
 		.child = nfs_cb_sysctl_dir,
 	},
 	{ }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int nfs_register_sysctl(void)
 {
+<<<<<<< HEAD
 	nfs_callback_sysctl_table = register_sysctl_table(nfs_cb_sysctl_root);
+=======
+	nfs_callback_sysctl_table = register_sysctl("fs/nfs", nfs_cb_sysctls);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nfs_callback_sysctl_table == NULL)
 		return -ENOMEM;
 	return 0;

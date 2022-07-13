@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 /*
  * IPv4 over IEEE 1394, per RFC 2734
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * IPv4 over IEEE 1394, per RFC 2734
+ * IPv6 over IEEE 1394, per RFC 3146
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2009 Jay Fenlason <fenlason@redhat.com>
  *
@@ -28,6 +35,10 @@
 
 #include <asm/unaligned.h>
 #include <net/arp.h>
+<<<<<<< HEAD
+=======
+#include <net/firewire.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* rx limits */
 #define FWNET_MAX_FRAGMENTS		30 /* arbitrary, > TX queue depth */
@@ -45,6 +56,10 @@
 
 #define IANA_SPECIFIER_ID		0x00005eU
 #define RFC2734_SW_VERSION		0x000001U
+<<<<<<< HEAD
+=======
+#define RFC3146_SW_VERSION		0x000002U
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IEEE1394_GASP_HDR_SIZE	8
 
@@ -57,6 +72,7 @@
 #define RFC2374_HDR_LASTFRAG	2	/* last fragment	*/
 #define RFC2374_HDR_INTFRAG	3	/* interior fragment	*/
 
+<<<<<<< HEAD
 #define RFC2734_HW_ADDR_LEN	16
 
 struct rfc2734_arp {
@@ -83,6 +99,12 @@ struct fwnet_header {
 	u8 h_dest[FWNET_ALEN];	/* destination address */
 	__be16 h_proto;		/* packet type ID field */
 } __packed;
+=======
+static bool fwnet_hwaddr_is_multicast(u8 *ha)
+{
+	return !!(*ha & 1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IPv4 and IPv6 encapsulation header */
 struct rfc2734_header {
@@ -92,6 +114,7 @@ struct rfc2734_header {
 
 #define fwnet_get_hdr_lf(h)		(((h)->w0 & 0xc0000000) >> 30)
 #define fwnet_get_hdr_ether_type(h)	(((h)->w0 & 0x0000ffff))
+<<<<<<< HEAD
 #define fwnet_get_hdr_dg_size(h)	(((h)->w0 & 0x0fff0000) >> 16)
 #define fwnet_get_hdr_fg_off(h)		(((h)->w0 & 0x00000fff))
 #define fwnet_get_hdr_dgl(h)		(((h)->w1 & 0xffff0000) >> 16)
@@ -99,6 +122,15 @@ struct rfc2734_header {
 #define fwnet_set_hdr_lf(lf)		((lf)  << 30)
 #define fwnet_set_hdr_ether_type(et)	(et)
 #define fwnet_set_hdr_dg_size(dgs)	((dgs) << 16)
+=======
+#define fwnet_get_hdr_dg_size(h)	((((h)->w0 & 0x0fff0000) >> 16) + 1)
+#define fwnet_get_hdr_fg_off(h)		(((h)->w0 & 0x00000fff))
+#define fwnet_get_hdr_dgl(h)		(((h)->w1 & 0xffff0000) >> 16)
+
+#define fwnet_set_hdr_lf(lf)		((lf) << 30)
+#define fwnet_set_hdr_ether_type(et)	(et)
+#define fwnet_set_hdr_dg_size(dgs)	(((dgs) - 1) << 16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fwnet_set_hdr_fg_off(fgo)	(fgo)
 
 #define fwnet_set_hdr_dgl(dgl)		((dgl) << 16)
@@ -191,8 +223,11 @@ struct fwnet_peer {
 	struct list_head peer_link;
 	struct fwnet_device *dev;
 	u64 guid;
+<<<<<<< HEAD
 	u64 fifo;
 	__be32 ip;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* guarded by dev->lock */
 	struct list_head pd_list; /* received partial datagrams */
@@ -231,7 +266,11 @@ static int fwnet_header_create(struct sk_buff *skb, struct net_device *net,
 {
 	struct fwnet_header *h;
 
+<<<<<<< HEAD
 	h = (struct fwnet_header *)skb_push(skb, sizeof(*h));
+=======
+	h = skb_push(skb, sizeof(*h));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_unaligned_be16(type, &h->h_proto);
 
 	if (net->flags & (IFF_LOOPBACK | IFF_NOARP)) {
@@ -249,6 +288,7 @@ static int fwnet_header_create(struct sk_buff *skb, struct net_device *net,
 	return -net->hard_header_len;
 }
 
+<<<<<<< HEAD
 static int fwnet_header_rebuild(struct sk_buff *skb)
 {
 	struct fwnet_header *h = (struct fwnet_header *)skb->data;
@@ -261,6 +301,8 @@ static int fwnet_header_rebuild(struct sk_buff *skb)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fwnet_header_cache(const struct neighbour *neigh,
 			      struct hh_cache *hh, __be16 type)
 {
@@ -270,10 +312,21 @@ static int fwnet_header_cache(const struct neighbour *neigh,
 	if (type == cpu_to_be16(ETH_P_802_3))
 		return -1;
 	net = neigh->dev;
+<<<<<<< HEAD
 	h = (struct fwnet_header *)((u8 *)hh->hh_data + 16 - sizeof(*h));
 	h->h_proto = type;
 	memcpy(h->h_dest, neigh->ha, net->addr_len);
 	hh->hh_len = FWNET_HLEN;
+=======
+	h = (struct fwnet_header *)((u8 *)hh->hh_data + HH_DATA_OFF(sizeof(*h)));
+	h->h_proto = type;
+	memcpy(h->h_dest, neigh->ha, net->addr_len);
+
+	/* Pairs with the READ_ONCE() in neigh_resolve_output(),
+	 * neigh_hh_output() and neigh_update_hhs().
+	 */
+	smp_store_release(&hh->hh_len, FWNET_HLEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -282,7 +335,11 @@ static int fwnet_header_cache(const struct neighbour *neigh,
 static void fwnet_header_cache_update(struct hh_cache *hh,
 		const struct net_device *net, const unsigned char *haddr)
 {
+<<<<<<< HEAD
 	memcpy((u8 *)hh->hh_data + 16 - FWNET_HLEN, haddr, net->addr_len);
+=======
+	memcpy((u8 *)hh->hh_data + HH_DATA_OFF(FWNET_HLEN), haddr, net->addr_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fwnet_header_parse(const struct sk_buff *skb, unsigned char *haddr)
@@ -294,7 +351,10 @@ static int fwnet_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 
 static const struct header_ops fwnet_header_ops = {
 	.create         = fwnet_header_create,
+<<<<<<< HEAD
 	.rebuild        = fwnet_header_rebuild,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache		= fwnet_header_cache,
 	.cache_update	= fwnet_header_cache_update,
 	.parse          = fwnet_header_parse,
@@ -368,10 +428,15 @@ static struct fwnet_fragment_info *fwnet_frag_new(
 	}
 
 	new = kmalloc(sizeof(*new), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!new) {
 		dev_err(&pd->skb->dev->dev, "out of memory\n");
 		return NULL;
 	}
+=======
+	if (!new)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new->offset = offset;
 	new->len = len;
@@ -398,11 +463,19 @@ static struct fwnet_partial_datagram *fwnet_pd_new(struct net_device *net,
 
 	new->datagram_label = datagram_label;
 	new->datagram_size = dg_size;
+<<<<<<< HEAD
 	new->skb = dev_alloc_skb(dg_size + net->hard_header_len + 15);
 	if (new->skb == NULL)
 		goto fail_w_fi;
 
 	skb_reserve(new->skb, (net->hard_header_len + 15) & ~15);
+=======
+	new->skb = dev_alloc_skb(dg_size + LL_RESERVED_SPACE(net));
+	if (new->skb == NULL)
+		goto fail_w_fi;
+
+	skb_reserve(new->skb, LL_RESERVED_SPACE(net));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->pbuf = skb_put(new->skb, dg_size);
 	memcpy(new->pbuf + frag_off, frag_buf, frag_len);
 	list_add_tail(&new->pd_link, &peer->pd_list);
@@ -414,8 +487,11 @@ fail_w_fi:
 fail_w_new:
 	kfree(new);
 fail:
+<<<<<<< HEAD
 	dev_err(&net->dev, "out of memory\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -512,6 +588,7 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 					struct sk_buff *skb, u16 source_node_id,
 					bool is_broadcast, u16 ether_type)
 {
+<<<<<<< HEAD
 	struct fwnet_device *dev;
 	static const __be64 broadcast_hw = cpu_to_be64(~0ULL);
 	int status;
@@ -610,6 +687,31 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 	guid = cpu_to_be64(dev->card->guid);
 	if (dev_hard_header(skb, net, ether_type,
 			   is_broadcast ? &broadcast_hw : &guid,
+=======
+	int status, len;
+
+	switch (ether_type) {
+	case ETH_P_ARP:
+	case ETH_P_IP:
+#if IS_ENABLED(CONFIG_IPV6)
+	case ETH_P_IPV6:
+#endif
+		break;
+	default:
+		goto err;
+	}
+
+	/* Write metadata, and then pass to the receive level */
+	skb->dev = net;
+	skb->ip_summed = CHECKSUM_NONE;
+
+	/*
+	 * Parse the encapsulation header. This actually does the job of
+	 * converting to an ethernet-like pseudo frame header.
+	 */
+	if (dev_hard_header(skb, net, ether_type,
+			   is_broadcast ? net->broadcast : net->dev_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   NULL, skb->len) >= 0) {
 		struct fwnet_header *eth;
 		u16 *rawp;
@@ -618,7 +720,11 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 		skb_reset_mac_header(skb);
 		skb_pull(skb, sizeof(*eth));
 		eth = (struct fwnet_header *)skb_mac_header(skb);
+<<<<<<< HEAD
 		if (*eth->h_dest & 1) {
+=======
+		if (fwnet_hwaddr_is_multicast(eth->h_dest)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (memcmp(eth->h_dest, net->broadcast,
 				   net->addr_len) == 0)
 				skb->pkt_type = PACKET_BROADCAST;
@@ -630,7 +736,11 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 			if (memcmp(eth->h_dest, net->dev_addr, net->addr_len))
 				skb->pkt_type = PACKET_OTHERHOST;
 		}
+<<<<<<< HEAD
 		if (ntohs(eth->h_proto) >= 1536) {
+=======
+		if (ntohs(eth->h_proto) >= ETH_P_802_3_MIN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			protocol = eth->h_proto;
 		} else {
 			rawp = (u16 *)skb->data;
@@ -641,18 +751,31 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 		}
 		skb->protocol = protocol;
 	}
+<<<<<<< HEAD
+=======
+
+	len = skb->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = netif_rx(skb);
 	if (status == NET_RX_DROP) {
 		net->stats.rx_errors++;
 		net->stats.rx_dropped++;
 	} else {
 		net->stats.rx_packets++;
+<<<<<<< HEAD
 		net->stats.rx_bytes += skb->len;
+=======
+		net->stats.rx_bytes += len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
+<<<<<<< HEAD
  no_peer:
+=======
+ err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net->stats.rx_errors++;
 	net->stats.rx_dropped++;
 
@@ -678,6 +801,12 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 	int retval;
 	u16 ether_type;
 
+<<<<<<< HEAD
+=======
+	if (len <= RFC2374_UNFRAG_HDR_SIZE)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr.w0 = be32_to_cpu(buf[0]);
 	lf = fwnet_get_hdr_lf(&hdr);
 	if (lf == RFC2374_HDR_UNFRAG) {
@@ -690,20 +819,39 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 		buf++;
 		len -= RFC2374_UNFRAG_HDR_SIZE;
 
+<<<<<<< HEAD
 		skb = dev_alloc_skb(len + net->hard_header_len + 15);
 		if (unlikely(!skb)) {
 			dev_err(&net->dev, "out of memory\n");
+=======
+		skb = dev_alloc_skb(len + LL_RESERVED_SPACE(net));
+		if (unlikely(!skb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			net->stats.rx_dropped++;
 
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		skb_reserve(skb, (net->hard_header_len + 15) & ~15);
 		memcpy(skb_put(skb, len), buf, len);
+=======
+		skb_reserve(skb, LL_RESERVED_SPACE(net));
+		skb_put_data(skb, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return fwnet_finish_incoming_packet(net, skb, source_node_id,
 						    is_broadcast, ether_type);
 	}
+<<<<<<< HEAD
 	/* A datagram fragment has been received, now the fun begins. */
+=======
+
+	/* A datagram fragment has been received, now the fun begins. */
+
+	if (len <= RFC2374_FRAG_HDR_SIZE)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr.w1 = ntohl(buf[1]);
 	buf += 2;
 	len -= RFC2374_FRAG_HDR_SIZE;
@@ -715,7 +863,14 @@ static int fwnet_incoming_packet(struct fwnet_device *dev, __be32 *buf, int len,
 		fg_off = fwnet_get_hdr_fg_off(&hdr);
 	}
 	datagram_label = fwnet_get_hdr_dgl(&hdr);
+<<<<<<< HEAD
 	dg_size = fwnet_get_hdr_dg_size(&hdr); /* ??? + 1 */
+=======
+	dg_size = fwnet_get_hdr_dg_size(&hdr);
+
+	if (fg_off + len > dg_size)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
@@ -804,6 +959,7 @@ static void fwnet_receive_packet(struct fw_card *card, struct fw_request *r,
 	int rcode;
 
 	if (destination == IEEE1394_ALL_NODES) {
+<<<<<<< HEAD
 		kfree(r);
 
 		return;
@@ -819,28 +975,74 @@ static void fwnet_receive_packet(struct fw_card *card, struct fw_request *r,
 		rcode = RCODE_CONFLICT_ERROR;
 	} else
 		rcode = RCODE_COMPLETE;
+=======
+		// Although the response to the broadcast packet is not necessarily required, the
+		// fw_send_response() function should still be called to maintain the reference
+		// counting of the object. In the case, the call of function just releases the
+		// object as a result to decrease the reference counting.
+		rcode = RCODE_COMPLETE;
+	} else if (offset != dev->handler.offset) {
+		rcode = RCODE_ADDRESS_ERROR;
+	} else if (tcode != TCODE_WRITE_BLOCK_REQUEST) {
+		rcode = RCODE_TYPE_ERROR;
+	} else if (fwnet_incoming_packet(dev, payload, length,
+					 source, generation, false) != 0) {
+		dev_err(&dev->netdev->dev, "incoming packet failure\n");
+		rcode = RCODE_CONFLICT_ERROR;
+	} else {
+		rcode = RCODE_COMPLETE;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fw_send_response(card, r, rcode);
 }
 
+<<<<<<< HEAD
+=======
+static int gasp_source_id(__be32 *p)
+{
+	return be32_to_cpu(p[0]) >> 16;
+}
+
+static u32 gasp_specifier_id(__be32 *p)
+{
+	return (be32_to_cpu(p[0]) & 0xffff) << 8 |
+	       (be32_to_cpu(p[1]) & 0xff000000) >> 24;
+}
+
+static u32 gasp_version(__be32 *p)
+{
+	return be32_to_cpu(p[1]) & 0xffffff;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fwnet_receive_broadcast(struct fw_iso_context *context,
 		u32 cycle, size_t header_length, void *header, void *data)
 {
 	struct fwnet_device *dev;
 	struct fw_iso_packet packet;
+<<<<<<< HEAD
 	struct fw_card *card;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 *hdr_ptr;
 	__be32 *buf_ptr;
 	int retval;
 	u32 length;
+<<<<<<< HEAD
 	u16 source_node_id;
 	u32 specifier_id;
 	u32 ver;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset;
 	unsigned long flags;
 
 	dev = data;
+<<<<<<< HEAD
 	card = dev->card;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr_ptr = header;
 	length = be16_to_cpup(hdr_ptr);
 
@@ -853,6 +1055,7 @@ static void fwnet_receive_broadcast(struct fw_iso_context *context,
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	specifier_id =    (be32_to_cpu(buf_ptr[0]) & 0xffff) << 8
 			| (be32_to_cpu(buf_ptr[1]) & 0xff000000) >> 24;
 	ver = be32_to_cpu(buf_ptr[1]) & 0xffffff;
@@ -864,6 +1067,19 @@ static void fwnet_receive_broadcast(struct fw_iso_context *context,
 		fwnet_incoming_packet(dev, buf_ptr, length, source_node_id,
 				      context->card->generation, true);
 	}
+=======
+	if (length > IEEE1394_GASP_HDR_SIZE &&
+	    gasp_specifier_id(buf_ptr) == IANA_SPECIFIER_ID &&
+	    (gasp_version(buf_ptr) == RFC2734_SW_VERSION
+#if IS_ENABLED(CONFIG_IPV6)
+	     || gasp_version(buf_ptr) == RFC3146_SW_VERSION
+#endif
+	    ))
+		fwnet_incoming_packet(dev, buf_ptr + 2,
+				      length - IEEE1394_GASP_HDR_SIZE,
+				      gasp_source_id(buf_ptr),
+				      context->card->generation, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	packet.payload_length = dev->rcv_buffer_size;
 	packet.interrupt = 1;
@@ -1040,16 +1256,24 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 	tx_len = ptask->max_payload;
 	switch (fwnet_get_hdr_lf(&ptask->hdr)) {
 	case RFC2374_HDR_UNFRAG:
+<<<<<<< HEAD
 		bufhdr = (struct rfc2734_header *)
 				skb_push(ptask->skb, RFC2374_UNFRAG_HDR_SIZE);
+=======
+		bufhdr = skb_push(ptask->skb, RFC2374_UNFRAG_HDR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_unaligned_be32(ptask->hdr.w0, &bufhdr->w0);
 		break;
 
 	case RFC2374_HDR_FIRSTFRAG:
 	case RFC2374_HDR_INTFRAG:
 	case RFC2374_HDR_LASTFRAG:
+<<<<<<< HEAD
 		bufhdr = (struct rfc2734_header *)
 				skb_push(ptask->skb, RFC2374_FRAG_HDR_SIZE);
+=======
+		bufhdr = skb_push(ptask->skb, RFC2374_FRAG_HDR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_unaligned_be32(ptask->hdr.w0, &bufhdr->w0);
 		put_unaligned_be32(ptask->hdr.w1, &bufhdr->w1);
 		break;
@@ -1061,16 +1285,37 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 		u8 *p;
 		int generation;
 		int node_id;
+<<<<<<< HEAD
+=======
+		unsigned int sw_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* ptask->generation may not have been set yet */
 		generation = dev->card->generation;
 		smp_rmb();
 		node_id = dev->card->node_id;
 
+<<<<<<< HEAD
 		p = skb_push(ptask->skb, IEEE1394_GASP_HDR_SIZE);
 		put_unaligned_be32(node_id << 16 | IANA_SPECIFIER_ID >> 8, p);
 		put_unaligned_be32((IANA_SPECIFIER_ID & 0xff) << 24
 						| RFC2734_SW_VERSION, &p[4]);
+=======
+		switch (ptask->skb->protocol) {
+		default:
+			sw_version = RFC2734_SW_VERSION;
+			break;
+#if IS_ENABLED(CONFIG_IPV6)
+		case htons(ETH_P_IPV6):
+			sw_version = RFC3146_SW_VERSION;
+#endif
+		}
+
+		p = skb_push(ptask->skb, IEEE1394_GASP_HDR_SIZE);
+		put_unaligned_be32(node_id << 16 | IANA_SPECIFIER_ID >> 8, p);
+		put_unaligned_be32((IANA_SPECIFIER_ID & 0xff) << 24
+						| sw_version, &p[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We should not transmit if broadcast_channel.valid == 0. */
 		fw_send_request(dev->card, &ptask->transaction,
@@ -1110,7 +1355,11 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+<<<<<<< HEAD
 	dev->netdev->trans_start = jiffies;
+=======
+	netif_trans_update(dev->netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	if (free)
 		fwnet_free_ptask(ptask);
@@ -1118,6 +1367,65 @@ static int fwnet_send_packet(struct fwnet_packet_task *ptask)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void fwnet_fifo_stop(struct fwnet_device *dev)
+{
+	if (dev->local_fifo == FWNET_NO_FIFO_ADDR)
+		return;
+
+	fw_core_remove_address_handler(&dev->handler);
+	dev->local_fifo = FWNET_NO_FIFO_ADDR;
+}
+
+static int fwnet_fifo_start(struct fwnet_device *dev)
+{
+	int retval;
+
+	if (dev->local_fifo != FWNET_NO_FIFO_ADDR)
+		return 0;
+
+	dev->handler.length = 4096;
+	dev->handler.address_callback = fwnet_receive_packet;
+	dev->handler.callback_data = dev;
+
+	retval = fw_core_add_address_handler(&dev->handler,
+					     &fw_high_memory_region);
+	if (retval < 0)
+		return retval;
+
+	dev->local_fifo = dev->handler.offset;
+
+	return 0;
+}
+
+static void __fwnet_broadcast_stop(struct fwnet_device *dev)
+{
+	unsigned u;
+
+	if (dev->broadcast_state != FWNET_BROADCAST_ERROR) {
+		for (u = 0; u < FWNET_ISO_PAGE_COUNT; u++)
+			kunmap(dev->broadcast_rcv_buffer.pages[u]);
+		fw_iso_buffer_destroy(&dev->broadcast_rcv_buffer, dev->card);
+	}
+	if (dev->broadcast_rcv_context) {
+		fw_iso_context_destroy(dev->broadcast_rcv_context);
+		dev->broadcast_rcv_context = NULL;
+	}
+	kfree(dev->broadcast_rcv_buffer_ptrs);
+	dev->broadcast_rcv_buffer_ptrs = NULL;
+	dev->broadcast_state = FWNET_BROADCAST_ERROR;
+}
+
+static void fwnet_broadcast_stop(struct fwnet_device *dev)
+{
+	if (dev->broadcast_state == FWNET_BROADCAST_ERROR)
+		return;
+	fw_iso_context_stop(dev->broadcast_rcv_context);
+	__fwnet_broadcast_stop(dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fwnet_broadcast_start(struct fwnet_device *dev)
 {
 	struct fw_iso_context *context;
@@ -1126,6 +1434,7 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 	unsigned max_receive;
 	struct fw_iso_packet packet;
 	unsigned long offset;
+<<<<<<< HEAD
 	unsigned u;
 
 	if (dev->local_fifo == FWNET_NO_FIFO_ADDR) {
@@ -1140,10 +1449,18 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 
 		dev->local_fifo = dev->handler.offset;
 	}
+=======
+	void **ptrptr;
+	unsigned u;
+
+	if (dev->broadcast_state != FWNET_BROADCAST_ERROR)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_receive = 1U << (dev->card->max_receive + 1);
 	num_packets = (FWNET_ISO_PAGE_COUNT * PAGE_SIZE) / max_receive;
 
+<<<<<<< HEAD
 	if (!dev->broadcast_rcv_context) {
 		void **ptrptr;
 
@@ -1180,6 +1497,40 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 	} else {
 		context = dev->broadcast_rcv_context;
 	}
+=======
+	ptrptr = kmalloc_array(num_packets, sizeof(void *), GFP_KERNEL);
+	if (!ptrptr) {
+		retval = -ENOMEM;
+		goto failed;
+	}
+	dev->broadcast_rcv_buffer_ptrs = ptrptr;
+
+	context = fw_iso_context_create(dev->card, FW_ISO_CONTEXT_RECEIVE,
+					IEEE1394_BROADCAST_CHANNEL,
+					dev->card->link_speed, 8,
+					fwnet_receive_broadcast, dev);
+	if (IS_ERR(context)) {
+		retval = PTR_ERR(context);
+		goto failed;
+	}
+
+	retval = fw_iso_buffer_init(&dev->broadcast_rcv_buffer, dev->card,
+				    FWNET_ISO_PAGE_COUNT, DMA_FROM_DEVICE);
+	if (retval < 0)
+		goto failed;
+
+	dev->broadcast_state = FWNET_BROADCAST_STOPPED;
+
+	for (u = 0; u < FWNET_ISO_PAGE_COUNT; u++) {
+		void *ptr;
+		unsigned v;
+
+		ptr = kmap(dev->broadcast_rcv_buffer.pages[u]);
+		for (v = 0; v < num_packets / FWNET_ISO_PAGE_COUNT; v++)
+			*ptrptr++ = (void *) ((char *)ptr + v * max_receive);
+	}
+	dev->broadcast_rcv_context = context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	packet.payload_length = max_receive;
 	packet.interrupt = 1;
@@ -1193,7 +1544,11 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 		retval = fw_iso_context_queue(context, &packet,
 				&dev->broadcast_rcv_buffer, offset);
 		if (retval < 0)
+<<<<<<< HEAD
 			goto failed_rcv_queue;
+=======
+			goto failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		offset += max_receive;
 	}
@@ -1203,7 +1558,11 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 	retval = fw_iso_context_start(context, -1, 0,
 			FW_ISO_CONTEXT_MATCH_ALL_TAGS); /* ??? sync */
 	if (retval < 0)
+<<<<<<< HEAD
 		goto failed_rcv_queue;
+=======
+		goto failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: adjust it according to the min. speed of all known peers? */
 	dev->broadcast_xmt_max_payload = IEEE1394_MAX_PAYLOAD_S100
@@ -1212,6 +1571,7 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 
 	return 0;
 
+<<<<<<< HEAD
  failed_rcv_queue:
 	kfree(dev->broadcast_rcv_buffer_ptrs);
 	dev->broadcast_rcv_buffer_ptrs = NULL;
@@ -1225,6 +1585,10 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
  failed_initial:
 	dev->local_fifo = FWNET_NO_FIFO_ADDR;
 
+=======
+ failed:
+	__fwnet_broadcast_stop(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -1242,11 +1606,18 @@ static int fwnet_open(struct net_device *net)
 	struct fwnet_device *dev = netdev_priv(net);
 	int ret;
 
+<<<<<<< HEAD
 	if (dev->broadcast_state == FWNET_BROADCAST_ERROR) {
 		ret = fwnet_broadcast_start(dev);
 		if (ret)
 			return ret;
 	}
+=======
+	ret = fwnet_broadcast_start(dev);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(net);
 
 	spin_lock_irq(&dev->lock);
@@ -1259,9 +1630,16 @@ static int fwnet_open(struct net_device *net)
 /* ifdown */
 static int fwnet_stop(struct net_device *net)
 {
+<<<<<<< HEAD
 	netif_stop_queue(net);
 
 	/* Deallocate iso context for use by other applications? */
+=======
+	struct fwnet_device *dev = netdev_priv(net);
+
+	netif_stop_queue(net);
+	fwnet_broadcast_stop(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1301,19 +1679,40 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	 * We might need to rebuild the header on tx failure.
 	 */
 	memcpy(&hdr_buf, skb->data, sizeof(hdr_buf));
+<<<<<<< HEAD
 	skb_pull(skb, sizeof(hdr_buf));
 
 	proto = hdr_buf.h_proto;
+=======
+	proto = hdr_buf.h_proto;
+
+	switch (proto) {
+	case htons(ETH_P_ARP):
+	case htons(ETH_P_IP):
+#if IS_ENABLED(CONFIG_IPV6)
+	case htons(ETH_P_IPV6):
+#endif
+		break;
+	default:
+		goto fail;
+	}
+
+	skb_pull(skb, sizeof(hdr_buf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dg_size = skb->len;
 
 	/*
 	 * Set the transmission type for the packet.  ARP packets and IP
 	 * broadcast packets are sent via GASP.
 	 */
+<<<<<<< HEAD
 	if (memcmp(hdr_buf.h_dest, net->broadcast, FWNET_ALEN) == 0
 	    || proto == htons(ETH_P_ARP)
 	    || (proto == htons(ETH_P_IP)
 		&& IN_MULTICAST(ntohl(ip_hdr(skb)->daddr)))) {
+=======
+	if (fwnet_hwaddr_is_multicast(hdr_buf.h_dest)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_payload        = dev->broadcast_xmt_max_payload;
 		datagram_label_ptr = &dev->broadcast_xmt_datagramlabel;
 
@@ -1322,11 +1721,20 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 		ptask->dest_node   = IEEE1394_ALL_NODES;
 		ptask->speed       = SCODE_100;
 	} else {
+<<<<<<< HEAD
 		__be64 guid = get_unaligned((__be64 *)hdr_buf.h_dest);
 		u8 generation;
 
 		peer = fwnet_peer_find_by_guid(dev, be64_to_cpu(guid));
 		if (!peer || peer->fifo == FWNET_NO_FIFO_ADDR)
+=======
+		union fwnet_hwaddr *ha = (union fwnet_hwaddr *)hdr_buf.h_dest;
+		__be64 guid = get_unaligned(&ha->uc.uniq_id);
+		u8 generation;
+
+		peer = fwnet_peer_find_by_guid(dev, be64_to_cpu(guid));
+		if (!peer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 
 		generation         = peer->generation;
@@ -1334,12 +1742,17 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 		max_payload        = peer->max_payload;
 		datagram_label_ptr = &peer->datagram_label;
 
+<<<<<<< HEAD
 		ptask->fifo_addr   = peer->fifo;
+=======
+		ptask->fifo_addr   = get_unaligned_be48(ha->uc.fifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptask->generation  = generation;
 		ptask->dest_node   = dest_node;
 		ptask->speed       = peer->speed;
 	}
 
+<<<<<<< HEAD
 	/* If this is an ARP packet, convert it */
 	if (proto == htons(ETH_P_ARP)) {
 		struct arphdr *arp = (struct arphdr *)skb->data;
@@ -1360,6 +1773,8 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 		put_unaligned(ipaddr, &arp1394->sip);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ptask->hdr.w0 = 0;
 	ptask->hdr.w1 = 0;
 	ptask->skb = skb;
@@ -1415,6 +1830,7 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 static int fwnet_change_mtu(struct net_device *net, int new_mtu)
 {
 	if (new_mtu < 68)
@@ -1424,6 +1840,8 @@ static int fwnet_change_mtu(struct net_device *net, int new_mtu)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ethtool_ops fwnet_ethtool_ops = {
 	.get_link	= ethtool_op_get_link,
 };
@@ -1432,7 +1850,10 @@ static const struct net_device_ops fwnet_netdev_ops = {
 	.ndo_open       = fwnet_open,
 	.ndo_stop	= fwnet_stop,
 	.ndo_start_xmit = fwnet_tx,
+<<<<<<< HEAD
 	.ndo_change_mtu = fwnet_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void fwnet_init_dev(struct net_device *net)
@@ -1474,8 +1895,11 @@ static int fwnet_add_peer(struct fwnet_device *dev,
 
 	peer->dev = dev;
 	peer->guid = (u64)device->config_rom[3] << 32 | device->config_rom[4];
+<<<<<<< HEAD
 	peer->fifo = FWNET_NO_FIFO_ADDR;
 	peer->ip = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&peer->pd_list);
 	peer->pdg_size = 0;
 	peer->datagram_label = 0;
@@ -1495,15 +1919,25 @@ static int fwnet_add_peer(struct fwnet_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fwnet_probe(struct device *_dev)
 {
 	struct fw_unit *unit = fw_unit(_dev);
+=======
+static int fwnet_probe(struct fw_unit *unit,
+		       const struct ieee1394_device_id *id)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_device *device = fw_parent_device(unit);
 	struct fw_card *card = device->card;
 	struct net_device *net;
 	bool allocated_netdev = false;
 	struct fwnet_device *dev;
+<<<<<<< HEAD
 	unsigned max_mtu;
+=======
+	union fwnet_hwaddr ha;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	mutex_lock(&fwnet_device_mutex);
@@ -1514,10 +1948,18 @@ static int fwnet_probe(struct device *_dev)
 		goto have_dev;
 	}
 
+<<<<<<< HEAD
 	net = alloc_netdev(sizeof(*dev), "firewire%d", fwnet_init_dev);
 	if (net == NULL) {
 		ret = -ENOMEM;
 		goto out;
+=======
+	net = alloc_netdev(sizeof(*dev), "firewire%d", NET_NAME_UNKNOWN,
+			   fwnet_init_dev);
+	if (net == NULL) {
+		mutex_unlock(&fwnet_device_mutex);
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	allocated_netdev = true;
@@ -1535,6 +1977,7 @@ static int fwnet_probe(struct device *_dev)
 	dev->card = card;
 	dev->netdev = net;
 
+<<<<<<< HEAD
 	/*
 	 * Use the RFC 2734 default 1500 octets or the maximum payload
 	 * as initial MTU
@@ -1546,28 +1989,65 @@ static int fwnet_probe(struct device *_dev)
 	/* Set our hardware address while we're at it */
 	put_unaligned_be64(card->guid, net->dev_addr);
 	put_unaligned_be64(~0ULL, net->broadcast);
+=======
+	ret = fwnet_fifo_start(dev);
+	if (ret < 0)
+		goto out;
+	dev->local_fifo = dev->handler.offset;
+
+	/*
+	 * default MTU: RFC 2734 cl. 4, RFC 3146 cl. 4
+	 * maximum MTU: RFC 2734 cl. 4.2, fragment encapsulation header's
+	 *              maximum possible datagram_size + 1 = 0xfff + 1
+	 */
+	net->mtu = 1500U;
+	net->min_mtu = ETH_MIN_MTU;
+	net->max_mtu = 4096U;
+
+	/* Set our hardware address while we're at it */
+	ha.uc.uniq_id = cpu_to_be64(card->guid);
+	ha.uc.max_rec = dev->card->max_receive;
+	ha.uc.sspd = dev->card->link_speed;
+	put_unaligned_be48(dev->local_fifo, ha.uc.fifo);
+	dev_addr_set(net, ha.u);
+
+	memset(net->broadcast, -1, net->addr_len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_netdev(net);
 	if (ret)
 		goto out;
 
 	list_add_tail(&dev->dev_link, &fwnet_device_list);
+<<<<<<< HEAD
 	dev_notice(&net->dev, "IPv4 over IEEE 1394 on card %s\n",
+=======
+	dev_notice(&net->dev, "IP over IEEE 1394 on card %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   dev_name(card->device));
  have_dev:
 	ret = fwnet_add_peer(dev, unit, device);
 	if (ret && allocated_netdev) {
 		unregister_netdev(net);
 		list_del(&dev->dev_link);
+<<<<<<< HEAD
 	}
  out:
 	if (ret && allocated_netdev)
 		free_netdev(net);
+=======
+ out:
+		fwnet_fifo_stop(dev);
+		free_netdev(net);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&fwnet_device_mutex);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static void fwnet_remove_peer(struct fwnet_peer *peer, struct fwnet_device *dev)
 {
 	struct fwnet_partial_datagram *pd, *pd_next;
@@ -1623,6 +2103,8 @@ static int fwnet_remove(struct device *_dev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FIXME abort partially sent fragmented datagrams,
  * discard partially received fragmented datagrams
@@ -1641,6 +2123,54 @@ static void fwnet_update(struct fw_unit *unit)
 	spin_unlock_irq(&peer->dev->lock);
 }
 
+<<<<<<< HEAD
+=======
+static void fwnet_remove_peer(struct fwnet_peer *peer, struct fwnet_device *dev)
+{
+	struct fwnet_partial_datagram *pd, *pd_next;
+
+	spin_lock_irq(&dev->lock);
+	list_del(&peer->peer_link);
+	dev->peer_count--;
+	set_carrier_state(dev);
+	spin_unlock_irq(&dev->lock);
+
+	list_for_each_entry_safe(pd, pd_next, &peer->pd_list, pd_link)
+		fwnet_pd_delete(pd);
+
+	kfree(peer);
+}
+
+static void fwnet_remove(struct fw_unit *unit)
+{
+	struct fwnet_peer *peer = dev_get_drvdata(&unit->device);
+	struct fwnet_device *dev = peer->dev;
+	struct net_device *net;
+	int i;
+
+	mutex_lock(&fwnet_device_mutex);
+
+	net = dev->netdev;
+
+	fwnet_remove_peer(peer, dev);
+
+	if (list_empty(&dev->peer_list)) {
+		unregister_netdev(net);
+
+		fwnet_fifo_stop(dev);
+
+		for (i = 0; dev->queued_datagrams && i < 5; i++)
+			ssleep(1);
+		WARN_ON(dev->queued_datagrams);
+		list_del(&dev->dev_link);
+
+		free_netdev(net);
+	}
+
+	mutex_unlock(&fwnet_device_mutex);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ieee1394_device_id fwnet_id_table[] = {
 	{
 		.match_flags  = IEEE1394_MATCH_SPECIFIER_ID |
@@ -1648,6 +2178,17 @@ static const struct ieee1394_device_id fwnet_id_table[] = {
 		.specifier_id = IANA_SPECIFIER_ID,
 		.version      = RFC2734_SW_VERSION,
 	},
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	{
+		.match_flags  = IEEE1394_MATCH_SPECIFIER_ID |
+				IEEE1394_MATCH_VERSION,
+		.specifier_id = IANA_SPECIFIER_ID,
+		.version      = RFC3146_SW_VERSION,
+	},
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 
@@ -1656,10 +2197,17 @@ static struct fw_driver fwnet_driver = {
 		.owner  = THIS_MODULE,
 		.name   = KBUILD_MODNAME,
 		.bus    = &fw_bus_type,
+<<<<<<< HEAD
 		.probe  = fwnet_probe,
 		.remove = fwnet_remove,
 	},
 	.update   = fwnet_update,
+=======
+	},
+	.probe    = fwnet_probe,
+	.update   = fwnet_update,
+	.remove   = fwnet_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = fwnet_id_table,
 };
 
@@ -1685,6 +2233,33 @@ static struct fw_descriptor rfc2374_unit_directory = {
 	.data   = rfc2374_unit_directory_data
 };
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+static const u32 rfc3146_unit_directory_data[] = {
+	0x00040000,	/* directory_length		*/
+	0x1200005e,	/* unit_specifier_id: IANA	*/
+	0x81000003,	/* textual descriptor offset	*/
+	0x13000002,	/* unit_sw_version: RFC 3146	*/
+	0x81000005,	/* textual descriptor offset	*/
+	0x00030000,	/* descriptor_length		*/
+	0x00000000,	/* text				*/
+	0x00000000,	/* minimal ASCII, en		*/
+	0x49414e41,	/* I A N A			*/
+	0x00030000,	/* descriptor_length		*/
+	0x00000000,	/* text				*/
+	0x00000000,	/* minimal ASCII, en		*/
+	0x49507636,	/* I P v 6			*/
+};
+
+static struct fw_descriptor rfc3146_unit_directory = {
+	.length = ARRAY_SIZE(rfc3146_unit_directory_data),
+	.key    = (CSR_DIRECTORY | CSR_UNIT) << 24,
+	.data   = rfc3146_unit_directory_data
+};
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init fwnet_init(void)
 {
 	int err;
@@ -1693,11 +2268,24 @@ static int __init fwnet_init(void)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	err = fw_core_add_descriptor(&rfc3146_unit_directory);
+	if (err)
+		goto out;
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fwnet_packet_task_cache = kmem_cache_create("packet_task",
 			sizeof(struct fwnet_packet_task), 0, 0, NULL);
 	if (!fwnet_packet_task_cache) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = driver_register(&fwnet_driver.driver);
@@ -1705,7 +2293,15 @@ static int __init fwnet_init(void)
 		return 0;
 
 	kmem_cache_destroy(fwnet_packet_task_cache);
+<<<<<<< HEAD
 out:
+=======
+out2:
+#if IS_ENABLED(CONFIG_IPV6)
+	fw_core_remove_descriptor(&rfc3146_unit_directory);
+out:
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_core_remove_descriptor(&rfc2374_unit_directory);
 
 	return err;
@@ -1716,11 +2312,21 @@ static void __exit fwnet_cleanup(void)
 {
 	driver_unregister(&fwnet_driver.driver);
 	kmem_cache_destroy(fwnet_packet_task_cache);
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	fw_core_remove_descriptor(&rfc3146_unit_directory);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_core_remove_descriptor(&rfc2374_unit_directory);
 }
 module_exit(fwnet_cleanup);
 
 MODULE_AUTHOR("Jay Fenlason <fenlason@redhat.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("IPv4 over IEEE1394 as per RFC 2734");
+=======
+MODULE_DESCRIPTION("IP over IEEE1394 as per RFC 2734/3146");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(ieee1394, fwnet_id_table);

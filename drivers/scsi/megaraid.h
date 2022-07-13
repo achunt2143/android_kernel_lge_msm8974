@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __MEGARAID_H__
 #define __MEGARAID_H__
 
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <scsi/scsi_cmnd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MEGARAID_VERSION	\
 	"v2.00.4 (Release Date: Thu Feb 9 08:51:30 EST 2006)\n"
@@ -45,6 +53,7 @@
 
 #define MAX_DEV_TYPE	32
 
+<<<<<<< HEAD
 #ifndef PCI_VENDOR_ID_LSI_LOGIC
 #define PCI_VENDOR_ID_LSI_LOGIC		0x1000
 #endif
@@ -73,10 +82,13 @@
 #define PCI_DEVICE_ID_AMI_MEGARAID3	0x1960
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_DISCOVERY		0x000E
 #define PCI_DEVICE_ID_PERC4_DI		0x000F
 #define PCI_DEVICE_ID_PERC4_QC_VERDE	0x0407
 
+<<<<<<< HEAD
 /* Sub-System Vendor IDs */
 #define	AMI_SUBSYS_VID			0x101E
 #define DELL_SUBSYS_VID			0x1028
@@ -84,6 +96,8 @@
 #define LSI_SUBSYS_VID			0x1000
 #define INTEL_SUBSYS_VID		0x8086
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HBA_SIGNATURE	      		0x3344
 #define HBA_SIGNATURE_471	  	0xCCCC
 #define HBA_SIGNATURE_64BIT		0x0299
@@ -225,7 +239,11 @@ typedef struct {
 	u32	dma_type;
 	u32	dma_direction;
 
+<<<<<<< HEAD
 	Scsi_Cmnd	*cmd;
+=======
+	struct scsi_cmnd	*cmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t	dma_h_bulkdata;
 	dma_addr_t	dma_h_sgdata;
 
@@ -790,8 +808,33 @@ struct private_bios_data {
 #define CACHED_IO		0
 #define DIRECT_IO		1
 
+<<<<<<< HEAD
 
 #define SCSI_LIST(scp) ((struct list_head *)(&(scp)->SCp))
+=======
+struct megaraid_cmd_priv {
+	struct list_head entry;
+};
+
+#define SCSI_LIST(scp)							\
+	(&((struct megaraid_cmd_priv *)scsi_cmd_priv(scp))->entry)
+
+struct scsi_cmd_and_priv {
+	struct scsi_cmnd	 cmd;
+	struct megaraid_cmd_priv priv;
+};
+
+static inline struct scsi_cmnd *
+megaraid_to_scsi_cmd(struct megaraid_cmd_priv *cmd_priv)
+{
+	/* See also scsi_mq_setup_tags() */
+	BUILD_BUG_ON(sizeof(struct scsi_cmd_and_priv) !=
+		     sizeof(struct scsi_cmnd) +
+		     sizeof(struct megaraid_cmd_priv));
+
+	return &container_of(cmd_priv, struct scsi_cmd_and_priv, priv)->cmd;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Each controller's soft state
@@ -848,6 +891,7 @@ typedef struct {
 
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry	*controller_proc_dir_entry;
+<<<<<<< HEAD
 	struct proc_dir_entry	*proc_read;
 	struct proc_dir_entry	*proc_stat;
 	struct proc_dir_entry	*proc_mbox;
@@ -860,6 +904,8 @@ typedef struct {
 	struct proc_dir_entry	*proc_rdrvstat[MAX_PROC_CHANNELS];
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	int	has_64bit_addr;		/* are we using 64-bit addressing */
@@ -888,10 +934,17 @@ typedef struct {
 
 	u8	sglen;	/* f/w supported scatter-gather list length */
 
+<<<<<<< HEAD
 	unsigned char int_cdb[MAX_COMMAND_SIZE];
 	scb_t			int_scb;
 	struct mutex		int_mtx;	/* To synchronize the internal
 						commands */
+=======
+	scb_t			int_scb;
+	struct mutex		int_mtx;	/* To synchronize the internal
+						commands */
+	int			int_status;	/* status of internal cmd */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct completion	int_waitq;	/* wait queue for internal
 						 cmds */
 
@@ -988,7 +1041,11 @@ static int issue_scb(adapter_t *, scb_t *);
 static int mega_setup_mailbox(adapter_t *);
 
 static int megaraid_queue (struct Scsi_Host *, struct scsi_cmnd *);
+<<<<<<< HEAD
 static scb_t * mega_build_cmd(adapter_t *, Scsi_Cmnd *, int *);
+=======
+static scb_t * mega_build_cmd(adapter_t *, struct scsi_cmnd *, int *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __mega_runpendq(adapter_t *);
 static int issue_scb_block(adapter_t *, u_char *);
 
@@ -997,9 +1054,15 @@ static irqreturn_t megaraid_isr_iomapped(int, void *);
 
 static void mega_free_scb(adapter_t *, scb_t *);
 
+<<<<<<< HEAD
 static int megaraid_abort(Scsi_Cmnd *);
 static int megaraid_reset(Scsi_Cmnd *);
 static int megaraid_abort_and_reset(adapter_t *, Scsi_Cmnd *, int);
+=======
+static int megaraid_abort(struct scsi_cmnd *);
+static int megaraid_reset(struct scsi_cmnd *);
+static int megaraid_abort_and_reset(adapter_t *, struct scsi_cmnd *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int megaraid_biosparam(struct scsi_device *, struct block_device *,
 		sector_t, int []);
 
@@ -1022,6 +1085,7 @@ static int mega_init_scb (adapter_t *);
 static int mega_is_bios_enabled (adapter_t *);
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 static int mega_print_inquiry(char *, char *);
 static void mega_create_proc_entry(int, struct proc_dir_entry *);
 static int proc_read_config(char *, char **, off_t, int, int *, void *);
@@ -1040,15 +1104,24 @@ static int proc_rdrv_30(char *, char **, off_t, int, int *, void *);
 static int proc_rdrv_40(char *, char **, off_t, int, int *, void *);
 static int proc_rdrv(adapter_t *, char *, int, int);
 
+=======
+static void mega_create_proc_entry(int, struct proc_dir_entry *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mega_adapinq(adapter_t *, dma_addr_t);
 static int mega_internal_dev_inquiry(adapter_t *, u8, u8, dma_addr_t);
 #endif
 
 static int mega_support_ext_cdb(adapter_t *);
 static mega_passthru* mega_prepare_passthru(adapter_t *, scb_t *,
+<<<<<<< HEAD
 		Scsi_Cmnd *, int, int);
 static mega_ext_passthru* mega_prepare_extpassthru(adapter_t *,
 		scb_t *, Scsi_Cmnd *, int, int);
+=======
+		struct scsi_cmnd *, int, int);
+static mega_ext_passthru* mega_prepare_extpassthru(adapter_t *,
+		scb_t *, struct scsi_cmnd *, int, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mega_enum_raid_scsi(adapter_t *);
 static void mega_get_boot_drv(adapter_t *);
 static int mega_support_random_del(adapter_t *);
@@ -1056,7 +1129,10 @@ static int mega_del_logdrv(adapter_t *, int);
 static int mega_do_del_logdrv(adapter_t *, int);
 static void mega_get_max_sgl(adapter_t *);
 static int mega_internal_command(adapter_t *, megacmd_t *, mega_passthru *);
+<<<<<<< HEAD
 static void mega_internal_done(Scsi_Cmnd *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mega_support_cluster(adapter_t *);
 #endif
 

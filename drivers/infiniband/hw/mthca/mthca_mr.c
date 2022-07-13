@@ -60,7 +60,11 @@ struct mthca_mpt_entry {
 	__be64 mtt_seg;
 	__be32 mtt_sz;		/* Arbel only */
 	u32    reserved[2];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MTHCA_MPT_FLAG_SW_OWNS       (0xfUL << 28)
 #define MTHCA_MPT_FLAG_MIO           (1 << 17)
@@ -101,13 +105,21 @@ static u32 mthca_buddy_alloc(struct mthca_buddy *buddy, int order)
 	return -1;
 
  found:
+<<<<<<< HEAD
 	clear_bit(seg, buddy->bits[o]);
+=======
+	__clear_bit(seg, buddy->bits[o]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	--buddy->num_free[o];
 
 	while (o > order) {
 		--o;
 		seg <<= 1;
+<<<<<<< HEAD
 		set_bit(seg ^ 1, buddy->bits[o]);
+=======
+		__set_bit(seg ^ 1, buddy->bits[o]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++buddy->num_free[o];
 	}
 
@@ -125,13 +137,21 @@ static void mthca_buddy_free(struct mthca_buddy *buddy, u32 seg, int order)
 	spin_lock(&buddy->lock);
 
 	while (test_bit(seg ^ 1, buddy->bits[order])) {
+<<<<<<< HEAD
 		clear_bit(seg ^ 1, buddy->bits[order]);
+=======
+		__clear_bit(seg ^ 1, buddy->bits[order]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		--buddy->num_free[order];
 		seg >>= 1;
 		++order;
 	}
 
+<<<<<<< HEAD
 	set_bit(seg, buddy->bits[order]);
+=======
+	__set_bit(seg, buddy->bits[order]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++buddy->num_free[order];
 
 	spin_unlock(&buddy->lock);
@@ -139,12 +159,20 @@ static void mthca_buddy_free(struct mthca_buddy *buddy, u32 seg, int order)
 
 static int mthca_buddy_init(struct mthca_buddy *buddy, int max_order)
 {
+<<<<<<< HEAD
 	int i, s;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buddy->max_order = max_order;
 	spin_lock_init(&buddy->lock);
 
+<<<<<<< HEAD
 	buddy->bits = kzalloc((buddy->max_order + 1) * sizeof (long *),
+=======
+	buddy->bits = kcalloc(buddy->max_order + 1, sizeof(long *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      GFP_KERNEL);
 	buddy->num_free = kcalloc((buddy->max_order + 1), sizeof *buddy->num_free,
 				  GFP_KERNEL);
@@ -152,6 +180,7 @@ static int mthca_buddy_init(struct mthca_buddy *buddy, int max_order)
 		goto err_out;
 
 	for (i = 0; i <= buddy->max_order; ++i) {
+<<<<<<< HEAD
 		s = BITS_TO_LONGS(1 << (buddy->max_order - i));
 		buddy->bits[i] = kmalloc(s * sizeof (long), GFP_KERNEL);
 		if (!buddy->bits[i])
@@ -161,13 +190,26 @@ static int mthca_buddy_init(struct mthca_buddy *buddy, int max_order)
 	}
 
 	set_bit(0, buddy->bits[buddy->max_order]);
+=======
+		buddy->bits[i] = bitmap_zalloc(1 << (buddy->max_order - i),
+					       GFP_KERNEL);
+		if (!buddy->bits[i])
+			goto err_out_free;
+	}
+
+	__set_bit(0, buddy->bits[buddy->max_order]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buddy->num_free[buddy->max_order] = 1;
 
 	return 0;
 
 err_out_free:
 	for (i = 0; i <= buddy->max_order; ++i)
+<<<<<<< HEAD
 		kfree(buddy->bits[i]);
+=======
+		bitmap_free(buddy->bits[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_out:
 	kfree(buddy->bits);
@@ -181,7 +223,11 @@ static void mthca_buddy_cleanup(struct mthca_buddy *buddy)
 	int i;
 
 	for (i = 0; i <= buddy->max_order; ++i)
+<<<<<<< HEAD
 		kfree(buddy->bits[i]);
+=======
+		bitmap_free(buddy->bits[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(buddy->bits);
 	kfree(buddy->num_free);
@@ -469,8 +515,12 @@ int mthca_mr_alloc(struct mthca_dev *dev, u32 pd, int buffer_size_shift,
 	mpt_entry->start     = cpu_to_be64(iova);
 	mpt_entry->length    = cpu_to_be64(total_size);
 
+<<<<<<< HEAD
 	memset(&mpt_entry->lkey, 0,
 	       sizeof *mpt_entry - offsetof(struct mthca_mpt_entry, lkey));
+=======
+	memset_startat(mpt_entry, 0, lkey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mr->mtt)
 		mpt_entry->mtt_seg =
@@ -541,7 +591,11 @@ int mthca_mr_alloc_phys(struct mthca_dev *dev, u32 pd,
 	return err;
 }
 
+<<<<<<< HEAD
 /* Free mr or fmr */
+=======
+/* Free mr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mthca_free_region(struct mthca_dev *dev, u32 lkey)
 {
 	mthca_table_put(dev, dev->mr_table.mpt_table,
@@ -564,6 +618,7 @@ void mthca_free_mr(struct mthca_dev *dev, struct mthca_mr *mr)
 	mthca_free_mtt(dev, mr->mtt);
 }
 
+<<<<<<< HEAD
 int mthca_fmr_alloc(struct mthca_dev *dev, u32 pd,
 		    u32 access, struct mthca_fmr *mr)
 {
@@ -824,6 +879,8 @@ void mthca_arbel_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr)
 	*(u8 *) fmr->mem.arbel.mpt = MTHCA_MPT_STATUS_SW;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mthca_init_mr_table(struct mthca_dev *dev)
 {
 	phys_addr_t addr;

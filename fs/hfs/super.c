@@ -14,6 +14,10 @@
 
 #include <linux/module.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/init.h>
 #include <linux/nls.h>
@@ -29,6 +33,7 @@ static struct kmem_cache *hfs_inode_cachep;
 
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /*
  * hfs_write_super()
  *
@@ -66,6 +71,11 @@ static int hfs_sync_fs(struct super_block *sb, int wait)
 	sb->s_dirt = 0;
 	unlock_super(sb);
 
+=======
+static int hfs_sync_fs(struct super_block *sb, int wait)
+{
+	hfs_mdb_commit(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -78,13 +88,52 @@ static int hfs_sync_fs(struct super_block *sb, int wait)
  */
 static void hfs_put_super(struct super_block *sb)
 {
+<<<<<<< HEAD
 	if (sb->s_dirt)
 		hfs_write_super(sb);
+=======
+	cancel_delayed_work_sync(&HFS_SB(sb)->mdb_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hfs_mdb_close(sb);
 	/* release the MDB's resources */
 	hfs_mdb_put(sb);
 }
 
+<<<<<<< HEAD
+=======
+static void flush_mdb(struct work_struct *work)
+{
+	struct hfs_sb_info *sbi;
+	struct super_block *sb;
+
+	sbi = container_of(work, struct hfs_sb_info, mdb_work.work);
+	sb = sbi->sb;
+
+	spin_lock(&sbi->work_lock);
+	sbi->work_queued = 0;
+	spin_unlock(&sbi->work_lock);
+
+	hfs_mdb_commit(sb);
+}
+
+void hfs_mark_mdb_dirty(struct super_block *sb)
+{
+	struct hfs_sb_info *sbi = HFS_SB(sb);
+	unsigned long delay;
+
+	if (sb_rdonly(sb))
+		return;
+
+	spin_lock(&sbi->work_lock);
+	if (!sbi->work_queued) {
+		delay = msecs_to_jiffies(dirty_writeback_interval * 10);
+		queue_delayed_work(system_long_wq, &sbi->mdb_work, delay);
+		sbi->work_queued = 1;
+	}
+	spin_unlock(&sbi->work_lock);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hfs_statfs()
  *
@@ -106,8 +155,12 @@ static int hfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bavail = buf->f_bfree;
 	buf->f_files = HFS_SB(sb)->fs_ablocks;
 	buf->f_ffree = HFS_SB(sb)->free_ablocks;
+<<<<<<< HEAD
 	buf->f_fsid.val[0] = (u32)id;
 	buf->f_fsid.val[1] = (u32)(id >> 32);
+=======
+	buf->f_fsid = u64_to_fsid(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_namelen = HFS_NAMELEN;
 
 	return 0;
@@ -115,6 +168,7 @@ static int hfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 
 static int hfs_remount(struct super_block *sb, int *flags, char *data)
 {
+<<<<<<< HEAD
 	*flags |= MS_NODIRATIME;
 	if ((*flags & MS_RDONLY) == (sb->s_flags & MS_RDONLY))
 		return 0;
@@ -128,6 +182,21 @@ static int hfs_remount(struct super_block *sb, int *flags, char *data)
 			printk(KERN_WARNING "hfs: filesystem is marked locked, leaving read-only.\n");
 			sb->s_flags |= MS_RDONLY;
 			*flags |= MS_RDONLY;
+=======
+	sync_filesystem(sb);
+	*flags |= SB_NODIRATIME;
+	if ((bool)(*flags & SB_RDONLY) == sb_rdonly(sb))
+		return 0;
+	if (!(*flags & SB_RDONLY)) {
+		if (!(HFS_SB(sb)->mdb->drAtrb & cpu_to_be16(HFS_SB_ATTRIB_UNMNT))) {
+			pr_warn("filesystem was not cleanly unmounted, running fsck.hfs is recommended.  leaving read-only.\n");
+			sb->s_flags |= SB_RDONLY;
+			*flags |= SB_RDONLY;
+		} else if (HFS_SB(sb)->mdb->drAtrb & cpu_to_be16(HFS_SB_ATTRIB_SLOCK)) {
+			pr_warn("filesystem is marked locked, leaving read-only.\n");
+			sb->s_flags |= SB_RDONLY;
+			*flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -141,7 +210,13 @@ static int hfs_show_options(struct seq_file *seq, struct dentry *root)
 		seq_show_option_n(seq, "creator", (char *)&sbi->s_creator, 4);
 	if (sbi->s_type != cpu_to_be32(0x3f3f3f3f))
 		seq_show_option_n(seq, "type", (char *)&sbi->s_type, 4);
+<<<<<<< HEAD
 	seq_printf(seq, ",uid=%u,gid=%u", sbi->s_uid, sbi->s_gid);
+=======
+	seq_printf(seq, ",uid=%u,gid=%u",
+			from_kuid_munged(&init_user_ns, sbi->s_uid),
+			from_kgid_munged(&init_user_ns, sbi->s_gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->s_file_umask != 0133)
 		seq_printf(seq, ",file_umask=%o", sbi->s_file_umask);
 	if (sbi->s_dir_umask != 0022)
@@ -163,6 +238,7 @@ static struct inode *hfs_alloc_inode(struct super_block *sb)
 {
 	struct hfs_inode_info *i;
 
+<<<<<<< HEAD
 	i = kmem_cache_alloc(hfs_inode_cachep, GFP_KERNEL);
 	return i ? &i->vfs_inode : NULL;
 }
@@ -185,6 +261,23 @@ static const struct super_operations hfs_super_operations = {
 	.evict_inode	= hfs_evict_inode,
 	.put_super	= hfs_put_super,
 	.write_super	= hfs_write_super,
+=======
+	i = alloc_inode_sb(sb, hfs_inode_cachep, GFP_KERNEL);
+	return i ? &i->vfs_inode : NULL;
+}
+
+static void hfs_free_inode(struct inode *inode)
+{
+	kmem_cache_free(hfs_inode_cachep, HFS_I(inode));
+}
+
+static const struct super_operations hfs_super_operations = {
+	.alloc_inode	= hfs_alloc_inode,
+	.free_inode	= hfs_free_inode,
+	.write_inode	= hfs_write_inode,
+	.evict_inode	= hfs_evict_inode,
+	.put_super	= hfs_put_super,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sync_fs	= hfs_sync_fs,
 	.statfs		= hfs_statfs,
 	.remount_fs     = hfs_remount,
@@ -255,6 +348,7 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 		switch (token) {
 		case opt_uid:
 			if (match_int(&args[0], &tmp)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: uid requires an argument\n");
 				return 0;
 			}
@@ -270,6 +364,31 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 		case opt_umask:
 			if (match_octal(&args[0], &tmp)) {
 				printk(KERN_ERR "hfs: umask requires a value\n");
+=======
+				pr_err("uid requires an argument\n");
+				return 0;
+			}
+			hsb->s_uid = make_kuid(current_user_ns(), (uid_t)tmp);
+			if (!uid_valid(hsb->s_uid)) {
+				pr_err("invalid uid %d\n", tmp);
+				return 0;
+			}
+			break;
+		case opt_gid:
+			if (match_int(&args[0], &tmp)) {
+				pr_err("gid requires an argument\n");
+				return 0;
+			}
+			hsb->s_gid = make_kgid(current_user_ns(), (gid_t)tmp);
+			if (!gid_valid(hsb->s_gid)) {
+				pr_err("invalid gid %d\n", tmp);
+				return 0;
+			}
+			break;
+		case opt_umask:
+			if (match_octal(&args[0], &tmp)) {
+				pr_err("umask requires a value\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			hsb->s_file_umask = (umode_t)tmp;
@@ -277,39 +396,63 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 			break;
 		case opt_file_umask:
 			if (match_octal(&args[0], &tmp)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: file_umask requires a value\n");
+=======
+				pr_err("file_umask requires a value\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			hsb->s_file_umask = (umode_t)tmp;
 			break;
 		case opt_dir_umask:
 			if (match_octal(&args[0], &tmp)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: dir_umask requires a value\n");
+=======
+				pr_err("dir_umask requires a value\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			hsb->s_dir_umask = (umode_t)tmp;
 			break;
 		case opt_part:
 			if (match_int(&args[0], &hsb->part)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: part requires an argument\n");
+=======
+				pr_err("part requires an argument\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_session:
 			if (match_int(&args[0], &hsb->session)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: session requires an argument\n");
+=======
+				pr_err("session requires an argument\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_type:
 			if (match_fourchar(&args[0], &hsb->s_type)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: type requires a 4 character value\n");
+=======
+				pr_err("type requires a 4 character value\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_creator:
 			if (match_fourchar(&args[0], &hsb->s_creator)) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: creator requires a 4 character value\n");
+=======
+				pr_err("creator requires a 4 character value\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
@@ -318,14 +461,22 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 			break;
 		case opt_codepage:
 			if (hsb->nls_disk) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: unable to change codepage\n");
+=======
+				pr_err("unable to change codepage\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			p = match_strdup(&args[0]);
 			if (p)
 				hsb->nls_disk = load_nls(p);
 			if (!hsb->nls_disk) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: unable to load codepage \"%s\"\n", p);
+=======
+				pr_err("unable to load codepage \"%s\"\n", p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(p);
 				return 0;
 			}
@@ -333,14 +484,22 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 			break;
 		case opt_iocharset:
 			if (hsb->nls_io) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: unable to change iocharset\n");
+=======
+				pr_err("unable to change iocharset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			p = match_strdup(&args[0]);
 			if (p)
 				hsb->nls_io = load_nls(p);
 			if (!hsb->nls_io) {
+<<<<<<< HEAD
 				printk(KERN_ERR "hfs: unable to load iocharset \"%s\"\n", p);
+=======
+				pr_err("unable to load iocharset \"%s\"\n", p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(p);
 				return 0;
 			}
@@ -354,7 +513,11 @@ static int parse_options(char *options, struct hfs_sb_info *hsb)
 	if (hsb->nls_disk && !hsb->nls_io) {
 		hsb->nls_io = load_nls_default();
 		if (!hsb->nls_io) {
+<<<<<<< HEAD
 			printk(KERN_ERR "hfs: unable to load default iocharset\n");
+=======
+			pr_err("unable to load default iocharset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
@@ -387,33 +550,60 @@ static int hfs_fill_super(struct super_block *sb, void *data, int silent)
 	if (!sbi)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sb->s_fs_info = sbi;
 
 	res = -EINVAL;
 	if (!parse_options((char *)data, sbi)) {
 		printk(KERN_ERR "hfs: unable to parse mount options.\n");
+=======
+	sbi->sb = sb;
+	sb->s_fs_info = sbi;
+	spin_lock_init(&sbi->work_lock);
+	INIT_DELAYED_WORK(&sbi->mdb_work, flush_mdb);
+
+	res = -EINVAL;
+	if (!parse_options((char *)data, sbi)) {
+		pr_err("unable to parse mount options\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
 	sb->s_op = &hfs_super_operations;
+<<<<<<< HEAD
 	sb->s_flags |= MS_NODIRATIME;
+=======
+	sb->s_xattr = hfs_xattr_handlers;
+	sb->s_flags |= SB_NODIRATIME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&sbi->bitmap_lock);
 
 	res = hfs_mdb_get(sb);
 	if (res) {
 		if (!silent)
+<<<<<<< HEAD
 			printk(KERN_WARNING "hfs: can't find a HFS filesystem on dev %s.\n",
+=======
+			pr_warn("can't find a HFS filesystem on dev %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hfs_mdb_name(sb));
 		res = -EINVAL;
 		goto bail;
 	}
 
 	/* try to get the root inode */
+<<<<<<< HEAD
 	hfs_find_init(HFS_SB(sb)->cat_tree, &fd);
+=======
+	res = hfs_find_init(HFS_SB(sb)->cat_tree, &fd);
+	if (res)
+		goto bail_no_root;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = hfs_cat_find_brec(sb, HFS_ROOT_CNID, &fd);
 	if (!res) {
 		if (fd.entrylength > sizeof(rec) || fd.entrylength < 0) {
 			res =  -EIO;
+<<<<<<< HEAD
 			goto bail;
 		}
 		hfs_bnode_read(fd.bnode, &rec, fd.entryoffset, fd.entrylength);
@@ -422,6 +612,14 @@ static int hfs_fill_super(struct super_block *sb, void *data, int silent)
 		hfs_find_exit(&fd);
 		goto bail_no_root;
 	}
+=======
+			goto bail_hfs_find;
+		}
+		hfs_bnode_read(fd.bnode, &rec, fd.entryoffset, fd.entrylength);
+	}
+	if (res)
+		goto bail_hfs_find;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = -EINVAL;
 	root_inode = hfs_iget(sb, &fd.search_key->cat, &rec);
 	hfs_find_exit(&fd);
@@ -437,8 +635,15 @@ static int hfs_fill_super(struct super_block *sb, void *data, int silent)
 	/* everything's okay */
 	return 0;
 
+<<<<<<< HEAD
 bail_no_root:
 	printk(KERN_ERR "hfs: get root inode failed.\n");
+=======
+bail_hfs_find:
+	hfs_find_exit(&fd);
+bail_no_root:
+	pr_err("get root inode failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail:
 	hfs_mdb_put(sb);
 	return res;
@@ -471,8 +676,13 @@ static int __init init_hfs_fs(void)
 	int err;
 
 	hfs_inode_cachep = kmem_cache_create("hfs_inode_cache",
+<<<<<<< HEAD
 		sizeof(struct hfs_inode_info), 0, SLAB_HWCACHE_ALIGN,
 		hfs_init_once);
+=======
+		sizeof(struct hfs_inode_info), 0,
+		SLAB_HWCACHE_ALIGN|SLAB_ACCOUNT, hfs_init_once);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hfs_inode_cachep)
 		return -ENOMEM;
 	err = register_filesystem(&hfs_fs_type);

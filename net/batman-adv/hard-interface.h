@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007-2012 B.A.T.M.A.N. contributors:
  *
@@ -17,11 +18,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright (C) B.A.T.M.A.N. contributors:
+ *
+ * Marek Lindner, Simon Wunderlich
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NET_BATMAN_ADV_HARD_INTERFACE_H_
 #define _NET_BATMAN_ADV_HARD_INTERFACE_H_
 
+<<<<<<< HEAD
 enum hard_if_state {
 	IF_NOT_IN_USE,
 	IF_TO_BE_REMOVED,
@@ -54,13 +62,117 @@ static inline struct hard_iface *primary_if_get_selected(
 						struct bat_priv *bat_priv)
 {
 	struct hard_iface *hard_iface;
+=======
+#include "main.h"
+
+#include <linux/compiler.h>
+#include <linux/kref.h>
+#include <linux/netdevice.h>
+#include <linux/notifier.h>
+#include <linux/rcupdate.h>
+#include <linux/stddef.h>
+#include <linux/types.h>
+
+/**
+ * enum batadv_hard_if_state - State of a hard interface
+ */
+enum batadv_hard_if_state {
+	/**
+	 * @BATADV_IF_NOT_IN_USE: interface is not used as slave interface of a
+	 * batman-adv soft interface
+	 */
+	BATADV_IF_NOT_IN_USE,
+
+	/**
+	 * @BATADV_IF_TO_BE_REMOVED: interface will be removed from soft
+	 * interface
+	 */
+	BATADV_IF_TO_BE_REMOVED,
+
+	/** @BATADV_IF_INACTIVE: interface is deactivated */
+	BATADV_IF_INACTIVE,
+
+	/** @BATADV_IF_ACTIVE: interface is used */
+	BATADV_IF_ACTIVE,
+
+	/** @BATADV_IF_TO_BE_ACTIVATED: interface is getting activated */
+	BATADV_IF_TO_BE_ACTIVATED,
+};
+
+/**
+ * enum batadv_hard_if_bcast - broadcast avoidance options
+ */
+enum batadv_hard_if_bcast {
+	/** @BATADV_HARDIF_BCAST_OK: Do broadcast on according hard interface */
+	BATADV_HARDIF_BCAST_OK = 0,
+
+	/**
+	 * @BATADV_HARDIF_BCAST_NORECIPIENT: Broadcast not needed, there is no
+	 *  recipient
+	 */
+	BATADV_HARDIF_BCAST_NORECIPIENT,
+
+	/**
+	 * @BATADV_HARDIF_BCAST_DUPFWD: There is just the neighbor we got it
+	 *  from
+	 */
+	BATADV_HARDIF_BCAST_DUPFWD,
+
+	/** @BATADV_HARDIF_BCAST_DUPORIG: There is just the originator */
+	BATADV_HARDIF_BCAST_DUPORIG,
+};
+
+extern struct notifier_block batadv_hard_if_notifier;
+
+struct net_device *batadv_get_real_netdev(struct net_device *net_device);
+bool batadv_is_cfg80211_hardif(struct batadv_hard_iface *hard_iface);
+bool batadv_is_wifi_hardif(struct batadv_hard_iface *hard_iface);
+struct batadv_hard_iface*
+batadv_hardif_get_by_netdev(const struct net_device *net_dev);
+int batadv_hardif_enable_interface(struct batadv_hard_iface *hard_iface,
+				   struct net_device *soft_iface);
+void batadv_hardif_disable_interface(struct batadv_hard_iface *hard_iface);
+int batadv_hardif_min_mtu(struct net_device *soft_iface);
+void batadv_update_min_mtu(struct net_device *soft_iface);
+void batadv_hardif_release(struct kref *ref);
+int batadv_hardif_no_broadcast(struct batadv_hard_iface *if_outgoing,
+			       u8 *orig_addr, u8 *orig_neigh);
+
+/**
+ * batadv_hardif_put() - decrement the hard interface refcounter and possibly
+ *  release it
+ * @hard_iface: the hard interface to free
+ */
+static inline void batadv_hardif_put(struct batadv_hard_iface *hard_iface)
+{
+	if (!hard_iface)
+		return;
+
+	kref_put(&hard_iface->refcount, batadv_hardif_release);
+}
+
+/**
+ * batadv_primary_if_get_selected() - Get reference to primary interface
+ * @bat_priv: the bat priv with all the soft interface information
+ *
+ * Return: primary interface (with increased refcnt), otherwise NULL
+ */
+static inline struct batadv_hard_iface *
+batadv_primary_if_get_selected(struct batadv_priv *bat_priv)
+{
+	struct batadv_hard_iface *hard_iface;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	hard_iface = rcu_dereference(bat_priv->primary_if);
 	if (!hard_iface)
 		goto out;
 
+<<<<<<< HEAD
 	if (!atomic_inc_not_zero(&hard_iface->refcount))
+=======
+	if (!kref_get_unless_zero(&hard_iface->refcount))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hard_iface = NULL;
 
 out:

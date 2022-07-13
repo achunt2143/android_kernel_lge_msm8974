@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2009 - 2009 Atheros Corporation. All rights reserved.
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -18,6 +23,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/netdevice.h>
@@ -26,6 +33,7 @@
 
 #include "atl1c.h"
 
+<<<<<<< HEAD
 static int atl1c_get_settings(struct net_device *netdev,
 			      struct ethtool_cmd *ecmd)
 {
@@ -33,12 +41,23 @@ static int atl1c_get_settings(struct net_device *netdev,
 	struct atl1c_hw *hw = &adapter->hw;
 
 	ecmd->supported = (SUPPORTED_10baseT_Half  |
+=======
+static int atl1c_get_link_ksettings(struct net_device *netdev,
+				    struct ethtool_link_ksettings *cmd)
+{
+	struct atl1c_adapter *adapter = netdev_priv(netdev);
+	struct atl1c_hw *hw = &adapter->hw;
+	u32 supported, advertising;
+
+	supported = (SUPPORTED_10baseT_Half  |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   SUPPORTED_10baseT_Full  |
 			   SUPPORTED_100baseT_Half |
 			   SUPPORTED_100baseT_Full |
 			   SUPPORTED_Autoneg       |
 			   SUPPORTED_TP);
 	if (hw->link_cap_flags & ATL1C_LINK_CAP_1000M)
+<<<<<<< HEAD
 		ecmd->supported |= SUPPORTED_1000baseT_Full;
 
 	ecmd->advertising = ADVERTISED_TP;
@@ -66,6 +85,40 @@ static int atl1c_get_settings(struct net_device *netdev,
 
 static int atl1c_set_settings(struct net_device *netdev,
 			      struct ethtool_cmd *ecmd)
+=======
+		supported |= SUPPORTED_1000baseT_Full;
+
+	advertising = ADVERTISED_TP;
+
+	advertising |= hw->autoneg_advertised;
+
+	cmd->base.port = PORT_TP;
+	cmd->base.phy_address = 0;
+
+	if (adapter->link_speed != SPEED_0) {
+		cmd->base.speed = adapter->link_speed;
+		if (adapter->link_duplex == FULL_DUPLEX)
+			cmd->base.duplex = DUPLEX_FULL;
+		else
+			cmd->base.duplex = DUPLEX_HALF;
+	} else {
+		cmd->base.speed = SPEED_UNKNOWN;
+		cmd->base.duplex = DUPLEX_UNKNOWN;
+	}
+
+	cmd->base.autoneg = AUTONEG_ENABLE;
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+
+	return 0;
+}
+
+static int atl1c_set_link_ksettings(struct net_device *netdev,
+				    const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 	struct atl1c_hw *hw = &adapter->hw;
@@ -74,12 +127,21 @@ static int atl1c_set_settings(struct net_device *netdev,
 	while (test_and_set_bit(__AT_RESETTING, &adapter->flags))
 		msleep(1);
 
+<<<<<<< HEAD
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
 		autoneg_advertised = ADVERTISED_Autoneg;
 	} else {
 		u32 speed = ethtool_cmd_speed(ecmd);
 		if (speed == SPEED_1000) {
 			if (ecmd->duplex != DUPLEX_FULL) {
+=======
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+		autoneg_advertised = ADVERTISED_Autoneg;
+	} else {
+		u32 speed = cmd->base.speed;
+		if (speed == SPEED_1000) {
+			if (cmd->base.duplex != DUPLEX_FULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (netif_msg_link(adapter))
 					dev_warn(&adapter->pdev->dev,
 						"1000M half is invalid\n");
@@ -88,12 +150,20 @@ static int atl1c_set_settings(struct net_device *netdev,
 			}
 			autoneg_advertised = ADVERTISED_1000baseT_Full;
 		} else if (speed == SPEED_100) {
+<<<<<<< HEAD
 			if (ecmd->duplex == DUPLEX_FULL)
+=======
+			if (cmd->base.duplex == DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				autoneg_advertised = ADVERTISED_100baseT_Full;
 			else
 				autoneg_advertised = ADVERTISED_100baseT_Half;
 		} else {
+<<<<<<< HEAD
 			if (ecmd->duplex == DUPLEX_FULL)
+=======
+			if (cmd->base.duplex == DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				autoneg_advertised = ADVERTISED_10baseT_Full;
 			else
 				autoneg_advertised = ADVERTISED_10baseT_Half;
@@ -141,8 +211,12 @@ static void atl1c_get_regs(struct net_device *netdev,
 
 	memset(p, 0, AT_REGS_LEN);
 
+<<<<<<< HEAD
 	regs->version = 0;
 	AT_READ_REG(hw, REG_VPD_CAP, 		  p++);
+=======
+	regs->version = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_READ_REG(hw, REG_PM_CTRL, 		  p++);
 	AT_READ_REG(hw, REG_MAC_HALF_DUPLX_CTRL,  p++);
 	AT_READ_REG(hw, REG_TWSI_CTRL, 		  p++);
@@ -154,7 +228,11 @@ static void atl1c_get_regs(struct net_device *netdev,
 	AT_READ_REG(hw, REG_LINK_CTRL, 		  p++);
 	AT_READ_REG(hw, REG_IDLE_STATUS, 	  p++);
 	AT_READ_REG(hw, REG_MDIO_CTRL, 		  p++);
+<<<<<<< HEAD
 	AT_READ_REG(hw, REG_SERDES_LOCK, 	  p++);
+=======
+	AT_READ_REG(hw, REG_SERDES,		  p++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_READ_REG(hw, REG_MAC_CTRL, 		  p++);
 	AT_READ_REG(hw, REG_MAC_IPG_IFG, 	  p++);
 	AT_READ_REG(hw, REG_MAC_STA_ADDR, 	  p++);
@@ -167,9 +245,15 @@ static void atl1c_get_regs(struct net_device *netdev,
 	AT_READ_REG(hw, REG_WOL_CTRL, 		  p++);
 
 	atl1c_read_phy_reg(hw, MII_BMCR, &phy_data);
+<<<<<<< HEAD
 	regs_buff[73] =	(u32) phy_data;
 	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
 	regs_buff[74] = (u32) phy_data;
+=======
+	regs_buff[AT_REGS_LEN/sizeof(u32) - 2] = (u32) phy_data;
+	atl1c_read_phy_reg(hw, MII_BMSR, &phy_data);
+	regs_buff[AT_REGS_LEN/sizeof(u32) - 1] = (u32) phy_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int atl1c_get_eeprom_len(struct net_device *netdev)
@@ -204,8 +288,13 @@ static int atl1c_get_eeprom(struct net_device *netdev,
 	first_dword = eeprom->offset >> 2;
 	last_dword = (eeprom->offset + eeprom->len - 1) >> 2;
 
+<<<<<<< HEAD
 	eeprom_buff = kmalloc(sizeof(u32) *
 			(last_dword - first_dword + 1), GFP_KERNEL);
+=======
+	eeprom_buff = kmalloc_array(last_dword - first_dword + 1, sizeof(u32),
+				    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (eeprom_buff == NULL)
 		return -ENOMEM;
 
@@ -229,6 +318,7 @@ static void atl1c_get_drvinfo(struct net_device *netdev,
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	strlcpy(drvinfo->driver,  atl1c_driver_name, sizeof(drvinfo->driver));
 	strlcpy(drvinfo->version, atl1c_driver_version,
 		sizeof(drvinfo->version));
@@ -238,6 +328,11 @@ static void atl1c_get_drvinfo(struct net_device *netdev,
 	drvinfo->testinfo_len = 0;
 	drvinfo->regdump_len = atl1c_get_regs_len(netdev);
 	drvinfo->eedump_len = atl1c_get_eeprom_len(netdev);
+=======
+	strscpy(drvinfo->driver,  atl1c_driver_name, sizeof(drvinfo->driver));
+	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
+		sizeof(drvinfo->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atl1c_get_wol(struct net_device *netdev,
@@ -289,8 +384,11 @@ static int atl1c_nway_reset(struct net_device *netdev)
 }
 
 static const struct ethtool_ops atl1c_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings           = atl1c_get_settings,
 	.set_settings           = atl1c_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo            = atl1c_get_drvinfo,
 	.get_regs_len           = atl1c_get_regs_len,
 	.get_regs               = atl1c_get_regs,
@@ -302,9 +400,18 @@ static const struct ethtool_ops atl1c_ethtool_ops = {
 	.get_link               = ethtool_op_get_link,
 	.get_eeprom_len         = atl1c_get_eeprom_len,
 	.get_eeprom             = atl1c_get_eeprom,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings     = atl1c_get_link_ksettings,
+	.set_link_ksettings     = atl1c_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void atl1c_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &atl1c_ethtool_ops);
+=======
+	netdev->ethtool_ops = &atl1c_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

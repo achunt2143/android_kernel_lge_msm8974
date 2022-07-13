@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/edd.h
  *  Copyright (C) 2002, 2003, 2004 Dell Inc.
@@ -16,6 +20,7 @@
  * transferred into the edd structure, and in drivers/firmware/edd.c, that
  * information is used to identify BIOS boot disk.  The code in setup.S
  * is very sensitive to the size of these structures.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License v2.0 as published by
@@ -26,10 +31,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_EDD_H
 #define _LINUX_EDD_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 #define EDDNR 0x1e9		/* addr of number of edd_info structs at EDDBUF
@@ -191,4 +199,11 @@ extern struct edd edd;
 #endif /* __KERNEL__ */
 #endif				/*!__ASSEMBLY__ */
 
+=======
+#include <uapi/linux/edd.h>
+
+#ifndef __ASSEMBLY__
+extern struct edd edd;
+#endif				/*!__ASSEMBLY__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* _LINUX_EDD_H */

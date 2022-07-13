@@ -21,6 +21,7 @@
 
 /* All code below is for AR5008, AR9001, AR9002 */
 
+<<<<<<< HEAD
 static const int firstep_table[] =
 /* level:  0   1   2   3   4   5   6   7   8  */
 	{ -4, -2,  0,  2,  4,  6,  8, 10, 12 }; /* lvl 0-8, default 2 */
@@ -28,6 +29,22 @@ static const int firstep_table[] =
 static const int cycpwrThr1_table[] =
 /* level:  0   1   2   3   4   5   6   7   8  */
 	{ -6, -4, -2,  0,  2,  4,  6,  8 };     /* lvl 0-7, default 3 */
+=======
+#define AR5008_OFDM_RATES		8
+#define AR5008_HT_SS_RATES		8
+#define AR5008_HT_DS_RATES		8
+
+#define AR5008_HT20_SHIFT		16
+#define AR5008_HT40_SHIFT		24
+
+#define AR5008_11NA_OFDM_SHIFT		0
+#define AR5008_11NA_HT_SS_SHIFT		8
+#define AR5008_11NA_HT_DS_SHIFT		16
+
+#define AR5008_11NG_OFDM_SHIFT		4
+#define AR5008_11NG_HT_SS_SHIFT		12
+#define AR5008_11NG_HT_DS_SHIFT		20
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * register values to turn OFDM weak signal detection OFF
@@ -43,6 +60,7 @@ static const int m2ThreshLowExt_off = 127;
 static const int m1ThreshExt_off = 127;
 static const int m2ThreshExt_off = 127;
 
+<<<<<<< HEAD
 
 static void ar5008_rf_bank_setup(u32 *bank, struct ar5416IniArray *array,
 				 int col)
@@ -60,6 +78,48 @@ static void ar5008_rf_bank_setup(u32 *bank, struct ar5416IniArray *array,
 static void ar5008_write_rf_array(struct ath_hw *ah, struct ar5416IniArray *array,
 				  u32 *data, unsigned int *writecnt)
 {
+=======
+static const u32 ar5416Bank0[][2] = {
+	/* Addr      allmodes  */
+	{0x000098b0, 0x1e5795e5},
+	{0x000098e0, 0x02008020},
+};
+
+static const u32 ar5416Bank1[][2] = {
+	/* Addr      allmodes  */
+	{0x000098b0, 0x02108421},
+	{0x000098ec, 0x00000008},
+};
+
+static const u32 ar5416Bank2[][2] = {
+	/* Addr      allmodes  */
+	{0x000098b0, 0x0e73ff17},
+	{0x000098e0, 0x00000420},
+};
+
+static const u32 ar5416Bank3[][3] = {
+	/* Addr      5G          2G        */
+	{0x000098f0, 0x01400018, 0x01c00018},
+};
+
+static const u32 ar5416Bank7[][2] = {
+	/* Addr      allmodes  */
+	{0x0000989c, 0x00000500},
+	{0x0000989c, 0x00000800},
+	{0x000098cc, 0x0000000e},
+};
+
+static const struct ar5416IniArray bank0 = STATIC_INI_ARRAY(ar5416Bank0);
+static const struct ar5416IniArray bank1 = STATIC_INI_ARRAY(ar5416Bank1);
+static const struct ar5416IniArray bank2 = STATIC_INI_ARRAY(ar5416Bank2);
+static const struct ar5416IniArray bank3 = STATIC_INI_ARRAY(ar5416Bank3);
+static const struct ar5416IniArray bank7 = STATIC_INI_ARRAY(ar5416Bank7);
+
+static void ar5008_write_bank6(struct ath_hw *ah, unsigned int *writecnt)
+{
+	struct ar5416IniArray *array = &ah->iniBank6;
+	u32 *data = ah->analogBank6Data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	ENABLE_REGWRITE_BUFFER(ah);
@@ -72,6 +132,7 @@ static void ar5008_write_rf_array(struct ath_hw *ah, struct ar5416IniArray *arra
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
+<<<<<<< HEAD
 /**
  * ar5008_hw_phy_modify_rx_buffer() - perform analog swizzling of parameters
  * @rfbuf:
@@ -79,6 +140,10 @@ static void ar5008_write_rf_array(struct ath_hw *ah, struct ar5416IniArray *arra
  * @numBits:
  * @firstBit:
  * @column:
+=======
+/*
+ * ar5008_hw_phy_modify_rx_buffer() - perform analog swizzling of parameters
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Performs analog "swizzling" of parameters into their location.
  * Used on external AR2133/AR5133 radios.
@@ -165,6 +230,7 @@ static void ar5008_hw_force_bias(struct ath_hw *ah, u16 synth_freq)
 	ar5008_hw_phy_modify_rx_buffer(ah->analogBank6Data, tmp_reg, 3, 181, 3);
 
 	/* write Bank 6 with new params */
+<<<<<<< HEAD
 	REG_WRITE_RF_ARRAY(&ah->iniBank6, ah->analogBank6Data, reg_writes);
 }
 
@@ -172,6 +238,13 @@ static void ar5008_hw_force_bias(struct ath_hw *ah, u16 synth_freq)
  * ar5008_hw_set_channel - tune to a channel on the external AR2133/AR5133 radios
  * @ah: atheros hardware structure
  * @chan:
+=======
+	ar5008_write_bank6(ah, &reg_writes);
+}
+
+/*
+ * ar5008_hw_set_channel - tune to a channel on the external AR2133/AR5133 radios
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For the external AR2133/AR5133 radios, takes the MHz channel value and set
  * the channel value. Assumes writes enabled to analog bus and bank6 register
@@ -245,11 +318,15 @@ static int ar5008_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	REG_WRITE(ah, AR_PHY(0x37), reg32);
 
 	ah->curchan = chan;
+<<<<<<< HEAD
 	ah->curchan_rad_index = -1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * ar5008_hw_spur_mitigate - convert baseband spur frequency for external radios
  * @ah: atheros hardware structure
@@ -330,6 +407,27 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 	       SM(spur_freq_sd, AR_PHY_TIMING11_SPUR_FREQ_SD) |
 	       SM(spur_delta_phase, AR_PHY_TIMING11_SPUR_DELTA_PHASE));
 	REG_WRITE(ah, AR_PHY_TIMING11, new);
+=======
+void ar5008_hw_cmn_spur_mitigate(struct ath_hw *ah,
+			  struct ath9k_channel *chan, int bin)
+{
+	int cur_bin;
+	int upper, lower, cur_vit_mask;
+	int i;
+	int8_t mask_m[123] = {0};
+	int8_t mask_p[123] = {0};
+	int8_t mask_amt;
+	int tmp_mask;
+	static const int pilot_mask_reg[4] = {
+		AR_PHY_TIMING7, AR_PHY_TIMING8,
+		AR_PHY_PILOT_MASK_01_30, AR_PHY_PILOT_MASK_31_60
+	};
+	static const int chan_mask_reg[4] = {
+		AR_PHY_TIMING9, AR_PHY_TIMING10,
+		AR_PHY_CHANNEL_MASK_01_30, AR_PHY_CHANNEL_MASK_31_60
+	};
+	static const int inc[4] = { 0, 100, 0, 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cur_bin = -6000;
 	upper = bin + 100;
@@ -339,6 +437,10 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 		int pilot_mask = 0;
 		int chan_mask = 0;
 		int bp = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (bp = 0; bp < 30; bp++) {
 			if ((cur_bin > lower) && (cur_bin < upper)) {
 				pilot_mask = pilot_mask | 0x1 << bp;
@@ -355,9 +457,14 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 	upper = bin + 120;
 	lower = bin - 120;
 
+<<<<<<< HEAD
 	for (i = 0; i < 123; i++) {
 		if ((cur_vit_mask > lower) && (cur_vit_mask < upper)) {
 
+=======
+	for (i = 0; i < ARRAY_SIZE(mask_m); i++) {
+		if ((cur_vit_mask > lower) && (cur_vit_mask < upper)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* workaround for gcc bug #37014 */
 			volatile int tmp_v = abs(cur_vit_mask - bin);
 
@@ -462,6 +569,74 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 	REG_WRITE(ah, AR_PHY_MASK2_P_61_45, tmp_mask);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * ar5008_hw_spur_mitigate - convert baseband spur frequency for external radios
+ *
+ * For non single-chip solutions. Converts to baseband spur frequency given the
+ * input channel frequency and compute register settings below.
+ */
+static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
+				    struct ath9k_channel *chan)
+{
+	int bb_spur = AR_NO_SPUR;
+	int bin;
+	int spur_freq_sd;
+	int spur_delta_phase;
+	int denominator;
+	int tmp, new;
+	int i;
+
+	int cur_bb_spur;
+	bool is2GHz = IS_CHAN_2GHZ(chan);
+
+	for (i = 0; i < AR_EEPROM_MODAL_SPURS; i++) {
+		cur_bb_spur = ah->eep_ops->get_spur_channel(ah, i, is2GHz);
+		if (AR_NO_SPUR == cur_bb_spur)
+			break;
+		cur_bb_spur = cur_bb_spur - (chan->channel * 10);
+		if ((cur_bb_spur > -95) && (cur_bb_spur < 95)) {
+			bb_spur = cur_bb_spur;
+			break;
+		}
+	}
+
+	if (AR_NO_SPUR == bb_spur)
+		return;
+
+	bin = bb_spur * 32;
+
+	tmp = REG_READ(ah, AR_PHY_TIMING_CTRL4(0));
+	new = tmp | (AR_PHY_TIMING_CTRL4_ENABLE_SPUR_RSSI |
+		     AR_PHY_TIMING_CTRL4_ENABLE_SPUR_FILTER |
+		     AR_PHY_TIMING_CTRL4_ENABLE_CHAN_MASK |
+		     AR_PHY_TIMING_CTRL4_ENABLE_PILOT_MASK);
+
+	REG_WRITE(ah, AR_PHY_TIMING_CTRL4(0), new);
+
+	new = (AR_PHY_SPUR_REG_MASK_RATE_CNTL |
+	       AR_PHY_SPUR_REG_ENABLE_MASK_PPM |
+	       AR_PHY_SPUR_REG_MASK_RATE_SELECT |
+	       AR_PHY_SPUR_REG_ENABLE_VIT_SPUR_RSSI |
+	       SM(SPUR_RSSI_THRESH, AR_PHY_SPUR_REG_SPUR_RSSI_THRESH));
+	REG_WRITE(ah, AR_PHY_SPUR_REG, new);
+
+	spur_delta_phase = ((bb_spur * 524288) / 100) &
+		AR_PHY_TIMING11_SPUR_DELTA_PHASE;
+
+	denominator = IS_CHAN_2GHZ(chan) ? 440 : 400;
+	spur_freq_sd = ((bb_spur * 2048) / denominator) & 0x3ff;
+
+	new = (AR_PHY_TIMING11_USE_SPUR_IN_AGC |
+	       SM(spur_freq_sd, AR_PHY_TIMING11_SPUR_FREQ_SD) |
+	       SM(spur_delta_phase, AR_PHY_TIMING11_SPUR_DELTA_PHASE));
+	REG_WRITE(ah, AR_PHY_TIMING11, new);
+
+	ar5008_hw_cmn_spur_mitigate(ah, chan, bin);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ar5008_hw_rf_alloc_ext_banks - allocates banks for external radio programming
  * @ah: atheros hardware structure
@@ -470,6 +645,7 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
  */
 static int ar5008_hw_rf_alloc_ext_banks(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 #define ATH_ALLOC_BANK(bank, size) do { \
 		bank = kzalloc((sizeof(u32) * size), GFP_KERNEL); \
 		if (!bank) { \
@@ -522,6 +698,21 @@ static void ar5008_hw_rf_free_ext_banks(struct ath_hw *ah)
 #undef ATH_FREE_BANK
 }
 
+=======
+	int size = ah->iniBank6.ia_rows * sizeof(u32);
+
+	if (AR_SREV_9280_20_OR_LATER(ah))
+	    return 0;
+
+	ah->analogBank6Data = devm_kzalloc(ah->dev, size, GFP_KERNEL);
+	if (!ah->analogBank6Data)
+		return -ENOMEM;
+
+	return 0;
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* *
  * ar5008_hw_set_rf_regs - programs rf registers based on EEPROM
  * @ah: atheros hardware structure
@@ -542,6 +733,10 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 	u32 ob5GHz = 0, db5GHz = 0;
 	u32 ob2GHz = 0, db2GHz = 0;
 	int regWrites = 0;
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Software does not need to program bank data
@@ -552,6 +747,7 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 		return true;
 
 	/* Setup rf parameters */
+<<<<<<< HEAD
 	eepMinorRev = ah->eep_ops->get_eeprom(ah, EEP_MINOR_REV);
 
 	/* Setup Bank 0 Write */
@@ -573,6 +769,12 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 			    INI_RA(&ah->iniBank6TPC, i, modesIndex);
 		}
 	}
+=======
+	eepMinorRev = ah->eep_ops->get_eeprom_rev(ah);
+
+	for (i = 0; i < ah->iniBank6.ia_rows; i++)
+		ah->analogBank6Data[i] = INI_RA(&ah->iniBank6, i, modesIndex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only the 5 or 2 GHz OB/DB need to be set for a mode */
 	if (eepMinorRev >= 2) {
@@ -593,6 +795,7 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 		}
 	}
 
+<<<<<<< HEAD
 	/* Setup Bank 7 Setup */
 	ar5008_rf_bank_setup(ah->analogBank7Data, &ah->iniBank7, 1);
 
@@ -609,6 +812,15 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 			   regWrites);
 	REG_WRITE_RF_ARRAY(&ah->iniBank7, ah->analogBank7Data,
 			   regWrites);
+=======
+	/* Write Analog registers */
+	REG_WRITE_ARRAY(&bank0, 1, regWrites);
+	REG_WRITE_ARRAY(&bank1, 1, regWrites);
+	REG_WRITE_ARRAY(&bank2, 1, regWrites);
+	REG_WRITE_ARRAY(&bank3, modesIndex, regWrites);
+	ar5008_write_bank6(ah, &regWrites);
+	REG_WRITE_ARRAY(&bank7, 1, regWrites);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -619,6 +831,7 @@ static void ar5008_hw_init_bb(struct ath_hw *ah,
 	u32 synthDelay;
 
 	synthDelay = REG_READ(ah, AR_PHY_RX_DELAY) & AR_PHY_RX_DELAY_DELAY;
+<<<<<<< HEAD
 	if (IS_CHAN_B(chan))
 		synthDelay = (4 * synthDelay) / 22;
 	else
@@ -632,6 +845,12 @@ static void ar5008_hw_init_bb(struct ath_hw *ah,
 	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_EN);
 
 	udelay(synthDelay + BASE_ACTIVATE_DELAY);
+=======
+
+	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_EN);
+
+	ath9k_hw_synth_delay(ah, chan, synthDelay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar5008_hw_init_chain_masks(struct ath_hw *ah)
@@ -646,12 +865,20 @@ static void ar5008_hw_init_chain_masks(struct ath_hw *ah)
 	case 0x5:
 		REG_SET_BIT(ah, AR_PHY_ANALOG_SWAP,
 			    AR_PHY_SWAP_ALT_CHAIN);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x3:
 		if (ah->hw_version.macVersion == AR_SREV_REVISION_5416_10) {
 			REG_WRITE(ah, AR_PHY_RX_CHAINMASK, 0x7);
 			REG_WRITE(ah, AR_PHY_CAL_CHAINMASK, 0x7);
 			break;
 		}
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x1:
 	case 0x2:
 	case 0x7:
@@ -690,7 +917,19 @@ static void ar5008_hw_override_ini(struct ath_hw *ah,
 	REG_SET_BIT(ah, AR_DIAG_SW, (AR_DIAG_RX_DIS | AR_DIAG_RX_ABORT));
 
 	if (AR_SREV_9280_20_OR_LATER(ah)) {
+<<<<<<< HEAD
 		val = REG_READ(ah, AR_PCU_MISC_MODE2);
+=======
+		/*
+		 * For AR9280 and above, there is a new feature that allows
+		 * Multicast search based on both MAC Address and Key ID.
+		 * By default, this feature is enabled. But since the driver
+		 * is not using this feature, we switch it off; otherwise
+		 * multicast search based on MAC addr only will fail.
+		 */
+		val = REG_READ(ah, AR_PCU_MISC_MODE2) &
+			(~AR_ADHOC_MCAST_KEYID_ENABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!AR_SREV_9271(ah))
 			val &= ~AR_PCU_MISC_MODE2_HWWAR1;
@@ -698,12 +937,20 @@ static void ar5008_hw_override_ini(struct ath_hw *ah,
 		if (AR_SREV_9287_11_OR_LATER(ah))
 			val = val & (~AR_PCU_MISC_MODE2_HWWAR2);
 
+<<<<<<< HEAD
 		REG_WRITE(ah, AR_PCU_MISC_MODE2, val);
 	}
 
 	REG_SET_BIT(ah, AR_PHY_CCK_DETECT,
 		    AR_PHY_CCK_DETECT_BB_ENABLE_ANT_FAST_DIV);
 
+=======
+		val |= AR_PCU_MISC_MODE2_CFP_IGNORE;
+
+		REG_WRITE(ah, AR_PCU_MISC_MODE2, val);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (AR_SREV_9280_20_OR_LATER(ah))
 		return;
 	/*
@@ -739,6 +986,7 @@ static void ar5008_hw_set_channel_regs(struct ath_hw *ah,
 	if (IS_CHAN_HT40(chan)) {
 		phymode |= AR_PHY_FC_DYN2040_EN;
 
+<<<<<<< HEAD
 		if ((chan->chanmode == CHANNEL_A_HT40PLUS) ||
 		    (chan->chanmode == CHANNEL_G_HT40PLUS))
 			phymode |= AR_PHY_FC_DYN2040_PRI_CH;
@@ -749,6 +997,18 @@ static void ar5008_hw_set_channel_regs(struct ath_hw *ah,
 	ath9k_hw_set11nmac2040(ah);
 
 	ENABLE_REGWRITE_BUFFER(ah);
+=======
+		if (IS_CHAN_HT40PLUS(chan))
+			phymode |= AR_PHY_FC_DYN2040_PRI_CH;
+
+	}
+	ENABLE_REGWRITE_BUFFER(ah);
+	REG_WRITE(ah, AR_PHY_TURBO, phymode);
+
+	/* This function do only REG_WRITE, so
+	 * we can include it to REGWRITE_BUFFER. */
+	ath9k_hw_set11nmac2040(ah, chan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_WRITE(ah, AR_GTXTO, 25 << AR_GTXTO_TIMEOUT_LIMIT_S);
 	REG_WRITE(ah, AR_CST, 0xF << AR_CST_TIMEOUT_LIMIT_S);
@@ -764,6 +1024,7 @@ static int ar5008_hw_process_ini(struct ath_hw *ah,
 	int i, regWrites = 0;
 	u32 modesIndex, freqIndex;
 
+<<<<<<< HEAD
 	switch (chan->chanmode) {
 	case CHANNEL_A:
 	case CHANNEL_A_HT20:
@@ -789,6 +1050,14 @@ static int ar5008_hw_process_ini(struct ath_hw *ah,
 
 	default:
 		return -EINVAL;
+=======
+	if (IS_CHAN_5GHZ(chan)) {
+		freqIndex = 1;
+		modesIndex = IS_CHAN_HT40(chan) ? 2 : 1;
+	} else {
+		freqIndex = 2;
+		modesIndex = IS_CHAN_HT40(chan) ? 3 : 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -887,8 +1156,15 @@ static void ar5008_hw_set_rfmode(struct ath_hw *ah, struct ath9k_channel *chan)
 	if (chan == NULL)
 		return;
 
+<<<<<<< HEAD
 	rfMode |= (IS_CHAN_B(chan) || IS_CHAN_G(chan))
 		? AR_PHY_MODE_DYNAMIC : AR_PHY_MODE_OFDM;
+=======
+	if (IS_CHAN_2GHZ(chan))
+		rfMode |= AR_PHY_MODE_DYNAMIC;
+	else
+		rfMode |= AR_PHY_MODE_OFDM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!AR_SREV_9280_20_OR_LATER(ah))
 		rfMode |= (IS_CHAN_5GHZ(chan)) ?
@@ -949,12 +1225,17 @@ static bool ar5008_hw_rfbus_req(struct ath_hw *ah)
 static void ar5008_hw_rfbus_done(struct ath_hw *ah)
 {
 	u32 synthDelay = REG_READ(ah, AR_PHY_RX_DELAY) & AR_PHY_RX_DELAY_DELAY;
+<<<<<<< HEAD
 	if (IS_CHAN_B(ah->curchan))
 		synthDelay = (4 * synthDelay) / 22;
 	else
 		synthDelay /= 10;
 
 	udelay(synthDelay + BASE_ACTIVATE_DELAY);
+=======
+
+	ath9k_hw_synth_delay(ah, ah->curchan, synthDelay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_WRITE(ah, AR_PHY_RFBUS_REQ, 0);
 }
@@ -1009,6 +1290,7 @@ static u32 ar5008_hw_compute_pll_control(struct ath_hw *ah,
 	return pll;
 }
 
+<<<<<<< HEAD
 static bool ar5008_hw_ani_control_old(struct ath_hw *ah,
 				      enum ath9k_ani_cmd cmd,
 				      int param)
@@ -1182,14 +1464,21 @@ static bool ar5008_hw_ani_control_old(struct ath_hw *ah,
 	return true;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 				      enum ath9k_ani_cmd cmd,
 				      int param)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_channel *chan = ah->curchan;
+<<<<<<< HEAD
 	struct ar5416AniState *aniState = &chan->ani;
 	s32 value, value2;
+=======
+	struct ar5416AniState *aniState = &ah->ani;
+	s32 value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd & ah->ani_function) {
 	case ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION:{
@@ -1258,24 +1547,37 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 			REG_CLR_BIT(ah, AR_PHY_SFCORR_LOW,
 				    AR_PHY_SFCORR_LOW_USE_SELF_CORR_LOW);
 
+<<<<<<< HEAD
 		if (!on != aniState->ofdmWeakSigDetectOff) {
 			ath_dbg(common, ANI,
 				"** ch %d: ofdm weak signal: %s=>%s\n",
 				chan->channel,
 				!aniState->ofdmWeakSigDetectOff ?
+=======
+		if (on != aniState->ofdmWeakSigDetect) {
+			ath_dbg(common, ANI,
+				"** ch %d: ofdm weak signal: %s=>%s\n",
+				chan->channel,
+				aniState->ofdmWeakSigDetect ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"on" : "off",
 				on ? "on" : "off");
 			if (on)
 				ah->stats.ast_ani_ofdmon++;
 			else
 				ah->stats.ast_ani_ofdmoff++;
+<<<<<<< HEAD
 			aniState->ofdmWeakSigDetectOff = !on;
+=======
+			aniState->ofdmWeakSigDetect = on;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
 	case ATH9K_ANI_FIRSTEP_LEVEL:{
 		u32 level = param;
 
+<<<<<<< HEAD
 		if (level >= ARRAY_SIZE(firstep_table)) {
 			ath_dbg(common, ANI,
 				"ATH9K_ANI_FIRSTEP_LEVEL: level out of range (%u > %zu)\n",
@@ -1312,6 +1614,13 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 
 		REG_RMW_FIELD(ah, AR_PHY_FIND_SIG_LOW,
 			      AR_PHY_FIND_SIG_FIRSTEP_LOW, value2);
+=======
+		value = level * 2;
+		REG_RMW_FIELD(ah, AR_PHY_FIND_SIG,
+			      AR_PHY_FIND_SIG_FIRSTEP, value);
+		REG_RMW_FIELD(ah, AR_PHY_FIND_SIG_LOW,
+			      AR_PHY_FIND_SIG_FIRSTEP_LOW, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (level != aniState->firstepLevel) {
 			ath_dbg(common, ANI,
@@ -1319,7 +1628,11 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 				chan->channel,
 				aniState->firstepLevel,
 				level,
+<<<<<<< HEAD
 				ATH9K_ANI_FIRSTEP_LVL_NEW,
+=======
+				ATH9K_ANI_FIRSTEP_LVL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				value,
 				aniState->iniDef.firstep);
 			ath_dbg(common, ANI,
@@ -1327,8 +1640,13 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 				chan->channel,
 				aniState->firstepLevel,
 				level,
+<<<<<<< HEAD
 				ATH9K_ANI_FIRSTEP_LVL_NEW,
 				value2,
+=======
+				ATH9K_ANI_FIRSTEP_LVL,
+				value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				aniState->iniDef.firstepLow);
 			if (level > aniState->firstepLevel)
 				ah->stats.ast_ani_stepup++;
@@ -1341,6 +1659,7 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 	case ATH9K_ANI_SPUR_IMMUNITY_LEVEL:{
 		u32 level = param;
 
+<<<<<<< HEAD
 		if (level >= ARRAY_SIZE(cycpwrThr1_table)) {
 			ath_dbg(common, ANI,
 				"ATH9K_ANI_SPUR_IMMUNITY_LEVEL: level out of range (%u > %zu)\n",
@@ -1376,6 +1695,14 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 			value2 = ATH9K_SIG_SPUR_IMM_SETTING_MAX;
 		REG_RMW_FIELD(ah, AR_PHY_EXT_CCA,
 			      AR_PHY_EXT_TIMING5_CYCPWR_THR1, value2);
+=======
+		value = (level + 1) * 2;
+		REG_RMW_FIELD(ah, AR_PHY_TIMING5,
+			      AR_PHY_TIMING5_CYCPWR_THR1, value);
+
+		REG_RMW_FIELD(ah, AR_PHY_EXT_CCA,
+				  AR_PHY_EXT_TIMING5_CYCPWR_THR1, value - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (level != aniState->spurImmunityLevel) {
 			ath_dbg(common, ANI,
@@ -1383,7 +1710,11 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 				chan->channel,
 				aniState->spurImmunityLevel,
 				level,
+<<<<<<< HEAD
 				ATH9K_ANI_SPUR_IMMUNE_LVL_NEW,
+=======
+				ATH9K_ANI_SPUR_IMMUNE_LVL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				value,
 				aniState->iniDef.cycpwrThr1);
 			ath_dbg(common, ANI,
@@ -1391,8 +1722,13 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 				chan->channel,
 				aniState->spurImmunityLevel,
 				level,
+<<<<<<< HEAD
 				ATH9K_ANI_SPUR_IMMUNE_LVL_NEW,
 				value2,
+=======
+				ATH9K_ANI_SPUR_IMMUNE_LVL,
+				value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				aniState->iniDef.cycpwrThr1Ext);
 			if (level > aniState->spurImmunityLevel)
 				ah->stats.ast_ani_spurup++;
@@ -1409,8 +1745,11 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 		 */
 		WARN_ON(1);
 		break;
+<<<<<<< HEAD
 	case ATH9K_ANI_PRESENT:
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ath_dbg(common, ANI, "invalid cmd %u\n", cmd);
 		return false;
@@ -1419,9 +1758,15 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 	ath_dbg(common, ANI,
 		"ANI parameters: SI=%d, ofdmWS=%s FS=%d MRCcck=%s listenTime=%d ofdmErrs=%d cckErrs=%d\n",
 		aniState->spurImmunityLevel,
+<<<<<<< HEAD
 		!aniState->ofdmWeakSigDetectOff ? "on" : "off",
 		aniState->firstepLevel,
 		!aniState->mrcCCKOff ? "on" : "off",
+=======
+		aniState->ofdmWeakSigDetect ? "on" : "off",
+		aniState->firstepLevel,
+		aniState->mrcCCK ? "on" : "off",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aniState->listenTime,
 		aniState->ofdmPhyErrCount,
 		aniState->cckPhyErrCount);
@@ -1464,18 +1809,30 @@ static void ar5008_hw_ani_cache_ini_regs(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_channel *chan = ah->curchan;
+<<<<<<< HEAD
 	struct ar5416AniState *aniState = &chan->ani;
+=======
+	struct ar5416AniState *aniState = &ah->ani;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_ani_default *iniDef;
 	u32 val;
 
 	iniDef = &aniState->iniDef;
 
+<<<<<<< HEAD
 	ath_dbg(common, ANI, "ver %d.%d opmode %u chan %d Mhz/0x%x\n",
 		ah->hw_version.macVersion,
 		ah->hw_version.macRev,
 		ah->opmode,
 		chan->channel,
 		chan->channelFlags);
+=======
+	ath_dbg(common, ANI, "ver %d.%d opmode %u chan %d Mhz\n",
+		ah->hw_version.macVersion,
+		ah->hw_version.macRev,
+		ah->opmode,
+		chan->channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = REG_READ(ah, AR_PHY_SFCORR);
 	iniDef->m1Thresh = MS(val, AR_PHY_SFCORR_M1_THRESH);
@@ -1506,10 +1863,17 @@ static void ar5008_hw_ani_cache_ini_regs(struct ath_hw *ah)
 					       AR_PHY_EXT_TIMING5_CYCPWR_THR1);
 
 	/* these levels just got reset to defaults by the INI */
+<<<<<<< HEAD
 	aniState->spurImmunityLevel = ATH9K_ANI_SPUR_IMMUNE_LVL_NEW;
 	aniState->firstepLevel = ATH9K_ANI_FIRSTEP_LVL_NEW;
 	aniState->ofdmWeakSigDetectOff = !ATH9K_ANI_USE_OFDM_WEAK_SIG;
 	aniState->mrcCCKOff = true; /* not available on pre AR9003 */
+=======
+	aniState->spurImmunityLevel = ATH9K_ANI_SPUR_IMMUNE_LVL;
+	aniState->firstepLevel = ATH9K_ANI_FIRSTEP_LVL;
+	aniState->ofdmWeakSigDetect = true;
+	aniState->mrcCCK = false; /* not available on pre AR9003 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar5008_hw_set_nf_limits(struct ath_hw *ah)
@@ -1525,7 +1889,11 @@ static void ar5008_hw_set_nf_limits(struct ath_hw *ah)
 static void ar5008_hw_set_radar_params(struct ath_hw *ah,
 				       struct ath_hw_radar_conf *conf)
 {
+<<<<<<< HEAD
 	u32 radar_0 = 0, radar_1 = 0;
+=======
+	u32 radar_0 = 0, radar_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!conf) {
 		REG_CLR_BIT(ah, AR_PHY_RADAR_0, AR_PHY_RADAR_0_ENA);
@@ -1539,6 +1907,12 @@ static void ar5008_hw_set_radar_params(struct ath_hw *ah,
 	radar_0 |= SM(conf->pulse_rssi, AR_PHY_RADAR_0_PRSSI);
 	radar_0 |= SM(conf->pulse_inband, AR_PHY_RADAR_0_INBAND);
 
+<<<<<<< HEAD
+=======
+	radar_1 = REG_READ(ah, AR_PHY_RADAR_1);
+	radar_1 &= ~(AR_PHY_RADAR_1_MAXLEN | AR_PHY_RADAR_1_RELSTEP_THRESH |
+		     AR_PHY_RADAR_1_RELPWR_THRESH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radar_1 |= AR_PHY_RADAR_1_MAX_RRSSI;
 	radar_1 |= AR_PHY_RADAR_1_BLOCK_CHECK;
 	radar_1 |= SM(conf->pulse_maxlen, AR_PHY_RADAR_1_MAXLEN);
@@ -1560,14 +1934,87 @@ static void ar5008_hw_set_radar_conf(struct ath_hw *ah)
 	conf->fir_power = -33;
 	conf->radar_rssi = 20;
 	conf->pulse_height = 10;
+<<<<<<< HEAD
 	conf->pulse_rssi = 24;
+=======
+	conf->pulse_rssi = 15;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	conf->pulse_inband = 15;
 	conf->pulse_maxlen = 255;
 	conf->pulse_inband_step = 12;
 	conf->radar_inband = 8;
 }
 
+<<<<<<< HEAD
 void ar5008_hw_attach_phy_ops(struct ath_hw *ah)
+=======
+static void ar5008_hw_init_txpower_cck(struct ath_hw *ah, int16_t *rate_array)
+{
+#define CCK_DELTA(_ah, x) ((OLC_FOR_AR9280_20_LATER(_ah)) ? max((x) - 2, 0) : (x))
+	ah->tx_power[0] = CCK_DELTA(ah, rate_array[rate1l]);
+	ah->tx_power[1] = CCK_DELTA(ah, min(rate_array[rate2l],
+					rate_array[rate2s]));
+	ah->tx_power[2] = CCK_DELTA(ah, min(rate_array[rate5_5l],
+					rate_array[rate5_5s]));
+	ah->tx_power[3] = CCK_DELTA(ah, min(rate_array[rate11l],
+					rate_array[rate11s]));
+#undef CCK_DELTA
+}
+
+static void ar5008_hw_init_txpower_ofdm(struct ath_hw *ah, int16_t *rate_array,
+					int offset)
+{
+	int i, idx = 0;
+
+	for (i = offset; i < offset + AR5008_OFDM_RATES; i++) {
+		ah->tx_power[i] = rate_array[idx];
+		idx++;
+	}
+}
+
+static void ar5008_hw_init_txpower_ht(struct ath_hw *ah, int16_t *rate_array,
+				      int ss_offset, int ds_offset,
+				      bool is_40, int ht40_delta)
+{
+	int i, mcs_idx = (is_40) ? AR5008_HT40_SHIFT : AR5008_HT20_SHIFT;
+
+	for (i = ss_offset; i < ss_offset + AR5008_HT_SS_RATES; i++) {
+		ah->tx_power[i] = rate_array[mcs_idx] + ht40_delta;
+		mcs_idx++;
+	}
+	memcpy(&ah->tx_power[ds_offset], &ah->tx_power[ss_offset],
+	       AR5008_HT_SS_RATES);
+}
+
+void ar5008_hw_init_rate_txpower(struct ath_hw *ah, int16_t *rate_array,
+				 struct ath9k_channel *chan, int ht40_delta)
+{
+	if (IS_CHAN_5GHZ(chan)) {
+		ar5008_hw_init_txpower_ofdm(ah, rate_array,
+					    AR5008_11NA_OFDM_SHIFT);
+		if (IS_CHAN_HT20(chan) || IS_CHAN_HT40(chan)) {
+			ar5008_hw_init_txpower_ht(ah, rate_array,
+						  AR5008_11NA_HT_SS_SHIFT,
+						  AR5008_11NA_HT_DS_SHIFT,
+						  IS_CHAN_HT40(chan),
+						  ht40_delta);
+		}
+	} else {
+		ar5008_hw_init_txpower_cck(ah, rate_array);
+		ar5008_hw_init_txpower_ofdm(ah, rate_array,
+					    AR5008_11NG_OFDM_SHIFT);
+		if (IS_CHAN_HT20(chan) || IS_CHAN_HT40(chan)) {
+			ar5008_hw_init_txpower_ht(ah, rate_array,
+						  AR5008_11NG_HT_SS_SHIFT,
+						  AR5008_11NG_HT_DS_SHIFT,
+						  IS_CHAN_HT40(chan),
+						  ht40_delta);
+		}
+	}
+}
+
+int ar5008_hw_attach_phy_ops(struct ath_hw *ah)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_hw_private_ops *priv_ops = ath9k_hw_private_ops(ah);
 	static const u32 ar5416_cca_regs[6] = {
@@ -1578,12 +2025,23 @@ void ar5008_hw_attach_phy_ops(struct ath_hw *ah)
 		AR_PHY_CH1_EXT_CCA,
 		AR_PHY_CH2_EXT_CCA
 	};
+<<<<<<< HEAD
+=======
+	int ret;
+
+	ret = ar5008_hw_rf_alloc_ext_banks(ah);
+	if (ret)
+	    return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv_ops->rf_set_freq = ar5008_hw_set_channel;
 	priv_ops->spur_mitigate_freq = ar5008_hw_spur_mitigate;
 
+<<<<<<< HEAD
 	priv_ops->rf_alloc_ext_banks = ar5008_hw_rf_alloc_ext_banks;
 	priv_ops->rf_free_ext_banks = ar5008_hw_rf_free_ext_banks;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv_ops->set_rf_regs = ar5008_hw_set_rf_regs;
 	priv_ops->set_channel_regs = ar5008_hw_set_channel_regs;
 	priv_ops->init_bb = ar5008_hw_init_bb;
@@ -1597,11 +2055,16 @@ void ar5008_hw_attach_phy_ops(struct ath_hw *ah)
 	priv_ops->do_getnf = ar5008_hw_do_getnf;
 	priv_ops->set_radar_params = ar5008_hw_set_radar_params;
 
+<<<<<<< HEAD
 	if (modparam_force_new_ani) {
 		priv_ops->ani_control = ar5008_hw_ani_control_new;
 		priv_ops->ani_cache_ini_regs = ar5008_hw_ani_cache_ini_regs;
 	} else
 		priv_ops->ani_control = ar5008_hw_ani_control_old;
+=======
+	priv_ops->ani_control = ar5008_hw_ani_control_new;
+	priv_ops->ani_cache_ini_regs = ar5008_hw_ani_cache_ini_regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (AR_SREV_9100(ah) || AR_SREV_9160_10_OR_LATER(ah))
 		priv_ops->compute_pll_control = ar9160_hw_compute_pll_control;
@@ -1611,4 +2074,8 @@ void ar5008_hw_attach_phy_ops(struct ath_hw *ah)
 	ar5008_hw_set_nf_limits(ah);
 	ar5008_hw_set_radar_conf(ah);
 	memcpy(ah->nf_regs, ar5416_cca_regs, sizeof(ah->nf_regs));
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

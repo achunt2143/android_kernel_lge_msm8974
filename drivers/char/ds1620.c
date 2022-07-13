@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/char/ds1620.c: Dallas Semiconductors DS1620
  *   thermometer driver (as used in the Rebel.com NetWinder)
@@ -6,13 +10,21 @@
 #include <linux/miscdevice.h>
 #include <linux/delay.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/seq_file.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/init.h>
 #include <linux/mutex.h>
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/therm.h>
 
 #ifdef CONFIG_PROC_FS
@@ -74,21 +86,35 @@ static inline void netwinder_ds1620_reset(void)
 
 static inline void netwinder_lock(unsigned long *flags)
 {
+<<<<<<< HEAD
 	spin_lock_irqsave(&nw_gpio_lock, *flags);
+=======
+	raw_spin_lock_irqsave(&nw_gpio_lock, *flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void netwinder_unlock(unsigned long *flags)
 {
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&nw_gpio_lock, *flags);
+=======
+	raw_spin_unlock_irqrestore(&nw_gpio_lock, *flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void netwinder_set_fan(int i)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&nw_gpio_lock, flags);
 	nw_gpio_modify_op(GPIO_FAN, i ? GPIO_FAN : 0);
 	spin_unlock_irqrestore(&nw_gpio_lock, flags);
+=======
+	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+	nw_gpio_modify_op(GPIO_FAN, i ? GPIO_FAN : 0);
+	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int netwinder_get_fan(void)
@@ -211,7 +237,11 @@ static void ds1620_read_state(struct therm *therm)
 
 static int ds1620_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -329,9 +359,13 @@ ds1620_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 
 #ifdef THERM_USE_PROC
+<<<<<<< HEAD
 static int
 proc_therm_ds1620_read(char *buf, char **start, off_t offset,
 		       int len, int *eof, void *unused)
+=======
+static int ds1620_proc_therm_show(struct seq_file *m, void *v)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct therm th;
 	int temp;
@@ -339,6 +373,7 @@ proc_therm_ds1620_read(char *buf, char **start, off_t offset,
 	ds1620_read_state(&th);
 	temp =  cvt_9_to_int(ds1620_in(THERM_READ_TEMP, 9));
 
+<<<<<<< HEAD
 	len = sprintf(buf, "Thermostat: HI %i.%i, LOW %i.%i; "
 		      "temperature: %i.%i C, fan %s\n",
 		      th.hi >> 1, th.hi & 1 ? 5 : 0,
@@ -350,6 +385,15 @@ proc_therm_ds1620_read(char *buf, char **start, off_t offset,
 }
 
 static struct proc_dir_entry *proc_therm_ds1620;
+=======
+	seq_printf(m, "Thermostat: HI %i.%i, LOW %i.%i; temperature: %i.%i C, fan %s\n",
+		   th.hi >> 1, th.hi & 1 ? 5 : 0,
+		   th.lo >> 1, th.lo & 1 ? 5 : 0,
+		   temp  >> 1, temp  & 1 ? 5 : 0,
+		   fan_state[netwinder_get_fan()]);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static const struct file_operations ds1620_fops = {
@@ -397,10 +441,14 @@ static int __init ds1620_init(void)
 		return ret;
 
 #ifdef THERM_USE_PROC
+<<<<<<< HEAD
 	proc_therm_ds1620 = create_proc_entry("therm", 0, NULL);
 	if (proc_therm_ds1620)
 		proc_therm_ds1620->read_proc = proc_therm_ds1620_read;
 	else
+=======
+	if (!proc_create_single("therm", 0, NULL, ds1620_proc_therm_show))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "therm: unable to register /proc/therm\n");
 #endif
 

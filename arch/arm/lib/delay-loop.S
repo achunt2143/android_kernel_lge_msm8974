@@ -1,28 +1,50 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/delay.S
  *
  *  Copyright (C) 1995, 1996 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include <asm/delay.h>
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_ARCH_RPC
+		.arch	armv4
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.text
 
 .LC0:		.word	loops_per_jiffy
 .LC1:		.word	UDELAY_MULT
 
 /*
+<<<<<<< HEAD
  * r0  <= 2000
  * lpj <= 0x01ffffff (max. 3355 bogomips)
+=======
+ * loops = r0 * HZ * loops_per_jiffy / 1000000
+ *
+ * r0  <= 2000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HZ  <= 1000
  */
 
 ENTRY(__loop_udelay)
 		ldr	r2, .LC1
+<<<<<<< HEAD
 		mul	r0, r2, r0
 ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0x7fffff06
 		mov	r1, #-1
@@ -40,11 +62,24 @@ ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0x7fffff06
 /*
  * loops = r0 * HZ * loops_per_jiffy / 1000000
  */
+=======
+		mul	r0, r2, r0		@ r0 = delay_us * UDELAY_MULT
+ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0xfffffaf0
+		ldr	r2, .LC0
+		ldr	r2, [r2]
+		umull	r1, r0, r2, r0		@ r0-r1 = r0 * loops_per_jiffy
+		adds	r1, r1, #0xffffffff	@ rounding up ...
+		adcs	r0, r0, r0		@ and right shift by 31
+		reteq	lr
+
+		.align 3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 @ Delay routine
 ENTRY(__loop_delay)
 		subs	r0, r0, #1
 #if 0
+<<<<<<< HEAD
 		movls	pc, lr
 		subs	r0, r0, #1
 		movls	pc, lr
@@ -62,6 +97,25 @@ ENTRY(__loop_delay)
 #endif
 		bhi	__loop_delay
 		mov	pc, lr
+=======
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+		retls	lr
+		subs	r0, r0, #1
+#endif
+		bhi	__loop_delay
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__loop_udelay)
 ENDPROC(__loop_const_udelay)
 ENDPROC(__loop_delay)

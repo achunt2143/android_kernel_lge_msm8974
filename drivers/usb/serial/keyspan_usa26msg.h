@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 	usa26msg.h
 
@@ -62,7 +66,11 @@
 	or:
 
 		(b)	0x80 bit set
+<<<<<<< HEAD
 			indiates that the bytes following alternate data and
+=======
+			indicates that the bytes following alternate data and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status bytes:
 
 				STAT DATA STAT DATA STAT DATA STAT DATA ...

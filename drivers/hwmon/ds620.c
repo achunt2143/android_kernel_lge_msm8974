@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ds620.c - Support for temperature sensor and thermostat DS620
  *
  *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
  *
  *  based on ds1621.c by Christian W. Zuckschwerdt  <zany@triq.net>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,7 +37,11 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
 #include <linux/i2c/ds620.h>
+=======
+#include <linux/platform_data/ds620.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Many DS620 constants specified below
@@ -67,9 +78,15 @@ static const u8 DS620_REG_TEMP[3] = {
 
 /* Each client has this additional data */
 struct ds620_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char valid;		/* !=0 if following fields are valid */
+=======
+	struct i2c_client *client;
+	struct mutex update_lock;
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	s16 temp[3];		/* Register values, word */
@@ -77,7 +94,11 @@ struct ds620_data {
 
 static void ds620_init_client(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct ds620_platform_data *ds620_info = client->dev.platform_data;
+=======
+	struct ds620_platform_data *ds620_info = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 conf, new_conf;
 
 	new_conf = conf =
@@ -106,8 +127,13 @@ static void ds620_init_client(struct i2c_client *client)
 
 static struct ds620_data *ds620_update_client(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ds620_data *data = i2c_get_clientdata(client);
+=======
+	struct ds620_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ds620_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -131,7 +157,11 @@ static struct ds620_data *ds620_update_client(struct device *dev)
 		}
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 abort:
 	mutex_unlock(&data->update_lock);
@@ -139,7 +169,11 @@ abort:
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp(struct device *dev, struct device_attribute *da,
+=======
+static ssize_t temp_show(struct device *dev, struct device_attribute *da,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -151,22 +185,36 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", ((data->temp[attr->index] / 8) * 625) / 10);
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp(struct device *dev, struct device_attribute *da,
 			const char *buf, size_t count)
+=======
+static ssize_t temp_store(struct device *dev, struct device_attribute *da,
+			  const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 	long val;
 
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ds620_data *data = i2c_get_clientdata(client);
+=======
+	struct ds620_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = kstrtol(buf, 10, &val);
 
 	if (res)
 		return res;
 
+<<<<<<< HEAD
 	val = (val * 10 / 625) * 8;
+=======
+	val = (clamp_val(val, -128000, 128000) * 10 / 625) * 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->update_lock);
 	data->temp[attr->index] = val;
@@ -176,18 +224,31 @@ static ssize_t set_temp(struct device *dev, struct device_attribute *da,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_alarm(struct device *dev, struct device_attribute *da,
+=======
+static ssize_t alarm_show(struct device *dev, struct device_attribute *da,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	struct ds620_data *data = ds620_update_client(dev);
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	struct i2c_client *client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 conf, new_conf;
 	int res;
 
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
+<<<<<<< HEAD
+=======
+	client = data->client;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reset alarms if necessary */
 	res = i2c_smbus_read_word_swapped(client, DS620_REG_CONF);
 	if (res < 0)
@@ -205,6 +266,7 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", !!(conf & attr->index));
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_temp, NULL, 0);
 static SENSOR_DEVICE_ATTR(temp1_min, S_IWUSR | S_IRUGO, show_temp, set_temp, 1);
 static SENSOR_DEVICE_ATTR(temp1_max, S_IWUSR | S_IRUGO, show_temp, set_temp, 2);
@@ -214,6 +276,15 @@ static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL,
 			  DS620_REG_CONFIG_THF);
 
 static struct attribute *ds620_attributes[] = {
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_min, temp, 1);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, 2);
+static SENSOR_DEVICE_ATTR_RO(temp1_min_alarm, alarm, DS620_REG_CONFIG_TLF);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, DS620_REG_CONFIG_THF);
+
+static struct attribute *ds620_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_min.dev_attr.attr,
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
@@ -222,6 +293,7 @@ static struct attribute *ds620_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group ds620_group = {
 	.attrs = ds620_attributes,
 };
@@ -239,11 +311,27 @@ static int ds620_probe(struct i2c_client *client,
 	}
 
 	i2c_set_clientdata(client, data);
+=======
+ATTRIBUTE_GROUPS(ds620);
+
+static int ds620_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct ds620_data *data;
+
+	data = devm_kzalloc(dev, sizeof(struct ds620_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Initialize the DS620 chip */
 	ds620_init_client(client);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &ds620_group);
 	if (err)
@@ -277,6 +365,11 @@ static int ds620_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, ds620_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ds620_id[] = {
@@ -288,12 +381,18 @@ MODULE_DEVICE_TABLE(i2c, ds620_id);
 
 /* This is the driver that will be inserted */
 static struct i2c_driver ds620_driver = {
+<<<<<<< HEAD
 	.class = I2C_CLASS_HWMON,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		   .name = "ds620",
 	},
 	.probe = ds620_probe,
+<<<<<<< HEAD
 	.remove = ds620_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ds620_id,
 };
 

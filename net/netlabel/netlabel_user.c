@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel NETLINK Interface
  *
@@ -6,11 +10,15 @@
  * protocols such as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
+<<<<<<< HEAD
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +34,8 @@
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -45,6 +55,10 @@
 #include "netlabel_mgmt.h"
 #include "netlabel_unlabeled.h"
 #include "netlabel_cipso_v4.h"
+<<<<<<< HEAD
+=======
+#include "netlabel_calipso.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netlabel_user.h"
 
 /*
@@ -72,11 +86,19 @@ int __init netlbl_netlink_init(void)
 	if (ret_val != 0)
 		return ret_val;
 
+<<<<<<< HEAD
 	ret_val = netlbl_unlabel_genl_init();
 	if (ret_val != 0)
 		return ret_val;
 
 	return 0;
+=======
+	ret_val = netlbl_calipso_genl_init();
+	if (ret_val != 0)
+		return ret_val;
+
+	return netlbl_unlabel_genl_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -101,15 +123,26 @@ struct audit_buffer *netlbl_audit_start_common(int type,
 	char *secctx;
 	u32 secctx_len;
 
+<<<<<<< HEAD
 	if (audit_enabled == 0)
 		return NULL;
 
 	audit_buf = audit_log_start(current->audit_context, GFP_ATOMIC, type);
+=======
+	if (audit_enabled == AUDIT_OFF)
+		return NULL;
+
+	audit_buf = audit_log_start(audit_context(), GFP_ATOMIC, type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (audit_buf == NULL)
 		return NULL;
 
 	audit_log_format(audit_buf, "netlabel: auid=%u ses=%u",
+<<<<<<< HEAD
 			 audit_info->loginuid,
+=======
+			 from_kuid(&init_user_ns, audit_info->loginuid),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 audit_info->sessionid);
 
 	if (audit_info->secid != 0 &&

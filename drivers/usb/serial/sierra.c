@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   USB Driver for Sierra Wireless
 
@@ -9,16 +13,23 @@
   IMPORTANT DISCLAIMER: This driver is not commercially supported by
   Sierra Wireless. Use at your own risk.
 
+<<<<<<< HEAD
   This driver is free software; you can redistribute it and/or modify
   it under the terms of Version 2 of the GNU General Public License as
   published by the Free Software Foundation.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   Portions based on the option driver by Matthias Urlichs <smurf@smurf.noris.de>
   Whom based his on the Keyspan driver by Hugh Blemings <hugh@blemings.org>
 */
 /* Uncomment to log function calls */
 /* #define DEBUG */
+<<<<<<< HEAD
 #define DRIVER_VERSION "v.1.7.16"
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Kevin Lloyd, Elina Pasheva, Matthew Safar, Rory Filer"
 #define DRIVER_DESC "USB Driver for Sierra Wireless USB modems"
 
@@ -46,6 +57,7 @@
    allocations > PAGE_SIZE and the number of packets in a page
    is an integer 512 is the largest possible packet on EHCI */
 
+<<<<<<< HEAD
 static bool debug;
 static bool nmea;
 
@@ -53,6 +65,13 @@ static bool nmea;
 struct sierra_iface_info {
 	const u32 infolen;	/* number of interface numbers on blacklist */
 	const u8  *ifaceinfo;	/* pointer to the array holding the numbers */
+=======
+static bool nmea;
+
+struct sierra_iface_list {
+	const u8 *nums;		/* array of interface numbers */
+	size_t count;		/* number of elements in array */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sierra_intf_private {
@@ -64,9 +83,13 @@ struct sierra_intf_private {
 
 static int sierra_set_power_state(struct usb_device *udev, __u16 swiState)
 {
+<<<<<<< HEAD
 	int result;
 	dev_dbg(&udev->dev, "%s\n", __func__);
 	result = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+=======
+	return usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SWIMS_USB_REQUEST_SetPower,	/* __u8 request      */
 			USB_TYPE_VENDOR,		/* __u8 request type */
 			swiState,			/* __u16 value       */
@@ -74,14 +97,21 @@ static int sierra_set_power_state(struct usb_device *udev, __u16 swiState)
 			NULL,				/* void *data        */
 			0,				/* __u16 size 	     */
 			USB_CTRL_SET_TIMEOUT);		/* int timeout 	     */
+<<<<<<< HEAD
 	return result;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sierra_vsc_set_nmea(struct usb_device *udev, __u16 enable)
 {
+<<<<<<< HEAD
 	int result;
 	dev_dbg(&udev->dev, "%s\n", __func__);
 	result = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+=======
+	return usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SWIMS_USB_REQUEST_SetNmea,	/* __u8 request      */
 			USB_TYPE_VENDOR,		/* __u8 request type */
 			enable,				/* __u16 value       */
@@ -89,16 +119,26 @@ static int sierra_vsc_set_nmea(struct usb_device *udev, __u16 enable)
 			NULL,				/* void *data        */
 			0,				/* __u16 size 	     */
 			USB_CTRL_SET_TIMEOUT);		/* int timeout       */
+<<<<<<< HEAD
 	return result;
 }
 
 static int sierra_calc_num_ports(struct usb_serial *serial)
+=======
+}
+
+static int sierra_calc_num_ports(struct usb_serial *serial,
+					struct usb_serial_endpoints *epds)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int num_ports = 0;
 	u8 ifnum, numendpoints;
 
+<<<<<<< HEAD
 	dev_dbg(&serial->dev->dev, "%s\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
 	numendpoints = serial->interface->cur_altsetting->desc.bNumEndpoints;
 
@@ -112,6 +152,7 @@ static int sierra_calc_num_ports(struct usb_serial *serial)
 	return num_ports;
 }
 
+<<<<<<< HEAD
 static int is_blacklisted(const u8 ifnum,
 				const struct sierra_iface_info *blacklist)
 {
@@ -165,19 +206,48 @@ static int sierra_calc_interface(struct usb_serial *serial)
 	interface = p_host_interface->desc.bInterfaceNumber;
 
 	return interface;
+=======
+static bool is_listed(const u8 ifnum, const struct sierra_iface_list *list)
+{
+	int i;
+
+	if (!list)
+		return false;
+
+	for (i = 0; i < list->count; i++) {
+		if (list->nums[i] == ifnum)
+			return true;
+	}
+
+	return false;
+}
+
+static u8 sierra_interface_num(struct usb_serial *serial)
+{
+	return serial->interface->cur_altsetting->desc.bInterfaceNumber;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sierra_probe(struct usb_serial *serial,
 			const struct usb_device_id *id)
 {
+<<<<<<< HEAD
+=======
+	const struct sierra_iface_list *ignore_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 	struct usb_device *udev;
 	u8 ifnum;
 
 	udev = serial->dev;
+<<<<<<< HEAD
 	dev_dbg(&udev->dev, "%s\n", __func__);
 
 	ifnum = sierra_calc_interface(serial);
+=======
+	ifnum = sierra_interface_num(serial);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If this interface supports more than 1 alternate
 	 * select the 2nd one
@@ -189,6 +259,7 @@ static int sierra_probe(struct usb_serial *serial,
 		usb_set_interface(udev, ifnum, 1);
 	}
 
+<<<<<<< HEAD
 	/* ifnum could have changed - by calling usb_set_interface */
 	ifnum = sierra_calc_interface(serial);
 
@@ -196,6 +267,12 @@ static int sierra_probe(struct usb_serial *serial,
 				(struct sierra_iface_info *)id->driver_info)) {
 		dev_dbg(&serial->dev->dev,
 			"Ignoring blacklisted interface #%d\n", ifnum);
+=======
+	ignore_list = (const struct sierra_iface_list *)id->driver_info;
+
+	if (is_listed(ifnum, ignore_list)) {
+		dev_dbg(&serial->dev->dev, "Ignoring interface #%d\n", ifnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -204,6 +281,7 @@ static int sierra_probe(struct usb_serial *serial,
 
 /* interfaces with higher memory requirements */
 static const u8 hi_memory_typeA_ifaces[] = { 0, 2 };
+<<<<<<< HEAD
 static const struct sierra_iface_info typeA_interface_list = {
 	.infolen = ARRAY_SIZE(hi_memory_typeA_ifaces),
 	.ifaceinfo = hi_memory_typeA_ifaces,
@@ -220,6 +298,24 @@ static const u8 direct_ip_non_serial_ifaces[] = { 7, 8, 9, 10, 11, 19, 20 };
 static const struct sierra_iface_info direct_ip_interface_blacklist = {
 	.infolen = ARRAY_SIZE(direct_ip_non_serial_ifaces),
 	.ifaceinfo = direct_ip_non_serial_ifaces,
+=======
+static const struct sierra_iface_list typeA_interface_list = {
+	.nums	= hi_memory_typeA_ifaces,
+	.count	= ARRAY_SIZE(hi_memory_typeA_ifaces),
+};
+
+static const u8 hi_memory_typeB_ifaces[] = { 3, 4, 5, 6 };
+static const struct sierra_iface_list typeB_interface_list = {
+	.nums	= hi_memory_typeB_ifaces,
+	.count	= ARRAY_SIZE(hi_memory_typeB_ifaces),
+};
+
+/* 'ignorelist' of interfaces not served by this driver */
+static const u8 direct_ip_non_serial_ifaces[] = { 7, 8, 9, 10, 11, 19, 20 };
+static const struct sierra_iface_list direct_ip_interface_ignore = {
+	.nums	= direct_ip_non_serial_ifaces,
+	.count	= ARRAY_SIZE(direct_ip_non_serial_ifaces),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct usb_device_id id_table[] = {
@@ -293,6 +389,7 @@ static const struct usb_device_id id_table[] = {
 	/* Sierra Wireless HSPA Non-Composite Device */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x6892, 0xFF, 0xFF, 0xFF)},
 	{ USB_DEVICE(0x1199, 0x6893) },	/* Sierra Wireless Device */
+<<<<<<< HEAD
 	{ USB_DEVICE(0x1199, 0x68A2),   /* Sierra Wireless MC77xx in QMI mode */
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
@@ -302,15 +399,31 @@ static const struct usb_device_id id_table[] = {
 	},
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68AA, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+=======
+	/* Sierra Wireless Direct IP modems */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68A3, 0xFF, 0xFF, 0xFF),
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_ignore
+	},
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1199, 0x68AA, 0xFF, 0xFF, 0xFF),
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_ignore
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{ USB_DEVICE(0x1199, 0x68AB) }, /* Sierra Wireless AR8550 */
 	/* AT&T Direct IP LTE modems */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68AA, 0xFF, 0xFF, 0xFF),
+<<<<<<< HEAD
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
 	},
 	/* Airprime/Sierra Wireless Direct IP modems */
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68A3, 0xFF, 0xFF, 0xFF),
 	  .driver_info = (kernel_ulong_t)&direct_ip_interface_blacklist
+=======
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_ignore
+	},
+	/* Airprime/Sierra Wireless Direct IP modems */
+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0F3D, 0x68A3, 0xFF, 0xFF, 0xFF),
+	  .driver_info = (kernel_ulong_t)&direct_ip_interface_ignore
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	{ }
@@ -336,7 +449,10 @@ struct sierra_port_private {
 	int dsr_state;
 	int dcd_state;
 	int ri_state;
+<<<<<<< HEAD
 	unsigned int opened:1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sierra_send_setup(struct usb_serial_port *port)
@@ -348,8 +464,11 @@ static int sierra_send_setup(struct usb_serial_port *port)
 	int do_send = 0;
 	int retval;
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	portdata = usb_get_serial_port_data(port);
 
 	if (portdata->dtr_state)
@@ -359,7 +478,11 @@ static int sierra_send_setup(struct usb_serial_port *port)
 
 	/* If composite device then properly report interface */
 	if (serial->num_ports == 1) {
+<<<<<<< HEAD
 		interface = sierra_calc_interface(serial);
+=======
+		interface = sierra_interface_num(serial);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Control message is sent only to interfaces with
 		 * interrupt_in endpoints
 		 */
@@ -387,13 +510,18 @@ static int sierra_send_setup(struct usb_serial_port *port)
 	if (retval < 0)
 		return retval;
 
+<<<<<<< HEAD
 	retval = usb_control_msg(serial->dev, usb_rcvctrlpipe(serial->dev, 0),
+=======
+	retval = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0x22, 0x21, val, interface, NULL, 0, USB_CTRL_SET_TIMEOUT);
 	usb_autopm_put_interface(serial->interface);
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static void sierra_set_termios(struct tty_struct *tty,
 		struct usb_serial_port *port, struct ktermios *old_termios)
 {
@@ -402,13 +530,18 @@ static void sierra_set_termios(struct tty_struct *tty,
 	sierra_send_setup(port);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sierra_tiocmget(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	unsigned int value;
 	struct sierra_port_private *portdata;
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s\n", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	portdata = usb_get_serial_port_data(port);
 
 	value = ((portdata->rts_state) ? TIOCM_RTS : 0) |
@@ -443,10 +576,14 @@ static int sierra_tiocmset(struct tty_struct *tty,
 
 static void sierra_release_urb(struct urb *urb)
 {
+<<<<<<< HEAD
 	struct usb_serial_port *port;
 	if (urb) {
 		port =  urb->context;
 		dev_dbg(&port->dev, "%s: %p\n", __func__, urb);
+=======
+	if (urb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(urb->transfer_buffer);
 		usb_free_urb(urb);
 	}
@@ -458,9 +595,15 @@ static void sierra_outdat_callback(struct urb *urb)
 	struct sierra_port_private *portdata = usb_get_serial_port_data(port);
 	struct sierra_intf_private *intfdata;
 	int status = urb->status;
+<<<<<<< HEAD
 
 	dev_dbg(&port->dev, "%s - port %d\n", __func__, port->number);
 	intfdata = port->serial->private;
+=======
+	unsigned long flags;
+
+	intfdata = usb_get_serial_data(port->serial);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* free up the transfer buffer, as usb_free_urb() does not do this */
 	kfree(urb->transfer_buffer);
@@ -469,12 +612,21 @@ static void sierra_outdat_callback(struct urb *urb)
 		dev_dbg(&port->dev, "%s - nonzero write bulk status "
 		    "received: %d\n", __func__, status);
 
+<<<<<<< HEAD
 	spin_lock(&portdata->lock);
 	--portdata->outstanding_urbs;
 	spin_unlock(&portdata->lock);
 	spin_lock(&intfdata->susp_lock);
 	--intfdata->in_flight;
 	spin_unlock(&intfdata->susp_lock);
+=======
+	spin_lock_irqsave(&portdata->lock, flags);
+	--portdata->outstanding_urbs;
+	spin_unlock_irqrestore(&portdata->lock, flags);
+	spin_lock_irqsave(&intfdata->susp_lock, flags);
+	--intfdata->in_flight;
+	spin_unlock_irqrestore(&intfdata->susp_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_serial_port_softint(port);
 }
@@ -497,7 +649,11 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
 		return 0;
 
 	portdata = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	intfdata = serial->private;
+=======
+	intfdata = usb_get_serial_data(serial);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&port->dev, "%s: write (%zd bytes)\n", __func__, writesize);
 	spin_lock_irqsave(&portdata->lock, flags);
@@ -521,23 +677,35 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
 		goto error_simple;
 	}
 
+<<<<<<< HEAD
 	buffer = kmalloc(writesize, GFP_ATOMIC);
 	if (!buffer) {
 		dev_err(&port->dev, "out of memory\n");
+=======
+	buffer = kmemdup(buf, writesize, GFP_ATOMIC);
+	if (!buffer) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENOMEM;
 		goto error_no_buffer;
 	}
 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb) {
+<<<<<<< HEAD
 		dev_err(&port->dev, "no more free urbs\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENOMEM;
 		goto error_no_urb;
 	}
 
+<<<<<<< HEAD
 	memcpy(buffer, buf, writesize);
 
 	usb_serial_debug_data(debug, &port->dev, __func__, writesize, buffer);
+=======
+	usb_serial_debug_data(&port->dev, __func__, writesize, buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_fill_bulk_urb(urb, serial->dev,
 			  usb_sndbulkpipe(serial->dev,
@@ -595,20 +763,27 @@ static void sierra_indat_callback(struct urb *urb)
 	int err;
 	int endpoint;
 	struct usb_serial_port *port;
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *data = urb->transfer_buffer;
 	int status = urb->status;
 
 	endpoint = usb_pipeendpoint(urb->pipe);
 	port = urb->context;
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s: %p\n", __func__, urb);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status) {
 		dev_dbg(&port->dev, "%s: nonzero status: %d on"
 			" endpoint %02x\n", __func__, status, endpoint);
 	} else {
 		if (urb->actual_length) {
+<<<<<<< HEAD
 			tty = tty_port_tty_get(&port->port);
 			if (tty) {
 				tty_insert_flip_string(tty, data,
@@ -619,6 +794,14 @@ static void sierra_indat_callback(struct urb *urb)
 				usb_serial_debug_data(debug, &port->dev,
 					__func__, urb->actual_length, data);
 			}
+=======
+			tty_insert_flip_string(&port->port, data,
+				urb->actual_length);
+			tty_flip_buffer_push(&port->port);
+
+			usb_serial_debug_data(&port->dev, __func__,
+					      urb->actual_length, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			dev_dbg(&port->dev, "%s: empty read urb"
 				" received\n", __func__);
@@ -647,8 +830,12 @@ static void sierra_instat_callback(struct urb *urb)
 		urb, port, portdata);
 
 	if (status == 0) {
+<<<<<<< HEAD
 		struct usb_ctrlrequest *req_pkt =
 				(struct usb_ctrlrequest *)urb->transfer_buffer;
+=======
+		struct usb_ctrlrequest *req_pkt = urb->transfer_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!req_pkt) {
 			dev_dbg(&port->dev, "%s: NULL req_pkt\n",
@@ -661,7 +848,10 @@ static void sierra_instat_callback(struct urb *urb)
 			unsigned char signals = *((unsigned char *)
 					urb->transfer_buffer +
 					sizeof(struct usb_ctrlrequest));
+<<<<<<< HEAD
 			struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev_dbg(&port->dev, "%s: signal x%x\n", __func__,
 				signals);
@@ -672,11 +862,16 @@ static void sierra_instat_callback(struct urb *urb)
 			portdata->dsr_state = ((signals & 0x02) ? 1 : 0);
 			portdata->ri_state = ((signals & 0x08) ? 1 : 0);
 
+<<<<<<< HEAD
 			tty = tty_port_tty_get(&port->port);
 			if (tty && !C_CLOCAL(tty) &&
 					old_dcd_state && !portdata->dcd_state)
 				tty_hangup(tty);
 			tty_kref_put(tty);
+=======
+			if (old_dcd_state && !portdata->dcd_state)
+				tty_port_tty_hangup(&port->port, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			dev_dbg(&port->dev, "%s: type %x req %x\n",
 				__func__, req_pkt->bRequestType,
@@ -695,14 +890,21 @@ static void sierra_instat_callback(struct urb *urb)
 	}
 }
 
+<<<<<<< HEAD
 static int sierra_write_room(struct tty_struct *tty)
+=======
+static unsigned int sierra_write_room(struct tty_struct *tty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct sierra_port_private *portdata = usb_get_serial_port_data(port);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s - port %d\n", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* try to give a good number back based on if we have any free urbs at
 	 * this point in time */
 	spin_lock_irqsave(&portdata->lock, flags);
@@ -716,6 +918,26 @@ static int sierra_write_room(struct tty_struct *tty)
 	return 2048;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned int sierra_chars_in_buffer(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct sierra_port_private *portdata = usb_get_serial_port_data(port);
+	unsigned long flags;
+	unsigned int chars;
+
+	/* NOTE: This overcounts somewhat. */
+	spin_lock_irqsave(&portdata->lock, flags);
+	chars = portdata->outstanding_urbs * MAX_TRANSFER;
+	spin_unlock_irqrestore(&portdata->lock, flags);
+
+	dev_dbg(&port->dev, "%s - %u\n", __func__, chars);
+
+	return chars;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sierra_stop_rx_urbs(struct usb_serial_port *port)
 {
 	int i;
@@ -771,6 +993,7 @@ static struct urb *sierra_setup_urb(struct usb_serial *serial, int endpoint,
 	struct urb	*urb;
 	u8		*buf;
 
+<<<<<<< HEAD
 	if (endpoint == -1)
 		return NULL;
 
@@ -780,6 +1003,11 @@ static struct urb *sierra_setup_urb(struct usb_serial *serial, int endpoint,
 			__func__, endpoint);
 		return NULL;
 	}
+=======
+	urb = usb_alloc_urb(0, mem_flags);
+	if (!urb)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = kmalloc(len, mem_flags);
 	if (buf) {
@@ -788,6 +1016,7 @@ static struct urb *sierra_setup_urb(struct usb_serial *serial, int endpoint,
 			usb_sndbulkpipe(serial->dev, endpoint) | dir,
 			buf, len, callback, ctx);
 
+<<<<<<< HEAD
 		/* debug */
 		dev_dbg(&serial->dev->dev, "%s %c u : %p d:%p\n", __func__,
 				dir == USB_DIR_IN ? 'i' : 'o', urb, buf);
@@ -795,6 +1024,11 @@ static struct urb *sierra_setup_urb(struct usb_serial *serial, int endpoint,
 		dev_dbg(&serial->dev->dev, "%s %c u:%p d:%p\n", __func__,
 				dir == USB_DIR_IN ? 'i' : 'o', urb, buf);
 
+=======
+		dev_dbg(&serial->dev->dev, "%s %c u : %p d:%p\n", __func__,
+				dir == USB_DIR_IN ? 'i' : 'o', urb, buf);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sierra_release_urb(urb);
 		urb = NULL;
 	}
@@ -807,6 +1041,7 @@ static void sierra_close(struct usb_serial_port *port)
 	int i;
 	struct usb_serial *serial = port->serial;
 	struct sierra_port_private *portdata;
+<<<<<<< HEAD
 	struct sierra_intf_private *intfdata = port->serial->private;
 	struct urb *urb;
 
@@ -854,13 +1089,55 @@ static void sierra_close(struct usb_serial_port *port)
 			portdata->in_urbs[i] = NULL;
 		}
 	}
+=======
+	struct sierra_intf_private *intfdata = usb_get_serial_data(serial);
+	struct urb *urb;
+
+	portdata = usb_get_serial_port_data(port);
+
+	/*
+	 * Need to take susp_lock to make sure port is not already being
+	 * resumed, but no need to hold it due to the tty-port initialized
+	 * flag.
+	 */
+	spin_lock_irq(&intfdata->susp_lock);
+	if (--intfdata->open_ports == 0)
+		serial->interface->needs_remote_wakeup = 0;
+	spin_unlock_irq(&intfdata->susp_lock);
+
+	for (;;) {
+		urb = usb_get_from_anchor(&portdata->delayed);
+		if (!urb)
+			break;
+		kfree(urb->transfer_buffer);
+		usb_free_urb(urb);
+		usb_autopm_put_interface_async(serial->interface);
+		spin_lock_irq(&portdata->lock);
+		portdata->outstanding_urbs--;
+		spin_unlock_irq(&portdata->lock);
+	}
+
+	sierra_stop_rx_urbs(port);
+	usb_kill_anchored_urbs(&portdata->active);
+
+	for (i = 0; i < portdata->num_in_urbs; i++) {
+		sierra_release_urb(portdata->in_urbs[i]);
+		portdata->in_urbs[i] = NULL;
+	}
+
+	usb_autopm_get_interface_no_resume(serial->interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sierra_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	struct sierra_port_private *portdata;
 	struct usb_serial *serial = port->serial;
+<<<<<<< HEAD
 	struct sierra_intf_private *intfdata = serial->private;
+=======
+	struct sierra_intf_private *intfdata = usb_get_serial_data(serial);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int err;
 	int endpoint;
@@ -868,6 +1145,7 @@ static int sierra_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	portdata = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	dev_dbg(&port->dev, "%s\n", __func__);
 
 	/* Set some sane defaults */
@@ -875,6 +1153,8 @@ static int sierra_open(struct tty_struct *tty, struct usb_serial_port *port)
 	portdata->dtr_state = 1;
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	endpoint = port->bulk_in_endpointAddress;
 	for (i = 0; i < portdata->num_in_urbs; i++) {
 		urb = sierra_setup_urb(serial, endpoint, USB_DIR_IN, port,
@@ -890,10 +1170,14 @@ static int sierra_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (err)
 		goto err_submit;
 
+<<<<<<< HEAD
 	sierra_send_setup(port);
 
 	spin_lock_irq(&intfdata->susp_lock);
 	portdata->opened = 1;
+=======
+	spin_lock_irq(&intfdata->susp_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (++intfdata->open_ports == 1)
 		serial->interface->needs_remote_wakeup = 1;
 	spin_unlock_irq(&intfdata->susp_lock);
@@ -926,6 +1210,7 @@ static void sierra_dtr_rts(struct usb_serial_port *port, int on)
 
 static int sierra_startup(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	struct usb_serial_port *port;
 	struct sierra_intf_private *intfdata;
 	struct sierra_port_private *portdata;
@@ -934,6 +1219,9 @@ static int sierra_startup(struct usb_serial *serial)
 	u8 ifnum;
 
 	dev_dbg(&serial->dev->dev, "%s\n", __func__);
+=======
+	struct sierra_intf_private *intfdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intfdata = kzalloc(sizeof(*intfdata), GFP_KERNEL);
 	if (!intfdata)
@@ -950,6 +1238,7 @@ static int sierra_startup(struct usb_serial *serial)
 	if (nmea)
 		sierra_vsc_set_nmea(serial->dev, 1);
 
+<<<<<<< HEAD
 	/* Now setup per port private data */
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
@@ -1003,10 +1292,14 @@ err:
 	kfree(intfdata);
 
 	return -ENOMEM;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sierra_release(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int i;
 	struct usb_serial_port *port;
 	struct sierra_port_private *portdata;
@@ -1024,6 +1317,67 @@ static void sierra_release(struct usb_serial *serial)
 		kfree(portdata);
 	}
 	kfree(serial->private);
+=======
+	struct sierra_intf_private *intfdata;
+
+	intfdata = usb_get_serial_data(serial);
+	kfree(intfdata);
+}
+
+static int sierra_port_probe(struct usb_serial_port *port)
+{
+	struct usb_serial *serial = port->serial;
+	struct sierra_port_private *portdata;
+	const struct sierra_iface_list *himemory_list;
+	u8 ifnum;
+
+	portdata = kzalloc(sizeof(*portdata), GFP_KERNEL);
+	if (!portdata)
+		return -ENOMEM;
+
+	spin_lock_init(&portdata->lock);
+	init_usb_anchor(&portdata->active);
+	init_usb_anchor(&portdata->delayed);
+
+	/* Assume low memory requirements */
+	portdata->num_out_urbs = N_OUT_URB;
+	portdata->num_in_urbs  = N_IN_URB;
+
+	/* Determine actual memory requirements */
+	if (serial->num_ports == 1) {
+		/* Get interface number for composite device */
+		ifnum = sierra_interface_num(serial);
+		himemory_list = &typeB_interface_list;
+	} else {
+		/* This is really the usb-serial port number of the interface
+		 * rather than the interface number.
+		 */
+		ifnum = port->port_number;
+		himemory_list = &typeA_interface_list;
+	}
+
+	if (is_listed(ifnum, himemory_list)) {
+		portdata->num_out_urbs = N_OUT_URB_HM;
+		portdata->num_in_urbs  = N_IN_URB_HM;
+	}
+
+	dev_dbg(&port->dev,
+			"Memory usage (urbs) interface #%d, in=%d, out=%d\n",
+			ifnum, portdata->num_in_urbs, portdata->num_out_urbs);
+
+	usb_set_serial_port_data(port, portdata);
+
+	return 0;
+}
+
+static void sierra_port_remove(struct usb_serial_port *port)
+{
+	struct sierra_port_private *portdata;
+
+	portdata = usb_get_serial_port_data(port);
+	usb_set_serial_port_data(port, NULL);
+	kfree(portdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -1046,6 +1400,7 @@ static void stop_read_write_urbs(struct usb_serial *serial)
 
 static int sierra_suspend(struct usb_serial *serial, pm_message_t message)
 {
+<<<<<<< HEAD
 	struct sierra_intf_private *intfdata;
 	int b;
 
@@ -1062,7 +1417,69 @@ static int sierra_suspend(struct usb_serial *serial, pm_message_t message)
 			spin_unlock_irq(&intfdata->susp_lock);
 		}
 	}
+=======
+	struct sierra_intf_private *intfdata = usb_get_serial_data(serial);
+
+	spin_lock_irq(&intfdata->susp_lock);
+	if (PMSG_IS_AUTO(message)) {
+		if (intfdata->in_flight) {
+			spin_unlock_irq(&intfdata->susp_lock);
+			return -EBUSY;
+		}
+	}
+	intfdata->suspended = 1;
+	spin_unlock_irq(&intfdata->susp_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stop_read_write_urbs(serial);
+
+	return 0;
+}
+
+<<<<<<< HEAD
+static int sierra_resume(struct usb_serial *serial)
+{
+	struct usb_serial_port *port;
+	struct sierra_intf_private *intfdata = serial->private;
+	struct sierra_port_private *portdata;
+	struct urb *urb;
+=======
+/* Caller must hold susp_lock. */
+static int sierra_submit_delayed_urbs(struct usb_serial_port *port)
+{
+	struct sierra_port_private *portdata = usb_get_serial_port_data(port);
+	struct sierra_intf_private *intfdata;
+	struct urb *urb;
+	int ec = 0;
+	int err;
+
+	intfdata = usb_get_serial_data(port->serial);
+
+	for (;;) {
+		urb = usb_get_from_anchor(&portdata->delayed);
+		if (!urb)
+			break;
+
+		usb_anchor_urb(urb, &portdata->active);
+		intfdata->in_flight++;
+		err = usb_submit_urb(urb, GFP_ATOMIC);
+		if (err) {
+			dev_err(&port->dev, "%s - submit urb failed: %d",
+					__func__, err);
+			ec++;
+			intfdata->in_flight--;
+			usb_unanchor_urb(urb);
+			kfree(urb->transfer_buffer);
+			usb_free_urb(urb);
+
+			spin_lock(&portdata->lock);
+			portdata->outstanding_urbs--;
+			spin_unlock(&portdata->lock);
+		}
+	}
+
+	if (ec)
+		return -EIO;
 
 	return 0;
 }
@@ -1070,15 +1487,15 @@ static int sierra_suspend(struct usb_serial *serial, pm_message_t message)
 static int sierra_resume(struct usb_serial *serial)
 {
 	struct usb_serial_port *port;
-	struct sierra_intf_private *intfdata = serial->private;
-	struct sierra_port_private *portdata;
-	struct urb *urb;
+	struct sierra_intf_private *intfdata = usb_get_serial_data(serial);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ec = 0;
 	int i, err;
 
 	spin_lock_irq(&intfdata->susp_lock);
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
+<<<<<<< HEAD
 		portdata = usb_get_serial_port_data(port);
 
 		if (!portdata)
@@ -1105,6 +1522,19 @@ static int sierra_resume(struct usb_serial *serial)
 			if (err)
 				ec++;
 		}
+=======
+
+		if (!tty_port_initialized(&port->port))
+			continue;
+
+		err = sierra_submit_delayed_urbs(port);
+		if (err)
+			ec++;
+
+		err = sierra_submit_rx_urbs(port, GFP_ATOMIC);
+		if (err)
+			ec++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	intfdata->suspended = 0;
 	spin_unlock_irq(&intfdata->susp_lock);
@@ -1112,6 +1542,7 @@ static int sierra_resume(struct usb_serial *serial)
 	return ec ? -EIO : 0;
 }
 
+<<<<<<< HEAD
 static int sierra_reset_resume(struct usb_interface *intf)
 {
 	struct usb_serial *serial = usb_get_intfdata(intf);
@@ -1135,6 +1566,13 @@ static struct usb_driver sierra_driver = {
 	.supports_autosuspend =	1,
 };
 
+=======
+#else
+#define sierra_suspend NULL
+#define sierra_resume NULL
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver sierra_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -1149,11 +1587,20 @@ static struct usb_serial_driver sierra_device = {
 	.dtr_rts	   = sierra_dtr_rts,
 	.write             = sierra_write,
 	.write_room        = sierra_write_room,
+<<<<<<< HEAD
 	.set_termios       = sierra_set_termios,
+=======
+	.chars_in_buffer   = sierra_chars_in_buffer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tiocmget          = sierra_tiocmget,
 	.tiocmset          = sierra_tiocmset,
 	.attach            = sierra_startup,
 	.release           = sierra_release,
+<<<<<<< HEAD
+=======
+	.port_probe        = sierra_port_probe,
+	.port_remove       = sierra_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	   = sierra_suspend,
 	.resume		   = sierra_resume,
 	.read_int_callback = sierra_instat_callback,
@@ -1163,6 +1610,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&sierra_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(sierra_driver, serial_drivers);
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
@@ -1175,3 +1623,13 @@ MODULE_PARM_DESC(nmea, "NMEA streaming");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug messages");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_AUTHOR(DRIVER_AUTHOR);
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL v2");
+
+module_param(nmea, bool, 0644);
+MODULE_PARM_DESC(nmea, "NMEA streaming");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generate kernel symbol version hashes.
    Copyright 1996, 1997 Linux International.
 
@@ -7,6 +11,7 @@
    This file was part of the Linux modutils 2.4.22: moved back into the
    kernel sources by Rusty Russell/Kai Germaschewski.
 
+<<<<<<< HEAD
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
    Free Software Foundation; either version 2 of the License, or (at your
@@ -20,6 +25,9 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <stdio.h>
 #include <string.h>
@@ -27,9 +35,13 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdarg.h>
+<<<<<<< HEAD
 #ifdef __GNU_LIBRARY__
 #include <getopt.h>
 #endif				/* __GNU_LIBRARY__ */
+=======
+#include <getopt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "genksyms.h"
 /*----------------------------------------------------------------------*/
@@ -40,13 +52,20 @@ static struct symbol *symtab[HASH_BUCKETS];
 static FILE *debugfile;
 
 int cur_line = 1;
+<<<<<<< HEAD
 char *cur_filename, *source_file;
+=======
+char *cur_filename;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int in_source_file;
 
 static int flag_debug, flag_dump_defs, flag_reference, flag_dump_types,
 	   flag_preserve, flag_warnings;
+<<<<<<< HEAD
 static const char *arch = "";
 static const char *mod_prefix = "";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int errors;
 static int nsyms;
@@ -424,6 +443,7 @@ static struct string_list *read_node(FILE *f)
 	struct string_list node = {
 		.string = buffer,
 		.tag = SYM_NORMAL };
+<<<<<<< HEAD
 	int c;
 
 	while ((c = fgetc(f)) != EOF) {
@@ -431,6 +451,17 @@ static struct string_list *read_node(FILE *f)
 			if (node.string == buffer)
 				continue;
 			break;
+=======
+	int c, in_string = 0;
+
+	while ((c = fgetc(f)) != EOF) {
+		if (!in_string && c == ' ') {
+			if (node.string == buffer)
+				continue;
+			break;
+		} else if (c == '"') {
+			in_string = !in_string;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (c == '\n') {
 			if (node.string == buffer)
 				return NULL;
@@ -691,8 +722,12 @@ void export_symbol(const char *name)
 		if (flag_dump_defs)
 			fputs(">\n", debugfile);
 
+<<<<<<< HEAD
 		/* Used as a linker script. */
 		printf("%s__crc_%s = 0x%08lx ;\n", mod_prefix, name, crc);
+=======
+		printf("#SYMVER %s 0x%08lx\n", name, crc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -729,9 +764,13 @@ void error_with_pos(const char *fmt, ...)
 
 static void genksyms_usage(void)
 {
+<<<<<<< HEAD
 	fputs("Usage:\n" "genksyms [-adDTwqhV] > /path/to/.tmp_obj.ver\n" "\n"
 #ifdef __GNU_LIBRARY__
 	      "  -a, --arch            Select architecture\n"
+=======
+	fputs("Usage:\n" "genksyms [-adDTwqhVR] > /path/to/.tmp_obj.ver\n" "\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      "  -d, --debug           Increment the debug level (repeatable)\n"
 	      "  -D, --dump            Dump expanded symbol defs (for debugging only)\n"
 	      "  -r, --reference file  Read reference symbols from a file\n"
@@ -741,6 +780,7 @@ static void genksyms_usage(void)
 	      "  -q, --quiet           Disable warnings (default)\n"
 	      "  -h, --help            Print this message\n"
 	      "  -V, --version         Print the release version\n"
+<<<<<<< HEAD
 #else				/* __GNU_LIBRARY__ */
 	      "  -a                    Select architecture\n"
 	      "  -d                    Increment the debug level (repeatable)\n"
@@ -753,6 +793,8 @@ static void genksyms_usage(void)
 	      "  -h                    Print this message\n"
 	      "  -V                    Print the release version\n"
 #endif				/* __GNU_LIBRARY__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      , stderr);
 }
 
@@ -761,9 +803,13 @@ int main(int argc, char **argv)
 	FILE *dumpfile = NULL, *ref_file = NULL;
 	int o;
 
+<<<<<<< HEAD
 #ifdef __GNU_LIBRARY__
 	struct option long_opts[] = {
 		{"arch", 1, 0, 'a'},
+=======
+	struct option long_opts[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{"debug", 0, 0, 'd'},
 		{"warnings", 0, 0, 'w'},
 		{"quiet", 0, 0, 'q'},
@@ -776,6 +822,7 @@ int main(int argc, char **argv)
 		{0, 0, 0, 0}
 	};
 
+<<<<<<< HEAD
 	while ((o = getopt_long(argc, argv, "a:dwqVDr:T:ph",
 				&long_opts[0], NULL)) != EOF)
 #else				/* __GNU_LIBRARY__ */
@@ -785,6 +832,11 @@ int main(int argc, char **argv)
 		case 'a':
 			arch = optarg;
 			break;
+=======
+	while ((o = getopt_long(argc, argv, "dwqVDr:T:ph",
+				&long_opts[0], NULL)) != EOF)
+		switch (o) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'd':
 			flag_debug++;
 			break;
@@ -826,8 +878,11 @@ int main(int argc, char **argv)
 			genksyms_usage();
 			return 1;
 		}
+<<<<<<< HEAD
 	if ((strcmp(arch, "h8300") == 0) || (strcmp(arch, "blackfin") == 0))
 		mod_prefix = "_";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		extern int yydebug;
 		extern int yy_flex_debug;
@@ -874,5 +929,11 @@ int main(int argc, char **argv)
 			(double)nsyms / (double)HASH_BUCKETS);
 	}
 
+<<<<<<< HEAD
+=======
+	if (dumpfile)
+		fclose(dumpfile);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return errors != 0;
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ocfs2
 
@@ -711,6 +715,11 @@ TRACE_EVENT(ocfs2_trim_extent,
 
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_trim_group);
 
+<<<<<<< HEAD
+=======
+DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_trim_mainbm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_trim_fs);
 
 /* End of trace events for fs/ocfs2/alloc.c. */
@@ -1154,8 +1163,11 @@ DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_get_block_end);
 
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_readpage);
 
+<<<<<<< HEAD
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_writepage);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_bmap);
 
 TRACE_EVENT(ocfs2_try_to_write_inline_data,
@@ -1310,6 +1322,7 @@ DEFINE_OCFS2_FILE_OPS(ocfs2_file_release);
 
 DEFINE_OCFS2_FILE_OPS(ocfs2_sync_file);
 
+<<<<<<< HEAD
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_aio_write);
 
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_splice_write);
@@ -1318,6 +1331,14 @@ DEFINE_OCFS2_FILE_OPS(ocfs2_file_splice_read);
 
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_aio_read);
 
+=======
+DEFINE_OCFS2_FILE_OPS(ocfs2_file_write_iter);
+
+DEFINE_OCFS2_FILE_OPS(ocfs2_file_read_iter);
+
+DEFINE_OCFS2_FILE_OPS(ocfs2_file_splice_read);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_truncate_file);
 
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_truncate_file_error);
@@ -1450,6 +1471,7 @@ DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_remove_inode_range);
 
 TRACE_EVENT(ocfs2_prepare_inode_for_write,
 	TP_PROTO(unsigned long long ino, unsigned long long saved_pos,
+<<<<<<< HEAD
 		 int appending, unsigned long count,
 		 int *direct_io, int *has_refcount),
 	TP_ARGS(ino, saved_pos, appending, count, direct_io, has_refcount),
@@ -1460,10 +1482,20 @@ TRACE_EVENT(ocfs2_prepare_inode_for_write,
 		__field(unsigned long, count)
 		__field(int, direct_io)
 		__field(int, has_refcount)
+=======
+		 unsigned long count, int wait),
+	TP_ARGS(ino, saved_pos, count, wait),
+	TP_STRUCT__entry(
+		__field(unsigned long long, ino)
+		__field(unsigned long long, saved_pos)
+		__field(unsigned long, count)
+		__field(int, wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->ino = ino;
 		__entry->saved_pos = saved_pos;
+<<<<<<< HEAD
 		__entry->appending = appending;
 		__entry->count = count;
 		__entry->direct_io = direct_io ? *direct_io : -1;
@@ -1475,6 +1507,17 @@ TRACE_EVENT(ocfs2_prepare_inode_for_write,
 );
 
 DEFINE_OCFS2_INT_EVENT(generic_file_aio_read_ret);
+=======
+		__entry->count = count;
+		__entry->wait = wait;
+	),
+	TP_printk("%llu %llu %lu %d", __entry->ino,
+		  __entry->saved_pos, __entry->count, __entry->wait)
+);
+
+DEFINE_OCFS2_INT_EVENT(generic_file_read_iter_ret);
+DEFINE_OCFS2_INT_EVENT(filemap_splice_read_ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* End of trace events for fs/ocfs2/file.c. */
 
@@ -1540,6 +1583,11 @@ DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_read_locked_inode);
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_check_orphan_recovery_state);
 
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_inode_block);
+<<<<<<< HEAD
+=======
+DEFINE_OCFS2_ULL_EVENT(ocfs2_filecheck_validate_inode_block);
+DEFINE_OCFS2_ULL_EVENT(ocfs2_filecheck_repair_inode_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(ocfs2_inode_is_valid_to_delete,
 	TP_PROTO(void *task, void *dc_task, unsigned long long ino,
@@ -2035,6 +2083,11 @@ DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_release_dquot);
 
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_acquire_dquot);
 
+<<<<<<< HEAD
+=======
+DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_get_next_id);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_mark_dquot_dirty);
 
 /* End of trace events for fs/ocfs2/quota_global.c. */
@@ -2292,6 +2345,11 @@ TRACE_EVENT(ocfs2_rename,
 		  __entry->new_len, __get_str(new_name))
 );
 
+<<<<<<< HEAD
+=======
+DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_rename_not_permitted);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(ocfs2_rename_target_exists,
 	TP_PROTO(int new_len, const char *new_name),
 	TP_ARGS(new_len, new_name),
@@ -2579,6 +2637,11 @@ DEFINE_OCFS2_INT_INT_EVENT(ocfs2_extend_trans);
 
 DEFINE_OCFS2_INT_EVENT(ocfs2_extend_trans_restart);
 
+<<<<<<< HEAD
+=======
+DEFINE_OCFS2_INT_INT_EVENT(ocfs2_allocate_extend_trans);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_journal_access);
 
 DEFINE_OCFS2_ULL_EVENT(ocfs2_journal_dirty);

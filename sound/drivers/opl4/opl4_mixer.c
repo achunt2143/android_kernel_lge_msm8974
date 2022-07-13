@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * OPL4 mixer functions
  * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * OPL4 mixer functions
+ * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "opl4_local.h"
@@ -60,7 +67,11 @@ static int snd_opl4_ctl_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 	return value != old_value;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_opl4_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_opl4_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "FM Playback Volume",

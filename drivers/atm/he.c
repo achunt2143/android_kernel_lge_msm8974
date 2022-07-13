@@ -71,7 +71,11 @@
 #include <linux/slab.h>
 #include <asm/io.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atmdev.h>
 #include <linux/atm.h>
@@ -116,8 +120,13 @@ static bool disable64;
 static short nvpibits = -1;
 static short nvcibits = -1;
 static short rx_skb_reserve = 16;
+<<<<<<< HEAD
 static bool irq_coalesce = 1;
 static bool sdh = 0;
+=======
+static bool irq_coalesce = true;
+static bool sdh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Read from EEPROM = 0000 0011b */
 static unsigned int readtab[] = {
@@ -161,7 +170,11 @@ static unsigned int clocktab[] = {
 	CLK_LOW
 };     
 
+<<<<<<< HEAD
 static struct atmdev_ops he_ops =
+=======
+static const struct atmdev_ops he_ops =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		he_open,
 	.close =	he_close,	
@@ -329,7 +342,10 @@ __find_vcc(struct he_dev *he_dev, unsigned cid)
 {
 	struct hlist_head *head;
 	struct atm_vcc *vcc;
+<<<<<<< HEAD
 	struct hlist_node *node;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *s;
 	short vpi;
 	int vci;
@@ -338,7 +354,11 @@ __find_vcc(struct he_dev *he_dev, unsigned cid)
 	vci = cid & ((1 << he_dev->vcibits) - 1);
 	head = &vcc_hash[vci & (VCC_HTABLE_SIZE -1)];
 
+<<<<<<< HEAD
 	sk_for_each(s, node, head) {
+=======
+	sk_for_each(s, head) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vcc = atm_sk(s);
 		if (vcc->dev == he_dev->atm_dev &&
 		    vcc->vci == vci && vcc->vpi == vpi &&
@@ -349,8 +369,13 @@ __find_vcc(struct he_dev *he_dev, unsigned cid)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_init_one(struct pci_dev *pci_dev, const struct pci_device_id *pci_ent)
+=======
+static int he_init_one(struct pci_dev *pci_dev,
+		       const struct pci_device_id *pci_ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atm_dev *atm_dev = NULL;
 	struct he_dev *he_dev = NULL;
@@ -360,7 +385,11 @@ he_init_one(struct pci_dev *pci_dev, const struct pci_device_id *pci_ent)
 
 	if (pci_enable_device(pci_dev))
 		return -EIO;
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci_dev, DMA_BIT_MASK(32)) != 0) {
+=======
+	if (dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(32)) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "he: no suitable dma available\n");
 		err = -EIO;
 		goto init_one_failure;
@@ -406,8 +435,12 @@ init_one_failure:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit
 he_remove_one (struct pci_dev *pci_dev)
+=======
+static void he_remove_one(struct pci_dev *pci_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atm_dev *atm_dev;
 	struct he_dev *he_dev;
@@ -421,7 +454,10 @@ he_remove_one (struct pci_dev *pci_dev)
 	atm_dev_deregister(atm_dev);
 	kfree(he_dev);
 
+<<<<<<< HEAD
 	pci_set_drvdata(pci_dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pci_dev);
 }
 
@@ -445,8 +481,12 @@ rate_to_atmf(unsigned rate)		/* cps to atm forum format */
 	return (NONZERO | (exp << 9) | (rate & 0x1ff));
 }
 
+<<<<<<< HEAD
 static void __devinit
 he_init_rx_lbfp0(struct he_dev *he_dev)
+=======
+static void he_init_rx_lbfp0(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned i, lbm_offset, lbufd_index, lbuf_addr, lbuf_count;
 	unsigned lbufs_per_row = he_dev->cells_per_row / he_dev->cells_per_lbuf;
@@ -476,8 +516,12 @@ he_init_rx_lbfp0(struct he_dev *he_dev)
 	he_writel(he_dev, he_dev->r0_numbuffs, RLBF0_C);
 }
 
+<<<<<<< HEAD
 static void __devinit
 he_init_rx_lbfp1(struct he_dev *he_dev)
+=======
+static void he_init_rx_lbfp1(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned i, lbm_offset, lbufd_index, lbuf_addr, lbuf_count;
 	unsigned lbufs_per_row = he_dev->cells_per_row / he_dev->cells_per_lbuf;
@@ -507,8 +551,12 @@ he_init_rx_lbfp1(struct he_dev *he_dev)
 	he_writel(he_dev, he_dev->r1_numbuffs, RLBF1_C);
 }
 
+<<<<<<< HEAD
 static void __devinit
 he_init_tx_lbfp(struct he_dev *he_dev)
+=======
+static void he_init_tx_lbfp(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned i, lbm_offset, lbufd_index, lbuf_addr, lbuf_count;
 	unsigned lbufs_per_row = he_dev->cells_per_row / he_dev->cells_per_lbuf;
@@ -537,17 +585,29 @@ he_init_tx_lbfp(struct he_dev *he_dev)
 	he_writel(he_dev, lbufd_index - 1, TLBF_T);
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_init_tpdrq(struct he_dev *he_dev)
 {
 	he_dev->tpdrq_base = pci_alloc_consistent(he_dev->pci_dev,
 		CONFIG_TPDRQ_SIZE * sizeof(struct he_tpdrq), &he_dev->tpdrq_phys);
+=======
+static int he_init_tpdrq(struct he_dev *he_dev)
+{
+	he_dev->tpdrq_base = dma_alloc_coherent(&he_dev->pci_dev->dev,
+						CONFIG_TPDRQ_SIZE * sizeof(struct he_tpdrq),
+						&he_dev->tpdrq_phys,
+						GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->tpdrq_base == NULL) {
 		hprintk("failed to alloc tpdrq\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(he_dev->tpdrq_base, 0,
 				CONFIG_TPDRQ_SIZE * sizeof(struct he_tpdrq));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	he_dev->tpdrq_tail = he_dev->tpdrq_base;
 	he_dev->tpdrq_head = he_dev->tpdrq_base;
@@ -559,8 +619,12 @@ he_init_tpdrq(struct he_dev *he_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit
 he_init_cs_block(struct he_dev *he_dev)
+=======
+static void he_init_cs_block(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned clock, rate, delta;
 	int reg;
@@ -655,8 +719,12 @@ he_init_cs_block(struct he_dev *he_dev)
 
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_init_cs_block_rcm(struct he_dev *he_dev)
+=======
+static int he_init_cs_block_rcm(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned (*rategrid)[16][16];
 	unsigned rate, delta;
@@ -727,7 +795,11 @@ he_init_cs_block_rcm(struct he_dev *he_dev)
 			instead of '/ 512', use '>> 9' to prevent a call
 			to divdu3 on x86 platforms
 		*/
+<<<<<<< HEAD
 		rate_cps = (unsigned long long) (1 << exp) * (man + 512) >> 9;
+=======
+		rate_cps = (unsigned long long) (1UL << exp) * (man + 512) >> 9;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rate_cps < 10)
 			rate_cps = 10;	/* 2.2.1 minimum payload rate is 10 cps */
@@ -748,6 +820,7 @@ he_init_cs_block_rcm(struct he_dev *he_dev)
 #else
 		/* this is pretty, but avoids _divdu3 and is mostly correct */
 		mult = he_dev->atm_dev->link_rate / ATM_OC3_PCR;
+<<<<<<< HEAD
 		if (rate_cps > (272 * mult))
 			buf = 4;
 		else if (rate_cps > (204 * mult))
@@ -755,6 +828,15 @@ he_init_cs_block_rcm(struct he_dev *he_dev)
 		else if (rate_cps > (136 * mult))
 			buf = 2;
 		else if (rate_cps > (68 * mult))
+=======
+		if (rate_cps > (272ULL * mult))
+			buf = 4;
+		else if (rate_cps > (204ULL * mult))
+			buf = 3;
+		else if (rate_cps > (136ULL * mult))
+			buf = 2;
+		else if (rate_cps > (68ULL * mult))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			buf = 1;
 		else
 			buf = 0;
@@ -776,8 +858,12 @@ he_init_cs_block_rcm(struct he_dev *he_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_init_group(struct he_dev *he_dev, int group)
+=======
+static int he_init_group(struct he_dev *he_dev, int group)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct he_buff *heb, *next;
 	dma_addr_t mapping;
@@ -790,43 +876,72 @@ he_init_group(struct he_dev *he_dev, int group)
 		  G0_RBPS_BS + (group * 32));
 
 	/* bitmap table */
+<<<<<<< HEAD
 	he_dev->rbpl_table = kmalloc(BITS_TO_LONGS(RBPL_TABLE_SIZE)
 				     * sizeof(unsigned long), GFP_KERNEL);
+=======
+	he_dev->rbpl_table = bitmap_zalloc(RBPL_TABLE_SIZE, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!he_dev->rbpl_table) {
 		hprintk("unable to allocate rbpl bitmap table\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	bitmap_zero(he_dev->rbpl_table, RBPL_TABLE_SIZE);
 
 	/* rbpl_virt 64-bit pointers */
 	he_dev->rbpl_virt = kmalloc(RBPL_TABLE_SIZE
 				    * sizeof(struct he_buff *), GFP_KERNEL);
+=======
+
+	/* rbpl_virt 64-bit pointers */
+	he_dev->rbpl_virt = kmalloc_array(RBPL_TABLE_SIZE,
+					  sizeof(*he_dev->rbpl_virt),
+					  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!he_dev->rbpl_virt) {
 		hprintk("unable to allocate rbpl virt table\n");
 		goto out_free_rbpl_table;
 	}
 
 	/* large buffer pool */
+<<<<<<< HEAD
 	he_dev->rbpl_pool = pci_pool_create("rbpl", he_dev->pci_dev,
+=======
+	he_dev->rbpl_pool = dma_pool_create("rbpl", &he_dev->pci_dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    CONFIG_RBPL_BUFSIZE, 64, 0);
 	if (he_dev->rbpl_pool == NULL) {
 		hprintk("unable to create rbpl pool\n");
 		goto out_free_rbpl_virt;
 	}
 
+<<<<<<< HEAD
 	he_dev->rbpl_base = pci_alloc_consistent(he_dev->pci_dev,
 		CONFIG_RBPL_SIZE * sizeof(struct he_rbp), &he_dev->rbpl_phys);
+=======
+	he_dev->rbpl_base = dma_alloc_coherent(&he_dev->pci_dev->dev,
+					       CONFIG_RBPL_SIZE * sizeof(struct he_rbp),
+					       &he_dev->rbpl_phys, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->rbpl_base == NULL) {
 		hprintk("failed to alloc rbpl_base\n");
 		goto out_destroy_rbpl_pool;
 	}
+<<<<<<< HEAD
 	memset(he_dev->rbpl_base, 0, CONFIG_RBPL_SIZE * sizeof(struct he_rbp));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&he_dev->rbpl_outstanding);
 
 	for (i = 0; i < CONFIG_RBPL_SIZE; ++i) {
 
+<<<<<<< HEAD
 		heb = pci_pool_alloc(he_dev->rbpl_pool, GFP_KERNEL|GFP_DMA, &mapping);
+=======
+		heb = dma_pool_alloc(he_dev->rbpl_pool, GFP_KERNEL, &mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!heb)
 			goto out_free_rbpl;
 		heb->mapping = mapping;
@@ -853,13 +968,22 @@ he_init_group(struct he_dev *he_dev, int group)
 
 	/* rx buffer ready queue */
 
+<<<<<<< HEAD
 	he_dev->rbrq_base = pci_alloc_consistent(he_dev->pci_dev,
 		CONFIG_RBRQ_SIZE * sizeof(struct he_rbrq), &he_dev->rbrq_phys);
+=======
+	he_dev->rbrq_base = dma_alloc_coherent(&he_dev->pci_dev->dev,
+					       CONFIG_RBRQ_SIZE * sizeof(struct he_rbrq),
+					       &he_dev->rbrq_phys, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->rbrq_base == NULL) {
 		hprintk("failed to allocate rbrq\n");
 		goto out_free_rbpl;
 	}
+<<<<<<< HEAD
 	memset(he_dev->rbrq_base, 0, CONFIG_RBRQ_SIZE * sizeof(struct he_rbrq));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	he_dev->rbrq_head = he_dev->rbrq_base;
 	he_writel(he_dev, he_dev->rbrq_phys, G0_RBRQ_ST + (group * 16));
@@ -877,13 +1001,22 @@ he_init_group(struct he_dev *he_dev, int group)
 
 	/* tx buffer ready queue */
 
+<<<<<<< HEAD
 	he_dev->tbrq_base = pci_alloc_consistent(he_dev->pci_dev,
 		CONFIG_TBRQ_SIZE * sizeof(struct he_tbrq), &he_dev->tbrq_phys);
+=======
+	he_dev->tbrq_base = dma_alloc_coherent(&he_dev->pci_dev->dev,
+					       CONFIG_TBRQ_SIZE * sizeof(struct he_tbrq),
+					       &he_dev->tbrq_phys, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->tbrq_base == NULL) {
 		hprintk("failed to allocate tbrq\n");
 		goto out_free_rbpq_base;
 	}
+<<<<<<< HEAD
 	memset(he_dev->tbrq_base, 0, CONFIG_TBRQ_SIZE * sizeof(struct he_tbrq));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	he_dev->tbrq_head = he_dev->tbrq_base;
 
@@ -895,6 +1028,7 @@ he_init_group(struct he_dev *he_dev, int group)
 	return 0;
 
 out_free_rbpq_base:
+<<<<<<< HEAD
 	pci_free_consistent(he_dev->pci_dev, CONFIG_RBRQ_SIZE *
 			sizeof(struct he_rbrq), he_dev->rbrq_base,
 			he_dev->rbrq_phys);
@@ -911,20 +1045,48 @@ out_free_rbpl_virt:
 	kfree(he_dev->rbpl_virt);
 out_free_rbpl_table:
 	kfree(he_dev->rbpl_table);
+=======
+	dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_RBRQ_SIZE *
+			  sizeof(struct he_rbrq), he_dev->rbrq_base,
+			  he_dev->rbrq_phys);
+out_free_rbpl:
+	list_for_each_entry_safe(heb, next, &he_dev->rbpl_outstanding, entry)
+		dma_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+
+	dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_RBPL_SIZE *
+			  sizeof(struct he_rbp), he_dev->rbpl_base,
+			  he_dev->rbpl_phys);
+out_destroy_rbpl_pool:
+	dma_pool_destroy(he_dev->rbpl_pool);
+out_free_rbpl_virt:
+	kfree(he_dev->rbpl_virt);
+out_free_rbpl_table:
+	bitmap_free(he_dev->rbpl_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_init_irq(struct he_dev *he_dev)
+=======
+static int he_init_irq(struct he_dev *he_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	/* 2.9.3.5  tail offset for each interrupt queue is located after the
 		    end of the interrupt queue */
 
+<<<<<<< HEAD
 	he_dev->irq_base = pci_alloc_consistent(he_dev->pci_dev,
 			(CONFIG_IRQ_SIZE+1) * sizeof(struct he_irq), &he_dev->irq_phys);
+=======
+	he_dev->irq_base = dma_alloc_coherent(&he_dev->pci_dev->dev,
+					      (CONFIG_IRQ_SIZE + 1) * sizeof(struct he_irq),
+					      &he_dev->irq_phys, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->irq_base == NULL) {
 		hprintk("failed to allocate irq\n");
 		return -ENOMEM;
@@ -978,8 +1140,12 @@ he_init_irq(struct he_dev *he_dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit
 he_start(struct atm_dev *dev)
+=======
+static int he_start(struct atm_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct he_dev *he_dev;
 	struct pci_dev *pci_dev;
@@ -1066,7 +1232,11 @@ he_start(struct atm_dev *dev)
 	he_writel(he_dev, 0x0, RESET_CNTL);
 	he_writel(he_dev, 0xff, RESET_CNTL);
 
+<<<<<<< HEAD
 	udelay(16*1000);	/* 16 ms */
+=======
+	msleep(16);	/* 16 ms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = he_readl(he_dev, RESET_CNTL);
 	if ((status & BOARD_RST_STATUS) == 0) {
 		hprintk("reset failed\n");
@@ -1099,6 +1269,7 @@ he_start(struct atm_dev *dev)
 	for (i = 0; i < 6; ++i)
 		dev->esi[i] = read_prom_byte(he_dev, MAC_ADDR + i);
 
+<<<<<<< HEAD
 	hprintk("%s%s, %x:%x:%x:%x:%x:%x\n",
 				he_dev->prod_id,
 					he_dev->media & 0x40 ? "SM" : "MM",
@@ -1108,6 +1279,10 @@ he_start(struct atm_dev *dev)
 						dev->esi[3],
 						dev->esi[4],
 						dev->esi[5]);
+=======
+	hprintk("%s%s, %pM\n", he_dev->prod_id,
+		he_dev->media & 0x40 ? "SM" : "MM", dev->esi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	he_dev->atm_dev->link_rate = he_is622(he_dev) ?
 						ATM_OC12_PCR : ATM_OC3_PCR;
 
@@ -1439,10 +1614,17 @@ he_start(struct atm_dev *dev)
 
 	he_init_tpdrq(he_dev);
 
+<<<<<<< HEAD
 	he_dev->tpd_pool = pci_pool_create("tpd", he_dev->pci_dev,
 		sizeof(struct he_tpd), TPD_ALIGNMENT, 0);
 	if (he_dev->tpd_pool == NULL) {
 		hprintk("unable to create tpd pci_pool\n");
+=======
+	he_dev->tpd_pool = dma_pool_create("tpd", &he_dev->pci_dev->dev,
+					   sizeof(struct he_tpd), TPD_ALIGNMENT, 0);
+	if (he_dev->tpd_pool == NULL) {
+		hprintk("unable to create tpd dma_pool\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;         
 	}
 
@@ -1479,13 +1661,22 @@ he_start(struct atm_dev *dev)
 
 	/* host status page */
 
+<<<<<<< HEAD
 	he_dev->hsp = pci_alloc_consistent(he_dev->pci_dev,
 				sizeof(struct he_hsp), &he_dev->hsp_phys);
+=======
+	he_dev->hsp = dma_alloc_coherent(&he_dev->pci_dev->dev,
+					 sizeof(struct he_hsp),
+					 &he_dev->hsp_phys, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (he_dev->hsp == NULL) {
 		hprintk("failed to allocate host status page\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(he_dev->hsp, 0, sizeof(struct he_hsp));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	he_writel(he_dev, he_dev->hsp_phys, HSP_BA);
 
 	/* initialize framer */
@@ -1578,6 +1769,7 @@ he_stop(struct he_dev *he_dev)
 		free_irq(he_dev->irq, he_dev);
 
 	if (he_dev->irq_base)
+<<<<<<< HEAD
 		pci_free_consistent(he_dev->pci_dev, (CONFIG_IRQ_SIZE+1)
 			* sizeof(struct he_irq), he_dev->irq_base, he_dev->irq_phys);
 
@@ -1613,6 +1805,40 @@ he_stop(struct he_dev *he_dev)
 
 	if (he_dev->tpd_pool)
 		pci_pool_destroy(he_dev->tpd_pool);
+=======
+		dma_free_coherent(&he_dev->pci_dev->dev, (CONFIG_IRQ_SIZE + 1)
+				  * sizeof(struct he_irq), he_dev->irq_base, he_dev->irq_phys);
+
+	if (he_dev->hsp)
+		dma_free_coherent(&he_dev->pci_dev->dev, sizeof(struct he_hsp),
+				  he_dev->hsp, he_dev->hsp_phys);
+
+	if (he_dev->rbpl_base) {
+		list_for_each_entry_safe(heb, next, &he_dev->rbpl_outstanding, entry)
+			dma_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+
+		dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_RBPL_SIZE
+				  * sizeof(struct he_rbp), he_dev->rbpl_base, he_dev->rbpl_phys);
+	}
+
+	kfree(he_dev->rbpl_virt);
+	bitmap_free(he_dev->rbpl_table);
+	dma_pool_destroy(he_dev->rbpl_pool);
+
+	if (he_dev->rbrq_base)
+		dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_RBRQ_SIZE * sizeof(struct he_rbrq),
+				  he_dev->rbrq_base, he_dev->rbrq_phys);
+
+	if (he_dev->tbrq_base)
+		dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_TBRQ_SIZE * sizeof(struct he_tbrq),
+				  he_dev->tbrq_base, he_dev->tbrq_phys);
+
+	if (he_dev->tpdrq_base)
+		dma_free_coherent(&he_dev->pci_dev->dev, CONFIG_TBRQ_SIZE * sizeof(struct he_tbrq),
+				  he_dev->tpdrq_base, he_dev->tpdrq_phys);
+
+	dma_pool_destroy(he_dev->tpd_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (he_dev->pci_dev) {
 		pci_read_config_word(he_dev->pci_dev, PCI_COMMAND, &command);
@@ -1630,7 +1856,11 @@ __alloc_tpd(struct he_dev *he_dev)
 	struct he_tpd *tpd;
 	dma_addr_t mapping;
 
+<<<<<<< HEAD
 	tpd = pci_pool_alloc(he_dev->tpd_pool, GFP_ATOMIC|GFP_DMA, &mapping);
+=======
+	tpd = dma_pool_alloc(he_dev->tpd_pool, GFP_ATOMIC, &mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpd == NULL)
 		return NULL;
 			
@@ -1701,7 +1931,11 @@ he_service_rbrq(struct he_dev *he_dev, int group)
 			if (!RBRQ_HBUF_ERR(he_dev->rbrq_head)) {
 				clear_bit(i, he_dev->rbpl_table);
 				list_del(&heb->entry);
+<<<<<<< HEAD
 				pci_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+=======
+				dma_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 					
 			goto next_rbrq_entry;
@@ -1709,7 +1943,11 @@ he_service_rbrq(struct he_dev *he_dev, int group)
 
 		if (RBRQ_HBUF_ERR(he_dev->rbrq_head)) {
 			hprintk("HBUF_ERR!  (cid 0x%x)\n", cid);
+<<<<<<< HEAD
 				atomic_inc(&vcc->stats->rx_drop);
+=======
+			atomic_inc(&vcc->stats->rx_drop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto return_host_buffers;
 		}
 
@@ -1753,7 +1991,11 @@ he_service_rbrq(struct he_dev *he_dev, int group)
 		__net_timestamp(skb);
 
 		list_for_each_entry(heb, &he_vcc->buffers, entry)
+<<<<<<< HEAD
 			memcpy(skb_put(skb, heb->len), &heb->data, heb->len);
+=======
+			skb_put_data(skb, &heb->data, heb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (vcc->qos.aal) {
 			case ATM_AAL0:
@@ -1794,7 +2036,11 @@ return_host_buffers:
 		++pdus_assembled;
 
 		list_for_each_entry_safe(heb, next, &he_vcc->buffers, entry)
+<<<<<<< HEAD
 			pci_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+=======
+			dma_pool_free(he_dev->rbpl_pool, heb, heb->mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&he_vcc->buffers);
 		he_vcc->pdu_len = 0;
 
@@ -1863,10 +2109,17 @@ he_service_tbrq(struct he_dev *he_dev, int group)
 
 		for (slot = 0; slot < TPD_MAXIOV; ++slot) {
 			if (tpd->iovec[slot].addr)
+<<<<<<< HEAD
 				pci_unmap_single(he_dev->pci_dev,
 					tpd->iovec[slot].addr,
 					tpd->iovec[slot].len & TPD_LEN_MASK,
 							PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&he_dev->pci_dev->dev,
+					tpd->iovec[slot].addr,
+					tpd->iovec[slot].len & TPD_LEN_MASK,
+							DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (tpd->iovec[slot].len & TPD_LST)
 				break;
 				
@@ -1881,7 +2134,11 @@ he_service_tbrq(struct he_dev *he_dev, int group)
 
 next_tbrq_entry:
 		if (tpd)
+<<<<<<< HEAD
 			pci_pool_free(he_dev->tpd_pool, tpd, TPD_ADDR(tpd->status));
+=======
+			dma_pool_free(he_dev->tpd_pool, tpd, TPD_ADDR(tpd->status));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		he_dev->tbrq_head = (struct he_tbrq *)
 				((unsigned long) he_dev->tbrq_base |
 					TBRQ_MASK(he_dev->tbrq_head + 1));
@@ -1925,7 +2182,11 @@ he_service_rbpl(struct he_dev *he_dev, int group)
 		}
 		he_dev->rbpl_hint = i + 1;
 
+<<<<<<< HEAD
 		heb = pci_pool_alloc(he_dev->rbpl_pool, GFP_ATOMIC|GFP_DMA, &mapping);
+=======
+		heb = dma_pool_alloc(he_dev->rbpl_pool, GFP_ATOMIC, &mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!heb)
 			break;
 		heb->mapping = mapping;
@@ -1963,14 +2224,22 @@ he_tasklet(unsigned long data)
 		switch (type) {
 			case ITYPE_RBRQ_THRESH:
 				HPRINTK("rbrq%d threshold\n", group);
+<<<<<<< HEAD
 				/* fall through */
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ITYPE_RBRQ_TIMER:
 				if (he_service_rbrq(he_dev, group))
 					he_service_rbpl(he_dev, group);
 				break;
 			case ITYPE_TBRQ_THRESH:
 				HPRINTK("tbrq%d threshold\n", group);
+<<<<<<< HEAD
 				/* fall through */
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ITYPE_TPD_COMPLETE:
 				he_service_tbrq(he_dev, group);
 				break;
@@ -2104,10 +2373,17 @@ __enqueue_tpd(struct he_dev *he_dev, struct he_tpd *tpd, unsigned cid)
 			 */
 			for (slot = 0; slot < TPD_MAXIOV; ++slot) {
 				if (tpd->iovec[slot].addr)
+<<<<<<< HEAD
 					pci_unmap_single(he_dev->pci_dev,
 						tpd->iovec[slot].addr,
 						tpd->iovec[slot].len & TPD_LEN_MASK,
 								PCI_DMA_TODEVICE);
+=======
+					dma_unmap_single(&he_dev->pci_dev->dev,
+						tpd->iovec[slot].addr,
+						tpd->iovec[slot].len & TPD_LEN_MASK,
+								DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (tpd->skb) {
 				if (tpd->vcc->pop)
@@ -2116,7 +2392,11 @@ __enqueue_tpd(struct he_dev *he_dev, struct he_tpd *tpd, unsigned cid)
 					dev_kfree_skb_any(tpd->skb);
 				atomic_inc(&tpd->vcc->stats->tx_err);
 			}
+<<<<<<< HEAD
 			pci_pool_free(he_dev->tpd_pool, tpd, TPD_ADDR(tpd->status));
+=======
+			dma_pool_free(he_dev->tpd_pool, tpd, TPD_ADDR(tpd->status));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -2413,7 +2693,11 @@ he_close(struct atm_vcc *vcc)
 		 * TBRQ, the host issues the close command to the adapter.
 		 */
 
+<<<<<<< HEAD
 		while (((tx_inuse = atomic_read(&sk_atm(vcc)->sk_wmem_alloc)) > 1) &&
+=======
+		while (((tx_inuse = refcount_read(&sk_atm(vcc)->sk_wmem_alloc)) > 1) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (retry < MAX_RETRY)) {
 			msleep(sleep);
 			if (sleep < 250)
@@ -2570,8 +2854,13 @@ he_send(struct atm_vcc *vcc, struct sk_buff *skb)
 	}
 
 #ifdef USE_SCATTERGATHER
+<<<<<<< HEAD
 	tpd->iovec[slot].addr = pci_map_single(he_dev->pci_dev, skb->data,
 				skb_headlen(skb), PCI_DMA_TODEVICE);
+=======
+	tpd->iovec[slot].addr = dma_map_single(&he_dev->pci_dev->dev, skb->data,
+				skb_headlen(skb), DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpd->iovec[slot].len = skb_headlen(skb);
 	++slot;
 
@@ -2599,17 +2888,27 @@ he_send(struct atm_vcc *vcc, struct sk_buff *skb)
 			slot = 0;
 		}
 
+<<<<<<< HEAD
 		tpd->iovec[slot].addr = pci_map_single(he_dev->pci_dev,
 			(void *) page_address(frag->page) + frag->page_offset,
 				frag->size, PCI_DMA_TODEVICE);
 		tpd->iovec[slot].len = frag->size;
+=======
+		tpd->iovec[slot].addr = skb_frag_dma_map(&he_dev->pci_dev->dev,
+				frag, 0, skb_frag_size(frag), DMA_TO_DEVICE);
+		tpd->iovec[slot].len = skb_frag_size(frag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++slot;
 
 	}
 
 	tpd->iovec[slot - 1].len |= TPD_LST;
 #else
+<<<<<<< HEAD
 	tpd->address0 = pci_map_single(he_dev->pci_dev, skb->data, skb->len, PCI_DMA_TODEVICE);
+=======
+	tpd->address0 = dma_map_single(&he_dev->pci_dev->dev, skb->data, skb->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpd->length0 = skb->len | TPD_LST;
 #endif
 	tpd->status |= TPD_INT;
@@ -2869,7 +3168,11 @@ MODULE_PARM_DESC(irq_coalesce, "use interrupt coalescing (default 1)");
 module_param(sdh, bool, 0);
 MODULE_PARM_DESC(sdh, "use SDH framing (default 0)");
 
+<<<<<<< HEAD
 static struct pci_device_id he_pci_tbl[] = {
+=======
+static const struct pci_device_id he_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(FORE, PCI_DEVICE_ID_FORE_HE), 0 },
 	{ 0, }
 };
@@ -2879,6 +3182,7 @@ MODULE_DEVICE_TABLE(pci, he_pci_tbl);
 static struct pci_driver he_driver = {
 	.name =		"he",
 	.probe =	he_init_one,
+<<<<<<< HEAD
 	.remove =	__devexit_p(he_remove_one),
 	.id_table =	he_pci_tbl,
 };
@@ -2895,3 +3199,10 @@ static void __exit he_cleanup(void)
 
 module_init(he_init);
 module_exit(he_cleanup);
+=======
+	.remove =	he_remove_one,
+	.id_table =	he_pci_tbl,
+};
+
+module_pci_driver(he_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

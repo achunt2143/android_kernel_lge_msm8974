@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2009 Matt Fleming <matt@console-pimps.org>
  *
@@ -5,6 +6,11 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright (C) 2009 Matt Fleming <matt@console-pimps.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_SH_DWARF_H
 #define __ASM_SH_DWARF_H

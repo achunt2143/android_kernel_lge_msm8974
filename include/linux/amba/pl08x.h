@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/amba/pl08x.h - ARM PrimeCell DMA Controller driver
  *
  * Copyright (C) 2005 ARM Ltd
  * Copyright (C) 2010 ST-Ericsson SA
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pl08x information required by platform code
  *
  * Please credit ARM.com
@@ -21,8 +28,14 @@
 #include <linux/dmaengine.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 struct pl08x_lli;
 struct pl08x_driver_data;
+=======
+struct pl08x_driver_data;
+struct pl08x_phy_chan;
+struct pl08x_txd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bitmasks for selecting AHB ports for DMA transfers */
 enum {
@@ -46,20 +59,27 @@ enum {
  * devices with static assignments
  * @muxval: a number usually used to poke into some mux regiser to
  * mux in the signal to this channel
+<<<<<<< HEAD
  * @cctl_opt: default options for the channel control register
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr: source/target address in physical memory for this DMA channel,
  * can be the address of a FIFO register for burst requests for example.
  * This can be left undefined if the PrimeCell API is used for configuring
  * this.
+<<<<<<< HEAD
  * @circular_buffer: whether the buffer passed in is circular and
  * shall simply be looped round round (like a record baby round
  * round round round)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @single: the device connected to this channel will request single DMA
  * transfers, not bursts. (Bursts are default.)
  * @periph_buses: the device connected to this channel is accessible via
  * these buses (use PL08X_AHB1 | PL08X_AHB2).
  */
 struct pl08x_channel_data {
+<<<<<<< HEAD
 	char *bus_id;
 	int min_signal;
 	int max_signal;
@@ -67,10 +87,18 @@ struct pl08x_channel_data {
 	u32 cctl;
 	dma_addr_t addr;
 	bool circular_buffer;
+=======
+	const char *bus_id;
+	int min_signal;
+	int max_signal;
+	u32 muxval;
+	dma_addr_t addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool single;
 	u8 periph_buses;
 };
 
+<<<<<<< HEAD
 /**
  * Struct pl08x_bus_data - information of source or destination
  * busses for a transfer
@@ -204,6 +232,23 @@ struct pl08x_dma_chan {
 	bool slave;
 	bool device_fc;
 	struct pl08x_txd *waiting;
+=======
+enum pl08x_burst_size {
+	PL08X_BURST_SZ_1,
+	PL08X_BURST_SZ_4,
+	PL08X_BURST_SZ_8,
+	PL08X_BURST_SZ_16,
+	PL08X_BURST_SZ_32,
+	PL08X_BURST_SZ_64,
+	PL08X_BURST_SZ_128,
+	PL08X_BURST_SZ_256,
+};
+
+enum pl08x_bus_width {
+	PL08X_BUS_WIDTH_8_BITS,
+	PL08X_BUS_WIDTH_16_BITS,
+	PL08X_BUS_WIDTH_32_BITS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -213,6 +258,7 @@ struct pl08x_dma_chan {
  * platform, all inclusive, including multiplexed channels. The available
  * physical channels will be multiplexed around these signals as they are
  * requested, just enumerate all possible channels.
+<<<<<<< HEAD
  * @get_signal: request a physical signal to be used for a DMA transfer
  * immediately: if there is some multiplexing or similar blocking the use
  * of the channel the transfer can be denied by returning less than zero,
@@ -230,6 +276,37 @@ struct pl08x_platform_data {
 	void (*put_signal)(struct pl08x_dma_chan *);
 	u8 lli_buses;
 	u8 mem_buses;
+=======
+ * @num_slave_channels: number of elements in the slave channel array
+ * @memcpy_burst_size: the appropriate burst size for memcpy operations
+ * @memcpy_bus_width: memory bus width
+ * @memcpy_prot_buff: whether memcpy DMA is bufferable
+ * @memcpy_prot_cache: whether memcpy DMA is cacheable
+ * @get_xfer_signal: request a physical signal to be used for a DMA transfer
+ * immediately: if there is some multiplexing or similar blocking the use
+ * of the channel the transfer can be denied by returning less than zero,
+ * else it returns the allocated signal number
+ * @put_xfer_signal: indicate to the platform that this physical signal is not
+ * running any DMA transfer and multiplexing can be recycled
+ * @lli_buses: buses which LLIs can be fetched from: PL08X_AHB1 | PL08X_AHB2
+ * @mem_buses: buses which memory can be accessed from: PL08X_AHB1 | PL08X_AHB2
+ * @slave_map: DMA slave matching table
+ * @slave_map_len: number of elements in @slave_map
+ */
+struct pl08x_platform_data {
+	struct pl08x_channel_data *slave_channels;
+	unsigned int num_slave_channels;
+	enum pl08x_burst_size memcpy_burst_size;
+	enum pl08x_bus_width memcpy_bus_width;
+	bool memcpy_prot_buff;
+	bool memcpy_prot_cache;
+	int (*get_xfer_signal)(const struct pl08x_channel_data *);
+	void (*put_xfer_signal)(const struct pl08x_channel_data *, int);
+	u8 lli_buses;
+	u8 mem_buses;
+	const struct dma_slave_map *slave_map;
+	int slave_map_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_AMBA_PL08X

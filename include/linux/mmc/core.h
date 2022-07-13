@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 /*
  *  linux/include/linux/mmc/core.h
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *  linux/include/linux/mmc/core.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_MMC_CORE_H
 #define LINUX_MMC_CORE_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/interrupt.h>
 #include <linux/completion.h>
@@ -16,15 +23,41 @@ struct request;
 struct mmc_data;
 struct mmc_request;
 
+=======
+#include <linux/completion.h>
+#include <linux/types.h>
+
+struct mmc_data;
+struct mmc_request;
+
+enum mmc_blk_status {
+	MMC_BLK_SUCCESS = 0,
+	MMC_BLK_PARTIAL,
+	MMC_BLK_CMD_ERR,
+	MMC_BLK_RETRY,
+	MMC_BLK_ABORT,
+	MMC_BLK_DATA_ERR,
+	MMC_BLK_ECC_ERR,
+	MMC_BLK_NOMEDIUM,
+	MMC_BLK_NEW_REQUEST,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mmc_command {
 	u32			opcode;
 	u32			arg;
 #define MMC_CMD23_ARG_REL_WR	(1 << 31)
+<<<<<<< HEAD
 #define MMC_CMD23_ARG_PACKED	((0 << 31) | (1 << 30))
 #define MMC_CMD23_ARG_TAG_REQ	(1 << 29)
 	u32			resp[4];
 	unsigned int		flags;		/* expected response type */
 #endif /* __KERNEL__ */
+=======
+#define MMC_CMD23_ARG_TAG_REQ	(1 << 29)
+	u32			resp[4];
+	unsigned int		flags;		/* expected response type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MMC_RSP_PRESENT	(1 << 0)
 #define MMC_RSP_136	(1 << 1)		/* 136 bit response */
 #define MMC_RSP_CRC	(1 << 2)		/* expect valid crc */
@@ -57,7 +90,13 @@ struct mmc_command {
 #define MMC_RSP_R6	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
 #define MMC_RSP_R7	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+/* Can be used by core to poll after switch to MMC HS mode */
+#define MMC_RSP_R1_NO_CRC	(MMC_RSP_PRESENT|MMC_RSP_OPCODE)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mmc_resp_type(cmd)	((cmd)->flags & (MMC_RSP_PRESENT|MMC_RSP_136|MMC_RSP_CRC|MMC_RSP_BUSY|MMC_RSP_OPCODE))
 
 /*
@@ -82,7 +121,11 @@ struct mmc_command {
 #define mmc_cmd_type(cmd)	((cmd)->flags & MMC_CMD_MASK)
 
 	unsigned int		retries;	/* max number of retries */
+<<<<<<< HEAD
 	unsigned int		error;		/* command error */
+=======
+	int			error;		/* command error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Standard errno values are used for errors, but some have specific
@@ -98,10 +141,14 @@ struct mmc_command {
  *              actively failing requests
  */
 
+<<<<<<< HEAD
 	unsigned int		cmd_timeout_ms;	/* in milliseconds */
 	/* Set this flag only for commands which can be HPIed */
 	bool			ignore_timeout;
 
+=======
+	unsigned int		busy_timeout;	/* busy detect timeout in ms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data		*data;		/* data segment associated with cmd */
 	struct mmc_request	*mrq;		/* associated request */
 };
@@ -111,12 +158,27 @@ struct mmc_data {
 	unsigned int		timeout_clks;	/* data timeout (in clocks) */
 	unsigned int		blksz;		/* data block size */
 	unsigned int		blocks;		/* number of blocks */
+<<<<<<< HEAD
 	unsigned int		error;		/* data error */
 	unsigned int		flags;
 
 #define MMC_DATA_WRITE	(1 << 8)
 #define MMC_DATA_READ	(1 << 9)
 #define MMC_DATA_STREAM	(1 << 10)
+=======
+	unsigned int		blk_addr;	/* block address */
+	int			error;		/* data error */
+	unsigned int		flags;
+
+#define MMC_DATA_WRITE		BIT(8)
+#define MMC_DATA_READ		BIT(9)
+/* Extra flags used by CQE */
+#define MMC_DATA_QBR		BIT(10)		/* CQE queue barrier*/
+#define MMC_DATA_PRIO		BIT(11)		/* CQE high priority */
+#define MMC_DATA_REL_WR		BIT(12)		/* Reliable write */
+#define MMC_DATA_DAT_TAG	BIT(13)		/* Tag request */
+#define MMC_DATA_FORCED_PRG	BIT(14)		/* Forced programming */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int		bytes_xfered;
 
@@ -124,9 +186,15 @@ struct mmc_data {
 	struct mmc_request	*mrq;		/* associated request */
 
 	unsigned int		sg_len;		/* size of scatter list */
+<<<<<<< HEAD
 	struct scatterlist	*sg;		/* I/O scatter list */
 	s32			host_cookie;	/* host private data */
 	bool			fault_injected; /* fault injected */
+=======
+	int			sg_count;	/* mapped sg entries */
+	struct scatterlist	*sg;		/* I/O scatter list */
+	s32			host_cookie;	/* host private data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mmc_host;
@@ -137,6 +205,7 @@ struct mmc_request {
 	struct mmc_command	*stop;
 
 	struct completion	completion;
+<<<<<<< HEAD
 	void			(*done)(struct mmc_request *);/* completion function */
 	struct mmc_host		*host;
 };
@@ -223,4 +292,37 @@ static inline void mmc_claim_host(struct mmc_host *host)
 extern u32 mmc_vddrange_to_ocrmask(int vdd_min, int vdd_max);
 
 #endif /* __KERNEL__ */
+=======
+	struct completion	cmd_completion;
+	void			(*done)(struct mmc_request *);/* completion function */
+	/*
+	 * Notify uppers layers (e.g. mmc block driver) that recovery is needed
+	 * due to an error associated with the mmc_request. Currently used only
+	 * by CQE.
+	 */
+	void			(*recovery_notifier)(struct mmc_request *);
+	struct mmc_host		*host;
+
+	/* Allow other commands during this ongoing data transfer or busy wait */
+	bool			cap_cmd_during_tfr;
+
+	int			tag;
+
+#ifdef CONFIG_MMC_CRYPTO
+	const struct bio_crypt_ctx *crypto_ctx;
+	int			crypto_key_slot;
+#endif
+};
+
+struct mmc_card;
+
+void mmc_wait_for_req(struct mmc_host *host, struct mmc_request *mrq);
+int mmc_wait_for_cmd(struct mmc_host *host, struct mmc_command *cmd,
+		int retries);
+
+int mmc_hw_reset(struct mmc_card *card);
+int mmc_sw_reset(struct mmc_card *card);
+void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_MMC_CORE_H */

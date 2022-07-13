@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ARCH_S390_KERNEL_AUDIT_H
 #define __ARCH_S390_KERNEL_AUDIT_H
 

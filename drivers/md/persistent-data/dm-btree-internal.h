@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -34,6 +38,7 @@ struct node_header {
 	__le32 max_entries;
 	__le32 value_size;
 	__le32 padding;
+<<<<<<< HEAD
 } __packed;
 
 struct btree_node {
@@ -42,11 +47,31 @@ struct btree_node {
 } __packed;
 
 
+=======
+} __packed __aligned(8);
+
+struct btree_node {
+	struct node_header header;
+	__le64 keys[];
+} __packed __aligned(8);
+
+
+/*
+ * Locks a block using the btree node validator.
+ */
+int bn_read_lock(struct dm_btree_info *info, dm_block_t b,
+		 struct dm_block **result);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
 		  struct dm_btree_value_type *vt);
 
 int new_block(struct dm_btree_info *info, struct dm_block **result);
+<<<<<<< HEAD
 int unlock_block(struct dm_btree_info *info, struct dm_block *b);
+=======
+void unlock_block(struct dm_btree_info *info, struct dm_block *b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Spines keep track of the rolling locks.  There are 2 variants, read-only
@@ -62,8 +87,14 @@ struct ro_spine {
 };
 
 void init_ro_spine(struct ro_spine *s, struct dm_btree_info *info);
+<<<<<<< HEAD
 int exit_ro_spine(struct ro_spine *s);
 int ro_step(struct ro_spine *s, dm_block_t new_child);
+=======
+void exit_ro_spine(struct ro_spine *s);
+int ro_step(struct ro_spine *s, dm_block_t new_child);
+void ro_pop(struct ro_spine *s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct btree_node *ro_node(struct ro_spine *s);
 
 struct shadow_spine {
@@ -76,7 +107,11 @@ struct shadow_spine {
 };
 
 void init_shadow_spine(struct shadow_spine *s, struct dm_btree_info *info);
+<<<<<<< HEAD
 int exit_shadow_spine(struct shadow_spine *s);
+=======
+void exit_shadow_spine(struct shadow_spine *s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int shadow_step(struct shadow_spine *s, dm_block_t b,
 		struct dm_btree_value_type *vt);
@@ -93,7 +128,11 @@ struct dm_block *shadow_parent(struct shadow_spine *s);
 
 int shadow_has_parent(struct shadow_spine *s);
 
+<<<<<<< HEAD
 int shadow_root(struct shadow_spine *s);
+=======
+dm_block_t shadow_root(struct shadow_spine *s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Some inlines.
@@ -111,6 +150,10 @@ static inline void *value_base(struct btree_node *n)
 static inline void *value_ptr(struct btree_node *n, uint32_t index)
 {
 	uint32_t value_size = le32_to_cpu(n->header.value_size);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return value_base(n) + (value_size * index);
 }
 
@@ -137,4 +180,20 @@ extern struct dm_block_validator btree_node_validator;
 extern void init_le64_type(struct dm_transaction_manager *tm,
 			   struct dm_btree_value_type *vt);
 
+<<<<<<< HEAD
+=======
+/*
+ * This returns a shadowed btree leaf that you may modify.  In practise
+ * this means overwrites only, since an insert could cause a node to
+ * be split.  Useful if you need access to the old value to calculate the
+ * new one.
+ *
+ * This only works with single level btrees.  The given key must be present in
+ * the tree, otherwise -EINVAL will be returned.
+ */
+int btree_get_overwrite_leaf(struct dm_btree_info *info, dm_block_t root,
+			     uint64_t key, int *index,
+			     dm_block_t *new_root, struct dm_block **leaf);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* DM_BTREE_INTERNAL_H */

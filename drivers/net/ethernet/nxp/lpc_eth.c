@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/nxp/lpc_eth.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2010 NXP Semiconductors
  * Copyright (C) 2012 Roland Stigge <stigge@antcom.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +20,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -52,6 +60,22 @@
 #define MODNAME "lpc-eth"
 #define DRV_VERSION "1.00"
 #define PHYDEF_ADDR 0x00
+=======
+#include <linux/clk.h>
+#include <linux/crc32.h>
+#include <linux/etherdevice.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_mdio.h>
+#include <linux/of_net.h>
+#include <linux/phy.h>
+#include <linux/platform_device.h>
+#include <linux/spinlock.h>
+#include <linux/soc/nxp/lpc32xx-misc.h>
+
+#define MODNAME "lpc-eth"
+#define DRV_VERSION "1.00"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ENET_MAXF_SIZE 1536
 #define ENET_RX_DESC 48
@@ -298,7 +322,11 @@
 #define LPC_FCCR_MIRRORCOUNTERCURRENT(n)	((n) & 0xFFFF)
 
 /*
+<<<<<<< HEAD
  * rxfliterctrl, rxfilterwolstatus, and rxfilterwolclear shared
+=======
+ * rxfilterctrl, rxfilterwolstatus, and rxfilterwolclear shared
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * register definitions
  */
 #define LPC_RXFLTRW_ACCEPTUNICAST		(1 << 0)
@@ -309,7 +337,11 @@
 #define LPC_RXFLTRW_ACCEPTPERFECT		(1 << 5)
 
 /*
+<<<<<<< HEAD
  * rxfliterctrl register definitions
+=======
+ * rxfilterctrl register definitions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define LPC_RXFLTRWSTS_MAGICPACKETENWOL		(1 << 12)
 #define LPC_RXFLTRWSTS_RXFILTERENWOL		(1 << 13)
@@ -340,6 +372,7 @@
  */
 #define LPC_POWERDOWN_MACAHB			(1 << 31)
 
+<<<<<<< HEAD
 /* Upon the upcoming introduction of device tree usage in LPC32xx,
  * lpc_phy_interface_mode() and use_iram_for_net() will be extended with a
  * device parameter for access to device tree information at runtime, instead
@@ -361,6 +394,24 @@ static inline int use_iram_for_net(void)
 #else
 	return 0;
 #endif
+=======
+static phy_interface_t lpc_phy_interface_mode(struct device *dev)
+{
+	if (dev && dev->of_node) {
+		const char *mode = of_get_property(dev->of_node,
+						   "phy-mode", NULL);
+		if (mode && !strcmp(mode, "mii"))
+			return PHY_INTERFACE_MODE_MII;
+	}
+	return PHY_INTERFACE_MODE_RMII;
+}
+
+static bool use_iram_for_net(struct device *dev)
+{
+	if (dev && dev->of_node)
+		return of_property_read_bool(dev->of_node, "use-iram");
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Receive Status information word */
@@ -407,9 +458,12 @@ static inline int use_iram_for_net(void)
 #define TXDESC_CONTROL_LAST		(1 << 30)
 #define TXDESC_CONTROL_INT		(1 << 31)
 
+<<<<<<< HEAD
 static int lpc_eth_hard_start_xmit(struct sk_buff *skb,
 				   struct net_device *ndev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Structure of a TX/RX descriptors and RX status
  */
@@ -428,6 +482,7 @@ struct rx_status_t {
 struct netdata_local {
 	struct platform_device	*pdev;
 	struct net_device	*ndev;
+<<<<<<< HEAD
 	spinlock_t		lock;
 	void __iomem		*net_base;
 	u32			msg_enable;
@@ -436,6 +491,16 @@ struct netdata_local {
 	unsigned int		num_used_tx_buffs;
 	struct mii_bus		*mii_bus;
 	struct phy_device	*phy_dev;
+=======
+	struct device_node	*phy_node;
+	spinlock_t		lock;
+	void __iomem		*net_base;
+	u32			msg_enable;
+	unsigned int		skblen[ENET_TX_DESC];
+	unsigned int		last_tx_idx;
+	unsigned int		num_used_tx_buffs;
+	struct mii_bus		*mii_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clk		*clk;
 	dma_addr_t		dma_buff_base_p;
 	void			*dma_buff_base_v;
@@ -455,7 +520,11 @@ struct netdata_local {
 /*
  * MAC support functions
  */
+<<<<<<< HEAD
 static void __lpc_set_mac(struct netdata_local *pldat, u8 *mac)
+=======
+static void __lpc_set_mac(struct netdata_local *pldat, const u8 *mac)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -486,6 +555,7 @@ static void __lpc_get_mac(struct netdata_local *pldat, u8 *mac)
 	mac[5] = tmp >> 8;
 }
 
+<<<<<<< HEAD
 static void __lpc_eth_clock_enable(struct netdata_local *pldat,
 				   bool enable)
 {
@@ -495,6 +565,8 @@ static void __lpc_eth_clock_enable(struct netdata_local *pldat,
 		clk_disable(pldat->clk);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __lpc_params_setup(struct netdata_local *pldat)
 {
 	u32 tmp;
@@ -664,7 +736,11 @@ static void __lpc_eth_init(struct netdata_local *pldat)
 	       LPC_ENET_CLRT(pldat->net_base));
 	writel(LPC_IPGR_LOAD_PART2(0x12), LPC_ENET_IPGR(pldat->net_base));
 
+<<<<<<< HEAD
 	if (lpc_phy_interface_mode() == PHY_INTERFACE_MODE_MII)
+=======
+	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(LPC_COMMAND_PASSRUNTFRAME,
 		       LPC_ENET_COMMAND(pldat->net_base));
 	else {
@@ -761,7 +837,11 @@ static int lpc_mdio_reset(struct mii_bus *bus)
 static void lpc_handle_link_change(struct net_device *ndev)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
+<<<<<<< HEAD
 	struct phy_device *phydev = pldat->phy_dev;
+=======
+	struct phy_device *phydev = ndev->phydev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	bool status_change = false;
@@ -796,13 +876,29 @@ static void lpc_handle_link_change(struct net_device *ndev)
 static int lpc_mii_probe(struct net_device *ndev)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
+<<<<<<< HEAD
 	struct phy_device *phydev = phy_find_first(pldat->mii_bus);
 
+=======
+	struct phy_device *phydev;
+
+	/* Attach to the PHY */
+	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
+		netdev_info(ndev, "using MII interface\n");
+	else
+		netdev_info(ndev, "using RMII interface\n");
+
+	if (pldat->phy_node)
+		phydev =  of_phy_find_device(pldat->phy_node);
+	else
+		phydev = phy_find_first(pldat->mii_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!phydev) {
 		netdev_err(ndev, "no PHY found\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	/* Attach to the PHY */
 	if (lpc_phy_interface_mode() == PHY_INTERFACE_MODE_MII)
 		netdev_info(ndev, "using MII interface\n");
@@ -811,30 +907,50 @@ static int lpc_mii_probe(struct net_device *ndev)
 	phydev = phy_connect(ndev, dev_name(&phydev->dev),
 		&lpc_handle_link_change, 0, lpc_phy_interface_mode());
 
+=======
+	phydev = phy_connect(ndev, phydev_name(phydev),
+			     &lpc_handle_link_change,
+			     lpc_phy_interface_mode(&pldat->pdev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(phydev)) {
 		netdev_err(ndev, "Could not attach to PHY\n");
 		return PTR_ERR(phydev);
 	}
 
+<<<<<<< HEAD
 	/* mask with MAC supported features */
 	phydev->supported &= PHY_BASIC_FEATURES;
 
 	phydev->advertising = phydev->supported;
+=======
+	phy_set_max_speed(phydev, SPEED_100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pldat->link = 0;
 	pldat->speed = 0;
 	pldat->duplex = -1;
+<<<<<<< HEAD
 	pldat->phy_dev = phydev;
 
 	netdev_info(ndev,
 		"attached PHY driver [%s] (mii_bus:phy_addr=%s, irq=%d)\n",
 		phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
+=======
+
+	phy_attached_info(phydev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int lpc_mii_init(struct netdata_local *pldat)
 {
+<<<<<<< HEAD
 	int err = -ENXIO, i;
+=======
+	struct device_node *node;
+	int err = -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pldat->mii_bus = mdiobus_alloc();
 	if (!pldat->mii_bus) {
@@ -843,7 +959,11 @@ static int lpc_mii_init(struct netdata_local *pldat)
 	}
 
 	/* Setup MII mode */
+<<<<<<< HEAD
 	if (lpc_phy_interface_mode() == PHY_INTERFACE_MODE_MII)
+=======
+	if (lpc_phy_interface_mode(&pldat->pdev->dev) == PHY_INTERFACE_MODE_MII)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(LPC_COMMAND_PASSRUNTFRAME,
 		       LPC_ENET_COMMAND(pldat->net_base));
 	else {
@@ -861,6 +981,7 @@ static int lpc_mii_init(struct netdata_local *pldat)
 	pldat->mii_bus->priv = pldat;
 	pldat->mii_bus->parent = &pldat->pdev->dev;
 
+<<<<<<< HEAD
 	pldat->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!pldat->mii_bus->irq) {
 		err = -ENOMEM;
@@ -876,15 +997,28 @@ static int lpc_mii_init(struct netdata_local *pldat)
 		goto err_out_free_mdio_irq;
 
 	if (lpc_mii_probe(pldat->ndev) != 0)
+=======
+	node = of_get_child_by_name(pldat->pdev->dev.of_node, "mdio");
+	err = of_mdiobus_register(pldat->mii_bus, node);
+	of_node_put(node);
+	if (err)
+		goto err_out_unregister_bus;
+
+	err = lpc_mii_probe(pldat->ndev);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_unregister_bus;
 
 	return 0;
 
 err_out_unregister_bus:
 	mdiobus_unregister(pldat->mii_bus);
+<<<<<<< HEAD
 err_out_free_mdio_irq:
 	kfree(pldat->mii_bus->irq);
 err_out_1:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdiobus_free(pldat->mii_bus);
 err_out:
 	return err;
@@ -893,12 +1027,19 @@ err_out:
 static void __lpc_handle_xmit(struct net_device *ndev)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
+<<<<<<< HEAD
 	struct sk_buff *skb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 txcidx, *ptxstat, txstat;
 
 	txcidx = readl(LPC_ENET_TXCONSUMEINDEX(pldat->net_base));
 	while (pldat->last_tx_idx != txcidx) {
+<<<<<<< HEAD
 		skb = pldat->skb[pldat->last_tx_idx];
+=======
+		unsigned int skblen = pldat->skblen[pldat->last_tx_idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* A buffer is available, get buffer status */
 		ptxstat = &pldat->tx_stat_v[pldat->last_tx_idx];
@@ -935,9 +1076,14 @@ static void __lpc_handle_xmit(struct net_device *ndev)
 		} else {
 			/* Update stats */
 			ndev->stats.tx_packets++;
+<<<<<<< HEAD
 			ndev->stats.tx_bytes += skb->len;
 		}
 		dev_kfree_skb_irq(skb);
+=======
+			ndev->stats.tx_bytes += skblen;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		txcidx = readl(LPC_ENET_TXCONSUMEINDEX(pldat->net_base));
 	}
@@ -954,7 +1100,10 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 	struct sk_buff *skb;
 	u32 rxconsidx, len, ethst;
 	struct rx_status_t *prxstat;
+<<<<<<< HEAD
 	u8 *prdbuf;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rx_done = 0;
 
 	/* Get the current RX buffer indexes */
@@ -990,6 +1139,7 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 			ndev->stats.rx_errors++;
 		} else {
 			/* Packet is good */
+<<<<<<< HEAD
 			skb = dev_alloc_skb(len + 8);
 			if (!skb)
 				ndev->stats.rx_dropped++;
@@ -999,6 +1149,16 @@ static int __lpc_handle_recv(struct net_device *ndev, int budget)
 				/* Copy packet from buffer */
 				memcpy(prdbuf, pldat->rx_buff_v +
 					rxconsidx * ENET_MAXF_SIZE, len);
+=======
+			skb = dev_alloc_skb(len);
+			if (!skb) {
+				ndev->stats.rx_dropped++;
+			} else {
+				/* Copy packet from buffer */
+				skb_put_data(skb,
+					     pldat->rx_buff_v + rxconsidx * ENET_MAXF_SIZE,
+					     len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* Pass to upper layer */
 				skb->protocol = eth_type_trans(skb, ndev);
@@ -1034,7 +1194,11 @@ static int lpc_eth_poll(struct napi_struct *napi, int budget)
 	rx_done = __lpc_handle_recv(ndev, budget);
 
 	if (rx_done < budget) {
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, rx_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpc_eth_enable_int(pldat->net_base);
 	}
 
@@ -1073,9 +1237,12 @@ static int lpc_eth_close(struct net_device *ndev)
 	napi_disable(&pldat->napi);
 	netif_stop_queue(ndev);
 
+<<<<<<< HEAD
 	if (pldat->phy_dev)
 		phy_stop(pldat->phy_dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pldat->lock, flags);
 	__lpc_eth_reset(pldat);
 	netif_carrier_off(ndev);
@@ -1083,12 +1250,23 @@ static int lpc_eth_close(struct net_device *ndev)
 	writel(0, LPC_ENET_MAC2(pldat->net_base));
 	spin_unlock_irqrestore(&pldat->lock, flags);
 
+<<<<<<< HEAD
 	__lpc_eth_clock_enable(pldat, false);
+=======
+	if (ndev->phydev)
+		phy_stop(ndev->phydev);
+	clk_disable_unprepare(pldat->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lpc_eth_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+=======
+static netdev_tx_t lpc_eth_hard_start_xmit(struct sk_buff *skb,
+					   struct net_device *ndev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
 	u32 len, txidx;
@@ -1101,7 +1279,12 @@ static int lpc_eth_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 	if (pldat->num_used_tx_buffs >= (ENET_TX_DESC - 1)) {
 		/* This function should never be called when there are no
+<<<<<<< HEAD
 		   buffers */
+=======
+		 * buffers
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_stop_queue(ndev);
 		spin_unlock_irq(&pldat->lock);
 		WARN(1, "BUG! TX request when no free TX buffers!\n");
@@ -1122,7 +1305,11 @@ static int lpc_eth_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	memcpy(pldat->tx_buff_v + txidx * ENET_MAXF_SIZE, skb->data, len);
 
 	/* Save the buffer and increment the buffer counter */
+<<<<<<< HEAD
 	pldat->skb[txidx] = skb;
+=======
+	pldat->skblen[txidx] = len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pldat->num_used_tx_buffs++;
 
 	/* Start transmit */
@@ -1137,6 +1324,10 @@ static int lpc_eth_hard_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 	spin_unlock_irq(&pldat->lock);
 
+<<<<<<< HEAD
+=======
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 }
 
@@ -1148,7 +1339,11 @@ static int lpc_set_mac_address(struct net_device *ndev, void *p)
 
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
+<<<<<<< HEAD
 	memcpy(ndev->dev_addr, addr->sa_data, ETH_ALEN);
+=======
+	eth_hw_addr_set(ndev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pldat->lock, flags);
 
@@ -1207,6 +1402,7 @@ static void lpc_eth_set_multicast_list(struct net_device *ndev)
 	spin_unlock_irqrestore(&pldat->lock, flags);
 }
 
+<<<<<<< HEAD
 static int lpc_eth_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
@@ -1224,21 +1420,40 @@ static int lpc_eth_ioctl(struct net_device *ndev, struct ifreq *req, int cmd)
 static int lpc_eth_open(struct net_device *ndev)
 {
 	struct netdata_local *pldat = netdev_priv(ndev);
+=======
+static int lpc_eth_open(struct net_device *ndev)
+{
+	struct netdata_local *pldat = netdev_priv(ndev);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_ifup(pldat))
 		dev_dbg(&pldat->pdev->dev, "enabling %s\n", ndev->name);
 
+<<<<<<< HEAD
 	if (!is_valid_ether_addr(ndev->dev_addr))
 		return -EADDRNOTAVAIL;
 
 	__lpc_eth_clock_enable(pldat, true);
+=======
+	ret = clk_prepare_enable(pldat->clk);
+	if (ret)
+		return ret;
+
+	/* Suspended PHY makes LPC ethernet core block, so resume now */
+	phy_resume(ndev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset and initialize */
 	__lpc_eth_reset(pldat);
 	__lpc_eth_init(pldat);
 
 	/* schedule a link state check */
+<<<<<<< HEAD
 	phy_start(pldat->phy_dev);
+=======
+	phy_start(ndev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(ndev);
 	napi_enable(&pldat->napi);
 
@@ -1251,9 +1466,16 @@ static int lpc_eth_open(struct net_device *ndev)
 static void lpc_eth_ethtool_getdrvinfo(struct net_device *ndev,
 	struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, MODNAME);
 	strcpy(info->version, DRV_VERSION);
 	strcpy(info->bus_info, dev_name(ndev->dev.parent));
+=======
+	strscpy(info->driver, MODNAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, dev_name(ndev->dev.parent),
+		sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 lpc_eth_ethtool_getmsglevel(struct net_device *ndev)
@@ -1270,6 +1492,7 @@ static void lpc_eth_ethtool_setmsglevel(struct net_device *ndev, u32 level)
 	pldat->msg_enable = level;
 }
 
+<<<<<<< HEAD
 static int lpc_eth_ethtool_getsettings(struct net_device *ndev,
 	struct ethtool_cmd *cmd)
 {
@@ -1301,6 +1524,15 @@ static const struct ethtool_ops lpc_eth_ethtool_ops = {
 	.get_msglevel	= lpc_eth_ethtool_getmsglevel,
 	.set_msglevel	= lpc_eth_ethtool_setmsglevel,
 	.get_link	= ethtool_op_get_link,
+=======
+static const struct ethtool_ops lpc_eth_ethtool_ops = {
+	.get_drvinfo	= lpc_eth_ethtool_getdrvinfo,
+	.get_msglevel	= lpc_eth_ethtool_getmsglevel,
+	.set_msglevel	= lpc_eth_ethtool_setmsglevel,
+	.get_link	= ethtool_op_get_link,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops lpc_netdev_ops = {
@@ -1308,13 +1540,20 @@ static const struct net_device_ops lpc_netdev_ops = {
 	.ndo_stop		= lpc_eth_close,
 	.ndo_start_xmit		= lpc_eth_hard_start_xmit,
 	.ndo_set_rx_mode	= lpc_eth_set_multicast_list,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= lpc_eth_ioctl,
 	.ndo_set_mac_address	= lpc_set_mac_address,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= phy_do_ioctl_running,
+	.ndo_set_mac_address	= lpc_set_mac_address,
+	.ndo_validate_addr	= eth_validate_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int lpc_eth_drv_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res;
 	struct resource *dma_res;
 	struct net_device *ndev;
@@ -1329,6 +1568,25 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	irq = platform_get_irq(pdev, 0);
 	if ((!res) || (!dma_res) || (irq < 0) || (irq >= NR_IRQS)) {
 		dev_err(&pdev->dev, "error getting resources.\n");
+=======
+	struct device *dev = &pdev->dev;
+	struct device_node *np = dev->of_node;
+	struct netdata_local *pldat;
+	struct net_device *ndev;
+	dma_addr_t dma_handle;
+	struct resource *res;
+	u8 addr[ETH_ALEN];
+	int irq, ret;
+
+	/* Setup network interface for RMII or MII mode */
+	lpc32xx_set_phy_interface_mode(lpc_phy_interface_mode(dev));
+
+	/* Get platform resources */
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	irq = platform_get_irq(pdev, 0);
+	if (!res || irq < 0) {
+		dev_err(dev, "error getting resources.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENXIO;
 		goto err_exit;
 	}
@@ -1336,12 +1594,20 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	/* Allocate net driver data structure */
 	ndev = alloc_etherdev(sizeof(struct netdata_local));
 	if (!ndev) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "could not allocate device.\n");
+=======
+		dev_err(dev, "could not allocate device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto err_exit;
 	}
 
+<<<<<<< HEAD
 	SET_NETDEV_DEV(ndev, &pdev->dev);
+=======
+	SET_NETDEV_DEV(ndev, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pldat = netdev_priv(ndev);
 	pldat->pdev = pdev;
@@ -1353,26 +1619,44 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	ndev->irq = irq;
 
 	/* Get clock for the device */
+<<<<<<< HEAD
 	pldat->clk = clk_get(&pdev->dev, NULL);
 	if (IS_ERR(pldat->clk)) {
 		dev_err(&pdev->dev, "error getting clock.\n");
+=======
+	pldat->clk = clk_get(dev, NULL);
+	if (IS_ERR(pldat->clk)) {
+		dev_err(dev, "error getting clock.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = PTR_ERR(pldat->clk);
 		goto err_out_free_dev;
 	}
 
 	/* Enable network clock */
+<<<<<<< HEAD
 	__lpc_eth_clock_enable(pldat, true);
 
 	/* Map IO space */
 	pldat->net_base = ioremap(res->start, res->end - res->start + 1);
 	if (!pldat->net_base) {
 		dev_err(&pdev->dev, "failed to map registers\n");
+=======
+	ret = clk_prepare_enable(pldat->clk);
+	if (ret)
+		goto err_out_clk_put;
+
+	/* Map IO space */
+	pldat->net_base = ioremap(res->start, resource_size(res));
+	if (!pldat->net_base) {
+		dev_err(dev, "failed to map registers\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto err_out_disable_clocks;
 	}
 	ret = request_irq(ndev->irq, __lpc_eth_interrupt, 0,
 			  ndev->name, ndev);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "error requesting interrupt.\n");
 		goto err_out_iounmap;
 	}
@@ -1380,6 +1664,12 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	/* Fill in the fields of the device structure with ethernet values. */
 	ether_setup(ndev);
 
+=======
+		dev_err(dev, "error requesting interrupt.\n");
+		goto err_out_iounmap;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup driver functions */
 	ndev->netdev_ops = &lpc_netdev_ops;
 	ndev->ethtool_ops = &lpc_eth_ethtool_ops;
@@ -1388,6 +1678,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	/* Get size of DMA buffers/descriptors region */
 	pldat->dma_buff_size = (ENET_TX_DESC + ENET_RX_DESC) * (ENET_MAXF_SIZE +
 		sizeof(struct txrx_desc_t) + sizeof(struct rx_status_t));
+<<<<<<< HEAD
 	pldat->dma_buff_base_v = 0;
 
 	if (use_iram_for_net()) {
@@ -1412,12 +1703,41 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 
 		if (pldat->dma_buff_base_v == NULL) {
 			dev_err(&pdev->dev, "error getting DMA region.\n");
+=======
+
+	if (use_iram_for_net(dev)) {
+		if (pldat->dma_buff_size >
+		    lpc32xx_return_iram(&pldat->dma_buff_base_v, &dma_handle)) {
+			pldat->dma_buff_base_v = NULL;
+			pldat->dma_buff_size = 0;
+			netdev_err(ndev,
+				"IRAM not big enough for net buffers, using SDRAM instead.\n");
+		}
+	}
+
+	if (pldat->dma_buff_base_v == NULL) {
+		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(32));
+		if (ret)
+			goto err_out_free_irq;
+
+		pldat->dma_buff_size = PAGE_ALIGN(pldat->dma_buff_size);
+
+		/* Allocate a chunk of memory for the DMA ethernet buffers
+		 * and descriptors
+		 */
+		pldat->dma_buff_base_v =
+			dma_alloc_coherent(dev,
+					   pldat->dma_buff_size, &dma_handle,
+					   GFP_KERNEL);
+		if (pldat->dma_buff_base_v == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto err_out_free_irq;
 		}
 	}
 	pldat->dma_buff_base_p = dma_handle;
 
+<<<<<<< HEAD
 	netdev_dbg(ndev, "IO address start     :0x%08x\n",
 			res->start);
 	netdev_dbg(ndev, "IO address size      :%d\n",
@@ -1447,6 +1767,32 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	/* Reset the ethernet controller */
 	__lpc_eth_reset(pldat);
 
+=======
+	netdev_dbg(ndev, "IO address space     :%pR\n", res);
+	netdev_dbg(ndev, "IO address size      :%zd\n",
+			(size_t)resource_size(res));
+	netdev_dbg(ndev, "IO address (mapped)  :0x%p\n",
+			pldat->net_base);
+	netdev_dbg(ndev, "IRQ number           :%d\n", ndev->irq);
+	netdev_dbg(ndev, "DMA buffer size      :%zd\n", pldat->dma_buff_size);
+	netdev_dbg(ndev, "DMA buffer P address :%pad\n",
+			&pldat->dma_buff_base_p);
+	netdev_dbg(ndev, "DMA buffer V address :0x%p\n",
+			pldat->dma_buff_base_v);
+
+	pldat->phy_node = of_parse_phandle(np, "phy-handle", 0);
+
+	/* Get MAC address from current HW setting (POR state is all zeros) */
+	__lpc_get_mac(pldat, addr);
+	eth_hw_addr_set(ndev, addr);
+
+	if (!is_valid_ether_addr(ndev->dev_addr)) {
+		of_get_ethdev_address(np, ndev);
+	}
+	if (!is_valid_ether_addr(ndev->dev_addr))
+		eth_hw_addr_random(ndev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* then shut everything down to save power */
 	__lpc_eth_shutdown(pldat);
 
@@ -1457,21 +1803,35 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	__lpc_mii_mngt_reset(pldat);
 
 	/* Force default PHY interface setup in chip, this will probably be
+<<<<<<< HEAD
 	   changed by the PHY driver */
+=======
+	 * changed by the PHY driver
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pldat->link = 0;
 	pldat->speed = 100;
 	pldat->duplex = DUPLEX_FULL;
 	__lpc_params_setup(pldat);
 
+<<<<<<< HEAD
 	netif_napi_add(ndev, &pldat->napi, lpc_eth_poll, NAPI_WEIGHT);
 
 	ret = register_netdev(ndev);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot register net device, aborting.\n");
+=======
+	netif_napi_add_weight(ndev, &pldat->napi, lpc_eth_poll, NAPI_WEIGHT);
+
+	ret = register_netdev(ndev);
+	if (ret) {
+		dev_err(dev, "Cannot register net device, aborting.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_dma_unmap;
 	}
 	platform_set_drvdata(pdev, ndev);
 
+<<<<<<< HEAD
 	if (lpc_mii_init(pldat) != 0)
 		goto err_out_unregister_netdev;
 
@@ -1482,16 +1842,35 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 1);
 	device_set_wakeup_enable(&pdev->dev, 0);
+=======
+	ret = lpc_mii_init(pldat);
+	if (ret)
+		goto err_out_unregister_netdev;
+
+	netdev_info(ndev, "LPC mac at 0x%08lx irq %d\n",
+	       (unsigned long)res->start, ndev->irq);
+
+	device_init_wakeup(dev, 1);
+	device_set_wakeup_enable(dev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_out_unregister_netdev:
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	unregister_netdev(ndev);
 err_out_dma_unmap:
 	if (!use_iram_for_net() ||
 	    pldat->dma_buff_size > lpc32xx_return_iram_size())
 		dma_free_coherent(&pldat->pdev->dev, pldat->dma_buff_size,
+=======
+	unregister_netdev(ndev);
+err_out_dma_unmap:
+	if (!use_iram_for_net(dev) ||
+	    pldat->dma_buff_size > lpc32xx_return_iram(NULL, NULL))
+		dma_free_coherent(dev, pldat->dma_buff_size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  pldat->dma_buff_base_v,
 				  pldat->dma_buff_base_p);
 err_out_free_irq:
@@ -1499,7 +1878,12 @@ err_out_free_irq:
 err_out_iounmap:
 	iounmap(pldat->net_base);
 err_out_disable_clocks:
+<<<<<<< HEAD
 	clk_disable(pldat->clk);
+=======
+	clk_disable_unprepare(pldat->clk);
+err_out_clk_put:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk_put(pldat->clk);
 err_out_free_dev:
 	free_netdev(ndev);
@@ -1508,16 +1892,26 @@ err_exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int lpc_eth_drv_remove(struct platform_device *pdev)
+=======
+static void lpc_eth_drv_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct netdata_local *pldat = netdev_priv(ndev);
 
 	unregister_netdev(ndev);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
 	if (!use_iram_for_net() ||
 	    pldat->dma_buff_size > lpc32xx_return_iram_size())
+=======
+
+	if (!use_iram_for_net(&pldat->pdev->dev) ||
+	    pldat->dma_buff_size > lpc32xx_return_iram(NULL, NULL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_free_coherent(&pldat->pdev->dev, pldat->dma_buff_size,
 				  pldat->dma_buff_base_v,
 				  pldat->dma_buff_base_p);
@@ -1525,11 +1919,17 @@ static int lpc_eth_drv_remove(struct platform_device *pdev)
 	iounmap(pldat->net_base);
 	mdiobus_unregister(pldat->mii_bus);
 	mdiobus_free(pldat->mii_bus);
+<<<<<<< HEAD
 	clk_disable(pldat->clk);
 	clk_put(pldat->clk);
 	free_netdev(ndev);
 
 	return 0;
+=======
+	clk_disable_unprepare(pldat->clk);
+	clk_put(pldat->clk);
+	free_netdev(ndev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -1546,7 +1946,11 @@ static int lpc_eth_drv_suspend(struct platform_device *pdev,
 		if (netif_running(ndev)) {
 			netif_device_detach(ndev);
 			__lpc_eth_shutdown(pldat);
+<<<<<<< HEAD
 			clk_disable(pldat->clk);
+=======
+			clk_disable_unprepare(pldat->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Reset again now clock is disable to be sure
@@ -1563,6 +1967,10 @@ static int lpc_eth_drv_resume(struct platform_device *pdev)
 {
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct netdata_local *pldat;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (device_may_wakeup(&pdev->dev))
 		disable_irq_wake(ndev->irq);
@@ -1572,7 +1980,13 @@ static int lpc_eth_drv_resume(struct platform_device *pdev)
 			pldat = netdev_priv(ndev);
 
 			/* Enable interface clock */
+<<<<<<< HEAD
 			clk_enable(pldat->clk);
+=======
+			ret = clk_enable(pldat->clk);
+			if (ret)
+				return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Reset and initialize */
 			__lpc_eth_reset(pldat);
@@ -1586,15 +2000,31 @@ static int lpc_eth_drv_resume(struct platform_device *pdev)
 }
 #endif
 
+<<<<<<< HEAD
 static struct platform_driver lpc_eth_driver = {
 	.probe		= lpc_eth_drv_probe,
 	.remove		= __devexit_p(lpc_eth_drv_remove),
+=======
+static const struct of_device_id lpc_eth_match[] = {
+	{ .compatible = "nxp,lpc-eth" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, lpc_eth_match);
+
+static struct platform_driver lpc_eth_driver = {
+	.probe		= lpc_eth_drv_probe,
+	.remove_new	= lpc_eth_drv_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= lpc_eth_drv_suspend,
 	.resume		= lpc_eth_drv_resume,
 #endif
 	.driver		= {
 		.name	= MODNAME,
+<<<<<<< HEAD
+=======
+		.of_match_table = lpc_eth_match,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

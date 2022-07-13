@@ -148,7 +148,11 @@ struct au1xmmc_platform_data {
 /*
  *  SD_STATUS bit definitions.
  */
+<<<<<<< HEAD
 #define SD_STATUS_DCRCW	(0x00000007)
+=======
+#define SD_STATUS_DCRCW (0x00000007)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SD_STATUS_xx1	(0x00000008)
 #define SD_STATUS_CB	(0x00000010)
 #define SD_STATUS_DB	(0x00000020)

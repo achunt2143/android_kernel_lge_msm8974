@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * SH3 CPU-specific DMA definitions, used by both DMA drivers
  *
@@ -6,6 +7,13 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * SH3 CPU-specific DMA definitions, used by both DMA drivers
+ *
+ * Copyright (C) 2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef CPU_DMA_REGISTER_H
 #define CPU_DMA_REGISTER_H

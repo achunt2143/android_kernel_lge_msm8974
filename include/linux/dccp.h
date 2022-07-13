@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_DCCP_H
 #define _LINUX_DCCP_H
 
@@ -234,6 +235,12 @@ enum dccp_packet_dequeueing_policy {
 #define DCCP_SERVICE_LIST_MAX_LEN      32
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_DCCP_H
+#define _LINUX_DCCP_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/in.h>
 #include <linux/interrupt.h>
@@ -246,6 +253,10 @@ enum dccp_packet_dequeueing_policy {
 #include <net/inet_sock.h>
 #include <net/inet_timewait_sock.h>
 #include <net/tcp_states.h>
+<<<<<<< HEAD
+=======
+#include <uapi/linux/dccp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum dccp_state {
 	DCCP_OPEN	     = TCP_ESTABLISHED,
@@ -275,6 +286,10 @@ enum dccp_state {
 	DCCP_CLOSING	     = TCP_CLOSING,
 	DCCP_TIME_WAIT	     = TCP_TIME_WAIT,
 	DCCP_CLOSED	     = TCP_CLOSE,
+<<<<<<< HEAD
+=======
+	DCCP_NEW_SYN_RECV    = TCP_NEW_SYN_RECV,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DCCP_PARTOPEN	     = TCP_MAX_STATES,
 	DCCP_PASSIVE_CLOSEREQ,			/* clients receiving CloseReq */
 	DCCP_MAX_STATES
@@ -289,6 +304,10 @@ enum {
 	DCCPF_CLOSING	      = TCPF_CLOSING,
 	DCCPF_TIME_WAIT	      = TCPF_TIME_WAIT,
 	DCCPF_CLOSED	      = TCPF_CLOSE,
+<<<<<<< HEAD
+=======
+	DCCPF_NEW_SYN_RECV    = TCPF_NEW_SYN_RECV,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DCCPF_PARTOPEN	      = (1 << DCCP_PARTOPEN),
 };
 
@@ -393,6 +412,10 @@ struct dccp_request_sock {
 	__u64			 dreq_isr;
 	__u64			 dreq_gsr;
 	__be32			 dreq_service;
+<<<<<<< HEAD
+=======
+	spinlock_t		 dreq_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	 dreq_featneg;
 	__u32			 dreq_timestamp_echo;
 	__u32			 dreq_timestamp_time;
@@ -426,22 +449,36 @@ enum dccp_role {
 
 struct dccp_service_list {
 	__u32	dccpsl_nr;
+<<<<<<< HEAD
 	__be32	dccpsl_list[0];
+=======
+	__be32	dccpsl_list[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define DCCP_SERVICE_INVALID_VALUE htonl((__u32)-1)
 #define DCCP_SERVICE_CODE_IS_ABSENT		0
 
+<<<<<<< HEAD
 static inline int dccp_list_has_service(const struct dccp_service_list *sl,
+=======
+static inline bool dccp_list_has_service(const struct dccp_service_list *sl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const __be32 service)
 {
 	if (likely(sl != NULL)) {
 		u32 i = sl->dccpsl_nr;
 		while (i--)
 			if (sl->dccpsl_list[i] == service)
+<<<<<<< HEAD
 				return 1;
 	}
 	return 0;
+=======
+				return true;
+	}
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct dccp_ackvec;
@@ -533,10 +570,15 @@ struct dccp_sock {
 	struct timer_list		dccps_xmit_timer;
 };
 
+<<<<<<< HEAD
 static inline struct dccp_sock *dccp_sk(const struct sock *sk)
 {
 	return (struct dccp_sock *)sk;
 }
+=======
+#define dccp_sk(ptr)	container_of_const(ptr, struct dccp_sock, \
+					   dccps_inet_connection.icsk_inet.sk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline const char *dccp_role(const struct sock *sk)
 {
@@ -549,6 +591,10 @@ static inline const char *dccp_role(const struct sock *sk)
 	return NULL;
 }
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+extern void dccp_syn_ack_timeout(const struct request_sock *req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_DCCP_H */

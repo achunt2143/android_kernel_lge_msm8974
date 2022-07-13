@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support PCI IO workaround
  *
  * (C) Copyright 2007-2008 TOSHIBA CORPORATION
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +21,17 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _IO_WORKAROUNDS_H
 #define _IO_WORKAROUNDS_H
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_IO_WORKAROUNDS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <asm/pci-bridge.h>
 
@@ -31,8 +42,13 @@ struct iowa_bus {
 	void   *private;
 };
 
+<<<<<<< HEAD
 void __devinit iowa_register_bus(struct pci_controller *, struct ppc_pci_io *,
 				 int (*)(struct iowa_bus *, void *), void *);
+=======
+void iowa_register_bus(struct pci_controller *, struct ppc_pci_io *,
+		       int (*)(struct iowa_bus *, void *), void *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iowa_bus *iowa_mem_find_bus(const PCI_IO_ADDR);
 struct iowa_bus *iowa_pio_find_bus(unsigned long);
 
@@ -45,4 +61,26 @@ extern int spiderpci_iowa_init(struct iowa_bus *, void *);
 #define SPIDER_PCI_DUMMY_READ		0x0810
 #define SPIDER_PCI_DUMMY_READ_BASE	0x0814
 
+<<<<<<< HEAD
+=======
+#endif
+
+#if defined(CONFIG_PPC_IO_WORKAROUNDS) && defined(CONFIG_PPC_INDIRECT_MMIO)
+extern bool io_workaround_inited;
+
+static inline bool iowa_is_active(void)
+{
+	return unlikely(io_workaround_inited);
+}
+#else
+static inline bool iowa_is_active(void)
+{
+	return false;
+}
+#endif
+
+void __iomem *iowa_ioremap(phys_addr_t addr, unsigned long size,
+			   pgprot_t prot, void *caller);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _IO_WORKAROUNDS_H */

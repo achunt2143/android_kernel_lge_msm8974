@@ -40,9 +40,15 @@
 
 /**
  * qib_format_hwmsg - format a single hwerror message
+<<<<<<< HEAD
  * @msg message buffer
  * @msgl length of message buffer
  * @hwmsg message to add to message buffer
+=======
+ * @msg: message buffer
+ * @msgl: length of message buffer
+ * @hwmsg: message to add to message buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void qib_format_hwmsg(char *msg, size_t msgl, const char *hwmsg)
 {
@@ -53,11 +59,19 @@ static void qib_format_hwmsg(char *msg, size_t msgl, const char *hwmsg)
 
 /**
  * qib_format_hwerrors - format hardware error messages for display
+<<<<<<< HEAD
  * @hwerrs hardware errors bit vector
  * @hwerrmsgs hardware error descriptions
  * @nhwerrmsgs number of hwerrmsgs
  * @msg message buffer
  * @msgl message buffer length
+=======
+ * @hwerrs: hardware errors bit vector
+ * @hwerrmsgs: hardware error descriptions
+ * @nhwerrmsgs: number of hwerrmsgs
+ * @msg: message buffer
+ * @msgl: message buffer length
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void qib_format_hwerrors(u64 hwerrs, const struct qib_hwerror_msgs *hwerrmsgs,
 			 size_t nhwerrmsgs, char *msg, size_t msgl)
@@ -74,7 +88,11 @@ static void signal_ib_event(struct qib_pportdata *ppd, enum ib_event_type ev)
 	struct ib_event event;
 	struct qib_devdata *dd = ppd->dd;
 
+<<<<<<< HEAD
 	event.device = &dd->verbs_dev.ibdev;
+=======
+	event.device = &dd->verbs_dev.rdi.ibdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event.element.port_num = ppd->port;
 	event.event = ev;
 	ib_dispatch_event(&event);
@@ -141,7 +159,11 @@ void qib_handle_e_ibstatuschanged(struct qib_pportdata *ppd, u64 ibcs)
 			qib_hol_up(ppd); /* useful only for 6120 now */
 			*ppd->statusp |=
 				QIB_STATUS_IB_READY | QIB_STATUS_IB_CONF;
+<<<<<<< HEAD
 			qib_clear_symerror_on_linkup((unsigned long)ppd);
+=======
+			qib_clear_symerror_on_linkup(&ppd->symerr_clear_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&ppd->lflags_lock, flags);
 			ppd->lflags |= QIBL_LINKACTIVE | QIBL_LINKV;
 			ppd->lflags &= ~(QIBL_LINKINIT |
@@ -168,12 +190,20 @@ skip_ibchange:
 	ppd->lastibcstat = ibcs;
 	if (ev)
 		signal_ib_event(ppd, ev);
+<<<<<<< HEAD
 	return;
 }
 
 void qib_clear_symerror_on_linkup(unsigned long opaque)
 {
 	struct qib_pportdata *ppd = (struct qib_pportdata *)opaque;
+=======
+}
+
+void qib_clear_symerror_on_linkup(struct timer_list *t)
+{
+	struct qib_pportdata *ppd = from_timer(ppd, t, symerr_clear_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ppd->lflags & QIBL_LINKACTIVE)
 		return;
@@ -224,15 +254,25 @@ void qib_bad_intrstatus(struct qib_devdata *dd)
 	 * We print the message and disable interrupts, in hope of
 	 * having a better chance of debugging the problem.
 	 */
+<<<<<<< HEAD
 	qib_dev_err(dd, "Read of chip interrupt status failed"
 		    " disabling interrupts\n");
+=======
+	qib_dev_err(dd,
+		"Read of chip interrupt status failed disabling interrupts\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (allbits++) {
 		/* disable interrupt delivery, something is very wrong */
 		if (allbits == 2)
 			dd->f_set_intr_state(dd, 0);
 		if (allbits == 3) {
+<<<<<<< HEAD
 			qib_dev_err(dd, "2nd bad interrupt status, "
 				    "unregistering interrupts\n");
+=======
+			qib_dev_err(dd,
+				"2nd bad interrupt status, unregistering interrupts\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dd->flags |= QIB_BADINTR;
 			dd->flags &= ~QIB_INITTED;
 			dd->f_free_irq(dd);

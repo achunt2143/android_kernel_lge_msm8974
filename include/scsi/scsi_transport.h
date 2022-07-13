@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  *  Transport specific attributes.
  *
  *  Copyright (c) 2003 Silicon Graphics, Inc.  All rights reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef SCSI_TRANSPORT_H
 #define SCSI_TRANSPORT_H
@@ -35,7 +42,11 @@ struct scsi_transport_template {
 	/*
 	 * If set, called from sysfs and legacy procfs rescanning code.
 	 */
+<<<<<<< HEAD
 	int (*user_scan)(struct Scsi_Host *, uint, uint, uint);
+=======
+	int (*user_scan)(struct Scsi_Host *, uint, uint, u64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The size of the specific transport attribute structure (a
 	 * space of this size will be left at the end of the
@@ -56,6 +67,7 @@ struct scsi_transport_template {
 	 * Allows a transport to override the default error handler.
 	 */
 	void (* eh_strategy_handler)(struct Scsi_Host *);
+<<<<<<< HEAD
 
 	/*
 	 * This is an optional routine that allows the transport to become
@@ -79,6 +91,8 @@ struct scsi_transport_template {
 	 * request for target drivers.
 	 */
 	int (* tsk_mgmt_response)(struct Scsi_Host *, u64, u64, int);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define transport_class_to_shost(tc) \
@@ -119,4 +133,9 @@ scsi_transport_device_data(struct scsi_device *sdev)
 		+ shost->transportt->device_private_offset;
 }
 
+<<<<<<< HEAD
+=======
+void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* SCSI_TRANSPORT_H */

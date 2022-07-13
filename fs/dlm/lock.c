@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2010 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -55,13 +62,22 @@
                                    R: do_xxxx()
    L: receive_xxxx_reply()     <-  R: send_xxxx_reply()
 */
+<<<<<<< HEAD
+=======
+#include <trace/events/dlm.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/rbtree.h>
 #include <linux/slab.h>
 #include "dlm_internal.h"
 #include <linux/dlm_device.h>
 #include "memory.h"
+<<<<<<< HEAD
 #include "lowcomms.h"
+=======
+#include "midcomms.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "requestqueue.h"
 #include "util.h"
 #include "dir.h"
@@ -86,10 +102,17 @@ static int send_remove(struct dlm_rsb *r);
 static int _request_lock(struct dlm_rsb *r, struct dlm_lkb *lkb);
 static int _cancel_lock(struct dlm_rsb *r, struct dlm_lkb *lkb);
 static void __receive_convert_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 				    struct dlm_message *ms);
 static int receive_extralen(struct dlm_message *ms);
 static void do_purge(struct dlm_ls *ls, int nodeid, int pid);
 static void del_timeout(struct dlm_lkb *lkb);
+=======
+				    const struct dlm_message *ms, bool local);
+static int receive_extralen(const struct dlm_message *ms);
+static void do_purge(struct dlm_ls *ls, int nodeid, int pid);
+static void toss_rsb(struct kref *kref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Lock compatibilty matrix - thanks Steve
@@ -160,18 +183,35 @@ static const int __quecvt_compat_matrix[8][8] = {
 
 void dlm_print_lkb(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "lkb: nodeid %d id %x remid %x exflags %x flags %x\n"
 	       "     status %d rqmode %d grmode %d wait_type %d\n",
 	       lkb->lkb_nodeid, lkb->lkb_id, lkb->lkb_remid, lkb->lkb_exflags,
 	       lkb->lkb_flags, lkb->lkb_status, lkb->lkb_rqmode,
 	       lkb->lkb_grmode, lkb->lkb_wait_type);
+=======
+	printk(KERN_ERR "lkb: nodeid %d id %x remid %x exflags %x flags %x "
+	       "sts %d rq %d gr %d wait_type %d wait_nodeid %d seq %llu\n",
+	       lkb->lkb_nodeid, lkb->lkb_id, lkb->lkb_remid, lkb->lkb_exflags,
+	       dlm_iflags_val(lkb), lkb->lkb_status, lkb->lkb_rqmode,
+	       lkb->lkb_grmode, lkb->lkb_wait_type, lkb->lkb_wait_nodeid,
+	       (unsigned long long)lkb->lkb_recover_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dlm_print_rsb(struct dlm_rsb *r)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "rsb: nodeid %d flags %lx first %x rlc %d name %s\n",
 	       r->res_nodeid, r->res_flags, r->res_first_lkid,
 	       r->res_recover_locks_count, r->res_name);
+=======
+	printk(KERN_ERR "rsb: nodeid %d master %d dir %d flags %lx first %x "
+	       "rlc %d name %s\n",
+	       r->res_nodeid, r->res_master_nodeid, r->res_dir_nodeid,
+	       r->res_flags, r->res_first_lkid, r->res_recover_locks_count,
+	       r->res_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_dump_rsb(struct dlm_rsb *r)
@@ -225,12 +265,20 @@ static inline int force_blocking_asts(struct dlm_lkb *lkb)
 
 static inline int is_demoted(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return (lkb->lkb_sbflags & DLM_SBF_DEMOTED);
+=======
+	return test_bit(DLM_SBF_DEMOTED_BIT, &lkb->lkb_sbflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_altmode(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return (lkb->lkb_sbflags & DLM_SBF_ALTMODE);
+=======
+	return test_bit(DLM_SBF_ALTMODE_BIT, &lkb->lkb_sbflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_granted(struct dlm_lkb *lkb)
@@ -246,14 +294,23 @@ static inline int is_remote(struct dlm_rsb *r)
 
 static inline int is_process_copy(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return (lkb->lkb_nodeid && !(lkb->lkb_flags & DLM_IFL_MSTCPY));
+=======
+	return lkb->lkb_nodeid &&
+	       !test_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_master_copy(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	if (lkb->lkb_flags & DLM_IFL_MSTCPY)
 		DLM_ASSERT(lkb->lkb_nodeid, dlm_print_lkb(lkb););
 	return (lkb->lkb_flags & DLM_IFL_MSTCPY) ? 1 : 0;
+=======
+	return test_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int middle_conversion(struct dlm_lkb *lkb)
@@ -271,18 +328,31 @@ static inline int down_conversion(struct dlm_lkb *lkb)
 
 static inline int is_overlap_unlock(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return lkb->lkb_flags & DLM_IFL_OVERLAP_UNLOCK;
+=======
+	return test_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_overlap_cancel(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return lkb->lkb_flags & DLM_IFL_OVERLAP_CANCEL;
+=======
+	return test_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_overlap(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	return (lkb->lkb_flags & (DLM_IFL_OVERLAP_UNLOCK |
 				  DLM_IFL_OVERLAP_CANCEL));
+=======
+	return test_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags) ||
+	       test_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void queue_cast(struct dlm_rsb *r, struct dlm_lkb *lkb, int rv)
@@ -290,6 +360,7 @@ static void queue_cast(struct dlm_rsb *r, struct dlm_lkb *lkb, int rv)
 	if (is_master_copy(lkb))
 		return;
 
+<<<<<<< HEAD
 	del_timeout(lkb);
 
 	DLM_ASSERT(lkb->lkb_lksb, dlm_print_lkb(lkb););
@@ -307,6 +378,15 @@ static void queue_cast(struct dlm_rsb *r, struct dlm_lkb *lkb, int rv)
 	}
 
 	dlm_add_cb(lkb, DLM_CB_CAST, lkb->lkb_grmode, rv, lkb->lkb_sbflags);
+=======
+	DLM_ASSERT(lkb->lkb_lksb, dlm_print_lkb(lkb););
+
+	if (rv == -DLM_ECANCEL &&
+	    test_and_clear_bit(DLM_IFL_DEADLOCK_CANCEL_BIT, &lkb->lkb_iflags))
+		rv = -EDEADLK;
+
+	dlm_add_cb(lkb, DLM_CB_CAST, lkb->lkb_grmode, rv, dlm_sbflags_val(lkb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void queue_cast_overlap(struct dlm_rsb *r, struct dlm_lkb *lkb)
@@ -328,6 +408,42 @@ static void queue_bast(struct dlm_rsb *r, struct dlm_lkb *lkb, int rqmode)
  * Basic operations on rsb's and lkb's
  */
 
+<<<<<<< HEAD
+=======
+/* This is only called to add a reference when the code already holds
+   a valid reference to the rsb, so there's no need for locking. */
+
+static inline void hold_rsb(struct dlm_rsb *r)
+{
+	kref_get(&r->res_ref);
+}
+
+void dlm_hold_rsb(struct dlm_rsb *r)
+{
+	hold_rsb(r);
+}
+
+/* When all references to the rsb are gone it's transferred to
+   the tossed list for later disposal. */
+
+static void put_rsb(struct dlm_rsb *r)
+{
+	struct dlm_ls *ls = r->res_ls;
+	uint32_t bucket = r->res_bucket;
+	int rv;
+
+	rv = kref_put_lock(&r->res_ref, toss_rsb,
+			   &ls->ls_rsbtbl[bucket].lock);
+	if (rv)
+		spin_unlock(&ls->ls_rsbtbl[bucket].lock);
+}
+
+void dlm_put_rsb(struct dlm_rsb *r)
+{
+	put_rsb(r);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pre_rsb_struct(struct dlm_ls *ls)
 {
 	struct dlm_rsb *r1, *r2;
@@ -364,7 +480,11 @@ static int pre_rsb_struct(struct dlm_ls *ls)
    unlock any spinlocks, go back and call pre_rsb_struct again.
    Otherwise, take an rsb off the list and return it. */
 
+<<<<<<< HEAD
 static int get_rsb_struct(struct dlm_ls *ls, char *name, int len,
+=======
+static int get_rsb_struct(struct dlm_ls *ls, const void *name, int len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct dlm_rsb **r_ret)
 {
 	struct dlm_rsb *r;
@@ -375,7 +495,12 @@ static int get_rsb_struct(struct dlm_ls *ls, char *name, int len,
 		count = ls->ls_new_rsb_count;
 		spin_unlock(&ls->ls_new_rsb_spin);
 		log_debug(ls, "find_rsb retry %d %d %s",
+<<<<<<< HEAD
 			  count, dlm_config.ci_new_rsb_count, name);
+=======
+			  count, dlm_config.ci_new_rsb_count,
+			  (const char *)name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
@@ -411,12 +536,20 @@ static int rsb_cmp(struct dlm_rsb *r, const char *name, int nlen)
 	return memcmp(r->res_name, maxname, DLM_RESNAME_MAXLEN);
 }
 
+<<<<<<< HEAD
 int dlm_search_rsb_tree(struct rb_root *tree, char *name, int len,
 			unsigned int flags, struct dlm_rsb **r_ret)
 {
 	struct rb_node *node = tree->rb_node;
 	struct dlm_rsb *r;
 	int error = 0;
+=======
+int dlm_search_rsb_tree(struct rb_root *tree, const void *name, int len,
+			struct dlm_rsb **r_ret)
+{
+	struct rb_node *node = tree->rb_node;
+	struct dlm_rsb *r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	while (node) {
@@ -433,10 +566,15 @@ int dlm_search_rsb_tree(struct rb_root *tree, char *name, int len,
 	return -EBADR;
 
  found:
+<<<<<<< HEAD
 	if (r->res_nodeid && (flags & R_MASTER))
 		error = -ENOTBLK;
 	*r_ret = r;
 	return error;
+=======
+	*r_ret = r;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rsb_insert(struct dlm_rsb *rsb, struct rb_root *tree)
@@ -468,6 +606,7 @@ static int rsb_insert(struct dlm_rsb *rsb, struct rb_root *tree)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int _search_rsb(struct dlm_ls *ls, char *name, int len, int b,
 		       unsigned int flags, struct dlm_rsb **r_ret)
 {
@@ -506,6 +645,8 @@ static int _search_rsb(struct dlm_ls *ls, char *name, int len, int b,
 	return error;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Find rsb in rsbtbl and potentially create/add one
  *
@@ -518,6 +659,7 @@ static int _search_rsb(struct dlm_ls *ls, char *name, int len, int b,
  * Searching for an rsb means looking through both the normal list and toss
  * list.  When found on the toss list the rsb is moved to the normal list with
  * ref count of 1; when found on normal list the ref count is incremented.
+<<<<<<< HEAD
  */
 
 static int find_rsb(struct dlm_ls *ls, char *name, int namelen,
@@ -540,11 +682,90 @@ static int find_rsb(struct dlm_ls *ls, char *name, int namelen,
 
  retry:
 	if (flags & R_CREATE) {
+=======
+ *
+ * rsb's on the keep list are being used locally and refcounted.
+ * rsb's on the toss list are not being used locally, and are not refcounted.
+ *
+ * The toss list rsb's were either
+ * - previously used locally but not any more (were on keep list, then
+ *   moved to toss list when last refcount dropped)
+ * - created and put on toss list as a directory record for a lookup
+ *   (we are the dir node for the res, but are not using the res right now,
+ *   but some other node is)
+ *
+ * The purpose of find_rsb() is to return a refcounted rsb for local use.
+ * So, if the given rsb is on the toss list, it is moved to the keep list
+ * before being returned.
+ *
+ * toss_rsb() happens when all local usage of the rsb is done, i.e. no
+ * more refcounts exist, so the rsb is moved from the keep list to the
+ * toss list.
+ *
+ * rsb's on both keep and toss lists are used for doing a name to master
+ * lookups.  rsb's that are in use locally (and being refcounted) are on
+ * the keep list, rsb's that are not in use locally (not refcounted) and
+ * only exist for name/master lookups are on the toss list.
+ *
+ * rsb's on the toss list who's dir_nodeid is not local can have stale
+ * name/master mappings.  So, remote requests on such rsb's can potentially
+ * return with an error, which means the mapping is stale and needs to
+ * be updated with a new lookup.  (The idea behind MASTER UNCERTAIN and
+ * first_lkid is to keep only a single outstanding request on an rsb
+ * while that rsb has a potentially stale master.)
+ */
+
+static int find_rsb_dir(struct dlm_ls *ls, const void *name, int len,
+			uint32_t hash, uint32_t b,
+			int dir_nodeid, int from_nodeid,
+			unsigned int flags, struct dlm_rsb **r_ret)
+{
+	struct dlm_rsb *r = NULL;
+	int our_nodeid = dlm_our_nodeid();
+	int from_local = 0;
+	int from_other = 0;
+	int from_dir = 0;
+	int create = 0;
+	int error;
+
+	if (flags & R_RECEIVE_REQUEST) {
+		if (from_nodeid == dir_nodeid)
+			from_dir = 1;
+		else
+			from_other = 1;
+	} else if (flags & R_REQUEST) {
+		from_local = 1;
+	}
+
+	/*
+	 * flags & R_RECEIVE_RECOVER is from dlm_recover_master_copy, so
+	 * from_nodeid has sent us a lock in dlm_recover_locks, believing
+	 * we're the new master.  Our local recovery may not have set
+	 * res_master_nodeid to our_nodeid yet, so allow either.  Don't
+	 * create the rsb; dlm_recover_process_copy() will handle EBADR
+	 * by resending.
+	 *
+	 * If someone sends us a request, we are the dir node, and we do
+	 * not find the rsb anywhere, then recreate it.  This happens if
+	 * someone sends us a request after we have removed/freed an rsb
+	 * from our toss list.  (They sent a request instead of lookup
+	 * because they are using an rsb from their toss list.)
+	 */
+
+	if (from_local || from_dir ||
+	    (from_other && (dir_nodeid == our_nodeid))) {
+		create = 1;
+	}
+
+ retry:
+	if (create) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = pre_rsb_struct(ls);
 		if (error < 0)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&ls->ls_rsbtbl[bucket].lock);
 
 	error = _search_rsb(ls, name, namelen, bucket, flags, &r);
@@ -561,12 +782,86 @@ static int find_rsb(struct dlm_ls *ls, char *name, int namelen,
 	error = get_rsb_struct(ls, name, namelen, &r);
 	if (error == -EAGAIN) {
 		spin_unlock(&ls->ls_rsbtbl[bucket].lock);
+=======
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].keep, name, len, &r);
+	if (error)
+		goto do_toss;
+	
+	/*
+	 * rsb is active, so we can't check master_nodeid without lock_rsb.
+	 */
+
+	kref_get(&r->res_ref);
+	goto out_unlock;
+
+
+ do_toss:
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+	if (error)
+		goto do_new;
+
+	/*
+	 * rsb found inactive (master_nodeid may be out of date unless
+	 * we are the dir_nodeid or were the master)  No other thread
+	 * is using this rsb because it's on the toss list, so we can
+	 * look at or update res_master_nodeid without lock_rsb.
+	 */
+
+	if ((r->res_master_nodeid != our_nodeid) && from_other) {
+		/* our rsb was not master, and another node (not the dir node)
+		   has sent us a request */
+		log_debug(ls, "find_rsb toss from_other %d master %d dir %d %s",
+			  from_nodeid, r->res_master_nodeid, dir_nodeid,
+			  r->res_name);
+		error = -ENOTBLK;
+		goto out_unlock;
+	}
+
+	if ((r->res_master_nodeid != our_nodeid) && from_dir) {
+		/* don't think this should ever happen */
+		log_error(ls, "find_rsb toss from_dir %d master %d",
+			  from_nodeid, r->res_master_nodeid);
+		dlm_print_rsb(r);
+		/* fix it and go on */
+		r->res_master_nodeid = our_nodeid;
+		r->res_nodeid = 0;
+		rsb_clear_flag(r, RSB_MASTER_UNCERTAIN);
+		r->res_first_lkid = 0;
+	}
+
+	if (from_local && (r->res_master_nodeid != our_nodeid)) {
+		/* Because we have held no locks on this rsb,
+		   res_master_nodeid could have become stale. */
+		rsb_set_flag(r, RSB_MASTER_UNCERTAIN);
+		r->res_first_lkid = 0;
+	}
+
+	rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[b].toss);
+	error = rsb_insert(r, &ls->ls_rsbtbl[b].keep);
+	goto out_unlock;
+
+
+ do_new:
+	/*
+	 * rsb not found
+	 */
+
+	if (error == -EBADR && !create)
+		goto out_unlock;
+
+	error = get_rsb_struct(ls, name, len, &r);
+	if (error == -EAGAIN) {
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto retry;
 	}
 	if (error)
 		goto out_unlock;
 
 	r->res_hash = hash;
+<<<<<<< HEAD
 	r->res_bucket = bucket;
 	r->res_nodeid = -1;
 	kref_init(&r->res_ref);
@@ -581,11 +876,57 @@ static int find_rsb(struct dlm_ls *ls, char *name, int namelen,
 	error = rsb_insert(r, &ls->ls_rsbtbl[bucket].keep);
  out_unlock:
 	spin_unlock(&ls->ls_rsbtbl[bucket].lock);
+=======
+	r->res_bucket = b;
+	r->res_dir_nodeid = dir_nodeid;
+	kref_init(&r->res_ref);
+
+	if (from_dir) {
+		/* want to see how often this happens */
+		log_debug(ls, "find_rsb new from_dir %d recreate %s",
+			  from_nodeid, r->res_name);
+		r->res_master_nodeid = our_nodeid;
+		r->res_nodeid = 0;
+		goto out_add;
+	}
+
+	if (from_other && (dir_nodeid != our_nodeid)) {
+		/* should never happen */
+		log_error(ls, "find_rsb new from_other %d dir %d our %d %s",
+			  from_nodeid, dir_nodeid, our_nodeid, r->res_name);
+		dlm_free_rsb(r);
+		r = NULL;
+		error = -ENOTBLK;
+		goto out_unlock;
+	}
+
+	if (from_other) {
+		log_debug(ls, "find_rsb new from_other %d dir %d %s",
+			  from_nodeid, dir_nodeid, r->res_name);
+	}
+
+	if (dir_nodeid == our_nodeid) {
+		/* When we are the dir nodeid, we can set the master
+		   node immediately */
+		r->res_master_nodeid = our_nodeid;
+		r->res_nodeid = 0;
+	} else {
+		/* set_master will send_lookup to dir_nodeid */
+		r->res_master_nodeid = 0;
+		r->res_nodeid = -1;
+	}
+
+ out_add:
+	error = rsb_insert(r, &ls->ls_rsbtbl[b].keep);
+ out_unlock:
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	*r_ret = r;
 	return error;
 }
 
+<<<<<<< HEAD
 /* This is only called to add a reference when the code already holds
    a valid reference to the rsb, so there's no need for locking. */
 
@@ -597,6 +938,426 @@ static inline void hold_rsb(struct dlm_rsb *r)
 void dlm_hold_rsb(struct dlm_rsb *r)
 {
 	hold_rsb(r);
+=======
+/* During recovery, other nodes can send us new MSTCPY locks (from
+   dlm_recover_locks) before we've made ourself master (in
+   dlm_recover_masters). */
+
+static int find_rsb_nodir(struct dlm_ls *ls, const void *name, int len,
+			  uint32_t hash, uint32_t b,
+			  int dir_nodeid, int from_nodeid,
+			  unsigned int flags, struct dlm_rsb **r_ret)
+{
+	struct dlm_rsb *r = NULL;
+	int our_nodeid = dlm_our_nodeid();
+	int recover = (flags & R_RECEIVE_RECOVER);
+	int error;
+
+ retry:
+	error = pre_rsb_struct(ls);
+	if (error < 0)
+		goto out;
+
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].keep, name, len, &r);
+	if (error)
+		goto do_toss;
+
+	/*
+	 * rsb is active, so we can't check master_nodeid without lock_rsb.
+	 */
+
+	kref_get(&r->res_ref);
+	goto out_unlock;
+
+
+ do_toss:
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+	if (error)
+		goto do_new;
+
+	/*
+	 * rsb found inactive. No other thread is using this rsb because
+	 * it's on the toss list, so we can look at or update
+	 * res_master_nodeid without lock_rsb.
+	 */
+
+	if (!recover && (r->res_master_nodeid != our_nodeid) && from_nodeid) {
+		/* our rsb is not master, and another node has sent us a
+		   request; this should never happen */
+		log_error(ls, "find_rsb toss from_nodeid %d master %d dir %d",
+			  from_nodeid, r->res_master_nodeid, dir_nodeid);
+		dlm_print_rsb(r);
+		error = -ENOTBLK;
+		goto out_unlock;
+	}
+
+	if (!recover && (r->res_master_nodeid != our_nodeid) &&
+	    (dir_nodeid == our_nodeid)) {
+		/* our rsb is not master, and we are dir; may as well fix it;
+		   this should never happen */
+		log_error(ls, "find_rsb toss our %d master %d dir %d",
+			  our_nodeid, r->res_master_nodeid, dir_nodeid);
+		dlm_print_rsb(r);
+		r->res_master_nodeid = our_nodeid;
+		r->res_nodeid = 0;
+	}
+
+	rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[b].toss);
+	error = rsb_insert(r, &ls->ls_rsbtbl[b].keep);
+	goto out_unlock;
+
+
+ do_new:
+	/*
+	 * rsb not found
+	 */
+
+	error = get_rsb_struct(ls, name, len, &r);
+	if (error == -EAGAIN) {
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		goto retry;
+	}
+	if (error)
+		goto out_unlock;
+
+	r->res_hash = hash;
+	r->res_bucket = b;
+	r->res_dir_nodeid = dir_nodeid;
+	r->res_master_nodeid = dir_nodeid;
+	r->res_nodeid = (dir_nodeid == our_nodeid) ? 0 : dir_nodeid;
+	kref_init(&r->res_ref);
+
+	error = rsb_insert(r, &ls->ls_rsbtbl[b].keep);
+ out_unlock:
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+ out:
+	*r_ret = r;
+	return error;
+}
+
+static int find_rsb(struct dlm_ls *ls, const void *name, int len,
+		    int from_nodeid, unsigned int flags,
+		    struct dlm_rsb **r_ret)
+{
+	uint32_t hash, b;
+	int dir_nodeid;
+
+	if (len > DLM_RESNAME_MAXLEN)
+		return -EINVAL;
+
+	hash = jhash(name, len, 0);
+	b = hash & (ls->ls_rsbtbl_size - 1);
+
+	dir_nodeid = dlm_hash2nodeid(ls, hash);
+
+	if (dlm_no_directory(ls))
+		return find_rsb_nodir(ls, name, len, hash, b, dir_nodeid,
+				      from_nodeid, flags, r_ret);
+	else
+		return find_rsb_dir(ls, name, len, hash, b, dir_nodeid,
+				      from_nodeid, flags, r_ret);
+}
+
+/* we have received a request and found that res_master_nodeid != our_nodeid,
+   so we need to return an error or make ourself the master */
+
+static int validate_master_nodeid(struct dlm_ls *ls, struct dlm_rsb *r,
+				  int from_nodeid)
+{
+	if (dlm_no_directory(ls)) {
+		log_error(ls, "find_rsb keep from_nodeid %d master %d dir %d",
+			  from_nodeid, r->res_master_nodeid,
+			  r->res_dir_nodeid);
+		dlm_print_rsb(r);
+		return -ENOTBLK;
+	}
+
+	if (from_nodeid != r->res_dir_nodeid) {
+		/* our rsb is not master, and another node (not the dir node)
+	   	   has sent us a request.  this is much more common when our
+	   	   master_nodeid is zero, so limit debug to non-zero.  */
+
+		if (r->res_master_nodeid) {
+			log_debug(ls, "validate master from_other %d master %d "
+				  "dir %d first %x %s", from_nodeid,
+				  r->res_master_nodeid, r->res_dir_nodeid,
+				  r->res_first_lkid, r->res_name);
+		}
+		return -ENOTBLK;
+	} else {
+		/* our rsb is not master, but the dir nodeid has sent us a
+	   	   request; this could happen with master 0 / res_nodeid -1 */
+
+		if (r->res_master_nodeid) {
+			log_error(ls, "validate master from_dir %d master %d "
+				  "first %x %s",
+				  from_nodeid, r->res_master_nodeid,
+				  r->res_first_lkid, r->res_name);
+		}
+
+		r->res_master_nodeid = dlm_our_nodeid();
+		r->res_nodeid = 0;
+		return 0;
+	}
+}
+
+static void __dlm_master_lookup(struct dlm_ls *ls, struct dlm_rsb *r, int our_nodeid,
+				int from_nodeid, bool toss_list, unsigned int flags,
+				int *r_nodeid, int *result)
+{
+	int fix_master = (flags & DLM_LU_RECOVER_MASTER);
+	int from_master = (flags & DLM_LU_RECOVER_DIR);
+
+	if (r->res_dir_nodeid != our_nodeid) {
+		/* should not happen, but may as well fix it and carry on */
+		log_error(ls, "%s res_dir %d our %d %s", __func__,
+			  r->res_dir_nodeid, our_nodeid, r->res_name);
+		r->res_dir_nodeid = our_nodeid;
+	}
+
+	if (fix_master && dlm_is_removed(ls, r->res_master_nodeid)) {
+		/* Recovery uses this function to set a new master when
+		 * the previous master failed.  Setting NEW_MASTER will
+		 * force dlm_recover_masters to call recover_master on this
+		 * rsb even though the res_nodeid is no longer removed.
+		 */
+
+		r->res_master_nodeid = from_nodeid;
+		r->res_nodeid = from_nodeid;
+		rsb_set_flag(r, RSB_NEW_MASTER);
+
+		if (toss_list) {
+			/* I don't think we should ever find it on toss list. */
+			log_error(ls, "%s fix_master on toss", __func__);
+			dlm_dump_rsb(r);
+		}
+	}
+
+	if (from_master && (r->res_master_nodeid != from_nodeid)) {
+		/* this will happen if from_nodeid became master during
+		 * a previous recovery cycle, and we aborted the previous
+		 * cycle before recovering this master value
+		 */
+
+		log_limit(ls, "%s from_master %d master_nodeid %d res_nodeid %d first %x %s",
+			  __func__, from_nodeid, r->res_master_nodeid,
+			  r->res_nodeid, r->res_first_lkid, r->res_name);
+
+		if (r->res_master_nodeid == our_nodeid) {
+			log_error(ls, "from_master %d our_master", from_nodeid);
+			dlm_dump_rsb(r);
+			goto ret_assign;
+		}
+
+		r->res_master_nodeid = from_nodeid;
+		r->res_nodeid = from_nodeid;
+		rsb_set_flag(r, RSB_NEW_MASTER);
+	}
+
+	if (!r->res_master_nodeid) {
+		/* this will happen if recovery happens while we're looking
+		 * up the master for this rsb
+		 */
+
+		log_debug(ls, "%s master 0 to %d first %x %s", __func__,
+			  from_nodeid, r->res_first_lkid, r->res_name);
+		r->res_master_nodeid = from_nodeid;
+		r->res_nodeid = from_nodeid;
+	}
+
+	if (!from_master && !fix_master &&
+	    (r->res_master_nodeid == from_nodeid)) {
+		/* this can happen when the master sends remove, the dir node
+		 * finds the rsb on the keep list and ignores the remove,
+		 * and the former master sends a lookup
+		 */
+
+		log_limit(ls, "%s from master %d flags %x first %x %s",
+			  __func__, from_nodeid, flags, r->res_first_lkid,
+			  r->res_name);
+	}
+
+ ret_assign:
+	*r_nodeid = r->res_master_nodeid;
+	if (result)
+		*result = DLM_LU_MATCH;
+}
+
+/*
+ * We're the dir node for this res and another node wants to know the
+ * master nodeid.  During normal operation (non recovery) this is only
+ * called from receive_lookup(); master lookups when the local node is
+ * the dir node are done by find_rsb().
+ *
+ * normal operation, we are the dir node for a resource
+ * . _request_lock
+ * . set_master
+ * . send_lookup
+ * . receive_lookup
+ * . dlm_master_lookup flags 0
+ *
+ * recover directory, we are rebuilding dir for all resources
+ * . dlm_recover_directory
+ * . dlm_rcom_names
+ *   remote node sends back the rsb names it is master of and we are dir of
+ * . dlm_master_lookup RECOVER_DIR (fix_master 0, from_master 1)
+ *   we either create new rsb setting remote node as master, or find existing
+ *   rsb and set master to be the remote node.
+ *
+ * recover masters, we are finding the new master for resources
+ * . dlm_recover_masters
+ * . recover_master
+ * . dlm_send_rcom_lookup
+ * . receive_rcom_lookup
+ * . dlm_master_lookup RECOVER_MASTER (fix_master 1, from_master 0)
+ */
+
+int dlm_master_lookup(struct dlm_ls *ls, int from_nodeid, const char *name,
+		      int len, unsigned int flags, int *r_nodeid, int *result)
+{
+	struct dlm_rsb *r = NULL;
+	uint32_t hash, b;
+	int our_nodeid = dlm_our_nodeid();
+	int dir_nodeid, error;
+
+	if (len > DLM_RESNAME_MAXLEN)
+		return -EINVAL;
+
+	if (from_nodeid == our_nodeid) {
+		log_error(ls, "dlm_master_lookup from our_nodeid %d flags %x",
+			  our_nodeid, flags);
+		return -EINVAL;
+	}
+
+	hash = jhash(name, len, 0);
+	b = hash & (ls->ls_rsbtbl_size - 1);
+
+	dir_nodeid = dlm_hash2nodeid(ls, hash);
+	if (dir_nodeid != our_nodeid) {
+		log_error(ls, "dlm_master_lookup from %d dir %d our %d h %x %d",
+			  from_nodeid, dir_nodeid, our_nodeid, hash,
+			  ls->ls_num_nodes);
+		*r_nodeid = -1;
+		return -EINVAL;
+	}
+
+ retry:
+	error = pre_rsb_struct(ls);
+	if (error < 0)
+		return error;
+
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].keep, name, len, &r);
+	if (!error) {
+		/* because the rsb is active, we need to lock_rsb before
+		 * checking/changing re_master_nodeid
+		 */
+
+		hold_rsb(r);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		lock_rsb(r);
+
+		__dlm_master_lookup(ls, r, our_nodeid, from_nodeid, false,
+				    flags, r_nodeid, result);
+
+		/* the rsb was active */
+		unlock_rsb(r);
+		put_rsb(r);
+
+		return 0;
+	}
+
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+	if (error)
+		goto not_found;
+
+	/* because the rsb is inactive (on toss list), it's not refcounted
+	 * and lock_rsb is not used, but is protected by the rsbtbl lock
+	 */
+
+	__dlm_master_lookup(ls, r, our_nodeid, from_nodeid, true, flags,
+			    r_nodeid, result);
+
+	r->res_toss_time = jiffies;
+	/* the rsb was inactive (on toss list) */
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+
+	return 0;
+
+ not_found:
+	error = get_rsb_struct(ls, name, len, &r);
+	if (error == -EAGAIN) {
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		goto retry;
+	}
+	if (error)
+		goto out_unlock;
+
+	r->res_hash = hash;
+	r->res_bucket = b;
+	r->res_dir_nodeid = our_nodeid;
+	r->res_master_nodeid = from_nodeid;
+	r->res_nodeid = from_nodeid;
+	kref_init(&r->res_ref);
+	r->res_toss_time = jiffies;
+
+	error = rsb_insert(r, &ls->ls_rsbtbl[b].toss);
+	if (error) {
+		/* should never happen */
+		dlm_free_rsb(r);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		goto retry;
+	}
+
+	if (result)
+		*result = DLM_LU_ADD;
+	*r_nodeid = from_nodeid;
+ out_unlock:
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+	return error;
+}
+
+static void dlm_dump_rsb_hash(struct dlm_ls *ls, uint32_t hash)
+{
+	struct rb_node *n;
+	struct dlm_rsb *r;
+	int i;
+
+	for (i = 0; i < ls->ls_rsbtbl_size; i++) {
+		spin_lock(&ls->ls_rsbtbl[i].lock);
+		for (n = rb_first(&ls->ls_rsbtbl[i].keep); n; n = rb_next(n)) {
+			r = rb_entry(n, struct dlm_rsb, res_hashnode);
+			if (r->res_hash == hash)
+				dlm_dump_rsb(r);
+		}
+		spin_unlock(&ls->ls_rsbtbl[i].lock);
+	}
+}
+
+void dlm_dump_rsb_name(struct dlm_ls *ls, const char *name, int len)
+{
+	struct dlm_rsb *r = NULL;
+	uint32_t hash, b;
+	int error;
+
+	hash = jhash(name, len, 0);
+	b = hash & (ls->ls_rsbtbl_size - 1);
+
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].keep, name, len, &r);
+	if (!error)
+		goto out_dump;
+
+	error = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+	if (error)
+		goto out;
+ out_dump:
+	dlm_dump_rsb(r);
+ out:
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void toss_rsb(struct kref *kref)
@@ -609,12 +1370,17 @@ static void toss_rsb(struct kref *kref)
 	rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[r->res_bucket].keep);
 	rsb_insert(r, &ls->ls_rsbtbl[r->res_bucket].toss);
 	r->res_toss_time = jiffies;
+<<<<<<< HEAD
+=======
+	set_bit(DLM_RTF_SHRINK_BIT, &ls->ls_rsbtbl[r->res_bucket].flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r->res_lvbptr) {
 		dlm_free_lvb(r->res_lvbptr);
 		r->res_lvbptr = NULL;
 	}
 }
 
+<<<<<<< HEAD
 /* When all references to the rsb are gone it's transferred to
    the tossed list for later disposal. */
 
@@ -633,6 +1399,8 @@ void dlm_put_rsb(struct dlm_rsb *r)
 	put_rsb(r);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* See comment for unhold_lkb */
 
 static void unhold_rsb(struct dlm_rsb *r)
@@ -674,20 +1442,33 @@ static void detach_lkb(struct dlm_lkb *lkb)
 	}
 }
 
+<<<<<<< HEAD
 static int create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret)
 {
 	struct dlm_lkb *lkb;
 	int rv, id;
+=======
+static int _create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret,
+		       int start, int end)
+{
+	struct dlm_lkb *lkb;
+	int rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lkb = dlm_allocate_lkb(ls);
 	if (!lkb)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	lkb->lkb_last_bast_mode = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkb->lkb_nodeid = -1;
 	lkb->lkb_grmode = DLM_LOCK_IV;
 	kref_init(&lkb->lkb_ref);
 	INIT_LIST_HEAD(&lkb->lkb_ownqueue);
 	INIT_LIST_HEAD(&lkb->lkb_rsb_lookup);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&lkb->lkb_time_list);
 	INIT_LIST_HEAD(&lkb->lkb_cb_list);
 	mutex_init(&lkb->lkb_cb_mutex);
@@ -709,6 +1490,24 @@ static int create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret)
 
 	if (rv < 0) {
 		log_error(ls, "create_lkb idr error %d", rv);
+=======
+	INIT_LIST_HEAD(&lkb->lkb_cb_list);
+	INIT_LIST_HEAD(&lkb->lkb_callbacks);
+	spin_lock_init(&lkb->lkb_cb_lock);
+	INIT_WORK(&lkb->lkb_cb_work, dlm_callback_work);
+
+	idr_preload(GFP_NOFS);
+	spin_lock(&ls->ls_lkbidr_spin);
+	rv = idr_alloc(&ls->ls_lkbidr, lkb, start, end, GFP_NOWAIT);
+	if (rv >= 0)
+		lkb->lkb_id = rv;
+	spin_unlock(&ls->ls_lkbidr_spin);
+	idr_preload_end();
+
+	if (rv < 0) {
+		log_error(ls, "create_lkb idr error %d", rv);
+		dlm_free_lkb(lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rv;
 	}
 
@@ -716,6 +1515,14 @@ static int create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int create_lkb(struct dlm_ls *ls, struct dlm_lkb **lkb_ret)
+{
+	return _create_lkb(ls, lkb_ret, 1, 0);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int find_lkb(struct dlm_ls *ls, uint32_t lkid, struct dlm_lkb **lkb_ret)
 {
 	struct dlm_lkb *lkb;
@@ -746,9 +1553,17 @@ static void kill_lkb(struct kref *kref)
 static int __put_lkb(struct dlm_ls *ls, struct dlm_lkb *lkb)
 {
 	uint32_t lkid = lkb->lkb_id;
+<<<<<<< HEAD
 
 	spin_lock(&ls->ls_lkbidr_spin);
 	if (kref_put(&lkb->lkb_ref, kill_lkb)) {
+=======
+	int rv;
+
+	rv = kref_put_lock(&lkb->lkb_ref, kill_lkb,
+			   &ls->ls_lkbidr_spin);
+	if (rv) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idr_remove(&ls->ls_lkbidr, lkid);
 		spin_unlock(&ls->ls_lkbidr_spin);
 
@@ -758,11 +1573,17 @@ static int __put_lkb(struct dlm_ls *ls, struct dlm_lkb *lkb)
 		if (lkb->lkb_lvbptr && is_master_copy(lkb))
 			dlm_free_lvb(lkb->lkb_lvbptr);
 		dlm_free_lkb(lkb);
+<<<<<<< HEAD
 		return 1;
 	} else {
 		spin_unlock(&ls->ls_lkbidr_spin);
 		return 0;
 	}
+=======
+	}
+
+	return rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dlm_put_lkb(struct dlm_lkb *lkb)
@@ -784,6 +1605,16 @@ static inline void hold_lkb(struct dlm_lkb *lkb)
 	kref_get(&lkb->lkb_ref);
 }
 
+<<<<<<< HEAD
+=======
+static void unhold_lkb_assert(struct kref *kref)
+{
+	struct dlm_lkb *lkb = container_of(kref, struct dlm_lkb, lkb_ref);
+
+	DLM_ASSERT(false, dlm_print_lkb(lkb););
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is called when we need to remove a reference and are certain
    it's not the last ref.  e.g. del_lkb is always called between a
    find_lkb/put_lkb and is always the inverse of a previous add_lkb.
@@ -791,14 +1622,19 @@ static inline void hold_lkb(struct dlm_lkb *lkb)
 
 static inline void unhold_lkb(struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	int rv;
 	rv = kref_put(&lkb->lkb_ref, kill_lkb);
 	DLM_ASSERT(!rv, dlm_print_lkb(lkb););
+=======
+	kref_put(&lkb->lkb_ref, unhold_lkb_assert);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void lkb_add_ordered(struct list_head *new, struct list_head *head,
 			    int mode)
 {
+<<<<<<< HEAD
 	struct dlm_lkb *lkb = NULL;
 
 	list_for_each_entry(lkb, head, lkb_statequeue)
@@ -806,6 +1642,19 @@ static void lkb_add_ordered(struct list_head *new, struct list_head *head,
 			break;
 
 	__list_add(new, lkb->lkb_statequeue.prev, &lkb->lkb_statequeue);
+=======
+	struct dlm_lkb *lkb = NULL, *iter;
+
+	list_for_each_entry(iter, head, lkb_statequeue)
+		if (iter->lkb_rqmode < mode) {
+			lkb = iter;
+			list_add_tail(new, &iter->lkb_statequeue);
+			break;
+		}
+
+	if (!lkb)
+		list_add_tail(new, head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* add/remove lkb to rsb's grant/convert/wait queue */
@@ -876,6 +1725,7 @@ static int msg_reply_type(int mstype)
 	return -1;
 }
 
+<<<<<<< HEAD
 static int nodeid_warned(int nodeid, int num_nodes, int *warned)
 {
 	int i;
@@ -946,6 +1796,8 @@ void dlm_scan_waiters(struct dlm_ls *ls)
 			  dlm_config.ci_waitwarn_us, (long long)debug_maxus);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* add/remove lkb from global waiters list of lkb's waiting for
    a reply from a remote node */
 
@@ -965,10 +1817,17 @@ static int add_to_waiters(struct dlm_lkb *lkb, int mstype, int to_nodeid)
 	if (lkb->lkb_wait_type || is_overlap_cancel(lkb)) {
 		switch (mstype) {
 		case DLM_MSG_UNLOCK:
+<<<<<<< HEAD
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_UNLOCK;
 			break;
 		case DLM_MSG_CANCEL:
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_CANCEL;
+=======
+			set_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+			break;
+		case DLM_MSG_CANCEL:
+			set_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			error = -EBUSY;
@@ -979,7 +1838,11 @@ static int add_to_waiters(struct dlm_lkb *lkb, int mstype, int to_nodeid)
 
 		log_debug(ls, "addwait %x cur %d overlap %d count %d f %x",
 			  lkb->lkb_id, lkb->lkb_wait_type, mstype,
+<<<<<<< HEAD
 			  lkb->lkb_wait_count, lkb->lkb_flags);
+=======
+			  lkb->lkb_wait_count, dlm_iflags_val(lkb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -989,14 +1852,21 @@ static int add_to_waiters(struct dlm_lkb *lkb, int mstype, int to_nodeid)
 
 	lkb->lkb_wait_count++;
 	lkb->lkb_wait_type = mstype;
+<<<<<<< HEAD
 	lkb->lkb_wait_time = ktime_get();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkb->lkb_wait_nodeid = to_nodeid; /* for debugging */
 	hold_lkb(lkb);
 	list_add(&lkb->lkb_wait_reply, &ls->ls_waiters);
  out:
 	if (error)
 		log_error(ls, "addwait error %x %d flags %x %d %d %s",
+<<<<<<< HEAD
 			  lkb->lkb_id, error, lkb->lkb_flags, mstype,
+=======
+			  lkb->lkb_id, error, dlm_iflags_val(lkb), mstype,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  lkb->lkb_wait_type, lkb->lkb_resource->res_name);
 	mutex_unlock(&ls->ls_waiters_mutex);
 	return error;
@@ -1008,21 +1878,37 @@ static int add_to_waiters(struct dlm_lkb *lkb, int mstype, int to_nodeid)
    set RESEND and dlm_recover_waiters_post() */
 
 static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
+<<<<<<< HEAD
 				struct dlm_message *ms)
+=======
+				const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_ls *ls = lkb->lkb_resource->res_ls;
 	int overlap_done = 0;
 
+<<<<<<< HEAD
 	if (is_overlap_unlock(lkb) && (mstype == DLM_MSG_UNLOCK_REPLY)) {
 		log_debug(ls, "remwait %x unlock_reply overlap", lkb->lkb_id);
 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
+=======
+	if (mstype == DLM_MSG_UNLOCK_REPLY &&
+	    test_and_clear_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags)) {
+		log_debug(ls, "remwait %x unlock_reply overlap", lkb->lkb_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		overlap_done = 1;
 		goto out_del;
 	}
 
+<<<<<<< HEAD
 	if (is_overlap_cancel(lkb) && (mstype == DLM_MSG_CANCEL_REPLY)) {
 		log_debug(ls, "remwait %x cancel_reply overlap", lkb->lkb_id);
 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
+=======
+	if (mstype == DLM_MSG_CANCEL_REPLY &&
+	    test_and_clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags)) {
+		log_debug(ls, "remwait %x cancel_reply overlap", lkb->lkb_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		overlap_done = 1;
 		goto out_del;
 	}
@@ -1046,6 +1932,7 @@ static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
 	   lingering state of the cancel and fail with -EBUSY. */
 
 	if ((mstype == DLM_MSG_CONVERT_REPLY) &&
+<<<<<<< HEAD
 	    (lkb->lkb_wait_type == DLM_MSG_CONVERT) &&
 	    is_overlap_cancel(lkb) && ms && !ms->m_result) {
 		log_debug(ls, "remwait %x convert_reply zap overlap_cancel",
@@ -1053,6 +1940,15 @@ static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
 		lkb->lkb_wait_type = 0;
 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
 		lkb->lkb_wait_count--;
+=======
+	    (lkb->lkb_wait_type == DLM_MSG_CONVERT) && ms && !ms->m_result &&
+	    test_and_clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags)) {
+		log_debug(ls, "remwait %x convert_reply zap overlap_cancel",
+			  lkb->lkb_id);
+		lkb->lkb_wait_type = 0;
+		lkb->lkb_wait_count--;
+		unhold_lkb(lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_del;
 	}
 
@@ -1064,8 +1960,14 @@ static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
 		goto out_del;
 	}
 
+<<<<<<< HEAD
 	log_error(ls, "remwait error %x reply %d flags %x no wait_type",
 		  lkb->lkb_id, mstype, lkb->lkb_flags);
+=======
+	log_error(ls, "remwait error %x remote %d %x msg %d flags %x no wait",
+		  lkb->lkb_id, ms ? le32_to_cpu(ms->m_header.h_nodeid) : 0,
+		  lkb->lkb_remid, mstype, dlm_iflags_val(lkb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 
  out_del:
@@ -1078,12 +1980,20 @@ static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
 		lkb->lkb_wait_count--;
+<<<<<<< HEAD
+=======
+		unhold_lkb(lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lkb->lkb_wait_type = 0;
 	}
 
 	DLM_ASSERT(lkb->lkb_wait_count, dlm_print_lkb(lkb););
 
+<<<<<<< HEAD
 	lkb->lkb_flags &= ~DLM_IFL_RESEND;
+=======
+	clear_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkb->lkb_wait_count--;
 	if (!lkb->lkb_wait_count)
 		list_del_init(&lkb->lkb_wait_reply);
@@ -1102,22 +2012,38 @@ static int remove_from_waiters(struct dlm_lkb *lkb, int mstype)
 	return error;
 }
 
+<<<<<<< HEAD
 /* Handles situations where we might be processing a "fake" or "stub" reply in
    which we can't try to take waiters_mutex again. */
 
 static int remove_from_waiters_ms(struct dlm_lkb *lkb, struct dlm_message *ms)
+=======
+/* Handles situations where we might be processing a "fake" or "local" reply in
+   which we can't try to take waiters_mutex again. */
+
+static int remove_from_waiters_ms(struct dlm_lkb *lkb,
+				  const struct dlm_message *ms, bool local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_ls *ls = lkb->lkb_resource->res_ls;
 	int error;
 
+<<<<<<< HEAD
 	if (ms->m_flags != DLM_IFL_STUB_MS)
 		mutex_lock(&ls->ls_waiters_mutex);
 	error = _remove_from_waiters(lkb, ms->m_type, ms);
 	if (ms->m_flags != DLM_IFL_STUB_MS)
+=======
+	if (!local)
+		mutex_lock(&ls->ls_waiters_mutex);
+	error = _remove_from_waiters(lkb, le32_to_cpu(ms->m_type), ms);
+	if (!local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&ls->ls_waiters_mutex);
 	return error;
 }
 
+<<<<<<< HEAD
 static void dir_remove(struct dlm_rsb *r)
 {
 	int to_nodeid;
@@ -1173,6 +2099,140 @@ static int shrink_bucket(struct dlm_ls *ls, int b)
 	}
 
 	return count;
+=======
+static void shrink_bucket(struct dlm_ls *ls, int b)
+{
+	struct rb_node *n, *next;
+	struct dlm_rsb *r;
+	char *name;
+	int our_nodeid = dlm_our_nodeid();
+	int remote_count = 0;
+	int need_shrink = 0;
+	int i, len, rv;
+
+	memset(&ls->ls_remove_lens, 0, sizeof(int) * DLM_REMOVE_NAMES_MAX);
+
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+
+	if (!test_bit(DLM_RTF_SHRINK_BIT, &ls->ls_rsbtbl[b].flags)) {
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		return;
+	}
+
+	for (n = rb_first(&ls->ls_rsbtbl[b].toss); n; n = next) {
+		next = rb_next(n);
+		r = rb_entry(n, struct dlm_rsb, res_hashnode);
+
+		/* If we're the directory record for this rsb, and
+		   we're not the master of it, then we need to wait
+		   for the master node to send us a dir remove for
+		   before removing the dir record. */
+
+		if (!dlm_no_directory(ls) &&
+		    (r->res_master_nodeid != our_nodeid) &&
+		    (dlm_dir_nodeid(r) == our_nodeid)) {
+			continue;
+		}
+
+		need_shrink = 1;
+
+		if (!time_after_eq(jiffies, r->res_toss_time +
+				   dlm_config.ci_toss_secs * HZ)) {
+			continue;
+		}
+
+		if (!dlm_no_directory(ls) &&
+		    (r->res_master_nodeid == our_nodeid) &&
+		    (dlm_dir_nodeid(r) != our_nodeid)) {
+
+			/* We're the master of this rsb but we're not
+			   the directory record, so we need to tell the
+			   dir node to remove the dir record. */
+
+			ls->ls_remove_lens[remote_count] = r->res_length;
+			memcpy(ls->ls_remove_names[remote_count], r->res_name,
+			       DLM_RESNAME_MAXLEN);
+			remote_count++;
+
+			if (remote_count >= DLM_REMOVE_NAMES_MAX)
+				break;
+			continue;
+		}
+
+		if (!kref_put(&r->res_ref, kill_rsb)) {
+			log_error(ls, "tossed rsb in use %s", r->res_name);
+			continue;
+		}
+
+		rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[b].toss);
+		dlm_free_rsb(r);
+	}
+
+	if (need_shrink)
+		set_bit(DLM_RTF_SHRINK_BIT, &ls->ls_rsbtbl[b].flags);
+	else
+		clear_bit(DLM_RTF_SHRINK_BIT, &ls->ls_rsbtbl[b].flags);
+	spin_unlock(&ls->ls_rsbtbl[b].lock);
+
+	/*
+	 * While searching for rsb's to free, we found some that require
+	 * remote removal.  We leave them in place and find them again here
+	 * so there is a very small gap between removing them from the toss
+	 * list and sending the removal.  Keeping this gap small is
+	 * important to keep us (the master node) from being out of sync
+	 * with the remote dir node for very long.
+	 */
+
+	for (i = 0; i < remote_count; i++) {
+		name = ls->ls_remove_names[i];
+		len = ls->ls_remove_lens[i];
+
+		spin_lock(&ls->ls_rsbtbl[b].lock);
+		rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+		if (rv) {
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			log_debug(ls, "remove_name not toss %s", name);
+			continue;
+		}
+
+		if (r->res_master_nodeid != our_nodeid) {
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			log_debug(ls, "remove_name master %d dir %d our %d %s",
+				  r->res_master_nodeid, r->res_dir_nodeid,
+				  our_nodeid, name);
+			continue;
+		}
+
+		if (r->res_dir_nodeid == our_nodeid) {
+			/* should never happen */
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			log_error(ls, "remove_name dir %d master %d our %d %s",
+				  r->res_dir_nodeid, r->res_master_nodeid,
+				  our_nodeid, name);
+			continue;
+		}
+
+		if (!time_after_eq(jiffies, r->res_toss_time +
+				   dlm_config.ci_toss_secs * HZ)) {
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			log_debug(ls, "remove_name toss_time %lu now %lu %s",
+				  r->res_toss_time, jiffies, name);
+			continue;
+		}
+
+		if (!kref_put(&r->res_ref, kill_rsb)) {
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			log_error(ls, "remove_name in use %s", name);
+			continue;
+		}
+
+		rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[b].toss);
+		send_remove(r);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+
+		dlm_free_rsb(r);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_scan_rsbs(struct dlm_ls *ls)
@@ -1187,6 +2247,7 @@ void dlm_scan_rsbs(struct dlm_ls *ls)
 	}
 }
 
+<<<<<<< HEAD
 static void add_timeout(struct dlm_lkb *lkb)
 {
 	struct dlm_ls *ls = lkb->lkb_resource->res_ls;
@@ -1318,6 +2379,8 @@ void dlm_adjust_timeouts(struct dlm_ls *ls)
 	mutex_unlock(&ls->ls_waiters_mutex);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* lkb is master or local copy */
 
 static void set_lvb_lock(struct dlm_rsb *r, struct dlm_lkb *lkb)
@@ -1368,7 +2431,11 @@ static void set_lvb_lock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	}
 
 	if (rsb_flag(r, RSB_VALNOTVALID))
+<<<<<<< HEAD
 		lkb->lkb_sbflags |= DLM_SBF_VALNOTVALID;
+=======
+		set_bit(DLM_SBF_VALNOTVALID_BIT, &lkb->lkb_sbflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_lvb_unlock(struct dlm_rsb *r, struct dlm_lkb *lkb)
@@ -1401,7 +2468,11 @@ static void set_lvb_unlock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 /* lkb is process copy (pc) */
 
 static void set_lvb_lock_pc(struct dlm_rsb *r, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 			    struct dlm_message *ms)
+=======
+			    const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int b;
 
@@ -1414,10 +2485,17 @@ static void set_lvb_lock_pc(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	b = dlm_lvb_operations[lkb->lkb_grmode + 1][lkb->lkb_rqmode + 1];
 	if (b == 1) {
 		int len = receive_extralen(ms);
+<<<<<<< HEAD
 		if (len > DLM_RESNAME_MAXLEN)
 			len = DLM_RESNAME_MAXLEN;
 		memcpy(lkb->lkb_lvbptr, ms->m_extra, len);
 		lkb->lkb_lvbseq = ms->m_lvbseq;
+=======
+		if (len > r->res_ls->ls_lvblen)
+			len = r->res_ls->ls_lvblen;
+		memcpy(lkb->lkb_lvbptr, ms->m_extra, len);
+		lkb->lkb_lvbseq = le32_to_cpu(ms->m_lvbseq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1498,17 +2576,28 @@ static void _grant_lock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	}
 
 	lkb->lkb_rqmode = DLM_LOCK_IV;
+<<<<<<< HEAD
+=======
+	lkb->lkb_highbast = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void grant_lock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 {
 	set_lvb_lock(r, lkb);
 	_grant_lock(r, lkb);
+<<<<<<< HEAD
 	lkb->lkb_highbast = 0;
 }
 
 static void grant_lock_pc(struct dlm_rsb *r, struct dlm_lkb *lkb,
 			  struct dlm_message *ms)
+=======
+}
+
+static void grant_lock_pc(struct dlm_rsb *r, struct dlm_lkb *lkb,
+			  const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	set_lvb_lock_pc(r, lkb, ms);
 	_grant_lock(r, lkb);
@@ -1546,12 +2635,21 @@ static void munge_demoted(struct dlm_lkb *lkb)
 	lkb->lkb_grmode = DLM_LOCK_NL;
 }
 
+<<<<<<< HEAD
 static void munge_altmode(struct dlm_lkb *lkb, struct dlm_message *ms)
 {
 	if (ms->m_type != DLM_MSG_REQUEST_REPLY &&
 	    ms->m_type != DLM_MSG_GRANT) {
 		log_print("munge_altmode %x invalid reply type %d",
 			  lkb->lkb_id, ms->m_type);
+=======
+static void munge_altmode(struct dlm_lkb *lkb, const struct dlm_message *ms)
+{
+	if (ms->m_type != cpu_to_le32(DLM_MSG_REQUEST_REPLY) &&
+	    ms->m_type != cpu_to_le32(DLM_MSG_GRANT)) {
+		log_print("munge_altmode %x invalid reply type %d",
+			  lkb->lkb_id, le32_to_cpu(ms->m_type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1664,10 +2762,21 @@ static int conversion_deadlock_detect(struct dlm_rsb *r, struct dlm_lkb *lkb2)
  * immediate request, it is 0 if called later, after the lock has been
  * queued.
  *
+<<<<<<< HEAD
  * References are from chapter 6 of "VAXcluster Principles" by Roy Davis
  */
 
 static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now)
+=======
+ * recover is 1 if dlm_recover_grant() is trying to grant conversions
+ * after recovery.
+ *
+ * References are from chapter 6 of "VAXcluster Principles" by Roy Davis
+ */
+
+static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
+			   int recover)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int8_t conv = (lkb->lkb_grmode != DLM_LOCK_IV);
 
@@ -1699,7 +2808,11 @@ static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now)
 	 */
 
 	if (queue_conflict(&r->res_grantqueue, lkb))
+<<<<<<< HEAD
 		goto out;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * 6-3: By default, a conversion request is immediately granted if the
@@ -1708,7 +2821,28 @@ static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now)
 	 */
 
 	if (queue_conflict(&r->res_convertqueue, lkb))
+<<<<<<< HEAD
 		goto out;
+=======
+		return 0;
+
+	/*
+	 * The RECOVER_GRANT flag means dlm_recover_grant() is granting
+	 * locks for a recovered rsb, on which lkb's have been rebuilt.
+	 * The lkb's may have been rebuilt on the queues in a different
+	 * order than they were in on the previous master.  So, granting
+	 * queued conversions in order after recovery doesn't make sense
+	 * since the order hasn't been preserved anyway.  The new order
+	 * could also have created a new "in place" conversion deadlock.
+	 * (e.g. old, failed master held granted EX, with PR->EX, NL->EX.
+	 * After recovery, there would be no granted locks, and possibly
+	 * NL->EX, PR->EX, an in-place conversion deadlock.)  So, after
+	 * recovery, grant conversions without considering order.
+	 */
+
+	if (conv && recover)
+		return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * 6-5: But the default algorithm for deciding whether to grant or
@@ -1745,7 +2879,11 @@ static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now)
 		if (list_empty(&r->res_convertqueue))
 			return 1;
 		else
+<<<<<<< HEAD
 			goto out;
+=======
+			return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1791,12 +2929,20 @@ static int _can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now)
 	if (!now && !conv && list_empty(&r->res_convertqueue) &&
 	    first_in_list(lkb, &r->res_waitqueue))
 		return 1;
+<<<<<<< HEAD
  out:
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
+<<<<<<< HEAD
 			  int *err)
+=======
+			  int recover, int *err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rv;
 	int8_t alt = 0, rqmode = lkb->lkb_rqmode;
@@ -1805,7 +2951,11 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 	if (err)
 		*err = 0;
 
+<<<<<<< HEAD
 	rv = _can_be_granted(r, lkb, now);
+=======
+	rv = _can_be_granted(r, lkb, now, recover);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rv)
 		goto out;
 
@@ -1819,6 +2969,7 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 	    conversion_deadlock_detect(r, lkb)) {
 		if (lkb->lkb_exflags & DLM_LKF_CONVDEADLK) {
 			lkb->lkb_grmode = DLM_LOCK_NL;
+<<<<<<< HEAD
 			lkb->lkb_sbflags |= DLM_SBF_DEMOTED;
 		} else if (!(lkb->lkb_exflags & DLM_LKF_NODLCKWT)) {
 			if (err)
@@ -1828,6 +2979,15 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 					  lkb->lkb_id, now);
 				dlm_dump_rsb(r);
 			}
+=======
+			set_bit(DLM_SBF_DEMOTED_BIT, &lkb->lkb_sbflags);
+		} else if (err) {
+			*err = -EDEADLK;
+		} else {
+			log_print("can_be_granted deadlock %x now %d",
+				  lkb->lkb_id, now);
+			dlm_dump_rsb(r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
@@ -1846,9 +3006,15 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 
 	if (alt) {
 		lkb->lkb_rqmode = alt;
+<<<<<<< HEAD
 		rv = _can_be_granted(r, lkb, now);
 		if (rv)
 			lkb->lkb_sbflags |= DLM_SBF_ALTMODE;
+=======
+		rv = _can_be_granted(r, lkb, now, 0);
+		if (rv)
+			set_bit(DLM_SBF_ALTMODE_BIT, &lkb->lkb_sbflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			lkb->lkb_rqmode = rqmode;
 	}
@@ -1856,6 +3022,7 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 	return rv;
 }
 
+<<<<<<< HEAD
 /* FIXME: I don't think that can_be_granted() can/will demote or find deadlock
    for locks pending on the convert list.  Once verified (watch for these
    log_prints), we should be able to just call _can_be_granted() and not
@@ -1869,6 +3036,16 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 static int grant_pending_convert(struct dlm_rsb *r, int high, int *cw)
 {
 	struct dlm_lkb *lkb, *s;
+=======
+/* Returns the highest requested mode of all blocked conversions; sets
+   cw if there's a blocked conversion to DLM_LOCK_CW. */
+
+static int grant_pending_convert(struct dlm_rsb *r, int high, int *cw,
+				 unsigned int *count)
+{
+	struct dlm_lkb *lkb, *s;
+	int recover = rsb_flag(r, RSB_RECOVER_GRANT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hi, demoted, quit, grant_restart, demote_restart;
 	int deadlk;
 
@@ -1882,9 +3059,17 @@ static int grant_pending_convert(struct dlm_rsb *r, int high, int *cw)
 		demoted = is_demoted(lkb);
 		deadlk = 0;
 
+<<<<<<< HEAD
 		if (can_be_granted(r, lkb, 0, &deadlk)) {
 			grant_lock_pending(r, lkb);
 			grant_restart = 1;
+=======
+		if (can_be_granted(r, lkb, 0, recover, &deadlk)) {
+			grant_lock_pending(r, lkb);
+			grant_restart = 1;
+			if (count)
+				(*count)++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -1896,9 +3081,28 @@ static int grant_pending_convert(struct dlm_rsb *r, int high, int *cw)
 		}
 
 		if (deadlk) {
+<<<<<<< HEAD
 			log_print("WARN: pending deadlock %x node %d %s",
 				  lkb->lkb_id, lkb->lkb_nodeid, r->res_name);
 			dlm_dump_rsb(r);
+=======
+			/*
+			 * If DLM_LKB_NODLKWT flag is set and conversion
+			 * deadlock is detected, we request blocking AST and
+			 * down (or cancel) conversion.
+			 */
+			if (lkb->lkb_exflags & DLM_LKF_NODLCKWT) {
+				if (lkb->lkb_highbast < lkb->lkb_rqmode) {
+					queue_bast(r, lkb, lkb->lkb_rqmode);
+					lkb->lkb_highbast = lkb->lkb_rqmode;
+				}
+			} else {
+				log_print("WARN: pending deadlock %x node %d %s",
+					  lkb->lkb_id, lkb->lkb_nodeid,
+					  r->res_name);
+				dlm_dump_rsb(r);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -1918,14 +3122,27 @@ static int grant_pending_convert(struct dlm_rsb *r, int high, int *cw)
 	return max_t(int, high, hi);
 }
 
+<<<<<<< HEAD
 static int grant_pending_wait(struct dlm_rsb *r, int high, int *cw)
+=======
+static int grant_pending_wait(struct dlm_rsb *r, int high, int *cw,
+			      unsigned int *count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb, *s;
 
 	list_for_each_entry_safe(lkb, s, &r->res_waitqueue, lkb_statequeue) {
+<<<<<<< HEAD
 		if (can_be_granted(r, lkb, 0, NULL))
 			grant_lock_pending(r, lkb);
                 else {
+=======
+		if (can_be_granted(r, lkb, 0, 0, NULL)) {
+			grant_lock_pending(r, lkb);
+			if (count)
+				(*count)++;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			high = max_t(int, lkb->lkb_rqmode, high);
 			if (lkb->lkb_rqmode == DLM_LOCK_CW)
 				*cw = 1;
@@ -1954,16 +3171,31 @@ static int lock_requires_bast(struct dlm_lkb *gr, int high, int cw)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void grant_pending_locks(struct dlm_rsb *r)
+=======
+static void grant_pending_locks(struct dlm_rsb *r, unsigned int *count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb, *s;
 	int high = DLM_LOCK_IV;
 	int cw = 0;
 
+<<<<<<< HEAD
 	DLM_ASSERT(is_master(r), dlm_dump_rsb(r););
 
 	high = grant_pending_convert(r, high, &cw);
 	high = grant_pending_wait(r, high, &cw);
+=======
+	if (!is_master(r)) {
+		log_print("grant_pending_locks r nodeid %d", r->res_nodeid);
+		dlm_dump_rsb(r);
+		return;
+	}
+
+	high = grant_pending_convert(r, high, &cw, count);
+	high = grant_pending_wait(r, high, &cw, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (high == DLM_LOCK_IV)
 		return;
@@ -2048,8 +3280,12 @@ static void send_blocking_asts_all(struct dlm_rsb *r, struct dlm_lkb *lkb)
 
 static int set_master(struct dlm_rsb *r, struct dlm_lkb *lkb)
 {
+<<<<<<< HEAD
 	struct dlm_ls *ls = r->res_ls;
 	int i, error, dir_nodeid, ret_nodeid, our_nodeid = dlm_our_nodeid();
+=======
+	int our_nodeid = dlm_our_nodeid();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rsb_flag(r, RSB_MASTER_UNCERTAIN)) {
 		rsb_clear_flag(r, RSB_MASTER_UNCERTAIN);
@@ -2063,11 +3299,16 @@ static int set_master(struct dlm_rsb *r, struct dlm_lkb *lkb)
 		return 1;
 	}
 
+<<<<<<< HEAD
 	if (r->res_nodeid == 0) {
+=======
+	if (r->res_master_nodeid == our_nodeid) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lkb->lkb_nodeid = 0;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (r->res_nodeid > 0) {
 		lkb->lkb_nodeid = r->res_nodeid;
 		return 0;
@@ -2110,6 +3351,32 @@ static int set_master(struct dlm_rsb *r, struct dlm_lkb *lkb)
 		lkb->lkb_nodeid = ret_nodeid;
 	}
 	return 0;
+=======
+	if (r->res_master_nodeid) {
+		lkb->lkb_nodeid = r->res_master_nodeid;
+		return 0;
+	}
+
+	if (dlm_dir_nodeid(r) == our_nodeid) {
+		/* This is a somewhat unusual case; find_rsb will usually
+		   have set res_master_nodeid when dir nodeid is local, but
+		   there are cases where we become the dir node after we've
+		   past find_rsb and go through _request_lock again.
+		   confirm_master() or process_lookup_list() needs to be
+		   called after this. */
+		log_debug(r->res_ls, "set_master %x self master %d dir %d %s",
+			  lkb->lkb_id, r->res_master_nodeid, r->res_dir_nodeid,
+			  r->res_name);
+		r->res_master_nodeid = our_nodeid;
+		r->res_nodeid = 0;
+		lkb->lkb_nodeid = 0;
+		return 0;
+	}
+
+	r->res_first_lkid = lkb->lkb_id;
+	send_lookup(r, lkb);
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void process_lookup_list(struct dlm_rsb *r)
@@ -2163,10 +3430,16 @@ static void confirm_master(struct dlm_rsb *r, int error)
 }
 
 static int set_lock_args(int mode, struct dlm_lksb *lksb, uint32_t flags,
+<<<<<<< HEAD
 			 int namelen, unsigned long timeout_cs,
 			 void (*ast) (void *astparam),
 			 void *astparam,
 			 void (*bast) (void *astparam, int mode),
+=======
+			 int namelen, void (*ast)(void *astparam),
+			 void *astparam,
+			 void (*bast)(void *astparam, int mode),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct dlm_args *args)
 {
 	int rv = -EINVAL;
@@ -2220,7 +3493,10 @@ static int set_lock_args(int mode, struct dlm_lksb *lksb, uint32_t flags,
 	args->astfn = ast;
 	args->astparam = astparam;
 	args->bastfn = bast;
+<<<<<<< HEAD
 	args->timeout = timeout_cs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	args->mode = mode;
 	args->lksb = lksb;
 	rv = 0;
@@ -2245,15 +3521,34 @@ static int set_unlock_args(uint32_t flags, void *astarg, struct dlm_args *args)
 static int validate_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 			      struct dlm_args *args)
 {
+<<<<<<< HEAD
 	int rv = -EINVAL;
 
 	if (args->flags & DLM_LKF_CONVERT) {
 		if (lkb->lkb_flags & DLM_IFL_MSTCPY)
+=======
+	int rv = -EBUSY;
+
+	if (args->flags & DLM_LKF_CONVERT) {
+		if (lkb->lkb_status != DLM_LKSTS_GRANTED)
+			goto out;
+
+		/* lock not allowed if there's any op in progress */
+		if (lkb->lkb_wait_type || lkb->lkb_wait_count)
+			goto out;
+
+		if (is_overlap(lkb))
+			goto out;
+
+		rv = -EINVAL;
+		if (test_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 
 		if (args->flags & DLM_LKF_QUECVT &&
 		    !__quecvt_compat_matrix[lkb->lkb_grmode+1][args->mode+1])
 			goto out;
+<<<<<<< HEAD
 
 		rv = -EBUSY;
 		if (lkb->lkb_status != DLM_LKSTS_GRANTED)
@@ -2268,6 +3563,12 @@ static int validate_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 
 	lkb->lkb_exflags = args->flags;
 	lkb->lkb_sbflags = 0;
+=======
+	}
+
+	lkb->lkb_exflags = args->flags;
+	dlm_set_sbflags_val(lkb, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkb->lkb_astfn = args->astfn;
 	lkb->lkb_astparam = args->astparam;
 	lkb->lkb_bastfn = args->bastfn;
@@ -2275,6 +3576,7 @@ static int validate_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 	lkb->lkb_lksb = args->lksb;
 	lkb->lkb_lvbptr = args->lksb->sb_lvbptr;
 	lkb->lkb_ownpid = (int) current->pid;
+<<<<<<< HEAD
 	lkb->lkb_timeout_cs = args->timeout;
 	rv = 0;
  out:
@@ -2283,6 +3585,29 @@ static int validate_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 			  rv, lkb->lkb_id, lkb->lkb_flags, args->flags,
 			  lkb->lkb_status, lkb->lkb_wait_type,
 			  lkb->lkb_resource->res_name);
+=======
+	rv = 0;
+ out:
+	switch (rv) {
+	case 0:
+		break;
+	case -EINVAL:
+		/* annoy the user because dlm usage is wrong */
+		WARN_ON(1);
+		log_error(ls, "%s %d %x %x %x %d %d %s", __func__,
+			  rv, lkb->lkb_id, dlm_iflags_val(lkb), args->flags,
+			  lkb->lkb_status, lkb->lkb_wait_type,
+			  lkb->lkb_resource->res_name);
+		break;
+	default:
+		log_debug(ls, "%s %d %x %x %x %d %d %s", __func__,
+			  rv, lkb->lkb_id, dlm_iflags_val(lkb), args->flags,
+			  lkb->lkb_status, lkb->lkb_wait_type,
+			  lkb->lkb_resource->res_name);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
@@ -2296,6 +3621,7 @@ static int validate_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 {
 	struct dlm_ls *ls = lkb->lkb_resource->res_ls;
+<<<<<<< HEAD
 	int rv = -EINVAL;
 
 	if (lkb->lkb_flags & DLM_IFL_MSTCPY) {
@@ -2313,6 +3639,14 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 		rv = -ENOENT;
 		goto out;
 	}
+=======
+	int rv = -EBUSY;
+
+	/* normal unlock not allowed if there's any op in progress */
+	if (!(args->flags & (DLM_LKF_CANCEL | DLM_LKF_FORCEUNLOCK)) &&
+	    (lkb->lkb_wait_type || lkb->lkb_wait_count))
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* an lkb may be waiting for an rsb lookup to complete where the
 	   lookup was initiated by another lock */
@@ -2327,7 +3661,28 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 			unhold_lkb(lkb); /* undoes create_lkb() */
 		}
 		/* caller changes -EBUSY to 0 for CANCEL and FORCEUNLOCK */
+<<<<<<< HEAD
 		rv = -EBUSY;
+=======
+		goto out;
+	}
+
+	rv = -EINVAL;
+	if (test_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags)) {
+		log_error(ls, "unlock on MSTCPY %x", lkb->lkb_id);
+		dlm_print_lkb(lkb);
+		goto out;
+	}
+
+	/* an lkb may still exist even though the lock is EOL'ed due to a
+	 * cancel, unlock or failed noqueue request; an app can't use these
+	 * locks; return same error as if the lkid had not been found at all
+	 */
+
+	if (test_bit(DLM_IFL_ENDOFLIFE_BIT, &lkb->lkb_iflags)) {
+		log_debug(ls, "unlock on ENDOFLIFE %x", lkb->lkb_id);
+		rv = -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2340,11 +3695,16 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 		if (is_overlap(lkb))
 			goto out;
 
+<<<<<<< HEAD
 		/* don't let scand try to do a cancel */
 		del_timeout(lkb);
 
 		if (lkb->lkb_flags & DLM_IFL_RESEND) {
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_CANCEL;
+=======
+		if (test_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags)) {
+			set_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv = -EBUSY;
 			goto out;
 		}
@@ -2359,7 +3719,11 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 		switch (lkb->lkb_wait_type) {
 		case DLM_MSG_LOOKUP:
 		case DLM_MSG_REQUEST:
+<<<<<<< HEAD
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_CANCEL;
+=======
+			set_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv = -EBUSY;
 			goto out;
 		case DLM_MSG_UNLOCK:
@@ -2381,11 +3745,16 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 		if (is_overlap_unlock(lkb))
 			goto out;
 
+<<<<<<< HEAD
 		/* don't let scand try to do a cancel */
 		del_timeout(lkb);
 
 		if (lkb->lkb_flags & DLM_IFL_RESEND) {
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_UNLOCK;
+=======
+		if (test_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags)) {
+			set_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv = -EBUSY;
 			goto out;
 		}
@@ -2393,13 +3762,18 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 		switch (lkb->lkb_wait_type) {
 		case DLM_MSG_LOOKUP:
 		case DLM_MSG_REQUEST:
+<<<<<<< HEAD
 			lkb->lkb_flags |= DLM_IFL_OVERLAP_UNLOCK;
+=======
+			set_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rv = -EBUSY;
 			goto out;
 		case DLM_MSG_UNLOCK:
 			goto out;
 		}
 		/* add_to_waiters() will set OVERLAP_UNLOCK */
+<<<<<<< HEAD
 		goto out_ok;
 	}
 
@@ -2420,6 +3794,36 @@ static int validate_unlock_args(struct dlm_lkb *lkb, struct dlm_args *args)
 			  lkb->lkb_id, lkb->lkb_flags, lkb->lkb_exflags,
 			  args->flags, lkb->lkb_wait_type,
 			  lkb->lkb_resource->res_name);
+=======
+	}
+
+ out_ok:
+	/* an overlapping op shouldn't blow away exflags from other op */
+	lkb->lkb_exflags |= args->flags;
+	dlm_set_sbflags_val(lkb, 0);
+	lkb->lkb_astparam = args->astparam;
+	rv = 0;
+ out:
+	switch (rv) {
+	case 0:
+		break;
+	case -EINVAL:
+		/* annoy the user because dlm usage is wrong */
+		WARN_ON(1);
+		log_error(ls, "%s %d %x %x %x %x %d %s", __func__, rv,
+			  lkb->lkb_id, dlm_iflags_val(lkb), lkb->lkb_exflags,
+			  args->flags, lkb->lkb_wait_type,
+			  lkb->lkb_resource->res_name);
+		break;
+	default:
+		log_debug(ls, "%s %d %x %x %x %x %d %s", __func__, rv,
+			  lkb->lkb_id, dlm_iflags_val(lkb), lkb->lkb_exflags,
+			  args->flags, lkb->lkb_wait_type,
+			  lkb->lkb_resource->res_name);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
@@ -2434,7 +3838,11 @@ static int do_request(struct dlm_rsb *r, struct dlm_lkb *lkb)
 {
 	int error = 0;
 
+<<<<<<< HEAD
 	if (can_be_granted(r, lkb, 1, NULL)) {
+=======
+	if (can_be_granted(r, lkb, 1, 0, NULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		grant_lock(r, lkb);
 		queue_cast(r, lkb, 0);
 		goto out;
@@ -2443,7 +3851,10 @@ static int do_request(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	if (can_be_queued(lkb)) {
 		error = -EINPROGRESS;
 		add_lkb(r, lkb, DLM_LKSTS_WAITING);
+<<<<<<< HEAD
 		add_timeout(lkb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2474,7 +3885,11 @@ static int do_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 
 	/* changing an existing lock may allow others to be granted */
 
+<<<<<<< HEAD
 	if (can_be_granted(r, lkb, 1, &deadlk)) {
+=======
+	if (can_be_granted(r, lkb, 1, 0, &deadlk)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		grant_lock(r, lkb);
 		queue_cast(r, lkb, 0);
 		goto out;
@@ -2484,7 +3899,11 @@ static int do_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	   deadlock, so we leave it on the granted queue and return EDEADLK in
 	   the ast for the convert. */
 
+<<<<<<< HEAD
 	if (deadlk) {
+=======
+	if (deadlk && !(lkb->lkb_exflags & DLM_LKF_NODLCKWT)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* it's left on the granted queue */
 		revert_lock(r, lkb);
 		queue_cast(r, lkb, -EDEADLK);
@@ -2499,8 +3918,13 @@ static int do_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	   before we try again to grant this one. */
 
 	if (is_demoted(lkb)) {
+<<<<<<< HEAD
 		grant_pending_convert(r, DLM_LOCK_IV, NULL);
 		if (_can_be_granted(r, lkb, 1)) {
+=======
+		grant_pending_convert(r, DLM_LOCK_IV, NULL, NULL);
+		if (_can_be_granted(r, lkb, 1, 0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			grant_lock(r, lkb);
 			queue_cast(r, lkb, 0);
 			goto out;
@@ -2512,7 +3936,10 @@ static int do_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 		error = -EINPROGRESS;
 		del_lkb(r, lkb);
 		add_lkb(r, lkb, DLM_LKSTS_CONVERT);
+<<<<<<< HEAD
 		add_timeout(lkb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2527,7 +3954,11 @@ static void do_convert_effects(struct dlm_rsb *r, struct dlm_lkb *lkb,
 {
 	switch (error) {
 	case 0:
+<<<<<<< HEAD
 		grant_pending_locks(r);
+=======
+		grant_pending_locks(r, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* grant_pending_locks also sends basts */
 		break;
 	case -EAGAIN:
@@ -2550,11 +3981,19 @@ static int do_unlock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 static void do_unlock_effects(struct dlm_rsb *r, struct dlm_lkb *lkb,
 			      int error)
 {
+<<<<<<< HEAD
 	grant_pending_locks(r);
 }
 
 /* returns: 0 did nothing, -DLM_ECANCEL canceled lock */
  
+=======
+	grant_pending_locks(r, NULL);
+}
+
+/* returns: 0 did nothing, -DLM_ECANCEL canceled lock */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int do_cancel(struct dlm_rsb *r, struct dlm_lkb *lkb)
 {
 	int error;
@@ -2571,7 +4010,11 @@ static void do_cancel_effects(struct dlm_rsb *r, struct dlm_lkb *lkb,
 			      int error)
 {
 	if (error)
+<<<<<<< HEAD
 		grant_pending_locks(r);
+=======
+		grant_pending_locks(r, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2670,19 +4113,33 @@ static int _cancel_lock(struct dlm_rsb *r, struct dlm_lkb *lkb)
  * request_lock(), convert_lock(), unlock_lock(), cancel_lock()
  */
 
+<<<<<<< HEAD
 static int request_lock(struct dlm_ls *ls, struct dlm_lkb *lkb, char *name,
 			int len, struct dlm_args *args)
+=======
+static int request_lock(struct dlm_ls *ls, struct dlm_lkb *lkb,
+			const void *name, int len,
+			struct dlm_args *args)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_rsb *r;
 	int error;
 
 	error = validate_lock_args(ls, lkb, args);
 	if (error)
+<<<<<<< HEAD
 		goto out;
 
 	error = find_rsb(ls, name, len, R_CREATE, &r);
 	if (error)
 		goto out;
+=======
+		return error;
+
+	error = find_rsb(ls, name, len, 0, R_REQUEST, &r);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_rsb(r);
 
@@ -2693,8 +4150,11 @@ static int request_lock(struct dlm_ls *ls, struct dlm_lkb *lkb, char *name,
 
 	unlock_rsb(r);
 	put_rsb(r);
+<<<<<<< HEAD
 
  out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2772,7 +4232,11 @@ int dlm_lock(dlm_lockspace_t *lockspace,
 	     int mode,
 	     struct dlm_lksb *lksb,
 	     uint32_t flags,
+<<<<<<< HEAD
 	     void *name,
+=======
+	     const void *name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     unsigned int namelen,
 	     uint32_t parent_lkid,
 	     void (*ast) (void *astarg),
@@ -2798,8 +4262,15 @@ int dlm_lock(dlm_lockspace_t *lockspace,
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	error = set_lock_args(mode, lksb, flags, namelen, 0, ast,
 			      astarg, bast, &args);
+=======
+	trace_dlm_lock_start(ls, lkb, name, namelen, mode, flags);
+
+	error = set_lock_args(mode, lksb, flags, namelen, ast, astarg, bast,
+			      &args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_put;
 
@@ -2811,6 +4282,11 @@ int dlm_lock(dlm_lockspace_t *lockspace,
 	if (error == -EINPROGRESS)
 		error = 0;
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_lock_end(ls, lkb, name, namelen, mode, flags, error, true);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (convert || error)
 		__put_lkb(ls, lkb);
 	if (error == -EAGAIN || error == -EDEADLK)
@@ -2842,6 +4318,11 @@ int dlm_unlock(dlm_lockspace_t *lockspace,
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_start(ls, lkb, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = set_unlock_args(flags, astarg, &args);
 	if (error)
 		goto out_put;
@@ -2856,6 +4337,11 @@ int dlm_unlock(dlm_lockspace_t *lockspace,
 	if (error == -EBUSY && (flags & (DLM_LKF_CANCEL | DLM_LKF_FORCEUNLOCK)))
 		error = 0;
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_end(ls, lkb, flags, error);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lkb(lkb);
  out:
 	dlm_unlock_recovery(ls);
@@ -2888,13 +4374,19 @@ int dlm_unlock(dlm_lockspace_t *lockspace,
 static int _create_message(struct dlm_ls *ls, int mb_len,
 			   int to_nodeid, int mstype,
 			   struct dlm_message **ms_ret,
+<<<<<<< HEAD
 			   struct dlm_mhandle **mh_ret)
+=======
+			   struct dlm_mhandle **mh_ret,
+			   gfp_t allocation)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_message *ms;
 	struct dlm_mhandle *mh;
 	char *mb;
 
 	/* get_buffer gives us a message handle (mh) that we need to
+<<<<<<< HEAD
 	   pass into lowcomms_commit and a message buffer (mb) that we
 	   write our data into */
 
@@ -2913,6 +4405,24 @@ static int _create_message(struct dlm_ls *ls, int mb_len,
 	ms->m_header.h_cmd = DLM_MSG;
 
 	ms->m_type = mstype;
+=======
+	   pass into midcomms_commit and a message buffer (mb) that we
+	   write our data into */
+
+	mh = dlm_midcomms_get_mhandle(to_nodeid, mb_len, allocation, &mb);
+	if (!mh)
+		return -ENOBUFS;
+
+	ms = (struct dlm_message *) mb;
+
+	ms->m_header.h_version = cpu_to_le32(DLM_HEADER_MAJOR | DLM_HEADER_MINOR);
+	ms->m_header.u.h_lockspace = cpu_to_le32(ls->ls_global_id);
+	ms->m_header.h_nodeid = cpu_to_le32(dlm_our_nodeid());
+	ms->m_header.h_length = cpu_to_le16(mb_len);
+	ms->m_header.h_cmd = DLM_MSG;
+
+	ms->m_type = cpu_to_le32(mstype);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*mh_ret = mh;
 	*ms_ret = ms;
@@ -2922,7 +4432,12 @@ static int _create_message(struct dlm_ls *ls, int mb_len,
 static int create_message(struct dlm_rsb *r, struct dlm_lkb *lkb,
 			  int to_nodeid, int mstype,
 			  struct dlm_message **ms_ret,
+<<<<<<< HEAD
 			  struct dlm_mhandle **mh_ret)
+=======
+			  struct dlm_mhandle **mh_ret,
+			  gfp_t allocation)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int mb_len = sizeof(struct dlm_message);
 
@@ -2937,28 +4452,44 @@ static int create_message(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	case DLM_MSG_REQUEST_REPLY:
 	case DLM_MSG_CONVERT_REPLY:
 	case DLM_MSG_GRANT:
+<<<<<<< HEAD
 		if (lkb && lkb->lkb_lvbptr)
+=======
+		if (lkb && lkb->lkb_lvbptr && (lkb->lkb_exflags & DLM_LKF_VALBLK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mb_len += r->res_ls->ls_lvblen;
 		break;
 	}
 
 	return _create_message(r->res_ls, mb_len, to_nodeid, mstype,
+<<<<<<< HEAD
 			       ms_ret, mh_ret);
+=======
+			       ms_ret, mh_ret, allocation);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* further lowcomms enhancements or alternate implementations may make
    the return value from this function useful at some point */
 
+<<<<<<< HEAD
 static int send_message(struct dlm_mhandle *mh, struct dlm_message *ms)
 {
 	dlm_message_out(ms);
 	dlm_lowcomms_commit_buffer(mh);
+=======
+static int send_message(struct dlm_mhandle *mh, struct dlm_message *ms,
+			const void *name, int namelen)
+{
+	dlm_midcomms_commit_mhandle(mh, name, namelen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void send_args(struct dlm_rsb *r, struct dlm_lkb *lkb,
 		      struct dlm_message *ms)
 {
+<<<<<<< HEAD
 	ms->m_nodeid   = lkb->lkb_nodeid;
 	ms->m_pid      = lkb->lkb_ownpid;
 	ms->m_lkid     = lkb->lkb_id;
@@ -2971,19 +4502,40 @@ static void send_args(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	ms->m_grmode   = lkb->lkb_grmode;
 	ms->m_rqmode   = lkb->lkb_rqmode;
 	ms->m_hash     = r->res_hash;
+=======
+	ms->m_nodeid   = cpu_to_le32(lkb->lkb_nodeid);
+	ms->m_pid      = cpu_to_le32(lkb->lkb_ownpid);
+	ms->m_lkid     = cpu_to_le32(lkb->lkb_id);
+	ms->m_remid    = cpu_to_le32(lkb->lkb_remid);
+	ms->m_exflags  = cpu_to_le32(lkb->lkb_exflags);
+	ms->m_sbflags  = cpu_to_le32(dlm_sbflags_val(lkb));
+	ms->m_flags    = cpu_to_le32(dlm_dflags_val(lkb));
+	ms->m_lvbseq   = cpu_to_le32(lkb->lkb_lvbseq);
+	ms->m_status   = cpu_to_le32(lkb->lkb_status);
+	ms->m_grmode   = cpu_to_le32(lkb->lkb_grmode);
+	ms->m_rqmode   = cpu_to_le32(lkb->lkb_rqmode);
+	ms->m_hash     = cpu_to_le32(r->res_hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* m_result and m_bastmode are set from function args,
 	   not from lkb fields */
 
 	if (lkb->lkb_bastfn)
+<<<<<<< HEAD
 		ms->m_asts |= DLM_CB_BAST;
 	if (lkb->lkb_astfn)
 		ms->m_asts |= DLM_CB_CAST;
+=======
+		ms->m_asts |= cpu_to_le32(DLM_CB_BAST);
+	if (lkb->lkb_astfn)
+		ms->m_asts |= cpu_to_le32(DLM_CB_CAST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* compare with switch in create_message; send_remove() doesn't
 	   use send_args() */
 
 	switch (ms->m_type) {
+<<<<<<< HEAD
 	case DLM_MSG_REQUEST:
 	case DLM_MSG_LOOKUP:
 		memcpy(ms->m_extra, r->res_name, r->res_length);
@@ -2994,6 +4546,18 @@ static void send_args(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	case DLM_MSG_CONVERT_REPLY:
 	case DLM_MSG_GRANT:
 		if (!lkb->lkb_lvbptr)
+=======
+	case cpu_to_le32(DLM_MSG_REQUEST):
+	case cpu_to_le32(DLM_MSG_LOOKUP):
+		memcpy(ms->m_extra, r->res_name, r->res_length);
+		break;
+	case cpu_to_le32(DLM_MSG_CONVERT):
+	case cpu_to_le32(DLM_MSG_UNLOCK):
+	case cpu_to_le32(DLM_MSG_REQUEST_REPLY):
+	case cpu_to_le32(DLM_MSG_CONVERT_REPLY):
+	case cpu_to_le32(DLM_MSG_GRANT):
+		if (!lkb->lkb_lvbptr || !(lkb->lkb_exflags & DLM_LKF_VALBLK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		memcpy(ms->m_extra, lkb->lkb_lvbptr, r->res_ls->ls_lvblen);
 		break;
@@ -3012,13 +4576,21 @@ static int send_common(struct dlm_rsb *r, struct dlm_lkb *lkb, int mstype)
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	error = create_message(r, lkb, to_nodeid, mstype, &ms, &mh);
+=======
+	error = create_message(r, lkb, to_nodeid, mstype, &ms, &mh, GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto fail;
 
 	send_args(r, lkb, ms);
 
+<<<<<<< HEAD
 	error = send_message(mh, ms);
+=======
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto fail;
 	return 0;
@@ -3042,10 +4614,16 @@ static int send_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	/* down conversions go without a reply from the master */
 	if (!error && down_conversion(lkb)) {
 		remove_from_waiters(lkb, DLM_MSG_CONVERT_REPLY);
+<<<<<<< HEAD
 		r->res_ls->ls_stub_ms.m_flags = DLM_IFL_STUB_MS;
 		r->res_ls->ls_stub_ms.m_type = DLM_MSG_CONVERT_REPLY;
 		r->res_ls->ls_stub_ms.m_result = 0;
 		__receive_convert_reply(r, lkb, &r->res_ls->ls_stub_ms);
+=======
+		r->res_ls->ls_local_ms.m_type = cpu_to_le32(DLM_MSG_CONVERT_REPLY);
+		r->res_ls->ls_local_ms.m_result = 0;
+		__receive_convert_reply(r, lkb, &r->res_ls->ls_local_ms, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error;
@@ -3073,7 +4651,12 @@ static int send_grant(struct dlm_rsb *r, struct dlm_lkb *lkb)
 
 	to_nodeid = lkb->lkb_nodeid;
 
+<<<<<<< HEAD
 	error = create_message(r, lkb, to_nodeid, DLM_MSG_GRANT, &ms, &mh);
+=======
+	error = create_message(r, lkb, to_nodeid, DLM_MSG_GRANT, &ms, &mh,
+			       GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
@@ -3081,7 +4664,11 @@ static int send_grant(struct dlm_rsb *r, struct dlm_lkb *lkb)
 
 	ms->m_result = 0;
 
+<<<<<<< HEAD
 	error = send_message(mh, ms);
+=======
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return error;
 }
@@ -3094,15 +4681,26 @@ static int send_bast(struct dlm_rsb *r, struct dlm_lkb *lkb, int mode)
 
 	to_nodeid = lkb->lkb_nodeid;
 
+<<<<<<< HEAD
 	error = create_message(r, NULL, to_nodeid, DLM_MSG_BAST, &ms, &mh);
+=======
+	error = create_message(r, NULL, to_nodeid, DLM_MSG_BAST, &ms, &mh,
+			       GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	send_args(r, lkb, ms);
 
+<<<<<<< HEAD
 	ms->m_bastmode = mode;
 
 	error = send_message(mh, ms);
+=======
+	ms->m_bastmode = cpu_to_le32(mode);
+
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return error;
 }
@@ -3119,13 +4717,22 @@ static int send_lookup(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	error = create_message(r, NULL, to_nodeid, DLM_MSG_LOOKUP, &ms, &mh);
+=======
+	error = create_message(r, NULL, to_nodeid, DLM_MSG_LOOKUP, &ms, &mh,
+			       GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto fail;
 
 	send_args(r, lkb, ms);
 
+<<<<<<< HEAD
 	error = send_message(mh, ms);
+=======
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto fail;
 	return 0;
@@ -3143,14 +4750,25 @@ static int send_remove(struct dlm_rsb *r)
 
 	to_nodeid = dlm_dir_nodeid(r);
 
+<<<<<<< HEAD
 	error = create_message(r, NULL, to_nodeid, DLM_MSG_REMOVE, &ms, &mh);
+=======
+	error = create_message(r, NULL, to_nodeid, DLM_MSG_REMOVE, &ms, &mh,
+			       GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	memcpy(ms->m_extra, r->res_name, r->res_length);
+<<<<<<< HEAD
 	ms->m_hash = r->res_hash;
 
 	error = send_message(mh, ms);
+=======
+	ms->m_hash = cpu_to_le32(r->res_hash);
+
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return error;
 }
@@ -3164,15 +4782,25 @@ static int send_common_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
 
 	to_nodeid = lkb->lkb_nodeid;
 
+<<<<<<< HEAD
 	error = create_message(r, lkb, to_nodeid, mstype, &ms, &mh);
+=======
+	error = create_message(r, lkb, to_nodeid, mstype, &ms, &mh, GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	send_args(r, lkb, ms);
 
+<<<<<<< HEAD
 	ms->m_result = rv;
 
 	error = send_message(mh, ms);
+=======
+	ms->m_result = cpu_to_le32(to_dlm_errno(rv));
+
+	error = send_message(mh, ms, r->res_name, r->res_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return error;
 }
@@ -3197,6 +4825,7 @@ static int send_cancel_reply(struct dlm_rsb *r, struct dlm_lkb *lkb, int rv)
 	return send_common_reply(r, lkb, DLM_MSG_CANCEL_REPLY, rv);
 }
 
+<<<<<<< HEAD
 static int send_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms_in,
 			     int ret_nodeid, int rv)
 {
@@ -3206,14 +4835,34 @@ static int send_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms_in,
 	int error, nodeid = ms_in->m_header.h_nodeid;
 
 	error = create_message(r, NULL, nodeid, DLM_MSG_LOOKUP_REPLY, &ms, &mh);
+=======
+static int send_lookup_reply(struct dlm_ls *ls,
+			     const struct dlm_message *ms_in, int ret_nodeid,
+			     int rv)
+{
+	struct dlm_rsb *r = &ls->ls_local_rsb;
+	struct dlm_message *ms;
+	struct dlm_mhandle *mh;
+	int error, nodeid = le32_to_cpu(ms_in->m_header.h_nodeid);
+
+	error = create_message(r, NULL, nodeid, DLM_MSG_LOOKUP_REPLY, &ms, &mh,
+			       GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	ms->m_lkid = ms_in->m_lkid;
+<<<<<<< HEAD
 	ms->m_result = rv;
 	ms->m_nodeid = ret_nodeid;
 
 	error = send_message(mh, ms);
+=======
+	ms->m_result = cpu_to_le32(to_dlm_errno(rv));
+	ms->m_nodeid = cpu_to_le32(ret_nodeid);
+
+	error = send_message(mh, ms, ms_in->m_extra, receive_extralen(ms_in));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return error;
 }
@@ -3222,6 +4871,7 @@ static int send_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms_in,
    of message, unlike the send side where we can safely send everything about
    the lkb for any type of message */
 
+<<<<<<< HEAD
 static void receive_flags(struct dlm_lkb *lkb, struct dlm_message *ms)
 {
 	lkb->lkb_exflags = ms->m_exflags;
@@ -3247,6 +4897,34 @@ static int receive_extralen(struct dlm_message *ms)
 
 static int receive_lvb(struct dlm_ls *ls, struct dlm_lkb *lkb,
 		       struct dlm_message *ms)
+=======
+static void receive_flags(struct dlm_lkb *lkb, const struct dlm_message *ms)
+{
+	lkb->lkb_exflags = le32_to_cpu(ms->m_exflags);
+	dlm_set_sbflags_val(lkb, le32_to_cpu(ms->m_sbflags));
+	dlm_set_dflags_val(lkb, le32_to_cpu(ms->m_flags));
+}
+
+static void receive_flags_reply(struct dlm_lkb *lkb,
+				const struct dlm_message *ms,
+				bool local)
+{
+	if (local)
+		return;
+
+	dlm_set_sbflags_val(lkb, le32_to_cpu(ms->m_sbflags));
+	dlm_set_dflags_val(lkb, le32_to_cpu(ms->m_flags));
+}
+
+static int receive_extralen(const struct dlm_message *ms)
+{
+	return (le16_to_cpu(ms->m_header.h_length) -
+		sizeof(struct dlm_message));
+}
+
+static int receive_lvb(struct dlm_ls *ls, struct dlm_lkb *lkb,
+		       const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
@@ -3256,8 +4934,13 @@ static int receive_lvb(struct dlm_ls *ls, struct dlm_lkb *lkb,
 		if (!lkb->lkb_lvbptr)
 			return -ENOMEM;
 		len = receive_extralen(ms);
+<<<<<<< HEAD
 		if (len > DLM_RESNAME_MAXLEN)
 			len = DLM_RESNAME_MAXLEN;
+=======
+		if (len > ls->ls_lvblen)
+			len = ls->ls_lvblen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(lkb->lkb_lvbptr, ms->m_extra, len);
 	}
 	return 0;
@@ -3274,6 +4957,7 @@ static void fake_astfn(void *astparam)
 }
 
 static int receive_request_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 				struct dlm_message *ms)
 {
 	lkb->lkb_nodeid = ms->m_header.h_nodeid;
@@ -3284,6 +4968,18 @@ static int receive_request_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 
 	lkb->lkb_bastfn = (ms->m_asts & DLM_CB_BAST) ? &fake_bastfn : NULL;
 	lkb->lkb_astfn = (ms->m_asts & DLM_CB_CAST) ? &fake_astfn : NULL;
+=======
+				const struct dlm_message *ms)
+{
+	lkb->lkb_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+	lkb->lkb_ownpid = le32_to_cpu(ms->m_pid);
+	lkb->lkb_remid = le32_to_cpu(ms->m_lkid);
+	lkb->lkb_grmode = DLM_LOCK_IV;
+	lkb->lkb_rqmode = le32_to_cpu(ms->m_rqmode);
+
+	lkb->lkb_bastfn = (ms->m_asts & cpu_to_le32(DLM_CB_BAST)) ? &fake_bastfn : NULL;
+	lkb->lkb_astfn = (ms->m_asts & cpu_to_le32(DLM_CB_CAST)) ? &fake_astfn : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lkb->lkb_exflags & DLM_LKF_VALBLK) {
 		/* lkb was just created so there won't be an lvb yet */
@@ -3296,7 +4992,11 @@ static int receive_request_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 }
 
 static int receive_convert_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 				struct dlm_message *ms)
+=======
+				const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (lkb->lkb_status != DLM_LKSTS_GRANTED)
 		return -EBUSY;
@@ -3304,20 +5004,30 @@ static int receive_convert_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 	if (receive_lvb(ls, lkb, ms))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	lkb->lkb_rqmode = ms->m_rqmode;
 	lkb->lkb_lvbseq = ms->m_lvbseq;
+=======
+	lkb->lkb_rqmode = le32_to_cpu(ms->m_rqmode);
+	lkb->lkb_lvbseq = le32_to_cpu(ms->m_lvbseq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int receive_unlock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 			       struct dlm_message *ms)
+=======
+			       const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (receive_lvb(ls, lkb, ms))
 		return -ENOMEM;
 	return 0;
 }
 
+<<<<<<< HEAD
 /* We fill in the stub-lkb fields with the info that send_xxxx_reply()
    uses to send a reply and that the remote end uses to process the reply. */
 
@@ -3326,11 +5036,22 @@ static void setup_stub_lkb(struct dlm_ls *ls, struct dlm_message *ms)
 	struct dlm_lkb *lkb = &ls->ls_stub_lkb;
 	lkb->lkb_nodeid = ms->m_header.h_nodeid;
 	lkb->lkb_remid = ms->m_lkid;
+=======
+/* We fill in the local-lkb fields with the info that send_xxxx_reply()
+   uses to send a reply and that the remote end uses to process the reply. */
+
+static void setup_local_lkb(struct dlm_ls *ls, const struct dlm_message *ms)
+{
+	struct dlm_lkb *lkb = &ls->ls_local_lkb;
+	lkb->lkb_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+	lkb->lkb_remid = le32_to_cpu(ms->m_lkid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is called after the rsb is locked so that we can safely inspect
    fields in the lkb. */
 
+<<<<<<< HEAD
 static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
 {
 	int from = ms->m_header.h_nodeid;
@@ -3340,20 +5061,52 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
 	case DLM_MSG_CONVERT:
 	case DLM_MSG_UNLOCK:
 	case DLM_MSG_CANCEL:
+=======
+static int validate_message(struct dlm_lkb *lkb, const struct dlm_message *ms)
+{
+	int from = le32_to_cpu(ms->m_header.h_nodeid);
+	int error = 0;
+
+	/* currently mixing of user/kernel locks are not supported */
+	if (ms->m_flags & cpu_to_le32(BIT(DLM_DFL_USER_BIT)) &&
+	    !test_bit(DLM_DFL_USER_BIT, &lkb->lkb_dflags)) {
+		log_error(lkb->lkb_resource->res_ls,
+			  "got user dlm message for a kernel lock");
+		error = -EINVAL;
+		goto out;
+	}
+
+	switch (ms->m_type) {
+	case cpu_to_le32(DLM_MSG_CONVERT):
+	case cpu_to_le32(DLM_MSG_UNLOCK):
+	case cpu_to_le32(DLM_MSG_CANCEL):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_master_copy(lkb) || lkb->lkb_nodeid != from)
 			error = -EINVAL;
 		break;
 
+<<<<<<< HEAD
 	case DLM_MSG_CONVERT_REPLY:
 	case DLM_MSG_UNLOCK_REPLY:
 	case DLM_MSG_CANCEL_REPLY:
 	case DLM_MSG_GRANT:
 	case DLM_MSG_BAST:
+=======
+	case cpu_to_le32(DLM_MSG_CONVERT_REPLY):
+	case cpu_to_le32(DLM_MSG_UNLOCK_REPLY):
+	case cpu_to_le32(DLM_MSG_CANCEL_REPLY):
+	case cpu_to_le32(DLM_MSG_GRANT):
+	case cpu_to_le32(DLM_MSG_BAST):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_process_copy(lkb) || lkb->lkb_nodeid != from)
 			error = -EINVAL;
 		break;
 
+<<<<<<< HEAD
 	case DLM_MSG_REQUEST_REPLY:
+=======
+	case cpu_to_le32(DLM_MSG_REQUEST_REPLY):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!is_process_copy(lkb))
 			error = -EINVAL;
 		else if (lkb->lkb_nodeid != -1 && lkb->lkb_nodeid != from)
@@ -3364,6 +5117,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
 		error = -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (error)
 		log_error(lkb->lkb_resource->res_ls,
 			  "ignore invalid message %d from %d %x %x %x %d",
@@ -3377,22 +5131,59 @@ static void receive_request(struct dlm_ls *ls, struct dlm_message *ms)
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error, namelen;
+=======
+out:
+	if (error)
+		log_error(lkb->lkb_resource->res_ls,
+			  "ignore invalid message %d from %d %x %x %x %d",
+			  le32_to_cpu(ms->m_type), from, lkb->lkb_id,
+			  lkb->lkb_remid, dlm_iflags_val(lkb),
+			  lkb->lkb_nodeid);
+	return error;
+}
+
+static int receive_request(struct dlm_ls *ls, const struct dlm_message *ms)
+{
+	struct dlm_lkb *lkb;
+	struct dlm_rsb *r;
+	int from_nodeid;
+	int error, namelen = 0;
+
+	from_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = create_lkb(ls, &lkb);
 	if (error)
 		goto fail;
 
 	receive_flags(lkb, ms);
+<<<<<<< HEAD
 	lkb->lkb_flags |= DLM_IFL_MSTCPY;
+=======
+	set_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = receive_request_args(ls, lkb, ms);
 	if (error) {
 		__put_lkb(ls, lkb);
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	namelen = receive_extralen(ms);
 
 	error = find_rsb(ls, ms->m_extra, namelen, R_MASTER, &r);
+=======
+	/* The dir node is the authority on whether we are the master
+	   for this rsb or not, so if the master sends us a request, we should
+	   recreate the rsb if we've destroyed it.   This race happens when we
+	   send a remove message to the dir node at the same time that the dir
+	   node sends us a request for the rsb. */
+
+	namelen = receive_extralen(ms);
+
+	error = find_rsb(ls, ms->m_extra, namelen, from_nodeid,
+			 R_RECEIVE_REQUEST, &r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error) {
 		__put_lkb(ls, lkb);
 		goto fail;
@@ -3400,6 +5191,19 @@ static void receive_request(struct dlm_ls *ls, struct dlm_message *ms)
 
 	lock_rsb(r);
 
+<<<<<<< HEAD
+=======
+	if (r->res_master_nodeid != dlm_our_nodeid()) {
+		error = validate_master_nodeid(ls, r, from_nodeid);
+		if (error) {
+			unlock_rsb(r);
+			put_rsb(r);
+			__put_lkb(ls, lkb);
+			goto fail;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	attach_lkb(r, lkb);
 	error = do_request(r, lkb);
 	send_request_reply(r, lkb, error);
@@ -3412,6 +5216,7 @@ static void receive_request(struct dlm_ls *ls, struct dlm_message *ms)
 		error = 0;
 	if (error)
 		dlm_put_lkb(lkb);
+<<<<<<< HEAD
 	return;
 
  fail:
@@ -3420,15 +5225,55 @@ static void receive_request(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_convert(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	return 0;
+
+ fail:
+	/* TODO: instead of returning ENOTBLK, add the lkb to res_lookup
+	   and do this receive_request again from process_lookup_list once
+	   we get the lookup reply.  This would avoid a many repeated
+	   ENOTBLK request failures when the lookup reply designating us
+	   as master is delayed. */
+
+	if (error != -ENOTBLK) {
+		log_limit(ls, "receive_request %x from %d %d",
+			  le32_to_cpu(ms->m_lkid), from_nodeid, error);
+	}
+
+	setup_local_lkb(ls, ms);
+	send_request_reply(&ls->ls_local_rsb, &ls->ls_local_lkb, error);
+	return error;
+}
+
+static int receive_convert(struct dlm_ls *ls, const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error, reply = 1;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error)
 		goto fail;
 
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		goto fail;
+
+	if (lkb->lkb_remid != le32_to_cpu(ms->m_lkid)) {
+		log_error(ls, "receive_convert %x remid %x recover_seq %llu "
+			  "remote %d %x", lkb->lkb_id, lkb->lkb_remid,
+			  (unsigned long long)lkb->lkb_recover_seq,
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid));
+		error = -ENOENT;
+		dlm_put_lkb(lkb);
+		goto fail;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = lkb->lkb_resource;
 
 	hold_rsb(r);
@@ -3456,6 +5301,7 @@ static void receive_convert(struct dlm_ls *ls, struct dlm_message *ms)
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 	return;
 
  fail:
@@ -3464,15 +5310,43 @@ static void receive_convert(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_unlock(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	return 0;
+
+ fail:
+	setup_local_lkb(ls, ms);
+	send_convert_reply(&ls->ls_local_rsb, &ls->ls_local_lkb, error);
+	return error;
+}
+
+static int receive_unlock(struct dlm_ls *ls, const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error)
 		goto fail;
 
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		goto fail;
+
+	if (lkb->lkb_remid != le32_to_cpu(ms->m_lkid)) {
+		log_error(ls, "receive_unlock %x remid %x remote %d %x",
+			  lkb->lkb_id, lkb->lkb_remid,
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid));
+		error = -ENOENT;
+		dlm_put_lkb(lkb);
+		goto fail;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = lkb->lkb_resource;
 
 	hold_rsb(r);
@@ -3497,6 +5371,7 @@ static void receive_unlock(struct dlm_ls *ls, struct dlm_message *ms)
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 	return;
 
  fail:
@@ -3505,12 +5380,27 @@ static void receive_unlock(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_cancel(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	return 0;
+
+ fail:
+	setup_local_lkb(ls, ms);
+	send_unlock_reply(&ls->ls_local_rsb, &ls->ls_local_lkb, error);
+	return error;
+}
+
+static int receive_cancel(struct dlm_ls *ls, const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto fail;
 
@@ -3532,6 +5422,7 @@ static void receive_cancel(struct dlm_ls *ls, struct dlm_message *ms)
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 	return;
 
  fail:
@@ -3540,17 +5431,34 @@ static void receive_cancel(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_grant(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	return 0;
+
+ fail:
+	setup_local_lkb(ls, ms);
+	send_cancel_reply(&ls->ls_local_rsb, &ls->ls_local_lkb, error);
+	return error;
+}
+
+static int receive_grant(struct dlm_ls *ls, const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
 		log_debug(ls, "receive_grant from %d no lkb %x",
 			  ms->m_header.h_nodeid, ms->m_remid);
 		return;
 	}
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = lkb->lkb_resource;
 
@@ -3561,7 +5469,11 @@ static void receive_grant(struct dlm_ls *ls, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	receive_flags_reply(lkb, ms);
+=======
+	receive_flags_reply(lkb, ms, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_altmode(lkb))
 		munge_altmode(lkb, ms);
 	grant_lock_pc(r, lkb, ms);
@@ -3570,20 +5482,33 @@ static void receive_grant(struct dlm_ls *ls, struct dlm_message *ms)
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 }
 
 static void receive_bast(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	return 0;
+}
+
+static int receive_bast(struct dlm_ls *ls, const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
 		log_debug(ls, "receive_bast from %d no lkb %x",
 			  ms->m_header.h_nodeid, ms->m_remid);
 		return;
 	}
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = lkb->lkb_resource;
 
@@ -3594,11 +5519,17 @@ static void receive_bast(struct dlm_ls *ls, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	queue_bast(r, lkb, ms->m_bastmode);
+=======
+	queue_bast(r, lkb, le32_to_cpu(ms->m_bastmode));
+	lkb->lkb_highbast = le32_to_cpu(ms->m_bastmode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 }
 
 static void receive_lookup(struct dlm_ls *ls, struct dlm_message *ms)
@@ -3606,10 +5537,21 @@ static void receive_lookup(struct dlm_ls *ls, struct dlm_message *ms)
 	int len, error, ret_nodeid, dir_nodeid, from_nodeid, our_nodeid;
 
 	from_nodeid = ms->m_header.h_nodeid;
+=======
+	return 0;
+}
+
+static void receive_lookup(struct dlm_ls *ls, const struct dlm_message *ms)
+{
+	int len, error, ret_nodeid, from_nodeid, our_nodeid;
+
+	from_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	our_nodeid = dlm_our_nodeid();
 
 	len = receive_extralen(ms);
 
+<<<<<<< HEAD
 	dir_nodeid = dlm_hash2nodeid(ls, ms->m_hash);
 	if (dir_nodeid != our_nodeid) {
 		log_error(ls, "lookup dir_nodeid %d from %d",
@@ -3620,12 +5562,17 @@ static void receive_lookup(struct dlm_ls *ls, struct dlm_message *ms)
 	}
 
 	error = dlm_dir_lookup(ls, from_nodeid, ms->m_extra, len, &ret_nodeid);
+=======
+	error = dlm_master_lookup(ls, from_nodeid, ms->m_extra, len, 0,
+				  &ret_nodeid, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optimization: we're master so treat lookup as a request */
 	if (!error && ret_nodeid == our_nodeid) {
 		receive_request(ls, ms);
 		return;
 	}
+<<<<<<< HEAD
  out:
 	send_lookup_reply(ls, ms, ret_nodeid, error);
 }
@@ -3654,10 +5601,111 @@ static void receive_purge(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	send_lookup_reply(ls, ms, ret_nodeid, error);
+}
+
+static void receive_remove(struct dlm_ls *ls, const struct dlm_message *ms)
+{
+	char name[DLM_RESNAME_MAXLEN+1];
+	struct dlm_rsb *r;
+	uint32_t hash, b;
+	int rv, len, dir_nodeid, from_nodeid;
+
+	from_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+
+	len = receive_extralen(ms);
+
+	if (len > DLM_RESNAME_MAXLEN) {
+		log_error(ls, "receive_remove from %d bad len %d",
+			  from_nodeid, len);
+		return;
+	}
+
+	dir_nodeid = dlm_hash2nodeid(ls, le32_to_cpu(ms->m_hash));
+	if (dir_nodeid != dlm_our_nodeid()) {
+		log_error(ls, "receive_remove from %d bad nodeid %d",
+			  from_nodeid, dir_nodeid);
+		return;
+	}
+
+	/* Look for name on rsbtbl.toss, if it's there, kill it.
+	   If it's on rsbtbl.keep, it's being used, and we should ignore this
+	   message.  This is an expected race between the dir node sending a
+	   request to the master node at the same time as the master node sends
+	   a remove to the dir node.  The resolution to that race is for the
+	   dir node to ignore the remove message, and the master node to
+	   recreate the master rsb when it gets a request from the dir node for
+	   an rsb it doesn't have. */
+
+	memset(name, 0, sizeof(name));
+	memcpy(name, ms->m_extra, len);
+
+	hash = jhash(name, len, 0);
+	b = hash & (ls->ls_rsbtbl_size - 1);
+
+	spin_lock(&ls->ls_rsbtbl[b].lock);
+
+	rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].toss, name, len, &r);
+	if (rv) {
+		/* verify the rsb is on keep list per comment above */
+		rv = dlm_search_rsb_tree(&ls->ls_rsbtbl[b].keep, name, len, &r);
+		if (rv) {
+			/* should not happen */
+			log_error(ls, "receive_remove from %d not found %s",
+				  from_nodeid, name);
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			return;
+		}
+		if (r->res_master_nodeid != from_nodeid) {
+			/* should not happen */
+			log_error(ls, "receive_remove keep from %d master %d",
+				  from_nodeid, r->res_master_nodeid);
+			dlm_print_rsb(r);
+			spin_unlock(&ls->ls_rsbtbl[b].lock);
+			return;
+		}
+
+		log_debug(ls, "receive_remove from %d master %d first %x %s",
+			  from_nodeid, r->res_master_nodeid, r->res_first_lkid,
+			  name);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		return;
+	}
+
+	if (r->res_master_nodeid != from_nodeid) {
+		log_error(ls, "receive_remove toss from %d master %d",
+			  from_nodeid, r->res_master_nodeid);
+		dlm_print_rsb(r);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		return;
+	}
+
+	if (kref_put(&r->res_ref, kill_rsb)) {
+		rb_erase(&r->res_hashnode, &ls->ls_rsbtbl[b].toss);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+		dlm_free_rsb(r);
+	} else {
+		log_error(ls, "receive_remove from %d rsb ref error",
+			  from_nodeid);
+		dlm_print_rsb(r);
+		spin_unlock(&ls->ls_rsbtbl[b].lock);
+	}
+}
+
+static void receive_purge(struct dlm_ls *ls, const struct dlm_message *ms)
+{
+	do_purge(ls, le32_to_cpu(ms->m_nodeid), le32_to_cpu(ms->m_pid));
+}
+
+static int receive_request_reply(struct dlm_ls *ls,
+				 const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error, mstype, result;
+<<<<<<< HEAD
 
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
@@ -3665,6 +5713,13 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 			  ms->m_header.h_nodeid, ms->m_remid);
 		return;
 	}
+=======
+	int from_nodeid = le32_to_cpu(ms->m_header.h_nodeid);
+
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = lkb->lkb_resource;
 	hold_rsb(r);
@@ -3676,18 +5731,38 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 
 	mstype = lkb->lkb_wait_type;
 	error = remove_from_waiters(lkb, DLM_MSG_REQUEST_REPLY);
+<<<<<<< HEAD
 	if (error)
 		goto out;
+=======
+	if (error) {
+		log_error(ls, "receive_request_reply %x remote %d %x result %d",
+			  lkb->lkb_id, from_nodeid, le32_to_cpu(ms->m_lkid),
+			  from_dlm_errno(le32_to_cpu(ms->m_result)));
+		dlm_dump_rsb(r);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optimization: the dir node was also the master, so it took our
 	   lookup as a request and sent request reply instead of lookup reply */
 	if (mstype == DLM_MSG_LOOKUP) {
+<<<<<<< HEAD
 		r->res_nodeid = ms->m_header.h_nodeid;
 		lkb->lkb_nodeid = r->res_nodeid;
 	}
 
 	/* this is the value returned from do_request() on the master */
 	result = ms->m_result;
+=======
+		r->res_master_nodeid = from_nodeid;
+		r->res_nodeid = from_nodeid;
+		lkb->lkb_nodeid = from_nodeid;
+	}
+
+	/* this is the value returned from do_request() on the master */
+	result = from_dlm_errno(le32_to_cpu(ms->m_result));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (result) {
 	case -EAGAIN:
@@ -3700,13 +5775,21 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	case -EINPROGRESS:
 	case 0:
 		/* request was queued or granted on remote master */
+<<<<<<< HEAD
 		receive_flags_reply(lkb, ms);
 		lkb->lkb_remid = ms->m_lkid;
+=======
+		receive_flags_reply(lkb, ms, false);
+		lkb->lkb_remid = le32_to_cpu(ms->m_lkid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_altmode(lkb))
 			munge_altmode(lkb, ms);
 		if (result) {
 			add_lkb(r, lkb, DLM_LKSTS_WAITING);
+<<<<<<< HEAD
 			add_timeout(lkb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			grant_lock_pc(r, lkb, ms);
 			queue_cast(r, lkb, 0);
@@ -3717,18 +5800,42 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	case -EBADR:
 	case -ENOTBLK:
 		/* find_rsb failed to find rsb or rsb wasn't master */
+<<<<<<< HEAD
 		log_debug(ls, "receive_request_reply %x %x master diff %d %d",
 			  lkb->lkb_id, lkb->lkb_flags, r->res_nodeid, result);
 		r->res_nodeid = -1;
 		lkb->lkb_nodeid = -1;
+=======
+		log_limit(ls, "receive_request_reply %x from %d %d "
+			  "master %d dir %d first %x %s", lkb->lkb_id,
+			  from_nodeid, result, r->res_master_nodeid,
+			  r->res_dir_nodeid, r->res_first_lkid, r->res_name);
+
+		if (r->res_dir_nodeid != dlm_our_nodeid() &&
+		    r->res_master_nodeid != dlm_our_nodeid()) {
+			/* cause _request_lock->set_master->send_lookup */
+			r->res_master_nodeid = 0;
+			r->res_nodeid = -1;
+			lkb->lkb_nodeid = -1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (is_overlap(lkb)) {
 			/* we'll ignore error in cancel/unlock reply */
 			queue_cast_overlap(r, lkb);
 			confirm_master(r, result);
 			unhold_lkb(lkb); /* undoes create_lkb() */
+<<<<<<< HEAD
 		} else
 			_request_lock(r, lkb);
+=======
+		} else {
+			_request_lock(r, lkb);
+
+			if (r->res_master_nodeid == dlm_our_nodeid())
+				confirm_master(r, 0);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -3736,6 +5843,7 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 			  lkb->lkb_id, result);
 	}
 
+<<<<<<< HEAD
 	if (is_overlap_unlock(lkb) && (result == 0 || result == -EINPROGRESS)) {
 		log_debug(ls, "receive_request_reply %x result %d unlock",
 			  lkb->lkb_id, result);
@@ -3750,11 +5858,29 @@ static void receive_request_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	} else {
 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
+=======
+	if ((result == 0 || result == -EINPROGRESS) &&
+	    test_and_clear_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags)) {
+		log_debug(ls, "receive_request_reply %x result %d unlock",
+			  lkb->lkb_id, result);
+		clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+		send_unlock(r, lkb);
+	} else if ((result == -EINPROGRESS) &&
+		   test_and_clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT,
+				      &lkb->lkb_iflags)) {
+		log_debug(ls, "receive_request_reply %x cancel", lkb->lkb_id);
+		clear_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+		send_cancel(r, lkb);
+	} else {
+		clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT, &lkb->lkb_iflags);
+		clear_bit(DLM_IFL_OVERLAP_UNLOCK_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
  out:
 	unlock_rsb(r);
 	put_rsb(r);
 	dlm_put_lkb(lkb);
+<<<<<<< HEAD
 }
 
 static void __receive_convert_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
@@ -3762,30 +5888,55 @@ static void __receive_convert_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
 {
 	/* this is the value returned from do_convert() on the master */
 	switch (ms->m_result) {
+=======
+	return 0;
+}
+
+static void __receive_convert_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
+				    const struct dlm_message *ms, bool local)
+{
+	/* this is the value returned from do_convert() on the master */
+	switch (from_dlm_errno(le32_to_cpu(ms->m_result))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -EAGAIN:
 		/* convert would block (be queued) on remote master */
 		queue_cast(r, lkb, -EAGAIN);
 		break;
 
 	case -EDEADLK:
+<<<<<<< HEAD
 		receive_flags_reply(lkb, ms);
+=======
+		receive_flags_reply(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		revert_lock_pc(r, lkb);
 		queue_cast(r, lkb, -EDEADLK);
 		break;
 
 	case -EINPROGRESS:
 		/* convert was queued on remote master */
+<<<<<<< HEAD
 		receive_flags_reply(lkb, ms);
+=======
+		receive_flags_reply(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_demoted(lkb))
 			munge_demoted(lkb);
 		del_lkb(r, lkb);
 		add_lkb(r, lkb, DLM_LKSTS_CONVERT);
+<<<<<<< HEAD
 		add_timeout(lkb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case 0:
 		/* convert was granted on remote master */
+<<<<<<< HEAD
 		receive_flags_reply(lkb, ms);
+=======
+		receive_flags_reply(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_demoted(lkb))
 			munge_demoted(lkb);
 		grant_lock_pc(r, lkb, ms);
@@ -3793,12 +5944,26 @@ static void __receive_convert_reply(struct dlm_rsb *r, struct dlm_lkb *lkb,
 		break;
 
 	default:
+<<<<<<< HEAD
 		log_error(r->res_ls, "receive_convert_reply %x error %d",
 			  lkb->lkb_id, ms->m_result);
 	}
 }
 
 static void _receive_convert_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
+=======
+		log_error(r->res_ls, "receive_convert_reply %x remote %d %x %d",
+			  lkb->lkb_id, le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid),
+			  from_dlm_errno(le32_to_cpu(ms->m_result)));
+		dlm_print_rsb(r);
+		dlm_print_lkb(lkb);
+	}
+}
+
+static void _receive_convert_reply(struct dlm_lkb *lkb,
+				   const struct dlm_message *ms, bool local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_rsb *r = lkb->lkb_resource;
 	int error;
@@ -3810,22 +5975,37 @@ static void _receive_convert_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	/* stub reply can happen with waiters_mutex held */
 	error = remove_from_waiters_ms(lkb, ms);
 	if (error)
 		goto out;
 
 	__receive_convert_reply(r, lkb, ms);
+=======
+	/* local reply can happen with waiters_mutex held */
+	error = remove_from_waiters_ms(lkb, ms, local);
+	if (error)
+		goto out;
+
+	__receive_convert_reply(r, lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	unlock_rsb(r);
 	put_rsb(r);
 }
 
+<<<<<<< HEAD
 static void receive_convert_reply(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+static int receive_convert_reply(struct dlm_ls *ls,
+				 const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
 		log_debug(ls, "receive_convert_reply from %d no lkb %x",
@@ -3838,6 +6018,19 @@ static void receive_convert_reply(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void _receive_unlock_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+
+	_receive_convert_reply(lkb, ms, false);
+	dlm_put_lkb(lkb);
+	return 0;
+}
+
+static void _receive_unlock_reply(struct dlm_lkb *lkb,
+				  const struct dlm_message *ms, bool local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_rsb *r = lkb->lkb_resource;
 	int error;
@@ -3849,16 +6042,27 @@ static void _receive_unlock_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	/* stub reply can happen with waiters_mutex held */
 	error = remove_from_waiters_ms(lkb, ms);
+=======
+	/* local reply can happen with waiters_mutex held */
+	error = remove_from_waiters_ms(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	/* this is the value returned from do_unlock() on the master */
 
+<<<<<<< HEAD
 	switch (ms->m_result) {
 	case -DLM_EUNLOCK:
 		receive_flags_reply(lkb, ms);
+=======
+	switch (from_dlm_errno(le32_to_cpu(ms->m_result))) {
+	case -DLM_EUNLOCK:
+		receive_flags_reply(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		remove_lock_pc(r, lkb);
 		queue_cast(r, lkb, -DLM_EUNLOCK);
 		break;
@@ -3866,18 +6070,28 @@ static void _receive_unlock_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
 		break;
 	default:
 		log_error(r->res_ls, "receive_unlock_reply %x error %d",
+<<<<<<< HEAD
 			  lkb->lkb_id, ms->m_result);
+=======
+			  lkb->lkb_id, from_dlm_errno(le32_to_cpu(ms->m_result)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
  out:
 	unlock_rsb(r);
 	put_rsb(r);
 }
 
+<<<<<<< HEAD
 static void receive_unlock_reply(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+static int receive_unlock_reply(struct dlm_ls *ls,
+				const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
 		log_debug(ls, "receive_unlock_reply from %d no lkb %x",
@@ -3890,6 +6104,19 @@ static void receive_unlock_reply(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void _receive_cancel_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+
+	_receive_unlock_reply(lkb, ms, false);
+	dlm_put_lkb(lkb);
+	return 0;
+}
+
+static void _receive_cancel_reply(struct dlm_lkb *lkb,
+				  const struct dlm_message *ms, bool local)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_rsb *r = lkb->lkb_resource;
 	int error;
@@ -3901,16 +6128,27 @@ static void _receive_cancel_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	/* stub reply can happen with waiters_mutex held */
 	error = remove_from_waiters_ms(lkb, ms);
+=======
+	/* local reply can happen with waiters_mutex held */
+	error = remove_from_waiters_ms(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	/* this is the value returned from do_cancel() on the master */
 
+<<<<<<< HEAD
 	switch (ms->m_result) {
 	case -DLM_ECANCEL:
 		receive_flags_reply(lkb, ms);
+=======
+	switch (from_dlm_errno(le32_to_cpu(ms->m_result))) {
+	case -DLM_ECANCEL:
+		receive_flags_reply(lkb, ms, local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		revert_lock_pc(r, lkb);
 		queue_cast(r, lkb, -DLM_ECANCEL);
 		break;
@@ -3918,18 +6156,29 @@ static void _receive_cancel_reply(struct dlm_lkb *lkb, struct dlm_message *ms)
 		break;
 	default:
 		log_error(r->res_ls, "receive_cancel_reply %x error %d",
+<<<<<<< HEAD
 			  lkb->lkb_id, ms->m_result);
+=======
+			  lkb->lkb_id,
+			  from_dlm_errno(le32_to_cpu(ms->m_result)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
  out:
 	unlock_rsb(r);
 	put_rsb(r);
 }
 
+<<<<<<< HEAD
 static void receive_cancel_reply(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+static int receive_cancel_reply(struct dlm_ls *ls,
+				const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	int error;
 
+<<<<<<< HEAD
 	error = find_lkb(ls, ms->m_remid, &lkb);
 	if (error) {
 		log_debug(ls, "receive_cancel_reply from %d no lkb %x",
@@ -3942,10 +6191,24 @@ static void receive_cancel_reply(struct dlm_ls *ls, struct dlm_message *ms)
 }
 
 static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
+=======
+	error = find_lkb(ls, le32_to_cpu(ms->m_remid), &lkb);
+	if (error)
+		return error;
+
+	_receive_cancel_reply(lkb, ms, false);
+	dlm_put_lkb(lkb);
+	return 0;
+}
+
+static void receive_lookup_reply(struct dlm_ls *ls,
+				 const struct dlm_message *ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_rsb *r;
 	int error, ret_nodeid;
+<<<<<<< HEAD
 
 	error = find_lkb(ls, ms->m_lkid, &lkb);
 	if (error) {
@@ -3954,6 +6217,18 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	}
 
 	/* ms->m_result is the value returned by dlm_dir_lookup on dir node
+=======
+	int do_lookup_list = 0;
+
+	error = find_lkb(ls, le32_to_cpu(ms->m_lkid), &lkb);
+	if (error) {
+		log_error(ls, "%s no lkid %x", __func__,
+			  le32_to_cpu(ms->m_lkid));
+		return;
+	}
+
+	/* ms->m_result is the value returned by dlm_master_lookup on dir node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   FIXME: will a non-zero error ever be returned? */
 
 	r = lkb->lkb_resource;
@@ -3964,6 +6239,7 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
 	ret_nodeid = ms->m_nodeid;
 	if (ret_nodeid == dlm_our_nodeid()) {
 		r->res_nodeid = 0;
@@ -3971,12 +6247,50 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 		r->res_first_lkid = 0;
 	} else {
 		/* set_master() will copy res_nodeid to lkb_nodeid */
+=======
+	ret_nodeid = le32_to_cpu(ms->m_nodeid);
+
+	/* We sometimes receive a request from the dir node for this
+	   rsb before we've received the dir node's loookup_reply for it.
+	   The request from the dir node implies we're the master, so we set
+	   ourself as master in receive_request_reply, and verify here that
+	   we are indeed the master. */
+
+	if (r->res_master_nodeid && (r->res_master_nodeid != ret_nodeid)) {
+		/* This should never happen */
+		log_error(ls, "receive_lookup_reply %x from %d ret %d "
+			  "master %d dir %d our %d first %x %s",
+			  lkb->lkb_id, le32_to_cpu(ms->m_header.h_nodeid),
+			  ret_nodeid, r->res_master_nodeid, r->res_dir_nodeid,
+			  dlm_our_nodeid(), r->res_first_lkid, r->res_name);
+	}
+
+	if (ret_nodeid == dlm_our_nodeid()) {
+		r->res_master_nodeid = ret_nodeid;
+		r->res_nodeid = 0;
+		do_lookup_list = 1;
+		r->res_first_lkid = 0;
+	} else if (ret_nodeid == -1) {
+		/* the remote node doesn't believe it's the dir node */
+		log_error(ls, "receive_lookup_reply %x from %d bad ret_nodeid",
+			  lkb->lkb_id, le32_to_cpu(ms->m_header.h_nodeid));
+		r->res_master_nodeid = 0;
+		r->res_nodeid = -1;
+		lkb->lkb_nodeid = -1;
+	} else {
+		/* set_master() will set lkb_nodeid from r */
+		r->res_master_nodeid = ret_nodeid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r->res_nodeid = ret_nodeid;
 	}
 
 	if (is_overlap(lkb)) {
 		log_debug(ls, "receive_lookup_reply %x unlock %x",
+<<<<<<< HEAD
 			  lkb->lkb_id, lkb->lkb_flags);
+=======
+			  lkb->lkb_id, dlm_iflags_val(lkb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_cast_overlap(r, lkb);
 		unhold_lkb(lkb); /* undoes create_lkb() */
 		goto out_list;
@@ -3985,7 +6299,11 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	_request_lock(r, lkb);
 
  out_list:
+<<<<<<< HEAD
 	if (!ret_nodeid)
+=======
+	if (do_lookup_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		process_lookup_list(r);
  out:
 	unlock_rsb(r);
@@ -3993,12 +6311,26 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 	dlm_put_lkb(lkb);
 }
 
+<<<<<<< HEAD
 static void _receive_message(struct dlm_ls *ls, struct dlm_message *ms)
 {
 	if (!dlm_is_member(ls, ms->m_header.h_nodeid)) {
 		log_debug(ls, "ignore non-member message %d from %d %x %x %d",
 			  ms->m_type, ms->m_header.h_nodeid, ms->m_lkid,
 			  ms->m_remid, ms->m_result);
+=======
+static void _receive_message(struct dlm_ls *ls, const struct dlm_message *ms,
+			     uint32_t saved_seq)
+{
+	int error = 0, noent = 0;
+
+	if (WARN_ON_ONCE(!dlm_is_member(ls, le32_to_cpu(ms->m_header.h_nodeid)))) {
+		log_limit(ls, "receive %d from non-member %d %x %x %d",
+			  le32_to_cpu(ms->m_type),
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid), le32_to_cpu(ms->m_remid),
+			  from_dlm_errno(le32_to_cpu(ms->m_result)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -4006,6 +6338,7 @@ static void _receive_message(struct dlm_ls *ls, struct dlm_message *ms)
 
 	/* messages sent to a master node */
 
+<<<<<<< HEAD
 	case DLM_MSG_REQUEST:
 		receive_request(ls, ms);
 		break;
@@ -4020,10 +6353,28 @@ static void _receive_message(struct dlm_ls *ls, struct dlm_message *ms)
 
 	case DLM_MSG_CANCEL:
 		receive_cancel(ls, ms);
+=======
+	case cpu_to_le32(DLM_MSG_REQUEST):
+		error = receive_request(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_CONVERT):
+		error = receive_convert(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_UNLOCK):
+		error = receive_unlock(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_CANCEL):
+		noent = 1;
+		error = receive_cancel(ls, ms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* messages sent from a master node (replies to above) */
 
+<<<<<<< HEAD
 	case DLM_MSG_REQUEST_REPLY:
 		receive_request_reply(ls, ms);
 		break;
@@ -4038,42 +6389,125 @@ static void _receive_message(struct dlm_ls *ls, struct dlm_message *ms)
 
 	case DLM_MSG_CANCEL_REPLY:
 		receive_cancel_reply(ls, ms);
+=======
+	case cpu_to_le32(DLM_MSG_REQUEST_REPLY):
+		error = receive_request_reply(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_CONVERT_REPLY):
+		error = receive_convert_reply(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_UNLOCK_REPLY):
+		error = receive_unlock_reply(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_CANCEL_REPLY):
+		error = receive_cancel_reply(ls, ms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* messages sent from a master node (only two types of async msg) */
 
+<<<<<<< HEAD
 	case DLM_MSG_GRANT:
 		receive_grant(ls, ms);
 		break;
 
 	case DLM_MSG_BAST:
 		receive_bast(ls, ms);
+=======
+	case cpu_to_le32(DLM_MSG_GRANT):
+		noent = 1;
+		error = receive_grant(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_BAST):
+		noent = 1;
+		error = receive_bast(ls, ms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* messages sent to a dir node */
 
+<<<<<<< HEAD
 	case DLM_MSG_LOOKUP:
 		receive_lookup(ls, ms);
 		break;
 
 	case DLM_MSG_REMOVE:
+=======
+	case cpu_to_le32(DLM_MSG_LOOKUP):
+		receive_lookup(ls, ms);
+		break;
+
+	case cpu_to_le32(DLM_MSG_REMOVE):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		receive_remove(ls, ms);
 		break;
 
 	/* messages sent from a dir node (remove has no reply) */
 
+<<<<<<< HEAD
 	case DLM_MSG_LOOKUP_REPLY:
+=======
+	case cpu_to_le32(DLM_MSG_LOOKUP_REPLY):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		receive_lookup_reply(ls, ms);
 		break;
 
 	/* other messages */
 
+<<<<<<< HEAD
 	case DLM_MSG_PURGE:
+=======
+	case cpu_to_le32(DLM_MSG_PURGE):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		receive_purge(ls, ms);
 		break;
 
 	default:
+<<<<<<< HEAD
 		log_error(ls, "unknown message type %d", ms->m_type);
+=======
+		log_error(ls, "unknown message type %d",
+			  le32_to_cpu(ms->m_type));
+	}
+
+	/*
+	 * When checking for ENOENT, we're checking the result of
+	 * find_lkb(m_remid):
+	 *
+	 * The lock id referenced in the message wasn't found.  This may
+	 * happen in normal usage for the async messages and cancel, so
+	 * only use log_debug for them.
+	 *
+	 * Some errors are expected and normal.
+	 */
+
+	if (error == -ENOENT && noent) {
+		log_debug(ls, "receive %d no %x remote %d %x saved_seq %u",
+			  le32_to_cpu(ms->m_type), le32_to_cpu(ms->m_remid),
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid), saved_seq);
+	} else if (error == -ENOENT) {
+		log_error(ls, "receive %d no %x remote %d %x saved_seq %u",
+			  le32_to_cpu(ms->m_type), le32_to_cpu(ms->m_remid),
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid), saved_seq);
+
+		if (ms->m_type == cpu_to_le32(DLM_MSG_CONVERT))
+			dlm_dump_rsb_hash(ls, le32_to_cpu(ms->m_hash));
+	}
+
+	if (error == -EINVAL) {
+		log_error(ls, "receive %d inval from %d lkid %x remid %x "
+			  "saved_seq %u",
+			  le32_to_cpu(ms->m_type),
+			  le32_to_cpu(ms->m_header.h_nodeid),
+			  le32_to_cpu(ms->m_lkid), le32_to_cpu(ms->m_remid),
+			  saved_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4085,6 +6519,7 @@ static void _receive_message(struct dlm_ls *ls, struct dlm_message *ms)
    requestqueue, to processing all the saved messages, to processing new
    messages as they arrive. */
 
+<<<<<<< HEAD
 static void dlm_receive_message(struct dlm_ls *ls, struct dlm_message *ms,
 				int nodeid)
 {
@@ -4093,15 +6528,41 @@ static void dlm_receive_message(struct dlm_ls *ls, struct dlm_message *ms,
 	} else {
 		dlm_wait_requestqueue(ls);
 		_receive_message(ls, ms);
+=======
+static void dlm_receive_message(struct dlm_ls *ls, const struct dlm_message *ms,
+				int nodeid)
+{
+	if (dlm_locking_stopped(ls)) {
+		/* If we were a member of this lockspace, left, and rejoined,
+		   other nodes may still be sending us messages from the
+		   lockspace generation before we left. */
+		if (WARN_ON_ONCE(!ls->ls_generation)) {
+			log_limit(ls, "receive %d from %d ignore old gen",
+				  le32_to_cpu(ms->m_type), nodeid);
+			return;
+		}
+
+		dlm_add_requestqueue(ls, nodeid, ms);
+	} else {
+		dlm_wait_requestqueue(ls);
+		_receive_message(ls, ms, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* This is called by dlm_recoverd to process messages that were saved on
    the requestqueue. */
 
+<<<<<<< HEAD
 void dlm_receive_message_saved(struct dlm_ls *ls, struct dlm_message *ms)
 {
 	_receive_message(ls, ms);
+=======
+void dlm_receive_message_saved(struct dlm_ls *ls, const struct dlm_message *ms,
+			       uint32_t saved_seq)
+{
+	_receive_message(ls, ms, saved_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is called by the midcomms layer when something is received for
@@ -4109,26 +6570,40 @@ void dlm_receive_message_saved(struct dlm_ls *ls, struct dlm_message *ms)
    standard locking activity) or an RCOM (recovery message sent as part of
    lockspace recovery). */
 
+<<<<<<< HEAD
 void dlm_receive_buffer(union dlm_packet *p, int nodeid)
 {
 	struct dlm_header *hd = &p->header;
+=======
+void dlm_receive_buffer(const union dlm_packet *p, int nodeid)
+{
+	const struct dlm_header *hd = &p->header;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlm_ls *ls;
 	int type = 0;
 
 	switch (hd->h_cmd) {
 	case DLM_MSG:
+<<<<<<< HEAD
 		dlm_message_in(&p->message);
 		type = p->message.m_type;
 		break;
 	case DLM_RCOM:
 		dlm_rcom_in(&p->rcom);
 		type = p->rcom.rc_type;
+=======
+		type = le32_to_cpu(p->message.m_type);
+		break;
+	case DLM_RCOM:
+		type = le32_to_cpu(p->rcom.rc_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		log_print("invalid h_cmd %d from %u", hd->h_cmd, nodeid);
 		return;
 	}
 
+<<<<<<< HEAD
 	if (hd->h_nodeid != nodeid) {
 		log_print("invalid h_nodeid %d from %d lockspace %x",
 			  hd->h_nodeid, nodeid, hd->h_lockspace);
@@ -4140,6 +6615,23 @@ void dlm_receive_buffer(union dlm_packet *p, int nodeid)
 		if (dlm_config.ci_log_debug)
 			log_print("invalid lockspace %x from %d cmd %d type %d",
 				  hd->h_lockspace, nodeid, hd->h_cmd, type);
+=======
+	if (le32_to_cpu(hd->h_nodeid) != nodeid) {
+		log_print("invalid h_nodeid %d from %d lockspace %x",
+			  le32_to_cpu(hd->h_nodeid), nodeid,
+			  le32_to_cpu(hd->u.h_lockspace));
+		return;
+	}
+
+	ls = dlm_find_lockspace_global(le32_to_cpu(hd->u.h_lockspace));
+	if (!ls) {
+		if (dlm_config.ci_log_debug) {
+			printk_ratelimited(KERN_DEBUG "dlm: invalid lockspace "
+				"%u from %d cmd %d type %d\n",
+				le32_to_cpu(hd->u.h_lockspace), nodeid,
+				hd->h_cmd, type);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hd->h_cmd == DLM_RCOM && type == DLM_RCOM_STATUS)
 			dlm_send_ls_not_ready(nodeid, &p->rcom);
@@ -4152,14 +6644,23 @@ void dlm_receive_buffer(union dlm_packet *p, int nodeid)
 	down_read(&ls->ls_recv_active);
 	if (hd->h_cmd == DLM_MSG)
 		dlm_receive_message(ls, &p->message, nodeid);
+<<<<<<< HEAD
 	else
 		dlm_receive_rcom(ls, &p->rcom, nodeid);
+=======
+	else if (hd->h_cmd == DLM_RCOM)
+		dlm_receive_rcom(ls, &p->rcom, nodeid);
+	else
+		log_error(ls, "invalid h_cmd %d from %d lockspace %x",
+			  hd->h_cmd, nodeid, le32_to_cpu(hd->u.h_lockspace));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&ls->ls_recv_active);
 
 	dlm_put_lockspace(ls);
 }
 
 static void recover_convert_waiter(struct dlm_ls *ls, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 				   struct dlm_message *ms_stub)
 {
 	if (middle_conversion(lkb)) {
@@ -4170,6 +6671,17 @@ static void recover_convert_waiter(struct dlm_ls *ls, struct dlm_lkb *lkb,
 		ms_stub->m_result = -EINPROGRESS;
 		ms_stub->m_header.h_nodeid = lkb->lkb_nodeid;
 		_receive_convert_reply(lkb, ms_stub);
+=======
+				   struct dlm_message *ms_local)
+{
+	if (middle_conversion(lkb)) {
+		hold_lkb(lkb);
+		memset(ms_local, 0, sizeof(struct dlm_message));
+		ms_local->m_type = cpu_to_le32(DLM_MSG_CONVERT_REPLY);
+		ms_local->m_result = cpu_to_le32(to_dlm_errno(-EINPROGRESS));
+		ms_local->m_header.h_nodeid = cpu_to_le32(lkb->lkb_nodeid);
+		_receive_convert_reply(lkb, ms_local, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Same special case as in receive_rcom_lock_args() */
 		lkb->lkb_grmode = DLM_LOCK_IV;
@@ -4177,7 +6689,11 @@ static void recover_convert_waiter(struct dlm_ls *ls, struct dlm_lkb *lkb,
 		unhold_lkb(lkb);
 
 	} else if (lkb->lkb_rqmode >= lkb->lkb_grmode) {
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_RESEND;
+=======
+		set_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* lkb->lkb_rqmode < lkb->lkb_grmode shouldn't happen since down
@@ -4187,6 +6703,7 @@ static void recover_convert_waiter(struct dlm_ls *ls, struct dlm_lkb *lkb,
 /* A waiting lkb needs recovery if the master node has failed, or
    the master node is changing (only when no directory is used) */
 
+<<<<<<< HEAD
 static int waiter_needs_recovery(struct dlm_ls *ls, struct dlm_lkb *lkb)
 {
 	if (dlm_is_removed(ls, lkb->lkb_nodeid))
@@ -4196,6 +6713,15 @@ static int waiter_needs_recovery(struct dlm_ls *ls, struct dlm_lkb *lkb)
 		return 0;
 
 	if (dlm_dir_nodeid(lkb->lkb_resource) != lkb->lkb_nodeid)
+=======
+static int waiter_needs_recovery(struct dlm_ls *ls, struct dlm_lkb *lkb,
+				 int dir_nodeid)
+{
+	if (dlm_no_directory(ls))
+		return 1;
+
+	if (dlm_is_removed(ls, lkb->lkb_wait_nodeid))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -4210,6 +6736,7 @@ static int waiter_needs_recovery(struct dlm_ls *ls, struct dlm_lkb *lkb)
 void dlm_recover_waiters_pre(struct dlm_ls *ls)
 {
 	struct dlm_lkb *lkb, *safe;
+<<<<<<< HEAD
 	struct dlm_message *ms_stub;
 	int wait_type, stub_unlock_result, stub_cancel_result;
 
@@ -4218,24 +6745,51 @@ void dlm_recover_waiters_pre(struct dlm_ls *ls)
 		log_error(ls, "dlm_recover_waiters_pre no mem");
 		return;
 	}
+=======
+	struct dlm_message *ms_local;
+	int wait_type, local_unlock_result, local_cancel_result;
+	int dir_nodeid;
+
+	ms_local = kmalloc(sizeof(*ms_local), GFP_KERNEL);
+	if (!ms_local)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ls->ls_waiters_mutex);
 
 	list_for_each_entry_safe(lkb, safe, &ls->ls_waiters, lkb_wait_reply) {
 
+<<<<<<< HEAD
+=======
+		dir_nodeid = dlm_dir_nodeid(lkb->lkb_resource);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* exclude debug messages about unlocks because there can be so
 		   many and they aren't very interesting */
 
 		if (lkb->lkb_wait_type != DLM_MSG_UNLOCK) {
+<<<<<<< HEAD
 			log_debug(ls, "recover_waiter %x nodeid %d "
 				  "msg %d to %d", lkb->lkb_id, lkb->lkb_nodeid,
 				  lkb->lkb_wait_type, lkb->lkb_wait_nodeid);
+=======
+			log_debug(ls, "waiter %x remote %x msg %d r_nodeid %d "
+				  "lkb_nodeid %d wait_nodeid %d dir_nodeid %d",
+				  lkb->lkb_id,
+				  lkb->lkb_remid,
+				  lkb->lkb_wait_type,
+				  lkb->lkb_resource->res_nodeid,
+				  lkb->lkb_nodeid,
+				  lkb->lkb_wait_nodeid,
+				  dir_nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* all outstanding lookups, regardless of destination  will be
 		   resent after recovery is done */
 
 		if (lkb->lkb_wait_type == DLM_MSG_LOOKUP) {
+<<<<<<< HEAD
 			lkb->lkb_flags |= DLM_IFL_RESEND;
 			continue;
 		}
@@ -4246,6 +6800,18 @@ void dlm_recover_waiters_pre(struct dlm_ls *ls)
 		wait_type = lkb->lkb_wait_type;
 		stub_unlock_result = -DLM_EUNLOCK;
 		stub_cancel_result = -DLM_ECANCEL;
+=======
+			set_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags);
+			continue;
+		}
+
+		if (!waiter_needs_recovery(ls, lkb, dir_nodeid))
+			continue;
+
+		wait_type = lkb->lkb_wait_type;
+		local_unlock_result = -DLM_EUNLOCK;
+		local_cancel_result = -DLM_ECANCEL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Main reply may have been received leaving a zero wait_type,
 		   but a reply for the overlapping op may not have been
@@ -4256,48 +6822,85 @@ void dlm_recover_waiters_pre(struct dlm_ls *ls)
 			if (is_overlap_cancel(lkb)) {
 				wait_type = DLM_MSG_CANCEL;
 				if (lkb->lkb_grmode == DLM_LOCK_IV)
+<<<<<<< HEAD
 					stub_cancel_result = 0;
+=======
+					local_cancel_result = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (is_overlap_unlock(lkb)) {
 				wait_type = DLM_MSG_UNLOCK;
 				if (lkb->lkb_grmode == DLM_LOCK_IV)
+<<<<<<< HEAD
 					stub_unlock_result = -ENOENT;
 			}
 
 			log_debug(ls, "rwpre overlap %x %x %d %d %d",
 				  lkb->lkb_id, lkb->lkb_flags, wait_type,
 				  stub_cancel_result, stub_unlock_result);
+=======
+					local_unlock_result = -ENOENT;
+			}
+
+			log_debug(ls, "rwpre overlap %x %x %d %d %d",
+				  lkb->lkb_id, dlm_iflags_val(lkb), wait_type,
+				  local_cancel_result, local_unlock_result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		switch (wait_type) {
 
 		case DLM_MSG_REQUEST:
+<<<<<<< HEAD
 			lkb->lkb_flags |= DLM_IFL_RESEND;
 			break;
 
 		case DLM_MSG_CONVERT:
 			recover_convert_waiter(ls, lkb, ms_stub);
+=======
+			set_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags);
+			break;
+
+		case DLM_MSG_CONVERT:
+			recover_convert_waiter(ls, lkb, ms_local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case DLM_MSG_UNLOCK:
 			hold_lkb(lkb);
+<<<<<<< HEAD
 			memset(ms_stub, 0, sizeof(struct dlm_message));
 			ms_stub->m_flags = DLM_IFL_STUB_MS;
 			ms_stub->m_type = DLM_MSG_UNLOCK_REPLY;
 			ms_stub->m_result = stub_unlock_result;
 			ms_stub->m_header.h_nodeid = lkb->lkb_nodeid;
 			_receive_unlock_reply(lkb, ms_stub);
+=======
+			memset(ms_local, 0, sizeof(struct dlm_message));
+			ms_local->m_type = cpu_to_le32(DLM_MSG_UNLOCK_REPLY);
+			ms_local->m_result = cpu_to_le32(to_dlm_errno(local_unlock_result));
+			ms_local->m_header.h_nodeid = cpu_to_le32(lkb->lkb_nodeid);
+			_receive_unlock_reply(lkb, ms_local, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dlm_put_lkb(lkb);
 			break;
 
 		case DLM_MSG_CANCEL:
 			hold_lkb(lkb);
+<<<<<<< HEAD
 			memset(ms_stub, 0, sizeof(struct dlm_message));
 			ms_stub->m_flags = DLM_IFL_STUB_MS;
 			ms_stub->m_type = DLM_MSG_CANCEL_REPLY;
 			ms_stub->m_result = stub_cancel_result;
 			ms_stub->m_header.h_nodeid = lkb->lkb_nodeid;
 			_receive_cancel_reply(lkb, ms_stub);
+=======
+			memset(ms_local, 0, sizeof(struct dlm_message));
+			ms_local->m_type = cpu_to_le32(DLM_MSG_CANCEL_REPLY);
+			ms_local->m_result = cpu_to_le32(to_dlm_errno(local_cancel_result));
+			ms_local->m_header.h_nodeid = cpu_to_le32(lkb->lkb_nodeid);
+			_receive_cancel_reply(lkb, ms_local, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dlm_put_lkb(lkb);
 			break;
 
@@ -4308,11 +6911,16 @@ void dlm_recover_waiters_pre(struct dlm_ls *ls)
 		schedule();
 	}
 	mutex_unlock(&ls->ls_waiters_mutex);
+<<<<<<< HEAD
 	kfree(ms_stub);
+=======
+	kfree(ms_local);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dlm_lkb *find_resend_waiter(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	struct dlm_lkb *lkb;
 	int found = 0;
 
@@ -4321,11 +6929,21 @@ static struct dlm_lkb *find_resend_waiter(struct dlm_ls *ls)
 		if (lkb->lkb_flags & DLM_IFL_RESEND) {
 			hold_lkb(lkb);
 			found = 1;
+=======
+	struct dlm_lkb *lkb = NULL, *iter;
+
+	mutex_lock(&ls->ls_waiters_mutex);
+	list_for_each_entry(iter, &ls->ls_waiters, lkb_wait_reply) {
+		if (test_bit(DLM_IFL_RESEND_BIT, &iter->lkb_iflags)) {
+			hold_lkb(iter);
+			lkb = iter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	mutex_unlock(&ls->ls_waiters_mutex);
 
+<<<<<<< HEAD
 	if (!found)
 		lkb = NULL;
 	return lkb;
@@ -4346,6 +6964,37 @@ static struct dlm_lkb *find_resend_waiter(struct dlm_ls *ls)
    overlap flag would just have been set and nothing new sent.  we can be
    confident here than any replies to either the initial op or overlap ops
    prior to recovery have been received. */
+=======
+	return lkb;
+}
+
+/*
+ * Forced state reset for locks that were in the middle of remote operations
+ * when recovery happened (i.e. lkbs that were on the waiters list, waiting
+ * for a reply from a remote operation.)  The lkbs remaining on the waiters
+ * list need to be reevaluated; some may need resending to a different node
+ * than previously, and some may now need local handling rather than remote.
+ *
+ * First, the lkb state for the voided remote operation is forcibly reset,
+ * equivalent to what remove_from_waiters() would normally do:
+ * . lkb removed from ls_waiters list
+ * . lkb wait_type cleared
+ * . lkb waiters_count cleared
+ * . lkb ref count decremented for each waiters_count (almost always 1,
+ *   but possibly 2 in case of cancel/unlock overlapping, which means
+ *   two remote replies were being expected for the lkb.)
+ *
+ * Second, the lkb is reprocessed like an original operation would be,
+ * by passing it to _request_lock or _convert_lock, which will either
+ * process the lkb operation locally, or send it to a remote node again
+ * and put the lkb back onto the waiters list.
+ *
+ * When reprocessing the lkb, we may find that it's flagged for an overlapping
+ * force-unlock or cancel, either from before recovery began, or after recovery
+ * finished.  If this is the case, the unlock/cancel is done directly, and the
+ * original operation is not initiated again (no _request_lock/_convert_lock.)
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dlm_recover_waiters_post(struct dlm_ls *ls)
 {
@@ -4360,6 +7009,14 @@ int dlm_recover_waiters_post(struct dlm_ls *ls)
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		/* 
+		 * Find an lkb from the waiters list that's been affected by
+		 * recovery node changes, and needs to be reprocessed.  Does
+		 * hold_lkb(), adding a refcount.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lkb = find_resend_waiter(ls);
 		if (!lkb)
 			break;
@@ -4368,6 +7025,7 @@ int dlm_recover_waiters_post(struct dlm_ls *ls)
 		hold_rsb(r);
 		lock_rsb(r);
 
+<<<<<<< HEAD
 		mstype = lkb->lkb_wait_type;
 		oc = is_overlap_cancel(lkb);
 		ou = is_overlap_unlock(lkb);
@@ -4389,6 +7047,59 @@ int dlm_recover_waiters_post(struct dlm_ls *ls)
 		list_del_init(&lkb->lkb_wait_reply);
 		mutex_unlock(&ls->ls_waiters_mutex);
 		unhold_lkb(lkb); /* for waiters list */
+=======
+		/*
+		 * If the lkb has been flagged for a force unlock or cancel,
+		 * then the reprocessing below will be replaced by just doing
+		 * the unlock/cancel directly.
+		 */
+		mstype = lkb->lkb_wait_type;
+		oc = test_and_clear_bit(DLM_IFL_OVERLAP_CANCEL_BIT,
+					&lkb->lkb_iflags);
+		ou = test_and_clear_bit(DLM_IFL_OVERLAP_UNLOCK_BIT,
+					&lkb->lkb_iflags);
+		err = 0;
+
+		log_debug(ls, "waiter %x remote %x msg %d r_nodeid %d "
+			  "lkb_nodeid %d wait_nodeid %d dir_nodeid %d "
+			  "overlap %d %d", lkb->lkb_id, lkb->lkb_remid, mstype,
+			  r->res_nodeid, lkb->lkb_nodeid, lkb->lkb_wait_nodeid,
+			  dlm_dir_nodeid(r), oc, ou);
+
+		/*
+		 * No reply to the pre-recovery operation will now be received,
+		 * so a forced equivalent of remove_from_waiters() is needed to
+		 * reset the waiters state that was in place before recovery.
+		 */
+
+		clear_bit(DLM_IFL_RESEND_BIT, &lkb->lkb_iflags);
+
+		/* Forcibly clear wait_type */
+		lkb->lkb_wait_type = 0;
+
+		/*
+		 * Forcibly reset wait_count and associated refcount.  The
+		 * wait_count will almost always be 1, but in case of an
+		 * overlapping unlock/cancel it could be 2: see where
+		 * add_to_waiters() finds the lkb is already on the waiters
+		 * list and does lkb_wait_count++; hold_lkb().
+		 */
+		while (lkb->lkb_wait_count) {
+			lkb->lkb_wait_count--;
+			unhold_lkb(lkb);
+		}
+
+		/* Forcibly remove from waiters list */
+		mutex_lock(&ls->ls_waiters_mutex);
+		list_del_init(&lkb->lkb_wait_reply);
+		mutex_unlock(&ls->ls_waiters_mutex);
+
+		/*
+		 * The lkb is now clear of all prior waiters state and can be
+		 * processed locally, or sent to remote node again, or directly
+		 * cancelled/unlocked.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (oc || ou) {
 			/* do an unlock or cancel instead of resending */
@@ -4426,9 +7137,18 @@ int dlm_recover_waiters_post(struct dlm_ls *ls)
 			}
 		}
 
+<<<<<<< HEAD
 		if (err)
 			log_error(ls, "recover_waiters_post %x %d %x %d %d",
 			  	  lkb->lkb_id, mstype, lkb->lkb_flags, oc, ou);
+=======
+		if (err) {
+			log_error(ls, "waiter %x msg %d r_nodeid %d "
+				  "dir_nodeid %d overlap %d %d",
+				  lkb->lkb_id, mstype, r->res_nodeid,
+				  dlm_dir_nodeid(r), oc, ou);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unlock_rsb(r);
 		put_rsb(r);
 		dlm_put_lkb(lkb);
@@ -4437,6 +7157,7 @@ int dlm_recover_waiters_post(struct dlm_ls *ls)
 	return error;
 }
 
+<<<<<<< HEAD
 static void purge_queue(struct dlm_rsb *r, struct list_head *queue,
 			int (*test)(struct dlm_ls *ls, struct dlm_lkb *lkb))
 {
@@ -4476,20 +7197,107 @@ void dlm_purge_mstcpy_locks(struct dlm_rsb *r)
 	purge_queue(r, &r->res_grantqueue, &purge_mstcpy_test);
 	purge_queue(r, &r->res_convertqueue, &purge_mstcpy_test);
 	purge_queue(r, &r->res_waitqueue, &purge_mstcpy_test);
+=======
+static void purge_mstcpy_list(struct dlm_ls *ls, struct dlm_rsb *r,
+			      struct list_head *list)
+{
+	struct dlm_lkb *lkb, *safe;
+
+	list_for_each_entry_safe(lkb, safe, list, lkb_statequeue) {
+		if (!is_master_copy(lkb))
+			continue;
+
+		/* don't purge lkbs we've added in recover_master_copy for
+		   the current recovery seq */
+
+		if (lkb->lkb_recover_seq == ls->ls_recover_seq)
+			continue;
+
+		del_lkb(r, lkb);
+
+		/* this put should free the lkb */
+		if (!dlm_put_lkb(lkb))
+			log_error(ls, "purged mstcpy lkb not released");
+	}
+}
+
+void dlm_purge_mstcpy_locks(struct dlm_rsb *r)
+{
+	struct dlm_ls *ls = r->res_ls;
+
+	purge_mstcpy_list(ls, r, &r->res_grantqueue);
+	purge_mstcpy_list(ls, r, &r->res_convertqueue);
+	purge_mstcpy_list(ls, r, &r->res_waitqueue);
+}
+
+static void purge_dead_list(struct dlm_ls *ls, struct dlm_rsb *r,
+			    struct list_head *list,
+			    int nodeid_gone, unsigned int *count)
+{
+	struct dlm_lkb *lkb, *safe;
+
+	list_for_each_entry_safe(lkb, safe, list, lkb_statequeue) {
+		if (!is_master_copy(lkb))
+			continue;
+
+		if ((lkb->lkb_nodeid == nodeid_gone) ||
+		    dlm_is_removed(ls, lkb->lkb_nodeid)) {
+
+			/* tell recover_lvb to invalidate the lvb
+			   because a node holding EX/PW failed */
+			if ((lkb->lkb_exflags & DLM_LKF_VALBLK) &&
+			    (lkb->lkb_grmode >= DLM_LOCK_PW)) {
+				rsb_set_flag(r, RSB_RECOVER_LVB_INVAL);
+			}
+
+			del_lkb(r, lkb);
+
+			/* this put should free the lkb */
+			if (!dlm_put_lkb(lkb))
+				log_error(ls, "purged dead lkb not released");
+
+			rsb_set_flag(r, RSB_RECOVER_GRANT);
+
+			(*count)++;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Get rid of locks held by nodes that are gone. */
 
+<<<<<<< HEAD
 int dlm_purge_locks(struct dlm_ls *ls)
 {
 	struct dlm_rsb *r;
 
 	log_debug(ls, "dlm_purge_locks");
+=======
+void dlm_recover_purge(struct dlm_ls *ls)
+{
+	struct dlm_rsb *r;
+	struct dlm_member *memb;
+	int nodes_count = 0;
+	int nodeid_gone = 0;
+	unsigned int lkb_count = 0;
+
+	/* cache one removed nodeid to optimize the common
+	   case of a single node removed */
+
+	list_for_each_entry(memb, &ls->ls_nodes_gone, list) {
+		nodes_count++;
+		nodeid_gone = memb->nodeid;
+	}
+
+	if (!nodes_count)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&ls->ls_root_sem);
 	list_for_each_entry(r, &ls->ls_root_list, res_root_list) {
 		hold_rsb(r);
 		lock_rsb(r);
+<<<<<<< HEAD
 		if (is_master(r))
 			purge_dead_locks(r);
 		unlock_rsb(r);
@@ -4506,10 +7314,36 @@ static struct dlm_rsb *find_purged_rsb(struct dlm_ls *ls, int bucket)
 {
 	struct rb_node *n;
 	struct dlm_rsb *r, *r_ret = NULL;
+=======
+		if (is_master(r)) {
+			purge_dead_list(ls, r, &r->res_grantqueue,
+					nodeid_gone, &lkb_count);
+			purge_dead_list(ls, r, &r->res_convertqueue,
+					nodeid_gone, &lkb_count);
+			purge_dead_list(ls, r, &r->res_waitqueue,
+					nodeid_gone, &lkb_count);
+		}
+		unlock_rsb(r);
+		unhold_rsb(r);
+		cond_resched();
+	}
+	up_write(&ls->ls_root_sem);
+
+	if (lkb_count)
+		log_rinfo(ls, "dlm_recover_purge %u locks for %u nodes",
+			  lkb_count, nodes_count);
+}
+
+static struct dlm_rsb *find_grant_rsb(struct dlm_ls *ls, int bucket)
+{
+	struct rb_node *n;
+	struct dlm_rsb *r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&ls->ls_rsbtbl[bucket].lock);
 	for (n = rb_first(&ls->ls_rsbtbl[bucket].keep); n; n = rb_next(n)) {
 		r = rb_entry(n, struct dlm_rsb, res_hashnode);
+<<<<<<< HEAD
 		if (!rsb_flag(r, RSB_LOCKS_PURGED))
 			continue;
 		hold_rsb(r);
@@ -4528,12 +7362,57 @@ void dlm_grant_after_purge(struct dlm_ls *ls)
 
 	while (1) {
 		r = find_purged_rsb(ls, bucket);
+=======
+
+		if (!rsb_flag(r, RSB_RECOVER_GRANT))
+			continue;
+		if (!is_master(r)) {
+			rsb_clear_flag(r, RSB_RECOVER_GRANT);
+			continue;
+		}
+		hold_rsb(r);
+		spin_unlock(&ls->ls_rsbtbl[bucket].lock);
+		return r;
+	}
+	spin_unlock(&ls->ls_rsbtbl[bucket].lock);
+	return NULL;
+}
+
+/*
+ * Attempt to grant locks on resources that we are the master of.
+ * Locks may have become grantable during recovery because locks
+ * from departed nodes have been purged (or not rebuilt), allowing
+ * previously blocked locks to now be granted.  The subset of rsb's
+ * we are interested in are those with lkb's on either the convert or
+ * waiting queues.
+ *
+ * Simplest would be to go through each master rsb and check for non-empty
+ * convert or waiting queues, and attempt to grant on those rsbs.
+ * Checking the queues requires lock_rsb, though, for which we'd need
+ * to release the rsbtbl lock.  This would make iterating through all
+ * rsb's very inefficient.  So, we rely on earlier recovery routines
+ * to set RECOVER_GRANT on any rsb's that we should attempt to grant
+ * locks for.
+ */
+
+void dlm_recover_grant(struct dlm_ls *ls)
+{
+	struct dlm_rsb *r;
+	int bucket = 0;
+	unsigned int count = 0;
+	unsigned int rsb_count = 0;
+	unsigned int lkb_count = 0;
+
+	while (1) {
+		r = find_grant_rsb(ls, bucket);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!r) {
 			if (bucket == ls->ls_rsbtbl_size - 1)
 				break;
 			bucket++;
 			continue;
 		}
+<<<<<<< HEAD
 		lock_rsb(r);
 		if (is_master(r)) {
 			grant_pending_locks(r);
@@ -4543,6 +7422,24 @@ void dlm_grant_after_purge(struct dlm_ls *ls)
 		put_rsb(r);
 		schedule();
 	}
+=======
+		rsb_count++;
+		count = 0;
+		lock_rsb(r);
+		/* the RECOVER_GRANT flag is checked in the grant path */
+		grant_pending_locks(r, &count);
+		rsb_clear_flag(r, RSB_RECOVER_GRANT);
+		lkb_count += count;
+		confirm_master(r, 0);
+		unlock_rsb(r);
+		put_rsb(r);
+		cond_resched();
+	}
+
+	if (lkb_count)
+		log_rinfo(ls, "dlm_recover_grant %u locks on %u resources",
+			  lkb_count, rsb_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dlm_lkb *search_remid_list(struct list_head *head, int nodeid,
@@ -4576,6 +7473,7 @@ static struct dlm_lkb *search_remid(struct dlm_rsb *r, int nodeid,
 
 /* needs at least dlm_rcom + rcom_lock */
 static int receive_rcom_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
+<<<<<<< HEAD
 				  struct dlm_rsb *r, struct dlm_rcom *rc)
 {
 	struct rcom_lock *rl = (struct rcom_lock *) rc->rc_buf;
@@ -4586,6 +7484,18 @@ static int receive_rcom_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 	lkb->lkb_exflags = le32_to_cpu(rl->rl_exflags);
 	lkb->lkb_flags = le32_to_cpu(rl->rl_flags) & 0x0000FFFF;
 	lkb->lkb_flags |= DLM_IFL_MSTCPY;
+=======
+				  struct dlm_rsb *r, const struct dlm_rcom *rc)
+{
+	struct rcom_lock *rl = (struct rcom_lock *) rc->rc_buf;
+
+	lkb->lkb_nodeid = le32_to_cpu(rc->rc_header.h_nodeid);
+	lkb->lkb_ownpid = le32_to_cpu(rl->rl_ownpid);
+	lkb->lkb_remid = le32_to_cpu(rl->rl_lkid);
+	lkb->lkb_exflags = le32_to_cpu(rl->rl_exflags);
+	dlm_set_dflags_val(lkb, le32_to_cpu(rl->rl_flags));
+	set_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lkb->lkb_lvbseq = le32_to_cpu(rl->rl_lvbseq);
 	lkb->lkb_rqmode = rl->rl_rqmode;
 	lkb->lkb_grmode = rl->rl_grmode;
@@ -4595,8 +7505,13 @@ static int receive_rcom_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
 	lkb->lkb_astfn = (rl->rl_asts & DLM_CB_CAST) ? &fake_astfn : NULL;
 
 	if (lkb->lkb_exflags & DLM_LKF_VALBLK) {
+<<<<<<< HEAD
 		int lvblen = rc->rc_header.h_length - sizeof(struct dlm_rcom) -
 			 sizeof(struct rcom_lock);
+=======
+		int lvblen = le16_to_cpu(rc->rc_header.h_length) -
+			sizeof(struct dlm_rcom) - sizeof(struct rcom_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lvblen > ls->ls_lvblen)
 			return -EINVAL;
 		lkb->lkb_lvbptr = dlm_allocate_lvb(ls);
@@ -4626,26 +7541,67 @@ static int receive_rcom_lock_args(struct dlm_ls *ls, struct dlm_lkb *lkb,
    back the rcom_lock struct we got but with the remid field filled in. */
 
 /* needs at least dlm_rcom + rcom_lock */
+<<<<<<< HEAD
 int dlm_recover_master_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
+=======
+int dlm_recover_master_copy(struct dlm_ls *ls, const struct dlm_rcom *rc,
+			    __le32 *rl_remid, __le32 *rl_result)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rcom_lock *rl = (struct rcom_lock *) rc->rc_buf;
 	struct dlm_rsb *r;
 	struct dlm_lkb *lkb;
+<<<<<<< HEAD
 	int error;
 
+=======
+	uint32_t remid = 0;
+	int from_nodeid = le32_to_cpu(rc->rc_header.h_nodeid);
+	int error;
+
+	/* init rl_remid with rcom lock rl_remid */
+	*rl_remid = rl->rl_remid;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rl->rl_parent_lkid) {
 		error = -EOPNOTSUPP;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	error = find_rsb(ls, rl->rl_name, le16_to_cpu(rl->rl_namelen),
 			 R_MASTER, &r);
+=======
+	remid = le32_to_cpu(rl->rl_lkid);
+
+	/* In general we expect the rsb returned to be R_MASTER, but we don't
+	   have to require it.  Recovery of masters on one node can overlap
+	   recovery of locks on another node, so one node can send us MSTCPY
+	   locks before we've made ourselves master of this rsb.  We can still
+	   add new MSTCPY locks that we receive here without any harm; when
+	   we make ourselves master, dlm_recover_masters() won't touch the
+	   MSTCPY locks we've received early. */
+
+	error = find_rsb(ls, rl->rl_name, le16_to_cpu(rl->rl_namelen),
+			 from_nodeid, R_RECEIVE_RECOVER, &r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
 	lock_rsb(r);
 
+<<<<<<< HEAD
 	lkb = search_remid(r, rc->rc_header.h_nodeid, le32_to_cpu(rl->rl_lkid));
+=======
+	if (dlm_no_directory(ls) && (dlm_dir_nodeid(r) != dlm_our_nodeid())) {
+		log_error(ls, "dlm_recover_master_copy remote %d %x not dir",
+			  from_nodeid, remid);
+		error = -EBADR;
+		goto out_unlock;
+	}
+
+	lkb = search_remid(r, from_nodeid, remid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lkb) {
 		error = -EEXIST;
 		goto out_remid;
@@ -4663,30 +7619,56 @@ int dlm_recover_master_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
 
 	attach_lkb(r, lkb);
 	add_lkb(r, lkb, rl->rl_status);
+<<<<<<< HEAD
 	error = 0;
+=======
+	ls->ls_recover_locks_in++;
+
+	if (!list_empty(&r->res_waitqueue) || !list_empty(&r->res_convertqueue))
+		rsb_set_flag(r, RSB_RECOVER_GRANT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out_remid:
 	/* this is the new value returned to the lock holder for
 	   saving in its process-copy lkb */
+<<<<<<< HEAD
 	rl->rl_remid = cpu_to_le32(lkb->lkb_id);
+=======
+	*rl_remid = cpu_to_le32(lkb->lkb_id);
+
+	lkb->lkb_recover_seq = ls->ls_recover_seq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out_unlock:
 	unlock_rsb(r);
 	put_rsb(r);
  out:
+<<<<<<< HEAD
 	if (error)
 		log_debug(ls, "recover_master_copy %d %x", error,
 			  le32_to_cpu(rl->rl_lkid));
 	rl->rl_result = cpu_to_le32(error);
+=======
+	if (error && error != -EEXIST)
+		log_rinfo(ls, "dlm_recover_master_copy remote %d %x error %d",
+			  from_nodeid, remid, error);
+	*rl_result = cpu_to_le32(error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /* needs at least dlm_rcom + rcom_lock */
+<<<<<<< HEAD
 int dlm_recover_process_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
+=======
+int dlm_recover_process_copy(struct dlm_ls *ls, const struct dlm_rcom *rc,
+			     uint64_t seq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rcom_lock *rl = (struct rcom_lock *) rc->rc_buf;
 	struct dlm_rsb *r;
 	struct dlm_lkb *lkb;
+<<<<<<< HEAD
 	int error;
 
 	error = find_lkb(ls, le32_to_cpu(rl->rl_lkid), &lkb);
@@ -4700,15 +7682,48 @@ int dlm_recover_process_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
 
 	error = le32_to_cpu(rl->rl_result);
 
+=======
+	uint32_t lkid, remid;
+	int error, result;
+
+	lkid = le32_to_cpu(rl->rl_lkid);
+	remid = le32_to_cpu(rl->rl_remid);
+	result = le32_to_cpu(rl->rl_result);
+
+	error = find_lkb(ls, lkid, &lkb);
+	if (error) {
+		log_error(ls, "dlm_recover_process_copy no %x remote %d %x %d",
+			  lkid, le32_to_cpu(rc->rc_header.h_nodeid), remid,
+			  result);
+		return error;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = lkb->lkb_resource;
 	hold_rsb(r);
 	lock_rsb(r);
 
+<<<<<<< HEAD
 	switch (error) {
+=======
+	if (!is_process_copy(lkb)) {
+		log_error(ls, "dlm_recover_process_copy bad %x remote %d %x %d",
+			  lkid, le32_to_cpu(rc->rc_header.h_nodeid), remid,
+			  result);
+		dlm_dump_rsb(r);
+		unlock_rsb(r);
+		put_rsb(r);
+		dlm_put_lkb(lkb);
+		return -EINVAL;
+	}
+
+	switch (result) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -EBADR:
 		/* There's a chance the new master received our lock before
 		   dlm_recover_master_reply(), this wouldn't happen if we did
 		   a barrier between recover_masters and recover_locks. */
+<<<<<<< HEAD
 		log_debug(ls, "master copy not ready %x r %lx %s", lkb->lkb_id,
 			  (unsigned long)r, r->res_name);
 		dlm_send_rcom_lock(r, lkb);
@@ -4722,6 +7737,23 @@ int dlm_recover_process_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
 	default:
 		log_error(ls, "dlm_recover_process_copy unknown error %d %x",
 			  error, lkb->lkb_id);
+=======
+
+		log_debug(ls, "dlm_recover_process_copy %x remote %d %x %d",
+			  lkid, le32_to_cpu(rc->rc_header.h_nodeid), remid,
+			  result);
+	
+		dlm_send_rcom_lock(r, lkb, seq);
+		goto out;
+	case -EEXIST:
+	case 0:
+		lkb->lkb_remid = remid;
+		break;
+	default:
+		log_error(ls, "dlm_recover_process_copy %x remote %d %x %d unk",
+			  lkid, le32_to_cpu(rc->rc_header.h_nodeid), remid,
+			  result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* an ack for dlm_recover_locks() which waits for replies from
@@ -4736,11 +7768,19 @@ int dlm_recover_process_copy(struct dlm_ls *ls, struct dlm_rcom *rc)
 }
 
 int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
+<<<<<<< HEAD
 		     int mode, uint32_t flags, void *name, unsigned int namelen,
 		     unsigned long timeout_cs)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_args args;
+=======
+		     int mode, uint32_t flags, void *name, unsigned int namelen)
+{
+	struct dlm_lkb *lkb;
+	struct dlm_args args;
+	bool do_put = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	dlm_lock_recovery(ls);
@@ -4751,10 +7791,16 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	trace_dlm_lock_start(ls, lkb, name, namelen, mode, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & DLM_LKF_VALBLK) {
 		ua->lksb.sb_lvbptr = kzalloc(DLM_USER_LVB_LEN, GFP_NOFS);
 		if (!ua->lksb.sb_lvbptr) {
 			kfree(ua);
+<<<<<<< HEAD
 			__put_lkb(ls, lkb);
 			error = -ENOMEM;
 			goto out;
@@ -4774,6 +7820,25 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 		goto out;
 	}
 
+=======
+			error = -ENOMEM;
+			goto out_put;
+		}
+	}
+	error = set_lock_args(mode, &ua->lksb, flags, namelen, fake_astfn, ua,
+			      fake_bastfn, &args);
+	if (error) {
+		kfree(ua->lksb.sb_lvbptr);
+		ua->lksb.sb_lvbptr = NULL;
+		kfree(ua);
+		goto out_put;
+	}
+
+	/* After ua is attached to lkb it will be freed by dlm_free_lkb().
+	   When DLM_DFL_USER_BIT is set, the dlm knows that this is a userspace
+	   lock and that lkb_astparam is the dlm_user_args structure. */
+	set_bit(DLM_DFL_USER_BIT, &lkb->lkb_dflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = request_lock(ls, lkb, name, namelen, &args);
 
 	switch (error) {
@@ -4784,10 +7849,16 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 		break;
 	case -EAGAIN:
 		error = 0;
+<<<<<<< HEAD
 		/* fall through */
 	default:
 		__put_lkb(ls, lkb);
 		goto out;
+=======
+		fallthrough;
+	default:
+		goto out_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* add this new lkb to the per-process list of locks */
@@ -4795,14 +7866,26 @@ int dlm_user_request(struct dlm_ls *ls, struct dlm_user_args *ua,
 	hold_lkb(lkb);
 	list_add_tail(&lkb->lkb_ownqueue, &ua->proc->locks);
 	spin_unlock(&ua->proc->locks_spin);
+<<<<<<< HEAD
+=======
+	do_put = false;
+ out_put:
+	trace_dlm_lock_end(ls, lkb, name, namelen, mode, flags, error, false);
+	if (do_put)
+		__put_lkb(ls, lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	dlm_unlock_recovery(ls);
 	return error;
 }
 
 int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
+<<<<<<< HEAD
 		     int mode, uint32_t flags, uint32_t lkid, char *lvb_in,
 		     unsigned long timeout_cs)
+=======
+		     int mode, uint32_t flags, uint32_t lkid, char *lvb_in)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_lkb *lkb;
 	struct dlm_args args;
@@ -4815,6 +7898,11 @@ int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	trace_dlm_lock_start(ls, lkb, NULL, 0, mode, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* user can change the params on its lock when it converts it, or
 	   add an lvb that didn't exist before */
 
@@ -4837,8 +7925,13 @@ int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	ua->bastaddr = ua_tmp->bastaddr;
 	ua->user_lksb = ua_tmp->user_lksb;
 
+<<<<<<< HEAD
 	error = set_lock_args(mode, &ua->lksb, flags, 0, timeout_cs,
 			      fake_astfn, ua, fake_bastfn, &args);
+=======
+	error = set_lock_args(mode, &ua->lksb, flags, 0, fake_astfn, ua,
+			      fake_bastfn, &args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_put;
 
@@ -4847,6 +7940,10 @@ int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	if (error == -EINPROGRESS || error == -EAGAIN || error == -EDEADLK)
 		error = 0;
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_lock_end(ls, lkb, NULL, 0, mode, flags, error, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lkb(lkb);
  out:
 	dlm_unlock_recovery(ls);
@@ -4854,6 +7951,80 @@ int dlm_user_convert(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The caller asks for an orphan lock on a given resource with a given mode.
+ * If a matching lock exists, it's moved to the owner's list of locks and
+ * the lkid is returned.
+ */
+
+int dlm_user_adopt_orphan(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
+		     int mode, uint32_t flags, void *name, unsigned int namelen,
+		     uint32_t *lkid)
+{
+	struct dlm_lkb *lkb = NULL, *iter;
+	struct dlm_user_args *ua;
+	int found_other_mode = 0;
+	int rv = 0;
+
+	mutex_lock(&ls->ls_orphans_mutex);
+	list_for_each_entry(iter, &ls->ls_orphans, lkb_ownqueue) {
+		if (iter->lkb_resource->res_length != namelen)
+			continue;
+		if (memcmp(iter->lkb_resource->res_name, name, namelen))
+			continue;
+		if (iter->lkb_grmode != mode) {
+			found_other_mode = 1;
+			continue;
+		}
+
+		lkb = iter;
+		list_del_init(&iter->lkb_ownqueue);
+		clear_bit(DLM_DFL_ORPHAN_BIT, &iter->lkb_dflags);
+		*lkid = iter->lkb_id;
+		break;
+	}
+	mutex_unlock(&ls->ls_orphans_mutex);
+
+	if (!lkb && found_other_mode) {
+		rv = -EAGAIN;
+		goto out;
+	}
+
+	if (!lkb) {
+		rv = -ENOENT;
+		goto out;
+	}
+
+	lkb->lkb_exflags = flags;
+	lkb->lkb_ownpid = (int) current->pid;
+
+	ua = lkb->lkb_ua;
+
+	ua->proc = ua_tmp->proc;
+	ua->xid = ua_tmp->xid;
+	ua->castparam = ua_tmp->castparam;
+	ua->castaddr = ua_tmp->castaddr;
+	ua->bastparam = ua_tmp->bastparam;
+	ua->bastaddr = ua_tmp->bastaddr;
+	ua->user_lksb = ua_tmp->user_lksb;
+
+	/*
+	 * The lkb reference from the ls_orphans list was not
+	 * removed above, and is now considered the reference
+	 * for the proc locks list.
+	 */
+
+	spin_lock(&ua->proc->locks_spin);
+	list_add_tail(&lkb->lkb_ownqueue, &ua->proc->locks);
+	spin_unlock(&ua->proc->locks_spin);
+ out:
+	kfree(ua_tmp);
+	return rv;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dlm_user_unlock(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 		    uint32_t flags, uint32_t lkid, char *lvb_in)
 {
@@ -4868,6 +8039,11 @@ int dlm_user_unlock(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_start(ls, lkb, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ua = lkb->lkb_ua;
 
 	if (lvb_in && ua->lksb.sb_lvbptr)
@@ -4896,6 +8072,10 @@ int dlm_user_unlock(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 		list_move(&lkb->lkb_ownqueue, &ua->proc->unlocking);
 	spin_unlock(&ua->proc->locks_spin);
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_end(ls, lkb, flags, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lkb(lkb);
  out:
 	dlm_unlock_recovery(ls);
@@ -4917,6 +8097,11 @@ int dlm_user_cancel(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_start(ls, lkb, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ua = lkb->lkb_ua;
 	if (ua_tmp->castparam)
 		ua->castparam = ua_tmp->castparam;
@@ -4934,6 +8119,10 @@ int dlm_user_cancel(struct dlm_ls *ls, struct dlm_user_args *ua_tmp,
 	if (error == -EBUSY)
 		error = 0;
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_end(ls, lkb, flags, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lkb(lkb);
  out:
 	dlm_unlock_recovery(ls);
@@ -4955,6 +8144,11 @@ int dlm_user_deadlock(struct dlm_ls *ls, uint32_t flags, uint32_t lkid)
 	if (error)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_start(ls, lkb, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ua = lkb->lkb_ua;
 
 	error = set_unlock_args(flags, ua, &args);
@@ -4970,7 +8164,11 @@ int dlm_user_deadlock(struct dlm_ls *ls, uint32_t flags, uint32_t lkid)
 	error = validate_unlock_args(lkb, &args);
 	if (error)
 		goto out_r;
+<<<<<<< HEAD
 	lkb->lkb_flags |= DLM_IFL_DEADLOCK_CANCEL;
+=======
+	set_bit(DLM_IFL_DEADLOCK_CANCEL_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = _cancel_lock(r, lkb);
  out_r:
@@ -4983,6 +8181,10 @@ int dlm_user_deadlock(struct dlm_ls *ls, uint32_t flags, uint32_t lkid)
 	if (error == -EBUSY)
 		error = 0;
  out_put:
+<<<<<<< HEAD
+=======
+	trace_dlm_unlock_end(ls, lkb, flags, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lkb(lkb);
  out:
 	dlm_unlock_recovery(ls);
@@ -4997,7 +8199,11 @@ static int orphan_proc_lock(struct dlm_ls *ls, struct dlm_lkb *lkb)
 	struct dlm_args args;
 	int error;
 
+<<<<<<< HEAD
 	hold_lkb(lkb);
+=======
+	hold_lkb(lkb); /* reference for the ls_orphans list */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ls->ls_orphans_mutex);
 	list_add_tail(&lkb->lkb_ownqueue, &ls->ls_orphans);
 	mutex_unlock(&ls->ls_orphans_mutex);
@@ -5010,15 +8216,27 @@ static int orphan_proc_lock(struct dlm_ls *ls, struct dlm_lkb *lkb)
 	return error;
 }
 
+<<<<<<< HEAD
 /* The force flag allows the unlock to go ahead even if the lkb isn't granted.
    Regardless of what rsb queue the lock is on, it's removed and freed. */
+=======
+/* The FORCEUNLOCK flag allows the unlock to go ahead even if the lkb isn't
+   granted.  Regardless of what rsb queue the lock is on, it's removed and
+   freed.  The IVVALBLK flag causes the lvb on the resource to be invalidated
+   if our lock is PW/EX (it's ignored if our granted mode is smaller.) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int unlock_proc_lock(struct dlm_ls *ls, struct dlm_lkb *lkb)
 {
 	struct dlm_args args;
 	int error;
 
+<<<<<<< HEAD
 	set_unlock_args(DLM_LKF_FORCEUNLOCK, lkb->lkb_ua, &args);
+=======
+	set_unlock_args(DLM_LKF_FORCEUNLOCK | DLM_LKF_IVVALBLK,
+			lkb->lkb_ua, &args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = unlock_lock(ls, lkb, &args);
 	if (error == -DLM_EUNLOCK)
@@ -5035,7 +8253,11 @@ static struct dlm_lkb *del_proc_lock(struct dlm_ls *ls,
 {
 	struct dlm_lkb *lkb = NULL;
 
+<<<<<<< HEAD
 	mutex_lock(&ls->ls_clear_proc_locks);
+=======
+	spin_lock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&proc->locks))
 		goto out;
 
@@ -5043,11 +8265,19 @@ static struct dlm_lkb *del_proc_lock(struct dlm_ls *ls,
 	list_del_init(&lkb->lkb_ownqueue);
 
 	if (lkb->lkb_exflags & DLM_LKF_PERSISTENT)
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_ORPHAN;
 	else
 		lkb->lkb_flags |= DLM_IFL_DEAD;
  out:
 	mutex_unlock(&ls->ls_clear_proc_locks);
+=======
+		set_bit(DLM_DFL_ORPHAN_BIT, &lkb->lkb_dflags);
+	else
+		set_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags);
+ out:
+	spin_unlock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lkb;
 }
 
@@ -5071,7 +8301,10 @@ void dlm_clear_proc_locks(struct dlm_ls *ls, struct dlm_user_proc *proc)
 		lkb = del_proc_lock(ls, proc);
 		if (!lkb)
 			break;
+<<<<<<< HEAD
 		del_timeout(lkb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lkb->lkb_exflags & DLM_LKF_PERSISTENT)
 			orphan_proc_lock(ls, lkb);
 		else
@@ -5084,23 +8317,39 @@ void dlm_clear_proc_locks(struct dlm_ls *ls, struct dlm_user_proc *proc)
 		dlm_put_lkb(lkb);
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&ls->ls_clear_proc_locks);
+=======
+	spin_lock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* in-progress unlocks */
 	list_for_each_entry_safe(lkb, safe, &proc->unlocking, lkb_ownqueue) {
 		list_del_init(&lkb->lkb_ownqueue);
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_DEAD;
+=======
+		set_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlm_put_lkb(lkb);
 	}
 
 	list_for_each_entry_safe(lkb, safe, &proc->asts, lkb_cb_list) {
+<<<<<<< HEAD
 		memset(&lkb->lkb_callbacks, 0,
 		       sizeof(struct dlm_callback) * DLM_CALLBACKS_SIZE);
+=======
+		dlm_purge_lkb_callbacks(lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&lkb->lkb_cb_list);
 		dlm_put_lkb(lkb);
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&ls->ls_clear_proc_locks);
+=======
+	spin_unlock(&ls->ls_clear_proc_locks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_unlock_recovery(ls);
 }
 
@@ -5121,7 +8370,11 @@ static void purge_proc_locks(struct dlm_ls *ls, struct dlm_user_proc *proc)
 		if (!lkb)
 			break;
 
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_DEAD;
+=======
+		set_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unlock_proc_lock(ls, lkb);
 		dlm_put_lkb(lkb); /* ref from proc->locks list */
 	}
@@ -5129,15 +8382,23 @@ static void purge_proc_locks(struct dlm_ls *ls, struct dlm_user_proc *proc)
 	spin_lock(&proc->locks_spin);
 	list_for_each_entry_safe(lkb, safe, &proc->unlocking, lkb_ownqueue) {
 		list_del_init(&lkb->lkb_ownqueue);
+<<<<<<< HEAD
 		lkb->lkb_flags |= DLM_IFL_DEAD;
+=======
+		set_bit(DLM_IFL_DEAD_BIT, &lkb->lkb_iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlm_put_lkb(lkb);
 	}
 	spin_unlock(&proc->locks_spin);
 
 	spin_lock(&proc->asts_spin);
 	list_for_each_entry_safe(lkb, safe, &proc->asts, lkb_cb_list) {
+<<<<<<< HEAD
 		memset(&lkb->lkb_callbacks, 0,
 		       sizeof(struct dlm_callback) * DLM_CALLBACKS_SIZE);
+=======
+		dlm_purge_lkb_callbacks(lkb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_init(&lkb->lkb_cb_list);
 		dlm_put_lkb(lkb);
 	}
@@ -5168,6 +8429,7 @@ static int send_purge(struct dlm_ls *ls, int nodeid, int pid)
 	int error;
 
 	error = _create_message(ls, sizeof(struct dlm_message), nodeid,
+<<<<<<< HEAD
 				DLM_MSG_PURGE, &ms, &mh);
 	if (error)
 		return error;
@@ -5175,6 +8437,15 @@ static int send_purge(struct dlm_ls *ls, int nodeid, int pid)
 	ms->m_pid = pid;
 
 	return send_message(mh, ms);
+=======
+				DLM_MSG_PURGE, &ms, &mh, GFP_NOFS);
+	if (error)
+		return error;
+	ms->m_nodeid = cpu_to_le32(nodeid);
+	ms->m_pid = cpu_to_le32(pid);
+
+	return send_message(mh, ms, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dlm_user_purge(struct dlm_ls *ls, struct dlm_user_proc *proc,
@@ -5182,7 +8453,11 @@ int dlm_user_purge(struct dlm_ls *ls, struct dlm_user_proc *proc,
 {
 	int error = 0;
 
+<<<<<<< HEAD
 	if (nodeid != dlm_our_nodeid()) {
+=======
+	if (nodeid && (nodeid != dlm_our_nodeid())) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = send_purge(ls, nodeid, pid);
 	} else {
 		dlm_lock_recovery(ls);
@@ -5195,3 +8470,67 @@ int dlm_user_purge(struct dlm_ls *ls, struct dlm_user_proc *proc,
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/* debug functionality */
+int dlm_debug_add_lkb(struct dlm_ls *ls, uint32_t lkb_id, char *name, int len,
+		      int lkb_nodeid, unsigned int lkb_dflags, int lkb_status)
+{
+	struct dlm_lksb *lksb;
+	struct dlm_lkb *lkb;
+	struct dlm_rsb *r;
+	int error;
+
+	/* we currently can't set a valid user lock */
+	if (lkb_dflags & BIT(DLM_DFL_USER_BIT))
+		return -EOPNOTSUPP;
+
+	lksb = kzalloc(sizeof(*lksb), GFP_NOFS);
+	if (!lksb)
+		return -ENOMEM;
+
+	error = _create_lkb(ls, &lkb, lkb_id, lkb_id + 1);
+	if (error) {
+		kfree(lksb);
+		return error;
+	}
+
+	dlm_set_dflags_val(lkb, lkb_dflags);
+	lkb->lkb_nodeid = lkb_nodeid;
+	lkb->lkb_lksb = lksb;
+	/* user specific pointer, just don't have it NULL for kernel locks */
+	if (~lkb_dflags & BIT(DLM_DFL_USER_BIT))
+		lkb->lkb_astparam = (void *)0xDEADBEEF;
+
+	error = find_rsb(ls, name, len, 0, R_REQUEST, &r);
+	if (error) {
+		kfree(lksb);
+		__put_lkb(ls, lkb);
+		return error;
+	}
+
+	lock_rsb(r);
+	attach_lkb(r, lkb);
+	add_lkb(r, lkb, lkb_status);
+	unlock_rsb(r);
+	put_rsb(r);
+
+	return 0;
+}
+
+int dlm_debug_add_lkb_to_waiters(struct dlm_ls *ls, uint32_t lkb_id,
+				 int mstype, int to_nodeid)
+{
+	struct dlm_lkb *lkb;
+	int error;
+
+	error = find_lkb(ls, lkb_id, &lkb);
+	if (error)
+		return error;
+
+	error = add_to_waiters(lkb, mstype, to_nodeid);
+	dlm_put_lkb(lkb);
+	return error;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

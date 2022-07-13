@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max8952.h - Voltage regulation for the Maxim 8952
  *
  *  Copyright (C) 2010 Samsung Electrnoics
  *  MyungJoo Ham <myungjoo.ham@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef REGULATOR_MAX8952
@@ -118,6 +125,7 @@ enum {
 #define MAX8952_NUM_DVS_MODE	4
 
 struct max8952_platform_data {
+<<<<<<< HEAD
 	int gpio_vid0;
 	int gpio_vid1;
 	int gpio_en;
@@ -129,6 +137,15 @@ struct max8952_platform_data {
 	u8 ramp_speed;
 
 	struct regulator_init_data reg_data;
+=======
+	u32 default_mode;
+	u32 dvs_mode[MAX8952_NUM_DVS_MODE]; /* MAX8952_DVS_MODEx_XXXXmV */
+
+	u32 sync_freq;
+	u32 ramp_speed;
+
+	struct regulator_init_data *reg_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

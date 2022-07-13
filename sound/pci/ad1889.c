@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Analog Devices 1889 audio driver
  *
  * This is a driver for the AD1889 PCI audio chipset found
@@ -7,6 +11,7 @@
  * Copyright (C) 2005, Thibaut Varene <varenet@parisc-linux.org>
  *   Based on the OSS AD1889 driver by Randolph Chung <tausq@debian.org>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
  * published by the Free Software Foundation.
@@ -20,6 +25,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  *	Do we need to take care of CCS register?
  *	Maybe we could use finer grained locking (separate locks for pb/cap)?
@@ -40,14 +47,21 @@
 #include <linux/compiler.h>
 #include <linux/delay.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/initval.h>
 #include <sound/ac97_codec.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ad1889.h"
 #include "ac97/ac97_id.h"
 
@@ -56,7 +70,10 @@
 MODULE_AUTHOR("Kyle McMartin <kyle@parisc-linux.org>, Thibaut Varene <t-bone@parisc-linux.org>");
 MODULE_DESCRIPTION("Analog Devices AD1889 ALSA sound driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Analog Devices,AD1889}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
 module_param_array(index, int, NULL, 0444);
@@ -77,9 +94,12 @@ MODULE_PARM_DESC(ac97_quirk, "AC'97 workaround for strange hardware.");
 #define DEVNAME "ad1889"
 #define PFX	DEVNAME ": "
 
+<<<<<<< HEAD
 /* let's use the global sound debug interfaces */
 #define ad1889_debug(fmt, arg...) snd_printd(KERN_DEBUG fmt, ## arg)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* keep track of some hw registers */
 struct ad1889_register_state {
 	u16 reg;	/* reg setup */
@@ -262,6 +282,7 @@ snd_ad1889_ac97_ready(struct snd_ad1889 *chip)
 	
 	while (!(ad1889_readw(chip, AD_AC97_ACIC) & AD_AC97_ACIC_ACRDY) 
 			&& --retry)
+<<<<<<< HEAD
 		mdelay(1);
 	if (!retry) {
 		snd_printk(KERN_ERR PFX "[%s] Link is not ready.\n",
@@ -269,10 +290,20 @@ snd_ad1889_ac97_ready(struct snd_ad1889 *chip)
 		return -EIO;
 	}
 	ad1889_debug("[%s] ready after %d ms\n", __func__, 400 - retry);
+=======
+		usleep_range(1000, 2000);
+	if (!retry) {
+		dev_err(chip->card->dev, "[%s] Link is not ready.\n",
+			__func__);
+		return -EIO;
+	}
+	dev_dbg(chip->card->dev, "[%s] ready after %d ms\n", __func__, 400 - retry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int 
 snd_ad1889_hw_params(struct snd_pcm_substream *substream,
 			struct snd_pcm_hw_params *hw_params)
@@ -288,6 +319,9 @@ snd_ad1889_hw_free(struct snd_pcm_substream *substream)
 }
 
 static struct snd_pcm_hardware snd_ad1889_playback_hw = {
+=======
+static const struct snd_pcm_hardware snd_ad1889_playback_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_MMAP_VALID | SNDRV_PCM_INFO_BLOCK_TRANSFER,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
@@ -304,7 +338,11 @@ static struct snd_pcm_hardware snd_ad1889_playback_hw = {
 	/*.fifo_size = 0,*/
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_ad1889_capture_hw = {
+=======
+static const struct snd_pcm_hardware snd_ad1889_capture_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_MMAP_VALID | SNDRV_PCM_INFO_BLOCK_TRANSFER,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
@@ -405,9 +443,15 @@ snd_ad1889_playback_prepare(struct snd_pcm_substream *ss)
 	
 	spin_unlock_irq(&chip->lock);
 	
+<<<<<<< HEAD
 	ad1889_debug("prepare playback: addr = 0x%x, count = %u, "
 			"size = %u, reg = 0x%x, rate = %u\n", chip->wave.addr,
 			count, size, reg, rt->rate);
+=======
+	dev_dbg(chip->card->dev,
+		"prepare playback: addr = 0x%x, count = %u, size = %u, reg = 0x%x, rate = %u\n",
+		chip->wave.addr, count, size, reg, rt->rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -452,9 +496,15 @@ snd_ad1889_capture_prepare(struct snd_pcm_substream *ss)
 	
 	spin_unlock_irq(&chip->lock);
 	
+<<<<<<< HEAD
 	ad1889_debug("prepare capture: addr = 0x%x, count = %u, "
 			"size = %u, reg = 0x%x, rate = %u\n", chip->ramc.addr,
 			count, size, reg, rt->rate);
+=======
+	dev_dbg(chip->card->dev,
+		"prepare capture: addr = 0x%x, count = %u, size = %u, reg = 0x%x, rate = %u\n",
+		chip->ramc.addr, count, size, reg, rt->rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -575,23 +625,35 @@ snd_ad1889_capture_pointer(struct snd_pcm_substream *ss)
 	return bytes_to_frames(ss->runtime, ptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ad1889_playback_ops = {
 	.open = snd_ad1889_playback_open,
 	.close = snd_ad1889_playback_close,
 	.ioctl = snd_pcm_lib_ioctl,
 	.hw_params = snd_ad1889_hw_params,
 	.hw_free = snd_ad1889_hw_free,
+=======
+static const struct snd_pcm_ops snd_ad1889_playback_ops = {
+	.open = snd_ad1889_playback_open,
+	.close = snd_ad1889_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = snd_ad1889_playback_prepare,
 	.trigger = snd_ad1889_playback_trigger,
 	.pointer = snd_ad1889_playback_pointer, 
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ad1889_capture_ops = {
 	.open = snd_ad1889_capture_open,
 	.close = snd_ad1889_capture_close,
 	.ioctl = snd_pcm_lib_ioctl,
 	.hw_params = snd_ad1889_hw_params,
 	.hw_free = snd_ad1889_hw_free,
+=======
+static const struct snd_pcm_ops snd_ad1889_capture_ops = {
+	.open = snd_ad1889_capture_open,
+	.close = snd_ad1889_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = snd_ad1889_capture_prepare,
 	.trigger = snd_ad1889_capture_trigger,
 	.pointer = snd_ad1889_capture_pointer, 
@@ -614,7 +676,12 @@ snd_ad1889_interrupt(int irq, void *dev_id)
 		return IRQ_NONE;
 
 	if (st & (AD_DMA_DISR_PMAI|AD_DMA_DISR_PTAI))
+<<<<<<< HEAD
 		ad1889_debug("Unexpected master or target abort interrupt!\n");
+=======
+		dev_dbg(chip->card->dev,
+			"Unexpected master or target abort interrupt!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((st & AD_DMA_DISR_WAVI) && chip->psubs)
 		snd_pcm_period_elapsed(chip->psubs);
@@ -624,15 +691,23 @@ snd_ad1889_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit
 snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device, struct snd_pcm **rpcm)
+=======
+static int
+snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_pcm *pcm;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_pcm_new(chip->card, chip->card->driver, device, 1, 1, &pcm);
 	if (err < 0)
 		return err;
@@ -650,6 +725,7 @@ snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device, struct snd_pcm **rpcm)
 	chip->psubs = NULL;
 	chip->csubs = NULL;
 
+<<<<<<< HEAD
 	err = snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						snd_dma_pci_data(chip->pci),
 						BUFFER_BYTES_MAX / 2,
@@ -663,6 +739,11 @@ snd_ad1889_pcm_init(struct snd_ad1889 *chip, int device, struct snd_pcm **rpcm)
 	if (rpcm)
 		*rpcm = pcm;
 	
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+				       BUFFER_BYTES_MAX / 2, BUFFER_BYTES_MAX);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -683,7 +764,11 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	
 	/* WARQ is at offset 12 */
 	tmp = (reg & AD_DS_WSMC_WARQ) ?
+<<<<<<< HEAD
 			(((reg & AD_DS_WSMC_WARQ >> 12) & 0x01) ? 12 : 18) : 4;
+=======
+		((((reg & AD_DS_WSMC_WARQ) >> 12) & 0x01) ? 12 : 18) : 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp /= (reg & AD_DS_WSMC_WAST) ? 2 : 1;
 	
 	snd_iprintf(buffer, "Wave FIFO: %d %s words\n\n", tmp,
@@ -695,7 +780,11 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	
 	/* SYRQ is at offset 4 */
 	tmp = (reg & AD_DS_WSMC_SYRQ) ?
+<<<<<<< HEAD
 			(((reg & AD_DS_WSMC_SYRQ >> 4) & 0x01) ? 12 : 18) : 4;
+=======
+		((((reg & AD_DS_WSMC_SYRQ) >> 4) & 0x01) ? 12 : 18) : 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp /= (reg & AD_DS_WSMC_WAST) ? 2 : 1;
 	
 	snd_iprintf(buffer, "Synthesis FIFO: %d %s words\n\n", tmp,
@@ -711,7 +800,11 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	
 	/* ACRQ is at offset 4 */
 	tmp = (reg & AD_DS_RAMC_ACRQ) ?
+<<<<<<< HEAD
 			(((reg & AD_DS_RAMC_ACRQ >> 4) & 0x01) ? 12 : 18) : 4;
+=======
+		((((reg & AD_DS_RAMC_ACRQ) >> 4) & 0x01) ? 12 : 18) : 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp /= (reg & AD_DS_RAMC_ADST) ? 2 : 1;
 	
 	snd_iprintf(buffer, "ADC FIFO: %d %s words\n\n", tmp,
@@ -722,7 +815,11 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 			
 	/* RERQ is at offset 12 */
 	tmp = (reg & AD_DS_RAMC_RERQ) ?
+<<<<<<< HEAD
 			(((reg & AD_DS_RAMC_RERQ >> 12) & 0x01) ? 12 : 18) : 4;
+=======
+		((((reg & AD_DS_RAMC_RERQ) >> 12) & 0x01) ? 12 : 18) : 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp /= (reg & AD_DS_RAMC_ADST) ? 2 : 1;
 	
 	snd_iprintf(buffer, "Resampler FIFO: %d %s words\n\n", tmp,
@@ -739,7 +836,11 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	reg = ad1889_readw(chip, AD_DS_WADA);
 	snd_iprintf(buffer, "Right: %s, -%d dB\n",
 			(reg & AD_DS_WADA_RWAM) ? "mute" : "unmute",
+<<<<<<< HEAD
 			((reg & AD_DS_WADA_RWAA) >> 8) * 3);
+=======
+			(reg & AD_DS_WADA_RWAA) * 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	reg = ad1889_readw(chip, AD_DS_WAS);
 	snd_iprintf(buffer, "Wave samplerate: %u Hz\n", reg);
@@ -747,6 +848,7 @@ snd_ad1889_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffe
 	snd_iprintf(buffer, "Resampler samplerate: %u Hz\n", reg);
 }
 
+<<<<<<< HEAD
 static void __devinit
 snd_ad1889_proc_init(struct snd_ad1889 *chip)
 {
@@ -757,6 +859,16 @@ snd_ad1889_proc_init(struct snd_ad1889 *chip)
 }
 
 static struct ac97_quirk ac97_quirks[] = {
+=======
+static void
+snd_ad1889_proc_init(struct snd_ad1889 *chip)
+{
+	snd_card_ro_proc_new(chip->card, chip->card->driver,
+			     chip, snd_ad1889_proc_read);
+}
+
+static const struct ac97_quirk ac97_quirks[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = 0x11d4,	/* AD */
 		.subdevice = 0x1889,	/* AD1889 */
@@ -767,7 +879,11 @@ static struct ac97_quirk ac97_quirks[] = {
 	{ } /* terminator */
 };
 
+<<<<<<< HEAD
 static void __devinit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_ad1889_ac97_xinit(struct snd_ad1889 *chip)
 {
 	u16 reg;
@@ -791,6 +907,7 @@ snd_ad1889_ac97_xinit(struct snd_ad1889 *chip)
 
 }
 
+<<<<<<< HEAD
 static void
 snd_ad1889_ac97_bus_free(struct snd_ac97_bus *bus)
 {
@@ -806,11 +923,18 @@ snd_ad1889_ac97_free(struct snd_ac97 *ac97)
 }
 
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_ad1889_ac97_init(struct snd_ad1889 *chip, const char *quirk_override)
 {
 	int err;
 	struct snd_ac97_template ac97;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_ad1889_ac97_write,
 		.read = snd_ad1889_ac97_read,
 	};
@@ -822,11 +946,16 @@ snd_ad1889_ac97_init(struct snd_ad1889 *chip, const char *quirk_override)
 	if (err < 0)
 		return err;
 	
+<<<<<<< HEAD
 	chip->ac97_bus->private_free = snd_ad1889_ac97_bus_free;
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
 	ac97.private_free = snd_ad1889_ac97_free;
+=======
+	memset(&ac97, 0, sizeof(ac97));
+	ac97.private_data = chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ac97.pci = chip->pci;
 
 	err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97);
@@ -838,11 +967,18 @@ snd_ad1889_ac97_init(struct snd_ad1889 *chip, const char *quirk_override)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 snd_ad1889_free(struct snd_ad1889 *chip)
 {
 	if (chip->irq < 0)
 		goto skip_hw;
+=======
+static void
+snd_ad1889_free(struct snd_card *card)
+{
+	struct snd_ad1889 *chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&chip->lock);
 
@@ -856,6 +992,7 @@ snd_ad1889_free(struct snd_ad1889 *chip)
 	ad1889_readl(chip, AD_DMA_DISR);	/* flush, dammit! */
 
 	spin_unlock_irq(&chip->lock);
+<<<<<<< HEAD
 
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
@@ -885,6 +1022,57 @@ snd_ad1889_init(struct snd_ad1889 *chip)
 	ad1889_readw(chip, AD_DS_CCS);	/* flush posted write */
 
 	mdelay(10);
+=======
+}
+
+static int
+snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
+{
+	struct snd_ad1889 *chip = card->private_data;
+	int err;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+	/* check PCI availability (32bit DMA) */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32))) {
+		dev_err(card->dev, "error setting 32-bit DMA mask.\n");
+		return -ENXIO;
+	}
+
+	chip->card = card;
+	chip->pci = pci;
+	chip->irq = -1;
+
+	/* (1) PCI resource allocation */
+	err = pcim_iomap_regions(pci, 1 << 0, card->driver);
+	if (err < 0)
+		return err;
+
+	chip->bar = pci_resource_start(pci, 0);
+	chip->iobase = pcim_iomap_table(pci)[0];
+	
+	pci_set_master(pci);
+
+	spin_lock_init(&chip->lock);	/* only now can we call ad1889_free */
+
+	if (devm_request_irq(&pci->dev, pci->irq, snd_ad1889_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "cannot obtain IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_ad1889_free;
+
+	/* (2) initialization of the chip hardware */
+	ad1889_writew(chip, AD_DS_CCS, AD_DS_CCS_CLKEN); /* turn on clock */
+	ad1889_readw(chip, AD_DS_CCS);	/* flush posted write */
+
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable Master and Target abort interrupts */
 	ad1889_writel(chip, AD_DMA_DISR, AD_DMA_DISR_PMAE | AD_DMA_DISR_PTAE);
@@ -892,6 +1080,7 @@ snd_ad1889_init(struct snd_ad1889 *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit
 snd_ad1889_create(struct snd_card *card,
 		  struct pci_dev *pci,
@@ -981,6 +1170,11 @@ free_and_ret:
 static int __devinit
 snd_ad1889_probe(struct pci_dev *pci,
 		 const struct pci_device_id *pci_id)
+=======
+static int
+__snd_ad1889_probe(struct pci_dev *pci,
+		   const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	static int devno;
@@ -996,18 +1190,32 @@ snd_ad1889_probe(struct pci_dev *pci,
 	}
 
 	/* (2) */
+<<<<<<< HEAD
 	err = snd_card_create(index[devno], id[devno], THIS_MODULE, 0, &card);
 	/* XXX REVISIT: we can probably allocate chip in this call */
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index[devno], id[devno], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "AD1889");
 	strcpy(card->shortname, "Analog Devices AD1889");
 
 	/* (3) */
+<<<<<<< HEAD
 	err = snd_ad1889_create(card, pci, &chip);
 	if (err < 0)
 		goto free_and_ret;
+=======
+	err = snd_ad1889_create(card, pci);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* (4) */
 	sprintf(card->longname, "%s at 0x%lx irq %i",
@@ -1017,11 +1225,19 @@ snd_ad1889_probe(struct pci_dev *pci,
 	/* register AC97 mixer */
 	err = snd_ad1889_ac97_init(chip, ac97_quirk[devno]);
 	if (err < 0)
+<<<<<<< HEAD
 		goto free_and_ret;
 	
 	err = snd_ad1889_pcm_init(chip, 0, NULL);
 	if (err < 0)
 		goto free_and_ret;
+=======
+		return err;
+	
+	err = snd_ad1889_pcm_init(chip, 0);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register proc interface */
 	snd_ad1889_proc_init(chip);
@@ -1029,13 +1245,18 @@ snd_ad1889_probe(struct pci_dev *pci,
 	/* (6) */
 	err = snd_card_register(card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto free_and_ret;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* (7) */
 	pci_set_drvdata(pci, card);
 
 	devno++;
 	return 0;
+<<<<<<< HEAD
 
 free_and_ret:
 	snd_card_free(card);
@@ -1050,6 +1271,17 @@ snd_ad1889_remove(struct pci_dev *pci)
 }
 
 static DEFINE_PCI_DEVICE_TABLE(snd_ad1889_ids) = {
+=======
+}
+
+static int snd_ad1889_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_ad1889_probe(pci, pci_id));
+}
+
+static const struct pci_device_id snd_ad1889_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_ANALOG_DEVICES, PCI_DEVICE_ID_AD1889JS) },
 	{ 0, },
 };
@@ -1059,6 +1291,7 @@ static struct pci_driver ad1889_pci_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_ad1889_ids,
 	.probe = snd_ad1889_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_ad1889_remove),
 };
 
@@ -1076,3 +1309,8 @@ alsa_ad1889_fini(void)
 
 module_init(alsa_ad1889_init);
 module_exit(alsa_ad1889_fini);
+=======
+};
+
+module_pci_driver(ad1889_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

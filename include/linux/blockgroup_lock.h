@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BLOCKGROUP_LOCK_H
 #define _LINUX_BLOCKGROUP_LOCK_H
 /*
@@ -10,6 +14,7 @@
 #include <linux/cache.h>
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 
 /*
  * We want a power-of-two.  Is there a better way than this?
@@ -32,6 +37,12 @@
 #else	/* CONFIG_SMP */
 #define NR_BG_LOCKS	1
 #endif	/* CONFIG_SMP */
+=======
+#define NR_BG_LOCKS	(4 << ilog2(NR_CPUS < 32 ? NR_CPUS : 32))
+#else
+#define NR_BG_LOCKS	1
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bgl_lock {
 	spinlock_t lock;
@@ -49,6 +60,7 @@ static inline void bgl_lock_init(struct blockgroup_lock *bgl)
 		spin_lock_init(&bgl->locks[i].lock);
 }
 
+<<<<<<< HEAD
 /*
  * The accessor is a macro so we can embed a blockgroup_lock into different
  * superblock types
@@ -57,6 +69,12 @@ static inline spinlock_t *
 bgl_lock_ptr(struct blockgroup_lock *bgl, unsigned int block_group)
 {
 	return &bgl->locks[(block_group) & (NR_BG_LOCKS-1)].lock;
+=======
+static inline spinlock_t *
+bgl_lock_ptr(struct blockgroup_lock *bgl, unsigned int block_group)
+{
+	return &bgl->locks[block_group & (NR_BG_LOCKS-1)].lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

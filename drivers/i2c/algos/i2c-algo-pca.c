@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  i2c-algo-pca.c i2c driver algorithms for PCA9564 adapters
  *    Copyright (C) 2004 Arcom Control Systems
  *    Copyright (C) 2008 Pengutronix
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  *  MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,7 +31,10 @@
 #include <linux/moduleparam.h>
 #include <linux/delay.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/i2c-algo-pca.h>
@@ -46,6 +56,7 @@ static int i2c_debug;
 #define pca_set_con(adap, val) pca_outw(adap, I2C_PCA_CON, val)
 #define pca_get_con(adap) pca_inw(adap, I2C_PCA_CON)
 #define pca_wait(adap) adap->wait_for_completion(adap->data)
+<<<<<<< HEAD
 #define pca_reset(adap) adap->reset_chip(adap->data)
 
 static void pca9665_reset(void *pd)
@@ -54,6 +65,35 @@ static void pca9665_reset(void *pd)
 	pca_outw(adap, I2C_PCA_INDPTR, I2C_PCA_IPRESET);
 	pca_outw(adap, I2C_PCA_IND, 0xA5);
 	pca_outw(adap, I2C_PCA_IND, 0x5A);
+=======
+
+static void pca_reset(struct i2c_algo_pca_data *adap)
+{
+	if (adap->chip == I2C_PCA_CHIP_9665) {
+		/* Ignore the reset function from the module,
+		 * we can use the parallel bus reset.
+		 */
+		pca_outw(adap, I2C_PCA_INDPTR, I2C_PCA_IPRESET);
+		pca_outw(adap, I2C_PCA_IND, 0xA5);
+		pca_outw(adap, I2C_PCA_IND, 0x5A);
+
+		/*
+		 * After a reset we need to re-apply any configuration
+		 * (calculated in pca_init) to get the bus in a working state.
+		 */
+		pca_outw(adap, I2C_PCA_INDPTR, I2C_PCA_IMODE);
+		pca_outw(adap, I2C_PCA_IND, adap->bus_settings.mode);
+		pca_outw(adap, I2C_PCA_INDPTR, I2C_PCA_ISCLL);
+		pca_outw(adap, I2C_PCA_IND, adap->bus_settings.tlow);
+		pca_outw(adap, I2C_PCA_INDPTR, I2C_PCA_ISCLH);
+		pca_outw(adap, I2C_PCA_IND, adap->bus_settings.thi);
+
+		pca_set_con(adap, I2C_PCA_CON_ENSIO);
+	} else {
+		adap->reset_chip(adap->data);
+		pca_set_con(adap, I2C_PCA_CON_ENSIO | adap->bus_settings.clock_freq);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -113,11 +153,16 @@ static int pca_address(struct i2c_algo_pca_data *adap,
 		       struct i2c_msg *msg)
 {
 	int sta = pca_get_con(adap);
+<<<<<<< HEAD
 	int addr;
 
 	addr = ((0x7f & msg->addr) << 1);
 	if (msg->flags & I2C_M_RD)
 		addr |= 1;
+=======
+	int addr = i2c_8bit_addr_from_msg(msg);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEB2("=== SLAVE ADDRESS %#04x+%c=%#04x\n",
 	     msg->addr, msg->flags & I2C_M_RD ? 'R' : 'W', addr);
 
@@ -327,7 +372,12 @@ static int pca_xfer(struct i2c_adapter *i2c_adap,
 			DEB2("BUS ERROR - SDA Stuck low\n");
 			pca_reset(adap);
 			goto out;
+<<<<<<< HEAD
 		case 0x90: /* Bus error - SCL stuck low */
+=======
+		case 0x78: /* Bus error - SCL stuck low (PCA9665) */
+		case 0x90: /* Bus error - SCL stuck low (PCA9564) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DEB2("BUS ERROR - SCL Stuck low\n");
 			pca_reset(adap);
 			goto out;
@@ -378,11 +428,20 @@ static unsigned int pca_probe_chip(struct i2c_adapter *adap)
 	pca_outw(pca_data, I2C_PCA_INDPTR, I2C_PCA_IADR);
 	if (pca_inw(pca_data, I2C_PCA_IND) == 0xAA) {
 		printk(KERN_INFO "%s: PCA9665 detected.\n", adap->name);
+<<<<<<< HEAD
 		return I2C_PCA_CHIP_9665;
 	} else {
 		printk(KERN_INFO "%s: PCA9564 detected.\n", adap->name);
 		return I2C_PCA_CHIP_9564;
 	}
+=======
+		pca_data->chip = I2C_PCA_CHIP_9665;
+	} else {
+		printk(KERN_INFO "%s: PCA9564 detected.\n", adap->name);
+		pca_data->chip = I2C_PCA_CHIP_9564;
+	}
+	return pca_data->chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pca_init(struct i2c_adapter *adap)
@@ -434,13 +493,23 @@ static int pca_init(struct i2c_adapter *adap)
 				" Use the nominal frequency.\n", adap->name);
 		}
 
+<<<<<<< HEAD
 		pca_reset(pca_data);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clock = pca_clock(pca_data);
 		printk(KERN_INFO "%s: Clock frequency is %dkHz\n",
 		     adap->name, freqs[clock]);
 
+<<<<<<< HEAD
 		pca_set_con(pca_data, I2C_PCA_CON_ENSIO | clock);
+=======
+		/* Store settings as these will be needed when the PCA chip is reset */
+		pca_data->bus_settings.clock_freq = clock;
+
+		pca_reset(pca_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		int clock;
 		int mode;
@@ -456,11 +525,14 @@ static int pca_init(struct i2c_adapter *adap)
 		 */
 		int raise_fall_time;
 
+<<<<<<< HEAD
 		/* Ignore the reset function from the module,
 		 * we can use the parallel bus reset
 		 */
 		pca_data->reset_chip = pca9665_reset;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pca_data->i2c_clock > 1265800) {
 			printk(KERN_WARNING "%s: I2C clock speed too high."
 				" Using 1265.8kHz.\n", adap->name);
@@ -476,17 +548,29 @@ static int pca_init(struct i2c_adapter *adap)
 		/* To avoid integer overflow, use clock/100 for calculations */
 		clock = pca_clock(pca_data) / 100;
 
+<<<<<<< HEAD
 		if (pca_data->i2c_clock > 10000) {
+=======
+		if (pca_data->i2c_clock > I2C_MAX_FAST_MODE_PLUS_FREQ) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode = I2C_PCA_MODE_TURBO;
 			min_tlow = 14;
 			min_thi  = 5;
 			raise_fall_time = 22; /* Raise 11e-8s, Fall 11e-8s */
+<<<<<<< HEAD
 		} else if (pca_data->i2c_clock > 4000) {
+=======
+		} else if (pca_data->i2c_clock > I2C_MAX_FAST_MODE_FREQ) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode = I2C_PCA_MODE_FASTP;
 			min_tlow = 17;
 			min_thi  = 9;
 			raise_fall_time = 22; /* Raise 11e-8s, Fall 11e-8s */
+<<<<<<< HEAD
 		} else if (pca_data->i2c_clock > 1000) {
+=======
+		} else if (pca_data->i2c_clock > I2C_MAX_STANDARD_MODE_FREQ) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode = I2C_PCA_MODE_FAST;
 			min_tlow = 44;
 			min_thi  = 20;
@@ -512,10 +596,19 @@ static int pca_init(struct i2c_adapter *adap)
 			thi = tlow * min_thi / min_tlow;
 		}
 
+<<<<<<< HEAD
+=======
+		/* Store settings as these will be needed when the PCA chip is reset */
+		pca_data->bus_settings.mode = mode;
+		pca_data->bus_settings.tlow = tlow;
+		pca_data->bus_settings.thi = thi;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pca_reset(pca_data);
 
 		printk(KERN_INFO
 		     "%s: Clock frequency is %dHz\n", adap->name, clock * 100);
+<<<<<<< HEAD
 
 		pca_outw(pca_data, I2C_PCA_INDPTR, I2C_PCA_IMODE);
 		pca_outw(pca_data, I2C_PCA_IND, mode);
@@ -527,6 +620,10 @@ static int pca_init(struct i2c_adapter *adap)
 		pca_set_con(pca_data, I2C_PCA_CON_ENSIO);
 	}
 	udelay(500); /* 500 us for oscilator to stabilise */
+=======
+	}
+	udelay(500); /* 500 us for oscillator to stabilise */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -558,8 +655,13 @@ int i2c_pca_add_numbered_bus(struct i2c_adapter *adap)
 }
 EXPORT_SYMBOL(i2c_pca_add_numbered_bus);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Ian Campbell <icampbell@arcom.com>, "
 	"Wolfram Sang <w.sang@pengutronix.de>");
+=======
+MODULE_AUTHOR("Ian Campbell <icampbell@arcom.com>");
+MODULE_AUTHOR("Wolfram Sang <kernel@pengutronix.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("I2C-Bus PCA9564/PCA9665 algorithm");
 MODULE_LICENSE("GPL");
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8580.c  --  WM8580 ALSA Soc Audio driver
  *
@@ -7,15 +8,32 @@
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * wm8580.c  --  WM8580 and WM8581 ALSA Soc Audio driver
+ *
+ * Copyright 2008-12 Wolfson Microelectronics PLC.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Notes:
  *  The WM8580 is a multichannel codec with S/PDIF support, featuring six
  *  DAC channels and two ADC channels.
  *
+<<<<<<< HEAD
+=======
+ *  The WM8581 is a multichannel codec with S/PDIF support, featuring eight
+ *  DAC channels and two ADC channels.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Currently only the primary audio interface is supported - S/PDIF and
  *  the secondary audio interfaces are not.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -23,9 +41,15 @@
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/of_device.h>
+=======
+#include <linux/regmap.h>
+#include <linux/regulator/consumer.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -64,6 +88,11 @@
 #define WM8580_DIGITAL_ATTENUATION_DACR2     0x17
 #define WM8580_DIGITAL_ATTENUATION_DACL3     0x18
 #define WM8580_DIGITAL_ATTENUATION_DACR3     0x19
+<<<<<<< HEAD
+=======
+#define WM8581_DIGITAL_ATTENUATION_DACL4     0x1A
+#define WM8581_DIGITAL_ATTENUATION_DACR4     0x1B
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM8580_MASTER_DIGITAL_ATTENUATION    0x1C
 #define WM8580_ADC_CONTROL1                  0x1D
 #define WM8580_SPDTXCHAN0                    0x1E
@@ -157,6 +186,7 @@
  * We can't read the WM8580 register space when we
  * are using 2 wire for device control, so we cache them instead.
  */
+<<<<<<< HEAD
 static const u16 wm8580_reg[] = {
 	0x0121, 0x017e, 0x007d, 0x0014, /*R3*/
 	0x0121, 0x017e, 0x007d, 0x0194, /*R7*/
@@ -174,6 +204,74 @@ static const u16 wm8580_reg[] = {
 	0x0000, 0x0000 /*R53*/
 };
 
+=======
+static const struct reg_default wm8580_reg_defaults[] = {
+	{  0, 0x0121 },
+	{  1, 0x017e },
+	{  2, 0x007d },
+	{  3, 0x0014 },
+	{  4, 0x0121 },
+	{  5, 0x017e },
+	{  6, 0x007d },
+	{  7, 0x0194 },
+	{  8, 0x0010 },
+	{  9, 0x0002 },
+	{ 10, 0x0002 },
+	{ 11, 0x00c2 },
+	{ 12, 0x0182 },
+	{ 13, 0x0082 },
+	{ 14, 0x000a },
+	{ 15, 0x0024 },
+	{ 16, 0x0009 },
+	{ 17, 0x0000 },
+	{ 18, 0x00ff },
+	{ 19, 0x0000 },
+	{ 20, 0x00ff },
+	{ 21, 0x00ff },
+	{ 22, 0x00ff },
+	{ 23, 0x00ff },
+	{ 24, 0x00ff },
+	{ 25, 0x00ff },
+	{ 26, 0x00ff },
+	{ 27, 0x00ff },
+	{ 28, 0x01f0 },
+	{ 29, 0x0040 },
+	{ 30, 0x0000 },
+	{ 31, 0x0000 },
+	{ 32, 0x0000 },
+	{ 33, 0x0000 },
+	{ 34, 0x0031 },
+	{ 35, 0x000b },
+	{ 36, 0x0039 },
+	{ 37, 0x0000 },
+	{ 38, 0x0010 },
+	{ 39, 0x0032 },
+	{ 40, 0x0054 },
+	{ 41, 0x0076 },
+	{ 42, 0x0098 },
+	{ 43, 0x0000 },
+	{ 44, 0x0000 },
+	{ 45, 0x0000 },
+	{ 46, 0x0000 },
+	{ 47, 0x0000 },
+	{ 48, 0x0000 },
+	{ 49, 0x0000 },
+	{ 50, 0x005e },
+	{ 51, 0x003e },
+	{ 52, 0x0000 },
+};
+
+static bool wm8580_volatile(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case WM8580_RESET:
+		return true;
+	default:
+		return false;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pll_state {
 	unsigned int in;
 	unsigned int out;
@@ -186,12 +284,26 @@ static const char *wm8580_supply_names[WM8580_NUM_SUPPLIES] = {
 	"PVDD",
 };
 
+<<<<<<< HEAD
 /* codec private data */
 struct wm8580_priv {
 	enum snd_soc_control_type control_type;
 	struct regulator_bulk_data supplies[WM8580_NUM_SUPPLIES];
 	struct pll_state a;
 	struct pll_state b;
+=======
+struct wm8580_driver_data {
+	int num_dacs;
+};
+
+/* codec private data */
+struct wm8580_priv {
+	struct regmap *regmap;
+	struct regulator_bulk_data supplies[WM8580_NUM_SUPPLIES];
+	struct pll_state a;
+	struct pll_state b;
+	const struct wm8580_driver_data *drvdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sysclk[2];
 };
 
@@ -202,23 +314,41 @@ static int wm8580_out_vu(struct snd_kcontrol *kcontrol,
 {
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	u16 *reg_cache = codec->reg_cache;
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reg = mc->reg;
 	unsigned int reg2 = mc->rreg;
 	int ret;
 
+<<<<<<< HEAD
 	/* Clear the register cache so we write without VU set */
 	reg_cache[reg] = 0;
 	reg_cache[reg2] = 0;
+=======
+	/* Clear the register cache VU so we write without VU set */
+	regcache_cache_only(wm8580->regmap, true);
+	regmap_update_bits(wm8580->regmap, reg, 0x100, 0x000);
+	regmap_update_bits(wm8580->regmap, reg2, 0x100, 0x000);
+	regcache_cache_only(wm8580->regmap, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snd_soc_put_volsw(kcontrol, ucontrol);
 	if (ret < 0)
 		return ret;
 
 	/* Now write again with the volume update bit set */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, reg, 0x100, 0x100);
 	snd_soc_update_bits(codec, reg2, 0x100, 0x100);
+=======
+	snd_soc_component_update_bits(component, reg, 0x100, 0x100);
+	snd_soc_component_update_bits(component, reg2, 0x100, 0x100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -254,6 +384,22 @@ SOC_DOUBLE("Capture Switch", WM8580_ADC_CONTROL1, 0, 1, 1, 1),
 SOC_SINGLE("Capture High-Pass Filter Switch", WM8580_ADC_CONTROL1, 4, 1, 0),
 };
 
+<<<<<<< HEAD
+=======
+static const struct snd_kcontrol_new wm8581_snd_controls[] = {
+SOC_DOUBLE_R_EXT_TLV("DAC4 Playback Volume",
+		     WM8581_DIGITAL_ATTENUATION_DACL4,
+		     WM8581_DIGITAL_ATTENUATION_DACR4,
+		     0, 0xff, 0, snd_soc_get_volsw, wm8580_out_vu, dac_tlv),
+
+SOC_SINGLE("DAC4 Deemphasis Switch", WM8580_DAC_CONTROL3, 3, 1, 0),
+
+SOC_DOUBLE("DAC4 Invert Switch", WM8580_DAC_CONTROL4,  8, 7, 1, 0),
+
+SOC_SINGLE("DAC4 Switch", WM8580_DAC_CONTROL5, 3, 1, 1),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_widget wm8580_dapm_widgets[] = {
 SND_SOC_DAPM_DAC("DAC1", "Playback", WM8580_PWRDN1, 2, 1),
 SND_SOC_DAPM_DAC("DAC2", "Playback", WM8580_PWRDN1, 3, 1),
@@ -272,6 +418,16 @@ SND_SOC_DAPM_INPUT("AINL"),
 SND_SOC_DAPM_INPUT("AINR"),
 };
 
+<<<<<<< HEAD
+=======
+static const struct snd_soc_dapm_widget wm8581_dapm_widgets[] = {
+SND_SOC_DAPM_DAC("DAC4", "Playback", WM8580_PWRDN1, 5, 1),
+
+SND_SOC_DAPM_OUTPUT("VOUT4L"),
+SND_SOC_DAPM_OUTPUT("VOUT4R"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_route wm8580_dapm_routes[] = {
 	{ "VOUT1L", NULL, "DAC1" },
 	{ "VOUT1R", NULL, "DAC1" },
@@ -286,6 +442,14 @@ static const struct snd_soc_dapm_route wm8580_dapm_routes[] = {
 	{ "ADC", NULL, "AINR" },
 };
 
+<<<<<<< HEAD
+=======
+static const struct snd_soc_dapm_route wm8581_dapm_routes[] = {
+	{ "VOUT4L", NULL, "DAC4" },
+	{ "VOUT4R", NULL, "DAC4" },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PLL divisors */
 struct _pll_div {
 	u32 prescale:1;
@@ -378,8 +542,13 @@ static int wm8580_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 		int source, unsigned int freq_in, unsigned int freq_out)
 {
 	int offset;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct wm8580_priv *wm8580 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pll_state *state;
 	struct _pll_div pll_div;
 	unsigned int reg;
@@ -418,25 +587,45 @@ static int wm8580_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	/* Always disable the PLL - it is not safe to leave it running
 	 * while reprogramming it.
 	 */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8580_PWRDN2, pwr_mask, pwr_mask);
+=======
+	snd_soc_component_update_bits(component, WM8580_PWRDN2, pwr_mask, pwr_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!freq_in || !freq_out)
 		return 0;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8580_PLLA1 + offset, pll_div.k & 0x1ff);
 	snd_soc_write(codec, WM8580_PLLA2 + offset, (pll_div.k >> 9) & 0x1ff);
 	snd_soc_write(codec, WM8580_PLLA3 + offset,
 		     (pll_div.k >> 18 & 0xf) | (pll_div.n << 4));
 
 	reg = snd_soc_read(codec, WM8580_PLLA4 + offset);
+=======
+	snd_soc_component_write(component, WM8580_PLLA1 + offset, pll_div.k & 0x1ff);
+	snd_soc_component_write(component, WM8580_PLLA2 + offset, (pll_div.k >> 9) & 0x1ff);
+	snd_soc_component_write(component, WM8580_PLLA3 + offset,
+		     (pll_div.k >> 18 & 0xf) | (pll_div.n << 4));
+
+	reg = snd_soc_component_read(component, WM8580_PLLA4 + offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg &= ~0x1b;
 	reg |= pll_div.prescale | pll_div.postscale << 1 |
 		pll_div.freqmode << 3;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8580_PLLA4 + offset, reg);
 
 	/* All done, turn it on */
 	snd_soc_update_bits(codec, WM8580_PWRDN2, pwr_mask, 0);
+=======
+	snd_soc_component_write(component, WM8580_PLLA4 + offset, reg);
+
+	/* All done, turn it on */
+	snd_soc_component_update_bits(component, WM8580_PWRDN2, pwr_mask, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -452,14 +641,20 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct wm8580_priv *wm8580 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 paifa = 0;
 	u16 paifb = 0;
 	int i, ratio, osr;
 
 	/* bit size */
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		paifa |= 0x8;
@@ -473,6 +668,21 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 		paifb |= WM8580_AIF_LENGTH_24;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		paifa |= 0x8;
+		break;
+	case 20:
+		paifa |= 0x0;
+		paifb |= WM8580_AIF_LENGTH_20;
+		break;
+	case 24:
+		paifa |= 0x0;
+		paifb |= WM8580_AIF_LENGTH_24;
+		break;
+	case 32:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		paifa |= 0x0;
 		paifb |= WM8580_AIF_LENGTH_32;
 		break;
@@ -486,12 +696,20 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 		if (ratio == wm8580_sysclk_ratios[i])
 			break;
 	if (i == ARRAY_SIZE(wm8580_sysclk_ratios)) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Invalid clock ratio %d/%d\n",
+=======
+		dev_err(component->dev, "Invalid clock ratio %d/%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8580->sysclk[dai->driver->id], params_rate(params));
 		return -EINVAL;
 	}
 	paifa |= i;
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Running at %dfs with %dHz clock\n",
+=======
+	dev_dbg(component->dev, "Running at %dfs with %dHz clock\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8580_sysclk_ratios[i], wm8580->sysclk[dai->driver->id]);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -499,6 +717,7 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 		case 128:
 		case 192:
 			osr = WM8580_DACOSR;
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "Selecting 64x OSR\n");
 			break;
 		default:
@@ -514,6 +733,23 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 			    WM8580_AIF_RATE_MASK | WM8580_AIF_BCLKSEL_MASK,
 			    paifa);
 	snd_soc_update_bits(codec, WM8580_PAIF3 + dai->driver->id,
+=======
+			dev_dbg(component->dev, "Selecting 64x OSR\n");
+			break;
+		default:
+			osr = 0;
+			dev_dbg(component->dev, "Selecting 128x OSR\n");
+			break;
+		}
+
+		snd_soc_component_update_bits(component, WM8580_PAIF3, WM8580_DACOSR, osr);
+	}
+
+	snd_soc_component_update_bits(component, WM8580_PAIF1 + dai->driver->id,
+			    WM8580_AIF_RATE_MASK | WM8580_AIF_BCLKSEL_MASK,
+			    paifa);
+	snd_soc_component_update_bits(component, WM8580_PAIF3 + dai->driver->id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8580_AIF_LENGTH_MASK, paifb);
 	return 0;
 }
@@ -521,13 +757,22 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 static int wm8580_set_paif_dai_fmt(struct snd_soc_dai *codec_dai,
 				      unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int aifa;
 	unsigned int aifb;
 	int can_invert_lrclk;
 
+<<<<<<< HEAD
 	aifa = snd_soc_read(codec, WM8580_PAIF1 + codec_dai->driver->id);
 	aifb = snd_soc_read(codec, WM8580_PAIF3 + codec_dai->driver->id);
+=======
+	aifa = snd_soc_component_read(component, WM8580_PAIF1 + codec_dai->driver->id);
+	aifb = snd_soc_component_read(component, WM8580_PAIF3 + codec_dai->driver->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aifb &= ~(WM8580_AIF_FMT_MASK | WM8580_AIF_LRP | WM8580_AIF_BCP);
 
@@ -593,8 +838,13 @@ static int wm8580_set_paif_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8580_PAIF1 + codec_dai->driver->id, aifa);
 	snd_soc_write(codec, WM8580_PAIF3 + codec_dai->driver->id, aifb);
+=======
+	snd_soc_component_write(component, WM8580_PAIF1 + codec_dai->driver->id, aifa);
+	snd_soc_component_write(component, WM8580_PAIF3 + codec_dai->driver->id, aifb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -602,12 +852,20 @@ static int wm8580_set_paif_dai_fmt(struct snd_soc_dai *codec_dai,
 static int wm8580_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 				 int div_id, int div)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reg;
 
 	switch (div_id) {
 	case WM8580_MCLK:
+<<<<<<< HEAD
 		reg = snd_soc_read(codec, WM8580_PLLB4);
+=======
+		reg = snd_soc_component_read(component, WM8580_PLLB4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg &= ~WM8580_PLLB4_MCLKOUTSRC_MASK;
 
 		switch (div) {
@@ -629,11 +887,19 @@ static int wm8580_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 		default:
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8580_PLLB4, reg);
 		break;
 
 	case WM8580_CLKOUTSRC:
 		reg = snd_soc_read(codec, WM8580_PLLB4);
+=======
+		snd_soc_component_write(component, WM8580_PLLB4, reg);
+		break;
+
+	case WM8580_CLKOUTSRC:
+		reg = snd_soc_component_read(component, WM8580_PLLB4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg &= ~WM8580_PLLB4_CLKOUTSRC_MASK;
 
 		switch (div) {
@@ -655,7 +921,11 @@ static int wm8580_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 		default:
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8580_PLLB4, reg);
+=======
+		snd_soc_component_write(component, WM8580_PLLB4, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -668,8 +938,13 @@ static int wm8580_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 static int wm8580_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 			     unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8580_priv *wm8580 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, sel, sel_mask, sel_shift;
 
 	switch (dai->driver->id) {
@@ -684,7 +959,11 @@ static int wm8580_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 		break;
 
 	default:
+<<<<<<< HEAD
 		BUG_ON("Unknown DAI driver ID\n");
+=======
+		WARN(1, "Unknown DAI driver ID\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -704,38 +983,63 @@ static int wm8580_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 		sel = 3 << sel_shift;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unknown clock %d\n", clk_id);
+=======
+		dev_err(component->dev, "Unknown clock %d\n", clk_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* We really should validate PLL settings but not yet */
 	wm8580->sysclk[dai->driver->id] = freq;
 
+<<<<<<< HEAD
 	ret = snd_soc_update_bits(codec, WM8580_CLKSEL, sel_mask, sel);
+=======
+	ret = snd_soc_component_update_bits(component, WM8580_CLKSEL, sel_mask, sel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8580_digital_mute(struct snd_soc_dai *codec_dai, int mute)
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
 	unsigned int reg;
 
 	reg = snd_soc_read(codec, WM8580_DAC_CONTROL5);
+=======
+static int wm8580_mute(struct snd_soc_dai *codec_dai, int mute, int direction)
+{
+	struct snd_soc_component *component = codec_dai->component;
+	unsigned int reg;
+
+	reg = snd_soc_component_read(component, WM8580_DAC_CONTROL5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mute)
 		reg |= WM8580_DAC_CONTROL5_MUTEALL;
 	else
 		reg &= ~WM8580_DAC_CONTROL5_MUTEALL;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8580_DAC_CONTROL5, reg);
+=======
+	snd_soc_component_write(component, WM8580_DAC_CONTROL5, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8580_set_bias_level(struct snd_soc_codec *codec,
+=======
+static int wm8580_set_bias_level(struct snd_soc_component *component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum snd_soc_bias_level level)
 {
 	switch (level) {
@@ -744,19 +1048,30 @@ static int wm8580_set_bias_level(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			/* Power up and get individual control of the DACs */
 			snd_soc_update_bits(codec, WM8580_PWRDN1,
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			/* Power up and get individual control of the DACs */
+			snd_soc_component_update_bits(component, WM8580_PWRDN1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8580_PWRDN1_PWDN |
 					    WM8580_PWRDN1_ALLDACPD, 0);
 
 			/* Make VMID high impedance */
+<<<<<<< HEAD
 			snd_soc_update_bits(codec, WM8580_ADC_CONTROL1,
+=======
+			snd_soc_component_update_bits(component, WM8580_ADC_CONTROL1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    0x100, 0);
 		}
 		break;
 
 	case SND_SOC_BIAS_OFF:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8580_PWRDN1,
 				    WM8580_PWRDN1_PWDN, WM8580_PWRDN1_PWDN);
 		break;
@@ -765,16 +1080,44 @@ static int wm8580_set_bias_level(struct snd_soc_codec *codec,
 	return 0;
 }
 
+=======
+		snd_soc_component_update_bits(component, WM8580_PWRDN1,
+				    WM8580_PWRDN1_PWDN, WM8580_PWRDN1_PWDN);
+		break;
+	}
+	return 0;
+}
+
+static int wm8580_playback_startup(struct snd_pcm_substream *substream,
+			   struct snd_soc_dai *dai)
+{
+	struct snd_soc_component *component = dai->component;
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+
+	return snd_pcm_hw_constraint_minmax(substream->runtime,
+		SNDRV_PCM_HW_PARAM_CHANNELS, 1, wm8580->drvdata->num_dacs * 2);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM8580_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops wm8580_dai_ops_playback = {
+<<<<<<< HEAD
+=======
+	.startup	= wm8580_playback_startup,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_sysclk	= wm8580_set_sysclk,
 	.hw_params	= wm8580_paif_hw_params,
 	.set_fmt	= wm8580_set_paif_dai_fmt,
 	.set_clkdiv	= wm8580_set_dai_clkdiv,
 	.set_pll	= wm8580_set_dai_pll,
+<<<<<<< HEAD
 	.digital_mute	= wm8580_digital_mute,
+=======
+	.mute_stream	= wm8580_mute,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_soc_dai_ops wm8580_dai_ops_capture = {
@@ -792,7 +1135,10 @@ static struct snd_soc_dai_driver wm8580_dai[] = {
 		.playback = {
 			.stream_name = "Playback",
 			.channels_min = 1,
+<<<<<<< HEAD
 			.channels_max = 6,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.rates = SNDRV_PCM_RATE_8000_192000,
 			.formats = WM8580_FORMATS,
 		},
@@ -812,6 +1158,7 @@ static struct snd_soc_dai_driver wm8580_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 static int wm8580_probe(struct snd_soc_codec *codec)
 {
 	struct wm8580_priv *wm8580 = snd_soc_codec_get_drvdata(codec);
@@ -831,16 +1178,40 @@ static int wm8580_probe(struct snd_soc_codec *codec)
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		return ret;
+=======
+static int wm8580_probe(struct snd_soc_component *component)
+{
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+	int ret = 0;
+
+	switch (wm8580->drvdata->num_dacs) {
+	case 4:
+		snd_soc_add_component_controls(component, wm8581_snd_controls,
+					ARRAY_SIZE(wm8581_snd_controls));
+		snd_soc_dapm_new_controls(dapm, wm8581_dapm_widgets,
+					ARRAY_SIZE(wm8581_dapm_widgets));
+		snd_soc_dapm_add_routes(dapm, wm8581_dapm_routes,
+					ARRAY_SIZE(wm8581_dapm_routes));
+		break;
+	default:
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm8580->supplies),
 				    wm8580->supplies);
 	if (ret != 0) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
+=======
+		dev_err(component->dev, "Failed to enable supplies: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_regulator_get;
 	}
 
 	/* Get the codec into a known state */
+<<<<<<< HEAD
 	ret = snd_soc_write(codec, WM8580_RESET, 0);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to reset codec: %d\n", ret);
@@ -849,16 +1220,28 @@ static int wm8580_probe(struct snd_soc_codec *codec)
 
 	wm8580_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
+=======
+	ret = snd_soc_component_write(component, WM8580_RESET, 0);
+	if (ret != 0) {
+		dev_err(component->dev, "Failed to reset component: %d\n", ret);
+		goto err_regulator_enable;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_regulator_enable:
 	regulator_bulk_disable(ARRAY_SIZE(wm8580->supplies), wm8580->supplies);
 err_regulator_get:
+<<<<<<< HEAD
 	regulator_bulk_free(ARRAY_SIZE(wm8580->supplies), wm8580->supplies);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* power down chip */
+<<<<<<< HEAD
 static int wm8580_remove(struct snd_soc_codec *codec)
 {
 	struct wm8580_priv *wm8580 = snd_soc_codec_get_drvdata(codec);
@@ -922,6 +1305,96 @@ static int wm8580_i2c_remove(struct i2c_client *client)
 
 static const struct i2c_device_id wm8580_i2c_id[] = {
 	{ "wm8580", 0 },
+=======
+static void wm8580_remove(struct snd_soc_component *component)
+{
+	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);
+
+	regulator_bulk_disable(ARRAY_SIZE(wm8580->supplies), wm8580->supplies);
+}
+
+static const struct snd_soc_component_driver soc_component_dev_wm8580 = {
+	.probe			= wm8580_probe,
+	.remove			= wm8580_remove,
+	.set_bias_level		= wm8580_set_bias_level,
+	.controls		= wm8580_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8580_snd_controls),
+	.dapm_widgets		= wm8580_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8580_dapm_widgets),
+	.dapm_routes		= wm8580_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(wm8580_dapm_routes),
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static const struct regmap_config wm8580_regmap = {
+	.reg_bits = 7,
+	.val_bits = 9,
+	.max_register = WM8580_MAX_REGISTER,
+
+	.reg_defaults = wm8580_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(wm8580_reg_defaults),
+	.cache_type = REGCACHE_MAPLE,
+
+	.volatile_reg = wm8580_volatile,
+};
+
+static const struct wm8580_driver_data wm8580_data = {
+	.num_dacs = 3,
+};
+
+static const struct wm8580_driver_data wm8581_data = {
+	.num_dacs = 4,
+};
+
+static int wm8580_i2c_probe(struct i2c_client *i2c)
+{
+	struct wm8580_priv *wm8580;
+	int ret, i;
+
+	wm8580 = devm_kzalloc(&i2c->dev, sizeof(struct wm8580_priv),
+			      GFP_KERNEL);
+	if (wm8580 == NULL)
+		return -ENOMEM;
+
+	wm8580->regmap = devm_regmap_init_i2c(i2c, &wm8580_regmap);
+	if (IS_ERR(wm8580->regmap))
+		return PTR_ERR(wm8580->regmap);
+
+	for (i = 0; i < ARRAY_SIZE(wm8580->supplies); i++)
+		wm8580->supplies[i].supply = wm8580_supply_names[i];
+
+	ret = devm_regulator_bulk_get(&i2c->dev, ARRAY_SIZE(wm8580->supplies),
+				      wm8580->supplies);
+	if (ret != 0) {
+		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
+		return ret;
+	}
+
+	i2c_set_clientdata(i2c, wm8580);
+
+	wm8580->drvdata = i2c_get_match_data(i2c);
+	if (!wm8580->drvdata)
+		return dev_err_probe(&i2c->dev, -EINVAL, "failed to find driver data\n");
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_wm8580, wm8580_dai, ARRAY_SIZE(wm8580_dai));
+
+	return ret;
+}
+
+static const struct of_device_id wm8580_of_match[] = {
+	{ .compatible = "wlf,wm8580", .data = &wm8580_data },
+	{ .compatible = "wlf,wm8581", .data = &wm8581_data },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, wm8580_of_match);
+
+static const struct i2c_device_id wm8580_i2c_id[] = {
+	{ "wm8580", (kernel_ulong_t)&wm8580_data },
+	{ "wm8581", (kernel_ulong_t)&wm8581_data },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, wm8580_i2c_id);
@@ -929,6 +1402,7 @@ MODULE_DEVICE_TABLE(i2c, wm8580_i2c_id);
 static struct i2c_driver wm8580_i2c_driver = {
 	.driver = {
 		.name = "wm8580",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = wm8580_of_match,
 	},
@@ -963,4 +1437,17 @@ module_exit(wm8580_exit);
 
 MODULE_DESCRIPTION("ASoC WM8580 driver");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
+=======
+		.of_match_table = wm8580_of_match,
+	},
+	.probe = wm8580_i2c_probe,
+	.id_table = wm8580_i2c_id,
+};
+
+module_i2c_driver(wm8580_i2c_driver);
+
+MODULE_DESCRIPTION("ASoC WM8580 driver");
+MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
+MODULE_AUTHOR("Matt Flax <flatmax@flatmax.org>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

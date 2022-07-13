@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3/4 Voltage Controller (VC) structure and macro definitions
  *
@@ -9,10 +13,13 @@
  * Copyright (C) 2008, 2011 Nokia Corporation
  * Kalle Jokiniemi
  * Paul Walmsley
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version
  * 2 as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_OMAP2_VC_H
 #define __ARCH_ARM_MACH_OMAP2_VC_H
@@ -34,6 +41,10 @@ struct voltagedomain;
  * @cmd_ret_shift: RET field shift in PRM_VC_CMD_VAL_* register
  * @cmd_off_shift: OFF field shift in PRM_VC_CMD_VAL_* register
  * @i2c_cfg_reg: I2C configuration register offset
+<<<<<<< HEAD
+=======
+ * @i2c_cfg_clear_mask: high-speed mode bit clear mask in I2C config register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @i2c_cfg_hsen_mask: high-speed mode bit field mask in I2C config register
  * @i2c_mcode_mask: MCODE field mask for I2C config register
  *
@@ -52,6 +63,10 @@ struct omap_vc_common {
 	u8 cmd_ret_shift;
 	u8 cmd_off_shift;
 	u8 i2c_cfg_reg;
+<<<<<<< HEAD
+=======
+	u8 i2c_cfg_clear_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 i2c_cfg_hsen_mask;
 	u8 i2c_mcode_mask;
 };
@@ -86,7 +101,10 @@ struct omap_vc_channel {
 	u16 i2c_slave_addr;
 	u16 volt_reg_addr;
 	u16 cmd_reg_addr;
+<<<<<<< HEAD
 	u16 setup_time;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 cfg_channel;
 	bool i2c_high_speed;
 
@@ -111,6 +129,19 @@ extern struct omap_vc_channel omap4_vc_mpu;
 extern struct omap_vc_channel omap4_vc_iva;
 extern struct omap_vc_channel omap4_vc_core;
 
+<<<<<<< HEAD
+=======
+extern struct omap_vc_param omap3_mpu_vc_data;
+extern struct omap_vc_param omap3_core_vc_data;
+
+extern struct omap_vc_param omap4_mpu_vc_data;
+extern struct omap_vc_param omap4_iva_vc_data;
+extern struct omap_vc_param omap4_core_vc_data;
+
+void omap3_vc_set_pmic_signaling(int core_next_state);
+void omap4_vc_set_pmic_signaling(int core_next_state);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void omap_vc_init_channel(struct voltagedomain *voltdm);
 int omap_vc_pre_scale(struct voltagedomain *voltdm,
 		      unsigned long target_volt,

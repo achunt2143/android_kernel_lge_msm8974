@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* drm_pci.h -- PCI DMA memory management wrappers for DRM -*- linux-c -*- */
 /**
  * \file drm_pci.c
@@ -12,6 +13,8 @@
  * \author Leif Delgass <ldelgass@retinalburn.net>
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2003 José Fonseca.
  * Copyright 2003 Leif Delgass.
@@ -36,6 +39,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/dma-mapping.h>
@@ -126,6 +130,21 @@ void drm_pci_free(struct drm_device * dev, drm_dma_handle_t * dmah)
 EXPORT_SYMBOL(drm_pci_free);
 
 #ifdef CONFIG_PCI
+=======
+#include <linux/dma-mapping.h>
+#include <linux/export.h>
+#include <linux/list.h>
+#include <linux/mutex.h>
+#include <linux/pci.h>
+#include <linux/slab.h>
+
+#include <drm/drm_auth.h>
+#include <drm/drm.h>
+#include <drm/drm_drv.h>
+#include <drm/drm_print.h>
+
+#include "drm_internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int drm_get_pci_domain(struct drm_device *dev)
 {
@@ -138,6 +157,7 @@ static int drm_get_pci_domain(struct drm_device *dev)
 		return 0;
 #endif /* __alpha__ */
 
+<<<<<<< HEAD
 	return pci_domain_nr(dev->pdev->bus);
 }
 
@@ -150,10 +170,14 @@ static const char *drm_pci_get_name(struct drm_device *dev)
 {
 	struct pci_driver *pdriver = dev->driver->kdriver.pci;
 	return pdriver->name;
+=======
+	return pci_domain_nr(to_pci_dev(dev->dev)->bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int drm_pci_set_busid(struct drm_device *dev, struct drm_master *master)
 {
+<<<<<<< HEAD
 	int len, ret;
 	struct pci_driver *pdriver = dev->driver->kdriver.pci;
 	master->unique_len = 40;
@@ -465,3 +489,18 @@ void drm_pci_exit(struct drm_driver *driver, struct pci_driver *pdriver)
 	DRM_INFO("Module unloaded\n");
 }
 EXPORT_SYMBOL(drm_pci_exit);
+=======
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+
+	master->unique = kasprintf(GFP_KERNEL, "pci:%04x:%02x:%02x.%d",
+					drm_get_pci_domain(dev),
+					pdev->bus->number,
+					PCI_SLOT(pdev->devfn),
+					PCI_FUNC(pdev->devfn));
+	if (!master->unique)
+		return -ENOMEM;
+
+	master->unique_len = strlen(master->unique);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

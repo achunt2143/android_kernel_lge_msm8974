@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AMD Family 10h mmconfig enablement
  */
@@ -24,14 +28,24 @@ struct pci_hostbridge_probe {
 	u32 device;
 };
 
+<<<<<<< HEAD
 static u64 __cpuinitdata fam10h_pci_mmconf_base;
 
 static struct pci_hostbridge_probe pci_probes[] __cpuinitdata = {
+=======
+static u64 fam10h_pci_mmconf_base;
+
+static struct pci_hostbridge_probe pci_probes[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0x18, PCI_VENDOR_ID_AMD, 0x1200 },
 	{ 0xff, 0, PCI_VENDOR_ID_AMD, 0x1200 },
 };
 
+<<<<<<< HEAD
 static int __cpuinit cmp_range(const void *x1, const void *x2)
+=======
+static int cmp_range(const void *x1, const void *x2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct range *r1 = x1;
 	const struct range *r2 = x2;
@@ -49,7 +63,11 @@ static int __cpuinit cmp_range(const void *x1, const void *x2)
 /* need to avoid (0xfd<<32), (0xfe<<32), and (0xff<<32), ht used space */
 #define FAM10H_PCI_MMCONF_BASE (0xfcULL<<32)
 #define BASE_VALID(b) ((b) + MMCONF_SIZE <= (0xfdULL<<32) || (b) >= (1ULL<<40))
+<<<<<<< HEAD
 static void __cpuinit get_fam10h_pci_mmconf_base(void)
+=======
+static void get_fam10h_pci_mmconf_base(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned bus;
@@ -94,7 +112,11 @@ static void __cpuinit get_fam10h_pci_mmconf_base(void)
 		return;
 
 	/* SYS_CFG */
+<<<<<<< HEAD
 	address = MSR_K8_SYSCFG;
+=======
+	address = MSR_AMD64_SYSCFG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdmsrl(address, val);
 
 	/* TOP_MEM2 is not enabled? */
@@ -166,7 +188,11 @@ out:
 	fam10h_pci_mmconf_base = base;
 }
 
+<<<<<<< HEAD
 void __cpuinit fam10h_check_enable_mmcfg(void)
+=======
+void fam10h_check_enable_mmcfg(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 val;
 	u32 address;
@@ -230,7 +256,11 @@ static const struct dmi_system_id __initconst mmconf_dmi_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 /* Called from a __cpuinit function, but only on the BSP. */
+=======
+/* Called from a non __init function, but only on the BSP. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __ref check_enable_amd_mmconf_dmi(void)
 {
 	dmi_check_system(mmconf_dmi_table);

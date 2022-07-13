@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) 2005 Andrea Bittau <a.bittau@cs.ucl.ac.uk>
  *
@@ -14,6 +15,11 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  Copyright (c) 2005 Andrea Bittau <a.bittau@cs.ucl.ac.uk>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _DCCP_CCID2_H_
 #define _DCCP_CCID2_H_
@@ -27,7 +33,11 @@
  * CCID-2 timestamping faces the same issues as TCP timestamping.
  * Hence we reuse/share as much of the code as possible.
  */
+<<<<<<< HEAD
 #define ccid2_time_stamp	tcp_time_stamp
+=======
+#define ccid2_jiffies32	((u32)jiffies)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NUMDUPACK parameter from RFC 4341, p. 6 */
 #define NUMDUPACK	3
@@ -85,6 +95,10 @@ struct ccid2_hc_tx_sock {
 				tx_rto;
 	u64			tx_rtt_seq:48;
 	struct timer_list	tx_rtotimer;
+<<<<<<< HEAD
+=======
+	struct sock		*sk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Congestion Window validation (optional, RFC 2861) */
 	u32			tx_cwnd_used,

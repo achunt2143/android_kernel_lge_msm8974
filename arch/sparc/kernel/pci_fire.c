@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_fire.c: Sun4u platform PCI-E controller support.
  *
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
@@ -9,7 +13,13 @@
 #include <linux/msi.h>
 #include <linux/export.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/numa.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/prom.h>
 #include <asm/irq.h>
@@ -408,14 +418,23 @@ static void pci_fire_hw_init(struct pci_pbm_info *pbm)
 	upa_writeq(~(u64)0, pbm->pbm_regs + FIRE_PEC_IENAB);
 }
 
+<<<<<<< HEAD
 static int __devinit pci_fire_pbm_init(struct pci_pbm_info *pbm,
 				       struct platform_device *op, u32 portid)
+=======
+static int pci_fire_pbm_init(struct pci_pbm_info *pbm,
+			     struct platform_device *op, u32 portid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct linux_prom64_registers *regs;
 	struct device_node *dp = op->dev.of_node;
 	int err;
 
+<<<<<<< HEAD
 	pbm->numa_node = -1;
+=======
+	pbm->numa_node = NUMA_NO_NODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pbm->pci_ops = &sun4u_pci_ops;
 	pbm->config_space_reg_bits = 12;
@@ -454,7 +473,11 @@ static int __devinit pci_fire_pbm_init(struct pci_pbm_info *pbm,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit fire_probe(struct platform_device *op)
+=======
+static int fire_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	struct pci_pbm_info *pbm;
@@ -508,7 +531,10 @@ static const struct of_device_id fire_match[] = {
 static struct platform_driver fire_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = fire_match,
 	},
 	.probe		= fire_probe,

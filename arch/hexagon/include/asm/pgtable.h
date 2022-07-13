@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Page table support for the Hexagon architecture
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_PGTABLE_H
@@ -24,13 +31,19 @@
 /*
  * Page table definitions for Qualcomm Hexagon processor.
  */
+<<<<<<< HEAD
 #include <linux/swap.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm-generic/pgtable-nopmd.h>
 
 /* A handy thing to have if one has the RAM. Declared in head.S */
 extern unsigned long empty_zero_page;
+<<<<<<< HEAD
 extern unsigned long zero_page_mask;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The PTE model described here is that of the Hexagon Virtual Machine,
@@ -62,6 +75,7 @@ extern unsigned long zero_page_mask;
 #define _PAGE_ACCESSED	(1<<2)
 
 /*
+<<<<<<< HEAD
  * _PAGE_FILE is only meaningful if _PAGE_PRESENT is false, while
  * _PAGE_DIRTY is only meaningful if _PAGE_PRESENT is true.
  * So we can overload the bit...
@@ -69,6 +83,8 @@ extern unsigned long zero_page_mask;
 #define _PAGE_FILE	_PAGE_DIRTY /* set:  pagecache, unset = swap */
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For now, let's say that Valid and Present are the same thing.
  * Alternatively, we could say that it's the "or" of R, W, and X
  * permissions.
@@ -83,6 +99,12 @@ extern unsigned long zero_page_mask;
  * So we'll put up with a bit of inefficiency for now...
  */
 
+<<<<<<< HEAD
+=======
+/* We borrow bit 6 to store the exclusive marker in swap PTEs. */
+#define _PAGE_SWP_EXCLUSIVE	(1<<6)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Top "FOURTH" level (pgd), which for the Hexagon VM is really
  * only the second from the bottom, pgd and pud both being collapsed.
@@ -148,6 +170,7 @@ extern unsigned long _dflt_cache_att;
  */
 #define CACHEDEF	(CACHE_DEFAULT << 6)
 
+<<<<<<< HEAD
 /* Private (copy-on-write) page protections. */
 #define __P000 __pgprot(_PAGE_PRESENT | _PAGE_USER | CACHEDEF)
 #define __P001 __pgprot(_PAGE_PRESENT | _PAGE_USER | _PAGE_READ | CACHEDEF)
@@ -182,6 +205,10 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];  /* located in head.S */
 #define pte_special(pte)	0
 #define pte_mkspecial(pte)	(pte)
 
+=======
+extern pgd_t swapper_pg_dir[PTRS_PER_PGD];  /* located in head.S */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  HUGETLB not working currently  */
 #ifdef CONFIG_HUGETLB_PAGE
 #define pte_mkhuge(pte) __pte((pte_val(pte) & ~0x3) | HVM_HUGEPAGE_SIZE)
@@ -230,6 +257,7 @@ static inline void pte_clear(struct mm_struct *mm, unsigned long addr,
 	pte_val(*ptep) = _NULL_PTE;
 }
 
+<<<<<<< HEAD
 #ifdef NEED_PMD_INDEX_DESPITE_BEING_2_LEVEL
 /**
  * pmd_index - returns the index of the entry in the PMD page
@@ -257,6 +285,8 @@ static inline void pte_clear(struct mm_struct *mm, unsigned long addr,
  */
 #define pgd_offset_k(address) pgd_offset(&init_mm, address)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmd_none - check if pmd_entry is mapped
  * @pmd_entry:  pmd entry
@@ -290,10 +320,21 @@ static inline int pmd_bad(pmd_t pmd)
 }
 
 /*
+<<<<<<< HEAD
  * pmd_page - converts a PMD entry to a page pointer
  */
 #define pmd_page(pmd)  (pfn_to_page(pmd_val(pmd) >> PAGE_SHIFT))
 #define pmd_pgtable(pmd) pmd_page(pmd)
+=======
+ * pmd_pfn - converts a PMD entry to a page frame number
+ */
+#define pmd_pfn(pmd)  (pmd_val(pmd) >> PAGE_SHIFT)
+
+/*
+ * pmd_page - converts a PMD entry to a page pointer
+ */
+#define pmd_page(pmd)  (pfn_to_page(pmd_val(pmd) >> PAGE_SHIFT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pte_none - check if pte is mapped
@@ -374,7 +415,11 @@ static inline pte_t pte_wrprotect(pte_t pte)
 }
 
 /* pte_mkwrite - mark page as writable */
+<<<<<<< HEAD
 static inline pte_t pte_mkwrite(pte_t pte)
+=======
+static inline pte_t pte_mkwrite_novma(pte_t pte)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pte_val(pte) |= _PAGE_WRITE;
 	return pte;
@@ -412,6 +457,10 @@ static inline int pte_exec(pte_t pte)
 /* __swp_entry_to_pte - extract PTE from swap entry */
 #define __swp_entry_to_pte(x) ((pte_t) { (x).val })
 
+<<<<<<< HEAD
+=======
+#define PFN_PTE_SHIFT	PAGE_SHIFT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pfn_pte - convert page number and protection value to page table entry */
 #define pfn_pte(pfn, pgprot) __pte((pfn << PAGE_SHIFT) | pgprot_val(pgprot))
 
@@ -419,6 +468,7 @@ static inline int pte_exec(pte_t pte)
 #define pte_pfn(pte) (pte_val(pte) >> PAGE_SHIFT)
 #define set_pmd(pmdptr, pmdval) (*(pmdptr) = (pmdval))
 
+<<<<<<< HEAD
 /*
  * set_pte_at - update page table and do whatever magic may be
  * necessary to make the underlying hardware/firmware take note.
@@ -446,10 +496,17 @@ static inline int pte_exec(pte_t pte)
 #define pte_offset_kernel(dir, address) \
 	((pte_t *) (unsigned long) __va(pmd_val(*dir) & PAGE_MASK) \
 				+  __pte_offset(address))
+=======
+static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+{
+	return (unsigned long)__va(pmd_val(pmd) & PAGE_MASK);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ZERO_PAGE - returns the globally shared zero page */
 #define ZERO_PAGE(vaddr) (virt_to_page(&empty_zero_page))
 
+<<<<<<< HEAD
 #define __pte_offset(address) (((address) >> PAGE_SHIFT) & (PTRS_PER_PTE - 1))
 
 /* Nothing special about IO remapping at this point */
@@ -484,10 +541,33 @@ static inline int pte_exec(pte_t pte)
  *	bits	2-9:	bits 7:0 of offset
  *	bits 10-12:	effectively _PAGE_PROTNONE (all zero)
  *	bits 13-31:  bits 26:8 of swap offset
+=======
+/*
+ * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
+ * are !pte_none() && !pte_present().
+ *
+ * Swap/file PTE definitions.  If _PAGE_PRESENT is zero, the rest of the PTE is
+ * interpreted as swap information.  The remaining free bits are interpreted as
+ * listed below.  Rather than have the TLB fill handler test
+ * _PAGE_PRESENT, we're going to reserve the permissions bits and set them to
+ * all zeros for swap entries, which speeds up the miss handler at the cost of
+ * 3 bits of offset.  That trade-off can be revisited if necessary, but Hexagon
+ * processor architecture and target applications suggest a lot of TLB misses
+ * and not much swap space.
+ *
+ * Format of swap PTE:
+ *	bit	0:	Present (zero)
+ *	bits	1-5:	swap type (arch independent layer uses 5 bits max)
+ *	bit	6:	exclusive marker
+ *	bits	7-9:	bits 2:0 of offset
+ *	bits	10-12:	effectively _PAGE_PROTNONE (all zero)
+ *	bits	13-31:  bits 21:3 of swap offset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The split offset makes some of the following macros a little gnarly,
  * but there's plenty of precedent for this sort of thing.
  */
+<<<<<<< HEAD
 #define PTE_FILE_MAX_BITS     27
 
 /* Used for swap PTEs */
@@ -514,5 +594,35 @@ static inline int pte_exec(pte_t pte)
 
 /*  Oh boy.  There are a lot of possible arch overrides found in this file.  */
 #include <asm-generic/pgtable.h>
+=======
+
+/* Used for swap PTEs */
+#define __swp_type(swp_pte)		(((swp_pte).val >> 1) & 0x1f)
+
+#define __swp_offset(swp_pte) \
+	((((swp_pte).val >> 7) & 0x7) | (((swp_pte).val >> 10) & 0x3ffff8))
+
+#define __swp_entry(type, offset) \
+	((swp_entry_t)	{ \
+		(((type & 0x1f) << 1) | \
+		 ((offset & 0x3ffff8) << 10) | ((offset & 0x7) << 7)) })
+
+static inline int pte_swp_exclusive(pte_t pte)
+{
+	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
+}
+
+static inline pte_t pte_swp_mkexclusive(pte_t pte)
+{
+	pte_val(pte) |= _PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+
+static inline pte_t pte_swp_clear_exclusive(pte_t pte)
+{
+	pte_val(pte) &= ~_PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

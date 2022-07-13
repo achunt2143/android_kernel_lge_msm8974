@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Keymile km82xx support
  * Copyright 2008-2011 DENX Software Engineering GmbH
@@ -6,11 +10,14 @@
  * based on code from:
  * Copyright 2007 Freescale Semiconductor, Inc.
  * Author: Scott Wood <scottwood@freescale.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -18,6 +25,7 @@
 #include <linux/fsl_devices.h>
 #include <linux/of_platform.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/cpm2.h>
 #include <asm/udbg.h>
@@ -25,6 +33,13 @@
 #include <asm/time.h>
 #include <asm/mpc8260.h>
 #include <asm/prom.h>
+=======
+#include <linux/io.h>
+#include <asm/cpm2.h>
+#include <asm/udbg.h>
+#include <asm/machdep.h>
+#include <linux/time.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 #include <sysdev/cpm2_pic.h>
@@ -36,7 +51,11 @@ static void __init km82xx_pic_init(void)
 	struct device_node *np = of_find_compatible_node(NULL, NULL,
 							"fsl,pq2-pic");
 	if (!np) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PIC init: can not find cpm-pic node\n");
+=======
+		pr_err("PIC init: can not find cpm-pic node\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -128,6 +147,14 @@ static __initdata struct cpm_pin km82xx_pins[] = {
 	{3, 23, CPM_PIN_OUTPUT | CPM_PIN_PRIMARY}, /* TXP */
 	{3, 24, CPM_PIN_OUTPUT | CPM_PIN_PRIMARY}, /* TXN */
 	{3, 25, CPM_PIN_INPUT  | CPM_PIN_PRIMARY}, /* RXD */
+<<<<<<< HEAD
+=======
+
+	/* SPI */
+	{3, 16, CPM_PIN_INPUT | CPM_PIN_SECONDARY},/* SPI_MISO PD16 */
+	{3, 17, CPM_PIN_INPUT | CPM_PIN_SECONDARY},/* SPI_MOSI PD17 */
+	{3, 18, CPM_PIN_INPUT | CPM_PIN_SECONDARY},/* SPI_CLK PD18 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init init_ioports(void)
@@ -175,7 +202,11 @@ static void __init km82xx_setup_arch(void)
 		ppc_md.progress("km82xx_setup_arch(), finish", 0);
 }
 
+<<<<<<< HEAD
 static  __initdata struct of_device_id of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "simple-bus", },
 	{},
 };
@@ -188,6 +219,7 @@ static int __init declare_of_platform_devices(void)
 }
 machine_device_initcall(km82xx, declare_of_platform_devices);
 
+<<<<<<< HEAD
 /*
  * Called very early, device-tree isn't unflattened
  */
@@ -205,6 +237,15 @@ define_machine(km82xx)
 	.init_IRQ = km82xx_pic_init,
 	.get_irq = cpm2_get_irq,
 	.calibrate_decr = generic_calibrate_decr,
+=======
+define_machine(km82xx)
+{
+	.name = "Keymile km82xx",
+	.compatible = "keymile,km82xx",
+	.setup_arch = km82xx_setup_arch,
+	.init_IRQ = km82xx_pic_init,
+	.get_irq = cpm2_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart = pq2_restart,
 	.progress = udbg_progress,
 };

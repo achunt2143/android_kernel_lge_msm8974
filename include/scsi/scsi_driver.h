@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _SCSI_SCSI_DRIVER_H
 #define _SCSI_SCSI_DRIVER_H
 
@@ -17,6 +18,29 @@ struct scsi_driver {
 	void (*rescan)(struct device *);
 	int (*done)(struct scsi_cmnd *);
 	int (*eh_action)(struct scsi_cmnd *, unsigned char *, int, int);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SCSI_SCSI_DRIVER_H
+#define _SCSI_SCSI_DRIVER_H
+
+#include <linux/blk_types.h>
+#include <linux/device.h>
+#include <scsi/scsi_cmnd.h>
+
+struct module;
+struct request;
+
+struct scsi_driver {
+	struct device_driver	gendrv;
+
+	int (*resume)(struct device *);
+	void (*rescan)(struct device *);
+	blk_status_t (*init_command)(struct scsi_cmnd *);
+	void (*uninit_command)(struct scsi_cmnd *);
+	int (*done)(struct scsi_cmnd *);
+	int (*eh_action)(struct scsi_cmnd *, int);
+	void (*eh_reset)(struct scsi_cmnd *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_scsi_driver(drv) \
 	container_of((drv), struct scsi_driver, gendrv)
@@ -29,10 +53,18 @@ extern int scsi_register_interface(struct class_interface *);
 #define scsi_unregister_interface(intf) \
 	class_interface_unregister(intf)
 
+<<<<<<< HEAD
 int scsi_setup_blk_pc_cmnd(struct scsi_device *sdev, struct request *req);
 int scsi_setup_fs_cmnd(struct scsi_device *sdev, struct request *req);
 int scsi_prep_state_check(struct scsi_device *sdev, struct request *req);
 int scsi_prep_return(struct request_queue *q, struct request *req, int ret);
 int scsi_prep_fn(struct request_queue *, struct request *);
+=======
+/* make sure not to use it with passthrough commands */
+static inline struct scsi_driver *scsi_cmd_to_driver(struct scsi_cmnd *cmd)
+{
+	return to_scsi_driver(cmd->device->sdev_gendev.driver);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _SCSI_SCSI_DRIVER_H */

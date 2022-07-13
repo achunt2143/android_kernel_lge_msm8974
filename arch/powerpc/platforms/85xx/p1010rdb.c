@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * P1010RDB Board Setup
  *
  * Copyright 2011 Freescale Semiconductor Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -14,13 +21,20 @@
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <mm/mmu_decl.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 
@@ -29,7 +43,11 @@
 
 #include "mpc85xx.h"
 
+<<<<<<< HEAD
 void __init p1010_rdb_pic_init(void)
+=======
+static void __init p1010_rdb_pic_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic = mpic_alloc(NULL, 0, MPIC_BIG_ENDIAN |
 	  MPIC_SINGLE_DEST_CPU,
@@ -46,6 +64,7 @@ void __init p1010_rdb_pic_init(void)
  */
 static void __init p1010_rdb_setup_arch(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	struct device_node *np;
 #endif
@@ -60,21 +79,37 @@ static void __init p1010_rdb_setup_arch(void)
 	}
 
 #endif
+=======
+	if (ppc_md.progress)
+		ppc_md.progress("p1010_rdb_setup_arch()", 0);
+
+	fsl_pci_assign_primary();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "P1010 RDB board from Freescale Semiconductor\n");
 }
 
+<<<<<<< HEAD
 machine_device_initcall(p1010_rdb, mpc85xx_common_publish_devices);
 machine_arch_initcall(p1010_rdb, swiotlb_setup_bus_notifier);
+=======
+machine_arch_initcall(p1010_rdb, mpc85xx_common_publish_devices);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called very early, device-tree isn't unflattened
  */
 static int __init p1010_rdb_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (of_flat_dt_is_compatible(root, "fsl,P1010RDB"))
+=======
+	if (of_machine_is_compatible("fsl,P1010RDB"))
+		return 1;
+	if (of_machine_is_compatible("fsl,P1010RDB-PB"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
@@ -86,9 +121,15 @@ define_machine(p1010_rdb) {
 	.init_IRQ		= p1010_rdb_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _UVESAFB_H
 #define _UVESAFB_H
 
@@ -58,6 +59,14 @@ struct vbe_ib {
 } __attribute__ ((packed));
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _UVESAFB_H
+#define _UVESAFB_H
+
+#include <uapi/video/uvesafb.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* VBE CRTC Info Block */
 struct vbe_crtc_ib {
@@ -163,8 +172,11 @@ struct uvesafb_ktask {
 	u32 ack;
 };
 
+<<<<<<< HEAD
 static int uvesafb_exec(struct uvesafb_ktask *tsk);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UVESAFB_EXACT_RES	1
 #define UVESAFB_EXACT_DEPTH	2
 
@@ -189,7 +201,13 @@ struct uvesafb_par {
 
 	int mode_idx;
 	struct vbe_crtc_ib crtc;
+<<<<<<< HEAD
 };
 
 #endif /* __KERNEL__ */
+=======
+	int mtrr_handle;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _UVESAFB_H */

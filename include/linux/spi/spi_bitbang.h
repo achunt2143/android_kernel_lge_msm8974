@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef	__SPI_BITBANG_H
 #define	__SPI_BITBANG_H
 
 #include <linux/workqueue.h>
 
 struct spi_bitbang {
+<<<<<<< HEAD
 	struct workqueue_struct	*workqueue;
 	struct work_struct	work;
 
@@ -14,6 +19,14 @@ struct spi_bitbang {
 	u8			flags;		/* extra spi->mode support */
 
 	struct spi_master	*master;
+=======
+	struct mutex		lock;
+	u8			busy;
+	u8			use_dma;
+	u16			flags;		/* extra spi->mode support */
+
+	struct spi_controller	*ctlr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup_transfer() changes clock and/or wordsize to match settings
 	 * for this transfer; zeroes restore defaults from spi_device.
@@ -33,7 +46,12 @@ struct spi_bitbang {
 	/* txrx_word[SPI_MODE_*]() just looks like a shift register */
 	u32	(*txrx_word[4])(struct spi_device *spi,
 			unsigned nsecs,
+<<<<<<< HEAD
 			u32 word, u8 bits);
+=======
+			u32 word, u8 bits, unsigned flags);
+	int	(*set_line_direction)(struct spi_device *spi, bool output);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* you can call these default bitbang->master methods from your custom
@@ -41,12 +59,20 @@ struct spi_bitbang {
  */
 extern int spi_bitbang_setup(struct spi_device *spi);
 extern void spi_bitbang_cleanup(struct spi_device *spi);
+<<<<<<< HEAD
 extern int spi_bitbang_transfer(struct spi_device *spi, struct spi_message *m);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int spi_bitbang_setup_transfer(struct spi_device *spi,
 				      struct spi_transfer *t);
 
 /* start or stop queue processing */
 extern int spi_bitbang_start(struct spi_bitbang *spi);
+<<<<<<< HEAD
 extern int spi_bitbang_stop(struct spi_bitbang *spi);
+=======
+extern int spi_bitbang_init(struct spi_bitbang *spi);
+extern void spi_bitbang_stop(struct spi_bitbang *spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __SPI_BITBANG_H */

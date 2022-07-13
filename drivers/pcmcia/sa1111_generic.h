@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "soc_common.h"
 #include "sa11xx_base.h"
 
@@ -18,8 +22,13 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 extern void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *, struct pcmcia_state *);
 extern int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *, const socket_state_t *);
 
+<<<<<<< HEAD
 extern int pcmcia_badge4_init(struct device *);
 extern int pcmcia_jornada720_init(struct device *);
+=======
+extern int pcmcia_badge4_init(struct sa1111_dev *);
+extern int pcmcia_jornada720_init(struct sa1111_dev *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int pcmcia_lubbock_init(struct sa1111_dev *);
 extern int pcmcia_neponset_init(struct sa1111_dev *);
 

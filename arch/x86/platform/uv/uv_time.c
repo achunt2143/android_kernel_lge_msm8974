@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * SGI RTC clock/timer routines.
  *
@@ -16,6 +17,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *  Copyright (c) 2009 Silicon Graphics, Inc.  All Rights Reserved.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * SGI RTC clock/timer routines.
+ *
+ *  (C) Copyright 2020 Hewlett Packard Enterprise Development LP
+ *  Copyright (c) 2009-2013 Silicon Graphics, Inc.  All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) Dimitri Sivanich
  */
 #include <linux/clockchips.h>
@@ -30,20 +39,31 @@
 
 #define RTC_NAME		"sgi_rtc"
 
+<<<<<<< HEAD
 static cycle_t uv_read_rtc(struct clocksource *cs);
 static int uv_rtc_next_event(unsigned long, struct clock_event_device *);
 static void uv_rtc_timer_setup(enum clock_event_mode,
 				struct clock_event_device *);
+=======
+static u64 uv_read_rtc(struct clocksource *cs);
+static int uv_rtc_next_event(unsigned long, struct clock_event_device *);
+static int uv_rtc_shutdown(struct clock_event_device *evt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct clocksource clocksource_uv = {
 	.name		= RTC_NAME,
 	.rating		= 299,
 	.read		= uv_read_rtc,
+<<<<<<< HEAD
 	.mask		= (cycle_t)UVH_RTC_REAL_TIME_CLOCK_MASK,
+=======
+	.mask		= (u64)UVH_RTC_REAL_TIME_CLOCK_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
 static struct clock_event_device clock_event_device_uv = {
+<<<<<<< HEAD
 	.name		= RTC_NAME,
 	.features	= CLOCK_EVT_FEAT_ONESHOT,
 	.shift		= 20,
@@ -52,6 +72,16 @@ static struct clock_event_device clock_event_device_uv = {
 	.set_next_event	= uv_rtc_next_event,
 	.set_mode	= uv_rtc_timer_setup,
 	.event_handler	= NULL,
+=======
+	.name			= RTC_NAME,
+	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.shift			= 20,
+	.rating			= 400,
+	.irq			= -1,
+	.set_next_event		= uv_rtc_next_event,
+	.set_state_shutdown	= uv_rtc_shutdown,
+	.event_handler		= NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_PER_CPU(struct clock_event_device, cpu_ced);
@@ -66,7 +96,11 @@ struct uv_rtc_timer_head {
 	struct {
 		int	lcpu;		/* systemwide logical cpu number */
 		u64	expires;	/* next timer expiration for this cpu */
+<<<<<<< HEAD
 	} cpu[1];
+=======
+	} cpu[] __counted_by(ncpus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -88,7 +122,10 @@ static void uv_rtc_send_IPI(int cpu)
 
 	apicid = cpu_physical_id(cpu);
 	pnode = uv_apicid_to_pnode(apicid);
+<<<<<<< HEAD
 	apicid |= uv_apicid_hibits;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = (1UL << UVH_IPI_INT_SEND_SHFT) |
 	      (apicid << UVH_IPI_INT_APIC_ID_SHFT) |
 	      (X86_PLATFORM_IPI_VECTOR << UVH_IPI_INT_VECTOR_SHFT);
@@ -99,31 +136,45 @@ static void uv_rtc_send_IPI(int cpu)
 /* Check for an RTC interrupt pending */
 static int uv_intr_pending(int pnode)
 {
+<<<<<<< HEAD
 	if (is_uv1_hub())
 		return uv_read_global_mmr64(pnode, UVH_EVENT_OCCURRED0) &
 			UV1H_EVENT_OCCURRED0_RTC1_MASK;
 	else
 		return uv_read_global_mmr64(pnode, UV2H_EVENT_OCCURRED2) &
 			UV2H_EVENT_OCCURRED2_RTC_1_MASK;
+=======
+	return uv_read_global_mmr64(pnode, UVH_EVENT_OCCURRED2) &
+		UVH_EVENT_OCCURRED2_RTC_1_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Setup interrupt and return non-zero if early expiration occurred. */
 static int uv_setup_intr(int cpu, u64 expires)
 {
 	u64 val;
+<<<<<<< HEAD
 	unsigned long apicid = cpu_physical_id(cpu) | uv_apicid_hibits;
+=======
+	unsigned long apicid = cpu_physical_id(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pnode = uv_cpu_to_pnode(cpu);
 
 	uv_write_global_mmr64(pnode, UVH_RTC1_INT_CONFIG,
 		UVH_RTC1_INT_CONFIG_M_MASK);
 	uv_write_global_mmr64(pnode, UVH_INT_CMPB, -1L);
 
+<<<<<<< HEAD
 	if (is_uv1_hub())
 		uv_write_global_mmr64(pnode, UVH_EVENT_OCCURRED0_ALIAS,
 				UV1H_EVENT_OCCURRED0_RTC1_MASK);
 	else
 		uv_write_global_mmr64(pnode, UV2H_EVENT_OCCURRED2_ALIAS,
 				UV2H_EVENT_OCCURRED2_RTC_1_MASK);
+=======
+	uv_write_global_mmr64(pnode, UVH_EVENT_OCCURRED2_ALIAS,
+			      UVH_EVENT_OCCURRED2_RTC_1_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = (X86_PLATFORM_IPI_VECTOR << UVH_RTC1_INT_CONFIG_VECTOR_SHFT) |
 		((u64)apicid << UVH_RTC1_INT_CONFIG_APIC_ID_SHFT);
@@ -158,14 +209,21 @@ static __init int uv_rtc_allocate_timers(void)
 {
 	int cpu;
 
+<<<<<<< HEAD
 	blade_info = kmalloc(uv_possible_blades * sizeof(void *), GFP_KERNEL);
 	if (!blade_info)
 		return -ENOMEM;
 	memset(blade_info, 0, uv_possible_blades * sizeof(void *));
+=======
+	blade_info = kcalloc(uv_possible_blades, sizeof(void *), GFP_KERNEL);
+	if (!blade_info)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_present_cpu(cpu) {
 		int nid = cpu_to_node(cpu);
 		int bid = uv_cpu_to_blade_id(cpu);
+<<<<<<< HEAD
 		int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
 		struct uv_rtc_timer_head *head = blade_info[bid];
 
@@ -173,6 +231,14 @@ static __init int uv_rtc_allocate_timers(void)
 			head = kmalloc_node(sizeof(struct uv_rtc_timer_head) +
 				(uv_blade_nr_possible_cpus(bid) *
 					2 * sizeof(u64)),
+=======
+		int bcpu = uv_cpu_blade_processor_id(cpu);
+		struct uv_rtc_timer_head *head = blade_info[bid];
+
+		if (!head) {
+			head = kmalloc_node(struct_size(head, cpu,
+				uv_blade_nr_possible_cpus(bid)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				GFP_KERNEL, nid);
 			if (!head) {
 				uv_rtc_deallocate_timers();
@@ -227,7 +293,11 @@ static int uv_rtc_set_timer(int cpu, u64 expires)
 	int pnode = uv_cpu_to_pnode(cpu);
 	int bid = uv_cpu_to_blade_id(cpu);
 	struct uv_rtc_timer_head *head = blade_info[bid];
+<<<<<<< HEAD
 	int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
+=======
+	int bcpu = uv_cpu_blade_processor_id(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 *t = &head->cpu[bcpu].expires;
 	unsigned long flags;
 	int next_cpu;
@@ -263,7 +333,11 @@ static int uv_rtc_unset_timer(int cpu, int force)
 	int pnode = uv_cpu_to_pnode(cpu);
 	int bid = uv_cpu_to_blade_id(cpu);
 	struct uv_rtc_timer_head *head = blade_info[bid];
+<<<<<<< HEAD
 	int bcpu = uv_cpu_hub_info(cpu)->blade_processor_id;
+=======
+	int bcpu = uv_cpu_blade_processor_id(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 *t = &head->cpu[bcpu].expires;
 	unsigned long flags;
 	int rc = 0;
@@ -294,10 +368,17 @@ static int uv_rtc_unset_timer(int cpu, int force)
  * Read the RTC.
  *
  * Starting with HUB rev 2.0, the UV RTC register is replicated across all
+<<<<<<< HEAD
  * cachelines of it's own page.  This allows faster simultaneous reads
  * from a given socket.
  */
 static cycle_t uv_read_rtc(struct clocksource *cs)
+=======
+ * cachelines of its own page.  This allows faster simultaneous reads
+ * from a given socket.
+ */
+static u64 uv_read_rtc(struct clocksource *cs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long offset;
 
@@ -306,7 +387,11 @@ static cycle_t uv_read_rtc(struct clocksource *cs)
 	else
 		offset = (uv_blade_processor_id() * L1_CACHE_BYTES) % PAGE_SIZE;
 
+<<<<<<< HEAD
 	return (cycle_t)uv_read_local_mmr(UVH_RTC | offset);
+=======
+	return (u64)uv_read_local_mmr(UVH_RTC | offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -321,6 +406,7 @@ static int uv_rtc_next_event(unsigned long delta,
 }
 
 /*
+<<<<<<< HEAD
  * Setup the RTC timer in oneshot mode
  */
 static void uv_rtc_timer_setup(enum clock_event_mode mode,
@@ -339,6 +425,16 @@ static void uv_rtc_timer_setup(enum clock_event_mode mode,
 		uv_rtc_unset_timer(ced_cpu, 1);
 		break;
 	}
+=======
+ * Shutdown the RTC timer
+ */
+static int uv_rtc_shutdown(struct clock_event_device *evt)
+{
+	int ced_cpu = cpumask_first(evt->cpumask);
+
+	uv_rtc_unset_timer(ced_cpu, 1);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void uv_rtc_interrupt(void)
@@ -365,7 +461,11 @@ __setup("uvrtcevt", uv_enable_evt_rtc);
 
 static __init void uv_rtc_register_clockevents(struct work_struct *dummy)
 {
+<<<<<<< HEAD
 	struct clock_event_device *ced = &__get_cpu_var(cpu_ced);
+=======
+	struct clock_event_device *ced = this_cpu_ptr(&cpu_ced);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*ced = clock_event_device_uv;
 	ced->cpumask = cpumask_of(smp_processor_id());
@@ -401,9 +501,17 @@ static __init int uv_rtc_setup_clock(void)
 
 	clock_event_device_uv.min_delta_ns = NSEC_PER_SEC /
 						sn_rtc_cycles_per_second;
+<<<<<<< HEAD
 
 	clock_event_device_uv.max_delta_ns = clocksource_uv.mask *
 				(NSEC_PER_SEC / sn_rtc_cycles_per_second);
+=======
+	clock_event_device_uv.min_delta_ticks = 1;
+
+	clock_event_device_uv.max_delta_ns = clocksource_uv.mask *
+				(NSEC_PER_SEC / sn_rtc_cycles_per_second);
+	clock_event_device_uv.max_delta_ticks = clocksource_uv.mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = schedule_on_each_cpu(uv_rtc_register_clockevents);
 	if (rc) {

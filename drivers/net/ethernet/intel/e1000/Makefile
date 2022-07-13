@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ################################################################################
 #
 # Intel PRO/1000 Linux driver
@@ -25,6 +26,10 @@
 # Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 #
 ################################################################################
+=======
+# SPDX-License-Identifier: GPL-2.0
+# Copyright(c) 1999 - 2006 Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Makefile for the Intel(R) PRO/1000 ethernet driver

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,6 +15,17 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfa_ioc.h"
@@ -22,8 +34,12 @@
 #include "bfi_reg.h"
 #include "bfa_defs.h"
 
+<<<<<<< HEAD
 #define bfa_ioc_ct_sync_pos(__ioc)	\
 		((u32) (1 << bfa_ioc_pcifn(__ioc)))
+=======
+#define bfa_ioc_ct_sync_pos(__ioc)	BIT(bfa_ioc_pcifn(__ioc))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_IOC_SYNC_REQD_SH		16
 #define bfa_ioc_ct_get_sync_ackd(__val) (__val & 0x0000ffff)
 #define bfa_ioc_ct_clear_sync_ackd(__val) (__val & 0xffff0000)
@@ -48,6 +64,15 @@ static void bfa_ioc_ct_sync_join(struct bfa_ioc *ioc);
 static void bfa_ioc_ct_sync_leave(struct bfa_ioc *ioc);
 static void bfa_ioc_ct_sync_ack(struct bfa_ioc *ioc);
 static bool bfa_ioc_ct_sync_complete(struct bfa_ioc *ioc);
+<<<<<<< HEAD
+=======
+static void bfa_ioc_ct_set_cur_ioc_fwstate(
+			struct bfa_ioc *ioc, enum bfi_ioc_state fwstate);
+static enum bfi_ioc_state bfa_ioc_ct_get_cur_ioc_fwstate(struct bfa_ioc *ioc);
+static void bfa_ioc_ct_set_alt_ioc_fwstate(
+			struct bfa_ioc *ioc, enum bfi_ioc_state fwstate);
+static enum bfi_ioc_state bfa_ioc_ct_get_alt_ioc_fwstate(struct bfa_ioc *ioc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum bfa_status bfa_ioc_ct_pll_init(void __iomem *rb,
 				enum bfi_asic_mode asic_mode);
 static enum bfa_status bfa_ioc_ct2_pll_init(void __iomem *rb,
@@ -68,6 +93,13 @@ static const struct bfa_ioc_hwif nw_hwif_ct = {
 	.ioc_sync_leave	     = bfa_ioc_ct_sync_leave,
 	.ioc_sync_ack	     = bfa_ioc_ct_sync_ack,
 	.ioc_sync_complete   = bfa_ioc_ct_sync_complete,
+<<<<<<< HEAD
+=======
+	.ioc_set_fwstate     = bfa_ioc_ct_set_cur_ioc_fwstate,
+	.ioc_get_fwstate     = bfa_ioc_ct_get_cur_ioc_fwstate,
+	.ioc_set_alt_fwstate     = bfa_ioc_ct_set_alt_ioc_fwstate,
+	.ioc_get_alt_fwstate     = bfa_ioc_ct_get_alt_ioc_fwstate,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct bfa_ioc_hwif nw_hwif_ct2 = {
@@ -85,11 +117,21 @@ static const struct bfa_ioc_hwif nw_hwif_ct2 = {
 	.ioc_sync_leave	     = bfa_ioc_ct_sync_leave,
 	.ioc_sync_ack	     = bfa_ioc_ct_sync_ack,
 	.ioc_sync_complete   = bfa_ioc_ct_sync_complete,
+<<<<<<< HEAD
 };
 
 /**
  * Called from bfa_ioc_attach() to map asic specific calls.
  */
+=======
+	.ioc_set_fwstate     = bfa_ioc_ct_set_cur_ioc_fwstate,
+	.ioc_get_fwstate     = bfa_ioc_ct_get_cur_ioc_fwstate,
+	.ioc_set_alt_fwstate     = bfa_ioc_ct_set_alt_ioc_fwstate,
+	.ioc_get_alt_fwstate     = bfa_ioc_ct_get_alt_ioc_fwstate,
+};
+
+/* Called from bfa_ioc_attach() to map asic specific calls. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 bfa_nw_ioc_set_ct_hwif(struct bfa_ioc *ioc)
 {
@@ -102,9 +144,13 @@ bfa_nw_ioc_set_ct2_hwif(struct bfa_ioc *ioc)
 	ioc->ioc_hwif = &nw_hwif_ct2;
 }
 
+<<<<<<< HEAD
 /**
  * Return true if firmware of current driver matches the running firmware.
  */
+=======
+/* Return true if firmware of current driver matches the running firmware. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 bfa_ioc_ct_firmware_lock(struct bfa_ioc *ioc)
 {
@@ -182,9 +228,13 @@ bfa_ioc_ct_firmware_unlock(struct bfa_ioc *ioc)
 	bfa_nw_ioc_sem_release(ioc->ioc_regs.ioc_usage_sem_reg);
 }
 
+<<<<<<< HEAD
 /**
  * Notify other functions on HB failure.
  */
+=======
+/* Notify other functions on HB failure. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_ioc_ct_notify_fail(struct bfa_ioc *ioc)
 {
@@ -195,6 +245,7 @@ bfa_ioc_ct_notify_fail(struct bfa_ioc *ioc)
 	readl(ioc->ioc_regs.alt_ll_halt);
 }
 
+<<<<<<< HEAD
 /**
  * Host to LPU mailbox message addresses
  */
@@ -202,6 +253,13 @@ static const struct {
 	u32 	hfn_mbox;
 	u32 	lpu_mbox;
 	u32 	hfn_pgn;
+=======
+/* Host to LPU mailbox message addresses */
+static const struct {
+	u32	hfn_mbox;
+	u32	lpu_mbox;
+	u32	hfn_pgn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ct_fnreg[] = {
 	{ HOSTFN0_LPU_MBOX0_0, LPU_HOSTFN0_MBOX0_0, HOST_PAGE_NUM_FN0 },
 	{ HOSTFN1_LPU_MBOX0_8, LPU_HOSTFN1_MBOX0_8, HOST_PAGE_NUM_FN1 },
@@ -209,9 +267,13 @@ static const struct {
 	{ HOSTFN3_LPU_MBOX0_8, LPU_HOSTFN3_MBOX0_8, HOST_PAGE_NUM_FN3 }
 };
 
+<<<<<<< HEAD
 /**
  * Host <-> LPU mailbox command/status registers - port 0
  */
+=======
+/* Host <-> LPU mailbox command/status registers - port 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct {
 	u32	hfn;
 	u32	lpu;
@@ -222,9 +284,13 @@ static const struct {
 	{ HOSTFN3_LPU0_CMD_STAT, LPU0_HOSTFN3_CMD_STAT }
 };
 
+<<<<<<< HEAD
 /**
  * Host <-> LPU mailbox command/status registers - port 1
  */
+=======
+/* Host <-> LPU mailbox command/status registers - port 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct {
 	u32	hfn;
 	u32	lpu;
@@ -368,9 +434,13 @@ bfa_ioc_ct2_reg_init(struct bfa_ioc *ioc)
 	ioc->ioc_regs.err_set = rb + ERR_SET_REG;
 }
 
+<<<<<<< HEAD
 /**
  * Initialize IOC to port mapping.
  */
+=======
+/* Initialize IOC to port mapping. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FNC_PERS_FN_SHIFT(__fn)	((__fn) * 8)
 static void
@@ -398,9 +468,13 @@ bfa_ioc_ct2_map_port(struct bfa_ioc *ioc)
 	ioc->port_id = ((r32 & __FC_LL_PORT_MAP__MK) >> __FC_LL_PORT_MAP__SH);
 }
 
+<<<<<<< HEAD
 /**
  * Set interrupt mode for a function: INTX or MSIX
  */
+=======
+/* Set interrupt mode for a function: INTX or MSIX */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_ioc_ct_isr_mode_set(struct bfa_ioc *ioc, bool msix)
 {
@@ -443,9 +517,13 @@ bfa_ioc_ct2_lpu_read_stat(struct bfa_ioc *ioc)
 	return false;
 }
 
+<<<<<<< HEAD
 /**
  * MSI-X resource allocation for 1860 with no asic block
  */
+=======
+/* MSI-X resource allocation for 1860 with no asic block */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HOSTFN_MSIX_DEFAULT		64
 #define HOSTFN_MSIX_VT_INDEX_MBOX_ERR	0x30138
 #define HOSTFN_MSIX_VT_OFST_NUMVT	0x3013c
@@ -473,9 +551,13 @@ bfa_nw_ioc_ct2_poweron(struct bfa_ioc *ioc)
 			rb + HOSTFN_MSIX_VT_INDEX_MBOX_ERR);
 }
 
+<<<<<<< HEAD
 /**
  * Cleanup hw semaphore and usecnt registers
  */
+=======
+/* Cleanup hw semaphore and usecnt registers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_ioc_ct_ownership_reset(struct bfa_ioc *ioc)
 {
@@ -492,9 +574,13 @@ bfa_ioc_ct_ownership_reset(struct bfa_ioc *ioc)
 	bfa_nw_ioc_hw_sem_release(ioc);
 }
 
+<<<<<<< HEAD
 /**
  * Synchronized IOC failure processing routines
  */
+=======
+/* Synchronized IOC failure processing routines */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 bfa_ioc_ct_sync_start(struct bfa_ioc *ioc)
 {
@@ -518,9 +604,13 @@ bfa_ioc_ct_sync_start(struct bfa_ioc *ioc)
 
 	return bfa_ioc_ct_sync_complete(ioc);
 }
+<<<<<<< HEAD
 /**
  * Synchronized IOC failure processing routines
  */
+=======
+/* Synchronized IOC failure processing routines */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_ioc_ct_sync_join(struct bfa_ioc *ioc)
 {
@@ -545,7 +635,11 @@ bfa_ioc_ct_sync_ack(struct bfa_ioc *ioc)
 {
 	u32 r32 = readl(ioc->ioc_regs.ioc_fail_sync);
 
+<<<<<<< HEAD
 	writel((r32 | bfa_ioc_ct_sync_pos(ioc)), ioc->ioc_regs.ioc_fail_sync);
+=======
+	writel(r32 | bfa_ioc_ct_sync_pos(ioc), ioc->ioc_regs.ioc_fail_sync);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
@@ -589,6 +683,35 @@ bfa_ioc_ct_sync_complete(struct bfa_ioc *ioc)
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static void
+bfa_ioc_ct_set_cur_ioc_fwstate(struct bfa_ioc *ioc,
+			       enum bfi_ioc_state fwstate)
+{
+	writel(fwstate, ioc->ioc_regs.ioc_fwstate);
+}
+
+static enum bfi_ioc_state
+bfa_ioc_ct_get_cur_ioc_fwstate(struct bfa_ioc *ioc)
+{
+	return (enum bfi_ioc_state)readl(ioc->ioc_regs.ioc_fwstate);
+}
+
+static void
+bfa_ioc_ct_set_alt_ioc_fwstate(struct bfa_ioc *ioc,
+			       enum bfi_ioc_state fwstate)
+{
+	writel(fwstate, ioc->ioc_regs.alt_ioc_fwstate);
+}
+
+static enum bfi_ioc_state
+bfa_ioc_ct_get_alt_ioc_fwstate(struct bfa_ioc *ioc)
+{
+	return (enum bfi_ioc_state)readl(ioc->ioc_regs.alt_ioc_fwstate);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum bfa_status
 bfa_ioc_ct_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 {
@@ -650,7 +773,11 @@ bfa_ioc_ct_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 		writel(__PMM_1T_RESET_P, (rb + PMM_1T_RESET_REG_P0));
 		writel(__PMM_1T_RESET_P, (rb + PMM_1T_RESET_REG_P1));
 	}
+<<<<<<< HEAD
 	r32 = readl((rb + PSS_CTL_REG));
+=======
+	r32 = readl(rb + PSS_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r32 &= ~__PSS_LMEM_RESET;
 	writel(r32, (rb + PSS_CTL_REG));
 	udelay(1000);
@@ -661,7 +788,11 @@ bfa_ioc_ct_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 
 	writel(__EDRAM_BISTR_START, (rb + MBIST_CTL_REG));
 	udelay(1000);
+<<<<<<< HEAD
 	r32 = readl((rb + MBIST_STAT_REG));
+=======
+	r32 = readl(rb + MBIST_STAT_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0, (rb + MBIST_CTL_REG));
 	return BFA_STATUS_OK;
 }
@@ -674,7 +805,11 @@ bfa_ioc_ct2_sclk_init(void __iomem *rb)
 	/*
 	 * put s_clk PLL and PLL FSM in reset
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_SCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_SCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r32 &= ~(__APP_PLL_SCLK_ENABLE | __APP_PLL_SCLK_LRESETN);
 	r32 |= (__APP_PLL_SCLK_ENARST | __APP_PLL_SCLK_BYPASS |
 		__APP_PLL_SCLK_LOGIC_SOFT_RESET);
@@ -682,15 +817,22 @@ bfa_ioc_ct2_sclk_init(void __iomem *rb)
 
 	/*
 	 * Ignore mode and program for the max clock (which is FC16)
+<<<<<<< HEAD
 	 * Firmware/NFC will do the PLL init appropiately
 	 */
 	r32 = readl((rb + CT2_APP_PLL_SCLK_CTL_REG));
+=======
+	 * Firmware/NFC will do the PLL init appropriately
+	 */
+	r32 = readl(rb + CT2_APP_PLL_SCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r32 &= ~(__APP_PLL_SCLK_REFCLK_SEL | __APP_PLL_SCLK_CLK_DIV2);
 	writel(r32, (rb + CT2_APP_PLL_SCLK_CTL_REG));
 
 	/*
 	 * while doing PLL init dont clock gate ethernet subsystem
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_CHIP_MISC_PRG));
 	writel((r32 | __ETH_CLK_ENABLE_PORT0),
 				(rb + CT2_CHIP_MISC_PRG));
@@ -698,14 +840,30 @@ bfa_ioc_ct2_sclk_init(void __iomem *rb)
 	r32 = readl((rb + CT2_PCIE_MISC_REG));
 	writel((r32 | __ETH_CLK_ENABLE_PORT1),
 				(rb + CT2_PCIE_MISC_REG));
+=======
+	r32 = readl(rb + CT2_CHIP_MISC_PRG);
+	writel(r32 | __ETH_CLK_ENABLE_PORT0,
+	       rb + CT2_CHIP_MISC_PRG);
+
+	r32 = readl(rb + CT2_PCIE_MISC_REG);
+	writel(r32 | __ETH_CLK_ENABLE_PORT1,
+	       rb + CT2_PCIE_MISC_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * set sclk value
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_SCLK_CTL_REG));
 	r32 &= (__P_SCLK_PLL_LOCK | __APP_PLL_SCLK_REFCLK_SEL |
 		__APP_PLL_SCLK_CLK_DIV2);
 	writel(r32 | 0x1061731b, (rb + CT2_APP_PLL_SCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_SCLK_CTL_REG);
+	r32 &= (__P_SCLK_PLL_LOCK | __APP_PLL_SCLK_REFCLK_SEL |
+		__APP_PLL_SCLK_CLK_DIV2);
+	writel(r32 | 0x1061731b, rb + CT2_APP_PLL_SCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * poll for s_clk lock or delay 1ms
@@ -726,28 +884,49 @@ bfa_ioc_ct2_lclk_init(void __iomem *rb)
 	/*
 	 * put l_clk PLL and PLL FSM in reset
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_LCLK_CTL_REG));
 	r32 &= ~(__APP_PLL_LCLK_ENABLE | __APP_PLL_LCLK_LRESETN);
 	r32 |= (__APP_PLL_LCLK_ENARST | __APP_PLL_LCLK_BYPASS |
 		__APP_PLL_LCLK_LOGIC_SOFT_RESET);
 	writel(r32, (rb + CT2_APP_PLL_LCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+	r32 &= ~(__APP_PLL_LCLK_ENABLE | __APP_PLL_LCLK_LRESETN);
+	r32 |= (__APP_PLL_LCLK_ENARST | __APP_PLL_LCLK_BYPASS |
+		__APP_PLL_LCLK_LOGIC_SOFT_RESET);
+	writel(r32, rb + CT2_APP_PLL_LCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * set LPU speed (set for FC16 which will work for other modes)
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_CHIP_MISC_PRG));
+=======
+	r32 = readl(rb + CT2_CHIP_MISC_PRG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(r32, (rb + CT2_CHIP_MISC_PRG));
 
 	/*
 	 * set LPU half speed (set for FC16 which will work for other modes)
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_LCLK_CTL_REG));
 	writel(r32, (rb + CT2_APP_PLL_LCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+	writel(r32, rb + CT2_APP_PLL_LCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * set lclk for mode (set for FC16)
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_LCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r32 &= (__P_LCLK_PLL_LOCK | __APP_LPUCLK_HALFSPEED);
 	r32 |= 0x20c1731b;
 	writel(r32, (rb + CT2_APP_PLL_LCLK_CTL_REG));
@@ -763,6 +942,7 @@ bfa_ioc_ct2_mem_init(void __iomem *rb)
 {
 	u32 r32;
 
+<<<<<<< HEAD
 	r32 = readl((rb + PSS_CTL_REG));
 	r32 &= ~__PSS_LMEM_RESET;
 	writel(r32, (rb + PSS_CTL_REG));
@@ -771,6 +951,16 @@ bfa_ioc_ct2_mem_init(void __iomem *rb)
 	writel(__EDRAM_BISTR_START, (rb + CT2_MBIST_CTL_REG));
 	udelay(1000);
 	writel(0, (rb + CT2_MBIST_CTL_REG));
+=======
+	r32 = readl(rb + PSS_CTL_REG);
+	r32 &= ~__PSS_LMEM_RESET;
+	writel(r32, rb + PSS_CTL_REG);
+	udelay(1000);
+
+	writel(__EDRAM_BISTR_START, rb + CT2_MBIST_CTL_REG);
+	udelay(1000);
+	writel(0, rb + CT2_MBIST_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -784,13 +974,20 @@ bfa_ioc_ct2_mac_reset(void __iomem *rb)
 	/*
 	 * release soft reset on s_clk & l_clk
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_SCLK_CTL_REG));
 	writel((r32 & ~__APP_PLL_SCLK_LOGIC_SOFT_RESET),
 			(rb + CT2_APP_PLL_SCLK_CTL_REG));
+=======
+	r32 = readl(rb + CT2_APP_PLL_SCLK_CTL_REG);
+	writel(r32 & ~__APP_PLL_SCLK_LOGIC_SOFT_RESET,
+	       rb + CT2_APP_PLL_SCLK_CTL_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * release soft reset on s_clk & l_clk
 	 */
+<<<<<<< HEAD
 	r32 = readl((rb + CT2_APP_PLL_LCLK_CTL_REG));
 	writel((r32 & ~__APP_PLL_LCLK_LOGIC_SOFT_RESET),
 			(rb + CT2_APP_PLL_LCLK_CTL_REG));
@@ -803,10 +1000,56 @@ bfa_ioc_ct2_mac_reset(void __iomem *rb)
 }
 
 #define CT2_NFC_MAX_DELAY       1000
+=======
+	r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+	writel(r32 & ~__APP_PLL_LCLK_LOGIC_SOFT_RESET,
+	       rb + CT2_APP_PLL_LCLK_CTL_REG);
+
+	/* put port0, port1 MAC & AHB in reset */
+	writel(__CSI_MAC_RESET | __CSI_MAC_AHB_RESET,
+	       rb + CT2_CSI_MAC_CONTROL_REG(0));
+	writel(__CSI_MAC_RESET | __CSI_MAC_AHB_RESET,
+	       rb + CT2_CSI_MAC_CONTROL_REG(1));
+}
+
+#define CT2_NFC_MAX_DELAY       1000
+#define CT2_NFC_VER_VALID       0x143
+#define BFA_IOC_PLL_POLL        1000000
+
+static bool
+bfa_ioc_ct2_nfc_halted(void __iomem *rb)
+{
+	volatile u32 r32;
+
+	r32 = readl(rb + CT2_NFC_CSR_SET_REG);
+	if (r32 & __NFC_CONTROLLER_HALTED)
+		return true;
+
+	return false;
+}
+
+static void
+bfa_ioc_ct2_nfc_resume(void __iomem *rb)
+{
+	volatile u32 r32;
+	int i;
+
+	writel(__HALT_NFC_CONTROLLER, rb + CT2_NFC_CSR_CLR_REG);
+	for (i = 0; i < CT2_NFC_MAX_DELAY; i++) {
+		r32 = readl(rb + CT2_NFC_CSR_SET_REG);
+		if (!(r32 & __NFC_CONTROLLER_HALTED))
+			return;
+		udelay(1000);
+	}
+	BUG_ON(1);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum bfa_status
 bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 {
 	volatile u32 wgn, r32;
+<<<<<<< HEAD
 	int i;
 
 	/*
@@ -814,6 +1057,39 @@ bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 	 */
 	wgn = readl(rb + CT2_WGN_STATUS);
 	if (!(wgn & __GLBL_PF_VF_CFG_RDY)) {
+=======
+	u32 nfc_ver, i;
+
+	wgn = readl(rb + CT2_WGN_STATUS);
+
+	nfc_ver = readl(rb + CT2_RSC_GPR15_REG);
+
+	if (wgn == (__A2T_AHB_LOAD | __WGN_READY) &&
+	    nfc_ver >= CT2_NFC_VER_VALID) {
+		if (bfa_ioc_ct2_nfc_halted(rb))
+			bfa_ioc_ct2_nfc_resume(rb);
+		writel(__RESET_AND_START_SCLK_LCLK_PLLS,
+				rb + CT2_CSI_FW_CTL_SET_REG);
+
+		for (i = 0; i < BFA_IOC_PLL_POLL; i++) {
+			r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+			if (r32 & __RESET_AND_START_SCLK_LCLK_PLLS)
+				break;
+		}
+		BUG_ON(!(r32 & __RESET_AND_START_SCLK_LCLK_PLLS));
+
+		for (i = 0; i < BFA_IOC_PLL_POLL; i++) {
+			r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+			if (!(r32 & __RESET_AND_START_SCLK_LCLK_PLLS))
+				break;
+		}
+		BUG_ON(r32 & __RESET_AND_START_SCLK_LCLK_PLLS);
+		udelay(1000);
+
+		r32 = readl(rb + CT2_CSI_FW_CTL_REG);
+		BUG_ON(r32 & __RESET_AND_START_SCLK_LCLK_PLLS);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(__HALT_NFC_CONTROLLER, (rb + CT2_NFC_CSR_SET_REG));
 		for (i = 0; i < CT2_NFC_MAX_DELAY; i++) {
 			r32 = readl(rb + CT2_NFC_CSR_SET_REG);
@@ -821,12 +1097,36 @@ bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 				break;
 			udelay(1000);
 		}
+<<<<<<< HEAD
+=======
+
+		bfa_ioc_ct2_mac_reset(rb);
+		bfa_ioc_ct2_sclk_init(rb);
+		bfa_ioc_ct2_lclk_init(rb);
+
+		/* release soft reset on s_clk & l_clk */
+		r32 = readl(rb + CT2_APP_PLL_SCLK_CTL_REG);
+		writel(r32 & ~__APP_PLL_SCLK_LOGIC_SOFT_RESET,
+				rb + CT2_APP_PLL_SCLK_CTL_REG);
+		r32 = readl(rb + CT2_APP_PLL_LCLK_CTL_REG);
+		writel(r32 & ~__APP_PLL_LCLK_LOGIC_SOFT_RESET,
+				rb + CT2_APP_PLL_LCLK_CTL_REG);
+	}
+
+	/* Announce flash device presence, if flash was corrupted. */
+	if (wgn == (__WGN_READY | __GLBL_PF_VF_CFG_RDY)) {
+		r32 = readl(rb + PSS_GPIO_OUT_REG);
+		writel(r32 & ~1, rb + PSS_GPIO_OUT_REG);
+		r32 = readl(rb + PSS_GPIO_OE_REG);
+		writel(r32 | 1, rb + PSS_GPIO_OE_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Mask the interrupts and clear any
 	 * pending interrupts left by BIOS/EFI
 	 */
+<<<<<<< HEAD
 
 	writel(1, (rb + CT2_LPU0_HOSTFN_MBOX0_MSK));
 	writel(1, (rb + CT2_LPU1_HOSTFN_MBOX0_MSK));
@@ -868,11 +1168,34 @@ bfa_ioc_ct2_pll_init(void __iomem *rb, enum bfi_asic_mode asic_mode)
 		writel((r32 & ~1), (rb + PSS_GPIO_OUT_REG));
 		r32 = readl((rb + PSS_GPIO_OE_REG));
 		writel((r32 | 1), (rb + PSS_GPIO_OE_REG));
+=======
+	writel(1, rb + CT2_LPU0_HOSTFN_MBOX0_MSK);
+	writel(1, rb + CT2_LPU1_HOSTFN_MBOX0_MSK);
+
+	/* For first time initialization, no need to clear interrupts */
+	r32 = readl(rb + HOST_SEM5_REG);
+	if (r32 & 0x1) {
+		r32 = readl(rb + CT2_LPU0_HOSTFN_CMD_STAT);
+		if (r32 == 1) {
+			writel(1, rb + CT2_LPU0_HOSTFN_CMD_STAT);
+			readl(rb + CT2_LPU0_HOSTFN_CMD_STAT);
+		}
+		r32 = readl(rb + CT2_LPU1_HOSTFN_CMD_STAT);
+		if (r32 == 1) {
+			writel(1, rb + CT2_LPU1_HOSTFN_CMD_STAT);
+			readl(rb + CT2_LPU1_HOSTFN_CMD_STAT);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bfa_ioc_ct2_mem_init(rb);
 
+<<<<<<< HEAD
 	writel(BFI_IOC_UNINIT, (rb + CT2_BFA_IOC0_STATE_REG));
 	writel(BFI_IOC_UNINIT, (rb + CT2_BFA_IOC1_STATE_REG));
+=======
+	writel(BFI_IOC_UNINIT, rb + CT2_BFA_IOC0_STATE_REG);
+	writel(BFI_IOC_UNINIT, rb + CT2_BFA_IOC1_STATE_REG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BFA_STATUS_OK;
 }

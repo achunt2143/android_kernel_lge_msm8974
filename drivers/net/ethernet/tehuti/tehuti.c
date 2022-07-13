@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tehuti Networks(R) Network Driver
  * ethtool interface implementation
  * Copyright (C) 2007 Tehuti Networks Ltd. All rights reserved
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -66,7 +73,11 @@
 
 #include "tehuti.h"
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(bdx_pci_tbl) = {
+=======
+static const struct pci_device_id bdx_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(TEHUTI, 0x3009), },
 	{ PCI_VDEVICE(TEHUTI, 0x3010), },
 	{ PCI_VDEVICE(TEHUTI, 0x3014), },
@@ -137,6 +148,7 @@ static void print_eth_id(struct net_device *ndev)
 #define bdx_disable_interrupts(priv)	\
 	do { WRITE_REG(priv, regIMR, 0); } while (0)
 
+<<<<<<< HEAD
 /* bdx_fifo_init
  * create TX/RX descriptor fifo for host-NIC communication.
  * 1K extra space is allocated at the end of the fifo to simplify
@@ -145,6 +157,20 @@ static void print_eth_id(struct net_device *ndev)
  * @f - fifo to initialize
  * @fsz_type - fifo size type: 0-4KB, 1-8KB, 2-16KB, 3-32KB
  * @reg_XXX - offsets of registers relative to base address
+=======
+/**
+ * bdx_fifo_init - create TX/RX descriptor fifo for host-NIC communication.
+ * @priv: NIC private structure
+ * @f: fifo to initialize
+ * @fsz_type: fifo size type: 0-4KB, 1-8KB, 2-16KB, 3-32KB
+ * @reg_CFG0: offsets of registers relative to base address
+ * @reg_CFG1: offsets of registers relative to base address
+ * @reg_RPTR: offsets of registers relative to base address
+ * @reg_WPTR: offsets of registers relative to base address
+ *
+ * 1K extra space is allocated at the end of the fifo to simplify
+ * processing of descriptors that wraps around fifo's end
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success, negative value on failure
  *
@@ -156,11 +182,19 @@ bdx_fifo_init(struct bdx_priv *priv, struct fifo *f, int fsz_type,
 	u16 memsz = FIFO_SIZE * (1 << fsz_type);
 
 	memset(f, 0, sizeof(struct fifo));
+<<<<<<< HEAD
 	/* pci_alloc_consistent gives us 4k-aligned memory */
 	f->va = pci_alloc_consistent(priv->pdev,
 				     memsz + FIFO_EXTRA_SPACE, &f->da);
 	if (!f->va) {
 		pr_err("pci_alloc_consistent failed\n");
+=======
+	/* dma_alloc_coherent gives us 4k-aligned memory */
+	f->va = dma_alloc_coherent(&priv->pdev->dev, memsz + FIFO_EXTRA_SPACE,
+				   &f->da, GFP_ATOMIC);
+	if (!f->va) {
+		pr_err("dma_alloc_coherent failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		RET(-ENOMEM);
 	}
 	f->reg_CFG0 = reg_CFG0;
@@ -177,24 +211,42 @@ bdx_fifo_init(struct bdx_priv *priv, struct fifo *f, int fsz_type,
 	RET(0);
 }
 
+<<<<<<< HEAD
 /* bdx_fifo_free - free all resources used by fifo
  * @priv - NIC private structure
  * @f - fifo to release
+=======
+/**
+ * bdx_fifo_free - free all resources used by fifo
+ * @priv: NIC private structure
+ * @f: fifo to release
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void bdx_fifo_free(struct bdx_priv *priv, struct fifo *f)
 {
 	ENTER;
 	if (f->va) {
+<<<<<<< HEAD
 		pci_free_consistent(priv->pdev,
 				    f->memsz + FIFO_EXTRA_SPACE, f->va, f->da);
+=======
+		dma_free_coherent(&priv->pdev->dev,
+				  f->memsz + FIFO_EXTRA_SPACE, f->va, f->da);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f->va = NULL;
 	}
 	RET();
 }
 
+<<<<<<< HEAD
 /*
  * bdx_link_changed - notifies OS about hw link state.
  * @bdx_priv - hw adapter structure
+=======
+/**
+ * bdx_link_changed - notifies OS about hw link state.
+ * @priv: hw adapter structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void bdx_link_changed(struct bdx_priv *priv)
 {
@@ -233,10 +285,17 @@ static void bdx_isr_extra(struct bdx_priv *priv, u32 isr)
 
 }
 
+<<<<<<< HEAD
 /* bdx_isr - Interrupt Service Routine for Bordeaux NIC
  * @irq - interrupt number
  * @ndev - network device
  * @regs - CPU registers
+=======
+/**
+ * bdx_isr_napi - Interrupt Service Routine for Bordeaux NIC
+ * @irq: interrupt number
+ * @dev: network device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return IRQ_NONE if it was not our interrupt, IRQ_HANDLED - otherwise
  *
@@ -301,14 +360,25 @@ static int bdx_poll(struct napi_struct *napi, int budget)
 		 * device lock and allow waiting tasks (eg rmmod) to advance) */
 		priv->napi_stop = 0;
 
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bdx_enable_interrupts(priv);
 	}
 	return work_done;
 }
 
+<<<<<<< HEAD
 /* bdx_fw_load - loads firmware to NIC
  * @priv - NIC private structure
+=======
+/**
+ * bdx_fw_load - loads firmware to NIC
+ * @priv: NIC private structure
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Firmware is loaded via TXD fifo, so it must be initialized first.
  * Firware must be loaded once per NIC not per PCI device provided by NIC (NIC
  * can have few of them). So all drivers use semaphore register to choose one
@@ -341,8 +411,13 @@ static int bdx_fw_load(struct bdx_priv *priv)
 out:
 	if (master)
 		WRITE_REG(priv, regINIT_SEMAPHORE, 1);
+<<<<<<< HEAD
 	if (fw)
 		release_firmware(fw);
+=======
+
+	release_firmware(fw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc) {
 		netdev_err(priv->ndev, "firmware loading failed\n");
@@ -380,8 +455,14 @@ static void bdx_restore_mac(struct net_device *ndev, struct bdx_priv *priv)
 	RET();
 }
 
+<<<<<<< HEAD
 /* bdx_hw_start - inits registers and starts HW's Rx and Tx engines
  * @priv - NIC private structure
+=======
+/**
+ * bdx_hw_start - inits registers and starts HW's Rx and Tx engines
+ * @priv: NIC private structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int bdx_hw_start(struct bdx_priv *priv)
 {
@@ -557,7 +638,11 @@ static int bdx_reset(struct bdx_priv *priv)
 
 /**
  * bdx_close - Disables a network interface
+<<<<<<< HEAD
  * @netdev: network interface device structure
+=======
+ * @ndev: network interface device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0, this is not allowed to fail
  *
@@ -584,7 +669,11 @@ static int bdx_close(struct net_device *ndev)
 
 /**
  * bdx_open - Called when a network interface is made active
+<<<<<<< HEAD
  * @netdev: network interface device structure
+=======
+ * @ndev: network interface device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success, negative value on failure
  *
@@ -633,7 +722,12 @@ static int bdx_range_check(struct bdx_priv *priv, u32 offset)
 		-EINVAL : 0;
 }
 
+<<<<<<< HEAD
 static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
+=======
+static int bdx_siocdevprivate(struct net_device *ndev, struct ifreq *ifr,
+			      void __user *udata, int cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bdx_priv *priv = netdev_priv(ndev);
 	u32 data[3];
@@ -643,12 +737,21 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
 
 	DBG("jiffies=%ld cmd=%d\n", jiffies, cmd);
 	if (cmd != SIOCDEVPRIVATE) {
+<<<<<<< HEAD
 		error = copy_from_user(data, ifr->ifr_data, sizeof(data));
+=======
+		error = copy_from_user(data, udata, sizeof(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error) {
 			pr_err("can't copy from user\n");
 			RET(-EFAULT);
 		}
 		DBG("%d 0x%x 0x%x\n", data[0], data[1], data[2]);
+<<<<<<< HEAD
+=======
+	} else {
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!capable(CAP_SYS_RAWIO))
@@ -663,7 +766,11 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
 		data[2] = READ_REG(priv, data[1]);
 		DBG("read_reg(0x%x)=0x%x (dec %d)\n", data[1], data[2],
 		    data[2]);
+<<<<<<< HEAD
 		error = copy_to_user(ifr->ifr_data, data, sizeof(data));
+=======
+		error = copy_to_user(udata, data, sizeof(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			RET(-EFAULT);
 		break;
@@ -682,6 +789,7 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bdx_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
 {
 	ENTER;
@@ -697,6 +805,15 @@ static int bdx_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
  * @ndev network device
  * @vid  VLAN vid
  * @op   add or kill operation
+=======
+/**
+ * __bdx_vlan_rx_vid - private helper for adding/killing VLAN vid
+ * @ndev: network device
+ * @vid:  VLAN vid
+ * @enable: enable or disable vlan
+ *
+ * Passes VLAN filter table to hardware
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __bdx_vlan_rx_vid(struct net_device *ndev, uint16_t vid, int enable)
 {
@@ -722,23 +839,43 @@ static void __bdx_vlan_rx_vid(struct net_device *ndev, uint16_t vid, int enable)
 	RET();
 }
 
+<<<<<<< HEAD
 /*
  * bdx_vlan_rx_add_vid - kernel hook for adding VLAN vid to hw filtering table
  * @ndev network device
  * @vid  VLAN vid to add
  */
 static int bdx_vlan_rx_add_vid(struct net_device *ndev, uint16_t vid)
+=======
+/**
+ * bdx_vlan_rx_add_vid - kernel hook for adding VLAN vid to hw filtering table
+ * @ndev: network device
+ * @proto: unused
+ * @vid:  VLAN vid to add
+ */
+static int bdx_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__bdx_vlan_rx_vid(ndev, vid, 1);
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * bdx_vlan_rx_kill_vid - kernel hook for killing VLAN vid in hw filtering table
  * @ndev network device
  * @vid  VLAN vid to kill
  */
 static int bdx_vlan_rx_kill_vid(struct net_device *ndev, unsigned short vid)
+=======
+/**
+ * bdx_vlan_rx_kill_vid - kernel hook for killing VLAN vid in hw filtering table
+ * @ndev: network device
+ * @proto: unused
+ * @vid:  VLAN vid to kill
+ */
+static int bdx_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__bdx_vlan_rx_vid(ndev, vid, 0);
 	return 0;
@@ -746,7 +883,11 @@ static int bdx_vlan_rx_kill_vid(struct net_device *ndev, unsigned short vid)
 
 /**
  * bdx_change_mtu - Change the Maximum Transfer Unit
+<<<<<<< HEAD
  * @netdev: network interface device structure
+=======
+ * @ndev: network interface device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @new_mtu: new value for maximum frame size
  *
  * Returns 0 on success, negative on failure
@@ -755,6 +896,7 @@ static int bdx_change_mtu(struct net_device *ndev, int new_mtu)
 {
 	ENTER;
 
+<<<<<<< HEAD
 	if (new_mtu == ndev->mtu)
 		RET(0);
 
@@ -765,6 +907,8 @@ static int bdx_change_mtu(struct net_device *ndev, int new_mtu)
 		RET(-EINVAL);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->mtu = new_mtu;
 	if (netif_running(ndev)) {
 		bdx_close(ndev);
@@ -841,7 +985,11 @@ static int bdx_set_mac(struct net_device *ndev, void *p)
 	   if (netif_running(dev))
 	   return -EBUSY
 	 */
+<<<<<<< HEAD
 	memcpy(ndev->dev_addr, addr->sa_data, ndev->addr_len);
+=======
+	eth_hw_addr_set(ndev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bdx_restore_mac(ndev, priv);
 	RET(0);
 }
@@ -849,6 +997,10 @@ static int bdx_set_mac(struct net_device *ndev, void *p)
 static int bdx_read_mac(struct bdx_priv *priv)
 {
 	u16 macAddress[3], i;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ENTER;
 
 	macAddress[2] = READ_REG(priv, regUNC_MAC0_A);
@@ -858,9 +1010,16 @@ static int bdx_read_mac(struct bdx_priv *priv)
 	macAddress[0] = READ_REG(priv, regUNC_MAC2_A);
 	macAddress[0] = READ_REG(priv, regUNC_MAC2_A);
 	for (i = 0; i < 3; i++) {
+<<<<<<< HEAD
 		priv->ndev->dev_addr[i * 2 + 1] = macAddress[i];
 		priv->ndev->dev_addr[i * 2] = macAddress[i] >> 8;
 	}
+=======
+		addr[i * 2 + 1] = macAddress[i];
+		addr[i * 2] = macAddress[i] >> 8;
+	}
+	eth_hw_addr_set(priv->ndev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RET(0);
 }
 
@@ -974,8 +1133,14 @@ static inline void bdx_rxdb_free_elem(struct rxdb *db, int n)
  *     Rx Init                                                           *
  *************************************************************************/
 
+<<<<<<< HEAD
 /* bdx_rx_init - initialize RX all related HW and SW resources
  * @priv - NIC private structure
+=======
+/**
+ * bdx_rx_init - initialize RX all related HW and SW resources
+ * @priv: NIC private structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success, negative value on failure
  *
@@ -1016,9 +1181,16 @@ err_mem:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 /* bdx_rx_free_skbs - frees and unmaps all skbs allocated for the fifo
  * @priv - NIC private structure
  * @f - RXF fifo
+=======
+/**
+ * bdx_rx_free_skbs - frees and unmaps all skbs allocated for the fifo
+ * @priv: NIC private structure
+ * @f: RXF fifo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void bdx_rx_free_skbs(struct bdx_priv *priv, struct rxf_fifo *f)
 {
@@ -1037,16 +1209,28 @@ static void bdx_rx_free_skbs(struct bdx_priv *priv, struct rxf_fifo *f)
 	for (i = 0; i < db->nelem; i++) {
 		dm = bdx_rxdb_addr_elem(db, i);
 		if (dm->dma) {
+<<<<<<< HEAD
 			pci_unmap_single(priv->pdev,
 					 dm->dma, f->m.pktsz,
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&priv->pdev->dev, dm->dma,
+					 f->m.pktsz, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(dm->skb);
 		}
 	}
 }
 
+<<<<<<< HEAD
 /* bdx_rx_free - release all Rx resources
  * @priv - NIC private structure
+=======
+/**
+ * bdx_rx_free - release all Rx resources
+ * @priv: NIC private structure
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It assumes that Rx is desabled in HW
  */
 static void bdx_rx_free(struct bdx_priv *priv)
@@ -1067,9 +1251,17 @@ static void bdx_rx_free(struct bdx_priv *priv)
  *     Rx Engine                                                         *
  *************************************************************************/
 
+<<<<<<< HEAD
 /* bdx_rx_alloc_skbs - fill rxf fifo with new skbs
  * @priv - nic's private structure
  * @f - RXF fifo that needs skbs
+=======
+/**
+ * bdx_rx_alloc_skbs - fill rxf fifo with new skbs
+ * @priv: nic's private structure
+ * @f: RXF fifo that needs skbs
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It allocates skbs, build rxf descs and push it (rxf descr) into rxf fifo.
  * skb's virtual and physical addresses are stored in skb db.
  * To calculate free space, func uses cached values of RPTR and WPTR
@@ -1090,17 +1282,28 @@ static void bdx_rx_alloc_skbs(struct bdx_priv *priv, struct rxf_fifo *f)
 	dno = bdx_rxdb_available(db) - 1;
 	while (dno > 0) {
 		skb = netdev_alloc_skb(priv->ndev, f->m.pktsz + NET_IP_ALIGN);
+<<<<<<< HEAD
 		if (!skb) {
 			pr_err("NO MEM: netdev_alloc_skb failed\n");
 			break;
 		}
+=======
+		if (!skb)
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_reserve(skb, NET_IP_ALIGN);
 
 		idx = bdx_rxdb_alloc_elem(db);
 		dm = bdx_rxdb_addr_elem(db, idx);
+<<<<<<< HEAD
 		dm->dma = pci_map_single(priv->pdev,
 					 skb->data, f->m.pktsz,
 					 PCI_DMA_FROMDEVICE);
+=======
+		dm->dma = dma_map_single(&priv->pdev->dev, skb->data,
+					 f->m.pktsz, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dm->skb = skb;
 		rxfd = (struct rxf_desc *)(f->m.va + f->m.wptr);
 		rxfd->info = CPU_CHIP_SWAP32(0x10003);	/* INFO=1 BC=3 */
@@ -1137,7 +1340,11 @@ NETIF_RX_MUX(struct bdx_priv *priv, u32 rxd_val1, u16 rxd_vlan,
 		    priv->ndev->name,
 		    GET_RXD_VLAN_ID(rxd_vlan),
 		    GET_RXD_VTAG(rxd_val1));
+<<<<<<< HEAD
 		__vlan_hwaccel_put_tag(skb, GET_RXD_VLAN_TCI(rxd_vlan));
+=======
+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), GET_RXD_VLAN_TCI(rxd_vlan));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	netif_receive_skb(skb);
 }
@@ -1148,7 +1355,10 @@ static void bdx_recycle_skb(struct bdx_priv *priv, struct rxd_desc *rxdd)
 	struct rx_map *dm;
 	struct rxf_fifo *f;
 	struct rxdb *db;
+<<<<<<< HEAD
 	struct sk_buff *skb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int delta;
 
 	ENTER;
@@ -1158,7 +1368,10 @@ static void bdx_recycle_skb(struct bdx_priv *priv, struct rxd_desc *rxdd)
 	DBG("db=%p f=%p\n", db, f);
 	dm = bdx_rxdb_addr_elem(db, rxdd->va_lo);
 	DBG("dm=%p\n", dm);
+<<<<<<< HEAD
 	skb = dm->skb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rxfd = (struct rxf_desc *)(f->m.va + f->m.wptr);
 	rxfd->info = CPU_CHIP_SWAP32(0x10003);	/* INFO=1 BC=3 */
 	rxfd->va_lo = rxdd->va_lo;
@@ -1179,13 +1392,24 @@ static void bdx_recycle_skb(struct bdx_priv *priv, struct rxd_desc *rxdd)
 	RET();
 }
 
+<<<<<<< HEAD
 /* bdx_rx_receive - receives full packets from RXD fifo and pass them to OS
+=======
+/**
+ * bdx_rx_receive - receives full packets from RXD fifo and pass them to OS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTE: a special treatment is given to non-continuous descriptors
  * that start near the end, wraps around and continue at the beginning. a second
  * part is copied right after the first, and then descriptor is interpreted as
  * normal. fifo has an extra space to allow such operations
+<<<<<<< HEAD
  * @priv - nic's private structure
  * @f - RXF fifo that needs skbs
+=======
+ * @priv: nic's private structure
+ * @f: RXF fifo that needs skbs
+ * @budget: maximum number of packets to receive
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* TBD: replace memcpy func call by explicite inline asm */
@@ -1260,16 +1484,27 @@ static int bdx_rx_receive(struct bdx_priv *priv, struct rxd_fifo *f, int budget)
 		    (skb2 = netdev_alloc_skb(priv->ndev, len + NET_IP_ALIGN))) {
 			skb_reserve(skb2, NET_IP_ALIGN);
 			/*skb_put(skb2, len); */
+<<<<<<< HEAD
 			pci_dma_sync_single_for_cpu(priv->pdev,
 						    dm->dma, rxf_fifo->m.pktsz,
 						    PCI_DMA_FROMDEVICE);
+=======
+			dma_sync_single_for_cpu(&priv->pdev->dev, dm->dma,
+						rxf_fifo->m.pktsz,
+						DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(skb2->data, skb->data, len);
 			bdx_recycle_skb(priv, rxdd);
 			skb = skb2;
 		} else {
+<<<<<<< HEAD
 			pci_unmap_single(priv->pdev,
 					 dm->dma, rxf_fifo->m.pktsz,
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&priv->pdev->dev, dm->dma,
+					 rxf_fifo->m.pktsz, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bdx_rxdb_free_elem(db, rxdd->va_lo);
 		}
 
@@ -1317,7 +1552,11 @@ static void print_rxdd(struct rxd_desc *rxdd, u32 rxd_val1, u16 len,
 
 static void print_rxfd(struct rxf_desc *rxfd)
 {
+<<<<<<< HEAD
 	DBG("=== RxF desc CHIP ORDER/ENDIANESS =============\n"
+=======
+	DBG("=== RxF desc CHIP ORDER/ENDIANNESS =============\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "info 0x%x va_lo %u pa_lo 0x%x pa_hi 0x%x len 0x%x\n",
 	    rxfd->info, rxfd->va_lo, rxfd->pa_lo, rxfd->pa_hi, rxfd->len);
 }
@@ -1363,6 +1602,7 @@ static void print_rxfd(struct rxf_desc *rxfd)
  * As our benchmarks shows, it adds 1.5 Gbit/sec to NIS's throuput.
  */
 
+<<<<<<< HEAD
 /*************************************************************************
  *     Tx DB                                                             *
  *************************************************************************/
@@ -1378,6 +1618,12 @@ static inline int bdx_tx_db_size(struct txdb *db)
 /* __bdx_tx_ptr_next - helper function, increment read/write pointer + wrap
  * @d   - tx data base
  * @ptr - read or write pointer
+=======
+/**
+ * __bdx_tx_db_ptr_next - helper function, increment read/write pointer + wrap
+ * @db: tx data base
+ * @pptr: read or write pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void __bdx_tx_db_ptr_next(struct txdb *db, struct tx_map **pptr)
 {
@@ -1394,8 +1640,14 @@ static inline void __bdx_tx_db_ptr_next(struct txdb *db, struct tx_map **pptr)
 		*pptr = db->start;
 }
 
+<<<<<<< HEAD
 /* bdx_tx_db_inc_rptr - increment read pointer
  * @d   - tx data base
+=======
+/**
+ * bdx_tx_db_inc_rptr - increment read pointer
+ * @db: tx data base
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void bdx_tx_db_inc_rptr(struct txdb *db)
 {
@@ -1403,8 +1655,14 @@ static inline void bdx_tx_db_inc_rptr(struct txdb *db)
 	__bdx_tx_db_ptr_next(db, &db->rptr);
 }
 
+<<<<<<< HEAD
 /* bdx_tx_db_inc_rptr - increment write pointer
  * @d   - tx data base
+=======
+/**
+ * bdx_tx_db_inc_wptr - increment write pointer
+ * @db: tx data base
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void bdx_tx_db_inc_wptr(struct txdb *db)
 {
@@ -1413,9 +1671,17 @@ static inline void bdx_tx_db_inc_wptr(struct txdb *db)
 						   a result of write */
 }
 
+<<<<<<< HEAD
 /* bdx_tx_db_init - creates and initializes tx db
  * @d       - tx data base
  * @sz_type - size of tx fifo
+=======
+/**
+ * bdx_tx_db_init - creates and initializes tx db
+ * @d: tx data base
+ * @sz_type: size of tx fifo
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns 0 on success, error code otherwise
  */
 static int bdx_tx_db_init(struct txdb *d, int sz_type)
@@ -1441,8 +1707,14 @@ static int bdx_tx_db_init(struct txdb *d, int sz_type)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* bdx_tx_db_close - closes tx db and frees all memory
  * @d - tx data base
+=======
+/**
+ * bdx_tx_db_close - closes tx db and frees all memory
+ * @d: tx data base
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void bdx_tx_db_close(struct txdb *d)
 {
@@ -1463,9 +1735,17 @@ static struct {
 	u16 qwords;		/* qword = 64 bit */
 } txd_sizes[MAX_SKB_FRAGS + 1];
 
+<<<<<<< HEAD
 /* txdb_map_skb - creates and stores dma mappings for skb's data blocks
  * @priv - NIC private structure
  * @skb  - socket buffer to map
+=======
+/**
+ * bdx_tx_map_skb - creates and stores dma mappings for skb's data blocks
+ * @priv: NIC private structure
+ * @skb: socket buffer to map
+ * @txdd: TX descriptor to use
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * It makes dma mappings for skb's data blocks and writes them to PBL of
  * new tx descriptor. It also stores them in the tx db, so they could be
@@ -1483,8 +1763,13 @@ bdx_tx_map_skb(struct bdx_priv *priv, struct sk_buff *skb,
 	int i;
 
 	db->wptr->len = skb_headlen(skb);
+<<<<<<< HEAD
 	db->wptr->addr.dma = pci_map_single(priv->pdev, skb->data,
 					    db->wptr->len, PCI_DMA_TODEVICE);
+=======
+	db->wptr->addr.dma = dma_map_single(&priv->pdev->dev, skb->data,
+					    db->wptr->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbl->len = CPU_CHIP_SWAP32(db->wptr->len);
 	pbl->pa_lo = CPU_CHIP_SWAP32(L32_64(db->wptr->addr.dma));
 	pbl->pa_hi = CPU_CHIP_SWAP32(H32_64(db->wptr->addr.dma));
@@ -1494,7 +1779,11 @@ bdx_tx_map_skb(struct bdx_priv *priv, struct sk_buff *skb,
 	bdx_tx_db_inc_wptr(db);
 
 	for (i = 0; i < nr_frags; i++) {
+<<<<<<< HEAD
 		const struct skb_frag_struct *frag;
+=======
+		const skb_frag_t *frag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		frag = &skb_shinfo(skb)->frags[i];
 		db->wptr->len = skb_frag_size(frag);
@@ -1562,9 +1851,16 @@ err_mem:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 /*
  * bdx_tx_space - calculates available space in TX fifo
  * @priv - NIC private structure
+=======
+/**
+ * bdx_tx_space - calculates available space in TX fifo
+ * @priv: NIC private structure
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns available space in TX fifo in bytes
  */
 static inline int bdx_tx_space(struct bdx_priv *priv)
@@ -1579,15 +1875,25 @@ static inline int bdx_tx_space(struct bdx_priv *priv)
 	return fsize;
 }
 
+<<<<<<< HEAD
 /* bdx_tx_transmit - send packet to NIC
  * @skb - packet to send
  * ndev - network device assigned to NIC
+=======
+/**
+ * bdx_tx_transmit - send packet to NIC
+ * @skb: packet to send
+ * @ndev: network device assigned to NIC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return codes:
  * o NETDEV_TX_OK everything ok.
  * o NETDEV_TX_BUSY Cannot transmit packet, try later
  *   Usually a bug, means queue start/stop flow control is broken in
  *   the driver. Note: the driver must NOT put the skb in its DMA ring.
+<<<<<<< HEAD
  * o NETDEV_TX_LOCKED Locking failed, please retry quickly.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
 				   struct net_device *ndev)
@@ -1607,12 +1913,16 @@ static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
 
 	ENTER;
 	local_irq_save(flags);
+<<<<<<< HEAD
 	if (!spin_trylock(&priv->tx_lock)) {
 		local_irq_restore(flags);
 		DBG("%s[%s]: TX locked, returning NETDEV_TX_LOCKED\n",
 		    BDX_DRV_NAME, ndev->name);
 		return NETDEV_TX_LOCKED;
 	}
+=======
+	spin_lock(&priv->tx_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* build tx descriptor */
 	BDX_ASSERT(f->m.wptr >= f->m.memsz);	/* started with valid wptr */
@@ -1627,9 +1937,15 @@ static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
 		    txd_mss);
 	}
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		/*Cut VLAN ID to 12 bits */
 		txd_vlan_id = vlan_tx_tag_get(skb) & BITS_MASK(12);
+=======
+	if (skb_vlan_tag_present(skb)) {
+		/*Cut VLAN ID to 12 bits */
+		txd_vlan_id = skb_vlan_tag_get(skb) & BITS_MASK(12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txd_vtag = 1;
 	}
 
@@ -1684,7 +2000,11 @@ static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
 
 #endif
 #ifdef BDX_LLTX
+<<<<<<< HEAD
 	ndev->trans_start = jiffies; /* NETIF_F_LLTX driver :( */
+=======
+	netif_trans_update(ndev); /* NETIF_F_LLTX driver :( */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	ndev->stats.tx_packets++;
 	ndev->stats.tx_bytes += skb->len;
@@ -1699,8 +2019,15 @@ static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 /* bdx_tx_cleanup - clean TXF fifo, run in the context of IRQ.
  * @priv - bdx adapter
+=======
+/**
+ * bdx_tx_cleanup - clean TXF fifo, run in the context of IRQ.
+ * @priv: bdx adapter
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It scans TXF fifo for descriptors, frees DMA mappings and reports to OS
  * that those packets were sent
  */
@@ -1723,14 +2050,23 @@ static void bdx_tx_cleanup(struct bdx_priv *priv)
 		BDX_ASSERT(db->rptr->len == 0);
 		do {
 			BDX_ASSERT(db->rptr->addr.dma == 0);
+<<<<<<< HEAD
 			pci_unmap_page(priv->pdev, db->rptr->addr.dma,
 				       db->rptr->len, PCI_DMA_TODEVICE);
+=======
+			dma_unmap_page(&priv->pdev->dev, db->rptr->addr.dma,
+				       db->rptr->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bdx_tx_db_inc_rptr(db);
 		} while (db->rptr->len > 0);
 		tx_level -= db->rptr->len;	/* '-' koz len is negative */
 
 		/* now should come skb pointer - free it */
+<<<<<<< HEAD
 		dev_kfree_skb_irq(db->rptr->addr.skb);
+=======
+		dev_consume_skb_irq(db->rptr->addr.skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bdx_tx_db_inc_rptr(db);
 	}
 
@@ -1739,7 +2075,11 @@ static void bdx_tx_cleanup(struct bdx_priv *priv)
 	WRITE_REG(priv, f->m.reg_RPTR, f->m.rptr & TXF_WPTR_WR_PTR);
 
 	/* We reclaimed resources, so in case the Q is stopped by xmit callback,
+<<<<<<< HEAD
 	 * we resume the transmition and use tx_lock to synchronize with xmit.*/
+=======
+	 * we resume the transmission and use tx_lock to synchronize with xmit.*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&priv->tx_lock);
 	priv->tx_level += tx_level;
 	BDX_ASSERT(priv->tx_level <= 0 || priv->tx_level > BDX_MAX_TX_LEVEL);
@@ -1761,7 +2101,14 @@ static void bdx_tx_cleanup(struct bdx_priv *priv)
 	spin_unlock(&priv->tx_lock);
 }
 
+<<<<<<< HEAD
 /* bdx_tx_free_skbs - frees all skbs from TXD fifo.
+=======
+/**
+ * bdx_tx_free_skbs - frees all skbs from TXD fifo.
+ * @priv: NIC private structure
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It gets called when OS stops this dev, eg upon "ifconfig down" or rmmod
  */
 static void bdx_tx_free_skbs(struct bdx_priv *priv)
@@ -1771,8 +2118,13 @@ static void bdx_tx_free_skbs(struct bdx_priv *priv)
 	ENTER;
 	while (db->rptr != db->wptr) {
 		if (likely(db->rptr->len))
+<<<<<<< HEAD
 			pci_unmap_page(priv->pdev, db->rptr->addr.dma,
 				       db->rptr->len, PCI_DMA_TODEVICE);
+=======
+			dma_unmap_page(&priv->pdev->dev, db->rptr->addr.dma,
+				       db->rptr->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dev_kfree_skb(db->rptr->addr.skb);
 		bdx_tx_db_inc_rptr(db);
@@ -1790,10 +2142,18 @@ static void bdx_tx_free(struct bdx_priv *priv)
 	bdx_tx_db_close(&priv->txdb);
 }
 
+<<<<<<< HEAD
 /* bdx_tx_push_desc - push descriptor to TxD fifo
  * @priv - NIC private structure
  * @data - desc's data
  * @size - desc's size
+=======
+/**
+ * bdx_tx_push_desc - push descriptor to TxD fifo
+ * @priv: NIC private structure
+ * @data: desc's data
+ * @size: desc's size
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Pushes desc to TxD fifo and overlaps it if needed.
  * NOTE: this func does not check for available space. this is responsibility
@@ -1819,10 +2179,18 @@ static void bdx_tx_push_desc(struct bdx_priv *priv, void *data, int size)
 	WRITE_REG(priv, f->m.reg_WPTR, f->m.wptr & TXF_WPTR_WR_PTR);
 }
 
+<<<<<<< HEAD
 /* bdx_tx_push_desc_safe - push descriptor to TxD fifo in a safe way
  * @priv - NIC private structure
  * @data - desc's data
  * @size - desc's size
+=======
+/**
+ * bdx_tx_push_desc_safe - push descriptor to TxD fifo in a safe way
+ * @priv: NIC private structure
+ * @data: desc's data
+ * @size: desc's size
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: this func does check for available space and, if necessary, waits for
  *   NIC to read existing data before writing new one.
@@ -1860,7 +2228,11 @@ static const struct net_device_ops bdx_netdev_ops = {
 	.ndo_stop		= bdx_close,
 	.ndo_start_xmit		= bdx_tx_transmit,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= bdx_ioctl,
+=======
+	.ndo_siocdevprivate	= bdx_siocdevprivate,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= bdx_setmulti,
 	.ndo_change_mtu		= bdx_change_mtu,
 	.ndo_set_mac_address	= bdx_set_mac,
@@ -1885,15 +2257,26 @@ static const struct net_device_ops bdx_netdev_ops = {
  */
 
 /* TBD: netif_msg should be checked and implemented. I disable it for now */
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct net_device *ndev;
 	struct bdx_priv *priv;
+<<<<<<< HEAD
 	int err, pci_using_dac, port;
 	unsigned long pciaddr;
 	u32 regionSize;
 	struct pci_nic *nic;
+=======
+	unsigned long pciaddr;
+	u32 regionSize;
+	struct pci_nic *nic;
+	int err, port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 
@@ -1906,6 +2289,7 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)			/* it triggers interrupt, dunno why. */
 		goto err_pci;		/* it's not a problem though */
 
+<<<<<<< HEAD
 	if (!(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) &&
 	    !(err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)))) {
 		pci_using_dac = 1;
@@ -1916,6 +2300,12 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			goto err_dma;
 		}
 		pci_using_dac = 0;
+=======
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (err) {
+		pr_err("No usable DMA configuration, aborting\n");
+		goto err_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = pci_request_regions(pdev, BDX_DRV_NAME);
@@ -1965,7 +2355,11 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if ((readl(nic->regs + FPGA_VER) & 0xFFF) >= 378) {
 		err = pci_enable_msi(pdev);
 		if (err)
+<<<<<<< HEAD
 			pr_err("Can't eneble msi. error is %d\n", err);
+=======
+			pr_err("Can't enable msi. error is %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			nic->irq_type = IRQ_MSI;
 	} else
@@ -1988,6 +2382,7 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		/* these fields are used for info purposes only
 		 * so we can have them same for all ports of the board */
 		ndev->if_port = port;
+<<<<<<< HEAD
 		ndev->base_addr = pciaddr;
 		ndev->mem_start = pciaddr;
 		ndev->mem_end = pciaddr + regionSize;
@@ -2001,6 +2396,15 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 		if (pci_using_dac)
 			ndev->features |= NETIF_F_HIGHDMA;
+=======
+		ndev->features = NETIF_F_IP_CSUM | NETIF_F_SG | NETIF_F_TSO |
+		    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+		    NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_RXCSUM |
+		    NETIF_F_HIGHDMA;
+
+		ndev->hw_features = NETIF_F_IP_CSUM | NETIF_F_SG |
+			NETIF_F_TSO | NETIF_F_HW_VLAN_CTAG_TX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/************** priv ****************/
 		priv = nic->priv[port] = netdev_priv(ndev);
@@ -2012,7 +2416,11 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		priv->nic = nic;
 		priv->msg_enable = BDX_DEF_MSG_ENABLE;
 
+<<<<<<< HEAD
 		netif_napi_add(ndev, &priv->napi, bdx_poll, 64);
+=======
+		netif_napi_add(ndev, &priv->napi, bdx_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((readl(nic->regs + FPGA_VER) & 0xFFF) == 308) {
 			DBG("HW statistics not supported\n");
@@ -2039,11 +2447,22 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 #ifdef BDX_LLTX
 		ndev->features |= NETIF_F_LLTX;
 #endif
+<<<<<<< HEAD
+=======
+		/* MTU range: 60 - 16384 */
+		ndev->min_mtu = ETH_ZLEN;
+		ndev->max_mtu = BDX_MAX_MTU;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_init(&priv->tx_lock);
 
 		/*bdx_hw_reset(priv); */
 		if (bdx_read_mac(priv)) {
 			pr_err("load MAC address failed\n");
+<<<<<<< HEAD
+=======
+			err = -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_out_iomap;
 		}
 		SET_NETDEV_DEV(ndev, &pdev->dev);
@@ -2112,6 +2531,7 @@ static const char
 };
 
 /*
+<<<<<<< HEAD
  * bdx_get_settings - get device-specific settings
  * @netdev
  * @ecmd
@@ -2139,6 +2559,28 @@ static int bdx_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 	    ((GET_PCK_TH(tdintcm) * PCK_TH_MULT) / BDX_TXF_DESC_SZ);
 	ecmd->maxrxpkt =
 	    ((GET_PCK_TH(rdintcm) * PCK_TH_MULT) / sizeof(struct rxf_desc));
+=======
+ * bdx_get_link_ksettings - get device-specific settings
+ * @netdev
+ * @ecmd
+ */
+static int bdx_get_link_ksettings(struct net_device *netdev,
+				  struct ethtool_link_ksettings *ecmd)
+{
+	ethtool_link_ksettings_zero_link_mode(ecmd, supported);
+	ethtool_link_ksettings_add_link_mode(ecmd, supported,
+					     10000baseT_Full);
+	ethtool_link_ksettings_add_link_mode(ecmd, supported, FIBRE);
+	ethtool_link_ksettings_zero_link_mode(ecmd, advertising);
+	ethtool_link_ksettings_add_link_mode(ecmd, advertising,
+					     10000baseT_Full);
+	ethtool_link_ksettings_add_link_mode(ecmd, advertising, FIBRE);
+
+	ecmd->base.speed = SPEED_10000;
+	ecmd->base.duplex = DUPLEX_FULL;
+	ecmd->base.port = PORT_FIBRE;
+	ecmd->base.autoneg = AUTONEG_DISABLE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2153,6 +2595,7 @@ bdx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 {
 	struct bdx_priv *priv = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	strlcat(drvinfo->driver, BDX_DRV_NAME, sizeof(drvinfo->driver));
 	strlcat(drvinfo->version, BDX_DRV_VERSION, sizeof(drvinfo->version));
 	strlcat(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
@@ -2163,6 +2606,13 @@ bdx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 	drvinfo->testinfo_len = 0;
 	drvinfo->regdump_len = 0;
 	drvinfo->eedump_len = 0;
+=======
+	strscpy(drvinfo->driver, BDX_DRV_NAME, sizeof(drvinfo->driver));
+	strscpy(drvinfo->version, BDX_DRV_VERSION, sizeof(drvinfo->version));
+	strscpy(drvinfo->fw_version, "N/A", sizeof(drvinfo->fw_version));
+	strscpy(drvinfo->bus_info, pci_name(priv->pdev),
+		sizeof(drvinfo->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2170,8 +2620,15 @@ bdx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
  * @netdev
  * @ecoal
  */
+<<<<<<< HEAD
 static int
 bdx_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecoal)
+=======
+static int bdx_get_coalesce(struct net_device *netdev,
+			    struct ethtool_coalesce *ecoal,
+			    struct kernel_ethtool_coalesce *kernel_coal,
+			    struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 rdintcm;
 	u32 tdintcm;
@@ -2199,8 +2656,15 @@ bdx_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecoal)
  * @netdev
  * @ecoal
  */
+<<<<<<< HEAD
 static int
 bdx_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecoal)
+=======
+static int bdx_set_coalesce(struct net_device *netdev,
+			    struct ethtool_coalesce *ecoal,
+			    struct kernel_ethtool_coalesce *kernel_coal,
+			    struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 rdintcm;
 	u32 tdintcm;
@@ -2258,9 +2722,19 @@ static inline int bdx_tx_fifo_size_to_packets(int tx_size)
  * bdx_get_ringparam - report ring sizes
  * @netdev
  * @ring
+<<<<<<< HEAD
  */
 static void
 bdx_get_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
+=======
+ * @kernel_ring
+ * @extack
+ */
+static void
+bdx_get_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
+		  struct kernel_ethtool_ringparam *kernel_ring,
+		  struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bdx_priv *priv = netdev_priv(netdev);
 
@@ -2275,9 +2749,19 @@ bdx_get_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
  * bdx_set_ringparam - set ring sizes
  * @netdev
  * @ring
+<<<<<<< HEAD
  */
 static int
 bdx_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring)
+=======
+ * @kernel_ring
+ * @extack
+ */
+static int
+bdx_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
+		  struct kernel_ethtool_ringparam *kernel_ring,
+		  struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bdx_priv *priv = netdev_priv(netdev);
 	int rx_size = 0;
@@ -2377,7 +2861,12 @@ static void bdx_get_ethtool_stats(struct net_device *netdev,
 static void bdx_set_ethtool_ops(struct net_device *netdev)
 {
 	static const struct ethtool_ops bdx_ethtool_ops = {
+<<<<<<< HEAD
 		.get_settings = bdx_get_settings,
+=======
+		.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+					     ETHTOOL_COALESCE_MAX_FRAMES,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.get_drvinfo = bdx_get_drvinfo,
 		.get_link = ethtool_op_get_link,
 		.get_coalesce = bdx_get_coalesce,
@@ -2387,9 +2876,16 @@ static void bdx_set_ethtool_ops(struct net_device *netdev)
 		.get_strings = bdx_get_strings,
 		.get_sset_count = bdx_get_sset_count,
 		.get_ethtool_stats = bdx_get_ethtool_stats,
+<<<<<<< HEAD
 	};
 
 	SET_ETHTOOL_OPS(netdev, &bdx_ethtool_ops);
+=======
+		.get_link_ksettings = bdx_get_link_ksettings,
+	};
+
+	netdev->ethtool_ops = &bdx_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2401,7 +2897,11 @@ static void bdx_set_ethtool_ops(struct net_device *netdev)
  * Hot-Plug event, or because the driver is going to be removed from
  * memory.
  **/
+<<<<<<< HEAD
 static void __devexit bdx_remove(struct pci_dev *pdev)
+=======
+static void bdx_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_nic *nic = pci_get_drvdata(pdev);
 	struct net_device *ndev;
@@ -2422,7 +2922,10 @@ static void __devexit bdx_remove(struct pci_dev *pdev)
 	iounmap(nic->regs);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfree(nic);
 
 	RET();
@@ -2432,7 +2935,11 @@ static struct pci_driver bdx_pci_driver = {
 	.name = BDX_DRV_NAME,
 	.id_table = bdx_pci_tbl,
 	.probe = bdx_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(bdx_remove),
+=======
+	.remove = bdx_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

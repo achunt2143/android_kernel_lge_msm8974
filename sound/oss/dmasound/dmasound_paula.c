@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/sound/oss/dmasound/dmasound_paula.c
  *
@@ -23,7 +27,11 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
@@ -719,6 +727,7 @@ static int __init amiga_audio_probe(struct platform_device *pdev)
 	return dmasound_init();
 }
 
+<<<<<<< HEAD
 static int __exit amiga_audio_remove(struct platform_device *pdev)
 {
 	dmasound_deinit();
@@ -746,6 +755,27 @@ static void __exit amiga_audio_exit(void)
 }
 
 module_exit(amiga_audio_exit);
+=======
+static void __exit amiga_audio_remove(struct platform_device *pdev)
+{
+	dmasound_deinit();
+}
+
+/*
+ * amiga_audio_remove() lives in .exit.text. For drivers registered via
+ * module_platform_driver_probe() this is ok because they cannot get unbound at
+ * runtime. So mark the driver struct with __refdata to prevent modpost
+ * triggering a section mismatch warning.
+ */
+static struct platform_driver amiga_audio_driver __refdata = {
+	.remove_new = __exit_p(amiga_audio_remove),
+	.driver = {
+		.name	= "amiga-audio",
+	},
+};
+
+module_platform_driver_probe(amiga_audio_driver, amiga_audio_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:amiga-audio");

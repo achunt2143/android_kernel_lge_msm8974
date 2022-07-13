@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
@@ -47,6 +48,12 @@
  *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+/*
+ * libfdt - Flat Device Tree manipulation
+ * Copyright (C) 2006 David Gibson, IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "libfdt_env.h"
 
@@ -55,19 +62,50 @@
 
 #include "libfdt_internal.h"
 
+<<<<<<< HEAD
 int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 			const void *val, int len)
+=======
+int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
+					const char *name, int namelen,
+					uint32_t idx, const void *val,
+					int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *propval;
 	int proplen;
 
+<<<<<<< HEAD
 	propval = fdt_getprop_w(fdt, nodeoffset, name, &proplen);
 	if (! propval)
+=======
+	propval = fdt_getprop_namelen_w(fdt, nodeoffset, name, namelen,
+					&proplen);
+	if (!propval)
+		return proplen;
+
+	if ((unsigned)proplen < (len + idx))
+		return -FDT_ERR_NOSPACE;
+
+	memcpy((char *)propval + idx, val, len);
+	return 0;
+}
+
+int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
+			const void *val, int len)
+{
+	const void *propval;
+	int proplen;
+
+	propval = fdt_getprop(fdt, nodeoffset, name, &proplen);
+	if (!propval)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return proplen;
 
 	if (proplen != len)
 		return -FDT_ERR_NOSPACE;
 
+<<<<<<< HEAD
 	memcpy(propval, val, len);
 	return 0;
 }
@@ -75,6 +113,16 @@ int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 static void _fdt_nop_region(void *start, int len)
 {
 	uint32_t *p;
+=======
+	return fdt_setprop_inplace_namelen_partial(fdt, nodeoffset, name,
+						   strlen(name), 0,
+						   val, len);
+}
+
+static void fdt_nop_region_(void *start, int len)
+{
+	fdt32_t *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (p = start; (char *)p < ((char *)start + len); p++)
 		*p = cpu_to_fdt32(FDT_NOP);
@@ -86,15 +134,26 @@ int fdt_nop_property(void *fdt, int nodeoffset, const char *name)
 	int len;
 
 	prop = fdt_get_property_w(fdt, nodeoffset, name, &len);
+<<<<<<< HEAD
 	if (! prop)
 		return len;
 
 	_fdt_nop_region(prop, len + sizeof(*prop));
+=======
+	if (!prop)
+		return len;
+
+	fdt_nop_region_(prop, len + sizeof(*prop));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int _fdt_node_end_offset(void *fdt, int offset)
+=======
+int fdt_node_end_offset_(void *fdt, int offset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int depth = 0;
 
@@ -108,11 +167,19 @@ int fdt_nop_node(void *fdt, int nodeoffset)
 {
 	int endoffset;
 
+<<<<<<< HEAD
 	endoffset = _fdt_node_end_offset(fdt, nodeoffset);
 	if (endoffset < 0)
 		return endoffset;
 
 	_fdt_nop_region(fdt_offset_ptr_w(fdt, nodeoffset, 0),
+=======
+	endoffset = fdt_node_end_offset_(fdt, nodeoffset);
+	if (endoffset < 0)
+		return endoffset;
+
+	fdt_nop_region_(fdt_offset_ptr_w(fdt, nodeoffset, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			endoffset - nodeoffset);
 	return 0;
 }

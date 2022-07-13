@@ -1,2 +1,7 @@
 #!/bin/bash
+<<<<<<< HEAD
 perf record -e raw_syscalls:sys_exit $@
+=======
+(perf record -e raw_syscalls:sys_exit $@ || \
+ perf record -e syscalls:sys_exit $@) 2> /dev/null
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

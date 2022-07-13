@@ -1,14 +1,22 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/csumpartialcopyuser.S
  *
  *  Copyright (C) 1995-1998 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
  * 27/03/03 Ian Molton Clean up CONFIG_CPU
  *
+=======
+ * 27/03/03 Ian Molton Clean up CONFIG_CPU
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -17,6 +25,22 @@
 
 		.text
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+		.macro	save_regs
+		mrc	p15, 0, ip, c3, c0, 0
+		stmfd	sp!, {r1, r2, r4 - r8, ip, lr}
+		uaccess_enable ip
+		.endm
+
+		.macro	load_regs
+		ldmfd	sp!, {r1, r2, r4 - r8, ip, lr}
+		mcr	p15, 0, ip, c3, c0, 0
+		ret	lr
+		.endm
+#else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.macro	save_regs
 		stmfd	sp!, {r1, r2, r4 - r8, lr}
 		.endm
@@ -24,6 +48,10 @@
 		.macro	load_regs
 		ldmfd	sp!, {r1, r2, r4 - r8, pc}
 		.endm
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.macro	load1b,	reg1
 		ldrusr	\reg1, r0, 1
@@ -52,9 +80,15 @@
 
 /*
  * unsigned int
+<<<<<<< HEAD
  * csum_partial_copy_from_user(const char *src, char *dst, int len, int sum, int *err_ptr)
  *  r0 = src, r1 = dst, r2 = len, r3 = sum, [sp] = *err_ptr
  *  Returns : r0 = checksum, [[sp, #0], #0] = 0 or -EFAULT
+=======
+ * csum_partial_copy_from_user(const char *src, char *dst, int len)
+ *  r0 = src, r1 = dst, r2 = len
+ *  Returns : r0 = checksum or 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define FN_ENTRY	ENTRY(csum_partial_copy_from_user)
@@ -63,6 +97,7 @@
 #include "csumpartialcopygeneric.S"
 
 /*
+<<<<<<< HEAD
  * FIXME: minor buglet here
  * We don't return the checksum for the data present in the buffer.  To do
  * so properly, we would have to add in whatever registers were loaded before
@@ -79,5 +114,13 @@
 9002:		teq	r2, r1
 		strneb	r0, [r1], #1
 		bne	9002b
+=======
+ * We report fault by returning 0 csum - impossible in normal case, since
+ * we start with 0xffffffff for initial sum.
+ */
+		.pushsection .text.fixup,"ax"
+		.align	4
+9001:		mov	r0, #0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		load_regs
 		.popsection

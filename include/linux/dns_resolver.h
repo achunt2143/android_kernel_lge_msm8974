@@ -24,11 +24,20 @@
 #ifndef _LINUX_DNS_RESOLVER_H
 #define _LINUX_DNS_RESOLVER_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 extern int dns_query(const char *type, const char *name, size_t namelen,
 		     const char *options, char **_result, time_t *_expiry);
 
 #endif /* KERNEL */
+=======
+#include <uapi/linux/dns_resolver.h>
+
+struct net;
+extern int dns_query(struct net *net, const char *type, const char *name, size_t namelen,
+		     const char *options, char **_result, time64_t *_expiry,
+		     bool invalidate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_DNS_RESOLVER_H */

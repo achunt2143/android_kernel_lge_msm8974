@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Regulator Driver for Freescale MC13xxx PMIC
  *
@@ -14,6 +15,20 @@
  * Regs infos taken from mc13xxx drivers from freescale and mc13xxx.pdf file
  * from freescale
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Regulator Driver for Freescale MC13xxx PMIC
+//
+// Copyright 2010 Yong Shen <yong.shen@linaro.org>
+//
+// Based on mc13783 regulator driver :
+// Copyright (C) 2008 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
+// Copyright 2009 Alberto Panizzo <maramaopercheseimorto@gmail.com>
+//
+// Regs infos taken from mc13xxx drivers from freescale and mc13xxx.pdf file
+// from freescale
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/mc13xxx.h>
 #include <linux/regulator/machine.h>
@@ -33,6 +48,7 @@ static int mc13xxx_regulator_enable(struct regulator_dev *rdev)
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
@@ -44,6 +60,14 @@ static int mc13xxx_regulator_enable(struct regulator_dev *rdev)
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+
+	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].reg,
+			       mc13xxx_regulators[id].enable_bit,
+			       mc13xxx_regulators[id].enable_bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
@@ -51,6 +75,7 @@ static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
@@ -61,6 +86,13 @@ static int mc13xxx_regulator_disable(struct regulator_dev *rdev)
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+
+	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].reg,
+			       mc13xxx_regulators[id].enable_bit, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13xxx_regulator_is_enabled(struct regulator_dev *rdev)
@@ -70,16 +102,21 @@ static int mc13xxx_regulator_is_enabled(struct regulator_dev *rdev)
 	int ret, id = rdev_get_id(rdev);
 	unsigned int val;
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13xxx_reg_read(priv->mc13xxx, mc13xxx_regulators[id].reg, &val);
 	mc13xxx_unlock(priv->mc13xxx);
 
+=======
+	ret = mc13xxx_reg_read(priv->mc13xxx, mc13xxx_regulators[id].reg, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	return (val & mc13xxx_regulators[id].enable_bit) != 0;
 }
 
+<<<<<<< HEAD
 int mc13xxx_regulator_list_voltage(struct regulator_dev *rdev,
 						unsigned selector)
 {
@@ -153,6 +190,18 @@ static int mc13xxx_regulator_set_voltage(struct regulator_dev *rdev, int min_uV,
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+static int mc13xxx_regulator_set_voltage_sel(struct regulator_dev *rdev,
+					     unsigned selector)
+{
+	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
+	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
+	int id = rdev_get_id(rdev);
+
+	return mc13xxx_reg_rmw(priv->mc13xxx, mc13xxx_regulators[id].vsel_reg,
+			       mc13xxx_regulators[id].vsel_mask,
+			       selector << mc13xxx_regulators[id].vsel_shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13xxx_regulator_get_voltage(struct regulator_dev *rdev)
@@ -164,11 +213,16 @@ static int mc13xxx_regulator_get_voltage(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13xxx_reg_read(priv->mc13xxx,
 				mc13xxx_regulators[id].vsel_reg, &val);
 	mc13xxx_unlock(priv->mc13xxx);
 
+=======
+	ret = mc13xxx_reg_read(priv->mc13xxx,
+				mc13xxx_regulators[id].vsel_reg, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -179,6 +233,7 @@ static int mc13xxx_regulator_get_voltage(struct regulator_dev *rdev)
 
 	BUG_ON(val >= mc13xxx_regulators[id].desc.n_voltages);
 
+<<<<<<< HEAD
 	return mc13xxx_regulators[id].voltages[val];
 }
 
@@ -188,6 +243,17 @@ struct regulator_ops mc13xxx_regulator_ops = {
 	.is_enabled = mc13xxx_regulator_is_enabled,
 	.list_voltage = mc13xxx_regulator_list_voltage,
 	.set_voltage = mc13xxx_regulator_set_voltage,
+=======
+	return rdev->desc->volt_table[val];
+}
+
+const struct regulator_ops mc13xxx_regulator_ops = {
+	.enable = mc13xxx_regulator_enable,
+	.disable = mc13xxx_regulator_disable,
+	.is_enabled = mc13xxx_regulator_is_enabled,
+	.list_voltage = regulator_list_voltage_table,
+	.set_voltage_sel = mc13xxx_regulator_set_voltage_sel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_voltage = mc13xxx_regulator_get_voltage,
 };
 EXPORT_SYMBOL_GPL(mc13xxx_regulator_ops);
@@ -195,13 +261,17 @@ EXPORT_SYMBOL_GPL(mc13xxx_regulator_ops);
 int mc13xxx_fixed_regulator_set_voltage(struct regulator_dev *rdev, int min_uV,
 	       int max_uV, unsigned *selector)
 {
+<<<<<<< HEAD
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	struct mc13xxx_regulator *mc13xxx_regulators = priv->mc13xxx_regulators;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int id = rdev_get_id(rdev);
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d min_uV: %d max_uV: %d\n",
 		__func__, id, min_uV, max_uV);
 
+<<<<<<< HEAD
 	if (min_uV >= mc13xxx_regulators[id].voltages[0] &&
 	    max_uV <= mc13xxx_regulators[id].voltages[0])
 		return 0;
@@ -252,17 +322,58 @@ int __devinit mc13xxx_get_num_regulators_dt(struct platform_device *pdev)
 	for_each_child_of_node(parent, child)
 		num++;
 
+=======
+	if (min_uV <= rdev->desc->volt_table[0] &&
+	    rdev->desc->volt_table[0] <= max_uV) {
+		*selector = 0;
+		return 0;
+	} else {
+		return -EINVAL;
+	}
+}
+EXPORT_SYMBOL_GPL(mc13xxx_fixed_regulator_set_voltage);
+
+const struct regulator_ops mc13xxx_fixed_regulator_ops = {
+	.enable = mc13xxx_regulator_enable,
+	.disable = mc13xxx_regulator_disable,
+	.is_enabled = mc13xxx_regulator_is_enabled,
+	.list_voltage = regulator_list_voltage_table,
+	.set_voltage = mc13xxx_fixed_regulator_set_voltage,
+};
+EXPORT_SYMBOL_GPL(mc13xxx_fixed_regulator_ops);
+
+#ifdef CONFIG_OF
+int mc13xxx_get_num_regulators_dt(struct platform_device *pdev)
+{
+	struct device_node *parent;
+	int num;
+
+	if (!pdev->dev.parent->of_node)
+		return -ENODEV;
+
+	parent = of_get_child_by_name(pdev->dev.parent->of_node, "regulators");
+	if (!parent)
+		return -ENODEV;
+
+	num = of_get_child_count(parent);
+	of_node_put(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return num;
 }
 EXPORT_SYMBOL_GPL(mc13xxx_get_num_regulators_dt);
 
+<<<<<<< HEAD
 struct mc13xxx_regulator_init_data * __devinit mc13xxx_parse_regulators_dt(
+=======
+struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device *pdev, struct mc13xxx_regulator *regulators,
 	int num_regulators)
 {
 	struct mc13xxx_regulator_priv *priv = platform_get_drvdata(pdev);
 	struct mc13xxx_regulator_init_data *data, *p;
 	struct device_node *parent, *child;
+<<<<<<< HEAD
 	int i;
 
 	of_node_get(pdev->dev.parent->of_node);
@@ -289,6 +400,54 @@ struct mc13xxx_regulator_init_data * __devinit mc13xxx_parse_regulators_dt(
 			}
 		}
 	}
+=======
+	int i, parsed = 0;
+
+	if (!pdev->dev.parent->of_node)
+		return NULL;
+
+	parent = of_get_child_by_name(pdev->dev.parent->of_node, "regulators");
+	if (!parent)
+		return NULL;
+
+	data = devm_kcalloc(&pdev->dev, priv->num_regulators, sizeof(*data),
+			    GFP_KERNEL);
+	if (!data) {
+		of_node_put(parent);
+		return NULL;
+	}
+
+	p = data;
+
+	for_each_child_of_node(parent, child) {
+		int found = 0;
+
+		for (i = 0; i < num_regulators; i++) {
+			if (!regulators[i].desc.name)
+				continue;
+			if (of_node_name_eq(child,
+					 regulators[i].desc.name)) {
+				p->id = i;
+				p->init_data = of_get_regulator_init_data(
+							&pdev->dev, child,
+							&regulators[i].desc);
+				p->node = child;
+				p++;
+
+				parsed++;
+				found = 1;
+				break;
+			}
+		}
+
+		if (!found)
+			dev_warn(&pdev->dev,
+				 "Unknown regulator: %pOFn\n", child);
+	}
+	of_node_put(parent);
+
+	priv->num_regulators = parsed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return data;
 }

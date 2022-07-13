@@ -1,6 +1,10 @@
 /*
  * Copyright © 2010 ST Microelectronics
+<<<<<<< HEAD
  * Shiraz Hashim <shiraz.hashim@st.com>
+=======
+ * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any

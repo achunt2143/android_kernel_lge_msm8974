@@ -1,6 +1,18 @@
+<<<<<<< HEAD
 #ifndef __HID_LG_H
 #define __HID_LG_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __HID_LG_H
+#define __HID_LG_H
+
+struct lg_drv_data {
+	unsigned long quirks;
+	void *device_props;	/* Device specific properties */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_LOGITECH_FF
 int lgff_init(struct hid_device *hdev);
 #else
@@ -19,6 +31,7 @@ int lg3ff_init(struct hid_device *hdev);
 static inline int lg3ff_init(struct hid_device *hdev) { return -1; }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_LOGIWHEELS_FF
 int lg4ff_init(struct hid_device *hdev);
 int lg4ff_deinit(struct hid_device *hdev);
@@ -27,4 +40,6 @@ static inline int lg4ff_init(struct hid_device *hdev) { return -1; }
 static inline int lg4ff_deinit(struct hid_device *hdev) { return -1; }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for the KLSI KL5KUSB105 serial port adapter
  */
@@ -6,9 +10,12 @@
 #define PALMCONNECT_VID		0x0830
 #define PALMCONNECT_PID		0x0080
 
+<<<<<<< HEAD
 #define KLSI_VID		0x05e9
 #define KLSI_KL5KUSB105D_PID	0x00c0
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Vendor commands: */
 
 

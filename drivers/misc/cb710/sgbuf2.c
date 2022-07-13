@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  cb710/sgbuf2.c
  *
  *  Copyright by Michał Mirosław, 2008-2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -50,7 +57,11 @@ static inline bool needs_unaligned_copy(const void *ptr)
 #ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
 	return false;
 #else
+<<<<<<< HEAD
 	return ((ptr - NULL) & 3) != 0;
+=======
+	return ((uintptr_t)ptr & 3) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -120,6 +131,10 @@ static void sg_dwiter_write_slow(struct sg_mapping_iter *miter, uint32_t data)
 /**
  * cb710_sg_dwiter_write_next_block() - write next 32-bit word to sg buffer
  * @miter: sg mapping iterator used for writing
+<<<<<<< HEAD
+=======
+ * @data: data to write to sg buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *   Writes 32-bit word starting at byte pointed to by @miter@

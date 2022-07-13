@@ -1,17 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel CE4100  platform specific setup code
  *
  * (C) Copyright 2010 Intel Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/reboot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_reg.h>
 #include <linux/serial_8250.h>
 
@@ -21,10 +32,25 @@
 #include <asm/i8259.h>
 #include <asm/io.h>
 #include <asm/io_apic.h>
+<<<<<<< HEAD
 
 static int ce4100_i8042_detect(void)
 {
 	return 0;
+=======
+#include <asm/emergency-restart.h>
+
+/*
+ * The CE4100 platform has an internal 8051 Microcontroller which is
+ * responsible for signaling to the external Power Management Unit the
+ * intention to reset, reboot or power off the system. This 8051 device has
+ * its command register mapped at I/O port 0xcf9 and the value 0x4 is used
+ * to power off the system.
+ */
+static void ce4100_power_off(void)
+{
+	outb(0x4, 0xcf9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SERIAL_8250
@@ -76,7 +102,11 @@ static void ce4100_mem_serial_out(struct uart_port *p, int offset, int value)
 }
 
 static void ce4100_serial_fixup(int port, struct uart_port *up,
+<<<<<<< HEAD
 	unsigned short *capabilites)
+=======
+	u32 *capabilities)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_EARLY_PRINTK
 	/*
@@ -92,15 +122,27 @@ static void ce4100_serial_fixup(int port, struct uart_port *up,
 		up->membase =
 			(void __iomem *)__fix_to_virt(FIX_EARLYCON_MEM_BASE);
 		up->membase += up->mapbase & ~PAGE_MASK;
+<<<<<<< HEAD
 		up->iotype   = UPIO_MEM32;
 		up->regshift = 2;
+=======
+		up->mapbase += port * 0x100;
+		up->membase += port * 0x100;
+		up->iotype   = UPIO_MEM32;
+		up->regshift = 2;
+		up->irq = 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	up->iobase = 0;
 	up->serial_in = ce4100_mem_serial_in;
 	up->serial_out = ce4100_mem_serial_out;
 
+<<<<<<< HEAD
 	*capabilites |= (1 << 12);
+=======
+	*capabilities |= (1 << 12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __init void sdv_serial_fixup(void)
@@ -117,6 +159,7 @@ static void __init sdv_arch_setup(void)
 	sdv_serial_fixup();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_IO_APIC
 static void __cpuinit sdv_pci_init(void)
 {
@@ -125,6 +168,12 @@ static void __cpuinit sdv_pci_init(void)
 	legacy_pic = &null_legacy_pic;
 }
 #endif
+=======
+static void sdv_pci_init(void)
+{
+	x86_of_pci_init();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CE4100 specific x86_init function overrides and early setup
@@ -132,6 +181,7 @@ static void __cpuinit sdv_pci_init(void)
  */
 void __init x86_ce4100_early_setup(void)
 {
+<<<<<<< HEAD
 	x86_init.oem.arch_setup = sdv_arch_setup;
 	x86_platform.i8042_detect = ce4100_i8042_detect;
 	x86_init.resources.probe_roms = x86_init_noop;
@@ -143,4 +193,24 @@ void __init x86_ce4100_early_setup(void)
 	x86_init.pci.init_irq = sdv_pci_init;
 	x86_init.mpparse.setup_ioapic_ids = setup_ioapic_ids_from_mpc_nocheck;
 #endif
+=======
+	x86_init.oem.arch_setup			= sdv_arch_setup;
+	x86_init.resources.probe_roms		= x86_init_noop;
+	x86_init.mpparse.find_mptable		= x86_init_noop;
+	x86_init.mpparse.early_parse_smp_cfg	= x86_init_noop;
+	x86_init.mpparse.parse_smp_cfg		= x86_dtb_parse_smp_config;
+	x86_init.pci.init			= ce4100_pci_init;
+	x86_init.pci.init_irq			= sdv_pci_init;
+
+	/*
+	 * By default, the reboot method is ACPI which is supported by the
+	 * CE4100 bootloader CEFDK using FADT.ResetReg Address and ResetValue
+	 * the bootloader will however issue a system power off instead of
+	 * reboot. By using BOOT_KBD we ensure proper system reboot as
+	 * expected.
+	 */
+	reboot_type = BOOT_KBD;
+
+	pm_power_off = ce4100_power_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

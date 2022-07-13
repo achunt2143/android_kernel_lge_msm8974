@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * NCR 5380 defines
  *
@@ -7,8 +11,11 @@
  * 	drew@colorado.edu
  *      +1 (303) 666-5836
  *
+<<<<<<< HEAD
  * DISTRIBUTION RELEASE 7
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For more information, please consult 
  *
  * NCR 5380 Family
@@ -21,6 +28,7 @@
  * 1+ (800) 334-5454
  */
 
+<<<<<<< HEAD
 /*
  * $Log: NCR5380.h,v $
  */
@@ -36,6 +44,18 @@
 
 #define NCR5380_PUBLIC_RELEASE 7
 #define NCR53C400_PUBLIC_RELEASE 2
+=======
+#ifndef NCR5380_H
+#define NCR5380_H
+
+#include <linux/delay.h>
+#include <linux/interrupt.h>
+#include <linux/list.h>
+#include <linux/workqueue.h>
+#include <scsi/scsi_dbg.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_transport_spi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NDEBUG_ARBITRATION	0x1
 #define NDEBUG_AUTOSENSE	0x2
@@ -60,6 +80,12 @@
 #define NDEBUG_C400_PREAD	0x100000
 #define NDEBUG_C400_PWRITE	0x200000
 #define NDEBUG_LISTS		0x400000
+<<<<<<< HEAD
+=======
+#define NDEBUG_ABORT		0x800000
+#define NDEBUG_TAGS		0x1000000
+#define NDEBUG_MERGING		0x2000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NDEBUG_ANY		0xFFFFFFFFUL
 
@@ -85,11 +111,15 @@
 #define ICR_ASSERT_ATN		0x02	/* rw Set to assert ATN */
 #define ICR_ASSERT_DATA		0x01	/* rw SCSI_DATA_REG is asserted */
 
+<<<<<<< HEAD
 #ifdef DIFFERENTIAL
 #define ICR_BASE		ICR_DIFF_ENABLE
 #else
 #define ICR_BASE		0
 #endif
+=======
+#define ICR_BASE		0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODE_REG		2
 /*
@@ -106,11 +136,15 @@
 #define MR_DMA_MODE		0x02	/* rw DMA / pseudo DMA mode */
 #define MR_ARBITRATE		0x01	/* rw start arbitration */
 
+<<<<<<< HEAD
 #ifdef PARITY
 #define MR_BASE			MR_ENABLE_PAR_CHECK
 #else
 #define MR_BASE			0
 #endif
+=======
+#define MR_BASE			0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TARGET_COMMAND_REG	3
 #define TCR_LAST_BYTE_SENT	0x80	/* ro DMA done */
@@ -167,8 +201,12 @@
 /* Write any value to this register to start an ini mode DMA receive */
 #define START_DMA_INITIATOR_RECEIVE_REG 7	/* wo */
 
+<<<<<<< HEAD
 #define C400_CONTROL_STATUS_REG NCR53C400_register_offset-8	/* rw */
 
+=======
+/* NCR 53C400(A) Control Status Register bits: */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CSR_RESET              0x80	/* wo  Resets 53c400 */
 #define CSR_53C80_REG          0x80	/* ro  5380 registers busy */
 #define CSR_TRANS_DIR          0x40	/* rw  Data transfer direction */
@@ -179,6 +217,7 @@
 #define CSR_SCSI_BUF_RDY       0x02	/* ro  SCSI buffer read */
 #define CSR_GATED_53C80_IRQ    0x01	/* ro  Last block xferred */
 
+<<<<<<< HEAD
 #if 0
 #define CSR_BASE CSR_SCSI_BUFF_INTR | CSR_53C80_INTR
 #else
@@ -194,6 +233,9 @@
 /* Access to host buffer stack */
 #define C400_HOST_BUFFER         NCR53C400_register_offset-4	/* rw */
 
+=======
+#define CSR_BASE CSR_53C80_INTR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Note : PHASE_* macros are based on the values of the STATUS register */
 #define PHASE_MASK 	(SR_MSG | SR_CD | SR_IO)
@@ -214,6 +256,7 @@
 
 #define PHASE_SR_TO_TCR(phase) ((phase) >> 2)
 
+<<<<<<< HEAD
 /*
  * The internal should_disconnect() function returns these based on the 
  * expected length of a disconnect if a device supports disconnect/
@@ -434,4 +477,146 @@ static __inline__ int NCR5380_pc_dma_residual(struct Scsi_Host *instance)
 #endif				/* defined(REAL_DMA)  */
 #endif				/* __KERNEL__ */
 #endif				/* ndef ASM */
+=======
+#ifndef NO_IRQ
+#define NO_IRQ		0
+#endif
+
+#define FLAG_DMA_FIXUP			1	/* Use DMA errata workarounds */
+#define FLAG_NO_PSEUDO_DMA		8	/* Inhibit DMA */
+#define FLAG_LATE_DMA_SETUP		32	/* Setup NCR before DMA H/W */
+#define FLAG_TOSHIBA_DELAY		128	/* Allow for borken CD-ROMs */
+
+struct NCR5380_hostdata {
+	NCR5380_implementation_fields;		/* Board-specific data */
+	u8 __iomem *io;				/* Remapped 5380 address */
+	u8 __iomem *pdma_io;			/* Remapped PDMA address */
+	unsigned long poll_loops;		/* Register polling limit */
+	spinlock_t lock;			/* Protects this struct */
+	struct scsi_cmnd *connected;		/* Currently connected cmnd */
+	struct list_head disconnected;		/* Waiting for reconnect */
+	struct Scsi_Host *host;			/* SCSI host backpointer */
+	struct workqueue_struct *work_q;	/* SCSI host work queue */
+	struct work_struct main_task;		/* Work item for main loop */
+	int flags;				/* Board-specific quirks */
+	int dma_len;				/* Requested length of DMA */
+	int read_overruns;	/* Transfer size reduction for DMA erratum */
+	unsigned long io_port;			/* Device IO port */
+	unsigned long base;			/* Device base address */
+	struct list_head unissued;		/* Waiting to be issued */
+	struct scsi_cmnd *selecting;		/* Cmnd to be connected */
+	struct list_head autosense;		/* Priority cmnd queue */
+	struct scsi_cmnd *sensing;		/* Cmnd needing autosense */
+	struct scsi_eh_save ses;		/* Cmnd state saved for EH */
+	unsigned char busy[8];			/* Index = target, bit = lun */
+	unsigned char id_mask;			/* 1 << Host ID */
+	unsigned char id_higher_mask;		/* All bits above id_mask */
+	unsigned char last_message;		/* Last Message Out */
+	unsigned long region_size;		/* Size of address/port range */
+	char info[168];				/* Host banner message */
+};
+
+struct NCR5380_cmd {
+	char *ptr;
+	int this_residual;
+	struct scatterlist *buffer;
+	int status;
+	int message;
+	int phase;
+	struct list_head list;
+};
+
+#define NCR5380_PIO_CHUNK_SIZE		256
+
+/* Time limit (ms) to poll registers when IRQs are disabled, e.g. during PDMA */
+#define NCR5380_REG_POLL_TIME		10
+
+static inline struct scsi_cmnd *NCR5380_to_scmd(struct NCR5380_cmd *ncmd_ptr)
+{
+	return ((struct scsi_cmnd *)ncmd_ptr) - 1;
+}
+
+static inline struct NCR5380_cmd *NCR5380_to_ncmd(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+
+#ifndef NDEBUG
+#define NDEBUG (0)
+#endif
+
+#define dprintk(flg, fmt, ...) \
+	do { if ((NDEBUG) & (flg)) \
+		printk(KERN_DEBUG fmt, ## __VA_ARGS__); } while (0)
+
+#define dsprintk(flg, host, fmt, ...) \
+	do { if ((NDEBUG) & (flg)) \
+		shost_printk(KERN_DEBUG, host, fmt, ## __VA_ARGS__); \
+	} while (0)
+
+#if NDEBUG
+#define NCR5380_dprint(flg, arg) \
+	do { if ((NDEBUG) & (flg)) NCR5380_print(arg); } while (0)
+#define NCR5380_dprint_phase(flg, arg) \
+	do { if ((NDEBUG) & (flg)) NCR5380_print_phase(arg); } while (0)
+static void NCR5380_print_phase(struct Scsi_Host *instance);
+static void NCR5380_print(struct Scsi_Host *instance);
+#else
+#define NCR5380_dprint(flg, arg)       do {} while (0)
+#define NCR5380_dprint_phase(flg, arg) do {} while (0)
+#endif
+
+static int NCR5380_init(struct Scsi_Host *instance, int flags);
+static int NCR5380_maybe_reset_bus(struct Scsi_Host *);
+static void NCR5380_exit(struct Scsi_Host *instance);
+static void NCR5380_information_transfer(struct Scsi_Host *instance);
+static irqreturn_t NCR5380_intr(int irq, void *dev_id);
+static void NCR5380_main(struct work_struct *work);
+static const char *NCR5380_info(struct Scsi_Host *instance);
+static void NCR5380_reselect(struct Scsi_Host *instance);
+static bool NCR5380_select(struct Scsi_Host *, struct scsi_cmnd *);
+static int NCR5380_transfer_dma(struct Scsi_Host *instance, unsigned char *phase, int *count, unsigned char **data);
+static int NCR5380_transfer_pio(struct Scsi_Host *instance, unsigned char *phase, int *count, unsigned char **data,
+				unsigned int can_sleep);
+static int NCR5380_poll_politely2(struct NCR5380_hostdata *,
+                                  unsigned int, u8, u8,
+                                  unsigned int, u8, u8, unsigned long);
+
+static inline int NCR5380_poll_politely(struct NCR5380_hostdata *hostdata,
+                                        unsigned int reg, u8 bit, u8 val,
+                                        unsigned long wait)
+{
+	if ((NCR5380_read(reg) & bit) == val)
+		return 0;
+
+	return NCR5380_poll_politely2(hostdata, reg, bit, val,
+						reg, bit, val, wait);
+}
+
+static int NCR5380_dma_xfer_len(struct NCR5380_hostdata *,
+                                struct scsi_cmnd *);
+static int NCR5380_dma_send_setup(struct NCR5380_hostdata *,
+                                  unsigned char *, int);
+static int NCR5380_dma_recv_setup(struct NCR5380_hostdata *,
+                                  unsigned char *, int);
+static int NCR5380_dma_residual(struct NCR5380_hostdata *);
+
+static inline int NCR5380_dma_xfer_none(struct NCR5380_hostdata *hostdata,
+                                        struct scsi_cmnd *cmd)
+{
+	return 0;
+}
+
+static inline int NCR5380_dma_setup_none(struct NCR5380_hostdata *hostdata,
+                                         unsigned char *data, int count)
+{
+	return 0;
+}
+
+static inline int NCR5380_dma_residual_none(struct NCR5380_hostdata *hostdata)
+{
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* NCR5380_H */

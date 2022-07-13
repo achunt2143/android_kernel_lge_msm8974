@@ -82,6 +82,7 @@ PROPERTIES
 	Which event source asserted the interrupt is captured in an EPU
 	Interrupt Status Register (EPISR0,EPISR1).
 
+<<<<<<< HEAD
 	Interrupt numbers are lised in order (perfmon, event0, event1).
 
 	- interrupt-parent
@@ -90,6 +91,9 @@ PROPERTIES
 	Definition: A single <phandle> value that points
 	to the interrupt parent to which the child domain
 	is being mapped. Value must be "&mpic"
+=======
+	Interrupt numbers are listed in order (perfmon, event0, event1).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	- reg
 	Usage: required
@@ -192,10 +196,17 @@ PROPERTIES
 	with distinct functionality.
 
 	The first register range describes the CoreNet Debug Controller
+<<<<<<< HEAD
 	functionalty to perform transaction and transaction attribute matches.
 
 	The second register range describes the CoreNet Debug Controller
 	functionalty to trigger event notifications and debug traces.
+=======
+	functionality to perform transaction and transaction attribute matches.
+
+	The second register range describes the CoreNet Debug Controller
+	functionality to trigger event notifications and debug traces.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXAMPLE
 		dcsr-corenet {

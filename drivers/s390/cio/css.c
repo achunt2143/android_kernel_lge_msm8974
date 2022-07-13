@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver for channel subsystem
  *
@@ -10,20 +14,34 @@
 #define KMSG_COMPONENT "cio"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/list.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/suspend.h>
 #include <linux/proc_fs.h>
+=======
+#include <linux/proc_fs.h>
+#include <linux/genalloc.h>
+#include <linux/dma-mapping.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/isc.h>
 #include <asm/crw.h>
 
 #include "css.h"
 #include "cio.h"
+<<<<<<< HEAD
+=======
+#include "blacklist.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cio_debug.h"
 #include "ioasm.h"
 #include "chsc.h"
@@ -34,8 +52,14 @@
 int css_init_done = 0;
 int max_ssid;
 
+<<<<<<< HEAD
 struct channel_subsystem *channel_subsystems[__MAX_CSSID + 1];
 static struct bus_type css_bus_type;
+=======
+#define MAX_CSS_IDX 0
+struct channel_subsystem *channel_subsystems[MAX_CSS_IDX + 1];
+static const struct bus_type css_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int
 for_each_subchannel(int(*fn)(struct subchannel_id, void *), void *data)
@@ -44,7 +68,10 @@ for_each_subchannel(int(*fn)(struct subchannel_id, void *), void *data)
 	int ret;
 
 	init_subchannel_id(&schid);
+<<<<<<< HEAD
 	ret = -ENODEV;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		do {
 			ret = fn(schid, data);
@@ -69,7 +96,12 @@ static int call_fn_known_sch(struct device *dev, void *data)
 	struct cb_data *cb = data;
 	int rc = 0;
 
+<<<<<<< HEAD
 	idset_sch_del(cb->set, sch->schid);
+=======
+	if (cb->set)
+		idset_sch_del(cb->set, sch->schid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cb->fn_known_sch)
 		rc = cb->fn_known_sch(sch, cb->data);
 	return rc;
@@ -115,6 +147,16 @@ int for_each_subchannel_staged(int (*fn_known)(struct subchannel *, void *),
 	cb.fn_known_sch = fn_known;
 	cb.fn_unknown_sch = fn_unknown;
 
+<<<<<<< HEAD
+=======
+	if (fn_known && !fn_unknown) {
+		/* Skip idset allocation in case of known-only loop. */
+		cb.set = NULL;
+		return bus_for_each_dev(&css_bus_type, NULL, &cb,
+					call_fn_known_sch);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cb.set = idset_sch_new();
 	if (!cb.set)
 		/* fall back to brute force scanning in case of oom */
@@ -137,12 +179,64 @@ out:
 
 static void css_sch_todo(struct work_struct *work);
 
+<<<<<<< HEAD
 static struct subchannel *
 css_alloc_subchannel(struct subchannel_id schid)
+=======
+static void css_sch_create_locks(struct subchannel *sch)
+{
+	spin_lock_init(&sch->lock);
+	mutex_init(&sch->reg_mutex);
+}
+
+static void css_subchannel_release(struct device *dev)
+{
+	struct subchannel *sch = to_subchannel(dev);
+
+	sch->config.intparm = 0;
+	cio_commit_config(sch);
+	kfree(sch->driver_override);
+	kfree(sch);
+}
+
+static int css_validate_subchannel(struct subchannel_id schid,
+				   struct schib *schib)
+{
+	int err;
+
+	switch (schib->pmcw.st) {
+	case SUBCHANNEL_TYPE_IO:
+	case SUBCHANNEL_TYPE_MSG:
+		if (!css_sch_is_valid(schib))
+			err = -ENODEV;
+		else if (is_blacklisted(schid.ssid, schib->pmcw.dev)) {
+			CIO_MSG_EVENT(6, "Blacklisted device detected "
+				      "at devno %04X, subchannel set %x\n",
+				      schib->pmcw.dev, schid.ssid);
+			err = -ENODEV;
+		} else
+			err = 0;
+		break;
+	default:
+		err = 0;
+	}
+	if (err)
+		goto out;
+
+	CIO_MSG_EVENT(4, "Subchannel 0.%x.%04x reports subchannel type %04X\n",
+		      schid.ssid, schid.sch_no, schib->pmcw.st);
+out:
+	return err;
+}
+
+struct subchannel *css_alloc_subchannel(struct subchannel_id schid,
+					struct schib *schib)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct subchannel *sch;
 	int ret;
 
+<<<<<<< HEAD
 	sch = kmalloc (sizeof (*sch), GFP_KERNEL | GFP_DMA);
 	if (sch == NULL)
 		return ERR_PTR(-ENOMEM);
@@ -168,6 +262,46 @@ css_subchannel_release(struct device *dev)
 		kfree(sch->lock);
 		kfree(sch);
 	}
+=======
+	ret = css_validate_subchannel(schid, schib);
+	if (ret < 0)
+		return ERR_PTR(ret);
+
+	sch = kzalloc(sizeof(*sch), GFP_KERNEL | GFP_DMA);
+	if (!sch)
+		return ERR_PTR(-ENOMEM);
+
+	sch->schid = schid;
+	sch->schib = *schib;
+	sch->st = schib->pmcw.st;
+
+	css_sch_create_locks(sch);
+
+	INIT_WORK(&sch->todo_work, css_sch_todo);
+	sch->dev.release = &css_subchannel_release;
+	sch->dev.dma_mask = &sch->dma_mask;
+	device_initialize(&sch->dev);
+	/*
+	 * The physical addresses for some of the dma structures that can
+	 * belong to a subchannel need to fit 31 bit width (e.g. ccw).
+	 */
+	ret = dma_set_coherent_mask(&sch->dev, DMA_BIT_MASK(31));
+	if (ret)
+		goto err;
+	/*
+	 * But we don't have such restrictions imposed on the stuff that
+	 * is handled by the streaming API.
+	 */
+	ret = dma_set_mask(&sch->dev, DMA_BIT_MASK(64));
+	if (ret)
+		goto err;
+
+	return sch;
+
+err:
+	kfree(sch);
+	return ERR_PTR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int css_sch_device_register(struct subchannel *sch)
@@ -177,7 +311,11 @@ static int css_sch_device_register(struct subchannel *sch)
 	mutex_lock(&sch->reg_mutex);
 	dev_set_name(&sch->dev, "0.%x.%04x", sch->schid.ssid,
 		     sch->schid.sch_no);
+<<<<<<< HEAD
 	ret = device_register(&sch->dev);
+=======
+	ret = device_add(&sch->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&sch->reg_mutex);
 	return ret;
 }
@@ -219,8 +357,12 @@ static void ssd_register_chpids(struct chsc_ssd_info *ssd)
 	for (i = 0; i < 8; i++) {
 		mask = 0x80 >> i;
 		if (ssd->path_mask & mask)
+<<<<<<< HEAD
 			if (!chp_is_registered(ssd->chpid[i]))
 				chp_new(ssd->chpid[i]);
+=======
+			chp_new(ssd->chpid[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -228,6 +370,7 @@ void css_update_ssd_info(struct subchannel *sch)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (cio_is_console(sch->schid)) {
 		/* Console is initialized too early for functions requiring
 		 * memory allocation. */
@@ -238,6 +381,13 @@ void css_update_ssd_info(struct subchannel *sch)
 			ssd_from_pmcw(&sch->ssd_info, &sch->schib.pmcw);
 		ssd_register_chpids(&sch->ssd_info);
 	}
+=======
+	ret = chsc_get_ssd_info(sch->schid, &sch->ssd_info);
+	if (ret)
+		ssd_from_pmcw(&sch->ssd_info, &sch->schib.pmcw);
+
+	ssd_register_chpids(&sch->ssd_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t type_show(struct device *dev, struct device_attribute *attr,
@@ -248,7 +398,11 @@ static ssize_t type_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%01x\n", sch->st);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(type, 0444, type_show, NULL);
+=======
+static DEVICE_ATTR_RO(type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
@@ -258,11 +412,46 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "css:t%01X\n", sch->st);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(modalias, 0444, modalias_show, NULL);
+=======
+static DEVICE_ATTR_RO(modalias);
+
+static ssize_t driver_override_store(struct device *dev,
+				     struct device_attribute *attr,
+				     const char *buf, size_t count)
+{
+	struct subchannel *sch = to_subchannel(dev);
+	int ret;
+
+	ret = driver_set_override(dev, &sch->driver_override, buf, count);
+	if (ret)
+		return ret;
+
+	return count;
+}
+
+static ssize_t driver_override_show(struct device *dev,
+				    struct device_attribute *attr, char *buf)
+{
+	struct subchannel *sch = to_subchannel(dev);
+	ssize_t len;
+
+	device_lock(dev);
+	len = snprintf(buf, PAGE_SIZE, "%s\n", sch->driver_override);
+	device_unlock(dev);
+	return len;
+}
+static DEVICE_ATTR_RW(driver_override);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *subch_attrs[] = {
 	&dev_attr_type.attr,
 	&dev_attr_modalias.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_driver_override.attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -275,13 +464,80 @@ static const struct attribute_group *default_subch_attr_groups[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static int css_register_subchannel(struct subchannel *sch)
+=======
+static ssize_t chpids_show(struct device *dev,
+			   struct device_attribute *attr,
+			   char *buf)
+{
+	struct subchannel *sch = to_subchannel(dev);
+	struct chsc_ssd_info *ssd = &sch->ssd_info;
+	ssize_t ret = 0;
+	int mask;
+	int chp;
+
+	for (chp = 0; chp < 8; chp++) {
+		mask = 0x80 >> chp;
+		if (ssd->path_mask & mask)
+			ret += sprintf(buf + ret, "%02x ", ssd->chpid[chp].id);
+		else
+			ret += sprintf(buf + ret, "00 ");
+	}
+	ret += sprintf(buf + ret, "\n");
+	return ret;
+}
+static DEVICE_ATTR_RO(chpids);
+
+static ssize_t pimpampom_show(struct device *dev,
+			      struct device_attribute *attr,
+			      char *buf)
+{
+	struct subchannel *sch = to_subchannel(dev);
+	struct pmcw *pmcw = &sch->schib.pmcw;
+
+	return sprintf(buf, "%02x %02x %02x\n",
+		       pmcw->pim, pmcw->pam, pmcw->pom);
+}
+static DEVICE_ATTR_RO(pimpampom);
+
+static ssize_t dev_busid_show(struct device *dev,
+			      struct device_attribute *attr,
+			      char *buf)
+{
+	struct subchannel *sch = to_subchannel(dev);
+	struct pmcw *pmcw = &sch->schib.pmcw;
+
+	if ((pmcw->st == SUBCHANNEL_TYPE_IO && pmcw->dnv) ||
+	    (pmcw->st == SUBCHANNEL_TYPE_MSG && pmcw->w))
+		return sysfs_emit(buf, "0.%x.%04x\n", sch->schid.ssid,
+				  pmcw->dev);
+	else
+		return sysfs_emit(buf, "none\n");
+}
+static DEVICE_ATTR_RO(dev_busid);
+
+static struct attribute *io_subchannel_type_attrs[] = {
+	&dev_attr_chpids.attr,
+	&dev_attr_pimpampom.attr,
+	&dev_attr_dev_busid.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(io_subchannel_type);
+
+static const struct device_type io_subchannel_type = {
+	.groups = io_subchannel_type_groups,
+};
+
+int css_register_subchannel(struct subchannel *sch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	/* Initialize the subchannel structure */
 	sch->dev.parent = &channel_subsystems[0]->device;
 	sch->dev.bus = &css_bus_type;
+<<<<<<< HEAD
 	sch->dev.release = &css_subchannel_release;
 	sch->dev.groups = default_subch_attr_groups;
 	/*
@@ -294,6 +550,13 @@ static int css_register_subchannel(struct subchannel *sch)
 	 * userspace of its existence.
 	 */
 	dev_set_uevent_suppress(&sch->dev, 1);
+=======
+	sch->dev.groups = default_subch_attr_groups;
+
+	if (sch->st == SUBCHANNEL_TYPE_IO)
+		sch->dev.type = &io_subchannel_type;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	css_update_ssd_info(sch);
 	/* make it known to the system */
 	ret = css_sch_device_register(sch);
@@ -302,6 +565,7 @@ static int css_register_subchannel(struct subchannel *sch)
 			      sch->schid.ssid, sch->schid.sch_no, ret);
 		return ret;
 	}
+<<<<<<< HEAD
 	if (!sch->driver) {
 		/*
 		 * No driver matched. Generate the uevent now so that
@@ -331,14 +595,39 @@ int css_probe_device(struct subchannel_id schid)
 		if (!cio_is_console(schid))
 			put_device(&sch->dev);
 	}
+=======
+	return ret;
+}
+
+static int css_probe_device(struct subchannel_id schid, struct schib *schib)
+{
+	struct subchannel *sch;
+	int ret;
+
+	sch = css_alloc_subchannel(schid, schib);
+	if (IS_ERR(sch))
+		return PTR_ERR(sch);
+
+	ret = css_register_subchannel(sch);
+	if (ret)
+		put_device(&sch->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int
+<<<<<<< HEAD
 check_subchannel(struct device * dev, void * data)
 {
 	struct subchannel *sch;
 	struct subchannel_id *schid = data;
+=======
+check_subchannel(struct device *dev, const void *data)
+{
+	struct subchannel *sch;
+	struct subchannel_id *schid = (void *)data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sch = to_subchannel(dev);
 	return schid_equal(&sch->schid, schid);
@@ -372,11 +661,16 @@ EXPORT_SYMBOL_GPL(css_sch_is_valid);
 static int css_evaluate_new_subchannel(struct subchannel_id schid, int slow)
 {
 	struct schib schib;
+<<<<<<< HEAD
+=======
+	int ccode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!slow) {
 		/* Will be done on the slow path. */
 		return -EAGAIN;
 	}
+<<<<<<< HEAD
 	if (stsch_err(schid, &schib) || !css_sch_is_valid(&schib)) {
 		/* Unusable - ignore. */
 		return 0;
@@ -385,6 +679,19 @@ static int css_evaluate_new_subchannel(struct subchannel_id schid, int slow)
 		      schid.sch_no);
 
 	return css_probe_device(schid);
+=======
+	/*
+	 * The first subchannel that is not-operational (ccode==3)
+	 * indicates that there aren't any more devices available.
+	 * If stsch gets an exception, it means the current subchannel set
+	 * is not valid.
+	 */
+	ccode = stsch(schid, &schib);
+	if (ccode)
+		return (ccode == 3) ? -ENXIO : ccode;
+
+	return css_probe_device(schid, &schib);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int css_evaluate_known_subchannel(struct subchannel *sch, int slow)
@@ -445,6 +752,10 @@ void css_sched_sch_todo(struct subchannel *sch, enum sch_todo todo)
 		put_device(&sch->dev);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(css_sched_sch_todo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void css_sch_todo(struct work_struct *work)
 {
@@ -454,12 +765,20 @@ static void css_sch_todo(struct work_struct *work)
 
 	sch = container_of(work, struct subchannel, todo_work);
 	/* Find out todo. */
+<<<<<<< HEAD
 	spin_lock_irq(sch->lock);
+=======
+	spin_lock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	todo = sch->todo;
 	CIO_MSG_EVENT(4, "sch_todo: sch=0.%x.%04x, todo=%d\n", sch->schid.ssid,
 		      sch->schid.sch_no, todo);
 	sch->todo = SCH_TODO_NOTHING;
+<<<<<<< HEAD
 	spin_unlock_irq(sch->lock);
+=======
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Perform todo. */
 	switch (todo) {
 	case SCH_TODO_NOTHING:
@@ -467,9 +786,15 @@ static void css_sch_todo(struct work_struct *work)
 	case SCH_TODO_EVAL:
 		ret = css_evaluate_known_subchannel(sch, 1);
 		if (ret == -EAGAIN) {
+<<<<<<< HEAD
 			spin_lock_irq(sch->lock);
 			css_sched_sch_todo(sch, todo);
 			spin_unlock_irq(sch->lock);
+=======
+			spin_lock_irq(&sch->lock);
+			css_sched_sch_todo(sch, todo);
+			spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case SCH_TODO_UNREG:
@@ -481,15 +806,24 @@ static void css_sch_todo(struct work_struct *work)
 }
 
 static struct idset *slow_subchannel_set;
+<<<<<<< HEAD
 static spinlock_t slow_subchannel_lock;
 static wait_queue_head_t css_eval_wq;
+=======
+static DEFINE_SPINLOCK(slow_subchannel_lock);
+static DECLARE_WAIT_QUEUE_HEAD(css_eval_wq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static atomic_t css_eval_scheduled;
 
 static int __init slow_subchannel_init(void)
 {
+<<<<<<< HEAD
 	spin_lock_init(&slow_subchannel_lock);
 	atomic_set(&css_eval_scheduled, 0);
 	init_waitqueue_head(&css_eval_wq);
+=======
+	atomic_set(&css_eval_scheduled, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slow_subchannel_set = idset_sch_new();
 	if (!slow_subchannel_set) {
 		CIO_MSG_EVENT(0, "could not allocate slow subchannel set\n");
@@ -511,6 +845,14 @@ static int slow_eval_known_fn(struct subchannel *sch, void *data)
 		rc = css_evaluate_known_subchannel(sch, 1);
 		if (rc == -EAGAIN)
 			css_schedule_eval(sch->schid);
+<<<<<<< HEAD
+=======
+		/*
+		 * The loop might take long time for platforms with lots of
+		 * known devices. Allow scheduling here.
+		 */
+		cond_resched();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -535,10 +877,22 @@ static int slow_eval_unknown_fn(struct subchannel_id schid, void *data)
 		case -ENOMEM:
 		case -EIO:
 			/* These should abort looping */
+<<<<<<< HEAD
+=======
+			spin_lock_irq(&slow_subchannel_lock);
+			idset_sch_del_subseq(slow_subchannel_set, schid);
+			spin_unlock_irq(&slow_subchannel_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			rc = 0;
 		}
+<<<<<<< HEAD
+=======
+		/* Allow scheduling here since the containing loop might
+		 * take a while.  */
+		cond_resched();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
@@ -558,7 +912,11 @@ static void css_slow_path_func(struct work_struct *unused)
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
+<<<<<<< HEAD
 static DECLARE_WORK(slow_path_work, css_slow_path_func);
+=======
+static DECLARE_DELAYED_WORK(slow_path_work, css_slow_path_func);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct workqueue_struct *cio_work_q;
 
 void css_schedule_eval(struct subchannel_id schid)
@@ -568,7 +926,11 @@ void css_schedule_eval(struct subchannel_id schid)
 	spin_lock_irqsave(&slow_subchannel_lock, flags);
 	idset_sch_add(slow_subchannel_set, schid);
 	atomic_set(&css_eval_scheduled, 1);
+<<<<<<< HEAD
 	queue_work(cio_work_q, &slow_path_work);
+=======
+	queue_delayed_work(cio_work_q, &slow_path_work, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
@@ -579,15 +941,42 @@ void css_schedule_eval_all(void)
 	spin_lock_irqsave(&slow_subchannel_lock, flags);
 	idset_fill(slow_subchannel_set);
 	atomic_set(&css_eval_scheduled, 1);
+<<<<<<< HEAD
 	queue_work(cio_work_q, &slow_path_work);
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 }
 
 static int __unset_registered(struct device *dev, void *data)
+=======
+	queue_delayed_work(cio_work_q, &slow_path_work, 0);
+	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
+}
+
+static int __unset_validpath(struct device *dev, void *data)
+{
+	struct idset *set = data;
+	struct subchannel *sch = to_subchannel(dev);
+	struct pmcw *pmcw = &sch->schib.pmcw;
+
+	/* Here we want to make sure that we are considering only those subchannels
+	 * which do not have an operational device attached to it. This can be found
+	 * with the help of PAM and POM values of pmcw. OPM provides the information
+	 * about any path which is currently vary-off, so that we should not consider.
+	 */
+	if (sch->st == SUBCHANNEL_TYPE_IO &&
+	    (sch->opm & pmcw->pam & pmcw->pom))
+		idset_sch_del(set, sch->schid);
+
+	return 0;
+}
+
+static int __unset_online(struct device *dev, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct idset *set = data;
 	struct subchannel *sch = to_subchannel(dev);
 
+<<<<<<< HEAD
 	idset_sch_del(set, sch->schid);
 	return 0;
 }
@@ -600,10 +989,27 @@ static void css_schedule_eval_all_unreg(void)
 	/* Find unregistered subchannels. */
 	unreg_set = idset_sch_new();
 	if (!unreg_set) {
+=======
+	if (sch->st == SUBCHANNEL_TYPE_IO && sch->config.ena)
+		idset_sch_del(set, sch->schid);
+
+	return 0;
+}
+
+void css_schedule_eval_cond(enum css_eval_cond cond, unsigned long delay)
+{
+	unsigned long flags;
+	struct idset *set;
+
+	/* Find unregistered subchannels. */
+	set = idset_sch_new();
+	if (!set) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Fallback. */
 		css_schedule_eval_all();
 		return;
 	}
+<<<<<<< HEAD
 	idset_fill(unreg_set);
 	bus_for_each_dev(&css_bus_type, NULL, unreg_set, __unset_registered);
 	/* Apply to slow_subchannel_set. */
@@ -613,6 +1019,27 @@ static void css_schedule_eval_all_unreg(void)
 	queue_work(cio_work_q, &slow_path_work);
 	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
 	idset_free(unreg_set);
+=======
+	idset_fill(set);
+	switch (cond) {
+	case CSS_EVAL_NO_PATH:
+		bus_for_each_dev(&css_bus_type, NULL, set, __unset_validpath);
+		break;
+	case CSS_EVAL_NOT_ONLINE:
+		bus_for_each_dev(&css_bus_type, NULL, set, __unset_online);
+		break;
+	default:
+		break;
+	}
+
+	/* Apply to slow_subchannel_set. */
+	spin_lock_irqsave(&slow_subchannel_lock, flags);
+	idset_add_set(slow_subchannel_set, set);
+	atomic_set(&css_eval_scheduled, 1);
+	queue_delayed_work(cio_work_q, &slow_path_work, delay);
+	spin_unlock_irqrestore(&slow_subchannel_lock, flags);
+	idset_free(set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void css_wait_for_slow_path(void)
@@ -620,10 +1047,18 @@ void css_wait_for_slow_path(void)
 	flush_workqueue(cio_work_q);
 }
 
+<<<<<<< HEAD
 /* Schedule reprobing of all unregistered subchannels. */
 void css_schedule_reprobe(void)
 {
 	css_schedule_eval_all_unreg();
+=======
+/* Schedule reprobing of all subchannels with no valid operational path. */
+void css_schedule_reprobe(void)
+{
+	/* Schedule with a delay to allow merging of subsequent calls. */
+	css_schedule_eval_cond(CSS_EVAL_NO_PATH, 1 * HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(css_schedule_reprobe);
 
@@ -675,6 +1110,7 @@ css_generate_pgid(struct channel_subsystem *css, u32 tod_high)
 
 	if (css_general_characteristics.mcss) {
 		css->global_pgid.pgid_high.ext_cssid.version = 0x80;
+<<<<<<< HEAD
 		css->global_pgid.pgid_high.ext_cssid.cssid = css->cssid;
 	} else {
 #ifdef CONFIG_SMP
@@ -682,11 +1118,18 @@ css_generate_pgid(struct channel_subsystem *css, u32 tod_high)
 #else
 		css->global_pgid.pgid_high.cpu_addr = 0;
 #endif
+=======
+		css->global_pgid.pgid_high.ext_cssid.cssid =
+			css->id_valid ? css->cssid : 0;
+	} else {
+		css->global_pgid.pgid_high.cpu_addr = stap();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	get_cpu_id(&cpu_id);
 	css->global_pgid.cpu_id = cpu_id.ident;
 	css->global_pgid.cpu_model = cpu_id.machine;
 	css->global_pgid.tod_high = tod_high;
+<<<<<<< HEAD
 
 }
 
@@ -708,18 +1151,60 @@ channel_subsystem_release(struct device *dev)
 static ssize_t
 css_cm_enable_show(struct device *dev, struct device_attribute *attr,
 		   char *buf)
+=======
+}
+
+static void channel_subsystem_release(struct device *dev)
+{
+	struct channel_subsystem *css = to_css(dev);
+
+	mutex_destroy(&css->mutex);
+	kfree(css);
+}
+
+static ssize_t real_cssid_show(struct device *dev, struct device_attribute *a,
+			       char *buf)
+{
+	struct channel_subsystem *css = to_css(dev);
+
+	if (!css->id_valid)
+		return -EINVAL;
+
+	return sprintf(buf, "%x\n", css->cssid);
+}
+static DEVICE_ATTR_RO(real_cssid);
+
+static ssize_t rescan_store(struct device *dev, struct device_attribute *a,
+			    const char *buf, size_t count)
+{
+	CIO_TRACE_EVENT(4, "usr-rescan");
+
+	css_schedule_eval_all();
+	css_complete_work();
+
+	return count;
+}
+static DEVICE_ATTR_WO(rescan);
+
+static ssize_t cm_enable_show(struct device *dev, struct device_attribute *a,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct channel_subsystem *css = to_css(dev);
 	int ret;
 
+<<<<<<< HEAD
 	if (!css)
 		return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&css->mutex);
 	ret = sprintf(buf, "%x\n", css->cm_enabled);
 	mutex_unlock(&css->mutex);
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t
 css_cm_enable_store(struct device *dev, struct device_attribute *attr,
 		    const char *buf, size_t count)
@@ -729,6 +1214,16 @@ css_cm_enable_store(struct device *dev, struct device_attribute *attr,
 	unsigned long val;
 
 	ret = strict_strtoul(buf, 16, &val);
+=======
+static ssize_t cm_enable_store(struct device *dev, struct device_attribute *a,
+			       const char *buf, size_t count)
+{
+	struct channel_subsystem *css = to_css(dev);
+	unsigned long val;
+	int ret;
+
+	ret = kstrtoul(buf, 16, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	mutex_lock(&css->mutex);
@@ -745,6 +1240,7 @@ css_cm_enable_store(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&css->mutex);
 	return ret < 0 ? ret : count;
 }
+<<<<<<< HEAD
 
 static DEVICE_ATTR(cm_enable, 0644, css_cm_enable_show, css_cm_enable_store);
 
@@ -777,12 +1273,113 @@ static int __init setup_css(int nr)
 	tod_high = (u32) (get_clock() >> 32);
 	css_generate_pgid(css, tod_high);
 	return 0;
+=======
+static DEVICE_ATTR_RW(cm_enable);
+
+static umode_t cm_enable_mode(struct kobject *kobj, struct attribute *attr,
+			      int index)
+{
+	return css_chsc_characteristics.secm ? attr->mode : 0;
+}
+
+static struct attribute *cssdev_attrs[] = {
+	&dev_attr_real_cssid.attr,
+	&dev_attr_rescan.attr,
+	NULL,
+};
+
+static struct attribute_group cssdev_attr_group = {
+	.attrs = cssdev_attrs,
+};
+
+static struct attribute *cssdev_cm_attrs[] = {
+	&dev_attr_cm_enable.attr,
+	NULL,
+};
+
+static struct attribute_group cssdev_cm_attr_group = {
+	.attrs = cssdev_cm_attrs,
+	.is_visible = cm_enable_mode,
+};
+
+static const struct attribute_group *cssdev_attr_groups[] = {
+	&cssdev_attr_group,
+	&cssdev_cm_attr_group,
+	NULL,
+};
+
+static int __init setup_css(int nr)
+{
+	struct channel_subsystem *css;
+	int ret;
+
+	css = kzalloc(sizeof(*css), GFP_KERNEL);
+	if (!css)
+		return -ENOMEM;
+
+	channel_subsystems[nr] = css;
+	dev_set_name(&css->device, "css%x", nr);
+	css->device.groups = cssdev_attr_groups;
+	css->device.release = channel_subsystem_release;
+	/*
+	 * We currently allocate notifier bits with this (using
+	 * css->device as the device argument with the DMA API)
+	 * and are fine with 64 bit addresses.
+	 */
+	ret = dma_coerce_mask_and_coherent(&css->device, DMA_BIT_MASK(64));
+	if (ret) {
+		kfree(css);
+		goto out_err;
+	}
+
+	mutex_init(&css->mutex);
+	ret = chsc_get_cssid_iid(nr, &css->cssid, &css->iid);
+	if (!ret) {
+		css->id_valid = true;
+		pr_info("Partition identifier %01x.%01x\n", css->cssid,
+			css->iid);
+	}
+	css_generate_pgid(css, (u32) (get_tod_clock() >> 32));
+
+	ret = device_register(&css->device);
+	if (ret) {
+		put_device(&css->device);
+		goto out_err;
+	}
+
+	css->pseudo_subchannel = kzalloc(sizeof(*css->pseudo_subchannel),
+					 GFP_KERNEL);
+	if (!css->pseudo_subchannel) {
+		device_unregister(&css->device);
+		ret = -ENOMEM;
+		goto out_err;
+	}
+
+	css->pseudo_subchannel->dev.parent = &css->device;
+	css->pseudo_subchannel->dev.release = css_subchannel_release;
+	mutex_init(&css->pseudo_subchannel->reg_mutex);
+	css_sch_create_locks(css->pseudo_subchannel);
+
+	dev_set_name(&css->pseudo_subchannel->dev, "defunct");
+	ret = device_register(&css->pseudo_subchannel->dev);
+	if (ret) {
+		put_device(&css->pseudo_subchannel->dev);
+		device_unregister(&css->device);
+		goto out_err;
+	}
+
+	return ret;
+out_err:
+	channel_subsystems[nr] = NULL;
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int css_reboot_event(struct notifier_block *this,
 			    unsigned long event,
 			    void *ptr)
 {
+<<<<<<< HEAD
 	int ret, i;
 
 	ret = NOTIFY_DONE;
@@ -790,6 +1387,13 @@ static int css_reboot_event(struct notifier_block *this,
 		struct channel_subsystem *css;
 
 		css = channel_subsystems[i];
+=======
+	struct channel_subsystem *css;
+	int ret;
+
+	ret = NOTIFY_DONE;
+	for_each_css(css) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_lock(&css->mutex);
 		if (css->cm_enabled)
 			if (chsc_secm(css, 0))
@@ -804,6 +1408,7 @@ static struct notifier_block css_reboot_notifier = {
 	.notifier_call = css_reboot_event,
 };
 
+<<<<<<< HEAD
 /*
  * Since the css devices are neither on a bus nor have a class
  * nor have a special device type, we cannot stop/restart channel
@@ -866,6 +1471,123 @@ static struct notifier_block css_power_notifier = {
  * Now that the driver core is running, we can setup our channel subsystem.
  * The struct subchannel's are created during probing (except for the
  * static console subchannel).
+=======
+#define  CIO_DMA_GFP (GFP_KERNEL | __GFP_ZERO)
+static struct gen_pool *cio_dma_pool;
+
+/* Currently cio supports only a single css */
+struct device *cio_get_dma_css_dev(void)
+{
+	return &channel_subsystems[0]->device;
+}
+
+struct gen_pool *cio_gp_dma_create(struct device *dma_dev, int nr_pages)
+{
+	struct gen_pool *gp_dma;
+	void *cpu_addr;
+	dma_addr_t dma_addr;
+	int i;
+
+	gp_dma = gen_pool_create(3, -1);
+	if (!gp_dma)
+		return NULL;
+	for (i = 0; i < nr_pages; ++i) {
+		cpu_addr = dma_alloc_coherent(dma_dev, PAGE_SIZE, &dma_addr,
+					      CIO_DMA_GFP);
+		if (!cpu_addr)
+			return gp_dma;
+		gen_pool_add_virt(gp_dma, (unsigned long) cpu_addr,
+				  dma_addr, PAGE_SIZE, -1);
+	}
+	return gp_dma;
+}
+
+static void __gp_dma_free_dma(struct gen_pool *pool,
+			      struct gen_pool_chunk *chunk, void *data)
+{
+	size_t chunk_size = chunk->end_addr - chunk->start_addr + 1;
+
+	dma_free_coherent((struct device *) data, chunk_size,
+			 (void *) chunk->start_addr,
+			 (dma_addr_t) chunk->phys_addr);
+}
+
+void cio_gp_dma_destroy(struct gen_pool *gp_dma, struct device *dma_dev)
+{
+	if (!gp_dma)
+		return;
+	/* this is quite ugly but no better idea */
+	gen_pool_for_each_chunk(gp_dma, __gp_dma_free_dma, dma_dev);
+	gen_pool_destroy(gp_dma);
+}
+
+static int cio_dma_pool_init(void)
+{
+	/* No need to free up the resources: compiled in */
+	cio_dma_pool = cio_gp_dma_create(cio_get_dma_css_dev(), 1);
+	if (!cio_dma_pool)
+		return -ENOMEM;
+	return 0;
+}
+
+void *__cio_gp_dma_zalloc(struct gen_pool *gp_dma, struct device *dma_dev,
+			  size_t size, dma32_t *dma_handle)
+{
+	dma_addr_t dma_addr;
+	size_t chunk_size;
+	void *addr;
+
+	if (!gp_dma)
+		return NULL;
+	addr = gen_pool_dma_alloc(gp_dma, size, &dma_addr);
+	while (!addr) {
+		chunk_size = round_up(size, PAGE_SIZE);
+		addr = dma_alloc_coherent(dma_dev, chunk_size, &dma_addr, CIO_DMA_GFP);
+		if (!addr)
+			return NULL;
+		gen_pool_add_virt(gp_dma, (unsigned long)addr, dma_addr, chunk_size, -1);
+		addr = gen_pool_dma_alloc(gp_dma, size, dma_handle ? &dma_addr : NULL);
+	}
+	if (dma_handle)
+		*dma_handle = (__force dma32_t)dma_addr;
+	return addr;
+}
+
+void *cio_gp_dma_zalloc(struct gen_pool *gp_dma, struct device *dma_dev,
+			size_t size)
+{
+	return __cio_gp_dma_zalloc(gp_dma, dma_dev, size, NULL);
+}
+
+void cio_gp_dma_free(struct gen_pool *gp_dma, void *cpu_addr, size_t size)
+{
+	if (!cpu_addr)
+		return;
+	memset(cpu_addr, 0, size);
+	gen_pool_free(gp_dma, (unsigned long) cpu_addr, size);
+}
+
+/*
+ * Allocate dma memory from the css global pool. Intended for memory not
+ * specific to any single device within the css. The allocated memory
+ * is not guaranteed to be 31-bit addressable.
+ *
+ * Caution: Not suitable for early stuff like console.
+ */
+void *cio_dma_zalloc(size_t size)
+{
+	return cio_gp_dma_zalloc(cio_dma_pool, cio_get_dma_css_dev(), size);
+}
+
+void cio_dma_free(void *cpu_addr, size_t size)
+{
+	cio_gp_dma_free(cio_dma_pool, cpu_addr, size);
+}
+
+/*
+ * Now that the driver core is running, we can setup our channel subsystem.
+ * The struct subchannel's are created during probing.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init css_bus_init(void)
 {
@@ -895,6 +1617,7 @@ static int __init css_bus_init(void)
 		goto out;
 
 	/* Setup css structure. */
+<<<<<<< HEAD
 	for (i = 0; i <= __MAX_CSSID; i++) {
 		struct channel_subsystem *css;
 
@@ -925,21 +1648,35 @@ static int __init css_bus_init(void)
 			put_device(&css->pseudo_subchannel->dev);
 			goto out_file;
 		}
+=======
+	for (i = 0; i <= MAX_CSS_IDX; i++) {
+		ret = setup_css(i);
+		if (ret)
+			goto out_unregister;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ret = register_reboot_notifier(&css_reboot_notifier);
 	if (ret)
 		goto out_unregister;
+<<<<<<< HEAD
 	ret = register_pm_notifier(&css_power_notifier);
 	if (ret) {
 		unregister_reboot_notifier(&css_reboot_notifier);
 		goto out_unregister;
 	}
+=======
+	ret = cio_dma_pool_init();
+	if (ret)
+		goto out_unregister_rn;
+	airq_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	css_init_done = 1;
 
 	/* Enable default isc for I/O subchannels. */
 	isc_register(IO_SCH_ISC);
 
 	return 0;
+<<<<<<< HEAD
 out_file:
 	if (css_chsc_characteristics.secm)
 		device_remove_file(&channel_subsystems[i]->device,
@@ -957,6 +1694,14 @@ out_unregister:
 		if (css_chsc_characteristics.secm)
 			device_remove_file(&css->device,
 					   &dev_attr_cm_enable);
+=======
+out_unregister_rn:
+	unregister_reboot_notifier(&css_reboot_notifier);
+out_unregister:
+	while (i-- > 0) {
+		struct channel_subsystem *css = channel_subsystems[i];
+		device_unregister(&css->pseudo_subchannel->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_unregister(&css->device);
 	}
 	bus_unregister(&css_bus_type);
@@ -972,6 +1717,7 @@ out:
 static void __init css_bus_cleanup(void)
 {
 	struct channel_subsystem *css;
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i <= __MAX_CSSID; i++) {
@@ -980,6 +1726,11 @@ static void __init css_bus_cleanup(void)
 		css->pseudo_subchannel = NULL;
 		if (css_chsc_characteristics.secm)
 			device_remove_file(&css->device, &dev_attr_cm_enable);
+=======
+
+	for_each_css(css) {
+		device_unregister(&css->pseudo_subchannel->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_unregister(&css->device);
 	}
 	bus_unregister(&css_bus_type);
@@ -1005,6 +1756,14 @@ static int __init channel_subsystem_init(void)
 	if (ret)
 		goto out_wq;
 
+<<<<<<< HEAD
+=======
+	/* Register subchannels which are already in use. */
+	cio_register_early_subchannels();
+	/* Start initial subchannel evaluation. */
+	css_schedule_eval_all();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 out_wq:
 	destroy_workqueue(cio_work_q);
@@ -1044,13 +1803,17 @@ int css_complete_work(void)
  */
 static int __init channel_subsystem_init_sync(void)
 {
+<<<<<<< HEAD
 	/* Start initial subchannel evaluation. */
 	css_schedule_eval_all();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	css_complete_work();
 	return 0;
 }
 subsys_initcall_sync(channel_subsystem_init_sync);
 
+<<<<<<< HEAD
 void channel_subsystem_reinit(void)
 {
 	struct channel_path *chp;
@@ -1065,6 +1828,8 @@ void channel_subsystem_reinit(void)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 static ssize_t cio_settle_write(struct file *file, const char __user *buf,
 				size_t count, loff_t *ppos)
@@ -1078,18 +1843,29 @@ static ssize_t cio_settle_write(struct file *file, const char __user *buf,
 	return ret ? ret : count;
 }
 
+<<<<<<< HEAD
 static const struct file_operations cio_settle_proc_fops = {
 	.open = nonseekable_open,
 	.write = cio_settle_write,
 	.llseek = no_llseek,
+=======
+static const struct proc_ops cio_settle_proc_ops = {
+	.proc_open	= nonseekable_open,
+	.proc_write	= cio_settle_write,
+	.proc_lseek	= no_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init cio_settle_init(void)
 {
 	struct proc_dir_entry *entry;
 
+<<<<<<< HEAD
 	entry = proc_create("cio_settle", S_IWUSR, NULL,
 			    &cio_settle_proc_fops);
+=======
+	entry = proc_create("cio_settle", S_IWUSR, NULL, &cio_settle_proc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		return -ENOMEM;
 	return 0;
@@ -1099,6 +1875,11 @@ device_initcall(cio_settle_init);
 
 int sch_is_pseudo_sch(struct subchannel *sch)
 {
+<<<<<<< HEAD
+=======
+	if (!sch->dev.parent)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sch == to_css(sch->dev.parent)->pseudo_subchannel;
 }
 
@@ -1108,6 +1889,13 @@ static int css_bus_match(struct device *dev, struct device_driver *drv)
 	struct css_driver *driver = to_cssdriver(drv);
 	struct css_device_id *id;
 
+<<<<<<< HEAD
+=======
+	/* When driver_override is set, only bind to the matching driver */
+	if (sch->driver_override && strcmp(sch->driver_override, drv->name))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (id = driver->subchannel_type; id->match_flags; id++) {
 		if (sch->st == id->type)
 			return 1;
@@ -1129,6 +1917,7 @@ static int css_probe(struct device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int css_remove(struct device *dev)
 {
 	struct subchannel *sch;
@@ -1138,6 +1927,16 @@ static int css_remove(struct device *dev)
 	ret = sch->driver->remove ? sch->driver->remove(sch) : 0;
 	sch->driver = NULL;
 	return ret;
+=======
+static void css_remove(struct device *dev)
+{
+	struct subchannel *sch;
+
+	sch = to_subchannel(dev);
+	if (sch->driver->remove)
+		sch->driver->remove(sch);
+	sch->driver = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void css_shutdown(struct device *dev)
@@ -1149,9 +1948,15 @@ static void css_shutdown(struct device *dev)
 		sch->driver->shutdown(sch);
 }
 
+<<<<<<< HEAD
 static int css_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct subchannel *sch = to_subchannel(dev);
+=======
+static int css_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct subchannel *sch = to_subchannel(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = add_uevent_var(env, "ST=%01X", sch->st);
@@ -1161,6 +1966,7 @@ static int css_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int css_pm_prepare(struct device *dev)
 {
 	struct subchannel *sch = to_subchannel(dev);
@@ -1230,13 +2036,19 @@ static const struct dev_pm_ops css_pm_ops = {
 };
 
 static struct bus_type css_bus_type = {
+=======
+static const struct bus_type css_bus_type = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name     = "css",
 	.match    = css_bus_match,
 	.probe    = css_probe,
 	.remove   = css_remove,
 	.shutdown = css_shutdown,
 	.uevent   = css_uevent,
+<<<<<<< HEAD
 	.pm = &css_pm_ops,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1264,5 +2076,8 @@ void css_driver_unregister(struct css_driver *cdrv)
 	driver_unregister(&cdrv->drv);
 }
 EXPORT_SYMBOL_GPL(css_driver_unregister);
+<<<<<<< HEAD
 
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

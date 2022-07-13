@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/hwmon/lis3lv02d_i2c.c
  *
@@ -8,6 +12,7 @@
  * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Contact: Samu Onkalo <samu.p.onkalo@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,15 +27,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/pm_runtime.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/of_device.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lis3lv02d.h"
 
 #define DRV_NAME	"lis3lv02d_i2c"
@@ -90,7 +107,15 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	reg |= CTRL1_PD0 | CTRL1_Xen | CTRL1_Yen | CTRL1_Zen;
+=======
+	if (lis3->whoami == WAI_3DLH)
+		reg |= CTRL1_PM0 | CTRL1_Xen | CTRL1_Yen | CTRL1_Zen;
+	else
+		reg |= CTRL1_PD0 | CTRL1_Xen | CTRL1_Yen | CTRL1_Zen;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lis3->write(lis3, CTRL_REG1, reg);
 }
 
@@ -98,12 +123,37 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
 static union axis_conversion lis3lv02d_axis_map =
 	{ .as_array = { LIS3_DEV_X, LIS3_DEV_Y, LIS3_DEV_Z } };
 
+<<<<<<< HEAD
 static int __devinit lis3lv02d_i2c_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id lis3lv02d_i2c_dt_ids[] = {
+	{ .compatible = "st,lis3lv02d" },
+	{}
+};
+MODULE_DEVICE_TABLE(of, lis3lv02d_i2c_dt_ids);
+#endif
+
+static int lis3lv02d_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct lis3lv02d_platform_data *pdata = client->dev.platform_data;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+	if (of_match_device(lis3lv02d_i2c_dt_ids, &client->dev)) {
+		lis3_dev.of_node = client->dev.of_node;
+		ret = lis3lv02d_init_dt(&lis3_dev);
+		if (ret)
+			return ret;
+		pdata = lis3_dev.pdata;
+	}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata) {
 		if ((pdata->driver_features & LIS3_USE_BLOCK_READ) &&
 			(i2c_check_functionality(client->adapter,
@@ -139,6 +189,10 @@ static int __devinit lis3lv02d_i2c_probe(struct i2c_client *client,
 	lis3_dev.init	  = lis3_i2c_init;
 	lis3_dev.read	  = lis3_i2c_read;
 	lis3_dev.write	  = lis3_i2c_write;
+<<<<<<< HEAD
+=======
+	lis3_dev.reg_ctrl = lis3_reg_ctrl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lis3_dev.irq	  = client->irq;
 	lis3_dev.ac	  = lis3lv02d_axis_map;
 	lis3_dev.pm_dev	  = &client->dev;
@@ -165,7 +219,11 @@ fail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit lis3lv02d_i2c_remove(struct i2c_client *client)
+=======
+static void lis3lv02d_i2c_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 	struct lis3lv02d_platform_data *pdata = client->dev.platform_data;
@@ -178,22 +236,40 @@ static int __devexit lis3lv02d_i2c_remove(struct i2c_client *client)
 
 	regulator_bulk_free(ARRAY_SIZE(lis3->regulators),
 			    lis3_dev.regulators);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int lis3lv02d_i2c_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 
 	if (!lis3->pdata || !lis3->pdata->wakeup_flags)
 		lis3lv02d_poweroff(lis3);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
+
+	/* Turn on for wakeup if turned off by runtime suspend */
+	if (lis3->pdata && lis3->pdata->wakeup_flags) {
+		if (pm_runtime_suspended(dev))
+			lis3lv02d_poweron(lis3);
+	/* For non wakeup turn off if not already turned off by runtime suspend */
+	} else if (!pm_runtime_suspended(dev))
+		lis3lv02d_poweroff(lis3);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int lis3lv02d_i2c_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 
@@ -204,16 +280,34 @@ static int lis3lv02d_i2c_resume(struct device *dev)
 	 */
 	if (!lis3->pdata || !lis3->pdata->wakeup_flags ||
 		pm_runtime_suspended(dev))
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
+
+	/* Turn back off if turned on for wakeup and runtime suspended*/
+	if (lis3->pdata && lis3->pdata->wakeup_flags) {
+		if (pm_runtime_suspended(dev))
+			lis3lv02d_poweroff(lis3);
+	/* For non wakeup turn back on if not runtime suspended */
+	} else if (!pm_runtime_suspended(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lis3lv02d_poweron(lis3);
 
 	return 0;
 }
 #endif /* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 static int lis3_i2c_runtime_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+#ifdef CONFIG_PM
+static int lis3_i2c_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 
 	lis3lv02d_poweroff(lis3);
@@ -222,16 +316,28 @@ static int lis3_i2c_runtime_suspend(struct device *dev)
 
 static int lis3_i2c_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 
 	lis3lv02d_poweron(lis3);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM_RUNTIME */
 
 static const struct i2c_device_id lis3lv02d_id[] = {
 	{"lis3lv02d", 0 },
+=======
+#endif /* CONFIG_PM */
+
+static const struct i2c_device_id lis3lv02d_id[] = {
+	{"lis3lv02d", LIS3LV02D},
+	{"lis331dlh", LIS331DLH},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
@@ -248,11 +354,19 @@ static const struct dev_pm_ops lis3_pm_ops = {
 static struct i2c_driver lis3lv02d_i2c_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
+<<<<<<< HEAD
 		.owner  = THIS_MODULE,
 		.pm     = &lis3_pm_ops,
 	},
 	.probe	= lis3lv02d_i2c_probe,
 	.remove	= __devexit_p(lis3lv02d_i2c_remove),
+=======
+		.pm     = &lis3_pm_ops,
+		.of_match_table = of_match_ptr(lis3lv02d_i2c_dt_ids),
+	},
+	.probe = lis3lv02d_i2c_probe,
+	.remove	= lis3lv02d_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = lis3lv02d_id,
 };
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2009 Peter Holik
  *
@@ -9,6 +13,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or.
@@ -22,6 +27,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -73,7 +80,11 @@ static struct sk_buff *int51x1_tx_fixup(struct usbnet *dev,
 	int need_tail = 0;
 	__le16 *len;
 
+<<<<<<< HEAD
 	/* if packet and our header is smaler than 64 pad to 64 (+ ZLP) */
+=======
+	/* if packet and our header is smaller than 64 pad to 64 (+ ZLP) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((pack_with_header_len) < dev->maxpacket)
 		need_tail = dev->maxpacket - pack_with_header_len + 1;
 	/*
@@ -107,15 +118,24 @@ static struct sk_buff *int51x1_tx_fixup(struct usbnet *dev,
 	pack_len += need_tail;
 	pack_len &= 0x07ff;
 
+<<<<<<< HEAD
 	len = (__le16 *) __skb_push(skb, INT51X1_HEADER_SIZE);
 	*len = cpu_to_le16(pack_len);
 
 	if(need_tail)
 		memset(__skb_put(skb, need_tail), 0, need_tail);
+=======
+	len = __skb_push(skb, INT51X1_HEADER_SIZE);
+	*len = cpu_to_le16(pack_len);
+
+	if(need_tail)
+		__skb_put_zero(skb, need_tail);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb;
 }
 
+<<<<<<< HEAD
 static void int51x1_async_cmd_callback(struct urb *urb)
 {
 	struct usb_ctrlrequest *req = (struct usb_ctrlrequest *)urb->context;
@@ -133,6 +153,10 @@ static void int51x1_set_multicast(struct net_device *netdev)
 	struct usb_ctrlrequest *req;
 	int status;
 	struct urb *urb;
+=======
+static void int51x1_set_multicast(struct net_device *netdev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usbnet *dev = netdev_priv(netdev);
 	u16 filter = PACKET_TYPE_DIRECTED | PACKET_TYPE_BROADCAST;
 
@@ -149,6 +173,7 @@ static void int51x1_set_multicast(struct net_device *netdev)
 		netdev_dbg(dev->net, "receive own packets only\n");
 	}
 
+<<<<<<< HEAD
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb) {
 		netdev_warn(dev->net, "Error allocating URB\n");
@@ -183,6 +208,11 @@ out1:
 	kfree(req);
 out:
 	usb_free_urb(urb);
+=======
+	usbnet_write_cmd_async(dev, SET_ETHERNET_PACKET_FILTER,
+			       USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+			       filter, 0, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops int51x1_netdev_ops = {
@@ -191,6 +221,10 @@ static const struct net_device_ops int51x1_netdev_ops = {
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
 	.ndo_change_mtu		= usbnet_change_mtu,
+<<<<<<< HEAD
+=======
+	.ndo_get_stats64	= dev_get_tstats64,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_rx_mode	= int51x1_set_multicast,
@@ -236,6 +270,10 @@ static struct usb_driver int51x1_driver = {
 	.disconnect = usbnet_disconnect,
 	.suspend    = usbnet_suspend,
 	.resume     = usbnet_resume,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(int51x1_driver);

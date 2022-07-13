@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SND_USB_MIXER_QUIRKS_H
 #define SND_USB_MIXER_QUIRKS_H
 
@@ -13,5 +17,10 @@ void snd_usb_mixer_fu_apply_quirk(struct usb_mixer_interface *mixer,
 				  struct usb_mixer_elem_info *cval, int unitid,
 				  struct snd_kcontrol *kctl);
 
+<<<<<<< HEAD
+=======
+void snd_usb_mixer_resume_quirk(struct usb_mixer_interface *mixer);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* SND_USB_MIXER_QUIRKS_H */
 

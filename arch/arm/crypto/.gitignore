@@ -1,2 +1,10 @@
+<<<<<<< HEAD
 aesbs-core.S
 sha256-core.S
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+aesbs-core.S
+sha256-core.S
+sha512-core.S
+poly1305-core.S
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

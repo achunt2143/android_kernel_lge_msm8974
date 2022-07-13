@@ -10,15 +10,22 @@
  *
  */
 
+<<<<<<< HEAD
 #define AVMB1_COMPAT
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "kcapi.h"
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/skbuff.h>
 #include <linux/workqueue.h>
@@ -28,6 +35,7 @@
 #include <linux/moduleparam.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <linux/isdn/capicmd.h>
 #include <linux/isdn/capiutil.h>
@@ -43,6 +51,17 @@ static struct workqueue_struct *kcapi_wq;
 MODULE_DESCRIPTION("CAPI4Linux: kernel CAPI layer");
 MODULE_AUTHOR("Carsten Paeth");
 MODULE_LICENSE("GPL");
+=======
+#include <linux/uaccess.h>
+#include <linux/isdn/capicmd.h>
+#include <linux/isdn/capiutil.h>
+#include <linux/mutex.h>
+#include <linux/rcupdate.h>
+
+static int showcapimsgs;
+static struct workqueue_struct *kcapi_wq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(showcapimsgs, uint, 0);
 
 /* ------------------------------------------------------------- */
@@ -55,15 +74,22 @@ struct capictr_event {
 
 /* ------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static struct capi_version driver_version = {2, 0, 1, 1 << 4};
+=======
+static const struct capi_version driver_version = {2, 0, 1, 1 << 4};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char driver_serial[CAPI_SERIAL_LEN] = "0004711";
 static char capi_manufakturer[64] = "AVM Berlin";
 
 #define NCCI2CTRL(ncci)    (((ncci) >> 24) & 0x7f)
 
+<<<<<<< HEAD
 LIST_HEAD(capi_drivers);
 DEFINE_MUTEX(capi_drivers_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct capi_ctr *capi_controller[CAPI_MAXCONTR];
 DEFINE_MUTEX(capi_controller_lock);
 
@@ -71,8 +97,11 @@ struct capi20_appl *capi_applications[CAPI_MAXAPPL];
 
 static int ncontrollers;
 
+<<<<<<< HEAD
 static BLOCKING_NOTIFIER_HEAD(ctr_notifier_list);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -------- controller ref counting -------------------------------------- */
 
 static inline struct capi_ctr *
@@ -93,7 +122,11 @@ capi_ctr_put(struct capi_ctr *ctr)
 
 static inline struct capi_ctr *get_capi_ctr_by_nr(u16 contr)
 {
+<<<<<<< HEAD
 	if (contr - 1 >= CAPI_MAXCONTR)
+=======
+	if (contr < 1 || contr - 1 >= CAPI_MAXCONTR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return capi_controller[contr - 1];
@@ -103,7 +136,11 @@ static inline struct capi20_appl *__get_capi_appl_by_nr(u16 applid)
 {
 	lockdep_assert_held(&capi_controller_lock);
 
+<<<<<<< HEAD
 	if (applid - 1 >= CAPI_MAXAPPL)
+=======
+	if (applid < 1 || applid - 1 >= CAPI_MAXAPPL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return capi_applications[applid - 1];
@@ -111,7 +148,11 @@ static inline struct capi20_appl *__get_capi_appl_by_nr(u16 applid)
 
 static inline struct capi20_appl *get_capi_appl_by_nr(u16 applid)
 {
+<<<<<<< HEAD
 	if (applid - 1 >= CAPI_MAXAPPL)
+=======
+	if (applid < 1 || applid - 1 >= CAPI_MAXAPPL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return rcu_dereference(capi_applications[applid - 1]);
@@ -200,8 +241,11 @@ static void notify_up(u32 contr)
 			if (ap)
 				register_appl(ctr, applid, &ap->rparam);
 		}
+<<<<<<< HEAD
 
 		wake_up_interruptible_all(&ctr->state_wait_queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		printk(KERN_WARNING "%s: invalid contr %d\n", __func__, contr);
 
@@ -229,8 +273,11 @@ static void ctr_down(struct capi_ctr *ctr, int new_state)
 		if (ap)
 			capi_ctr_put(ctr);
 	}
+<<<<<<< HEAD
 
 	wake_up_interruptible_all(&ctr->state_wait_queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void notify_down(u32 contr)
@@ -251,6 +298,7 @@ static void notify_down(u32 contr)
 	mutex_unlock(&capi_controller_lock);
 }
 
+<<<<<<< HEAD
 static int
 notify_handler(struct notifier_block *nb, unsigned long val, void *v)
 {
@@ -267,11 +315,14 @@ notify_handler(struct notifier_block *nb, unsigned long val, void *v)
 	return NOTIFY_OK;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_notify_work(struct work_struct *work)
 {
 	struct capictr_event *event =
 		container_of(work, struct capictr_event, work);
 
+<<<<<<< HEAD
 	blocking_notifier_call_chain(&ctr_notifier_list, event->type,
 				     (void *)(long)event->controller);
 	kfree(event);
@@ -281,6 +332,20 @@ static void do_notify_work(struct work_struct *work)
  * The notifier will result in adding/deleteing of devices. Devices can
  * only removed in user process, not in bh.
  */
+=======
+	switch (event->type) {
+	case CAPICTR_UP:
+		notify_up(event->controller);
+		break;
+	case CAPICTR_DOWN:
+		notify_down(event->controller);
+		break;
+	}
+
+	kfree(event);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int notify_push(unsigned int event_type, u32 controller)
 {
 	struct capictr_event *event = kmalloc(sizeof(*event), GFP_ATOMIC);
@@ -296,6 +361,7 @@ static int notify_push(unsigned int event_type, u32 controller)
 	return 0;
 }
 
+<<<<<<< HEAD
 int register_capictr_notifier(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_register(&ctr_notifier_list, nb);
@@ -308,6 +374,8 @@ int unregister_capictr_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(unregister_capictr_notifier);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -------- Receiver ------------------------------------------ */
 
 static void recv_handler(struct work_struct *work)
@@ -454,6 +522,7 @@ void capi_ctr_down(struct capi_ctr *ctr)
 
 EXPORT_SYMBOL(capi_ctr_down);
 
+<<<<<<< HEAD
 /**
  * capi_ctr_suspend_output() - suspend controller
  * @ctr:	controller descriptor structure.
@@ -496,6 +565,8 @@ void capi_ctr_resume_output(struct capi_ctr *ctr)
 
 EXPORT_SYMBOL(capi_ctr_resume_output);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------- */
 
 /**
@@ -531,10 +602,17 @@ int attach_capi_ctr(struct capi_ctr *ctr)
 	ctr->state = CAPI_CTR_DETECTED;
 	ctr->blocked = 0;
 	ctr->traceflag = showcapimsgs;
+<<<<<<< HEAD
 	init_waitqueue_head(&ctr->state_wait_queue);
 
 	sprintf(ctr->procfn, "capi/controllers/%d", ctr->cnr);
 	ctr->procent = proc_create_data(ctr->procfn, 0, NULL, ctr->proc_fops, ctr);
+=======
+
+	sprintf(ctr->procfn, "capi/controllers/%d", ctr->cnr);
+	ctr->procent = proc_create_single_data(ctr->procfn, 0, NULL,
+			ctr->proc_show, ctr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ncontrollers++;
 
@@ -564,6 +642,14 @@ int detach_capi_ctr(struct capi_ctr *ctr)
 
 	ctr_down(ctr, CAPI_CTR_DETACHED);
 
+<<<<<<< HEAD
+=======
+	if (ctr->cnr < 1 || ctr->cnr - 1 >= CAPI_MAXCONTR) {
+		err = -EINVAL;
+		goto unlock_out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (capi_controller[ctr->cnr - 1] != ctr) {
 		err = -EINVAL;
 		goto unlock_out;
@@ -585,6 +671,7 @@ unlock_out:
 
 EXPORT_SYMBOL(detach_capi_ctr);
 
+<<<<<<< HEAD
 /**
  * register_capi_driver() - register CAPI driver
  * @driver:	driver descriptor structure.
@@ -617,6 +704,8 @@ void unregister_capi_driver(struct capi_driver *driver)
 
 EXPORT_SYMBOL(unregister_capi_driver);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------- */
 /* -------- CAPI2.0 Interface ---------------------------------- */
 /* ------------------------------------------------------------- */
@@ -647,8 +736,11 @@ u16 capi20_isinstalled(void)
 	return ret;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_isinstalled);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_register() - CAPI 2.0 operation CAPI_REGISTER
  * @ap:		CAPI application descriptor structure.
@@ -710,8 +802,11 @@ u16 capi20_register(struct capi20_appl *ap)
 	return CAPI_NOERROR;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_register);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_release() - CAPI 2.0 operation CAPI_RELEASE
  * @ap:		CAPI application descriptor structure.
@@ -754,8 +849,11 @@ u16 capi20_release(struct capi20_appl *ap)
 	return CAPI_NOERROR;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_release);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_put_message() - CAPI 2.0 operation CAPI_PUT_MESSAGE
  * @ap:		CAPI application descriptor structure.
@@ -833,8 +931,11 @@ u16 capi20_put_message(struct capi20_appl *ap, struct sk_buff *skb)
 	return ctr->send_message(ctr, skb);
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_put_message);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_get_manufacturer() - CAPI 2.0 operation CAPI_GET_MANUFACTURER
  * @contr:	controller number.
@@ -845,13 +946,21 @@ EXPORT_SYMBOL(capi20_put_message);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_manufacturer(u32 contr, u8 *buf)
+=======
+u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capi_ctr *ctr;
 	u16 ret;
 
 	if (contr == 0) {
+<<<<<<< HEAD
 		strlcpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+=======
+		strscpy_pad(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return CAPI_NOERROR;
 	}
 
@@ -859,7 +968,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 
 	ctr = get_capi_ctr_by_nr(contr);
 	if (ctr && ctr->state == CAPI_CTR_RUNNING) {
+<<<<<<< HEAD
 		strlcpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+=======
+		strscpy_pad(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = CAPI_NOERROR;
 	} else
 		ret = CAPI_REGNOTINSTALLED;
@@ -868,8 +981,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 	return ret;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_get_manufacturer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_get_version() - CAPI 2.0 operation CAPI_GET_VERSION
  * @contr:	controller number.
@@ -903,8 +1019,11 @@ u16 capi20_get_version(u32 contr, struct capi_version *verp)
 	return ret;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_get_version);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_get_serial() - CAPI 2.0 operation CAPI_GET_SERIAL_NUMBER
  * @contr:	controller number.
@@ -915,13 +1034,21 @@ EXPORT_SYMBOL(capi20_get_version);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_serial(u32 contr, u8 *serial)
+=======
+u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capi_ctr *ctr;
 	u16 ret;
 
 	if (contr == 0) {
+<<<<<<< HEAD
 		strlcpy(serial, driver_serial, CAPI_SERIAL_LEN);
+=======
+		strscpy(serial, driver_serial, CAPI_SERIAL_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return CAPI_NOERROR;
 	}
 
@@ -929,7 +1056,11 @@ u16 capi20_get_serial(u32 contr, u8 *serial)
 
 	ctr = get_capi_ctr_by_nr(contr);
 	if (ctr && ctr->state == CAPI_CTR_RUNNING) {
+<<<<<<< HEAD
 		strlcpy(serial, ctr->serial, CAPI_SERIAL_LEN);
+=======
+		strscpy(serial, ctr->serial, CAPI_SERIAL_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = CAPI_NOERROR;
 	} else
 		ret = CAPI_REGNOTINSTALLED;
@@ -938,8 +1069,11 @@ u16 capi20_get_serial(u32 contr, u8 *serial)
 	return ret;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_get_serial);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_get_profile() - CAPI 2.0 operation CAPI_GET_PROFILE
  * @contr:	controller number.
@@ -973,6 +1107,7 @@ u16 capi20_get_profile(u32 contr, struct capi_profile *profp)
 	return ret;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_get_profile);
 
 /* Must be called with capi_controller_lock held. */
@@ -1175,6 +1310,8 @@ static int old_capi_manufacturer(unsigned int cmd, void __user *data)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * capi20_manufacturer() - CAPI 2.0 operation CAPI_MANUFACTURER
  * @cmd:	command.
@@ -1184,12 +1321,17 @@ static int old_capi_manufacturer(unsigned int cmd, void __user *data)
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 int capi20_manufacturer(unsigned int cmd, void __user *data)
+=======
+int capi20_manufacturer(unsigned long cmd, void __user *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capi_ctr *ctr;
 	int retval;
 
 	switch (cmd) {
+<<<<<<< HEAD
 #ifdef AVMB1_COMPAT
 	case AVMB1_LOAD:
 	case AVMB1_LOAD_AND_CONFIG:
@@ -1198,6 +1340,8 @@ int capi20_manufacturer(unsigned int cmd, void __user *data)
 	case AVMB1_REMOVECARD:
 		return old_capi_manufacturer(cmd, data);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KCAPI_CMD_TRACE:
 	{
 		kcapi_flagdef fdef;
@@ -1220,6 +1364,7 @@ int capi20_manufacturer(unsigned int cmd, void __user *data)
 
 		return retval;
 	}
+<<<<<<< HEAD
 	case KCAPI_CMD_ADDCARD:
 	{
 		struct list_head *l;
@@ -1260,6 +1405,11 @@ int capi20_manufacturer(unsigned int cmd, void __user *data)
 
 	default:
 		printk(KERN_ERR "kcapi: manufacturer command %d unknown.\n",
+=======
+
+	default:
+		printk(KERN_ERR "kcapi: manufacturer command %lu unknown.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       cmd);
 		break;
 
@@ -1267,8 +1417,11 @@ int capi20_manufacturer(unsigned int cmd, void __user *data)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(capi20_manufacturer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------- */
 /* -------- Init & Cleanup ------------------------------------- */
 /* ------------------------------------------------------------- */
@@ -1277,12 +1430,16 @@ EXPORT_SYMBOL(capi20_manufacturer);
  * init / exit functions
  */
 
+<<<<<<< HEAD
 static struct notifier_block capictr_nb = {
 	.notifier_call = notify_handler,
 	.priority = INT_MAX,
 };
 
 static int __init kcapi_init(void)
+=======
+int __init kcapi_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -1290,11 +1447,16 @@ static int __init kcapi_init(void)
 	if (!kcapi_wq)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	register_capictr_notifier(&capictr_nb);
 
 	err = cdebug_init();
 	if (err) {
 		unregister_capictr_notifier(&capictr_nb);
+=======
+	err = cdebug_init();
+	if (err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		destroy_workqueue(kcapi_wq);
 		return err;
 	}
@@ -1303,6 +1465,7 @@ static int __init kcapi_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __exit kcapi_exit(void)
 {
 	kcapi_proc_exit();
@@ -1314,3 +1477,12 @@ static void __exit kcapi_exit(void)
 
 module_init(kcapi_init);
 module_exit(kcapi_exit);
+=======
+void kcapi_exit(void)
+{
+	kcapi_proc_exit();
+
+	cdebug_exit();
+	destroy_workqueue(kcapi_wq);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

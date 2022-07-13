@@ -1,16 +1,24 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/floppy.h
  *
  *  Copyright (C) 1996-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Note that we don't touch FLOPPY_DMA nor FLOPPY_IRQ here
  */
 #ifndef __ASM_ARM_FLOPPY_H
 #define __ASM_ARM_FLOPPY_H
+<<<<<<< HEAD
 #if 0
 #include <mach/floppy.h>
 #endif
@@ -26,6 +34,25 @@
 #define fd_inb(port)		inb((port))
 #define fd_request_irq()	request_irq(IRQ_FLOPPYDISK,floppy_interrupt,\
 					    IRQF_DISABLED,"floppy",NULL)
+=======
+
+#define fd_outb(val, base, reg)						\
+	do {								\
+		int new_val = (val);					\
+		if ((reg) == FD_DOR) {					\
+			if (new_val & 0xf0)				\
+				new_val = (new_val & 0x0c) |		\
+					  floppy_selects[new_val & 3];	\
+			else						\
+				new_val &= 0x0c;			\
+		}							\
+		outb(new_val, (base) + (reg));				\
+	} while(0)
+
+#define fd_inb(base, reg)	inb((base) + (reg))
+#define fd_request_irq()	request_irq(IRQ_FLOPPYDISK,floppy_interrupt,\
+					    0,"floppy",NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fd_free_irq()		free_irq(IRQ_FLOPPYDISK,NULL)
 #define fd_disable_irq()	disable_irq(IRQ_FLOPPYDISK)
 #define fd_enable_irq()		enable_irq(IRQ_FLOPPYDISK)
@@ -56,6 +83,7 @@ static inline int fd_dma_setup(void *data, unsigned int length,
  * to a non-zero track, and then restoring it to track 0.  If an error occurs,
  * then there is no floppy drive present.       [to be put back in again]
  */
+<<<<<<< HEAD
 static unsigned char floppy_selects[2][4] =
 {
 	{ 0x10, 0x21, 0x23, 0x33 },
@@ -119,6 +147,9 @@ static inline void fd_scandrives (void)
 	floppy_selects[0][3] = 0x33;
 #endif
 }
+=======
+static unsigned char floppy_selects[4] = { 0x10, 0x21, 0x23, 0x33 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FDC1 (0x3f0)
 
@@ -138,9 +169,13 @@ static inline void fd_scandrives (void)
  */
 static void driveswap(int *ints, int dummy, int dummy2)
 {
+<<<<<<< HEAD
 	floppy_selects[0][0] ^= floppy_selects[0][1];
 	floppy_selects[0][1] ^= floppy_selects[0][0];
 	floppy_selects[0][0] ^= floppy_selects[0][1];
+=======
+	swap(floppy_selects[0], floppy_selects[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define EXTRA_FLOPPY_PARAMS ,{ "driveswap", &driveswap, NULL, 0, 0 }

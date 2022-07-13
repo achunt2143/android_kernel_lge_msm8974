@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM TrackPoint PS/2 mouse driver
  *
  * Stephen Evanchik <evanchsa@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _TRACKPOINT_H
@@ -21,9 +28,24 @@
 #define TP_COMMAND		0xE2	/* Commands start with this */
 
 #define TP_READ_ID		0xE1	/* Sent for device identification */
+<<<<<<< HEAD
 #define TP_MAGIC_IDENT		0x01	/* Sent after a TP_READ_ID followed */
 					/* by the firmware ID */
 
+=======
+
+/*
+ * Valid first byte responses to the "Read Secondary ID" (0xE1) command.
+ * 0x01 was the original IBM trackpoint, others implement very limited
+ * subset of trackpoint features.
+ */
+#define TP_VARIANT_IBM			0x01
+#define TP_VARIANT_ALPS			0x02
+#define TP_VARIANT_ELAN			0x03
+#define TP_VARIANT_NXP			0x04
+#define TP_VARIANT_JYT_SYNAPTICS	0x05
+#define TP_VARIANT_SYNAPTICS		0x06
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Commands
@@ -70,6 +92,12 @@
 #define TP_UP_THRESH		0x5A	/* Used to generate a 'click' on Z-axis */
 #define TP_Z_TIME		0x5E	/* How sharp of a press */
 #define TP_JENKS_CURV		0x5D	/* Minimum curvature for double click */
+<<<<<<< HEAD
+=======
+#define TP_DRIFT_TIME		0x5F	/* How long a 'hands off' condition */
+					/* must last (x*107ms) for drift */
+					/* correction to occur */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Toggling Flag bits
@@ -120,12 +148,17 @@
 #define TP_DEF_UP_THRESH	0xFF
 #define TP_DEF_Z_TIME		0x26
 #define TP_DEF_JENKS_CURV	0x87
+<<<<<<< HEAD
+=======
+#define TP_DEF_DRIFT_TIME	0x05
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Toggles */
 #define TP_DEF_MB		0x00
 #define TP_DEF_PTSON		0x00
 #define TP_DEF_SKIPBACK		0x00
 #define TP_DEF_EXT_DEV		0x00	/* 0 means enabled */
+<<<<<<< HEAD
 
 #define MAKE_PS2_CMD(params, results, cmd) ((params<<12) | (results<<8) | (cmd))
 
@@ -150,5 +183,29 @@ inline int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
 	return -ENOSYS;
 }
 #endif /* CONFIG_MOUSE_PS2_TRACKPOINT */
+=======
+#define TP_DEF_TWOHAND		0x00
+#define TP_DEF_SOURCE_TAG	0x00
+
+#define MAKE_PS2_CMD(params, results, cmd) ((params<<12) | (results<<8) | (cmd))
+
+struct trackpoint_data {
+	u8 variant_id;
+	u8 firmware_id;
+
+	u8 sensitivity, speed, inertia, reach;
+	u8 draghys, mindrag;
+	u8 thresh, upthresh;
+	u8 ztime, jenks;
+	u8 drift_time;
+
+	/* toggles */
+	bool press_to_select;
+	bool skipback;
+	bool ext_dev;
+};
+
+int trackpoint_detect(struct psmouse *psmouse, bool set_properties);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _TRACKPOINT_H */

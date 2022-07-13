@@ -35,11 +35,15 @@
 # define NEED_CMOV	0
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_USE_3DNOW
 # define NEED_3DNOW	(1<<(X86_FEATURE_3DNOW & 31))
 #else
 # define NEED_3DNOW	0
 #endif
+=======
+# define NEED_3DNOW	0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_X86_P6_NOP) || defined(CONFIG_X86_64)
 # define NEED_NOPL	(1<<(X86_FEATURE_NOPL & 31))
@@ -47,8 +51,19 @@
 # define NEED_NOPL	0
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_64
 #ifdef CONFIG_PARAVIRT
+=======
+#ifdef CONFIG_MATOM
+# define NEED_MOVBE	(1<<(X86_FEATURE_MOVBE & 31))
+#else
+# define NEED_MOVBE	0
+#endif
+
+#ifdef CONFIG_X86_64
+#ifdef CONFIG_PARAVIRT_XXL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Paravirtualized systems may not have PSE or PGE available */
 #define NEED_PSE	0
 #define NEED_PGE	0
@@ -80,11 +95,31 @@
 
 #define REQUIRED_MASK2	0
 #define REQUIRED_MASK3	(NEED_NOPL)
+<<<<<<< HEAD
 #define REQUIRED_MASK4	0
+=======
+#define REQUIRED_MASK4	(NEED_MOVBE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REQUIRED_MASK5	0
 #define REQUIRED_MASK6	0
 #define REQUIRED_MASK7	0
 #define REQUIRED_MASK8	0
 #define REQUIRED_MASK9	0
+<<<<<<< HEAD
+=======
+#define REQUIRED_MASK10	0
+#define REQUIRED_MASK11	0
+#define REQUIRED_MASK12	0
+#define REQUIRED_MASK13	0
+#define REQUIRED_MASK14	0
+#define REQUIRED_MASK15	0
+#define REQUIRED_MASK16	0
+#define REQUIRED_MASK17	0
+#define REQUIRED_MASK18	0
+#define REQUIRED_MASK19	0
+#define REQUIRED_MASK20	0
+#define REQUIRED_MASK21	0
+#define REQUIRED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 22)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_REQUIRED_FEATURES_H */

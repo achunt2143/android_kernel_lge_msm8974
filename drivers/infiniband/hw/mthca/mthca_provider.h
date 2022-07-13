@@ -76,6 +76,7 @@ struct mthca_mr {
 	struct mthca_mtt *mtt;
 };
 
+<<<<<<< HEAD
 struct mthca_fmr {
 	struct ib_fmr      ibmr;
 	struct ib_fmr_attr attr;
@@ -94,6 +95,8 @@ struct mthca_fmr {
 	} mem;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mthca_pd {
 	struct ib_pd    ibpd;
 	u32             pd_num;
@@ -258,6 +261,19 @@ struct mthca_wq {
 	__be32    *db;
 };
 
+<<<<<<< HEAD
+=======
+struct mthca_sqp {
+	int             pkey_index;
+	u32             qkey;
+	u32             send_psn;
+	struct ib_ud_header ud_header;
+	int             header_buf_size;
+	void           *header_buf;
+	dma_addr_t      header_dma;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mthca_qp {
 	struct ib_qp           ibqp;
 	int                    refcount;
@@ -283,6 +299,7 @@ struct mthca_qp {
 
 	wait_queue_head_t      wait;
 	struct mutex	       mutex;
+<<<<<<< HEAD
 };
 
 struct mthca_sqp {
@@ -294,6 +311,9 @@ struct mthca_sqp {
 	int             header_buf_size;
 	void           *header_buf;
 	dma_addr_t      header_dma;
+=======
+	struct mthca_sqp *sqp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct mthca_ucontext *to_mucontext(struct ib_ucontext *ibucontext)
@@ -301,11 +321,14 @@ static inline struct mthca_ucontext *to_mucontext(struct ib_ucontext *ibucontext
 	return container_of(ibucontext, struct mthca_ucontext, ibucontext);
 }
 
+<<<<<<< HEAD
 static inline struct mthca_fmr *to_mfmr(struct ib_fmr *ibmr)
 {
 	return container_of(ibmr, struct mthca_fmr, ibmr);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct mthca_mr *to_mmr(struct ib_mr *ibmr)
 {
 	return container_of(ibmr, struct mthca_mr, ibmr);
@@ -336,9 +359,12 @@ static inline struct mthca_qp *to_mqp(struct ib_qp *ibqp)
 	return container_of(ibqp, struct mthca_qp, ibqp);
 }
 
+<<<<<<< HEAD
 static inline struct mthca_sqp *to_msqp(struct mthca_qp *qp)
 {
 	return container_of(qp, struct mthca_sqp, qp);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* MTHCA_PROVIDER_H */

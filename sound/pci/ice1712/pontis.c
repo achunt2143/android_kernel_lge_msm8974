@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
  *   Lowlevel functions for Pontis MS300
  *
  *	Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,10 @@
  */
 
 #include <asm/io.h>
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -418,6 +427,7 @@ static int cs_source_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_inf
 		"Optical",	/* RXP1 */
 		"CD",		/* RXP2 */
 	};
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 3;
@@ -425,6 +435,9 @@ static int cs_source_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_inf
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cs_source_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -550,7 +563,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_volume, -6400, 50, 1);
  * mixers
  */
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new pontis_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new pontis_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.access = (SNDRV_CTL_ELEM_ACCESS_READWRITE |
@@ -666,12 +683,17 @@ static void wm_proc_regs_read(struct snd_info_entry *entry, struct snd_info_buff
 
 static void wm_proc_init(struct snd_ice1712 *ice)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 	if (! snd_card_proc_new(ice->card, "wm_codec", &entry)) {
 		snd_info_set_text_ops(entry, ice, wm_proc_regs_read);
 		entry->mode |= S_IWUSR;
 		entry->c.text.write = wm_proc_regs_write;
 	}
+=======
+	snd_card_rw_proc_new(ice->card, "wm_codec", ice, wm_proc_regs_read,
+			     wm_proc_regs_write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cs_proc_regs_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
@@ -691,6 +713,7 @@ static void cs_proc_regs_read(struct snd_info_entry *entry, struct snd_info_buff
 
 static void cs_proc_init(struct snd_ice1712 *ice)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 	if (! snd_card_proc_new(ice->card, "cs_codec", &entry))
 		snd_info_set_text_ops(entry, ice, cs_proc_regs_read);
@@ -698,6 +721,13 @@ static void cs_proc_init(struct snd_ice1712 *ice)
 
 
 static int __devinit pontis_add_controls(struct snd_ice1712 *ice)
+=======
+	snd_card_ro_proc_new(ice->card, "cs_codec", ice, cs_proc_regs_read);
+}
+
+
+static int pontis_add_controls(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	int err;
@@ -718,7 +748,11 @@ static int __devinit pontis_add_controls(struct snd_ice1712 *ice)
 /*
  * initialize the chip
  */
+<<<<<<< HEAD
 static int __devinit pontis_init(struct snd_ice1712 *ice)
+=======
+static int pontis_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short wm_inits[] = {
 		/* These come first to reduce init pop noise */
@@ -805,7 +839,11 @@ static int __devinit pontis_init(struct snd_ice1712 *ice)
  * hence the driver needs to sets up it properly.
  */
 
+<<<<<<< HEAD
 static unsigned char pontis_eeprom[] __devinitdata = {
+=======
+static const unsigned char pontis_eeprom[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x08,	/* clock 256, mpu401, spdif-in/ADC, 1DAC */
 	[ICE_EEP2_ACLINK]      = 0x80,	/* I2S */
 	[ICE_EEP2_I2S]         = 0xf8,	/* vol, 96k, 24bit, 192k */
@@ -822,7 +860,11 @@ static unsigned char pontis_eeprom[] __devinitdata = {
 };
 
 /* entry point */
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_vt1720_pontis_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_vt1720_pontis_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1720_SUBDEVICE_PONTIS_MS300,
 		.name = "Pontis MS300",

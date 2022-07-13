@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL.
@@ -6,6 +7,16 @@
 #include "linux/init.h"
 #include <linux/netdevice.h>
 #include "net_kern.h"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/init.h>
+#include <linux/netdevice.h>
+#include <net_kern.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pcap_user.h"
 
 struct pcap_init {
@@ -15,7 +26,11 @@ struct pcap_init {
 	char *filter;
 };
 
+<<<<<<< HEAD
 void pcap_init(struct net_device *dev, void *data)
+=======
+void pcap_init_kern(struct net_device *dev, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_net_private *pri;
 	struct pcap_data *ppri;
@@ -44,7 +59,11 @@ static int pcap_write(int fd, struct sk_buff *skb, struct uml_net_private *lp)
 }
 
 static const struct net_kern_info pcap_kern_info = {
+<<<<<<< HEAD
 	.init			= pcap_init,
+=======
+	.init			= pcap_init_kern,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.protocol		= eth_protocol,
 	.read			= pcap_read,
 	.write			= pcap_write,

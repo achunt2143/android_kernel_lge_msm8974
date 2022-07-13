@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Amiga mouse driver for Linux/m68k
  *
@@ -11,11 +15,14 @@
  *	Russell King
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -25,7 +32,11 @@
 
 #include <asm/irq.h>
 #include <asm/setup.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
 
@@ -129,6 +140,7 @@ static int __init amimouse_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __exit amimouse_remove(struct platform_device *pdev)
 {
 	struct input_dev *dev = platform_get_drvdata(pdev);
@@ -159,5 +171,28 @@ static void __exit amimouse_exit(void)
 }
 
 module_exit(amimouse_exit);
+=======
+static void __exit amimouse_remove(struct platform_device *pdev)
+{
+	struct input_dev *dev = platform_get_drvdata(pdev);
+
+	input_unregister_device(dev);
+}
+
+/*
+ * amimouse_remove() lives in .exit.text. For drivers registered via
+ * module_platform_driver_probe() this is ok because they cannot get unbound at
+ * runtime. So mark the driver struct with __refdata to prevent modpost
+ * triggering a section mismatch warning.
+ */
+static struct platform_driver amimouse_driver __refdata = {
+	.remove_new = __exit_p(amimouse_remove),
+	.driver   = {
+		.name	= "amiga-mouse",
+	},
+};
+
+module_platform_driver_probe(amimouse_driver, amimouse_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_ALIAS("platform:amiga-mouse");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
@@ -6,6 +10,7 @@
  *  Copyright (C) 1999 SuSE GmbH Nuernberg 
  *  Copyright (C) 2000 Hewlett-Packard (John Marvin)
  *  Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/asm-offsets.h>
@@ -32,12 +39,25 @@
 #include <asm/psw.h>
 #include <asm/cache.h>		/* for L1_CACHE_SHIFT */
 #include <asm/assembly.h>	/* for LDREG/STREG defines */
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/signal.h>
 #include <asm/unistd.h>
 #include <asm/thread_info.h>
 
 #include <linux/linkage.h>
+=======
+#include <asm/signal.h>
+#include <asm/unistd.h>
+#include <asm/ldcw.h>
+#include <asm/traps.h>
+#include <asm/thread_info.h>
+#include <asm/alternative.h>
+#include <asm/spinlock_types.h>
+
+#include <linux/linkage.h>
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	.level 2.0w
@@ -45,7 +65,32 @@
 	.level 2.0
 #endif
 
+<<<<<<< HEAD
 	.import         pa_dbit_lock,data
+=======
+/*
+ * We need seven instructions after a TLB insert for it to take effect.
+ * The PA8800/PA8900 processors are an exception and need 12 instructions.
+ * The RFI changes both IAOQ_Back and IAOQ_Front, so it counts as one.
+ */
+#ifdef CONFIG_64BIT
+#define NUM_PIPELINE_INSNS    12
+#else
+#define NUM_PIPELINE_INSNS    7
+#endif
+
+	/* Insert num nops */
+	.macro	insert_nops num
+	.rept \num
+	nop
+	.endr
+	.endm
+
+	/* Get aligned page_table_lock address for this mm from cr28/tr4 */
+	.macro  get_ptl reg
+	mfctl	%cr28,\reg
+	.endm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* space_to_prot macro creates a prot id from a space id */
 
@@ -58,6 +103,7 @@
 	extrd,u \spc,(64 - (SPACEID_SHIFT)),32,\prot
 	.endm
 #endif
+<<<<<<< HEAD
 
 	/* Switch to virtual mapping, trashing only %r1 */
 	.macro  virt_map
@@ -86,6 +132,8 @@
 4:
 	.endm
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The "get_stack" macros are responsible for determining the
 	 * kernel stack value.
@@ -98,8 +146,13 @@
 	 *          Need to set up a kernel stack, so call the
 	 *          get_stack_use_cr30 macro to set up a pointer
 	 *          to the pt_regs structure contained within the
+<<<<<<< HEAD
 	 *          task pointer pointed to by cr30. Set the stack
 	 *          pointer to point to the end of the task structure.
+=======
+	 *          task pointer pointed to by cr30. Load the stack
+	 *          pointer from the task structure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * Note that we use shadowed registers for temps until
 	 * we can save %r26 and %r29. %r26 is used to preserve
@@ -111,14 +164,18 @@
 	 * or handle_interruption. %r29 is used to hold a pointer
 	 * the register save area, and once again, it needs to
 	 * be a non-shadowed register so that it survives the rfir.
+<<<<<<< HEAD
 	 *
 	 * N.B. TASK_SZ_ALGN and PT_SZ_ALGN include space for a stack frame.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	.macro  get_stack_use_cr30
 
 	/* we save the registers in the task struct */
 
+<<<<<<< HEAD
 	mfctl   %cr30, %r1
 	tophys  %r1,%r9
 	LDREG	TI_TASK(%r9), %r1	/* thread_info -> task_struct */
@@ -130,6 +187,21 @@
 	copy    %r9,%r29
 	mfctl   %cr30, %r1
 	ldo	THREAD_SZ_ALGN(%r1), %r30
+=======
+	copy	%r30, %r17
+	mfctl   %cr30, %r1
+	tophys  %r1,%r9		/* task_struct */
+	LDREG	TASK_STACK(%r9),%r30
+	ldo	PT_SZ_ALGN(%r30),%r30
+	mtsp	%r0,%sr7	/* clear sr7 after kernel stack was set! */
+	mtsp	%r16,%sr3
+	ldo     TASK_REGS(%r9),%r9
+	STREG   %r17,PT_GR30(%r9)
+	STREG   %r29,PT_GR29(%r9)
+	STREG   %r26,PT_GR26(%r9)
+	STREG	%r16,PT_SR7(%r9)
+	copy    %r9,%r29
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro  get_stack_use_r30
@@ -137,10 +209,19 @@
 	/* we put a struct pt_regs on the stack and save the registers there */
 
 	tophys  %r30,%r9
+<<<<<<< HEAD
 	STREG   %r30,PT_GR30(%r9)
 	ldo	PT_SZ_ALGN(%r30),%r30
 	STREG   %r29,PT_GR29(%r9)
 	STREG   %r26,PT_GR26(%r9)
+=======
+	copy	%r30,%r1
+	ldo	PT_SZ_ALGN(%r30),%r30
+	STREG   %r1,PT_GR30(%r9)
+	STREG   %r29,PT_GR29(%r9)
+	STREG   %r26,PT_GR26(%r9)
+	STREG	%r16,PT_SR7(%r9)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	copy    %r9,%r29
 	.endm
 
@@ -175,7 +256,11 @@
 	bv,n	0(%r3)
 	nop
 	.word	0		/* checksum (will be patched) */
+<<<<<<< HEAD
 	.word	PA(os_hpmc)	/* address of handler */
+=======
+	.word	0		/* address of handler */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.word	0		/* length of handler */
 	.endm
 
@@ -382,6 +467,10 @@
 	*/
 	.macro		space_check	spc,tmp,fault
 	mfsp		%sr7,\tmp
+<<<<<<< HEAD
+=======
+	/* check against %r0 which is same value as LINUX_GATEWAY_SPACE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	or,COND(<>)	%r0,\spc,%r0	/* user may execute gateway page
 					 * as kernel, so defeat the space
 					 * check if it is */
@@ -397,6 +486,7 @@
 	 * can address up to 1TB
 	 */
 	.macro		L2_ptep	pmd,pte,index,va,fault
+<<<<<<< HEAD
 #if PT_NLEVELS == 3
 	extru		\va,31-ASM_PMD_SHIFT,ASM_BITS_PER_PMD,\index
 #else
@@ -440,10 +530,39 @@
 	copy		\index,\pgd
 	extrd,u,*<>	\va,63-ASM_PGDIR_SHIFT,64-ASM_PGDIR_SHIFT,%r0
 	ldo		ASM_PGD_PMD_OFFSET(\pgd),\pgd
+=======
+#if CONFIG_PGTABLE_LEVELS == 3
+	extru_safe	\va,31-ASM_PMD_SHIFT,ASM_BITS_PER_PMD,\index
+#else
+	extru_safe	\va,31-ASM_PGDIR_SHIFT,ASM_BITS_PER_PGD,\index
+#endif
+	dep             %r0,31,PAGE_SHIFT,\pmd  /* clear offset */
+#if CONFIG_PGTABLE_LEVELS < 3
+	copy		%r0,\pte
+#endif
+	ldw,s		\index(\pmd),\pmd
+	bb,>=,n		\pmd,_PxD_PRESENT_BIT,\fault
+	dep		%r0,31,PxD_FLAG_SHIFT,\pmd /* clear flags */
+	SHLREG		\pmd,PxD_VALUE_SHIFT,\pmd
+	extru_safe	\va,31-PAGE_SHIFT,ASM_BITS_PER_PTE,\index
+	dep		%r0,31,PAGE_SHIFT,\pmd  /* clear offset */
+	shladd		\index,BITS_PER_PTE_ENTRY,\pmd,\pmd /* pmd is now pte */
+	.endm
+
+	/* Look up PTE in a 3-Level scheme. */
+	.macro		L3_ptep pgd,pte,index,va,fault
+#if CONFIG_PGTABLE_LEVELS == 3
+	copy		%r0,\pte
+	extrd,u		\va,63-ASM_PGDIR_SHIFT,ASM_BITS_PER_PGD,\index
+	ldw,s		\index(\pgd),\pgd
+	bb,>=,n		\pgd,_PxD_PRESENT_BIT,\fault
+	shld		\pgd,PxD_VALUE_SHIFT,\pgd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	L2_ptep		\pgd,\pte,\index,\va,\fault
 	.endm
 
+<<<<<<< HEAD
 	/* Set the _PAGE_ACCESSED bit of the PTE.  Be clever and
 	 * don't needlessly dirty the cache line if it was already set */
 	.macro		update_ptep	ptep,pte,tmp,tmp1
@@ -451,10 +570,56 @@
 	or		\tmp1,\pte,\tmp
 	and,COND(<>)	\tmp1,\pte,%r0
 	STREG		\tmp,0(\ptep)
+=======
+	/* Acquire page_table_lock and check page is present. */
+	.macro		ptl_lock	spc,ptp,pte,tmp,tmp1,fault
+#ifdef CONFIG_TLB_PTLOCK
+98:	cmpib,COND(=),n	0,\spc,2f
+	get_ptl		\tmp
+1:	LDCW		0(\tmp),\tmp1
+	cmpib,COND(=)	0,\tmp1,1b
+	nop
+	LDREG		0(\ptp),\pte
+	bb,<,n		\pte,_PAGE_PRESENT_BIT,3f
+	b		\fault
+	stw		\tmp1,0(\tmp)
+99:	ALTERNATIVE(98b, 99b, ALT_COND_NO_SMP, INSN_NOP)
+#endif
+2:	LDREG		0(\ptp),\pte
+	bb,>=,n		\pte,_PAGE_PRESENT_BIT,\fault
+3:
+	.endm
+
+	/* Release page_table_lock if for user space. We use an ordered
+	   store to ensure all prior accesses are performed prior to
+	   releasing the lock. Note stw may not be executed, so we
+	   provide one extra nop when CONFIG_TLB_PTLOCK is defined. */
+	.macro		ptl_unlock	spc,tmp,tmp2
+#ifdef CONFIG_TLB_PTLOCK
+98:	get_ptl		\tmp
+	ldi		__ARCH_SPIN_LOCK_UNLOCKED_VAL, \tmp2
+	or,COND(=)	%r0,\spc,%r0
+	stw,ma		\tmp2,0(\tmp)
+99:	ALTERNATIVE(98b, 99b, ALT_COND_NO_SMP, INSN_NOP)
+	insert_nops	NUM_PIPELINE_INSNS - 4
+#else
+	insert_nops	NUM_PIPELINE_INSNS - 1
+#endif
+	.endm
+
+	/* Set the _PAGE_ACCESSED bit of the PTE.  Be clever and
+	 * don't needlessly dirty the cache line if it was already set */
+	.macro		update_accessed	ptp,pte,tmp,tmp1
+	ldi		_PAGE_ACCESSED,\tmp1
+	or		\tmp1,\pte,\tmp
+	and,COND(<>)	\tmp1,\pte,%r0
+	STREG		\tmp,0(\ptp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	/* Set the dirty bit (and accessed bit).  No need to be
 	 * clever, this is only used from the dirty fault */
+<<<<<<< HEAD
 	.macro		update_dirty	ptep,pte,tmp
 	ldi		_PAGE_ACCESSED|_PAGE_DIRTY,\tmp
 	or		\tmp,\pte,\pte
@@ -471,11 +636,49 @@
 				64-PAGE_SHIFT-PAGE_ADD_SHIFT,\pte
 	depdi		_PAGE_SIZE_ENCODING_DEFAULT,63,\
 				(63-58)+PAGE_ADD_SHIFT,\pte
+=======
+	.macro		update_dirty	ptp,pte,tmp
+	ldi		_PAGE_ACCESSED|_PAGE_DIRTY,\tmp
+	or		\tmp,\pte,\pte
+	STREG		\pte,0(\ptp)
+	.endm
+
+	/* We have (depending on the page size):
+	 * - 38 to 52-bit Physical Page Number
+	 * - 12 to 26-bit page offset
+	 */
+	/* bitshift difference between a PFN (based on kernel's PAGE_SIZE)
+	 * to a CPU TLB 4k PFN (4k => 12 bits to shift) */
+	#define PAGE_ADD_SHIFT		(PAGE_SHIFT-12)
+	#define PAGE_ADD_HUGE_SHIFT	(REAL_HPAGE_SHIFT-12)
+	#define PFN_START_BIT	(63-ASM_PFN_PTE_SHIFT+(63-58)-PAGE_ADD_SHIFT)
+
+	/* Drop prot bits and convert to page addr for iitlbt and idtlbt */
+	.macro		convert_for_tlb_insert20 pte,tmp
+#ifdef CONFIG_HUGETLB_PAGE
+	copy		\pte,\tmp
+	extrd,u		\tmp,PFN_START_BIT,PFN_START_BIT+1,\pte
+
+	depdi		_PAGE_SIZE_ENCODING_DEFAULT,63,\
+				(63-58)+PAGE_ADD_SHIFT,\pte
+	extrd,u,*=	\tmp,_PAGE_HPAGE_BIT+32,1,%r0
+	depdi		_HUGE_PAGE_SIZE_ENCODING_DEFAULT,63,\
+				(63-58)+PAGE_ADD_HUGE_SHIFT,\pte
+#else /* Huge pages disabled */
+	extrd,u		\pte,PFN_START_BIT,PFN_START_BIT+1,\pte
+	depdi		_PAGE_SIZE_ENCODING_DEFAULT,63,\
+				(63-58)+PAGE_ADD_SHIFT,\pte
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	/* Convert the pte and prot to tlb insertion values.  How
 	 * this happens is quite subtle, read below */
+<<<<<<< HEAD
 	.macro		make_insert_tlb	spc,pte,prot
+=======
+	.macro		make_insert_tlb	spc,pte,prot,tmp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	space_to_prot   \spc \prot        /* create prot id from space */
 	/* The following is the real subtlety.  This is depositing
 	 * T <-> _PAGE_REFTRAP
@@ -483,17 +686,32 @@
 	 * B <-> _PAGE_DMB (memory break)
 	 *
 	 * Then incredible subtlety: The access rights are
+<<<<<<< HEAD
 	 * _PAGE_GATEWAY _PAGE_EXEC _PAGE_READ
+=======
+	 * _PAGE_GATEWAY, _PAGE_EXEC and _PAGE_WRITE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * See 3-14 of the parisc 2.0 manual
 	 *
 	 * Finally, _PAGE_READ goes in the top bit of PL1 (so we
 	 * trigger an access rights trap in user space if the user
 	 * tries to read an unreadable page */
+<<<<<<< HEAD
+=======
+#if _PAGE_SPECIAL_BIT == _PAGE_DMB_BIT
+	/* need to drop DMB bit, as it's used as SPECIAL flag */
+	depi		0,_PAGE_SPECIAL_BIT,1,\pte
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depd            \pte,8,7,\prot
 
 	/* PAGE_USER indicates the page can be read with user privileges,
 	 * so deposit X1|11 to PL1|PL2 (remember the upper bit of PL1
+<<<<<<< HEAD
 	 * contains _PAGE_READ */
+=======
+	 * contains _PAGE_READ) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extrd,u,*=      \pte,_PAGE_USER_BIT+32,1,%r0
 	depdi		7,11,3,\prot
 	/* If we're a gateway page, drop PL2 back to zero for promotion
@@ -512,13 +730,24 @@
 	depdi		1,12,1,\prot
 
 	/* Drop prot bits and convert to page addr for iitlbt and idtlbt */
+<<<<<<< HEAD
 	convert_for_tlb_insert20 \pte
+=======
+	convert_for_tlb_insert20 \pte \tmp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	/* Identical macro to make_insert_tlb above, except it
 	 * makes the tlb entry for the differently formatted pa11
 	 * insertion instructions */
 	.macro		make_insert_tlb_11	spc,pte,prot
+<<<<<<< HEAD
+=======
+#if _PAGE_SPECIAL_BIT == _PAGE_DMB_BIT
+	/* need to drop DMB bit, as it's used as SPECIAL flag */
+	depi		0,_PAGE_SPECIAL_BIT,1,\pte
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	zdep		\spc,30,15,\prot
 	dep		\pte,8,7,\prot
 	extru,=		\pte,_PAGE_NO_CACHE_BIT,1,%r0
@@ -544,8 +773,14 @@
 	extrd,s		\pte,63,25,\pte
 	.endm
 
+<<<<<<< HEAD
 	/* The alias region is an 8MB aligned 16MB to do clear and
 	 * copy user pages at addresses congruent with the user
+=======
+	/* The alias region is comprised of a pair of 4 MB regions
+	 * aligned to 8 MB. It is used to clear/copy/flush user pages
+	 * using kernel virtual addresses congruent with the user
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * virtual address.
 	 *
 	 * To use the alias page, you set %r26 up with the to TLB
@@ -555,6 +790,7 @@
 	.macro		do_alias	spc,tmp,tmp1,va,pte,prot,fault,patype
 	cmpib,COND(<>),n 0,\spc,\fault
 	ldil		L%(TMPALIAS_MAP_START),\tmp
+<<<<<<< HEAD
 #if defined(CONFIG_64BIT) && (TMPALIAS_MAP_START >= 0x80000000)
 	/* on LP64, ldi will sign extend into the upper 32 bits,
 	 * which is behaviour we don't want */
@@ -562,6 +798,10 @@
 #endif
 	copy		\va,\tmp1
 	depi		0,31,23,\tmp1
+=======
+	copy		\va,\tmp1
+	depi_safe	0,31,TMPALIAS_SIZE_BITS+1,\tmp1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmpb,COND(<>),n	\tmp,\tmp1,\fault
 	mfctl		%cr19,\tmp	/* iir */
 	/* get the opcode (first six bits) into \tmp */
@@ -594,6 +834,7 @@
 	 * OK, it is in the temp alias region, check whether "from" or "to".
 	 * Check "subtle" note in pacache.S re: r23/r26.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 	extrd,u,*=	\va,41,1,%r0
 #else
@@ -601,10 +842,20 @@
 #endif
 	or,COND(tr)	%r23,%r0,\pte
 	or		%r26,%r0,\pte
+=======
+	extrw,u,=	\va,31-TMPALIAS_SIZE_BITS,1,%r0
+	or,COND(tr)	%r23,%r0,\pte
+	or		%r26,%r0,\pte
+
+	/* convert phys addr in \pte (from r23 or r26) to tlb insert format */
+	SHRREG		\pte,PAGE_SHIFT+PAGE_ADD_SHIFT-5, \pte
+	depi_safe	_PAGE_SIZE_ENCODING_DEFAULT, 31,5, \pte
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm 
 
 
 	/*
+<<<<<<< HEAD
 	 * Align fault_vector_20 on 4K boundary so that both
 	 * fault_vector_11 and fault_vector_20 are on the
 	 * same page. This is only necessary as long as we
@@ -616,6 +867,14 @@
 	.text
 
 	.align	PAGE_SIZE
+=======
+	 * Fault_vectors are architecturally required to be aligned on a 2K
+	 * boundary
+	 */
+
+	.section .text.hot
+	.align 2048
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(fault_vector_20)
 	/* First vector is invalid (0) */
@@ -628,7 +887,11 @@ ENTRY(fault_vector_20)
 	def		 3
 	extint		 4
 	def		 5
+<<<<<<< HEAD
 	itlb_20		 6
+=======
+	itlb_20		 PARISC_ITLB_TRAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def		 7
 	def		 8
 	def              9
@@ -671,7 +934,11 @@ ENTRY(fault_vector_11)
 	def		 3
 	extint		 4
 	def		 5
+<<<<<<< HEAD
 	itlb_11		 6
+=======
+	itlb_11		 PARISC_ITLB_TRAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def		 7
 	def		 8
 	def              9
@@ -702,12 +969,16 @@ END(fault_vector_11)
 #endif
 	/* Fault vector is separately protected and *must* be on its own page */
 	.align		PAGE_SIZE
+<<<<<<< HEAD
 ENTRY(end_fault_vector)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.import		handle_interruption,code
 	.import		do_cpu_irq_mask,code
 
 	/*
+<<<<<<< HEAD
 	 * r26 = function to be called
 	 * r25 = argument to pass in
 	 * r24 = flags for do_fork()
@@ -765,19 +1036,35 @@ ENDPROC(__kernel_thread)
 
 ENTRY(ret_from_kernel_thread)
 
+=======
+	 * Child Returns here
+	 *
+	 * copy_thread moved args into task save area.
+	 */
+
+ENTRY(ret_from_kernel_thread)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Call schedule_tail first though */
 	BL	schedule_tail, %r2
 	nop
 
+<<<<<<< HEAD
 	LDREG	TI_TASK-THREAD_SZ_ALGN(%r30), %r1
 	LDREG	TASK_PT_GR25(%r1), %r26
 #ifdef CONFIG_64BIT
 	LDREG	TASK_PT_GR27(%r1), %r27
 	LDREG	TASK_PT_GR22(%r1), %r22
+=======
+	mfctl	%cr30,%r1	/* task_struct */
+	LDREG	TASK_PT_GR25(%r1), %r26
+#ifdef CONFIG_64BIT
+	LDREG	TASK_PT_GR27(%r1), %r27
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	LDREG	TASK_PT_GR26(%r1), %r1
 	ble	0(%sr7, %r1)
 	copy	%r31, %r2
+<<<<<<< HEAD
 
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29		/* Reference param save area */
@@ -814,6 +1101,11 @@ ENTRY(__execve)
 	bv	%r0(%r2)
 	nop
 ENDPROC(__execve)
+=======
+	b	finish_child_return
+	nop
+END(ret_from_kernel_thread)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/*
@@ -821,7 +1113,11 @@ ENDPROC(__execve)
 	 *	struct task_struct *next)
 	 *
 	 * switch kernel stacks and return prev */
+<<<<<<< HEAD
 ENTRY(_switch_to)
+=======
+ENTRY_CFI(_switch_to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STREG	 %r2, -RP_OFFSET(%r30)
 
 	callee_save_float
@@ -834,11 +1130,18 @@ ENTRY(_switch_to)
 
 	STREG	%r30, TASK_PT_KSP(%r26)
 	LDREG	TASK_PT_KSP(%r25), %r30
+<<<<<<< HEAD
 	LDREG	TASK_THREAD_INFO(%r25), %r25
 	bv	%r0(%r2)
 	mtctl   %r25,%cr30
 
 _switch_to_ret:
+=======
+	bv	%r0(%r2)
+	mtctl   %r25,%cr30
+
+ENTRY(_switch_to_ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtctl	%r0, %cr0		/* Needed for single stepping */
 	callee_rest
 	callee_rest_float
@@ -846,7 +1149,11 @@ _switch_to_ret:
 	LDREG	-RP_OFFSET(%r30), %r2
 	bv	%r0(%r2)
 	copy	%r26, %r28
+<<<<<<< HEAD
 ENDPROC(_switch_to)
+=======
+ENDPROC_CFI(_switch_to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Common rfi return path for interruptions, kernel execve, and
@@ -864,18 +1171,30 @@ ENDPROC(_switch_to)
 
 	.align	PAGE_SIZE
 
+<<<<<<< HEAD
 ENTRY(syscall_exit_rfi)
 	mfctl   %cr30,%r16
 	LDREG	TI_TASK(%r16), %r16	/* thread_info -> task_struct */
+=======
+ENTRY_CFI(syscall_exit_rfi)
+	mfctl	%cr30,%r16		/* task_struct */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r16),%r16
 	/* Force iaoq to userspace, as the user has had access to our current
 	 * context via sigcontext. Also Filter the PSW for the same reason.
 	 */
 	LDREG	PT_IAOQ0(%r16),%r19
+<<<<<<< HEAD
 	depi	3,31,2,%r19
 	STREG	%r19,PT_IAOQ0(%r16)
 	LDREG	PT_IAOQ1(%r16),%r19
 	depi	3,31,2,%r19
+=======
+	depi	PRIV_USER,31,2,%r19
+	STREG	%r19,PT_IAOQ0(%r16)
+	LDREG	PT_IAOQ1(%r16),%r19
+	depi	PRIV_USER,31,2,%r19
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STREG	%r19,PT_IAOQ1(%r16)
 	LDREG   PT_PSW(%r16),%r19
 	load32	USER_PSW_MASK,%r1
@@ -908,6 +1227,7 @@ ENTRY(syscall_exit_rfi)
 	STREG   %r19,PT_SR6(%r16)
 	STREG   %r19,PT_SR7(%r16)
 
+<<<<<<< HEAD
 intr_return:
 	/* NOTE: Need to enable interrupts incase we schedule. */
 	ssm     PSW_SM_I, %r0
@@ -917,14 +1237,25 @@ intr_check_resched:
 	/* check for reschedule */
 	mfctl   %cr30,%r1
 	LDREG   TI_FLAGS(%r1),%r19	/* sched.h: TIF_NEED_RESCHED */
+=======
+ENTRY(intr_return)
+	/* check for reschedule */
+	mfctl   %cr30,%r1
+	LDREG   TASK_TI_FLAGS(%r1),%r19	/* sched.h: TIF_NEED_RESCHED */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bb,<,n	%r19,31-TIF_NEED_RESCHED,intr_do_resched /* forward */
 
 	.import do_notify_resume,code
 intr_check_sig:
 	/* As above */
 	mfctl   %cr30,%r1
+<<<<<<< HEAD
 	LDREG	TI_FLAGS(%r1),%r19
 	ldi	(_TIF_SIGPENDING|_TIF_RESTORE_SIGMASK|_TIF_NOTIFY_RESUME), %r20
+=======
+	LDREG	TASK_TI_FLAGS(%r1),%r19
+	ldi	(_TIF_USER_WORK_MASK & ~_TIF_NEED_RESCHED), %r20
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and,COND(<>)	%r19, %r20, %r0
 	b,n	intr_restore	/* skip past if we've nothing to do */
 
@@ -936,15 +1267,29 @@ intr_check_sig:
 	 * Only do signals if we are returning to user space
 	 */
 	LDREG	PT_IASQ0(%r16), %r20
+<<<<<<< HEAD
 	cmpib,COND(=),n 0,%r20,intr_restore /* backward */
 	LDREG	PT_IASQ1(%r16), %r20
 	cmpib,COND(=),n 0,%r20,intr_restore /* backward */
+=======
+	cmpib,COND(=),n LINUX_GATEWAY_SPACE, %r20, intr_restore /* forward */
+	LDREG	PT_IASQ1(%r16), %r20
+	cmpib,COND(=),n LINUX_GATEWAY_SPACE, %r20, intr_restore /* forward */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	copy	%r0, %r25			/* long in_syscall = 0 */
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29			/* Reference param save area */
 #endif
 
+<<<<<<< HEAD
+=======
+	/* NOTE: We need to enable interrupts if we have to deliver
+	 * signals. We used to do this earlier but it caused kernel
+	 * stack overflows. */
+	ssm	PSW_SM_I, %r0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BL	do_notify_resume,%r2
 	copy	%r16, %r26			/* struct pt_regs *regs */
 
@@ -974,14 +1319,24 @@ intr_restore:
 	rfi
 	nop
 
+<<<<<<< HEAD
 #ifndef CONFIG_PREEMPT
 # define intr_do_preempt	intr_restore
 #endif /* !CONFIG_PREEMPT */
+=======
+#ifndef CONFIG_PREEMPTION
+# define intr_do_preempt	intr_restore
+#endif /* !CONFIG_PREEMPTION */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.import schedule,code
 intr_do_resched:
 	/* Only call schedule on return to userspace. If we're returning
+<<<<<<< HEAD
 	 * to kernel space, we may schedule if CONFIG_PREEMPT, otherwise
+=======
+	 * to kernel space, we may schedule if CONFIG_PREEMPTION, otherwise
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we jump back to intr_restore.
 	 */
 	LDREG	PT_IASQ0(%r16), %r20
@@ -991,6 +1346,13 @@ intr_do_resched:
 	cmpib,COND(=)	0, %r20, intr_do_preempt
 	nop
 
+<<<<<<< HEAD
+=======
+	/* NOTE: We need to enable interrupts if we schedule.  We used
+	 * to do this earlier but it caused kernel stack overflows. */
+	ssm     PSW_SM_I, %r0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29		/* Reference param save area */
 #endif
@@ -1009,15 +1371,24 @@ intr_do_resched:
 	 * and preempt_count is 0. otherwise, we continue on
 	 * our merry way back to the current running task.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT
+=======
+#ifdef CONFIG_PREEMPTION
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.import preempt_schedule_irq,code
 intr_do_preempt:
 	rsm	PSW_SM_I, %r0		/* disable interrupts */
 
 	/* current_thread_info()->preempt_count */
 	mfctl	%cr30, %r1
+<<<<<<< HEAD
 	LDREG	TI_PRE_COUNT(%r1), %r19
 	cmpib,COND(<>)	0, %r19, intr_restore	/* if preempt_count > 0 */
+=======
+	ldw	TI_PRE_COUNT(%r1), %r19
+	cmpib,<>	0, %r19, intr_restore	/* if preempt_count > 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nop				/* prev insn branched backwards */
 
 	/* check if we interrupted a critical path */
@@ -1025,11 +1396,26 @@ intr_do_preempt:
 	bb,<,n	%r20, 31 - PSW_SM_I, intr_restore
 	nop
 
+<<<<<<< HEAD
 	BL	preempt_schedule_irq, %r2
 	nop
 
 	b,n	intr_restore		/* ssm PSW_SM_I done by intr_restore */
 #endif /* CONFIG_PREEMPT */
+=======
+	/* ssm PSW_SM_I done later in intr_restore */
+#ifdef CONFIG_MLONGCALLS
+	ldil	L%intr_restore, %r2
+	load32	preempt_schedule_irq, %r1
+	bv	%r0(%r1)
+	ldo	R%intr_restore(%r2), %r2
+#else
+	ldil	L%intr_restore, %r1
+	BL	preempt_schedule_irq, %r2
+	ldo	R%intr_restore(%r1), %r2
+#endif
+#endif /* CONFIG_PREEMPTION */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * External interrupts.
@@ -1064,12 +1450,20 @@ intr_extint:
 
 	b	do_cpu_irq_mask
 	ldo	R%intr_return(%r2), %r2	/* return to intr_return, not here */
+<<<<<<< HEAD
 ENDPROC(syscall_exit_rfi)
+=======
+ENDPROC_CFI(syscall_exit_rfi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* Generic interruptions (illegal insn, unaligned, page fault, etc) */
 
+<<<<<<< HEAD
 ENTRY(intr_save)		/* for os_hpmc */
+=======
+ENTRY_CFI(intr_save)		/* for os_hpmc */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfsp    %sr7,%r16
 	cmpib,COND(=),n 0,%r16,1f
 	get_stack_use_cr30
@@ -1084,6 +1478,7 @@ ENTRY(intr_save)		/* for os_hpmc */
 	save_specials	%r29
 
 	/* If this trap is a itlb miss, skip saving/adjusting isr/ior */
+<<<<<<< HEAD
 
 	/*
 	 * FIXME: 1) Use a #define for the hardwired "6" below (and in
@@ -1099,6 +1494,14 @@ ENTRY(intr_save)		/* for os_hpmc */
 	mfctl           %cr20, %r16 /* isr */
 	nop		/* serialize mfctl on PA 2.0 to avoid 4 cycle penalty */
 	mfctl           %cr21, %r17 /* ior */
+=======
+	cmpib,COND(=),n        PARISC_ITLB_TRAP,%r26,skip_save_ior
+
+
+	mfctl           %isr, %r16
+	nop		/* serialize mfctl on PA 2.0 to avoid 4 cycle penalty */
+	mfctl           %ior, %r17
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #ifdef CONFIG_64BIT
@@ -1110,6 +1513,7 @@ ENTRY(intr_save)		/* for os_hpmc */
 	extrd,u,*<>     %r8,PSW_W_BIT,1,%r0
 	depdi           0,1,2,%r17
 
+<<<<<<< HEAD
 	/*
 	 * FIXME: This code has hardwired assumptions about the split
 	 *        between space bits and offset bits. This will change
@@ -1120,12 +1524,41 @@ ENTRY(intr_save)		/* for os_hpmc */
 	extrd,u         %r16,63,SPACEID_SHIFT,%r1	/* get high bits from isr for ior */
 	depd            %r1,31,SPACEID_SHIFT,%r17	/* deposit them into ior */
 	depdi           0,63,SPACEID_SHIFT,%r16		/* clear them from isr */
+=======
+	/* adjust isr/ior: get high bits from isr and deposit in ior */
+	space_adjust	%r16,%r17,%r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	STREG           %r16, PT_ISR(%r29)
 	STREG           %r17, PT_IOR(%r29)
 
+<<<<<<< HEAD
 
 skip_save_ior:
+=======
+#if 0 && defined(CONFIG_64BIT)
+	/* Revisit when we have 64-bit code above 4Gb */
+	b,n		intr_save2
+
+skip_save_ior:
+	/* We have a itlb miss, and when executing code above 4 Gb on ILP64, we
+	 * need to adjust iasq/iaoq here in the same way we adjusted isr/ior
+	 * above.
+	 */
+	extrd,u,*	%r8,PSW_W_BIT,1,%r1
+	cmpib,COND(=),n	1,%r1,intr_save2
+	LDREG		PT_IASQ0(%r29), %r16
+	LDREG		PT_IAOQ0(%r29), %r17
+	/* adjust iasq/iaoq */
+	space_adjust	%r16,%r17,%r1
+	STREG           %r16, PT_IASQ0(%r29)
+	STREG           %r17, PT_IAOQ0(%r29)
+#else
+skip_save_ior:
+#endif
+
+intr_save2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	virt_map
 	save_general	%r29
 
@@ -1144,7 +1577,11 @@ skip_save_ior:
 
 	b		handle_interruption
 	ldo		R%intr_check_sig(%r2), %r2
+<<<<<<< HEAD
 ENDPROC(intr_save)
+=======
+ENDPROC_CFI(intr_save)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/*
@@ -1183,12 +1620,23 @@ dtlb_miss_20w:
 
 	L3_ptep		ptp,pte,t0,va,dtlb_check_alias_20w
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
 	
 	idtlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dtlb_check_alias_20w
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+	
+	idtlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1197,6 +1645,10 @@ dtlb_check_alias_20w:
 
 	idtlbt          pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1207,12 +1659,23 @@ nadtlb_miss_20w:
 
 	L3_ptep		ptp,pte,t0,va,nadtlb_check_alias_20w
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
 
 	idtlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,nadtlb_check_alias_20w
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	idtlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1221,6 +1684,10 @@ nadtlb_check_alias_20w:
 
 	idtlbt          pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1233,18 +1700,33 @@ dtlb_miss_11:
 
 	L2_ptep		ptp,pte,t0,va,dtlb_check_alias_11
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb_11	spc,pte,prot
 
 	mfsp		%sr1,t0  /* Save sr1 so we can use it in tlb inserts */
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dtlb_check_alias_11
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb_11	spc,pte,prot
+
+	mfsp		%sr1,t1  /* Save sr1 so we can use it in tlb inserts */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtsp		spc,%sr1
 
 	idtlba		pte,(%sr1,va)
 	idtlbp		prot,(%sr1,va)
 
+<<<<<<< HEAD
 	mtsp		t0, %sr1	/* Restore sr1 */
 
+=======
+	mtsp		t1, %sr1	/* Restore sr1 */
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1254,6 +1736,10 @@ dtlb_check_alias_11:
 	idtlba          pte,(va)
 	idtlbp          prot,(va)
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1264,19 +1750,34 @@ nadtlb_miss_11:
 
 	L2_ptep		ptp,pte,t0,va,nadtlb_check_alias_11
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb_11	spc,pte,prot
 
 
 	mfsp		%sr1,t0  /* Save sr1 so we can use it in tlb inserts */
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,nadtlb_check_alias_11
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb_11	spc,pte,prot
+
+	mfsp		%sr1,t1  /* Save sr1 so we can use it in tlb inserts */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtsp		spc,%sr1
 
 	idtlba		pte,(%sr1,va)
 	idtlbp		prot,(%sr1,va)
 
+<<<<<<< HEAD
 	mtsp		t0, %sr1	/* Restore sr1 */
 
+=======
+	mtsp		t1, %sr1	/* Restore sr1 */
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1286,6 +1787,10 @@ nadtlb_check_alias_11:
 	idtlba          pte,(va)
 	idtlbp          prot,(va)
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1296,6 +1801,7 @@ dtlb_miss_20:
 
 	L2_ptep		ptp,pte,t0,va,dtlb_check_alias_20
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
@@ -1304,6 +1810,18 @@ dtlb_miss_20:
 
 	idtlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dtlb_check_alias_20
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	f_extend	pte,t1
+
+	idtlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1312,6 +1830,10 @@ dtlb_check_alias_20:
 	
 	idtlbt          pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1322,6 +1844,7 @@ nadtlb_miss_20:
 
 	L2_ptep		ptp,pte,t0,va,nadtlb_check_alias_20
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
@@ -1330,6 +1853,18 @@ nadtlb_miss_20:
 	
         idtlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,nadtlb_check_alias_20
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	f_extend	pte,t1
+	
+	idtlbt		pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1338,6 +1873,10 @@ nadtlb_check_alias_20:
 
 	idtlbt          pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1346,6 +1885,7 @@ nadtlb_check_alias_20:
 nadtlb_emulate:
 
 	/*
+<<<<<<< HEAD
 	 * Non access misses can be caused by fdc,fic,pdc,lpa,probe and
 	 * probei instructions. We don't want to fault for these
 	 * instructions (not only does it not make sense, it can cause
@@ -1414,6 +1954,14 @@ nadtlb_probe_check:
 	b nadtlb_nullify                       /* Nullify return insn */
 	nop
 
+=======
+	 * Non-access misses can be caused by fdc,fic,pdc,lpa,probe and
+	 * probei instructions. The kernel no longer faults doing flushes.
+	 * Use of lpa and probe instructions is rare. Given the issue
+	 * with shadow registers, we defer everything to the "slow" path.
+	 */
+	b,n		nadtlb_fault
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 itlb_miss_20w:
@@ -1429,12 +1977,23 @@ itlb_miss_20w:
 
 	L3_ptep		ptp,pte,t0,va,itlb_fault
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
 	
 	iitlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,itlb_fault
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+	
+	iitlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1451,12 +2010,23 @@ naitlb_miss_20w:
 
 	L3_ptep		ptp,pte,t0,va,naitlb_check_alias_20w
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
 
 	iitlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,naitlb_check_alias_20w
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	iitlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1465,6 +2035,10 @@ naitlb_check_alias_20w:
 
 	iitlbt		pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1477,18 +2051,33 @@ itlb_miss_11:
 
 	L2_ptep		ptp,pte,t0,va,itlb_fault
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb_11	spc,pte,prot
 
 	mfsp		%sr1,t0  /* Save sr1 so we can use it in tlb inserts */
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,itlb_fault
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb_11	spc,pte,prot
+
+	mfsp		%sr1,t1  /* Save sr1 so we can use it in tlb inserts */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtsp		spc,%sr1
 
 	iitlba		pte,(%sr1,va)
 	iitlbp		prot,(%sr1,va)
 
+<<<<<<< HEAD
 	mtsp		t0, %sr1	/* Restore sr1 */
 
+=======
+	mtsp		t1, %sr1	/* Restore sr1 */
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1499,18 +2088,33 @@ naitlb_miss_11:
 
 	L2_ptep		ptp,pte,t0,va,naitlb_check_alias_11
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb_11	spc,pte,prot
 
 	mfsp		%sr1,t0  /* Save sr1 so we can use it in tlb inserts */
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,naitlb_check_alias_11
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb_11	spc,pte,prot
+
+	mfsp		%sr1,t1  /* Save sr1 so we can use it in tlb inserts */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtsp		spc,%sr1
 
 	iitlba		pte,(%sr1,va)
 	iitlbp		prot,(%sr1,va)
 
+<<<<<<< HEAD
 	mtsp		t0, %sr1	/* Restore sr1 */
 
+=======
+	mtsp		t1, %sr1	/* Restore sr1 */
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1520,6 +2124,10 @@ naitlb_check_alias_11:
 	iitlba          pte,(%sr0, va)
 	iitlbp          prot,(%sr0, va)
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1531,6 +2139,7 @@ itlb_miss_20:
 
 	L2_ptep		ptp,pte,t0,va,itlb_fault
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
@@ -1539,6 +2148,18 @@ itlb_miss_20:
 
 	iitlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,itlb_fault
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	f_extend	pte,t1
+
+	iitlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1549,6 +2170,7 @@ naitlb_miss_20:
 
 	L2_ptep		ptp,pte,t0,va,naitlb_check_alias_20
 
+<<<<<<< HEAD
 	update_ptep	ptp,pte,t0,t1
 
 	make_insert_tlb	spc,pte,prot
@@ -1557,6 +2179,18 @@ naitlb_miss_20:
 
 	iitlbt          pte,prot
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,naitlb_check_alias_20
+	update_accessed	ptp,pte,t0,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	f_extend	pte,t1
+
+	iitlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1565,6 +2199,10 @@ naitlb_check_alias_20:
 
 	iitlbt          pte,prot
 
+<<<<<<< HEAD
+=======
+	insert_nops	NUM_PIPELINE_INSNS - 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1579,6 +2217,7 @@ dbit_trap_20w:
 
 	L3_ptep		ptp,pte,t0,va,dbit_fault
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	cmpib,COND(=),n        0,spc,dbit_nolock_20w
 	load32		PA(pa_dbit_lock),t0
@@ -1603,6 +2242,16 @@ dbit_nolock_20w:
 dbit_nounlock_20w:
 #endif
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dbit_fault
+	update_dirty	ptp,pte,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+		
+	idtlbt          pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 #else
@@ -1615,6 +2264,7 @@ dbit_trap_11:
 
 	L2_ptep		ptp,pte,t0,va,dbit_fault
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	cmpib,COND(=),n        0,spc,dbit_nolock_11
 	load32		PA(pa_dbit_lock),t0
@@ -1626,6 +2276,9 @@ dbit_spin_11:
 
 dbit_nolock_11:
 #endif
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dbit_fault
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	update_dirty	ptp,pte,t1
 
 	make_insert_tlb_11	spc,pte,prot
@@ -1637,6 +2290,7 @@ dbit_nolock_11:
 	idtlbp		prot,(%sr1,va)
 
 	mtsp            t1, %sr1     /* Restore sr1 */
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	cmpib,COND(=),n        0,spc,dbit_nounlock_11
 	ldi             1,t1
@@ -1645,6 +2299,10 @@ dbit_nolock_11:
 dbit_nounlock_11:
 #endif
 
+=======
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 
@@ -1655,6 +2313,7 @@ dbit_trap_20:
 
 	L2_ptep		ptp,pte,t0,va,dbit_fault
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	cmpib,COND(=),n        0,spc,dbit_nolock_20
 	load32		PA(pa_dbit_lock),t0
@@ -1682,6 +2341,18 @@ dbit_nolock_20:
 dbit_nounlock_20:
 #endif
 
+=======
+	ptl_lock	spc,ptp,pte,t0,t1,dbit_fault
+	update_dirty	ptp,pte,t1
+
+	make_insert_tlb	spc,pte,prot,t1
+
+	f_extend	pte,t1
+	
+	idtlbt		pte,prot
+
+	ptl_unlock	spc,t0,t1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfir
 	nop
 #endif
@@ -1698,7 +2369,11 @@ dbit_fault:
 
 itlb_fault:
 	b               intr_save
+<<<<<<< HEAD
 	ldi             6,%r8
+=======
+	ldi             PARISC_ITLB_TRAP,%r8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nadtlb_fault:
 	b               intr_save
@@ -1772,6 +2447,7 @@ dtlb_fault:
 	LDREG   PT_GR18(\regs),%r18
 	.endm
 
+<<<<<<< HEAD
 ENTRY(sys_fork_wrapper)
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30), %r1
 	ldo	TASK_REGS(%r1),%r1
@@ -1810,11 +2486,30 @@ wrapper_exit:
 	bv %r0(%r2)
 	STREG	%r20,PT_GR20(%r1)
 ENDPROC(sys_fork_wrapper)
+=======
+	.macro	fork_like name
+ENTRY_CFI(sys_\name\()_wrapper)
+	mfctl	%cr30,%r1
+	ldo	TASK_REGS(%r1),%r1
+	reg_save %r1
+	mfctl	%cr27, %r28
+	ldil	L%sys_\name, %r31
+	be	R%sys_\name(%sr4,%r31)
+	STREG	%r28, PT_CR27(%r1)
+ENDPROC_CFI(sys_\name\()_wrapper)
+	.endm
+
+fork_like clone
+fork_like clone3
+fork_like fork
+fork_like vfork
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the return value for the child */
 ENTRY(child_return)
 	BL	schedule_tail, %r2
 	nop
+<<<<<<< HEAD
 
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE-FRAME_SIZE(%r30), %r1
 	LDREG	TASK_PT_GR19(%r1),%r2
@@ -1919,6 +2614,21 @@ ENDPROC(sys32_execve_wrapper)
 
 ENTRY(sys_rt_sigreturn_wrapper)
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r26
+=======
+finish_child_return:
+	mfctl	%cr30,%r1
+	ldo	TASK_REGS(%r1),%r1	 /* get pt regs */
+
+	LDREG	PT_CR27(%r1), %r3
+	mtctl	%r3, %cr27
+	reg_restore %r1
+	b	syscall_exit
+	copy	%r0,%r28
+END(child_return)
+
+ENTRY_CFI(sys_rt_sigreturn_wrapper)
+	mfctl	%cr30,%r26
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r26),%r26	/* get pt regs */
 	/* Don't save regs, we are going to restore them from sigcontext. */
 	STREG	%r2, -RP_OFFSET(%r30)
@@ -1935,7 +2645,11 @@ ENTRY(sys_rt_sigreturn_wrapper)
 	LDREG	-RP_OFFSET(%r30), %r2
 
 	/* FIXME: I think we need to restore a few more things here. */
+<<<<<<< HEAD
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
+=======
+	mfctl	%cr30,%r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r1),%r1	/* get pt regs */
 	reg_restore %r1
 
@@ -1945,6 +2659,7 @@ ENTRY(sys_rt_sigreturn_wrapper)
 	 */
 	bv	%r0(%r2)
 	LDREG	PT_GR28(%r1),%r28  /* reload original r28 for syscall_exit */
+<<<<<<< HEAD
 ENDPROC(sys_rt_sigreturn_wrapper)
 
 ENTRY(sys_sigaltstack_wrapper)
@@ -1990,12 +2705,18 @@ ENTRY(syscall_exit)
 	 * after hpux_syscall_exit fixes up return
 	 * values. */
 
+=======
+ENDPROC_CFI(sys_rt_sigreturn_wrapper)
+
+ENTRY(syscall_exit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* NOTE: Not all syscalls exit this way.  rt_sigreturn will exit
 	 * via syscall_exit_rfi if the signal was received while the process
 	 * was running.
 	 */
 
 	/* save return value now */
+<<<<<<< HEAD
 
 	mfctl     %cr30, %r1
 	LDREG     TI_TASK(%r1),%r1
@@ -2017,6 +2738,11 @@ ENTRY(syscall_exit)
 
 #endif /* CONFIG_HPUX */
 
+=======
+	mfctl     %cr30, %r1
+	STREG     %r28,TASK_PT_GR28(%r1)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Seems to me that dp could be wrong here, if the syscall involved
 	 * calling a module, and nothing got round to restoring dp on return.
 	 */
@@ -2025,14 +2751,25 @@ ENTRY(syscall_exit)
 syscall_check_resched:
 
 	/* check for reschedule */
+<<<<<<< HEAD
 
 	LDREG	TI_FLAGS-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r19	/* long */
+=======
+	mfctl	%cr30,%r19
+	LDREG	TASK_TI_FLAGS(%r19),%r19	/* long */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bb,<,n	%r19, 31-TIF_NEED_RESCHED, syscall_do_resched /* forward */
 
 	.import do_signal,code
 syscall_check_sig:
+<<<<<<< HEAD
 	LDREG	TI_FLAGS-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r19
 	ldi	(_TIF_SIGPENDING|_TIF_RESTORE_SIGMASK), %r26
+=======
+	mfctl	%cr30,%r19
+	LDREG	TASK_TI_FLAGS(%r19),%r19
+	ldi	(_TIF_USER_WORK_MASK & ~_TIF_NEED_RESCHED), %r26
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and,COND(<>)	%r19, %r26, %r0
 	b,n	syscall_restore	/* skip past if we've nothing to do */
 
@@ -2042,7 +2779,11 @@ syscall_do_signal:
 	 * consistent with all the relevant state of the process
 	 * before the syscall.  We need to verify this.
 	 */
+<<<<<<< HEAD
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
+=======
+	mfctl	%cr30,%r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r1), %r26		/* struct pt_regs *regs */
 	reg_save %r26
 
@@ -2053,18 +2794,30 @@ syscall_do_signal:
 	BL	do_notify_resume,%r2
 	ldi	1, %r25				/* long in_syscall = 1 */
 
+<<<<<<< HEAD
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
+=======
+	mfctl	%cr30,%r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldo	TASK_REGS(%r1), %r20		/* reload pt_regs */
 	reg_restore %r20
 
 	b,n     syscall_check_sig
 
 syscall_restore:
+<<<<<<< HEAD
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
 
 	/* Are we being ptraced? */
 	ldw	TASK_FLAGS(%r1),%r19
 	ldi	(_TIF_SINGLESTEP|_TIF_BLOCKSTEP),%r2
+=======
+	mfctl	%cr30,%r1
+
+	/* Are we being ptraced? */
+	LDREG	TASK_TI_FLAGS(%r1),%r19
+	ldi	_TIF_SINGLESTEP|_TIF_BLOCKSTEP,%r2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and,COND(=)	%r19,%r2,%r0
 	b,n	syscall_restore_rfi
 
@@ -2102,7 +2855,11 @@ syscall_restore:
 	mtsp	%r1,%sr5			   /* Restore sr5 */
 	mtsp	%r1,%sr6			   /* Restore sr6 */
 
+<<<<<<< HEAD
 	depi	3,31,2,%r31			   /* ensure return to user mode. */
+=======
+	depi	PRIV_USER,31,2,%r31	/* ensure return to user mode. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	/* decide whether to reset the wide mode bit
@@ -2177,6 +2934,7 @@ syscall_restore_rfi:
 	/* sr2 should be set to zero for userspace syscalls */
 	STREG	%r0,TASK_PT_SR2(%r1)
 
+<<<<<<< HEAD
 pt_regs_ok:
 	LDREG	TASK_PT_GR31(%r1),%r2
 	depi	3,31,2,%r2			   /* ensure return to user mode. */
@@ -2190,11 +2948,36 @@ pt_regs_ok:
 	.import schedule,code
 syscall_do_resched:
 	BL	schedule,%r2
+=======
+	LDREG	TASK_PT_GR31(%r1),%r2
+	depi	PRIV_USER,31,2,%r2	/* ensure return to user mode. */
+	STREG   %r2,TASK_PT_IAOQ0(%r1)
+	ldo	4(%r2),%r2
+	STREG	%r2,TASK_PT_IAOQ1(%r1)
+	b	intr_restore
+	copy	%r25,%r16
+
+pt_regs_ok:
+	LDREG	TASK_PT_IAOQ0(%r1),%r2
+	depi	PRIV_USER,31,2,%r2	/* ensure return to user mode. */
+	STREG	%r2,TASK_PT_IAOQ0(%r1)
+	LDREG	TASK_PT_IAOQ1(%r1),%r2
+	depi	PRIV_USER,31,2,%r2
+	STREG	%r2,TASK_PT_IAOQ1(%r1)
+	b	intr_restore
+	copy	%r25,%r16
+
+syscall_do_resched:
+	load32	syscall_check_resched,%r2 /* if resched, we start over again */
+	load32	schedule,%r19
+	bv	%r0(%r19)		/* jumps to schedule() */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 	ldo	-16(%r30),%r29		/* Reference param save area */
 #else
 	nop
 #endif
+<<<<<<< HEAD
 	b	syscall_check_resched	/* if resched, we start over again */
 	nop
 ENDPROC(syscall_exit)
@@ -2228,6 +3011,294 @@ ENDPROC(return_to_handler)
 
 
 get_register:
+=======
+END(syscall_exit)
+
+
+#ifdef CONFIG_FUNCTION_TRACER
+
+	.import ftrace_function_trampoline,code
+	.align L1_CACHE_BYTES
+ENTRY_CFI(mcount, caller)
+_mcount:
+	.export _mcount,data
+	/*
+	 * The 64bit mcount() function pointer needs 4 dwords, of which the
+	 * first two are free.  We optimize it here and put 2 instructions for
+	 * calling mcount(), and 2 instructions for ftrace_stub().  That way we
+	 * have all on one L1 cacheline.
+	 */
+	ldi	0, %arg3
+	b	ftrace_function_trampoline
+	copy	%r3, %arg2	/* caller original %sp */
+ftrace_stub:
+	.globl ftrace_stub
+        .type  ftrace_stub, @function
+#ifdef CONFIG_64BIT
+	bve	(%rp)
+#else
+	bv	%r0(%rp)
+#endif
+	nop
+#ifdef CONFIG_64BIT
+	.dword mcount
+	.dword 0 /* code in head.S puts value of global gp here */
+#endif
+ENDPROC_CFI(mcount)
+
+#ifdef CONFIG_DYNAMIC_FTRACE
+
+#ifdef CONFIG_64BIT
+#define FTRACE_FRAME_SIZE (2*FRAME_SIZE)
+#else
+#define FTRACE_FRAME_SIZE FRAME_SIZE
+#endif
+ENTRY_CFI(ftrace_caller, caller,frame=FTRACE_FRAME_SIZE,CALLS,SAVE_RP,SAVE_SP)
+ftrace_caller:
+	.global ftrace_caller
+
+	STREG	%r3, -FTRACE_FRAME_SIZE+1*REG_SZ(%sp)
+	ldo	-FTRACE_FRAME_SIZE(%sp), %r3
+	STREG	%rp, -RP_OFFSET(%r3)
+
+	/* Offset 0 is already allocated for %r1 */
+	STREG	%r23, 2*REG_SZ(%r3)
+	STREG	%r24, 3*REG_SZ(%r3)
+	STREG	%r25, 4*REG_SZ(%r3)
+	STREG	%r26, 5*REG_SZ(%r3)
+	STREG	%r28, 6*REG_SZ(%r3)
+	STREG	%r29, 7*REG_SZ(%r3)
+#ifdef CONFIG_64BIT
+	STREG	%r19, 8*REG_SZ(%r3)
+	STREG	%r20, 9*REG_SZ(%r3)
+	STREG	%r21, 10*REG_SZ(%r3)
+	STREG	%r22, 11*REG_SZ(%r3)
+	STREG	%r27, 12*REG_SZ(%r3)
+	STREG	%r31, 13*REG_SZ(%r3)
+	loadgp
+	ldo	-16(%sp),%r29
+#endif
+	LDREG	0(%r3), %r25
+	copy	%rp, %r26
+	ldo	-8(%r25), %r25
+	ldi	0, %r23		/* no pt_regs */
+	b,l	ftrace_function_trampoline, %rp
+	copy	%r3, %r24
+
+	LDREG	-RP_OFFSET(%r3), %rp
+	LDREG	2*REG_SZ(%r3), %r23
+	LDREG	3*REG_SZ(%r3), %r24
+	LDREG	4*REG_SZ(%r3), %r25
+	LDREG	5*REG_SZ(%r3), %r26
+	LDREG	6*REG_SZ(%r3), %r28
+	LDREG	7*REG_SZ(%r3), %r29
+#ifdef CONFIG_64BIT
+	LDREG	8*REG_SZ(%r3), %r19
+	LDREG	9*REG_SZ(%r3), %r20
+	LDREG	10*REG_SZ(%r3), %r21
+	LDREG	11*REG_SZ(%r3), %r22
+	LDREG	12*REG_SZ(%r3), %r27
+	LDREG	13*REG_SZ(%r3), %r31
+#endif
+	LDREG	1*REG_SZ(%r3), %r3
+
+	LDREGM	-FTRACE_FRAME_SIZE(%sp), %r1
+	/* Adjust return point to jump back to beginning of traced function */
+	ldo	-4(%r1), %r1
+	bv,n	(%r1)
+
+ENDPROC_CFI(ftrace_caller)
+
+#ifdef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS
+ENTRY_CFI(ftrace_regs_caller,caller,frame=FTRACE_FRAME_SIZE+PT_SZ_ALGN,
+	CALLS,SAVE_RP,SAVE_SP)
+ftrace_regs_caller:
+	.global ftrace_regs_caller
+
+	ldo	-FTRACE_FRAME_SIZE(%sp), %r1
+	STREG	%rp, -RP_OFFSET(%r1)
+
+	copy	%sp, %r1
+	ldo	PT_SZ_ALGN(%sp), %sp
+
+	STREG	%rp, PT_GR2(%r1)
+	STREG	%r3, PT_GR3(%r1)
+	STREG	%r4, PT_GR4(%r1)
+	STREG	%r5, PT_GR5(%r1)
+	STREG	%r6, PT_GR6(%r1)
+	STREG	%r7, PT_GR7(%r1)
+	STREG	%r8, PT_GR8(%r1)
+	STREG	%r9, PT_GR9(%r1)
+	STREG   %r10, PT_GR10(%r1)
+	STREG   %r11, PT_GR11(%r1)
+	STREG   %r12, PT_GR12(%r1)
+	STREG   %r13, PT_GR13(%r1)
+	STREG   %r14, PT_GR14(%r1)
+	STREG   %r15, PT_GR15(%r1)
+	STREG   %r16, PT_GR16(%r1)
+	STREG   %r17, PT_GR17(%r1)
+	STREG   %r18, PT_GR18(%r1)
+	STREG	%r19, PT_GR19(%r1)
+	STREG	%r20, PT_GR20(%r1)
+	STREG	%r21, PT_GR21(%r1)
+	STREG	%r22, PT_GR22(%r1)
+	STREG	%r23, PT_GR23(%r1)
+	STREG	%r24, PT_GR24(%r1)
+	STREG	%r25, PT_GR25(%r1)
+	STREG	%r26, PT_GR26(%r1)
+	STREG	%r27, PT_GR27(%r1)
+	STREG	%r28, PT_GR28(%r1)
+	STREG	%r29, PT_GR29(%r1)
+	STREG	%r30, PT_GR30(%r1)
+	STREG	%r31, PT_GR31(%r1)
+	mfctl	%cr11, %r26
+	STREG	%r26, PT_SAR(%r1)
+
+	copy	%rp, %r26
+	LDREG	-FTRACE_FRAME_SIZE-PT_SZ_ALGN(%sp), %r25
+	ldo	-8(%r25), %r25
+	ldo	-FTRACE_FRAME_SIZE(%r1), %arg2
+	b,l	ftrace_function_trampoline, %rp
+	copy	%r1, %arg3 /* struct pt_regs */
+
+	ldo	-PT_SZ_ALGN(%sp), %r1
+
+	LDREG	PT_SAR(%r1), %rp
+	mtctl	%rp, %cr11
+
+	LDREG	PT_GR2(%r1), %rp
+	LDREG	PT_GR3(%r1), %r3
+	LDREG	PT_GR4(%r1), %r4
+	LDREG	PT_GR5(%r1), %r5
+	LDREG	PT_GR6(%r1), %r6
+	LDREG	PT_GR7(%r1), %r7
+	LDREG	PT_GR8(%r1), %r8
+	LDREG	PT_GR9(%r1), %r9
+	LDREG   PT_GR10(%r1),%r10
+	LDREG   PT_GR11(%r1),%r11
+	LDREG   PT_GR12(%r1),%r12
+	LDREG   PT_GR13(%r1),%r13
+	LDREG   PT_GR14(%r1),%r14
+	LDREG   PT_GR15(%r1),%r15
+	LDREG   PT_GR16(%r1),%r16
+	LDREG   PT_GR17(%r1),%r17
+	LDREG   PT_GR18(%r1),%r18
+	LDREG   PT_GR19(%r1),%r19
+	LDREG   PT_GR20(%r1),%r20
+	LDREG   PT_GR21(%r1),%r21
+	LDREG   PT_GR22(%r1),%r22
+	LDREG   PT_GR23(%r1),%r23
+	LDREG   PT_GR24(%r1),%r24
+	LDREG   PT_GR25(%r1),%r25
+	LDREG   PT_GR26(%r1),%r26
+	LDREG   PT_GR27(%r1),%r27
+	LDREG   PT_GR28(%r1),%r28
+	LDREG   PT_GR29(%r1),%r29
+	LDREG   PT_GR30(%r1),%r30
+	LDREG   PT_GR31(%r1),%r31
+
+	ldo	-PT_SZ_ALGN(%sp), %sp
+	LDREGM	-FTRACE_FRAME_SIZE(%sp), %r1
+	/* Adjust return point to jump back to beginning of traced function */
+	ldo	-4(%r1), %r1
+	bv,n	(%r1)
+
+ENDPROC_CFI(ftrace_regs_caller)
+
+#endif
+#endif
+
+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+	.align 8
+ENTRY_CFI(return_to_handler, caller,frame=FRAME_SIZE)
+	.export parisc_return_to_handler,data
+parisc_return_to_handler:
+	copy %r3,%r1
+	STREG %r0,-RP_OFFSET(%sp)	/* store 0 as %rp */
+	copy %sp,%r3
+	STREGM %r1,FRAME_SIZE(%sp)
+	STREG %ret0,8(%r3)
+	STREG %ret1,16(%r3)
+
+#ifdef CONFIG_64BIT
+	loadgp
+#endif
+
+	/* call ftrace_return_to_handler(0) */
+	.import ftrace_return_to_handler,code
+	load32 ftrace_return_to_handler,%ret0
+	load32 .Lftrace_ret,%r2
+#ifdef CONFIG_64BIT
+	ldo -16(%sp),%ret1		/* Reference param save area */
+	bve	(%ret0)
+#else
+	bv	%r0(%ret0)
+#endif
+	ldi 0,%r26
+.Lftrace_ret:
+	copy %ret0,%rp
+
+	/* restore original return values */
+	LDREG 8(%r3),%ret0
+	LDREG 16(%r3),%ret1
+
+	/* return from function */
+#ifdef CONFIG_64BIT
+	bve	(%rp)
+#else
+	bv	%r0(%rp)
+#endif
+	LDREGM -FRAME_SIZE(%sp),%r3
+ENDPROC_CFI(return_to_handler)
+
+#endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+
+#endif	/* CONFIG_FUNCTION_TRACER */
+
+#ifdef CONFIG_IRQSTACKS
+/* void call_on_stack(unsigned long param1, void *func,
+		      unsigned long new_stack) */
+ENTRY_CFI(call_on_stack, FRAME=2*FRAME_SIZE,CALLS,SAVE_RP,SAVE_SP)
+ENTRY(_call_on_stack)
+	copy	%sp, %r1
+
+	/* Regarding the HPPA calling conventions for function pointers,
+	   we assume the PIC register is not changed across call.  For
+	   CONFIG_64BIT, the argument pointer is left to point at the
+	   argument region allocated for the call to call_on_stack. */
+
+	/* Switch to new stack.  We allocate two frames.  */
+	ldo	2*FRAME_SIZE(%arg2), %sp
+# ifdef CONFIG_64BIT
+	/* Save previous stack pointer and return pointer in frame marker */
+	STREG	%rp, -FRAME_SIZE-RP_OFFSET(%sp)
+	/* Calls always use function descriptor */
+	LDREG	16(%arg1), %arg1
+	bve,l	(%arg1), %rp
+	STREG	%r1, -FRAME_SIZE-REG_SZ(%sp)
+	LDREG	-FRAME_SIZE-RP_OFFSET(%sp), %rp
+	bve	(%rp)
+	LDREG	-FRAME_SIZE-REG_SZ(%sp), %sp
+# else
+	/* Save previous stack pointer and return pointer in frame marker */
+	STREG	%r1, -FRAME_SIZE-REG_SZ(%sp)
+	STREG	%rp, -FRAME_SIZE-RP_OFFSET(%sp)
+	/* Calls use function descriptor if PLABEL bit is set */
+	bb,>=,n	%arg1, 30, 1f
+	depwi	0,31,2, %arg1
+	LDREG	0(%arg1), %arg1
+1:
+	be,l	0(%sr4,%arg1), %sr0, %r31
+	copy	%r31, %rp
+	LDREG	-FRAME_SIZE-RP_OFFSET(%sp), %rp
+	bv	(%rp)
+	LDREG	-FRAME_SIZE-REG_SZ(%sp), %sp
+# endif /* CONFIG_64BIT */
+ENDPROC_CFI(call_on_stack)
+#endif /* CONFIG_IRQSTACKS */
+
+ENTRY_CFI(get_register)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * get_register is used by the non access tlb miss handlers to
 	 * copy the value of the general register specified in r8 into
@@ -2304,9 +3375,16 @@ get_register:
 	copy    %r30,%r1
 	bv      %r0(%r25)    /* r31 */
 	copy    %r31,%r1
+<<<<<<< HEAD
 
 
 set_register:
+=======
+ENDPROC_CFI(get_register)
+
+
+ENTRY_CFI(set_register)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * set_register is used by the non access tlb miss handlers to
 	 * copy the value of r1 into the general register specified in
@@ -2378,4 +3456,8 @@ set_register:
 	copy    %r1,%r30
 	bv      %r0(%r25)    /* r31 */
 	copy    %r1,%r31
+<<<<<<< HEAD
+=======
+ENDPROC_CFI(set_register)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DBAu1200/PBAu1200 board platform device registration
  *
  * Copyright (C) 2008-2011 Manuel Lauss
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+=======
+ */
+
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/gpio.h>
 #include <linux/i2c.h>
@@ -27,13 +37,18 @@
 #include <linux/leds.h>
 #include <linux/mmc/host.h>
 #include <linux/mtd/mtd.h>
+<<<<<<< HEAD
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
+=======
+#include <linux/mtd/platnand.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/serial_8250.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
 #include <linux/smc91x.h>
+<<<<<<< HEAD
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/au1100_mmc.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
@@ -63,6 +78,68 @@ const char *get_system_type(void)
 }
 
 static int __init detect_board(void)
+=======
+#include <linux/ata_platform.h>
+#include <asm/mach-au1x00/au1000.h>
+#include <asm/mach-au1x00/au1100_mmc.h>
+#include <asm/mach-au1x00/au1xxx_dbdma.h>
+#include <asm/mach-au1x00/au1xxx_psc.h>
+#include <asm/mach-au1x00/au1200fb.h>
+#include <asm/mach-au1x00/au1550_spi.h>
+#include <asm/mach-db1x00/bcsr.h>
+
+#include "platform.h"
+
+#define BCSR_INT_IDE		0x0001
+#define BCSR_INT_ETH		0x0002
+#define BCSR_INT_PC0		0x0004
+#define BCSR_INT_PC0STSCHG	0x0008
+#define BCSR_INT_PC1		0x0010
+#define BCSR_INT_PC1STSCHG	0x0020
+#define BCSR_INT_DC		0x0040
+#define BCSR_INT_FLASHBUSY	0x0080
+#define BCSR_INT_PC0INSERT	0x0100
+#define BCSR_INT_PC0EJECT	0x0200
+#define BCSR_INT_PC1INSERT	0x0400
+#define BCSR_INT_PC1EJECT	0x0800
+#define BCSR_INT_SD0INSERT	0x1000
+#define BCSR_INT_SD0EJECT	0x2000
+#define BCSR_INT_SD1INSERT	0x4000
+#define BCSR_INT_SD1EJECT	0x8000
+
+#define DB1200_IDE_PHYS_ADDR	0x18800000
+#define DB1200_IDE_REG_SHIFT	5
+#define DB1200_IDE_PHYS_LEN	(16 << DB1200_IDE_REG_SHIFT)
+#define DB1200_ETH_PHYS_ADDR	0x19000300
+#define DB1200_NAND_PHYS_ADDR	0x20000000
+
+#define PB1200_IDE_PHYS_ADDR	0x0C800000
+#define PB1200_ETH_PHYS_ADDR	0x0D000300
+#define PB1200_NAND_PHYS_ADDR	0x1C000000
+
+#define DB1200_INT_BEGIN	(AU1000_MAX_INTR + 1)
+#define DB1200_IDE_INT		(DB1200_INT_BEGIN + 0)
+#define DB1200_ETH_INT		(DB1200_INT_BEGIN + 1)
+#define DB1200_PC0_INT		(DB1200_INT_BEGIN + 2)
+#define DB1200_PC0_STSCHG_INT	(DB1200_INT_BEGIN + 3)
+#define DB1200_PC1_INT		(DB1200_INT_BEGIN + 4)
+#define DB1200_PC1_STSCHG_INT	(DB1200_INT_BEGIN + 5)
+#define DB1200_DC_INT		(DB1200_INT_BEGIN + 6)
+#define DB1200_FLASHBUSY_INT	(DB1200_INT_BEGIN + 7)
+#define DB1200_PC0_INSERT_INT	(DB1200_INT_BEGIN + 8)
+#define DB1200_PC0_EJECT_INT	(DB1200_INT_BEGIN + 9)
+#define DB1200_PC1_INSERT_INT	(DB1200_INT_BEGIN + 10)
+#define DB1200_PC1_EJECT_INT	(DB1200_INT_BEGIN + 11)
+#define DB1200_SD0_INSERT_INT	(DB1200_INT_BEGIN + 12)
+#define DB1200_SD0_EJECT_INT	(DB1200_INT_BEGIN + 13)
+#define PB1200_SD1_INSERT_INT	(DB1200_INT_BEGIN + 14)
+#define PB1200_SD1_EJECT_INT	(DB1200_INT_BEGIN + 15)
+#define DB1200_INT_END		(DB1200_INT_BEGIN + 15)
+
+const char *get_system_type(void);
+
+static int __init db1200_detect_board(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bid;
 
@@ -95,6 +172,7 @@ static int __init detect_board(void)
 	return 1;	/* it's neither */
 }
 
+<<<<<<< HEAD
 void __init board_setup(void)
 {
 	unsigned long freq0, clksrc, div, pfc;
@@ -137,14 +215,47 @@ void __init board_setup(void)
 	clksrc = SYS_CS_MUX_FQ0 << SYS_CS_ME0_BIT;
 	__raw_writel(clksrc, (void __iomem *)SYS_CLKSRC);
 	wmb();
+=======
+int __init db1200_board_setup(void)
+{
+	unsigned short whoami;
+
+	if (db1200_detect_board())
+		return -ENODEV;
+
+	whoami = bcsr_read(BCSR_WHOAMI);
+	switch (BCSR_WHOAMI_BOARD(whoami)) {
+	case BCSR_WHOAMI_PB1200_DDR1:
+	case BCSR_WHOAMI_PB1200_DDR2:
+	case BCSR_WHOAMI_DB1200:
+		break;
+	default:
+		return -ENODEV;
+	}
+
+	printk(KERN_INFO "Alchemy/AMD/RMI %s Board, CPLD Rev %d"
+		"  Board-ID %d	Daughtercard ID %d\n", get_system_type(),
+		(whoami >> 4) & 0xf, (whoami >> 8) & 0xf, whoami & 0xf);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /******************************************************************************/
 
+<<<<<<< HEAD
 static struct mtd_partition db1200_spiflash_parts[] = {
 	{
 		.name	= "spi_flash",
 		.offset	= 0,
+=======
+static u64 au1200_all_dmamask = DMA_BIT_MASK(32);
+
+static struct mtd_partition db1200_spiflash_parts[] = {
+	{
+		.name	= "spi_flash",
+		.offset = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= MTDPART_SIZ_FULL,
 	},
 };
@@ -184,11 +295,18 @@ static struct i2c_board_info db1200_i2c_devs[] __initdata = {
 
 /**********************************************************************/
 
+<<<<<<< HEAD
 static void au1200_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 				 unsigned int ctrl)
 {
 	struct nand_chip *this = mtd->priv;
 	unsigned long ioaddr = (unsigned long)this->IO_ADDR_W;
+=======
+static void au1200_nand_cmd_ctrl(struct nand_chip *this, int cmd,
+				 unsigned int ctrl)
+{
+	unsigned long ioaddr = (unsigned long)this->legacy.IO_ADDR_W;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioaddr &= 0xffffff00;
 
@@ -200,13 +318,20 @@ static void au1200_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 		/* assume we want to r/w real data  by default */
 		ioaddr += MEM_STNAND_DATA;
 	}
+<<<<<<< HEAD
 	this->IO_ADDR_R = this->IO_ADDR_W = (void __iomem *)ioaddr;
 	if (cmd != NAND_CMD_NONE) {
 		__raw_writeb(cmd, this->IO_ADDR_W);
+=======
+	this->legacy.IO_ADDR_R = this->legacy.IO_ADDR_W = (void __iomem *)ioaddr;
+	if (cmd != NAND_CMD_NONE) {
+		__raw_writeb(cmd, this->legacy.IO_ADDR_W);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 	}
 }
 
+<<<<<<< HEAD
 static int au1200_nand_device_ready(struct mtd_info *mtd)
 {
 	return __raw_readl((void __iomem *)MEM_STSTAT) & 1;
@@ -218,11 +343,26 @@ static struct mtd_partition db1200_nand_parts[] = {
 	{
 		.name	= "NAND FS 0",
 		.offset	= 0,
+=======
+static int au1200_nand_device_ready(struct nand_chip *this)
+{
+	return alchemy_rdsmem(AU1000_MEM_STSTAT) & 1;
+}
+
+static struct mtd_partition db1200_nand_parts[] = {
+	{
+		.name	= "NAND FS 0",
+		.offset = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= 8 * 1024 * 1024,
 	},
 	{
 		.name	= "NAND FS 1",
+<<<<<<< HEAD
 		.offset	= MTDPART_OFS_APPEND,
+=======
+		.offset = MTDPART_OFS_APPEND,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= MTDPART_SIZ_FULL
 	},
 };
@@ -234,7 +374,10 @@ struct platform_nand_data db1200_nand_platdata = {
 		.nr_partitions	= ARRAY_SIZE(db1200_nand_parts),
 		.partitions	= db1200_nand_parts,
 		.chip_delay	= 20,
+<<<<<<< HEAD
 		.part_probe_types = db1200_part_probes,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.ctrl = {
 		.dev_ready	= au1200_nand_device_ready,
@@ -293,6 +436,7 @@ static struct platform_device db1200_eth_dev = {
 
 /**********************************************************************/
 
+<<<<<<< HEAD
 static struct resource db1200_ide_res[] = {
 	[0] = {
 		.start	= DB1200_IDE_PHYS_ADDR,
@@ -300,10 +444,30 @@ static struct resource db1200_ide_res[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+=======
+static struct pata_platform_info db1200_ide_info = {
+	.ioport_shift	= DB1200_IDE_REG_SHIFT,
+};
+
+#define IDE_ALT_START	(14 << DB1200_IDE_REG_SHIFT)
+static struct resource db1200_ide_res[] = {
+	[0] = {
+		.start	= DB1200_IDE_PHYS_ADDR,
+		.end	= DB1200_IDE_PHYS_ADDR + IDE_ALT_START - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= DB1200_IDE_PHYS_ADDR + IDE_ALT_START,
+		.end	= DB1200_IDE_PHYS_ADDR + DB1200_IDE_PHYS_LEN - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	[2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.start	= DB1200_IDE_INT,
 		.end	= DB1200_IDE_INT,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		.start	= AU1200_DSCR_CMD0_DMA_REQ1,
 		.end	= AU1200_DSCR_CMD0_DMA_REQ1,
@@ -319,6 +483,17 @@ static struct platform_device db1200_ide_dev = {
 	.dev = {
 		.dma_mask		= &au1200_ide_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
+=======
+};
+
+static struct platform_device db1200_ide_dev = {
+	.name		= "pata_platform",
+	.id		= 0,
+	.dev = {
+		.dma_mask		= &au1200_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+		.platform_data		= &db1200_ide_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.num_resources	= ARRAY_SIZE(db1200_ide_res),
 	.resource	= db1200_ide_res,
@@ -326,6 +501,7 @@ static struct platform_device db1200_ide_dev = {
 
 /**********************************************************************/
 
+<<<<<<< HEAD
 /* SD carddetects:  they're supposed to be edge-triggered, but ack
  * doesn't seem to work (CPLD Rev 2).  Instead, the screaming one
  * is disabled and its counterpart enabled.  The 500ms timeout is
@@ -349,6 +525,29 @@ static irqreturn_t db1200_mmc_cd(int irq, void *ptr)
 		mmc_cd(ptr, msecs_to_jiffies(500));
 		symbol_put(mmc_detect_change);
 	}
+=======
+#ifdef CONFIG_MMC_AU1X
+/* SD carddetects:  they're supposed to be edge-triggered, but ack
+ * doesn't seem to work (CPLD Rev 2).  Instead, the screaming one
+ * is disabled and its counterpart enabled.  The 200ms timeout is
+ * because the carddetect usually triggers twice, after debounce.
+ */
+static irqreturn_t db1200_mmc_cd(int irq, void *ptr)
+{
+	disable_irq_nosync(irq);
+	return IRQ_WAKE_THREAD;
+}
+
+static irqreturn_t db1200_mmc_cdfn(int irq, void *ptr)
+{
+	mmc_detect_change(ptr, msecs_to_jiffies(200));
+
+	msleep(100);	/* debounce */
+	if (irq == DB1200_SD0_INSERT_INT)
+		enable_irq(DB1200_SD0_EJECT_INT);
+	else
+		enable_irq(DB1200_SD0_INSERT_INT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -358,6 +557,7 @@ static int db1200_mmc_cd_setup(void *mmc_host, int en)
 	int ret;
 
 	if (en) {
+<<<<<<< HEAD
 		ret = request_irq(DB1200_SD0_INSERT_INT, db1200_mmc_cd,
 				  0, "sd_insert", mmc_host);
 		if (ret)
@@ -365,6 +565,15 @@ static int db1200_mmc_cd_setup(void *mmc_host, int en)
 
 		ret = request_irq(DB1200_SD0_EJECT_INT, db1200_mmc_cd,
 				  0, "sd_eject", mmc_host);
+=======
+		ret = request_threaded_irq(DB1200_SD0_INSERT_INT, db1200_mmc_cd,
+				db1200_mmc_cdfn, 0, "sd_insert", mmc_host);
+		if (ret)
+			goto out;
+
+		ret = request_threaded_irq(DB1200_SD0_EJECT_INT, db1200_mmc_cd,
+				db1200_mmc_cdfn, 0, "sd_eject", mmc_host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			free_irq(DB1200_SD0_INSERT_INT, mmc_host);
 			goto out;
@@ -413,13 +622,18 @@ static void db1200_mmcled_set(struct led_classdev *led,
 }
 
 static struct led_classdev db1200_mmc_led = {
+<<<<<<< HEAD
 	.brightness_set	= db1200_mmcled_set,
+=======
+	.brightness_set = db1200_mmcled_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* -- */
 
 static irqreturn_t pb1200_mmc1_cd(int irq, void *ptr)
 {
+<<<<<<< HEAD
 	void(*mmc_cd)(struct mmc_host *, unsigned long);
 
 	if (irq == PB1200_SD1_INSERT_INT) {
@@ -436,6 +650,21 @@ static irqreturn_t pb1200_mmc1_cd(int irq, void *ptr)
 		mmc_cd(ptr, msecs_to_jiffies(500));
 		symbol_put(mmc_detect_change);
 	}
+=======
+	disable_irq_nosync(irq);
+	return IRQ_WAKE_THREAD;
+}
+
+static irqreturn_t pb1200_mmc1_cdfn(int irq, void *ptr)
+{
+	mmc_detect_change(ptr, msecs_to_jiffies(200));
+
+	msleep(100);	/* debounce */
+	if (irq == PB1200_SD1_INSERT_INT)
+		enable_irq(PB1200_SD1_EJECT_INT);
+	else
+		enable_irq(PB1200_SD1_INSERT_INT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -445,6 +674,7 @@ static int pb1200_mmc1_cd_setup(void *mmc_host, int en)
 	int ret;
 
 	if (en) {
+<<<<<<< HEAD
 		ret = request_irq(PB1200_SD1_INSERT_INT, pb1200_mmc1_cd, 0,
 				  "sd1_insert", mmc_host);
 		if (ret)
@@ -452,6 +682,15 @@ static int pb1200_mmc1_cd_setup(void *mmc_host, int en)
 
 		ret = request_irq(PB1200_SD1_EJECT_INT, pb1200_mmc1_cd, 0,
 				  "sd1_eject", mmc_host);
+=======
+		ret = request_threaded_irq(PB1200_SD1_INSERT_INT, pb1200_mmc1_cd,
+				pb1200_mmc1_cdfn, 0, "sd1_insert", mmc_host);
+		if (ret)
+			goto out;
+
+		ret = request_threaded_irq(PB1200_SD1_EJECT_INT, pb1200_mmc1_cd,
+				pb1200_mmc1_cdfn, 0, "sd1_eject", mmc_host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			free_irq(PB1200_SD1_INSERT_INT, mmc_host);
 			goto out;
@@ -481,7 +720,11 @@ static void pb1200_mmc1led_set(struct led_classdev *led,
 }
 
 static struct led_classdev pb1200_mmc1_led = {
+<<<<<<< HEAD
 	.brightness_set	= pb1200_mmc1led_set,
+=======
+	.brightness_set = pb1200_mmc1led_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void pb1200_mmc1_set_power(void *mmc_host, int state)
@@ -544,13 +787,20 @@ static struct resource au1200_mmc0_resources[] = {
 	}
 };
 
+<<<<<<< HEAD
 static u64 au1xxx_mmc_dmamask =  DMA_BIT_MASK(32);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device db1200_mmc0_dev = {
 	.name		= "au1xxx-mmc",
 	.id		= 0,
 	.dev = {
+<<<<<<< HEAD
 		.dma_mask		= &au1xxx_mmc_dmamask,
+=======
+		.dma_mask		= &au1200_all_dmamask,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1200_mmc_platdata[0],
 	},
@@ -585,13 +835,21 @@ static struct platform_device pb1200_mmc1_dev = {
 	.name		= "au1xxx-mmc",
 	.id		= 1,
 	.dev = {
+<<<<<<< HEAD
 		.dma_mask		= &au1xxx_mmc_dmamask,
+=======
+		.dma_mask		= &au1200_all_dmamask,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1200_mmc_platdata[1],
 	},
 	.num_resources	= ARRAY_SIZE(au1200_mmc1_res),
 	.resource	= au1200_mmc1_res,
 };
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_MMC_AU1X */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************/
 
@@ -619,7 +877,11 @@ static int db1200fb_panel_shutdown(void)
 static struct au1200fb_platdata db1200fb_pd = {
 	.panel_index	= db1200fb_panel_index,
 	.panel_init	= db1200fb_panel_init,
+<<<<<<< HEAD
 	.panel_shutdown	= db1200fb_panel_shutdown,
+=======
+	.panel_shutdown = db1200fb_panel_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource au1200_lcd_res[] = {
@@ -635,13 +897,20 @@ static struct resource au1200_lcd_res[] = {
 	}
 };
 
+<<<<<<< HEAD
 static u64 au1200_lcd_dmamask = DMA_BIT_MASK(32);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device au1200_lcd_dev = {
 	.name		= "au1200-lcd",
 	.id		= 0,
 	.dev = {
+<<<<<<< HEAD
 		.dma_mask		= &au1200_lcd_dmamask,
+=======
+		.dma_mask		= &au1200_all_dmamask,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1200fb_pd,
 	},
@@ -695,11 +964,17 @@ static struct au1550_spi_info db1200_spi_platdata = {
 	.activate_cs	= db1200_spi_cs_en,
 };
 
+<<<<<<< HEAD
 static u64 spi_dmamask = DMA_BIT_MASK(32);
 
 static struct platform_device db1200_spi_dev = {
 	.dev	= {
 		.dma_mask		= &spi_dmamask,
+=======
+static struct platform_device db1200_spi_dev = {
+	.dev	= {
+		.dma_mask		= &au1200_all_dmamask,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1200_spi_platdata,
 	},
@@ -744,6 +1019,13 @@ static struct platform_device db1200_audio_dev = {
 static struct platform_device db1200_sound_dev = {
 	/* name assigned later based on switch setting */
 	.id		= 1,	/* PSC ID */
+<<<<<<< HEAD
+=======
+	.dev = {
+		.dma_mask		= &au1200_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device db1200_stac_dev = {
@@ -759,7 +1041,13 @@ static struct platform_device db1200_audiodma_dev = {
 static struct platform_device *db1200_devs[] __initdata = {
 	NULL,		/* PSC0, selected by S6.8 */
 	&db1200_ide_dev,
+<<<<<<< HEAD
 	&db1200_mmc0_dev,
+=======
+#ifdef CONFIG_MMC_AU1X
+	&db1200_mmc0_dev,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&au1200_lcd_dev,
 	&db1200_eth_dev,
 	&db1200_nand_dev,
@@ -770,7 +1058,13 @@ static struct platform_device *db1200_devs[] __initdata = {
 };
 
 static struct platform_device *pb1200_devs[] __initdata = {
+<<<<<<< HEAD
 	&pb1200_mmc1_dev,
+=======
+#ifdef CONFIG_MMC_AU1X
+	&pb1200_mmc1_dev,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Some peripheral base addresses differ on the PB1200 */
@@ -790,6 +1084,7 @@ static int __init pb1200_res_fixup(void)
 	}
 
 	db1200_nand_res[0].start = PB1200_NAND_PHYS_ADDR;
+<<<<<<< HEAD
 	db1200_nand_res[0].end   = PB1200_NAND_PHYS_ADDR + 0xff;
 	db1200_ide_res[0].start = PB1200_IDE_PHYS_ADDR;
 	db1200_ide_res[0].end   = PB1200_IDE_PHYS_ADDR + DB1200_IDE_PHYS_LEN - 1;
@@ -799,10 +1094,25 @@ static int __init pb1200_res_fixup(void)
 }
 
 static int __init db1200_dev_init(void)
+=======
+	db1200_nand_res[0].end	 = PB1200_NAND_PHYS_ADDR + 0xff;
+	db1200_ide_res[0].start = PB1200_IDE_PHYS_ADDR;
+	db1200_ide_res[0].end	= PB1200_IDE_PHYS_ADDR + DB1200_IDE_PHYS_LEN - 1;
+	db1200_eth_res[0].start = PB1200_ETH_PHYS_ADDR;
+	db1200_eth_res[0].end	= PB1200_ETH_PHYS_ADDR + 0xff;
+	return 0;
+}
+
+int __init db1200_dev_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pfc;
 	unsigned short sw;
 	int swapped, bid;
+<<<<<<< HEAD
+=======
+	struct clk *c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bid = BCSR_WHOAMI_BOARD(bcsr_read(BCSR_WHOAMI));
 	if ((bid == BCSR_WHOAMI_PB1200_DDR1) ||
@@ -815,7 +1125,30 @@ static int __init db1200_dev_init(void)
 	irq_set_irq_type(AU1200_GPIO7_INT, IRQ_TYPE_LEVEL_LOW);
 	bcsr_init_irq(DB1200_INT_BEGIN, DB1200_INT_END, AU1200_GPIO7_INT);
 
+<<<<<<< HEAD
 	/* insert/eject pairs: one of both is always screaming.  To avoid
+=======
+	/* SMBus/SPI on PSC0, Audio on PSC1 */
+	pfc = alchemy_rdsys(AU1000_SYS_PINFUNC);
+	pfc &= ~(SYS_PINFUNC_P0A | SYS_PINFUNC_P0B);
+	pfc &= ~(SYS_PINFUNC_P1A | SYS_PINFUNC_P1B | SYS_PINFUNC_FS3);
+	pfc |= SYS_PINFUNC_P1C; /* SPI is configured later */
+	alchemy_wrsys(pfc, AU1000_SYS_PINFUNC);
+
+	/* get 50MHz for I2C driver on PSC0 */
+	c = clk_get(NULL, "psc0_intclk");
+	if (!IS_ERR(c)) {
+		pfc = clk_round_rate(c, 50000000);
+		if ((pfc < 1) || (abs(50000000 - pfc) > 2500000))
+			pr_warn("DB1200: can't get I2C close to 50MHz\n");
+		else
+			clk_set_rate(c, pfc);
+		clk_prepare_enable(c);
+		clk_put(c);
+	}
+
+	/* insert/eject pairs: one of both is always screaming.	 To avoid
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * issues they must not be automatically enabled when initially
 	 * requested.
 	 */
@@ -829,9 +1162,15 @@ static int __init db1200_dev_init(void)
 	i2c_register_board_info(0, db1200_i2c_devs,
 				ARRAY_SIZE(db1200_i2c_devs));
 	spi_register_board_info(db1200_spi_devs,
+<<<<<<< HEAD
 				ARRAY_SIZE(db1200_i2c_devs));
 
 	/* SWITCHES:	S6.8 I2C/SPI selector  (OFF=I2C  ON=SPI)
+=======
+				ARRAY_SIZE(db1200_spi_devs));
+
+	/* SWITCHES:	S6.8 I2C/SPI selector  (OFF=I2C	 ON=SPI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *		S6.7 AC97/I2S selector (OFF=AC97 ON=I2S)
 	 *		or S12 on the PB1200.
 	 */
@@ -842,13 +1181,21 @@ static int __init db1200_dev_init(void)
 	 * As a result, in SPI mode, OTG simply won't work (PSC0 uses
 	 * it as an input pin which is pulled high on the boards).
 	 */
+<<<<<<< HEAD
 	pfc = __raw_readl((void __iomem *)SYS_PINFUNC) & ~SYS_PINFUNC_P0A;
+=======
+	pfc = alchemy_rdsys(AU1000_SYS_PINFUNC) & ~SYS_PINFUNC_P0A;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* switch off OTG VBUS supply */
 	gpio_request(215, "otg-vbus");
 	gpio_direction_output(215, 1);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s device configuration:\n", board_type_str());
+=======
+	printk(KERN_INFO "%s device configuration:\n", get_system_type());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sw = bcsr_read(BCSR_SWITCHES);
 	if (sw & BCSR_SWITCHES_DIP_8) {
@@ -868,8 +1215,12 @@ static int __init db1200_dev_init(void)
 		printk(KERN_INFO " S6.8 ON : PSC0 mode SPI\n");
 		printk(KERN_INFO "   OTG port VBUS supply disabled\n");
 	}
+<<<<<<< HEAD
 	__raw_writel(pfc, (void __iomem *)SYS_PINFUNC);
 	wmb();
+=======
+	alchemy_wrsys(pfc, AU1000_SYS_PINFUNC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Audio: DIP7 selects I2S(0)/AC97(1), but need I2C for I2S!
 	 * so: DIP7=1 || DIP8=0 => AC97, DIP7=0 && DIP8=1 => I2S
@@ -924,4 +1275,7 @@ static int __init db1200_dev_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 device_initcall(db1200_dev_init);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

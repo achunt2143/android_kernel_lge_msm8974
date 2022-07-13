@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  sata_uli.c - ULi Electronics SATA
  *
@@ -22,13 +23,26 @@
  *
  *  Hardware documentation available under NDA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  sata_uli.c - ULi Electronics SATA
+ *
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+ *
+ *  Hardware documentation available under NDA.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -76,7 +90,11 @@ static struct pci_driver uli_pci_driver = {
 	.remove			= ata_pci_remove_one,
 };
 
+<<<<<<< HEAD
 static struct scsi_host_template uli_sht = {
+=======
+static const struct scsi_host_template uli_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -243,6 +261,7 @@ static int uli_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 				 IRQF_SHARED, &uli_sht);
 }
 
+<<<<<<< HEAD
 static int __init uli_init(void)
 {
 	return pci_register_driver(&uli_pci_driver);
@@ -256,3 +275,6 @@ static void __exit uli_exit(void)
 
 module_init(uli_init);
 module_exit(uli_exit);
+=======
+module_pci_driver(uli_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

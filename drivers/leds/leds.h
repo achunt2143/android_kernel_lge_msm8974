@@ -1,18 +1,26 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LED Core
  *
  * Copyright 2005 Openedhand Ltd.
  *
  * Author: Richard Purdie <rpurdie@openedhand.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LEDS_H_INCLUDED
 #define __LEDS_H_INCLUDED
 
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/rwsem.h>
 #include <linux/leds.h>
@@ -48,11 +56,17 @@ static inline void led_set_brightness(struct led_classdev *led_cdev,
 		led_cdev->brightness_set(led_cdev, value);
 }
 
+=======
+#include <linux/rwsem.h>
+#include <linux/leds.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int led_get_brightness(struct led_classdev *led_cdev)
 {
 	return led_cdev->brightness;
 }
 
+<<<<<<< HEAD
 extern struct rw_semaphore leds_list_lock;
 extern struct list_head leds_list;
 
@@ -78,5 +92,21 @@ ssize_t led_trigger_store(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count);
 ssize_t led_trigger_show(struct device *dev, struct device_attribute *attr,
 			char *buf);
+=======
+void led_init_core(struct led_classdev *led_cdev);
+void led_stop_software_blink(struct led_classdev *led_cdev);
+void led_set_brightness_nopm(struct led_classdev *led_cdev, unsigned int value);
+void led_set_brightness_nosleep(struct led_classdev *led_cdev, unsigned int value);
+ssize_t led_trigger_read(struct file *filp, struct kobject *kobj,
+			struct bin_attribute *attr, char *buf,
+			loff_t pos, size_t count);
+ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
+			struct bin_attribute *bin_attr, char *buf,
+			loff_t pos, size_t count);
+
+extern struct rw_semaphore leds_list_lock;
+extern struct list_head leds_list;
+extern const char * const led_colors[LED_COLOR_ID_MAX];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __LEDS_H_INCLUDED */

@@ -897,6 +897,7 @@ static const u32 ar9280Modes_original_tx_gain_9280_2[][5] = {
 	{0x00007844, 0x92592480, 0x92592480, 0x92592480, 0x92592480},
 };
 
+<<<<<<< HEAD
 static const u32 ar9280PciePhy_clkreq_off_L1_9280[][2] = {
 	/* Addr      allmodes  */
 	{0x00004040, 0x9248fd00},
@@ -911,6 +912,8 @@ static const u32 ar9280PciePhy_clkreq_off_L1_9280[][2] = {
 	{0x00004044, 0x00000000},
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 ar9280PciePhy_clkreq_always_on_L1_9280[][2] = {
 	/* Addr      allmodes  */
 	{0x00004040, 0x9248fd00},

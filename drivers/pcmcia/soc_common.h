@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/pcmcia/soc_common.h
  *
@@ -12,6 +16,7 @@
 /* include the world */
 #include <linux/clk.h>
 #include <linux/cpufreq.h>
+<<<<<<< HEAD
 #include <pcmcia/ss.h>
 #include <pcmcia/cistpl.h>
 
@@ -125,6 +130,21 @@ struct pcmcia_low_level {
 };
 
 
+=======
+#include <pcmcia/cistpl.h>
+#include <pcmcia/soc_common.h>
+
+struct device;
+struct gpio_desc;
+struct pcmcia_low_level;
+struct regulator;
+
+struct skt_dev_info {
+	int nskt;
+	struct soc_pcmcia_socket skt[];
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct soc_pcmcia_timing {
 	unsigned short io;
 	unsigned short mem;
@@ -134,10 +154,23 @@ struct soc_pcmcia_timing {
 extern void soc_common_pcmcia_get_timing(struct soc_pcmcia_socket *, struct soc_pcmcia_timing *);
 
 void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
+<<<<<<< HEAD
 	struct pcmcia_low_level *ops, struct device *dev);
 void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt);
 int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt);
 
+=======
+	const struct pcmcia_low_level *ops, struct device *dev);
+void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt);
+int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt);
+int soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt);
+
+void soc_common_cf_socket_state(struct soc_pcmcia_socket *skt,
+	struct pcmcia_state *state);
+
+int soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,
+	struct soc_pcmcia_regulator *r, int v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCMCIA_DEBUG
 

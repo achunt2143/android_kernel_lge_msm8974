@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/ioremap.c
  *
@@ -25,10 +29,16 @@
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/sizes.h>
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cp15.h>
 #include <asm/cputype.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #include <asm/mmu_context.h>
 #include <asm/pgalloc.h>
 #include <asm/tlbflush.h>
@@ -60,12 +70,113 @@ void __check_kvm_seq(struct mm_struct *mm)
 
 	do {
 		seq = init_mm.context.kvm_seq;
+=======
+#include <asm/early_ioremap.h>
+#include <asm/mmu_context.h>
+#include <asm/pgalloc.h>
+#include <asm/tlbflush.h>
+#include <asm/set_memory.h>
+#include <asm/system_info.h>
+
+#include <asm/mach/map.h>
+#include <asm/mach/pci.h>
+#include "mm.h"
+
+
+LIST_HEAD(static_vmlist);
+
+static struct static_vm *find_static_vm_paddr(phys_addr_t paddr,
+			size_t size, unsigned int mtype)
+{
+	struct static_vm *svm;
+	struct vm_struct *vm;
+
+	list_for_each_entry(svm, &static_vmlist, list) {
+		vm = &svm->vm;
+		if (!(vm->flags & VM_ARM_STATIC_MAPPING))
+			continue;
+		if ((vm->flags & VM_ARM_MTYPE_MASK) != VM_ARM_MTYPE(mtype))
+			continue;
+
+		if (vm->phys_addr > paddr ||
+			paddr + size - 1 > vm->phys_addr + vm->size - 1)
+			continue;
+
+		return svm;
+	}
+
+	return NULL;
+}
+
+struct static_vm *find_static_vm_vaddr(void *vaddr)
+{
+	struct static_vm *svm;
+	struct vm_struct *vm;
+
+	list_for_each_entry(svm, &static_vmlist, list) {
+		vm = &svm->vm;
+
+		/* static_vmlist is ascending order */
+		if (vm->addr > vaddr)
+			break;
+
+		if (vm->addr <= vaddr && vm->addr + vm->size > vaddr)
+			return svm;
+	}
+
+	return NULL;
+}
+
+void __init add_static_vm_early(struct static_vm *svm)
+{
+	struct static_vm *curr_svm;
+	struct vm_struct *vm;
+	void *vaddr;
+
+	vm = &svm->vm;
+	vm_area_add_early(vm);
+	vaddr = vm->addr;
+
+	list_for_each_entry(curr_svm, &static_vmlist, list) {
+		vm = &curr_svm->vm;
+
+		if (vm->addr > vaddr)
+			break;
+	}
+	list_add_tail(&svm->list, &curr_svm->list);
+}
+
+int ioremap_page(unsigned long virt, unsigned long phys,
+		 const struct mem_type *mtype)
+{
+	return vmap_page_range(virt, virt + PAGE_SIZE, phys,
+			       __pgprot(mtype->prot_pte));
+}
+EXPORT_SYMBOL(ioremap_page);
+
+void __check_vmalloc_seq(struct mm_struct *mm)
+{
+	int seq;
+
+	do {
+		seq = atomic_read(&init_mm.context.vmalloc_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(pgd_offset(mm, VMALLOC_START),
 		       pgd_offset_k(VMALLOC_START),
 		       sizeof(pgd_t) * (pgd_index(VMALLOC_END) -
 					pgd_index(VMALLOC_START)));
+<<<<<<< HEAD
 		mm->context.kvm_seq = seq;
 	} while (seq != init_mm.context.kvm_seq);
+=======
+		/*
+		 * Use a store-release so that other CPUs that observe the
+		 * counter's new value are guaranteed to see the results of the
+		 * memcpy as well.
+		 */
+		atomic_set_release(&mm->context.vmalloc_seq, seq);
+	} while (seq != atomic_read(&init_mm.context.vmalloc_seq));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if !defined(CONFIG_SMP) && !defined(CONFIG_ARM_LPAE)
@@ -82,6 +193,7 @@ void __check_kvm_seq(struct mm_struct *mm)
 static void unmap_area_sections(unsigned long virt, unsigned long size)
 {
 	unsigned long addr = virt, end = virt + (size & ~(SZ_1M - 1));
+<<<<<<< HEAD
 	pgd_t *pgd;
 	pud_t *pud;
 	pmd_t *pmdp;
@@ -90,19 +202,31 @@ static void unmap_area_sections(unsigned long virt, unsigned long size)
 	pgd = pgd_offset_k(addr);
 	pud = pud_offset(pgd, addr);
 	pmdp = pmd_offset(pud, addr);
+=======
+	pmd_t *pmdp = pmd_off_k(addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		pmd_t pmd = *pmdp;
 
 		if (!pmd_none(pmd)) {
 			/*
 			 * Clear the PMD from the page table, and
+<<<<<<< HEAD
 			 * increment the kvm sequence so others
+=======
+			 * increment the vmalloc sequence so others
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * notice this change.
 			 *
 			 * Note: this is still racy on SMP machines.
 			 */
 			pmd_clear(pmdp);
+<<<<<<< HEAD
 			init_mm.context.kvm_seq++;
+=======
+			atomic_inc_return_release(&init_mm.context.vmalloc_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Free the page table, if there was one.
@@ -119,8 +243,12 @@ static void unmap_area_sections(unsigned long virt, unsigned long size)
 	 * Ensure that the active_mm is up to date - we want to
 	 * catch any use-after-iounmap cases.
 	 */
+<<<<<<< HEAD
 	if (current->active_mm->context.kvm_seq != init_mm.context.kvm_seq)
 		__check_kvm_seq(current->active_mm);
+=======
+	check_vmalloc_seq(current->active_mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flush_tlb_kernel_range(virt, end);
 }
@@ -130,9 +258,13 @@ remap_area_sections(unsigned long virt, unsigned long pfn,
 		    size_t size, const struct mem_type *type)
 {
 	unsigned long addr = virt, end = virt + size;
+<<<<<<< HEAD
 	pgd_t *pgd;
 	pud_t *pud;
 	pmd_t *pmd;
+=======
+	pmd_t *pmd = pmd_off_k(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Remove and free any PTE-based mapping, and
@@ -140,9 +272,12 @@ remap_area_sections(unsigned long virt, unsigned long pfn,
 	 */
 	unmap_area_sections(virt, size);
 
+<<<<<<< HEAD
 	pgd = pgd_offset_k(addr);
 	pud = pud_offset(pgd, addr);
 	pmd = pmd_offset(pud, addr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		pmd[0] = __pmd(__pfn_to_phys(pfn) | type->prot_sect);
 		pfn += SZ_1M >> PAGE_SHIFT;
@@ -162,19 +297,26 @@ remap_area_supersections(unsigned long virt, unsigned long pfn,
 			 size_t size, const struct mem_type *type)
 {
 	unsigned long addr = virt, end = virt + size;
+<<<<<<< HEAD
 	pgd_t *pgd;
 	pud_t *pud;
 	pmd_t *pmd;
+=======
+	pmd_t *pmd = pmd_off_k(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Remove and free any PTE-based mapping, and
 	 * sync the current kernel mapping.
 	 */
 	unmap_area_sections(virt, size);
+<<<<<<< HEAD
 
 	pgd = pgd_offset_k(virt);
 	pud = pud_offset(pgd, addr);
 	pmd = pmd_offset(pud, addr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		unsigned long super_pmd_val, i;
 
@@ -198,19 +340,32 @@ remap_area_supersections(unsigned long virt, unsigned long pfn,
 }
 #endif
 
+<<<<<<< HEAD
 void __iomem * __arm_ioremap_pfn_caller(unsigned long pfn,
+=======
+static void __iomem * __arm_ioremap_pfn_caller(unsigned long pfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset, size_t size, unsigned int mtype, void *caller)
 {
 	const struct mem_type *type;
 	int err;
 	unsigned long addr;
+<<<<<<< HEAD
  	struct vm_struct * area;
+=======
+	struct vm_struct *area;
+	phys_addr_t paddr = __pfn_to_phys(pfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_ARM_LPAE
 	/*
 	 * High mappings must be supersection aligned
 	 */
+<<<<<<< HEAD
 	if (pfn >= 0x100000 && (__pfn_to_phys(pfn) & ~SUPERSECTION_MASK))
+=======
+	if (pfn >= 0x100000 && (paddr & ~SUPERSECTION_MASK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 #endif
 
@@ -226,6 +381,7 @@ void __iomem * __arm_ioremap_pfn_caller(unsigned long pfn,
 	/*
 	 * Try to reuse one of the static mapping whenever possible.
 	 */
+<<<<<<< HEAD
 	read_lock(&vmlist_lock);
 	for (area = vmlist; area; area = area->next) {
 		if (!size || (sizeof(phys_addr_t) == 4 && pfn >= 0x100000))
@@ -249,26 +405,60 @@ void __iomem * __arm_ioremap_pfn_caller(unsigned long pfn,
 	 * Don't allow RAM to be mapped - this causes problems with ARMv6+
 	 */
 	if (WARN_ON(pfn_valid(pfn)))
+=======
+	if (size && !(sizeof(phys_addr_t) == 4 && pfn >= 0x100000)) {
+		struct static_vm *svm;
+
+		svm = find_static_vm_paddr(paddr, size, mtype);
+		if (svm) {
+			addr = (unsigned long)svm->vm.addr;
+			addr += paddr - svm->vm.phys_addr;
+			return (void __iomem *) (offset + addr);
+		}
+	}
+
+	/*
+	 * Don't allow RAM to be mapped with mismatched attributes - this
+	 * causes problems with ARMv6+
+	 */
+	if (WARN_ON(memblock_is_map_memory(PFN_PHYS(pfn)) &&
+		    mtype != MT_MEMORY_RW))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	area = get_vm_area_caller(size, VM_IOREMAP, caller);
  	if (!area)
  		return NULL;
  	addr = (unsigned long)area->addr;
+<<<<<<< HEAD
+=======
+	area->phys_addr = paddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if !defined(CONFIG_SMP) && !defined(CONFIG_ARM_LPAE)
 	if (DOMAIN_IO == 0 &&
 	    (((cpu_architecture() >= CPU_ARCH_ARMv6) && (get_cr() & CR_XP)) ||
 	       cpu_is_xsc3()) && pfn >= 0x100000 &&
+<<<<<<< HEAD
 	       !((__pfn_to_phys(pfn) | size | addr) & ~SUPERSECTION_MASK)) {
 		area->flags |= VM_ARM_SECTION_MAPPING;
 		err = remap_area_supersections(addr, pfn, size, type);
 	} else if (!((__pfn_to_phys(pfn) | size | addr) & ~PMD_MASK)) {
+=======
+	       !((paddr | size | addr) & ~SUPERSECTION_MASK)) {
+		area->flags |= VM_ARM_SECTION_MAPPING;
+		err = remap_area_supersections(addr, pfn, size, type);
+	} else if (!((paddr | size | addr) & ~PMD_MASK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		area->flags |= VM_ARM_SECTION_MAPPING;
 		err = remap_area_sections(addr, pfn, size, type);
 	} else
 #endif
+<<<<<<< HEAD
 		err = ioremap_page_range(addr, addr + size, __pfn_to_phys(pfn),
+=======
+		err = ioremap_page_range(addr, addr + size, paddr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 __pgprot(type->prot_pte));
 
 	if (err) {
@@ -284,7 +474,11 @@ void __iomem *__arm_ioremap_caller(phys_addr_t phys_addr, size_t size,
 	unsigned int mtype, void *caller)
 {
 	phys_addr_t last_addr;
+<<<<<<< HEAD
 	phys_addr_t offset = phys_addr & ~PAGE_MASK;
+=======
+ 	unsigned long offset = phys_addr & ~PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  	unsigned long pfn = __phys_to_pfn(phys_addr);
 
  	/*
@@ -312,7 +506,11 @@ __arm_ioremap_pfn(unsigned long pfn, unsigned long offset, size_t size,
 		  unsigned int mtype)
 {
 	return __arm_ioremap_pfn_caller(pfn, offset, size, mtype,
+<<<<<<< HEAD
 			__builtin_return_address(0));
+=======
+					__builtin_return_address(0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__arm_ioremap_pfn);
 
@@ -320,6 +518,7 @@ void __iomem * (*arch_ioremap_caller)(phys_addr_t, size_t,
 				      unsigned int, void *) =
 	__arm_ioremap_caller;
 
+<<<<<<< HEAD
 void __iomem *
 __arm_ioremap(phys_addr_t phys_addr, size_t size, unsigned int mtype)
 {
@@ -327,6 +526,28 @@ __arm_ioremap(phys_addr_t phys_addr, size_t size, unsigned int mtype)
 		__builtin_return_address(0));
 }
 EXPORT_SYMBOL(__arm_ioremap);
+=======
+void __iomem *ioremap(resource_size_t res_cookie, size_t size)
+{
+	return arch_ioremap_caller(res_cookie, size, MT_DEVICE,
+				   __builtin_return_address(0));
+}
+EXPORT_SYMBOL(ioremap);
+
+void __iomem *ioremap_cache(resource_size_t res_cookie, size_t size)
+{
+	return arch_ioremap_caller(res_cookie, size, MT_DEVICE_CACHED,
+				   __builtin_return_address(0));
+}
+EXPORT_SYMBOL(ioremap_cache);
+
+void __iomem *ioremap_wc(resource_size_t res_cookie, size_t size)
+{
+	return arch_ioremap_caller(res_cookie, size, MT_DEVICE_WC,
+				   __builtin_return_address(0));
+}
+EXPORT_SYMBOL(ioremap_wc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Remap an arbitrary physical address space into the kernel virtual
@@ -341,14 +562,21 @@ __arm_ioremap_exec(phys_addr_t phys_addr, size_t size, bool cached)
 	unsigned int mtype;
 
 	if (cached)
+<<<<<<< HEAD
 		mtype = MT_MEMORY;
 	else
 		mtype = MT_MEMORY_NONCACHED;
+=======
+		mtype = MT_MEMORY_RWX;
+	else
+		mtype = MT_MEMORY_RWX_NONCACHED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return __arm_ioremap_caller(phys_addr, size, mtype,
 			__builtin_return_address(0));
 }
 
+<<<<<<< HEAD
 void __iounmap(volatile void __iomem *io_addr)
 {
 	void *addr = (void *)(PAGE_MASK & (unsigned long)io_addr);
@@ -367,11 +595,42 @@ void __iounmap(volatile void __iomem *io_addr)
 			return;
 		}
 #if !defined(CONFIG_SMP) && !defined(CONFIG_ARM_LPAE)
+=======
+void __arm_iomem_set_ro(void __iomem *ptr, size_t size)
+{
+	set_memory_ro((unsigned long)ptr, PAGE_ALIGN(size) / PAGE_SIZE);
+}
+
+void *arch_memremap_wb(phys_addr_t phys_addr, size_t size)
+{
+	return (__force void *)arch_ioremap_caller(phys_addr, size,
+						   MT_MEMORY_RW,
+						   __builtin_return_address(0));
+}
+
+void iounmap(volatile void __iomem *io_addr)
+{
+	void *addr = (void *)(PAGE_MASK & (unsigned long)io_addr);
+	struct static_vm *svm;
+
+	/* If this is a static mapping, we must leave it alone */
+	svm = find_static_vm_vaddr(addr);
+	if (svm)
+		return;
+
+#if !defined(CONFIG_SMP) && !defined(CONFIG_ARM_LPAE)
+	{
+		struct vm_struct *vm;
+
+		vm = find_vm_area(addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If this is a section based mapping we need to handle it
 		 * specially as the VM subsystem does not know how to handle
 		 * such a beast.
 		 */
+<<<<<<< HEAD
 		if ((vm->addr == addr) &&
 		    (vm->flags & VM_ARM_SECTION_MAPPING)) {
 			unmap_area_sections((unsigned long)vm->addr, vm->size);
@@ -391,3 +650,60 @@ void __arm_iounmap(volatile void __iomem *io_addr)
 	arch_iounmap(io_addr);
 }
 EXPORT_SYMBOL(__arm_iounmap);
+=======
+		if (vm && (vm->flags & VM_ARM_SECTION_MAPPING))
+			unmap_area_sections((unsigned long)vm->addr, vm->size);
+	}
+#endif
+
+	vunmap(addr);
+}
+EXPORT_SYMBOL(iounmap);
+
+#if defined(CONFIG_PCI) || IS_ENABLED(CONFIG_PCMCIA)
+static int pci_ioremap_mem_type = MT_DEVICE;
+
+void pci_ioremap_set_mem_type(int mem_type)
+{
+	pci_ioremap_mem_type = mem_type;
+}
+
+int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr)
+{
+	unsigned long vaddr = (unsigned long)PCI_IOBASE + res->start;
+
+	if (!(res->flags & IORESOURCE_IO))
+		return -EINVAL;
+
+	if (res->end > IO_SPACE_LIMIT)
+		return -EINVAL;
+
+	return vmap_page_range(vaddr, vaddr + resource_size(res), phys_addr,
+			       __pgprot(get_mem_type(pci_ioremap_mem_type)->prot_pte));
+}
+EXPORT_SYMBOL(pci_remap_iospace);
+
+void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size)
+{
+	return arch_ioremap_caller(res_cookie, size, MT_UNCACHED,
+				   __builtin_return_address(0));
+}
+EXPORT_SYMBOL_GPL(pci_remap_cfgspace);
+#endif
+
+/*
+ * Must be called after early_fixmap_init
+ */
+void __init early_ioremap_init(void)
+{
+	early_ioremap_setup();
+}
+
+bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
+				 unsigned long flags)
+{
+	unsigned long pfn = PHYS_PFN(offset);
+
+	return memblock_is_map_memory(pfn);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

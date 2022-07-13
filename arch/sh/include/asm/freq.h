@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * include/asm-sh/freq.h
  *
@@ -15,4 +16,17 @@
 #include <cpu/freq.h>
 
 #endif /* __KERNEL__ */
+=======
+/* SPDX-License-Identifier: GPL-2.0+
+ *
+ * include/asm-sh/freq.h
+ *
+ * Copyright (C) 2002, 2003 Paul Mundt
+ */
+#ifndef __ASM_SH_FREQ_H
+#define __ASM_SH_FREQ_H
+
+#include <cpu/freq.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_FREQ_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kvm asynchronous fault support
  *
@@ -5,6 +9,7 @@
  *
  * Author:
  *      Gleb Natapov <gleb@redhat.com>
+<<<<<<< HEAD
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __KVM_ASYNC_PF_H__
@@ -29,8 +36,13 @@ void kvm_async_pf_deinit(void);
 void kvm_async_pf_vcpu_init(struct kvm_vcpu *vcpu);
 #else
 #define kvm_async_pf_init() (0)
+<<<<<<< HEAD
 #define kvm_async_pf_deinit() do{}while(0)
 #define kvm_async_pf_vcpu_init(C) do{}while(0)
+=======
+#define kvm_async_pf_deinit() do {} while (0)
+#define kvm_async_pf_vcpu_init(C) do {} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

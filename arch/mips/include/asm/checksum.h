@@ -7,13 +7,27 @@
  * Copyright (C) 1999 Silicon Graphics, Inc.
  * Copyright (C) 2001 Thiemo Seufer.
  * Copyright (C) 2002 Maciej W. Rozycki
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014 Imagination Technologies Ltd.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_CHECKSUM_H
 #define _ASM_CHECKSUM_H
 
+<<<<<<< HEAD
 #include <linux/in6.h>
 
 #include <asm/uaccess.h>
+=======
+#ifdef CONFIG_GENERIC_CSUM
+#include <asm-generic/checksum.h>
+#else
+
+#include <linux/in6.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -29,6 +43,7 @@
  */
 __wsum csum_partial(const void *buff, int len, __wsum sum);
 
+<<<<<<< HEAD
 __wsum __csum_partial_copy_user(const void *src, void *dst,
 				int len, __wsum sum, int *err_ptr);
 
@@ -43,6 +58,19 @@ __wsum csum_partial_copy_from_user(const void __user *src, void *dst, int len,
 	might_fault();
 	return __csum_partial_copy_user((__force void *)src, dst,
 					len, sum, err_ptr);
+=======
+__wsum __csum_partial_copy_from_user(const void __user *src, void *dst, int len);
+__wsum __csum_partial_copy_to_user(const void *src, void __user *dst, int len);
+
+#define _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+static inline
+__wsum csum_and_copy_from_user(const void __user *src, void *dst, int len)
+{
+	might_fault();
+	if (!access_ok(src, len))
+		return 0;
+	return __csum_partial_copy_from_user(src, dst, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -50,6 +78,7 @@ __wsum csum_partial_copy_from_user(const void __user *src, void *dst, int len,
  */
 #define HAVE_CSUM_COPY_USER
 static inline
+<<<<<<< HEAD
 __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len,
 			     __wsum sum, int *err_ptr)
 {
@@ -61,18 +90,36 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len,
 		*err_ptr = -EFAULT;
 
 	return (__force __wsum)-1; /* invalid checksum */
+=======
+__wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
+{
+	might_fault();
+	if (!access_ok(dst, len))
+		return 0;
+	return __csum_partial_copy_to_user(src, dst, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * the same as csum_partial, but copies from user space (but on MIPS
  * we have just one address space, so this is identical to the above)
  */
+<<<<<<< HEAD
 __wsum csum_partial_copy_nocheck(const void *src, void *dst,
 				       int len, __wsum sum);
+=======
+#define _HAVE_ARCH_CSUM_AND_COPY
+__wsum __csum_partial_copy_nocheck(const void *src, void *dst, int len);
+static inline __wsum csum_partial_copy_nocheck(const void *src, void *dst, int len)
+{
+	return __csum_partial_copy_nocheck(src, dst, len);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Fold a partial checksum without adding pseudo headers
  */
+<<<<<<< HEAD
 static inline __sum16 csum_fold(__wsum sum)
 {
 	__asm__(
@@ -90,6 +137,20 @@ static inline __sum16 csum_fold(__wsum sum)
 
 	return (__force __sum16)sum;
 }
+=======
+static inline __sum16 csum_fold(__wsum csum)
+{
+	u32 sum = (__force u32)csum;
+
+	sum += (sum << 16);
+	csum = (__force __wsum)(sum < (__force u32)csum);
+	sum >>= 16;
+	sum += (__force u32)csum;
+
+	return (__force __sum16)~sum;
+}
+#define csum_fold csum_fold
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
@@ -128,6 +189,7 @@ static inline __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 
 	return csum_fold(csum);
 }
+<<<<<<< HEAD
 
 static inline __wsum csum_tcpudp_nofold(__be32 saddr,
 	__be32 daddr, unsigned short len, unsigned short proto,
@@ -182,6 +244,53 @@ static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
 {
 	return csum_fold(csum_tcpudp_nofold(saddr, daddr, len, proto, sum));
 }
+=======
+#define ip_fast_csum ip_fast_csum
+
+static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+					__u32 len, __u8 proto,
+					__wsum isum)
+{
+	const unsigned int sh32 = IS_ENABLED(CONFIG_64BIT) ? 32 : 0;
+	unsigned long sum = (__force unsigned long)daddr;
+	unsigned long tmp;
+	__u32 osum;
+
+	tmp = (__force unsigned long)saddr;
+	sum += tmp;
+
+	if (IS_ENABLED(CONFIG_32BIT))
+		sum += sum < tmp;
+
+	/*
+	 * We know PROTO + LEN has the sign bit clear, so cast to a signed
+	 * type to avoid an extraneous zero-extension where TMP is 64-bit.
+	 */
+	tmp = (__s32)(proto + len);
+	tmp <<= IS_ENABLED(CONFIG_CPU_LITTLE_ENDIAN) ? 8 : 0;
+	sum += tmp;
+	if (IS_ENABLED(CONFIG_32BIT))
+		sum += sum < tmp;
+
+	tmp = (__force unsigned long)isum;
+	sum += tmp;
+
+	if (IS_ENABLED(CONFIG_32BIT)) {
+		sum += sum < tmp;
+		osum = sum;
+	} else if (IS_ENABLED(CONFIG_64BIT)) {
+		tmp = sum << sh32;
+		sum += tmp;
+		osum = sum < tmp;
+		osum += sum >> sh32;
+	} else {
+		BUILD_BUG();
+	}
+
+	return (__force __wsum)osum;
+}
+#define csum_tcpudp_nofold csum_tcpudp_nofold
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * this routine is used for miscellaneous IP-like checksums, mainly
@@ -194,10 +303,19 @@ static inline __sum16 ip_compute_csum(const void *buff, int len)
 
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
+<<<<<<< HEAD
 				          const struct in6_addr *daddr,
 					  __u32 len, unsigned short proto,
 					  __wsum sum)
 {
+=======
+					  const struct in6_addr *daddr,
+					  __u32 len, __u8 proto,
+					  __wsum sum)
+{
+	__wsum tmp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__(
 	"	.set	push		# csum_ipv6_magic\n"
 	"	.set	noreorder	\n"
@@ -250,11 +368,24 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 
 	"	addu	%0, $1		# Add final carry\n"
 	"	.set	pop"
+<<<<<<< HEAD
 	: "=r" (sum), "=r" (proto)
 	: "r" (saddr), "r" (daddr),
 	  "0" (htonl(len)), "1" (htonl(proto)), "r" (sum));
+=======
+	: "=&r" (sum), "=&r" (tmp)
+	: "r" (saddr), "r" (daddr),
+	  "0" (htonl(len)), "r" (htonl(proto)), "r" (sum)
+	: "memory");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return csum_fold(sum);
 }
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/checksum.h>
+#endif /* CONFIG_GENERIC_CSUM */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_CHECKSUM_H */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
  * All rights reserved.
@@ -26,6 +27,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2000-2001 Christoph Hellwig.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _VXFS_EXTERN_H_
 #define _VXFS_EXTERN_H_
@@ -50,6 +56,7 @@ extern daddr_t			vxfs_bmap1(struct inode *, long);
 /* vxfs_fshead.c */
 extern int			vxfs_read_fshead(struct super_block *);
 
+<<<<<<< HEAD
 /* vxfs_immed.c */
 extern const struct inode_operations vxfs_immed_symlink_iops;
 
@@ -63,6 +70,14 @@ extern void			vxfs_put_fake_inode(struct inode *);
 extern struct vxfs_inode_info *	vxfs_blkiget(struct super_block *, u_long, ino_t);
 extern struct vxfs_inode_info *	vxfs_stiget(struct super_block *, ino_t);
 extern struct inode *		vxfs_iget(struct super_block *, ino_t);
+=======
+/* vxfs_inode.c */
+extern const struct address_space_operations vxfs_immed_aops;
+extern void			vxfs_dumpi(struct vxfs_inode_info *, ino_t);
+extern struct inode		*vxfs_blkiget(struct super_block *, u_long, ino_t);
+extern struct inode		*vxfs_stiget(struct super_block *, ino_t);
+extern struct inode		*vxfs_iget(struct super_block *, ino_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void			vxfs_evict_inode(struct inode *);
 
 /* vxfs_lookup.c */

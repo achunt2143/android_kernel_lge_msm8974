@@ -1,10 +1,20 @@
+<<<<<<< HEAD
 config LLC
 	tristate
 	depends on NET
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config LLC
+	tristate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config LLC2
 	tristate "ANSI/IEEE 802.2 LLC type 2 Support"
 	select LLC
 	help
+<<<<<<< HEAD
 	  This is a Logical Link Layer type 2, connection oriented support. 
+=======
+	  This is a Logical Link Layer type 2, connection oriented support.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Select this if you want to have support for PF_LLC sockets.

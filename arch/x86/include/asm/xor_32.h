@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_XOR_32_H
 #define _ASM_X86_XOR_32_H
 
 /*
+<<<<<<< HEAD
  * Optimized RAID-5 checksumming functions for MMX and SSE.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -12,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * (for example /usr/src/linux/COPYING); if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ * Optimized RAID-5 checksumming functions for MMX.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -26,10 +34,18 @@
 #define XO3(x, y)	"       pxor   8*("#x")(%4), %%mm"#y"   ;\n"
 #define XO4(x, y)	"       pxor   8*("#x")(%5), %%mm"#y"   ;\n"
 
+<<<<<<< HEAD
 #include <asm/i387.h>
 
 static void
 xor_pII_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
+=======
+#include <asm/fpu/api.h>
+
+static void
+xor_pII_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
+	      const unsigned long * __restrict p2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 7;
 
@@ -72,8 +88,14 @@ xor_pII_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
 }
 
 static void
+<<<<<<< HEAD
 xor_pII_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	      unsigned long *p3)
+=======
+xor_pII_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
+	      const unsigned long * __restrict p2,
+	      const unsigned long * __restrict p3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 7;
 
@@ -121,8 +143,15 @@ xor_pII_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 }
 
 static void
+<<<<<<< HEAD
 xor_pII_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	      unsigned long *p3, unsigned long *p4)
+=======
+xor_pII_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
+	      const unsigned long * __restrict p2,
+	      const unsigned long * __restrict p3,
+	      const unsigned long * __restrict p4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 7;
 
@@ -176,8 +205,16 @@ xor_pII_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 
 
 static void
+<<<<<<< HEAD
 xor_pII_mmx_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	      unsigned long *p3, unsigned long *p4, unsigned long *p5)
+=======
+xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
+	      const unsigned long * __restrict p2,
+	      const unsigned long * __restrict p3,
+	      const unsigned long * __restrict p4,
+	      const unsigned long * __restrict p5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 7;
 
@@ -256,7 +293,12 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 #undef BLOCK
 
 static void
+<<<<<<< HEAD
 xor_p5_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
+=======
+xor_p5_mmx_2(unsigned long bytes, unsigned long * __restrict p1,
+	     const unsigned long * __restrict p2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 6;
 
@@ -303,8 +345,14 @@ xor_p5_mmx_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
 }
 
 static void
+<<<<<<< HEAD
 xor_p5_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	     unsigned long *p3)
+=======
+xor_p5_mmx_3(unsigned long bytes, unsigned long * __restrict p1,
+	     const unsigned long * __restrict p2,
+	     const unsigned long * __restrict p3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 6;
 
@@ -360,8 +408,15 @@ xor_p5_mmx_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 }
 
 static void
+<<<<<<< HEAD
 xor_p5_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	     unsigned long *p3, unsigned long *p4)
+=======
+xor_p5_mmx_4(unsigned long bytes, unsigned long * __restrict p1,
+	     const unsigned long * __restrict p2,
+	     const unsigned long * __restrict p3,
+	     const unsigned long * __restrict p4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 6;
 
@@ -426,8 +481,16 @@ xor_p5_mmx_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 }
 
 static void
+<<<<<<< HEAD
 xor_p5_mmx_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	     unsigned long *p3, unsigned long *p4, unsigned long *p5)
+=======
+xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
+	     const unsigned long * __restrict p2,
+	     const unsigned long * __restrict p3,
+	     const unsigned long * __restrict p4,
+	     const unsigned long * __restrict p5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lines = bytes >> 6;
 
@@ -529,6 +592,7 @@ static struct xor_block_template xor_block_p5_mmx = {
 	.do_5 = xor_p5_mmx_5,
 };
 
+<<<<<<< HEAD
 /*
  * Cache avoiding checksumming functions utilizing KNI instructions
  * Copyright (C) 1999 Zach Brown (with obvious credit due Ingo)
@@ -853,6 +917,8 @@ xor_sse_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
 	XMMS_RESTORE;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xor_block_template xor_block_pIII_sse = {
 	.name = "pIII_sse",
 	.do_2 = xor_sse_2,
@@ -861,6 +927,7 @@ static struct xor_block_template xor_block_pIII_sse = {
 	.do_5 = xor_sse_5,
 };
 
+<<<<<<< HEAD
 /* Also try the generic routines.  */
 #include <asm-generic/xor.h>
 
@@ -884,5 +951,33 @@ do {							\
    deals with a load to a line that is being prefetched.  */
 #define XOR_SELECT_TEMPLATE(FASTEST)			\
 	(cpu_has_xmm ? &xor_block_pIII_sse : FASTEST)
+=======
+/* Also try the AVX routines */
+#include <asm/xor_avx.h>
+
+/* Also try the generic routines.  */
+#include <asm-generic/xor.h>
+
+/* We force the use of the SSE xor block because it can write around L2.
+   We may also be able to load into the L1 only depending on how the cpu
+   deals with a load to a line that is being prefetched.  */
+#undef XOR_TRY_TEMPLATES
+#define XOR_TRY_TEMPLATES				\
+do {							\
+	AVX_XOR_SPEED;					\
+	if (boot_cpu_has(X86_FEATURE_XMM)) {				\
+		xor_speed(&xor_block_pIII_sse);		\
+		xor_speed(&xor_block_sse_pf64);		\
+	} else if (boot_cpu_has(X86_FEATURE_MMX)) {	\
+		xor_speed(&xor_block_pII_mmx);		\
+		xor_speed(&xor_block_p5_mmx);		\
+	} else {					\
+		xor_speed(&xor_block_8regs);		\
+		xor_speed(&xor_block_8regs_p);		\
+		xor_speed(&xor_block_32regs);		\
+		xor_speed(&xor_block_32regs_p);		\
+	}						\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_XOR_32_H */

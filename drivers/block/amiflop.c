@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/amiga/amiflop.c
  *
@@ -60,17 +64,28 @@
 #include <linux/hdreg.h>
 #include <linux/delay.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
 #include <linux/amifdreg.h>
 #include <linux/amifd.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
+=======
+#include <linux/major.h>
+#include <linux/mutex.h>
+#include <linux/fs.h>
+#include <linux/blk-mq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 
 #include <asm/setup.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
 #include <asm/irq.h>
@@ -87,6 +102,129 @@
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * CIAAPRA bits (read only)
+ */
+
+#define DSKRDY      (0x1<<5)        /* disk ready when low */
+#define DSKTRACK0   (0x1<<4)        /* head at track zero when low */
+#define DSKPROT     (0x1<<3)        /* disk protected when low */
+#define DSKCHANGE   (0x1<<2)        /* low when disk removed */
+
+/*
+ * CIAAPRB bits (read/write)
+ */
+
+#define DSKMOTOR    (0x1<<7)        /* motor on when low */
+#define DSKSEL3     (0x1<<6)        /* select drive 3 when low */
+#define DSKSEL2     (0x1<<5)        /* select drive 2 when low */
+#define DSKSEL1     (0x1<<4)        /* select drive 1 when low */
+#define DSKSEL0     (0x1<<3)        /* select drive 0 when low */
+#define DSKSIDE     (0x1<<2)        /* side selection: 0 = upper, 1 = lower */
+#define DSKDIREC    (0x1<<1)        /* step direction: 0=in, 1=out (to trk 0) */
+#define DSKSTEP     (0x1)           /* pulse low to step head 1 track */
+
+/*
+ * DSKBYTR bits (read only)
+ */
+
+#define DSKBYT      (1<<15)         /* register contains valid byte when set */
+#define DMAON       (1<<14)         /* disk DMA enabled */
+#define DISKWRITE   (1<<13)         /* disk write bit in DSKLEN enabled */
+#define WORDEQUAL   (1<<12)         /* DSKSYNC register match when true */
+/* bits 7-0 are data */
+
+/*
+ * ADKCON/ADKCONR bits
+ */
+
+#ifndef SETCLR
+#define ADK_SETCLR      (1<<15)     /* control bit */
+#endif
+#define ADK_PRECOMP1    (1<<14)     /* precompensation selection */
+#define ADK_PRECOMP0    (1<<13)     /* 00=none, 01=140ns, 10=280ns, 11=500ns */
+#define ADK_MFMPREC     (1<<12)     /* 0=GCR precomp., 1=MFM precomp. */
+#define ADK_WORDSYNC    (1<<10)     /* enable DSKSYNC auto DMA */
+#define ADK_MSBSYNC     (1<<9)      /* when 1, enable sync on MSbit (for GCR) */
+#define ADK_FAST        (1<<8)      /* bit cell: 0=2us (GCR), 1=1us (MFM) */
+
+/*
+ * DSKLEN bits
+ */
+
+#define DSKLEN_DMAEN    (1<<15)
+#define DSKLEN_WRITE    (1<<14)
+
+/*
+ * INTENA/INTREQ bits
+ */
+
+#define DSKINDEX    (0x1<<4)        /* DSKINDEX bit */
+
+/*
+ * Misc
+ */
+
+#define MFM_SYNC    0x4489          /* standard MFM sync value */
+
+/* Values for FD_COMMAND */
+#define FD_RECALIBRATE		0x07	/* move to track 0 */
+#define FD_SEEK			0x0F	/* seek track */
+#define FD_READ			0xE6	/* read with MT, MFM, SKip deleted */
+#define FD_WRITE		0xC5	/* write with MT, MFM */
+#define FD_SENSEI		0x08	/* Sense Interrupt Status */
+#define FD_SPECIFY		0x03	/* specify HUT etc */
+#define FD_FORMAT		0x4D	/* format one track */
+#define FD_VERSION		0x10	/* get version code */
+#define FD_CONFIGURE		0x13	/* configure FIFO operation */
+#define FD_PERPENDICULAR	0x12	/* perpendicular r/w mode */
+
+#define FD_MAX_UNITS    4	/* Max. Number of drives */
+#define FLOPPY_MAX_SECTORS	22	/* Max. Number of sectors per track */
+
+struct fd_data_type {
+	char *name;		/* description of data type */
+	int sects;		/* sectors per track */
+	int (*read_fkt)(int);	/* read whole track */
+	void (*write_fkt)(int);	/* write whole track */
+};
+
+struct fd_drive_type {
+	unsigned long code;		/* code returned from drive */
+	char *name;			/* description of drive */
+	unsigned int tracks;	/* number of tracks */
+	unsigned int heads;		/* number of heads */
+	unsigned int read_size;	/* raw read size for one track */
+	unsigned int write_size;	/* raw write size for one track */
+	unsigned int sect_mult;	/* sectors and gap multiplier (HD = 2) */
+	unsigned int precomp1;	/* start track for precomp 1 */
+	unsigned int precomp2;	/* start track for precomp 2 */
+	unsigned int step_delay;	/* time (in ms) for delay after step */
+	unsigned int settle_time;	/* time to settle after dir change */
+	unsigned int side_time;	/* time needed to change sides */
+};
+
+struct amiga_floppy_struct {
+	struct fd_drive_type *type;	/* type of floppy for this unit */
+	struct fd_data_type *dtype;	/* type of floppy for this unit */
+	int track;			/* current track (-1 == unknown) */
+	unsigned char *trackbuf;	/* current track (kmaloc()'d */
+
+	int blocks;			/* total # blocks on disk */
+
+	int changed;			/* true when not known */
+	int disk;			/* disk in drive (-1 == unknown) */
+	int motor;			/* true when motor is at speed */
+	int busy;			/* true when drive is active */
+	int dirty;			/* true when trackbuf is not on disk */
+	int status;			/* current error code for unit */
+	struct gendisk *gendisk[2];
+	struct blk_mq_tag_set tag_set;
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Error codes
  */
 #define FD_OK		0	/* operation succeeded */
@@ -146,6 +284,10 @@ static struct amiga_floppy_struct unit[FD_MAX_UNITS];
 
 static struct timer_list flush_track_timer[FD_MAX_UNITS];
 static struct timer_list post_write_timer;
+<<<<<<< HEAD
+=======
+static unsigned long post_write_timer_drive;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct timer_list motor_on_timer;
 static struct timer_list motor_off_timer[FD_MAX_UNITS];
 static int on_attempts;
@@ -163,7 +305,10 @@ static volatile int selected = -1;	/* currently selected drive */
 static int writepending;
 static int writefromint;
 static char *raw_buf;
+<<<<<<< HEAD
 static int fdc_queue;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(amiflop_lock);
 
@@ -323,7 +468,11 @@ static void fd_deselect (int drive)
 
 }
 
+<<<<<<< HEAD
 static void motor_on_callback(unsigned long nr)
+=======
+static void motor_on_callback(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!(ciaa.pra & DSKRDY) || --on_attempts == 0) {
 		complete_all(&motor_on_completion);
@@ -343,8 +492,12 @@ static int fd_motor_on(int nr)
 		unit[nr].motor = 1;
 		fd_select(nr);
 
+<<<<<<< HEAD
 		INIT_COMPLETION(motor_on_completion);
 		motor_on_timer.data = nr;
+=======
+		reinit_completion(&motor_on_completion);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&motor_on_timer, jiffies + HZ/2);
 
 		on_attempts = 10;
@@ -356,7 +509,11 @@ static int fd_motor_on(int nr)
 		on_attempts = -1;
 #if 0
 		printk (KERN_ERR "motor_on failed, turning motor off\n");
+<<<<<<< HEAD
 		fd_motor_off (nr);
+=======
+		fd_motor_off (motor_off_timer + nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 #else
 		printk (KERN_WARNING "DSKRDY not set after 1.5 seconds - assuming drive is spinning notwithstanding\n");
@@ -366,6 +523,7 @@ static int fd_motor_on(int nr)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void fd_motor_off(unsigned long drive)
 {
 	long calledfromint;
@@ -380,6 +538,19 @@ static void fd_motor_off(unsigned long drive)
 		/* We would be blocked in an interrupt, so try again later */
 		motor_off_timer[drive].expires = jiffies + 1;
 		add_timer(motor_off_timer + drive);
+=======
+static void fd_motor_off(struct timer_list *timer)
+{
+	unsigned long drive = ((unsigned long)timer -
+			       (unsigned long)&motor_off_timer[0]) /
+					sizeof(motor_off_timer[0]);
+
+	drive&=3;
+	if (!try_fdc(drive)) {
+		/* We would be blocked in an interrupt, so try again later */
+		timer->expires = jiffies + 1;
+		add_timer(timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	unit[drive].motor = 0;
@@ -393,8 +564,11 @@ static void floppy_off (unsigned int nr)
 	int drive;
 
 	drive = nr & 3;
+<<<<<<< HEAD
 	/* called this way it is always from interrupt */
 	motor_off_timer[drive].data = nr | 0x80000000;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(motor_off_timer + drive, jiffies + 3*HZ);
 }
 
@@ -436,7 +610,11 @@ static int fd_calibrate(int drive)
 			break;
 		if (--n == 0) {
 			printk (KERN_ERR "fd%d: calibrate failed, turning motor off\n", drive);
+<<<<<<< HEAD
 			fd_motor_off (drive);
+=======
+			fd_motor_off (motor_off_timer + drive);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unit[drive].track = -1;
 			rel_fdc();
 			return 0;
@@ -565,7 +743,11 @@ static irqreturn_t fd_block_done(int irq, void *dummy)
 	if (block_flag == 2) { /* writing */
 		writepending = 2;
 		post_write_timer.expires = jiffies + 1; /* at least 2 ms */
+<<<<<<< HEAD
 		post_write_timer.data = selected;
+=======
+		post_write_timer_drive = selected;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&post_write_timer);
 	}
 	else {                /* reading */
@@ -652,6 +834,13 @@ static void post_write (unsigned long drive)
 	rel_fdc(); /* corresponds to get_fdc() in raw_write */
 }
 
+<<<<<<< HEAD
+=======
+static void post_write_callback(struct timer_list *timer)
+{
+	post_write(post_write_timer_drive);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following functions are to convert the block contents into raw data
@@ -1245,8 +1434,17 @@ static void dos_write(int disk)
 /* FIXME: this assumes the drive is still spinning -
  * which is only true if we complete writing a track within three seconds
  */
+<<<<<<< HEAD
 static void flush_track_callback(unsigned long nr)
 {
+=======
+static void flush_track_callback(struct timer_list *timer)
+{
+	unsigned long nr = ((unsigned long)timer -
+			       (unsigned long)&flush_track_timer[0]) /
+					sizeof(flush_track_timer[0]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr&=3;
 	writefromint = 1;
 	if (!try_fdc(nr)) {
@@ -1334,6 +1532,7 @@ static int get_track(int drive, int track)
 	return -1;
 }
 
+<<<<<<< HEAD
 /*
  * Round-robin between our available drives, doing one request from each
  */
@@ -1393,12 +1592,23 @@ next_req:
 next_segment:
 	/* Here someone could investigate to be more efficient */
 	for (cnt = 0, err = 0; cnt < blk_rq_cur_sectors(rq); cnt++) {
+=======
+static blk_status_t amiflop_rw_cur_segment(struct amiga_floppy_struct *floppy,
+					   struct request *rq)
+{
+	int drive = floppy - unit;
+	unsigned int cnt, block, track, sector;
+	char *data;
+
+	for (cnt = 0; cnt < blk_rq_cur_sectors(rq); cnt++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 		printk("fd: sector %ld + %d requested for %s\n",
 		       blk_rq_pos(rq), cnt,
 		       (rq_data_dir(rq) == READ) ? "read" : "write");
 #endif
 		block = blk_rq_pos(rq) + cnt;
+<<<<<<< HEAD
 		if ((int)block > floppy->blocks) {
 			err = -EIO;
 			break;
@@ -1407,15 +1617,25 @@ next_segment:
 		track = block / (floppy->dtype->sects * floppy->type->sect_mult);
 		sector = block % (floppy->dtype->sects * floppy->type->sect_mult);
 		data = rq->buffer + 512 * cnt;
+=======
+		track = block / (floppy->dtype->sects * floppy->type->sect_mult);
+		sector = block % (floppy->dtype->sects * floppy->type->sect_mult);
+		data = bio_data(rq->bio) + 512 * cnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 		printk("access to track %d, sector %d, with buffer at "
 		       "0x%08lx\n", track, sector, data);
 #endif
 
+<<<<<<< HEAD
 		if (get_track(drive, track) == -1) {
 			err = -EIO;
 			break;
 		}
+=======
+		if (get_track(drive, track) == -1)
+			return BLK_STS_IOERR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rq_data_dir(rq) == READ) {
 			memcpy(data, floppy->trackbuf + sector * 512, 512);
@@ -1423,14 +1643,20 @@ next_segment:
 			memcpy(floppy->trackbuf + sector * 512, data, 512);
 
 			/* keep the drive spinning while writes are scheduled */
+<<<<<<< HEAD
 			if (!fd_motor_on(drive)) {
 				err = -EIO;
 				break;
 			}
+=======
+			if (!fd_motor_on(drive))
+				return BLK_STS_IOERR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * setup a callback to write the track buffer
 			 * after a short (1 tick) delay.
 			 */
+<<<<<<< HEAD
 			local_irq_save(flags);
 
 			floppy->dirty = 1;
@@ -1448,6 +1674,36 @@ next_segment:
 static void do_fd_request(struct request_queue * q)
 {
 	redo_fd_request();
+=======
+			floppy->dirty = 1;
+		        /* reset the timer */
+			mod_timer (flush_track_timer + drive, jiffies + 1);
+		}
+	}
+
+	return BLK_STS_OK;
+}
+
+static blk_status_t amiflop_queue_rq(struct blk_mq_hw_ctx *hctx,
+				     const struct blk_mq_queue_data *bd)
+{
+	struct request *rq = bd->rq;
+	struct amiga_floppy_struct *floppy = rq->q->disk->private_data;
+	blk_status_t err;
+
+	if (!spin_trylock_irq(&amiflop_lock))
+		return BLK_STS_DEV_RESOURCE;
+
+	blk_mq_start_request(rq);
+
+	do {
+		err = amiflop_rw_cur_segment(floppy, rq);
+	} while (blk_update_request(rq, err, blk_rq_cur_bytes(rq)));
+	blk_mq_end_request(rq, err);
+
+	spin_unlock_irq(&amiflop_lock);
+	return BLK_STS_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -1460,7 +1716,11 @@ static int fd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode,
+=======
+static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int cmd, unsigned long param)
 {
 	struct amiga_floppy_struct *p = bdev->bd_disk->private_data;
@@ -1475,7 +1735,10 @@ static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode,
 			rel_fdc();
 			return -EBUSY;
 		}
+<<<<<<< HEAD
 		fsync_bdev(bdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fd_motor_on(drive) == 0) {
 			rel_fdc();
 			return -ENODEV;
@@ -1530,14 +1793,21 @@ static int fd_locked_ioctl(struct block_device *bdev, fmode_t mode,
 			return p->type->read_size;
 #endif
 	default:
+<<<<<<< HEAD
 		printk(KERN_DEBUG "fd_ioctl: unknown cmd %d for drive %d.",
 		       cmd, drive);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int fd_ioctl(struct block_device *bdev, fmode_t mode,
+=======
+static int fd_ioctl(struct block_device *bdev, blk_mode_t mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned int cmd, unsigned long param)
 {
 	int ret;
@@ -1584,10 +1854,17 @@ static void fd_probe(int dev)
  * /dev/PS0 etc), and disallows simultaneous access to the same
  * drive with different device numbers.
  */
+<<<<<<< HEAD
 static int floppy_open(struct block_device *bdev, fmode_t mode)
 {
 	int drive = MINOR(bdev->bd_dev) & 3;
 	int system =  (MINOR(bdev->bd_dev) & 4) >> 2;
+=======
+static int floppy_open(struct gendisk *disk, blk_mode_t mode)
+{
+	int drive = disk->first_minor & 3;
+	int system = (disk->first_minor & 4) >> 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_dev;
 	unsigned long flags;
 
@@ -1599,9 +1876,19 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	if (mode & (FMODE_READ|FMODE_WRITE)) {
 		check_disk_change(bdev);
 		if (mode & FMODE_WRITE) {
+=======
+	if (unit[drive].type->code == FD_NODRIVE) {
+		mutex_unlock(&amiflop_mutex);
+		return -ENXIO;
+	}
+	if (mode & (BLK_OPEN_READ | BLK_OPEN_WRITE)) {
+		disk_check_media_change(disk);
+		if (mode & BLK_OPEN_WRITE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int wrprot;
 
 			get_fdc(drive);
@@ -1616,7 +1903,10 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 			}
 		}
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_save(flags);
 	fd_ref[drive]++;
 	fd_device[drive] = system;
@@ -1625,7 +1915,11 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 	unit[drive].dtype=&data_types[system];
 	unit[drive].blocks=unit[drive].type->heads*unit[drive].type->tracks*
 		data_types[system].sects*unit[drive].type->sect_mult;
+<<<<<<< HEAD
 	set_capacity(unit[drive].gendisk, unit[drive].blocks);
+=======
+	set_capacity(unit[drive].gendisk[system], unit[drive].blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "fd%d: accessing %s-disk with %s-layout\n",drive,
 	       unit[drive].type->name, data_types[system].name);
@@ -1634,7 +1928,11 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int floppy_release(struct gendisk *disk, fmode_t mode)
+=======
+static void floppy_release(struct gendisk *disk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct amiga_floppy_struct *p = disk->private_data;
 	int drive = p - unit;
@@ -1650,11 +1948,17 @@ static int floppy_release(struct gendisk *disk, fmode_t mode)
 		fd_ref[drive] = 0;
 	}
 #ifdef MODULE
+<<<<<<< HEAD
 /* the mod_use counter is handled this way */
 	floppy_off (drive | 0x40000000);
 #endif
 	mutex_unlock(&amiflop_mutex);
 	return 0;
+=======
+	floppy_off (drive);
+#endif
+	mutex_unlock(&amiflop_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1700,10 +2004,78 @@ static const struct block_device_operations floppy_fops = {
 	.check_events	= amiga_check_events,
 };
 
+<<<<<<< HEAD
+=======
+static const struct blk_mq_ops amiflop_mq_ops = {
+	.queue_rq = amiflop_queue_rq,
+};
+
+static int fd_alloc_disk(int drive, int system)
+{
+	struct gendisk *disk;
+	int err;
+
+	disk = blk_mq_alloc_disk(&unit[drive].tag_set, NULL, NULL);
+	if (IS_ERR(disk))
+		return PTR_ERR(disk);
+
+	disk->major = FLOPPY_MAJOR;
+	disk->first_minor = drive + system;
+	disk->minors = 1;
+	disk->fops = &floppy_fops;
+	disk->flags |= GENHD_FL_NO_PART;
+	disk->events = DISK_EVENT_MEDIA_CHANGE;
+	if (system)
+		sprintf(disk->disk_name, "fd%d_msdos", drive);
+	else
+		sprintf(disk->disk_name, "fd%d", drive);
+	disk->private_data = &unit[drive];
+	set_capacity(disk, 880 * 2);
+
+	unit[drive].gendisk[system] = disk;
+	err = add_disk(disk);
+	if (err)
+		put_disk(disk);
+	return err;
+}
+
+static int fd_alloc_drive(int drive)
+{
+	unit[drive].trackbuf = kmalloc(FLOPPY_MAX_SECTORS * 512, GFP_KERNEL);
+	if (!unit[drive].trackbuf)
+		goto out;
+
+	memset(&unit[drive].tag_set, 0, sizeof(unit[drive].tag_set));
+	unit[drive].tag_set.ops = &amiflop_mq_ops;
+	unit[drive].tag_set.nr_hw_queues = 1;
+	unit[drive].tag_set.nr_maps = 1;
+	unit[drive].tag_set.queue_depth = 2;
+	unit[drive].tag_set.numa_node = NUMA_NO_NODE;
+	unit[drive].tag_set.flags = BLK_MQ_F_SHOULD_MERGE;
+	if (blk_mq_alloc_tag_set(&unit[drive].tag_set))
+		goto out_cleanup_trackbuf;
+
+	pr_cont(" fd%d", drive);
+
+	if (fd_alloc_disk(drive, 0) || fd_alloc_disk(drive, 1))
+		goto out_cleanup_tagset;
+	return 0;
+
+out_cleanup_tagset:
+	blk_mq_free_tag_set(&unit[drive].tag_set);
+out_cleanup_trackbuf:
+	kfree(unit[drive].trackbuf);
+out:
+	unit[drive].type->code = FD_NODRIVE;
+	return -ENOMEM;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init fd_probe_drives(void)
 {
 	int drive,drives,nomem;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "FD: probing units\nfound ");
 	drives=0;
 	nomem=0;
@@ -1760,6 +2132,33 @@ static struct kobject *floppy_find(dev_t dev, int *part, void *data)
 	return get_disk(unit[drive].gendisk);
 }
 
+=======
+	pr_info("FD: probing units\nfound");
+	drives=0;
+	nomem=0;
+	for(drive=0;drive<FD_MAX_UNITS;drive++) {
+		fd_probe(drive);
+		if (unit[drive].type->code == FD_NODRIVE)
+			continue;
+
+		if (fd_alloc_drive(drive) < 0) {
+			pr_cont(" no mem for fd%d", drive);
+			nomem = 1;
+			continue;
+		}
+		drives++;
+	}
+	if ((drives > 0) || (nomem == 0)) {
+		if (drives == 0)
+			pr_cont(" no drives");
+		pr_cont("\n");
+		return drives;
+	}
+	pr_cont("\n");
+	return -ENOMEM;
+}
+ 
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init amiga_floppy_probe(struct platform_device *pdev)
 {
 	int i, ret;
@@ -1789,6 +2188,7 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 	if (fd_probe_drives() < 1) /* No usable drives */
 		goto out_probe;
 
+<<<<<<< HEAD
 	blk_register_region(MKDEV(FLOPPY_MAJOR, 0), 256, THIS_MODULE,
 				floppy_find, NULL, NULL);
 
@@ -1806,14 +2206,29 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 		flush_track_timer[i].expires = 0;
 		flush_track_timer[i].data = i;
 		flush_track_timer[i].function = flush_track_callback;
+=======
+	/* initialize variables */
+	timer_setup(&motor_on_timer, motor_on_callback, 0);
+	motor_on_timer.expires = 0;
+	for (i = 0; i < FD_MAX_UNITS; i++) {
+		timer_setup(&motor_off_timer[i], fd_motor_off, 0);
+		motor_off_timer[i].expires = 0;
+		timer_setup(&flush_track_timer[i], flush_track_callback, 0);
+		flush_track_timer[i].expires = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		unit[i].track = -1;
 	}
 
+<<<<<<< HEAD
 	init_timer(&post_write_timer);
 	post_write_timer.expires = 0;
 	post_write_timer.data = 0;
 	post_write_timer.function = post_write;
+=======
+	timer_setup(&post_write_timer, post_write_callback, 0);
+	post_write_timer.expires = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   
 	for (i = 0; i < 128; i++)
 		mfmdecode[i]=255;
@@ -1838,6 +2253,7 @@ out_blkdev:
 	return ret;
 }
 
+<<<<<<< HEAD
 #if 0 /* not safe to unload */
 static int __exit amiga_floppy_remove(struct platform_device *pdev)
 {
@@ -1866,6 +2282,11 @@ static struct platform_driver amiga_floppy_driver = {
 	.driver   = {
 		.name	= "amiga-floppy",
 		.owner	= THIS_MODULE,
+=======
+static struct platform_driver amiga_floppy_driver = {
+	.driver   = {
+		.name	= "amiga-floppy",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

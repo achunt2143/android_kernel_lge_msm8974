@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 #ifndef _ASM_MACH_TOPOLOGY_H
 #define _ASM_MACH_TOPOLOGY_H	1
 
 #include <asm/sn/hub.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_MACH_TOPOLOGY_H
+#define _ASM_MACH_TOPOLOGY_H	1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sn/types.h>
 #include <asm/mmzone.h>
 
 struct cpuinfo_ip27 {
+<<<<<<< HEAD
 //	cpuid_t		p_cpuid;	/* PROM assigned cpuid */
 	cnodeid_t	p_nodeid;	/* my node ID in compact-id-space */
 	nasid_t		p_nasid;	/* my node ID in numa-as-id-space */
@@ -18,18 +26,28 @@ struct cpuinfo_ip27 {
 	unsigned long		prof_multiplier;
 	unsigned long		prof_counter;
 #endif
+=======
+	nasid_t		p_nasid;	/* my node ID in numa-as-id-space */
+	unsigned short	p_speed;	/* cpu speed in MHz */
+	unsigned char	p_slice;	/* Physical position on node board */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
 
+<<<<<<< HEAD
 #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
 #define parent_node(node)	(node)
+=======
+#define cpu_to_node(cpu)	(cputonasid(cpu))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpumask_of_node(node)	((node) == -1 ?				\
 				 cpu_all_mask :				\
 				 &hub_data(node)->h_cpus)
 struct pci_bus;
 extern int pcibus_to_node(struct pci_bus *);
 
+<<<<<<< HEAD
 #define cpumask_of_pcibus(bus)	(cpu_online_mask)
 
 extern unsigned char __node_distances[MAX_COMPACT_NODES][MAX_COMPACT_NODES];
@@ -52,6 +70,13 @@ extern unsigned char __node_distances[MAX_COMPACT_NODES][MAX_COMPACT_NODES];
 	.balance_interval	= 1,			\
 	.nr_balance_failed	= 0,			\
 }
+=======
+#define cpumask_of_pcibus(bus)	(cpumask_of_node(pcibus_to_node(bus)))
+
+extern unsigned char __node_distances[MAX_NUMNODES][MAX_NUMNODES];
+
+#define node_distance(from, to) (__node_distances[(from)][(to)])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm-generic/topology.h>
 

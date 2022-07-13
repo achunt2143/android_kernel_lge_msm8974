@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux reiser-filesystem routines.
 #
@@ -25,6 +29,7 @@ ifeq ($(CONFIG_REISERFS_FS_POSIX_ACL),y)
 reiserfs-objs += xattr_acl.o
 endif
 
+<<<<<<< HEAD
 # gcc -O2 (the kernel default)  is overaggressive on ppc32 when many inline
 # functions are used.  This causes the compiler to advance the stack
 # pointer out of the available stack space, corrupting kernel space,
@@ -36,3 +41,7 @@ ccflags-$(CONFIG_PPC32) := $(call cc-ifversion, -lt, 0400, -O1)
 TAGS:
 	etags *.c
 
+=======
+TAGS:
+	etags *.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -6,6 +6,7 @@
  * Copyright (C) 1994 by Waldorf Electronics
  * Copyright (C) 1995 - 2000, 01, 03 by Ralf Baechle
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+<<<<<<< HEAD
  * Copyright (C) 2007  Maciej W. Rozycki
  */
 #include <linux/module.h>
@@ -16,15 +17,44 @@
 #include <asm/war.h>
 
 inline void __delay(unsigned int loops)
+=======
+ * Copyright (C) 2007, 2014 Maciej W. Rozycki
+ */
+#include <linux/delay.h>
+#include <linux/export.h>
+#include <linux/param.h>
+#include <linux/smp.h>
+#include <linux/stringify.h>
+
+#include <asm/asm.h>
+#include <asm/compiler.h>
+
+#ifndef CONFIG_CPU_DADDI_WORKAROUNDS
+#define GCC_DADDI_IMM_ASM() "I"
+#else
+#define GCC_DADDI_IMM_ASM() "r"
+#endif
+
+#ifndef CONFIG_HAVE_PLAT_DELAY
+
+void __delay(unsigned long loops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ (
 	"	.set	noreorder				\n"
 	"	.align	3					\n"
 	"1:	bnez	%0, 1b					\n"
+<<<<<<< HEAD
 	"	subu	%0, 1					\n"
 	"	.set	reorder					\n"
 	: "=r" (loops)
 	: "0" (loops));
+=======
+	"	 " __stringify(LONG_SUBU) "	%0, %1		\n"
+	"	.set	reorder					\n"
+	: "=r" (loops)
+	: GCC_DADDI_IMM_ASM() (1), "0" (loops));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__delay);
 
@@ -32,7 +62,11 @@ EXPORT_SYMBOL(__delay);
  * Division by multiplication: you don't have to worry about
  * loss of precision.
  *
+<<<<<<< HEAD
  * Use only for very small delays ( < 1 msec).  Should probably use a
+=======
+ * Use only for very small delays ( < 1 msec).	Should probably use a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lookup table, really, as the multiplications take much too long with
  * short delays.  This is a "reasonable" implementation, though (and the
  * first constant multiplications gets optimized away if the delay is
@@ -54,3 +88,8 @@ void __ndelay(unsigned long ns)
 	__delay((ns * 0x00000005ull * HZ * lpj) >> 32);
 }
 EXPORT_SYMBOL(__ndelay);
+<<<<<<< HEAD
+=======
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VX soundcards
  *
  * Common mixer part
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/core.h>
@@ -32,17 +39,26 @@
  */
 static void vx_write_codec_reg(struct vx_core *chip, int codec, unsigned int data)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(!chip->ops->write_codec))
 		return;
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->lock, flags);
 	chip->ops->write_codec(chip, codec, data);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	mutex_lock(&chip->lock);
+	chip->ops->write_codec(chip, codec, data);
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -178,6 +194,7 @@ void vx_reset_codec(struct vx_core *chip, int cold_reset)
  */
 static void vx_change_audio_source(struct vx_core *chip, int src)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
@@ -186,6 +203,14 @@ static void vx_change_audio_source(struct vx_core *chip, int src)
 	spin_lock_irqsave(&chip->lock, flags);
 	chip->ops->change_audio_source(chip, src);
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	if (chip->chip_status & VX_STAT_IS_STALE)
+		return;
+
+	mutex_lock(&chip->lock);
+	chip->ops->change_audio_source(chip, src);
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -459,7 +484,11 @@ static int vx_output_level_put(struct snd_kcontrol *kcontrol, struct snd_ctl_ele
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_output_level = {
+=======
+static const struct snd_kcontrol_new vx_control_output_level = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			 SNDRV_CTL_ELEM_ACCESS_TLV_READ),
@@ -475,14 +504,22 @@ static struct snd_kcontrol_new vx_control_output_level = {
  */
 static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts_mic[3] = {
 		"Digital", "Line", "Mic"
 	};
 	static char *texts_vx2[2] = {
+=======
+	static const char * const texts_mic[3] = {
+		"Digital", "Line", "Mic"
+	};
+	static const char * const texts_vx2[2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Digital", "Analog"
 	};
 	struct vx_core *chip = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	if (chip->type >= VX_TYPE_VXPOCKET) {
@@ -499,6 +536,12 @@ static int vx_audio_src_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 		       texts_vx2[uinfo->value.enumerated.item]);
 	}
 	return 0;
+=======
+	if (chip->type >= VX_TYPE_VXPOCKET)
+		return snd_ctl_enum_info(uinfo, 1, 3, texts_mic);
+	else
+		return snd_ctl_enum_info(uinfo, 1, 2, texts_vx2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vx_audio_src_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -530,7 +573,11 @@ static int vx_audio_src_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_audio_src = {
+=======
+static const struct snd_kcontrol_new vx_control_audio_src = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Capture Source",
 	.info =		vx_audio_src_info,
@@ -543,6 +590,7 @@ static struct snd_kcontrol_new vx_control_audio_src = {
  */
 static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {
 		"Auto", "Internal", "External"
 	};
@@ -555,6 +603,13 @@ static int vx_clock_mode_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Auto", "Internal", "External"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vx_clock_mode_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -581,7 +636,11 @@ static int vx_clock_mode_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_clock_mode = {
+=======
+static const struct snd_kcontrol_new vx_control_clock_mode = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Clock Mode",
 	.info =		vx_clock_mode_info,
@@ -740,7 +799,11 @@ static int vx_monitor_sw_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 
 static const DECLARE_TLV_DB_SCALE(db_scale_audio_gain, -10975, 25, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_audio_gain = {
+=======
+static const struct snd_kcontrol_new vx_control_audio_gain = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			 SNDRV_CTL_ELEM_ACCESS_TLV_READ),
@@ -750,14 +813,22 @@ static struct snd_kcontrol_new vx_control_audio_gain = {
 	.put =          vx_audio_gain_put,
 	.tlv = { .p = db_scale_audio_gain },
 };
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_output_switch = {
+=======
+static const struct snd_kcontrol_new vx_control_output_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "PCM Playback Switch",
 	.info =         vx_audio_sw_info,
 	.get =          vx_audio_sw_get,
 	.put =          vx_audio_sw_put
 };
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_monitor_gain = {
+=======
+static const struct snd_kcontrol_new vx_control_monitor_gain = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "Monitoring Volume",
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
@@ -767,7 +838,11 @@ static struct snd_kcontrol_new vx_control_monitor_gain = {
 	.put =          vx_audio_monitor_put,
 	.tlv = { .p = db_scale_audio_gain },
 };
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_monitor_switch = {
+=======
+static const struct snd_kcontrol_new vx_control_monitor_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =         "Monitoring Switch",
 	.info =         vx_audio_sw_info,	/* shared */
@@ -828,7 +903,11 @@ static int vx_iec958_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_valu
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_iec958_mask = {
+=======
+static const struct snd_kcontrol_new vx_control_iec958_mask = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ,
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,MASK),
@@ -836,7 +915,11 @@ static struct snd_kcontrol_new vx_control_iec958_mask = {
 	.get =		vx_iec958_mask_get,
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_iec958 = {
+=======
+static const struct snd_kcontrol_new vx_control_iec958 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =         SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
 	.info =         vx_iec958_info,
@@ -901,7 +984,11 @@ static int vx_saturation_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_vu_meter = {
+=======
+static const struct snd_kcontrol_new vx_control_vu_meter = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	/* name will be filled later */
@@ -909,7 +996,11 @@ static struct snd_kcontrol_new vx_control_vu_meter = {
 	.get =		vx_vu_meter_get,
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_peak_meter = {
+=======
+static const struct snd_kcontrol_new vx_control_peak_meter = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	/* name will be filled later */
@@ -917,7 +1008,11 @@ static struct snd_kcontrol_new vx_control_peak_meter = {
 	.get =		vx_peak_meter_get,
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_saturation = {
+=======
+static const struct snd_kcontrol_new vx_control_saturation = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Input Saturation",
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
@@ -946,7 +1041,12 @@ int snd_vx_mixer_new(struct vx_core *chip)
 		temp = vx_control_output_level;
 		temp.index = i;
 		temp.tlv.p = chip->hw->output_level_db_scale;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
@@ -957,22 +1057,42 @@ int snd_vx_mixer_new(struct vx_core *chip)
 		temp.index = i;
 		temp.name = "PCM Playback Volume";
 		temp.private_value = val;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		temp = vx_control_output_switch;
 		temp.index = i;
 		temp.private_value = val;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		temp = vx_control_monitor_gain;
 		temp.index = i;
 		temp.private_value = val;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		temp = vx_control_monitor_switch;
 		temp.index = i;
 		temp.private_value = val;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	for (i = 0; i < chip->hw->num_outs; i++) {
@@ -980,11 +1100,17 @@ int snd_vx_mixer_new(struct vx_core *chip)
 		temp.index = i;
 		temp.name = "PCM Capture Volume";
 		temp.private_value = (i * 2) | (1 << 8);
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	/* Audio source */
+<<<<<<< HEAD
 	if ((err = snd_ctl_add(card, snd_ctl_new1(&vx_control_audio_src, chip))) < 0)
 		return err;
 	/* clock mode */
@@ -998,13 +1124,37 @@ int snd_vx_mixer_new(struct vx_core *chip)
 	/* VU, peak, saturation meters */
 	for (c = 0; c < 2; c++) {
 		static char *dir[2] = { "Output", "Input" };
+=======
+	err = snd_ctl_add(card, snd_ctl_new1(&vx_control_audio_src, chip));
+	if (err < 0)
+		return err;
+	/* clock mode */
+	err = snd_ctl_add(card, snd_ctl_new1(&vx_control_clock_mode, chip));
+	if (err < 0)
+		return err;
+	/* IEC958 controls */
+	err = snd_ctl_add(card, snd_ctl_new1(&vx_control_iec958_mask, chip));
+	if (err < 0)
+		return err;
+	err = snd_ctl_add(card, snd_ctl_new1(&vx_control_iec958, chip));
+	if (err < 0)
+		return err;
+	/* VU, peak, saturation meters */
+	for (c = 0; c < 2; c++) {
+		static const char * const dir[2] = { "Output", "Input" };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < chip->hw->num_ins; i++) {
 			int val = (i * 2) | (c << 8);
 			if (c == 1) {
 				temp = vx_control_saturation;
 				temp.index = i;
 				temp.private_value = val;
+<<<<<<< HEAD
 				if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+				err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+				if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return err;
 			}
 			sprintf(name, "%s VU Meter", dir[c]);
@@ -1012,14 +1162,24 @@ int snd_vx_mixer_new(struct vx_core *chip)
 			temp.index = i;
 			temp.name = name;
 			temp.private_value = val;
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+			err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 			sprintf(name, "%s Peak Meter", dir[c]);
 			temp = vx_control_peak_meter;
 			temp.index = i;
 			temp.name = name;
 			temp.private_value = val;
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&temp, chip))) < 0)
+=======
+			err = snd_ctl_add(card, snd_ctl_new1(&temp, chip));
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}

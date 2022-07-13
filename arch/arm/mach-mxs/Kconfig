@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 if ARCH_MXS
 
 source "arch/arm/mach-mxs/devices/Kconfig"
@@ -108,3 +109,33 @@ config MACH_APX4DEVKIT
 	select MODULE_APX4
 
 endif
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config SOC_IMX23
+	bool
+	select ARM_AMBA
+	select ARM_CPU_SUSPEND if PM
+	select CPU_ARM926T
+	select PINCTRL_IMX23
+
+config SOC_IMX28
+	bool
+	select ARM_AMBA
+	select ARM_CPU_SUSPEND if PM
+	select CPU_ARM926T
+	select PINCTRL_IMX28
+
+config ARCH_MXS
+	bool "Freescale MXS (i.MX23, i.MX28) support"
+	depends on ARCH_MULTI_V5
+	depends on CPU_LITTLE_ENDIAN
+	select GPIOLIB
+	select MXS_TIMER
+	select PINCTRL
+	select SOC_BUS
+	select SOC_IMX23
+	select SOC_IMX28
+	select STMP_DEVICE
+	help
+	  Support for Freescale MXS-based family of processors
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

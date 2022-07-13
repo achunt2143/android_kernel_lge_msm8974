@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) International Business Machines Corp., 2006
  *
@@ -15,6 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) International Business Machines Corp., 2006
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём)
  */
 
@@ -60,6 +67,7 @@ static int get_exclusive(struct ubi_volume_desc *desc)
 	struct ubi_volume *vol = desc->vol;
 
 	spin_lock(&vol->ubi->volumes_lock);
+<<<<<<< HEAD
 	users = vol->readers + vol->writers + vol->exclusive;
 	ubi_assert(users > 0);
 	if (users > 1) {
@@ -67,6 +75,15 @@ static int get_exclusive(struct ubi_volume_desc *desc)
 		err = -EBUSY;
 	} else {
 		vol->readers = vol->writers = 0;
+=======
+	users = vol->readers + vol->writers + vol->exclusive + vol->metaonly;
+	ubi_assert(users > 0);
+	if (users > 1) {
+		ubi_err(vol->ubi, "%d users for volume %d", users, vol->vol_id);
+		err = -EBUSY;
+	} else {
+		vol->readers = vol->writers = vol->metaonly = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vol->exclusive = 1;
 		err = desc->mode;
 		desc->mode = UBI_EXCLUSIVE;
@@ -86,13 +103,22 @@ static void revoke_exclusive(struct ubi_volume_desc *desc, int mode)
 	struct ubi_volume *vol = desc->vol;
 
 	spin_lock(&vol->ubi->volumes_lock);
+<<<<<<< HEAD
 	ubi_assert(vol->readers == 0 && vol->writers == 0);
+=======
+	ubi_assert(vol->readers == 0 && vol->writers == 0 && vol->metaonly == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubi_assert(vol->exclusive == 1 && desc->mode == UBI_EXCLUSIVE);
 	vol->exclusive = 0;
 	if (mode == UBI_READONLY)
 		vol->readers = 1;
 	else if (mode == UBI_READWRITE)
 		vol->writers = 1;
+<<<<<<< HEAD
+=======
+	else if (mode == UBI_METAONLY)
+		vol->metaonly = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		vol->exclusive = 1;
 	spin_unlock(&vol->ubi->volumes_lock);
@@ -134,15 +160,25 @@ static int vol_cdev_release(struct inode *inode, struct file *file)
 		vol->ubi->ubi_num, vol->vol_id, desc->mode);
 
 	if (vol->updating) {
+<<<<<<< HEAD
 		ubi_warn("update of volume %d not finished, volume is damaged",
+=======
+		ubi_warn(vol->ubi, "update of volume %d not finished, volume is damaged",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 vol->vol_id);
 		ubi_assert(!vol->changing_leb);
 		vol->updating = 0;
 		vfree(vol->upd_buf);
 	} else if (vol->changing_leb) {
+<<<<<<< HEAD
 		dbg_gen("only %lld of %lld bytes received for atomic LEB change"
 			" for volume %d:%d, cancel", vol->upd_received,
 			vol->upd_bytes, vol->ubi->ubi_num, vol->vol_id);
+=======
+		dbg_gen("only %lld of %lld bytes received for atomic LEB change for volume %d:%d, cancel",
+			vol->upd_received, vol->upd_bytes, vol->ubi->ubi_num,
+			vol->vol_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vol->changing_leb = 0;
 		vfree(vol->upd_buf);
 	}
@@ -155,6 +191,7 @@ static loff_t vol_cdev_llseek(struct file *file, loff_t offset, int origin)
 {
 	struct ubi_volume_desc *desc = file->private_data;
 	struct ubi_volume *vol = desc->vol;
+<<<<<<< HEAD
 	loff_t new_offset;
 
 	if (vol->updating) {
@@ -198,6 +235,28 @@ static int vol_cdev_fsync(struct file *file, loff_t start, loff_t end, int datas
 	mutex_lock(&inode->i_mutex);
 	err = ubi_sync(ubi->ubi_num);
 	mutex_unlock(&inode->i_mutex);
+=======
+
+	if (vol->updating) {
+		/* Update is in progress, seeking is prohibited */
+		ubi_err(vol->ubi, "updating");
+		return -EBUSY;
+	}
+
+	return fixed_size_llseek(file, offset, origin, vol->used_bytes);
+}
+
+static int vol_cdev_fsync(struct file *file, loff_t start, loff_t end,
+			  int datasync)
+{
+	struct ubi_volume_desc *desc = file->private_data;
+	struct ubi_device *ubi = desc->vol->ubi;
+	struct inode *inode = file_inode(file);
+	int err;
+	inode_lock(inode);
+	err = ubi_sync(ubi->ubi_num);
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -216,11 +275,19 @@ static ssize_t vol_cdev_read(struct file *file, __user char *buf, size_t count,
 		count, *offp, vol->vol_id);
 
 	if (vol->updating) {
+<<<<<<< HEAD
 		dbg_err("updating");
 		return -EBUSY;
 	}
 	if (vol->upd_marker) {
 		dbg_err("damaged volume, update marker is set");
+=======
+		ubi_err(vol->ubi, "updating");
+		return -EBUSY;
+	}
+	if (vol->upd_marker) {
+		ubi_err(vol->ubi, "damaged volume, update marker is set");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADF;
 	}
 	if (*offp == vol->used_bytes || count == 0)
@@ -300,7 +367,11 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 
 	lnum = div_u64_rem(*offp, vol->usable_leb_size, &off);
 	if (off & (ubi->min_io_size - 1)) {
+<<<<<<< HEAD
 		dbg_err("unaligned position");
+=======
+		ubi_err(ubi, "unaligned position");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -309,7 +380,11 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 
 	/* We can write only in fractions of the minimum I/O unit */
 	if (count & (ubi->min_io_size - 1)) {
+<<<<<<< HEAD
 		dbg_err("unaligned write length");
+=======
+		ubi_err(ubi, "unaligned write length");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -334,8 +409,12 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 			break;
 		}
 
+<<<<<<< HEAD
 		err = ubi_eba_write_leb(ubi, vol, lnum, tbuf, off, len,
 					UBI_UNKNOWN);
+=======
+		err = ubi_eba_write_leb(ubi, vol, lnum, tbuf, off, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 
@@ -372,7 +451,11 @@ static ssize_t vol_cdev_write(struct file *file, const char __user *buf,
 		err = ubi_more_leb_change_data(ubi, vol, buf, count);
 
 	if (err < 0) {
+<<<<<<< HEAD
 		ubi_err("cannot accept more %zd bytes of data, error %d",
+=======
+		ubi_err(ubi, "cannot accept more %zd bytes of data, error %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count, err);
 		return err;
 	}
@@ -389,12 +472,23 @@ static ssize_t vol_cdev_write(struct file *file, const char __user *buf,
 			return count;
 		}
 
+<<<<<<< HEAD
+=======
+		/*
+		 * We voluntarily do not take into account the skip_check flag
+		 * as we want to make sure what we wrote was correctly written.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ubi_check_volume(ubi, vol->vol_id);
 		if (err < 0)
 			return err;
 
 		if (err) {
+<<<<<<< HEAD
 			ubi_warn("volume %d on UBI device %d is corrupted",
+=======
+			ubi_warn(ubi, "volume %d on UBI device %d is corrupted",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 vol->vol_id, ubi->ubi_num);
 			vol->corrupted = 1;
 		}
@@ -438,7 +532,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		}
 
 		rsvd_bytes = (long long)vol->reserved_pebs *
+<<<<<<< HEAD
 					ubi->leb_size-vol->data_pad;
+=======
+					vol->usable_leb_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bytes < 0 || bytes > rsvd_bytes) {
 			err = -EINVAL;
 			break;
@@ -449,8 +547,15 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			break;
 
 		err = ubi_start_update(ubi, vol, bytes);
+<<<<<<< HEAD
 		if (bytes == 0)
 			revoke_exclusive(desc, UBI_READWRITE);
+=======
+		if (bytes == 0) {
+			ubi_volume_notify(ubi, vol, UBI_VOLUME_UPDATED);
+			revoke_exclusive(desc, UBI_READWRITE);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -474,12 +579,18 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 
 		/* Validate the request */
 		err = -EINVAL;
+<<<<<<< HEAD
 		if (req.lnum < 0 || req.lnum >= vol->reserved_pebs ||
 		    req.bytes < 0 || req.bytes > vol->usable_leb_size)
 			break;
 		if (req.dtype != UBI_LONGTERM && req.dtype != UBI_SHORTTERM &&
 		    req.dtype != UBI_UNKNOWN)
 			break;
+=======
+		if (!ubi_leb_valid(vol, req.lnum) ||
+		    req.bytes < 0 || req.bytes > vol->usable_leb_size)
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = get_exclusive(desc);
 		if (err < 0)
@@ -508,7 +619,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (lnum < 0 || lnum >= vol->reserved_pebs) {
+=======
+		if (!ubi_leb_valid(vol, lnum)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
@@ -518,7 +633,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			break;
 
+<<<<<<< HEAD
 		err = ubi_wl_flush(ubi);
+=======
+		err = ubi_wl_flush(ubi, UBI_ALL, UBI_ALL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -532,7 +651,11 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			err = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
 		err = ubi_leb_map(desc, req.lnum, req.dtype);
+=======
+		err = ubi_leb_map(desc, req.lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -588,6 +711,29 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Create a R/O block device on top of the UBI volume */
+	case UBI_IOCVOLCRBLK:
+	{
+		struct ubi_volume_info vi;
+
+		ubi_get_volume_info(desc, &vi);
+		err = ubiblock_create(&vi);
+		break;
+	}
+
+	/* Remove the R/O block device */
+	case UBI_IOCVOLRMBLK:
+	{
+		struct ubi_volume_info vi;
+
+		ubi_get_volume_info(desc, &vi);
+		err = ubiblock_remove(&vi);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		err = -ENOTTY;
 		break;
@@ -625,6 +771,16 @@ static int verify_mkvol_req(const struct ubi_device *ubi,
 	    req->vol_type != UBI_STATIC_VOLUME)
 		goto bad;
 
+<<<<<<< HEAD
+=======
+	if (req->flags & ~UBI_VOL_VALID_FLGS)
+		goto bad;
+
+	if (req->flags & UBI_VOL_SKIP_CRC_CHECK_FLG &&
+	    req->vol_type != UBI_STATIC_VOLUME)
+		goto bad;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (req->alignment > ubi->leb_size)
 		goto bad;
 
@@ -647,8 +803,13 @@ static int verify_mkvol_req(const struct ubi_device *ubi,
 	return 0;
 
 bad:
+<<<<<<< HEAD
 	dbg_err("bad volume creation request");
 	ubi_dbg_dump_mkvol_req(req);
+=======
+	ubi_err(ubi, "bad volume creation request");
+	ubi_dump_mkvol_req(req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -677,7 +838,11 @@ static int verify_rsvol_req(const struct ubi_device *ubi,
  * @req: volumes re-name request
  *
  * This is a helper function for the volume re-name IOCTL which validates the
+<<<<<<< HEAD
  * the request, opens the volume and calls corresponding volumes management
+=======
+ * request, opens the volume and calls corresponding volumes management
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * function. Returns zero in case of success and a negative error code in case
  * of failure.
  */
@@ -706,19 +871,31 @@ static int rename_volumes(struct ubi_device *ubi,
 		req->ents[i].name[req->ents[i].name_len] = '\0';
 		n = strlen(req->ents[i].name);
 		if (n != req->ents[i].name_len)
+<<<<<<< HEAD
 			err = -EINVAL;
+=======
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Make sure volume IDs and names are unique */
 	for (i = 0; i < req->count - 1; i++) {
 		for (n = i + 1; n < req->count; n++) {
 			if (req->ents[i].vol_id == req->ents[n].vol_id) {
+<<<<<<< HEAD
 				dbg_err("duplicated volume id %d",
+=======
+				ubi_err(ubi, "duplicated volume id %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					req->ents[i].vol_id);
 				return -EINVAL;
 			}
 			if (!strcmp(req->ents[i].name, req->ents[n].name)) {
+<<<<<<< HEAD
 				dbg_err("duplicated volume name \"%s\"",
+=======
+				ubi_err(ubi, "duplicated volume name \"%s\"",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					req->ents[i].name);
 				return -EINVAL;
 			}
@@ -738,10 +915,18 @@ static int rename_volumes(struct ubi_device *ubi,
 			goto out_free;
 		}
 
+<<<<<<< HEAD
 		re->desc = ubi_open_volume(ubi->ubi_num, vol_id, UBI_EXCLUSIVE);
 		if (IS_ERR(re->desc)) {
 			err = PTR_ERR(re->desc);
 			dbg_err("cannot open volume %d, error %d", vol_id, err);
+=======
+		re->desc = ubi_open_volume(ubi->ubi_num, vol_id, UBI_METAONLY);
+		if (IS_ERR(re->desc)) {
+			err = PTR_ERR(re->desc);
+			ubi_err(ubi, "cannot open volume %d, error %d",
+				vol_id, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(re);
 			goto out_free;
 		}
@@ -757,7 +942,11 @@ static int rename_volumes(struct ubi_device *ubi,
 		re->new_name_len = name_len;
 		memcpy(re->new_name, name, name_len);
 		list_add_tail(&re->list, &rename_list);
+<<<<<<< HEAD
 		dbg_msg("will rename volume %d from \"%s\" to \"%s\"",
+=======
+		dbg_gen("will rename volume %d from \"%s\" to \"%s\"",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vol_id, re->desc->vol->name, name);
 	}
 
@@ -800,7 +989,11 @@ static int rename_volumes(struct ubi_device *ubi,
 				continue;
 
 			/* The volume exists but busy, or an error occurred */
+<<<<<<< HEAD
 			dbg_err("cannot open volume \"%s\", error %d",
+=======
+			ubi_err(ubi, "cannot open volume \"%s\", error %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				re->new_name, err);
 			goto out_free;
 		}
@@ -815,7 +1008,11 @@ static int rename_volumes(struct ubi_device *ubi,
 		re1->remove = 1;
 		re1->desc = desc;
 		list_add(&re1->list, &rename_list);
+<<<<<<< HEAD
 		dbg_msg("will remove volume %d, name \"%s\"",
+=======
+		dbg_gen("will remove volume %d, name \"%s\"",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			re1->desc->vol->vol_id, re1->desc->vol->name);
 	}
 
@@ -946,12 +1143,20 @@ static long ubi_cdev_ioctl(struct file *file, unsigned int cmd,
 	{
 		struct ubi_rnvol_req *req;
 
+<<<<<<< HEAD
 		dbg_msg("re-name volumes");
+=======
+		dbg_gen("re-name volumes");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req = kmalloc(sizeof(struct ubi_rnvol_req), GFP_KERNEL);
 		if (!req) {
 			err = -ENOMEM;
 			break;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = copy_from_user(req, argp, sizeof(struct ubi_rnvol_req));
 		if (err) {
@@ -965,6 +1170,39 @@ static long ubi_cdev_ioctl(struct file *file, unsigned int cmd,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check a specific PEB for bitflips and scrub it if needed */
+	case UBI_IOCRPEB:
+	{
+		int pnum;
+
+		err = get_user(pnum, (__user int32_t *)argp);
+		if (err) {
+			err = -EFAULT;
+			break;
+		}
+
+		err = ubi_bitflip_check(ubi, pnum, 0);
+		break;
+	}
+
+	/* Force scrubbing for a specific PEB */
+	case UBI_IOCSPEB:
+	{
+		int pnum;
+
+		err = get_user(pnum, (__user int32_t *)argp);
+		if (err) {
+			err = -EFAULT;
+			break;
+		}
+
+		err = ubi_bitflip_check(ubi, pnum, 1);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		err = -ENOTTY;
 		break;
@@ -1014,7 +1252,13 @@ static long ctrl_cdev_ioctl(struct file *file, unsigned int cmd,
 		 * 'ubi_attach_mtd_dev()'.
 		 */
 		mutex_lock(&ubi_devices_mutex);
+<<<<<<< HEAD
 		err = ubi_attach_mtd_dev(mtd, req.ubi_num, req.vid_hdr_offset);
+=======
+		err = ubi_attach_mtd_dev(mtd, req.ubi_num, req.vid_hdr_offset,
+					 req.max_beb_per1024, !!req.disable_fm,
+					 !!req.need_resv_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&ubi_devices_mutex);
 		if (err < 0)
 			put_mtd_device(mtd);
@@ -1030,7 +1274,11 @@ static long ctrl_cdev_ioctl(struct file *file, unsigned int cmd,
 	{
 		int ubi_num;
 
+<<<<<<< HEAD
 		dbg_gen("dettach MTD device");
+=======
+		dbg_gen("detach MTD device");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = get_user(ubi_num, (__user int32_t *)argp);
 		if (err) {
 			err = -EFAULT;
@@ -1051,6 +1299,7 @@ static long ctrl_cdev_ioctl(struct file *file, unsigned int cmd,
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 static long vol_cdev_compat_ioctl(struct file *file, unsigned int cmd,
 				  unsigned long arg)
@@ -1081,6 +1330,8 @@ static long ctrl_cdev_compat_ioctl(struct file *file, unsigned int cmd,
 #define ctrl_cdev_compat_ioctl NULL
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* UBI volume character device operations */
 const struct file_operations ubi_vol_cdev_operations = {
 	.owner          = THIS_MODULE,
@@ -1091,7 +1342,11 @@ const struct file_operations ubi_vol_cdev_operations = {
 	.write          = vol_cdev_write,
 	.fsync		= vol_cdev_fsync,
 	.unlocked_ioctl = vol_cdev_ioctl,
+<<<<<<< HEAD
 	.compat_ioctl   = vol_cdev_compat_ioctl,
+=======
+	.compat_ioctl   = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* UBI character device operations */
@@ -1099,13 +1354,21 @@ const struct file_operations ubi_cdev_operations = {
 	.owner          = THIS_MODULE,
 	.llseek         = no_llseek,
 	.unlocked_ioctl = ubi_cdev_ioctl,
+<<<<<<< HEAD
 	.compat_ioctl   = ubi_cdev_compat_ioctl,
+=======
+	.compat_ioctl   = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* UBI control character device operations */
 const struct file_operations ubi_ctrl_cdev_operations = {
 	.owner          = THIS_MODULE,
 	.unlocked_ioctl = ctrl_cdev_ioctl,
+<<<<<<< HEAD
 	.compat_ioctl   = ctrl_cdev_compat_ioctl,
+=======
+	.compat_ioctl   = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek		= no_llseek,
 };

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup platform devices needed by the Freescale multi-port host
  * and/or dual-role USB controller modules based on the description
  * in flat device tree.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -14,9 +21,17 @@
 #include <linux/fsl_devices.h>
 #include <linux/err.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/clk.h>
 #include <linux/module.h>
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/clk.h>
+#include <linux/module.h>
+#include <linux/dma-mapping.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fsl_usb2_dev_data {
 	char *dr_mode;		/* controller mode */
@@ -24,7 +39,11 @@ struct fsl_usb2_dev_data {
 	enum fsl_usb2_operating_modes op_mode;	/* operating mode */
 };
 
+<<<<<<< HEAD
 struct fsl_usb2_dev_data dr_mode_data[] __devinitdata = {
+=======
+static struct fsl_usb2_dev_data dr_mode_data[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.dr_mode = "host",
 		.drivers = { "fsl-ehci", NULL, NULL, },
@@ -42,7 +61,11 @@ struct fsl_usb2_dev_data dr_mode_data[] __devinitdata = {
 	},
 };
 
+<<<<<<< HEAD
 struct fsl_usb2_dev_data * __devinit get_dr_mode_data(struct device_node *np)
+=======
+static struct fsl_usb2_dev_data *get_dr_mode_data(struct device_node *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *prop;
 	int i;
@@ -54,12 +77,21 @@ struct fsl_usb2_dev_data * __devinit get_dr_mode_data(struct device_node *np)
 				return &dr_mode_data[i];
 		}
 	}
+<<<<<<< HEAD
 	pr_warn("%s: Invalid 'dr_mode' property, fallback to host mode\n",
 		np->full_name);
 	return &dr_mode_data[0]; /* mode not specified, use host */
 }
 
 static enum fsl_usb2_phy_modes __devinit determine_usb_phy(const char *phy_type)
+=======
+	pr_warn("%pOF: Invalid 'dr_mode' property, fallback to host mode\n",
+		np);
+	return &dr_mode_data[0]; /* mode not specified, use host */
+}
+
+static enum fsl_usb2_phy_modes determine_usb_phy(const char *phy_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!phy_type)
 		return FSL_USB2_PHY_NONE;
@@ -69,13 +101,22 @@ static enum fsl_usb2_phy_modes __devinit determine_usb_phy(const char *phy_type)
 		return FSL_USB2_PHY_UTMI;
 	if (!strcasecmp(phy_type, "utmi_wide"))
 		return FSL_USB2_PHY_UTMI_WIDE;
+<<<<<<< HEAD
+=======
+	if (!strcasecmp(phy_type, "utmi_dual"))
+		return FSL_USB2_PHY_UTMI_DUAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcasecmp(phy_type, "serial"))
 		return FSL_USB2_PHY_SERIAL;
 
 	return FSL_USB2_PHY_NONE;
 }
 
+<<<<<<< HEAD
 struct platform_device * __devinit fsl_usb2_device_register(
+=======
+static struct platform_device *fsl_usb2_device_register(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct platform_device *ofdev,
 					struct fsl_usb2_platform_data *pdata,
 					const char *name, int id)
@@ -94,7 +135,18 @@ struct platform_device * __devinit fsl_usb2_device_register(
 	pdev->dev.parent = &ofdev->dev;
 
 	pdev->dev.coherent_dma_mask = ofdev->dev.coherent_dma_mask;
+<<<<<<< HEAD
 	*pdev->dev.dma_mask = *ofdev->dev.dma_mask;
+=======
+
+	if (!pdev->dev.dma_mask) {
+		pdev->dev.dma_mask = &ofdev->dev.coherent_dma_mask;
+	} else {
+		retval = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+		if (retval)
+			goto error;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = platform_device_add_data(pdev, pdata, sizeof(*pdata));
 	if (retval)
@@ -106,6 +158,11 @@ struct platform_device * __devinit fsl_usb2_device_register(
 			goto error;
 	}
 
+<<<<<<< HEAD
+=======
+	device_set_of_node_from_dev(&pdev->dev, &ofdev->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = platform_device_add(pdev);
 	if (retval)
 		goto error;
@@ -119,7 +176,57 @@ error:
 
 static const struct of_device_id fsl_usb2_mph_dr_of_match[];
 
+<<<<<<< HEAD
 static int __devinit fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
+=======
+static enum fsl_usb2_controller_ver usb_get_ver_info(struct device_node *np)
+{
+	enum fsl_usb2_controller_ver ver = FSL_USB_VER_NONE;
+
+	/*
+	 * returns 1 for usb controller version 1.6
+	 * returns 2 for usb controller version 2.2
+	 * returns 3 for usb controller version 2.4
+	 * returns 4 for usb controller version 2.5
+	 * returns 0 otherwise
+	 */
+	if (of_device_is_compatible(np, "fsl-usb2-dr")) {
+		if (of_device_is_compatible(np, "fsl-usb2-dr-v1.6"))
+			ver = FSL_USB_VER_1_6;
+		else if (of_device_is_compatible(np, "fsl-usb2-dr-v2.2"))
+			ver = FSL_USB_VER_2_2;
+		else if (of_device_is_compatible(np, "fsl-usb2-dr-v2.4"))
+			ver = FSL_USB_VER_2_4;
+		else if (of_device_is_compatible(np, "fsl-usb2-dr-v2.5"))
+			ver = FSL_USB_VER_2_5;
+		else /* for previous controller versions */
+			ver = FSL_USB_VER_OLD;
+
+		if (ver > FSL_USB_VER_NONE)
+			return ver;
+	}
+
+	if (of_device_is_compatible(np, "fsl,mpc5121-usb2-dr"))
+		return FSL_USB_VER_OLD;
+
+	if (of_device_is_compatible(np, "fsl-usb2-mph")) {
+		if (of_device_is_compatible(np, "fsl-usb2-mph-v1.6"))
+			ver = FSL_USB_VER_1_6;
+		else if (of_device_is_compatible(np, "fsl-usb2-mph-v2.2"))
+			ver = FSL_USB_VER_2_2;
+		else if (of_device_is_compatible(np, "fsl-usb2-mph-v2.4"))
+			ver = FSL_USB_VER_2_4;
+		else if (of_device_is_compatible(np, "fsl-usb2-mph-v2.5"))
+			ver = FSL_USB_VER_2_5;
+		else /* for previous controller versions */
+			ver = FSL_USB_VER_OLD;
+	}
+
+	return ver;
+}
+
+static int fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np = ofdev->dev.of_node;
 	struct platform_device *usb_dev;
@@ -146,19 +253,31 @@ static int __devinit fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 	dev_data = get_dr_mode_data(np);
 
 	if (of_device_is_compatible(np, "fsl-usb2-mph")) {
+<<<<<<< HEAD
 		if (of_get_property(np, "port0", NULL))
 			pdata->port_enables |= FSL_USB2_PORT0_ENABLED;
 
 		if (of_get_property(np, "port1", NULL))
+=======
+		if (of_property_present(np, "port0"))
+			pdata->port_enables |= FSL_USB2_PORT0_ENABLED;
+
+		if (of_property_present(np, "port1"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pdata->port_enables |= FSL_USB2_PORT1_ENABLED;
 
 		pdata->operating_mode = FSL_USB2_MPH_HOST;
 	} else {
+<<<<<<< HEAD
 		if (of_get_property(np, "fsl,invert-drvvbus", NULL))
 			pdata->invert_drvvbus = 1;
 
 		if (of_get_property(np, "fsl,invert-pwr-fault", NULL))
 			pdata->invert_pwr_fault = 1;
+=======
+		pdata->invert_drvvbus = of_property_read_bool(np, "fsl,invert-drvvbus");
+		pdata->invert_pwr_fault = of_property_read_bool(np, "fsl,invert-pwr-fault");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* setup mode selected in the device tree */
 		pdata->operating_mode = dev_data->op_mode;
@@ -166,6 +285,36 @@ static int __devinit fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 
 	prop = of_get_property(np, "phy_type", NULL);
 	pdata->phy_mode = determine_usb_phy(prop);
+<<<<<<< HEAD
+=======
+	pdata->controller_ver = usb_get_ver_info(np);
+
+	/* Activate Erratum by reading property in device tree */
+	pdata->has_fsl_erratum_a007792 =
+		of_property_read_bool(np, "fsl,usb-erratum-a007792");
+	pdata->has_fsl_erratum_a005275 =
+		of_property_read_bool(np, "fsl,usb-erratum-a005275");
+	pdata->has_fsl_erratum_a005697 =
+		of_property_read_bool(np, "fsl,usb_erratum-a005697");
+	pdata->has_fsl_erratum_a006918 =
+		of_property_read_bool(np, "fsl,usb_erratum-a006918");
+	pdata->has_fsl_erratum_14 =
+		of_property_read_bool(np, "fsl,usb_erratum-14");
+
+	/*
+	 * Determine whether phy_clk_valid needs to be checked
+	 * by reading property in device tree
+	 */
+	pdata->check_phy_clk_valid =
+		of_property_read_bool(np, "phy-clk-valid");
+
+	if (pdata->have_sysif_regs) {
+		if (pdata->controller_ver == FSL_USB_VER_NONE) {
+			dev_warn(&ofdev->dev, "Could not get controller version\n");
+			return -ENODEV;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(dev_data->drivers); i++) {
 		if (!dev_data->drivers[i])
@@ -181,16 +330,26 @@ static int __devinit fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit __unregister_subdev(struct device *dev, void *d)
+=======
+static int __unregister_subdev(struct device *dev, void *d)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	platform_device_unregister(to_platform_device(dev));
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit fsl_usb2_mph_dr_of_remove(struct platform_device *ofdev)
 {
 	device_for_each_child(&ofdev->dev, NULL, __unregister_subdev);
 	return 0;
+=======
+static void fsl_usb2_mph_dr_of_remove(struct platform_device *ofdev)
+{
+	device_for_each_child(&ofdev->dev, NULL, __unregister_subdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PPC_MPC512x
@@ -210,6 +369,7 @@ static int __devexit fsl_usb2_mph_dr_of_remove(struct platform_device *ofdev)
 #define PHYCTRL_LSFE		(1 << 1)	/* Line State Filter Enable */
 #define PHYCTRL_PXE		(1 << 0)	/* PHY oscillator enable */
 
+<<<<<<< HEAD
 int fsl_usb2_mpc5121_init(struct platform_device *pdev)
 {
 	struct fsl_usb2_platform_data *pdata = pdev->dev.platform_data;
@@ -227,12 +387,29 @@ int fsl_usb2_mpc5121_init(struct platform_device *pdev)
 
 	snprintf(clk_name, sizeof(clk_name), "usb%d_clk", clk_num);
 	clk = clk_get(&pdev->dev, clk_name);
+=======
+static int fsl_usb2_mpc5121_init(struct platform_device *pdev)
+{
+	struct fsl_usb2_platform_data *pdata = dev_get_platdata(&pdev->dev);
+	struct clk *clk;
+	int err;
+
+	clk = devm_clk_get(pdev->dev.parent, "ipg");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "failed to get clk\n");
 		return PTR_ERR(clk);
 	}
+<<<<<<< HEAD
 
 	clk_enable(clk);
+=======
+	err = clk_prepare_enable(clk);
+	if (err) {
+		dev_err(&pdev->dev, "failed to enable clk\n");
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->clk = clk;
 
 	if (pdata->phy_mode == FSL_USB2_PHY_UTMI_WIDE) {
@@ -252,6 +429,7 @@ int fsl_usb2_mpc5121_init(struct platform_device *pdev)
 
 static void fsl_usb2_mpc5121_exit(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct fsl_usb2_platform_data *pdata = pdev->dev.platform_data;
 
 	pdata->regs = NULL;
@@ -260,6 +438,14 @@ static void fsl_usb2_mpc5121_exit(struct platform_device *pdev)
 		clk_disable(pdata->clk);
 		clk_put(pdata->clk);
 	}
+=======
+	struct fsl_usb2_platform_data *pdata = dev_get_platdata(&pdev->dev);
+
+	pdata->regs = NULL;
+
+	if (pdata->clk)
+		clk_disable_unprepare(pdata->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct fsl_usb2_platform_data fsl_usb2_mpc5121_pd = {
@@ -285,15 +471,26 @@ static const struct of_device_id fsl_usb2_mph_dr_of_match[] = {
 #endif
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, fsl_usb2_mph_dr_of_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver fsl_usb2_mph_dr_driver = {
 	.driver = {
 		.name = "fsl-usb2-mph-dr",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = fsl_usb2_mph_dr_of_match,
 	},
 	.probe	= fsl_usb2_mph_dr_of_probe,
 	.remove	= __devexit_p(fsl_usb2_mph_dr_of_remove),
+=======
+		.of_match_table = fsl_usb2_mph_dr_of_match,
+	},
+	.probe	= fsl_usb2_mph_dr_of_probe,
+	.remove_new = fsl_usb2_mph_dr_of_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(fsl_usb2_mph_dr_driver);

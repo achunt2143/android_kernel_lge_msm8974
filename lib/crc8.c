@@ -20,11 +20,19 @@
 #include <linux/crc8.h>
 #include <linux/printk.h>
 
+<<<<<<< HEAD
 /*
  * crc8_populate_msb - fill crc table for given polynomial in reverse bit order.
  *
  * table:	table to be filled.
  * polynomial:	polynomial for which table is to be filled.
+=======
+/**
+ * crc8_populate_msb - fill crc table for given polynomial in reverse bit order.
+ *
+ * @table:	table to be filled.
+ * @polynomial:	polynomial for which table is to be filled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
 {
@@ -42,11 +50,19 @@ void crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
 }
 EXPORT_SYMBOL(crc8_populate_msb);
 
+<<<<<<< HEAD
 /*
  * crc8_populate_lsb - fill crc table for given polynomial in regular bit order.
  *
  * table:	table to be filled.
  * polynomial:	polynomial for which table is to be filled.
+=======
+/**
+ * crc8_populate_lsb - fill crc table for given polynomial in regular bit order.
+ *
+ * @table:	table to be filled.
+ * @polynomial:	polynomial for which table is to be filled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void crc8_populate_lsb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
 {
@@ -63,6 +79,7 @@ void crc8_populate_lsb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
 }
 EXPORT_SYMBOL(crc8_populate_lsb);
 
+<<<<<<< HEAD
 /*
  * crc8 - calculate a crc8 over the given input data.
  *
@@ -72,6 +89,17 @@ EXPORT_SYMBOL(crc8_populate_lsb);
  * crc:	previous returned crc8 value.
  */
 u8 crc8(const u8 table[CRC8_TABLE_SIZE], u8 *pdata, size_t nbytes, u8 crc)
+=======
+/**
+ * crc8 - calculate a crc8 over the given input data.
+ *
+ * @table: crc table used for calculation.
+ * @pdata: pointer to data buffer.
+ * @nbytes: number of bytes in data buffer.
+ * @crc: previous returned crc8 value.
+ */
+u8 crc8(const u8 table[CRC8_TABLE_SIZE], const u8 *pdata, size_t nbytes, u8 crc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* loop over the buffer data */
 	while (nbytes-- > 0)

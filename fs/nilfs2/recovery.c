@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * recovery.c - NILFS recovery logic
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS recovery logic
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/buffer_head.h>
@@ -47,8 +57,15 @@ enum {
 
 /* work structure for recovery */
 struct nilfs_recovery_block {
+<<<<<<< HEAD
 	ino_t ino;		/* Inode number of the file that this block
 				   belongs to */
+=======
+	ino_t ino;		/*
+				 * Inode number of the file that this block
+				 * belongs to
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t blocknr;	/* block number */
 	__u64 vblocknr;		/* virtual block number */
 	unsigned long blkoff;	/* File offset of the data block (per block) */
@@ -56,6 +73,7 @@ struct nilfs_recovery_block {
 };
 
 
+<<<<<<< HEAD
 static int nilfs_warn_segment_error(int err)
 {
 	switch (err) {
@@ -88,6 +106,39 @@ static int nilfs_warn_segment_error(int err)
 		       "NILFS warning: No super root in the last segment\n");
 		break;
 	}
+=======
+static int nilfs_warn_segment_error(struct super_block *sb, int err)
+{
+	const char *msg = NULL;
+
+	switch (err) {
+	case NILFS_SEG_FAIL_IO:
+		nilfs_err(sb, "I/O error reading segment");
+		return -EIO;
+	case NILFS_SEG_FAIL_MAGIC:
+		msg = "Magic number mismatch";
+		break;
+	case NILFS_SEG_FAIL_SEQ:
+		msg = "Sequence number mismatch";
+		break;
+	case NILFS_SEG_FAIL_CHECKSUM_SUPER_ROOT:
+		msg = "Checksum error in super root";
+		break;
+	case NILFS_SEG_FAIL_CHECKSUM_FULL:
+		msg = "Checksum error in segment payload";
+		break;
+	case NILFS_SEG_FAIL_CONSISTENCY:
+		msg = "Inconsistency found";
+		break;
+	case NILFS_SEG_NO_SUPER_ROOT:
+		msg = "No super root in the last segment";
+		break;
+	default:
+		nilfs_err(sb, "unrecognized segment error %d", err);
+		return -EINVAL;
+	}
+	nilfs_warn(sb, "invalid segment: %s", msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -156,7 +207,11 @@ int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 
 	sr = (struct nilfs_super_root *)bh_sr->b_data;
 	if (check) {
+<<<<<<< HEAD
 		unsigned bytes = le16_to_cpu(sr->sr_bytes);
+=======
+		unsigned int bytes = le16_to_cpu(sr->sr_bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (bytes == 0 || bytes > nilfs->ns_blocksize) {
 			ret = NILFS_SEG_FAIL_CHECKSUM_SUPER_ROOT;
@@ -180,7 +235,11 @@ int nilfs_read_super_root_block(struct the_nilfs *nilfs, sector_t sr_block,
 	brelse(bh_sr);
 
  failed:
+<<<<<<< HEAD
 	return nilfs_warn_segment_error(ret);
+=======
+	return nilfs_warn_segment_error(nilfs->ns_sb, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -484,18 +543,31 @@ static int nilfs_prepare_segment_for_recovery(struct the_nilfs *nilfs,
 
 static int nilfs_recovery_copy_block(struct the_nilfs *nilfs,
 				     struct nilfs_recovery_block *rb,
+<<<<<<< HEAD
 				     struct page *page)
 {
 	struct buffer_head *bh_org;
+=======
+				     loff_t pos, struct page *page)
+{
+	struct buffer_head *bh_org;
+	size_t from = pos & ~PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *kaddr;
 
 	bh_org = __bread(nilfs->ns_bdev, rb->blocknr, nilfs->ns_blocksize);
 	if (unlikely(!bh_org))
 		return -EIO;
 
+<<<<<<< HEAD
 	kaddr = kmap_atomic(page);
 	memcpy(kaddr + bh_offset(bh_org), bh_org->b_data, bh_org->b_size);
 	kunmap_atomic(kaddr);
+=======
+	kaddr = kmap_local_page(page);
+	memcpy(kaddr + from, bh_org->b_data, bh_org->b_size);
+	kunmap_local(kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh_org);
 	return 0;
 }
@@ -508,7 +580,11 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 {
 	struct inode *inode;
 	struct nilfs_recovery_block *rb, *n;
+<<<<<<< HEAD
 	unsigned blocksize = nilfs->ns_blocksize;
+=======
+	unsigned int blocksize = nilfs->ns_blocksize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 	loff_t pos;
 	int err = 0, err2 = 0;
@@ -523,6 +599,7 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 
 		pos = rb->blkoff << inode->i_blkbits;
 		err = block_write_begin(inode->i_mapping, pos, blocksize,
+<<<<<<< HEAD
 					0, &page, nilfs_get_block);
 		if (unlikely(err)) {
 			loff_t isize = inode->i_size;
@@ -532,6 +609,19 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 		}
 
 		err = nilfs_recovery_copy_block(nilfs, rb, page);
+=======
+					&page, nilfs_get_block);
+		if (unlikely(err)) {
+			loff_t isize = inode->i_size;
+
+			if (pos + blocksize > isize)
+				nilfs_write_failed(inode->i_mapping,
+							pos + blocksize);
+			goto failed_inode;
+		}
+
+		err = nilfs_recovery_copy_block(nilfs, rb, pos, page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(err))
 			goto failed_page;
 
@@ -543,13 +633,18 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 				blocksize, page, NULL);
 
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		(*nr_salvaged_blocks)++;
 		goto next;
 
  failed_page:
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
 
  failed_inode:
@@ -558,6 +653,15 @@ static int nilfs_recover_dsync_blocks(struct the_nilfs *nilfs,
 		       "(err=%d, ino=%lu, block-offset=%llu)\n",
 		       err, (unsigned long)rb->ino,
 		       (unsigned long long)rb->blkoff);
+=======
+		put_page(page);
+
+ failed_inode:
+		nilfs_warn(sb,
+			   "error %d recovering data block (ino=%lu, block-offset=%llu)",
+			   err, (unsigned long)rb->ino,
+			   (unsigned long long)rb->blkoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err2)
 			err2 = err;
  next:
@@ -581,7 +685,11 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 				 struct nilfs_recovery_info *ri)
 {
 	struct buffer_head *bh_sum = NULL;
+<<<<<<< HEAD
 	struct nilfs_segment_summary *sum;
+=======
+	struct nilfs_segment_summary *sum = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t pseg_start;
 	sector_t seg_start, seg_end;  /* Starting/ending DBN of full segment */
 	unsigned long nsalvaged_blocks = 0;
@@ -637,7 +745,11 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 			    !(flags & NILFS_SS_SYNDT))
 				goto try_next_pseg;
 			state = RF_DSYNC_ST;
+<<<<<<< HEAD
 			/* Fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case RF_DSYNC_ST:
 			if (!(flags & NILFS_SS_SYNDT))
 				goto confused;
@@ -680,8 +792,12 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
 	}
 
 	if (nsalvaged_blocks) {
+<<<<<<< HEAD
 		printk(KERN_INFO "NILFS (device %s): salvaged %lu blocks\n",
 		       sb->s_id, nsalvaged_blocks);
+=======
+		nilfs_info(sb, "salvaged %lu blocks", nsalvaged_blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ri->ri_need_recovery = NILFS_RECOVERY_ROLLFORWARD_DONE;
 	}
  out:
@@ -692,10 +808,16 @@ static int nilfs_do_roll_forward(struct the_nilfs *nilfs,
  confused:
 	err = -EINVAL;
  failed:
+<<<<<<< HEAD
 	printk(KERN_ERR
 	       "NILFS (device %s): Error roll-forwarding "
 	       "(err=%d, pseg block=%llu). ",
 	       sb->s_id, err, (unsigned long long)pseg_start);
+=======
+	nilfs_err(sb,
+		  "error %d roll-forwarding partial segment at blocknr = %llu",
+		  err, (unsigned long long)pseg_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -715,9 +837,14 @@ static void nilfs_finish_roll_forward(struct the_nilfs *nilfs,
 	set_buffer_dirty(bh);
 	err = sync_dirty_buffer(bh);
 	if (unlikely(err))
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "NILFS warning: buffer sync write failed during "
 		       "post-cleaning of recovery.\n");
+=======
+		nilfs_warn(nilfs->ns_sb,
+			   "buffer sync write failed during post-cleaning of recovery.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 }
 
@@ -752,8 +879,12 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 
 	err = nilfs_attach_checkpoint(sb, ri->ri_cno, true, &root);
 	if (unlikely(err)) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "NILFS: error loading the latest checkpoint.\n");
+=======
+		nilfs_err(sb, "error %d loading the latest checkpoint", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -764,8 +895,13 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 	if (ri->ri_need_recovery == NILFS_RECOVERY_ROLLFORWARD_DONE) {
 		err = nilfs_prepare_segment_for_recovery(nilfs, sb, ri);
 		if (unlikely(err)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: Error preparing segments for "
 			       "recovery.\n");
+=======
+			nilfs_err(sb, "error %d preparing segment for recovery",
+				  err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed;
 		}
 
@@ -778,8 +914,13 @@ int nilfs_salvage_orphan_logs(struct the_nilfs *nilfs,
 		nilfs_detach_log_writer(sb);
 
 		if (unlikely(err)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "NILFS: Oops! recovery failed. "
 			       "(err=%d)\n", err);
+=======
+			nilfs_err(sb, "error %d writing segment for recovery",
+				  err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed;
 		}
 
@@ -813,7 +954,11 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 			    struct nilfs_recovery_info *ri)
 {
 	struct buffer_head *bh_sum = NULL;
+<<<<<<< HEAD
 	struct nilfs_segment_summary *sum;
+=======
+	struct nilfs_segment_summary *sum = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t pseg_start, pseg_end, sr_pseg_start = 0;
 	sector_t seg_start, seg_end; /* range of full segment (block number) */
 	sector_t b, end;
@@ -871,9 +1016,17 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
 
 		flags = le16_to_cpu(sum->ss_flags);
 		if (!(flags & NILFS_SS_SR) && !scan_newer) {
+<<<<<<< HEAD
 			/* This will never happen because a superblock
 			   (last_segment) always points to a pseg
 			   having a super root. */
+=======
+			/*
+			 * This will never happen because a superblock
+			 * (last_segment) always points to a pseg with
+			 * a super root.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = NILFS_SEG_FAIL_CONSISTENCY;
 			goto failed;
 		}
@@ -959,5 +1112,9 @@ int nilfs_search_super_root(struct the_nilfs *nilfs,
  failed:
 	brelse(bh_sum);
 	nilfs_dispose_segment_list(&segments);
+<<<<<<< HEAD
 	return (ret < 0) ? ret : nilfs_warn_segment_error(ret);
+=======
+	return ret < 0 ? ret : nilfs_warn_segment_error(nilfs->ns_sb, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

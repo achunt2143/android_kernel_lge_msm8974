@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
  *      PCF50633 backlight device driver
@@ -11,6 +12,12 @@
  *  with this program; if not, write  to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (C) 2009-2010, Lars-Peter Clausen <lars@metafoo.de>
+ *      PCF50633 backlight device driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -52,7 +59,11 @@ int pcf50633_bl_set_brightness_limit(struct pcf50633 *pcf, unsigned int limit)
 	pcf_bl->brightness_limit = limit & 0x3f;
 	backlight_update_status(pcf_bl->bl);
 
+<<<<<<< HEAD
     return 0;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcf50633_bl_update_status(struct backlight_device *bl)
@@ -90,6 +101,10 @@ static int pcf50633_bl_update_status(struct backlight_device *bl)
 static int pcf50633_bl_get_brightness(struct backlight_device *bl)
 {
 	struct pcf50633_bl *pcf_bl = bl_get_data(bl);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pcf_bl->brightness;
 }
 
@@ -99,11 +114,19 @@ static const struct backlight_ops pcf50633_bl_ops = {
 	.options	= BL_CORE_SUSPENDRESUME,
 };
 
+<<<<<<< HEAD
 static int __devinit pcf50633_bl_probe(struct platform_device *pdev)
 {
 	struct pcf50633_bl *pcf_bl;
 	struct device *parent = pdev->dev.parent;
 	struct pcf50633_platform_data *pcf50633_data = parent->platform_data;
+=======
+static int pcf50633_bl_probe(struct platform_device *pdev)
+{
+	struct pcf50633_bl *pcf_bl;
+	struct device *parent = pdev->dev.parent;
+	struct pcf50633_platform_data *pcf50633_data = dev_get_platdata(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcf50633_bl_platform_data *pdata = pcf50633_data->backlight_data;
 	struct backlight_properties bl_props;
 
@@ -111,6 +134,10 @@ static int __devinit pcf50633_bl_probe(struct platform_device *pdev)
 	if (!pcf_bl)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	memset(&bl_props, 0, sizeof(bl_props));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bl_props.type = BACKLIGHT_RAW;
 	bl_props.max_brightness = 0x3f;
 	bl_props.power = FB_BLANK_UNBLANK;
@@ -125,7 +152,12 @@ static int __devinit pcf50633_bl_probe(struct platform_device *pdev)
 
 	pcf_bl->pcf = dev_to_pcf50633(pdev->dev.parent);
 
+<<<<<<< HEAD
 	pcf_bl->bl = backlight_device_register(pdev->name, &pdev->dev, pcf_bl,
+=======
+	pcf_bl->bl = devm_backlight_device_register(&pdev->dev, pdev->name,
+						&pdev->dev, pcf_bl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						&pcf50633_bl_ops, &bl_props);
 
 	if (IS_ERR(pcf_bl->bl))
@@ -135,8 +167,15 @@ static int __devinit pcf50633_bl_probe(struct platform_device *pdev)
 
 	pcf50633_reg_write(pcf_bl->pcf, PCF50633_REG_LEDDIM, pdata->ramp_time);
 
+<<<<<<< HEAD
 	/* Should be different from bl_props.brightness, so we do not exit
 	 * update_status early the first time it's called */
+=======
+	/*
+	 * Should be different from bl_props.brightness, so we do not exit
+	 * update_status early the first time it's called
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcf_bl->brightness = pcf_bl->bl->props.brightness + 1;
 
 	backlight_update_status(pcf_bl->bl);
@@ -144,6 +183,7 @@ static int __devinit pcf50633_bl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit pcf50633_bl_remove(struct platform_device *pdev)
 {
 	struct pcf50633_bl *pcf_bl = platform_get_drvdata(pdev);
@@ -158,6 +198,10 @@ static int __devexit pcf50633_bl_remove(struct platform_device *pdev)
 static struct platform_driver pcf50633_bl_driver = {
 	.probe =	pcf50633_bl_probe,
 	.remove =	__devexit_p(pcf50633_bl_remove),
+=======
+static struct platform_driver pcf50633_bl_driver = {
+	.probe =	pcf50633_bl_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "pcf50633-backlight",
 	},

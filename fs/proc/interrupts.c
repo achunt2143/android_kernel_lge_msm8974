@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -33,6 +37,7 @@ static const struct seq_operations int_seq_ops = {
 	.show  = show_interrupts
 };
 
+<<<<<<< HEAD
 static int interrupts_open(struct inode *inode, struct file *filp)
 {
 	return seq_open(filp, &int_seq_ops);
@@ -51,3 +56,11 @@ static int __init proc_interrupts_init(void)
 	return 0;
 }
 module_init(proc_interrupts_init);
+=======
+static int __init proc_interrupts_init(void)
+{
+	proc_create_seq("interrupts", 0, NULL, &int_seq_ops);
+	return 0;
+}
+fs_initcall(proc_interrupts_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

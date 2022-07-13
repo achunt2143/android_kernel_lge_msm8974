@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pnpacpi -- PnP ACPI driver
  *
@@ -5,6 +9,7 @@
  * Copyright (c) 2004 Li Shaohua <shaohua.li@intel.com>
  * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
  *	Bjorn Helgaas <bjorn.helgaas@hp.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/acpi.h>
@@ -28,6 +35,7 @@
 #include "../base.h"
 #include "pnpacpi.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_IA64
 #define valid_IRQ(i) (1)
 #else
@@ -61,6 +69,10 @@ static int irq_flags(int triggering, int polarity, int shareable)
 
 static void decode_irq_flags(struct pnp_dev *dev, int flags, int *triggering,
 			     int *polarity, int *shareable)
+=======
+static void decode_irq_flags(struct pnp_dev *dev, int flags, u8 *triggering,
+			     u8 *polarity, u8 *shareable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (flags & (IORESOURCE_IRQ_LOWLEVEL | IORESOURCE_IRQ_HIGHLEVEL |
 			 IORESOURCE_IRQ_LOWEDGE  | IORESOURCE_IRQ_HIGHEDGE)) {
@@ -94,6 +106,7 @@ static void decode_irq_flags(struct pnp_dev *dev, int flags, int *triggering,
 		*shareable = ACPI_EXCLUSIVE;
 }
 
+<<<<<<< HEAD
 static void pnpacpi_parse_allocated_irqresource(struct pnp_dev *dev,
 						u32 gsi, int triggering,
 						int polarity, int shareable)
@@ -133,6 +146,8 @@ static void pnpacpi_parse_allocated_irqresource(struct pnp_dev *dev,
 	pnp_add_irq_resource(dev, irq, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dma_flags(struct pnp_dev *dev, int type, int bus_master,
 		     int transfer)
 {
@@ -177,6 +192,7 @@ static int dma_flags(struct pnp_dev *dev, int type, int bus_master,
 	return flags;
 }
 
+<<<<<<< HEAD
 static void pnpacpi_parse_allocated_ioresource(struct pnp_dev *dev, u64 start,
 					       u64 len, int io_decode,
 					       int window)
@@ -192,6 +208,18 @@ static void pnpacpi_parse_allocated_ioresource(struct pnp_dev *dev, u64 start,
 		flags |= IORESOURCE_WINDOW;
 
 	pnp_add_io_resource(dev, start, end, flags);
+=======
+/*
+ * Allocated Resources
+ */
+
+static void pnpacpi_add_irqresource(struct pnp_dev *dev, struct resource *r)
+{
+	if (!(r->flags & IORESOURCE_DISABLED))
+		pcibios_penalize_isa_irq(r->start, 1);
+
+	pnp_add_resource(dev, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -224,8 +252,13 @@ static int vendor_resource_matches(struct pnp_dev *dev,
 	    uuid_len == sizeof(match->data) &&
 	    memcmp(uuid, match->data, uuid_len) == 0) {
 		if (expected_len && expected_len != actual_len) {
+<<<<<<< HEAD
 			dev_err(&dev->dev, "wrong vendor descriptor size; "
 				"expected %d, found %d bytes\n",
+=======
+			dev_err(&dev->dev,
+				"wrong vendor descriptor size; expected %d, found %d bytes\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				expected_len, actual_len);
 			return 0;
 		}
@@ -239,6 +272,7 @@ static int vendor_resource_matches(struct pnp_dev *dev,
 static void pnpacpi_parse_allocated_vendor(struct pnp_dev *dev,
 				    struct acpi_resource_vendor_typed *vendor)
 {
+<<<<<<< HEAD
 	if (vendor_resource_matches(dev, vendor, &hp_ccsr_uuid, 16)) {
 		u64 start, length;
 
@@ -326,10 +360,23 @@ static void pnpacpi_parse_allocated_ext_address_space(struct pnp_dev *dev,
 		pnpacpi_parse_allocated_busresource(dev, p->minimum, len);
 }
 
+=======
+	struct { u64 start, length; } range;
+
+	if (vendor_resource_matches(dev, vendor, &hp_ccsr_uuid,
+				    sizeof(range))) {
+		memcpy(&range, vendor->byte_data, sizeof(range));
+		pnp_add_mem_resource(dev, range.start, range.start +
+				     range.length - 1, 0);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 					      void *data)
 {
 	struct pnp_dev *dev = data;
+<<<<<<< HEAD
 	struct acpi_resource_irq *irq;
 	struct acpi_resource_dma *dma;
 	struct acpi_resource_io *io;
@@ -359,11 +406,34 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 				    irq->sharable);
 			}
 
+=======
+	struct acpi_resource_dma *dma;
+	struct acpi_resource_vendor_typed *vendor_typed;
+	struct acpi_resource_gpio *gpio;
+	struct resource_win win = {{0}, 0};
+	struct resource *r = &win.res;
+	int i, flags;
+
+	if (acpi_dev_resource_address_space(res, &win)
+	    || acpi_dev_resource_ext_address_space(res, &win)) {
+		pnp_add_resource(dev, &win.res);
+		return AE_OK;
+	}
+
+	r->flags = 0;
+	if (acpi_dev_resource_interrupt(res, 0, r)) {
+		pnpacpi_add_irqresource(dev, r);
+		for (i = 1; acpi_dev_resource_interrupt(res, i, r); i++)
+			pnpacpi_add_irqresource(dev, r);
+
+		if (i > 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The IRQ encoder puts a single interrupt in each
 			 * descriptor, so if a _CRS descriptor has more than
 			 * one interrupt, we won't be able to re-encode it.
 			 */
+<<<<<<< HEAD
 			if (pnp_can_write(dev) && irq->interrupt_count > 1) {
 				dev_warn(&dev->dev, "multiple interrupts in "
 					 "_CRS descriptor; configuration can't "
@@ -373,6 +443,48 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 		}
 		break;
 
+=======
+			if (pnp_can_write(dev)) {
+				dev_warn(&dev->dev,
+					 "multiple interrupts in _CRS descriptor; configuration can't be changed\n");
+				dev->capabilities &= ~PNP_WRITE;
+			}
+		}
+		return AE_OK;
+	} else if (acpi_gpio_get_irq_resource(res, &gpio)) {
+		/*
+		 * If the resource is GpioInt() type then extract the IRQ
+		 * from GPIO resource and fill it into IRQ resource type.
+		 */
+		i = acpi_dev_gpio_irq_get(dev->data, 0);
+		if (i >= 0) {
+			flags = acpi_dev_irq_flags(gpio->triggering,
+						   gpio->polarity,
+						   gpio->shareable,
+						   gpio->wake_capable);
+		} else {
+			flags = IORESOURCE_DISABLED;
+		}
+		pnp_add_irq_resource(dev, i, flags);
+		return AE_OK;
+	} else if (r->flags & IORESOURCE_DISABLED) {
+		pnp_add_irq_resource(dev, 0, IORESOURCE_DISABLED);
+		return AE_OK;
+	}
+
+	switch (res->type) {
+	case ACPI_RESOURCE_TYPE_MEMORY24:
+	case ACPI_RESOURCE_TYPE_MEMORY32:
+	case ACPI_RESOURCE_TYPE_FIXED_MEMORY32:
+		if (acpi_dev_resource_memory(res, r))
+			pnp_add_resource(dev, r);
+		break;
+	case ACPI_RESOURCE_TYPE_IO:
+	case ACPI_RESOURCE_TYPE_FIXED_IO:
+		if (acpi_dev_resource_io(res, r))
+			pnp_add_resource(dev, r);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACPI_RESOURCE_TYPE_DMA:
 		dma = &res->data.dma;
 		if (dma->channel_count > 0 && dma->channels[0] != (u8) -1)
@@ -383,6 +495,7 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 		pnp_add_dma_resource(dev, dma->channels[0], flags);
 		break;
 
+<<<<<<< HEAD
 	case ACPI_RESOURCE_TYPE_IO:
 		io = &res->data.io;
 		pnpacpi_parse_allocated_ioresource(dev,
@@ -391,10 +504,13 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 			io->io_decode, 0);
 		break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACPI_RESOURCE_TYPE_START_DEPENDENT:
 	case ACPI_RESOURCE_TYPE_END_DEPENDENT:
 		break;
 
+<<<<<<< HEAD
 	case ACPI_RESOURCE_TYPE_FIXED_IO:
 		fixed_io = &res->data.fixed_io;
 		pnpacpi_parse_allocated_ioresource(dev,
@@ -403,6 +519,8 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 			ACPI_DECODE_10, 0);
 		break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACPI_RESOURCE_TYPE_VENDOR:
 		vendor_typed = &res->data.vendor_typed;
 		pnpacpi_parse_allocated_vendor(dev, vendor_typed);
@@ -411,6 +529,7 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 	case ACPI_RESOURCE_TYPE_END_TAG:
 		break;
 
+<<<<<<< HEAD
 	case ACPI_RESOURCE_TYPE_MEMORY24:
 		memory24 = &res->data.memory24;
 		pnpacpi_parse_allocated_memresource(dev,
@@ -474,6 +593,15 @@ static acpi_status pnpacpi_allocated_resource(struct acpi_resource *res,
 	case ACPI_RESOURCE_TYPE_GENERIC_REGISTER:
 		break;
 
+=======
+	case ACPI_RESOURCE_TYPE_GENERIC_REGISTER:
+		break;
+
+	case ACPI_RESOURCE_TYPE_SERIAL_BUS:
+		/* serial bus connections (I2C/SPI/UART) are not pnp */
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		dev_warn(&dev->dev, "unknown resource type %d in _CRS\n",
 			 res->type);
@@ -531,7 +659,11 @@ static __init void pnpacpi_parse_irq_option(struct pnp_dev *dev,
 		if (p->interrupts[i])
 			__set_bit(p->interrupts[i], map.bits);
 
+<<<<<<< HEAD
 	flags = irq_flags(p->triggering, p->polarity, p->sharable);
+=======
+	flags = acpi_dev_irq_flags(p->triggering, p->polarity, p->shareable, p->wake_capable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_register_irq_resource(dev, option_flags, &map, flags);
 }
 
@@ -549,13 +681,22 @@ static __init void pnpacpi_parse_ext_irq_option(struct pnp_dev *dev,
 			if (p->interrupts[i] < PNP_IRQ_NR)
 				__set_bit(p->interrupts[i], map.bits);
 			else
+<<<<<<< HEAD
 				dev_err(&dev->dev, "ignoring IRQ %d option "
 					"(too large for %d entry bitmap)\n",
+=======
+				dev_err(&dev->dev,
+					"ignoring IRQ %d option (too large for %d entry bitmap)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					p->interrupts[i], PNP_IRQ_NR);
 		}
 	}
 
+<<<<<<< HEAD
 	flags = irq_flags(p->triggering, p->polarity, p->sharable);
+=======
+	flags = acpi_dev_irq_flags(p->triggering, p->polarity, p->shareable, p->wake_capable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_register_irq_resource(dev, option_flags, &map, flags);
 }
 
@@ -633,12 +774,21 @@ static __init void pnpacpi_parse_address_option(struct pnp_dev *dev,
 	if (p->resource_type == ACPI_MEMORY_RANGE) {
 		if (p->info.mem.write_protect == ACPI_READ_WRITE_MEMORY)
 			flags = IORESOURCE_MEM_WRITEABLE;
+<<<<<<< HEAD
 		pnp_register_mem_resource(dev, option_flags, p->minimum,
 					  p->minimum, 0, p->address_length,
 					  flags);
 	} else if (p->resource_type == ACPI_IO_RANGE)
 		pnp_register_port_resource(dev, option_flags, p->minimum,
 					   p->minimum, 0, p->address_length,
+=======
+		pnp_register_mem_resource(dev, option_flags, p->address.minimum,
+					  p->address.minimum, 0, p->address.address_length,
+					  flags);
+	} else if (p->resource_type == ACPI_IO_RANGE)
+		pnp_register_port_resource(dev, option_flags, p->address.minimum,
+					   p->address.minimum, 0, p->address.address_length,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   IORESOURCE_IO_FIXED);
 }
 
@@ -652,12 +802,21 @@ static __init void pnpacpi_parse_ext_address_option(struct pnp_dev *dev,
 	if (p->resource_type == ACPI_MEMORY_RANGE) {
 		if (p->info.mem.write_protect == ACPI_READ_WRITE_MEMORY)
 			flags = IORESOURCE_MEM_WRITEABLE;
+<<<<<<< HEAD
 		pnp_register_mem_resource(dev, option_flags, p->minimum,
 					  p->minimum, 0, p->address_length,
 					  flags);
 	} else if (p->resource_type == ACPI_IO_RANGE)
 		pnp_register_port_resource(dev, option_flags, p->minimum,
 					   p->minimum, 0, p->address_length,
+=======
+		pnp_register_mem_resource(dev, option_flags, p->address.minimum,
+					  p->address.minimum, 0, p->address.address_length,
+					  flags);
+	} else if (p->resource_type == ACPI_IO_RANGE)
+		pnp_register_port_resource(dev, option_flags, p->address.minimum,
+					   p->address.minimum, 0, p->address.address_length,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   IORESOURCE_IO_FIXED);
 }
 
@@ -866,6 +1025,10 @@ int pnpacpi_build_resource_template(struct pnp_dev *dev,
 	}
 	/* resource will pointer the end resource now */
 	resource->type = ACPI_RESOURCE_TYPE_END_TAG;
+<<<<<<< HEAD
+=======
+	resource->length = sizeof(struct acpi_resource);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -875,7 +1038,11 @@ static void pnpacpi_encode_irq(struct pnp_dev *dev,
 			       struct resource *p)
 {
 	struct acpi_resource_irq *irq = &resource->data.irq;
+<<<<<<< HEAD
 	int triggering, polarity, shareable;
+=======
+	u8 triggering, polarity, shareable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pnp_resource_enabled(p)) {
 		irq->interrupt_count = 0;
@@ -887,7 +1054,11 @@ static void pnpacpi_encode_irq(struct pnp_dev *dev,
 	decode_irq_flags(dev, p->flags, &triggering, &polarity, &shareable);
 	irq->triggering = triggering;
 	irq->polarity = polarity;
+<<<<<<< HEAD
 	irq->sharable = shareable;
+=======
+	irq->shareable = shareable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq->interrupt_count = 1;
 	irq->interrupts[0] = p->start;
 
@@ -895,7 +1066,11 @@ static void pnpacpi_encode_irq(struct pnp_dev *dev,
 		(int) p->start,
 		triggering == ACPI_LEVEL_SENSITIVE ? "level" : "edge",
 		polarity == ACPI_ACTIVE_LOW ? "low" : "high",
+<<<<<<< HEAD
 		irq->sharable == ACPI_SHARED ? "shared" : "exclusive",
+=======
+		irq->shareable == ACPI_SHARED ? "shared" : "exclusive",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq->descriptor_length);
 }
 
@@ -904,7 +1079,11 @@ static void pnpacpi_encode_ext_irq(struct pnp_dev *dev,
 				   struct resource *p)
 {
 	struct acpi_resource_extended_irq *extended_irq = &resource->data.extended_irq;
+<<<<<<< HEAD
 	int triggering, polarity, shareable;
+=======
+	u8 triggering, polarity, shareable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pnp_resource_enabled(p)) {
 		extended_irq->interrupt_count = 0;
@@ -917,14 +1096,22 @@ static void pnpacpi_encode_ext_irq(struct pnp_dev *dev,
 	extended_irq->producer_consumer = ACPI_CONSUMER;
 	extended_irq->triggering = triggering;
 	extended_irq->polarity = polarity;
+<<<<<<< HEAD
 	extended_irq->sharable = shareable;
+=======
+	extended_irq->shareable = shareable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extended_irq->interrupt_count = 1;
 	extended_irq->interrupts[0] = p->start;
 
 	pnp_dbg(&dev->dev, "  encode irq %d %s %s %s\n", (int) p->start,
 		triggering == ACPI_LEVEL_SENSITIVE ? "level" : "edge",
 		polarity == ACPI_ACTIVE_LOW ? "low" : "high",
+<<<<<<< HEAD
 		extended_irq->sharable == ACPI_SHARED ? "shared" : "exclusive");
+=======
+		extended_irq->shareable == ACPI_SHARED ? "shared" : "exclusive");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pnpacpi_encode_dma(struct pnp_dev *dev,
@@ -1094,7 +1281,11 @@ int pnpacpi_encode_resources(struct pnp_dev *dev, struct acpi_buffer *buffer)
 	/* pnpacpi_build_resource_template allocates extra mem */
 	int res_cnt = (buffer->length - 1) / sizeof(struct acpi_resource) - 1;
 	struct acpi_resource *resource = buffer->pointer;
+<<<<<<< HEAD
 	int port = 0, irq = 0, dma = 0, mem = 0;
+=======
+	unsigned int port = 0, irq = 0, dma = 0, mem = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pnp_dbg(&dev->dev, "encode %d resources\n", res_cnt);
 	while (i < res_cnt) {
@@ -1150,8 +1341,14 @@ int pnpacpi_encode_resources(struct pnp_dev *dev, struct acpi_buffer *buffer)
 		case ACPI_RESOURCE_TYPE_EXTENDED_ADDRESS64:
 		case ACPI_RESOURCE_TYPE_GENERIC_REGISTER:
 		default:	/* other type */
+<<<<<<< HEAD
 			dev_warn(&dev->dev, "can't encode unknown resource "
 				 "type %d\n", resource->type);
+=======
+			dev_warn(&dev->dev,
+				 "can't encode unknown resource type %d\n",
+				 resource->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		resource++;

@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ASMARM_PCI_H
 #define ASMARM_PCI_H
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 #include <asm-generic/pci-dma-compat.h>
 #include <asm-generic/pci-bridge.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach/pci.h> /* for pci_sys_data */
 
 extern unsigned long pcibios_min_io;
@@ -12,6 +19,7 @@ extern unsigned long pcibios_min_io;
 extern unsigned long pcibios_min_mem;
 #define PCIBIOS_MIN_MEM pcibios_min_mem
 
+<<<<<<< HEAD
 static inline int pcibios_assign_all_busses(void)
 {
 	return pci_has_flag(PCI_REASSIGN_ALL_RSRC);
@@ -25,12 +33,18 @@ static inline int pci_domain_nr(struct pci_bus *bus)
 	return root->domain;
 }
 
+=======
+#define pcibios_assign_all_busses()	pci_has_flag(PCI_REASSIGN_ALL_BUS)
+
+#ifdef CONFIG_PCI_DOMAINS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pci_proc_domain(struct pci_bus *bus)
 {
 	return pci_domain_nr(bus);
 }
 #endif /* CONFIG_PCI_DOMAINS */
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
@@ -67,4 +81,12 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 
 #endif /* __KERNEL__ */
  
+=======
+#define HAVE_PCI_MMAP
+#define ARCH_GENERIC_PCI_MMAP_RESOURCE
+
+extern void pcibios_report_status(unsigned int status_mask, int warn);
+
+#endif /* __KERNEL__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

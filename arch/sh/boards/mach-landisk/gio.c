@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/landisk/gio.c - driver for landisk
  *
@@ -6,11 +10,14 @@
  *
  *   Copylight (C) 2006 kogiidena
  *   Copylight (C) 2002 Atom Create Engineering Co., Ltd. *
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
@@ -18,7 +25,11 @@
 #include <linux/cdev.h>
 #include <linux/fs.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach-landisk/mach/gio.h>
 #include <mach-landisk/mach/iodata_landisk.h>
 
@@ -31,11 +42,18 @@ static int openCnt;
 
 static int gio_open(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 	int minor;
 	int ret = -ENOENT;
 
 	preempt_disable();
 	minor = MINOR(inode->i_rdev);
+=======
+	int minor = iminor(inode);
+	int ret = -ENOENT;
+
+	preempt_disable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (minor < DEVCOUNT) {
 		if (openCnt > 0) {
 			ret = -EALREADY;
@@ -50,9 +68,14 @@ static int gio_open(struct inode *inode, struct file *filp)
 
 static int gio_close(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 	int minor;
 
 	minor = MINOR(inode->i_rdev);
+=======
+	int minor = iminor(inode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (minor < DEVCOUNT) {
 		openCnt--;
 	}

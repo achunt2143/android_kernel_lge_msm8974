@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Creative Labs, Inc.
  *  Routines for IRQ control of EMU10K1 chips
+<<<<<<< HEAD
  *
  *  BUGS:
  *    --
@@ -23,6 +28,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -32,6 +39,7 @@
 irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 {
 	struct snd_emu10k1 *emu = dev_id;
+<<<<<<< HEAD
 	unsigned int status, status2, orig_status, orig_status2;
 	int handled = 0;
 	int timeout = 0;
@@ -46,6 +54,26 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 		}
 		if (status & IPR_PCIERROR) {
 			snd_printk(KERN_ERR "interrupt: PCI error\n");
+=======
+	unsigned int status, orig_status;
+	int handled = 0;
+	int timeout = 0;
+
+	while ((status = inl(emu->port + IPR)) != 0) {
+		handled = 1;
+		if ((status & 0xffffffff) == 0xffffffff) {
+			dev_info(emu->card->dev,
+				 "Suspected sound card removal\n");
+			break;
+		}
+		if (++timeout == 1000) {
+			dev_info(emu->card->dev, "emu10k1 irq routine failure\n");
+			break;
+		}
+		orig_status = status;
+		if (status & IPR_PCIERROR) {
+			dev_err(emu->card->dev, "interrupt: PCI error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_emu10k1_intr_disable(emu, INTE_PCIERRORENABLE);
 			status &= ~IPR_PCIERROR;
 		}
@@ -57,12 +85,22 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 			status &= ~(IPR_VOLINCR|IPR_VOLDECR|IPR_MUTE);
 		}
 		if (status & IPR_CHANNELLOOP) {
+<<<<<<< HEAD
 			int voice;
 			int voice_max = status & IPR_CHANNELNUMBERMASK;
 			u32 val;
 			struct snd_emu10k1_voice *pvoice = emu->voices;
 
 			val = snd_emu10k1_ptr_read(emu, CLIPL, 0);
+=======
+			struct snd_emu10k1_voice *pvoice;
+			int voice;
+			int voice_max = status & IPR_CHANNELNUMBERMASK;
+			u32 val;
+
+			val = snd_emu10k1_ptr_read(emu, CLIPL, 0);
+			pvoice = emu->voices;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (voice = 0; voice <= voice_max; voice++) {
 				if (voice == 0x20)
 					val = snd_emu10k1_ptr_read(emu, CLIPH, 0);
@@ -78,6 +116,10 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 				pvoice++;
 			}
 			val = snd_emu10k1_ptr_read(emu, HLIPL, 0);
+<<<<<<< HEAD
+=======
+			pvoice = emu->voices;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (voice = 0; voice <= voice_max; voice++) {
 				if (voice == 0x20)
 					val = snd_emu10k1_ptr_read(emu, HLIPH, 0);
@@ -92,9 +134,14 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 				val >>= 1;
 				pvoice++;
 			}
+<<<<<<< HEAD
 			status &= ~IPR_CHANNELLOOP;
 		}
 		status &= ~IPR_CHANNELNUMBERMASK;
+=======
+			status &= ~(IPR_CHANNELLOOP | IPR_CHANNELNUMBERMASK);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status & (IPR_ADCBUFFULL|IPR_ADCBUFHALFFULL)) {
 			if (emu->capture_interrupt)
 				emu->capture_interrupt(emu, status);
@@ -152,6 +199,7 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 			status &= ~IPR_FXDSP;
 		}
 		if (status & IPR_P16V) {
+<<<<<<< HEAD
 			while ((status2 = inl(emu->port + IPR2)) != 0) {
 				u32 mask = INTE2_PLAYBACK_CH_0_LOOP;  /* Full Loop */
 				struct snd_emu10k1_voice *pvoice = &(emu->p16v_voices[0]);
@@ -203,6 +251,28 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 	}
 	if (timeout == 1000)
 		snd_printk(KERN_INFO "emu10k1 irq routine failure\n");
+=======
+			if (emu->p16v_interrupt)
+				emu->p16v_interrupt(emu);
+			else
+				outl(0, emu->port + INTE2);
+			status &= ~IPR_P16V;
+		}
+		if (status & IPR_A_GPIO) {
+			if (emu->gpio_interrupt)
+				emu->gpio_interrupt(emu);
+			else
+				snd_emu10k1_intr_disable(emu, INTE_A_GPIOENABLE);
+			status &= ~IPR_A_GPIO;
+		}
+
+		if (status) {
+			dev_err(emu->card->dev,
+				"unhandled interrupt: 0x%08x\n", status);
+		}
+		outl(orig_status, emu->port + IPR); /* ack all */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_RETVAL(handled);
 }

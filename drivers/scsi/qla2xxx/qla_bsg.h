@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2011 QLogic Corporation
  *
  * See LICENSE.qla2xxx for copyright and licensing details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * QLogic Fibre Channel HBA Driver
+ * Copyright (c)  2003-2014 QLogic Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __QLA_BSG_H
 #define __QLA_BSG_H
@@ -19,21 +26,76 @@
 #define QL_VND_SET_FRU_VERSION	0x0B
 #define QL_VND_READ_FRU_STATUS	0x0C
 #define QL_VND_WRITE_FRU_STATUS	0x0D
+<<<<<<< HEAD
+=======
+#define QL_VND_DIAG_IO_CMD	0x0A
+#define QL_VND_WRITE_I2C	0x10
+#define QL_VND_READ_I2C		0x11
+#define QL_VND_FX00_MGMT_CMD	0x12
+#define QL_VND_SERDES_OP	0x13
+#define	QL_VND_SERDES_OP_EX	0x14
+#define QL_VND_GET_FLASH_UPDATE_CAPS    0x15
+#define QL_VND_SET_FLASH_UPDATE_CAPS    0x16
+#define QL_VND_GET_BBCR_DATA    0x17
+#define QL_VND_GET_PRIV_STATS	0x18
+#define QL_VND_DPORT_DIAGNOSTICS	0x19
+#define QL_VND_GET_PRIV_STATS_EX	0x1A
+#define QL_VND_SS_GET_FLASH_IMAGE_STATUS	0x1E
+#define QL_VND_EDIF_MGMT                0X1F
+#define QL_VND_MANAGE_HOST_STATS	0x23
+#define QL_VND_GET_HOST_STATS		0x24
+#define QL_VND_GET_TGT_STATS		0x25
+#define QL_VND_MANAGE_HOST_PORT		0x26
+#define QL_VND_MBX_PASSTHRU		0x2B
+#define QL_VND_DPORT_DIAGNOSTICS_V2	0x2C
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BSG Vendor specific subcode returns */
 #define EXT_STATUS_OK			0
 #define EXT_STATUS_ERR			1
+<<<<<<< HEAD
 #define EXT_STATUS_INVALID_PARAM	6
 #define EXT_STATUS_MAILBOX		11
 #define EXT_STATUS_NO_MEMORY		17
+=======
+#define EXT_STATUS_BUSY			2
+#define EXT_STATUS_INVALID_PARAM	6
+#define EXT_STATUS_DATA_OVERRUN		7
+#define EXT_STATUS_DATA_UNDERRUN	8
+#define EXT_STATUS_MAILBOX		11
+#define EXT_STATUS_BUFFER_TOO_SMALL	16
+#define EXT_STATUS_NO_MEMORY		17
+#define EXT_STATUS_DEVICE_OFFLINE	22
+
+/*
+ * To support bidirectional iocb
+ * BSG Vendor specific returns
+ */
+#define EXT_STATUS_NOT_SUPPORTED	27
+#define EXT_STATUS_INVALID_CFG		28
+#define EXT_STATUS_DMA_ERR		29
+#define EXT_STATUS_TIMEOUT		30
+#define EXT_STATUS_THREAD_FAILED	31
+#define EXT_STATUS_DATA_CMP_FAILED	32
+#define EXT_STATUS_DPORT_DIAG_ERR	40
+#define EXT_STATUS_DPORT_DIAG_IN_PROCESS	41
+#define EXT_STATUS_DPORT_DIAG_NOT_RUNNING	42
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BSG definations for interpreting CommandSent field */
 #define INT_DEF_LB_LOOPBACK_CMD         0
 #define INT_DEF_LB_ECHO_CMD             1
 
 /* Loopback related definations */
+<<<<<<< HEAD
 #define EXTERNAL_LOOPBACK		0xF2
 #define ENABLE_INTERNAL_LOOPBACK	0x02
+=======
+#define INTERNAL_LOOPBACK		0xF1
+#define EXTERNAL_LOOPBACK		0xF2
+#define ENABLE_INTERNAL_LOOPBACK	0x02
+#define ENABLE_EXTERNAL_LOOPBACK	0x04
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INTERNAL_LOOPBACK_MASK		0x000E
 #define MAX_ELS_FRAME_PAYLOAD		252
 #define ELS_OPCODE_BYTE			0x10
@@ -121,7 +183,11 @@ struct qla84_msg_mgmt {
 	uint16_t rsrvd;
 	struct qla84_mgmt_param mgmtp;/* parameters for cmd */
 	uint32_t len; /* bytes in payload following this struct */
+<<<<<<< HEAD
 	uint8_t payload[0]; /* payload for cmd */
+=======
+	uint8_t payload[]; /* payload for cmd */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qla_bsg_a84_mgmt {
@@ -152,6 +218,15 @@ struct qla_port_param {
 	uint16_t speed;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
+=======
+struct qla_mbx_passthru {
+	uint16_t reserved1[2];
+	uint16_t mbx_in[32];
+	uint16_t mbx_out[32];
+	uint32_t reserved2[16];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FRU VPD */
 
@@ -174,7 +249,11 @@ struct qla_image_version {
 
 struct qla_image_version_list {
 	uint32_t count;
+<<<<<<< HEAD
 	struct qla_image_version version[0];
+=======
+	struct qla_image_version version[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct qla_status_reg {
@@ -183,4 +262,98 @@ struct qla_status_reg {
 	uint8_t reserved[7];
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct qla_i2c_access {
+	uint16_t device;
+	uint16_t offset;
+	uint16_t option;
+	uint16_t length;
+	uint8_t  buffer[0x40];
+} __packed;
+
+/* 26xx serdes register interface */
+
+/* serdes reg commands */
+#define INT_SC_SERDES_READ_REG		1
+#define INT_SC_SERDES_WRITE_REG		2
+
+struct qla_serdes_reg {
+	uint16_t cmd;
+	uint16_t addr;
+	uint16_t val;
+} __packed;
+
+struct qla_serdes_reg_ex {
+	uint16_t cmd;
+	uint32_t addr;
+	uint32_t val;
+} __packed;
+
+struct qla_flash_update_caps {
+	uint64_t  capabilities;
+	uint32_t  outage_duration;
+	uint8_t   reserved[20];
+} __packed;
+
+/* BB_CR Status */
+#define QLA_BBCR_STATUS_DISABLED       0
+#define QLA_BBCR_STATUS_ENABLED        1
+#define QLA_BBCR_STATUS_UNKNOWN        2
+
+/* BB_CR State */
+#define QLA_BBCR_STATE_OFFLINE         0
+#define QLA_BBCR_STATE_ONLINE          1
+
+/* BB_CR Offline Reason Code */
+#define QLA_BBCR_REASON_PORT_SPEED     1
+#define QLA_BBCR_REASON_PEER_PORT      2
+#define QLA_BBCR_REASON_SWITCH         3
+#define QLA_BBCR_REASON_LOGIN_REJECT   4
+
+struct  qla_bbcr_data {
+	uint8_t   status;         /* 1 - enabled, 0 - Disabled */
+	uint8_t   state;          /* 1 - online, 0 - offline */
+	uint8_t   configured_bbscn;       /* 0-15 */
+	uint8_t   negotiated_bbscn;       /* 0-15 */
+	uint8_t   offline_reason_code;
+	uint16_t  mbx1;			/* Port state */
+	uint8_t   reserved[9];
+} __packed;
+
+struct qla_dport_diag {
+	uint16_t options;
+	uint32_t buf[16];
+	uint8_t  unused[62];
+} __packed;
+
+#define QLA_GET_DPORT_RESULT_V2		0  /* Get Result */
+#define QLA_RESTART_DPORT_TEST_V2	1  /* Restart test */
+#define QLA_START_DPORT_TEST_V2		2  /* Start test */
+struct qla_dport_diag_v2 {
+	uint16_t options;
+	uint16_t mbx1;
+	uint16_t mbx2;
+	uint8_t  unused[58];
+	uint8_t buf[1024]; /* Test Result */
+} __packed;
+
+/* D_Port options */
+#define QLA_DPORT_RESULT	0x0
+#define QLA_DPORT_START		0x2
+
+/* active images in flash */
+struct qla_active_regions {
+	uint8_t global_image;
+	uint8_t board_config;
+	uint8_t vpd_nvram;
+	uint8_t npiv_config_0_1;
+	uint8_t npiv_config_2_3;
+	uint8_t nvme_params;
+	uint8_t reserved[31];
+} __packed;
+
+#include "qla_edif_bsg.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

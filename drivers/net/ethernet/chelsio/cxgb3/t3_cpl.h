@@ -1448,7 +1448,11 @@ struct cpl_rdma_terminate {
 #endif
 	__be32 msn;
 	__be32 mo;
+<<<<<<< HEAD
 	__u8 data[0];
+=======
+	__u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* cpl_rdma_terminate.tid_len fields */

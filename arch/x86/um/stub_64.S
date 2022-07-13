@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "as-layout.h"
 
 	.globl syscall_stub
@@ -22,6 +23,16 @@ batch_syscall_stub:
 	or	%rax, %rbx
 	/* load pointer to first operation */
 	mov	%rbx, %rsp
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#include <as-layout.h>
+
+.section .__syscall_stub, "ax"
+	.globl batch_syscall_stub
+batch_syscall_stub:
+	/* %rsp has the pointer to first operation */
+	mov	%rsp, %rbx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add	$0x10, %rsp
 again:
 	/* load length of additional data */

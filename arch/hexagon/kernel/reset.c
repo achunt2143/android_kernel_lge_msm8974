@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
  *
@@ -16,6 +17,14 @@
  * 02110-1301, USA.
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+ */
+
+#include <linux/reboot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <asm/hexagon_vm.h>
 
@@ -33,6 +42,11 @@ void machine_restart(char *cmd)
 {
 }
 
+<<<<<<< HEAD
 void pm_power_off(void)
 {
 }
+=======
+void (*pm_power_off)(void) = NULL;
+EXPORT_SYMBOL(pm_power_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

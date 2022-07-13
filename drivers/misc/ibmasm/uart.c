@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBM ASM Service Processor Device Driver
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,11 @@
  *
  * Author: Max Asböck <amax@us.ibm.com>
  *
+=======
+ * Copyright (C) IBM Corporation, 2004
+ *
+ * Author: Max Asböck <amax@us.ibm.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/termios.h>
@@ -33,7 +43,11 @@
 
 void ibmasm_register_uart(struct service_processor *sp)
 {
+<<<<<<< HEAD
 	struct uart_port uport;
+=======
+	struct uart_8250_port uart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *iomem_base;
 
 	iomem_base = sp->base_address + SCOUT_COM_B_BASE;
@@ -47,6 +61,7 @@ void ibmasm_register_uart(struct service_processor *sp)
 		return;
 	}
 
+<<<<<<< HEAD
 	memset(&uport, 0, sizeof(struct uart_port));
 	uport.irq	= sp->irq;
 	uport.uartclk	= 3686400;
@@ -55,6 +70,16 @@ void ibmasm_register_uart(struct service_processor *sp)
 	uport.membase	= iomem_base;
 
 	sp->serial_line = serial8250_register_port(&uport);
+=======
+	memset(&uart, 0, sizeof(uart));
+	uart.port.irq		= sp->irq;
+	uart.port.uartclk	= 3686400;
+	uart.port.flags		= UPF_SHARE_IRQ;
+	uart.port.iotype	= UPIO_MEM;
+	uart.port.membase	= iomem_base;
+
+	sp->serial_line = serial8250_register_8250_port(&uart);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sp->serial_line < 0) {
 		dev_err(sp->dev, "Failed to register serial port\n");
 		return;

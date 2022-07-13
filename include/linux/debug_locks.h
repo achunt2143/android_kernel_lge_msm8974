@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __LINUX_DEBUG_LOCKING_H
 #define __LINUX_DEBUG_LOCKING_H
 
@@ -12,6 +13,22 @@ extern int debug_locks_silent;
 
 
 static inline int __debug_locks_off(void)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_DEBUG_LOCKING_H
+#define __LINUX_DEBUG_LOCKING_H
+
+#include <linux/atomic.h>
+#include <linux/cache.h>
+
+struct task_struct;
+
+extern int debug_locks __read_mostly;
+extern int debug_locks_silent __read_mostly;
+
+
+static __always_inline int __debug_locks_off(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return xchg(&debug_locks, 0);
 }
@@ -26,8 +43,15 @@ extern int debug_locks_off(void);
 	int __ret = 0;							\
 									\
 	if (!oops_in_progress && unlikely(c)) {				\
+<<<<<<< HEAD
 		if (debug_locks_off() && !debug_locks_silent)		\
 			WARN_ON(1);					\
+=======
+		instrumentation_begin();				\
+		if (debug_locks_off() && !debug_locks_silent)		\
+			WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", #c);		\
+		instrumentation_end();					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__ret = 1;						\
 	}								\
 	__ret;								\
@@ -45,13 +69,20 @@ extern int debug_locks_off(void);
 # define locking_selftest()	do { } while (0)
 #endif
 
+<<<<<<< HEAD
 struct task_struct;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_LOCKDEP
 extern void debug_show_all_locks(void);
 extern void debug_show_held_locks(struct task_struct *task);
 extern void debug_check_no_locks_freed(const void *from, unsigned long len);
+<<<<<<< HEAD
 extern void debug_check_no_locks_held(struct task_struct *task);
+=======
+extern void debug_check_no_locks_held(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void debug_show_all_locks(void)
 {
@@ -67,7 +98,11 @@ debug_check_no_locks_freed(const void *from, unsigned long len)
 }
 
 static inline void
+<<<<<<< HEAD
 debug_check_no_locks_held(struct task_struct *task)
+=======
+debug_check_no_locks_held(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif

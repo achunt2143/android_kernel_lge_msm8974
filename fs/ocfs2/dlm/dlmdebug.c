@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmdebug.c
  *
  * debug functionality for the dlm
  *
  * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -32,9 +40,15 @@
 #include <linux/debugfs.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
 #include "cluster/heartbeat.h"
 #include "cluster/nodemanager.h"
 #include "cluster/tcp.h"
+=======
+#include "../cluster/heartbeat.h"
+#include "../cluster/nodemanager.h"
+#include "../cluster/tcp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
@@ -42,7 +56,11 @@
 #include "dlmdebug.h"
 
 #define MLOG_MASK_PREFIX ML_DLM
+<<<<<<< HEAD
 #include "cluster/masklog.h"
+=======
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int stringify_lockname(const char *lockname, int locklen, char *buf,
 			      int len);
@@ -81,7 +99,11 @@ static void __dlm_print_lock(struct dlm_lock *lock)
 	       lock->ml.type, lock->ml.convert_type, lock->ml.node,
 	       dlm_get_lock_cookie_node(be64_to_cpu(lock->ml.cookie)),
 	       dlm_get_lock_cookie_seq(be64_to_cpu(lock->ml.cookie)),
+<<<<<<< HEAD
 	       atomic_read(&lock->lock_refs.refcount),
+=======
+	       kref_read(&lock->lock_refs),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (list_empty(&lock->ast_list) ? 'y' : 'n'),
 	       (lock->ast_pending ? 'y' : 'n'),
 	       (list_empty(&lock->bast_list) ? 'y' : 'n'),
@@ -96,7 +118,10 @@ static void __dlm_print_lock(struct dlm_lock *lock)
 
 void __dlm_print_one_lock_resource(struct dlm_lock_resource *res)
 {
+<<<<<<< HEAD
 	struct list_head *iter2;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlm_lock *lock;
 	char buf[DLM_LOCKID_NAME_MAX];
 
@@ -107,7 +132,11 @@ void __dlm_print_one_lock_resource(struct dlm_lock_resource *res)
 	printk("lockres: %s, owner=%u, state=%u\n",
 	       buf, res->owner, res->state);
 	printk("  last used: %lu, refcnt: %u, on purge list: %s\n",
+<<<<<<< HEAD
 	       res->last_used, atomic_read(&res->refs.refcount),
+=======
+	       res->last_used, kref_read(&res->refs),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       list_empty(&res->purge) ? "no" : "yes");
 	printk("  on dirty list: %s, on reco list: %s, "
 	       "migrating pending: %s\n",
@@ -118,6 +147,7 @@ void __dlm_print_one_lock_resource(struct dlm_lock_resource *res)
 	       res->inflight_locks, atomic_read(&res->asts_reserved));
 	dlm_print_lockres_refmap(res);
 	printk("  granted queue:\n");
+<<<<<<< HEAD
 	list_for_each(iter2, &res->granted) {
 		lock = list_entry(iter2, struct dlm_lock, list);
 		__dlm_print_lock(lock);
@@ -130,6 +160,17 @@ void __dlm_print_one_lock_resource(struct dlm_lock_resource *res)
 	printk("  blocked queue:\n");
 	list_for_each(iter2, &res->blocked) {
 		lock = list_entry(iter2, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->granted, list) {
+		__dlm_print_lock(lock);
+	}
+	printk("  converting queue:\n");
+	list_for_each_entry(lock, &res->converting, list) {
+		__dlm_print_lock(lock);
+	}
+	printk("  blocked queue:\n");
+	list_for_each_entry(lock, &res->blocked, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__dlm_print_lock(lock);
 	}
 }
@@ -263,11 +304,19 @@ static int stringify_lockname(const char *lockname, int locklen, char *buf,
 		memcpy((__be64 *)&inode_blkno_be,
 		       (char *)&lockname[OCFS2_DENTRY_LOCK_INO_START],
 		       sizeof(__be64));
+<<<<<<< HEAD
 		out += snprintf(buf + out, len - out, "%.*s%08x",
 				OCFS2_DENTRY_LOCK_INO_START - 1, lockname,
 				(unsigned int)be64_to_cpu(inode_blkno_be));
 	} else
 		out += snprintf(buf + out, len - out, "%.*s",
+=======
+		out += scnprintf(buf + out, len - out, "%.*s%08x",
+				OCFS2_DENTRY_LOCK_INO_START - 1, lockname,
+				(unsigned int)be64_to_cpu(inode_blkno_be));
+	} else
+		out += scnprintf(buf + out, len - out, "%.*s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				locklen, lockname);
 	return out;
 }
@@ -279,7 +328,11 @@ static int stringify_nodemap(unsigned long *nodemap, int maxnodes,
 	int i = -1;
 
 	while ((i = find_next_bit(nodemap, maxnodes, i + 1)) < maxnodes)
+<<<<<<< HEAD
 		out += snprintf(buf + out, len - out, "%d ", i);
+=======
+		out += scnprintf(buf + out, len - out, "%d ", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return out;
 }
@@ -297,11 +350,16 @@ static int dump_mle(struct dlm_master_list_entry *mle, char *buf, int len)
 		mle_type = "MIG";
 
 	out += stringify_lockname(mle->mname, mle->mnamelen, buf + out, len - out);
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\t%3s\tmas=%3u\tnew=%3u\tevt=%1d\tuse=%1d\tref=%3d\n",
 			mle_type, mle->master, mle->new_master,
 			!list_empty(&mle->hb_events),
 			!!mle->inuse,
+<<<<<<< HEAD
 			atomic_read(&mle->mle_refs.refcount));
 
 	out += snprintf(buf + out, len - out, "Maybe=");
@@ -325,6 +383,31 @@ static int dump_mle(struct dlm_master_list_entry *mle, char *buf, int len)
 	out += snprintf(buf + out, len - out, "\n");
 
 	out += snprintf(buf + out, len - out, "\n");
+=======
+			kref_read(&mle->mle_refs));
+
+	out += scnprintf(buf + out, len - out, "Maybe=");
+	out += stringify_nodemap(mle->maybe_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	out += scnprintf(buf + out, len - out, "Vote=");
+	out += stringify_nodemap(mle->vote_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	out += scnprintf(buf + out, len - out, "Response=");
+	out += stringify_nodemap(mle->response_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	out += scnprintf(buf + out, len - out, "Node=");
+	out += stringify_nodemap(mle->node_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	out += scnprintf(buf + out, len - out, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return out;
 }
@@ -333,7 +416,11 @@ void dlm_print_one_mle(struct dlm_master_list_entry *mle)
 {
 	char *buf;
 
+<<<<<<< HEAD
 	buf = (char *) get_zeroed_page(GFP_NOFS);
+=======
+	buf = (char *) get_zeroed_page(GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buf) {
 		dump_mle(mle, buf, PAGE_SIZE - 1);
 		free_page((unsigned long)buf);
@@ -342,7 +429,11 @@ void dlm_print_one_mle(struct dlm_master_list_entry *mle)
 
 #ifdef CONFIG_DEBUG_FS
 
+<<<<<<< HEAD
 static struct dentry *dlm_debugfs_root = NULL;
+=======
+static struct dentry *dlm_debugfs_root;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DLM_DEBUGFS_DIR				"o2dlm"
 #define DLM_DEBUGFS_DLM_STATE			"dlm_state"
@@ -351,6 +442,7 @@ static struct dentry *dlm_debugfs_root = NULL;
 #define DLM_DEBUGFS_PURGE_LIST			"purge_list"
 
 /* begin - utils funcs */
+<<<<<<< HEAD
 static void dlm_debug_free(struct kref *kref)
 {
 	struct dlm_debug_ctxt *dc;
@@ -371,6 +463,8 @@ static void dlm_debug_get(struct dlm_debug_ctxt *dc)
 	kref_get(&dc->debug_refcnt);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int debug_release(struct inode *inode, struct file *file)
 {
 	free_page((unsigned long)file->private_data);
@@ -392,7 +486,11 @@ static int debug_purgelist_print(struct dlm_ctxt *dlm, char *buf, int len)
 	int out = 0;
 	unsigned long total = 0;
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Dumping Purgelist for Domain: %s\n", dlm->name);
 
 	spin_lock(&dlm->spinlock);
@@ -404,13 +502,21 @@ static int debug_purgelist_print(struct dlm_ctxt *dlm, char *buf, int len)
 		out += stringify_lockname(res->lockname.name,
 					  res->lockname.len,
 					  buf + out, len - out);
+<<<<<<< HEAD
 		out += snprintf(buf + out, len - out, "\t%ld\n",
+=======
+		out += scnprintf(buf + out, len - out, "\t%ld\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(jiffies - res->last_used)/HZ);
 		spin_unlock(&res->spinlock);
 	}
 	spin_unlock(&dlm->spinlock);
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "Total on list: %ld\n", total);
+=======
+	out += scnprintf(buf + out, len - out, "Total on list: %lu\n", total);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return out;
 }
@@ -446,19 +552,30 @@ static int debug_mle_print(struct dlm_ctxt *dlm, char *buf, int len)
 {
 	struct dlm_master_list_entry *mle;
 	struct hlist_head *bucket;
+<<<<<<< HEAD
 	struct hlist_node *list;
 	int i, out = 0;
 	unsigned long total = 0, longest = 0, bucket_count = 0;
 
 	out += snprintf(buf + out, len - out,
+=======
+	int i, out = 0;
+	unsigned long total = 0, longest = 0, bucket_count = 0;
+
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Dumping MLEs for Domain: %s\n", dlm->name);
 
 	spin_lock(&dlm->master_lock);
 	for (i = 0; i < DLM_HASH_BUCKETS; i++) {
 		bucket = dlm_master_hash(dlm, i);
+<<<<<<< HEAD
 		hlist_for_each(list, bucket) {
 			mle = hlist_entry(list, struct dlm_master_list_entry,
 					  master_hash_node);
+=======
+		hlist_for_each_entry(mle, bucket, master_hash_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			++total;
 			++bucket_count;
 			if (len - out < 200)
@@ -470,8 +587,13 @@ static int debug_mle_print(struct dlm_ctxt *dlm, char *buf, int len)
 	}
 	spin_unlock(&dlm->master_lock);
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
 			"Total: %ld, Longest: %ld\n", total, longest);
+=======
+	out += scnprintf(buf + out, len - out,
+			"Total: %lu, Longest: %lu\n", total, longest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return out;
 }
 
@@ -509,7 +631,11 @@ static int dump_lock(struct dlm_lock *lock, int list_type, char *buf, int len)
 
 #define DEBUG_LOCK_VERSION	1
 	spin_lock(&lock->spinlock);
+<<<<<<< HEAD
 	out = snprintf(buf, len, "LOCK:%d,%d,%d,%d,%d,%d:%lld,%d,%d,%d,%d,%d,"
+=======
+	out = scnprintf(buf, len, "LOCK:%d,%d,%d,%d,%d,%d:%lld,%d,%d,%d,%d,%d,"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "%d,%d,%d,%d\n",
 		       DEBUG_LOCK_VERSION,
 		       list_type, lock->ml.type, lock->ml.convert_type,
@@ -521,7 +647,11 @@ static int dump_lock(struct dlm_lock *lock, int list_type, char *buf, int len)
 		       lock->ast_pending, lock->bast_pending,
 		       lock->convert_pending, lock->lock_pending,
 		       lock->cancel_pending, lock->unlock_pending,
+<<<<<<< HEAD
 		       atomic_read(&lock->lock_refs.refcount));
+=======
+		       kref_read(&lock->lock_refs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&lock->spinlock);
 
 	return out;
@@ -533,6 +663,7 @@ static int dump_lockres(struct dlm_lock_resource *res, char *buf, int len)
 	int i;
 	int out = 0;
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "NAME:");
 	out += stringify_lockname(res->lockname.name, res->lockname.len,
 				  buf + out, len - out);
@@ -540,6 +671,15 @@ static int dump_lockres(struct dlm_lock_resource *res, char *buf, int len)
 
 #define DEBUG_LRES_VERSION	1
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out, "NAME:");
+	out += stringify_lockname(res->lockname.name, res->lockname.len,
+				  buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+#define DEBUG_LRES_VERSION	1
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"LRES:%d,%d,%d,%ld,%d,%d,%d,%d,%d,%d,%d\n",
 			DEBUG_LRES_VERSION,
 			res->owner, res->state, res->last_used,
@@ -548,6 +688,7 @@ static int dump_lockres(struct dlm_lock_resource *res, char *buf, int len)
 			!list_empty(&res->recovering),
 			res->inflight_locks, res->migration_pending,
 			atomic_read(&res->asts_reserved),
+<<<<<<< HEAD
 			atomic_read(&res->refs.refcount));
 
 	/* refmap */
@@ -562,6 +703,22 @@ static int dump_lockres(struct dlm_lock_resource *res, char *buf, int len)
 		out += snprintf(buf + out, len - out,
 					"%02x", (unsigned char)res->lvb[i]);
 	out += snprintf(buf + out, len - out, "\n");
+=======
+			kref_read(&res->refs));
+
+	/* refmap */
+	out += scnprintf(buf + out, len - out, "RMAP:");
+	out += stringify_nodemap(res->refmap, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	/* lvb */
+	out += scnprintf(buf + out, len - out, "LVBX:");
+	for (i = 0; i < DLM_LVB_LEN; i++)
+		out += scnprintf(buf + out, len - out,
+					"%02x", (unsigned char)res->lvb[i]);
+	out += scnprintf(buf + out, len - out, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* granted */
 	list_for_each_entry(lock, &res->granted, list)
@@ -575,7 +732,11 @@ static int dump_lockres(struct dlm_lock_resource *res, char *buf, int len)
 	list_for_each_entry(lock, &res->blocked, list)
 		out += dump_lock(lock, 2, buf + out, len - out);
 
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "\n");
+=======
+	out += scnprintf(buf + out, len - out, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return out;
 }
@@ -585,7 +746,11 @@ static void *lockres_seq_start(struct seq_file *m, loff_t *pos)
 	struct debug_lockres *dl = m->private;
 	struct dlm_ctxt *dlm = dl->dl_ctxt;
 	struct dlm_lock_resource *oldres = dl->dl_res;
+<<<<<<< HEAD
 	struct dlm_lock_resource *res = NULL;
+=======
+	struct dlm_lock_resource *res = NULL, *iter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head *track_list;
 
 	spin_lock(&dlm->track_lock);
@@ -600,11 +765,19 @@ static void *lockres_seq_start(struct seq_file *m, loff_t *pos)
 		}
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry(res, track_list, tracking) {
 		if (&res->tracking == &dlm->tracking_list)
 			res = NULL;
 		else
 			dlm_lockres_get(res);
+=======
+	list_for_each_entry(iter, track_list, tracking) {
+		if (&iter->tracking != &dlm->tracking_list) {
+			dlm_lockres_get(iter);
+			res = iter;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	spin_unlock(&dlm->track_lock);
@@ -654,6 +827,7 @@ static const struct seq_operations debug_lockres_ops = {
 static int debug_lockres_open(struct inode *inode, struct file *file)
 {
 	struct dlm_ctxt *dlm = inode->i_private;
+<<<<<<< HEAD
 	int ret = -ENOMEM;
 	struct seq_file *seq;
 	struct debug_lockres *dl = NULL;
@@ -679,16 +853,40 @@ static int debug_lockres_open(struct inode *inode, struct file *file)
 
 	seq = file->private_data;
 	seq->private = dl;
+=======
+	struct debug_lockres *dl;
+	void *buf;
+
+	buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!buf)
+		goto bail;
+
+	dl = __seq_open_private(file, &debug_lockres_ops, sizeof(*dl));
+	if (!dl)
+		goto bailfree;
+
+	dl->dl_len = PAGE_SIZE;
+	dl->dl_buf = buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dlm_grab(dlm);
 	dl->dl_ctxt = dlm;
 
 	return 0;
+<<<<<<< HEAD
 bail:
 	if (dl)
 		kfree(dl->dl_buf);
 	kfree(dl);
 	return ret;
+=======
+
+bailfree:
+	kfree(buf);
+bail:
+	mlog_errno(-ENOMEM);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int debug_lockres_release(struct inode *inode, struct file *file)
@@ -736,22 +934,35 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 	}
 
 	/* Domain: xxxxxxxxxx  Key: 0xdfbac769 */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Domain: %s  Key: 0x%08x  Protocol: %d.%d\n",
 			dlm->name, dlm->key, dlm->dlm_locking_proto.pv_major,
 			dlm->dlm_locking_proto.pv_minor);
 
 	/* Thread Pid: xxx  Node: xxx  State: xxxxx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Thread Pid: %d  Node: %d  State: %s\n",
 			task_pid_nr(dlm->dlm_thread_task), dlm->node_num, state);
 
 	/* Number of Joins: xxx  Joining Node: xxx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Number of Joins: %d  Joining Node: %d\n",
 			dlm->num_joins, dlm->joining_node);
 
 	/* Domain Map: xx xx xx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "Domain Map: ");
 	out += stringify_nodemap(dlm->domain_map, O2NM_MAX_NODES,
 				 buf + out, len - out);
@@ -771,6 +982,27 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 
 	/* Lock Resources: xxx (xxx) */
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out, "Domain Map: ");
+	out += stringify_nodemap(dlm->domain_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	/* Exit Domain Map: xx xx xx */
+	out += scnprintf(buf + out, len - out, "Exit Domain Map: ");
+	out += stringify_nodemap(dlm->exit_domain_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	/* Live Map: xx xx xx */
+	out += scnprintf(buf + out, len - out, "Live Map: ");
+	out += stringify_nodemap(dlm->live_nodes_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	/* Lock Resources: xxx (xxx) */
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Lock Resources: %d (%d)\n",
 			atomic_read(&dlm->res_cur_count),
 			atomic_read(&dlm->res_tot_count));
@@ -782,29 +1014,49 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 		cur_mles += atomic_read(&dlm->mle_cur_count[i]);
 
 	/* MLEs: xxx (xxx) */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
 			"MLEs: %d (%d)\n", cur_mles, tot_mles);
 
 	/*  Blocking: xxx (xxx) */
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+			"MLEs: %d (%d)\n", cur_mles, tot_mles);
+
+	/*  Blocking: xxx (xxx) */
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"  Blocking: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_BLOCK]),
 			atomic_read(&dlm->mle_tot_count[DLM_MLE_BLOCK]));
 
 	/*  Mastery: xxx (xxx) */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"  Mastery: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_MASTER]),
 			atomic_read(&dlm->mle_tot_count[DLM_MLE_MASTER]));
 
 	/*  Migration: xxx (xxx) */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"  Migration: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_MIGRATION]),
 			atomic_read(&dlm->mle_tot_count[DLM_MLE_MIGRATION]));
 
 	/* Lists: Dirty=Empty  Purge=InUse  PendingASTs=Empty  ... */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Lists: Dirty=%s  Purge=%s  PendingASTs=%s  "
 			"PendingBASTs=%s\n",
 			(list_empty(&dlm->dirty_list) ? "Empty" : "InUse"),
@@ -813,12 +1065,21 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 			(list_empty(&dlm->pending_basts) ? "Empty" : "InUse"));
 
 	/* Purge Count: xxx  Refs: xxx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
 			"Purge Count: %d  Refs: %d\n", dlm->purge_count,
 			atomic_read(&dlm->dlm_refs.refcount));
 
 	/* Dead Node: xxx */
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+			"Purge Count: %d  Refs: %d\n", dlm->purge_count,
+			kref_read(&dlm->dlm_refs));
+
+	/* Dead Node: xxx */
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Dead Node: %d\n", dlm->reco.dead_node);
 
 	/* What about DLM_RECO_STATE_FINALIZE? */
@@ -828,12 +1089,17 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 		state = "INACTIVE";
 
 	/* Recovery Pid: xxxx  Master: xxx  State: xxxx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out,
+=======
+	out += scnprintf(buf + out, len - out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Recovery Pid: %d  Master: %d  State: %s\n",
 			task_pid_nr(dlm->dlm_reco_thread_task),
 			dlm->reco.new_master, state);
 
 	/* Recovery Map: xx xx */
+<<<<<<< HEAD
 	out += snprintf(buf + out, len - out, "Recovery Map: ");
 	out += stringify_nodemap(dlm->recovery_map, O2NM_MAX_NODES,
 				 buf + out, len - out);
@@ -841,6 +1107,15 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 
 	/* Recovery Node State: */
 	out += snprintf(buf + out, len - out, "Recovery Node State:\n");
+=======
+	out += scnprintf(buf + out, len - out, "Recovery Map: ");
+	out += stringify_nodemap(dlm->recovery_map, O2NM_MAX_NODES,
+				 buf + out, len - out);
+	out += scnprintf(buf + out, len - out, "\n");
+
+	/* Recovery Node State: */
+	out += scnprintf(buf + out, len - out, "Recovery Node State:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(node, &dlm->reco.node_data, list) {
 		switch (node->state) {
 		case DLM_RECO_NODE_DATA_INIT:
@@ -868,7 +1143,11 @@ static int debug_state_print(struct dlm_ctxt *dlm, char *buf, int len)
 			state = "BAD";
 			break;
 		}
+<<<<<<< HEAD
 		out += snprintf(buf + out, len - out, "\t%u - %s\n",
+=======
+		out += scnprintf(buf + out, len - out, "\t%u - %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				node->node_num, state);
 	}
 
@@ -904,6 +1183,7 @@ static const struct file_operations debug_state_fops = {
 /* end  - debug state funcs */
 
 /* files in subroot */
+<<<<<<< HEAD
 int dlm_debug_init(struct dlm_ctxt *dlm)
 {
 	struct dlm_debug_ctxt *dc = dlm->dlm_debug_ctxt;
@@ -993,10 +1273,38 @@ int dlm_create_debugfs_subroot(struct dlm_ctxt *dlm)
 bail:
 	dlm_destroy_debugfs_subroot(dlm);
 	return -ENOMEM;
+=======
+void dlm_debug_init(struct dlm_ctxt *dlm)
+{
+	/* for dumping dlm_ctxt */
+	debugfs_create_file(DLM_DEBUGFS_DLM_STATE, S_IFREG|S_IRUSR,
+			    dlm->dlm_debugfs_subroot, dlm, &debug_state_fops);
+
+	/* for dumping lockres */
+	debugfs_create_file(DLM_DEBUGFS_LOCKING_STATE, S_IFREG|S_IRUSR,
+			    dlm->dlm_debugfs_subroot, dlm, &debug_lockres_fops);
+
+	/* for dumping mles */
+	debugfs_create_file(DLM_DEBUGFS_MLE_STATE, S_IFREG|S_IRUSR,
+			    dlm->dlm_debugfs_subroot, dlm, &debug_mle_fops);
+
+	/* for dumping lockres on the purge list */
+	debugfs_create_file(DLM_DEBUGFS_PURGE_LIST, S_IFREG|S_IRUSR,
+			    dlm->dlm_debugfs_subroot, dlm,
+			    &debug_purgelist_fops);
+}
+
+/* subroot - domain dir */
+void dlm_create_debugfs_subroot(struct dlm_ctxt *dlm)
+{
+	dlm->dlm_debugfs_subroot = debugfs_create_dir(dlm->name,
+						      dlm_debugfs_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_destroy_debugfs_subroot(struct dlm_ctxt *dlm)
 {
+<<<<<<< HEAD
 	debugfs_remove(dlm->dlm_debugfs_subroot);
 }
 
@@ -1009,6 +1317,15 @@ int dlm_create_debugfs_root(void)
 		return -ENOMEM;
 	}
 	return 0;
+=======
+	debugfs_remove_recursive(dlm->dlm_debugfs_subroot);
+}
+
+/* debugfs root */
+void dlm_create_debugfs_root(void)
+{
+	dlm_debugfs_root = debugfs_create_dir(DLM_DEBUGFS_DIR, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_destroy_debugfs_root(void)

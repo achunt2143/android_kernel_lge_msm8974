@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Backlight Driver for Intel-based Apples
  *
@@ -7,15 +11,23 @@
  *  Copyright (C) 2006 Felipe Alfaro Solana <felipe_alfaro @linuxmail.org>
  *  Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This driver triggers SMIs which cause the firmware to change the
  *  backlight brightness. This is icky in many ways, but it's impractical to
  *  get at the firmware code in order to figure out what it's actually doing.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -25,6 +37,10 @@
 #include <linux/pci.h>
 #include <linux/acpi.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <acpi/video.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct backlight_device *apple_backlight_device;
 
@@ -39,8 +55,11 @@ struct hw_data {
 
 static const struct hw_data *hw_data;
 
+<<<<<<< HEAD
 #define DRIVER "apple_backlight: "
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Module parameters. */
 static int debug;
 module_param_named(debug, debug, int, 0644);
@@ -60,8 +79,12 @@ static int intel_chipset_send_intensity(struct backlight_device *bd)
 	int intensity = bd->props.brightness;
 
 	if (debug)
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRIVER "setting brightness to %d\n",
 		       intensity);
+=======
+		pr_debug("setting brightness to %d\n", intensity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intel_chipset_set_brightness(intensity);
 	return 0;
@@ -76,8 +99,12 @@ static int intel_chipset_get_intensity(struct backlight_device *bd)
 	intensity = inb(0xb3) >> 4;
 
 	if (debug)
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRIVER "read brightness of %d\n",
 		       intensity);
+=======
+		pr_debug("read brightness of %d\n", intensity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return intensity;
 }
@@ -107,8 +134,12 @@ static int nvidia_chipset_send_intensity(struct backlight_device *bd)
 	int intensity = bd->props.brightness;
 
 	if (debug)
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRIVER "setting brightness to %d\n",
 		       intensity);
+=======
+		pr_debug("setting brightness to %d\n", intensity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nvidia_chipset_set_brightness(intensity);
 	return 0;
@@ -123,8 +154,12 @@ static int nvidia_chipset_get_intensity(struct backlight_device *bd)
 	intensity = inb(0x52f) >> 4;
 
 	if (debug)
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRIVER "read brightness of %d\n",
 		       intensity);
+=======
+		pr_debug("read brightness of %d\n", intensity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return intensity;
 }
@@ -140,16 +175,27 @@ static const struct hw_data nvidia_chipset_data = {
 	.set_brightness = nvidia_chipset_set_brightness,
 };
 
+<<<<<<< HEAD
 static int __devinit apple_bl_add(struct acpi_device *dev)
+=======
+static int apple_bl_add(struct acpi_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_properties props;
 	struct pci_dev *host;
 	int intensity;
 
+<<<<<<< HEAD
 	host = pci_get_bus_and_slot(0, 0);
 
 	if (!host) {
 		printk(KERN_ERR DRIVER "unable to find PCI host\n");
+=======
+	host = pci_get_domain_bus_and_slot(0, 0, 0);
+
+	if (!host) {
+		pr_err("unable to find PCI host\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -161,7 +207,11 @@ static int __devinit apple_bl_add(struct acpi_device *dev)
 	pci_dev_put(host);
 
 	if (!hw_data) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRIVER "unknown hardware\n");
+=======
+		pr_err("unknown hardware\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -199,13 +249,20 @@ static int __devinit apple_bl_add(struct acpi_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit apple_bl_remove(struct acpi_device *dev, int type)
+=======
+static void apple_bl_remove(struct acpi_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	backlight_device_unregister(apple_backlight_device);
 
 	release_region(hw_data->iostart, hw_data->iolen);
 	hw_data = NULL;
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id apple_bl_ids[] = {
@@ -222,6 +279,7 @@ static struct acpi_driver apple_bl_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static atomic_t apple_bl_registered = ATOMIC_INIT(0);
 
 int apple_bl_register(void)
@@ -243,11 +301,27 @@ EXPORT_SYMBOL_GPL(apple_bl_unregister);
 static int __init apple_bl_init(void)
 {
 	return apple_bl_register();
+=======
+static int __init apple_bl_init(void)
+{
+	/*
+	 * Use ACPI video detection code to see if this driver should register
+	 * or if another driver, e.g. the apple-gmux driver should be used.
+	 */
+	if (acpi_video_get_backlight_type() != acpi_backlight_vendor)
+		return -ENODEV;
+
+	return acpi_bus_register_driver(&apple_bl_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit apple_bl_exit(void)
 {
+<<<<<<< HEAD
 	apple_bl_unregister();
+=======
+	acpi_bus_unregister_driver(&apple_bl_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(apple_bl_init);

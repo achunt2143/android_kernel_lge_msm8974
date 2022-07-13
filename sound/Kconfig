@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menuconfig SOUND
 	tristate "Sound card support"
 	depends on HAS_IOMEM
@@ -22,6 +23,15 @@ menuconfig SOUND
 	  after the PnP configuration is finished.  To do this, choose M here
 	  and read <file:Documentation/sound/oss/README.modules>; the module
 	  will be called soundcore.
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+menuconfig SOUND
+	tristate "Sound card support"
+	depends on HAS_IOMEM || UML
+	help
+	  If you have a sound card in your computer, i.e. if it can say more
+	  than an occasional beep, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if SOUND
 
@@ -52,15 +62,21 @@ config SOUND_OSS_CORE_PRECLAIM
 
 	  Disabling this allows alternative OSS implementations.
 
+<<<<<<< HEAD
 	  Please read Documentation/feature-removal-schedule.txt for
 	  details.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If unsure, say Y.
 
 source "sound/oss/dmasound/Kconfig"
 
+<<<<<<< HEAD
 if !M68K && !UML
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menuconfig SND
 	tristate "Advanced Linux Sound Architecture"
 	help
@@ -79,8 +95,17 @@ source "sound/isa/Kconfig"
 
 source "sound/pci/Kconfig"
 
+<<<<<<< HEAD
 source "sound/ppc/Kconfig"
 
+=======
+source "sound/hda/Kconfig"
+
+source "sound/ppc/Kconfig"
+
+source "sound/ac97/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "sound/aoa/Kconfig"
 
 source "sound/arm/Kconfig"
@@ -109,6 +134,7 @@ source "sound/parisc/Kconfig"
 
 source "sound/soc/Kconfig"
 
+<<<<<<< HEAD
 endif # SND
 
 menuconfig SOUND_PRIME
@@ -128,6 +154,20 @@ endif # !M68K
 endif # SOUND
 
 # AC97_BUS is used from both sound and ucb1400
+=======
+source "sound/x86/Kconfig"
+
+source "sound/synth/Kconfig"
+
+source "sound/xen/Kconfig"
+
+source "sound/virtio/Kconfig"
+
+endif # SND
+
+endif # SOUND
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config AC97_BUS
 	tristate
 	help

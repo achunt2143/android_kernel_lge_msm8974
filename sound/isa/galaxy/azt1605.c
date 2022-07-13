@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Aztech AZT1605 Driver
  * Copyright (C) 2007,2010  Rene Herman
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Aztech AZT1605 Driver
+ * Copyright (C) 2007,2010  Rene Herman
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define AZT1605

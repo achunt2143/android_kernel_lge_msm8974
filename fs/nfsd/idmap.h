@@ -37,6 +37,7 @@
 
 #include <linux/in.h>
 #include <linux/sunrpc/svc.h>
+<<<<<<< HEAD
 
 /* XXX from linux/nfs_idmap.h */
 #define IDMAP_NAMESZ 128
@@ -50,13 +51,33 @@ static inline int nfsd_idmap_init(void)
 	return 0;
 }
 static inline void nfsd_idmap_shutdown(void)
+=======
+#include <linux/nfs_idmap.h>
+
+#ifdef CONFIG_NFSD_V4
+int nfsd_idmap_init(struct net *);
+void nfsd_idmap_shutdown(struct net *);
+#else
+static inline int nfsd_idmap_init(struct net *net)
+{
+	return 0;
+}
+static inline void nfsd_idmap_shutdown(struct net *net)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
+<<<<<<< HEAD
 __be32 nfsd_map_name_to_uid(struct svc_rqst *, const char *, size_t, __u32 *);
 __be32 nfsd_map_name_to_gid(struct svc_rqst *, const char *, size_t, __u32 *);
 int nfsd_map_uid_to_name(struct svc_rqst *, __u32, char *);
 int nfsd_map_gid_to_name(struct svc_rqst *, __u32, char *);
+=======
+__be32 nfsd_map_name_to_uid(struct svc_rqst *, const char *, size_t, kuid_t *);
+__be32 nfsd_map_name_to_gid(struct svc_rqst *, const char *, size_t, kgid_t *);
+__be32 nfsd4_encode_user(struct xdr_stream *, struct svc_rqst *, kuid_t);
+__be32 nfsd4_encode_group(struct xdr_stream *, struct svc_rqst *, kgid_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* LINUX_NFSD_IDMAP_H */

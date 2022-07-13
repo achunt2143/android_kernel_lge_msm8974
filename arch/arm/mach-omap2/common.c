@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/common.c
  *
@@ -7,6 +11,7 @@
  * Copyright (C) 2010 Nokia Corporation
  * Tony Lindgren <tony@atomide.com>
  * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -181,3 +186,26 @@ void __init omap4_map_io(void)
 }
 #endif
 
+=======
+ */
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+#include "common.h"
+#include "omap-secure.h"
+
+/*
+ * Stub function for OMAP2 so that common files
+ * continue to build when custom builds are used
+ */
+int __weak omap_secure_ram_reserve_memblock(void)
+{
+	return 0;
+}
+
+void __init omap_reserve(void)
+{
+	omap_secure_ram_reserve_memblock();
+	omap_barrier_reserve_memblock();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

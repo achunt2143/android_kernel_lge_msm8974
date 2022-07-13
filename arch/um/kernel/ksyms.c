@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
@@ -8,6 +9,18 @@
 
 EXPORT_SYMBOL(set_signals);
 EXPORT_SYMBOL(get_signals);
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* 
+ * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/module.h>
+#include <os.h>
+
+EXPORT_SYMBOL(um_set_signals);
+EXPORT_SYMBOL(signals_enabled);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(os_stat_fd);
 EXPORT_SYMBOL(os_stat_file);
@@ -38,7 +51,17 @@ EXPORT_SYMBOL(run_helper);
 EXPORT_SYMBOL(os_major);
 EXPORT_SYMBOL(os_minor);
 EXPORT_SYMBOL(os_makedev);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(os_eventfd);
+EXPORT_SYMBOL(os_sendmsg_fds);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(add_sigio_fd);
 EXPORT_SYMBOL(ignore_sigio_fd);
 EXPORT_SYMBOL(sigio_broken);
+<<<<<<< HEAD
+=======
+
+EXPORT_SYMBOL(syscall);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

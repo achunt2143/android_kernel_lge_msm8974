@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  *
  * Authors:
  *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
  *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/nfc.h>
@@ -42,7 +49,11 @@ static int nfc_sock_create(struct net *net, struct socket *sock, int proto,
 
 	read_lock(&proto_tab_lock);
 	if (proto_tab[proto] &&	try_module_get(proto_tab[proto]->owner)) {
+<<<<<<< HEAD
 		rc = proto_tab[proto]->create(net, sock, proto_tab[proto]);
+=======
+		rc = proto_tab[proto]->create(net, sock, proto_tab[proto], kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		module_put(proto_tab[proto]->owner);
 	}
 	read_unlock(&proto_tab_lock);
@@ -50,7 +61,11 @@ static int nfc_sock_create(struct net *net, struct socket *sock, int proto,
 	return rc;
 }
 
+<<<<<<< HEAD
 static struct net_proto_family nfc_sock_family_ops = {
+=======
+static const struct net_proto_family nfc_sock_family_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner  = THIS_MODULE,
 	.family = PF_NFC,
 	.create = nfc_sock_create,
@@ -74,6 +89,12 @@ int nfc_proto_register(const struct nfc_protocol *nfc_proto)
 		proto_tab[nfc_proto->id] = nfc_proto;
 	write_unlock(&proto_tab_lock);
 
+<<<<<<< HEAD
+=======
+	if (rc)
+		proto_unregister(nfc_proto->proto);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL(nfc_proto_register);
@@ -93,7 +114,11 @@ int __init af_nfc_init(void)
 	return sock_register(&nfc_sock_family_ops);
 }
 
+<<<<<<< HEAD
 void af_nfc_exit(void)
+=======
+void __exit af_nfc_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sock_unregister(PF_NFC);
 }

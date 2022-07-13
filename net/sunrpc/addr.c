@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2009, Oracle.  All rights reserved.
  *
@@ -17,7 +21,12 @@
  */
 
 #include <net/ipv6.h>
+<<<<<<< HEAD
 #include <linux/sunrpc/clnt.h>
+=======
+#include <linux/sunrpc/addr.h>
+#include <linux/sunrpc/msg_prot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/export.h>
 
@@ -80,11 +89,19 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
 
 	rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
 			IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
+<<<<<<< HEAD
 	if (unlikely((size_t)rc > sizeof(scopebuf)))
 		return 0;
 
 	len += rc;
 	if (unlikely(len > buflen))
+=======
+	if (unlikely((size_t)rc >= sizeof(scopebuf)))
+		return 0;
+
+	len += rc;
+	if (unlikely(len >= buflen))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	strcat(buf, scopebuf);
@@ -160,8 +177,15 @@ static int rpc_parse_scope_id(struct net *net, const char *buf,
 			      const size_t buflen, const char *delim,
 			      struct sockaddr_in6 *sin6)
 {
+<<<<<<< HEAD
 	char *p;
 	size_t len;
+=======
+	char p[IPV6_SCOPE_ID_LEN + 1];
+	size_t len;
+	u32 scope_id = 0;
+	struct net_device *dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((buf + buflen) == delim)
 		return 1;
@@ -173,6 +197,7 @@ static int rpc_parse_scope_id(struct net *net, const char *buf,
 		return 0;
 
 	len = (buf + buflen) - delim - 1;
+<<<<<<< HEAD
 	p = kstrndup(delim + 1, len, GFP_KERNEL);
 	if (p) {
 		unsigned long scope_id = 0;
@@ -196,6 +221,25 @@ static int rpc_parse_scope_id(struct net *net, const char *buf,
 	}
 
 	return 0;
+=======
+	if (len > IPV6_SCOPE_ID_LEN)
+		return 0;
+
+	memcpy(p, delim + 1, len);
+	p[len] = 0;
+
+	dev = dev_get_by_name(net, p);
+	if (dev != NULL) {
+		scope_id = dev->ifindex;
+		dev_put(dev);
+	} else {
+		if (kstrtou32(p, 10, &scope_id) != 0)
+			return 0;
+	}
+
+	sin6->sin6_scope_id = scope_id;
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static size_t rpc_pton6(struct net *net, const char *buf, const size_t buflen,
@@ -286,10 +330,17 @@ char *rpc_sockaddr2uaddr(const struct sockaddr *sap, gfp_t gfp_flags)
 	}
 
 	if (snprintf(portbuf, sizeof(portbuf),
+<<<<<<< HEAD
 		     ".%u.%u", port >> 8, port & 0xff) > (int)sizeof(portbuf))
 		return NULL;
 
 	if (strlcat(addrbuf, portbuf, sizeof(addrbuf)) > sizeof(addrbuf))
+=======
+		     ".%u.%u", port >> 8, port & 0xff) >= (int)sizeof(portbuf))
+		return NULL;
+
+	if (strlcat(addrbuf, portbuf, sizeof(addrbuf)) >= sizeof(addrbuf))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return kstrdup(addrbuf, gfp_flags);
@@ -303,7 +354,11 @@ char *rpc_sockaddr2uaddr(const struct sockaddr *sap, gfp_t gfp_flags)
  * @sap: buffer into which to plant socket address
  * @salen: size of buffer
  *
+<<<<<<< HEAD
  * @uaddr does not have to be '\0'-terminated, but strict_strtoul() and
+=======
+ * @uaddr does not have to be '\0'-terminated, but kstrtou8() and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * rpc_pton() require proper string termination to be successful.
  *
  * Returns the size of the socket address if successful; otherwise
@@ -314,7 +369,11 @@ size_t rpc_uaddr2sockaddr(struct net *net, const char *uaddr,
 			  const size_t salen)
 {
 	char *c, buf[RPCBIND_MAXUADDRLEN + sizeof('\0')];
+<<<<<<< HEAD
 	unsigned long portlo, porthi;
+=======
+	u8 portlo, porthi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short port;
 
 	if (uaddr_len > RPCBIND_MAXUADDRLEN)
@@ -326,18 +385,26 @@ size_t rpc_uaddr2sockaddr(struct net *net, const char *uaddr,
 	c = strrchr(buf, '.');
 	if (unlikely(c == NULL))
 		return 0;
+<<<<<<< HEAD
 	if (unlikely(strict_strtoul(c + 1, 10, &portlo) != 0))
 		return 0;
 	if (unlikely(portlo > 255))
+=======
+	if (unlikely(kstrtou8(c + 1, 10, &portlo) != 0))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	*c = '\0';
 	c = strrchr(buf, '.');
 	if (unlikely(c == NULL))
 		return 0;
+<<<<<<< HEAD
 	if (unlikely(strict_strtoul(c + 1, 10, &porthi) != 0))
 		return 0;
 	if (unlikely(porthi > 255))
+=======
+	if (unlikely(kstrtou8(c + 1, 10, &porthi) != 0))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	port = (unsigned short)((porthi << 8) | portlo);

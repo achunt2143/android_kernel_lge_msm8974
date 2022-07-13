@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_KGDB_H_
 #define __ASM_KGDB_H_
 
@@ -17,7 +21,11 @@
 #ifdef CONFIG_32BIT
 #define KGDB_GDB_REG_SIZE	32
 #define GDB_SIZEOF_REG		sizeof(u32)
+<<<<<<< HEAD
 #else /* CONFIG_CPU_32BIT */
+=======
+#else /* CONFIG_32BIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KGDB_GDB_REG_SIZE	64
 #define GDB_SIZEOF_REG		sizeof(u64)
 #endif
@@ -33,7 +41,10 @@
 #define CACHE_FLUSH_IS_SAFE	0
 
 extern void arch_kgdb_breakpoint(void);
+<<<<<<< HEAD
 extern int kgdb_early_setup;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void *saved_vectors[32];
 extern void handle_exception(struct pt_regs *regs);
 extern void breakinst(void);

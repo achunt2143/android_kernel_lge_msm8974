@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for ESS Maestro3/Allegro (ES1988) soundcards.
  * Copyright (c) 2000 by Zach Brown <zab@zabbo.net>
@@ -6,6 +10,7 @@
  * Most of the hardware init stuffs are based on maestro3 driver for
  * OSS/Free by Zach Brown.  Many thanks to Zach!
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -21,17 +26,26 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ChangeLog:
  * Aug. 27, 2001
  *     - Fixed deadlock on capture
  *     - Added Canyon3D-2 support by Rob Riggs <rob@pangalactic.org>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  
 #define CARD_NAME "ESS Maestro3/Allegro/Canyon3D-2"
 #define DRIVER_NAME "Maestro3"
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -54,11 +68,14 @@
 MODULE_AUTHOR("Zach Brown <zab@zabbo.net>, Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("ESS Maestro3 PCI");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ESS,Maestro3 PCI},"
 		"{ESS,ES1988},"
 		"{ESS,Allegro PCI},"
 		"{ESS,Allegro-1 PCI},"
 	        "{ESS,Canyon3D-2/LE PCI}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("ess/maestro3_assp_kernel.fw");
 MODULE_FIRMWARE("ess/maestro3_assp_minisrc.fw");
 
@@ -361,6 +378,7 @@ MODULE_PARM_DESC(amp_gpio, "GPIO pin number for external amp. (default = -1)");
 #define DSP2HOST_REQ_I2SRATE    0x02
 #define DSP2HOST_REQ_TIMER      0x04
 
+<<<<<<< HEAD
 /* AC97 registers */
 /* XXX fix this crap up */
 /*#define AC97_RESET              0x00*/
@@ -429,6 +447,8 @@ MODULE_PARM_DESC(amp_gpio, "GPIO pin number for external amp. (default = -1)");
 /*#define AC97_VENDOR_ID1         0x7C
 #define AC97_VENDOR_ID2         0x7E*/
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ASSP control regs
  */
@@ -857,9 +877,13 @@ struct snd_m3 {
 
 	unsigned int in_suspend;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	u16 *suspend_mem;
 #endif
+=======
+	u16 *suspend_mem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	const struct firmware *assp_kernel_image;
 	const struct firmware *assp_minisrc_image;
@@ -868,7 +892,11 @@ struct snd_m3 {
 /*
  * pci ids
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_m3_ids) = {
+=======
+static const struct pci_device_id snd_m3_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VENDOR_ID_ESS, PCI_DEVICE_ID_ESS_ALLEGRO_1, PCI_ANY_ID, PCI_ANY_ID,
 	 PCI_CLASS_MULTIMEDIA_AUDIO << 8, 0xffff00, 0},
 	{PCI_VENDOR_ID_ESS, PCI_DEVICE_ID_ESS_ALLEGRO, PCI_ANY_ID, PCI_ANY_ID,
@@ -890,7 +918,11 @@ static DEFINE_PCI_DEVICE_TABLE(snd_m3_ids) = {
 
 MODULE_DEVICE_TABLE(pci, snd_m3_ids);
 
+<<<<<<< HEAD
 static struct snd_pci_quirk m3_amp_quirk_list[] __devinitdata = {
+=======
+static const struct snd_pci_quirk m3_amp_quirk_list[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_PCI_QUIRK(0x0E11, 0x0094, "Compaq Evo N600c", 0x0c),
 	SND_PCI_QUIRK(0x10f7, 0x833e, "Panasonic CF-28", 0x0d),
 	SND_PCI_QUIRK(0x10f7, 0x833d, "Panasonic CF-72", 0x0d),
@@ -899,7 +931,11 @@ static struct snd_pci_quirk m3_amp_quirk_list[] __devinitdata = {
 	{ } /* END */
 };
 
+<<<<<<< HEAD
 static struct snd_pci_quirk m3_irda_quirk_list[] __devinitdata = {
+=======
+static const struct snd_pci_quirk m3_irda_quirk_list[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_PCI_QUIRK(0x1028, 0x00b0, "Dell Inspiron 4000", 1),
 	SND_PCI_QUIRK(0x1028, 0x00a4, "Dell Inspiron 8000", 1),
 	SND_PCI_QUIRK(0x1028, 0x00e6, "Dell Inspiron 8100", 1),
@@ -907,7 +943,11 @@ static struct snd_pci_quirk m3_irda_quirk_list[] __devinitdata = {
 };
 
 /* hardware volume quirks */
+<<<<<<< HEAD
 static struct snd_pci_quirk m3_hv_quirk_list[] __devinitdata = {
+=======
+static const struct snd_pci_quirk m3_hv_quirk_list[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allegro chips */
 	SND_PCI_QUIRK(0x0E11, 0x002E, NULL, HV_CTRL_ENABLE | HV_BUTTON_FROM_GD),
 	SND_PCI_QUIRK(0x0E11, 0x0094, NULL, HV_CTRL_ENABLE | HV_BUTTON_FROM_GD),
@@ -985,7 +1025,11 @@ static struct snd_pci_quirk m3_hv_quirk_list[] __devinitdata = {
 };
 
 /* HP Omnibook quirks */
+<<<<<<< HEAD
 static struct snd_pci_quirk m3_omnibook_quirk_list[] __devinitdata = {
+=======
+static const struct snd_pci_quirk m3_omnibook_quirk_list[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_PCI_QUIRK_ID(0x103c, 0x0010), /* HP OmniBook 6000 */
 	SND_PCI_QUIRK_ID(0x103c, 0x0011), /* HP OmniBook 500 */
 	{ } /* END */
@@ -1328,7 +1372,11 @@ static void snd_m3_pcm_setup2(struct snd_m3 *chip, struct m3_dma *s,
 			  snd_pcm_format_width(runtime->format) == 16 ? 0 : 1);
 
 	/* set up dac/adc rate */
+<<<<<<< HEAD
 	freq = ((runtime->rate << 15) + 24000 ) / 48000;
+=======
+	freq = DIV_ROUND_CLOSEST(runtime->rate << 15, 48000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (freq) 
 		freq--;
 
@@ -1464,6 +1512,7 @@ static int snd_m3_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *hw_params)
 {
 	struct m3_dma *s = substream->runtime->private_data;
+<<<<<<< HEAD
 	int err;
 
 	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
@@ -1472,6 +1521,13 @@ static int snd_m3_pcm_hw_params(struct snd_pcm_substream *substream,
 	s->buffer_addr = substream->runtime->dma_addr;
 	if (s->buffer_addr & 0x3) {
 		snd_printk(KERN_ERR "oh my, not aligned\n");
+=======
+
+	/* set buffer address */
+	s->buffer_addr = substream->runtime->dma_addr;
+	if (s->buffer_addr & 0x3) {
+		dev_err(substream->pcm->card->dev, "oh my, not aligned\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->buffer_addr = s->buffer_addr & ~0x3;
 	}
 	return 0;
@@ -1484,7 +1540,10 @@ static int snd_m3_pcm_hw_free(struct snd_pcm_substream *substream)
 	if (substream->runtime->private_data == NULL)
 		return 0;
 	s = substream->runtime->private_data;
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s->buffer_addr = 0;
 	return 0;
 }
@@ -1749,7 +1808,11 @@ static irqreturn_t snd_m3_interrupt(int irq, void *dev_id)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_m3_playback =
+=======
+static const struct snd_pcm_hardware snd_m3_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_INTERLEAVED |
@@ -1770,7 +1833,11 @@ static struct snd_pcm_hardware snd_m3_playback =
 	.periods_max =		1024,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_m3_capture =
+=======
+static const struct snd_pcm_hardware snd_m3_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_INTERLEAVED |
@@ -1857,7 +1924,12 @@ snd_m3_playback_open(struct snd_pcm_substream *subs)
 	struct snd_pcm_runtime *runtime = subs->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_m3_substream_open(chip, subs)) < 0)
+=======
+	err = snd_m3_substream_open(chip, subs);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	runtime->hw = snd_m3_playback;
@@ -1881,7 +1953,12 @@ snd_m3_capture_open(struct snd_pcm_substream *subs)
 	struct snd_pcm_runtime *runtime = subs->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_m3_substream_open(chip, subs)) < 0)
+=======
+	err = snd_m3_substream_open(chip, subs);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	runtime->hw = snd_m3_capture;
@@ -1902,10 +1979,16 @@ snd_m3_capture_close(struct snd_pcm_substream *subs)
  * create pcm instance
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_m3_playback_ops = {
 	.open =		snd_m3_playback_open,
 	.close =	snd_m3_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_m3_playback_ops = {
+	.open =		snd_m3_playback_open,
+	.close =	snd_m3_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_m3_pcm_hw_params,
 	.hw_free =	snd_m3_pcm_hw_free,
 	.prepare =	snd_m3_pcm_prepare,
@@ -1913,10 +1996,16 @@ static struct snd_pcm_ops snd_m3_playback_ops = {
 	.pointer =	snd_m3_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_m3_capture_ops = {
 	.open =		snd_m3_capture_open,
 	.close =	snd_m3_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_m3_capture_ops = {
+	.open =		snd_m3_capture_open,
+	.close =	snd_m3_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_m3_pcm_hw_params,
 	.hw_free =	snd_m3_pcm_hw_free,
 	.prepare =	snd_m3_pcm_prepare,
@@ -1924,7 +2013,11 @@ static struct snd_pcm_ops snd_m3_capture_ops = {
 	.pointer =	snd_m3_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_m3_pcm(struct snd_m3 * chip, int device)
 {
 	struct snd_pcm *pcm;
@@ -1943,8 +2036,13 @@ snd_m3_pcm(struct snd_m3 * chip, int device)
 	strcpy(pcm->name, chip->card->driver);
 	chip->pcm = pcm;
 	
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 64*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &chip->pci->dev, 64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1968,7 +2066,11 @@ static int snd_m3_ac97_wait(struct snd_m3 *chip)
 		cpu_relax();
 	} while (i-- > 0);
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "ac97 serial bus busy\n");
+=======
+	dev_err(chip->card->dev, "ac97 serial bus busy\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1997,6 +2099,7 @@ snd_m3_ac97_write(struct snd_ac97 *ac97, unsigned short reg, unsigned short val)
 		return;
 	snd_m3_outw(chip, val, CODEC_DATA);
 	snd_m3_outb(chip, reg & 0x7f, CODEC_COMMAND);
+<<<<<<< HEAD
 }
 
 
@@ -2006,6 +2109,34 @@ static void snd_m3_remote_codec_config(int io, int isremote)
 
 	outw((inw(io + RING_BUS_CTRL_B) & ~SECOND_CODEC_ID_MASK) | isremote,
 	     io + RING_BUS_CTRL_B);
+=======
+	/*
+	 * Workaround for buggy ES1988 integrated AC'97 codec. It remains silent
+	 * until the MASTER volume or mute is touched (alsactl restore does not
+	 * work).
+	 */
+	if (ac97->id == 0x45838308 && reg == AC97_MASTER) {
+		snd_m3_ac97_wait(chip);
+		snd_m3_outw(chip, val, CODEC_DATA);
+		snd_m3_outb(chip, reg & 0x7f, CODEC_COMMAND);
+	}
+}
+
+
+static void snd_m3_remote_codec_config(struct snd_m3 *chip, int isremote)
+{
+	int io = chip->iobase;
+	u16 tmp;
+
+	isremote = isremote ? 1 : 0;
+
+	tmp = inw(io + RING_BUS_CTRL_B) & ~SECOND_CODEC_ID_MASK;
+	/* enable dock on Dell Latitude C810 */
+	if (chip->pci->subsystem_vendor == 0x1028 &&
+	    chip->pci->subsystem_device == 0x00e5)
+		tmp |= M3I_DOCK_ENABLE;
+	outw(tmp | isremote, io + RING_BUS_CTRL_B);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outw((inw(io + SDO_OUT_DEST_CTRL) & ~COMMAND_ADDR_OUT) | isremote,
 	     io + SDO_OUT_DEST_CTRL);
 	outw((inw(io + SDO_IN_DEST_CTRL) & ~STATUS_ADDR_IN) | isremote,
@@ -2057,7 +2188,11 @@ static void snd_m3_ac97_reset(struct snd_m3 *chip)
 		if (!chip->irda_workaround)
 			dir |= 0x10; /* assuming pci bus master? */
 
+<<<<<<< HEAD
 		snd_m3_remote_codec_config(io, 0);
+=======
+		snd_m3_remote_codec_config(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		outw(IO_SRAM_ENABLE, io + RING_BUS_CTRL_A);
 		udelay(20);
@@ -2083,7 +2218,12 @@ static void snd_m3_ac97_reset(struct snd_m3 *chip)
 		delay1 += 10;
 		delay2 += 100;
 
+<<<<<<< HEAD
 		snd_printd("maestro3: retrying codec reset with delays of %d and %d ms\n",
+=======
+		dev_dbg(chip->card->dev,
+			"retrying codec reset with delays of %d and %d ms\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   delay1, delay2);
 	}
 
@@ -2099,6 +2239,7 @@ static void snd_m3_ac97_reset(struct snd_m3 *chip)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit snd_m3_mixer(struct snd_m3 *chip)
 {
 	struct snd_ac97_bus *pbus;
@@ -2108,16 +2249,34 @@ static int __devinit snd_m3_mixer(struct snd_m3 *chip)
 #endif
 	int err;
 	static struct snd_ac97_bus_ops ops = {
+=======
+static int snd_m3_mixer(struct snd_m3 *chip)
+{
+	struct snd_ac97_bus *pbus;
+	struct snd_ac97_template ac97;
+	int err;
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_m3_ac97_write,
 		.read = snd_m3_ac97_read,
 	};
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
+<<<<<<< HEAD
 	if ((err = snd_ac97_mixer(pbus, &ac97, &chip->ac97)) < 0)
+=======
+	err = snd_ac97_mixer(pbus, &ac97, &chip->ac97);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* seems ac97 PCM needs initialization.. hack hack.. */
@@ -2126,6 +2285,7 @@ static int __devinit snd_m3_mixer(struct snd_m3 *chip)
 	snd_ac97_write(chip->ac97, AC97_PCM, 0);
 
 #ifndef CONFIG_SND_MAESTRO3_INPUT
+<<<<<<< HEAD
 	memset(&elem_id, 0, sizeof(elem_id));
 	elem_id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	strcpy(elem_id.name, "Master Playback Switch");
@@ -2134,6 +2294,12 @@ static int __devinit snd_m3_mixer(struct snd_m3 *chip)
 	elem_id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	strcpy(elem_id.name, "Master Playback Volume");
 	chip->master_volume = snd_ctl_find_id(chip->card, &elem_id);
+=======
+	chip->master_switch = snd_ctl_find_id_mixer(chip->card,
+						    "Master Playback Switch");
+	chip->master_volume = snd_ctl_find_id_mixer(chip->card,
+						    "Master Playback Volume");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
@@ -2153,7 +2319,11 @@ static const u16 minisrc_lpf[MINISRC_LPF_LEN] = {
 static void snd_m3_assp_init(struct snd_m3 *chip)
 {
 	unsigned int i;
+<<<<<<< HEAD
 	const u16 *data;
+=======
+	const __le16 *data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* zero kernel data */
 	for (i = 0; i < (REV_B_DATA_MEMORY_UNIT_LENGTH * NUM_UNITS_KERNEL_DATA) / 2; i++)
@@ -2171,7 +2341,11 @@ static void snd_m3_assp_init(struct snd_m3 *chip)
 			  KDATA_DMA_XFER0);
 
 	/* write kernel into code memory.. */
+<<<<<<< HEAD
 	data = (const u16 *)chip->assp_kernel_image->data;
+=======
+	data = (const __le16 *)chip->assp_kernel_image->data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0 ; i * 2 < chip->assp_kernel_image->size; i++) {
 		snd_m3_assp_write(chip, MEMTYPE_INTERNAL_CODE, 
 				  REV_B_CODE_MEMORY_BEGIN + i,
@@ -2184,7 +2358,11 @@ static void snd_m3_assp_init(struct snd_m3 *chip)
 	 * drop it there.  It seems that the minisrc doesn't
 	 * need vectors, so we won't bother with them..
 	 */
+<<<<<<< HEAD
 	data = (const u16 *)chip->assp_minisrc_image->data;
+=======
+	data = (const __le16 *)chip->assp_minisrc_image->data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i * 2 < chip->assp_minisrc_image->size; i++) {
 		snd_m3_assp_write(chip, MEMTYPE_INTERNAL_CODE, 
 				  0x400 + i, le16_to_cpu(data[i]));
@@ -2241,7 +2419,11 @@ static void snd_m3_assp_init(struct snd_m3 *chip)
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_m3_assp_client_init(struct snd_m3 *chip, struct m3_dma *s, int index)
+=======
+static int snd_m3_assp_client_init(struct snd_m3 *chip, struct m3_dma *s, int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int data_bytes = 2 * ( MINISRC_TMP_BUFFER_SIZE / 2 + 
 			       MINISRC_IN_BUFFER_SIZE / 2 +
@@ -2262,7 +2444,12 @@ static int __devinit snd_m3_assp_client_init(struct snd_m3 *chip, struct m3_dma 
 	address = 0x1100 + ((data_bytes/2) * index);
 
 	if ((address + (data_bytes/2)) >= 0x1c00) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "no memory for %d bytes at ind %d (addr 0x%x)\n",
+=======
+		dev_err(chip->card->dev,
+			"no memory for %d bytes at ind %d (addr 0x%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   data_bytes, index, address);
 		return -ENOMEM;
 	}
@@ -2410,16 +2597,25 @@ snd_m3_enable_ints(struct snd_m3 *chip)
 /*
  */
 
+<<<<<<< HEAD
 static int snd_m3_free(struct snd_m3 *chip)
 {
+=======
+static void snd_m3_free(struct snd_card *card)
+{
+	struct snd_m3 *chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct m3_dma *s;
 	int i;
 
 	cancel_work_sync(&chip->hwvol_work);
+<<<<<<< HEAD
 #ifdef CONFIG_SND_MAESTRO3_INPUT
 	if (chip->input_dev)
 		input_unregister_device(chip->input_dev);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->substreams) {
 		spin_lock_irq(&chip->reg_lock);
@@ -2430,12 +2626,16 @@ static int snd_m3_free(struct snd_m3 *chip)
 				snd_m3_pcm_stop(chip, s, s->substream);
 		}
 		spin_unlock_irq(&chip->reg_lock);
+<<<<<<< HEAD
 		kfree(chip->substreams);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (chip->iobase) {
 		outw(0, chip->iobase + HOST_INT_CTRL); /* disable ints */
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	vfree(chip->suspend_mem);
 #endif
@@ -2452,16 +2652,27 @@ static int snd_m3_free(struct snd_m3 *chip)
 	pci_disable_device(chip->pci);
 	kfree(chip);
 	return 0;
+=======
+	vfree(chip->suspend_mem);
+	release_firmware(chip->assp_kernel_image);
+	release_firmware(chip->assp_minisrc_image);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  * APM support
  */
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int m3_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+static int m3_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_m3 *chip = card->private_data;
 	int i, dsp_index;
 
@@ -2471,7 +2682,10 @@ static int m3_suspend(struct pci_dev *pci, pm_message_t state)
 	chip->in_suspend = 1;
 	cancel_work_sync(&chip->hwvol_work);
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ac97_suspend(chip->ac97);
 
 	msleep(10); /* give the assp a chance to idle.. */
@@ -2486,6 +2700,7 @@ static int m3_suspend(struct pci_dev *pci, pm_message_t state)
 	for (i = REV_B_DATA_MEMORY_BEGIN ; i <= REV_B_DATA_MEMORY_END; i++)
 		chip->suspend_mem[dsp_index++] =
 			snd_m3_assp_read(chip, MEMTYPE_INTERNAL_DATA, i);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -2496,12 +2711,21 @@ static int m3_suspend(struct pci_dev *pci, pm_message_t state)
 static int m3_resume(struct pci_dev *pci)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+	return 0;
+}
+
+static int m3_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_m3 *chip = card->private_data;
 	int i, dsp_index;
 
 	if (chip->suspend_mem == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -2512,6 +2736,8 @@ static int m3_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* first lets just bring everything back. .*/
 	snd_m3_outw(chip, 0, 0x54);
 	snd_m3_outw(chip, 0, 0x56);
@@ -2546,15 +2772,27 @@ static int m3_resume(struct pci_dev *pci)
 	chip->in_suspend = 0;
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 #ifdef CONFIG_SND_MAESTRO3_INPUT
 static int __devinit snd_m3_input_register(struct snd_m3 *chip)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(m3_pm, m3_suspend, m3_resume);
+
+#ifdef CONFIG_SND_MAESTRO3_INPUT
+static int snd_m3_input_register(struct snd_m3 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *input_dev;
 	int err;
 
+<<<<<<< HEAD
 	input_dev = input_allocate_device();
+=======
+	input_dev = devm_input_allocate_device(&chip->pci->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!input_dev)
 		return -ENOMEM;
 
@@ -2574,10 +2812,15 @@ static int __devinit snd_m3_input_register(struct snd_m3 *chip)
 	__set_bit(KEY_VOLUMEUP, input_dev->keybit);
 
 	err = input_register_device(input_dev);
+<<<<<<< HEAD
 	if (err) {
 		input_free_device(input_dev);
 		return err;
 	}
+=======
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->input_dev = input_dev;
 	return 0;
@@ -2587,6 +2830,7 @@ static int __devinit snd_m3_input_register(struct snd_m3 *chip)
 /*
  */
 
+<<<<<<< HEAD
 static int snd_m3_dev_free(struct snd_device *device)
 {
 	struct snd_m3 *chip = device->device_data;
@@ -2625,6 +2869,27 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 		return -ENOMEM;
 	}
 
+=======
+static int
+snd_m3_create(struct snd_card *card, struct pci_dev *pci,
+	      int enable_amp,
+	      int amp_gpio)
+{
+	struct snd_m3 *chip = card->private_data;
+	int i, err;
+	const struct snd_pci_quirk *quirk;
+
+	if (pcim_enable_device(pci))
+		return -EIO;
+
+	/* check, if we can restrict PCI DMA transfers to 28 bits */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) {
+		dev_err(card->dev,
+			"architecture does not support 28bit PCI busmaster DMA\n");
+		return -ENXIO;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 
 	switch (pci->device) {
@@ -2640,6 +2905,10 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 	chip->pci = pci;
 	chip->irq = -1;
 	INIT_WORK(&chip->hwvol_work, snd_m3_update_hw_volume);
+<<<<<<< HEAD
+=======
+	card->private_free = snd_m3_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->external_amp = enable_amp;
 	if (amp_gpio >= 0 && amp_gpio <= 0x0f)
@@ -2647,8 +2916,13 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 	else {
 		quirk = snd_pci_quirk_lookup(pci, m3_amp_quirk_list);
 		if (quirk) {
+<<<<<<< HEAD
 			snd_printdd(KERN_INFO "maestro3: set amp-gpio "
 				    "for '%s'\n", quirk->name);
+=======
+			dev_info(card->dev, "set amp-gpio for '%s'\n",
+				 snd_pci_quirk_name(quirk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->amp_gpio = quirk->value;
 		} else if (chip->allegro_flag)
 			chip->amp_gpio = GPO_EXT_AMP_ALLEGRO;
@@ -2658,8 +2932,13 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 
 	quirk = snd_pci_quirk_lookup(pci, m3_irda_quirk_list);
 	if (quirk) {
+<<<<<<< HEAD
 		snd_printdd(KERN_INFO "maestro3: enabled irda workaround "
 			    "for '%s'\n", quirk->name);
+=======
+		dev_info(card->dev, "enabled irda workaround for '%s'\n",
+			 snd_pci_quirk_name(quirk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->irda_workaround = 1;
 	}
 	quirk = snd_pci_quirk_lookup(pci, m3_hv_quirk_list);
@@ -2669,6 +2948,7 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 		chip->is_omnibook = 1;
 
 	chip->num_substreams = NR_DSPS;
+<<<<<<< HEAD
 	chip->substreams = kcalloc(chip->num_substreams, sizeof(struct m3_dma),
 				   GFP_KERNEL);
 	if (chip->substreams == NULL) {
@@ -2695,6 +2975,27 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 		snd_m3_free(chip);
 		return err;
 	}
+=======
+	chip->substreams = devm_kcalloc(&pci->dev, chip->num_substreams,
+					sizeof(struct m3_dma), GFP_KERNEL);
+	if (!chip->substreams)
+		return -ENOMEM;
+
+	err = request_firmware(&chip->assp_kernel_image,
+			       "ess/maestro3_assp_kernel.fw", &pci->dev);
+	if (err < 0)
+		return err;
+
+	err = request_firmware(&chip->assp_minisrc_image,
+			       "ess/maestro3_assp_minisrc.fw", &pci->dev);
+	if (err < 0)
+		return err;
+
+	err = pci_request_regions(pci, card->driver);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->iobase = pci_resource_start(pci, 0);
 	
 	/* just to be sure */
@@ -2709,6 +3010,7 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 
 	snd_m3_hv_init(chip);
 
+<<<<<<< HEAD
 	if (request_irq(pci->irq, snd_m3_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
@@ -2729,40 +3031,85 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
 	}
 
 	if ((err = snd_m3_mixer(chip)) < 0)
+=======
+	if (devm_request_irq(&pci->dev, pci->irq, snd_m3_interrupt, IRQF_SHARED,
+			     KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -ENOMEM;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+
+	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
+		chip->suspend_mem =
+			vmalloc(array_size(sizeof(u16),
+					   REV_B_CODE_MEMORY_LENGTH +
+					   REV_B_DATA_MEMORY_LENGTH));
+		if (!chip->suspend_mem)
+			dev_warn(card->dev, "can't allocate apm buffer\n");
+	}
+
+	err = snd_m3_mixer(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	for (i = 0; i < chip->num_substreams; i++) {
 		struct m3_dma *s = &chip->substreams[i];
+<<<<<<< HEAD
 		if ((err = snd_m3_assp_client_init(chip, s, i)) < 0)
 			return err;
 	}
 
 	if ((err = snd_m3_pcm(chip, 0)) < 0)
+=======
+		err = snd_m3_assp_client_init(chip, s, i);
+		if (err < 0)
+			return err;
+	}
+
+	err = snd_m3_pcm(chip, 0);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 #ifdef CONFIG_SND_MAESTRO3_INPUT
 	if (chip->hv_config & HV_CTRL_ENABLE) {
 		err = snd_m3_input_register(chip);
 		if (err)
+<<<<<<< HEAD
 			snd_printk(KERN_WARNING "Input device registration "
 				"failed with error %i", err);
+=======
+			dev_warn(card->dev,
+				 "Input device registration failed with error %i",
+				 err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
 	snd_m3_enable_ints(chip);
 	snd_m3_assp_continue(chip);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	*chip_ret = chip;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0; 
 }
 
 /*
  */
+<<<<<<< HEAD
 static int __devinit
 snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+=======
+static int
+__snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -2780,9 +3127,17 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (pci->device) {
 	case PCI_DEVICE_ID_ESS_ALLEGRO:
@@ -2798,6 +3153,7 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_m3_create(card, pci,
 				 external_amp[dev],
 				 amp_gpio[dev],
@@ -2806,15 +3162,26 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return err;
 	}
 	card->private_data = chip;
+=======
+	err = snd_m3_create(card, pci, external_amp[dev], amp_gpio[dev]);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(card->shortname, "ESS %s PCI", card->driver);
 	sprintf(card->longname, "%s at 0x%lx, irq %d",
 		card->shortname, chip->iobase, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0 /* TODO: not supported yet */
 	/* TODO enable MIDI IRQ and I/O */
@@ -2823,7 +3190,11 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 				  MPU401_INFO_INTEGRATED | MPU401_INFO_IRQ_HOOK,
 				  -1, &chip->rmidi);
 	if (err < 0)
+<<<<<<< HEAD
 		printk(KERN_WARNING "maestro3: no MIDI support.\n");
+=======
+		dev_warn(card->dev, "no MIDI support.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	pci_set_drvdata(pci, card);
@@ -2831,6 +3202,7 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_m3_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -2860,3 +3232,21 @@ static void __exit alsa_card_m3_exit(void)
 
 module_init(alsa_card_m3_init)
 module_exit(alsa_card_m3_exit)
+=======
+static int
+snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_m3_probe(pci, pci_id));
+}
+
+static struct pci_driver m3_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_m3_ids,
+	.probe = snd_m3_probe,
+	.driver = {
+		.pm = &m3_pm,
+	},
+};
+	
+module_pci_driver(m3_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

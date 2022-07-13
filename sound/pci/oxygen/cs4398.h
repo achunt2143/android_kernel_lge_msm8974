@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* register 1 */
 #define CS4398_REV_MASK		0x07
 #define CS4398_PART_MASK	0xf8

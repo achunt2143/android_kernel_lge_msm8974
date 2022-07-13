@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -19,17 +20,36 @@
 /**
  * File for interrupt macros and functions
  */
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+ */
+
+/* File for interrupt macros and functions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __BNA_HW_DEFS_H__
 #define __BNA_HW_DEFS_H__
 
 #include "bfi_reg.h"
 
+<<<<<<< HEAD
 /**
  *
  * SW imposed limits
  *
  */
+=======
+/* SW imposed limits */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFI_ENET_DEF_TXQ		1
 #define BFI_ENET_DEF_RXP		1
 #define BFI_ENET_DEF_UCAM		1
@@ -51,7 +71,12 @@
 #define BFI_MAX_INTERPKT_COUNT		0xFF
 #define BFI_MAX_INTERPKT_TIMEO		0xF	/* in 0.5us units */
 #define BFI_TX_COALESCING_TIMEO		20	/* 20 * 5 = 100us */
+<<<<<<< HEAD
 #define BFI_TX_INTERPKT_COUNT		32
+=======
+#define BFI_TX_INTERPKT_COUNT		12	/* Pkt Cnt = 12 */
+#define BFI_TX_INTERPKT_TIMEO		15	/* 15 * 0.5 = 7.5us */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	BFI_RX_COALESCING_TIMEO		12	/* 12 * 5 = 60us */
 #define	BFI_RX_INTERPKT_COUNT		6	/* Pkt Cnt = 6 */
 #define	BFI_RX_INTERPKT_TIMEO		3	/* 3 * 0.5 = 1.5us */
@@ -141,11 +166,16 @@
 }
 
 #define bna_port_id_get(_bna) ((_bna)->ioceth.ioc.port_id)
+<<<<<<< HEAD
 /**
  *
  *  Interrupt related bits, flags and macros
  *
  */
+=======
+
+/*  Interrupt related bits, flags and macros  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IB_STATUS_BITS		0x0000ffff
 
@@ -219,7 +249,11 @@ do {									\
  * 15 bits (32K) should  be large enough to accumulate, anyways, and the max.
  * acked events to h/w can be (32K + max poll weight) (currently 64).
  */
+<<<<<<< HEAD
 #define	BNA_IB_MAX_ACK_EVENTS		(1 << 15)
+=======
+#define BNA_IB_MAX_ACK_EVENTS		BIT(15)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These macros build the data portion of the TxQ/RxQ doorbell */
 #define BNA_DOORBELL_Q_PRD_IDX(_pi)	(0x80000000 | (_pi))
@@ -232,6 +266,7 @@ do {									\
 
 /* Set the coalescing timer for the given ib */
 #define bna_ib_coalescing_timer_set(_i_dbell, _cls_timer)		\
+<<<<<<< HEAD
 	((_i_dbell)->doorbell_ack = BNA_DOORBELL_IB_INT_ACK((_cls_timer), 0));
 
 /* Acks 'events' # of events for a given ib while disabling interrupts */
@@ -243,6 +278,19 @@ do {									\
 #define bna_ib_ack(_i_dbell, _events)					\
 	(writel(((_i_dbell)->doorbell_ack | (_events)), \
 		(_i_dbell)->doorbell_addr));
+=======
+	((_i_dbell)->doorbell_ack = BNA_DOORBELL_IB_INT_ACK((_cls_timer), 0))
+
+/* Acks 'events' # of events for a given ib while disabling interrupts */
+#define bna_ib_ack_disable_irq(_i_dbell, _events)			\
+	(writel(BNA_DOORBELL_IB_INT_ACK(0, (_events)),			\
+		(_i_dbell)->doorbell_addr))
+
+/* Acks 'events' # of events for a given ib */
+#define bna_ib_ack(_i_dbell, _events)					\
+	(writel(((_i_dbell)->doorbell_ack | (_events)),		\
+		(_i_dbell)->doorbell_addr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define bna_ib_start(_bna, _ib, _is_regular)				\
 {									\
@@ -273,6 +321,7 @@ do {									\
 }
 
 #define bna_txq_prod_indx_doorbell(_tcb)				\
+<<<<<<< HEAD
 	(writel(BNA_DOORBELL_Q_PRD_IDX((_tcb)->producer_index), \
 		(_tcb)->q_dbell));
 
@@ -285,6 +334,16 @@ do {									\
  * TxQ, RxQ, CQ related bits, offsets, macros
  *
  */
+=======
+	(writel(BNA_DOORBELL_Q_PRD_IDX((_tcb)->producer_index),		\
+		(_tcb)->q_dbell))
+
+#define bna_rxq_prod_indx_doorbell(_rcb)				\
+	(writel(BNA_DOORBELL_Q_PRD_IDX((_rcb)->producer_index),		\
+		(_rcb)->q_dbell))
+
+/* TxQ, RxQ, CQ related bits, offsets, macros */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TxQ Entry Opcodes */
 #define BNA_TXQ_WI_SEND			(0x402)	/* Single Frame Transmission */
@@ -292,6 +351,7 @@ do {									\
 #define BNA_TXQ_WI_EXTENSION		(0x104)	/* Extension WI */
 
 /* TxQ Entry Control Flags */
+<<<<<<< HEAD
 #define BNA_TXQ_WI_CF_FCOE_CRC		(1 << 8)
 #define BNA_TXQ_WI_CF_IPID_MODE		(1 << 5)
 #define BNA_TXQ_WI_CF_INS_PRIO		(1 << 4)
@@ -299,6 +359,15 @@ do {									\
 #define BNA_TXQ_WI_CF_UDP_CKSUM		(1 << 2)
 #define BNA_TXQ_WI_CF_TCP_CKSUM		(1 << 1)
 #define BNA_TXQ_WI_CF_IP_CKSUM		(1 << 0)
+=======
+#define BNA_TXQ_WI_CF_FCOE_CRC		BIT(8)
+#define BNA_TXQ_WI_CF_IPID_MODE		BIT(5)
+#define BNA_TXQ_WI_CF_INS_PRIO		BIT(4)
+#define BNA_TXQ_WI_CF_INS_VLAN		BIT(3)
+#define BNA_TXQ_WI_CF_UDP_CKSUM		BIT(2)
+#define BNA_TXQ_WI_CF_TCP_CKSUM		BIT(1)
+#define BNA_TXQ_WI_CF_IP_CKSUM		BIT(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNA_TXQ_WI_L4_HDR_N_OFFSET(_hdr_size, _offset) \
 		(((_hdr_size) << 10) | ((_offset) & 0x3FF))
@@ -307,6 +376,7 @@ do {									\
  * Completion Q defines
  */
 /* CQ Entry Flags */
+<<<<<<< HEAD
 #define	BNA_CQ_EF_MAC_ERROR	(1 <<  0)
 #define	BNA_CQ_EF_FCS_ERROR	(1 <<  1)
 #define	BNA_CQ_EF_TOO_LONG	(1 <<  2)
@@ -339,6 +409,40 @@ do {									\
  * Data structures
  *
  */
+=======
+#define BNA_CQ_EF_MAC_ERROR	BIT(0)
+#define BNA_CQ_EF_FCS_ERROR	BIT(1)
+#define BNA_CQ_EF_TOO_LONG	BIT(2)
+#define BNA_CQ_EF_FC_CRC_OK	BIT(3)
+
+#define BNA_CQ_EF_RSVD1		BIT(4)
+#define BNA_CQ_EF_L4_CKSUM_OK	BIT(5)
+#define BNA_CQ_EF_L3_CKSUM_OK	BIT(6)
+#define BNA_CQ_EF_HDS_HEADER	BIT(7)
+
+#define BNA_CQ_EF_UDP		BIT(8)
+#define BNA_CQ_EF_TCP		BIT(9)
+#define BNA_CQ_EF_IP_OPTIONS	BIT(10)
+#define BNA_CQ_EF_IPV6		BIT(11)
+
+#define BNA_CQ_EF_IPV4		BIT(12)
+#define BNA_CQ_EF_VLAN		BIT(13)
+#define BNA_CQ_EF_RSS		BIT(14)
+#define BNA_CQ_EF_RSVD2		BIT(15)
+
+#define BNA_CQ_EF_MCAST_MATCH   BIT(16)
+#define BNA_CQ_EF_MCAST		BIT(17)
+#define BNA_CQ_EF_BCAST		BIT(18)
+#define BNA_CQ_EF_REMOTE	BIT(19)
+
+#define BNA_CQ_EF_LOCAL		BIT(20)
+/* CAT2 ASIC does not use bit 21 as per the SPEC.
+ * Bit 31 is set in every end of frame completion
+ */
+#define BNA_CQ_EF_EOP		BIT(31)
+
+/* Data structures */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bna_reg_offset {
 	u32 fn_int_status;
@@ -371,10 +475,16 @@ struct bna_txq_wi_vector {
 	struct bna_dma_addr host_addr; /* Tx-Buf DMA addr */
 };
 
+<<<<<<< HEAD
 /**
  *  TxQ Entry Structure
  *
  *  BEWARE:  Load values into this structure with correct endianess.
+=======
+/*  TxQ Entry Structure
+ *
+ *  BEWARE:  Load values into this structure with correct endianness.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct bna_txq_entry {
 	union {

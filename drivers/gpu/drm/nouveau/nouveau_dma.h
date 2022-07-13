@@ -27,12 +27,21 @@
 #ifndef __NOUVEAU_DMA_H__
 #define __NOUVEAU_DMA_H__
 
+<<<<<<< HEAD
 #ifndef NOUVEAU_DMA_DEBUG
 #define NOUVEAU_DMA_DEBUG 0
 #endif
 
 void nv50_dma_push(struct nouveau_channel *, struct nouveau_bo *,
 		   int delta, int length);
+=======
+#include "nouveau_bo.h"
+#include "nouveau_chan.h"
+
+int nouveau_dma_wait(struct nouveau_channel *, int slots, int size);
+void nv50_dma_push(struct nouveau_channel *, u64 addr, u32 length,
+		   bool no_prefetch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * There's a hw race condition where you can't jump to your PUT offset,
@@ -46,6 +55,7 @@ void nv50_dma_push(struct nouveau_channel *, struct nouveau_bo *,
  */
 #define NOUVEAU_DMA_SKIPS (128 / 4)
 
+<<<<<<< HEAD
 /* Hardcoded object assignments to subchannels (subchannel id). */
 enum {
 	NvSubM2MF	= 0,
@@ -99,6 +109,24 @@ enum {
 #define NV50_MEMORY_TO_MEMORY_FORMAT_OFFSET_IN_HIGH                   0x00000238
 #define NV50_MEMORY_TO_MEMORY_FORMAT_OFFSET_OUT_HIGH                  0x0000023c
 
+=======
+/* Maximum push buffer size. */
+#define NV50_DMA_PUSH_MAX_LENGTH 0x7fffff
+
+/* Maximum IBs per ring. */
+#define NV50_DMA_IB_MAX ((0x02000 / 8) - 1)
+
+/* Object handles - for stuff that's doesn't use handle == oclass. */
+enum {
+	NvDmaFB		= 0x80000002,
+	NvDmaTT		= 0x80000003,
+	NvNotify0       = 0x80000006,
+	NvSema		= 0x8000000f,
+	NvEvoSema0	= 0x80000010,
+	NvEvoSema1	= 0x80000011,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __must_check inline int
 RING_SPACE(struct nouveau_channel *chan, int size)
 {
@@ -115,6 +143,7 @@ RING_SPACE(struct nouveau_channel *chan, int size)
 static inline void
 OUT_RING(struct nouveau_channel *chan, int data)
 {
+<<<<<<< HEAD
 	if (NOUVEAU_DMA_DEBUG) {
 		NV_INFO(chan->dev, "Ch%d/0x%08x: 0x%08x\n",
 			chan->id, chan->dma.cur << 2, data);
@@ -142,23 +171,40 @@ BEGIN_RING(struct nouveau_channel *chan, int subc, int mthd, int size)
 	DRM_MEMORYBARRIER();                                                   \
 	nouveau_bo_rd32(chan->pushbuf_bo, 0);                                  \
 	nvchan_wr32(chan, chan->user_put, ((val) << 2) + chan->pushbuf_base);  \
+=======
+	nouveau_bo_wr32(chan->push.buffer, chan->dma.cur++, data);
+}
+
+#define WRITE_PUT(val) do {                                                    \
+	mb();                                                   \
+	nouveau_bo_rd32(chan->push.buffer, 0);                                 \
+	nvif_wr32(&chan->user, chan->user_put, ((val) << 2) + chan->push.addr);\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 static inline void
 FIRE_RING(struct nouveau_channel *chan)
 {
+<<<<<<< HEAD
 	if (NOUVEAU_DMA_DEBUG) {
 		NV_INFO(chan->dev, "Ch%d/0x%08x: PUSH!\n",
 			chan->id, chan->dma.cur << 2);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chan->dma.cur == chan->dma.put)
 		return;
 	chan->accel_done = true;
 
 	if (chan->dma.ib_max) {
+<<<<<<< HEAD
 		nv50_dma_push(chan, chan->pushbuf_bo, chan->dma.put << 2,
 			      (chan->dma.cur - chan->dma.put) << 2);
+=======
+		nv50_dma_push(chan, chan->push.addr + (chan->dma.put << 2),
+			      (chan->dma.cur - chan->dma.put) << 2, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		WRITE_PUT(chan->dma.cur);
 	}
@@ -172,4 +218,14 @@ WIND_RING(struct nouveau_channel *chan)
 	chan->dma.cur = chan->dma.put;
 }
 
+<<<<<<< HEAD
+=======
+/* NV_SW object class */
+#define NV_SW_DMA_VBLSEM                                             0x0000018c
+#define NV_SW_VBLSEM_OFFSET                                          0x00000400
+#define NV_SW_VBLSEM_RELEASE_VALUE                                   0x00000404
+#define NV_SW_VBLSEM_RELEASE                                         0x00000408
+#define NV_SW_PAGE_FLIP                                              0x00000500
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

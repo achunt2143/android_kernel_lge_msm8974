@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -55,8 +59,13 @@
 #define	CACHE_SIZE	0x2000		/* 8k of unified cache */
 #define	ICACHE_SIZE	CACHE_SIZE
 #define	DCACHE_SIZE	CACHE_SIZE
+<<<<<<< HEAD
 #elif defined(CONFIG_M532x)
 #define	CACHE_SIZE	0x4000		/* 32k of unified cache */
+=======
+#elif defined(CONFIG_M53xx)
+#define	CACHE_SIZE	0x4000		/* 16k of unified cache */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	ICACHE_SIZE	CACHE_SIZE
 #define	DCACHE_SIZE	CACHE_SIZE
 #endif
@@ -88,9 +97,15 @@
  * coherency though in all cases. And for copyback caches we will need
  * to push cached data as well.
  */
+<<<<<<< HEAD
 #define CACHE_INIT	  CACR_CINVA
 #define CACHE_INVALIDATE  CACR_CINVA
 #define CACHE_INVALIDATED CACR_CINVA
+=======
+#define CACHE_INIT        (CACHE_MODE + CACR_CINVA - CACR_EC)
+#define CACHE_INVALIDATE  (CACHE_MODE + CACR_CINVA)
+#define CACHE_INVALIDATED (CACHE_MODE + CACR_CINVA)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACR0_MODE	((CONFIG_RAMBASE & 0xff000000) + \
 			 (0x000f0000) + \

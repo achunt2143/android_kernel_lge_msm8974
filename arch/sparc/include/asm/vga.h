@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Access to VGA videoram
  *
@@ -8,9 +12,19 @@
 #define _LINUX_ASM_VGA_H_
 
 #include <linux/bug.h>
+<<<<<<< HEAD
 #include <asm/types.h>
 
 #define VT_BUF_HAVE_RW
+=======
+#include <linux/string.h>
+#include <asm/types.h>
+
+#define VT_BUF_HAVE_RW
+#define VT_BUF_HAVE_MEMSETW
+#define VT_BUF_HAVE_MEMCPYW
+#define VT_BUF_HAVE_MEMMOVEW
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef scr_writew
 #undef scr_readw
@@ -29,6 +43,30 @@ static inline u16 scr_readw(const u16 *addr)
 	return *addr;
 }
 
+<<<<<<< HEAD
+=======
+static inline void scr_memsetw(u16 *p, u16 v, unsigned int n)
+{
+	BUG_ON((long) p >= 0);
+
+	memset16(p, cpu_to_le16(v), n / 2);
+}
+
+static inline void scr_memcpyw(u16 *d, u16 *s, unsigned int n)
+{
+	BUG_ON((long) d >= 0);
+
+	memcpy(d, s, n);
+}
+
+static inline void scr_memmovew(u16 *d, u16 *s, unsigned int n)
+{
+	BUG_ON((long) d >= 0);
+
+	memmove(d, s, n);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VGA_MAP_MEM(x,s) (x)
 
 #endif

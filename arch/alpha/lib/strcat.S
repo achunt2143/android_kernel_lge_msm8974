@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/strcat.S
  * Contributed by Richard Henderson (rth@tamu.edu)
  *
  * Append a null-terminated string from SRC to DST.
  */
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.text
 
@@ -50,3 +58,7 @@ $found:	negq    $2, $3		# clear all but least set bit
 	br	__stxcpy
 
 	.end strcat
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strcat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

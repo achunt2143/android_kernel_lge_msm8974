@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/hw_breakpoint.c
  *
  * Unified kernel/user-space hardware breakpoint facility for the on-chip UBC.
  *
  * Copyright (C) 2009 - 2010  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -11,6 +16,12 @@
  */
 #include <linux/init.h>
 #include <linux/perf_event.h>
+=======
+ */
+#include <linux/init.h>
+#include <linux/perf_event.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hw_breakpoint.h>
 #include <linux/percpu.h>
 #include <linux/kallsyms.h>
@@ -52,7 +63,11 @@ int arch_install_hw_breakpoint(struct perf_event *bp)
 	int i;
 
 	for (i = 0; i < sh_ubc->num_events; i++) {
+<<<<<<< HEAD
 		struct perf_event **slot = &__get_cpu_var(bp_per_reg[i]);
+=======
+		struct perf_event **slot = this_cpu_ptr(&bp_per_reg[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!*slot) {
 			*slot = bp;
@@ -84,7 +99,11 @@ void arch_uninstall_hw_breakpoint(struct perf_event *bp)
 	int i;
 
 	for (i = 0; i < sh_ubc->num_events; i++) {
+<<<<<<< HEAD
 		struct perf_event **slot = &__get_cpu_var(bp_per_reg[i]);
+=======
+		struct perf_event **slot = this_cpu_ptr(&bp_per_reg[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (*slot == bp) {
 			*slot = NULL;
@@ -123,6 +142,7 @@ static int get_hbp_len(u16 hbp_len)
 /*
  * Check for virtual address in kernel space.
  */
+<<<<<<< HEAD
 int arch_check_bp_in_kernelspace(struct perf_event *bp)
 {
 	unsigned int len;
@@ -131,6 +151,15 @@ int arch_check_bp_in_kernelspace(struct perf_event *bp)
 
 	va = info->address;
 	len = get_hbp_len(info->len);
+=======
+int arch_check_bp_in_kernelspace(struct arch_hw_breakpoint *hw)
+{
+	unsigned int len;
+	unsigned long va;
+
+	va = hw->address;
+	len = get_hbp_len(hw->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (va >= TASK_SIZE) && ((va + len - 1) >= TASK_SIZE);
 }
@@ -160,6 +189,10 @@ int arch_bp_generic_fields(int sh_len, int sh_type,
 	switch (sh_type) {
 	case SH_BREAKPOINT_READ:
 		*gen_type = HW_BREAKPOINT_R;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SH_BREAKPOINT_WRITE:
 		*gen_type = HW_BREAKPOINT_W;
 		break;
@@ -173,6 +206,7 @@ int arch_bp_generic_fields(int sh_len, int sh_type,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int arch_build_bp_info(struct perf_event *bp)
 {
 	struct arch_hw_breakpoint *info = counter_arch_bp(bp);
@@ -192,12 +226,34 @@ static int arch_build_bp_info(struct perf_event *bp)
 		break;
 	case HW_BREAKPOINT_LEN_8:
 		info->len = SH_BREAKPOINT_LEN_8;
+=======
+static int arch_build_bp_info(struct perf_event *bp,
+			      const struct perf_event_attr *attr,
+			      struct arch_hw_breakpoint *hw)
+{
+	hw->address = attr->bp_addr;
+
+	/* Len */
+	switch (attr->bp_len) {
+	case HW_BREAKPOINT_LEN_1:
+		hw->len = SH_BREAKPOINT_LEN_1;
+		break;
+	case HW_BREAKPOINT_LEN_2:
+		hw->len = SH_BREAKPOINT_LEN_2;
+		break;
+	case HW_BREAKPOINT_LEN_4:
+		hw->len = SH_BREAKPOINT_LEN_4;
+		break;
+	case HW_BREAKPOINT_LEN_8:
+		hw->len = SH_BREAKPOINT_LEN_8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
 	/* Type */
+<<<<<<< HEAD
 	switch (bp->attr.bp_type) {
 	case HW_BREAKPOINT_R:
 		info->type = SH_BREAKPOINT_READ;
@@ -207,6 +263,17 @@ static int arch_build_bp_info(struct perf_event *bp)
 		break;
 	case HW_BREAKPOINT_W | HW_BREAKPOINT_R:
 		info->type = SH_BREAKPOINT_RW;
+=======
+	switch (attr->bp_type) {
+	case HW_BREAKPOINT_R:
+		hw->type = SH_BREAKPOINT_READ;
+		break;
+	case HW_BREAKPOINT_W:
+		hw->type = SH_BREAKPOINT_WRITE;
+		break;
+	case HW_BREAKPOINT_W | HW_BREAKPOINT_R:
+		hw->type = SH_BREAKPOINT_RW;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -218,6 +285,7 @@ static int arch_build_bp_info(struct perf_event *bp)
 /*
  * Validate the arch-specific HW Breakpoint register settings
  */
+<<<<<<< HEAD
 int arch_validate_hwbkpt_settings(struct perf_event *bp)
 {
 	struct arch_hw_breakpoint *info = counter_arch_bp(bp);
@@ -225,12 +293,26 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 	int ret;
 
 	ret = arch_build_bp_info(bp);
+=======
+int hw_breakpoint_arch_parse(struct perf_event *bp,
+			     const struct perf_event_attr *attr,
+			     struct arch_hw_breakpoint *hw)
+{
+	unsigned int align;
+	int ret;
+
+	ret = arch_build_bp_info(bp, attr, hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	ret = -EINVAL;
 
+<<<<<<< HEAD
 	switch (info->len) {
+=======
+	switch (hw->len) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SH_BREAKPOINT_LEN_1:
 		align = 0;
 		break;
@@ -248,6 +330,7 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * For kernel-addresses, either the address or symbol name can be
 	 * specified.
 	 */
@@ -259,6 +342,12 @@ int arch_validate_hwbkpt_settings(struct perf_event *bp)
 	 * for the alignment implied by len.
 	 */
 	if (info->address & align)
+=======
+	 * Check that the low-order bits of the address are appropriate
+	 * for the alignment implied by len.
+	 */
+	if (hw->address & align)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	return 0;
@@ -345,6 +434,7 @@ static int __kprobes hw_breakpoint_handler(struct die_args *args)
 		perf_bp_event(bp, args->regs);
 
 		/* Deliver the signal to userspace */
+<<<<<<< HEAD
 		if (!arch_check_bp_in_kernelspace(bp)) {
 			siginfo_t info;
 
@@ -353,6 +443,11 @@ static int __kprobes hw_breakpoint_handler(struct die_args *args)
 			info.si_code = TRAP_HWBKPT;
 
 			force_sig_info(args->signr, &info, current);
+=======
+		if (!arch_check_bp_in_kernelspace(&bp->hw.info)) {
+			force_sig_fault(SIGTRAP, TRAP_HWBKPT,
+					(void __user *)NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		rcu_read_unlock();

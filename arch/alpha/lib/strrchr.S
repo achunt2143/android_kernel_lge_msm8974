@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/strrchr.S
  * Contributed by Richard Henderson (rth@tamu.edu)
@@ -5,7 +9,11 @@
  * Return the address of the last occurrence of a given character
  * within a null-terminated string, or null if it is not found.
  */
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -85,3 +93,7 @@ $retnull:
 	ret			# .. e1 :
 
 	.end strrchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strrchr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

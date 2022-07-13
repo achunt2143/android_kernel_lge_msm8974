@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2007 PA Semi, Inc
  *
  * Maintained by: Olof Johansson <olof@lixom.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/processor.h>
@@ -66,7 +73,11 @@ sleep_common:
 	std	r3, 48(r1)
 
 	/* Only do power savings when in astate 0 */
+<<<<<<< HEAD
 	bl	.check_astate
+=======
+	bl	check_astate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmpwi	r3,0
 	bne	1f
 

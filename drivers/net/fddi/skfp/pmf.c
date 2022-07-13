@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -5,11 +9,14 @@
  *
  *	See the file "skfddi.c" for further information.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -28,10 +35,13 @@
 
 #ifndef	SLIM_SMT
 
+<<<<<<< HEAD
 #ifndef	lint
 static const char ID_sccs[] = "@(#)pmf.c	1.37 97/08/04 (C) SK " ;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int smt_authorize(struct s_smc *smc, struct smt_header *sm);
 static int smt_check_set_count(struct s_smc *smc, struct smt_header *sm);
 static const struct s_p_tab* smt_get_ptab(u_short para);
@@ -284,7 +294,11 @@ void smt_pmf_received_pack(struct s_smc *smc, SMbuf *mb, int local)
 	SMbuf		*reply ;
 
 	sm = smtod(mb,struct smt_header *) ;
+<<<<<<< HEAD
 	DB_SMT("SMT: processing PMF frame at %x len %d\n",sm,mb->sm_len) ;
+=======
+	DB_SMT("SMT: processing PMF frame at %p len %d", sm, mb->sm_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	DEBUG
 	dump_smt(smc,sm,"PMF Received") ;
 #endif
@@ -673,7 +687,11 @@ void smt_add_para(struct s_smc *smc, struct s_pcon *pcon, u_short para,
 			sm_pm_get_ls(smc,port_to_mib(smc,port))) ;
 		break ;
 	case SMT_P_REASON :
+<<<<<<< HEAD
 		* (u_long *) to = 0 ;
+=======
+		*(u32 *)to = 0 ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sp_len = 4 ;
 		goto sp_done ;
 	case SMT_P1033 :			/* time stamp */
@@ -1242,7 +1260,11 @@ static int smt_set_para(struct s_smc *smc, struct smt_para *pa, int index,
 			if (len < 8)
 				goto len_error ;
 			if (set)
+<<<<<<< HEAD
 				memcpy((char *) to,(char *) from+2,6) ;
+=======
+				memcpy(to,from+2,6) ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to += 8 ;
 			from += 8 ;
 			len -= 8 ;
@@ -1251,7 +1273,11 @@ static int smt_set_para(struct s_smc *smc, struct smt_para *pa, int index,
 			if (len < 4)
 				goto len_error ;
 			if (set)
+<<<<<<< HEAD
 				memcpy((char *) to,(char *) from,4) ;
+=======
+				memcpy(to,from,4) ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to += 4 ;
 			from += 4 ;
 			len -= 4 ;
@@ -1260,7 +1286,11 @@ static int smt_set_para(struct s_smc *smc, struct smt_para *pa, int index,
 			if (len < 8)
 				goto len_error ;
 			if (set)
+<<<<<<< HEAD
 				memcpy((char *) to,(char *) from,8) ;
+=======
+				memcpy(to,from,8) ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to += 8 ;
 			from += 8 ;
 			len -= 8 ;
@@ -1269,7 +1299,11 @@ static int smt_set_para(struct s_smc *smc, struct smt_para *pa, int index,
 			if (len < 32)
 				goto len_error ;
 			if (set)
+<<<<<<< HEAD
 				memcpy((char *) to,(char *) from,32) ;
+=======
+				memcpy(to,from,32) ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to += 32 ;
 			from += 32 ;
 			len -= 32 ;
@@ -1585,7 +1619,11 @@ void dump_smt(struct s_smc *smc, struct smt_header *sm, char *text)
 	dump_hex((char *) &sm->smt_source,6) ;
 	printf(" Class %x Type %x Version %x\n",
 		sm->smt_class,sm->smt_type,sm->smt_version)  ;
+<<<<<<< HEAD
 	printf("TID %lx\t\tSID ",sm->smt_tid) ;
+=======
+	printf("TID %x\t\tSID ", sm->smt_tid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump_hex((char *) &sm->smt_sid,8) ;
 	printf(" LEN %x\n",sm->smt_len) ;
 

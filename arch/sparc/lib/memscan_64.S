@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * memscan.S: Optimized memscan for Sparc64.
  *
@@ -5,6 +9,11 @@
  * Copyright (C) 1998 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HI_MAGIC	0x8080808080808080
 #define LO_MAGIC	0x0101010101010101
 #define ASI_PL		0x88
@@ -12,7 +21,15 @@
 	.text
 	.align	32
 	.globl		__memscan_zero, __memscan_generic
+<<<<<<< HEAD
 	.globl		memscan
+=======
+	.type		__memscan_zero,#function
+	.type		__memscan_generic,#function
+	.globl		memscan
+	EXPORT_SYMBOL(__memscan_zero)
+	EXPORT_SYMBOL(__memscan_generic)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __memscan_zero:
 	/* %o0 = bufp, %o1 = size */

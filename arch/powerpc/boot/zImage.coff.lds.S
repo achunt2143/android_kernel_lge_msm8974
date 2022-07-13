@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT_ARCH(powerpc:common)
 ENTRY(_zimage_start_opd)
 EXTERN(_zimage_start_opd)

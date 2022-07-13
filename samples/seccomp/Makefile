@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # kbuild trick to avoid linker error. Can be omitted if a module is built.
 obj- := dummy.o
 
@@ -30,3 +31,11 @@ endif
 
 # Tell kbuild to always build the programs
 always := $(hostprogs-y)
+=======
+# SPDX-License-Identifier: GPL-2.0
+userprogs-always-y += bpf-fancy dropper bpf-direct user-trap
+
+bpf-fancy-objs := bpf-fancy.o bpf-helper.o
+
+userccflags += -I usr/include
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

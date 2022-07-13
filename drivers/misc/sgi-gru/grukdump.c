@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
  *            Dump GRU State
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,6 +34,12 @@
 #include <linux/delay.h>
 #include <linux/bitops.h>
 #include <asm/uv/uv_hub.h>
+<<<<<<< HEAD
+=======
+
+#include <linux/nospec.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "gru.h"
 #include "grutables.h"
 #include "gruhandles.h"
@@ -78,11 +91,18 @@ static int gru_dump_tfm(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_fault_map *tfm;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TFM * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TFM * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < GRU_NUM_TFM; i++) {
 		tfm = get_tfm(gru->gs_gru_base_vaddr, i);
@@ -99,11 +119,18 @@ static int gru_dump_tgh(struct gru_state *gru,
 		void __user *ubuf, void __user *ubufend)
 {
 	struct gru_tlb_global_handle *tgh;
+<<<<<<< HEAD
 	int i, ret, bytes;
 
 	bytes = GRU_NUM_TGH * GRU_CACHE_LINE_BYTES;
 	if (bytes > ubufend - ubuf)
 		ret = -EFBIG;
+=======
+	int i;
+
+	if (GRU_NUM_TGH * GRU_CACHE_LINE_BYTES > ubufend - ubuf)
+		return -EFBIG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < GRU_NUM_TGH; i++) {
 		tgh = get_tgh(gru->gs_gru_base_vaddr, i);
@@ -139,8 +166,16 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 
 	ubuf += sizeof(hdr);
 	ubufcch = ubuf;
+<<<<<<< HEAD
 	if (gru_user_copy_handle(&ubuf, cch))
 		goto fail;
+=======
+	if (gru_user_copy_handle(&ubuf, cch)) {
+		if (cch_locked)
+			unlock_cch_handle(cch);
+		return -EFAULT;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cch_locked)
 		ubufcch->delresp = 0;
 	bytes = sizeof(hdr) + GRU_CACHE_LINE_BYTES;
@@ -175,6 +210,7 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 	hdr.cbrcnt = cbrcnt;
 	hdr.dsrcnt = dsrcnt;
 	hdr.cch_locked = cch_locked;
+<<<<<<< HEAD
 	if (!ret && copy_to_user((void __user *)uhdr, &hdr, sizeof(hdr)))
 		ret = -EFAULT;
 
@@ -183,6 +219,12 @@ static int gru_dump_context(struct gru_state *gru, int ctxnum,
 fail:
 	unlock_cch_handle(cch);
 	return -EFAULT;
+=======
+	if (copy_to_user(uhdr, &hdr, sizeof(hdr)))
+		return -EFAULT;
+
+	return bytes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int gru_dump_chiplet_request(unsigned long arg)
@@ -197,8 +239,14 @@ int gru_dump_chiplet_request(unsigned long arg)
 		return -EFAULT;
 
 	/* Currently, only dump by gid is implemented */
+<<<<<<< HEAD
 	if (req.gid >= gru_max_gids || req.gid < 0)
 		return -EINVAL;
+=======
+	if (req.gid >= gru_max_gids)
+		return -EINVAL;
+	req.gid = array_index_nospec(req.gid, gru_max_gids);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gru = GID_TO_GRU(req.gid);
 	ubuf = req.buf;

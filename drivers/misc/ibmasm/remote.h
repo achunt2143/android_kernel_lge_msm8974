@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBM ASM Service Processor Device Driver
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2004
  *
  * Author: Max Asböck <amax@us.ibm.com>
@@ -56,7 +63,11 @@
 #define REMOTE_BUTTON_MIDDLE	0x02
 #define REMOTE_BUTTON_RIGHT	0x04
 
+<<<<<<< HEAD
 /* size of keysym/keycode translation matricies */
+=======
+/* size of keysym/keycode translation matrices */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XLATE_SIZE 256
 
 struct mouse_input {

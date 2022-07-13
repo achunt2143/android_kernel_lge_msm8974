@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright © 2001      Red Hat UK Limited
  * Copyright © 2001-2010 David Woodhouse <dwmw2@infradead.org>
@@ -16,6 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright © 2001      Red Hat UK Limited
+ * Copyright © 2001-2010 David Woodhouse <dwmw2@infradead.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MTD_GEN_PROBE_H__

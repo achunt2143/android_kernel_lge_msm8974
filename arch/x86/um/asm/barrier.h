@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_UM_BARRIER_H_
 #define _ASM_UM_BARRIER_H_
 
@@ -9,6 +10,14 @@
 
 #include <linux/kernel.h>
 #include <linux/irqflags.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_UM_BARRIER_H_
+#define _ASM_UM_BARRIER_H_
+
+#include <asm/cpufeatures.h>
+#include <asm/alternative.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Force strict CPU ordering.
@@ -29,6 +38,7 @@
 
 #endif /* CONFIG_X86_32 */
 
+<<<<<<< HEAD
 #define read_barrier_depends()	do { } while (0)
 
 #ifdef CONFIG_SMP
@@ -71,5 +81,8 @@ static inline void rdtsc_barrier(void)
 	alternative(ASM_NOP3, "mfence", X86_FEATURE_MFENCE_RDTSC);
 	alternative(ASM_NOP3, "lfence", X86_FEATURE_LFENCE_RDTSC);
 }
+=======
+#include <asm-generic/barrier.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

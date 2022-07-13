@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * "splice": joining two ropes together by interweaving their strands.
  *
@@ -17,6 +21,10 @@
  * Copyright (C) 2006 Ingo Molnar <mingo@elte.hu>
  *
  */
+<<<<<<< HEAD
+=======
+#include <linux/bvec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/file.h>
 #include <linux/pagemap.h>
@@ -28,9 +36,36 @@
 #include <linux/export.h>
 #include <linux/syscalls.h>
 #include <linux/uio.h>
+<<<<<<< HEAD
 #include <linux/security.h>
 #include <linux/gfp.h>
 #include <linux/socket.h>
+=======
+#include <linux/fsnotify.h>
+#include <linux/security.h>
+#include <linux/gfp.h>
+#include <linux/net.h>
+#include <linux/socket.h>
+#include <linux/sched/signal.h>
+
+#include "internal.h"
+
+/*
+ * Splice doesn't support FMODE_NOWAIT. Since pipes may set this flag to
+ * indicate they support non-blocking reads or writes, we must clear it
+ * here if set to avoid blocking other users of this pipe if splice is
+ * being done on it.
+ */
+static noinline void noinline pipe_clear_nowait(struct file *file)
+{
+	fmode_t fmode = READ_ONCE(file->f_mode);
+
+	do {
+		if (!(fmode & FMODE_NOWAIT))
+			break;
+	} while (!try_cmpxchg(&file->f_mode, &fmode, fmode & ~FMODE_NOWAIT));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Attempt to steal a page from a pipe buffer. This should perhaps go into
@@ -38,6 +73,7 @@
  * addition of remove_mapping(). If success is returned, the caller may
  * attempt to reuse this page for another destination.
  */
+<<<<<<< HEAD
 static int page_cache_pipe_buf_steal(struct pipe_inode_info *pipe,
 				     struct pipe_buffer *buf)
 {
@@ -62,31 +98,75 @@ static int page_cache_pipe_buf_steal(struct pipe_inode_info *pipe,
 
 		if (page_has_private(page) &&
 		    !try_to_release_page(page, GFP_KERNEL))
+=======
+static bool page_cache_pipe_buf_try_steal(struct pipe_inode_info *pipe,
+		struct pipe_buffer *buf)
+{
+	struct folio *folio = page_folio(buf->page);
+	struct address_space *mapping;
+
+	folio_lock(folio);
+
+	mapping = folio_mapping(folio);
+	if (mapping) {
+		WARN_ON(!folio_test_uptodate(folio));
+
+		/*
+		 * At least for ext2 with nobh option, we need to wait on
+		 * writeback completing on this folio, since we'll remove it
+		 * from the pagecache.  Otherwise truncate wont wait on the
+		 * folio, allowing the disk blocks to be reused by someone else
+		 * before we actually wrote our data to them. fs corruption
+		 * ensues.
+		 */
+		folio_wait_writeback(folio);
+
+		if (!filemap_release_folio(folio, GFP_KERNEL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_unlock;
 
 		/*
 		 * If we succeeded in removing the mapping, set LRU flag
 		 * and return good.
 		 */
+<<<<<<< HEAD
 		if (remove_mapping(mapping, page)) {
 			buf->flags |= PIPE_BUF_FLAG_LRU;
 			return 0;
+=======
+		if (remove_mapping(mapping, folio)) {
+			buf->flags |= PIPE_BUF_FLAG_LRU;
+			return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Raced with truncate or failed to remove page from current
 	 * address space, unlock and return failure.
 	 */
 out_unlock:
 	unlock_page(page);
 	return 1;
+=======
+	 * Raced with truncate or failed to remove folio from current
+	 * address space, unlock and return failure.
+	 */
+out_unlock:
+	folio_unlock(folio);
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void page_cache_pipe_buf_release(struct pipe_inode_info *pipe,
 					struct pipe_buffer *buf)
 {
+<<<<<<< HEAD
 	page_cache_release(buf->page);
+=======
+	put_page(buf->page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->flags &= ~PIPE_BUF_FLAG_LRU;
 }
 
@@ -97,6 +177,7 @@ static void page_cache_pipe_buf_release(struct pipe_inode_info *pipe,
 static int page_cache_pipe_buf_confirm(struct pipe_inode_info *pipe,
 				       struct pipe_buffer *buf)
 {
+<<<<<<< HEAD
 	struct page *page = buf->page;
 	int err;
 
@@ -108,6 +189,19 @@ static int page_cache_pipe_buf_confirm(struct pipe_inode_info *pipe,
 		 * splice, if this is the first page.
 		 */
 		if (!page->mapping) {
+=======
+	struct folio *folio = page_folio(buf->page);
+	int err;
+
+	if (!folio_test_uptodate(folio)) {
+		folio_lock(folio);
+
+		/*
+		 * Folio got truncated/unhashed. This will cause a 0-byte
+		 * splice, if this is the first page.
+		 */
+		if (!folio->mapping) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENODATA;
 			goto error;
 		}
@@ -115,24 +209,38 @@ static int page_cache_pipe_buf_confirm(struct pipe_inode_info *pipe,
 		/*
 		 * Uh oh, read-error from disk.
 		 */
+<<<<<<< HEAD
 		if (!PageUptodate(page)) {
+=======
+		if (!folio_test_uptodate(folio)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EIO;
 			goto error;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * Page is ok afterall, we are done.
 		 */
 		unlock_page(page);
+=======
+		/* Folio is ok after all, we are done */
+		folio_unlock(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 error:
+<<<<<<< HEAD
 	unlock_page(page);
+=======
+	folio_unlock(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 const struct pipe_buf_operations page_cache_pipe_buf_ops = {
+<<<<<<< HEAD
 	.can_merge = 0,
 	.map = generic_pipe_buf_map,
 	.unmap = generic_pipe_buf_unmap,
@@ -160,13 +268,40 @@ static const struct pipe_buf_operations user_page_pipe_buf_ops = {
 	.release = page_cache_pipe_buf_release,
 	.steal = user_page_pipe_buf_steal,
 	.get = generic_pipe_buf_get,
+=======
+	.confirm	= page_cache_pipe_buf_confirm,
+	.release	= page_cache_pipe_buf_release,
+	.try_steal	= page_cache_pipe_buf_try_steal,
+	.get		= generic_pipe_buf_get,
+};
+
+static bool user_page_pipe_buf_try_steal(struct pipe_inode_info *pipe,
+		struct pipe_buffer *buf)
+{
+	if (!(buf->flags & PIPE_BUF_FLAG_GIFT))
+		return false;
+
+	buf->flags |= PIPE_BUF_FLAG_LRU;
+	return generic_pipe_buf_try_steal(pipe, buf);
+}
+
+static const struct pipe_buf_operations user_page_pipe_buf_ops = {
+	.release	= page_cache_pipe_buf_release,
+	.try_steal	= user_page_pipe_buf_try_steal,
+	.get		= generic_pipe_buf_get,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void wakeup_pipe_readers(struct pipe_inode_info *pipe)
 {
 	smp_mb();
+<<<<<<< HEAD
 	if (waitqueue_active(&pipe->wait))
 		wake_up_interruptible(&pipe->wait);
+=======
+	if (waitqueue_active(&pipe->rd_wait))
+		wake_up_interruptible(&pipe->rd_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kill_fasync(&pipe->fasync_readers, SIGIO, POLL_IN);
 }
 
@@ -185,6 +320,7 @@ ssize_t splice_to_pipe(struct pipe_inode_info *pipe,
 		       struct splice_pipe_desc *spd)
 {
 	unsigned int spd_pages = spd->nr_pages;
+<<<<<<< HEAD
 	int ret, do_wakeup, page_nr;
 
 	ret = 0;
@@ -258,16 +394,82 @@ ssize_t splice_to_pipe(struct pipe_inode_info *pipe,
 	if (do_wakeup)
 		wakeup_pipe_readers(pipe);
 
+=======
+	unsigned int tail = pipe->tail;
+	unsigned int head = pipe->head;
+	unsigned int mask = pipe->ring_size - 1;
+	ssize_t ret = 0;
+	int page_nr = 0;
+
+	if (!spd_pages)
+		return 0;
+
+	if (unlikely(!pipe->readers)) {
+		send_sig(SIGPIPE, current, 0);
+		ret = -EPIPE;
+		goto out;
+	}
+
+	while (!pipe_full(head, tail, pipe->max_usage)) {
+		struct pipe_buffer *buf = &pipe->bufs[head & mask];
+
+		buf->page = spd->pages[page_nr];
+		buf->offset = spd->partial[page_nr].offset;
+		buf->len = spd->partial[page_nr].len;
+		buf->private = spd->partial[page_nr].private;
+		buf->ops = spd->ops;
+		buf->flags = 0;
+
+		head++;
+		pipe->head = head;
+		page_nr++;
+		ret += buf->len;
+
+		if (!--spd->nr_pages)
+			break;
+	}
+
+	if (!ret)
+		ret = -EAGAIN;
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (page_nr < spd_pages)
 		spd->spd_release(spd, page_nr++);
 
 	return ret;
 }
+<<<<<<< HEAD
 
 void spd_release_page(struct splice_pipe_desc *spd, unsigned int i)
 {
 	page_cache_release(spd->pages[i]);
 }
+=======
+EXPORT_SYMBOL_GPL(splice_to_pipe);
+
+ssize_t add_to_pipe(struct pipe_inode_info *pipe, struct pipe_buffer *buf)
+{
+	unsigned int head = pipe->head;
+	unsigned int tail = pipe->tail;
+	unsigned int mask = pipe->ring_size - 1;
+	int ret;
+
+	if (unlikely(!pipe->readers)) {
+		send_sig(SIGPIPE, current, 0);
+		ret = -EPIPE;
+	} else if (pipe_full(head, tail, pipe->max_usage)) {
+		ret = -EAGAIN;
+	} else {
+		pipe->bufs[head & mask] = *buf;
+		pipe->head = head + 1;
+		return buf->len;
+	}
+	pipe_buf_release(pipe, buf);
+	return ret;
+}
+EXPORT_SYMBOL(add_to_pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check if we need to grow the arrays holding pages and partial page
@@ -275,6 +477,7 @@ void spd_release_page(struct splice_pipe_desc *spd, unsigned int i)
  */
 int splice_grow_spd(const struct pipe_inode_info *pipe, struct splice_pipe_desc *spd)
 {
+<<<<<<< HEAD
 	unsigned int buffers = ACCESS_ONCE(pipe->buffers);
 
 	spd->nr_pages_max = buffers;
@@ -283,6 +486,17 @@ int splice_grow_spd(const struct pipe_inode_info *pipe, struct splice_pipe_desc 
 
 	spd->pages = kmalloc(buffers * sizeof(struct page *), GFP_KERNEL);
 	spd->partial = kmalloc(buffers * sizeof(struct partial_page), GFP_KERNEL);
+=======
+	unsigned int max_usage = READ_ONCE(pipe->max_usage);
+
+	spd->nr_pages_max = max_usage;
+	if (max_usage <= PIPE_DEF_BUFFERS)
+		return 0;
+
+	spd->pages = kmalloc_array(max_usage, sizeof(struct page *), GFP_KERNEL);
+	spd->partial = kmalloc_array(max_usage, sizeof(struct partial_page),
+				     GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (spd->pages && spd->partial)
 		return 0;
@@ -301,6 +515,7 @@ void splice_shrink_spd(struct splice_pipe_desc *spd)
 	kfree(spd->partial);
 }
 
+<<<<<<< HEAD
 static int
 __generic_file_splice_read(struct file *in, loff_t *ppos,
 			   struct pipe_inode_info *pipe, size_t len,
@@ -763,12 +978,134 @@ out:
 	return ret;
 }
 EXPORT_SYMBOL(pipe_to_file);
+=======
+/**
+ * copy_splice_read -  Copy data from a file and splice the copy into a pipe
+ * @in: The file to read from
+ * @ppos: Pointer to the file position to read from
+ * @pipe: The pipe to splice into
+ * @len: The amount to splice
+ * @flags: The SPLICE_F_* flags
+ *
+ * This function allocates a bunch of pages sufficient to hold the requested
+ * amount of data (but limited by the remaining pipe capacity), passes it to
+ * the file's ->read_iter() to read into and then splices the used pages into
+ * the pipe.
+ *
+ * Return: On success, the number of bytes read will be returned and *@ppos
+ * will be updated if appropriate; 0 will be returned if there is no more data
+ * to be read; -EAGAIN will be returned if the pipe had no space, and some
+ * other negative error code will be returned on error.  A short read may occur
+ * if the pipe has insufficient space, we reach the end of the data or we hit a
+ * hole.
+ */
+ssize_t copy_splice_read(struct file *in, loff_t *ppos,
+			 struct pipe_inode_info *pipe,
+			 size_t len, unsigned int flags)
+{
+	struct iov_iter to;
+	struct bio_vec *bv;
+	struct kiocb kiocb;
+	struct page **pages;
+	ssize_t ret;
+	size_t used, npages, chunk, remain, keep = 0;
+	int i;
+
+	/* Work out how much data we can actually add into the pipe */
+	used = pipe_occupancy(pipe->head, pipe->tail);
+	npages = max_t(ssize_t, pipe->max_usage - used, 0);
+	len = min_t(size_t, len, npages * PAGE_SIZE);
+	npages = DIV_ROUND_UP(len, PAGE_SIZE);
+
+	bv = kzalloc(array_size(npages, sizeof(bv[0])) +
+		     array_size(npages, sizeof(struct page *)), GFP_KERNEL);
+	if (!bv)
+		return -ENOMEM;
+
+	pages = (struct page **)(bv + npages);
+	npages = alloc_pages_bulk_array(GFP_USER, npages, pages);
+	if (!npages) {
+		kfree(bv);
+		return -ENOMEM;
+	}
+
+	remain = len = min_t(size_t, len, npages * PAGE_SIZE);
+
+	for (i = 0; i < npages; i++) {
+		chunk = min_t(size_t, PAGE_SIZE, remain);
+		bv[i].bv_page = pages[i];
+		bv[i].bv_offset = 0;
+		bv[i].bv_len = chunk;
+		remain -= chunk;
+	}
+
+	/* Do the I/O */
+	iov_iter_bvec(&to, ITER_DEST, bv, npages, len);
+	init_sync_kiocb(&kiocb, in);
+	kiocb.ki_pos = *ppos;
+	ret = call_read_iter(in, &kiocb, &to);
+
+	if (ret > 0) {
+		keep = DIV_ROUND_UP(ret, PAGE_SIZE);
+		*ppos = kiocb.ki_pos;
+	}
+
+	/*
+	 * Callers of ->splice_read() expect -EAGAIN on "can't put anything in
+	 * there", rather than -EFAULT.
+	 */
+	if (ret == -EFAULT)
+		ret = -EAGAIN;
+
+	/* Free any pages that didn't get touched at all. */
+	if (keep < npages)
+		release_pages(pages + keep, npages - keep);
+
+	/* Push the remaining pages into the pipe. */
+	remain = ret;
+	for (i = 0; i < keep; i++) {
+		struct pipe_buffer *buf = pipe_head_buf(pipe);
+
+		chunk = min_t(size_t, remain, PAGE_SIZE);
+		*buf = (struct pipe_buffer) {
+			.ops	= &default_pipe_buf_ops,
+			.page	= bv[i].bv_page,
+			.offset	= 0,
+			.len	= chunk,
+		};
+		pipe->head++;
+		remain -= chunk;
+	}
+
+	kfree(bv);
+	return ret;
+}
+EXPORT_SYMBOL(copy_splice_read);
+
+const struct pipe_buf_operations default_pipe_buf_ops = {
+	.release	= generic_pipe_buf_release,
+	.try_steal	= generic_pipe_buf_try_steal,
+	.get		= generic_pipe_buf_get,
+};
+
+/* Pipe buffer operations for a socket and similar. */
+const struct pipe_buf_operations nosteal_pipe_buf_ops = {
+	.release	= generic_pipe_buf_release,
+	.get		= generic_pipe_buf_get,
+};
+EXPORT_SYMBOL(nosteal_pipe_buf_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void wakeup_pipe_writers(struct pipe_inode_info *pipe)
 {
 	smp_mb();
+<<<<<<< HEAD
 	if (waitqueue_active(&pipe->wait))
 		wake_up_interruptible(&pipe->wait);
+=======
+	if (waitqueue_active(&pipe->wr_wait))
+		wake_up_interruptible(&pipe->wr_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kill_fasync(&pipe->fasync_writers, SIGIO, POLL_OUT);
 }
 
@@ -792,6 +1129,7 @@ static void wakeup_pipe_writers(struct pipe_inode_info *pipe)
  *    locking is required around copying the pipe buffers to the
  *    destination.
  */
+<<<<<<< HEAD
 int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_desc *sd,
 			  splice_actor *actor)
 {
@@ -800,12 +1138,28 @@ int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_desc *sd,
 	while (pipe->nrbufs) {
 		struct pipe_buffer *buf = pipe->bufs + pipe->curbuf;
 		const struct pipe_buf_operations *ops = buf->ops;
+=======
+static int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_desc *sd,
+			  splice_actor *actor)
+{
+	unsigned int head = pipe->head;
+	unsigned int tail = pipe->tail;
+	unsigned int mask = pipe->ring_size - 1;
+	int ret;
+
+	while (!pipe_empty(head, tail)) {
+		struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sd->len = buf->len;
 		if (sd->len > sd->total_len)
 			sd->len = sd->total_len;
 
+<<<<<<< HEAD
 		ret = buf->ops->confirm(pipe, buf);
+=======
+		ret = pipe_buf_confirm(pipe, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(ret)) {
 			if (ret == -ENODATA)
 				ret = 0;
@@ -825,11 +1179,18 @@ int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_desc *sd,
 		sd->total_len -= ret;
 
 		if (!buf->len) {
+<<<<<<< HEAD
 			buf->ops = NULL;
 			ops->release(pipe, buf);
 			pipe->curbuf = (pipe->curbuf + 1) & (pipe->buffers - 1);
 			pipe->nrbufs--;
 			if (pipe->inode)
+=======
+			pipe_buf_release(pipe, buf);
+			tail++;
+			pipe->tail = tail;
+			if (pipe->files)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sd->need_wakeup = true;
 		}
 
@@ -839,7 +1200,26 @@ int splice_from_pipe_feed(struct pipe_inode_info *pipe, struct splice_desc *sd,
 
 	return 1;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(splice_from_pipe_feed);
+=======
+
+/* We know we have a pipe buffer, but maybe it's empty? */
+static inline bool eat_empty_buffer(struct pipe_inode_info *pipe)
+{
+	unsigned int tail = pipe->tail;
+	unsigned int mask = pipe->ring_size - 1;
+	struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+
+	if (unlikely(!buf->len)) {
+		pipe_buf_release(pipe, buf);
+		pipe->tail = tail+1;
+		return true;
+	}
+
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * splice_from_pipe_next - wait for some data to splice from
@@ -851,7 +1231,11 @@ EXPORT_SYMBOL(splice_from_pipe_feed);
  *    value (one) if pipe buffers are available.  It will return zero
  *    or -errno if no more data needs to be spliced.
  */
+<<<<<<< HEAD
 int splice_from_pipe_next(struct pipe_inode_info *pipe, struct splice_desc *sd)
+=======
+static int splice_from_pipe_next(struct pipe_inode_info *pipe, struct splice_desc *sd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Check for signal early to make process killable when there are
@@ -860,11 +1244,20 @@ int splice_from_pipe_next(struct pipe_inode_info *pipe, struct splice_desc *sd)
 	if (signal_pending(current))
 		return -ERESTARTSYS;
 
+<<<<<<< HEAD
 	while (!pipe->nrbufs) {
 		if (!pipe->writers)
 			return 0;
 
 		if (!pipe->waiting_writers && sd->num_spliced)
+=======
+repeat:
+	while (pipe_empty(pipe->head, pipe->tail)) {
+		if (!pipe->writers)
+			return 0;
+
+		if (sd->num_spliced)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		if (sd->flags & SPLICE_F_NONBLOCK)
@@ -878,12 +1271,23 @@ int splice_from_pipe_next(struct pipe_inode_info *pipe, struct splice_desc *sd)
 			sd->need_wakeup = false;
 		}
 
+<<<<<<< HEAD
 		pipe_wait(pipe);
 	}
 
 	return 1;
 }
 EXPORT_SYMBOL(splice_from_pipe_next);
+=======
+		pipe_wait_readable(pipe);
+	}
+
+	if (eat_empty_buffer(pipe))
+		goto repeat;
+
+	return 1;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * splice_from_pipe_begin - start splicing from pipe
@@ -894,12 +1298,19 @@ EXPORT_SYMBOL(splice_from_pipe_next);
  *    splice_from_pipe_next() and splice_from_pipe_feed() to
  *    initialize the necessary fields of @sd.
  */
+<<<<<<< HEAD
 void splice_from_pipe_begin(struct splice_desc *sd)
+=======
+static void splice_from_pipe_begin(struct splice_desc *sd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sd->num_spliced = 0;
 	sd->need_wakeup = false;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(splice_from_pipe_begin);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * splice_from_pipe_end - finish splicing from pipe
@@ -911,12 +1322,19 @@ EXPORT_SYMBOL(splice_from_pipe_begin);
  *    be called after a loop containing splice_from_pipe_next() and
  *    splice_from_pipe_feed().
  */
+<<<<<<< HEAD
 void splice_from_pipe_end(struct pipe_inode_info *pipe, struct splice_desc *sd)
+=======
+static void splice_from_pipe_end(struct pipe_inode_info *pipe, struct splice_desc *sd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sd->need_wakeup)
 		wakeup_pipe_writers(pipe);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(splice_from_pipe_end);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __splice_from_pipe - splice data from a pipe to given actor
@@ -927,7 +1345,11 @@ EXPORT_SYMBOL(splice_from_pipe_end);
  * Description:
  *    This function does little more than loop over the pipe and call
  *    @actor to do the actual moving of a single struct pipe_buffer to
+<<<<<<< HEAD
  *    the desired destination. See pipe_to_file, pipe_to_sendpage, or
+=======
+ *    the desired destination. See pipe_to_file, pipe_to_sendmsg, or
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    pipe_to_user.
  *
  */
@@ -983,7 +1405,11 @@ ssize_t splice_from_pipe(struct pipe_inode_info *pipe, struct file *out,
 }
 
 /**
+<<<<<<< HEAD
  * generic_file_splice_write - splice data from a pipe to a file
+=======
+ * iter_file_splice_write - splice data from a pipe to a file
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pipe:	pipe info
  * @out:	file to write to
  * @ppos:	position in @out
@@ -993,6 +1419,7 @@ ssize_t splice_from_pipe(struct pipe_inode_info *pipe, struct file *out,
  * Description:
  *    Will either move or copy pages (determined by @flags options) from
  *    the given pipe inode to the given file.
+<<<<<<< HEAD
  *
  */
 ssize_t
@@ -1012,15 +1439,51 @@ generic_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
 		return ret;
 	sd.total_len = len;
 	sd.pos = *ppos;
+=======
+ *    This one is ->write_iter-based.
+ *
+ */
+ssize_t
+iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
+			  loff_t *ppos, size_t len, unsigned int flags)
+{
+	struct splice_desc sd = {
+		.total_len = len,
+		.flags = flags,
+		.pos = *ppos,
+		.u.file = out,
+	};
+	int nbufs = pipe->max_usage;
+	struct bio_vec *array;
+	ssize_t ret;
+
+	if (!out->f_op->write_iter)
+		return -EINVAL;
+
+	array = kcalloc(nbufs, sizeof(struct bio_vec), GFP_KERNEL);
+	if (unlikely(!array))
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pipe_lock(pipe);
 
 	splice_from_pipe_begin(&sd);
+<<<<<<< HEAD
 	do {
+=======
+	while (sd.total_len) {
+		struct kiocb kiocb;
+		struct iov_iter from;
+		unsigned int head, tail, mask;
+		size_t left;
+		int n;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = splice_from_pipe_next(pipe, &sd);
 		if (ret <= 0)
 			break;
 
+<<<<<<< HEAD
 		mutex_lock_nested(&inode->i_mutex, I_MUTEX_CHILD);
 		ret = file_remove_suid(out);
 		if (!ret) {
@@ -1031,6 +1494,80 @@ generic_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
 		}
 		mutex_unlock(&inode->i_mutex);
 	} while (ret > 0);
+=======
+		if (unlikely(nbufs < pipe->max_usage)) {
+			kfree(array);
+			nbufs = pipe->max_usage;
+			array = kcalloc(nbufs, sizeof(struct bio_vec),
+					GFP_KERNEL);
+			if (!array) {
+				ret = -ENOMEM;
+				break;
+			}
+		}
+
+		head = pipe->head;
+		tail = pipe->tail;
+		mask = pipe->ring_size - 1;
+
+		/* build the vector */
+		left = sd.total_len;
+		for (n = 0; !pipe_empty(head, tail) && left && n < nbufs; tail++) {
+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+			size_t this_len = buf->len;
+
+			/* zero-length bvecs are not supported, skip them */
+			if (!this_len)
+				continue;
+			this_len = min(this_len, left);
+
+			ret = pipe_buf_confirm(pipe, buf);
+			if (unlikely(ret)) {
+				if (ret == -ENODATA)
+					ret = 0;
+				goto done;
+			}
+
+			bvec_set_page(&array[n], buf->page, this_len,
+				      buf->offset);
+			left -= this_len;
+			n++;
+		}
+
+		iov_iter_bvec(&from, ITER_SOURCE, array, n, sd.total_len - left);
+		init_sync_kiocb(&kiocb, out);
+		kiocb.ki_pos = sd.pos;
+		ret = call_write_iter(out, &kiocb, &from);
+		sd.pos = kiocb.ki_pos;
+		if (ret <= 0)
+			break;
+
+		sd.num_spliced += ret;
+		sd.total_len -= ret;
+		*ppos = sd.pos;
+
+		/* dismiss the fully eaten buffers, adjust the partial one */
+		tail = pipe->tail;
+		while (ret) {
+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+			if (ret >= buf->len) {
+				ret -= buf->len;
+				buf->len = 0;
+				pipe_buf_release(pipe, buf);
+				tail++;
+				pipe->tail = tail;
+				if (pipe->files)
+					sd.need_wakeup = true;
+			} else {
+				buf->offset += ret;
+				buf->len -= ret;
+				ret = 0;
+			}
+		}
+	}
+done:
+	kfree(array);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	splice_from_pipe_end(pipe, &sd);
 
 	pipe_unlock(pipe);
@@ -1038,6 +1575,7 @@ generic_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
 	if (sd.num_spliced)
 		ret = sd.num_spliced;
 
+<<<<<<< HEAD
 	if (ret > 0) {
 		unsigned long nr_pages;
 		int err;
@@ -1088,6 +1626,16 @@ static ssize_t default_file_splice_write(struct pipe_inode_info *pipe,
 
 /**
  * generic_splice_sendpage - splice data from a pipe to a socket
+=======
+	return ret;
+}
+
+EXPORT_SYMBOL(iter_file_splice_write);
+
+#ifdef CONFIG_NET
+/**
+ * splice_to_socket - splice data from a pipe to a socket
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pipe:	pipe to splice from
  * @out:	socket to write to
  * @ppos:	position in @out
@@ -1099,6 +1647,7 @@ static ssize_t default_file_splice_write(struct pipe_inode_info *pipe,
  *    is involved.
  *
  */
+<<<<<<< HEAD
 ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe, struct file *out,
 				loff_t *ppos, size_t len, unsigned int flags)
 {
@@ -1106,10 +1655,146 @@ ssize_t generic_splice_sendpage(struct pipe_inode_info *pipe, struct file *out,
 }
 
 EXPORT_SYMBOL(generic_splice_sendpage);
+=======
+ssize_t splice_to_socket(struct pipe_inode_info *pipe, struct file *out,
+			 loff_t *ppos, size_t len, unsigned int flags)
+{
+	struct socket *sock = sock_from_file(out);
+	struct bio_vec bvec[16];
+	struct msghdr msg = {};
+	ssize_t ret = 0;
+	size_t spliced = 0;
+	bool need_wakeup = false;
+
+	pipe_lock(pipe);
+
+	while (len > 0) {
+		unsigned int head, tail, mask, bc = 0;
+		size_t remain = len;
+
+		/*
+		 * Check for signal early to make process killable when there
+		 * are always buffers available
+		 */
+		ret = -ERESTARTSYS;
+		if (signal_pending(current))
+			break;
+
+		while (pipe_empty(pipe->head, pipe->tail)) {
+			ret = 0;
+			if (!pipe->writers)
+				goto out;
+
+			if (spliced)
+				goto out;
+
+			ret = -EAGAIN;
+			if (flags & SPLICE_F_NONBLOCK)
+				goto out;
+
+			ret = -ERESTARTSYS;
+			if (signal_pending(current))
+				goto out;
+
+			if (need_wakeup) {
+				wakeup_pipe_writers(pipe);
+				need_wakeup = false;
+			}
+
+			pipe_wait_readable(pipe);
+		}
+
+		head = pipe->head;
+		tail = pipe->tail;
+		mask = pipe->ring_size - 1;
+
+		while (!pipe_empty(head, tail)) {
+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+			size_t seg;
+
+			if (!buf->len) {
+				tail++;
+				continue;
+			}
+
+			seg = min_t(size_t, remain, buf->len);
+
+			ret = pipe_buf_confirm(pipe, buf);
+			if (unlikely(ret)) {
+				if (ret == -ENODATA)
+					ret = 0;
+				break;
+			}
+
+			bvec_set_page(&bvec[bc++], buf->page, seg, buf->offset);
+			remain -= seg;
+			if (remain == 0 || bc >= ARRAY_SIZE(bvec))
+				break;
+			tail++;
+		}
+
+		if (!bc)
+			break;
+
+		msg.msg_flags = MSG_SPLICE_PAGES;
+		if (flags & SPLICE_F_MORE)
+			msg.msg_flags |= MSG_MORE;
+		if (remain && pipe_occupancy(pipe->head, tail) > 0)
+			msg.msg_flags |= MSG_MORE;
+		if (out->f_flags & O_NONBLOCK)
+			msg.msg_flags |= MSG_DONTWAIT;
+
+		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, bvec, bc,
+			      len - remain);
+		ret = sock_sendmsg(sock, &msg);
+		if (ret <= 0)
+			break;
+
+		spliced += ret;
+		len -= ret;
+		tail = pipe->tail;
+		while (ret > 0) {
+			struct pipe_buffer *buf = &pipe->bufs[tail & mask];
+			size_t seg = min_t(size_t, ret, buf->len);
+
+			buf->offset += seg;
+			buf->len -= seg;
+			ret -= seg;
+
+			if (!buf->len) {
+				pipe_buf_release(pipe, buf);
+				tail++;
+			}
+		}
+
+		if (tail != pipe->tail) {
+			pipe->tail = tail;
+			if (pipe->files)
+				need_wakeup = true;
+		}
+	}
+
+out:
+	pipe_unlock(pipe);
+	if (need_wakeup)
+		wakeup_pipe_writers(pipe);
+	return spliced ?: ret;
+}
+#endif
+
+static int warn_unsupported(struct file *file, const char *op)
+{
+	pr_debug_ratelimited(
+		"splice %s not supported for file %pD4 (pid: %d comm: %.20s)\n",
+		op, file, current->pid, current->comm);
+	return -EINVAL;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Attempt to initiate a splice from pipe to file.
  */
+<<<<<<< HEAD
 static long do_splice_from(struct pipe_inode_info *pipe, struct file *out,
 			   loff_t *ppos, size_t len, unsigned int flags)
 {
@@ -1148,11 +1833,86 @@ static long do_splice_to(struct file *in, loff_t *ppos,
 
 	if (unlikely(!(in->f_mode & FMODE_READ)))
 		return -EBADF;
+=======
+static ssize_t do_splice_from(struct pipe_inode_info *pipe, struct file *out,
+			      loff_t *ppos, size_t len, unsigned int flags)
+{
+	if (unlikely(!out->f_op->splice_write))
+		return warn_unsupported(out, "write");
+	return out->f_op->splice_write(pipe, out, ppos, len, flags);
+}
+
+/*
+ * Indicate to the caller that there was a premature EOF when reading from the
+ * source and the caller didn't indicate they would be sending more data after
+ * this.
+ */
+static void do_splice_eof(struct splice_desc *sd)
+{
+	if (sd->splice_eof)
+		sd->splice_eof(sd);
+}
+
+/*
+ * Callers already called rw_verify_area() on the entire range.
+ * No need to call it for sub ranges.
+ */
+static ssize_t do_splice_read(struct file *in, loff_t *ppos,
+			      struct pipe_inode_info *pipe, size_t len,
+			      unsigned int flags)
+{
+	unsigned int p_space;
+
+	if (unlikely(!(in->f_mode & FMODE_READ)))
+		return -EBADF;
+	if (!len)
+		return 0;
+
+	/* Don't try to read more the pipe has space for. */
+	p_space = pipe->max_usage - pipe_occupancy(pipe->head, pipe->tail);
+	len = min_t(size_t, len, p_space << PAGE_SHIFT);
+
+	if (unlikely(len > MAX_RW_COUNT))
+		len = MAX_RW_COUNT;
+
+	if (unlikely(!in->f_op->splice_read))
+		return warn_unsupported(in, "read");
+	/*
+	 * O_DIRECT and DAX don't deal with the pagecache, so we allocate a
+	 * buffer, copy into it and splice that into the pipe.
+	 */
+	if ((in->f_flags & O_DIRECT) || IS_DAX(in->f_mapping->host))
+		return copy_splice_read(in, ppos, pipe, len, flags);
+	return in->f_op->splice_read(in, ppos, pipe, len, flags);
+}
+
+/**
+ * vfs_splice_read - Read data from a file and splice it into a pipe
+ * @in:		File to splice from
+ * @ppos:	Input file offset
+ * @pipe:	Pipe to splice to
+ * @len:	Number of bytes to splice
+ * @flags:	Splice modifier flags (SPLICE_F_*)
+ *
+ * Splice the requested amount of data from the input file to the pipe.  This
+ * is synchronous as the caller must hold the pipe lock across the entire
+ * operation.
+ *
+ * If successful, it returns the amount of data spliced, 0 if it hit the EOF or
+ * a hole and a negative error code otherwise.
+ */
+ssize_t vfs_splice_read(struct file *in, loff_t *ppos,
+			struct pipe_inode_info *pipe, size_t len,
+			unsigned int flags)
+{
+	ssize_t ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = rw_verify_area(READ, in, ppos, len);
 	if (unlikely(ret < 0))
 		return ret;
 
+<<<<<<< HEAD
 	if (in->f_op && in->f_op->splice_read)
 		splice_read = in->f_op->splice_read;
 	else
@@ -1160,6 +1920,11 @@ static long do_splice_to(struct file *in, loff_t *ppos,
 
 	return splice_read(in, ppos, pipe, len, flags);
 }
+=======
+	return do_splice_read(in, ppos, pipe, len, flags);
+}
+EXPORT_SYMBOL_GPL(vfs_splice_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * splice_direct_to_actor - splices data directly between two non-pipes
@@ -1178,18 +1943,30 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 			       splice_direct_actor *actor)
 {
 	struct pipe_inode_info *pipe;
+<<<<<<< HEAD
 	long ret, bytes;
 	umode_t i_mode;
+=======
+	ssize_t ret, bytes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t len;
 	int i, flags, more;
 
 	/*
+<<<<<<< HEAD
 	 * We require the input being a regular file, as we don't want to
 	 * randomly drop data for eg socket -> socket splicing. Use the
 	 * piped splicing for that!
 	 */
 	i_mode = in->f_path.dentry->d_inode->i_mode;
 	if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode)))
+=======
+	 * We require the input to be seekable, as we don't want to randomly
+	 * drop data for eg socket -> socket splicing. Use the piped splicing
+	 * for that!
+	 */
+	if (unlikely(!(in->f_mode & FMODE_LSEEK)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/*
@@ -1198,7 +1975,11 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	 */
 	pipe = current->splice_pipe;
 	if (unlikely(!pipe)) {
+<<<<<<< HEAD
 		pipe = alloc_pipe_info(NULL);
+=======
+		pipe = alloc_pipe_info();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pipe)
 			return -ENOMEM;
 
@@ -1215,6 +1996,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	/*
 	 * Do the splice.
 	 */
+<<<<<<< HEAD
 	ret = 0;
 	bytes = 0;
 	len = sd->total_len;
@@ -1225,19 +2007,43 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	 */
 	sd->flags &= ~SPLICE_F_NONBLOCK;
 	more = sd->flags & SPLICE_F_MORE;
+=======
+	bytes = 0;
+	len = sd->total_len;
+
+	/* Don't block on output, we have to drain the direct pipe. */
+	flags = sd->flags;
+	sd->flags &= ~SPLICE_F_NONBLOCK;
+
+	/*
+	 * We signal MORE until we've read sufficient data to fulfill the
+	 * request and we keep signalling it if the caller set it.
+	 */
+	more = sd->flags & SPLICE_F_MORE;
+	sd->flags |= SPLICE_F_MORE;
+
+	WARN_ON_ONCE(!pipe_empty(pipe->head, pipe->tail));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len) {
 		size_t read_len;
 		loff_t pos = sd->pos, prev_pos = pos;
 
+<<<<<<< HEAD
 		ret = do_splice_to(in, &pos, pipe, len, flags);
 		if (unlikely(ret <= 0))
 			goto out_release;
+=======
+		ret = do_splice_read(in, &pos, pipe, len, flags);
+		if (unlikely(ret <= 0))
+			goto read_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		read_len = ret;
 		sd->total_len = read_len;
 
 		/*
+<<<<<<< HEAD
 		 * If more data is pending, set SPLICE_F_MORE
 		 * If this is the last data and SPLICE_F_MORE was not set
 		 * initially, clears it.
@@ -1246,6 +2052,14 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 			sd->flags |= SPLICE_F_MORE;
 		else if (!more)
 			sd->flags &= ~SPLICE_F_MORE;
+=======
+		 * If we now have sufficient data to fulfill the request then
+		 * we clear SPLICE_F_MORE if it was not set initially.
+		 */
+		if (read_len >= len && !more)
+			sd->flags &= ~SPLICE_F_MORE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * NOTE: nonblocking mode only applies to the input. We
 		 * must not do the output in nonblocking mode as then we
@@ -1268,15 +2082,32 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
 	}
 
 done:
+<<<<<<< HEAD
 	pipe->nrbufs = pipe->curbuf = 0;
 	file_accessed(in);
 	return bytes;
 
+=======
+	pipe->tail = pipe->head = 0;
+	file_accessed(in);
+	return bytes;
+
+read_failure:
+	/*
+	 * If the user did *not* set SPLICE_F_MORE *and* we didn't hit that
+	 * "use all of len" case that cleared SPLICE_F_MORE, *and* we did a
+	 * "->splice_in()" that returned EOF (ie zero) *and* we have sent at
+	 * least 1 byte *then* we will also do the ->splice_eof() call.
+	 */
+	if (ret == 0 && !more && len > 0 && bytes)
+		do_splice_eof(sd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_release:
 	/*
 	 * If we did an incomplete transfer we must release
 	 * the pipe buffers in question:
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < pipe->buffers; i++) {
 		struct pipe_buffer *buf = pipe->bufs + i;
 
@@ -1284,6 +2115,13 @@ out_release:
 			buf->ops->release(pipe, buf);
 			buf->ops = NULL;
 		}
+=======
+	for (i = 0; i < pipe->ring_size; i++) {
+		struct pipe_buffer *buf = &pipe->bufs[i];
+
+		if (buf->ops)
+			pipe_buf_release(pipe, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!bytes)
@@ -1297,16 +2135,75 @@ static int direct_splice_actor(struct pipe_inode_info *pipe,
 			       struct splice_desc *sd)
 {
 	struct file *file = sd->u.file;
+<<<<<<< HEAD
 
 	return do_splice_from(pipe, file, &file->f_pos, sd->total_len,
 			      sd->flags);
 }
 
+=======
+	long ret;
+
+	file_start_write(file);
+	ret = do_splice_from(pipe, file, sd->opos, sd->total_len, sd->flags);
+	file_end_write(file);
+	return ret;
+}
+
+static int splice_file_range_actor(struct pipe_inode_info *pipe,
+					struct splice_desc *sd)
+{
+	struct file *file = sd->u.file;
+
+	return do_splice_from(pipe, file, sd->opos, sd->total_len, sd->flags);
+}
+
+static void direct_file_splice_eof(struct splice_desc *sd)
+{
+	struct file *file = sd->u.file;
+
+	if (file->f_op->splice_eof)
+		file->f_op->splice_eof(file);
+}
+
+static ssize_t do_splice_direct_actor(struct file *in, loff_t *ppos,
+				      struct file *out, loff_t *opos,
+				      size_t len, unsigned int flags,
+				      splice_direct_actor *actor)
+{
+	struct splice_desc sd = {
+		.len		= len,
+		.total_len	= len,
+		.flags		= flags,
+		.pos		= *ppos,
+		.u.file		= out,
+		.splice_eof	= direct_file_splice_eof,
+		.opos		= opos,
+	};
+	ssize_t ret;
+
+	if (unlikely(!(out->f_mode & FMODE_WRITE)))
+		return -EBADF;
+
+	if (unlikely(out->f_flags & O_APPEND))
+		return -EINVAL;
+
+	ret = splice_direct_to_actor(in, &sd, actor);
+	if (ret > 0)
+		*ppos = sd.pos;
+
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * do_splice_direct - splices data directly between two files
  * @in:		file to splice from
  * @ppos:	input file offset
  * @out:	file to splice to
+<<<<<<< HEAD
+=======
+ * @opos:	output file offset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len:	number of bytes to splice
  * @flags:	splice modifier flags
  *
@@ -1316,6 +2213,7 @@ static int direct_splice_actor(struct pipe_inode_info *pipe,
  *    (splice in + splice out, as compared to just sendfile()). So this helper
  *    can splice directly through a process-private pipe.
  *
+<<<<<<< HEAD
  */
 long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
 		      size_t len, unsigned int flags)
@@ -1334,12 +2232,66 @@ long do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
 		*ppos = sd.pos;
 
 	return ret;
+=======
+ * Callers already called rw_verify_area() on the entire range.
+ */
+ssize_t do_splice_direct(struct file *in, loff_t *ppos, struct file *out,
+			 loff_t *opos, size_t len, unsigned int flags)
+{
+	return do_splice_direct_actor(in, ppos, out, opos, len, flags,
+				      direct_splice_actor);
+}
+EXPORT_SYMBOL(do_splice_direct);
+
+/**
+ * splice_file_range - splices data between two files for copy_file_range()
+ * @in:		file to splice from
+ * @ppos:	input file offset
+ * @out:	file to splice to
+ * @opos:	output file offset
+ * @len:	number of bytes to splice
+ *
+ * Description:
+ *    For use by ->copy_file_range() methods.
+ *    Like do_splice_direct(), but vfs_copy_file_range() already holds
+ *    start_file_write() on @out file.
+ *
+ * Callers already called rw_verify_area() on the entire range.
+ */
+ssize_t splice_file_range(struct file *in, loff_t *ppos, struct file *out,
+			  loff_t *opos, size_t len)
+{
+	lockdep_assert(file_write_started(out));
+
+	return do_splice_direct_actor(in, ppos, out, opos,
+				      min_t(size_t, len, MAX_RW_COUNT),
+				      0, splice_file_range_actor);
+}
+EXPORT_SYMBOL(splice_file_range);
+
+static int wait_for_space(struct pipe_inode_info *pipe, unsigned flags)
+{
+	for (;;) {
+		if (unlikely(!pipe->readers)) {
+			send_sig(SIGPIPE, current, 0);
+			return -EPIPE;
+		}
+		if (!pipe_full(pipe->head, pipe->tail, pipe->max_usage))
+			return 0;
+		if (flags & SPLICE_F_NONBLOCK)
+			return -EAGAIN;
+		if (signal_pending(current))
+			return -ERESTARTSYS;
+		pipe_wait_writable(pipe);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int splice_pipe_to_pipe(struct pipe_inode_info *ipipe,
 			       struct pipe_inode_info *opipe,
 			       size_t len, unsigned int flags);
 
+<<<<<<< HEAD
 /*
  * Determine where to splice to/from.
  */
@@ -1354,30 +2306,78 @@ static long do_splice(struct file *in, loff_t __user *off_in,
 
 	ipipe = get_pipe_info(in);
 	opipe = get_pipe_info(out);
+=======
+ssize_t splice_file_to_pipe(struct file *in,
+			    struct pipe_inode_info *opipe,
+			    loff_t *offset,
+			    size_t len, unsigned int flags)
+{
+	ssize_t ret;
+
+	pipe_lock(opipe);
+	ret = wait_for_space(opipe, flags);
+	if (!ret)
+		ret = do_splice_read(in, offset, opipe, len, flags);
+	pipe_unlock(opipe);
+	if (ret > 0)
+		wakeup_pipe_readers(opipe);
+	return ret;
+}
+
+/*
+ * Determine where to splice to/from.
+ */
+ssize_t do_splice(struct file *in, loff_t *off_in, struct file *out,
+		  loff_t *off_out, size_t len, unsigned int flags)
+{
+	struct pipe_inode_info *ipipe;
+	struct pipe_inode_info *opipe;
+	loff_t offset;
+	ssize_t ret;
+
+	if (unlikely(!(in->f_mode & FMODE_READ) ||
+		     !(out->f_mode & FMODE_WRITE)))
+		return -EBADF;
+
+	ipipe = get_pipe_info(in, true);
+	opipe = get_pipe_info(out, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ipipe && opipe) {
 		if (off_in || off_out)
 			return -ESPIPE;
 
+<<<<<<< HEAD
 		if (!(in->f_mode & FMODE_READ))
 			return -EBADF;
 
 		if (!(out->f_mode & FMODE_WRITE))
 			return -EBADF;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Splicing to self would be fun, but... */
 		if (ipipe == opipe)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		return splice_pipe_to_pipe(ipipe, opipe, len, flags);
 	}
 
 	if (ipipe) {
+=======
+		if ((in->f_flags | out->f_flags) & O_NONBLOCK)
+			flags |= SPLICE_F_NONBLOCK;
+
+		ret = splice_pipe_to_pipe(ipipe, opipe, len, flags);
+	} else if (ipipe) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (off_in)
 			return -ESPIPE;
 		if (off_out) {
 			if (!(out->f_mode & FMODE_PWRITE))
 				return -EINVAL;
+<<<<<<< HEAD
 			if (copy_from_user(&offset, off_out, sizeof(loff_t)))
 				return -EFAULT;
 			off = &offset;
@@ -1393,11 +2393,38 @@ static long do_splice(struct file *in, loff_t __user *off_in,
 	}
 
 	if (opipe) {
+=======
+			offset = *off_out;
+		} else {
+			offset = out->f_pos;
+		}
+
+		if (unlikely(out->f_flags & O_APPEND))
+			return -EINVAL;
+
+		ret = rw_verify_area(WRITE, out, &offset, len);
+		if (unlikely(ret < 0))
+			return ret;
+
+		if (in->f_flags & O_NONBLOCK)
+			flags |= SPLICE_F_NONBLOCK;
+
+		file_start_write(out);
+		ret = do_splice_from(ipipe, out, &offset, len, flags);
+		file_end_write(out);
+
+		if (!off_out)
+			out->f_pos = offset;
+		else
+			*off_out = offset;
+	} else if (opipe) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (off_out)
 			return -ESPIPE;
 		if (off_in) {
 			if (!(in->f_mode & FMODE_PREAD))
 				return -EINVAL;
+<<<<<<< HEAD
 			if (copy_from_user(&offset, off_in, sizeof(loff_t)))
 				return -EFAULT;
 			off = &offset;
@@ -1515,11 +2542,140 @@ static int get_iovec_page_array(const struct iovec __user *iov,
 		return buffers;
 
 	return error;
+=======
+			offset = *off_in;
+		} else {
+			offset = in->f_pos;
+		}
+
+		ret = rw_verify_area(READ, in, &offset, len);
+		if (unlikely(ret < 0))
+			return ret;
+
+		if (out->f_flags & O_NONBLOCK)
+			flags |= SPLICE_F_NONBLOCK;
+
+		ret = splice_file_to_pipe(in, opipe, &offset, len, flags);
+
+		if (!off_in)
+			in->f_pos = offset;
+		else
+			*off_in = offset;
+	} else {
+		ret = -EINVAL;
+	}
+
+	if (ret > 0) {
+		/*
+		 * Generate modify out before access in:
+		 * do_splice_from() may've already sent modify out,
+		 * and this ensures the events get merged.
+		 */
+		fsnotify_modify(out);
+		fsnotify_access(in);
+	}
+
+	return ret;
+}
+
+static ssize_t __do_splice(struct file *in, loff_t __user *off_in,
+			   struct file *out, loff_t __user *off_out,
+			   size_t len, unsigned int flags)
+{
+	struct pipe_inode_info *ipipe;
+	struct pipe_inode_info *opipe;
+	loff_t offset, *__off_in = NULL, *__off_out = NULL;
+	ssize_t ret;
+
+	ipipe = get_pipe_info(in, true);
+	opipe = get_pipe_info(out, true);
+
+	if (ipipe) {
+		if (off_in)
+			return -ESPIPE;
+		pipe_clear_nowait(in);
+	}
+	if (opipe) {
+		if (off_out)
+			return -ESPIPE;
+		pipe_clear_nowait(out);
+	}
+
+	if (off_out) {
+		if (copy_from_user(&offset, off_out, sizeof(loff_t)))
+			return -EFAULT;
+		__off_out = &offset;
+	}
+	if (off_in) {
+		if (copy_from_user(&offset, off_in, sizeof(loff_t)))
+			return -EFAULT;
+		__off_in = &offset;
+	}
+
+	ret = do_splice(in, __off_in, out, __off_out, len, flags);
+	if (ret < 0)
+		return ret;
+
+	if (__off_out && copy_to_user(off_out, __off_out, sizeof(loff_t)))
+		return -EFAULT;
+	if (__off_in && copy_to_user(off_in, __off_in, sizeof(loff_t)))
+		return -EFAULT;
+
+	return ret;
+}
+
+static ssize_t iter_to_pipe(struct iov_iter *from,
+			    struct pipe_inode_info *pipe,
+			    unsigned int flags)
+{
+	struct pipe_buffer buf = {
+		.ops = &user_page_pipe_buf_ops,
+		.flags = flags
+	};
+	size_t total = 0;
+	ssize_t ret = 0;
+
+	while (iov_iter_count(from)) {
+		struct page *pages[16];
+		ssize_t left;
+		size_t start;
+		int i, n;
+
+		left = iov_iter_get_pages2(from, pages, ~0UL, 16, &start);
+		if (left <= 0) {
+			ret = left;
+			break;
+		}
+
+		n = DIV_ROUND_UP(left + start, PAGE_SIZE);
+		for (i = 0; i < n; i++) {
+			int size = min_t(int, left, PAGE_SIZE - start);
+
+			buf.page = pages[i];
+			buf.offset = start;
+			buf.len = size;
+			ret = add_to_pipe(pipe, &buf);
+			if (unlikely(ret < 0)) {
+				iov_iter_revert(from, left);
+				// this one got dropped by add_to_pipe()
+				while (++i < n)
+					put_page(pages[i]);
+				goto out;
+			}
+			total += ret;
+			left -= size;
+			start = 0;
+		}
+	}
+out:
+	return total ? total : ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pipe_to_user(struct pipe_inode_info *pipe, struct pipe_buffer *buf,
 			struct splice_desc *sd)
 {
+<<<<<<< HEAD
 	char *src;
 	int ret;
 
@@ -1552,12 +2708,17 @@ out:
 	if (ret > 0)
 		sd->u.userptr += ret;
 	return ret;
+=======
+	int n = copy_page_to_iter(buf->page, buf->offset, sd->len, sd->u.data);
+	return n == sd->len ? n : -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * For lack of a better implementation, implement vmsplice() to userspace
  * as a simple copy of the pipes pages to the user iov.
  */
+<<<<<<< HEAD
 static long vmsplice_to_user(struct file *file, const struct iovec __user *iov,
 			     unsigned long nr_segs, unsigned int flags)
 {
@@ -1630,6 +2791,32 @@ static long vmsplice_to_user(struct file *file, const struct iovec __user *iov,
 
 	if (!ret)
 		ret = error;
+=======
+static ssize_t vmsplice_to_user(struct file *file, struct iov_iter *iter,
+				unsigned int flags)
+{
+	struct pipe_inode_info *pipe = get_pipe_info(file, true);
+	struct splice_desc sd = {
+		.total_len = iov_iter_count(iter),
+		.flags = flags,
+		.u.data = iter
+	};
+	ssize_t ret = 0;
+
+	if (!pipe)
+		return -EBADF;
+
+	pipe_clear_nowait(file);
+
+	if (sd.total_len) {
+		pipe_lock(pipe);
+		ret = __splice_from_pipe(pipe, &sd, pipe_to_user);
+		pipe_unlock(pipe);
+	}
+
+	if (ret > 0)
+		fsnotify_access(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1639,6 +2826,7 @@ static long vmsplice_to_user(struct file *file, const struct iovec __user *iov,
  * as splice-from-memory, where the regular splice is splice-from-file (or
  * to file). In both cases the output is a pipe, naturally.
  */
+<<<<<<< HEAD
 static long vmsplice_to_pipe(struct file *file, const struct iovec __user *iov,
 			     unsigned long nr_segs, unsigned int flags)
 {
@@ -1674,6 +2862,51 @@ static long vmsplice_to_pipe(struct file *file, const struct iovec __user *iov,
 	return ret;
 }
 
+=======
+static ssize_t vmsplice_to_pipe(struct file *file, struct iov_iter *iter,
+				unsigned int flags)
+{
+	struct pipe_inode_info *pipe;
+	ssize_t ret = 0;
+	unsigned buf_flag = 0;
+
+	if (flags & SPLICE_F_GIFT)
+		buf_flag = PIPE_BUF_FLAG_GIFT;
+
+	pipe = get_pipe_info(file, true);
+	if (!pipe)
+		return -EBADF;
+
+	pipe_clear_nowait(file);
+
+	pipe_lock(pipe);
+	ret = wait_for_space(pipe, flags);
+	if (!ret)
+		ret = iter_to_pipe(iter, pipe, buf_flag);
+	pipe_unlock(pipe);
+	if (ret > 0) {
+		wakeup_pipe_readers(pipe);
+		fsnotify_modify(file);
+	}
+	return ret;
+}
+
+static int vmsplice_type(struct fd f, int *type)
+{
+	if (!f.file)
+		return -EBADF;
+	if (f.file->f_mode & FMODE_WRITE) {
+		*type = ITER_SOURCE;
+	} else if (f.file->f_mode & FMODE_READ) {
+		*type = ITER_DEST;
+	} else {
+		fdput(f);
+		return -EBADF;
+	}
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Note that vmsplice only really supports true splicing _from_ user memory
  * to a pipe, not the other way around. Splicing from user memory is a simple
@@ -1690,6 +2923,7 @@ static long vmsplice_to_pipe(struct file *file, const struct iovec __user *iov,
  * Currently we punt and implement it as a normal copy, see pipe_to_user().
  *
  */
+<<<<<<< HEAD
 SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, iov,
 		unsigned long, nr_segs, unsigned int, flags)
 {
@@ -1713,6 +2947,41 @@ SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, iov,
 		fput_light(file, fput);
 	}
 
+=======
+SYSCALL_DEFINE4(vmsplice, int, fd, const struct iovec __user *, uiov,
+		unsigned long, nr_segs, unsigned int, flags)
+{
+	struct iovec iovstack[UIO_FASTIOV];
+	struct iovec *iov = iovstack;
+	struct iov_iter iter;
+	ssize_t error;
+	struct fd f;
+	int type;
+
+	if (unlikely(flags & ~SPLICE_F_ALL))
+		return -EINVAL;
+
+	f = fdget(fd);
+	error = vmsplice_type(f, &type);
+	if (error)
+		return error;
+
+	error = import_iovec(type, uiov, nr_segs,
+			     ARRAY_SIZE(iovstack), &iov, &iter);
+	if (error < 0)
+		goto out_fdput;
+
+	if (!iov_iter_count(&iter))
+		error = 0;
+	else if (type == ITER_SOURCE)
+		error = vmsplice_to_pipe(f.file, &iter, flags);
+	else
+		error = vmsplice_to_user(f.file, &iter, flags);
+
+	kfree(iov);
+out_fdput:
+	fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1720,13 +2989,19 @@ SYSCALL_DEFINE6(splice, int, fd_in, loff_t __user *, off_in,
 		int, fd_out, loff_t __user *, off_out,
 		size_t, len, unsigned int, flags)
 {
+<<<<<<< HEAD
 	long error;
 	struct file *in, *out;
 	int fput_in, fput_out;
+=======
+	struct fd in, out;
+	ssize_t error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!len))
 		return 0;
 
+<<<<<<< HEAD
 	error = -EBADF;
 	in = fget_light(fd_in, &fput_in);
 	if (in) {
@@ -1744,6 +3019,22 @@ SYSCALL_DEFINE6(splice, int, fd_in, loff_t __user *, off_in,
 		fput_light(in, fput_in);
 	}
 
+=======
+	if (unlikely(flags & ~SPLICE_F_ALL))
+		return -EINVAL;
+
+	error = -EBADF;
+	in = fdget(fd_in);
+	if (in.file) {
+		out = fdget(fd_out);
+		if (out.file) {
+			error = __do_splice(in.file, off_in, out.file, off_out,
+					    len, flags);
+			fdput(out);
+		}
+		fdput(in);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1756,22 +3047,34 @@ static int ipipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
 	int ret;
 
 	/*
+<<<<<<< HEAD
 	 * Check ->nrbufs without the inode lock first. This function
 	 * is speculative anyways, so missing one is ok.
 	 */
 	if (pipe->nrbufs)
+=======
+	 * Check the pipe occupancy without the inode lock first. This function
+	 * is speculative anyways, so missing one is ok.
+	 */
+	if (!pipe_empty(pipe->head, pipe->tail))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ret = 0;
 	pipe_lock(pipe);
 
+<<<<<<< HEAD
 	while (!pipe->nrbufs) {
+=======
+	while (pipe_empty(pipe->head, pipe->tail)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current)) {
 			ret = -ERESTARTSYS;
 			break;
 		}
 		if (!pipe->writers)
 			break;
+<<<<<<< HEAD
 		if (!pipe->waiting_writers) {
 			if (flags & SPLICE_F_NONBLOCK) {
 				ret = -EAGAIN;
@@ -1779,6 +3082,13 @@ static int ipipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
 			}
 		}
 		pipe_wait(pipe);
+=======
+		if (flags & SPLICE_F_NONBLOCK) {
+			ret = -EAGAIN;
+			break;
+		}
+		pipe_wait_readable(pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pipe_unlock(pipe);
@@ -1794,16 +3104,27 @@ static int opipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
 	int ret;
 
 	/*
+<<<<<<< HEAD
 	 * Check ->nrbufs without the inode lock first. This function
 	 * is speculative anyways, so missing one is ok.
 	 */
 	if (pipe->nrbufs < pipe->buffers)
+=======
+	 * Check pipe occupancy without the inode lock first. This function
+	 * is speculative anyways, so missing one is ok.
+	 */
+	if (!pipe_full(pipe->head, pipe->tail, pipe->max_usage))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ret = 0;
 	pipe_lock(pipe);
 
+<<<<<<< HEAD
 	while (pipe->nrbufs >= pipe->buffers) {
+=======
+	while (pipe_full(pipe->head, pipe->tail, pipe->max_usage)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pipe->readers) {
 			send_sig(SIGPIPE, current, 0);
 			ret = -EPIPE;
@@ -1817,9 +3138,13 @@ static int opipe_prep(struct pipe_inode_info *pipe, unsigned int flags)
 			ret = -ERESTARTSYS;
 			break;
 		}
+<<<<<<< HEAD
 		pipe->waiting_writers++;
 		pipe_wait(pipe);
 		pipe->waiting_writers--;
+=======
+		pipe_wait_writable(pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pipe_unlock(pipe);
@@ -1834,7 +3159,14 @@ static int splice_pipe_to_pipe(struct pipe_inode_info *ipipe,
 			       size_t len, unsigned int flags)
 {
 	struct pipe_buffer *ibuf, *obuf;
+<<<<<<< HEAD
 	int ret = 0, nbuf;
+=======
+	unsigned int i_head, o_head;
+	unsigned int i_tail, o_tail;
+	unsigned int i_mask, o_mask;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool input_wakeup = false;
 
 
@@ -1854,7 +3186,18 @@ retry:
 	 */
 	pipe_double_lock(ipipe, opipe);
 
+<<<<<<< HEAD
 	do {
+=======
+	i_tail = ipipe->tail;
+	i_mask = ipipe->ring_size - 1;
+	o_head = opipe->head;
+	o_mask = opipe->ring_size - 1;
+
+	do {
+		size_t o_len;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!opipe->readers) {
 			send_sig(SIGPIPE, current, 0);
 			if (!ret)
@@ -1862,14 +3205,26 @@ retry:
 			break;
 		}
 
+<<<<<<< HEAD
 		if (!ipipe->nrbufs && !ipipe->writers)
+=======
+		i_head = ipipe->head;
+		o_tail = opipe->tail;
+
+		if (pipe_empty(i_head, i_tail) && !ipipe->writers)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/*
 		 * Cannot make any progress, because either the input
 		 * pipe is empty or the output pipe is full.
 		 */
+<<<<<<< HEAD
 		if (!ipipe->nrbufs || opipe->nrbufs >= opipe->buffers) {
+=======
+		if (pipe_empty(i_head, i_tail) ||
+		    pipe_full(o_head, o_tail, opipe->max_usage)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Already processed some buffers, break */
 			if (ret)
 				break;
@@ -1889,9 +3244,14 @@ retry:
 			goto retry;
 		}
 
+<<<<<<< HEAD
 		ibuf = ipipe->bufs + ipipe->curbuf;
 		nbuf = (opipe->curbuf + opipe->nrbufs) & (opipe->buffers - 1);
 		obuf = opipe->bufs + nbuf;
+=======
+		ibuf = &ipipe->bufs[i_tail & i_mask];
+		obuf = &opipe->bufs[o_head & o_mask];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (len >= ibuf->len) {
 			/*
@@ -1899,15 +3259,25 @@ retry:
 			 */
 			*obuf = *ibuf;
 			ibuf->ops = NULL;
+<<<<<<< HEAD
 			opipe->nrbufs++;
 			ipipe->curbuf = (ipipe->curbuf + 1) & (ipipe->buffers - 1);
 			ipipe->nrbufs--;
 			input_wakeup = true;
+=======
+			i_tail++;
+			ipipe->tail = i_tail;
+			input_wakeup = true;
+			o_len = obuf->len;
+			o_head++;
+			opipe->head = o_head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/*
 			 * Get a reference to this pipe buffer,
 			 * so we can copy the contents over.
 			 */
+<<<<<<< HEAD
 			ibuf->ops->get(ipipe, ibuf);
 			*obuf = *ibuf;
 
@@ -1924,6 +3294,31 @@ retry:
 		}
 		ret += obuf->len;
 		len -= obuf->len;
+=======
+			if (!pipe_buf_get(ipipe, ibuf)) {
+				if (ret == 0)
+					ret = -EFAULT;
+				break;
+			}
+			*obuf = *ibuf;
+
+			/*
+			 * Don't inherit the gift and merge flags, we need to
+			 * prevent multiple steals of this page.
+			 */
+			obuf->flags &= ~PIPE_BUF_FLAG_GIFT;
+			obuf->flags &= ~PIPE_BUF_FLAG_CAN_MERGE;
+
+			obuf->len = len;
+			ibuf->offset += len;
+			ibuf->len -= len;
+			o_len = len;
+			o_head++;
+			opipe->head = o_head;
+		}
+		ret += o_len;
+		len -= o_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (len);
 
 	pipe_unlock(ipipe);
@@ -1944,12 +3339,24 @@ retry:
 /*
  * Link contents of ipipe to opipe.
  */
+<<<<<<< HEAD
 static int link_pipe(struct pipe_inode_info *ipipe,
 		     struct pipe_inode_info *opipe,
 		     size_t len, unsigned int flags)
 {
 	struct pipe_buffer *ibuf, *obuf;
 	int ret = 0, i = 0, nbuf;
+=======
+static ssize_t link_pipe(struct pipe_inode_info *ipipe,
+			 struct pipe_inode_info *opipe,
+			 size_t len, unsigned int flags)
+{
+	struct pipe_buffer *ibuf, *obuf;
+	unsigned int i_head, o_head;
+	unsigned int i_tail, o_tail;
+	unsigned int i_mask, o_mask;
+	ssize_t ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Potential ABBA deadlock, work around it by ordering lock
@@ -1958,6 +3365,14 @@ static int link_pipe(struct pipe_inode_info *ipipe,
 	 */
 	pipe_double_lock(ipipe, opipe);
 
+<<<<<<< HEAD
+=======
+	i_tail = ipipe->tail;
+	i_mask = ipipe->ring_size - 1;
+	o_head = opipe->head;
+	o_mask = opipe->ring_size - 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		if (!opipe->readers) {
 			send_sig(SIGPIPE, current, 0);
@@ -1966,6 +3381,7 @@ static int link_pipe(struct pipe_inode_info *ipipe,
 			break;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * If we have iterated all input buffers or ran out of
 		 * output room, break.
@@ -1975,11 +3391,27 @@ static int link_pipe(struct pipe_inode_info *ipipe,
 
 		ibuf = ipipe->bufs + ((ipipe->curbuf + i) & (ipipe->buffers-1));
 		nbuf = (opipe->curbuf + opipe->nrbufs) & (opipe->buffers - 1);
+=======
+		i_head = ipipe->head;
+		o_tail = opipe->tail;
+
+		/*
+		 * If we have iterated all input buffers or run out of
+		 * output room, break.
+		 */
+		if (pipe_empty(i_head, i_tail) ||
+		    pipe_full(o_head, o_tail, opipe->max_usage))
+			break;
+
+		ibuf = &ipipe->bufs[i_tail & i_mask];
+		obuf = &opipe->bufs[o_head & o_mask];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Get a reference to this pipe buffer,
 		 * so we can copy the contents over.
 		 */
+<<<<<<< HEAD
 		ibuf->ops->get(ipipe, ibuf);
 
 		obuf = opipe->bufs + nbuf;
@@ -2006,6 +3438,32 @@ static int link_pipe(struct pipe_inode_info *ipipe,
 	 */
 	if (!ret && ipipe->waiting_writers && (flags & SPLICE_F_NONBLOCK))
 		ret = -EAGAIN;
+=======
+		if (!pipe_buf_get(ipipe, ibuf)) {
+			if (ret == 0)
+				ret = -EFAULT;
+			break;
+		}
+
+		*obuf = *ibuf;
+
+		/*
+		 * Don't inherit the gift and merge flag, we need to prevent
+		 * multiple steals of this page.
+		 */
+		obuf->flags &= ~PIPE_BUF_FLAG_GIFT;
+		obuf->flags &= ~PIPE_BUF_FLAG_CAN_MERGE;
+
+		if (obuf->len > len)
+			obuf->len = len;
+		ret += obuf->len;
+		len -= obuf->len;
+
+		o_head++;
+		opipe->head = o_head;
+		i_tail++;
+	} while (len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pipe_unlock(ipipe);
 	pipe_unlock(opipe);
@@ -2025,18 +3483,37 @@ static int link_pipe(struct pipe_inode_info *ipipe,
  * The 'flags' used are the SPLICE_F_* variants, currently the only
  * applicable one is SPLICE_F_NONBLOCK.
  */
+<<<<<<< HEAD
 static long do_tee(struct file *in, struct file *out, size_t len,
 		   unsigned int flags)
 {
 	struct pipe_inode_info *ipipe = get_pipe_info(in);
 	struct pipe_inode_info *opipe = get_pipe_info(out);
 	int ret = -EINVAL;
+=======
+ssize_t do_tee(struct file *in, struct file *out, size_t len,
+	       unsigned int flags)
+{
+	struct pipe_inode_info *ipipe = get_pipe_info(in, true);
+	struct pipe_inode_info *opipe = get_pipe_info(out, true);
+	ssize_t ret = -EINVAL;
+
+	if (unlikely(!(in->f_mode & FMODE_READ) ||
+		     !(out->f_mode & FMODE_WRITE)))
+		return -EBADF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Duplicate the contents of ipipe to opipe without actually
 	 * copying the data.
 	 */
 	if (ipipe && opipe && ipipe != opipe) {
+<<<<<<< HEAD
+=======
+		if ((in->f_flags | out->f_flags) & O_NONBLOCK)
+			flags |= SPLICE_F_NONBLOCK;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Keep going, unless we encounter an error. The ipipe/opipe
 		 * ordering doesn't really matter.
@@ -2049,18 +3526,35 @@ static long do_tee(struct file *in, struct file *out, size_t len,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (ret > 0) {
+		fsnotify_access(in);
+		fsnotify_modify(out);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 SYSCALL_DEFINE4(tee, int, fdin, int, fdout, size_t, len, unsigned int, flags)
 {
+<<<<<<< HEAD
 	struct file *in;
 	int error, fput_in;
+=======
+	struct fd in, out;
+	ssize_t error;
+
+	if (unlikely(flags & ~SPLICE_F_ALL))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!len))
 		return 0;
 
 	error = -EBADF;
+<<<<<<< HEAD
 	in = fget_light(fdin, &fput_in);
 	if (in) {
 		if (in->f_mode & FMODE_READ) {
@@ -2074,6 +3568,16 @@ SYSCALL_DEFINE4(tee, int, fdin, int, fdout, size_t, len, unsigned int, flags)
 			}
 		}
  		fput_light(in, fput_in);
+=======
+	in = fdget(fdin);
+	if (in.file) {
+		out = fdget(fdout);
+		if (out.file) {
+			error = do_tee(in.file, out.file, len, flags);
+			fdput(out);
+		}
+ 		fdput(in);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  	}
 
 	return error;

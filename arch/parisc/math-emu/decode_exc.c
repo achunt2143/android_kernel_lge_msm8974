@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * BEGIN_DESC
@@ -59,7 +66,11 @@
 #define SIGNALCODE(signal, code) ((signal) << 24 | (code))
 #define copropbit	1<<31-2	/* bit position 2 */
 #define opclass		9	/* bits 21 & 22 */
+<<<<<<< HEAD
 #define fmt		11	/* bits 19 & 20 */
+=======
+#define fmtbits		11	/* bits 19 & 20 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define df		13	/* bits 17 & 18 */
 #define twobits		3	/* mask low-order 2 bits */
 #define fivebits	31	/* mask low-order 5 bits */
@@ -70,7 +81,11 @@
 #define Excp_instr(index) Instructionfield(Fpu_register[index])
 #define Clear_excp_register(index) Allexception(Fpu_register[index]) = 0
 #define Excp_format() \
+<<<<<<< HEAD
     (current_ir >> ((current_ir>>opclass & twobits)==1 ? df : fmt) & twobits)
+=======
+	(current_ir >> ((current_ir>>opclass & twobits) == 1 ? df : fmtbits) & twobits)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Miscellaneous definitions */
 #define Fpu_sgl(index) Fpu_register[index*2]
@@ -115,7 +130,11 @@ decode_fpu(unsigned int Fpu_register[], unsigned int trap_counts[])
      * that happen.  Want to keep this overhead low, but still provide
      * some information to the customer.  All exits from this routine
      * need to restore Fpu_register[0]
+<<<<<<< HEAD
     */
+=======
+     */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     bflags=(Fpu_register[0] & 0xf8000000);
     Fpu_register[0] &= 0x07ffffff;

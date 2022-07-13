@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008 Freescale Semiconductor, Inc. All rights reserved.
  *
@@ -5,11 +9,14 @@
  *
  * Description:
  * MPC5121ADS CPLD irq handling
+<<<<<<< HEAD
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -18,7 +25,14 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+
+#include "mpc5121_ads.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct device_node *cpld_pic_node;
 static struct irq_domain *cpld_pic_host;
@@ -85,11 +99,18 @@ static struct irq_chip cpld_pic = {
 	.irq_unmask = cpld_unmask_irq,
 };
 
+<<<<<<< HEAD
 static int
 cpld_pic_get_irq(int offset, u8 ignore, u8 __iomem *statusp,
 			    u8 __iomem *maskp)
 {
 	int cpld_irq;
+=======
+static unsigned int
+cpld_pic_get_irq(int offset, u8 ignore, u8 __iomem *statusp,
+			    u8 __iomem *maskp)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 status = in_8(statusp);
 	u8 mask = in_8(maskp);
 
@@ -97,6 +118,7 @@ cpld_pic_get_irq(int offset, u8 ignore, u8 __iomem *statusp,
 	status |= (ignore | mask);
 
 	if (status == 0xff)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	cpld_irq = ffz(status) + offset;
@@ -118,12 +140,39 @@ cpld_pic_cascade(unsigned int irq, struct irq_desc *desc)
 		&cpld_regs->misc_mask);
 	if (irq != NO_IRQ) {
 		generic_handle_irq(irq);
+=======
+		return ~0;
+
+	return ffz(status) + offset;
+}
+
+static void cpld_pic_cascade(struct irq_desc *desc)
+{
+	unsigned int hwirq;
+
+	hwirq = cpld_pic_get_irq(0, PCI_IGNORE, &cpld_regs->pci_status,
+		&cpld_regs->pci_mask);
+	if (hwirq != ~0) {
+		generic_handle_domain_irq(cpld_pic_host, hwirq);
+		return;
+	}
+
+	hwirq = cpld_pic_get_irq(8, MISC_IGNORE, &cpld_regs->misc_status,
+		&cpld_regs->misc_mask);
+	if (hwirq != ~0) {
+		generic_handle_domain_irq(cpld_pic_host, hwirq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 }
 
 static int
+<<<<<<< HEAD
 cpld_pic_host_match(struct irq_domain *h, struct device_node *node)
+=======
+cpld_pic_host_match(struct irq_domain *h, struct device_node *node,
+		    enum irq_domain_bus_token bus_token)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return cpld_pic_node == node;
 }
@@ -175,7 +224,11 @@ mpc5121_ads_cpld_pic_init(void)
 		goto end;
 
 	cascade_irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (cascade_irq == NO_IRQ)
+=======
+	if (!cascade_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 
 	/*

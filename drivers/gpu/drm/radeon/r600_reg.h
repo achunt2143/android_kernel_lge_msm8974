@@ -31,6 +31,15 @@
 #define R600_PCIE_PORT_INDEX                0x0038
 #define R600_PCIE_PORT_DATA                 0x003c
 
+<<<<<<< HEAD
+=======
+#define R600_RCU_INDEX                      0x0100
+#define R600_RCU_DATA                       0x0104
+
+#define R600_UVD_CTX_INDEX                  0xf4a0
+#define R600_UVD_CTX_DATA                   0xf4a4
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define R600_MC_VM_FB_LOCATION			0x2180
 #define		R600_MC_FB_BASE_MASK			0x0000FFFF
 #define		R600_MC_FB_BASE_SHIFT			0
@@ -81,11 +90,40 @@
 #define R600_MEDIUM_VID_LOWER_GPIO_CNTL                            0x720
 #define R600_LOW_VID_LOWER_GPIO_CNTL                               0x724
 
+<<<<<<< HEAD
 #define R600_D1GRPH_SWAP_CONTROL                               0x610C
 #       define R600_D1GRPH_SWAP_ENDIAN_NONE                    (0 << 0)
 #       define R600_D1GRPH_SWAP_ENDIAN_16BIT                   (1 << 0)
 #       define R600_D1GRPH_SWAP_ENDIAN_32BIT                   (2 << 0)
 #       define R600_D1GRPH_SWAP_ENDIAN_64BIT                   (3 << 0)
+=======
+#define R600_D1GRPH_SWAP_CONTROL                     0x610C
+#       define R600_D1GRPH_ENDIAN_SWAP(x)            (((x) & 0x3) << 0)
+#       define R600_D1GRPH_SWAP_ENDIAN_NONE          0
+#       define R600_D1GRPH_SWAP_ENDIAN_16BIT         1
+#       define R600_D1GRPH_SWAP_ENDIAN_32BIT         2
+#       define R600_D1GRPH_SWAP_ENDIAN_64BIT         3
+#       define R600_D1GRPH_RED_CROSSBAR(x)           (((x) & 0x3) << 4)
+#       define R600_D1GRPH_RED_SEL_R                 0
+#       define R600_D1GRPH_RED_SEL_G                 1
+#       define R600_D1GRPH_RED_SEL_B                 2
+#       define R600_D1GRPH_RED_SEL_A                 3
+#       define R600_D1GRPH_GREEN_CROSSBAR(x)         (((x) & 0x3) << 6)
+#       define R600_D1GRPH_GREEN_SEL_G               0
+#       define R600_D1GRPH_GREEN_SEL_B               1
+#       define R600_D1GRPH_GREEN_SEL_A               2
+#       define R600_D1GRPH_GREEN_SEL_R               3
+#       define R600_D1GRPH_BLUE_CROSSBAR(x)          (((x) & 0x3) << 8)
+#       define R600_D1GRPH_BLUE_SEL_B                0
+#       define R600_D1GRPH_BLUE_SEL_A                1
+#       define R600_D1GRPH_BLUE_SEL_R                2
+#       define R600_D1GRPH_BLUE_SEL_G                3
+#       define R600_D1GRPH_ALPHA_CROSSBAR(x)         (((x) & 0x3) << 10)
+#       define R600_D1GRPH_ALPHA_SEL_A               0
+#       define R600_D1GRPH_ALPHA_SEL_R               1
+#       define R600_D1GRPH_ALPHA_SEL_G               2
+#       define R600_D1GRPH_ALPHA_SEL_B               3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define R600_HDP_NONSURFACE_BASE                                0x2c04
 
@@ -96,6 +134,18 @@
 #define R600_CONFIG_F0_BASE                                     0x542C
 #define R600_CONFIG_APER_SIZE                                   0x5430
 
+<<<<<<< HEAD
+=======
+#define	R600_BIF_FB_EN						0x5490
+#define		R600_FB_READ_EN					(1 << 0)
+#define		R600_FB_WRITE_EN				(1 << 1)
+
+#define R600_CITF_CNTL           				0x200c
+#define		R600_BLACKOUT_MASK				0x00000003
+
+#define R700_MC_CITF_CNTL           				0x25c0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define R600_ROM_CNTL                              0x1600
 #       define R600_SCK_OVERWRITE                  (1 << 1)
 #       define R600_SCK_PRESCALE_CRYSTAL_CLK_SHIFT 28
@@ -156,6 +206,7 @@
 #define R600_AUDIO_PIN_WIDGET_CNTL        0x73d4
 #define R600_AUDIO_STATUS_BITS            0x73d8
 
+<<<<<<< HEAD
 /* HDMI base register addresses */
 #define R600_HDMI_BLOCK1                  0x7400
 #define R600_HDMI_BLOCK2                  0x7700
@@ -196,5 +247,12 @@
 /* HDMI additional config base register addresses */
 #define R600_HDMI_CONFIG1                 0x7600
 #define R600_HDMI_CONFIG2                 0x7a00
+=======
+#define DCE2_HDMI_OFFSET0		(0x7400 - 0x7400)
+#define DCE2_HDMI_OFFSET1		(0x7700 - 0x7400)
+/* DCE3.2 second instance starts at 0x7800 */
+#define DCE3_HDMI_OFFSET0		(0x7400 - 0x7400)
+#define DCE3_HDMI_OFFSET1		(0x7800 - 0x7400)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

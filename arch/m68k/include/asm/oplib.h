@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * oplib.h:  Describes the interface and available routines in the
  *           Linux Prom library.
@@ -8,6 +12,11 @@
 #ifndef __SPARC_OPLIB_H
 #define __SPARC_OPLIB_H
 
+<<<<<<< HEAD
+=======
+#include <linux/compiler.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/openprom.h>
 
 /* The master romvec pointer... */
@@ -148,7 +157,11 @@ extern char prom_getchar(void);
 extern void prom_putchar(char character);
 
 /* Prom's internal printf routine, don't use in kernel/boot code. */
+<<<<<<< HEAD
 void prom_printf(char *fmt, ...);
+=======
+__printf(1, 2) void prom_printf(char *fmt, ...);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Query for input device type */
 

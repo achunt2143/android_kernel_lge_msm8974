@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ROOT_DEV_H_
 #define _ROOT_DEV_H_
 
@@ -7,6 +11,7 @@
 
 enum {
 	Root_NFS = MKDEV(UNNAMED_MAJOR, 255),
+<<<<<<< HEAD
 	Root_RAM0 = MKDEV(RAMDISK_MAJOR, 0),
 	Root_RAM1 = MKDEV(RAMDISK_MAJOR, 1),
 	Root_FD0 = MKDEV(FLOPPY_MAJOR, 0),
@@ -16,6 +21,11 @@ enum {
 	Root_SDA2 = MKDEV(SCSI_DISK0_MAJOR, 2),
 	Root_HDC1 = MKDEV(IDE1_MAJOR, 1),
 	Root_SR0 = MKDEV(SCSI_CDROM_MAJOR, 0),
+=======
+	Root_CIFS = MKDEV(UNNAMED_MAJOR, 254),
+	Root_Generic = MKDEV(UNNAMED_MAJOR, 253),
+	Root_RAM0 = MKDEV(RAMDISK_MAJOR, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern dev_t ROOT_DEV;

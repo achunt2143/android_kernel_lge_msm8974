@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sharp SL-C7xx Series PCMCIA routines
  *
  * Copyright (c) 2004-2005 Richard Purdie
  *
  * Based on Sharp's 2.4 kernel patches and pxa2xx_mainstone.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,11 +26,18 @@
 #include <linux/platform_device.h>
 
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <asm/irq.h>
 #include <asm/hardware/scoop.h>
 
 #include "soc_common.h"
+=======
+#include <asm/irq.h>
+#include <asm/hardware/scoop.h>
+
+#include <pcmcia/soc_common.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	NO_KEEP_VS 0x0001
 #define SCOOP_DEV platform_scoop_config->devs
@@ -208,7 +222,11 @@ static struct pcmcia_low_level sharpsl_pcmcia_ops = {
 #ifdef CONFIG_SA1100_COLLIE
 #include "sa11xx_base.h"
 
+<<<<<<< HEAD
 int __devinit pcmcia_collie_init(struct device *dev)
+=======
+int pcmcia_collie_init(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
        int ret = -ENODEV;
 

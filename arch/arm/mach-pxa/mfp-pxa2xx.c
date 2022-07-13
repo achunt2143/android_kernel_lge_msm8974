@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-pxa/mfp-pxa2xx.c
  *
@@ -7,10 +11,13 @@
  *  functions, this is by concept samilar to the MFP configuration
  *  on PXA3xx,  what's more important, the low power pin state and
  *  wakeup detection are also supported by the same framework.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/gpio.h>
 #include <linux/gpio-pxa.h>
@@ -19,9 +26,17 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/syscore_ops.h>
+<<<<<<< HEAD
 
 #include <mach/pxa2xx-regs.h>
 #include <mach/mfp-pxa2xx.h>
+=======
+#include <linux/soc/pxa/cpu.h>
+
+#include "pxa2xx-regs.h"
+#include "mfp-pxa2xx.h"
+#include "mfp-pxa27x.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 
@@ -93,8 +108,13 @@ static int __mfp_config_gpio(unsigned gpio, unsigned long c)
 		break;
 	default:
 		/* warning and fall through, treat as MFP_LPM_DEFAULT */
+<<<<<<< HEAD
 		pr_warning("%s: GPIO%d: unsupported low power mode\n",
 				__func__, gpio);
+=======
+		pr_warn("%s: GPIO%d: unsupported low power mode\n",
+			__func__, gpio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -107,14 +127,22 @@ static int __mfp_config_gpio(unsigned gpio, unsigned long c)
 	 * configurations of those pins not able to wakeup
 	 */
 	if ((c & MFP_LPM_CAN_WAKEUP) && !gpio_desc[gpio].can_wakeup) {
+<<<<<<< HEAD
 		pr_warning("%s: GPIO%d unable to wakeup\n",
 				__func__, gpio);
+=======
+		pr_warn("%s: GPIO%d unable to wakeup\n", __func__, gpio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if ((c & MFP_LPM_CAN_WAKEUP) && is_out) {
+<<<<<<< HEAD
 		pr_warning("%s: output GPIO%d unable to wakeup\n",
 				__func__, gpio);
+=======
+		pr_warn("%s: output GPIO%d unable to wakeup\n", __func__, gpio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -126,7 +154,11 @@ static inline int __mfp_validate(int mfp)
 	int gpio = mfp_to_gpio(mfp);
 
 	if ((mfp > MFP_PIN_GPIO127) || !gpio_desc[gpio].valid) {
+<<<<<<< HEAD
 		pr_warning("%s: GPIO%d is invalid pin\n", __func__, gpio);
+=======
+		pr_warn("%s: GPIO%d is invalid pin\n", __func__, gpio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -230,11 +262,15 @@ static void __init pxa25x_mfp_init(void)
 	int i;
 
 	/* running before pxa_gpio_probe() */
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_PXA26x
 	pxa_last_gpio = 89;
 #else
 	pxa_last_gpio = 84;
 #endif
+=======
+	pxa_last_gpio = 84;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i <= pxa_last_gpio; i++)
 		gpio_desc[i].valid = 1;
 

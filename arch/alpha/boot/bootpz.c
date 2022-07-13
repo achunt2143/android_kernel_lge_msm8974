@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/boot/bootpz.c
  *
@@ -17,10 +21,16 @@
 
 #include <asm/console.h>
 #include <asm/hwrpb.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/io.h>
 
 #include <stdarg.h>
+=======
+#include <asm/io.h>
+
+#include <linux/stdarg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "kzsize.h"
 
@@ -200,7 +210,11 @@ extern char _end;
 	START_ADDR	KSEG address of the entry point of kernel code.
 
 	ZERO_PGE	KSEG address of page full of zeroes, but 
+<<<<<<< HEAD
 			upon entry to kerne cvan be expected
+=======
+			upon entry to kernel, it can be expected
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to hold the parameter list and possible
 			INTRD information.
 

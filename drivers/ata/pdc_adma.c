@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  pdc_adma.c - Pacific Digital Corporation ADMA
  *
@@ -23,20 +24,38 @@
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/DocBook/libata.*
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  pdc_adma.c - Pacific Digital Corporation ADMA
+ *
+ *  Maintained by:  Tejun Heo <tj@kernel.org>
+ *
+ *  Copyright 2005 Mark Lord
+ *
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Supports ATA disks in single-packet ADMA mode.
  *  Uses PIO for everything else.
  *
  *  TODO:  Use ADMA transfers for ATAPI devices, when possible.
  *  This requires careful attention to a number of quirks of the chip.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -133,14 +152,22 @@ static int adma_ata_init_one(struct pci_dev *pdev,
 				const struct pci_device_id *ent);
 static int adma_port_start(struct ata_port *ap);
 static void adma_port_stop(struct ata_port *ap);
+<<<<<<< HEAD
 static void adma_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors adma_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int adma_qc_issue(struct ata_queued_cmd *qc);
 static int adma_check_atapi_dma(struct ata_queued_cmd *qc);
 static void adma_freeze(struct ata_port *ap);
 static void adma_thaw(struct ata_port *ap);
 static int adma_prereset(struct ata_link *link, unsigned long deadline);
 
+<<<<<<< HEAD
 static struct scsi_host_template adma_ata_sht = {
+=======
+static const struct scsi_host_template adma_ata_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= LIBATA_MAX_PRD,
 	.dma_boundary		= ADMA_DMA_BOUNDARY,
@@ -301,9 +328,12 @@ static int adma_fill_sg(struct ata_queued_cmd *qc)
 		*(__le32 *)(buf + i) =
 			(pFLAGS & pEND) ? 0 : cpu_to_le32(pp->pkt_dma + i + 4);
 		i += 4;
+<<<<<<< HEAD
 
 		VPRINTK("PRD[%u] = (0x%lX, 0x%X)\n", i/4,
 					(unsigned long)addr, len);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (likely(last_buf))
@@ -312,18 +342,28 @@ static int adma_fill_sg(struct ata_queued_cmd *qc)
 	return i;
 }
 
+<<<<<<< HEAD
 static void adma_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors adma_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adma_port_priv *pp = qc->ap->private_data;
 	u8  *buf = pp->pkt;
 	u32 pkt_dma = (u32)pp->pkt_dma;
 	int i = 0;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	adma_enter_reg_mode(qc->ap);
 	if (qc->tf.protocol != ATA_PROT_DMA)
 		return;
+=======
+	adma_enter_reg_mode(qc->ap);
+	if (qc->tf.protocol != ATA_PROT_DMA)
+		return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf[i++] = 0;	/* Response flags */
 	buf[i++] = 0;	/* reserved */
@@ -372,6 +412,7 @@ static void adma_qc_prep(struct ata_queued_cmd *qc)
 
 	i = adma_fill_sg(qc);
 	wmb();	/* flush PRDs and pkt to memory */
+<<<<<<< HEAD
 #if 0
 	/* dump out CPB + PRDs for debug */
 	{
@@ -388,6 +429,9 @@ static void adma_qc_prep(struct ata_queued_cmd *qc)
 			printk("%s\n", obuf);
 	}
 #endif
+=======
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void adma_packet_start(struct ata_queued_cmd *qc)
@@ -395,8 +439,11 @@ static inline void adma_packet_start(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	void __iomem *chan = ADMA_PORT_REGS(ap);
 
+<<<<<<< HEAD
 	VPRINTK("ENTER, ap %p\n", ap);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* fire up the ADMA engine */
 	writew(aPIOMD4 | aGO, chan + ADMA_CONTROL);
 }
@@ -491,8 +538,11 @@ static inline unsigned int adma_intr_mmio(struct ata_host *host)
 			u8 status = ata_sff_check_status(ap);
 			if ((status & ATA_BUSY))
 				continue;
+<<<<<<< HEAD
 			DPRINTK("ata%u: protocol %d (dev_stat 0x%X)\n",
 				ap->print_id, qc->tf.protocol, status);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* complete taskfile transaction */
 			pp->state = adma_state_idle;
@@ -520,14 +570,20 @@ static irqreturn_t adma_intr(int irq, void *dev_instance)
 	struct ata_host *host = dev_instance;
 	unsigned int handled = 0;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&host->lock);
 	handled  = adma_intr_pkt(host) | adma_intr_mmio(host);
 	spin_unlock(&host->lock);
 
+<<<<<<< HEAD
 	VPRINTK("EXIT\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_RETVAL(handled);
 }
 
@@ -563,11 +619,18 @@ static int adma_port_start(struct ata_port *ap)
 		return -ENOMEM;
 	/* paranoia? */
 	if ((pp->pkt_dma & 7) != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "bad alignment for pp->pkt_dma: %08x\n",
 						(u32)pp->pkt_dma);
 		return -ENOMEM;
 	}
 	memset(pp->pkt, 0, ADMA_PKT_BYTES);
+=======
+		ata_port_err(ap, "bad alignment for pp->pkt_dma: %08x\n",
+			     (u32)pp->pkt_dma);
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->private_data = pp;
 	adma_reinit_engine(ap);
 	return 0;
@@ -590,6 +653,7 @@ static void adma_host_init(struct ata_host *host, unsigned int chip_id)
 		adma_reset_engine(host->ports[port_no]);
 }
 
+<<<<<<< HEAD
 static int adma_set_dma_masks(struct pci_dev *pdev, void __iomem *mmio_base)
 {
 	int rc;
@@ -607,6 +671,8 @@ static int adma_set_dma_masks(struct pci_dev *pdev, void __iomem *mmio_base)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int adma_ata_init_one(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
 {
@@ -637,9 +703,17 @@ static int adma_ata_init_one(struct pci_dev *pdev,
 	host->iomap = pcim_iomap_table(pdev);
 	mmio_base = host->iomap[ADMA_MMIO_BAR];
 
+<<<<<<< HEAD
 	rc = adma_set_dma_masks(pdev, mmio_base);
 	if (rc)
 		return rc;
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+	if (rc) {
+		dev_err(&pdev->dev, "32-bit DMA enable failed\n");
+		return rc;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (port_no = 0; port_no < ADMA_PORTS; ++port_no) {
 		struct ata_port *ap = host->ports[port_no];
@@ -660,6 +734,7 @@ static int adma_ata_init_one(struct pci_dev *pdev,
 				 &adma_ata_sht);
 }
 
+<<<<<<< HEAD
 static int __init adma_ata_init(void)
 {
 	return pci_register_driver(&adma_ata_pci_driver);
@@ -669,12 +744,18 @@ static void __exit adma_ata_exit(void)
 {
 	pci_unregister_driver(&adma_ata_pci_driver);
 }
+=======
+module_pci_driver(adma_ata_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Mark Lord");
 MODULE_DESCRIPTION("Pacific Digital Corporation ADMA low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, adma_ata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(adma_ata_init);
 module_exit(adma_ata_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

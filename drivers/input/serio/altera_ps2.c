@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Altera University Program PS2 controller driver
  *
@@ -5,6 +9,7 @@
  *
  * Based on sa1111ps2.c, which is:
  * Copyright (C) 2002 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -13,6 +18,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/interrupt.h>
@@ -25,9 +35,13 @@
 
 struct ps2if {
 	struct serio *io;
+<<<<<<< HEAD
 	struct resource *iomem_res;
 	void __iomem *base;
 	unsigned irq;
+=======
+	void __iomem *base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -38,7 +52,11 @@ static irqreturn_t altera_ps2_rxint(int irq, void *dev_id)
 {
 	struct ps2if *ps2if = dev_id;
 	unsigned int status;
+<<<<<<< HEAD
 	int handled = IRQ_NONE;
+=======
+	irqreturn_t handled = IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((status = readl(ps2if->base)) & 0xffff0000) {
 		serio_interrupt(ps2if->io, status & 0xff, 0);
@@ -75,18 +93,27 @@ static void altera_ps2_close(struct serio *io)
 {
 	struct ps2if *ps2if = io->port_data;
 
+<<<<<<< HEAD
 	writel(0, ps2if->base); /* disable rx irq */
+=======
+	writel(0, ps2if->base + 4); /* disable rx irq */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Add one device to this driver.
  */
+<<<<<<< HEAD
 static int __devinit altera_ps2_probe(struct platform_device *pdev)
+=======
+static int altera_ps2_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps2if *ps2if;
 	struct serio *serio;
 	int error, irq;
 
+<<<<<<< HEAD
 	ps2if = kzalloc(sizeof(struct ps2if), GFP_KERNEL);
 	serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	if (!ps2if || !serio) {
@@ -94,16 +121,47 @@ static int __devinit altera_ps2_probe(struct platform_device *pdev)
 		goto err_free_mem;
 	}
 
+=======
+	ps2if = devm_kzalloc(&pdev->dev, sizeof(struct ps2if), GFP_KERNEL);
+	if (!ps2if)
+		return -ENOMEM;
+
+	ps2if->base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+	if (IS_ERR(ps2if->base))
+		return PTR_ERR(ps2if->base);
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return -ENXIO;
+
+	error = devm_request_irq(&pdev->dev, irq, altera_ps2_rxint, 0,
+				 pdev->name, ps2if);
+	if (error) {
+		dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
+		return error;
+	}
+
+	serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
+	if (!serio)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->id.type		= SERIO_8042;
 	serio->write		= altera_ps2_write;
 	serio->open		= altera_ps2_open;
 	serio->close		= altera_ps2_close;
+<<<<<<< HEAD
 	strlcpy(serio->name, dev_name(&pdev->dev), sizeof(serio->name));
 	strlcpy(serio->phys, dev_name(&pdev->dev), sizeof(serio->phys));
+=======
+	strscpy(serio->name, dev_name(&pdev->dev), sizeof(serio->name));
+	strscpy(serio->phys, dev_name(&pdev->dev), sizeof(serio->phys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->port_data	= ps2if;
 	serio->dev.parent	= &pdev->dev;
 	ps2if->io		= serio;
 
+<<<<<<< HEAD
 	ps2if->iomem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (ps2if->iomem_res == NULL) {
 		error = -ENOENT;
@@ -139,11 +197,15 @@ static int __devinit altera_ps2_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev, "base %p, irq %d\n", ps2if->base, ps2if->irq);
+=======
+	dev_info(&pdev->dev, "base %p, irq %d\n", ps2if->base, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	serio_register_port(ps2if->io);
 	platform_set_drvdata(pdev, ps2if);
 
 	return 0;
+<<<<<<< HEAD
 
  err_unmap:
 	iounmap(ps2if->base);
@@ -154,11 +216,14 @@ static int __devinit altera_ps2_probe(struct platform_device *pdev)
 	kfree(ps2if);
 	kfree(serio);
 	return error;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Remove one device from this driver.
  */
+<<<<<<< HEAD
 static int __devexit altera_ps2_remove(struct platform_device *pdev)
 {
 	struct ps2if *ps2if = platform_get_drvdata(pdev);
@@ -172,11 +237,22 @@ static int __devexit altera_ps2_remove(struct platform_device *pdev)
 	kfree(ps2if);
 
 	return 0;
+=======
+static void altera_ps2_remove(struct platform_device *pdev)
+{
+	struct ps2if *ps2if = platform_get_drvdata(pdev);
+
+	serio_unregister_port(ps2if->io);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_OF
 static const struct of_device_id altera_ps2_match[] = {
 	{ .compatible = "ALTR,ps2-1.0", },
+<<<<<<< HEAD
+=======
+	{ .compatible = "altr,ps2-1.0", },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 MODULE_DEVICE_TABLE(of, altera_ps2_match);
@@ -187,10 +263,16 @@ MODULE_DEVICE_TABLE(of, altera_ps2_match);
  */
 static struct platform_driver altera_ps2_driver = {
 	.probe		= altera_ps2_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(altera_ps2_remove),
 	.driver	= {
 		.name	= DRV_NAME,
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= altera_ps2_remove,
+	.driver	= {
+		.name	= DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = of_match_ptr(altera_ps2_match),
 	},
 };

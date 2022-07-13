@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Dummy soundcard for virtual rawmidi devices
  *
  *  Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -57,7 +64,10 @@
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("Dummy soundcard for virtual rawmidi devices");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ALSA,Virtual rawmidi device}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_MIDI_DEVICES	4
 
@@ -83,15 +93,24 @@ struct snd_card_virmidi {
 static struct platform_device *devices[SNDRV_CARDS];
 
 
+<<<<<<< HEAD
 static int __devinit snd_virmidi_probe(struct platform_device *devptr)
+=======
+static int snd_virmidi_probe(struct platform_device *devptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_card_virmidi *vmidi;
 	int idx, err;
 	int dev = devptr->id;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_card_virmidi), &card);
+=======
+	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_card_virmidi), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	vmidi = card->private_data;
@@ -99,12 +118,18 @@ static int __devinit snd_virmidi_probe(struct platform_device *devptr)
 
 	if (midi_devs[dev] > MAX_MIDI_DEVICES) {
 		snd_printk(KERN_WARNING
+<<<<<<< HEAD
 			   "too much midi devices for virmidi %d: "
 			   "force to use %d\n", dev, MAX_MIDI_DEVICES);
+=======
+			   "too much midi devices for virmidi %d: force to use %d\n",
+			   dev, MAX_MIDI_DEVICES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		midi_devs[dev] = MAX_MIDI_DEVICES;
 	}
 	for (idx = 0; idx < midi_devs[dev]; idx++) {
 		struct snd_rawmidi *rmidi;
+<<<<<<< HEAD
 		struct snd_virmidi_dev *rdev;
 		if ((err = snd_virmidi_new(card, idx, &rmidi)) < 0)
 			goto __nodev;
@@ -114,10 +139,21 @@ static int __devinit snd_virmidi_probe(struct platform_device *devptr)
 		rdev->seq_mode = SNDRV_VIRMIDI_SEQ_DISPATCH;
 	}
 	
+=======
+
+		err = snd_virmidi_new(card, idx, &rmidi);
+		if (err < 0)
+			return err;
+		vmidi->midi[idx] = rmidi;
+		strcpy(rmidi->name, "Virtual Raw MIDI");
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(card->driver, "VirMIDI");
 	strcpy(card->shortname, "VirMIDI");
 	sprintf(card->longname, "Virtual MIDI Card %i", dev + 1);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &devptr->dev);
 
 	if ((err = snd_card_register(card)) == 0) {
@@ -133,6 +169,13 @@ static int __devexit snd_virmidi_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
 	platform_set_drvdata(devptr, NULL);
+=======
+	err = snd_card_register(card);
+	if (err)
+		return err;
+
+	platform_set_drvdata(devptr, card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -140,9 +183,14 @@ static int __devexit snd_virmidi_remove(struct platform_device *devptr)
 
 static struct platform_driver snd_virmidi_driver = {
 	.probe		= snd_virmidi_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_virmidi_remove),
 	.driver		= {
 		.name	= SND_VIRMIDI_DRIVER
+=======
+	.driver		= {
+		.name	= SND_VIRMIDI_DRIVER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -159,13 +207,23 @@ static int __init alsa_card_virmidi_init(void)
 {
 	int i, cards, err;
 
+<<<<<<< HEAD
 	if ((err = platform_driver_register(&snd_virmidi_driver)) < 0)
+=======
+	err = platform_driver_register(&snd_virmidi_driver);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	cards = 0;
 	for (i = 0; i < SNDRV_CARDS; i++) {
 		struct platform_device *device;
+<<<<<<< HEAD
 		if (! enable[i])
+=======
+
+		if (!enable[i])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		device = platform_device_register_simple(SND_VIRMIDI_DRIVER,
 							 i, NULL, 0);

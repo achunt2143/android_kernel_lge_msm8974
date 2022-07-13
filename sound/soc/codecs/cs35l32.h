@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * cs35l32.h -- CS35L32 ALSA SoC audio driver
  *
@@ -9,15 +10,45 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * cs35l32.h -- CS35L32 ALSA SoC audio driver
+ *
+ * Copyright 2014 CirrusLogic, Inc.
+ *
+ * Author: Brian Austin <brian.austin@cirrus.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CS35L32_H__
 #define __CS35L32_H__
 
+<<<<<<< HEAD
 #define CS35L32_FIRSTREG	0x01
 #define CS35L32_LASTREG		0x1C
 #define CS35L32_CHIP_ID		0x00035A32
 #define CS35L32_NO_PLACE	0x00	/* Place Holder */
+=======
+struct cs35l32_platform_data {
+	/* Low Battery Threshold */
+	unsigned int batt_thresh;
+	/* Low Battery Recovery */
+	unsigned int batt_recov;
+	/* LED Current Management*/
+	unsigned int led_mng;
+	/* Audio Gain w/ LED */
+	unsigned int audiogain_mng;
+	/* Boost Management */
+	unsigned int boost_mng;
+	/* Data CFG for DUAL device */
+	unsigned int sdout_datacfg;
+	/* SDOUT Sharing */
+	unsigned int sdout_share;
+};
+
+#define CS35L32_CHIP_ID		0x00035A32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS35L32_DEVID_AB	0x01	/* Device ID A & B [RO] */
 #define CS35L32_DEVID_CD	0x02    /* Device ID C & D [RO] */
 #define CS35L32_DEVID_E		0x03    /* Device ID E [RO] */
@@ -45,6 +76,7 @@
 #define CS35L32_MOVIE_MODE	0x1A	/* LED Movie Mode Current */
 #define CS35L32_FLASH_TIMER	0x1B	/* LED Flash Timer */
 #define CS35L32_FLASH_INHIBIT	0x1C	/* LED Flash Inhibit Current */
+<<<<<<< HEAD
 #define CS35L32_MAX_REGISTER	0x50
 #define CS35L32_REGISTER_COUNT	0x50
 
@@ -62,19 +94,49 @@
 #define CS35L32_PDN_VMON	(1 << 7)
 #define CS35L32_PDN_VPMON	(1 << 5)
 #define CS35L32_PDN_ADSP	(1 << 3)
+=======
+#define CS35L32_MAX_REGISTER	0x1C
+
+#define CS35L32_MCLK_DIV2	0x01
+#define CS35L32_MCLK_RATIO	0x01
+#define CS35L32_MCLKDIS		0x80
+#define CS35L32_PDN_ALL		0x01
+#define CS35L32_PDN_AMP		0x80
+#define CS35L32_PDN_BOOST	0x04
+#define CS35L32_PDN_IMON	0x40
+#define CS35L32_PDN_VMON	0x80
+#define CS35L32_PDN_VPMON	0x20
+#define CS35L32_PDN_ADSP	0x08
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CS35L32_MCLK_DIV2_MASK		0x40
 #define CS35L32_MCLK_RATIO_MASK		0x01
 #define CS35L32_MCLK_MASK		0x41
 #define CS35L32_ADSP_MASTER_MASK	0x40
 #define CS35L32_BOOST_MASK		0x03
+<<<<<<< HEAD
 #define CS35L32_ADSP_SHARE_MASK		0x08
 #define CS35L32_ADSP_DATACFG_MASK	0x30
 #define CS35L32_SDOUT_3ST		0x80
 
 #define CS35L32_RATES (SNDRV_PCM_RATE_48000) 
+=======
+#define CS35L32_GAIN_MGR_MASK		0x08
+#define CS35L32_ADSP_SHARE_MASK		0x08
+#define CS35L32_ADSP_DATACFG_MASK	0x30
+#define CS35L32_SDOUT_3ST		0x08
+#define CS35L32_BATT_REC_MASK		0x0E
+#define CS35L32_BATT_THRESH_MASK	0x30
+
+#define CS35L32_RATES (SNDRV_PCM_RATE_48000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS35L32_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | \
 			SNDRV_PCM_FMTBIT_S24_LE | \
 			SNDRV_PCM_FMTBIT_S32_LE)
 
+<<<<<<< HEAD
 #endif
+=======
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

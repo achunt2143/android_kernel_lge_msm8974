@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GE PPC9A board support
  *
@@ -5,11 +9,14 @@
  *
  * Copyright 2008 GE Intelligent Platforms Embedded Systems, Inc.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on: mpc86xx_hpcn.c (MPC86xx HPCN board specific routines)
  * Copyright 2006 Freescale Semiconductor Inc.
  *
@@ -22,12 +29,20 @@
 #include <linux/kdev_t.h>
 #include <linux/delay.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mm/mmu_decl.h>
 #include <asm/udbg.h>
 
@@ -73,6 +88,7 @@ static void __init gef_ppc9a_init_irq(void)
 static void __init gef_ppc9a_setup_arch(void)
 {
 	struct device_node *regs;
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	struct device_node *np;
 
@@ -80,6 +96,8 @@ static void __init gef_ppc9a_setup_arch(void)
 		fsl_add_bridge(np, 1);
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "GE Intelligent Platforms PPC9A 6U VME SBC\n");
 
@@ -87,6 +105,11 @@ static void __init gef_ppc9a_setup_arch(void)
 	mpc86xx_smp_init();
 #endif
 
+<<<<<<< HEAD
+=======
+	fsl_pci_assign_primary();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Remap basic board registers */
 	regs = of_find_compatible_node(NULL, NULL, "gef,ppc9a-fpga-regs");
 	if (regs) {
@@ -164,7 +187,11 @@ static void gef_ppc9a_show_cpuinfo(struct seq_file *m)
 		gef_ppc9a_get_vme_is_syscon() ? "yes" : "no");
 }
 
+<<<<<<< HEAD
 static void __init gef_ppc9a_nec_fixup(struct pci_dev *pdev)
+=======
+static void gef_ppc9a_nec_fixup(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 
@@ -184,6 +211,7 @@ static void __init gef_ppc9a_nec_fixup(struct pci_dev *pdev)
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_NEC, PCI_DEVICE_ID_NEC_USB,
 	gef_ppc9a_nec_fixup);
 
+<<<<<<< HEAD
 /*
  * Called very early, device-tree isn't unflattened
  *
@@ -236,13 +264,24 @@ machine_device_initcall(gef_ppc9a, declare_of_platform_devices);
 define_machine(gef_ppc9a) {
 	.name			= "GE PPC9A",
 	.probe			= gef_ppc9a_probe,
+=======
+machine_arch_initcall(gef_ppc9a, mpc86xx_common_publish_devices);
+
+define_machine(gef_ppc9a) {
+	.name			= "GE PPC9A",
+	.compatible		= "gef,ppc9a",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= gef_ppc9a_setup_arch,
 	.init_IRQ		= gef_ppc9a_init_irq,
 	.show_cpuinfo		= gef_ppc9a_show_cpuinfo,
 	.get_irq		= mpic_get_irq,
+<<<<<<< HEAD
 	.restart		= fsl_rstcr_restart,
 	.time_init		= mpc86xx_time_init,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.time_init		= mpc86xx_time_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,

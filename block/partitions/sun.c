@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/sun.c
  *
@@ -8,7 +12,18 @@
  */
 
 #include "check.h"
+<<<<<<< HEAD
 #include "sun.h"
+=======
+
+#define SUN_LABEL_MAGIC          0xDABE
+#define SUN_VTOC_SANITY          0x600DDEEE
+
+enum {
+	SUN_WHOLE_DISK = 5,
+	LINUX_RAID_PARTITION = 0xfd,	/* autodetect RAID partition */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sun_partition(struct parsed_partitions *state)
 {
@@ -57,7 +72,10 @@ int sun_partition(struct parsed_partitions *state)
 	} * label;
 	struct sun_partition *p;
 	unsigned long spc;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int use_vtoc;
 	int nparts;
 
@@ -68,7 +86,11 @@ int sun_partition(struct parsed_partitions *state)
 	p = label->partitions;
 	if (be16_to_cpu(label->magic) != SUN_LABEL_MAGIC) {
 /*		printk(KERN_INFO "Dev %s Sun disklabel: bad magic %04x\n",
+<<<<<<< HEAD
 		       bdevname(bdev, b), be16_to_cpu(label->magic)); */
+=======
+		       state->disk->disk_name, be16_to_cpu(label->magic)); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_dev_sector(sect);
 		return 0;
 	}
@@ -78,7 +100,11 @@ int sun_partition(struct parsed_partitions *state)
 		csum ^= *ush--;
 	if (csum) {
 		printk("Dev %s Sun disklabel: Csum bad, label corrupted\n",
+<<<<<<< HEAD
 		       bdevname(state->bdev, b));
+=======
+		       state->disk->disk_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_dev_sector(sect);
 		return 0;
 	}

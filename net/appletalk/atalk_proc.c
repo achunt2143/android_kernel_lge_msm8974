@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 	atalk_proc.c - proc support for Appletalk
  *
  * 	Copyright(c) Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or modify it
  *	under the terms of the GNU General Public License as published by the
  *	Free Software Foundation, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -178,12 +185,21 @@ static int atalk_seq_socket_show(struct seq_file *seq, void *v)
 	at = at_sk(s);
 
 	seq_printf(seq, "%02X   %04X:%02X:%02X  %04X:%02X:%02X  %08X:%08X "
+<<<<<<< HEAD
 			"%02X %d\n",
+=======
+			"%02X %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   s->sk_type, ntohs(at->src_net), at->src_node, at->src_port,
 		   ntohs(at->dest_net), at->dest_node, at->dest_port,
 		   sk_wmem_alloc_get(s),
 		   sk_rmem_alloc_get(s),
+<<<<<<< HEAD
 		   s->sk_state, SOCK_INODE(s->sk_socket)->i_uid);
+=======
+		   s->sk_state,
+		   from_kuid_munged(seq_user_ns(seq), sock_i_uid(s)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return 0;
 }
@@ -209,6 +225,7 @@ static const struct seq_operations atalk_seq_socket_ops = {
 	.show   = atalk_seq_socket_show,
 };
 
+<<<<<<< HEAD
 static int atalk_seq_interface_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &atalk_seq_interface_ops);
@@ -299,4 +316,38 @@ void __exit atalk_proc_exit(void)
 	remove_proc_entry("socket", atalk_proc_dir);
 	remove_proc_entry("arp", atalk_proc_dir);
 	remove_proc_entry("atalk", init_net.proc_net);
+=======
+int __init atalk_proc_init(void)
+{
+	if (!proc_mkdir("atalk", init_net.proc_net))
+		return -ENOMEM;
+
+	if (!proc_create_seq("atalk/interface", 0444, init_net.proc_net,
+			    &atalk_seq_interface_ops))
+		goto out;
+
+	if (!proc_create_seq("atalk/route", 0444, init_net.proc_net,
+			    &atalk_seq_route_ops))
+		goto out;
+
+	if (!proc_create_seq("atalk/socket", 0444, init_net.proc_net,
+			    &atalk_seq_socket_ops))
+		goto out;
+
+	if (!proc_create_seq_private("atalk/arp", 0444, init_net.proc_net,
+				     &aarp_seq_ops,
+				     sizeof(struct aarp_iter_state), NULL))
+		goto out;
+
+	return 0;
+
+out:
+	remove_proc_subtree("atalk", init_net.proc_net);
+	return -ENOMEM;
+}
+
+void atalk_proc_exit(void)
+{
+	remove_proc_subtree("atalk", init_net.proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

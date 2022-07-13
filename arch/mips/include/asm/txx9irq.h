@@ -11,7 +11,11 @@
 
 #include <irq.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_IRQ_CPU
+=======
+#ifdef CONFIG_IRQ_MIPS_CPU
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TXX9_IRQ_BASE	(MIPS_CPU_IRQ_BASE + 8)
 #else
 #ifdef CONFIG_I8259
@@ -21,11 +25,15 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_TX39XX
 #define TXx9_MAX_IR 16
 #else
 #define TXx9_MAX_IR 32
 #endif
+=======
+#define TXx9_MAX_IR 32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void txx9_irq_init(unsigned long baseaddr);
 int txx9_irq(void);

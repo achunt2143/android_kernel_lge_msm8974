@@ -34,7 +34,18 @@
 #ifndef __CVMX_HELPER_BOARD_H__
 #define __CVMX_HELPER_BOARD_H__
 
+<<<<<<< HEAD
 #include "cvmx-helper.h"
+=======
+#include <asm/octeon/cvmx-helper.h>
+
+enum cvmx_helper_board_usb_clock_types {
+	USB_CLOCK_TYPE_REF_12,
+	USB_CLOCK_TYPE_REF_24,
+	USB_CLOCK_TYPE_REF_48,
+	USB_CLOCK_TYPE_CRYSTAL_12,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef enum {
 	set_phy_link_flags_autoneg = 0x1,
@@ -48,6 +59,7 @@ typedef enum {
  * Fake IPD port, the RGMII/MII interface may use different PHY, use
  * this macro to return appropriate MIX address to read the PHY.
  */
+<<<<<<< HEAD
 #define CVMX_HELPER_BOARD_MGMT_IPD_PORT     -10
 
 /**
@@ -59,6 +71,9 @@ typedef enum {
  * operations.
  */
 extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
+=======
+#define CVMX_HELPER_BOARD_MGMT_IPD_PORT	    -10
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Return the MII PHY address associated with the given IPD
@@ -66,9 +81,15 @@ extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
  * connected to this port. On chips supporting multiple MII
  * busses the bus number is encoded in bits <15:8>.
  *
+<<<<<<< HEAD
  * This function must be modifed for every new Octeon board.
  * Internally it uses switch statements based on the cvmx_sysinfo
  * data to determine board types and revisions. It relys on the
+=======
+ * This function must be modified for every new Octeon board.
+ * Internally it uses switch statements based on the cvmx_sysinfo
+ * data to determine board types and revisions. It relies on the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fact that every Octeon board receives a unique board type
  * enumeration from the bootloader.
  *
@@ -79,6 +100,7 @@ extern cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port);
 extern int cvmx_helper_board_get_mii_address(int ipd_port);
 
 /**
+<<<<<<< HEAD
  * This function as a board specific method of changing the PHY
  * speed, duplex, and autonegotiation. This programs the PHY and
  * not Octeon. This can be used to force Octeon's links to
@@ -99,24 +121,41 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
 				   cvmx_helper_link_info_t link_info);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is the board specific method of determining an
  * ethernet ports link speed. Most Octeon boards have Marvell PHYs
  * and are handled by the fall through case. This function must be
  * updated for boards that don't have the normal Marvell PHYs.
  *
+<<<<<<< HEAD
  * This function must be modifed for every new Octeon board.
  * Internally it uses switch statements based on the cvmx_sysinfo
  * data to determine board types and revisions. It relys on the
+=======
+ * This function must be modified for every new Octeon board.
+ * Internally it uses switch statements based on the cvmx_sysinfo
+ * data to determine board types and revisions. It relies on the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fact that every Octeon board receives a unique board type
  * enumeration from the bootloader.
  *
  * @ipd_port: IPD input port associated with the port we want to get link
+<<<<<<< HEAD
  *                 status for.
  *
  * Returns The ports link status. If the link isn't fully resolved, this must
  *         return zero.
  */
 extern cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port);
+=======
+ *		   status for.
+ *
+ * Returns The ports link status. If the link isn't fully resolved, this must
+ *	   return zero.
+ */
+extern union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * This function is called by cvmx_helper_interface_probe() after it
@@ -126,22 +165,36 @@ extern cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port);
  * support and should return the number of actual ports on the
  * board.
  *
+<<<<<<< HEAD
  * This function must be modifed for every new Octeon board.
  * Internally it uses switch statements based on the cvmx_sysinfo
  * data to determine board types and revisions. It relys on the
+=======
+ * This function must be modified for every new Octeon board.
+ * Internally it uses switch statements based on the cvmx_sysinfo
+ * data to determine board types and revisions. It relies on the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fact that every Octeon board receives a unique board type
  * enumeration from the bootloader.
  *
  * @interface: Interface to probe
  * @supported_ports:
+<<<<<<< HEAD
  *                  Number of ports Octeon supports.
  *
  * Returns Number of ports the actual board supports. Many times this will
  *         simple be "support_ports".
+=======
+ *		    Number of ports Octeon supports.
+ *
+ * Returns Number of ports the actual board supports. Many times this will
+ *	   simple be "support_ports".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern int __cvmx_helper_board_interface_probe(int interface,
 					       int supported_ports);
 
+<<<<<<< HEAD
 /**
  * Enable packet input/output from the hardware. This function is
  * called after by cvmx_helper_packet_hardware_enable() to
@@ -153,5 +206,8 @@ extern int __cvmx_helper_board_interface_probe(int interface,
  * Returns Zero on success, negative on failure
  */
 extern int __cvmx_helper_board_hardware_enable(int interface);
+=======
+enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __CVMX_HELPER_BOARD_H__ */

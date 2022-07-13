@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boot/compressed/misc.c
  *
@@ -11,7 +15,11 @@
  * Modified to use standard LinuxSH BIOS by Greg Banks 7Jul2000
  */
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/addrspace.h>
 #include <asm/page.h>
 
@@ -103,11 +111,30 @@ static void error(char *x)
 	while(1);	/* Halt */
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH64
 #define stackalign	8
 #else
 #define stackalign	4
 #endif
+=======
+const unsigned long __stack_chk_guard = 0x000a0dff;
+
+void __stack_chk_fail(void)
+{
+	error("stack-protector: Kernel stack is corrupted\n");
+}
+
+/* Needed because vmlinux.lds.h references this */
+void ftrace_stub(void)
+{
+}
+void arch_ftrace_ops_list_func(void)
+{
+}
+
+#define stackalign	4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STACK_SIZE (4096)
 long __attribute__ ((aligned(stackalign))) user_stack[STACK_SIZE];
@@ -117,14 +144,20 @@ void decompress_kernel(void)
 {
 	unsigned long output_addr;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH64
 	output_addr = (CONFIG_MEMORY_START + 0x2000);
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	output_addr = __pa((unsigned long)&_text+PAGE_SIZE);
 #if defined(CONFIG_29BIT)
 	output_addr |= P2SEG;
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	output = (unsigned char *)output_addr;
 	free_mem_ptr = (unsigned long)&_end;
@@ -132,7 +165,11 @@ void decompress_kernel(void)
 
 	puts("Uncompressing Linux... ");
 	cache_control(CACHE_ENABLE);
+<<<<<<< HEAD
 	decompress(input_data, input_len, NULL, NULL, output, NULL, error);
+=======
+	__decompress(input_data, input_len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cache_control(CACHE_DISABLE);
 	puts("Ok, booting the kernel.\n");
 }

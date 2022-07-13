@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Alpha specific irq code.
  */
@@ -45,6 +49,17 @@ do_entInt(unsigned long type, unsigned long vector,
 	  unsigned long la_ptr, struct pt_regs *regs)
 {
 	struct pt_regs *old_regs;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Disable interrupts during IRQ handling.
+	 * Note that there is no matching local_irq_enable() due to
+	 * severe problems with RTI at IPL0 and some MILO PALcode
+	 * (namely LX164).
+	 */
+	local_irq_disable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (type) {
 	case 0:
 #ifdef CONFIG_SMP
@@ -58,6 +73,7 @@ do_entInt(unsigned long type, unsigned long vector,
 		break;
 	case 1:
 		old_regs = set_irq_regs(regs);
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	  {
 		long cpu;
@@ -74,6 +90,9 @@ do_entInt(unsigned long type, unsigned long vector,
 #else
 		handle_irq(RTC_IRQ);
 #endif
+=======
+		handle_irq(RTC_IRQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_irq_regs(old_regs);
 		return;
 	case 2:
@@ -219,6 +238,7 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
  * The special RTC interrupt type.  The interrupt itself was
  * processed by PALcode, and comes in via entInt vector 1.
  */
+<<<<<<< HEAD
 
 struct irqaction timer_irqaction = {
 	.handler	= timer_interrupt,
@@ -249,3 +269,15 @@ struct irqaction halt_switch_irqaction = {
 	.handler	= no_action,
 	.name		= "halt-switch"
 };
+=======
+void __init
+init_rtc_irq(irq_handler_t handler)
+{
+	irq_set_chip_and_handler_name(RTC_IRQ, &dummy_irq_chip,
+				      handle_percpu_irq, "RTC");
+	if (!handler)
+		handler = rtc_timer_interrupt;
+	if (request_irq(RTC_IRQ, handler, 0, "timer", NULL))
+		pr_err("Failed to register timer interrupt\n");
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

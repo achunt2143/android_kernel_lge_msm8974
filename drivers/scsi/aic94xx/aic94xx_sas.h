@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver SAS definitions and hardware interface header file.
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AIC94XX_SAS_H_
@@ -327,6 +334,7 @@ struct scb_header {
 
 #define LUN_SIZE                8
 
+<<<<<<< HEAD
 /* See SAS spec, task IU
  */
 struct ssp_task_iu {
@@ -367,6 +375,11 @@ struct xfer_rdy_iu {
 	__be32 _r_a;
 } __attribute__ ((packed));
 
+=======
+#define EFB_MASK                0x80
+#define TASK_PRIO_MASK          0x78
+#define TASK_ATTR_MASK          0x07
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ---------- SCB tasks ---------- */
 
 /* This is both ssp_task and long_ssp_task
@@ -511,7 +524,11 @@ struct abort_task {
 	u8     proto_conn_rate;
 	__le32 _r_a;
 	struct ssp_frame_hdr ssp_frame;
+<<<<<<< HEAD
 	struct ssp_task_iu ssp_task;
+=======
+	struct ssp_tmf_iu ssp_task;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 sister_scb;
 	__le16 conn_handle;
 	u8     flags;	  /* ovrd_itnl_timer:3,3, suspend_data_trans:2,2 */
@@ -549,7 +566,11 @@ struct clear_nexus {
 	u8     _r_b[3];
 	u8     conn_mask;
 	u8     _r_c[19];
+<<<<<<< HEAD
 	struct ssp_task_iu ssp_task; /* LUN and TAG */
+=======
+	struct ssp_tmf_iu ssp_task; /* LUN and TAG */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 _r_d;
 	__le16 conn_handle;
 	__le64 _r_e;
@@ -562,7 +583,11 @@ struct initiate_ssp_tmf {
 	u8     proto_conn_rate;
 	__le32 _r_a;
 	struct ssp_frame_hdr ssp_frame;
+<<<<<<< HEAD
 	struct ssp_task_iu ssp_task;
+=======
+	struct ssp_tmf_iu ssp_task;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 sister_scb;
 	__le16 conn_handle;
 	u8     flags;	  /* itnl override and suspend data tx */

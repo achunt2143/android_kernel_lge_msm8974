@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Routines to emulate some Altivec/VMX instructions, specifically
  * those that can trap when given denormalized operands in Java mode.
@@ -7,7 +11,13 @@
 #include <linux/sched.h>
 #include <asm/ptrace.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <asm/switch_to.h>
+#include <linux/uaccess.h>
+#include <asm/inst.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Functions in vector.S */
 extern void vaddfp(vector128 *dst, vector128 *a, vector128 *b);
@@ -258,6 +268,7 @@ static unsigned int rfin(unsigned int x)
 
 int emulate_altivec(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	unsigned int instr, i;
 	unsigned int va, vb, vc, vd;
 	vector128 *vrs;
@@ -273,6 +284,26 @@ int emulate_altivec(struct pt_regs *regs)
 
 	vrs = current->thread.vr;
 	switch (instr & 0x3f) {
+=======
+	ppc_inst_t instr;
+	unsigned int i, word;
+	unsigned int va, vb, vc, vd;
+	vector128 *vrs;
+
+	if (get_user_instr(instr, (void __user *)regs->nip))
+		return -EFAULT;
+
+	word = ppc_inst_val(instr);
+	if (ppc_inst_primary_opcode(instr) != 4)
+		return -EINVAL;		/* not an altivec instruction */
+	vd = (word >> 21) & 0x1f;
+	va = (word >> 16) & 0x1f;
+	vb = (word >> 11) & 0x1f;
+	vc = (word >> 6) & 0x1f;
+
+	vrs = current->thread.vr_state.vr;
+	switch (word & 0x3f) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 10:
 		switch (vc) {
 		case 0:	/* vaddfp */
@@ -320,12 +351,20 @@ int emulate_altivec(struct pt_regs *regs)
 		case 14:	/* vctuxs */
 			for (i = 0; i < 4; ++i)
 				vrs[vd].u[i] = ctuxs(vrs[vb].u[i], va,
+<<<<<<< HEAD
 						&current->thread.vscr.u[3]);
+=======
+					&current->thread.vr_state.vscr.u[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 15:	/* vctsxs */
 			for (i = 0; i < 4; ++i)
 				vrs[vd].u[i] = ctsxs(vrs[vb].u[i], va,
+<<<<<<< HEAD
 						&current->thread.vscr.u[3]);
+=======
+					&current->thread.vr_state.vscr.u[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			return -EINVAL;

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -53,7 +64,11 @@ ACPI_MODULE_NAME("uteval")
  * FUNCTION:    acpi_ut_evaluate_object
  *
  * PARAMETERS:  prefix_node         - Starting node
+<<<<<<< HEAD
  *              Path                - Path to object from starting node
+=======
+ *              path                - Path to object from starting node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              expected_return_types - Bitmap of allowed return types
  *              return_desc         - Where a return value is stored
  *
@@ -69,7 +84,11 @@ ACPI_MODULE_NAME("uteval")
 
 acpi_status
 acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
+<<<<<<< HEAD
 			char *path,
+=======
+			const char *path,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u32 expected_return_btypes,
 			union acpi_operand_object **return_desc)
 {
@@ -87,7 +106,11 @@ acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
 	}
 
 	info->prefix_node = prefix_node;
+<<<<<<< HEAD
 	info->pathname = path;
+=======
+	info->relative_pathname = path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Evaluate the object/method */
 
@@ -123,22 +146,42 @@ acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
 
 	switch ((info->return_object)->common.type) {
 	case ACPI_TYPE_INTEGER:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_btype = ACPI_BTYPE_INTEGER;
 		break;
 
 	case ACPI_TYPE_BUFFER:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_btype = ACPI_BTYPE_BUFFER;
 		break;
 
 	case ACPI_TYPE_STRING:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_btype = ACPI_BTYPE_STRING;
 		break;
 
 	case ACPI_TYPE_PACKAGE:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_btype = ACPI_BTYPE_PACKAGE;
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_btype = 0;
 		break;
 	}
@@ -176,7 +219,11 @@ acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
 
 	*return_desc = info->return_object;
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_FREE(info);
 	return_ACPI_STATUS(status);
 }
@@ -187,7 +234,11 @@ acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
  *
  * PARAMETERS:  object_name         - Object name to be evaluated
  *              device_node         - Node for the device
+<<<<<<< HEAD
  *              Value               - Where the value is returned
+=======
+ *              value               - Where the value is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -199,7 +250,11 @@ acpi_ut_evaluate_object(struct acpi_namespace_node *prefix_node,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_evaluate_numeric_object(char *object_name,
+=======
+acpi_ut_evaluate_numeric_object(const char *object_name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct acpi_namespace_node *device_node,
 				u64 *value)
 {
@@ -229,12 +284,21 @@ acpi_ut_evaluate_numeric_object(char *object_name,
  * FUNCTION:    acpi_ut_execute_STA
  *
  * PARAMETERS:  device_node         - Node for the device
+<<<<<<< HEAD
  *              Flags               - Where the status flags are returned
+=======
+ *              flags               - Where the status flags are returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Executes _STA for selected device and stores results in
+<<<<<<< HEAD
  *              *Flags.
+=======
+ *              *Flags. If _STA does not exist, then the device is assumed
+ *              to be present/functional/enabled (as per the ACPI spec).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *              NOTE: Internal function, no parameter validation
  *
@@ -252,6 +316,14 @@ acpi_ut_execute_STA(struct acpi_namespace_node *device_node, u32 * flags)
 					 ACPI_BTYPE_INTEGER, &obj_desc);
 	if (ACPI_FAILURE(status)) {
 		if (AE_NOT_FOUND == status) {
+<<<<<<< HEAD
+=======
+			/*
+			 * if _STA does not exist, then (as per the ACPI specification),
+			 * the returned flags will indicate that the device is present,
+			 * functional, and enabled.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 					  "_STA on %4.4s was not found, assuming device is present\n",
 					  acpi_ut_get_node_name(device_node)));

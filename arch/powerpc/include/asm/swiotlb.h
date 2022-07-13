@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2009 Becky Bruce, Freescale Semiconductor
  *
@@ -6,6 +7,11 @@
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2009 Becky Bruce, Freescale Semiconductor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_SWIOTLB_H
@@ -13,6 +19,7 @@
 
 #include <linux/swiotlb.h>
 
+<<<<<<< HEAD
 extern struct dma_map_ops swiotlb_dma_ops;
 
 static inline void dma_mark_clean(void *addr, size_t size) {}
@@ -21,5 +28,15 @@ extern unsigned int ppc_swiotlb_enable;
 int __init swiotlb_setup_bus_notifier(void);
 
 extern void pci_dma_dev_setup_swiotlb(struct pci_dev *pdev);
+=======
+extern unsigned int ppc_swiotlb_enable;
+extern unsigned int ppc_swiotlb_flags;
+
+#ifdef CONFIG_SWIOTLB
+void swiotlb_detect_4g(void);
+#else
+static inline void swiotlb_detect_4g(void) {}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SWIOTLB_H */

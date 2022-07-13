@@ -26,10 +26,18 @@
 
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm_crtc_helper.h"
 #include "drm_encoder_slave.h"
 #include "i2c/sil164.h"
+=======
+#include <drm/drm_drv.h>
+#include <drm/drm_encoder_slave.h>
+#include <drm/drm_print.h>
+#include <drm/drm_probe_helper.h>
+#include <drm/i2c/sil164.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sil164_priv {
 	struct sil164_encoder_params config;
@@ -43,7 +51,11 @@ struct sil164_priv {
 	((struct sil164_priv *)to_encoder_slave(x)->slave_priv)
 
 #define sil164_dbg(client, format, ...) do {				\
+<<<<<<< HEAD
 		if (drm_debug & DRM_UT_KMS)				\
+=======
+		if (drm_debug_enabled(DRM_UT_KMS))			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_printk(KERN_DEBUG, &client->dev,		\
 				   "%s: " format, __func__, ## __VA_ARGS__); \
 	} while (0)
@@ -252,6 +264,7 @@ sil164_encoder_restore(struct drm_encoder *encoder)
 				     priv->saved_slave_state);
 }
 
+<<<<<<< HEAD
 static bool
 sil164_encoder_mode_fixup(struct drm_encoder *encoder,
 			  struct drm_display_mode *mode,
@@ -260,6 +273,8 @@ sil164_encoder_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 sil164_encoder_mode_valid(struct drm_encoder *encoder,
 			  struct drm_display_mode *mode)
@@ -334,20 +349,31 @@ sil164_encoder_destroy(struct drm_encoder *encoder)
 {
 	struct sil164_priv *priv = to_sil164_priv(encoder);
 
+<<<<<<< HEAD
 	if (priv->duallink_slave)
 		i2c_unregister_device(priv->duallink_slave);
+=======
+	i2c_unregister_device(priv->duallink_slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(priv);
 	drm_i2c_encoder_destroy(encoder);
 }
 
+<<<<<<< HEAD
 static struct drm_encoder_slave_funcs sil164_encoder_funcs = {
+=======
+static const struct drm_encoder_slave_funcs sil164_encoder_funcs = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_config = sil164_encoder_set_config,
 	.destroy = sil164_encoder_destroy,
 	.dpms = sil164_encoder_dpms,
 	.save = sil164_encoder_save,
 	.restore = sil164_encoder_restore,
+<<<<<<< HEAD
 	.mode_fixup = sil164_encoder_mode_fixup,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mode_valid = sil164_encoder_mode_valid,
 	.mode_set = sil164_encoder_mode_set,
 	.detect = sil164_encoder_detect,
@@ -359,7 +385,11 @@ static struct drm_encoder_slave_funcs sil164_encoder_funcs = {
 /* I2C driver functions */
 
 static int
+<<<<<<< HEAD
 sil164_probe(struct i2c_client *client, const struct i2c_device_id *id)
+=======
+sil164_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int vendor = sil164_read(client, SIL164_VENDOR_HI) << 8 |
 		sil164_read(client, SIL164_VENDOR_LO);
@@ -379,12 +409,15 @@ sil164_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 sil164_remove(struct i2c_client *client)
 {
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_client *
 sil164_detect_slave(struct i2c_client *client)
 {
@@ -402,7 +435,11 @@ sil164_detect_slave(struct i2c_client *client)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	return i2c_new_device(adap, &info);
+=======
+	return i2c_new_client_device(adap, &info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -411,6 +448,10 @@ sil164_encoder_init(struct i2c_client *client,
 		    struct drm_encoder_slave *encoder)
 {
 	struct sil164_priv *priv;
+<<<<<<< HEAD
+=======
+	struct i2c_client *slave_client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -419,12 +460,22 @@ sil164_encoder_init(struct i2c_client *client,
 	encoder->slave_priv = priv;
 	encoder->slave_funcs = &sil164_encoder_funcs;
 
+<<<<<<< HEAD
 	priv->duallink_slave = sil164_detect_slave(client);
+=======
+	slave_client = sil164_detect_slave(client);
+	if (!IS_ERR(slave_client))
+		priv->duallink_slave = slave_client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct i2c_device_id sil164_ids[] = {
+=======
+static const struct i2c_device_id sil164_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "sil164", 0 },
 	{ }
 };
@@ -433,7 +484,10 @@ MODULE_DEVICE_TABLE(i2c, sil164_ids);
 static struct drm_i2c_encoder_driver sil164_driver = {
 	.i2c_driver = {
 		.probe = sil164_probe,
+<<<<<<< HEAD
 		.remove = sil164_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.driver = {
 			.name = "sil164",
 		},

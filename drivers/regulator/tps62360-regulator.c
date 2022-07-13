@@ -1,11 +1,20 @@
+<<<<<<< HEAD
 /*
  * tps62360.c -- TI tps62360
  *
  * Driver for processor core supply tps62360 and tps62361B
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * tps62360.c -- TI tps62360
+ *
+ * Driver for processor core supply tps62360, tps62361B, tps62362 and tps62363.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (c) 2012, NVIDIA Corporation.
  *
  * Author: Laxman Dewangan <ldewangan@nvidia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,19 +29,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307, USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/regulator/of_regulator.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/tps62360.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/i2c.h>
 #include <linux/delay.h>
+=======
+#include <linux/gpio/consumer.h>
+#include <linux/i2c.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/regmap.h>
 
@@ -46,16 +68,28 @@
 #define REG_RAMPCTRL		6
 #define REG_CHIPID		8
 
+<<<<<<< HEAD
 enum chips {TPS62360, TPS62361};
 
 #define TPS62360_BASE_VOLTAGE	770
 #define TPS62360_N_VOLTAGES	64
 
 #define TPS62361_BASE_VOLTAGE	500
+=======
+#define FORCE_PWM_ENABLE	BIT(7)
+
+enum chips {TPS62360, TPS62361, TPS62362, TPS62363};
+
+#define TPS62360_BASE_VOLTAGE	770000
+#define TPS62360_N_VOLTAGES	64
+
+#define TPS62361_BASE_VOLTAGE	500000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TPS62361_N_VOLTAGES	128
 
 /* tps 62360 chip information */
 struct tps62360_chip {
+<<<<<<< HEAD
 	const char *name;
 	struct device *dev;
 	struct regulator_desc desc;
@@ -69,6 +103,16 @@ struct tps62360_chip {
 	u8 voltage_reg_mask;
 	bool en_internal_pulldn;
 	bool en_force_pwm;
+=======
+	struct device *dev;
+	struct regulator_desc desc;
+	struct regulator_dev *rdev;
+	struct regmap *regmap;
+	struct gpio_desc *vsel0_gpio;
+	struct gpio_desc *vsel1_gpio;
+	u8 voltage_reg_mask;
+	bool en_internal_pulldn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool en_discharge;
 	bool valid_gpios;
 	int lru_index[4];
@@ -99,6 +143,10 @@ static bool find_voltage_set_register(struct tps62360_chip *tps,
 	bool found = false;
 	int new_vset_reg = tps->lru_index[3];
 	int found_index = 3;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; ++i) {
 		if (tps->curr_vset_vsel[tps->lru_index[i]] == req_vsel) {
 			new_vset_reg = tps->lru_index[i];
@@ -117,7 +165,11 @@ update_lru_index:
 	return found;
 }
 
+<<<<<<< HEAD
 static int tps62360_dcdc_get_voltage(struct regulator_dev *dev)
+=======
+static int tps62360_dcdc_get_voltage_sel(struct regulator_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps62360_chip *tps = rdev_get_drvdata(dev);
 	int vsel;
@@ -126,6 +178,7 @@ static int tps62360_dcdc_get_voltage(struct regulator_dev *dev)
 
 	ret = regmap_read(tps->regmap, REG_VSET0 + tps->curr_vset_id, &data);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(tps->dev, "%s: Error in reading register %d\n",
 			__func__, REG_VSET0 + tps->curr_vset_id);
 		return ret;
@@ -139,10 +192,25 @@ static int tps62360_dcdc_set_voltage(struct regulator_dev *dev,
 {
 	struct tps62360_chip *tps = rdev_get_drvdata(dev);
 	int vsel;
+=======
+		dev_err(tps->dev, "%s(): register %d read failed with err %d\n",
+			__func__, REG_VSET0 + tps->curr_vset_id, ret);
+		return ret;
+	}
+	vsel = (int)data & tps->voltage_reg_mask;
+	return vsel;
+}
+
+static int tps62360_dcdc_set_voltage_sel(struct regulator_dev *dev,
+					 unsigned selector)
+{
+	struct tps62360_chip *tps = rdev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	bool found = false;
 	int new_vset_id = tps->curr_vset_id;
 
+<<<<<<< HEAD
 	if (max_uV < min_uV)
 		return -EINVAL;
 
@@ -157,11 +225,14 @@ static int tps62360_dcdc_set_voltage(struct regulator_dev *dev,
 	if (selector)
 		*selector = (vsel & tps->voltage_reg_mask);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If gpios are available to select the VSET register then least
 	 * recently used register for new configuration.
 	 */
 	if (tps->valid_gpios)
+<<<<<<< HEAD
 		found = find_voltage_set_register(tps, vsel, &new_vset_id);
 
 	if (!found) {
@@ -174,18 +245,39 @@ static int tps62360_dcdc_set_voltage(struct regulator_dev *dev,
 		}
 		tps->curr_vset_id = new_vset_id;
 		tps->curr_vset_vsel[new_vset_id] = vsel;
+=======
+		found = find_voltage_set_register(tps, selector, &new_vset_id);
+
+	if (!found) {
+		ret = regmap_update_bits(tps->regmap, REG_VSET0 + new_vset_id,
+				tps->voltage_reg_mask, selector);
+		if (ret < 0) {
+			dev_err(tps->dev,
+				"%s(): register %d update failed with err %d\n",
+				 __func__, REG_VSET0 + new_vset_id, ret);
+			return ret;
+		}
+		tps->curr_vset_id = new_vset_id;
+		tps->curr_vset_vsel[new_vset_id] = selector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Select proper VSET register vio gpios */
 	if (tps->valid_gpios) {
+<<<<<<< HEAD
 		gpio_set_value_cansleep(tps->vsel0_gpio,
 					new_vset_id & 0x1);
 		gpio_set_value_cansleep(tps->vsel1_gpio,
+=======
+		gpiod_set_value_cansleep(tps->vsel0_gpio, new_vset_id & 0x1);
+		gpiod_set_value_cansleep(tps->vsel1_gpio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(new_vset_id >> 1) & 0x1);
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tps62360_dcdc_list_voltage(struct regulator_dev *dev,
 					unsigned selector)
 {
@@ -226,18 +318,98 @@ static int tps62360_init_force_pwm(struct tps62360_chip *tps,
 	return ret;
 }
 
+=======
+static int tps62360_set_mode(struct regulator_dev *rdev, unsigned int mode)
+{
+	struct tps62360_chip *tps = rdev_get_drvdata(rdev);
+	int i;
+	int val;
+	int ret;
+
+	/* Enable force PWM mode in FAST mode only. */
+	switch (mode) {
+	case REGULATOR_MODE_FAST:
+		val = FORCE_PWM_ENABLE;
+		break;
+
+	case REGULATOR_MODE_NORMAL:
+		val = 0;
+		break;
+
+	default:
+		return -EINVAL;
+	}
+
+	if (!tps->valid_gpios) {
+		ret = regmap_update_bits(tps->regmap,
+			REG_VSET0 + tps->curr_vset_id, FORCE_PWM_ENABLE, val);
+		if (ret < 0)
+			dev_err(tps->dev,
+				"%s(): register %d update failed with err %d\n",
+				__func__, REG_VSET0 + tps->curr_vset_id, ret);
+		return ret;
+	}
+
+	/* If gpios are valid then all register set need to be control */
+	for (i = 0; i < 4; ++i) {
+		ret = regmap_update_bits(tps->regmap,
+					REG_VSET0 + i, FORCE_PWM_ENABLE, val);
+		if (ret < 0) {
+			dev_err(tps->dev,
+				"%s(): register %d update failed with err %d\n",
+				__func__, REG_VSET0 + i, ret);
+			return ret;
+		}
+	}
+	return ret;
+}
+
+static unsigned int tps62360_get_mode(struct regulator_dev *rdev)
+{
+	struct tps62360_chip *tps = rdev_get_drvdata(rdev);
+	unsigned int data;
+	int ret;
+
+	ret = regmap_read(tps->regmap, REG_VSET0 + tps->curr_vset_id, &data);
+	if (ret < 0) {
+		dev_err(tps->dev, "%s(): register %d read failed with err %d\n",
+			__func__, REG_VSET0 + tps->curr_vset_id, ret);
+		return ret;
+	}
+	return (data & FORCE_PWM_ENABLE) ?
+				REGULATOR_MODE_FAST : REGULATOR_MODE_NORMAL;
+}
+
+static const struct regulator_ops tps62360_dcdc_ops = {
+	.get_voltage_sel	= tps62360_dcdc_get_voltage_sel,
+	.set_voltage_sel	= tps62360_dcdc_set_voltage_sel,
+	.list_voltage		= regulator_list_voltage_linear,
+	.map_voltage		= regulator_map_voltage_linear,
+	.set_voltage_time_sel	= regulator_set_voltage_time_sel,
+	.set_mode		= tps62360_set_mode,
+	.get_mode		= tps62360_get_mode,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tps62360_init_dcdc(struct tps62360_chip *tps,
 		struct tps62360_regulator_platform_data *pdata)
 {
 	int ret;
+<<<<<<< HEAD
 	int i;
 
 	/* Initailize internal pull up/down control */
+=======
+	unsigned int ramp_ctrl;
+
+	/* Initialize internal pull up/down control */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tps->en_internal_pulldn)
 		ret = regmap_write(tps->regmap, REG_CONTROL, 0xE0);
 	else
 		ret = regmap_write(tps->regmap, REG_CONTROL, 0x0);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(tps->dev, "%s() fails in writing reg %d\n",
 			__func__, REG_CONTROL);
 		return ret;
@@ -261,10 +433,40 @@ static int tps62360_init_dcdc(struct tps62360_chip *tps,
 	if (ret < 0)
 		dev_err(tps->dev, "%s() fails in updating reg %d\n",
 			__func__, REG_RAMPCTRL);
+=======
+		dev_err(tps->dev,
+			"%s(): register %d write failed with err %d\n",
+			__func__, REG_CONTROL, ret);
+		return ret;
+	}
+
+	/* Reset output discharge path to reduce power consumption */
+	ret = regmap_update_bits(tps->regmap, REG_RAMPCTRL, BIT(2), 0);
+	if (ret < 0) {
+		dev_err(tps->dev,
+			"%s(): register %d update failed with err %d\n",
+			__func__, REG_RAMPCTRL, ret);
+		return ret;
+	}
+
+	/* Get ramp value from ramp control register */
+	ret = regmap_read(tps->regmap, REG_RAMPCTRL, &ramp_ctrl);
+	if (ret < 0) {
+		dev_err(tps->dev,
+			"%s(): register %d read failed with err %d\n",
+			__func__, REG_RAMPCTRL, ret);
+		return ret;
+	}
+	ramp_ctrl = (ramp_ctrl >> 5) & 0x7;
+
+	/* ramp mV/us = 32/(2^ramp_ctrl) */
+	tps->desc.ramp_delay = DIV_ROUND_UP(32000, BIT(ramp_ctrl));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static const struct regmap_config tps62360_regmap_config = {
+<<<<<<< HEAD
 	.reg_bits = 8,
 	.val_bits = 8,
 };
@@ -273,18 +475,109 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 				     const struct i2c_device_id *id)
 {
 	struct tps62360_regulator_platform_data *pdata;
+=======
+	.reg_bits		= 8,
+	.val_bits		= 8,
+	.max_register		= REG_CHIPID,
+	.cache_type		= REGCACHE_RBTREE,
+};
+
+static struct tps62360_regulator_platform_data *
+	of_get_tps62360_platform_data(struct device *dev,
+				      const struct regulator_desc *desc)
+{
+	struct tps62360_regulator_platform_data *pdata;
+	struct device_node *np = dev->of_node;
+
+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		return NULL;
+
+	pdata->reg_init_data = of_get_regulator_init_data(dev, dev->of_node,
+							  desc);
+	if (!pdata->reg_init_data) {
+		dev_err(dev, "Not able to get OF regulator init data\n");
+		return NULL;
+	}
+
+	pdata->vsel0_def_state = of_property_read_bool(np, "ti,vsel0-state-high");
+	pdata->vsel1_def_state = of_property_read_bool(np, "ti,vsel1-state-high");
+	pdata->en_internal_pulldn = of_property_read_bool(np, "ti,enable-pull-down");
+	pdata->en_discharge = of_property_read_bool(np, "ti,enable-vout-discharge");
+
+	return pdata;
+}
+
+#if defined(CONFIG_OF)
+static const struct of_device_id tps62360_of_match[] = {
+	 { .compatible = "ti,tps62360", .data = (void *)TPS62360},
+	 { .compatible = "ti,tps62361", .data = (void *)TPS62361},
+	 { .compatible = "ti,tps62362", .data = (void *)TPS62362},
+	 { .compatible = "ti,tps62363", .data = (void *)TPS62363},
+	{},
+};
+MODULE_DEVICE_TABLE(of, tps62360_of_match);
+#endif
+
+static int tps62360_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct regulator_config config = { };
+	struct tps62360_regulator_platform_data *pdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_dev *rdev;
 	struct tps62360_chip *tps;
 	int ret;
 	int i;
+<<<<<<< HEAD
 
 	pdata = client->dev.platform_data;
 	if (!pdata) {
 		dev_err(&client->dev, "%s() Err: Platform data not found\n",
+=======
+	int chip_id;
+	int gpio_flags;
+
+	pdata = dev_get_platdata(&client->dev);
+
+	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
+	if (!tps)
+		return -ENOMEM;
+
+	tps->desc.name = client->name;
+	tps->desc.id = 0;
+	tps->desc.ops = &tps62360_dcdc_ops;
+	tps->desc.type = REGULATOR_VOLTAGE;
+	tps->desc.owner = THIS_MODULE;
+	tps->desc.uV_step = 10000;
+
+	if (client->dev.of_node) {
+		const struct of_device_id *match;
+		match = of_match_device(of_match_ptr(tps62360_of_match),
+				&client->dev);
+		if (!match) {
+			dev_err(&client->dev, "Error: No device match found\n");
+			return -ENODEV;
+		}
+		chip_id = (int)(long)match->data;
+		if (!pdata)
+			pdata = of_get_tps62360_platform_data(&client->dev,
+							      &tps->desc);
+	} else if (id) {
+		chip_id = id->driver_data;
+	} else {
+		dev_err(&client->dev, "No device tree match or id table match found\n");
+		return -ENODEV;
+	}
+
+	if (!pdata) {
+		dev_err(&client->dev, "%s(): Platform data not found\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						__func__);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps) {
 		dev_err(&client->dev, "%s() Err: Memory allocation fails\n",
@@ -316,6 +609,35 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 		ret = PTR_ERR(tps->regmap);
 		dev_err(&client->dev, "%s() Err: Failed to allocate register"
 			"map: %d\n", __func__, ret);
+=======
+	tps->en_discharge = pdata->en_discharge;
+	tps->en_internal_pulldn = pdata->en_internal_pulldn;
+	tps->dev = &client->dev;
+
+	switch (chip_id) {
+	case TPS62360:
+	case TPS62362:
+		tps->desc.min_uV = TPS62360_BASE_VOLTAGE;
+		tps->voltage_reg_mask = 0x3F;
+		tps->desc.n_voltages = TPS62360_N_VOLTAGES;
+		break;
+	case TPS62361:
+	case TPS62363:
+		tps->desc.min_uV = TPS62361_BASE_VOLTAGE;
+		tps->voltage_reg_mask = 0x7F;
+		tps->desc.n_voltages = TPS62361_N_VOLTAGES;
+		break;
+	default:
+		return -ENODEV;
+	}
+
+	tps->regmap = devm_regmap_init_i2c(client, &tps62360_regmap_config);
+	if (IS_ERR(tps->regmap)) {
+		ret = PTR_ERR(tps->regmap);
+		dev_err(&client->dev,
+			"%s(): regmap allocation failed with err %d\n",
+			__func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	i2c_set_clientdata(client, tps);
@@ -325,6 +647,7 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 	tps->lru_index[0] = tps->curr_vset_id;
 	tps->valid_gpios = false;
 
+<<<<<<< HEAD
 	if (gpio_is_valid(tps->vsel0_gpio) && gpio_is_valid(tps->vsel1_gpio)) {
 		ret = gpio_request(tps->vsel0_gpio, "tps62360-vsel0");
 		if (ret) {
@@ -357,6 +680,29 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 			gpio_free(tps->vsel1_gpio);
 			goto err_gpio1;
 		}
+=======
+	gpio_flags = (pdata->vsel0_def_state) ?
+			GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+	tps->vsel0_gpio = devm_gpiod_get_optional(&client->dev, "vsel0", gpio_flags);
+	if (IS_ERR(tps->vsel0_gpio)) {
+		dev_err(&client->dev,
+			"%s(): Could not obtain vsel0 GPIO: %ld\n",
+			__func__, PTR_ERR(tps->vsel0_gpio));
+		return PTR_ERR(tps->vsel0_gpio);
+	}
+
+	gpio_flags = (pdata->vsel1_def_state) ?
+			GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
+	tps->vsel1_gpio = devm_gpiod_get_optional(&client->dev, "vsel1", gpio_flags);
+	if (IS_ERR(tps->vsel1_gpio)) {
+		dev_err(&client->dev,
+			"%s(): Could not obtain vsel1 GPIO: %ld\n",
+			__func__, PTR_ERR(tps->vsel1_gpio));
+		return PTR_ERR(tps->vsel1_gpio);
+	}
+
+	if (tps->vsel0_gpio != NULL && tps->vsel1_gpio != NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tps->valid_gpios = true;
 
 		/*
@@ -371,6 +717,7 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 
 	ret = tps62360_init_dcdc(tps, pdata);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(tps->dev, "%s() Err: Init fails with = %d\n",
 				__func__, ret);
 		goto err_init;
@@ -384,10 +731,30 @@ static int __devinit tps62360_probe(struct i2c_client *client,
 				__func__, id->name);
 		ret = PTR_ERR(rdev);
 		goto err_init;
+=======
+		dev_err(tps->dev, "%s(): Init failed with err = %d\n",
+				__func__, ret);
+		return ret;
+	}
+
+	config.dev = &client->dev;
+	config.init_data = pdata->reg_init_data;
+	config.driver_data = tps;
+	config.of_node = client->dev.of_node;
+
+	/* Register the regulators */
+	rdev = devm_regulator_register(&client->dev, &tps->desc, &config);
+	if (IS_ERR(rdev)) {
+		dev_err(tps->dev,
+			"%s(): regulator register failed with err %s\n",
+			__func__, id->name);
+		return PTR_ERR(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tps->rdev = rdev;
 	return 0;
+<<<<<<< HEAD
 
 err_init:
 	if (gpio_is_valid(tps->vsel1_gpio))
@@ -419,6 +786,8 @@ static int __devexit tps62360_remove(struct i2c_client *client)
 	regulator_unregister(tps->rdev);
 	regmap_exit(tps->regmap);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tps62360_shutdown(struct i2c_client *client)
@@ -432,13 +801,24 @@ static void tps62360_shutdown(struct i2c_client *client)
 	/* Configure the output discharge path */
 	st = regmap_update_bits(tps->regmap, REG_RAMPCTRL, BIT(2), BIT(2));
 	if (st < 0)
+<<<<<<< HEAD
 		dev_err(tps->dev, "%s() fails in updating reg %d\n",
 			__func__, REG_RAMPCTRL);
+=======
+		dev_err(tps->dev,
+			"%s(): register %d update failed with err %d\n",
+			__func__, REG_RAMPCTRL, st);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id tps62360_id[] = {
 	{.name = "tps62360", .driver_data = TPS62360},
 	{.name = "tps62361", .driver_data = TPS62361},
+<<<<<<< HEAD
+=======
+	{.name = "tps62362", .driver_data = TPS62362},
+	{.name = "tps62363", .driver_data = TPS62363},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 
@@ -447,10 +827,17 @@ MODULE_DEVICE_TABLE(i2c, tps62360_id);
 static struct i2c_driver tps62360_i2c_driver = {
 	.driver = {
 		.name = "tps62360",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = tps62360_probe,
 	.remove = __devexit_p(tps62360_remove),
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.of_match_table = of_match_ptr(tps62360_of_match),
+	},
+	.probe = tps62360_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = tps62360_shutdown,
 	.id_table = tps62360_id,
 };
@@ -468,5 +855,9 @@ static void __exit tps62360_cleanup(void)
 module_exit(tps62360_cleanup);
 
 MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("TPS62360 voltage regulator driver");
+=======
+MODULE_DESCRIPTION("TPS6236x voltage regulator driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");

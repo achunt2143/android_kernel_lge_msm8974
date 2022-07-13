@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*********************************************************************
  *
  * 2002/06/30 Karsten Wiese:
@@ -19,6 +23,7 @@
  *
  * Copyright (C) 1998 Andrew Veliath
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -36,6 +41,12 @@
  ********************************************************************/
 
 #include <linux/kernel.h>
+=======
+ ********************************************************************/
+
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -53,7 +64,11 @@
 #define LOGNAME			"msnd"
 
 
+<<<<<<< HEAD
 void snd_msnd_init_queue(void *base, int start, int size)
+=======
+void snd_msnd_init_queue(void __iomem *base, int start, int size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writew(PCTODSP_BASED(start), base + JQS_wStart);
 	writew(PCTODSP_OFFSET(size) - 1, base + JQS_wSize);
@@ -269,7 +284,11 @@ int snd_msnd_DARQ(struct snd_msnd *chip, int bank)
 		udelay(1);
 
 	if (chip->capturePeriods == 2) {
+<<<<<<< HEAD
 		void *pDAQ = chip->mappedbase + DARQ_DATA_BUFF +
+=======
+		void __iomem *pDAQ = chip->mappedbase + DARQ_DATA_BUFF +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     bank * DAQDS__size + DAQDS_wStart;
 		unsigned short offset = 0x3000 + chip->capturePeriodBytes;
 
@@ -308,7 +327,11 @@ int snd_msnd_DAPQ(struct snd_msnd *chip, int start)
 {
 	u16	DAPQ_tail;
 	int	protect = start, nbanks = 0;
+<<<<<<< HEAD
 	void	*DAQD;
+=======
+	void	__iomem *DAQD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static int play_banks_submitted;
 	/* unsigned long flags;
 	spin_lock_irqsave(&chip->lock, flags); not necessary */
@@ -369,7 +392,11 @@ static void snd_msnd_play_reset_queue(struct snd_msnd *chip,
 				      unsigned int pcm_count)
 {
 	int	n;
+<<<<<<< HEAD
 	void	*pDAQ = chip->mappedbase + DAPQ_DATA_BUFF;
+=======
+	void	__iomem *pDAQ = chip->mappedbase + DAPQ_DATA_BUFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->last_playbank = -1;
 	chip->playLimit = pcm_count * (pcm_periods - 1);
@@ -397,7 +424,11 @@ static void snd_msnd_capture_reset_queue(struct snd_msnd *chip,
 					 unsigned int pcm_count)
 {
 	int		n;
+<<<<<<< HEAD
 	void		*pDAQ;
+=======
+	void		__iomem *pDAQ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* unsigned long	flags; */
 
 	/* snd_msnd_init_queue(chip->DARQ, DARQ_DATA_BUFF, DARQ_BUFF_SIZE); */
@@ -436,8 +467,13 @@ static void snd_msnd_capture_reset_queue(struct snd_msnd *chip,
 	}
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_msnd_playback = {
 	.info =			SNDRV_PCM_INFO_MMAP |
+=======
+static const struct snd_pcm_hardware snd_msnd_playback = {
+	.info =			SNDRV_PCM_INFO_MMAP_IOMEM |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SNDRV_PCM_INFO_INTERLEAVED |
 				SNDRV_PCM_INFO_MMAP_VALID |
 				SNDRV_PCM_INFO_BATCH,
@@ -455,8 +491,13 @@ static struct snd_pcm_hardware snd_msnd_playback = {
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_msnd_capture = {
 	.info =			SNDRV_PCM_INFO_MMAP |
+=======
+static const struct snd_pcm_hardware snd_msnd_capture = {
+	.info =			SNDRV_PCM_INFO_MMAP_IOMEM |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SNDRV_PCM_INFO_INTERLEAVED |
 				SNDRV_PCM_INFO_MMAP_VALID |
 				SNDRV_PCM_INFO_BATCH,
@@ -484,7 +525,12 @@ static int snd_msnd_playback_open(struct snd_pcm_substream *substream)
 	clear_bit(F_WRITING, &chip->flags);
 	snd_msnd_enable_irq(chip);
 
+<<<<<<< HEAD
 	runtime->dma_area = chip->mappedbase;
+=======
+	runtime->dma_area = (__force void *)chip->mappedbase;
+	runtime->dma_addr = chip->base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->dma_bytes = 0x3000;
 
 	chip->playback_substream = substream;
@@ -507,7 +553,11 @@ static int snd_msnd_playback_hw_params(struct snd_pcm_substream *substream,
 {
 	int	i;
 	struct snd_msnd *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	void	*pDAQ =	chip->mappedbase + DAPQ_DATA_BUFF;
+=======
+	void	__iomem *pDAQ =	chip->mappedbase + DAPQ_DATA_BUFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->play_sample_size = snd_pcm_format_width(params_format(params));
 	chip->play_channels = params_channels(params);
@@ -571,14 +621,24 @@ snd_msnd_playback_pointer(struct snd_pcm_substream *substream)
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_msnd_playback_ops = {
 	.open =		snd_msnd_playback_open,
 	.close =	snd_msnd_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_msnd_playback_ops = {
+	.open =		snd_msnd_playback_open,
+	.close =	snd_msnd_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_msnd_playback_hw_params,
 	.prepare =	snd_msnd_playback_prepare,
 	.trigger =	snd_msnd_playback_trigger,
 	.pointer =	snd_msnd_playback_pointer,
+<<<<<<< HEAD
+=======
+	.mmap =		snd_pcm_lib_mmap_iomem,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int snd_msnd_capture_open(struct snd_pcm_substream *substream)
@@ -588,7 +648,12 @@ static int snd_msnd_capture_open(struct snd_pcm_substream *substream)
 
 	set_bit(F_AUDIO_READ_INUSE, &chip->flags);
 	snd_msnd_enable_irq(chip);
+<<<<<<< HEAD
 	runtime->dma_area = chip->mappedbase + 0x3000;
+=======
+	runtime->dma_area = (__force void *)chip->mappedbase + 0x3000;
+	runtime->dma_addr = chip->base + 0x3000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->dma_bytes = 0x3000;
 	memset(runtime->dma_area, 0, runtime->dma_bytes);
 	chip->capture_substream = substream;
@@ -653,7 +718,11 @@ static int snd_msnd_capture_hw_params(struct snd_pcm_substream *substream,
 {
 	int		i;
 	struct snd_msnd *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	void		*pDAQ = chip->mappedbase + DARQ_DATA_BUFF;
+=======
+	void		__iomem *pDAQ = chip->mappedbase + DARQ_DATA_BUFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->capture_sample_size = snd_pcm_format_width(params_format(params));
 	chip->capture_channels = params_channels(params);
@@ -668,19 +737,33 @@ static int snd_msnd_capture_hw_params(struct snd_pcm_substream *substream,
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_msnd_capture_ops = {
 	.open =		snd_msnd_capture_open,
 	.close =	snd_msnd_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_msnd_capture_ops = {
+	.open =		snd_msnd_capture_open,
+	.close =	snd_msnd_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_msnd_capture_hw_params,
 	.prepare =	snd_msnd_capture_prepare,
 	.trigger =	snd_msnd_capture_trigger,
 	.pointer =	snd_msnd_capture_pointer,
+<<<<<<< HEAD
 };
 
 
 int snd_msnd_pcm(struct snd_card *card, int device,
 			struct snd_pcm **rpcm)
+=======
+	.mmap =		snd_pcm_lib_mmap_iomem,
+};
+
+
+int snd_msnd_pcm(struct snd_card *card, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_msnd *chip = card->private_data;
 	struct snd_pcm	*pcm;
@@ -696,9 +779,12 @@ int snd_msnd_pcm(struct snd_card *card, int device,
 	pcm->private_data = chip;
 	strcpy(pcm->name, "Hurricane");
 
+<<<<<<< HEAD
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(snd_msnd_pcm);

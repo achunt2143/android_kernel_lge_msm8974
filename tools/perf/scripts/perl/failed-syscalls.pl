@@ -18,7 +18,11 @@ my %failed_syscalls;
 sub raw_syscalls::sys_exit
 {
 	my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	    $common_pid, $common_comm,
+=======
+	    $common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    $id, $ret) = @_;
 
 	if ($ret < 0) {
@@ -26,6 +30,14 @@ sub raw_syscalls::sys_exit
 	}
 }
 
+<<<<<<< HEAD
+=======
+sub syscalls::sys_exit
+{
+	raw_syscalls::sys_exit(@_)
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub trace_end
 {
     printf("\nfailed syscalls by comm:\n\n");

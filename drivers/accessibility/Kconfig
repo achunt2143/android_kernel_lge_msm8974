@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 menuconfig ACCESSIBILITY
 	bool "Accessibility support"
 	---help---
+=======
+# SPDX-License-Identifier: GPL-2.0
+menuconfig ACCESSIBILITY
+	bool "Accessibility support"
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Accessibility handles all special kinds of hardware devices or
 	  software adapters which help people with disabilities (e.g.
 	  blindness) to use computers.
@@ -20,7 +27,11 @@ config A11Y_BRAILLE_CONSOLE
 	bool "Console on braille device"
 	depends on VT
 	depends on SERIAL_CORE_CONSOLE
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enables console output on a braille device connected to a 8250
 	  serial port. For now only the VisioBraille device is supported.
 
@@ -30,4 +41,9 @@ config A11Y_BRAILLE_CONSOLE
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
+=======
+source "drivers/accessibility/speakup/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # ACCESSIBILITY

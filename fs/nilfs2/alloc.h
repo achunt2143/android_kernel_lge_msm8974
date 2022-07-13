@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * alloc.h - persistent object (dat entry/disk inode) allocator/deallocator
  *
@@ -20,6 +21,16 @@
  * Original code was written by Koji Sato <koji@osrg.net>.
  * Two allocators were unified by Ryusuke Konishi <ryusuke@osrg.net>,
  *                                Amagai Yoshiji <amagai@osrg.net>.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Persistent object (dat entry/disk inode) allocator/deallocator
+ *
+ * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Originally written by Koji Sato.
+ * Two allocators were unified by Ryusuke Konishi and Amagai Yoshiji.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NILFS_ALLOC_H
@@ -42,12 +53,21 @@ nilfs_palloc_entries_per_group(const struct inode *inode)
 	return 1UL << (inode->i_blkbits + 3 /* log2(8 = CHAR_BITS) */);
 }
 
+<<<<<<< HEAD
 int nilfs_palloc_init_blockgroup(struct inode *, unsigned);
+=======
+int nilfs_palloc_init_blockgroup(struct inode *, unsigned int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nilfs_palloc_get_entry_block(struct inode *, __u64, int,
 				 struct buffer_head **);
 void *nilfs_palloc_block_get_entry(const struct inode *, __u64,
 				   const struct buffer_head *, void *);
 
+<<<<<<< HEAD
+=======
+int nilfs_palloc_count_max_entries(struct inode *, u64, u64 *);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nilfs_palloc_req - persistent allocator request and reply
  * @pr_entry_nr: entry number (vblocknr or inode number)
@@ -75,16 +95,36 @@ int nilfs_palloc_freev(struct inode *, __u64 *, size_t);
 #define nilfs_set_bit_atomic		ext2_set_bit_atomic
 #define nilfs_clear_bit_atomic		ext2_clear_bit_atomic
 #define nilfs_find_next_zero_bit	find_next_zero_bit_le
+<<<<<<< HEAD
 
 /*
  * persistent object allocator cache
  */
 
+=======
+#define nilfs_find_next_bit		find_next_bit_le
+
+/**
+ * struct nilfs_bh_assoc - block offset and buffer head association
+ * @blkoff: block offset
+ * @bh: buffer head
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nilfs_bh_assoc {
 	unsigned long blkoff;
 	struct buffer_head *bh;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * struct nilfs_palloc_cache - persistent object allocator cache
+ * @lock: cache protecting lock
+ * @prev_desc: blockgroup descriptors cache
+ * @prev_bitmap: blockgroup bitmap cache
+ * @prev_entry: translation entries cache
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nilfs_palloc_cache {
 	spinlock_t lock;
 	struct nilfs_bh_assoc prev_desc;

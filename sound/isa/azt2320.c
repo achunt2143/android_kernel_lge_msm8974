@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     card-azt2320.c - driver for Aztech Systems AZT2320 based soundcards.
     Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -15,6 +20,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -29,7 +36,11 @@
     activation method (full-duplex audio!).
 */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -47,11 +58,14 @@
 MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_DESCRIPTION("Aztech Systems AZT2320");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Aztech Systems,PRO16V},"
 		"{Aztech Systems,AZT2320},"
 		"{Aztech Systems,AZT3300},"
 		"{Aztech Systems,AZT2320},"
 		"{Aztech Systems,AZT3000}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -79,7 +93,11 @@ struct snd_card_azt2320 {
 	struct snd_wss *chip;
 };
 
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_azt2320_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_azt2320_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PRO16V */
 	{ .id = "AZT1008", .devs = { { "AZT1008" }, { "AZT2001" }, } },
 	/* Aztech Sound Galaxy 16 */
@@ -99,9 +117,15 @@ MODULE_DEVICE_TABLE(pnp_card, snd_azt2320_pnpids);
 
 #define	DRIVER_NAME	"snd-card-azt2320"
 
+<<<<<<< HEAD
 static int __devinit snd_card_azt2320_pnp(int dev, struct snd_card_azt2320 *acard,
 					  struct pnp_card_link *card,
 					  const struct pnp_card_device_id *id)
+=======
+static int snd_card_azt2320_pnp(int dev, struct snd_card_azt2320 *acard,
+				struct pnp_card_link *card,
+				const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -147,7 +171,11 @@ static int __devinit snd_card_azt2320_pnp(int dev, struct snd_card_azt2320 *acar
 }
 
 /* same of snd_sbdsp_command by Jaroslav Kysela */
+<<<<<<< HEAD
 static int __devinit snd_card_azt2320_command(unsigned long port, unsigned char val)
+=======
+static int snd_card_azt2320_command(unsigned long port, unsigned char val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned long limit;
@@ -161,6 +189,7 @@ static int __devinit snd_card_azt2320_command(unsigned long port, unsigned char 
 	return -EBUSY;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_azt2320_enable_wss(unsigned long port)
 {
 	int error;
@@ -168,15 +197,32 @@ static int __devinit snd_card_azt2320_enable_wss(unsigned long port)
 	if ((error = snd_card_azt2320_command(port, 0x09)))
 		return error;
 	if ((error = snd_card_azt2320_command(port, 0x00)))
+=======
+static int snd_card_azt2320_enable_wss(unsigned long port)
+{
+	int error;
+
+	error = snd_card_azt2320_command(port, 0x09);
+	if (error)
+		return error;
+	error = snd_card_azt2320_command(port, 0x00);
+	if (error)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 
 	mdelay(5);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_azt2320_probe(int dev,
 					    struct pnp_card_link *pcard,
 					    const struct pnp_card_device_id *pid)
+=======
+static int snd_card_azt2320_probe(int dev,
+				  struct pnp_card_link *pcard,
+				  const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct snd_card *card;
@@ -184,12 +230,19 @@ static int __devinit snd_card_azt2320_probe(int dev,
 	struct snd_wss *chip;
 	struct snd_opl3 *opl3;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[dev], id[dev], THIS_MODULE,
 				sizeof(struct snd_card_azt2320), &card);
+=======
+	error = snd_devm_card_new(&pcard->card->dev,
+				  index[dev], id[dev], THIS_MODULE,
+				  sizeof(struct snd_card_azt2320), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 	acard = card->private_data;
 
+<<<<<<< HEAD
 	if ((error = snd_card_azt2320_pnp(dev, acard, pcard, pid))) {
 		snd_card_free(card);
 		return error;
@@ -200,21 +253,36 @@ static int __devinit snd_card_azt2320_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+=======
+	error = snd_card_azt2320_pnp(dev, acard, pcard, pid);
+	if (error)
+		return error;
+
+	error = snd_card_azt2320_enable_wss(port[dev]);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = snd_wss_create(card, wss_port[dev], -1,
 			       irq[dev],
 			       dma1[dev], dma2[dev],
 			       WSS_HW_DETECT, 0, &chip);
+<<<<<<< HEAD
 	if (error < 0) {
 		snd_card_free(card);
 		return error;
 	}
+=======
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "AZT2320");
 	strcpy(card->shortname, "Aztech AZT2320");
 	sprintf(card->longname, "%s, WSS at 0x%lx, irq %i, dma %i&%i",
 		card->shortname, chip->port, irq[dev], dma1[dev], dma2[dev]);
 
+<<<<<<< HEAD
 	error = snd_wss_pcm(chip, 0, NULL);
 	if (error < 0) {
 		snd_card_free(card);
@@ -230,6 +298,17 @@ static int __devinit snd_card_azt2320_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+=======
+	error = snd_wss_pcm(chip, 0);
+	if (error < 0)
+		return error;
+	error = snd_wss_mixer(chip);
+	if (error < 0)
+		return error;
+	error = snd_wss_timer(chip, 0);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port[dev] > 0 && mpu_port[dev] != SNDRV_AUTO_PORT) {
 		if (snd_mpu401_uart_new(card, 0, MPU401_HW_AZT2320,
@@ -245,6 +324,7 @@ static int __devinit snd_card_azt2320_probe(int dev,
 			snd_printk(KERN_ERR PFX "no OPL device at 0x%lx-0x%lx\n",
 				   fm_port[dev], fm_port[dev] + 2);
 		} else {
+<<<<<<< HEAD
 			if ((error = snd_opl3_timer_new(opl3, 1, 2)) < 0) {
 				snd_card_free(card);
 				return error;
@@ -260,14 +340,35 @@ static int __devinit snd_card_azt2320_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+=======
+			error = snd_opl3_timer_new(opl3, 1, 2);
+			if (error < 0)
+				return error;
+			error = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+			if (error < 0)
+				return error;
+		}
+	}
+
+	error = snd_card_register(card);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int __devinitdata azt2320_devices;
 
 static int __devinit snd_azt2320_pnp_detect(struct pnp_card_link *card,
 					    const struct pnp_card_device_id *id)
+=======
+static unsigned int azt2320_devices;
+
+static int snd_azt2320_pnp_detect(struct pnp_card_link *card,
+				  const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	int res;
@@ -285,12 +386,15 @@ static int __devinit snd_azt2320_pnp_detect(struct pnp_card_link *card,
         return -ENODEV;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_azt2320_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_azt2320_pnp_suspend(struct pnp_card_link *pcard, pm_message_t state)
 {
@@ -320,7 +424,10 @@ static struct pnp_card_driver azt2320_pnpc_driver = {
 	.name           = "azt2320",
 	.id_table       = snd_azt2320_pnpids,
 	.probe          = snd_azt2320_pnp_detect,
+<<<<<<< HEAD
 	.remove         = __devexit_p(snd_azt2320_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_azt2320_pnp_suspend,
 	.resume		= snd_azt2320_pnp_resume,

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP44xx CM1 instance offset macros
  *
@@ -14,10 +18,13 @@
  * authors above to ensure that the autogeneration scripts are kept
  * up-to-date with the file contents.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX This file needs to be updated to align on one of "OMAP4", "OMAP44XX",
  *     or "OMAP4430".
  */
@@ -37,14 +44,18 @@
 #define OMAP4430_CM1_MPU_INST		0x0300
 #define OMAP4430_CM1_TESLA_INST		0x0400
 #define OMAP4430_CM1_ABE_INST		0x0500
+<<<<<<< HEAD
 #define OMAP4430_CM1_RESTORE_INST	0x0e00
 #define OMAP4430_CM1_INSTR_INST		0x0f00
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CM1 clockdomain register offsets (from instance start) */
 #define OMAP4430_CM1_MPU_MPU_CDOFFS	0x0000
 #define OMAP4430_CM1_TESLA_TESLA_CDOFFS	0x0000
 #define OMAP4430_CM1_ABE_ABE_CDOFFS	0x0000
 
+<<<<<<< HEAD
 /* CM1 */
 
 /* CM1.OCP_SOCKET_CM1 register offsets */
@@ -222,4 +233,6 @@ extern u32 omap4_cm1_read_inst_reg(s16 inst, u16 idx);
 extern void omap4_cm1_write_inst_reg(u32 val, s16 inst, u16 idx);
 extern u32 omap4_cm1_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

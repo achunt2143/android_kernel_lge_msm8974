@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
  * DES & Triple DES EDE Cipher Algorithms.
  *
  * Copyright (c) 2005 Dag Arne Osvik <da@osvik.no>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,10 +18,17 @@
  */
 
 #include <asm/byteorder.h>
+=======
+ */
+
+#include <asm/byteorder.h>
+#include <crypto/algapi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bitops.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
 #include <linux/types.h>
 
@@ -777,11 +789,16 @@ static void dkey(u32 *pe, const u8 *k)
 		pe[2 * d + 1] = b;
 	}
 }
+=======
+
+#include <crypto/internal/des.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int des_setkey(struct crypto_tfm *tfm, const u8 *key,
 		      unsigned int keylen)
 {
 	struct des_ctx *dctx = crypto_tfm_ctx(tfm);
+<<<<<<< HEAD
 	u32 *flags = &tfm->crt_flags;
 	u32 tmp[DES_EXPKEY_WORDS];
 	int ret;
@@ -945,32 +962,116 @@ static void des3_ede_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 
 static struct crypto_alg des_alg = {
 	.cra_name		=	"des",
+=======
+	int err;
+
+	err = des_expand_key(dctx, key, keylen);
+	if (err == -ENOKEY) {
+		if (crypto_tfm_get_flags(tfm) & CRYPTO_TFM_REQ_FORBID_WEAK_KEYS)
+			err = -EINVAL;
+		else
+			err = 0;
+	}
+	if (err)
+		memset(dctx, 0, sizeof(*dctx));
+	return err;
+}
+
+static void crypto_des_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+{
+	const struct des_ctx *dctx = crypto_tfm_ctx(tfm);
+
+	des_encrypt(dctx, dst, src);
+}
+
+static void crypto_des_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+{
+	const struct des_ctx *dctx = crypto_tfm_ctx(tfm);
+
+	des_decrypt(dctx, dst, src);
+}
+
+static int des3_ede_setkey(struct crypto_tfm *tfm, const u8 *key,
+			   unsigned int keylen)
+{
+	struct des3_ede_ctx *dctx = crypto_tfm_ctx(tfm);
+	int err;
+
+	err = des3_ede_expand_key(dctx, key, keylen);
+	if (err == -ENOKEY) {
+		if (crypto_tfm_get_flags(tfm) & CRYPTO_TFM_REQ_FORBID_WEAK_KEYS)
+			err = -EINVAL;
+		else
+			err = 0;
+	}
+	if (err)
+		memset(dctx, 0, sizeof(*dctx));
+	return err;
+}
+
+static void crypto_des3_ede_encrypt(struct crypto_tfm *tfm, u8 *dst,
+				    const u8 *src)
+{
+	const struct des3_ede_ctx *dctx = crypto_tfm_ctx(tfm);
+
+	des3_ede_encrypt(dctx, dst, src);
+}
+
+static void crypto_des3_ede_decrypt(struct crypto_tfm *tfm, u8 *dst,
+				    const u8 *src)
+{
+	const struct des3_ede_ctx *dctx = crypto_tfm_ctx(tfm);
+
+	des3_ede_decrypt(dctx, dst, src);
+}
+
+static struct crypto_alg des_algs[2] = { {
+	.cra_name		=	"des",
+	.cra_driver_name	=	"des-generic",
+	.cra_priority		=	100,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	DES_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof(struct des_ctx),
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_alignmask		=	3,
 	.cra_list		=	LIST_HEAD_INIT(des_alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	DES_KEY_SIZE,
 	.cia_max_keysize	=	DES_KEY_SIZE,
 	.cia_setkey		=	des_setkey,
+<<<<<<< HEAD
 	.cia_encrypt		=	des_encrypt,
 	.cia_decrypt		=	des_decrypt } }
 };
 
 static struct crypto_alg des3_ede_alg = {
 	.cra_name		=	"des3_ede",
+=======
+	.cia_encrypt		=	crypto_des_encrypt,
+	.cia_decrypt		=	crypto_des_decrypt } }
+}, {
+	.cra_name		=	"des3_ede",
+	.cra_driver_name	=	"des3_ede-generic",
+	.cra_priority		=	100,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	DES3_EDE_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof(struct des3_ede_ctx),
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_alignmask		=	3,
 	.cra_list		=	LIST_HEAD_INIT(des3_ede_alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	DES3_EDE_KEY_SIZE,
 	.cia_max_keysize	=	DES3_EDE_KEY_SIZE,
 	.cia_setkey		=	des3_ede_setkey,
+<<<<<<< HEAD
 	.cia_encrypt		=	des3_ede_encrypt,
 	.cia_decrypt		=	des3_ede_decrypt } }
 };
@@ -990,18 +1091,41 @@ static int __init des_generic_mod_init(void)
 		crypto_unregister_alg(&des_alg);
 out:
 	return ret;
+=======
+	.cia_encrypt		=	crypto_des3_ede_encrypt,
+	.cia_decrypt		=	crypto_des3_ede_decrypt } }
+} };
+
+static int __init des_generic_mod_init(void)
+{
+	return crypto_register_algs(des_algs, ARRAY_SIZE(des_algs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit des_generic_mod_fini(void)
 {
+<<<<<<< HEAD
 	crypto_unregister_alg(&des3_ede_alg);
 	crypto_unregister_alg(&des_alg);
 }
 
 module_init(des_generic_mod_init);
+=======
+	crypto_unregister_algs(des_algs, ARRAY_SIZE(des_algs));
+}
+
+subsys_initcall(des_generic_mod_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(des_generic_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("DES & Triple DES EDE Cipher Algorithms");
 MODULE_AUTHOR("Dag Arne Osvik <da@osvik.no>");
+<<<<<<< HEAD
 MODULE_ALIAS("des");
+=======
+MODULE_ALIAS_CRYPTO("des");
+MODULE_ALIAS_CRYPTO("des-generic");
+MODULE_ALIAS_CRYPTO("des3_ede");
+MODULE_ALIAS_CRYPTO("des3_ede-generic");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ceph string constants
  */
@@ -15,10 +19,43 @@ const char *ceph_entity_type_name(int type)
 	default: return "unknown";
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ceph_entity_type_name);
+
+const char *ceph_auth_proto_name(int proto)
+{
+	switch (proto) {
+	case CEPH_AUTH_UNKNOWN:
+		return "unknown";
+	case CEPH_AUTH_NONE:
+		return "none";
+	case CEPH_AUTH_CEPHX:
+		return "cephx";
+	default:
+		return "???";
+	}
+}
+
+const char *ceph_con_mode_name(int mode)
+{
+	switch (mode) {
+	case CEPH_CON_MODE_UNKNOWN:
+		return "unknown";
+	case CEPH_CON_MODE_CRC:
+		return "crc";
+	case CEPH_CON_MODE_SECURE:
+		return "secure";
+	default:
+		return "???";
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *ceph_osd_op_name(int op)
 {
 	switch (op) {
+<<<<<<< HEAD
 	case CEPH_OSD_OP_READ: return "read";
 	case CEPH_OSD_OP_STAT: return "stat";
 
@@ -81,4 +118,44 @@ const char *ceph_pool_op_name(int op)
 	case POOL_OP_DELETE_UNMANAGED_SNAP: return "delete unmanaged snap";
 	}
 	return "???";
+=======
+#define GENERATE_CASE(op, opcode, str)	case CEPH_OSD_OP_##op: return (str);
+__CEPH_FORALL_OSD_OPS(GENERATE_CASE)
+#undef GENERATE_CASE
+	default:
+		return "???";
+	}
+}
+
+const char *ceph_osd_watch_op_name(int o)
+{
+	switch (o) {
+	case CEPH_OSD_WATCH_OP_UNWATCH:
+		return "unwatch";
+	case CEPH_OSD_WATCH_OP_WATCH:
+		return "watch";
+	case CEPH_OSD_WATCH_OP_RECONNECT:
+		return "reconnect";
+	case CEPH_OSD_WATCH_OP_PING:
+		return "ping";
+	default:
+		return "???";
+	}
+}
+
+const char *ceph_osd_state_name(int s)
+{
+	switch (s) {
+	case CEPH_OSD_EXISTS:
+		return "exists";
+	case CEPH_OSD_UP:
+		return "up";
+	case CEPH_OSD_AUTOOUT:
+		return "autoout";
+	case CEPH_OSD_NEW:
+		return "new";
+	default:
+		return "???";
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

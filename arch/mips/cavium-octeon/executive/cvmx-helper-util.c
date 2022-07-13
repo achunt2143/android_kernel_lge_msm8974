@@ -81,6 +81,7 @@ const char *cvmx_helper_interface_mode_to_string(cvmx_helper_interface_mode_t
 }
 
 /**
+<<<<<<< HEAD
  * Debug routine to dump the packet structure to the console
  *
  * @work:   Work queue entry containing the packet to dump
@@ -168,10 +169,13 @@ int cvmx_helper_dump_packet(cvmx_wqe_t *work)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Setup Random Early Drop on a specific input queue
  *
  * @queue:  Input queue to setup RED on (0-7)
  * @pass_thresh:
+<<<<<<< HEAD
  *               Packets will begin slowly dropping when there are less than
  *               this many packet buffers free in FPA 0.
  * @drop_thresh:
@@ -180,6 +184,17 @@ int cvmx_helper_dump_packet(cvmx_wqe_t *work)
  * Returns Zero on success. Negative on failure
  */
 int cvmx_helper_setup_red_queue(int queue, int pass_thresh, int drop_thresh)
+=======
+ *		 Packets will begin slowly dropping when there are less than
+ *		 this many packet buffers free in FPA 0.
+ * @drop_thresh:
+ *		 All incoming packets will be dropped when there are less
+ *		 than this many free packet buffers in FPA 0.
+ * Returns Zero on success. Negative on failure
+ */
+static int cvmx_helper_setup_red_queue(int queue, int pass_thresh,
+				       int drop_thresh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union cvmx_ipd_qosx_red_marks red_marks;
 	union cvmx_ipd_red_quex_param red_param;
@@ -207,11 +222,19 @@ int cvmx_helper_setup_red_queue(int queue, int pass_thresh, int drop_thresh)
  * Setup Random Early Drop to automatically begin dropping packets.
  *
  * @pass_thresh:
+<<<<<<< HEAD
  *               Packets will begin slowly dropping when there are less than
  *               this many packet buffers free in FPA 0.
  * @drop_thresh:
  *               All incomming packets will be dropped when there are less
  *               than this many free packet buffers in FPA 0.
+=======
+ *		 Packets will begin slowly dropping when there are less than
+ *		 this many packet buffers free in FPA 0.
+ * @drop_thresh:
+ *		 All incoming packets will be dropped when there are less
+ *		 than this many free packet buffers in FPA 0.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns Zero on success. Negative on failure
  */
 int cvmx_helper_setup_red(int pass_thresh, int drop_thresh)
@@ -251,6 +274,10 @@ int cvmx_helper_setup_red(int pass_thresh, int drop_thresh)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_setup_red);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Setup the common GMX settings that determine the number of
@@ -381,9 +408,20 @@ int cvmx_helper_get_ipd_port(int interface, int port)
 		return port + 32;
 	case 3:
 		return port + 36;
+<<<<<<< HEAD
 	}
 	return -1;
 }
+=======
+	case 4:
+		return port + 40;
+	case 5:
+		return port + 44;
+	}
+	return -1;
+}
+EXPORT_SYMBOL_GPL(cvmx_helper_get_ipd_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Returns the interface number for an IPD/PKO port number.
@@ -402,12 +440,23 @@ int cvmx_helper_get_interface_num(int ipd_port)
 		return 2;
 	else if (ipd_port < 40)
 		return 3;
+<<<<<<< HEAD
+=======
+	else if (ipd_port < 44)
+		return 4;
+	else if (ipd_port < 48)
+		return 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		cvmx_dprintf("cvmx_helper_get_interface_num: Illegal IPD "
 			     "port number\n");
 
 	return -1;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Returns the interface index number for an IPD/PKO port
@@ -425,9 +474,20 @@ int cvmx_helper_get_interface_index_num(int ipd_port)
 		return ipd_port & 3;
 	else if (ipd_port < 40)
 		return ipd_port & 3;
+<<<<<<< HEAD
+=======
+	else if (ipd_port < 44)
+		return ipd_port & 3;
+	else if (ipd_port < 48)
+		return ipd_port & 3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		cvmx_dprintf("cvmx_helper_get_interface_index_num: "
 			     "Illegal IPD port number\n");
 
 	return -1;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_get_interface_index_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

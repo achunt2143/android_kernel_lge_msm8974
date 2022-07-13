@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-footbridge/include/mach/hardware.h
  *
  *  Copyright (C) 1998-1999 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains the hardware definitions of the EBSA-285.
  */
 #ifndef __ASM_ARCH_HARDWARE_H
@@ -24,6 +31,7 @@
  * 0xf0000000	0x80000000	16MB	ISA memory
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 #define MMU_IO(a, b)	(a)
 #else
@@ -56,6 +64,30 @@
 #define XBUS_LED_GREEN		(1 << 1)
 #define XBUS_LED_RED		(1 << 2)
 #define XBUS_LED_TOGGLE		(1 << 8)
+=======
+#define XBUS_SIZE		0x00100000
+#define XBUS_BASE		0xff800000
+
+#define ARMCSR_SIZE		0x00100000
+#define ARMCSR_BASE		0xfe000000
+
+#define WFLUSH_SIZE		0x00100000
+#define WFLUSH_BASE		0xfd000000
+
+#define PCIIACK_SIZE		0x00100000
+#define PCIIACK_BASE		0xfc000000
+
+#define PCICFG1_SIZE		0x01000000
+#define PCICFG1_BASE		0xfb000000
+
+#define PCICFG0_SIZE		0x01000000
+#define PCICFG0_BASE		0xfa000000
+
+#define PCIMEM_SIZE		0x01000000
+#define PCIMEM_BASE		0xf0000000
+
+#define XBUS_CS2		0x40012000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XBUS_SWITCH		((volatile unsigned char *)(XBUS_BASE + 0x12000))
 #define XBUS_SWITCH_SWITCH	((*XBUS_SWITCH) & 15)
@@ -63,7 +95,11 @@
 #define XBUS_SWITCH_J17_11	((*XBUS_SWITCH) & (1 << 5))
 #define XBUS_SWITCH_J17_9	((*XBUS_SWITCH) & (1 << 6))
 
+<<<<<<< HEAD
 #define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)
+=======
+#define UNCACHEABLE_ADDR	(ARMCSR_BASE + 0x108)	/* CSR_ROMBASEMASK */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* PIC irq control */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_arpreply
  *
@@ -51,7 +55,12 @@ ebt_arpreply_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	if (diptr == NULL)
 		return EBT_DROP;
 
+<<<<<<< HEAD
 	arp_send(ARPOP_REPLY, ETH_P_ARP, *siptr, (struct net_device *)par->in,
+=======
+	arp_send(ARPOP_REPLY, ETH_P_ARP, *siptr,
+		 (struct net_device *)xt_in(par),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *diptr, shp, info->mac, shp);
 
 	return info->target;
@@ -67,6 +76,12 @@ static int ebt_arpreply_tg_check(const struct xt_tgchk_param *par)
 	if (e->ethproto != htons(ETH_P_ARP) ||
 	    e->invflags & EBT_IPROTO)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (ebt_invalid_target(info->target))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

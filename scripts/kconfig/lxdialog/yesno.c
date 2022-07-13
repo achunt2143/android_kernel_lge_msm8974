@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  yesno.c -- implements the yes/no box
  *
  *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
  *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "dialog.h"
@@ -29,8 +36,13 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 	int x = width / 2 - 10;
 	int y = height - 2;
 
+<<<<<<< HEAD
 	print_button(dialog, gettext(" Yes "), y, x, selected == 0);
 	print_button(dialog, gettext("  No  "), y, x + 13, selected == 1);
+=======
+	print_button(dialog, " Yes ", y, x, selected == 0);
+	print_button(dialog, "  No  ", y, x + 13, selected == 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wmove(dialog, y, x + 1 + 13 * selected);
 	wrefresh(dialog);
@@ -45,6 +57,7 @@ int dialog_yesno(const char *title, const char *prompt, int height, int width)
 	WINDOW *dialog;
 
 do_resize:
+<<<<<<< HEAD
 	if (getmaxy(stdscr) < (height + 4))
 		return -ERRDISPLAYTOOSMALL;
 	if (getmaxx(stdscr) < (width + 4))
@@ -53,6 +66,16 @@ do_resize:
 	/* center dialog box on screen */
 	x = (COLS - width) / 2;
 	y = (LINES - height) / 2;
+=======
+	if (getmaxy(stdscr) < (height + YESNO_HEIGHT_MIN))
+		return -ERRDISPLAYTOOSMALL;
+	if (getmaxx(stdscr) < (width + YESNO_WIDTH_MIN))
+		return -ERRDISPLAYTOOSMALL;
+
+	/* center dialog box on screen */
+	x = (getmaxx(stdscr) - width) / 2;
+	y = (getmaxy(stdscr) - height) / 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	draw_shadow(stdscr, y, x, height, width);
 

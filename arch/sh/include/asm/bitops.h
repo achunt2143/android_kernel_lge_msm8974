@@ -1,14 +1,25 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_BITOPS_H
 #define __ASM_SH_BITOPS_H
 
 #ifdef __KERNEL__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_BITOPS_H
+#define __ASM_SH_BITOPS_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BITOPS_H
 #error only <linux/bitops.h> can be included directly
 #endif
 
 /* For __swab32 */
 #include <asm/byteorder.h>
+<<<<<<< HEAD
+=======
+#include <asm/barrier.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_GUSA_RB
 #include <asm/bitops-grb.h>
@@ -17,11 +28,17 @@
 #include <asm/bitops-op32.h>
 #elif defined(CONFIG_CPU_SH4A)
 #include <asm/bitops-llsc.h>
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_CPU_J2) && defined(CONFIG_SMP)
+#include <asm/bitops-cas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #include <asm-generic/bitops/atomic.h>
 #include <asm-generic/bitops/non-atomic.h>
 #endif
 
+<<<<<<< HEAD
 /*
  * clear_bit() doesn't provide any barrier for the compiler.
  */
@@ -29,6 +46,8 @@
 #define smp_mb__after_clear_bit()	smp_mb()
 
 #ifdef CONFIG_SUPERH32
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long ffz(unsigned long word)
 {
 	unsigned long result;
@@ -62,6 +81,7 @@ static inline unsigned long __ffs(unsigned long word)
 		: "t");
 	return result;
 }
+<<<<<<< HEAD
 #else
 static inline unsigned long ffz(unsigned long word)
 {
@@ -89,16 +109,26 @@ static inline unsigned long ffz(unsigned long word)
 #endif
 
 #include <asm-generic/bitops/find.h>
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ffs.h>
 #include <asm-generic/bitops/hweight.h>
 #include <asm-generic/bitops/lock.h>
 #include <asm-generic/bitops/sched.h>
+<<<<<<< HEAD
 #include <asm-generic/bitops/le.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ext2-atomic.h>
 #include <asm-generic/bitops/fls.h>
 #include <asm-generic/bitops/__fls.h>
 #include <asm-generic/bitops/fls64.h>
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+#include <asm-generic/bitops/le.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_BITOPS_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble VT1724 (Envy24HT)
  *
@@ -31,12 +35,17 @@
  *		  Experimentally I found out that only a combination of
  *		  OCKS0=1, OCKS1=1 (128fs, 64fs output) and ice1724 -
  *		  VT1724_MT_I2S_MCLK_128X=0 (256fs input) yields correct
+<<<<<<< HEAD
  *		  sampling rate. That means the the FPGA doubles the
+=======
+ *		  sampling rate. That means that the FPGA doubles the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		  MCK01 rate.
  *
  *	Copyright (c) 2003 Takashi Iwai <tiwai@suse.de>
  *      Copyright (c) 2003 Dimitromanolakis Apostolos <apostol@cs.utoronto.ca>
  *      Copyright (c) 2004 Kouichi ONO <co2b@ceres.dti.ne.jp>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,6 +64,10 @@
  */      
 
 #include <asm/io.h>
+=======
+ */      
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -99,7 +112,11 @@ static int stac9460_dac_mute(struct snd_ice1712 *ice, int idx,
 	new = (~mute << 7 & 0x80) | (old & ~0x80);
 	change = (new != old);
 	if (change)
+<<<<<<< HEAD
 		/*printk ("Volume register 0x%02x: 0x%02x\n", idx, new);*/
+=======
+		/* dev_dbg(ice->card->dev, "Volume register 0x%02x: 0x%02x\n", idx, new);*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stac9460_put(ice, idx, new);
 	return change;
 }
@@ -134,7 +151,11 @@ static int stac9460_dac_mute_put(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	/* due to possible conflicts with stac9460_set_rate_val, mutexing */
 	mutex_lock(&spec->mute_mutex);
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "Mute put: reg 0x%02x, ctrl value: 0x%02x\n", idx,
+=======
+	dev_dbg(ice->card->dev, "Mute put: reg 0x%02x, ctrl value: 0x%02x\n", idx,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ucontrol->value.integer.value[0]);
 	*/
 	change = stac9460_dac_mute(ice, idx, ucontrol->value.integer.value[0]);
@@ -188,7 +209,11 @@ static int stac9460_dac_vol_put(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 	if (change) {
 		ovol =  (0x7f - nvol) | (tmp & 0x80);
 		/*
+<<<<<<< HEAD
 		printk(KERN_DEBUG "DAC Volume: reg 0x%02x: 0x%02x\n",
+=======
+		dev_dbg(ice->card->dev, "DAC Volume: reg 0x%02x: 0x%02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       idx, ovol);
 		*/
 		stac9460_put(ice, idx, (0x7f - nvol) | (tmp & 0x80));
@@ -283,6 +308,7 @@ static int stac9460_adc_vol_put(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 	       			struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "Line In", "Mic" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -294,6 +320,11 @@ static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 
         return 0;
+=======
+	static const char * const texts[2] = { "Line In", "Mic" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -349,7 +380,11 @@ static void stac9460_set_rate_val(struct snd_ice1712 *ice, unsigned int rate)
 	for (idx = 0; idx < 7 ; ++idx)
 		changed[idx] = stac9460_dac_mute(ice,
 				STAC946X_MASTER_VOLUME + idx, 0);
+<<<<<<< HEAD
 	/*printk(KERN_DEBUG "Rate change: %d, new MC: 0x%02x\n", rate, new);*/
+=======
+	/*dev_dbg(ice->card->dev, "Rate change: %d, new MC: 0x%02x\n", rate, new);*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stac9460_put(ice, STAC946X_MASTER_CLOCKING, new);
 	udelay(10);
 	/* unmuting - only originally unmuted dacs -
@@ -369,7 +404,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_adc, 0, 150, 0);
  * mixers
  */
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new stac_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new stac_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Master Playback Switch",
@@ -562,6 +601,7 @@ static unsigned char prodigy192_ak4114_read(void *private_data,
 static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 	       			struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "Toslink", "Coax" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -571,6 +611,11 @@ static int ak4114_input_sw_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
         return 0;
+=======
+	static const char * const texts[2] = { "Toslink", "Coax" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -607,7 +652,11 @@ static int ak4114_input_sw_put(struct snd_kcontrol *kcontrol,
 }
 
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new ak4114_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new ak4114_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "MIODIO IEC958 Capture Input",
@@ -666,6 +715,7 @@ static void stac9460_proc_regs_read(struct snd_info_entry *entry,
 
 static void stac9460_proc_init(struct snd_ice1712 *ice)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 	if (!snd_card_proc_new(ice->card, "stac9460_codec", &entry))
 		snd_info_set_text_ops(entry, ice, stac9460_proc_regs_read);
@@ -673,6 +723,14 @@ static void stac9460_proc_init(struct snd_ice1712 *ice)
 
 
 static int __devinit prodigy192_add_controls(struct snd_ice1712 *ice)
+=======
+	snd_card_ro_proc_new(ice->card, "stac9460_codec", ice,
+			     stac9460_proc_regs_read);
+}
+
+
+static int prodigy192_add_controls(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct prodigy192_spec *spec = ice->spec;
 	unsigned int i;
@@ -728,7 +786,11 @@ static int prodigy192_miodio_exists(struct snd_ice1712 *ice)
 /*
  * initialize the chip
  */
+<<<<<<< HEAD
 static int __devinit prodigy192_init(struct snd_ice1712 *ice)
+=======
+static int prodigy192_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short stac_inits_prodigy[] = {
 		STAC946X_RESET, 0,
@@ -769,6 +831,7 @@ static int __devinit prodigy192_init(struct snd_ice1712 *ice)
 		/* from this moment if err = 0 then
 		 * spec->ak4114 should not be null
 		 */
+<<<<<<< HEAD
 		snd_printdd("AK4114 initialized with status %d\n", err);
 	} else
 		snd_printdd("AK4114 not found\n");
@@ -776,6 +839,14 @@ static int __devinit prodigy192_init(struct snd_ice1712 *ice)
 		return err;
 
 	return 0;
+=======
+		dev_dbg(ice->card->dev,
+			"AK4114 initialized with status %d\n", err);
+	} else
+		dev_dbg(ice->card->dev, "AK4114 not found\n");
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -784,7 +855,11 @@ static int __devinit prodigy192_init(struct snd_ice1712 *ice)
  * hence the driver needs to sets up it properly.
  */
 
+<<<<<<< HEAD
 static unsigned char prodigy71_eeprom[] __devinitdata = {
+=======
+static const unsigned char prodigy71_eeprom[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x6a,	/* 49MHz crystal, mpu401,
 					 * spdif-in+ 1 stereo ADC,
 					 * 3 stereo DACs
@@ -808,7 +883,11 @@ static unsigned char prodigy71_eeprom[] __devinitdata = {
 
 
 /* entry point */
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_vt1724_prodigy192_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_vt1724_prodigy192_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_PRODIGY192VE,
 		.name = "Audiotrak Prodigy 192",

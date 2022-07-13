@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/phy/national.c
  *
@@ -7,6 +11,7 @@
  * Maintainer: Giuseppe Cavallaro <peppe.cavallaro@st.com>
  *
  * Copyright (c) 2008 STMicroelectronics Limited
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -15,6 +20,12 @@
  *
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mii.h>
@@ -64,6 +75,7 @@ static void ns_exp_write(struct phy_device *phydev, u16 reg, u8 data)
 	phy_write(phydev, NS_EXP_MEM_DATA, data);
 }
 
+<<<<<<< HEAD
 static int ns_config_intr(struct phy_device *phydev)
 {
 	int err;
@@ -77,6 +89,8 @@ static int ns_config_intr(struct phy_device *phydev)
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ns_ack_interrupt(struct phy_device *phydev)
 {
 	int ret = phy_read(phydev, DP83865_INT_STATUS);
@@ -84,12 +98,63 @@ static int ns_ack_interrupt(struct phy_device *phydev)
 		return ret;
 
 	/* Clear the interrupt status bit by writing a “1”
+<<<<<<< HEAD
 	 * to the corresponding bit in INT_CLEAR (2:0 are reserved) */
+=======
+	 * to the corresponding bit in INT_CLEAR (2:0 are reserved)
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = phy_write(phydev, DP83865_INT_CLEAR, ret & ~0x7);
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static irqreturn_t ns_handle_interrupt(struct phy_device *phydev)
+{
+	int irq_status;
+
+	irq_status = phy_read(phydev, DP83865_INT_STATUS);
+	if (irq_status < 0) {
+		phy_error(phydev);
+		return IRQ_NONE;
+	}
+
+	if (!(irq_status & DP83865_INT_MASK_DEFAULT))
+		return IRQ_NONE;
+
+	/* clear the interrupt */
+	phy_write(phydev, DP83865_INT_CLEAR, irq_status & ~0x7);
+
+	phy_trigger_machine(phydev);
+
+	return IRQ_HANDLED;
+}
+
+static int ns_config_intr(struct phy_device *phydev)
+{
+	int err;
+
+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+		err = ns_ack_interrupt(phydev);
+		if (err)
+			return err;
+
+		err = phy_write(phydev, DP83865_INT_MASK,
+				DP83865_INT_MASK_DEFAULT);
+	} else {
+		err = phy_write(phydev, DP83865_INT_MASK, 0);
+		if (err)
+			return err;
+
+		err = ns_ack_interrupt(phydev);
+	}
+
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
 {
 	int bmcr = phy_read(phydev, MII_BMCR);
@@ -106,6 +171,7 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
 
 static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
 {
+<<<<<<< HEAD
 	if (disable)
 		ns_exp_write(phydev, 0x1c0, ns_exp_read(phydev, 0x1c0) | 1);
 	else
@@ -114,17 +180,36 @@ static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
 
 	printk(KERN_DEBUG "DP83865 PHY: 10BASE-T HDX loopback %s\n",
 	       (ns_exp_read(phydev, 0x1c0) & 0x0001) ? "off" : "on");
+=======
+	u16 lb_dis = BIT(1);
+
+	if (disable)
+		ns_exp_write(phydev, 0x1c0,
+			     ns_exp_read(phydev, 0x1c0) | lb_dis);
+	else
+		ns_exp_write(phydev, 0x1c0,
+			     ns_exp_read(phydev, 0x1c0) & ~lb_dis);
+
+	pr_debug("10BASE-T HDX loopback %s\n",
+		 (ns_exp_read(phydev, 0x1c0) & lb_dis) ? "off" : "on");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ns_config_init(struct phy_device *phydev)
 {
 	ns_giga_speed_fallback(phydev, ALL_FALLBACK_ON);
 	/* In the latest MAC or switches design, the 10 Mbps loopback
+<<<<<<< HEAD
 	   is desired to be turned off. */
+=======
+	 * is desired to be turned off.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ns_10_base_t_hdx_loopack(phydev, hdx_loopback_off);
 	return ns_ack_interrupt(phydev);
 }
 
+<<<<<<< HEAD
 static struct phy_driver dp83865_driver = {
 	.phy_id = DP83865_PHY_ID,
 	.phy_id_mask = 0xfffffff0,
@@ -148,14 +233,30 @@ static void __exit ns_exit(void)
 {
 	phy_driver_unregister(&dp83865_driver);
 }
+=======
+static struct phy_driver dp83865_driver[] = { {
+	.phy_id = DP83865_PHY_ID,
+	.phy_id_mask = 0xfffffff0,
+	.name = "NatSemi DP83865",
+	/* PHY_GBIT_FEATURES */
+	.config_init = ns_config_init,
+	.config_intr = ns_config_intr,
+	.handle_interrupt = ns_handle_interrupt,
+} };
+
+module_phy_driver(dp83865_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("NatSemi PHY driver");
 MODULE_AUTHOR("Stuart Menefy");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_init(ns_init);
 module_exit(ns_exit);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mdio_device_id __maybe_unused ns_tbl[] = {
 	{ DP83865_PHY_ID, 0xfffffff0 },
 	{ }

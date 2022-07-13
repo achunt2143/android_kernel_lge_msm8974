@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  * Functions only useful for debugging.
  *
  * Copyright (C) 2006 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,11 +25,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ecryptfs_kernel.h"
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_dump_auth_tok - debug function to print auth toks
  *
  * This function will print the contents of an ecryptfs authentication
@@ -97,6 +109,7 @@ void ecryptfs_dump_auth_tok(struct ecryptfs_auth_tok *auth_tok)
  */
 void ecryptfs_dump_hex(char *data, int bytes)
 {
+<<<<<<< HEAD
 	int i = 0;
 	int add_newline = 1;
 
@@ -119,3 +132,11 @@ void ecryptfs_dump_hex(char *data, int bytes)
 		printk("\n");
 }
 
+=======
+	if (ecryptfs_verbosity < 1)
+		return;
+
+	print_hex_dump(KERN_DEBUG, "ecryptfs: ", DUMP_PREFIX_OFFSET, 16, 1,
+		       data, bytes, false);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

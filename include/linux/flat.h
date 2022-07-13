@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2002-2003  David McCullough <davidm@snapgear.com>
  * Copyright (C) 1998       Kenneth Albanowski <kjahds@kjahds.com>
@@ -6,6 +10,7 @@
  * This file provides the definitions and structures needed to
  * support uClinux flat-format executables.
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_FLAT_H
 #define _LINUX_FLAT_H
@@ -22,12 +27,20 @@
 #define	MAX_SHARED_LIBS			(1)
 #endif
 
+=======
+#ifndef _LINUX_FLAT_H
+#define _LINUX_FLAT_H
+
+#define	FLAT_VERSION			0x00000004L
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * To make everything easier to port and manage cross platform
  * development,  all fields are in network byte order.
  */
 
 struct flat_hdr {
+<<<<<<< HEAD
 	char magic[4];
 	unsigned long rev;          /* version (as above) */
 	unsigned long entry;        /* Offset of first executable instruction
@@ -48,6 +61,28 @@ struct flat_hdr {
 	unsigned long flags;       
 	unsigned long build_date;   /* When the program/library was built */
 	unsigned long filler[5];    /* Reservered, set to zero */
+=======
+	char	magic[4];
+	__be32	rev;          /* version (as above) */
+	__be32	entry;        /* Offset of first executable instruction
+				 with text segment from beginning of file */
+	__be32	data_start;   /* Offset of data segment from beginning of
+				 file */
+	__be32	data_end;     /* Offset of end of data segment from beginning
+				 of file */
+	__be32	bss_end;      /* Offset of end of bss segment from beginning
+				 of file */
+
+	/* (It is assumed that data_end through bss_end forms the bss segment.) */
+
+	__be32	stack_size;   /* Size of stack, in bytes */
+	__be32	reloc_start;  /* Offset of relocation records from beginning of
+				 file */
+	__be32	reloc_count;  /* Number of relocation records */
+	__be32	flags;
+	__be32	build_date;   /* When the program/library was built */
+	__u32	filler[5];    /* Reservered, set to zero */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define FLAT_FLAG_RAM    0x0001 /* load program entirely into RAM */
@@ -56,8 +91,11 @@ struct flat_hdr {
 #define FLAT_FLAG_GZDATA 0x0008 /* only data/relocs are compressed (for XIP) */
 #define FLAT_FLAG_KTRACE 0x0010 /* output useful kernel trace for debugging */
 
+<<<<<<< HEAD
 
 #ifdef __KERNEL__ /* so systems without linux headers can compile the apps */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * While it would be nice to keep this header clean,  users of older
  * tools still need this support in the kernel.  So this section is
@@ -67,14 +105,18 @@ struct flat_hdr {
  *        with the format above,  except to fix bugs with old format support.
  */
 
+<<<<<<< HEAD
 #include <asm/byteorder.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	OLD_FLAT_VERSION			0x00000002L
 #define OLD_FLAT_RELOC_TYPE_TEXT	0
 #define OLD_FLAT_RELOC_TYPE_DATA	1
 #define OLD_FLAT_RELOC_TYPE_BSS		2
 
 typedef union {
+<<<<<<< HEAD
 	unsigned long	value;
 	struct {
 # if defined(mc68000) && !defined(CONFIG_COLDFIRE)
@@ -89,12 +131,26 @@ typedef union {
 		signed long offset : 30;
 		unsigned long type : 2;
 #   	define OLD_FLAT_FLAG_RAM    0x1 /* load program entirely into RAM */
+=======
+	u32		value;
+	struct {
+#if defined(__LITTLE_ENDIAN_BITFIELD) || \
+    (defined(mc68000) && !defined(CONFIG_COLDFIRE))
+		s32	offset : 30;
+		u32	type : 2;
+# elif defined(__BIG_ENDIAN_BITFIELD)
+		u32	type : 2;
+		s32	offset : 30;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # else
 #   	error "Unknown bitfield order for flat files."
 # endif
 	} reloc;
 } flat_v2_reloc_t;
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_FLAT_H */

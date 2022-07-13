@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -15,10 +19,13 @@
 
 #define BTREE_CSUM_XOR 121107
 
+<<<<<<< HEAD
 static int node_check(struct dm_block_validator *v,
 		      struct dm_block *b,
 		      size_t block_size);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void node_prepare_for_write(struct dm_block_validator *v,
 				   struct dm_block *b,
 				   size_t block_size)
@@ -30,8 +37,11 @@ static void node_prepare_for_write(struct dm_block_validator *v,
 	h->csum = cpu_to_le32(dm_bm_checksum(&h->flags,
 					     block_size - sizeof(__le32),
 					     BTREE_CSUM_XOR));
+<<<<<<< HEAD
 
 	BUG_ON(node_check(v, b, 4096));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int node_check(struct dm_block_validator *v,
@@ -42,11 +52,19 @@ static int node_check(struct dm_block_validator *v,
 	struct node_header *h = &n->header;
 	size_t value_size;
 	__le32 csum_disk;
+<<<<<<< HEAD
 	uint32_t flags;
 
 	if (dm_block_location(b) != le64_to_cpu(h->blocknr)) {
 		DMERR("node_check failed blocknr %llu wanted %llu",
 		      le64_to_cpu(h->blocknr), dm_block_location(b));
+=======
+	uint32_t flags, nr_entries, max_entries;
+
+	if (dm_block_location(b) != le64_to_cpu(h->blocknr)) {
+		DMERR_LIMIT("%s failed: blocknr %llu != wanted %llu", __func__,
+			    le64_to_cpu(h->blocknr), dm_block_location(b));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTBLK;
 	}
 
@@ -54,6 +72,7 @@ static int node_check(struct dm_block_validator *v,
 					       block_size - sizeof(__le32),
 					       BTREE_CSUM_XOR));
 	if (csum_disk != h->csum) {
+<<<<<<< HEAD
 		DMERR("node_check failed csum %u wanted %u",
 		      le32_to_cpu(csum_disk), le32_to_cpu(h->csum));
 		return -EILSEQ;
@@ -69,6 +88,25 @@ static int node_check(struct dm_block_validator *v,
 
 	if (le32_to_cpu(h->nr_entries) > le32_to_cpu(h->max_entries)) {
 		DMERR("node_check failed, too many entries");
+=======
+		DMERR_LIMIT("%s failed: csum %u != wanted %u", __func__,
+			    le32_to_cpu(csum_disk), le32_to_cpu(h->csum));
+		return -EILSEQ;
+	}
+
+	nr_entries = le32_to_cpu(h->nr_entries);
+	max_entries = le32_to_cpu(h->max_entries);
+	value_size = le32_to_cpu(h->value_size);
+
+	if (sizeof(struct node_header) +
+	    (sizeof(__le64) + value_size) * max_entries > block_size) {
+		DMERR_LIMIT("%s failed: max_entries too large", __func__);
+		return -EILSEQ;
+	}
+
+	if (nr_entries > max_entries) {
+		DMERR_LIMIT("%s failed: too many entries", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EILSEQ;
 	}
 
@@ -77,7 +115,11 @@ static int node_check(struct dm_block_validator *v,
 	 */
 	flags = le32_to_cpu(h->flags);
 	if (!(flags & INTERNAL_NODE) && !(flags & LEAF_NODE)) {
+<<<<<<< HEAD
 		DMERR("node_check failed, node is neither INTERNAL or LEAF");
+=======
+		DMERR_LIMIT("%s failed: node is neither INTERNAL or LEAF", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EILSEQ;
 	}
 
@@ -92,7 +134,11 @@ struct dm_block_validator btree_node_validator = {
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int bn_read_lock(struct dm_btree_info *info, dm_block_t b,
+=======
+int bn_read_lock(struct dm_btree_info *info, dm_block_t b,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 struct dm_block **result)
 {
 	return dm_tm_read_lock(info->tm, b, &btree_node_validator, result);
@@ -117,9 +163,15 @@ int new_block(struct dm_btree_info *info, struct dm_block **result)
 	return dm_tm_new_block(info->tm, &btree_node_validator, result);
 }
 
+<<<<<<< HEAD
 int unlock_block(struct dm_btree_info *info, struct dm_block *b)
 {
 	return dm_tm_unlock(info->tm, b);
+=======
+void unlock_block(struct dm_btree_info *info, struct dm_block *b)
+{
+	dm_tm_unlock(info->tm, b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------*/
@@ -132,6 +184,7 @@ void init_ro_spine(struct ro_spine *s, struct dm_btree_info *info)
 	s->nodes[1] = NULL;
 }
 
+<<<<<<< HEAD
 int exit_ro_spine(struct ro_spine *s)
 {
 	int r = 0, i;
@@ -143,6 +196,14 @@ int exit_ro_spine(struct ro_spine *s)
 	}
 
 	return r;
+=======
+void exit_ro_spine(struct ro_spine *s)
+{
+	int i;
+
+	for (i = 0; i < s->count; i++)
+		unlock_block(s->info, s->nodes[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ro_step(struct ro_spine *s, dm_block_t new_child)
@@ -150,9 +211,13 @@ int ro_step(struct ro_spine *s, dm_block_t new_child)
 	int r;
 
 	if (s->count == 2) {
+<<<<<<< HEAD
 		r = unlock_block(s->info, s->nodes[0]);
 		if (r < 0)
 			return r;
+=======
+		unlock_block(s->info, s->nodes[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->nodes[0] = s->nodes[1];
 		s->count--;
 	}
@@ -164,6 +229,16 @@ int ro_step(struct ro_spine *s, dm_block_t new_child)
 	return r;
 }
 
+<<<<<<< HEAD
+=======
+void ro_pop(struct ro_spine *s)
+{
+	BUG_ON(!s->count);
+	--s->count;
+	unlock_block(s->info, s->nodes[s->count]);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct btree_node *ro_node(struct ro_spine *s)
 {
 	struct dm_block *block;
@@ -182,6 +257,7 @@ void init_shadow_spine(struct shadow_spine *s, struct dm_btree_info *info)
 	s->count = 0;
 }
 
+<<<<<<< HEAD
 int exit_shadow_spine(struct shadow_spine *s)
 {
 	int r = 0, i;
@@ -193,6 +269,14 @@ int exit_shadow_spine(struct shadow_spine *s)
 	}
 
 	return r;
+=======
+void exit_shadow_spine(struct shadow_spine *s)
+{
+	int i;
+
+	for (i = 0; i < s->count; i++)
+		unlock_block(s->info, s->nodes[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int shadow_step(struct shadow_spine *s, dm_block_t b,
@@ -201,9 +285,13 @@ int shadow_step(struct shadow_spine *s, dm_block_t b,
 	int r;
 
 	if (s->count == 2) {
+<<<<<<< HEAD
 		r = unlock_block(s->info, s->nodes[0]);
 		if (r < 0)
 			return r;
+=======
+		unlock_block(s->info, s->nodes[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->nodes[0] = s->nodes[1];
 		s->count--;
 	}
@@ -238,11 +326,16 @@ int shadow_has_parent(struct shadow_spine *s)
 	return s->count >= 2;
 }
 
+<<<<<<< HEAD
 int shadow_root(struct shadow_spine *s)
+=======
+dm_block_t shadow_root(struct shadow_spine *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return s->root;
 }
 
+<<<<<<< HEAD
 static void le64_inc(void *context, void *value_le)
 {
 	struct dm_transaction_manager *tm = context;
@@ -262,6 +355,19 @@ static void le64_dec(void *context, void *value_le)
 }
 
 static int le64_equal(void *context, void *value1_le, void *value2_le)
+=======
+static void le64_inc(void *context, const void *value_le, unsigned int count)
+{
+	dm_tm_with_runs(context, value_le, count, dm_tm_inc_range);
+}
+
+static void le64_dec(void *context, const void *value_le, unsigned int count)
+{
+	dm_tm_with_runs(context, value_le, count, dm_tm_dec_range);
+}
+
+static int le64_equal(void *context, const void *value1_le, const void *value2_le)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le64 v1_le, v2_le;
 

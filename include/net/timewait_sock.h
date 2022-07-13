@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NET		Generic infrastructure for Network protocols.
  *
  * Authors:	Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _TIMEWAIT_SOCK_H
 #define _TIMEWAIT_SOCK_H
@@ -22,7 +29,10 @@ struct timewait_sock_ops {
 	int		(*twsk_unique)(struct sock *sk,
 				       struct sock *sktw, void *twp);
 	void		(*twsk_destructor)(struct sock *sk);
+<<<<<<< HEAD
 	void		*(*twsk_getpeer)(struct sock *sk);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
@@ -34,13 +44,17 @@ static inline int twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 
 static inline void twsk_destructor(struct sock *sk)
 {
+<<<<<<< HEAD
 	BUG_ON(sk == NULL);
 	BUG_ON(sk->sk_prot == NULL);
 	BUG_ON(sk->sk_prot->twsk_prot == NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk->sk_prot->twsk_prot->twsk_destructor != NULL)
 		sk->sk_prot->twsk_prot->twsk_destructor(sk);
 }
 
+<<<<<<< HEAD
 static inline void *twsk_getpeer(struct sock *sk)
 {
 	if (sk->sk_prot->twsk_prot->twsk_getpeer)
@@ -48,4 +62,6 @@ static inline void *twsk_getpeer(struct sock *sk)
 	return NULL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TIMEWAIT_SOCK_H */

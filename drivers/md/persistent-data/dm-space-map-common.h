@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -33,7 +37,11 @@ struct disk_index_entry {
 	__le64 blocknr;
 	__le32 nr_free;
 	__le32 none_free_before;
+<<<<<<< HEAD
 } __packed;
+=======
+} __packed __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define MAX_METADATA_BITMAPS 255
@@ -43,7 +51,11 @@ struct disk_metadata_index {
 	__le64 blocknr;
 
 	struct disk_index_entry index[MAX_METADATA_BITMAPS];
+<<<<<<< HEAD
 } __packed;
+=======
+} __packed __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ll_disk;
 
@@ -54,6 +66,23 @@ typedef int (*open_index_fn)(struct ll_disk *ll);
 typedef dm_block_t (*max_index_entries_fn)(struct ll_disk *ll);
 typedef int (*commit_fn)(struct ll_disk *ll);
 
+<<<<<<< HEAD
+=======
+/*
+ * A lot of time can be wasted reading and writing the same
+ * index entry.  So we cache a few entries.
+ */
+#define IE_CACHE_SIZE 64
+#define IE_CACHE_MASK (IE_CACHE_SIZE - 1)
+
+struct ie_cache {
+	bool valid;
+	bool dirty;
+	dm_block_t index;
+	struct disk_index_entry ie;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ll_disk {
 	struct dm_transaction_manager *tm;
 	struct dm_btree_info bitmap_info;
@@ -78,6 +107,12 @@ struct ll_disk {
 	open_index_fn open_index;
 	max_index_entries_fn max_entries;
 	commit_fn commit;
+<<<<<<< HEAD
+=======
+	bool bitmap_index_changed:1;
+
+	struct ie_cache ie_cache[IE_CACHE_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct disk_sm_root {
@@ -85,7 +120,11 @@ struct disk_sm_root {
 	__le64 nr_allocated;
 	__le64 bitmap_root;
 	__le64 ref_count_root;
+<<<<<<< HEAD
 } __packed;
+=======
+} __packed __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ENTRIES_PER_BYTE 4
 
@@ -93,6 +132,7 @@ struct disk_bitmap_header {
 	__le32 csum;
 	__le32 not_used;
 	__le64 blocknr;
+<<<<<<< HEAD
 } __packed;
 
 enum allocation_event {
@@ -100,6 +140,9 @@ enum allocation_event {
 	SM_ALLOC,
 	SM_FREE,
 };
+=======
+} __packed __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------------------------------------------------------------*/
 
@@ -108,9 +151,23 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result);
 int sm_ll_lookup(struct ll_disk *ll, dm_block_t b, uint32_t *result);
 int sm_ll_find_free_block(struct ll_disk *ll, dm_block_t begin,
 			  dm_block_t end, dm_block_t *result);
+<<<<<<< HEAD
 int sm_ll_insert(struct ll_disk *ll, dm_block_t b, uint32_t ref_count, enum allocation_event *ev);
 int sm_ll_inc(struct ll_disk *ll, dm_block_t b, enum allocation_event *ev);
 int sm_ll_dec(struct ll_disk *ll, dm_block_t b, enum allocation_event *ev);
+=======
+int sm_ll_find_common_free_block(struct ll_disk *old_ll, struct ll_disk *new_ll,
+				 dm_block_t begin, dm_block_t end, dm_block_t *result);
+
+/*
+ * The next three functions return (via nr_allocations) the net number of
+ * allocations that were made.  This number may be negative if there were
+ * more frees than allocs.
+ */
+int sm_ll_insert(struct ll_disk *ll, dm_block_t b, uint32_t ref_count, int32_t *nr_allocations);
+int sm_ll_inc(struct ll_disk *ll, dm_block_t b, dm_block_t e, int32_t *nr_allocations);
+int sm_ll_dec(struct ll_disk *ll, dm_block_t b, dm_block_t e, int32_t *nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sm_ll_commit(struct ll_disk *ll);
 
 int sm_ll_new_metadata(struct ll_disk *ll, struct dm_transaction_manager *tm);

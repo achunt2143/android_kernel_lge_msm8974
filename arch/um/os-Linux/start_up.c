@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -18,6 +24,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <asm/unistd.h>
+<<<<<<< HEAD
 #include "init.h"
 #include "os.h"
 #include "mem_user.h"
@@ -25,6 +32,14 @@
 #include "registers.h"
 #include "skas.h"
 #include "skas_ptrace.h"
+=======
+#include <init.h>
+#include <os.h>
+#include <mem_user.h>
+#include <ptrace_user.h>
+#include <registers.h>
+#include <skas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ptrace_child(void)
 {
@@ -95,6 +110,11 @@ static int start_ptraced_child(void)
 {
 	int pid, n, status;
 
+<<<<<<< HEAD
+=======
+	fflush(stdout);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = fork();
 	if (pid == 0)
 		ptrace_child();
@@ -111,6 +131,7 @@ static int start_ptraced_child(void)
 	return pid;
 }
 
+<<<<<<< HEAD
 /* When testing for SYSEMU support, if it is one of the broken versions, we
  * must just avoid using sysemu, not panic, but only if SYSEMU features are
  * broken.
@@ -245,6 +266,34 @@ static void __init check_sysemu(void)
 	if ((ptrace(PTRACE_OLDSETOPTIONS, pid, 0,
 		   (void *) PTRACE_O_TRACESYSGOOD) < 0))
 		fatal_perror("check_sysemu: PTRACE_OLDSETOPTIONS failed");
+=======
+static void stop_ptraced_child(int pid, int exitcode)
+{
+	int status, n;
+
+	if (ptrace(PTRACE_CONT, pid, 0, 0) < 0)
+		fatal_perror("stop_ptraced_child : ptrace failed");
+
+	CATCH_EINTR(n = waitpid(pid, &status, 0));
+	if (!WIFEXITED(status) || (WEXITSTATUS(status) != exitcode)) {
+		int exit_with = WEXITSTATUS(status);
+		fatal("stop_ptraced_child : child exited with exitcode %d, "
+		      "while expecting %d; status 0x%x\n", exit_with,
+		      exitcode, status);
+	}
+}
+
+static void __init check_sysemu(void)
+{
+	int pid, n, status, count=0;
+
+	os_info("Checking syscall emulation for ptrace...");
+	pid = start_ptraced_child();
+
+	if ((ptrace(PTRACE_SETOPTIONS, pid, 0,
+		   (void *) PTRACE_O_TRACESYSGOOD) < 0))
+		fatal_perror("check_sysemu: PTRACE_SETOPTIONS failed");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		count++;
@@ -277,6 +326,7 @@ static void __init check_sysemu(void)
 			goto fail;
 		}
 	}
+<<<<<<< HEAD
 	if (stop_ptraced_child(pid, 0, 0) < 0)
 		goto fail_stopped;
 
@@ -291,18 +341,38 @@ fail:
 	stop_ptraced_child(pid, 1, 0);
 fail_stopped:
 	non_fatal("missing\n");
+=======
+	stop_ptraced_child(pid, 0);
+
+	os_info("OK\n");
+
+	return;
+
+fail:
+	stop_ptraced_child(pid, 1);
+	fatal("missing\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init check_ptrace(void)
 {
 	int pid, syscall, n, status;
 
+<<<<<<< HEAD
 	non_fatal("Checking that ptrace can change system call numbers...");
 	pid = start_ptraced_child();
 
 	if ((ptrace(PTRACE_OLDSETOPTIONS, pid, 0,
 		   (void *) PTRACE_O_TRACESYSGOOD) < 0))
 		fatal_perror("check_ptrace: PTRACE_OLDSETOPTIONS failed");
+=======
+	os_info("Checking that ptrace can change system call numbers...");
+	pid = start_ptraced_child();
+
+	if ((ptrace(PTRACE_SETOPTIONS, pid, 0,
+		   (void *) PTRACE_O_TRACESYSGOOD) < 0))
+		fatal_perror("check_ptrace: PTRACE_SETOPTIONS failed");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		if (ptrace(PTRACE_SYSCALL, pid, 0, 0) < 0)
@@ -328,8 +398,13 @@ static void __init check_ptrace(void)
 			break;
 		}
 	}
+<<<<<<< HEAD
 	stop_ptraced_child(pid, 0, 1);
 	non_fatal("OK\n");
+=======
+	stop_ptraced_child(pid, 0);
+	os_info("OK\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_sysemu();
 }
 
@@ -345,6 +420,7 @@ static void __init check_coredump_limit(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	printf("Core dump limits :\n\tsoft - ");
 	if (lim.rlim_cur == RLIM_INFINITY)
 		printf("NONE\n");
@@ -356,6 +432,53 @@ static void __init check_coredump_limit(void)
 	else printf("%lu\n", lim.rlim_max);
 }
 
+=======
+	os_info("Core dump limits :\n\tsoft - ");
+	if (lim.rlim_cur == RLIM_INFINITY)
+		os_info("NONE\n");
+	else
+		os_info("%llu\n", (unsigned long long)lim.rlim_cur);
+
+	os_info("\thard - ");
+	if (lim.rlim_max == RLIM_INFINITY)
+		os_info("NONE\n");
+	else
+		os_info("%llu\n", (unsigned long long)lim.rlim_max);
+}
+
+void  __init get_host_cpu_features(
+		void (*flags_helper_func)(char *line),
+		void (*cache_helper_func)(char *line))
+{
+	FILE *cpuinfo;
+	char *line = NULL;
+	size_t len = 0;
+	int done_parsing = 0;
+
+	cpuinfo = fopen("/proc/cpuinfo", "r");
+	if (cpuinfo == NULL) {
+		os_info("Failed to get host CPU features\n");
+	} else {
+		while ((getline(&line, &len, cpuinfo)) != -1) {
+			if (strstr(line, "flags")) {
+				flags_helper_func(line);
+				done_parsing++;
+			}
+			if (strstr(line, "cache_alignment")) {
+				cache_helper_func(line);
+				done_parsing++;
+			}
+			free(line);
+			line = NULL;
+			if (done_parsing > 1)
+				break;
+		}
+		fclose(cpuinfo);
+	}
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init os_early_checks(void)
 {
 	int pid;
@@ -371,6 +494,7 @@ void __init os_early_checks(void)
 	check_tmpexec();
 
 	pid = start_ptraced_child();
+<<<<<<< HEAD
 	if (init_registers(pid))
 		fatal("Failed to initialize default registers");
 	stop_ptraced_child(pid, 1, 1);
@@ -489,6 +613,11 @@ void can_do_skas(void)
 
 	if (!proc_mm || !ptrace_faultinfo || !ptrace_ldt)
 		skas_needs_stub = 1;
+=======
+	if (init_pid_registers(pid))
+		fatal("Failed to initialize default registers");
+	stop_ptraced_child(pid, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init parse_iomem(char *str, int *add)
@@ -501,7 +630,11 @@ int __init parse_iomem(char *str, int *add)
 	driver = str;
 	file = strchr(str,',');
 	if (file == NULL) {
+<<<<<<< HEAD
 		fprintf(stderr, "parse_iomem : failed to parse iomem\n");
+=======
+		os_warn("parse_iomem : failed to parse iomem\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	*file = '\0';

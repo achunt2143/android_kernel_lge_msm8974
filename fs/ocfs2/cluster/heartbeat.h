@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * heartbeat.h
  *
  * Function prototypes
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef O2CLUSTER_HEARTBEAT_H
@@ -76,12 +84,20 @@ int o2hb_register_callback(const char *region_uuid,
 void o2hb_unregister_callback(const char *region_uuid,
 			      struct o2hb_callback_func *hc);
 void o2hb_fill_node_map(unsigned long *map,
+<<<<<<< HEAD
 			unsigned bytes);
 void o2hb_exit(void);
 int o2hb_init(void);
 int o2hb_check_node_heartbeating(u8 node_num);
 int o2hb_check_node_heartbeating_from_callback(u8 node_num);
 int o2hb_check_local_node_heartbeating(void);
+=======
+			unsigned int bits);
+void o2hb_exit(void);
+void o2hb_init(void);
+int o2hb_check_node_heartbeating_no_sem(u8 node_num);
+int o2hb_check_node_heartbeating_from_callback(u8 node_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void o2hb_stop_all_regions(void);
 int o2hb_get_all_regions(char *region_uuids, u8 numregions);
 int o2hb_global_heartbeat_active(void);

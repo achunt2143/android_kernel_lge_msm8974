@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_CACHEFLUSH_H
 #define _ALPHA_CACHEFLUSH_H
 
 #include <linux/mm.h>
 
+<<<<<<< HEAD
 /* Caches aren't brain-dead on the Alpha. */
 #define flush_cache_all()			do { } while (0)
 #define flush_cache_mm(mm)			do { } while (0)
@@ -16,6 +21,8 @@
 #define flush_cache_vmap(start, end)		do { } while (0)
 #define flush_cache_vunmap(start, end)		do { } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Note that the following two definitions are _highly_ dependent
    on the contexts in which they are used in the kernel.  I personally
    think it is criminal how loosely defined these macros are.  */
@@ -47,7 +54,11 @@ extern void smp_imb(void);
 
 extern void __load_new_mm_context(struct mm_struct *);
 static inline void
+<<<<<<< HEAD
 flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
+=======
+flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long addr, int len)
 {
 	if (vma->vm_flags & VM_EXEC) {
@@ -58,6 +69,7 @@ flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
 			mm->context[smp_processor_id()] = 0;
 	}
 }
+<<<<<<< HEAD
 #else
 extern void flush_icache_user_range(struct vm_area_struct *vma,
 		struct page *page, unsigned long addr, int len);
@@ -73,5 +85,26 @@ do { memcpy(dst, src, len); \
 } while (0)
 #define copy_from_user_page(vma, page, vaddr, dst, src, len) \
 	memcpy(dst, src, len)
+=======
+#define flush_icache_user_page flush_icache_user_page
+#else /* CONFIG_SMP */
+extern void flush_icache_user_page(struct vm_area_struct *vma,
+		struct page *page, unsigned long addr, int len);
+#define flush_icache_user_page flush_icache_user_page
+#endif /* CONFIG_SMP */
+
+/*
+ * Both implementations of flush_icache_user_page flush the entire
+ * address space, so one call, no matter how many pages.
+ */
+static inline void flush_icache_pages(struct vm_area_struct *vma,
+		struct page *page, unsigned int nr)
+{
+	flush_icache_user_page(vma, page, 0, 0);
+}
+#define flush_icache_pages flush_icache_pages
+
+#include <asm-generic/cacheflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ALPHA_CACHEFLUSH_H */

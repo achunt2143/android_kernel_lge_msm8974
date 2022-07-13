@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (C) 2005 Russell King.
  *  Data taken from include/asm-i386/serial.h
@@ -5,12 +6,22 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  Copyright (C) 2005 Russell King.
+ *  Data taken from include/asm-i386/serial.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define HUB6(card,port)							\
+=======
+#define HUB6(card, port)						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{								\
 		.iobase		= 0x302,				\
 		.irq		= 3,					\

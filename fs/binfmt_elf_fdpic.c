@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* binfmt_elf_fdpic.c: FDPIC ELF binary format
  *
  * Copyright (C) 2003, 2004, 2006 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
  * Derived from binfmt_elf.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -15,6 +22,12 @@
 #include <linux/fs.h>
 #include <linux/stat.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/coredump.h>
+#include <linux/sched/task_stack.h>
+#include <linux/sched/cputime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/mman.h>
 #include <linux/errno.h>
@@ -35,11 +48,19 @@
 #include <linux/elf-fdpic.h>
 #include <linux/elfcore.h>
 #include <linux/coredump.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 #include <asm/param.h>
 #include <asm/pgalloc.h>
 #include <asm/exec.h>
+=======
+#include <linux/dax.h>
+#include <linux/regset.h>
+
+#include <linux/uaccess.h>
+#include <asm/param.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef char *elf_caddr_t;
 
@@ -57,7 +78,11 @@ typedef char *elf_caddr_t;
 
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 static int load_elf_fdpic_binary(struct linux_binprm *, struct pt_regs *);
+=======
+static int load_elf_fdpic_binary(struct linux_binprm *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int elf_fdpic_fetch_phdrs(struct elf_fdpic_params *, struct file *);
 static int elf_fdpic_map_file(struct elf_fdpic_params *, struct file *,
 			      struct mm_struct *, const char *);
@@ -67,8 +92,11 @@ static int create_elf_fdpic_tables(struct linux_binprm *, struct mm_struct *,
 				   struct elf_fdpic_params *);
 
 #ifndef CONFIG_MMU
+<<<<<<< HEAD
 static int elf_fdpic_transfer_args_to_stack(struct linux_binprm *,
 					    unsigned long *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int elf_fdpic_map_file_constdisp_on_uclinux(struct elf_fdpic_params *,
 						   struct file *,
 						   struct mm_struct *);
@@ -86,8 +114,13 @@ static struct linux_binfmt elf_fdpic_format = {
 	.load_binary	= load_elf_fdpic_binary,
 #ifdef CONFIG_ELF_CORE
 	.core_dump	= elf_fdpic_core_dump,
+<<<<<<< HEAD
 #endif
 	.min_coredump	= ELF_EXEC_PAGESIZE,
+=======
+	.min_coredump	= ELF_EXEC_PAGESIZE,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_elf_fdpic_binfmt(void)
@@ -104,19 +137,49 @@ static void __exit exit_elf_fdpic_binfmt(void)
 core_initcall(init_elf_fdpic_binfmt);
 module_exit(exit_elf_fdpic_binfmt);
 
+<<<<<<< HEAD
 static int is_elf_fdpic(struct elfhdr *hdr, struct file *file)
+=======
+static int is_elf(struct elfhdr *hdr, struct file *file)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (memcmp(hdr->e_ident, ELFMAG, SELFMAG) != 0)
 		return 0;
 	if (hdr->e_type != ET_EXEC && hdr->e_type != ET_DYN)
 		return 0;
+<<<<<<< HEAD
 	if (!elf_check_arch(hdr) || !elf_check_fdpic(hdr))
 		return 0;
 	if (!file->f_op || !file->f_op->mmap)
+=======
+	if (!elf_check_arch(hdr))
+		return 0;
+	if (!file->f_op->mmap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+#ifndef elf_check_fdpic
+#define elf_check_fdpic(x) 0
+#endif
+
+#ifndef elf_check_const_displacement
+#define elf_check_const_displacement(x) 0
+#endif
+
+static int is_constdisp(struct elfhdr *hdr)
+{
+	if (!elf_check_fdpic(hdr))
+		return 1;
+	if (elf_check_const_displacement(hdr))
+		return 1;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 /*
  * read the program headers table into memory
@@ -124,9 +187,16 @@ static int is_elf_fdpic(struct elfhdr *hdr, struct file *file)
 static int elf_fdpic_fetch_phdrs(struct elf_fdpic_params *params,
 				 struct file *file)
 {
+<<<<<<< HEAD
 	struct elf32_phdr *phdr;
 	unsigned long size;
 	int retval, loop;
+=======
+	struct elf_phdr *phdr;
+	unsigned long size;
+	int retval, loop;
+	loff_t pos = params->hdr.e_phoff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (params->hdr.e_phentsize != sizeof(struct elf_phdr))
 		return -ENOMEM;
@@ -138,8 +208,12 @@ static int elf_fdpic_fetch_phdrs(struct elf_fdpic_params *params,
 	if (!params->phdrs)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	retval = kernel_read(file, params->hdr.e_phoff,
 			     (char *) params->phdrs, size);
+=======
+	retval = kernel_read(file, params->phdrs, size, &pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(retval != size))
 		return retval < 0 ? retval : -ENOEXEC;
 
@@ -165,10 +239,17 @@ static int elf_fdpic_fetch_phdrs(struct elf_fdpic_params *params,
 /*
  * load an fdpic binary into various bits of memory
  */
+<<<<<<< HEAD
 static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 				 struct pt_regs *regs)
 {
 	struct elf_fdpic_params exec_params, interp_params;
+=======
+static int load_elf_fdpic_binary(struct linux_binprm *bprm)
+{
+	struct elf_fdpic_params exec_params, interp_params;
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct elf_phdr *phdr;
 	unsigned long stack_size, entryaddr;
 #ifdef ELF_FDPIC_PLAT_INIT
@@ -181,6 +262,10 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 	char *interpreter_name = NULL;
 	int executable_stack;
 	int retval, i;
+<<<<<<< HEAD
+=======
+	loff_t pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kdebug("____ LOAD %d ____", current->pid);
 
@@ -192,8 +277,23 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 
 	/* check that this is a binary we know how to deal with */
 	retval = -ENOEXEC;
+<<<<<<< HEAD
 	if (!is_elf_fdpic(&exec_params.hdr, bprm->file))
 		goto error;
+=======
+	if (!is_elf(&exec_params.hdr, bprm->file))
+		goto error;
+	if (!elf_check_fdpic(&exec_params.hdr)) {
+#ifdef CONFIG_MMU
+		/* binfmt_elf handles non-fdpic elf except on nommu */
+		goto error;
+#else
+		/* nommu can only load ET_DYN (PIE) ELF */
+		if (exec_params.hdr.e_type != ET_DYN)
+			goto error;
+#endif
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read the program header table */
 	retval = elf_fdpic_fetch_phdrs(&exec_params, bprm->file);
@@ -218,10 +318,16 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 			if (!interpreter_name)
 				goto error;
 
+<<<<<<< HEAD
 			retval = kernel_read(bprm->file,
 					     phdr->p_offset,
 					     interpreter_name,
 					     phdr->p_filesz);
+=======
+			pos = phdr->p_offset;
+			retval = kernel_read(bprm->file, interpreter_name,
+					     phdr->p_filesz, &pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(retval != phdr->p_filesz)) {
 				if (retval >= 0)
 					retval = -ENOEXEC;
@@ -249,8 +355,14 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 			 */
 			would_dump(bprm, interpreter);
 
+<<<<<<< HEAD
 			retval = kernel_read(interpreter, 0, bprm->buf,
 					     BINPRM_BUF_SIZE);
+=======
+			pos = 0;
+			retval = kernel_read(interpreter, bprm->buf,
+					BINPRM_BUF_SIZE, &pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(retval != BINPRM_BUF_SIZE)) {
 				if (retval >= 0)
 					retval = -ENOEXEC;
@@ -270,13 +382,21 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 
 	}
 
+<<<<<<< HEAD
 	if (elf_check_const_displacement(&exec_params.hdr))
+=======
+	if (is_constdisp(&exec_params.hdr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exec_params.flags |= ELF_FDPIC_FLAG_CONSTDISP;
 
 	/* perform insanity checks on the interpreter */
 	if (interpreter_name) {
 		retval = -ELIBBAD;
+<<<<<<< HEAD
 		if (!is_elf_fdpic(&interp_params.hdr, interpreter))
+=======
+		if (!is_elf(&interp_params.hdr, interpreter))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 
 		interp_params.flags = ELF_FDPIC_FLAG_PRESENT;
@@ -295,7 +415,11 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 	else
 		executable_stack = EXSTACK_DEFAULT;
 
+<<<<<<< HEAD
 	if (stack_size == 0) {
+=======
+	if (stack_size == 0 && interp_params.flags & ELF_FDPIC_FLAG_PRESENT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stack_size = interp_params.stack_size;
 		if (interp_params.flags & ELF_FDPIC_FLAG_EXEC_STACK)
 			executable_stack = EXSTACK_ENABLE_X;
@@ -307,6 +431,7 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 
 	retval = -ENOEXEC;
 	if (stack_size == 0)
+<<<<<<< HEAD
 		goto error;
 
 	if (elf_check_const_displacement(&interp_params.hdr))
@@ -314,13 +439,30 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 
 	/* flush all traces of the currently running executable */
 	retval = flush_old_exec(bprm);
+=======
+		stack_size = 131072UL; /* same as exec.c's default commit */
+
+	if (is_constdisp(&interp_params.hdr))
+		interp_params.flags |= ELF_FDPIC_FLAG_CONSTDISP;
+
+	/* flush all traces of the currently running executable */
+	retval = begin_new_exec(bprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto error;
 
 	/* there's now no turning back... the old userspace image is dead,
+<<<<<<< HEAD
 	 * defunct, deceased, etc. after this point we have to exit via
 	 * error_kill */
 	set_personality(PER_LINUX_FDPIC);
+=======
+	 * defunct, deceased, etc.
+	 */
+	SET_PERSONALITY(exec_params.hdr);
+	if (elf_check_fdpic(&exec_params.hdr))
+		current->personality |= PER_LINUX_FDPIC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (elf_read_implies_exec(&exec_params.hdr, executable_stack))
 		current->personality |= READ_IMPLIES_EXEC;
 
@@ -344,24 +486,42 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 
 	retval = setup_arg_pages(bprm, current->mm->start_stack,
 				 executable_stack);
+<<<<<<< HEAD
 	if (retval < 0) {
 		send_sig(SIGKILL, current, 0);
 		goto error_kill;
 	}
+=======
+	if (retval < 0)
+		goto error;
+#ifdef ARCH_HAS_SETUP_ADDITIONAL_PAGES
+	retval = arch_setup_additional_pages(bprm, !!interpreter_name);
+	if (retval < 0)
+		goto error;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* load the executable and interpreter into memory */
 	retval = elf_fdpic_map_file(&exec_params, bprm->file, current->mm,
 				    "executable");
 	if (retval < 0)
+<<<<<<< HEAD
 		goto error_kill;
+=======
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (interpreter_name) {
 		retval = elf_fdpic_map_file(&interp_params, interpreter,
 					    current->mm, "interpreter");
 		if (retval < 0) {
 			printk(KERN_ERR "Unable to load interpreter\n");
+<<<<<<< HEAD
 			goto error_kill;
+=======
+			goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		allow_write_access(interpreter);
@@ -377,10 +537,14 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 		PAGE_ALIGN(current->mm->start_brk);
 
 #else
+<<<<<<< HEAD
 	/* create a stack and brk area big enough for everyone
 	 * - the brk heap starts at the bottom and works up
 	 * - the stack starts at the top and works down
 	 */
+=======
+	/* create a stack area and zero-size brk area */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stack_size = (stack_size + PAGE_SIZE - 1) & PAGE_MASK;
 	if (stack_size < PAGE_SIZE * 2)
 		stack_size = PAGE_SIZE * 2;
@@ -398,11 +562,16 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 	if (IS_ERR_VALUE(current->mm->start_brk)) {
 		retval = current->mm->start_brk;
 		current->mm->start_brk = 0;
+<<<<<<< HEAD
 		goto error_kill;
+=======
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	current->mm->brk = current->mm->start_brk;
 	current->mm->context.end_brk = current->mm->start_brk;
+<<<<<<< HEAD
 	current->mm->context.end_brk +=
 		(stack_size > PAGE_SIZE) ? (stack_size - PAGE_SIZE) : 0;
 	current->mm->start_stack = current->mm->start_brk + stack_size;
@@ -412,6 +581,15 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 	if (create_elf_fdpic_tables(bprm, current->mm,
 				    &exec_params, &interp_params) < 0)
 		goto error_kill;
+=======
+	current->mm->start_stack = current->mm->start_brk + stack_size;
+#endif
+
+	retval = create_elf_fdpic_tables(bprm, current->mm, &exec_params,
+					 &interp_params);
+	if (retval < 0)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kdebug("- start_code  %lx", current->mm->start_code);
 	kdebug("- end_code    %lx", current->mm->end_code);
@@ -433,6 +611,10 @@ static int load_elf_fdpic_binary(struct linux_binprm *bprm,
 			    dynaddr);
 #endif
 
+<<<<<<< HEAD
+=======
+	finalize_exec(bprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* everything is now ready... get the userspace context ready to roll */
 	entryaddr = interp_params.entry_addr ?: exec_params.entry_addr;
 	start_thread(regs, entryaddr, current->mm->start_stack);
@@ -450,12 +632,15 @@ error:
 	kfree(interp_params.phdrs);
 	kfree(interp_params.loadmap);
 	return retval;
+<<<<<<< HEAD
 
 	/* unrecoverable error - kill the process */
 error_kill:
 	send_sig(SIGSEGV, current, 0);
 	goto error;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*****************************************************************************/
@@ -484,9 +669,15 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	size_t platform_len = 0, len;
 	char *k_platform, *k_base_platform;
 	char __user *u_platform, *u_base_platform, *p;
+<<<<<<< HEAD
 	long hwcap;
 	int loop;
 	int nr;	/* reset for each csp adjustment */
+=======
+	int loop;
+	int nr;	/* reset for each csp adjustment */
+	unsigned long flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MMU
 	/* In some cases (e.g. Hyper-Threading), we want to avoid L1 evictions
@@ -499,12 +690,20 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	sp = mm->start_stack;
 
 	/* stack the program arguments and environment */
+<<<<<<< HEAD
 	if (elf_fdpic_transfer_args_to_stack(bprm, &sp) < 0)
 		return -EFAULT;
 #endif
 
 	hwcap = ELF_HWCAP;
 
+=======
+	if (transfer_args_to_stack(bprm, &sp) < 0)
+		return -EFAULT;
+	sp &= ~15;
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If this architecture has a platform capability string, copy it
 	 * to userspace.  In some cases (Sparc), this info is impossible
@@ -518,7 +717,11 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 		platform_len = strlen(k_platform) + 1;
 		sp -= platform_len;
 		u_platform = (char __user *) sp;
+<<<<<<< HEAD
 		if (__copy_to_user(u_platform, k_platform, platform_len) != 0)
+=======
+		if (copy_to_user(u_platform, k_platform, platform_len) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -533,15 +736,24 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 		platform_len = strlen(k_base_platform) + 1;
 		sp -= platform_len;
 		u_base_platform = (char __user *) sp;
+<<<<<<< HEAD
 		if (__copy_to_user(u_base_platform, k_base_platform, platform_len) != 0)
+=======
+		if (copy_to_user(u_base_platform, k_base_platform, platform_len) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
 	sp &= ~7UL;
 
 	/* stack the load map(s) */
+<<<<<<< HEAD
 	len = sizeof(struct elf32_fdpic_loadmap);
 	len += sizeof(struct elf32_fdpic_loadseg) * exec_params->loadmap->nsegs;
+=======
+	len = sizeof(struct elf_fdpic_loadmap);
+	len += sizeof(struct elf_fdpic_loadseg) * exec_params->loadmap->nsegs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp = (sp - len) & ~7UL;
 	exec_params->map_addr = sp;
 
@@ -551,8 +763,13 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	current->mm->context.exec_fdpic_loadmap = (unsigned long) sp;
 
 	if (interp_params->loadmap) {
+<<<<<<< HEAD
 		len = sizeof(struct elf32_fdpic_loadmap);
 		len += sizeof(struct elf32_fdpic_loadseg) *
+=======
+		len = sizeof(struct elf_fdpic_loadmap);
+		len += sizeof(struct elf_fdpic_loadseg) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			interp_params->loadmap->nsegs;
 		sp = (sp - len) & ~7UL;
 		interp_params->map_addr = sp;
@@ -570,7 +787,11 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	nitems = 1 + DLINFO_ITEMS + (k_platform ? 1 : 0) +
 		(k_base_platform ? 1 : 0) + AT_VECTOR_SIZE_ARCH;
 
+<<<<<<< HEAD
 	if (bprm->interp_flags & BINPRM_FLAGS_EXECFD)
+=======
+	if (bprm->have_execfd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nitems++;
 
 	csp = sp;
@@ -585,11 +806,21 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	/* put the ELF interpreter info on the stack */
 #define NEW_AUX_ENT(id, val)						\
 	do {								\
+<<<<<<< HEAD
 		struct { unsigned long _id, _val; } __user *ent;	\
 									\
 		ent = (void __user *) csp;				\
 		__put_user((id), &ent[nr]._id);				\
 		__put_user((val), &ent[nr]._val);			\
+=======
+		struct { unsigned long _id, _val; } __user *ent, v;	\
+									\
+		ent = (void __user *) csp;				\
+		v._id = (id);						\
+		v._val = (val);						\
+		if (copy_to_user(ent + nr, &v, sizeof(v)))		\
+			return -EFAULT;					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr++;							\
 	} while (0)
 
@@ -610,21 +841,36 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 			    (elf_addr_t) (unsigned long) u_base_platform);
 	}
 
+<<<<<<< HEAD
 	if (bprm->interp_flags & BINPRM_FLAGS_EXECFD) {
 		nr = 0;
 		csp -= 2 * sizeof(unsigned long);
 		NEW_AUX_ENT(AT_EXECFD, bprm->interp_data);
+=======
+	if (bprm->have_execfd) {
+		nr = 0;
+		csp -= 2 * sizeof(unsigned long);
+		NEW_AUX_ENT(AT_EXECFD, bprm->execfd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nr = 0;
 	csp -= DLINFO_ITEMS * 2 * sizeof(unsigned long);
+<<<<<<< HEAD
 	NEW_AUX_ENT(AT_HWCAP,	hwcap);
+=======
+	NEW_AUX_ENT(AT_HWCAP,	ELF_HWCAP);
+#ifdef ELF_HWCAP2
+	NEW_AUX_ENT(AT_HWCAP2,	ELF_HWCAP2);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NEW_AUX_ENT(AT_PAGESZ,	PAGE_SIZE);
 	NEW_AUX_ENT(AT_CLKTCK,	CLOCKS_PER_SEC);
 	NEW_AUX_ENT(AT_PHDR,	exec_params->ph_addr);
 	NEW_AUX_ENT(AT_PHENT,	sizeof(struct elf_phdr));
 	NEW_AUX_ENT(AT_PHNUM,	exec_params->hdr.e_phnum);
 	NEW_AUX_ENT(AT_BASE,	interp_params->elfhdr_addr);
+<<<<<<< HEAD
 	NEW_AUX_ENT(AT_FLAGS,	0);
 	NEW_AUX_ENT(AT_ENTRY,	exec_params->entry_addr);
 	NEW_AUX_ENT(AT_UID,	(elf_addr_t) cred->uid);
@@ -632,6 +878,17 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 	NEW_AUX_ENT(AT_GID,	(elf_addr_t) cred->gid);
 	NEW_AUX_ENT(AT_EGID,	(elf_addr_t) cred->egid);
 	NEW_AUX_ENT(AT_SECURE,	security_bprm_secureexec(bprm));
+=======
+	if (bprm->interp_flags & BINPRM_FLAGS_PRESERVE_ARGV0)
+		flags |= AT_FLAGS_PRESERVE_ARGV0;
+	NEW_AUX_ENT(AT_FLAGS,	flags);
+	NEW_AUX_ENT(AT_ENTRY,	exec_params->entry_addr);
+	NEW_AUX_ENT(AT_UID,	(elf_addr_t) from_kuid_munged(cred->user_ns, cred->uid));
+	NEW_AUX_ENT(AT_EUID,	(elf_addr_t) from_kuid_munged(cred->user_ns, cred->euid));
+	NEW_AUX_ENT(AT_GID,	(elf_addr_t) from_kgid_munged(cred->user_ns, cred->gid));
+	NEW_AUX_ENT(AT_EGID,	(elf_addr_t) from_kgid_munged(cred->user_ns, cred->egid));
+	NEW_AUX_ENT(AT_SECURE,	bprm->secureexec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NEW_AUX_ENT(AT_EXECFN,	bprm->exec);
 
 #ifdef ARCH_DLINFO
@@ -653,7 +910,12 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 
 	/* stack argc */
 	csp -= sizeof(unsigned long);
+<<<<<<< HEAD
 	__put_user(bprm->argc, (unsigned long __user *) csp);
+=======
+	if (put_user(bprm->argc, (unsigned long __user *) csp))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(csp != sp);
 
@@ -667,25 +929,45 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 
 	p = (char __user *) current->mm->arg_start;
 	for (loop = bprm->argc; loop > 0; loop--) {
+<<<<<<< HEAD
 		__put_user((elf_caddr_t) p, argv++);
+=======
+		if (put_user((elf_caddr_t) p, argv++))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = strnlen_user(p, MAX_ARG_STRLEN);
 		if (!len || len > MAX_ARG_STRLEN)
 			return -EINVAL;
 		p += len;
 	}
+<<<<<<< HEAD
 	__put_user(NULL, argv);
+=======
+	if (put_user(NULL, argv))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->mm->arg_end = (unsigned long) p;
 
 	/* fill in the envv[] array */
 	current->mm->env_start = (unsigned long) p;
 	for (loop = bprm->envc; loop > 0; loop--) {
+<<<<<<< HEAD
 		__put_user((elf_caddr_t)(unsigned long) p, envp++);
+=======
+		if (put_user((elf_caddr_t)(unsigned long) p, envp++))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = strnlen_user(p, MAX_ARG_STRLEN);
 		if (!len || len > MAX_ARG_STRLEN)
 			return -EINVAL;
 		p += len;
 	}
+<<<<<<< HEAD
 	__put_user(NULL, envp);
+=======
+	if (put_user(NULL, envp))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->mm->env_end = (unsigned long) p;
 
 	mm->start_stack = (unsigned long) sp;
@@ -694,6 +976,7 @@ static int create_elf_fdpic_tables(struct linux_binprm *bprm,
 
 /*****************************************************************************/
 /*
+<<<<<<< HEAD
  * transfer the program arguments and environment from the holding pages onto
  * the stack
  */
@@ -727,6 +1010,8 @@ out:
 
 /*****************************************************************************/
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * load the appropriate binary image (executable or interpreter) into memory
  * - we assume no MMU is available
  * - if no other PIC bits are set in params->hdr->e_flags
@@ -741,6 +1026,7 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 			      struct mm_struct *mm,
 			      const char *what)
 {
+<<<<<<< HEAD
 	struct elf32_fdpic_loadmap *loadmap;
 #ifdef CONFIG_MMU
 	struct elf32_fdpic_loadseg *mseg;
@@ -750,6 +1036,17 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 	unsigned long load_addr, stop;
 	unsigned nloads, tmp;
 	size_t size;
+=======
+	struct elf_fdpic_loadmap *loadmap;
+#ifdef CONFIG_MMU
+	struct elf_fdpic_loadseg *mseg;
+	unsigned long load_addr;
+#endif
+	struct elf_fdpic_loadseg *seg;
+	struct elf_phdr *phdr;
+	unsigned nloads, tmp;
+	unsigned long stop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int loop, ret;
 
 	/* allocate a load map table */
@@ -761,19 +1058,29 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 	if (nloads == 0)
 		return -ELIBBAD;
 
+<<<<<<< HEAD
 	size = sizeof(*loadmap) + nloads * sizeof(*seg);
 	loadmap = kzalloc(size, GFP_KERNEL);
+=======
+	loadmap = kzalloc(struct_size(loadmap, segs, nloads), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!loadmap)
 		return -ENOMEM;
 
 	params->loadmap = loadmap;
 
+<<<<<<< HEAD
 	loadmap->version = ELF32_FDPIC_LOADMAP_VERSION;
 	loadmap->nsegs = nloads;
 
 	load_addr = params->load_addr;
 	seg = loadmap->segs;
 
+=======
+	loadmap->version = ELF_FDPIC_LOADMAP_VERSION;
+	loadmap->nsegs = nloads;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* map the requested LOADs into the memory space */
 	switch (params->flags & ELF_FDPIC_FLAG_ARRANGEMENT) {
 	case ELF_FDPIC_FLAG_CONSTDISP:
@@ -844,6 +1151,12 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 			if (phdr->p_vaddr >= seg->p_vaddr &&
 			    phdr->p_vaddr + phdr->p_memsz <=
 			    seg->p_vaddr + seg->p_memsz) {
+<<<<<<< HEAD
+=======
+				Elf_Dyn __user *dyn;
+				Elf_Sword d_tag;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				params->dynamic_addr =
 					(phdr->p_vaddr - seg->p_vaddr) +
 					seg->addr;
@@ -852,12 +1165,22 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 				 * one item, and that the last item is a NULL
 				 * entry */
 				if (phdr->p_memsz == 0 ||
+<<<<<<< HEAD
 				    phdr->p_memsz % sizeof(Elf32_Dyn) != 0)
 					goto dynamic_error;
 
 				tmp = phdr->p_memsz / sizeof(Elf32_Dyn);
 				if (((Elf32_Dyn *)
 				     params->dynamic_addr)[tmp - 1].d_tag != 0)
+=======
+				    phdr->p_memsz % sizeof(Elf_Dyn) != 0)
+					goto dynamic_error;
+
+				tmp = phdr->p_memsz / sizeof(Elf_Dyn);
+				dyn = (Elf_Dyn __user *)params->dynamic_addr;
+				if (get_user(d_tag, &dyn[tmp - 1].d_tag) ||
+				    d_tag != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto dynamic_error;
 				break;
 			}
@@ -901,16 +1224,29 @@ static int elf_fdpic_map_file(struct elf_fdpic_params *params,
 	kdebug("- DYNAMIC[]: %lx", params->dynamic_addr);
 	seg = loadmap->segs;
 	for (loop = 0; loop < loadmap->nsegs; loop++, seg++)
+<<<<<<< HEAD
 		kdebug("- LOAD[%d] : %08x-%08x [va=%x ms=%x]",
 		       loop,
 		       seg->addr, seg->addr + seg->p_memsz - 1,
 		       seg->p_vaddr, seg->p_memsz);
+=======
+		kdebug("- LOAD[%d] : %08llx-%08llx [va=%llx ms=%llx]",
+		       loop,
+		       (unsigned long long) seg->addr,
+		       (unsigned long long) seg->addr + seg->p_memsz - 1,
+		       (unsigned long long) seg->p_vaddr,
+		       (unsigned long long) seg->p_memsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 dynamic_error:
 	printk("ELF FDPIC %s with invalid DYNAMIC section (inode=%lu)\n",
+<<<<<<< HEAD
 	       what, file->f_path.dentry->d_inode->i_ino);
+=======
+	       what, file_inode(file)->i_ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ELIBBAD;
 }
 
@@ -924,10 +1260,16 @@ static int elf_fdpic_map_file_constdisp_on_uclinux(
 	struct file *file,
 	struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	struct elf32_fdpic_loadseg *seg;
 	struct elf32_phdr *phdr;
 	unsigned long load_addr, base = ULONG_MAX, top = 0, maddr = 0, mflags;
 	loff_t fpos;
+=======
+	struct elf_fdpic_loadseg *seg;
+	struct elf_phdr *phdr;
+	unsigned long load_addr, base = ULONG_MAX, top = 0, maddr = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int loop, ret;
 
 	load_addr = params->load_addr;
@@ -947,12 +1289,17 @@ static int elf_fdpic_map_file_constdisp_on_uclinux(
 	}
 
 	/* allocate one big anon block for everything */
+<<<<<<< HEAD
 	mflags = MAP_PRIVATE;
 	if (params->flags & ELF_FDPIC_FLAG_EXECUTABLE)
 		mflags |= MAP_EXECUTABLE;
 
 	maddr = vm_mmap(NULL, load_addr, top - base,
 			PROT_READ | PROT_WRITE | PROT_EXEC, mflags, 0);
+=======
+	maddr = vm_mmap(NULL, load_addr, top - base,
+			PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR_VALUE(maddr))
 		return (int) maddr;
 
@@ -965,14 +1312,22 @@ static int elf_fdpic_map_file_constdisp_on_uclinux(
 		if (params->phdrs[loop].p_type != PT_LOAD)
 			continue;
 
+<<<<<<< HEAD
 		fpos = phdr->p_offset;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seg->addr = maddr + (phdr->p_vaddr - base);
 		seg->p_vaddr = phdr->p_vaddr;
 		seg->p_memsz = phdr->p_memsz;
 
+<<<<<<< HEAD
 		ret = file->f_op->read(file, (void *) seg->addr,
 				       phdr->p_filesz, &fpos);
+=======
+		ret = read_code(file, seg->addr, phdr->p_offset,
+				       phdr->p_filesz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 
@@ -1015,8 +1370,13 @@ static int elf_fdpic_map_file_by_direct_mmap(struct elf_fdpic_params *params,
 					     struct file *file,
 					     struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	struct elf32_fdpic_loadseg *seg;
 	struct elf32_phdr *phdr;
+=======
+	struct elf_fdpic_loadseg *seg;
+	struct elf_phdr *phdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long load_addr, delta_vaddr;
 	int loop, dvset;
 
@@ -1046,10 +1406,14 @@ static int elf_fdpic_map_file_by_direct_mmap(struct elf_fdpic_params *params,
 		if (phdr->p_flags & PF_W) prot |= PROT_WRITE;
 		if (phdr->p_flags & PF_X) prot |= PROT_EXEC;
 
+<<<<<<< HEAD
 		flags = MAP_PRIVATE | MAP_DENYWRITE;
 		if (params->flags & ELF_FDPIC_FLAG_EXECUTABLE)
 			flags |= MAP_EXECUTABLE;
 
+=======
+		flags = MAP_PRIVATE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		maddr = 0;
 
 		switch (params->flags & ELF_FDPIC_FLAG_ARRANGEMENT) {
@@ -1093,9 +1457,16 @@ static int elf_fdpic_map_file_by_direct_mmap(struct elf_fdpic_params *params,
 		maddr = vm_mmap(file, maddr, phdr->p_memsz + disp, prot, flags,
 				phdr->p_offset - disp);
 
+<<<<<<< HEAD
 		kdebug("mmap[%d] <file> sz=%lx pr=%x fl=%x of=%lx --> %08lx",
 		       loop, phdr->p_memsz + disp, prot, flags,
 		       phdr->p_offset - disp, maddr);
+=======
+		kdebug("mmap[%d] <file> sz=%llx pr=%x fl=%x of=%llx --> %08lx",
+		       loop, (unsigned long long) phdr->p_memsz + disp,
+		       prot, flags, (unsigned long long) phdr->p_offset - disp,
+		       maddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (IS_ERR_VALUE(maddr))
 			return (int) maddr;
@@ -1157,8 +1528,14 @@ static int elf_fdpic_map_file_by_direct_mmap(struct elf_fdpic_params *params,
 
 #else
 		if (excess > 0) {
+<<<<<<< HEAD
 			kdebug("clear[%d] ad=%lx sz=%lx",
 			       loop, maddr + phdr->p_filesz, excess);
+=======
+			kdebug("clear[%d] ad=%llx sz=%lx", loop,
+			       (unsigned long long) maddr + phdr->p_filesz,
+			       excess);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (clear_user((void *) maddr + phdr->p_filesz, excess))
 				return -EFAULT;
 		}
@@ -1193,6 +1570,7 @@ static int elf_fdpic_map_file_by_direct_mmap(struct elf_fdpic_params *params,
  */
 #ifdef CONFIG_ELF_CORE
 
+<<<<<<< HEAD
 /*
  * Decide whether a segment is worth dumping; default is yes to be
  * sure (missing info is worse than too much; etc).
@@ -1248,6 +1626,22 @@ static int maydump(struct vm_area_struct *vma, unsigned long mm_flags)
 	       dump_ok ? "yes" : "no");
 	return dump_ok;
 }
+=======
+struct elf_prstatus_fdpic
+{
+	struct elf_prstatus_common	common;
+	elf_gregset_t pr_reg;	/* GP registers */
+	/* When using FDPIC, the loadmap addresses need to be communicated
+	 * to GDB in order for GDB to do the necessary relocations.  The
+	 * fields (below) used to communicate this information are placed
+	 * immediately after ``pr_reg'', so that the loadmap addresses may
+	 * be viewed as part of the register set if so desired.
+	 */
+	unsigned long pr_exec_fdpic_loadmap;
+	unsigned long pr_interp_fdpic_loadmap;
+	int pr_fpvalid;		/* True if math co-processor being used.  */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* An ELF note in memory */
 struct memelfnote
@@ -1271,6 +1665,7 @@ static int notesize(struct memelfnote *en)
 
 /* #define DEBUG */
 
+<<<<<<< HEAD
 #define DUMP_WRITE(addr, nr, foffset)	\
 	do { if (!dump_write(file, (addr), (nr))) return 0; *foffset += (nr); } while(0)
 
@@ -1283,12 +1678,16 @@ static int alignfile(struct file *file, loff_t *foffset)
 
 static int writenote(struct memelfnote *men, struct file *file,
 			loff_t *foffset)
+=======
+static int writenote(struct memelfnote *men, struct coredump_params *cprm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct elf_note en;
 	en.n_namesz = strlen(men->name) + 1;
 	en.n_descsz = men->datasz;
 	en.n_type = men->type;
 
+<<<<<<< HEAD
 	DUMP_WRITE(&en, sizeof(en), foffset);
 	DUMP_WRITE(men->name, en.n_namesz, foffset);
 	if (!alignfile(file, foffset))
@@ -1300,6 +1699,12 @@ static int writenote(struct memelfnote *men, struct file *file,
 	return 1;
 }
 #undef DUMP_WRITE
+=======
+	return dump_emit(cprm, &en, sizeof(en)) &&
+		dump_emit(cprm, men->name, en.n_namesz) && dump_align(cprm, 4) &&
+		dump_emit(cprm, men->data, men->datasz) && dump_align(cprm, 4);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void fill_elf_fdpic_header(struct elfhdr *elf, int segs)
 {
@@ -1335,7 +1740,11 @@ static inline void fill_elf_note_phdr(struct elf_phdr *phdr, int sz, loff_t offs
 	phdr->p_filesz = sz;
 	phdr->p_memsz = 0;
 	phdr->p_flags = 0;
+<<<<<<< HEAD
 	phdr->p_align = 0;
+=======
+	phdr->p_align = 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -1353,7 +1762,11 @@ static inline void fill_note(struct memelfnote *note, const char *name, int type
  * fill up all the fields in prstatus from the given task struct, except
  * registers which need to be filled up separately.
  */
+<<<<<<< HEAD
 static void fill_prstatus(struct elf_prstatus *prstatus,
+=======
+static void fill_prstatus(struct elf_prstatus_common *prstatus,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct task_struct *p, long signr)
 {
 	prstatus->pr_info.si_signo = prstatus->pr_cursig = signr;
@@ -1373,6 +1786,7 @@ static void fill_prstatus(struct elf_prstatus *prstatus,
 		 * group-wide total, not its individual thread total.
 		 */
 		thread_group_cputime(p, &cputime);
+<<<<<<< HEAD
 		cputime_to_timeval(cputime.utime, &prstatus->pr_utime);
 		cputime_to_timeval(cputime.stime, &prstatus->pr_stime);
 	} else {
@@ -1384,6 +1798,19 @@ static void fill_prstatus(struct elf_prstatus *prstatus,
 
 	prstatus->pr_exec_fdpic_loadmap = p->mm->context.exec_fdpic_loadmap;
 	prstatus->pr_interp_fdpic_loadmap = p->mm->context.interp_fdpic_loadmap;
+=======
+		prstatus->pr_utime = ns_to_kernel_old_timeval(cputime.utime);
+		prstatus->pr_stime = ns_to_kernel_old_timeval(cputime.stime);
+	} else {
+		u64 utime, stime;
+
+		task_cputime(p, &utime, &stime);
+		prstatus->pr_utime = ns_to_kernel_old_timeval(utime);
+		prstatus->pr_stime = ns_to_kernel_old_timeval(stime);
+	}
+	prstatus->pr_cutime = ns_to_kernel_old_timeval(p->signal->cutime);
+	prstatus->pr_cstime = ns_to_kernel_old_timeval(p->signal->cstime);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
@@ -1391,6 +1818,10 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
 {
 	const struct cred *cred;
 	unsigned int i, len;
+<<<<<<< HEAD
+=======
+	unsigned int state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* first copy the parameters from user space */
 	memset(psinfo, 0, sizeof(struct elf_prpsinfo));
@@ -1413,7 +1844,12 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
 	psinfo->pr_pgrp = task_pgrp_vnr(p);
 	psinfo->pr_sid = task_session_vnr(p);
 
+<<<<<<< HEAD
 	i = p->state ? ffz(~p->state) + 1 : 0;
+=======
+	state = READ_ONCE(p->__state);
+	i = state ? ffz(~state) + 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psinfo->pr_state = i;
 	psinfo->pr_sname = (i > 5) ? '.' : "RSDTZW"[i];
 	psinfo->pr_zomb = psinfo->pr_sname == 'Z';
@@ -1421,10 +1857,17 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
 	psinfo->pr_flag = p->flags;
 	rcu_read_lock();
 	cred = __task_cred(p);
+<<<<<<< HEAD
 	SET_UID(psinfo->pr_uid, cred->uid);
 	SET_GID(psinfo->pr_gid, cred->gid);
 	rcu_read_unlock();
 	strncpy(psinfo->pr_fname, p->comm, sizeof(psinfo->pr_fname));
+=======
+	SET_UID(psinfo->pr_uid, from_kuid_munged(cred->user_ns, cred->uid));
+	SET_GID(psinfo->pr_gid, from_kgid_munged(cred->user_ns, cred->gid));
+	rcu_read_unlock();
+	get_task_comm(psinfo->pr_fname, p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1432,6 +1875,7 @@ static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,
 /* Here is the structure in which status of each thread is captured. */
 struct elf_thread_status
 {
+<<<<<<< HEAD
 	struct list_head list;
 	struct elf_prstatus prstatus;	/* NT_PRSTATUS */
 	elf_fpregset_t fpu;		/* NT_PRFPREG */
@@ -1440,6 +1884,12 @@ struct elf_thread_status
 	elf_fpxregset_t xfpu;		/* ELF_CORE_XFPREG_TYPE */
 #endif
 	struct memelfnote notes[3];
+=======
+	struct elf_thread_status *next;
+	struct elf_prstatus_fdpic prstatus;	/* NT_PRSTATUS */
+	elf_fpregset_t fpu;		/* NT_PRFPREG */
+	struct memelfnote notes[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_notes;
 };
 
@@ -1448,6 +1898,7 @@ struct elf_thread_status
  * we need to keep a linked list of every thread's pr_status and then create
  * a single section for them in the final core file.
  */
+<<<<<<< HEAD
 static int elf_dump_thread_status(long signr, struct elf_thread_status *t)
 {
 	struct task_struct *p = t->thread;
@@ -1457,17 +1908,52 @@ static int elf_dump_thread_status(long signr, struct elf_thread_status *t)
 
 	fill_prstatus(&t->prstatus, p, signr);
 	elf_core_copy_task_regs(p, &t->prstatus.pr_reg);
+=======
+static struct elf_thread_status *elf_dump_thread_status(long signr, struct task_struct *p, int *sz)
+{
+	const struct user_regset_view *view = task_user_regset_view(p);
+	struct elf_thread_status *t;
+	int i, ret;
+
+	t = kzalloc(sizeof(struct elf_thread_status), GFP_KERNEL);
+	if (!t)
+		return t;
+
+	fill_prstatus(&t->prstatus.common, p, signr);
+	t->prstatus.pr_exec_fdpic_loadmap = p->mm->context.exec_fdpic_loadmap;
+	t->prstatus.pr_interp_fdpic_loadmap = p->mm->context.interp_fdpic_loadmap;
+	regset_get(p, &view->regsets[0],
+		   sizeof(t->prstatus.pr_reg), &t->prstatus.pr_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fill_note(&t->notes[0], "CORE", NT_PRSTATUS, sizeof(t->prstatus),
 		  &t->prstatus);
 	t->num_notes++;
+<<<<<<< HEAD
 	sz += notesize(&t->notes[0]);
 
 	t->prstatus.pr_fpvalid = elf_core_copy_task_fpregs(p, NULL, &t->fpu);
+=======
+	*sz += notesize(&t->notes[0]);
+
+	for (i = 1; i < view->n; ++i) {
+		const struct user_regset *regset = &view->regsets[i];
+		if (regset->core_note_type != NT_PRFPREG)
+			continue;
+		if (regset->active && regset->active(p, regset) <= 0)
+			continue;
+		ret = regset_get(p, regset, sizeof(t->fpu), &t->fpu);
+		if (ret >= 0)
+			t->prstatus.pr_fpvalid = 1;
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (t->prstatus.pr_fpvalid) {
 		fill_note(&t->notes[1], "CORE", NT_PRFPREG, sizeof(t->fpu),
 			  &t->fpu);
 		t->num_notes++;
+<<<<<<< HEAD
 		sz += notesize(&t->notes[1]);
 	}
 
@@ -1480,6 +1966,11 @@ static int elf_dump_thread_status(long signr, struct elf_thread_status *t)
 	}
 #endif
 	return sz;
+=======
+		*sz += notesize(&t->notes[1]);
+	}
+	return t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fill_extnum_info(struct elfhdr *elf, struct elf_shdr *shdr4extnum,
@@ -1501,6 +1992,7 @@ static void fill_extnum_info(struct elfhdr *elf, struct elf_shdr *shdr4extnum,
 /*
  * dump the segments for an MMU process
  */
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 static int elf_fdpic_dump_segments(struct file *file, size_t *size,
 			   unsigned long *limit, unsigned long mm_flags)
@@ -1571,6 +2063,21 @@ static size_t elf_core_vma_data_size(unsigned long mm_flags)
 		if (maydump(vma, mm_flags))
 			size += vma->vm_end - vma->vm_start;
 	return size;
+=======
+static bool elf_fdpic_dump_segments(struct coredump_params *cprm,
+				    struct core_vma_metadata *vma_meta,
+				    int vma_count)
+{
+	int i;
+
+	for (i = 0; i < vma_count; i++) {
+		struct core_vma_metadata *meta = vma_meta + i;
+
+		if (!dump_user_range(cprm, meta->start, meta->dump_size))
+			return false;
+	}
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1582,6 +2089,7 @@ static size_t elf_core_vma_data_size(unsigned long mm_flags)
  */
 static int elf_fdpic_core_dump(struct coredump_params *cprm)
 {
+<<<<<<< HEAD
 #define	NUM_NOTES	6
 	int has_dumped = 0;
 	mm_segment_t fs;
@@ -1601,12 +2109,23 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 #ifdef ELF_CORE_COPY_XFPREGS
 	elf_fpxregset_t *xfpu = NULL;
 #endif
+=======
+	int has_dumped = 0;
+	int segs;
+	int i;
+	struct elfhdr *elf = NULL;
+	loff_t offset = 0, dataoff;
+	struct memelfnote psinfo_note, auxv_note;
+	struct elf_prpsinfo *psinfo = NULL;	/* NT_PRPSINFO */
+	struct elf_thread_status *thread_list = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int thread_status_size = 0;
 	elf_addr_t *auxv;
 	struct elf_phdr *phdr4note = NULL;
 	struct elf_shdr *shdr4extnum = NULL;
 	Elf_Half e_phnum;
 	elf_addr_t e_shoff;
+<<<<<<< HEAD
 
 	/*
 	 * We no longer stop all VM operations.
@@ -1619,10 +2138,15 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	 * the map_count or the pages allocated. So no possibility of crashing
 	 * exists while dumping the mm->vm_next areas to the core file.
 	 */
+=======
+	struct core_thread *ct;
+	struct elf_thread_status *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* alloc memory for large data structures: too large to be on stack */
 	elf = kmalloc(sizeof(*elf), GFP_KERNEL);
 	if (!elf)
+<<<<<<< HEAD
 		goto cleanup;
 	prstatus = kzalloc(sizeof(*prstatus), GFP_KERNEL);
 	if (!prstatus)
@@ -1672,6 +2196,33 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 
 	segs = current->mm->map_count;
 	segs += elf_core_extra_phdrs();
+=======
+		goto end_coredump;
+	psinfo = kmalloc(sizeof(*psinfo), GFP_KERNEL);
+	if (!psinfo)
+		goto end_coredump;
+
+	for (ct = current->signal->core_state->dumper.next;
+					ct; ct = ct->next) {
+		tmp = elf_dump_thread_status(cprm->siginfo->si_signo,
+					     ct->task, &thread_status_size);
+		if (!tmp)
+			goto end_coredump;
+
+		tmp->next = thread_list;
+		thread_list = tmp;
+	}
+
+	/* now collect the dump for the current */
+	tmp = elf_dump_thread_status(cprm->siginfo->si_signo,
+				     current, &thread_status_size);
+	if (!tmp)
+		goto end_coredump;
+	tmp->next = thread_list;
+	thread_list = tmp;
+
+	segs = cprm->vma_count + elf_core_extra_phdrs(cprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* for notes section */
 	segs++;
@@ -1685,13 +2236,17 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	fill_elf_fdpic_header(elf, e_phnum);
 
 	has_dumped = 1;
+<<<<<<< HEAD
 	current->flags |= PF_DUMPCORE;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set up the notes in similar form to SVR4 core dumps made
 	 * with info from their /proc.
 	 */
 
+<<<<<<< HEAD
 	fill_note(notes + 0, "CORE", NT_PRSTATUS, sizeof(*prstatus), prstatus);
 	fill_psinfo(psinfo, current->group_leader, current->mm);
 	fill_note(notes + 1, "CORE", NT_PRPSINFO, sizeof(*psinfo), psinfo);
@@ -1700,10 +2255,18 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 
 	auxv = (elf_addr_t *) current->mm->saved_auxv;
 
+=======
+	fill_psinfo(psinfo, current->group_leader, current->mm);
+	fill_note(&psinfo_note, "CORE", NT_PRPSINFO, sizeof(*psinfo), psinfo);
+	thread_status_size += notesize(&psinfo_note);
+
+	auxv = (elf_addr_t *) current->mm->saved_auxv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 0;
 	do
 		i += 2;
 	while (auxv[i - 2] != AT_NULL);
+<<<<<<< HEAD
 	fill_note(&notes[numnote++], "CORE", NT_AUXV,
 		  i * sizeof(elf_addr_t), auxv);
 
@@ -1741,12 +2304,32 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 		fill_elf_note_phdr(phdr4note, sz, offset);
 		offset += sz;
 	}
+=======
+	fill_note(&auxv_note, "CORE", NT_AUXV, i * sizeof(elf_addr_t), auxv);
+	thread_status_size += notesize(&auxv_note);
+
+	offset = sizeof(*elf);				/* ELF header */
+	offset += segs * sizeof(struct elf_phdr);	/* Program headers */
+
+	/* Write notes phdr entry */
+	phdr4note = kmalloc(sizeof(*phdr4note), GFP_KERNEL);
+	if (!phdr4note)
+		goto end_coredump;
+
+	fill_elf_note_phdr(phdr4note, thread_status_size, offset);
+	offset += thread_status_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Page-align dumped data */
 	dataoff = offset = roundup(offset, ELF_EXEC_PAGESIZE);
 
+<<<<<<< HEAD
 	offset += elf_core_vma_data_size(cprm->mm_flags);
 	offset += elf_core_extra_data_size();
+=======
+	offset += cprm->vma_data_size;
+	offset += elf_core_extra_data_size(cprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e_shoff = offset;
 
 	if (e_phnum == PN_XNUM) {
@@ -1758,6 +2341,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 
 	offset = dataoff;
 
+<<<<<<< HEAD
 	size += sizeof(*elf);
 	if (size > cprm->limit || !dump_write(cprm->file, elf, sizeof(*elf)))
 		goto end_coredump;
@@ -1827,6 +2411,73 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 		if (size > cprm->limit
 		    || !dump_write(cprm->file, shdr4extnum,
 				   sizeof(*shdr4extnum)))
+=======
+	if (!dump_emit(cprm, elf, sizeof(*elf)))
+		goto end_coredump;
+
+	if (!dump_emit(cprm, phdr4note, sizeof(*phdr4note)))
+		goto end_coredump;
+
+	/* write program headers for segments dump */
+	for (i = 0; i < cprm->vma_count; i++) {
+		struct core_vma_metadata *meta = cprm->vma_meta + i;
+		struct elf_phdr phdr;
+		size_t sz;
+
+		sz = meta->end - meta->start;
+
+		phdr.p_type = PT_LOAD;
+		phdr.p_offset = offset;
+		phdr.p_vaddr = meta->start;
+		phdr.p_paddr = 0;
+		phdr.p_filesz = meta->dump_size;
+		phdr.p_memsz = sz;
+		offset += phdr.p_filesz;
+		phdr.p_flags = 0;
+		if (meta->flags & VM_READ)
+			phdr.p_flags |= PF_R;
+		if (meta->flags & VM_WRITE)
+			phdr.p_flags |= PF_W;
+		if (meta->flags & VM_EXEC)
+			phdr.p_flags |= PF_X;
+		phdr.p_align = ELF_EXEC_PAGESIZE;
+
+		if (!dump_emit(cprm, &phdr, sizeof(phdr)))
+			goto end_coredump;
+	}
+
+	if (!elf_core_write_extra_phdrs(cprm, offset))
+		goto end_coredump;
+
+	/* write out the notes section */
+	if (!writenote(thread_list->notes, cprm))
+		goto end_coredump;
+	if (!writenote(&psinfo_note, cprm))
+		goto end_coredump;
+	if (!writenote(&auxv_note, cprm))
+		goto end_coredump;
+	for (i = 1; i < thread_list->num_notes; i++)
+		if (!writenote(thread_list->notes + i, cprm))
+			goto end_coredump;
+
+	/* write out the thread status notes section */
+	for (tmp = thread_list->next; tmp; tmp = tmp->next) {
+		for (i = 0; i < tmp->num_notes; i++)
+			if (!writenote(&tmp->notes[i], cprm))
+				goto end_coredump;
+	}
+
+	dump_skip_to(cprm, dataoff);
+
+	if (!elf_fdpic_dump_segments(cprm, cprm->vma_meta, cprm->vma_count))
+		goto end_coredump;
+
+	if (!elf_core_write_extra_data(cprm))
+		goto end_coredump;
+
+	if (e_phnum == PN_XNUM) {
+		if (!dump_emit(cprm, shdr4extnum, sizeof(*shdr4extnum)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto end_coredump;
 	}
 
@@ -1838,6 +2489,7 @@ static int elf_fdpic_core_dump(struct coredump_params *cprm)
 	}
 
 end_coredump:
+<<<<<<< HEAD
 	set_fs(fs);
 
 cleanup:
@@ -1858,6 +2510,18 @@ cleanup:
 #endif
 	return has_dumped;
 #undef NUM_NOTES
+=======
+	while (thread_list) {
+		tmp = thread_list;
+		thread_list = thread_list->next;
+		kfree(tmp);
+	}
+	kfree(phdr4note);
+	kfree(elf);
+	kfree(psinfo);
+	kfree(shdr4extnum);
+	return has_dumped;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif		/* CONFIG_ELF_CORE */

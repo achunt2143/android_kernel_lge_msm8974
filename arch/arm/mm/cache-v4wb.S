@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/cache-v4wb.S
  *
  *  Copyright (C) 1997-2002 Russell king
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -10,6 +15,12 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <asm/memory.h>
+=======
+ */
+#include <linux/linkage.h>
+#include <linux/init.h>
+#include <asm/assembler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include "proc-macros.S"
 
@@ -46,6 +57,10 @@
 #define CACHE_DLIMIT	(CACHE_DSIZE * 4)
 
 	.data
+<<<<<<< HEAD
+=======
+	.align	2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 flush_base:
 	.long	FLUSH_BASE
 	.text
@@ -58,7 +73,11 @@ flush_base:
 ENTRY(v4wb_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(v4wb_flush_icache_all)
 
 /*
@@ -94,7 +113,11 @@ __flush_whole_cache:
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -122,7 +145,11 @@ ENTRY(v4wb_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -167,10 +194,17 @@ ENTRY(v4wb_coherent_user_range)
 	add	r0, r0, #CACHE_DLINESIZE
 	cmp	r0, r1
 	blo	1b
+<<<<<<< HEAD
 	mov	ip, #0
 	mcr	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
 	mov	pc, lr
+=======
+	mov	r0, #0
+	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -195,7 +229,11 @@ v4wb_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_clean_range(start, end)
@@ -212,7 +250,11 @@ v4wb_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_flush_range(start, end)
@@ -248,7 +290,11 @@ ENDPROC(v4wb_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(v4wb_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(v4wb_dma_unmap_area)
 
 	.globl	v4wb_flush_kern_cache_louis

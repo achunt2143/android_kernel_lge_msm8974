@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-memset.S
  *
@@ -17,7 +21,11 @@
  * The algorithm for the leading and trailing quadwords remains the same,
  * however the loop has been unrolled to enable better memory throughput,
  * and the code has been replicated for each of the entry points: __memset
+<<<<<<< HEAD
  * and __memsetw to permit better scheduling to eliminate the stalling
+=======
+ * and __memset16 to permit better scheduling to eliminate the stalling
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * encountered during the mask replication.
  * A future enhancement might be to put in a byte store loop for really
  * small (say < 32 bytes) memset()s.  Whether or not that change would be
@@ -26,6 +34,7 @@
  * as fixes will need to be made in multiple places.  The performance gain
  * is worth it.
  */
+<<<<<<< HEAD
 
 	.set noat
 	.set noreorder
@@ -38,6 +47,21 @@
 	.ent __memset
 .align 5
 __memset:
+=======
+#include <linux/export.h>
+	.set noat
+	.set noreorder
+.text
+	.globl memset
+	.globl __memset
+	.globl ___memset
+	.globl __memset16
+	.globl __constant_c_memset
+
+	.ent ___memset
+.align 5
+___memset:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.frame $30,0,$26,0
 	.prologue 0
 
@@ -227,7 +251,12 @@ end_b:
 	nop
 	nop
 	ret $31,($26),1		# L0 :
+<<<<<<< HEAD
 	.end __memset
+=======
+	.end ___memset
+	EXPORT_SYMBOL(___memset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is the original body of code, prior to replication and
@@ -405,15 +434,25 @@ end:
 	nop
 	ret $31,($26),1		# L0 :
 	.end __constant_c_memset
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__constant_c_memset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a replicant of the __constant_c_memset code, rescheduled
 	 * to mask stalls.  Note that entry point names also had to change
 	 */
 	.align 5
+<<<<<<< HEAD
 	.ent __memsetw
 
 __memsetw:
+=======
+	.ent __memset16
+
+__memset16:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.frame $30,0,$26,0
 	.prologue 0
 
@@ -592,6 +631,16 @@ end_w:
 	nop
 	ret $31,($26),1		# L0 :
 
+<<<<<<< HEAD
 	.end __memsetw
 
 memset = __memset
+=======
+	.end __memset16
+	EXPORT_SYMBOL(__memset16)
+
+memset = ___memset
+__memset = ___memset
+	EXPORT_SYMBOL(memset)
+	EXPORT_SYMBOL(__memset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

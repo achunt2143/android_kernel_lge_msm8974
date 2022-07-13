@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      Low-level parallel-support for PC-style hardware integrated in the 
  *	LASI-Controller (on GSC-Bus) for HP-PARISC Workstations
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
@@ -9,6 +14,9 @@
  *
  *	(C) 1999-2001 by Helge Deller <deller@gmx.de>
  *
+=======
+ *	(C) 1999-2001 by Helge Deller <deller@gmx.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 
  * based on parport_pc.c by 
  * 	    Grant Guenther <grant@torque.net>
@@ -33,8 +41,12 @@
 #include <linux/sysctl.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/dma.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/superio.h>
 
 #include <linux/parport.h>
@@ -46,7 +58,10 @@
 
 MODULE_AUTHOR("Helge Deller <deller@gmx.de>");
 MODULE_DESCRIPTION("HP-PARISC PC-style parallel port driver");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("integrated PC-style parallel port");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 
@@ -137,7 +152,11 @@ struct parport_operations parport_gsc_ops =
 /*
  * Checks for port existence, all ports support SPP MODE
  */
+<<<<<<< HEAD
 static int __devinit parport_SPP_supported(struct parport *pb)
+=======
+static int parport_SPP_supported(struct parport *pb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char r, w;
 
@@ -201,7 +220,11 @@ static int __devinit parport_SPP_supported(struct parport *pb)
  * be misdetected here is rather academic. 
  */
 
+<<<<<<< HEAD
 static int __devinit parport_PS2_supported(struct parport *pb)
+=======
+static int parport_PS2_supported(struct parport *pb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ok = 0;
   
@@ -232,10 +255,16 @@ static int __devinit parport_PS2_supported(struct parport *pb)
 
 /* --- Initialisation code -------------------------------- */
 
+<<<<<<< HEAD
 struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 						 unsigned long base_hi,
 						 int irq, int dma,
 						 struct pci_dev *dev)
+=======
+static struct parport *parport_gsc_probe_port(unsigned long base,
+				       unsigned long base_hi, int irq,
+				       struct parisc_device *padev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport_gsc_private *priv;
 	struct parport_operations *ops;
@@ -244,6 +273,7 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 
 	priv = kzalloc (sizeof (struct parport_gsc_private), GFP_KERNEL);
 	if (!priv) {
+<<<<<<< HEAD
 		printk (KERN_DEBUG "parport (0x%lx): no memory!\n", base);
 		return NULL;
 	}
@@ -264,6 +294,24 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 	p->base_hi = base_hi;
 	p->irq = irq;
 	p->dma = dma;
+=======
+		printk(KERN_DEBUG "parport (0x%lx): no memory!\n", base);
+		return NULL;
+	}
+	ops = kmemdup(&parport_gsc_ops, sizeof(struct parport_operations),
+		      GFP_KERNEL);
+	if (!ops) {
+		printk(KERN_DEBUG "parport (0x%lx): no memory for ops!\n",
+		       base);
+		kfree (priv);
+		return NULL;
+	}
+	priv->ctr = 0xc;
+	priv->ctr_writable = 0xff;
+	p->base = base;
+	p->base_hi = base_hi;
+	p->irq = irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->modes = PARPORT_MODE_PCSPP | PARPORT_MODE_SAFEININT;
 	p->ops = ops;
 	p->private_data = priv;
@@ -271,6 +319,10 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 	if (!parport_SPP_supported (p)) {
 		/* No port. */
 		kfree (priv);
+<<<<<<< HEAD
+=======
+		kfree(ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	parport_PS2_supported (p);
@@ -282,16 +334,25 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 		return NULL;
 	}
 
+<<<<<<< HEAD
+=======
+	p->dev = &padev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->base_hi = base_hi;
 	p->modes = tmp.modes;
 	p->size = (p->modes & PARPORT_MODE_EPP)?8:3;
 	p->private_data = priv;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: PC-style at 0x%lx", p->name, p->base);
+=======
+	pr_info("%s: PC-style at 0x%lx", p->name, p->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->irq = irq;
 	if (p->irq == PARPORT_IRQ_AUTO) {
 		p->irq = PARPORT_IRQ_NONE;
 	}
+<<<<<<< HEAD
 	if (p->irq != PARPORT_IRQ_NONE) {
 		printk(", irq %d", p->irq);
 
@@ -305,26 +366,51 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 
 	printk(" [");
 #define printmode(x) {if(p->modes&PARPORT_MODE_##x){printk("%s%s",f?",":"",#x);f++;}}
+=======
+	if (p->irq != PARPORT_IRQ_NONE)
+		pr_cont(", irq %d", p->irq);
+
+	pr_cont(" [");
+#define printmode(x)							\
+do {									\
+	if (p->modes & PARPORT_MODE_##x)				\
+		pr_cont("%s%s", f++ ? "," : "", #x);			\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		int f = 0;
 		printmode(PCSPP);
 		printmode(TRISTATE);
+<<<<<<< HEAD
 		printmode(COMPAT)
+=======
+		printmode(COMPAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printmode(EPP);
 //		printmode(ECP);
 //		printmode(DMA);
 	}
 #undef printmode
+<<<<<<< HEAD
 	printk("]\n");
+=======
+	pr_cont("]\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p->irq != PARPORT_IRQ_NONE) {
 		if (request_irq (p->irq, parport_irq_handler,
 				 0, p->name, p)) {
+<<<<<<< HEAD
 			printk (KERN_WARNING "%s: irq %d in use, "
 				"resorting to polled operation\n",
 				p->name, p->irq);
 			p->irq = PARPORT_IRQ_NONE;
 			p->dma = PARPORT_DMA_NONE;
+=======
+			pr_warn("%s: irq %d in use, resorting to polled operation\n",
+				p->name, p->irq);
+			p->irq = PARPORT_IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -344,15 +430,25 @@ struct parport *__devinit parport_gsc_probe_port (unsigned long base,
 
 #define PARPORT_GSC_OFFSET 0x800
 
+<<<<<<< HEAD
 static int __devinitdata parport_count;
 
 static int __devinit parport_init_chip(struct parisc_device *dev)
+=======
+static int parport_count;
+
+static int __init parport_init_chip(struct parisc_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport *p;
 	unsigned long port;
 
 	if (!dev->irq) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "IRQ not found for parallel device at 0x%llx\n",
+=======
+		pr_warn("IRQ not found for parallel device at 0x%llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)dev->hpa.start);
 		return -ENODEV;
 	}
@@ -365,6 +461,7 @@ static int __devinit parport_init_chip(struct parisc_device *dev)
 	if (boot_cpu_data.cpu_type > pcxt && !pdc_add_valid(port+4)) {
 
 		/* Initialize bidirectional-mode (0x10) & data-tranfer-mode #1 (0x20) */
+<<<<<<< HEAD
 		printk("%s: initialize bidirectional-mode.\n", __func__);
 		parport_writeb ( (0x10 + 0x20), port + 4);
 
@@ -374,6 +471,16 @@ static int __devinit parport_init_chip(struct parisc_device *dev)
 	
 	p = parport_gsc_probe_port(port, 0, dev->irq,
 			/* PARPORT_IRQ_NONE */ PARPORT_DMA_NONE, NULL);
+=======
+		pr_info("%s: initialize bidirectional-mode\n", __func__);
+		parport_writeb ( (0x10 + 0x20), port + 4);
+
+	} else {
+		pr_info("%s: enhanced parport-modes not supported\n", __func__);
+	}
+	
+	p = parport_gsc_probe_port(port, 0, dev->irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p)
 		parport_count++;
 	dev_set_drvdata(&dev->dev, p);
@@ -381,6 +488,7 @@ static int __devinit parport_init_chip(struct parisc_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit parport_remove_chip(struct parisc_device *dev)
 {
 	struct parport *p = dev_get_drvdata(&dev->dev);
@@ -396,20 +504,37 @@ static int __devexit parport_remove_chip(struct parisc_device *dev)
 			pci_free_consistent(priv->dev, PAGE_SIZE,
 					    priv->dma_buf,
 					    priv->dma_handle);
+=======
+static void __exit parport_remove_chip(struct parisc_device *dev)
+{
+	struct parport *p = dev_get_drvdata(&dev->dev);
+	if (p) {
+		struct parport_operations *ops = p->ops;
+		parport_remove_port(p);
+		if (p->irq != PARPORT_IRQ_NONE)
+			free_irq(p->irq, p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree (p->private_data);
 		parport_put_port(p);
 		kfree (ops); /* hope no-one cached it */
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
 static struct parisc_device_id parport_tbl[] = {
+=======
+}
+
+static const struct parisc_device_id parport_tbl[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x74 },
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE(parisc, parport_tbl);
 
+<<<<<<< HEAD
 static struct parisc_driver parport_driver = {
 	.name		= "Parallel",
 	.id_table	= parport_tbl,
@@ -418,11 +543,25 @@ static struct parisc_driver parport_driver = {
 };
 
 int __devinit parport_gsc_init(void)
+=======
+static struct parisc_driver parport_driver __refdata = {
+	.name		= "Parallel",
+	.id_table	= parport_tbl,
+	.probe		= parport_init_chip,
+	.remove		= __exit_p(parport_remove_chip),
+};
+
+static int parport_gsc_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return register_parisc_driver(&parport_driver);
 }
 
+<<<<<<< HEAD
 static void __devexit parport_gsc_exit(void)
+=======
+static void parport_gsc_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unregister_parisc_driver(&parport_driver);
 }

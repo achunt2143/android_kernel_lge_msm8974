@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * davinci_mmc.c - TI DaVinci MMC/SD/SDIO driver
  *
  * Copyright (C) 2006 Texas Instruments.
  *       Original author: Purushotam Kumar
  * Copyright (C) 2009 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,11 +37,22 @@
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/mmc/mmc.h>
 
 #include <mach/mmc.h>
 #include <mach/edma.h>
+=======
+#include <linux/dmaengine.h>
+#include <linux/dma-mapping.h>
+#include <linux/mmc/mmc.h>
+#include <linux/of.h>
+#include <linux/mmc/slot-gpio.h>
+#include <linux/interrupt.h>
+
+#include <linux/platform_data/mmc-davinci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register Definitions
@@ -170,7 +188,11 @@ module_param(poll_loopcount, uint, S_IRUGO);
 MODULE_PARM_DESC(poll_loopcount,
 		 "Maximum polling loop count. Default = 32");
 
+<<<<<<< HEAD
 static unsigned __initdata use_dma = 1;
+=======
+static unsigned use_dma = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(use_dma, uint, 0);
 MODULE_PARM_DESC(use_dma, "Whether to use DMA or not. Default = 1");
 
@@ -189,6 +211,7 @@ struct mmc_davinci_host {
 #define DAVINCI_MMC_DATADIR_READ	1
 #define DAVINCI_MMC_DATADIR_WRITE	2
 	unsigned char data_dir;
+<<<<<<< HEAD
 	unsigned char suspended;
 
 	/* buffer is used during PIO of one scatterlist segment, and
@@ -200,11 +223,19 @@ struct mmc_davinci_host {
 	u32 bytes_left;
 
 	u32 rxdma, txdma;
+=======
+
+	u32 bytes_left;
+
+	struct dma_chan *dma_tx;
+	struct dma_chan *dma_rx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool use_dma;
 	bool do_dma;
 	bool sdio_int;
 	bool active_request;
 
+<<<<<<< HEAD
 	/* Scatterlist DMA uses one or more parameter RAM entries:
 	 * the main one (associated with rxdma or txdma) plus zero or
 	 * more links.  The entries for a given transfer differ only
@@ -218,6 +249,11 @@ struct mmc_davinci_host {
 	/* For PIO we walk scatterlists one segment at a time. */
 	unsigned int		sg_len;
 	struct scatterlist *sg;
+=======
+	/* For PIO we walk scatterlists one segment at a time. */
+	struct sg_mapping_iter sg_miter;
+	unsigned int		sg_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Version of the MMC/SD controller */
 	u8 version;
@@ -233,6 +269,7 @@ struct mmc_davinci_host {
 static irqreturn_t mmc_davinci_irq(int irq, void *dev_id);
 
 /* PIO only */
+<<<<<<< HEAD
 static void mmc_davinci_sg_to_buf(struct mmc_davinci_host *host)
 {
 	host->buffer_bytes_left = sg_dma_len(host->sg);
@@ -257,6 +294,24 @@ static void davinci_fifo_data_trans(struct mmc_davinci_host *host,
 		n = host->buffer_bytes_left;
 	host->buffer_bytes_left -= n;
 	host->bytes_left -= n;
+=======
+static void davinci_fifo_data_trans(struct mmc_davinci_host *host,
+					unsigned int n)
+{
+	struct sg_mapping_iter *sgm = &host->sg_miter;
+	u8 *p;
+	unsigned int i;
+
+	/*
+	 * By adjusting sgm->consumed this will give a pointer to the
+	 * current index into the sgm.
+	 */
+	if (!sg_miter_next(sgm)) {
+		dev_err(mmc_dev(host->mmc), "ran out of sglist prematurely\n");
+		return;
+	}
+	p = sgm->addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NOTE:  we never transfer more than rw_threshold bytes
 	 * to/from the fifo here; there's no I/O overlap.
@@ -281,7 +336,13 @@ static void davinci_fifo_data_trans(struct mmc_davinci_host *host,
 			p = p + (n & 3);
 		}
 	}
+<<<<<<< HEAD
 	host->buffer = p;
+=======
+
+	sgm->consumed = n;
+	host->bytes_left -= n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmc_davinci_start_command(struct mmc_davinci_host *host,
@@ -309,7 +370,11 @@ static void mmc_davinci_start_command(struct mmc_davinci_host *host,
 		default:
 			s = ", (R? response)";
 			break;
+<<<<<<< HEAD
 		}; s; }));
+=======
+		} s; }));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->cmd = cmd;
 
 	switch (mmc_resp_type(cmd)) {
@@ -319,7 +384,11 @@ static void mmc_davinci_start_command(struct mmc_davinci_host *host,
 		 * then it's harmless for us to allow it.
 		 */
 		cmd_reg |= MMCCMD_BSYEXP;
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MMC_RSP_R1:		/* 48 bits, CRC */
 		cmd_reg |= MMCCMD_RSPFMT_R1456;
 		break;
@@ -351,10 +420,13 @@ static void mmc_davinci_start_command(struct mmc_davinci_host *host,
 	if (cmd->data)
 		cmd_reg |= MMCCMD_WDATX;
 
+<<<<<<< HEAD
 	/* Setting whether stream or block transfer */
 	if (cmd->flags & MMC_DATA_STREAM)
 		cmd_reg |= MMCCMD_STRMTP;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setting whether data read or write */
 	if (host->data_dir == DAVINCI_MMC_DATADIR_WRITE)
 		cmd_reg |= MMCCMD_DTRW;
@@ -410,6 +482,7 @@ static void mmc_davinci_start_command(struct mmc_davinci_host *host,
 
 static void davinci_abort_dma(struct mmc_davinci_host *host)
 {
+<<<<<<< HEAD
 	int sync_dev;
 
 	if (host->data_dir == DAVINCI_MMC_DATADIR_READ)
@@ -557,6 +630,76 @@ static void mmc_davinci_send_dma_request(struct mmc_davinci_host *host,
 		edma_clear_event(channel);
 
 	edma_start(channel);
+=======
+	struct dma_chan *sync_dev;
+
+	if (host->data_dir == DAVINCI_MMC_DATADIR_READ)
+		sync_dev = host->dma_rx;
+	else
+		sync_dev = host->dma_tx;
+
+	dmaengine_terminate_all(sync_dev);
+}
+
+static int mmc_davinci_send_dma_request(struct mmc_davinci_host *host,
+		struct mmc_data *data)
+{
+	struct dma_chan *chan;
+	struct dma_async_tx_descriptor *desc;
+	int ret = 0;
+
+	if (host->data_dir == DAVINCI_MMC_DATADIR_WRITE) {
+		struct dma_slave_config dma_tx_conf = {
+			.direction = DMA_MEM_TO_DEV,
+			.dst_addr = host->mem_res->start + DAVINCI_MMCDXR,
+			.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
+			.dst_maxburst =
+				rw_threshold / DMA_SLAVE_BUSWIDTH_4_BYTES,
+		};
+		chan = host->dma_tx;
+		dmaengine_slave_config(host->dma_tx, &dma_tx_conf);
+
+		desc = dmaengine_prep_slave_sg(host->dma_tx,
+				data->sg,
+				host->sg_len,
+				DMA_MEM_TO_DEV,
+				DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+		if (!desc) {
+			dev_dbg(mmc_dev(host->mmc),
+				"failed to allocate DMA TX descriptor");
+			ret = -1;
+			goto out;
+		}
+	} else {
+		struct dma_slave_config dma_rx_conf = {
+			.direction = DMA_DEV_TO_MEM,
+			.src_addr = host->mem_res->start + DAVINCI_MMCDRR,
+			.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
+			.src_maxburst =
+				rw_threshold / DMA_SLAVE_BUSWIDTH_4_BYTES,
+		};
+		chan = host->dma_rx;
+		dmaengine_slave_config(host->dma_rx, &dma_rx_conf);
+
+		desc = dmaengine_prep_slave_sg(host->dma_rx,
+				data->sg,
+				host->sg_len,
+				DMA_DEV_TO_MEM,
+				DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+		if (!desc) {
+			dev_dbg(mmc_dev(host->mmc),
+				"failed to allocate DMA RX descriptor");
+			ret = -1;
+			goto out;
+		}
+	}
+
+	dmaengine_submit(desc);
+	dma_async_issue_pending(chan);
+
+out:
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mmc_davinci_start_dma_transfer(struct mmc_davinci_host *host,
@@ -564,25 +707,38 @@ static int mmc_davinci_start_dma_transfer(struct mmc_davinci_host *host,
 {
 	int i;
 	int mask = rw_threshold - 1;
+<<<<<<< HEAD
 
 	host->sg_len = dma_map_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
 				((data->flags & MMC_DATA_WRITE)
 				? DMA_TO_DEVICE
 				: DMA_FROM_DEVICE));
+=======
+	int ret = 0;
+
+	host->sg_len = dma_map_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
+				  mmc_get_dma_dir(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* no individual DMA segment should need a partial FIFO */
 	for (i = 0; i < host->sg_len; i++) {
 		if (sg_dma_len(data->sg + i) & mask) {
 			dma_unmap_sg(mmc_dev(host->mmc),
+<<<<<<< HEAD
 					data->sg, data->sg_len,
 					(data->flags & MMC_DATA_WRITE)
 					? DMA_TO_DEVICE
 					: DMA_FROM_DEVICE);
+=======
+				     data->sg, data->sg_len,
+				     mmc_get_dma_dir(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 	}
 
 	host->do_dma = 1;
+<<<<<<< HEAD
 	mmc_davinci_send_dma_request(host, data);
 
 	return 0;
@@ -649,6 +805,38 @@ free_master_write:
 	edma_free_channel(host->txdma);
 
 	return r;
+=======
+	ret = mmc_davinci_send_dma_request(host, data);
+
+	return ret;
+}
+
+static void davinci_release_dma_channels(struct mmc_davinci_host *host)
+{
+	if (!host->use_dma)
+		return;
+
+	dma_release_channel(host->dma_tx);
+	dma_release_channel(host->dma_rx);
+}
+
+static int davinci_acquire_dma_channels(struct mmc_davinci_host *host)
+{
+	host->dma_tx = dma_request_chan(mmc_dev(host->mmc), "tx");
+	if (IS_ERR(host->dma_tx)) {
+		dev_err(mmc_dev(host->mmc), "Can't get dma_tx channel\n");
+		return PTR_ERR(host->dma_tx);
+	}
+
+	host->dma_rx = dma_request_chan(mmc_dev(host->mmc), "rx");
+	if (IS_ERR(host->dma_rx)) {
+		dev_err(mmc_dev(host->mmc), "Can't get dma_rx channel\n");
+		dma_release_channel(host->dma_tx);
+		return PTR_ERR(host->dma_rx);
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------------*/
@@ -659,6 +847,10 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 	int fifo_lev = (rw_threshold == 32) ? MMCFIFOCTL_FIFOLEV : 0;
 	int timeout;
 	struct mmc_data *data = req->data;
+<<<<<<< HEAD
+=======
+	unsigned int flags = SG_MITER_ATOMIC; /* Used from IRQ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->version == MMC_CTLR_VERSION_2)
 		fifo_lev = (rw_threshold == 64) ? MMCFIFOCTL_FIFOLEV : 0;
@@ -671,8 +863,12 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 		return;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(mmc_dev(host->mmc), "%s %s, %d blocks of %d bytes\n",
 		(data->flags & MMC_DATA_STREAM) ? "stream" : "block",
+=======
+	dev_dbg(mmc_dev(host->mmc), "%s, %d blocks of %d bytes\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(data->flags & MMC_DATA_WRITE) ? "write" : "read",
 		data->blocks, data->blksz);
 	dev_dbg(mmc_dev(host->mmc), "  DTO %d cycles + %d ns\n",
@@ -687,25 +883,40 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 	writel(data->blksz, host->base + DAVINCI_MMCBLEN);
 
 	/* Configure the FIFO */
+<<<<<<< HEAD
 	switch (data->flags & MMC_DATA_WRITE) {
 	case MMC_DATA_WRITE:
+=======
+	if (data->flags & MMC_DATA_WRITE) {
+		flags |= SG_MITER_FROM_SG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->data_dir = DAVINCI_MMC_DATADIR_WRITE;
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_WR | MMCFIFOCTL_FIFORST,
 			host->base + DAVINCI_MMCFIFOCTL);
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_WR,
 			host->base + DAVINCI_MMCFIFOCTL);
+<<<<<<< HEAD
 		break;
 
 	default:
+=======
+	} else {
+		flags |= SG_MITER_TO_SG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->data_dir = DAVINCI_MMC_DATADIR_READ;
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_RD | MMCFIFOCTL_FIFORST,
 			host->base + DAVINCI_MMCFIFOCTL);
 		writel(fifo_lev | MMCFIFOCTL_FIFODIR_RD,
 			host->base + DAVINCI_MMCFIFOCTL);
+<<<<<<< HEAD
 		break;
 	}
 
 	host->buffer = NULL;
+=======
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->bytes_left = data->blocks * data->blksz;
 
 	/* For now we try to use DMA whenever we won't need partial FIFO
@@ -723,8 +934,12 @@ mmc_davinci_prepare_data(struct mmc_davinci_host *host, struct mmc_request *req)
 	} else {
 		/* Revert to CPU Copy */
 		host->sg_len = data->sg_len;
+<<<<<<< HEAD
 		host->sg = host->data->sg;
 		mmc_davinci_sg_to_buf(host);
+=======
+		sg_miter_start(&host->sg_miter, data->sg, data->sg_len, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -930,9 +1145,13 @@ mmc_davinci_xfer_done(struct mmc_davinci_host *host, struct mmc_data *data)
 		davinci_abort_dma(host);
 
 		dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
+<<<<<<< HEAD
 			     (data->flags & MMC_DATA_WRITE)
 			     ? DMA_TO_DEVICE
 			     : DMA_FROM_DEVICE);
+=======
+			     mmc_get_dma_dir(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->do_dma = false;
 	}
 	host->data_dir = DAVINCI_MMC_DATADIR_NONE;
@@ -992,6 +1211,11 @@ davinci_abort_data(struct mmc_davinci_host *host, struct mmc_data *data)
 {
 	mmc_davinci_reset_ctrl(host, 1);
 	mmc_davinci_reset_ctrl(host, 0);
+<<<<<<< HEAD
+=======
+	if (!host->do_dma)
+		sg_miter_stop(&host->sg_miter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t mmc_davinci_sdio_irq(int irq, void *dev_id)
@@ -1068,11 +1292,21 @@ static irqreturn_t mmc_davinci_irq(int irq, void *dev_id)
 	if (qstatus & MMCST0_DATDNE) {
 		/* All blocks sent/received, and CRC checks passed */
 		if (data != NULL) {
+<<<<<<< HEAD
 			if ((host->do_dma == 0) && (host->bytes_left > 0)) {
 				/* if datasize < rw_threshold
 				 * no RX ints are generated
 				 */
 				davinci_fifo_data_trans(host, host->bytes_left);
+=======
+			if (!host->do_dma) {
+				if (host->bytes_left > 0)
+					/* if datasize < rw_threshold
+					 * no RX ints are generated
+					 */
+					davinci_fifo_data_trans(host, host->bytes_left);
+				sg_miter_stop(&host->sg_miter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			end_transfer = 1;
 			data->bytes_xfered = data->blocks * data->blksz;
@@ -1144,7 +1378,11 @@ static irqreturn_t mmc_davinci_irq(int irq, void *dev_id)
 
 	if (qstatus & MMCST0_RSPDNE) {
 		/* End of command phase */
+<<<<<<< HEAD
 		end_command = (int) host->cmd;
+=======
+		end_command = host->cmd ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (end_command)
@@ -1159,9 +1397,16 @@ static int mmc_davinci_get_cd(struct mmc_host *mmc)
 	struct platform_device *pdev = to_platform_device(mmc->parent);
 	struct davinci_mmc_config *config = pdev->dev.platform_data;
 
+<<<<<<< HEAD
 	if (!config || !config->get_cd)
 		return -ENOSYS;
 	return config->get_cd(pdev->id);
+=======
+	if (config && config->get_cd)
+		return config->get_cd(pdev->id);
+
+	return mmc_gpio_get_cd(mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mmc_davinci_get_ro(struct mmc_host *mmc)
@@ -1169,9 +1414,16 @@ static int mmc_davinci_get_ro(struct mmc_host *mmc)
 	struct platform_device *pdev = to_platform_device(mmc->parent);
 	struct davinci_mmc_config *config = pdev->dev.platform_data;
 
+<<<<<<< HEAD
 	if (!config || !config->get_ro)
 		return -ENOSYS;
 	return config->get_ro(pdev->id);
+=======
+	if (config && config->get_ro)
+		return config->get_ro(pdev->id);
+
+	return mmc_gpio_get_ro(mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mmc_davinci_enable_sdio_irq(struct mmc_host *mmc, int enable)
@@ -1194,7 +1446,11 @@ static void mmc_davinci_enable_sdio_irq(struct mmc_host *mmc, int enable)
 	}
 }
 
+<<<<<<< HEAD
 static struct mmc_host_ops mmc_davinci_ops = {
+=======
+static const struct mmc_host_ops mmc_davinci_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.request	= mmc_davinci_request,
 	.set_ios	= mmc_davinci_set_ios,
 	.get_cd		= mmc_davinci_get_cd,
@@ -1250,7 +1506,11 @@ static inline void mmc_davinci_cpufreq_deregister(struct mmc_davinci_host *host)
 {
 }
 #endif
+<<<<<<< HEAD
 static void __init init_mmcsd_host(struct mmc_davinci_host *host)
+=======
+static void init_mmcsd_host(struct mmc_davinci_host *host)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	mmc_davinci_reset_ctrl(host, 1);
@@ -1264,6 +1524,7 @@ static void __init init_mmcsd_host(struct mmc_davinci_host *host)
 	mmc_davinci_reset_ctrl(host, 0);
 }
 
+<<<<<<< HEAD
 static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 {
 	struct davinci_mmc_config *pdata = pdev->dev.platform_data;
@@ -1338,28 +1599,184 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	mmc->caps |= MMC_CAP_NEEDS_POLL;
 	mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
 
+=======
+static const struct platform_device_id davinci_mmc_devtype[] = {
+	{
+		.name	= "dm6441-mmc",
+		.driver_data = MMC_CTLR_VERSION_1,
+	}, {
+		.name	= "da830-mmc",
+		.driver_data = MMC_CTLR_VERSION_2,
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(platform, davinci_mmc_devtype);
+
+static const struct of_device_id davinci_mmc_dt_ids[] = {
+	{
+		.compatible = "ti,dm6441-mmc",
+		.data = &davinci_mmc_devtype[MMC_CTLR_VERSION_1],
+	},
+	{
+		.compatible = "ti,da830-mmc",
+		.data = &davinci_mmc_devtype[MMC_CTLR_VERSION_2],
+	},
+	{},
+};
+MODULE_DEVICE_TABLE(of, davinci_mmc_dt_ids);
+
+static int mmc_davinci_parse_pdata(struct mmc_host *mmc)
+{
+	struct platform_device *pdev = to_platform_device(mmc->parent);
+	struct davinci_mmc_config *pdata = pdev->dev.platform_data;
+	struct mmc_davinci_host *host;
+	int ret;
+
+	if (!pdata)
+		return -EINVAL;
+
+	host = mmc_priv(mmc);
+	if (!host)
+		return -EINVAL;
+
+	if (pdata && pdata->nr_sg)
+		host->nr_sg = pdata->nr_sg - 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata && (pdata->wires == 4 || pdata->wires == 0))
 		mmc->caps |= MMC_CAP_4_BIT_DATA;
 
 	if (pdata && (pdata->wires == 8))
 		mmc->caps |= (MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA);
 
+<<<<<<< HEAD
 	host->version = pdata->version;
 
 	mmc->ops = &mmc_davinci_ops;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc->f_min = 312500;
 	mmc->f_max = 25000000;
 	if (pdata && pdata->max_freq)
 		mmc->f_max = pdata->max_freq;
 	if (pdata && pdata->caps)
 		mmc->caps |= pdata->caps;
+<<<<<<< HEAD
+=======
+
+	/* Register a cd gpio, if there is not one, enable polling */
+	ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
+	if (ret == -EPROBE_DEFER)
+		return ret;
+	else if (ret)
+		mmc->caps |= MMC_CAP_NEEDS_POLL;
+
+	ret = mmc_gpiod_request_ro(mmc, "wp", 0, 0);
+	if (ret == -EPROBE_DEFER)
+		return ret;
+
+	return 0;
+}
+
+static int davinci_mmcsd_probe(struct platform_device *pdev)
+{
+	struct mmc_davinci_host *host = NULL;
+	struct mmc_host *mmc = NULL;
+	struct resource *r, *mem = NULL;
+	int ret, irq;
+	size_t mem_size;
+	const struct platform_device_id *id_entry;
+
+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!r)
+		return -ENODEV;
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+
+	mem_size = resource_size(r);
+	mem = devm_request_mem_region(&pdev->dev, r->start, mem_size,
+				      pdev->name);
+	if (!mem)
+		return -EBUSY;
+
+	mmc = mmc_alloc_host(sizeof(struct mmc_davinci_host), &pdev->dev);
+	if (!mmc)
+		return -ENOMEM;
+
+	host = mmc_priv(mmc);
+	host->mmc = mmc;	/* Important */
+
+	host->mem_res = mem;
+	host->base = devm_ioremap(&pdev->dev, mem->start, mem_size);
+	if (!host->base) {
+		ret = -ENOMEM;
+		goto ioremap_fail;
+	}
+
+	host->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(host->clk)) {
+		ret = PTR_ERR(host->clk);
+		goto clk_get_fail;
+	}
+	ret = clk_prepare_enable(host->clk);
+	if (ret)
+		goto clk_prepare_enable_fail;
+
+	host->mmc_input_clk = clk_get_rate(host->clk);
+
+	pdev->id_entry = of_device_get_match_data(&pdev->dev);
+	if (pdev->id_entry) {
+		ret = mmc_of_parse(mmc);
+		if (ret) {
+			dev_err_probe(&pdev->dev, ret,
+				      "could not parse of data\n");
+			goto parse_fail;
+		}
+	} else {
+		ret = mmc_davinci_parse_pdata(mmc);
+		if (ret) {
+			dev_err(&pdev->dev,
+				"could not parse platform data: %d\n", ret);
+			goto parse_fail;
+	}	}
+
+	if (host->nr_sg > MAX_NR_SG || !host->nr_sg)
+		host->nr_sg = MAX_NR_SG;
+
+	init_mmcsd_host(host);
+
+	host->use_dma = use_dma;
+	host->mmc_irq = irq;
+	host->sdio_irq = platform_get_irq_optional(pdev, 1);
+
+	if (host->use_dma) {
+		ret = davinci_acquire_dma_channels(host);
+		if (ret == -EPROBE_DEFER)
+			goto dma_probe_defer;
+		else if (ret)
+			host->use_dma = 0;
+	}
+
+	mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
+
+	id_entry = platform_get_device_id(pdev);
+	if (id_entry)
+		host->version = id_entry->driver_data;
+
+	mmc->ops = &mmc_davinci_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
 	/* With no iommu coalescing pages, each phys_seg is a hw_seg.
 	 * Each hw_seg uses one EDMA parameter RAM slot, always one
 	 * channel and then usually some linked slots.
 	 */
+<<<<<<< HEAD
 	mmc->max_segs		= 1 + host->n_link;
+=======
+	mmc->max_segs		= MAX_NR_SG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* EDMA limit per hw segment (one or two MBytes) */
 	mmc->max_seg_size	= MAX_CCNT * rw_threshold;
@@ -1384,6 +1801,7 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 
 	ret = mmc_add_host(mmc);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out;
 
 	ret = request_irq(irq, mmc_davinci_irq, 0, mmc_hostname(mmc), host);
@@ -1393,6 +1811,19 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 	if (host->sdio_irq >= 0) {
 		ret = request_irq(host->sdio_irq, mmc_davinci_sdio_irq, 0,
 				  mmc_hostname(mmc), host);
+=======
+		goto mmc_add_host_fail;
+
+	ret = devm_request_irq(&pdev->dev, irq, mmc_davinci_irq, 0,
+			       mmc_hostname(mmc), host);
+	if (ret)
+		goto request_irq_fail;
+
+	if (host->sdio_irq >= 0) {
+		ret = devm_request_irq(&pdev->dev, host->sdio_irq,
+				       mmc_davinci_sdio_irq, 0,
+				       mmc_hostname(mmc), host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ret)
 			mmc->caps |= MMC_CAP_SDIO_IRQ;
 	}
@@ -1405,6 +1836,7 @@ static int __init davinci_mmcsd_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 out:
 	mmc_davinci_cpufreq_deregister(host);
 cpu_freq_fail:
@@ -1427,10 +1859,26 @@ cpu_freq_fail:
 		release_resource(mem);
 
 	dev_dbg(&pdev->dev, "probe err %d\n", ret);
+=======
+request_irq_fail:
+	mmc_remove_host(mmc);
+mmc_add_host_fail:
+	mmc_davinci_cpufreq_deregister(host);
+cpu_freq_fail:
+	davinci_release_dma_channels(host);
+parse_fail:
+dma_probe_defer:
+	clk_disable_unprepare(host->clk);
+clk_prepare_enable_fail:
+clk_get_fail:
+ioremap_fail:
+	mmc_free_host(mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __exit davinci_mmcsd_remove(struct platform_device *pdev)
 {
 	struct mmc_davinci_host *host = platform_get_drvdata(pdev);
@@ -1457,11 +1905,23 @@ static int __exit davinci_mmcsd_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+static void __exit davinci_mmcsd_remove(struct platform_device *pdev)
+{
+	struct mmc_davinci_host *host = platform_get_drvdata(pdev);
+
+	mmc_remove_host(host->mmc);
+	mmc_davinci_cpufreq_deregister(host);
+	davinci_release_dma_channels(host);
+	clk_disable_unprepare(host->clk);
+	mmc_free_host(host->mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
 static int davinci_mmcsd_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct mmc_davinci_host *host = platform_get_drvdata(pdev);
 	int ret;
@@ -1477,10 +1937,20 @@ static int davinci_mmcsd_suspend(struct device *dev)
 	}
 
 	return ret;
+=======
+	struct mmc_davinci_host *host = dev_get_drvdata(dev);
+
+	writel(0, host->base + DAVINCI_MMCIM);
+	mmc_davinci_reset_ctrl(host, 1);
+	clk_disable(host->clk);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int davinci_mmcsd_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct mmc_davinci_host *host = platform_get_drvdata(pdev);
 	int ret;
@@ -1496,6 +1966,18 @@ static int davinci_mmcsd_resume(struct device *dev)
 		host->suspended = 0;
 
 	return ret;
+=======
+	struct mmc_davinci_host *host = dev_get_drvdata(dev);
+	int ret;
+
+	ret = clk_enable(host->clk);
+	if (ret)
+		return ret;
+
+	mmc_davinci_reset_ctrl(host, 0);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct dev_pm_ops davinci_mmcsd_pm = {
@@ -1511,6 +1993,7 @@ static const struct dev_pm_ops davinci_mmcsd_pm = {
 static struct platform_driver davinci_mmcsd_driver = {
 	.driver		= {
 		.name	= "davinci_mmc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= davinci_mmcsd_pm_ops,
 	},
@@ -1529,8 +2012,24 @@ static void __exit davinci_mmcsd_exit(void)
 	platform_driver_unregister(&davinci_mmcsd_driver);
 }
 module_exit(davinci_mmcsd_exit);
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.pm	= davinci_mmcsd_pm_ops,
+		.of_match_table = davinci_mmc_dt_ids,
+	},
+	.probe		= davinci_mmcsd_probe,
+	.remove_new	= __exit_p(davinci_mmcsd_remove),
+	.id_table	= davinci_mmc_devtype,
+};
+
+module_platform_driver(davinci_mmcsd_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Texas Instruments India");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MMC/SD driver for Davinci MMC controller");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:davinci_mmc");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

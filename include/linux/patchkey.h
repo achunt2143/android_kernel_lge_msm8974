@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * <linux/patchkey.h> -- definition of _PATCHKEY macro
  *
@@ -9,6 +13,7 @@
  * Do not include this file directly.  Please use <sys/soundcard.h> instead.
  * For kernel code, use <linux/soundcard.h>
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_PATCHKEY_H_INDIRECT
 #error "patchkey.h included directly"
@@ -25,6 +30,14 @@
 #endif
 
 #if defined(__KERNEL__)
+=======
+#ifndef _LINUX_PATCHKEY_H
+#define _LINUX_PATCHKEY_H
+
+#  include <asm/byteorder.h>
+#include <uapi/linux/patchkey.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  if defined(__BIG_ENDIAN)
 #    define _PATCHKEY(id) (0xfd00|id)
 #  elif defined(__LITTLE_ENDIAN)
@@ -32,6 +45,7 @@
 #  else
 #    error "could not determine byte order"
 #  endif
+<<<<<<< HEAD
 #else
 #if defined(__BYTE_ORDER)
 #  if __BYTE_ORDER == __BIG_ENDIAN
@@ -44,4 +58,6 @@
 #endif
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_PATCHKEY_H */

@@ -169,7 +169,11 @@ sci_phy_link_layer_initialization(struct isci_phy *iphy,
 	phy_cap.gen1_no_ssc = 1;
 	if (ihost->oem_parameters.controller.do_enable_ssc) {
 		struct scu_afe_registers __iomem *afe = &ihost->scu_registers->afe;
+<<<<<<< HEAD
 		struct scu_afe_transceiver *xcvr = &afe->scu_afe_xcvr[phy_idx];
+=======
+		struct scu_afe_transceiver __iomem *xcvr = &afe->scu_afe_xcvr[phy_idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct isci_pci_info *pci_info = to_pci_info(ihost->pdev);
 		bool en_sas = false;
 		bool en_sata = false;
@@ -315,9 +319,15 @@ sci_phy_link_layer_initialization(struct isci_phy *iphy,
 	return SCI_SUCCESS;
 }
 
+<<<<<<< HEAD
 static void phy_sata_timeout(unsigned long data)
 {
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void phy_sata_timeout(struct timer_list *t)
+{
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_phy *iphy = container_of(tmr, typeof(*iphy), sata_timer);
 	struct isci_host *ihost = iphy->owning_port->owning_controller;
 	unsigned long flags;
@@ -339,10 +349,18 @@ done:
 }
 
 /**
+<<<<<<< HEAD
  * This method returns the port currently containing this phy. If the phy is
  *    currently contained by the dummy port, then the phy is considered to not
  *    be part of a port.
  * @sci_phy: This parameter specifies the phy for which to retrieve the
+=======
+ * phy_get_non_dummy_port() - This method returns the port currently containing
+ * this phy. If the phy is currently contained by the dummy port, then the phy
+ * is considered to not be part of a port.
+ *
+ * @iphy: This parameter specifies the phy for which to retrieve the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    containing port.
  *
  * This method returns a handle to a port that contains the supplied phy.
@@ -360,12 +378,17 @@ struct isci_port *phy_get_non_dummy_port(struct isci_phy *iphy)
 	return iphy->owning_port;
 }
 
+<<<<<<< HEAD
 /**
  * This method will assign a port to the phy object.
  * @out]: iphy This parameter specifies the phy for which to assign a port
  *    object.
  *
  *
+=======
+/*
+ * sci_phy_set_port() - This method will assign a port to the phy object.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void sci_phy_set_port(
 	struct isci_phy *iphy,
@@ -398,11 +421,19 @@ enum sci_status sci_phy_initialize(struct isci_phy *iphy,
 }
 
 /**
+<<<<<<< HEAD
  * This method assigns the direct attached device ID for this phy.
  *
  * @iphy The phy for which the direct attached device id is to
  *       be assigned.
  * @device_id The direct attached device ID to assign to the phy.
+=======
+ * sci_phy_setup_transport() - This method assigns the direct attached device ID for this phy.
+ *
+ * @iphy: The phy for which the direct attached device id is to
+ *       be assigned.
+ * @device_id: The direct attached device ID to assign to the phy.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *       This will either be the RNi for the device or an invalid RNi if there
  *       is no current device assigned to the phy.
  */
@@ -580,7 +611,11 @@ static void sci_phy_start_sas_link_training(struct isci_phy *iphy)
 
 	sci_change_state(&iphy->sm, SCI_PHY_SUB_AWAIT_SAS_SPEED_EN);
 
+<<<<<<< HEAD
 	iphy->protocol = SCIC_SDS_PHY_PROTOCOL_SAS;
+=======
+	iphy->protocol = SAS_PROTOCOL_SSP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_phy_start_sata_link_training(struct isci_phy *iphy)
@@ -591,13 +626,21 @@ static void sci_phy_start_sata_link_training(struct isci_phy *iphy)
 	 */
 	sci_change_state(&iphy->sm, SCI_PHY_SUB_AWAIT_SATA_POWER);
 
+<<<<<<< HEAD
 	iphy->protocol = SCIC_SDS_PHY_PROTOCOL_SATA;
+=======
+	iphy->protocol = SAS_PROTOCOL_SATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * sci_phy_complete_link_training - perform processing common to
  *    all protocols upon completion of link training.
+<<<<<<< HEAD
  * @sci_phy: This parameter specifies the phy object for which link training
+=======
+ * @iphy: This parameter specifies the phy object for which link training
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    has completed.
  * @max_link_rate: This parameter specifies the maximum link rate to be
  *    associated with this phy.
@@ -668,6 +711,22 @@ static const char *phy_event_name(u32 event_code)
 		phy_to_host(iphy)->id, iphy->phy_index, \
 		phy_state_name(state), phy_event_name(code), code)
 
+<<<<<<< HEAD
+=======
+
+static void scu_link_layer_set_txcomsas_timeout(struct isci_phy *iphy, u32 timeout)
+{
+	u32 val;
+
+	/* Extend timeout */
+	val = readl(&iphy->link_layer_registers->transmit_comsas_signal);
+	val &= ~SCU_SAS_LLTXCOMSAS_GEN_VAL(NEGTIME, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_MASK);
+	val |= SCU_SAS_LLTXCOMSAS_GEN_VAL(NEGTIME, timeout);
+
+	writel(val, &iphy->link_layer_registers->transmit_comsas_signal);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 {
 	enum sci_phy_states state = iphy->sm.current_state_id;
@@ -683,6 +742,16 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			sci_phy_start_sata_link_training(iphy);
 			iphy->is_in_link_training = true;
 			break;
+<<<<<<< HEAD
+=======
+		case SCU_EVENT_RECEIVED_IDENTIFY_TIMEOUT:
+		       /* Extend timeout value */
+		       scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_EXTENDED);
+
+		       /* Start the oob/sn state machine over again */
+		       sci_change_state(&iphy->sm, SCI_PHY_STARTING);
+		       break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			phy_event_dbg(iphy, state, event_code);
 			return SCI_FAILURE;
@@ -717,6 +786,7 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			sci_phy_start_sata_link_training(iphy);
 			break;
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -724,6 +794,24 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			phy_event_warn(iphy, state, event_code);
 			return SCI_FAILURE;
 			break;
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+			/* Link failure change state back to the starting state */
+			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
+			break;
+		case SCU_EVENT_RECEIVED_IDENTIFY_TIMEOUT:
+		       /* Extend the timeout value */
+		       scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_EXTENDED);
+
+		       /* Start the oob/sn state machine over again */
+		       sci_change_state(&iphy->sm, SCI_PHY_STARTING);
+		       break;
+		default:
+			phy_event_warn(iphy, state, event_code);
+			return SCI_FAILURE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return SCI_SUCCESS;
 	case SCI_PHY_SUB_AWAIT_IAF_UF:
@@ -740,7 +828,19 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			sci_phy_start_sata_link_training(iphy);
 			break;
 		case SCU_EVENT_RECEIVED_IDENTIFY_TIMEOUT:
+<<<<<<< HEAD
 		case SCU_EVENT_LINK_FAILURE:
+=======
+			/* Extend the timeout value */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_EXTENDED);
+
+			/* Start the oob/sn state machine over again */
+			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
+			break;
+		case SCU_EVENT_LINK_FAILURE:
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SCU_EVENT_HARD_RESET_RECEIVED:
 			/* Start the oob/sn state machine over again */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
@@ -753,6 +853,12 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 	case SCI_PHY_SUB_AWAIT_SAS_POWER:
 		switch (scu_get_event_code(event_code)) {
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -764,6 +870,12 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 	case SCI_PHY_SUB_AWAIT_SATA_POWER:
 		switch (scu_get_event_code(event_code)) {
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -788,6 +900,12 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 	case SCI_PHY_SUB_AWAIT_SATA_PHY_EN:
 		switch (scu_get_event_code(event_code)) {
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -797,7 +915,11 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			 */
 			break;
 		case SCU_EVENT_SATA_PHY_DETECTED:
+<<<<<<< HEAD
 			iphy->protocol = SCIC_SDS_PHY_PROTOCOL_SATA;
+=======
+			iphy->protocol = SAS_PROTOCOL_SATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* We have received the SATA PHY notification change state */
 			sci_change_state(&iphy->sm, SCI_PHY_SUB_AWAIT_SATA_SPEED_EN);
@@ -836,6 +958,12 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 						       SCI_PHY_SUB_AWAIT_SIG_FIS_UF);
 			break;
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -859,6 +987,12 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 			break;
 
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Change the timeout value to default */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
@@ -871,16 +1005,35 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 	case SCI_PHY_READY:
 		switch (scu_get_event_code(event_code)) {
 		case SCU_EVENT_LINK_FAILURE:
+<<<<<<< HEAD
+=======
+			/* Set default timeout */
+			scu_link_layer_set_txcomsas_timeout(iphy, SCU_SAS_LINK_LAYER_TXCOMSAS_NEGTIME_DEFAULT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Link failure change state back to the starting state */
 			sci_change_state(&iphy->sm, SCI_PHY_STARTING);
 			break;
 		case SCU_EVENT_BROADCAST_CHANGE:
+<<<<<<< HEAD
+=======
+		case SCU_EVENT_BROADCAST_SES:
+		case SCU_EVENT_BROADCAST_RESERVED0:
+		case SCU_EVENT_BROADCAST_RESERVED1:
+		case SCU_EVENT_BROADCAST_EXPANDER:
+		case SCU_EVENT_BROADCAST_AEN:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Broadcast change received. Notify the port. */
 			if (phy_get_non_dummy_port(iphy) != NULL)
 				sci_port_broadcast_change_received(iphy->owning_port, iphy);
 			else
 				iphy->bcn_received_while_port_unassigned = true;
 			break;
+<<<<<<< HEAD
+=======
+		case SCU_EVENT_BROADCAST_RESERVED3:
+		case SCU_EVENT_BROADCAST_RESERVED4:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			phy_event_warn(iphy, state, event_code);
 			return SCI_FAILURE_INVALID_STATE;
@@ -895,7 +1048,10 @@ enum sci_status sci_phy_event_handler(struct isci_phy *iphy, u32 event_code)
 		default:
 			phy_event_warn(iphy, state, event_code);
 			return SCI_FAILURE_INVALID_STATE;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return SCI_SUCCESS;
 	default:
@@ -1106,8 +1262,13 @@ static void sci_phy_starting_final_substate_enter(struct sci_base_state_machine 
 }
 
 /**
+<<<<<<< HEAD
  *
  * @sci_phy: This is the struct isci_phy object to stop.
+=======
+ * scu_link_layer_stop_protocol_engine()
+ * @iphy: This is the struct isci_phy object to stop.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will stop the struct isci_phy object. This does not reset the
  * protocol engine it just suspends it and places it in a state where it will
@@ -1143,6 +1304,10 @@ static void scu_link_layer_start_oob(struct isci_phy *iphy)
 	/** Reset OOB sequence - start */
 	val = readl(&ll->phy_configuration);
 	val &= ~(SCU_SAS_PCFG_GEN_BIT(OOB_RESET) |
+<<<<<<< HEAD
+=======
+		 SCU_SAS_PCFG_GEN_BIT(OOB_ENABLE) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 SCU_SAS_PCFG_GEN_BIT(HARD_RESET));
 	writel(val, &ll->phy_configuration);
 	readl(&ll->phy_configuration); /* flush */
@@ -1157,7 +1322,12 @@ static void scu_link_layer_start_oob(struct isci_phy *iphy)
 }
 
 /**
+<<<<<<< HEAD
  *
+=======
+ * scu_link_layer_tx_hard_reset()
+ * @iphy: This is the struct isci_phy object to stop.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will transmit a hard reset request on the specified phy. The SCU
  * hardware requires that we reset the OOB state machine and set the hard reset
@@ -1174,6 +1344,10 @@ static void scu_link_layer_tx_hard_reset(
 	 * to the starting state. */
 	phy_configuration_value =
 		readl(&iphy->link_layer_registers->phy_configuration);
+<<<<<<< HEAD
+=======
+	phy_configuration_value &= ~(SCU_SAS_PCFG_GEN_BIT(OOB_ENABLE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_configuration_value |=
 		(SCU_SAS_PCFG_GEN_BIT(HARD_RESET) |
 		 SCU_SAS_PCFG_GEN_BIT(OOB_RESET));
@@ -1215,7 +1389,11 @@ static void sci_phy_starting_state_enter(struct sci_base_state_machine *sm)
 	scu_link_layer_start_oob(iphy);
 
 	/* We don't know what kind of phy we are going to be just yet */
+<<<<<<< HEAD
 	iphy->protocol = SCIC_SDS_PHY_PROTOCOL_UNKNOWN;
+=======
+	iphy->protocol = SAS_PROTOCOL_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iphy->bcn_received_while_port_unassigned = false;
 
 	if (iphy->sm.previous_state_id == SCI_PHY_READY)
@@ -1250,7 +1428,11 @@ static void sci_phy_resetting_state_enter(struct sci_base_state_machine *sm)
 	 */
 	sci_port_deactivate_phy(iphy->owning_port, iphy, false);
 
+<<<<<<< HEAD
 	if (iphy->protocol == SCIC_SDS_PHY_PROTOCOL_SAS) {
+=======
+	if (iphy->protocol == SAS_PROTOCOL_SSP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scu_link_layer_tx_hard_reset(iphy);
 	} else {
 		/* The SCU does not need to have a discrete reset state so
@@ -1316,7 +1498,11 @@ void sci_phy_construct(struct isci_phy *iphy,
 	iphy->owning_port = iport;
 	iphy->phy_index = phy_index;
 	iphy->bcn_received_while_port_unassigned = false;
+<<<<<<< HEAD
 	iphy->protocol = SCIC_SDS_PHY_PROTOCOL_UNKNOWN;
+=======
+	iphy->protocol = SAS_PROTOCOL_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iphy->link_layer_registers = NULL;
 	iphy->max_negotiated_speed = SAS_LINK_RATE_UNKNOWN;
 
@@ -1343,10 +1529,15 @@ void isci_phy_init(struct isci_phy *iphy, struct isci_host *ihost, int index)
 	iphy->sas_phy.ha = &ihost->sas_ha;
 	iphy->sas_phy.lldd_phy = iphy;
 	iphy->sas_phy.enabled = 1;
+<<<<<<< HEAD
 	iphy->sas_phy.class = SAS;
 	iphy->sas_phy.iproto = SAS_PROTOCOL_ALL;
 	iphy->sas_phy.tproto = 0;
 	iphy->sas_phy.type = PHY_TYPE_PHYSICAL;
+=======
+	iphy->sas_phy.iproto = SAS_PROTOCOL_ALL;
+	iphy->sas_phy.tproto = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iphy->sas_phy.role = PHY_ROLE_INITIATOR;
 	iphy->sas_phy.oob_mode = OOB_NOT_CONNECTED;
 	iphy->sas_phy.linkrate = SAS_LINK_RATE_UNKNOWN;
@@ -1357,7 +1548,11 @@ void isci_phy_init(struct isci_phy *iphy, struct isci_host *ihost, int index)
 /**
  * isci_phy_control() - This function is one of the SAS Domain Template
  *    functions. This is a phy management function.
+<<<<<<< HEAD
  * @phy: This parameter specifies the sphy being controlled.
+=======
+ * @sas_phy: This parameter specifies the sphy being controlled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @func: This parameter specifies the phy control function being invoked.
  * @buf: This parameter is specific to the phy function being invoked.
  *
@@ -1380,12 +1575,20 @@ int isci_phy_control(struct asd_sas_phy *sas_phy,
 	switch (func) {
 	case PHY_FUNC_DISABLE:
 		spin_lock_irqsave(&ihost->scic_lock, flags);
+<<<<<<< HEAD
+=======
+		scu_link_layer_start_oob(iphy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sci_phy_stop(iphy);
 		spin_unlock_irqrestore(&ihost->scic_lock, flags);
 		break;
 
 	case PHY_FUNC_LINK_RESET:
 		spin_lock_irqsave(&ihost->scic_lock, flags);
+<<<<<<< HEAD
+=======
+		scu_link_layer_start_oob(iphy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sci_phy_stop(iphy);
 		sci_phy_start(iphy);
 		spin_unlock_irqrestore(&ihost->scic_lock, flags);

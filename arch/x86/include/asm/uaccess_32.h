@@ -1,15 +1,23 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_UACCESS_32_H
 #define _ASM_X86_UACCESS_32_H
 
 /*
  * User space memory access functions
  */
+<<<<<<< HEAD
 #include <linux/errno.h>
 #include <linux/thread_info.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <asm/asm.h>
 #include <asm/page.h>
 
+<<<<<<< HEAD
 unsigned long __must_check __copy_to_user_ll
 		(void __user *to, const void *from, unsigned long n);
 unsigned long __must_check __copy_from_user_ll
@@ -175,6 +183,23 @@ static __always_inline unsigned long __copy_from_user_nocache(void *to,
 		}
 	}
 	return __copy_from_user_ll_nocache(to, from, n);
+=======
+unsigned long __must_check __copy_user_ll
+		(void *to, const void *from, unsigned long n);
+unsigned long __must_check __copy_from_user_ll_nocache_nozero
+		(void *to, const void __user *from, unsigned long n);
+
+static __always_inline unsigned long __must_check
+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	return __copy_user_ll((__force void *)to, from, n);
+}
+
+static __always_inline unsigned long
+raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	return __copy_user_ll(to, (__force const void *)from, n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __always_inline unsigned long
@@ -184,6 +209,7 @@ __copy_from_user_inatomic_nocache(void *to, const void __user *from,
        return __copy_from_user_ll_nocache_nozero(to, from, n);
 }
 
+<<<<<<< HEAD
 unsigned long __must_check copy_to_user(void __user *to,
 					const void *from, unsigned long n);
 unsigned long __must_check _copy_from_user(void *to,
@@ -230,6 +256,8 @@ static inline unsigned long __must_check copy_from_user(void *to,
 #define strlen_user(str) strnlen_user(str, LONG_MAX)
 
 long strnlen_user(const char __user *str, long n);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long __must_check clear_user(void __user *mem, unsigned long len);
 unsigned long __must_check __clear_user(void __user *mem, unsigned long len);
 

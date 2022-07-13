@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ks8842.h KS8842 platform data struct definition
  * Copyright (c) 2010 Intel Corporation
@@ -14,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * ks8842.h KS8842 platform data struct definition
+ * Copyright (c) 2010 Intel Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_KS8842_H

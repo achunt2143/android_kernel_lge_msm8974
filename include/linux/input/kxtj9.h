@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Kionix, Inc.
  * Written by Chris Hudson <chudson@kionix.com>
@@ -15,6 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307, USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2011 Kionix, Inc.
+ * Written by Chris Hudson <chudson@kionix.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __KXTJ9_H__
@@ -46,7 +53,11 @@ struct kxtj9_platform_data {
 	/* Output resolution: 8-bit valid or 12-bit valid */
 	#define RES_8BIT		0
 	#define RES_12BIT		(1 << 6)
+<<<<<<< HEAD
 	u8 res_ctl;
+=======
+	u8 res_12bit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Output g-range: +/-2g, 4g, or 8g */
 	#define KXTJ9_G_2G		0
 	#define KXTJ9_G_4G		(1 << 3)

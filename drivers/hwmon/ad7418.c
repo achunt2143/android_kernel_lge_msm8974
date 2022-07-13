@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An hwmon driver for the Analog Devices AD7416/17/18
  * Copyright (C) 2006-07 Tower Technologies
@@ -6,10 +10,13 @@
  *
  * Based on lm75.c
  * Copyright (C) 1998-99 Frodo Looijaard <frodol@dds.nl>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License,
  * as published by the Free Software Foundation - version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,6 +26,10 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 
@@ -44,17 +55,26 @@ static const u8 AD7418_REG_TEMP[] = { AD7418_REG_TEMP_IN,
 					AD7418_REG_TEMP_OS };
 
 struct ad7418_data {
+<<<<<<< HEAD
 	struct device		*hwmon_dev;
 	struct attribute_group	attrs;
 	enum chips		type;
 	struct mutex		lock;
 	int			adc_max;	/* number of ADC channels */
 	char			valid;
+=======
+	struct i2c_client	*client;
+	enum chips		type;
+	struct mutex		lock;
+	int			adc_max;	/* number of ADC channels */
+	bool			valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		last_updated;	/* In jiffies */
 	s16			temp[3];	/* Register values */
 	u16			in[4];
 };
 
+<<<<<<< HEAD
 static int ad7418_probe(struct i2c_client *client,
 			const struct i2c_device_id *id);
 static int ad7418_remove(struct i2c_client *client);
@@ -75,6 +95,168 @@ static struct i2c_driver ad7418_driver = {
 	.remove		= ad7418_remove,
 	.id_table	= ad7418_id,
 };
+=======
+static int ad7418_update_device(struct device *dev)
+{
+	struct ad7418_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	s32 val;
+
+	mutex_lock(&data->lock);
+
+	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+		|| !data->valid) {
+		u8 cfg;
+		int i, ch;
+
+		/* read config register and clear channel bits */
+		val = i2c_smbus_read_byte_data(client, AD7418_REG_CONF);
+		if (val < 0)
+			goto abort;
+
+		cfg = val;
+		cfg &= 0x1F;
+
+		val = i2c_smbus_write_byte_data(client, AD7418_REG_CONF,
+						cfg | AD7418_CH_TEMP);
+		if (val < 0)
+			goto abort;
+
+		udelay(30);
+
+		for (i = 0; i < 3; i++) {
+			val = i2c_smbus_read_word_swapped(client,
+							  AD7418_REG_TEMP[i]);
+			if (val < 0)
+				goto abort;
+
+			data->temp[i] = val;
+		}
+
+		for (i = 0, ch = 4; i < data->adc_max; i++, ch--) {
+			val = i2c_smbus_write_byte_data(client, AD7418_REG_CONF,
+					cfg | AD7418_REG_ADC_CH(ch));
+			if (val < 0)
+				goto abort;
+
+			udelay(15);
+			val = i2c_smbus_read_word_swapped(client,
+							  AD7418_REG_ADC);
+			if (val < 0)
+				goto abort;
+
+			data->in[data->adc_max - 1 - i] = val;
+		}
+
+		/* restore old configuration value */
+		val = i2c_smbus_write_word_swapped(client, AD7418_REG_CONF,
+						   cfg);
+		if (val < 0)
+			goto abort;
+
+		data->last_updated = jiffies;
+		data->valid = true;
+	}
+
+	mutex_unlock(&data->lock);
+	return 0;
+
+abort:
+	data->valid = false;
+	mutex_unlock(&data->lock);
+	return val;
+}
+
+static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
+			 char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct ad7418_data *data = dev_get_drvdata(dev);
+	int ret;
+
+	ret = ad7418_update_device(dev);
+	if (ret < 0)
+		return ret;
+
+	return sprintf(buf, "%d\n",
+		LM75_TEMP_FROM_REG(data->temp[attr->index]));
+}
+
+static ssize_t adc_show(struct device *dev, struct device_attribute *devattr,
+			char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct ad7418_data *data = dev_get_drvdata(dev);
+	int ret;
+
+	ret = ad7418_update_device(dev);
+	if (ret < 0)
+		return ret;
+
+	return sprintf(buf, "%d\n",
+		((data->in[attr->index] >> 6) * 2500 + 512) / 1024);
+}
+
+static ssize_t temp_store(struct device *dev,
+			  struct device_attribute *devattr, const char *buf,
+			  size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct ad7418_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	long temp;
+	int ret = kstrtol(buf, 10, &temp);
+
+	if (ret < 0)
+		return ret;
+
+	mutex_lock(&data->lock);
+	data->temp[attr->index] = LM75_TEMP_TO_REG(temp);
+	i2c_smbus_write_word_swapped(client,
+				     AD7418_REG_TEMP[attr->index],
+				     data->temp[attr->index]);
+	mutex_unlock(&data->lock);
+	return count;
+}
+
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_max_hyst, temp, 1);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, 2);
+
+static SENSOR_DEVICE_ATTR_RO(in1_input, adc, 0);
+static SENSOR_DEVICE_ATTR_RO(in2_input, adc, 1);
+static SENSOR_DEVICE_ATTR_RO(in3_input, adc, 2);
+static SENSOR_DEVICE_ATTR_RO(in4_input, adc, 3);
+
+static struct attribute *ad7416_attrs[] = {
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(ad7416);
+
+static struct attribute *ad7417_attrs[] = {
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_in1_input.dev_attr.attr,
+	&sensor_dev_attr_in2_input.dev_attr.attr,
+	&sensor_dev_attr_in3_input.dev_attr.attr,
+	&sensor_dev_attr_in4_input.dev_attr.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(ad7417);
+
+static struct attribute *ad7418_attrs[] = {
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_in1_input.dev_attr.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(ad7418);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ad7418_init_client(struct i2c_client *client)
 {
@@ -93,6 +275,7 @@ static void ad7418_init_client(struct i2c_client *client)
 	}
 }
 
+<<<<<<< HEAD
 static struct ad7418_data *ad7418_update_device(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -237,34 +420,78 @@ static int ad7418_probe(struct i2c_client *client,
 		err = -ENOMEM;
 		goto exit;
 	}
+=======
+static const struct i2c_device_id ad7418_id[];
+
+static int ad7418_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct i2c_adapter *adapter = client->adapter;
+	struct ad7418_data *data;
+	struct device *hwmon_dev;
+	const struct attribute_group **attr_groups = NULL;
+
+	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA |
+					I2C_FUNC_SMBUS_WORD_DATA))
+		return -EOPNOTSUPP;
+
+	data = devm_kzalloc(dev, sizeof(struct ad7418_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_set_clientdata(client, data);
 
 	mutex_init(&data->lock);
+<<<<<<< HEAD
 	data->type = id->driver_data;
+=======
+	data->client = client;
+	if (dev->of_node)
+		data->type = (uintptr_t)of_device_get_match_data(dev);
+	else
+		data->type = i2c_match_id(ad7418_id, client)->driver_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (data->type) {
 	case ad7416:
 		data->adc_max = 0;
+<<<<<<< HEAD
 		data->attrs.attrs = ad7416_attributes;
+=======
+		attr_groups = ad7416_groups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ad7417:
 		data->adc_max = 4;
+<<<<<<< HEAD
 		data->attrs.attrs = ad7417_attributes;
+=======
+		attr_groups = ad7417_groups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ad7418:
 		data->adc_max = 1;
+<<<<<<< HEAD
 		data->attrs.attrs = ad7418_attributes;
 		break;
 	}
 
 	dev_info(&client->dev, "%s chip found\n", client->name);
+=======
+		attr_groups = ad7418_groups;
+		break;
+	}
+
+	dev_info(dev, "%s chip found\n", client->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the AD7418 chip */
 	ad7418_init_client(client);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &data->attrs);
 	if (err)
@@ -294,6 +521,38 @@ static int ad7418_remove(struct i2c_client *client)
 	kfree(data);
 	return 0;
 }
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev,
+							   client->name,
+							   data, attr_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id ad7418_id[] = {
+	{ "ad7416", ad7416 },
+	{ "ad7417", ad7417 },
+	{ "ad7418", ad7418 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, ad7418_id);
+
+static const struct of_device_id ad7418_dt_ids[] = {
+	{ .compatible = "adi,ad7416", .data = (void *)ad7416, },
+	{ .compatible = "adi,ad7417", .data = (void *)ad7417, },
+	{ .compatible = "adi,ad7418", .data = (void *)ad7418, },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, ad7418_dt_ids);
+
+static struct i2c_driver ad7418_driver = {
+	.driver = {
+		.name	= "ad7418",
+		.of_match_table = ad7418_dt_ids,
+	},
+	.probe		= ad7418_probe,
+	.id_table	= ad7418_id,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_i2c_driver(ad7418_driver);
 

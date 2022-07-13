@@ -1,11 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* nf_nat_helper.c - generic support functions for NAT helpers
  *
  * (C) 2000-2002 Harald Welte <laforge@netfilter.org>
  * (C) 2003-2006 Netfilter Core Team <coreteam@netfilter.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * (C) 2007-2012 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/gfp.h>
@@ -19,6 +27,7 @@
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_ecache.h>
 #include <net/netfilter/nf_conntrack_expect.h>
+<<<<<<< HEAD
 #include <net/netfilter/nf_nat.h>
 #include <net/netfilter/nf_nat_l3proto.h>
 #include <net/netfilter/nf_nat_l4proto.h>
@@ -87,6 +96,12 @@ s16 nf_nat_get_offset(const struct nf_conn *ct,
 	return offset;
 }
 
+=======
+#include <net/netfilter/nf_conntrack_seqadj.h>
+#include <net/netfilter/nf_nat.h>
+#include <net/netfilter/nf_nat_helper.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Frobs data inside this packet, which is linear. */
 static void mangle_contents(struct sk_buff *skb,
 			    unsigned int dataoff,
@@ -97,13 +112,21 @@ static void mangle_contents(struct sk_buff *skb,
 {
 	unsigned char *data;
 
+<<<<<<< HEAD
 	BUG_ON(skb_is_nonlinear(skb));
+=======
+	SKB_LINEAR_ASSERT(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = skb_network_header(skb) + dataoff;
 
 	/* move post-replacement */
 	memmove(data + match_offset + rep_len,
 		data + match_offset + match_len,
+<<<<<<< HEAD
 		skb->tail - (skb->network_header + dataoff +
+=======
+		skb_tail_pointer(skb) - (skb_network_header(skb) + dataoff +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     match_offset + match_len));
 
 	/* insert data from buffer */
@@ -120,7 +143,11 @@ static void mangle_contents(struct sk_buff *skb,
 		__skb_trim(skb, skb->len + rep_len - match_len);
 	}
 
+<<<<<<< HEAD
 	if (nf_ct_l3num((struct nf_conn *)skb->nfct) == NFPROTO_IPV4) {
+=======
+	if (nf_ct_l3num((struct nf_conn *)skb_nfct(skb)) == NFPROTO_IPV4) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* fix IP hdr checksum information */
 		ip_hdr(skb)->tot_len = htons(skb->len);
 		ip_send_check(ip_hdr(skb));
@@ -130,6 +157,7 @@ static void mangle_contents(struct sk_buff *skb,
 }
 
 /* Unusual, but possible case. */
+<<<<<<< HEAD
 static int enlarge_skb(struct sk_buff *skb, unsigned int extra)
 {
 	if (skb->len + extra > 65535)
@@ -165,6 +193,19 @@ void nf_nat_tcp_seq_adjust(struct sk_buff *skb, struct nf_conn *ct,
 }
 EXPORT_SYMBOL_GPL(nf_nat_tcp_seq_adjust);
 
+=======
+static bool enlarge_skb(struct sk_buff *skb, unsigned int extra)
+{
+	if (skb->len + extra > 65535)
+		return false;
+
+	if (pskb_expand_head(skb, 0, extra - skb_tailroom(skb), GFP_ATOMIC))
+		return false;
+
+	return true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generic function for mangling variable-length address changes inside
  * NATed TCP connections (like the PORT XXX,XXX,XXX,XXX,XXX,XXX
  * command in FTP).
@@ -173,6 +214,7 @@ EXPORT_SYMBOL_GPL(nf_nat_tcp_seq_adjust);
  * skb enlargement, ...
  *
  * */
+<<<<<<< HEAD
 int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 			       struct nf_conn *ct,
 			       enum ip_conntrack_info ctinfo,
@@ -188,13 +230,33 @@ int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 
 	if (!skb_make_writable(skb, skb->len))
 		return 0;
+=======
+bool __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
+				struct nf_conn *ct,
+				enum ip_conntrack_info ctinfo,
+				unsigned int protoff,
+				unsigned int match_offset,
+				unsigned int match_len,
+				const char *rep_buffer,
+				unsigned int rep_len, bool adjust)
+{
+	struct tcphdr *tcph;
+	int oldlen, datalen;
+
+	if (skb_ensure_writable(skb, skb->len))
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rep_len > match_len &&
 	    rep_len - match_len > skb_tailroom(skb) &&
 	    !enlarge_skb(skb, rep_len - match_len))
+<<<<<<< HEAD
 		return 0;
 
 	SKB_LINEAR_ASSERT(skb);
+=======
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tcph = (void *)skb->data + protoff;
 
@@ -204,6 +266,7 @@ int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 
 	datalen = skb->len - protoff;
 
+<<<<<<< HEAD
 	l3proto = __nf_nat_l3proto_find(nf_ct_l3num(ct));
 	l3proto->csum_recalc(skb, IPPROTO_TCP, tcph, &tcph->check,
 			     datalen, oldlen);
@@ -213,6 +276,16 @@ int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 				      (int)rep_len - (int)match_len);
 
 	return 1;
+=======
+	nf_nat_csum_recalc(skb, nf_ct_l3num(ct), IPPROTO_TCP,
+			   tcph, &tcph->check, datalen, oldlen);
+
+	if (adjust && rep_len != match_len)
+		nf_ct_seqadj_set(ct, ctinfo, tcph->seq,
+				 (int)rep_len - (int)match_len);
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__nf_nat_mangle_tcp_packet);
 
@@ -226,7 +299,11 @@ EXPORT_SYMBOL(__nf_nat_mangle_tcp_packet);
  * XXX - This function could be merged with nf_nat_mangle_tcp_packet which
  *       should be fairly easy to do.
  */
+<<<<<<< HEAD
 int
+=======
+bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nf_nat_mangle_udp_packet(struct sk_buff *skb,
 			 struct nf_conn *ct,
 			 enum ip_conntrack_info ctinfo,
@@ -236,17 +313,29 @@ nf_nat_mangle_udp_packet(struct sk_buff *skb,
 			 const char *rep_buffer,
 			 unsigned int rep_len)
 {
+<<<<<<< HEAD
 	const struct nf_nat_l3proto *l3proto;
 	struct udphdr *udph;
 	int datalen, oldlen;
 
 	if (!skb_make_writable(skb, skb->len))
 		return 0;
+=======
+	struct udphdr *udph;
+	int datalen, oldlen;
+
+	if (skb_ensure_writable(skb, skb->len))
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rep_len > match_len &&
 	    rep_len - match_len > skb_tailroom(skb) &&
 	    !enlarge_skb(skb, rep_len - match_len))
+<<<<<<< HEAD
 		return 0;
+=======
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udph = (void *)skb->data + protoff;
 
@@ -260,6 +349,7 @@ nf_nat_mangle_udp_packet(struct sk_buff *skb,
 
 	/* fix udp checksum if udp checksum was previously calculated */
 	if (!udph->check && skb->ip_summed != CHECKSUM_PARTIAL)
+<<<<<<< HEAD
 		return 1;
 
 	l3proto = __nf_nat_l3proto_find(nf_ct_l3num(ct));
@@ -409,12 +499,27 @@ nf_nat_seq_adjust(struct sk_buff *skb,
 	return nf_nat_sack_adjust(skb, protoff, tcph, ct, ctinfo);
 }
 
+=======
+		return true;
+
+	nf_nat_csum_recalc(skb, nf_ct_l3num(ct), IPPROTO_UDP,
+			   udph, &udph->check, datalen, oldlen);
+
+	return true;
+}
+EXPORT_SYMBOL(nf_nat_mangle_udp_packet);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Setup NAT on this expected conntrack so it follows master. */
 /* If we fail to get a free NAT slot, we'll get dropped on confirm */
 void nf_nat_follow_master(struct nf_conn *ct,
 			  struct nf_conntrack_expect *exp)
 {
+<<<<<<< HEAD
 	struct nf_nat_range range;
+=======
+	struct nf_nat_range2 range;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This must be a fresh one. */
 	BUG_ON(ct->status & IPS_NAT_DONE_MASK);
@@ -433,3 +538,37 @@ void nf_nat_follow_master(struct nf_conn *ct,
 	nf_nat_setup_info(ct, &range, NF_NAT_MANIP_DST);
 }
 EXPORT_SYMBOL(nf_nat_follow_master);
+<<<<<<< HEAD
+=======
+
+u16 nf_nat_exp_find_port(struct nf_conntrack_expect *exp, u16 port)
+{
+	static const unsigned int max_attempts = 128;
+	int range, attempts_left;
+	u16 min = port;
+
+	range = USHRT_MAX - port;
+	attempts_left = range;
+
+	if (attempts_left > max_attempts)
+		attempts_left = max_attempts;
+
+	/* Try to get same port: if not, try to change it. */
+	for (;;) {
+		int res;
+
+		exp->tuple.dst.u.tcp.port = htons(port);
+		res = nf_ct_expect_related(exp, 0);
+		if (res == 0)
+			return port;
+
+		if (res != -EBUSY || (--attempts_left < 0))
+			break;
+
+		port = min + get_random_u32_below(range);
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(nf_nat_exp_find_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,16 +1,24 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Atmel AC97C
  *
  * Copyright (C) 2005-2009 Atmel Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/bitmap.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/atmel_pdc.h>
@@ -20,6 +28,16 @@
 #include <linux/platform_device.h>
 #include <linux/mutex.h>
 #include <linux/gpio.h>
+=======
+#include <linux/atmel_pdc.h>
+#include <linux/gpio/consumer.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/mod_devicetable.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/mutex.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/io.h>
 
@@ -28,6 +46,7 @@
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/ac97_codec.h>
+<<<<<<< HEAD
 #include <sound/atmel-ac97c.h>
 #include <sound/memalloc.h>
 
@@ -61,6 +80,18 @@ struct atmel_ac97c {
 	struct clk			*pclk;
 	struct platform_device		*pdev;
 	struct atmel_ac97c_dma		dma;
+=======
+#include <sound/memalloc.h>
+
+#include "ac97c.h"
+
+/* Serialize access to opened variable */
+static DEFINE_MUTEX(opened_mutex);
+
+struct atmel_ac97c {
+	struct clk			*pclk;
+	struct platform_device		*pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_pcm_substream	*playback_substream;
 	struct snd_pcm_substream	*capture_substream;
@@ -71,14 +102,21 @@ struct atmel_ac97c {
 
 	u64				cur_format;
 	unsigned int			cur_rate;
+<<<<<<< HEAD
 	unsigned long			flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int				playback_period, capture_period;
 	/* Serialize access to opened variable */
 	spinlock_t			lock;
 	void __iomem			*regs;
 	int				irq;
 	int				opened;
+<<<<<<< HEAD
 	int				reset_pin;
+=======
+	struct gpio_desc		*reset_pin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define get_chip(card) ((struct atmel_ac97c *)(card)->private_data)
@@ -88,6 +126,7 @@ struct atmel_ac97c {
 #define ac97c_readl(chip, reg)				\
 	__raw_readl((chip)->regs + AC97C_##reg)
 
+<<<<<<< HEAD
 /* This function is called by the DMA driver. */
 static void atmel_ac97c_dma_playback_period_done(void *arg)
 {
@@ -148,6 +187,9 @@ static int atmel_ac97c_prepare_dma(struct atmel_ac97c *chip,
 }
 
 static struct snd_pcm_hardware atmel_ac97c_hw = {
+=======
+static const struct snd_pcm_hardware atmel_ac97c_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= (SNDRV_PCM_INFO_MMAP
 				  | SNDRV_PCM_INFO_MMAP_VALID
 				  | SNDRV_PCM_INFO_INTERLEAVED
@@ -182,7 +224,11 @@ static int atmel_ac97c_playback_open(struct snd_pcm_substream *substream)
 		runtime->hw.rate_max = chip->cur_rate;
 	}
 	if (chip->cur_format)
+<<<<<<< HEAD
 		runtime->hw.formats = (1ULL << chip->cur_format);
+=======
+		runtime->hw.formats = pcm_format_to_bits(chip->cur_format);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&opened_mutex);
 	chip->playback_substream = substream;
 	return 0;
@@ -201,7 +247,11 @@ static int atmel_ac97c_capture_open(struct snd_pcm_substream *substream)
 		runtime->hw.rate_max = chip->cur_rate;
 	}
 	if (chip->cur_format)
+<<<<<<< HEAD
 		runtime->hw.formats = (1ULL << chip->cur_format);
+=======
+		runtime->hw.formats = pcm_format_to_bits(chip->cur_format);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&opened_mutex);
 	chip->capture_substream = substream;
 	return 0;
@@ -245,6 +295,7 @@ static int atmel_ac97c_playback_hw_params(struct snd_pcm_substream *substream,
 		struct snd_pcm_hw_params *hw_params)
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int retval;
 
 	retval = snd_pcm_lib_malloc_pages(substream,
@@ -258,19 +309,27 @@ static int atmel_ac97c_playback_hw_params(struct snd_pcm_substream *substream,
 			if (test_and_clear_bit(DMA_TX_READY, &chip->flags))
 				dw_dma_cyclic_free(chip->dma.tx_chan);
 	}
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set restrictions to params. */
 	mutex_lock(&opened_mutex);
 	chip->cur_rate = params_rate(hw_params);
 	chip->cur_format = params_format(hw_params);
 	mutex_unlock(&opened_mutex);
 
+<<<<<<< HEAD
 	return retval;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int atmel_ac97c_capture_hw_params(struct snd_pcm_substream *substream,
 		struct snd_pcm_hw_params *hw_params)
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int retval;
 
 	retval = snd_pcm_lib_malloc_pages(substream,
@@ -286,6 +345,8 @@ static int atmel_ac97c_capture_hw_params(struct snd_pcm_substream *substream,
 			if (test_and_clear_bit(DMA_RX_READY, &chip->flags))
 				dw_dma_cyclic_free(chip->dma.rx_chan);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set restrictions to params. */
 	mutex_lock(&opened_mutex);
@@ -293,6 +354,7 @@ static int atmel_ac97c_capture_hw_params(struct snd_pcm_substream *substream,
 	chip->cur_format = params_format(hw_params);
 	mutex_unlock(&opened_mutex);
 
+<<<<<<< HEAD
 	return retval;
 }
 
@@ -314,6 +376,9 @@ static int atmel_ac97c_capture_hw_free(struct snd_pcm_substream *substream)
 			dw_dma_cyclic_free(chip->dma.rx_chan);
 	}
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
@@ -351,10 +416,15 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 
 	switch (runtime->format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
+<<<<<<< HEAD
 		if (cpu_is_at32ap7000())
 			word |= AC97C_CMR_CEM_LITTLE;
 		break;
 	case SNDRV_PCM_FORMAT_S16_BE: /* fall through */
+=======
+		break;
+	case SNDRV_PCM_FORMAT_S16_BE:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		word &= ~(AC97C_CMR_CEM_LITTLE);
 		break;
 	default:
@@ -391,6 +461,7 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 		dev_dbg(&chip->pdev->dev, "could not set rate %d Hz\n",
 				runtime->rate);
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000()) {
 		if (!test_bit(DMA_TX_READY, &chip->flags))
 			retval = atmel_ac97c_prepare_dma(chip, substream,
@@ -403,6 +474,13 @@ static int atmel_ac97c_playback_prepare(struct snd_pcm_substream *substream)
 				chip->regs + ATMEL_PDC_TNPR);
 		writel(block_size / 2, chip->regs + ATMEL_PDC_TNCR);
 	}
+=======
+	/* Initialize and start the PDC */
+	writel(runtime->dma_addr, chip->regs + ATMEL_PDC_TPR);
+	writel(block_size / 2, chip->regs + ATMEL_PDC_TCR);
+	writel(runtime->dma_addr + block_size, chip->regs + ATMEL_PDC_TNPR);
+	writel(block_size / 2, chip->regs + ATMEL_PDC_TNCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -442,10 +520,15 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 
 	switch (runtime->format) {
 	case SNDRV_PCM_FORMAT_S16_LE:
+<<<<<<< HEAD
 		if (cpu_is_at32ap7000())
 			word |= AC97C_CMR_CEM_LITTLE;
 		break;
 	case SNDRV_PCM_FORMAT_S16_BE: /* fall through */
+=======
+		break;
+	case SNDRV_PCM_FORMAT_S16_BE:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		word &= ~(AC97C_CMR_CEM_LITTLE);
 		break;
 	default:
@@ -482,6 +565,7 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 		dev_dbg(&chip->pdev->dev, "could not set rate %d Hz\n",
 				runtime->rate);
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000()) {
 		if (!test_bit(DMA_RX_READY, &chip->flags))
 			retval = atmel_ac97c_prepare_dma(chip, substream,
@@ -494,6 +578,13 @@ static int atmel_ac97c_capture_prepare(struct snd_pcm_substream *substream)
 				chip->regs + ATMEL_PDC_RNPR);
 		writel(block_size / 2, chip->regs + ATMEL_PDC_RNCR);
 	}
+=======
+	/* Initialize and start the PDC */
+	writel(runtime->dma_addr, chip->regs + ATMEL_PDC_RPR);
+	writel(block_size / 2, chip->regs + ATMEL_PDC_RCR);
+	writel(runtime->dma_addr + block_size, chip->regs + ATMEL_PDC_RNPR);
+	writel(block_size / 2, chip->regs + ATMEL_PDC_RNCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -503,11 +594,15 @@ atmel_ac97c_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
 	unsigned long camr, ptcr = 0;
+<<<<<<< HEAD
 	int retval = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	camr = ac97c_readl(chip, CAMR);
 
 	switch (cmd) {
+<<<<<<< HEAD
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: /* fall through */
 	case SNDRV_PCM_TRIGGER_RESUME: /* fall through */
 	case SNDRV_PCM_TRIGGER_START:
@@ -527,10 +622,23 @@ atmel_ac97c_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 			dw_dma_cyclic_stop(chip->dma.tx_chan);
 		else
 			ptcr |= ATMEL_PDC_TXTDIS;
+=======
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_START:
+		ptcr = ATMEL_PDC_TXTEN;
+		camr |= AC97C_CMR_CENA | AC97C_CSR_ENDTX;
+		break;
+	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		ptcr |= ATMEL_PDC_TXTDIS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chip->opened <= 1)
 			camr &= ~AC97C_CMR_CENA;
 		break;
 	default:
+<<<<<<< HEAD
 		retval = -EINVAL;
 		goto out;
 	}
@@ -540,6 +648,14 @@ atmel_ac97c_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 		writel(ptcr, chip->regs + ATMEL_PDC_PTCR);
 out:
 	return retval;
+=======
+		return -EINVAL;
+	}
+
+	ac97c_writel(chip, CAMR, camr);
+	writel(ptcr, chip->regs + ATMEL_PDC_PTCR);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -547,12 +663,16 @@ atmel_ac97c_capture_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct atmel_ac97c *chip = snd_pcm_substream_chip(substream);
 	unsigned long camr, ptcr = 0;
+<<<<<<< HEAD
 	int retval = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	camr = ac97c_readl(chip, CAMR);
 	ptcr = readl(chip->regs + ATMEL_PDC_PTSR);
 
 	switch (cmd) {
+<<<<<<< HEAD
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE: /* fall through */
 	case SNDRV_PCM_TRIGGER_RESUME: /* fall through */
 	case SNDRV_PCM_TRIGGER_START:
@@ -572,10 +692,23 @@ atmel_ac97c_capture_trigger(struct snd_pcm_substream *substream, int cmd)
 			dw_dma_cyclic_stop(chip->dma.rx_chan);
 		else
 			ptcr |= (ATMEL_PDC_RXTDIS);
+=======
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+	case SNDRV_PCM_TRIGGER_RESUME:
+	case SNDRV_PCM_TRIGGER_START:
+		ptcr = ATMEL_PDC_RXTEN;
+		camr |= AC97C_CMR_CENA | AC97C_CSR_ENDRX;
+		break;
+	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+	case SNDRV_PCM_TRIGGER_STOP:
+		ptcr |= ATMEL_PDC_RXTDIS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chip->opened <= 1)
 			camr &= ~AC97C_CMR_CENA;
 		break;
 	default:
+<<<<<<< HEAD
 		retval = -EINVAL;
 		break;
 	}
@@ -585,6 +718,14 @@ atmel_ac97c_capture_trigger(struct snd_pcm_substream *substream, int cmd)
 		writel(ptcr, chip->regs + ATMEL_PDC_PTCR);
 out:
 	return retval;
+=======
+		return -EINVAL;
+	}
+
+	ac97c_writel(chip, CAMR, camr);
+	writel(ptcr, chip->regs + ATMEL_PDC_PTCR);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static snd_pcm_uframes_t
@@ -595,10 +736,14 @@ atmel_ac97c_playback_pointer(struct snd_pcm_substream *substream)
 	snd_pcm_uframes_t	frames;
 	unsigned long		bytes;
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000())
 		bytes = dw_dma_get_src_addr(chip->dma.tx_chan);
 	else
 		bytes = readl(chip->regs + ATMEL_PDC_TPR);
+=======
+	bytes = readl(chip->regs + ATMEL_PDC_TPR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bytes -= runtime->dma_addr;
 
 	frames = bytes_to_frames(runtime, bytes);
@@ -615,10 +760,14 @@ atmel_ac97c_capture_pointer(struct snd_pcm_substream *substream)
 	snd_pcm_uframes_t	frames;
 	unsigned long		bytes;
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000())
 		bytes = dw_dma_get_dst_addr(chip->dma.rx_chan);
 	else
 		bytes = readl(chip->regs + ATMEL_PDC_RPR);
+=======
+	bytes = readl(chip->regs + ATMEL_PDC_RPR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bytes -= runtime->dma_addr;
 
 	frames = bytes_to_frames(runtime, bytes);
@@ -627,23 +776,37 @@ atmel_ac97c_capture_pointer(struct snd_pcm_substream *substream)
 	return frames;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops atmel_ac97_playback_ops = {
 	.open		= atmel_ac97c_playback_open,
 	.close		= atmel_ac97c_playback_close,
 	.ioctl		= snd_pcm_lib_ioctl,
 	.hw_params	= atmel_ac97c_playback_hw_params,
 	.hw_free	= atmel_ac97c_playback_hw_free,
+=======
+static const struct snd_pcm_ops atmel_ac97_playback_ops = {
+	.open		= atmel_ac97c_playback_open,
+	.close		= atmel_ac97c_playback_close,
+	.hw_params	= atmel_ac97c_playback_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare	= atmel_ac97c_playback_prepare,
 	.trigger	= atmel_ac97c_playback_trigger,
 	.pointer	= atmel_ac97c_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops atmel_ac97_capture_ops = {
 	.open		= atmel_ac97c_capture_open,
 	.close		= atmel_ac97c_capture_close,
 	.ioctl		= snd_pcm_lib_ioctl,
 	.hw_params	= atmel_ac97c_capture_hw_params,
 	.hw_free	= atmel_ac97c_capture_hw_free,
+=======
+static const struct snd_pcm_ops atmel_ac97_capture_ops = {
+	.open		= atmel_ac97c_capture_open,
+	.close		= atmel_ac97c_capture_close,
+	.hw_params	= atmel_ac97c_capture_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare	= atmel_ac97c_capture_prepare,
 	.trigger	= atmel_ac97c_capture_trigger,
 	.pointer	= atmel_ac97c_capture_pointer,
@@ -662,6 +825,7 @@ static irqreturn_t atmel_ac97c_interrupt(int irq, void *dev)
 		struct snd_pcm_runtime *runtime;
 		int offset, next_period, block_size;
 		dev_dbg(&chip->pdev->dev, "channel A event%s%s%s%s%s%s\n",
+<<<<<<< HEAD
 				casr & AC97C_CSR_OVRUN   ? " OVRUN"   : "",
 				casr & AC97C_CSR_RXRDY   ? " RXRDY"   : "",
 				casr & AC97C_CSR_UNRUN   ? " UNRUN"   : "",
@@ -711,17 +875,67 @@ static irqreturn_t atmel_ac97c_interrupt(int irq, void *dev)
 						chip->regs + ATMEL_PDC_RNCR);
 				snd_pcm_period_elapsed(chip->capture_substream);
 			}
+=======
+			(casr & AC97C_CSR_OVRUN)   ? " OVRUN"   : "",
+			(casr & AC97C_CSR_RXRDY)   ? " RXRDY"   : "",
+			(casr & AC97C_CSR_UNRUN)   ? " UNRUN"   : "",
+			(casr & AC97C_CSR_TXEMPTY) ? " TXEMPTY" : "",
+			(casr & AC97C_CSR_TXRDY)   ? " TXRDY"   : "",
+			!casr                      ? " NONE"    : "");
+		if ((casr & camr) & AC97C_CSR_ENDTX) {
+			runtime = chip->playback_substream->runtime;
+			block_size = frames_to_bytes(runtime, runtime->period_size);
+			chip->playback_period++;
+
+			if (chip->playback_period == runtime->periods)
+				chip->playback_period = 0;
+			next_period = chip->playback_period + 1;
+			if (next_period == runtime->periods)
+				next_period = 0;
+
+			offset = block_size * next_period;
+
+			writel(runtime->dma_addr + offset, chip->regs + ATMEL_PDC_TNPR);
+			writel(block_size / 2, chip->regs + ATMEL_PDC_TNCR);
+
+			snd_pcm_period_elapsed(chip->playback_substream);
+		}
+		if ((casr & camr) & AC97C_CSR_ENDRX) {
+			runtime = chip->capture_substream->runtime;
+			block_size = frames_to_bytes(runtime, runtime->period_size);
+			chip->capture_period++;
+
+			if (chip->capture_period == runtime->periods)
+				chip->capture_period = 0;
+			next_period = chip->capture_period + 1;
+			if (next_period == runtime->periods)
+				next_period = 0;
+
+			offset = block_size * next_period;
+
+			writel(runtime->dma_addr + offset, chip->regs + ATMEL_PDC_RNPR);
+			writel(block_size / 2, chip->regs + ATMEL_PDC_RNCR);
+			snd_pcm_period_elapsed(chip->capture_substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		retval = IRQ_HANDLED;
 	}
 
 	if (sr & AC97C_SR_COEVT) {
 		dev_info(&chip->pdev->dev, "codec channel event%s%s%s%s%s\n",
+<<<<<<< HEAD
 				cosr & AC97C_CSR_OVRUN   ? " OVRUN"   : "",
 				cosr & AC97C_CSR_RXRDY   ? " RXRDY"   : "",
 				cosr & AC97C_CSR_TXEMPTY ? " TXEMPTY" : "",
 				cosr & AC97C_CSR_TXRDY   ? " TXRDY"   : "",
 				!cosr                    ? " NONE"    : "");
+=======
+			 (cosr & AC97C_CSR_OVRUN)   ? " OVRUN"   : "",
+			 (cosr & AC97C_CSR_RXRDY)   ? " RXRDY"   : "",
+			 (cosr & AC97C_CSR_TXEMPTY) ? " TXEMPTY" : "",
+			 (cosr & AC97C_CSR_TXRDY)   ? " TXRDY"   : "",
+			 !cosr                      ? " NONE"    : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = IRQ_HANDLED;
 	}
 
@@ -733,7 +947,11 @@ static irqreturn_t atmel_ac97c_interrupt(int irq, void *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 static struct ac97_pcm at91_ac97_pcm_defs[] __devinitdata = {
+=======
+static const struct ac97_pcm at91_ac97_pcm_defs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Playback */
 	{
 		.exclusive = 1,
@@ -761,6 +979,7 @@ static struct ac97_pcm at91_ac97_pcm_defs[] __devinitdata = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit atmel_ac97c_pcm_new(struct atmel_ac97c *chip)
 {
 	struct snd_pcm		*pcm;
@@ -794,6 +1013,30 @@ static int __devinit atmel_ac97c_pcm_new(struct atmel_ac97c *chip)
 			hw.buffer_bytes_max);
 	if (retval)
 		return retval;
+=======
+static int atmel_ac97c_pcm_new(struct atmel_ac97c *chip)
+{
+	struct snd_pcm		*pcm;
+	struct snd_pcm_hardware	hw = atmel_ac97c_hw;
+	int			retval;
+
+	retval = snd_ac97_pcm_assign(chip->ac97_bus,
+				     ARRAY_SIZE(at91_ac97_pcm_defs),
+				     at91_ac97_pcm_defs);
+	if (retval)
+		return retval;
+
+	retval = snd_pcm_new(chip->card, chip->card->shortname, 0, 1, 1, &pcm);
+	if (retval)
+		return retval;
+
+	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &atmel_ac97_capture_ops);
+	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &atmel_ac97_playback_ops);
+
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+			&chip->pdev->dev, hw.periods_min * hw.period_bytes_min,
+			hw.buffer_bytes_max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm->private_data = chip;
 	pcm->info_flags = 0;
@@ -877,6 +1120,7 @@ timed_out:
 	return 0xffff;
 }
 
+<<<<<<< HEAD
 static bool filter(struct dma_chan *chan, void *slave)
 {
 	struct dw_dma_slave *dws = slave;
@@ -888,6 +1132,8 @@ static bool filter(struct dma_chan *chan, void *slave)
 		return false;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void atmel_ac97c_reset(struct atmel_ac97c *chip)
 {
 	ac97c_writel(chip, MR,   0);
@@ -895,11 +1141,19 @@ static void atmel_ac97c_reset(struct atmel_ac97c *chip)
 	ac97c_writel(chip, CAMR, 0);
 	ac97c_writel(chip, COMR, 0);
 
+<<<<<<< HEAD
 	if (gpio_is_valid(chip->reset_pin)) {
 		gpio_set_value(chip->reset_pin, 0);
 		/* AC97 v2.2 specifications says minimum 1 us. */
 		udelay(2);
 		gpio_set_value(chip->reset_pin, 1);
+=======
+	if (!IS_ERR(chip->reset_pin)) {
+		gpiod_set_value(chip->reset_pin, 0);
+		/* AC97 v2.2 specifications says minimum 1 us. */
+		udelay(2);
+		gpiod_set_value(chip->reset_pin, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ac97c_writel(chip, MR, AC97C_MR_WRST | AC97C_MR_ENA);
 		udelay(2);
@@ -907,6 +1161,7 @@ static void atmel_ac97c_reset(struct atmel_ac97c *chip)
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 {
 	struct snd_card			*card;
@@ -915,6 +1170,22 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 	struct ac97c_platform_data	*pdata;
 	struct clk			*pclk;
 	static struct snd_ac97_bus_ops	ops = {
+=======
+static const struct of_device_id atmel_ac97c_dt_ids[] = {
+	{ .compatible = "atmel,at91sam9263-ac97c", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, atmel_ac97c_dt_ids);
+
+static int atmel_ac97c_probe(struct platform_device *pdev)
+{
+	struct device			*dev = &pdev->dev;
+	struct snd_card			*card;
+	struct atmel_ac97c		*chip;
+	struct resource			*regs;
+	struct clk			*pclk;
+	static const struct snd_ac97_bus_ops	ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write	= atmel_ac97c_write,
 		.read	= atmel_ac97c_read,
 	};
@@ -927,6 +1198,7 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
 	if (!pdata) {
 		dev_dbg(&pdev->dev, "no platform data\n");
@@ -945,14 +1217,33 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 		pclk = clk_get(&pdev->dev, "ac97_clk");
 	}
 
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0) {
+		dev_dbg(&pdev->dev, "could not get irq: %d\n", irq);
+		return irq;
+	}
+
+	pclk = clk_get(&pdev->dev, "ac97_clk");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pclk)) {
 		dev_dbg(&pdev->dev, "no peripheral clock\n");
 		return PTR_ERR(pclk);
 	}
+<<<<<<< HEAD
 	clk_enable(pclk);
 
 	retval = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			THIS_MODULE, sizeof(struct atmel_ac97c), &card);
+=======
+	retval = clk_prepare_enable(pclk);
+	if (retval)
+		goto err_prepare_enable;
+
+	retval = snd_card_new(&pdev->dev, SNDRV_DEFAULT_IDX1,
+			      SNDRV_DEFAULT_STR1, THIS_MODULE,
+			      sizeof(struct atmel_ac97c), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		dev_dbg(&pdev->dev, "could not create sound card device\n");
 		goto err_snd_card_new;
@@ -980,6 +1271,7 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 
 	if (!chip->regs) {
 		dev_dbg(&pdev->dev, "could not remap register memory\n");
+<<<<<<< HEAD
 		goto err_ioremap;
 	}
 
@@ -994,6 +1286,15 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 	}
 
 	snd_card_set_dev(card, &pdev->dev);
+=======
+		retval = -ENOMEM;
+		goto err_ioremap;
+	}
+
+	chip->reset_pin = devm_gpiod_get_index(dev, "ac97", 2, GPIOD_OUT_HIGH);
+	if (IS_ERR(chip->reset_pin))
+		dev_dbg(dev, "reset pin not available\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atmel_ac97c_reset(chip);
 
@@ -1013,6 +1314,7 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 		goto err_ac97_bus;
 	}
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000()) {
 		if (pdata->rx_dws.dma_dev) {
 			dma_cap_mask_t mask;
@@ -1089,12 +1391,22 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 	if (retval) {
 		dev_dbg(&pdev->dev, "could not register ac97 pcm device\n");
 		goto err_dma;
+=======
+	retval = atmel_ac97c_pcm_new(chip);
+	if (retval) {
+		dev_dbg(&pdev->dev, "could not register ac97 pcm device\n");
+		goto err_ac97_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	retval = snd_card_register(card);
 	if (retval) {
 		dev_dbg(&pdev->dev, "could not register sound card\n");
+<<<<<<< HEAD
 		goto err_dma;
+=======
+		goto err_ac97_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, card);
@@ -1104,6 +1416,7 @@ static int __devinit atmel_ac97c_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 err_dma:
 	if (cpu_is_at32ap7000()) {
 		if (test_bit(DMA_RX_CHAN_PRESENT, &chip->flags))
@@ -1121,17 +1434,26 @@ err_ac97_bus:
 	if (gpio_is_valid(chip->reset_pin))
 		gpio_free(chip->reset_pin);
 
+=======
+err_ac97_bus:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(chip->regs);
 err_ioremap:
 	free_irq(irq, chip);
 err_request_irq:
 	snd_card_free(card);
 err_snd_card_new:
+<<<<<<< HEAD
 	clk_disable(pclk);
+=======
+	clk_disable_unprepare(pclk);
+err_prepare_enable:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk_put(pclk);
 	return retval;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int atmel_ac97c_suspend(struct platform_device *pdev, pm_message_t msg)
 {
@@ -1169,22 +1491,58 @@ static int atmel_ac97c_resume(struct platform_device *pdev)
 #endif
 
 static int __devexit atmel_ac97c_remove(struct platform_device *pdev)
+=======
+#ifdef CONFIG_PM_SLEEP
+static int atmel_ac97c_suspend(struct device *pdev)
+{
+	struct snd_card *card = dev_get_drvdata(pdev);
+	struct atmel_ac97c *chip = card->private_data;
+
+	clk_disable_unprepare(chip->pclk);
+	return 0;
+}
+
+static int atmel_ac97c_resume(struct device *pdev)
+{
+	struct snd_card *card = dev_get_drvdata(pdev);
+	struct atmel_ac97c *chip = card->private_data;
+	int ret = clk_prepare_enable(chip->pclk);
+
+	return ret;
+}
+
+static SIMPLE_DEV_PM_OPS(atmel_ac97c_pm, atmel_ac97c_suspend, atmel_ac97c_resume);
+#define ATMEL_AC97C_PM_OPS	&atmel_ac97c_pm
+#else
+#define ATMEL_AC97C_PM_OPS	NULL
+#endif
+
+static void atmel_ac97c_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = platform_get_drvdata(pdev);
 	struct atmel_ac97c *chip = get_chip(card);
 
+<<<<<<< HEAD
 	if (gpio_is_valid(chip->reset_pin))
 		gpio_free(chip->reset_pin);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ac97c_writel(chip, CAMR, 0);
 	ac97c_writel(chip, COMR, 0);
 	ac97c_writel(chip, MR,   0);
 
+<<<<<<< HEAD
 	clk_disable(chip->pclk);
+=======
+	clk_disable_unprepare(chip->pclk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk_put(chip->pclk);
 	iounmap(chip->regs);
 	free_irq(chip->irq, chip);
 
+<<<<<<< HEAD
 	if (cpu_is_at32ap7000()) {
 		if (test_bit(DMA_RX_CHAN_PRESENT, &chip->flags))
 			dma_release_channel(chip->dma.rx_chan);
@@ -1225,6 +1583,21 @@ static void __exit atmel_ac97c_exit(void)
 	platform_driver_unregister(&atmel_ac97c_driver);
 }
 module_exit(atmel_ac97c_exit);
+=======
+	snd_card_free(card);
+}
+
+static struct platform_driver atmel_ac97c_driver = {
+	.probe		= atmel_ac97c_probe,
+	.remove_new	= atmel_ac97c_remove,
+	.driver		= {
+		.name	= "atmel_ac97c",
+		.pm	= ATMEL_AC97C_PM_OPS,
+		.of_match_table = atmel_ac97c_dt_ids,
+	},
+};
+module_platform_driver(atmel_ac97c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Driver for Atmel AC97 controller");

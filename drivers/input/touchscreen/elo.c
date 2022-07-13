@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Elo serial touchscreen driver
  *
  * Copyright (c) 2004 Vojtech Pavlik
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This driver can handle serial Elo touchscreens using either the Elo standard
@@ -22,7 +29,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 
 #define DRIVER_DESC	"Elo serial touchscreen driver"
@@ -346,13 +356,24 @@ static int elo_connect(struct serio *serio, struct serio_driver *drv)
 	switch (elo->id) {
 
 	case 0: /* 10-byte protocol */
+<<<<<<< HEAD
 		if (elo_setup_10(elo))
 			goto fail3;
+=======
+		if (elo_setup_10(elo)) {
+			err = -EIO;
+			goto fail3;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
 	case 1: /* 6-byte protocol */
 		input_set_abs_params(input_dev, ABS_PRESSURE, 0, 15, 0, 0);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case 2: /* 4-byte protocol */
 		input_set_abs_params(input_dev, ABS_X, 96, 4000, 0, 0);
@@ -382,7 +403,11 @@ static int elo_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id elo_serio_ids[] = {
+=======
+static const struct serio_device_id elo_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_ELO,
@@ -405,6 +430,7 @@ static struct serio_driver elo_drv = {
 	.disconnect	= elo_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -421,3 +447,6 @@ static void __exit elo_exit(void)
 
 module_init(elo_init);
 module_exit(elo_exit);
+=======
+module_serio_driver(elo_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

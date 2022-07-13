@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Infinity Unlimited USB Phoenix driver
  *
@@ -6,6 +10,7 @@
  *
  * Original code taken from iuutool ( Copyright (C) 2006 Juan Carlos Borrás )
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
@@ -13,6 +18,9 @@
  *
  *  And tested with help of WB Electronics
  *
+=======
+ *  And tested with help of WB Electronics
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define   IUU_USB_VENDOR_ID  0x104f

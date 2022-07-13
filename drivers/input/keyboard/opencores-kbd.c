@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenCores Keyboard Controller Driver
  * http://www.opencores.org/project,keyboardcontroller
  *
  * Copyright 2007-2009 HV Sistemas S.L.
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
@@ -18,7 +25,10 @@
 
 struct opencores_kbd {
 	struct input_dev *input;
+<<<<<<< HEAD
 	struct resource *addr_res;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *addr;
 	int irq;
 	unsigned short keycodes[128];
@@ -37,6 +47,7 @@ static irqreturn_t opencores_kbd_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit opencores_kbd_probe(struct platform_device *pdev)
 {
 	struct input_dev *input;
@@ -87,6 +98,37 @@ static int __devinit opencores_kbd_probe(struct platform_device *pdev)
 	input->dev.parent = &pdev->dev;
 
 	input_set_drvdata(input, opencores_kbd);
+=======
+static int opencores_kbd_probe(struct platform_device *pdev)
+{
+	struct input_dev *input;
+	struct opencores_kbd *opencores_kbd;
+	int irq, i, error;
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return -EINVAL;
+
+	opencores_kbd = devm_kzalloc(&pdev->dev, sizeof(*opencores_kbd),
+				     GFP_KERNEL);
+	if (!opencores_kbd)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input) {
+		dev_err(&pdev->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	opencores_kbd->input = input;
+
+	opencores_kbd->addr = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(opencores_kbd->addr))
+		return PTR_ERR(opencores_kbd->addr);
+
+	input->name = pdev->name;
+	input->phys = "opencores-kbd/input0";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->id.bustype = BUS_HOST;
 	input->id.vendor = 0x0001;
@@ -109,16 +151,26 @@ static int __devinit opencores_kbd_probe(struct platform_device *pdev)
 	}
 	__clear_bit(KEY_RESERVED, input->keybit);
 
+<<<<<<< HEAD
 	error = request_irq(irq, &opencores_kbd_isr,
 			    IRQF_TRIGGER_RISING, pdev->name, opencores_kbd);
 	if (error) {
 		dev_err(&pdev->dev, "unable to claim irq %d\n", irq);
 		goto err_unmap_mem;
+=======
+	error = devm_request_irq(&pdev->dev, irq, &opencores_kbd_isr,
+				 IRQF_TRIGGER_RISING,
+				 pdev->name, opencores_kbd);
+	if (error) {
+		dev_err(&pdev->dev, "unable to claim irq %d\n", irq);
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "unable to register input device\n");
+<<<<<<< HEAD
 		goto err_free_irq;
 	}
 
@@ -153,12 +205,20 @@ static int __devexit opencores_kbd_remove(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, NULL);
 
+=======
+		return error;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct platform_driver opencores_kbd_device_driver = {
 	.probe    = opencores_kbd_probe,
+<<<<<<< HEAD
 	.remove   = __devexit_p(opencores_kbd_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver   = {
 		.name = "opencores-kbd",
 	},

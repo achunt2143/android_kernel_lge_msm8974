@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * misc.c:  Miscellaneous prom functions that don't belong
  *          anywhere else.
@@ -81,11 +85,14 @@ void prom_feval(const char *fstring)
 }
 EXPORT_SYMBOL(prom_feval);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 extern void smp_capture(void);
 extern void smp_release(void);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Drop into the prom, with the chance to continue with the 'go'
  * prom command.
  */

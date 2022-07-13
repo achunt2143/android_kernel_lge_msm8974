@@ -29,6 +29,11 @@
  * status registers (ISR).
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ath5k.h"
 #include "reg.h"
 #include "debug.h"
@@ -614,7 +619,20 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 		 * SISRs will also clear PISR so no need to worry here.
 		 */
 
+<<<<<<< HEAD
 		pisr_clear = pisr & ~AR5K_ISR_BITS_FROM_SISRS;
+=======
+		/* XXX: There seems to be  an issue on some cards
+		 *	with tx interrupt flags not being updated
+		 *	on PISR despite that all Tx interrupt bits
+		 * 	are cleared on SISRs. Since we handle all
+		 *	Tx queues all together it shouldn't be an
+		 *	issue if we clear Tx interrupt flags also
+		 * 	on PISR to avoid that.
+		 */
+		pisr_clear = (pisr & ~AR5K_ISR_BITS_FROM_SISRS) |
+					(pisr & AR5K_INT_TX_ALL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Write to clear them...
@@ -639,6 +657,10 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 		 */
 		*interrupt_mask = (pisr & AR5K_INT_COMMON) & ah->ah_imr;
 
+<<<<<<< HEAD
+=======
+		ah->ah_txq_isr_txok_all = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We treat TXOK,TXDESC, TXERR and TXEOL
 		 * the same way (schedule the tx tasklet)
@@ -659,6 +681,7 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 			ah->ah_txq_isr_txok_all |= AR5K_REG_MS(sisr1,
 						AR5K_SISR1_QCU_TXEOL);
 
+<<<<<<< HEAD
 		/* Currently this is not much usefull since we treat
 		 * all queues the same way if we get a TXURN (update
 		 * tx trigger level) but we might need it later on*/
@@ -666,6 +689,8 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 			ah->ah_txq_isr_txurn |= AR5K_REG_MS(sisr2,
 						AR5K_SISR2_QCU_TXURN);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Misc Beacon related interrupts */
 
 		/* For AR5211 */
@@ -698,6 +723,7 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 			*interrupt_mask |= AR5K_INT_BNR;
 
 		/* A queue got CBR overrun */
+<<<<<<< HEAD
 		if (unlikely(pisr & (AR5K_ISR_QCBRORN))) {
 			*interrupt_mask |= AR5K_INT_QCBRORN;
 			ah->ah_txq_isr_qcborn |= AR5K_REG_MS(sisr3,
@@ -717,6 +743,18 @@ ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 			ah->ah_txq_isr_qtrig |= AR5K_REG_MS(sisr4,
 						AR5K_SISR4_QTRIG);
 		}
+=======
+		if (unlikely(pisr & (AR5K_ISR_QCBRORN)))
+			*interrupt_mask |= AR5K_INT_QCBRORN;
+
+		/* A queue got CBR underrun */
+		if (unlikely(pisr & (AR5K_ISR_QCBRURN)))
+			*interrupt_mask |= AR5K_INT_QCBRURN;
+
+		/* A queue got triggered */
+		if (unlikely(pisr & (AR5K_ISR_QTRIG)))
+			*interrupt_mask |= AR5K_INT_QTRIG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		data = pisr;
 	}

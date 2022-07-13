@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for Disk-On-Chip devices
  *
@@ -5,6 +9,7 @@
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
  * Copyright © 2002-2003 Greg Ungerer <gerg@snapgear.com>
  * Copyright © 2002-2003 SnapGear Inc
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTD_DOC2000_H__
@@ -92,12 +99,35 @@
  * Others use readb/writeb
  */
 #if defined(__arm__)
+<<<<<<< HEAD
 #define ReadDOC_(adr, reg)      ((unsigned char)(*(volatile __u32 *)(((unsigned long)adr)+((reg)<<2))))
 #define WriteDOC_(d, adr, reg)  do{ *(volatile __u32 *)(((unsigned long)adr)+((reg)<<2)) = (__u32)d; wmb();} while(0)
 #define DOC_IOREMAP_LEN 0x8000
 #elif defined(__ppc__)
 #define ReadDOC_(adr, reg)      ((unsigned char)(*(volatile __u16 *)(((unsigned long)adr)+((reg)<<1))))
 #define WriteDOC_(d, adr, reg)  do{ *(volatile __u16 *)(((unsigned long)adr)+((reg)<<1)) = (__u16)d; wmb();} while(0)
+=======
+static inline u8 ReadDOC_(u32 __iomem *addr, unsigned long reg)
+{
+	return __raw_readl(addr + reg);
+}
+static inline void WriteDOC_(u8 data, u32 __iomem *addr, unsigned long reg)
+{
+	__raw_writel(data, addr + reg);
+	wmb();
+}
+#define DOC_IOREMAP_LEN 0x8000
+#elif defined(__ppc__)
+static inline u8 ReadDOC_(u16 __iomem *addr, unsigned long reg)
+{
+	return __raw_readw(addr + reg);
+}
+static inline void WriteDOC_(u8 data, u16 __iomem *addr, unsigned long reg)
+{
+	__raw_writew(data, addr + reg);
+	wmb();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DOC_IOREMAP_LEN 0x4000
 #else
 #define ReadDOC_(adr, reg)      readb((void __iomem *)(adr) + (reg))

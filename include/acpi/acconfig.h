@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ACCONFIG_H
 #define _ACCONFIG_H
 
@@ -78,12 +89,22 @@
 #define ACPI_MAX_EXTPARSE_CACHE_DEPTH   96	/* Parse tree objects */
 #define ACPI_MAX_OBJECT_CACHE_DEPTH     96	/* Interpreter operand objects */
 #define ACPI_MAX_NAMESPACE_CACHE_DEPTH  96	/* Namespace objects */
+<<<<<<< HEAD
+=======
+#define ACPI_MAX_COMMENT_CACHE_DEPTH    96	/* Comments for the -ca option */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Should the subsystem abort the loading of an ACPI table if the
  * table checksum is incorrect?
  */
+<<<<<<< HEAD
 #define ACPI_CHECKSUM_ABORT             FALSE
+=======
+#ifndef ACPI_CHECKSUM_ABORT
+#define ACPI_CHECKSUM_ABORT             FALSE
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generate a version of ACPICA that only supports "reduced hardware"
@@ -100,7 +121,13 @@
  *      ACPI PM timer
  *      FACS table (Waking vectors and Global Lock)
  */
+<<<<<<< HEAD
 #define ACPI_REDUCED_HARDWARE           FALSE
+=======
+#ifndef ACPI_REDUCED_HARDWARE
+#define ACPI_REDUCED_HARDWARE           FALSE
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /******************************************************************************
  *
@@ -118,20 +145,31 @@
 
 /* Maximum object reference count (detects object deletion issues) */
 
+<<<<<<< HEAD
 #define ACPI_MAX_REFERENCE_COUNT        0x1000
+=======
+#define ACPI_MAX_REFERENCE_COUNT        0x4000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Default page size for use in mapping memory for operation regions */
 
 #define ACPI_DEFAULT_PAGE_SIZE          4096	/* Must be power of 2 */
 
+<<<<<<< HEAD
 /* owner_id tracking. 8 entries allows for 255 owner_ids */
 
 #define ACPI_NUM_OWNERID_MASKS          8
+=======
+/* owner_id tracking. 128 entries allows for 4095 owner_ids */
+
+#define ACPI_NUM_OWNERID_MASKS          128
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Size of the root table array is increased by this increment */
 
 #define ACPI_ROOT_TABLE_SIZE_INCREMENT  4
 
+<<<<<<< HEAD
 /* Maximum number of While() loop iterations before forced abort */
 
 #define ACPI_MAX_LOOP_ITERATIONS        0xFFFF
@@ -139,23 +177,39 @@
 /* Maximum sleep allowed via Sleep() operator */
 
 #define ACPI_MAX_SLEEP                  2000	/* Two seconds */
+=======
+/* Maximum sleep allowed via Sleep() operator */
+
+#define ACPI_MAX_SLEEP                  2000	/* 2000 millisec == two seconds */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Address Range lists are per-space_id (Memory and I/O only) */
 
 #define ACPI_ADDRESS_RANGE_MAX          2
 
+<<<<<<< HEAD
+=======
+/* Maximum time (default 30s) of While() loops before abort */
+
+#define ACPI_MAX_LOOP_TIMEOUT           30
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * ACPI Specification constants (Do not change unless the specification changes)
  *
  *****************************************************************************/
 
+<<<<<<< HEAD
 /* Number of distinct GPE register blocks and register width */
 
 #define ACPI_MAX_GPE_BLOCKS             2
 #define ACPI_GPE_REGISTER_WIDTH         8
 
 /* Method info (in WALK_STATE), containing local variables and argumetns */
+=======
+/* Method info (in WALK_STATE), containing local variables and arguments */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_METHOD_NUM_LOCALS          8
 #define ACPI_METHOD_MAX_LOCAL           7
@@ -163,12 +217,15 @@
 #define ACPI_METHOD_NUM_ARGS            7
 #define ACPI_METHOD_MAX_ARG             6
 
+<<<<<<< HEAD
 /* Length of _HID, _UID, _CID, and UUID values */
 
 #define ACPI_DEVICE_ID_LENGTH           0x09
 #define ACPI_MAX_CID_LENGTH             48
 #define ACPI_UUID_LENGTH                16
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Operand Stack (in WALK_STATE), Must be large enough to contain METHOD_MAX_ARG
  */
@@ -181,11 +238,16 @@
 
 /*
  * Maximal number of elements the Result Stack can contain,
+<<<<<<< HEAD
  * it may be an arbitray value not exceeding the types of
+=======
+ * it may be an arbitrary value not exceeding the types of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * result_size and result_count (now u8).
  */
 #define ACPI_RESULTS_OBJ_NUM_MAX        255
 
+<<<<<<< HEAD
 /* Names within the namespace are 4 bytes long */
 
 #define ACPI_NAME_SIZE                  4
@@ -197,6 +259,8 @@
 #define ACPI_OEM_ID_SIZE                6
 #define ACPI_OEM_TABLE_ID_SIZE          8
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Constants used in searching for the RSDP in low memory */
 
 #define ACPI_EBDA_PTR_LOCATION          0x0000040E	/* Physical Address */
@@ -213,6 +277,10 @@
 /* Maximum space_ids for Operation Regions */
 
 #define ACPI_MAX_ADDRESS_SPACE          255
+<<<<<<< HEAD
+=======
+#define ACPI_NUM_DEFAULT_SPACES         4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Array sizes.  Used for range checking also */
 
@@ -223,11 +291,32 @@
 #define ACPI_RSDP_CHECKSUM_LENGTH       20
 #define ACPI_RSDP_XCHECKSUM_LENGTH      36
 
+<<<<<<< HEAD
 /* SMBus, GSBus and IPMI bidirectional buffer size */
 
 #define ACPI_SMBUS_BUFFER_SIZE          34
 #define ACPI_GSBUS_BUFFER_SIZE          34
 #define ACPI_IPMI_BUFFER_SIZE           66
+=======
+/*
+ * SMBus, GSBus and IPMI buffer sizes. All have a 2-byte header,
+ * containing both Status and Length.
+ */
+#define ACPI_SERIAL_HEADER_SIZE         2	/* Common for below. Status and Length fields */
+
+#define ACPI_SMBUS_DATA_SIZE            32
+#define ACPI_SMBUS_BUFFER_SIZE          ACPI_SERIAL_HEADER_SIZE + ACPI_SMBUS_DATA_SIZE
+
+#define ACPI_IPMI_DATA_SIZE             64
+#define ACPI_IPMI_BUFFER_SIZE           ACPI_SERIAL_HEADER_SIZE + ACPI_IPMI_DATA_SIZE
+
+#define ACPI_MAX_GSBUS_DATA_SIZE        255
+#define ACPI_MAX_GSBUS_BUFFER_SIZE      ACPI_SERIAL_HEADER_SIZE + ACPI_MAX_GSBUS_DATA_SIZE
+
+#define ACPI_PRM_INPUT_BUFFER_SIZE      26
+
+#define ACPI_FFH_INPUT_BUFFER_SIZE      256
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* _sx_d and _sx_w control methods */
 
@@ -236,11 +325,37 @@
 
 /******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * Miscellaneous constants
+ *
+ *****************************************************************************/
+
+/* UUID constants */
+
+#define UUID_BUFFER_LENGTH          16	/* Length of UUID in memory */
+#define UUID_STRING_LENGTH          36	/* Total length of a UUID string */
+
+/* Positions for required hyphens (dashes) in UUID strings */
+
+#define UUID_HYPHEN1_OFFSET         8
+#define UUID_HYPHEN2_OFFSET         13
+#define UUID_HYPHEN3_OFFSET         18
+#define UUID_HYPHEN4_OFFSET         23
+
+/******************************************************************************
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ACPI AML Debugger
  *
  *****************************************************************************/
 
+<<<<<<< HEAD
 #define ACPI_DEBUGGER_MAX_ARGS          8	/* Must be max method args + 1 */
+=======
+#define ACPI_DEBUGGER_MAX_ARGS          ACPI_METHOD_NUM_ARGS + 4	/* Max command line arguments */
+#define ACPI_DB_LINE_BUFFER_SIZE        512
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_DEBUGGER_COMMAND_PROMPT    '-'
 #define ACPI_DEBUGGER_EXECUTE_PROMPT    '%'

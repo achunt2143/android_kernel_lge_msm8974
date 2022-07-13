@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * Carsten Langgaard, carstenl@mips.com
  * Copyright (C) 2000 MIPS Technologies, Inc.  All rights reserved.
  *
@@ -21,12 +22,24 @@
  *
  * Defines for the Malta interrupt controller.
  *
+=======
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * Copyright (C) 2000,2012 MIPS Technologies, Inc.  All rights reserved.
+ *	Carsten Langgaard <carstenl@mips.com>
+ *	Steven J. Hill <sjhill@mips.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _MIPS_MALTAINT_H
 #define _MIPS_MALTAINT_H
 
+<<<<<<< HEAD
 #include <irq.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interrupts 0..15 are used for Malta ISA compatible interrupts
  */
@@ -37,29 +50,48 @@
 #define MIPSCPU_INT_SW1		1
 #define MIPSCPU_INT_MB0		2
 #define MIPSCPU_INT_I8259A	MIPSCPU_INT_MB0
+<<<<<<< HEAD
 #define MIPSCPU_INT_MB1		3
 #define MIPSCPU_INT_SMI		MIPSCPU_INT_MB1
 #define MIPSCPU_INT_IPI0	MIPSCPU_INT_MB1	/* GIC IPI */
 #define MIPSCPU_INT_MB2		4
 #define MIPSCPU_INT_IPI1	MIPSCPU_INT_MB2	/* GIC IPI */
+=======
+#define MIPSCPU_INT_GIC		MIPSCPU_INT_MB0 /* GIC chained interrupt */
+#define MIPSCPU_INT_MB1		3
+#define MIPSCPU_INT_SMI		MIPSCPU_INT_MB1
+#define MIPSCPU_INT_MB2		4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MIPSCPU_INT_MB3		5
 #define MIPSCPU_INT_COREHI	MIPSCPU_INT_MB3
 #define MIPSCPU_INT_MB4		6
 #define MIPSCPU_INT_CORELO	MIPSCPU_INT_MB4
 
 /*
+<<<<<<< HEAD
  * Interrupts 64..127 are used for Soc-it Classic interrupts
  */
 #define MSC01C_INT_BASE		64
+=======
+ * Interrupts 96..127 are used for Soc-it Classic interrupts
+ */
+#define MSC01C_INT_BASE		96
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SOC-it Classic interrupt offsets */
 #define MSC01C_INT_TMR		0
 #define MSC01C_INT_PCI		1
 
 /*
+<<<<<<< HEAD
  * Interrupts 64..127 are used for Soc-it EIC interrupts
  */
 #define MSC01E_INT_BASE		64
+=======
+ * Interrupts 96..127 are used for Soc-it EIC interrupts
+ */
+#define MSC01E_INT_BASE		96
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SOC-it EIC interrupt offsets */
 #define MSC01E_INT_SW0		1
@@ -78,6 +110,7 @@
 #define MSC01E_INT_PERFCTR	10
 #define MSC01E_INT_CPUCTR	11
 
+<<<<<<< HEAD
 /* GIC's Nomenclature for Core Interrupt Pins on the Malta */
 #define GIC_CPU_INT0		0 /* Core Interrupt 2 	*/
 #define GIC_CPU_INT1		1 /* .			*/
@@ -104,4 +137,6 @@
 extern void maltaint_init(void);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(_MIPS_MALTAINT_H) */

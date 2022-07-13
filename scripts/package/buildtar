@@ -1,7 +1,14 @@
 #!/bin/sh
+<<<<<<< HEAD
 
 #
 # buildtar 0.0.4
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+#
+# buildtar 0.0.5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # (C) 2004-2006 by Jan-Benedict Glaw <jbglaw@lug-owl.de>
 #
@@ -15,6 +22,7 @@ set -e
 #
 # Some variables and settings used throughout the script
 #
+<<<<<<< HEAD
 tmpdir="${objtree}/tar-install"
 tarball="${objtree}/linux-${KERNELRELEASE}.tar"
 
@@ -45,6 +53,9 @@ case "${1}" in
 		;;
 esac
 
+=======
+tmpdir=$1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Clean-up and re-create the temporary directory
@@ -54,18 +65,41 @@ mkdir -p -- "${tmpdir}/boot"
 
 
 #
+<<<<<<< HEAD
 # Try to install modules
 #
 if grep -q '^CONFIG_MODULES=y' "${objtree}/.config"; then
 	make ARCH="${ARCH}" O="${objtree}" KBUILD_SRC= INSTALL_MOD_PATH="${tmpdir}" modules_install
+=======
+# Try to install dtbs
+#
+if grep -q '^CONFIG_OF_EARLY_FLATTREE=y' include/config/auto.conf; then
+	# Only some architectures with OF support have this target
+	if [ -d "${srctree}/arch/${SRCARCH}/boot/dts" ]; then
+		$MAKE ARCH="${ARCH}" -f ${srctree}/Makefile INSTALL_DTBS_PATH="${tmpdir}/boot/dtbs/${KERNELRELEASE}" dtbs_install
+    fi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
+
+
+#
+<<<<<<< HEAD
+# Install basic kernel files
+#
+cp -v -- "${objtree}/System.map" "${tmpdir}/boot/System.map-${KERNELRELEASE}"
+cp -v -- "${objtree}/.config" "${tmpdir}/boot/config-${KERNELRELEASE}"
+=======
+# Install modules
+#
+make ARCH="${ARCH}" -f ${srctree}/Makefile INSTALL_MOD_PATH="${tmpdir}" modules_install
 
 
 #
 # Install basic kernel files
 #
 cp -v -- "${objtree}/System.map" "${tmpdir}/boot/System.map-${KERNELRELEASE}"
-cp -v -- "${objtree}/.config" "${tmpdir}/boot/config-${KERNELRELEASE}"
+cp -v -- "${KCONFIG_CONFIG}" "${tmpdir}/boot/config-${KERNELRELEASE}"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cp -v -- "${objtree}/vmlinux" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
 
 
@@ -83,9 +117,48 @@ case "${ARCH}" in
 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
 		[ -f "${objtree}/lifimage" ] && cp -v -- "${objtree}/lifimage" "${tmpdir}/boot/lifimage-${KERNELRELEASE}"
 		;;
+<<<<<<< HEAD
 	vax)
 		[ -f "${objtree}/vmlinux.SYS" ] && cp -v -- "${objtree}/vmlinux.SYS" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.SYS"
 		[ -f "${objtree}/vmlinux.dsk" ] && cp -v -- "${objtree}/vmlinux.dsk" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.dsk"
+=======
+	mips)
+		if [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.bin" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.bin" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+		elif [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.ecoff" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.ecoff" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+		elif [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.srec" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.srec" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+		elif [ -f "${objtree}/vmlinux.32" ]; then
+			cp -v -- "${objtree}/vmlinux.32" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		elif [ -f "${objtree}/vmlinux.64" ]; then
+			cp -v -- "${objtree}/vmlinux.64" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		elif [ -f "${objtree}/arch/mips/boot/vmlinux.bin" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/vmlinux.bin" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		elif [ -f "${objtree}/arch/mips/boot/vmlinux.ecoff" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/vmlinux.ecoff" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		elif [ -f "${objtree}/arch/mips/boot/vmlinux.srec" ]; then
+			cp -v -- "${objtree}/arch/mips/boot/vmlinux.srec" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		elif [ -f "${objtree}/vmlinux" ]; then
+			cp -v -- "${objtree}/vmlinux" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+		fi
+		;;
+	arm64)
+		for i in Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo vmlinuz.efi ; do
+			if [ -f "${objtree}/arch/arm64/boot/${i}" ] ; then
+				cp -v -- "${objtree}/arch/arm64/boot/${i}" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+				break
+			fi
+		done
+		;;
+	riscv)
+		for i in Image.bz2 Image.gz Image; do
+			if [ -f "${objtree}/arch/riscv/boot/${i}" ] ; then
+				cp -v -- "${objtree}/arch/riscv/boot/${i}" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+				break
+			fi
+		done
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		;;
 	*)
 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-kbuild-${KERNELRELEASE}"
@@ -98,6 +171,7 @@ case "${ARCH}" in
 		sleep 5
 		;;
 esac
+<<<<<<< HEAD
 
 
 #
@@ -116,3 +190,5 @@ echo "Tarball successfully created in ${tarball}${file_ext}"
 
 exit 0
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

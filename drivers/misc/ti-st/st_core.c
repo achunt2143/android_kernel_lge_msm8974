@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Shared Transport Line discipline driver Core
  *	This hooks up ST KIM driver and ST LL driver
  *  Copyright (C) 2009-2010 Texas Instruments
  *  Author: Pavan Savoy <pavan_savoy@ti.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -17,24 +22,40 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt)	"(stc): " fmt
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tty.h>
 
 #include <linux/seq_file.h>
 #include <linux/skbuff.h>
 
 #include <linux/ti_wilink_st.h>
+<<<<<<< HEAD
 
 /* function pointer pointing to either,
  * st_kim_recv during registration to receive fw download responses
  * st_int_recv after registration to receive proto stack responses
  */
 void (*st_recv) (void*, const unsigned char*, long);
+=======
+#include <linux/netdevice.h>
+
+/*
+ * function pointer pointing to either,
+ * st_kim_recv during registration to receive fw download responses
+ * st_int_recv after registration to receive proto stack responses
+ */
+static void (*st_recv)(void *disc_data, const u8 *ptr, size_t count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********************************************************************/
 static void add_channel_to_table(struct st_data_s *st_gdata,
@@ -63,16 +84,28 @@ static void remove_channel_from_table(struct st_data_s *st_gdata,
  */
 int st_get_uart_wr_room(struct st_data_s *st_gdata)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(st_gdata == NULL || st_gdata->tty == NULL)) {
 		pr_err("tty unavailable to perform write");
 		return -1;
 	}
+<<<<<<< HEAD
 	tty = st_gdata->tty;
 	return tty->ops->write_room(tty);
 }
 
 /* can be called in from
+=======
+
+	return tty_write_room(st_gdata->tty);
+}
+
+/*
+ * can be called in from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * -- KIM (during fw download)
  * -- ST Core (during st_write)
  *
@@ -100,7 +133,11 @@ int st_int_write(struct st_data_s *st_gdata,
  * push the skb received to relevant
  * protocol stacks
  */
+<<<<<<< HEAD
 void st_send_frame(unsigned char chnl_id, struct st_data_s *st_gdata)
+=======
+static void st_send_frame(unsigned char chnl_id, struct st_data_s *st_gdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pr_debug(" %s(prot:%d) ", __func__, chnl_id);
 
@@ -112,7 +149,12 @@ void st_send_frame(unsigned char chnl_id, struct st_data_s *st_gdata)
 		kfree_skb(st_gdata->rx_skb);
 		return;
 	}
+<<<<<<< HEAD
 	/* this cannot fail
+=======
+	/*
+	 * this cannot fail
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * this shouldn't take long
 	 * - should be just skb_queue_tail for the
 	 *   protocol stack driver
@@ -133,14 +175,23 @@ void st_send_frame(unsigned char chnl_id, struct st_data_s *st_gdata)
 	return;
 }
 
+<<<<<<< HEAD
 /**
  * st_reg_complete -
  * to call registration complete callbacks
+=======
+/*
+ * st_reg_complete - to call registration complete callbacks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of all protocol stack drivers
  * This function is being called with spin lock held, protocol drivers are
  * only expected to complete their waits and do nothing more than that.
  */
+<<<<<<< HEAD
 void st_reg_complete(struct st_data_s *st_gdata, char err)
+=======
+static void st_reg_complete(struct st_data_s *st_gdata, int err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char i = 0;
 	pr_info(" %s ", __func__);
@@ -152,8 +203,14 @@ void st_reg_complete(struct st_data_s *st_gdata, char err)
 				(st_gdata->list[i]->priv_data, err);
 			pr_info("protocol %d's cb sent %d\n", i, err);
 			if (err) { /* cleanup registered protocol */
+<<<<<<< HEAD
 				st_gdata->protos_registered--;
 				st_gdata->is_registered[i] = false;
+=======
+				st_gdata->is_registered[i] = false;
+				if (st_gdata->protos_registered)
+					st_gdata->protos_registered--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -167,21 +224,36 @@ static inline int st_check_data_len(struct st_data_s *st_gdata,
 	pr_debug("len %d room %d", len, room);
 
 	if (!len) {
+<<<<<<< HEAD
 		/* Received packet has only packet header and
+=======
+		/*
+		 * Received packet has only packet header and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * has zero length payload. So, ask ST CORE to
 		 * forward the packet to protocol driver (BT/FM/GPS)
 		 */
 		st_send_frame(chnl_id, st_gdata);
 
 	} else if (len > room) {
+<<<<<<< HEAD
 		/* Received packet's payload length is larger.
+=======
+		/*
+		 * Received packet's payload length is larger.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * We can't accommodate it in created skb.
 		 */
 		pr_err("Data length is too large len %d room %d", len,
 			   room);
 		kfree_skb(st_gdata->rx_skb);
 	} else {
+<<<<<<< HEAD
 		/* Packet header has non-zero payload length and
+=======
+		/*
+		 * Packet header has non-zero payload length and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * we have enough space in created skb. Lets read
 		 * payload data */
 		st_gdata->rx_state = ST_W4_DATA;
@@ -189,8 +261,12 @@ static inline int st_check_data_len(struct st_data_s *st_gdata,
 		return len;
 	}
 
+<<<<<<< HEAD
 	/* Change ST state to continue to process next
 	 * packet */
+=======
+	/* Change ST state to continue to process next packet */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	st_gdata->rx_state = ST_W4_PACKET_TYPE;
 	st_gdata->rx_skb = NULL;
 	st_gdata->rx_count = 0;
@@ -199,7 +275,11 @@ static inline int st_check_data_len(struct st_data_s *st_gdata,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_wakeup_ack - internal function for action when wake-up ack
  *	received
  */
@@ -210,7 +290,12 @@ static inline void st_wakeup_ack(struct st_data_s *st_gdata,
 	unsigned long flags = 0;
 
 	spin_lock_irqsave(&st_gdata->lock, flags);
+<<<<<<< HEAD
 	/* de-Q from waitQ and Q in txQ now that the
+=======
+	/*
+	 * de-Q from waitQ and Q in txQ now that the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * chip is awake
 	 */
 	while ((waiting_skb = skb_dequeue(&st_gdata->tx_waitq)))
@@ -224,7 +309,11 @@ static inline void st_wakeup_ack(struct st_data_s *st_gdata,
 	st_tx_wakeup(st_gdata);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_int_recv - ST's internal receive function.
  *	Decodes received RAW data and forwards to corresponding
  *	client drivers (Bluetooth,FM,GPS..etc).
@@ -232,6 +321,7 @@ static inline void st_wakeup_ack(struct st_data_s *st_gdata,
  *	HCI-Events, ACL, SCO, 4 types of HCI-LL PM packets
  *	CH-8 packets from FM, CH-9 packets from GPS cores.
  */
+<<<<<<< HEAD
 void st_int_recv(void *disc_data,
 	const unsigned char *data, long count)
 {
@@ -239,18 +329,34 @@ void st_int_recv(void *disc_data,
 	struct st_proto_s *proto;
 	unsigned short payload_len = 0;
 	int len = 0, type = 0;
+=======
+static void st_int_recv(void *disc_data, const u8 *ptr, size_t count)
+{
+	struct st_proto_s *proto;
+	unsigned short payload_len = 0;
+	int len = 0;
+	unsigned char type = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *plen;
 	struct st_data_s *st_gdata = (struct st_data_s *)disc_data;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	ptr = (char *)data;
 	/* tty_receive sent null ? */
 	if (unlikely(ptr == NULL) || (st_gdata == NULL)) {
+=======
+	if (st_gdata == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err(" received null from TTY ");
 		return;
 	}
 
+<<<<<<< HEAD
 	pr_debug("count %ld rx_state %ld"
+=======
+	pr_debug("count %zu rx_state %ld"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "rx_count %ld", count, st_gdata->rx_state,
 		   st_gdata->rx_count);
 
@@ -259,7 +365,11 @@ void st_int_recv(void *disc_data,
 	while (count) {
 		if (st_gdata->rx_count) {
 			len = min_t(unsigned int, st_gdata->rx_count, count);
+<<<<<<< HEAD
 			memcpy(skb_put(st_gdata->rx_skb, len), ptr, len);
+=======
+			skb_put_data(st_gdata->rx_skb, ptr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			st_gdata->rx_count -= len;
 			count -= len;
 			ptr += len;
@@ -272,8 +382,15 @@ void st_int_recv(void *disc_data,
 			/* Waiting for complete packet ? */
 			case ST_W4_DATA:
 				pr_debug("Complete pkt received");
+<<<<<<< HEAD
 				/* Ask ST CORE to forward
 				 * the packet to protocol driver */
+=======
+				/*
+				 * Ask ST CORE to forward
+				 * the packet to protocol driver
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				st_send_frame(st_gdata->rx_chnl, st_gdata);
 
 				st_gdata->rx_state = ST_W4_PACKET_TYPE;
@@ -286,7 +403,11 @@ void st_int_recv(void *disc_data,
 				&st_gdata->rx_skb->data
 				[proto->offset_len_in_hdr];
 				pr_debug("plen pointing to %x\n", *plen);
+<<<<<<< HEAD
 				if (proto->len_size == 1)/* 1 byte len field */
+=======
+				if (proto->len_size == 1) /* 1 byte len field */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					payload_len = *(unsigned char *)plen;
 				else if (proto->len_size == 2)
 					payload_len =
@@ -304,18 +425,36 @@ void st_int_recv(void *disc_data,
 		}
 
 		/* end of if rx_count */
+<<<<<<< HEAD
 		/* Check first byte of packet and identify module
 		 * owner (BT/FM/GPS) */
+=======
+
+		/*
+		 * Check first byte of packet and identify module
+		 * owner (BT/FM/GPS)
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (*ptr) {
 		case LL_SLEEP_IND:
 		case LL_SLEEP_ACK:
 		case LL_WAKE_UP_IND:
 			pr_debug("PM packet");
+<<<<<<< HEAD
 			/* this takes appropriate action based on
 			 * sleep state received --
 			 */
 			st_ll_sleep_state(st_gdata, *ptr);
 			/* if WAKEUP_IND collides copy from waitq to txq
+=======
+			/*
+			 * this takes appropriate action based on
+			 * sleep state received --
+			 */
+			st_ll_sleep_state(st_gdata, *ptr);
+			/*
+			 * if WAKEUP_IND collides copy from waitq to txq
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * and assume chip awake
 			 */
 			spin_unlock_irqrestore(&st_gdata->lock, flags);
@@ -337,6 +476,7 @@ void st_int_recv(void *disc_data,
 			ptr++;
 			count--;
 			continue;
+<<<<<<< HEAD
 			/* Unknow packet? */
 		default:
 			type = *ptr;
@@ -349,6 +489,40 @@ void st_int_recv(void *disc_data,
 			st_gdata->rx_skb = alloc_skb(
 					st_gdata->list[type]->max_frame_size,
 					GFP_ATOMIC);
+=======
+			/* Unknown packet? */
+		default:
+			type = *ptr;
+
+			/*
+			 * Default case means non-HCILL packets,
+			 * possibilities are packets for:
+			 * (a) valid protocol -  Supported Protocols within
+			 *     the ST_MAX_CHANNELS.
+			 * (b) registered protocol - Checked by
+			 *     "st_gdata->list[type] == NULL)" are supported
+			 *     protocols only.
+			 *  Rules out any invalid protocol and
+			 *  unregistered protocols with channel ID < 16.
+			 */
+
+			if ((type >= ST_MAX_CHANNELS) ||
+					(st_gdata->list[type] == NULL)) {
+				pr_err("chip/interface misbehavior: "
+						"dropping frame starting "
+						"with 0x%02x\n", type);
+				goto done;
+			}
+
+			st_gdata->rx_skb = alloc_skb(
+					st_gdata->list[type]->max_frame_size,
+					GFP_ATOMIC);
+			if (st_gdata->rx_skb == NULL) {
+				pr_err("out of memory: dropping\n");
+				goto done;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_reserve(st_gdata->rx_skb,
 					st_gdata->list[type]->reserve);
 			/* next 2 required for BT only */
@@ -358,7 +532,11 @@ void st_int_recv(void *disc_data,
 			st_gdata->rx_state = ST_W4_HEADER;
 			st_gdata->rx_count = st_gdata->list[type]->hdr_len;
 			pr_debug("rx_count %ld\n", st_gdata->rx_count);
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptr++;
 		count--;
 	}
@@ -368,13 +546,21 @@ done:
 	return;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_int_dequeue - internal de-Q function.
  *	If the previous data set was not written
  *	completely, return that skb which has the pending data.
  *	In normal cases, return top of txq.
  */
+<<<<<<< HEAD
 struct sk_buff *st_int_dequeue(struct st_data_s *st_gdata)
+=======
+static struct sk_buff *st_int_dequeue(struct st_data_s *st_gdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *returning_skb;
 
@@ -387,7 +573,11 @@ struct sk_buff *st_int_dequeue(struct st_data_s *st_gdata)
 	return skb_dequeue(&st_gdata->txq);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_int_enqueue - internal Q-ing function.
  *	Will either Q the skb to txq or the tx_waitq
  *	depending on the ST LL state.
@@ -396,7 +586,11 @@ struct sk_buff *st_int_dequeue(struct st_data_s *st_gdata)
  *	txq and waitq needs protection since the other contexts
  *	may be sending data, waking up chip.
  */
+<<<<<<< HEAD
 void st_int_enqueue(struct st_data_s *st_gdata, struct sk_buff *skb)
+=======
+static void st_int_enqueue(struct st_data_s *st_gdata, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags = 0;
 
@@ -414,7 +608,11 @@ void st_int_enqueue(struct st_data_s *st_gdata, struct sk_buff *skb)
 	case ST_LL_AWAKE_TO_ASLEEP:
 		pr_err("ST LL is illegal state(%ld),"
 			   "purging received skb.", st_ll_getstate(st_gdata));
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		dev_kfree_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ST_LL_ASLEEP:
 		skb_queue_tail(&st_gdata->tx_waitq, skb);
@@ -423,7 +621,11 @@ void st_int_enqueue(struct st_data_s *st_gdata, struct sk_buff *skb)
 	default:
 		pr_err("ST LL is illegal state(%ld),"
 			   "purging received skb.", st_ll_getstate(st_gdata));
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		dev_kfree_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -438,6 +640,16 @@ void st_int_enqueue(struct st_data_s *st_gdata, struct sk_buff *skb)
  * - TTY layer when write's finished
  * - st_write (in context of the protocol stack)
  */
+<<<<<<< HEAD
+=======
+static void work_fn_write_wakeup(struct work_struct *work)
+{
+	struct st_data_s *st_gdata = container_of(work, struct st_data_s,
+			work_write_wakeup);
+
+	st_tx_wakeup((void *)st_gdata);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void st_tx_wakeup(struct st_data_s *st_data)
 {
 	struct sk_buff *skb;
@@ -470,7 +682,11 @@ void st_tx_wakeup(struct st_data_s *st_data)
 				spin_unlock_irqrestore(&st_data->lock, flags);
 				break;
 			}
+<<<<<<< HEAD
 			kfree_skb(skb);
+=======
+			dev_kfree_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&st_data->lock, flags);
 		}
 		/* if wake-up is set in another context- restart sending */
@@ -504,7 +720,10 @@ long st_register(struct st_proto_s *new_proto)
 	unsigned long flags = 0;
 
 	st_kim_ref(&st_gdata, 0);
+<<<<<<< HEAD
 	pr_info("%s(%d) ", __func__, new_proto->chnl_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (st_gdata == NULL || new_proto == NULL || new_proto->recv == NULL
 	    || new_proto->reg_complete_cb == NULL) {
 		pr_err("gdata/new_proto/recv or reg_complete_cb not ready");
@@ -546,7 +765,12 @@ long st_register(struct st_proto_s *new_proto)
 		/* release lock previously held - re-locked below */
 		spin_unlock_irqrestore(&st_gdata->lock, flags);
 
+<<<<<<< HEAD
 		/* this may take a while to complete
+=======
+		/*
+		 * this may take a while to complete
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * since it involves BT fw download
 		 */
 		err = st_kim_start(st_gdata->kim_data);
@@ -555,7 +779,13 @@ long st_register(struct st_proto_s *new_proto)
 			if ((st_gdata->protos_registered != ST_EMPTY) &&
 			    (test_bit(ST_REG_PENDING, &st_gdata->st_state))) {
 				pr_err(" KIM failure complete callback ");
+<<<<<<< HEAD
 				st_reg_complete(st_gdata, err);
+=======
+				spin_lock_irqsave(&st_gdata->lock, flags);
+				st_reg_complete(st_gdata, err);
+				spin_unlock_irqrestore(&st_gdata->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				clear_bit(ST_REG_PENDING, &st_gdata->st_state);
 			}
 			return -EINVAL;
@@ -566,7 +796,12 @@ long st_register(struct st_proto_s *new_proto)
 		clear_bit(ST_REG_IN_PROGRESS, &st_gdata->st_state);
 		st_recv = st_int_recv;
 
+<<<<<<< HEAD
 		/* this is where all pending registration
+=======
+		/*
+		 * this is where all pending registration
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * are signalled to be complete by calling callback functions
 		 */
 		if ((st_gdata->protos_registered != ST_EMPTY) &&
@@ -576,7 +811,12 @@ long st_register(struct st_proto_s *new_proto)
 		}
 		clear_bit(ST_REG_PENDING, &st_gdata->st_state);
 
+<<<<<<< HEAD
 		/* check for already registered once more,
+=======
+		/*
+		 * check for already registered once more,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * since the above check is old
 		 */
 		if (st_gdata->is_registered[new_proto->chnl_id] == true) {
@@ -602,11 +842,19 @@ long st_register(struct st_proto_s *new_proto)
 		spin_unlock_irqrestore(&st_gdata->lock, flags);
 		return err;
 	}
+<<<<<<< HEAD
 	pr_debug("done %s(%d) ", __func__, new_proto->chnl_id);
 }
 EXPORT_SYMBOL_GPL(st_register);
 
 /* to unregister a protocol -
+=======
+}
+EXPORT_SYMBOL_GPL(st_register);
+
+/*
+ * to unregister a protocol -
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to be called from protocol stack driver
  */
 long st_unregister(struct st_proto_s *proto)
@@ -631,6 +879,7 @@ long st_unregister(struct st_proto_s *proto)
 		return -EPROTONOSUPPORT;
 	}
 
+<<<<<<< HEAD
 	st_gdata->protos_registered--;
 	remove_channel_from_table(st_gdata, proto);
 	spin_unlock_irqrestore(&st_gdata->lock, flags);
@@ -639,6 +888,14 @@ long st_unregister(struct st_proto_s *proto)
 	if (st_gdata->protos_registered < ST_EMPTY)
 		st_gdata->protos_registered = ST_EMPTY;
 
+=======
+	if (st_gdata->protos_registered)
+		st_gdata->protos_registered--;
+
+	remove_channel_from_table(st_gdata, proto);
+	spin_unlock_irqrestore(&st_gdata->lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((st_gdata->protos_registered == ST_EMPTY) &&
 	    (!test_bit(ST_REG_PENDING, &st_gdata->st_state))) {
 		pr_info(" all chnl_ids unregistered ");
@@ -694,7 +951,10 @@ EXPORT_SYMBOL_GPL(st_unregister);
  */
 static int st_tty_open(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	int err = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct st_data_s *st_gdata;
 	pr_info("%s ", __func__);
 
@@ -717,18 +977,33 @@ static int st_tty_open(struct tty_struct *tty)
 	 */
 	st_kim_complete(st_gdata->kim_data);
 	pr_debug("done %s", __func__);
+<<<<<<< HEAD
 	return err;
+=======
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void st_tty_close(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	unsigned char i = ST_MAX_CHANNELS;
 	unsigned long flags = 0;
+=======
+	unsigned char i;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct	st_data_s *st_gdata = tty->disc_data;
 
 	pr_info("%s ", __func__);
 
+<<<<<<< HEAD
 	/* TODO:
+=======
+	/*
+	 * TODO:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * if a protocol has been registered & line discipline
 	 * un-installed for some reason - what should be done ?
 	 */
@@ -765,8 +1040,13 @@ static void st_tty_close(struct tty_struct *tty)
 	pr_debug("%s: done ", __func__);
 }
 
+<<<<<<< HEAD
 static void st_tty_receive(struct tty_struct *tty, const unsigned char *data,
 			   char *tty_flags, int count)
+=======
+static void st_tty_receive(struct tty_struct *tty, const u8 *data,
+			   const u8 *tty_flags, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef VERBOSE
 	print_hex_dump(KERN_DEBUG, ">in>", DUMP_PREFIX_NONE,
@@ -781,7 +1061,12 @@ static void st_tty_receive(struct tty_struct *tty, const unsigned char *data,
 	pr_debug("done %s", __func__);
 }
 
+<<<<<<< HEAD
 /* wake-up function called in from the TTY layer
+=======
+/*
+ * wake-up function called in from the TTY layer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * inside the internal wakeup function will be called
  */
 static void st_tty_wakeup(struct tty_struct *tty)
@@ -791,8 +1076,17 @@ static void st_tty_wakeup(struct tty_struct *tty)
 	/* don't do an wakeup for now */
 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 
+<<<<<<< HEAD
 	/* call our internal wakeup */
 	st_tx_wakeup((void *)st_gdata);
+=======
+	/*
+	 * schedule the internal wakeup instead of calling directly to
+	 * avoid lockup (port->lock needed in tty->ops->write is
+	 * already taken here
+	 */
+	schedule_work(&st_gdata->work_write_wakeup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void st_tty_flush_buffer(struct tty_struct *tty)
@@ -803,12 +1097,20 @@ static void st_tty_flush_buffer(struct tty_struct *tty)
 	kfree_skb(st_gdata->tx_skb);
 	st_gdata->tx_skb = NULL;
 
+<<<<<<< HEAD
 	tty->ops->flush_buffer(tty);
+=======
+	tty_driver_flush_buffer(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
 static struct tty_ldisc_ops st_ldisc_ops = {
+<<<<<<< HEAD
 	.magic = TTY_LDISC_MAGIC,
+=======
+	.num = N_TI_WL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "n_st",
 	.open = st_tty_open,
 	.close = st_tty_close,
@@ -824,7 +1126,11 @@ int st_core_init(struct st_data_s **core_data)
 	struct st_data_s *st_gdata;
 	long err;
 
+<<<<<<< HEAD
 	err = tty_register_ldisc(N_TI_WL, &st_ldisc_ops);
+=======
+	err = tty_register_ldisc(&st_ldisc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		pr_err("error registering %d line discipline %ld",
 			   N_TI_WL, err);
@@ -835,11 +1141,16 @@ int st_core_init(struct st_data_s **core_data)
 	st_gdata = kzalloc(sizeof(struct st_data_s), GFP_KERNEL);
 	if (!st_gdata) {
 		pr_err("memory allocation failed");
+<<<<<<< HEAD
 		err = tty_unregister_ldisc(N_TI_WL);
 		if (err)
 			pr_err("unable to un-register ldisc %ld", err);
 		err = -ENOMEM;
 		return err;
+=======
+		err = -ENOMEM;
+		goto err_unreg_ldisc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Initialize ST TxQ and Tx waitQ queue head. All BT/FM/GPS module skb's
@@ -854,6 +1165,7 @@ int st_core_init(struct st_data_s **core_data)
 	err = st_ll_init(st_gdata);
 	if (err) {
 		pr_err("error during st_ll initialization(%ld)", err);
+<<<<<<< HEAD
 		kfree(st_gdata);
 		err = tty_unregister_ldisc(N_TI_WL);
 		if (err)
@@ -862,6 +1174,20 @@ int st_core_init(struct st_data_s **core_data)
 	}
 	*core_data = st_gdata;
 	return 0;
+=======
+		goto err_free_gdata;
+	}
+
+	INIT_WORK(&st_gdata->work_write_wakeup, work_fn_write_wakeup);
+
+	*core_data = st_gdata;
+	return 0;
+err_free_gdata:
+	kfree(st_gdata);
+err_unreg_ldisc:
+	tty_unregister_ldisc(&st_ldisc_ops);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void st_core_exit(struct st_data_s *st_gdata)
@@ -879,12 +1205,19 @@ void st_core_exit(struct st_data_s *st_gdata)
 		kfree_skb(st_gdata->rx_skb);
 		kfree_skb(st_gdata->tx_skb);
 		/* TTY ldisc cleanup */
+<<<<<<< HEAD
 		err = tty_unregister_ldisc(N_TI_WL);
 		if (err)
 			pr_err("unable to un-register ldisc %ld", err);
+=======
+		tty_unregister_ldisc(&st_ldisc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* free the global data pointer */
 		kfree(st_gdata);
 	}
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

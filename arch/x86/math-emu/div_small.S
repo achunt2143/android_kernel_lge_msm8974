@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"div_small.S"
 /*---------------------------------------------------------------------------+
  |  div_small.S                                                              |
@@ -18,7 +22,11 @@
 #include "fpu_emu.h"
 
 .text
+<<<<<<< HEAD
 ENTRY(FPU_div_small)
+=======
+SYM_FUNC_START(FPU_div_small)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 
@@ -43,5 +51,10 @@ ENTRY(FPU_div_small)
 	popl	%esi
 
 	leave
+<<<<<<< HEAD
 	ret
 
+=======
+	RET
+SYM_FUNC_END(FPU_div_small)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

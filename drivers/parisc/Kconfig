@@ -1,7 +1,16 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "Bus options (PCI, PCMCIA, EISA, GSC, ISA)"
 
 config GSC
 	bool "VSC/GSC/HSC bus support"
+<<<<<<< HEAD
+=======
+	select HAVE_EISA
+	select HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  The VSC, GSC and HSC busses were used from the earliest 700-series
@@ -46,6 +55,7 @@ config GSC_WAX
 	  used), a HIL interface chip and is also known to be used as the
 	  GSC bridge for an X.25 GSC card.
 
+<<<<<<< HEAD
 config EISA
 	bool "EISA support"
 	depends on GSC
@@ -56,6 +66,8 @@ config EISA
 
 source "drivers/eisa/Kconfig"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ISA
 	bool "ISA support"
 	depends on EISA
@@ -63,6 +75,7 @@ config ISA
 	  If you want to plug an ISA card into your EISA bus, say Y here.
 	  Most people should say N.
 
+<<<<<<< HEAD
 config PCI
 	bool "PCI support"
 	help
@@ -74,6 +87,8 @@ config PCI
 
 source "drivers/pci/Kconfig"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GSC_DINO
 	bool "GSCtoPCI/Dino PCI support"
 	depends on PCI && GSC
@@ -103,6 +118,7 @@ config IOMMU_SBA
 	depends on PCI_LBA
 	default PCI_LBA
 
+<<<<<<< HEAD
 config IOMMU_HELPER
 	bool
 	depends on IOMMU_SBA || IOMMU_CCIO
@@ -112,6 +128,8 @@ source "drivers/pcmcia/Kconfig"
 
 source "drivers/pci/hotplug/Kconfig"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu
 
 menu "PA-RISC specific drivers"
@@ -127,7 +145,13 @@ config SUPERIO
 
 config CHASSIS_LCD_LED
 	bool "Chassis LCD and LED support"
+<<<<<<< HEAD
 	default y
+=======
+	depends on LEDS_CLASS=y
+	default y
+	select LEDS_TRIGGERS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to enable support for the Heartbeat,
 	  Disk/Network activities LEDs on some PA-RISC machines,

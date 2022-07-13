@@ -1,11 +1,20 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # LAPB Data Link Drive
 #
 
 config LAPB
+<<<<<<< HEAD
 	tristate "LAPB Data Link Driver (EXPERIMENTAL)"
 	depends on EXPERIMENTAL
 	---help---
+=======
+	tristate "LAPB Data Link Driver"
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Link Access Procedure, Balanced (LAPB) is the data link layer (i.e.
 	  the lower) part of the X.25 protocol. It offers a reliable
 	  connection service to exchange data frames with one other host, and
@@ -15,7 +24,11 @@ config LAPB
 	  currently supports LAPB only over Ethernet connections. If you want
 	  to use LAPB connections over Ethernet, say Y here and to "LAPB over
 	  Ethernet driver" below. Read
+<<<<<<< HEAD
 	  <file:Documentation/networking/lapb-module.txt> for technical
+=======
+	  <file:Documentation/networking/lapb-module.rst> for technical
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  details.
 
 	  To compile this driver as a module, choose M here: the

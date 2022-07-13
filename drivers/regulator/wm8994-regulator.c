@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8994-regulator.c  --  Regulator driver for the WM8994
  *
@@ -10,6 +11,15 @@
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// wm8994-regulator.c  --  Regulator driver for the WM8994
+//
+// Copyright 2009 Wolfson Microelectronics PLC.
+//
+// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -18,7 +28,12 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/regulator/machine.h>
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <linux/mfd/wm8994/core.h>
@@ -26,15 +41,23 @@
 #include <linux/mfd/wm8994/pdata.h>
 
 struct wm8994_ldo {
+<<<<<<< HEAD
 	int enable;
 	bool is_enabled;
 	struct regulator_dev *regulator;
 	struct wm8994 *wm8994;
+=======
+	struct regulator_dev *regulator;
+	struct wm8994 *wm8994;
+	struct regulator_consumer_supply supply;
+	struct regulator_init_data init_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define WM8994_LDO1_MAX_SELECTOR 0x7
 #define WM8994_LDO2_MAX_SELECTOR 0x3
 
+<<<<<<< HEAD
 static int wm8994_ldo_enable(struct regulator_dev *rdev)
 {
 	struct wm8994_ldo *ldo = rdev_get_drvdata(rdev);
@@ -125,6 +148,13 @@ static struct regulator_ops wm8994_ldo1_ops = {
 	.list_voltage = wm8994_ldo1_list_voltage,
 	.get_voltage_sel = wm8994_ldo1_get_voltage_sel,
 	.set_voltage = wm8994_ldo1_set_voltage,
+=======
+static const struct regulator_ops wm8994_ldo1_ops = {
+	.list_voltage = regulator_list_voltage_linear,
+	.map_voltage = regulator_map_voltage_linear,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int wm8994_ldo2_list_voltage(struct regulator_dev *rdev,
@@ -153,6 +183,7 @@ static int wm8994_ldo2_list_voltage(struct regulator_dev *rdev,
 	}
 }
 
+<<<<<<< HEAD
 static int wm8994_ldo2_get_voltage_sel(struct regulator_dev *rdev)
 {
 	struct wm8994_ldo *ldo = rdev_get_drvdata(rdev);
@@ -210,12 +241,31 @@ static struct regulator_ops wm8994_ldo2_ops = {
 };
 
 static struct regulator_desc wm8994_ldo_desc[] = {
+=======
+static const struct regulator_ops wm8994_ldo2_ops = {
+	.list_voltage = wm8994_ldo2_list_voltage,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+};
+
+static const struct regulator_desc wm8994_ldo_desc[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "LDO1",
 		.id = 1,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
+<<<<<<< HEAD
 		.ops = &wm8994_ldo1_ops,
+=======
+		.vsel_reg = WM8994_LDO_1,
+		.vsel_mask = WM8994_LDO1_VSEL_MASK,
+		.ops = &wm8994_ldo1_ops,
+		.min_uV = 2400000,
+		.uV_step = 100000,
+		.enable_time = 3000,
+		.off_on_delay = 36000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -223,21 +273,88 @@ static struct regulator_desc wm8994_ldo_desc[] = {
 		.id = 2,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
+<<<<<<< HEAD
 		.ops = &wm8994_ldo2_ops,
+=======
+		.vsel_reg = WM8994_LDO_2,
+		.vsel_mask = WM8994_LDO2_VSEL_MASK,
+		.ops = &wm8994_ldo2_ops,
+		.enable_time = 3000,
+		.off_on_delay = 36000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 };
 
+<<<<<<< HEAD
 static __devinit int wm8994_ldo_probe(struct platform_device *pdev)
 {
 	struct wm8994 *wm8994 = dev_get_drvdata(pdev->dev.parent);
 	struct wm8994_pdata *pdata = wm8994->dev->platform_data;
 	int id = pdev->id % ARRAY_SIZE(pdata->ldo);
 	struct wm8994_ldo *ldo;
+=======
+static const struct regulator_desc wm8958_ldo_desc[] = {
+	{
+		.name = "LDO1",
+		.id = 1,
+		.type = REGULATOR_VOLTAGE,
+		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
+		.vsel_reg = WM8994_LDO_1,
+		.vsel_mask = WM8994_LDO1_VSEL_MASK,
+		.ops = &wm8994_ldo1_ops,
+		.min_uV = 2400000,
+		.uV_step = 100000,
+		.enable_time = 3000,
+		.owner = THIS_MODULE,
+	},
+	{
+		.name = "LDO2",
+		.id = 2,
+		.type = REGULATOR_VOLTAGE,
+		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
+		.vsel_reg = WM8994_LDO_2,
+		.vsel_mask = WM8994_LDO2_VSEL_MASK,
+		.ops = &wm8994_ldo2_ops,
+		.enable_time = 3000,
+		.owner = THIS_MODULE,
+	},
+};
+
+static const struct regulator_consumer_supply wm8994_ldo_consumer[] = {
+	{ .supply = "AVDD1" },
+	{ .supply = "DCVDD" },
+};
+
+static const struct regulator_init_data wm8994_ldo_default[] = {
+	{
+		.constraints = {
+			.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		},
+		.num_consumer_supplies = 1,
+	},
+	{
+		.constraints = {
+			.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		},
+		.num_consumer_supplies = 1,
+	},
+};
+
+static int wm8994_ldo_probe(struct platform_device *pdev)
+{
+	struct wm8994 *wm8994 = dev_get_drvdata(pdev->dev.parent);
+	struct wm8994_pdata *pdata = dev_get_platdata(wm8994->dev);
+	int id = pdev->id % ARRAY_SIZE(pdata->ldo);
+	struct regulator_config config = { };
+	struct wm8994_ldo *ldo;
+	struct gpio_desc *gpiod;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	dev_dbg(&pdev->dev, "Probing LDO%d\n", id + 1);
 
+<<<<<<< HEAD
 	if (!pdata)
 		return -ENODEV;
 
@@ -270,16 +387,76 @@ static __devinit int wm8994_ldo_probe(struct platform_device *pdev)
 
 	ldo->regulator = regulator_register(&wm8994_ldo_desc[id], &pdev->dev,
 					     pdata->ldo[id].init_data, ldo, NULL);
+=======
+	ldo = devm_kzalloc(&pdev->dev, sizeof(struct wm8994_ldo), GFP_KERNEL);
+	if (!ldo)
+		return -ENOMEM;
+
+	ldo->wm8994 = wm8994;
+	ldo->supply = wm8994_ldo_consumer[id];
+	ldo->supply.dev_name = dev_name(wm8994->dev);
+
+	config.dev = wm8994->dev;
+	config.driver_data = ldo;
+	config.regmap = wm8994->regmap;
+	config.init_data = &ldo->init_data;
+
+	/*
+	 * Look up LDO enable GPIO from the parent device node, we don't
+	 * use devm because the regulator core will free the GPIO
+	 */
+	gpiod = gpiod_get_optional(pdev->dev.parent,
+				   id ? "wlf,ldo2ena" : "wlf,ldo1ena",
+				   GPIOD_OUT_LOW |
+				   GPIOD_FLAGS_BIT_NONEXCLUSIVE);
+	if (IS_ERR(gpiod))
+		return PTR_ERR(gpiod);
+	config.ena_gpiod = gpiod;
+
+	/* Use default constraints if none set up */
+	if (!pdata || !pdata->ldo[id].init_data || wm8994->dev->of_node) {
+		dev_dbg(wm8994->dev, "Using default init data, supply %s %s\n",
+			ldo->supply.dev_name, ldo->supply.supply);
+
+		ldo->init_data = wm8994_ldo_default[id];
+		ldo->init_data.consumer_supplies = &ldo->supply;
+		if (!gpiod)
+			ldo->init_data.constraints.valid_ops_mask = 0;
+	} else {
+		ldo->init_data = *pdata->ldo[id].init_data;
+	}
+
+	/*
+	 * At this point the GPIO descriptor is handled over to the
+	 * regulator core and we need not worry about it on the
+	 * error path.
+	 */
+	if (ldo->wm8994->type == WM8994) {
+		ldo->regulator = devm_regulator_register(&pdev->dev,
+							 &wm8994_ldo_desc[id],
+							 &config);
+	} else {
+		ldo->regulator = devm_regulator_register(&pdev->dev,
+							 &wm8958_ldo_desc[id],
+							 &config);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ldo->regulator)) {
 		ret = PTR_ERR(ldo->regulator);
 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
 			id + 1, ret);
+<<<<<<< HEAD
 		goto err_gpio;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, ldo);
 
 	return 0;
+<<<<<<< HEAD
 
 err_gpio:
 	if (gpio_is_valid(ldo->enable))
@@ -299,10 +476,13 @@ static __devexit int wm8994_ldo_remove(struct platform_device *pdev)
 		gpio_free(ldo->enable);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8994_ldo_driver = {
 	.probe = wm8994_ldo_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(wm8994_ldo_remove),
 	.driver		= {
 		.name	= "wm8994-ldo",
@@ -327,6 +507,15 @@ static void __exit wm8994_ldo_exit(void)
 	platform_driver_unregister(&wm8994_ldo_driver);
 }
 module_exit(wm8994_ldo_exit);
+=======
+	.driver		= {
+		.name	= "wm8994-ldo",
+		.probe_type = PROBE_FORCE_SYNCHRONOUS,
+	},
+};
+
+module_platform_driver(wm8994_ldo_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Module information */
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");

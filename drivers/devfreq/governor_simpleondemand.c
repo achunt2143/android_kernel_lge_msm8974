@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/devfreq/governor_simpleondemand.c
  *
  *  Copyright (C) 2011 Samsung Electronics
  *	MyungJoo Ham <myungjoo.ham@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -19,6 +26,7 @@
 #define DFSO_UPTHRESHOLD	(90)
 #define DFSO_DOWNDIFFERENCTIAL	(5)
 static int devfreq_simple_ondemand_func(struct devfreq *df,
+<<<<<<< HEAD
 					unsigned long *freq,
 					u32 *flag)
 {
@@ -39,6 +47,23 @@ static int devfreq_simple_ondemand_func(struct devfreq *df,
 	if (err)
 		return err;
 
+=======
+					unsigned long *freq)
+{
+	int err;
+	struct devfreq_dev_status *stat;
+	unsigned long long a, b;
+	unsigned int dfso_upthreshold = DFSO_UPTHRESHOLD;
+	unsigned int dfso_downdifferential = DFSO_DOWNDIFFERENCTIAL;
+	struct devfreq_simple_ondemand_data *data = df->data;
+
+	err = devfreq_update_stats(df);
+	if (err)
+		return err;
+
+	stat = &df->last_status;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data) {
 		if (data->upthreshold)
 			dfso_upthreshold = data->upthreshold;
@@ -48,6 +73,7 @@ static int devfreq_simple_ondemand_func(struct devfreq *df,
 	if (dfso_upthreshold > 100 ||
 	    dfso_upthreshold < dfso_downdifferential)
 		return -EINVAL;
+<<<<<<< HEAD
 #ifdef CONFIG_LGE_DEVFREQ_DFPS
 	if(stat.busy_time > dfso_upthreshold){
 		*freq = max;
@@ -85,23 +111,54 @@ static int devfreq_simple_ondemand_func(struct devfreq *df,
 	if (stat.busy_time * 100 >
 	    stat.total_time * dfso_upthreshold) {
 		*freq = max;
+=======
+
+	/* Assume MAX if it is going to be divided by zero */
+	if (stat->total_time == 0) {
+		*freq = DEVFREQ_MAX_FREQ;
+		return 0;
+	}
+
+	/* Prevent overflow */
+	if (stat->busy_time >= (1 << 24) || stat->total_time >= (1 << 24)) {
+		stat->busy_time >>= 7;
+		stat->total_time >>= 7;
+	}
+
+	/* Set MAX if it's busy enough */
+	if (stat->busy_time * 100 >
+	    stat->total_time * dfso_upthreshold) {
+		*freq = DEVFREQ_MAX_FREQ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* Set MAX if we do not know the initial frequency */
+<<<<<<< HEAD
 	if (stat.current_frequency == 0) {
 		*freq = max;
+=======
+	if (stat->current_frequency == 0) {
+		*freq = DEVFREQ_MAX_FREQ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* Keep the current frequency */
+<<<<<<< HEAD
 	if (stat.busy_time * 100 >
 	    stat.total_time * (dfso_upthreshold - dfso_downdifferential)) {
 		*freq = stat.current_frequency;
+=======
+	if (stat->busy_time * 100 >
+	    stat->total_time * (dfso_upthreshold - dfso_downdifferential)) {
+		*freq = stat->current_frequency;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* Set the desired frequency based on the load */
+<<<<<<< HEAD
 	a = stat.busy_time;
 	a *= stat.current_frequency;
 	b = div_u64(a, stat.total_time);
@@ -113,6 +170,14 @@ static int devfreq_simple_ondemand_func(struct devfreq *df,
 		*freq = df->min_freq;
 	if (df->max_freq && *freq > df->max_freq)
 		*freq = df->max_freq;
+=======
+	a = stat->busy_time;
+	a *= stat->current_frequency;
+	b = div_u64(a, stat->total_time);
+	b *= 100;
+	b = div_u64(b, (dfso_upthreshold - dfso_downdifferential / 2));
+	*freq = (unsigned long) b;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -129,8 +194,13 @@ static int devfreq_simple_ondemand_handler(struct devfreq *devfreq,
 		devfreq_monitor_stop(devfreq);
 		break;
 
+<<<<<<< HEAD
 	case DEVFREQ_GOV_INTERVAL:
 		devfreq_interval_update(devfreq, (unsigned int *)data);
+=======
+	case DEVFREQ_GOV_UPDATE_INTERVAL:
+		devfreq_update_interval(devfreq, (unsigned int *)data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case DEVFREQ_GOV_SUSPEND:
@@ -148,6 +218,7 @@ static int devfreq_simple_ondemand_handler(struct devfreq *devfreq,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_LGE_DEVFREQ_DFPS
 static ssize_t store_upthreshold(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
@@ -252,6 +323,14 @@ static struct devfreq_governor devfreq_simple_ondemand = {
 	.init = simpleondemand_init,
 	.exit = simpleondemand_exit,
 #endif
+=======
+static struct devfreq_governor devfreq_simple_ondemand = {
+	.name = DEVFREQ_GOV_SIMPLE_ONDEMAND,
+	.attrs = DEVFREQ_GOV_ATTR_POLLING_INTERVAL
+		| DEVFREQ_GOV_ATTR_TIMER,
+	.get_target_freq = devfreq_simple_ondemand_func,
+	.event_handler = devfreq_simple_ondemand_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init devfreq_simple_ondemand_init(void)

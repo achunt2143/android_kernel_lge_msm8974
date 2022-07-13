@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-lpc32xx/common.c
  *
  * Author: Kevin Wells <kevin.wells@nxp.com>
  *
  * Copyright (C) 2010 NXP Semiconductors
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,6 +212,20 @@ struct platform_device lpc32xx_net_device = {
 };
 
 /*
+=======
+ */
+
+#include <linux/init.h>
+#include <linux/soc/nxp/lpc32xx-misc.h>
+
+#include <asm/mach/map.h>
+#include <asm/system_info.h>
+
+#include "lpc32xx.h"
+#include "common.h"
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns the unique ID for the device
  */
 void lpc32xx_get_uid(u32 devid[4])
@@ -218,6 +237,7 @@ void lpc32xx_get_uid(u32 devid[4])
 }
 
 /*
+<<<<<<< HEAD
  * Returns SYSCLK source
  * 0 = PLL397, 1 = main oscillator
  */
@@ -245,11 +265,17 @@ static void lpc32xx_watchdog_reset(void)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Detects and returns IRAM size for the device variation
  */
 #define LPC32XX_IRAM_BANK_SIZE SZ_128K
 static u32 iram_size;
+<<<<<<< HEAD
 u32 lpc32xx_return_iram_size(void)
+=======
+u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (iram_size == 0) {
 		u32 savedval1, savedval2;
@@ -270,6 +296,7 @@ u32 lpc32xx_return_iram_size(void)
 		} else
 			iram_size = LPC32XX_IRAM_BANK_SIZE * 2;
 	}
+<<<<<<< HEAD
 
 	return iram_size;
 }
@@ -352,24 +379,62 @@ u32 clk_get_pclk_div(void)
 static struct map_desc lpc32xx_io_desc[] __initdata = {
 	{
 		.virtual	= IO_ADDRESS(LPC32XX_AHB0_START),
+=======
+	if (dmaaddr)
+		*dmaaddr = LPC32XX_IRAM_BASE;
+	if (mapbase)
+		*mapbase = io_p2v(LPC32XX_IRAM_BASE);
+
+	return iram_size;
+}
+EXPORT_SYMBOL_GPL(lpc32xx_return_iram);
+
+void lpc32xx_set_phy_interface_mode(phy_interface_t mode)
+{
+	u32 tmp = __raw_readl(LPC32XX_CLKPWR_MACCLK_CTRL);
+	tmp &= ~LPC32XX_CLKPWR_MACCTRL_PINS_MSK;
+	if (mode == PHY_INTERFACE_MODE_MII)
+		tmp |= LPC32XX_CLKPWR_MACCTRL_USE_MII_PINS;
+	else
+		tmp |= LPC32XX_CLKPWR_MACCTRL_USE_RMII_PINS;
+	__raw_writel(tmp, LPC32XX_CLKPWR_MACCLK_CTRL);
+}
+EXPORT_SYMBOL_GPL(lpc32xx_set_phy_interface_mode);
+
+static struct map_desc lpc32xx_io_desc[] __initdata = {
+	{
+		.virtual	= (unsigned long)IO_ADDRESS(LPC32XX_AHB0_START),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(LPC32XX_AHB0_START),
 		.length		= LPC32XX_AHB0_SIZE,
 		.type		= MT_DEVICE
 	},
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(LPC32XX_AHB1_START),
+=======
+		.virtual	= (unsigned long)IO_ADDRESS(LPC32XX_AHB1_START),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(LPC32XX_AHB1_START),
 		.length		= LPC32XX_AHB1_SIZE,
 		.type		= MT_DEVICE
 	},
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(LPC32XX_FABAPB_START),
+=======
+		.virtual	= (unsigned long)IO_ADDRESS(LPC32XX_FABAPB_START),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(LPC32XX_FABAPB_START),
 		.length		= LPC32XX_FABAPB_SIZE,
 		.type		= MT_DEVICE
 	},
 	{
+<<<<<<< HEAD
 		.virtual	= IO_ADDRESS(LPC32XX_IRAM_BASE),
+=======
+		.virtual	= (unsigned long)IO_ADDRESS(LPC32XX_IRAM_BASE),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pfn		= __phys_to_pfn(LPC32XX_IRAM_BASE),
 		.length		= (LPC32XX_IRAM_BANK_SIZE * 2),
 		.type		= MT_DEVICE
@@ -381,6 +446,7 @@ void __init lpc32xx_map_io(void)
 	iotable_init(lpc32xx_io_desc, ARRAY_SIZE(lpc32xx_io_desc));
 }
 
+<<<<<<< HEAD
 void lpc23xx_restart(char mode, const char *cmd)
 {
 	switch (mode) {
@@ -398,3 +464,22 @@ void lpc23xx_restart(char mode, const char *cmd)
 	while (1)
 		;
 }
+=======
+static int __init lpc32xx_check_uid(void)
+{
+	u32 uid[4];
+
+	lpc32xx_get_uid(uid);
+
+	printk(KERN_INFO "LPC32XX unique ID: %08x%08x%08x%08x\n",
+		uid[3], uid[2], uid[1], uid[0]);
+
+	if (!system_serial_low && !system_serial_high) {
+		system_serial_low = uid[0];
+		system_serial_high = uid[1];
+	}
+
+	return 1;
+}
+arch_initcall(lpc32xx_check_uid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

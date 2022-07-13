@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for Zeroplus based devices
  *
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,19 +23,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/hid.h>
 #include <linux/input.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include "hid-ids.h"
 
 #ifdef CONFIG_ZEROPLUS_FF
+<<<<<<< HEAD
 #include "usbhid/usbhid.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct zpff_device {
 	struct hid_report *report;
@@ -59,7 +72,11 @@ static int zpff_play(struct input_dev *dev, void *data,
 	zpff->report->field[2]->value[0] = left;
 	zpff->report->field[3]->value[0] = right;
 	dbg_hid("running with 0x%02x 0x%02x\n", left, right);
+<<<<<<< HEAD
 	usbhid_submit_report(hid, zpff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, zpff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -68,11 +85,25 @@ static int zpff_init(struct hid_device *hid)
 {
 	struct zpff_device *zpff;
 	struct hid_report *report;
+<<<<<<< HEAD
 	struct hid_input *hidinput = list_entry(hid->inputs.next,
 						struct hid_input, list);
 	struct input_dev *dev = hidinput->input;
 	int i, error;
 
+=======
+	struct hid_input *hidinput;
+	struct input_dev *dev;
+	int i, error;
+
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "no inputs found\n");
+		return -ENODEV;
+	}
+	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
+	dev = hidinput->input;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; i++) {
 		report = hid_validate_values(hid, HID_OUTPUT_REPORT, 0, i, 1);
 		if (!report)
@@ -96,7 +127,11 @@ static int zpff_init(struct hid_device *hid)
 	zpff->report->field[1]->value[0] = 0x02;
 	zpff->report->field[2]->value[0] = 0x00;
 	zpff->report->field[3]->value[0] = 0x00;
+<<<<<<< HEAD
 	usbhid_submit_report(hid, zpff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, zpff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hid_info(hid, "force feedback for Zeroplus based devices by Anssi Hannula <anssi.hannula@gmail.com>\n");
 
@@ -144,6 +179,7 @@ static struct hid_driver zp_driver = {
 	.id_table = zp_devices,
 	.probe = zp_probe,
 };
+<<<<<<< HEAD
 
 static int __init zp_init(void)
 {
@@ -157,4 +193,8 @@ static void __exit zp_exit(void)
 
 module_init(zp_init);
 module_exit(zp_exit);
+=======
+module_hid_driver(zp_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

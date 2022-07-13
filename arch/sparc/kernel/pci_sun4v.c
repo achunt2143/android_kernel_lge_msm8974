@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_sun4v.c: SUN4V specific PCI controller support.
  *
  * Copyright (C) 2006, 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -14,7 +18,14 @@
 #include <linux/msi.h>
 #include <linux/export.h>
 #include <linux/log2.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/dma-map-ops.h>
+#include <asm/iommu-common.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/iommu.h>
 #include <asm/irq.h>
@@ -23,14 +34,37 @@
 
 #include "pci_impl.h"
 #include "iommu_common.h"
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "pci_sun4v.h"
 
 #define DRIVER_NAME	"pci_sun4v"
 #define PFX		DRIVER_NAME ": "
 
+<<<<<<< HEAD
 static unsigned long vpci_major = 1;
 static unsigned long vpci_minor = 1;
+=======
+static unsigned long vpci_major;
+static unsigned long vpci_minor;
+
+struct vpci_version {
+	unsigned long major;
+	unsigned long minor;
+};
+
+/* Ordered from largest major to lowest */
+static struct vpci_version vpci_versions[] = {
+	{ .major = 2, .minor = 0 },
+	{ .major = 1, .minor = 1 },
+};
+
+static unsigned long vatu_major = 1;
+static unsigned long vatu_minor = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PGLIST_NENTS	(PAGE_SIZE / sizeof(u64))
 
@@ -48,7 +82,11 @@ static int iommu_batch_initialized;
 /* Interrupts must be disabled.  */
 static inline void iommu_batch_start(struct device *dev, unsigned long prot, unsigned long entry)
 {
+<<<<<<< HEAD
 	struct iommu_batch *p = &__get_cpu_var(iommu_batch);
+=======
+	struct iommu_batch *p = this_cpu_ptr(&iommu_batch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p->dev		= dev;
 	p->prot		= prot;
@@ -56,6 +94,7 @@ static inline void iommu_batch_start(struct device *dev, unsigned long prot, uns
 	p->npages	= 0;
 }
 
+<<<<<<< HEAD
 /* Interrupts must be disabled.  */
 static long iommu_batch_flush(struct iommu_batch *p)
 {
@@ -81,6 +120,65 @@ static long iommu_batch_flush(struct iommu_batch *p)
 			return -1;
 		}
 
+=======
+static inline bool iommu_use_atu(struct iommu *iommu, u64 mask)
+{
+	return iommu->atu && mask > DMA_BIT_MASK(32);
+}
+
+/* Interrupts must be disabled.  */
+static long iommu_batch_flush(struct iommu_batch *p, u64 mask)
+{
+	struct pci_pbm_info *pbm = p->dev->archdata.host_controller;
+	u64 *pglist = p->pglist;
+	u64 index_count;
+	unsigned long devhandle = pbm->devhandle;
+	unsigned long prot = p->prot;
+	unsigned long entry = p->entry;
+	unsigned long npages = p->npages;
+	unsigned long iotsb_num;
+	unsigned long ret;
+	long num;
+
+	/* VPCI maj=1, min=[0,1] only supports read and write */
+	if (vpci_major < 2)
+		prot &= (HV_PCI_MAP_ATTR_READ | HV_PCI_MAP_ATTR_WRITE);
+
+	while (npages != 0) {
+		if (!iommu_use_atu(pbm->iommu, mask)) {
+			num = pci_sun4v_iommu_map(devhandle,
+						  HV_PCI_TSBID(0, entry),
+						  npages,
+						  prot,
+						  __pa(pglist));
+			if (unlikely(num < 0)) {
+				pr_err_ratelimited("%s: IOMMU map of [%08lx:%08llx:%lx:%lx:%lx] failed with status %ld\n",
+						   __func__,
+						   devhandle,
+						   HV_PCI_TSBID(0, entry),
+						   npages, prot, __pa(pglist),
+						   num);
+				return -1;
+			}
+		} else {
+			index_count = HV_PCI_IOTSB_INDEX_COUNT(npages, entry),
+			iotsb_num = pbm->iommu->atu->iotsb->iotsb_num;
+			ret = pci_sun4v_iotsb_map(devhandle,
+						  iotsb_num,
+						  index_count,
+						  prot,
+						  __pa(pglist),
+						  &num);
+			if (unlikely(ret != HV_EOK)) {
+				pr_err_ratelimited("%s: ATU map of [%08lx:%lx:%llx:%lx:%lx] failed with status %ld\n",
+						   __func__,
+						   devhandle, iotsb_num,
+						   index_count, prot,
+						   __pa(pglist), ret);
+				return -1;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry += num;
 		npages -= num;
 		pglist += num;
@@ -92,32 +190,53 @@ static long iommu_batch_flush(struct iommu_batch *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void iommu_batch_new_entry(unsigned long entry)
 {
 	struct iommu_batch *p = &__get_cpu_var(iommu_batch);
+=======
+static inline void iommu_batch_new_entry(unsigned long entry, u64 mask)
+{
+	struct iommu_batch *p = this_cpu_ptr(&iommu_batch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p->entry + p->npages == entry)
 		return;
 	if (p->entry != ~0UL)
+<<<<<<< HEAD
 		iommu_batch_flush(p);
+=======
+		iommu_batch_flush(p, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->entry = entry;
 }
 
 /* Interrupts must be disabled.  */
+<<<<<<< HEAD
 static inline long iommu_batch_add(u64 phys_page)
 {
 	struct iommu_batch *p = &__get_cpu_var(iommu_batch);
+=======
+static inline long iommu_batch_add(u64 phys_page, u64 mask)
+{
+	struct iommu_batch *p = this_cpu_ptr(&iommu_batch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(p->npages >= PGLIST_NENTS);
 
 	p->pglist[p->npages++] = phys_page;
 	if (p->npages == PGLIST_NENTS)
+<<<<<<< HEAD
 		return iommu_batch_flush(p);
+=======
+		return iommu_batch_flush(p, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* Interrupts must be disabled.  */
+<<<<<<< HEAD
 static inline long iommu_batch_end(void)
 {
 	struct iommu_batch *p = &__get_cpu_var(iommu_batch);
@@ -125,14 +244,33 @@ static inline long iommu_batch_end(void)
 	BUG_ON(p->npages >= PGLIST_NENTS);
 
 	return iommu_batch_flush(p);
+=======
+static inline long iommu_batch_end(u64 mask)
+{
+	struct iommu_batch *p = this_cpu_ptr(&iommu_batch);
+
+	BUG_ON(p->npages >= PGLIST_NENTS);
+
+	return iommu_batch_flush(p, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
 				   dma_addr_t *dma_addrp, gfp_t gfp,
+<<<<<<< HEAD
 				   struct dma_attrs *attrs)
 {
 	unsigned long flags, order, first_page, npages, n;
 	struct iommu *iommu;
+=======
+				   unsigned long attrs)
+{
+	u64 mask;
+	unsigned long flags, order, first_page, npages, n;
+	unsigned long prot = 0;
+	struct iommu *iommu;
+	struct iommu_map_table *tbl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 	void *ret;
 	long entry;
@@ -140,11 +278,21 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
 
 	size = IO_PAGE_ALIGN(size);
 	order = get_order(size);
+<<<<<<< HEAD
 	if (unlikely(order >= MAX_ORDER))
+=======
+	if (unlikely(order > MAX_PAGE_ORDER))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	npages = size >> IO_PAGE_SHIFT;
 
+<<<<<<< HEAD
+=======
+	if (attrs & DMA_ATTR_WEAK_ORDERING)
+		prot = HV_PCI_MAP_ATTR_RELAXED_ORDER;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nid = dev->archdata.numa_node;
 	page = alloc_pages_node(nid, gfp, order);
 	if (unlikely(!page))
@@ -154,6 +302,7 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
 	memset((char *)first_page, 0, PAGE_SIZE << order);
 
 	iommu = dev->archdata.iommu;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&iommu->lock, flags);
 	entry = iommu_range_alloc(dev, iommu, npages, NULL);
@@ -164,23 +313,50 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
 
 	*dma_addrp = (iommu->page_table_map_base +
 		      (entry << IO_PAGE_SHIFT));
+=======
+	mask = dev->coherent_dma_mask;
+	if (!iommu_use_atu(iommu, mask))
+		tbl = &iommu->tbl;
+	else
+		tbl = &iommu->atu->tbl;
+
+	entry = iommu_tbl_range_alloc(dev, tbl, npages, NULL,
+				      (unsigned long)(-1), 0);
+
+	if (unlikely(entry == IOMMU_ERROR_CODE))
+		goto range_alloc_fail;
+
+	*dma_addrp = (tbl->table_map_base + (entry << IO_PAGE_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = (void *) first_page;
 	first_page = __pa(first_page);
 
 	local_irq_save(flags);
 
 	iommu_batch_start(dev,
+<<<<<<< HEAD
 			  (HV_PCI_MAP_ATTR_READ |
+=======
+			  (HV_PCI_MAP_ATTR_READ | prot |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   HV_PCI_MAP_ATTR_WRITE),
 			  entry);
 
 	for (n = 0; n < npages; n++) {
+<<<<<<< HEAD
 		long err = iommu_batch_add(first_page + (n * PAGE_SIZE));
+=======
+		long err = iommu_batch_add(first_page + (n * PAGE_SIZE), mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(err < 0L))
 			goto iommu_map_fail;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(iommu_batch_end() < 0L))
+=======
+	if (unlikely(iommu_batch_end(mask) < 0L))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto iommu_map_fail;
 
 	local_irq_restore(flags);
@@ -188,27 +364,109 @@ static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
 	return ret;
 
 iommu_map_fail:
+<<<<<<< HEAD
 	/* Interrupts are disabled.  */
 	spin_lock(&iommu->lock);
 	iommu_range_free(iommu, *dma_addrp, npages);
 	spin_unlock_irqrestore(&iommu->lock, flags);
+=======
+	local_irq_restore(flags);
+	iommu_tbl_range_free(tbl, *dma_addrp, npages, IOMMU_ERROR_CODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 range_alloc_fail:
 	free_pages(first_page, order);
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
 				 dma_addr_t dvma, struct dma_attrs *attrs)
 {
 	struct pci_pbm_info *pbm;
 	struct iommu *iommu;
 	unsigned long flags, order, npages, entry;
+=======
+unsigned long dma_4v_iotsb_bind(unsigned long devhandle,
+				unsigned long iotsb_num,
+				struct pci_bus *bus_dev)
+{
+	struct pci_dev *pdev;
+	unsigned long err;
+	unsigned int bus;
+	unsigned int device;
+	unsigned int fun;
+
+	list_for_each_entry(pdev, &bus_dev->devices, bus_list) {
+		if (pdev->subordinate) {
+			/* No need to bind pci bridge */
+			dma_4v_iotsb_bind(devhandle, iotsb_num,
+					  pdev->subordinate);
+		} else {
+			bus = bus_dev->number;
+			device = PCI_SLOT(pdev->devfn);
+			fun = PCI_FUNC(pdev->devfn);
+			err = pci_sun4v_iotsb_bind(devhandle, iotsb_num,
+						   HV_PCI_DEVICE_BUILD(bus,
+								       device,
+								       fun));
+
+			/* If bind fails for one device it is going to fail
+			 * for rest of the devices because we are sharing
+			 * IOTSB. So in case of failure simply return with
+			 * error.
+			 */
+			if (err)
+				return err;
+		}
+	}
+
+	return 0;
+}
+
+static void dma_4v_iommu_demap(struct device *dev, unsigned long devhandle,
+			       dma_addr_t dvma, unsigned long iotsb_num,
+			       unsigned long entry, unsigned long npages)
+{
+	unsigned long num, flags;
+	unsigned long ret;
+
+	local_irq_save(flags);
+	do {
+		if (dvma <= DMA_BIT_MASK(32)) {
+			num = pci_sun4v_iommu_demap(devhandle,
+						    HV_PCI_TSBID(0, entry),
+						    npages);
+		} else {
+			ret = pci_sun4v_iotsb_demap(devhandle, iotsb_num,
+						    entry, npages, &num);
+			if (unlikely(ret != HV_EOK)) {
+				pr_err_ratelimited("pci_iotsb_demap() failed with error: %ld\n",
+						   ret);
+			}
+		}
+		entry += num;
+		npages -= num;
+	} while (npages != 0);
+	local_irq_restore(flags);
+}
+
+static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
+				 dma_addr_t dvma, unsigned long attrs)
+{
+	struct pci_pbm_info *pbm;
+	struct iommu *iommu;
+	struct atu *atu;
+	struct iommu_map_table *tbl;
+	unsigned long order, npages, entry;
+	unsigned long iotsb_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 devhandle;
 
 	npages = IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
 	iommu = dev->archdata.iommu;
 	pbm = dev->archdata.host_controller;
+<<<<<<< HEAD
 	devhandle = pbm->devhandle;
 	entry = ((dvma - iommu->page_table_map_base) >> IO_PAGE_SHIFT);
 
@@ -227,6 +485,21 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
 
 	spin_unlock_irqrestore(&iommu->lock, flags);
 
+=======
+	atu = iommu->atu;
+	devhandle = pbm->devhandle;
+
+	if (!iommu_use_atu(iommu, dvma)) {
+		tbl = &iommu->tbl;
+		iotsb_num = 0; /* we don't care for legacy iommu */
+	} else {
+		tbl = &atu->tbl;
+		iotsb_num = atu->iotsb->iotsb_num;
+	}
+	entry = ((dvma - tbl->table_map_base) >> IO_PAGE_SHIFT);
+	dma_4v_iommu_demap(dev, devhandle, dvma, iotsb_num, entry, npages);
+	iommu_tbl_range_free(tbl, dvma, npages, IOMMU_ERROR_CODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	order = get_order(size);
 	if (order < 10)
 		free_pages((unsigned long)cpu, order);
@@ -235,6 +508,7 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
 static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
 				  unsigned long offset, size_t sz,
 				  enum dma_data_direction direction,
+<<<<<<< HEAD
 				  struct dma_attrs *attrs)
 {
 	struct iommu *iommu;
@@ -245,6 +519,22 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
 	long entry;
 
 	iommu = dev->archdata.iommu;
+=======
+				  unsigned long attrs)
+{
+	struct iommu *iommu;
+	struct atu *atu;
+	struct iommu_map_table *tbl;
+	u64 mask;
+	unsigned long flags, npages, oaddr;
+	unsigned long i, base_paddr;
+	unsigned long prot;
+	dma_addr_t bus_addr, ret;
+	long entry;
+
+	iommu = dev->archdata.iommu;
+	atu = iommu->atu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(direction == DMA_NONE))
 		goto bad;
@@ -253,6 +543,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
 	npages = IO_PAGE_ALIGN(oaddr + sz) - (oaddr & IO_PAGE_MASK);
 	npages >>= IO_PAGE_SHIFT;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&iommu->lock, flags);
 	entry = iommu_range_alloc(dev, iommu, npages, NULL);
 	spin_unlock_irqrestore(&iommu->lock, flags);
@@ -262,22 +553,51 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
 
 	bus_addr = (iommu->page_table_map_base +
 		    (entry << IO_PAGE_SHIFT));
+=======
+	mask = *dev->dma_mask;
+	if (!iommu_use_atu(iommu, mask))
+		tbl = &iommu->tbl;
+	else
+		tbl = &atu->tbl;
+
+	entry = iommu_tbl_range_alloc(dev, tbl, npages, NULL,
+				      (unsigned long)(-1), 0);
+
+	if (unlikely(entry == IOMMU_ERROR_CODE))
+		goto bad;
+
+	bus_addr = (tbl->table_map_base + (entry << IO_PAGE_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = bus_addr | (oaddr & ~IO_PAGE_MASK);
 	base_paddr = __pa(oaddr & IO_PAGE_MASK);
 	prot = HV_PCI_MAP_ATTR_READ;
 	if (direction != DMA_TO_DEVICE)
 		prot |= HV_PCI_MAP_ATTR_WRITE;
 
+<<<<<<< HEAD
+=======
+	if (attrs & DMA_ATTR_WEAK_ORDERING)
+		prot |= HV_PCI_MAP_ATTR_RELAXED_ORDER;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_save(flags);
 
 	iommu_batch_start(dev, prot, entry);
 
 	for (i = 0; i < npages; i++, base_paddr += IO_PAGE_SIZE) {
+<<<<<<< HEAD
 		long err = iommu_batch_add(base_paddr);
 		if (unlikely(err < 0L))
 			goto iommu_map_fail;
 	}
 	if (unlikely(iommu_batch_end() < 0L))
+=======
+		long err = iommu_batch_add(base_paddr, mask);
+		if (unlikely(err < 0L))
+			goto iommu_map_fail;
+	}
+	if (unlikely(iommu_batch_end(mask) < 0L))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto iommu_map_fail;
 
 	local_irq_restore(flags);
@@ -287,6 +607,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
 bad:
 	if (printk_ratelimit())
 		WARN_ON(1);
+<<<<<<< HEAD
 	return DMA_ERROR_CODE;
 
 iommu_map_fail:
@@ -296,15 +617,34 @@ iommu_map_fail:
 	spin_unlock_irqrestore(&iommu->lock, flags);
 
 	return DMA_ERROR_CODE;
+=======
+	return DMA_MAPPING_ERROR;
+
+iommu_map_fail:
+	local_irq_restore(flags);
+	iommu_tbl_range_free(tbl, bus_addr, npages, IOMMU_ERROR_CODE);
+	return DMA_MAPPING_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
 			      size_t sz, enum dma_data_direction direction,
+<<<<<<< HEAD
 			      struct dma_attrs *attrs)
 {
 	struct pci_pbm_info *pbm;
 	struct iommu *iommu;
 	unsigned long flags, npages;
+=======
+			      unsigned long attrs)
+{
+	struct pci_pbm_info *pbm;
+	struct iommu *iommu;
+	struct atu *atu;
+	struct iommu_map_table *tbl;
+	unsigned long npages;
+	unsigned long iotsb_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long entry;
 	u32 devhandle;
 
@@ -316,12 +656,17 @@ static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
 
 	iommu = dev->archdata.iommu;
 	pbm = dev->archdata.host_controller;
+<<<<<<< HEAD
+=======
+	atu = iommu->atu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devhandle = pbm->devhandle;
 
 	npages = IO_PAGE_ALIGN(bus_addr + sz) - (bus_addr & IO_PAGE_MASK);
 	npages >>= IO_PAGE_SHIFT;
 	bus_addr &= IO_PAGE_MASK;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&iommu->lock, flags);
 
 	iommu_range_free(iommu, bus_addr, npages);
@@ -337,11 +682,27 @@ static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
 	} while (npages != 0);
 
 	spin_unlock_irqrestore(&iommu->lock, flags);
+=======
+	if (bus_addr <= DMA_BIT_MASK(32)) {
+		iotsb_num = 0; /* we don't care for legacy iommu */
+		tbl = &iommu->tbl;
+	} else {
+		iotsb_num = atu->iotsb->iotsb_num;
+		tbl = &atu->tbl;
+	}
+	entry = (bus_addr - tbl->table_map_base) >> IO_PAGE_SHIFT;
+	dma_4v_iommu_demap(dev, devhandle, bus_addr, iotsb_num, entry, npages);
+	iommu_tbl_range_free(tbl, bus_addr, npages, IOMMU_ERROR_CODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 			 int nelems, enum dma_data_direction direction,
+<<<<<<< HEAD
 			 struct dma_attrs *attrs)
+=======
+			 unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist *s, *outs, *segstart;
 	unsigned long flags, handle, prot;
@@ -350,6 +711,12 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 	unsigned long seg_boundary_size;
 	int outcount, incount, i;
 	struct iommu *iommu;
+<<<<<<< HEAD
+=======
+	struct atu *atu;
+	struct iommu_map_table *tbl;
+	u64 mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long base_shift;
 	long err;
 
@@ -357,12 +724,24 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 
 	iommu = dev->archdata.iommu;
 	if (nelems == 0 || !iommu)
+<<<<<<< HEAD
 		return 0;
 	
+=======
+		return -EINVAL;
+	atu = iommu->atu;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prot = HV_PCI_MAP_ATTR_READ;
 	if (direction != DMA_TO_DEVICE)
 		prot |= HV_PCI_MAP_ATTR_WRITE;
 
+<<<<<<< HEAD
+=======
+	if (attrs & DMA_ATTR_WEAK_ORDERING)
+		prot |= HV_PCI_MAP_ATTR_RELAXED_ORDER;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outs = s = segstart = &sglist[0];
 	outcount = 1;
 	incount = nelems;
@@ -371,14 +750,31 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 	/* Init first segment length for backout at failure */
 	outs->dma_length = 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&iommu->lock, flags);
+=======
+	local_irq_save(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iommu_batch_start(dev, prot, ~0UL);
 
 	max_seg_size = dma_get_max_seg_size(dev);
+<<<<<<< HEAD
 	seg_boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
 				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
 	base_shift = iommu->page_table_map_base >> IO_PAGE_SHIFT;
+=======
+	seg_boundary_size = dma_get_seg_boundary_nr_pages(dev, IO_PAGE_SHIFT);
+
+	mask = *dev->dma_mask;
+	if (!iommu_use_atu(iommu, mask))
+		tbl = &iommu->tbl;
+	else
+		tbl = &atu->tbl;
+
+	base_shift = tbl->table_map_base >> IO_PAGE_SHIFT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_sg(sglist, s, nelems, i) {
 		unsigned long paddr, npages, entry, out_entry = 0, slen;
 
@@ -391,6 +787,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 		/* Allocate iommu entries for that segment */
 		paddr = (unsigned long) SG_ENT_PHYS_ADDRESS(s);
 		npages = iommu_num_pages(paddr, slen, IO_PAGE_SIZE);
+<<<<<<< HEAD
 		entry = iommu_range_alloc(dev, iommu, npages, &handle);
 
 		/* Handle failure */
@@ -406,12 +803,32 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 		/* Convert entry to a dma_addr_t */
 		dma_addr = iommu->page_table_map_base +
 			(entry << IO_PAGE_SHIFT);
+=======
+		entry = iommu_tbl_range_alloc(dev, tbl, npages,
+					      &handle, (unsigned long)(-1), 0);
+
+		/* Handle failure */
+		if (unlikely(entry == IOMMU_ERROR_CODE)) {
+			pr_err_ratelimited("iommu_alloc failed, iommu %p paddr %lx npages %lx\n",
+					   tbl, paddr, npages);
+			goto iommu_map_failed;
+		}
+
+		iommu_batch_new_entry(entry, mask);
+
+		/* Convert entry to a dma_addr_t */
+		dma_addr = tbl->table_map_base + (entry << IO_PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_addr |= (s->offset & ~IO_PAGE_MASK);
 
 		/* Insert into HW table */
 		paddr &= IO_PAGE_MASK;
 		while (npages--) {
+<<<<<<< HEAD
 			err = iommu_batch_add(paddr);
+=======
+			err = iommu_batch_add(paddr, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(err < 0L))
 				goto iommu_map_failed;
 			paddr += IO_PAGE_SIZE;
@@ -446,16 +863,27 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
 		dma_next = dma_addr + slen;
 	}
 
+<<<<<<< HEAD
 	err = iommu_batch_end();
+=======
+	err = iommu_batch_end(mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(err < 0L))
 		goto iommu_map_failed;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&iommu->lock, flags);
 
 	if (outcount < incount) {
 		outs = sg_next(outs);
 		outs->dma_address = DMA_ERROR_CODE;
+=======
+	local_irq_restore(flags);
+
+	if (outcount < incount) {
+		outs = sg_next(outs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outs->dma_length = 0;
 	}
 
@@ -469,46 +897,82 @@ iommu_map_failed:
 			vaddr = s->dma_address & IO_PAGE_MASK;
 			npages = iommu_num_pages(s->dma_address, s->dma_length,
 						 IO_PAGE_SIZE);
+<<<<<<< HEAD
 			iommu_range_free(iommu, vaddr, npages);
 			/* XXX demap? XXX */
 			s->dma_address = DMA_ERROR_CODE;
+=======
+			iommu_tbl_range_free(tbl, vaddr, npages,
+					     IOMMU_ERROR_CODE);
+			/* XXX demap? XXX */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			s->dma_length = 0;
 		}
 		if (s == outs)
 			break;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&iommu->lock, flags);
 
 	return 0;
+=======
+	local_irq_restore(flags);
+
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dma_4v_unmap_sg(struct device *dev, struct scatterlist *sglist,
 			    int nelems, enum dma_data_direction direction,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_pbm_info *pbm;
 	struct scatterlist *sg;
 	struct iommu *iommu;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	struct atu *atu;
+	unsigned long flags, entry;
+	unsigned long iotsb_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 devhandle;
 
 	BUG_ON(direction == DMA_NONE);
 
 	iommu = dev->archdata.iommu;
 	pbm = dev->archdata.host_controller;
+<<<<<<< HEAD
 	devhandle = pbm->devhandle;
 	
 	spin_lock_irqsave(&iommu->lock, flags);
+=======
+	atu = iommu->atu;
+	devhandle = pbm->devhandle;
+	
+	local_irq_save(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg = sglist;
 	while (nelems--) {
 		dma_addr_t dma_handle = sg->dma_address;
 		unsigned int len = sg->dma_length;
+<<<<<<< HEAD
 		unsigned long npages, entry;
+=======
+		unsigned long npages;
+		struct iommu_map_table *tbl;
+		unsigned long shift = IO_PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!len)
 			break;
 		npages = iommu_num_pages(dma_handle, len, IO_PAGE_SIZE);
+<<<<<<< HEAD
 		iommu_range_free(iommu, dma_handle, npages);
 
 		entry = ((dma_handle - iommu->page_table_map_base) >> IO_PAGE_SHIFT);
@@ -528,16 +992,56 @@ static void dma_4v_unmap_sg(struct device *dev, struct scatterlist *sglist,
 }
 
 static struct dma_map_ops sun4v_dma_ops = {
+=======
+
+		if (dma_handle <= DMA_BIT_MASK(32)) {
+			iotsb_num = 0; /* we don't care for legacy iommu */
+			tbl = &iommu->tbl;
+		} else {
+			iotsb_num = atu->iotsb->iotsb_num;
+			tbl = &atu->tbl;
+		}
+		entry = ((dma_handle - tbl->table_map_base) >> shift);
+		dma_4v_iommu_demap(dev, devhandle, dma_handle, iotsb_num,
+				   entry, npages);
+		iommu_tbl_range_free(tbl, dma_handle, npages,
+				     IOMMU_ERROR_CODE);
+		sg = sg_next(sg);
+	}
+
+	local_irq_restore(flags);
+}
+
+static int dma_4v_supported(struct device *dev, u64 device_mask)
+{
+	struct iommu *iommu = dev->archdata.iommu;
+
+	if (ali_sound_dma_hack(dev, device_mask))
+		return 1;
+	if (device_mask < iommu->dma_addr_mask)
+		return 0;
+	return 1;
+}
+
+static const struct dma_map_ops sun4v_dma_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alloc				= dma_4v_alloc_coherent,
 	.free				= dma_4v_free_coherent,
 	.map_page			= dma_4v_map_page,
 	.unmap_page			= dma_4v_unmap_page,
 	.map_sg				= dma_4v_map_sg,
 	.unmap_sg			= dma_4v_unmap_sg,
+<<<<<<< HEAD
 };
 
 static void __devinit pci_sun4v_scan_bus(struct pci_pbm_info *pbm,
 					 struct device *parent)
+=======
+	.dma_supported			= dma_4v_supported,
+};
+
+static void pci_sun4v_scan_bus(struct pci_pbm_info *pbm, struct device *parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct property *prop;
 	struct device_node *dp;
@@ -550,6 +1054,7 @@ static void __devinit pci_sun4v_scan_bus(struct pci_pbm_info *pbm,
 	/* XXX register error interrupt handlers XXX */
 }
 
+<<<<<<< HEAD
 static unsigned long __devinit probe_existing_entries(struct pci_pbm_info *pbm,
 						      struct iommu *iommu)
 {
@@ -579,6 +1084,166 @@ static unsigned long __devinit probe_existing_entries(struct pci_pbm_info *pbm,
 }
 
 static int __devinit pci_sun4v_iommu_init(struct pci_pbm_info *pbm)
+=======
+static unsigned long probe_existing_entries(struct pci_pbm_info *pbm,
+					    struct iommu_map_table *iommu)
+{
+	struct iommu_pool *pool;
+	unsigned long i, pool_nr, cnt = 0;
+	u32 devhandle;
+
+	devhandle = pbm->devhandle;
+	for (pool_nr = 0; pool_nr < iommu->nr_pools; pool_nr++) {
+		pool = &(iommu->pools[pool_nr]);
+		for (i = pool->start; i <= pool->end; i++) {
+			unsigned long ret, io_attrs, ra;
+
+			ret = pci_sun4v_iommu_getmap(devhandle,
+						     HV_PCI_TSBID(0, i),
+						     &io_attrs, &ra);
+			if (ret == HV_EOK) {
+				if (page_in_phys_avail(ra)) {
+					pci_sun4v_iommu_demap(devhandle,
+							      HV_PCI_TSBID(0,
+							      i), 1);
+				} else {
+					cnt++;
+					__set_bit(i, iommu->map);
+				}
+			}
+		}
+	}
+	return cnt;
+}
+
+static int pci_sun4v_atu_alloc_iotsb(struct pci_pbm_info *pbm)
+{
+	struct atu *atu = pbm->iommu->atu;
+	struct atu_iotsb *iotsb;
+	void *table;
+	u64 table_size;
+	u64 iotsb_num;
+	unsigned long order;
+	unsigned long err;
+
+	iotsb = kzalloc(sizeof(*iotsb), GFP_KERNEL);
+	if (!iotsb) {
+		err = -ENOMEM;
+		goto out_err;
+	}
+	atu->iotsb = iotsb;
+
+	/* calculate size of IOTSB */
+	table_size = (atu->size / IO_PAGE_SIZE) * 8;
+	order = get_order(table_size);
+	table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, order);
+	if (!table) {
+		err = -ENOMEM;
+		goto table_failed;
+	}
+	iotsb->table = table;
+	iotsb->ra = __pa(table);
+	iotsb->dvma_size = atu->size;
+	iotsb->dvma_base = atu->base;
+	iotsb->table_size = table_size;
+	iotsb->page_size = IO_PAGE_SIZE;
+
+	/* configure and register IOTSB with HV */
+	err = pci_sun4v_iotsb_conf(pbm->devhandle,
+				   iotsb->ra,
+				   iotsb->table_size,
+				   iotsb->page_size,
+				   iotsb->dvma_base,
+				   &iotsb_num);
+	if (err) {
+		pr_err(PFX "pci_iotsb_conf failed error: %ld\n", err);
+		goto iotsb_conf_failed;
+	}
+	iotsb->iotsb_num = iotsb_num;
+
+	err = dma_4v_iotsb_bind(pbm->devhandle, iotsb_num, pbm->pci_bus);
+	if (err) {
+		pr_err(PFX "pci_iotsb_bind failed error: %ld\n", err);
+		goto iotsb_conf_failed;
+	}
+
+	return 0;
+
+iotsb_conf_failed:
+	free_pages((unsigned long)table, order);
+table_failed:
+	kfree(iotsb);
+out_err:
+	return err;
+}
+
+static int pci_sun4v_atu_init(struct pci_pbm_info *pbm)
+{
+	struct atu *atu = pbm->iommu->atu;
+	unsigned long err;
+	const u64 *ranges;
+	u64 map_size, num_iotte;
+	u64 dma_mask;
+	const u32 *page_size;
+	int len;
+
+	ranges = of_get_property(pbm->op->dev.of_node, "iommu-address-ranges",
+				 &len);
+	if (!ranges) {
+		pr_err(PFX "No iommu-address-ranges\n");
+		return -EINVAL;
+	}
+
+	page_size = of_get_property(pbm->op->dev.of_node, "iommu-pagesizes",
+				    NULL);
+	if (!page_size) {
+		pr_err(PFX "No iommu-pagesizes\n");
+		return -EINVAL;
+	}
+
+	/* There are 4 iommu-address-ranges supported. Each range is pair of
+	 * {base, size}. The ranges[0] and ranges[1] are 32bit address space
+	 * while ranges[2] and ranges[3] are 64bit space.  We want to use 64bit
+	 * address ranges to support 64bit addressing. Because 'size' for
+	 * address ranges[2] and ranges[3] are same we can select either of
+	 * ranges[2] or ranges[3] for mapping. However due to 'size' is too
+	 * large for OS to allocate IOTSB we are using fix size 32G
+	 * (ATU_64_SPACE_SIZE) which is more than enough for all PCIe devices
+	 * to share.
+	 */
+	atu->ranges = (struct atu_ranges *)ranges;
+	atu->base = atu->ranges[3].base;
+	atu->size = ATU_64_SPACE_SIZE;
+
+	/* Create IOTSB */
+	err = pci_sun4v_atu_alloc_iotsb(pbm);
+	if (err) {
+		pr_err(PFX "Error creating ATU IOTSB\n");
+		return err;
+	}
+
+	/* Create ATU iommu map.
+	 * One bit represents one iotte in IOTSB table.
+	 */
+	dma_mask = (roundup_pow_of_two(atu->size) - 1UL);
+	num_iotte = atu->size / IO_PAGE_SIZE;
+	map_size = num_iotte / 8;
+	atu->tbl.table_map_base = atu->base;
+	atu->dma_addr_mask = dma_mask;
+	atu->tbl.map = kzalloc(map_size, GFP_KERNEL);
+	if (!atu->tbl.map)
+		return -ENOMEM;
+
+	iommu_tbl_pool_init(&atu->tbl, num_iotte, IO_PAGE_SHIFT,
+			    NULL, false /* no large_pool */,
+			    0 /* default npools */,
+			    false /* want span boundary checking */);
+
+	return 0;
+}
+
+static int pci_sun4v_iommu_init(struct pci_pbm_info *pbm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const u32 vdma_default[] = { 0x80000000, 0x80000000 };
 	struct iommu *iommu = pbm->iommu;
@@ -594,7 +1259,11 @@ static int __devinit pci_sun4v_iommu_init(struct pci_pbm_info *pbm)
 		printk(KERN_ERR PFX "Strange virtual-dma[%08x:%08x].\n",
 		       vdma[0], vdma[1]);
 		return -EINVAL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_mask = (roundup_pow_of_two(vdma[1]) - 1UL);
 	num_tsb_entries = vdma[1] / IO_PAGE_SIZE;
@@ -604,12 +1273,17 @@ static int __devinit pci_sun4v_iommu_init(struct pci_pbm_info *pbm)
 	/* Setup initial software IOMMU state. */
 	spin_lock_init(&iommu->lock);
 	iommu->ctx_lowest_free = 1;
+<<<<<<< HEAD
 	iommu->page_table_map_base = dma_offset;
+=======
+	iommu->tbl.table_map_base = dma_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iommu->dma_addr_mask = dma_mask;
 
 	/* Allocate and initialize the free area map.  */
 	sz = (num_tsb_entries + 7) / 8;
 	sz = (sz + 7UL) & ~7UL;
+<<<<<<< HEAD
 	iommu->arena.map = kzalloc(sz, GFP_KERNEL);
 	if (!iommu->arena.map) {
 		printk(KERN_ERR PFX "Error, kmalloc(arena.map) failed.\n");
@@ -618,6 +1292,18 @@ static int __devinit pci_sun4v_iommu_init(struct pci_pbm_info *pbm)
 	iommu->arena.limit = num_tsb_entries;
 
 	sz = probe_existing_entries(pbm, iommu);
+=======
+	iommu->tbl.map = kzalloc(sz, GFP_KERNEL);
+	if (!iommu->tbl.map) {
+		printk(KERN_ERR PFX "Error, kmalloc(arena.map) failed.\n");
+		return -ENOMEM;
+	}
+	iommu_tbl_pool_init(&iommu->tbl, num_tsb_entries, IO_PAGE_SHIFT,
+			    NULL, false /* no large_pool */,
+			    0 /* default npools */,
+			    false /* want span boundary checking */);
+	sz = probe_existing_entries(pbm, &iommu->tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sz)
 		printk("%s: Imported %lu TSB entries from OBP\n",
 		       pbm->name, sz);
@@ -879,8 +1565,13 @@ static void pci_sun4v_msi_init(struct pci_pbm_info *pbm)
 }
 #endif /* !(CONFIG_PCI_MSI) */
 
+<<<<<<< HEAD
 static int __devinit pci_sun4v_pbm_init(struct pci_pbm_info *pbm,
 					struct platform_device *op, u32 devhandle)
+=======
+static int pci_sun4v_pbm_init(struct pci_pbm_info *pbm,
+			      struct platform_device *op, u32 devhandle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	int err;
@@ -913,25 +1604,52 @@ static int __devinit pci_sun4v_pbm_init(struct pci_pbm_info *pbm,
 
 	pci_sun4v_scan_bus(pbm, &op->dev);
 
+<<<<<<< HEAD
+=======
+	/* if atu_init fails its not complete failure.
+	 * we can still continue using legacy iommu.
+	 */
+	if (pbm->iommu->atu) {
+		err = pci_sun4v_atu_init(pbm);
+		if (err) {
+			kfree(pbm->iommu->atu);
+			pbm->iommu->atu = NULL;
+			pr_err(PFX "ATU init failed, err=%d\n", err);
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pbm->next = pci_pbm_root;
 	pci_pbm_root = pbm;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit pci_sun4v_probe(struct platform_device *op)
+=======
+static int pci_sun4v_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct linux_prom64_registers *regs;
 	static int hvapi_negotiated = 0;
 	struct pci_pbm_info *pbm;
 	struct device_node *dp;
 	struct iommu *iommu;
+<<<<<<< HEAD
 	u32 devhandle;
 	int i, err;
+=======
+	struct atu *atu;
+	u32 devhandle;
+	int i, err = -ENODEV;
+	static bool hv_atu = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dp = op->dev.of_node;
 
 	if (!hvapi_negotiated++) {
+<<<<<<< HEAD
 		err = sun4v_hvapi_register(HV_GRP_PCI,
 					   vpci_major,
 					   &vpci_minor);
@@ -943,6 +1661,35 @@ static int __devinit pci_sun4v_probe(struct platform_device *op)
 		}
 		printk(KERN_INFO PFX "Registered hvapi major[%lu] minor[%lu]\n",
 		       vpci_major, vpci_minor);
+=======
+		for (i = 0; i < ARRAY_SIZE(vpci_versions); i++) {
+			vpci_major = vpci_versions[i].major;
+			vpci_minor = vpci_versions[i].minor;
+
+			err = sun4v_hvapi_register(HV_GRP_PCI, vpci_major,
+						   &vpci_minor);
+			if (!err)
+				break;
+		}
+
+		if (err) {
+			pr_err(PFX "Could not register hvapi, err=%d\n", err);
+			return err;
+		}
+		pr_info(PFX "Registered hvapi major[%lu] minor[%lu]\n",
+			vpci_major, vpci_minor);
+
+		err = sun4v_hvapi_register(HV_GRP_ATU, vatu_major, &vatu_minor);
+		if (err) {
+			/* don't return an error if we fail to register the
+			 * ATU group, but ATU hcalls won't be available.
+			 */
+			hv_atu = false;
+		} else {
+			pr_info(PFX "Registered hvapi ATU major[%lu] minor[%lu]\n",
+				vatu_major, vatu_minor);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dma_ops = &sun4v_dma_ops;
 	}
@@ -981,6 +1728,17 @@ static int __devinit pci_sun4v_probe(struct platform_device *op)
 	}
 
 	pbm->iommu = iommu;
+<<<<<<< HEAD
+=======
+	iommu->atu = NULL;
+	if (hv_atu) {
+		atu = kzalloc(sizeof(*atu), GFP_KERNEL);
+		if (!atu)
+			pr_err(PFX "Could not allocate atu\n");
+		else
+			iommu->atu = atu;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_sun4v_pbm_init(pbm, op, devhandle);
 	if (err)
@@ -991,6 +1749,10 @@ static int __devinit pci_sun4v_probe(struct platform_device *op)
 	return 0;
 
 out_free_iommu:
+<<<<<<< HEAD
+=======
+	kfree(iommu->atu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(pbm->iommu);
 
 out_free_controller:
@@ -1011,7 +1773,10 @@ static const struct of_device_id pci_sun4v_match[] = {
 static struct platform_driver pci_sun4v_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = pci_sun4v_match,
 	},
 	.probe		= pci_sun4v_probe,

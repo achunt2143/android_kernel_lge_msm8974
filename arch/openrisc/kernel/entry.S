@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC entry.S
  *
@@ -9,6 +13,7 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2005 Gyorgy Jeney <nog@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -17,6 +22,12 @@
  */
 
 #include <linux/linkage.h>
+=======
+ */
+
+#include <linux/linkage.h>
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/processor.h>
 #include <asm/unistd.h>
@@ -25,7 +36,10 @@
 #include <asm/spr_defs.h>
 #include <asm/page.h>
 #include <asm/mmu.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm-offsets.h>
 
 #define DISABLE_INTERRUPTS(t1,t2)			\
@@ -42,6 +56,64 @@
 
 /* =========================================================[ macros ]=== */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TRACE_IRQFLAGS
+/*
+ * Trace irq on/off creating a stack frame.
+ */
+#define TRACE_IRQS_OP(trace_op)					\
+	l.sw 	-8(r1),r2	/* store frame pointer */		;\
+	l.sw	-4(r1),r9	/* store return address */		;\
+	l.addi	r2,r1,0		/* move sp to fp */			;\
+	l.jal	trace_op						;\
+	 l.addi	r1,r1,-8						;\
+	l.ori	r1,r2,0		/* restore sp */			;\
+	l.lwz	r9,-4(r1)	/* restore return address */		;\
+	l.lwz	r2,-8(r1)	/* restore fp */			;\
+/*
+ * Trace irq on/off and save registers we need that would otherwise be
+ * clobbered.
+ */
+#define TRACE_IRQS_SAVE(t1,trace_op)					\
+	l.sw	-12(r1),t1	/* save extra reg */			;\
+	l.sw 	-8(r1),r2	/* store frame pointer */		;\
+	l.sw	-4(r1),r9	/* store return address */		;\
+	l.addi	r2,r1,0		/* move sp to fp */			;\
+	l.jal	trace_op						;\
+	 l.addi	r1,r1,-12						;\
+	l.ori	r1,r2,0		/* restore sp */			;\
+	l.lwz	r9,-4(r1)	/* restore return address */		;\
+	l.lwz	r2,-8(r1)	/* restore fp */			;\
+	l.lwz	t1,-12(r1)	/* restore extra reg */
+
+#define TRACE_IRQS_OFF	TRACE_IRQS_OP(trace_hardirqs_off)
+#define TRACE_IRQS_ON	TRACE_IRQS_OP(trace_hardirqs_on)
+#define TRACE_IRQS_ON_SYSCALL						\
+	TRACE_IRQS_SAVE(r10,trace_hardirqs_on)				;\
+	l.lwz	r3,PT_GPR3(r1)						;\
+	l.lwz	r4,PT_GPR4(r1)						;\
+	l.lwz	r5,PT_GPR5(r1)						;\
+	l.lwz	r6,PT_GPR6(r1)						;\
+	l.lwz	r7,PT_GPR7(r1)						;\
+	l.lwz	r8,PT_GPR8(r1)						;\
+	l.lwz	r11,PT_GPR11(r1)
+#define TRACE_IRQS_OFF_ENTRY						\
+	l.lwz	r5,PT_SR(r1)						;\
+	l.andi	r3,r5,(SPR_SR_IEE|SPR_SR_TEE)				;\
+	l.sfeq	r5,r0		/* skip trace if irqs were already off */;\
+	l.bf	1f							;\
+	 l.nop								;\
+	TRACE_IRQS_SAVE(r4,trace_hardirqs_off)				;\
+1:
+#else
+#define TRACE_IRQS_OFF
+#define TRACE_IRQS_ON
+#define TRACE_IRQS_OFF_ENTRY
+#define TRACE_IRQS_ON_SYSCALL
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We need to disable interrupts at beginning of RESTORE_ALL
  * since interrupt might come in after we've loaded EPC return address
@@ -55,6 +127,11 @@
 	l.mtspr r0,r3,SPR_EPCR_BASE				;\
 	l.lwz   r3,PT_SR(r1)					;\
 	l.mtspr r0,r3,SPR_ESR_BASE				;\
+<<<<<<< HEAD
+=======
+	l.lwz	r3,PT_FPCSR(r1)					;\
+	l.mtspr	r0,r3,SPR_FPCSR					;\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz   r2,PT_GPR2(r1)					;\
 	l.lwz   r3,PT_GPR3(r1)					;\
 	l.lwz   r4,PT_GPR4(r1)					;\
@@ -122,8 +199,15 @@ handler:							;\
 	l.sw    PT_GPR28(r1),r28					;\
 	l.sw    PT_GPR29(r1),r29					;\
 	/* r30 already save */					;\
+<<<<<<< HEAD
 /*        l.sw    PT_GPR30(r1),r30*/					;\
 	l.sw    PT_GPR31(r1),r31					;\
+=======
+	l.sw    PT_GPR31(r1),r31					;\
+	TRACE_IRQS_OFF_ENTRY						;\
+	l.mfspr	r30,r0,SPR_FPCSR				;\
+	l.sw	PT_FPCSR(r1),r30				;\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Store -1 in orig_gpr11 for non-syscall exceptions */	;\
 	l.addi	r30,r0,-1					;\
 	l.sw	PT_ORIG_GPR11(r1),r30
@@ -159,12 +243,22 @@ handler:							;\
 	l.sw    PT_GPR27(r1),r27					;\
 	l.sw    PT_GPR28(r1),r28					;\
 	l.sw    PT_GPR29(r1),r29					;\
+<<<<<<< HEAD
 	/* r31 already saved */					;\
 	l.sw    PT_GPR30(r1),r30					;\
 /*        l.sw    PT_GPR31(r1),r31	*/				;\
 	/* Store -1 in orig_gpr11 for non-syscall exceptions */	;\
 	l.addi	r30,r0,-1					;\
 	l.sw	PT_ORIG_GPR11(r1),r30				;\
+=======
+	/* r30 already saved */						;\
+	l.sw    PT_GPR31(r1),r31					;\
+	/* Store -1 in orig_gpr11 for non-syscall exceptions */	;\
+	l.addi	r30,r0,-1					;\
+	l.sw	PT_ORIG_GPR11(r1),r30				;\
+	l.mfspr	r30,r0,SPR_FPCSR				;\
+	l.sw	PT_FPCSR(r1),r30				;\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.addi	r3,r1,0						;\
 	/* r4 is exception EA */				;\
 	l.addi	r5,r0,vector					;\
@@ -173,13 +267,25 @@ handler:							;\
 	l.j	_ret_from_exception				;\
 	 l.nop
 
+<<<<<<< HEAD
+=======
+/* clobbers 'reg' */
+#define CLEAR_LWA_FLAG(reg)		\
+	l.movhi	reg,hi(lwa_flag)	;\
+	l.ori	reg,reg,lo(lwa_flag)	;\
+	l.sw	0(reg),r0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NOTE: one should never assume that SPR_EPC, SPR_ESR, SPR_EEAR
  *       contain the same values as when exception we're handling
  *	 occured. in fact they never do. if you need them use
  *	 values saved on stack (for SPR_EPC, SPR_ESR) or content
  *       of r4 (for SPR_EEAR). for details look at EXCEPTION_HANDLE()
+<<<<<<< HEAD
  *       in 'arch/or32/kernel/head.S'
+=======
+ *       in 'arch/openrisc/kernel/head.S'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* =====================================================[ exceptions] === */
@@ -193,6 +299,10 @@ EXCEPTION_ENTRY(_tng_kernel_start)
 /* ---[ 0x200: BUS exception ]------------------------------------------- */
 
 EXCEPTION_ENTRY(_bus_fault_handler)
+<<<<<<< HEAD
+=======
+	CLEAR_LWA_FLAG(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* r4: EA of fault (set by EXCEPTION_HANDLE) */
 	l.jal   do_bus_fault
 	 l.addi  r3,r1,0 /* pt_regs */
@@ -201,6 +311,7 @@ EXCEPTION_ENTRY(_bus_fault_handler)
 	 l.nop
 
 /* ---[ 0x300: Data Page Fault exception ]------------------------------- */
+<<<<<<< HEAD
 
 EXCEPTION_ENTRY(_data_page_fault_handler)
 	/* set up parameters for do_page_fault */
@@ -216,6 +327,24 @@ EXCEPTION_ENTRY(_data_page_fault_handler)
 	 */
 #ifdef CONFIG_OPENRISC_NO_SPR_SR_DSX
 	l.lwz   r6,PT_PC(r3)                  // address of an offending insn
+=======
+EXCEPTION_ENTRY(_dtlb_miss_page_fault_handler)
+	CLEAR_LWA_FLAG(r3)
+	l.and	r5,r5,r0
+	l.j	1f
+	 l.nop
+
+EXCEPTION_ENTRY(_data_page_fault_handler)
+	CLEAR_LWA_FLAG(r3)
+	/* set up parameters for do_page_fault */
+	l.ori	r5,r0,0x300		   // exception vector
+1:
+	l.addi  r3,r1,0                    // pt_regs
+	/* r4 set be EXCEPTION_HANDLE */   // effective address of fault
+
+#ifdef CONFIG_OPENRISC_NO_SPR_SR_DSX
+	l.lwz   r6,PT_PC(r3)               // address of an offending insn
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz   r6,0(r6)                   // instruction that caused pf
 
 	l.srli  r6,r6,26                   // check opcode for jump insn
@@ -231,6 +360,7 @@ EXCEPTION_ENTRY(_data_page_fault_handler)
 	l.bf    8f
 	l.sfeqi r6,0x12                    // l.jalr
 	l.bf    8f
+<<<<<<< HEAD
 
 	l.nop
 
@@ -254,17 +384,45 @@ EXCEPTION_ENTRY(_data_page_fault_handler)
 	l.lwz	r6,PT_PC(r3)		   // address of an offending insn
 
 	l.addi	r6,r6,4			   // offending insn is in delay slot
+=======
+	 l.nop
+
+	l.j     9f
+	 l.nop
+
+8: // offending insn is in delay slot
+	l.lwz   r6,PT_PC(r3)               // address of an offending insn
+	l.addi  r6,r6,4
+	l.lwz   r6,0(r6)                   // instruction that caused pf
+	l.srli  r6,r6,26                   // get opcode
+9: // offending instruction opcode loaded in r6
+
+#else
+
+	l.mfspr r6,r0,SPR_SR               // SR
+	l.andi  r6,r6,SPR_SR_DSX           // check for delay slot exception
+	l.sfne  r6,r0                      // exception happened in delay slot
+	l.bnf   7f
+	 l.lwz  r6,PT_PC(r3)               // address of an offending insn
+
+	l.addi	r6,r6,4                    // offending insn is in delay slot
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 7:
 	l.lwz   r6,0(r6)                   // instruction that caused pf
 	l.srli  r6,r6,26                   // check opcode for write access
 #endif
 
+<<<<<<< HEAD
 	l.sfgeui r6,0x34		   // check opcode for write access
+=======
+	l.sfgeui r6,0x33                   // check opcode for write access
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.bnf   1f
 	l.sfleui r6,0x37
 	l.bnf   1f
 	l.ori   r6,r0,0x1                  // write access
 	l.j     2f
+<<<<<<< HEAD
 	l.nop
 1:	l.ori   r6,r0,0x0                  // !write access
 2:
@@ -289,20 +447,64 @@ EXCEPTION_ENTRY(_insn_page_fault_handler)
 	l.nop
 	l.j     _ret_from_exception
 	l.nop
+=======
+	 l.nop
+1:	l.ori   r6,r0,0x0                  // !write access
+2:
+
+	/* call fault.c handler in openrisc/mm/fault.c */
+	l.jal   do_page_fault
+	 l.nop
+	l.j     _ret_from_exception
+	 l.nop
+
+/* ---[ 0x400: Insn Page Fault exception ]------------------------------- */
+EXCEPTION_ENTRY(_itlb_miss_page_fault_handler)
+	CLEAR_LWA_FLAG(r3)
+	l.and	r5,r5,r0
+	l.j	1f
+	 l.nop
+
+EXCEPTION_ENTRY(_insn_page_fault_handler)
+	CLEAR_LWA_FLAG(r3)
+	/* set up parameters for do_page_fault */
+	l.ori	r5,r0,0x400		   // exception vector
+1:
+	l.addi  r3,r1,0                    // pt_regs
+	/* r4 set be EXCEPTION_HANDLE */   // effective address of fault
+	l.ori	r6,r0,0x0		   // !write access
+
+	/* call fault.c handler in openrisc/mm/fault.c */
+	l.jal   do_page_fault
+	 l.nop
+	l.j     _ret_from_exception
+	 l.nop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* ---[ 0x500: Timer exception ]----------------------------------------- */
 
 EXCEPTION_ENTRY(_timer_handler)
+<<<<<<< HEAD
+=======
+	CLEAR_LWA_FLAG(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.jal	timer_interrupt
 	 l.addi r3,r1,0 /* pt_regs */
 
 	l.j    _ret_from_intr
 	 l.nop
 
+<<<<<<< HEAD
 /* ---[ 0x600: Aligment exception ]-------------------------------------- */
 
 EXCEPTION_ENTRY(_alignment_handler)
+=======
+/* ---[ 0x600: Alignment exception ]-------------------------------------- */
+
+EXCEPTION_ENTRY(_alignment_handler)
+	CLEAR_LWA_FLAG(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* r4: EA of fault (set by EXCEPTION_HANDLE) */
 	l.jal   do_unaligned_access
 	 l.addi  r3,r1,0 /* pt_regs */
@@ -311,8 +513,13 @@ EXCEPTION_ENTRY(_alignment_handler)
 	 l.nop
 
 #if 0
+<<<<<<< HEAD
 EXCEPTION_ENTRY(_aligment_handler)
 //        l.mfspr r2,r0,SPR_EEAR_BASE     /* Load the efective addres */
+=======
+EXCEPTION_ENTRY(_alignment_handler)
+//        l.mfspr r2,r0,SPR_EEAR_BASE     /* Load the effective address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.addi	r2,r4,0
 //        l.mfspr r5,r0,SPR_EPCR_BASE     /* Load the insn address */
 	l.lwz   r5,PT_PC(r1)
@@ -481,11 +688,19 @@ EXCEPTION_ENTRY(_external_irq_handler)
 	l.bnf	1f			// ext irq enabled, all ok.
 	l.nop
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PRINTK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.addi  r1,r1,-0x8
 	l.movhi r3,hi(42f)
 	l.ori	r3,r3,lo(42f)
 	l.sw    0x0(r1),r3
+<<<<<<< HEAD
 	l.jal   printk
+=======
+	l.jal   _printk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.sw    0x4(r1),r4
 	l.addi  r1,r1,0x8
 
@@ -494,14 +709,25 @@ EXCEPTION_ENTRY(_external_irq_handler)
 		.string "\n\rESR interrupt bug: in _external_irq_handler (ESR %x)\n\r"
 		.align 4
 	.previous
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	l.ori	r4,r4,SPR_SR_IEE	// fix the bug
 //	l.sw	PT_SR(r1),r4
 1:
 #endif
+<<<<<<< HEAD
 	l.addi	r3,r1,0
 	l.movhi	r8,hi(do_IRQ)
 	l.ori	r8,r8,lo(do_IRQ)
+=======
+	CLEAR_LWA_FLAG(r3)
+	l.addi	r3,r1,0
+	l.movhi	r8,hi(generic_handle_arch_irq)
+	l.ori	r8,r8,lo(generic_handle_arch_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.jalr r8
 	l.nop
 	l.j    _ret_from_intr
@@ -532,6 +758,7 @@ UNHANDLED_EXCEPTION(_vector_0xb00,0xb00)
  */
 
 _string_syscall_return:
+<<<<<<< HEAD
 	.string "syscall return %ld \n\r\0"
 	.align 4
 
@@ -539,6 +766,12 @@ ENTRY(_sys_call_handler)
 	/* syscalls run with interrupts enabled */
 	ENABLE_INTERRUPTS(r29)		// enable interrupts, r29 is temp
 
+=======
+	.string "syscall r9:0x%08x -> syscall(%ld) return %ld\0"
+	.align 4
+
+ENTRY(_sys_call_handler)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* r1, EPCR, ESR a already saved */
 	l.sw	PT_GPR2(r1),r2
 	/* r3-r8 must be saved because syscall restart relies
@@ -546,8 +779,17 @@ ENTRY(_sys_call_handler)
 	 * they should be clobbered, otherwise
 	 */
 	l.sw    PT_GPR3(r1),r3
+<<<<<<< HEAD
 	/* r4 already saved */
 	/* r4 holds the EEAR address of the fault, load the original r4 */
+=======
+	/*
+	 * r4 already saved
+	 * r4 holds the EEAR address of the fault, use it as screatch reg and
+	 * then load the original r4
+	 */
+	CLEAR_LWA_FLAG(r4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz	r4,PT_GPR4(r1)
 	l.sw    PT_GPR5(r1),r5
 	l.sw    PT_GPR6(r1),r6
@@ -572,6 +814,13 @@ ENTRY(_sys_call_handler)
 /*	l.sw    PT_GPR30(r1),r30 */
 
 _syscall_check_trace_enter:
+<<<<<<< HEAD
+=======
+	/* syscalls run with interrupts enabled */
+	TRACE_IRQS_ON_SYSCALL
+	ENABLE_INTERRUPTS(r29)		// enable interrupts, r29 is temp
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If TIF_SYSCALL_TRACE is set, then we want to do syscall tracing */
 	l.lwz	r30,TI_FLAGS(r10)
 	l.andi	r30,r30,_TIF_SYSCALL_TRACE
@@ -605,6 +854,7 @@ _syscall_return:
 _syscall_debug:
 	l.movhi r3,hi(_string_syscall_return)
 	l.ori   r3,r3,lo(_string_syscall_return)
+<<<<<<< HEAD
 	l.ori   r27,r0,1
 	l.sw    -4(r1),r27
 	l.sw    -8(r1),r11
@@ -614,6 +864,27 @@ _syscall_debug:
 	l.jalr  r27
 	 l.nop
 	l.addi  r1,r1,8
+=======
+	l.ori   r27,r0,2
+	l.sw    -4(r1),r27
+	l.sw    -8(r1),r11
+	l.lwz	r29,PT_ORIG_GPR11(r1)
+	l.sw    -12(r1),r29
+	l.lwz	r29,PT_GPR9(r1)
+	l.sw    -16(r1),r29
+	l.movhi r27,hi(_printk)
+	l.ori   r27,r27,lo(_printk)
+	l.jalr  r27
+	 l.addi  r1,r1,-16
+	l.addi  r1,r1,16
+#endif
+#if 0
+_syscall_show_regs:
+	l.movhi r27,hi(show_registers)
+	l.ori   r27,r27,lo(show_registers)
+	l.jalr  r27
+	 l.or	r3,r1,r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 _syscall_check_trace_leave:
@@ -632,6 +903,10 @@ _syscall_check_trace_leave:
 _syscall_check_work:
 	/* Here we need to disable interrupts */
 	DISABLE_INTERRUPTS(r27,r29)
+<<<<<<< HEAD
+=======
+	TRACE_IRQS_OFF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz	r30,TI_FLAGS(r10)
 	l.andi	r30,r30,_TIF_WORK_MASK
 	l.sfne	r30,r0
@@ -759,13 +1034,30 @@ _syscall_badsys:
 
 /******* END SYSCALL HANDLING *******/
 
+<<<<<<< HEAD
 /* ---[ 0xd00: Trap exception ]------------------------------------------ */
 
 UNHANDLED_EXCEPTION(_vector_0xd00,0xd00)
+=======
+/* ---[ 0xd00: Floating Point exception ]-------------------------------- */
+
+EXCEPTION_ENTRY(_fpe_trap_handler)
+	CLEAR_LWA_FLAG(r3)
+	/* r4: EA of fault (set by EXCEPTION_HANDLE) */
+	l.jal   do_fpe_trap
+	 l.addi  r3,r1,0 /* pt_regs */
+
+	l.j     _ret_from_exception
+	 l.nop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---[ 0xe00: Trap exception ]------------------------------------------ */
 
 EXCEPTION_ENTRY(_trap_handler)
+<<<<<<< HEAD
+=======
+	CLEAR_LWA_FLAG(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* r4: EA of fault (set by EXCEPTION_HANDLE) */
 	l.jal   do_trap
 	 l.addi  r3,r1,0 /* pt_regs */
@@ -843,6 +1135,7 @@ UNHANDLED_EXCEPTION(_vector_0x1f00,0x1f00)
 
 /* ========================================================[ return ] === */
 
+<<<<<<< HEAD
 _work_pending:
 	/*
 	 * if (current_thread_info->flags & _TIF_NEED_RESCHED)
@@ -876,6 +1169,58 @@ _resume_userspace:
 	 l.nop
 
 _restore_all:
+=======
+_resume_userspace:
+	DISABLE_INTERRUPTS(r3,r4)
+	TRACE_IRQS_OFF
+	l.lwz	r4,TI_FLAGS(r10)
+	l.andi	r13,r4,_TIF_WORK_MASK
+	l.sfeqi	r13,0
+	l.bf	_restore_all
+	 l.nop
+
+_work_pending:
+	l.lwz	r5,PT_ORIG_GPR11(r1)
+	l.sfltsi r5,0
+	l.bnf	1f
+	 l.nop
+	l.andi	r5,r5,0
+1:
+	l.jal	do_work_pending
+	 l.ori	r3,r1,0			/* pt_regs */
+
+	l.sfeqi	r11,0
+	l.bf	_restore_all
+	 l.nop
+	l.sfltsi r11,0
+	l.bnf	1f
+	 l.nop
+	l.and	r11,r11,r0
+	l.ori	r11,r11,__NR_restart_syscall
+	l.j	_syscall_check_trace_enter
+	 l.nop
+1:
+	l.lwz	r11,PT_ORIG_GPR11(r1)
+	/* Restore arg registers */
+	l.lwz	r3,PT_GPR3(r1)
+	l.lwz	r4,PT_GPR4(r1)
+	l.lwz	r5,PT_GPR5(r1)
+	l.lwz	r6,PT_GPR6(r1)
+	l.lwz	r7,PT_GPR7(r1)
+	l.j	_syscall_check_trace_enter
+	 l.lwz	r8,PT_GPR8(r1)
+
+_restore_all:
+#ifdef CONFIG_TRACE_IRQFLAGS
+	l.lwz	r4,PT_SR(r1)
+	l.andi	r3,r4,(SPR_SR_IEE|SPR_SR_TEE)
+	l.sfeq	r3,r0		/* skip trace if irqs were off */
+	l.bf	skip_hardirqs_on
+	 l.nop
+	TRACE_IRQS_ON
+skip_hardirqs_on:
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RESTORE_ALL
 	/* This returns to userspace code */
 
@@ -894,15 +1239,35 @@ ENTRY(ret_from_fork)
 	l.jal	schedule_tail
 	 l.nop
 
+<<<<<<< HEAD
+=======
+	/* Check if we are a kernel thread */
+	l.sfeqi	r20,0
+	l.bf	1f
+	 l.nop
+
+	/* ...we are a kernel thread so invoke the requested callback */
+	l.jalr	r20
+	 l.or	r3,r22,r0
+
+1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* _syscall_returns expect r11 to contain return value */
 	l.lwz	r11,PT_GPR11(r1)
 
 	/* The syscall fast path return expects call-saved registers
+<<<<<<< HEAD
 	 * r12-r28 to be untouched, so we restore them here as they
 	 * will have been effectively clobbered when arriving here
 	 * via the call to switch()
 	 */
 	l.lwz	r12,PT_GPR12(r1)
+=======
+	 * r14-r28 to be untouched, so we restore them here as they
+	 * will have been effectively clobbered when arriving here
+	 * via the call to switch()
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz	r14,PT_GPR14(r1)
 	l.lwz	r16,PT_GPR16(r1)
 	l.lwz	r18,PT_GPR18(r1)
@@ -915,6 +1280,7 @@ ENTRY(ret_from_fork)
 	l.j	_syscall_return
 	 l.nop
 
+<<<<<<< HEAD
 /* Since syscalls don't save call-clobbered registers, the args to
  * kernel_thread_helper will need to be passed through callee-saved
  * registers and copied to the parameter registers when the thread
@@ -935,6 +1301,8 @@ ENTRY(_kernel_thread_helper)
 	 l.nop
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ========================================================[ switch ] === */
 
 /*
@@ -954,10 +1322,17 @@ ENTRY(_kernel_thread_helper)
 
 /* _switch MUST never lay on page boundry, cause it runs from
  * effective addresses and beeing interrupted by iTLB miss would kill it.
+<<<<<<< HEAD
  * dTLB miss seams to never accour in the bad place since data accesses
  * are from task structures which are always page aligned.
  *
  * The problem happens in RESTORE_ALL_NO_R11 where we first set the EPCR
+=======
+ * dTLB miss seems to never accour in the bad place since data accesses
+ * are from task structures which are always page aligned.
+ *
+ * The problem happens in RESTORE_ALL where we first set the EPCR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * register, then load the previous register values and only at the end call
  * the l.rfe instruction. If get TLB miss in beetwen the EPCR register gets
  * garbled and we end up calling l.rfe with the wrong EPCR. (same probably
@@ -985,9 +1360,14 @@ ENTRY(_switch)
 	/* No need to store r1/PT_SP as it goes into KSP below */
 	l.sw    PT_GPR2(r1),r2
 	l.sw    PT_GPR9(r1),r9
+<<<<<<< HEAD
 	/* This is wrong, r12 shouldn't be here... but GCC is broken for the time being
 	 * and expects r12 to be callee-saved... */
 	l.sw    PT_GPR12(r1),r12
+=======
+
+	/* Save callee-saved registers to the new pt_regs */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.sw    PT_GPR14(r1),r14
 	l.sw    PT_GPR16(r1),r16
 	l.sw    PT_GPR18(r1),r18
@@ -998,6 +1378,13 @@ ENTRY(_switch)
 	l.sw    PT_GPR28(r1),r28
 	l.sw    PT_GPR30(r1),r30
 
+<<<<<<< HEAD
+=======
+	/* Store the old FPU state to new pt_regs */
+	l.mfspr	r29,r0,SPR_FPCSR
+	l.sw	PT_FPCSR(r1),r29
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.addi	r11,r10,0			/* Save old 'current' to 'last' return value*/
 
 	/* We use thread_info->ksp for storing the address of the above
@@ -1020,6 +1407,13 @@ ENTRY(_switch)
 	l.lwz	r29,PT_SP(r1)
 	l.sw	TI_KSP(r10),r29
 
+<<<<<<< HEAD
+=======
+	/* Restore the old value of FPCSR */
+	l.lwz	r29,PT_FPCSR(r1)
+	l.mtspr	r0,r29,SPR_FPCSR
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ...and restore the registers, except r11 because the return value
 	 * has already been set above.
 	 */
@@ -1028,9 +1422,13 @@ ENTRY(_switch)
 	/* No need to restore r10 */
 	/* ...and do not restore r11 */
 
+<<<<<<< HEAD
 	/* This is wrong, r12 shouldn't be here... but GCC is broken for the time being
 	 * and expects r12 to be callee-saved... */
 	l.lwz   r12,PT_GPR12(r1)
+=======
+	/* Restore callee-saved registers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.lwz   r14,PT_GPR14(r1)
 	l.lwz   r16,PT_GPR16(r1)
 	l.lwz   r18,PT_GPR18(r1)
@@ -1044,8 +1442,18 @@ ENTRY(_switch)
 	/* Unwind stack to pre-switch state */
 	l.addi  r1,r1,(INT_FRAME_SIZE)
 
+<<<<<<< HEAD
 	/* Return via the link-register back to where we 'came from', where that can be
 	 * either schedule() or return_from_fork()... */
+=======
+	/* Return via the link-register back to where we 'came from', where
+	 * that may be either schedule(), ret_from_fork(), or
+	 * ret_from_kernel_thread().  If we are returning to a new thread,
+	 * we are expected to have set up the arg to schedule_tail already,
+	 * hence we do so here unconditionally:
+	 */
+	l.lwz   r3,TI_TASK(r3)		/* Load 'prev' as schedule_tail arg */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l.jr	r9
 	 l.nop
 
@@ -1076,6 +1484,7 @@ _fork_save_extra_regs_and_call:
 	l.jr	r29
 	 l.sw    PT_GPR28(r1),r28
 
+<<<<<<< HEAD
 ENTRY(sys_clone)
 	l.movhi	r29,hi(_sys_clone)
 	l.ori	r29,r29,lo(_sys_clone)
@@ -1099,6 +1508,34 @@ ENTRY(sys_sigaltstack)
 ENTRY(sys_rt_sigreturn)
 	l.j	_sys_rt_sigreturn
 	 l.addi	r3,r1,0
+=======
+ENTRY(__sys_clone)
+	l.movhi	r29,hi(sys_clone)
+	l.j	_fork_save_extra_regs_and_call
+	 l.ori	r29,r29,lo(sys_clone)
+
+ENTRY(__sys_clone3)
+	l.movhi	r29,hi(sys_clone3)
+	l.j	_fork_save_extra_regs_and_call
+	 l.ori	r29,r29,lo(sys_clone3)
+
+ENTRY(__sys_fork)
+	l.movhi	r29,hi(sys_fork)
+	l.j	_fork_save_extra_regs_and_call
+	 l.ori	r29,r29,lo(sys_fork)
+
+ENTRY(sys_rt_sigreturn)
+	l.jal	_sys_rt_sigreturn
+	 l.addi	r3,r1,0
+	l.sfne	r30,r0
+	l.bnf	_no_syscall_trace
+	 l.nop
+	l.jal	do_syscall_trace_leave
+	 l.addi	r3,r1,0
+_no_syscall_trace:
+	l.j	_resume_userspace
+	 l.nop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is a catch-all syscall for atomic instructions for the OpenRISC 1000.
  * The functions takes a variable number of parameters depending on which
@@ -1117,10 +1554,17 @@ ENTRY(sys_rt_sigreturn)
 ENTRY(sys_or1k_atomic)
 	/* FIXME: This ignores r3 and always does an XCHG */
 	DISABLE_INTERRUPTS(r17,r19)
+<<<<<<< HEAD
 	l.lwz	r30,0(r4)
 	l.lwz	r28,0(r5)
 	l.sw	0(r4),r28
 	l.sw	0(r5),r30
+=======
+	l.lwz	r29,0(r4)
+	l.lwz	r27,0(r5)
+	l.sw	0(r4),r27
+	l.sw	0(r5),r29
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ENABLE_INTERRUPTS(r17)
 	l.jr	r9
 	 l.or	r11,r0,r0

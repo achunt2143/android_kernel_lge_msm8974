@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*-linux-c-*-
 
  * vendor-specific code for SCSI CD-ROM's goes here.
@@ -60,14 +64,21 @@
 #define VENDOR_NEC             2
 #define VENDOR_TOSHIBA         3
 #define VENDOR_WRITER          4	/* pre-scsi3 writers */
+<<<<<<< HEAD
+=======
+#define VENDOR_CYGNAL_85ED     5	/* CD-on-a-chip */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VENDOR_TIMEOUT	30*HZ
 
 void sr_vendor_init(Scsi_CD *cd)
 {
+<<<<<<< HEAD
 #ifndef CONFIG_BLK_DEV_SR_VENDOR
 	cd->vendor = VENDOR_SCSI3;
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *vendor = cd->device->vendor;
 	const char *model = cd->device->model;
 	
@@ -98,8 +109,29 @@ void sr_vendor_init(Scsi_CD *cd)
 	} else if (!strncmp(vendor, "TOSHIBA", 7)) {
 		cd->vendor = VENDOR_TOSHIBA;
 
+<<<<<<< HEAD
 	}
 #endif
+=======
+	} else if (!strncmp(vendor, "Beurer", 6) &&
+		   !strncmp(model, "Gluco Memory", 12)) {
+		/* The Beurer GL50 evo uses a Cygnal-manufactured CD-on-a-chip
+		   that only accepts a subset of SCSI commands.  Most of the
+		   not-implemented commands are fine to fail, but a few,
+		   particularly around the MMC or Audio commands, will put the
+		   device into an unrecoverable state, so they need to be
+		   avoided at all costs.
+		*/
+		cd->vendor = VENDOR_CYGNAL_85ED;
+		cd->cdi.mask |= (
+			CDC_MULTI_SESSION |
+			CDC_CLOSE_TRAY | CDC_OPEN_TRAY |
+			CDC_LOCK |
+			CDC_GENERIC_PACKET |
+			CDC_PLAY_AUDIO
+			);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -113,17 +145,28 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
 	struct ccs_modesel_head *modesel;
 	int rc, density = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLK_DEV_SR_VENDOR
 	if (cd->vendor == VENDOR_TOSHIBA)
 		density = (blocklength > 2048) ? 0x81 : 0x83;
 #endif
 
 	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
+=======
+	if (cd->vendor == VENDOR_TOSHIBA)
+		density = (blocklength > 2048) ? 0x81 : 0x83;
+
+	buffer = kmalloc(512, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer)
 		return -ENOMEM;
 
 #ifdef DEBUG
+<<<<<<< HEAD
 	printk("%s: MODE SELECT 0x%x/%d\n", cd->cdi.name, density, blocklength);
+=======
+	sr_printk(KERN_INFO, cd, "MODE SELECT 0x%x/%d\n", density, blocklength);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	memset(&cgc, 0, sizeof(struct packet_command));
 	cgc.cmd[0] = MODE_SELECT;
@@ -144,8 +187,14 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
 	}
 #ifdef DEBUG
 	else
+<<<<<<< HEAD
 		printk("%s: switching blocklength to %d bytes failed\n",
 		       cd->cdi.name, blocklength);
+=======
+		sr_printk(KERN_INFO, cd,
+			  "switching blocklength to %d bytes failed\n",
+			  blocklength);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	kfree(buffer);
 	return rc;
@@ -165,7 +214,11 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 	if (cd->cdi.mask & CDC_MULTI_SESSION)
 		return 0;
 
+<<<<<<< HEAD
 	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
+=======
+	buffer = kmalloc(512, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer)
 		return -ENOMEM;
 
@@ -190,8 +243,13 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 		if (rc != 0)
 			break;
 		if ((buffer[0] << 8) + buffer[1] < 0x0a) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: Hmm, seems the drive "
 			   "doesn't support multisession CD's\n", cd->cdi.name);
+=======
+			sr_printk(KERN_INFO, cd, "Hmm, seems the drive "
+			   "doesn't support multisession CD's\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			no_multi = 1;
 			break;
 		}
@@ -203,7 +261,10 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 		}
 		break;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLK_DEV_SR_VENDOR
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VENDOR_NEC:{
 			unsigned long min, sec, frame;
 			cgc.cmd[0] = 0xde;
@@ -218,9 +279,15 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 			if (rc != 0)
 				break;
 			if (buffer[14] != 0 && buffer[14] != 0xb0) {
+<<<<<<< HEAD
 				printk(KERN_INFO "%s: Hmm, seems the cdrom "
 				       "doesn't support multisession CD's\n",
 				       cd->cdi.name);
+=======
+				sr_printk(KERN_INFO, cd, "Hmm, seems the cdrom "
+					  "doesn't support multisession CD's\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				no_multi = 1;
 				break;
 			}
@@ -245,9 +312,14 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 			cgc.timeout = VENDOR_TIMEOUT;
 			rc = sr_do_ioctl(cd, &cgc);
 			if (rc == -EINVAL) {
+<<<<<<< HEAD
 				printk(KERN_INFO "%s: Hmm, seems the drive "
 				       "doesn't support multisession CD's\n",
 				       cd->cdi.name);
+=======
+				sr_printk(KERN_INFO, cd, "Hmm, seems the drive "
+					  "doesn't support multisession CD's\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				no_multi = 1;
 				break;
 			}
@@ -277,8 +349,13 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 			break;
 		}
 		if ((rc = buffer[2]) == 0) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "%s: No finished session\n", cd->cdi.name);
+=======
+			sr_printk(KERN_WARNING, cd,
+				  "No finished session\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		cgc.cmd[0] = READ_TOC;	/* Read TOC */
@@ -297,6 +374,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 		sector = buffer[11] + (buffer[10] << 8) +
 		    (buffer[9] << 16) + (buffer[8] << 24);
 		break;
+<<<<<<< HEAD
 #endif				/* CONFIG_BLK_DEV_SR_VENDOR */
 
 	default:
@@ -304,6 +382,14 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 		printk(KERN_WARNING
 		   "%s: unknown vendor code (%i), not initialized ?\n",
 		       cd->cdi.name, cd->vendor);
+=======
+
+	default:
+		/* should not happen */
+		sr_printk(KERN_WARNING, cd,
+			  "unknown vendor code (%i), not initialized ?\n",
+			  cd->vendor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sector = 0;
 		no_multi = 1;
 		break;
@@ -321,8 +407,13 @@ int sr_cd_check(struct cdrom_device_info *cdi)
 
 #ifdef DEBUG
 	if (sector)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: multisession offset=%lu\n",
 		       cd->cdi.name, sector);
+=======
+		sr_printk(KERN_DEBUG, cd, "multisession offset=%lu\n",
+			  sector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	kfree(buffer);
 	return rc;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/hpfs_fn.h
  *
@@ -8,18 +12,35 @@
 
 //#define DBG
 //#define DEBUG_LOCKS
+<<<<<<< HEAD
+=======
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mutex.h>
 #include <linux/pagemap.h>
 #include <linux/buffer_head.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 #include "hpfs.h"
 
 #define EIOERROR  EIO
+<<<<<<< HEAD
 #define EFSERROR  EPERM
 #define EMEMERROR ENOMEM
+=======
+#define EFSERROR  EUCLEAN
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ANODE_ALLOC_FWD	512
 #define FNODE_ALLOC_FWD	0
@@ -27,14 +48,21 @@
 #define ALLOC_FWD_MAX	128
 #define ALLOC_M		1
 #define FNODE_RD_AHEAD	16
+<<<<<<< HEAD
 #define ANODE_RD_AHEAD	16
 #define DNODE_RD_AHEAD	4
+=======
+#define ANODE_RD_AHEAD	0
+#define DNODE_RD_AHEAD	72
+#define COUNT_RD_AHEAD	62
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FREE_DNODES_ADD	58
 #define FREE_DNODES_DEL	29
 
 #define CHKCOND(x,y) if (!(x)) printk y
 
+<<<<<<< HEAD
 #ifdef DBG
 #define PRINTK(x) printk x
 #else
@@ -42,6 +70,8 @@
 #define PRINTK(x)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hpfs_inode_info {
 	loff_t mmu_private;
 	ino_t i_parent_dir;	/* (directories) gives fnode of parent dir */
@@ -70,8 +100,13 @@ struct hpfs_sb_info {
 	unsigned sb_dmap;		/* sector number of dnode bit map */
 	unsigned sb_n_free;		/* free blocks for statfs, or -1 */
 	unsigned sb_n_free_dnodes;	/* free dnodes for statfs, or -1 */
+<<<<<<< HEAD
 	uid_t sb_uid;			/* uid from mount options */
 	gid_t sb_gid;			/* gid from mount options */
+=======
+	kuid_t sb_uid;			/* uid from mount options */
+	kgid_t sb_gid;			/* gid from mount options */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t sb_mode;		/* mode from mount options */
 	unsigned sb_eas : 2;		/* eas: 0-ignore, 1-ro, 2-rw */
 	unsigned sb_err : 2;		/* on errs: 0-cont, 1-ro, 2-panic */
@@ -82,10 +117,22 @@ struct hpfs_sb_info {
 	unsigned char *sb_cp_table;	/* code page tables: */
 					/* 	128 bytes uppercasing table & */
 					/*	128 bytes lowercasing table */
+<<<<<<< HEAD
 	unsigned *sb_bmp_dir;		/* main bitmap directory */
 	unsigned sb_c_bitmap;		/* current bitmap */
 	unsigned sb_max_fwd_alloc;	/* max forwad allocation */
 	int sb_timeshift;
+=======
+	__le32 *sb_bmp_dir;		/* main bitmap directory */
+	unsigned sb_c_bitmap;		/* current bitmap */
+	unsigned sb_max_fwd_alloc;	/* max forwad allocation */
+	int sb_timeshift;
+	struct rcu_head rcu;
+
+	unsigned n_hotfixes;
+	secno hotfix_from[256];
+	secno hotfix_to[256];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Four 512-byte buffers and the 2k block obtained by concatenating them */
@@ -100,7 +147,11 @@ struct quad_buffer_head {
 static inline dnode_secno de_down_pointer (struct hpfs_dirent *de)
 {
   CHKCOND(de->down,("HPFS: de_down_pointer: !de->down\n"));
+<<<<<<< HEAD
   return le32_to_cpu(*(dnode_secno *) ((void *) de + le16_to_cpu(de->length) - 4));
+=======
+  return le32_to_cpu(*(__le32 *) ((void *) de + le16_to_cpu(de->length) - 4));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The first dir entry in a dnode */
@@ -148,12 +199,20 @@ static inline struct extended_attribute *next_ea(struct extended_attribute *ea)
 
 static inline secno ea_sec(struct extended_attribute *ea)
 {
+<<<<<<< HEAD
 	return le32_to_cpu(get_unaligned((secno *)((char *)ea + 9 + ea->namelen)));
+=======
+	return le32_to_cpu(get_unaligned((__le32 *)((char *)ea + 9 + ea->namelen)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline secno ea_len(struct extended_attribute *ea)
 {
+<<<<<<< HEAD
 	return le32_to_cpu(get_unaligned((secno *)((char *)ea + 5 + ea->namelen)));
+=======
+	return le32_to_cpu(get_unaligned((__le32 *)((char *)ea + 5 + ea->namelen)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline char *ea_data(struct extended_attribute *ea)
@@ -178,7 +237,11 @@ static inline void copy_de(struct hpfs_dirent *dst, struct hpfs_dirent *src)
 	dst->not_8x3 = n;
 }
 
+<<<<<<< HEAD
 static inline unsigned tstbits(u32 *bmp, unsigned b, unsigned n)
+=======
+static inline unsigned tstbits(__le32 *bmp, unsigned b, unsigned n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	if ((b >= 0x4000) || (b + n - 1 >= 0x4000)) return n;
@@ -200,6 +263,10 @@ void hpfs_free_dnode(struct super_block *, secno);
 struct dnode *hpfs_alloc_dnode(struct super_block *, secno, dnode_secno *, struct quad_buffer_head *);
 struct fnode *hpfs_alloc_fnode(struct super_block *, secno, fnode_secno *, struct buffer_head **);
 struct anode *hpfs_alloc_anode(struct super_block *, secno, anode_secno *, struct buffer_head **);
+<<<<<<< HEAD
+=======
+int hpfs_trim_fs(struct super_block *, u64, u64, u64, unsigned *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* anode.c */
 
@@ -214,6 +281,12 @@ void hpfs_remove_fnode(struct super_block *, fnode_secno fno);
 
 /* buffer.c */
 
+<<<<<<< HEAD
+=======
+secno hpfs_search_hotfix_map(struct super_block *s, secno sec);
+unsigned hpfs_search_hotfix_map_for_range(struct super_block *s, secno sec, unsigned n);
+void hpfs_prefetch_sectors(struct super_block *, unsigned, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *hpfs_map_sector(struct super_block *, unsigned, struct buffer_head **, int);
 void *hpfs_get_sector(struct super_block *, unsigned, struct buffer_head **);
 void *hpfs_map_4sectors(struct super_block *, unsigned, struct quad_buffer_head *, int);
@@ -232,7 +305,11 @@ extern const struct file_operations hpfs_dir_ops;
 
 /* dnode.c */
 
+<<<<<<< HEAD
 void hpfs_add_pos(struct inode *, loff_t *);
+=======
+int hpfs_add_pos(struct inode *, loff_t *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void hpfs_del_pos(struct inode *, loff_t *);
 struct hpfs_dirent *hpfs_add_de(struct super_block *, struct dnode *,
 				const unsigned char *, unsigned, secno);
@@ -259,6 +336,10 @@ void hpfs_set_ea(struct inode *, struct fnode *, const char *,
 /* file.c */
 
 int hpfs_file_fsync(struct file *, loff_t, loff_t, int);
+<<<<<<< HEAD
+=======
+void hpfs_truncate(struct inode *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct file_operations hpfs_file_ops;
 extern const struct inode_operations hpfs_file_iops;
 extern const struct address_space_operations hpfs_aops;
@@ -269,16 +350,29 @@ void hpfs_init_inode(struct inode *);
 void hpfs_read_inode(struct inode *);
 void hpfs_write_inode(struct inode *);
 void hpfs_write_inode_nolock(struct inode *);
+<<<<<<< HEAD
 int hpfs_setattr(struct dentry *, struct iattr *);
+=======
+int hpfs_setattr(struct mnt_idmap *, struct dentry *, struct iattr *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void hpfs_write_if_changed(struct inode *);
 void hpfs_evict_inode(struct inode *);
 
 /* map.c */
 
+<<<<<<< HEAD
 unsigned *hpfs_map_dnode_bitmap(struct super_block *, struct quad_buffer_head *);
 unsigned *hpfs_map_bitmap(struct super_block *, unsigned, struct quad_buffer_head *, char *);
 unsigned char *hpfs_load_code_page(struct super_block *, secno);
 secno *hpfs_load_bitmap_directory(struct super_block *, secno bmp);
+=======
+__le32 *hpfs_map_dnode_bitmap(struct super_block *, struct quad_buffer_head *);
+__le32 *hpfs_map_bitmap(struct super_block *, unsigned, struct quad_buffer_head *, char *);
+void hpfs_prefetch_bitmap(struct super_block *, unsigned);
+unsigned char *hpfs_load_code_page(struct super_block *, secno);
+__le32 *hpfs_load_bitmap_directory(struct super_block *, secno bmp);
+void hpfs_load_hotfix_map(struct super_block *s, struct hpfs_spare_block *spareblock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fnode *hpfs_map_fnode(struct super_block *s, ino_t, struct buffer_head **);
 struct anode *hpfs_map_anode(struct super_block *s, anode_secno, struct buffer_head **);
 struct dnode *hpfs_map_dnode(struct super_block *s, dnode_secno, struct quad_buffer_head *);
@@ -301,7 +395,11 @@ extern const struct address_space_operations hpfs_symlink_aops;
 
 static inline struct hpfs_inode_info *hpfs_i(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct hpfs_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct hpfs_inode_info, vfs_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct hpfs_sb_info *hpfs_sb(struct super_block *sb)
@@ -314,24 +412,45 @@ static inline struct hpfs_sb_info *hpfs_sb(struct super_block *sb)
 __printf(2, 3)
 void hpfs_error(struct super_block *, const char *, ...);
 int hpfs_stop_cycles(struct super_block *, int, int *, int *, char *);
+<<<<<<< HEAD
 unsigned hpfs_count_one_bitmap(struct super_block *, secno);
+=======
+unsigned hpfs_get_free_dnodes(struct super_block *);
+long hpfs_ioctl(struct file *file, unsigned cmd, unsigned long arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * local time (HPFS) to GMT (Unix)
  */
 
+<<<<<<< HEAD
 static inline time_t local_to_gmt(struct super_block *s, time32_t t)
+=======
+static inline time64_t local_to_gmt(struct super_block *s, time64_t t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern struct timezone sys_tz;
 	return t + sys_tz.tz_minuteswest * 60 + hpfs_sb(s)->sb_timeshift;
 }
 
+<<<<<<< HEAD
 static inline time32_t gmt_to_local(struct super_block *s, time_t t)
+=======
+static inline time32_t gmt_to_local(struct super_block *s, time64_t t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern struct timezone sys_tz;
 	return t - sys_tz.tz_minuteswest * 60 - hpfs_sb(s)->sb_timeshift;
 }
 
+<<<<<<< HEAD
+=======
+static inline time32_t local_get_seconds(struct super_block *s)
+{
+	return gmt_to_local(s, ktime_get_real_seconds());
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Locking:
  *

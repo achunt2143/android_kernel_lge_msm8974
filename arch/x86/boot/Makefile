@@ -9,6 +9,22 @@
 # Changed by many, many contributors over the years.
 #
 
+<<<<<<< HEAD
+=======
+# Sanitizer runtimes are unavailable and cannot be linked for early boot code.
+KASAN_SANITIZE			:= n
+KCSAN_SANITIZE			:= n
+KMSAN_SANITIZE			:= n
+OBJECT_FILES_NON_STANDARD	:= y
+
+# Kernel does not boot with kcov instrumentation here.
+# One of the problems observed was insertion of __sanitizer_cov_trace_pc()
+# callback into middle of per-cpu data enabling code. Thus the callback observed
+# inconsistent state and crashed. We are interested mostly in syscall coverage,
+# so boot code is not interesting anyway.
+KCOV_INSTRUMENT		:= n
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # If you want to preset the SVGA mode, uncomment the next line and
 # set SVGA_MODE to whatever number you want.
 # Set it to -DSVGA_MODE=NORMAL_VGA if you just want the EGA/VGA mode.
@@ -17,11 +33,19 @@
 SVGA_MODE	:= -DSVGA_MODE=NORMAL_VGA
 
 targets		:= vmlinux.bin setup.bin setup.elf bzImage
+<<<<<<< HEAD
 targets		+= fdimage fdimage144 fdimage288 image.iso mtools.conf
 subdir-		:= compressed
 
 setup-y		+= a20.o bioscall.o cmdline.o copy.o cpu.o cpucheck.o
 setup-y		+= early_serial_console.o edd.o header.o main.o mca.o memory.o
+=======
+targets		+= fdimage fdimage144 fdimage288 image.iso hdimage
+subdir-		:= compressed
+
+setup-y		+= a20.o bioscall.o cmdline.o copy.o cpu.o cpuflags.o cpucheck.o
+setup-y		+= early_serial_console.o edd.o header.o main.o memory.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 setup-y		+= pm.o pmjump.o printf.o regs.o string.o tty.o video.o
 setup-y		+= video-mode.o version.o
 setup-$(CONFIG_X86_APM_BOOT) += apm.o
@@ -35,15 +59,24 @@ setup-y		+= video-vesa.o
 setup-y		+= video-bios.o
 
 targets		+= $(setup-y)
+<<<<<<< HEAD
 hostprogs-y	:= mkcpustr tools/build
 
 HOST_EXTRACFLAGS += -I$(srctree)/tools/include $(LINUXINCLUDE) \
+=======
+hostprogs	:= tools/build
+hostprogs	+= mkcpustr
+
+HOST_EXTRACFLAGS += -I$(srctree)/tools/include \
+		    -include include/generated/autoconf.h \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	            -D__EXPORTED_HEADERS__
 
 $(obj)/cpu.o: $(obj)/cpustr.h
 
 quiet_cmd_cpustr = CPUSTR  $@
       cmd_cpustr = $(obj)/mkcpustr > $@
+<<<<<<< HEAD
 targets		+= cpustr.h
 $(obj)/cpustr.h: $(obj)/mkcpustr FORCE
 	$(call if_changed,cpustr)
@@ -66,15 +99,39 @@ KBUILD_CFLAGS	:= $(LINUXINCLUDE) -m32 -g -Os -D_SETUP -D__KERNEL__ \
 		   $(call cc-option, -mpreferred-stack-boundary=2)
 KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
 GCOV_PROFILE := n
+=======
+$(obj)/cpustr.h: $(obj)/mkcpustr FORCE
+	$(call if_changed,cpustr)
+targets += cpustr.h
+
+# ---------------------------------------------------------------------------
+
+KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
+KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
+KBUILD_CFLAGS	+= $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
+KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
+GCOV_PROFILE := n
+UBSAN_SANITIZE := n
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/bzImage: asflags-y  := $(SVGA_MODE)
 
 quiet_cmd_image = BUILD   $@
+<<<<<<< HEAD
 cmd_image = $(obj)/tools/build $(obj)/setup.bin $(obj)/vmlinux.bin > $@
 
 $(obj)/bzImage: $(obj)/setup.bin $(obj)/vmlinux.bin $(obj)/tools/build FORCE
 	$(call if_changed,image)
 	@echo 'Kernel: $@ is ready' ' (#'`cat .version`')'
+=======
+silent_redirect_image = >/dev/null
+cmd_image = $(obj)/tools/build $(obj)/setup.bin $(obj)/vmlinux.bin \
+			       $(obj)/zoffset.h $@ $($(quiet)redirect_image)
+
+$(obj)/bzImage: $(obj)/setup.bin $(obj)/vmlinux.bin $(obj)/tools/build FORCE
+	$(call if_changed,image)
+	@$(kecho) 'Kernel: $@ is ready' ' (#'$(or $(KBUILD_BUILD_VERSION),`cat .version`)')'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 OBJCOPYFLAGS_vmlinux.bin := -O binary -R .note -R .comment -S
 $(obj)/vmlinux.bin: $(obj)/compressed/vmlinux FORCE
@@ -82,6 +139,7 @@ $(obj)/vmlinux.bin: $(obj)/compressed/vmlinux FORCE
 
 SETUP_OBJS = $(addprefix $(obj)/,$(setup-y))
 
+<<<<<<< HEAD
 sed-voffset := -e 's/^\([0-9a-fA-F]*\) . \(_text\|_end\)$$/\#define VO_\2 0x\1/p'
 
 quiet_cmd_voffset = VOFFSET $@
@@ -92,6 +150,9 @@ $(obj)/voffset.h: vmlinux FORCE
 	$(call if_changed,voffset)
 
 sed-zoffset := -e 's/^\([0-9a-fA-F]*\) . \(startup_32\|input_data\|_end\|z_.*\)$$/\#define ZO_\2 0x\1/p'
+=======
+sed-zoffset := -e 's/^\([0-9a-fA-F]*\) [a-zA-Z] \(startup_32\|efi.._stub_entry\|efi\(32\)\?_pe_entry\|input_data\|kernel_info\|_end\|_ehead\|_text\|_e\?data\|z_.*\)$$/\#define ZO_\2 0x\1/p'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 quiet_cmd_zoffset = ZOFFSET $@
       cmd_zoffset = $(NM) $< | sed -n $(sed-zoffset) > $@
@@ -101,10 +162,17 @@ $(obj)/zoffset.h: $(obj)/compressed/vmlinux FORCE
 	$(call if_changed,zoffset)
 
 
+<<<<<<< HEAD
 AFLAGS_header.o += -I$(obj)
 $(obj)/header.o: $(obj)/voffset.h $(obj)/zoffset.h
 
 LDFLAGS_setup.elf	:= -T
+=======
+AFLAGS_header.o += -I$(objtree)/$(obj)
+$(obj)/header.o: $(obj)/zoffset.h
+
+LDFLAGS_setup.elf	:= -m elf_i386 -z noexecstack -T
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 $(obj)/setup.elf: $(src)/setup.ld $(SETUP_OBJS) FORCE
 	$(call if_changed,ld)
 
@@ -116,6 +184,7 @@ $(obj)/compressed/vmlinux: FORCE
 	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
 
 # Set this if you want to pass append arguments to the
+<<<<<<< HEAD
 # bzdisk/fdimage/isoimage kernel
 FDARGS =
 # Set this if you want an initrd included with the
@@ -123,10 +192,19 @@ FDARGS =
 FDINITRD =
 
 image_cmdline = default linux $(FDARGS) $(if $(FDINITRD),initrd=initrd.img,)
+=======
+# bzdisk/fdimage/hdimage/isoimage kernel
+FDARGS =
+# Set this if you want one or more initrds included in the image
+FDINITRD =
+
+imgdeps = $(obj)/bzImage $(obj)/mtools.conf $(src)/genimage.sh
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/mtools.conf: $(src)/mtools.conf.in
 	sed -e 's|@OBJ@|$(obj)|g' < $< > $@
 
+<<<<<<< HEAD
 # This requires write access to /dev/fd0
 bzdisk: $(obj)/bzImage $(obj)/mtools.conf
 	MTOOLSRC=$(obj)/mtools.conf mformat a:			; sync
@@ -192,3 +270,36 @@ bzlilo: $(obj)/bzImage
 install:
 	sh $(srctree)/$(src)/install.sh $(KERNELRELEASE) $(obj)/bzImage \
 		System.map "$(INSTALL_PATH)"
+=======
+targets += mtools.conf
+
+# genimage.sh requires bash, but it also has a bunch of other
+# external dependencies.
+quiet_cmd_genimage = GENIMAGE $3
+cmd_genimage = $(BASH) $(srctree)/$(src)/genimage.sh $2 $3 $(obj)/bzImage \
+		$(obj)/mtools.conf '$(FDARGS)' $(FDINITRD)
+
+PHONY += bzdisk fdimage fdimage144 fdimage288 hdimage isoimage
+
+# This requires write access to /dev/fd0
+# All images require syslinux to be installed; hdimage also requires
+# EDK2/OVMF if the kernel is compiled with the EFI stub.
+bzdisk: $(imgdeps)
+	$(call cmd,genimage,bzdisk,/dev/fd0)
+
+fdimage fdimage144: $(imgdeps)
+	$(call cmd,genimage,fdimage144,$(obj)/fdimage)
+	@$(kecho) 'Kernel: $(obj)/fdimage is ready'
+
+fdimage288: $(imgdeps)
+	$(call cmd,genimage,fdimage288,$(obj)/fdimage)
+	@$(kecho) 'Kernel: $(obj)/fdimage is ready'
+
+hdimage: $(imgdeps)
+	$(call cmd,genimage,hdimage,$(obj)/hdimage)
+	@$(kecho) 'Kernel: $(obj)/hdimage is ready'
+
+isoimage: $(imgdeps)
+	$(call cmd,genimage,isoimage,$(obj)/image.iso)
+	@$(kecho) 'Kernel: $(obj)/image.iso is ready'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

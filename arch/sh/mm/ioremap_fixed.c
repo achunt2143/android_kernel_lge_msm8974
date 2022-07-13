@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Re-map IO memory to kernel address space so that we can access it.
  *
@@ -13,16 +17,27 @@
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/proc_fs.h>
 #include <asm/fixmap.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
+=======
+#include <linux/memblock.h>
+#include <linux/proc_fs.h>
+#include <asm/fixmap.h>
+#include <asm/page.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/addrspace.h>
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
+=======
+#include "ioremap.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ioremap_map {
 	void __iomem *addr;

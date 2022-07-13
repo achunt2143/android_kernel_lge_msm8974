@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA sequencer Memory Manager
  *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  ALSA sequencer Memory Manager
+ *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_MEMORYMGR_H
 #define __SND_SEQ_MEMORYMGR_H
@@ -26,9 +33,32 @@
 
 struct snd_info_buffer;
 
+<<<<<<< HEAD
 /* container for sequencer event (internal use) */
 struct snd_seq_event_cell {
 	struct snd_seq_event event;
+=======
+/* aliasing for legacy and UMP event packet handling */
+union __snd_seq_event {
+	struct snd_seq_event legacy;
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+	struct snd_seq_ump_event ump;
+#endif
+	struct {
+		struct snd_seq_event event;
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+		u32 extra;
+#endif
+	} __packed raw;
+};
+
+/* container for sequencer event (internal use) */
+struct snd_seq_event_cell {
+	union {
+		struct snd_seq_event event;
+		union __snd_seq_event ump;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_pool *pool;				/* used pool */
 	struct snd_seq_event_cell *next;	/* next cell */
 };
@@ -66,7 +96,12 @@ struct snd_seq_pool {
 void snd_seq_cell_free(struct snd_seq_event_cell *cell);
 
 int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
+<<<<<<< HEAD
 		      struct snd_seq_event_cell **cellp, int nonblock, struct file *file);
+=======
+		      struct snd_seq_event_cell **cellp, int nonblock,
+		      struct file *file, struct mutex *mutexp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* return number of unused (free) cells */
 static inline int snd_seq_unused_cells(struct snd_seq_pool *pool)
@@ -84,6 +119,10 @@ static inline int snd_seq_total_cells(struct snd_seq_pool *pool)
 int snd_seq_pool_init(struct snd_seq_pool *pool);
 
 /* done pool - free events */
+<<<<<<< HEAD
+=======
+void snd_seq_pool_mark_closing(struct snd_seq_pool *pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_seq_pool_done(struct snd_seq_pool *pool);
 
 /* create pool */
@@ -92,12 +131,15 @@ struct snd_seq_pool *snd_seq_pool_new(int poolsize);
 /* remove pool */
 int snd_seq_pool_delete(struct snd_seq_pool **pool);
 
+<<<<<<< HEAD
 /* init memory */
 int snd_sequencer_memory_init(void);
             
 /* release event memory */
 void snd_sequencer_memory_done(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* polling */
 int snd_seq_pool_poll_wait(struct snd_seq_pool *pool, struct file *file, poll_table *wait);
 

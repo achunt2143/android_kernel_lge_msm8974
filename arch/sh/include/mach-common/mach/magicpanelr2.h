@@ -1,19 +1,31 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  include/asm-sh/magicpanelr2.h
  *
  *  Copyright (C) 2007  Markus Brunner, Mark Jonas
  *
  *  I/O addresses and bitmasks for Magic Panel Release 2 board
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_SH_MAGICPANELR2_H
 #define __ASM_SH_MAGICPANELR2_H
 
+<<<<<<< HEAD
 #include <asm/gpio.h>
+=======
+#include <linux/gpio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __IO_PREFIX mpr2
 #include <asm/io_generic.h>

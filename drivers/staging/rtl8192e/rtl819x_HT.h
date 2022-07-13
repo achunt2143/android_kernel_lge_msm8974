@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -58,6 +59,21 @@ enum ht_mcs_rate {
 	HT_MCS15 = 0x00008000,
 };
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+#ifndef _RTL819XU_HTTYPE_H_
+#define _RTL819XU_HTTYPE_H_
+
+#define MIMO_PS_STATIC				0
+
+#define sHTCLng	4
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ht_channel_width {
 	HT_CHANNEL_WIDTH_20 = 0,
 	HT_CHANNEL_WIDTH_20_40 = 1,
@@ -70,6 +86,7 @@ enum ht_extchnl_offset {
 	HT_EXTCHNL_OFFSET_LOWER = 3,
 };
 
+<<<<<<< HEAD
 enum chnl_op {
 	CHNLOP_NONE = 0,
 	CHNLOP_SCAN = 1,
@@ -137,6 +154,9 @@ enum ht_bw40_sc {
 
 struct ht_capab_ele {
 
+=======
+struct ht_capab_ele {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	AdvCoding:1;
 	u8	ChlWidth:1;
 	u8	MimoPwrSave:2;
@@ -158,7 +178,10 @@ struct ht_capab_ele {
 
 	u8	MCS[16];
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16	ExtHTCapInfo;
 
 	u8	TxBFCap[4];
@@ -167,7 +190,10 @@ struct ht_capab_ele {
 
 } __packed;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ht_info_ele {
 	u8	ControlChl;
 
@@ -195,12 +221,15 @@ struct ht_info_ele {
 	u8	BasicMSC[16];
 } __packed;
 
+<<<<<<< HEAD
 struct mimops_ctrl {
 	u8	MimoPsEnable:1;
 	u8	MimoPsMode:1;
 	u8	Reserved:6;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ht_spec_ver {
 	HT_SPEC_VER_IEEE = 0,
 	HT_SPEC_VER_EWC = 1,
@@ -212,6 +241,7 @@ enum ht_aggre_mode {
 	HT_AGG_FORCE_DISABLE = 2,
 };
 
+<<<<<<< HEAD
 
 struct rt_hi_throughput {
 	u8				bEnableHT;
@@ -390,12 +420,70 @@ extern u8 MCS_FILTER_1SS[16];
 
 
 
+=======
+struct rt_hi_throughput {
+	u8 enable_ht;
+	u8 current_ht_support;
+	u8 cur_bw_40mhz;
+	u8 cur_short_gi_40mhz;
+	u8 cur_short_gi_20mhz;
+	enum ht_spec_ver peer_ht_spec_ver;
+	struct ht_capab_ele self_ht_cap;
+	u8 peer_ht_cap_buf[32];
+	u8 peer_ht_info_buf[32];
+	u8 ampdu_enable;
+	u8 current_ampdu_enable;
+	u8 ampdu_factor;
+	u8 CurrentAMPDUFactor;
+	u8 current_mpdu_density;
+	u8 forced_ampdu_factor;
+	u8 forced_mpdu_density;
+	u8 current_op_mode;
+	enum ht_extchnl_offset CurSTAExtChnlOffset;
+	u8 cur_tx_bw40mhz;
+	u8 sw_bw_in_progress;
+	u8 current_rt2rt_aggregation;
+	u8 current_rt2rt_long_slot_time;
+	u8 sz_rt2rt_agg_buf[10];
+	u8 cur_rx_reorder_enable;
+	u8 rx_reorder_win_size;
+	u8 rx_reorder_pending_time;
+	u16 rx_reorder_drop_counter;
+	u8 iot_peer;
+	u32 iot_action;
+	u8 iot_ra_func;
+} __packed;
+
+struct bss_ht {
+	u8 bd_support_ht;
+
+	u8 bd_ht_cap_buf[32];
+	u16 bd_ht_cap_len;
+	u8 bd_ht_info_buf[32];
+	u16 bd_ht_info_len;
+
+	enum ht_spec_ver bd_ht_spec_ver;
+	enum ht_channel_width bd_bandwidth;
+
+	u8 bd_rt2rt_aggregation;
+	u8 bd_rt2rt_long_slot_time;
+	u8 rt2rt_ht_mode;
+	u8 bd_ht_1r;
+};
+
+extern u8 MCS_FILTER_ALL[16];
+extern u8 MCS_FILTER_1SS[16];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	RATE_ADPT_1SS_MASK		0xFF
 #define	RATE_ADPT_2SS_MASK		0xF0
 #define	RATE_ADPT_MCS32_MASK		0x01
 
+<<<<<<< HEAD
 #define		IS_11N_MCS_RATE(rate)		(rate&0x80)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ht_aggre_size {
 	HT_AGG_SIZE_8K = 0,
 	HT_AGG_SIZE_16K = 1,
@@ -418,10 +506,13 @@ enum ht_iot_peer {
 	HT_IOT_PEER_MAX = 11,
 };
 
+<<<<<<< HEAD
 enum ht_iot_peer_subtype {
 	HT_IOT_PEER_ATHEROS_DIR635 = 0,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ht_iot_action {
 	HT_IOT_ACT_TX_USE_AMSDU_4K = 0x00000001,
 	HT_IOT_ACT_TX_USE_AMSDU_8K = 0x00000002,

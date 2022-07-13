@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/dentry.c
  *
@@ -12,8 +16,12 @@
  * Note: the dentry argument is the parent dentry.
  */
 
+<<<<<<< HEAD
 static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *inode,
 		struct qstr *qstr)
+=======
+static int hpfs_hash_dentry(const struct dentry *dentry, struct qstr *qstr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long	 hash;
 	int		 i;
@@ -27,7 +35,11 @@ static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *ino
 		/*return -ENOENT;*/
 	x:
 
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < l; i++)
 		hash = partial_name_hash(hpfs_upcase(hpfs_sb(dentry->d_sb)->sb_cp_table,qstr->name[i]), hash);
 	qstr->hash = end_name_hash(hash);
@@ -35,9 +47,13 @@ static int hpfs_hash_dentry(const struct dentry *dentry, const struct inode *ino
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hpfs_compare_dentry(const struct dentry *parent,
 		const struct inode *pinode,
 		const struct dentry *dentry, const struct inode *inode,
+=======
+static int hpfs_compare_dentry(const struct dentry *dentry,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	unsigned al = len;
@@ -53,7 +69,11 @@ static int hpfs_compare_dentry(const struct dentry *parent,
 
 	if (hpfs_chk_name(name->name, &bl))
 		return 1;
+<<<<<<< HEAD
 	if (hpfs_compare_names(parent->d_sb, str, al, name->name, bl, 0))
+=======
+	if (hpfs_compare_names(dentry->d_sb, str, al, name->name, bl, 0))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }

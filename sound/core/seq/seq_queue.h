@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   ALSA sequencer Queue handling
  *   Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -16,6 +17,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   ALSA sequencer Queue handling
+ *   Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_QUEUE_H
 #define __SND_SEQ_QUEUE_H
@@ -40,10 +47,17 @@ struct snd_seq_queue {
 	
 	struct snd_seq_timer *timer;	/* time keeper for this queue */
 	int	owner;		/* client that 'owns' the timer */
+<<<<<<< HEAD
 	unsigned int	locked:1,	/* timer is only accesibble by owner if set */
 		klocked:1,	/* kernel lock (after START) */	
 		check_again:1,
 		check_blocked:1;
+=======
+	bool	locked;		/* timer is only accesibble by owner if set */
+	bool	klocked;	/* kernel lock (after START) */
+	bool	check_again;	/* concurrent access happened during check */
+	bool	check_blocked;	/* queue being checked */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int flags;		/* status flags */
 	unsigned int info_flags;	/* info for sync */
@@ -63,22 +77,32 @@ struct snd_seq_queue {
 /* get the number of current queues */
 int snd_seq_queue_get_cur_queues(void);
 
+<<<<<<< HEAD
 /* init queues structure */
 int snd_seq_queues_init(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* delete queues */ 
 void snd_seq_queues_delete(void);
 
 
 /* create new queue (constructor) */
+<<<<<<< HEAD
 int snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+=======
+struct snd_seq_queue *snd_seq_queue_alloc(int client, int locked, unsigned int flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* delete queue (destructor) */
 int snd_seq_queue_delete(int client, int queueid);
 
+<<<<<<< HEAD
 /* notification that client has left the system */
 void snd_seq_queue_client_termination(int client);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* final stage */
 void snd_seq_queue_client_leave(int client);
 
@@ -112,6 +136,7 @@ int snd_seq_queue_is_used(int queueid, int client);
 
 int snd_seq_control_queue(struct snd_seq_event *ev, int atomic, int hop);
 
+<<<<<<< HEAD
 /*
  * 64bit division - for sync stuff..
  */
@@ -136,4 +161,6 @@ int snd_seq_control_queue(struct snd_seq_event *ev, int atomic, int hop);
 #endif
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Libata driver for the highpoint 37x and 30x UDMA66 ATA controllers.
  *
@@ -13,6 +17,7 @@
  * TODO
  *	Look into engine reset on timeout errors. Should not be	required.
  */
+<<<<<<< HEAD
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,13 +25,22 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/init.h>
+=======
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 
 #define DRV_NAME	"pata_hpt37x"
+<<<<<<< HEAD
 #define DRV_VERSION	"0.6.23"
+=======
+#define DRV_VERSION	"0.6.30"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hpt_clock {
 	u8	xfer_speed;
@@ -225,6 +239,7 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			       const char * const list[])
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
+<<<<<<< HEAD
 	int i = 0;
 
 	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
@@ -236,6 +251,17 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			return 1;
 		}
 		i++;
+=======
+	int i;
+
+	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
+
+	i = match_string(list, -1, model_num);
+	if (i >= 0) {
+		ata_dev_warn(dev, "%s is not supported for %s\n",
+			     modestr, list[i]);
+		return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -278,11 +304,19 @@ static const char * const bad_ata100_5[] = {
 /**
  *	hpt370_filter	-	mode selection filter
  *	@adev: ATA device
+<<<<<<< HEAD
+=======
+ *	@mask: mode mask
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Block UDMA on devices that cause trouble with this controller.
  */
 
+<<<<<<< HEAD
 static unsigned long hpt370_filter(struct ata_device *adev, unsigned long mask)
+=======
+static unsigned int hpt370_filter(struct ata_device *adev, unsigned int mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (adev->class == ATA_DEV_ATA) {
 		if (hpt_dma_blacklisted(adev, "UDMA", bad_ata33))
@@ -296,11 +330,19 @@ static unsigned long hpt370_filter(struct ata_device *adev, unsigned long mask)
 /**
  *	hpt370a_filter	-	mode selection filter
  *	@adev: ATA device
+<<<<<<< HEAD
+=======
+ *	@mask: mode mask
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Block UDMA on devices that cause trouble with this controller.
  */
 
+<<<<<<< HEAD
 static unsigned long hpt370a_filter(struct ata_device *adev, unsigned long mask)
+=======
+static unsigned int hpt370a_filter(struct ata_device *adev, unsigned int mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (adev->class == ATA_DEV_ATA) {
 		if (hpt_dma_blacklisted(adev, "UDMA100", bad_ata100_5))
@@ -317,7 +359,11 @@ static unsigned long hpt370a_filter(struct ata_device *adev, unsigned long mask)
  *	The Marvell bridge chips used on the HighPoint SATA cards do not seem
  *	to support the UltraDMA modes 1, 2, and 3 as well as any MWDMA modes...
  */
+<<<<<<< HEAD
 static unsigned long hpt372_filter(struct ata_device *adev, unsigned long mask)
+=======
+static unsigned int hpt372_filter(struct ata_device *adev, unsigned int mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ata_id_is_sata(adev->id))
 		mask &= ~((0xE << ATA_SHIFT_UDMA) | ATA_MASK_MWDMA);
@@ -397,6 +443,10 @@ static int hpt37x_pre_reset(struct ata_link *link, unsigned long deadline)
 		{ 0x50, 1, 0x04, 0x04 },
 		{ 0x54, 1, 0x04, 0x04 }
 	};
+<<<<<<< HEAD
+=======
+	u8 mcr2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pci_test_config_bits(pdev, &hpt37x_enable_bits[ap->port_no]))
 		return -ENOENT;
@@ -405,6 +455,7 @@ static int hpt37x_pre_reset(struct ata_link *link, unsigned long deadline)
 	pci_write_config_byte(pdev, 0x50 + 4 * ap->port_no, 0x37);
 	udelay(100);
 
+<<<<<<< HEAD
 	return ata_sff_prereset(link, deadline);
 }
 
@@ -424,6 +475,31 @@ static void hpt370_set_mode(struct ata_port *ap, struct ata_device *adev,
 	fast &= ~0x02;
 	fast |= 0x01;
 	pci_write_config_byte(pdev, addr2, fast);
+=======
+	/*
+	 * Disable the "fast interrupt" prediction.  Don't hold off
+	 * on interrupts. (== 0x01 despite what the docs say)
+	 */
+	pci_read_config_byte(pdev, 0x51 + 4 * ap->port_no, &mcr2);
+	/* Is it HPT370/A? */
+	if (pdev->device == PCI_DEVICE_ID_TTI_HPT366 && pdev->revision < 5) {
+		mcr2 &= ~0x02;
+		mcr2 |= 0x01;
+	} else {
+		mcr2 &= ~0x07;
+	}
+	pci_write_config_byte(pdev, 0x51 + 4 * ap->port_no, mcr2);
+
+	return ata_sff_prereset(link, deadline);
+}
+
+static void hpt37x_set_mode(struct ata_port *ap, struct ata_device *adev,
+			    u8 mode)
+{
+	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
+	int addr = 0x40 + 4 * (adev->devno + 2 * ap->port_no);
+	u32 reg, timing, mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine timing mask and find matching mode entry */
 	if (mode < XFER_MW_DMA_0)
@@ -435,18 +511,28 @@ static void hpt370_set_mode(struct ata_port *ap, struct ata_device *adev,
 
 	timing = hpt37x_find_mode(ap, mode);
 
+<<<<<<< HEAD
 	pci_read_config_dword(pdev, addr1, &reg);
 	reg = (reg & ~mask) | (timing & mask);
 	pci_write_config_dword(pdev, addr1, reg);
 }
 /**
  *	hpt370_set_piomode		-	PIO setup
+=======
+	pci_read_config_dword(pdev, addr, &reg);
+	reg = (reg & ~mask) | (timing & mask);
+	pci_write_config_dword(pdev, addr, reg);
+}
+/**
+ *	hpt37x_set_piomode		-	PIO setup
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@ap: ATA interface
  *	@adev: device on the interface
  *
  *	Perform PIO mode setup.
  */
 
+<<<<<<< HEAD
 static void hpt370_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
 	hpt370_set_mode(ap, adev, adev->pio_mode);
@@ -454,12 +540,22 @@ static void hpt370_set_piomode(struct ata_port *ap, struct ata_device *adev)
 
 /**
  *	hpt370_set_dmamode		-	DMA timing setup
+=======
+static void hpt37x_set_piomode(struct ata_port *ap, struct ata_device *adev)
+{
+	hpt37x_set_mode(ap, adev, adev->pio_mode);
+}
+
+/**
+ *	hpt37x_set_dmamode		-	DMA timing setup
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@ap: ATA interface
  *	@adev: Device being configured
  *
  *	Set up the channel for MWDMA or UDMA modes.
  */
 
+<<<<<<< HEAD
 static void hpt370_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 {
 	hpt370_set_mode(ap, adev, adev->dma_mode);
@@ -467,6 +563,15 @@ static void hpt370_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 
 /**
  *	hpt370_bmdma_end		-	DMA engine stop
+=======
+static void hpt37x_set_dmamode(struct ata_port *ap, struct ata_device *adev)
+{
+	hpt37x_set_mode(ap, adev, adev->dma_mode);
+}
+
+/**
+ *	hpt370_bmdma_stop		-	DMA engine stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: ATA command
  *
  *	Work around the HPT370 DMA engine.
@@ -502,6 +607,7 @@ static void hpt370_bmdma_stop(struct ata_queued_cmd *qc)
 	ata_bmdma_stop(qc);
 }
 
+<<<<<<< HEAD
 static void hpt372_set_mode(struct ata_port *ap, struct ata_device *adev,
 			    u8 mode)
 {
@@ -561,6 +667,10 @@ static void hpt372_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 
 /**
  *	hpt37x_bmdma_end		-	DMA engine stop
+=======
+/**
+ *	hpt37x_bmdma_stop		-	DMA engine stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: ATA command
  *
  *	Clean up after the HPT372 and later DMA engine
@@ -581,7 +691,11 @@ static void hpt37x_bmdma_stop(struct ata_queued_cmd *qc)
 }
 
 
+<<<<<<< HEAD
 static struct scsi_host_template hpt37x_sht = {
+=======
+static const struct scsi_host_template hpt37x_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -596,8 +710,13 @@ static struct ata_port_operations hpt370_port_ops = {
 
 	.mode_filter	= hpt370_filter,
 	.cable_detect	= hpt37x_cable_detect,
+<<<<<<< HEAD
 	.set_piomode	= hpt370_set_piomode,
 	.set_dmamode	= hpt370_set_dmamode,
+=======
+	.set_piomode	= hpt37x_set_piomode,
+	.set_dmamode	= hpt37x_set_dmamode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prereset	= hpt37x_pre_reset,
 };
 
@@ -611,8 +730,12 @@ static struct ata_port_operations hpt370a_port_ops = {
 };
 
 /*
+<<<<<<< HEAD
  *	Configuration for HPT371 and HPT302. Slightly different PIO and DMA
  *	mode setting functionality.
+=======
+ *	Configuration for HPT371 and HPT302.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static struct ata_port_operations hpt302_port_ops = {
@@ -621,8 +744,13 @@ static struct ata_port_operations hpt302_port_ops = {
 	.bmdma_stop	= hpt37x_bmdma_stop,
 
 	.cable_detect	= hpt37x_cable_detect,
+<<<<<<< HEAD
 	.set_piomode	= hpt372_set_piomode,
 	.set_dmamode	= hpt372_set_dmamode,
+=======
+	.set_piomode	= hpt37x_set_piomode,
+	.set_dmamode	= hpt37x_set_dmamode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prereset	= hpt37x_pre_reset,
 };
 
@@ -648,6 +776,7 @@ static struct ata_port_operations hpt374_fn1_port_ops = {
 
 /**
  *	hpt37x_clock_slot	-	Turn timing to PC clock entry
+<<<<<<< HEAD
  *	@freq: Reported frequency timing
  *	@base: Base timing
  *
@@ -663,6 +792,21 @@ static int hpt37x_clock_slot(unsigned int freq, unsigned int base)
 	if (f < 45)
 		return 1;	/* 40Mhz slot */
 	if (f < 55)
+=======
+ *	@freq: Reported frequency in MHz
+ *
+ *	Turn the timing data into a clock slot (0 for 33, 1 for 40, 2 for 50
+ *	and 3 for 66Mhz)
+ */
+
+static int hpt37x_clock_slot(unsigned int freq)
+{
+	if (freq < 40)
+		return 0;	/* 33Mhz slot */
+	if (freq < 45)
+		return 1;	/* 40Mhz slot */
+	if (freq < 55)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 2;	/* 50Mhz slot */
 	return 3;		/* 60Mhz slot */
 }
@@ -702,6 +846,7 @@ static int hpt37x_calibrate_dpll(struct pci_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32 hpt374_read_freq(struct pci_dev *pdev)
 {
 	u32 freq;
@@ -720,6 +865,59 @@ static u32 hpt374_read_freq(struct pci_dev *pdev)
 	} else
 		freq = inl(io_base + 0x90);
 	return freq;
+=======
+static int hpt37x_pci_clock(struct pci_dev *pdev, unsigned int base)
+{
+	unsigned int freq;
+	u32 fcnt;
+
+	/*
+	 * Some devices do not let this value be accessed via PCI space
+	 * according to the old driver. In addition we must use the value
+	 * from FN 0 on the HPT374.
+	 */
+	if (pdev->device == PCI_DEVICE_ID_TTI_HPT374 &&
+	    (PCI_FUNC(pdev->devfn) & 1)) {
+		struct pci_dev *pdev_fn0;
+
+		pdev_fn0 = pci_get_slot(pdev->bus, pdev->devfn - 1);
+		/* Someone hot plugged the controller on us? */
+		if (!pdev_fn0)
+			return 0;
+		fcnt = inl(pci_resource_start(pdev_fn0, 4) + 0x90);
+		pci_dev_put(pdev_fn0);
+	} else	{
+		fcnt = inl(pci_resource_start(pdev, 4) + 0x90);
+	}
+
+	if ((fcnt >> 12) != 0xABCDE) {
+		u32 total = 0;
+		int i;
+		u16 sr;
+
+		dev_warn(&pdev->dev, "BIOS clock data not set\n");
+
+		/* This is the process the HPT371 BIOS is reported to use */
+		for (i = 0; i < 128; i++) {
+			pci_read_config_word(pdev, 0x78, &sr);
+			total += sr & 0x1FF;
+			udelay(15);
+		}
+		fcnt = total / 128;
+	}
+	fcnt &= 0x1FF;
+
+	freq = (fcnt * base) / 192;	/* in MHz */
+
+	/* Clamp to bands */
+	if (freq < 40)
+		return 33;
+	if (freq < 45)
+		return 40;
+	if (freq < 55)
+		return 50;
+	return 66;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -826,7 +1024,11 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	u8 rev = dev->revision;
 	u8 irqmask;
 	u8 mcr1;
+<<<<<<< HEAD
 	u32 freq;
+=======
+	unsigned int freq; /* MHz */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int prefer_dpll = 1;
 
 	unsigned long iobase = pci_resource_start(dev, 4);
@@ -865,7 +1067,12 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 			chip_table = &hpt372;
 			break;
 		default:
+<<<<<<< HEAD
 			pr_err("Unknown HPT366 subtype, please report (%d)\n",
+=======
+			dev_err(&dev->dev,
+				"Unknown HPT366 subtype, please report (%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       rev);
 			return -ENODEV;
 		}
@@ -906,7 +1113,12 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 			*ppi = &info_hpt374_fn1;
 		break;
 	default:
+<<<<<<< HEAD
 		pr_err("PCI table is bogus, please report (%d)\n", dev->device);
+=======
+		dev_err(&dev->dev, "PCI table is bogus, please report (%d)\n",
+			dev->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	/* Ok so this is a chip we support */
@@ -921,6 +1133,23 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	pci_write_config_byte(dev, 0x5a, irqmask);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * HPT371 chips physically have only one channel, the secondary one,
+	 * but the primary channel registers do exist!  Go figure...
+	 * So,  we manually disable the non-existing channel here
+	 * (if the BIOS hasn't done this already).
+	 */
+	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
+		u8 mcr1;
+
+		pci_read_config_byte(dev, 0x50, &mcr1);
+		mcr1 &= ~0x04;
+		pci_write_config_byte(dev, 0x50, mcr1);
+	}
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * default to pci clock. make sure MA15/16 are set to output
 	 * to prevent drives having problems with 40-pin cables. Needed
 	 * for some drives such as IBM-DTLA which will not enter ready
@@ -936,6 +1165,7 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	if (chip_table == &hpt372a)
 		outb(0x0e, iobase + 0x9c);
 
+<<<<<<< HEAD
 	/*
 	 * Some devices do not let this value be accessed via PCI space
 	 * according to the old driver. In addition we must use the value
@@ -965,13 +1195,22 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		freq = total / 128;
 	}
 	freq &= 0x1FF;
+=======
+	freq = hpt37x_pci_clock(dev, chip_table->base);
+	if (!freq)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Turn the frequency check into a band and then find a timing
 	 *	table to match it.
 	 */
 
+<<<<<<< HEAD
 	clock_slot = hpt37x_clock_slot(freq, chip_table->base);
+=======
+	clock_slot = hpt37x_clock_slot(freq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip_table->clocks[clock_slot] == NULL || prefer_dpll) {
 		/*
 		 *	We need to try PLL mode instead
@@ -1010,7 +1249,11 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 					       (f_high << 16) | f_low | 0x100);
 		}
 		if (adjust == 8) {
+<<<<<<< HEAD
 			pr_err("DPLL did not stabilize!\n");
+=======
+			dev_err(&dev->dev, "DPLL did not stabilize!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 		if (dpll == 3)
@@ -1018,7 +1261,11 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		else
 			private_data = (void *)hpt37x_timings_50;
 
+<<<<<<< HEAD
 		pr_info("bus clock %dMHz, using %dMHz DPLL\n",
+=======
+		dev_info(&dev->dev, "bus clock %dMHz, using %dMHz DPLL\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MHz[clock_slot], MHz[dpll]);
 	} else {
 		private_data = (void *)chip_table->clocks[clock_slot];
@@ -1033,7 +1280,11 @@ static int hpt37x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		if (clock_slot < 2 && ppi[0] == &info_hpt370a)
 			ppi[0] = &info_hpt370a_33;
 
+<<<<<<< HEAD
 		pr_info("%s using %dMHz bus clock\n",
+=======
+		dev_info(&dev->dev, "%s using %dMHz bus clock\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip_table->name, MHz[clock_slot]);
 	}
 
@@ -1058,6 +1309,7 @@ static struct pci_driver hpt37x_pci_driver = {
 	.remove		= ata_pci_remove_one
 };
 
+<<<<<<< HEAD
 static int __init hpt37x_init(void)
 {
 	return pci_register_driver(&hpt37x_pci_driver);
@@ -1067,12 +1319,18 @@ static void __exit hpt37x_exit(void)
 {
 	pci_unregister_driver(&hpt37x_pci_driver);
 }
+=======
+module_pci_driver(hpt37x_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for the Highpoint HPT37x/30x");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, hpt37x);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(hpt37x_init);
 module_exit(hpt37x_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

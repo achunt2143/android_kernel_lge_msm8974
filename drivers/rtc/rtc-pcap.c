@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  pcap rtc code for Motorola EZX phones
  *
@@ -5,11 +9,14 @@
  *  Copyright (c) 2009 Daniel Ribeiro <drwyrm@gmail.com>
  *
  *  Based on Motorola's rtc.c Copyright (c) 2003-2005 Motorola
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -43,8 +50,12 @@ static irqreturn_t pcap_rtc_irq(int irq, void *_pcap_rtc)
 
 static int pcap_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pcap_rtc *pcap_rtc = platform_get_drvdata(pdev);
+=======
+	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rtc_time *tm = &alrm->time;
 	unsigned long secs;
 	u32 tod;	/* time of day, seconds since midnight */
@@ -56,13 +67,18 @@ static int pcap_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	ezx_pcap_read(pcap_rtc->pcap, PCAP_REG_RTC_DAYA, &days);
 	secs += (days & PCAP_RTC_DAY_MASK) * SEC_PER_DAY;
 
+<<<<<<< HEAD
 	rtc_time_to_tm(secs, tm);
+=======
+	rtc_time64_to_tm(secs, tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int pcap_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pcap_rtc *pcap_rtc = platform_get_drvdata(pdev);
 	struct rtc_time *tm = &alrm->time;
@@ -71,6 +87,12 @@ static int pcap_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	rtc_tm_to_time(tm, &secs);
 
+=======
+	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
+	unsigned long secs = rtc_tm_to_time64(&alrm->time);
+	u32 tod, days;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tod = secs % SEC_PER_DAY;
 	ezx_pcap_write(pcap_rtc->pcap, PCAP_REG_RTC_TODA, tod);
 
@@ -82,8 +104,12 @@ static int pcap_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 static int pcap_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pcap_rtc *pcap_rtc = platform_get_drvdata(pdev);
+=======
+	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long secs;
 	u32 tod, days;
 
@@ -93,6 +119,7 @@ static int pcap_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	ezx_pcap_read(pcap_rtc->pcap, PCAP_REG_RTC_DAY, &days);
 	secs += (days & PCAP_RTC_DAY_MASK) * SEC_PER_DAY;
 
+<<<<<<< HEAD
 	rtc_time_to_tm(secs, tm);
 
 	return rtc_valid_tm(tm);
@@ -102,6 +129,17 @@ static int pcap_rtc_set_mmss(struct device *dev, unsigned long secs)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pcap_rtc *pcap_rtc = platform_get_drvdata(pdev);
+=======
+	rtc_time64_to_tm(secs, tm);
+
+	return 0;
+}
+
+static int pcap_rtc_set_time(struct device *dev, struct rtc_time *tm)
+{
+	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
+	unsigned long secs = rtc_tm_to_time64(tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tod, days;
 
 	tod = secs % SEC_PER_DAY;
@@ -115,8 +153,12 @@ static int pcap_rtc_set_mmss(struct device *dev, unsigned long secs)
 
 static int pcap_rtc_irq_enable(struct device *dev, int pirq, unsigned int en)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pcap_rtc *pcap_rtc = platform_get_drvdata(pdev);
+=======
+	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (en)
 		enable_irq(pcap_to_irq(pcap_rtc->pcap, pirq));
@@ -133,6 +175,7 @@ static int pcap_rtc_alarm_irq_enable(struct device *dev, unsigned int en)
 
 static const struct rtc_class_ops pcap_rtc_ops = {
 	.read_time = pcap_rtc_read_time,
+<<<<<<< HEAD
 	.read_alarm = pcap_rtc_read_alarm,
 	.set_alarm = pcap_rtc_set_alarm,
 	.set_mmss = pcap_rtc_set_mmss,
@@ -140,12 +183,26 @@ static const struct rtc_class_ops pcap_rtc_ops = {
 };
 
 static int __devinit pcap_rtc_probe(struct platform_device *pdev)
+=======
+	.set_time = pcap_rtc_set_time,
+	.read_alarm = pcap_rtc_read_alarm,
+	.set_alarm = pcap_rtc_set_alarm,
+	.alarm_irq_enable = pcap_rtc_alarm_irq_enable,
+};
+
+static int __init pcap_rtc_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcap_rtc *pcap_rtc;
 	int timer_irq, alarm_irq;
 	int err = -ENOMEM;
 
+<<<<<<< HEAD
 	pcap_rtc = kmalloc(sizeof(struct pcap_rtc), GFP_KERNEL);
+=======
+	pcap_rtc = devm_kzalloc(&pdev->dev, sizeof(struct pcap_rtc),
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcap_rtc)
 		return err;
 
@@ -153,6 +210,7 @@ static int __devinit pcap_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, pcap_rtc);
 
+<<<<<<< HEAD
 	pcap_rtc->rtc = rtc_device_register("pcap", &pdev->dev,
 				  &pcap_rtc_ops, THIS_MODULE);
 	if (IS_ERR(pcap_rtc->rtc)) {
@@ -160,10 +218,19 @@ static int __devinit pcap_rtc_probe(struct platform_device *pdev)
 		goto fail_rtc;
 	}
 
+=======
+	pcap_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(pcap_rtc->rtc))
+		return PTR_ERR(pcap_rtc->rtc);
+
+	pcap_rtc->rtc->ops = &pcap_rtc_ops;
+	pcap_rtc->rtc->range_max = (1 << 14) * 86400ULL - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	timer_irq = pcap_to_irq(pcap_rtc->pcap, PCAP_IRQ_1HZ);
 	alarm_irq = pcap_to_irq(pcap_rtc->pcap, PCAP_IRQ_TODA);
 
+<<<<<<< HEAD
 	err = request_irq(timer_irq, pcap_rtc_irq, 0, "RTC Timer", pcap_rtc);
 	if (err)
 		goto fail_timer;
@@ -215,6 +282,28 @@ static void __exit rtc_pcap_exit(void)
 
 module_init(rtc_pcap_init);
 module_exit(rtc_pcap_exit);
+=======
+	err = devm_request_irq(&pdev->dev, timer_irq, pcap_rtc_irq, 0,
+				"RTC Timer", pcap_rtc);
+	if (err)
+		return err;
+
+	err = devm_request_irq(&pdev->dev, alarm_irq, pcap_rtc_irq, 0,
+				"RTC Alarm", pcap_rtc);
+	if (err)
+		return err;
+
+	return devm_rtc_register_device(pcap_rtc->rtc);
+}
+
+static struct platform_driver pcap_rtc_driver = {
+	.driver = {
+		.name  = "pcap-rtc",
+	},
+};
+
+module_platform_driver_probe(pcap_rtc_driver, pcap_rtc_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Motorola pcap rtc driver");
 MODULE_AUTHOR("guiming zhuo <gmzhuo@gmail.com>");

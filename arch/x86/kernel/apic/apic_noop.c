@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NOOP APIC driver.
  *
@@ -7,6 +11,7 @@
  * Though in case if apic is disabled (for some reason) we try
  * to not uglify the caller's code and allow to call (some) apic routines
  * like self-ipi, etc...
+<<<<<<< HEAD
  */
 
 #include <linux/threads.h>
@@ -31,11 +36,27 @@
 #include <asm/e820.h>
 
 static void noop_init_apic_ldr(void) { }
+=======
+ *
+ * FIXME: Remove this gunk. The above argument which was intentionally left
+ * in place is silly to begin with because none of the callbacks except for
+ * APIC::read/write() have a WARN_ON_ONCE() in them. Sigh...
+ */
+#include <linux/cpumask.h>
+#include <linux/thread_info.h>
+
+#include <asm/apic.h>
+
+#include "local.h"
+
+static void noop_send_IPI(int cpu, int vector) { }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void noop_send_IPI_mask(const struct cpumask *cpumask, int vector) { }
 static void noop_send_IPI_mask_allbutself(const struct cpumask *cpumask, int vector) { }
 static void noop_send_IPI_allbutself(int vector) { }
 static void noop_send_IPI_all(int vector) { }
 static void noop_send_IPI_self(int vector) { }
+<<<<<<< HEAD
 static void noop_apic_wait_icr_idle(void) { }
 static void noop_apic_icr_write(u32 low, u32 id) { }
 
@@ -162,6 +183,40 @@ struct apic apic_noop = {
 	.cpu_mask_to_apicid		= default_cpu_mask_to_apicid,
 	.cpu_mask_to_apicid_and		= default_cpu_mask_to_apicid_and,
 
+=======
+static void noop_apic_icr_write(u32 low, u32 id) { }
+static int noop_wakeup_secondary_cpu(u32 apicid, unsigned long start_eip) { return -1; }
+static u64 noop_apic_icr_read(void) { return 0; }
+static u32 noop_get_apic_id(u32 apicid) { return 0; }
+static void noop_apic_eoi(void) { }
+
+static u32 noop_apic_read(u32 reg)
+{
+	WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !apic_is_disabled);
+	return 0;
+}
+
+static void noop_apic_write(u32 reg, u32 val)
+{
+	WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !apic_is_disabled);
+}
+
+struct apic apic_noop __ro_after_init = {
+	.name				= "noop",
+
+	.dest_mode_logical		= true,
+
+	.disable_esr			= 0,
+
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= 0xFE,
+	.get_apic_id			= noop_get_apic_id,
+
+	.calc_dest_apicid		= apic_flat_calc_apicid,
+
+	.send_IPI			= noop_send_IPI,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_IPI_mask			= noop_send_IPI_mask,
 	.send_IPI_mask_allbutself	= noop_send_IPI_mask_allbutself,
 	.send_IPI_allbutself		= noop_send_IPI_allbutself,
@@ -170,6 +225,7 @@ struct apic apic_noop = {
 
 	.wakeup_secondary_cpu		= noop_wakeup_secondary_cpu,
 
+<<<<<<< HEAD
 	/* should be safe */
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
@@ -189,4 +245,11 @@ struct apic apic_noop = {
 #ifdef CONFIG_X86_32
 	.x86_32_early_logical_apicid	= noop_x86_32_early_logical_apicid,
 #endif
+=======
+	.read				= noop_apic_read,
+	.write				= noop_apic_write,
+	.eoi				= noop_apic_eoi,
+	.icr_read			= noop_apic_icr_read,
+	.icr_write			= noop_apic_icr_write,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

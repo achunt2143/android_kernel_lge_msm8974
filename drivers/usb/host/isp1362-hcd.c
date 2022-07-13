@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ISP1362 HCD (Host Controller Driver) for USB.
  *
@@ -37,11 +41,15 @@
  * recovery time (MSCx = 0x7f8c) with a memory clock of 99.53 MHz.
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_DEBUG
 # define ISP1362_DEBUG
 #else
 # undef ISP1362_DEBUG
 #endif
+=======
+#undef ISP1362_DEBUG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The PXA255 UDC apparently doesn't handle GET_STATUS, GET_CONFIG and
@@ -71,7 +79,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/interrupt.h>
 #include <linux/usb.h>
@@ -82,6 +93,11 @@
 #include <linux/io.h>
 #include <linux/bitmap.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
+=======
+#include <linux/debugfs.h>
+#include <linux/seq_file.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 #include <asm/byteorder.h>
@@ -92,7 +108,10 @@ static int dbg_level;
 module_param(dbg_level, int, 0644);
 #else
 module_param(dbg_level, int, 0);
+<<<<<<< HEAD
 #define	STUB_DEBUG_FILE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #include "../core/usb.h"
@@ -151,7 +170,11 @@ static inline struct isp1362_ep_queue *get_ptd_queue(struct isp1362_hcd *isp1362
 	if (epq)
 		DBG(1, "%s: PTD $%04x is on %s queue\n", __func__, offset, epq->name);
 	else
+<<<<<<< HEAD
 		pr_warning("%s: invalid PTD $%04x\n", __func__, offset);
+=======
+		pr_warn("%s: invalid PTD $%04x\n", __func__, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return epq;
 }
@@ -161,8 +184,14 @@ static inline int get_ptd_offset(struct isp1362_ep_queue *epq, u8 index)
 	int offset;
 
 	if (index * epq->blk_size > epq->buf_size) {
+<<<<<<< HEAD
 		pr_warning("%s: Bad %s index %d(%d)\n", __func__, epq->name, index,
 		     epq->buf_size / epq->blk_size);
+=======
+		pr_warn("%s: Bad %s index %d(%d)\n",
+			__func__, epq->name, index,
+			epq->buf_size / epq->blk_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	offset = epq->buf_start + index * epq->blk_size;
@@ -350,8 +379,11 @@ static void isp1362_write_ptd(struct isp1362_hcd *isp1362_hcd, struct isp1362_ep
 	struct ptd *ptd = &ep->ptd;
 	int len = PTD_GET_DIR(ptd) == PTD_DIR_IN ? 0 : ep->length;
 
+<<<<<<< HEAD
 	_BUG_ON(ep->ptd_offset < 0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prefetch(ptd);
 	isp1362_write_buffer(isp1362_hcd, ptd, ep->ptd_offset, PTD_HEADER_SIZE);
 	if (len)
@@ -543,12 +575,21 @@ static void postproc_ep(struct isp1362_hcd *isp1362_hcd, struct isp1362_ep *ep)
 			    usb_pipein(urb->pipe) ? "IN" : "OUT", ep->nextpid,
 			    short_ok ? "" : "not_",
 			    PTD_GET_COUNT(ptd), ep->maxpacket, len);
+<<<<<<< HEAD
 			if (usb_pipecontrol(urb->pipe)) {
 				ep->nextpid = USB_PID_ACK;
 				/* save the data underrun error code for later and
 				 * proceed with the status stage
 				 */
 				urb->actual_length += PTD_GET_COUNT(ptd);
+=======
+			/* save the data underrun error code for later and
+			 * proceed with the status stage
+			 */
+			urb->actual_length += PTD_GET_COUNT(ptd);
+			if (usb_pipecontrol(urb->pipe)) {
+				ep->nextpid = USB_PID_ACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				BUG_ON(urb->actual_length > urb->transfer_buffer_length);
 
 				if (urb->status == -EINPROGRESS)
@@ -717,7 +758,11 @@ static inline void enable_istl_transfers(struct isp1362_hcd *isp1362_hcd, int fl
 static int submit_req(struct isp1362_hcd *isp1362_hcd, struct urb *urb,
 		      struct isp1362_ep *ep, struct isp1362_ep_queue *epq)
 {
+<<<<<<< HEAD
 	int index = epq->free_ptd;
+=======
+	int index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prepare_ptd(isp1362_hcd, urb, ep, epq, 0);
 	index = claim_ptd_buffers(epq, ep, ep->length);
@@ -908,8 +953,13 @@ static void start_iso_transfers(struct isp1362_hcd *isp1362_hcd)
 
 			ptd_offset = next_ptd(epq, ep);
 			if (ptd_offset < 0) {
+<<<<<<< HEAD
 				pr_warning("%s: req %d No more %s PTD buffers available\n", __func__,
 				     ep->num_req, epq->name);
+=======
+				pr_warn("%s: req %d No more %s PTD buffers available\n",
+					__func__, ep->num_req, epq->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -979,8 +1029,13 @@ static void finish_transfers(struct isp1362_hcd *isp1362_hcd, unsigned long done
 			break;
 	}
 	if (done_map)
+<<<<<<< HEAD
 		pr_warning("%s: done_map not clear: %08lx:%08lx\n", __func__, done_map,
 		     epq->skip_map);
+=======
+		pr_warn("%s: done_map not clear: %08lx:%08lx\n",
+			__func__, done_map, epq->skip_map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&epq->finishing);
 }
 
@@ -1283,7 +1338,11 @@ static int isp1362_urb_enqueue(struct usb_hcd *hcd,
 		ep->udev = usb_get_dev(udev);
 		ep->hep = hep;
 		ep->epnum = epnum;
+<<<<<<< HEAD
 		ep->maxpacket = usb_maxpacket(udev, urb->pipe, is_out);
+=======
+		ep->maxpacket = usb_maxpacket(udev, urb->pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ep->ptd_offset = -EINVAL;
 		ep->ptd_index = -EINVAL;
 		usb_settoggle(udev, epnum, is_out, 0);
@@ -1303,8 +1362,13 @@ static int isp1362_urb_enqueue(struct usb_hcd *hcd,
 			ep->interval = urb->interval;
 			ep->branch = PERIODIC_SIZE;
 			ep->load = usb_calc_bus_time(udev->speed, !is_out,
+<<<<<<< HEAD
 						     (type == PIPE_ISOCHRONOUS),
 						     usb_maxpacket(udev, pipe, is_out)) / 1000;
+=======
+						     type == PIPE_ISOCHRONOUS,
+						     usb_maxpacket(udev, pipe)) / 1000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		hep->hcpriv = ep;
@@ -1439,7 +1503,11 @@ static int isp1362_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		} else
 			DBG(1, "%s: urb %p active; wait4irq\n", __func__, urb);
 	} else {
+<<<<<<< HEAD
 		pr_warning("%s: No EP in URB %p\n", __func__, urb);
+=======
+		pr_warn("%s: No EP in URB %p\n", __func__, urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EINVAL;
 	}
 done:
@@ -1544,13 +1612,26 @@ static void isp1362_hub_descriptor(struct isp1362_hcd *isp1362_hcd,
 
 	DBG(3, "%s: enter\n", __func__);
 
+<<<<<<< HEAD
 	desc->bDescriptorType = 0x29;
+=======
+	desc->bDescriptorType = USB_DT_HUB;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->bDescLength = 9;
 	desc->bHubContrCurrent = 0;
 	desc->bNbrPorts = reg & 0x3;
 	/* Power switching, device type, overcurrent. */
+<<<<<<< HEAD
 	desc->wHubCharacteristics = cpu_to_le16((reg >> 8) & 0x1f);
 	DBG(0, "%s: hubcharacteristics = %02x\n", __func__, cpu_to_le16((reg >> 8) & 0x1f));
+=======
+	desc->wHubCharacteristics = cpu_to_le16((reg >> 8) &
+						(HUB_CHAR_LPSM |
+						 HUB_CHAR_COMPOUND |
+						 HUB_CHAR_OCPM));
+	DBG(0, "%s: hubcharacteristics = %02x\n", __func__,
+			desc->wHubCharacteristics);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->bPwrOn2PwrGood = (reg >> 24) & 0xff;
 	/* ports removable, and legacy PortPwrCtrlMask */
 	desc->u.hs.DeviceRemovable[0] = desc->bNbrPorts == 1 ? 1 << 1 : 3 << 1;
@@ -1575,12 +1656,22 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		DBG(0, "ClearHubFeature: ");
 		switch (wValue) {
 		case C_HUB_OVER_CURRENT:
+<<<<<<< HEAD
 			_DBG(0, "C_HUB_OVER_CURRENT\n");
 			spin_lock_irqsave(&isp1362_hcd->lock, flags);
 			isp1362_write_reg32(isp1362_hcd, HCRHSTATUS, RH_HS_OCIC);
 			spin_unlock_irqrestore(&isp1362_hcd->lock, flags);
 		case C_HUB_LOCAL_POWER:
 			_DBG(0, "C_HUB_LOCAL_POWER\n");
+=======
+			DBG(0, "C_HUB_OVER_CURRENT\n");
+			spin_lock_irqsave(&isp1362_hcd->lock, flags);
+			isp1362_write_reg32(isp1362_hcd, HCRHSTATUS, RH_HS_OCIC);
+			spin_unlock_irqrestore(&isp1362_hcd->lock, flags);
+			break;
+		case C_HUB_LOCAL_POWER:
+			DBG(0, "C_HUB_LOCAL_POWER\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			goto error;
@@ -1591,7 +1682,11 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		switch (wValue) {
 		case C_HUB_OVER_CURRENT:
 		case C_HUB_LOCAL_POWER:
+<<<<<<< HEAD
 			_DBG(0, "C_HUB_OVER_CURRENT or C_HUB_LOCAL_POWER\n");
+=======
+			DBG(0, "C_HUB_OVER_CURRENT or C_HUB_LOCAL_POWER\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			goto error;
@@ -1622,6 +1717,7 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 		switch (wValue) {
 		case USB_PORT_FEAT_ENABLE:
+<<<<<<< HEAD
 			_DBG(0, "USB_PORT_FEAT_ENABLE\n");
 			tmp = RH_PS_CCS;
 			break;
@@ -1639,10 +1735,30 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			break;
 		case USB_PORT_FEAT_POWER:
 			_DBG(0, "USB_PORT_FEAT_POWER\n");
+=======
+			DBG(0, "USB_PORT_FEAT_ENABLE\n");
+			tmp = RH_PS_CCS;
+			break;
+		case USB_PORT_FEAT_C_ENABLE:
+			DBG(0, "USB_PORT_FEAT_C_ENABLE\n");
+			tmp = RH_PS_PESC;
+			break;
+		case USB_PORT_FEAT_SUSPEND:
+			DBG(0, "USB_PORT_FEAT_SUSPEND\n");
+			tmp = RH_PS_POCI;
+			break;
+		case USB_PORT_FEAT_C_SUSPEND:
+			DBG(0, "USB_PORT_FEAT_C_SUSPEND\n");
+			tmp = RH_PS_PSSC;
+			break;
+		case USB_PORT_FEAT_POWER:
+			DBG(0, "USB_PORT_FEAT_POWER\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp = RH_PS_LSDA;
 
 			break;
 		case USB_PORT_FEAT_C_CONNECTION:
+<<<<<<< HEAD
 			_DBG(0, "USB_PORT_FEAT_C_CONNECTION\n");
 			tmp = RH_PS_CSC;
 			break;
@@ -1652,6 +1768,17 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			break;
 		case USB_PORT_FEAT_C_RESET:
 			_DBG(0, "USB_PORT_FEAT_C_RESET\n");
+=======
+			DBG(0, "USB_PORT_FEAT_C_CONNECTION\n");
+			tmp = RH_PS_CSC;
+			break;
+		case USB_PORT_FEAT_C_OVER_CURRENT:
+			DBG(0, "USB_PORT_FEAT_C_OVER_CURRENT\n");
+			tmp = RH_PS_OCIC;
+			break;
+		case USB_PORT_FEAT_C_RESET:
+			DBG(0, "USB_PORT_FEAT_C_RESET\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp = RH_PS_PRSC;
 			break;
 		default:
@@ -1671,7 +1798,11 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		wIndex--;
 		switch (wValue) {
 		case USB_PORT_FEAT_SUSPEND:
+<<<<<<< HEAD
 			_DBG(0, "USB_PORT_FEAT_SUSPEND\n");
+=======
+			DBG(0, "USB_PORT_FEAT_SUSPEND\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&isp1362_hcd->lock, flags);
 			isp1362_write_reg32(isp1362_hcd, HCRHPORT1 + wIndex, RH_PS_PSS);
 			isp1362_hcd->rhport[wIndex] =
@@ -1679,7 +1810,11 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			spin_unlock_irqrestore(&isp1362_hcd->lock, flags);
 			break;
 		case USB_PORT_FEAT_POWER:
+<<<<<<< HEAD
 			_DBG(0, "USB_PORT_FEAT_POWER\n");
+=======
+			DBG(0, "USB_PORT_FEAT_POWER\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&isp1362_hcd->lock, flags);
 			isp1362_write_reg32(isp1362_hcd, HCRHPORT1 + wIndex, RH_PS_PPS);
 			isp1362_hcd->rhport[wIndex] =
@@ -1687,7 +1822,11 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			spin_unlock_irqrestore(&isp1362_hcd->lock, flags);
 			break;
 		case USB_PORT_FEAT_RESET:
+<<<<<<< HEAD
 			_DBG(0, "USB_PORT_FEAT_RESET\n");
+=======
+			DBG(0, "USB_PORT_FEAT_RESET\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&isp1362_hcd->lock, flags);
 
 			t1 = jiffies + msecs_to_jiffies(USB_RESET_WIDTH);
@@ -1721,7 +1860,11 @@ static int isp1362_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	default:
  error:
 		/* "protocol stall" on error */
+<<<<<<< HEAD
 		_DBG(0, "PROTOCOL STALL\n");
+=======
+		DBG(0, "PROTOCOL STALL\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EPIPE;
 	}
 
@@ -1747,6 +1890,7 @@ static int isp1362_bus_suspend(struct usb_hcd *hcd)
 		isp1362_hcd->hc_control &= ~OHCI_CTRL_HCFS;
 		isp1362_hcd->hc_control |= OHCI_USB_RESET;
 		isp1362_write_reg32(isp1362_hcd, HCCONTROL, isp1362_hcd->hc_control);
+<<<<<<< HEAD
 		/* FALL THROUGH */
 	case OHCI_USB_RESET:
 		status = -EBUSY;
@@ -1754,6 +1898,15 @@ static int isp1362_bus_suspend(struct usb_hcd *hcd)
 		goto done;
 	case OHCI_USB_SUSPEND:
 		pr_warning("%s: already suspended?\n", __func__);
+=======
+		fallthrough;
+	case OHCI_USB_RESET:
+		status = -EBUSY;
+		pr_warn("%s: needs reinit!\n", __func__);
+		goto done;
+	case OHCI_USB_SUSPEND:
+		pr_warn("%s: already suspended?\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 	DBG(0, "%s: suspend root hub\n", __func__);
@@ -1841,7 +1994,11 @@ static int isp1362_bus_resume(struct usb_hcd *hcd)
 	isp1362_hcd->hc_control = isp1362_read_reg32(isp1362_hcd, HCCONTROL);
 	pr_info("%s: HCCONTROL: %08x\n", __func__, isp1362_hcd->hc_control);
 	if (hcd->state == HC_STATE_RESUMING) {
+<<<<<<< HEAD
 		pr_warning("%s: duplicate resume\n", __func__);
+=======
+		pr_warn("%s: duplicate resume\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = 0;
 	} else
 		switch (isp1362_hcd->hc_control & OHCI_CTRL_HCFS) {
@@ -1913,6 +2070,7 @@ static int isp1362_bus_resume(struct usb_hcd *hcd)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #ifdef STUB_DEBUG_FILE
 
 static inline void create_debug_file(struct isp1362_hcd *isp1362_hcd)
@@ -1927,6 +2085,8 @@ static inline void remove_debug_file(struct isp1362_hcd *isp1362_hcd)
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dump_irq(struct seq_file *s, char *label, u16 mask)
 {
 	seq_printf(s, "%-15s %04x%s%s%s%s%s%s\n", label, mask,
@@ -2069,7 +2229,11 @@ static void dump_regs(struct seq_file *s, struct isp1362_hcd *isp1362_hcd)
 		   isp1362_read_reg16(isp1362_hcd, HCATLDTCTO));
 }
 
+<<<<<<< HEAD
 static int proc_isp1362_show(struct seq_file *s, void *unused)
+=======
+static int isp1362_show(struct seq_file *s, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isp1362_hcd *isp1362_hcd = s->private;
 	struct isp1362_ep *ep;
@@ -2127,7 +2291,11 @@ static int proc_isp1362_show(struct seq_file *s, void *unused)
 				   default:
 					   s = "?";
 					   break;
+<<<<<<< HEAD
 				   };
+=======
+				   }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   s;}), ep->maxpacket) ;
 		list_for_each_entry(urb, &ep->hep->urb_list, urb_list) {
 			seq_printf(s, "  urb%p, %d/%d\n", urb,
@@ -2172,6 +2340,7 @@ static int proc_isp1362_show(struct seq_file *s, void *unused)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int proc_isp1362_open(struct inode *inode, struct file *file)
 {
@@ -2201,16 +2370,31 @@ static void create_debug_file(struct isp1362_hcd *isp1362_hcd)
 	pde->proc_fops = &proc_ops;
 	pde->data = isp1362_hcd;
 	isp1362_hcd->pde = pde;
+=======
+DEFINE_SHOW_ATTRIBUTE(isp1362);
+
+/* expect just one isp1362_hcd per system */
+static void create_debug_file(struct isp1362_hcd *isp1362_hcd)
+{
+	debugfs_create_file("isp1362", S_IRUGO, usb_debug_root, isp1362_hcd,
+			    &isp1362_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remove_debug_file(struct isp1362_hcd *isp1362_hcd)
 {
+<<<<<<< HEAD
 	if (isp1362_hcd->pde)
 		remove_proc_entry(proc_filename, NULL);
 }
 
 #endif
 
+=======
+	debugfs_lookup_and_remove("isp1362", usb_debug_root);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 static void __isp1362_sw_reset(struct isp1362_hcd *isp1362_hcd)
@@ -2279,7 +2463,10 @@ static int isp1362_mem_config(struct usb_hcd *hcd)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	total = istl_size + intl_size + atl_size;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&isp1362_hcd->lock, flags);
 
 	for (i = 0; i < 2; i++) {
@@ -2503,8 +2690,13 @@ static int isp1362_chip_test(struct isp1362_hcd *isp1362_hcd)
 					    __func__, offset);
 					break;
 				}
+<<<<<<< HEAD
 				pr_warning("%s: memory check with offset %02x ok after second read\n",
 				     __func__, offset);
+=======
+				pr_warn("%s: memory check with offset %02x ok after second read\n",
+					__func__, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		kfree(ref);
@@ -2619,7 +2811,11 @@ static int isp1362_hc_start(struct usb_hcd *hcd)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static struct hc_driver isp1362_hc_driver = {
+=======
+static const struct hc_driver isp1362_hc_driver = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.description =		hcd_name,
 	.product_desc =		"ISP1362 Host Controller",
 	.hcd_priv_size =	sizeof(struct isp1362_hcd),
@@ -2645,15 +2841,23 @@ static struct hc_driver isp1362_hc_driver = {
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int __devexit isp1362_remove(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 	struct isp1362_hcd *isp1362_hcd = hcd_to_isp1362_hcd(hcd);
 	struct resource *res;
+=======
+static void isp1362_remove(struct platform_device *pdev)
+{
+	struct usb_hcd *hcd = platform_get_drvdata(pdev);
+	struct isp1362_hcd *isp1362_hcd = hcd_to_isp1362_hcd(hcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	remove_debug_file(isp1362_hcd);
 	DBG(0, "%s: Removing HCD\n", __func__);
 	usb_remove_hcd(hcd);
+<<<<<<< HEAD
 
 	DBG(0, "%s: Unmapping data_reg @ %p\n", __func__,
 	    isp1362_hcd->data_reg);
@@ -2685,11 +2889,26 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 	struct usb_hcd *hcd;
 	struct isp1362_hcd *isp1362_hcd;
 	struct resource *addr, *data;
+=======
+	DBG(0, "%s: put_hcd\n", __func__);
+	usb_put_hcd(hcd);
+	DBG(0, "%s: Done\n", __func__);
+}
+
+static int isp1362_probe(struct platform_device *pdev)
+{
+	struct usb_hcd *hcd;
+	struct isp1362_hcd *isp1362_hcd;
+	struct resource *data, *irq_res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *addr_reg;
 	void __iomem *data_reg;
 	int irq;
 	int retval = 0;
+<<<<<<< HEAD
 	struct resource *irq_res;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int irq_flags = 0;
 
 	if (usb_disabled())
@@ -2700,6 +2919,7 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 	 * specific platform_data.  we don't probe for IRQs, and do only
 	 * minimal sanity checking.
 	 */
+<<<<<<< HEAD
 	if (pdev->num_resources < 3) {
 		retval = -ENODEV;
 		goto err1;
@@ -2746,6 +2966,30 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 		retval = -ENOMEM;
 		goto err5;
 	}
+=======
+	if (pdev->num_resources < 3)
+		return -ENODEV;
+
+	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+	if (!irq_res)
+		return -ENODEV;
+
+	irq = irq_res->start;
+
+	addr_reg = devm_platform_ioremap_resource(pdev, 1);
+	if (IS_ERR(addr_reg))
+		return PTR_ERR(addr_reg);
+
+	data_reg = devm_platform_get_and_ioremap_resource(pdev, 0, &data);
+	if (IS_ERR(data_reg))
+		return PTR_ERR(data_reg);
+
+	/* allocate and initialize hcd */
+	hcd = usb_create_hcd(&isp1362_hc_driver, &pdev->dev, dev_name(&pdev->dev));
+	if (!hcd)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hcd->rsrc_start = data->start;
 	isp1362_hcd = hcd_to_isp1362_hcd(hcd);
 	isp1362_hcd->data_reg = data_reg;
@@ -2757,12 +3001,20 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&isp1362_hcd->periodic);
 	INIT_LIST_HEAD(&isp1362_hcd->isoc);
 	INIT_LIST_HEAD(&isp1362_hcd->remove_list);
+<<<<<<< HEAD
 	isp1362_hcd->board = pdev->dev.platform_data;
+=======
+	isp1362_hcd->board = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if USE_PLATFORM_DELAY
 	if (!isp1362_hcd->board->delay) {
 		dev_err(hcd->self.controller, "No platform delay function given\n");
 		retval = -ENODEV;
+<<<<<<< HEAD
 		goto err6;
+=======
+		goto err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -2777,13 +3029,21 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 
 	retval = usb_add_hcd(hcd, irq, irq_flags | IRQF_SHARED);
 	if (retval != 0)
+<<<<<<< HEAD
 		goto err6;
 	pr_info("%s, irq %d\n", hcd->product_desc, irq);
+=======
+		goto err;
+	device_wakeup_enable(hcd->self.controller);
+
+	dev_info(&pdev->dev, "%s, irq %d\n", hcd->product_desc, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	create_debug_file(isp1362_hcd);
 
 	return 0;
 
+<<<<<<< HEAD
  err6:
 	DBG(0, "%s: Freeing dev %p\n", __func__, isp1362_hcd);
 	usb_put_hcd(hcd);
@@ -2801,6 +3061,10 @@ static int __devinit isp1362_probe(struct platform_device *pdev)
 	release_mem_region(addr->start, resource_size(addr));
  err1:
 	pr_err("%s: init error, %d\n", __func__, retval);
+=======
+ err:
+	usb_put_hcd(hcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -2856,13 +3120,21 @@ static int isp1362_resume(struct platform_device *pdev)
 
 static struct platform_driver isp1362_driver = {
 	.probe = isp1362_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(isp1362_remove),
+=======
+	.remove_new = isp1362_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.suspend = isp1362_suspend,
 	.resume = isp1362_resume,
 	.driver = {
+<<<<<<< HEAD
 		.name = (char *)hcd_name,
 		.owner = THIS_MODULE,
+=======
+		.name = hcd_name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

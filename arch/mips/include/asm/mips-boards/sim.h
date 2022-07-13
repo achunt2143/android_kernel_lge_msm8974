@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2005 MIPS Technologies, Inc.  All rights reserved.
  *
@@ -14,23 +15,42 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2005 MIPS Technologies, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MIPS_BOARDS_SIM_H
 #define _ASM_MIPS_BOARDS_SIM_H
 
+<<<<<<< HEAD
 #define STATS_ON        1
 #define STATS_OFF       2
 #define STATS_CLEAR     3
 #define STATS_DUMP      4
 #define TRACE_ON		5
 #define TRACE_OFF       6
+=======
+#define STATS_ON	1
+#define STATS_OFF	2
+#define STATS_CLEAR	3
+#define STATS_DUMP	4
+#define TRACE_ON		5
+#define TRACE_OFF	6
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define simcfg(code)						\
 ({					   \
+<<<<<<< HEAD
 	__asm__  __volatile__( \
         "sltiu $0,$0, %0" \
+=======
+	__asm__	 __volatile__( \
+	"sltiu $0,$0, %0" \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		::"i"(code)					\
 		); \
 })

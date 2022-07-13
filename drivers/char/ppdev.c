@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/char/ppdev.c
  *
@@ -6,11 +10,14 @@
  *
  * Copyright (C) 1998-2000, 2002 Tim Waugh <tim@cyberelk.net>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A /dev/parportx device node represents an arbitrary device
  * on port 'x'.  The following operations are possible:
  *
@@ -58,7 +65,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/ioctl.h>
 #include <linux/parport.h>
@@ -69,12 +80,20 @@
 #include <linux/ppdev.h>
 #include <linux/mutex.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PP_VERSION "ppdev: user-space parallel port driver"
 #define CHRDEV "ppdev"
 
 struct pp_struct {
+<<<<<<< HEAD
 	struct pardevice * pdev;
+=======
+	struct pardevice *pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t irq_wait;
 	atomic_t irqc;
 	unsigned int flags;
@@ -83,8 +102,19 @@ struct pp_struct {
 	struct ieee1284_info state;
 	struct ieee1284_info saved_state;
 	long default_inactivity;
+<<<<<<< HEAD
 };
 
+=======
+	int index;
+};
+
+/* should we use PARDEVICE_MAX here? */
+static struct device *devices[PARPORT_MAX];
+
+static DEFINE_IDA(ida_index);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pp_struct.flags bitfields */
 #define PP_CLAIMED    (1<<0)
 #define PP_EXCL       (1<<1)
@@ -94,6 +124,7 @@ struct pp_struct {
 #define PP_BUFFER_SIZE 1024
 #define PARDEVICE_MAX 8
 
+<<<<<<< HEAD
 /* ROUND_UP macro from fs/select.c */
 #define ROUND_UP(x,y) (((x)+(y)-1)/(y))
 
@@ -110,6 +141,29 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 	unsigned int minor = iminor(file->f_path.dentry->d_inode);
 	struct pp_struct *pp = file->private_data;
 	char * kbuffer;
+=======
+static DEFINE_MUTEX(pp_do_mutex);
+
+/* define fixed sized ioctl cmd for y2038 migration */
+#define PPGETTIME32	_IOR(PP_IOCTL, 0x95, s32[2])
+#define PPSETTIME32	_IOW(PP_IOCTL, 0x96, s32[2])
+#define PPGETTIME64	_IOR(PP_IOCTL, 0x95, s64[2])
+#define PPSETTIME64	_IOW(PP_IOCTL, 0x96, s64[2])
+
+static inline void pp_enable_irq(struct pp_struct *pp)
+{
+	struct parport *port = pp->pdev->port;
+
+	port->ops->enable_irq(port);
+}
+
+static ssize_t pp_read(struct file *file, char __user *buf, size_t count,
+		       loff_t *ppos)
+{
+	unsigned int minor = iminor(file_inode(file));
+	struct pp_struct *pp = file->private_data;
+	char *kbuffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t bytes_read = 0;
 	struct parport *pport;
 	int mode;
@@ -125,6 +179,7 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 		return 0;
 
 	kbuffer = kmalloc(min_t(size_t, count, PP_BUFFER_SIZE), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!kbuffer) {
 		return -ENOMEM;
 	}
@@ -135,6 +190,17 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 			     (file->f_flags & O_NONBLOCK) ?
 			     PARPORT_INACTIVITY_O_NONBLOCK :
 			     pp->default_inactivity);
+=======
+	if (!kbuffer)
+		return -ENOMEM;
+	pport = pp->pdev->port;
+	mode = pport->ieee1284.mode & ~(IEEE1284_DEVICEID | IEEE1284_ADDR);
+
+	parport_set_timeout(pp->pdev,
+			    (file->f_flags & O_NONBLOCK) ?
+			    PARPORT_INACTIVITY_O_NONBLOCK :
+			    pp->default_inactivity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (bytes_read == 0) {
 		ssize_t need = min_t(unsigned long, count, PP_BUFFER_SIZE);
@@ -144,6 +210,7 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 			int flags = 0;
 			size_t (*fn)(struct parport *, void *, size_t, int);
 
+<<<<<<< HEAD
 			if (pp->flags & PP_W91284PIC) {
 				flags |= PARPORT_W91284PIC;
 			}
@@ -158,6 +225,19 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 			bytes_read = (*fn)(pport, kbuffer, need, flags);
 		} else {
 			bytes_read = parport_read (pport, kbuffer, need);
+=======
+			if (pp->flags & PP_W91284PIC)
+				flags |= PARPORT_W91284PIC;
+			if (pp->flags & PP_FASTREAD)
+				flags |= PARPORT_EPP_FAST;
+			if (pport->ieee1284.mode & IEEE1284_ADDR)
+				fn = pport->ops->epp_read_addr;
+			else
+				fn = pport->ops->epp_read_data;
+			bytes_read = (*fn)(pport, kbuffer, need, flags);
+		} else {
+			bytes_read = parport_read(pport, kbuffer, need);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (bytes_read != 0)
@@ -168,7 +248,11 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (signal_pending (current)) {
+=======
+		if (signal_pending(current)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bytes_read = -ERESTARTSYS;
 			break;
 		}
@@ -176,6 +260,7 @@ static ssize_t pp_read (struct file * file, char __user * buf, size_t count,
 		cond_resched();
 	}
 
+<<<<<<< HEAD
 	parport_set_timeout (pp->pdev, pp->default_inactivity);
 
 	if (bytes_read > 0 && copy_to_user (buf, kbuffer, bytes_read))
@@ -192,6 +277,24 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 	unsigned int minor = iminor(file->f_path.dentry->d_inode);
 	struct pp_struct *pp = file->private_data;
 	char * kbuffer;
+=======
+	parport_set_timeout(pp->pdev, pp->default_inactivity);
+
+	if (bytes_read > 0 && copy_to_user(buf, kbuffer, bytes_read))
+		bytes_read = -EFAULT;
+
+	kfree(kbuffer);
+	pp_enable_irq(pp);
+	return bytes_read;
+}
+
+static ssize_t pp_write(struct file *file, const char __user *buf,
+			size_t count, loff_t *ppos)
+{
+	unsigned int minor = iminor(file_inode(file));
+	struct pp_struct *pp = file->private_data;
+	char *kbuffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t bytes_written = 0;
 	ssize_t wrote;
 	int mode;
@@ -204,6 +307,7 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 	}
 
 	kbuffer = kmalloc(min_t(size_t, count, PP_BUFFER_SIZE), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!kbuffer) {
 		return -ENOMEM;
 	}
@@ -214,11 +318,27 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 			     (file->f_flags & O_NONBLOCK) ?
 			     PARPORT_INACTIVITY_O_NONBLOCK :
 			     pp->default_inactivity);
+=======
+	if (!kbuffer)
+		return -ENOMEM;
+
+	pport = pp->pdev->port;
+	mode = pport->ieee1284.mode & ~(IEEE1284_DEVICEID | IEEE1284_ADDR);
+
+	parport_set_timeout(pp->pdev,
+			    (file->f_flags & O_NONBLOCK) ?
+			    PARPORT_INACTIVITY_O_NONBLOCK :
+			    pp->default_inactivity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (bytes_written < count) {
 		ssize_t n = min_t(unsigned long, count - bytes_written, PP_BUFFER_SIZE);
 
+<<<<<<< HEAD
 		if (copy_from_user (kbuffer, buf + bytes_written, n)) {
+=======
+		if (copy_from_user(kbuffer, buf + bytes_written, n)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bytes_written = -EFAULT;
 			break;
 		}
@@ -226,6 +346,7 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 		if ((pp->flags & PP_FASTWRITE) && (mode == IEEE1284_MODE_EPP)) {
 			/* do a fast EPP write */
 			if (pport->ieee1284.mode & IEEE1284_ADDR) {
+<<<<<<< HEAD
 				wrote = pport->ops->epp_write_addr (pport,
 					kbuffer, n, PARPORT_EPP_FAST);
 			} else {
@@ -240,6 +361,21 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 			if (!bytes_written) {
 				bytes_written = wrote;
 			}
+=======
+				wrote = pport->ops->epp_write_addr(pport,
+					kbuffer, n, PARPORT_EPP_FAST);
+			} else {
+				wrote = pport->ops->epp_write_data(pport,
+					kbuffer, n, PARPORT_EPP_FAST);
+			}
+		} else {
+			wrote = parport_write(pp->pdev->port, kbuffer, n);
+		}
+
+		if (wrote <= 0) {
+			if (!bytes_written)
+				bytes_written = wrote;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -251,16 +387,22 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (signal_pending (current)) {
 			if (!bytes_written) {
 				bytes_written = -EINTR;
 			}
 			break;
 		}
+=======
+		if (signal_pending(current))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cond_resched();
 	}
 
+<<<<<<< HEAD
 	parport_set_timeout (pp->pdev, pp->default_inactivity);
 
 	kfree (kbuffer);
@@ -269,10 +411,21 @@ static ssize_t pp_write (struct file * file, const char __user * buf,
 }
 
 static void pp_irq (void *private)
+=======
+	parport_set_timeout(pp->pdev, pp->default_inactivity);
+
+	kfree(kbuffer);
+	pp_enable_irq(pp);
+	return bytes_written;
+}
+
+static void pp_irq(void *private)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pp_struct *pp = private;
 
 	if (pp->irqresponse) {
+<<<<<<< HEAD
 		parport_write_control (pp->pdev->port, pp->irqctl);
 		pp->irqresponse = 0;
 	}
@@ -287,11 +440,29 @@ static int register_device (int minor, struct pp_struct *pp)
 	struct pardevice * pdev = NULL;
 	char *name;
 	int fl;
+=======
+		parport_write_control(pp->pdev->port, pp->irqctl);
+		pp->irqresponse = 0;
+	}
+
+	atomic_inc(&pp->irqc);
+	wake_up_interruptible(&pp->irq_wait);
+}
+
+static int register_device(int minor, struct pp_struct *pp)
+{
+	struct parport *port;
+	struct pardevice *pdev = NULL;
+	char *name;
+	struct pardev_cb ppdev_cb;
+	int rc = 0, index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	name = kasprintf(GFP_KERNEL, CHRDEV "%x", minor);
 	if (name == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	port = parport_find_number (minor);
 	if (!port) {
 		printk (KERN_WARNING "%s: no associated port!\n", name);
@@ -316,6 +487,39 @@ static int register_device (int minor, struct pp_struct *pp)
 }
 
 static enum ieee1284_phase init_phase (int mode)
+=======
+	port = parport_find_number(minor);
+	if (!port) {
+		pr_warn("%s: no associated port!\n", name);
+		rc = -ENXIO;
+		goto err;
+	}
+
+	index = ida_alloc(&ida_index, GFP_KERNEL);
+	memset(&ppdev_cb, 0, sizeof(ppdev_cb));
+	ppdev_cb.irq_func = pp_irq;
+	ppdev_cb.flags = (pp->flags & PP_EXCL) ? PARPORT_FLAG_EXCL : 0;
+	ppdev_cb.private = pp;
+	pdev = parport_register_dev_model(port, name, &ppdev_cb, index);
+	parport_put_port(port);
+
+	if (!pdev) {
+		pr_warn("%s: failed to register device!\n", name);
+		rc = -ENXIO;
+		ida_free(&ida_index, index);
+		goto err;
+	}
+
+	pp->pdev = pdev;
+	pp->index = index;
+	dev_dbg(&pdev->dev, "registered pardevice\n");
+err:
+	kfree(name);
+	return rc;
+}
+
+static enum ieee1284_phase init_phase(int mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (mode & ~(IEEE1284_DEVICEID
 			 | IEEE1284_ADDR)) {
@@ -326,27 +530,66 @@ static enum ieee1284_phase init_phase (int mode)
 	return IEEE1284_PH_FWD_IDLE;
 }
 
+<<<<<<< HEAD
 static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	unsigned int minor = iminor(file->f_path.dentry->d_inode);
 	struct pp_struct *pp = file->private_data;
 	struct parport * port;
 	void __user *argp = (void __user *)arg;
+=======
+static int pp_set_timeout(struct pardevice *pdev, long tv_sec, int tv_usec)
+{
+	long to_jiffies;
+
+	if ((tv_sec < 0) || (tv_usec < 0))
+		return -EINVAL;
+
+	to_jiffies = usecs_to_jiffies(tv_usec);
+	to_jiffies += tv_sec * HZ;
+	if (to_jiffies <= 0)
+		return -EINVAL;
+
+	pdev->timeout = to_jiffies;
+	return 0;
+}
+
+static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	unsigned int minor = iminor(file_inode(file));
+	struct pp_struct *pp = file->private_data;
+	struct parport *port;
+	void __user *argp = (void __user *)arg;
+	struct ieee1284_info *info;
+	unsigned char reg;
+	unsigned char mask;
+	int mode;
+	s32 time32[2];
+	s64 time64[2];
+	struct timespec64 ts;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First handle the cases that don't take arguments. */
 	switch (cmd) {
 	case PPCLAIM:
 	    {
+<<<<<<< HEAD
 		struct ieee1284_info *info;
 		int ret;
 
 		if (pp->flags & PP_CLAIMED) {
 			pr_debug(CHRDEV "%x: you've already got it!\n", minor);
+=======
+		if (pp->flags & PP_CLAIMED) {
+			dev_dbg(&pp->pdev->dev, "you've already got it!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
 		/* Deferred device registration. */
 		if (!pp->pdev) {
+<<<<<<< HEAD
 			int err = register_device (minor, pp);
 			if (err) {
 				return err;
@@ -354,6 +597,15 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		}
 
 		ret = parport_claim_or_block (pp->pdev);
+=======
+			int err = register_device(minor, pp);
+
+			if (err)
+				return err;
+		}
+
+		ret = parport_claim_or_block(pp->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 
@@ -361,7 +613,11 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		/* For interrupt-reporting to work, we need to be
 		 * informed of each interrupt. */
+<<<<<<< HEAD
 		pp_enable_irq (pp);
+=======
+		pp_enable_irq(pp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We may need to fix up the state machine. */
 		info = &pp->pdev->port->ieee1284;
@@ -369,15 +625,25 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		pp->saved_state.phase = info->phase;
 		info->mode = pp->state.mode;
 		info->phase = pp->state.phase;
+<<<<<<< HEAD
 		pp->default_inactivity = parport_set_timeout (pp->pdev, 0);
 		parport_set_timeout (pp->pdev, pp->default_inactivity);
+=======
+		pp->default_inactivity = parport_set_timeout(pp->pdev, 0);
+		parport_set_timeout(pp->pdev, pp->default_inactivity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	    }
 	case PPEXCL:
 		if (pp->pdev) {
+<<<<<<< HEAD
 			pr_debug(CHRDEV "%x: too late for PPEXCL; "
 				"already registered\n", minor);
+=======
+			dev_dbg(&pp->pdev->dev,
+				"too late for PPEXCL; already registered\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pp->flags & PP_EXCL)
 				/* But it's not really an error. */
 				return 0;
@@ -392,11 +658,20 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case PPSETMODE:
 	    {
 		int mode;
+<<<<<<< HEAD
 		if (copy_from_user (&mode, argp, sizeof (mode)))
 			return -EFAULT;
 		/* FIXME: validate mode */
 		pp->state.mode = mode;
 		pp->state.phase = init_phase (mode);
+=======
+
+		if (copy_from_user(&mode, argp, sizeof(mode)))
+			return -EFAULT;
+		/* FIXME: validate mode */
+		pp->state.mode = mode;
+		pp->state.phase = init_phase(mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pp->flags & PP_CLAIMED) {
 			pp->pdev->port->ieee1284.mode = mode;
@@ -409,6 +684,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	    {
 		int mode;
 
+<<<<<<< HEAD
 		if (pp->flags & PP_CLAIMED) {
 			mode = pp->pdev->port->ieee1284.mode;
 		} else {
@@ -417,11 +693,21 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_to_user (argp, &mode, sizeof (mode))) {
 			return -EFAULT;
 		}
+=======
+		if (pp->flags & PP_CLAIMED)
+			mode = pp->pdev->port->ieee1284.mode;
+		else
+			mode = pp->state.mode;
+
+		if (copy_to_user(argp, &mode, sizeof(mode)))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	    }
 	case PPSETPHASE:
 	    {
 		int phase;
+<<<<<<< HEAD
 		if (copy_from_user (&phase, argp, sizeof (phase))) {
 			return -EFAULT;
 		}
@@ -431,6 +717,17 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (pp->flags & PP_CLAIMED) {
 			pp->pdev->port->ieee1284.phase = phase;
 		}
+=======
+
+		if (copy_from_user(&phase, argp, sizeof(phase)))
+			return -EFAULT;
+
+		/* FIXME: validate phase */
+		pp->state.phase = phase;
+
+		if (pp->flags & PP_CLAIMED)
+			pp->pdev->port->ieee1284.phase = phase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	    }
@@ -438,6 +735,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	    {
 		int phase;
 
+<<<<<<< HEAD
 		if (pp->flags & PP_CLAIMED) {
 			phase = pp->pdev->port->ieee1284.phase;
 		} else {
@@ -446,30 +744,52 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_to_user (argp, &phase, sizeof (phase))) {
 			return -EFAULT;
 		}
+=======
+		if (pp->flags & PP_CLAIMED)
+			phase = pp->pdev->port->ieee1284.phase;
+		else
+			phase = pp->state.phase;
+		if (copy_to_user(argp, &phase, sizeof(phase)))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	    }
 	case PPGETMODES:
 	    {
 		unsigned int modes;
 
+<<<<<<< HEAD
 		port = parport_find_number (minor);
+=======
+		port = parport_find_number(minor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!port)
 			return -ENODEV;
 
 		modes = port->modes;
 		parport_put_port(port);
+<<<<<<< HEAD
 		if (copy_to_user (argp, &modes, sizeof (modes))) {
 			return -EFAULT;
 		}
+=======
+		if (copy_to_user(argp, &modes, sizeof(modes)))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	    }
 	case PPSETFLAGS:
 	    {
 		int uflags;
 
+<<<<<<< HEAD
 		if (copy_from_user (&uflags, argp, sizeof (uflags))) {
 			return -EFAULT;
 		}
+=======
+		if (copy_from_user(&uflags, argp, sizeof(uflags)))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pp->flags &= ~PP_FLAGMASK;
 		pp->flags |= (uflags & PP_FLAGMASK);
 		return 0;
@@ -479,9 +799,14 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		int uflags;
 
 		uflags = pp->flags & PP_FLAGMASK;
+<<<<<<< HEAD
 		if (copy_to_user (argp, &uflags, sizeof (uflags))) {
 			return -EFAULT;
 		}
+=======
+		if (copy_to_user(argp, &uflags, sizeof(uflags)))
+			return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	    }
 	}	/* end switch() */
@@ -495,6 +820,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	port = pp->pdev->port;
 	switch (cmd) {
+<<<<<<< HEAD
 		struct ieee1284_info *info;
 		unsigned char reg;
 		unsigned char mask;
@@ -520,6 +846,25 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return 0;
 	case PPYIELD:
 		parport_yield_blocking (pp->pdev);
+=======
+	case PPRSTATUS:
+		reg = parport_read_status(port);
+		if (copy_to_user(argp, &reg, sizeof(reg)))
+			return -EFAULT;
+		return 0;
+	case PPRDATA:
+		reg = parport_read_data(port);
+		if (copy_to_user(argp, &reg, sizeof(reg)))
+			return -EFAULT;
+		return 0;
+	case PPRCONTROL:
+		reg = parport_read_control(port);
+		if (copy_to_user(argp, &reg, sizeof(reg)))
+			return -EFAULT;
+		return 0;
+	case PPYIELD:
+		parport_yield_blocking(pp->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	case PPRELEASE:
@@ -529,11 +874,16 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		pp->state.phase = info->phase;
 		info->mode = pp->saved_state.mode;
 		info->phase = pp->saved_state.phase;
+<<<<<<< HEAD
 		parport_release (pp->pdev);
+=======
+		parport_release(pp->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pp->flags &= ~PP_CLAIMED;
 		return 0;
 
 	case PPWCONTROL:
+<<<<<<< HEAD
 		if (copy_from_user (&reg, argp, sizeof (reg)))
 			return -EFAULT;
 		parport_write_control (port, reg);
@@ -568,6 +918,42 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user (&mode, argp, sizeof (mode)))
 			return -EFAULT;
 		switch ((ret = parport_negotiate (port, mode))) {
+=======
+		if (copy_from_user(&reg, argp, sizeof(reg)))
+			return -EFAULT;
+		parport_write_control(port, reg);
+		return 0;
+
+	case PPWDATA:
+		if (copy_from_user(&reg, argp, sizeof(reg)))
+			return -EFAULT;
+		parport_write_data(port, reg);
+		return 0;
+
+	case PPFCONTROL:
+		if (copy_from_user(&mask, argp,
+				   sizeof(mask)))
+			return -EFAULT;
+		if (copy_from_user(&reg, 1 + (unsigned char __user *) arg,
+				   sizeof(reg)))
+			return -EFAULT;
+		parport_frob_control(port, mask, reg);
+		return 0;
+
+	case PPDATADIR:
+		if (copy_from_user(&mode, argp, sizeof(mode)))
+			return -EFAULT;
+		if (mode)
+			port->ops->data_reverse(port);
+		else
+			port->ops->data_forward(port);
+		return 0;
+
+	case PPNEGOT:
+		if (copy_from_user(&mode, argp, sizeof(mode)))
+			return -EFAULT;
+		switch ((ret = parport_negotiate(port, mode))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0: break;
 		case -1: /* handshake failed, peripheral not IEEE 1284 */
 			ret = -EIO;
@@ -576,11 +962,19 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -ENXIO;
 			break;
 		}
+<<<<<<< HEAD
 		pp_enable_irq (pp);
 		return ret;
 
 	case PPWCTLONIRQ:
 		if (copy_from_user (&reg, argp, sizeof (reg)))
+=======
+		pp_enable_irq(pp);
+		return ret;
+
+	case PPWCTLONIRQ:
+		if (copy_from_user(&reg, argp, sizeof(reg)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		/* Remember what to set the control lines to, for next
@@ -590,6 +984,7 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return 0;
 
 	case PPCLRIRQ:
+<<<<<<< HEAD
 		ret = atomic_read (&pp->irqc);
 		if (copy_to_user (argp, &ret, sizeof (ret)))
 			return -EFAULT;
@@ -623,6 +1018,60 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	default:
 		pr_debug(CHRDEV "%x: What? (cmd=0x%x)\n", minor, cmd);
+=======
+		ret = atomic_read(&pp->irqc);
+		if (copy_to_user(argp, &ret, sizeof(ret)))
+			return -EFAULT;
+		atomic_sub(ret, &pp->irqc);
+		return 0;
+
+	case PPSETTIME32:
+		if (copy_from_user(time32, argp, sizeof(time32)))
+			return -EFAULT;
+
+		if ((time32[0] < 0) || (time32[1] < 0))
+			return -EINVAL;
+
+		return pp_set_timeout(pp->pdev, time32[0], time32[1]);
+
+	case PPSETTIME64:
+		if (copy_from_user(time64, argp, sizeof(time64)))
+			return -EFAULT;
+
+		if ((time64[0] < 0) || (time64[1] < 0))
+			return -EINVAL;
+
+		if (IS_ENABLED(CONFIG_SPARC64) && !in_compat_syscall())
+			time64[1] >>= 32;
+
+		return pp_set_timeout(pp->pdev, time64[0], time64[1]);
+
+	case PPGETTIME32:
+		jiffies_to_timespec64(pp->pdev->timeout, &ts);
+		time32[0] = ts.tv_sec;
+		time32[1] = ts.tv_nsec / NSEC_PER_USEC;
+
+		if (copy_to_user(argp, time32, sizeof(time32)))
+			return -EFAULT;
+
+		return 0;
+
+	case PPGETTIME64:
+		jiffies_to_timespec64(pp->pdev->timeout, &ts);
+		time64[0] = ts.tv_sec;
+		time64[1] = ts.tv_nsec / NSEC_PER_USEC;
+
+		if (IS_ENABLED(CONFIG_SPARC64) && !in_compat_syscall())
+			time64[1] <<= 32;
+
+		if (copy_to_user(argp, time64, sizeof(time64)))
+			return -EFAULT;
+
+		return 0;
+
+	default:
+		dev_dbg(&pp->pdev->dev, "What? (cmd=0x%x)\n", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -633,13 +1082,21 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static long pp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	long ret;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&pp_do_mutex);
 	ret = pp_do_ioctl(file, cmd, arg);
 	mutex_unlock(&pp_do_mutex);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pp_open (struct inode * inode, struct file * file)
+=======
+static int pp_open(struct inode *inode, struct file *file)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int minor = iminor(inode);
 	struct pp_struct *pp;
@@ -647,16 +1104,28 @@ static int pp_open (struct inode * inode, struct file * file)
 	if (minor >= PARPORT_MAX)
 		return -ENXIO;
 
+<<<<<<< HEAD
 	pp = kmalloc (sizeof (struct pp_struct), GFP_KERNEL);
+=======
+	pp = kmalloc(sizeof(struct pp_struct), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pp)
 		return -ENOMEM;
 
 	pp->state.mode = IEEE1284_MODE_COMPAT;
+<<<<<<< HEAD
 	pp->state.phase = init_phase (pp->state.mode);
 	pp->flags = 0;
 	pp->irqresponse = 0;
 	atomic_set (&pp->irqc, 0);
 	init_waitqueue_head (&pp->irq_wait);
+=======
+	pp->state.phase = init_phase(pp->state.mode);
+	pp->flags = 0;
+	pp->irqresponse = 0;
+	atomic_set(&pp->irqc, 0);
+	init_waitqueue_head(&pp->irq_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Defer the actual device registration until the first claim.
 	 * That way, we know whether or not the driver wants to have
@@ -668,7 +1137,11 @@ static int pp_open (struct inode * inode, struct file * file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pp_release (struct inode * inode, struct file * file)
+=======
+static int pp_release(struct inode *inode, struct file *file)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int minor = iminor(inode);
 	struct pp_struct *pp = file->private_data;
@@ -677,10 +1150,17 @@ static int pp_release (struct inode * inode, struct file * file)
 	compat_negot = 0;
 	if (!(pp->flags & PP_CLAIMED) && pp->pdev &&
 	    (pp->state.mode != IEEE1284_MODE_COMPAT)) {
+<<<<<<< HEAD
 	    	struct ieee1284_info *info;
 
 		/* parport released, but not in compatibility mode */
 		parport_claim_or_block (pp->pdev);
+=======
+		struct ieee1284_info *info;
+
+		/* parport released, but not in compatibility mode */
+		parport_claim_or_block(pp->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pp->flags |= PP_CLAIMED;
 		info = &pp->pdev->port->ieee1284;
 		pp->saved_state.mode = info->mode;
@@ -693,12 +1173,21 @@ static int pp_release (struct inode * inode, struct file * file)
 		compat_negot = 2;
 	}
 	if (compat_negot) {
+<<<<<<< HEAD
 		parport_negotiate (pp->pdev->port, IEEE1284_MODE_COMPAT);
 		pr_debug(CHRDEV "%x: negotiated back to compatibility "
 			"mode because user-space forgot\n", minor);
 	}
 
 	if (pp->flags & PP_CLAIMED) {
+=======
+		parport_negotiate(pp->pdev->port, IEEE1284_MODE_COMPAT);
+		dev_dbg(&pp->pdev->dev,
+			"negotiated back to compatibility mode because user-space forgot\n");
+	}
+
+	if ((pp->flags & PP_CLAIMED) && pp->pdev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ieee1284_info *info;
 
 		info = &pp->pdev->port->ieee1284;
@@ -706,7 +1195,11 @@ static int pp_release (struct inode * inode, struct file * file)
 		pp->state.phase = info->phase;
 		info->mode = pp->saved_state.mode;
 		info->phase = pp->saved_state.phase;
+<<<<<<< HEAD
 		parport_release (pp->pdev);
+=======
+		parport_release(pp->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (compat_negot != 1) {
 			pr_debug(CHRDEV "%x: released pardevice "
 				"because user-space forgot\n", minor);
@@ -714,19 +1207,29 @@ static int pp_release (struct inode * inode, struct file * file)
 	}
 
 	if (pp->pdev) {
+<<<<<<< HEAD
 		const char *name = pp->pdev->name;
 		parport_unregister_device (pp->pdev);
 		kfree (name);
+=======
+		parport_unregister_device(pp->pdev);
+		ida_free(&ida_index, pp->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pp->pdev = NULL;
 		pr_debug(CHRDEV "%x: unregistered pardevice\n", minor);
 	}
 
+<<<<<<< HEAD
 	kfree (pp);
+=======
+	kfree(pp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* No kernel lock held - fine */
+<<<<<<< HEAD
 static unsigned int pp_poll (struct file * file, poll_table * wait)
 {
 	struct pp_struct *pp = file->private_data;
@@ -735,11 +1238,27 @@ static unsigned int pp_poll (struct file * file, poll_table * wait)
 	poll_wait (file, &pp->irq_wait, wait);
 	if (atomic_read (&pp->irqc))
 		mask |= POLLIN | POLLRDNORM;
+=======
+static __poll_t pp_poll(struct file *file, poll_table *wait)
+{
+	struct pp_struct *pp = file->private_data;
+	__poll_t mask = 0;
+
+	poll_wait(file, &pp->irq_wait, wait);
+	if (atomic_read(&pp->irqc))
+		mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
 
+<<<<<<< HEAD
 static struct class *ppdev_class;
+=======
+static const struct class ppdev_class = {
+	.name = CHRDEV,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct file_operations pp_fops = {
 	.owner		= THIS_MODULE,
@@ -748,23 +1267,64 @@ static const struct file_operations pp_fops = {
 	.write		= pp_write,
 	.poll		= pp_poll,
 	.unlocked_ioctl	= pp_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl   = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= pp_open,
 	.release	= pp_release,
 };
 
 static void pp_attach(struct parport *port)
 {
+<<<<<<< HEAD
 	device_create(ppdev_class, port->dev, MKDEV(PP_MAJOR, port->number),
 		      NULL, "parport%d", port->number);
+=======
+	struct device *ret;
+
+	if (devices[port->number])
+		return;
+
+	ret = device_create(&ppdev_class, port->dev,
+			    MKDEV(PP_MAJOR, port->number), NULL,
+			    "parport%d", port->number);
+	if (IS_ERR(ret)) {
+		pr_err("Failed to create device parport%d\n",
+		       port->number);
+		return;
+	}
+	devices[port->number] = ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pp_detach(struct parport *port)
 {
+<<<<<<< HEAD
 	device_destroy(ppdev_class, MKDEV(PP_MAJOR, port->number));
+=======
+	if (!devices[port->number])
+		return;
+
+	device_destroy(&ppdev_class, MKDEV(PP_MAJOR, port->number));
+	devices[port->number] = NULL;
+}
+
+static int pp_probe(struct pardevice *par_dev)
+{
+	struct device_driver *drv = par_dev->dev.driver;
+	int len = strlen(drv->name);
+
+	if (strncmp(par_dev->name, drv->name, len))
+		return -ENODEV;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct parport_driver pp_driver = {
 	.name		= CHRDEV,
+<<<<<<< HEAD
 	.attach		= pp_attach,
 	.detach		= pp_detach,
 };
@@ -793,18 +1353,58 @@ static int __init ppdev_init (void)
 
 out_class:
 	class_destroy(ppdev_class);
+=======
+	.probe		= pp_probe,
+	.match_port	= pp_attach,
+	.detach		= pp_detach,
+	.devmodel	= true,
+};
+
+static int __init ppdev_init(void)
+{
+	int err = 0;
+
+	if (register_chrdev(PP_MAJOR, CHRDEV, &pp_fops)) {
+		pr_warn(CHRDEV ": unable to get major %d\n", PP_MAJOR);
+		return -EIO;
+	}
+	err = class_register(&ppdev_class);
+	if (err)
+		goto out_chrdev;
+
+	err = parport_register_driver(&pp_driver);
+	if (err < 0) {
+		pr_warn(CHRDEV ": unable to register with parport\n");
+		goto out_class;
+	}
+
+	pr_info(PP_VERSION "\n");
+	goto out;
+
+out_class:
+	class_unregister(&ppdev_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_chrdev:
 	unregister_chrdev(PP_MAJOR, CHRDEV);
 out:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __exit ppdev_cleanup (void)
 {
 	/* Clean up all parport stuff */
 	parport_unregister_driver(&pp_driver);
 	class_destroy(ppdev_class);
 	unregister_chrdev (PP_MAJOR, CHRDEV);
+=======
+static void __exit ppdev_cleanup(void)
+{
+	/* Clean up all parport stuff */
+	parport_unregister_driver(&pp_driver);
+	class_unregister(&ppdev_class);
+	unregister_chrdev(PP_MAJOR, CHRDEV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ppdev_init);

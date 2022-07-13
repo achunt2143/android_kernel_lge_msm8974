@@ -25,7 +25,11 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
+<<<<<<< HEAD
 #include "drmP.h"
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "atom.h"
@@ -44,7 +48,11 @@ int r520_mc_wait_for_idle(struct radeon_device *rdev)
 		if (tmp & R520_MC_STATUS_IDLE) {
 			return 0;
 		}
+<<<<<<< HEAD
 		DRM_UDELAY(1);
+=======
+		udelay(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -1;
 }
@@ -86,8 +94,12 @@ static void r520_gpu_init(struct radeon_device *rdev)
 	      (((gb_pipe_select >> 8) & 0xF) << 4);
 	WREG32_PLL(0x000D, tmp);
 	if (r520_mc_wait_for_idle(rdev)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "Failed to wait MC idle while "
 		       "programming pipes. Bad things might happen.\n");
+=======
+		pr_warn("Failed to wait MC idle while programming pipes. Bad things might happen.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -119,7 +131,11 @@ static void r520_vram_get_type(struct radeon_device *rdev)
 		rdev->mc.vram_width *= 2;
 }
 
+<<<<<<< HEAD
 void r520_mc_init(struct radeon_device *rdev)
+=======
+static void r520_mc_init(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	r520_vram_get_type(rdev);
@@ -131,7 +147,11 @@ void r520_mc_init(struct radeon_device *rdev)
 	radeon_update_bandwidth_info(rdev);
 }
 
+<<<<<<< HEAD
 void r520_mc_program(struct radeon_device *rdev)
+=======
+static void r520_mc_program(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rv515_mc_save save;
 
@@ -209,6 +229,7 @@ static int r520_startup(struct radeon_device *rdev)
 		return r;
 	}
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_start(rdev);
 	if (r)
 		return r;
@@ -219,6 +240,14 @@ static int r520_startup(struct radeon_device *rdev)
 		rdev->accel_working = false;
 		return r;
 	}
+=======
+	r = radeon_ib_pool_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
+		return r;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -304,9 +333,13 @@ int r520_init(struct radeon_device *rdev)
 	r520_mc_init(rdev);
 	rv515_debugfs(rdev);
 	/* Fence driver */
+<<<<<<< HEAD
 	r = radeon_fence_driver_init(rdev);
 	if (r)
 		return r;
+=======
+	radeon_fence_driver_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -316,6 +349,7 @@ int r520_init(struct radeon_device *rdev)
 		return r;
 	rv515_set_safe_registers(rdev);
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_init(rdev);
 	rdev->accel_working = true;
 	if (r) {
@@ -323,13 +357,23 @@ int r520_init(struct radeon_device *rdev)
 		rdev->accel_working = false;
 	}
 
+=======
+	/* Initialize power management */
+	radeon_pm_init(rdev);
+
+	rdev->accel_working = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = r520_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
+<<<<<<< HEAD
 		r100_ib_fini(rdev);
+=======
+		radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		rv370_pcie_gart_fini(rdev);
 		radeon_agp_fini(rdev);

@@ -1,13 +1,24 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_IO_H
 #define _ASM_IO_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 
 #define virt_to_phys(a) ((unsigned long)__pa(a))
 #define phys_to_virt(a) __va(a)
 #define virt_to_bus virt_to_phys
 #define bus_to_virt phys_to_virt
+=======
+#include <linux/pgtable.h>
+
+#define virt_to_phys(a) ((unsigned long)__pa(a))
+#define phys_to_virt(a) __va(a)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long isa_bus_to_virt(unsigned long addr) {
 	BUG();
@@ -34,10 +45,17 @@ static inline unsigned char gsc_readb(unsigned long addr)
 	unsigned char ret;
 
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	rsm	2,%0\n"
 	"	ldbx	0(%2),%1\n"
 	"	mtsm	%0\n"
 	: "=&r" (flags), "=r" (ret) : "r" (addr) );
+=======
+	"	rsm	%3,%0\n"
+	"	ldbx	0(%2),%1\n"
+	"	mtsm	%0\n"
+	: "=&r" (flags), "=r" (ret) : "r" (addr), "i" (PSW_SM_D) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -48,10 +66,17 @@ static inline unsigned short gsc_readw(unsigned long addr)
 	unsigned short ret;
 
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	rsm	2,%0\n"
 	"	ldhx	0(%2),%1\n"
 	"	mtsm	%0\n"
 	: "=&r" (flags), "=r" (ret) : "r" (addr) );
+=======
+	"	rsm	%3,%0\n"
+	"	ldhx	0(%2),%1\n"
+	"	mtsm	%0\n"
+	: "=&r" (flags), "=r" (ret) : "r" (addr), "i" (PSW_SM_D) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -87,20 +112,34 @@ static inline void gsc_writeb(unsigned char val, unsigned long addr)
 {
 	long flags;
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	rsm	2,%0\n"
 	"	stbs	%1,0(%2)\n"
 	"	mtsm	%0\n"
 	: "=&r" (flags) :  "r" (val), "r" (addr) );
+=======
+	"	rsm	%3,%0\n"
+	"	stbs	%1,0(%2)\n"
+	"	mtsm	%0\n"
+	: "=&r" (flags) :  "r" (val), "r" (addr), "i" (PSW_SM_D) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void gsc_writew(unsigned short val, unsigned long addr)
 {
 	long flags;
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	rsm	2,%0\n"
 	"	sths	%1,0(%2)\n"
 	"	mtsm	%0\n"
 	: "=&r" (flags) :  "r" (val), "r" (addr) );
+=======
+	"	rsm	%3,%0\n"
+	"	sths	%1,0(%2)\n"
+	"	mtsm	%0\n"
+	: "=&r" (flags) :  "r" (val), "r" (addr), "i" (PSW_SM_D) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void gsc_writel(unsigned int val, unsigned long addr)
@@ -126,6 +165,7 @@ static inline void gsc_writeq(unsigned long long val, unsigned long addr)
 /*
  * The standard PCI ioremap interfaces
  */
+<<<<<<< HEAD
 
 extern void __iomem * __ioremap(unsigned long offset, unsigned long size, unsigned long flags);
 
@@ -223,10 +263,27 @@ static inline void writeq(unsigned long long q, volatile void __iomem *addr)
 #define readq_relaxed(addr) readq(addr)
 
 #define mmiowb() do { } while (0)
+=======
+#define ioremap_prot ioremap_prot
+
+#define _PAGE_IOREMAP (_PAGE_PRESENT | _PAGE_RW | _PAGE_DIRTY | \
+		       _PAGE_ACCESSED | _PAGE_NO_CACHE)
+
+#define ioremap_wc(addr, size)  \
+	ioremap_prot((addr), (size), _PAGE_IOREMAP)
+
+#define pci_iounmap			pci_iounmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void memset_io(volatile void __iomem *addr, unsigned char val, int count);
 void memcpy_fromio(void *dst, const volatile void __iomem *src, int count);
 void memcpy_toio(volatile void __iomem *dst, const void *src, int count);
+<<<<<<< HEAD
+=======
+#define memset_io memset_io
+#define memcpy_fromio memcpy_fromio
+#define memcpy_toio memcpy_toio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Port-space IO */
 
@@ -248,10 +305,22 @@ extern void eisa_out32(unsigned int data, unsigned short port);
 extern unsigned char inb(int addr);
 extern unsigned short inw(int addr);
 extern unsigned int inl(int addr);
+<<<<<<< HEAD
 
 extern void outb(unsigned char b, int addr);
 extern void outw(unsigned short b, int addr);
 extern void outl(unsigned int b, int addr);
+=======
+extern void outb(unsigned char b, int addr);
+extern void outw(unsigned short b, int addr);
+extern void outl(unsigned int b, int addr);
+#define inb inb
+#define inw inw
+#define inl inl
+#define outb outb
+#define outw outw
+#define outl outl
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif defined(CONFIG_EISA)
 #define inb eisa_in8
 #define inw eisa_in16
@@ -277,10 +346,19 @@ static inline int inl(unsigned long addr)
 	BUG();
 	return -1;
 }
+<<<<<<< HEAD
 
 #define outb(x, y)	BUG()
 #define outw(x, y)	BUG()
 #define outl(x, y)	BUG()
+=======
+#define inb inb
+#define inw inw
+#define inl inl
+#define outb(x, y)	({(void)(x); (void)(y); BUG(); 0;})
+#define outw(x, y)	({(void)(x); (void)(y); BUG(); 0;})
+#define outl(x, y)	({(void)(x); (void)(y); BUG(); 0;})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -292,7 +370,16 @@ extern void insl (unsigned long port, void *dst, unsigned long count);
 extern void outsb (unsigned long port, const void *src, unsigned long count);
 extern void outsw (unsigned long port, const void *src, unsigned long count);
 extern void outsl (unsigned long port, const void *src, unsigned long count);
+<<<<<<< HEAD
 
+=======
+#define insb insb
+#define insw insw
+#define insl insl
+#define outsb outsb
+#define outsw outsw
+#define outsl outsl
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IO Port space is :      BBiiii   where BB is HBA number. */
 #define IO_SPACE_LIMIT 0x00ffffff
@@ -304,6 +391,7 @@ extern void outsl (unsigned long port, const void *src, unsigned long count);
  * value for either 32 or 64 bit mode */
 #define F_EXTEND(x) ((unsigned long)((x) | (0xffffffff00000000ULL)))
 
+<<<<<<< HEAD
 #include <asm-generic/iomap.h>
 
 /*
@@ -316,5 +404,45 @@ extern void outsl (unsigned long port, const void *src, unsigned long count);
  * Convert a virtual cached pointer to an uncached pointer
  */
 #define xlate_dev_kmem_ptr(p)	p
+=======
+#ifdef CONFIG_64BIT
+#define ioread64 ioread64
+#define ioread64be ioread64be
+#define iowrite64 iowrite64
+#define iowrite64be iowrite64be
+extern u64 ioread64(const void __iomem *addr);
+extern u64 ioread64be(const void __iomem *addr);
+extern void iowrite64(u64 val, void __iomem *addr);
+extern void iowrite64be(u64 val, void __iomem *addr);
+#endif
+
+#include <asm-generic/iomap.h>
+/*
+ * These get provided from <asm-generic/iomap.h> since parisc does not
+ * select GENERIC_IOMAP.
+ */
+#define ioport_map ioport_map
+#define ioport_unmap ioport_unmap
+#define ioread8 ioread8
+#define ioread16 ioread16
+#define ioread32 ioread32
+#define ioread16be ioread16be
+#define ioread32be ioread32be
+#define iowrite8 iowrite8
+#define iowrite16 iowrite16
+#define iowrite32 iowrite32
+#define iowrite16be iowrite16be
+#define iowrite32be iowrite32be
+#define ioread8_rep ioread8_rep
+#define ioread16_rep ioread16_rep
+#define ioread32_rep ioread32_rep
+#define iowrite8_rep iowrite8_rep
+#define iowrite16_rep iowrite16_rep
+#define iowrite32_rep iowrite32_rep
+
+extern int devmem_is_allowed(unsigned long pfn);
+
+#include <asm-generic/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

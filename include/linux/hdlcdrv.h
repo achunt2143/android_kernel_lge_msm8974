@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hdlcdrv.h  -- HDLC packet radio network driver.
  * The Linux soundcard driver for 1200 baud and 9600 baud packet radio
  * (C) 1996-1998 by Thomas Sailer, HB9JNX/AE4WA
  */
+<<<<<<< HEAD
 
 #ifndef _HDLCDRV_H
 #define _HDLCDRV_H
@@ -103,10 +108,19 @@ struct hdlcdrv_ioctl {
 /* -------------------------------------------------------------------- */
 
 #ifdef __KERNEL__
+=======
+#ifndef _HDLCDRV_H
+#define _HDLCDRV_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netdevice.h>
 #include <linux/if.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <uapi/linux/hdlcdrv.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HDLCDRV_MAGIC      0x5ac6e778
 #define HDLCDRV_HDLCBUFFER  32 /* should be a power of 2 for speed reasons */
@@ -174,7 +188,11 @@ struct hdlcdrv_ops {
 	 */
 	int (*open)(struct net_device *);
 	int (*close)(struct net_device *);
+<<<<<<< HEAD
 	int (*ioctl)(struct net_device *, struct ifreq *, 
+=======
+	int (*ioctl)(struct net_device *, void __user *,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     struct hdlcdrv_ioctl *, int);
 };
 
@@ -368,6 +386,7 @@ void hdlcdrv_unregister(struct net_device *dev);
 
 
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 /* -------------------------------------------------------------------- */
@@ -375,3 +394,6 @@ void hdlcdrv_unregister(struct net_device *dev);
 #endif /* _HDLCDRV_H */
 
 /* -------------------------------------------------------------------- */
+=======
+#endif /* _HDLCDRV_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

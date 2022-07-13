@@ -137,7 +137,11 @@ static void print_commandk (unsigned char *command)
 	printk("\n");
 }
 
+<<<<<<< HEAD
 static void show_command(Scsi_Cmnd *SCpnt)
+=======
+static void show_command(struct scsi_cmnd *SCpnt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	print_commandk(SCpnt->cmnd);
 }

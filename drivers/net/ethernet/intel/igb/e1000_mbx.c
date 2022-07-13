@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) Gigabit Ethernet Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 2007 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "e1000_mbx.h"
 
@@ -33,10 +38,19 @@
  *  @msg: The message buffer
  *  @size: Length of buffer
  *  @mbx_id: id of mailbox to read
+<<<<<<< HEAD
  *
  *  returns SUCCESS if it successfully read message from buffer
  **/
 s32 igb_read_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id)
+=======
+ *  @unlock: skip locking or not
+ *
+ *  returns SUCCESS if it successfully read message from buffer
+ **/
+s32 igb_read_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id,
+		 bool unlock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	s32 ret_val = -E1000_ERR_MBX;
@@ -46,7 +60,11 @@ s32 igb_read_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id)
 		size = mbx->size;
 
 	if (mbx->ops.read)
+<<<<<<< HEAD
 		ret_val = mbx->ops.read(hw, msg, size, mbx_id);
+=======
+		ret_val = mbx->ops.read(hw, msg, size, mbx_id, unlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -129,6 +147,27 @@ s32 igb_check_for_rst(struct e1000_hw *hw, u16 mbx_id)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *  igb_unlock_mbx - unlock the mailbox
+ *  @hw: pointer to the HW structure
+ *  @mbx_id: id of mailbox to check
+ *
+ *  returns SUCCESS if the mailbox was unlocked or else ERR_MBX
+ **/
+s32 igb_unlock_mbx(struct e1000_hw *hw, u16 mbx_id)
+{
+	struct e1000_mbx_info *mbx = &hw->mbx;
+	s32 ret_val = -E1000_ERR_MBX;
+
+	if (mbx->ops.unlock)
+		ret_val = mbx->ops.unlock(hw, mbx_id);
+
+	return ret_val;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  igb_poll_for_msg - Wait for message notification
  *  @hw: pointer to the HW structure
  *  @mbx_id: id of mailbox to write
@@ -196,7 +235,12 @@ out:
  *  returns SUCCESS if it successfully received a message notification and
  *  copied it into the receive buffer.
  **/
+<<<<<<< HEAD
 static s32 igb_read_posted_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id)
+=======
+static s32 igb_read_posted_mbx(struct e1000_hw *hw, u32 *msg, u16 size,
+			       u16 mbx_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	s32 ret_val = -E1000_ERR_MBX;
@@ -207,7 +251,11 @@ static s32 igb_read_posted_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_
 	ret_val = igb_poll_for_msg(hw, mbx_id);
 
 	if (!ret_val)
+<<<<<<< HEAD
 		ret_val = mbx->ops.read(hw, msg, size, mbx_id);
+=======
+		ret_val = mbx->ops.read(hw, msg, size, mbx_id, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret_val;
 }
@@ -222,7 +270,12 @@ out:
  *  returns SUCCESS if it successfully copied message into the buffer and
  *  received an ack to that message within delay * timeout period
  **/
+<<<<<<< HEAD
 static s32 igb_write_posted_mbx(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id)
+=======
+static s32 igb_write_posted_mbx(struct e1000_hw *hw, u32 *msg, u16 size,
+				u16 mbx_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	s32 ret_val = -E1000_ERR_MBX;
@@ -304,9 +357,15 @@ static s32 igb_check_for_rst_pf(struct e1000_hw *hw, u16 vf_number)
 	u32 vflre = rd32(E1000_VFLRE);
 	s32 ret_val = -E1000_ERR_MBX;
 
+<<<<<<< HEAD
 	if (vflre & (1 << vf_number)) {
 		ret_val = 0;
 		wr32(E1000_VFLRE, (1 << vf_number));
+=======
+	if (vflre & BIT(vf_number)) {
+		ret_val = 0;
+		wr32(E1000_VFLRE, BIT(vf_number));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mbx.stats.rsts++;
 	}
 
@@ -324,6 +383,7 @@ static s32 igb_obtain_mbx_lock_pf(struct e1000_hw *hw, u16 vf_number)
 {
 	s32 ret_val = -E1000_ERR_MBX;
 	u32 p2v_mailbox;
+<<<<<<< HEAD
 
 
 	/* Take ownership of the buffer */
@@ -333,11 +393,50 @@ static s32 igb_obtain_mbx_lock_pf(struct e1000_hw *hw, u16 vf_number)
 	p2v_mailbox = rd32(E1000_P2VMAILBOX(vf_number));
 	if (p2v_mailbox & E1000_P2VMAILBOX_PFU)
 		ret_val = 0;
+=======
+	int count = 10;
+
+	do {
+		/* Take ownership of the buffer */
+		wr32(E1000_P2VMAILBOX(vf_number), E1000_P2VMAILBOX_PFU);
+
+		/* reserve mailbox for vf use */
+		p2v_mailbox = rd32(E1000_P2VMAILBOX(vf_number));
+		if (p2v_mailbox & E1000_P2VMAILBOX_PFU) {
+			ret_val = 0;
+			break;
+		}
+		udelay(1000);
+	} while (count-- > 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *  igb_release_mbx_lock_pf - release mailbox lock
+ *  @hw: pointer to the HW structure
+ *  @vf_number: the VF index
+ *
+ *  return SUCCESS if we released the mailbox lock
+ **/
+static s32 igb_release_mbx_lock_pf(struct e1000_hw *hw, u16 vf_number)
+{
+	u32 p2v_mailbox;
+
+	/* drop PF lock of mailbox, if set */
+	p2v_mailbox = rd32(E1000_P2VMAILBOX(vf_number));
+	if (p2v_mailbox & E1000_P2VMAILBOX_PFU)
+		wr32(E1000_P2VMAILBOX(vf_number),
+		     p2v_mailbox & ~E1000_P2VMAILBOX_PFU);
+
+	return 0;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  igb_write_mbx_pf - Places a message in the mailbox
  *  @hw: pointer to the HW structure
  *  @msg: The message buffer
@@ -347,7 +446,11 @@ static s32 igb_obtain_mbx_lock_pf(struct e1000_hw *hw, u16 vf_number)
  *  returns SUCCESS if it successfully copied message into the buffer
  **/
 static s32 igb_write_mbx_pf(struct e1000_hw *hw, u32 *msg, u16 size,
+<<<<<<< HEAD
                               u16 vf_number)
+=======
+			    u16 vf_number)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 ret_val;
 	u16 i;
@@ -382,13 +485,21 @@ out_no_write:
  *  @msg: The message buffer
  *  @size: Length of buffer
  *  @vf_number: the VF index
+<<<<<<< HEAD
+=======
+ *  @unlock: unlock the mailbox when done?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This function copies a message from the mailbox buffer to the caller's
  *  memory buffer.  The presumption is that the caller knows that there was
  *  a message due to a VF request so no polling for message is needed.
  **/
 static s32 igb_read_mbx_pf(struct e1000_hw *hw, u32 *msg, u16 size,
+<<<<<<< HEAD
                              u16 vf_number)
+=======
+			   u16 vf_number, bool unlock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 ret_val;
 	u16 i;
@@ -402,8 +513,17 @@ static s32 igb_read_mbx_pf(struct e1000_hw *hw, u32 *msg, u16 size,
 	for (i = 0; i < size; i++)
 		msg[i] = array_rd32(E1000_VMBMEM(vf_number), i);
 
+<<<<<<< HEAD
 	/* Acknowledge the message and release buffer */
 	wr32(E1000_P2VMAILBOX(vf_number), E1000_P2VMAILBOX_ACK);
+=======
+	/* Acknowledge the message and release mailbox lock (or not) */
+	if (unlock)
+		wr32(E1000_P2VMAILBOX(vf_number), E1000_P2VMAILBOX_ACK);
+	else
+		wr32(E1000_P2VMAILBOX(vf_number),
+		     E1000_P2VMAILBOX_ACK | E1000_P2VMAILBOX_PFU);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update stats */
 	hw->mbx.stats.msgs_rx++;
@@ -413,7 +533,11 @@ out_no_read:
 }
 
 /**
+<<<<<<< HEAD
  *  e1000_init_mbx_params_pf - set initial values for pf mailbox
+=======
+ *  igb_init_mbx_params_pf - set initial values for pf mailbox
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @hw: pointer to the HW structure
  *
  *  Initializes the hw->mbx struct to correct values for pf mailbox
@@ -434,6 +558,10 @@ s32 igb_init_mbx_params_pf(struct e1000_hw *hw)
 	mbx->ops.check_for_msg = igb_check_for_msg_pf;
 	mbx->ops.check_for_ack = igb_check_for_ack_pf;
 	mbx->ops.check_for_rst = igb_check_for_rst_pf;
+<<<<<<< HEAD
+=======
+	mbx->ops.unlock = igb_release_mbx_lock_pf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbx->stats.msgs_tx = 0;
 	mbx->stats.msgs_rx = 0;

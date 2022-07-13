@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas Solutions Highlander FPGA I2C/SMBus support.
  *
@@ -6,6 +10,7 @@
  * Copyright (C) 2008  Paul Mundt
  * Copyright (C) 2008  Renesas Solutions Corp.
  * Copyright (C) 2008  Atom Create Engineering Co., Ltd.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General
  * Public License version 2. See the file "COPYING" in the main directory
@@ -13,6 +18,10 @@
  */
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
@@ -326,7 +335,11 @@ static int highlander_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 		tmp |= (SMMR_MODE0 | SMMR_MODE1);
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(dev->dev, "unsupported xfer size %d\n", dev->buf_len);
+=======
+		dev_err(dev->dev, "unsupported xfer size %zu\n", dev->buf_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -356,7 +369,11 @@ static const struct i2c_algorithm highlander_i2c_algo = {
 	.functionality	= highlander_i2c_func,
 };
 
+<<<<<<< HEAD
 static int __devinit highlander_i2c_probe(struct platform_device *pdev)
+=======
+static int highlander_i2c_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct highlander_i2c_dev *dev;
 	struct i2c_adapter *adap;
@@ -373,7 +390,11 @@ static int __devinit highlander_i2c_probe(struct platform_device *pdev)
 	if (unlikely(!dev))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	dev->base = ioremap_nocache(res->start, resource_size(res));
+=======
+	dev->base = ioremap(res->start, resource_size(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!dev->base)) {
 		ret = -ENXIO;
 		goto err;
@@ -383,7 +404,11 @@ static int __devinit highlander_i2c_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, dev);
 
 	dev->irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (iic_force_poll)
+=======
+	if (dev->irq < 0 || iic_force_poll)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->irq = 0;
 
 	if (dev->irq) {
@@ -406,7 +431,11 @@ static int __devinit highlander_i2c_probe(struct platform_device *pdev)
 	i2c_set_adapdata(adap, dev);
 	adap->owner = THIS_MODULE;
 	adap->class = I2C_CLASS_HWMON;
+<<<<<<< HEAD
 	strlcpy(adap->name, "HL FPGA I2C adapter", sizeof(adap->name));
+=======
+	strscpy(adap->name, "HL FPGA I2C adapter", sizeof(adap->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adap->algo = &highlander_i2c_algo;
 	adap->dev.parent = &pdev->dev;
 	adap->nr = pdev->id;
@@ -436,12 +465,19 @@ err_unmap:
 err:
 	kfree(dev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 
 	return ret;
 }
 
 static int __devexit highlander_i2c_remove(struct platform_device *pdev)
+=======
+	return ret;
+}
+
+static void highlander_i2c_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct highlander_i2c_dev *dev = platform_get_drvdata(pdev);
 
@@ -452,20 +488,30 @@ static int __devexit highlander_i2c_remove(struct platform_device *pdev)
 
 	iounmap(dev->base);
 	kfree(dev);
+<<<<<<< HEAD
 
 	platform_set_drvdata(pdev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver highlander_i2c_driver = {
 	.driver		= {
 		.name	= "i2c-highlander",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 
 	.probe		= highlander_i2c_probe,
 	.remove		= __devexit_p(highlander_i2c_remove),
+=======
+	},
+
+	.probe		= highlander_i2c_probe,
+	.remove_new	= highlander_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(highlander_i2c_driver);

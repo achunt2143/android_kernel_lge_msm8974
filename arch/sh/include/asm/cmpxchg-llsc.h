@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_CMPXCHG_LLSC_H
 #define __ASM_SH_CMPXCHG_LLSC_H
 
@@ -22,6 +26,7 @@ static inline unsigned long xchg_u32(volatile u32 *m, unsigned long val)
 	return retval;
 }
 
+<<<<<<< HEAD
 static inline unsigned long xchg_u8(volatile u8 *m, unsigned long val)
 {
 	unsigned long retval;
@@ -45,6 +50,10 @@ static inline unsigned long xchg_u8(volatile u8 *m, unsigned long val)
 
 static inline unsigned long
 __cmpxchg_u32(volatile int *m, unsigned long old, unsigned long new)
+=======
+static inline unsigned long
+__cmpxchg_u32(volatile u32 *m, unsigned long old, unsigned long new)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long retval;
 	unsigned long tmp;
@@ -68,4 +77,9 @@ __cmpxchg_u32(volatile int *m, unsigned long old, unsigned long new)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+#include <asm/cmpxchg-xchg.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_CMPXCHG_LLSC_H */

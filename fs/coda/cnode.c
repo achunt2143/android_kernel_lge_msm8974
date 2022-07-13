@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cnode related routines for the coda kernel code
    (C) 1996 Peter Braam
    */
@@ -7,7 +11,12 @@
 #include <linux/time.h>
 
 #include <linux/coda.h>
+<<<<<<< HEAD
 #include <linux/coda_psdev.h>
+=======
+#include <linux/pagemap.h>
+#include "coda_psdev.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "coda_linux.h"
 
 static inline int coda_fideq(struct CodaFid *fid1, struct CodaFid *fid2)
@@ -16,9 +25,13 @@ static inline int coda_fideq(struct CodaFid *fid1, struct CodaFid *fid2)
 }
 
 static const struct inode_operations coda_symlink_inode_operations = {
+<<<<<<< HEAD
 	.readlink	= generic_readlink,
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	.get_link	= page_get_link,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr	= coda_setattr,
 };
 
@@ -35,6 +48,10 @@ static void coda_fill_inode(struct inode *inode, struct coda_vattr *attr)
                 inode->i_fop = &coda_dir_operations;
         } else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &coda_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_data.a_ops = &coda_symlink_aops;
 		inode->i_mapping = &inode->i_data;
 	} else
@@ -62,9 +79,16 @@ struct inode * coda_iget(struct super_block * sb, struct CodaFid * fid,
 	struct inode *inode;
 	struct coda_inode_info *cii;
 	unsigned long hash = coda_f2i(fid);
+<<<<<<< HEAD
 
 	inode = iget5_locked(sb, hash, coda_test_inode, coda_set_inode, fid);
 
+=======
+	umode_t inode_type = coda_inode_type(attr);
+
+retry:
+	inode = iget5_locked(sb, hash, coda_test_inode, coda_set_inode, fid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 
@@ -74,11 +98,23 @@ struct inode * coda_iget(struct super_block * sb, struct CodaFid * fid,
 		inode->i_ino = hash;
 		/* inode is locked and unique, no need to grab cii->c_lock */
 		cii->c_mapcount = 0;
+<<<<<<< HEAD
 		unlock_new_inode(inode);
 	}
 
 	/* always replace the attributes, type might have changed */
 	coda_fill_inode(inode, attr);
+=======
+		coda_fill_inode(inode, attr);
+		unlock_new_inode(inode);
+	} else if ((inode->i_mode & S_IFMT) != inode_type) {
+		/* Inode has changed type, mark bad and grab a new one */
+		remove_inode_hash(inode);
+		coda_flag_inode(inode, C_PURGE);
+		iput(inode);
+		goto retry;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 }
 
@@ -101,7 +137,11 @@ struct inode *coda_cnode_make(struct CodaFid *fid, struct super_block *sb)
 
 	inode = coda_iget(sb, fid, &attr);
 	if (IS_ERR(inode))
+<<<<<<< HEAD
 		printk("coda_cnode_make: coda_iget failed\n");
+=======
+		pr_warn("%s: coda_iget failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 }
 
@@ -136,11 +176,14 @@ struct inode *coda_fid_to_inode(struct CodaFid *fid, struct super_block *sb)
 	struct inode *inode;
 	unsigned long hash = coda_f2i(fid);
 
+<<<<<<< HEAD
 	if ( !sb ) {
 		printk("coda_fid_to_inode: no sb!\n");
 		return NULL;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode = ilookup5(sb, hash, coda_test_inode, fid);
 	if ( !inode )
 		return NULL;
@@ -152,6 +195,19 @@ struct inode *coda_fid_to_inode(struct CodaFid *fid, struct super_block *sb)
 	return inode;
 }
 
+<<<<<<< HEAD
+=======
+struct coda_file_info *coda_ftoc(struct file *file)
+{
+	struct coda_file_info *cfi = file->private_data;
+
+	BUG_ON(!cfi || cfi->cfi_magic != CODA_MAGIC);
+
+	return cfi;
+
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* the CONTROL inode is made without asking attributes from Venus */
 struct inode *coda_cnode_makectl(struct super_block *sb)
 {

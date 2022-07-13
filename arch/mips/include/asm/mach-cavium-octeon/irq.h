@@ -21,6 +21,7 @@ enum octeon_irq {
 	OCTEON_IRQ_TIMER,
 /* sources in CIU_INTX_EN0 */
 	OCTEON_IRQ_WORKQ0,
+<<<<<<< HEAD
 	OCTEON_IRQ_GPIO0 = OCTEON_IRQ_WORKQ0 + 16,
 	OCTEON_IRQ_WDOG0 = OCTEON_IRQ_GPIO0 + 16,
 	OCTEON_IRQ_WDOG15 = OCTEON_IRQ_WDOG0 + 15,
@@ -29,6 +30,13 @@ enum octeon_irq {
 	OCTEON_IRQ_UART0,
 	OCTEON_IRQ_UART1,
 	OCTEON_IRQ_UART2,
+=======
+	OCTEON_IRQ_WDOG0 = OCTEON_IRQ_WORKQ0 + 64,
+	OCTEON_IRQ_MBOX0 = OCTEON_IRQ_WDOG0 + 32,
+	OCTEON_IRQ_MBOX1,
+	OCTEON_IRQ_MBOX2,
+	OCTEON_IRQ_MBOX3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OCTEON_IRQ_PCI_INT0,
 	OCTEON_IRQ_PCI_INT1,
 	OCTEON_IRQ_PCI_INT2,
@@ -41,14 +49,18 @@ enum octeon_irq {
 	OCTEON_IRQ_TWSI,
 	OCTEON_IRQ_TWSI2,
 	OCTEON_IRQ_RML,
+<<<<<<< HEAD
 	OCTEON_IRQ_TRACE0,
 	OCTEON_IRQ_GMX_DRP0 = OCTEON_IRQ_TRACE0 + 4,
 	OCTEON_IRQ_IPD_DRP = OCTEON_IRQ_GMX_DRP0 + 5,
 	OCTEON_IRQ_KEY_ZERO,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OCTEON_IRQ_TIMER0,
 	OCTEON_IRQ_TIMER1,
 	OCTEON_IRQ_TIMER2,
 	OCTEON_IRQ_TIMER3,
+<<<<<<< HEAD
 	OCTEON_IRQ_USB0,
 	OCTEON_IRQ_USB1,
 	OCTEON_IRQ_PCM,
@@ -96,6 +108,19 @@ enum octeon_irq {
 #define OCTEON_IRQ_LAST          (OCTEON_IRQ_MSI_LAST + 1)
 #else
 #define OCTEON_IRQ_LAST         (OCTEON_IRQ_RST + 1)
+=======
+#ifndef CONFIG_PCI_MSI
+	OCTEON_IRQ_LAST = 127
+#endif
+};
+
+#ifdef CONFIG_PCI_MSI
+/* 256 - 511 represent the MSI interrupts 0-255 */
+#define OCTEON_IRQ_MSI_BIT0	(256)
+
+#define OCTEON_IRQ_MSI_LAST	 (OCTEON_IRQ_MSI_BIT0 + 255)
+#define OCTEON_IRQ_LAST		 (OCTEON_IRQ_MSI_LAST + 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

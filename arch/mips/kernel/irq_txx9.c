@@ -1,5 +1,6 @@
 /*
  * Based on linux/arch/mips/jmr3927/rbhma3100/irq.c,
+<<<<<<< HEAD
  *          linux/arch/mips/tx4927/common/tx4927_irq.c,
  *          linux/arch/mips/tx4938/common/irq.c
  *
@@ -7,6 +8,15 @@
  * Author: MontaVista Software, Inc.
  *         ahennessy@mvista.com
  *         source@mvista.com
+=======
+ *	    linux/arch/mips/tx4927/common/tx4927_irq.c,
+ *	    linux/arch/mips/tx4938/common/irq.c
+ *
+ * Copyright 2001, 2003-2005 MontaVista Software Inc.
+ * Author: MontaVista Software, Inc.
+ *	   ahennessy@mvista.com
+ *	   source@mvista.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2000-2001 Toshiba Corporation
  *
  * This file is subject to the terms and conditions of the GNU General Public
@@ -72,11 +82,14 @@ static void txx9_irq_unmask(struct irq_data *d)
 	__raw_writel((__raw_readl(ilrp) & ~(0xff << ofs))
 		     | (txx9irq[irq_nr].level << ofs),
 		     ilrp);
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_TX39XX
 	/* update IRCSR */
 	__raw_writel(0, &txx9_ircptr->imr);
 	__raw_writel(irc_elevel, &txx9_ircptr->imr);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void txx9_irq_mask(struct irq_data *d)
@@ -88,6 +101,7 @@ static inline void txx9_irq_mask(struct irq_data *d)
 	__raw_writel((__raw_readl(ilrp) & ~(0xff << ofs))
 		     | (irc_dlevel << ofs),
 		     ilrp);
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_TX39XX
 	/* update IRCSR */
 	__raw_writel(0, &txx9_ircptr->imr);
@@ -97,6 +111,9 @@ static inline void txx9_irq_mask(struct irq_data *d)
 #else
 	mmiowb();
 #endif
+=======
+	mmiowb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9_irq_mask_ack(struct irq_data *d)
@@ -122,7 +139,11 @@ static int txx9_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	switch (flow_type & IRQF_TRIGGER_MASK) {
 	case IRQF_TRIGGER_RISING:	mode = TXx9_IRCR_UP;	break;
 	case IRQF_TRIGGER_FALLING:	mode = TXx9_IRCR_DOWN;	break;
+<<<<<<< HEAD
 	case IRQF_TRIGGER_HIGH:	mode = TXx9_IRCR_HIGH;	break;
+=======
+	case IRQF_TRIGGER_HIGH: mode = TXx9_IRCR_HIGH;	break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IRQF_TRIGGER_LOW:	mode = TXx9_IRCR_LOW;	break;
 	default:
 		return -EINVAL;

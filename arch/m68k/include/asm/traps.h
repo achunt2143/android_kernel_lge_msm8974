@@ -267,6 +267,13 @@ struct frame {
     } un;
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_M68040
+asmlinkage void berr_040cleanup(struct frame *fp);
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 #endif /* _M68K_TRAPS_H */

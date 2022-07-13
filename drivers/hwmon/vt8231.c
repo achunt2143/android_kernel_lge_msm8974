@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vt8231.c - Part of lm_sensors, Linux kernel modules
  *	      for hardware monitoring
@@ -5,6 +9,7 @@
  * Copyright (c) 2005 Roger Lucas <vt8231@hiddenengine.co.uk>
  * Copyright (c) 2002 Mark D. Studebaker <mdsxyz123@yahoo.com>
  *		      Aaron M. Marsh <amarsh@sdf.lonestar.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -35,7 +42,10 @@
 #include <linux/platform_device.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
 #include <linux/hwmon-vid.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/mutex.h>
 #include <linux/acpi.h>
@@ -51,6 +61,11 @@ static struct platform_device *pdev;
 #define VT8231_BASE_REG 0x70
 #define VT8231_ENABLE_REG 0x74
 
+<<<<<<< HEAD
+=======
+#define DRIVER_NAME "vt8231"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The VT8231 registers
  *
@@ -147,7 +162,11 @@ static inline u8 FAN_TO_REG(long rpm, int div)
 {
 	if (rpm <= 0 || rpm > 1310720)
 		return 0;
+<<<<<<< HEAD
 	return SENSORS_LIMIT(1310720 / (rpm * div), 1, 255);
+=======
+	return clamp_val(1310720 / (rpm * div), 1, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define FAN_FROM_REG(val, div) ((val) == 0 ? 0 : 1310720 / ((val) * (div)))
@@ -158,7 +177,11 @@ struct vt8231_data {
 
 	struct mutex update_lock;
 	struct device *hwmon_dev;
+<<<<<<< HEAD
 	char valid;		/* !=0 if following fields are valid */
+=======
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	u8 in[6];		/* Register value */
@@ -175,10 +198,13 @@ struct vt8231_data {
 };
 
 static struct pci_dev *s_bridge;
+<<<<<<< HEAD
 static int vt8231_probe(struct platform_device *pdev);
 static int __devexit vt8231_remove(struct platform_device *pdev);
 static struct vt8231_data *vt8231_update_device(struct device *dev);
 static void vt8231_init_device(struct vt8231_data *data);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int vt8231_read_value(struct vt8231_data *data, u8 reg)
 {
@@ -191,9 +217,83 @@ static inline void vt8231_write_value(struct vt8231_data *data, u8 reg,
 	outb_p(value, data->addr + reg);
 }
 
+<<<<<<< HEAD
 /* following are the sysfs callback functions */
 static ssize_t show_in(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static struct vt8231_data *vt8231_update_device(struct device *dev)
+{
+	struct vt8231_data *data = dev_get_drvdata(dev);
+	int i;
+	u16 low;
+
+	mutex_lock(&data->update_lock);
+
+	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+	    || !data->valid) {
+		for (i = 0; i < 6; i++) {
+			if (ISVOLT(i, data->uch_config)) {
+				data->in[i] = vt8231_read_value(data,
+						regvolt[i]);
+				data->in_min[i] = vt8231_read_value(data,
+						regvoltmin[i]);
+				data->in_max[i] = vt8231_read_value(data,
+						regvoltmax[i]);
+			}
+		}
+		for (i = 0; i < 2; i++) {
+			data->fan[i] = vt8231_read_value(data,
+						VT8231_REG_FAN(i));
+			data->fan_min[i] = vt8231_read_value(data,
+						VT8231_REG_FAN_MIN(i));
+		}
+
+		low = vt8231_read_value(data, VT8231_REG_TEMP_LOW01);
+		low = (low >> 6) | ((low & 0x30) >> 2)
+		    | (vt8231_read_value(data, VT8231_REG_TEMP_LOW25) << 4);
+		for (i = 0; i < 6; i++) {
+			if (ISTEMP(i, data->uch_config)) {
+				data->temp[i] = (vt8231_read_value(data,
+						       regtemp[i]) << 2)
+						| ((low >> (2 * i)) & 0x03);
+				data->temp_max[i] = vt8231_read_value(data,
+						      regtempmax[i]);
+				data->temp_min[i] = vt8231_read_value(data,
+						      regtempmin[i]);
+			}
+		}
+
+		i = vt8231_read_value(data, VT8231_REG_FANDIV);
+		data->fan_div[0] = (i >> 4) & 0x03;
+		data->fan_div[1] = i >> 6;
+		data->alarms = vt8231_read_value(data, VT8231_REG_ALARM1) |
+			(vt8231_read_value(data, VT8231_REG_ALARM2) << 8);
+
+		/* Set alarm flags correctly */
+		if (!data->fan[0] && data->fan_min[0])
+			data->alarms |= 0x40;
+		else if (data->fan[0] && !data->fan_min[0])
+			data->alarms &= ~0x40;
+
+		if (!data->fan[1] && data->fan_min[1])
+			data->alarms |= 0x80;
+		else if (data->fan[1] && !data->fan_min[1])
+			data->alarms &= ~0x80;
+
+		data->last_updated = jiffies;
+		data->valid = true;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+
+/* following are the sysfs callback functions */
+static ssize_t in_show(struct device *dev, struct device_attribute *attr,
+		       char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -202,8 +302,13 @@ static ssize_t show_in(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", ((data->in[nr] - 3) * 10000) / 958);
 }
 
+<<<<<<< HEAD
 static ssize_t show_in_min(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t in_min_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -212,8 +317,13 @@ static ssize_t show_in_min(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", ((data->in_min[nr] - 3) * 10000) / 958);
 }
 
+<<<<<<< HEAD
 static ssize_t show_in_max(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t in_max_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -222,8 +332,13 @@ static ssize_t show_in_max(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", (((data->in_max[nr] - 3) * 10000) / 958));
 }
 
+<<<<<<< HEAD
 static ssize_t set_in_min(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t in_min_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -236,14 +351,23 @@ static ssize_t set_in_min(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->in_min[nr] = SENSORS_LIMIT(((val * 958) / 10000) + 3, 0, 255);
+=======
+	data->in_min[nr] = clamp_val(((val * 958) / 10000) + 3, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regvoltmin[nr], data->in_min[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t set_in_max(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t in_max_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -256,15 +380,24 @@ static ssize_t set_in_max(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->in_max[nr] = SENSORS_LIMIT(((val * 958) / 10000) + 3, 0, 255);
+=======
+	data->in_max[nr] = clamp_val(((val * 958) / 10000) + 3, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regvoltmax[nr], data->in_max[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
 /* Special case for input 5 as this has 3.3V scaling built into the chip */
+<<<<<<< HEAD
 static ssize_t show_in5(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t in5_input_show(struct device *dev,
+			      struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
 
@@ -272,7 +405,11 @@ static ssize_t show_in5(struct device *dev, struct device_attribute *attr,
 		(((data->in[5] - 3) * 10000 * 54) / (958 * 34)));
 }
 
+<<<<<<< HEAD
 static ssize_t show_in5_min(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t in5_min_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
@@ -281,7 +418,11 @@ static ssize_t show_in5_min(struct device *dev, struct device_attribute *attr,
 		(((data->in_min[5] - 3) * 10000 * 54) / (958 * 34)));
 }
 
+<<<<<<< HEAD
 static ssize_t show_in5_max(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t in5_max_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
@@ -290,8 +431,14 @@ static ssize_t show_in5_max(struct device *dev, struct device_attribute *attr,
 		(((data->in_max[5] - 3) * 10000 * 54) / (958 * 34)));
 }
 
+<<<<<<< HEAD
 static ssize_t set_in5_min(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t in5_min_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -302,15 +449,26 @@ static ssize_t set_in5_min(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->in_min[5] = SENSORS_LIMIT(((val * 958 * 34) / (10000 * 54)) + 3,
 					0, 255);
+=======
+	data->in_min[5] = clamp_val(((val * 958 * 34) / (10000 * 54)) + 3,
+				    0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regvoltmin[5], data->in_min[5]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t set_in5_max(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t in5_max_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -321,13 +479,19 @@ static ssize_t set_in5_max(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->in_max[5] = SENSORS_LIMIT(((val * 958 * 34) / (10000 * 54)) + 3,
 					0, 255);
+=======
+	data->in_max[5] = clamp_val(((val * 958 * 34) / (10000 * 54)) + 3,
+				    0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regvoltmax[5], data->in_max[5]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 #define define_voltage_sysfs(offset)				\
 static SENSOR_DEVICE_ATTR(in##offset##_input, S_IRUGO,		\
 		show_in, NULL, offset);				\
@@ -349,27 +513,67 @@ static DEVICE_ATTR(in5_max, S_IRUGO | S_IWUSR, show_in5_max, set_in5_max);
 /* Temperatures */
 static ssize_t show_temp0(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static SENSOR_DEVICE_ATTR_RO(in0_input, in, 0);
+static SENSOR_DEVICE_ATTR_RW(in0_min, in_min, 0);
+static SENSOR_DEVICE_ATTR_RW(in0_max, in_max, 0);
+static SENSOR_DEVICE_ATTR_RO(in1_input, in, 1);
+static SENSOR_DEVICE_ATTR_RW(in1_min, in_min, 1);
+static SENSOR_DEVICE_ATTR_RW(in1_max, in_max, 1);
+static SENSOR_DEVICE_ATTR_RO(in2_input, in, 2);
+static SENSOR_DEVICE_ATTR_RW(in2_min, in_min, 2);
+static SENSOR_DEVICE_ATTR_RW(in2_max, in_max, 2);
+static SENSOR_DEVICE_ATTR_RO(in3_input, in, 3);
+static SENSOR_DEVICE_ATTR_RW(in3_min, in_min, 3);
+static SENSOR_DEVICE_ATTR_RW(in3_max, in_max, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_input, in, 4);
+static SENSOR_DEVICE_ATTR_RW(in4_min, in_min, 4);
+static SENSOR_DEVICE_ATTR_RW(in4_max, in_max, 4);
+
+static DEVICE_ATTR_RO(in5_input);
+static DEVICE_ATTR_RW(in5_min);
+static DEVICE_ATTR_RW(in5_max);
+
+/* Temperatures */
+static ssize_t temp1_input_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp[0] * 250);
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp0_max(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t temp1_max_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_max[0] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp0_min(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t temp1_max_hyst_show(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_min[0] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp0_max(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t temp1_max_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	long val;
@@ -380,13 +584,23 @@ static ssize_t set_temp0_max(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_max[0] = SENSORS_LIMIT((val + 500) / 1000, 0, 255);
+=======
+	data->temp_max[0] = clamp_val((val + 500) / 1000, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regtempmax[0], data->temp_max[0]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_temp0_min(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t temp1_max_hyst_store(struct device *dev,
+				    struct device_attribute *attr,
+				    const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	long val;
@@ -397,14 +611,23 @@ static ssize_t set_temp0_min(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_min[0] = SENSORS_LIMIT((val + 500) / 1000, 0, 255);
+=======
+	data->temp_min[0] = clamp_val((val + 500) / 1000, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regtempmin[0], data->temp_min[0]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t temp_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -412,8 +635,13 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_max(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t temp_max_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -421,8 +649,13 @@ static ssize_t show_temp_max(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", TEMP_MAXMIN_FROM_REG(data->temp_max[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_min(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t temp_min_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -430,8 +663,14 @@ static ssize_t show_temp_min(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", TEMP_MAXMIN_FROM_REG(data->temp_min[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t temp_max_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -444,13 +683,23 @@ static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_max[nr] = SENSORS_LIMIT(TEMP_MAXMIN_TO_REG(val), 0, 255);
+=======
+	data->temp_max[nr] = clamp_val(TEMP_MAXMIN_TO_REG(val), 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regtempmax[nr], data->temp_max[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t temp_min_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -463,7 +712,11 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_min[nr] = SENSORS_LIMIT(TEMP_MAXMIN_TO_REG(val), 0, 255);
+=======
+	data->temp_min[nr] = clamp_val(TEMP_MAXMIN_TO_REG(val), 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt8231_write_value(data, regtempmin[nr], data->temp_min[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
@@ -473,6 +726,7 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
  * Note that these map the Linux temperature sensor numbering (1-6) to the VIA
  * temperature sensor numbering (0-5)
  */
+<<<<<<< HEAD
 #define define_temperature_sysfs(offset)				\
 static SENSOR_DEVICE_ATTR(temp##offset##_input, S_IRUGO,		\
 		show_temp, NULL, offset - 1);				\
@@ -495,6 +749,32 @@ define_temperature_sysfs(6);
 /* Fans */
 static ssize_t show_fan(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+
+static DEVICE_ATTR_RO(temp1_input);
+static DEVICE_ATTR_RW(temp1_max);
+static DEVICE_ATTR_RW(temp1_max_hyst);
+
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_max_hyst, temp_min, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_max, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_max_hyst, temp_min, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_input, temp, 3);
+static SENSOR_DEVICE_ATTR_RW(temp4_max, temp_max, 3);
+static SENSOR_DEVICE_ATTR_RW(temp4_max_hyst, temp_min, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_input, temp, 4);
+static SENSOR_DEVICE_ATTR_RW(temp5_max, temp_max, 4);
+static SENSOR_DEVICE_ATTR_RW(temp5_max_hyst, temp_min, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_input, temp, 5);
+static SENSOR_DEVICE_ATTR_RW(temp6_max, temp_max, 5);
+static SENSOR_DEVICE_ATTR_RW(temp6_max_hyst, temp_min, 5);
+
+/* Fans */
+static ssize_t fan_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -503,8 +783,13 @@ static ssize_t show_fan(struct device *dev, struct device_attribute *attr,
 				DIV_FROM_REG(data->fan_div[nr])));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_min(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t fan_min_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -513,8 +798,13 @@ static ssize_t show_fan_min(struct device *dev, struct device_attribute *attr,
 			DIV_FROM_REG(data->fan_div[nr])));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -522,8 +812,14 @@ static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", DIV_FROM_REG(data->fan_div[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t fan_min_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
@@ -542,8 +838,14 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t fan_div_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
@@ -573,8 +875,14 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 		data->fan_div[nr] = 3;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(dev, "fan_div value %ld not supported. "
 			"Choose one of 1, 2, 4 or 8!\n", val);
+=======
+		dev_err(dev,
+			"fan_div value %ld not supported. Choose one of 1, 2, 4 or 8!\n",
+			val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&data->update_lock);
 		return -EINVAL;
 	}
@@ -589,6 +897,7 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 
 #define define_fan_sysfs(offset)					\
 static SENSOR_DEVICE_ATTR(fan##offset##_input, S_IRUGO,			\
@@ -603,20 +912,38 @@ define_fan_sysfs(2);
 
 /* Alarms */
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
+=======
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+
+/* Alarms */
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct vt8231_data *data = vt8231_update_device(dev);
 	return sprintf(buf, "%d\n", data->alarms);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
 
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(alarms);
+
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	struct vt8231_data *data = vt8231_update_device(dev);
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL, 4);
 static SENSOR_DEVICE_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL, 11);
 static SENSOR_DEVICE_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL, 0);
@@ -633,12 +960,34 @@ static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 6);
 static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 7);
 
 static ssize_t show_name(struct device *dev, struct device_attribute
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_alarm, alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp2_alarm, alarm, 11);
+static SENSOR_DEVICE_ATTR_RO(temp3_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp4_alarm, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp5_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp6_alarm, alarm, 8);
+static SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 11);
+static SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(in3_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_alarm, alarm, 8);
+static SENSOR_DEVICE_ATTR_RO(in5_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 7);
+
+static ssize_t name_show(struct device *dev, struct device_attribute
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *devattr, char *buf)
 {
 	struct vt8231_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%s\n", data->name);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
+=======
+static DEVICE_ATTR_RO(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *vt8231_attributes_temps[6][5] = {
 	{
@@ -756,6 +1105,7 @@ static const struct attribute_group vt8231_group = {
 	.attrs = vt8231_attributes,
 };
 
+<<<<<<< HEAD
 static struct platform_driver vt8231_driver = {
 	.driver = {
 		.owner	= THIS_MODULE,
@@ -780,6 +1130,13 @@ static struct pci_driver vt8231_pci_driver = {
 	.id_table	= vt8231_pci_ids,
 	.probe		= vt8231_pci_probe,
 };
+=======
+static void vt8231_init_device(struct vt8231_data *data)
+{
+	vt8231_write_value(data, VT8231_REG_TEMP1_CONFIG, 0);
+	vt8231_write_value(data, VT8231_REG_TEMP2_CONFIG, 0);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vt8231_probe(struct platform_device *pdev)
 {
@@ -789,13 +1146,19 @@ static int vt8231_probe(struct platform_device *pdev)
 
 	/* Reserve the ISA region */
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
+<<<<<<< HEAD
 	if (!request_region(res->start, VT8231_EXTENT,
 			    vt8231_driver.driver.name)) {
+=======
+	if (!devm_request_region(&pdev->dev, res->start, VT8231_EXTENT,
+				 DRIVER_NAME)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "Region 0x%lx-0x%lx already in use!\n",
 			(unsigned long)res->start, (unsigned long)res->end);
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct vt8231_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
@@ -805,6 +1168,15 @@ static int vt8231_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, data);
 	data->addr = res->start;
 	data->name = "vt8231";
+=======
+	data = devm_kzalloc(&pdev->dev, sizeof(struct vt8231_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	platform_set_drvdata(pdev, data);
+	data->addr = res->start;
+	data->name = DRIVER_NAME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&data->update_lock);
 	vt8231_init_device(data);
@@ -812,7 +1184,11 @@ static int vt8231_probe(struct platform_device *pdev)
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&pdev->dev.kobj, &vt8231_group);
 	if (err)
+<<<<<<< HEAD
 		goto exit_free;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Must update device information to find out the config field */
 	data->uch_config = vt8231_read_value(data, VT8231_REG_UCH_CONFIG);
@@ -850,6 +1226,7 @@ exit_remove_files:
 		sysfs_remove_group(&pdev->dev.kobj, &vt8231_group_temps[i]);
 
 	sysfs_remove_group(&pdev->dev.kobj, &vt8231_group);
+<<<<<<< HEAD
 
 exit_free:
 	platform_set_drvdata(pdev, NULL);
@@ -861,6 +1238,12 @@ exit_release:
 }
 
 static int __devexit vt8231_remove(struct platform_device *pdev)
+=======
+	return err;
+}
+
+static void vt8231_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vt8231_data *data = platform_get_drvdata(pdev);
 	int i;
@@ -874,6 +1257,7 @@ static int __devexit vt8231_remove(struct platform_device *pdev)
 		sysfs_remove_group(&pdev->dev.kobj, &vt8231_group_temps[i]);
 
 	sysfs_remove_group(&pdev->dev.kobj, &vt8231_group);
+<<<<<<< HEAD
 
 	release_region(data->addr, VT8231_EXTENT);
 	platform_set_drvdata(pdev, NULL);
@@ -956,11 +1340,36 @@ static struct vt8231_data *vt8231_update_device(struct device *dev)
 }
 
 static int __devinit vt8231_device_add(unsigned short address)
+=======
+}
+
+
+static struct platform_driver vt8231_driver = {
+	.driver = {
+		.name	= DRIVER_NAME,
+	},
+	.probe	= vt8231_probe,
+	.remove_new = vt8231_remove,
+};
+
+static const struct pci_device_id vt8231_pci_ids[] = {
+	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_8231_4) },
+	{ 0, }
+};
+
+MODULE_DEVICE_TABLE(pci, vt8231_pci_ids);
+
+static int vt8231_device_add(unsigned short address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource res = {
 		.start	= address,
 		.end	= address + VT8231_EXTENT - 1,
+<<<<<<< HEAD
 		.name	= "vt8231",
+=======
+		.name	= DRIVER_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IO,
 	};
 	int err;
@@ -969,7 +1378,11 @@ static int __devinit vt8231_device_add(unsigned short address)
 	if (err)
 		goto exit;
 
+<<<<<<< HEAD
 	pdev = platform_device_alloc("vt8231", address);
+=======
+	pdev = platform_device_alloc(DRIVER_NAME, address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdev) {
 		err = -ENOMEM;
 		pr_err("Device allocation failed\n");
@@ -996,15 +1409,25 @@ exit:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit vt8231_pci_probe(struct pci_dev *dev,
 				const struct pci_device_id *id)
 {
 	u16 address, val;
+=======
+static int vt8231_pci_probe(struct pci_dev *dev,
+				const struct pci_device_id *id)
+{
+	u16 address, val;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (force_addr) {
 		address = force_addr & 0xff00;
 		dev_warn(&dev->dev, "Forcing ISA address 0x%x\n",
 			 address);
 
+<<<<<<< HEAD
 		if (PCIBIOS_SUCCESSFUL !=
 		    pci_write_config_word(dev, VT8231_BASE_REG, address | 1))
 			return -ENODEV;
@@ -1012,6 +1435,15 @@ static int __devinit vt8231_pci_probe(struct pci_dev *dev,
 
 	if (PCIBIOS_SUCCESSFUL != pci_read_config_word(dev, VT8231_BASE_REG,
 							&val))
+=======
+		ret = pci_write_config_word(dev, VT8231_BASE_REG, address | 1);
+		if (ret != PCIBIOS_SUCCESSFUL)
+			return -ENODEV;
+	}
+
+	pci_read_config_word(dev, VT8231_BASE_REG, &val);
+	if (val == (u16)~0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	address = val & ~(VT8231_EXTENT - 1);
@@ -1020,15 +1452,25 @@ static int __devinit vt8231_pci_probe(struct pci_dev *dev,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (PCIBIOS_SUCCESSFUL != pci_read_config_word(dev, VT8231_ENABLE_REG,
 							&val))
+=======
+	pci_read_config_word(dev, VT8231_ENABLE_REG, &val);
+	if (val == (u16)~0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	if (!(val & 0x0001)) {
 		dev_warn(&dev->dev, "enabling sensors\n");
+<<<<<<< HEAD
 		if (PCIBIOS_SUCCESSFUL !=
 			pci_write_config_word(dev, VT8231_ENABLE_REG,
 							val | 0x0001))
+=======
+		ret = pci_write_config_word(dev, VT8231_ENABLE_REG, val | 0x1);
+		if (ret != PCIBIOS_SUCCESSFUL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 	}
 
@@ -1058,6 +1500,15 @@ exit:
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
+=======
+static struct pci_driver vt8231_pci_driver = {
+	.name		= DRIVER_NAME,
+	.id_table	= vt8231_pci_ids,
+	.probe		= vt8231_pci_probe,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init sm_vt8231_init(void)
 {
 	return pci_register_driver(&vt8231_pci_driver);

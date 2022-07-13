@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xHCI host controller driver
  *
@@ -5,6 +9,7 @@
  *
  * Author: Sarah Sharp
  * Some code borrowed from the Linux EHCI driver.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,10 +23,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "xhci.h"
 
+<<<<<<< HEAD
 #define XHCI_INIT_VALUE 0x0
 
 /* Add verbose debugging later, just print everything for now */
@@ -432,10 +440,13 @@ static void dbg_rsvd64(struct xhci_hcd *xhci, u64 *ctx, dma_addr_t dma)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *xhci_get_slot_state(struct xhci_hcd *xhci,
 		struct xhci_container_ctx *ctx)
 {
 	struct xhci_slot_ctx *slot_ctx = xhci_get_slot_ctx(xhci, ctx);
+<<<<<<< HEAD
 
 	switch (GET_SLOT_STATE(le32_to_cpu(slot_ctx->dev_state))) {
 	case SLOT_STATE_ENABLED:
@@ -574,3 +585,24 @@ void xhci_dbg_ctx(struct xhci_hcd *xhci,
 	xhci_dbg_slot_ctx(xhci, ctx);
 	xhci_dbg_ep_ctx(xhci, ctx, last_ep);
 }
+=======
+	int state = GET_SLOT_STATE(le32_to_cpu(slot_ctx->dev_state));
+
+	return xhci_slot_state_string(state);
+}
+
+void xhci_dbg_trace(struct xhci_hcd *xhci, void (*trace)(struct va_format *),
+			const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	xhci_dbg(xhci, "%pV\n", &vaf);
+	trace(&vaf);
+	va_end(args);
+}
+EXPORT_SYMBOL_GPL(xhci_dbg_trace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

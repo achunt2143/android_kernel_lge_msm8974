@@ -163,7 +163,10 @@ struct tps6507x_dev {
 
 	/* Client devices */
 	struct tps6507x_pmic *pmic;
+<<<<<<< HEAD
 	struct tps6507x_ts *ts;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /*  __LINUX_MFD_TPS6507X_H */

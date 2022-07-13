@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_SCSI_EH_H
 #define _SCSI_SCSI_EH_H
 
 #include <linux/scatterlist.h>
 
 #include <scsi/scsi_cmnd.h>
+<<<<<<< HEAD
 struct scsi_device;
 struct Scsi_Host;
 
@@ -36,22 +41,37 @@ static inline int scsi_sense_valid(struct scsi_sense_hdr *sshdr)
 }
 
 
+=======
+#include <scsi/scsi_common.h>
+struct scsi_device;
+struct Scsi_Host;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void scsi_eh_finish_cmd(struct scsi_cmnd *scmd,
 			       struct list_head *done_q);
 extern void scsi_eh_flush_done_q(struct list_head *done_q);
 extern void scsi_report_bus_reset(struct Scsi_Host *, int);
 extern void scsi_report_device_reset(struct Scsi_Host *, int, int);
 extern int scsi_block_when_processing_errors(struct scsi_device *);
+<<<<<<< HEAD
 extern int scsi_normalize_sense(const u8 *sense_buffer, int sb_len,
 		struct scsi_sense_hdr *sshdr);
 extern int scsi_command_normalize_sense(struct scsi_cmnd *cmd,
 		struct scsi_sense_hdr *sshdr);
 
 static inline int scsi_sense_is_deferred(struct scsi_sense_hdr *sshdr)
+=======
+extern bool scsi_command_normalize_sense(const struct scsi_cmnd *cmd,
+					 struct scsi_sense_hdr *sshdr);
+extern enum scsi_disposition scsi_check_sense(struct scsi_cmnd *);
+
+static inline bool scsi_sense_is_deferred(const struct scsi_sense_hdr *sshdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ((sshdr->response_code >= 0x70) && (sshdr->response_code & 1));
 }
 
+<<<<<<< HEAD
 extern const u8 * scsi_sense_desc_find(const u8 * sense_buffer, int sb_len,
 				       int desc_type);
 
@@ -69,19 +89,35 @@ extern void scsi_build_sense_buffer(int desc, u8 *buf, u8 key, u8 asc, u8 ascq);
 #define SCSI_TRY_RESET_TARGET	4
 
 extern int scsi_reset_provider(struct scsi_device *, int);
+=======
+extern bool scsi_get_sense_info_fld(const u8 *sense_buffer, int sb_len,
+				    u64 *info_out);
+
+extern int scsi_ioctl_reset(struct scsi_device *, int __user *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct scsi_eh_save {
 	/* saved state */
 	int result;
+<<<<<<< HEAD
+=======
+	unsigned int resid_len;
+	int eh_eflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum dma_data_direction data_direction;
 	unsigned underflow;
 	unsigned char cmd_len;
 	unsigned char prot_op;
+<<<<<<< HEAD
 	unsigned char *cmnd;
 	struct scsi_data_buffer sdb;
 	struct request *next_rq;
 	/* new command support */
 	unsigned char eh_cmnd[BLK_MAX_CDB];
+=======
+	unsigned char cmnd[32];
+	struct scsi_data_buffer sdb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist sense_sgl;
 };
 

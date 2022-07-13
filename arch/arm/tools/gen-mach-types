@@ -1,4 +1,8 @@
 #!/bin/awk
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Awk script to generate include/generated/mach-types.h
 #
@@ -20,10 +24,21 @@ NF == 3 {
 	  num[nr] = ""; nr++
 	}
 
+<<<<<<< HEAD
 
 END	{
 	  printf("/*\n");
 	  printf(" * This was automagically generated from %s!\n", FILENAME);
+=======
+	function basename(file) {
+	   sub(".*/", "", file)
+	   return file
+	}
+
+END	{
+	  printf("/*\n");
+	  printf(" * This was automagically generated from %s!\n", basename(FILENAME));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  printf(" * Do NOT edit\n");
 	  printf(" */\n\n");
 	  printf("#ifndef __ASM_ARM_MACH_TYPE_H\n");

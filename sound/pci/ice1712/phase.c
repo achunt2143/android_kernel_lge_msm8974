@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble ICE1724 (Envy24)
  *
  *   Lowlevel functions for Terratec PHASE 22
  *
  *	Copyright (c) 2005 Misha Zhilin <misha@epiphan.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* PHASE 22 overview:
@@ -42,7 +49,10 @@
  *   Digital receiver: CS8414-CS (supported in this release)
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -103,13 +113,21 @@ static const unsigned char wm_vol[256] = {
 #define WM_VOL_MAX	(sizeof(wm_vol) - 1)
 #define WM_VOL_MUTE	0x8000
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_phase22 __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_phase22 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4524,
 	.num_dacs = 2,
 	.num_adcs = 2,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_phase22_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_phase22_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr =	2,
 	.cif =		1,
 	.data_mask =	1 << 4,
@@ -121,7 +139,11 @@ static struct snd_ak4xxx_private akm_phase22_priv __devinitdata = {
 	.mask_flags =	0,
 };
 
+<<<<<<< HEAD
 static int __devinit phase22_init(struct snd_ice1712 *ice)
+=======
+static int phase22_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_akm4xxx *ak;
 	int err;
@@ -158,7 +180,11 @@ static int __devinit phase22_init(struct snd_ice1712 *ice)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit phase22_add_controls(struct snd_ice1712 *ice)
+=======
+static int phase22_add_controls(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -172,7 +198,11 @@ static int __devinit phase22_add_controls(struct snd_ice1712 *ice)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned char phase22_eeprom[] __devinitdata = {
+=======
+static const unsigned char phase22_eeprom[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x28,  /* clock 512, mpu 401,
 					spdif-in/1xADC, 1xDACs */
 	[ICE_EEP2_ACLINK]      = 0x80,	/* I2S */
@@ -189,7 +219,11 @@ static unsigned char phase22_eeprom[] __devinitdata = {
 	[ICE_EEP2_GPIO_STATE2] = 0x00,
 };
 
+<<<<<<< HEAD
 static unsigned char phase28_eeprom[] __devinitdata = {
+=======
+static const unsigned char phase28_eeprom[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ICE_EEP2_SYSCONF]     = 0x2b,  /* clock 512, mpu401,
 					spdif-in/1xADC, 4xDACs */
 	[ICE_EEP2_ACLINK]      = 0x80,	/* I2S */
@@ -379,7 +413,11 @@ static int wm_master_vol_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static int __devinit phase28_init(struct snd_ice1712 *ice)
+=======
+static int phase28_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short wm_inits_phase28[] = {
 		/* These come first to reduce init pop noise */
@@ -722,6 +760,7 @@ static int phase28_deemp_put(struct snd_kcontrol *kcontrol,
 static int phase28_oversampling_info(struct snd_kcontrol *k,
 					struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = { "128x", "64x"	};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -735,6 +774,11 @@ static int phase28_oversampling_info(struct snd_kcontrol *k,
 		texts[uinfo->value.enumerated.item]);
 
 	return 0;
+=======
+	static const char * const texts[2] = { "128x", "64x"	};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int phase28_oversampling_get(struct snd_kcontrol *kcontrol,
@@ -770,7 +814,11 @@ static int phase28_oversampling_put(struct snd_kcontrol *kcontrol,
 static const DECLARE_TLV_DB_SCALE(db_scale_wm_dac, -12700, 100, 1);
 static const DECLARE_TLV_DB_SCALE(db_scale_wm_pcm, -6400, 50, 1);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new phase28_dac_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new phase28_dac_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "Master Playback Switch",
@@ -885,7 +933,11 @@ static struct snd_kcontrol_new phase28_dac_controls[] __devinitdata = {
 	}
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new wm_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new wm_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name = "PCM Playback Switch",
@@ -919,7 +971,11 @@ static struct snd_kcontrol_new wm_controls[] __devinitdata = {
 	}
 };
 
+<<<<<<< HEAD
 static int __devinit phase28_add_controls(struct snd_ice1712 *ice)
+=======
+static int phase28_add_controls(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, counts;
 	int err;
@@ -943,7 +999,11 @@ static int __devinit phase28_add_controls(struct snd_ice1712 *ice)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_vt1724_phase_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_vt1724_phase_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_PHASE22,
 		.name = "Terratec PHASE 22",

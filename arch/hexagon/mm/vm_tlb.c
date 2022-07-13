@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hexagon Virtual Machine TLB functions
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -24,8 +31,15 @@
  * be instantiated for it, differently from a native build.
  */
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/page.h>
 #include <asm/hexagon_vm.h>
+=======
+#include <linux/sched.h>
+#include <asm/page.h>
+#include <asm/hexagon_vm.h>
+#include <asm/tlbflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initial VM implementation has only one map active at a time, with

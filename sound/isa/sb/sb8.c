@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Driver for SoundBlaster 1.0/2.0/Pro soundcards and compatible
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Driver for SoundBlaster 1.0/2.0/Pro soundcards and compatible
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -32,7 +39,10 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Sound Blaster 1.0/2.0/Pro");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Creative Labs,SB 1.0/SB 2.0/SB Pro}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -47,11 +57,19 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for Sound Blaster soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable Sound Blaster soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for SB8 driver.");
 module_param_array(irq, int, NULL, 0444);
 MODULE_PARM_DESC(irq, "IRQ # for SB8 driver.");
 module_param_array(dma8, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for SB8 driver.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for SB8 driver.");
+module_param_hw_array(dma8, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma8, "8-bit DMA # for SB8 driver.");
 
 struct snd_sb8 {
@@ -70,6 +88,7 @@ static irqreturn_t snd_sb8_interrupt(int irq, void *dev_id)
 	}
 }
 
+<<<<<<< HEAD
 static void snd_sb8_free(struct snd_card *card)
 {
 	struct snd_sb8 *acard = card->private_data;
@@ -80,6 +99,9 @@ static void snd_sb8_free(struct snd_card *card)
 }
 
 static int __devinit snd_sb8_match(struct device *pdev, unsigned int dev)
+=======
+static int snd_sb8_match(struct device *pdev, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev])
 		return 0;
@@ -94,7 +116,11 @@ static int __devinit snd_sb8_match(struct device *pdev, unsigned int dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
+=======
+static int snd_sb8_probe(struct device *pdev, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_sb *chip;
 	struct snd_card *card;
@@ -102,6 +128,7 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 	struct snd_opl3 *opl3;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_sb8), &card);
 	if (err < 0)
@@ -123,6 +150,31 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 	} else {
 		/* auto-probe legacy ports */
 		static unsigned long possible_ports[] = {
+=======
+	err = snd_devm_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_sb8), &card);
+	if (err < 0)
+		return err;
+	acard = card->private_data;
+
+	/*
+	 * Block the 0x388 port to avoid PnP conflicts.
+	 * No need to check this value after request_region,
+	 * as we never do anything with it.
+	 */
+	acard->fm_res = devm_request_region(card->dev, 0x388, 4,
+					    "SoundBlaster FM");
+
+	if (port[dev] != SNDRV_AUTO_PORT) {
+		err = snd_sbdsp_create(card, port[dev], irq[dev],
+				       snd_sb8_interrupt, dma8[dev],
+				       -1, SB_HW_AUTO, &chip);
+		if (err < 0)
+			return err;
+	} else {
+		/* auto-probe legacy ports */
+		static const unsigned long possible_ports[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0x220, 0x240, 0x260,
 		};
 		int i;
@@ -139,10 +191,15 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 				break;
 			}
 		}
+<<<<<<< HEAD
 		if (i >= ARRAY_SIZE(possible_ports)) {
 			err = -EINVAL;
 			goto _err;
 		}
+=======
+		if (i >= ARRAY_SIZE(possible_ports))
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	acard->chip = chip;
 			
@@ -153,6 +210,7 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 		else
 			snd_printk(KERN_WARNING "SB 16 chip detected at 0x%lx, try snd-sb16 module\n",
 				   port[dev]);
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto _err;
 	}
@@ -173,17 +231,50 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 		if ((err = snd_opl3_create(card, chip->port, chip->port + 2,
 					   OPL3_HW_AUTO, 1,
 					   &opl3)) < 0) {
+=======
+		return -ENODEV;
+	}
+
+	err = snd_sb8dsp_pcm(chip, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_sbmixer_new(chip);
+	if (err < 0)
+		return err;
+
+	if (chip->hardware == SB_HW_10 || chip->hardware == SB_HW_20) {
+		err = snd_opl3_create(card, chip->port + 8, 0,
+				      OPL3_HW_AUTO, 1, &opl3);
+		if (err < 0)
+			snd_printk(KERN_WARNING "sb8: no OPL device at 0x%lx\n", chip->port + 8);
+	} else {
+		err = snd_opl3_create(card, chip->port, chip->port + 2,
+				      OPL3_HW_AUTO, 1, &opl3);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_WARNING "sb8: no OPL device at 0x%lx-0x%lx\n",
 				   chip->port, chip->port + 2);
 		}
 	}
 	if (err >= 0) {
+<<<<<<< HEAD
 		if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0)
 			goto _err;
 	}
 
 	if ((err = snd_sb8dsp_midi(chip, 0, NULL)) < 0)
 		goto _err;
+=======
+		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+		if (err < 0)
+			return err;
+	}
+
+	err = snd_sb8dsp_midi(chip, 0);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, chip->hardware == SB_HW_PRO ? "SB Pro" : "SB8");
 	strcpy(card->shortname, chip->name);
@@ -192,6 +283,7 @@ static int __devinit snd_sb8_probe(struct device *pdev, unsigned int dev)
 		chip->port,
 		irq[dev], dma8[dev]);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, pdev);
 
 	if ((err = snd_card_register(card)) < 0)
@@ -210,6 +302,14 @@ static int __devexit snd_sb8_remove(struct device *pdev, unsigned int dev)
 	snd_card_free(dev_get_drvdata(pdev));
 	dev_set_drvdata(pdev, NULL);
 	return 0;
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	dev_set_drvdata(pdev, card);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -221,7 +321,10 @@ static int snd_sb8_suspend(struct device *dev, unsigned int n,
 	struct snd_sb *chip = acard->chip;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_suspend(chip);
 	return 0;
 }
@@ -244,7 +347,10 @@ static int snd_sb8_resume(struct device *dev, unsigned int n)
 static struct isa_driver snd_sb8_driver = {
 	.match		= snd_sb8_match,
 	.probe		= snd_sb8_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_sb8_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_sb8_suspend,
 	.resume		= snd_sb8_resume,
@@ -254,6 +360,7 @@ static struct isa_driver snd_sb8_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_sb8_init(void)
 {
 	return isa_register_driver(&snd_sb8_driver, SNDRV_CARDS);
@@ -266,3 +373,6 @@ static void __exit alsa_card_sb8_exit(void)
 
 module_init(alsa_card_sb8_init)
 module_exit(alsa_card_sb8_exit)
+=======
+module_isa_driver(snd_sb8_driver, SNDRV_CARDS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

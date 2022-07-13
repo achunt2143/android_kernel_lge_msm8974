@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-pxa/pxa3xx.c
  *
@@ -7,6 +11,7 @@
  *
  * 2007-09-02: eric miao <eric.miao@marvell.com>
  *             initial version
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -36,10 +41,44 @@
 #include "generic.h"
 #include "devices.h"
 #include "clock.h"
+=======
+ */
+#include <linux/dmaengine.h>
+#include <linux/dma/pxa-dma.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/gpio-pxa.h>
+#include <linux/pm.h>
+#include <linux/platform_device.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+#include <linux/io.h>
+#include <linux/of.h>
+#include <linux/syscore_ops.h>
+#include <linux/platform_data/i2c-pxa.h>
+#include <linux/platform_data/mmp_dma.h>
+#include <linux/soc/pxa/cpu.h>
+#include <linux/clk/pxa.h>
+
+#include <asm/mach/map.h>
+#include <asm/suspend.h>
+#include "pxa3xx-regs.h"
+#include "reset.h"
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include "pm.h"
+#include "addr-map.h"
+#include "smemc.h"
+#include "irqs.h"
+
+#include "generic.h"
+#include "devices.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PECR_IE(n)	((1 << ((n) * 2)) << 28)
 #define PECR_IS(n)	((1 << ((n) * 2)) << 29)
 
+<<<<<<< HEAD
 static DEFINE_PXA3_CKEN(pxa3xx_ffuart, FFUART, 14857000, 1);
 static DEFINE_PXA3_CKEN(pxa3xx_btuart, BTUART, 14857000, 1);
 static DEFINE_PXA3_CKEN(pxa3xx_stuart, STUART, 14857000, 1);
@@ -92,6 +131,20 @@ static struct clk_lookup pxa3xx_clkregs[] = {
 	INIT_CLKREG(&clk_pxa3xx_gpio, "pxa-gpio", NULL),
 	INIT_CLKREG(&clk_dummy, "sa1100-rtc", NULL),
 };
+=======
+extern void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int));
+
+/*
+ * NAND NFC: DFI bus arbitration subset
+ */
+#define NDCR			(*(volatile u32 __iomem*)(NAND_VIRT + 0))
+#define NDCR_ND_ARB_EN		(1 << 12)
+#define NDCR_ND_ARB_CNTL	(1 << 19)
+
+#define CKEN_BOOT  		11      /* < Boot rom clock enable */
+#define CKEN_TPM   		19      /* < TPM clock enable */
+#define CKEN_HSIO2 		41      /* < HSIO2 clock enable */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 
@@ -111,7 +164,10 @@ static unsigned long wakeup_src;
  */
 static void pxa3xx_cpu_standby(unsigned int pwrmode)
 {
+<<<<<<< HEAD
 	extern const char pm_enter_standby_start[], pm_enter_standby_end[];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*fn)(unsigned int) = (void __force *)(sram + 0x8000);
 
 	memcpy_toio(sram + 0x8000, pm_enter_standby_start,
@@ -146,10 +202,20 @@ static void pxa3xx_cpu_pm_suspend(void)
 #ifndef CONFIG_IWMMXT
 	u64 acc0;
 
+<<<<<<< HEAD
 	asm volatile("mra %Q0, %R0, acc0" : "=r" (acc0));
 #endif
 
 	extern int pxa3xx_finish_suspend(unsigned long);
+=======
+#ifdef CONFIG_CC_IS_GCC
+	asm volatile(".arch_extension xscale\n\t"
+		     "mra %Q0, %R0, acc0" : "=r" (acc0));
+#else
+	asm volatile("mrrc p0, 0, %Q0, %R0, c0" : "=r" (acc0));
+#endif
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* resuming from D2 requires the HSIO2/BOOT/TPM clocks enabled */
 	CKENA |= (1 << CKEN_BOOT) | (1 << CKEN_TPM);
@@ -167,7 +233,11 @@ static void pxa3xx_cpu_pm_suspend(void)
 	PSPR = 0x5c014000;
 
 	/* overwrite with the resume address */
+<<<<<<< HEAD
 	*p = virt_to_phys(cpu_resume);
+=======
+	*p = __pa_symbol(cpu_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpu_suspend(0, pxa3xx_finish_suspend);
 
@@ -176,7 +246,16 @@ static void pxa3xx_cpu_pm_suspend(void)
 	AD3ER = 0;
 
 #ifndef CONFIG_IWMMXT
+<<<<<<< HEAD
 	asm volatile("mar acc0, %Q0, %R0" : "=r" (acc0));
+=======
+#ifndef CONFIG_AS_IS_LLVM
+	asm volatile(".arch_extension xscale\n\t"
+		     "mar acc0, %Q0, %R0" : "=r" (acc0));
+#else
+	asm volatile("mcrr p0, 0, %Q0, %R0, c0" :: "r" (acc0));
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -376,13 +455,21 @@ static void __init pxa_init_ext_wakeup_irq(int (*fn)(struct irq_data *,
 	for (irq = IRQ_WAKEUP0; irq <= IRQ_WAKEUP1; irq++) {
 		irq_set_chip_and_handler(irq, &pxa_ext_wakeup_chip,
 					 handle_edge_irq);
+<<<<<<< HEAD
 		set_irq_flags(irq, IRQF_VALID);
+=======
+		irq_clear_status_flags(irq, IRQ_NOREQUEST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pxa_ext_wakeup_chip.irq_set_wake = fn;
 }
 
+<<<<<<< HEAD
 void __init pxa3xx_init_irq(void)
+=======
+static void __init __pxa3xx_init_irq(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* enable CP6 access */
 	u32 value;
@@ -390,17 +477,45 @@ void __init pxa3xx_init_irq(void)
 	value |= (1 << 6);
 	__asm__ __volatile__("mcr p15, 0, %0, c15, c1, 0\n": :"r"(value));
 
+<<<<<<< HEAD
 	pxa_init_irq(56, pxa3xx_set_wake);
 	pxa_init_ext_wakeup_irq(pxa3xx_set_wake);
 }
 
+=======
+	pxa_init_ext_wakeup_irq(pxa3xx_set_wake);
+}
+
+static int __init __init
+pxa3xx_dt_init_irq(struct device_node *node, struct device_node *parent)
+{
+	__pxa3xx_init_irq();
+	pxa_dt_irq_init(pxa3xx_set_wake);
+	set_handle_irq(ichp_handle_irq);
+
+	return 0;
+}
+IRQCHIP_DECLARE(pxa3xx_intc, "marvell,pxa-intc", pxa3xx_dt_init_irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc pxa3xx_io_desc[] __initdata = {
 	{	/* Mem Ctl */
 		.virtual	= (unsigned long)SMEMC_VIRT,
 		.pfn		= __phys_to_pfn(PXA3XX_SMEMC_BASE),
+<<<<<<< HEAD
 		.length		= 0x00200000,
 		.type		= MT_DEVICE
 	}
+=======
+		.length		= SMEMC_SIZE,
+		.type		= MT_DEVICE
+	}, {
+		.virtual	= (unsigned long)NAND_VIRT,
+		.pfn		= __phys_to_pfn(NAND_PHYS),
+		.length		= NAND_SIZE,
+		.type		= MT_DEVICE
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init pxa3xx_map_io(void)
@@ -410,6 +525,7 @@ void __init pxa3xx_map_io(void)
 	pxa3xx_get_clk_frequency_khz(1);
 }
 
+<<<<<<< HEAD
 /*
  * device registration specific to PXA3xx.
  */
@@ -439,13 +555,19 @@ static struct platform_device *devices[] __initdata = {
 	&pxa27x_device_pwm1,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init pxa3xx_init(void)
 {
 	int ret = 0;
 
 	if (cpu_is_pxa3xx()) {
 
+<<<<<<< HEAD
 		reset_status = ARSR;
+=======
+		pxa_register_wdt(ARSR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * clear RDH bit every time after reset
@@ -455,6 +577,7 @@ static int __init pxa3xx_init(void)
 		 */
 		ASCR &= ~(ASCR_RDH | ASCR_D1S | ASCR_D2S | ASCR_D3S);
 
+<<<<<<< HEAD
 		clkdev_add_table(pxa3xx_clkregs, ARRAY_SIZE(pxa3xx_clkregs));
 
 		if ((ret = pxa_init_dma(IRQ_DMA, 32)))
@@ -467,6 +590,23 @@ static int __init pxa3xx_init(void)
 		register_syscore_ops(&pxa3xx_clock_syscore_ops);
 
 		ret = platform_add_devices(devices, ARRAY_SIZE(devices));
+=======
+		/*
+		 * Disable DFI bus arbitration, to prevent a system bus lock if
+		 * somebody disables the NAND clock (unused clock) while this
+		 * bit remains set.
+		 */
+		NDCR = (NDCR & ~NDCR_ND_ARB_EN) | NDCR_ND_ARB_CNTL;
+
+		pxa3xx_init_pm();
+
+		enable_irq_wake(IRQ_WAKEUP0);
+		if (cpu_is_pxa320())
+			enable_irq_wake(IRQ_WAKEUP1);
+
+		register_syscore_ops(&pxa_irq_syscore_ops);
+		register_syscore_ops(&pxa3xx_mfp_syscore_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;

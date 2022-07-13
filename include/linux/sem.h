@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_SEM_H
 #define _LINUX_SEM_H
 
@@ -102,15 +103,31 @@ struct sysv_sem {
 	struct sem_undo_list *undo_list;
 };
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_SEM_H
+#define _LINUX_SEM_H
+
+#include <uapi/linux/sem.h>
+#include <linux/sem_types.h>
+
+struct task_struct;
+
+#ifdef CONFIG_SYSVIPC
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int copy_semundo(unsigned long clone_flags, struct task_struct *tsk);
 extern void exit_sem(struct task_struct *tsk);
 
 #else
 
+<<<<<<< HEAD
 struct sysv_sem {
 	/* empty */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int copy_semundo(unsigned long clone_flags, struct task_struct *tsk)
 {
 	return 0;
@@ -122,6 +139,9 @@ static inline void exit_sem(struct task_struct *tsk)
 }
 #endif
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SEM_H */

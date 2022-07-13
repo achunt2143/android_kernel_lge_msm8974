@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 #include "au8810.h"
 #include "au88x0.h"
 static DEFINE_PCI_DEVICE_TABLE(snd_vortex_ids) = {
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include "au8810.h"
+#include "au88x0.h"
+static const struct pci_device_id snd_vortex_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VDEVICE(AUREAL, PCI_DEVICE_ID_AUREAL_ADVANTAGE), 1,},
 	{0,}
 };

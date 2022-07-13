@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2006-2010 Solarflare Communications Inc.
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, incorporated herein by reference.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/****************************************************************************
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2006-2013 Solarflare Communications Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef EFX_WORKAROUNDS_H
@@ -15,6 +22,7 @@
  * Bug numbers are from Solarflare's Bugzilla.
  */
 
+<<<<<<< HEAD
 #define EFX_WORKAROUND_ALWAYS(efx) 1
 #define EFX_WORKAROUND_FALCON_A(efx) (efx_nic_rev(efx) <= EFX_REV_FALCON_A1)
 #define EFX_WORKAROUND_FALCON_AB(efx) (efx_nic_rev(efx) <= EFX_REV_FALCON_B0)
@@ -55,5 +63,18 @@
 #define EFX_WORKAROUND_7803 EFX_WORKAROUND_FALCON_AB
 /* Leak overlength packets rather than free */
 #define EFX_WORKAROUND_8071 EFX_WORKAROUND_FALCON_A
+=======
+#define EFX_WORKAROUND_EF10(efx) (efx_nic_rev(efx) >= EFX_REV_HUNT_A0)
+
+/* Lockup when writing event block registers at gen2/gen3 */
+#define EFX_EF10_WORKAROUND_35388(efx)					\
+	(((struct efx_ef10_nic_data *)efx->nic_data)->workaround_35388)
+#define EFX_WORKAROUND_35388(efx)					\
+	(efx_nic_rev(efx) == EFX_REV_HUNT_A0 && EFX_EF10_WORKAROUND_35388(efx))
+
+/* Moderation timer access must go through MCDI */
+#define EFX_EF10_WORKAROUND_61265(efx)					\
+	(((struct efx_ef10_nic_data *)efx->nic_data)->workaround_61265)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* EFX_WORKAROUNDS_H */

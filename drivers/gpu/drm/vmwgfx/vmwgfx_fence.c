@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /**************************************************************************
  *
  * Copyright © 2011 VMware, Inc., Palo Alto, CA., USA
  * All Rights Reserved.
+=======
+// SPDX-License-Identifier: GPL-2.0 OR MIT
+/**************************************************************************
+ *
+ * Copyright 2011-2023 VMware, Inc., Palo Alto, CA., USA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -25,7 +32,12 @@
  *
  **************************************************************************/
 
+<<<<<<< HEAD
 #include "drmP.h"
+=======
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vmwgfx_drv.h"
 
 #define VMW_FENCE_WRAP (1 << 31)
@@ -36,9 +48,12 @@ struct vmw_fence_manager {
 	spinlock_t lock;
 	struct list_head fence_list;
 	struct work_struct work;
+<<<<<<< HEAD
 	u32 user_fence_size;
 	u32 fence_size;
 	u32 event_fence_action_size;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool fifo_down;
 	struct list_head cleanup_list;
 	uint32_t pending_actions[VMW_ACTION_MAX];
@@ -46,6 +61,10 @@ struct vmw_fence_manager {
 	bool goal_irq_on; /* Protected by @goal_irq_mutex */
 	bool seqno_valid; /* Protected by @lock, and may not be set to true
 			     without the @goal_irq_mutex held. */
+<<<<<<< HEAD
+=======
+	u64 ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vmw_user_fence {
@@ -56,6 +75,7 @@ struct vmw_user_fence {
 /**
  * struct vmw_event_fence_action - fence action that delivers a drm event.
  *
+<<<<<<< HEAD
  * @e: A struct drm_pending_event that controls the event delivery.
  * @action: A struct vmw_fence_action to hook up to a fence.
  * @fence: A referenced pointer to the fence to keep it alive while @action
@@ -63,6 +83,13 @@ struct vmw_user_fence {
  * @dev: Pointer to a struct drm_device so we can access the event stuff.
  * @kref: Both @e and @action has destructors, so we need to refcount.
  * @size: Size accounted for this object.
+=======
+ * @action: A struct vmw_fence_action to hook up to a fence.
+ * @event: A pointer to the pending event.
+ * @fence: A referenced pointer to the fence to keep it alive while @action
+ * hangs on it.
+ * @dev: Pointer to a struct drm_device so we can access the event stuff.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tv_sec: If non-null, the variable pointed to will be assigned
  * current time tv_sec val when the fence signals.
  * @tv_usec: Must be set if @tv_sec is set, and the variable pointed to will
@@ -70,7 +97,10 @@ struct vmw_user_fence {
  */
 struct vmw_event_fence_action {
 	struct vmw_fence_action action;
+<<<<<<< HEAD
 	struct list_head fpriv_head;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct drm_pending_event *event;
 	struct vmw_fence_obj *fence;
@@ -80,7 +110,33 @@ struct vmw_event_fence_action {
 	uint32_t *tv_usec;
 };
 
+<<<<<<< HEAD
 /**
+=======
+static struct vmw_fence_manager *
+fman_from_fence(struct vmw_fence_obj *fence)
+{
+	return container_of(fence->base.lock, struct vmw_fence_manager, lock);
+}
+
+static u32 vmw_fence_goal_read(struct vmw_private *vmw)
+{
+	if ((vmw->capabilities2 & SVGA_CAP2_EXTRA_REGS) != 0)
+		return vmw_read(vmw, SVGA_REG_FENCE_GOAL);
+	else
+		return vmw_fifo_mem_read(vmw, SVGA_FIFO_FENCE_GOAL);
+}
+
+static void vmw_fence_goal_write(struct vmw_private *vmw, u32 value)
+{
+	if ((vmw->capabilities2 & SVGA_CAP2_EXTRA_REGS) != 0)
+		vmw_write(vmw, SVGA_REG_FENCE_GOAL, value);
+	else
+		vmw_fifo_mem_write(vmw, SVGA_FIFO_FENCE_GOAL, value);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note on fencing subsystem usage of irqs:
  * Typically the vmw_fences_update function is called
  *
@@ -102,6 +158,7 @@ struct vmw_event_fence_action {
  * objects with actions attached to them.
  */
 
+<<<<<<< HEAD
 static void vmw_fence_obj_destroy_locked(struct kref *kref)
 {
 	struct vmw_fence_obj *fence =
@@ -123,6 +180,147 @@ static void vmw_fence_obj_destroy_locked(struct kref *kref)
 
 
 /**
+=======
+static void vmw_fence_obj_destroy(struct dma_fence *f)
+{
+	struct vmw_fence_obj *fence =
+		container_of(f, struct vmw_fence_obj, base);
+
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+
+	spin_lock(&fman->lock);
+	list_del_init(&fence->head);
+	--fman->num_fence_objects;
+	spin_unlock(&fman->lock);
+	fence->destroy(fence);
+}
+
+static const char *vmw_fence_get_driver_name(struct dma_fence *f)
+{
+	return "vmwgfx";
+}
+
+static const char *vmw_fence_get_timeline_name(struct dma_fence *f)
+{
+	return "svga";
+}
+
+static bool vmw_fence_enable_signaling(struct dma_fence *f)
+{
+	struct vmw_fence_obj *fence =
+		container_of(f, struct vmw_fence_obj, base);
+
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+	struct vmw_private *dev_priv = fman->dev_priv;
+
+	u32 seqno = vmw_fence_read(dev_priv);
+	if (seqno - fence->base.seqno < VMW_FENCE_WRAP)
+		return false;
+
+	return true;
+}
+
+struct vmwgfx_wait_cb {
+	struct dma_fence_cb base;
+	struct task_struct *task;
+};
+
+static void
+vmwgfx_wait_cb(struct dma_fence *fence, struct dma_fence_cb *cb)
+{
+	struct vmwgfx_wait_cb *wait =
+		container_of(cb, struct vmwgfx_wait_cb, base);
+
+	wake_up_process(wait->task);
+}
+
+static void __vmw_fences_update(struct vmw_fence_manager *fman);
+
+static long vmw_fence_wait(struct dma_fence *f, bool intr, signed long timeout)
+{
+	struct vmw_fence_obj *fence =
+		container_of(f, struct vmw_fence_obj, base);
+
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+	struct vmw_private *dev_priv = fman->dev_priv;
+	struct vmwgfx_wait_cb cb;
+	long ret = timeout;
+
+	if (likely(vmw_fence_obj_signaled(fence)))
+		return timeout;
+
+	vmw_seqno_waiter_add(dev_priv);
+
+	spin_lock(f->lock);
+
+	if (test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &f->flags))
+		goto out;
+
+	if (intr && signal_pending(current)) {
+		ret = -ERESTARTSYS;
+		goto out;
+	}
+
+	cb.base.func = vmwgfx_wait_cb;
+	cb.task = current;
+	list_add(&cb.base.node, &f->cb_list);
+
+	for (;;) {
+		__vmw_fences_update(fman);
+
+		/*
+		 * We can use the barrier free __set_current_state() since
+		 * DMA_FENCE_FLAG_SIGNALED_BIT + wakeup is protected by the
+		 * fence spinlock.
+		 */
+		if (intr)
+			__set_current_state(TASK_INTERRUPTIBLE);
+		else
+			__set_current_state(TASK_UNINTERRUPTIBLE);
+
+		if (test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &f->flags)) {
+			if (ret == 0 && timeout > 0)
+				ret = 1;
+			break;
+		}
+
+		if (intr && signal_pending(current)) {
+			ret = -ERESTARTSYS;
+			break;
+		}
+
+		if (ret == 0)
+			break;
+
+		spin_unlock(f->lock);
+
+		ret = schedule_timeout(ret);
+
+		spin_lock(f->lock);
+	}
+	__set_current_state(TASK_RUNNING);
+	if (!list_empty(&cb.base.node))
+		list_del(&cb.base.node);
+
+out:
+	spin_unlock(f->lock);
+
+	vmw_seqno_waiter_remove(dev_priv);
+
+	return ret;
+}
+
+static const struct dma_fence_ops vmw_fence_ops = {
+	.get_driver_name = vmw_fence_get_driver_name,
+	.get_timeline_name = vmw_fence_get_timeline_name,
+	.enable_signaling = vmw_fence_enable_signaling,
+	.wait = vmw_fence_wait,
+	.release = vmw_fence_obj_destroy,
+};
+
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Execute signal actions on fences recently signaled.
  * This is done from a workqueue so we don't have to execute
  * signal actions from atomic context.
@@ -140,10 +338,17 @@ static void vmw_fence_work_func(struct work_struct *work)
 		INIT_LIST_HEAD(&list);
 		mutex_lock(&fman->goal_irq_mutex);
 
+<<<<<<< HEAD
 		spin_lock_irq(&fman->lock);
 		list_splice_init(&fman->cleanup_list, &list);
 		seqno_valid = fman->seqno_valid;
 		spin_unlock_irq(&fman->lock);
+=======
+		spin_lock(&fman->lock);
+		list_splice_init(&fman->cleanup_list, &list);
+		seqno_valid = fman->seqno_valid;
+		spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!seqno_valid && fman->goal_irq_on) {
 			fman->goal_irq_on = false;
@@ -172,7 +377,11 @@ struct vmw_fence_manager *vmw_fence_manager_init(struct vmw_private *dev_priv)
 {
 	struct vmw_fence_manager *fman = kzalloc(sizeof(*fman), GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (unlikely(fman == NULL))
+=======
+	if (unlikely(!fman))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	fman->dev_priv = dev_priv;
@@ -181,32 +390,48 @@ struct vmw_fence_manager *vmw_fence_manager_init(struct vmw_private *dev_priv)
 	INIT_LIST_HEAD(&fman->cleanup_list);
 	INIT_WORK(&fman->work, &vmw_fence_work_func);
 	fman->fifo_down = true;
+<<<<<<< HEAD
 	fman->user_fence_size = ttm_round_pot(sizeof(struct vmw_user_fence));
 	fman->fence_size = ttm_round_pot(sizeof(struct vmw_fence_obj));
 	fman->event_fence_action_size =
 		ttm_round_pot(sizeof(struct vmw_event_fence_action));
 	mutex_init(&fman->goal_irq_mutex);
+=======
+	mutex_init(&fman->goal_irq_mutex);
+	fman->ctx = dma_fence_context_alloc(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fman;
 }
 
 void vmw_fence_manager_takedown(struct vmw_fence_manager *fman)
 {
+<<<<<<< HEAD
 	unsigned long irq_flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool lists_empty;
 
 	(void) cancel_work_sync(&fman->work);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&fman->lock, irq_flags);
 	lists_empty = list_empty(&fman->fence_list) &&
 		list_empty(&fman->cleanup_list);
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+	spin_lock(&fman->lock);
+	lists_empty = list_empty(&fman->fence_list) &&
+		list_empty(&fman->cleanup_list);
+	spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!lists_empty);
 	kfree(fman);
 }
 
 static int vmw_fence_obj_init(struct vmw_fence_manager *fman,
+<<<<<<< HEAD
 			      struct vmw_fence_obj *fence,
 			      u32 seqno,
 			      uint32_t mask,
@@ -226,19 +451,40 @@ static int vmw_fence_obj_init(struct vmw_fence_manager *fman,
 	init_waitqueue_head(&fence->queue);
 
 	spin_lock_irqsave(&fman->lock, irq_flags);
+=======
+			      struct vmw_fence_obj *fence, u32 seqno,
+			      void (*destroy) (struct vmw_fence_obj *fence))
+{
+	int ret = 0;
+
+	dma_fence_init(&fence->base, &vmw_fence_ops, &fman->lock,
+		       fman->ctx, seqno);
+	INIT_LIST_HEAD(&fence->seq_passed_actions);
+	fence->destroy = destroy;
+
+	spin_lock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(fman->fifo_down)) {
 		ret = -EBUSY;
 		goto out_unlock;
 	}
 	list_add_tail(&fence->head, &fman->fence_list);
+<<<<<<< HEAD
 	num_fences = ++fman->num_fence_objects;
 
 out_unlock:
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+	++fman->num_fence_objects;
+
+out_unlock:
+	spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 }
 
+<<<<<<< HEAD
 struct vmw_fence_obj *vmw_fence_obj_reference(struct vmw_fence_obj *fence)
 {
 	if (unlikely(fence == NULL))
@@ -272,6 +518,9 @@ void vmw_fence_obj_unreference(struct vmw_fence_obj **fence_p)
 }
 
 void vmw_fences_perform_actions(struct vmw_fence_manager *fman,
+=======
+static void vmw_fences_perform_actions(struct vmw_fence_manager *fman,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct list_head *list)
 {
 	struct vmw_fence_action *action, *next_action;
@@ -311,14 +560,21 @@ static bool vmw_fence_goal_new_locked(struct vmw_fence_manager *fman,
 				      u32 passed_seqno)
 {
 	u32 goal_seqno;
+<<<<<<< HEAD
 	__le32 __iomem *fifo_mem;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vmw_fence_obj *fence;
 
 	if (likely(!fman->seqno_valid))
 		return false;
 
+<<<<<<< HEAD
 	fifo_mem = fman->dev_priv->mmio_virt;
 	goal_seqno = ioread32(fifo_mem + SVGA_FIFO_FENCE_GOAL);
+=======
+	goal_seqno = vmw_fence_goal_read(fman->dev_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(passed_seqno - goal_seqno >= VMW_FENCE_WRAP))
 		return false;
 
@@ -326,8 +582,13 @@ static bool vmw_fence_goal_new_locked(struct vmw_fence_manager *fman,
 	list_for_each_entry(fence, &fman->fence_list, head) {
 		if (!list_empty(&fence->seq_passed_actions)) {
 			fman->seqno_valid = true;
+<<<<<<< HEAD
 			iowrite32(fence->seqno,
 				  fifo_mem + SVGA_FIFO_FENCE_GOAL);
+=======
+			vmw_fence_goal_write(fman->dev_priv,
+					     fence->base.seqno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -353,6 +614,7 @@ static bool vmw_fence_goal_new_locked(struct vmw_fence_manager *fman,
  */
 static bool vmw_fence_goal_check_locked(struct vmw_fence_obj *fence)
 {
+<<<<<<< HEAD
 	u32 goal_seqno;
 	__le32 __iomem *fifo_mem;
 
@@ -367,17 +629,38 @@ static bool vmw_fence_goal_check_locked(struct vmw_fence_obj *fence)
 
 	iowrite32(fence->seqno, fifo_mem + SVGA_FIFO_FENCE_GOAL);
 	fence->fman->seqno_valid = true;
+=======
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+	u32 goal_seqno;
+
+	if (dma_fence_is_signaled_locked(&fence->base))
+		return false;
+
+	goal_seqno = vmw_fence_goal_read(fman->dev_priv);
+	if (likely(fman->seqno_valid &&
+		   goal_seqno - fence->base.seqno < VMW_FENCE_WRAP))
+		return false;
+
+	vmw_fence_goal_write(fman->dev_priv, fence->base.seqno);
+	fman->seqno_valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
 
+<<<<<<< HEAD
 void vmw_fences_update(struct vmw_fence_manager *fman)
 {
 	unsigned long flags;
+=======
+static void __vmw_fences_update(struct vmw_fence_manager *fman)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vmw_fence_obj *fence, *next_fence;
 	struct list_head action_list;
 	bool needs_rerun;
 	uint32_t seqno, new_seqno;
+<<<<<<< HEAD
 	__le32 __iomem *fifo_mem = fman->dev_priv->mmio_virt;
 
 	seqno = ioread32(fifo_mem + SVGA_FIFO_FENCE);
@@ -387,34 +670,56 @@ rerun:
 		if (seqno - fence->seqno < VMW_FENCE_WRAP) {
 			list_del_init(&fence->head);
 			fence->signaled |= DRM_VMW_FENCE_FLAG_EXEC;
+=======
+
+	seqno = vmw_fence_read(fman->dev_priv);
+rerun:
+	list_for_each_entry_safe(fence, next_fence, &fman->fence_list, head) {
+		if (seqno - fence->base.seqno < VMW_FENCE_WRAP) {
+			list_del_init(&fence->head);
+			dma_fence_signal_locked(&fence->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			INIT_LIST_HEAD(&action_list);
 			list_splice_init(&fence->seq_passed_actions,
 					 &action_list);
 			vmw_fences_perform_actions(fman, &action_list);
+<<<<<<< HEAD
 			wake_up_all(&fence->queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			break;
 	}
 
+<<<<<<< HEAD
 	needs_rerun = vmw_fence_goal_new_locked(fman, seqno);
 
 	if (!list_empty(&fman->cleanup_list))
 		(void) schedule_work(&fman->work);
 	spin_unlock_irqrestore(&fman->lock, flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Rerun if the fence goal seqno was updated, and the
 	 * hardware might have raced with that update, so that
 	 * we missed a fence_goal irq.
 	 */
 
+<<<<<<< HEAD
 	if (unlikely(needs_rerun)) {
 		new_seqno = ioread32(fifo_mem + SVGA_FIFO_FENCE);
+=======
+	needs_rerun = vmw_fence_goal_new_locked(fman, seqno);
+	if (unlikely(needs_rerun)) {
+		new_seqno = vmw_fence_read(fman->dev_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (new_seqno != seqno) {
 			seqno = new_seqno;
 			goto rerun;
 		}
 	}
+<<<<<<< HEAD
 }
 
 bool vmw_fence_obj_signaled(struct vmw_fence_obj *fence,
@@ -481,15 +786,57 @@ void vmw_fence_obj_flush(struct vmw_fence_obj *fence)
 	struct vmw_private *dev_priv = fence->fman->dev_priv;
 
 	vmw_fifo_ping_host(dev_priv, SVGA_SYNC_GENERIC);
+=======
+
+	if (!list_empty(&fman->cleanup_list))
+		(void) schedule_work(&fman->work);
+}
+
+void vmw_fences_update(struct vmw_fence_manager *fman)
+{
+	spin_lock(&fman->lock);
+	__vmw_fences_update(fman);
+	spin_unlock(&fman->lock);
+}
+
+bool vmw_fence_obj_signaled(struct vmw_fence_obj *fence)
+{
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+
+	if (test_bit(DMA_FENCE_FLAG_SIGNALED_BIT, &fence->base.flags))
+		return true;
+
+	vmw_fences_update(fman);
+
+	return dma_fence_is_signaled(&fence->base);
+}
+
+int vmw_fence_obj_wait(struct vmw_fence_obj *fence, bool lazy,
+		       bool interruptible, unsigned long timeout)
+{
+	long ret = dma_fence_wait_timeout(&fence->base, interruptible, timeout);
+
+	if (likely(ret > 0))
+		return 0;
+	else if (ret == 0)
+		return -EBUSY;
+	else
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vmw_fence_destroy(struct vmw_fence_obj *fence)
 {
+<<<<<<< HEAD
 	kfree(fence);
+=======
+	dma_fence_free(&fence->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int vmw_fence_create(struct vmw_fence_manager *fman,
 		     uint32_t seqno,
+<<<<<<< HEAD
 		     uint32_t mask,
 		     struct vmw_fence_obj **p_fence)
 {
@@ -501,6 +848,18 @@ int vmw_fence_create(struct vmw_fence_manager *fman,
 		return -ENOMEM;
 
 	ret = vmw_fence_obj_init(fman, fence, seqno, mask,
+=======
+		     struct vmw_fence_obj **p_fence)
+{
+	struct vmw_fence_obj *fence;
+ 	int ret;
+
+	fence = kzalloc(sizeof(*fence), GFP_KERNEL);
+	if (unlikely(!fence))
+		return -ENOMEM;
+
+	ret = vmw_fence_obj_init(fman, fence, seqno,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 vmw_fence_destroy);
 	if (unlikely(ret != 0))
 		goto out_err_init;
@@ -518,6 +877,7 @@ static void vmw_user_fence_destroy(struct vmw_fence_obj *fence)
 {
 	struct vmw_user_fence *ufence =
 		container_of(fence, struct vmw_user_fence, fence);
+<<<<<<< HEAD
 	struct vmw_fence_manager *fman = fence->fman;
 
 	kfree(ufence);
@@ -526,6 +886,10 @@ static void vmw_user_fence_destroy(struct vmw_fence_obj *fence)
 	 */
 	ttm_mem_global_free(vmw_mem_glob(fman->dev_priv),
 			    fman->user_fence_size);
+=======
+
+	ttm_base_object_kfree(ufence, base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vmw_user_fence_base_release(struct ttm_base_object **p_base)
@@ -542,13 +906,17 @@ static void vmw_user_fence_base_release(struct ttm_base_object **p_base)
 int vmw_user_fence_create(struct drm_file *file_priv,
 			  struct vmw_fence_manager *fman,
 			  uint32_t seqno,
+<<<<<<< HEAD
 			  uint32_t mask,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct vmw_fence_obj **p_fence,
 			  uint32_t *p_handle)
 {
 	struct ttm_object_file *tfile = vmw_fpriv(file_priv)->tfile;
 	struct vmw_user_fence *ufence;
 	struct vmw_fence_obj *tmp;
+<<<<<<< HEAD
 	struct ttm_mem_global *mem_glob = vmw_mem_glob(fman->dev_priv);
 	int ret;
 
@@ -564,12 +932,22 @@ int vmw_user_fence_create(struct drm_file *file_priv,
 
 	ufence = kzalloc(sizeof(*ufence), GFP_KERNEL);
 	if (unlikely(ufence == NULL)) {
+=======
+	int ret;
+
+	ufence = kzalloc(sizeof(*ufence), GFP_KERNEL);
+	if (unlikely(!ufence)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_no_object;
 	}
 
 	ret = vmw_fence_obj_init(fman, &ufence->fence, seqno,
+<<<<<<< HEAD
 				 mask, vmw_user_fence_destroy);
+=======
+				 vmw_user_fence_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(ret != 0)) {
 		kfree(ufence);
 		goto out_no_object;
@@ -580,9 +958,16 @@ int vmw_user_fence_create(struct drm_file *file_priv,
 	 * vmw_user_fence_base_release.
 	 */
 	tmp = vmw_fence_obj_reference(&ufence->fence);
+<<<<<<< HEAD
 	ret = ttm_base_object_init(tfile, &ufence->base, false,
 				   VMW_RES_FENCE,
 				   &vmw_user_fence_base_release, NULL);
+=======
+
+	ret = ttm_base_object_init(tfile, &ufence->base, false,
+				   VMW_RES_FENCE,
+				   &vmw_user_fence_base_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	if (unlikely(ret != 0)) {
@@ -594,25 +979,39 @@ int vmw_user_fence_create(struct drm_file *file_priv,
 	}
 
 	*p_fence = &ufence->fence;
+<<<<<<< HEAD
 	*p_handle = ufence->base.hash.key;
+=======
+	*p_handle = ufence->base.handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 out_err:
 	tmp = &ufence->fence;
 	vmw_fence_obj_unreference(&tmp);
 out_no_object:
+<<<<<<< HEAD
 	ttm_mem_global_free(mem_glob, fman->user_fence_size);
 	return ret;
 }
 
 
 /**
+=======
+	return ret;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vmw_fence_fifo_down - signal all unsignaled fence objects.
  */
 
 void vmw_fence_fifo_down(struct vmw_fence_manager *fman)
 {
+<<<<<<< HEAD
 	unsigned long irq_flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head action_list;
 	int ret;
 
@@ -621,26 +1020,42 @@ void vmw_fence_fifo_down(struct vmw_fence_manager *fman)
 	 * restart when we've released the fman->lock.
 	 */
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&fman->lock, irq_flags);
+=======
+	spin_lock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fman->fifo_down = true;
 	while (!list_empty(&fman->fence_list)) {
 		struct vmw_fence_obj *fence =
 			list_entry(fman->fence_list.prev, struct vmw_fence_obj,
 				   head);
+<<<<<<< HEAD
 		kref_get(&fence->kref);
 		spin_unlock_irq(&fman->lock);
 
 		ret = vmw_fence_obj_wait(fence, fence->signal_mask,
 					 false, false,
+=======
+		dma_fence_get(&fence->base);
+		spin_unlock(&fman->lock);
+
+		ret = vmw_fence_obj_wait(fence, false, false,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 VMW_FENCE_WAIT_TIMEOUT);
 
 		if (unlikely(ret != 0)) {
 			list_del_init(&fence->head);
+<<<<<<< HEAD
 			fence->signaled |= DRM_VMW_FENCE_FLAG_EXEC;
+=======
+			dma_fence_signal(&fence->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			INIT_LIST_HEAD(&action_list);
 			list_splice_init(&fence->seq_passed_actions,
 					 &action_list);
 			vmw_fences_perform_actions(fman, &action_list);
+<<<<<<< HEAD
 			wake_up_all(&fence->queue);
 		}
 
@@ -650,15 +1065,65 @@ void vmw_fence_fifo_down(struct vmw_fence_manager *fman)
 		kref_put(&fence->kref, vmw_fence_obj_destroy_locked);
 	}
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+		}
+
+		BUG_ON(!list_empty(&fence->head));
+		dma_fence_put(&fence->base);
+		spin_lock(&fman->lock);
+	}
+	spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vmw_fence_fifo_up(struct vmw_fence_manager *fman)
 {
+<<<<<<< HEAD
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&fman->lock, irq_flags);
 	fman->fifo_down = false;
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+	spin_lock(&fman->lock);
+	fman->fifo_down = false;
+	spin_unlock(&fman->lock);
+}
+
+
+/**
+ * vmw_fence_obj_lookup - Look up a user-space fence object
+ *
+ * @tfile: A struct ttm_object_file identifying the caller.
+ * @handle: A handle identifying the fence object.
+ * @return: A struct vmw_user_fence base ttm object on success or
+ * an error pointer on failure.
+ *
+ * The fence object is looked up and type-checked. The caller needs
+ * to have opened the fence object first, but since that happens on
+ * creation and fence objects aren't shareable, that's not an
+ * issue currently.
+ */
+static struct ttm_base_object *
+vmw_fence_obj_lookup(struct ttm_object_file *tfile, u32 handle)
+{
+	struct ttm_base_object *base = ttm_base_object_lookup(tfile, handle);
+
+	if (!base) {
+		pr_err("Invalid fence object handle 0x%08lx.\n",
+		       (unsigned long)handle);
+		return ERR_PTR(-EINVAL);
+	}
+
+	if (base->refcount_release != vmw_user_fence_base_release) {
+		pr_err("Invalid fence object handle 0x%08lx.\n",
+		       (unsigned long)handle);
+		ttm_base_object_unref(&base);
+		return ERR_PTR(-EINVAL);
+	}
+
+	return base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -687,6 +1152,7 @@ int vmw_fence_obj_wait_ioctl(struct drm_device *dev, void *data,
 		arg->kernel_cookie = jiffies + wait_timeout;
 	}
 
+<<<<<<< HEAD
 	base = ttm_base_object_lookup(tfile, arg->handle);
 	if (unlikely(base == NULL)) {
 		printk(KERN_ERR "Wait invalid fence object handle "
@@ -694,19 +1160,32 @@ int vmw_fence_obj_wait_ioctl(struct drm_device *dev, void *data,
 		       (unsigned long)arg->handle);
 		return -EINVAL;
 	}
+=======
+	base = vmw_fence_obj_lookup(tfile, arg->handle);
+	if (IS_ERR(base))
+		return PTR_ERR(base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fence = &(container_of(base, struct vmw_user_fence, base)->fence);
 
 	timeout = jiffies;
 	if (time_after_eq(timeout, (unsigned long)arg->kernel_cookie)) {
+<<<<<<< HEAD
 		ret = ((vmw_fence_obj_signaled(fence, arg->flags)) ?
+=======
+		ret = ((vmw_fence_obj_signaled(fence)) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       0 : -EBUSY);
 		goto out;
 	}
 
 	timeout = (unsigned long)arg->kernel_cookie - timeout;
 
+<<<<<<< HEAD
 	ret = vmw_fence_obj_wait(fence, arg->flags, arg->lazy, true, timeout);
+=======
+	ret = vmw_fence_obj_wait(fence, arg->lazy, true, timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ttm_base_object_unref(&base);
@@ -716,8 +1195,12 @@ out:
 	 */
 
 	if (ret == 0 && (arg->wait_options & DRM_VMW_WAIT_OPTION_UNREF))
+<<<<<<< HEAD
 		return ttm_ref_object_base_unref(tfile, arg->handle,
 						 TTM_REF_USAGE);
+=======
+		return ttm_ref_object_base_unref(tfile, arg->handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -732,6 +1215,7 @@ int vmw_fence_obj_signaled_ioctl(struct drm_device *dev, void *data,
 	struct ttm_object_file *tfile = vmw_fpriv(file_priv)->tfile;
 	struct vmw_private *dev_priv = vmw_priv(dev);
 
+<<<<<<< HEAD
 	base = ttm_base_object_lookup(tfile, arg->handle);
 	if (unlikely(base == NULL)) {
 		printk(KERN_ERR "Fence signaled invalid fence object handle "
@@ -749,6 +1233,21 @@ int vmw_fence_obj_signaled_ioctl(struct drm_device *dev, void *data,
 	arg->signaled_flags = fence->signaled;
 	arg->passed_seqno = dev_priv->last_read_seqno;
 	spin_unlock_irq(&fman->lock);
+=======
+	base = vmw_fence_obj_lookup(tfile, arg->handle);
+	if (IS_ERR(base))
+		return PTR_ERR(base);
+
+	fence = &(container_of(base, struct vmw_user_fence, base)->fence);
+	fman = fman_from_fence(fence);
+
+	arg->signaled = vmw_fence_obj_signaled(fence);
+
+	arg->signaled_flags = arg->flags;
+	spin_lock(&fman->lock);
+	arg->passed_seqno = dev_priv->last_read_seqno;
+	spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ttm_base_object_unref(&base);
 
@@ -763,6 +1262,7 @@ int vmw_fence_obj_unref_ioctl(struct drm_device *dev, void *data,
 		(struct drm_vmw_fence_arg *) data;
 
 	return ttm_ref_object_base_unref(vmw_fpriv(file_priv)->tfile,
+<<<<<<< HEAD
 					 arg->handle,
 					 TTM_REF_USAGE);
 }
@@ -806,6 +1306,12 @@ out_unlock:
 
 
 /**
+=======
+					 arg->handle);
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vmw_event_fence_action_seq_passed
  *
  * @action: The struct vmw_fence_action embedded in a struct
@@ -813,8 +1319,12 @@ out_unlock:
  *
  * This function is called when the seqno of the fence where @action is
  * attached has passed. It queues the event on the submitter's event list.
+<<<<<<< HEAD
  * This function is always called from atomic context, and may be called
  * from irq context.
+=======
+ * This function is always called from atomic context.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void vmw_event_fence_action_seq_passed(struct vmw_fence_action *action)
 {
@@ -822,12 +1332,16 @@ static void vmw_event_fence_action_seq_passed(struct vmw_fence_action *action)
 		container_of(action, struct vmw_event_fence_action, action);
 	struct drm_device *dev = eaction->dev;
 	struct drm_pending_event *event = eaction->event;
+<<<<<<< HEAD
 	struct drm_file *file_priv;
 	unsigned long irq_flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(event == NULL))
 		return;
 
+<<<<<<< HEAD
 	file_priv = event->file_priv;
 	spin_lock_irqsave(&dev->event_lock, irq_flags);
 
@@ -844,6 +1358,22 @@ static void vmw_event_fence_action_seq_passed(struct vmw_fence_action *action)
 	eaction->event = NULL;
 	wake_up_all(&file_priv->event_wait);
 	spin_unlock_irqrestore(&dev->event_lock, irq_flags);
+=======
+	spin_lock_irq(&dev->event_lock);
+
+	if (likely(eaction->tv_sec != NULL)) {
+		struct timespec64 ts;
+
+		ktime_get_ts64(&ts);
+		/* monotonic time, so no y2038 overflow */
+		*eaction->tv_sec = ts.tv_sec;
+		*eaction->tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+	}
+
+	drm_send_event_locked(dev, eaction->event);
+	eaction->event = NULL;
+	spin_unlock_irq(&dev->event_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -859,12 +1389,15 @@ static void vmw_event_fence_action_cleanup(struct vmw_fence_action *action)
 {
 	struct vmw_event_fence_action *eaction =
 		container_of(action, struct vmw_event_fence_action, action);
+<<<<<<< HEAD
 	struct vmw_fence_manager *fman = eaction->fence->fman;
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&fman->lock, irq_flags);
 	list_del(&eaction->fpriv_head);
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vmw_fence_obj_unreference(&eaction->fence);
 	kfree(eaction);
@@ -874,12 +1407,18 @@ static void vmw_event_fence_action_cleanup(struct vmw_fence_action *action)
 /**
  * vmw_fence_obj_add_action - Add an action to a fence object.
  *
+<<<<<<< HEAD
  * @fence - The fence object.
  * @action - The action to add.
+=======
+ * @fence: The fence object.
+ * @action: The action to add.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note that the action callbacks may be executed before this function
  * returns.
  */
+<<<<<<< HEAD
 void vmw_fence_obj_add_action(struct vmw_fence_obj *fence,
 			      struct vmw_fence_action *action)
 {
@@ -892,6 +1431,19 @@ void vmw_fence_obj_add_action(struct vmw_fence_obj *fence,
 
 	fman->pending_actions[action->type]++;
 	if (fence->signaled & DRM_VMW_FENCE_FLAG_EXEC) {
+=======
+static void vmw_fence_obj_add_action(struct vmw_fence_obj *fence,
+			      struct vmw_fence_action *action)
+{
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+	bool run_update = false;
+
+	mutex_lock(&fman->goal_irq_mutex);
+	spin_lock(&fman->lock);
+
+	fman->pending_actions[action->type]++;
+	if (dma_fence_is_signaled_locked(&fence->base)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct list_head action_list;
 
 		INIT_LIST_HEAD(&action_list);
@@ -907,7 +1459,11 @@ void vmw_fence_obj_add_action(struct vmw_fence_obj *fence,
 		run_update = vmw_fence_goal_check_locked(fence);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
+=======
+	spin_unlock(&fman->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (run_update) {
 		if (!fman->goal_irq_on) {
@@ -921,13 +1477,24 @@ void vmw_fence_obj_add_action(struct vmw_fence_obj *fence,
 }
 
 /**
+<<<<<<< HEAD
  * vmw_event_fence_action_create - Post an event for sending when a fence
+=======
+ * vmw_event_fence_action_queue - Post an event for sending when a fence
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * object seqno has passed.
  *
  * @file_priv: The file connection on which the event should be posted.
  * @fence: The fence object on which to post the event.
  * @event: Event to be posted. This event should've been alloced
  * using k[mz]alloc, and should've been completely initialized.
+<<<<<<< HEAD
+=======
+ * @tv_sec: If non-null, the variable pointed to will be assigned
+ * current time tv_sec val when the fence signals.
+ * @tv_usec: Must be set if @tv_sec is set, and the variable pointed to will
+ * be assigned the current time tv_usec val when the fence signals.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @interruptible: Interruptible waits if possible.
  *
  * As a side effect, the object pointed to by @event may have been
@@ -943,12 +1510,19 @@ int vmw_event_fence_action_queue(struct drm_file *file_priv,
 				 bool interruptible)
 {
 	struct vmw_event_fence_action *eaction;
+<<<<<<< HEAD
 	struct vmw_fence_manager *fman = fence->fman;
 	struct vmw_fpriv *vmw_fp = vmw_fpriv(file_priv);
 	unsigned long irq_flags;
 
 	eaction = kzalloc(sizeof(*eaction), GFP_KERNEL);
 	if (unlikely(eaction == NULL))
+=======
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+
+	eaction = kzalloc(sizeof(*eaction), GFP_KERNEL);
+	if (unlikely(!eaction))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	eaction->event = event;
@@ -958,6 +1532,7 @@ int vmw_event_fence_action_queue(struct drm_file *file_priv,
 	eaction->action.type = VMW_ACTION_EVENT;
 
 	eaction->fence = vmw_fence_obj_reference(fence);
+<<<<<<< HEAD
 	eaction->dev = fman->dev_priv->dev;
 	eaction->tv_sec = tv_sec;
 	eaction->tv_usec = tv_usec;
@@ -966,6 +1541,12 @@ int vmw_event_fence_action_queue(struct drm_file *file_priv,
 	list_add_tail(&eaction->fpriv_head, &vmw_fp->fence_events);
 	spin_unlock_irqrestore(&fman->lock, irq_flags);
 
+=======
+	eaction->dev = &fman->dev_priv->drm;
+	eaction->tv_sec = tv_sec;
+	eaction->tv_usec = tv_usec;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vmw_fence_obj_add_action(fence, &eaction->action);
 
 	return 0;
@@ -976,13 +1557,18 @@ struct vmw_event_fence_pending {
 	struct drm_vmw_event_fence event;
 };
 
+<<<<<<< HEAD
 int vmw_event_fence_action_create(struct drm_file *file_priv,
+=======
+static int vmw_event_fence_action_create(struct drm_file *file_priv,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct vmw_fence_obj *fence,
 				  uint32_t flags,
 				  uint64_t user_data,
 				  bool interruptible)
 {
 	struct vmw_event_fence_pending *event;
+<<<<<<< HEAD
 	struct drm_device *dev = fence->fman->dev_priv->dev;
 	unsigned long irq_flags;
 	int ret;
@@ -1016,6 +1602,30 @@ int vmw_event_fence_action_create(struct drm_file *file_priv,
 	event->base.file_priv = file_priv;
 	event->base.destroy = (void (*) (struct drm_pending_event *)) kfree;
 
+=======
+	struct vmw_fence_manager *fman = fman_from_fence(fence);
+	struct drm_device *dev = &fman->dev_priv->drm;
+	int ret;
+
+	event = kzalloc(sizeof(*event), GFP_KERNEL);
+	if (unlikely(!event)) {
+		DRM_ERROR("Failed to allocate an event.\n");
+		ret = -ENOMEM;
+		goto out_no_space;
+	}
+
+	event->event.base.type = DRM_VMW_EVENT_FENCE_SIGNALED;
+	event->event.base.length = sizeof(event->event);
+	event->event.user_data = user_data;
+
+	ret = drm_event_reserve_init(dev, file_priv, &event->base, &event->event.base);
+
+	if (unlikely(ret != 0)) {
+		DRM_ERROR("Failed to allocate event space for this file.\n");
+		kfree(event);
+		goto out_no_space;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & DRM_VMW_FE_FLAG_REQ_TIME)
 		ret = vmw_event_fence_action_queue(file_priv, fence,
@@ -1035,11 +1645,15 @@ int vmw_event_fence_action_create(struct drm_file *file_priv,
 	return 0;
 
 out_no_queue:
+<<<<<<< HEAD
 	event->base.destroy(&event->base);
 out_no_event:
 	spin_lock_irqsave(&dev->event_lock, irq_flags);
 	file_priv->event_space += sizeof(*event);
 	spin_unlock_irqrestore(&dev->event_lock, irq_flags);
+=======
+	drm_event_cancel_free(dev, &event->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_no_space:
 	return ret;
 }
@@ -1052,6 +1666,10 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
 		(struct drm_vmw_fence_event_arg *) data;
 	struct vmw_fence_obj *fence = NULL;
 	struct vmw_fpriv *vmw_fp = vmw_fpriv(file_priv);
+<<<<<<< HEAD
+=======
+	struct ttm_object_file *tfile = vmw_fp->tfile;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_vmw_fence_rep __user *user_fence_rep =
 		(struct drm_vmw_fence_rep __user *)(unsigned long)
 		arg->fence_rep;
@@ -1065,6 +1683,7 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
 	 */
 	if (arg->handle) {
 		struct ttm_base_object *base =
+<<<<<<< HEAD
 			ttm_base_object_lookup(vmw_fp->tfile, arg->handle);
 
 		if (unlikely(base == NULL)) {
@@ -1073,21 +1692,37 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
 				  (unsigned long)arg->handle);
 			return -EINVAL;
 		}
+=======
+			vmw_fence_obj_lookup(tfile, arg->handle);
+
+		if (IS_ERR(base))
+			return PTR_ERR(base);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fence = &(container_of(base, struct vmw_user_fence,
 				       base)->fence);
 		(void) vmw_fence_obj_reference(fence);
 
 		if (user_fence_rep != NULL) {
+<<<<<<< HEAD
 			bool existed;
 
 			ret = ttm_ref_object_add(vmw_fp->tfile, base,
 						 TTM_REF_USAGE, &existed);
+=======
+			ret = ttm_ref_object_add(vmw_fp->tfile, base,
+						 NULL, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(ret != 0)) {
 				DRM_ERROR("Failed to reference a fence "
 					  "object.\n");
 				goto out_no_ref_obj;
 			}
+<<<<<<< HEAD
 			handle = base->hash.key;
+=======
+			handle = base->handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ttm_base_object_unref(&base);
 	}
@@ -1119,13 +1754,21 @@ int vmw_fence_event_ioctl(struct drm_device *dev, void *data,
 	}
 
 	vmw_execbuf_copy_fence_user(dev_priv, vmw_fp, 0, user_fence_rep, fence,
+<<<<<<< HEAD
 				    handle);
+=======
+				    handle, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vmw_fence_obj_unreference(&fence);
 	return 0;
 out_no_create:
 	if (user_fence_rep != NULL)
+<<<<<<< HEAD
 		ttm_ref_object_base_unref(vmw_fpriv(file_priv)->tfile,
 					  handle, TTM_REF_USAGE);
+=======
+		ttm_ref_object_base_unref(tfile, handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_no_ref_obj:
 	vmw_fence_obj_unreference(&fence);
 	return ret;

@@ -1,7 +1,10 @@
 #
 # SNI RM
 #
+<<<<<<< HEAD
 platform-$(CONFIG_SNI_RM)		+= sni/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-$(CONFIG_SNI_RM)		+= -I$(srctree)/arch/mips/include/asm/mach-rm
 ifdef CONFIG_CPU_LITTLE_ENDIAN
 load-$(CONFIG_SNI_RM)		+= 0xffffffff80600000

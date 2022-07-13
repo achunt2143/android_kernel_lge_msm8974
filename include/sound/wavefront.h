@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_WAVEFRONT_H__
 #define __SOUND_WAVEFRONT_H__
 
@@ -5,6 +9,7 @@
  *  Driver for Turtle Beach Wavefront cards (Maui,Tropez,Tropez+)
  *
  *  Copyright (c) by Paul Barton-Davis <pbd@op.net>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,6 +54,10 @@
   BE USED WITH EITHER C *OR* C++.
  **********************************************************************/
 
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef NUM_MIDIKEYS 
 #define NUM_MIDIKEYS 128
 #endif  /* NUM_MIDIKEYS */
@@ -57,6 +66,7 @@
 #define NUM_MIDICHANNELS 16
 #endif  /* NUM_MIDICHANNELS */
 
+<<<<<<< HEAD
 /* These are very useful/important. the original wavefront interface
    was developed on a 16 bit system, where sizeof(int) = 2
    bytes. Defining things like this makes the code much more portable, and
@@ -80,6 +90,8 @@ typedef s8 CHAR8;
 typedef u8 UCHAR8;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Pseudo-commands not part of the WaveFront command set.
    These are used for various driver controls and direct
    hardware control.
@@ -481,7 +493,11 @@ typedef struct wf_alias {
     */
 
     u8 sixteen_bit_padding;
+<<<<<<< HEAD
 } __attribute__((packed)) wavefront_alias;
+=======
+} __packed wavefront_alias;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct wf_drum {
     u8 PatchNumber;

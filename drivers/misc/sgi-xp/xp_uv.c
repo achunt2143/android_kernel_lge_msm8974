@@ -3,6 +3,10 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
+=======
+ * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
@@ -17,8 +21,11 @@
 #include <asm/uv/uv_hub.h>
 #if defined CONFIG_X86_64
 #include <asm/uv/bios.h>
+<<<<<<< HEAD
 #elif defined CONFIG_IA64_GENERIC || defined CONFIG_IA64_SGI_UV
 #include <asm/sn/sn_sal.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #include "../sgi-gru/grukservices.h"
 #include "xp.h"
@@ -98,6 +105,7 @@ xp_expand_memprotect_uv(unsigned long phys_addr, unsigned long size)
 			"UV_MEMPROT_ALLOW_RW) failed, ret=%d\n", ret);
 		return xpBiosError;
 	}
+<<<<<<< HEAD
 
 #elif defined CONFIG_IA64_GENERIC || defined CONFIG_IA64_SGI_UV
 	u64 nasid_array;
@@ -109,6 +117,8 @@ xp_expand_memprotect_uv(unsigned long phys_addr, unsigned long size)
 			"SN_MEMPROT_ACCESS_CLASS_1,) failed ret=%d\n", ret);
 		return xpSalError;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	#error not a supported configuration
 #endif
@@ -128,6 +138,7 @@ xp_restrict_memprotect_uv(unsigned long phys_addr, unsigned long size)
 			"UV_MEMPROT_RESTRICT_ACCESS) failed, ret=%d\n", ret);
 		return xpBiosError;
 	}
+<<<<<<< HEAD
 
 #elif defined CONFIG_IA64_GENERIC || defined CONFIG_IA64_SGI_UV
 	u64 nasid_array;
@@ -139,6 +150,8 @@ xp_restrict_memprotect_uv(unsigned long phys_addr, unsigned long size)
 			"SN_MEMPROT_ACCESS_CLASS_0,) failed ret=%d\n", ret);
 		return xpSalError;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	#error not a supported configuration
 #endif
@@ -148,12 +161,24 @@ xp_restrict_memprotect_uv(unsigned long phys_addr, unsigned long size)
 enum xp_retval
 xp_init_uv(void)
 {
+<<<<<<< HEAD
 	BUG_ON(!is_uv());
 
 	xp_max_npartitions = XP_MAX_NPARTITIONS_UV;
 	xp_partition_id = sn_partition_id;
 	xp_region_size = sn_region_size;
 
+=======
+	WARN_ON(!is_uv_system());
+	if (!is_uv_system())
+		return xpUnsupported;
+
+	xp_max_npartitions = XP_MAX_NPARTITIONS_UV;
+#ifdef CONFIG_X86
+	xp_partition_id = sn_partition_id;
+	xp_region_size = sn_region_size;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xp_pa = xp_pa_uv;
 	xp_socket_pa = xp_socket_pa_uv;
 	xp_remote_memcpy = xp_remote_memcpy_uv;
@@ -167,5 +192,9 @@ xp_init_uv(void)
 void
 xp_exit_uv(void)
 {
+<<<<<<< HEAD
 	BUG_ON(!is_uv());
+=======
+	WARN_ON(!is_uv_system());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

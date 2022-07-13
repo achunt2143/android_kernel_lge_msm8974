@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Old U-boot compatibility for Esteem 195E Hotfoot CPU Board
  *
  * Author: Solomon Peachy <solomon@linux-wlan.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ops.h"
@@ -73,7 +80,11 @@ static void hotfoot_fixups(void)
 
 		printf("Fixing devtree for 4M Flash\n");
 		
+<<<<<<< HEAD
 		/* First fix up the base addresse */
+=======
+		/* First fix up the base address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		getprop(devp, "reg", regs, sizeof(regs));
 		regs[0] = 0;
 		regs[1] = 0xffc00000;

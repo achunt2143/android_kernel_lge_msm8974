@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Alchemy Au1x00 ethernet driver include file
@@ -5,6 +9,7 @@
  * Author: Pete Popov <ppopov@mvista.com>
  *
  * Copyright 2001 MontaVista Software Inc.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -24,6 +29,8 @@
  * ########################################################################
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -107,7 +114,10 @@ struct au1000_private {
 	int old_speed;
 	int old_duplex;
 
+<<<<<<< HEAD
 	struct phy_device *phy_dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mii_bus *mii_bus;
 
 	/* PHY configuration */
@@ -125,8 +135,13 @@ struct au1000_private {
 	struct mac_reg *mac;  /* mac registers                      */
 	u32 *enable;     /* address of MAC Enable Register     */
 	void __iomem *macdma;	/* base of MAC DMA port */
+<<<<<<< HEAD
 	u32 vaddr;                /* virtual address of rx/tx buffers   */
 	dma_addr_t dma_addr;      /* dma address of rx/tx buffers       */
+=======
+	void *vaddr;		/* virtual address of rx/tx buffers   */
+	dma_addr_t dma_addr;	/* dma address of rx/tx buffers       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;       /* Serialise access to device */
 

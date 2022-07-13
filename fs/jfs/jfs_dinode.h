@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2001
  *
@@ -14,6 +15,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2001
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _H_JFS_DINODE
 #define _H_JFS_DINODE
@@ -109,15 +115,38 @@ struct dinode {
 #define di_gengen	u._file._u1._imap._gengen
 
 			union {
+<<<<<<< HEAD
 				xtpage_t _xtroot;
+=======
+				xtroot_t _xtroot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct {
 					u8 unused[16];	/* 16: */
 					dxd_t _dxd;	/* 16: */
 					union {
+<<<<<<< HEAD
 						__le32 _rdev;	/* 4: */
 						u8 _fastsymlink[128];
 					} _u;
 					u8 _inlineea[128];
+=======
+						/*
+						 * The fast symlink area
+						 * is expected to overflow
+						 * into _inlineea when
+						 * needed (which will clear
+						 * INLINEEA).
+						 */
+						struct {
+							union {
+								__le32 _rdev;	/* 4: */
+								u8 _fastsymlink[128];
+							} _u;
+							u8 _inlineea[128];
+						};
+						u8 _inline_all[256];
+					};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} _special;
 			} _u2;
 		} _file;
@@ -128,6 +157,10 @@ struct dinode {
 #define di_rdev		u._file._u2._special._u._rdev
 #define di_fastsymlink	u._file._u2._special._u._fastsymlink
 #define di_inlineea	u._file._u2._special._inlineea
+<<<<<<< HEAD
+=======
+#define di_inline_all	u._file._u2._special._inline_all
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 };
 
@@ -166,6 +199,7 @@ struct dinode {
 #define JFS_FL_USER_MODIFIABLE	0x03F80000
 #define JFS_FL_INHERIT		0x03C80000
 
+<<<<<<< HEAD
 /* These are identical to EXT[23]_IOC_GETFLAGS/SETFLAGS */
 #define JFS_IOC_GETFLAGS	_IOR('f', 1, long)
 #define JFS_IOC_SETFLAGS	_IOW('f', 2, long)
@@ -173,4 +207,6 @@ struct dinode {
 #define JFS_IOC_GETFLAGS32	_IOR('f', 1, int)
 #define JFS_IOC_SETFLAGS32	_IOW('f', 2, int)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_H_JFS_DINODE */

@@ -13,7 +13,10 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/hdreg.h>
 #include <linux/slab.h>
@@ -41,8 +44,13 @@ static inline s32 nfhd_read_write(u32 major, u32 minor, u32 rwflag, u32 recno,
 static inline s32 nfhd_get_capacity(u32 major, u32 minor, u32 *blocks,
 				    u32 *blocksize)
 {
+<<<<<<< HEAD
 	return nf_call(nfhd_id + NFHD_GET_CAPACITY, major, minor, blocks,
 		       blocksize);
+=======
+	return nf_call(nfhd_id + NFHD_GET_CAPACITY, major, minor,
+		       virt_to_phys(blocks), virt_to_phys(blocksize));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static LIST_HEAD(nfhd_list);
@@ -55,6 +63,7 @@ struct nfhd_device {
 	int id;
 	u32 blocks, bsize;
 	int bshift;
+<<<<<<< HEAD
 	struct request_queue *queue;
 	struct gendisk *disk;
 };
@@ -76,6 +85,29 @@ static void nfhd_make_request(struct request_queue *queue, struct bio *bio)
 		sec += len;
 	}
 	bio_endio(bio, 0);
+=======
+	struct gendisk *disk;
+};
+
+static void nfhd_submit_bio(struct bio *bio)
+{
+	struct nfhd_device *dev = bio->bi_bdev->bd_disk->private_data;
+	struct bio_vec bvec;
+	struct bvec_iter iter;
+	int dir, len, shift;
+	sector_t sec = bio->bi_iter.bi_sector;
+
+	dir = bio_data_dir(bio);
+	shift = dev->bshift;
+	bio_for_each_segment(bvec, bio, iter) {
+		len = bvec.bv_len;
+		len >>= 9;
+		nfhd_read_write(dev->id, 0, dir, sec >> shift, len >> shift,
+				page_to_phys(bvec.bv_page) + bvec.bv_offset);
+		sec += len;
+	}
+	bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nfhd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -91,13 +123,26 @@ static int nfhd_getgeo(struct block_device *bdev, struct hd_geometry *geo)
 
 static const struct block_device_operations nfhd_ops = {
 	.owner	= THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.submit_bio = nfhd_submit_bio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.getgeo	= nfhd_getgeo,
 };
 
 static int __init nfhd_init_one(int id, u32 blocks, u32 bsize)
 {
+<<<<<<< HEAD
 	struct nfhd_device *dev;
 	int dev_id = id - NFHD_DEV_OFFSET;
+=======
+	struct queue_limits lim = {
+		.logical_block_size	= bsize,
+	};
+	struct nfhd_device *dev;
+	int dev_id = id - NFHD_DEV_OFFSET;
+	int err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("nfhd%u: found device with %u blocks (%u bytes)\n", dev_id,
 		blocks, bsize);
@@ -116,6 +161,7 @@ static int __init nfhd_init_one(int id, u32 blocks, u32 bsize)
 	dev->bsize = bsize;
 	dev->bshift = ffs(bsize) - 10;
 
+<<<<<<< HEAD
 	dev->queue = blk_alloc_queue(GFP_KERNEL);
 	if (dev->queue == NULL)
 		goto free_dev;
@@ -130,41 +176,83 @@ static int __init nfhd_init_one(int id, u32 blocks, u32 bsize)
 
 	dev->disk->major = major_num;
 	dev->disk->first_minor = dev_id * 16;
+=======
+	dev->disk = blk_alloc_disk(&lim, NUMA_NO_NODE);
+	if (IS_ERR(dev->disk)) {
+		err = PTR_ERR(dev->disk);
+		goto free_dev;
+	}
+
+	dev->disk->major = major_num;
+	dev->disk->first_minor = dev_id * 16;
+	dev->disk->minors = 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->disk->fops = &nfhd_ops;
 	dev->disk->private_data = dev;
 	sprintf(dev->disk->disk_name, "nfhd%u", dev_id);
 	set_capacity(dev->disk, (sector_t)blocks * (bsize / 512));
+<<<<<<< HEAD
 	dev->disk->queue = dev->queue;
 
 	add_disk(dev->disk);
+=======
+	err = add_disk(dev->disk);
+	if (err)
+		goto out_cleanup_disk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_tail(&dev->list, &nfhd_list);
 
 	return 0;
 
+<<<<<<< HEAD
 free_queue:
 	blk_cleanup_queue(dev->queue);
 free_dev:
 	kfree(dev);
 out:
 	return -ENOMEM;
+=======
+out_cleanup_disk:
+	put_disk(dev->disk);
+free_dev:
+	kfree(dev);
+out:
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nfhd_init(void)
 {
 	u32 blocks, bsize;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	nfhd_id = nf_get_id("XHDI");
 	if (!nfhd_id)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	major_num = register_blkdev(major_num, "nfhd");
 	if (major_num <= 0) {
 		pr_warn("nfhd: unable to get major number\n");
 		return major_num;
 	}
 
+=======
+	ret = register_blkdev(major_num, "nfhd");
+	if (ret < 0) {
+		pr_warn("nfhd: unable to get major number\n");
+		return ret;
+	}
+
+	if (!major_num)
+		major_num = ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = NFHD_DEV_OFFSET; i < 24; i++) {
 		if (nfhd_get_capacity(i, 0, &blocks, &bsize))
 			continue;
@@ -182,7 +270,10 @@ static void __exit nfhd_exit(void)
 		list_del(&dev->list);
 		del_gendisk(dev->disk);
 		put_disk(dev->disk);
+<<<<<<< HEAD
 		blk_cleanup_queue(dev->queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(dev);
 	}
 	unregister_blkdev(major_num, "nfhd");

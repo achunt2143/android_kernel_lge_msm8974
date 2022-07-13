@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -14,6 +15,12 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _FNIC_IO_H_
 #define _FNIC_IO_H_
@@ -21,7 +28,11 @@
 #include <scsi/fc/fc_fcp.h>
 
 #define FNIC_DFLT_SG_DESC_CNT  32
+<<<<<<< HEAD
 #define FNIC_MAX_SG_DESC_CNT        1024    /* Maximum descriptors per sgl */
+=======
+#define FNIC_MAX_SG_DESC_CNT        256     /* Maximum descriptors per sgl */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FNIC_SG_DESC_ALIGN          16      /* Descriptor address alignment */
 
 struct host_sg_desc {
@@ -45,7 +56,12 @@ enum fnic_sgl_list_type {
 };
 
 enum fnic_ioreq_state {
+<<<<<<< HEAD
 	FNIC_IOREQ_CMD_PENDING = 0,
+=======
+	FNIC_IOREQ_NOT_INITED = 0,
+	FNIC_IOREQ_CMD_PENDING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FNIC_IOREQ_ABTS_PENDING,
 	FNIC_IOREQ_ABTS_COMPLETE,
 	FNIC_IOREQ_CMD_COMPLETE,
@@ -60,8 +76,28 @@ struct fnic_io_req {
 	u8 sgl_type; /* device DMA descriptor list type */
 	u8 io_completed:1; /* set to 1 when fw completes IO */
 	u32 port_id; /* remote port DID */
+<<<<<<< HEAD
 	struct completion *abts_done; /* completion for abts */
 	struct completion *dr_done; /* completion for device reset */
 };
 
+=======
+	unsigned long start_time; /* in jiffies */
+	struct completion *abts_done; /* completion for abts */
+	struct completion *dr_done; /* completion for device reset */
+	unsigned int tag;
+	struct scsi_cmnd *sc; /* midlayer's cmd pointer */
+};
+
+enum fnic_port_speeds {
+	DCEM_PORTSPEED_NONE = 0,
+	DCEM_PORTSPEED_1G    = 1000,
+	DCEM_PORTSPEED_10G   = 10000,
+	DCEM_PORTSPEED_20G   = 20000,
+	DCEM_PORTSPEED_25G   = 25000,
+	DCEM_PORTSPEED_40G   = 40000,
+	DCEM_PORTSPEED_4x10G = 41000,
+	DCEM_PORTSPEED_100G  = 100000,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _FNIC_IO_H_ */

@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /**************************************************************************
  *
  * Copyright © 2009 VMware, Inc., Palo Alto, CA., USA
  * All Rights Reserved.
+=======
+/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+/**************************************************************************
+ *
+ * Copyright 2009-2014 VMware, Inc., Palo Alto, CA., USA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -34,6 +41,7 @@
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #define VMWGFX_INDEX_PORT     0x0
 #define VMWGFX_VALUE_PORT     0x1
 #define VMWGFX_IRQSTATUS_PORT 0x8
@@ -45,13 +53,26 @@ struct svga_guest_mem_descriptor {
 
 struct svga_fifo_cmd_fence {
 	__le32 fence;
+=======
+struct svga_guest_mem_descriptor {
+	u32 ppn;
+	u32 num_pages;
+};
+
+struct svga_fifo_cmd_fence {
+	u32 fence;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SVGA_SYNC_GENERIC         1
 #define SVGA_SYNC_FIFOFULL        2
 
+<<<<<<< HEAD
 #include "svga_types.h"
 
 #include "svga3d_reg.h"
+=======
+#include "device_include/svga3d_reg.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

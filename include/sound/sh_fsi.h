@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 #ifndef __SOUND_FSI_H
 #define __SOUND_FSI_H
 
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fifo-attached Serial Interface (FSI) support for SH7724
  *
  * Copyright (C) 2009 Renesas Solutions Corp.
  * Kuninori Morimoto <morimoto.kuninori@renesas.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,11 +20,17 @@
 
 #define FSI_PORT_A	0
 #define FSI_PORT_B	1
+=======
+ */
+#ifndef __SOUND_FSI_H
+#define __SOUND_FSI_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/clk.h>
 #include <sound/soc.h>
 
 /*
+<<<<<<< HEAD
  * flags format
  *
  * 0x000000BA
@@ -71,12 +83,22 @@
 #define SH_FSI_BPFMD_64		(4 << 4)
 #define SH_FSI_BPFMD_32		(5 << 4)
 #define SH_FSI_BPFMD_16		(6 << 4)
+=======
+ * flags
+ */
+#define SH_FSI_FMT_SPDIF		(1 << 0) /* spdif for HDMI */
+#define SH_FSI_ENABLE_STREAM_MODE	(1 << 1) /* for 16bit data */
+#define SH_FSI_CLK_CPG			(1 << 2) /* FSIxCK + FSI-DIV */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sh_fsi_port_info {
 	unsigned long flags;
 	int tx_id;
 	int rx_id;
+<<<<<<< HEAD
 	int (*set_rate)(struct device *dev, int rate, int enable);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sh_fsi_platform_info {
@@ -84,6 +106,7 @@ struct sh_fsi_platform_info {
 	struct sh_fsi_port_info port_b;
 };
 
+<<<<<<< HEAD
 /*
  * for fsi-ak4642
  */
@@ -96,4 +119,6 @@ struct fsi_ak4642_info {
 	int id;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_FSI_H */

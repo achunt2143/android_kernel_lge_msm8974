@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-omap2/clock.h
  *
@@ -7,18 +11,49 @@
  *  Contacts:
  *  Richard Woodruff <r-woodruff2@ti.com>
  *  Paul Walmsley
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_MACH_OMAP2_CLOCK_H
 #define __ARCH_ARM_MACH_OMAP2_CLOCK_H
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
 #include <plat/clock.h>
+=======
+#include <linux/list.h>
+
+#include <linux/clkdev.h>
+#include <linux/clk-provider.h>
+#include <linux/clk/ti.h>
+
+/* struct clksel_rate.flags possibilities */
+#define RATE_IN_242X		(1 << 0)
+#define RATE_IN_243X		(1 << 1)
+#define RATE_IN_3430ES1		(1 << 2)	/* 3430ES1 rates only */
+#define RATE_IN_3430ES2PLUS	(1 << 3)	/* 3430 ES >= 2 rates only */
+#define RATE_IN_36XX		(1 << 4)
+#define RATE_IN_4430		(1 << 5)
+#define RATE_IN_TI816X		(1 << 6)
+#define RATE_IN_4460		(1 << 7)
+#define RATE_IN_AM33XX		(1 << 8)
+#define RATE_IN_TI814X		(1 << 9)
+
+#define RATE_IN_24XX		(RATE_IN_242X | RATE_IN_243X)
+#define RATE_IN_34XX		(RATE_IN_3430ES1 | RATE_IN_3430ES2PLUS)
+#define RATE_IN_3XXX		(RATE_IN_34XX | RATE_IN_36XX)
+#define RATE_IN_44XX		(RATE_IN_4430 | RATE_IN_4460)
+
+/* RATE_IN_3430ES2PLUS_36XX includes 34xx/35xx with ES >=2, and all 36xx/37xx */
+#define RATE_IN_3430ES2PLUS_36XX	(RATE_IN_3430ES2PLUS | RATE_IN_36XX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CM_CLKSEL2_PLL.CORE_CLK_SRC bits (2XXX) */
 #define CORE_CLK_SRC_32K		0x0
@@ -41,6 +76,7 @@
 #define OMAP4XXX_EN_DPLL_FRBYPASS		0x6
 #define OMAP4XXX_EN_DPLL_LOCKED			0x7
 
+<<<<<<< HEAD
 /* CM_CLKEN_PLL*.EN* bit values - not all are available for every DPLL */
 #define DPLL_LOW_POWER_STOP	0x1
 #define DPLL_LOW_POWER_BYPASS	0x5
@@ -155,4 +191,11 @@ extern const struct clkops clkops_omap3_noncore_dpll_ops;
 extern const struct clkops clkops_omap3_core_dpll_ops;
 extern const struct clkops clkops_omap4_dpllmx_ops;
 
+=======
+extern struct ti_clk_ll_ops omap_clk_ll_ops;
+
+int __init omap2_clk_setup_ll_ops(void);
+
+void __init ti_clk_init_features(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

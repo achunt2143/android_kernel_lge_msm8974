@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * EMU10k1 - SB Live / Audigy - gameport driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +31,16 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <linux/module.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gameport.h>
 #include <linux/slab.h>
 #include <linux/pci.h>
@@ -57,7 +67,11 @@ static const struct pci_device_id emu_tbl[] = {
 
 MODULE_DEVICE_TABLE(pci, emu_tbl);
 
+<<<<<<< HEAD
 static int __devinit emu_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+=======
+static int emu_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emu *emu;
 	struct gameport *port;
@@ -107,7 +121,11 @@ static int __devinit emu_probe(struct pci_dev *pdev, const struct pci_device_id 
 	return error;
 }
 
+<<<<<<< HEAD
 static void __devexit emu_remove(struct pci_dev *pdev)
+=======
+static void emu_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emu *emu = pci_get_drvdata(pdev);
 
@@ -122,6 +140,7 @@ static struct pci_driver emu_driver = {
         .name =         "Emu10k1_gameport",
         .id_table =     emu_tbl,
         .probe =        emu_probe,
+<<<<<<< HEAD
         .remove =       __devexit_p(emu_remove),
 };
 
@@ -137,3 +156,9 @@ static void __exit emu_exit(void)
 
 module_init(emu_init);
 module_exit(emu_exit);
+=======
+	.remove =	emu_remove,
+};
+
+module_pci_driver(emu_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

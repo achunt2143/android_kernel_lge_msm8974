@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # arch/arm/mach-exynos/Makefile
 #
 # Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
@@ -69,3 +70,19 @@ obj-$(CONFIG_EXYNOS4_SETUP_KEYPAD)	+= setup-keypad.o
 obj-$(CONFIG_EXYNOS4_SETUP_SDHCI_GPIO)	+= setup-sdhci-gpio.o
 obj-$(CONFIG_EXYNOS4_SETUP_USB_PHY)	+= setup-usb-phy.o
 obj-$(CONFIG_EXYNOS4_SETUP_SPI)		+= setup-spi.o
+=======
+# SPDX-License-Identifier: GPL-2.0
+#
+# Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
+#		http://www.samsung.com/
+
+obj-$(CONFIG_ARCH_EXYNOS)	+= exynos.o exynos-smc.o firmware.o
+
+obj-$(CONFIG_EXYNOS_CPU_SUSPEND) += pm.o sleep.o
+obj-$(CONFIG_PM_SLEEP)		+= suspend.o
+
+obj-$(CONFIG_SMP)		+= platsmp.o headsmp.o
+
+obj-$(CONFIG_EXYNOS_MCPM)	+= mcpm-exynos.o
+CFLAGS_mcpm-exynos.o		+= -march=armv7-a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

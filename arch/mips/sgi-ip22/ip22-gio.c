@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -11,6 +15,7 @@
 #include <asm/sgi/mc.h>
 #include <asm/sgi/ip22.h>
 
+<<<<<<< HEAD
 static struct bus_type gio_bus_type;
 
 static struct {
@@ -19,13 +24,37 @@ static struct {
 } gio_name_table[] = {
 	{ .name = "SGI Impact", .id = 0x10 },
 	{ .name = "Phobos G160", .id = 0x35 },
+=======
+static const struct bus_type gio_bus_type;
+
+static struct {
+	const char *name;
+	__u8	   id;
+} gio_name_table[] = {
+	{ .name = "SGI Impact", .id = 0x10 },
+	{ .name = "Phobos G160", .id = 0x35 },
+	{ .name = "Phobos G130", .id = 0x36 },
+	{ .name = "Phobos G100", .id = 0x37 },
+	{ .name = "Set Engineering GFE", .id = 0x38 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* fake IDs */
 	{ .name = "SGI Newport", .id = 0x7e },
 	{ .name = "SGI GR2/GR3", .id = 0x7f },
 };
 
+<<<<<<< HEAD
 static struct device gio_bus = {
 	.init_name = "gio",
+=======
+static void gio_bus_release(struct device *dev)
+{
+	kfree(dev);
+}
+
+static struct device gio_bus = {
+	.init_name = "gio",
+	.release = &gio_bus_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -37,8 +66,14 @@ static struct device gio_bus = {
  * Used by a driver to check whether an of_device present in the
  * system is in its list of supported devices.
  */
+<<<<<<< HEAD
 const struct gio_device_id *gio_match_device(const struct gio_device_id *match,
 		     const struct gio_device *dev)
+=======
+static const struct gio_device_id *
+gio_match_device(const struct gio_device_id *match,
+		 const struct gio_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct gio_device_id *ids;
 
@@ -48,7 +83,10 @@ const struct gio_device_id *gio_match_device(const struct gio_device_id *match,
 
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(gio_match_device);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gio_device *gio_dev_get(struct gio_device *dev)
 {
@@ -133,11 +171,16 @@ static int gio_device_probe(struct device *dev)
 	return error;
 }
 
+<<<<<<< HEAD
 static int gio_device_remove(struct device *dev)
+=======
+static void gio_device_remove(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gio_device *gio_dev = to_gio_device(dev);
 	struct gio_driver *drv = to_gio_driver(dev->driver);
 
+<<<<<<< HEAD
 	if (dev->driver && drv->remove)
 		drv->remove(gio_dev);
 	return 0;
@@ -163,6 +206,10 @@ static int gio_device_resume(struct device *dev)
 	if (dev->driver && drv->resume)
 		error = drv->resume(gio_dev);
 	return error;
+=======
+	if (drv->remove)
+		drv->remove(gio_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gio_device_shutdown(struct device *dev)
@@ -182,6 +229,10 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *a,
 
 	return (len >= PAGE_SIZE) ? (PAGE_SIZE - 1) : len;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(modalias);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t name_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
@@ -191,6 +242,10 @@ static ssize_t name_show(struct device *dev,
 	giodev = to_gio_device(dev);
 	return sprintf(buf, "%s", giodev->name);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t id_show(struct device *dev,
 		       struct device_attribute *attr, char *buf)
@@ -200,6 +255,7 @@ static ssize_t id_show(struct device *dev,
 	giodev = to_gio_device(dev);
 	return sprintf(buf, "%x", giodev->id.id);
 }
+<<<<<<< HEAD
 
 static struct device_attribute gio_dev_attrs[] = {
 	__ATTR_RO(modalias),
@@ -211,6 +267,21 @@ static struct device_attribute gio_dev_attrs[] = {
 static int gio_device_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct gio_device *gio_dev = to_gio_device(dev);
+=======
+static DEVICE_ATTR_RO(id);
+
+static struct attribute *gio_dev_attrs[] = {
+	&dev_attr_modalias.attr,
+	&dev_attr_name.attr,
+	&dev_attr_id.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(gio_dev);
+
+static int gio_device_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct gio_device *gio_dev = to_gio_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	add_uevent_var(env, "MODALIAS=gio:%x", gio_dev->id.id);
 	return 0;
@@ -293,7 +364,20 @@ static int ip22_gio_id(unsigned long addr, u32 *res)
 		 * data matches
 		 */
 		ptr8 = (void *)CKSEG1ADDR(addr + 3);
+<<<<<<< HEAD
 		get_dbe(tmp8, ptr8);
+=======
+		if (get_dbe(tmp8, ptr8)) {
+			/*
+			 * 32bit access worked, but 8bit doesn't
+			 * so we don't see phantom reads on
+			 * a pipelined bus, but a real card which
+			 * doesn't support 8 bit reads
+			 */
+			*res = tmp32;
+			return 1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptr16 = (void *)CKSEG1ADDR(addr + 2);
 		get_dbe(tmp16, ptr16);
 		if (tmp8 == (tmp16 & 0xff) &&
@@ -324,7 +408,11 @@ static int ip22_is_gr2(unsigned long addr)
 }
 
 
+<<<<<<< HEAD
 static void ip22_check_gio(int slotno, unsigned long addr)
+=======
+static void ip22_check_gio(int slotno, unsigned long addr, int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *name = "Unknown";
 	struct gio_device *gio_dev;
@@ -338,9 +426,15 @@ static void ip22_check_gio(int slotno, unsigned long addr)
 	else {
 		if (!ip22_gio_id(addr, &tmp)) {
 			/*
+<<<<<<< HEAD
 			 * no GIO signature at start address of slot, but
 			 * Newport doesn't have one, so let's check usea
 			 * status register
+=======
+			 * no GIO signature at start address of slot
+			 * since Newport doesn't have one, we check if
+			 * user status register is readable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			if (ip22_gio_id(addr + NEWPORT_USTATUS_OFFS, &tmp))
 				tmp = 0x7e;
@@ -363,18 +457,28 @@ static void ip22_check_gio(int slotno, unsigned long addr)
 		printk(KERN_INFO "GIO: slot %d : %s (id %x)\n",
 		       slotno, name, id);
 		gio_dev = kzalloc(sizeof *gio_dev, GFP_KERNEL);
+<<<<<<< HEAD
+=======
+		if (!gio_dev)
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gio_dev->name = name;
 		gio_dev->slotno = slotno;
 		gio_dev->id.id = id;
 		gio_dev->resource.start = addr;
 		gio_dev->resource.end = addr + 0x3fffff;
 		gio_dev->resource.flags = IORESOURCE_MEM;
+<<<<<<< HEAD
+=======
+		gio_dev->irq = irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_set_name(&gio_dev->dev, "%d", slotno);
 		gio_device_register(gio_dev);
 	} else
 		printk(KERN_INFO "GIO: slot %d : Empty\n", slotno);
 }
 
+<<<<<<< HEAD
 static struct bus_type gio_bus_type = {
 	.name      = "gio",
 	.dev_attrs = gio_dev_attrs,
@@ -385,6 +489,16 @@ static struct bus_type gio_bus_type = {
 	.resume    = gio_device_resume,
 	.shutdown  = gio_device_shutdown,
 	.uevent    = gio_device_uevent,
+=======
+static const struct bus_type gio_bus_type = {
+	.name	   = "gio",
+	.dev_groups = gio_dev_groups,
+	.match	   = gio_bus_match,
+	.probe	   = gio_device_probe,
+	.remove	   = gio_device_remove,
+	.shutdown  = gio_device_shutdown,
+	.uevent	   = gio_device_uevent,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource gio_bus_resource = {
@@ -400,14 +514,22 @@ int __init ip22_gio_init(void)
 	int ret;
 
 	ret = device_register(&gio_bus);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
+=======
+	if (ret) {
+		put_device(&gio_bus);
+		return ret;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = bus_register(&gio_bus_type);
 	if (!ret) {
 		request_resource(&iomem_resource, &gio_bus_resource);
 		printk(KERN_INFO "GIO: Probing bus...\n");
 
+<<<<<<< HEAD
 		if (ip22_is_fullhouse() ||
 		    !get_dbe(pbdma, (unsigned int *)&hpc3c1->pbdma[1])) {
 			/* Indigo2 and ChallengeS */
@@ -418,6 +540,19 @@ int __init ip22_gio_init(void)
 			ip22_check_gio(0, GIO_SLOT_GFX_BASE);
 			ip22_check_gio(1, GIO_SLOT_EXP0_BASE);
 			ip22_check_gio(2, GIO_SLOT_EXP1_BASE);
+=======
+		if (ip22_is_fullhouse()) {
+			/* Indigo2 */
+			ip22_check_gio(0, GIO_SLOT_GFX_BASE, SGI_GIO_1_IRQ);
+			ip22_check_gio(1, GIO_SLOT_EXP0_BASE, SGI_GIO_1_IRQ);
+		} else {
+			/* Indy/Challenge S */
+			if (get_dbe(pbdma, (unsigned int *)&hpc3c1->pbdma[1]))
+				ip22_check_gio(0, GIO_SLOT_GFX_BASE,
+					       SGI_GIO_0_IRQ);
+			ip22_check_gio(1, GIO_SLOT_EXP0_BASE, SGI_GIOEXP0_IRQ);
+			ip22_check_gio(2, GIO_SLOT_EXP1_BASE, SGI_GIOEXP1_IRQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		device_unregister(&gio_bus);

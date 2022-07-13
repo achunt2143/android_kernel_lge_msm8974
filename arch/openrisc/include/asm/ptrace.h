@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC Linux
  *
@@ -9,6 +13,7 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  * et al.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +41,15 @@ struct user_regs_struct {
 #endif
 
 #ifdef __KERNEL__
+=======
+ */
+#ifndef __ASM_OPENRISC_PTRACE_H
+#define __ASM_OPENRISC_PTRACE_H
+
+
+#include <asm/spr_defs.h>
+#include <uapi/asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Make kernel PTrace/register structures opaque to userspace... userspace can
@@ -78,7 +92,11 @@ struct pt_regs {
 	 * -1 for all other exceptions.
 	 */
 	long  orig_gpr11;	/* For restarting system calls */
+<<<<<<< HEAD
 	long dummy;		/* Cheap alignment fix */
+=======
+	long fpcsr;		/* Floating point control status register. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long dummy2;		/* Cheap alignment fix */
 };
 
@@ -134,8 +152,12 @@ static inline long regs_return_value(struct pt_regs *regs)
 #define PT_GPR31      124
 #define PT_PC	      128
 #define PT_ORIG_GPR11 132
+<<<<<<< HEAD
 #define PT_SYSCALLNO  136
 
 #endif /* __KERNEL__ */
+=======
+#define PT_FPCSR      136
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_OPENRISC_PTRACE_H */

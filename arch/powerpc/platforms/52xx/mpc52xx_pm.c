@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/suspend.h>
 #include <linux/io.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/init.h>
+#include <linux/suspend.h>
+#include <linux/io.h>
+#include <linux/of_address.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 #include <asm/cacheflush.h>
 #include <asm/mpc52xx.h>
@@ -57,7 +66,11 @@ int mpc52xx_set_wakeup_gpio(u8 pin, u8 level)
 int mpc52xx_pm_prepare(void)
 {
 	struct device_node *np;
+<<<<<<< HEAD
 	const struct of_device_id immr_ids[] = {
+=======
+	static const struct of_device_id immr_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ .compatible = "fsl,mpc5200-immr", },
 		{ .compatible = "fsl,mpc5200b-immr", },
 		{ .type = "soc", .compatible = "mpc5200", }, /* lite5200 */
@@ -116,7 +129,14 @@ int mpc52xx_pm_enter(suspend_state_t state)
 	u32 intr_main_mask;
 	void __iomem * irq_0x500 = (void __iomem *)CONFIG_KERNEL_START + 0x500;
 	unsigned long irq_0x500_stop = (unsigned long)irq_0x500 + mpc52xx_ds_cached_size;
+<<<<<<< HEAD
 	char saved_0x500[mpc52xx_ds_cached_size];
+=======
+	char saved_0x500[0x600-0x500];
+
+	if (WARN_ON(mpc52xx_ds_cached_size > sizeof(saved_0x500)))
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable all interrupts in PIC */
 	intr_main_mask = in_be32(&intr->main_mask);

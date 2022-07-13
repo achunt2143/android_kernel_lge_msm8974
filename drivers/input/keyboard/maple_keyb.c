@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SEGA Dreamcast keyboard driver
  * Based on drivers/usb/usbkbd.c
  * Copyright (c) YAEGASHI Takeshi, 2001
  * Porting to 2.6 Copyright (c) Adrian McMenamin, 2007 - 2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * along with this program; if not, see the file COPYING, or write
  * to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -196,7 +203,10 @@ static int probe_maple_kbd(struct device *dev)
 	__clear_bit(KEY_RESERVED, idev->keybit);
 
 	input_set_capability(idev, EV_MSC, MSC_SCAN);
+<<<<<<< HEAD
 	input_set_drvdata(idev, kbd);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = input_register_device(idev);
 	if (error)

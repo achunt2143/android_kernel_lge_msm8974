@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_IOPS_H__
 #define __XFS_IOPS_H__
@@ -25,6 +32,14 @@ extern const struct file_operations xfs_dir_file_operations;
 
 extern ssize_t xfs_vn_listxattr(struct dentry *, char *data, size_t size);
 
+<<<<<<< HEAD
 extern void xfs_setup_inode(struct xfs_inode *);
+=======
+int xfs_vn_setattr_size(struct mnt_idmap *idmap,
+		struct dentry *dentry, struct iattr *vap);
+
+int xfs_inode_init_security(struct inode *inode, struct inode *dir,
+		const struct qstr *qstr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __XFS_IOPS_H__ */

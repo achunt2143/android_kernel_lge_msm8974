@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Regulator driver for National Semiconductors LP3972 PMIC chip
  *
  * Based on lp3971.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
@@ -22,8 +29,11 @@ struct lp3972 {
 	struct device *dev;
 	struct mutex io_lock;
 	struct i2c_client *i2c;
+<<<<<<< HEAD
 	int num_regulators;
 	struct regulator_dev **rdev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* LP3972 Control Registers */
@@ -74,6 +84,7 @@ struct lp3972 {
 #define LP3972_OVER2_LDO4_EN	BIT(4)
 #define LP3972_OVER1_S_EN	BIT(2)
 
+<<<<<<< HEAD
 static const int ldo1_voltage_map[] = {
 	1700, 1725, 1750, 1775, 1800, 1825, 1850, 1875,
 	1900, 1925, 1950, 1975, 2000,
@@ -122,6 +133,42 @@ static const int *buck_voltage_map[] = {
 	buck1_voltage_map,
 	buck23_voltage_map,
 	buck23_voltage_map,
+=======
+static const unsigned int ldo1_voltage_map[] = {
+	1700000, 1725000, 1750000, 1775000, 1800000, 1825000, 1850000, 1875000,
+	1900000, 1925000, 1950000, 1975000, 2000000,
+};
+
+static const unsigned int ldo23_voltage_map[] = {
+	1800000, 1900000, 2000000, 2100000, 2200000, 2300000, 2400000, 2500000,
+	2600000, 2700000, 2800000, 2900000, 3000000, 3100000, 3200000, 3300000,
+};
+
+static const unsigned int ldo4_voltage_map[] = {
+	1000000, 1050000, 1100000, 1150000, 1200000, 1250000, 1300000, 1350000,
+	1400000, 1500000, 1800000, 1900000, 2500000, 2800000, 3000000, 3300000,
+};
+
+static const unsigned int ldo5_voltage_map[] = {
+	      0,       0,       0,       0,       0,  850000,  875000,  900000,
+	 925000,  950000,  975000, 1000000, 1025000, 1050000, 1075000, 1100000,
+	1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000,
+	1325000, 1350000, 1375000, 1400000, 1425000, 1450000, 1475000, 1500000,
+};
+
+static const unsigned int buck1_voltage_map[] = {
+	 725000,  750000,  775000,  800000,  825000,  850000,  875000,  900000,
+	 925000,  950000,  975000, 1000000, 1025000, 1050000, 1075000, 1100000,
+	1125000, 1150000, 1175000, 1200000, 1225000, 1250000, 1275000, 1300000,
+	1325000, 1350000, 1375000, 1400000, 1425000, 1450000, 1475000, 1500000,
+};
+
+static const unsigned int buck23_voltage_map[] = {
+	      0,  800000,  850000,  900000,  950000, 1000000, 1050000, 1100000,
+	1150000, 1200000, 1250000, 1300000, 1350000, 1400000, 1450000, 1500000,
+	1550000, 1600000, 1650000, 1700000, 1800000, 1900000, 2500000, 2800000,
+	3000000, 3300000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int ldo_output_enable_mask[] = {
@@ -160,7 +207,10 @@ static const int buck_base_addr[] = {
 	LP3972_B3TV_REG,
 };
 
+<<<<<<< HEAD
 #define LP3972_LDO_VOL_VALUE_MAP(x) (ldo_voltage_map[x])
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LP3972_LDO_OUTPUT_ENABLE_MASK(x) (ldo_output_enable_mask[x])
 #define LP3972_LDO_OUTPUT_ENABLE_REG(x) (ldo_output_enable_addr[x])
 
@@ -177,12 +227,18 @@ static const int buck_base_addr[] = {
 #define LP3972_LDO_VOL_MIN_IDX(x) (((x) == 4) ? 0x05 : 0x00)
 #define LP3972_LDO_VOL_MAX_IDX(x) ((x) ? (((x) == 4) ? 0x1f : 0x0f) : 0x0c)
 
+<<<<<<< HEAD
 #define LP3972_BUCK_VOL_VALUE_MAP(x) (buck_voltage_map[x])
 #define LP3972_BUCK_VOL_ENABLE_REG(x) (buck_vol_enable_addr[x])
 #define LP3972_BUCK_VOL1_REG(x) (buck_base_addr[x])
 #define LP3972_BUCK_VOL_MASK 0x1f
 #define LP3972_BUCK_VOL_MIN_IDX(x) ((x) ? 0x01 : 0x00)
 #define LP3972_BUCK_VOL_MAX_IDX(x) ((x) ? 0x19 : 0x1f)
+=======
+#define LP3972_BUCK_VOL_ENABLE_REG(x) (buck_vol_enable_addr[x])
+#define LP3972_BUCK_VOL1_REG(x) (buck_base_addr[x])
+#define LP3972_BUCK_VOL_MASK 0x1f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int lp3972_i2c_read(struct i2c_client *i2c, char reg, int count,
 	u16 *dest)
@@ -231,8 +287,13 @@ static int lp3972_set_bits(struct lp3972 *lp3972, u8 reg, u16 mask, u16 val)
 	mutex_lock(&lp3972->io_lock);
 
 	ret = lp3972_i2c_read(lp3972->i2c, reg, 1, &tmp);
+<<<<<<< HEAD
 	tmp = (tmp & ~mask) | val;
 	if (ret == 0) {
+=======
+	if (ret == 0) {
+		tmp = (tmp & ~mask) | val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = lp3972_i2c_write(lp3972->i2c, reg, 1, &tmp);
 		dev_dbg(lp3972->dev, "reg write 0x%02x -> 0x%02x\n", (int)reg,
 			(unsigned)val & 0xff);
@@ -242,12 +303,15 @@ static int lp3972_set_bits(struct lp3972 *lp3972, u8 reg, u16 mask, u16 val)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int lp3972_ldo_list_voltage(struct regulator_dev *dev, unsigned index)
 {
 	int ldo = rdev_get_id(dev) - LP3972_LDO1;
 	return 1000 * LP3972_LDO_VOL_VALUE_MAP(ldo)[index];
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lp3972_ldo_is_enabled(struct regulator_dev *dev)
 {
 	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
@@ -279,7 +343,11 @@ static int lp3972_ldo_disable(struct regulator_dev *dev)
 				mask, 0);
 }
 
+<<<<<<< HEAD
 static int lp3972_ldo_get_voltage(struct regulator_dev *dev)
+=======
+static int lp3972_ldo_get_voltage_sel(struct regulator_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
 	int ldo = rdev_get_id(dev) - LP3972_LDO1;
@@ -289,6 +357,7 @@ static int lp3972_ldo_get_voltage(struct regulator_dev *dev)
 	reg = lp3972_reg_read(lp3972, LP3972_LDO_VOL_CONTR_REG(ldo));
 	val = (reg >> LP3972_LDO_VOL_CONTR_SHIFT(ldo)) & mask;
 
+<<<<<<< HEAD
 	return 1000 * LP3972_LDO_VOL_VALUE_MAP(ldo)[val];
 }
 
@@ -320,6 +389,21 @@ static int lp3972_ldo_set_voltage(struct regulator_dev *dev,
 	shift = LP3972_LDO_VOL_CONTR_SHIFT(ldo);
 	ret = lp3972_set_bits(lp3972, LP3972_LDO_VOL_CONTR_REG(ldo),
 		LP3972_LDO_VOL_MASK(ldo) << shift, val << shift);
+=======
+	return val;
+}
+
+static int lp3972_ldo_set_voltage_sel(struct regulator_dev *dev,
+				      unsigned int selector)
+{
+	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
+	int ldo = rdev_get_id(dev) - LP3972_LDO1;
+	int shift, ret;
+
+	shift = LP3972_LDO_VOL_CONTR_SHIFT(ldo);
+	ret = lp3972_set_bits(lp3972, LP3972_LDO_VOL_CONTR_REG(ldo),
+		LP3972_LDO_VOL_MASK(ldo) << shift, selector << shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret)
 		return ret;
@@ -349,6 +433,7 @@ static int lp3972_ldo_set_voltage(struct regulator_dev *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops lp3972_ldo_ops = {
 	.list_voltage = lp3972_ldo_list_voltage,
 	.is_enabled = lp3972_ldo_is_enabled,
@@ -364,6 +449,18 @@ static int lp3972_dcdc_list_voltage(struct regulator_dev *dev, unsigned index)
 	return 1000 * buck_voltage_map[buck][index];
 }
 
+=======
+static const struct regulator_ops lp3972_ldo_ops = {
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+	.is_enabled = lp3972_ldo_is_enabled,
+	.enable = lp3972_ldo_enable,
+	.disable = lp3972_ldo_disable,
+	.get_voltage_sel = lp3972_ldo_get_voltage_sel,
+	.set_voltage_sel = lp3972_ldo_set_voltage_sel,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lp3972_dcdc_is_enabled(struct regulator_dev *dev)
 {
 	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
@@ -399,11 +496,16 @@ static int lp3972_dcdc_disable(struct regulator_dev *dev)
 	return val;
 }
 
+<<<<<<< HEAD
 static int lp3972_dcdc_get_voltage(struct regulator_dev *dev)
+=======
+static int lp3972_dcdc_get_voltage_sel(struct regulator_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
 	int buck = rdev_get_id(dev) - LP3972_DCDC1;
 	u16 reg;
+<<<<<<< HEAD
 	int val;
 
 	reg = lp3972_reg_read(lp3972, LP3972_BUCK_VOL1_REG(buck));
@@ -447,6 +549,24 @@ static int lp3972_dcdc_set_voltage(struct regulator_dev *dev,
 
 	ret = lp3972_set_bits(lp3972, LP3972_BUCK_VOL1_REG(buck),
 				LP3972_BUCK_VOL_MASK, val);
+=======
+
+	reg = lp3972_reg_read(lp3972, LP3972_BUCK_VOL1_REG(buck));
+	reg &= LP3972_BUCK_VOL_MASK;
+
+	return reg;
+}
+
+static int lp3972_dcdc_set_voltage_sel(struct regulator_dev *dev,
+				       unsigned int selector)
+{
+	struct lp3972 *lp3972 = rdev_get_drvdata(dev);
+	int buck = rdev_get_id(dev) - LP3972_DCDC1;
+	int ret;
+
+	ret = lp3972_set_bits(lp3972, LP3972_BUCK_VOL1_REG(buck),
+				LP3972_BUCK_VOL_MASK, selector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -462,6 +582,7 @@ static int lp3972_dcdc_set_voltage(struct regulator_dev *dev,
 				LP3972_VOL_CHANGE_FLAG_MASK, 0);
 }
 
+<<<<<<< HEAD
 static struct regulator_ops lp3972_dcdc_ops = {
 	.list_voltage = lp3972_dcdc_list_voltage,
 	.is_enabled = lp3972_dcdc_is_enabled,
@@ -472,11 +593,28 @@ static struct regulator_ops lp3972_dcdc_ops = {
 };
 
 static struct regulator_desc regulators[] = {
+=======
+static const struct regulator_ops lp3972_dcdc_ops = {
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+	.is_enabled = lp3972_dcdc_is_enabled,
+	.enable = lp3972_dcdc_enable,
+	.disable = lp3972_dcdc_disable,
+	.get_voltage_sel = lp3972_dcdc_get_voltage_sel,
+	.set_voltage_sel = lp3972_dcdc_set_voltage_sel,
+};
+
+static const struct regulator_desc regulators[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "LDO1",
 		.id = LP3972_LDO1,
 		.ops = &lp3972_ldo_ops,
 		.n_voltages = ARRAY_SIZE(ldo1_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = ldo1_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -485,6 +623,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_LDO2,
 		.ops = &lp3972_ldo_ops,
 		.n_voltages = ARRAY_SIZE(ldo23_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = ldo23_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -493,6 +635,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_LDO3,
 		.ops = &lp3972_ldo_ops,
 		.n_voltages = ARRAY_SIZE(ldo23_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = ldo23_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -501,6 +647,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_LDO4,
 		.ops = &lp3972_ldo_ops,
 		.n_voltages = ARRAY_SIZE(ldo4_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = ldo4_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -509,6 +659,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_LDO5,
 		.ops = &lp3972_ldo_ops,
 		.n_voltages = ARRAY_SIZE(ldo5_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = ldo5_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -517,6 +671,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_DCDC1,
 		.ops = &lp3972_dcdc_ops,
 		.n_voltages = ARRAY_SIZE(buck1_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = buck1_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -525,6 +683,10 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_DCDC2,
 		.ops = &lp3972_dcdc_ops,
 		.n_voltages = ARRAY_SIZE(buck23_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = buck23_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
@@ -533,16 +695,25 @@ static struct regulator_desc regulators[] = {
 		.id = LP3972_DCDC3,
 		.ops = &lp3972_dcdc_ops,
 		.n_voltages = ARRAY_SIZE(buck23_voltage_map),
+<<<<<<< HEAD
+=======
+		.volt_table = buck23_voltage_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.type = REGULATOR_VOLTAGE,
 		.owner = THIS_MODULE,
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit setup_regulators(struct lp3972 *lp3972,
+=======
+static int setup_regulators(struct lp3972 *lp3972,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lp3972_platform_data *pdata)
 {
 	int i, err;
 
+<<<<<<< HEAD
 	lp3972->num_regulators = pdata->num_regulators;
 	lp3972->rdev = kcalloc(pdata->num_regulators,
 				sizeof(struct regulator_dev *), GFP_KERNEL);
@@ -562,10 +733,30 @@ static int __devinit setup_regulators(struct lp3972 *lp3972,
 			dev_err(lp3972->dev, "regulator init failed: %d\n",
 				err);
 			goto error;
+=======
+	/* Instantiate the regulators */
+	for (i = 0; i < pdata->num_regulators; i++) {
+		struct lp3972_regulator_subdev *reg = &pdata->regulators[i];
+		struct regulator_config config = { };
+		struct regulator_dev *rdev;
+
+		config.dev = lp3972->dev;
+		config.init_data = reg->initdata;
+		config.driver_data = lp3972;
+
+		rdev = devm_regulator_register(lp3972->dev,
+					       &regulators[reg->id], &config);
+		if (IS_ERR(rdev)) {
+			err = PTR_ERR(rdev);
+			dev_err(lp3972->dev, "regulator init failed: %d\n",
+				err);
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 error:
 	while (--i >= 0)
 		regulator_unregister(lp3972->rdev[i]);
@@ -580,6 +771,14 @@ static int __devinit lp3972_i2c_probe(struct i2c_client *i2c,
 {
 	struct lp3972 *lp3972;
 	struct lp3972_platform_data *pdata = i2c->dev.platform_data;
+=======
+}
+
+static int lp3972_i2c_probe(struct i2c_client *i2c)
+{
+	struct lp3972 *lp3972;
+	struct lp3972_platform_data *pdata = dev_get_platdata(&i2c->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	u16 val;
 
@@ -588,7 +787,11 @@ static int __devinit lp3972_i2c_probe(struct i2c_client *i2c,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	lp3972 = kzalloc(sizeof(struct lp3972), GFP_KERNEL);
+=======
+	lp3972 = devm_kzalloc(&i2c->dev, sizeof(struct lp3972), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lp3972)
 		return -ENOMEM;
 
@@ -606,11 +809,16 @@ static int __devinit lp3972_i2c_probe(struct i2c_client *i2c,
 	}
 	if (ret < 0) {
 		dev_err(&i2c->dev, "failed to detect device. ret = %d\n", ret);
+<<<<<<< HEAD
 		goto err_detect;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = setup_regulators(lp3972, pdata);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_detect;
 
 	i2c_set_clientdata(i2c, lp3972);
@@ -632,6 +840,12 @@ static int __devexit lp3972_i2c_remove(struct i2c_client *i2c)
 	kfree(lp3972);
 
 	return 0;
+=======
+		return ret;
+
+	i2c_set_clientdata(i2c, lp3972);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id lp3972_i2c_id[] = {
@@ -643,10 +857,16 @@ MODULE_DEVICE_TABLE(i2c, lp3972_i2c_id);
 static struct i2c_driver lp3972_i2c_driver = {
 	.driver = {
 		.name = "lp3972",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe    = lp3972_i2c_probe,
 	.remove   = __devexit_p(lp3972_i2c_remove),
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe = lp3972_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = lp3972_i2c_id,
 };
 

@@ -1,11 +1,20 @@
+<<<<<<< HEAD
 /*
  * TI DA850/OMAP-L138 chip specific setup
  *
  * Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * TI DA850/OMAP-L138 chip specific setup
+ *
+ * Copyright (C) 2009 Texas Instruments Incorporated - https://www.ti.com/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Derived from: arch/arm/mach-davinci/da830.c
  * Original Copyrights follow:
  *
+<<<<<<< HEAD
  * 2009 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
@@ -36,12 +45,37 @@
 /* SoC specific clock flags */
 #define DA850_CLK_ASYNC3	BIT(16)
 
+=======
+ * 2009 (c) MontaVista Software, Inc.
+ */
+
+#include <linux/gpio.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/mfd/da8xx-cfgchip.h>
+#include <linux/platform_device.h>
+#include <linux/regmap.h>
+#include <linux/regulator/consumer.h>
+#include <clocksource/timer-davinci.h>
+
+#include <asm/mach/map.h>
+
+#include "common.h"
+#include "cputype.h"
+#include "da8xx.h"
+#include "hardware.h"
+#include "pm.h"
+#include "irqs.h"
+#include "mux.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA850_PLL1_BASE		0x01e1a000
 #define DA850_TIMER64P2_BASE	0x01f0c000
 #define DA850_TIMER64P3_BASE	0x01f0d000
 
 #define DA850_REF_FREQ		24000000
 
+<<<<<<< HEAD
 #define CFGCHIP3_ASYNC3_CLKSRC	BIT(4)
 #define CFGCHIP3_PLL1_MASTER_LOCK	BIT(5)
 #define CFGCHIP0_PLL_MASTER_LOCK	BIT(4)
@@ -401,6 +435,8 @@ static struct clk_lookup da850_clks[] = {
 	CLK(NULL,		NULL,		NULL),
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device specific mux setup
  *
@@ -573,6 +609,7 @@ static const struct mux_config da850_pins[] = {
 	MUX_CFG(DA850, GPIO6_10,	13,	20,	15,	8,	false)
 	MUX_CFG(DA850, GPIO6_13,	13,	8,	15,	8,	false)
 	MUX_CFG(DA850, RTC_ALARM,	0,	28,	15,	2,	false)
+<<<<<<< HEAD
 #endif
 };
 
@@ -700,6 +737,51 @@ static u8 da850_default_priorities[DA850_N_CP_INTC_IRQ] = {
 	[IRQ_DA8XX_ARMCLKSTOPREQ]	= 7,
 };
 
+=======
+	/* VPIF Capture */
+	MUX_CFG(DA850, VPIF_DIN0,	15,	4,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN1,	15,	0,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN2,	14,	28,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN3,	14,	24,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN4,	14,	20,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN5,	14,	16,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN6,	14,	12,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN7,	14,	8,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN8,	16,	4,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN9,	16,	0,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN10,	15,	28,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN11,	15,	24,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN12,	15,	20,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN13,	15,	16,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN14,	15,	12,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DIN15,	15,	8,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKIN0,	14,	0,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKIN1,	14,	4,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKIN2,	19,	8,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKIN3,	19,	16,	15,	1,	false)
+	/* VPIF Display */
+	MUX_CFG(DA850, VPIF_DOUT0,	17,	4,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT1,	17,	0,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT2,	16,	28,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT3,	16,	24,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT4,	16,	20,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT5,	16,	16,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT6,	16,	12,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT7,	16,	8,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT8,	18,	4,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT9,	18,	0,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT10,	17,	28,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT11,	17,	24,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT12,	17,	20,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT13,	17,	16,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT14,	17,	12,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_DOUT15,	17,	8,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKO2,	19,	12,	15,	1,	false)
+	MUX_CFG(DA850, VPIF_CLKO3,	19,	20,	15,	1,	false)
+#endif
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc da850_io_desc[] = {
 	{
 		.virtual	= IO_VIRT,
@@ -713,6 +795,7 @@ static struct map_desc da850_io_desc[] = {
 		.length		= DA8XX_CP_INTC_SIZE,
 		.type		= MT_DEVICE
 	},
+<<<<<<< HEAD
 	{
 		.virtual	= SRAM_VIRT,
 		.pfn		= __phys_to_pfn(DA8XX_ARM_RAM_BASE),
@@ -723,6 +806,10 @@ static struct map_desc da850_io_desc[] = {
 
 static u32 da850_psc_bases[] = { DA8XX_PSC0_BASE, DA8XX_PSC1_BASE };
 
+=======
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Contents of JTAG ID register used to identify exact cpu type */
 static struct davinci_id da850_ids[] = {
 	{
@@ -741,6 +828,7 @@ static struct davinci_id da850_ids[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct davinci_timer_instance da850_timer_instance[4] = {
 	{
 		.base		= DA8XX_TIMER64P0_BASE,
@@ -1065,11 +1153,75 @@ no_ddrpll_mem:
 }
 
 static struct davinci_soc_info davinci_soc_info_da850 = {
+=======
+/* VPIF resource, platform data */
+static u64 da850_vpif_dma_mask = DMA_BIT_MASK(32);
+
+static struct resource da850_vpif_display_resource[] = {
+	{
+		.start = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.end   = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.flags = IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device da850_vpif_display_dev = {
+	.name		= "vpif_display",
+	.id		= -1,
+	.dev		= {
+		.dma_mask		= &da850_vpif_dma_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	},
+	.resource       = da850_vpif_display_resource,
+	.num_resources  = ARRAY_SIZE(da850_vpif_display_resource),
+};
+
+static struct resource da850_vpif_capture_resource[] = {
+	{
+		.start = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.end   = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.flags = IORESOURCE_IRQ,
+	},
+	{
+		.start = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.end   = DAVINCI_INTC_IRQ(IRQ_DA850_VPIFINT),
+		.flags = IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device da850_vpif_capture_dev = {
+	.name		= "vpif_capture",
+	.id		= -1,
+	.dev		= {
+		.dma_mask		= &da850_vpif_dma_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	},
+	.resource       = da850_vpif_capture_resource,
+	.num_resources  = ARRAY_SIZE(da850_vpif_capture_resource),
+};
+
+int __init da850_register_vpif_display(struct vpif_display_config
+						*display_config)
+{
+	da850_vpif_display_dev.dev.platform_data = display_config;
+	return platform_device_register(&da850_vpif_display_dev);
+}
+
+int __init da850_register_vpif_capture(struct vpif_capture_config
+							*capture_config)
+{
+	da850_vpif_capture_dev.dev.platform_data = capture_config;
+	return platform_device_register(&da850_vpif_capture_dev);
+}
+
+static const struct davinci_soc_info davinci_soc_info_da850 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.io_desc		= da850_io_desc,
 	.io_desc_num		= ARRAY_SIZE(da850_io_desc),
 	.jtag_id_reg		= DA8XX_SYSCFG0_BASE + DA8XX_JTAG_ID_REG,
 	.ids			= da850_ids,
 	.ids_num		= ARRAY_SIZE(da850_ids),
+<<<<<<< HEAD
 	.cpu_clks		= da850_clks,
 	.psc_bases		= da850_psc_bases,
 	.psc_bases_num		= ARRAY_SIZE(da850_psc_bases),
@@ -1089,12 +1241,22 @@ static struct davinci_soc_info davinci_soc_info_da850 = {
 	.emac_pdata		= &da8xx_emac_pdata,
 	.sram_dma		= DA8XX_ARM_RAM_BASE,
 	.sram_len		= SZ_8K,
+=======
+	.pinmux_base		= DA8XX_SYSCFG0_BASE + 0x120,
+	.pinmux_pins		= da850_pins,
+	.pinmux_pins_num	= ARRAY_SIZE(da850_pins),
+	.sram_dma		= DA8XX_SHARED_RAM_BASE,
+	.sram_len		= SZ_128K,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init da850_init(void)
 {
+<<<<<<< HEAD
 	unsigned int v;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	davinci_common_init(&davinci_soc_info_da850);
 
 	da8xx_syscfg0_base = ioremap(DA8XX_SYSCFG0_BASE, SZ_4K);
@@ -1102,6 +1264,7 @@ void __init da850_init(void)
 		return;
 
 	da8xx_syscfg1_base = ioremap(DA8XX_SYSCFG1_BASE, SZ_4K);
+<<<<<<< HEAD
 	if (WARN(!da8xx_syscfg1_base, "Unable to map syscfg1 module"))
 		return;
 
@@ -1123,4 +1286,7 @@ void __init da850_init(void)
 	v = __raw_readl(DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
 	v &= ~CFGCHIP3_PLL1_MASTER_LOCK;
 	__raw_writel(v, DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG));
+=======
+	WARN(!da8xx_syscfg1_base, "Unable to map syscfg1 module");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

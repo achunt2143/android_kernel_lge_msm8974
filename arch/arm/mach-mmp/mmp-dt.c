@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-mmp/mmp-dt.c
  *
  *  Copyright (C) 2012 Marvell Technology Group Ltd.
  *  Author: Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -62,10 +67,23 @@ static void __init mmp_dt_init(void)
 }
 
 static const char *pxa168_dt_board_compat[] __initdata = {
+=======
+ */
+
+#include <linux/of_clk.h>
+#include <linux/clocksource.h>
+#include <asm/mach/arch.h>
+#include <asm/hardware/cache-tauros2.h>
+
+#include "common.h"
+
+static const char *const pxa168_dt_board_compat[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"mrvl,pxa168-aspenite",
 	NULL,
 };
 
+<<<<<<< HEAD
 DT_MACHINE_START(PXA168_DT, "Marvell PXA168 (Device Tree Support)")
 	.map_io		= mmp_map_io,
 	.init_irq	= icu_init_irq,
@@ -73,3 +91,30 @@ DT_MACHINE_START(PXA168_DT, "Marvell PXA168 (Device Tree Support)")
 	.init_machine	= mmp_dt_init,
 	.dt_compat	= pxa168_dt_board_compat,
 MACHINE_END
+=======
+static const char *const pxa910_dt_board_compat[] __initconst = {
+	"mrvl,pxa910-dkb",
+	NULL,
+};
+
+static void __init mmp_init_time(void)
+{
+#ifdef CONFIG_CACHE_TAUROS2
+	tauros2_init(0);
+#endif
+	of_clk_init(NULL);
+	timer_probe();
+}
+
+DT_MACHINE_START(PXA168_DT, "Marvell PXA168 (Device Tree Support)")
+	.map_io		= mmp_map_io,
+	.init_time	= mmp_init_time,
+	.dt_compat	= pxa168_dt_board_compat,
+MACHINE_END
+
+DT_MACHINE_START(PXA910_DT, "Marvell PXA910 (Device Tree Support)")
+	.map_io		= mmp_map_io,
+	.init_time	= mmp_init_time,
+	.dt_compat	= pxa910_dt_board_compat,
+MACHINE_END
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

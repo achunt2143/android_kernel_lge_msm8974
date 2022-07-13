@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for AK4524 / AK4528 / AK4529 / AK4355 / AK4358 / AK4381
  *   AD and DA converters
  *
  *	Copyright (c) 2000-2004 Jaroslav Kysela <perex@perex.cz>,
  *				Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,11 @@
  */
 
 #include <asm/io.h>
+=======
+ */
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -465,6 +475,7 @@ static int snd_akm4xxx_stereo_volume_put(struct snd_kcontrol *kcontrol,
 static int snd_akm4xxx_deemphasis_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {
 		"44.1kHz", "Off", "48kHz", "32kHz",
 	};
@@ -476,6 +487,12 @@ static int snd_akm4xxx_deemphasis_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"44.1kHz", "Off", "48kHz", "32kHz",
+	};
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_akm4xxx_deemphasis_get(struct snd_kcontrol *kcontrol,
@@ -570,12 +587,17 @@ static int ak4xxx_capture_source_info(struct snd_kcontrol *kcontrol,
 {
 	struct snd_akm4xxx *ak = snd_kcontrol_chip(kcontrol);
 	int mixer_ch = AK_GET_SHIFT(kcontrol->private_value);
+<<<<<<< HEAD
 	const char **input_names;
 	unsigned int num_names, idx;
+=======
+	unsigned int num_names;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	num_names = ak4xxx_capture_num_inputs(ak, mixer_ch);
 	if (!num_names)
 		return -EINVAL;
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = num_names;
@@ -586,6 +608,10 @@ static int ak4xxx_capture_source_info(struct snd_kcontrol *kcontrol,
 	strncpy(uinfo->value.enumerated.name, input_names[idx],
 		sizeof(uinfo->value.enumerated.name));
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, num_names,
+				 ak->adc_info[mixer_ch].input_names);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ak4xxx_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -805,11 +831,20 @@ static int build_adc_controls(struct snd_akm4xxx *ak)
 				return err;
 
 			memset(&knew, 0, sizeof(knew));
+<<<<<<< HEAD
 			knew.name = ak->adc_info[mixer_ch].selector_name;
 			if (!knew.name) {
 				knew.name = "Capture Channel";
 				knew.index = mixer_ch + ak->idx_offset * 2;
 			}
+=======
+			if (!ak->adc_info ||
+				!ak->adc_info[mixer_ch].selector_name) {
+				knew.name = "Capture Channel";
+				knew.index = mixer_ch + ak->idx_offset * 2;
+			} else
+				knew.name = ak->adc_info[mixer_ch].selector_name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			knew.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 			knew.info = ak4xxx_capture_source_info;
@@ -875,7 +910,10 @@ static int build_deemphasis(struct snd_akm4xxx *ak, int num_emphs)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void proc_regs_read(struct snd_info_entry *entry,
 		struct snd_info_buffer *buffer)
 {
@@ -892,6 +930,7 @@ static void proc_regs_read(struct snd_info_entry *entry,
 
 static int proc_init(struct snd_akm4xxx *ak)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 	int err;
 	err = snd_card_proc_new(ak->card, ak->name, &entry);
@@ -903,6 +942,10 @@ static int proc_init(struct snd_akm4xxx *ak)
 #else /* !CONFIG_PROC_FS */
 static int proc_init(struct snd_akm4xxx *ak) { return 0; }
 #endif
+=======
+	return snd_card_ro_proc_new(ak->card, ak->name, ak, proc_regs_read);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_akm4xxx_build_controls(struct snd_akm4xxx *ak)
 {
@@ -931,6 +974,7 @@ int snd_akm4xxx_build_controls(struct snd_akm4xxx *ak)
 	return 0;
 }
 EXPORT_SYMBOL(snd_akm4xxx_build_controls);
+<<<<<<< HEAD
 
 static int __init alsa_akm4xxx_module_init(void)
 {
@@ -943,3 +987,5 @@ static void __exit alsa_akm4xxx_module_exit(void)
         
 module_init(alsa_akm4xxx_module_init)
 module_exit(alsa_akm4xxx_module_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

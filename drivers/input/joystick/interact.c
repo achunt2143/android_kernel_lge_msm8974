@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001 Vojtech Pavlik
  *
@@ -9,6 +13,7 @@
  * InterAct digital gamepad/joystick driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +34,16 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gameport.h>
 #include <linux/input.h>
 #include <linux/jiffies.h>
@@ -311,6 +321,7 @@ static struct gameport_driver interact_drv = {
 	.disconnect	= interact_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init interact_init(void)
 {
 	return gameport_register_driver(&interact_drv);
@@ -323,3 +334,6 @@ static void __exit interact_exit(void)
 
 module_init(interact_init);
 module_exit(interact_exit);
+=======
+module_gameport_driver(interact_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

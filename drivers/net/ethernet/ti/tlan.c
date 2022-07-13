@@ -69,11 +69,17 @@ MODULE_AUTHOR("Maintainer: Samuel Chessman <chessman@tux.org>");
 MODULE_DESCRIPTION("Driver for TI ThunderLAN based ethernet PCI adapters");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 
 /* Define this to enable Link beat monitoring */
 #undef MONITOR
 
 /* Turn on debugging. See Documentation/networking/tlan.txt for details */
+=======
+/* Turn on debugging.
+ * See Documentation/networking/device_drivers/ethernet/ti/tlan.rst for details
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static  int		debug;
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "ThunderLAN debug mask");
@@ -107,8 +113,15 @@ static struct board {
 	{ "Compaq Netelligent 10/100 TX Embedded UTP",
 	  TLAN_ADAPTER_NONE, 0x83 },
 	{ "Olicom OC-2183/2185", TLAN_ADAPTER_USE_INTERN_10, 0x83 },
+<<<<<<< HEAD
 	{ "Olicom OC-2325", TLAN_ADAPTER_UNMANAGED_PHY, 0xf8 },
 	{ "Olicom OC-2326", TLAN_ADAPTER_USE_INTERN_10, 0xf8 },
+=======
+	{ "Olicom OC-2325", TLAN_ADAPTER_ACTIVITY_LED |
+	  TLAN_ADAPTER_UNMANAGED_PHY, 0xf8 },
+	{ "Olicom OC-2326", TLAN_ADAPTER_ACTIVITY_LED |
+	  TLAN_ADAPTER_USE_INTERN_10, 0xf8 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Compaq Netelligent 10/100 TX UTP", TLAN_ADAPTER_ACTIVITY_LED, 0x83 },
 	{ "Compaq Netelligent 10 T/2 PCI UTP/coax", TLAN_ADAPTER_NONE, 0x83 },
 	{ "Compaq NetFlex-3/E",
@@ -118,7 +131,11 @@ static struct board {
 	  TLAN_ADAPTER_ACTIVITY_LED, 0x83 }, /* EISA card */
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(tlan_pci_tbl) = {
+=======
+static const struct pci_device_id tlan_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_COMPAQ, PCI_DEVICE_ID_COMPAQ_NETEL10,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_COMPAQ, PCI_DEVICE_ID_COMPAQ_NETEL100,
@@ -161,7 +178,11 @@ static void	tlan_set_multicast_list(struct net_device *);
 static int	tlan_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 static int      tlan_probe1(struct pci_dev *pdev, long ioaddr,
 			    int irq, int rev, const struct pci_device_id *ent);
+<<<<<<< HEAD
 static void	tlan_tx_timeout(struct net_device *dev);
+=======
+static void	tlan_tx_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	tlan_tx_timeout_work(struct work_struct *work);
 static int	tlan_init_one(struct pci_dev *pdev,
 			      const struct pci_device_id *ent);
@@ -174,7 +195,12 @@ static u32	tlan_handle_tx_eoc(struct net_device *, u16);
 static u32	tlan_handle_status_check(struct net_device *, u16);
 static u32	tlan_handle_rx_eoc(struct net_device *, u16);
 
+<<<<<<< HEAD
 static void	tlan_timer(unsigned long);
+=======
+static void	tlan_timer(struct timer_list *t);
+static void	tlan_phy_monitor(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void	tlan_reset_lists(struct net_device *);
 static void	tlan_free_lists(struct net_device *);
@@ -183,8 +209,14 @@ static void	tlan_print_list(struct tlan_list *, char *, int);
 static void	tlan_read_and_clear_stats(struct net_device *, int);
 static void	tlan_reset_adapter(struct net_device *);
 static void	tlan_finish_reset(struct net_device *);
+<<<<<<< HEAD
 static void	tlan_set_mac(struct net_device *, int areg, char *mac);
 
+=======
+static void	tlan_set_mac(struct net_device *, int areg, const char *mac);
+
+static void	__tlan_phy_print(struct net_device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	tlan_phy_print(struct net_device *);
 static void	tlan_phy_detect(struct net_device *);
 static void	tlan_phy_power_down(struct net_device *);
@@ -192,9 +224,12 @@ static void	tlan_phy_power_up(struct net_device *);
 static void	tlan_phy_reset(struct net_device *);
 static void	tlan_phy_start_link(struct net_device *);
 static void	tlan_phy_finish_auto_neg(struct net_device *);
+<<<<<<< HEAD
 #ifdef MONITOR
 static void     tlan_phy_monitor(struct net_device *);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
   static int	tlan_phy_nop(struct net_device *);
@@ -203,9 +238,17 @@ static void     tlan_phy_monitor(struct net_device *);
   static int	tlan_phy_dp83840a_check(struct net_device *);
 */
 
+<<<<<<< HEAD
 static bool	tlan_mii_read_reg(struct net_device *, u16, u16, u16 *);
 static void	tlan_mii_send_data(u16, u32, unsigned);
 static void	tlan_mii_sync(u16);
+=======
+static bool	__tlan_mii_read_reg(struct net_device *, u16, u16, u16 *);
+static void	tlan_mii_read_reg(struct net_device *, u16, u16, u16 *);
+static void	tlan_mii_send_data(u16, u32, unsigned);
+static void	tlan_mii_sync(u16);
+static void	__tlan_mii_write_reg(struct net_device *, u16, u16, u16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	tlan_mii_write_reg(struct net_device *, u16, u16, u16);
 
 static void	tlan_ee_send_start(u16);
@@ -244,12 +287,17 @@ static u32
 	tlan_handle_rx_eoc
 };
 
+<<<<<<< HEAD
 static inline void
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 tlan_set_timer(struct net_device *dev, u32 ticks, u32 type)
 {
 	struct tlan_priv *priv = netdev_priv(dev);
 	unsigned long flags = 0;
 
+<<<<<<< HEAD
 	if (!in_irq())
 		spin_lock_irqsave(&priv->lock, flags);
 	if (priv->timer.function != NULL &&
@@ -263,6 +311,17 @@ tlan_set_timer(struct net_device *dev, u32 ticks, u32 type)
 		spin_unlock_irqrestore(&priv->lock, flags);
 
 	priv->timer.data = (unsigned long) dev;
+=======
+	spin_lock_irqsave(&priv->lock, flags);
+	if (priv->timer.function != NULL &&
+	    priv->timer_type != TLAN_TIMER_ACTIVITY) {
+		spin_unlock_irqrestore(&priv->lock, flags);
+		return;
+	}
+	priv->timer.function = tlan_timer;
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->timer_set_at = jiffies;
 	priv->timer_type = type;
 	mod_timer(&priv->timer, jiffies + ticks);
@@ -300,7 +359,11 @@ these functions are more or less common to all linux network drivers.
  **************************************************************/
 
 
+<<<<<<< HEAD
 static void __devexit tlan_remove_one(struct pci_dev *pdev)
+=======
+static void tlan_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct tlan_priv	*priv = netdev_priv(dev);
@@ -308,18 +371,28 @@ static void __devexit tlan_remove_one(struct pci_dev *pdev)
 	unregister_netdev(dev);
 
 	if (priv->dma_storage) {
+<<<<<<< HEAD
 		pci_free_consistent(priv->pci_dev,
 				    priv->dma_size, priv->dma_storage,
 				    priv->dma_storage_dma);
+=======
+		dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
+				  priv->dma_storage, priv->dma_storage_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef CONFIG_PCI
 	pci_release_regions(pdev);
 #endif
 
+<<<<<<< HEAD
 	free_netdev(dev);
 
 	pci_set_drvdata(pdev, NULL);
+=======
+	cancel_work_sync(&priv->tlan_tqueue);
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tlan_start(struct net_device *dev)
@@ -337,6 +410,10 @@ static void tlan_stop(struct net_device *dev)
 {
 	struct tlan_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	del_timer_sync(&priv->media_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlan_read_and_clear_stats(dev, TLAN_RECORD);
 	outl(TLAN_HC_AD_RST, dev->base_addr + TLAN_HOST_CMD);
 	/* Reset and power down phy */
@@ -347,24 +424,34 @@ static void tlan_stop(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int tlan_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
+=======
+static int __maybe_unused tlan_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev))
 		tlan_stop(dev);
 
 	netif_device_detach(dev);
+<<<<<<< HEAD
 	pci_save_state(pdev);
 	pci_disable_device(pdev);
 	pci_wake_from_d3(pdev, false);
 	pci_set_power_state(pdev, PCI_D3hot);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tlan_resume(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -372,6 +459,11 @@ static int tlan_resume(struct pci_dev *pdev)
 	pci_set_power_state(pdev, PCI_D0);
 	pci_restore_state(pdev);
 	pci_enable_wake(pdev, 0, 0);
+=======
+static int __maybe_unused tlan_resume(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_attach(dev);
 
 	if (netif_running(dev))
@@ -380,6 +472,7 @@ static int tlan_resume(struct pci_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #else /* CONFIG_PM */
 
 #define tlan_suspend   NULL
@@ -387,14 +480,22 @@ static int tlan_resume(struct pci_dev *pdev)
 
 #endif /* CONFIG_PM */
 
+=======
+static SIMPLE_DEV_PM_OPS(tlan_pm_ops, tlan_suspend, tlan_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver tlan_driver = {
 	.name		= "tlan",
 	.id_table	= tlan_pci_tbl,
 	.probe		= tlan_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(tlan_remove_one),
 	.suspend	= tlan_suspend,
 	.resume		= tlan_resume,
+=======
+	.remove		= tlan_remove_one,
+	.driver.pm	= &tlan_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init tlan_probe(void)
@@ -434,7 +535,11 @@ err_out_pci_free:
 }
 
 
+<<<<<<< HEAD
 static int __devinit tlan_init_one(struct pci_dev *pdev,
+=======
+static int tlan_init_one(struct pci_dev *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const struct pci_device_id *ent)
 {
 	return tlan_probe1(pdev, -1, -1, 0, ent);
@@ -460,9 +565,14 @@ static int __devinit tlan_init_one(struct pci_dev *pdev,
 *
 **************************************************************/
 
+<<<<<<< HEAD
 static int __devinit tlan_probe1(struct pci_dev *pdev,
 				 long ioaddr, int irq, int rev,
 				 const struct pci_device_id *ent)
+=======
+static int tlan_probe1(struct pci_dev *pdev, long ioaddr, int irq, int rev,
+		       const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct net_device  *dev;
@@ -502,7 +612,11 @@ static int __devinit tlan_probe1(struct pci_dev *pdev,
 
 		priv->adapter = &board_info[ent->driver_data];
 
+<<<<<<< HEAD
 		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			pr_err("No suitable PCI mapping available\n");
 			goto err_out_free_dev;
@@ -533,7 +647,10 @@ static int __devinit tlan_probe1(struct pci_dev *pdev,
 		/* This is a hack. We need to know which board structure
 		 * is suited for this adapter */
 		device_id = inw(ioaddr + EISA_ID2);
+<<<<<<< HEAD
 		priv->is_eisa = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (device_id == 0x20F1) {
 			priv->adapter = &board_info[13]; /* NetFlex-3/E */
 			priv->adapter_rev = 23;		/* TLAN 2.3 */
@@ -605,16 +722,26 @@ static int __devinit tlan_probe1(struct pci_dev *pdev,
 	return 0;
 
 err_out_uninit:
+<<<<<<< HEAD
 	pci_free_consistent(priv->pci_dev, priv->dma_size, priv->dma_storage,
 			    priv->dma_storage_dma);
+=======
+	dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
+			  priv->dma_storage, priv->dma_storage_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_dev:
 	free_netdev(dev);
 err_out_regions:
 #ifdef CONFIG_PCI
 	if (pdev)
 		pci_release_regions(pdev);
+<<<<<<< HEAD
 #endif
 err_out:
+=======
+err_out:
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdev)
 		pci_disable_device(pdev);
 	return rc;
@@ -630,9 +757,15 @@ static void tlan_eisa_cleanup(void)
 		dev = tlan_eisa_devices;
 		priv = netdev_priv(dev);
 		if (priv->dma_storage) {
+<<<<<<< HEAD
 			pci_free_consistent(priv->pci_dev, priv->dma_size,
 					    priv->dma_storage,
 					    priv->dma_storage_dma);
+=======
+			dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
+					  priv->dma_storage,
+					  priv->dma_storage_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		release_region(dev->base_addr, 0x10);
 		unregister_netdev(dev);
@@ -675,7 +808,10 @@ module_exit(tlan_exit);
 static void  __init tlan_eisa_probe(void)
 {
 	long	ioaddr;
+<<<<<<< HEAD
 	int	rc = -ENODEV;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	irq;
 	u16	device_id;
 
@@ -740,8 +876,12 @@ static void  __init tlan_eisa_probe(void)
 
 
 		/* Setup the newly found eisa adapter */
+<<<<<<< HEAD
 		rc = tlan_probe1(NULL, ioaddr, irq,
 				 12, NULL);
+=======
+		tlan_probe1(NULL, ioaddr, irq, 12, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		continue;
 
 out:
@@ -774,8 +914,12 @@ static const struct net_device_ops tlan_netdev_ops = {
 	.ndo_tx_timeout		= tlan_tx_timeout,
 	.ndo_get_stats		= tlan_get_stats,
 	.ndo_set_rx_mode	= tlan_set_multicast_list,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= tlan_ioctl,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= tlan_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -783,7 +927,46 @@ static const struct net_device_ops tlan_netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 
+=======
+static void tlan_get_drvinfo(struct net_device *dev,
+			     struct ethtool_drvinfo *info)
+{
+	struct tlan_priv *priv = netdev_priv(dev);
+
+	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
+	if (priv->pci_dev)
+		strscpy(info->bus_info, pci_name(priv->pci_dev),
+			sizeof(info->bus_info));
+	else
+		strscpy(info->bus_info, "EISA",	sizeof(info->bus_info));
+}
+
+static int tlan_get_eeprom_len(struct net_device *dev)
+{
+	return TLAN_EEPROM_SIZE;
+}
+
+static int tlan_get_eeprom(struct net_device *dev,
+			   struct ethtool_eeprom *eeprom, u8 *data)
+{
+	int i;
+
+	for (i = 0; i < TLAN_EEPROM_SIZE; i++)
+		if (tlan_ee_read_byte(dev, i, &data[i]))
+			return -EIO;
+
+	return 0;
+}
+
+static const struct ethtool_ops tlan_ethtool_ops = {
+	.get_drvinfo	= tlan_get_drvinfo,
+	.get_link	= ethtool_op_get_link,
+	.get_eeprom_len	= tlan_get_eeprom_len,
+	.get_eeprom	= tlan_get_eeprom,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***************************************************************
  *	tlan_init
@@ -808,14 +991,23 @@ static int tlan_init(struct net_device *dev)
 	int		err;
 	int		i;
 	struct tlan_priv	*priv;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = netdev_priv(dev);
 
 	dma_size = (TLAN_NUM_RX_LISTS + TLAN_NUM_TX_LISTS)
 		* (sizeof(struct tlan_list));
+<<<<<<< HEAD
 	priv->dma_storage = pci_alloc_consistent(priv->pci_dev,
 						 dma_size,
 						 &priv->dma_storage_dma);
+=======
+	priv->dma_storage = dma_alloc_coherent(&priv->pci_dev->dev, dma_size,
+					       &priv->dma_storage_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->dma_size = dma_size;
 
 	if (priv->dma_storage == NULL) {
@@ -823,7 +1015,10 @@ static int tlan_init(struct net_device *dev)
 		       dev->name);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(priv->dma_storage, 0, dma_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->rx_list = (struct tlan_list *)
 		ALIGN((unsigned long)priv->dma_storage, 8);
 	priv->rx_list_dma = ALIGN(priv->dma_storage_dma, 8);
@@ -832,20 +1027,43 @@ static int tlan_init(struct net_device *dev)
 		priv->rx_list_dma + sizeof(struct tlan_list)*TLAN_NUM_RX_LISTS;
 
 	err = 0;
+<<<<<<< HEAD
 	for (i = 0;  i < 6 ; i++)
 		err |= tlan_ee_read_byte(dev,
 					 (u8) priv->adapter->addr_ofs + i,
 					 (u8 *) &dev->dev_addr[i]);
+=======
+	for (i = 0; i < ETH_ALEN; i++)
+		err |= tlan_ee_read_byte(dev,
+					 (u8) priv->adapter->addr_ofs + i,
+					 addr + i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		pr_err("%s: Error reading MAC from eeprom: %d\n",
 		       dev->name, err);
 	}
+<<<<<<< HEAD
 	dev->addr_len = 6;
+=======
+	/* Olicom OC-2325/OC-2326 have the address byte-swapped */
+	if (priv->adapter->addr_ofs == 0xf8) {
+		for (i = 0; i < ETH_ALEN; i += 2) {
+			char tmp = addr[i];
+			addr[i] = addr[i + 1];
+			addr[i + 1] = tmp;
+		}
+	}
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_carrier_off(dev);
 
 	/* Device methods */
 	dev->netdev_ops = &tlan_netdev_ops;
+<<<<<<< HEAD
+=======
+	dev->ethtool_ops = &tlan_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = TX_TIMEOUT;
 
 	return 0;
@@ -887,7 +1105,12 @@ static int tlan_open(struct net_device *dev)
 		return err;
 	}
 
+<<<<<<< HEAD
 	init_timer(&priv->timer);
+=======
+	timer_setup(&priv->timer, NULL, 0);
+	timer_setup(&priv->media_timer, tlan_phy_monitor, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tlan_start(dev);
 
@@ -927,6 +1150,10 @@ static int tlan_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	switch (cmd) {
 	case SIOCGMIIPHY:		/* get address of MII PHY in use. */
 		data->phy_id = phy;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	case SIOCGMIIREG:		/* read MII PHY register. */
@@ -956,7 +1183,11 @@ static int tlan_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
  *
  **************************************************************/
 
+<<<<<<< HEAD
 static void tlan_tx_timeout(struct net_device *dev)
+=======
+static void tlan_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	TLAN_DBG(TLAN_DEBUG_GNRL, "%s: Transmit timed out.\n", dev->name);
@@ -966,7 +1197,11 @@ static void tlan_tx_timeout(struct net_device *dev)
 	tlan_reset_lists(dev);
 	tlan_read_and_clear_stats(dev, TLAN_IGNORE);
 	tlan_reset_adapter(dev);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 
 }
@@ -987,7 +1222,11 @@ static void tlan_tx_timeout_work(struct work_struct *work)
 	struct tlan_priv	*priv =
 		container_of(work, struct tlan_priv, tlan_tqueue);
 
+<<<<<<< HEAD
 	tlan_tx_timeout(priv->dev);
+=======
+	tlan_tx_timeout(priv->dev, UINT_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1047,9 +1286,15 @@ static netdev_tx_t tlan_start_tx(struct sk_buff *skb, struct net_device *dev)
 
 	tail_list->forward = 0;
 
+<<<<<<< HEAD
 	tail_list->buffer[0].address = pci_map_single(priv->pci_dev,
 						      skb->data, txlen,
 						      PCI_DMA_TODEVICE);
+=======
+	tail_list->buffer[0].address = dma_map_single(&priv->pci_dev->dev,
+						      skb->data, txlen,
+						      DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlan_store_skb(tail_list, skb);
 
 	tail_list->frame_size = (u16) txlen;
@@ -1158,9 +1403,12 @@ static irqreturn_t tlan_handle_interrupt(int irq, void *dev_id)
 
 static int tlan_close(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct tlan_priv *priv = netdev_priv(dev);
 
 	priv->neg_be_verbose = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlan_stop(dev);
 
 	free_irq(dev->irq, dev);
@@ -1346,10 +1594,17 @@ static u32 tlan_handle_tx_eof(struct net_device *dev, u16 host_int)
 		struct sk_buff *skb = tlan_get_skb(head_list);
 
 		ack++;
+<<<<<<< HEAD
 		pci_unmap_single(priv->pci_dev, head_list->buffer[0].address,
 				 max(skb->len,
 				     (unsigned int)TLAN_MIN_FRAME_SIZE),
 				 PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&priv->pci_dev->dev,
+				 head_list->buffer[0].address,
+				 max(skb->len, (unsigned int)TLAN_MIN_FRAME_SIZE),
+				 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 		head_list->buffer[8].address = 0;
 		head_list->buffer[9].address = 0;
@@ -1390,7 +1645,10 @@ static u32 tlan_handle_tx_eof(struct net_device *dev, u16 host_int)
 				TLAN_LED_REG, TLAN_LED_LINK | TLAN_LED_ACT);
 		if (priv->timer.function == NULL) {
 			priv->timer.function = tlan_timer;
+<<<<<<< HEAD
 			priv->timer.data = (unsigned long) dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->timer.expires = jiffies + TLAN_TIMER_ACT_DELAY;
 			priv->timer_set_at = jiffies;
 			priv->timer_type = TLAN_TIMER_ACTIVITY;
@@ -1493,8 +1751,13 @@ static u32 tlan_handle_rx_eof(struct net_device *dev, u16 host_int)
 			goto drop_and_reuse;
 
 		skb = tlan_get_skb(head_list);
+<<<<<<< HEAD
 		pci_unmap_single(priv->pci_dev, frame_dma,
 				 TLAN_MAX_FRAME_SIZE, PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&priv->pci_dev->dev, frame_dma,
+				 TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_put(skb, frame_size);
 
 		dev->stats.rx_bytes += frame_size;
@@ -1503,8 +1766,13 @@ static u32 tlan_handle_rx_eof(struct net_device *dev, u16 host_int)
 		netif_rx(skb);
 
 		head_list->buffer[0].address =
+<<<<<<< HEAD
 			pci_map_single(priv->pci_dev, new_skb->data,
 				       TLAN_MAX_FRAME_SIZE, PCI_DMA_FROMDEVICE);
+=======
+			dma_map_single(&priv->pci_dev->dev, new_skb->data,
+				       TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tlan_store_skb(head_list, new_skb);
 drop_and_reuse:
@@ -1542,7 +1810,10 @@ drop_and_reuse:
 				TLAN_LED_REG, TLAN_LED_LINK | TLAN_LED_ACT);
 		if (priv->timer.function == NULL)  {
 			priv->timer.function = tlan_timer;
+<<<<<<< HEAD
 			priv->timer.data = (unsigned long) dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->timer.expires = jiffies + TLAN_TIMER_ACT_DELAY;
 			priv->timer_set_at = jiffies;
 			priv->timer_type = TLAN_TIMER_ACTIVITY;
@@ -1613,7 +1884,10 @@ static u32 tlan_handle_tx_eoc(struct net_device *dev, u16 host_int)
 	dma_addr_t		head_list_phys;
 	u32			ack = 1;
 
+<<<<<<< HEAD
 	host_int = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->tlan_rev < 0x30) {
 		TLAN_DBG(TLAN_DEBUG_TX,
 			 "TRANSMIT:  handling TX EOC (Head=%d Tail=%d) -- IRQ\n",
@@ -1691,6 +1965,7 @@ static u32 tlan_handle_status_check(struct net_device *dev, u16 host_int)
 				 dev->name, (unsigned) net_sts);
 		}
 		if ((net_sts & TLAN_NET_STS_MIRQ) &&  (priv->phy_num == 0)) {
+<<<<<<< HEAD
 			tlan_mii_read_reg(dev, phy, TLAN_TLPHY_STS, &tlphy_sts);
 			tlan_mii_read_reg(dev, phy, TLAN_TLPHY_CTL, &tlphy_ctl);
 			if (!(tlphy_sts & TLAN_TS_POLOK) &&
@@ -1707,6 +1982,24 @@ static u32 tlan_handle_status_check(struct net_device *dev, u16 host_int)
 
 			if (debug)
 				tlan_phy_print(dev);
+=======
+			__tlan_mii_read_reg(dev, phy, TLAN_TLPHY_STS, &tlphy_sts);
+			__tlan_mii_read_reg(dev, phy, TLAN_TLPHY_CTL, &tlphy_ctl);
+			if (!(tlphy_sts & TLAN_TS_POLOK) &&
+			    !(tlphy_ctl & TLAN_TC_SWAPOL)) {
+				tlphy_ctl |= TLAN_TC_SWAPOL;
+				__tlan_mii_write_reg(dev, phy, TLAN_TLPHY_CTL,
+						     tlphy_ctl);
+			} else if ((tlphy_sts & TLAN_TS_POLOK) &&
+				   (tlphy_ctl & TLAN_TC_SWAPOL)) {
+				tlphy_ctl &= ~TLAN_TC_SWAPOL;
+				__tlan_mii_write_reg(dev, phy, TLAN_TLPHY_CTL,
+						     tlphy_ctl);
+			}
+
+			if (debug)
+				__tlan_phy_print(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1800,21 +2093,31 @@ ThunderLAN driver timer function
  *
  **************************************************************/
 
+<<<<<<< HEAD
 static void tlan_timer(unsigned long data)
 {
 	struct net_device	*dev = (struct net_device *) data;
 	struct tlan_priv	*priv = netdev_priv(dev);
+=======
+static void tlan_timer(struct timer_list *t)
+{
+	struct tlan_priv	*priv = from_timer(priv, t, timer);
+	struct net_device	*dev = priv->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		elapsed;
 	unsigned long	flags = 0;
 
 	priv->timer.function = NULL;
 
 	switch (priv->timer_type) {
+<<<<<<< HEAD
 #ifdef MONITOR
 	case TLAN_TIMER_LINK_BEAT:
 		tlan_phy_monitor(dev);
 		break;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TLAN_TIMER_PHY_PDOWN:
 		tlan_phy_power_down(dev);
 		break;
@@ -1841,7 +2144,10 @@ static void tlan_timer(unsigned long data)
 				tlan_dio_write8(dev->base_addr,
 						TLAN_LED_REG, TLAN_LED_LINK);
 			} else  {
+<<<<<<< HEAD
 				priv->timer.function = tlan_timer;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				priv->timer.expires = priv->timer_set_at
 					+ TLAN_TIMER_ACT_DELAY;
 				spin_unlock_irqrestore(&priv->lock, flags);
@@ -1858,8 +2164,11 @@ static void tlan_timer(unsigned long data)
 }
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
 ******************************************************************************
 
@@ -1876,7 +2185,11 @@ ThunderLAN driver adapter related routines
  *		Nothing
  *	Parms:
  *		dev	The device structure with the list
+<<<<<<< HEAD
  *			stuctures to be reset.
+=======
+ *			structures to be reset.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This routine sets the variables associated with managing
  *	the TLAN lists to their initial values.
@@ -1912,6 +2225,7 @@ static void tlan_reset_lists(struct net_device *dev)
 		list->frame_size = TLAN_MAX_FRAME_SIZE;
 		list->buffer[0].count = TLAN_MAX_FRAME_SIZE | TLAN_LAST_BUFFER;
 		skb = netdev_alloc_skb_ip_align(dev, TLAN_MAX_FRAME_SIZE + 5);
+<<<<<<< HEAD
 		if (!skb) {
 			netdev_err(dev, "Out of memory for received data\n");
 			break;
@@ -1921,6 +2235,15 @@ static void tlan_reset_lists(struct net_device *dev)
 							 skb->data,
 							 TLAN_MAX_FRAME_SIZE,
 							 PCI_DMA_FROMDEVICE);
+=======
+		if (!skb)
+			break;
+
+		list->buffer[0].address = dma_map_single(&priv->pci_dev->dev,
+							 skb->data,
+							 TLAN_MAX_FRAME_SIZE,
+							 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tlan_store_skb(list, skb);
 		list->buffer[1].count = 0;
 		list->buffer[1].address = 0;
@@ -1948,12 +2271,19 @@ static void tlan_free_lists(struct net_device *dev)
 		list = priv->tx_list + i;
 		skb = tlan_get_skb(list);
 		if (skb) {
+<<<<<<< HEAD
 			pci_unmap_single(
 				priv->pci_dev,
 				list->buffer[0].address,
 				max(skb->len,
 				    (unsigned int)TLAN_MIN_FRAME_SIZE),
 				PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&priv->pci_dev->dev,
+					 list->buffer[0].address,
+					 max(skb->len, (unsigned int)TLAN_MIN_FRAME_SIZE),
+					 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(skb);
 			list->buffer[8].address = 0;
 			list->buffer[9].address = 0;
@@ -1964,10 +2294,16 @@ static void tlan_free_lists(struct net_device *dev)
 		list = priv->rx_list + i;
 		skb = tlan_get_skb(list);
 		if (skb) {
+<<<<<<< HEAD
 			pci_unmap_single(priv->pci_dev,
 					 list->buffer[0].address,
 					 TLAN_MAX_FRAME_SIZE,
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&priv->pci_dev->dev,
+					 list->buffer[0].address,
+					 TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(skb);
 			list->buffer[8].address = 0;
 			list->buffer[9].address = 0;
@@ -2209,7 +2545,13 @@ tlan_reset_adapter(struct net_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (priv->phy_num == 0)
+=======
+	/* don't power down internal PHY if we're going to use it */
+	if (priv->phy_num == 0 ||
+	   (priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data |= TLAN_NET_CFG_PHY_EN;
 	tlan_dio_write16(dev->base_addr, TLAN_NET_CONFIG, (u16) data);
 
@@ -2259,6 +2601,7 @@ tlan_finish_reset(struct net_device *dev)
 		tlan_mii_read_reg(dev, phy, MII_GEN_STS, &status);
 		udelay(1000);
 		tlan_mii_read_reg(dev, phy, MII_GEN_STS, &status);
+<<<<<<< HEAD
 		if ((status & MII_GS_LINK) &&
 		    /* We only support link info on Nat.Sem. PHY's */
 		    (tlphy_id1 == NAT_SEM_ID1) &&
@@ -2295,6 +2638,39 @@ tlan_finish_reset(struct net_device *dev)
 			netdev_info(dev, "Link active\n");
 			tlan_dio_write8(dev->base_addr, TLAN_LED_REG,
 					TLAN_LED_LINK);
+=======
+		if (status & MII_GS_LINK) {
+			/* We only support link info on Nat.Sem. PHY's */
+			if ((tlphy_id1 == NAT_SEM_ID1) &&
+			    (tlphy_id2 == NAT_SEM_ID2)) {
+				tlan_mii_read_reg(dev, phy, MII_AN_LPA,
+					&partner);
+				tlan_mii_read_reg(dev, phy, TLAN_TLPHY_PAR,
+					&tlphy_par);
+
+				netdev_info(dev,
+					"Link active, %s %uMbps %s-Duplex\n",
+					!(tlphy_par & TLAN_PHY_AN_EN_STAT)
+					? "forced" : "Autonegotiation enabled,",
+					tlphy_par & TLAN_PHY_SPEED_100
+					? 100 : 10,
+					tlphy_par & TLAN_PHY_DUPLEX_FULL
+					? "Full" : "Half");
+
+				if (tlphy_par & TLAN_PHY_AN_EN_STAT) {
+					netdev_info(dev, "Partner capability:");
+					for (i = 5; i < 10; i++)
+						if (partner & (1 << i))
+							pr_cont(" %s",
+								media[i-5]);
+					pr_cont("\n");
+				}
+			} else
+				netdev_info(dev, "Link active\n");
+			/* Enabling link beat monitoring */
+			priv->media_timer.expires = jiffies + HZ;
+			add_timer(&priv->media_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2316,6 +2692,10 @@ tlan_finish_reset(struct net_device *dev)
 			     dev->base_addr + TLAN_HOST_CMD + 1);
 		outl(priv->rx_list_dma, dev->base_addr + TLAN_CH_PARM);
 		outl(TLAN_HC_GO | TLAN_HC_RT, dev->base_addr + TLAN_HOST_CMD);
+<<<<<<< HEAD
+=======
+		tlan_dio_write8(dev->base_addr, TLAN_LED_REG, TLAN_LED_LINK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_carrier_on(dev);
 	} else {
 		netdev_info(dev, "Link inactive, will retry in 10 secs...\n");
@@ -2350,7 +2730,11 @@ tlan_finish_reset(struct net_device *dev)
  *
  **************************************************************/
 
+<<<<<<< HEAD
 static void tlan_set_mac(struct net_device *dev, int areg, char *mac)
+=======
+static void tlan_set_mac(struct net_device *dev, int areg, const char *mac)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -2382,7 +2766,11 @@ ThunderLAN driver PHY layer routines
 
 
 /*********************************************************************
+<<<<<<< HEAD
  *	tlan_phy_print
+=======
+ *	__tlan_phy_print
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Returns:
  *		Nothing
@@ -2394,11 +2782,20 @@ ThunderLAN driver PHY layer routines
  *
  ********************************************************************/
 
+<<<<<<< HEAD
 static void tlan_phy_print(struct net_device *dev)
+=======
+static void __tlan_phy_print(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tlan_priv *priv = netdev_priv(dev);
 	u16 i, data0, data1, data2, data3, phy;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&priv->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy = priv->phy[priv->phy_num];
 
 	if (priv->adapter->flags & TLAN_ADAPTER_UNMANAGED_PHY) {
@@ -2407,10 +2804,17 @@ static void tlan_phy_print(struct net_device *dev)
 		netdev_info(dev, "PHY 0x%02x\n", phy);
 		pr_info("   Off.  +0     +1     +2     +3\n");
 		for (i = 0; i < 0x20; i += 4) {
+<<<<<<< HEAD
 			tlan_mii_read_reg(dev, phy, i, &data0);
 			tlan_mii_read_reg(dev, phy, i + 1, &data1);
 			tlan_mii_read_reg(dev, phy, i + 2, &data2);
 			tlan_mii_read_reg(dev, phy, i + 3, &data3);
+=======
+			__tlan_mii_read_reg(dev, phy, i, &data0);
+			__tlan_mii_read_reg(dev, phy, i + 1, &data1);
+			__tlan_mii_read_reg(dev, phy, i + 2, &data2);
+			__tlan_mii_read_reg(dev, phy, i + 3, &data3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_info("   0x%02x 0x%04hx 0x%04hx 0x%04hx 0x%04hx\n",
 				i, data0, data1, data2, data3);
 		}
@@ -2420,7 +2824,19 @@ static void tlan_phy_print(struct net_device *dev)
 
 }
 
+<<<<<<< HEAD
 
+=======
+static void tlan_phy_print(struct net_device *dev)
+{
+	struct tlan_priv *priv = netdev_priv(dev);
+	unsigned long flags;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	__tlan_phy_print(dev);
+	spin_unlock_irqrestore(&priv->lock, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*********************************************************************
@@ -2498,18 +2914,32 @@ static void tlan_phy_power_down(struct net_device *dev)
 	value = MII_GC_PDOWN | MII_GC_LOOPBK | MII_GC_ISOLATE;
 	tlan_mii_sync(dev->base_addr);
 	tlan_mii_write_reg(dev, priv->phy[priv->phy_num], MII_GEN_CTL, value);
+<<<<<<< HEAD
 	if ((priv->phy_num == 0) &&
 	    (priv->phy[1] != TLAN_PHY_NONE) &&
 	    (!(priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10))) {
+=======
+	if ((priv->phy_num == 0) && (priv->phy[1] != TLAN_PHY_NONE)) {
+		/* if using internal PHY, the external PHY must be powered on */
+		if (priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10)
+			value = MII_GC_ISOLATE; /* just isolate it from MII */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tlan_mii_sync(dev->base_addr);
 		tlan_mii_write_reg(dev, priv->phy[1], MII_GEN_CTL, value);
 	}
 
 	/* Wait for 50 ms and powerup
+<<<<<<< HEAD
 	 * This is abitrary.  It is intended to make sure the
 	 * transceiver settles.
 	 */
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_PUP);
+=======
+	 * This is arbitrary.  It is intended to make sure the
+	 * transceiver settles.
+	 */
+	tlan_set_timer(dev, msecs_to_jiffies(50), TLAN_TIMER_PHY_PUP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -2530,7 +2960,11 @@ static void tlan_phy_power_up(struct net_device *dev)
 	 * transceiver.  The TLAN docs say both 50 ms and
 	 * 500 ms, so do the longer, just in case.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_RESET);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(500), TLAN_TIMER_PHY_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -2542,6 +2976,7 @@ static void tlan_phy_reset(struct net_device *dev)
 	struct tlan_priv	*priv = netdev_priv(dev);
 	u16		phy;
 	u16		value;
+<<<<<<< HEAD
 
 	phy = priv->phy[priv->phy_num];
 
@@ -2552,12 +2987,33 @@ static void tlan_phy_reset(struct net_device *dev)
 	tlan_mii_read_reg(dev, phy, MII_GEN_CTL, &value);
 	while (value & MII_GC_RESET)
 		tlan_mii_read_reg(dev, phy, MII_GEN_CTL, &value);
+=======
+	unsigned long timeout = jiffies + HZ;
+
+	phy = priv->phy[priv->phy_num];
+
+	TLAN_DBG(TLAN_DEBUG_GNRL, "%s: Resetting PHY.\n", dev->name);
+	tlan_mii_sync(dev->base_addr);
+	value = MII_GC_LOOPBK | MII_GC_RESET;
+	tlan_mii_write_reg(dev, phy, MII_GEN_CTL, value);
+	do {
+		tlan_mii_read_reg(dev, phy, MII_GEN_CTL, &value);
+		if (time_after(jiffies, timeout)) {
+			netdev_err(dev, "PHY reset timeout\n");
+			return;
+		}
+	} while (value & MII_GC_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for 500 ms and initialize.
 	 * I don't remember why I wait this long.
 	 * I've changed this to 50ms, as it seems long enough.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/20), TLAN_TIMER_PHY_START_LINK);
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(50), TLAN_TIMER_PHY_START_LINK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -2622,7 +3078,11 @@ static void tlan_phy_start_link(struct net_device *dev)
 		data = TLAN_NET_CFG_1FRAG | TLAN_NET_CFG_1CHAN
 			| TLAN_NET_CFG_PHY_EN;
 		tlan_dio_write16(dev->base_addr, TLAN_NET_CONFIG, data);
+<<<<<<< HEAD
 		tlan_set_timer(dev, (40*HZ/1000), TLAN_TIMER_PHY_PDOWN);
+=======
+		tlan_set_timer(dev, msecs_to_jiffies(40), TLAN_TIMER_PHY_PDOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	} else if (priv->phy_num == 0) {
 		control = 0;
@@ -2657,7 +3117,10 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 	struct tlan_priv	*priv = netdev_priv(dev);
 	u16		an_adv;
 	u16		an_lpa;
+<<<<<<< HEAD
 	u16		data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16		mode;
 	u16		phy;
 	u16		status;
@@ -2672,6 +3135,7 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 		/* Wait for 8 sec to give the process
 		 * more time.  Perhaps we should fail after a while.
 		 */
+<<<<<<< HEAD
 		if (!priv->neg_be_verbose++) {
 			pr_info("Giving autonegotiation more time.\n");
 			pr_info("Please check that your adapter has\n");
@@ -2679,6 +3143,9 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 			pr_info("Trying to establish link in the background...\n");
 		}
 		tlan_set_timer(dev, (8*HZ), TLAN_TIMER_PHY_FINISH_AN);
+=======
+		tlan_set_timer(dev, 2 * HZ, TLAN_TIMER_PHY_FINISH_AN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2691,14 +3158,22 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 	else if (!(mode & 0x0080) && (mode & 0x0040))
 		priv->tlan_full_duplex = true;
 
+<<<<<<< HEAD
+=======
+	/* switch to internal PHY for 10 Mbps */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((!(mode & 0x0180)) &&
 	    (priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10) &&
 	    (priv->phy_num != 0)) {
 		priv->phy_num = 0;
+<<<<<<< HEAD
 		data = TLAN_NET_CFG_1FRAG | TLAN_NET_CFG_1CHAN
 			| TLAN_NET_CFG_PHY_EN;
 		tlan_dio_write16(dev->base_addr, TLAN_NET_CONFIG, data);
 		tlan_set_timer(dev, (400*HZ/1000), TLAN_TIMER_PHY_PDOWN);
+=======
+		tlan_set_timer(dev, msecs_to_jiffies(400), TLAN_TIMER_PHY_PDOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2717,11 +3192,18 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 
 	/* Wait for 100 ms.  No reason in partiticular.
 	 */
+<<<<<<< HEAD
 	tlan_set_timer(dev, (HZ/10), TLAN_TIMER_FINISH_RESET);
 
 }
 
 #ifdef MONITOR
+=======
+	tlan_set_timer(dev, msecs_to_jiffies(100), TLAN_TIMER_FINISH_RESET);
+
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*********************************************************************
  *
@@ -2731,6 +3213,7 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
  *	      None
  *
  *     Params:
+<<<<<<< HEAD
  *	      dev	     The device structure of this device.
  *
  *
@@ -2744,6 +3227,21 @@ static void tlan_phy_finish_auto_neg(struct net_device *dev)
 void tlan_phy_monitor(struct net_device *dev)
 {
 	struct tlan_priv *priv = netdev_priv(dev);
+=======
+ *	      data	     The device structure of this device.
+ *
+ *
+ *     This function monitors PHY condition by reading the status
+ *     register via the MII bus, controls LINK LED and notifies the
+ *     kernel about link state.
+ *
+ *******************************************************************/
+
+static void tlan_phy_monitor(struct timer_list *t)
+{
+	struct tlan_priv *priv = from_timer(priv, t, media_timer);
+	struct net_device *dev = priv->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16     phy;
 	u16     phy_status;
 
@@ -2754,6 +3252,7 @@ void tlan_phy_monitor(struct net_device *dev)
 
 	/* Check if link has been lost */
 	if (!(phy_status & MII_GS_LINK)) {
+<<<<<<< HEAD
 		if (priv->link) {
 			priv->link = 0;
 			printk(KERN_DEBUG "TLAN: %s has lost link\n",
@@ -2761,16 +3260,44 @@ void tlan_phy_monitor(struct net_device *dev)
 			netif_carrier_off(dev);
 			tlan_set_timer(dev, (2*HZ), TLAN_TIMER_LINK_BEAT);
 			return;
+=======
+		if (netif_carrier_ok(dev)) {
+			printk(KERN_DEBUG "TLAN: %s has lost link\n",
+			       dev->name);
+			tlan_dio_write8(dev->base_addr, TLAN_LED_REG, 0);
+			netif_carrier_off(dev);
+			if (priv->adapter->flags & TLAN_ADAPTER_USE_INTERN_10) {
+				/* power down internal PHY */
+				u16 data = MII_GC_PDOWN | MII_GC_LOOPBK |
+					   MII_GC_ISOLATE;
+
+				tlan_mii_sync(dev->base_addr);
+				tlan_mii_write_reg(dev, priv->phy[0],
+						   MII_GEN_CTL, data);
+				/* set to external PHY */
+				priv->phy_num = 1;
+				/* restart autonegotiation */
+				tlan_set_timer(dev, msecs_to_jiffies(400),
+					       TLAN_TIMER_PHY_PDOWN);
+				return;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Link restablished? */
+<<<<<<< HEAD
 	if ((phy_status & MII_GS_LINK) && !priv->link) {
 		priv->link = 1;
+=======
+	if ((phy_status & MII_GS_LINK) && !netif_carrier_ok(dev)) {
+		tlan_dio_write8(dev->base_addr, TLAN_LED_REG, TLAN_LED_LINK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "TLAN: %s has reestablished link\n",
 		       dev->name);
 		netif_carrier_on(dev);
 	}
+<<<<<<< HEAD
 
 	/* Setup a new monitor */
 	tlan_set_timer(dev, (2*HZ), TLAN_TIMER_LINK_BEAT);
@@ -2778,6 +3305,12 @@ void tlan_phy_monitor(struct net_device *dev)
 
 #endif /* MONITOR */
 
+=======
+	priv->media_timer.expires = jiffies + HZ;
+	add_timer(&priv->media_timer);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
 ******************************************************************************
@@ -2792,7 +3325,11 @@ these routines are based on the information in chap. 2 of the
 
 
 /***************************************************************
+<<<<<<< HEAD
  *	tlan_mii_read_reg
+=======
+ *	__tlan_mii_read_reg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Returns:
  *		false	if ack received ok
@@ -2816,7 +3353,11 @@ these routines are based on the information in chap. 2 of the
  **************************************************************/
 
 static bool
+<<<<<<< HEAD
 tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg, u16 *val)
+=======
+__tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg, u16 *val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8	nack;
 	u16	sio, tmp;
@@ -2824,15 +3365,23 @@ tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg, u16 *val)
 	bool	err;
 	int	minten;
 	struct tlan_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned long flags = 0;
+=======
+
+	lockdep_assert_held(&priv->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = false;
 	outw(TLAN_NET_SIO, dev->base_addr + TLAN_DIO_ADR);
 	sio = dev->base_addr + TLAN_DIO_DATA + TLAN_NET_SIO;
 
+<<<<<<< HEAD
 	if (!in_irq())
 		spin_lock_irqsave(&priv->lock, flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlan_mii_sync(dev->base_addr);
 
 	minten = tlan_get_bit(TLAN_NET_SIO_MINTEN, sio);
@@ -2878,6 +3427,7 @@ tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg, u16 *val)
 
 	*val = tmp;
 
+<<<<<<< HEAD
 	if (!in_irq())
 		spin_unlock_irqrestore(&priv->lock, flags);
 
@@ -2887,6 +3437,21 @@ tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg, u16 *val)
 
 
 
+=======
+	return err;
+}
+
+static void tlan_mii_read_reg(struct net_device *dev, u16 phy, u16 reg,
+			      u16 *val)
+{
+	struct tlan_priv *priv = netdev_priv(dev);
+	unsigned long flags;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	__tlan_mii_read_reg(dev, phy, reg, val);
+	spin_unlock_irqrestore(&priv->lock, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***************************************************************
  *	tlan_mii_send_data
@@ -2968,7 +3533,11 @@ static void tlan_mii_sync(u16 base_port)
 
 
 /***************************************************************
+<<<<<<< HEAD
  *	tlan_mii_write_reg
+=======
+ *	__tlan_mii_write_reg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Returns:
  *		Nothing
@@ -2988,6 +3557,7 @@ static void tlan_mii_sync(u16 base_port)
  **************************************************************/
 
 static void
+<<<<<<< HEAD
 tlan_mii_write_reg(struct net_device *dev, u16 phy, u16 reg, u16 val)
 {
 	u16	sio;
@@ -3001,6 +3571,19 @@ tlan_mii_write_reg(struct net_device *dev, u16 phy, u16 reg, u16 val)
 	if (!in_irq())
 		spin_lock_irqsave(&priv->lock, flags);
 
+=======
+__tlan_mii_write_reg(struct net_device *dev, u16 phy, u16 reg, u16 val)
+{
+	u16	sio;
+	int	minten;
+	struct tlan_priv *priv = netdev_priv(dev);
+
+	lockdep_assert_held(&priv->lock);
+
+	outw(TLAN_NET_SIO, dev->base_addr + TLAN_DIO_ADR);
+	sio = dev->base_addr + TLAN_DIO_DATA + TLAN_NET_SIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tlan_mii_sync(dev->base_addr);
 
 	minten = tlan_get_bit(TLAN_NET_SIO_MINTEN, sio);
@@ -3021,12 +3604,27 @@ tlan_mii_write_reg(struct net_device *dev, u16 phy, u16 reg, u16 val)
 	if (minten)
 		tlan_set_bit(TLAN_NET_SIO_MINTEN, sio);
 
+<<<<<<< HEAD
 	if (!in_irq())
 		spin_unlock_irqrestore(&priv->lock, flags);
 
 }
 
 
+=======
+}
+
+static void
+tlan_mii_write_reg(struct net_device *dev, u16 phy, u16 reg, u16 val)
+{
+	struct tlan_priv *priv = netdev_priv(dev);
+	unsigned long flags;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	__tlan_mii_write_reg(dev, phy, reg, val);
+	spin_unlock_irqrestore(&priv->lock, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*****************************************************************************

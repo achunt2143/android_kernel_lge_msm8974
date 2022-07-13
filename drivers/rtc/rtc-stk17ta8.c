@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A RTC driver for the Simtek STK17TA8
  *
@@ -5,10 +9,13 @@
  *
  * Based on the DS1553 driver from
  * Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bcd.h>
@@ -23,8 +30,11 @@
 #include <linux/io.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.1"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTC_REG_SIZE		0x20000
 #define RTC_OFFSET		0x1fff0
 
@@ -76,8 +86,12 @@ struct rtc_plat_data {
 
 static int stk17ta8_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
+=======
+	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = pdata->ioaddr;
 	u8 flags;
 
@@ -99,8 +113,12 @@ static int stk17ta8_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 static int stk17ta8_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
+=======
+	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = pdata->ioaddr;
 	unsigned int year, month, day, hour, minute, second, week;
 	unsigned int century;
@@ -131,10 +149,13 @@ static int stk17ta8_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	/* year is 1900 + tm->tm_year */
 	tm->tm_year = bcd2bin(year) + bcd2bin(century) * 100 - 1900;
 
+<<<<<<< HEAD
 	if (rtc_valid_tm(tm) < 0) {
 		dev_err(dev, "retrieved date/time is not valid.\n");
 		rtc_time_to_tm(0, tm);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -169,8 +190,12 @@ static void stk17ta8_rtc_update_alarm(struct rtc_plat_data *pdata)
 
 static int stk17ta8_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
+=======
+	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->irq <= 0)
 		return -EINVAL;
@@ -186,8 +211,12 @@ static int stk17ta8_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 static int stk17ta8_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
+=======
+	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->irq <= 0)
 		return -EINVAL;
@@ -214,8 +243,12 @@ static irqreturn_t stk17ta8_rtc_interrupt(int irq, void *dev_id)
 			events |= RTC_UF;
 		else
 			events |= RTC_AF;
+<<<<<<< HEAD
 		if (likely(pdata->rtc))
 			rtc_update_irq(pdata->rtc, 1, events);
+=======
+		rtc_update_irq(pdata->rtc, 1, events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&pdata->lock);
 	return events ? IRQ_HANDLED : IRQ_NONE;
@@ -224,8 +257,12 @@ static irqreturn_t stk17ta8_rtc_interrupt(int irq, void *dev_id)
 static int stk17ta8_rtc_alarm_irq_enable(struct device *dev,
 	unsigned int enabled)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
+=======
+	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->irq <= 0)
 		return -EINVAL;
@@ -245,6 +282,7 @@ static const struct rtc_class_ops stk17ta8_rtc_ops = {
 	.alarm_irq_enable	= stk17ta8_rtc_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 static ssize_t stk17ta8_nvram_read(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *attr, char *buf,
 				 loff_t pos, size_t size)
@@ -288,25 +326,71 @@ static struct bin_attribute stk17ta8_nvram_attr = {
 static int __devinit stk17ta8_rtc_probe(struct platform_device *pdev)
 {
 	struct resource *res;
+=======
+static int stk17ta8_nvram_read(void *priv, unsigned int pos, void *val,
+			       size_t bytes)
+{
+	struct rtc_plat_data *pdata = priv;
+	void __iomem *ioaddr = pdata->ioaddr;
+	u8 *buf = val;
+
+	for (; bytes; bytes--)
+		*buf++ = readb(ioaddr + pos++);
+	return 0;
+}
+
+static int stk17ta8_nvram_write(void *priv, unsigned int pos, void *val,
+				size_t bytes)
+{
+	struct rtc_plat_data *pdata = priv;
+	void __iomem *ioaddr = pdata->ioaddr;
+	u8 *buf = val;
+
+	for (; bytes; bytes--)
+		writeb(*buf++, ioaddr + pos++);
+	return 0;
+}
+
+static int stk17ta8_rtc_probe(struct platform_device *pdev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cal;
 	unsigned int flags;
 	struct rtc_plat_data *pdata;
 	void __iomem *ioaddr;
 	int ret = 0;
+<<<<<<< HEAD
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
+=======
+	struct nvmem_config nvmem_cfg = {
+		.name = "stk17ta8_nvram",
+		.word_size = 1,
+		.stride = 1,
+		.size = RTC_OFFSET,
+		.reg_read = stk17ta8_nvram_read,
+		.reg_write = stk17ta8_nvram_write,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
+<<<<<<< HEAD
 	if (!devm_request_mem_region(&pdev->dev, res->start, RTC_REG_SIZE,
 			pdev->name))
 		return -EBUSY;
 	ioaddr = devm_ioremap(&pdev->dev, res->start, RTC_REG_SIZE);
 	if (!ioaddr)
 		return -ENOMEM;
+=======
+
+	ioaddr = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(ioaddr))
+		return PTR_ERR(ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdata->ioaddr = ioaddr;
 	pdata->irq = platform_get_irq(pdev, 0);
 
@@ -336,6 +420,7 @@ static int __devinit stk17ta8_rtc_probe(struct platform_device *pdev)
 		}
 	}
 
+<<<<<<< HEAD
 	pdata->rtc = rtc_device_register(pdev->name, &pdev->dev,
 				  &stk17ta8_rtc_ops, THIS_MODULE);
 	if (IS_ERR(pdata->rtc))
@@ -356,6 +441,20 @@ static int __devexit stk17ta8_rtc_remove(struct platform_device *pdev)
 	if (pdata->irq > 0)
 		writeb(0, pdata->ioaddr + RTC_INTERRUPTS);
 	return 0;
+=======
+	pdata->rtc = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(pdata->rtc))
+		return PTR_ERR(pdata->rtc);
+
+	pdata->rtc->ops = &stk17ta8_rtc_ops;
+
+	nvmem_cfg.priv = pdata;
+	ret = devm_rtc_nvmem_register(pdata->rtc, &nvmem_cfg);
+	if (ret)
+		return ret;
+
+	return devm_rtc_register_device(pdata->rtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* work with hotplug and coldplug */
@@ -363,10 +462,15 @@ MODULE_ALIAS("platform:stk17ta8");
 
 static struct platform_driver stk17ta8_rtc_driver = {
 	.probe		= stk17ta8_rtc_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(stk17ta8_rtc_remove),
 	.driver		= {
 		.name	= "stk17ta8",
 		.owner	= THIS_MODULE,
+=======
+	.driver		= {
+		.name	= "stk17ta8",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -375,4 +479,7 @@ module_platform_driver(stk17ta8_rtc_driver);
 MODULE_AUTHOR("Thomas Hommel <thomas.hommel@ge.com>");
 MODULE_DESCRIPTION("Simtek STK17TA8 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,25 +1,41 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * net/sched/sch_choke.c	CHOKE scheduler
  *
  * Copyright (c) 2011 Stephen Hemminger <shemminger@vyatta.com>
  * Copyright (c) 2011 Eric Dumazet <eric.dumazet@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * version 2 as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/reciprocal_div.h>
 #include <linux/vmalloc.h>
 #include <net/pkt_sched.h>
 #include <net/inet_ecn.h>
 #include <net/red.h>
 #include <net/flow_keys.h>
+=======
+#include <linux/vmalloc.h>
+#include <net/pkt_sched.h>
+#include <net/pkt_cls.h>
+#include <net/inet_ecn.h>
+#include <net/red.h>
+#include <net/flow_dissector.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
    CHOKe stateless AQM for fair bandwidth allocation
@@ -58,14 +74,20 @@ struct choke_sched_data {
 
 /* Variables */
 	struct red_vars  vars;
+<<<<<<< HEAD
 	struct tcf_proto *filter_list;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		u32	prob_drop;	/* Early probability drops */
 		u32	prob_mark;	/* Early probability marks */
 		u32	forced_drop;	/* Forced drops, qavg > max_thresh */
 		u32	forced_mark;	/* Forced marks, qavg > max_thresh */
 		u32	pdrop;          /* Drops due to queue limits */
+<<<<<<< HEAD
 		u32	other;          /* Drops due to drop() calls */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32	matched;	/* Drops to flow match */
 	} stats;
 
@@ -77,12 +99,15 @@ struct choke_sched_data {
 	struct sk_buff **tab;
 };
 
+<<<<<<< HEAD
 /* deliver a random number between 0 and N - 1 */
 static u32 random_N(unsigned int N)
 {
 	return reciprocal_divide(random32(), N);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* number of elements in queue including holes */
 static unsigned int choke_len(const struct choke_sched_data *q)
 {
@@ -122,7 +147,12 @@ static void choke_zap_tail_holes(struct choke_sched_data *q)
 }
 
 /* Drop packet from queue array by creating a "hole" */
+<<<<<<< HEAD
 static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx)
+=======
+static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx,
+			      struct sk_buff **to_free)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 	struct sk_buff *skb = q->tab[idx];
@@ -134,16 +164,27 @@ static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx)
 	if (idx == q->tail)
 		choke_zap_tail_holes(q);
 
+<<<<<<< HEAD
 	sch->qstats.backlog -= qdisc_pkt_len(skb);
 	qdisc_drop(skb, sch);
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+	qdisc_tree_reduce_backlog(sch, 1, qdisc_pkt_len(skb));
+	qdisc_drop(skb, sch, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	--sch->q.qlen;
 }
 
 struct choke_skb_cb {
+<<<<<<< HEAD
 	u16			classid;
 	u8			keys_valid;
 	struct flow_keys	keys;
+=======
+	u8			keys_valid;
+	struct			flow_keys_digest keys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct choke_skb_cb *choke_skb_cb(const struct sk_buff *skb)
@@ -152,6 +193,7 @@ static inline struct choke_skb_cb *choke_skb_cb(const struct sk_buff *skb)
 	return (struct choke_skb_cb *)qdisc_skb_cb(skb)->data;
 }
 
+<<<<<<< HEAD
 static inline void choke_set_classid(struct sk_buff *skb, u16 classid)
 {
 	choke_skb_cb(skb)->classid = classid;
@@ -162,6 +204,8 @@ static u16 choke_get_classid(const struct sk_buff *skb)
 	return choke_skb_cb(skb)->classid;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compare flow of two packets
  *  Returns true only if source and destination address and port match.
@@ -170,21 +214,37 @@ static u16 choke_get_classid(const struct sk_buff *skb)
 static bool choke_match_flow(struct sk_buff *skb1,
 			     struct sk_buff *skb2)
 {
+<<<<<<< HEAD
+=======
+	struct flow_keys temp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb1->protocol != skb2->protocol)
 		return false;
 
 	if (!choke_skb_cb(skb1)->keys_valid) {
 		choke_skb_cb(skb1)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb1, &choke_skb_cb(skb1)->keys);
+=======
+		skb_flow_dissect_flow_keys(skb1, &temp, 0);
+		make_flow_keys_digest(&choke_skb_cb(skb1)->keys, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!choke_skb_cb(skb2)->keys_valid) {
 		choke_skb_cb(skb2)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb2, &choke_skb_cb(skb2)->keys);
+=======
+		skb_flow_dissect_flow_keys(skb2, &temp, 0);
+		make_flow_keys_digest(&choke_skb_cb(skb2)->keys, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return !memcmp(&choke_skb_cb(skb1)->keys,
 		       &choke_skb_cb(skb2)->keys,
+<<<<<<< HEAD
 		       sizeof(struct flow_keys));
 }
 
@@ -218,6 +278,9 @@ static bool choke_classify(struct sk_buff *skb,
 	}
 
 	return false;
+=======
+		       sizeof(choke_skb_cb(skb1)->keys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -233,7 +296,11 @@ static struct sk_buff *choke_peek_random(const struct choke_sched_data *q,
 	int retrys = 3;
 
 	do {
+<<<<<<< HEAD
 		*pidx = (q->head + random_N(choke_len(q))) & q->tab_mask;
+=======
+		*pidx = (q->head + get_random_u32_below(choke_len(q))) & q->tab_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = q->tab[*pidx];
 		if (skb)
 			return skb;
@@ -256,6 +323,7 @@ static bool choke_match_random(const struct choke_sched_data *q,
 		return false;
 
 	oskb = choke_peek_random(q, pidx);
+<<<<<<< HEAD
 	if (q->filter_list)
 		return choke_get_classid(nskb) == choke_get_classid(oskb);
 
@@ -273,6 +341,16 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		if (!choke_classify(skb, sch, &ret))
 			goto other_drop;	/* Packet was eaten by filter */
 	}
+=======
+	return choke_match_flow(oskb, nskb);
+}
+
+static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			 struct sk_buff **to_free)
+{
+	struct choke_sched_data *q = qdisc_priv(sch);
+	const struct red_parms *p = &q->parms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	choke_skb_cb(skb)->keys_valid = 0;
 	/* Compute average queue usage (see RED) */
@@ -289,7 +367,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		/* Draw a packet at random from queue and compare flow */
 		if (choke_match_random(q, skb, &idx)) {
 			q->stats.matched++;
+<<<<<<< HEAD
 			choke_drop_by_idx(sch, idx);
+=======
+			choke_drop_by_idx(sch, idx, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto congestion_drop;
 		}
 
@@ -297,7 +379,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		if (q->vars.qavg > p->qth_max) {
 			q->vars.qcount = -1;
 
+<<<<<<< HEAD
 			sch->qstats.overlimits++;
+=======
+			qdisc_qstats_overlimit(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (use_harddrop(q) || !use_ecn(q) ||
 			    !INET_ECN_set_ce(skb)) {
 				q->stats.forced_drop++;
@@ -310,7 +396,11 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 				q->vars.qcount = 0;
 				q->vars.qR = red_random(p);
 
+<<<<<<< HEAD
 				sch->qstats.overlimits++;
+=======
+				qdisc_qstats_overlimit(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!use_ecn(q) || !INET_ECN_set_ce(skb)) {
 					q->stats.prob_drop++;
 					goto congestion_drop;
@@ -327,11 +417,16 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		q->tab[q->tail] = skb;
 		q->tail = (q->tail + 1) & q->tab_mask;
 		++sch->q.qlen;
+<<<<<<< HEAD
 		sch->qstats.backlog += qdisc_pkt_len(skb);
+=======
+		qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_XMIT_SUCCESS;
 	}
 
 	q->stats.pdrop++;
+<<<<<<< HEAD
 	sch->qstats.drops++;
 	kfree_skb(skb);
 	return NET_XMIT_DROP;
@@ -345,6 +440,13 @@ static int choke_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		sch->qstats.drops++;
 	kfree_skb(skb);
 	return ret;
+=======
+	return qdisc_drop(skb, sch, to_free);
+
+congestion_drop:
+	qdisc_drop(skb, sch, to_free);
+	return NET_XMIT_CN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sk_buff *choke_dequeue(struct Qdisc *sch)
@@ -362,12 +464,17 @@ static struct sk_buff *choke_dequeue(struct Qdisc *sch)
 	q->tab[q->head] = NULL;
 	choke_zap_head_holes(q);
 	--sch->q.qlen;
+<<<<<<< HEAD
 	sch->qstats.backlog -= qdisc_pkt_len(skb);
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qdisc_bstats_update(sch, skb);
 
 	return skb;
 }
 
+<<<<<<< HEAD
 static unsigned int choke_drop(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
@@ -384,10 +491,27 @@ static unsigned int choke_drop(struct Qdisc *sch)
 	return len;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void choke_reset(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 
+<<<<<<< HEAD
+=======
+	while (q->head != q->tail) {
+		struct sk_buff *skb = q->tab[q->head];
+
+		q->head = (q->head + 1) & q->tab_mask;
+		if (!skb)
+			continue;
+		rtnl_qdisc_drop(skb, sch);
+	}
+
+	if (q->tab)
+		memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
+	q->head = q->tail = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	red_restart(&q->vars);
 }
 
@@ -400,6 +524,7 @@ static const struct nla_policy choke_policy[TCA_CHOKE_MAX + 1] = {
 
 static void choke_free(void *addr)
 {
+<<<<<<< HEAD
 	if (addr) {
 		if (is_vmalloc_addr(addr))
 			vfree(addr);
@@ -409,6 +534,13 @@ static void choke_free(void *addr)
 }
 
 static int choke_change(struct Qdisc *sch, struct nlattr *opt)
+=======
+	kvfree(addr);
+}
+
+static int choke_change(struct Qdisc *sch, struct nlattr *opt,
+			struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tb[TCA_CHOKE_MAX + 1];
@@ -417,11 +549,20 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	struct sk_buff **old = NULL;
 	unsigned int mask;
 	u32 max_P;
+<<<<<<< HEAD
+=======
+	u8 *stab;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (opt == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = nla_parse_nested(tb, TCA_CHOKE_MAX, opt, choke_policy);
+=======
+	err = nla_parse_nested_deprecated(tb, TCA_CHOKE_MAX, opt,
+					  choke_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -432,6 +573,12 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	max_P = tb[TCA_CHOKE_MAX_P] ? nla_get_u32(tb[TCA_CHOKE_MAX_P]) : 0;
 
 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
+<<<<<<< HEAD
+=======
+	stab = nla_data(tb[TCA_CHOKE_STAB]);
+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log, stab))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctl->limit > CHOKE_MAX_QUEUE)
 		return -EINVAL;
@@ -440,9 +587,13 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	if (mask != q->tab_mask) {
 		struct sk_buff **ntab;
 
+<<<<<<< HEAD
 		ntab = kcalloc(mask + 1, sizeof(struct sk_buff *), GFP_KERNEL);
 		if (!ntab)
 			ntab = vzalloc((mask + 1) * sizeof(struct sk_buff *));
+=======
+		ntab = kvcalloc(mask + 1, sizeof(struct sk_buff *), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ntab)
 			return -ENOMEM;
 
@@ -450,6 +601,10 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 		old = q->tab;
 		if (old) {
 			unsigned int oqlen = sch->q.qlen, tail = 0;
+<<<<<<< HEAD
+=======
+			unsigned dropped = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			while (q->head != q->tail) {
 				struct sk_buff *skb = q->tab[q->head];
@@ -461,11 +616,20 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 					ntab[tail++] = skb;
 					continue;
 				}
+<<<<<<< HEAD
 				sch->qstats.backlog -= qdisc_pkt_len(skb);
 				--sch->q.qlen;
 				qdisc_drop(skb, sch);
 			}
 			qdisc_tree_decrease_qlen(sch, oqlen - sch->q.qlen);
+=======
+				dropped += qdisc_pkt_len(skb);
+				qdisc_qstats_backlog_dec(sch, skb);
+				--sch->q.qlen;
+				rtnl_qdisc_drop(skb, sch);
+			}
+			qdisc_tree_reduce_backlog(sch, oqlen - sch->q.qlen, dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q->head = 0;
 			q->tail = tail;
 		}
@@ -480,7 +644,11 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 
 	red_set_parms(&q->parms, ctl->qth_min, ctl->qth_max, ctl->Wlog,
 		      ctl->Plog, ctl->Scell_log,
+<<<<<<< HEAD
 		      nla_data(tb[TCA_CHOKE_STAB]),
+=======
+		      stab,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      max_P);
 	red_set_vars(&q->vars);
 
@@ -492,9 +660,16 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int choke_init(struct Qdisc *sch, struct nlattr *opt)
 {
 	return choke_change(sch, opt);
+=======
+static int choke_init(struct Qdisc *sch, struct nlattr *opt,
+		      struct netlink_ext_ack *extack)
+{
+	return choke_change(sch, opt, extack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int choke_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -511,12 +686,22 @@ static int choke_dump(struct Qdisc *sch, struct sk_buff *skb)
 		.Scell_log	= q->parms.Scell_log,
 	};
 
+<<<<<<< HEAD
 	opts = nla_nest_start(skb, TCA_OPTIONS);
 	if (opts == NULL)
 		goto nla_put_failure;
 
 	NLA_PUT(skb, TCA_CHOKE_PARMS, sizeof(opt), &opt);
 	NLA_PUT_U32(skb, TCA_CHOKE_MAX_P, q->parms.max_P);
+=======
+	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
+	if (opts == NULL)
+		goto nla_put_failure;
+
+	if (nla_put(skb, TCA_CHOKE_PARMS, sizeof(opt), &opt) ||
+	    nla_put_u32(skb, TCA_CHOKE_MAX_P, q->parms.max_P))
+		goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nla_nest_end(skb, opts);
 
 nla_put_failure:
@@ -531,7 +716,10 @@ static int choke_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 		.early	= q->stats.prob_drop + q->stats.forced_drop,
 		.marked	= q->stats.prob_mark + q->stats.forced_mark,
 		.pdrop	= q->stats.pdrop,
+<<<<<<< HEAD
 		.other	= q->stats.other,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.matched = q->stats.matched,
 	};
 
@@ -542,6 +730,7 @@ static void choke_destroy(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
 
+<<<<<<< HEAD
 	tcf_destroy_chain(&q->filter_list);
 	choke_free(q->tab);
 }
@@ -604,6 +793,11 @@ static const struct Qdisc_class_ops choke_class_ops = {
 	.walk		=	choke_walk,
 };
 
+=======
+	choke_free(q->tab);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sk_buff *choke_peek_head(struct Qdisc *sch)
 {
 	struct choke_sched_data *q = qdisc_priv(sch);
@@ -618,7 +812,10 @@ static struct Qdisc_ops choke_qdisc_ops __read_mostly = {
 	.enqueue	=	choke_enqueue,
 	.dequeue	=	choke_dequeue,
 	.peek		=	choke_peek_head,
+<<<<<<< HEAD
 	.drop		=	choke_drop,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		=	choke_init,
 	.destroy	=	choke_destroy,
 	.reset		=	choke_reset,
@@ -627,6 +824,10 @@ static struct Qdisc_ops choke_qdisc_ops __read_mostly = {
 	.dump_stats	=	choke_dump_stats,
 	.owner		=	THIS_MODULE,
 };
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NET_SCH("choke");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init choke_module_init(void)
 {
@@ -642,3 +843,7 @@ module_init(choke_module_init)
 module_exit(choke_module_exit)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Choose and keep responsive flows scheduler");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

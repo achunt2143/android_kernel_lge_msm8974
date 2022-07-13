@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_pwrctrl.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -44,8 +51,12 @@ void r8712_set_rpwm(struct _adapter *padapter, u8 val8)
 		if (pwrpriv->rpwm_retry == 0)
 			return;
 	}
+<<<<<<< HEAD
 	if ((padapter->bDriverStopped == true) ||
 	    (padapter->bSurpriseRemoved == true))
+=======
+	if (padapter->driver_stopped || padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	rpwm = val8 | pwrpriv->tog;
 	switch (val8) {
@@ -53,7 +64,12 @@ void r8712_set_rpwm(struct _adapter *padapter, u8 val8)
 		pwrpriv->cpwm = val8;
 		break;
 	case PS_STATE_S2:/* only for USB normal powersave mode use,
+<<<<<<< HEAD
 			  * temp mark some code. */
+=======
+			  * temp mark some code.
+			  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PS_STATE_S3:
 	case PS_STATE_S4:
 		pwrpriv->cpwm = val8;
@@ -83,7 +99,11 @@ void r8712_set_ps_mode(struct _adapter *padapter, uint ps_mode, uint smart_ps)
 			pwrpriv->bSleep = false;
 		pwrpriv->pwr_mode = ps_mode;
 		pwrpriv->smart_ps = smart_ps;
+<<<<<<< HEAD
 		_set_workitem(&(pwrpriv->SetPSModeWorkItem));
+=======
+		schedule_work(&pwrpriv->SetPSModeWorkItem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -103,6 +123,7 @@ void r8712_cpwm_int_hdl(struct _adapter *padapter,
 
 	if (pwrpriv->cpwm_tog == ((preportpwrstate->state) & 0x80))
 		return;
+<<<<<<< HEAD
 	_cancel_timer_ex(&padapter->pwrctrlpriv. rpwm_check_timer);
 	_enter_pwrlock(&pwrpriv->lock);
 	pwrpriv->cpwm = (preportpwrstate->state) & 0xf;
@@ -112,6 +133,17 @@ void r8712_cpwm_int_hdl(struct _adapter *padapter,
 	}
 	pwrpriv->cpwm_tog = (preportpwrstate->state) & 0x80;
 	up(&pwrpriv->lock);
+=======
+	del_timer(&padapter->pwrctrlpriv.rpwm_check_timer);
+	mutex_lock(&pwrpriv->mutex_lock);
+	pwrpriv->cpwm = (preportpwrstate->state) & 0xf;
+	if (pwrpriv->cpwm >= PS_STATE_S2) {
+		if (pwrpriv->alives & CMD_ALIVE)
+			complete(&(pcmdpriv->cmd_queue_comp));
+	}
+	pwrpriv->cpwm_tog = (preportpwrstate->state) & 0x80;
+	mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void register_task_alive(struct pwrctrl_priv *pwrctrl, uint tag)
@@ -129,11 +161,18 @@ static void _rpwm_check_handler (struct _adapter *padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 
+<<<<<<< HEAD
 	if (padapter->bDriverStopped == true ||
 	    padapter->bSurpriseRemoved == true)
 		return;
 	if (pwrpriv->cpwm != pwrpriv->rpwm)
 		_set_workitem(&(pwrpriv->rpwm_workitem));
+=======
+	if (padapter->driver_stopped || padapter->surprise_removed)
+		return;
+	if (pwrpriv->cpwm != pwrpriv->rpwm)
+		schedule_work(&pwrpriv->rpwm_workitem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void SetPSModeWorkItemCallback(struct work_struct *work)
@@ -143,10 +182,17 @@ static void SetPSModeWorkItemCallback(struct work_struct *work)
 	struct _adapter *padapter = container_of(pwrpriv,
 				    struct _adapter, pwrctrlpriv);
 	if (!pwrpriv->bSleep) {
+<<<<<<< HEAD
 		_enter_pwrlock(&pwrpriv->lock);
 		if (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
 			r8712_set_rpwm(padapter, PS_STATE_S4);
 		up(&pwrpriv->lock);
+=======
+		mutex_lock(&pwrpriv->mutex_lock);
+		if (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
+			r8712_set_rpwm(padapter, PS_STATE_S4);
+		mutex_unlock(&pwrpriv->mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -156,6 +202,7 @@ static void rpwm_workitem_callback(struct work_struct *work)
 				       struct pwrctrl_priv, rpwm_workitem);
 	struct _adapter *padapter = container_of(pwrpriv,
 				    struct _adapter, pwrctrlpriv);
+<<<<<<< HEAD
 	u8 cpwm = pwrpriv->cpwm;
 	if (pwrpriv->cpwm != pwrpriv->rpwm) {
 		_enter_pwrlock(&pwrpriv->lock);
@@ -169,6 +216,22 @@ static void rpwm_workitem_callback(struct work_struct *work)
 static void rpwm_check_handler (void *FunctionContext)
 {
 	struct _adapter *adapter = (struct _adapter *)FunctionContext;
+=======
+	if (pwrpriv->cpwm != pwrpriv->rpwm) {
+		mutex_lock(&pwrpriv->mutex_lock);
+		r8712_read8(padapter, SDIO_HCPWM);
+		pwrpriv->rpwm_retry = 1;
+		r8712_set_rpwm(padapter, pwrpriv->rpwm);
+		mutex_unlock(&pwrpriv->mutex_lock);
+	}
+}
+
+static void rpwm_check_handler (struct timer_list *t)
+{
+	struct _adapter *adapter =
+		from_timer(adapter, t, pwrctrlpriv.rpwm_check_timer);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_rpwm_check_handler(adapter);
 }
 
@@ -177,13 +240,18 @@ void r8712_init_pwrctrl_priv(struct _adapter *padapter)
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
 
 	memset((unsigned char *)pwrctrlpriv, 0, sizeof(struct pwrctrl_priv));
+<<<<<<< HEAD
 	sema_init(&pwrctrlpriv->lock, 1);
+=======
+	mutex_init(&pwrctrlpriv->mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pwrctrlpriv->cpwm = PS_STATE_S4;
 	pwrctrlpriv->pwr_mode = PS_MODE_ACTIVE;
 	pwrctrlpriv->smart_ps = 0;
 	pwrctrlpriv->tog = 0x80;
 /* clear RPWM to ensure driver and fw back to initial state. */
 	r8712_write8(padapter, 0x1025FE58, 0);
+<<<<<<< HEAD
 	_init_workitem(&(pwrctrlpriv->SetPSModeWorkItem),
 		       SetPSModeWorkItemCallback, padapter);
 	_init_workitem(&(pwrctrlpriv->rpwm_workitem),
@@ -218,10 +286,40 @@ sint r8712_register_cmd_alive(struct _adapter *padapter)
 		res = _FAIL;
 	}
 	up(&pwrctrl->lock);
+=======
+	INIT_WORK(&pwrctrlpriv->SetPSModeWorkItem, SetPSModeWorkItemCallback);
+	INIT_WORK(&pwrctrlpriv->rpwm_workitem, rpwm_workitem_callback);
+	timer_setup(&pwrctrlpriv->rpwm_check_timer, rpwm_check_handler, 0);
+}
+
+/*
+ * Caller: r8712_cmd_thread
+ * Check if the fw_pwrstate is okay for issuing cmd.
+ * If not (cpwm should be is less than P2 state), then the sub-routine
+ * will raise the cpwm to be greater than or equal to P2.
+ * Calling Context: Passive
+ * Return Value:
+ * 0:	    r8712_cmd_thread can issue cmds to firmware afterwards.
+ * -EINVAL: r8712_cmd_thread can not do anything.
+ */
+int r8712_register_cmd_alive(struct _adapter *padapter)
+{
+	int res = 0;
+	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;
+
+	mutex_lock(&pwrctrl->mutex_lock);
+	register_task_alive(pwrctrl, CMD_ALIVE);
+	if (pwrctrl->cpwm < PS_STATE_S2) {
+		r8712_set_rpwm(padapter, PS_STATE_S3);
+		res = -EINVAL;
+	}
+	mutex_unlock(&pwrctrl->mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /*
+<<<<<<< HEAD
 Caller: ISR
 
 If ISR's txdone,
@@ -229,11 +327,22 @@ No more pkts for TX,
 Then driver shall call this fun. to power down firmware again.
 */
 
+=======
+ * Caller: ISR
+ * If ISR's txdone,
+ * No more pkts for TX,
+ * Then driver shall call this fun. to power down firmware again.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_unregister_cmd_alive(struct _adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;
 
+<<<<<<< HEAD
 	_enter_pwrlock(&pwrctrl->lock);
+=======
+	mutex_lock(&pwrctrl->mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_task_alive(pwrctrl, CMD_ALIVE);
 	if ((pwrctrl->cpwm > PS_STATE_S2) &&
 	   (pwrctrl->pwr_mode > PS_MODE_ACTIVE)) {
@@ -243,5 +352,17 @@ void r8712_unregister_cmd_alive(struct _adapter *padapter)
 			r8712_set_rpwm(padapter, PS_STATE_S0);
 		}
 	}
+<<<<<<< HEAD
 	up(&pwrctrl->lock);
+=======
+	mutex_unlock(&pwrctrl->mutex_lock);
+}
+
+void r8712_flush_rwctrl_works(struct _adapter *padapter)
+{
+	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;
+
+	flush_work(&pwrctrl->SetPSModeWorkItem);
+	flush_work(&pwrctrl->rpwm_workitem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

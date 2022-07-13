@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* user-type.h: User-defined key type
  *
  * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _KEYS_USER_TYPE_H
@@ -15,6 +22,11 @@
 #include <linux/key.h>
 #include <linux/rcupdate.h>
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_KEYS
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 /*
  * the payload for a key of type "user" or "logon"
@@ -29,12 +41,17 @@
 struct user_key_payload {
 	struct rcu_head	rcu;		/* RCU destructor */
 	unsigned short	datalen;	/* length of this data */
+<<<<<<< HEAD
 	char		data[0];	/* actual data */
+=======
+	char		data[] __aligned(__alignof__(u64)); /* actual data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct key_type key_type_user;
 extern struct key_type key_type_logon;
 
+<<<<<<< HEAD
 extern int user_instantiate(struct key *key, const void *data, size_t datalen);
 extern int user_update(struct key *key, const void *data, size_t datalen);
 extern int user_match(const struct key *key, const void *criterion);
@@ -44,5 +61,28 @@ extern void user_describe(const struct key *user, struct seq_file *m);
 extern long user_read(const struct key *key,
 		      char __user *buffer, size_t buflen);
 
+=======
+struct key_preparsed_payload;
+
+extern int user_preparse(struct key_preparsed_payload *prep);
+extern void user_free_preparse(struct key_preparsed_payload *prep);
+extern int user_update(struct key *key, struct key_preparsed_payload *prep);
+extern void user_revoke(struct key *key);
+extern void user_destroy(struct key *key);
+extern void user_describe(const struct key *user, struct seq_file *m);
+extern long user_read(const struct key *key, char *buffer, size_t buflen);
+
+static inline const struct user_key_payload *user_key_payload_rcu(const struct key *key)
+{
+	return (struct user_key_payload *)dereference_key_rcu(key);
+}
+
+static inline struct user_key_payload *user_key_payload_locked(const struct key *key)
+{
+	return (struct user_key_payload *)dereference_key_locked((struct key *)key);
+}
+
+#endif /* CONFIG_KEYS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _KEYS_USER_TYPE_H */

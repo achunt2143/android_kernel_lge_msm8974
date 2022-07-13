@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  libata-core.c - helper library for ATA
  *
@@ -26,6 +27,17 @@
  *
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/DocBook/libata.*
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  libata-core.c - helper library for ATA
+ *
+ *  Copyright 2003-2004 Red Hat, Inc.  All rights reserved.
+ *  Copyright 2003-2004 Jeff Garzik
+ *
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Hardware documentation available from http://www.t13.org/ and
  *  http://www.sata-io.org/
@@ -38,6 +50,13 @@
  *	http://www.qic.org (QIC157 - Tape and DSC)
  *	http://www.ce-ata.org (CE-ATA: not supported)
  *
+<<<<<<< HEAD
+=======
+ * libata is essentially a library of internal helper functions for
+ * low-level ATA host controller drivers.  As such, the API/ABI is
+ * likely to change as new drivers are added and updated.
+ * Do not depend on ABI/API stability.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -50,36 +69,67 @@
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/timer.h>
+<<<<<<< HEAD
+=======
+#include <linux/time.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/completion.h>
 #include <linux/suspend.h>
 #include <linux/workqueue.h>
 #include <linux/scatterlist.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/async.h>
 #include <linux/log2.h>
 #include <linux/slab.h>
+=======
+#include <linux/log2.h>
+#include <linux/slab.h>
+#include <linux/glob.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <linux/cdrom.h>
 #include <linux/ratelimit.h>
 #include <linux/pm_runtime.h>
+=======
+#include <asm/unaligned.h>
+#include <linux/cdrom.h>
+#include <linux/ratelimit.h>
+#include <linux/leds.h>
+#include <linux/pm_runtime.h>
+#include <linux/platform_device.h>
+#include <asm/setup.h>
+
+#define CREATE_TRACE_POINTS
+#include <trace/events/libata.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "libata.h"
 #include "libata-transport.h"
 
+<<<<<<< HEAD
 /* debounce timing parameters in msecs { interval, duration, timeout } */
 const unsigned long sata_deb_timing_normal[]		= {   5,  100, 2000 };
 const unsigned long sata_deb_timing_hotplug[]		= {  25,  500, 2000 };
 const unsigned long sata_deb_timing_long[]		= { 100, 2000, 5000 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct ata_port_operations ata_base_port_ops = {
 	.prereset		= ata_std_prereset,
 	.postreset		= ata_std_postreset,
 	.error_handler		= ata_std_error_handler,
+<<<<<<< HEAD
+=======
+	.sched_eh		= ata_std_sched_eh,
+	.end_eh			= ata_std_end_eh,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct ata_port_operations sata_port_ops = {
@@ -88,6 +138,10 @@ const struct ata_port_operations sata_port_ops = {
 	.qc_defer		= ata_std_qc_defer,
 	.hardreset		= sata_std_hardreset,
 };
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(sata_port_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int ata_dev_init_params(struct ata_device *dev,
 					u16 heads, u16 sectors);
@@ -97,6 +151,7 @@ static unsigned long ata_dev_blacklisted(const struct ata_device *dev);
 
 atomic_t ata_print_id = ATOMIC_INIT(0);
 
+<<<<<<< HEAD
 struct ata_force_param {
 	const char	*name;
 	unsigned int	cbl;
@@ -105,6 +160,18 @@ struct ata_force_param {
 	unsigned int	horkage_on;
 	unsigned int	horkage_off;
 	unsigned int	lflags;
+=======
+#ifdef CONFIG_ATA_FORCE
+struct ata_force_param {
+	const char	*name;
+	u8		cbl;
+	u8		spd_limit;
+	unsigned int	xfer_mask;
+	unsigned int	horkage_on;
+	unsigned int	horkage_off;
+	u16		lflags_on;
+	u16		lflags_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ata_force_ent {
@@ -116,10 +183,18 @@ struct ata_force_ent {
 static struct ata_force_ent *ata_force_tbl;
 static int ata_force_tbl_size;
 
+<<<<<<< HEAD
 static char ata_force_param_buf[PAGE_SIZE] __initdata;
 /* param_buf is thrown away after initialization, disallow read */
 module_param_string(force, ata_force_param_buf, sizeof(ata_force_param_buf), 0);
 MODULE_PARM_DESC(force, "Force ATA configurations including cable type, link speed and transfer mode (see Documentation/kernel-parameters.txt for details)");
+=======
+static char ata_force_param_buf[COMMAND_LINE_SIZE] __initdata;
+/* param_buf is thrown away after initialization, disallow read */
+module_param_string(force, ata_force_param_buf, sizeof(ata_force_param_buf), 0);
+MODULE_PARM_DESC(force, "Force ATA configurations including cable type, link speed and transfer mode (see Documentation/admin-guide/kernel-parameters.rst for details)");
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int atapi_enabled = 1;
 module_param(atapi_enabled, int, 0444);
@@ -166,6 +241,15 @@ MODULE_DESCRIPTION("Library module for ATA devices");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
 
+<<<<<<< HEAD
+=======
+static inline bool ata_dev_print_info(struct ata_device *dev)
+{
+	struct ata_eh_context *ehc = &dev->link->eh_context;
+
+	return ehc->i.flags & ATA_EHI_PRINTINFO;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool ata_sstatus_online(u32 sstatus)
 {
@@ -197,7 +281,11 @@ struct ata_link *ata_link_next(struct ata_link *link, struct ata_port *ap,
 		case ATA_LITER_PMP_FIRST:
 			if (sata_pmp_attached(ap))
 				return ap->pmp_link;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ATA_LITER_HOST_FIRST:
 			return &ap->link;
 		}
@@ -208,11 +296,19 @@ struct ata_link *ata_link_next(struct ata_link *link, struct ata_port *ap,
 		case ATA_LITER_HOST_FIRST:
 			if (sata_pmp_attached(ap))
 				return ap->pmp_link;
+<<<<<<< HEAD
 			/* fall through */
 		case ATA_LITER_PMP_FIRST:
 			if (unlikely(ap->slave_link))
 				return ap->slave_link;
 			/* fall through */
+=======
+			fallthrough;
+		case ATA_LITER_PMP_FIRST:
+			if (unlikely(ap->slave_link))
+				return ap->slave_link;
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ATA_LITER_EDGE:
 			return NULL;
 		}
@@ -230,6 +326,10 @@ struct ata_link *ata_link_next(struct ata_link *link, struct ata_port *ap,
 
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_link_next);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_dev_next - device iteration helper
@@ -283,6 +383,10 @@ struct ata_device *ata_dev_next(struct ata_device *dev, struct ata_link *link,
 		goto next;
 	return dev;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_dev_next);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_dev_phys_link - find physical link for a device
@@ -309,6 +413,10 @@ struct ata_link *ata_dev_phys_link(struct ata_device *dev)
 	return ap->slave_link;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ATA_FORCE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_force_cbl - force cable type according to libata.force
  *	@ap: ATA port of interest
@@ -384,11 +492,25 @@ static void ata_force_link_limits(struct ata_link *link)
 		}
 
 		/* let lflags stack */
+<<<<<<< HEAD
 		if (fe->param.lflags) {
 			link->flags |= fe->param.lflags;
 			ata_link_notice(link,
 					"FORCE: link flag 0x%x forced -> 0x%x\n",
 					fe->param.lflags, link->flags);
+=======
+		if (fe->param.lflags_on) {
+			link->flags |= fe->param.lflags_on;
+			ata_link_notice(link,
+					"FORCE: link flag 0x%x forced -> 0x%x\n",
+					fe->param.lflags_on, link->flags);
+		}
+		if (fe->param.lflags_off) {
+			link->flags &= ~fe->param.lflags_off;
+			ata_link_notice(link,
+				"FORCE: link flag 0x%x cleared -> 0x%x\n",
+				fe->param.lflags_off, link->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -416,7 +538,11 @@ static void ata_force_xfermask(struct ata_device *dev)
 
 	for (i = ata_force_tbl_size - 1; i >= 0; i--) {
 		const struct ata_force_ent *fe = &ata_force_tbl[i];
+<<<<<<< HEAD
 		unsigned long pio_mask, mwdma_mask, udma_mask;
+=======
+		unsigned int pio_mask, mwdma_mask, udma_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (fe->port != -1 && fe->port != dev->link->ap->print_id)
 			continue;
@@ -489,6 +615,14 @@ static void ata_force_horkage(struct ata_device *dev)
 			       fe->param.name);
 	}
 }
+<<<<<<< HEAD
+=======
+#else
+static inline void ata_force_link_limits(struct ata_link *link) { }
+static inline void ata_force_xfermask(struct ata_device *dev) { }
+static inline void ata_force_horkage(struct ata_device *dev) { }
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	atapi_cmd_type - Determine ATAPI command type from SCSI opcode
@@ -522,11 +656,16 @@ int atapi_cmd_type(u8 opcode)
 	case ATA_12:
 		if (atapi_passthru16)
 			return ATAPI_PASS_THRU;
+<<<<<<< HEAD
 		/* fall thru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return ATAPI_MISC;
 	}
 }
+<<<<<<< HEAD
 
 /**
  *	ata_tf_to_fis - Convert ATA taskfile to SATA FIS structure
@@ -600,6 +739,9 @@ void ata_tf_from_fis(const u8 *fis, struct ata_taskfile *tf)
 	tf->nsect	= fis[12];
 	tf->hob_nsect	= fis[13];
 }
+=======
+EXPORT_SYMBOL_GPL(atapi_cmd_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u8 ata_rw_cmds[] = {
 	/* pio multi */
@@ -610,7 +752,11 @@ static const u8 ata_rw_cmds[] = {
 	0,
 	0,
 	0,
+<<<<<<< HEAD
 	ATA_CMD_WRITE_MULTI_FUA_EXT,
+=======
+	0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* pio */
 	ATA_CMD_PIO_READ,
 	ATA_CMD_PIO_WRITE,
@@ -632,17 +778,31 @@ static const u8 ata_rw_cmds[] = {
 };
 
 /**
+<<<<<<< HEAD
  *	ata_rwcmd_protocol - set taskfile r/w commands and protocol
  *	@tf: command to examine and configure
  *	@dev: device tf belongs to
  *
  *	Examine the device configuration and tf->flags to calculate
  *	the proper read/write commands and protocol to use.
+=======
+ *	ata_set_rwcmd_protocol - set taskfile r/w command and protocol
+ *	@dev: target device for the taskfile
+ *	@tf: taskfile to examine and configure
+ *
+ *	Examine the device configuration and tf->flags to determine
+ *	the proper read/write command and protocol to use for @tf.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	caller.
  */
+<<<<<<< HEAD
 static int ata_rwcmd_protocol(struct ata_taskfile *tf, struct ata_device *dev)
+=======
+static bool ata_set_rwcmd_protocol(struct ata_device *dev,
+				   struct ata_taskfile *tf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 cmd;
 
@@ -665,11 +825,20 @@ static int ata_rwcmd_protocol(struct ata_taskfile *tf, struct ata_device *dev)
 	}
 
 	cmd = ata_rw_cmds[index + fua + lba48 + write];
+<<<<<<< HEAD
 	if (cmd) {
 		tf->command = cmd;
 		return 0;
 	}
 	return -1;
+=======
+	if (!cmd)
+		return false;
+
+	tf->command = cmd;
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -687,7 +856,11 @@ static int ata_rwcmd_protocol(struct ata_taskfile *tf, struct ata_device *dev)
  *	RETURNS:
  *	Block address read from @tf.
  */
+<<<<<<< HEAD
 u64 ata_tf_read_block(struct ata_taskfile *tf, struct ata_device *dev)
+=======
+u64 ata_tf_read_block(const struct ata_taskfile *tf, struct ata_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 block = 0;
 
@@ -712,7 +885,11 @@ u64 ata_tf_read_block(struct ata_taskfile *tf, struct ata_device *dev)
 		if (!sect) {
 			ata_dev_warn(dev,
 				     "device reported invalid CHS sector 0\n");
+<<<<<<< HEAD
 			sect = 1; /* oh well */
+=======
+			return U64_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		block = (cyl * dev->heads + head) * dev->sectors + sect - 1;
@@ -721,6 +898,7 @@ u64 ata_tf_read_block(struct ata_taskfile *tf, struct ata_device *dev)
 	return block;
 }
 
+<<<<<<< HEAD
 /**
  *	ata_build_rw_tf - Build ATA taskfile for given read/write request
  *	@tf: Target ATA taskfile
@@ -729,18 +907,54 @@ u64 ata_tf_read_block(struct ata_taskfile *tf, struct ata_device *dev)
  *	@n_block: Number of blocks
  *	@tf_flags: RW/FUA etc...
  *	@tag: tag
+=======
+/*
+ * Set a taskfile command duration limit index.
+ */
+static inline void ata_set_tf_cdl(struct ata_queued_cmd *qc, int cdl)
+{
+	struct ata_taskfile *tf = &qc->tf;
+
+	if (tf->protocol == ATA_PROT_NCQ)
+		tf->auxiliary |= cdl;
+	else
+		tf->feature |= cdl;
+
+	/*
+	 * Mark this command as having a CDL and request the result
+	 * task file so that we can inspect the sense data available
+	 * bit on completion.
+	 */
+	qc->flags |= ATA_QCFLAG_HAS_CDL | ATA_QCFLAG_RESULT_TF;
+}
+
+/**
+ *	ata_build_rw_tf - Build ATA taskfile for given read/write request
+ *	@qc: Metadata associated with the taskfile to build
+ *	@block: Block address
+ *	@n_block: Number of blocks
+ *	@tf_flags: RW/FUA etc...
+ *	@cdl: Command duration limit index
+ *	@class: IO priority class
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	None.
  *
+<<<<<<< HEAD
  *	Build ATA taskfile @tf for read/write request described by
  *	@block, @n_block, @tf_flags and @tag on @dev.
+=======
+ *	Build ATA taskfile for the command @qc for read/write request described
+ *	by @block, @n_block, @tf_flags and @class.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	RETURNS:
  *
  *	0 on success, -ERANGE if the request is too large for @dev,
  *	-EINVAL if the request is invalid.
  */
+<<<<<<< HEAD
 int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		    u64 block, u32 n_block, unsigned int tf_flags,
 		    unsigned int tag)
@@ -749,6 +963,18 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 	tf->flags |= tf_flags;
 
 	if (ata_ncq_enabled(dev) && likely(tag != ATA_TAG_INTERNAL)) {
+=======
+int ata_build_rw_tf(struct ata_queued_cmd *qc, u64 block, u32 n_block,
+		    unsigned int tf_flags, int cdl, int class)
+{
+	struct ata_taskfile *tf = &qc->tf;
+	struct ata_device *dev = qc->dev;
+
+	tf->flags |= ATA_TFLAG_ISADDR | ATA_TFLAG_DEVICE;
+	tf->flags |= tf_flags;
+
+	if (ata_ncq_enabled(dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* yay, NCQ */
 		if (!lba_48_ok(block, n_block))
 			return -ERANGE;
@@ -761,7 +987,11 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		else
 			tf->command = ATA_CMD_FPDMA_READ;
 
+<<<<<<< HEAD
 		tf->nsect = tag << 3;
+=======
+		tf->nsect = qc->hw_tag << 3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tf->hob_feature = (n_block >> 8) & 0xff;
 		tf->feature = n_block & 0xff;
 
@@ -772,6 +1002,7 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		tf->lbam = (block >> 8) & 0xff;
 		tf->lbal = block & 0xff;
 
+<<<<<<< HEAD
 		tf->device = 1 << 6;
 		if (tf->flags & ATA_TFLAG_FUA)
 			tf->device |= 1 << 7;
@@ -779,6 +1010,29 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		tf->flags |= ATA_TFLAG_LBA;
 
 		if (lba_28_ok(block, n_block)) {
+=======
+		tf->device = ATA_LBA;
+		if (tf->flags & ATA_TFLAG_FUA)
+			tf->device |= 1 << 7;
+
+		if (dev->flags & ATA_DFLAG_NCQ_PRIO_ENABLED &&
+		    class == IOPRIO_CLASS_RT)
+			tf->hob_nsect |= ATA_PRIO_HIGH << ATA_SHIFT_PRIO;
+
+		if ((dev->flags & ATA_DFLAG_CDL_ENABLED) && cdl)
+			ata_set_tf_cdl(qc, cdl);
+
+	} else if (dev->flags & ATA_DFLAG_LBA) {
+		tf->flags |= ATA_TFLAG_LBA;
+
+		if ((dev->flags & ATA_DFLAG_CDL_ENABLED) && cdl)
+			ata_set_tf_cdl(qc, cdl);
+
+		/* Both FUA writes and a CDL index require 48-bit commands */
+		if (!(tf->flags & ATA_TFLAG_FUA) &&
+		    !(qc->flags & ATA_QCFLAG_HAS_CDL) &&
+		    lba_28_ok(block, n_block)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* use LBA28 */
 			tf->device |= (block >> 24) & 0xf;
 		} else if (lba_48_ok(block, n_block)) {
@@ -793,11 +1047,20 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 			tf->hob_lbah = (block >> 40) & 0xff;
 			tf->hob_lbam = (block >> 32) & 0xff;
 			tf->hob_lbal = (block >> 24) & 0xff;
+<<<<<<< HEAD
 		} else
 			/* request too large even for LBA48 */
 			return -ERANGE;
 
 		if (unlikely(ata_rwcmd_protocol(tf, dev) < 0))
+=======
+		} else {
+			/* request too large even for LBA48 */
+			return -ERANGE;
+		}
+
+		if (unlikely(!ata_set_rwcmd_protocol(dev, tf)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		tf->nsect = n_block & 0xff;
@@ -815,7 +1078,11 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		if (!lba_28_ok(block, n_block))
 			return -ERANGE;
 
+<<<<<<< HEAD
 		if (unlikely(ata_rwcmd_protocol(tf, dev) < 0))
+=======
+		if (unlikely(!ata_set_rwcmd_protocol(dev, tf)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		/* Convert LBA to CHS */
@@ -824,9 +1091,12 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
 		head  = track % dev->heads;
 		sect  = (u32)block % dev->sectors + 1;
 
+<<<<<<< HEAD
 		DPRINTK("block %u track %u cyl %u head %u sect %u\n",
 			(u32)block, track, cyl, head, sect);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check whether the converted CHS can fit.
 		   Cylinder: 0-65535
 		   Head: 0-15
@@ -859,6 +1129,7 @@ int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
  *	RETURNS:
  *	Packed xfer_mask.
  */
+<<<<<<< HEAD
 unsigned long ata_pack_xfermask(unsigned long pio_mask,
 				unsigned long mwdma_mask,
 				unsigned long udma_mask)
@@ -867,6 +1138,17 @@ unsigned long ata_pack_xfermask(unsigned long pio_mask,
 		((mwdma_mask << ATA_SHIFT_MWDMA) & ATA_MASK_MWDMA) |
 		((udma_mask << ATA_SHIFT_UDMA) & ATA_MASK_UDMA);
 }
+=======
+unsigned int ata_pack_xfermask(unsigned int pio_mask,
+			       unsigned int mwdma_mask,
+			       unsigned int udma_mask)
+{
+	return	((pio_mask << ATA_SHIFT_PIO) & ATA_MASK_PIO) |
+		((mwdma_mask << ATA_SHIFT_MWDMA) & ATA_MASK_MWDMA) |
+		((udma_mask << ATA_SHIFT_UDMA) & ATA_MASK_UDMA);
+}
+EXPORT_SYMBOL_GPL(ata_pack_xfermask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_unpack_xfermask - Unpack xfer_mask into pio, mwdma and udma masks
@@ -876,10 +1158,17 @@ unsigned long ata_pack_xfermask(unsigned long pio_mask,
  *	@udma_mask: resulting udma_mask
  *
  *	Unpack @xfer_mask into @pio_mask, @mwdma_mask and @udma_mask.
+<<<<<<< HEAD
  *	Any NULL distination masks will be ignored.
  */
 void ata_unpack_xfermask(unsigned long xfer_mask, unsigned long *pio_mask,
 			 unsigned long *mwdma_mask, unsigned long *udma_mask)
+=======
+ *	Any NULL destination masks will be ignored.
+ */
+void ata_unpack_xfermask(unsigned int xfer_mask, unsigned int *pio_mask,
+			 unsigned int *mwdma_mask, unsigned int *udma_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pio_mask)
 		*pio_mask = (xfer_mask & ATA_MASK_PIO) >> ATA_SHIFT_PIO;
@@ -912,7 +1201,11 @@ static const struct ata_xfer_ent {
  *	RETURNS:
  *	Matching XFER_* value, 0xff if no match found.
  */
+<<<<<<< HEAD
 u8 ata_xfer_mask2mode(unsigned long xfer_mask)
+=======
+u8 ata_xfer_mask2mode(unsigned int xfer_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int highbit = fls(xfer_mask) - 1;
 	const struct ata_xfer_ent *ent;
@@ -922,6 +1215,10 @@ u8 ata_xfer_mask2mode(unsigned long xfer_mask)
 			return ent->base + highbit - ent->shift;
 	return 0xff;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_xfer_mask2mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_xfer_mode2mask - Find matching xfer_mask for XFER_*
@@ -935,7 +1232,11 @@ u8 ata_xfer_mask2mode(unsigned long xfer_mask)
  *	RETURNS:
  *	Matching xfer_mask, 0 if no match found.
  */
+<<<<<<< HEAD
 unsigned long ata_xfer_mode2mask(u8 xfer_mode)
+=======
+unsigned int ata_xfer_mode2mask(u8 xfer_mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ata_xfer_ent *ent;
 
@@ -945,6 +1246,10 @@ unsigned long ata_xfer_mode2mask(u8 xfer_mode)
 				& ~((1 << ent->shift) - 1);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_xfer_mode2mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_xfer_mode2shift - Find matching xfer_shift for XFER_*
@@ -958,7 +1263,11 @@ unsigned long ata_xfer_mode2mask(u8 xfer_mode)
  *	RETURNS:
  *	Matching xfer_shift, -1 if no match found.
  */
+<<<<<<< HEAD
 int ata_xfer_mode2shift(unsigned long xfer_mode)
+=======
+int ata_xfer_mode2shift(u8 xfer_mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ata_xfer_ent *ent;
 
@@ -967,6 +1276,10 @@ int ata_xfer_mode2shift(unsigned long xfer_mode)
 			return ent->shift;
 	return -1;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_xfer_mode2shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_mode_string - convert xfer_mask to string
@@ -982,7 +1295,11 @@ int ata_xfer_mode2shift(unsigned long xfer_mode)
  *	Constant C string representing highest speed listed in
  *	@mode_mask, or the constant C string "<n/a>".
  */
+<<<<<<< HEAD
 const char *ata_mode_string(unsigned long xfer_mask)
+=======
+const char *ata_mode_string(unsigned int xfer_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char * const xfer_mode_str[] = {
 		"PIO0",
@@ -1013,6 +1330,10 @@ const char *ata_mode_string(unsigned long xfer_mask)
 		return xfer_mode_str[highbit];
 	return "<n/a>";
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_mode_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *sata_spd_string(unsigned int spd)
 {
@@ -1039,8 +1360,13 @@ const char *sata_spd_string(unsigned int spd)
  *	None.
  *
  *	RETURNS:
+<<<<<<< HEAD
  *	Device type, %ATA_DEV_ATA, %ATA_DEV_ATAPI, %ATA_DEV_PMP or
  *	%ATA_DEV_UNKNOWN the event of failure.
+=======
+ *	Device type, %ATA_DEV_ATA, %ATA_DEV_ATAPI, %ATA_DEV_PMP,
+ *	%ATA_DEV_ZAC, or %ATA_DEV_UNKNOWN the event of failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int ata_dev_classify(const struct ata_taskfile *tf)
 {
@@ -1065,6 +1391,7 @@ unsigned int ata_dev_classify(const struct ata_taskfile *tf)
 	 * SEMB signature.  This is worked around in
 	 * ata_dev_read_id().
 	 */
+<<<<<<< HEAD
 	if ((tf->lbam == 0) && (tf->lbah == 0)) {
 		DPRINTK("found ATA device by sig\n");
 		return ATA_DEV_ATA;
@@ -1088,6 +1415,26 @@ unsigned int ata_dev_classify(const struct ata_taskfile *tf)
 	DPRINTK("unknown device\n");
 	return ATA_DEV_UNKNOWN;
 }
+=======
+	if (tf->lbam == 0 && tf->lbah == 0)
+		return ATA_DEV_ATA;
+
+	if (tf->lbam == 0x14 && tf->lbah == 0xeb)
+		return ATA_DEV_ATAPI;
+
+	if (tf->lbam == 0x69 && tf->lbah == 0x96)
+		return ATA_DEV_PMP;
+
+	if (tf->lbam == 0x3c && tf->lbah == 0xc3)
+		return ATA_DEV_SEMB;
+
+	if (tf->lbam == 0xcd && tf->lbah == 0xab)
+		return ATA_DEV_ZAC;
+
+	return ATA_DEV_UNKNOWN;
+}
+EXPORT_SYMBOL_GPL(ata_dev_classify);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_id_string - Convert IDENTIFY DEVICE page into string
@@ -1124,6 +1471,10 @@ void ata_id_string(const u16 *id, unsigned char *s,
 		len -= 2;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_id_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_id_c_string - Convert IDENTIFY DEVICE page into C string
@@ -1151,12 +1502,17 @@ void ata_id_c_string(const u16 *id, unsigned char *s,
 		p--;
 	*p = '\0';
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_id_c_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u64 ata_id_n_sectors(const u16 *id)
 {
 	if (ata_id_has_lba(id)) {
 		if (ata_id_has_lba48(id))
 			return ata_id_u64(id, ATA_ID_LBA_CAPACITY_2);
+<<<<<<< HEAD
 		else
 			return ata_id_u32(id, ATA_ID_LBA_CAPACITY);
 	} else {
@@ -1167,6 +1523,18 @@ static u64 ata_id_n_sectors(const u16 *id)
 			return id[ATA_ID_CYLS] * id[ATA_ID_HEADS] *
 			       id[ATA_ID_SECTORS];
 	}
+=======
+
+		return ata_id_u32(id, ATA_ID_LBA_CAPACITY);
+	}
+
+	if (ata_id_current_chs_valid(id))
+		return (u32)id[ATA_ID_CUR_CYLS] * (u32)id[ATA_ID_CUR_HEADS] *
+		       (u32)id[ATA_ID_CUR_SECTORS];
+
+	return (u32)id[ATA_ID_CYLS] * (u32)id[ATA_ID_HEADS] *
+	       (u32)id[ATA_ID_SECTORS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u64 ata_tf_to_lba48(const struct ata_taskfile *tf)
@@ -1224,7 +1592,11 @@ static int ata_read_native_max_address(struct ata_device *dev, u64 *max_sectors)
 	} else
 		tf.command = ATA_CMD_READ_NATIVE_MAX;
 
+<<<<<<< HEAD
 	tf.protocol |= ATA_PROT_NODATA;
+=======
+	tf.protocol = ATA_PROT_NODATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf.device |= ATA_LBA;
 
 	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 0);
@@ -1232,7 +1604,11 @@ static int ata_read_native_max_address(struct ata_device *dev, u64 *max_sectors)
 		ata_dev_warn(dev,
 			     "failed to read native max address (err_mask=0x%x)\n",
 			     err_mask);
+<<<<<<< HEAD
 		if (err_mask == AC_ERR_DEV && (tf.feature & ATA_ABORTED))
+=======
+		if (err_mask == AC_ERR_DEV && (tf.error & ATA_ABORTED))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EACCES;
 		return -EIO;
 	}
@@ -1283,7 +1659,11 @@ static int ata_set_max_sectors(struct ata_device *dev, u64 new_sectors)
 		tf.device |= (new_sectors >> 24) & 0xf;
 	}
 
+<<<<<<< HEAD
 	tf.protocol |= ATA_PROT_NODATA;
+=======
+	tf.protocol = ATA_PROT_NODATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf.device |= ATA_LBA;
 
 	tf.lbal = (new_sectors >> 0) & 0xff;
@@ -1296,7 +1676,11 @@ static int ata_set_max_sectors(struct ata_device *dev, u64 new_sectors)
 			     "failed to set max address (err_mask=0x%x)\n",
 			     err_mask);
 		if (err_mask == AC_ERR_DEV &&
+<<<<<<< HEAD
 		    (tf.feature & (ATA_ABORTED | ATA_IDNF)))
+=======
+		    (tf.error & (ATA_ABORTED | ATA_IDNF)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EACCES;
 		return -EIO;
 	}
@@ -1317,15 +1701,23 @@ static int ata_set_max_sectors(struct ata_device *dev, u64 new_sectors)
  */
 static int ata_hpa_resize(struct ata_device *dev)
 {
+<<<<<<< HEAD
 	struct ata_eh_context *ehc = &dev->link->eh_context;
 	int print_info = ehc->i.flags & ATA_EHI_PRINTINFO;
+=======
+	bool print_info = ata_dev_print_info(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool unlock_hpa = ata_ignore_hpa || dev->flags & ATA_DFLAG_UNLOCK_HPA;
 	u64 sectors = ata_id_n_sectors(dev->id);
 	u64 native_sectors;
 	int rc;
 
 	/* do we need to do it? */
+<<<<<<< HEAD
 	if (dev->class != ATA_DEV_ATA ||
+=======
+	if ((dev->class != ATA_DEV_ATA && dev->class != ATA_DEV_ZAC) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !ata_id_has_lba(dev->id) || !ata_id_hpa_enabled(dev->id) ||
 	    (dev->horkage & ATA_HORKAGE_BROKEN_HPA))
 		return 0;
@@ -1403,6 +1795,10 @@ static int ata_hpa_resize(struct ata_device *dev)
 
 /**
  *	ata_dump_id - IDENTIFY DEVICE info debugging output
+<<<<<<< HEAD
+=======
+ *	@dev: device from which the information is fetched
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@id: IDENTIFY DEVICE page to dump
  *
  *	Dump selected 16-bit words from the given IDENTIFY DEVICE
@@ -1412,6 +1808,7 @@ static int ata_hpa_resize(struct ata_device *dev)
  *	caller.
  */
 
+<<<<<<< HEAD
 static inline void ata_dump_id(const u16 *id)
 {
 	DPRINTK("49==0x%04x  "
@@ -1438,6 +1835,16 @@ static inline void ata_dump_id(const u16 *id)
 		"93==0x%04x\n",
 		id[88],
 		id[93]);
+=======
+static inline void ata_dump_id(struct ata_device *dev, const u16 *id)
+{
+	ata_dev_dbg(dev,
+		"49==0x%04x  53==0x%04x  63==0x%04x  64==0x%04x  75==0x%04x\n"
+		"80==0x%04x  81==0x%04x  82==0x%04x  83==0x%04x  84==0x%04x\n"
+		"88==0x%04x  93==0x%04x\n",
+		id[49], id[53], id[63], id[64], id[75], id[80],
+		id[81], id[82], id[83], id[84], id[88], id[93]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1455,9 +1862,15 @@ static inline void ata_dump_id(const u16 *id)
  *	RETURNS:
  *	Computed xfermask
  */
+<<<<<<< HEAD
 unsigned long ata_id_xfermask(const u16 *id)
 {
 	unsigned long pio_mask, mwdma_mask, udma_mask;
+=======
+unsigned int ata_id_xfermask(const u16 *id)
+{
+	unsigned int pio_mask, mwdma_mask, udma_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Usual case. Word 53 indicates word 64 is valid */
 	if (id[ATA_ID_FIELD_VALID] & (1 << 1)) {
@@ -1477,7 +1890,11 @@ unsigned long ata_id_xfermask(const u16 *id)
 
 		/* But wait.. there's more. Design your standards by
 		 * committee and you too can get a free iordy field to
+<<<<<<< HEAD
 		 * process. However its the speeds not the modes that
+=======
+		 * process. However it is the speeds not the modes that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * are supported... Note drivers using the timing API
 		 * will get this right anyway
 		 */
@@ -1508,6 +1925,10 @@ unsigned long ata_id_xfermask(const u16 *id)
 
 	return ata_pack_xfermask(pio_mask, mwdma_mask, udma_mask);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_id_xfermask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ata_qc_complete_internal(struct ata_queued_cmd *qc)
 {
@@ -1521,7 +1942,11 @@ static void ata_qc_complete_internal(struct ata_queued_cmd *qc)
  *	@dev: Device to which the command is sent
  *	@tf: Taskfile registers for the command and the result
  *	@cdb: CDB for packet command
+<<<<<<< HEAD
  *	@dma_dir: Data tranfer direction of the command
+=======
+ *	@dma_dir: Data transfer direction of the command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@sgl: sg list for the data buffer of the command
  *	@n_elem: Number of sg entries
  *	@timeout: Timeout in msecs (0 for default)
@@ -1538,18 +1963,31 @@ static void ata_qc_complete_internal(struct ata_queued_cmd *qc)
  *	RETURNS:
  *	Zero on success, AC_ERR_* mask on failure
  */
+<<<<<<< HEAD
 unsigned ata_exec_internal_sg(struct ata_device *dev,
 			      struct ata_taskfile *tf, const u8 *cdb,
 			      int dma_dir, struct scatterlist *sgl,
 			      unsigned int n_elem, unsigned long timeout)
+=======
+static unsigned ata_exec_internal_sg(struct ata_device *dev,
+				     struct ata_taskfile *tf, const u8 *cdb,
+				     int dma_dir, struct scatterlist *sgl,
+				     unsigned int n_elem, unsigned int timeout)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_link *link = dev->link;
 	struct ata_port *ap = link->ap;
 	u8 command = tf->command;
 	int auto_timeout = 0;
 	struct ata_queued_cmd *qc;
+<<<<<<< HEAD
 	unsigned int tag, preempted_tag;
 	u32 preempted_sactive, preempted_qc_active;
+=======
+	unsigned int preempted_tag;
+	u32 preempted_sactive;
+	u64 preempted_qc_active;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int preempted_nr_active_links;
 	DECLARE_COMPLETION_ONSTACK(wait);
 	unsigned long flags;
@@ -1559,12 +1997,17 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 	spin_lock_irqsave(ap->lock, flags);
 
 	/* no internal command while frozen */
+<<<<<<< HEAD
 	if (ap->pflags & ATA_PFLAG_FROZEN) {
+=======
+	if (ata_port_is_frozen(ap)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ap->lock, flags);
 		return AC_ERR_SYSTEM;
 	}
 
 	/* initialize internal qc */
+<<<<<<< HEAD
 
 	/* XXX: Tag 0 is used for drivers with legacy EH as some
 	 * drivers choke if any other tag is given.  This breaks
@@ -1581,6 +2024,12 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 	qc = __ata_qc_from_tag(ap, tag);
 
 	qc->tag = tag;
+=======
+	qc = __ata_qc_from_tag(ap, ATA_TAG_INTERNAL);
+
+	qc->tag = ATA_TAG_INTERNAL;
+	qc->hw_tag = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc->scsicmd = NULL;
 	qc->ap = ap;
 	qc->dev = dev;
@@ -1634,6 +2083,7 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	if (ap->ops->error_handler)
 		ata_eh_release(ap);
 
@@ -1641,6 +2091,13 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 
 	if (ap->ops->error_handler)
 		ata_eh_acquire(ap);
+=======
+	ata_eh_release(ap);
+
+	rc = wait_for_completion_timeout(&wait, msecs_to_jiffies(timeout));
+
+	ata_eh_acquire(ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_sff_flush_pio_task(ap);
 
@@ -1655,6 +2112,7 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 		if (qc->flags & ATA_QCFLAG_ACTIVE) {
 			qc->err_mask |= AC_ERR_TIMEOUT;
 
+<<<<<<< HEAD
 			if (ap->ops->error_handler)
 				ata_port_freeze(ap);
 			else
@@ -1663,6 +2121,12 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 			if (ata_msg_warn(ap))
 				ata_dev_warn(dev, "qc timeout (cmd 0x%x)\n",
 					     command);
+=======
+			ata_port_freeze(ap);
+
+			ata_dev_warn(dev, "qc timeout after %u msecs (cmd 0x%x)\n",
+				     timeout, command);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		spin_unlock_irqrestore(ap->lock, flags);
@@ -1673,8 +2137,13 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 		ap->ops->post_internal_cmd(qc);
 
 	/* perform minimal error analysis */
+<<<<<<< HEAD
 	if (qc->flags & ATA_QCFLAG_FAILED) {
 		if (qc->result_tf.command & (ATA_ERR | ATA_DF))
+=======
+	if (qc->flags & ATA_QCFLAG_EH) {
+		if (qc->result_tf.status & (ATA_ERR | ATA_DF))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qc->err_mask |= AC_ERR_DEV;
 
 		if (!qc->err_mask)
@@ -1682,6 +2151,11 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 
 		if (qc->err_mask & ~AC_ERR_OTHER)
 			qc->err_mask &= ~AC_ERR_OTHER;
+<<<<<<< HEAD
+=======
+	} else if (qc->tf.command == ATA_CMD_REQ_SENSE_DATA) {
+		qc->result_tf.status |= ATA_SENSE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* finish up */
@@ -1709,7 +2183,11 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
  *	@dev: Device to which the command is sent
  *	@tf: Taskfile registers for the command and the result
  *	@cdb: CDB for packet command
+<<<<<<< HEAD
  *	@dma_dir: Data tranfer direction of the command
+=======
+ *	@dma_dir: Data transfer direction of the command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@buf: Data buffer of the command
  *	@buflen: Length of data buffer
  *	@timeout: Timeout in msecs (0 for default)
@@ -1726,7 +2204,11 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 unsigned ata_exec_internal(struct ata_device *dev,
 			   struct ata_taskfile *tf, const u8 *cdb,
 			   int dma_dir, void *buf, unsigned int buflen,
+<<<<<<< HEAD
 			   unsigned long timeout)
+=======
+			   unsigned int timeout)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist *psg = NULL, sg;
 	unsigned int n_elem = 0;
@@ -1743,6 +2225,7 @@ unsigned ata_exec_internal(struct ata_device *dev,
 }
 
 /**
+<<<<<<< HEAD
  *	ata_do_simple_cmd - execute simple internal command
  *	@dev: Device to which the command is sent
  *	@cmd: Opcode to execute
@@ -1770,6 +2253,8 @@ unsigned int ata_do_simple_cmd(struct ata_device *dev, u8 cmd)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	ata_pio_need_iordy	-	check if iordy needed
  *	@adev: ATA device
  *
@@ -1801,6 +2286,10 @@ unsigned int ata_pio_need_iordy(const struct ata_device *adev)
 		return 1;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_pio_need_iordy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_pio_mask_no_iordy	-	Return the non IORDY mask
@@ -1836,11 +2325,19 @@ static u32 ata_pio_mask_no_iordy(const struct ata_device *adev)
  *	this function is wrapped or replaced by the driver
  */
 unsigned int ata_do_dev_read_id(struct ata_device *dev,
+<<<<<<< HEAD
 					struct ata_taskfile *tf, u16 *id)
+=======
+				struct ata_taskfile *tf, __le16 *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ata_exec_internal(dev, tf, NULL, DMA_FROM_DEVICE,
 				     id, sizeof(id[0]) * ATA_ID_WORDS, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_do_dev_read_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_dev_read_id - Read ID data from the specified device
@@ -1875,16 +2372,25 @@ int ata_dev_read_id(struct ata_device *dev, unsigned int *p_class,
 	int may_fallback = 1, tried_spinup = 0;
 	int rc;
 
+<<<<<<< HEAD
 	if (ata_msg_ctl(ap))
 		ata_dev_dbg(dev, "%s: ENTER\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 retry:
 	ata_tf_init(dev, &tf);
 
 	switch (class) {
 	case ATA_DEV_SEMB:
 		class = ATA_DEV_ATA;	/* some hard drives report SEMB sig */
+<<<<<<< HEAD
 	case ATA_DEV_ATA:
+=======
+		fallthrough;
+	case ATA_DEV_ATA:
+	case ATA_DEV_ZAC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tf.command = ATA_CMD_ID_ATA;
 		break;
 	case ATA_DEV_ATAPI:
@@ -1909,9 +2415,15 @@ retry:
 	tf.flags |= ATA_TFLAG_POLLING;
 
 	if (ap->ops->read_id)
+<<<<<<< HEAD
 		err_mask = ap->ops->read_id(dev, &tf, id);
 	else
 		err_mask = ata_do_dev_read_id(dev, &tf, id);
+=======
+		err_mask = ap->ops->read_id(dev, &tf, (__le16 *)id);
+	else
+		err_mask = ata_do_dev_read_id(dev, &tf, (__le16 *)id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err_mask) {
 		if (err_mask & AC_ERR_NODEV_HINT) {
@@ -1927,7 +2439,11 @@ retry:
 			return 0;
 		}
 
+<<<<<<< HEAD
 		if ((err_mask == AC_ERR_DEV) && (tf.feature & ATA_ABORTED)) {
+=======
+		if ((err_mask == AC_ERR_DEV) && (tf.error & ATA_ABORTED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Device or controller might have reported
 			 * the wrong device class.  Give a shot at the
 			 * other IDENTIFY if the current one is
@@ -1958,10 +2474,17 @@ retry:
 	}
 
 	if (dev->horkage & ATA_HORKAGE_DUMP_ID) {
+<<<<<<< HEAD
 		ata_dev_dbg(dev, "dumping IDENTIFY data, "
 			    "class=%d may_fallback=%d tried_spinup=%d\n",
 			    class, may_fallback, tried_spinup);
 		print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET,
+=======
+		ata_dev_info(dev, "dumping IDENTIFY data, "
+			    "class=%d may_fallback=%d tried_spinup=%d\n",
+			    class, may_fallback, tried_spinup);
+		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_OFFSET,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       16, 2, id, ATA_ID_WORDS * sizeof(*id), true);
 	}
 
@@ -1976,7 +2499,11 @@ retry:
 	rc = -EINVAL;
 	reason = "device reports invalid type";
 
+<<<<<<< HEAD
 	if (class == ATA_DEV_ATA) {
+=======
+	if (class == ATA_DEV_ATA || class == ATA_DEV_ZAC) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ata_id_is_ata(id) && !ata_id_is_cfa(id))
 			goto err_out;
 		if (ap->host->flags & ATA_HOST_IGNORE_ATA &&
@@ -2011,7 +2538,12 @@ retry:
 			goto retry;
 	}
 
+<<<<<<< HEAD
 	if ((flags & ATA_READID_POSTRESET) && class == ATA_DEV_ATA) {
+=======
+	if ((flags & ATA_READID_POSTRESET) &&
+	    (class == ATA_DEV_ATA || class == ATA_DEV_ZAC)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The exact sequence expected by certain pre-ATA4 drives is:
 		 * SRST RESET
@@ -2044,12 +2576,278 @@ retry:
 	return 0;
 
  err_out:
+<<<<<<< HEAD
 	if (ata_msg_warn(ap))
 		ata_dev_warn(dev, "failed to IDENTIFY (%s, err_mask=0x%x)\n",
 			     reason, err_mask);
 	return rc;
 }
 
+=======
+	ata_dev_warn(dev, "failed to IDENTIFY (%s, err_mask=0x%x)\n",
+		     reason, err_mask);
+	return rc;
+}
+
+bool ata_dev_power_init_tf(struct ata_device *dev, struct ata_taskfile *tf,
+			   bool set_active)
+{
+	/* Only applies to ATA and ZAC devices */
+	if (dev->class != ATA_DEV_ATA && dev->class != ATA_DEV_ZAC)
+		return false;
+
+	ata_tf_init(dev, tf);
+	tf->flags |= ATA_TFLAG_DEVICE | ATA_TFLAG_ISADDR;
+	tf->protocol = ATA_PROT_NODATA;
+
+	if (set_active) {
+		/* VERIFY for 1 sector at lba=0 */
+		tf->command = ATA_CMD_VERIFY;
+		tf->nsect = 1;
+		if (dev->flags & ATA_DFLAG_LBA) {
+			tf->flags |= ATA_TFLAG_LBA;
+			tf->device |= ATA_LBA;
+		} else {
+			/* CHS */
+			tf->lbal = 0x1; /* sect */
+		}
+	} else {
+		tf->command = ATA_CMD_STANDBYNOW1;
+	}
+
+	return true;
+}
+
+static bool ata_dev_power_is_active(struct ata_device *dev)
+{
+	struct ata_taskfile tf;
+	unsigned int err_mask;
+
+	ata_tf_init(dev, &tf);
+	tf.flags |= ATA_TFLAG_DEVICE | ATA_TFLAG_ISADDR;
+	tf.protocol = ATA_PROT_NODATA;
+	tf.command = ATA_CMD_CHK_POWER;
+
+	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 0);
+	if (err_mask) {
+		ata_dev_err(dev, "Check power mode failed (err_mask=0x%x)\n",
+			    err_mask);
+		/*
+		 * Assume we are in standby mode so that we always force a
+		 * spinup in ata_dev_power_set_active().
+		 */
+		return false;
+	}
+
+	ata_dev_dbg(dev, "Power mode: 0x%02x\n", tf.nsect);
+
+	/* Active or idle */
+	return tf.nsect == 0xff;
+}
+
+/**
+ *	ata_dev_power_set_standby - Set a device power mode to standby
+ *	@dev: target device
+ *
+ *	Issue a STANDBY IMMEDIATE command to set a device power mode to standby.
+ *	For an HDD device, this spins down the disks.
+ *
+ *	LOCKING:
+ *	Kernel thread context (may sleep).
+ */
+void ata_dev_power_set_standby(struct ata_device *dev)
+{
+	unsigned long ap_flags = dev->link->ap->flags;
+	struct ata_taskfile tf;
+	unsigned int err_mask;
+
+	/* If the device is already sleeping or in standby, do nothing. */
+	if ((dev->flags & ATA_DFLAG_SLEEPING) ||
+	    !ata_dev_power_is_active(dev))
+		return;
+
+	/*
+	 * Some odd clown BIOSes issue spindown on power off (ACPI S4 or S5)
+	 * causing some drives to spin up and down again. For these, do nothing
+	 * if we are being called on shutdown.
+	 */
+	if ((ap_flags & ATA_FLAG_NO_POWEROFF_SPINDOWN) &&
+	    system_state == SYSTEM_POWER_OFF)
+		return;
+
+	if ((ap_flags & ATA_FLAG_NO_HIBERNATE_SPINDOWN) &&
+	    system_entering_hibernation())
+		return;
+
+	/* Issue STANDBY IMMEDIATE command only if supported by the device */
+	if (!ata_dev_power_init_tf(dev, &tf, false))
+		return;
+
+	ata_dev_notice(dev, "Entering standby power mode\n");
+
+	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 0);
+	if (err_mask)
+		ata_dev_err(dev, "STANDBY IMMEDIATE failed (err_mask=0x%x)\n",
+			    err_mask);
+}
+
+/**
+ *	ata_dev_power_set_active -  Set a device power mode to active
+ *	@dev: target device
+ *
+ *	Issue a VERIFY command to enter to ensure that the device is in the
+ *	active power mode. For a spun-down HDD (standby or idle power mode),
+ *	the VERIFY command will complete after the disk spins up.
+ *
+ *	LOCKING:
+ *	Kernel thread context (may sleep).
+ */
+void ata_dev_power_set_active(struct ata_device *dev)
+{
+	struct ata_taskfile tf;
+	unsigned int err_mask;
+
+	/*
+	 * Issue READ VERIFY SECTORS command for 1 sector at lba=0 only
+	 * if supported by the device.
+	 */
+	if (!ata_dev_power_init_tf(dev, &tf, true))
+		return;
+
+	/*
+	 * Check the device power state & condition and force a spinup with
+	 * VERIFY command only if the drive is not already ACTIVE or IDLE.
+	 */
+	if (ata_dev_power_is_active(dev))
+		return;
+
+	ata_dev_notice(dev, "Entering active power mode\n");
+
+	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 0);
+	if (err_mask)
+		ata_dev_err(dev, "VERIFY failed (err_mask=0x%x)\n",
+			    err_mask);
+}
+
+/**
+ *	ata_read_log_page - read a specific log page
+ *	@dev: target device
+ *	@log: log to read
+ *	@page: page to read
+ *	@buf: buffer to store read page
+ *	@sectors: number of sectors to read
+ *
+ *	Read log page using READ_LOG_EXT command.
+ *
+ *	LOCKING:
+ *	Kernel thread context (may sleep).
+ *
+ *	RETURNS:
+ *	0 on success, AC_ERR_* mask otherwise.
+ */
+unsigned int ata_read_log_page(struct ata_device *dev, u8 log,
+			       u8 page, void *buf, unsigned int sectors)
+{
+	unsigned long ap_flags = dev->link->ap->flags;
+	struct ata_taskfile tf;
+	unsigned int err_mask;
+	bool dma = false;
+
+	ata_dev_dbg(dev, "read log page - log 0x%x, page 0x%x\n", log, page);
+
+	/*
+	 * Return error without actually issuing the command on controllers
+	 * which e.g. lockup on a read log page.
+	 */
+	if (ap_flags & ATA_FLAG_NO_LOG_PAGE)
+		return AC_ERR_DEV;
+
+retry:
+	ata_tf_init(dev, &tf);
+	if (ata_dma_enabled(dev) && ata_id_has_read_log_dma_ext(dev->id) &&
+	    !(dev->horkage & ATA_HORKAGE_NO_DMA_LOG)) {
+		tf.command = ATA_CMD_READ_LOG_DMA_EXT;
+		tf.protocol = ATA_PROT_DMA;
+		dma = true;
+	} else {
+		tf.command = ATA_CMD_READ_LOG_EXT;
+		tf.protocol = ATA_PROT_PIO;
+		dma = false;
+	}
+	tf.lbal = log;
+	tf.lbam = page;
+	tf.nsect = sectors;
+	tf.hob_nsect = sectors >> 8;
+	tf.flags |= ATA_TFLAG_ISADDR | ATA_TFLAG_LBA48 | ATA_TFLAG_DEVICE;
+
+	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_FROM_DEVICE,
+				     buf, sectors * ATA_SECT_SIZE, 0);
+
+	if (err_mask) {
+		if (dma) {
+			dev->horkage |= ATA_HORKAGE_NO_DMA_LOG;
+			if (!ata_port_is_frozen(dev->link->ap))
+				goto retry;
+		}
+		ata_dev_err(dev,
+			    "Read log 0x%02x page 0x%02x failed, Emask 0x%x\n",
+			    (unsigned int)log, (unsigned int)page, err_mask);
+	}
+
+	return err_mask;
+}
+
+static int ata_log_supported(struct ata_device *dev, u8 log)
+{
+	struct ata_port *ap = dev->link->ap;
+
+	if (dev->horkage & ATA_HORKAGE_NO_LOG_DIR)
+		return 0;
+
+	if (ata_read_log_page(dev, ATA_LOG_DIRECTORY, 0, ap->sector_buf, 1))
+		return 0;
+	return get_unaligned_le16(&ap->sector_buf[log * 2]);
+}
+
+static bool ata_identify_page_supported(struct ata_device *dev, u8 page)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err, i;
+
+	if (dev->horkage & ATA_HORKAGE_NO_ID_DEV_LOG)
+		return false;
+
+	if (!ata_log_supported(dev, ATA_LOG_IDENTIFY_DEVICE)) {
+		/*
+		 * IDENTIFY DEVICE data log is defined as mandatory starting
+		 * with ACS-3 (ATA version 10). Warn about the missing log
+		 * for drives which implement this ATA level or above.
+		 */
+		if (ata_id_major_version(dev->id) >= 10)
+			ata_dev_warn(dev,
+				"ATA Identify Device Log not supported\n");
+		dev->horkage |= ATA_HORKAGE_NO_ID_DEV_LOG;
+		return false;
+	}
+
+	/*
+	 * Read IDENTIFY DEVICE data log, page 0, to figure out if the page is
+	 * supported.
+	 */
+	err = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE, 0, ap->sector_buf,
+				1);
+	if (err)
+		return false;
+
+	for (i = 0; i < ap->sector_buf[8]; i++) {
+		if (ap->sector_buf[9 + i] == page)
+			return true;
+	}
+
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ata_do_link_spd_horkage(struct ata_device *dev)
 {
 	struct ata_link *plink = ata_dev_phys_link(dev);
@@ -2093,6 +2891,100 @@ static inline u8 ata_dev_knobble(struct ata_device *dev)
 	return ((ap->cbl == ATA_CBL_SATA) && (!ata_id_is_sata(dev->id)));
 }
 
+<<<<<<< HEAD
+=======
+static void ata_dev_config_ncq_send_recv(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err_mask;
+
+	if (!ata_log_supported(dev, ATA_LOG_NCQ_SEND_RECV)) {
+		ata_dev_warn(dev, "NCQ Send/Recv Log not supported\n");
+		return;
+	}
+	err_mask = ata_read_log_page(dev, ATA_LOG_NCQ_SEND_RECV,
+				     0, ap->sector_buf, 1);
+	if (!err_mask) {
+		u8 *cmds = dev->ncq_send_recv_cmds;
+
+		dev->flags |= ATA_DFLAG_NCQ_SEND_RECV;
+		memcpy(cmds, ap->sector_buf, ATA_LOG_NCQ_SEND_RECV_SIZE);
+
+		if (dev->horkage & ATA_HORKAGE_NO_NCQ_TRIM) {
+			ata_dev_dbg(dev, "disabling queued TRIM support\n");
+			cmds[ATA_LOG_NCQ_SEND_RECV_DSM_OFFSET] &=
+				~ATA_LOG_NCQ_SEND_RECV_DSM_TRIM;
+		}
+	}
+}
+
+static void ata_dev_config_ncq_non_data(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err_mask;
+
+	if (!ata_log_supported(dev, ATA_LOG_NCQ_NON_DATA)) {
+		ata_dev_warn(dev,
+			     "NCQ Send/Recv Log not supported\n");
+		return;
+	}
+	err_mask = ata_read_log_page(dev, ATA_LOG_NCQ_NON_DATA,
+				     0, ap->sector_buf, 1);
+	if (!err_mask) {
+		u8 *cmds = dev->ncq_non_data_cmds;
+
+		memcpy(cmds, ap->sector_buf, ATA_LOG_NCQ_NON_DATA_SIZE);
+	}
+}
+
+static void ata_dev_config_ncq_prio(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err_mask;
+
+	if (!ata_identify_page_supported(dev, ATA_LOG_SATA_SETTINGS))
+		return;
+
+	err_mask = ata_read_log_page(dev,
+				     ATA_LOG_IDENTIFY_DEVICE,
+				     ATA_LOG_SATA_SETTINGS,
+				     ap->sector_buf,
+				     1);
+	if (err_mask)
+		goto not_supported;
+
+	if (!(ap->sector_buf[ATA_LOG_NCQ_PRIO_OFFSET] & BIT(3)))
+		goto not_supported;
+
+	dev->flags |= ATA_DFLAG_NCQ_PRIO;
+
+	return;
+
+not_supported:
+	dev->flags &= ~ATA_DFLAG_NCQ_PRIO_ENABLED;
+	dev->flags &= ~ATA_DFLAG_NCQ_PRIO;
+}
+
+static bool ata_dev_check_adapter(struct ata_device *dev,
+				  unsigned short vendor_id)
+{
+	struct pci_dev *pcidev = NULL;
+	struct device *parent_dev = NULL;
+
+	for (parent_dev = dev->tdev.parent; parent_dev != NULL;
+	     parent_dev = parent_dev->parent) {
+		if (dev_is_pci(parent_dev)) {
+			pcidev = to_pci_dev(parent_dev);
+			if (pcidev->vendor == vendor_id)
+				return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ata_dev_config_ncq(struct ata_device *dev,
 			       char *desc, size_t desc_sz)
 {
@@ -2105,12 +2997,29 @@ static int ata_dev_config_ncq(struct ata_device *dev,
 		desc[0] = '\0';
 		return 0;
 	}
+<<<<<<< HEAD
+=======
+	if (!IS_ENABLED(CONFIG_SATA_HOST))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->horkage & ATA_HORKAGE_NONCQ) {
 		snprintf(desc, desc_sz, "NCQ (not used)");
 		return 0;
 	}
+<<<<<<< HEAD
 	if (ap->flags & ATA_FLAG_NCQ) {
 		hdepth = min(ap->scsi_host->can_queue, ATA_MAX_QUEUE - 1);
+=======
+
+	if (dev->horkage & ATA_HORKAGE_NO_NCQ_ON_ATI &&
+	    ata_dev_check_adapter(dev, PCI_VENDOR_ID_ATI)) {
+		snprintf(desc, desc_sz, "NCQ (not used)");
+		return 0;
+	}
+
+	if (ap->flags & ATA_FLAG_NCQ) {
+		hdepth = min(ap->scsi_host->can_queue, ATA_MAX_QUEUE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->flags |= ATA_DFLAG_NCQ;
 	}
 
@@ -2136,9 +3045,439 @@ static int ata_dev_config_ncq(struct ata_device *dev,
 	else
 		snprintf(desc, desc_sz, "NCQ (depth %d/%d)%s", hdepth,
 			ddepth, aa_desc);
+<<<<<<< HEAD
 	return 0;
 }
 
+=======
+
+	if ((ap->flags & ATA_FLAG_FPDMA_AUX)) {
+		if (ata_id_has_ncq_send_and_recv(dev->id))
+			ata_dev_config_ncq_send_recv(dev);
+		if (ata_id_has_ncq_non_data(dev->id))
+			ata_dev_config_ncq_non_data(dev);
+		if (ata_id_has_ncq_prio(dev->id))
+			ata_dev_config_ncq_prio(dev);
+	}
+
+	return 0;
+}
+
+static void ata_dev_config_sense_reporting(struct ata_device *dev)
+{
+	unsigned int err_mask;
+
+	if (!ata_id_has_sense_reporting(dev->id))
+		return;
+
+	if (ata_id_sense_reporting_enabled(dev->id))
+		return;
+
+	err_mask = ata_dev_set_feature(dev, SETFEATURE_SENSE_DATA, 0x1);
+	if (err_mask) {
+		ata_dev_dbg(dev,
+			    "failed to enable Sense Data Reporting, Emask 0x%x\n",
+			    err_mask);
+	}
+}
+
+static void ata_dev_config_zac(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err_mask;
+	u8 *identify_buf = ap->sector_buf;
+
+	dev->zac_zones_optimal_open = U32_MAX;
+	dev->zac_zones_optimal_nonseq = U32_MAX;
+	dev->zac_zones_max_open = U32_MAX;
+
+	/*
+	 * Always set the 'ZAC' flag for Host-managed devices.
+	 */
+	if (dev->class == ATA_DEV_ZAC)
+		dev->flags |= ATA_DFLAG_ZAC;
+	else if (ata_id_zoned_cap(dev->id) == 0x01)
+		/*
+		 * Check for host-aware devices.
+		 */
+		dev->flags |= ATA_DFLAG_ZAC;
+
+	if (!(dev->flags & ATA_DFLAG_ZAC))
+		return;
+
+	if (!ata_identify_page_supported(dev, ATA_LOG_ZONED_INFORMATION)) {
+		ata_dev_warn(dev,
+			     "ATA Zoned Information Log not supported\n");
+		return;
+	}
+
+	/*
+	 * Read IDENTIFY DEVICE data log, page 9 (Zoned-device information)
+	 */
+	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
+				     ATA_LOG_ZONED_INFORMATION,
+				     identify_buf, 1);
+	if (!err_mask) {
+		u64 zoned_cap, opt_open, opt_nonseq, max_open;
+
+		zoned_cap = get_unaligned_le64(&identify_buf[8]);
+		if ((zoned_cap >> 63))
+			dev->zac_zoned_cap = (zoned_cap & 1);
+		opt_open = get_unaligned_le64(&identify_buf[24]);
+		if ((opt_open >> 63))
+			dev->zac_zones_optimal_open = (u32)opt_open;
+		opt_nonseq = get_unaligned_le64(&identify_buf[32]);
+		if ((opt_nonseq >> 63))
+			dev->zac_zones_optimal_nonseq = (u32)opt_nonseq;
+		max_open = get_unaligned_le64(&identify_buf[40]);
+		if ((max_open >> 63))
+			dev->zac_zones_max_open = (u32)max_open;
+	}
+}
+
+static void ata_dev_config_trusted(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	u64 trusted_cap;
+	unsigned int err;
+
+	if (!ata_id_has_trusted(dev->id))
+		return;
+
+	if (!ata_identify_page_supported(dev, ATA_LOG_SECURITY)) {
+		ata_dev_warn(dev,
+			     "Security Log not supported\n");
+		return;
+	}
+
+	err = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE, ATA_LOG_SECURITY,
+			ap->sector_buf, 1);
+	if (err)
+		return;
+
+	trusted_cap = get_unaligned_le64(&ap->sector_buf[40]);
+	if (!(trusted_cap & (1ULL << 63))) {
+		ata_dev_dbg(dev,
+			    "Trusted Computing capability qword not valid!\n");
+		return;
+	}
+
+	if (trusted_cap & (1 << 0))
+		dev->flags |= ATA_DFLAG_TRUSTED;
+}
+
+static void ata_dev_config_cdl(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	unsigned int err_mask;
+	bool cdl_enabled;
+	u64 val;
+
+	if (ata_id_major_version(dev->id) < 11)
+		goto not_supported;
+
+	if (!ata_log_supported(dev, ATA_LOG_IDENTIFY_DEVICE) ||
+	    !ata_identify_page_supported(dev, ATA_LOG_SUPPORTED_CAPABILITIES) ||
+	    !ata_identify_page_supported(dev, ATA_LOG_CURRENT_SETTINGS))
+		goto not_supported;
+
+	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
+				     ATA_LOG_SUPPORTED_CAPABILITIES,
+				     ap->sector_buf, 1);
+	if (err_mask)
+		goto not_supported;
+
+	/* Check Command Duration Limit Supported bits */
+	val = get_unaligned_le64(&ap->sector_buf[168]);
+	if (!(val & BIT_ULL(63)) || !(val & BIT_ULL(0)))
+		goto not_supported;
+
+	/* Warn the user if command duration guideline is not supported */
+	if (!(val & BIT_ULL(1)))
+		ata_dev_warn(dev,
+			"Command duration guideline is not supported\n");
+
+	/*
+	 * We must have support for the sense data for successful NCQ commands
+	 * log indicated by the successful NCQ command sense data supported bit.
+	 */
+	val = get_unaligned_le64(&ap->sector_buf[8]);
+	if (!(val & BIT_ULL(63)) || !(val & BIT_ULL(47))) {
+		ata_dev_warn(dev,
+			"CDL supported but Successful NCQ Command Sense Data is not supported\n");
+		goto not_supported;
+	}
+
+	/* Without NCQ autosense, the successful NCQ commands log is useless. */
+	if (!ata_id_has_ncq_autosense(dev->id)) {
+		ata_dev_warn(dev,
+			"CDL supported but NCQ autosense is not supported\n");
+		goto not_supported;
+	}
+
+	/*
+	 * If CDL is marked as enabled, make sure the feature is enabled too.
+	 * Conversely, if CDL is disabled, make sure the feature is turned off.
+	 */
+	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
+				     ATA_LOG_CURRENT_SETTINGS,
+				     ap->sector_buf, 1);
+	if (err_mask)
+		goto not_supported;
+
+	val = get_unaligned_le64(&ap->sector_buf[8]);
+	cdl_enabled = val & BIT_ULL(63) && val & BIT_ULL(21);
+	if (dev->flags & ATA_DFLAG_CDL_ENABLED) {
+		if (!cdl_enabled) {
+			/* Enable CDL on the device */
+			err_mask = ata_dev_set_feature(dev, SETFEATURES_CDL, 1);
+			if (err_mask) {
+				ata_dev_err(dev,
+					    "Enable CDL feature failed\n");
+				goto not_supported;
+			}
+		}
+	} else {
+		if (cdl_enabled) {
+			/* Disable CDL on the device */
+			err_mask = ata_dev_set_feature(dev, SETFEATURES_CDL, 0);
+			if (err_mask) {
+				ata_dev_err(dev,
+					    "Disable CDL feature failed\n");
+				goto not_supported;
+			}
+		}
+	}
+
+	/*
+	 * While CDL itself has to be enabled using sysfs, CDL requires that
+	 * sense data for successful NCQ commands is enabled to work properly.
+	 * Just like ata_dev_config_sense_reporting(), enable it unconditionally
+	 * if supported.
+	 */
+	if (!(val & BIT_ULL(63)) || !(val & BIT_ULL(18))) {
+		err_mask = ata_dev_set_feature(dev,
+					SETFEATURE_SENSE_DATA_SUCC_NCQ, 0x1);
+		if (err_mask) {
+			ata_dev_warn(dev,
+				     "failed to enable Sense Data for successful NCQ commands, Emask 0x%x\n",
+				     err_mask);
+			goto not_supported;
+		}
+	}
+
+	/*
+	 * Allocate a buffer to handle reading the sense data for successful
+	 * NCQ Commands log page for commands using a CDL with one of the limit
+	 * policy set to 0xD (successful completion with sense data available
+	 * bit set).
+	 */
+	if (!ap->ncq_sense_buf) {
+		ap->ncq_sense_buf = kmalloc(ATA_LOG_SENSE_NCQ_SIZE, GFP_KERNEL);
+		if (!ap->ncq_sense_buf)
+			goto not_supported;
+	}
+
+	/*
+	 * Command duration limits is supported: cache the CDL log page 18h
+	 * (command duration descriptors).
+	 */
+	err_mask = ata_read_log_page(dev, ATA_LOG_CDL, 0, ap->sector_buf, 1);
+	if (err_mask) {
+		ata_dev_warn(dev, "Read Command Duration Limits log failed\n");
+		goto not_supported;
+	}
+
+	memcpy(dev->cdl, ap->sector_buf, ATA_LOG_CDL_SIZE);
+	dev->flags |= ATA_DFLAG_CDL;
+
+	return;
+
+not_supported:
+	dev->flags &= ~(ATA_DFLAG_CDL | ATA_DFLAG_CDL_ENABLED);
+	kfree(ap->ncq_sense_buf);
+	ap->ncq_sense_buf = NULL;
+}
+
+static int ata_dev_config_lba(struct ata_device *dev)
+{
+	const u16 *id = dev->id;
+	const char *lba_desc;
+	char ncq_desc[32];
+	int ret;
+
+	dev->flags |= ATA_DFLAG_LBA;
+
+	if (ata_id_has_lba48(id)) {
+		lba_desc = "LBA48";
+		dev->flags |= ATA_DFLAG_LBA48;
+		if (dev->n_sectors >= (1UL << 28) &&
+		    ata_id_has_flush_ext(id))
+			dev->flags |= ATA_DFLAG_FLUSH_EXT;
+	} else {
+		lba_desc = "LBA";
+	}
+
+	/* config NCQ */
+	ret = ata_dev_config_ncq(dev, ncq_desc, sizeof(ncq_desc));
+
+	/* print device info to dmesg */
+	if (ata_dev_print_info(dev))
+		ata_dev_info(dev,
+			     "%llu sectors, multi %u: %s %s\n",
+			     (unsigned long long)dev->n_sectors,
+			     dev->multi_count, lba_desc, ncq_desc);
+
+	return ret;
+}
+
+static void ata_dev_config_chs(struct ata_device *dev)
+{
+	const u16 *id = dev->id;
+
+	if (ata_id_current_chs_valid(id)) {
+		/* Current CHS translation is valid. */
+		dev->cylinders = id[54];
+		dev->heads     = id[55];
+		dev->sectors   = id[56];
+	} else {
+		/* Default translation */
+		dev->cylinders	= id[1];
+		dev->heads	= id[3];
+		dev->sectors	= id[6];
+	}
+
+	/* print device info to dmesg */
+	if (ata_dev_print_info(dev))
+		ata_dev_info(dev,
+			     "%llu sectors, multi %u, CHS %u/%u/%u\n",
+			     (unsigned long long)dev->n_sectors,
+			     dev->multi_count, dev->cylinders,
+			     dev->heads, dev->sectors);
+}
+
+static void ata_dev_config_fua(struct ata_device *dev)
+{
+	/* Ignore FUA support if its use is disabled globally */
+	if (!libata_fua)
+		goto nofua;
+
+	/* Ignore devices without support for WRITE DMA FUA EXT */
+	if (!(dev->flags & ATA_DFLAG_LBA48) || !ata_id_has_fua(dev->id))
+		goto nofua;
+
+	/* Ignore known bad devices and devices that lack NCQ support */
+	if (!ata_ncq_supported(dev) || (dev->horkage & ATA_HORKAGE_NO_FUA))
+		goto nofua;
+
+	dev->flags |= ATA_DFLAG_FUA;
+
+	return;
+
+nofua:
+	dev->flags &= ~ATA_DFLAG_FUA;
+}
+
+static void ata_dev_config_devslp(struct ata_device *dev)
+{
+	u8 *sata_setting = dev->link->ap->sector_buf;
+	unsigned int err_mask;
+	int i, j;
+
+	/*
+	 * Check device sleep capability. Get DevSlp timing variables
+	 * from SATA Settings page of Identify Device Data Log.
+	 */
+	if (!ata_id_has_devslp(dev->id) ||
+	    !ata_identify_page_supported(dev, ATA_LOG_SATA_SETTINGS))
+		return;
+
+	err_mask = ata_read_log_page(dev,
+				     ATA_LOG_IDENTIFY_DEVICE,
+				     ATA_LOG_SATA_SETTINGS,
+				     sata_setting, 1);
+	if (err_mask)
+		return;
+
+	dev->flags |= ATA_DFLAG_DEVSLP;
+	for (i = 0; i < ATA_LOG_DEVSLP_SIZE; i++) {
+		j = ATA_LOG_DEVSLP_OFFSET + i;
+		dev->devslp_timing[i] = sata_setting[j];
+	}
+}
+
+static void ata_dev_config_cpr(struct ata_device *dev)
+{
+	unsigned int err_mask;
+	size_t buf_len;
+	int i, nr_cpr = 0;
+	struct ata_cpr_log *cpr_log = NULL;
+	u8 *desc, *buf = NULL;
+
+	if (ata_id_major_version(dev->id) < 11)
+		goto out;
+
+	buf_len = ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES);
+	if (buf_len == 0)
+		goto out;
+
+	/*
+	 * Read the concurrent positioning ranges log (0x47). We can have at
+	 * most 255 32B range descriptors plus a 64B header. This log varies in
+	 * size, so use the size reported in the GPL directory. Reading beyond
+	 * the supported length will result in an error.
+	 */
+	buf_len <<= 9;
+	buf = kzalloc(buf_len, GFP_KERNEL);
+	if (!buf)
+		goto out;
+
+	err_mask = ata_read_log_page(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES,
+				     0, buf, buf_len >> 9);
+	if (err_mask)
+		goto out;
+
+	nr_cpr = buf[0];
+	if (!nr_cpr)
+		goto out;
+
+	cpr_log = kzalloc(struct_size(cpr_log, cpr, nr_cpr), GFP_KERNEL);
+	if (!cpr_log)
+		goto out;
+
+	cpr_log->nr_cpr = nr_cpr;
+	desc = &buf[64];
+	for (i = 0; i < nr_cpr; i++, desc += 32) {
+		cpr_log->cpr[i].num = desc[0];
+		cpr_log->cpr[i].num_storage_elements = desc[1];
+		cpr_log->cpr[i].start_lba = get_unaligned_le64(&desc[8]);
+		cpr_log->cpr[i].num_lbas = get_unaligned_le64(&desc[16]);
+	}
+
+out:
+	swap(dev->cpr_log, cpr_log);
+	kfree(cpr_log);
+	kfree(buf);
+}
+
+static void ata_dev_print_features(struct ata_device *dev)
+{
+	if (!(dev->flags & ATA_DFLAG_FEATURES_MASK))
+		return;
+
+	ata_dev_info(dev,
+		     "Features:%s%s%s%s%s%s%s%s\n",
+		     dev->flags & ATA_DFLAG_FUA ? " FUA" : "",
+		     dev->flags & ATA_DFLAG_TRUSTED ? " Trust" : "",
+		     dev->flags & ATA_DFLAG_DA ? " Dev-Attention" : "",
+		     dev->flags & ATA_DFLAG_DEVSLP ? " Dev-Sleep" : "",
+		     dev->flags & ATA_DFLAG_NCQ_SEND_RECV ? " NCQ-sndrcv" : "",
+		     dev->flags & ATA_DFLAG_NCQ_PRIO ? " NCQ-prio" : "",
+		     dev->flags & ATA_DFLAG_CDL ? " CDL" : "",
+		     dev->cpr_log ? " CPR" : "");
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_dev_configure - Configure the specified ATA/ATAPI device
  *	@dev: Target device to configure
@@ -2155,15 +3494,23 @@ static int ata_dev_config_ncq(struct ata_device *dev,
 int ata_dev_configure(struct ata_device *dev)
 {
 	struct ata_port *ap = dev->link->ap;
+<<<<<<< HEAD
 	struct ata_eh_context *ehc = &dev->link->eh_context;
 	int print_info = ehc->i.flags & ATA_EHI_PRINTINFO;
 	const u16 *id = dev->id;
 	unsigned long xfer_mask;
+=======
+	bool print_info = ata_dev_print_info(dev);
+	const u16 *id = dev->id;
+	unsigned int xfer_mask;
+	unsigned int err_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char revbuf[7];		/* XYZ-99\0 */
 	char fwrevbuf[ATA_ID_FW_REV_LEN+1];
 	char modelbuf[ATA_ID_PROD_LEN+1];
 	int rc;
 
+<<<<<<< HEAD
 	if (!ata_dev_enabled(dev) && ata_msg_info(ap)) {
 		ata_dev_info(dev, "%s: ENTER/EXIT -- nodev\n", __func__);
 		return 0;
@@ -2172,6 +3519,13 @@ int ata_dev_configure(struct ata_device *dev)
 	if (ata_msg_probe(ap))
 		ata_dev_dbg(dev, "%s: ENTER\n", __func__);
 
+=======
+	if (!ata_dev_enabled(dev)) {
+		ata_dev_dbg(dev, "no device\n");
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set horkage */
 	dev->horkage |= ata_dev_blacklisted(dev);
 	ata_force_horkage(dev);
@@ -2195,6 +3549,22 @@ int ata_dev_configure(struct ata_device *dev)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	/* some WD SATA-1 drives have issues with LPM, turn on NOLPM for them */
+	if ((dev->horkage & ATA_HORKAGE_WD_BROKEN_LPM) &&
+	    (id[ATA_ID_SATA_CAPABILITY] & 0xe) == 0x2)
+		dev->horkage |= ATA_HORKAGE_NOLPM;
+
+	if (ap->flags & ATA_FLAG_NO_LPM)
+		dev->horkage |= ATA_HORKAGE_NOLPM;
+
+	if (dev->horkage & ATA_HORKAGE_NOLPM) {
+		ata_dev_warn(dev, "LPM support broken, forcing max_power\n");
+		dev->link->ap->target_lpm_policy = ATA_LPM_MAX_POWER;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* let ACPI work its magic */
 	rc = ata_acpi_on_devcfg(dev);
 	if (rc)
@@ -2206,6 +3576,7 @@ int ata_dev_configure(struct ata_device *dev)
 		return rc;
 
 	/* print device capabilities */
+<<<<<<< HEAD
 	if (ata_msg_probe(ap))
 		ata_dev_dbg(dev,
 			    "%s: cfg 49:%04x 82:%04x 83:%04x 84:%04x "
@@ -2213,6 +3584,14 @@ int ata_dev_configure(struct ata_device *dev)
 			    __func__,
 			    id[49], id[82], id[83], id[84],
 			    id[85], id[86], id[87], id[88]);
+=======
+	ata_dev_dbg(dev,
+		    "%s: cfg 49:%04x 82:%04x 83:%04x 84:%04x "
+		    "85:%04x 86:%04x 87:%04x 88:%04x\n",
+		    __func__,
+		    id[49], id[82], id[83], id[84],
+		    id[85], id[86], id[87], id[88]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize to-be-configured parameters */
 	dev->flags &= ~ATA_DFLAG_CFG_MASK;
@@ -2231,8 +3610,12 @@ int ata_dev_configure(struct ata_device *dev)
 	/* find max transfer mode; for printk only */
 	xfer_mask = ata_id_xfermask(id);
 
+<<<<<<< HEAD
 	if (ata_msg_probe(ap))
 		ata_dump_id(id);
+=======
+	ata_dump_id(dev, id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SCSI only uses 4-char revisions, dump full 8 chars from ATA */
 	ata_id_c_string(dev->id, fwrevbuf, ATA_ID_FW_REV,
@@ -2242,7 +3625,11 @@ int ata_dev_configure(struct ata_device *dev)
 			sizeof(modelbuf));
 
 	/* ATA-specific feature tests */
+<<<<<<< HEAD
 	if (dev->class == ATA_DEV_ATA) {
+=======
+	if (dev->class == ATA_DEV_ATA || dev->class == ATA_DEV_ZAC) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ata_id_is_cfa(id)) {
 			/* CPRM may make this media unusable */
 			if (id[ATA_ID_CFA_KEY_MGMT] & 1)
@@ -2269,6 +3656,7 @@ int ata_dev_configure(struct ata_device *dev)
 					dev->multi_count = cnt;
 		}
 
+<<<<<<< HEAD
 		if (ata_id_has_lba(id)) {
 			const char *lba_desc;
 			char ncq_desc[24];
@@ -2328,6 +3716,33 @@ int ata_dev_configure(struct ata_device *dev)
 		}
 
 		dev->cdb_len = 16;
+=======
+		/* print device info to dmesg */
+		if (print_info)
+			ata_dev_info(dev, "%s: %s, %s, max %s\n",
+				     revbuf, modelbuf, fwrevbuf,
+				     ata_mode_string(xfer_mask));
+
+		if (ata_id_has_lba(id)) {
+			rc = ata_dev_config_lba(dev);
+			if (rc)
+				return rc;
+		} else {
+			ata_dev_config_chs(dev);
+		}
+
+		ata_dev_config_fua(dev);
+		ata_dev_config_devslp(dev);
+		ata_dev_config_sense_reporting(dev);
+		ata_dev_config_zac(dev);
+		ata_dev_config_trusted(dev);
+		ata_dev_config_cpr(dev);
+		ata_dev_config_cdl(dev);
+		dev->cdb_len = 32;
+
+		if (print_info)
+			ata_dev_print_features(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* ATAPI-specific feature tests */
@@ -2339,8 +3754,12 @@ int ata_dev_configure(struct ata_device *dev)
 
 		rc = atapi_cdb_len(id);
 		if ((rc < 12) || (rc > ATAPI_CDB_LEN)) {
+<<<<<<< HEAD
 			if (ata_msg_warn(ap))
 				ata_dev_warn(dev, "unsupported CDB len\n");
+=======
+			ata_dev_warn(dev, "unsupported CDB len %d\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EINVAL;
 			goto err_out_nosup;
 		}
@@ -2355,8 +3774,11 @@ int ata_dev_configure(struct ata_device *dev)
 		    (ap->flags & ATA_FLAG_AN) && ata_id_has_atapi_AN(id) &&
 		    (!sata_pmp_attached(ap) ||
 		     sata_scr_read(&ap->link, SCR_NOTIFICATION, &sntf) == 0)) {
+<<<<<<< HEAD
 			unsigned int err_mask;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* issue SET feature command to turn this on */
 			err_mask = ata_dev_set_feature(dev,
 					SETFEATURES_SATA_ENABLE, SATA_AN);
@@ -2375,13 +3797,27 @@ int ata_dev_configure(struct ata_device *dev)
 			cdb_intr_string = ", CDB intr";
 		}
 
+<<<<<<< HEAD
 		if (atapi_dmadir || atapi_id_dmadir(dev->id)) {
+=======
+		if (atapi_dmadir || (dev->horkage & ATA_HORKAGE_ATAPI_DMADIR) || atapi_id_dmadir(dev->id)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->flags |= ATA_DFLAG_DMADIR;
 			dma_dir_string = ", DMADIR";
 		}
 
+<<<<<<< HEAD
 		/* print device info to dmesg */
 		if (ata_msg_drv(ap) && print_info)
+=======
+		if (ata_id_has_da(dev->id)) {
+			dev->flags |= ATA_DFLAG_DA;
+			zpodd_init(dev);
+		}
+
+		/* print device info to dmesg */
+		if (print_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ata_dev_info(dev,
 				     "ATAPI: %s, %s, max %s%s%s%s\n",
 				     modelbuf, fwrevbuf,
@@ -2398,7 +3834,11 @@ int ata_dev_configure(struct ata_device *dev)
 	/* Limit PATA drive on SATA cable bridge transfers to udma5,
 	   200 sectors */
 	if (ata_dev_knobble(dev)) {
+<<<<<<< HEAD
 		if (ata_msg_drv(ap) && print_info)
+=======
+		if (print_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ata_dev_info(dev, "applying bridge limits\n");
 		dev->udma_mask &= ATA_UDMA5;
 		dev->max_sectors = ATA_MAX_SECTORS;
@@ -2414,6 +3854,13 @@ int ata_dev_configure(struct ata_device *dev)
 		dev->max_sectors = min_t(unsigned int, ATA_MAX_SECTORS_128,
 					 dev->max_sectors);
 
+<<<<<<< HEAD
+=======
+	if (dev->horkage & ATA_HORKAGE_MAX_SEC_1024)
+		dev->max_sectors = min_t(unsigned int, ATA_MAX_SECTORS_1024,
+					 dev->max_sectors);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->horkage & ATA_HORKAGE_MAX_SEC_LBA48)
 		dev->max_sectors = ATA_MAX_SECTORS_LBA48;
 
@@ -2443,8 +3890,11 @@ int ata_dev_configure(struct ata_device *dev)
 	return 0;
 
 err_out_nosup:
+<<<<<<< HEAD
 	if (ata_msg_probe(ap))
 		ata_dev_dbg(dev, "%s: EXIT, err\n", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -2460,6 +3910,10 @@ int ata_cable_40wire(struct ata_port *ap)
 {
 	return ATA_CBL_PATA40;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_cable_40wire);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_cable_80wire	-	return 80 wire cable type
@@ -2473,6 +3927,10 @@ int ata_cable_80wire(struct ata_port *ap)
 {
 	return ATA_CBL_PATA80;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_cable_80wire);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_cable_unknown	-	return unknown PATA cable.
@@ -2485,6 +3943,10 @@ int ata_cable_unknown(struct ata_port *ap)
 {
 	return ATA_CBL_PATA_UNK;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_cable_unknown);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_cable_ignore	-	return ignored PATA cable.
@@ -2497,6 +3959,10 @@ int ata_cable_ignore(struct ata_port *ap)
 {
 	return ATA_CBL_PATA_IGN;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_cable_ignore);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_cable_sata	-	return SATA cable type
@@ -2509,6 +3975,7 @@ int ata_cable_sata(struct ata_port *ap)
 {
 	return ATA_CBL_SATA;
 }
+<<<<<<< HEAD
 
 /**
  *	ata_bus_probe - Reset and probe ATA bus
@@ -2646,6 +4113,9 @@ int ata_bus_probe(struct ata_port *ap)
 
 	goto retry;
 }
+=======
+EXPORT_SYMBOL_GPL(ata_cable_sata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	sata_print_link_status - Print SATA link status
@@ -2662,7 +4132,12 @@ static void sata_print_link_status(struct ata_link *link)
 
 	if (sata_scr_read(link, SCR_STATUS, &sstatus))
 		return;
+<<<<<<< HEAD
 	sata_scr_read(link, SCR_CONTROL, &scontrol);
+=======
+	if (sata_scr_read(link, SCR_CONTROL, &scontrol))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ata_phys_link_online(link)) {
 		tmp = (sstatus >> 4) & 0xf;
@@ -2690,6 +4165,10 @@ struct ata_device *ata_dev_pair(struct ata_device *adev)
 		return NULL;
 	return pair;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_dev_pair);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	sata_down_spd_limit - adjust SATA spd limit downward
@@ -2736,6 +4215,7 @@ int sata_down_spd_limit(struct ata_link *link, u32 spd_limit)
 	bit = fls(mask) - 1;
 	mask &= ~(1 << bit);
 
+<<<<<<< HEAD
 	/* Mask off all speeds higher than or equal to the current
 	 * one.  Force 1.5Gbps if current SPD is not available.
 	 */
@@ -2743,6 +4223,21 @@ int sata_down_spd_limit(struct ata_link *link, u32 spd_limit)
 		mask &= (1 << (spd - 1)) - 1;
 	else
 		mask &= 1;
+=======
+	/*
+	 * Mask off all speeds higher than or equal to the current one.  At
+	 * this point, if current SPD is not available and we previously
+	 * recorded the link speed from SStatus, the driver has already
+	 * masked off the highest bit so mask should already be 1 or 0.
+	 * Otherwise, we should not force 1.5Gbps on a link where we have
+	 * not previously recorded speed from SStatus.  Just return in this
+	 * case.
+	 */
+	if (spd > 1)
+		mask &= (1 << (spd - 1)) - 1;
+	else if (link->sata_spd)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* were we already at the bottom? */
 	if (!mask)
@@ -2765,6 +4260,7 @@ int sata_down_spd_limit(struct ata_link *link, u32 spd_limit)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __sata_set_spd_needed(struct ata_link *link, u32 *scontrol)
 {
 	struct ata_link *host_link = &link->ap->link;
@@ -3007,6 +4503,9 @@ int ata_timing_compute(struct ata_device *adev, unsigned short speed,
 	return 0;
 }
 
+=======
+#ifdef CONFIG_ATA_ACPI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_timing_cycle2mode - find xfer mode for the specified cycle duration
  *	@xfer_shift: ATA_SHIFT_* value for transfer type to examine.
@@ -3057,6 +4556,10 @@ u8 ata_timing_cycle2mode(unsigned int xfer_shift, int cycle)
 
 	return last_mode;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_down_xfermask_limit - adjust dev xfer masks downward
@@ -3076,8 +4579,13 @@ u8 ata_timing_cycle2mode(unsigned int xfer_shift, int cycle)
 int ata_down_xfermask_limit(struct ata_device *dev, unsigned int sel)
 {
 	char buf[32];
+<<<<<<< HEAD
 	unsigned long orig_mask, xfer_mask;
 	unsigned long pio_mask, mwdma_mask, udma_mask;
+=======
+	unsigned int orig_mask, xfer_mask;
+	unsigned int pio_mask, mwdma_mask, udma_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int quiet, highbit;
 
 	quiet = !!(sel & ATA_DNXFER_QUIET);
@@ -3114,6 +4622,10 @@ int ata_down_xfermask_limit(struct ata_device *dev, unsigned int sel)
 
 	case ATA_DNXFER_FORCE_PIO0:
 		pio_mask &= 1;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_DNXFER_FORCE_PIO:
 		mwdma_mask = 0;
 		udma_mask = 0;
@@ -3213,12 +4725,23 @@ static int ata_dev_set_mode(struct ata_device *dev)
 			dev_err_whine = " (device error ignored)";
 	}
 
+<<<<<<< HEAD
 	DPRINTK("xfer_shift=%u, xfer_mode=0x%x\n",
 		dev->xfer_shift, (int)dev->xfer_mode);
 
 	ata_dev_info(dev, "configured for %s%s\n",
 		     ata_mode_string(ata_xfer_mode2mask(dev->xfer_mode)),
 		     dev_err_whine);
+=======
+	ata_dev_dbg(dev, "xfer_shift=%u, xfer_mode=0x%x\n",
+		    dev->xfer_shift, (int)dev->xfer_mode);
+
+	if (!(ehc->i.flags & ATA_EHI_QUIET) ||
+	    ehc->i.flags & ATA_EHI_DID_HARDRESET)
+		ata_dev_info(dev, "configured for %s%s\n",
+			     ata_mode_string(ata_xfer_mode2mask(dev->xfer_mode)),
+			     dev_err_whine);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -3252,7 +4775,11 @@ int ata_do_set_mode(struct ata_link *link, struct ata_device **r_failed_dev)
 
 	/* step 1: calculate xfer_mask */
 	ata_for_each_dev(dev, link, ENABLED) {
+<<<<<<< HEAD
 		unsigned long pio_mask, dma_mask;
+=======
+		unsigned int pio_mask, dma_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int mode_mask;
 
 		mode_mask = ATA_DMA_MASK_ATA;
@@ -3325,6 +4852,10 @@ int ata_do_set_mode(struct ata_link *link, struct ata_device **r_failed_dev)
 		*r_failed_dev = dev;
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_do_set_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_wait_ready - wait for link to become ready
@@ -3344,7 +4875,11 @@ int ata_do_set_mode(struct ata_link *link, struct ata_device **r_failed_dev)
  *	EH context.
  *
  *	RETURNS:
+<<<<<<< HEAD
  *	0 if @linke is ready before @deadline; otherwise, -errno.
+=======
+ *	0 if @link is ready before @deadline; otherwise, -errno.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ata_wait_ready(struct ata_link *link, unsigned long deadline,
 		   int (*check_ready)(struct ata_link *link))
@@ -3425,7 +4960,11 @@ int ata_wait_ready(struct ata_link *link, unsigned long deadline,
  *	EH context.
  *
  *	RETURNS:
+<<<<<<< HEAD
  *	0 if @linke is ready before @deadline; otherwise, -errno.
+=======
+ *	0 if @link is ready before @deadline; otherwise, -errno.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ata_wait_after_reset(struct ata_link *link, unsigned long deadline,
 				int (*check_ready)(struct ata_link *link))
@@ -3434,6 +4973,7 @@ int ata_wait_after_reset(struct ata_link *link, unsigned long deadline,
 
 	return ata_wait_ready(link, deadline, check_ready);
 }
+<<<<<<< HEAD
 
 /**
  *	sata_link_debounce - debounce SATA phy status
@@ -3641,6 +5181,9 @@ int sata_link_scr_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 	ehc->i.serror &= ~SERR_PHYRDY_CHG;
 	return sata_scr_write(link, SCR_ERROR, SERR_PHYRDY_CHG);
 }
+=======
+EXPORT_SYMBOL_GPL(ata_wait_after_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_std_prereset - prepare for reset
@@ -3657,13 +5200,21 @@ int sata_link_scr_lpm(struct ata_link *link, enum ata_lpm_policy policy,
  *	Kernel thread context (may sleep)
  *
  *	RETURNS:
+<<<<<<< HEAD
  *	0 on success, -errno otherwise.
+=======
+ *	Always 0.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ata_std_prereset(struct ata_link *link, unsigned long deadline)
 {
 	struct ata_port *ap = link->ap;
 	struct ata_eh_context *ehc = &link->eh_context;
+<<<<<<< HEAD
 	const unsigned long *timing = sata_ehc_deb_timing(ehc);
+=======
+	const unsigned int *timing = sata_ehc_deb_timing(ehc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* if we're about to do hardreset, nothing more to do */
@@ -3686,6 +5237,7 @@ int ata_std_prereset(struct ata_link *link, unsigned long deadline)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 /**
  *	sata_link_hardreset - reset link via SATA phy reset
@@ -3798,6 +5350,9 @@ int sata_link_hardreset(struct ata_link *link, const unsigned long *timing,
 	DPRINTK("EXIT, rc=%d\n", rc);
 	return rc;
 }
+=======
+EXPORT_SYMBOL_GPL(ata_std_prereset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	sata_std_hardreset - COMRESET w/o waiting or classification
@@ -3816,7 +5371,11 @@ int sata_link_hardreset(struct ata_link *link, const unsigned long *timing,
 int sata_std_hardreset(struct ata_link *link, unsigned int *class,
 		       unsigned long deadline)
 {
+<<<<<<< HEAD
 	const unsigned long *timing = sata_ehc_deb_timing(&link->eh_context);
+=======
+	const unsigned int *timing = sata_ehc_deb_timing(&link->eh_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool online;
 	int rc;
 
@@ -3824,6 +5383,10 @@ int sata_std_hardreset(struct ata_link *link, unsigned int *class,
 	rc = sata_link_hardreset(link, timing, deadline, &online, NULL);
 	return online ? -EAGAIN : rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(sata_std_hardreset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_std_postreset - standard postreset callback
@@ -3841,17 +5404,25 @@ void ata_std_postreset(struct ata_link *link, unsigned int *classes)
 {
 	u32 serror;
 
+<<<<<<< HEAD
 	DPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reset complete, clear SError */
 	if (!sata_scr_read(link, SCR_ERROR, &serror))
 		sata_scr_write(link, SCR_ERROR, serror);
 
 	/* print link status */
 	sata_print_link_status(link);
+<<<<<<< HEAD
 
 	DPRINTK("EXIT\n");
 }
+=======
+}
+EXPORT_SYMBOL_GPL(ata_std_postreset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_dev_same_device - Determine whether new ID matches configured device
@@ -3961,10 +5532,14 @@ int ata_dev_revalidate(struct ata_device *dev, unsigned int new_class,
 		return -ENODEV;
 
 	/* fail early if !ATA && !ATAPI to avoid issuing [P]IDENTIFY to PMP */
+<<<<<<< HEAD
 	if (ata_class_enabled(new_class) &&
 	    new_class != ATA_DEV_ATA &&
 	    new_class != ATA_DEV_ATAPI &&
 	    new_class != ATA_DEV_SEMB) {
+=======
+	if (ata_class_enabled(new_class) && new_class == ATA_DEV_PMP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ata_dev_info(dev, "class mismatch %u != %u\n",
 			     dev->class, new_class);
 		rc = -ENODEV;
@@ -4067,8 +5642,17 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "_NEC DV5800A", 	NULL,		ATA_HORKAGE_NODMA },
 	{ "SAMSUNG CD-ROM SN-124", "N001",	ATA_HORKAGE_NODMA },
 	{ "Seagate STT20000A", NULL,		ATA_HORKAGE_NODMA },
+<<<<<<< HEAD
 	/* Odd clown on sil3726/4726 PMPs */
 	{ "Config  Disk",	NULL,		ATA_HORKAGE_DISABLE },
+=======
+	{ " 2GB ATA Flash Disk", "ADMA428M",	ATA_HORKAGE_NODMA },
+	{ "VRFDFC22048UCHC-TE*", NULL,		ATA_HORKAGE_NODMA },
+	/* Odd clown on sil3726/4726 PMPs */
+	{ "Config  Disk",	NULL,		ATA_HORKAGE_DISABLE },
+	/* Similar story with ASMedia 1092 */
+	{ "ASMT109x- Config",	NULL,		ATA_HORKAGE_DISABLE },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Weird ATAPI devices */
 	{ "TORiSAN DVD-ROM DRD-N216", NULL,	ATA_HORKAGE_MAX_SEC_128 },
@@ -4076,12 +5660,32 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "Slimtype DVD A  DS8A8SH", NULL,	ATA_HORKAGE_MAX_SEC_LBA48 },
 	{ "Slimtype DVD A  DS8A9SH", NULL,	ATA_HORKAGE_MAX_SEC_LBA48 },
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Causes silent data corruption with higher max sects.
+	 * http://lkml.kernel.org/g/x49wpy40ysk.fsf@segfault.boston.devel.redhat.com
+	 */
+	{ "ST380013AS",		"3.20",		ATA_HORKAGE_MAX_SEC_1024 },
+
+	/*
+	 * These devices time out with higher max sects.
+	 * https://bugzilla.kernel.org/show_bug.cgi?id=121671
+	 */
+	{ "LITEON CX1-JB*-HP",	NULL,		ATA_HORKAGE_MAX_SEC_1024 },
+	{ "LITEON EP1-*",	NULL,		ATA_HORKAGE_MAX_SEC_1024 },
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Devices we expect to fail diagnostics */
 
 	/* Devices where NCQ should be avoided */
 	/* NCQ is slow */
 	{ "WDC WD740ADFD-00",	NULL,		ATA_HORKAGE_NONCQ },
+<<<<<<< HEAD
 	{ "WDC WD740ADFD-00NLR1", NULL,		ATA_HORKAGE_NONCQ, },
+=======
+	{ "WDC WD740ADFD-00NLR1", NULL,		ATA_HORKAGE_NONCQ },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* http://thread.gmane.org/gmane.linux.ide/14907 */
 	{ "FUJITSU MHT2060BH",	NULL,		ATA_HORKAGE_NONCQ },
 	/* NCQ is broken */
@@ -4104,13 +5708,21 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "ST3320[68]13AS",	"SD1[5-9]",	ATA_HORKAGE_NONCQ |
 						ATA_HORKAGE_FIRMWARE_WARN },
 
+<<<<<<< HEAD
 	/* drives which fail FPDMA_AA activation (some may freeze afterwards) */
 	{ "ST1000LM024 HN-M101MBB", "2AR10001",	ATA_HORKAGE_BROKEN_FPDMA_AA },
 	{ "ST1000LM024 HN-M101MBB", "2BA30001",	ATA_HORKAGE_BROKEN_FPDMA_AA },
+=======
+	/* drives which fail FPDMA_AA activation (some may freeze afterwards)
+	   the ST disks also have LPM issues */
+	{ "ST1000LM024 HN-M101MBB", NULL,	ATA_HORKAGE_BROKEN_FPDMA_AA |
+						ATA_HORKAGE_NOLPM },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "VB0250EAVER",	"HPG7",		ATA_HORKAGE_BROKEN_FPDMA_AA },
 
 	/* Blacklist entries taken from Silicon Image 3124/3132
 	   Windows driver .inf file - also several Linux problem reports */
+<<<<<<< HEAD
 	{ "HTS541060G9SA00",    "MB3OC60D",     ATA_HORKAGE_NONCQ, },
 	{ "HTS541080G9SA00",    "MB4OC60D",     ATA_HORKAGE_NONCQ, },
 	{ "HTS541010G9SA00",    "MBZOC60D",     ATA_HORKAGE_NONCQ, },
@@ -4120,6 +5732,20 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 
 	/* devices which puke on READ_NATIVE_MAX */
 	{ "HDS724040KLSA80",	"KFAOA20N",	ATA_HORKAGE_BROKEN_HPA, },
+=======
+	{ "HTS541060G9SA00",    "MB3OC60D",     ATA_HORKAGE_NONCQ },
+	{ "HTS541080G9SA00",    "MB4OC60D",     ATA_HORKAGE_NONCQ },
+	{ "HTS541010G9SA00",    "MBZOC60D",     ATA_HORKAGE_NONCQ },
+
+	/* https://bugzilla.kernel.org/show_bug.cgi?id=15573 */
+	{ "C300-CTFDDAC128MAG",	"0001",		ATA_HORKAGE_NONCQ },
+
+	/* Sandisk SD7/8/9s lock up hard on large trims */
+	{ "SanDisk SD[789]*",	NULL,		ATA_HORKAGE_MAX_TRIM_128M },
+
+	/* devices which puke on READ_NATIVE_MAX */
+	{ "HDS724040KLSA80",	"KFAOA20N",	ATA_HORKAGE_BROKEN_HPA },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "WDC WD3200JD-00KLB0", "WD-WCAMR1130137", ATA_HORKAGE_BROKEN_HPA },
 	{ "WDC WD2500JD-00HBB0", "WD-WMAL71490727", ATA_HORKAGE_BROKEN_HPA },
 	{ "MAXTOR 6L080L4",	"A93.0500",	ATA_HORKAGE_BROKEN_HPA },
@@ -4128,6 +5754,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "OCZ-VERTEX",		    "1.30",	ATA_HORKAGE_BROKEN_HPA },
 
 	/* Devices which report 1 sector over size HPA */
+<<<<<<< HEAD
 	{ "ST340823A",		NULL,		ATA_HORKAGE_HPA_SIZE, },
 	{ "ST320413A",		NULL,		ATA_HORKAGE_HPA_SIZE, },
 	{ "ST310211A",		NULL,		ATA_HORKAGE_HPA_SIZE, },
@@ -4146,6 +5773,24 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 
 	/* devices that don't properly handle TRIM commands */
 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
+=======
+	{ "ST340823A",		NULL,		ATA_HORKAGE_HPA_SIZE },
+	{ "ST320413A",		NULL,		ATA_HORKAGE_HPA_SIZE },
+	{ "ST310211A",		NULL,		ATA_HORKAGE_HPA_SIZE },
+
+	/* Devices which get the IVB wrong */
+	{ "QUANTUM FIREBALLlct10 05", "A03.0900", ATA_HORKAGE_IVB },
+	/* Maybe we should just blacklist TSSTcorp... */
+	{ "TSSTcorp CDDVDW SH-S202[HJN]", "SB0[01]",  ATA_HORKAGE_IVB },
+
+	/* Devices that do not need bridging limits applied */
+	{ "MTRON MSP-SATA*",		NULL,	ATA_HORKAGE_BRIDGE_OK },
+	{ "BUFFALO HD-QSU2/R5",		NULL,	ATA_HORKAGE_BRIDGE_OK },
+
+	/* Devices which aren't very happy with higher link speeds */
+	{ "WD My Book",			NULL,	ATA_HORKAGE_1_5_GBPS },
+	{ "Seagate FreeAgent GoFlex",	NULL,	ATA_HORKAGE_1_5_GBPS },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Devices which choke on SETXFER.  Applies only if both the
@@ -4157,10 +5802,138 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
 	{ "PIONEER DVD-RW  DVR-212D",	NULL,	ATA_HORKAGE_NOSETXFER },
 	{ "PIONEER DVD-RW  DVR-216D",	NULL,	ATA_HORKAGE_NOSETXFER },
 
+<<<<<<< HEAD
+=======
+	/* These specific Pioneer models have LPM issues */
+	{ "PIONEER BD-RW   BDR-207M",	NULL,	ATA_HORKAGE_NOLPM },
+	{ "PIONEER BD-RW   BDR-205",	NULL,	ATA_HORKAGE_NOLPM },
+
+	/* Crucial BX100 SSD 500GB has broken LPM support */
+	{ "CT500BX100SSD1",		NULL,	ATA_HORKAGE_NOLPM },
+
+	/* 512GB MX100 with MU01 firmware has both queued TRIM and LPM issues */
+	{ "Crucial_CT512MX100*",	"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NOLPM },
+	/* 512GB MX100 with newer firmware has only LPM issues */
+	{ "Crucial_CT512MX100*",	NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NOLPM },
+
+	/* 480GB+ M500 SSDs have both queued TRIM and LPM issues */
+	{ "Crucial_CT480M500*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NOLPM },
+	{ "Crucial_CT960M500*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NOLPM },
+
+	/* These specific Samsung models/firmware-revs do not handle LPM well */
+	{ "SAMSUNG MZMPC128HBFU-000MV", "CXM14M1Q", ATA_HORKAGE_NOLPM },
+	{ "SAMSUNG SSD PM830 mSATA *",  "CXM13D1Q", ATA_HORKAGE_NOLPM },
+	{ "SAMSUNG MZ7TD256HAFV-000L9", NULL,       ATA_HORKAGE_NOLPM },
+	{ "SAMSUNG MZ7TE512HMHP-000L1", "EXT06L0Q", ATA_HORKAGE_NOLPM },
+
+	/* devices that don't properly handle queued TRIM commands */
+	{ "Micron_M500IT_*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Micron_M500_*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Micron_M5[15]0_*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Micron_1100_*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+	{ "Crucial_CT*M500*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Crucial_CT*M550*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_NO_DMA_LOG |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Samsung SSD 860*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NO_NCQ_ON_ATI },
+	{ "Samsung SSD 870*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NO_NCQ_ON_ATI },
+	{ "SAMSUNG*MZ7LH*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM |
+						ATA_HORKAGE_NO_NCQ_ON_ATI, },
+	{ "FCCT*M500*",			NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+						ATA_HORKAGE_ZERO_AFTER_TRIM },
+
+	/* devices that don't properly handle TRIM commands */
+	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM },
+	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM },
+
+	/*
+	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+	 * (Return Zero After Trim) flags in the ATA Command Set are
+	 * unreliable in the sense that they only define what happens if
+	 * the device successfully executed the DSM TRIM command. TRIM
+	 * is only advisory, however, and the device is free to silently
+	 * ignore all or parts of the request.
+	 *
+	 * Whitelist drives that are known to reliably return zeroes
+	 * after TRIM.
+	 */
+
+	/*
+	 * The intel 510 drive has buggy DRAT/RZAT. Explicitly exclude
+	 * that model before whitelisting all other intel SSDs.
+	 */
+	{ "INTEL*SSDSC2MH*",		NULL,	0 },
+
+	{ "Micron*",			NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Crucial*",			NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "INTEL*SSD*", 		NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "SSD*INTEL*",			NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "Samsung*SSD*",		NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "SAMSUNG*SSD*",		NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "SAMSUNG*MZ7KM*",		NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+	{ "ST[1248][0248]0[FH]*",	NULL,	ATA_HORKAGE_ZERO_AFTER_TRIM },
+
+	/*
+	 * Some WD SATA-I drives spin up and down erratically when the link
+	 * is put into the slumber mode.  We don't have full list of the
+	 * affected devices.  Disable LPM if the device matches one of the
+	 * known prefixes and is SATA-1.  As a side effect LPM partial is
+	 * lost too.
+	 *
+	 * https://bugzilla.kernel.org/show_bug.cgi?id=57211
+	 */
+	{ "WDC WD800JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD1200JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD1600JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD2000JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD2500JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD3000JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+	{ "WDC WD3200JD-*",		NULL,	ATA_HORKAGE_WD_BROKEN_LPM },
+
+	/*
+	 * This sata dom device goes on a walkabout when the ATA_LOG_DIRECTORY
+	 * log page is accessed. Ensure we never ask for this log page with
+	 * these devices.
+	 */
+	{ "SATADOM-ML 3ME",		NULL,	ATA_HORKAGE_NO_LOG_DIR },
+
+	/* Buggy FUA */
+	{ "Maxtor",		"BANC1G10",	ATA_HORKAGE_NO_FUA },
+	{ "WDC*WD2500J*",	NULL,		ATA_HORKAGE_NO_FUA },
+	{ "OCZ-VERTEX*",	NULL,		ATA_HORKAGE_NO_FUA },
+	{ "INTEL*SSDSC2CT*",	NULL,		ATA_HORKAGE_NO_FUA },
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* End Marker */
 	{ }
 };
 
+<<<<<<< HEAD
 /**
  *	glob_match - match a text string against a glob-style pattern
  *	@text: the string to be examined
@@ -4228,6 +6001,8 @@ static int glob_match (const char *text, const char *pattern)
 	return 1;  /* No match */
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long ata_dev_blacklisted(const struct ata_device *dev)
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
@@ -4238,10 +6013,17 @@ static unsigned long ata_dev_blacklisted(const struct ata_device *dev)
 	ata_id_c_string(dev->id, model_rev, ATA_ID_FW_REV, sizeof(model_rev));
 
 	while (ad->model_num) {
+<<<<<<< HEAD
 		if (!glob_match(model_num, ad->model_num)) {
 			if (ad->model_rev == NULL)
 				return ad->horkage;
 			if (!glob_match(model_rev, ad->model_rev))
+=======
+		if (glob_match(ad->model_num, model_num)) {
+			if (ad->model_rev == NULL)
+				return ad->horkage;
+			if (glob_match(ad->model_rev, model_rev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ad->horkage;
 		}
 		ad++;
@@ -4344,7 +6126,11 @@ static void ata_dev_xfermask(struct ata_device *dev)
 	struct ata_link *link = dev->link;
 	struct ata_port *ap = link->ap;
 	struct ata_host *host = ap->host;
+<<<<<<< HEAD
 	unsigned long xfer_mask;
+=======
+	unsigned int xfer_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* controller modes available */
 	xfer_mask = ata_pack_xfermask(ap->pio_mask,
@@ -4422,10 +6208,16 @@ static void ata_dev_xfermask(struct ata_device *dev)
 static unsigned int ata_dev_set_xfermode(struct ata_device *dev)
 {
 	struct ata_taskfile tf;
+<<<<<<< HEAD
 	unsigned int err_mask;
 
 	/* set up set-features taskfile */
 	DPRINTK("set features - xfer mode\n");
+=======
+
+	/* set up set-features taskfile */
+	ata_dev_dbg(dev, "set features - xfer mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Some controllers and ATAPI devices show flaky interrupt
 	 * behavior after setting xfer mode.  Use polling instead.
@@ -4444,6 +6236,7 @@ static unsigned int ata_dev_set_xfermode(struct ata_device *dev)
 	else /* In the ancient relic department - skip all of this */
 		return 0;
 
+<<<<<<< HEAD
 	/* On some disks, this command causes spin-up, so we need longer timeout */
 	err_mask = ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 15000);
 
@@ -4459,6 +6252,22 @@ static unsigned int ata_dev_set_xfermode(struct ata_device *dev)
  *
  *	Issue SET FEATURES - SATA FEATURES command to device @dev
  *	on port @ap with sector count
+=======
+	/*
+	 * On some disks, this command causes spin-up, so we need longer
+	 * timeout.
+	 */
+	return ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, 15000);
+}
+
+/**
+ *	ata_dev_set_feature - Issue SET FEATURES
+ *	@dev: Device to which command will be sent
+ *	@subcmd: The SET FEATURES subcommand to be sent
+ *	@action: The sector count represents a subcommand specific action
+ *
+ *	Issue SET FEATURES command to device @dev on port @ap with sector count
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	PCI/etc. bus probe sem.
@@ -4466,6 +6275,7 @@ static unsigned int ata_dev_set_xfermode(struct ata_device *dev)
  *	RETURNS:
  *	0 on success, AC_ERR_* mask otherwise.
  */
+<<<<<<< HEAD
 unsigned int ata_dev_set_feature(struct ata_device *dev, u8 enable, u8 feature)
 {
 	struct ata_taskfile tf;
@@ -4486,6 +6296,30 @@ unsigned int ata_dev_set_feature(struct ata_device *dev, u8 enable, u8 feature)
 	DPRINTK("EXIT, err_mask=%x\n", err_mask);
 	return err_mask;
 }
+=======
+unsigned int ata_dev_set_feature(struct ata_device *dev, u8 subcmd, u8 action)
+{
+	struct ata_taskfile tf;
+	unsigned int timeout = 0;
+
+	/* set up set-features taskfile */
+	ata_dev_dbg(dev, "set features\n");
+
+	ata_tf_init(dev, &tf);
+	tf.command = ATA_CMD_SET_FEATURES;
+	tf.feature = subcmd;
+	tf.flags |= ATA_TFLAG_ISADDR | ATA_TFLAG_DEVICE;
+	tf.protocol = ATA_PROT_NODATA;
+	tf.nsect = action;
+
+	if (subcmd == SETFEATURES_SPINUP)
+		timeout = ata_probe_timeout ?
+			  ata_probe_timeout * 1000 : SETFEATURES_SPINUP_TIMEOUT;
+
+	return ata_exec_internal(dev, &tf, NULL, DMA_NONE, NULL, 0, timeout);
+}
+EXPORT_SYMBOL_GPL(ata_dev_set_feature);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_dev_init_params - Issue INIT DEV PARAMS command
@@ -4510,7 +6344,11 @@ static unsigned int ata_dev_init_params(struct ata_device *dev,
 		return AC_ERR_INVALID;
 
 	/* set up init dev params taskfile */
+<<<<<<< HEAD
 	DPRINTK("init dev params \n");
+=======
+	ata_dev_dbg(dev, "init dev params \n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_tf_init(dev, &tf);
 	tf.command = ATA_CMD_INIT_DEV_PARAMS;
@@ -4523,14 +6361,21 @@ static unsigned int ata_dev_init_params(struct ata_device *dev,
 	/* A clean abort indicates an original or just out of spec drive
 	   and we should continue as we issue the setup based on the
 	   drive reported working geometry */
+<<<<<<< HEAD
 	if (err_mask == AC_ERR_DEV && (tf.feature & ATA_ABORTED))
 		err_mask = 0;
 
 	DPRINTK("EXIT, err_mask=%x\n", err_mask);
+=======
+	if (err_mask == AC_ERR_DEV && (tf.error & ATA_ABORTED))
+		err_mask = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err_mask;
 }
 
 /**
+<<<<<<< HEAD
  *	ata_sg_clean - Unmap DMA memory associated with command
  *	@qc: Command containing DMA memory to be released
  *
@@ -4557,6 +6402,8 @@ void ata_sg_clean(struct ata_queued_cmd *qc)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	atapi_check_dma - Check whether ATAPI DMA can be supported
  *	@qc: Metadata associated with taskfile to check
  *
@@ -4606,7 +6453,11 @@ int ata_std_qc_defer(struct ata_queued_cmd *qc)
 {
 	struct ata_link *link = qc->dev->link;
 
+<<<<<<< HEAD
 	if (qc->tf.protocol == ATA_PROT_NCQ) {
+=======
+	if (ata_is_ncq(qc->tf.protocol)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ata_tag_valid(link->active_tag))
 			return 0;
 	} else {
@@ -4616,8 +6467,18 @@ int ata_std_qc_defer(struct ata_queued_cmd *qc)
 
 	return ATA_DEFER_LINK;
 }
+<<<<<<< HEAD
 
 void ata_noop_qc_prep(struct ata_queued_cmd *qc) { }
+=======
+EXPORT_SYMBOL_GPL(ata_std_qc_defer);
+
+enum ata_completion_errors ata_noop_qc_prep(struct ata_queued_cmd *qc)
+{
+	return AC_ERR_OK;
+}
+EXPORT_SYMBOL_GPL(ata_noop_qc_prep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_sg_init - Associate command with scatter-gather table.
@@ -4640,6 +6501,35 @@ void ata_sg_init(struct ata_queued_cmd *qc, struct scatterlist *sg,
 	qc->cursg = qc->sg;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HAS_DMA
+
+/**
+ *	ata_sg_clean - Unmap DMA memory associated with command
+ *	@qc: Command containing DMA memory to be released
+ *
+ *	Unmap all mapped DMA memory associated with this command.
+ *
+ *	LOCKING:
+ *	spin_lock_irqsave(host lock)
+ */
+static void ata_sg_clean(struct ata_queued_cmd *qc)
+{
+	struct ata_port *ap = qc->ap;
+	struct scatterlist *sg = qc->sg;
+	int dir = qc->dma_dir;
+
+	WARN_ON_ONCE(sg == NULL);
+
+	if (qc->n_elem)
+		dma_unmap_sg(ap->dev, sg, qc->orig_n_elem, dir);
+
+	qc->flags &= ~ATA_QCFLAG_DMAMAP;
+	qc->sg = NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_sg_setup - DMA-map the scatter-gather table associated with a command.
  *	@qc: Command with scatter-gather table to be mapped.
@@ -4658,13 +6548,19 @@ static int ata_sg_setup(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	unsigned int n_elem;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER, ata%u\n", ap->print_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n_elem = dma_map_sg(ap->dev, qc->sg, qc->n_elem, qc->dma_dir);
 	if (n_elem < 1)
 		return -1;
 
+<<<<<<< HEAD
 	DPRINTK("%d sg elements mapped\n", n_elem);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc->orig_n_elem = qc->n_elem;
 	qc->n_elem = n_elem;
 	qc->flags |= ATA_QCFLAG_DMAMAP;
@@ -4672,6 +6568,16 @@ static int ata_sg_setup(struct ata_queued_cmd *qc)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#else /* !CONFIG_HAS_DMA */
+
+static inline void ata_sg_clean(struct ata_queued_cmd *qc) {}
+static inline int ata_sg_setup(struct ata_queued_cmd *qc) { return -1; }
+
+#endif /* !CONFIG_HAS_DMA */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	swap_buf_le16 - swap halves of 16-bit words in place
  *	@buf:  Buffer to swap
@@ -4695,6 +6601,7 @@ void swap_buf_le16(u16 *buf, unsigned int buf_words)
 }
 
 /**
+<<<<<<< HEAD
  *	ata_qc_new - Request an available ATA command, for queueing
  *	@ap: target port
  *
@@ -4763,6 +6670,8 @@ struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	ata_qc_free - free unused ata_queued_cmd
  *	@qc: Command to complete
  *
@@ -4774,6 +6683,7 @@ struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev)
  */
 void ata_qc_free(struct ata_queued_cmd *qc)
 {
+<<<<<<< HEAD
 	struct ata_port *ap;
 	unsigned int tag;
 
@@ -4786,6 +6696,11 @@ void ata_qc_free(struct ata_queued_cmd *qc)
 		qc->tag = ATA_TAG_POISON;
 		clear_bit(tag, &ap->qc_allocated);
 	}
+=======
+	qc->flags = 0;
+	if (ata_tag_valid(qc->tag))
+		qc->tag = ATA_TAG_POISON;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __ata_qc_complete(struct ata_queued_cmd *qc)
@@ -4802,8 +6717,13 @@ void __ata_qc_complete(struct ata_queued_cmd *qc)
 		ata_sg_clean(qc);
 
 	/* command should be marked inactive atomically with qc completion */
+<<<<<<< HEAD
 	if (qc->tf.protocol == ATA_PROT_NCQ) {
 		link->sactive &= ~(1 << qc->tag);
+=======
+	if (ata_is_ncq(qc->tf.protocol)) {
+		link->sactive &= ~(1 << qc->hw_tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!link->sactive)
 			ap->nr_active_links--;
 	} else {
@@ -4821,7 +6741,11 @@ void __ata_qc_complete(struct ata_queued_cmd *qc)
 	 * is called. (when rc != 0 and atapi request sense is needed)
 	 */
 	qc->flags &= ~ATA_QCFLAG_ACTIVE;
+<<<<<<< HEAD
 	ap->qc_active &= ~(1 << qc->tag);
+=======
+	ap->qc_active &= ~(1ULL << qc->tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* call completion callback */
 	qc->complete_fn(qc);
@@ -4839,7 +6763,11 @@ static void ata_verify_xfer(struct ata_queued_cmd *qc)
 {
 	struct ata_device *dev = qc->dev;
 
+<<<<<<< HEAD
 	if (ata_is_nodata(qc->tf.protocol))
+=======
+	if (!ata_is_data(qc->tf.protocol))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if ((dev->mwdma_mask || dev->udma_mask) && ata_is_pio(qc->tf.protocol))
@@ -4866,6 +6794,7 @@ static void ata_verify_xfer(struct ata_queued_cmd *qc)
 void ata_qc_complete(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
+<<<<<<< HEAD
 
 	/* XXX: New EH and old EH use different mechanisms to
 	 * synchronize EH with regular execution path.
@@ -4963,11 +6892,114 @@ void ata_qc_complete(struct ata_queued_cmd *qc)
  *	Always use this function when completing multiple NCQ commands
  *	from IRQ handlers instead of calling ata_qc_complete()
  *	multiple times to keep IRQ expect status properly in sync.
+=======
+	struct ata_device *dev = qc->dev;
+	struct ata_eh_info *ehi = &dev->link->eh_info;
+
+	/* Trigger the LED (if available) */
+	ledtrig_disk_activity(!!(qc->tf.flags & ATA_TFLAG_WRITE));
+
+	/*
+	 * In order to synchronize EH with the regular execution path, a qc that
+	 * is owned by EH is marked with ATA_QCFLAG_EH.
+	 *
+	 * The normal execution path is responsible for not accessing a qc owned
+	 * by EH.  libata core enforces the rule by returning NULL from
+	 * ata_qc_from_tag() for qcs owned by EH.
+	 */
+	if (unlikely(qc->err_mask))
+		qc->flags |= ATA_QCFLAG_EH;
+
+	/*
+	 * Finish internal commands without any further processing and always
+	 * with the result TF filled.
+	 */
+	if (unlikely(ata_tag_internal(qc->tag))) {
+		fill_result_tf(qc);
+		trace_ata_qc_complete_internal(qc);
+		__ata_qc_complete(qc);
+		return;
+	}
+
+	/* Non-internal qc has failed.  Fill the result TF and summon EH. */
+	if (unlikely(qc->flags & ATA_QCFLAG_EH)) {
+		fill_result_tf(qc);
+		trace_ata_qc_complete_failed(qc);
+		ata_qc_schedule_eh(qc);
+		return;
+	}
+
+	WARN_ON_ONCE(ata_port_is_frozen(ap));
+
+	/* read result TF if requested */
+	if (qc->flags & ATA_QCFLAG_RESULT_TF)
+		fill_result_tf(qc);
+
+	trace_ata_qc_complete_done(qc);
+
+	/*
+	 * For CDL commands that completed without an error, check if we have
+	 * sense data (ATA_SENSE is set). If we do, then the command may have
+	 * been aborted by the device due to a limit timeout using the policy
+	 * 0xD. For these commands, invoke EH to get the command sense data.
+	 */
+	if (qc->flags & ATA_QCFLAG_HAS_CDL &&
+	    qc->result_tf.status & ATA_SENSE) {
+		/*
+		 * Tell SCSI EH to not overwrite scmd->result even if this
+		 * command is finished with result SAM_STAT_GOOD.
+		 */
+		qc->scsicmd->flags |= SCMD_FORCE_EH_SUCCESS;
+		qc->flags |= ATA_QCFLAG_EH_SUCCESS_CMD;
+		ehi->dev_action[dev->devno] |= ATA_EH_GET_SUCCESS_SENSE;
+
+		/*
+		 * set pending so that ata_qc_schedule_eh() does not trigger
+		 * fast drain, and freeze the port.
+		 */
+		ap->pflags |= ATA_PFLAG_EH_PENDING;
+		ata_qc_schedule_eh(qc);
+		return;
+	}
+
+	/* Some commands need post-processing after successful completion. */
+	switch (qc->tf.command) {
+	case ATA_CMD_SET_FEATURES:
+		if (qc->tf.feature != SETFEATURES_WC_ON &&
+		    qc->tf.feature != SETFEATURES_WC_OFF &&
+		    qc->tf.feature != SETFEATURES_RA_ON &&
+		    qc->tf.feature != SETFEATURES_RA_OFF)
+			break;
+		fallthrough;
+	case ATA_CMD_INIT_DEV_PARAMS: /* CHS translation changed */
+	case ATA_CMD_SET_MULTI: /* multi_count changed */
+		/* revalidate device */
+		ehi->dev_action[dev->devno] |= ATA_EH_REVALIDATE;
+		ata_port_schedule_eh(ap);
+		break;
+
+	case ATA_CMD_SLEEP:
+		dev->flags |= ATA_DFLAG_SLEEPING;
+		break;
+	}
+
+	if (unlikely(dev->flags & ATA_DFLAG_DUBIOUS_XFER))
+		ata_verify_xfer(qc);
+
+	__ata_qc_complete(qc);
+}
+EXPORT_SYMBOL_GPL(ata_qc_complete);
+
+/**
+ *	ata_qc_get_active - get bitmask of active qcs
+ *	@ap: port in question
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
  *
  *	RETURNS:
+<<<<<<< HEAD
  *	Number of completed commands on success, -errno otherwise.
  */
 int ata_qc_complete_multiple(struct ata_port *ap, u32 qc_active)
@@ -4997,6 +7029,23 @@ int ata_qc_complete_multiple(struct ata_port *ap, u32 qc_active)
 
 	return nr_done;
 }
+=======
+ *	Bitmask of active qcs
+ */
+u64 ata_qc_get_active(struct ata_port *ap)
+{
+	u64 qc_active = ap->qc_active;
+
+	/* ATA_TAG_INTERNAL is sent to hw as tag 0 */
+	if (qc_active & (1ULL << ATA_TAG_INTERNAL)) {
+		qc_active |= (1 << 0);
+		qc_active &= ~(1ULL << ATA_TAG_INTERNAL);
+	}
+
+	return qc_active;
+}
+EXPORT_SYMBOL_GPL(ata_qc_get_active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_qc_issue - issue taskfile to device
@@ -5016,6 +7065,7 @@ void ata_qc_issue(struct ata_queued_cmd *qc)
 	struct ata_link *link = qc->dev->link;
 	u8 prot = qc->tf.protocol;
 
+<<<<<<< HEAD
 	/* Make sure only one non-NCQ command is outstanding.  The
 	 * check is skipped for old EH because it reuses active qc to
 	 * request ATAPI sense.
@@ -5028,6 +7078,17 @@ void ata_qc_issue(struct ata_queued_cmd *qc)
 		if (!link->sactive)
 			ap->nr_active_links++;
 		link->sactive |= 1 << qc->tag;
+=======
+	/* Make sure only one non-NCQ command is outstanding. */
+	WARN_ON_ONCE(ata_tag_valid(link->active_tag));
+
+	if (ata_is_ncq(prot)) {
+		WARN_ON_ONCE(link->sactive & (1 << qc->hw_tag));
+
+		if (!link->sactive)
+			ap->nr_active_links++;
+		link->sactive |= 1 << qc->hw_tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		WARN_ON_ONCE(link->sactive);
 
@@ -5036,14 +7097,22 @@ void ata_qc_issue(struct ata_queued_cmd *qc)
 	}
 
 	qc->flags |= ATA_QCFLAG_ACTIVE;
+<<<<<<< HEAD
 	ap->qc_active |= 1 << qc->tag;
+=======
+	ap->qc_active |= 1ULL << qc->tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We guarantee to LLDs that they will have at least one
 	 * non-zero sg if the command is a data command.
 	 */
+<<<<<<< HEAD
 	if (WARN_ON_ONCE(ata_is_data(prot) &&
 			 (!qc->sg || !qc->n_elem || !qc->nbytes)))
+=======
+	if (ata_is_data(prot) && (!qc->sg || !qc->n_elem || !qc->nbytes))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto sys_err;
 
 	if (ata_is_dma(prot) || (ata_is_pio(prot) &&
@@ -5059,8 +7128,16 @@ void ata_qc_issue(struct ata_queued_cmd *qc)
 		return;
 	}
 
+<<<<<<< HEAD
 	ap->ops->qc_prep(qc);
 
+=======
+	trace_ata_qc_prep(qc);
+	qc->err_mask |= ap->ops->qc_prep(qc);
+	if (unlikely(qc->err_mask))
+		goto err;
+	trace_ata_qc_issue(qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc->err_mask |= ap->ops->qc_issue(qc);
 	if (unlikely(qc->err_mask))
 		goto err;
@@ -5073,6 +7150,7 @@ err:
 }
 
 /**
+<<<<<<< HEAD
  *	sata_scr_valid - test whether SCRs are accessible
  *	@link: ATA link to test SCR accessibility for
  *
@@ -5178,6 +7256,8 @@ int sata_scr_write_flush(struct ata_link *link, int reg, u32 val)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	ata_phys_link_online - test whether the given link is online
  *	@link: ATA link to test
  *
@@ -5250,6 +7330,10 @@ bool ata_link_online(struct ata_link *link)
 	return ata_phys_link_online(link) ||
 		(slave && ata_phys_link_online(slave));
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_link_online);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_link_offline - test whether the given link is offline
@@ -5276,6 +7360,7 @@ bool ata_link_offline(struct ata_link *link)
 	return ata_phys_link_offline(link) &&
 		(!slave || ata_phys_link_offline(slave));
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM
 static int ata_port_request_pm(struct ata_port *ap, pm_message_t mesg,
@@ -5303,6 +7388,32 @@ static int ata_port_request_pm(struct ata_port *ap, pm_message_t mesg,
 		ap->pm_result = &rc;
 	}
 
+=======
+EXPORT_SYMBOL_GPL(ata_link_offline);
+
+#ifdef CONFIG_PM
+static void ata_port_request_pm(struct ata_port *ap, pm_message_t mesg,
+				unsigned int action, unsigned int ehi_flags,
+				bool async)
+{
+	struct ata_link *link;
+	unsigned long flags;
+
+	spin_lock_irqsave(ap->lock, flags);
+
+	/*
+	 * A previous PM operation might still be in progress. Wait for
+	 * ATA_PFLAG_PM_PENDING to clear.
+	 */
+	if (ap->pflags & ATA_PFLAG_PM_PENDING) {
+		spin_unlock_irqrestore(ap->lock, flags);
+		ata_port_wait_eh(ap);
+		spin_lock_irqsave(ap->lock, flags);
+	}
+
+	/* Request PM operation to EH */
+	ap->pm_mesg = mesg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->pflags |= ATA_PFLAG_PM_PENDING;
 	ata_for_each_link(link, ap, HOST_FIRST) {
 		link->eh_info.action |= action;
@@ -5313,6 +7424,7 @@ static int ata_port_request_pm(struct ata_port *ap, pm_message_t mesg,
 
 	spin_unlock_irqrestore(ap->lock, flags);
 
+<<<<<<< HEAD
 	/* wait and check result */
 	if (wait) {
 		ata_port_wait_eh(ap);
@@ -5411,6 +7523,147 @@ static const struct dev_pm_ops ata_port_pm_ops = {
 	.runtime_idle = ata_port_runtime_idle,
 };
 
+=======
+	if (!async)
+		ata_port_wait_eh(ap);
+}
+
+static void ata_port_suspend(struct ata_port *ap, pm_message_t mesg,
+			     bool async)
+{
+	/*
+	 * We are about to suspend the port, so we do not care about
+	 * scsi_rescan_device() calls scheduled by previous resume operations.
+	 * The next resume will schedule the rescan again. So cancel any rescan
+	 * that is not done yet.
+	 */
+	cancel_delayed_work_sync(&ap->scsi_rescan_task);
+
+	/*
+	 * On some hardware, device fails to respond after spun down for
+	 * suspend. As the device will not be used until being resumed, we
+	 * do not need to touch the device. Ask EH to skip the usual stuff
+	 * and proceed directly to suspend.
+	 *
+	 * http://thread.gmane.org/gmane.linux.ide/46764
+	 */
+	ata_port_request_pm(ap, mesg, 0,
+			    ATA_EHI_QUIET | ATA_EHI_NO_AUTOPSY |
+			    ATA_EHI_NO_RECOVERY,
+			    async);
+}
+
+static int ata_port_pm_suspend(struct device *dev)
+{
+	struct ata_port *ap = to_ata_port(dev);
+
+	if (pm_runtime_suspended(dev))
+		return 0;
+
+	ata_port_suspend(ap, PMSG_SUSPEND, false);
+	return 0;
+}
+
+static int ata_port_pm_freeze(struct device *dev)
+{
+	struct ata_port *ap = to_ata_port(dev);
+
+	if (pm_runtime_suspended(dev))
+		return 0;
+
+	ata_port_suspend(ap, PMSG_FREEZE, false);
+	return 0;
+}
+
+static int ata_port_pm_poweroff(struct device *dev)
+{
+	if (!pm_runtime_suspended(dev))
+		ata_port_suspend(to_ata_port(dev), PMSG_HIBERNATE, false);
+	return 0;
+}
+
+static void ata_port_resume(struct ata_port *ap, pm_message_t mesg,
+			    bool async)
+{
+	ata_port_request_pm(ap, mesg, ATA_EH_RESET,
+			    ATA_EHI_NO_AUTOPSY | ATA_EHI_QUIET,
+			    async);
+}
+
+static int ata_port_pm_resume(struct device *dev)
+{
+	if (!pm_runtime_suspended(dev))
+		ata_port_resume(to_ata_port(dev), PMSG_RESUME, true);
+	return 0;
+}
+
+/*
+ * For ODDs, the upper layer will poll for media change every few seconds,
+ * which will make it enter and leave suspend state every few seconds. And
+ * as each suspend will cause a hard/soft reset, the gain of runtime suspend
+ * is very little and the ODD may malfunction after constantly being reset.
+ * So the idle callback here will not proceed to suspend if a non-ZPODD capable
+ * ODD is attached to the port.
+ */
+static int ata_port_runtime_idle(struct device *dev)
+{
+	struct ata_port *ap = to_ata_port(dev);
+	struct ata_link *link;
+	struct ata_device *adev;
+
+	ata_for_each_link(link, ap, HOST_FIRST) {
+		ata_for_each_dev(adev, link, ENABLED)
+			if (adev->class == ATA_DEV_ATAPI &&
+			    !zpodd_dev_enabled(adev))
+				return -EBUSY;
+	}
+
+	return 0;
+}
+
+static int ata_port_runtime_suspend(struct device *dev)
+{
+	ata_port_suspend(to_ata_port(dev), PMSG_AUTO_SUSPEND, false);
+	return 0;
+}
+
+static int ata_port_runtime_resume(struct device *dev)
+{
+	ata_port_resume(to_ata_port(dev), PMSG_AUTO_RESUME, false);
+	return 0;
+}
+
+static const struct dev_pm_ops ata_port_pm_ops = {
+	.suspend = ata_port_pm_suspend,
+	.resume = ata_port_pm_resume,
+	.freeze = ata_port_pm_freeze,
+	.thaw = ata_port_pm_resume,
+	.poweroff = ata_port_pm_poweroff,
+	.restore = ata_port_pm_resume,
+
+	.runtime_suspend = ata_port_runtime_suspend,
+	.runtime_resume = ata_port_runtime_resume,
+	.runtime_idle = ata_port_runtime_idle,
+};
+
+/* sas ports don't participate in pm runtime management of ata_ports,
+ * and need to resume ata devices at the domain level, not the per-port
+ * level. sas suspend/resume is async to allow parallel port recovery
+ * since sas has multiple ata_port instances per Scsi_Host.
+ */
+void ata_sas_port_suspend(struct ata_port *ap)
+{
+	ata_port_suspend(ap, PMSG_SUSPEND, true);
+}
+EXPORT_SYMBOL_GPL(ata_sas_port_suspend);
+
+void ata_sas_port_resume(struct ata_port *ap)
+{
+	ata_port_resume(ap, PMSG_RESUME, true);
+}
+EXPORT_SYMBOL_GPL(ata_sas_port_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_host_suspend - suspend host
  *	@host: host to suspend
@@ -5418,11 +7671,19 @@ static const struct dev_pm_ops ata_port_pm_ops = {
  *
  *	Suspend @host.  Actual operation is performed by port suspend.
  */
+<<<<<<< HEAD
 int ata_host_suspend(struct ata_host *host, pm_message_t mesg)
 {
 	host->dev->power.power_state = mesg;
 	return 0;
 }
+=======
+void ata_host_suspend(struct ata_host *host, pm_message_t mesg)
+{
+	host->dev->power.power_state = mesg;
+}
+EXPORT_SYMBOL_GPL(ata_host_suspend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_host_resume - resume host
@@ -5434,10 +7695,18 @@ void ata_host_resume(struct ata_host *host)
 {
 	host->dev->power.power_state = PMSG_ON;
 }
+<<<<<<< HEAD
 #endif
 
 struct device_type ata_port_type = {
 	.name = "ata_port",
+=======
+EXPORT_SYMBOL_GPL(ata_host_resume);
+#endif
+
+const struct device_type ata_port_type = {
+	.name = ATA_PORT_TYPE_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.pm = &ata_port_pm_ops,
 #endif
@@ -5519,7 +7788,11 @@ void ata_link_init(struct ata_port *ap, struct ata_link *link, int pmp)
  *	sata_link_init_spd - Initialize link->sata_spd_limit
  *	@link: Link to configure sata_spd_limit for
  *
+<<<<<<< HEAD
  *	Initialize @link->[hw_]sata_spd_limit to the currently
+=======
+ *	Initialize ``link->[hw_]sata_spd_limit`` to the currently
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	configured value.
  *
  *	LOCKING:
@@ -5564,8 +7837,11 @@ struct ata_port *ata_port_alloc(struct ata_host *host)
 {
 	struct ata_port *ap;
 
+<<<<<<< HEAD
 	DPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap = kzalloc(sizeof(*ap), GFP_KERNEL);
 	if (!ap)
 		return NULL;
@@ -5573,6 +7849,7 @@ struct ata_port *ata_port_alloc(struct ata_host *host)
 	ap->pflags |= ATA_PFLAG_INITIALIZING | ATA_PFLAG_FROZEN;
 	ap->lock = &host->lock;
 	ap->print_id = -1;
+<<<<<<< HEAD
 	ap->host = host;
 	ap->dev = host->dev;
 
@@ -5594,6 +7871,20 @@ struct ata_port *ata_port_alloc(struct ata_host *host)
 	init_timer_deferrable(&ap->fastdrain_timer);
 	ap->fastdrain_timer.function = ata_eh_fastdrain_timerfn;
 	ap->fastdrain_timer.data = (unsigned long)ap;
+=======
+	ap->local_port_no = -1;
+	ap->host = host;
+	ap->dev = host->dev;
+
+	mutex_init(&ap->scsi_scan_mutex);
+	INIT_DELAYED_WORK(&ap->hotplug_task, ata_scsi_hotplug);
+	INIT_DELAYED_WORK(&ap->scsi_rescan_task, ata_scsi_dev_rescan);
+	INIT_LIST_HEAD(&ap->eh_done_q);
+	init_waitqueue_head(&ap->eh_wait_q);
+	init_completion(&ap->park_req_pending);
+	timer_setup(&ap->fastdrain_timer, ata_eh_fastdrain_timerfn,
+		    TIMER_DEFERRABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ap->cbl = ATA_CBL_NONE;
 
@@ -5608,7 +7899,11 @@ struct ata_port *ata_port_alloc(struct ata_host *host)
 	return ap;
 }
 
+<<<<<<< HEAD
 static void ata_host_release(struct device *gendev, void *res)
+=======
+static void ata_devres_release(struct device *gendev, void *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host = dev_get_drvdata(gendev);
 	int i;
@@ -5622,6 +7917,7 @@ static void ata_host_release(struct device *gendev, void *res)
 		if (ap->scsi_host)
 			scsi_host_put(ap->scsi_host);
 
+<<<<<<< HEAD
 		kfree(ap->pmp_link);
 		kfree(ap->slave_link);
 		kfree(ap);
@@ -5631,6 +7927,42 @@ static void ata_host_release(struct device *gendev, void *res)
 	dev_set_drvdata(gendev, NULL);
 }
 
+=======
+	}
+
+	dev_set_drvdata(gendev, NULL);
+	ata_host_put(host);
+}
+
+static void ata_host_release(struct kref *kref)
+{
+	struct ata_host *host = container_of(kref, struct ata_host, kref);
+	int i;
+
+	for (i = 0; i < host->n_ports; i++) {
+		struct ata_port *ap = host->ports[i];
+
+		kfree(ap->pmp_link);
+		kfree(ap->slave_link);
+		kfree(ap->ncq_sense_buf);
+		kfree(ap);
+		host->ports[i] = NULL;
+	}
+	kfree(host);
+}
+
+void ata_host_get(struct ata_host *host)
+{
+	kref_get(&host->kref);
+}
+
+void ata_host_put(struct ata_host *host)
+{
+	kref_put(&host->kref, ata_host_release);
+}
+EXPORT_SYMBOL_GPL(ata_host_put);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ata_host_alloc - allocate and init basic ATA host resources
  *	@dev: generic device this host is associated with
@@ -5656,6 +7988,7 @@ struct ata_host *ata_host_alloc(struct device *dev, int max_ports)
 	struct ata_host *host;
 	size_t sz;
 	int i;
+<<<<<<< HEAD
 
 	DPRINTK("ENTER\n");
 
@@ -5670,12 +8003,34 @@ struct ata_host *ata_host_alloc(struct device *dev, int max_ports)
 		goto err_out;
 
 	devres_add(dev, host);
+=======
+	void *dr;
+
+	/* alloc a container for our list of ATA ports (buses) */
+	sz = sizeof(struct ata_host) + (max_ports + 1) * sizeof(void *);
+	host = kzalloc(sz, GFP_KERNEL);
+	if (!host)
+		return NULL;
+
+	if (!devres_open_group(dev, NULL, GFP_KERNEL))
+		goto err_free;
+
+	dr = devres_alloc(ata_devres_release, 0, GFP_KERNEL);
+	if (!dr)
+		goto err_out;
+
+	devres_add(dev, dr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(dev, host);
 
 	spin_lock_init(&host->lock);
 	mutex_init(&host->eh_mutex);
 	host->dev = dev;
 	host->n_ports = max_ports;
+<<<<<<< HEAD
+=======
+	kref_init(&host->kref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate ports bound to this host */
 	for (i = 0; i < max_ports; i++) {
@@ -5694,8 +8049,16 @@ struct ata_host *ata_host_alloc(struct device *dev, int max_ports)
 
  err_out:
 	devres_release_group(dev, NULL);
+<<<<<<< HEAD
 	return NULL;
 }
+=======
+ err_free:
+	kfree(host);
+	return NULL;
+}
+EXPORT_SYMBOL_GPL(ata_host_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_host_alloc_pinfo - alloc host and init with port_info array
@@ -5717,7 +8080,11 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
 				      const struct ata_port_info * const * ppi,
 				      int n_ports)
 {
+<<<<<<< HEAD
 	const struct ata_port_info *pi;
+=======
+	const struct ata_port_info *pi = &ata_dummy_port_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_host *host;
 	int i, j;
 
@@ -5725,7 +8092,11 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
 	if (!host)
 		return NULL;
 
+<<<<<<< HEAD
 	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
+=======
+	for (i = 0, j = 0; i < host->n_ports; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ata_port *ap = host->ports[i];
 
 		if (ppi[j])
@@ -5744,6 +8115,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
 
 	return host;
 }
+<<<<<<< HEAD
 
 /**
  *	ata_slave_link_init - initialize slave link
@@ -5806,6 +8178,9 @@ int ata_slave_link_init(struct ata_port *ap)
 	ap->slave_link = link;
 	return 0;
 }
+=======
+EXPORT_SYMBOL_GPL(ata_host_alloc_pinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ata_host_stop(struct device *gendev, void *res)
 {
@@ -5882,7 +8257,11 @@ static void ata_finalize_port_ops(struct ata_port_operations *ops)
  *	Start and then freeze ports of @host.  Started status is
  *	recorded in host->flags, so this function can be called
  *	multiple times.  Ports are guaranteed to get started only
+<<<<<<< HEAD
  *	once.  If host->ops isn't initialized yet, its set to the
+=======
+ *	once.  If host->ops is not initialized yet, it is set to the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	first non-dummy port ops.
  *
  *	LOCKING:
@@ -5914,7 +8293,11 @@ int ata_host_start(struct ata_host *host)
 			have_stop = 1;
 	}
 
+<<<<<<< HEAD
 	if (host->ops->host_stop)
+=======
+	if (host->ops && host->ops->host_stop)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		have_stop = 1;
 
 	if (have_stop) {
@@ -5954,6 +8337,7 @@ int ata_host_start(struct ata_host *host)
 	devres_free(start_dr);
 	return rc;
 }
+<<<<<<< HEAD
 
 /**
  *	ata_sas_host_init - Initialize a host struct
@@ -5979,6 +8363,30 @@ void ata_host_init(struct ata_host *host, struct device *dev,
 }
 
 void __ata_port_probe(struct ata_port *ap)
+=======
+EXPORT_SYMBOL_GPL(ata_host_start);
+
+/**
+ *	ata_host_init - Initialize a host struct for sas (ipr, libsas)
+ *	@host:	host to initialize
+ *	@dev:	device host is attached to
+ *	@ops:	port_ops
+ *
+ */
+void ata_host_init(struct ata_host *host, struct device *dev,
+		   struct ata_port_operations *ops)
+{
+	spin_lock_init(&host->lock);
+	mutex_init(&host->eh_mutex);
+	host->n_tags = ATA_MAX_QUEUE;
+	host->dev = dev;
+	host->ops = ops;
+	kref_init(&host->kref);
+}
+EXPORT_SYMBOL_GPL(ata_host_init);
+
+void ata_port_probe(struct ata_port *ap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_eh_info *ehi = &ap->link.eh_info;
 	unsigned long flags;
@@ -5996,6 +8404,7 @@ void __ata_port_probe(struct ata_port *ap)
 
 	spin_unlock_irqrestore(ap->lock, flags);
 }
+<<<<<<< HEAD
 
 int ata_port_probe(struct ata_port *ap)
 {
@@ -6012,6 +8421,9 @@ int ata_port_probe(struct ata_port *ap)
 	return rc;
 }
 
+=======
+EXPORT_SYMBOL_GPL(ata_port_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void async_port_probe(void *data, async_cookie_t cookie)
 {
@@ -6027,7 +8439,12 @@ static void async_port_probe(void *data, async_cookie_t cookie)
 	if (!(ap->host->flags & ATA_HOST_PARALLEL_SCAN) && ap->port_no != 0)
 		async_synchronize_cookie(cookie);
 
+<<<<<<< HEAD
 	(void)ata_port_probe(ap);
+=======
+	ata_port_probe(ap);
+	ata_port_wait_eh(ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* in order to keep device order, we need to synchronize at this point */
 	async_synchronize_cookie(cookie);
@@ -6051,11 +8468,19 @@ static void async_port_probe(void *data, async_cookie_t cookie)
  *	RETURNS:
  *	0 on success, -errno otherwise.
  */
+<<<<<<< HEAD
 int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 {
 	int i, rc;
 
 	host->n_tags = clamp(sht->can_queue, 1, ATA_MAX_QUEUE - 1);
+=======
+int ata_host_register(struct ata_host *host, const struct scsi_host_template *sht)
+{
+	int i, rc;
+
+	host->n_tags = clamp(sht->can_queue, 1, ATA_MAX_QUEUE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* host must have been started */
 	if (!(host->flags & ATA_HOST_STARTED)) {
@@ -6072,9 +8497,16 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 		kfree(host->ports[i]);
 
 	/* give ports names and add SCSI hosts */
+<<<<<<< HEAD
 	for (i = 0; i < host->n_ports; i++)
 		host->ports[i]->print_id = atomic_inc_return(&ata_print_id);
 
+=======
+	for (i = 0; i < host->n_ports; i++) {
+		host->ports[i]->print_id = atomic_inc_return(&ata_print_id);
+		host->ports[i]->local_port_no = i + 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create associated sysfs transport objects  */
 	for (i = 0; i < host->n_ports; i++) {
@@ -6088,6 +8520,7 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 	if (rc)
 		goto err_tadd;
 
+<<<<<<< HEAD
 	/* associate with ACPI nodes */
 	ata_acpi_associate(host);
 
@@ -6095,6 +8528,12 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 	for (i = 0; i < host->n_ports; i++) {
 		struct ata_port *ap = host->ports[i];
 		unsigned long xfer_mask;
+=======
+	/* set cable, sata_spd_limit and report */
+	for (i = 0; i < host->n_ports; i++) {
+		struct ata_port *ap = host->ports[i];
+		unsigned int xfer_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* set SATA cable type if still unset */
 		if (ap->cbl == ATA_CBL_NONE && (ap->flags & ATA_FLAG_SATA))
@@ -6122,7 +8561,11 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 	/* perform each probe asynchronously */
 	for (i = 0; i < host->n_ports; i++) {
 		struct ata_port *ap = host->ports[i];
+<<<<<<< HEAD
 		async_schedule(async_port_probe, ap);
+=======
+		ap->cookie = async_schedule(async_port_probe, ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -6134,6 +8577,10 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
 	return rc;
 
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_host_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_host_activate - start host, request IRQ and register it
@@ -6145,7 +8592,11 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
  *
  *	After allocating an ATA host and initializing it, most libata
  *	LLDs perform three steps to activate the host - start host,
+<<<<<<< HEAD
  *	request IRQ and register it.  This helper takes necessasry
+=======
+ *	request IRQ and register it.  This helper takes necessary
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	arguments and performs the three steps in one go.
  *
  *	An invalid IRQ skips the IRQ registration and expects the host to
@@ -6160,9 +8611,16 @@ int ata_host_register(struct ata_host *host, struct scsi_host_template *sht)
  */
 int ata_host_activate(struct ata_host *host, int irq,
 		      irq_handler_t irq_handler, unsigned long irq_flags,
+<<<<<<< HEAD
 		      struct scsi_host_template *sht)
 {
 	int i, rc;
+=======
+		      const struct scsi_host_template *sht)
+{
+	int i, rc;
+	char *irq_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = ata_host_start(host);
 	if (rc)
@@ -6174,13 +8632,28 @@ int ata_host_activate(struct ata_host *host, int irq,
 		return ata_host_register(host, sht);
 	}
 
+<<<<<<< HEAD
 	rc = devm_request_irq(host->dev, irq, irq_handler, irq_flags,
 			      dev_driver_string(host->dev), host);
+=======
+	irq_desc = devm_kasprintf(host->dev, GFP_KERNEL, "%s[%s]",
+				  dev_driver_string(host->dev),
+				  dev_name(host->dev));
+	if (!irq_desc)
+		return -ENOMEM;
+
+	rc = devm_request_irq(host->dev, irq, irq_handler, irq_flags,
+			      irq_desc, host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
 	for (i = 0; i < host->n_ports; i++)
+<<<<<<< HEAD
 		ata_port_desc(host->ports[i], "irq %d", irq);
+=======
+		ata_port_desc_misc(host->ports[i], irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = ata_host_register(host, sht);
 	/* if failed, just free the IRQ and leave ports alone */
@@ -6189,9 +8662,16 @@ int ata_host_activate(struct ata_host *host, int irq,
 
 	return rc;
 }
+<<<<<<< HEAD
 
 /**
  *	ata_port_detach - Detach ATA port in prepration of device removal
+=======
+EXPORT_SYMBOL_GPL(ata_host_activate);
+
+/**
+ *	ata_port_detach - Detach ATA port in preparation of device removal
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@ap: ATA port to be detached
  *
  *	Detach all ATA devices and the associated SCSI devices of @ap;
@@ -6204,6 +8684,7 @@ int ata_host_activate(struct ata_host *host, int irq,
 static void ata_port_detach(struct ata_port *ap)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 
 	if (!ap->ops->error_handler)
 		goto skip_eh;
@@ -6213,6 +8694,38 @@ static void ata_port_detach(struct ata_port *ap)
 	ap->pflags |= ATA_PFLAG_UNLOADING;
 	ata_port_schedule_eh(ap);
 	spin_unlock_irqrestore(ap->lock, flags);
+=======
+	struct ata_link *link;
+	struct ata_device *dev;
+
+	/* Ensure ata_port probe has completed */
+	async_synchronize_cookie(ap->cookie + 1);
+
+	/* Wait for any ongoing EH */
+	ata_port_wait_eh(ap);
+
+	mutex_lock(&ap->scsi_scan_mutex);
+	spin_lock_irqsave(ap->lock, flags);
+
+	/* Remove scsi devices */
+	ata_for_each_link(link, ap, HOST_FIRST) {
+		ata_for_each_dev(dev, link, ALL) {
+			if (dev->sdev) {
+				spin_unlock_irqrestore(ap->lock, flags);
+				scsi_remove_device(dev->sdev);
+				spin_lock_irqsave(ap->lock, flags);
+				dev->sdev = NULL;
+			}
+		}
+	}
+
+	/* Tell EH to disable all devices */
+	ap->pflags |= ATA_PFLAG_UNLOADING;
+	ata_port_schedule_eh(ap);
+
+	spin_unlock_irqrestore(ap->lock, flags);
+	mutex_unlock(&ap->scsi_scan_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wait till EH commits suicide */
 	ata_port_wait_eh(ap);
@@ -6221,17 +8734,35 @@ static void ata_port_detach(struct ata_port *ap)
 	WARN_ON(!(ap->pflags & ATA_PFLAG_UNLOADED));
 
 	cancel_delayed_work_sync(&ap->hotplug_task);
+<<<<<<< HEAD
 
  skip_eh:
+=======
+	cancel_delayed_work_sync(&ap->scsi_rescan_task);
+
+	/* clean up zpodd on port removal */
+	ata_for_each_link(link, ap, HOST_FIRST) {
+		ata_for_each_dev(dev, link, ALL) {
+			if (zpodd_dev_enabled(dev))
+				zpodd_exit(dev);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ap->pmp_link) {
 		int i;
 		for (i = 0; i < SATA_PMP_MAX_PORTS; i++)
 			ata_tlink_delete(&ap->pmp_link[i]);
 	}
+<<<<<<< HEAD
 	ata_tport_delete(ap);
 
 	/* remove the associated SCSI host */
 	scsi_remove_host(ap->scsi_host);
+=======
+	/* remove the associated SCSI host */
+	scsi_remove_host(ap->scsi_host);
+	ata_tport_delete(ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6253,6 +8784,10 @@ void ata_host_detach(struct ata_host *host)
 	/* the host is dead now, dissociate ACPI */
 	ata_acpi_dissociate(host);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_host_detach);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI
 
@@ -6269,11 +8804,40 @@ void ata_host_detach(struct ata_host *host)
  */
 void ata_pci_remove_one(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct device *dev = &pdev->dev;
 	struct ata_host *host = dev_get_drvdata(dev);
 
 	ata_host_detach(host);
 }
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+
+	ata_host_detach(host);
+}
+EXPORT_SYMBOL_GPL(ata_pci_remove_one);
+
+void ata_pci_shutdown_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+	int i;
+
+	for (i = 0; i < host->n_ports; i++) {
+		struct ata_port *ap = host->ports[i];
+
+		ap->pflags |= ATA_PFLAG_FROZEN;
+
+		/* Disable port interrupts */
+		if (ap->ops->freeze)
+			ap->ops->freeze(ap);
+
+		/* Stop the port DMA engines */
+		if (ap->ops->port_stop)
+			ap->ops->port_stop(ap);
+	}
+}
+EXPORT_SYMBOL_GPL(ata_pci_shutdown_one);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* move to PCI subsystem */
 int pci_test_config_bits(struct pci_dev *pdev, const struct pci_bits *bits)
@@ -6308,6 +8872,10 @@ int pci_test_config_bits(struct pci_dev *pdev, const struct pci_bits *bits)
 
 	return (tmp == bits->val) ? 1 : 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pci_test_config_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 void ata_pci_device_do_suspend(struct pci_dev *pdev, pm_message_t mesg)
@@ -6318,6 +8886,10 @@ void ata_pci_device_do_suspend(struct pci_dev *pdev, pm_message_t mesg)
 	if (mesg.event & PM_EVENT_SLEEP)
 		pci_set_power_state(pdev, PCI_D3hot);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_pci_device_do_suspend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ata_pci_device_do_resume(struct pci_dev *pdev)
 {
@@ -6336,6 +8908,7 @@ int ata_pci_device_do_resume(struct pci_dev *pdev)
 	pci_set_master(pdev);
 	return 0;
 }
+<<<<<<< HEAD
 
 int ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
@@ -6345,15 +8918,32 @@ int ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 	rc = ata_host_suspend(host, mesg);
 	if (rc)
 		return rc;
+=======
+EXPORT_SYMBOL_GPL(ata_pci_device_do_resume);
+
+int ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+
+	ata_host_suspend(host, mesg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_pci_device_do_suspend(pdev, mesg);
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int ata_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+EXPORT_SYMBOL_GPL(ata_pci_device_suspend);
+
+int ata_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -6361,14 +8951,146 @@ int ata_pci_device_resume(struct pci_dev *pdev)
 		ata_host_resume(host);
 	return rc;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 #endif /* CONFIG_PCI */
 
+=======
+EXPORT_SYMBOL_GPL(ata_pci_device_resume);
+#endif /* CONFIG_PM */
+#endif /* CONFIG_PCI */
+
+/**
+ *	ata_platform_remove_one - Platform layer callback for device removal
+ *	@pdev: Platform device that was removed
+ *
+ *	Platform layer indicates to libata via this hook that hot-unplug or
+ *	module unload event has occurred.  Detach all ports.  Resource
+ *	release is handled via devres.
+ *
+ *	LOCKING:
+ *	Inherited from platform layer (may sleep).
+ */
+void ata_platform_remove_one(struct platform_device *pdev)
+{
+	struct ata_host *host = platform_get_drvdata(pdev);
+
+	ata_host_detach(host);
+}
+EXPORT_SYMBOL_GPL(ata_platform_remove_one);
+
+#ifdef CONFIG_ATA_FORCE
+
+#define force_cbl(name, flag)				\
+	{ #name,	.cbl		= (flag) }
+
+#define force_spd_limit(spd, val)			\
+	{ #spd,	.spd_limit		= (val) }
+
+#define force_xfer(mode, shift)				\
+	{ #mode,	.xfer_mask	= (1UL << (shift)) }
+
+#define force_lflag_on(name, flags)			\
+	{ #name,	.lflags_on	= (flags) }
+
+#define force_lflag_onoff(name, flags)			\
+	{ "no" #name,	.lflags_on	= (flags) },	\
+	{ #name,	.lflags_off	= (flags) }
+
+#define force_horkage_on(name, flag)			\
+	{ #name,	.horkage_on	= (flag) }
+
+#define force_horkage_onoff(name, flag)			\
+	{ "no" #name,	.horkage_on	= (flag) },	\
+	{ #name,	.horkage_off	= (flag) }
+
+static const struct ata_force_param force_tbl[] __initconst = {
+	force_cbl(40c,			ATA_CBL_PATA40),
+	force_cbl(80c,			ATA_CBL_PATA80),
+	force_cbl(short40c,		ATA_CBL_PATA40_SHORT),
+	force_cbl(unk,			ATA_CBL_PATA_UNK),
+	force_cbl(ign,			ATA_CBL_PATA_IGN),
+	force_cbl(sata,			ATA_CBL_SATA),
+
+	force_spd_limit(1.5Gbps,	1),
+	force_spd_limit(3.0Gbps,	2),
+
+	force_xfer(pio0,		ATA_SHIFT_PIO + 0),
+	force_xfer(pio1,		ATA_SHIFT_PIO + 1),
+	force_xfer(pio2,		ATA_SHIFT_PIO + 2),
+	force_xfer(pio3,		ATA_SHIFT_PIO + 3),
+	force_xfer(pio4,		ATA_SHIFT_PIO + 4),
+	force_xfer(pio5,		ATA_SHIFT_PIO + 5),
+	force_xfer(pio6,		ATA_SHIFT_PIO + 6),
+	force_xfer(mwdma0,		ATA_SHIFT_MWDMA + 0),
+	force_xfer(mwdma1,		ATA_SHIFT_MWDMA + 1),
+	force_xfer(mwdma2,		ATA_SHIFT_MWDMA + 2),
+	force_xfer(mwdma3,		ATA_SHIFT_MWDMA + 3),
+	force_xfer(mwdma4,		ATA_SHIFT_MWDMA + 4),
+	force_xfer(udma0,		ATA_SHIFT_UDMA + 0),
+	force_xfer(udma16,		ATA_SHIFT_UDMA + 0),
+	force_xfer(udma/16,		ATA_SHIFT_UDMA + 0),
+	force_xfer(udma1,		ATA_SHIFT_UDMA + 1),
+	force_xfer(udma25,		ATA_SHIFT_UDMA + 1),
+	force_xfer(udma/25,		ATA_SHIFT_UDMA + 1),
+	force_xfer(udma2,		ATA_SHIFT_UDMA + 2),
+	force_xfer(udma33,		ATA_SHIFT_UDMA + 2),
+	force_xfer(udma/33,		ATA_SHIFT_UDMA + 2),
+	force_xfer(udma3,		ATA_SHIFT_UDMA + 3),
+	force_xfer(udma44,		ATA_SHIFT_UDMA + 3),
+	force_xfer(udma/44,		ATA_SHIFT_UDMA + 3),
+	force_xfer(udma4,		ATA_SHIFT_UDMA + 4),
+	force_xfer(udma66,		ATA_SHIFT_UDMA + 4),
+	force_xfer(udma/66,		ATA_SHIFT_UDMA + 4),
+	force_xfer(udma5,		ATA_SHIFT_UDMA + 5),
+	force_xfer(udma100,		ATA_SHIFT_UDMA + 5),
+	force_xfer(udma/100,		ATA_SHIFT_UDMA + 5),
+	force_xfer(udma6,		ATA_SHIFT_UDMA + 6),
+	force_xfer(udma133,		ATA_SHIFT_UDMA + 6),
+	force_xfer(udma/133,		ATA_SHIFT_UDMA + 6),
+	force_xfer(udma7,		ATA_SHIFT_UDMA + 7),
+
+	force_lflag_on(nohrst,		ATA_LFLAG_NO_HRST),
+	force_lflag_on(nosrst,		ATA_LFLAG_NO_SRST),
+	force_lflag_on(norst,		ATA_LFLAG_NO_HRST | ATA_LFLAG_NO_SRST),
+	force_lflag_on(rstonce,		ATA_LFLAG_RST_ONCE),
+	force_lflag_onoff(dbdelay,	ATA_LFLAG_NO_DEBOUNCE_DELAY),
+
+	force_horkage_onoff(ncq,	ATA_HORKAGE_NONCQ),
+	force_horkage_onoff(ncqtrim,	ATA_HORKAGE_NO_NCQ_TRIM),
+	force_horkage_onoff(ncqati,	ATA_HORKAGE_NO_NCQ_ON_ATI),
+
+	force_horkage_onoff(trim,	ATA_HORKAGE_NOTRIM),
+	force_horkage_on(trim_zero,	ATA_HORKAGE_ZERO_AFTER_TRIM),
+	force_horkage_on(max_trim_128m, ATA_HORKAGE_MAX_TRIM_128M),
+
+	force_horkage_onoff(dma,	ATA_HORKAGE_NODMA),
+	force_horkage_on(atapi_dmadir,	ATA_HORKAGE_ATAPI_DMADIR),
+	force_horkage_on(atapi_mod16_dma, ATA_HORKAGE_ATAPI_MOD16_DMA),
+
+	force_horkage_onoff(dmalog,	ATA_HORKAGE_NO_DMA_LOG),
+	force_horkage_onoff(iddevlog,	ATA_HORKAGE_NO_ID_DEV_LOG),
+	force_horkage_onoff(logdir,	ATA_HORKAGE_NO_LOG_DIR),
+
+	force_horkage_on(max_sec_128,	ATA_HORKAGE_MAX_SEC_128),
+	force_horkage_on(max_sec_1024,	ATA_HORKAGE_MAX_SEC_1024),
+	force_horkage_on(max_sec_lba48,	ATA_HORKAGE_MAX_SEC_LBA48),
+
+	force_horkage_onoff(lpm,	ATA_HORKAGE_NOLPM),
+	force_horkage_onoff(setxfer,	ATA_HORKAGE_NOSETXFER),
+	force_horkage_on(dump_id,	ATA_HORKAGE_DUMP_ID),
+	force_horkage_onoff(fua,	ATA_HORKAGE_NO_FUA),
+
+	force_horkage_on(disable,	ATA_HORKAGE_DISABLE),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init ata_parse_force_one(char **cur,
 				      struct ata_force_ent *force_ent,
 				      const char **reason)
 {
+<<<<<<< HEAD
 	/* FIXME: Currently, there's no way to tag init const data and
 	 * using __initdata causes build failure on some versions of
 	 * gcc.  Once __initdataconst is implemented, add const to the
@@ -6424,6 +9146,8 @@ static int __init ata_parse_force_one(char **cur,
 		{ "nosrst",	.lflags		= ATA_LFLAG_NO_SRST },
 		{ "norst",	.lflags		= ATA_LFLAG_NO_HRST | ATA_LFLAG_NO_SRST },
 	};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *start = *cur, *p = *cur;
 	char *id, *val, *endp;
 	const struct ata_force_param *match_fp = NULL;
@@ -6463,7 +9187,11 @@ static int __init ata_parse_force_one(char **cur,
 	}
 
 	force_ent->port = simple_strtoul(id, &endp, 10);
+<<<<<<< HEAD
 	if (p == endp || *endp != '\0') {
+=======
+	if (id == endp || *endp != '\0') {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*reason = "invalid port/link";
 		return -EINVAL;
 	}
@@ -6490,7 +9218,11 @@ static int __init ata_parse_force_one(char **cur,
 		return -EINVAL;
 	}
 	if (nr_matches > 1) {
+<<<<<<< HEAD
 		*reason = "ambigious value";
+=======
+		*reason = "ambiguous value";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -6505,12 +9237,20 @@ static void __init ata_parse_force_param(void)
 	int last_port = -1, last_device = -1;
 	char *p, *cur, *next;
 
+<<<<<<< HEAD
 	/* calculate maximum number of params and allocate force_tbl */
+=======
+	/* Calculate maximum number of params and allocate ata_force_tbl */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (p = ata_force_param_buf; *p; p++)
 		if (*p == ',')
 			size++;
 
+<<<<<<< HEAD
 	ata_force_tbl = kzalloc(sizeof(ata_force_tbl[0]) * size, GFP_KERNEL);
+=======
+	ata_force_tbl = kcalloc(size, sizeof(ata_force_tbl[0]), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ata_force_tbl) {
 		printk(KERN_WARNING "ata: failed to extend force table, "
 		       "libata.force ignored\n");
@@ -6544,6 +9284,18 @@ static void __init ata_parse_force_param(void)
 	ata_force_tbl_size = idx;
 }
 
+<<<<<<< HEAD
+=======
+static void ata_free_force_param(void)
+{
+	kfree(ata_force_tbl);
+}
+#else
+static inline void ata_parse_force_param(void) { }
+static inline void ata_free_force_param(void) { }
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init ata_init(void)
 {
 	int rc;
@@ -6552,7 +9304,11 @@ static int __init ata_init(void)
 
 	rc = ata_sff_init();
 	if (rc) {
+<<<<<<< HEAD
 		kfree(ata_force_tbl);
+=======
+		ata_free_force_param();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
@@ -6576,7 +9332,11 @@ static void __exit ata_exit(void)
 	ata_release_transport(ata_scsi_transport_template);
 	libata_transport_exit();
 	ata_sff_exit();
+<<<<<<< HEAD
 	kfree(ata_force_tbl);
+=======
+	ata_free_force_param();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 subsys_initcall(ata_init);
@@ -6588,6 +9348,10 @@ int ata_ratelimit(void)
 {
 	return __ratelimit(&ratelimit);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_ratelimit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_msleep - ATA EH owner aware msleep
@@ -6610,11 +9374,24 @@ void ata_msleep(struct ata_port *ap, unsigned int msecs)
 	if (owns_eh)
 		ata_eh_release(ap);
 
+<<<<<<< HEAD
 	msleep(msecs);
+=======
+	if (msecs < 20) {
+		unsigned long usecs = msecs * USEC_PER_MSEC;
+		usleep_range(usecs, usecs + 50);
+	} else {
+		msleep(msecs);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (owns_eh)
 		ata_eh_acquire(ap);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ata_msleep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_wait_register - wait until register value changes
@@ -6641,7 +9418,11 @@ void ata_msleep(struct ata_port *ap, unsigned int msecs)
  *	The final register value.
  */
 u32 ata_wait_register(struct ata_port *ap, void __iomem *reg, u32 mask, u32 val,
+<<<<<<< HEAD
 		      unsigned long interval, unsigned long timeout)
+=======
+		      unsigned int interval, unsigned int timeout)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long deadline;
 	u32 tmp;
@@ -6661,6 +9442,7 @@ u32 ata_wait_register(struct ata_port *ap, void __iomem *reg, u32 mask, u32 val,
 
 	return tmp;
 }
+<<<<<<< HEAD
 
 /**
  *	sata_lpm_ignore_phy_events - test if PHY event should be ignored
@@ -6693,6 +9475,9 @@ bool sata_lpm_ignore_phy_events(struct ata_link *link)
 	return false;
 }
 EXPORT_SYMBOL_GPL(sata_lpm_ignore_phy_events);
+=======
+EXPORT_SYMBOL_GPL(ata_wait_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Dummy port_ops
@@ -6711,11 +9496,19 @@ struct ata_port_operations ata_dummy_port_ops = {
 	.qc_prep		= ata_noop_qc_prep,
 	.qc_issue		= ata_dummy_qc_issue,
 	.error_handler		= ata_dummy_error_handler,
+<<<<<<< HEAD
 };
+=======
+	.sched_eh		= ata_std_sched_eh,
+	.end_eh			= ata_std_end_eh,
+};
+EXPORT_SYMBOL_GPL(ata_dummy_port_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct ata_port_info ata_dummy_port_info = {
 	.port_ops		= &ata_dummy_port_ops,
 };
+<<<<<<< HEAD
 
 /*
  * Utility print functions
@@ -6786,6 +9579,9 @@ int ata_dev_printk(const struct ata_device *dev, const char *level,
 	return r;
 }
 EXPORT_SYMBOL(ata_dev_printk);
+=======
+EXPORT_SYMBOL_GPL(ata_dummy_port_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ata_print_version(const struct device *dev, const char *version)
 {
@@ -6793,6 +9589,7 @@ void ata_print_version(const struct device *dev, const char *version)
 }
 EXPORT_SYMBOL(ata_print_version);
 
+<<<<<<< HEAD
 /*
  * libata is essentially a library of internal helper functions for
  * low-level ATA host controller drivers.  As such, the API/ABI is
@@ -6911,3 +9708,10 @@ EXPORT_SYMBOL_GPL(ata_cable_80wire);
 EXPORT_SYMBOL_GPL(ata_cable_unknown);
 EXPORT_SYMBOL_GPL(ata_cable_ignore);
 EXPORT_SYMBOL_GPL(ata_cable_sata);
+=======
+EXPORT_TRACEPOINT_SYMBOL_GPL(ata_tf_load);
+EXPORT_TRACEPOINT_SYMBOL_GPL(ata_exec_command);
+EXPORT_TRACEPOINT_SYMBOL_GPL(ata_bmdma_setup);
+EXPORT_TRACEPOINT_SYMBOL_GPL(ata_bmdma_start);
+EXPORT_TRACEPOINT_SYMBOL_GPL(ata_bmdma_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

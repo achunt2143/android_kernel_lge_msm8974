@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-footbridge/isa-rtc.c
  *
@@ -19,7 +23,10 @@
 
 #include <linux/init.h>
 #include <linux/mc146818rtc.h>
+<<<<<<< HEAD
 #include <linux/bcd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 
 #include "common.h"

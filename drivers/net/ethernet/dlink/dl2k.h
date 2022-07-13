@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  D-Link DL2000-based Gigabit Ethernet Adapter Linux driver */
 /*
     Copyright (c) 2001, 2002 by D-Link Corporation
     Written by Edward Peng.<edward_peng@dlink.com.tw>
     Created 03-May-2001, base on Linux' sundance.c.
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef __DL2K_H__
@@ -25,14 +32,21 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 #include <linux/ethtool.h>
 #include <linux/mii.h>
 #include <linux/bitops.h>
 #include <asm/processor.h>	/* Processor type for cache alignment. */
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/spinlock.h>
 #include <linux/time.h>
@@ -42,6 +56,7 @@
 #define TX_TOTAL_SIZE	TX_RING_SIZE*sizeof(struct netdev_desc)
 #define RX_TOTAL_SIZE	RX_RING_SIZE*sizeof(struct netdev_desc)
 
+<<<<<<< HEAD
 /* This driver was written to use PCI memory space, however x86-oriented
    hardware often uses I/O space accesses. */
 #ifndef MEM_MAPPING
@@ -59,6 +74,8 @@
 #define writel outl
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Offsets to the device registers.
    Unlike software-only systems, device drivers interact with complex hardware.
    It's not useful to define symbolic names for every register bit in the
@@ -229,6 +246,13 @@ enum ASICCtrl_HiWord_bits {
 	ResetBusy = 0x0400,
 };
 
+<<<<<<< HEAD
+=======
+#define IPG_AC_LED_MODE		BIT(14)
+#define IPG_AC_LED_SPEED	BIT(27)
+#define IPG_AC_LED_MODE_BIT_1	BIT(29)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Transmit Frame Control bits */
 enum TFC_bits {
 	DwordAlign = 0x00000000,
@@ -350,7 +374,14 @@ typedef struct t_SROM {
 	u16 asic_ctrl;		/* 0x02 */
 	u16 sub_vendor_id;	/* 0x04 */
 	u16 sub_system_id;	/* 0x06 */
+<<<<<<< HEAD
 	u16 reserved1[12];	/* 0x08-0x1f */
+=======
+	u16 pci_base_1;		/* 0x08 (IP1000A only) */
+	u16 pci_base_2;		/* 0x0a (IP1000A only) */
+	u16 led_mode;		/* 0x0c (IP1000A only) */
+	u16 reserved1[9];	/* 0x0e-0x1f */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 mac_addr[6];		/* 0x20-0x25 */
 	u8 reserved2[10];	/* 0x26-0x2f */
 	u8 sib[204];		/* 0x30-0xfb */
@@ -384,9 +415,16 @@ struct netdev_private {
 	dma_addr_t tx_ring_dma;
 	dma_addr_t rx_ring_dma;
 	struct pci_dev *pdev;
+<<<<<<< HEAD
 	spinlock_t tx_lock;
 	spinlock_t rx_lock;
 	struct net_device_stats stats;
+=======
+	void __iomem *ioaddr;
+	void __iomem *eeprom_addr;
+	spinlock_t tx_lock;
+	spinlock_t rx_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rx_buf_sz;		/* Based on MTU+slack. */
 	unsigned int speed;		/* Operating speed */
 	unsigned int vlan;		/* VLAN Id */
@@ -413,6 +451,10 @@ struct netdev_private {
 	u16 advertising;	/* NWay media advertisement */
 	u16 negotiate;		/* Negotiated media */
 	int phy_addr;		/* PHY addresses. */
+<<<<<<< HEAD
+=======
+	u16 led_mode;		/* LED mode read from EEPROM (IP1000A only) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* The station address location in the EEPROM. */
@@ -423,10 +465,22 @@ struct netdev_private {
         class_mask              of the class are honored during the comparison.
         driver_data             Data private to the driver.
 */
+<<<<<<< HEAD
 
 static DEFINE_PCI_DEVICE_TABLE(rio_pci_tbl) = {
 	{0x1186, 0x4000, PCI_ANY_ID, PCI_ANY_ID, },
 	{0x13f0, 0x1021, PCI_ANY_ID, PCI_ANY_ID, },
+=======
+#define CHIP_IP1000A	1
+
+static const struct pci_device_id rio_pci_tbl[] = {
+	{0x1186, 0x4000, PCI_ANY_ID, PCI_ANY_ID, },
+	{0x13f0, 0x1021, PCI_ANY_ID, PCI_ANY_ID, },
+	{ PCI_VDEVICE(SUNDANCE,	0x1023), CHIP_IP1000A },
+	{ PCI_VDEVICE(SUNDANCE,	0x2021), CHIP_IP1000A },
+	{ PCI_VDEVICE(DLINK,	0x9021), CHIP_IP1000A },
+	{ PCI_VDEVICE(DLINK,	0x4020), CHIP_IP1000A },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE (pci, rio_pci_tbl);

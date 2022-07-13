@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 'traps.c' handles hardware traps and faults after we have saved some
  * state in 'entry.S'.
@@ -6,27 +10,41 @@
  *                  Copyright (C) 2000 Philipp Rumpf
  *                  Copyright (C) 2000 David Howells
  *                  Copyright (C) 2002 - 2010 Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/ptrace.h>
 #include <linux/hardirq.h>
 #include <linux/init.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kallsyms.h>
 #include <linux/io.h>
 #include <linux/bug.h>
 #include <linux/debug_locks.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
 #include <linux/kexec.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/limits.h>
 #include <linux/sysfs.h>
 #include <linux/uaccess.h>
 #include <linux/perf_event.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/task_stack.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/alignment.h>
 #include <asm/fpu.h>
 #include <asm/kprobes.h>
@@ -48,6 +66,7 @@
 #define TRAP_ILLEGAL_SLOT_INST	13
 #endif
 
+<<<<<<< HEAD
 static void dump_mem(const char *str, unsigned long bottom, unsigned long top)
 {
 	unsigned long p;
@@ -144,6 +163,8 @@ static void die_if_no_fixup(const char * str, struct pt_regs * regs, long err)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void sign_extend(unsigned int count, unsigned char *dst)
 {
 #ifdef __LITTLE_ENDIAN__
@@ -174,6 +195,26 @@ static struct mem_access user_mem_access = {
 	copy_to_user,
 };
 
+<<<<<<< HEAD
+=======
+static unsigned long copy_from_kernel_wrapper(void *dst, const void __user *src,
+					      unsigned long cnt)
+{
+	return copy_from_kernel_nofault(dst, (const void __force *)src, cnt);
+}
+
+static unsigned long copy_to_kernel_wrapper(void __user *dst, const void *src,
+					    unsigned long cnt)
+{
+	return copy_to_kernel_nofault((void __force *)dst, src, cnt);
+}
+
+static struct mem_access kernel_mem_access = {
+	copy_from_kernel_wrapper,
+	copy_to_kernel_wrapper,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * handle an instruction that does an unaligned memory access by emulating the
  * desired behaviour
@@ -572,8 +613,11 @@ asmlinkage void do_address_error(struct pt_regs *regs,
 				 unsigned long address)
 {
 	unsigned long error_code = 0;
+<<<<<<< HEAD
 	mm_segment_t oldfs;
 	siginfo_t info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	insn_size_t instruction;
 	int tmp;
 
@@ -582,8 +626,11 @@ asmlinkage void do_address_error(struct pt_regs *regs,
 	error_code = lookup_exception_vector();
 #endif
 
+<<<<<<< HEAD
 	oldfs = get_fs();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (user_mode(regs)) {
 		int si_code = BUS_ADRERR;
 		unsigned int user_action;
@@ -591,6 +638,7 @@ asmlinkage void do_address_error(struct pt_regs *regs,
 		local_irq_enable();
 		inc_unaligned_user_access();
 
+<<<<<<< HEAD
 		set_fs(USER_DS);
 		if (copy_from_user(&instruction, (insn_size_t *)(regs->pc & ~1),
 				   sizeof(instruction))) {
@@ -598,6 +646,12 @@ asmlinkage void do_address_error(struct pt_regs *regs,
 			goto uspace_segv;
 		}
 		set_fs(oldfs);
+=======
+		if (copy_from_user(&instruction, (insn_size_t __user *)(regs->pc & ~1),
+				   sizeof(instruction))) {
+			goto uspace_segv;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* shout about userspace fixups */
 		unaligned_fixups_notify(current, instruction, regs);
@@ -620,11 +674,17 @@ fixup:
 			goto uspace_segv;
 		}
 
+<<<<<<< HEAD
 		set_fs(USER_DS);
 		tmp = handle_unaligned_access(instruction, regs,
 					      &user_mem_access, 0,
 					      address);
 		set_fs(oldfs);
+=======
+		tmp = handle_unaligned_access(instruction, regs,
+					      &user_mem_access, 0,
+					      address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tmp == 0)
 			return; /* sorted */
@@ -633,32 +693,48 @@ uspace_segv:
 		       "access (PC %lx PR %lx)\n", current->comm, regs->pc,
 		       regs->pr);
 
+<<<<<<< HEAD
 		info.si_signo = SIGBUS;
 		info.si_errno = 0;
 		info.si_code = si_code;
 		info.si_addr = (void __user *)address;
 		force_sig_info(SIGBUS, &info, current);
+=======
+		force_sig_fault(SIGBUS, si_code, (void __user *)address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		inc_unaligned_kernel_access();
 
 		if (regs->pc & 1)
 			die("unaligned program counter", regs, error_code);
 
+<<<<<<< HEAD
 		set_fs(KERNEL_DS);
 		if (copy_from_user(&instruction, (void __user *)(regs->pc),
+=======
+		if (copy_from_kernel_nofault(&instruction, (void *)(regs->pc),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sizeof(instruction))) {
 			/* Argh. Fault on the instruction itself.
 			   This should never happen non-SMP
 			*/
+<<<<<<< HEAD
 			set_fs(oldfs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			die("insn faulting in do_address_error", regs, 0);
 		}
 
 		unaligned_fixups_notify(current, instruction, regs);
 
+<<<<<<< HEAD
 		handle_unaligned_access(instruction, regs, &user_mem_access,
 					0, address);
 		set_fs(oldfs);
+=======
+		handle_unaligned_access(instruction, regs, &kernel_mem_access,
+					0, address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -692,6 +768,7 @@ int is_dsp_inst(struct pt_regs *regs)
 #endif /* CONFIG_SH_DSP */
 
 #ifdef CONFIG_CPU_SH2A
+<<<<<<< HEAD
 asmlinkage void do_divide_error(unsigned long r4, unsigned long r5,
 				unsigned long r6, unsigned long r7,
 				struct pt_regs __regs)
@@ -718,12 +795,41 @@ asmlinkage void do_reserved_inst(unsigned long r4, unsigned long r5,
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
 	unsigned long error_code;
 	struct task_struct *tsk = current;
+=======
+asmlinkage void do_divide_error(unsigned long r4)
+{
+	int code;
+
+	switch (r4) {
+	case TRAP_DIVZERO_ERROR:
+		code = FPE_INTDIV;
+		break;
+	case TRAP_DIVOVF_ERROR:
+		code = FPE_INTOVF;
+		break;
+	default:
+		/* Let gcc know unhandled cases don't make it past here */
+		return;
+	}
+	force_sig_fault(SIGFPE, code, NULL);
+}
+#endif
+
+asmlinkage void do_reserved_inst(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+	unsigned long error_code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SH_FPU_EMU
 	unsigned short inst = 0;
 	int err;
 
+<<<<<<< HEAD
 	get_user(inst, (unsigned short*)regs->pc);
+=======
+	get_user(inst, (unsigned short __user *)regs->pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = do_fpu_inst(inst, regs);
 	if (!err) {
@@ -739,7 +845,11 @@ asmlinkage void do_reserved_inst(unsigned long r4, unsigned long r5,
 		/* Enable DSP mode, and restart instruction. */
 		regs->sr |= SR_DSP;
 		/* Save DSP mode */
+<<<<<<< HEAD
 		tsk->thread.dsp_status.status |= SR_DSP;
+=======
+		current->thread.dsp_status.status |= SR_DSP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
@@ -747,7 +857,11 @@ asmlinkage void do_reserved_inst(unsigned long r4, unsigned long r5,
 	error_code = lookup_exception_vector();
 
 	local_irq_enable();
+<<<<<<< HEAD
 	force_sig(SIGILL, tsk);
+=======
+	force_sig(SIGILL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	die_if_no_fixup("reserved instruction", regs, error_code);
 }
 
@@ -799,6 +913,7 @@ static int emulate_branch(unsigned short inst, struct pt_regs *regs)
 }
 #endif
 
+<<<<<<< HEAD
 asmlinkage void do_illegal_slot_inst(unsigned long r4, unsigned long r5,
 				unsigned long r6, unsigned long r7,
 				struct pt_regs __regs)
@@ -806,14 +921,26 @@ asmlinkage void do_illegal_slot_inst(unsigned long r4, unsigned long r5,
 	struct pt_regs *regs = RELOC_HIDE(&__regs, 0);
 	unsigned long inst;
 	struct task_struct *tsk = current;
+=======
+asmlinkage void do_illegal_slot_inst(void)
+{
+	struct pt_regs *regs = current_pt_regs();
+	unsigned long inst;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (kprobe_handle_illslot(regs->pc) == 0)
 		return;
 
 #ifdef CONFIG_SH_FPU_EMU
+<<<<<<< HEAD
 	get_user(inst, (unsigned short *)regs->pc + 1);
 	if (!do_fpu_inst(inst, regs)) {
 		get_user(inst, (unsigned short *)regs->pc);
+=======
+	get_user(inst, (unsigned short __user *)regs->pc + 1);
+	if (!do_fpu_inst(inst, regs)) {
+		get_user(inst, (unsigned short __user *)regs->pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!emulate_branch(inst, regs))
 			return;
 		/* fault in branch.*/
@@ -824,6 +951,7 @@ asmlinkage void do_illegal_slot_inst(unsigned long r4, unsigned long r5,
 	inst = lookup_exception_vector();
 
 	local_irq_enable();
+<<<<<<< HEAD
 	force_sig(SIGILL, tsk);
 	die_if_no_fixup("illegal slot instruction", regs, inst);
 }
@@ -840,6 +968,21 @@ asmlinkage void do_exception_error(unsigned long r4, unsigned long r5,
 }
 
 void __cpuinit per_cpu_trap_init(void)
+=======
+	force_sig(SIGILL);
+	die_if_no_fixup("illegal slot instruction", regs, inst);
+}
+
+asmlinkage void do_exception_error(void)
+{
+	long ex;
+
+	ex = lookup_exception_vector();
+	die_if_kernel("exception", current_pt_regs(), ex);
+}
+
+void per_cpu_trap_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern void *vbr_base;
 
@@ -900,6 +1043,7 @@ void __init trap_init(void)
 	set_exception_table_vec(TRAP_UBC, breakpoint_trap_handler);
 #endif
 }
+<<<<<<< HEAD
 
 void show_stack(struct task_struct *tsk, unsigned long *sp)
 {
@@ -923,3 +1067,5 @@ void dump_stack(void)
 	show_stack(NULL, NULL);
 }
 EXPORT_SYMBOL(dump_stack);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Interface to the FSF support functions.
  *
+<<<<<<< HEAD
  * Copyright IBM Corporation 2002, 2010
+=======
+ * Copyright IBM Corp. 2002, 2020
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef FSF_H
@@ -36,6 +44,7 @@
 #define FSF_CONFIG_COMMAND			0x00000003
 #define FSF_PORT_COMMAND			0x00000004
 
+<<<<<<< HEAD
 /* FSF control file upload/download operations' subtype and options */
 #define FSF_CFDC_OPERATION_SUBTYPE		0x00020001
 #define FSF_CFDC_OPTION_NORMAL_MODE		0x00000000
@@ -43,6 +52,8 @@
 #define FSF_CFDC_OPTION_FULL_ACCESS		0x00000002
 #define FSF_CFDC_OPTION_RESTRICTED_ACCESS	0x00000004
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FSF protocol states */
 #define FSF_PROT_GOOD				0x00000001
 #define FSF_PROT_QTCB_VERSION_ERROR		0x00000010
@@ -64,7 +75,10 @@
 #define FSF_HANDLE_MISMATCH			0x00000005
 #define FSF_SERVICE_CLASS_NOT_SUPPORTED		0x00000006
 #define FSF_FCPLUN_NOT_VALID			0x00000009
+<<<<<<< HEAD
 #define FSF_ACCESS_DENIED			0x00000010
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FSF_LUN_SHARING_VIOLATION               0x00000012
 #define FSF_FCP_COMMAND_DOES_NOT_EXIST		0x00000022
 #define FSF_DIRECTION_INDICATOR_NOT_VALID	0x00000030
@@ -85,7 +99,13 @@
 #define FSF_BLOCK_GUARD_CHECK_FAILURE		0x00000081
 #define FSF_APP_TAG_CHECK_FAILURE		0x00000082
 #define FSF_REF_TAG_CHECK_FAILURE		0x00000083
+<<<<<<< HEAD
 #define FSF_ADAPTER_STATUS_AVAILABLE		0x000000AD
+=======
+#define FSF_SECURITY_ERROR			0x00000090
+#define FSF_ADAPTER_STATUS_AVAILABLE		0x000000AD
+#define FSF_FCP_RSP_AVAILABLE			0x000000AF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FSF_UNKNOWN_COMMAND			0x000000E2
 #define FSF_UNKNOWN_OP_SUBTYPE                  0x000000E3
 #define FSF_INVALID_COMMAND_OPTION              0x000000E5
@@ -116,6 +136,17 @@
 #define FSF_PSQ_LINK_MODE_TABLE_CURRUPTED	0x00004000
 #define FSF_PSQ_LINK_NO_WWPN_ASSIGNMENT		0x00008000
 
+<<<<<<< HEAD
+=======
+/* FSF status qualifier, security error */
+#define FSF_SQ_SECURITY_REQUIRED		0x00000001
+#define FSF_SQ_SECURITY_TIMEOUT			0x00000002
+#define FSF_SQ_SECURITY_KM_UNAVAILABLE		0x00000003
+#define FSF_SQ_SECURITY_RKM_UNAVAILABLE		0x00000004
+#define FSF_SQ_SECURITY_AUTH_FAILURE		0x00000005
+#define FSF_SQ_SECURITY_ENC_FAILURE		0x00000010
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* payload size in status read buffer */
 #define FSF_STATUS_READ_PAYLOAD_SIZE		4032
 
@@ -130,8 +161,13 @@
 #define FSF_STATUS_READ_LINK_DOWN		0x00000005
 #define FSF_STATUS_READ_LINK_UP          	0x00000006
 #define FSF_STATUS_READ_NOTIFICATION_LOST	0x00000009
+<<<<<<< HEAD
 #define FSF_STATUS_READ_CFDC_UPDATED		0x0000000A
 #define FSF_STATUS_READ_FEATURE_UPDATE_ALERT	0x0000000C
+=======
+#define FSF_STATUS_READ_FEATURE_UPDATE_ALERT	0x0000000C
+#define FSF_STATUS_READ_VERSION_CHANGE		0x0000000D
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* status subtypes for link down */
 #define FSF_STATUS_READ_SUB_NO_PHYSICAL_LINK	0x00000000
@@ -140,7 +176,14 @@
 
 /* status subtypes for unsolicited status notification lost */
 #define FSF_STATUS_READ_SUB_INCOMING_ELS	0x00000001
+<<<<<<< HEAD
 #define FSF_STATUS_READ_SUB_ACT_UPDATED		0x00000020
+=======
+#define FSF_STATUS_READ_SUB_VERSION_CHANGE	0x00000100
+
+/* status subtypes for version change */
+#define FSF_STATUS_READ_SUB_LIC_CHANGE		0x00000001
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* topologie that is detected by the adapter */
 #define FSF_TOPO_P2P				0x00000001
@@ -166,13 +209,22 @@
 #define FSF_QTCB_LOG_SIZE			1024
 
 /* channel features */
+<<<<<<< HEAD
 #define FSF_FEATURE_CFDC			0x00000002
 #define FSF_FEATURE_LUN_SHARING			0x00000004
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FSF_FEATURE_NOTIFICATION_LOST		0x00000008
 #define FSF_FEATURE_HBAAPI_MANAGEMENT           0x00000010
 #define FSF_FEATURE_ELS_CT_CHAINED_SBALS	0x00000020
 #define FSF_FEATURE_UPDATE_ALERT		0x00000100
 #define FSF_FEATURE_MEASUREMENT_DATA		0x00000200
+<<<<<<< HEAD
+=======
+#define FSF_FEATURE_REQUEST_SFP_DATA		0x00000200
+#define FSF_FEATURE_REPORT_SFP_DATA		0x00000800
+#define FSF_FEATURE_FC_SECURITY			0x00001000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FSF_FEATURE_DIF_PROT_TYPE1		0x00010000
 #define FSF_FEATURE_DIX_PROT_TCPIP		0x00020000
 
@@ -182,6 +234,7 @@
 /* option */
 #define FSF_OPEN_LUN_SUPPRESS_BOXING		0x00000001
 
+<<<<<<< HEAD
 /* open LUN access flags*/
 #define FSF_UNIT_ACCESS_EXCLUSIVE		0x02000000
 #define FSF_UNIT_ACCESS_OUTBOUND_TRANSFER	0x10000000
@@ -195,6 +248,12 @@ struct zfcp_fsf_cfdc {
 	u32 command;
 	u32 option;
 };
+=======
+/* FC security algorithms */
+#define FSF_FC_SECURITY_AUTH			0x00000001
+#define FSF_FC_SECURITY_ENC_FCSP2		0x00000002
+#define FSF_FC_SECURITY_ENC_ERAS		0x00000004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fsf_queue_designator {
 	u8  cssid;
@@ -233,6 +292,14 @@ struct fsf_link_down_info {
 	u8 vendor_specific_code;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
+=======
+struct fsf_version_change {
+	u32 current_version;
+	u32 previous_version;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fsf_status_read_buffer {
 	u32 status_type;
 	u32 status_subtype;
@@ -249,6 +316,10 @@ struct fsf_status_read_buffer {
 		u32 word[FSF_STATUS_READ_PAYLOAD_SIZE/sizeof(u32)];
 		struct fsf_link_down_info link_down_info;
 		struct fsf_bit_error_payload bit_error;
+<<<<<<< HEAD
+=======
+		struct fsf_version_change version_change;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} payload;
 } __attribute__ ((packed));
 
@@ -337,8 +408,19 @@ struct fsf_qtcb_bottom_io {
 	u32 data_block_length;
 	u32 prot_data_length;
 	u8  res2[4];
+<<<<<<< HEAD
 	u8  fcp_cmnd[FSF_FCP_CMND_SIZE];
 	u8  fcp_rsp[FSF_FCP_RSP_SIZE];
+=======
+	union {
+		u8		byte[FSF_FCP_CMND_SIZE];
+		struct fcp_cmnd iu;
+	}   fcp_cmnd;
+	union {
+		u8			 byte[FSF_FCP_RSP_SIZE];
+		struct fcp_resp_with_ext iu;
+	}   fcp_rsp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  res3[64];
 } __attribute__ ((packed));
 
@@ -354,7 +436,12 @@ struct fsf_qtcb_bottom_support {
 	u8  res3[3];
 	u8  timeout;
         u32 lun_access_info;
+<<<<<<< HEAD
         u8  res4[180];
+=======
+	u32 connection_info;
+	u8  res4[176];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 els1_length;
 	u32 els2_length;
 	u32 req_buf_length;
@@ -374,7 +461,11 @@ struct fsf_qtcb_bottom_config {
 	u32 adapter_features;
 	u32 connection_features;
 	u32 fc_topology;
+<<<<<<< HEAD
 	u32 fc_link_speed;
+=======
+	u32 fc_link_speed;	/* one of ZFCP_FSF_PORTSPEED_* */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 adapter_type;
 	u8 res0;
 	u8 peer_d_id[3];
@@ -400,7 +491,11 @@ struct fsf_qtcb_bottom_port {
 	u32 class_of_service;	/* should be 0x00000006 for class 2 and 3 */
 	u8 supported_fc4_types[32]; /* should be 0x00000100 for scsi fcp */
 	u8 active_fc4_types[32];
+<<<<<<< HEAD
 	u32 supported_speed;	/* 0x0001 for 1 GBit/s or 0x0002 for 2 GBit/s */
+=======
+	u32 supported_speed;	/* any combination of ZFCP_FSF_PORTSPEED_* */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 maximum_frame_size;	/* fixed value of 2112 */
 	u64 seconds_since_last_reset;
 	u64 tx_frames;
@@ -425,7 +520,29 @@ struct fsf_qtcb_bottom_port {
 	u8 cp_util;
 	u8 cb_util;
 	u8 a_util;
+<<<<<<< HEAD
 	u8 res2[253];
+=======
+	u8 res2;
+	s16 temperature;
+	u16 vcc;
+	u16 tx_bias;
+	u16 tx_power;
+	u16 rx_power;
+	union {
+		u16 raw;
+		struct {
+			u16 fec_active		:1;
+			u16:7;
+			u16 connector_type	:2;
+			u16 sfp_invalid		:1;
+			u16 optical_port	:1;
+			u16 port_tx_type	:4;
+		};
+	} sfp_flags;
+	u32 fc_security_algorithms;
+	u8 res3[236];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 union fsf_qtcb_bottom {
@@ -456,12 +573,21 @@ struct zfcp_blk_drv_data {
 
 /**
  * struct zfcp_fsf_ct_els - zfcp data for ct or els request
+<<<<<<< HEAD
  * @req: scatter-gather list for request
  * @resp: scatter-gather list for response
+=======
+ * @req: scatter-gather list for request, points to &zfcp_fc_req.sg_req or BSG
+ * @resp: scatter-gather list for response, points to &zfcp_fc_req.sg_rsp or BSG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @handler: handler function (called for response to the request)
  * @handler_data: data passed to handler function
  * @port: Optional pointer to port for zfcp internal ELS (only test link ADISC)
  * @status: used to pass error status to calling function
+<<<<<<< HEAD
+=======
+ * @d_id: Destination ID of either open WKA port for CT or of D_ID for ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct zfcp_fsf_ct_els {
 	struct scatterlist *req;
@@ -470,6 +596,10 @@ struct zfcp_fsf_ct_els {
 	void *handler_data;
 	struct zfcp_port *port;
 	int status;
+<<<<<<< HEAD
+=======
+	u32 d_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif				/* FSF_H */

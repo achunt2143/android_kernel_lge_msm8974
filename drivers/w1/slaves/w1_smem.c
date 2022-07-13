@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	w1_smem.c
  *
  * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/types.h>
@@ -27,6 +34,7 @@
 #include <linux/device.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
 #include "../w1.h"
 #include "../w1_int.h"
 #include "../w1_family.h"
@@ -34,6 +42,12 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
 MODULE_DESCRIPTION("Driver for 1-wire Dallas network protocol, 64bit memory family.");
+=======
+#include <linux/w1.h>
+
+#define W1_FAMILY_SMEM_01	0x01
+#define W1_FAMILY_SMEM_81	0x81
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct w1_family w1_smem_family_01 = {
 	.fid = W1_FAMILY_SMEM_01,
@@ -68,3 +82,12 @@ static void __exit w1_smem_fini(void)
 
 module_init(w1_smem_init);
 module_exit(w1_smem_fini);
+<<<<<<< HEAD
+=======
+
+MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
+MODULE_DESCRIPTION("Driver for 1-wire Dallas network protocol, 64bit memory family.");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_SMEM_01));
+MODULE_ALIAS("w1-family-" __stringify(W1_FAMILY_SMEM_81));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

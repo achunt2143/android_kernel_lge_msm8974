@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * printf.c:  Internal prom library printf facility.
  *
@@ -24,22 +28,35 @@ prom_printf(char *fmt, ...)
 {
 	va_list args;
 	char ch, *bptr;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, fmt);
 
 #ifdef CONFIG_KGDB
 	ppbuf[0] = 'O';
+<<<<<<< HEAD
 	i = vsprintf(ppbuf + 1, fmt, args) + 1;
 #else
 	i = vsprintf(ppbuf, fmt, args);
+=======
+	vsprintf(ppbuf + 1, fmt, args) + 1;
+#else
+	vsprintf(ppbuf, fmt, args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	bptr = ppbuf;
 
 #ifdef CONFIG_KGDB
 	if (kgdb_initialized) {
+<<<<<<< HEAD
 		printk("kgdb_initialized = %d\n", kgdb_initialized);
+=======
+		pr_info("kgdb_initialized = %d\n", kgdb_initialized);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		putpacket(bptr, 1);
 	} else
 #else

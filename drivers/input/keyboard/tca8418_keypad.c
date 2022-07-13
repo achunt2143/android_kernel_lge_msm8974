@@ -24,6 +24,7 @@
  * alternative licensing inquiries.
  */
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -35,6 +36,19 @@
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/input/tca8418_keypad.h>
+=======
+#include <linux/delay.h>
+#include <linux/i2c.h>
+#include <linux/init.h>
+#include <linux/input.h>
+#include <linux/input/matrix_keypad.h>
+#include <linux/interrupt.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/property.h>
+#include <linux/slab.h>
+#include <linux/types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TCA8418 hardware limits */
 #define TCA8418_MAX_ROWS	8
@@ -109,6 +123,7 @@
 #define KEY_EVENT_CODE		0x7f
 #define KEY_EVENT_VALUE		0x80
 
+<<<<<<< HEAD
 
 static const struct i2c_device_id tca8418_id[] = {
 	{ TCA8418_NAME, 8418, },
@@ -128,6 +143,13 @@ struct tca8418_keypad {
 
 	/* Flexible array member, must be at end of struct */
 	unsigned short keymap[];
+=======
+struct tca8418_keypad {
+	struct i2c_client *client;
+	struct input_dev *input;
+
+	unsigned int row_shift;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -172,6 +194,7 @@ static int tca8418_read_byte(struct tca8418_keypad *keypad_data,
 
 static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 {
+<<<<<<< HEAD
 	int error, col, row;
 	u8 reg, state, code;
 
@@ -180,6 +203,25 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 
 	/* Assume that key code 0 signifies empty FIFO */
 	while (error >= 0 && reg > 0) {
+=======
+	struct input_dev *input = keypad_data->input;
+	unsigned short *keymap = input->keycode;
+	int error, col, row;
+	u8 reg, state, code;
+
+	do {
+		error = tca8418_read_byte(keypad_data, REG_KEY_EVENT_A, &reg);
+		if (error < 0) {
+			dev_err(&keypad_data->client->dev,
+				"unable to read REG_KEY_EVENT_A\n");
+			break;
+		}
+
+		/* Assume that key code 0 signifies empty FIFO */
+		if (reg <= 0)
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state = reg & KEY_EVENT_VALUE;
 		code  = reg & KEY_EVENT_CODE;
 
@@ -190,6 +232,7 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 		col = (col) ? col - 1 : TCA8418_MAX_COLS - 1;
 
 		code = MATRIX_SCAN_CODE(row, col, keypad_data->row_shift);
+<<<<<<< HEAD
 		input_event(keypad_data->input, EV_MSC, MSC_SCAN, code);
 		input_report_key(keypad_data->input,
 				keypad_data->keymap[code], state);
@@ -203,6 +246,14 @@ static void tca8418_read_keypad(struct tca8418_keypad *keypad_data)
 			"unable to read REG_KEY_EVENT_A\n");
 
 	input_sync(keypad_data->input);
+=======
+		input_event(input, EV_MSC, MSC_SCAN, code);
+		input_report_key(input, keymap[code], state);
+
+	} while (1);
+
+	input_sync(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -218,16 +269,28 @@ static irqreturn_t tca8418_irq_handler(int irq, void *dev_id)
 	if (error) {
 		dev_err(&keypad_data->client->dev,
 			"unable to read REG_INT_STAT\n");
+<<<<<<< HEAD
 		goto exit;
 	}
 
+=======
+		return IRQ_NONE;
+	}
+
+	if (!reg)
+		return IRQ_NONE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg & INT_STAT_OVR_FLOW_INT)
 		dev_warn(&keypad_data->client->dev, "overflow occurred\n");
 
 	if (reg & INT_STAT_K_INT)
 		tca8418_read_keypad(keypad_data);
 
+<<<<<<< HEAD
 exit:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear all interrupts, even IRQs we didn't check (GPI, CAD, LCK) */
 	reg = 0xff;
 	error = tca8418_write_byte(keypad_data, REG_INT_STAT, reg);
@@ -241,6 +304,7 @@ exit:
 /*
  * Configure the TCA8418 for keypad operation
  */
+<<<<<<< HEAD
 static int __devinit tca8418_configure(struct tca8418_keypad *keypad_data)
 {
 	int reg, error;
@@ -256,6 +320,16 @@ static int __devinit tca8418_configure(struct tca8418_keypad *keypad_data)
 	reg  =  ~(~0 << keypad_data->rows);
 	reg += (~(~0 << keypad_data->cols)) << 8;
 	keypad_data->keypad_mask = reg;
+=======
+static int tca8418_configure(struct tca8418_keypad *keypad_data,
+			     u32 rows, u32 cols)
+{
+	int reg, error = 0;
+
+	/* Assemble a mask for row and column registers */
+	reg  =  ~(~0 << rows);
+	reg += (~(~0 << cols)) << 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set registers to keypad mode */
 	error |= tca8418_write_byte(keypad_data, REG_KP_GPIO1, reg);
@@ -267,6 +341,7 @@ static int __devinit tca8418_configure(struct tca8418_keypad *keypad_data)
 	error |= tca8418_write_byte(keypad_data, REG_DEBOUNCE_DIS2, reg >> 8);
 	error |= tca8418_write_byte(keypad_data, REG_DEBOUNCE_DIS3, reg >> 16);
 
+<<<<<<< HEAD
 	return error;
 }
 
@@ -303,10 +378,34 @@ static int __devinit tca8418_keypad_probe(struct i2c_client *client,
 	/* Check i2c driver capabilities */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE)) {
 		dev_err(&client->dev, "%s adapter not supported\n",
+=======
+	if (error)
+		return error;
+
+	error = tca8418_write_byte(keypad_data, REG_CFG,
+				CFG_INT_CFG | CFG_OVR_FLOW_IEN | CFG_KE_IEN);
+
+	return error;
+}
+
+static int tca8418_keypad_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct tca8418_keypad *keypad_data;
+	struct input_dev *input;
+	u32 rows = 0, cols = 0;
+	int error, row_shift;
+	u8 reg;
+
+	/* Check i2c driver capabilities */
+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE)) {
+		dev_err(dev, "%s adapter not supported\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_driver_string(&client->adapter->dev));
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	row_shift = get_count_order(pdata->cols);
 	max_keys = pdata->rows << row_shift;
 
@@ -337,21 +436,71 @@ static int __devinit tca8418_keypad_probe(struct i2c_client *client,
 	input->name = client->name;
 	input->dev.parent = &client->dev;
 
+=======
+	error = matrix_keypad_parse_properties(dev, &rows, &cols);
+	if (error)
+		return error;
+
+	if (!rows || rows > TCA8418_MAX_ROWS) {
+		dev_err(dev, "invalid rows\n");
+		return -EINVAL;
+	}
+
+	if (!cols || cols > TCA8418_MAX_COLS) {
+		dev_err(dev, "invalid columns\n");
+		return -EINVAL;
+	}
+
+	row_shift = get_count_order(cols);
+
+	/* Allocate memory for keypad_data and input device */
+	keypad_data = devm_kzalloc(dev, sizeof(*keypad_data), GFP_KERNEL);
+	if (!keypad_data)
+		return -ENOMEM;
+
+	keypad_data->client = client;
+	keypad_data->row_shift = row_shift;
+
+	/* Read key lock register, if this fails assume device not present */
+	error = tca8418_read_byte(keypad_data, REG_KEY_LCK_EC, &reg);
+	if (error)
+		return -ENODEV;
+
+	/* Configure input device */
+	input = devm_input_allocate_device(dev);
+	if (!input)
+		return -ENOMEM;
+
+	keypad_data->input = input;
+
+	input->name = client->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input->id.bustype = BUS_I2C;
 	input->id.vendor  = 0x0001;
 	input->id.product = 0x001;
 	input->id.version = 0x0001;
 
+<<<<<<< HEAD
 	input->keycode     = keypad_data->keymap;
 	input->keycodesize = sizeof(keypad_data->keymap[0]);
 	input->keycodemax  = max_keys;
 
 	__set_bit(EV_KEY, input->evbit);
 	if (pdata->rep)
+=======
+	error = matrix_keypad_build_keymap(NULL, NULL, rows, cols, NULL, input);
+	if (error) {
+		dev_err(dev, "Failed to build keymap\n");
+		return error;
+	}
+
+	if (device_property_read_bool(dev, "keypad,autorepeat"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__set_bit(EV_REP, input->evbit);
 
 	input_set_capability(input, EV_MSC, MSC_SCAN);
 
+<<<<<<< HEAD
 	input_set_drvdata(input, keypad_data);
 
 	matrix_keypad_build_keymap(pdata->keymap_data, row_shift,
@@ -410,6 +559,51 @@ static struct i2c_driver tca8418_keypad_driver = {
 	},
 	.probe		= tca8418_keypad_probe,
 	.remove		= __devexit_p(tca8418_keypad_remove),
+=======
+	error = devm_request_threaded_irq(dev, client->irq,
+					  NULL, tca8418_irq_handler,
+					  IRQF_SHARED | IRQF_ONESHOT,
+					  client->name, keypad_data);
+	if (error) {
+		dev_err(dev, "Unable to claim irq %d; error %d\n",
+			client->irq, error);
+		return error;
+	}
+
+	/* Initialize the chip */
+	error = tca8418_configure(keypad_data, rows, cols);
+	if (error < 0)
+		return error;
+
+	error = input_register_device(input);
+	if (error) {
+		dev_err(dev, "Unable to register input device, error: %d\n",
+			error);
+		return error;
+	}
+
+	return 0;
+}
+
+static const struct i2c_device_id tca8418_id[] = {
+	{ "tca8418", 8418, },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, tca8418_id);
+
+static const struct of_device_id tca8418_dt_ids[] = {
+	{ .compatible = "ti,tca8418", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, tca8418_dt_ids);
+
+static struct i2c_driver tca8418_keypad_driver = {
+	.driver = {
+		.name	= "tca8418_keypad",
+		.of_match_table = tca8418_dt_ids,
+	},
+	.probe		= tca8418_keypad_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= tca8418_id,
 };
 

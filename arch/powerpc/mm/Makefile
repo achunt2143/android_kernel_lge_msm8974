@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux ppc-specific parts of the memory manager.
 #
 
+<<<<<<< HEAD
 subdir-ccflags-$(CONFIG_PPC_WERROR) := -Werror
 
 ccflags-$(CONFIG_PPC64)	:= -mno-minimal-toc
@@ -36,3 +41,21 @@ endif
 obj-$(CONFIG_PPC_SUBPAGE_PROT)	+= subpage-prot.o
 obj-$(CONFIG_NOT_COHERENT_CACHE) += dma-noncoherent.o
 obj-$(CONFIG_HIGHMEM)		+= highmem.o
+=======
+ccflags-$(CONFIG_PPC64)	:= $(NO_MINIMAL_TOC)
+
+obj-y				:= fault.o mem.o pgtable.o maccess.o pageattr.o \
+				   init_$(BITS).o pgtable_$(BITS).o \
+				   pgtable-frag.o ioremap.o ioremap_$(BITS).o \
+				   init-common.o mmu_context.o drmem.o \
+				   cacheflush.o
+obj-$(CONFIG_PPC_MMU_NOHASH)	+= nohash/
+obj-$(CONFIG_PPC_BOOK3S_32)	+= book3s32/
+obj-$(CONFIG_PPC_BOOK3S_64)	+= book3s64/
+obj-$(CONFIG_NUMA) += numa.o
+obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
+obj-$(CONFIG_NOT_COHERENT_CACHE) += dma-noncoherent.o
+obj-$(CONFIG_PPC_COPRO_BASE)	+= copro_fault.o
+obj-$(CONFIG_PTDUMP_CORE)	+= ptdump/
+obj-$(CONFIG_KASAN)		+= kasan/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

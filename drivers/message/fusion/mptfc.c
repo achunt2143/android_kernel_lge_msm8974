@@ -50,7 +50,11 @@
 #include <linux/kdev_t.h>
 #include <linux/blkdev.h>
 #include <linux/delay.h>	/* for mdelay */
+<<<<<<< HEAD
 #include <linux/interrupt.h>	/* needed for in_interrupt() proto */
+=======
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/reboot.h>	/* notifier code */
 #include <linux/workqueue.h>
 #include <linux/sort.h>
@@ -100,6 +104,7 @@ static int mptfc_slave_alloc(struct scsi_device *sdev);
 static int mptfc_qcmd(struct Scsi_Host *shost, struct scsi_cmnd *SCpnt);
 static void mptfc_target_destroy(struct scsi_target *starget);
 static void mptfc_set_rport_loss_tmo(struct fc_rport *rport, uint32_t timeout);
+<<<<<<< HEAD
 static void __devexit mptfc_remove(struct pci_dev *pdev);
 static int mptfc_abort(struct scsi_cmnd *SCpnt);
 static int mptfc_dev_reset(struct scsi_cmnd *SCpnt);
@@ -110,6 +115,17 @@ static struct scsi_host_template mptfc_driver_template = {
 	.module				= THIS_MODULE,
 	.proc_name			= "mptfc",
 	.proc_info			= mptscsih_proc_info,
+=======
+static void mptfc_remove(struct pci_dev *pdev);
+static int mptfc_abort(struct scsi_cmnd *SCpnt);
+static int mptfc_dev_reset(struct scsi_cmnd *SCpnt);
+static int mptfc_bus_reset(struct scsi_cmnd *SCpnt);
+
+static const struct scsi_host_template mptfc_driver_template = {
+	.module				= THIS_MODULE,
+	.proc_name			= "mptfc",
+	.show_info			= mptscsih_show_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name				= "MPT FC Host",
 	.info				= mptscsih_info,
 	.queuecommand			= mptfc_qcmd,
@@ -119,18 +135,30 @@ static struct scsi_host_template mptfc_driver_template = {
 	.target_destroy			= mptfc_target_destroy,
 	.slave_destroy			= mptscsih_slave_destroy,
 	.change_queue_depth 		= mptscsih_change_queue_depth,
+<<<<<<< HEAD
 	.eh_abort_handler		= mptfc_abort,
 	.eh_device_reset_handler	= mptfc_dev_reset,
 	.eh_bus_reset_handler		= mptfc_bus_reset,
 	.eh_host_reset_handler		= mptfc_host_reset,
+=======
+	.eh_timed_out			= fc_eh_timed_out,
+	.eh_abort_handler		= mptfc_abort,
+	.eh_device_reset_handler	= mptfc_dev_reset,
+	.eh_bus_reset_handler		= mptfc_bus_reset,
+	.eh_host_reset_handler		= mptscsih_host_reset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bios_param			= mptscsih_bios_param,
 	.can_queue			= MPT_FC_CAN_QUEUE,
 	.this_id			= -1,
 	.sg_tablesize			= MPT_SCSI_SG_DEPTH,
 	.max_sectors			= 8192,
 	.cmd_per_lun			= 7,
+<<<<<<< HEAD
 	.use_clustering			= ENABLE_CLUSTERING,
 	.shost_attrs			= mptscsih_host_attrs,
+=======
+	.shost_groups			= mptscsih_host_attr_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /****************************************************************************
@@ -184,6 +212,7 @@ static struct fc_function_template mptfc_transport_functions = {
 };
 
 static int
+<<<<<<< HEAD
 mptfc_block_error_handler(struct scsi_cmnd *SCpnt,
 			  int (*func)(struct scsi_cmnd *SCpnt),
 			  const char *caller)
@@ -198,23 +227,43 @@ mptfc_block_error_handler(struct scsi_cmnd *SCpnt,
 	int			loops = 40;	/* seconds */
 
 	hd = shost_priv(SCpnt->device->host);
+=======
+mptfc_block_error_handler(struct fc_rport *rport)
+{
+	MPT_SCSI_HOST		*hd;
+	struct Scsi_Host	*shost = rport_to_shost(rport);
+	unsigned long		flags;
+	int			ready;
+	MPT_ADAPTER		*ioc;
+	int			loops = 40;	/* seconds */
+
+	hd = shost_priv(shost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioc = hd->ioc;
 	spin_lock_irqsave(shost->host_lock, flags);
 	while ((ready = fc_remote_port_chkready(rport) >> 16) == DID_IMM_RETRY
 	 || (loops > 0 && ioc->active == 0)) {
 		spin_unlock_irqrestore(shost->host_lock, flags);
 		dfcprintk (ioc, printk(MYIOC_s_DEBUG_FMT
+<<<<<<< HEAD
 			"mptfc_block_error_handler.%d: %d:%d, port status is "
 			"%x, active flag %d, deferring %s recovery.\n",
 			ioc->name, ioc->sh->host_no,
 			SCpnt->device->id, SCpnt->device->lun,
 			ready, ioc->active, caller));
+=======
+			"mptfc_block_error_handler.%d: %s, port status is "
+			"%x, active flag %d, deferring recovery.\n",
+			ioc->name, ioc->sh->host_no,
+			dev_name(&rport->dev), ready, ioc->active));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(1000);
 		spin_lock_irqsave(shost->host_lock, flags);
 		loops --;
 	}
 	spin_unlock_irqrestore(shost->host_lock, flags);
 
+<<<<<<< HEAD
 	if (ready == DID_NO_CONNECT || !SCpnt->device->hostdata
 	 || ioc->active == 0) {
 		dfcprintk (ioc, printk(MYIOC_s_DEBUG_FMT
@@ -230,25 +279,71 @@ mptfc_block_error_handler(struct scsi_cmnd *SCpnt,
 		ioc->name, ioc->sh->host_no,
 		SCpnt->device->id, SCpnt->device->lun));
 	return (*func)(SCpnt);
+=======
+	if (ready == DID_NO_CONNECT || ioc->active == 0) {
+		dfcprintk (ioc, printk(MYIOC_s_DEBUG_FMT
+			"mpt_block_error_handler.%d: %s, failing recovery, "
+			"port state %x, active %d.\n",
+			ioc->name, ioc->sh->host_no,
+			dev_name(&rport->dev), ready, ioc->active));
+		return FAILED;
+	}
+	return SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 mptfc_abort(struct scsi_cmnd *SCpnt)
 {
+<<<<<<< HEAD
 	return
 	    mptfc_block_error_handler(SCpnt, mptscsih_abort, __func__);
+=======
+	struct Scsi_Host *shost = SCpnt->device->host;
+	struct fc_rport *rport = starget_to_rport(scsi_target(SCpnt->device));
+	MPT_SCSI_HOST __maybe_unused *hd = shost_priv(shost);
+	int rtn;
+
+	rtn = mptfc_block_error_handler(rport);
+	if (rtn == SUCCESS) {
+		dfcprintk (hd->ioc, printk(MYIOC_s_DEBUG_FMT
+			"%s.%d: %d:%llu, executing recovery.\n", __func__,
+			hd->ioc->name, shost->host_no,
+			SCpnt->device->id, SCpnt->device->lun));
+		rtn = mptscsih_abort(SCpnt);
+	}
+	return rtn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 mptfc_dev_reset(struct scsi_cmnd *SCpnt)
 {
+<<<<<<< HEAD
 	return
 	    mptfc_block_error_handler(SCpnt, mptscsih_dev_reset, __func__);
+=======
+	struct Scsi_Host *shost = SCpnt->device->host;
+	struct fc_rport *rport = starget_to_rport(scsi_target(SCpnt->device));
+	MPT_SCSI_HOST __maybe_unused *hd = shost_priv(shost);
+	int rtn;
+
+	rtn = mptfc_block_error_handler(rport);
+	if (rtn == SUCCESS) {
+		dfcprintk (hd->ioc, printk(MYIOC_s_DEBUG_FMT
+			"%s.%d: %d:%llu, executing recovery.\n", __func__,
+			hd->ioc->name, shost->host_no,
+			SCpnt->device->id, SCpnt->device->lun));
+		rtn = mptscsih_dev_reset(SCpnt);
+	}
+	return rtn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 mptfc_bus_reset(struct scsi_cmnd *SCpnt)
 {
+<<<<<<< HEAD
 	return
 	    mptfc_block_error_handler(SCpnt, mptscsih_bus_reset, __func__);
 }
@@ -258,6 +353,33 @@ mptfc_host_reset(struct scsi_cmnd *SCpnt)
 {
 	return
 	    mptfc_block_error_handler(SCpnt, mptscsih_host_reset, __func__);
+=======
+	struct Scsi_Host *shost = SCpnt->device->host;
+	MPT_SCSI_HOST __maybe_unused *hd = shost_priv(shost);
+	int channel = SCpnt->device->channel;
+	struct mptfc_rport_info *ri;
+	int rtn = FAILED;
+
+	list_for_each_entry(ri, &hd->ioc->fc_rports, list) {
+		if (ri->flags & MPT_RPORT_INFO_FLAGS_REGISTERED) {
+			VirtTarget *vtarget = ri->starget->hostdata;
+
+			if (!vtarget || vtarget->channel != channel)
+				continue;
+			rtn = fc_block_rport(ri->rport);
+			if (rtn != 0)
+				break;
+		}
+	}
+	if (rtn == 0) {
+		dfcprintk (hd->ioc, printk(MYIOC_s_DEBUG_FMT
+			"%s.%d: %d:%llu, executing recovery.\n", __func__,
+			hd->ioc->name, shost->host_no,
+			SCpnt->device->id, SCpnt->device->lun));
+		rtn = mptscsih_bus_reset(SCpnt);
+	}
+	return rtn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -339,8 +461,13 @@ mptfc_GetFcDevPage0(MPT_ADAPTER *ioc, int ioc_port,
 			break;
 
 		data_sz = hdr.PageLength * 4;
+<<<<<<< HEAD
 		ppage0_alloc = pci_alloc_consistent(ioc->pcidev, data_sz,
 		    					&page0_dma);
+=======
+		ppage0_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
+						  &page0_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		if (!ppage0_alloc)
 			break;
@@ -375,8 +502,13 @@ mptfc_GetFcDevPage0(MPT_ADAPTER *ioc, int ioc_port,
 			*p_p0 = *ppage0_alloc;	/* save data */
 			*p_pp0++ = p_p0++;	/* save addr */
 		}
+<<<<<<< HEAD
 		pci_free_consistent(ioc->pcidev, data_sz,
 		    			(u8 *) ppage0_alloc, page0_dma);
+=======
+		dma_free_coherent(&ioc->pcidev->dev, data_sz,
+				  ppage0_alloc, page0_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc != 0)
 			break;
 
@@ -525,8 +657,12 @@ mptfc_target_destroy(struct scsi_target *starget)
 		if (ri)	/* better be! */
 			ri->starget = NULL;
 	}
+<<<<<<< HEAD
 	if (starget->hostdata)
 		kfree(starget->hostdata);
+=======
+	kfree(starget->hostdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	starget->hostdata = NULL;
 }
 
@@ -649,7 +785,11 @@ mptfc_slave_alloc(struct scsi_device *sdev)
 }
 
 static int
+<<<<<<< HEAD
 mptfc_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
+=======
+mptfc_qcmd(struct Scsi_Host *shost, struct scsi_cmnd *SCpnt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mptfc_rport_info	*ri;
 	struct fc_rport	*rport = starget_to_rport(scsi_target(SCpnt->device));
@@ -658,14 +798,22 @@ mptfc_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 
 	if (!vdevice || !vdevice->vtarget) {
 		SCpnt->result = DID_NO_CONNECT << 16;
+<<<<<<< HEAD
 		done(SCpnt);
+=======
+		scsi_done(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	err = fc_remote_port_chkready(rport);
 	if (unlikely(err)) {
 		SCpnt->result = err;
+<<<<<<< HEAD
 		done(SCpnt);
+=======
+		scsi_done(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -673,6 +821,7 @@ mptfc_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 	ri = *((struct mptfc_rport_info **)rport->dd_data);
 	if (unlikely(!ri)) {
 		SCpnt->result = DID_IMM_RETRY << 16;
+<<<<<<< HEAD
 		done(SCpnt);
 		return 0;
 	}
@@ -682,6 +831,15 @@ mptfc_qcmd_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 
 static DEF_SCSI_QCMD(mptfc_qcmd)
 
+=======
+		scsi_done(SCpnt);
+		return 0;
+	}
+
+	return mptscsih_qcmd(SCpnt);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	mptfc_display_port_link_speed - displaying link speed
  *	@ioc: Pointer to MPT_ADAPTER structure
@@ -703,7 +861,11 @@ mptfc_display_port_link_speed(MPT_ADAPTER *ioc, int portnum, FCPortPage0_t *pp0d
 	state = pp0dest->PortState;
 
 	if (state != MPI_FCPORTPAGE0_PORTSTATE_OFFLINE &&
+<<<<<<< HEAD
 	    new_speed != MPI_FCPORTPAGE0_CURRENT_SPEED_UKNOWN) {
+=======
+	    new_speed != MPI_FCPORTPAGE0_CURRENT_SPEED_UNKNOWN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		old = old_speed == MPI_FCPORTPAGE0_CURRENT_SPEED_1GBIT ? "1 Gbps" :
 		       old_speed == MPI_FCPORTPAGE0_CURRENT_SPEED_2GBIT ? "2 Gbps" :
@@ -774,7 +936,12 @@ mptfc_GetFcPortPage0(MPT_ADAPTER *ioc, int portnum)
 
 	data_sz = hdr.PageLength * 4;
 	rc = -ENOMEM;
+<<<<<<< HEAD
 	ppage0_alloc = (FCPortPage0_t *) pci_alloc_consistent(ioc->pcidev, data_sz, &page0_dma);
+=======
+	ppage0_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
+					  &page0_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppage0_alloc) {
 
  try_again:
@@ -828,7 +995,12 @@ mptfc_GetFcPortPage0(MPT_ADAPTER *ioc, int portnum)
 			mptfc_display_port_link_speed(ioc, portnum, pp0dest);
 		}
 
+<<<<<<< HEAD
 		pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage0_alloc, page0_dma);
+=======
+		dma_free_coherent(&ioc->pcidev->dev, data_sz, ppage0_alloc,
+				  page0_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -915,9 +1087,14 @@ start_over:
 		if (data_sz < sizeof(FCPortPage1_t))
 			data_sz = sizeof(FCPortPage1_t);
 
+<<<<<<< HEAD
 		page1_alloc = (FCPortPage1_t *) pci_alloc_consistent(ioc->pcidev,
 						data_sz,
 						&page1_dma);
+=======
+		page1_alloc = dma_alloc_coherent(&ioc->pcidev->dev, data_sz,
+						 &page1_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!page1_alloc)
 			return -ENOMEM;
 	}
@@ -927,14 +1104,22 @@ start_over:
 		data_sz = ioc->fc_data.fc_port_page1[portnum].pg_sz;
 		if (hdr.PageLength * 4 > data_sz) {
 			ioc->fc_data.fc_port_page1[portnum].data = NULL;
+<<<<<<< HEAD
 			pci_free_consistent(ioc->pcidev, data_sz, (u8 *)
 				page1_alloc, page1_dma);
+=======
+			dma_free_coherent(&ioc->pcidev->dev, data_sz,
+					  page1_alloc, page1_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto start_over;
 		}
 	}
 
+<<<<<<< HEAD
 	memset(page1_alloc,0,data_sz);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg.physAddr = page1_dma;
 	cfg.action = MPI_CONFIG_ACTION_PAGE_READ_CURRENT;
 
@@ -945,8 +1130,13 @@ start_over:
 	}
 	else {
 		ioc->fc_data.fc_port_page1[portnum].data = NULL;
+<<<<<<< HEAD
 		pci_free_consistent(ioc->pcidev, data_sz, (u8 *)
 			page1_alloc, page1_dma);
+=======
+		dma_free_coherent(&ioc->pcidev->dev, data_sz, page1_alloc,
+				  page1_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -1302,7 +1492,11 @@ mptfc_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	/* SCSI needs scsi_cmnd lookup table!
 	 * (with size equal to req_depth*PtrSz!)
 	 */
+<<<<<<< HEAD
 	ioc->ScsiLookup = kcalloc(ioc->req_depth, sizeof(void *), GFP_ATOMIC);
+=======
+	ioc->ScsiLookup = kcalloc(ioc->req_depth, sizeof(void *), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ioc->ScsiLookup) {
 		error = -ENOMEM;
 		goto out_mptfc_probe;
@@ -1327,9 +1521,18 @@ mptfc_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	snprintf(ioc->fc_rescan_work_q_name, sizeof(ioc->fc_rescan_work_q_name),
 		 "mptfc_wq_%d", sh->host_no);
 	ioc->fc_rescan_work_q =
+<<<<<<< HEAD
 		create_singlethread_workqueue(ioc->fc_rescan_work_q_name);
 	if (!ioc->fc_rescan_work_q)
 		goto out_mptfc_probe;
+=======
+		alloc_ordered_workqueue(ioc->fc_rescan_work_q_name,
+					WQ_MEM_RECLAIM);
+	if (!ioc->fc_rescan_work_q) {
+		error = -ENOMEM;
+		goto out_mptfc_host;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  Pre-fetch FC port WWN and stuff...
@@ -1350,6 +1553,12 @@ mptfc_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+out_mptfc_host:
+	scsi_remove_host(sh);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_mptfc_probe:
 
 	mptscsih_remove(pdev);
@@ -1360,7 +1569,11 @@ static struct pci_driver mptfc_driver = {
 	.name		= "mptfc",
 	.id_table	= mptfc_pci_table,
 	.probe		= mptfc_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(mptfc_remove),
+=======
+	.remove		= mptfc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= mptscsih_shutdown,
 #ifdef CONFIG_PM
 	.suspend	= mptscsih_suspend,
@@ -1371,7 +1584,10 @@ static struct pci_driver mptfc_driver = {
 static int
 mptfc_event_process(MPT_ADAPTER *ioc, EventNotificationReply_t *pEvReply)
 {
+<<<<<<< HEAD
 	MPT_SCSI_HOST *hd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 event = le32_to_cpu(pEvReply->Event) & 0xFF;
 	unsigned long flags;
 	int rc=1;
@@ -1382,8 +1598,12 @@ mptfc_event_process(MPT_ADAPTER *ioc, EventNotificationReply_t *pEvReply)
 	devtverboseprintk(ioc, printk(MYIOC_s_DEBUG_FMT "MPT event (=%02Xh) routed to SCSI host driver!\n",
 			ioc->name, event));
 
+<<<<<<< HEAD
 	if (ioc->sh == NULL ||
 		((hd = shost_priv(ioc->sh)) == NULL))
+=======
+	if (ioc->sh == NULL || shost_priv(ioc->sh) == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	switch (event) {
@@ -1496,8 +1716,12 @@ mptfc_init(void)
  *	@pdev: Pointer to pci_dev structure
  *
  */
+<<<<<<< HEAD
 static void __devexit
 mptfc_remove(struct pci_dev *pdev)
+=======
+static void mptfc_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	MPT_ADAPTER		*ioc = pci_get_drvdata(pdev);
 	struct mptfc_rport_info	*p, *n;
@@ -1522,14 +1746,26 @@ mptfc_remove(struct pci_dev *pdev)
 
 	for (ii=0; ii<ioc->facts.NumberOfPorts; ii++) {
 		if (ioc->fc_data.fc_port_page1[ii].data) {
+<<<<<<< HEAD
 			pci_free_consistent(ioc->pcidev,
 				ioc->fc_data.fc_port_page1[ii].pg_sz,
 				(u8 *) ioc->fc_data.fc_port_page1[ii].data,
 				ioc->fc_data.fc_port_page1[ii].dma);
+=======
+			dma_free_coherent(&ioc->pcidev->dev,
+					  ioc->fc_data.fc_port_page1[ii].pg_sz,
+					  ioc->fc_data.fc_port_page1[ii].data,
+					  ioc->fc_data.fc_port_page1[ii].dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioc->fc_data.fc_port_page1[ii].data = NULL;
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	scsi_remove_host(ioc->sh);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mptscsih_remove(pdev);
 }
 

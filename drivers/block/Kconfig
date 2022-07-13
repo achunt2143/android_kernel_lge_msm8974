@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Block device driver configuration
 #
@@ -6,7 +10,11 @@ menuconfig BLK_DEV
 	bool "Block devices"
 	depends on BLOCK
 	default y
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for various different block device
 	  drivers. This option alone does not add any kernel code.
 
@@ -15,6 +23,7 @@ menuconfig BLK_DEV
 
 if BLK_DEV
 
+<<<<<<< HEAD
 config BLK_DEV_FD
 	tristate "Normal floppy disk support"
 	depends on ARCH_MAY_HAVE_PC_FDC
@@ -23,6 +32,18 @@ config BLK_DEV_FD
 	  say Y. Information about this driver, especially important for IBM
 	  Thinkpad users, is contained in
 	  <file:Documentation/blockdev/floppy.txt>.
+=======
+source "drivers/block/null_blk/Kconfig"
+
+config BLK_DEV_FD
+	tristate "Normal floppy disk support"
+	depends on ARCH_MAY_HAVE_PC_FDC
+	help
+	  If you want to use the floppy disk drive(s) of your PC under Linux,
+	  say Y. Information about this driver, especially important for IBM
+	  Thinkpad users, is contained in
+	  <file:Documentation/admin-guide/blockdev/floppy.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  That file also contains the location of the Floppy driver FAQ as
 	  well as location of the fdutils package used to configure additional
 	  parameters of the driver at run time.
@@ -30,6 +51,25 @@ config BLK_DEV_FD
 	  To compile this driver as a module, choose M here: the
 	  module will be called floppy.
 
+<<<<<<< HEAD
+=======
+config BLK_DEV_FD_RAWCMD
+	bool "Support for raw floppy disk commands (DEPRECATED)"
+	depends on BLK_DEV_FD
+	help
+	  If you want to use actual physical floppies and expect to do
+	  special low-level hardware accesses to them (access and use
+	  non-standard formats, for example), then enable this.
+
+	  Note that the code enabled by this option is rarely used and
+	  might be unstable or insecure, and distros should not enable it.
+
+	  Note: FDRAWCMD is deprecated and will be removed from the kernel
+	  in the near future.
+
+	  If unsure, say N.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config AMIGA_FLOPPY
 	tristate "Amiga floppy support"
 	depends on AMIGA
@@ -47,7 +87,11 @@ config MAC_FLOPPY
 
 config BLK_DEV_SWIM
 	tristate "Support for SWIM Macintosh floppy"
+<<<<<<< HEAD
 	depends on M68K && MAC
+=======
+	depends on M68K && MAC && !HIGHMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  You should select this option if you want floppy support
 	  and you don't have a II, IIfx, Q900, Q950 or AV series.
@@ -63,6 +107,7 @@ config AMIGA_Z2RAM
 	  To compile this driver as a module, choose M here: the
 	  module will be called z2ram.
 
+<<<<<<< HEAD
 config BLK_DEV_XD
 	tristate "XT hard disk support"
 	depends on ISA && ISA_DMA_API
@@ -75,10 +120,24 @@ config BLK_DEV_XD
 	  module will be called xd.
 
 	  It's pretty unlikely that you have one of these: say N.
+=======
+config N64CART
+	bool "N64 cart support"
+	depends on MACH_NINTENDO64
+	help
+	  Support for the N64 cart.
+
+config CDROM
+	tristate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config GDROM
 	tristate "SEGA Dreamcast GD-ROM drive"
 	depends on SH_DREAMCAST
+<<<<<<< HEAD
+=======
+	select CDROM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A standard SEGA Dreamcast comes with a modified CD ROM drive called a
 	  "GD-ROM" by SEGA to signify it is capable of reading special disks
@@ -87,6 +146,7 @@ config GDROM
 	  Most users will want to say "Y" here.
 	  You can also build this as a module which will be called gdrom.
 
+<<<<<<< HEAD
 config PARIDE
 	tristate "Parallel port IDE device support"
 	depends on PARPORT_PC
@@ -116,10 +176,13 @@ config PARIDE
 
 source "drivers/block/paride/Kconfig"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/block/mtip32xx/Kconfig"
 
 source "drivers/block/zram/Kconfig"
 
+<<<<<<< HEAD
 config BLK_CPQ_DA
 	tristate "Compaq SMART2 support"
 	depends on PCI && VIRT_TO_BUS
@@ -188,6 +251,12 @@ config BLK_DEV_UBD
 	bool "Virtual block device"
 	depends on UML
 	---help---
+=======
+config BLK_DEV_UBD
+	bool "Virtual block device"
+	depends on UML
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
           The User-Mode Linux port includes a driver called UBD which will let
           you access arbitrary files on the host computer as block devices.
           Unless you know that you do not need such virtual block devices say
@@ -196,7 +265,11 @@ config BLK_DEV_UBD
 config BLK_DEV_UBD_SYNC
 	bool "Always do synchronous disk IO for UBD"
 	depends on BLK_DEV_UBD
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Writes to the virtual block device are not immediately written to the
 	  host's disk; this may cause problems if, for example, the User-Mode
 	  Linux 'Virtual Machine' uses a journalling filesystem and the host
@@ -219,7 +292,11 @@ config BLK_DEV_COW_COMMON
 
 config BLK_DEV_LOOP
 	tristate "Loopback device support"
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Saying Y here will allow you to use a regular file as a block
 	  device; you can then create a file system on that block device and
 	  mount it just as you would mount other block devices such as hard
@@ -236,7 +313,11 @@ config BLK_DEV_LOOP
 
 	  To use the loop device, you need the losetup utility, found in the
 	  util-linux package, see
+<<<<<<< HEAD
 	  <ftp://ftp.kernel.org/pub/linux/utils/util-linux/>.
+=======
+	  <https://www.kernel.org/pub/linux/utils/util-linux/>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  The loop device driver can also be used to "hide" a file system in
 	  a disk partition, floppy, or regular file, either using encryption
@@ -244,6 +325,7 @@ config BLK_DEV_LOOP
 	  bits of, say, a sound file). This is also safe if the file resides
 	  on a remote file server.
 
+<<<<<<< HEAD
 	  There are several ways of encrypting disks. Some of these require
 	  kernel patches. The vanilla kernel offers the cryptoloop option
 	  and a Device Mapper target (which is superior, as it supports all
@@ -252,6 +334,8 @@ config BLK_DEV_LOOP
 	  or later) version of util-linux. Additionally, be aware that
 	  the cryptoloop is not safe for storing journaled filesystems.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Note that this loop device has nothing to do with the loopback
 	  device used for network connections from the machine to itself.
 
@@ -275,6 +359,7 @@ config BLK_DEV_LOOP_MIN_COUNT
 	  is used, it can be set to 0, since needed loop devices can be
 	  dynamically allocated with the /dev/loop-control interface.
 
+<<<<<<< HEAD
 config BLK_DEV_CRYPTOLOOP
 	tristate "Cryptoloop Support"
 	select CRYPTO
@@ -290,12 +375,18 @@ config BLK_DEV_CRYPTOLOOP
 	  instead, which can be configured to be on-disk compatible with the
 	  cryptoloop device.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/block/drbd/Kconfig"
 
 config BLK_DEV_NBD
 	tristate "Network block device support"
 	depends on NET
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Saying Y here will allow your computer to be a client for network
 	  block devices, i.e. it will be able to use block devices exported by
 	  servers (mount file systems on them etc.). Communication between
@@ -307,7 +398,11 @@ config BLK_DEV_NBD
 	  userland (making server and client physically the same computer,
 	  communicating using the loopback network device).
 
+<<<<<<< HEAD
 	  Read <file:Documentation/blockdev/nbd.txt> for more information,
+=======
+	  Read <file:Documentation/admin-guide/blockdev/nbd.rst> for more information,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  especially about where to find the server code, which runs in user
 	  space and does not need special kernel support.
 
@@ -319,6 +414,7 @@ config BLK_DEV_NBD
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config BLK_DEV_NVME
 	tristate "NVM Express block device"
 	depends on PCI
@@ -370,6 +466,11 @@ config BLK_DEV_UB
 config BLK_DEV_RAM
 	tristate "RAM block device support"
 	---help---
+=======
+config BLK_DEV_RAM
+	tristate "RAM block device support"
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Saying Y here will allow you to use a portion of your RAM memory as
 	  a block device, so that you can make file systems on it, read and
 	  write to it and do all the other things that you can do with normal
@@ -378,10 +479,18 @@ config BLK_DEV_RAM
 	  during the initial install of Linux.
 
 	  Note that the kernel command line option "ramdisk=XX" is now obsolete.
+<<<<<<< HEAD
 	  For details, read <file:Documentation/blockdev/ramdisk.txt>.
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called rd.
+=======
+	  For details, read <file:Documentation/admin-guide/blockdev/ramdisk.rst>.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called brd. An alias "rd" has been defined
+	  for historical reasons.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Most normal users won't need the RAM disk functionality, and can
 	  thus say N here.
@@ -403,6 +512,7 @@ config BLK_DEV_RAM_SIZE
 	  The default value is 4096 kilobytes. Only change this if you know
 	  what you are doing.
 
+<<<<<<< HEAD
 config BLK_DEV_XIP
 	bool "Support XIP filesystems on RAM block device"
 	depends on BLK_DEV_RAM
@@ -417,6 +527,17 @@ config CDROM_PKTCDVD
 	tristate "Packet writing on CD/DVD media"
 	depends on !UML
 	help
+=======
+config CDROM_PKTCDVD
+	tristate "Packet writing on CD/DVD media (DEPRECATED)"
+	depends on !UML
+	depends on SCSI
+	select CDROM
+	help
+	  Note: This driver is deprecated and will be removed from the
+	  kernel in the near future!
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a CDROM/DVD drive that supports packet writing, say
 	  Y to include support. It should work with any MMC/Mt Fuji
 	  compliant ATAPI or SCSI drive, which is just about any newer
@@ -426,7 +547,11 @@ config CDROM_PKTCDVD
 	  is possible.
 	  DVD-RW disks must be in restricted overwrite mode.
 
+<<<<<<< HEAD
 	  See the file <file:Documentation/cdrom/packet-writing.txt>
+=======
+	  See the file <file:Documentation/cdrom/packet-writing.rst>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  for further information on the use of this driver.
 
 	  To compile this driver as a module, choose M here: the
@@ -444,8 +569,13 @@ config CDROM_PKTCDVD_BUFFERS
 	  a disc is opened for writing.
 
 config CDROM_PKTCDVD_WCACHE
+<<<<<<< HEAD
 	bool "Enable write caching (EXPERIMENTAL)"
 	depends on CDROM_PKTCDVD && EXPERIMENTAL
+=======
+	bool "Enable write caching"
+	depends on CDROM_PKTCDVD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If enabled, write caching will be set for the CD-R/W device. For now
 	  this option is dangerous unless the CD-RW media is known good, as we
@@ -458,6 +588,7 @@ config ATA_OVER_ETH
 	This driver provides Support for ATA over Ethernet block
 	devices like the Coraid EtherDrive (R) Storage Blade.
 
+<<<<<<< HEAD
 config MG_DISK
 	tristate "mGine mflash, gflash support"
 	depends on ARM && GPIOLIB
@@ -475,6 +606,8 @@ config MG_DISK_RES
 	  Examples:
 			1024 => 1 MB
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SUNVDC
 	tristate "Sun Virtual Disk Client support"
 	depends on SUN_LDOMS
@@ -484,12 +617,15 @@ config SUNVDC
 
 source "drivers/s390/block/Kconfig"
 
+<<<<<<< HEAD
 config XILINX_SYSACE
 	tristate "Xilinx SystemACE support"
 	depends on 4xx || MICROBLAZE
 	help
 	  Include support for the Xilinx SystemACE CompactFlash interface
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XEN_BLKDEV_FRONTEND
 	tristate "Xen virtual block device support"
 	depends on XEN
@@ -522,6 +658,7 @@ config XEN_BLKDEV_BACKEND
 
 
 config VIRTIO_BLK
+<<<<<<< HEAD
 	tristate "Virtio block driver (EXPERIMENTAL)"
 	depends on EXPERIMENTAL && VIRTIO
 	---help---
@@ -543,11 +680,26 @@ config BLK_DEV_HD
 config BLK_DEV_RBD
 	tristate "Rados block device (RBD)"
 	depends on INET && EXPERIMENTAL && BLOCK
+=======
+	tristate "Virtio block driver"
+	depends on VIRTIO
+	select SG_POOL
+	help
+	  This is the virtual block driver for virtio.  It can be used with
+          QEMU based VMMs (like KVM or Xen).  Say Y or M.
+
+config BLK_DEV_RBD
+	tristate "Rados block device (RBD)"
+	depends on INET && BLOCK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CEPH_LIB
 	select LIBCRC32C
 	select CRYPTO_AES
 	select CRYPTO
+<<<<<<< HEAD
 	default n
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want include the Rados block device, which stripes
 	  a block device over objects stored in the Ceph distributed object
@@ -557,4 +709,41 @@ config BLK_DEV_RBD
 
 	  If unsure, say N.
 
+<<<<<<< HEAD
+=======
+config BLK_DEV_UBLK
+	tristate "Userspace block driver (Experimental)"
+	select IO_URING
+	help
+	  io_uring based userspace block driver. Together with ublk server, ublk
+	  has been working well, but interface with userspace or command data
+	  definition isn't finalized yet, and might change according to future
+	  requirement, so mark is as experimental now.
+
+	  Say Y if you want to get better performance because task_work_add()
+	  can be used in IO path for replacing io_uring cmd, which will become
+	  shared between IO tasks and ubq daemon, meantime task_work_add() can
+	  can handle batch more effectively, but task_work_add() isn't exported
+	  for module, so ublk has to be built to kernel.
+
+config BLKDEV_UBLK_LEGACY_OPCODES
+	bool "Support legacy command opcode"
+	depends on BLK_DEV_UBLK
+	default y
+	help
+	  ublk driver started to take plain command encoding, which turns out
+	  one bad way. The traditional ioctl command opcode encodes more
+	  info and basically defines each code uniquely, so opcode conflict
+	  is avoided, and driver can handle wrong command easily, meantime it
+	  may help security subsystem to audit io_uring command.
+
+	  Say Y if your application still uses legacy command opcode.
+
+	  Say N if you don't want to support legacy command opcode. It is
+	  suggested to enable N if your application(ublk server) switches to
+	  ioctl command encoding.
+
+source "drivers/block/rnbd/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # BLK_DEV

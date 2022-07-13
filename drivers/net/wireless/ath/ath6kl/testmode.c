@@ -55,8 +55,14 @@ void ath6kl_tm_rx_event(struct ath6kl *ar, void *buf, size_t buf_len)
 		ath6kl_warn("failed to allocate testmode rx skb!\n");
 		return;
 	}
+<<<<<<< HEAD
 	NLA_PUT_U32(skb, ATH6KL_TM_ATTR_CMD, ATH6KL_TM_CMD_TCMD);
 	NLA_PUT(skb, ATH6KL_TM_ATTR_DATA, buf_len, buf);
+=======
+	if (nla_put_u32(skb, ATH6KL_TM_ATTR_CMD, ATH6KL_TM_CMD_TCMD) ||
+	    nla_put(skb, ATH6KL_TM_ATTR_DATA, buf_len, buf))
+		goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cfg80211_testmode_event(skb, GFP_KERNEL);
 	return;
 
@@ -65,15 +71,25 @@ nla_put_failure:
 	ath6kl_warn("nla_put failed on testmode rx skb!\n");
 }
 
+<<<<<<< HEAD
 int ath6kl_tm_cmd(struct wiphy *wiphy, void *data, int len)
+=======
+int ath6kl_tm_cmd(struct wiphy *wiphy, struct wireless_dev *wdev,
+		  void *data, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl *ar = wiphy_priv(wiphy);
 	struct nlattr *tb[ATH6KL_TM_ATTR_MAX + 1];
 	int err, buf_len;
 	void *buf;
 
+<<<<<<< HEAD
 	err = nla_parse(tb, ATH6KL_TM_ATTR_MAX, data, len,
 			ath6kl_tm_policy);
+=======
+	err = nla_parse_deprecated(tb, ATH6KL_TM_ATTR_MAX, data, len,
+				   ath6kl_tm_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -92,7 +108,10 @@ int ath6kl_tm_cmd(struct wiphy *wiphy, void *data, int len)
 
 		return 0;
 
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATH6KL_TM_CMD_RX_REPORT:
 	default:
 		return -EOPNOTSUPP;

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hitachi SCA HD64570 driver for Linux
  *
  * Copyright (C) 1998-2003 Krzysztof Halasa <khc@pm.waw.pl>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License
  * as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Source of information: Hitachi HD64570 SCA User's Manual
  *
  * We use the following SCA memory map:
@@ -29,7 +36,10 @@
 #include <linux/fcntl.h>
 #include <linux/hdlc.h>
 #include <linux/in.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/jiffies.h>
@@ -40,7 +50,11 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hd64570.h"
 
 #define get_msci(port)	  (phy_node(port) ?   MSCI1_OFFSET :   MSCI0_OFFSET)
@@ -51,7 +65,10 @@
 #define SCA_INTR_DMAC_RX(node) (node ? 0x20 : 0x02)
 #define SCA_INTR_DMAC_TX(node) (node ? 0x40 : 0x04)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct net_device *port_to_dev(port_t *port)
 {
 	return port->dev;
@@ -63,12 +80,27 @@ static inline int sca_intr_status(card_t *card)
 	u8 isr0 = sca_in(ISR0, card);
 	u8 isr1 = sca_in(ISR1, card);
 
+<<<<<<< HEAD
 	if (isr1 & 0x03) result |= SCA_INTR_DMAC_RX(0);
 	if (isr1 & 0x0C) result |= SCA_INTR_DMAC_TX(0);
 	if (isr1 & 0x30) result |= SCA_INTR_DMAC_RX(1);
 	if (isr1 & 0xC0) result |= SCA_INTR_DMAC_TX(1);
 	if (isr0 & 0x0F) result |= SCA_INTR_MSCI(0);
 	if (isr0 & 0xF0) result |= SCA_INTR_MSCI(1);
+=======
+	if (isr1 & 0x03)
+		result |= SCA_INTR_DMAC_RX(0);
+	if (isr1 & 0x0C)
+		result |= SCA_INTR_DMAC_TX(0);
+	if (isr1 & 0x30)
+		result |= SCA_INTR_DMAC_RX(1);
+	if (isr1 & 0xC0)
+		result |= SCA_INTR_DMAC_TX(1);
+	if (isr0 & 0x0F)
+		result |= SCA_INTR_MSCI(0);
+	if (isr0 & 0xF0)
+		result |= SCA_INTR_MSCI(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(result & SCA_INTR_DMAC_TX(0)))
 		if (sca_in(DSR_TX(0), card) & DSR_EOM)
@@ -80,7 +112,11 @@ static inline int sca_intr_status(card_t *card)
 	return result;
 }
 
+<<<<<<< HEAD
 static inline port_t* dev_to_port(struct net_device *dev)
+=======
+static inline port_t *dev_to_port(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev_to_hdlc(dev)->priv;
 }
@@ -91,7 +127,10 @@ static inline u16 next_desc(port_t *port, u16 desc, int transmit)
 			     : port_to_card(port)->rx_ring_buffers);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u16 desc_abs_number(port_t *port, u16 desc, int transmit)
 {
 	u16 rx_buffs = port_to_card(port)->rx_ring_buffers;
@@ -102,14 +141,20 @@ static inline u16 desc_abs_number(port_t *port, u16 desc, int transmit)
 		transmit * rx_buffs + desc;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u16 desc_offset(port_t *port, u16 desc, int transmit)
 {
 	/* Descriptor offset always fits in 16 bits */
 	return desc_abs_number(port, desc, transmit) * sizeof(pkt_desc);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pkt_desc __iomem *desc_address(port_t *port, u16 desc,
 					     int transmit)
 {
@@ -122,14 +167,20 @@ static inline pkt_desc __iomem *desc_address(port_t *port, u16 desc,
 #endif
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 buffer_offset(port_t *port, u16 desc, int transmit)
 {
 	return port_to_card(port)->buff_offset +
 		desc_abs_number(port, desc, transmit) * (u32)HDLC_MAX_MRU;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void sca_set_carrier(port_t *port)
 {
 	if (!(sca_in(get_msci(port) + ST3, port_to_card(port)) & ST3_DCD)) {
@@ -147,7 +198,10 @@ static inline void sca_set_carrier(port_t *port)
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sca_init_port(port_t *port)
 {
 	card_t *card = port_to_card(port);
@@ -217,13 +271,20 @@ static void sca_init_port(port_t *port)
 	sca_set_carrier(port);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef NEED_SCA_MSCI_INTR
 /* MSCI interrupt service */
 static inline void sca_msci_intr(port_t *port)
 {
 	u16 msci = get_msci(port);
+<<<<<<< HEAD
 	card_t* card = port_to_card(port);
+=======
+	card_t *card = port_to_card(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 stat = sca_in(msci + ST1, card); /* read MSCI ST1 status */
 
 	/* Reset MSCI TX underrun and CDCD status bit */
@@ -240,7 +301,10 @@ static inline void sca_msci_intr(port_t *port)
 }
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void sca_rx(card_t *card, port_t *port, pkt_desc __iomem *desc,
 			  u16 rxin)
 {
@@ -269,8 +333,14 @@ static inline void sca_rx(card_t *card, port_t *port, pkt_desc __iomem *desc,
 		memcpy_fromio(skb->data, winbase(card) + buff, maxlen);
 		openwin(card, page + 1);
 		memcpy_fromio(skb->data + maxlen, winbase(card), len - maxlen);
+<<<<<<< HEAD
 	} else
 		memcpy_fromio(skb->data, winbase(card) + buff, len);
+=======
+	} else {
+		memcpy_fromio(skb->data, winbase(card) + buff, len);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef PAGE0_ALWAYS_MAPPED
 	openwin(card, 0);	/* select pkt_desc table page back */
@@ -286,7 +356,10 @@ static inline void sca_rx(card_t *card, port_t *port, pkt_desc __iomem *desc,
 	netif_rx(skb);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Receive DMA interrupt service */
 static inline void sca_rx_intr(port_t *port)
 {
@@ -308,7 +381,11 @@ static inline void sca_rx_intr(port_t *port)
 		pkt_desc __iomem *desc;
 		u32 cda = sca_inw(dmac + CDAL, card);
 
+<<<<<<< HEAD
 		if ((cda >= desc_off) && (cda < desc_off + sizeof(pkt_desc)))
+=======
+		if (cda >= desc_off && (cda < desc_off + sizeof(pkt_desc)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;	/* No frame received */
 
 		desc = desc_address(port, port->rxin, 0);
@@ -326,8 +403,14 @@ static inline void sca_rx_intr(port_t *port)
 				dev->stats.rx_crc_errors++;
 			if (stat & ST_RX_EOM)
 				port->rxpart = 0; /* received last fragment */
+<<<<<<< HEAD
 		} else
 			sca_rx(card, port, desc, port->rxin);
+=======
+		} else {
+			sca_rx(card, port, desc, port->rxin);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Set new error descriptor address */
 		sca_outw(desc_off, dmac + EDAL, card);
@@ -338,13 +421,20 @@ static inline void sca_rx_intr(port_t *port)
 	sca_out(DSR_DE, DSR_RX(phy_node(port)), card);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Transmit DMA interrupt service */
 static inline void sca_tx_intr(port_t *port)
 {
 	struct net_device *dev = port_to_dev(port);
 	u16 dmac = get_dmac_tx(port);
+<<<<<<< HEAD
 	card_t* card = port_to_card(port);
+=======
+	card_t *card = port_to_card(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 stat;
 
 	spin_lock(&port->lock);
@@ -360,7 +450,12 @@ static inline void sca_tx_intr(port_t *port)
 
 		u32 desc_off = desc_offset(port, port->txlast, 1);
 		u32 cda = sca_inw(dmac + CDAL, card);
+<<<<<<< HEAD
 		if ((cda >= desc_off) && (cda < desc_off + sizeof(pkt_desc)))
+=======
+
+		if (cda >= desc_off && (cda < desc_off + sizeof(pkt_desc)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;	/* Transmitter is/will_be sending this frame */
 
 		desc = desc_address(port, port->txlast, 1);
@@ -374,8 +469,12 @@ static inline void sca_tx_intr(port_t *port)
 	spin_unlock(&port->lock);
 }
 
+<<<<<<< HEAD
 
 static irqreturn_t sca_intr(int irq, void* dev_id)
+=======
+static irqreturn_t sca_intr(int irq, void *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	card_t *card = dev_id;
 	int i;
@@ -383,10 +482,18 @@ static irqreturn_t sca_intr(int irq, void* dev_id)
 	int handled = 0;
 	u8 page = sca_get_page(card);
 
+<<<<<<< HEAD
 	while((stat = sca_intr_status(card)) != 0) {
 		handled = 1;
 		for (i = 0; i < 2; i++) {
 			port_t *port = get_port(card, i);
+=======
+	while ((stat = sca_intr_status(card)) != 0) {
+		handled = 1;
+		for (i = 0; i < 2; i++) {
+			port_t *port = get_port(card, i);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (port) {
 				if (stat & SCA_INTR_MSCI(i))
 					sca_msci_intr(port);
@@ -404,15 +511,24 @@ static irqreturn_t sca_intr(int irq, void* dev_id)
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 
 static void sca_set_port(port_t *port)
 {
 	card_t* card = port_to_card(port);
+=======
+static void sca_set_port(port_t *port)
+{
+	card_t *card = port_to_card(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 msci = get_msci(port);
 	u8 md2 = sca_in(msci + MD2, card);
 	unsigned int tmc, br = 10, brv = 1024;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port->settings.clock_rate > 0) {
 		/* Try lower br for better accuracy*/
 		do {
@@ -421,14 +537,24 @@ static void sca_set_port(port_t *port)
 
 			/* Baud Rate = CLOCK_BASE / TMC / 2^BR */
 			tmc = CLOCK_BASE / brv / port->settings.clock_rate;
+<<<<<<< HEAD
 		}while (br > 1 && tmc <= 128);
+=======
+		} while (br > 1 && tmc <= 128);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tmc < 1) {
 			tmc = 1;
 			br = 0;	/* For baud=CLOCK_BASE we use tmc=1 br=0 */
 			brv = 1;
+<<<<<<< HEAD
 		} else if (tmc > 255)
 			tmc = 256; /* tmc=0 means 256 - low baud rates */
+=======
+		} else if (tmc > 255) {
+			tmc = 256; /* tmc=0 means 256 - low baud rates */
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		port->settings.clock_rate = CLOCK_BASE / brv / tmc;
 	} else {
@@ -454,6 +580,7 @@ static void sca_set_port(port_t *port)
 		md2 &= ~MD2_LOOPBACK;
 
 	sca_out(md2, msci + MD2, card);
+<<<<<<< HEAD
 
 }
 
@@ -471,17 +598,61 @@ static void sca_open(struct net_device *dev)
 	case ENCODING_FM_MARK:	md2 = MD2_FM_MARK;	break;
 	case ENCODING_FM_SPACE:	md2 = MD2_FM_SPACE;	break;
 	default:		md2 = MD2_MANCHESTER;
+=======
+}
+
+static void sca_open(struct net_device *dev)
+{
+	port_t *port = dev_to_port(dev);
+	card_t *card = port_to_card(port);
+	u16 msci = get_msci(port);
+	u8 md0, md2;
+
+	switch (port->encoding) {
+	case ENCODING_NRZ:
+		md2 = MD2_NRZ;
+		break;
+	case ENCODING_NRZI:
+		md2 = MD2_NRZI;
+		break;
+	case ENCODING_FM_MARK:
+		md2 = MD2_FM_MARK;
+		break;
+	case ENCODING_FM_SPACE:
+		md2 = MD2_FM_SPACE;
+		break;
+	default:
+		md2 = MD2_MANCHESTER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (port->settings.loopback)
 		md2 |= MD2_LOOPBACK;
 
+<<<<<<< HEAD
 	switch(port->parity) {
 	case PARITY_CRC16_PR0:	     md0 = MD0_HDLC | MD0_CRC_16_0;  break;
 	case PARITY_CRC16_PR1:	     md0 = MD0_HDLC | MD0_CRC_16;    break;
 	case PARITY_CRC16_PR0_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU_0; break;
 	case PARITY_CRC16_PR1_CCITT: md0 = MD0_HDLC | MD0_CRC_ITU;   break;
 	default:		     md0 = MD0_HDLC | MD0_CRC_NONE;
+=======
+	switch (port->parity) {
+	case PARITY_CRC16_PR0:
+		md0 = MD0_HDLC | MD0_CRC_16_0;
+		break;
+	case PARITY_CRC16_PR1:
+		md0 = MD0_HDLC | MD0_CRC_16;
+		break;
+	case PARITY_CRC16_PR0_CCITT:
+		md0 = MD0_HDLC | MD0_CRC_ITU_0;
+		break;
+	case PARITY_CRC16_PR1_CCITT:
+		md0 = MD0_HDLC | MD0_CRC_ITU;
+		break;
+	default:
+		md0 = MD0_HDLC | MD0_CRC_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sca_out(CMD_RESET, msci + CMD, card);
@@ -498,9 +669,15 @@ static void sca_open(struct net_device *dev)
 	sca_out(0x14, msci + TRC1, card); /* +1=TXRDY/DMA deactiv condition */
 
 /* We're using the following interrupts:
+<<<<<<< HEAD
    - TXINT (DMAC completed all transmisions, underrun or DCD change)
    - all DMA interrupts
 */
+=======
+ * - TXINT (DMAC completed all transmisions, underrun or DCD change)
+ * - all DMA interrupts
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sca_set_carrier(port);
 
 	/* MSCI TX INT and RX INT A IRQ enable */
@@ -521,11 +698,18 @@ static void sca_open(struct net_device *dev)
 	netif_start_queue(dev);
 }
 
+<<<<<<< HEAD
 
 static void sca_close(struct net_device *dev)
 {
 	port_t *port = dev_to_port(dev);
 	card_t* card = port_to_card(port);
+=======
+static void sca_close(struct net_device *dev)
+{
+	port_t *port = dev_to_port(dev);
+	card_t *card = port_to_card(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset channel */
 	sca_out(CMD_RESET, get_msci(port) + CMD, port_to_card(port));
@@ -539,7 +723,10 @@ static void sca_close(struct net_device *dev)
 	netif_stop_queue(dev);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sca_attach(struct net_device *dev, unsigned short encoding,
 		      unsigned short parity)
 {
@@ -562,7 +749,10 @@ static int sca_attach(struct net_device *dev, unsigned short encoding,
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_RINGS
 static void sca_dump_rings(struct net_device *dev)
 {
@@ -617,7 +807,10 @@ static void sca_dump_rings(struct net_device *dev)
 }
 #endif /* DEBUG_RINGS */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t sca_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	port_t *port = dev_to_port(dev);
@@ -649,8 +842,14 @@ static netdev_tx_t sca_xmit(struct sk_buff *skb, struct net_device *dev)
 		memcpy_toio(winbase(card) + buff, skb->data, maxlen);
 		openwin(card, page + 1);
 		memcpy_toio(winbase(card), skb->data + maxlen, len - maxlen);
+<<<<<<< HEAD
 	} else
 		memcpy_toio(winbase(card) + buff, skb->data, len);
+=======
+	} else {
+		memcpy_toio(winbase(card) + buff, skb->data, len);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef PAGE0_ALWAYS_MAPPED
 	openwin(card, 0);	/* select pkt_desc table page back */
@@ -674,10 +873,15 @@ static netdev_tx_t sca_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 
 #ifdef NEED_DETECT_RAM
 static u32 __devinit sca_detect_ram(card_t *card, u8 __iomem *rambase,
 				    u32 ramsize)
+=======
+#ifdef NEED_DETECT_RAM
+static u32 sca_detect_ram(card_t *card, u8 __iomem *rambase, u32 ramsize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Round RAM size to 32 bits, fill from end to start */
 	u32 i = ramsize &= ~3;
@@ -704,8 +908,12 @@ static u32 __devinit sca_detect_ram(card_t *card, u8 __iomem *rambase,
 }
 #endif /* NEED_DETECT_RAM */
 
+<<<<<<< HEAD
 
 static void __devinit sca_init(card_t *card, int wait_states)
+=======
+static void sca_init(card_t *card, int wait_states)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sca_out(wait_states, WCRL, card); /* Wait Control */
 	sca_out(wait_states, WCRM, card);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale SPI/eSPI controller driver library.
  *
@@ -10,6 +14,7 @@
  * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
  *
  * Copyright 2010 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -24,6 +29,21 @@
 #include <linux/of_platform.h>
 #include <linux/of_spi.h>
 #include <sysdev/fsl_soc.h>
+=======
+ */
+#include <linux/dma-mapping.h>
+#include <linux/fsl_devices.h>
+#include <linux/interrupt.h>
+#include <linux/kernel.h>
+#include <linux/mm.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/spi/spi.h>
+#ifdef CONFIG_FSL_SOC
+#include <sysdev/fsl_soc.h>
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "spi-fsl-lib.h"
 
@@ -33,7 +53,12 @@ void mpc8xxx_spi_rx_buf_##type(u32 data, struct mpc8xxx_spi *mpc8xxx_spi) \
 	type *rx = mpc8xxx_spi->rx;					  \
 	*rx++ = (type)(data >> mpc8xxx_spi->rx_shift);			  \
 	mpc8xxx_spi->rx = rx;						  \
+<<<<<<< HEAD
 }
+=======
+}									  \
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_rx_buf_##type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MPC8XXX_SPI_TX_BUF(type)				\
 u32 mpc8xxx_spi_tx_buf_##type(struct mpc8xxx_spi *mpc8xxx_spi)	\
@@ -45,7 +70,12 @@ u32 mpc8xxx_spi_tx_buf_##type(struct mpc8xxx_spi *mpc8xxx_spi)	\
 	data = *tx++ << mpc8xxx_spi->tx_shift;			\
 	mpc8xxx_spi->tx = tx;					\
 	return data;						\
+<<<<<<< HEAD
 }
+=======
+}								\
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_tx_buf_##type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MPC8XXX_SPI_RX_BUF(u8)
 MPC8XXX_SPI_RX_BUF(u16)
@@ -58,6 +88,7 @@ struct mpc8xxx_spi_probe_info *to_of_pinfo(struct fsl_spi_platform_data *pdata)
 {
 	return container_of(pdata, struct mpc8xxx_spi_probe_info, pdata);
 }
+<<<<<<< HEAD
 
 void mpc8xxx_spi_work(struct work_struct *work)
 {
@@ -101,6 +132,9 @@ void mpc8xxx_spi_cleanup(struct spi_device *spi)
 {
 	kfree(spi->controller_state);
 }
+=======
+EXPORT_SYMBOL_GPL(to_of_pinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *mpc8xxx_spi_strmode(unsigned int flags)
 {
@@ -116,6 +150,7 @@ const char *mpc8xxx_spi_strmode(unsigned int flags)
 	}
 	return "CPU";
 }
+<<<<<<< HEAD
 
 int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 			unsigned int irq)
@@ -136,6 +171,26 @@ int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 	master->dev.of_node = dev->of_node;
 
 	mpc8xxx_spi = spi_master_get_devdata(master);
+=======
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_strmode);
+
+void mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
+			unsigned int irq)
+{
+	struct fsl_spi_platform_data *pdata = dev_get_platdata(dev);
+	struct spi_controller *ctlr;
+	struct mpc8xxx_spi *mpc8xxx_spi;
+
+	ctlr = dev_get_drvdata(dev);
+
+	/* the spi->mode bits understood by this driver: */
+	ctlr->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH
+			| SPI_LSB_FIRST | SPI_LOOP;
+
+	ctlr->dev.of_node = dev->of_node;
+
+	mpc8xxx_spi = spi_controller_get_devdata(ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpc8xxx_spi->dev = dev;
 	mpc8xxx_spi->get_rx = mpc8xxx_spi_rx_buf_u8;
 	mpc8xxx_spi->get_tx = mpc8xxx_spi_tx_buf_u8;
@@ -146,6 +201,7 @@ int mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 	mpc8xxx_spi->rx_shift = 0;
 	mpc8xxx_spi->tx_shift = 0;
 
+<<<<<<< HEAD
 	init_completion(&mpc8xxx_spi->done);
 
 	master->bus_num = pdata->bus_num;
@@ -190,6 +246,16 @@ int __devexit mpc8xxx_spi_remove(struct device *dev)
 }
 
 int __devinit of_mpc8xxx_spi_probe(struct platform_device *ofdev)
+=======
+	ctlr->bus_num = pdata->bus_num;
+	ctlr->num_chipselect = pdata->max_chipselect;
+
+	init_completion(&mpc8xxx_spi->done);
+}
+EXPORT_SYMBOL_GPL(mpc8xxx_spi_probe);
+
+int of_mpc8xxx_spi_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &ofdev->dev;
 	struct device_node *np = ofdev->dev.of_node;
@@ -198,9 +264,15 @@ int __devinit of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 	const void *prop;
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
 	pinfo = kzalloc(sizeof(*pinfo), GFP_KERNEL);
 	if (!pinfo)
 		return -ENOMEM;
+=======
+	pinfo = devm_kzalloc(&ofdev->dev, sizeof(*pinfo), GFP_KERNEL);
+	if (!pinfo)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata = &pinfo->pdata;
 	dev->platform_data = pdata;
@@ -208,15 +280,30 @@ int __devinit of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 	/* Allocate bus num dynamically. */
 	pdata->bus_num = -1;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FSL_SOC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SPI controller is either clocked from QE or SoC clock. */
 	pdata->sysclk = get_brgfreq();
 	if (pdata->sysclk == -1) {
 		pdata->sysclk = fsl_get_sys_freq();
+<<<<<<< HEAD
 		if (pdata->sysclk == -1) {
 			ret = -ENODEV;
 			goto err;
 		}
 	}
+=======
+		if (pdata->sysclk == -1)
+			return -ENODEV;
+	}
+#else
+	ret = of_property_read_u32(np, "clock-frequency", &pdata->sysclk);
+	if (ret)
+		return ret;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prop = of_get_property(np, "mode", NULL);
 	if (prop && !strcmp(prop, "cpu-qe"))
@@ -229,8 +316,15 @@ int __devinit of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 		pdata->flags = SPI_CPM_MODE | SPI_CPM1;
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	kfree(pinfo);
 	return ret;
 }
+=======
+}
+EXPORT_SYMBOL_GPL(of_mpc8xxx_spi_probe);
+
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

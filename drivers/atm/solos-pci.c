@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 /*
  * Driver for the Solos PCI ADSL2+ card, designed to support Linux by
  *  Traverse Technologies -- http://www.traverse.com.au/
  *  Xrio Limited          -- http://www.xrio.com/
  *
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Driver for the Solos PCI ADSL2+ card, designed to support Linux by
+ *  Traverse Technologies -- https://www.traverse.com.au/
+ *  Xrio Limited          -- http://www.xrio.com/
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright © 2008 Traverse Technologies
  * Copyright © 2008 Intel Corporation
  *
  * Authors: Nathan Williams <nathan@traverse.com.au>
  *          David Woodhouse <dwmw2@infradead.org>
  *          Treker Chen <treker@xrio.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +29,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define DEBUG
@@ -42,7 +54,12 @@
 #include <linux/swab.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #define VERSION "0.07"
+=======
+#define VERSION "1.04"
+#define DRIVER_VERSION 0x01
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTAG "solos-pci"
 
 #define CONFIG_RAM_SIZE	128
@@ -56,16 +73,31 @@
 #define FLASH_BUSY	0x60
 #define FPGA_MODE	0x5C
 #define FLASH_MODE	0x58
+<<<<<<< HEAD
+=======
+#define GPIO_STATUS	0x54
+#define DRIVER_VER	0x50
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TX_DMA_ADDR(port)	(0x40 + (4 * (port)))
 #define RX_DMA_ADDR(port)	(0x30 + (4 * (port)))
 
 #define DATA_RAM_SIZE	32768
 #define BUF_SIZE	2048
 #define OLD_BUF_SIZE	4096 /* For FPGA versions <= 2*/
+<<<<<<< HEAD
 #define FPGA_PAGE	528 /* FPGA flash page size*/
 #define SOLOS_PAGE	512 /* Solos flash page size*/
 #define FPGA_BLOCK	(FPGA_PAGE * 8) /* FPGA flash block size*/
 #define SOLOS_BLOCK	(SOLOS_PAGE * 8) /* Solos flash block size*/
+=======
+/* Old boards use ATMEL AD45DB161D flash */
+#define ATMEL_FPGA_PAGE	528 /* FPGA flash page size*/
+#define ATMEL_SOLOS_PAGE	512 /* Solos flash page size*/
+#define ATMEL_FPGA_BLOCK	(ATMEL_FPGA_PAGE * 8) /* FPGA block size*/
+#define ATMEL_SOLOS_BLOCK	(ATMEL_SOLOS_PAGE * 8) /* Solos block size*/
+/* Current boards use M25P/M25PE SPI flash */
+#define SPI_FLASH_BLOCK	(256 * 64)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RX_BUF(card, nr) ((card->buffers) + (nr)*(card->buffer_size)*2)
 #define TX_BUF(card, nr) ((card->buffers) + (nr)*(card->buffer_size)*2 + (card->buffer_size))
@@ -122,11 +154,22 @@ struct solos_card {
 	struct sk_buff_head cli_queue[4];
 	struct sk_buff *tx_skb[4];
 	struct sk_buff *rx_skb[4];
+<<<<<<< HEAD
 	wait_queue_head_t param_wq;
 	wait_queue_head_t fw_wq;
 	int using_dma;
 	int fpga_version;
 	int buffer_size;
+=======
+	unsigned char *dma_bounce;
+	wait_queue_head_t param_wq;
+	wait_queue_head_t fw_wq;
+	int using_dma;
+	int dma_alignment;
+	int fpga_version;
+	int buffer_size;
+	int atmel_flash;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -164,7 +207,10 @@ static void fpga_queue(struct solos_card *card, int port, struct sk_buff *skb,
 static uint32_t fpga_tx(struct solos_card *);
 static irqreturn_t solos_irq(int irq, void *dev_id);
 static struct atm_vcc* find_vcc(struct atm_dev *dev, short vpi, int vci);
+<<<<<<< HEAD
 static int list_vccs(int vci);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atm_init(struct solos_card *, struct device *);
 static void atm_remove(struct solos_card *);
 static int send_command(struct solos_card *card, int dev, const char *buf, size_t size);
@@ -197,7 +243,11 @@ static ssize_t solos_param_show(struct device *dev, struct device_attribute *att
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	header = (void *)skb_put(skb, sizeof(*header));
+=======
+	header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buflen = snprintf((void *)&header[1], buflen - 1,
 			  "L%05d\n%s\n", current->pid, attr->attr.name);
@@ -253,7 +303,11 @@ static ssize_t solos_param_store(struct device *dev, struct device_attribute *at
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	header = (void *)skb_put(skb, sizeof(*header));
+=======
+	header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buflen = snprintf((void *)&header[1], buflen - 1,
 			  "L%05d\n%s\n%s\n", current->pid, attr->attr.name, buf);
@@ -339,8 +393,13 @@ static char *next_string(struct sk_buff *skb)
  */       
 static int process_status(struct solos_card *card, int port, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	char *str, *end, *state_str, *snr, *attn;
 	int ver, rate_up, rate_down;
+=======
+	char *str, *state_str, *snr, *attn;
+	int ver, rate_up, rate_down, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!card->atmdev[port])
 		return -ENODEV;
@@ -349,7 +408,15 @@ static int process_status(struct solos_card *card, int port, struct sk_buff *skb
 	if (!str)
 		return -EIO;
 
+<<<<<<< HEAD
 	ver = simple_strtol(str, NULL, 10);
+=======
+	err = kstrtoint(str, 10, &ver);
+	if (err) {
+		dev_warn(&card->dev->dev, "Unexpected status interrupt version\n");
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ver < 1) {
 		dev_warn(&card->dev->dev, "Unexpected status interrupt version %d\n",
 			 ver);
@@ -365,16 +432,28 @@ static int process_status(struct solos_card *card, int port, struct sk_buff *skb
 		return 0;
 	}
 
+<<<<<<< HEAD
 	rate_down = simple_strtol(str, &end, 10);
 	if (*end)
 		return -EIO;
+=======
+	err = kstrtoint(str, 10, &rate_down);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str = next_string(skb);
 	if (!str)
 		return -EIO;
+<<<<<<< HEAD
 	rate_up = simple_strtol(str, &end, 10);
 	if (*end)
 		return -EIO;
+=======
+	err = kstrtoint(str, 10, &rate_up);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state_str = next_string(skb);
 	if (!state_str)
@@ -409,7 +488,11 @@ static int process_command(struct solos_card *card, int port, struct sk_buff *sk
 	struct solos_param *prm;
 	unsigned long flags;
 	int cmdpid;
+<<<<<<< HEAD
 	int found = 0;
+=======
+	int found = 0, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->len < 7)
 		return 0;
@@ -420,7 +503,13 @@ static int process_command(struct solos_card *card, int port, struct sk_buff *sk
 	    skb->data[6] != '\n')
 		return 0;
 
+<<<<<<< HEAD
 	cmdpid = simple_strtol(&skb->data[1], NULL, 10);
+=======
+	err = kstrtoint(&skb->data[1], 10, &cmdpid);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&card->param_queue_lock, flags);
 	list_for_each_entry(prm, &card->param_queue, list) {
@@ -444,15 +533,24 @@ static ssize_t console_show(struct device *dev, struct device_attribute *attr,
 	struct sk_buff *skb;
 	unsigned int len;
 
+<<<<<<< HEAD
 	spin_lock(&card->cli_queue_lock);
 	skb = skb_dequeue(&card->cli_queue[SOLOS_CHAN(atmdev)]);
 	spin_unlock(&card->cli_queue_lock);
+=======
+	spin_lock_bh(&card->cli_queue_lock);
+	skb = skb_dequeue(&card->cli_queue[SOLOS_CHAN(atmdev)]);
+	spin_unlock_bh(&card->cli_queue_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(skb == NULL)
 		return sprintf(buf, "No data.\n");
 
 	len = skb->len;
 	memcpy(buf, skb->data, len);
+<<<<<<< HEAD
 	dev_dbg(&card->dev->dev, "len: %d\n", len);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree_skb(skb);
 	return len;
@@ -473,14 +571,22 @@ static int send_command(struct solos_card *card, int dev, const char *buf, size_
 		return 0;
 	}
 
+<<<<<<< HEAD
 	header = (void *)skb_put(skb, sizeof(*header));
+=======
+	header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header->size = cpu_to_le16(size);
 	header->vpi = cpu_to_le16(0);
 	header->vci = cpu_to_le16(0);
 	header->type = cpu_to_le16(PKT_COMMAND);
 
+<<<<<<< HEAD
 	memcpy(skb_put(skb, size), buf, size);
+=======
+	skb_put_data(skb, buf, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fpga_queue(card, dev, skb, NULL);
 
@@ -499,7 +605,80 @@ static ssize_t console_store(struct device *dev, struct device_attribute *attr,
 	return err?:count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(console, 0644, console_show, console_store);
+=======
+struct geos_gpio_attr {
+	struct device_attribute attr;
+	int offset;
+};
+
+#define SOLOS_GPIO_ATTR(_name, _mode, _show, _store, _offset)	\
+	struct geos_gpio_attr gpio_attr_##_name = {		\
+		.attr = __ATTR(_name, _mode, _show, _store),	\
+		.offset = _offset }
+
+static ssize_t geos_gpio_store(struct device *dev, struct device_attribute *attr,
+			       const char *buf, size_t count)
+{
+	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+	struct solos_card *card = dev_get_drvdata(dev);
+	uint32_t data32;
+
+	if (count != 1 && (count != 2 || buf[1] != '\n'))
+		return -EINVAL;
+
+	spin_lock_irq(&card->param_queue_lock);
+	data32 = ioread32(card->config_regs + GPIO_STATUS);
+	if (buf[0] == '1') {
+		data32 |= 1 << gattr->offset;
+		iowrite32(data32, card->config_regs + GPIO_STATUS);
+	} else if (buf[0] == '0') {
+		data32 &= ~(1 << gattr->offset);
+		iowrite32(data32, card->config_regs + GPIO_STATUS);
+	} else {
+		count = -EINVAL;
+	}
+	spin_unlock_irq(&card->param_queue_lock);
+	return count;
+}
+
+static ssize_t geos_gpio_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+{
+	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+	struct solos_card *card = dev_get_drvdata(dev);
+	uint32_t data32;
+
+	data32 = ioread32(card->config_regs + GPIO_STATUS);
+	data32 = (data32 >> gattr->offset) & 1;
+
+	return sprintf(buf, "%d\n", data32);
+}
+
+static ssize_t hardware_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+{
+	struct geos_gpio_attr *gattr = container_of(attr, struct geos_gpio_attr, attr);
+	struct solos_card *card = dev_get_drvdata(dev);
+	uint32_t data32;
+
+	data32 = ioread32(card->config_regs + GPIO_STATUS);
+	switch (gattr->offset) {
+	case 0:
+		/* HardwareVersion */
+		data32 = data32 & 0x1F;
+		break;
+	case 1:
+		/* HardwareVariant */
+		data32 = (data32 >> 5) & 0x0F;
+		break;
+	}
+	return sprintf(buf, "%d\n", data32);
+}
+
+static DEVICE_ATTR_RW(console);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define SOLOS_ATTR_RO(x) static DEVICE_ATTR(x, 0444, solos_param_show, NULL);
@@ -507,6 +686,17 @@ static DEVICE_ATTR(console, 0644, console_show, console_store);
 
 #include "solos-attrlist.c"
 
+<<<<<<< HEAD
+=======
+static SOLOS_GPIO_ATTR(GPIO1, 0644, geos_gpio_show, geos_gpio_store, 9);
+static SOLOS_GPIO_ATTR(GPIO2, 0644, geos_gpio_show, geos_gpio_store, 10);
+static SOLOS_GPIO_ATTR(GPIO3, 0644, geos_gpio_show, geos_gpio_store, 11);
+static SOLOS_GPIO_ATTR(GPIO4, 0644, geos_gpio_show, geos_gpio_store, 12);
+static SOLOS_GPIO_ATTR(GPIO5, 0644, geos_gpio_show, geos_gpio_store, 13);
+static SOLOS_GPIO_ATTR(PushButton, 0444, geos_gpio_show, NULL, 14);
+static SOLOS_GPIO_ATTR(HardwareVersion, 0444, hardware_show, NULL, 0);
+static SOLOS_GPIO_ATTR(HardwareVariant, 0444, hardware_show, NULL, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef SOLOS_ATTR_RO
 #undef SOLOS_ATTR_RW
 
@@ -518,11 +708,35 @@ static struct attribute *solos_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct attribute_group solos_attr_group = {
+=======
+static const struct attribute_group solos_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = solos_attrs,
 	.name = "parameters",
 };
 
+<<<<<<< HEAD
+=======
+static struct attribute *gpio_attrs[] = {
+	&gpio_attr_GPIO1.attr.attr,
+	&gpio_attr_GPIO2.attr.attr,
+	&gpio_attr_GPIO3.attr.attr,
+	&gpio_attr_GPIO4.attr.attr,
+	&gpio_attr_GPIO5.attr.attr,
+	&gpio_attr_PushButton.attr.attr,
+	&gpio_attr_HardwareVersion.attr.attr,
+	&gpio_attr_HardwareVariant.attr.attr,
+	NULL
+};
+
+static const struct attribute_group gpio_attr_group = {
+	.attrs = gpio_attrs,
+	.name = "gpio",
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int flash_upgrade(struct solos_card *card, int chip)
 {
 	const struct firmware *fw;
@@ -534,16 +748,37 @@ static int flash_upgrade(struct solos_card *card, int chip)
 	switch (chip) {
 	case 0:
 		fw_name = "solos-FPGA.bin";
+<<<<<<< HEAD
 		blocksize = FPGA_BLOCK;
 		break;
 	case 1:
 		fw_name = "solos-Firmware.bin";
 		blocksize = SOLOS_BLOCK;
+=======
+		if (card->atmel_flash)
+			blocksize = ATMEL_FPGA_BLOCK;
+		else
+			blocksize = SPI_FLASH_BLOCK;
+		break;
+	case 1:
+		fw_name = "solos-Firmware.bin";
+		if (card->atmel_flash)
+			blocksize = ATMEL_SOLOS_BLOCK;
+		else
+			blocksize = SPI_FLASH_BLOCK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 2:
 		if (card->fpga_version > LEGACY_BUFFERS){
 			fw_name = "solos-db-FPGA.bin";
+<<<<<<< HEAD
 			blocksize = FPGA_BLOCK;
+=======
+			if (card->atmel_flash)
+				blocksize = ATMEL_FPGA_BLOCK;
+			else
+				blocksize = SPI_FLASH_BLOCK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			dev_info(&card->dev->dev, "FPGA version doesn't support"
 					" daughter board upgrades\n");
@@ -553,7 +788,14 @@ static int flash_upgrade(struct solos_card *card, int chip)
 	case 3:
 		if (card->fpga_version > LEGACY_BUFFERS){
 			fw_name = "solos-Firmware.bin";
+<<<<<<< HEAD
 			blocksize = SOLOS_BLOCK;
+=======
+			if (card->atmel_flash)
+				blocksize = ATMEL_SOLOS_BLOCK;
+			else
+				blocksize = SPI_FLASH_BLOCK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			dev_info(&card->dev->dev, "FPGA version doesn't support"
 					" daughter board upgrades\n");
@@ -569,6 +811,12 @@ static int flash_upgrade(struct solos_card *card, int chip)
 
 	dev_info(&card->dev->dev, "Flash upgrade starting\n");
 
+<<<<<<< HEAD
+=======
+	/* New FPGAs require driver version before permitting flash upgrades */
+	iowrite32(DRIVER_VERSION, card->config_regs + DRIVER_VER);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	numblocks = fw->size / blocksize;
 	dev_info(&card->dev->dev, "Firmware size: %zd\n", fw->size);
 	dev_info(&card->dev->dev, "Number of blocks: %d\n", numblocks);
@@ -598,9 +846,19 @@ static int flash_upgrade(struct solos_card *card, int chip)
 		/* dev_info(&card->dev->dev, "Set FPGA Flash mode to Block Write\n"); */
 		iowrite32(((chip * 2) + 1), card->config_regs + FLASH_MODE);
 
+<<<<<<< HEAD
 		/* Copy block to buffer, swapping each 16 bits */
 		for(i = 0; i < blocksize; i += 4) {
 			uint32_t word = swahb32p((uint32_t *)(fw->data + offset + i));
+=======
+		/* Copy block to buffer, swapping each 16 bits for Atmel flash */
+		for(i = 0; i < blocksize; i += 4) {
+			uint32_t word;
+			if (card->atmel_flash)
+				word = swahb32p((uint32_t *)(fw->data + offset + i));
+			else
+				word = *(uint32_t *)(fw->data + offset + i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if(card->fpga_version > LEGACY_BUFFERS)
 				iowrite32(word, FLASH_BUF + i);
 			else
@@ -637,7 +895,11 @@ static irqreturn_t solos_irq(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 void solos_bh(unsigned long card_arg)
+=======
+static void solos_bh(unsigned long card_arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct solos_card *card = (void *)card_arg;
 	uint32_t card_flags;
@@ -662,8 +924,13 @@ void solos_bh(unsigned long card_arg)
 				skb = card->rx_skb[port];
 				card->rx_skb[port] = NULL;
 
+<<<<<<< HEAD
 				pci_unmap_single(card->dev, SKB_CB(skb)->dma_addr,
 						 RX_DMA_SIZE, PCI_DMA_FROMDEVICE);
+=======
+				dma_unmap_single(&card->dev->dev, SKB_CB(skb)->dma_addr,
+						 RX_DMA_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				header = (void *)skb->data;
 				size = le16_to_cpu(header->size);
@@ -682,7 +949,16 @@ void solos_bh(unsigned long card_arg)
 					continue;
 				}
 
+<<<<<<< HEAD
 				skb = alloc_skb(size + 1, GFP_ATOMIC);
+=======
+				/* Use netdev_alloc_skb() because it adds NET_SKB_PAD of
+				 * headroom, and ensures we can route packets back out an
+				 * Ethernet interface (for example) without having to
+				 * reallocate. Adding NET_IP_ALIGN also ensures that both
+				 * PPPoATM and PPPoEoBR2684 packets end up aligned. */
+				skb = netdev_alloc_skb_ip_align(NULL, size + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!skb) {
 					if (net_ratelimit())
 						dev_warn(&card->dev->dev, "Failed to allocate sk_buff for RX\n");
@@ -710,7 +986,12 @@ void solos_bh(unsigned long card_arg)
 						dev_warn(&card->dev->dev, "Received packet for unknown VPI.VCI %d.%d on port %d\n",
 							 le16_to_cpu(header->vpi), le16_to_cpu(header->vci),
 							 port);
+<<<<<<< HEAD
 					continue;
+=======
+					dev_kfree_skb_any(skb);
+					break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				atm_charge(vcc, skb->truesize);
 				vcc->push(vcc, skb);
@@ -745,11 +1026,22 @@ void solos_bh(unsigned long card_arg)
 		/* Allocate RX skbs for any ports which need them */
 		if (card->using_dma && card->atmdev[port] &&
 		    !card->rx_skb[port]) {
+<<<<<<< HEAD
 			struct sk_buff *skb = alloc_skb(RX_DMA_SIZE, GFP_ATOMIC);
 			if (skb) {
 				SKB_CB(skb)->dma_addr =
 					pci_map_single(card->dev, skb->data,
 						       RX_DMA_SIZE, PCI_DMA_FROMDEVICE);
+=======
+			/* Unlike the MMIO case (qv) we can't add NET_IP_ALIGN
+			 * here; the FPGA can only DMA to addresses which are
+			 * aligned to 4 bytes. */
+			struct sk_buff *skb = dev_alloc_skb(RX_DMA_SIZE);
+			if (skb) {
+				SKB_CB(skb)->dma_addr =
+					dma_map_single(&card->dev->dev, skb->data,
+						       RX_DMA_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				iowrite32(SKB_CB(skb)->dma_addr,
 					  card->config_regs + RX_DMA_ADDR(port));
 				card->rx_skb[port] = skb;
@@ -772,12 +1064,19 @@ static struct atm_vcc *find_vcc(struct atm_dev *dev, short vpi, int vci)
 {
 	struct hlist_head *head;
 	struct atm_vcc *vcc = NULL;
+<<<<<<< HEAD
 	struct hlist_node *node;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *s;
 
 	read_lock(&vcc_sklist_lock);
 	head = &vcc_hash[vci & (VCC_HTABLE_SIZE -1)];
+<<<<<<< HEAD
 	sk_for_each(s, node, head) {
+=======
+	sk_for_each(s, head) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vcc = atm_sk(s);
 		if (vcc->dev == dev && vcc->vci == vci &&
 		    vcc->vpi == vpi && vcc->qos.rxtp.traffic_class != ATM_NONE &&
@@ -790,6 +1089,7 @@ static struct atm_vcc *find_vcc(struct atm_dev *dev, short vpi, int vci)
 	return vcc;
 }
 
+<<<<<<< HEAD
 static int list_vccs(int vci)
 {
 	struct hlist_head *head;
@@ -828,6 +1128,8 @@ static int list_vccs(int vci)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int popen(struct atm_vcc *vcc)
 {
 	struct solos_card *card = vcc->dev->dev_data;
@@ -840,13 +1142,21 @@ static int popen(struct atm_vcc *vcc)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	skb = alloc_skb(sizeof(*header), GFP_ATOMIC);
+=======
+	skb = alloc_skb(sizeof(*header), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		if (net_ratelimit())
 			dev_warn(&card->dev->dev, "Failed to allocate sk_buff in popen()\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	header = (void *)skb_put(skb, sizeof(*header));
+=======
+	header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header->size = cpu_to_le16(0);
 	header->vpi = cpu_to_le16(vcc->vpi);
@@ -857,8 +1167,11 @@ static int popen(struct atm_vcc *vcc)
 
 	set_bit(ATM_VF_ADDR, &vcc->flags);
 	set_bit(ATM_VF_READY, &vcc->flags);
+<<<<<<< HEAD
 	list_vccs(0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -866,30 +1179,69 @@ static int popen(struct atm_vcc *vcc)
 static void pclose(struct atm_vcc *vcc)
 {
 	struct solos_card *card = vcc->dev->dev_data;
+<<<<<<< HEAD
 	struct sk_buff *skb;
 	struct pkt_hdr *header;
 
 	skb = alloc_skb(sizeof(*header), GFP_ATOMIC);
+=======
+	unsigned char port = SOLOS_CHAN(vcc->dev);
+	struct sk_buff *skb, *tmpskb;
+	struct pkt_hdr *header;
+
+	/* Remove any yet-to-be-transmitted packets from the pending queue */
+	spin_lock_bh(&card->tx_queue_lock);
+	skb_queue_walk_safe(&card->tx_queue[port], skb, tmpskb) {
+		if (SKB_CB(skb)->vcc == vcc) {
+			skb_unlink(skb, &card->tx_queue[port]);
+			solos_pop(vcc, skb);
+		}
+	}
+	spin_unlock_bh(&card->tx_queue_lock);
+
+	skb = alloc_skb(sizeof(*header), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		dev_warn(&card->dev->dev, "Failed to allocate sk_buff in pclose()\n");
 		return;
 	}
+<<<<<<< HEAD
 	header = (void *)skb_put(skb, sizeof(*header));
+=======
+	header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header->size = cpu_to_le16(0);
 	header->vpi = cpu_to_le16(vcc->vpi);
 	header->vci = cpu_to_le16(vcc->vci);
 	header->type = cpu_to_le16(PKT_PCLOSE);
 
+<<<<<<< HEAD
 	fpga_queue(card, SOLOS_CHAN(vcc->dev), skb, NULL);
 
 	clear_bit(ATM_VF_ADDR, &vcc->flags);
 	clear_bit(ATM_VF_READY, &vcc->flags);
+=======
+	skb_get(skb);
+	fpga_queue(card, port, skb, NULL);
+
+	if (!wait_event_timeout(card->param_wq, !skb_shared(skb), 5 * HZ))
+		dev_warn(&card->dev->dev,
+			 "Timeout waiting for VCC close on port %d\n", port);
+
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hold up vcc_destroy_socket() (our caller) until solos_bh() in the
 	   tasklet has finished processing any incoming packets (and, more to
 	   the point, using the vcc pointer). */
 	tasklet_unlock_wait(&card->tlet);
+<<<<<<< HEAD
+=======
+
+	clear_bit(ATM_VF_ADDR, &vcc->flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -968,8 +1320,13 @@ static uint32_t fpga_tx(struct solos_card *card)
 		if (tx_pending & 1) {
 			struct sk_buff *oldskb = card->tx_skb[port];
 			if (oldskb) {
+<<<<<<< HEAD
 				pci_unmap_single(card->dev, SKB_CB(oldskb)->dma_addr,
 						 oldskb->len, PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&card->dev->dev, SKB_CB(oldskb)->dma_addr,
+						 oldskb->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				card->tx_skb[port] = NULL;
 			}
 			spin_lock(&card->tx_queue_lock);
@@ -983,8 +1340,18 @@ static uint32_t fpga_tx(struct solos_card *card)
 				tx_started |= 1 << port;
 				oldskb = skb; /* We're done with this skb already */
 			} else if (skb && card->using_dma) {
+<<<<<<< HEAD
 				SKB_CB(skb)->dma_addr = pci_map_single(card->dev, skb->data,
 								       skb->len, PCI_DMA_TODEVICE);
+=======
+				unsigned char *data = skb->data;
+				if ((unsigned long)data & card->dma_alignment) {
+					data = card->dma_bounce + (BUF_SIZE * port);
+					memcpy(data, skb->data, skb->len);
+				}
+				SKB_CB(skb)->dma_addr = dma_map_single(&card->dev->dev, data,
+								       skb->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				card->tx_skb[port] = skb;
 				iowrite32(SKB_CB(skb)->dma_addr,
 					  card->config_regs + TX_DMA_ADDR(port));
@@ -1012,9 +1379,16 @@ static uint32_t fpga_tx(struct solos_card *card)
 			if (vcc) {
 				atomic_inc(&vcc->stats->tx);
 				solos_pop(vcc, oldskb);
+<<<<<<< HEAD
 			} else
 				dev_kfree_skb_irq(oldskb);
 
+=======
+			} else {
+				dev_kfree_skb_irq(oldskb);
+				wake_up(&card->param_wq);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* For non-DMA TX, write the 'TX start' bit for all four ports simultaneously */
@@ -1053,7 +1427,11 @@ static int psend(struct atm_vcc *vcc, struct sk_buff *skb)
 		}
 	}
 
+<<<<<<< HEAD
 	header = (void *)skb_push(skb, sizeof(*header));
+=======
+	header = skb_push(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This does _not_ include the size of the header */
 	header->size = cpu_to_le16(pktlen);
@@ -1066,12 +1444,19 @@ static int psend(struct atm_vcc *vcc, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct atmdev_ops fpga_ops = {
 	.open =		popen,
 	.close =	pclose,
 	.ioctl =	NULL,
 	.getsockopt =	NULL,
 	.setsockopt =	NULL,
+=======
+static const struct atmdev_ops fpga_ops = {
+	.open =		popen,
+	.close =	pclose,
+	.ioctl =	NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send =		psend,
 	.send_oam =	NULL,
 	.phy_put =	NULL,
@@ -1103,7 +1488,11 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	err = pci_set_dma_mask(dev, DMA_BIT_MASK(32));
+=======
+	err = dma_set_mask_and_coherent(&dev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_warn(&dev->dev, "Failed to set 32-bit DMA mask\n");
 		goto out;
@@ -1118,20 +1507,35 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	card->config_regs = pci_iomap(dev, 0, CONFIG_RAM_SIZE);
 	if (!card->config_regs) {
 		dev_warn(&dev->dev, "Failed to ioremap config registers\n");
+<<<<<<< HEAD
+=======
+		err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release_regions;
 	}
 	card->buffers = pci_iomap(dev, 1, DATA_RAM_SIZE);
 	if (!card->buffers) {
 		dev_warn(&dev->dev, "Failed to ioremap data buffers\n");
+<<<<<<< HEAD
+=======
+		err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unmap_config;
 	}
 
 	if (reset) {
 		iowrite32(1, card->config_regs + FPGA_MODE);
+<<<<<<< HEAD
 		data32 = ioread32(card->config_regs + FPGA_MODE); 
 
 		iowrite32(0, card->config_regs + FPGA_MODE);
 		data32 = ioread32(card->config_regs + FPGA_MODE); 
+=======
+		ioread32(card->config_regs + FPGA_MODE);
+
+		iowrite32(0, card->config_regs + FPGA_MODE);
+		ioread32(card->config_regs + FPGA_MODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	data32 = ioread32(card->config_regs + FPGA_VER);
@@ -1154,18 +1558,47 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		db_fpga_upgrade = db_firmware_upgrade = 0;
 	}
 
+<<<<<<< HEAD
 	if (card->fpga_version >= DMA_SUPPORTED) {
 		pci_set_master(dev);
 		card->using_dma = 1;
+=======
+	/* Stopped using Atmel flash after 0.03-38 */
+	if (fpga_ver < 39)
+		card->atmel_flash = 1;
+	else
+		card->atmel_flash = 0;
+
+	data32 = ioread32(card->config_regs + PORTS);
+	card->nr_ports = (data32 & 0x000000FF);
+
+	if (card->fpga_version >= DMA_SUPPORTED) {
+		pci_set_master(dev);
+		card->using_dma = 1;
+		if (1) { /* All known FPGA versions so far */
+			card->dma_alignment = 3;
+			card->dma_bounce = kmalloc_array(card->nr_ports,
+							 BUF_SIZE, GFP_KERNEL);
+			if (!card->dma_bounce) {
+				dev_warn(&card->dev->dev, "Failed to allocate DMA bounce buffers\n");
+				err = -ENOMEM;
+				/* Fallback to MMIO doesn't work */
+				goto out_unmap_both;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		card->using_dma = 0;
 		/* Set RX empty flag for all ports */
 		iowrite32(0xF0, card->config_regs + FLAGS_ADDR);
 	}
 
+<<<<<<< HEAD
 	data32 = ioread32(card->config_regs + PORTS);
 	card->nr_ports = (data32 & 0x000000FF);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(dev, card);
 
 	tasklet_init(&card->tlet, solos_bh, (unsigned long)card);
@@ -1200,6 +1633,13 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (err)
 		goto out_free_irq;
 
+<<<<<<< HEAD
+=======
+	if (card->fpga_version >= DMA_SUPPORTED &&
+	    sysfs_create_group(&card->dev->dev.kobj, &gpio_attr_group))
+		dev_err(&card->dev->dev, "Could not register parameter group for GPIOs\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  out_free_irq:
@@ -1208,7 +1648,11 @@ static int fpga_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	tasklet_kill(&card->tlet);
 	
  out_unmap_both:
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+	kfree(card->dma_bounce);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_iounmap(dev, card->buffers);
  out_unmap_config:
 	pci_iounmap(dev, card->config_regs);
@@ -1249,13 +1693,21 @@ static int atm_init(struct solos_card *card, struct device *parent)
 		card->atmdev[i]->phy_data = (void *)(unsigned long)i;
 		atm_dev_signal_change(card->atmdev[i], ATM_PHY_SIG_FOUND);
 
+<<<<<<< HEAD
 		skb = alloc_skb(sizeof(*header), GFP_ATOMIC);
+=======
+		skb = alloc_skb(sizeof(*header), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb) {
 			dev_warn(&card->dev->dev, "Failed to allocate sk_buff in atm_init()\n");
 			continue;
 		}
 
+<<<<<<< HEAD
 		header = (void *)skb_put(skb, sizeof(*header));
+=======
+		header = skb_put(skb, sizeof(*header));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		header->size = cpu_to_le16(0);
 		header->vpi = cpu_to_le16(0);
@@ -1282,14 +1734,24 @@ static void atm_remove(struct solos_card *card)
 
 			skb = card->rx_skb[i];
 			if (skb) {
+<<<<<<< HEAD
 				pci_unmap_single(card->dev, SKB_CB(skb)->dma_addr,
 						 RX_DMA_SIZE, PCI_DMA_FROMDEVICE);
+=======
+				dma_unmap_single(&card->dev->dev, SKB_CB(skb)->dma_addr,
+						 RX_DMA_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(skb);
 			}
 			skb = card->tx_skb[i];
 			if (skb) {
+<<<<<<< HEAD
 				pci_unmap_single(card->dev, SKB_CB(skb)->dma_addr,
 						 skb->len, PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&card->dev->dev, SKB_CB(skb)->dma_addr,
+						 skb->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(skb);
 			}
 			while ((skb = skb_dequeue(&card->tx_queue[i])))
@@ -1310,11 +1772,22 @@ static void fpga_remove(struct pci_dev *dev)
 	iowrite32(1, card->config_regs + FPGA_MODE);
 	(void)ioread32(card->config_regs + FPGA_MODE); 
 
+<<<<<<< HEAD
+=======
+	if (card->fpga_version >= DMA_SUPPORTED)
+		sysfs_remove_group(&card->dev->dev.kobj, &gpio_attr_group);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atm_remove(card);
 
 	free_irq(dev->irq, card);
 	tasklet_kill(&card->tlet);
 
+<<<<<<< HEAD
+=======
+	kfree(card->dma_bounce);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Release device from reset */
 	iowrite32(0, card->config_regs + FPGA_MODE);
 	(void)ioread32(card->config_regs + FPGA_MODE); 
@@ -1325,11 +1798,18 @@ static void fpga_remove(struct pci_dev *dev)
 	pci_release_regions(dev);
 	pci_disable_device(dev);
 
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
 	kfree(card);
 }
 
 static struct pci_device_id fpga_pci_tbl[] __devinitdata = {
+=======
+	kfree(card);
+}
+
+static const struct pci_device_id fpga_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10ee, 0x0300, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ 0, }
 };
@@ -1346,6 +1826,11 @@ static struct pci_driver fpga_driver = {
 
 static int __init solos_pci_init(void)
 {
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(sizeof(struct solos_skb_cb) > sizeof(((struct sk_buff *)0)->cb));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "Solos PCI Driver Version %s\n", VERSION);
 	return pci_register_driver(&fpga_driver);
 }

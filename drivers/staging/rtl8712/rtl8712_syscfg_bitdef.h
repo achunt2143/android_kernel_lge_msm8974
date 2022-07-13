@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -68,11 +75,21 @@
 #define SYS_CLKSEL		BIT(SYS_CLKSEL_SHT) /* System Clock 80MHz*/
 #define PS_CLKSEL_SHT		1
 #define PS_CLKSEL		BIT(PS_CLKSEL_SHT) /*System power save
+<<<<<<< HEAD
 						    * clock select.*/
 #define CPU_CLKSEL_SHT		2
 #define CPU_CLKSEL		BIT(CPU_CLKSEL_SHT) /* System Clock select,
 						     * 1: AFE source,
 						     * 0: System clock(L-Bus)*/
+=======
+						    * clock select.
+						    */
+#define CPU_CLKSEL_SHT		2
+#define CPU_CLKSEL		BIT(CPU_CLKSEL_SHT) /* System Clock select,
+						     * 1: AFE source,
+						     * 0: System clock(L-Bus)
+						     */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INT32K_EN_SHT		3
 #define INT32K_EN		BIT(INT32K_EN_SHT)
 #define MACSLP_SHT		4
@@ -85,10 +102,19 @@
 #define RING_CLK_EN		BIT(RING_CLK_EN_SHT)
 #define SWHW_SEL_SHT		14
 #define SWHW_SEL		BIT(SWHW_SEL_SHT) /* Load done,
+<<<<<<< HEAD
 						   * control path switch.*/
 #define FWHW_SEL_SHT		15
 #define FWHW_SEL		BIT(FWHW_SEL_SHT) /* Sleep exit,
 						   * control path switch.*/
+=======
+						   * control path switch.
+						   */
+#define FWHW_SEL_SHT		15
+#define FWHW_SEL		BIT(FWHW_SEL_SHT) /* Sleep exit,
+						   * control path switch.
+						   */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*9346CR*/
 #define	_VPDIDX_MSK		0xFF00
@@ -118,11 +144,20 @@
 #define	AFE_MISC_E32_EN		BIT(AFE_MISC_E32_EN_SHT)
 #define	AFE_MISC_MBEN_SHT	1
 #define	AFE_MISC_MBEN		BIT(AFE_MISC_MBEN_SHT)/* Enable AFE Macro
+<<<<<<< HEAD
 						       * Block's Mbias.*/
 #define	AFE_MISC_BGEN_SHT	0
 #define	AFE_MISC_BGEN		BIT(AFE_MISC_BGEN_SHT)/* Enable AFE Macro
 						       * Block's Bandgap.*/
 
+=======
+						       * Block's Mbias.
+						       */
+#define	AFE_MISC_BGEN_SHT	0
+#define	AFE_MISC_BGEN		BIT(AFE_MISC_BGEN_SHT)/* Enable AFE Macro
+						       * Block's Bandgap.
+						       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*--------------------------------------------------------------------------*/
 /*       SPS1_CTRL bits				(Offset 0x18-1E, 56bits)*/
@@ -130,13 +165,19 @@
 #define	SPS1_SWEN		BIT(1)	/* Enable vsps18 SW Macro Block.*/
 #define	SPS1_LDEN		BIT(0)	/* Enable VSPS12 LDO Macro block.*/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------------------*/
 /*       LDOA15_CTRL bits		(Offset 0x20, 8bits)*/
 /*----------------------------------------------------------------------------*/
 #define	LDA15_EN		BIT(0)	/* Enable LDOA15 Macro Block*/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------------------*/
 /*       8192S LDOV12D_CTRL bit		(Offset 0x21, 8bits)*/
 /*----------------------------------------------------------------------------*/
@@ -146,6 +187,7 @@
 /*CLK_PS_CTRL*/
 #define	_CLK_GATE_EN		BIT(0)
 
+<<<<<<< HEAD
 
 /* EFUSE_CTRL*/
 #define EF_FLAG			BIT(31)		/* Access Flag, Write:1;
@@ -153,6 +195,16 @@
 #define EF_PGPD			0x70000000	/* E-fuse Program time*/
 #define EF_RDT			0x0F000000	/* E-fuse read time: in the
 						 * unit of cycle time*/
+=======
+/* EFUSE_CTRL*/
+#define EF_FLAG			BIT(31)		/* Access Flag, Write:1;
+						 *	        Read:0
+						 */
+#define EF_PGPD			0x70000000	/* E-fuse Program time*/
+#define EF_RDT			0x0F000000	/* E-fuse read time: in the
+						 * unit of cycle time
+						 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EF_PDN_EN		BIT(19)		/* EFuse Power down enable*/
 #define ALD_EN			BIT(18)		/* Autoload Enable*/
 #define EF_ADDR			0x0003FF00	/* Access Address*/
@@ -164,7 +216,12 @@
 /* EFUSE_CLK_CTRL*/
 #define EFUSE_CLK_EN		BIT(1)		/* E-Fuse Clock Enable*/
 #define EFUSE_CLK_SEL		BIT(0)		/* E-Fuse Clock Select,
+<<<<<<< HEAD
 						 * 0:500K, 1:40M*/
+=======
+						 * 0:500K, 1:40M
+						 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/*__RTL8712_SYSCFG_BITDEF_H__*/
 

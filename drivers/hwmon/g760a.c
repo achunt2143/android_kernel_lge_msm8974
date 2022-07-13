@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * g760a - Driver for the Global Mixed-mode Technology Inc. G760A
  *	   fan speed PWM controller chip
@@ -6,11 +10,14 @@
  *
  * Complete datasheet is available at GMT's website:
  * http://www.gmt.com.tw/product/datasheet/EDS-760A.pdf
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -24,12 +31,15 @@
 #include <linux/mutex.h>
 #include <linux/sysfs.h>
 
+<<<<<<< HEAD
 static const struct i2c_device_id g760a_id[] = {
 	{ "g760a", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, g760a_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum g760a_regs {
 	G760A_REG_SET_CNT = 0x00,
 	G760A_REG_ACT_CNT = 0x01,
@@ -44,7 +54,10 @@ enum g760a_regs {
 
 struct g760a_data {
 	struct i2c_client *client;
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex update_lock;
 
 	/* board specific parameters */
@@ -74,6 +87,7 @@ static inline unsigned int rpm_from_cnt(u8 val, u32 clk, u16 div)
 	return ((val == 0x00) ? 0 : ((clk*30)/(val*div)));
 }
 
+<<<<<<< HEAD
 /* new-style driver model */
 static int g760a_probe(struct i2c_client *client,
 			const struct i2c_device_id *id);
@@ -88,6 +102,8 @@ static struct i2c_driver g760a_driver = {
 	.id_table = g760a_id,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* read/write wrappers */
 static int g760a_read_value(struct i2c_client *client, enum g760a_regs reg)
 {
@@ -106,8 +122,13 @@ static int g760a_write_value(struct i2c_client *client, enum g760a_regs reg,
 
 static struct g760a_data *g760a_update_client(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct g760a_data *data = i2c_get_clientdata(client);
+=======
+	struct g760a_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->update_lock);
 
@@ -120,7 +141,11 @@ static struct g760a_data *g760a_update_client(struct device *dev)
 		data->fan_sta = g760a_read_value(client, G760A_REG_FAN_STA);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -128,8 +153,13 @@ static struct g760a_data *g760a_update_client(struct device *dev)
 	return data;
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan(struct device *dev, struct device_attribute *da,
 			char *buf)
+=======
+static ssize_t fan1_input_show(struct device *dev,
+			       struct device_attribute *da, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct g760a_data *data = g760a_update_client(dev);
 	unsigned int rpm = 0;
@@ -142,8 +172,13 @@ static ssize_t show_fan(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", rpm);
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_alarm(struct device *dev, struct device_attribute *da,
 			      char *buf)
+=======
+static ssize_t fan1_alarm_show(struct device *dev,
+			       struct device_attribute *da, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct g760a_data *data = g760a_update_client(dev);
 
@@ -152,51 +187,81 @@ static ssize_t show_fan_alarm(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", fan_alarm);
 }
 
+<<<<<<< HEAD
 static ssize_t get_pwm(struct device *dev, struct device_attribute *da,
 		       char *buf)
+=======
+static ssize_t pwm1_show(struct device *dev, struct device_attribute *da,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct g760a_data *data = g760a_update_client(dev);
 
 	return sprintf(buf, "%d\n", PWM_FROM_CNT(data->set_cnt));
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm(struct device *dev, struct device_attribute *da,
 		       const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct g760a_data *data = g760a_update_client(dev);
+=======
+static ssize_t pwm1_store(struct device *dev, struct device_attribute *da,
+			  const char *buf, size_t count)
+{
+	struct g760a_data *data = g760a_update_client(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 
 	if (kstrtoul(buf, 10, &val))
 		return -EINVAL;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->set_cnt = PWM_TO_CNT(SENSORS_LIMIT(val, 0, 255));
+=======
+	data->set_cnt = PWM_TO_CNT(clamp_val(val, 0, 255));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	g760a_write_value(client, G760A_REG_SET_CNT, data->set_cnt);
 	mutex_unlock(&data->update_lock);
 
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, get_pwm, set_pwm);
 static DEVICE_ATTR(fan1_input, S_IRUGO, show_fan, NULL);
 static DEVICE_ATTR(fan1_alarm, S_IRUGO, show_fan_alarm, NULL);
 
 static struct attribute *g760a_attributes[] = {
+=======
+static DEVICE_ATTR_RW(pwm1);
+static DEVICE_ATTR_RO(fan1_input);
+static DEVICE_ATTR_RO(fan1_alarm);
+
+static struct attribute *g760a_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_pwm1.attr,
 	&dev_attr_fan1_input.attr,
 	&dev_attr_fan1_alarm.attr,
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group g760a_group = {
 	.attrs = g760a_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(g760a);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * new-style driver model code
  */
 
+<<<<<<< HEAD
 static int g760a_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
@@ -213,6 +278,21 @@ static int g760a_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, data);
 
+=======
+static int g760a_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct g760a_data *data;
+	struct device *hwmon_dev;
+
+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+		return -EIO;
+
+	data = devm_kzalloc(dev, sizeof(struct g760a_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
@@ -220,6 +300,7 @@ static int g760a_probe(struct i2c_client *client,
 	data->fan_div = G760A_DEFAULT_FAN_DIV;
 	data->clk = G760A_DEFAULT_CLK;
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &g760a_group);
 	if (err)
@@ -250,6 +331,27 @@ static int g760a_remove(struct i2c_client *client)
 
 	return 0;
 }
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   g760a_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id g760a_id[] = {
+	{ "g760a", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, g760a_id);
+
+static struct i2c_driver g760a_driver = {
+	.driver = {
+		.name	= "g760a",
+	},
+	.probe = g760a_probe,
+	.id_table = g760a_id,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_i2c_driver(g760a_driver);
 

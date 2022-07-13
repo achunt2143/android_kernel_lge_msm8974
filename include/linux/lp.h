@@ -1,12 +1,17 @@
+<<<<<<< HEAD
 #ifndef _LINUX_LP_H
 #define _LINUX_LP_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * usr/include/linux/lp.h c.1991-1992 James Wiegand
  * many modifications copyright (C) 1992 Michael K. Johnson
  * Interrupt support added 1993 Nigel Gamble
  * Removed 8255 status defines from inside __KERNEL__ Marcelo Tosatti 
  */
+<<<<<<< HEAD
 
 /*
  * Per POSIX guidelines, this module reserves the LP and lp prefixes
@@ -100,6 +105,15 @@
 
 #include <linux/wait.h>
 #include <linux/mutex.h>
+=======
+#ifndef _LINUX_LP_H
+#define _LINUX_LP_H
+
+
+#include <linux/wait.h>
+#include <linux/mutex.h>
+#include <uapi/linux/lp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Magic numbers for defining port-device mappings */
 #define LP_PARPORT_UNSPEC -4
@@ -187,5 +201,8 @@ struct lp_struct {
 #define LP_DELAY 	50
 
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

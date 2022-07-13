@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8995.c  --  WM8995 ALSA SoC Audio driver
  *
@@ -6,10 +10,13 @@
  * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
  *
  * Based on wm8994.c and wm_hubs.c by Mark Brown
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -44,7 +51,11 @@ static const char *wm8995_supply_names[WM8995_NUM_SUPPLIES] = {
 	"MICVDD"
 };
 
+<<<<<<< HEAD
 static struct reg_default wm8995_reg_defaults[] = {
+=======
+static const struct reg_default wm8995_reg_defaults[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0x8995 },
 	{ 5, 0x0100 },
 	{ 16, 0x000b },
@@ -385,7 +396,11 @@ struct wm8995_priv {
 	struct fll_config fll[2], fll_suspend[2];
 	struct regulator_bulk_data supplies[WM8995_NUM_SUPPLIES];
 	struct notifier_block disable_nb[WM8995_NUM_SUPPLIES];
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
+=======
+	struct snd_soc_component *component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -423,24 +438,41 @@ static const char *in1l_text[] = {
 	"Differential", "Single-ended IN1LN", "Single-ended IN1LP"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(in1l_enum, WM8995_LEFT_LINE_INPUT_CONTROL,
 				  2, in1l_text);
+=======
+static SOC_ENUM_SINGLE_DECL(in1l_enum, WM8995_LEFT_LINE_INPUT_CONTROL,
+			    2, in1l_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *in1r_text[] = {
 	"Differential", "Single-ended IN1RN", "Single-ended IN1RP"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(in1r_enum, WM8995_LEFT_LINE_INPUT_CONTROL,
 				  0, in1r_text);
+=======
+static SOC_ENUM_SINGLE_DECL(in1r_enum, WM8995_LEFT_LINE_INPUT_CONTROL,
+			    0, in1r_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *dmic_src_text[] = {
 	"DMICDAT1", "DMICDAT2", "DMICDAT3"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(dmic_src1_enum, WM8995_POWER_MANAGEMENT_5,
 				  8, dmic_src_text);
 static const SOC_ENUM_SINGLE_DECL(dmic_src2_enum, WM8995_POWER_MANAGEMENT_5,
 				  6, dmic_src_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dmic_src1_enum, WM8995_POWER_MANAGEMENT_5,
+			    8, dmic_src_text);
+static SOC_ENUM_SINGLE_DECL(dmic_src2_enum, WM8995_POWER_MANAGEMENT_5,
+			    6, dmic_src_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new wm8995_snd_controls[] = {
 	SOC_DOUBLE_R_TLV("DAC1 Volume", WM8995_DAC1_LEFT_VOLUME,
@@ -485,13 +517,18 @@ static const struct snd_kcontrol_new wm8995_snd_controls[] = {
 		WM8995_AIF2_ADC_RIGHT_VOLUME, 0, 96, 0, digital_tlv)
 };
 
+<<<<<<< HEAD
 static void wm8995_update_class_w(struct snd_soc_codec *codec)
+=======
+static void wm8995_update_class_w(struct snd_soc_component *component)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int enable = 1;
 	int source = 0;  /* GCC flow analysis can't track enable */
 	int reg, reg_r;
 
 	/* We also need the same setting for L/R and only one path */
+<<<<<<< HEAD
 	reg = snd_soc_read(codec, WM8995_DAC1_LEFT_MIXER_ROUTING);
 	switch (reg) {
 	case WM8995_AIF2DACL_TO_DAC1L:
@@ -508,25 +545,59 @@ static void wm8995_update_class_w(struct snd_soc_codec *codec)
 		break;
 	default:
 		dev_dbg(codec->dev, "DAC mixer setting: %x\n", reg);
+=======
+	reg = snd_soc_component_read(component, WM8995_DAC1_LEFT_MIXER_ROUTING);
+	switch (reg) {
+	case WM8995_AIF2DACL_TO_DAC1L:
+		dev_dbg(component->dev, "Class W source AIF2DAC\n");
+		source = 2 << WM8995_CP_DYN_SRC_SEL_SHIFT;
+		break;
+	case WM8995_AIF1DAC2L_TO_DAC1L:
+		dev_dbg(component->dev, "Class W source AIF1DAC2\n");
+		source = 1 << WM8995_CP_DYN_SRC_SEL_SHIFT;
+		break;
+	case WM8995_AIF1DAC1L_TO_DAC1L:
+		dev_dbg(component->dev, "Class W source AIF1DAC1\n");
+		source = 0 << WM8995_CP_DYN_SRC_SEL_SHIFT;
+		break;
+	default:
+		dev_dbg(component->dev, "DAC mixer setting: %x\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable = 0;
 		break;
 	}
 
+<<<<<<< HEAD
 	reg_r = snd_soc_read(codec, WM8995_DAC1_RIGHT_MIXER_ROUTING);
 	if (reg_r != reg) {
 		dev_dbg(codec->dev, "Left and right DAC mixers different\n");
+=======
+	reg_r = snd_soc_component_read(component, WM8995_DAC1_RIGHT_MIXER_ROUTING);
+	if (reg_r != reg) {
+		dev_dbg(component->dev, "Left and right DAC mixers different\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable = 0;
 	}
 
 	if (enable) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Class W enabled\n");
 		snd_soc_update_bits(codec, WM8995_CLASS_W_1,
+=======
+		dev_dbg(component->dev, "Class W enabled\n");
+		snd_soc_component_update_bits(component, WM8995_CLASS_W_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_CP_DYN_PWR_MASK |
 				    WM8995_CP_DYN_SRC_SEL_MASK,
 				    source | WM8995_CP_DYN_PWR);
 	} else {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Class W disabled\n");
 		snd_soc_update_bits(codec, WM8995_CLASS_W_1,
+=======
+		dev_dbg(component->dev, "Class W disabled\n");
+		snd_soc_component_update_bits(component, WM8995_CLASS_W_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_CP_DYN_PWR_MASK, 0);
 	}
 }
@@ -534,21 +605,34 @@ static void wm8995_update_class_w(struct snd_soc_codec *codec)
 static int check_clk_sys(struct snd_soc_dapm_widget *source,
 			 struct snd_soc_dapm_widget *sink)
 {
+<<<<<<< HEAD
 	unsigned int reg;
 	const char *clk;
 
 	reg = snd_soc_read(source->codec, WM8995_CLOCKING_1);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	unsigned int reg;
+	const char *clk;
+
+	reg = snd_soc_component_read(component, WM8995_CLOCKING_1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check what we're currently using for CLK_SYS */
 	if (reg & WM8995_SYSCLK_SRC)
 		clk = "AIF2CLK";
 	else
 		clk = "AIF1CLK";
+<<<<<<< HEAD
 	return !strcmp(source->name, clk);
+=======
+	return !snd_soc_dapm_widget_name_cmp(source, clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8995_put_class_w(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_dapm_widget_list *wlist = snd_kcontrol_chip(kcontrol);
 	struct snd_soc_dapm_widget *w = wlist->widgets[0];
 	struct snd_soc_codec *codec;
@@ -557,36 +641,59 @@ static int wm8995_put_class_w(struct snd_kcontrol *kcontrol,
 	codec = w->codec;
 	ret = snd_soc_dapm_put_volsw(kcontrol, ucontrol);
 	wm8995_update_class_w(codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_kcontrol_component(kcontrol);
+	int ret;
+
+	ret = snd_soc_dapm_put_volsw(kcontrol, ucontrol);
+	wm8995_update_class_w(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int hp_supply_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	struct wm8995_priv *wm8995;
 
 	codec = w->codec;
 	wm8995 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		/* Enable the headphone amp */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_POWER_MANAGEMENT_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_HPOUT1L_ENA_MASK |
 				    WM8995_HPOUT1R_ENA_MASK,
 				    WM8995_HPOUT1L_ENA |
 				    WM8995_HPOUT1R_ENA);
 
 		/* Enable the second stage */
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_ANALOGUE_HP_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_ANALOGUE_HP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_HPOUT1L_DLY_MASK |
 				    WM8995_HPOUT1R_DLY_MASK,
 				    WM8995_HPOUT1L_DLY |
 				    WM8995_HPOUT1R_DLY);
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_CHARGE_PUMP_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_CHARGE_PUMP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_CP_ENA_MASK, 0);
 		break;
 	}
@@ -594,11 +701,16 @@ static int hp_supply_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dc_servo_cmd(struct snd_soc_codec *codec,
+=======
+static void dc_servo_cmd(struct snd_soc_component *component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 unsigned int reg, unsigned int val, unsigned int mask)
 {
 	int timeout = 10;
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "%s: reg = %#x, val = %#x, mask = %#x\n",
 		__func__, reg, val, mask);
 
@@ -606,16 +718,30 @@ static void dc_servo_cmd(struct snd_soc_codec *codec,
 	while (timeout--) {
 		msleep(10);
 		val = snd_soc_read(codec, WM8995_DC_SERVO_READBACK_0);
+=======
+	dev_dbg(component->dev, "%s: reg = %#x, val = %#x, mask = %#x\n",
+		__func__, reg, val, mask);
+
+	snd_soc_component_write(component, reg, val);
+	while (timeout--) {
+		msleep(10);
+		val = snd_soc_component_read(component, WM8995_DC_SERVO_READBACK_0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((val & mask) == mask)
 			return;
 	}
 
+<<<<<<< HEAD
 	dev_err(codec->dev, "Timed out waiting for DC Servo\n");
+=======
+	dev_err(component->dev, "Timed out waiting for DC Servo\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hp_event(struct snd_soc_dapm_widget *w,
 		    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	unsigned int reg;
 
@@ -625,11 +751,25 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		snd_soc_update_bits(codec, WM8995_CHARGE_PUMP_1,
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	unsigned int reg;
+
+	reg = snd_soc_component_read(component, WM8995_ANALOGUE_HP_1);
+
+	switch (event) {
+	case SND_SOC_DAPM_POST_PMU:
+		snd_soc_component_update_bits(component, WM8995_CHARGE_PUMP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_CP_ENA_MASK, WM8995_CP_ENA);
 
 		msleep(5);
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_POWER_MANAGEMENT_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_HPOUT1L_ENA_MASK |
 				    WM8995_HPOUT1R_ENA_MASK,
 				    WM8995_HPOUT1L_ENA | WM8995_HPOUT1R_ENA);
@@ -637,12 +777,21 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 		udelay(20);
 
 		reg |= WM8995_HPOUT1L_DLY | WM8995_HPOUT1R_DLY;
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8995_ANALOGUE_HP_1, reg);
 
 		snd_soc_write(codec, WM8995_DC_SERVO_1, WM8995_DCS_ENA_CHAN_0 |
 			      WM8995_DCS_ENA_CHAN_1);
 
 		dc_servo_cmd(codec, WM8995_DC_SERVO_2,
+=======
+		snd_soc_component_write(component, WM8995_ANALOGUE_HP_1, reg);
+
+		snd_soc_component_write(component, WM8995_DC_SERVO_1, WM8995_DCS_ENA_CHAN_0 |
+			      WM8995_DCS_ENA_CHAN_1);
+
+		dc_servo_cmd(component, WM8995_DC_SERVO_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     WM8995_DCS_TRIG_STARTUP_0 |
 			     WM8995_DCS_TRIG_STARTUP_1,
 			     WM8995_DCS_TRIG_DAC_WR_0 |
@@ -650,16 +799,25 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 
 		reg |= WM8995_HPOUT1R_OUTP | WM8995_HPOUT1R_RMV_SHORT |
 		       WM8995_HPOUT1L_OUTP | WM8995_HPOUT1L_RMV_SHORT;
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8995_ANALOGUE_HP_1, reg);
 
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
 		snd_soc_update_bits(codec, WM8995_ANALOGUE_HP_1,
+=======
+		snd_soc_component_write(component, WM8995_ANALOGUE_HP_1, reg);
+
+		break;
+	case SND_SOC_DAPM_PRE_PMD:
+		snd_soc_component_update_bits(component, WM8995_ANALOGUE_HP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_HPOUT1L_OUTP_MASK |
 				    WM8995_HPOUT1R_OUTP_MASK |
 				    WM8995_HPOUT1L_RMV_SHORT_MASK |
 				    WM8995_HPOUT1R_RMV_SHORT_MASK, 0);
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_ANALOGUE_HP_1,
 				    WM8995_HPOUT1L_DLY_MASK |
 				    WM8995_HPOUT1R_DLY_MASK, 0);
@@ -667,6 +825,15 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 		snd_soc_write(codec, WM8995_DC_SERVO_1, 0);
 
 		snd_soc_update_bits(codec, WM8995_POWER_MANAGEMENT_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_ANALOGUE_HP_1,
+				    WM8995_HPOUT1L_DLY_MASK |
+				    WM8995_HPOUT1R_DLY_MASK, 0);
+
+		snd_soc_component_write(component, WM8995_DC_SERVO_1, 0);
+
+		snd_soc_component_update_bits(component, WM8995_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_HPOUT1L_ENA_MASK |
 				    WM8995_HPOUT1R_ENA_MASK,
 				    0);
@@ -676,14 +843,22 @@ static int hp_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int configure_aif_clock(struct snd_soc_codec *codec, int aif)
+=======
+static int configure_aif_clock(struct snd_soc_component *component, int aif)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8995_priv *wm8995;
 	int rate;
 	int reg1 = 0;
 	int offset;
 
+<<<<<<< HEAD
 	wm8995 = snd_soc_codec_get_drvdata(codec);
+=======
+	wm8995 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (aif)
 		offset = 4;
@@ -714,18 +889,27 @@ static int configure_aif_clock(struct snd_soc_codec *codec, int aif)
 		rate /= 2;
 		reg1 |= WM8995_AIF1CLK_DIV;
 
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Dividing AIF%d clock to %dHz\n",
+=======
+		dev_dbg(component->dev, "Dividing AIF%d clock to %dHz\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aif + 1, rate);
 	}
 
 	wm8995->aifclk[aif] = rate;
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8995_AIF1_CLOCKING_1 + offset,
+=======
+	snd_soc_component_update_bits(component, WM8995_AIF1_CLOCKING_1 + offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8995_AIF1CLK_SRC_MASK | WM8995_AIF1CLK_DIV_MASK,
 			    reg1);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int configure_clock(struct snd_soc_codec *codec)
 {
 	struct wm8995_priv *wm8995;
@@ -736,6 +920,19 @@ static int configure_clock(struct snd_soc_codec *codec)
 	/* Bring up the AIF clocks first */
 	configure_aif_clock(codec, 0);
 	configure_aif_clock(codec, 1);
+=======
+static int configure_clock(struct snd_soc_component *component)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+	struct wm8995_priv *wm8995;
+	int change, new;
+
+	wm8995 = snd_soc_component_get_drvdata(component);
+
+	/* Bring up the AIF clocks first */
+	configure_aif_clock(component, 0);
+	configure_aif_clock(component, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Then switch CLK_SYS over to the higher of them; a change
@@ -753,12 +950,20 @@ static int configure_clock(struct snd_soc_codec *codec)
 	else
 		new = 0;
 
+<<<<<<< HEAD
 	change = snd_soc_update_bits(codec, WM8995_CLOCKING_1,
+=======
+	change = snd_soc_component_update_bits(component, WM8995_CLOCKING_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     WM8995_SYSCLK_SRC_MASK, new);
 	if (!change)
 		return 0;
 
+<<<<<<< HEAD
 	snd_soc_dapm_sync(&codec->dapm);
+=======
+	snd_soc_dapm_sync(dapm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -766,6 +971,7 @@ static int configure_clock(struct snd_soc_codec *codec)
 static int clk_sys_event(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 
 	codec = w->codec;
@@ -776,6 +982,16 @@ static int clk_sys_event(struct snd_soc_dapm_widget *w,
 
 	case SND_SOC_DAPM_POST_PMD:
 		configure_clock(codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+
+	switch (event) {
+	case SND_SOC_DAPM_PRE_PMU:
+		return configure_clock(component);
+
+	case SND_SOC_DAPM_POST_PMD:
+		configure_clock(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -786,14 +1002,22 @@ static const char *sidetone_text[] = {
 	"ADC/DMIC1", "DMIC2",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum sidetone1_enum =
 	SOC_ENUM_SINGLE(WM8995_SIDETONE, 0, 2, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(sidetone1_enum, WM8995_SIDETONE, 0, sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new sidetone1_mux =
 	SOC_DAPM_ENUM("Left Sidetone Mux", sidetone1_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum sidetone2_enum =
 	SOC_ENUM_SINGLE(WM8995_SIDETONE, 1, 2, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(sidetone2_enum, WM8995_SIDETONE, 1, sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new sidetone2_mux =
 	SOC_DAPM_ENUM("Right Sidetone Mux", sidetone2_enum);
@@ -889,6 +1113,7 @@ static const char *adc_mux_text[] = {
 	"DMIC",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum adc_enum =
 	SOC_ENUM_SINGLE(0, 0, 2, adc_mux_text);
 
@@ -897,11 +1122,21 @@ static const struct snd_kcontrol_new adcl_mux =
 
 static const struct snd_kcontrol_new adcr_mux =
 	SOC_DAPM_ENUM_VIRT("ADCR Mux", adc_enum);
+=======
+static SOC_ENUM_SINGLE_VIRT_DECL(adc_enum, adc_mux_text);
+
+static const struct snd_kcontrol_new adcl_mux =
+	SOC_DAPM_ENUM("ADCL Mux", adc_enum);
+
+static const struct snd_kcontrol_new adcr_mux =
+	SOC_DAPM_ENUM("ADCR Mux", adc_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *spk_src_text[] = {
 	"DAC1L", "DAC1R", "DAC2L", "DAC2R"
 };
 
+<<<<<<< HEAD
 static const SOC_ENUM_SINGLE_DECL(spk1l_src_enum, WM8995_LEFT_PDM_SPEAKER_1,
 				  0, spk_src_text);
 static const SOC_ENUM_SINGLE_DECL(spk1r_src_enum, WM8995_RIGHT_PDM_SPEAKER_1,
@@ -910,6 +1145,16 @@ static const SOC_ENUM_SINGLE_DECL(spk2l_src_enum, WM8995_LEFT_PDM_SPEAKER_2,
 				  0, spk_src_text);
 static const SOC_ENUM_SINGLE_DECL(spk2r_src_enum, WM8995_RIGHT_PDM_SPEAKER_2,
 				  0, spk_src_text);
+=======
+static SOC_ENUM_SINGLE_DECL(spk1l_src_enum, WM8995_LEFT_PDM_SPEAKER_1,
+			    0, spk_src_text);
+static SOC_ENUM_SINGLE_DECL(spk1r_src_enum, WM8995_RIGHT_PDM_SPEAKER_1,
+			    0, spk_src_text);
+static SOC_ENUM_SINGLE_DECL(spk2l_src_enum, WM8995_LEFT_PDM_SPEAKER_2,
+			    0, spk_src_text);
+static SOC_ENUM_SINGLE_DECL(spk2r_src_enum, WM8995_RIGHT_PDM_SPEAKER_2,
+			    0, spk_src_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new spk1l_mux =
 	SOC_DAPM_ENUM("SPK1L SRC", spk1l_src_enum);
@@ -956,10 +1201,15 @@ static const struct snd_soc_dapm_widget wm8995_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("AIF1ADC2R", "AIF1 Capture",
 		0, WM8995_POWER_MANAGEMENT_3, 10, 0),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_VIRT_MUX("ADCL Mux", SND_SOC_NOPM, 1, 0,
 		&adcl_mux),
 	SND_SOC_DAPM_VIRT_MUX("ADCR Mux", SND_SOC_NOPM, 0, 0,
 		&adcr_mux),
+=======
+	SND_SOC_DAPM_MUX("ADCL Mux", SND_SOC_NOPM, 1, 0, &adcl_mux),
+	SND_SOC_DAPM_MUX("ADCR Mux", SND_SOC_NOPM, 0, 0, &adcr_mux),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SND_SOC_DAPM_ADC("DMIC2L", NULL, WM8995_POWER_MANAGEMENT_3, 5, 0),
 	SND_SOC_DAPM_ADC("DMIC2R", NULL, WM8995_POWER_MANAGEMENT_3, 4, 0),
@@ -1433,9 +1683,15 @@ static bool wm8995_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
+<<<<<<< HEAD
 static int wm8995_aif_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
+=======
+static int wm8995_aif_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mute_reg;
 
 	switch (dai->id) {
@@ -1449,18 +1705,30 @@ static int wm8995_aif_mute(struct snd_soc_dai *dai, int mute)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, mute_reg, WM8995_AIF1DAC1_MUTE_MASK,
+=======
+	snd_soc_component_update_bits(component, mute_reg, WM8995_AIF1DAC1_MUTE_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !!mute << WM8995_AIF1DAC1_MUTE_SHIFT);
 	return 0;
 }
 
 static int wm8995_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	int master;
 	int aif;
 
 	codec = dai->codec;
+=======
+	struct snd_soc_component *component;
+	int master;
+	int aif;
+
+	component = dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	master = 0;
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
@@ -1478,6 +1746,10 @@ static int wm8995_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_B:
 		aif |= WM8995_AIF1_LRCLK_INV;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_SOC_DAIFMT_DSP_A:
 		aif |= (0x3 << WM8995_AIF1_FMT_SHIFT);
 		break;
@@ -1532,11 +1804,19 @@ static int wm8995_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8995_AIF1_CONTROL_1,
 			    WM8995_AIF1_BCLK_INV_MASK |
 			    WM8995_AIF1_LRCLK_INV_MASK |
 			    WM8995_AIF1_FMT_MASK, aif);
 	snd_soc_update_bits(codec, WM8995_AIF1_MASTER_SLAVE,
+=======
+	snd_soc_component_update_bits(component, WM8995_AIF1_CONTROL_1,
+			    WM8995_AIF1_BCLK_INV_MASK |
+			    WM8995_AIF1_LRCLK_INV_MASK |
+			    WM8995_AIF1_FMT_MASK, aif);
+	snd_soc_component_update_bits(component, WM8995_AIF1_MASTER_SLAVE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8995_AIF1_MSTR_MASK, master);
 	return 0;
 }
@@ -1559,7 +1839,11 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
+=======
+	struct snd_soc_component *component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8995_priv *wm8995;
 	int aif1_reg;
 	int bclk_reg;
@@ -1570,8 +1854,13 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 	int lrclk, bclk;
 	int i, rate_val, best, best_val, cur_val;
 
+<<<<<<< HEAD
 	codec = dai->codec;
 	wm8995 = snd_soc_codec_get_drvdata(codec);
+=======
+	component = dai->component;
+	wm8995 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (dai->id) {
 	case 0:
@@ -1583,7 +1872,11 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 			lrclk_reg = WM8995_AIF1DAC_LRCLK;
 		} else {
 			lrclk_reg = WM8995_AIF1ADC_LRCLK;
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "AIF1 using split LRCLK\n");
+=======
+			dev_dbg(component->dev, "AIF1 using split LRCLK\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case 1:
@@ -1595,7 +1888,11 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 			lrclk_reg = WM8995_AIF2DAC_LRCLK;
 		} else {
 			lrclk_reg = WM8995_AIF2ADC_LRCLK;
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "AIF2 using split LRCLK\n");
+=======
+			dev_dbg(component->dev, "AIF2 using split LRCLK\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -1607,6 +1904,7 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 		return bclk_rate;
 
 	aif1 = 0;
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
@@ -1617,11 +1915,27 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 		aif1 |= (0x2 << WM8995_AIF1_WL_SHIFT);
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		aif1 |= (0x1 << WM8995_AIF1_WL_SHIFT);
+		break;
+	case 24:
+		aif1 |= (0x2 << WM8995_AIF1_WL_SHIFT);
+		break;
+	case 32:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aif1 |= (0x3 << WM8995_AIF1_WL_SHIFT);
 		break;
 	default:
 		dev_err(dai->dev, "Unsupported word length %u\n",
+<<<<<<< HEAD
 			params_format(params));
+=======
+			params_width(params));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1681,6 +1995,7 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(dai->dev, "Using LRCLK rate %d for actual LRCLK %dHz\n",
 		lrclk, bclk_rate / lrclk);
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, aif1_reg,
 			    WM8995_AIF1_WL_MASK, aif1);
 	snd_soc_update_bits(codec, bclk_reg,
@@ -1688,6 +2003,15 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_update_bits(codec, lrclk_reg,
 			    WM8995_AIF1DAC_RATE_MASK, lrclk);
 	snd_soc_update_bits(codec, rate_reg,
+=======
+	snd_soc_component_update_bits(component, aif1_reg,
+			    WM8995_AIF1_WL_MASK, aif1);
+	snd_soc_component_update_bits(component, bclk_reg,
+			    WM8995_AIF1_BCLK_DIV_MASK, bclk);
+	snd_soc_component_update_bits(component, lrclk_reg,
+			    WM8995_AIF1DAC_RATE_MASK, lrclk);
+	snd_soc_component_update_bits(component, rate_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8995_AIF1_SR_MASK |
 			    WM8995_AIF1CLK_RATE_MASK, rate_val);
 	return 0;
@@ -1695,7 +2019,11 @@ static int wm8995_hw_params(struct snd_pcm_substream *substream,
 
 static int wm8995_set_tristate(struct snd_soc_dai *codec_dai, int tristate)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int reg, val, mask;
 
 	switch (codec_dai->id) {
@@ -1720,7 +2048,11 @@ static int wm8995_set_tristate(struct snd_soc_dai *codec_dai, int tristate)
 	else
 		val = 0;
 
+<<<<<<< HEAD
 	return snd_soc_update_bits(codec, reg, mask, val);
+=======
+	return snd_soc_component_update_bits(component, reg, mask, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The size in bits of the FLL divide multiplied by 10
@@ -1810,12 +2142,17 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 			  int src, unsigned int freq_in,
 			  unsigned int freq_out)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
+=======
+	struct snd_soc_component *component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8995_priv *wm8995;
 	int reg_offset, ret;
 	struct fll_div fll;
 	u16 reg, aif1, aif2;
 
+<<<<<<< HEAD
 	codec = dai->codec;
 	wm8995 = snd_soc_codec_get_drvdata(codec);
 
@@ -1823,6 +2160,15 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 	       & WM8995_AIF1CLK_ENA;
 
 	aif2 = snd_soc_read(codec, WM8995_AIF2_CLOCKING_1)
+=======
+	component = dai->component;
+	wm8995 = snd_soc_component_get_drvdata(component);
+
+	aif1 = snd_soc_component_read(component, WM8995_AIF1_CLOCKING_1)
+	       & WM8995_AIF1CLK_ENA;
+
+	aif2 = snd_soc_component_read(component, WM8995_AIF2_CLOCKING_1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       & WM8995_AIF2CLK_ENA;
 
 	switch (id) {
@@ -1871,6 +2217,7 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 		return ret;
 
 	/* Gate the AIF clocks while we reclock */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8995_AIF1_CLOCKING_1,
 			    WM8995_AIF1CLK_ENA_MASK, 0);
 	snd_soc_update_bits(codec, WM8995_AIF2_CLOCKING_1,
@@ -1878,10 +2225,20 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 
 	/* We always need to disable the FLL while reconfiguring */
 	snd_soc_update_bits(codec, WM8995_FLL1_CONTROL_1 + reg_offset,
+=======
+	snd_soc_component_update_bits(component, WM8995_AIF1_CLOCKING_1,
+			    WM8995_AIF1CLK_ENA_MASK, 0);
+	snd_soc_component_update_bits(component, WM8995_AIF2_CLOCKING_1,
+			    WM8995_AIF2CLK_ENA_MASK, 0);
+
+	/* We always need to disable the FLL while reconfiguring */
+	snd_soc_component_update_bits(component, WM8995_FLL1_CONTROL_1 + reg_offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8995_FLL1_ENA_MASK, 0);
 
 	reg = (fll.outdiv << WM8995_FLL1_OUTDIV_SHIFT) |
 	      (fll.fll_fratio << WM8995_FLL1_FRATIO_SHIFT);
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8995_FLL1_CONTROL_2 + reg_offset,
 			    WM8995_FLL1_OUTDIV_MASK |
 			    WM8995_FLL1_FRATIO_MASK, reg);
@@ -1893,13 +2250,30 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 			    fll.n << WM8995_FLL1_N_SHIFT);
 
 	snd_soc_update_bits(codec, WM8995_FLL1_CONTROL_5 + reg_offset,
+=======
+	snd_soc_component_update_bits(component, WM8995_FLL1_CONTROL_2 + reg_offset,
+			    WM8995_FLL1_OUTDIV_MASK |
+			    WM8995_FLL1_FRATIO_MASK, reg);
+
+	snd_soc_component_write(component, WM8995_FLL1_CONTROL_3 + reg_offset, fll.k);
+
+	snd_soc_component_update_bits(component, WM8995_FLL1_CONTROL_4 + reg_offset,
+			    WM8995_FLL1_N_MASK,
+			    fll.n << WM8995_FLL1_N_SHIFT);
+
+	snd_soc_component_update_bits(component, WM8995_FLL1_CONTROL_5 + reg_offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8995_FLL1_REFCLK_DIV_MASK |
 			    WM8995_FLL1_REFCLK_SRC_MASK,
 			    (fll.clk_ref_div << WM8995_FLL1_REFCLK_DIV_SHIFT) |
 			    (src - 1));
 
 	if (freq_out)
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_FLL1_CONTROL_1 + reg_offset,
+=======
+		snd_soc_component_update_bits(component, WM8995_FLL1_CONTROL_1 + reg_offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_FLL1_ENA_MASK, WM8995_FLL1_ENA);
 
 	wm8995->fll[id].in = freq_in;
@@ -1907,12 +2281,21 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 	wm8995->fll[id].src = src;
 
 	/* Enable any gated AIF clocks */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8995_AIF1_CLOCKING_1,
 			    WM8995_AIF1CLK_ENA_MASK, aif1);
 	snd_soc_update_bits(codec, WM8995_AIF2_CLOCKING_1,
 			    WM8995_AIF2CLK_ENA_MASK, aif2);
 
 	configure_clock(codec);
+=======
+	snd_soc_component_update_bits(component, WM8995_AIF1_CLOCKING_1,
+			    WM8995_AIF1CLK_ENA_MASK, aif1);
+	snd_soc_component_update_bits(component, WM8995_AIF2_CLOCKING_1,
+			    WM8995_AIF2CLK_ENA_MASK, aif2);
+
+	configure_clock(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1920,11 +2303,19 @@ static int wm8995_set_fll(struct snd_soc_dai *dai, int id,
 static int wm8995_set_dai_sysclk(struct snd_soc_dai *dai,
 				 int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	struct wm8995_priv *wm8995;
 
 	codec = dai->codec;
 	wm8995 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component;
+	struct wm8995_priv *wm8995;
+
+	component = dai->component;
+	wm8995 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (dai->id) {
 	case 0:
@@ -1943,7 +2334,11 @@ static int wm8995_set_dai_sysclk(struct snd_soc_dai *dai,
 			dai->id + 1, freq);
 		break;
 	case WM8995_SYSCLK_MCLK2:
+<<<<<<< HEAD
 		wm8995->sysclk[dai->id] = WM8995_SYSCLK_MCLK1;
+=======
+		wm8995->sysclk[dai->id] = WM8995_SYSCLK_MCLK2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8995->mclk[1] = freq;
 		dev_dbg(dai->dev, "AIF%d using MCLK2 at %uHz\n",
 			dai->id + 1, freq);
@@ -1962,24 +2357,40 @@ static int wm8995_set_dai_sysclk(struct snd_soc_dai *dai,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	configure_clock(codec);
+=======
+	configure_clock(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8995_set_bias_level(struct snd_soc_codec *codec,
+=======
+static int wm8995_set_bias_level(struct snd_soc_component *component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 enum snd_soc_bias_level level)
 {
 	struct wm8995_priv *wm8995;
 	int ret;
 
+<<<<<<< HEAD
 	wm8995 = snd_soc_codec_get_drvdata(codec);
+=======
+	wm8995 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8995->supplies),
 						    wm8995->supplies);
 			if (ret)
@@ -1987,23 +2398,36 @@ static int wm8995_set_bias_level(struct snd_soc_codec *codec,
 
 			ret = regcache_sync(wm8995->regmap);
 			if (ret) {
+<<<<<<< HEAD
 				dev_err(codec->dev,
+=======
+				dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to sync cache: %d\n", ret);
 				return ret;
 			}
 
+<<<<<<< HEAD
 			snd_soc_update_bits(codec, WM8995_POWER_MANAGEMENT_1,
+=======
+			snd_soc_component_update_bits(component, WM8995_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8995_BG_ENA_MASK, WM8995_BG_ENA);
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8995_POWER_MANAGEMENT_1,
+=======
+		snd_soc_component_update_bits(component, WM8995_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8995_BG_ENA_MASK, 0);
 		regulator_bulk_disable(ARRAY_SIZE(wm8995->supplies),
 				       wm8995->supplies);
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 	return 0;
 }
@@ -2042,11 +2466,18 @@ static int wm8995_remove(struct snd_soc_codec *codec)
 }
 
 static int wm8995_probe(struct snd_soc_codec *codec)
+=======
+	return 0;
+}
+
+static int wm8995_probe(struct snd_soc_component *component)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8995_priv *wm8995;
 	int i;
 	int ret;
 
+<<<<<<< HEAD
 	wm8995 = snd_soc_codec_get_drvdata(codec);
 	wm8995->codec = codec;
 
@@ -2056,14 +2487,26 @@ static int wm8995_probe(struct snd_soc_codec *codec)
 		dev_err(codec->dev, "Failed to set cache i/o: %d\n", ret);
 		return ret;
 	}
+=======
+	wm8995 = snd_soc_component_get_drvdata(component);
+	wm8995->component = component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(wm8995->supplies); i++)
 		wm8995->supplies[i].supply = wm8995_supply_names[i];
 
+<<<<<<< HEAD
 	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(wm8995->supplies),
 				 wm8995->supplies);
 	if (ret) {
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
+=======
+	ret = devm_regulator_bulk_get(component->dev,
+				      ARRAY_SIZE(wm8995->supplies),
+				      wm8995->supplies);
+	if (ret) {
+		dev_err(component->dev, "Failed to request supplies: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -2078,10 +2521,18 @@ static int wm8995_probe(struct snd_soc_codec *codec)
 
 	/* This should really be moved into the regulator core */
 	for (i = 0; i < ARRAY_SIZE(wm8995->supplies); i++) {
+<<<<<<< HEAD
 		ret = regulator_register_notifier(wm8995->supplies[i].consumer,
 						  &wm8995->disable_nb[i]);
 		if (ret) {
 			dev_err(codec->dev,
+=======
+		ret = devm_regulator_register_notifier(
+						wm8995->supplies[i].consumer,
+						&wm8995->disable_nb[i]);
+		if (ret) {
+			dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Failed to register regulator notifier: %d\n",
 				ret);
 		}
@@ -2090,6 +2541,7 @@ static int wm8995_probe(struct snd_soc_codec *codec)
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm8995->supplies),
 				    wm8995->supplies);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
 		goto err_reg_get;
 	}
@@ -2097,15 +2549,29 @@ static int wm8995_probe(struct snd_soc_codec *codec)
 	ret = snd_soc_read(codec, WM8995_SOFTWARE_RESET);
 	if (ret < 0) {
 		dev_err(codec->dev, "Failed to read device ID: %d\n", ret);
+=======
+		dev_err(component->dev, "Failed to enable supplies: %d\n", ret);
+		return ret;
+	}
+
+	ret = snd_soc_component_read(component, WM8995_SOFTWARE_RESET);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to read device ID: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_reg_enable;
 	}
 
 	if (ret != 0x8995) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Invalid device ID: %#x\n", ret);
+=======
+		dev_err(component->dev, "Invalid device ID: %#x\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto err_reg_enable;
 	}
 
+<<<<<<< HEAD
 	ret = snd_soc_write(codec, WM8995_SOFTWARE_RESET, 0);
 	if (ret < 0) {
 		dev_err(codec->dev, "Failed to issue reset: %d\n", ret);
@@ -2142,13 +2608,45 @@ static int wm8995_probe(struct snd_soc_codec *codec)
 				  ARRAY_SIZE(wm8995_dapm_widgets));
 	snd_soc_dapm_add_routes(&codec->dapm, wm8995_intercon,
 				ARRAY_SIZE(wm8995_intercon));
+=======
+	ret = snd_soc_component_write(component, WM8995_SOFTWARE_RESET, 0);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to issue reset: %d\n", ret);
+		goto err_reg_enable;
+	}
+
+	/* Latch volume updates (right only; we always do left then right). */
+	snd_soc_component_update_bits(component, WM8995_AIF1_DAC1_RIGHT_VOLUME,
+			    WM8995_AIF1DAC1_VU_MASK, WM8995_AIF1DAC1_VU);
+	snd_soc_component_update_bits(component, WM8995_AIF1_DAC2_RIGHT_VOLUME,
+			    WM8995_AIF1DAC2_VU_MASK, WM8995_AIF1DAC2_VU);
+	snd_soc_component_update_bits(component, WM8995_AIF2_DAC_RIGHT_VOLUME,
+			    WM8995_AIF2DAC_VU_MASK, WM8995_AIF2DAC_VU);
+	snd_soc_component_update_bits(component, WM8995_AIF1_ADC1_RIGHT_VOLUME,
+			    WM8995_AIF1ADC1_VU_MASK, WM8995_AIF1ADC1_VU);
+	snd_soc_component_update_bits(component, WM8995_AIF1_ADC2_RIGHT_VOLUME,
+			    WM8995_AIF1ADC2_VU_MASK, WM8995_AIF1ADC2_VU);
+	snd_soc_component_update_bits(component, WM8995_AIF2_ADC_RIGHT_VOLUME,
+			    WM8995_AIF2ADC_VU_MASK, WM8995_AIF1ADC2_VU);
+	snd_soc_component_update_bits(component, WM8995_DAC1_RIGHT_VOLUME,
+			    WM8995_DAC1_VU_MASK, WM8995_DAC1_VU);
+	snd_soc_component_update_bits(component, WM8995_DAC2_RIGHT_VOLUME,
+			    WM8995_DAC2_VU_MASK, WM8995_DAC2_VU);
+	snd_soc_component_update_bits(component, WM8995_RIGHT_LINE_INPUT_1_VOLUME,
+			    WM8995_IN1_VU_MASK, WM8995_IN1_VU);
+
+	wm8995_update_class_w(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_reg_enable:
 	regulator_bulk_disable(ARRAY_SIZE(wm8995->supplies), wm8995->supplies);
+<<<<<<< HEAD
 err_reg_get:
 	regulator_bulk_free(ARRAY_SIZE(wm8995->supplies), wm8995->supplies);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2159,18 +2657,32 @@ static const struct snd_soc_dai_ops wm8995_aif1_dai_ops = {
 	.set_sysclk = wm8995_set_dai_sysclk,
 	.set_fmt = wm8995_set_dai_fmt,
 	.hw_params = wm8995_hw_params,
+<<<<<<< HEAD
 	.digital_mute = wm8995_aif_mute,
 	.set_pll = wm8995_set_fll,
 	.set_tristate = wm8995_set_tristate,
+=======
+	.mute_stream = wm8995_aif_mute,
+	.set_pll = wm8995_set_fll,
+	.set_tristate = wm8995_set_tristate,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_soc_dai_ops wm8995_aif2_dai_ops = {
 	.set_sysclk = wm8995_set_dai_sysclk,
 	.set_fmt = wm8995_set_dai_fmt,
 	.hw_params = wm8995_hw_params,
+<<<<<<< HEAD
 	.digital_mute = wm8995_aif_mute,
 	.set_pll = wm8995_set_fll,
 	.set_tristate = wm8995_set_tristate,
+=======
+	.mute_stream = wm8995_aif_mute,
+	.set_pll = wm8995_set_fll,
+	.set_tristate = wm8995_set_tristate,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_soc_dai_ops wm8995_aif3_dai_ops = {
@@ -2234,6 +2746,7 @@ static struct snd_soc_dai_driver wm8995_dai[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wm8995 = {
 	.probe = wm8995_probe,
 	.remove = wm8995_remove,
@@ -2244,6 +2757,22 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8995 = {
 };
 
 static struct regmap_config wm8995_regmap = {
+=======
+static const struct snd_soc_component_driver soc_component_dev_wm8995 = {
+	.probe			= wm8995_probe,
+	.set_bias_level		= wm8995_set_bias_level,
+	.controls		= wm8995_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8995_snd_controls),
+	.dapm_widgets		= wm8995_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8995_dapm_widgets),
+	.dapm_routes		= wm8995_intercon,
+	.num_dapm_routes	= ARRAY_SIZE(wm8995_intercon),
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static const struct regmap_config wm8995_regmap = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 16,
 	.val_bits = 16,
 
@@ -2252,21 +2781,34 @@ static struct regmap_config wm8995_regmap = {
 	.num_reg_defaults = ARRAY_SIZE(wm8995_reg_defaults),
 	.volatile_reg = wm8995_volatile,
 	.readable_reg = wm8995_readable,
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
 };
 
 #if defined(CONFIG_SPI_MASTER)
 static int __devinit wm8995_spi_probe(struct spi_device *spi)
+=======
+	.cache_type = REGCACHE_MAPLE,
+};
+
+#if defined(CONFIG_SPI_MASTER)
+static int wm8995_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8995_priv *wm8995;
 	int ret;
 
+<<<<<<< HEAD
 	wm8995 = kzalloc(sizeof *wm8995, GFP_KERNEL);
+=======
+	wm8995 = devm_kzalloc(&spi->dev, sizeof(*wm8995), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm8995)
 		return -ENOMEM;
 
 	spi_set_drvdata(spi, wm8995);
 
+<<<<<<< HEAD
 	wm8995->regmap = regmap_init_spi(spi, &wm8995_regmap);
 	if (IS_ERR(wm8995->regmap)) {
 		ret = PTR_ERR(wm8995->regmap);
@@ -2297,11 +2839,25 @@ static int __devexit wm8995_spi_remove(struct spi_device *spi)
 	regmap_exit(wm8995->regmap);
 	kfree(wm8995);
 	return 0;
+=======
+	wm8995->regmap = devm_regmap_init_spi(spi, &wm8995_regmap);
+	if (IS_ERR(wm8995->regmap)) {
+		ret = PTR_ERR(wm8995->regmap);
+		dev_err(&spi->dev, "Failed to register regmap: %d\n", ret);
+		return ret;
+	}
+
+	ret = devm_snd_soc_register_component(&spi->dev,
+				     &soc_component_dev_wm8995, wm8995_dai,
+				     ARRAY_SIZE(wm8995_dai));
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver wm8995_spi_driver = {
 	.driver = {
 		.name = "wm8995",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = wm8995_spi_probe,
@@ -2312,16 +2868,30 @@ static struct spi_driver wm8995_spi_driver = {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 static __devinit int wm8995_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
+=======
+	},
+	.probe = wm8995_spi_probe,
+};
+#endif
+
+#if IS_ENABLED(CONFIG_I2C)
+static int wm8995_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8995_priv *wm8995;
 	int ret;
 
+<<<<<<< HEAD
 	wm8995 = kzalloc(sizeof *wm8995, GFP_KERNEL);
+=======
+	wm8995 = devm_kzalloc(&i2c->dev, sizeof(*wm8995), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm8995)
 		return -ENOMEM;
 
 	i2c_set_clientdata(i2c, wm8995);
 
+<<<<<<< HEAD
 	wm8995->regmap = regmap_init_i2c(i2c, &wm8995_regmap);
 	if (IS_ERR(wm8995->regmap)) {
 		ret = PTR_ERR(wm8995->regmap);
@@ -2355,6 +2925,22 @@ static __devexit int wm8995_i2c_remove(struct i2c_client *client)
 	regmap_exit(wm8995->regmap);
 	kfree(wm8995);
 	return 0;
+=======
+	wm8995->regmap = devm_regmap_init_i2c(i2c, &wm8995_regmap);
+	if (IS_ERR(wm8995->regmap)) {
+		ret = PTR_ERR(wm8995->regmap);
+		dev_err(&i2c->dev, "Failed to register regmap: %d\n", ret);
+		return ret;
+	}
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+				     &soc_component_dev_wm8995, wm8995_dai,
+				     ARRAY_SIZE(wm8995_dai));
+	if (ret < 0)
+		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm8995_i2c_id[] = {
@@ -2367,10 +2953,15 @@ MODULE_DEVICE_TABLE(i2c, wm8995_i2c_id);
 static struct i2c_driver wm8995_i2c_driver = {
 	.driver = {
 		.name = "wm8995",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = wm8995_i2c_probe,
 	.remove = __devexit_p(wm8995_i2c_remove),
+=======
+	},
+	.probe = wm8995_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8995_i2c_id
 };
 #endif
@@ -2379,7 +2970,11 @@ static int __init wm8995_modinit(void)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8995_i2c_driver);
 	if (ret) {
 		printk(KERN_ERR "Failed to register wm8995 I2C driver: %d\n",
@@ -2400,7 +2995,11 @@ module_init(wm8995_modinit);
 
 static void __exit wm8995_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_driver(&wm8995_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

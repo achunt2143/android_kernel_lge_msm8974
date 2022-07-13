@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2011 Atheros Communications Inc.
+=======
+ * Copyright (c) 2010-2011 Atheros Communications Inc.
+ * Copyright (c) 2011-2012 Qualcomm Atheros Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +22,7 @@
 #ifndef INITVALS_9330_1P2_H
 #define INITVALS_9330_1P2_H
 
+<<<<<<< HEAD
 static const u32 ar9331_modes_lowest_ob_db_tx_gain_1p2[][5] = {
 	/*  Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20  */
 	{0x0000a410, 0x000050d7, 0x000050d7, 0x000050d7, 0x000050d7},
@@ -149,6 +155,32 @@ static const u32 ar9331_1p2_baseband_postamble[][5] = {
 
 static const u32 ar9331_modes_high_ob_db_tx_gain_1p2[][5] = {
 	/*  Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20  */
+=======
+#define ar9331_modes_high_power_tx_gain_1p2 ar9331_modes_high_ob_db_tx_gain_1p2
+
+#define ar9331_modes_low_ob_db_tx_gain_1p2 ar9331_modes_high_ob_db_tx_gain_1p2
+
+#define ar9331_modes_lowest_ob_db_tx_gain_1p2 ar9331_modes_high_ob_db_tx_gain_1p2
+
+#define ar9331_1p2_baseband_core_txfir_coeff_japan_2484 ar9331_1p1_baseband_core_txfir_coeff_japan_2484
+
+#define ar9331_1p2_xtal_25M ar9331_1p1_xtal_25M
+
+#define ar9331_1p2_xtal_40M ar9331_1p1_xtal_40M
+
+#define ar9331_1p2_soc_postamble ar9331_1p1_soc_postamble
+
+#define ar9331_1p2_mac_postamble ar9331_1p1_mac_postamble
+
+#define ar9331_1p2_soc_preamble ar9331_1p1_soc_preamble
+
+#define ar9331_1p2_mac_core ar9331_1p1_mac_core
+
+#define ar9331_common_wo_xlna_rx_gain_1p2 ar9331_common_wo_xlna_rx_gain_1p1
+
+static const u32 ar9331_modes_high_ob_db_tx_gain_1p2[][5] = {
+	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x0000a410, 0x000050d7, 0x000050d7, 0x000050d7, 0x000050d7},
 	{0x0000a500, 0x00022200, 0x00022200, 0x00000000, 0x00000000},
 	{0x0000a504, 0x05062002, 0x05062002, 0x04000002, 0x04000002},
@@ -232,6 +264,7 @@ static const u32 ar9331_modes_high_ob_db_tx_gain_1p2[][5] = {
 	{0x0000a63c, 0x04011004, 0x04011004, 0x04011004, 0x04011004},
 };
 
+<<<<<<< HEAD
 static const u32 ar9331_modes_low_ob_db_tx_gain_1p2[][5] = {
 	/*  Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20  */
 	{0x0000a410, 0x000050d7, 0x000050d7, 0x000050d7, 0x000050d7},
@@ -332,6 +365,8 @@ static const u32 ar9331_1p2_xtal_25M[][2] = {
 	{0x0001609c, 0x0f508f29},
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 ar9331_1p2_radio_core[][2] = {
 	/* Addr      allmodes  */
 	{0x00016000, 0x36db6db6},
@@ -397,6 +432,7 @@ static const u32 ar9331_1p2_radio_core[][2] = {
 	{0x000163d4, 0x00000000},
 };
 
+<<<<<<< HEAD
 static const u32 ar9331_1p2_soc_postamble[][5] = {
 	/*  Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20  */
 	{0x00007010, 0x00000022, 0x00000022, 0x00000022, 0x00000022},
@@ -534,6 +570,8 @@ static const u32 ar9331_common_wo_xlna_rx_gain_1p2[][2] = {
 	{0x0000a1fc, 0x00000296},
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 ar9331_1p2_baseband_core[][2] = {
 	/* Addr      allmodes  */
 	{0x00009800, 0xafe68e30},
@@ -575,7 +613,11 @@ static const u32 ar9331_1p2_baseband_core[][2] = {
 	{0x00009e30, 0x06336f77},
 	{0x00009e34, 0x6af6532f},
 	{0x00009e38, 0x0cc80c00},
+<<<<<<< HEAD
 	{0x00009e40, 0x0d261820},
+=======
+	{0x00009e40, 0x0d261800},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x00009e4c, 0x00001004},
 	{0x00009e50, 0x00ff03f1},
 	{0x00009fc0, 0x803e4788},
@@ -671,6 +713,7 @@ static const u32 ar9331_1p2_baseband_core[][2] = {
 	{0x0000a7dc, 0x00000001},
 };
 
+<<<<<<< HEAD
 static const u32 ar9331_modes_high_power_tx_gain_1p2[][5] = {
 	/*  Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20  */
 	{0x0000a410, 0x000050d7, 0x000050d7, 0x000050d7, 0x000050d7},
@@ -943,6 +986,51 @@ static const u32 ar9331_1p2_mac_core[][2] = {
 	{0x000083c8, 0x00000000},
 	{0x000083cc, 0x00000200},
 	{0x000083d0, 0x000301ff},
+=======
+static const u32 ar9331_1p2_baseband_postamble[][5] = {
+	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
+	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8005, 0xd00a8005},
+	{0x00009820, 0x206a002e, 0x206a002e, 0x206a002e, 0x206a002e},
+	{0x00009824, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0},
+	{0x00009828, 0x06903081, 0x06903081, 0x06903881, 0x06903881},
+	{0x0000982c, 0x05eea6d4, 0x05eea6d4, 0x05eea6d4, 0x05eea6d4},
+	{0x00009830, 0x0000059c, 0x0000059c, 0x0000059c, 0x0000059c},
+	{0x00009c00, 0x00000044, 0x00000044, 0x00000044, 0x00000044},
+	{0x00009e00, 0x0372161e, 0x0372161e, 0x037216a4, 0x037216a4},
+	{0x00009e04, 0x00182020, 0x00182020, 0x00182020, 0x00182020},
+	{0x00009e0c, 0x6c4000e2, 0x6d4000e2, 0x6d4000e2, 0x6c4000e2},
+	{0x00009e10, 0x7ec80d2e, 0x7ec80d2e, 0x7ec80d2e, 0x7ec80d2e},
+	{0x00009e14, 0x31395d5e, 0x3139605e, 0x3139605e, 0x31395d5e},
+	{0x00009e18, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x00009e1c, 0x0001cf9c, 0x0001cf9c, 0x00021f9c, 0x00021f9c},
+	{0x00009e20, 0x000003b5, 0x000003b5, 0x000003ce, 0x000003ce},
+	{0x00009e2c, 0x0000001c, 0x0000001c, 0x00003221, 0x00003221},
+	{0x00009e3c, 0xcf946220, 0xcf946220, 0xcf946220, 0xcf946220},
+	{0x00009e44, 0x02321e27, 0x02321e27, 0x02282324, 0x02282324},
+	{0x00009e48, 0x5030201a, 0x5030201a, 0x50302010, 0x50302010},
+	{0x00009fc8, 0x0003f000, 0x0003f000, 0x0001a000, 0x0001a000},
+	{0x0000a204, 0x00003fc0, 0x00003fc4, 0x00003fc4, 0x00003fc0},
+	{0x0000a208, 0x00000104, 0x00000104, 0x00000004, 0x00000004},
+	{0x0000a230, 0x0000000a, 0x00000014, 0x00000016, 0x0000000b},
+	{0x0000a234, 0x00000fff, 0x00000fff, 0x10000fff, 0x00000fff},
+	{0x0000a238, 0xffb81018, 0xffb81018, 0xffb81018, 0xffb81018},
+	{0x0000a250, 0x00000000, 0x00000000, 0x00000210, 0x00000108},
+	{0x0000a254, 0x000007d0, 0x00000fa0, 0x00001130, 0x00000898},
+	{0x0000a258, 0x02020002, 0x02020002, 0x02020002, 0x02020002},
+	{0x0000a25c, 0x01000e0e, 0x01000e0e, 0x01000e0e, 0x01000e0e},
+	{0x0000a260, 0x3a021501, 0x3a021501, 0x3a021501, 0x3a021501},
+	{0x0000a264, 0x00000e0e, 0x00000e0e, 0x00000e0e, 0x00000e0e},
+	{0x0000a280, 0x00000007, 0x00000007, 0x0000000b, 0x0000000b},
+	{0x0000a284, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a288, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a28c, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000a2c4, 0x00058d18, 0x00058d18, 0x00058d18, 0x00058d18},
+	{0x0000a2d0, 0x00071981, 0x00071981, 0x00071981, 0x00071981},
+	{0x0000a2d8, 0xf999a83a, 0xf999a83a, 0xf999a83a, 0xf999a83a},
+	{0x0000a358, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+	{0x0000ae04, 0x00802020, 0x00802020, 0x00802020, 0x00802020},
+	{0x0000ae18, 0x00000000, 0x00000000, 0x00000000, 0x00000000},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const u32 ar9331_common_rx_gain_1p2[][2] = {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -28,11 +29,18 @@
 
 /*
  * 80003ES2LAN Gigabit Ethernet Controller (Copper)
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+/* 80003ES2LAN Gigabit Ethernet Controller (Copper)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 80003ES2LAN Gigabit Ethernet Controller (Serdes)
  */
 
 #include "e1000.h"
 
+<<<<<<< HEAD
 #define E1000_KMRNCTRLSTA_OFFSET_FIFO_CTRL	 0x00
 #define E1000_KMRNCTRLSTA_OFFSET_INB_CTRL	 0x02
 #define E1000_KMRNCTRLSTA_OFFSET_HD_CTRL	 0x10
@@ -97,11 +105,20 @@
 
 /*
  * A table for the GG82563 cable length where the range is defined
+=======
+/* A table for the GG82563 cable length where the range is defined
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * with a lower bound at "index" and the upper bound at
  * "index + 5".
  */
 static const u16 e1000_gg82563_cable_length_table[] = {
+<<<<<<< HEAD
 	 0, 60, 115, 150, 150, 60, 115, 150, 180, 180, 0xFF };
+=======
+	0, 60, 115, 150, 150, 60, 115, 150, 180, 180, 0xFF
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GG82563_CABLE_LENGTH_TABLE_SIZE \
 		ARRAY_SIZE(e1000_gg82563_cable_length_table)
 
@@ -112,11 +129,18 @@ static void e1000_initialize_hw_bits_80003es2lan(struct e1000_hw *hw);
 static void e1000_clear_hw_cntrs_80003es2lan(struct e1000_hw *hw);
 static s32 e1000_cfg_kmrn_1000_80003es2lan(struct e1000_hw *hw);
 static s32 e1000_cfg_kmrn_10_100_80003es2lan(struct e1000_hw *hw, u16 duplex);
+<<<<<<< HEAD
 static s32 e1000_cfg_on_link_up_80003es2lan(struct e1000_hw *hw);
 static s32  e1000_read_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
                                             u16 *data);
 static s32  e1000_write_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
                                              u16 data);
+=======
+static s32 e1000_read_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
+					   u16 *data);
+static s32 e1000_write_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
+					    u16 data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void e1000_power_down_phy_copper_80003es2lan(struct e1000_hw *hw);
 
 /**
@@ -129,17 +153,28 @@ static s32 e1000_init_phy_params_80003es2lan(struct e1000_hw *hw)
 	s32 ret_val;
 
 	if (hw->phy.media_type != e1000_media_type_copper) {
+<<<<<<< HEAD
 		phy->type	= e1000_phy_none;
+=======
+		phy->type = e1000_phy_none;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	} else {
 		phy->ops.power_up = e1000_power_up_phy_copper;
 		phy->ops.power_down = e1000_power_down_phy_copper_80003es2lan;
 	}
 
+<<<<<<< HEAD
 	phy->addr		= 1;
 	phy->autoneg_mask	= AUTONEG_ADVERTISE_SPEED_DEFAULT;
 	phy->reset_delay_us      = 100;
 	phy->type		= e1000_phy_gg82563;
+=======
+	phy->addr = 1;
+	phy->autoneg_mask = AUTONEG_ADVERTISE_SPEED_DEFAULT;
+	phy->reset_delay_us = 100;
+	phy->type = e1000_phy_gg82563;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This can only be done after all function pointers are setup. */
 	ret_val = e1000e_get_phy_id(hw);
@@ -161,6 +196,7 @@ static s32 e1000_init_nvm_params_80003es2lan(struct e1000_hw *hw)
 	u32 eecd = er32(EECD);
 	u16 size;
 
+<<<<<<< HEAD
 	nvm->opcode_bits	= 8;
 	nvm->delay_usec	 = 1;
 	switch (nvm->override) {
@@ -174,17 +210,38 @@ static s32 e1000_init_nvm_params_80003es2lan(struct e1000_hw *hw)
 		break;
 	default:
 		nvm->page_size    = eecd & E1000_EECD_ADDR_BITS ? 32 : 8;
+=======
+	nvm->opcode_bits = 8;
+	nvm->delay_usec = 1;
+	switch (nvm->override) {
+	case e1000_nvm_override_spi_large:
+		nvm->page_size = 32;
+		nvm->address_bits = 16;
+		break;
+	case e1000_nvm_override_spi_small:
+		nvm->page_size = 8;
+		nvm->address_bits = 8;
+		break;
+	default:
+		nvm->page_size = eecd & E1000_EECD_ADDR_BITS ? 32 : 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nvm->address_bits = eecd & E1000_EECD_ADDR_BITS ? 16 : 8;
 		break;
 	}
 
 	nvm->type = e1000_nvm_eeprom_spi;
 
+<<<<<<< HEAD
 	size = (u16)((eecd & E1000_EECD_SIZE_EX_MASK) >>
 			  E1000_EECD_SIZE_EX_SHIFT);
 
 	/*
 	 * Added to a constant, "size" becomes the left-shift value
+=======
+	size = (u16)FIELD_GET(E1000_EECD_SIZE_EX_MASK, eecd);
+
+	/* Added to a constant, "size" becomes the left-shift value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * for setting word_size.
 	 */
 	size += NVM_WORD_SIZE_BASE_SHIFT;
@@ -192,7 +249,11 @@ static s32 e1000_init_nvm_params_80003es2lan(struct e1000_hw *hw)
 	/* EEPROM access above 16k is unsupported */
 	if (size > 14)
 		size = 14;
+<<<<<<< HEAD
 	nvm->word_size	= 1 << size;
+=======
+	nvm->word_size = BIT(size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -228,9 +289,13 @@ static s32 e1000_init_mac_params_80003es2lan(struct e1000_hw *hw)
 	/* FWSM register */
 	mac->has_fwsm = true;
 	/* ARC supported; valid only if manageability features are enabled. */
+<<<<<<< HEAD
 	mac->arc_subsystem_valid =
 	        (er32(FWSM) & E1000_FWSM_MODE_MASK)
 	                ? true : false;
+=======
+	mac->arc_subsystem_valid = !!(er32(FWSM) & E1000_FWSM_MODE_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Adaptive IFS not supported */
 	mac->adaptive_ifs = false;
 
@@ -377,8 +442,12 @@ static s32 e1000_acquire_swfw_sync_80003es2lan(struct e1000_hw *hw, u16 mask)
 		if (!(swfw_sync & (fwmask | swmask)))
 			break;
 
+<<<<<<< HEAD
 		/*
 		 * Firmware currently using resource (fwmask)
+=======
+		/* Firmware currently using resource (fwmask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * or other software thread using resource (swmask)
 		 */
 		e1000e_put_hw_semaphore(hw);
@@ -444,8 +513,12 @@ static s32 e1000_read_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 	if ((offset & MAX_PHY_REG_ADDRESS) < GG82563_MIN_ALT_REG) {
 		page_select = GG82563_PHY_PAGE_SELECT;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * Use Alternative Page Select register to access
+=======
+		/* Use Alternative Page Select register to access
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * registers 30 and 31
 		 */
 		page_select = GG82563_PHY_PAGE_SELECT_ALT;
@@ -459,12 +532,20 @@ static s32 e1000_read_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 	}
 
 	if (hw->dev_spec.e80003es2lan.mdic_wa_enable) {
+<<<<<<< HEAD
 		/*
 		 * The "ready" bit in the MDIC register may be incorrectly set
 		 * before the device has completed the "Page Select" MDI
 		 * transaction.  So we wait 200us after each MDI command...
 		 */
 		udelay(200);
+=======
+		/* The "ready" bit in the MDIC register may be incorrectly set
+		 * before the device has completed the "Page Select" MDI
+		 * transaction.  So we wait 200us after each MDI command...
+		 */
+		usleep_range(200, 400);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* ...and verify the command was successful. */
 		ret_val = e1000e_read_phy_reg_mdic(hw, page_select, &temp);
@@ -474,6 +555,7 @@ static s32 e1000_read_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 			return -E1000_ERR_PHY;
 		}
 
+<<<<<<< HEAD
 		udelay(200);
 
 		ret_val = e1000e_read_phy_reg_mdic(hw,
@@ -485,6 +567,19 @@ static s32 e1000_read_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 		ret_val = e1000e_read_phy_reg_mdic(hw,
 		                                  MAX_PHY_REG_ADDRESS & offset,
 		                                  data);
+=======
+		usleep_range(200, 400);
+
+		ret_val = e1000e_read_phy_reg_mdic(hw,
+						   MAX_PHY_REG_ADDRESS & offset,
+						   data);
+
+		usleep_range(200, 400);
+	} else {
+		ret_val = e1000e_read_phy_reg_mdic(hw,
+						   MAX_PHY_REG_ADDRESS & offset,
+						   data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	e1000_release_phy_80003es2lan(hw);
@@ -515,8 +610,12 @@ static s32 e1000_write_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 	if ((offset & MAX_PHY_REG_ADDRESS) < GG82563_MIN_ALT_REG) {
 		page_select = GG82563_PHY_PAGE_SELECT;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * Use Alternative Page Select register to access
+=======
+		/* Use Alternative Page Select register to access
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * registers 30 and 31
 		 */
 		page_select = GG82563_PHY_PAGE_SELECT_ALT;
@@ -530,12 +629,20 @@ static s32 e1000_write_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 	}
 
 	if (hw->dev_spec.e80003es2lan.mdic_wa_enable) {
+<<<<<<< HEAD
 		/*
 		 * The "ready" bit in the MDIC register may be incorrectly set
 		 * before the device has completed the "Page Select" MDI
 		 * transaction.  So we wait 200us after each MDI command...
 		 */
 		udelay(200);
+=======
+		/* The "ready" bit in the MDIC register may be incorrectly set
+		 * before the device has completed the "Page Select" MDI
+		 * transaction.  So we wait 200us after each MDI command...
+		 */
+		usleep_range(200, 400);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* ...and verify the command was successful. */
 		ret_val = e1000e_read_phy_reg_mdic(hw, page_select, &temp);
@@ -545,6 +652,7 @@ static s32 e1000_write_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 			return -E1000_ERR_PHY;
 		}
 
+<<<<<<< HEAD
 		udelay(200);
 
 		ret_val = e1000e_write_phy_reg_mdic(hw,
@@ -556,6 +664,19 @@ static s32 e1000_write_phy_reg_gg82563_80003es2lan(struct e1000_hw *hw,
 		ret_val = e1000e_write_phy_reg_mdic(hw,
 		                                  MAX_PHY_REG_ADDRESS & offset,
 		                                  data);
+=======
+		usleep_range(200, 400);
+
+		ret_val = e1000e_write_phy_reg_mdic(hw,
+						    MAX_PHY_REG_ADDRESS &
+						    offset, data);
+
+		usleep_range(200, 400);
+	} else {
+		ret_val = e1000e_write_phy_reg_mdic(hw,
+						    MAX_PHY_REG_ADDRESS &
+						    offset, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	e1000_release_phy_80003es2lan(hw);
@@ -620,8 +741,12 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 	u16 phy_data;
 	bool link;
 
+<<<<<<< HEAD
 	/*
 	 * Clear Auto-Crossover to force MDI manually.  M88E1000 requires MDI
+=======
+	/* Clear Auto-Crossover to force MDI manually.  M88E1000 requires MDI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * forced whenever speed and duplex are forced.
 	 */
 	ret_val = e1e_rphy(hw, M88E1000_PHY_SPEC_CTRL, &phy_data);
@@ -635,16 +760,26 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 
 	e_dbg("GG82563 PSCR: %X\n", phy_data);
 
+<<<<<<< HEAD
 	ret_val = e1e_rphy(hw, PHY_CONTROL, &phy_data);
+=======
+	ret_val = e1e_rphy(hw, MII_BMCR, &phy_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
 	e1000e_phy_force_speed_duplex_setup(hw, &phy_data);
 
 	/* Reset the phy to commit changes. */
+<<<<<<< HEAD
 	phy_data |= MII_CR_RESET;
 
 	ret_val = e1e_wphy(hw, PHY_CONTROL, phy_data);
+=======
+	phy_data |= BMCR_RESET;
+
+	ret_val = e1e_wphy(hw, MII_BMCR, phy_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -654,13 +789,21 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 		e_dbg("Waiting for forced speed/duplex link on GG82563 phy.\n");
 
 		ret_val = e1000e_phy_has_link_generic(hw, PHY_FORCE_LIMIT,
+<<<<<<< HEAD
 						     100000, &link);
+=======
+						      100000, &link);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 
 		if (!link) {
+<<<<<<< HEAD
 			/*
 			 * We didn't get link.
+=======
+			/* We didn't get link.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * Reset the DSP and cross our fingers.
 			 */
 			ret_val = e1000e_phy_reset_dsp(hw);
@@ -670,7 +813,11 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 
 		/* Try once more */
 		ret_val = e1000e_phy_has_link_generic(hw, PHY_FORCE_LIMIT,
+<<<<<<< HEAD
 						     100000, &link);
+=======
+						      100000, &link);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 	}
@@ -679,8 +826,12 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	/*
 	 * Resetting the phy means we need to verify the TX_CLK corresponds
+=======
+	/* Resetting the phy means we need to verify the TX_CLK corresponds
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to the link speed.  10Mbps -> 2.5MHz, else 25MHz.
 	 */
 	phy_data &= ~GG82563_MSCR_TX_CLK_MASK;
@@ -689,8 +840,12 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 	else
 		phy_data |= GG82563_MSCR_TX_CLK_100MBPS_25;
 
+<<<<<<< HEAD
 	/*
 	 * In addition, we must re-enable CRS on Tx for both half and full
+=======
+	/* In addition, we must re-enable CRS on Tx for both half and full
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * duplex.
 	 */
 	phy_data |= GG82563_MSCR_ASSERT_CRS_ON_TX;
@@ -709,7 +864,11 @@ static s32 e1000_phy_force_speed_duplex_80003es2lan(struct e1000_hw *hw)
 static s32 e1000_get_cable_length_80003es2lan(struct e1000_hw *hw)
 {
 	struct e1000_phy_info *phy = &hw->phy;
+<<<<<<< HEAD
 	s32 ret_val = 0;
+=======
+	s32 ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 phy_data, index;
 
 	ret_val = e1e_rphy(hw, GG82563_PHY_DSP_DISTANCE, &phy_data);
@@ -743,6 +902,7 @@ static s32 e1000_get_link_up_info_80003es2lan(struct e1000_hw *hw, u16 *speed,
 	s32 ret_val;
 
 	if (hw->phy.media_type == e1000_media_type_copper) {
+<<<<<<< HEAD
 		ret_val = e1000e_get_speed_and_duplex_copper(hw,
 								    speed,
 								    duplex);
@@ -751,6 +911,14 @@ static s32 e1000_get_link_up_info_80003es2lan(struct e1000_hw *hw, u16 *speed,
 		ret_val = e1000e_get_speed_and_duplex_fiber_serdes(hw,
 								  speed,
 								  duplex);
+=======
+		ret_val = e1000e_get_speed_and_duplex_copper(hw, speed, duplex);
+		hw->phy.ops.cfg_on_link_up(hw);
+	} else {
+		ret_val = e1000e_get_speed_and_duplex_fiber_serdes(hw,
+								   speed,
+								   duplex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret_val;
@@ -766,9 +934,15 @@ static s32 e1000_reset_hw_80003es2lan(struct e1000_hw *hw)
 {
 	u32 ctrl;
 	s32 ret_val;
+<<<<<<< HEAD
 
 	/*
 	 * Prevent the PCI-E bus from sticking if there is no TLP connection
+=======
+	u16 kum_reg_data;
+
+	/* Prevent the PCI-E bus from sticking if there is no TLP connection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * on the last TLP read/write transaction when MAC is reset.
 	 */
 	ret_val = e1000e_disable_pcie_master(hw);
@@ -782,15 +956,43 @@ static s32 e1000_reset_hw_80003es2lan(struct e1000_hw *hw)
 	ew32(TCTL, E1000_TCTL_PSP);
 	e1e_flush();
 
+<<<<<<< HEAD
 	usleep_range(10000, 20000);
+=======
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl = er32(CTRL);
 
 	ret_val = e1000_acquire_phy_80003es2lan(hw);
+<<<<<<< HEAD
+=======
+	if (ret_val)
+		return ret_val;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e_dbg("Issuing a global reset to MAC\n");
 	ew32(CTRL, ctrl | E1000_CTRL_RST);
 	e1000_release_phy_80003es2lan(hw);
 
+<<<<<<< HEAD
+=======
+	/* Disable IBIST slave mode (far-end loopback) */
+	ret_val =
+	    e1000_read_kmrn_reg_80003es2lan(hw, E1000_KMRNCTRLSTA_INBAND_PARAM,
+					    &kum_reg_data);
+	if (!ret_val) {
+		kum_reg_data |= E1000_KMRNCTRLSTA_IBIST_DISABLE;
+		ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
+						 E1000_KMRNCTRLSTA_INBAND_PARAM,
+						 kum_reg_data);
+		if (ret_val)
+			e_dbg("Error disabling far-end loopback\n");
+	} else {
+		e_dbg("Error disabling far-end loopback\n");
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_val = e1000e_get_auto_rd_done(hw);
 	if (ret_val)
 		/* We don't want to continue accessing MAC registers. */
@@ -821,9 +1023,15 @@ static s32 e1000_init_hw_80003es2lan(struct e1000_hw *hw)
 
 	/* Initialize identification LED */
 	ret_val = mac->ops.id_led_init(hw);
+<<<<<<< HEAD
 	if (ret_val)
 		e_dbg("Error initializing identification LED\n");
 		/* This is not fatal and we should not stop init due to this */
+=======
+	/* An error is not fatal and we should not stop init due to this */
+	if (ret_val)
+		e_dbg("Error initializing identification LED\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disabling VLAN filtering */
 	e_dbg("Initializing the IEEE VLAN\n");
@@ -839,6 +1047,7 @@ static s32 e1000_init_hw_80003es2lan(struct e1000_hw *hw)
 
 	/* Setup link and flow control */
 	ret_val = mac->ops.setup_link(hw);
+<<<<<<< HEAD
 
 	/* Disable IBIST slave mode (far-end loopback) */
 	e1000_read_kmrn_reg_80003es2lan(hw, E1000_KMRNCTRLSTA_INBAND_PARAM,
@@ -851,12 +1060,41 @@ static s32 e1000_init_hw_80003es2lan(struct e1000_hw *hw)
 	reg_data = er32(TXDCTL(0));
 	reg_data = (reg_data & ~E1000_TXDCTL_WTHRESH) |
 		   E1000_TXDCTL_FULL_TX_DESC_WB | E1000_TXDCTL_COUNT_DESC;
+=======
+	if (ret_val)
+		return ret_val;
+
+	/* Disable IBIST slave mode (far-end loopback) */
+	ret_val =
+	    e1000_read_kmrn_reg_80003es2lan(hw, E1000_KMRNCTRLSTA_INBAND_PARAM,
+					    &kum_reg_data);
+	if (!ret_val) {
+		kum_reg_data |= E1000_KMRNCTRLSTA_IBIST_DISABLE;
+		ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
+						 E1000_KMRNCTRLSTA_INBAND_PARAM,
+						 kum_reg_data);
+		if (ret_val)
+			e_dbg("Error disabling far-end loopback\n");
+	} else {
+		e_dbg("Error disabling far-end loopback\n");
+	}
+
+	/* Set the transmit descriptor write-back policy */
+	reg_data = er32(TXDCTL(0));
+	reg_data = ((reg_data & ~E1000_TXDCTL_WTHRESH) |
+		    E1000_TXDCTL_FULL_TX_DESC_WB | E1000_TXDCTL_COUNT_DESC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(0), reg_data);
 
 	/* ...for both queues. */
 	reg_data = er32(TXDCTL(1));
+<<<<<<< HEAD
 	reg_data = (reg_data & ~E1000_TXDCTL_WTHRESH) |
 		   E1000_TXDCTL_FULL_TX_DESC_WB | E1000_TXDCTL_COUNT_DESC;
+=======
+	reg_data = ((reg_data & ~E1000_TXDCTL_WTHRESH) |
+		    E1000_TXDCTL_FULL_TX_DESC_WB | E1000_TXDCTL_COUNT_DESC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(1), reg_data);
 
 	/* Enable retransmit on late collisions */
@@ -883,6 +1121,7 @@ static s32 e1000_init_hw_80003es2lan(struct e1000_hw *hw)
 	/* default to true to enable the MDIC W/A */
 	hw->dev_spec.e80003es2lan.mdic_wa_enable = true;
 
+<<<<<<< HEAD
 	ret_val = e1000_read_kmrn_reg_80003es2lan(hw,
 	                              E1000_KMRNCTRLSTA_OFFSET >>
 	                              E1000_KMRNCTRLSTA_OFFSET_SHIFT,
@@ -895,6 +1134,18 @@ static s32 e1000_init_hw_80003es2lan(struct e1000_hw *hw)
 
 	/*
 	 * Clear all of the statistics registers (clear on read).  It is
+=======
+	ret_val =
+	    e1000_read_kmrn_reg_80003es2lan(hw, E1000_KMRNCTRLSTA_OFFSET >>
+					    E1000_KMRNCTRLSTA_OFFSET_SHIFT, &i);
+	if (!ret_val) {
+		if ((i & E1000_KMRNCTRLSTA_OPMODE_MASK) ==
+		    E1000_KMRNCTRLSTA_OPMODE_INBAND_MDIO)
+			hw->dev_spec.e80003es2lan.mdic_wa_enable = false;
+	}
+
+	/* Clear all of the statistics registers (clear on read).  It is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * important that we do this after we have tried to establish link
 	 * because the symbol error count will increment wildly if there
 	 * is no link.
@@ -916,28 +1167,56 @@ static void e1000_initialize_hw_bits_80003es2lan(struct e1000_hw *hw)
 
 	/* Transmit Descriptor Control 0 */
 	reg = er32(TXDCTL(0));
+<<<<<<< HEAD
 	reg |= (1 << 22);
+=======
+	reg |= BIT(22);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(0), reg);
 
 	/* Transmit Descriptor Control 1 */
 	reg = er32(TXDCTL(1));
+<<<<<<< HEAD
 	reg |= (1 << 22);
+=======
+	reg |= BIT(22);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TXDCTL(1), reg);
 
 	/* Transmit Arbitration Control 0 */
 	reg = er32(TARC(0));
+<<<<<<< HEAD
 	reg &= ~(0xF << 27); /* 30:27 */
 	if (hw->phy.media_type != e1000_media_type_copper)
 		reg &= ~(1 << 20);
+=======
+	reg &= ~(0xF << 27);	/* 30:27 */
+	if (hw->phy.media_type != e1000_media_type_copper)
+		reg &= ~BIT(20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(TARC(0), reg);
 
 	/* Transmit Arbitration Control 1 */
 	reg = er32(TARC(1));
 	if (er32(TCTL) & E1000_TCTL_MULR)
+<<<<<<< HEAD
 		reg &= ~(1 << 28);
 	else
 		reg |= (1 << 28);
 	ew32(TARC(1), reg);
+=======
+		reg &= ~BIT(28);
+	else
+		reg |= BIT(28);
+	ew32(TARC(1), reg);
+
+	/* Disable IPv6 extension header parsing because some malformed
+	 * IPv6 headers can hang the Rx.
+	 */
+	reg = er32(RFCTL);
+	reg |= (E1000_RFCTL_IPV6_EX_DIS | E1000_RFCTL_NEW_IPV6_EXT_DIS);
+	ew32(RFCTL, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -950,7 +1229,11 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 {
 	struct e1000_phy_info *phy = &hw->phy;
 	s32 ret_val;
+<<<<<<< HEAD
 	u32 ctrl_ext;
+=======
+	u32 reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 data;
 
 	ret_val = e1e_rphy(hw, GG82563_PHY_MAC_SPEC_CTRL, &data);
@@ -965,8 +1248,12 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	/*
 	 * Options:
+=======
+	/* Options:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *   MDI/MDI-X = 0 (default)
 	 *   0 - Auto for all speeds
 	 *   1 - MDI mode
@@ -992,8 +1279,12 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 		break;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Options:
+=======
+	/* Options:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *   disable_polarity_correction = 0 (default)
 	 *       Automatic Correction for Reversed Cable Polarity
 	 *   0 - Disabled
@@ -1008,13 +1299,18 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 		return ret_val;
 
 	/* SW Reset the PHY so all changes take effect */
+<<<<<<< HEAD
 	ret_val = e1000e_commit_phy(hw);
+=======
+	ret_val = hw->phy.ops.commit(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val) {
 		e_dbg("Error Resetting the PHY\n");
 		return ret_val;
 	}
 
 	/* Bypass Rx and Tx FIFO's */
+<<<<<<< HEAD
 	ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
 					E1000_KMRNCTRLSTA_OFFSET_FIFO_CTRL,
 					E1000_KMRNCTRLSTA_FIFO_CTRL_RX_BYPASS |
@@ -1031,6 +1327,21 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 	ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
 					E1000_KMRNCTRLSTA_OFFSET_MAC2PHY_OPMODE,
 					data);
+=======
+	reg = E1000_KMRNCTRLSTA_OFFSET_FIFO_CTRL;
+	data = (E1000_KMRNCTRLSTA_FIFO_CTRL_RX_BYPASS |
+		E1000_KMRNCTRLSTA_FIFO_CTRL_TX_BYPASS);
+	ret_val = e1000_write_kmrn_reg_80003es2lan(hw, reg, data);
+	if (ret_val)
+		return ret_val;
+
+	reg = E1000_KMRNCTRLSTA_OFFSET_MAC2PHY_OPMODE;
+	ret_val = e1000_read_kmrn_reg_80003es2lan(hw, reg, &data);
+	if (ret_val)
+		return ret_val;
+	data |= E1000_KMRNCTRLSTA_OPMODE_E_IDLE;
+	ret_val = e1000_write_kmrn_reg_80003es2lan(hw, reg, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -1043,16 +1354,26 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	ctrl_ext = er32(CTRL_EXT);
 	ctrl_ext &= ~(E1000_CTRL_EXT_LINK_MODE_MASK);
 	ew32(CTRL_EXT, ctrl_ext);
+=======
+	reg = er32(CTRL_EXT);
+	reg &= ~E1000_CTRL_EXT_LINK_MODE_MASK;
+	ew32(CTRL_EXT, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = e1e_rphy(hw, GG82563_PHY_PWR_MGMT_CTRL, &data);
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	/*
 	 * Do not init these registers when the HW is in IAMT mode, since the
+=======
+	/* Do not init these registers when the HW is in IAMT mode, since the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * firmware will have already initialized them.  We only initialize
 	 * them if the HW is not in IAMT mode.
 	 */
@@ -1073,8 +1394,12 @@ static s32 e1000_copper_link_setup_gg82563_80003es2lan(struct e1000_hw *hw)
 			return ret_val;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Workaround: Disable padding in Kumeran interface in the MAC
+=======
+	/* Workaround: Disable padding in Kumeran interface in the MAC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and in the PHY to avoid CRC errors.
 	 */
 	ret_val = e1e_rphy(hw, GG82563_PHY_INBAND_CTRL, &data);
@@ -1107,6 +1432,7 @@ static s32 e1000_setup_copper_link_80003es2lan(struct e1000_hw *hw)
 	ctrl &= ~(E1000_CTRL_FRCSPD | E1000_CTRL_FRCDPX);
 	ew32(CTRL, ctrl);
 
+<<<<<<< HEAD
 	/*
 	 * Set the mac to wait the maximum time between each
 	 * iteration and increase the max iterations when
@@ -1134,6 +1460,37 @@ static s32 e1000_setup_copper_link_80003es2lan(struct e1000_hw *hw)
 	ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
 					E1000_KMRNCTRLSTA_OFFSET_INB_CTRL,
 					reg_data);
+=======
+	/* Set the mac to wait the maximum time between each
+	 * iteration and increase the max iterations when
+	 * polling the phy; this fixes erroneous timeouts at 10Mbps.
+	 */
+	/* these next three accesses were always meant to use page 0x34 using
+	 * GG82563_REG(0x34, N) but never did, so we've just corrected the call
+	 * to not drop bits
+	 */
+	ret_val = e1000_write_kmrn_reg_80003es2lan(hw, 4, 0xFFFF);
+	if (ret_val)
+		return ret_val;
+	ret_val = e1000_read_kmrn_reg_80003es2lan(hw, 9, &reg_data);
+	if (ret_val)
+		return ret_val;
+	reg_data |= 0x3F;
+	ret_val = e1000_write_kmrn_reg_80003es2lan(hw, 9, reg_data);
+	if (ret_val)
+		return ret_val;
+	ret_val =
+	    e1000_read_kmrn_reg_80003es2lan(hw,
+					    E1000_KMRNCTRLSTA_OFFSET_INB_CTRL,
+					    &reg_data);
+	if (ret_val)
+		return ret_val;
+	reg_data |= E1000_KMRNCTRLSTA_INB_CTRL_DIS_PADDING;
+	ret_val =
+	    e1000_write_kmrn_reg_80003es2lan(hw,
+					     E1000_KMRNCTRLSTA_OFFSET_INB_CTRL,
+					     reg_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -1147,7 +1504,10 @@ static s32 e1000_setup_copper_link_80003es2lan(struct e1000_hw *hw)
 /**
  *  e1000_cfg_on_link_up_80003es2lan - es2 link configuration after link-up
  *  @hw: pointer to the HW structure
+<<<<<<< HEAD
  *  @duplex: current duplex setting
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Configure the KMRN interface by applying last minute quirks for
  *  10/100 operation.
@@ -1160,7 +1520,11 @@ static s32 e1000_cfg_on_link_up_80003es2lan(struct e1000_hw *hw)
 
 	if (hw->phy.media_type == e1000_media_type_copper) {
 		ret_val = e1000e_get_speed_and_duplex_copper(hw, &speed,
+<<<<<<< HEAD
 		                                             &duplex);
+=======
+							     &duplex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 
@@ -1189,9 +1553,16 @@ static s32 e1000_cfg_kmrn_10_100_80003es2lan(struct e1000_hw *hw, u16 duplex)
 	u16 reg_data, reg_data2;
 
 	reg_data = E1000_KMRNCTRLSTA_HD_CTRL_10_100_DEFAULT;
+<<<<<<< HEAD
 	ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
 	                               E1000_KMRNCTRLSTA_OFFSET_HD_CTRL,
 	                               reg_data);
+=======
+	ret_val =
+	    e1000_write_kmrn_reg_80003es2lan(hw,
+					     E1000_KMRNCTRLSTA_OFFSET_HD_CTRL,
+					     reg_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -1235,9 +1606,16 @@ static s32 e1000_cfg_kmrn_1000_80003es2lan(struct e1000_hw *hw)
 	u32 i = 0;
 
 	reg_data = E1000_KMRNCTRLSTA_HD_CTRL_1000_DEFAULT;
+<<<<<<< HEAD
 	ret_val = e1000_write_kmrn_reg_80003es2lan(hw,
 	                               E1000_KMRNCTRLSTA_OFFSET_HD_CTRL,
 	                               reg_data);
+=======
+	ret_val =
+	    e1000_write_kmrn_reg_80003es2lan(hw,
+					     E1000_KMRNCTRLSTA_OFFSET_HD_CTRL,
+					     reg_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		return ret_val;
 
@@ -1277,14 +1655,23 @@ static s32 e1000_read_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
 					   u16 *data)
 {
 	u32 kmrnctrlsta;
+<<<<<<< HEAD
 	s32 ret_val = 0;
+=======
+	s32 ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = e1000_acquire_mac_csr_80003es2lan(hw);
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	kmrnctrlsta = ((offset << E1000_KMRNCTRLSTA_OFFSET_SHIFT) &
 	               E1000_KMRNCTRLSTA_OFFSET) | E1000_KMRNCTRLSTA_REN;
+=======
+	kmrnctrlsta = FIELD_PREP(E1000_KMRNCTRLSTA_OFFSET, offset) |
+		      E1000_KMRNCTRLSTA_REN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(KMRNCTRLSTA, kmrnctrlsta);
 	e1e_flush();
 
@@ -1312,14 +1699,22 @@ static s32 e1000_write_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
 					    u16 data)
 {
 	u32 kmrnctrlsta;
+<<<<<<< HEAD
 	s32 ret_val = 0;
+=======
+	s32 ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = e1000_acquire_mac_csr_80003es2lan(hw);
 	if (ret_val)
 		return ret_val;
 
+<<<<<<< HEAD
 	kmrnctrlsta = ((offset << E1000_KMRNCTRLSTA_OFFSET_SHIFT) &
 	               E1000_KMRNCTRLSTA_OFFSET) | data;
+=======
+	kmrnctrlsta = FIELD_PREP(E1000_KMRNCTRLSTA_OFFSET, offset) | data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ew32(KMRNCTRLSTA, kmrnctrlsta);
 	e1e_flush();
 
@@ -1336,10 +1731,16 @@ static s32 e1000_write_kmrn_reg_80003es2lan(struct e1000_hw *hw, u32 offset,
  **/
 static s32 e1000_read_mac_addr_80003es2lan(struct e1000_hw *hw)
 {
+<<<<<<< HEAD
 	s32 ret_val = 0;
 
 	/*
 	 * If there's an alternate MAC address place it in RAR0
+=======
+	s32 ret_val;
+
+	/* If there's an alternate MAC address place it in RAR0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so that it will override the Si installed default perm
 	 * address.
 	 */
@@ -1433,12 +1834,18 @@ static const struct e1000_mac_operations es2_mac_ops = {
 	/* setup_physical_interface dependent on media type */
 	.setup_led		= e1000e_setup_led_generic,
 	.config_collision_dist	= e1000e_config_collision_dist_generic,
+<<<<<<< HEAD
+=======
+	.rar_set		= e1000e_rar_set_generic,
+	.rar_get_count		= e1000e_rar_get_count_generic,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct e1000_phy_operations es2_phy_ops = {
 	.acquire		= e1000_acquire_phy_80003es2lan,
 	.check_polarity		= e1000_check_polarity_m88,
 	.check_reset_block	= e1000e_check_reset_block_generic,
+<<<<<<< HEAD
 	.commit		 	= e1000e_phy_sw_reset,
 	.force_speed_duplex 	= e1000_phy_force_speed_duplex_80003es2lan,
 	.get_cfg_done       	= e1000_get_cfg_done_80003es2lan,
@@ -1451,6 +1858,20 @@ static const struct e1000_phy_operations es2_phy_ops = {
 	.set_d3_lplu_state  	= e1000e_set_d3_lplu_state,
 	.write_reg      	= e1000_write_phy_reg_gg82563_80003es2lan,
 	.cfg_on_link_up      	= e1000_cfg_on_link_up_80003es2lan,
+=======
+	.commit			= e1000e_phy_sw_reset,
+	.force_speed_duplex	= e1000_phy_force_speed_duplex_80003es2lan,
+	.get_cfg_done		= e1000_get_cfg_done_80003es2lan,
+	.get_cable_length	= e1000_get_cable_length_80003es2lan,
+	.get_info		= e1000e_get_phy_info_m88,
+	.read_reg		= e1000_read_phy_reg_gg82563_80003es2lan,
+	.release		= e1000_release_phy_80003es2lan,
+	.reset			= e1000e_phy_hw_reset_generic,
+	.set_d0_lplu_state	= NULL,
+	.set_d3_lplu_state	= e1000e_set_d3_lplu_state,
+	.write_reg		= e1000_write_phy_reg_gg82563_80003es2lan,
+	.cfg_on_link_up		= e1000_cfg_on_link_up_80003es2lan,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct e1000_nvm_operations es2_nvm_ops = {
@@ -1483,4 +1904,7 @@ const struct e1000_info e1000_es2_info = {
 	.phy_ops		= &es2_phy_ops,
 	.nvm_ops		= &es2_nvm_ops,
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

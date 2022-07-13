@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File:         sound/soc/codecs/ssm2602.h
  * Author:       Cliff Cai <Cliff.Cai@analog.com>
@@ -8,6 +12,7 @@
  *               Copyright 2008 Analog Devices Inc.
  *
  * Bugs:         Enter bugs at http://blackfin.uclinux.org/
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +28,30 @@
  * along with this program; if not, see the file COPYING, or write
  * to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SSM2602_H
 #define _SSM2602_H
 
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+
+struct device;
+
+enum ssm2602_type {
+	SSM2602,
+	SSM2604,
+};
+
+extern const struct regmap_config ssm2602_regmap_config;
+
+int ssm2602_probe(struct device *dev, enum ssm2602_type type,
+	struct regmap *regmap);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SSM2602 Codec Register definitions */
 
 #define SSM2602_LINVOL   0x00

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/sysfs/symlink.c - operations for initializing and mounting sysfs
  *
@@ -5,6 +9,7 @@
  * Copyright (c) 2007 SUSE Linux Products GmbH
  * Copyright (c) 2007 Tejun Heo <teheo@suse.de>
  *
+<<<<<<< HEAD
  * This file is released under the GPLv2.
  *
  * Please see Documentation/filesystems/sysfs.txt for more information.
@@ -133,10 +138,84 @@ static struct dentry *sysfs_mount(struct file_system_type *fs_type,
 	}
 
 	return dget(sb->s_root);
+=======
+ * Please see Documentation/filesystems/sysfs.rst for more information.
+ */
+
+#include <linux/fs.h>
+#include <linux/magic.h>
+#include <linux/mount.h>
+#include <linux/init.h>
+#include <linux/slab.h>
+#include <linux/user_namespace.h>
+#include <linux/fs_context.h>
+#include <net/net_namespace.h>
+
+#include "sysfs.h"
+
+static struct kernfs_root *sysfs_root;
+struct kernfs_node *sysfs_root_kn;
+
+static int sysfs_get_tree(struct fs_context *fc)
+{
+	struct kernfs_fs_context *kfc = fc->fs_private;
+	int ret;
+
+	ret = kernfs_get_tree(fc);
+	if (ret)
+		return ret;
+
+	if (kfc->new_sb_created)
+		fc->root->d_sb->s_iflags |= SB_I_USERNS_VISIBLE;
+	return 0;
+}
+
+static void sysfs_fs_context_free(struct fs_context *fc)
+{
+	struct kernfs_fs_context *kfc = fc->fs_private;
+
+	if (kfc->ns_tag)
+		kobj_ns_drop(KOBJ_NS_TYPE_NET, kfc->ns_tag);
+	kernfs_free_fs_context(fc);
+	kfree(kfc);
+}
+
+static const struct fs_context_operations sysfs_fs_context_ops = {
+	.free		= sysfs_fs_context_free,
+	.get_tree	= sysfs_get_tree,
+};
+
+static int sysfs_init_fs_context(struct fs_context *fc)
+{
+	struct kernfs_fs_context *kfc;
+	struct net *netns;
+
+	if (!(fc->sb_flags & SB_KERNMOUNT)) {
+		if (!kobj_ns_current_may_mount(KOBJ_NS_TYPE_NET))
+			return -EPERM;
+	}
+
+	kfc = kzalloc(sizeof(struct kernfs_fs_context), GFP_KERNEL);
+	if (!kfc)
+		return -ENOMEM;
+
+	kfc->ns_tag = netns = kobj_ns_grab_current(KOBJ_NS_TYPE_NET);
+	kfc->root = sysfs_root;
+	kfc->magic = SYSFS_MAGIC;
+	fc->fs_private = kfc;
+	fc->ops = &sysfs_fs_context_ops;
+	if (netns) {
+		put_user_ns(fc->user_ns);
+		fc->user_ns = get_user_ns(netns->user_ns);
+	}
+	fc->global = true;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sysfs_kill_sb(struct super_block *sb)
 {
+<<<<<<< HEAD
 	struct sysfs_super_info *info = sysfs_info(sb);
 	/* Remove the superblock from fs_supers/s_instances
 	 * so we can't find it, before freeing sysfs_super_info.
@@ -149,10 +228,24 @@ static struct file_system_type sysfs_fs_type = {
 	.name		= "sysfs",
 	.mount		= sysfs_mount,
 	.kill_sb	= sysfs_kill_sb,
+=======
+	void *ns = (void *)kernfs_super_ns(sb);
+
+	kernfs_kill_sb(sb);
+	kobj_ns_drop(KOBJ_NS_TYPE_NET, ns);
+}
+
+static struct file_system_type sysfs_fs_type = {
+	.name			= "sysfs",
+	.init_fs_context	= sysfs_init_fs_context,
+	.kill_sb		= sysfs_kill_sb,
+	.fs_flags		= FS_USERNS_MOUNT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init sysfs_init(void)
 {
+<<<<<<< HEAD
 	int err = -ENOMEM;
 
 	sysfs_dir_cachep = kmem_cache_create("sysfs_dir_cache",
@@ -198,3 +291,22 @@ void sysfs_put(struct sysfs_dirent *sd)
 	__sysfs_put(sd);
 }
 EXPORT_SYMBOL_GPL(sysfs_put);
+=======
+	int err;
+
+	sysfs_root = kernfs_create_root(NULL, KERNFS_ROOT_EXTRA_OPEN_PERM_CHECK,
+					NULL);
+	if (IS_ERR(sysfs_root))
+		return PTR_ERR(sysfs_root);
+
+	sysfs_root_kn = kernfs_root_to_node(sysfs_root);
+
+	err = register_filesystem(&sysfs_fs_type);
+	if (err) {
+		kernfs_destroy_root(sysfs_root);
+		return err;
+	}
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

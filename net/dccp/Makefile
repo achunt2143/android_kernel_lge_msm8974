@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_IP_DCCP) += dccp.o dccp_ipv4.o
 
 dccp-y := ccid.o feat.o input.o minisocks.o options.o output.o proto.o timer.o \
@@ -20,9 +24,18 @@ obj-$(subst y,$(CONFIG_IP_DCCP),$(CONFIG_IPV6)) += dccp_ipv6.o
 dccp_ipv6-y := ipv6.o
 
 obj-$(CONFIG_INET_DCCP_DIAG) += dccp_diag.o
+<<<<<<< HEAD
 obj-$(CONFIG_NET_DCCPPROBE) += dccp_probe.o
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 dccp-$(CONFIG_SYSCTL) += sysctl.o
 
 dccp_diag-y := diag.o
+<<<<<<< HEAD
 dccp_probe-y := probe.o
+=======
+
+# build with local directory for trace.h
+CFLAGS_proto.o := -I$(src)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

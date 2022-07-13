@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -26,6 +33,7 @@
 #ifndef __RTL871X_MP_H_
 #define __RTL871X_MP_H_
 
+<<<<<<< HEAD
 /*	00 - Success */
 /*	11 - Error */
 #define STATUS_SUCCESS			(0x00000000L)
@@ -82,6 +90,8 @@
 #define NDIS_STATUS_INCOMPATABLE_QOS	((uint)0xC0010027L)  /* 49*/
 #define NDIS_STATUS_AAL_PARAMS_UNSUPPORTED ((uint)0xC0010028L)  /*  93*/
 #define NDIS_STATUS_NO_ROUTE_TO_DESTINATION ((uint)0xC0010029L)  /*  3*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPT_NOOP			0
 #define MPT_READ_MAC_1BYTE		1
 #define MPT_READ_MAC_2BYTE		2
@@ -164,7 +174,12 @@ struct mp_priv {
 	unsigned char network_macaddr[6];
 	/*Testing Flag*/
 	u32 mode;/*0 for normal type packet,
+<<<<<<< HEAD
 		  * 1 for loopback packet (16bytes TXCMD)*/
+=======
+		  * 1 for loopback packet (16bytes TXCMD)
+		  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sint prev_fw_state;
 	u8 *pallocated_mp_xmitframe_buf;
 	u8 *pmp_xmtframe_buf;
@@ -188,6 +203,10 @@ struct bb_reg_param {
 	u32 offset;
 	u32 value;
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ======================================================================= */
 
 #define LOWER	true
@@ -264,7 +283,11 @@ enum POWER_MODE {
 #define RX_PKT_DEST_ADDR	2
 #define RX_PKT_PHY_MATCH	3
 
+<<<<<<< HEAD
 #define RPTMaxCount 0x000FFFFF;
+=======
+#define RPTMaxCount 0x000FFFFF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* parameter 1 : BitMask
  *	bit 0  : OFDM PPDU
@@ -328,7 +351,10 @@ void r8712_SetTxAGCOffset(struct _adapter *pAdapter, u32 ulTxAGCOffset);
 void r8712_SetDataRate(struct _adapter *pAdapter);
 void r8712_SwitchBandwidth(struct _adapter *pAdapter);
 void r8712_SwitchAntenna(struct _adapter *pAdapter);
+<<<<<<< HEAD
 void r8712_SetCrystalCap(struct _adapter *pAdapter);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_GetThermalMeter(struct _adapter *pAdapter, u32 *value);
 void r8712_SetContinuousTx(struct _adapter *pAdapter, u8 bStart);
 void r8712_SetSingleCarrierTx(struct _adapter *pAdapter, u8 bStart);

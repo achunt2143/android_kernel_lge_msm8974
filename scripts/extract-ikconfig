@@ -61,6 +61,11 @@ try_decompress '\3757zXZ\000' abcde unxz
 try_decompress 'BZh'          xy    bunzip2
 try_decompress '\135\0\0\0'   xxx   unlzma
 try_decompress '\211\114\132' xy    'lzop -d'
+<<<<<<< HEAD
+=======
+try_decompress '\002\041\114\030' xyy 'lz4 -d -l'
+try_decompress '\050\265\057\375' xxx unzstd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Bail out:
 echo "$me: Cannot find kernel config." >&2

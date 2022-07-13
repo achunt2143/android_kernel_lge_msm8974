@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
  *
@@ -14,13 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SIBYTE_BOARD_H
 #define _SIBYTE_BOARD_H
 
 #if defined(CONFIG_SIBYTE_SWARM) || defined(CONFIG_SIBYTE_CRHONE) || \
+<<<<<<< HEAD
     defined(CONFIG_SIBYTE_CRHINE) || defined(CONFIG_SIBYTE_LITTLESUR)
+=======
+    defined(CONFIG_SIBYTE_LITTLESUR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sibyte/swarm.h>
 #endif
 
@@ -28,10 +38,13 @@
 #include <asm/sibyte/sentosa.h>
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SIBYTE_CARMEL
 #include <asm/sibyte/carmel.h>
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SIBYTE_BIGSUR
 #include <asm/sibyte/bigsur.h>
 #endif

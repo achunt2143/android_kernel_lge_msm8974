@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #ifndef _SPARC64_MMZONE_H
 #define _SPARC64_MMZONE_H
 
 #ifdef CONFIG_NEED_MULTIPLE_NODES
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SPARC64_MMZONE_H
+#define _SPARC64_MMZONE_H
+
+#ifdef CONFIG_NUMA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/cpumask.h>
 
@@ -12,6 +20,10 @@ extern struct pglist_data *node_data[];
 extern int numa_cpu_lookup_table[];
 extern cpumask_t numa_cpumask_lookup_table[];
 
+<<<<<<< HEAD
 #endif /* CONFIG_NEED_MULTIPLE_NODES */
+=======
+#endif /* CONFIG_NUMA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _SPARC64_MMZONE_H */

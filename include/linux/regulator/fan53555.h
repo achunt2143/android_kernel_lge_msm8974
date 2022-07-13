@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fan53555.h - Fairchild Regulator FAN53555 Driver
  *
  * Copyright (C) 2012 Marvell Technology Ltd.
  * Yunfan Zhang <yfzhang@marvell.com>
+<<<<<<< HEAD
  *
  * This package is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,12 @@
  */
 
 #ifndef __FAN53555_H__
+=======
+ */
+
+#ifndef __FAN53555_H__
+#define __FAN53555_H__
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* VSEL ID */
 enum {
@@ -57,10 +68,13 @@ struct fan53555_platform_data {
 	unsigned int sleep_vsel_id;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_REGULATOR_FAN53555
 int __init fan53555_regulator_init(void);
 #else
 static inline int __init fan53555_regulator_init(void) { return 0; }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __FAN53555_H__ */

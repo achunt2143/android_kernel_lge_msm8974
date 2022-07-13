@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * lib/ts_fsm.c	   A naive finite state machine text search approach
  *
@@ -6,12 +7,22 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * lib/ts_fsm.c	   A naive finite state machine text search approach
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  *
  * ==========================================================================
  *
  *   A finite state machine consists of n states (struct ts_fsm_token)
+<<<<<<< HEAD
  *   representing the pattern as a finite automation. The data is read
+=======
+ *   representing the pattern as a finite automaton. The data is read
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   sequentially on an octet basis. Every state token specifies the number
  *   of recurrences and the type of value accepted which can be either a
  *   specific character or ctype based set of characters. The available
@@ -36,7 +47,11 @@
 struct ts_fsm
 {
 	unsigned int		ntokens;
+<<<<<<< HEAD
 	struct ts_fsm_token	tokens[0];
+=======
+	struct ts_fsm_token	tokens[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* other values derived from ctype.h */
@@ -197,7 +212,11 @@ startover:
 				TOKEN_MISMATCH();
 
 			block_idx++;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case TS_FSM_ANY:
 			if (next == NULL)

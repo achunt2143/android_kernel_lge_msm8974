@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * jazzsonic.c
  *
@@ -24,7 +28,10 @@
 #include <linux/fcntl.h>
 #include <linux/gfp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/in.h>
 #include <linux/string.h>
@@ -36,9 +43,15 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/bootinfo.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+
+#include <asm/bootinfo.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/dma.h>
 #include <asm/jazz.h>
@@ -60,6 +73,7 @@ do {									\
 	*((volatile unsigned int *)dev->base_addr+(reg)) = (val);		\
 } while (0)
 
+<<<<<<< HEAD
 
 /* use 0 for production, 1 for verification, >1 for debug */
 #ifdef SONIC_DEBUG
@@ -68,6 +82,8 @@ static unsigned int sonic_debug = SONIC_DEBUG;
 static unsigned int sonic_debug = 1;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We cannot use station (ethernet) address prefixes to detect the
  * sonic controller since these are board manufacturer depended.
@@ -83,8 +99,12 @@ static int jazzsonic_open(struct net_device* dev)
 {
 	int retval;
 
+<<<<<<< HEAD
 	retval = request_irq(dev->irq, sonic_interrupt, IRQF_DISABLED,
 				"sonic", dev);
+=======
+	retval = request_irq(dev->irq, sonic_interrupt, 0, "sonic", dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		printk(KERN_ERR "%s: unable to get IRQ %d.\n",
 				dev->name, dev->irq);
@@ -112,19 +132,31 @@ static const struct net_device_ops sonic_netdev_ops = {
 	.ndo_get_stats		= sonic_get_stats,
 	.ndo_set_rx_mode	= sonic_multicast_list,
 	.ndo_tx_timeout		= sonic_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
+<<<<<<< HEAD
 static int __devinit sonic_probe1(struct net_device *dev)
 {
 	static unsigned version_printed;
+=======
+static int sonic_probe1(struct net_device *dev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int silicon_revision;
 	unsigned int val;
 	struct sonic_local *lp = netdev_priv(dev);
 	int err = -ENODEV;
 	int i;
+<<<<<<< HEAD
+=======
+	unsigned char addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_mem_region(dev->base_addr, SONIC_MEM_SIZE, jazz_sonic_string))
 		return -EBUSY;
@@ -135,15 +167,19 @@ static int __devinit sonic_probe1(struct net_device *dev)
 	 * the expected location.
 	 */
 	silicon_revision = SONIC_READ(SONIC_SR);
+<<<<<<< HEAD
 	if (sonic_debug > 1)
 		printk("SONIC Silicon Revision = 0x%04x\n",silicon_revision);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 0;
 	while (known_revisions[i] != 0xffff &&
 	       known_revisions[i] != silicon_revision)
 		i++;
 
 	if (known_revisions[i] == 0xffff) {
+<<<<<<< HEAD
 		printk("SONIC ethernet controller not found (0x%4x)\n",
 		       silicon_revision);
 		goto out;
@@ -155,6 +191,13 @@ static int __devinit sonic_probe1(struct net_device *dev)
 	printk(KERN_INFO "%s: Sonic ethernet found at 0x%08lx, ",
 	       dev_name(lp->device), dev->base_addr);
 
+=======
+		pr_info("SONIC ethernet controller not found (0x%4x)\n",
+			silicon_revision);
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Put the sonic into software reset, then
 	 * retrieve and print the ethernet address.
@@ -163,6 +206,7 @@ static int __devinit sonic_probe1(struct net_device *dev)
 	SONIC_WRITE(SONIC_CEP,0);
 	for (i=0; i<3; i++) {
 		val = SONIC_READ(SONIC_CAP0-i);
+<<<<<<< HEAD
 		dev->dev_addr[i*2] = val;
 		dev->dev_addr[i*2+1] = val >> 8;
 	}
@@ -199,6 +243,18 @@ static int __devinit sonic_probe1(struct net_device *dev)
 	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
 	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
 	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+=======
+		addr[i*2] = val;
+		addr[i*2+1] = val >> 8;
+	}
+	eth_hw_addr_set(dev, addr);
+
+	lp->dma_bitmode = SONIC_BITMODE32;
+
+	err = sonic_alloc_descriptors(dev);
+	if (err)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &sonic_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
@@ -220,7 +276,11 @@ out:
  * Probe for a SONIC ethernet controller on a Mips Jazz board.
  * Actually probing is superfluous but we're paranoid.
  */
+<<<<<<< HEAD
 static int __devinit jazz_sonic_probe(struct platform_device *pdev)
+=======
+static int jazz_sonic_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct sonic_local *lp;
@@ -240,13 +300,17 @@ static int __devinit jazz_sonic_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	platform_set_drvdata(pdev, dev);
 
+<<<<<<< HEAD
 	netdev_boot_setup_check(dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->base_addr = res->start;
 	dev->irq = platform_get_irq(pdev, 0);
 	err = sonic_probe1(dev);
 	if (err)
 		goto out;
+<<<<<<< HEAD
 	err = register_netdev(dev);
 	if (err)
 		goto out1;
@@ -256,6 +320,23 @@ static int __devinit jazz_sonic_probe(struct platform_device *pdev)
 	return 0;
 
 out1:
+=======
+
+	pr_info("SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
+		dev->base_addr, dev->dev_addr, dev->irq);
+
+	sonic_msg_init(dev);
+
+	err = register_netdev(dev);
+	if (err)
+		goto undo_probe1;
+
+	return 0;
+
+undo_probe1:
+	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_mem_region(dev->base_addr, SONIC_MEM_SIZE);
 out:
 	free_netdev(dev);
@@ -264,13 +345,20 @@ out:
 }
 
 MODULE_DESCRIPTION("Jazz SONIC ethernet driver");
+<<<<<<< HEAD
 module_param(sonic_debug, int, 0);
 MODULE_PARM_DESC(sonic_debug, "jazzsonic debug level (1-4)");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:jazzsonic");
 
 #include "sonic.c"
 
+<<<<<<< HEAD
 static int __devexit jazz_sonic_device_remove (struct platform_device *pdev)
+=======
+static void jazz_sonic_device_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct sonic_local* lp = netdev_priv(dev);
@@ -280,16 +368,25 @@ static int __devexit jazz_sonic_device_remove (struct platform_device *pdev)
 	                  lp->descriptors, lp->descriptors_laddr);
 	release_mem_region(dev->base_addr, SONIC_MEM_SIZE);
 	free_netdev(dev);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver jazz_sonic_driver = {
 	.probe	= jazz_sonic_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(jazz_sonic_device_remove),
 	.driver	= {
 		.name	= jazz_sonic_string,
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = jazz_sonic_device_remove,
+	.driver	= {
+		.name	= jazz_sonic_string,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

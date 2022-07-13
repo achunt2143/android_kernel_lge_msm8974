@@ -25,7 +25,11 @@
  *		  check this.)
  * 990605 (jmt) - Rearranged things a bit wrt IOP detection; iop_present is
  *		  gone, IOP base addresses are now in an array and the
+<<<<<<< HEAD
  *		  globally-visible functions take an IOP number instead of an
+=======
+ *		  globally-visible functions take an IOP number instead of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		  an actual base address.
  * 990610 (jmt) - Finished the message passing framework and it seems to work.
  *		  Sending _definitely_ works; my adb-bus.c mods can send
@@ -47,6 +51,13 @@
  *
  * TODO:
  *
+<<<<<<< HEAD
+=======
+ * o The SCC IOP has to be placed in bypass mode before the serial console
+ *   gets initialized. iop_init() would be one place to do that. Or the
+ *   bootloader could do that. For now, the Serial Switch control panel
+ *   is needed for that -- contrary to the changelog above.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * o Something should be periodically checking iop_alive() to make sure the
  *   IOP hasn't died.
  * o Some of the IOP manager routines need better error checking and
@@ -60,9 +71,15 @@
  *
  * The host talks to the IOPs using a rather simple message-passing scheme via
  * a shared memory area in the IOP RAM. Each IOP has seven "channels"; each
+<<<<<<< HEAD
  * channel is conneced to a specific software driver on the IOP. For example
  * on the SCC IOP there is one channel for each serial port. Each channel has
  * an incoming and and outgoing message queue with a depth of one.
+=======
+ * channel is connected to a specific software driver on the IOP. For example
+ * on the SCC IOP there is one channel for each serial port. Each channel has
+ * an incoming and an outgoing message queue with a depth of one.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A message is 32 bytes plus a state byte for the channel (MSG_IDLE, MSG_NEW,
  * MSG_RCVD, MSG_COMPLETE). To send a message you copy the message into the
@@ -111,16 +128,39 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 #include <asm/bootinfo.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macintosh.h>
 #include <asm/macints.h>
 #include <asm/mac_iop.h>
 
+<<<<<<< HEAD
 /*#define DEBUG_IOP*/
 
 /* Set to non-zero if the IOPs are present. Set by iop_init() */
 
 int iop_scc_present,iop_ism_present;
+=======
+#include "mac.h"
+
+#ifdef DEBUG
+#define iop_pr_debug(fmt, ...) \
+	printk(KERN_DEBUG "%s: " fmt, __func__, ##__VA_ARGS__)
+#define iop_pr_cont(fmt, ...) \
+	printk(KERN_CONT fmt, ##__VA_ARGS__)
+#else
+#define iop_pr_debug(fmt, ...) \
+	no_printk(KERN_DEBUG "%s: " fmt, __func__, ##__VA_ARGS__)
+#define iop_pr_cont(fmt, ...) \
+	no_printk(KERN_CONT fmt, ##__VA_ARGS__)
+#endif
+
+/* Non-zero if the IOPs are present */
+
+int iop_scc_present, iop_ism_present;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* structure for tracking channel listeners */
 
@@ -174,7 +214,11 @@ static __inline__ void iop_writeb(volatile struct mac_iop *iop, __u16 addr, __u8
 
 static __inline__ void iop_stop(volatile struct mac_iop *iop)
 {
+<<<<<<< HEAD
 	iop->status_ctrl &= ~IOP_RUN;
+=======
+	iop->status_ctrl = IOP_AUTOINC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __inline__ void iop_start(volatile struct mac_iop *iop)
@@ -182,6 +226,7 @@ static __inline__ void iop_start(volatile struct mac_iop *iop)
 	iop->status_ctrl = IOP_RUN | IOP_AUTOINC;
 }
 
+<<<<<<< HEAD
 static __inline__ void iop_bypass(volatile struct mac_iop *iop)
 {
 	iop->status_ctrl |= IOP_BYPASS;
@@ -190,6 +235,11 @@ static __inline__ void iop_bypass(volatile struct mac_iop *iop)
 static __inline__ void iop_interrupt(volatile struct mac_iop *iop)
 {
 	iop->status_ctrl |= IOP_IRQ;
+=======
+static __inline__ void iop_interrupt(volatile struct mac_iop *iop)
+{
+	iop->status_ctrl = IOP_IRQ | IOP_RUN | IOP_AUTOINC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int iop_alive(volatile struct mac_iop *iop)
@@ -201,7 +251,11 @@ static int iop_alive(volatile struct mac_iop *iop)
 	return retval;
 }
 
+<<<<<<< HEAD
 static struct iop_msg *iop_alloc_msg(void)
+=======
+static struct iop_msg *iop_get_unused_msg(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned long flags;
@@ -220,6 +274,7 @@ static struct iop_msg *iop_alloc_msg(void)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void iop_free_msg(struct iop_msg *msg)
 {
 	msg->status = IOP_MSGSTATUS_UNUSED;
@@ -260,6 +315,8 @@ void __init iop_preinit(void)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialize the IOPs, if present.
  */
@@ -268,11 +325,31 @@ void __init iop_init(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (iop_scc_present) {
 		printk("IOP: detected SCC IOP at %p\n", iop_base[IOP_NUM_SCC]);
 	}
 	if (iop_ism_present) {
 		printk("IOP: detected ISM IOP at %p\n", iop_base[IOP_NUM_ISM]);
+=======
+	if (macintosh_config->scc_type == MAC_SCC_IOP) {
+		if (macintosh_config->ident == MAC_MODEL_IIFX)
+			iop_base[IOP_NUM_SCC] = (struct mac_iop *)SCC_IOP_BASE_IIFX;
+		else
+			iop_base[IOP_NUM_SCC] = (struct mac_iop *)SCC_IOP_BASE_QUADRA;
+		iop_scc_present = 1;
+		pr_debug("SCC IOP detected at %p\n", iop_base[IOP_NUM_SCC]);
+	}
+	if (macintosh_config->adb_type == MAC_ADB_IOP) {
+		if (macintosh_config->ident == MAC_MODEL_IIFX)
+			iop_base[IOP_NUM_ISM] = (struct mac_iop *)ISM_IOP_BASE_IIFX;
+		else
+			iop_base[IOP_NUM_ISM] = (struct mac_iop *)ISM_IOP_BASE_QUADRA;
+		iop_ism_present = 1;
+		pr_debug("ISM IOP detected at %p\n", iop_base[IOP_NUM_ISM]);
+
+		iop_stop(iop_base[IOP_NUM_ISM]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iop_start(iop_base[IOP_NUM_ISM]);
 		iop_alive(iop_base[IOP_NUM_ISM]); /* clears the alive flag */
 	}
@@ -295,7 +372,10 @@ void __init iop_init(void)
 
 /*
  * Register the interrupt handler for the IOPs.
+<<<<<<< HEAD
  * TODO: might be wrong for non-OSS machines. Anyone?
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 void __init iop_register_interrupts(void)
@@ -311,9 +391,15 @@ void __init iop_register_interrupts(void)
 				pr_err("Couldn't register ISM IOP interrupt\n");
 		}
 		if (!iop_alive(iop_base[IOP_NUM_ISM])) {
+<<<<<<< HEAD
 			printk("IOP: oh my god, they killed the ISM IOP!\n");
 		} else {
 			printk("IOP: the ISM IOP seems to be alive.\n");
+=======
+			pr_warn("IOP: oh my god, they killed the ISM IOP!\n");
+		} else {
+			pr_warn("IOP: the ISM IOP seems to be alive.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -350,9 +436,14 @@ void iop_complete_message(struct iop_msg *msg)
 	int chan = msg->channel;
 	int i,offset;
 
+<<<<<<< HEAD
 #ifdef DEBUG_IOP
 	printk("iop_complete(%p): iop %d chan %d\n", msg, msg->iop_num, msg->channel);
 #endif
+=======
+	iop_pr_debug("iop_num %d chan %d reply %*ph\n",
+		     msg->iop_num, msg->channel, IOP_MSG_LEN, msg->reply);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = IOP_ADDR_RECV_MSG + (msg->channel * IOP_MSG_LEN);
 
@@ -364,7 +455,11 @@ void iop_complete_message(struct iop_msg *msg)
 		   IOP_ADDR_RECV_STATE + chan, IOP_MSG_COMPLETE);
 	iop_interrupt(iop_base[msg->iop_num]);
 
+<<<<<<< HEAD
 	iop_free_msg(msg);
+=======
+	msg->status = IOP_MSGSTATUS_UNUSED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -376,6 +471,12 @@ static void iop_do_send(struct iop_msg *msg)
 	volatile struct mac_iop *iop = iop_base[msg->iop_num];
 	int i,offset;
 
+<<<<<<< HEAD
+=======
+	iop_pr_debug("iop_num %d chan %d message %*ph\n",
+		     msg->iop_num, msg->channel, IOP_MSG_LEN, msg->message);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	offset = IOP_ADDR_SEND_MSG + (msg->channel * IOP_MSG_LEN);
 
 	for (i = 0 ; i < IOP_MSG_LEN ; i++, offset++) {
@@ -395,6 +496,7 @@ static void iop_do_send(struct iop_msg *msg)
 static void iop_handle_send(uint iop_num, uint chan)
 {
 	volatile struct mac_iop *iop = iop_base[iop_num];
+<<<<<<< HEAD
 	struct iop_msg *msg,*msg2;
 	int i,offset;
 
@@ -402,6 +504,11 @@ static void iop_handle_send(uint iop_num, uint chan)
 	printk("iop_handle_send: iop %d channel %d\n", iop_num, chan);
 #endif
 
+=======
+	struct iop_msg *msg;
+	int i,offset;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iop_writeb(iop, IOP_ADDR_SEND_STATE + chan, IOP_MSG_IDLE);
 
 	if (!(msg = iop_send_queue[iop_num][chan])) return;
@@ -411,6 +518,7 @@ static void iop_handle_send(uint iop_num, uint chan)
 	for (i = 0 ; i < IOP_MSG_LEN ; i++, offset++) {
 		msg->reply[i] = iop_readb(iop, offset);
 	}
+<<<<<<< HEAD
 	if (msg->handler) (*msg->handler)(msg);
 	msg2 = msg;
 	msg = msg->next;
@@ -418,6 +526,17 @@ static void iop_handle_send(uint iop_num, uint chan)
 
 	iop_send_queue[iop_num][chan] = msg;
 	if (msg) iop_do_send(msg);
+=======
+	iop_pr_debug("iop_num %d chan %d reply %*ph\n",
+		     iop_num, chan, IOP_MSG_LEN, msg->reply);
+
+	if (msg->handler) (*msg->handler)(msg);
+	msg->status = IOP_MSGSTATUS_UNUSED;
+	msg = msg->next;
+	iop_send_queue[iop_num][chan] = msg;
+	if (msg && iop_readb(iop, IOP_ADDR_SEND_STATE + chan) == IOP_MSG_IDLE)
+		iop_do_send(msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -431,11 +550,15 @@ static void iop_handle_recv(uint iop_num, uint chan)
 	int i,offset;
 	struct iop_msg *msg;
 
+<<<<<<< HEAD
 #ifdef DEBUG_IOP
 	printk("iop_handle_recv: iop %d channel %d\n", iop_num, chan);
 #endif
 
 	msg = iop_alloc_msg();
+=======
+	msg = iop_get_unused_msg();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg->iop_num = iop_num;
 	msg->channel = chan;
 	msg->status = IOP_MSGSTATUS_UNSOL;
@@ -446,6 +569,11 @@ static void iop_handle_recv(uint iop_num, uint chan)
 	for (i = 0 ; i < IOP_MSG_LEN ; i++, offset++) {
 		msg->message[i] = iop_readb(iop, offset);
 	}
+<<<<<<< HEAD
+=======
+	iop_pr_debug("iop_num %d chan %d message %*ph\n",
+		     iop_num, chan, IOP_MSG_LEN, msg->message);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iop_writeb(iop, IOP_ADDR_RECV_STATE + chan, IOP_MSG_RCVD);
 
@@ -455,6 +583,7 @@ static void iop_handle_recv(uint iop_num, uint chan)
 	if (msg->handler) {
 		(*msg->handler)(msg);
 	} else {
+<<<<<<< HEAD
 #ifdef DEBUG_IOP
 		printk("iop_handle_recv: unclaimed message on iop %d channel %d\n", iop_num, chan);
 		printk("iop_handle_recv:");
@@ -463,6 +592,9 @@ static void iop_handle_recv(uint iop_num, uint chan)
 		}
 		printk("\n");
 #endif
+=======
+		memset(msg->reply, 0, IOP_MSG_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iop_complete_message(msg);
 	}
 }
@@ -485,7 +617,11 @@ int iop_send_message(uint iop_num, uint chan, void *privdata,
 	if (chan >= NUM_IOP_CHAN) return -EINVAL;
 	if (msg_len > IOP_MSG_LEN) return -EINVAL;
 
+<<<<<<< HEAD
 	msg = iop_alloc_msg();
+=======
+	msg = iop_get_unused_msg();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg) return -ENOMEM;
 
 	msg->next = NULL;
@@ -498,16 +634,23 @@ int iop_send_message(uint iop_num, uint chan, void *privdata,
 
 	if (!(q = iop_send_queue[iop_num][chan])) {
 		iop_send_queue[iop_num][chan] = msg;
+<<<<<<< HEAD
+=======
+		iop_do_send(msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		while (q->next) q = q->next;
 		q->next = msg;
 	}
 
+<<<<<<< HEAD
 	if (iop_readb(iop_base[iop_num],
 	    IOP_ADDR_SEND_STATE + chan) == IOP_MSG_IDLE) {
 		iop_do_send(msg);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -574,6 +717,7 @@ irqreturn_t iop_ism_irq(int irq, void *dev_id)
 	uint iop_num = (uint) dev_id;
 	volatile struct mac_iop *iop = iop_base[iop_num];
 	int i,state;
+<<<<<<< HEAD
 
 #ifdef DEBUG_IOP
 	printk("iop_ism_irq: status = %02X\n", (uint) iop->status_ctrl);
@@ -622,3 +766,51 @@ irqreturn_t iop_ism_irq(int irq, void *dev_id)
 	}
 	return IRQ_HANDLED;
 }
+=======
+	u8 events = iop->status_ctrl & (IOP_INT0 | IOP_INT1);
+
+	do {
+		iop_pr_debug("iop_num %d status %02X\n", iop_num,
+			     iop->status_ctrl);
+
+		/* INT0 indicates state change on an outgoing message channel */
+		if (events & IOP_INT0) {
+			iop->status_ctrl = IOP_INT0 | IOP_RUN | IOP_AUTOINC;
+			for (i = 0; i < NUM_IOP_CHAN; i++) {
+				state = iop_readb(iop, IOP_ADDR_SEND_STATE + i);
+				if (state == IOP_MSG_COMPLETE)
+					iop_handle_send(iop_num, i);
+				else if (state != IOP_MSG_IDLE)
+					iop_pr_debug("chan %d send state %02X\n",
+						     i, state);
+			}
+		}
+
+		/* INT1 for incoming messages */
+		if (events & IOP_INT1) {
+			iop->status_ctrl = IOP_INT1 | IOP_RUN | IOP_AUTOINC;
+			for (i = 0; i < NUM_IOP_CHAN; i++) {
+				state = iop_readb(iop, IOP_ADDR_RECV_STATE + i);
+				if (state == IOP_MSG_NEW)
+					iop_handle_recv(iop_num, i);
+				else if (state != IOP_MSG_IDLE)
+					iop_pr_debug("chan %d recv state %02X\n",
+						     i, state);
+			}
+		}
+
+		events = iop->status_ctrl & (IOP_INT0 | IOP_INT1);
+	} while (events);
+
+	return IRQ_HANDLED;
+}
+
+void iop_ism_irq_poll(uint iop_num)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	iop_ism_irq(0, (void *)iop_num);
+	local_irq_restore(flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

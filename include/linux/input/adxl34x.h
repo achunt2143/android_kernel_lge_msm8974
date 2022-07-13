@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/input/adxl34x.h
  *
@@ -6,13 +10,21 @@
  * device's "struct device" holds this information.
  *
  * Copyright 2009 Analog Devices Inc.
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_INPUT_ADXL34X_H__
 #define __LINUX_INPUT_ADXL34X_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/input.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct adxl34x_platform_data {
 
 	/*

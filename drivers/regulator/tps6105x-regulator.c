@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for TPS61050/61052 boost converters, typically used for white LEDs
  * or audio amplifiers.
@@ -6,27 +10,39 @@
  * Written on behalf of Linaro for ST-Ericsson
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
+<<<<<<< HEAD
  *
  * License terms: GNU General Public License (GPL) version 2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/tps6105x.h>
 
+<<<<<<< HEAD
 static const int tps6105x_voltages[] = {
+=======
+static const unsigned int tps6105x_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4500000,
 	5000000,
 	5250000,
 	5000000, /* There is an additional 5V */
 };
 
+<<<<<<< HEAD
 static int tps6105x_regulator_enable(struct regulator_dev *rdev)
 {
 	struct tps6105x *tps6105x = rdev_get_drvdata(rdev);
@@ -125,25 +141,58 @@ static struct regulator_ops tps6105x_regulator_ops = {
 
 static struct regulator_desc tps6105x_regulator_desc = {
 	.name		= "tps6105x-boost",
+=======
+static const struct regulator_ops tps6105x_regulator_ops = {
+	.enable		= regulator_enable_regmap,
+	.disable	= regulator_disable_regmap,
+	.is_enabled	= regulator_is_enabled_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.list_voltage	= regulator_list_voltage_table,
+};
+
+static const struct regulator_desc tps6105x_regulator_desc = {
+	.name		= "tps6105x-boost",
+	.of_match	= of_match_ptr("regulator"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ops		= &tps6105x_regulator_ops,
 	.type		= REGULATOR_VOLTAGE,
 	.id		= 0,
 	.owner		= THIS_MODULE,
 	.n_voltages	= ARRAY_SIZE(tps6105x_voltages),
+<<<<<<< HEAD
+=======
+	.volt_table	= tps6105x_voltages,
+	.vsel_reg	= TPS6105X_REG_0,
+	.vsel_mask	= TPS6105X_REG0_VOLTAGE_MASK,
+	.enable_reg	= TPS6105X_REG_0,
+	.enable_mask	= TPS6105X_REG0_MODE_MASK,
+	.enable_val	= TPS6105X_REG0_MODE_VOLTAGE <<
+			  TPS6105X_REG0_MODE_SHIFT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Registers the chip as a voltage regulator
  */
+<<<<<<< HEAD
 static int __devinit tps6105x_regulator_probe(struct platform_device *pdev)
 {
 	struct tps6105x *tps6105x = dev_get_platdata(&pdev->dev);
 	struct tps6105x_platform_data *pdata = tps6105x->pdata;
+=======
+static int tps6105x_regulator_probe(struct platform_device *pdev)
+{
+	struct tps6105x *tps6105x = dev_get_platdata(&pdev->dev);
+	struct tps6105x_platform_data *pdata = tps6105x->pdata;
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* This instance is not set for regulator mode so bail out */
 	if (pdata->mode != TPS6105X_MODE_VOLTAGE) {
 		dev_info(&pdev->dev,
+<<<<<<< HEAD
 			 "chip not in voltage mode mode, exit probe \n");
 		return 0;
 	}
@@ -153,6 +202,22 @@ static int __devinit tps6105x_regulator_probe(struct platform_device *pdev)
 					     &tps6105x->client->dev,
 					     pdata->regulator_data, tps6105x,
 					     NULL);
+=======
+			"chip not in voltage mode mode, exit probe\n");
+		return 0;
+	}
+
+	config.dev = &tps6105x->client->dev;
+	config.init_data = pdata->regulator_data;
+	config.driver_data = tps6105x;
+	config.of_node = pdev->dev.parent->of_node;
+	config.regmap = tps6105x->regmap;
+
+	/* Register regulator with framework */
+	tps6105x->regulator = devm_regulator_register(&pdev->dev,
+						      &tps6105x_regulator_desc,
+						      &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(tps6105x->regulator)) {
 		ret = PTR_ERR(tps6105x->regulator);
 		dev_err(&tps6105x->client->dev,
@@ -164,6 +229,7 @@ static int __devinit tps6105x_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit tps6105x_regulator_remove(struct platform_device *pdev)
 {
 	struct tps6105x *tps6105x = dev_get_platdata(&pdev->dev);
@@ -178,6 +244,14 @@ static struct platform_driver tps6105x_regulator_driver = {
 	},
 	.probe = tps6105x_regulator_probe,
 	.remove = __devexit_p(tps6105x_regulator_remove),
+=======
+static struct platform_driver tps6105x_regulator_driver = {
+	.driver = {
+		.name  = "tps6105x-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe = tps6105x_regulator_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static __init int tps6105x_regulator_init(void)

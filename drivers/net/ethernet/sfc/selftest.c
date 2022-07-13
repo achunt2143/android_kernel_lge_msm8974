@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2005-2006 Fen Systems Ltd.
@@ -6,6 +7,13 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, incorporated herein by reference.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/****************************************************************************
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2005-2006 Fen Systems Ltd.
+ * Copyright 2006-2012 Solarflare Communications Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/netdevice.h>
@@ -21,7 +29,14 @@
 #include <linux/slab.h>
 #include "net_driver.h"
 #include "efx.h"
+<<<<<<< HEAD
 #include "nic.h"
+=======
+#include "efx_common.h"
+#include "efx_channels.h"
+#include "nic.h"
+#include "mcdi_port_common.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "selftest.h"
 #include "workarounds.h"
 
@@ -38,6 +53,7 @@
 /*
  * Loopback test packet structure
  *
+<<<<<<< HEAD
  * The self-test should stress every RSS vector, and unfortunately
  * Falcon only performs RSS on TCP/UDP packets.
  */
@@ -51,6 +67,25 @@ struct efx_loopback_payload {
 
 /* Loopback test source MAC address */
 static const unsigned char payload_source[ETH_ALEN] = {
+=======
+ * The self-test should stress every RSS vector.
+ */
+struct efx_loopback_payload {
+	char pad[2]; /* Ensures ip is 4-byte aligned */
+	struct_group_attr(packet, __packed,
+		struct ethhdr header;
+		struct iphdr ip;
+		struct udphdr udp;
+		__be16 iteration;
+		char msg[64];
+	);
+} __packed __aligned(4);
+#define EFX_LOOPBACK_PAYLOAD_LEN	\
+		sizeof_field(struct efx_loopback_payload, packet)
+
+/* Loopback test source MAC address */
+static const u8 payload_source[ETH_ALEN] __aligned(2) = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0x0f, 0x53, 0x1b, 0x1b, 0x1b,
 };
 
@@ -68,7 +103,11 @@ static const char *const efx_interrupt_mode_names[] = {
 	STRING_TABLE_LOOKUP(efx->interrupt_mode, efx_interrupt_mode)
 
 /**
+<<<<<<< HEAD
  * efx_loopback_state - persistent state during a loopback selftest
+=======
+ * struct efx_loopback_state - persistent state during a loopback selftest
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flush:		Drop all packets in efx_loopback_rx_packet
  * @packet_count:	Number of packets being used in this test
  * @skbs:		An array of skbs transmitted
@@ -100,10 +139,15 @@ static int efx_test_phy_alive(struct efx_nic *efx, struct efx_self_tests *tests)
 {
 	int rc = 0;
 
+<<<<<<< HEAD
 	if (efx->phy_op->test_alive) {
 		rc = efx->phy_op->test_alive(efx);
 		tests->phy_alive = rc ? -1 : 1;
 	}
+=======
+	rc = efx_mcdi_phy_test_alive(efx);
+	tests->phy_alive = rc ? -1 : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -114,7 +158,14 @@ static int efx_test_nvram(struct efx_nic *efx, struct efx_self_tests *tests)
 
 	if (efx->type->test_nvram) {
 		rc = efx->type->test_nvram(efx);
+<<<<<<< HEAD
 		tests->nvram = rc ? -1 : 1;
+=======
+		if (rc == -EPERM)
+			rc = 0;
+		else
+			tests->nvram = rc ? -1 : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -132,11 +183,26 @@ static int efx_test_interrupts(struct efx_nic *efx,
 {
 	unsigned long timeout, wait;
 	int cpu;
+<<<<<<< HEAD
+=======
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_dbg(efx, drv, efx->net_dev, "testing interrupts\n");
 	tests->interrupt = -1;
 
+<<<<<<< HEAD
 	efx_nic_irq_test_start(efx);
+=======
+	rc = efx_nic_irq_test_start(efx);
+	if (rc == -ENOTSUPP) {
+		netif_dbg(efx, drv, efx->net_dev,
+			  "direct interrupt testing not supported\n");
+		tests->interrupt = 0;
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	timeout = jiffies + IRQ_TIMEOUT;
 	wait = 1;
 
@@ -188,7 +254,11 @@ static int efx_test_eventq_irq(struct efx_nic *efx,
 		schedule_timeout_uninterruptible(wait);
 
 		efx_for_each_channel(channel, efx) {
+<<<<<<< HEAD
 			napi_disable(&channel->napi_str);
+=======
+			efx_stop_eventq(channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (channel->eventq_read_ptr !=
 			    read_ptr[channel->channel]) {
 				set_bit(channel->channel, &napi_ran);
@@ -200,8 +270,12 @@ static int efx_test_eventq_irq(struct efx_nic *efx,
 				if (efx_nic_event_test_irq_cpu(channel) >= 0)
 					clear_bit(channel->channel, &int_pend);
 			}
+<<<<<<< HEAD
 			napi_enable(&channel->napi_str);
 			efx_nic_eventq_read_ack(channel);
+=======
+			efx_start_eventq(channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		wait *= 2;
@@ -248,12 +322,24 @@ static int efx_test_phy(struct efx_nic *efx, struct efx_self_tests *tests,
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (!efx->phy_op->run_tests)
 		return 0;
 
 	mutex_lock(&efx->mac_lock);
 	rc = efx->phy_op->run_tests(efx, tests->phy_ext, flags);
 	mutex_unlock(&efx->mac_lock);
+=======
+	mutex_lock(&efx->mac_lock);
+	rc = efx_mcdi_phy_run_tests(efx, tests->phy_ext, flags);
+	mutex_unlock(&efx->mac_lock);
+	if (rc == -EPERM)
+		rc = 0;
+	else
+		netif_info(efx, drv, efx->net_dev,
+			   "%s phy selftest\n", rc ? "Failed" : "Passed");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -271,7 +357,11 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 			    const char *buf_ptr, int pkt_len)
 {
 	struct efx_loopback_state *state = efx->loopback_selftest;
+<<<<<<< HEAD
 	struct efx_loopback_payload *received;
+=======
+	struct efx_loopback_payload received;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct efx_loopback_payload *payload;
 
 	BUG_ON(!buf_ptr);
@@ -282,6 +372,7 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 
 	payload = &state->payload;
 
+<<<<<<< HEAD
 	received = (struct efx_loopback_payload *) buf_ptr;
 	received->ip.saddr = payload->ip.saddr;
 	if (state->offload_csum)
@@ -289,6 +380,16 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 
 	/* Check that header exists */
 	if (pkt_len < sizeof(received->header)) {
+=======
+	memcpy(&received.packet, buf_ptr,
+	       min_t(int, pkt_len, EFX_LOOPBACK_PAYLOAD_LEN));
+	received.ip.saddr = payload->ip.saddr;
+	if (state->offload_csum)
+		received.ip.check = payload->ip.check;
+
+	/* Check that header exists */
+	if (pkt_len < sizeof(received.header)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_err(efx, drv, efx->net_dev,
 			  "saw runt RX packet (length %d) in %s loopback "
 			  "test\n", pkt_len, LOOPBACK_MODE(efx));
@@ -296,7 +397,11 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 	}
 
 	/* Check that the ethernet header exists */
+<<<<<<< HEAD
 	if (memcmp(&received->header, &payload->header, ETH_HLEN) != 0) {
+=======
+	if (memcmp(&received.header, &payload->header, ETH_HLEN) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_err(efx, drv, efx->net_dev,
 			  "saw non-loopback RX packet in %s loopback test\n",
 			  LOOPBACK_MODE(efx));
@@ -304,16 +409,28 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 	}
 
 	/* Check packet length */
+<<<<<<< HEAD
 	if (pkt_len != sizeof(*payload)) {
 		netif_err(efx, drv, efx->net_dev,
 			  "saw incorrect RX packet length %d (wanted %d) in "
 			  "%s loopback test\n", pkt_len, (int)sizeof(*payload),
 			  LOOPBACK_MODE(efx));
+=======
+	if (pkt_len != EFX_LOOPBACK_PAYLOAD_LEN) {
+		netif_err(efx, drv, efx->net_dev,
+			  "saw incorrect RX packet length %d (wanted %d) in "
+			  "%s loopback test\n", pkt_len,
+			  (int)EFX_LOOPBACK_PAYLOAD_LEN, LOOPBACK_MODE(efx));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	/* Check that IP header matches */
+<<<<<<< HEAD
 	if (memcmp(&received->ip, &payload->ip, sizeof(payload->ip)) != 0) {
+=======
+	if (memcmp(&received.ip, &payload->ip, sizeof(payload->ip)) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_err(efx, drv, efx->net_dev,
 			  "saw corrupted IP header in %s loopback test\n",
 			  LOOPBACK_MODE(efx));
@@ -321,7 +438,11 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 	}
 
 	/* Check that msg and padding matches */
+<<<<<<< HEAD
 	if (memcmp(&received->msg, &payload->msg, sizeof(received->msg)) != 0) {
+=======
+	if (memcmp(&received.msg, &payload->msg, sizeof(received.msg)) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_err(efx, drv, efx->net_dev,
 			  "saw corrupted RX packet in %s loopback test\n",
 			  LOOPBACK_MODE(efx));
@@ -329,10 +450,17 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 	}
 
 	/* Check that iteration matches */
+<<<<<<< HEAD
 	if (received->iteration != payload->iteration) {
 		netif_err(efx, drv, efx->net_dev,
 			  "saw RX packet from iteration %d (wanted %d) in "
 			  "%s loopback test\n", ntohs(received->iteration),
+=======
+	if (received.iteration != payload->iteration) {
+		netif_err(efx, drv, efx->net_dev,
+			  "saw RX packet from iteration %d (wanted %d) in "
+			  "%s loopback test\n", ntohs(received.iteration),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ntohs(payload->iteration), LOOPBACK_MODE(efx));
 		goto err;
 	}
@@ -352,7 +480,12 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
 			       buf_ptr, pkt_len, 0);
 		netif_err(efx, drv, efx->net_dev, "expected packet:\n");
 		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_OFFSET, 0x10, 1,
+<<<<<<< HEAD
 			       &state->payload, sizeof(state->payload), 0);
+=======
+			       &state->payload.packet, EFX_LOOPBACK_PAYLOAD_LEN,
+			       0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	atomic_inc(&state->rx_bad);
@@ -366,22 +499,38 @@ static void efx_iterate_state(struct efx_nic *efx)
 	struct efx_loopback_payload *payload = &state->payload;
 
 	/* Initialise the layerII header */
+<<<<<<< HEAD
 	memcpy(&payload->header.h_dest, net_dev->dev_addr, ETH_ALEN);
 	memcpy(&payload->header.h_source, &payload_source, ETH_ALEN);
+=======
+	ether_addr_copy((u8 *)&payload->header.h_dest, net_dev->dev_addr);
+	ether_addr_copy((u8 *)&payload->header.h_source, payload_source);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	payload->header.h_proto = htons(ETH_P_IP);
 
 	/* saddr set later and used as incrementing count */
 	payload->ip.daddr = htonl(INADDR_LOOPBACK);
 	payload->ip.ihl = 5;
+<<<<<<< HEAD
 	payload->ip.check = htons(0xdead);
 	payload->ip.tot_len = htons(sizeof(*payload) - sizeof(struct ethhdr));
+=======
+	payload->ip.check = (__force __sum16) htons(0xdead);
+	payload->ip.tot_len = htons(sizeof(*payload) -
+				    offsetof(struct efx_loopback_payload, ip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	payload->ip.version = IPVERSION;
 	payload->ip.protocol = IPPROTO_UDP;
 
 	/* Initialise udp header */
 	payload->udp.source = 0;
+<<<<<<< HEAD
 	payload->udp.len = htons(sizeof(*payload) - sizeof(struct ethhdr) -
 				 sizeof(struct iphdr));
+=======
+	payload->udp.len = htons(sizeof(*payload) -
+				 offsetof(struct efx_loopback_payload, udp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	payload->udp.check = 0;	/* checksum ignored */
 
 	/* Fill out payload */
@@ -415,10 +564,20 @@ static int efx_begin_loopback(struct efx_tx_queue *tx_queue)
 
 		/* Copy the payload in, incrementing the source address to
 		 * exercise the rss vectors */
+<<<<<<< HEAD
 		payload = ((struct efx_loopback_payload *)
 			   skb_put(skb, sizeof(state->payload)));
 		memcpy(payload, &state->payload, sizeof(state->payload));
 		payload->ip.saddr = htonl(INADDR_LOOPBACK | (i << 2));
+=======
+		payload = skb_put(skb, sizeof(state->payload));
+		memcpy(payload, &state->payload, sizeof(state->payload));
+		payload->ip.saddr = htonl(INADDR_LOOPBACK | (i << 2));
+		/* Strip off the leading padding */
+		skb_pull(skb, offsetof(struct efx_loopback_payload, header));
+		/* Strip off the trailing padding */
+		skb_trim(skb, EFX_LOOPBACK_PAYLOAD_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Ensure everything we've written is visible to the
 		 * interrupt handler. */
@@ -431,7 +590,11 @@ static int efx_begin_loopback(struct efx_tx_queue *tx_queue)
 		if (rc != NETDEV_TX_OK) {
 			netif_err(efx, drv, efx->net_dev,
 				  "TX queue %d could not transmit packet %d of "
+<<<<<<< HEAD
 				  "%d in %s loopback test\n", tx_queue->queue,
+=======
+				  "%d in %s loopback test\n", tx_queue->label,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  i + 1, state->packet_count,
 				  LOOPBACK_MODE(efx));
 
@@ -447,6 +610,7 @@ static int efx_begin_loopback(struct efx_tx_queue *tx_queue)
 static int efx_poll_loopback(struct efx_nic *efx)
 {
 	struct efx_loopback_state *state = efx->loopback_selftest;
+<<<<<<< HEAD
 	struct efx_channel *channel;
 
 	/* NAPI polling is not enabled, so process channels
@@ -455,6 +619,9 @@ static int efx_poll_loopback(struct efx_nic *efx)
 		if (channel->work_pending)
 			efx_process_channel_now(channel);
 	}
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return atomic_read(&state->rx_good) == state->packet_count;
 }
 
@@ -475,7 +642,11 @@ static int efx_end_loopback(struct efx_tx_queue *tx_queue,
 		skb = state->skbs[i];
 		if (skb && !skb_shared(skb))
 			++tx_done;
+<<<<<<< HEAD
 		dev_kfree_skb_any(skb);
+=======
+		dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netif_tx_unlock_bh(efx->net_dev);
@@ -490,7 +661,11 @@ static int efx_end_loopback(struct efx_tx_queue *tx_queue,
 		netif_err(efx, drv, efx->net_dev,
 			  "TX queue %d saw only %d out of an expected %d "
 			  "TX completion events in %s loopback test\n",
+<<<<<<< HEAD
 			  tx_queue->queue, tx_done, state->packet_count,
+=======
+			  tx_queue->label, tx_done, state->packet_count,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  LOOPBACK_MODE(efx));
 		rc = -ETIMEDOUT;
 		/* Allow to fall through so we see the RX errors as well */
@@ -501,15 +676,24 @@ static int efx_end_loopback(struct efx_tx_queue *tx_queue,
 		netif_dbg(efx, drv, efx->net_dev,
 			  "TX queue %d saw only %d out of an expected %d "
 			  "received packets in %s loopback test\n",
+<<<<<<< HEAD
 			  tx_queue->queue, rx_good, state->packet_count,
+=======
+			  tx_queue->label, rx_good, state->packet_count,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  LOOPBACK_MODE(efx));
 		rc = -ETIMEDOUT;
 		/* Fall through */
 	}
 
 	/* Update loopback test structure */
+<<<<<<< HEAD
 	lb_tests->tx_sent[tx_queue->queue] += state->packet_count;
 	lb_tests->tx_done[tx_queue->queue] += tx_done;
+=======
+	lb_tests->tx_sent[tx_queue->label] += state->packet_count;
+	lb_tests->tx_done[tx_queue->label] += tx_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lb_tests->rx_good += rx_good;
 	lb_tests->rx_bad += rx_bad;
 
@@ -535,8 +719,13 @@ efx_test_loopback(struct efx_tx_queue *tx_queue,
 		state->flush = false;
 
 		netif_dbg(efx, drv, efx->net_dev,
+<<<<<<< HEAD
 			  "TX queue %d testing %s loopback with %d packets\n",
 			  tx_queue->queue, LOOPBACK_MODE(efx),
+=======
+			  "TX queue %d (hw %d) testing %s loopback with %d packets\n",
+			  tx_queue->label, tx_queue->queue, LOOPBACK_MODE(efx),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  state->packet_count);
 
 		efx_iterate_state(efx);
@@ -563,16 +752,23 @@ efx_test_loopback(struct efx_tx_queue *tx_queue,
 
 	netif_dbg(efx, drv, efx->net_dev,
 		  "TX queue %d passed %s loopback test with a burst length "
+<<<<<<< HEAD
 		  "of %d packets\n", tx_queue->queue, LOOPBACK_MODE(efx),
+=======
+		  "of %d packets\n", tx_queue->label, LOOPBACK_MODE(efx),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  state->packet_count);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Wait for link up. On Falcon, we would prefer to rely on efx_monitor, but
  * any contention on the mac lock (via e.g. efx_mac_mcast_work) causes it
  * to delay and retry. Therefore, it's safer to just poll directly. Wait
  * for link up and any faults to dissipate. */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int efx_wait_for_link(struct efx_nic *efx)
 {
 	struct efx_link_state *link_state = &efx->link_state;
@@ -586,10 +782,13 @@ static int efx_wait_for_link(struct efx_nic *efx)
 			mutex_lock(&efx->mac_lock);
 			efx->type->monitor(efx);
 			mutex_unlock(&efx->mac_lock);
+<<<<<<< HEAD
 		} else {
 			struct efx_channel *channel = efx_get_channel(efx, 0);
 			if (channel->work_pending)
 				efx_process_channel_now(channel);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		mutex_lock(&efx->mac_lock);
@@ -614,7 +813,12 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
 {
 	enum efx_loopback_mode mode;
 	struct efx_loopback_state *state;
+<<<<<<< HEAD
 	struct efx_channel *channel = efx_get_channel(efx, 0);
+=======
+	struct efx_channel *channel =
+		efx_get_channel(efx, efx->tx_channel_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct efx_tx_queue *tx_queue;
 	int rc = 0;
 
@@ -656,8 +860,13 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
 
 		/* Test all enabled types of TX queue */
 		efx_for_each_channel_tx_queue(tx_queue, channel) {
+<<<<<<< HEAD
 			state->offload_csum = (tx_queue->queue &
 					       EFX_TXQ_TYPE_OFFLOAD);
+=======
+			state->offload_csum = (tx_queue->type &
+					       EFX_TXQ_TYPE_OUTER_CSUM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = efx_test_loopback(tx_queue,
 					       &tests->loopback[mode]);
 			if (rc)
@@ -672,6 +881,12 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
 	wmb();
 	kfree(state);
 
+<<<<<<< HEAD
+=======
+	if (rc == -EPERM)
+		rc = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -732,7 +947,11 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
 			return rc_reset;
 		}
 
+<<<<<<< HEAD
 		if ((tests->registers < 0) && !rc_test)
+=======
+		if ((tests->memory < 0 || tests->registers < 0) && !rc_test)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc_test = -EIO;
 	}
 
@@ -759,7 +978,11 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
 	__efx_reconfigure_port(efx);
 	mutex_unlock(&efx->mac_lock);
 
+<<<<<<< HEAD
 	netif_device_attach(efx->net_dev);
+=======
+	efx_device_attach_if_not_resetting(efx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc_test;
 }
@@ -778,7 +1001,11 @@ void efx_selftest_async_cancel(struct efx_nic *efx)
 	cancel_delayed_work_sync(&efx->selftest_work);
 }
 
+<<<<<<< HEAD
 void efx_selftest_async_work(struct work_struct *data)
+=======
+static void efx_selftest_async_work(struct work_struct *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct efx_nic *efx = container_of(data, struct efx_nic,
 					   selftest_work.work);
@@ -797,3 +1024,11 @@ void efx_selftest_async_work(struct work_struct *data)
 				  channel->channel, cpu);
 	}
 }
+<<<<<<< HEAD
+=======
+
+void efx_selftest_async_init(struct efx_nic *efx)
+{
+	INIT_DELAYED_WORK(&efx->selftest_work, efx_selftest_async_work);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

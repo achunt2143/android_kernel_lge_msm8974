@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _KBD_KERN_H
 #define _KBD_KERN_H
 
@@ -5,12 +9,16 @@
 #include <linux/interrupt.h>
 #include <linux/keyboard.h>
 
+<<<<<<< HEAD
 extern struct tasklet_struct keyboard_tasklet;
 
 extern char *func_table[MAX_NR_FUNC];
 extern char func_buf[];
 extern char *funcbufptr;
 extern int funcbufsize, funcbufleft;
+=======
+extern char *func_table[MAX_NR_FUNC];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kbd->xxx contains the VC-local things (flag settings etc..)
@@ -36,10 +44,16 @@ struct kbd_struct {
 #define VC_CTRLRLOCK	KG_CTRLR 	/* ctrlr lock mode */
 	unsigned char slockstate; 	/* for `sticky' Shift, Ctrl, etc. */
 
+<<<<<<< HEAD
 	unsigned char ledmode:2; 	/* one 2-bit value */
 #define LED_SHOW_FLAGS 0        /* traditional state */
 #define LED_SHOW_IOCTL 1        /* only change leds upon ioctl */
 #define LED_SHOW_MEM 2          /* `heartbeat': peek into memory */
+=======
+	unsigned char ledmode:1;
+#define LED_SHOW_FLAGS 0        /* traditional state */
+#define LED_SHOW_IOCTL 1        /* only change leds upon ioctl */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned char ledflagstate:4;	/* flags, not lights */
 	unsigned char default_ledflagstate:4;
@@ -65,7 +79,10 @@ struct kbd_struct {
 
 extern int kbd_init(void);
 
+<<<<<<< HEAD
 extern unsigned char getledstate(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void setledstate(struct kbd_struct *kbd, unsigned int led);
 
 extern int do_poke_blanked_console;
@@ -75,12 +92,15 @@ extern void (*kbd_ledfunc)(unsigned int led);
 extern int set_console(int nr);
 extern void schedule_console_callback(void);
 
+<<<<<<< HEAD
 /* FIXME: review locking for vt.c callers */
 static inline void set_leds(void)
 {
 	tasklet_schedule(&keyboard_tasklet);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int vc_kbd_mode(struct kbd_struct * kbd, int flag)
 {
 	return ((kbd->modeflags >> flag) & 1);
@@ -139,12 +159,17 @@ static inline void chg_vc_kbd_led(struct kbd_struct * kbd, int flag)
 
 struct console;
 
+<<<<<<< HEAD
 void compute_shiftstate(void);
+=======
+void vt_set_leds_compute_shiftstate(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* defkeymap.c */
 
 extern unsigned int keymap_count;
 
+<<<<<<< HEAD
 /* console.c */
 
 static inline void con_schedule_flip(struct tty_struct *t)
@@ -157,4 +182,6 @@ static inline void con_schedule_flip(struct tty_struct *t)
 	schedule_work(&t->buf.work);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

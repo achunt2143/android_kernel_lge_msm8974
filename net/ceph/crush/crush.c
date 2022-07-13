@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 #ifdef __KERNEL__
 # include <linux/slab.h>
@@ -10,6 +11,17 @@
 
 #include <linux/crush/crush.h>
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+#ifdef __KERNEL__
+# include <linux/slab.h>
+# include <linux/crush/crush.h>
+#else
+# include "crush_compat.h"
+# include "crush.h"
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *crush_bucket_alg_name(int alg)
 {
 	switch (alg) {
@@ -17,6 +29,10 @@ const char *crush_bucket_alg_name(int alg)
 	case CRUSH_BUCKET_LIST: return "list";
 	case CRUSH_BUCKET_TREE: return "tree";
 	case CRUSH_BUCKET_STRAW: return "straw";
+<<<<<<< HEAD
+=======
+	case CRUSH_BUCKET_STRAW2: return "straw2";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default: return "unknown";
 	}
 }
@@ -40,10 +56,16 @@ int crush_get_bucket_item_weight(const struct crush_bucket *b, int p)
 		return ((struct crush_bucket_tree *)b)->node_weights[crush_calc_tree_node(p)];
 	case CRUSH_BUCKET_STRAW:
 		return ((struct crush_bucket_straw *)b)->item_weights[p];
+<<<<<<< HEAD
+=======
+	case CRUSH_BUCKET_STRAW2:
+		return ((struct crush_bucket_straw2 *)b)->item_weights[p];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * crush_calc_parents - Calculate parent vectors for the given crush map.
  * @map: crush_map pointer
@@ -70,6 +92,10 @@ void crush_calc_parents(struct crush_map *map)
 void crush_destroy_bucket_uniform(struct crush_bucket_uniform *b)
 {
 	kfree(b->h.perm);
+=======
+void crush_destroy_bucket_uniform(struct crush_bucket_uniform *b)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(b->h.items);
 	kfree(b);
 }
@@ -78,14 +104,20 @@ void crush_destroy_bucket_list(struct crush_bucket_list *b)
 {
 	kfree(b->item_weights);
 	kfree(b->sum_weights);
+<<<<<<< HEAD
 	kfree(b->h.perm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(b->h.items);
 	kfree(b);
 }
 
 void crush_destroy_bucket_tree(struct crush_bucket_tree *b)
 {
+<<<<<<< HEAD
 	kfree(b->h.perm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(b->h.items);
 	kfree(b->node_weights);
 	kfree(b);
@@ -95,7 +127,17 @@ void crush_destroy_bucket_straw(struct crush_bucket_straw *b)
 {
 	kfree(b->straws);
 	kfree(b->item_weights);
+<<<<<<< HEAD
 	kfree(b->h.perm);
+=======
+	kfree(b->h.items);
+	kfree(b);
+}
+
+void crush_destroy_bucket_straw2(struct crush_bucket_straw2 *b)
+{
+	kfree(b->item_weights);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(b->h.items);
 	kfree(b);
 }
@@ -115,6 +157,12 @@ void crush_destroy_bucket(struct crush_bucket *b)
 	case CRUSH_BUCKET_STRAW:
 		crush_destroy_bucket_straw((struct crush_bucket_straw *)b);
 		break;
+<<<<<<< HEAD
+=======
+	case CRUSH_BUCKET_STRAW2:
+		crush_destroy_bucket_straw2((struct crush_bucket_straw2 *)b);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -139,6 +187,7 @@ void crush_destroy(struct crush_map *map)
 	if (map->rules) {
 		__u32 b;
 		for (b = 0; b < map->max_rules; b++)
+<<<<<<< HEAD
 			kfree(map->rules[b]);
 		kfree(map->rules);
 	}
@@ -149,3 +198,23 @@ void crush_destroy(struct crush_map *map)
 }
 
 
+=======
+			crush_destroy_rule(map->rules[b]);
+		kfree(map->rules);
+	}
+
+#ifndef __KERNEL__
+	kfree(map->choose_tries);
+#else
+	clear_crush_names(&map->type_names);
+	clear_crush_names(&map->names);
+	clear_choose_args(map);
+#endif
+	kfree(map);
+}
+
+void crush_destroy_rule(struct crush_rule *rule)
+{
+	kfree(rule);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -83,18 +83,27 @@ EXPORT_SYMBOL_GPL(intc_irq_lookup);
 
 static int add_virq_to_pirq(unsigned int irq, unsigned int virq)
 {
+<<<<<<< HEAD
 	struct intc_virq_list **last, *entry;
 	struct irq_data *data = irq_get_irq_data(irq);
 
 	/* scan for duplicates */
 	last = (struct intc_virq_list **)&data->handler_data;
 	for_each_virq(entry, data->handler_data) {
+=======
+	struct intc_virq_list *entry;
+	struct intc_virq_list **last = NULL;
+
+	/* scan for duplicates */
+	for_each_virq(entry, irq_get_handler_data(irq)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (entry->irq == virq)
 			return 0;
 		last = &entry->next;
 	}
 
 	entry = kzalloc(sizeof(struct intc_virq_list), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!entry) {
 		pr_err("can't allocate VIRQ mapping for %d\n", virq);
 		return -ENOMEM;
@@ -103,13 +112,31 @@ static int add_virq_to_pirq(unsigned int irq, unsigned int virq)
 	entry->irq = virq;
 
 	*last = entry;
+=======
+	if (!entry)
+		return -ENOMEM;
+
+	entry->irq = virq;
+
+	if (last)
+		*last = entry;
+	else
+		irq_set_handler_data(irq, entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void intc_virq_handler(unsigned int irq, struct irq_desc *desc)
 {
 	struct irq_data *data = irq_get_irq_data(irq);
+=======
+static void intc_virq_handler(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+	struct irq_data *data = irq_desc_get_irq_data(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct irq_chip *chip = irq_data_get_irq_chip(data);
 	struct intc_virq_list *entry, *vlist = irq_data_get_irq_handler_data(data);
 	struct intc_desc_int *d = get_intc_desc(irq);
@@ -118,12 +145,23 @@ static void intc_virq_handler(unsigned int irq, struct irq_desc *desc)
 
 	for_each_virq(entry, vlist) {
 		unsigned long addr, handle;
+<<<<<<< HEAD
 
 		handle = (unsigned long)irq_get_handler_data(entry->irq);
 		addr = INTC_REG(d, _INTC_ADDR_E(handle), 0);
 
 		if (intc_reg_fns[_INTC_FN(handle)](addr, handle, 0))
 			generic_handle_irq(entry->irq);
+=======
+		struct irq_desc *vdesc = irq_to_desc(entry->irq);
+
+		if (vdesc) {
+			handle = (unsigned long)irq_desc_get_handler_data(vdesc);
+			addr = INTC_REG(d, _INTC_ADDR_E(handle), 0);
+			if (intc_reg_fns[_INTC_FN(handle)](addr, handle, 0))
+				generic_handle_irq_desc(vdesc);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	chip->irq_unmask(data);
@@ -219,12 +257,21 @@ restart:
 		if (radix_tree_deref_retry(entry))
 			goto restart;
 
+<<<<<<< HEAD
 		irq = create_irq();
+=======
+		irq = irq_alloc_desc(numa_node_id());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(irq < 0)) {
 			pr_err("no more free IRQs, bailing..\n");
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		activate_irq(irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("Setting up a chained VIRQ from %d -> %d\n",
 			irq, entry->pirq);
 
@@ -241,12 +288,22 @@ restart:
 		 */
 		irq_set_nothread(irq);
 
+<<<<<<< HEAD
 		irq_set_chained_handler(entry->pirq, intc_virq_handler);
 		add_virq_to_pirq(entry->pirq, irq);
 
 		radix_tree_tag_clear(&d->tree, entry->enum_id,
 				     INTC_TAG_VIRQ_NEEDS_ALLOC);
 		radix_tree_replace_slot((void **)entries[i],
+=======
+		/* Set handler data before installing the handler */
+		add_virq_to_pirq(entry->pirq, irq);
+		irq_set_chained_handler(entry->pirq, intc_virq_handler);
+
+		radix_tree_tag_clear(&d->tree, entry->enum_id,
+				     INTC_TAG_VIRQ_NEEDS_ALLOC);
+		radix_tree_replace_slot(&d->tree, (void **)entries[i],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					&intc_irq_xlate[irq]);
 	}
 

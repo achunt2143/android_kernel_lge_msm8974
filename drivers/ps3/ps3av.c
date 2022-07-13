@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 AV backend support.
  *
  *  Copyright (C) 2007 Sony Computer Entertainment Inc.
  *  Copyright 2007 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -23,13 +30,21 @@
 #include <linux/delay.h>
 #include <linux/notifier.h>
 #include <linux/ioctl.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/firmware.h>
 #include <asm/ps3av.h>
 #include <asm/ps3.h>
 
+<<<<<<< HEAD
+=======
+#include <video/cmdline.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vuart.h"
 
 #define BUFSIZE          4096	/* vuart buf size */
@@ -44,7 +59,10 @@ static struct ps3av {
 	struct mutex mutex;
 	struct work_struct work;
 	struct completion done;
+<<<<<<< HEAD
 	struct workqueue_struct *wq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int open_count;
 	struct ps3_system_bus_device *dev;
 
@@ -230,9 +248,15 @@ static int ps3av_send_cmd_pkt(const struct ps3av_send_hdr *send_buf,
 	/* send pkt */
 	res = ps3av_vuart_write(ps3av->dev, send_buf, write_len);
 	if (res < 0) {
+<<<<<<< HEAD
 		dev_dbg(&ps3av->dev->core,
 			"%s: ps3av_vuart_write() failed (result=%d)\n",
 			__func__, res);
+=======
+		dev_warn(&ps3av->dev->core,
+			"%s:%d: ps3av_vuart_write() failed: %s\n", __func__,
+			__LINE__, ps3_result(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -243,9 +267,15 @@ static int ps3av_send_cmd_pkt(const struct ps3av_send_hdr *send_buf,
 		res = ps3av_vuart_read(ps3av->dev, recv_buf, PS3AV_HDR_SIZE,
 				       timeout);
 		if (res != PS3AV_HDR_SIZE) {
+<<<<<<< HEAD
 			dev_dbg(&ps3av->dev->core,
 				"%s: ps3av_vuart_read() failed (result=%d)\n",
 				__func__, res);
+=======
+			dev_warn(&ps3av->dev->core,
+				"%s:%d: ps3av_vuart_read() failed: %s\n", __func__,
+				__LINE__, ps3_result(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return res;
 		}
 
@@ -253,9 +283,15 @@ static int ps3av_send_cmd_pkt(const struct ps3av_send_hdr *send_buf,
 		res = ps3av_vuart_read(ps3av->dev, &recv_buf->cid,
 				       recv_buf->size, timeout);
 		if (res < 0) {
+<<<<<<< HEAD
 			dev_dbg(&ps3av->dev->core,
 				"%s: ps3av_vuart_read() failed (result=%d)\n",
 				__func__, res);
+=======
+			dev_warn(&ps3av->dev->core,
+				"%s:%d: ps3av_vuart_read() failed: %s\n", __func__,
+				__LINE__, ps3_result(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return res;
 		}
 		res += PS3AV_HDR_SIZE;	/* total len */
@@ -264,8 +300,13 @@ static int ps3av_send_cmd_pkt(const struct ps3av_send_hdr *send_buf,
 	} while (event);
 
 	if ((cmd | PS3AV_REPLY_BIT) != recv_buf->cid) {
+<<<<<<< HEAD
 		dev_dbg(&ps3av->dev->core, "%s: reply err (result=%x)\n",
 			__func__, recv_buf->cid);
+=======
+		dev_warn(&ps3av->dev->core, "%s:%d: reply err: %x\n", __func__,
+			__LINE__, recv_buf->cid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -338,7 +379,11 @@ int ps3av_do_pkt(u32 cid, u16 send_len, size_t usr_buf_size,
 	mutex_unlock(&ps3av->mutex);
 	return 0;
 
+<<<<<<< HEAD
       err:
+=======
+err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ps3av->mutex);
 	printk(KERN_ERR "%s: failed cid:%x res:%d\n", __func__, cid, res);
 	return res;
@@ -477,7 +522,10 @@ int ps3av_set_audio_mode(u32 ch, u32 fs, u32 word_bits, u32 format, u32 source)
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_set_audio_mode);
 
 static int ps3av_set_videomode(void)
@@ -486,7 +534,11 @@ static int ps3av_set_videomode(void)
 	ps3av_set_av_video_mute(PS3AV_CMD_MUTE_ON);
 
 	/* wake up ps3avd to do the actual video mode setting */
+<<<<<<< HEAD
 	queue_work(ps3av->wq, &ps3av->work);
+=======
+	schedule_work(&ps3av->work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -501,7 +553,11 @@ static void ps3av_set_videomode_packet(u32 id)
 
 	video_mode = &video_mode_table[id & PS3AV_MODE_MASK];
 
+<<<<<<< HEAD
 	avb_param.num_of_video_pkt = PS3AV_AVB_NUM_VIDEO;	/* num of head */
+=======
+	avb_param.num_of_video_pkt = PS3AV_AVB_NUM_VIDEO; /* num of head */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	avb_param.num_of_audio_pkt = 0;
 	avb_param.num_of_av_video_pkt = ps3av->av_hw_conf.num_of_hdmi +
 					ps3av->av_hw_conf.num_of_avmulti;
@@ -521,7 +577,11 @@ static void ps3av_set_videomode_packet(u32 id)
 #ifndef PS3AV_HDMI_YUV
 		if (ps3av->av_port[i] == PS3AV_CMD_AVPORT_HDMI_0 ||
 		    ps3av->av_port[i] == PS3AV_CMD_AVPORT_HDMI_1)
+<<<<<<< HEAD
 			av_video_cs = RGB8;	/* use RGB for HDMI */
+=======
+			av_video_cs = RGB8; /* use RGB for HDMI */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		len += ps3av_cmd_set_av_video_cs(&avb_param.buf[len],
 						 ps3av->av_port[i],
@@ -590,8 +650,13 @@ static void ps3avd(struct work_struct *work)
 #define SHIFT_VESA	8
 
 static const struct {
+<<<<<<< HEAD
 	unsigned mask : 19;
 	unsigned id :  4;
+=======
+	unsigned mask:19;
+	unsigned id:4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ps3av_preferred_modes[] = {
 	{ PS3AV_RESBIT_WUXGA      << SHIFT_VESA, PS3AV_MODE_WUXGA   },
 	{ PS3AV_RESBIT_1920x1080P << SHIFT_60,   PS3AV_MODE_1080P60 },
@@ -667,7 +732,12 @@ static enum ps3av_mode_num ps3av_hdmi_get_id(struct ps3av_info_monitor *info)
 	return id;
 }
 
+<<<<<<< HEAD
 static void ps3av_monitor_info_dump(const struct ps3av_pkt_av_get_monitor_info *monitor_info)
+=======
+static void ps3av_monitor_info_dump(
+	const struct ps3av_pkt_av_get_monitor_info *monitor_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ps3av_info_monitor *info = &monitor_info->info;
 	const struct ps3av_info_audio *audio = info->audio;
@@ -717,8 +787,13 @@ static void ps3av_monitor_info_dump(const struct ps3av_pkt_av_get_monitor_info *
 
 	/* audio block */
 	for (i = 0; i < info->num_of_audio_block; i++) {
+<<<<<<< HEAD
 		pr_debug("audio[%d] type: %02x max_ch: %02x fs: %02x sbit: "
 			 "%02x\n",
+=======
+		pr_debug(
+			"audio[%d] type: %02x max_ch: %02x fs: %02x sbit: %02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 i, audio->type, audio->max_num_of_ch, audio->fs,
 			 audio->sbit);
 		audio++;
@@ -782,7 +857,11 @@ static int ps3av_auto_videomode(struct ps3av_pkt_av_get_hw_conf *av_hw_conf)
 		switch (info->monitor_type) {
 		case PS3AV_MONITOR_TYPE_DVI:
 			dvi = PS3AV_MODE_DVI;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PS3AV_MONITOR_TYPE_HDMI:
 			id = ps3av_hdmi_get_id(info);
 			break;
@@ -870,21 +949,30 @@ int ps3av_set_video_mode(int id)
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_set_video_mode);
 
 int ps3av_get_auto_mode(void)
 {
 	return ps3av_auto_videomode(&ps3av->av_hw_conf);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_get_auto_mode);
 
 int ps3av_get_mode(void)
 {
 	return ps3av ? ps3av->ps3av_mode : 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_get_mode);
 
 /* get resolution by video_mode */
@@ -902,7 +990,10 @@ int ps3av_video_mode2res(u32 id, u32 *xres, u32 *yres)
 	*yres = video_mode_table[id].y;
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_video_mode2res);
 
 /* mute */
@@ -911,7 +1002,10 @@ int ps3av_video_mute(int mute)
 	return ps3av_set_av_video_mute(mute ? PS3AV_CMD_MUTE_ON
 					    : PS3AV_CMD_MUTE_OFF);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(ps3av_video_mute);
 
 /* mute analog output only */
@@ -935,11 +1029,19 @@ int ps3av_audio_mute(int mute)
 	return ps3av_set_audio_mute(mute ? PS3AV_CMD_MUTE_ON
 					 : PS3AV_CMD_MUTE_OFF);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL_GPL(ps3av_audio_mute);
 
 static int __devinit ps3av_probe(struct ps3_system_bus_device *dev)
 {
+=======
+EXPORT_SYMBOL_GPL(ps3av_audio_mute);
+
+static int ps3av_probe(struct ps3_system_bus_device *dev)
+{
+	const char *mode_option;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 	int id;
 
@@ -962,11 +1064,14 @@ static int __devinit ps3av_probe(struct ps3_system_bus_device *dev)
 	INIT_WORK(&ps3av->work, ps3avd);
 	init_completion(&ps3av->done);
 	complete(&ps3av->done);
+<<<<<<< HEAD
 	ps3av->wq = create_singlethread_workqueue("ps3avd");
 	if (!ps3av->wq) {
 		res = -ENOMEM;
 		goto fail;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ps3_os_area_get_av_multi_out()) {
 	case PS3_PARAM_AV_MULTI_OUT_NTSC:
@@ -992,10 +1097,16 @@ static int __devinit ps3av_probe(struct ps3_system_bus_device *dev)
 
 	ps3av_get_hw_conf(ps3av);
 
+<<<<<<< HEAD
 #ifdef CONFIG_FB
 	if (fb_mode_option && !strcmp(fb_mode_option, "safe"))
 		safe_mode = 1;
 #endif /* CONFIG_FB */
+=======
+	mode_option = video_get_options(NULL);
+	if (mode_option && !strcmp(mode_option, "safe"))
+		safe_mode = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	id = ps3av_auto_videomode(&ps3av->av_hw_conf);
 	if (id < 0) {
 		printk(KERN_ERR "%s: invalid id :%d\n", __func__, id);
@@ -1024,8 +1135,12 @@ static int ps3av_remove(struct ps3_system_bus_device *dev)
 	dev_dbg(&dev->core, " -> %s:%d\n", __func__, __LINE__);
 	if (ps3av) {
 		ps3av_cmd_fin();
+<<<<<<< HEAD
 		if (ps3av->wq)
 			destroy_workqueue(ps3av->wq);
+=======
+		flush_work(&ps3av->work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ps3av);
 		ps3av = NULL;
 	}

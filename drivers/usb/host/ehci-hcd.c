@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enhanced Host Controller Interface (EHCI) driver for USB.
  *
  * Maintainer: Alan Stern <stern@rowland.harvard.edu>
  *
  * Copyright (c) 2000-2004 by David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,17 +37,30 @@
 #include <linux/vmalloc.h>
 #include <linux/errno.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/timer.h>
 #include <linux/ktime.h>
+=======
+#include <linux/hrtimer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/interrupt.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <linux/moduleparam.h>
 #include <linux/dma-mapping.h>
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/usb/otg.h>
+#include <linux/moduleparam.h>
+#include <linux/dma-mapping.h>
+#include <linux/debugfs.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/byteorder.h>
 #include <asm/io.h>
@@ -73,6 +93,7 @@
 static const char	hcd_name [] = "ehci_hcd";
 
 
+<<<<<<< HEAD
 #undef VERBOSE_DEBUG
 #undef EHCI_URB_TRACE
 
@@ -80,6 +101,10 @@ static const char	hcd_name [] = "ehci_hcd";
 #define EHCI_STATS
 #endif
 
+=======
+#undef EHCI_URB_TRACE
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* magic numbers that can affect system performance */
 #define	EHCI_TUNE_CERR		3	/* 0-3 qtd retries; 0 == don't stop */
 #define	EHCI_TUNE_RL_HS		4	/* nak throttle; see 4.9 */
@@ -94,6 +119,7 @@ static const char	hcd_name [] = "ehci_hcd";
  */
 #define	EHCI_TUNE_FLS		1	/* (medium) 512-frame schedule */
 
+<<<<<<< HEAD
 #define EHCI_IAA_MSECS		100		/* arbitrary */
 #define EHCI_IO_JIFFIES		(HZ/10)		/* io watchdog > irq_thresh */
 #define EHCI_ASYNC_JIFFIES	(HZ/20)		/* async idle timeout */
@@ -102,15 +128,24 @@ static const char	hcd_name [] = "ehci_hcd";
 
 /* Initial IRQ latency:  faster than hw default */
 static int log2_irq_thresh = 0;		// 0 to 6
+=======
+/* Initial IRQ latency:  faster than hw default */
+static int log2_irq_thresh;		// 0 to 6
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param (log2_irq_thresh, int, S_IRUGO);
 MODULE_PARM_DESC (log2_irq_thresh, "log2 IRQ latency, 1-64 microframes");
 
 /* initial park setting:  slower than hw default */
+<<<<<<< HEAD
 static unsigned park = 0;
+=======
+static unsigned park;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param (park, uint, S_IRUGO);
 MODULE_PARM_DESC (park, "park setting; 1-3 back-to-back async packets");
 
 /* for flakey hardware, ignore overcurrent indicators */
+<<<<<<< HEAD
 static bool ignore_oc = 0;
 module_param (ignore_oc, bool, S_IRUGO);
 MODULE_PARM_DESC (ignore_oc, "ignore bogus hardware overcurrent indications");
@@ -120,11 +155,18 @@ static unsigned int hird;
 module_param(hird, int, S_IRUGO);
 MODULE_PARM_DESC(hird, "host initiated resume duration, +1 for each 75us");
 
+=======
+static bool ignore_oc;
+module_param (ignore_oc, bool, S_IRUGO);
+MODULE_PARM_DESC (ignore_oc, "ignore bogus hardware overcurrent indications");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	INTR_MASK (STS_IAA | STS_FATAL | STS_PCD | STS_ERR | STS_INT)
 
 /*-------------------------------------------------------------------------*/
 
 #include "ehci.h"
+<<<<<<< HEAD
 #include "ehci-dbg.c"
 #include "pci-quirks.h"
 
@@ -167,6 +209,43 @@ timer_action(struct ehci_hcd *ehci, enum ehci_timer_action action)
 
 /*
  * handshake - spin reading hc until handshake completes or fails
+=======
+#include "pci-quirks.h"
+
+static void compute_tt_budget(u8 budget_table[EHCI_BANDWIDTH_SIZE],
+		struct ehci_tt *tt);
+
+/*
+ * The MosChip MCS9990 controller updates its microframe counter
+ * a little before the frame counter, and occasionally we will read
+ * the invalid intermediate value.  Avoid problems by checking the
+ * microframe number (the low-order 3 bits); if they are 0 then
+ * re-read the register to get the correct value.
+ */
+static unsigned ehci_moschip_read_frame_index(struct ehci_hcd *ehci)
+{
+	unsigned uf;
+
+	uf = ehci_readl(ehci, &ehci->regs->frame_index);
+	if (unlikely((uf & 7) == 0))
+		uf = ehci_readl(ehci, &ehci->regs->frame_index);
+	return uf;
+}
+
+static inline unsigned ehci_read_frame_index(struct ehci_hcd *ehci)
+{
+	if (ehci->frame_index_bug)
+		return ehci_moschip_read_frame_index(ehci);
+	return ehci_readl(ehci, &ehci->regs->frame_index);
+}
+
+#include "ehci-dbg.c"
+
+/*-------------------------------------------------------------------------*/
+
+/*
+ * ehci_handshake - spin reading hc until handshake completes or fails
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ptr: address of hc register to be read
  * @mask: bits to look at in result of read
  * @done: value of those bits when handshake succeeds
@@ -182,8 +261,13 @@ timer_action(struct ehci_hcd *ehci, enum ehci_timer_action action)
  * before driver shutdown. But it also seems to be caused by bugs in cardbus
  * bridge shutdown:  shutting down the bridge before the devices using it.
  */
+<<<<<<< HEAD
 static int handshake (struct ehci_hcd *ehci, void __iomem *ptr,
 		      u32 mask, u32 done, int usec)
+=======
+int ehci_handshake(struct ehci_hcd *ehci, void __iomem *ptr,
+		   u32 mask, u32 done, int usec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	result;
 
@@ -199,10 +283,15 @@ static int handshake (struct ehci_hcd *ehci, void __iomem *ptr,
 	} while (usec > 0);
 	return -ETIMEDOUT;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ehci_handshake);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* check TDI/ARC silicon is in host mode */
 static int tdi_in_host_mode (struct ehci_hcd *ehci)
 {
+<<<<<<< HEAD
 	u32 __iomem	*reg_ptr;
 	u32		tmp;
 
@@ -215,10 +304,28 @@ static int tdi_in_host_mode (struct ehci_hcd *ehci)
 static int ehci_halt (struct ehci_hcd *ehci)
 {
 	u32	temp = ehci_readl(ehci, &ehci->regs->status);
+=======
+	u32		tmp;
+
+	tmp = ehci_readl(ehci, &ehci->regs->usbmode);
+	return (tmp & 3) == USBMODE_CM_HC;
+}
+
+/*
+ * Force HC to halt state from unknown (EHCI spec section 2.3).
+ * Must be called with interrupts enabled and the lock not held.
+ */
+static int ehci_halt (struct ehci_hcd *ehci)
+{
+	u32	temp;
+
+	spin_lock_irq(&ehci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable any irqs left enabled by previous code */
 	ehci_writel(ehci, 0, &ehci->regs->intr_enable);
 
+<<<<<<< HEAD
 	if (ehci_is_TDI(ehci) && tdi_in_host_mode(ehci) == 0) {
 		return 0;
 	}
@@ -303,6 +410,35 @@ static void tdi_reset (struct ehci_hcd *ehci)
 
 	reg_ptr = (u32 __iomem *)(((u8 __iomem *)ehci->regs) + USBMODE);
 	tmp = ehci_readl(ehci, reg_ptr);
+=======
+	if (ehci_is_TDI(ehci) && !tdi_in_host_mode(ehci)) {
+		spin_unlock_irq(&ehci->lock);
+		return 0;
+	}
+
+	/*
+	 * This routine gets called during probe before ehci->command
+	 * has been initialized, so we can't rely on its value.
+	 */
+	ehci->command &= ~CMD_RUN;
+	temp = ehci_readl(ehci, &ehci->regs->command);
+	temp &= ~(CMD_RUN | CMD_IAAD);
+	ehci_writel(ehci, temp, &ehci->regs->command);
+
+	spin_unlock_irq(&ehci->lock);
+	synchronize_irq(ehci_to_hcd(ehci)->irq);
+
+	return ehci_handshake(ehci, &ehci->regs->status,
+			  STS_HALT, STS_HALT, 16 * 125);
+}
+
+/* put TDI/ARC silicon into EHCI mode */
+static void tdi_reset (struct ehci_hcd *ehci)
+{
+	u32		tmp;
+
+	tmp = ehci_readl(ehci, &ehci->regs->usbmode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp |= USBMODE_CM_HC;
 	/* The default byte access to MMR space is LE after
 	 * controller reset. Set the required endian mode
@@ -310,18 +446,33 @@ static void tdi_reset (struct ehci_hcd *ehci)
 	 */
 	if (ehci_big_endian_mmio(ehci))
 		tmp |= USBMODE_BE;
+<<<<<<< HEAD
 	ehci_writel(ehci, tmp, reg_ptr);
 }
 
 /* reset a non-running (STS_HALT == 1) controller */
 static int ehci_reset (struct ehci_hcd *ehci)
+=======
+	ehci_writel(ehci, tmp, &ehci->regs->usbmode);
+}
+
+/*
+ * Reset a non-running (STS_HALT == 1) controller.
+ * Must be called with interrupts enabled and the lock not held.
+ */
+int ehci_reset(struct ehci_hcd *ehci)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int	retval;
 	u32	command = ehci_readl(ehci, &ehci->regs->command);
 
 	/* If the EHCI debug controller is active, special care must be
 	 * taken before and after a host controller reset */
+<<<<<<< HEAD
 	if (ehci->debug && !dbgp_reset_prep())
+=======
+	if (ehci->debug && !dbgp_reset_prep(ehci_to_hcd(ehci)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ehci->debug = NULL;
 
 	command |= CMD_RESET;
@@ -329,14 +480,23 @@ static int ehci_reset (struct ehci_hcd *ehci)
 	ehci_writel(ehci, command, &ehci->regs->command);
 	ehci->rh_state = EHCI_RH_HALTED;
 	ehci->next_statechange = jiffies;
+<<<<<<< HEAD
 	retval = handshake (ehci, &ehci->regs->command,
+=======
+	retval = ehci_handshake(ehci, &ehci->regs->command,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    CMD_RESET, 0, 250 * 1000);
 
 	if (ehci->has_hostpc) {
 		ehci_writel(ehci, USBMODE_EX_HC | USBMODE_EX_VBPS,
+<<<<<<< HEAD
 			(u32 __iomem *)(((u8 *)ehci->regs) + USBMODE_EX));
 		ehci_writel(ehci, TXFIFO_DEFAULT,
 			(u32 __iomem *)(((u8 *)ehci->regs) + TXFILLTUNING));
+=======
+				&ehci->regs->usbmode_ex);
+		ehci_writel(ehci, TXFIFO_DEFAULT, &ehci->regs->txfill_tuning);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (retval)
 		return retval;
@@ -345,18 +505,32 @@ static int ehci_reset (struct ehci_hcd *ehci)
 		tdi_reset (ehci);
 
 	if (ehci->debug)
+<<<<<<< HEAD
 		dbgp_external_startup();
+=======
+		dbgp_external_startup(ehci_to_hcd(ehci));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ehci->port_c_suspend = ehci->suspended_ports =
 			ehci->resuming_ports = 0;
 	return retval;
 }
+<<<<<<< HEAD
 
 /* idle the controller (from running) */
+=======
+EXPORT_SYMBOL_GPL(ehci_reset);
+
+/*
+ * Idle the controller (turn off the schedules).
+ * Must be called with interrupts enabled and the lock not held.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ehci_quiesce (struct ehci_hcd *ehci)
 {
 	u32	temp;
 
+<<<<<<< HEAD
 #ifdef DEBUG
 	if (ehci->rh_state != EHCI_RH_RUNNING)
 		BUG ();
@@ -377,15 +551,47 @@ static void ehci_quiesce (struct ehci_hcd *ehci)
 	/* hardware can take 16 microframes to turn off ... */
 	handshake_on_error_set_halt(ehci, &ehci->regs->status,
 				    STS_ASS | STS_PSS, 0, 16 * 125);
+=======
+	if (ehci->rh_state != EHCI_RH_RUNNING)
+		return;
+
+	/* wait for any schedule enables/disables to take effect */
+	temp = (ehci->command << 10) & (STS_ASS | STS_PSS);
+	ehci_handshake(ehci, &ehci->regs->status, STS_ASS | STS_PSS, temp,
+			16 * 125);
+
+	/* then disable anything that's still active */
+	spin_lock_irq(&ehci->lock);
+	ehci->command &= ~(CMD_ASE | CMD_PSE);
+	ehci_writel(ehci, ehci->command, &ehci->regs->command);
+	spin_unlock_irq(&ehci->lock);
+
+	/* hardware can take 16 microframes to turn off ... */
+	ehci_handshake(ehci, &ehci->regs->status, STS_ASS | STS_PSS, 0,
+			16 * 125);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void end_unlink_async(struct ehci_hcd *ehci);
 static void ehci_work(struct ehci_hcd *ehci);
 
 #include "ehci-hub.c"
 #include "ehci-lpm.c"
+=======
+static void end_iaa_cycle(struct ehci_hcd *ehci);
+static void end_unlink_async(struct ehci_hcd *ehci);
+static void unlink_empty_async(struct ehci_hcd *ehci);
+static void ehci_work(struct ehci_hcd *ehci);
+static void start_unlink_intr(struct ehci_hcd *ehci, struct ehci_qh *qh);
+static void end_unlink_intr(struct ehci_hcd *ehci, struct ehci_qh *qh);
+static int ehci_port_power(struct ehci_hcd *ehci, int portnum, bool enable);
+
+#include "ehci-timer.c"
+#include "ehci-hub.c"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ehci-mem.c"
 #include "ehci-q.c"
 #include "ehci-sched.c"
@@ -393,6 +599,7 @@ static void ehci_work(struct ehci_hcd *ehci);
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void ehci_iaa_watchdog(unsigned long param)
 {
 	struct ehci_hcd		*ehci = (struct ehci_hcd *) param;
@@ -458,6 +665,8 @@ static void ehci_watchdog(unsigned long param)
 	spin_unlock_irqrestore (&ehci->lock, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* On some systems, leaving remote wakeup enabled prevents system shutdown.
  * The firmware seems to think that powering off is a wakeup event!
  * This routine turns off remote wakeup and everything else, on all ports.
@@ -466,18 +675,38 @@ static void ehci_turn_off_all_ports(struct ehci_hcd *ehci)
 {
 	int	port = HCS_N_PORTS(ehci->hcs_params);
 
+<<<<<<< HEAD
 	while (port--)
 		ehci_writel(ehci, PORT_RWC_BITS,
 				&ehci->regs->port_status[port]);
+=======
+	while (port--) {
+		spin_unlock_irq(&ehci->lock);
+		ehci_port_power(ehci, port, false);
+		spin_lock_irq(&ehci->lock);
+		ehci_writel(ehci, PORT_RWC_BITS,
+				&ehci->regs->port_status[port]);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Halt HC, turn off all ports, and let the BIOS use the companion controllers.
+<<<<<<< HEAD
  * Should be called with ehci->lock held.
+=======
+ * Must be called with interrupts enabled and the lock not held.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ehci_silence_controller(struct ehci_hcd *ehci)
 {
 	ehci_halt(ehci);
+<<<<<<< HEAD
+=======
+
+	spin_lock_irq(&ehci->lock);
+	ehci->rh_state = EHCI_RH_HALTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ehci_turn_off_all_ports(ehci);
 
 	/* make BIOS/etc use companion controller during reboot */
@@ -485,6 +714,10 @@ static void ehci_silence_controller(struct ehci_hcd *ehci)
 
 	/* unblock posted writes */
 	ehci_readl(ehci, &ehci->regs->configured_flag);
+<<<<<<< HEAD
+=======
+	spin_unlock_irq(&ehci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ehci_shutdown kick in for silicon on any bus (not just pci, etc).
@@ -495,6 +728,7 @@ static void ehci_shutdown(struct usb_hcd *hcd)
 {
 	struct ehci_hcd	*ehci = hcd_to_ehci(hcd);
 
+<<<<<<< HEAD
 	del_timer_sync(&ehci->watchdog);
 	del_timer_sync(&ehci->iaa_watchdog);
 
@@ -519,6 +753,26 @@ static void __maybe_unused ehci_port_power (struct ehci_hcd *ehci, int is_on)
 	/* Flush those writes */
 	ehci_readl(ehci, &ehci->regs->command);
 	msleep(20);
+=======
+	/**
+	 * Protect the system from crashing at system shutdown in cases where
+	 * usb host is not added yet from OTG controller driver.
+	 * As ehci_setup() not done yet, so stop accessing registers or
+	 * variables initialized in ehci_setup()
+	 */
+	if (!ehci->sbrn)
+		return;
+
+	spin_lock_irq(&ehci->lock);
+	ehci->shutdown = true;
+	ehci->rh_state = EHCI_RH_STOPPING;
+	ehci->enabled_hrtimer_events = 0;
+	spin_unlock_irq(&ehci->lock);
+
+	ehci_silence_controller(ehci);
+
+	hrtimer_cancel(&ehci->hrtimer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -529,12 +783,16 @@ static void __maybe_unused ehci_port_power (struct ehci_hcd *ehci, int is_on)
  */
 static void ehci_work (struct ehci_hcd *ehci)
 {
+<<<<<<< HEAD
 	timer_action_done (ehci, TIMER_IO_WATCHDOG);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* another CPU may drop ehci->lock during a schedule scan while
 	 * it reports urb completions.  this flag guards against bogus
 	 * attempts at re-entrant schedule scanning.
 	 */
+<<<<<<< HEAD
 	if (ehci->scanning)
 		return;
 	ehci->scanning = 1;
@@ -542,15 +800,38 @@ static void ehci_work (struct ehci_hcd *ehci)
 	if (ehci->next_uframe != -1)
 		scan_periodic (ehci);
 	ehci->scanning = 0;
+=======
+	if (ehci->scanning) {
+		ehci->need_rescan = true;
+		return;
+	}
+	ehci->scanning = true;
+
+ rescan:
+	ehci->need_rescan = false;
+	if (ehci->async_count)
+		scan_async(ehci);
+	if (ehci->intr_count > 0)
+		scan_intr(ehci);
+	if (ehci->isoc_count > 0)
+		scan_isoc(ehci);
+	if (ehci->need_rescan)
+		goto rescan;
+	ehci->scanning = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the IO watchdog guards against hardware or driver bugs that
 	 * misplace IRQs, and should let us run completely without IRQs.
 	 * such lossage has been observed on both VT6202 and VT8235.
 	 */
+<<<<<<< HEAD
 	if (ehci->rh_state == EHCI_RH_RUNNING &&
 			(ehci->async->qh_next.ptr != NULL ||
 			 ehci->periodic_sched != 0))
 		timer_action (ehci, TIMER_IO_WATCHDOG);
+=======
+	turn_on_io_watchdog(ehci);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -563,6 +844,7 @@ static void ehci_stop (struct usb_hcd *hcd)
 	ehci_dbg (ehci, "stop\n");
 
 	/* no more interrupts ... */
+<<<<<<< HEAD
 	del_timer_sync (&ehci->watchdog);
 	del_timer_sync(&ehci->iaa_watchdog);
 
@@ -574,11 +856,24 @@ static void ehci_stop (struct usb_hcd *hcd)
 	ehci_reset (ehci);
 	spin_unlock_irq(&ehci->lock);
 
+=======
+
+	spin_lock_irq(&ehci->lock);
+	ehci->enabled_hrtimer_events = 0;
+	spin_unlock_irq(&ehci->lock);
+
+	ehci_quiesce(ehci);
+	ehci_silence_controller(ehci);
+	ehci_reset (ehci);
+
+	hrtimer_cancel(&ehci->hrtimer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_sysfs_files(ehci);
 	remove_debug_files (ehci);
 
 	/* root hub is shut down separately (first, when possible) */
 	spin_lock_irq (&ehci->lock);
+<<<<<<< HEAD
 	if (ehci->async) {
 		/*
 		 * TODO: Observed that ehci->async next ptr is not
@@ -594,12 +889,16 @@ static void ehci_stop (struct usb_hcd *hcd)
 			start_unlink_async(ehci, ehci->async->qh_next.qh);
 		ehci_work (ehci);
 	}
+=======
+	end_free_itds(ehci);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq (&ehci->lock);
 	ehci_mem_cleanup (ehci);
 
 	if (ehci->amd_pll_fix == 1)
 		usb_amd_dev_put();
 
+<<<<<<< HEAD
 #ifdef	EHCI_STATS
 	ehci_dbg (ehci, "irq normal %ld err %ld reclaim %ld (lost %ld)\n",
 		ehci->stats.normal, ehci->stats.error, ehci->stats.reclaim,
@@ -608,6 +907,8 @@ static void ehci_stop (struct usb_hcd *hcd)
 		ehci->stats.complete, ehci->stats.unlink);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_status (ehci, "ehci_stop completed",
 		    ehci_readl(ehci, &ehci->regs->status));
 }
@@ -627,6 +928,7 @@ static int ehci_init(struct usb_hcd *hcd)
 	 * keep io watchdog by default, those good HCDs could turn off it later
 	 */
 	ehci->need_io_watchdog = 1;
+<<<<<<< HEAD
 	init_timer(&ehci->watchdog);
 	ehci->watchdog.function = ehci_watchdog;
 	ehci->watchdog.data = (unsigned long) ehci;
@@ -634,6 +936,12 @@ static int ehci_init(struct usb_hcd *hcd)
 	init_timer(&ehci->iaa_watchdog);
 	ehci->iaa_watchdog.function = ehci_iaa_watchdog;
 	ehci->iaa_watchdog.data = (unsigned long) ehci;
+=======
+
+	hrtimer_init(&ehci->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	ehci->hrtimer.function = ehci_hrtimer_func;
+	ehci->next_hrtimer_event = EHCI_HRTIMER_NO_EVENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hcc_params = ehci_readl(ehci, &ehci->caps->hcc_params);
 
@@ -648,8 +956,19 @@ static int ehci_init(struct usb_hcd *hcd)
 	 * periodic_size can shrink by USBCMD update if hcc_params allows.
 	 */
 	ehci->periodic_size = DEFAULT_I_TDPS;
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&ehci->cached_itd_list);
 	INIT_LIST_HEAD(&ehci->cached_sitd_list);
+=======
+	INIT_LIST_HEAD(&ehci->async_unlink);
+	INIT_LIST_HEAD(&ehci->async_idle);
+	INIT_LIST_HEAD(&ehci->intr_unlink_wait);
+	INIT_LIST_HEAD(&ehci->intr_unlink);
+	INIT_LIST_HEAD(&ehci->intr_qh_list);
+	INIT_LIST_HEAD(&ehci->cached_itd_list);
+	INIT_LIST_HEAD(&ehci->cached_sitd_list);
+	INIT_LIST_HEAD(&ehci->tt_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (HCC_PGM_FRAMELISTLEN(hcc_params)) {
 		/* periodic schedule size can be smaller than default */
@@ -665,6 +984,7 @@ static int ehci_init(struct usb_hcd *hcd)
 
 	/* controllers may cache some of the periodic schedule ... */
 	if (HCC_ISOC_CACHE(hcc_params))		// full frame cache
+<<<<<<< HEAD
 		ehci->i_thresh = 2 + 8;
 	else					// N microframes cached
 		ehci->i_thresh = 2 + HCC_ISOC_THRES(hcc_params);
@@ -673,6 +993,12 @@ static int ehci_init(struct usb_hcd *hcd)
 	ehci->next_uframe = -1;
 	ehci->clock_frame = -1;
 
+=======
+		ehci->i_thresh = 0;
+	else					// N microframes cached
+		ehci->i_thresh = 2 + HCC_ISOC_THRES(hcc_params);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * dedicate a qh for the async ring head, since we couldn't unlink
 	 * a 'real' qh without stopping the async schedule [4.8].  use it
@@ -685,7 +1011,11 @@ static int ehci_init(struct usb_hcd *hcd)
 	hw->hw_next = QH_NEXT(ehci, ehci->async->qh_dma);
 	hw->hw_info1 = cpu_to_hc32(ehci, QH_HEAD);
 #if defined(CONFIG_PPC_PS3)
+<<<<<<< HEAD
 	hw->hw_info1 |= cpu_to_hc32(ehci, (1 << 7));	/* I = 1 */
+=======
+	hw->hw_info1 |= cpu_to_hc32(ehci, QH_INACTIVATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	hw->hw_token = cpu_to_hc32(ehci, QTD_STS_HALT);
 	hw->hw_qtd_next = EHCI_LIST_END(ehci);
@@ -693,8 +1023,11 @@ static int ehci_init(struct usb_hcd *hcd)
 	hw->hw_alt_next = QTD_NEXT(ehci, ehci->async->dummy->qtd_dma);
 
 	/* clear interrupt enables, set irq latency */
+<<<<<<< HEAD
 	log2_irq_thresh = ehci->log2_irq_thresh;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (log2_irq_thresh < 0 || log2_irq_thresh > 6)
 		log2_irq_thresh = 0;
 	temp = 1 << (16 + log2_irq_thresh);
@@ -723,6 +1056,7 @@ static int ehci_init(struct usb_hcd *hcd)
 		temp &= ~(3 << 2);
 		temp |= (EHCI_TUNE_FLS << 2);
 	}
+<<<<<<< HEAD
 	if (HCC_LPM(hcc_params)) {
 		/* support link power management EHCI 1.1 addendum */
 		ehci_dbg(ehci, "support lpm\n");
@@ -739,15 +1073,33 @@ static int ehci_init(struct usb_hcd *hcd)
 	/* Accept arbitrarily long scatter-gather lists */
 	if (!(hcd->driver->flags & HCD_LOCAL_MEM))
 		hcd->self.sg_tablesize = ~0;
+=======
+	ehci->command = temp;
+
+	/* Accept arbitrarily long scatter-gather lists */
+	if (!hcd->localmem_pool)
+		hcd->self.sg_tablesize = ~0;
+
+	/* Prepare for unlinking active QHs */
+	ehci->old_current = ~0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* start HC running; it's halted, ehci_init() has been run (once) */
+<<<<<<< HEAD
 static int __maybe_unused ehci_run (struct usb_hcd *hcd)
+=======
+static int ehci_run (struct usb_hcd *hcd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	u32			temp;
 	u32			hcc_params;
+<<<<<<< HEAD
+=======
+	int			rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hcd->uses_new_polling = 1;
 
@@ -759,11 +1111,19 @@ static int __maybe_unused ehci_run (struct usb_hcd *hcd)
 	/*
 	 * hcc_params controls whether ehci->regs->segment must (!!!)
 	 * be used; it constrains QH/ITD/SITD and QTD locations.
+<<<<<<< HEAD
 	 * pci_pool consistent memory always uses segment zero.
 	 * streaming mappings for I/O buffers, like pci_map_single(),
 	 * can return segments above 4GB, if the device allows.
 	 *
 	 * NOTE:  the dma mask is visible through dma_supported(), so
+=======
+	 * dma_pool consistent memory always uses segment zero.
+	 * streaming mappings for I/O buffers, like dma_map_single(),
+	 * can return segments above 4GB, if the device allows.
+	 *
+	 * NOTE:  the dma mask is visible through dev->dma_mask, so
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * drivers can pass this info along ... like NETIF_F_HIGHDMA,
 	 * Scsi_Host.highmem_io, and so forth.  It's readonly to all
 	 * host side drivers though.
@@ -803,9 +1163,35 @@ static int __maybe_unused ehci_run (struct usb_hcd *hcd)
 	down_write(&ehci_cf_port_reset_rwsem);
 	ehci->rh_state = EHCI_RH_RUNNING;
 	ehci_writel(ehci, FLAG_CF, &ehci->regs->configured_flag);
+<<<<<<< HEAD
 	ehci_readl(ehci, &ehci->regs->command);	/* unblock posted writes */
 	msleep(5);
 	up_write(&ehci_cf_port_reset_rwsem);
+=======
+
+	/* Wait until HC become operational */
+	ehci_readl(ehci, &ehci->regs->command);	/* unblock posted writes */
+	msleep(5);
+
+	/* For Aspeed, STS_HALT also depends on ASS/PSS status.
+	 * Check CMD_RUN instead.
+	 */
+	if (ehci->is_aspeed)
+		rc = ehci_handshake(ehci, &ehci->regs->command, CMD_RUN,
+				    1, 100 * 1000);
+	else
+		rc = ehci_handshake(ehci, &ehci->regs->status, STS_HALT,
+				    0, 100 * 1000);
+
+	up_write(&ehci_cf_port_reset_rwsem);
+
+	if (rc) {
+		ehci_err(ehci, "USB %x.%x, controller refused to start: %d\n",
+			 ((ehci->sbrn & 0xf0)>>4), (ehci->sbrn & 0x0f), rc);
+		return rc;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ehci->last_periodic_enable = ktime_get_real();
 
 	temp = HC_VERSION(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
@@ -813,7 +1199,11 @@ static int __maybe_unused ehci_run (struct usb_hcd *hcd)
 		"USB %x.%x started, EHCI %x.%02x%s\n",
 		((ehci->sbrn & 0xf0)>>4), (ehci->sbrn & 0x0f),
 		temp >> 8, temp & 0xff,
+<<<<<<< HEAD
 		ignore_oc ? ", overcurrent ignored" : "");
+=======
+		(ignore_oc || ehci->spurious_oc) ? ", overcurrent ignored" : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ehci_writel(ehci, INTR_MASK,
 		    &ehci->regs->intr_enable); /* Turn On Interrupts */
@@ -828,7 +1218,11 @@ static int __maybe_unused ehci_run (struct usb_hcd *hcd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __maybe_unused ehci_setup (struct usb_hcd *hcd)
+=======
+int ehci_setup(struct usb_hcd *hcd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 	int retval;
@@ -843,25 +1237,42 @@ static int __maybe_unused ehci_setup (struct usb_hcd *hcd)
 
 	ehci->sbrn = HCD_USB2;
 
+<<<<<<< HEAD
 	retval = ehci_halt(ehci);
 	if (retval)
 		return retval;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* data structure init */
 	retval = ehci_init(hcd);
 	if (retval)
 		return retval;
 
+<<<<<<< HEAD
+=======
+	retval = ehci_halt(ehci);
+	if (retval) {
+		ehci_mem_cleanup(ehci);
+		return retval;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ehci_reset(ehci);
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ehci_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
 static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
+<<<<<<< HEAD
 	u32			status, masked_status, pcd_status = 0, cmd;
 	int			bh;
 
@@ -874,12 +1285,34 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 		ehci_dbg (ehci, "device removed\n");
 		goto dead;
 	}
+=======
+	u32			status, current_status, masked_status, pcd_status = 0;
+	u32			cmd;
+	int			bh;
+
+	spin_lock(&ehci->lock);
+
+	status = 0;
+	current_status = ehci_readl(ehci, &ehci->regs->status);
+restart:
+
+	/* e.g. cardbus physical eject */
+	if (current_status == ~(u32) 0) {
+		ehci_dbg (ehci, "device removed\n");
+		goto dead;
+	}
+	status |= current_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We don't use STS_FLR, but some controllers don't like it to
 	 * remain on, so mask it out along with the other status bits.
 	 */
+<<<<<<< HEAD
 	masked_status = status & (INTR_MASK | STS_FLR);
+=======
+	masked_status = current_status & (INTR_MASK | STS_FLR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Shared IRQ? */
 	if (!masked_status || unlikely(ehci->rh_state == EHCI_RH_HALTED)) {
@@ -889,6 +1322,7 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 
 	/* clear (just) interrupts */
 	ehci_writel(ehci, masked_status, &ehci->regs->status);
+<<<<<<< HEAD
 	cmd = ehci_readl(ehci, &ehci->regs->command);
 	bh = 0;
 
@@ -905,11 +1339,33 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 			COUNT (ehci->stats.normal);
 		else
 			COUNT (ehci->stats.error);
+=======
+
+	/* For edge interrupts, don't race with an interrupt bit being raised */
+	current_status = ehci_readl(ehci, &ehci->regs->status);
+	if (current_status & INTR_MASK)
+		goto restart;
+
+	cmd = ehci_readl(ehci, &ehci->regs->command);
+	bh = 0;
+
+	/* normal [4.15.1.2] or error [4.15.1.1] completion */
+	if (likely ((status & (STS_INT|STS_ERR)) != 0)) {
+		if (likely ((status & STS_ERR) == 0)) {
+			INCR(ehci->stats.normal);
+		} else {
+			/* Force to check port status */
+			if (ehci->has_ci_pec_bug)
+				status |= STS_PCD;
+			INCR(ehci->stats.error);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bh = 1;
 	}
 
 	/* complete the unlinking of some qh [4.15.2.3] */
 	if (status & STS_IAA) {
+<<<<<<< HEAD
 		/* guard against (alleged) silicon errata */
 		if (cmd & CMD_IAAD) {
 			ehci_writel(ehci, cmd & ~CMD_IAAD,
@@ -921,12 +1377,38 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 			end_unlink_async(ehci);
 		} else
 			ehci_dbg(ehci, "IAA with nothing to reclaim?\n");
+=======
+
+		/* Turn off the IAA watchdog */
+		ehci->enabled_hrtimer_events &= ~BIT(EHCI_HRTIMER_IAA_WATCHDOG);
+
+		/*
+		 * Mild optimization: Allow another IAAD to reset the
+		 * hrtimer, if one occurs before the next expiration.
+		 * In theory we could always cancel the hrtimer, but
+		 * tests show that about half the time it will be reset
+		 * for some other event anyway.
+		 */
+		if (ehci->next_hrtimer_event == EHCI_HRTIMER_IAA_WATCHDOG)
+			++ehci->next_hrtimer_event;
+
+		/* guard against (alleged) silicon errata */
+		if (cmd & CMD_IAAD)
+			ehci_dbg(ehci, "IAA with IAAD still set?\n");
+		if (ehci->iaa_in_progress)
+			INCR(ehci->stats.iaa);
+		end_iaa_cycle(ehci);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* remote wakeup [4.3.1] */
 	if (status & STS_PCD) {
 		unsigned	i = HCS_N_PORTS (ehci->hcs_params);
+<<<<<<< HEAD
 		u32		ppcd = 0;
+=======
+		u32		ppcd = ~0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* kick root hub later */
 		pcd_status = status;
@@ -943,17 +1425,24 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 			int pstatus;
 
 			/* leverage per-port change bits feature */
+<<<<<<< HEAD
 			if (ehci->has_ppcd && !(ppcd & (1 << i)))
+=======
+			if (!(ppcd & (1 << i)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			pstatus = ehci_readl(ehci,
 					 &ehci->regs->port_status[i]);
 
+<<<<<<< HEAD
 			/*set RS bit in case of remote wakeup*/
 			if (ehci_is_TDI(ehci) && !(cmd & CMD_RUN) &&
 					(pstatus & PORT_SUSPEND))
 				ehci_writel(ehci, cmd | CMD_RUN,
 						&ehci->regs->command);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pstatus & PORT_OWNER)
 				continue;
 			if (!(test_bit(i, &ehci->suspended_ports) &&
@@ -963,6 +1452,7 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 					ehci->reset_done[i] == 0))
 				continue;
 
+<<<<<<< HEAD
 			/* start 20 msec resume signaling from this port,
 			 * and make khubd collect PORT_STAT_C_SUSPEND to
 			 * stop that signaling.  Use 5 ms extra for safety,
@@ -971,6 +1461,17 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 			ehci->reset_done[i] = jiffies + msecs_to_jiffies(25);
 			set_bit(i, &ehci->resuming_ports);
 			ehci_dbg (ehci, "port %d remote wakeup\n", i + 1);
+=======
+			/* start USB_RESUME_TIMEOUT msec resume signaling from
+			 * this port, and make hub_wq collect
+			 * PORT_STAT_C_SUSPEND to stop that signaling.
+			 */
+			ehci->reset_done[i] = jiffies +
+				msecs_to_jiffies(USB_RESUME_TIMEOUT);
+			set_bit(i, &ehci->resuming_ports);
+			ehci_dbg (ehci, "port %d remote wakeup\n", i + 1);
+			usb_hcd_start_port_resume(&hcd->self, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mod_timer(&hcd->rh_timer, ehci->reset_done[i]);
 		}
 	}
@@ -978,6 +1479,7 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 	/* PCI errors [4.15.2.4] */
 	if (unlikely ((status & STS_FATAL) != 0)) {
 		ehci_err(ehci, "fatal error\n");
+<<<<<<< HEAD
 		if (hcd->driver->dump_regs) {
 			hcd->driver->dump_regs(hcd);
 			panic("System error\n");
@@ -993,11 +1495,32 @@ dead:
 		 * uses ehci_stop to clean up the rest
 		 */
 		bh = 1;
+=======
+		dbg_cmd(ehci, "fatal", cmd);
+		dbg_status(ehci, "fatal", status);
+dead:
+		usb_hc_died(hcd);
+
+		/* Don't let the controller do anything more */
+		ehci->shutdown = true;
+		ehci->rh_state = EHCI_RH_STOPPING;
+		ehci->command &= ~(CMD_RUN | CMD_ASE | CMD_PSE);
+		ehci_writel(ehci, ehci->command, &ehci->regs->command);
+		ehci_writel(ehci, 0, &ehci->regs->intr_enable);
+		ehci_handle_controller_death(ehci);
+
+		/* Handle completions when the controller stops */
+		bh = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (bh)
 		ehci_work (ehci);
+<<<<<<< HEAD
 	spin_unlock (&ehci->lock);
+=======
+	spin_unlock(&ehci->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcd_status)
 		usb_hcd_poll_rh_status(hcd);
 	return IRQ_HANDLED;
@@ -1034,7 +1557,11 @@ static int ehci_urb_enqueue (
 		 */
 		if (urb->transfer_buffer_length > (16 * 1024))
 			return -EMSGSIZE;
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* case PIPE_BULK: */
 	default:
 		if (!qh_urb_transaction (ehci, urb, &qtd_list, mem_flags))
@@ -1054,6 +1581,7 @@ static int ehci_urb_enqueue (
 	}
 }
 
+<<<<<<< HEAD
 static void unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 {
 	/* failfast */
@@ -1086,6 +1614,8 @@ static void unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 		start_unlink_async (ehci, qh);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* remove from hardware lists
  * completions normally happen asynchronously
  */
@@ -1102,6 +1632,7 @@ static int ehci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 	if (rc)
 		goto done;
 
+<<<<<<< HEAD
 	switch (usb_pipetype (urb->pipe)) {
 	// case PIPE_CONTROL:
 	// case PIPE_BULK:
@@ -1113,6 +1644,26 @@ static int ehci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		case QH_STATE_LINKED:
 		case QH_STATE_COMPLETING:
 			unlink_async(ehci, qh);
+=======
+	if (usb_pipetype(urb->pipe) == PIPE_ISOCHRONOUS) {
+		/*
+		 * We don't expedite dequeue for isochronous URBs.
+		 * Just wait until they complete normally or their
+		 * time slot expires.
+		 */
+	} else {
+		qh = (struct ehci_qh *) urb->hcpriv;
+		qh->unlink_reason |= QH_UNLINK_REQUESTED;
+		switch (qh->qh_state) {
+		case QH_STATE_LINKED:
+			if (usb_pipetype(urb->pipe) == PIPE_INTERRUPT)
+				start_unlink_intr(ehci, qh);
+			else
+				start_unlink_async(ehci, qh);
+			break;
+		case QH_STATE_COMPLETING:
+			qh->dequeue_during_giveback = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case QH_STATE_UNLINK:
 		case QH_STATE_UNLINK_WAIT:
@@ -1123,6 +1674,7 @@ static int ehci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 			qh_completions(ehci, qh);
 			break;
 		}
+<<<<<<< HEAD
 		break;
 
 	case PIPE_INTERRUPT:
@@ -1150,6 +1702,8 @@ static int ehci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		// wait till next completion, do it then.
 		// completion irqs can wait up to 1024 msec,
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 done:
 	spin_unlock_irqrestore (&ehci->lock, flags);
@@ -1165,7 +1719,11 @@ ehci_endpoint_disable (struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci (hcd);
 	unsigned long		flags;
+<<<<<<< HEAD
 	struct ehci_qh		*qh, *tmp;
+=======
+	struct ehci_qh		*qh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ASSERT:  any requests/urbs are being unlinked */
 	/* ASSERT:  nobody can be submitting urbs for this any more */
@@ -1180,6 +1738,7 @@ rescan:
 	 * accelerate iso completions ... so spin a while.
 	 */
 	if (qh->hw == NULL) {
+<<<<<<< HEAD
 		ehci_vdbg (ehci, "iso delay\n");
 		goto idle_timeout;
 	}
@@ -1199,6 +1758,32 @@ rescan:
 		if (tmp)
 			unlink_async(ehci, qh);
 		/* FALL THROUGH */
+=======
+		struct ehci_iso_stream	*stream = ep->hcpriv;
+
+		if (!list_empty(&stream->td_list))
+			goto idle_timeout;
+
+		/* BUG_ON(!list_empty(&stream->free_list)); */
+		reserve_release_iso_bandwidth(ehci, stream, -1);
+		kfree(stream);
+		goto done;
+	}
+
+	qh->unlink_reason |= QH_UNLINK_REQUESTED;
+	switch (qh->qh_state) {
+	case QH_STATE_LINKED:
+		if (list_empty(&qh->qtd_list))
+			qh->unlink_reason |= QH_UNLINK_QUEUE_EMPTY;
+		else
+			WARN_ON(1);
+		if (usb_endpoint_type(&ep->desc) != USB_ENDPOINT_XFER_INT)
+			start_unlink_async(ehci, qh);
+		else
+			start_unlink_intr(ehci, qh);
+		fallthrough;
+	case QH_STATE_COMPLETING:	/* already in unlinking */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QH_STATE_UNLINK:		/* wait for hw to finish? */
 	case QH_STATE_UNLINK_WAIT:
 idle_timeout:
@@ -1209,10 +1794,19 @@ idle_timeout:
 		if (qh->clearing_tt)
 			goto idle_timeout;
 		if (list_empty (&qh->qtd_list)) {
+<<<<<<< HEAD
 			qh_put (qh);
 			break;
 		}
 		/* else FALL THROUGH */
+=======
+			if (qh->ps.bw_uperiod)
+				reserve_release_intr_bandwidth(ehci, qh, -1);
+			qh_destroy(ehci, qh);
+			break;
+		}
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* caller was supposed to have unlinked any requests;
 		 * that's not our job.  just leak this memory.
@@ -1222,12 +1816,21 @@ idle_timeout:
 			list_empty (&qh->qtd_list) ? "" : "(has tds)");
 		break;
 	}
+<<<<<<< HEAD
 	ep->hcpriv = NULL;
 done:
 	spin_unlock_irqrestore (&ehci->lock, flags);
 }
 
 static void __maybe_unused
+=======
+ done:
+	ep->hcpriv = NULL;
+	spin_unlock_irqrestore (&ehci->lock, flags);
+}
+
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ehci_endpoint_reset(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
@@ -1249,20 +1852,35 @@ ehci_endpoint_reset(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 	 * the toggle bit in the QH.
 	 */
 	if (qh) {
+<<<<<<< HEAD
 		usb_settoggle(qh->dev, epnum, is_out, 0);
 		if (!list_empty(&qh->qtd_list)) {
 			WARN_ONCE(1, "clear_halt for a busy endpoint\n");
 		} else if (qh->qh_state == QH_STATE_LINKED ||
 				qh->qh_state == QH_STATE_COMPLETING) {
 
+=======
+		if (!list_empty(&qh->qtd_list)) {
+			WARN_ONCE(1, "clear_halt for a busy endpoint\n");
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* The toggle value in the QH can't be updated
 			 * while the QH is active.  Unlink it now;
 			 * re-linking will call qh_refresh().
 			 */
+<<<<<<< HEAD
 			if (eptype == USB_ENDPOINT_XFER_BULK)
 				unlink_async(ehci, qh);
 			else
 				intr_deschedule(ehci, qh);
+=======
+			usb_settoggle(qh->ps.udev, epnum, is_out, 0);
+			qh->unlink_reason |= QH_UNLINK_REQUESTED;
+			if (eptype == USB_ENDPOINT_XFER_BULK)
+				start_unlink_async(ehci, qh);
+			else
+				start_unlink_intr(ehci, qh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irqrestore(&ehci->lock, flags);
@@ -1276,27 +1894,259 @@ static int ehci_get_frame (struct usb_hcd *hcd)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+/* Device addition and removal */
+
+static void ehci_remove_device(struct usb_hcd *hcd, struct usb_device *udev)
+{
+	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
+
+	spin_lock_irq(&ehci->lock);
+	drop_tt(udev);
+	spin_unlock_irq(&ehci->lock);
+}
+
+/*-------------------------------------------------------------------------*/
+
+#ifdef	CONFIG_PM
+
+/* Clear wakeup signal locked in zhaoxin platform when device plug in. */
+static void ehci_zx_wakeup_clear(struct ehci_hcd *ehci)
+{
+	u32 __iomem	*reg = &ehci->regs->port_status[4];
+	u32 		t1 = ehci_readl(ehci, reg);
+
+	t1 &= (u32)~0xf0000;
+	t1 |= PORT_TEST_FORCE;
+	ehci_writel(ehci, t1, reg);
+	t1 = ehci_readl(ehci, reg);
+	msleep(1);
+	t1 &= (u32)~0xf0000;
+	ehci_writel(ehci, t1, reg);
+	ehci_readl(ehci, reg);
+	msleep(1);
+	t1 = ehci_readl(ehci, reg);
+	ehci_writel(ehci, t1 | PORT_CSC, reg);
+	ehci_readl(ehci, reg);
+}
+
+/* suspend/resume, section 4.3 */
+
+/* These routines handle the generic parts of controller suspend/resume */
+
+int ehci_suspend(struct usb_hcd *hcd, bool do_wakeup)
+{
+	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
+
+	if (time_before(jiffies, ehci->next_statechange))
+		msleep(10);
+
+	/*
+	 * Root hub was already suspended.  Disable IRQ emission and
+	 * mark HW unaccessible.  The PM and USB cores make sure that
+	 * the root hub is either suspended or stopped.
+	 */
+	ehci_prepare_ports_for_controller_suspend(ehci, do_wakeup);
+
+	spin_lock_irq(&ehci->lock);
+	ehci_writel(ehci, 0, &ehci->regs->intr_enable);
+	(void) ehci_readl(ehci, &ehci->regs->intr_enable);
+
+	clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
+	spin_unlock_irq(&ehci->lock);
+
+	synchronize_irq(hcd->irq);
+
+	/* Check for race with a wakeup request */
+	if (do_wakeup && HCD_WAKEUP_PENDING(hcd)) {
+		ehci_resume(hcd, false);
+		return -EBUSY;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(ehci_suspend);
+
+/* Returns 0 if power was preserved, 1 if power was lost */
+int ehci_resume(struct usb_hcd *hcd, bool force_reset)
+{
+	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
+
+	if (time_before(jiffies, ehci->next_statechange))
+		msleep(100);
+
+	/* Mark hardware accessible again as we are back to full power by now */
+	set_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
+
+	if (ehci->shutdown)
+		return 0;		/* Controller is dead */
+
+	if (ehci->zx_wakeup_clear_needed)
+		ehci_zx_wakeup_clear(ehci);
+
+	/*
+	 * If CF is still set and reset isn't forced
+	 * then we maintained suspend power.
+	 * Just undo the effect of ehci_suspend().
+	 */
+	if (ehci_readl(ehci, &ehci->regs->configured_flag) == FLAG_CF &&
+			!force_reset) {
+		int	mask = INTR_MASK;
+
+		ehci_prepare_ports_for_controller_resume(ehci);
+
+		spin_lock_irq(&ehci->lock);
+		if (ehci->shutdown)
+			goto skip;
+
+		if (!hcd->self.root_hub->do_remote_wakeup)
+			mask &= ~STS_PCD;
+		ehci_writel(ehci, mask, &ehci->regs->intr_enable);
+		ehci_readl(ehci, &ehci->regs->intr_enable);
+ skip:
+		spin_unlock_irq(&ehci->lock);
+		return 0;
+	}
+
+	/*
+	 * Else reset, to cope with power loss or resume from hibernation
+	 * having let the firmware kick in during reboot.
+	 */
+	usb_root_hub_lost_power(hcd->self.root_hub);
+	(void) ehci_halt(ehci);
+	(void) ehci_reset(ehci);
+
+	spin_lock_irq(&ehci->lock);
+	if (ehci->shutdown)
+		goto skip;
+
+	ehci_writel(ehci, ehci->command, &ehci->regs->command);
+	ehci_writel(ehci, FLAG_CF, &ehci->regs->configured_flag);
+	ehci_readl(ehci, &ehci->regs->command);	/* unblock posted writes */
+
+	ehci->rh_state = EHCI_RH_SUSPENDED;
+	spin_unlock_irq(&ehci->lock);
+
+	return 1;
+}
+EXPORT_SYMBOL_GPL(ehci_resume);
+
+#endif
+
+/*-------------------------------------------------------------------------*/
+
+/*
+ * Generic structure: This gets copied for platform drivers so that
+ * individual entries can be overridden as needed.
+ */
+
+static const struct hc_driver ehci_hc_driver = {
+	.description =		hcd_name,
+	.product_desc =		"EHCI Host Controller",
+	.hcd_priv_size =	sizeof(struct ehci_hcd),
+
+	/*
+	 * generic hardware linkage
+	 */
+	.irq =			ehci_irq,
+	.flags =		HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
+
+	/*
+	 * basic lifecycle operations
+	 */
+	.reset =		ehci_setup,
+	.start =		ehci_run,
+	.stop =			ehci_stop,
+	.shutdown =		ehci_shutdown,
+
+	/*
+	 * managing i/o requests and associated device resources
+	 */
+	.urb_enqueue =		ehci_urb_enqueue,
+	.urb_dequeue =		ehci_urb_dequeue,
+	.endpoint_disable =	ehci_endpoint_disable,
+	.endpoint_reset =	ehci_endpoint_reset,
+	.clear_tt_buffer_complete =	ehci_clear_tt_buffer_complete,
+
+	/*
+	 * scheduling support
+	 */
+	.get_frame_number =	ehci_get_frame,
+
+	/*
+	 * root hub support
+	 */
+	.hub_status_data =	ehci_hub_status_data,
+	.hub_control =		ehci_hub_control,
+	.bus_suspend =		ehci_bus_suspend,
+	.bus_resume =		ehci_bus_resume,
+	.relinquish_port =	ehci_relinquish_port,
+	.port_handed_over =	ehci_port_handed_over,
+	.get_resuming_ports =	ehci_get_resuming_ports,
+
+	/*
+	 * device support
+	 */
+	.free_dev =		ehci_remove_device,
+#ifdef CONFIG_USB_HCD_TEST_MODE
+	/* EH SINGLE_STEP_SET_FEATURE test support */
+	.submit_single_step_set_feature	= ehci_submit_single_step_set_feature,
+#endif
+};
+
+void ehci_init_driver(struct hc_driver *drv,
+		const struct ehci_driver_overrides *over)
+{
+	/* Copy the generic table to drv and then apply the overrides */
+	*drv = ehci_hc_driver;
+
+	if (over) {
+		drv->hcd_priv_size += over->extra_priv_size;
+		if (over->reset)
+			drv->reset = over->reset;
+		if (over->port_power)
+			drv->port_power = over->port_power;
+	}
+}
+EXPORT_SYMBOL_GPL(ehci_init_driver);
+
+/*-------------------------------------------------------------------------*/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR (DRIVER_AUTHOR);
 MODULE_LICENSE ("GPL");
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 #include "ehci-pci.c"
 #define	PCI_DRIVER		ehci_pci_driver
+=======
+#ifdef CONFIG_USB_EHCI_SH
+#include "ehci-sh.c"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_PPC_PS3
 #include "ehci-ps3.c"
+<<<<<<< HEAD
 #define	PS3_SYSTEM_BUS_DRIVER	ps3_ehci_driver
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_USB_EHCI_HCD_PPC_OF
 #include "ehci-ppc-of.c"
+<<<<<<< HEAD
 #define OF_PLATFORM_DRIVER	ehci_hcd_ppc_of_driver
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_XPS_USB_HCD_XILINX
 #include "ehci-xilinx-of.c"
+<<<<<<< HEAD
 #define XILINX_OF_PLATFORM_DRIVER	ehci_hcd_xilinx_of_driver
 #endif
 
@@ -1394,10 +2244,13 @@ MODULE_LICENSE ("GPL");
 #ifdef CONFIG_USB_EHCI_ATH79
 #include "ehci-ath79.c"
 #define PLATFORM_DRIVER_PRESENT
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_SPARC_LEON
 #include "ehci-grlib.c"
+<<<<<<< HEAD
 #define PLATFORM_DRIVER_PRESENT
 #endif
 
@@ -1547,22 +2400,52 @@ static struct platform_driver *plat_drivers[]  = {
 static int __init ehci_hcd_init(void)
 {
 	int i, retval = 0;
+=======
+#endif
+
+static struct platform_driver * const platform_drivers[] = {
+#ifdef CONFIG_USB_EHCI_SH
+	&ehci_hcd_sh_driver,
+#endif
+#ifdef CONFIG_USB_EHCI_HCD_PPC_OF
+	&ehci_hcd_ppc_of_driver,
+#endif
+#ifdef CONFIG_XPS_USB_HCD_XILINX
+	&ehci_hcd_xilinx_of_driver,
+#endif
+#ifdef CONFIG_SPARC_LEON
+	&ehci_grlib_driver,
+#endif
+};
+
+static int __init ehci_hcd_init(void)
+{
+	int retval = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usb_disabled())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: " DRIVER_DESC "\n", hcd_name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
 	if (test_bit(USB_UHCI_LOADED, &usb_hcds_loaded) ||
 			test_bit(USB_OHCI_LOADED, &usb_hcds_loaded))
 		printk(KERN_WARNING "Warning! ehci_hcd should always be loaded"
 				" before uhci_hcd and ohci_hcd, not after\n");
 
+<<<<<<< HEAD
 	pr_debug("%s: block sizes: qh %Zd qtd %Zd itd %Zd sitd %Zd\n",
+=======
+	pr_debug("%s: block sizes: qh %zd qtd %zd itd %zd sitd %zd\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 hcd_name,
 		 sizeof(struct ehci_qh), sizeof(struct ehci_qtd),
 		 sizeof(struct ehci_itd), sizeof(struct ehci_sitd));
 
+<<<<<<< HEAD
 #ifdef DEBUG
 	ehci_debug_root = debugfs_create_dir("ehci", usb_debug_root);
 	if (!ehci_debug_root) {
@@ -1582,10 +2465,23 @@ static int __init ehci_hcd_init(void)
 
 #ifdef PCI_DRIVER
 	retval = pci_register_driver(&PCI_DRIVER);
+=======
+#ifdef CONFIG_DYNAMIC_DEBUG
+	ehci_debug_root = debugfs_create_dir("ehci", usb_debug_root);
+#endif
+
+	retval = platform_register_drivers(platform_drivers, ARRAY_SIZE(platform_drivers));
+	if (retval < 0)
+		goto clean0;
+
+#ifdef CONFIG_PPC_PS3
+	retval = ps3_ehci_driver_register(&ps3_ehci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0)
 		goto clean1;
 #endif
 
+<<<<<<< HEAD
 #ifdef PS3_SYSTEM_BUS_DRIVER
 	retval = ps3_ehci_driver_register(&PS3_SYSTEM_BUS_DRIVER);
 	if (retval < 0)
@@ -1628,6 +2524,18 @@ clean0:
 	debugfs_remove(ehci_debug_root);
 	ehci_debug_root = NULL;
 err_debug:
+=======
+	return 0;
+
+#ifdef CONFIG_PPC_PS3
+clean1:
+#endif
+	platform_unregister_drivers(platform_drivers, ARRAY_SIZE(platform_drivers));
+clean0:
+#ifdef CONFIG_DYNAMIC_DEBUG
+	debugfs_remove(ehci_debug_root);
+	ehci_debug_root = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
 	return retval;
@@ -1636,6 +2544,7 @@ module_init(ehci_hcd_init);
 
 static void __exit ehci_hcd_cleanup(void)
 {
+<<<<<<< HEAD
 	int i;
 #ifdef XILINX_OF_PLATFORM_DRIVER
 	platform_driver_unregister(&XILINX_OF_PLATFORM_DRIVER);
@@ -1654,9 +2563,19 @@ static void __exit ehci_hcd_cleanup(void)
 	ps3_ehci_driver_unregister(&PS3_SYSTEM_BUS_DRIVER);
 #endif
 #ifdef DEBUG
+=======
+#ifdef CONFIG_PPC_PS3
+	ps3_ehci_driver_unregister(&ps3_ehci_driver);
+#endif
+	platform_unregister_drivers(platform_drivers, ARRAY_SIZE(platform_drivers));
+#ifdef CONFIG_DYNAMIC_DEBUG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfs_remove(ehci_debug_root);
 #endif
 	clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
 }
 module_exit(ehci_hcd_cleanup);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These are copied from glibc/stdlib/longlong.h
  */
@@ -66,7 +70,10 @@
   } while (0)
 
 #define abort()	return 0
+<<<<<<< HEAD
 
 #define __BYTE_ORDER __LITTLE_ENDIAN
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

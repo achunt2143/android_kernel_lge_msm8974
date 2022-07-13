@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  * Xen PCI Frontend.
  *
  *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Xen PCI Frontend
+ *
+ * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
@@ -20,8 +28,16 @@
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 
 #define INVALID_GRANT_REF (0)
+=======
+#include <linux/ktime.h>
+#include <xen/platform_pci.h>
+
+#include <asm/xen/swiotlb-xen.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INVALID_EVTCHN    (-1)
 
 struct pci_bus_entry {
@@ -37,7 +53,11 @@ struct pcifront_device {
 	struct list_head root_buses;
 
 	int evtchn;
+<<<<<<< HEAD
 	int gnt_ref;
+=======
+	grant_ref_t gnt_ref;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int irq;
 
@@ -50,7 +70,11 @@ struct pcifront_device {
 };
 
 struct pcifront_sd {
+<<<<<<< HEAD
 	int domain;
+=======
+	struct pci_sysdata sd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcifront_device *pdev;
 };
 
@@ -64,16 +88,25 @@ static inline void pcifront_init_sd(struct pcifront_sd *sd,
 				    unsigned int domain, unsigned int bus,
 				    struct pcifront_device *pdev)
 {
+<<<<<<< HEAD
 	sd->domain = domain;
+=======
+	/* Because we do not expose that information via XenBus. */
+	sd->sd.node = first_online_node;
+	sd->sd.domain = domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sd->pdev = pdev;
 }
 
 static DEFINE_SPINLOCK(pcifront_dev_lock);
 static struct pcifront_device *pcifront_dev;
 
+<<<<<<< HEAD
 static int verbose_request;
 module_param(verbose_request, int, 0644);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int errno_to_pcibios_err(int errno)
 {
 	switch (errno) {
@@ -111,9 +144,14 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 	struct xen_pci_op *active_op = &pdev->sh_info->op;
 	unsigned long irq_flags;
 	evtchn_port_t port = pdev->evtchn;
+<<<<<<< HEAD
 	unsigned irq = pdev->irq;
 	s64 ns, ns_timeout;
 	struct timeval tv;
+=======
+	unsigned int irq = pdev->irq;
+	s64 ns, ns_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pdev->sh_info_lock, irq_flags);
 
@@ -130,8 +168,12 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 	 * (in the latter case we end up continually re-executing poll() with a
 	 * timeout in the past). 1s difference gives plenty of slack for error.
 	 */
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	ns_timeout = timeval_to_ns(&tv) + 2 * (s64)NSEC_PER_SEC;
+=======
+	ns_timeout = ktime_get_ns() + 2 * (s64)NSEC_PER_SEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xen_clear_irq_pending(irq);
 
@@ -139,8 +181,12 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 			(unsigned long *)&pdev->sh_info->flags)) {
 		xen_poll_irq_timeout(irq, jiffies + 3*HZ);
 		xen_clear_irq_pending(irq);
+<<<<<<< HEAD
 		do_gettimeofday(&tv);
 		ns = timeval_to_ns(&tv);
+=======
+		ns = ktime_get_ns();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ns > ns_timeout) {
 			dev_err(&pdev->xdev->dev,
 				"pciback not responding!!!\n");
@@ -152,10 +198,17 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 	}
 
 	/*
+<<<<<<< HEAD
 	* We might lose backend service request since we
 	* reuse same evtchn with pci_conf backend response. So re-schedule
 	* aer pcifront service.
 	*/
+=======
+	 * We might lose backend service request since we
+	 * reuse same evtchn with pci_conf backend response. So re-schedule
+	 * aer pcifront service.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(_XEN_PCIB_active,
 			(unsigned long *)&pdev->sh_info->flags)) {
 		dev_err(&pdev->xdev->dev,
@@ -187,18 +240,30 @@ static int pcifront_bus_read(struct pci_bus *bus, unsigned int devfn,
 	struct pcifront_sd *sd = bus->sysdata;
 	struct pcifront_device *pdev = pcifront_get_pdev(sd);
 
+<<<<<<< HEAD
 	if (verbose_request)
 		dev_info(&pdev->xdev->dev,
 			 "read dev=%04x:%02x:%02x.%d - offset %x size %d\n",
 			 pci_domain_nr(bus), bus->number, PCI_SLOT(devfn),
 			 PCI_FUNC(devfn), where, size);
+=======
+	dev_dbg(&pdev->xdev->dev,
+		"read dev=%04x:%02x:%02x.%d - offset %x size %d\n",
+		pci_domain_nr(bus), bus->number, PCI_SLOT(devfn),
+		PCI_FUNC(devfn), where, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = do_pci_op(pdev, &op);
 
 	if (likely(!err)) {
+<<<<<<< HEAD
 		if (verbose_request)
 			dev_info(&pdev->xdev->dev, "read got back value %x\n",
 				 op.value);
+=======
+		dev_dbg(&pdev->xdev->dev, "read got back value %x\n",
+			op.value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*val = op.value;
 	} else if (err == -ENODEV) {
@@ -226,17 +291,28 @@ static int pcifront_bus_write(struct pci_bus *bus, unsigned int devfn,
 	struct pcifront_sd *sd = bus->sysdata;
 	struct pcifront_device *pdev = pcifront_get_pdev(sd);
 
+<<<<<<< HEAD
 	if (verbose_request)
 		dev_info(&pdev->xdev->dev,
 			 "write dev=%04x:%02x:%02x.%d - "
 			 "offset %x size %d val %x\n",
 			 pci_domain_nr(bus), bus->number,
 			 PCI_SLOT(devfn), PCI_FUNC(devfn), where, size, val);
+=======
+	dev_dbg(&pdev->xdev->dev,
+		"write dev=%04x:%02x:%02x.%d - offset %x size %d val %x\n",
+		pci_domain_nr(bus), bus->number,
+		PCI_SLOT(devfn), PCI_FUNC(devfn), where, size, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return errno_to_pcibios_err(do_pci_op(pdev, &op));
 }
 
+<<<<<<< HEAD
 struct pci_ops pcifront_bus_ops = {
+=======
+static struct pci_ops pcifront_bus_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read = pcifront_bus_read,
 	.write = pcifront_bus_write,
 };
@@ -259,14 +335,24 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 	struct msi_desc *entry;
 
 	if (nvec > SH_INFO_MAX_VEC) {
+<<<<<<< HEAD
 		dev_err(&dev->dev, "too much vector for pci frontend: %x."
 				   " Increase SH_INFO_MAX_VEC.\n", nvec);
+=======
+		pci_err(dev, "too many vectors (0x%x) for PCI frontend:"
+				   " Increase SH_INFO_MAX_VEC\n", nvec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	list_for_each_entry(entry, &dev->msi_list, list) {
 		op.msix_entries[i].entry = entry->msi_attrib.entry_nr;
+=======
+	msi_for_each_desc(entry, &dev->dev, MSI_DESC_NOTASSOCIATED) {
+		op.msix_entries[i].entry = entry->msi_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Vector is useless at this point. */
 		op.msix_entries[i].vector = -1;
 		i++;
@@ -279,7 +365,11 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 			/* we get the result */
 			for (i = 0; i < nvec; i++) {
 				if (op.msix_entries[i].vector <= 0) {
+<<<<<<< HEAD
 					dev_warn(&dev->dev, "MSI-X entry %d is invalid: %d!\n",
+=======
+					pci_warn(dev, "MSI-X entry %d is invalid: %d!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						i, op.msix_entries[i].vector);
 					err = -EINVAL;
 					vector[i] = -1;
@@ -288,12 +378,20 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 				vector[i] = op.msix_entries[i].vector;
 			}
 		} else {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "enable msix get value %x\n",
 				op.value);
 			err = op.value;
 		}
 	} else {
 		dev_err(&dev->dev, "enable msix get err %x\n", err);
+=======
+			pr_info("enable msix get value %x\n", op.value);
+			err = op.value;
+		}
+	} else {
+		pci_err(dev, "enable msix get err %x\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -314,7 +412,11 @@ static void pci_frontend_disable_msix(struct pci_dev *dev)
 
 	/* What should do for error ? */
 	if (err)
+<<<<<<< HEAD
 		dev_err(&dev->dev, "pci_disable_msix get err %x\n", err);
+=======
+		pci_err(dev, "pci_disable_msix get err %x\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pci_frontend_enable_msi(struct pci_dev *dev, int vector[])
@@ -333,13 +435,21 @@ static int pci_frontend_enable_msi(struct pci_dev *dev, int vector[])
 	if (likely(!err)) {
 		vector[0] = op.value;
 		if (op.value <= 0) {
+<<<<<<< HEAD
 			dev_warn(&dev->dev, "MSI entry is invalid: %d!\n",
+=======
+			pci_warn(dev, "MSI entry is invalid: %d!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				op.value);
 			err = -EINVAL;
 			vector[0] = -1;
 		}
 	} else {
+<<<<<<< HEAD
 		dev_err(&dev->dev, "pci frontend enable msi failed for dev "
+=======
+		pci_err(dev, "pci frontend enable msi failed for dev "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    "%x:%x\n", op.bus, op.devfn);
 		err = -EINVAL;
 	}
@@ -361,12 +471,20 @@ static void pci_frontend_disable_msi(struct pci_dev *dev)
 	err = do_pci_op(pdev, &op);
 	if (err == XEN_PCI_ERR_dev_not_found) {
 		/* XXX No response from backend, what shall we do? */
+<<<<<<< HEAD
 		printk(KERN_DEBUG "get no response from backend for disable MSI\n");
+=======
+		pr_info("get no response from backend for disable MSI\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (err)
 		/* how can pciback notify us fail? */
+<<<<<<< HEAD
 		printk(KERN_DEBUG "get fake response frombackend\n");
+=======
+		pr_info("get fake response from backend\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xen_pci_frontend_ops pci_frontend_ops = {
@@ -394,9 +512,13 @@ static int pcifront_claim_resource(struct pci_dev *dev, void *data)
 	int i;
 	struct resource *r;
 
+<<<<<<< HEAD
 	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
 		r = &dev->resource[i];
 
+=======
+	pci_dev_for_each_resource(dev, r, i) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!r->parent && r->start && r->flags) {
 			dev_info(&pdev->xdev->dev, "claiming resource %s/%d\n",
 				pci_name(dev), i);
@@ -411,14 +533,23 @@ static int pcifront_claim_resource(struct pci_dev *dev, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit pcifront_scan_bus(struct pcifront_device *pdev,
+=======
+static int pcifront_scan_bus(struct pcifront_device *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unsigned int domain, unsigned int bus,
 				struct pci_bus *b)
 {
 	struct pci_dev *d;
 	unsigned int devfn;
 
+<<<<<<< HEAD
 	/* Scan the bus for functions and add.
+=======
+	/*
+	 * Scan the bus for functions and add.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We omit handling of PCI bridge attachment because pciback prevents
 	 * bridges from being exported.
 	 */
@@ -440,6 +571,7 @@ static int __devinit pcifront_scan_bus(struct pcifront_device *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit pcifront_scan_root(struct pcifront_device *pdev,
 				 unsigned int domain, unsigned int bus)
 {
@@ -447,6 +579,21 @@ static int __devinit pcifront_scan_root(struct pcifront_device *pdev,
 	struct pcifront_sd *sd = NULL;
 	struct pci_bus_entry *bus_entry = NULL;
 	int err = 0;
+=======
+static int pcifront_scan_root(struct pcifront_device *pdev,
+				 unsigned int domain, unsigned int bus)
+{
+	struct pci_bus *b;
+	LIST_HEAD(resources);
+	struct pcifront_sd *sd = NULL;
+	struct pci_bus_entry *bus_entry = NULL;
+	int err = 0;
+	static struct resource busn_res = {
+		.start = 0,
+		.end = 255,
+		.flags = IORESOURCE_BUS,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_PCI_DOMAINS
 	if (domain != 0) {
@@ -462,20 +609,42 @@ static int __devinit pcifront_scan_root(struct pcifront_device *pdev,
 	dev_info(&pdev->xdev->dev, "Creating PCI Frontend Bus %04x:%02x\n",
 		 domain, bus);
 
+<<<<<<< HEAD
 	bus_entry = kmalloc(sizeof(*bus_entry), GFP_KERNEL);
 	sd = kmalloc(sizeof(*sd), GFP_KERNEL);
+=======
+	bus_entry = kzalloc(sizeof(*bus_entry), GFP_KERNEL);
+	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bus_entry || !sd) {
 		err = -ENOMEM;
 		goto err_out;
 	}
+<<<<<<< HEAD
 	pcifront_init_sd(sd, domain, bus, pdev);
 
 	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
 				  &pcifront_bus_ops, sd);
+=======
+	pci_add_resource(&resources, &ioport_resource);
+	pci_add_resource(&resources, &iomem_resource);
+	pci_add_resource(&resources, &busn_res);
+	pcifront_init_sd(sd, domain, bus, pdev);
+
+	pci_lock_rescan_remove();
+
+	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
+				  &pcifront_bus_ops, sd, &resources);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!b) {
 		dev_err(&pdev->xdev->dev,
 			"Error creating PCI Frontend Bus!\n");
 		err = -ENOMEM;
+<<<<<<< HEAD
+=======
+		pci_unlock_rescan_remove();
+		pci_free_resource_list(&resources);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 	}
 
@@ -483,8 +652,15 @@ static int __devinit pcifront_scan_root(struct pcifront_device *pdev,
 
 	list_add(&bus_entry->list, &pdev->root_buses);
 
+<<<<<<< HEAD
 	/* pci_scan_bus_parented skips devices which do not have a have
 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
+=======
+	/*
+	 * pci_scan_root_bus skips devices which do not have a
+	 * devfn==0. The pcifront_scan_bus enumerates all devfn.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pcifront_scan_bus(pdev, domain, bus, b);
 
 	/* Claim resources before going "live" with our devices */
@@ -493,6 +669,10 @@ static int __devinit pcifront_scan_root(struct pcifront_device *pdev,
 	/* Create SysFS and notify udev of the devices. Aka: "going live" */
 	pci_bus_add_devices(b);
 
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 err_out:
@@ -502,12 +682,17 @@ err_out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit pcifront_rescan_root(struct pcifront_device *pdev,
+=======
+static int pcifront_rescan_root(struct pcifront_device *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   unsigned int domain, unsigned int bus)
 {
 	int err;
 	struct pci_bus *b;
 
+<<<<<<< HEAD
 #ifndef CONFIG_PCI_DOMAINS
 	if (domain != 0) {
 		dev_err(&pdev->xdev->dev,
@@ -521,11 +706,19 @@ static int __devinit pcifront_rescan_root(struct pcifront_device *pdev,
 	dev_info(&pdev->xdev->dev, "Rescanning PCI Frontend Bus %04x:%02x\n",
 		 domain, bus);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b = pci_find_bus(domain, bus);
 	if (!b)
 		/* If the bus is unknown, create it. */
 		return pcifront_scan_root(pdev, domain, bus);
 
+<<<<<<< HEAD
+=======
+	dev_info(&pdev->xdev->dev, "Rescanning PCI Frontend Bus %04x:%02x\n",
+		 domain, bus);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pcifront_scan_bus(pdev, domain, bus, b);
 
 	/* Claim resources before going "live" with our devices */
@@ -544,7 +737,11 @@ static void free_root_bus_devs(struct pci_bus *bus)
 	while (!list_empty(&bus->devices)) {
 		dev = container_of(bus->devices.next, struct pci_dev,
 				   bus_list);
+<<<<<<< HEAD
 		dev_dbg(&dev->dev, "removing device\n");
+=======
+		pci_dbg(dev, "removing device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_stop_and_remove_bus_device(dev);
 	}
 }
@@ -555,6 +752,10 @@ static void pcifront_free_roots(struct pcifront_device *pdev)
 
 	dev_dbg(&pdev->xdev->dev, "cleaning up root buses\n");
 
+<<<<<<< HEAD
+=======
+	pci_lock_rescan_remove();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(bus_entry, t, &pdev->root_buses, list) {
 		list_del(&bus_entry->list);
 
@@ -567,22 +768,35 @@ static void pcifront_free_roots(struct pcifront_device *pdev)
 
 		kfree(bus_entry);
 	}
+<<<<<<< HEAD
+=======
+	pci_unlock_rescan_remove();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static pci_ers_result_t pcifront_common_process(int cmd,
 						struct pcifront_device *pdev,
 						pci_channel_state_t state)
 {
+<<<<<<< HEAD
 	pci_ers_result_t result;
 	struct pci_driver *pdrv;
 	int bus = pdev->sh_info->aer_op.bus;
 	int devfn = pdev->sh_info->aer_op.devfn;
 	struct pci_dev *pcidev;
 	int flag = 0;
+=======
+	struct pci_driver *pdrv;
+	int bus = pdev->sh_info->aer_op.bus;
+	int devfn = pdev->sh_info->aer_op.devfn;
+	int domain = pdev->sh_info->aer_op.domain;
+	struct pci_dev *pcidev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&pdev->xdev->dev,
 		"pcifront AER process: cmd %x (bus:%x, devfn%x)",
 		cmd, bus, devfn);
+<<<<<<< HEAD
 	result = PCI_ERS_RESULT_NONE;
 
 	pcidev = pci_get_bus_and_slot(bus, devfn);
@@ -629,6 +843,36 @@ static pci_ers_result_t pcifront_common_process(int cmd,
 		result = PCI_ERS_RESULT_NONE;
 
 	return result;
+=======
+
+	pcidev = pci_get_domain_bus_and_slot(domain, bus, devfn);
+	if (!pcidev || !pcidev->dev.driver) {
+		dev_err(&pdev->xdev->dev, "device or AER driver is NULL\n");
+		pci_dev_put(pcidev);
+		return PCI_ERS_RESULT_NONE;
+	}
+	pdrv = to_pci_driver(pcidev->dev.driver);
+
+	if (pdrv->err_handler && pdrv->err_handler->error_detected) {
+		pci_dbg(pcidev, "trying to call AER service\n");
+		switch (cmd) {
+		case XEN_PCI_OP_aer_detected:
+			return pdrv->err_handler->error_detected(pcidev, state);
+		case XEN_PCI_OP_aer_mmio:
+			return pdrv->err_handler->mmio_enabled(pcidev);
+		case XEN_PCI_OP_aer_slotreset:
+			return pdrv->err_handler->slot_reset(pcidev);
+		case XEN_PCI_OP_aer_resume:
+			pdrv->err_handler->resume(pcidev);
+			return PCI_ERS_RESULT_NONE;
+		default:
+			dev_err(&pdev->xdev->dev,
+				"bad request in aer recovery operation!\n");
+		}
+	}
+
+	return PCI_ERS_RESULT_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -640,8 +884,15 @@ static void pcifront_do_aer(struct work_struct *data)
 	pci_channel_state_t state =
 		(pci_channel_state_t)pdev->sh_info->aer_op.err;
 
+<<<<<<< HEAD
 	/*If a pci_conf op is in progress,
 		we have to wait until it is done before service aer op*/
+=======
+	/*
+	 * If a pci_conf op is in progress, we have to wait until it is done
+	 * before service aer op
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&pdev->xdev->dev,
 		"pcifront service aer bus %x devfn %x\n",
 		pdev->sh_info->aer_op.bus, pdev->sh_info->aer_op.devfn);
@@ -654,9 +905,15 @@ static void pcifront_do_aer(struct work_struct *data)
 	notify_remote_via_evtchn(pdev->evtchn);
 
 	/*in case of we lost an aer request in four lines time_window*/
+<<<<<<< HEAD
 	smp_mb__before_clear_bit();
 	clear_bit(_PDEVB_op_active, &pdev->flags);
 	smp_mb__after_clear_bit();
+=======
+	smp_mb__before_atomic();
+	clear_bit(_PDEVB_op_active, &pdev->flags);
+	smp_mb__after_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_pcifront_aer_op(pdev);
 
@@ -665,10 +922,18 @@ static void pcifront_do_aer(struct work_struct *data)
 static irqreturn_t pcifront_handler_aer(int irq, void *dev)
 {
 	struct pcifront_device *pdev = dev;
+<<<<<<< HEAD
 	schedule_pcifront_aer_op(pdev);
 	return IRQ_HANDLED;
 }
 static int pcifront_connect(struct pcifront_device *pdev)
+=======
+
+	schedule_pcifront_aer_op(pdev);
+	return IRQ_HANDLED;
+}
+static int pcifront_connect_and_init_dma(struct pcifront_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -677,10 +942,15 @@ static int pcifront_connect(struct pcifront_device *pdev)
 	if (!pcifront_dev) {
 		dev_info(&pdev->xdev->dev, "Installing PCI frontend\n");
 		pcifront_dev = pdev;
+<<<<<<< HEAD
 	} else {
 		dev_err(&pdev->xdev->dev, "PCI frontend already installed!\n");
 		err = -EEXIST;
 	}
+=======
+	} else
+		err = -EEXIST;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&pcifront_dev_lock);
 
@@ -707,9 +977,14 @@ static struct pcifront_device *alloc_pdev(struct xenbus_device *xdev)
 	if (pdev == NULL)
 		goto out;
 
+<<<<<<< HEAD
 	pdev->sh_info =
 	    (struct xen_pci_sharedinfo *)__get_free_page(GFP_KERNEL);
 	if (pdev->sh_info == NULL) {
+=======
+	if (xenbus_setup_ring(xdev, GFP_KERNEL, (void **)&pdev->sh_info, 1,
+			      &pdev->gnt_ref)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(pdev);
 		pdev = NULL;
 		goto out;
@@ -727,7 +1002,10 @@ static struct pcifront_device *alloc_pdev(struct xenbus_device *xdev)
 	spin_lock_init(&pdev->sh_info_lock);
 
 	pdev->evtchn = INVALID_EVTCHN;
+<<<<<<< HEAD
 	pdev->gnt_ref = INVALID_GRANT_REF;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdev->irq = -1;
 
 	INIT_WORK(&pdev->op_work, pcifront_do_aer);
@@ -752,11 +1030,15 @@ static void free_pdev(struct pcifront_device *pdev)
 	if (pdev->evtchn != INVALID_EVTCHN)
 		xenbus_free_evtchn(pdev->xdev, pdev->evtchn);
 
+<<<<<<< HEAD
 	if (pdev->gnt_ref != INVALID_GRANT_REF)
 		gnttab_end_foreign_access(pdev->gnt_ref, 0 /* r/w page */,
 					  (unsigned long)pdev->sh_info);
 	else
 		free_page((unsigned long)pdev->sh_info);
+=======
+	xenbus_teardown_ring((void **)&pdev->sh_info, 1, &pdev->gnt_ref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(&pdev->xdev->dev, NULL);
 
@@ -768,12 +1050,15 @@ static int pcifront_publish_info(struct pcifront_device *pdev)
 	int err = 0;
 	struct xenbus_transaction trans;
 
+<<<<<<< HEAD
 	err = xenbus_grant_ring(pdev->xdev, virt_to_mfn(pdev->sh_info));
 	if (err < 0)
 		goto out;
 
 	pdev->gnt_ref = err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_alloc_evtchn(pdev->xdev, &pdev->evtchn);
 	if (err)
 		goto out;
@@ -829,13 +1114,20 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit pcifront_try_connect(struct pcifront_device *pdev)
 {
 	int err = -EFAULT;
+=======
+static void pcifront_connect(struct pcifront_device *pdev)
+{
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, num_roots, len;
 	char str[64];
 	unsigned int domain, bus;
 
+<<<<<<< HEAD
 
 	/* Only connect once */
 	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
@@ -849,11 +1141,14 @@ static int __devinit pcifront_try_connect(struct pcifront_device *pdev)
 		goto out;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_scanf(XBT_NIL, pdev->xdev->otherend,
 			   "root_num", "%d", &num_roots);
 	if (err == -ENOENT) {
 		xenbus_dev_error(pdev->xdev, err,
 				 "No PCI Roots found, trying 0000:00");
+<<<<<<< HEAD
 		err = pcifront_scan_root(pdev, 0, 0);
 		num_roots = 0;
 	} else if (err != 1) {
@@ -862,18 +1157,37 @@ static int __devinit pcifront_try_connect(struct pcifront_device *pdev)
 		xenbus_dev_fatal(pdev->xdev, err,
 				 "Error reading number of PCI roots");
 		goto out;
+=======
+		err = pcifront_rescan_root(pdev, 0, 0);
+		if (err) {
+			xenbus_dev_fatal(pdev->xdev, err,
+					 "Error scanning PCI root 0000:00");
+			return;
+		}
+		num_roots = 0;
+	} else if (err != 1) {
+		xenbus_dev_fatal(pdev->xdev, err >= 0 ? -EINVAL : err,
+				 "Error reading number of PCI roots");
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < num_roots; i++) {
 		len = snprintf(str, sizeof(str), "root-%d", i);
+<<<<<<< HEAD
 		if (unlikely(len >= (sizeof(str) - 1))) {
 			err = -ENOMEM;
 			goto out;
 		}
+=======
+		if (unlikely(len >= (sizeof(str) - 1)))
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = xenbus_scanf(XBT_NIL, pdev->xdev->otherend, str,
 				   "%x:%x", &domain, &bus);
 		if (err != 2) {
+<<<<<<< HEAD
 			if (err >= 0)
 				err = -EINVAL;
 			xenbus_dev_fatal(pdev->xdev, err,
@@ -882,10 +1196,19 @@ static int __devinit pcifront_try_connect(struct pcifront_device *pdev)
 		}
 
 		err = pcifront_scan_root(pdev, domain, bus);
+=======
+			xenbus_dev_fatal(pdev->xdev, err >= 0 ? -EINVAL : err,
+					 "Error reading PCI root %d", i);
+			return;
+		}
+
+		err = pcifront_rescan_root(pdev, domain, bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			xenbus_dev_fatal(pdev->xdev, err,
 					 "Error scanning PCI root %04x:%02x",
 					 domain, bus);
+<<<<<<< HEAD
 			goto out;
 		}
 	}
@@ -894,6 +1217,32 @@ static int __devinit pcifront_try_connect(struct pcifront_device *pdev)
 
 out:
 	return err;
+=======
+			return;
+		}
+	}
+
+	xenbus_switch_state(pdev->xdev, XenbusStateConnected);
+}
+
+static void pcifront_try_connect(struct pcifront_device *pdev)
+{
+	int err;
+
+	/* Only connect once */
+	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
+	    XenbusStateInitialised)
+		return;
+
+	err = pcifront_connect_and_init_dma(pdev);
+	if (err && err != -EEXIST) {
+		xenbus_dev_fatal(pdev->xdev, err,
+				 "Error setting up PCI Frontend");
+		return;
+	}
+
+	pcifront_connect(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcifront_try_disconnect(struct pcifront_device *pdev)
@@ -919,6 +1268,7 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit pcifront_attach_devices(struct pcifront_device *pdev)
 {
 	int err = -EFAULT;
@@ -975,12 +1325,20 @@ static int __devinit pcifront_attach_devices(struct pcifront_device *pdev)
 
 out:
 	return err;
+=======
+static void pcifront_attach_devices(struct pcifront_device *pdev)
+{
+	if (xenbus_read_driver_state(pdev->xdev->nodename) ==
+	    XenbusStateReconfiguring)
+		pcifront_connect(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcifront_detach_devices(struct pcifront_device *pdev)
 {
 	int err = 0;
 	int i, num_devs;
+<<<<<<< HEAD
 	unsigned int domain, bus, slot, func;
 	struct pci_bus *pci_bus;
 	struct pci_dev *pci_dev;
@@ -989,6 +1347,28 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
 	    XenbusStateConnected)
 		goto out;
+=======
+	enum xenbus_state state;
+	unsigned int domain, bus, slot, func;
+	struct pci_dev *pci_dev;
+	char str[64];
+
+	state = xenbus_read_driver_state(pdev->xdev->nodename);
+	if (state == XenbusStateInitialised) {
+		dev_dbg(&pdev->xdev->dev, "Handle skipped connect.\n");
+		/* We missed Connected and need to initialize. */
+		err = pcifront_connect_and_init_dma(pdev);
+		if (err && err != -EEXIST) {
+			xenbus_dev_fatal(pdev->xdev, err,
+					 "Error setting up PCI Frontend");
+			goto out;
+		}
+
+		goto out_switch_state;
+	} else if (state != XenbusStateConnected) {
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xenbus_scanf(XBT_NIL, pdev->xdev->otherend, "num_devs", "%d",
 			   &num_devs);
@@ -1003,15 +1383,24 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 	/* Find devices being detached and remove them. */
 	for (i = 0; i < num_devs; i++) {
 		int l, state;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		l = snprintf(str, sizeof(str), "state-%d", i);
 		if (unlikely(l >= (sizeof(str) - 1))) {
 			err = -ENOMEM;
 			goto out;
 		}
+<<<<<<< HEAD
 		err = xenbus_scanf(XBT_NIL, pdev->xdev->otherend, str, "%d",
 				   &state);
 		if (err != 1)
 			state = XenbusStateUnknown;
+=======
+		state = xenbus_read_unsigned(pdev->xdev->otherend, str,
+					     XenbusStateUnknown);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (state != XenbusStateClosing)
 			continue;
@@ -1032,6 +1421,7 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 			goto out;
 		}
 
+<<<<<<< HEAD
 		pci_bus = pci_find_bus(domain, bus);
 		if (!pci_bus) {
 			dev_dbg(&pdev->xdev->dev, "Cannot get bus %04x:%02x\n",
@@ -1039,27 +1429,46 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 			continue;
 		}
 		pci_dev = pci_get_slot(pci_bus, PCI_DEVFN(slot, func));
+=======
+		pci_dev = pci_get_domain_bus_and_slot(domain, bus,
+				PCI_DEVFN(slot, func));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pci_dev) {
 			dev_dbg(&pdev->xdev->dev,
 				"Cannot get PCI device %04x:%02x:%02x.%d\n",
 				domain, bus, slot, func);
 			continue;
 		}
+<<<<<<< HEAD
 		pci_stop_and_remove_bus_device(pci_dev);
 		pci_dev_put(pci_dev);
+=======
+		pci_lock_rescan_remove();
+		pci_stop_and_remove_bus_device(pci_dev);
+		pci_dev_put(pci_dev);
+		pci_unlock_rescan_remove();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_dbg(&pdev->xdev->dev,
 			"PCI device %04x:%02x:%02x.%d removed.\n",
 			domain, bus, slot, func);
 	}
 
+<<<<<<< HEAD
+=======
+ out_switch_state:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_switch_state(pdev->xdev, XenbusStateReconfiguring);
 
 out:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __init_refok pcifront_backend_changed(struct xenbus_device *xdev,
+=======
+static void pcifront_backend_changed(struct xenbus_device *xdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  enum xenbus_state be_state)
 {
 	struct pcifront_device *pdev = dev_get_drvdata(&xdev->dev);
@@ -1069,13 +1478,23 @@ static void __init_refok pcifront_backend_changed(struct xenbus_device *xdev,
 	case XenbusStateInitialising:
 	case XenbusStateInitWait:
 	case XenbusStateInitialised:
+<<<<<<< HEAD
 	case XenbusStateClosed:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case XenbusStateConnected:
 		pcifront_try_connect(pdev);
 		break;
 
+<<<<<<< HEAD
+=======
+	case XenbusStateClosed:
+		if (xdev->state == XenbusStateClosed)
+			break;
+		fallthrough;	/* Missed the backend's CLOSING state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XenbusStateClosing:
 		dev_warn(&xdev->dev, "backend going away!\n");
 		pcifront_try_disconnect(pdev);
@@ -1112,6 +1531,7 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int pcifront_xenbus_remove(struct xenbus_device *xdev)
 {
 	struct pcifront_device *pdev = dev_get_drvdata(&xdev->dev);
@@ -1119,6 +1539,14 @@ static int pcifront_xenbus_remove(struct xenbus_device *xdev)
 		free_pdev(pdev);
 
 	return 0;
+=======
+static void pcifront_xenbus_remove(struct xenbus_device *xdev)
+{
+	struct pcifront_device *pdev = dev_get_drvdata(&xdev->dev);
+
+	if (pdev)
+		free_pdev(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct xenbus_device_id xenpci_ids[] = {
@@ -1126,17 +1554,33 @@ static const struct xenbus_device_id xenpci_ids[] = {
 	{""},
 };
 
+<<<<<<< HEAD
 static DEFINE_XENBUS_DRIVER(xenpci, "pcifront",
 	.probe			= pcifront_xenbus_probe,
 	.remove			= pcifront_xenbus_remove,
 	.otherend_changed	= pcifront_backend_changed,
 );
+=======
+static struct xenbus_driver xenpci_driver = {
+	.name			= "pcifront",
+	.ids			= xenpci_ids,
+	.probe			= pcifront_xenbus_probe,
+	.remove			= pcifront_xenbus_remove,
+	.otherend_changed	= pcifront_backend_changed,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init pcifront_init(void)
 {
 	if (!xen_pv_domain() || xen_initial_domain())
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (!xen_has_pv_devices())
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_frontend_registrar(1 /* enable */);
 
 	return xenbus_register_frontend(&xenpci_driver);

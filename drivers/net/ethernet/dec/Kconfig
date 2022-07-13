@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Digital Equipment Inc network device configuration
 #
@@ -6,10 +10,15 @@ config NET_VENDOR_DEC
 	bool "Digital Equipment devices"
 	default y
 	depends on PCI || EISA || CARDBUS
+<<<<<<< HEAD
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -17,6 +26,7 @@ config NET_VENDOR_DEC
 	  your specific card in the following questions.
 
 if NET_VENDOR_DEC
+<<<<<<< HEAD
 
 config EWRK3
 	tristate "EtherWORKS 3 (DE203, DE204, DE205) support"
@@ -34,4 +44,7 @@ config EWRK3
 
 source "drivers/net/ethernet/dec/tulip/Kconfig"
 
+=======
+source "drivers/net/ethernet/dec/tulip/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_DEC

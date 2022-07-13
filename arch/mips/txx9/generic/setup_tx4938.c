@@ -17,13 +17,20 @@
 #include <linux/ptrace.h>
 #include <linux/mtd/physmap.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/txx9/ndfmc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/reboot.h>
 #include <asm/traps.h>
 #include <asm/txx9irq.h>
 #include <asm/txx9tmr.h>
 #include <asm/txx9pio.h>
 #include <asm/txx9/generic.h>
+<<<<<<< HEAD
 #include <asm/txx9/ndfmc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/txx9/dmac.h>
 #include <asm/txx9/tx4938.h>
 
@@ -31,8 +38,13 @@ static void __init tx4938_wdr_init(void)
 {
 	/* report watchdog reset status */
 	if (____raw_readq(&tx4938_ccfgptr->ccfg) & TX4938_CCFG_WDRST)
+<<<<<<< HEAD
 		pr_warning("Watchdog reset detected at 0x%lx\n",
 			   read_c0_errorepc());
+=======
+		pr_warn("Watchdog reset detected at 0x%lx\n",
+			read_c0_errorepc());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear WatchDogReset (W1C) */
 	tx4938_ccfg_set(TX4938_CCFG_WDRST);
 	/* do reset on watchdog */
@@ -82,7 +94,11 @@ static int tx4938_be_handler(struct pt_regs *regs, int is_fixup)
 }
 static void __init tx4938_be_init(void)
 {
+<<<<<<< HEAD
 	board_be_handler = tx4938_be_handler;
+=======
+	mips_set_be_handler(tx4938_be_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct resource tx4938_sdram_resource[4];
@@ -196,6 +212,7 @@ void __init tx4938_setup(void)
 	if (!(____raw_readq(&tx4938_ccfgptr->ccfg) & TX4938_CCFG_PCIARB))
 		txx9_clear64(&tx4938_ccfgptr->pcfg, TX4938_PCFG_PCICLKEN_ALL);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s -- %dMHz(M%dMHz) CRIR:%08x CCFG:%llx PCFG:%llx\n",
 	       txx9_pcode_str,
 	       (cpuclk + 500000) / 1000000,
@@ -205,6 +222,16 @@ void __init tx4938_setup(void)
 	       (unsigned long long)____raw_readq(&tx4938_ccfgptr->pcfg));
 
 	printk(KERN_INFO "%s SDRAMC --", txx9_pcode_str);
+=======
+	pr_info("%s -- %dMHz(M%dMHz) CRIR:%08x CCFG:%llx PCFG:%llx\n",
+		txx9_pcode_str, (cpuclk + 500000) / 1000000,
+		(txx9_master_clock + 500000) / 1000000,
+		(__u32)____raw_readq(&tx4938_ccfgptr->crir),
+		____raw_readq(&tx4938_ccfgptr->ccfg),
+		____raw_readq(&tx4938_ccfgptr->pcfg));
+
+	pr_info("%s SDRAMC --", txx9_pcode_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; i++) {
 		__u64 cr = TX4938_SDRAMC_CR(i);
 		unsigned long base, size;
@@ -212,15 +239,23 @@ void __init tx4938_setup(void)
 			continue;	/* disabled */
 		base = (unsigned long)(cr >> 49) << 21;
 		size = (((unsigned long)(cr >> 33) & 0x7fff) + 1) << 21;
+<<<<<<< HEAD
 		printk(" CR%d:%016llx", i, (unsigned long long)cr);
+=======
+		pr_cont(" CR%d:%016llx", i, cr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx4938_sdram_resource[i].name = "SDRAM";
 		tx4938_sdram_resource[i].start = base;
 		tx4938_sdram_resource[i].end = base + size - 1;
 		tx4938_sdram_resource[i].flags = IORESOURCE_MEM;
 		request_resource(&iomem_resource, &tx4938_sdram_resource[i]);
 	}
+<<<<<<< HEAD
 	printk(" TR:%09llx\n",
 	       (unsigned long long)____raw_readq(&tx4938_sdramcptr->tr));
+=======
+	pr_cont(" TR:%09llx\n", ____raw_readq(&tx4938_sdramcptr->tr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SRAM */
 	if (txx9_pcode == 0x4938 && ____raw_readq(&tx4938_sramcptr->cr) & 1) {
@@ -241,7 +276,10 @@ void __init tx4938_setup(void)
 		txx9_tmr_init(TX4938_TMR_REG(i) & 0xfffffffffULL);
 
 	/* PIO */
+<<<<<<< HEAD
 	txx9_gpio_init(TX4938_PIO_REG & 0xfffffffffULL, 0, TX4938_NUM_PIO);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writel(0, &tx4938_pioptr->maskcpu);
 	__raw_writel(0, &tx4938_pioptr->maskext);
 
@@ -255,20 +293,32 @@ void __init tx4938_setup(void)
 			txx9_clear64(&tx4938_ccfgptr->clkctr,
 				     TX4938_CLKCTR_PCIC1RST);
 		} else {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: stop PCIC1\n", txx9_pcode_str);
+=======
+			pr_info("%s: stop PCIC1\n", txx9_pcode_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* stop PCIC1 */
 			txx9_set64(&tx4938_ccfgptr->clkctr,
 				   TX4938_CLKCTR_PCIC1CKD);
 		}
 		if (!(pcfg & TX4938_PCFG_ETH0_SEL)) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: stop ETH0\n", txx9_pcode_str);
+=======
+			pr_info("%s: stop ETH0\n", txx9_pcode_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			txx9_set64(&tx4938_ccfgptr->clkctr,
 				   TX4938_CLKCTR_ETH0RST);
 			txx9_set64(&tx4938_ccfgptr->clkctr,
 				   TX4938_CLKCTR_ETH0CKD);
 		}
 		if (!(pcfg & TX4938_PCFG_ETH1_SEL)) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: stop ETH1\n", txx9_pcode_str);
+=======
+			pr_info("%s: stop ETH1\n", txx9_pcode_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			txx9_set64(&tx4938_ccfgptr->clkctr,
 				   TX4938_CLKCTR_ETH1RST);
 			txx9_set64(&tx4938_ccfgptr->clkctr,
@@ -329,7 +379,11 @@ void __init tx4938_mtd_init(int ch)
 	unsigned long size = txx9_ce_res[ch].end - start + 1;
 
 	if (!(TX4938_EBUSC_CR(ch) & 0x8))
+<<<<<<< HEAD
 		return;	/* disabled */
+=======
+		return; /* disabled */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txx9_physmap_flash_init(ch, start, size, &pdata);
 }
 

@@ -3,7 +3,11 @@
 #include <linux/module.h>
 
 #define for_each_test(i, test)	\
+<<<<<<< HEAD
 	for (i = 0; i < sizeof(test) / sizeof(test[0]); i++)
+=======
+	for (i = 0; i < ARRAY_SIZE(test); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct test_fail {
 	const char *str;
@@ -11,7 +15,11 @@ struct test_fail {
 };
 
 #define DEFINE_TEST_FAIL(test)	\
+<<<<<<< HEAD
 	const struct test_fail test[] __initdata
+=======
+	const struct test_fail test[] __initconst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DECLARE_TEST_OK(type, test_type)	\
 	test_type {				\
@@ -21,7 +29,11 @@ struct test_fail {
 	}
 
 #define DEFINE_TEST_OK(type, test)	\
+<<<<<<< HEAD
 	const type test[] __initdata
+=======
+	const type test[] __initconst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TEST_FAIL(fn, type, fmt, test)					\
 {									\
@@ -260,6 +272,10 @@ static void __init test_kstrtoll_ok(void)
 		{"4294967297",	10,	4294967297LL},
 		{"9223372036854775807",	10,	9223372036854775807LL},
 
+<<<<<<< HEAD
+=======
+		{"-0",	10,	0LL},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{"-1",	10,	-1LL},
 		{"-2",	10,	-2LL},
 		{"-9223372036854775808",	10,	LLONG_MIN},
@@ -277,11 +293,14 @@ static void __init test_kstrtoll_fail(void)
 		{"-9223372036854775809",	10},
 		{"-18446744073709551614",	10},
 		{"-18446744073709551615",	10},
+<<<<<<< HEAD
 		/* negative zero isn't an integer in Linux */
 		{"-0",	0},
 		{"-0",	8},
 		{"-0",	10},
 		{"-0",	16},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* sign is first character if any */
 		{"-+1", 0},
 		{"-+1", 8},

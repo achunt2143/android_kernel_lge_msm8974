@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Codec driver for ST STA32x 2.1-channel high-efficiency digital audio system
  *
@@ -7,11 +11,14 @@
  * based on code from:
  *	Wolfson Microelectronics PLC.
  *	Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASOC_STA_32X_H
 #define _ASOC_STA_32X_H
@@ -131,7 +138,11 @@
 #define STA32X_CONFF_OCFG_MASK	0x03
 #define STA32X_CONFF_OCFG_SHIFT	0
 #define STA32X_CONFF_IDE	0x04
+<<<<<<< HEAD
 #define STA32X_CONFF_IDE_SHIFT	3
+=======
+#define STA32X_CONFF_IDE_SHIFT	2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define STA32X_CONFF_BCLE	0x08
 #define STA32X_CONFF_ECLE	0x20
 #define STA32X_CONFF_PWDN	0x40

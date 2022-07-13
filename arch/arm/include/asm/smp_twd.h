@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASMARM_SMP_TWD_H
 #define __ASMARM_SMP_TWD_H
 
@@ -18,6 +22,7 @@
 #define TWD_TIMER_CONTROL_PERIODIC	(1 << 1)
 #define TWD_TIMER_CONTROL_IT_ENABLE	(1 << 2)
 
+<<<<<<< HEAD
 #include <linux/ioport.h>
 
 struct twd_local_timer {
@@ -42,4 +47,6 @@ static inline void twd_local_timer_of_register(void)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

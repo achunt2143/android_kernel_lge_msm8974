@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/map.c
  *
@@ -8,15 +12,27 @@
 
 #include "hpfs_fn.h"
 
+<<<<<<< HEAD
 unsigned *hpfs_map_dnode_bitmap(struct super_block *s, struct quad_buffer_head *qbh)
+=======
+__le32 *hpfs_map_dnode_bitmap(struct super_block *s, struct quad_buffer_head *qbh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return hpfs_map_4sectors(s, hpfs_sb(s)->sb_dmap, qbh, 0);
 }
 
+<<<<<<< HEAD
 unsigned int *hpfs_map_bitmap(struct super_block *s, unsigned bmp_block,
 			 struct quad_buffer_head *qbh, char *id)
 {
 	secno sec;
+=======
+__le32 *hpfs_map_bitmap(struct super_block *s, unsigned bmp_block,
+			 struct quad_buffer_head *qbh, char *id)
+{
+	secno sec;
+	__le32 *ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned n_bands = (hpfs_sb(s)->sb_fs_size + 0x3fff) >> 14;
 	if (hpfs_sb(s)->sb_chk) if (bmp_block >= n_bands) {
 		hpfs_error(s, "hpfs_map_bitmap called with bad parameter: %08x at %s", bmp_block, id);
@@ -27,7 +43,27 @@ unsigned int *hpfs_map_bitmap(struct super_block *s, unsigned bmp_block,
 		hpfs_error(s, "invalid bitmap block pointer %08x -> %08x at %s", bmp_block, sec, id);
 		return NULL;
 	}
+<<<<<<< HEAD
 	return hpfs_map_4sectors(s, sec, qbh, 4);
+=======
+	ret = hpfs_map_4sectors(s, sec, qbh, 4);
+	if (ret) hpfs_prefetch_bitmap(s, bmp_block + 1);
+	return ret;
+}
+
+void hpfs_prefetch_bitmap(struct super_block *s, unsigned bmp_block)
+{
+	unsigned to_prefetch, next_prefetch;
+	unsigned n_bands = (hpfs_sb(s)->sb_fs_size + 0x3fff) >> 14;
+	if (unlikely(bmp_block >= n_bands))
+		return;
+	to_prefetch = le32_to_cpu(hpfs_sb(s)->sb_bmp_dir[bmp_block]);
+	if (unlikely(bmp_block + 1 >= n_bands))
+		next_prefetch = 0;
+	else
+		next_prefetch = le32_to_cpu(hpfs_sb(s)->sb_bmp_dir[bmp_block + 1]);
+	hpfs_prefetch_sectors(s, to_prefetch, 4 + 4 * (to_prefetch + 4 == next_prefetch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -48,12 +84,21 @@ unsigned char *hpfs_load_code_page(struct super_block *s, secno cps)
 	struct code_page_directory *cp = hpfs_map_sector(s, cps, &bh, 0);
 	if (!cp) return NULL;
 	if (le32_to_cpu(cp->magic) != CP_DIR_MAGIC) {
+<<<<<<< HEAD
 		printk("HPFS: Code page directory magic doesn't match (magic = %08x)\n", le32_to_cpu(cp->magic));
+=======
+		pr_err("Code page directory magic doesn't match (magic = %08x)\n",
+			le32_to_cpu(cp->magic));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		return NULL;
 	}
 	if (!le32_to_cpu(cp->n_code_pages)) {
+<<<<<<< HEAD
 		printk("HPFS: n_code_pages == 0\n");
+=======
+		pr_err("n_code_pages == 0\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		return NULL;
 	}
@@ -62,19 +107,31 @@ unsigned char *hpfs_load_code_page(struct super_block *s, secno cps)
 	brelse(bh);
 
 	if (cpi >= 3) {
+<<<<<<< HEAD
 		printk("HPFS: Code page index out of array\n");
+=======
+		pr_err("Code page index out of array\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	
 	if (!(cpd = hpfs_map_sector(s, cpds, &bh, 0))) return NULL;
 	if (le16_to_cpu(cpd->offs[cpi]) > 0x178) {
+<<<<<<< HEAD
 		printk("HPFS: Code page index out of sector\n");
+=======
+		pr_err("Code page index out of sector\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		return NULL;
 	}
 	ptr = (unsigned char *)cpd + le16_to_cpu(cpd->offs[cpi]) + 6;
 	if (!(cp_table = kmalloc(256, GFP_KERNEL))) {
+<<<<<<< HEAD
 		printk("HPFS: out of memory for code page table\n");
+=======
+		pr_err("out of memory for code page table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		return NULL;
 	}
@@ -90,11 +147,16 @@ unsigned char *hpfs_load_code_page(struct super_block *s, secno cps)
 	return cp_table;
 }
 
+<<<<<<< HEAD
 secno *hpfs_load_bitmap_directory(struct super_block *s, secno bmp)
+=======
+__le32 *hpfs_load_bitmap_directory(struct super_block *s, secno bmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct buffer_head *bh;
 	int n = (hpfs_sb(s)->sb_fs_size + 0x200000 - 1) >> 21;
 	int i;
+<<<<<<< HEAD
 	secno *b;
 	if (!(b = kmalloc(n * 512, GFP_KERNEL))) {
 		printk("HPFS: can't allocate memory for bitmap directory\n");
@@ -102,6 +164,15 @@ secno *hpfs_load_bitmap_directory(struct super_block *s, secno bmp)
 	}	
 	for (i=0;i<n;i++) {
 		secno *d = hpfs_map_sector(s, bmp+i, &bh, n - i - 1);
+=======
+	__le32 *b;
+	if (!(b = kmalloc_array(n, 512, GFP_KERNEL))) {
+		pr_err("can't allocate memory for bitmap directory\n");
+		return NULL;
+	}	
+	for (i=0;i<n;i++) {
+		__le32 *d = hpfs_map_sector(s, bmp+i, &bh, n - i - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!d) {
 			kfree(b);
 			return NULL;
@@ -112,6 +183,35 @@ secno *hpfs_load_bitmap_directory(struct super_block *s, secno bmp)
 	return b;
 }
 
+<<<<<<< HEAD
+=======
+void hpfs_load_hotfix_map(struct super_block *s, struct hpfs_spare_block *spareblock)
+{
+	struct quad_buffer_head qbh;
+	__le32 *directory;
+	u32 n_hotfixes, n_used_hotfixes;
+	unsigned i;
+
+	n_hotfixes = le32_to_cpu(spareblock->n_spares);
+	n_used_hotfixes = le32_to_cpu(spareblock->n_spares_used);
+
+	if (n_hotfixes > 256 || n_used_hotfixes > n_hotfixes) {
+		hpfs_error(s, "invalid number of hotfixes: %u, used: %u", n_hotfixes, n_used_hotfixes);
+		return;
+	}
+	if (!(directory = hpfs_map_4sectors(s, le32_to_cpu(spareblock->hotfix_map), &qbh, 0))) {
+		hpfs_error(s, "can't load hotfix map");
+		return;
+	}
+	for (i = 0; i < n_used_hotfixes; i++) {
+		hpfs_sb(s)->hotfix_from[i] = le32_to_cpu(directory[i]);
+		hpfs_sb(s)->hotfix_to[i] = le32_to_cpu(directory[n_hotfixes + i]);
+	}
+	hpfs_sb(s)->n_hotfixes = n_used_hotfixes;
+	hpfs_brelse4(&qbh);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Load fnode to memory
  */
@@ -131,16 +231,26 @@ struct fnode *hpfs_map_fnode(struct super_block *s, ino_t ino, struct buffer_hea
 					(unsigned long)ino);
 				goto bail;
 			}
+<<<<<<< HEAD
 			if (!fnode->dirflag) {
 				if ((unsigned)fnode->btree.n_used_nodes + (unsigned)fnode->btree.n_free_nodes !=
 				    (fnode->btree.internal ? 12 : 8)) {
+=======
+			if (!fnode_is_dir(fnode)) {
+				if ((unsigned)fnode->btree.n_used_nodes + (unsigned)fnode->btree.n_free_nodes !=
+				    (bp_internal(&fnode->btree) ? 12 : 8)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hpfs_error(s,
 					   "bad number of nodes in fnode %08lx",
 					    (unsigned long)ino);
 					goto bail;
 				}
 				if (le16_to_cpu(fnode->btree.first_free) !=
+<<<<<<< HEAD
 				    8 + fnode->btree.n_used_nodes * (fnode->btree.internal ? 8 : 12)) {
+=======
+				    8 + fnode->btree.n_used_nodes * (bp_internal(&fnode->btree) ? 8 : 12)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hpfs_error(s,
 					    "bad first_free pointer in fnode %08lx",
 					    (unsigned long)ino);
@@ -188,12 +298,20 @@ struct anode *hpfs_map_anode(struct super_block *s, anode_secno ano, struct buff
 				goto bail;
 			}
 			if ((unsigned)anode->btree.n_used_nodes + (unsigned)anode->btree.n_free_nodes !=
+<<<<<<< HEAD
 			    (anode->btree.internal ? 60 : 40)) {
+=======
+			    (bp_internal(&anode->btree) ? 60 : 40)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hpfs_error(s, "bad number of nodes in anode %08x", ano);
 				goto bail;
 			}
 			if (le16_to_cpu(anode->btree.first_free) !=
+<<<<<<< HEAD
 			    8 + anode->btree.n_used_nodes * (anode->btree.internal ? 8 : 12)) {
+=======
+			    8 + anode->btree.n_used_nodes * (bp_internal(&anode->btree) ? 8 : 12)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hpfs_error(s, "bad first_free pointer in anode %08x", ano);
 				goto bail;
 			}
@@ -243,7 +361,11 @@ struct dnode *hpfs_map_dnode(struct super_block *s, unsigned secno,
 					goto bail;
 				}
 				if (((31 + de->namelen + de->down*4 + 3) & ~3) != le16_to_cpu(de->length)) {
+<<<<<<< HEAD
 					if (((31 + de->namelen + de->down*4 + 3) & ~3) < le16_to_cpu(de->length) && s->s_flags & MS_RDONLY) goto ok;
+=======
+					if (((31 + de->namelen + de->down*4 + 3) & ~3) < le16_to_cpu(de->length) && s->s_flags & SB_RDONLY) goto ok;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hpfs_error(s, "namelen does not match dirent size in dnode %08x, dirent %03x, last %03x", secno, p, pp);
 					goto bail;
 				}
@@ -264,7 +386,13 @@ struct dnode *hpfs_map_dnode(struct super_block *s, unsigned secno,
 				hpfs_error(s, "dnode %08x does not end with \\377 entry", secno);
 				goto bail;
 			}
+<<<<<<< HEAD
 			if (b == 3) printk("HPFS: warning: unbalanced dnode tree, dnode %08x; see hpfs.txt 4 more info\n", secno);
+=======
+			if (b == 3)
+				pr_err("unbalanced dnode tree, dnode %08x; see hpfs.txt 4 more info\n",
+					secno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	return dnode;
 	bail:

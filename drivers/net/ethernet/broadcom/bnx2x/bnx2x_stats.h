@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 /* bnx2x_stats.h: Broadcom Everest network driver.
  *
  * Copyright (c) 2007-2012 Broadcom Corporation
+=======
+/* bnx2x_stats.h: QLogic Everest network driver.
+ *
+ * Copyright (c) 2007-2013 Broadcom Corporation
+ * Copyright (c) 2014 QLogic Corporation
+ * All rights reserved
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
+<<<<<<< HEAD
  * Maintained by: Eilon Greenstein <eilong@broadcom.com>
+=======
+ * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by: Eliezer Tamir
  * Based on code from Michael Chan's bnx2 driver
  * UDP CSUM errata workaround by Arik Gendelman
@@ -34,6 +46,7 @@ struct nig_stats {
 	u32 pbf_octets;
 	u32 pbf_packet;
 	u32 safc_inp;
+<<<<<<< HEAD
 	u32 egress_mac_pkt0_lo;
 	u32 egress_mac_pkt0_hi;
 	u32 egress_mac_pkt1_lo;
@@ -41,6 +54,18 @@ struct nig_stats {
 };
 
 
+=======
+	struct_group(egress_mac_pkt0,
+		u32 egress_mac_pkt0_lo;
+		u32 egress_mac_pkt0_hi;
+	);
+	struct_group(egress_mac_pkt1,
+		u32 egress_mac_pkt1_lo;
+		u32 egress_mac_pkt1_hi;
+	);
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bnx2x_stats_event {
 	STATS_EVENT_PMF = 0,
 	STATS_EVENT_LINK_UP,
@@ -82,6 +107,10 @@ struct bnx2x_eth_stats {
 	u32 no_buff_discard_hi;
 	u32 no_buff_discard_lo;
 
+<<<<<<< HEAD
+=======
+	struct_group(shared,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_stat_ifhcinbadoctets_hi;
 	u32 rx_stat_ifhcinbadoctets_lo;
 	u32 tx_stat_ifhcoutbadoctets_hi;
@@ -158,6 +187,10 @@ struct bnx2x_eth_stats {
 	u32 tx_stat_dot3statsinternalmactransmiterrors_lo;
 	u32 tx_stat_bmac_ufl_hi;
 	u32 tx_stat_bmac_ufl_lo;
+<<<<<<< HEAD
+=======
+	);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 pause_frames_received_hi;
 	u32 pause_frames_received_lo;
@@ -203,8 +236,18 @@ struct bnx2x_eth_stats {
 	/* Recovery */
 	u32 recoverable_error;
 	u32 unrecoverable_error;
+<<<<<<< HEAD
 };
 
+=======
+	u32 driver_filtered_tx_pkt;
+	/* src: Clear-on-Read register; Will not survive PMF Migration */
+	u32 eee_tx_lpi;
+
+	/* PTP */
+	u32 ptp_skip_tx_ts;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bnx2x_eth_q_stats {
 	u32 total_unicast_bytes_received_hi;
@@ -262,6 +305,10 @@ struct bnx2x_eth_q_stats {
 	u32 total_tpa_aggregated_frames_lo;
 	u32 total_tpa_bytes_hi;
 	u32 total_tpa_bytes_lo;
+<<<<<<< HEAD
+=======
+	u32 driver_filtered_tx_pkt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bnx2x_eth_stats_old {
@@ -313,6 +360,10 @@ struct bnx2x_eth_q_stats_old {
 	u32 rx_err_discard_pkt_old;
 	u32 rx_skb_alloc_failed_old;
 	u32 hw_csum_err_old;
+<<<<<<< HEAD
+=======
+	u32 driver_filtered_tx_pkt_old;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bnx2x_net_stats_old {
@@ -326,7 +377,10 @@ struct bnx2x_fw_port_stats_old {
 	 u32 mac_discard;
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************
 * Macros
 ****************************************************************************/
@@ -338,6 +392,21 @@ struct bnx2x_fw_port_stats_old {
 		s_hi += a_hi + ((s_lo < a_lo) ? 1 : 0); \
 	} while (0)
 
+<<<<<<< HEAD
+=======
+#define LE32_0 ((__force __le32) 0)
+#define LE16_0 ((__force __le16) 0)
+
+/* The _force is for cases where high value is 0 */
+#define ADD_64_LE(s_hi, a_hi_le, s_lo, a_lo_le) \
+		ADD_64(s_hi, le32_to_cpu(a_hi_le), \
+		       s_lo, le32_to_cpu(a_lo_le))
+
+#define ADD_64_LE16(s_hi, a_hi_le, s_lo, a_lo_le) \
+		ADD_64(s_hi, le16_to_cpu(a_hi_le), \
+		       s_lo, le16_to_cpu(a_lo_le))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* difference = minuend - subtrahend */
 #define DIFF_64(d_hi, m_hi, s_hi, d_lo, m_lo, s_lo) \
 	do { \
@@ -404,16 +473,31 @@ struct bnx2x_fw_port_stats_old {
 			      new->s); \
 	} while (0)
 
+<<<<<<< HEAD
 #define UPDATE_EXTEND_TSTAT(s, t) \
 	do { \
 		diff = le32_to_cpu(tclient->s) - le32_to_cpu(old_tclient->s); \
+=======
+#define UPDATE_EXTEND_TSTAT_X(s, t, size) \
+	do { \
+		diff = le##size##_to_cpu(tclient->s) - \
+		       le##size##_to_cpu(old_tclient->s); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		old_tclient->s = tclient->s; \
 		ADD_EXTEND_64(qstats->t##_hi, qstats->t##_lo, diff); \
 	} while (0)
 
+<<<<<<< HEAD
 #define UPDATE_EXTEND_E_TSTAT(s, t) \
 	do { \
 		UPDATE_EXTEND_TSTAT(s, t); \
+=======
+#define UPDATE_EXTEND_TSTAT(s, t) UPDATE_EXTEND_TSTAT_X(s, t, 32)
+
+#define UPDATE_EXTEND_E_TSTAT(s, t, size) \
+	do { \
+		UPDATE_EXTEND_TSTAT_X(s, t, size); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ADD_EXTEND_64(estats->t##_hi, estats->t##_lo, diff); \
 	} while (0)
 
@@ -516,6 +600,7 @@ struct bnx2x_fw_port_stats_old {
 		SUB_EXTEND_64(qstats->t##_hi, qstats->t##_lo, diff); \
 	} while (0)
 
+<<<<<<< HEAD
 
 /* forward */
 struct bnx2x;
@@ -523,6 +608,17 @@ struct bnx2x;
 void bnx2x_stats_init(struct bnx2x *bp);
 
 void bnx2x_stats_handle(struct bnx2x *bp, enum bnx2x_stats_event event);
+=======
+/* forward */
+struct bnx2x;
+
+void bnx2x_memset_stats(struct bnx2x *bp);
+void bnx2x_stats_init(struct bnx2x *bp);
+void bnx2x_stats_handle(struct bnx2x *bp, enum bnx2x_stats_event event);
+int bnx2x_stats_safe_exec(struct bnx2x *bp,
+			  void (func_to_exec)(void *cookie),
+			  void *cookie);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bnx2x_save_statistics - save statistics when unloading.
@@ -530,4 +626,10 @@ void bnx2x_stats_handle(struct bnx2x *bp, enum bnx2x_stats_event event);
  * @bp:		driver handle
  */
 void bnx2x_save_statistics(struct bnx2x *bp);
+<<<<<<< HEAD
+=======
+
+void bnx2x_afex_collect_stats(struct bnx2x *bp, void *void_afex_stats,
+			      u32 stats_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* BNX2X_STATS_H */

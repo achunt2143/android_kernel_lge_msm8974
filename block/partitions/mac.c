@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/mac.c
  *
@@ -19,6 +23,10 @@ extern void note_bootable_part(dev_t dev, int part, int goodness);
  * Code to understand MacOS partition tables.
  */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_PMAC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void mac_fix_string(char *stg, int len)
 {
 	int i;
@@ -26,6 +34,10 @@ static inline void mac_fix_string(char *stg, int len)
 	for (i = len - 1; i >= 0 && stg[i] == ' '; i--)
 		stg[i] = 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int mac_partition(struct parsed_partitions *state)
 {
@@ -67,6 +79,13 @@ int mac_partition(struct parsed_partitions *state)
 		put_dev_sector(sect);
 		return 0;
 	}
+<<<<<<< HEAD
+=======
+
+	if (blocks_in_map >= state->limit)
+		blocks_in_map = state->limit - 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strlcat(state->pp_buf, " [mac]", PAGE_SIZE);
 	for (slot = 1; slot <= blocks_in_map; ++slot) {
 		int pos = slot * secsize;
@@ -81,7 +100,11 @@ int mac_partition(struct parsed_partitions *state)
 			be32_to_cpu(part->start_block) * (secsize/512),
 			be32_to_cpu(part->block_count) * (secsize/512));
 
+<<<<<<< HEAD
 		if (!strnicmp(part->type, "Linux_RAID", 10))
+=======
+		if (!strncasecmp(part->type, "Linux_RAID", 10))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			state->parts[slot].flags = ADDPART_FLAG_RAID;
 #ifdef CONFIG_PPC_PMAC
 		/*
@@ -100,7 +123,11 @@ int mac_partition(struct parsed_partitions *state)
 				goodness++;
 
 			if (strcasecmp(part->type, "Apple_UNIX_SVR2") == 0
+<<<<<<< HEAD
 			    || (strnicmp(part->type, "Linux", 5) == 0
+=======
+			    || (strncasecmp(part->type, "Linux", 5) == 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			        && strcasecmp(part->type, "Linux_swap") != 0)) {
 				int i, l;
 
@@ -109,13 +136,21 @@ int mac_partition(struct parsed_partitions *state)
 				if (strcmp(part->name, "/") == 0)
 					goodness++;
 				for (i = 0; i <= l - 4; ++i) {
+<<<<<<< HEAD
 					if (strnicmp(part->name + i, "root",
+=======
+					if (strncasecmp(part->name + i, "root",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     4) == 0) {
 						goodness += 2;
 						break;
 					}
 				}
+<<<<<<< HEAD
 				if (strnicmp(part->name, "swap", 4) == 0)
+=======
+				if (strncasecmp(part->name, "swap", 4) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goodness--;
 			}
 
@@ -128,7 +163,11 @@ int mac_partition(struct parsed_partitions *state)
 	}
 #ifdef CONFIG_PPC_PMAC
 	if (found_root_goodness)
+<<<<<<< HEAD
 		note_bootable_part(state->bdev->bd_dev, found_root,
+=======
+		note_bootable_part(state->disk->part0->bd_dev, found_root,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   found_root_goodness);
 #endif
 

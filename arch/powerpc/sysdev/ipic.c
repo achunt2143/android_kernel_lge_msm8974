@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/powerpc/sysdev/ipic.c
  *
  * IPIC routines implementations.
  *
  * Copyright 2005 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -20,12 +27,21 @@
 #include <linux/signal.h>
 #include <linux/syscore_ops.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/spinlock.h>
 #include <linux/fsl_devices.h>
 #include <asm/irq.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <linux/spinlock.h>
+#include <linux/fsl_devices.h>
+#include <linux/irqdomain.h>
+#include <linux/of_address.h>
+#include <asm/irq.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ipic.h>
 
 #include "ipic.h"
@@ -316,6 +332,10 @@ static struct ipic_info ipic_info[] = {
 		.prio_mask = 7,
 	},
 	[48] = {
+<<<<<<< HEAD
+=======
+		.ack	= IPIC_SEPNR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mask	= IPIC_SEMSR,
 		.prio	= IPIC_SMPRR_A,
 		.force	= IPIC_SEFCR,
@@ -625,10 +645,17 @@ static int ipic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 
 	irqd_set_trigger_type(d, flow_type);
 	if (flow_type & IRQ_TYPE_LEVEL_LOW)  {
+<<<<<<< HEAD
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 		d->chip = &ipic_level_irq_chip;
 	} else {
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
+=======
+		irq_set_handler_locked(d, handle_level_irq);
+		d->chip = &ipic_level_irq_chip;
+	} else {
+		irq_set_handler_locked(d, handle_edge_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d->chip = &ipic_edge_irq_chip;
 	}
 
@@ -672,10 +699,19 @@ static struct irq_chip ipic_edge_irq_chip = {
 	.irq_set_type	= ipic_set_irq_type,
 };
 
+<<<<<<< HEAD
 static int ipic_host_match(struct irq_domain *h, struct device_node *node)
 {
 	/* Exact match, unless ipic node is NULL */
 	return h->of_node == NULL || h->of_node == node;
+=======
+static int ipic_host_match(struct irq_domain *h, struct device_node *node,
+			   enum irq_domain_bus_token bus_token)
+{
+	/* Exact match, unless ipic node is NULL */
+	struct device_node *of_node = irq_domain_get_of_node(h);
+	return of_node == NULL || of_node == node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipic_host_map(struct irq_domain *h, unsigned int virq,
@@ -692,7 +728,11 @@ static int ipic_host_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops ipic_host_ops = {
+=======
+static const struct irq_domain_ops ipic_host_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match	= ipic_host_match,
 	.map	= ipic_host_map,
 	.xlate	= irq_domain_xlate_onetwocell,
@@ -769,6 +809,7 @@ struct ipic * __init ipic_init(struct device_node *node, unsigned int flags)
 	return ipic;
 }
 
+<<<<<<< HEAD
 int ipic_set_priority(unsigned int virq, unsigned int priority)
 {
 	struct ipic *ipic = ipic_from_irq(virq);
@@ -813,6 +854,9 @@ void ipic_set_highest_priority(unsigned int virq)
 }
 
 void ipic_set_default_priority(void)
+=======
+void __init ipic_set_default_priority(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ipic_write(primary_ipic->regs, IPIC_SIPRR_A, IPIC_PRIORITY_DEFAULT);
 	ipic_write(primary_ipic->regs, IPIC_SIPRR_B, IPIC_PRIORITY_DEFAULT);
@@ -822,6 +866,7 @@ void ipic_set_default_priority(void)
 	ipic_write(primary_ipic->regs, IPIC_SMPRR_B, IPIC_PRIORITY_DEFAULT);
 }
 
+<<<<<<< HEAD
 void ipic_enable_mcp(enum ipic_mcp_irq mcp_irq)
 {
 	struct ipic *ipic = primary_ipic;
@@ -845,14 +890,26 @@ void ipic_disable_mcp(enum ipic_mcp_irq mcp_irq)
 u32 ipic_get_mcp_status(void)
 {
 	return ipic_read(primary_ipic->regs, IPIC_SERMR);
+=======
+u32 ipic_get_mcp_status(void)
+{
+	return primary_ipic ? ipic_read(primary_ipic->regs, IPIC_SERSR) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipic_clear_mcp_status(u32 mask)
 {
+<<<<<<< HEAD
 	ipic_write(primary_ipic->regs, IPIC_SERMR, mask);
 }
 
 /* Return an interrupt vector or NO_IRQ if no interrupt is pending. */
+=======
+	ipic_write(primary_ipic->regs, IPIC_SERSR, mask);
+}
+
+/* Return an interrupt vector or 0 if no interrupt is pending. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int ipic_get_irq(void)
 {
 	int irq;
@@ -863,7 +920,11 @@ unsigned int ipic_get_irq(void)
 	irq = ipic_read(primary_ipic->regs, IPIC_SIVCR) & IPIC_SIVCR_VECTOR_MASK;
 
 	if (irq == 0)    /* 0 --> no irq is pending */
+<<<<<<< HEAD
 		return NO_IRQ;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return irq_linear_revmap(primary_ipic->irqhost, irq);
 }

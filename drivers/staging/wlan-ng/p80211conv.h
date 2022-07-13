@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* p80211conv.h
 *
 * Ether/802.11 conversions and packet buffer routines
@@ -49,22 +50,62 @@
 *
 * --------------------------------------------------------------------
 */
+=======
+/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
+/*
+ *
+ * Ether/802.11 conversions and packet buffer routines
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * This file declares the functions, types and macros that perform
+ * Ethernet to/from 802.11 frame conversions.
+ *
+ * --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _LINUX_P80211CONV_H
 #define _LINUX_P80211CONV_H
 
+<<<<<<< HEAD
 #define WLAN_ETHADDR_LEN	6
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WLAN_IEEE_OUI_LEN	3
 
 #define WLAN_ETHCONV_ENCAP	1
 #define WLAN_ETHCONV_8021h	3
 
+<<<<<<< HEAD
 #define WLAN_ETHHDR_LEN		14
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define P80211CAPTURE_VERSION	0x80211001
 
 #define	P80211_FRMMETA_MAGIC	0x802110
 
+<<<<<<< HEAD
 #define P80211SKB_FRMMETA(s) \
 	(((((struct p80211_frmmeta *)((s)->cb))->magic) == \
 		P80211_FRMMETA_MAGIC) ? \
@@ -75,6 +116,8 @@
 	(P80211SKB_FRMMETA((s)) ?  P80211SKB_FRMMETA((s))->rx : \
 		((struct p80211_rxmeta *)(NULL)))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct p80211_rxmeta {
 	struct wlandevice *wlandev;
 
@@ -100,10 +143,28 @@ void p80211skb_free(struct wlandevice *wlandev, struct sk_buff *skb);
 int p80211skb_rxmeta_attach(struct wlandevice *wlandev, struct sk_buff *skb);
 void p80211skb_rxmeta_detach(struct sk_buff *skb);
 
+<<<<<<< HEAD
+=======
+static inline struct p80211_frmmeta *p80211skb_frmmeta(struct sk_buff *skb)
+{
+	struct p80211_frmmeta *frmmeta = (struct p80211_frmmeta *)skb->cb;
+
+	return frmmeta->magic == P80211_FRMMETA_MAGIC ? frmmeta : NULL;
+}
+
+static inline struct p80211_rxmeta *p80211skb_rxmeta(struct sk_buff *skb)
+{
+	struct p80211_frmmeta *frmmeta = p80211skb_frmmeta(skb);
+
+	return frmmeta ? frmmeta->rx : NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Frame capture header.  (See doc/capturefrm.txt)
  */
 struct p80211_caphdr {
+<<<<<<< HEAD
 	u32 version;
 	u32 length;
 	u64 mactime;
@@ -123,6 +184,24 @@ struct p80211_caphdr {
 /* buffer free method pointer type */
 typedef void (*freebuf_method_t) (void *buf, int size);
 
+=======
+	__be32 version;
+	__be32 length;
+	__be64 mactime;
+	__be64 hosttime;
+	__be32 phytype;
+	__be32 channel;
+	__be32 datarate;
+	__be32 antenna;
+	__be32 priority;
+	__be32 ssi_type;
+	__be32 ssi_signal;
+	__be32 ssi_noise;
+	__be32 preamble;
+	__be32 encoding;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct p80211_metawep {
 	void *data;
 	u8 iv[4];
@@ -131,9 +210,15 @@ struct p80211_metawep {
 
 /* local ether header type */
 struct wlan_ethhdr {
+<<<<<<< HEAD
 	u8 daddr[WLAN_ETHADDR_LEN];
 	u8 saddr[WLAN_ETHADDR_LEN];
 	u16 type;
+=======
+	u8 daddr[ETH_ALEN];
+	u8 saddr[ETH_ALEN];
+	__be16 type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* local llc header type */
@@ -146,7 +231,11 @@ struct wlan_llc {
 /* local snap header type */
 struct wlan_snap {
 	u8 oui[WLAN_IEEE_OUI_LEN];
+<<<<<<< HEAD
 	u16 type;
+=======
+	__be16 type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Circular include trick */
@@ -155,7 +244,11 @@ struct wlandevice;
 int skb_p80211_to_ether(struct wlandevice *wlandev, u32 ethconv,
 			struct sk_buff *skb);
 int skb_ether_to_p80211(struct wlandevice *wlandev, u32 ethconv,
+<<<<<<< HEAD
 			struct sk_buff *skb, union p80211_hdr *p80211_hdr,
+=======
+			struct sk_buff *skb, struct p80211_hdr *p80211_hdr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct p80211_metawep *p80211_wep);
 
 int p80211_stt_findproto(u16 proto);

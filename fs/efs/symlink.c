@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symlink.c
  *
@@ -11,9 +15,16 @@
 #include <linux/buffer_head.h>
 #include "efs.h"
 
+<<<<<<< HEAD
 static int efs_symlink_readpage(struct file *file, struct page *page)
 {
 	char *link = kmap(page);
+=======
+static int efs_symlink_read_folio(struct file *file, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	char *link = page_address(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head * bh;
 	struct inode * inode = page->mapping->host;
 	efs_block_t size = inode->i_size;
@@ -39,16 +50,26 @@ static int efs_symlink_readpage(struct file *file, struct page *page)
 	}
 	link[size] = '\0';
 	SetPageUptodate(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return 0;
 fail:
 	SetPageError(page);
+<<<<<<< HEAD
 	kunmap(page);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return err;
 }
 
 const struct address_space_operations efs_symlink_aops = {
+<<<<<<< HEAD
 	.readpage	= efs_symlink_readpage
+=======
+	.read_folio	= efs_symlink_read_folio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

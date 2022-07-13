@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Initio 9100 device driver for Linux.
  *
@@ -6,6 +10,7 @@
  * Copyright (c) 2004 Christoph Hellwig <hch@lst.de>
  * Copyright (c) 2007 Red Hat
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -21,6 +26,8 @@
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *************************************************************************
  *
  * DESCRIPTION:
@@ -110,11 +117,14 @@
 #define i91u_MAXQUEUE		2
 #define i91u_REVID "Initio INI-9X00U/UW SCSI device driver; Revision: 1.04a"
 
+<<<<<<< HEAD
 #define I950_DEVICE_ID	0x9500	/* Initio's inic-950 product ID   */
 #define I940_DEVICE_ID	0x9400	/* Initio's inic-940 product ID   */
 #define I935_DEVICE_ID	0x9401	/* Initio's inic-935 product ID   */
 #define I920_DEVICE_ID	0x0002	/* Initio's other product ID      */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_i91u
 static unsigned int i91u_debug = DEBUG_DEFAULT;
 #endif
@@ -127,6 +137,7 @@ static int setup_debug = 0;
 
 static void i91uSCBPost(u8 * pHcb, u8 * pScb);
 
+<<<<<<< HEAD
 /* PCI Devices supported by this driver */
 static struct pci_device_id i91u_pci_devices[] = {
 	{ PCI_VENDOR_ID_INIT,  I950_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
@@ -138,6 +149,8 @@ static struct pci_device_id i91u_pci_devices[] = {
 };
 MODULE_DEVICE_TABLE(pci, i91u_pci_devices);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBUG_INTERRUPT 0
 #define DEBUG_QUEUE     0
 #define DEBUG_STATE     0
@@ -401,7 +414,10 @@ static u16 initio_se2_rd(unsigned long base, u8 addr)
  */
 static void initio_se2_wr(unsigned long base, u8 addr, u16 val)
 {
+<<<<<<< HEAD
 	u8 rb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 instr;
 	int i;
 
@@ -430,7 +446,11 @@ static void initio_se2_wr(unsigned long base, u8 addr, u16 val)
 		udelay(30);
 		outb(SE2CS, base + TUL_NVRAM);			/* -CLK */
 		udelay(30);
+<<<<<<< HEAD
 		if ((rb = inb(base + TUL_NVRAM)) & SE2DI)
+=======
+		if (inb(base + TUL_NVRAM) & SE2DI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;	/* write complete */
 	}
 	outb(0, base + TUL_NVRAM);				/* -CS */
@@ -576,7 +596,10 @@ static int initio_reset_scsi(struct initio_host * host, int seconds)
 /**
  *	initio_init		-	set up an InitIO host adapter
  *	@host: InitIO host adapter
+<<<<<<< HEAD
  *	@num_scbs: Number of SCBS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@bios_addr: BIOS address
  *
  *	Set up the host adapter and devices according to the configuration
@@ -896,17 +919,28 @@ static void initio_unlink_busy_scb(struct initio_host * host, struct scsi_ctrl_b
 
 struct scsi_ctrl_blk *initio_find_busy_scb(struct initio_host * host, u16 tarlun)
 {
+<<<<<<< HEAD
 	struct scsi_ctrl_blk *tmp, *prev;
 	u16 scbp_tarlun;
 
 
 	prev = tmp = host->first_busy;
+=======
+	struct scsi_ctrl_blk *tmp;
+	u16 scbp_tarlun;
+
+
+	tmp = host->first_busy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (tmp != NULL) {
 		scbp_tarlun = (tmp->lun << 8) | (tmp->target);
 		if (scbp_tarlun == tarlun) {	/* Unlink this SCB              */
 			break;
 		}
+<<<<<<< HEAD
 		prev = tmp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = tmp->next;
 	}
 #if DEBUG_QUEUE
@@ -1198,7 +1232,11 @@ static void tulip_scsi(struct initio_host * host)
 			return;
 		}
 		if (host->jsint & (TSS_FUNC_COMP | TSS_BUS_SERV)) {	/* func complete or Bus service */
+<<<<<<< HEAD
 			if ((scb = host->active) != NULL)
+=======
+			if (host->active)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				initio_next_state(host);
 			return;
 		}
@@ -1345,6 +1383,7 @@ static int initio_state_1(struct initio_host * host)
 		}
 		if ((active_tc->flags & (TCF_WDTR_DONE | TCF_NO_WDTR)) == 0) {
 			active_tc->flags |= TCF_WDTR_DONE;
+<<<<<<< HEAD
 			outb(MSG_EXTEND, host->addr + TUL_SFifo);
 			outb(2, host->addr + TUL_SFifo);	/* Extended msg length */
 			outb(3, host->addr + TUL_SFifo);	/* Sync request */
@@ -1354,6 +1393,17 @@ static int initio_state_1(struct initio_host * host)
 			outb(MSG_EXTEND, host->addr + TUL_SFifo);
 			outb(3, host->addr + TUL_SFifo);	/* extended msg length */
 			outb(1, host->addr + TUL_SFifo);	/* sync request */
+=======
+			outb(EXTENDED_MESSAGE, host->addr + TUL_SFifo);
+			outb(2, host->addr + TUL_SFifo);	/* Extended msg length */
+			outb(EXTENDED_SDTR, host->addr + TUL_SFifo);	/* Sync request */
+			outb(1, host->addr + TUL_SFifo);	/* Start from 16 bits */
+		} else if ((active_tc->flags & (TCF_SYNC_DONE | TCF_NO_SYNC_NEGO)) == 0) {
+			active_tc->flags |= TCF_SYNC_DONE;
+			outb(EXTENDED_MESSAGE, host->addr + TUL_SFifo);
+			outb(3, host->addr + TUL_SFifo);	/* extended msg length */
+			outb(EXTENDED_SDTR, host->addr + TUL_SFifo);	/* sync request */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(initio_rate_tbl[active_tc->flags & TCF_SCSI_RATE], host->addr + TUL_SFifo);
 			outb(MAX_OFFSET, host->addr + TUL_SFifo);	/* REQ/ACK offset */
 		}
@@ -1439,16 +1489,26 @@ static int initio_state_3(struct initio_host * host)
 
 		case MSG_OUT:	/* Message out phase            */
 			if (active_tc->flags & (TCF_SYNC_DONE | TCF_NO_SYNC_NEGO)) {
+<<<<<<< HEAD
 				outb(MSG_NOP, host->addr + TUL_SFifo);		/* msg nop */
+=======
+				outb(NOP, host->addr + TUL_SFifo);		/* msg nop */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 				if (wait_tulip(host) == -1)
 					return -1;
 			} else {
 				active_tc->flags |= TCF_SYNC_DONE;
 
+<<<<<<< HEAD
 				outb(MSG_EXTEND, host->addr + TUL_SFifo);
 				outb(3, host->addr + TUL_SFifo);	/* ext. msg len */
 				outb(1, host->addr + TUL_SFifo);	/* sync request */
+=======
+				outb(EXTENDED_MESSAGE, host->addr + TUL_SFifo);
+				outb(3, host->addr + TUL_SFifo);	/* ext. msg len */
+				outb(EXTENDED_SDTR, host->addr + TUL_SFifo);	/* sync request */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				outb(initio_rate_tbl[active_tc->flags & TCF_SCSI_RATE], host->addr + TUL_SFifo);
 				outb(MAX_OFFSET, host->addr + TUL_SFifo);	/* REQ/ACK offset */
 				outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
@@ -1509,7 +1569,11 @@ static int initio_state_4(struct initio_host * host)
 					return -1;
 				return 6;
 			} else {
+<<<<<<< HEAD
 				outb(MSG_NOP, host->addr + TUL_SFifo);		/* msg nop */
+=======
+				outb(NOP, host->addr + TUL_SFifo);		/* msg nop */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 				if (wait_tulip(host) == -1)
 					return -1;
@@ -1646,7 +1710,11 @@ static int initio_state_6(struct initio_host * host)
 			break;
 
 		case MSG_OUT:	/* Message out phase            */
+<<<<<<< HEAD
 			outb(MSG_NOP, host->addr + TUL_SFifo);		/* msg nop */
+=======
+			outb(NOP, host->addr + TUL_SFifo);		/* msg nop */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 			if (wait_tulip(host) == -1)
 				return -1;
@@ -1670,7 +1738,11 @@ static int initio_state_6(struct initio_host * host)
  *
  */
 
+<<<<<<< HEAD
 int initio_state_7(struct initio_host * host)
+=======
+static int initio_state_7(struct initio_host * host)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cnt, i;
 
@@ -1819,9 +1891,15 @@ int initio_status_msg(struct initio_host * host)
 
 	if (host->phase == MSG_OUT) {
 		if (host->jsstatus0 & TSS_PAR_ERROR)
+<<<<<<< HEAD
 			outb(MSG_PARITY, host->addr + TUL_SFifo);
 		else
 			outb(MSG_NOP, host->addr + TUL_SFifo);
+=======
+			outb(MSG_PARITY_ERROR, host->addr + TUL_SFifo);
+		else
+			outb(NOP, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 		return wait_tulip(host);
 	}
@@ -1832,7 +1910,11 @@ int initio_status_msg(struct initio_host * host)
 				return -1;
 			if (host->phase != MSG_OUT)
 				return initio_bad_seq(host);
+<<<<<<< HEAD
 			outb(MSG_PARITY, host->addr + TUL_SFifo);
+=======
+			outb(MSG_PARITY_ERROR, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 			return wait_tulip(host);
 		}
@@ -1845,7 +1927,12 @@ int initio_status_msg(struct initio_host * host)
 			return initio_wait_done_disc(host);
 
 		}
+<<<<<<< HEAD
 		if (msg == MSG_LINK_COMP || msg == MSG_LINK_FLAG) {
+=======
+		if (msg == LINKED_CMD_COMPLETE ||
+		    msg == LINKED_FLG_CMD_COMPLETE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((scb->tastat & 0x18) == 0x10)
 				return initio_msgin_accept(host);
 		}
@@ -1917,7 +2004,11 @@ static int int_initio_scsi_rst(struct initio_host * host)
 }
 
 /**
+<<<<<<< HEAD
  *	int_initio_scsi_resel	-	Reselection occurred
+=======
+ *	int_initio_resel	-	Reselection occurred
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@host: InitIO host adapter
  *
  *	A SCSI reselection event has been signalled and the interrupt
@@ -1960,7 +2051,12 @@ int int_initio_resel(struct initio_host * host)
 			return -1;
 		msg = inb(host->addr + TUL_SFifo);	/* Read Tag Message    */
 
+<<<<<<< HEAD
 		if (msg < MSG_STAG || msg > MSG_OTAG)		/* Is simple Tag      */
+=======
+		if (msg < SIMPLE_QUEUE_TAG || msg > ORDERED_QUEUE_TAG)
+			/* Is simple Tag      */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto no_tag;
 
 		if (initio_msgin_accept(host) == -1)
@@ -2040,7 +2136,11 @@ static int initio_msgout_abort_targ(struct initio_host * host)
 	if (host->phase != MSG_OUT)
 		return initio_bad_seq(host);
 
+<<<<<<< HEAD
 	outb(MSG_ABORT, host->addr + TUL_SFifo);
+=======
+	outb(ABORT_TASK_SET, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 
 	return initio_wait_disc(host);
@@ -2063,7 +2163,11 @@ static int initio_msgout_abort_tag(struct initio_host * host)
 	if (host->phase != MSG_OUT)
 		return initio_bad_seq(host);
 
+<<<<<<< HEAD
 	outb(MSG_ABORT_TAG, host->addr + TUL_SFifo);
+=======
+	outb(ABORT_TASK, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 
 	return initio_wait_disc(host);
@@ -2089,6 +2193,7 @@ static int initio_msgin(struct initio_host * host)
 			return -1;
 
 		switch (inb(host->addr + TUL_SFifo)) {
+<<<<<<< HEAD
 		case MSG_DISC:	/* Disconnect msg */
 			outb(TSC_MSG_ACCEPT, host->addr + TUL_SCmd);
 			return initio_wait_disc(host);
@@ -2098,6 +2203,17 @@ static int initio_msgin(struct initio_host * host)
 			initio_msgin_accept(host);
 			break;
 		case MSG_REJ:	/* Clear ATN first              */
+=======
+		case DISCONNECT:	/* Disconnect msg */
+			outb(TSC_MSG_ACCEPT, host->addr + TUL_SCmd);
+			return initio_wait_disc(host);
+		case SAVE_POINTERS:
+		case RESTORE_POINTERS:
+		case NOP:
+			initio_msgin_accept(host);
+			break;
+		case MESSAGE_REJECT:	/* Clear ATN first              */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb((inb(host->addr + TUL_SSignal) & (TSC_SET_ACK | 7)),
 				host->addr + TUL_SSignal);
 			active_tc = host->active_tc;
@@ -2106,6 +2222,7 @@ static int initio_msgin(struct initio_host * host)
 					host->addr + TUL_SSignal);
 			initio_msgin_accept(host);
 			break;
+<<<<<<< HEAD
 		case MSG_EXTEND:	/* extended msg */
 			initio_msgin_extend(host);
 			break;
@@ -2113,6 +2230,15 @@ static int initio_msgin(struct initio_host * host)
 			initio_msgin_accept(host);
 			break;
 		case MSG_COMP:
+=======
+		case EXTENDED_MESSAGE:	/* extended msg */
+			initio_msgin_extend(host);
+			break;
+		case IGNORE_WIDE_RESIDUE:
+			initio_msgin_accept(host);
+			break;
+		case COMMAND_COMPLETE:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(TSC_FLUSH_FIFO, host->addr + TUL_SCtrl0);
 			outb(TSC_MSG_ACCEPT, host->addr + TUL_SCmd);
 			return initio_wait_done_disc(host);
@@ -2134,7 +2260,11 @@ static int initio_msgout_reject(struct initio_host * host)
 		return -1;
 
 	if (host->phase == MSG_OUT) {
+<<<<<<< HEAD
 		outb(MSG_REJ, host->addr + TUL_SFifo);		/* Msg reject           */
+=======
+		outb(MESSAGE_REJECT, host->addr + TUL_SFifo);		/* Msg reject           */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 		return wait_tulip(host);
 	}
@@ -2143,7 +2273,11 @@ static int initio_msgout_reject(struct initio_host * host)
 
 static int initio_msgout_ide(struct initio_host * host)
 {
+<<<<<<< HEAD
 	outb(MSG_IDE, host->addr + TUL_SFifo);		/* Initiator Detected Error */
+=======
+	outb(INITIATOR_ERROR, host->addr + TUL_SFifo);		/* Initiator Detected Error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 	return wait_tulip(host);
 }
@@ -2197,9 +2331,15 @@ static int initio_msgin_extend(struct initio_host * host)
 
 		initio_sync_done(host);
 
+<<<<<<< HEAD
 		outb(MSG_EXTEND, host->addr + TUL_SFifo);
 		outb(3, host->addr + TUL_SFifo);
 		outb(1, host->addr + TUL_SFifo);
+=======
+		outb(EXTENDED_MESSAGE, host->addr + TUL_SFifo);
+		outb(3, host->addr + TUL_SFifo);
+		outb(EXTENDED_SDTR, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(host->msg[2], host->addr + TUL_SFifo);
 		outb(host->msg[3], host->addr + TUL_SFifo);
 		outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
@@ -2229,9 +2369,15 @@ static int initio_msgin_extend(struct initio_host * host)
 	if (initio_msgin_accept(host) != MSG_OUT)
 		return host->phase;
 	/* WDTR msg out                 */
+<<<<<<< HEAD
 	outb(MSG_EXTEND, host->addr + TUL_SFifo);
 	outb(2, host->addr + TUL_SFifo);
 	outb(3, host->addr + TUL_SFifo);
+=======
+	outb(EXTENDED_MESSAGE, host->addr + TUL_SFifo);
+	outb(2, host->addr + TUL_SFifo);
+	outb(EXTENDED_WDTR, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(host->msg[2], host->addr + TUL_SFifo);
 	outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 	return wait_tulip(host);
@@ -2421,7 +2567,11 @@ int initio_bus_device_reset(struct initio_host * host)
 		}
 		tmp = tmp->next;
 	}
+<<<<<<< HEAD
 	outb(MSG_DEVRST, host->addr + TUL_SFifo);
+=======
+	outb(TARGET_RESET, host->addr + TUL_SFifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(TSC_XF_FIFO_OUT, host->addr + TUL_SCmd);
 	return initio_wait_disc(host);
 
@@ -2583,7 +2733,11 @@ static void initio_build_scb(struct initio_host * host, struct scsi_ctrl_blk * c
 				  SENSE_SIZE, DMA_FROM_DEVICE);
 	cblk->senseptr = (u32)dma_addr;
 	cblk->senselen = SENSE_SIZE;
+<<<<<<< HEAD
 	cmnd->SCp.ptr = (char *)(unsigned long)dma_addr;
+=======
+	initio_priv(cmnd)->sense_dma_addr = dma_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cblk->cdblen = cmnd->cmd_len;
 
 	/* Clear the returned status */
@@ -2607,7 +2761,11 @@ static void initio_build_scb(struct initio_host * host, struct scsi_ctrl_blk * c
 					  sizeof(struct sg_entry) * TOTAL_SG_ENTRY,
 					  DMA_BIDIRECTIONAL);
 		cblk->bufptr = (u32)dma_addr;
+<<<<<<< HEAD
 		cmnd->SCp.dma_handle = dma_addr;
+=======
+		initio_priv(cmnd)->sglist_dma_addr = dma_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cblk->sglen = nseg;
 
@@ -2630,23 +2788,35 @@ static void initio_build_scb(struct initio_host * host, struct scsi_ctrl_blk * c
 }
 
 /**
+<<<<<<< HEAD
  *	i91u_queuecommand	-	Queue a new command if possible
  *	@cmd: SCSI command block from the mid layer
  *	@done: Completion handler
+=======
+ *	i91u_queuecommand_lck	-	Queue a new command if possible
+ *	@cmd: SCSI command block from the mid layer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Attempts to queue a new command with the host adapter. Will return
  *	zero if successful or indicate a host busy condition if not (which
  *	will cause the mid layer to call us again later with the command)
  */
+<<<<<<< HEAD
 
 static int i91u_queuecommand_lck(struct scsi_cmnd *cmd,
 		void (*done)(struct scsi_cmnd *))
+=======
+static int i91u_queuecommand_lck(struct scsi_cmnd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct initio_host *host = (struct initio_host *) cmd->device->host->hostdata;
 	struct scsi_ctrl_blk *cmnd;
 
+<<<<<<< HEAD
 	cmd->scsi_done = done;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmnd = initio_alloc_scb(host);
 	if (!cmnd)
 		return SCSI_MLQUEUE_HOST_BUSY;
@@ -2679,9 +2849,15 @@ static int i91u_bus_reset(struct scsi_cmnd * cmnd)
 }
 
 /**
+<<<<<<< HEAD
  *	i91u_biospararm			-	return the "logical geometry
  *	@sdev: SCSI device
  *	@dev; Matching block device
+=======
+ *	i91u_biosparam			-	return the "logical geometry
+ *	@sdev: SCSI device
+ *	@dev: Matching block device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@capacity: Sector size of drive
  *	@info_array: Return space for BIOS geometry
  *
@@ -2739,16 +2915,29 @@ static int i91u_biosparam(struct scsi_device *sdev, struct block_device *dev,
 static void i91u_unmap_scb(struct pci_dev *pci_dev, struct scsi_cmnd *cmnd)
 {
 	/* auto sense buffer */
+<<<<<<< HEAD
 	if (cmnd->SCp.ptr) {
 		dma_unmap_single(&pci_dev->dev,
 				 (dma_addr_t)((unsigned long)cmnd->SCp.ptr),
 				 SENSE_SIZE, DMA_FROM_DEVICE);
 		cmnd->SCp.ptr = NULL;
+=======
+	if (initio_priv(cmnd)->sense_dma_addr) {
+		dma_unmap_single(&pci_dev->dev,
+				 initio_priv(cmnd)->sense_dma_addr,
+				 SENSE_SIZE, DMA_FROM_DEVICE);
+		initio_priv(cmnd)->sense_dma_addr = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* request buffer */
 	if (scsi_sg_count(cmnd)) {
+<<<<<<< HEAD
 		dma_unmap_single(&pci_dev->dev, cmnd->SCp.dma_handle,
+=======
+		dma_unmap_single(&pci_dev->dev,
+				 initio_priv(cmnd)->sglist_dma_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 sizeof(struct sg_entry) * TOTAL_SG_ENTRY,
 				 DMA_BIDIRECTIONAL);
 
@@ -2756,10 +2945,15 @@ static void i91u_unmap_scb(struct pci_dev *pci_dev, struct scsi_cmnd *cmnd)
 	}
 }
 
+<<<<<<< HEAD
 /**
  *	i91uSCBPost		-	SCSI callback
  *	@host: Pointer to host adapter control block.
  *	@cmnd: Pointer to SCSI control block.
+=======
+/*
+ *	i91uSCBPost		-	SCSI callback
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This is callback routine be called when tulip finish one
  *	SCSI command.
@@ -2820,11 +3014,19 @@ static void i91uSCBPost(u8 * host_mem, u8 * cblk_mem)
 
 	cmnd->result = cblk->tastat | (cblk->hastat << 16);
 	i91u_unmap_scb(host->pci_dev, cmnd);
+<<<<<<< HEAD
 	cmnd->scsi_done(cmnd);	/* Notify system DONE           */
 	initio_release_scb(host, cblk);	/* Release SCB for current channel */
 }
 
 static struct scsi_host_template initio_template = {
+=======
+	scsi_done(cmnd);	/* Notify system DONE           */
+	initio_release_scb(host, cblk);	/* Release SCB for current channel */
+}
+
+static const struct scsi_host_template initio_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name		= "INI9100U",
 	.name			= "Initio INI-9X00U/UW SCSI device driver",
 	.queuecommand		= i91u_queuecommand,
@@ -2833,8 +3035,12 @@ static struct scsi_host_template initio_template = {
 	.can_queue		= MAX_TARGETS * i91u_MAXQUEUE,
 	.this_id		= 1,
 	.sg_tablesize		= SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun		= 1,
 	.use_clustering		= ENABLE_CLUSTERING,
+=======
+	.cmd_size		= sizeof(struct initio_cmd_priv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int initio_probe_one(struct pci_dev *pdev,
@@ -2857,7 +3063,11 @@ static int initio_probe_one(struct pci_dev *pdev,
 		reg = 0;
 	bios_seg = (bios_seg << 8) + ((u16) ((reg & 0xFF00) >> 8));
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING  "i91u: Could not set 32 bit DMA mask\n");
 		error = -ENODEV;
 		goto out_disable_device;
@@ -2886,7 +3096,12 @@ static int initio_probe_one(struct pci_dev *pdev,
 
 	for (; num_scb >= MAX_TARGETS + 3; num_scb--) {
 		i = num_scb * sizeof(struct scsi_ctrl_blk);
+<<<<<<< HEAD
 		if ((scb = kzalloc(i, GFP_DMA)) != NULL)
+=======
+		scb = kzalloc(i, GFP_KERNEL);
+		if (scb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
@@ -2931,7 +3146,11 @@ static int initio_probe_one(struct pci_dev *pdev,
 	shost->base = host->addr;
 	shost->sg_tablesize = TOTAL_SG_ENTRY;
 
+<<<<<<< HEAD
 	error = request_irq(pdev->irq, i91u_intr, IRQF_DISABLED|IRQF_SHARED, "i91u", shost);
+=======
+	error = request_irq(pdev->irq, i91u_intr, IRQF_SHARED, "i91u", shost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0) {
 		printk(KERN_WARNING "initio: Unable to request IRQ %d\n", pdev->irq);
 		goto out_free_scbs;
@@ -2992,6 +3211,7 @@ static struct pci_driver initio_pci_driver = {
 	.name		= "initio",
 	.id_table	= initio_pci_tbl,
 	.probe		= initio_probe_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(initio_remove_one),
 };
 
@@ -3004,10 +3224,18 @@ static void __exit initio_exit_driver(void)
 {
 	pci_unregister_driver(&initio_pci_driver);
 }
+=======
+	.remove		= initio_remove_one,
+};
+module_pci_driver(initio_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Initio INI-9X00U/UW SCSI device driver");
 MODULE_AUTHOR("Initio Corporation");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_init(initio_init_driver);
 module_exit(initio_exit_driver);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -12,12 +12,18 @@
 #include <linux/console.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/mc146818rtc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/param.h>
 #include <linux/sched.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
 #include <asm/mc146818-time.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mipsregs.h>
 #include <asm/mmu_context.h>
 #include <asm/sgialib.h>
@@ -28,8 +34,12 @@
 #include <asm/ip32/mace.h>
 #include <asm/ip32/ip32_ints.h>
 
+<<<<<<< HEAD
 extern void ip32_be_init(void);
 extern void crime_init(void);
+=======
+#include "ip32-common.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SGI_O2MACE_ETH
 /*

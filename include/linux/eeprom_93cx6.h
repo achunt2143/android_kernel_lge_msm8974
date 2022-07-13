@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 	Copyright (C) 2004 - 2006 rt2x00 SourceForge Project
 	<http://rt2x00.serialmonkey.com>
 
+<<<<<<< HEAD
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
 	along with this program; if not, write to the
 	Free Software Foundation, Inc.,
 	59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -75,6 +82,13 @@ extern void eeprom_93cx6_read(struct eeprom_93cx6 *eeprom,
 	const u8 word, u16 *data);
 extern void eeprom_93cx6_multiread(struct eeprom_93cx6 *eeprom,
 	const u8 word, __le16 *data, const u16 words);
+<<<<<<< HEAD
+=======
+extern void eeprom_93cx6_readb(struct eeprom_93cx6 *eeprom,
+	const u8 byte, u8 *data);
+extern void eeprom_93cx6_multireadb(struct eeprom_93cx6 *eeprom,
+	const u8 byte, u8 *data, const u16 bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void eeprom_93cx6_wren(struct eeprom_93cx6 *eeprom, bool enable);
 

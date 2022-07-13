@@ -1,8 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* leds-sunfire.c: SUNW,Ultra-Enterprise LED driver.
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -14,10 +23,14 @@
 #include <asm/fhc.h>
 #include <asm/upa.h>
 
+<<<<<<< HEAD
 #define DRIVER_NAME	"leds-sunfire"
 #define PFX		DRIVER_NAME ": "
 
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
+=======
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Sun Fire LED driver");
 MODULE_LICENSE("GPL");
 
@@ -123,13 +136,18 @@ struct sunfire_drvdata {
 	struct sunfire_led	leds[NUM_LEDS_PER_BOARD];
 };
 
+<<<<<<< HEAD
 static int __devinit sunfire_led_generic_probe(struct platform_device *pdev,
+=======
+static int sunfire_led_generic_probe(struct platform_device *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       struct led_type *types)
 {
 	struct sunfire_drvdata *p;
 	int i, err;
 
 	if (pdev->num_resources != 1) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Wrong number of resources %d, should be 1\n",
 		       pdev->num_resources);
 		err = -EINVAL;
@@ -142,6 +160,16 @@ static int __devinit sunfire_led_generic_probe(struct platform_device *pdev,
 		err = -ENOMEM;
 		goto out;
 	}
+=======
+		dev_err(&pdev->dev, "Wrong number of resources %d, should be 1\n",
+		       pdev->num_resources);
+		return -EINVAL;
+	}
+
+	p = devm_kzalloc(&pdev->dev, sizeof(*p), GFP_KERNEL);
+	if (!p)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < NUM_LEDS_PER_BOARD; i++) {
 		struct led_classdev *lp = &p->leds[i].led_cdev;
@@ -154,6 +182,7 @@ static int __devinit sunfire_led_generic_probe(struct platform_device *pdev,
 
 		err = led_classdev_register(&pdev->dev, lp);
 		if (err) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Could not register %s LED\n",
 			       lp->name);
 			goto out_unregister_led_cdevs;
@@ -175,14 +204,35 @@ out:
 static int __devexit sunfire_led_generic_remove(struct platform_device *pdev)
 {
 	struct sunfire_drvdata *p = dev_get_drvdata(&pdev->dev);
+=======
+			dev_err(&pdev->dev, "Could not register %s LED\n",
+			       lp->name);
+			for (i--; i >= 0; i--)
+				led_classdev_unregister(&p->leds[i].led_cdev);
+			return err;
+		}
+	}
+
+	platform_set_drvdata(pdev, p);
+
+	return 0;
+}
+
+static void sunfire_led_generic_remove(struct platform_device *pdev)
+{
+	struct sunfire_drvdata *p = platform_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < NUM_LEDS_PER_BOARD; i++)
 		led_classdev_unregister(&p->leds[i].led_cdev);
+<<<<<<< HEAD
 
 	kfree(p);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct led_type clockboard_led_types[NUM_LEDS_PER_BOARD] = {
@@ -197,11 +247,19 @@ static struct led_type clockboard_led_types[NUM_LEDS_PER_BOARD] = {
 	{
 		.name		= "clockboard-right",
 		.handler	= clockboard_right_set,
+<<<<<<< HEAD
 		.default_trigger= "heartbeat",
 	},
 };
 
 static int __devinit sunfire_clockboard_led_probe(struct platform_device *pdev)
+=======
+		.default_trigger = "heartbeat",
+	},
+};
+
+static int sunfire_clockboard_led_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sunfire_led_generic_probe(pdev, clockboard_led_types);
 }
@@ -218,11 +276,19 @@ static struct led_type fhc_led_types[NUM_LEDS_PER_BOARD] = {
 	{
 		.name		= "fhc-right",
 		.handler	= fhc_right_set,
+<<<<<<< HEAD
 		.default_trigger= "heartbeat",
 	},
 };
 
 static int __devinit sunfire_fhc_led_probe(struct platform_device *pdev)
+=======
+		.default_trigger = "heartbeat",
+	},
+};
+
+static int sunfire_fhc_led_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sunfire_led_generic_probe(pdev, fhc_led_types);
 }
@@ -232,15 +298,22 @@ MODULE_ALIAS("platform:sunfire-fhc-leds");
 
 static struct platform_driver sunfire_clockboard_led_driver = {
 	.probe		= sunfire_clockboard_led_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(sunfire_led_generic_remove),
 	.driver		= {
 		.name	= "sunfire-clockboard-leds",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= sunfire_led_generic_remove,
+	.driver		= {
+		.name	= "sunfire-clockboard-leds",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 static struct platform_driver sunfire_fhc_led_driver = {
 	.probe		= sunfire_fhc_led_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(sunfire_led_generic_remove),
 	.driver		= {
 		.name	= "sunfire-fhc-leds",
@@ -264,12 +337,32 @@ static int __init sunfire_leds_init(void)
 	}
 
 	return err;
+=======
+	.remove_new	= sunfire_led_generic_remove,
+	.driver		= {
+		.name	= "sunfire-fhc-leds",
+	},
+};
+
+static struct platform_driver * const drivers[] = {
+	&sunfire_clockboard_led_driver,
+	&sunfire_fhc_led_driver,
+};
+
+static int __init sunfire_leds_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit sunfire_leds_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&sunfire_clockboard_led_driver);
 	platform_driver_unregister(&sunfire_fhc_led_driver);
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(sunfire_leds_init);

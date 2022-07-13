@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 Platfom gelic network driver.
  *
@@ -10,6 +14,7 @@
  *
  * Authors : Utz Bacher <utz.bacher@de.ibm.com>
  *           Jens Osterkamp <Jens.Osterkamp@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +29,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _GELIC_NET_H
 #define _GELIC_NET_H
@@ -32,12 +39,21 @@
 #define GELIC_NET_RX_DESCRIPTORS        128 /* num of descriptors */
 #define GELIC_NET_TX_DESCRIPTORS        128 /* num of descriptors */
 
+<<<<<<< HEAD
 #define GELIC_NET_MAX_MTU               VLAN_ETH_FRAME_LEN
 #define GELIC_NET_MIN_MTU               VLAN_ETH_ZLEN
 #define GELIC_NET_RXBUF_ALIGN           128
 #define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
 #define GELIC_NET_WATCHDOG_TIMEOUT      5*HZ
 #define GELIC_NET_NAPI_WEIGHT           (GELIC_NET_RX_DESCRIPTORS)
+=======
+#define GELIC_NET_MAX_FRAME             2312
+#define GELIC_NET_MAX_MTU               2294
+#define GELIC_NET_MIN_MTU               64
+#define GELIC_NET_RXBUF_ALIGN           128
+#define GELIC_CARD_RX_CSUM_DEFAULT      1 /* hw chksum */
+#define GELIC_NET_WATCHDOG_TIMEOUT      5*HZ
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GELIC_NET_BROADCAST_ADDR        0xffffffffffffL
 
 #define GELIC_NET_MC_COUNT_MAX          32 /* multicast address list */
@@ -234,29 +250,55 @@ enum gelic_lv1_phy {
 	GELIC_LV1_PHY_ETHERNET_0	= 0x0000000000000002L,
 };
 
+<<<<<<< HEAD
 /* size of hardware part of gelic descriptor */
 #define GELIC_DESCR_SIZE	(32)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum gelic_port_type {
 	GELIC_PORT_ETHERNET_0	= 0,
 	GELIC_PORT_WIRELESS	= 1,
 	GELIC_PORT_MAX
 };
 
+<<<<<<< HEAD
 struct gelic_descr {
 	/* as defined by the hardware */
 	__be32 buf_addr;
 	__be32 buf_size;
+=======
+/* As defined by the gelic hardware device. */
+struct gelic_hw_regs {
+	struct  {
+		__be32 dev_addr;
+		__be32 size;
+	} __packed payload;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 next_descr_addr;
 	__be32 dmac_cmd_status;
 	__be32 result_size;
 	__be32 valid_size;	/* all zeroes for tx */
 	__be32 data_status;
 	__be32 data_error;	/* all zeroes for tx */
+<<<<<<< HEAD
 
 	/* used in the driver */
 	struct sk_buff *skb;
 	dma_addr_t bus_addr;
+=======
+} __packed;
+
+struct gelic_chain_link {
+	dma_addr_t cpu_addr;
+	unsigned int size;
+};
+
+struct gelic_descr {
+	struct gelic_hw_regs hw_regs;
+	struct gelic_chain_link link;
+	struct sk_buff *skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gelic_descr *next;
 	struct gelic_descr *prev;
 } __attribute__((aligned(32)));
@@ -315,14 +357,22 @@ struct gelic_card {
 	 */
 	unsigned int irq;
 	struct gelic_descr *tx_top, *rx_top;
+<<<<<<< HEAD
 	struct gelic_descr descr[0]; /* must be the last */
+=======
+	struct gelic_descr descr[]; /* must be the last */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct gelic_port {
 	struct gelic_card *card;
 	struct net_device *netdev;
 	enum gelic_port_type type;
+<<<<<<< HEAD
 	long priv[0]; /* long for alignment */
+=======
+	long priv[]; /* long for alignment */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct gelic_card *port_to_card(struct gelic_port *p)
@@ -359,6 +409,7 @@ static inline void *port_priv(struct gelic_port *port)
 	return port->priv;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_EARLY_DEBUG_PS3GELIC
 extern void udbg_shutdown_ps3gelic(void);
 #else
@@ -382,5 +433,22 @@ extern int gelic_net_setup_netdev(struct net_device *netdev,
 extern void gelic_net_get_drvinfo(struct net_device *netdev,
 				  struct ethtool_drvinfo *info);
 extern void gelic_net_poll_controller(struct net_device *netdev);
+=======
+int gelic_card_set_irq_mask(struct gelic_card *card, u64 mask);
+/* shared netdev ops */
+void gelic_card_up(struct gelic_card *card);
+void gelic_card_down(struct gelic_card *card);
+int gelic_net_open(struct net_device *netdev);
+int gelic_net_stop(struct net_device *netdev);
+netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev);
+void gelic_net_set_multi(struct net_device *netdev);
+void gelic_net_tx_timeout(struct net_device *netdev, unsigned int txqueue);
+int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card);
+
+/* shared ethtool ops */
+void gelic_net_get_drvinfo(struct net_device *netdev,
+			   struct ethtool_drvinfo *info);
+void gelic_net_poll_controller(struct net_device *netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _GELIC_NET_H */

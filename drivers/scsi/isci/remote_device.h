@@ -85,27 +85,55 @@ struct isci_remote_device {
 	#define IDEV_GONE 3
 	#define IDEV_IO_READY 4
 	#define IDEV_IO_NCQERROR 5
+<<<<<<< HEAD
+=======
+	#define IDEV_RNC_LLHANG_ENABLED 6
+	#define IDEV_ABORT_PATH_ACTIVE 7
+	#define IDEV_ABORT_PATH_RESUME_PENDING 8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct kref kref;
 	struct isci_port *isci_port;
 	struct domain_device *domain_dev;
 	struct list_head node;
+<<<<<<< HEAD
 	struct list_head reqs_in_process;
 	struct sci_base_state_machine sm;
 	u32 device_port_width;
 	enum sas_linkrate connection_rate;
 	bool is_direct_attached;
+=======
+	struct sci_base_state_machine sm;
+	u32 device_port_width;
+	enum sas_linkrate connection_rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_port *owning_port;
 	struct sci_remote_node_context rnc;
 	/* XXX unify with device reference counting and delete */
 	u32 started_request_count;
 	struct isci_request *working_request;
 	u32 not_ready_reason;
+<<<<<<< HEAD
+=======
+	scics_sds_remote_node_context_callback abort_resume_cb;
+	void *abort_resume_cbparam;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ISCI_REMOTE_DEVICE_START_TIMEOUT 5000
 
 /* device reference routines must be called under sci_lock */
+<<<<<<< HEAD
+=======
+static inline struct isci_remote_device *isci_get_device(
+	struct isci_remote_device *idev)
+{
+	if (idev)
+		kref_get(&idev->kref);
+	return idev;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct isci_remote_device *isci_lookup_device(struct domain_device *dev)
 {
 	struct isci_remote_device *idev = dev->lldd_dev;
@@ -284,11 +312,14 @@ static inline struct isci_remote_device *rnc_to_dev(struct sci_remote_node_conte
 	return idev;
 }
 
+<<<<<<< HEAD
 static inline bool dev_is_expander(struct domain_device *dev)
 {
 	return dev->dev_type == EDGE_DEV || dev->dev_type == FANOUT_DEV;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void sci_remote_device_decrement_request_count(struct isci_remote_device *idev)
 {
 	/* XXX delete this voodoo when converting to the top-level device
@@ -302,6 +333,11 @@ static inline void sci_remote_device_decrement_request_count(struct isci_remote_
 		idev->started_request_count--;
 }
 
+<<<<<<< HEAD
+=======
+void isci_dev_set_hang_detection_timeout(struct isci_remote_device *idev, u32 timeout);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum sci_status sci_remote_device_frame_handler(
 	struct isci_remote_device *idev,
 	u32 frame_index);
@@ -325,12 +361,60 @@ enum sci_status sci_remote_device_complete_io(
 	struct isci_remote_device *idev,
 	struct isci_request *ireq);
 
+<<<<<<< HEAD
 enum sci_status sci_remote_device_suspend(
 	struct isci_remote_device *idev,
 	u32 suspend_type);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sci_remote_device_post_request(
 	struct isci_remote_device *idev,
 	u32 request);
 
+<<<<<<< HEAD
+=======
+enum sci_status sci_remote_device_terminate_requests(
+	struct isci_remote_device *idev);
+
+int isci_remote_device_is_safe_to_abort(
+	struct isci_remote_device *idev);
+
+enum sci_status
+sci_remote_device_abort_requests_pending_abort(
+	struct isci_remote_device *idev);
+
+enum sci_status isci_remote_device_suspend(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev);
+
+enum sci_status sci_remote_device_resume(
+	struct isci_remote_device *idev,
+	scics_sds_remote_node_context_callback cb_fn,
+	void *cb_p);
+
+enum sci_status isci_remote_device_resume_from_abort(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev);
+
+enum sci_status isci_remote_device_reset(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev);
+
+enum sci_status isci_remote_device_reset_complete(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev);
+
+enum sci_status isci_remote_device_suspend_terminate(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev,
+	struct isci_request *ireq);
+
+enum sci_status isci_remote_device_terminate_requests(
+	struct isci_host *ihost,
+	struct isci_remote_device *idev,
+	struct isci_request *ireq);
+enum sci_status sci_remote_device_suspend(struct isci_remote_device *idev,
+					  enum sci_remote_node_suspension_reasons reason);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !defined(_ISCI_REMOTE_DEVICE_H_) */

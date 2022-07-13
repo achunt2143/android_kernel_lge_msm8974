@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/parser.h
  *
@@ -6,7 +10,12 @@
  * but could potentially be used anywhere else that simple option=arg
  * parsing is required.
  */
+<<<<<<< HEAD
 
+=======
+#ifndef _LINUX_PARSER_H
+#define _LINUX_PARSER_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* associates an integer enumerator with a pattern string. */
 struct match_token {
@@ -27,7 +36,19 @@ typedef struct {
 
 int match_token(char *, const match_table_t table, substring_t args[]);
 int match_int(substring_t *, int *result);
+<<<<<<< HEAD
 int match_octal(substring_t *, int *result);
 int match_hex(substring_t *, int *result);
 size_t match_strlcpy(char *, const substring_t *, size_t);
 char *match_strdup(const substring_t *);
+=======
+int match_uint(substring_t *s, unsigned int *result);
+int match_u64(substring_t *, u64 *result);
+int match_octal(substring_t *, int *result);
+int match_hex(substring_t *, int *result);
+bool match_wildcard(const char *pattern, const char *str);
+size_t match_strlcpy(char *, const substring_t *, size_t);
+char *match_strdup(const substring_t *);
+
+#endif /* _LINUX_PARSER_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

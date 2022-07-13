@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Sun keyboard driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +31,17 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/serio.h>
 #include <linux/workqueue.h>
@@ -116,7 +126,12 @@ static irqreturn_t sunkbd_interrupt(struct serio *serio,
 	switch (data) {
 
 	case SUNKBD_RET_RESET:
+<<<<<<< HEAD
 		schedule_work(&sunkbd->tq);
+=======
+		if (sunkbd->enabled)
+			schedule_work(&sunkbd->tq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sunkbd->reset = -1;
 		break;
 
@@ -217,6 +232,7 @@ static int sunkbd_initialize(struct sunkbd *sunkbd)
 }
 
 /*
+<<<<<<< HEAD
  * sunkbd_reinit() sets leds and beeps to a state the computer remembers they
  * were in.
  */
@@ -227,6 +243,14 @@ static void sunkbd_reinit(struct work_struct *work)
 
 	wait_event_interruptible_timeout(sunkbd->wait, sunkbd->reset >= 0, HZ);
 
+=======
+ * sunkbd_set_leds_beeps() sets leds and beeps to a state the computer remembers
+ * they were in.
+ */
+
+static void sunkbd_set_leds_beeps(struct sunkbd *sunkbd)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio_write(sunkbd->serio, SUNKBD_CMD_SETLED);
 	serio_write(sunkbd->serio,
 		(!!test_bit(LED_CAPSL,   sunkbd->dev->led) << 3) |
@@ -239,11 +263,45 @@ static void sunkbd_reinit(struct work_struct *work)
 		SUNKBD_CMD_BELLOFF - !!test_bit(SND_BELL, sunkbd->dev->snd));
 }
 
+<<<<<<< HEAD
+=======
+
+/*
+ * sunkbd_reinit() wait for the keyboard reset to complete and restores state
+ * of leds and beeps.
+ */
+
+static void sunkbd_reinit(struct work_struct *work)
+{
+	struct sunkbd *sunkbd = container_of(work, struct sunkbd, tq);
+
+	/*
+	 * It is OK that we check sunkbd->enabled without pausing serio,
+	 * as we only want to catch true->false transition that will
+	 * happen once and we will be woken up for it.
+	 */
+	wait_event_interruptible_timeout(sunkbd->wait,
+					 sunkbd->reset >= 0 || !sunkbd->enabled,
+					 HZ);
+
+	if (sunkbd->reset >= 0 && sunkbd->enabled)
+		sunkbd_set_leds_beeps(sunkbd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sunkbd_enable(struct sunkbd *sunkbd, bool enable)
 {
 	serio_pause_rx(sunkbd->serio);
 	sunkbd->enabled = enable;
 	serio_continue_rx(sunkbd->serio);
+<<<<<<< HEAD
+=======
+
+	if (!enable) {
+		wake_up_interruptible(&sunkbd->wait);
+		cancel_work_sync(&sunkbd->tq);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -340,7 +398,11 @@ static void sunkbd_disconnect(struct serio *serio)
 	kfree(sunkbd);
 }
 
+<<<<<<< HEAD
 static struct serio_device_id sunkbd_serio_ids[] = {
+=======
+static const struct serio_device_id sunkbd_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_SUNKBD,
@@ -369,6 +431,7 @@ static struct serio_driver sunkbd_drv = {
 	.disconnect	= sunkbd_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for insering/removing us as a module.
  */
@@ -385,3 +448,6 @@ static void __exit sunkbd_exit(void)
 
 module_init(sunkbd_init);
 module_exit(sunkbd_exit);
+=======
+module_serio_driver(sunkbd_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

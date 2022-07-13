@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPVS:        Least-Connection Scheduling module
  *
  * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
  *
+<<<<<<< HEAD
  *              This program is free software; you can redistribute it and/or
  *              modify it under the terms of the GNU General Public License
  *              as published by the Free Software Foundation; either version
@@ -12,6 +17,11 @@
  *     Wensong Zhang            :     added the ip_vs_lc_update_svc
  *     Wensong Zhang            :     added any dest with weight=0 is quiesced
  *
+=======
+ * Changes:
+ *     Wensong Zhang            :     added the ip_vs_lc_update_svc
+ *     Wensong Zhang            :     added any dest with weight=0 is quiesced
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -26,7 +36,12 @@
  *	Least Connection scheduling
  */
 static struct ip_vs_dest *
+<<<<<<< HEAD
 ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
+=======
+ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
+		  struct ip_vs_iphdr *iph)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_dest *dest, *least = NULL;
 	unsigned int loh = 0, doh;
@@ -42,7 +57,11 @@ ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 	 * served, but no new connection is assigned to the server.
 	 */
 
+<<<<<<< HEAD
 	list_for_each_entry(dest, &svc->destinations, n_list) {
+=======
+	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((dest->flags & IP_VS_DEST_F_OVERLOAD) ||
 		    atomic_read(&dest->weight) == 0)
 			continue;
@@ -58,7 +77,11 @@ ip_vs_lc_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 	else
 		IP_VS_DBG_BUF(6, "LC: server %s:%u activeconns %d "
 			      "inactconns %d\n",
+<<<<<<< HEAD
 			      IP_VS_DBG_ADDR(svc->af, &least->addr),
+=======
+			      IP_VS_DBG_ADDR(least->af, &least->addr),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      ntohs(least->port),
 			      atomic_read(&least->activeconns),
 			      atomic_read(&least->inactconns));
@@ -84,8 +107,16 @@ static int __init ip_vs_lc_init(void)
 static void __exit ip_vs_lc_cleanup(void)
 {
 	unregister_ip_vs_scheduler(&ip_vs_lc_scheduler);
+<<<<<<< HEAD
+=======
+	synchronize_rcu();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ip_vs_lc_init);
 module_exit(ip_vs_lc_cleanup);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ipvs least connection scheduler");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

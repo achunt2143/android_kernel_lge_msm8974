@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 #ifndef _NET_GARP_H
 #define _NET_GARP_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _NET_GARP_H
+#define _NET_GARP_H
+
+#include <linux/if_ether.h>
+#include <linux/types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/stp.h>
 
 #define GARP_PROTOCOL_ID	0x1
@@ -36,7 +45,11 @@ struct garp_skb_cb {
 static inline struct garp_skb_cb *garp_cb(struct sk_buff *skb)
 {
 	BUILD_BUG_ON(sizeof(struct garp_skb_cb) >
+<<<<<<< HEAD
 		     FIELD_SIZEOF(struct sk_buff, cb));
+=======
+		     sizeof_field(struct sk_buff, cb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (struct garp_skb_cb *)skb->cb;
 }
 
@@ -112,6 +125,7 @@ struct garp_port {
 	struct rcu_head			rcu;
 };
 
+<<<<<<< HEAD
 extern int	garp_register_application(struct garp_application *app);
 extern void	garp_unregister_application(struct garp_application *app);
 
@@ -126,5 +140,20 @@ extern int	garp_request_join(const struct net_device *dev,
 extern void	garp_request_leave(const struct net_device *dev,
 				   const struct garp_application *app,
 				   const void *data, u8 len, u8 type);
+=======
+int garp_register_application(struct garp_application *app);
+void garp_unregister_application(struct garp_application *app);
+
+int garp_init_applicant(struct net_device *dev, struct garp_application *app);
+void garp_uninit_applicant(struct net_device *dev,
+			   struct garp_application *app);
+
+int garp_request_join(const struct net_device *dev,
+		      const struct garp_application *app, const void *data,
+		      u8 len, u8 type);
+void garp_request_leave(const struct net_device *dev,
+			const struct garp_application *app,
+			const void *data, u8 len, u8 type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _NET_GARP_H */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MATRIX_KEYPAD_H
 #define _MATRIX_KEYPAD_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/input.h>
 #include <linux/of.h>
 
@@ -11,6 +16,18 @@
 #define KEY(row, col, val)	((((row) % (MATRIX_MAX_ROWS)) << 24) |\
 				 (((col) % (MATRIX_MAX_COLS)) << 16) |\
 				 (val & 0xffff))
+=======
+
+struct device;
+struct input_dev;
+
+#define MATRIX_MAX_ROWS		32
+#define MATRIX_MAX_COLS		32
+
+#define KEY(row, col, val)	((((row) & (MATRIX_MAX_ROWS - 1)) << 24) |\
+				 (((col) & (MATRIX_MAX_COLS - 1)) << 16) |\
+				 ((val) & 0xffff))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KEY_ROW(k)		(((k) >> 24) & 0xff)
 #define KEY_COL(k)		(((k) >> 16) & 0xff)
@@ -49,6 +66,11 @@ struct matrix_keymap_data {
  * @wakeup: controls whether the device should be set up as wakeup
  *	source
  * @no_autorepeat: disable key autorepeat
+<<<<<<< HEAD
+=======
+ * @drive_inactive_cols: drive inactive columns during scan, rather than
+ *	making them inputs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure represents platform-specific data that use used by
  * matrix_keypad driver to perform proper initialization.
@@ -73,6 +95,7 @@ struct matrix_keypad_platform_data {
 	bool		active_low;
 	bool		wakeup;
 	bool		no_autorepeat;
+<<<<<<< HEAD
 };
 
 /**
@@ -124,5 +147,19 @@ matrix_keyboard_of_free_keymap(const struct matrix_keymap_data *kd)
 {
 }
 #endif
+=======
+	bool		drive_inactive_cols;
+};
+
+int matrix_keypad_build_keymap(const struct matrix_keymap_data *keymap_data,
+			       const char *keymap_name,
+			       unsigned int rows, unsigned int cols,
+			       unsigned short *keymap,
+			       struct input_dev *input_dev);
+int matrix_keypad_parse_properties(struct device *dev,
+				   unsigned int *rows, unsigned int *cols);
+
+#define matrix_keypad_parse_of_params matrix_keypad_parse_properties
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _MATRIX_KEYPAD_H */

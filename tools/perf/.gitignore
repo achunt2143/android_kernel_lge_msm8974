@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 PERF-CFLAGS
 PERF-GUI-VARS
 PERF-VERSION-FILE
 perf
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+PERF-CFLAGS
+PERF-GUI-VARS
+PERF-VERSION-FILE
+FEATURE-DUMP
+perf
+!include/perf/
+perf-read-vdso32
+perf-read-vdsox32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 perf-help
 perf-record
 perf-report
@@ -11,13 +23,51 @@ perf*.1
 perf*.xml
 perf*.html
 common-cmds.h
+<<<<<<< HEAD
 perf.data
 perf.data.old
 perf-archive
 tags
 TAGS
+=======
+perf*.data
+perf*.data.old
+output.svg
+perf-archive
+perf-iostat
+tags
+TAGS
+stats-*.csv
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cscope*
 config.mak
 config.mak.autogen
 *-bison.*
 *-flex.*
+<<<<<<< HEAD
+=======
+*.pyc
+*.pyo
+*.stdout
+.config-detected
+util/intel-pt-decoder/inat-tables.c
+arch/*/include/generated/
+trace/beauty/generated/
+pmu-events/pmu-events.c
+pmu-events/jevents
+pmu-events/metric_test.log
+tests/shell/*.shellcheck_log
+tests/shell/coresight/*.shellcheck_log
+tests/shell/lib/*.shellcheck_log
+feature/
+libapi/
+libbpf/
+libperf/
+libsubcmd/
+libsymbol/
+libtraceevent/
+libtraceevent_plugins/
+fixdep
+Documentation/doc.dep
+python_ext_build/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

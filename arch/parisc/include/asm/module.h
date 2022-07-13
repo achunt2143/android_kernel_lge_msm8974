@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_PARISC_MODULE_H
 #define _ASM_PARISC_MODULE_H
 /*
@@ -16,6 +17,17 @@
 #define Elf_Addr Elf32_Addr
 #define Elf_Rela Elf32_Rela
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_PARISC_MODULE_H
+#define _ASM_PARISC_MODULE_H
+
+#include <asm-generic/module.h>
+
+/*
+ * This file contains the parisc architecture specific module code.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct unwind_table;
 

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dscontrol - Support for execution control opcodes -
  *                          if/else/while/return
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,11 +47,21 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acinterp.h"
+<<<<<<< HEAD
+=======
+#include "acdebug.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dscontrol")
@@ -56,7 +71,11 @@ ACPI_MODULE_NAME("dscontrol")
  * FUNCTION:    acpi_ds_exec_begin_control_op
  *
  * PARAMETERS:  walk_list       - The list that owns the walk stack
+<<<<<<< HEAD
  *              Op              - The control Op
+=======
+ *              op              - The control Op
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -78,7 +97,10 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
 
 	switch (op->common.aml_opcode) {
 	case AML_WHILE_OP:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If this is an additional iteration of a while loop, continue.
 		 * There is no need to allocate a new control state.
@@ -96,10 +118,16 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
 			}
 		}
 
+<<<<<<< HEAD
 		/*lint -fallthrough */
 
 	case AML_IF_OP:
 
+=======
+		ACPI_FALLTHROUGH;
+
+	case AML_IF_OP:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * IF/WHILE: Create a new control state to manage these
 		 * constructs. We need to manage these as a stack, in order
@@ -119,6 +147,11 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
 		control_state->control.package_end =
 		    walk_state->parser_state.pkg_end;
 		control_state->control.opcode = op->common.aml_opcode;
+<<<<<<< HEAD
+=======
+		control_state->control.loop_timeout = acpi_os_get_timer() +
+		    ((u64)acpi_gbl_max_loop_iterations * ACPI_100NSEC_PER_SEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Push the control state on this walk's control stack */
 
@@ -142,6 +175,10 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -153,7 +190,11 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
  * FUNCTION:    acpi_ds_exec_end_control_op
  *
  * PARAMETERS:  walk_list       - The list that owns the walk stack
+<<<<<<< HEAD
  *              Op              - The control Op
+=======
+ *              op              - The control Op
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -163,8 +204,13 @@ acpi_ds_exec_begin_control_op(struct acpi_walk_state *walk_state,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 			    union acpi_parse_object * op)
+=======
+acpi_ds_exec_end_control_op(struct acpi_walk_state *walk_state,
+			    union acpi_parse_object *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status = AE_OK;
 	union acpi_generic_state *control_state;
@@ -206,6 +252,7 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 			/* Predicate was true, the body of the loop was just executed */
 
 			/*
+<<<<<<< HEAD
 			 * This loop counter mechanism allows the interpreter to escape
 			 * possibly infinite loops. This can occur in poorly written AML
 			 * when the hardware does not respond within a while loop and the
@@ -215,6 +262,17 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 			if (control_state->control.loop_count >
 			    ACPI_MAX_LOOP_ITERATIONS) {
 				status = AE_AML_INFINITE_LOOP;
+=======
+			 * This infinite loop detection mechanism allows the interpreter
+			 * to escape possibly infinite loops. This can occur in poorly
+			 * written AML when the hardware does not respond within a while
+			 * loop and the loop does not implement a timeout.
+			 */
+			if (ACPI_TIME_AFTER(acpi_os_get_timer(),
+					    control_state->control.
+					    loop_timeout)) {
+				status = AE_AML_LOOP_TIMEOUT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -280,7 +338,11 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 
 			/*
 			 * Get the return value and save as the last result
+<<<<<<< HEAD
 			 * value.  This is the only place where walk_state->return_desc
+=======
+			 * value. This is the only place where walk_state->return_desc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * is set to anything other than zero!
 			 */
 			walk_state->return_desc = walk_state->operands[0];
@@ -344,6 +406,7 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 	case AML_NOOP_OP:
 
 		/* Just do nothing! */
+<<<<<<< HEAD
 		break;
 
 	case AML_BREAK_POINT_OP:
@@ -356,6 +419,14 @@ acpi_ds_exec_end_control_op(struct acpi_walk_state * walk_state,
 		ACPI_DEBUGGER_EXEC(acpi_gbl_cm_single_step = TRUE);
 		ACPI_DEBUGGER_EXEC(acpi_os_printf
 				   ("**break** Executed AML BreakPoint opcode\n"));
+=======
+
+		break;
+
+	case AML_BREAKPOINT_OP:
+
+		acpi_db_signal_break_point(walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Call to the OSL in case OS wants a piece of the action */
 

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acpi.h - Master public include file used to interface to ACPICA
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
@@ -53,6 +64,7 @@
  *
  * Note: The order of these include files is important.
  */
+<<<<<<< HEAD
 #include "platform/acenv.h"	/* Environment-specific items */
 #include "acnames.h"		/* Common ACPI names and strings */
 #include "actypes.h"		/* ACPICA data types and structures */
@@ -62,5 +74,17 @@
 #include "acrestyp.h"		/* Resource Descriptor structs */
 #include "acpiosxf.h"		/* OSL interfaces (ACPICA-to-OS) */
 #include "acpixf.h"		/* ACPI core subsystem external interfaces */
+=======
+#include <acpi/platform/acenv.h>	/* Environment-specific items */
+#include <acpi/acnames.h>		/* Common ACPI names and strings */
+#include <acpi/actypes.h>		/* ACPICA data types and structures */
+#include <acpi/acexcep.h>		/* ACPICA exceptions */
+#include <acpi/actbl.h>		/* ACPI table definitions */
+#include <acpi/acrestyp.h>		/* Resource Descriptor structs */
+#include <acpi/platform/acenvex.h>	/* Extra environment-specific items */
+#include <acpi/acoutput.h>		/* Error output and Debug macros */
+#include <acpi/acpiosxf.h>		/* OSL interfaces (ACPICA-to-OS) */
+#include <acpi/acpixf.h>		/* ACPI core subsystem external interfaces */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* __ACPI_H__ */

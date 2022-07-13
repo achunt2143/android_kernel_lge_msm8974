@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  m68k beeper driver for Linux
  *
  *  Copyright (c) 2002 Richard Zidlicky
  *  Copyright (c) 2002 Vojtech Pavlik
  *  Copyright (c) 1992 Orest Zborowski
+<<<<<<< HEAD
  *
  */
 
@@ -12,6 +17,10 @@
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation
  */
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -48,7 +57,11 @@ static int m68kspkr_event(struct input_dev *dev, unsigned int type, unsigned int
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit m68kspkr_probe(struct platform_device *dev)
+=======
+static int m68kspkr_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *input_dev;
 	int err;
@@ -80,16 +93,25 @@ static int __devinit m68kspkr_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit m68kspkr_remove(struct platform_device *dev)
+=======
+static void m68kspkr_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *input_dev = platform_get_drvdata(dev);
 
 	input_unregister_device(input_dev);
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 	/* turn off the speaker */
 	m68kspkr_event(NULL, EV_SND, SND_BELL, 0);
 
 	return 0;
+=======
+	/* turn off the speaker */
+	m68kspkr_event(NULL, EV_SND, SND_BELL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void m68kspkr_shutdown(struct platform_device *dev)
@@ -101,10 +123,16 @@ static void m68kspkr_shutdown(struct platform_device *dev)
 static struct platform_driver m68kspkr_platform_driver = {
 	.driver		= {
 		.name	= "m68kspkr",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= m68kspkr_probe,
 	.remove		= __devexit_p(m68kspkr_remove),
+=======
+	},
+	.probe		= m68kspkr_probe,
+	.remove_new	= m68kspkr_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= m68kspkr_shutdown,
 };
 

@@ -1,12 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Packet matching code.
  *
  * Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
  * Copyright (C) 2000-2005 Netfilter Core Team <coreteam@netfilter.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * Copyright (C) 2006-2010 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/cache.h>
@@ -16,10 +24,16 @@
 #include <linux/vmalloc.h>
 #include <linux/netdevice.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/icmp.h>
 #include <net/ip.h>
 #include <net/compat.h>
 #include <asm/uaccess.h>
+=======
+#include <net/ip.h>
+#include <net/compat.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/proc_fs.h>
 #include <linux/err.h>
@@ -34,6 +48,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
 MODULE_DESCRIPTION("IPv4 packet filter");
 
+<<<<<<< HEAD
 /*#define DEBUG_IP_FIREWALL*/
 /*#define DEBUG_ALLOW_ALL*/ /* Useful for remote debugging */
 /*#define DEBUG_IP_FIREWALL_USER*/
@@ -62,6 +77,8 @@ MODULE_DESCRIPTION("IPv4 packet filter");
 #define inline
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *ipt_alloc_initial_table(const struct xt_table *info)
 {
 	return xt_alloc_initial_table(ipt, IPT);
@@ -79,6 +96,7 @@ ip_packet_match(const struct iphdr *ip,
 {
 	unsigned long ret;
 
+<<<<<<< HEAD
 #define FWINV(bool, invflg) ((bool) ^ !!(ipinfo->invflags & (invflg)))
 
 	if (FWINV((ip->saddr&ipinfo->smsk.s_addr) != ipinfo->src.s_addr,
@@ -130,6 +148,34 @@ ip_packet_match(const struct iphdr *ip,
 			ipinfo->invflags & IPT_INV_FRAG ? " (INV)" : "");
 		return false;
 	}
+=======
+	if (NF_INVF(ipinfo, IPT_INV_SRCIP,
+		    (ip->saddr & ipinfo->smsk.s_addr) != ipinfo->src.s_addr) ||
+	    NF_INVF(ipinfo, IPT_INV_DSTIP,
+		    (ip->daddr & ipinfo->dmsk.s_addr) != ipinfo->dst.s_addr))
+		return false;
+
+	ret = ifname_compare_aligned(indev, ipinfo->iniface, ipinfo->iniface_mask);
+
+	if (NF_INVF(ipinfo, IPT_INV_VIA_IN, ret != 0))
+		return false;
+
+	ret = ifname_compare_aligned(outdev, ipinfo->outiface, ipinfo->outiface_mask);
+
+	if (NF_INVF(ipinfo, IPT_INV_VIA_OUT, ret != 0))
+		return false;
+
+	/* Check specific protocol */
+	if (ipinfo->proto &&
+	    NF_INVF(ipinfo, IPT_INV_PROTO, ip->protocol != ipinfo->proto))
+		return false;
+
+	/* If we have a fragment rule but the packet is not a fragment
+	 * then we return zero */
+	if (NF_INVF(ipinfo, IPT_INV_FRAG,
+		    (ipinfo->flags & IPT_F_FRAG) && !isfrag))
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -137,6 +183,7 @@ ip_packet_match(const struct iphdr *ip,
 static bool
 ip_checkentry(const struct ipt_ip *ip)
 {
+<<<<<<< HEAD
 	if (ip->flags & ~IPT_F_MASK) {
 		duprintf("Unknown flag bits set: %08X\n",
 			 ip->flags & ~IPT_F_MASK);
@@ -147,14 +194,24 @@ ip_checkentry(const struct ipt_ip *ip)
 			 ip->invflags & ~IPT_INV_MASK);
 		return false;
 	}
+=======
+	if (ip->flags & ~IPT_F_MASK)
+		return false;
+	if (ip->invflags & ~IPT_INV_MASK)
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 static unsigned int
 ipt_error(struct sk_buff *skb, const struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	if (net_ratelimit())
 		pr_info("error: `%s'\n", (const char *)par->targinfo);
+=======
+	net_info_ratelimited("error: `%s'\n", (const char *)par->targinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NF_DROP;
 }
@@ -174,7 +231,10 @@ static inline bool unconditional(const struct ipt_entry *e)
 
 	return e->target_offset == sizeof(struct ipt_entry) &&
 	       memcmp(&e->ip, &uncond, sizeof(uncond)) == 0;
+<<<<<<< HEAD
 #undef FWINV
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* for const-correctness */
@@ -205,12 +265,20 @@ static const char *const comments[] = {
 	[NF_IP_TRACE_COMMENT_POLICY]	= "policy",
 };
 
+<<<<<<< HEAD
 static struct nf_loginfo trace_loginfo = {
+=======
+static const struct nf_loginfo trace_loginfo = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = NF_LOG_TYPE_LOG,
 	.u = {
 		.log = {
 			.level = 4,
+<<<<<<< HEAD
 			.logflags = NF_LOG_MASK,
+=======
+			.logflags = NF_LOG_DEFAULT_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 	},
 };
@@ -246,7 +314,12 @@ get_chainname_rulenum(const struct ipt_entry *s, const struct ipt_entry *e,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void trace_packet(const struct sk_buff *skb,
+=======
+static void trace_packet(struct net *net,
+			 const struct sk_buff *skb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 unsigned int hook,
 			 const struct net_device *in,
 			 const struct net_device *out,
@@ -254,14 +327,21 @@ static void trace_packet(const struct sk_buff *skb,
 			 const struct xt_table_info *private,
 			 const struct ipt_entry *e)
 {
+<<<<<<< HEAD
 	const void *table_base;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct ipt_entry *root;
 	const char *hookname, *chainname, *comment;
 	const struct ipt_entry *iter;
 	unsigned int rulenum = 0;
 
+<<<<<<< HEAD
 	table_base = private->entries[smp_processor_id()];
 	root = get_entry(table_base, private->hook_entry[hook]);
+=======
+	root = get_entry(private->entries, private->hook_entry[hook]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hookname = chainname = hooknames[hook];
 	comment = comments[NF_IP_TRACE_COMMENT_RULE];
@@ -271,6 +351,7 @@ static void trace_packet(const struct sk_buff *skb,
 		    &chainname, &comment, &rulenum) != 0)
 			break;
 
+<<<<<<< HEAD
 	nf_log_packet(AF_INET, hook, skb, in, out, &trace_loginfo,
 		      "TRACE: %s:%s:%s:%u ",
 		      tablename, chainname, comment, rulenum);
@@ -278,6 +359,15 @@ static void trace_packet(const struct sk_buff *skb,
 #endif
 
 static inline __pure
+=======
+	nf_log_trace(net, AF_INET, hook, skb, in, out, &trace_loginfo,
+		     "TRACE: %s:%s:%s:%u ",
+		     tablename, chainname, comment, rulenum);
+}
+#endif
+
+static inline
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipt_entry *ipt_next_entry(const struct ipt_entry *entry)
 {
 	return (void *)entry + entry->next_offset;
@@ -285,12 +375,21 @@ struct ipt_entry *ipt_next_entry(const struct ipt_entry *entry)
 
 /* Returns one of the generic firewall policies, like NF_ACCEPT. */
 unsigned int
+<<<<<<< HEAD
 ipt_do_table(struct sk_buff *skb,
 	     unsigned int hook,
 	     const struct net_device *in,
 	     const struct net_device *out,
 	     struct xt_table *table)
 {
+=======
+ipt_do_table(void *priv,
+	     struct sk_buff *skb,
+	     const struct nf_hook_state *state)
+{
+	const struct xt_table *table = priv;
+	unsigned int hook = state->hook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const char nulldevname[IFNAMSIZ] __attribute__((aligned(sizeof(long))));
 	const struct iphdr *ip;
 	/* Initializing verdict to NF_DROP keeps gcc happy. */
@@ -298,15 +397,26 @@ ipt_do_table(struct sk_buff *skb,
 	const char *indev, *outdev;
 	const void *table_base;
 	struct ipt_entry *e, **jumpstack;
+<<<<<<< HEAD
 	unsigned int *stackptr, origptr, cpu;
+=======
+	unsigned int stackidx, cpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct xt_table_info *private;
 	struct xt_action_param acpar;
 	unsigned int addend;
 
 	/* Initialization */
+<<<<<<< HEAD
 	ip = ip_hdr(skb);
 	indev = in ? in->name : nulldevname;
 	outdev = out ? out->name : nulldevname;
+=======
+	stackidx = 0;
+	ip = ip_hdr(skb);
+	indev = state->in ? state->in->name : nulldevname;
+	outdev = state->out ? state->out->name : nulldevname;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We handle fragments by dealing with the first fragment as
 	 * if it was a normal packet.  All other fragments are treated
 	 * normally, except that they will NEVER match rules that ask
@@ -316,6 +426,7 @@ ipt_do_table(struct sk_buff *skb,
 	acpar.fragoff = ntohs(ip->frag_off) & IP_OFFSET;
 	acpar.thoff   = ip_hdrlen(skb);
 	acpar.hotdrop = false;
+<<<<<<< HEAD
 	acpar.in      = in;
 	acpar.out     = out;
 	acpar.family  = NFPROTO_IPV4;
@@ -347,6 +458,36 @@ ipt_do_table(struct sk_buff *skb,
 		const struct xt_entry_match *ematch;
 
 		IP_NF_ASSERT(e);
+=======
+	acpar.state   = state;
+
+	WARN_ON(!(table->valid_hooks & (1 << hook)));
+	local_bh_disable();
+	addend = xt_write_recseq_begin();
+	private = READ_ONCE(table->private); /* Address dependency. */
+	cpu        = smp_processor_id();
+	table_base = private->entries;
+	jumpstack  = (struct ipt_entry **)private->jumpstack[cpu];
+
+	/* Switch to alternate jumpstack if we're being invoked via TEE.
+	 * TEE issues XT_CONTINUE verdict on original skb so we must not
+	 * clobber the jumpstack.
+	 *
+	 * For recursion via REJECT or SYNPROXY the stack will be clobbered
+	 * but it is no problem since absolute verdict is issued by these.
+	 */
+	if (static_key_false(&xt_tee_enabled))
+		jumpstack += private->stacksize * __this_cpu_read(nf_skb_duplicated);
+
+	e = get_entry(table_base, private->hook_entry[hook]);
+
+	do {
+		const struct xt_entry_target *t;
+		const struct xt_entry_match *ematch;
+		struct xt_counters *counter;
+
+		WARN_ON(!e);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ip_packet_match(ip, indev, outdev,
 		    &e->ip, acpar.fragoff)) {
  no_match:
@@ -361,16 +502,29 @@ ipt_do_table(struct sk_buff *skb,
 				goto no_match;
 		}
 
+<<<<<<< HEAD
 		ADD_COUNTER(e->counters, skb->len, 1);
 
 		t = ipt_get_target(e);
 		IP_NF_ASSERT(t->u.kernel.target);
+=======
+		counter = xt_get_this_cpu_counter(&e->counters);
+		ADD_COUNTER(*counter, skb->len, 1);
+
+		t = ipt_get_target_c(e);
+		WARN_ON(!t->u.kernel.target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE)
 		/* The packet is traced: log it */
 		if (unlikely(skb->nf_trace))
+<<<<<<< HEAD
 			trace_packet(skb, hook, in, out,
 				     table->name, private, e);
+=======
+			trace_packet(state->net, skb, hook, state->in,
+				     state->out, table->name, private, e);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		/* Standard target? */
 		if (!t->u.kernel.target->target) {
@@ -380,6 +534,7 @@ ipt_do_table(struct sk_buff *skb,
 			if (v < 0) {
 				/* Pop from stack? */
 				if (v != XT_RETURN) {
+<<<<<<< HEAD
 					verdict = (unsigned)(-v) - 1;
 					break;
 				}
@@ -392,12 +547,23 @@ ipt_do_table(struct sk_buff *skb,
 					e = jumpstack[--*stackptr];
 					pr_debug("Pulled %p out from pos %u\n",
 						 e, *stackptr);
+=======
+					verdict = (unsigned int)(-v) - 1;
+					break;
+				}
+				if (stackidx == 0) {
+					e = get_entry(table_base,
+					    private->underflow[hook]);
+				} else {
+					e = jumpstack[--stackidx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					e = ipt_next_entry(e);
 				}
 				continue;
 			}
 			if (table_base + v != ipt_next_entry(e) &&
 			    !(e->ip.flags & IPT_F_GOTO)) {
+<<<<<<< HEAD
 				if (*stackptr >= private->stacksize) {
 					verdict = NF_DROP;
 					break;
@@ -405,6 +571,13 @@ ipt_do_table(struct sk_buff *skb,
 				jumpstack[(*stackptr)++] = e;
 				pr_debug("Pushed %p into pos %u\n",
 					 e, *stackptr - 1);
+=======
+				if (unlikely(stackidx >= private->stacksize)) {
+					verdict = NF_DROP;
+					break;
+				}
+				jumpstack[stackidx++] = e;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			e = get_entry(table_base, v);
@@ -415,6 +588,7 @@ ipt_do_table(struct sk_buff *skb,
 		acpar.targinfo = t->data;
 
 		verdict = t->u.kernel.target->target(skb, &acpar);
+<<<<<<< HEAD
 		/* Target might have changed stuff. */
 		ip = ip_hdr(skb);
 		if (verdict == XT_CONTINUE)
@@ -436,13 +610,36 @@ ipt_do_table(struct sk_buff *skb,
 		return NF_DROP;
 	else return verdict;
 #endif
+=======
+		if (verdict == XT_CONTINUE) {
+			/* Target might have changed stuff. */
+			ip = ip_hdr(skb);
+			e = ipt_next_entry(e);
+		} else {
+			/* Verdict */
+			break;
+		}
+	} while (!acpar.hotdrop);
+
+	xt_write_recseq_end(addend);
+	local_bh_enable();
+
+	if (acpar.hotdrop)
+		return NF_DROP;
+	else return verdict;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Figures out from what hook each rule can be called: returns 0 if
    there are loops.  Puts hook bitmask in comefrom. */
 static int
 mark_source_chains(const struct xt_table_info *newinfo,
+<<<<<<< HEAD
 		   unsigned int valid_hooks, void *entry0)
+=======
+		   unsigned int valid_hooks, void *entry0,
+		   unsigned int *offsets)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int hook;
 
@@ -450,7 +647,11 @@ mark_source_chains(const struct xt_table_info *newinfo,
 	   to 0 as we leave), and comefrom to save source hook bitmask */
 	for (hook = 0; hook < NF_INET_NUMHOOKS; hook++) {
 		unsigned int pos = newinfo->hook_entry[hook];
+<<<<<<< HEAD
 		struct ipt_entry *e = (struct ipt_entry *)(entry0 + pos);
+=======
+		struct ipt_entry *e = entry0 + pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(valid_hooks & (1 << hook)))
 			continue;
@@ -463,11 +664,17 @@ mark_source_chains(const struct xt_table_info *newinfo,
 				= (void *)ipt_get_target_c(e);
 			int visited = e->comefrom & (1 << hook);
 
+<<<<<<< HEAD
 			if (e->comefrom & (1 << NF_INET_NUMHOOKS)) {
 				pr_err("iptables: loop hook %u pos %u %08X.\n",
 				       hook, pos, e->comefrom);
 				return 0;
 			}
+=======
+			if (e->comefrom & (1 << NF_INET_NUMHOOKS))
+				return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e->comefrom |= ((1 << hook) | (1 << NF_INET_NUMHOOKS));
 
 			/* Unconditional return/END. */
@@ -477,6 +684,7 @@ mark_source_chains(const struct xt_table_info *newinfo,
 			     t->verdict < 0) || visited) {
 				unsigned int oldpos, size;
 
+<<<<<<< HEAD
 				if ((strcmp(t->target.u.user.name,
 			    		    XT_STANDARD_TARGET) == 0) &&
 				    t->verdict < -NF_MAX_VERDICT - 1) {
@@ -486,10 +694,13 @@ mark_source_chains(const struct xt_table_info *newinfo,
 					return 0;
 				}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Return: backtrack through the last
 				   big jump. */
 				do {
 					e->comefrom ^= (1<<NF_INET_NUMHOOKS);
+<<<<<<< HEAD
 #ifdef DEBUG_IP_FIREWALL_USER
 					if (e->comefrom
 					    & (1 << NF_INET_NUMHOOKS)) {
@@ -499,6 +710,8 @@ mark_source_chains(const struct xt_table_info *newinfo,
 							 hook, pos);
 					}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					oldpos = pos;
 					pos = e->counters.pcnt;
 					e->counters.pcnt = 0;
@@ -507,14 +720,24 @@ mark_source_chains(const struct xt_table_info *newinfo,
 					if (pos == oldpos)
 						goto next;
 
+<<<<<<< HEAD
 					e = (struct ipt_entry *)
 						(entry0 + pos);
+=======
+					e = entry0 + pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} while (oldpos == pos + e->next_offset);
 
 				/* Move along one */
 				size = e->next_offset;
+<<<<<<< HEAD
 				e = (struct ipt_entry *)
 					(entry0 + pos + size);
+=======
+				e = entry0 + pos + size;
+				if (pos + size >= newinfo->size)
+					return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				e->counters.pcnt = pos;
 				pos += size;
 			} else {
@@ -523,6 +746,7 @@ mark_source_chains(const struct xt_table_info *newinfo,
 				if (strcmp(t->target.u.user.name,
 					   XT_STANDARD_TARGET) == 0 &&
 				    newpos >= 0) {
+<<<<<<< HEAD
 					if (newpos > newinfo->size -
 						sizeof(struct ipt_entry)) {
 						duprintf("mark_source_chains: "
@@ -539,12 +763,29 @@ mark_source_chains(const struct xt_table_info *newinfo,
 				}
 				e = (struct ipt_entry *)
 					(entry0 + newpos);
+=======
+					/* This a jump; chase it. */
+					if (!xt_find_jump_offset(offsets, newpos,
+								 newinfo->number))
+						return 0;
+				} else {
+					/* ... this is a fallthru */
+					newpos = pos + e->next_offset;
+					if (newpos >= newinfo->size)
+						return 0;
+				}
+				e = entry0 + newpos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				e->counters.pcnt = pos;
 				pos = newpos;
 			}
 		}
+<<<<<<< HEAD
 		next:
 		duprintf("Finished chain %u\n", hook);
+=======
+next:		;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
@@ -563,6 +804,7 @@ static void cleanup_match(struct xt_entry_match *m, struct net *net)
 }
 
 static int
+<<<<<<< HEAD
 check_entry(const struct ipt_entry *e, const char *name)
 {
 	const struct xt_entry_target *t;
@@ -588,10 +830,16 @@ check_match(struct xt_entry_match *m, struct xt_mtchk_param *par)
 {
 	const struct ipt_ip *ip = par->entryinfo;
 	int ret;
+=======
+check_match(struct xt_entry_match *m, struct xt_mtchk_param *par)
+{
+	const struct ipt_ip *ip = par->entryinfo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	par->match     = m->u.kernel.match;
 	par->matchinfo = m->data;
 
+<<<<<<< HEAD
 	ret = xt_check_match(par, m->u.match_size - sizeof(*m),
 	      ip->proto, ip->invflags & IPT_INV_PROTO);
 	if (ret < 0) {
@@ -599,6 +847,10 @@ check_match(struct xt_entry_match *m, struct xt_mtchk_param *par)
 		return ret;
 	}
 	return 0;
+=======
+	return xt_check_match(par, m->u.match_size - sizeof(*m),
+			      ip->proto, ip->invflags & IPT_INV_PROTO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -609,10 +861,15 @@ find_check_match(struct xt_entry_match *m, struct xt_mtchk_param *par)
 
 	match = xt_request_find_match(NFPROTO_IPV4, m->u.user.name,
 				      m->u.user.revision);
+<<<<<<< HEAD
 	if (IS_ERR(match)) {
 		duprintf("find_check_match: `%s' not found\n", m->u.user.name);
 		return PTR_ERR(match);
 	}
+=======
+	if (IS_ERR(match))
+		return PTR_ERR(match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m->u.kernel.match = match;
 
 	ret = check_match(m, par);
@@ -637,6 +894,7 @@ static int check_target(struct ipt_entry *e, struct net *net, const char *name)
 		.hook_mask = e->comefrom,
 		.family    = NFPROTO_IPV4,
 	};
+<<<<<<< HEAD
 	int ret;
 
 	ret = xt_check_target(&par, t->u.target_size - sizeof(*t),
@@ -647,11 +905,21 @@ static int check_target(struct ipt_entry *e, struct net *net, const char *name)
 		return ret;
 	}
 	return 0;
+=======
+
+	return xt_check_target(&par, t->u.target_size - sizeof(*t),
+			       e->ip.proto, e->ip.invflags & IPT_INV_PROTO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 find_check_entry(struct ipt_entry *e, struct net *net, const char *name,
+<<<<<<< HEAD
 		 unsigned int size)
+=======
+		 unsigned int size,
+		 struct xt_percpu_counter_alloc_state *alloc_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xt_entry_target *t;
 	struct xt_target *target;
@@ -660,11 +928,19 @@ find_check_entry(struct ipt_entry *e, struct net *net, const char *name,
 	struct xt_mtchk_param mtpar;
 	struct xt_entry_match *ematch;
 
+<<<<<<< HEAD
 	ret = check_entry(e, name);
 	if (ret)
 		return ret;
 
 	j = 0;
+=======
+	if (!xt_percpu_counter_alloc(alloc_state, &e->counters))
+		return -ENOMEM;
+
+	j = 0;
+	memset(&mtpar, 0, sizeof(mtpar));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtpar.net	= net;
 	mtpar.table     = name;
 	mtpar.entryinfo = &e->ip;
@@ -681,7 +957,10 @@ find_check_entry(struct ipt_entry *e, struct net *net, const char *name,
 	target = xt_request_find_target(NFPROTO_IPV4, t->u.user.name,
 					t->u.user.revision);
 	if (IS_ERR(target)) {
+<<<<<<< HEAD
 		duprintf("find_check_entry: `%s' not found\n", t->u.user.name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = PTR_ERR(target);
 		goto cleanup_matches;
 	}
@@ -690,6 +969,10 @@ find_check_entry(struct ipt_entry *e, struct net *net, const char *name,
 	ret = check_target(e, net, name);
 	if (ret)
 		goto err;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
  err:
 	module_put(t->u.kernel.target->me);
@@ -699,6 +982,12 @@ find_check_entry(struct ipt_entry *e, struct net *net, const char *name,
 			break;
 		cleanup_match(ematch, net);
 	}
+<<<<<<< HEAD
+=======
+
+	xt_percpu_counter_free(&e->counters);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -727,6 +1016,7 @@ check_entry_size_and_hooks(struct ipt_entry *e,
 			   unsigned int valid_hooks)
 {
 	unsigned int h;
+<<<<<<< HEAD
 
 	if ((unsigned long)e % __alignof__(struct ipt_entry) != 0 ||
 	    (unsigned char *)e + sizeof(struct ipt_entry) >= limit ||
@@ -741,6 +1031,26 @@ check_entry_size_and_hooks(struct ipt_entry *e,
 			 e, e->next_offset);
 		return -EINVAL;
 	}
+=======
+	int err;
+
+	if ((unsigned long)e % __alignof__(struct ipt_entry) != 0 ||
+	    (unsigned char *)e + sizeof(struct ipt_entry) >= limit ||
+	    (unsigned char *)e + e->next_offset > limit)
+		return -EINVAL;
+
+	if (e->next_offset
+	    < sizeof(struct ipt_entry) + sizeof(struct xt_entry_target))
+		return -EINVAL;
+
+	if (!ip_checkentry(&e->ip))
+		return -EINVAL;
+
+	err = xt_check_entry_offsets(e, e->elems, e->target_offset,
+				     e->next_offset);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check hooks & underflows */
 	for (h = 0; h < NF_INET_NUMHOOKS; h++) {
@@ -749,12 +1059,18 @@ check_entry_size_and_hooks(struct ipt_entry *e,
 		if ((unsigned char *)e - base == hook_entries[h])
 			newinfo->hook_entry[h] = hook_entries[h];
 		if ((unsigned char *)e - base == underflows[h]) {
+<<<<<<< HEAD
 			if (!check_underflow(e)) {
 				pr_debug("Underflows must be unconditional and "
 					 "use the STANDARD target with "
 					 "ACCEPT/DROP\n");
 				return -EINVAL;
 			}
+=======
+			if (!check_underflow(e))
+				return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newinfo->underflow[h] = underflows[h];
 		}
 	}
@@ -784,15 +1100,27 @@ cleanup_entry(struct ipt_entry *e, struct net *net)
 	if (par.target->destroy != NULL)
 		par.target->destroy(&par);
 	module_put(par.target->me);
+<<<<<<< HEAD
+=======
+	xt_percpu_counter_free(&e->counters);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Checks and translates the user-supplied table segment (held in
    newinfo) */
 static int
 translate_table(struct net *net, struct xt_table_info *newinfo, void *entry0,
+<<<<<<< HEAD
                 const struct ipt_replace *repl)
 {
 	struct ipt_entry *iter;
+=======
+		const struct ipt_replace *repl)
+{
+	struct xt_percpu_counter_alloc_state alloc_state = { 0 };
+	struct ipt_entry *iter;
+	unsigned int *offsets;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 	int ret = 0;
 
@@ -805,7 +1133,13 @@ translate_table(struct net *net, struct xt_table_info *newinfo, void *entry0,
 		newinfo->underflow[i] = 0xFFFFFFFF;
 	}
 
+<<<<<<< HEAD
 	duprintf("translate_table: size %u\n", newinfo->size);
+=======
+	offsets = xt_alloc_entry_offsets(newinfo->number);
+	if (!offsets)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 0;
 	/* Walk through entries, checking offsets. */
 	xt_entry_foreach(iter, entry0, newinfo->size) {
@@ -815,13 +1149,20 @@ translate_table(struct net *net, struct xt_table_info *newinfo, void *entry0,
 						 repl->underflow,
 						 repl->valid_hooks);
 		if (ret != 0)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto out_free;
+		if (i < repl->num_entries)
+			offsets[i] = (void *)iter - entry0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++i;
 		if (strcmp(ipt_get_target(iter)->u.user.name,
 		    XT_ERROR_TARGET) == 0)
 			++newinfo->stacksize;
 	}
 
+<<<<<<< HEAD
 	if (i != repl->num_entries) {
 		duprintf("translate_table: %u not %u entries\n",
 			 i, repl->num_entries);
@@ -847,11 +1188,31 @@ translate_table(struct net *net, struct xt_table_info *newinfo, void *entry0,
 
 	if (!mark_source_chains(newinfo, repl->valid_hooks, entry0))
 		return -ELOOP;
+=======
+	ret = -EINVAL;
+	if (i != repl->num_entries)
+		goto out_free;
+
+	ret = xt_check_table_hooks(newinfo, repl->valid_hooks);
+	if (ret)
+		goto out_free;
+
+	if (!mark_source_chains(newinfo, repl->valid_hooks, entry0, offsets)) {
+		ret = -ELOOP;
+		goto out_free;
+	}
+	kvfree(offsets);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Finally, each sanity check must pass */
 	i = 0;
 	xt_entry_foreach(iter, entry0, newinfo->size) {
+<<<<<<< HEAD
 		ret = find_check_entry(iter, net, repl->name, repl->size);
+=======
+		ret = find_check_entry(iter, net, repl->name, repl->size,
+				       &alloc_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0)
 			break;
 		++i;
@@ -866,12 +1227,18 @@ translate_table(struct net *net, struct xt_table_info *newinfo, void *entry0,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	/* And one copy for every other CPU */
 	for_each_possible_cpu(i) {
 		if (newinfo->entries[i] && newinfo->entries[i] != entry0)
 			memcpy(newinfo->entries[i], entry0, newinfo->size);
 	}
 
+=======
+	return ret;
+ out_free:
+	kvfree(offsets);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -887,6 +1254,7 @@ get_counters(const struct xt_table_info *t,
 		seqcount_t *s = &per_cpu(xt_recseq, cpu);
 
 		i = 0;
+<<<<<<< HEAD
 		xt_entry_foreach(iter, t->entries[cpu], t->size) {
 			u64 bcnt, pcnt;
 			unsigned int start;
@@ -895,14 +1263,53 @@ get_counters(const struct xt_table_info *t,
 				start = read_seqcount_begin(s);
 				bcnt = iter->counters.bcnt;
 				pcnt = iter->counters.pcnt;
+=======
+		xt_entry_foreach(iter, t->entries, t->size) {
+			struct xt_counters *tmp;
+			u64 bcnt, pcnt;
+			unsigned int start;
+
+			tmp = xt_get_per_cpu_counter(&iter->counters, cpu);
+			do {
+				start = read_seqcount_begin(s);
+				bcnt = tmp->bcnt;
+				pcnt = tmp->pcnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} while (read_seqcount_retry(s, start));
 
 			ADD_COUNTER(counters[i], bcnt, pcnt);
 			++i; /* macro does multi eval of i */
+<<<<<<< HEAD
+=======
+			cond_resched();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void get_old_counters(const struct xt_table_info *t,
+			     struct xt_counters counters[])
+{
+	struct ipt_entry *iter;
+	unsigned int cpu, i;
+
+	for_each_possible_cpu(cpu) {
+		i = 0;
+		xt_entry_foreach(iter, t->entries, t->size) {
+			const struct xt_counters *tmp;
+
+			tmp = xt_get_per_cpu_counter(&iter->counters, cpu);
+			ADD_COUNTER(counters[i], tmp->bcnt, tmp->pcnt);
+			++i; /* macro does multi eval of i */
+		}
+
+		cond_resched();
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xt_counters *alloc_counters(const struct xt_table *table)
 {
 	unsigned int countersize;
@@ -939,6 +1346,7 @@ copy_entries_to_user(unsigned int total_size,
 	if (IS_ERR(counters))
 		return PTR_ERR(counters);
 
+<<<<<<< HEAD
 	/* choose the copy that is on our node/cpu, ...
 	 * This choice is lazy (because current thread is
 	 * allowed to migrate to another cpu)
@@ -948,6 +1356,9 @@ copy_entries_to_user(unsigned int total_size,
 		ret = -EFAULT;
 		goto free_counters;
 	}
+=======
+	loc_cpu_entry = private->entries;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: use iterator macros --RR */
 	/* ... then go back and fix counters and names */
@@ -956,7 +1367,15 @@ copy_entries_to_user(unsigned int total_size,
 		const struct xt_entry_match *m;
 		const struct xt_entry_target *t;
 
+<<<<<<< HEAD
 		e = (struct ipt_entry *)(loc_cpu_entry + off);
+=======
+		e = loc_cpu_entry + off;
+		if (copy_to_user(userptr + off, e, sizeof(*e))) {
+			ret = -EFAULT;
+			goto free_counters;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_to_user(userptr + off
 				 + offsetof(struct ipt_entry, counters),
 				 &counters[num],
@@ -970,23 +1389,31 @@ copy_entries_to_user(unsigned int total_size,
 		     i += m->u.match_size) {
 			m = (void *)e + i;
 
+<<<<<<< HEAD
 			if (copy_to_user(userptr + off + i
 					 + offsetof(struct xt_entry_match,
 						    u.user.name),
 					 m->u.kernel.match->name,
 					 strlen(m->u.kernel.match->name)+1)
 			    != 0) {
+=======
+			if (xt_match_to_user(m, userptr + off + i)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -EFAULT;
 				goto free_counters;
 			}
 		}
 
 		t = ipt_get_target_c(e);
+<<<<<<< HEAD
 		if (copy_to_user(userptr + off + e->target_offset
 				 + offsetof(struct xt_entry_target,
 					    u.user.name),
 				 t->u.kernel.target->name,
 				 strlen(t->u.kernel.target->name)+1) != 0) {
+=======
+		if (xt_target_to_user(t, userptr + off + e->target_offset)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EFAULT;
 			goto free_counters;
 		}
@@ -997,7 +1424,11 @@ copy_entries_to_user(unsigned int total_size,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void compat_standard_from_user(void *dst, const void *src)
 {
 	int v = *(compat_int_t *)src;
@@ -1051,17 +1482,31 @@ static int compat_table_info(const struct xt_table_info *info,
 			     struct xt_table_info *newinfo)
 {
 	struct ipt_entry *iter;
+<<<<<<< HEAD
 	void *loc_cpu_entry;
+=======
+	const void *loc_cpu_entry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!newinfo || !info)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* we dont care about newinfo->entries[] */
 	memcpy(newinfo, info, offsetof(struct xt_table_info, entries));
 	newinfo->initial_entries = 0;
 	loc_cpu_entry = info->entries[raw_smp_processor_id()];
 	xt_compat_init_offsets(AF_INET, info->number);
+=======
+	/* we dont care about newinfo->entries */
+	memcpy(newinfo, info, offsetof(struct xt_table_info, entries));
+	newinfo->initial_entries = 0;
+	loc_cpu_entry = info->entries;
+	ret = xt_compat_init_offsets(AF_INET, info->number);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xt_entry_foreach(iter, loc_cpu_entry, info->size) {
 		ret = compat_calc_entry(iter, info, loc_cpu_entry, newinfo);
 		if (ret != 0)
@@ -1071,23 +1516,33 @@ static int compat_table_info(const struct xt_table_info *info,
 }
 #endif
 
+<<<<<<< HEAD
 static int get_info(struct net *net, void __user *user,
                     const int *len, int compat)
+=======
+static int get_info(struct net *net, void __user *user, const int *len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char name[XT_TABLE_MAXNAMELEN];
 	struct xt_table *t;
 	int ret;
 
+<<<<<<< HEAD
 	if (*len != sizeof(struct ipt_getinfo)) {
 		duprintf("length %u != %zu\n", *len,
 			 sizeof(struct ipt_getinfo));
 		return -EINVAL;
 	}
+=======
+	if (*len != sizeof(struct ipt_getinfo))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(name, user, sizeof(name)) != 0)
 		return -EFAULT;
 
 	name[XT_TABLE_MAXNAMELEN-1] = '\0';
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	if (compat)
 		xt_compat_lock(AF_INET);
@@ -1101,6 +1556,20 @@ static int get_info(struct net *net, void __user *user,
 		struct xt_table_info tmp;
 
 		if (compat) {
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+	if (in_compat_syscall())
+		xt_compat_lock(AF_INET);
+#endif
+	t = xt_request_find_table_lock(net, AF_INET, name);
+	if (!IS_ERR(t)) {
+		struct ipt_getinfo info;
+		const struct xt_table_info *private = t->private;
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+		struct xt_table_info tmp;
+
+		if (in_compat_syscall()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = compat_table_info(private, &tmp);
 			xt_compat_flush_offsets(AF_INET);
 			private = &tmp;
@@ -1124,9 +1593,15 @@ static int get_info(struct net *net, void __user *user,
 		xt_table_unlock(t);
 		module_put(t->me);
 	} else
+<<<<<<< HEAD
 		ret = t ? PTR_ERR(t) : -ENOENT;
 #ifdef CONFIG_COMPAT
 	if (compat)
+=======
+		ret = PTR_ERR(t);
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+	if (in_compat_syscall())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xt_compat_unlock(AF_INET);
 #endif
 	return ret;
@@ -1140,6 +1615,7 @@ get_entries(struct net *net, struct ipt_get_entries __user *uptr,
 	struct ipt_get_entries get;
 	struct xt_table *t;
 
+<<<<<<< HEAD
 	if (*len < sizeof(get)) {
 		duprintf("get_entries: %u < %zu\n", *len, sizeof(get));
 		return -EINVAL;
@@ -1168,6 +1644,29 @@ get_entries(struct net *net, struct ipt_get_entries __user *uptr,
 		xt_table_unlock(t);
 	} else
 		ret = t ? PTR_ERR(t) : -ENOENT;
+=======
+	if (*len < sizeof(get))
+		return -EINVAL;
+	if (copy_from_user(&get, uptr, sizeof(get)) != 0)
+		return -EFAULT;
+	if (*len != sizeof(struct ipt_get_entries) + get.size)
+		return -EINVAL;
+	get.name[sizeof(get.name) - 1] = '\0';
+
+	t = xt_find_table_lock(net, AF_INET, get.name);
+	if (!IS_ERR(t)) {
+		const struct xt_table_info *private = t->private;
+		if (get.size == private->size)
+			ret = copy_entries_to_user(private->size,
+						   t, uptr->entrytable);
+		else
+			ret = -EAGAIN;
+
+		module_put(t->me);
+		xt_table_unlock(t);
+	} else
+		ret = PTR_ERR(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1181,27 +1680,42 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
 	struct xt_table *t;
 	struct xt_table_info *oldinfo;
 	struct xt_counters *counters;
+<<<<<<< HEAD
 	void *loc_cpu_old_entry;
 	struct ipt_entry *iter;
 
 	ret = 0;
 	counters = vzalloc(num_counters * sizeof(struct xt_counters));
+=======
+	struct ipt_entry *iter;
+
+	counters = xt_counters_alloc(num_counters);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!counters) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	t = try_then_request_module(xt_find_table_lock(net, AF_INET, name),
 				    "iptable_%s", name);
 	if (!t || IS_ERR(t)) {
 		ret = t ? PTR_ERR(t) : -ENOENT;
+=======
+	t = xt_request_find_table_lock(net, AF_INET, name);
+	if (IS_ERR(t)) {
+		ret = PTR_ERR(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto free_newinfo_counters_untrans;
 	}
 
 	/* You lied! */
 	if (valid_hooks != t->valid_hooks) {
+<<<<<<< HEAD
 		duprintf("Valid hook crap: %08X vs %08X\n",
 			 valid_hooks, t->valid_hooks);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto put_module;
 	}
@@ -1211,8 +1725,11 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
 		goto put_module;
 
 	/* Update module usage count based on number of rules */
+<<<<<<< HEAD
 	duprintf("do_replace: oldnum=%u, initnum=%u, newnum=%u\n",
 		oldinfo->number, oldinfo->initial_entries, newinfo->number);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((oldinfo->number > oldinfo->initial_entries) ||
 	    (newinfo->number <= oldinfo->initial_entries))
 		module_put(t->me);
@@ -1220,12 +1737,21 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
 	    (newinfo->number <= oldinfo->initial_entries))
 		module_put(t->me);
 
+<<<<<<< HEAD
 	/* Get the old counters, and synchronize with replace */
 	get_counters(oldinfo, counters);
 
 	/* Decrease module usage counts and free resource */
 	loc_cpu_old_entry = oldinfo->entries[raw_smp_processor_id()];
 	xt_entry_foreach(iter, loc_cpu_old_entry, oldinfo->size)
+=======
+	xt_table_unlock(t);
+
+	get_old_counters(oldinfo, counters);
+
+	/* Decrease module usage counts and free resource */
+	xt_entry_foreach(iter, oldinfo->entries, oldinfo->size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cleanup_entry(iter, net);
 
 	xt_free_table_info(oldinfo);
@@ -1235,8 +1761,12 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
 		net_warn_ratelimited("iptables: counters copy to user failed while replacing table\n");
 	}
 	vfree(counters);
+<<<<<<< HEAD
 	xt_table_unlock(t);
 	return ret;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  put_module:
 	module_put(t->me);
@@ -1248,7 +1778,11 @@ __do_replace(struct net *net, const char *name, unsigned int valid_hooks,
 }
 
 static int
+<<<<<<< HEAD
 do_replace(struct net *net, const void __user *user, unsigned int len)
+=======
+do_replace(struct net *net, sockptr_t arg, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct ipt_replace tmp;
@@ -1256,22 +1790,42 @@ do_replace(struct net *net, const void __user *user, unsigned int len)
 	void *loc_cpu_entry;
 	struct ipt_entry *iter;
 
+<<<<<<< HEAD
 	if (copy_from_user(&tmp, user, sizeof(tmp)) != 0)
+=======
+	if (len < sizeof(tmp))
+		return -EINVAL;
+	if (copy_from_sockptr(&tmp, arg, sizeof(tmp)) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	/* overflow check */
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
+<<<<<<< HEAD
+=======
+	if (tmp.num_counters == 0)
+		return -EINVAL;
+	if ((u64)len < (u64)tmp.size + sizeof(tmp))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.name[sizeof(tmp.name)-1] = 0;
 
 	newinfo = xt_alloc_table_info(tmp.size);
 	if (!newinfo)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	/* choose the copy that is on our node/cpu */
 	loc_cpu_entry = newinfo->entries[raw_smp_processor_id()];
 	if (copy_from_user(loc_cpu_entry, user + sizeof(tmp),
 			   tmp.size) != 0) {
+=======
+	loc_cpu_entry = newinfo->entries;
+	if (copy_from_sockptr_offset(loc_cpu_entry, arg, sizeof(tmp),
+			tmp.size) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EFAULT;
 		goto free_newinfo;
 	}
@@ -1280,8 +1834,11 @@ do_replace(struct net *net, const void __user *user, unsigned int len)
 	if (ret != 0)
 		goto free_newinfo;
 
+<<<<<<< HEAD
 	duprintf("Translated table\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = __do_replace(net, tmp.name, tmp.valid_hooks, newinfo,
 			   tmp.num_counters, tmp.counters);
 	if (ret)
@@ -1297,6 +1854,7 @@ do_replace(struct net *net, const void __user *user, unsigned int len)
 }
 
 static int
+<<<<<<< HEAD
 do_add_counters(struct net *net, const void __user *user,
                 unsigned int len, int compat)
 {
@@ -1355,23 +1913,56 @@ do_add_counters(struct net *net, const void __user *user,
 	t = xt_find_table_lock(net, AF_INET, name);
 	if (!t || IS_ERR(t)) {
 		ret = t ? PTR_ERR(t) : -ENOENT;
+=======
+do_add_counters(struct net *net, sockptr_t arg, unsigned int len)
+{
+	unsigned int i;
+	struct xt_counters_info tmp;
+	struct xt_counters *paddc;
+	struct xt_table *t;
+	const struct xt_table_info *private;
+	int ret = 0;
+	struct ipt_entry *iter;
+	unsigned int addend;
+
+	paddc = xt_copy_counters(arg, len, &tmp);
+	if (IS_ERR(paddc))
+		return PTR_ERR(paddc);
+
+	t = xt_find_table_lock(net, AF_INET, tmp.name);
+	if (IS_ERR(t)) {
+		ret = PTR_ERR(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto free;
 	}
 
 	local_bh_disable();
 	private = t->private;
+<<<<<<< HEAD
 	if (private->number != num_counters) {
+=======
+	if (private->number != tmp.num_counters) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto unlock_up_free;
 	}
 
 	i = 0;
+<<<<<<< HEAD
 	/* Choose the copy that is on our node */
 	curcpu = smp_processor_id();
 	loc_cpu_entry = private->entries[curcpu];
 	addend = xt_write_recseq_begin();
 	xt_entry_foreach(iter, loc_cpu_entry, private->size) {
 		ADD_COUNTER(iter->counters, paddc[i].bcnt, paddc[i].pcnt);
+=======
+	addend = xt_write_recseq_begin();
+	xt_entry_foreach(iter, private->entries, private->size) {
+		struct xt_counters *tmp;
+
+		tmp = xt_get_this_cpu_counter(&iter->counters);
+		ADD_COUNTER(*tmp, paddc[i].bcnt, paddc[i].pcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++i;
 	}
 	xt_write_recseq_end(addend);
@@ -1385,7 +1976,11 @@ do_add_counters(struct net *net, const void __user *user,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_ipt_replace {
 	char			name[XT_TABLE_MAXNAMELEN];
 	u32			valid_hooks;
@@ -1395,7 +1990,11 @@ struct compat_ipt_replace {
 	u32			underflow[NF_INET_NUMHOOKS];
 	u32			num_counters;
 	compat_uptr_t		counters;	/* struct xt_counters * */
+<<<<<<< HEAD
 	struct compat_ipt_entry	entries[0];
+=======
+	struct compat_ipt_entry	entries[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
@@ -1411,7 +2010,11 @@ compat_copy_entry_to_user(struct ipt_entry *e, void __user **dstptr,
 	int ret = 0;
 
 	origsize = *size;
+<<<<<<< HEAD
 	ce = (struct compat_ipt_entry __user *)*dstptr;
+=======
+	ce = *dstptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user(ce, e, sizeof(struct ipt_entry)) != 0 ||
 	    copy_to_user(&ce->counters, &counters[i],
 	    sizeof(counters[i])) != 0)
@@ -1439,20 +2042,30 @@ compat_copy_entry_to_user(struct ipt_entry *e, void __user **dstptr,
 
 static int
 compat_find_calc_match(struct xt_entry_match *m,
+<<<<<<< HEAD
 		       const char *name,
 		       const struct ipt_ip *ip,
 		       unsigned int hookmask,
+=======
+		       const struct ipt_ip *ip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       int *size)
 {
 	struct xt_match *match;
 
 	match = xt_request_find_match(NFPROTO_IPV4, m->u.user.name,
 				      m->u.user.revision);
+<<<<<<< HEAD
 	if (IS_ERR(match)) {
 		duprintf("compat_check_calc_match: `%s' not found\n",
 			 m->u.user.name);
 		return PTR_ERR(match);
 	}
+=======
+	if (IS_ERR(match))
+		return PTR_ERR(match);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m->u.kernel.match = match;
 	*size += xt_compat_match_offset(match);
 	return 0;
@@ -1475,16 +2088,21 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 				  struct xt_table_info *newinfo,
 				  unsigned int *size,
 				  const unsigned char *base,
+<<<<<<< HEAD
 				  const unsigned char *limit,
 				  const unsigned int *hook_entries,
 				  const unsigned int *underflows,
 				  const char *name)
+=======
+				  const unsigned char *limit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xt_entry_match *ematch;
 	struct xt_entry_target *t;
 	struct xt_target *target;
 	unsigned int entry_offset;
 	unsigned int j;
+<<<<<<< HEAD
 	int ret, off, h;
 
 	duprintf("check_compat_entry_size_and_hooks %p\n", e);
@@ -1504,6 +2122,24 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 
 	/* For purposes of check_entry casting the compat entry is fine */
 	ret = check_entry((struct ipt_entry *)e, name);
+=======
+	int ret, off;
+
+	if ((unsigned long)e % __alignof__(struct compat_ipt_entry) != 0 ||
+	    (unsigned char *)e + sizeof(struct compat_ipt_entry) >= limit ||
+	    (unsigned char *)e + e->next_offset > limit)
+		return -EINVAL;
+
+	if (e->next_offset < sizeof(struct compat_ipt_entry) +
+			     sizeof(struct compat_xt_entry_target))
+		return -EINVAL;
+
+	if (!ip_checkentry(&e->ip))
+		return -EINVAL;
+
+	ret = xt_compat_check_entry_offsets(e, e->elems,
+					    e->target_offset, e->next_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -1511,8 +2147,12 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 	entry_offset = (void *)e - (void *)base;
 	j = 0;
 	xt_ematch_foreach(ematch, e) {
+<<<<<<< HEAD
 		ret = compat_find_calc_match(ematch, name,
 					     &e->ip, e->comefrom, &off);
+=======
+		ret = compat_find_calc_match(ematch, &e->ip, &off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0)
 			goto release_matches;
 		++j;
@@ -1522,8 +2162,11 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 	target = xt_request_find_target(NFPROTO_IPV4, t->u.user.name,
 					t->u.user.revision);
 	if (IS_ERR(target)) {
+<<<<<<< HEAD
 		duprintf("check_compat_entry_size_and_hooks: `%s' not found\n",
 			 t->u.user.name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = PTR_ERR(target);
 		goto release_matches;
 	}
@@ -1535,6 +2178,7 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	/* Check hooks & underflows */
 	for (h = 0; h < NF_INET_NUMHOOKS; h++) {
 		if ((unsigned char *)e - base == hook_entries[h])
@@ -1546,6 +2190,8 @@ check_compat_entry_size_and_hooks(struct compat_ipt_entry *e,
 	/* Clear counters and comefrom */
 	memset(&e->counters, 0, sizeof(e->counters));
 	e->comefrom = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out:
@@ -1559,6 +2205,7 @@ release_matches:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int
 compat_copy_entry_from_user(struct compat_ipt_entry *e, void **dstptr,
 			    unsigned int *size, const char *name,
@@ -1574,12 +2221,28 @@ compat_copy_entry_from_user(struct compat_ipt_entry *e, void **dstptr,
 	ret = 0;
 	origsize = *size;
 	de = (struct ipt_entry *)*dstptr;
+=======
+static void
+compat_copy_entry_from_user(struct compat_ipt_entry *e, void **dstptr,
+			    unsigned int *size,
+			    struct xt_table_info *newinfo, unsigned char *base)
+{
+	struct xt_entry_target *t;
+	struct ipt_entry *de;
+	unsigned int origsize;
+	int h;
+	struct xt_entry_match *ematch;
+
+	origsize = *size;
+	de = *dstptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(de, e, sizeof(struct ipt_entry));
 	memcpy(&de->counters, &e->counters, sizeof(e->counters));
 
 	*dstptr += sizeof(struct ipt_entry);
 	*size += sizeof(struct ipt_entry) - sizeof(struct compat_ipt_entry);
 
+<<<<<<< HEAD
 	xt_ematch_foreach(ematch, e) {
 		ret = xt_compat_match_from_user(ematch, dstptr, size);
 		if (ret != 0)
@@ -1591,12 +2254,24 @@ compat_copy_entry_from_user(struct compat_ipt_entry *e, void **dstptr,
 	xt_compat_target_from_user(t, dstptr, size);
 
 	de->next_offset = e->next_offset - (origsize - *size);
+=======
+	xt_ematch_foreach(ematch, e)
+		xt_compat_match_from_user(ematch, dstptr, size);
+
+	de->target_offset = e->target_offset - (origsize - *size);
+	t = compat_ipt_get_target(e);
+	xt_compat_target_from_user(t, dstptr, size);
+
+	de->next_offset = e->next_offset - (origsize - *size);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (h = 0; h < NF_INET_NUMHOOKS; h++) {
 		if ((unsigned char *)de - base < newinfo->hook_entry[h])
 			newinfo->hook_entry[h] -= origsize - *size;
 		if ((unsigned char *)de - base < newinfo->underflow[h])
 			newinfo->underflow[h] -= origsize - *size;
 	}
+<<<<<<< HEAD
 	return ret;
 }
 
@@ -1633,10 +2308,13 @@ compat_check_entry(struct ipt_entry *e, struct net *net, const char *name)
 		cleanup_match(ematch, net);
 	}
 	return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 translate_compat_table(struct net *net,
+<<<<<<< HEAD
 		       const char *name,
 		       unsigned int valid_hooks,
 		       struct xt_table_info **pinfo,
@@ -1645,17 +2323,27 @@ translate_compat_table(struct net *net,
 		       unsigned int number,
 		       unsigned int *hook_entries,
 		       unsigned int *underflows)
+=======
+		       struct xt_table_info **pinfo,
+		       void **pentry0,
+		       const struct compat_ipt_replace *compatr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, j;
 	struct xt_table_info *newinfo, *info;
 	void *pos, *entry0, *entry1;
 	struct compat_ipt_entry *iter0;
+<<<<<<< HEAD
 	struct ipt_entry *iter1;
+=======
+	struct ipt_replace repl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int size;
 	int ret;
 
 	info = *pinfo;
 	entry0 = *pentry0;
+<<<<<<< HEAD
 	size = total_size;
 	info->number = number;
 
@@ -1677,12 +2365,28 @@ translate_compat_table(struct net *net,
 							hook_entries,
 							underflows,
 							name);
+=======
+	size = compatr->size;
+	info->number = compatr->num_entries;
+
+	j = 0;
+	xt_compat_lock(AF_INET);
+	ret = xt_compat_init_offsets(AF_INET, compatr->num_entries);
+	if (ret)
+		goto out_unlock;
+	/* Walk through entries, checking offsets. */
+	xt_entry_foreach(iter0, entry0, compatr->size) {
+		ret = check_compat_entry_size_and_hooks(iter0, info, &size,
+							entry0,
+							entry0 + compatr->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0)
 			goto out_unlock;
 		++j;
 	}
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	if (j != number) {
 		duprintf("translate_compat_table: %u not %u entries\n",
 			 j, number);
@@ -1705,12 +2409,17 @@ translate_compat_table(struct net *net,
 			goto out_unlock;
 		}
 	}
+=======
+	if (j != compatr->num_entries)
+		goto out_unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = -ENOMEM;
 	newinfo = xt_alloc_table_info(size);
 	if (!newinfo)
 		goto out_unlock;
 
+<<<<<<< HEAD
 	newinfo->number = number;
 	for (i = 0; i < NF_INET_NUMHOOKS; i++) {
 		newinfo->hook_entry[i] = info->hook_entry[i];
@@ -1773,6 +2482,46 @@ translate_compat_table(struct net *net,
 		if (newinfo->entries[i] && newinfo->entries[i] != entry1)
 			memcpy(newinfo->entries[i], entry1, newinfo->size);
 
+=======
+	memset(newinfo->entries, 0, size);
+
+	newinfo->number = compatr->num_entries;
+	for (i = 0; i < NF_INET_NUMHOOKS; i++) {
+		newinfo->hook_entry[i] = compatr->hook_entry[i];
+		newinfo->underflow[i] = compatr->underflow[i];
+	}
+	entry1 = newinfo->entries;
+	pos = entry1;
+	size = compatr->size;
+	xt_entry_foreach(iter0, entry0, compatr->size)
+		compat_copy_entry_from_user(iter0, &pos, &size,
+					    newinfo, entry1);
+
+	/* all module references in entry0 are now gone.
+	 * entry1/newinfo contains a 64bit ruleset that looks exactly as
+	 * generated by 64bit userspace.
+	 *
+	 * Call standard translate_table() to validate all hook_entrys,
+	 * underflows, check for loops, etc.
+	 */
+	xt_compat_flush_offsets(AF_INET);
+	xt_compat_unlock(AF_INET);
+
+	memcpy(&repl, compatr, sizeof(*compatr));
+
+	for (i = 0; i < NF_INET_NUMHOOKS; i++) {
+		repl.hook_entry[i] = newinfo->hook_entry[i];
+		repl.underflow[i] = newinfo->underflow[i];
+	}
+
+	repl.num_counters = 0;
+	repl.counters = NULL;
+	repl.size = newinfo->size;
+	ret = translate_table(net, newinfo, entry1, &repl);
+	if (ret)
+		goto free_newinfo;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pinfo = newinfo;
 	*pentry0 = entry1;
 	xt_free_table_info(info);
@@ -1780,13 +2529,22 @@ translate_compat_table(struct net *net,
 
 free_newinfo:
 	xt_free_table_info(newinfo);
+<<<<<<< HEAD
 out:
 	xt_entry_foreach(iter0, entry0, total_size) {
+=======
+	return ret;
+out_unlock:
+	xt_compat_flush_offsets(AF_INET);
+	xt_compat_unlock(AF_INET);
+	xt_entry_foreach(iter0, entry0, compatr->size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (j-- == 0)
 			break;
 		compat_release_entry(iter0);
 	}
 	return ret;
+<<<<<<< HEAD
 out_unlock:
 	xt_compat_flush_offsets(AF_INET);
 	xt_compat_unlock(AF_INET);
@@ -1795,6 +2553,12 @@ out_unlock:
 
 static int
 compat_do_replace(struct net *net, void __user *user, unsigned int len)
+=======
+}
+
+static int
+compat_do_replace(struct net *net, sockptr_t arg, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct compat_ipt_replace tmp;
@@ -1802,6 +2566,7 @@ compat_do_replace(struct net *net, void __user *user, unsigned int len)
 	void *loc_cpu_entry;
 	struct ipt_entry *iter;
 
+<<<<<<< HEAD
 	if (copy_from_user(&tmp, user, sizeof(tmp)) != 0)
 		return -EFAULT;
 
@@ -1810,20 +2575,42 @@ compat_do_replace(struct net *net, void __user *user, unsigned int len)
 		return -ENOMEM;
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
+=======
+	if (len < sizeof(tmp))
+		return -EINVAL;
+	if (copy_from_sockptr(&tmp, arg, sizeof(tmp)) != 0)
+		return -EFAULT;
+
+	/* overflow check */
+	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
+		return -ENOMEM;
+	if (tmp.num_counters == 0)
+		return -EINVAL;
+	if ((u64)len < (u64)tmp.size + sizeof(tmp))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.name[sizeof(tmp.name)-1] = 0;
 
 	newinfo = xt_alloc_table_info(tmp.size);
 	if (!newinfo)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	/* choose the copy that is on our node/cpu */
 	loc_cpu_entry = newinfo->entries[raw_smp_processor_id()];
 	if (copy_from_user(loc_cpu_entry, user + sizeof(tmp),
 			   tmp.size) != 0) {
+=======
+	loc_cpu_entry = newinfo->entries;
+	if (copy_from_sockptr_offset(loc_cpu_entry, arg, sizeof(tmp),
+			tmp.size) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EFAULT;
 		goto free_newinfo;
 	}
 
+<<<<<<< HEAD
 	ret = translate_compat_table(net, tmp.name, tmp.valid_hooks,
 				     &newinfo, &loc_cpu_entry, tmp.size,
 				     tmp.num_entries, tmp.hook_entry,
@@ -1833,6 +2620,12 @@ compat_do_replace(struct net *net, void __user *user, unsigned int len)
 
 	duprintf("compat_do_replace: Translated table\n");
 
+=======
+	ret = translate_compat_table(net, &newinfo, &loc_cpu_entry, &tmp);
+	if (ret != 0)
+		goto free_newinfo;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = __do_replace(net, tmp.name, tmp.valid_hooks, newinfo,
 			   tmp.num_counters, compat_ptr(tmp.counters));
 	if (ret)
@@ -1847,6 +2640,7 @@ compat_do_replace(struct net *net, void __user *user, unsigned int len)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int
 compat_do_ipt_set_ctl(struct sock *sk,	int cmd, void __user *user,
 		      unsigned int len)
@@ -1877,6 +2671,12 @@ struct compat_ipt_get_entries {
 	char name[XT_TABLE_MAXNAMELEN];
 	compat_uint_t size;
 	struct compat_ipt_entry entrytable[0];
+=======
+struct compat_ipt_get_entries {
+	char name[XT_TABLE_MAXNAMELEN];
+	compat_uint_t size;
+	struct compat_ipt_entry entrytable[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
@@ -1888,7 +2688,10 @@ compat_copy_entries_to_user(unsigned int total_size, struct xt_table *table,
 	void __user *pos;
 	unsigned int size;
 	int ret = 0;
+<<<<<<< HEAD
 	const void *loc_cpu_entry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i = 0;
 	struct ipt_entry *iter;
 
@@ -1896,6 +2699,7 @@ compat_copy_entries_to_user(unsigned int total_size, struct xt_table *table,
 	if (IS_ERR(counters))
 		return PTR_ERR(counters);
 
+<<<<<<< HEAD
 	/* choose the copy that is on our node/cpu, ...
 	 * This choice is lazy (because current thread is
 	 * allowed to migrate to another cpu)
@@ -1904,6 +2708,11 @@ compat_copy_entries_to_user(unsigned int total_size, struct xt_table *table,
 	pos = userptr;
 	size = total_size;
 	xt_entry_foreach(iter, loc_cpu_entry, total_size) {
+=======
+	pos = userptr;
+	size = total_size;
+	xt_entry_foreach(iter, private->entries, total_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = compat_copy_entry_to_user(iter, &pos,
 						&size, counters, i++);
 		if (ret != 0)
@@ -1922,14 +2731,20 @@ compat_get_entries(struct net *net, struct compat_ipt_get_entries __user *uptr,
 	struct compat_ipt_get_entries get;
 	struct xt_table *t;
 
+<<<<<<< HEAD
 	if (*len < sizeof(get)) {
 		duprintf("compat_get_entries: %u < %zu\n", *len, sizeof(get));
 		return -EINVAL;
 	}
+=======
+	if (*len < sizeof(get))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&get, uptr, sizeof(get)) != 0)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (*len != sizeof(struct compat_ipt_get_entries) + get.size) {
 		duprintf("compat_get_entries: %u != %zu\n",
 			 *len, sizeof(get) + get.size);
@@ -1951,15 +2766,39 @@ compat_get_entries(struct net *net, struct compat_ipt_get_entries __user *uptr,
 				 private->size, get.size);
 			ret = -EAGAIN;
 		}
+=======
+	if (*len != sizeof(struct compat_ipt_get_entries) + get.size)
+		return -EINVAL;
+
+	get.name[sizeof(get.name) - 1] = '\0';
+
+	xt_compat_lock(AF_INET);
+	t = xt_find_table_lock(net, AF_INET, get.name);
+	if (!IS_ERR(t)) {
+		const struct xt_table_info *private = t->private;
+		struct xt_table_info info;
+		ret = compat_table_info(private, &info);
+		if (!ret && get.size == info.size)
+			ret = compat_copy_entries_to_user(private->size,
+							  t, uptr->entrytable);
+		else if (!ret)
+			ret = -EAGAIN;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xt_compat_flush_offsets(AF_INET);
 		module_put(t->me);
 		xt_table_unlock(t);
 	} else
+<<<<<<< HEAD
 		ret = t ? PTR_ERR(t) : -ENOENT;
+=======
+		ret = PTR_ERR(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xt_compat_unlock(AF_INET);
 	return ret;
 }
+<<<<<<< HEAD
 
 static int do_ipt_get_ctl(struct sock *, int, void __user *, int *);
 
@@ -1987,6 +2826,12 @@ compat_do_ipt_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 
 static int
 do_ipt_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
+=======
+#endif
+
+static int
+do_ipt_set_ctl(struct sock *sk, int cmd, sockptr_t arg, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1995,6 +2840,7 @@ do_ipt_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 
 	switch (cmd) {
 	case IPT_SO_SET_REPLACE:
+<<<<<<< HEAD
 		ret = do_replace(sock_net(sk), user, len);
 		break;
 
@@ -2004,6 +2850,21 @@ do_ipt_set_ctl(struct sock *sk, int cmd, void __user *user, unsigned int len)
 
 	default:
 		duprintf("do_ipt_set_ctl:  unknown request %i\n", cmd);
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+		if (in_compat_syscall())
+			ret = compat_do_replace(sock_net(sk), arg, len);
+		else
+#endif
+			ret = do_replace(sock_net(sk), arg, len);
+		break;
+
+	case IPT_SO_SET_ADD_COUNTERS:
+		ret = do_add_counters(sock_net(sk), arg, len);
+		break;
+
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 	}
 
@@ -2020,11 +2881,24 @@ do_ipt_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 
 	switch (cmd) {
 	case IPT_SO_GET_INFO:
+<<<<<<< HEAD
 		ret = get_info(sock_net(sk), user, len, 0);
 		break;
 
 	case IPT_SO_GET_ENTRIES:
 		ret = get_entries(sock_net(sk), user, len);
+=======
+		ret = get_info(sock_net(sk), user, len);
+		break;
+
+	case IPT_SO_GET_ENTRIES:
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+		if (in_compat_syscall())
+			ret = compat_get_entries(sock_net(sk), user, len);
+		else
+#endif
+			ret = get_entries(sock_net(sk), user, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case IPT_SO_GET_REVISION_MATCH:
@@ -2055,13 +2929,17 @@ do_ipt_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
 	}
 
 	default:
+<<<<<<< HEAD
 		duprintf("do_ipt_get_ctl: unknown request %i\n", cmd);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 struct xt_table *ipt_register_table(struct net *net,
 				    const struct xt_table *table,
 				    const struct ipt_replace *repl)
@@ -2101,6 +2979,9 @@ out:
 }
 
 void ipt_unregister_table(struct net *net, struct xt_table *table)
+=======
+static void __ipt_unregister_table(struct net *net, struct xt_table *table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xt_table_info *private;
 	void *loc_cpu_entry;
@@ -2110,7 +2991,11 @@ void ipt_unregister_table(struct net *net, struct xt_table *table)
 	private = xt_unregister_table(table);
 
 	/* Decrease module usage counts and free resources */
+<<<<<<< HEAD
 	loc_cpu_entry = private->entries[raw_smp_processor_id()];
+=======
+	loc_cpu_entry = private->entries;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xt_entry_foreach(iter, loc_cpu_entry, private->size)
 		cleanup_entry(iter, net);
 	if (private->number > private->initial_entries)
@@ -2118,6 +3003,7 @@ void ipt_unregister_table(struct net *net, struct xt_table *table)
 	xt_free_table_info(private);
 }
 
+<<<<<<< HEAD
 /* Returns 1 if the type and code is matched by the range, 0 otherwise */
 static inline bool
 icmp_type_code_match(u_int8_t test_type, u_int8_t min_code, u_int8_t max_code,
@@ -2163,6 +3049,91 @@ static int icmp_checkentry(const struct xt_mtchk_param *par)
 
 	/* Must specify no unknown invflags */
 	return (icmpinfo->invflags & ~IPT_ICMP_INV) ? -EINVAL : 0;
+=======
+int ipt_register_table(struct net *net, const struct xt_table *table,
+		       const struct ipt_replace *repl,
+		       const struct nf_hook_ops *template_ops)
+{
+	struct nf_hook_ops *ops;
+	unsigned int num_ops;
+	int ret, i;
+	struct xt_table_info *newinfo;
+	struct xt_table_info bootstrap = {0};
+	void *loc_cpu_entry;
+	struct xt_table *new_table;
+
+	newinfo = xt_alloc_table_info(repl->size);
+	if (!newinfo)
+		return -ENOMEM;
+
+	loc_cpu_entry = newinfo->entries;
+	memcpy(loc_cpu_entry, repl->entries, repl->size);
+
+	ret = translate_table(net, newinfo, loc_cpu_entry, repl);
+	if (ret != 0) {
+		xt_free_table_info(newinfo);
+		return ret;
+	}
+
+	new_table = xt_register_table(net, table, &bootstrap, newinfo);
+	if (IS_ERR(new_table)) {
+		struct ipt_entry *iter;
+
+		xt_entry_foreach(iter, loc_cpu_entry, newinfo->size)
+			cleanup_entry(iter, net);
+		xt_free_table_info(newinfo);
+		return PTR_ERR(new_table);
+	}
+
+	/* No template? No need to do anything. This is used by 'nat' table, it registers
+	 * with the nat core instead of the netfilter core.
+	 */
+	if (!template_ops)
+		return 0;
+
+	num_ops = hweight32(table->valid_hooks);
+	if (num_ops == 0) {
+		ret = -EINVAL;
+		goto out_free;
+	}
+
+	ops = kmemdup(template_ops, sizeof(*ops) * num_ops, GFP_KERNEL);
+	if (!ops) {
+		ret = -ENOMEM;
+		goto out_free;
+	}
+
+	for (i = 0; i < num_ops; i++)
+		ops[i].priv = new_table;
+
+	new_table->ops = ops;
+
+	ret = nf_register_net_hooks(net, ops, num_ops);
+	if (ret != 0)
+		goto out_free;
+
+	return ret;
+
+out_free:
+	__ipt_unregister_table(net, new_table);
+	return ret;
+}
+
+void ipt_unregister_table_pre_exit(struct net *net, const char *name)
+{
+	struct xt_table *table = xt_find_table(net, NFPROTO_IPV4, name);
+
+	if (table)
+		nf_unregister_net_hooks(net, table->ops, hweight32(table->valid_hooks));
+}
+
+void ipt_unregister_table_exit(struct net *net, const char *name)
+{
+	struct xt_table *table = xt_find_table(net, NFPROTO_IPV4, name);
+
+	if (table)
+		__ipt_unregister_table(net, table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_target ipt_builtin_tg[] __read_mostly = {
@@ -2170,7 +3141,11 @@ static struct xt_target ipt_builtin_tg[] __read_mostly = {
 		.name             = XT_STANDARD_TARGET,
 		.targetsize       = sizeof(int),
 		.family           = NFPROTO_IPV4,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.compatsize       = sizeof(compat_int_t),
 		.compat_from_user = compat_standard_from_user,
 		.compat_to_user   = compat_standard_to_user,
@@ -2189,6 +3164,7 @@ static struct nf_sockopt_ops ipt_sockopts = {
 	.set_optmin	= IPT_BASE_CTL,
 	.set_optmax	= IPT_SO_SET_MAX+1,
 	.set		= do_ipt_set_ctl,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_set	= compat_do_ipt_set_ctl,
 #endif
@@ -2212,6 +3188,14 @@ static struct xt_match ipt_builtin_mt[] __read_mostly = {
 	},
 };
 
+=======
+	.get_optmin	= IPT_BASE_CTL,
+	.get_optmax	= IPT_SO_GET_MAX+1,
+	.get		= do_ipt_get_ctl,
+	.owner		= THIS_MODULE,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __net_init ip_tables_net_init(struct net *net)
 {
 	return xt_proto_init(net, NFPROTO_IPV4);
@@ -2239,13 +3223,17 @@ static int __init ip_tables_init(void)
 	ret = xt_register_targets(ipt_builtin_tg, ARRAY_SIZE(ipt_builtin_tg));
 	if (ret < 0)
 		goto err2;
+<<<<<<< HEAD
 	ret = xt_register_matches(ipt_builtin_mt, ARRAY_SIZE(ipt_builtin_mt));
 	if (ret < 0)
 		goto err4;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register setsockopt */
 	ret = nf_register_sockopt(&ipt_sockopts);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err5;
 
 	pr_info("(C) 2000-2006 Netfilter Core Team\n");
@@ -2253,6 +3241,12 @@ static int __init ip_tables_init(void)
 
 err5:
 	xt_unregister_matches(ipt_builtin_mt, ARRAY_SIZE(ipt_builtin_mt));
+=======
+		goto err4;
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err4:
 	xt_unregister_targets(ipt_builtin_tg, ARRAY_SIZE(ipt_builtin_tg));
 err2:
@@ -2265,13 +3259,21 @@ static void __exit ip_tables_fini(void)
 {
 	nf_unregister_sockopt(&ipt_sockopts);
 
+<<<<<<< HEAD
 	xt_unregister_matches(ipt_builtin_mt, ARRAY_SIZE(ipt_builtin_mt));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xt_unregister_targets(ipt_builtin_tg, ARRAY_SIZE(ipt_builtin_tg));
 	unregister_pernet_subsys(&ip_tables_net_ops);
 }
 
 EXPORT_SYMBOL(ipt_register_table);
+<<<<<<< HEAD
 EXPORT_SYMBOL(ipt_unregister_table);
+=======
+EXPORT_SYMBOL(ipt_unregister_table_pre_exit);
+EXPORT_SYMBOL(ipt_unregister_table_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ipt_do_table);
 module_init(ip_tables_init);
 module_exit(ip_tables_fini);

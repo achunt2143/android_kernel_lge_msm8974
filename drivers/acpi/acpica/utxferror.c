@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utxferror - Various error/warning output functions
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -45,6 +50,12 @@
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
+=======
+#define EXPORT_ACPI_INTERFACES
+
+#include <acpi/acpi.h>
+#include "accommon.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utxferror")
@@ -52,6 +63,7 @@ ACPI_MODULE_NAME("utxferror")
 /*
  * This module is used for the in-kernel ACPICA as well as the ACPICA
  * tools/applications.
+<<<<<<< HEAD
  *
  * For the i_aSL compiler case, the output is redirected to stderr so that
  * any of the various ACPI errors and warnings do not appear in the output
@@ -87,13 +99,21 @@ extern FILE *acpi_gbl_output_file;
  */
 #define ACPI_MSG_SUFFIX \
 	acpi_os_printf (" (%8.8X/%s-%u)\n", ACPI_CA_VERSION, module_name, line_number)
+=======
+ */
+#ifndef ACPI_NO_ERROR_MESSAGES	/* Entire module */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_error
  *
  * PARAMETERS:  module_name         - Caller's module name (for error output)
  *              line_number         - Caller's line number (for error output)
+<<<<<<< HEAD
  *              Format              - Printf format string + additional args
+=======
+ *              format              - Printf format string + additional args
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -124,6 +144,7 @@ ACPI_EXPORT_SYMBOL(acpi_error)
  *
  * PARAMETERS:  module_name         - Caller's module name (for error output)
  *              line_number         - Caller's line number (for error output)
+<<<<<<< HEAD
  *              Status              - Status to be formatted
  *              Format              - Printf format string + additional args
  *
@@ -131,6 +152,15 @@ ACPI_EXPORT_SYMBOL(acpi_error)
  *
  * DESCRIPTION: Print "ACPI Exception" message with module/line/version info
  *              and decoded acpi_status.
+=======
+ *              status              - Status value to be decoded/formatted
+ *              format              - Printf format string + additional args
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print an "ACPI Error" message with module/line/version
+ *              info as well as decoded acpi_status.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 void ACPI_INTERNAL_VAR_XFACE
@@ -140,8 +170,21 @@ acpi_exception(const char *module_name,
 	va_list arg_list;
 
 	ACPI_MSG_REDIRECT_BEGIN;
+<<<<<<< HEAD
 	acpi_os_printf(ACPI_MSG_EXCEPTION "%s, ",
 		       acpi_format_exception(status));
+=======
+
+	/* For AE_OK, just print the message */
+
+	if (ACPI_SUCCESS(status)) {
+		acpi_os_printf(ACPI_MSG_ERROR);
+
+	} else {
+		acpi_os_printf(ACPI_MSG_ERROR "%s, ",
+			       acpi_format_exception(status));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(arg_list, format);
 	acpi_os_vprintf(format, arg_list);
@@ -157,9 +200,15 @@ ACPI_EXPORT_SYMBOL(acpi_exception)
  *
  * FUNCTION:    acpi_warning
  *
+<<<<<<< HEAD
  * PARAMETERS:  module_name         - Caller's module name (for error output)
  *              line_number         - Caller's line number (for error output)
  *              Format              - Printf format string + additional args
+=======
+ * PARAMETERS:  module_name         - Caller's module name (for warning output)
+ *              line_number         - Caller's line number (for warning output)
+ *              format              - Printf format string + additional args
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -188,20 +237,29 @@ ACPI_EXPORT_SYMBOL(acpi_warning)
  *
  * FUNCTION:    acpi_info
  *
+<<<<<<< HEAD
  * PARAMETERS:  module_name         - Caller's module name (for error output)
  *              line_number         - Caller's line number (for error output)
  *              Format              - Printf format string + additional args
+=======
+ * PARAMETERS:  format              - Printf format string + additional args
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
  * DESCRIPTION: Print generic "ACPI:" information message. There is no
  *              module/line/version info in order to keep the message simple.
  *
+<<<<<<< HEAD
  * TBD: module_name and line_number args are not needed, should be removed.
  *
  ******************************************************************************/
 void ACPI_INTERNAL_VAR_XFACE
 acpi_info(const char *module_name, u32 line_number, const char *format, ...)
+=======
+ ******************************************************************************/
+void ACPI_INTERNAL_VAR_XFACE acpi_info(const char *format, ...)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	va_list arg_list;
 
@@ -218,6 +276,7 @@ acpi_info(const char *module_name, u32 line_number, const char *format, ...)
 
 ACPI_EXPORT_SYMBOL(acpi_info)
 
+<<<<<<< HEAD
 /*
  * The remainder of this module contains internal error functions that may
  * be configured out.
@@ -413,4 +472,115 @@ acpi_ut_method_error(const char *module_name,
 	ACPI_MSG_REDIRECT_END;
 }
 
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_bios_error
+ *
+ * PARAMETERS:  module_name         - Caller's module name (for error output)
+ *              line_number         - Caller's line number (for error output)
+ *              format              - Printf format string + additional args
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print "ACPI Firmware Error" message with module/line/version
+ *              info
+ *
+ ******************************************************************************/
+void ACPI_INTERNAL_VAR_XFACE
+acpi_bios_error(const char *module_name,
+		u32 line_number, const char *format, ...)
+{
+	va_list arg_list;
+
+	ACPI_MSG_REDIRECT_BEGIN;
+	acpi_os_printf(ACPI_MSG_BIOS_ERROR);
+
+	va_start(arg_list, format);
+	acpi_os_vprintf(format, arg_list);
+	ACPI_MSG_SUFFIX;
+	va_end(arg_list);
+
+	ACPI_MSG_REDIRECT_END;
+}
+
+ACPI_EXPORT_SYMBOL(acpi_bios_error)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_bios_exception
+ *
+ * PARAMETERS:  module_name         - Caller's module name (for error output)
+ *              line_number         - Caller's line number (for error output)
+ *              status              - Status value to be decoded/formatted
+ *              format              - Printf format string + additional args
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print an "ACPI Firmware Error" message with module/line/version
+ *              info as well as decoded acpi_status.
+ *
+ ******************************************************************************/
+void ACPI_INTERNAL_VAR_XFACE
+acpi_bios_exception(const char *module_name,
+		    u32 line_number,
+		    acpi_status status, const char *format, ...)
+{
+	va_list arg_list;
+
+	ACPI_MSG_REDIRECT_BEGIN;
+
+	/* For AE_OK, just print the message */
+
+	if (ACPI_SUCCESS(status)) {
+		acpi_os_printf(ACPI_MSG_BIOS_ERROR);
+
+	} else {
+		acpi_os_printf(ACPI_MSG_BIOS_ERROR "%s, ",
+			       acpi_format_exception(status));
+	}
+
+	va_start(arg_list, format);
+	acpi_os_vprintf(format, arg_list);
+	ACPI_MSG_SUFFIX;
+	va_end(arg_list);
+
+	ACPI_MSG_REDIRECT_END;
+}
+
+ACPI_EXPORT_SYMBOL(acpi_bios_exception)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_bios_warning
+ *
+ * PARAMETERS:  module_name         - Caller's module name (for warning output)
+ *              line_number         - Caller's line number (for warning output)
+ *              format              - Printf format string + additional args
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print "ACPI Firmware Warning" message with module/line/version
+ *              info
+ *
+ ******************************************************************************/
+void ACPI_INTERNAL_VAR_XFACE
+acpi_bios_warning(const char *module_name,
+		  u32 line_number, const char *format, ...)
+{
+	va_list arg_list;
+
+	ACPI_MSG_REDIRECT_BEGIN;
+	acpi_os_printf(ACPI_MSG_BIOS_WARNING);
+
+	va_start(arg_list, format);
+	acpi_os_vprintf(format, arg_list);
+	ACPI_MSG_SUFFIX;
+	va_end(arg_list);
+
+	ACPI_MSG_REDIRECT_END;
+}
+
+ACPI_EXPORT_SYMBOL(acpi_bios_warning)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* ACPI_NO_ERROR_MESSAGES */

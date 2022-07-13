@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * uncompress.c
  *
@@ -15,11 +19,20 @@
  * then is used by multiple filesystems.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/vmalloc.h>
 #include <linux/zlib.h>
+<<<<<<< HEAD
 #include <linux/cramfs_fs.h>
+=======
+#include "internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static z_stream stream;
 static int initialized;
@@ -37,7 +50,11 @@ int cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)
 
 	err = zlib_inflateReset(&stream);
 	if (err != Z_OK) {
+<<<<<<< HEAD
 		printk("zlib_inflateReset error %d\n", err);
+=======
+		pr_err("zlib_inflateReset error %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		zlib_inflateEnd(&stream);
 		zlib_inflateInit(&stream);
 	}
@@ -48,8 +65,13 @@ int cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)
 	return stream.total_out;
 
 err:
+<<<<<<< HEAD
 	printk("Error %d while decompressing!\n", err);
 	printk("%p(%d)->%p(%d)\n", src, srclen, dst, dstlen);
+=======
+	pr_err("Error %d while decompressing!\n", err);
+	pr_err("%p(%d)->%p(%d)\n", src, srclen, dst, dstlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -57,7 +79,11 @@ int cramfs_uncompress_init(void)
 {
 	if (!initialized++) {
 		stream.workspace = vmalloc(zlib_inflate_workspacesize());
+<<<<<<< HEAD
 		if ( !stream.workspace ) {
+=======
+		if (!stream.workspace) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			initialized = 0;
 			return -ENOMEM;
 		}

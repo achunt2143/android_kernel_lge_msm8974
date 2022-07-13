@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2009 Red Hat, Inc.
  *
@@ -66,7 +70,11 @@ static int dm_ulog_sendto_server(struct dm_ulog_request *tfr)
 	msg->seq = tfr->seq;
 	msg->len = sizeof(struct dm_ulog_request) + tfr->data_size;
 
+<<<<<<< HEAD
 	r = cn_netlink_send(msg, 0, gfp_any());
+=======
+	r = cn_netlink_send(msg, 0, 0, gfp_any());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -108,9 +116,14 @@ static int fill_pkg(struct cn_msg *msg, struct dm_ulog_request *tfr)
 			if (pkg->error != -EAGAIN)
 				*(pkg->data_size) = 0;
 		} else if (tfr->data_size > *(pkg->data_size)) {
+<<<<<<< HEAD
 			DMERR("Insufficient space to receive package [%u] "
 			      "(%u vs %zu)", tfr->request_type,
 			      tfr->data_size, *(pkg->data_size));
+=======
+			DMERR("Insufficient space to receive package [%u] (%u vs %zu)",
+			      tfr->request_type, tfr->data_size, *(pkg->data_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			*(pkg->data_size) = 0;
 			pkg->error = -ENOSPC;
@@ -142,7 +155,11 @@ static void cn_ulog_callback(struct cn_msg *msg, struct netlink_skb_parms *nsp)
 		fill_pkg(msg, NULL);
 	else if (msg->len < sizeof(*tfr))
 		DMERR("Incomplete message received (expected %u, got %u): [%u]",
+<<<<<<< HEAD
 		      (unsigned)sizeof(*tfr), msg->len, msg->seq);
+=======
+		      (unsigned int)sizeof(*tfr), msg->len, msg->seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		fill_pkg(NULL, tfr);
 	spin_unlock(&receiving_list_lock);
@@ -172,6 +189,10 @@ int dm_consult_userspace(const char *uuid, uint64_t luid, int request_type,
 			 char *rdata, size_t *rdata_size)
 {
 	int r = 0;
+<<<<<<< HEAD
+=======
+	unsigned long tmo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t dummy = 0;
 	int overhead_size = sizeof(struct dm_ulog_request) + sizeof(struct cn_msg);
 	struct dm_ulog_request *tfr = prealloced_ulog_tfr;
@@ -236,11 +257,19 @@ resend:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	r = wait_for_completion_timeout(&(pkg.complete), DM_ULOG_RETRY_TIMEOUT);
 	spin_lock(&receiving_list_lock);
 	list_del_init(&(pkg.list));
 	spin_unlock(&receiving_list_lock);
 	if (!r) {
+=======
+	tmo = wait_for_completion_timeout(&(pkg.complete), DM_ULOG_RETRY_TIMEOUT);
+	spin_lock(&receiving_list_lock);
+	list_del_init(&(pkg.list));
+	spin_unlock(&receiving_list_lock);
+	if (!tmo) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DMWARN("[%s] Request timed out: [%u/%u] - retrying",
 		       (strlen(uuid) > 8) ?
 		       (uuid + (strlen(uuid) - 8)) : (uuid),

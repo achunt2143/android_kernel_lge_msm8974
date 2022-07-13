@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
  *  Driver EMU10K1X chips
@@ -13,6 +17,7 @@
  *  Chips (SB0200 model):
  *    - EMU10K1X-DBQ
  *    - STAC 9708T
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,6 +33,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -45,7 +52,10 @@
 MODULE_AUTHOR("Francisco Moraes <fmoraes@nc.rr.com>");
 MODULE_DESCRIPTION("EMU10K1X");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Dell Creative Labs,SB Live!}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // module parameters (see "Module Parameters")
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
@@ -180,7 +190,11 @@ MODULE_PARM_DESC(enable, "Enable the EMU10K1X soundcard.");
 
 /* From 0x50 - 0x5f, last samples captured */
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The hardware has 3 channels for playback and 1 for capture.
  *  - channel 0 is the front channel
  *  - channel 1 is the rear channel
@@ -231,7 +245,10 @@ struct emu10k1x {
 	struct pci_dev *pci;
 
 	unsigned long port;
+<<<<<<< HEAD
 	struct resource *res_port;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 
 	unsigned char revision;		/* chip revision */
@@ -248,13 +265,21 @@ struct emu10k1x {
 	struct emu10k1x_voice capture_voice;
 	u32 spdif_bits[3]; // SPDIF out setup
 
+<<<<<<< HEAD
 	struct snd_dma_buffer dma_buffer;
+=======
+	struct snd_dma_buffer *dma_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct emu10k1x_midi midi;
 };
 
 /* hardware definition */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1x_playback_hw = {
+=======
+static const struct snd_pcm_hardware snd_emu10k1x_playback_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | 
 				 SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -273,7 +298,11 @@ static struct snd_pcm_hardware snd_emu10k1x_playback_hw = {
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1x_capture_hw = {
+=======
+static const struct snd_pcm_hardware snd_emu10k1x_capture_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | 
 				 SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -364,12 +393,22 @@ static void snd_emu10k1x_pcm_interrupt(struct emu10k1x *emu, struct emu10k1x_voi
 {
 	struct emu10k1x_pcm *epcm;
 
+<<<<<<< HEAD
 	if ((epcm = voice->epcm) == NULL)
+=======
+	epcm = voice->epcm;
+	if (!epcm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (epcm->substream == NULL)
 		return;
 #if 0
+<<<<<<< HEAD
 	snd_printk(KERN_INFO "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+=======
+	dev_info(emu->card->dev,
+		 "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   epcm->substream->ops->pointer(epcm->substream),
 		   snd_pcm_lib_period_bytes(epcm->substream),
 		   snd_pcm_lib_buffer_bytes(epcm->substream));
@@ -385,10 +424,18 @@ static int snd_emu10k1x_playback_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0) {
 		return err;
 	}
 	if ((err = snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 64)) < 0)
+=======
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 64);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return err;
 
 	epcm = kzalloc(sizeof(*epcm), GFP_KERNEL);
@@ -424,8 +471,12 @@ static int snd_emu10k1x_pcm_hw_params(struct snd_pcm_substream *substream,
 		epcm->voice->epcm = epcm;
 	}
 
+<<<<<<< HEAD
 	return snd_pcm_lib_malloc_pages(substream,
 					params_buffer_bytes(hw_params));
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hw_free callback */
@@ -445,7 +496,11 @@ static int snd_emu10k1x_pcm_hw_free(struct snd_pcm_substream *substream)
 		epcm->voice = NULL;
 	}
 
+<<<<<<< HEAD
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* prepare callback */
@@ -455,7 +510,11 @@ static int snd_emu10k1x_pcm_prepare(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct emu10k1x_pcm *epcm = runtime->private_data;
 	int voice = epcm->voice->number;
+<<<<<<< HEAD
 	u32 *table_base = (u32 *)(emu->dma_buffer.area+1024*voice);
+=======
+	u32 *table_base = (u32 *)(emu->dma_buffer->area+1024*voice);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 period_size_bytes = frames_to_bytes(runtime, runtime->period_size);
 	int i;
 	
@@ -464,7 +523,11 @@ static int snd_emu10k1x_pcm_prepare(struct snd_pcm_substream *substream)
 		*table_base++=period_size_bytes<<16;
 	}
 
+<<<<<<< HEAD
 	snd_emu10k1x_ptr_write(emu, PLAYBACK_LIST_ADDR, voice, emu->dma_buffer.addr+1024*voice);
+=======
+	snd_emu10k1x_ptr_write(emu, PLAYBACK_LIST_ADDR, voice, emu->dma_buffer->addr+1024*voice);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_emu10k1x_ptr_write(emu, PLAYBACK_LIST_SIZE, voice, (runtime->periods - 1) << 19);
 	snd_emu10k1x_ptr_write(emu, PLAYBACK_LIST_PTR, voice, 0);
 	snd_emu10k1x_ptr_write(emu, PLAYBACK_POINTER, voice, 0);
@@ -487,7 +550,15 @@ static int snd_emu10k1x_pcm_trigger(struct snd_pcm_substream *substream,
 	int channel = epcm->voice->number;
 	int result = 0;
 
+<<<<<<< HEAD
 //	snd_printk(KERN_INFO "trigger - emu10k1x = 0x%x, cmd = %i, pointer = %d\n", (int)emu, cmd, (int)substream->ops->pointer(substream));
+=======
+	/*
+	dev_dbg(emu->card->dev,
+		"trigger - emu10k1x = 0x%x, cmd = %i, pointer = %d\n",
+		(int)emu, cmd, (int)substream->ops->pointer(substream));
+	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -543,10 +614,16 @@ snd_emu10k1x_pcm_pointer(struct snd_pcm_substream *substream)
 }
 
 /* operators */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1x_playback_ops = {
 	.open =        snd_emu10k1x_playback_open,
 	.close =       snd_emu10k1x_playback_close,
 	.ioctl =       snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_emu10k1x_playback_ops = {
+	.open =        snd_emu10k1x_playback_open,
+	.close =       snd_emu10k1x_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =   snd_emu10k1x_pcm_hw_params,
 	.hw_free =     snd_emu10k1x_pcm_hw_free,
 	.prepare =     snd_emu10k1x_pcm_prepare,
@@ -562,10 +639,19 @@ static int snd_emu10k1x_pcm_open_capture(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
                 return err;
 	if ((err = snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 64)) < 0)
                 return err;
+=======
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_constraint_step(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 64);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	epcm = kzalloc(sizeof(*epcm), GFP_KERNEL);
 	if (epcm == NULL)
@@ -603,8 +689,12 @@ static int snd_emu10k1x_pcm_hw_params_capture(struct snd_pcm_substream *substrea
 		epcm->voice->use = 1;
 	}
 
+<<<<<<< HEAD
 	return snd_pcm_lib_malloc_pages(substream,
 					params_buffer_bytes(hw_params));
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hw_free callback */
@@ -624,7 +714,11 @@ static int snd_emu10k1x_pcm_hw_free_capture(struct snd_pcm_substream *substream)
 		epcm->voice = NULL;
 	}
 
+<<<<<<< HEAD
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* prepare capture callback */
@@ -689,10 +783,16 @@ snd_emu10k1x_pcm_pointer_capture(struct snd_pcm_substream *substream)
 	return ptr;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1x_capture_ops = {
 	.open =        snd_emu10k1x_pcm_open_capture,
 	.close =       snd_emu10k1x_pcm_close_capture,
 	.ioctl =       snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_emu10k1x_capture_ops = {
+	.open =        snd_emu10k1x_pcm_open_capture,
+	.close =       snd_emu10k1x_pcm_close_capture,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =   snd_emu10k1x_pcm_hw_params_capture,
 	.hw_free =     snd_emu10k1x_pcm_hw_free_capture,
 	.prepare =     snd_emu10k1x_pcm_prepare_capture,
@@ -731,12 +831,21 @@ static int snd_emu10k1x_ac97(struct emu10k1x *chip)
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
 	int err;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_emu10k1x_ac97_write,
 		.read = snd_emu10k1x_ac97_read,
 	};
   
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pbus->no_vra = 1; /* we don't need VRA */
 
@@ -746,13 +855,21 @@ static int snd_emu10k1x_ac97(struct emu10k1x *chip)
 	return snd_ac97_mixer(pbus, &ac97, &chip->ac97);
 }
 
+<<<<<<< HEAD
 static int snd_emu10k1x_free(struct emu10k1x *chip)
 {
+=======
+static void snd_emu10k1x_free(struct snd_card *card)
+{
+	struct emu10k1x *chip = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_emu10k1x_ptr_write(chip, TRIGGER_CHANNEL, 0, 0);
 	// disable interrupts
 	outl(0, chip->port + INTE);
 	// disable audio
 	outl(HCFG_LOCKSOUNDCACHE, chip->port + HCFG);
+<<<<<<< HEAD
 
 	/* release the irq */
 	if (chip->irq >= 0)
@@ -777,6 +894,8 @@ static int snd_emu10k1x_dev_free(struct snd_device *device)
 {
 	struct emu10k1x *chip = device->device_data;
 	return snd_emu10k1x_free(chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t snd_emu10k1x_interrupt(int irq, void *dev_id)
@@ -826,6 +945,7 @@ static irqreturn_t snd_emu10k1x_interrupt(int irq, void *dev_id)
 	// acknowledge the interrupt if necessary
 	outl(status, chip->port + IPR);
 
+<<<<<<< HEAD
 	// snd_printk(KERN_INFO "interrupt %08x\n", status);
 	return IRQ_HANDLED;
 }
@@ -842,6 +962,36 @@ static int __devinit snd_emu10k1x_pcm(struct emu10k1x *emu, int device, struct s
 		capture = 1;
 	
 	if ((err = snd_pcm_new(emu->card, "emu10k1x", device, 1, capture, &pcm)) < 0)
+=======
+	/* dev_dbg(chip->card->dev, "interrupt %08x\n", status); */
+	return IRQ_HANDLED;
+}
+
+static const struct snd_pcm_chmap_elem surround_map[] = {
+	{ .channels = 2,
+	  .map = { SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
+	{ }
+};
+
+static const struct snd_pcm_chmap_elem clfe_map[] = {
+	{ .channels = 2,
+	  .map = { SNDRV_CHMAP_FC, SNDRV_CHMAP_LFE } },
+	{ }
+};
+
+static int snd_emu10k1x_pcm(struct emu10k1x *emu, int device)
+{
+	struct snd_pcm *pcm;
+	const struct snd_pcm_chmap_elem *map = NULL;
+	int err;
+	int capture = 0;
+  
+	if (device == 0)
+		capture = 1;
+	
+	err = snd_pcm_new(emu->card, "emu10k1x", device, 1, capture, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
   
 	pcm->private_data = emu;
@@ -861,16 +1011,29 @@ static int __devinit snd_emu10k1x_pcm(struct emu10k1x *emu, int device, struct s
 	switch(device) {
 	case 0:
 		strcpy(pcm->name, "EMU10K1X Front");
+<<<<<<< HEAD
 		break;
 	case 1:
 		strcpy(pcm->name, "EMU10K1X Rear");
 		break;
 	case 2:
 		strcpy(pcm->name, "EMU10K1X Center/LFE");
+=======
+		map = snd_pcm_std_chmaps;
+		break;
+	case 1:
+		strcpy(pcm->name, "EMU10K1X Rear");
+		map = surround_map;
+		break;
+	case 2:
+		strcpy(pcm->name, "EMU10K1X Center/LFE");
+		map = clfe_map;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	emu->pcm = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(emu->pci), 
 					      32*1024, 32*1024);
@@ -907,6 +1070,29 @@ static int __devinit snd_emu10k1x_create(struct snd_card *card,
 	if (chip == NULL) {
 		pci_disable_device(pci);
 		return -ENOMEM;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &emu->pci->dev, 32*1024, 32*1024);
+  
+	return snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK, map, 2,
+				     1 << 2, NULL);
+}
+
+static int snd_emu10k1x_create(struct snd_card *card,
+			       struct pci_dev *pci)
+{
+	struct emu10k1x *chip = card->private_data;
+	int err;
+	int ch;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28)) < 0) {
+		dev_err(card->dev, "error to set 28bit mask DMA\n");
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	chip->card = card;
@@ -916,6 +1102,7 @@ static int __devinit snd_emu10k1x_create(struct snd_card *card,
 	spin_lock_init(&chip->emu_lock);
 	spin_lock_init(&chip->voice_lock);
   
+<<<<<<< HEAD
 	chip->port = pci_resource_start(pci, 0);
 	if ((chip->res_port = request_region(chip->port, 8,
 					     "EMU10K1X")) == NULL) { 
@@ -937,13 +1124,37 @@ static int __devinit snd_emu10k1x_create(struct snd_card *card,
 		snd_emu10k1x_free(chip);
 		return -ENOMEM;
 	}
+=======
+	err = pci_request_regions(pci, "EMU10K1X");
+	if (err < 0)
+		return err;
+	chip->port = pci_resource_start(pci, 0);
+
+	if (devm_request_irq(&pci->dev, pci->irq, snd_emu10k1x_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "cannot grab irq %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_emu10k1x_free;
+  
+	chip->dma_buffer = snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV,
+						4 * 1024);
+	if (!chip->dma_buffer)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(pci);
 	/* read revision & serial */
 	chip->revision = pci->revision;
 	pci_read_config_dword(pci, PCI_SUBSYSTEM_VENDOR_ID, &chip->serial);
 	pci_read_config_word(pci, PCI_SUBSYSTEM_ID, &chip->model);
+<<<<<<< HEAD
 	snd_printk(KERN_INFO "Model %04x Rev %08x Serial %08x\n", chip->model,
+=======
+	dev_info(card->dev, "Model %04x Rev %08x Serial %08x\n", chip->model,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   chip->revision, chip->serial);
 
 	outl(0, chip->port + INTE);	
@@ -992,12 +1203,15 @@ static int __devinit snd_emu10k1x_create(struct snd_card *card,
 
 	outl(HCFG_LOCKSOUNDCACHE|HCFG_AUDIOENABLE, chip->port+HCFG);
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL,
 				  chip, &ops)) < 0) {
 		snd_emu10k1x_free(chip);
 		return err;
 	}
 	*rchip = chip;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1040,11 +1254,16 @@ static void snd_emu10k1x_proc_reg_write(struct snd_info_entry *entry,
 		if (sscanf(line, "%x %x %x", &reg, &channel_id, &val) != 3)
 			continue;
 
+<<<<<<< HEAD
 		if (reg < 0x49 && val <= 0xffffffff && channel_id <= 2)
+=======
+		if (reg < 0x49 && channel_id <= 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_emu10k1x_ptr_write(emu, reg, channel_id, val);
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit snd_emu10k1x_proc_init(struct emu10k1x * emu)
 {
 	struct snd_info_entry *entry;
@@ -1056,6 +1275,13 @@ static int __devinit snd_emu10k1x_proc_init(struct emu10k1x * emu)
 		entry->private_data = emu;
 	}
 	
+=======
+static int snd_emu10k1x_proc_init(struct emu10k1x *emu)
+{
+	snd_card_rw_proc_new(emu->card, "emu10k1x_regs", emu,
+			     snd_emu10k1x_proc_reg_read,
+			     snd_emu10k1x_proc_reg_write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1076,7 +1302,10 @@ static int snd_emu10k1x_shared_spdif_put(struct snd_kcontrol *kcontrol,
 {
 	struct emu10k1x *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int val;
+<<<<<<< HEAD
 	int change = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = ucontrol->value.integer.value[0] ;
 
@@ -1091,10 +1320,17 @@ static int snd_emu10k1x_shared_spdif_put(struct snd_kcontrol *kcontrol,
 		snd_emu10k1x_ptr_write(emu, ROUTING, 0, 0x1003F);
 		snd_emu10k1x_gpio_write(emu, 0x1080);
 	}
+<<<<<<< HEAD
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1x_shared_spdif __devinitdata =
+=======
+	return 0;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1x_shared_spdif =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Analog/Digital Output Jack",
@@ -1153,7 +1389,11 @@ static int snd_emu10k1x_spdif_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_emu10k1x_spdif_mask_control =
+=======
+static const struct snd_kcontrol_new snd_emu10k1x_spdif_mask_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1163,7 +1403,11 @@ static struct snd_kcontrol_new snd_emu10k1x_spdif_mask_control =
 	.get =          snd_emu10k1x_spdif_get_mask
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_emu10k1x_spdif_control =
+=======
+static const struct snd_kcontrol_new snd_emu10k1x_spdif_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =         SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -1173,12 +1417,17 @@ static struct snd_kcontrol_new snd_emu10k1x_spdif_control =
 	.put =          snd_emu10k1x_spdif_put
 };
 
+<<<<<<< HEAD
 static int __devinit snd_emu10k1x_mixer(struct emu10k1x *emu)
+=======
+static int snd_emu10k1x_mixer(struct emu10k1x *emu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_kcontrol *kctl;
 	struct snd_card *card = emu->card;
 
+<<<<<<< HEAD
 	if ((kctl = snd_ctl_new1(&snd_emu10k1x_spdif_mask_control, emu)) == NULL)
 		return -ENOMEM;
 	if ((err = snd_ctl_add(card, kctl)))
@@ -1190,6 +1439,25 @@ static int __devinit snd_emu10k1x_mixer(struct emu10k1x *emu)
 	if ((kctl = snd_ctl_new1(&snd_emu10k1x_spdif_control, emu)) == NULL)
 		return -ENOMEM;
 	if ((err = snd_ctl_add(card, kctl)))
+=======
+	kctl = snd_ctl_new1(&snd_emu10k1x_spdif_mask_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	kctl = snd_ctl_new1(&snd_emu10k1x_shared_spdif, emu);
+	if (!kctl)
+		return -ENOMEM;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	kctl = snd_ctl_new1(&snd_emu10k1x_spdif_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
@@ -1227,7 +1495,13 @@ static void mpu401_clear_rx(struct emu10k1x *emu, struct emu10k1x_midi *mpu)
 		mpu401_read_data(emu, mpu);
 #ifdef CONFIG_SND_DEBUG
 	if (timeout <= 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "cmd: clear rx timeout (status = 0x%x)\n", mpu401_read_stat(emu, mpu));
+=======
+		dev_err(emu->card->dev,
+			"cmd: clear rx timeout (status = 0x%x)\n",
+			mpu401_read_stat(emu, mpu));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -1301,7 +1575,12 @@ static int snd_emu10k1x_midi_cmd(struct emu10k1x * emu,
 	}
 	spin_unlock_irqrestore(&midi->input_lock, flags);
 	if (!ok) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "midi_cmd: 0x%x failed at 0x%lx (status = 0x%x, data = 0x%x)!!!\n",
+=======
+		dev_err(emu->card->dev,
+			"midi_cmd: 0x%x failed at 0x%lx (status = 0x%x, data = 0x%x)!!!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   cmd, emu->port,
 			   mpu401_read_stat(emu, midi),
 			   mpu401_read_data(emu, midi));
@@ -1465,14 +1744,22 @@ static void snd_emu10k1x_midi_output_trigger(struct snd_rawmidi_substream *subst
 
  */
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_emu10k1x_midi_output =
+=======
+static const struct snd_rawmidi_ops snd_emu10k1x_midi_output =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_emu10k1x_midi_output_open,
 	.close =	snd_emu10k1x_midi_output_close,
 	.trigger =	snd_emu10k1x_midi_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_emu10k1x_midi_input =
+=======
+static const struct snd_rawmidi_ops snd_emu10k1x_midi_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_emu10k1x_midi_input_open,
 	.close =	snd_emu10k1x_midi_input_close,
@@ -1486,13 +1773,24 @@ static void snd_emu10k1x_midi_free(struct snd_rawmidi *rmidi)
 	midi->rmidi = NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit emu10k1x_midi_init(struct emu10k1x *emu,
 					struct emu10k1x_midi *midi, int device, char *name)
+=======
+static int emu10k1x_midi_init(struct emu10k1x *emu,
+			      struct emu10k1x_midi *midi, int device,
+			      char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_rawmidi_new(emu->card, name, device, 1, 1, &rmidi)) < 0)
+=======
+	err = snd_rawmidi_new(emu->card, name, device, 1, 1, &rmidi);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	midi->emu = emu;
 	spin_lock_init(&midi->open_lock);
@@ -1510,12 +1808,21 @@ static int __devinit emu10k1x_midi_init(struct emu10k1x *emu,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_emu10k1x_midi(struct emu10k1x *emu)
+=======
+static int snd_emu10k1x_midi(struct emu10k1x *emu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emu10k1x_midi *midi = &emu->midi;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = emu10k1x_midi_init(emu, midi, 0, "EMU10K1X MPU-401 (UART)")) < 0)
+=======
+	err = emu10k1x_midi_init(emu, midi, 0, "EMU10K1X MPU-401 (UART)");
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	midi->tx_enable = INTE_MIDITXENABLE;
@@ -1527,8 +1834,13 @@ static int __devinit snd_emu10k1x_midi(struct emu10k1x *emu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_emu10k1x_probe(struct pci_dev *pci,
 					const struct pci_device_id *pci_id)
+=======
+static int __snd_emu10k1x_probe(struct pci_dev *pci,
+				const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -1542,6 +1854,7 @@ static int __devinit snd_emu10k1x_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
@@ -1578,6 +1891,39 @@ static int __devinit snd_emu10k1x_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+
+	err = snd_emu10k1x_create(card, pci);
+	if (err < 0)
+		return err;
+
+	err = snd_emu10k1x_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_emu10k1x_pcm(chip, 1);
+	if (err < 0)
+		return err;
+	err = snd_emu10k1x_pcm(chip, 2);
+	if (err < 0)
+		return err;
+
+	err = snd_emu10k1x_ac97(chip);
+	if (err < 0)
+		return err;
+
+	err = snd_emu10k1x_mixer(chip);
+	if (err < 0)
+		return err;
+	
+	err = snd_emu10k1x_midi(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_emu10k1x_proc_init(chip);
 
@@ -1586,18 +1932,25 @@ static int __devinit snd_emu10k1x_probe(struct pci_dev *pci,
 	sprintf(card->longname, "%s at 0x%lx irq %i",
 		card->shortname, chip->port, chip->irq);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_emu10k1x_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -1606,12 +1959,23 @@ static void __devexit snd_emu10k1x_remove(struct pci_dev *pci)
 
 // PCI IDs
 static DEFINE_PCI_DEVICE_TABLE(snd_emu10k1x_ids) = {
+=======
+static int snd_emu10k1x_probe(struct pci_dev *pci,
+			      const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_emu10k1x_probe(pci, pci_id));
+}
+
+// PCI IDs
+static const struct pci_device_id snd_emu10k1x_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(CREATIVE, 0x0006), 0 },	/* Dell OEM version (EMU10K1) */
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, snd_emu10k1x_ids);
 
 // pci_driver definition
+<<<<<<< HEAD
 static struct pci_driver driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_emu10k1x_ids,
@@ -1633,3 +1997,12 @@ static void __exit alsa_card_emu10k1x_exit(void)
 
 module_init(alsa_card_emu10k1x_init)
 module_exit(alsa_card_emu10k1x_exit)
+=======
+static struct pci_driver emu10k1x_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_emu10k1x_ids,
+	.probe = snd_emu10k1x_probe,
+};
+
+module_pci_driver(emu10k1x_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

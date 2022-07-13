@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,14 +13,23 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  
 #ifndef __SOUND_AU88X0_H
 #define __SOUND_AU88X0_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/pci.h>
 #include <asm/io.h>
+=======
+#include <linux/pci.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/rawmidi.h>
@@ -27,7 +37,10 @@
 #include <sound/hwdep.h>
 #include <sound/ac97_codec.h>
 #include <sound/tlv.h>
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CHIP_AU8820
 #include "au88x0_eq.h"
@@ -155,7 +168,11 @@ struct snd_vortex {
 #ifndef CHIP_AU8810
 	stream_t dma_wt[NR_WT];
 	wt_voice_t wt_voice[NR_WT];	/* WT register cache. */
+<<<<<<< HEAD
 	char mixwt[(NR_WT / NR_WTPB) * 6];	/* WT mixin objects */
+=======
+	s8 mixwt[(NR_WT / NR_WTPB) * 6];	/* WT mixin objects */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Global resources */
@@ -243,14 +260,23 @@ static int vortex_core_init(vortex_t * card);
 static int vortex_core_shutdown(vortex_t * card);
 static void vortex_enable_int(vortex_t * card);
 static irqreturn_t vortex_interrupt(int irq, void *dev_id);
+<<<<<<< HEAD
 static int vortex_alsafmt_aspfmt(int alsafmt);
+=======
+static int vortex_alsafmt_aspfmt(snd_pcm_format_t alsafmt, vortex_t *v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Connection  stuff. */
 static void vortex_connect_default(vortex_t * vortex, int en);
 static int vortex_adb_allocroute(vortex_t * vortex, int dma, int nr_ch,
 				 int dir, int type, int subdev);
+<<<<<<< HEAD
 static char vortex_adb_checkinout(vortex_t * vortex, int resmap[], int out,
 				  int restype);
+=======
+static int vortex_adb_checkinout(vortex_t * vortex, int resmap[], int out,
+				 int restype);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CHIP_AU8810
 static int vortex_wt_allocroute(vortex_t * vortex, int dma, int nr_ch);
 static void vortex_wt_connect(vortex_t * vortex, int en);
@@ -278,7 +304,11 @@ static void vortex_mix_setvolumebyte(vortex_t * vortex, unsigned char mix,
 static void vortex_Vort3D_enable(vortex_t * v);
 static void vortex_Vort3D_disable(vortex_t * v);
 static void vortex_Vort3D_connect(vortex_t * vortex, int en);
+<<<<<<< HEAD
 static void vortex_Vort3D_InitializeSource(a3dsrc_t * a, int en);
+=======
+static void vortex_Vort3D_InitializeSource(a3dsrc_t *a, int en, vortex_t *v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Driver stuff. */

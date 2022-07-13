@@ -84,11 +84,14 @@ static inline int pullbit(struct pushpull *pp)
 	return bit;
 }
 
+<<<<<<< HEAD
 static inline int pulledbits(struct pushpull *pp)
 {
 	return pp->ofs;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void init_rubin(struct rubin_state *rs, int div, int *bits)
 {

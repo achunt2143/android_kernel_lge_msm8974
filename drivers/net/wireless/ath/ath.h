@@ -17,6 +17,10 @@
 #ifndef ATH_H
 #define ATH_H
 
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/if_ether.h>
 #include <linux/spinlock.h>
@@ -32,8 +36,11 @@
  */
 #define	ATH_KEYMAX	        128     /* max key cache size we handle */
 
+<<<<<<< HEAD
 static const u8 ath_bcast_mac[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ath_ani {
 	bool caldone;
 	unsigned int longcal_timer;
@@ -55,6 +62,20 @@ enum ath_device_state {
 	ATH_HW_INITIALIZED,
 };
 
+<<<<<<< HEAD
+=======
+enum ath_op_flags {
+	ATH_OP_INVALID,
+	ATH_OP_BEACONS,
+	ATH_OP_ANI_RUN,
+	ATH_OP_PRIM_STA_VIF,
+	ATH_OP_HW_RESET,
+	ATH_OP_SCANNING,
+	ATH_OP_MULTI_CHANNEL,
+	ATH_OP_WOW_ENABLED,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ath_bus_type {
 	ATH_PCI,
 	ATH_AHB,
@@ -62,13 +83,21 @@ enum ath_bus_type {
 };
 
 struct reg_dmn_pair_mapping {
+<<<<<<< HEAD
 	u16 regDmnEnum;
+=======
+	u16 reg_domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg_5ghz_ctl;
 	u16 reg_2ghz_ctl;
 };
 
 struct ath_regulatory {
 	char alpha2[2];
+<<<<<<< HEAD
+=======
+	enum nl80211_dfs_regions region;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 country_code;
 	u16 max_power_level;
 	u16 current_rd;
@@ -85,11 +114,21 @@ struct ath_keyval {
 	u8 kv_type;
 	u8 kv_pad;
 	u16 kv_len;
+<<<<<<< HEAD
 	u8 kv_val[16]; /* TK */
 	u8 kv_mic[8]; /* Michael MIC key */
 	u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
 			 * supports both MIC keys in the same key cache entry;
 			 * in that case, kv_mic is the RX key) */
+=======
+	struct_group(kv_values,
+		u8 kv_val[16]; /* TK */
+		u8 kv_mic[8]; /* Michael MIC key */
+		u8 kv_txmic[8]; /* Michael MIC TX key (used only if the hardware
+				 * supports both MIC keys in the same key cache entry;
+				 * in that case, kv_mic is the RX key) */
+	);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ath_cipher {
@@ -118,24 +157,46 @@ struct ath_ops {
 	void (*enable_write_buffer)(void *);
 	void (*write_flush) (void *);
 	u32 (*rmw)(void *, u32 reg_offset, u32 set, u32 clr);
+<<<<<<< HEAD
+=======
+	void (*enable_rmw_buffer)(void *);
+	void (*rmw_flush) (void *);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_common;
 struct ath_bus_ops;
 
+<<<<<<< HEAD
+=======
+struct ath_ps_ops {
+	void (*wakeup)(struct ath_common *common);
+	void (*restore)(struct ath_common *common);
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ath_common {
 	void *ah;
 	void *priv;
 	struct ieee80211_hw *hw;
 	int debug_mask;
 	enum ath_device_state state;
+<<<<<<< HEAD
+=======
+	unsigned long op_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ath_ani ani;
 
 	u16 cachelsz;
 	u16 curaid;
 	u8 macaddr[ETH_ALEN];
+<<<<<<< HEAD
 	u8 curbssid[ETH_ALEN];
+=======
+	u8 curbssid[ETH_ALEN] __aligned(2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 bssidmask[ETH_ALEN];
 
 	u32 rx_bufsize;
@@ -156,6 +217,7 @@ struct ath_common {
 	struct ath_regulatory reg_world_copy;
 	const struct ath_ops *ops;
 	const struct ath_bus_ops *bus_ops;
+<<<<<<< HEAD
 
 	bool btcoex_enabled;
 	bool disable_ani;
@@ -167,11 +229,39 @@ struct sk_buff *ath_rxbuf_alloc(struct ath_common *common,
 
 void ath_hw_setbssidmask(struct ath_common *common);
 void ath_key_delete(struct ath_common *common, struct ieee80211_key_conf *key);
+=======
+	const struct ath_ps_ops *ps_ops;
+
+	bool btcoex_enabled;
+	bool disable_ani;
+	bool bt_ant_diversity;
+
+	int last_rssi;
+	struct ieee80211_supported_band sbands[NUM_NL80211_BANDS];
+};
+
+static inline const struct ath_ps_ops *ath_ps_ops(struct ath_common *common)
+{
+	return common->ps_ops;
+}
+
+struct sk_buff *ath_rxbuf_alloc(struct ath_common *common,
+				u32 len,
+				gfp_t gfp_mask);
+bool ath_is_mybeacon(struct ath_common *common, struct ieee80211_hdr *hdr);
+
+void ath_hw_setbssidmask(struct ath_common *common);
+void ath_key_delete(struct ath_common *common, u8 hw_key_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath_key_config(struct ath_common *common,
 			  struct ieee80211_vif *vif,
 			  struct ieee80211_sta *sta,
 			  struct ieee80211_key_conf *key);
 bool ath_hw_keyreset(struct ath_common *common, u16 entry);
+<<<<<<< HEAD
+=======
+bool ath_hw_keysetmac(struct ath_common *common, u16 entry, const u8 *mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath_hw_cycle_counters_update(struct ath_common *common);
 int32_t ath_hw_get_listen_time(struct ath_common *common);
 
@@ -216,6 +306,12 @@ void ath_printk(const char *level, const struct ath_common *common,
  *	used exclusively for WLAN-BT coexistence starting from
  *	AR9462.
  * @ATH_DBG_DFS: radar datection
+<<<<<<< HEAD
+=======
+ * @ATH_DBG_WOW: Wake on Wireless
+ * @ATH_DBG_DYNACK: dynack handling
+ * @ATH_DBG_SPECTRAL_SCAN: FFT spectral scan
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ATH_DBG_ANY: enable all debugging
  *
  * The debug level is used to control the amount and type of debugging output
@@ -237,16 +333,32 @@ enum ATH_DEBUG {
 	ATH_DBG_CONFIG		= 0x00000200,
 	ATH_DBG_FATAL		= 0x00000400,
 	ATH_DBG_PS		= 0x00000800,
+<<<<<<< HEAD
 	ATH_DBG_HWTIMER		= 0x00001000,
 	ATH_DBG_BTCOEX		= 0x00002000,
 	ATH_DBG_WMI		= 0x00004000,
 	ATH_DBG_BSTUCK		= 0x00008000,
 	ATH_DBG_MCI		= 0x00010000,
 	ATH_DBG_DFS		= 0x00020000,
+=======
+	ATH_DBG_BTCOEX		= 0x00001000,
+	ATH_DBG_WMI		= 0x00002000,
+	ATH_DBG_BSTUCK		= 0x00004000,
+	ATH_DBG_MCI		= 0x00008000,
+	ATH_DBG_DFS		= 0x00010000,
+	ATH_DBG_WOW		= 0x00020000,
+	ATH_DBG_CHAN_CTX	= 0x00040000,
+	ATH_DBG_DYNACK		= 0x00080000,
+	ATH_DBG_SPECTRAL_SCAN	= 0x00100000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATH_DBG_ANY		= 0xffffffff
 };
 
 #define ATH_DBG_DEFAULT (ATH_DBG_FATAL)
+<<<<<<< HEAD
+=======
+#define ATH_DBG_MAX_LEN 512
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ATH_DEBUG
 
@@ -287,4 +399,13 @@ static inline const char *ath_opmode_to_string(enum nl80211_iftype opmode)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+extern const char *ath_bus_type_strings[];
+static inline const char *ath_bus_type_to_string(enum ath_bus_type bustype)
+{
+	return ath_bus_type_strings[bustype];
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ATH_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ARMv6 Performance counter handling code.
  *
@@ -31,6 +35,17 @@
  */
 
 #if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K)
+<<<<<<< HEAD
+=======
+
+#include <asm/cputype.h>
+#include <asm/irq_regs.h>
+
+#include <linux/of.h>
+#include <linux/perf/arm_pmu.h>
+#include <linux/platform_device.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum armv6_perf_types {
 	ARMV6_PERFCTR_ICACHE_MISS	    = 0x0,
 	ARMV6_PERFCTR_IBUF_STALL	    = 0x1,
@@ -65,6 +80,7 @@ enum armv6_counters {
  * accesses/misses in hardware.
  */
 static const unsigned armv6_perf_map[PERF_COUNT_HW_MAX] = {
+<<<<<<< HEAD
 	[PERF_COUNT_HW_CPU_CYCLES]		= ARMV6_PERFCTR_CPU_CYCLES,
 	[PERF_COUNT_HW_INSTRUCTIONS]		= ARMV6_PERFCTR_INSTR_EXEC,
 	[PERF_COUNT_HW_CACHE_REFERENCES]	= HW_OP_UNSUPPORTED,
@@ -72,10 +88,18 @@ static const unsigned armv6_perf_map[PERF_COUNT_HW_MAX] = {
 	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS]	= ARMV6_PERFCTR_BR_EXEC,
 	[PERF_COUNT_HW_BRANCH_MISSES]		= ARMV6_PERFCTR_BR_MISPREDICT,
 	[PERF_COUNT_HW_BUS_CYCLES]		= HW_OP_UNSUPPORTED,
+=======
+	PERF_MAP_ALL_UNSUPPORTED,
+	[PERF_COUNT_HW_CPU_CYCLES]		= ARMV6_PERFCTR_CPU_CYCLES,
+	[PERF_COUNT_HW_INSTRUCTIONS]		= ARMV6_PERFCTR_INSTR_EXEC,
+	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS]	= ARMV6_PERFCTR_BR_EXEC,
+	[PERF_COUNT_HW_BRANCH_MISSES]		= ARMV6_PERFCTR_BR_MISPREDICT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND]	= ARMV6_PERFCTR_IBUF_STALL,
 	[PERF_COUNT_HW_STALLED_CYCLES_BACKEND]	= ARMV6_PERFCTR_LSU_FULL_STALL,
 };
 
+<<<<<<< HEAD
 static unsigned armv6_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 					  [PERF_COUNT_HW_CACHE_OP_MAX]
 					  [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
@@ -342,6 +366,36 @@ static unsigned armv6mpcore_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 			[C(RESULT_MISS)]    = CACHE_OP_UNSUPPORTED,
 		},
 	},
+=======
+static const unsigned armv6_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
+					  [PERF_COUNT_HW_CACHE_OP_MAX]
+					  [PERF_COUNT_HW_CACHE_RESULT_MAX] = {
+	PERF_CACHE_MAP_ALL_UNSUPPORTED,
+
+	/*
+	 * The performance counters don't differentiate between read and write
+	 * accesses/misses so this isn't strictly correct, but it's the best we
+	 * can do. Writes and reads get combined.
+	 */
+	[C(L1D)][C(OP_READ)][C(RESULT_ACCESS)]	= ARMV6_PERFCTR_DCACHE_ACCESS,
+	[C(L1D)][C(OP_READ)][C(RESULT_MISS)]	= ARMV6_PERFCTR_DCACHE_MISS,
+	[C(L1D)][C(OP_WRITE)][C(RESULT_ACCESS)]	= ARMV6_PERFCTR_DCACHE_ACCESS,
+	[C(L1D)][C(OP_WRITE)][C(RESULT_MISS)]	= ARMV6_PERFCTR_DCACHE_MISS,
+
+	[C(L1I)][C(OP_READ)][C(RESULT_MISS)]	= ARMV6_PERFCTR_ICACHE_MISS,
+
+	/*
+	 * The ARM performance counters can count micro DTLB misses, micro ITLB
+	 * misses and main TLB misses. There isn't an event for TLB misses, so
+	 * use the micro misses here and if users want the main TLB misses they
+	 * can use a raw counter.
+	 */
+	[C(DTLB)][C(OP_READ)][C(RESULT_MISS)]	= ARMV6_PERFCTR_DTLB_MISS,
+	[C(DTLB)][C(OP_WRITE)][C(RESULT_MISS)]	= ARMV6_PERFCTR_DTLB_MISS,
+
+	[C(ITLB)][C(OP_READ)][C(RESULT_MISS)]	= ARMV6_PERFCTR_ITLB_MISS,
+	[C(ITLB)][C(OP_WRITE)][C(RESULT_MISS)]	= ARMV6_PERFCTR_ITLB_MISS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline unsigned long
@@ -401,9 +455,16 @@ armv6_pmcr_counter_has_overflowed(unsigned long pmcr,
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline u32
 armv6pmu_read_counter(int counter)
 {
+=======
+static inline u64 armv6pmu_read_counter(struct perf_event *event)
+{
+	struct hw_perf_event *hwc = &event->hw;
+	int counter = hwc->idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long value = 0;
 
 	if (ARMV6_CYCLE_COUNTER == counter)
@@ -418,10 +479,18 @@ armv6pmu_read_counter(int counter)
 	return value;
 }
 
+<<<<<<< HEAD
 static inline void
 armv6pmu_write_counter(int counter,
 		       u32 value)
 {
+=======
+static inline void armv6pmu_write_counter(struct perf_event *event, u64 value)
+{
+	struct hw_perf_event *hwc = &event->hw;
+	int counter = hwc->idx;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ARMV6_CYCLE_COUNTER == counter)
 		asm volatile("mcr   p15, 0, %0, c15, c12, 1" : : "r"(value));
 	else if (ARMV6_COUNTER0 == counter)
@@ -432,12 +501,20 @@ armv6pmu_write_counter(int counter,
 		WARN_ONCE(1, "invalid counter number (%d)\n", counter);
 }
 
+<<<<<<< HEAD
 static void
 armv6pmu_enable_event(struct hw_perf_event *hwc,
 		      int idx)
 {
 	unsigned long val, mask, evt, flags;
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+static void armv6pmu_enable_event(struct perf_event *event)
+{
+	unsigned long val, mask, evt;
+	struct hw_perf_event *hwc = &event->hw;
+	int idx = hwc->idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ARMV6_CYCLE_COUNTER == idx) {
 		mask	= 0;
@@ -459,11 +536,15 @@ armv6pmu_enable_event(struct hw_perf_event *hwc,
 	 * Mask out the current event and set the counter to count the event
 	 * that we're interested in.
 	 */
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = armv6_pmcr_read();
 	val &= ~mask;
 	val |= evt;
 	armv6_pmcr_write(val);
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
 }
 
@@ -474,6 +555,16 @@ armv6pmu_handle_irq(int irq_num,
 	unsigned long pmcr = armv6_pmcr_read();
 	struct perf_sample_data data;
 	struct pmu_hw_events *cpuc;
+=======
+}
+
+static irqreturn_t
+armv6pmu_handle_irq(struct arm_pmu *cpu_pmu)
+{
+	unsigned long pmcr = armv6_pmcr_read();
+	struct perf_sample_data data;
+	struct pmu_hw_events *cpuc = this_cpu_ptr(cpu_pmu->hw_events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pt_regs *regs;
 	int idx;
 
@@ -489,9 +580,12 @@ armv6pmu_handle_irq(int irq_num,
 	 */
 	armv6_pmcr_write(pmcr);
 
+<<<<<<< HEAD
 	perf_sample_data_init(&data, 0);
 
 	cpuc = &__get_cpu_var(cpu_hw_events);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < cpu_pmu->num_events; ++idx) {
 		struct perf_event *event = cpuc->events[idx];
 		struct hw_perf_event *hwc;
@@ -508,6 +602,7 @@ armv6pmu_handle_irq(int irq_num,
 			continue;
 
 		hwc = &event->hw;
+<<<<<<< HEAD
 		armpmu_event_update(event, hwc, idx);
 		data.period = event->hw.last_period;
 		if (!armpmu_event_set_period(event, hwc, idx))
@@ -515,6 +610,15 @@ armv6pmu_handle_irq(int irq_num,
 
 		if (perf_event_overflow(event, &data, regs))
 			cpu_pmu->disable(hwc, idx);
+=======
+		armpmu_event_update(event);
+		perf_sample_data_init(&data, 0, hwc->last_period);
+		if (!armpmu_event_set_period(event))
+			continue;
+
+		if (perf_event_overflow(event, &data, regs))
+			cpu_pmu->disable(event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -529,6 +633,7 @@ armv6pmu_handle_irq(int irq_num,
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void
 armv6pmu_start(void)
 {
@@ -553,14 +658,40 @@ armv6pmu_stop(void)
 	val &= ~ARMV6_PMCR_ENABLE;
 	armv6_pmcr_write(val);
 	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+=======
+static void armv6pmu_start(struct arm_pmu *cpu_pmu)
+{
+	unsigned long val;
+
+	val = armv6_pmcr_read();
+	val |= ARMV6_PMCR_ENABLE;
+	armv6_pmcr_write(val);
+}
+
+static void armv6pmu_stop(struct arm_pmu *cpu_pmu)
+{
+	unsigned long val;
+
+	val = armv6_pmcr_read();
+	val &= ~ARMV6_PMCR_ENABLE;
+	armv6_pmcr_write(val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 armv6pmu_get_event_idx(struct pmu_hw_events *cpuc,
+<<<<<<< HEAD
 		       struct hw_perf_event *event)
 {
 	/* Always place a cycle counter into the cycle counter. */
 	if (ARMV6_PERFCTR_CPU_CYCLES == event->config_base) {
+=======
+				struct perf_event *event)
+{
+	struct hw_perf_event *hwc = &event->hw;
+	/* Always place a cycle counter into the cycle counter. */
+	if (ARMV6_PERFCTR_CPU_CYCLES == hwc->config_base) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_and_set_bit(ARMV6_CYCLE_COUNTER, cpuc->used_mask))
 			return -EAGAIN;
 
@@ -581,12 +712,26 @@ armv6pmu_get_event_idx(struct pmu_hw_events *cpuc,
 	}
 }
 
+<<<<<<< HEAD
 static void
 armv6pmu_disable_event(struct hw_perf_event *hwc,
 		       int idx)
 {
 	unsigned long val, mask, evt, flags;
 	struct pmu_hw_events *events = cpu_pmu->get_hw_events();
+=======
+static void armv6pmu_clear_event_idx(struct pmu_hw_events *cpuc,
+				     struct perf_event *event)
+{
+	clear_bit(event->hw.idx, cpuc->used_mask);
+}
+
+static void armv6pmu_disable_event(struct perf_event *event)
+{
+	unsigned long val, mask, evt;
+	struct hw_perf_event *hwc = &event->hw;
+	int idx = hwc->idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ARMV6_CYCLE_COUNTER == idx) {
 		mask	= ARMV6_PMCR_CCOUNT_IEN;
@@ -607,11 +752,15 @@ armv6pmu_disable_event(struct hw_perf_event *hwc,
 	 * of ETM bus signal assertion cycles. The external reporting should
 	 * be disabled and so this should never increment.
 	 */
+<<<<<<< HEAD
 	raw_spin_lock_irqsave(&events->pmu_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = armv6_pmcr_read();
 	val &= ~mask;
 	val |= evt;
 	armv6_pmcr_write(val);
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
 }
 
@@ -643,10 +792,13 @@ armv6mpcore_pmu_disable_event(struct hw_perf_event *hwc,
 	val |= evt;
 	armv6_pmcr_write(val);
 	raw_spin_unlock_irqrestore(&events->pmu_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int armv6_map_event(struct perf_event *event)
 {
+<<<<<<< HEAD
 	return map_cpu_event(event, &armv6_perf_map,
 				&armv6_perf_cache_map, 0xFF);
 }
@@ -720,4 +872,74 @@ static struct arm_pmu *__init armv6mpcore_pmu_init(void)
 {
 	return NULL;
 }
+=======
+	return armpmu_map_event(event, &armv6_perf_map,
+				&armv6_perf_cache_map, 0xFF);
+}
+
+static void armv6pmu_init(struct arm_pmu *cpu_pmu)
+{
+	cpu_pmu->handle_irq	= armv6pmu_handle_irq;
+	cpu_pmu->enable		= armv6pmu_enable_event;
+	cpu_pmu->disable	= armv6pmu_disable_event;
+	cpu_pmu->read_counter	= armv6pmu_read_counter;
+	cpu_pmu->write_counter	= armv6pmu_write_counter;
+	cpu_pmu->get_event_idx	= armv6pmu_get_event_idx;
+	cpu_pmu->clear_event_idx = armv6pmu_clear_event_idx;
+	cpu_pmu->start		= armv6pmu_start;
+	cpu_pmu->stop		= armv6pmu_stop;
+	cpu_pmu->map_event	= armv6_map_event;
+	cpu_pmu->num_events	= 3;
+}
+
+static int armv6_1136_pmu_init(struct arm_pmu *cpu_pmu)
+{
+	armv6pmu_init(cpu_pmu);
+	cpu_pmu->name		= "armv6_1136";
+	return 0;
+}
+
+static int armv6_1156_pmu_init(struct arm_pmu *cpu_pmu)
+{
+	armv6pmu_init(cpu_pmu);
+	cpu_pmu->name		= "armv6_1156";
+	return 0;
+}
+
+static int armv6_1176_pmu_init(struct arm_pmu *cpu_pmu)
+{
+	armv6pmu_init(cpu_pmu);
+	cpu_pmu->name		= "armv6_1176";
+	return 0;
+}
+
+static const struct of_device_id armv6_pmu_of_device_ids[] = {
+	{.compatible = "arm,arm1176-pmu",	.data = armv6_1176_pmu_init},
+	{.compatible = "arm,arm1136-pmu",	.data = armv6_1136_pmu_init},
+	{ /* sentinel value */ }
+};
+
+static const struct pmu_probe_info armv6_pmu_probe_table[] = {
+	ARM_PMU_PROBE(ARM_CPU_PART_ARM1136, armv6_1136_pmu_init),
+	ARM_PMU_PROBE(ARM_CPU_PART_ARM1156, armv6_1156_pmu_init),
+	ARM_PMU_PROBE(ARM_CPU_PART_ARM1176, armv6_1176_pmu_init),
+	{ /* sentinel value */ }
+};
+
+static int armv6_pmu_device_probe(struct platform_device *pdev)
+{
+	return arm_pmu_device_probe(pdev, armv6_pmu_of_device_ids,
+				    armv6_pmu_probe_table);
+}
+
+static struct platform_driver armv6_pmu_driver = {
+	.driver		= {
+		.name	= "armv6-pmu",
+		.of_match_table = armv6_pmu_of_device_ids,
+	},
+	.probe		= armv6_pmu_device_probe,
+};
+
+builtin_platform_driver(armv6_pmu_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_CPU_V6 || CONFIG_CPU_V6K */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Lance ethernet driver for the MIPS processor based
  *      DECstation family
@@ -72,7 +76,11 @@
 #include <asm/dec/machtype.h>
 #include <asm/dec/system.h>
 
+<<<<<<< HEAD
 static char version[] __devinitdata =
+=======
+static const char version[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "declance.c: v0.011 by Linux MIPS DECstation task force\n";
 
 MODULE_AUTHOR("Linux MIPS DECstation task force");
@@ -260,6 +268,10 @@ struct lance_private {
 	unsigned short busmaster_regval;
 
 	struct timer_list       multicast_timer;
+<<<<<<< HEAD
+=======
+	struct net_device	*dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Pointers to the ring buffers as seen from the CPU */
 	char *rx_buf_ptr_cpu[RX_RING_SIZE];
@@ -344,8 +356,13 @@ static void cp_to_buf(const int type, void *to, const void *from, int len)
 		}
 
 		clen = len & 1;
+<<<<<<< HEAD
 		rtp = tp;
 		rfp = fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -372,8 +389,13 @@ static void cp_to_buf(const int type, void *to, const void *from, int len)
 		 * do the rest, if any.
 		 */
 		clen = len & 15;
+<<<<<<< HEAD
 		rtp = (unsigned char *) tp;
 		rfp = (unsigned char *) fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -403,8 +425,13 @@ static void cp_from_buf(const int type, void *to, const void *from, int len)
 
 		clen = len & 1;
 
+<<<<<<< HEAD
 		rtp = tp;
 		rfp = fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (clen--) {
 			*rtp++ = *rfp++;
@@ -433,8 +460,13 @@ static void cp_from_buf(const int type, void *to, const void *from, int len)
 		 * do the rest, if any.
 		 */
 		clen = len & 15;
+<<<<<<< HEAD
 		rtp = (unsigned char *) tp;
 		rfp = (unsigned char *) fp;
+=======
+		rtp = (unsigned char *)tp;
+		rfp = (const unsigned char *)fp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (clen--) {
 			*rtp++ = *rfp++;
 		}
@@ -475,7 +507,11 @@ static void lance_init_ring(struct net_device *dev)
 	*lib_ptr(ib, rx_ptr, lp->type) = leptr;
 	if (ZERO)
 		printk("RX ptr: %8.8x(%8.8x)\n",
+<<<<<<< HEAD
 		       leptr, lib_off(brx_ring, lp->type));
+=======
+		       leptr, (uint)lib_off(brx_ring, lp->type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup tx descriptor pointer */
 	leptr = offsetof(struct lance_init_block, btx_ring);
@@ -484,7 +520,11 @@ static void lance_init_ring(struct net_device *dev)
 	*lib_ptr(ib, tx_ptr, lp->type) = leptr;
 	if (ZERO)
 		printk("TX ptr: %8.8x(%8.8x)\n",
+<<<<<<< HEAD
 		       leptr, lib_off(btx_ring, lp->type));
+=======
+		       leptr, (uint)lib_off(btx_ring, lp->type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ZERO)
 		printk("TX rings:\n");
@@ -499,8 +539,13 @@ static void lance_init_ring(struct net_device *dev)
 						/* The ones required by tmd2 */
 		*lib_ptr(ib, btx_ring[i].misc, lp->type) = 0;
 		if (i < 3 && ZERO)
+<<<<<<< HEAD
 			printk("%d: 0x%8.8x(0x%8.8x)\n",
 			       i, leptr, (uint)lp->tx_buf_ptr_cpu[i]);
+=======
+			printk("%d: %8.8x(%p)\n",
+			       i, leptr, lp->tx_buf_ptr_cpu[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Setup the Rx ring entries */
@@ -516,8 +561,13 @@ static void lance_init_ring(struct net_device *dev)
 							     0xf000;
 		*lib_ptr(ib, brx_ring[i].mblength, lp->type) = 0;
 		if (i < 3 && ZERO)
+<<<<<<< HEAD
 			printk("%d: 0x%8.8x(0x%8.8x)\n",
 			       i, leptr, (uint)lp->rx_buf_ptr_cpu[i]);
+=======
+			printk("%d: %8.8x(%p)\n",
+			       i, leptr, lp->rx_buf_ptr_cpu[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	iob();
 }
@@ -606,9 +656,13 @@ static int lance_rx(struct net_device *dev)
 			len = (*rds_ptr(rd, mblength, lp->type) & 0xfff) - 4;
 			skb = netdev_alloc_skb(dev, len + 2);
 
+<<<<<<< HEAD
 			if (skb == 0) {
 				printk("%s: Memory squeeze, deferring packet.\n",
 				       dev->name);
+=======
+			if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 				*rds_ptr(rd, mblength, lp->type) = 0;
 				*rds_ptr(rd, rmd1, lp->type) =
@@ -623,7 +677,11 @@ static int lance_rx(struct net_device *dev)
 			skb_put(skb, len);	/* make room */
 
 			cp_from_buf(lp->type, skb->data,
+<<<<<<< HEAD
 				    (char *)lp->rx_buf_ptr_cpu[entry], len);
+=======
+				    lp->rx_buf_ptr_cpu[entry], len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			skb->protocol = eth_type_trans(skb, dev);
 			netif_rx(skb);
@@ -813,7 +871,11 @@ static int lance_open(struct net_device *dev)
 	if (lp->dma_irq >= 0) {
 		unsigned long flags;
 
+<<<<<<< HEAD
 		if (request_irq(lp->dma_irq, lance_dma_merr_int, 0,
+=======
+		if (request_irq(lp->dma_irq, lance_dma_merr_int, IRQF_ONESHOT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"lance error", dev)) {
 			free_irq(dev->irq, dev);
 			printk("%s: Can't get DMA IRQ %d\n", dev->name,
@@ -879,12 +941,20 @@ static inline int lance_reset(struct net_device *dev)
 
 	lance_init_ring(dev);
 	load_csrs(lp);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = init_restart_lance(lp);
 	return status;
 }
 
+<<<<<<< HEAD
 static void lance_tx_timeout(struct net_device *dev)
+=======
+static void lance_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 	volatile struct lance_regs *ll = lp->ll;
@@ -895,7 +965,11 @@ static void lance_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 	volatile struct lance_regs *ll = lp->ll;
@@ -919,7 +993,11 @@ static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	*lib_ptr(ib, btx_ring[entry].length, lp->type) = (-len);
 	*lib_ptr(ib, btx_ring[entry].misc, lp->type) = 0;
 
+<<<<<<< HEAD
 	cp_to_buf(lp->type, (char *)lp->tx_buf_ptr_cpu[entry], skb->data, len);
+=======
+	cp_to_buf(lp->type, lp->tx_buf_ptr_cpu[entry], skb->data, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now, give the packet to the lance */
 	*lib_ptr(ib, btx_ring[entry].tmd1, lp->type) =
@@ -937,7 +1015,11 @@ static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	dev_kfree_skb(skb);
 
+<<<<<<< HEAD
  	return NETDEV_TX_OK;
+=======
+	return NETDEV_TX_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void lance_load_multicast(struct net_device *dev)
@@ -1002,9 +1084,16 @@ static void lance_set_multicast(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static void lance_set_multicast_retry(unsigned long _opaque)
 {
 	struct net_device *dev = (struct net_device *) _opaque;
+=======
+static void lance_set_multicast_retry(struct timer_list *t)
+{
+	struct lance_private *lp = from_timer(lp, t, multicast_timer);
+	struct net_device *dev = lp->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lance_set_multicast(dev);
 }
@@ -1015,12 +1104,19 @@ static const struct net_device_ops lance_netdev_ops = {
 	.ndo_start_xmit		= lance_start_xmit,
 	.ndo_tx_timeout		= lance_tx_timeout,
 	.ndo_set_rx_mode	= lance_set_multicast,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
+<<<<<<< HEAD
 static int __devinit dec_lance_probe(struct device *bdev, const int type)
+=======
+static int dec_lance_probe(struct device *bdev, const int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static unsigned version_printed;
 	static const char fmt[] = "declance%d";
@@ -1032,6 +1128,11 @@ static int __devinit dec_lance_probe(struct device *bdev, const int type)
 	int i, ret;
 	unsigned long esar_base;
 	unsigned char *esar;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+	const char *desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dec_lance_debug && version_printed++ == 0)
 		printk(version);
@@ -1217,6 +1318,7 @@ static int __devinit dec_lance_probe(struct device *bdev, const int type)
 	 */
 	switch (type) {
 	case ASIC_LANCE:
+<<<<<<< HEAD
 		printk("%s: IOASIC onboard LANCE", name);
 		break;
 	case PMAD_LANCE:
@@ -1230,6 +1332,23 @@ static int __devinit dec_lance_probe(struct device *bdev, const int type)
 		dev->dev_addr[i] = esar[i * 4];
 
 	printk(", addr = %pM, irq = %d\n", dev->dev_addr, dev->irq);
+=======
+		desc = "IOASIC onboard LANCE";
+		break;
+	case PMAD_LANCE:
+		desc = "PMAD-AA";
+		break;
+	case PMAX_LANCE:
+		desc = "PMAX onboard LANCE";
+		break;
+	}
+	for (i = 0; i < 6; i++)
+		addr[i] = esar[i * 4];
+	eth_hw_addr_set(dev, addr);
+
+	printk("%s: %s, addr = %pM, irq = %d\n",
+	       name, desc, dev->dev_addr, dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &lance_netdev_ops;
 	dev->watchdog_timeo = 5*HZ;
@@ -1249,9 +1368,15 @@ static int __devinit dec_lance_probe(struct device *bdev, const int type)
 	 * can occur from interrupts (ex. IPv6).  So we
 	 * use a timer to try again later when necessary. -DaveM
 	 */
+<<<<<<< HEAD
 	init_timer(&lp->multicast_timer);
 	lp->multicast_timer.data = (unsigned long) dev;
 	lp->multicast_timer.function = lance_set_multicast_retry;
+=======
+	lp->dev = dev;
+	timer_setup(&lp->multicast_timer, lance_set_multicast_retry, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = register_netdev(dev);
 	if (ret) {
@@ -1279,6 +1404,7 @@ err_out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __exit dec_lance_remove(struct device *bdev)
 {
 	struct net_device *dev = dev_get_drvdata(bdev);
@@ -1291,6 +1417,8 @@ static void __exit dec_lance_remove(struct device *bdev)
 	free_netdev(dev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Find all the lance cards on the system and initialize them */
 static int __init dec_lance_platform_probe(void)
 {
@@ -1322,8 +1450,13 @@ static void __exit dec_lance_platform_remove(void)
 }
 
 #ifdef CONFIG_TC
+<<<<<<< HEAD
 static int __devinit dec_lance_tc_probe(struct device *dev);
 static int __exit dec_lance_tc_remove(struct device *dev);
+=======
+static int dec_lance_tc_probe(struct device *dev);
+static int dec_lance_tc_remove(struct device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct tc_device_id dec_lance_tc_table[] = {
 	{ "DEC     ", "PMAD-AA " },
@@ -1337,11 +1470,19 @@ static struct tc_driver dec_lance_tc_driver = {
 		.name	= "declance",
 		.bus	= &tc_bus_type,
 		.probe	= dec_lance_tc_probe,
+<<<<<<< HEAD
 		.remove	= __exit_p(dec_lance_tc_remove),
 	},
 };
 
 static int __devinit dec_lance_tc_probe(struct device *dev)
+=======
+		.remove	= dec_lance_tc_remove,
+	},
+};
+
+static int dec_lance_tc_probe(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         int status = dec_lance_probe(dev, PMAD_LANCE);
         if (!status)
@@ -1349,7 +1490,23 @@ static int __devinit dec_lance_tc_probe(struct device *dev)
         return status;
 }
 
+<<<<<<< HEAD
 static int __exit dec_lance_tc_remove(struct device *dev)
+=======
+static void dec_lance_remove(struct device *bdev)
+{
+	struct net_device *dev = dev_get_drvdata(bdev);
+	resource_size_t start, len;
+
+	unregister_netdev(dev);
+	start = to_tc_dev(bdev)->resource.start;
+	len = to_tc_dev(bdev)->resource.end - start + 1;
+	release_mem_region(start, len);
+	free_netdev(dev);
+}
+
+static int dec_lance_tc_remove(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         put_device(dev);
         dec_lance_remove(dev);

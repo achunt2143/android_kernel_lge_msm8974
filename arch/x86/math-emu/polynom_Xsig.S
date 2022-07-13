@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  polynomial_Xsig.S                                                        |
  |                                                                           |
@@ -36,7 +40,11 @@
 #define OVERFLOWED      -16(%ebp)	/* addition overflow flag */
 
 .text
+<<<<<<< HEAD
 ENTRY(polynomial_Xsig)
+=======
+SYM_FUNC_START(polynomial_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	subl	$32,%esp
@@ -132,4 +140,9 @@ L_accum_done:
 	popl	%edi
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+SYM_FUNC_END(polynomial_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

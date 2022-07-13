@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Isochronous I/O functionality:
  *   - Isochronous DMA context management
  *   - Isochronous bus resource management (channels, bandwidth), client side
  *
  * Copyright (C) 2006 Kristian Hoegsberg <krh@bitplanet.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dma-mapping.h>
@@ -39,6 +46,7 @@
  * Isochronous DMA context management
  */
 
+<<<<<<< HEAD
 int fw_iso_buffer_init(struct fw_iso_buffer *buffer, struct fw_card *card,
 		       int page_count, enum dma_data_direction direction)
 {
@@ -101,12 +109,80 @@ int fw_iso_buffer_map(struct fw_iso_buffer *buffer, struct vm_area_struct *vma)
 	return 0;
 }
 
+=======
+int fw_iso_buffer_alloc(struct fw_iso_buffer *buffer, int page_count)
+{
+	int i;
+
+	buffer->page_count = 0;
+	buffer->page_count_mapped = 0;
+	buffer->pages = kmalloc_array(page_count, sizeof(buffer->pages[0]),
+				      GFP_KERNEL);
+	if (buffer->pages == NULL)
+		return -ENOMEM;
+
+	for (i = 0; i < page_count; i++) {
+		buffer->pages[i] = alloc_page(GFP_KERNEL | GFP_DMA32 | __GFP_ZERO);
+		if (buffer->pages[i] == NULL)
+			break;
+	}
+	buffer->page_count = i;
+	if (i < page_count) {
+		fw_iso_buffer_destroy(buffer, NULL);
+		return -ENOMEM;
+	}
+
+	return 0;
+}
+
+int fw_iso_buffer_map_dma(struct fw_iso_buffer *buffer, struct fw_card *card,
+			  enum dma_data_direction direction)
+{
+	dma_addr_t address;
+	int i;
+
+	buffer->direction = direction;
+
+	for (i = 0; i < buffer->page_count; i++) {
+		address = dma_map_page(card->device, buffer->pages[i],
+				       0, PAGE_SIZE, direction);
+		if (dma_mapping_error(card->device, address))
+			break;
+
+		set_page_private(buffer->pages[i], address);
+	}
+	buffer->page_count_mapped = i;
+	if (i < buffer->page_count)
+		return -ENOMEM;
+
+	return 0;
+}
+
+int fw_iso_buffer_init(struct fw_iso_buffer *buffer, struct fw_card *card,
+		       int page_count, enum dma_data_direction direction)
+{
+	int ret;
+
+	ret = fw_iso_buffer_alloc(buffer, page_count);
+	if (ret < 0)
+		return ret;
+
+	ret = fw_iso_buffer_map_dma(buffer, card, direction);
+	if (ret < 0)
+		fw_iso_buffer_destroy(buffer, card);
+
+	return ret;
+}
+EXPORT_SYMBOL(fw_iso_buffer_init);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fw_iso_buffer_destroy(struct fw_iso_buffer *buffer,
 			   struct fw_card *card)
 {
 	int i;
 	dma_addr_t address;
 
+<<<<<<< HEAD
 	for (i = 0; i < buffer->page_count; i++) {
 		address = page_private(buffer->pages[i]);
 		dma_unmap_page(card->device, address,
@@ -116,13 +192,31 @@ void fw_iso_buffer_destroy(struct fw_iso_buffer *buffer,
 
 	kfree(buffer->pages);
 	buffer->pages = NULL;
+=======
+	for (i = 0; i < buffer->page_count_mapped; i++) {
+		address = page_private(buffer->pages[i]);
+		dma_unmap_page(card->device, address,
+			       PAGE_SIZE, buffer->direction);
+	}
+	for (i = 0; i < buffer->page_count; i++)
+		__free_page(buffer->pages[i]);
+
+	kfree(buffer->pages);
+	buffer->pages = NULL;
+	buffer->page_count = 0;
+	buffer->page_count_mapped = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(fw_iso_buffer_destroy);
 
 /* Convert DMA address to offset into virtually contiguous buffer. */
 size_t fw_iso_buffer_lookup(struct fw_iso_buffer *buffer, dma_addr_t completed)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	size_t i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t address;
 	ssize_t offset;
 
@@ -284,7 +378,11 @@ static int manage_channel(struct fw_card *card, int irm_id, int generation,
 			if ((data[0] & bit) == (data[1] & bit))
 				continue;
 
+<<<<<<< HEAD
 			/* 1394-1995 IRM, fall through to retry. */
+=======
+			fallthrough;	/* It's a 1394-1995 IRM, retry */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			if (retry) {
 				retry--;
@@ -313,9 +411,22 @@ static void deallocate_channel(struct fw_card *card, int irm_id,
 
 /**
  * fw_iso_resource_manage() - Allocate or deallocate a channel and/or bandwidth
+<<<<<<< HEAD
  *
  * In parameters: card, generation, channels_mask, bandwidth, allocate
  * Out parameters: channel, bandwidth
+=======
+ * @card: card interface for this action
+ * @generation: bus generation
+ * @channels_mask: bitmask for channel allocation
+ * @channel: pointer for returning channel allocation result
+ * @bandwidth: pointer for returning bandwidth allocation result
+ * @allocate: whether to allocate (true) or deallocate (false)
+ *
+ * In parameters: card, generation, channels_mask, bandwidth, allocate
+ * Out parameters: channel, bandwidth
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function blocks (sleeps) during communication with the IRM.
  *
  * Allocates or deallocates at most one channel out of channels_mask.

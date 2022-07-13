@@ -1,41 +1,67 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RTC related functions
  */
 #include <linux/platform_device.h>
 #include <linux/mc146818rtc.h>
+<<<<<<< HEAD
 #include <linux/acpi.h>
 #include <linux/bcd.h>
 #include <linux/export.h>
 #include <linux/pnp.h>
 #include <linux/of.h>
+=======
+#include <linux/export.h>
+#include <linux/pnp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/vsyscall.h>
 #include <asm/x86_init.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mrst.h>
+=======
+#include <asm/intel-mid.h>
+#include <asm/setup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_32
 /*
  * This is a special lock that is owned by the CPU and holds the index
  * register we are working with.  It is required for NMI access to the
+<<<<<<< HEAD
  * CMOS/RTC registers.  See include/asm-i386/mc146818rtc.h for details.
+=======
+ * CMOS/RTC registers.  See arch/x86/include/asm/mc146818rtc.h for details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 volatile unsigned long cmos_lock;
 EXPORT_SYMBOL(cmos_lock);
 #endif /* CONFIG_X86_32 */
 
+<<<<<<< HEAD
 /* For two digit years assume time is always after that */
 #define CMOS_YEARS_OFFS 2000
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_SPINLOCK(rtc_lock);
 EXPORT_SYMBOL(rtc_lock);
 
 /*
+<<<<<<< HEAD
  * In order to set the CMOS clock precisely, set_rtc_mmss has to be
+=======
+ * In order to set the CMOS clock precisely, mach_set_cmos_time has to be
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * called 500 ms after the second nowtime has started, because when
  * nowtime is written into the registers of the CMOS clock, it will
  * jump to the next second precisely 500 ms later. Check the Motorola
  * MC146818A or Dallas DS12887 data sheet for details.
+<<<<<<< HEAD
  *
  * BUG: This routine does not handle hour overflow properly; it just
  *      sets the minutes. Usually you'll only notice that after reboot!
@@ -154,6 +180,51 @@ unsigned long mach_get_cmos_time(void)
 		year += CMOS_YEARS_OFFS;
 
 	return mktime(year, mon, day, hour, min, sec);
+=======
+ */
+int mach_set_cmos_time(const struct timespec64 *now)
+{
+	unsigned long long nowtime = now->tv_sec;
+	struct rtc_time tm;
+	int retval = 0;
+
+	rtc_time64_to_tm(nowtime, &tm);
+	if (!rtc_valid_tm(&tm)) {
+		retval = mc146818_set_time(&tm);
+		if (retval)
+			printk(KERN_ERR "%s: RTC write failed with error %d\n",
+			       __func__, retval);
+	} else {
+		printk(KERN_ERR
+		       "%s: Invalid RTC value: write of %llx to RTC failed\n",
+			__func__, nowtime);
+		retval = -EINVAL;
+	}
+	return retval;
+}
+
+void mach_get_cmos_time(struct timespec64 *now)
+{
+	struct rtc_time tm;
+
+	/*
+	 * If pm_trace abused the RTC as storage, set the timespec to 0,
+	 * which tells the caller that this RTC value is unusable.
+	 */
+	if (!pm_trace_rtc_valid()) {
+		now->tv_sec = now->tv_nsec = 0;
+		return;
+	}
+
+	if (mc146818_get_time(&tm, 1000)) {
+		pr_err("Unable to read current time from RTC\n");
+		now->tv_sec = now->tv_nsec = 0;
+		return;
+	}
+
+	now->tv_sec = rtc_tm_to_time64(&tm);
+	now->tv_nsec = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Routines for accessing the CMOS RAM/RTC. */
@@ -179,6 +250,7 @@ void rtc_cmos_write(unsigned char val, unsigned char addr)
 }
 EXPORT_SYMBOL(rtc_cmos_write);
 
+<<<<<<< HEAD
 int update_persistent_clock(struct timespec now)
 {
 	return x86_platform.set_wallclock(now.tv_sec);
@@ -201,6 +273,19 @@ unsigned long long native_read_tsc(void)
 }
 EXPORT_SYMBOL(native_read_tsc);
 
+=======
+int update_persistent_clock64(struct timespec64 now)
+{
+	return x86_platform.set_wallclock(&now);
+}
+
+/* not static: needed by APM */
+void read_persistent_clock64(struct timespec64 *ts)
+{
+	x86_platform.get_wallclock(ts);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource rtc_resources[] = {
 	[0] = {
@@ -225,6 +310,7 @@ static struct platform_device rtc_device = {
 static __init int add_rtc_cmos(void)
 {
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 	static const char *ids[] __initconst =
 	    { "PNP0b00", "PNP0b01", "PNP0b02", };
 	struct pnp_dev *dev;
@@ -245,6 +331,21 @@ static __init int add_rtc_cmos(void)
 
 	/* Intel MID platforms don't have ioport rtc */
 	if (mrst_identify_cpu())
+=======
+	static const char * const ids[] __initconst =
+	    { "PNP0b00", "PNP0b01", "PNP0b02", };
+	struct pnp_dev *dev;
+	int i;
+
+	pnp_for_each_dev(dev) {
+		for (i = 0; i < ARRAY_SIZE(ids); i++) {
+			if (compare_pnp_id(dev->id, ids[i]) != 0)
+				return 0;
+		}
+	}
+#endif
+	if (!x86_platform.legacy.rtc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	platform_device_register(&rtc_device);

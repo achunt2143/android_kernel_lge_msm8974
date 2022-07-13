@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
+<<<<<<< HEAD
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,6 +32,15 @@
 	!info->func ? 0 :			\
 	 info->func(param);			\
 })
+=======
+ * Copyright (C) 2019 Renesas Electronics Corporation
+ * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+ */
+#include <linux/interrupt.h>
+
+#include "common.h"
+#include "mod.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		autonomy
@@ -50,7 +64,11 @@ static int usbhsm_autonomy_irq_vbus(struct usbhs_priv *priv,
 {
 	struct platform_device *pdev = usbhs_priv_to_pdev(priv);
 
+<<<<<<< HEAD
 	renesas_usbhs_call_notify_hotplug(pdev);
+=======
+	usbhsc_schedule_notify_hotplug(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -59,12 +77,27 @@ void usbhs_mod_autonomy_mode(struct usbhs_priv *priv)
 {
 	struct usbhs_mod_info *info = usbhs_priv_to_modinfo(priv);
 
+<<<<<<< HEAD
 	info->irq_vbus		= usbhsm_autonomy_irq_vbus;
 	priv->pfunc.get_vbus	= usbhsm_autonomy_get_vbus;
+=======
+	info->irq_vbus = usbhsm_autonomy_irq_vbus;
+	info->get_vbus = usbhsm_autonomy_get_vbus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usbhs_irq_callback_update(priv, NULL);
 }
 
+<<<<<<< HEAD
+=======
+void usbhs_mod_non_autonomy_mode(struct usbhs_priv *priv)
+{
+	struct usbhs_mod_info *info = usbhs_priv_to_modinfo(priv);
+
+	info->get_vbus = priv->pfunc->get_vbus;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		host / gadget functions
  *
@@ -151,8 +184,13 @@ int usbhs_mod_probe(struct usbhs_priv *priv)
 		goto mod_init_host_err;
 
 	/* irq settings */
+<<<<<<< HEAD
 	ret = request_irq(priv->irq, usbhs_interrupt,
 			  priv->irqflags, dev_name(dev), priv);
+=======
+	ret = devm_request_irq(dev, priv->irq, usbhs_interrupt,
+			       0, dev_name(dev), priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev, "irq request err\n");
 		goto mod_init_gadget_err;
@@ -172,7 +210,10 @@ void usbhs_mod_remove(struct usbhs_priv *priv)
 {
 	usbhs_mod_host_remove(priv);
 	usbhs_mod_gadget_remove(priv);
+<<<<<<< HEAD
 	free_irq(priv->irq, priv);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -180,6 +221,7 @@ void usbhs_mod_remove(struct usbhs_priv *priv)
  */
 int usbhs_status_get_device_state(struct usbhs_irq_state *irq_state)
 {
+<<<<<<< HEAD
 	int state = irq_state->intsts0 & DVSQ_MASK;
 
 	switch (state) {
@@ -191,6 +233,9 @@ int usbhs_status_get_device_state(struct usbhs_irq_state *irq_state)
 	}
 
 	return -EIO;
+=======
+	return (int)irq_state->intsts0 & DVSQ_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int usbhs_status_get_ctrl_stage(struct usbhs_irq_state *irq_state)
@@ -209,6 +254,7 @@ int usbhs_status_get_ctrl_stage(struct usbhs_irq_state *irq_state)
 	return (int)irq_state->intsts0 & CTSQ_MASK;
 }
 
+<<<<<<< HEAD
 static void usbhs_status_get_each_irq(struct usbhs_priv *priv,
 				      struct usbhs_irq_state *state)
 {
@@ -216,6 +262,26 @@ static void usbhs_status_get_each_irq(struct usbhs_priv *priv,
 
 	state->intsts0 = usbhs_read(priv, INTSTS0);
 	state->intsts1 = usbhs_read(priv, INTSTS1);
+=======
+static int usbhs_status_get_each_irq(struct usbhs_priv *priv,
+				     struct usbhs_irq_state *state)
+{
+	struct usbhs_mod *mod = usbhs_mod_get_current(priv);
+	u16 intenb0, intenb1;
+	unsigned long flags;
+
+	/********************  spin lock ********************/
+	usbhs_lock(priv, flags);
+	state->intsts0 = usbhs_read(priv, INTSTS0);
+	intenb0 = usbhs_read(priv, INTENB0);
+
+	if (usbhs_mod_is_host(priv)) {
+		state->intsts1 = usbhs_read(priv, INTSTS1);
+		intenb1 = usbhs_read(priv, INTENB1);
+	} else {
+		state->intsts1 = intenb1 = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mask */
 	if (mod) {
@@ -226,6 +292,13 @@ static void usbhs_status_get_each_irq(struct usbhs_priv *priv,
 		state->bempsts &= mod->irq_bempsts;
 		state->brdysts &= mod->irq_brdysts;
 	}
+<<<<<<< HEAD
+=======
+	usbhs_unlock(priv, flags);
+	/********************  spin unlock ******************/
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -238,7 +311,12 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	struct usbhs_priv *priv = data;
 	struct usbhs_irq_state irq_state;
 
+<<<<<<< HEAD
 	usbhs_status_get_each_irq(priv, &irq_state);
+=======
+	if (usbhs_status_get_each_irq(priv, &irq_state) < 0)
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * clear interrupt
@@ -252,11 +330,27 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	 *	   - Function :: VALID bit should 0
 	 */
 	usbhs_write(priv, INTSTS0, ~irq_state.intsts0 & INTSTS0_MAGIC);
+<<<<<<< HEAD
 	usbhs_write(priv, INTSTS1, ~irq_state.intsts1 & INTSTS1_MAGIC);
 
 	usbhs_write(priv, BRDYSTS, 0);
 	usbhs_write(priv, NRDYSTS, 0);
 	usbhs_write(priv, BEMPSTS, 0);
+=======
+	if (usbhs_mod_is_host(priv))
+		usbhs_write(priv, INTSTS1, ~irq_state.intsts1 & INTSTS1_MAGIC);
+
+	/*
+	 * The driver should not clear the xxxSTS after the line of
+	 * "call irq callback functions" because each "if" statement is
+	 * possible to call the callback function for avoiding any side effects.
+	 */
+	if (irq_state.intsts0 & BRDY)
+		usbhs_write(priv, BRDYSTS, ~irq_state.brdysts);
+	usbhs_write(priv, NRDYSTS, ~irq_state.nrdysts);
+	if (irq_state.intsts0 & BEMP)
+		usbhs_write(priv, BEMPSTS, ~irq_state.bempsts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * call irq callback functions
@@ -280,6 +374,7 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	if (irq_state.intsts0 & BRDY)
 		usbhs_mod_call(priv, irq_ready, priv, &irq_state);
 
+<<<<<<< HEAD
 	/* INTSTS1 */
 	if (irq_state.intsts1 & ATTCH)
 		usbhs_mod_call(priv, irq_attch, priv, &irq_state);
@@ -293,6 +388,22 @@ static irqreturn_t usbhs_interrupt(int irq, void *data)
 	if (irq_state.intsts1 & SACK)
 		usbhs_mod_call(priv, irq_sack, priv, &irq_state);
 
+=======
+	if (usbhs_mod_is_host(priv)) {
+		/* INTSTS1 */
+		if (irq_state.intsts1 & ATTCH)
+			usbhs_mod_call(priv, irq_attch, priv, &irq_state);
+
+		if (irq_state.intsts1 & DTCH)
+			usbhs_mod_call(priv, irq_dtch, priv, &irq_state);
+
+		if (irq_state.intsts1 & SIGN)
+			usbhs_mod_call(priv, irq_sign, priv, &irq_state);
+
+		if (irq_state.intsts1 & SACK)
+			usbhs_mod_call(priv, irq_sack, priv, &irq_state);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -311,7 +422,12 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 	 *  - update INTSTS0
 	 */
 	usbhs_write(priv, INTENB0, 0);
+<<<<<<< HEAD
 	usbhs_write(priv, INTENB1, 0);
+=======
+	if (usbhs_mod_is_host(priv))
+		usbhs_write(priv, INTENB1, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usbhs_write(priv, BEMPENB, 0);
 	usbhs_write(priv, BRDYENB, 0);
@@ -321,10 +437,13 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 	 *	usbhs_interrupt
 	 */
 
+<<<<<<< HEAD
 	/*
 	 * it don't enable DVSE (intenb0) here
 	 * but "mod->irq_dev_state" will be called.
 	 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->irq_vbus)
 		intenb0 |= VBSE;
 
@@ -335,6 +454,12 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 		if (mod->irq_ctrl_stage)
 			intenb0 |= CTRE;
 
+<<<<<<< HEAD
+=======
+		if (mod->irq_dev_state)
+			intenb0 |= DVSE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mod->irq_empty && mod->irq_bempsts) {
 			usbhs_write(priv, BEMPENB, mod->irq_bempsts);
 			intenb0 |= BEMPE;
@@ -345,6 +470,7 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 			intenb0 |= BRDYE;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * INTSTS1
 		 */
@@ -359,11 +485,33 @@ void usbhs_irq_callback_update(struct usbhs_priv *priv, struct usbhs_mod *mod)
 
 		if (mod->irq_sack)
 			intenb1 |= SACKE;
+=======
+		if (usbhs_mod_is_host(priv)) {
+			/*
+			 * INTSTS1
+			 */
+			if (mod->irq_attch)
+				intenb1 |= ATTCHE;
+
+			if (mod->irq_dtch)
+				intenb1 |= DTCHE;
+
+			if (mod->irq_sign)
+				intenb1 |= SIGNE;
+
+			if (mod->irq_sack)
+				intenb1 |= SACKE;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (intenb0)
 		usbhs_write(priv, INTENB0, intenb0);
 
+<<<<<<< HEAD
 	if (intenb1)
+=======
+	if (usbhs_mod_is_host(priv) && intenb1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbhs_write(priv, INTENB1, intenb1);
 }

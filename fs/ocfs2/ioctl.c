@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ocfs2/ioctl.c
  *
@@ -7,7 +11,13 @@
 
 #include <linux/fs.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
 #include <linux/compat.h>
+=======
+#include <linux/blkdev.h>
+#include <linux/compat.h>
+#include <linux/fileattr.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -34,9 +44,14 @@
 		copy_to_user((typeof(a) __user *)b, &(a), sizeof(a))
 
 /*
+<<<<<<< HEAD
  * This call is void because we are already reporting an error that may
  * be -EFAULT.  The error will be returned from the ioctl(2) call.  It's
  * just a best-effort to tell userspace that this request caused the error.
+=======
+ * This is just a best-effort to tell userspace that this request
+ * caused the error.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void o2info_set_request_error(struct ocfs2_info_request *kreq,
 					struct ocfs2_info_request __user *req)
@@ -60,8 +75,15 @@ static inline int o2info_coherent(struct ocfs2_info_request *req)
 	return (!(req->ir_flags & OCFS2_INFO_FL_NON_COHERENT));
 }
 
+<<<<<<< HEAD
 static int ocfs2_get_inode_attr(struct inode *inode, unsigned *flags)
 {
+=======
+int ocfs2_fileattr_get(struct dentry *dentry, struct fileattr *fa)
+{
+	struct inode *inode = d_inode(dentry);
+	unsigned int flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = ocfs2_inode_lock(inode, NULL, 0);
@@ -70,6 +92,7 @@ static int ocfs2_get_inode_attr(struct inode *inode, unsigned *flags)
 		return status;
 	}
 	ocfs2_get_inode_flags(OCFS2_I(inode));
+<<<<<<< HEAD
 	*flags = OCFS2_I(inode)->ip_attr;
 	ocfs2_inode_unlock(inode, 0);
 
@@ -79,6 +102,21 @@ static int ocfs2_get_inode_attr(struct inode *inode, unsigned *flags)
 static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 				unsigned mask)
 {
+=======
+	flags = OCFS2_I(inode)->ip_attr;
+	ocfs2_inode_unlock(inode, 0);
+
+	fileattr_fill_flags(fa, flags & OCFS2_FL_VISIBLE);
+
+	return status;
+}
+
+int ocfs2_fileattr_set(struct mnt_idmap *idmap,
+		       struct dentry *dentry, struct fileattr *fa)
+{
+	struct inode *inode = d_inode(dentry);
+	unsigned int flags = fa->flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_inode_info *ocfs2_inode = OCFS2_I(inode);
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	handle_t *handle = NULL;
@@ -86,7 +124,12 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 	unsigned oldflags;
 	int status;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
+=======
+	if (fileattr_has_fsx(fa))
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_inode_lock(inode, &bh, 1);
 	if (status < 0) {
@@ -94,6 +137,7 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	status = -EACCES;
 	if (!inode_owner_or_capable(inode))
 		goto bail_unlock;
@@ -101,6 +145,21 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 	if (!S_ISDIR(inode->i_mode))
 		flags &= ~OCFS2_DIRSYNC_FL;
 
+=======
+	if (!S_ISDIR(inode->i_mode))
+		flags &= ~OCFS2_DIRSYNC_FL;
+
+	oldflags = ocfs2_inode->ip_attr;
+	flags = flags & OCFS2_FL_MODIFIABLE;
+	flags |= oldflags & ~OCFS2_FL_MODIFIABLE;
+
+	/* Check already done by VFS, but repeat with ocfs lock */
+	status = -EPERM;
+	if ((flags ^ oldflags) & (FS_APPEND_FL | FS_IMMUTABLE_FL) &&
+	    !capable(CAP_LINUX_IMMUTABLE))
+		goto bail_unlock;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle = ocfs2_start_trans(osb, OCFS2_INODE_UPDATE_CREDITS);
 	if (IS_ERR(handle)) {
 		status = PTR_ERR(handle);
@@ -108,6 +167,7 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 		goto bail_unlock;
 	}
 
+<<<<<<< HEAD
 	oldflags = ocfs2_inode->ip_attr;
 	flags = flags & mask;
 	flags |= oldflags & ~mask;
@@ -123,6 +183,8 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 			goto bail_commit;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_inode->ip_attr = flags;
 	ocfs2_set_inode_flags(inode);
 
@@ -130,6 +192,7 @@ static int ocfs2_set_inode_attr(struct inode *inode, unsigned flags,
 	if (status < 0)
 		mlog_errno(status);
 
+<<<<<<< HEAD
 bail_commit:
 	ocfs2_commit_trans(osb, handle);
 bail_unlock:
@@ -137,11 +200,19 @@ bail_unlock:
 bail:
 	mutex_unlock(&inode->i_mutex);
 
+=======
+	ocfs2_commit_trans(osb, handle);
+
+bail_unlock:
+	ocfs2_inode_unlock(inode, 1);
+bail:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_info_handle_blocksize(struct inode *inode,
 				struct ocfs2_info_request __user *req)
 {
@@ -150,12 +221,22 @@ int ocfs2_info_handle_blocksize(struct inode *inode,
 
 	if (o2info_from_user(oib, req))
 		goto bail;
+=======
+static int ocfs2_info_handle_blocksize(struct inode *inode,
+				       struct ocfs2_info_request __user *req)
+{
+	struct ocfs2_info_blocksize oib;
+
+	if (o2info_from_user(oib, req))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oib.ib_blocksize = inode->i_sb->s_blocksize;
 
 	o2info_set_request_filled(&oib.ib_req);
 
 	if (o2info_to_user(oib, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -170,17 +251,32 @@ int ocfs2_info_handle_clustersize(struct inode *inode,
 				  struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_clustersize(struct inode *inode,
+					 struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_clustersize oic;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oic, req))
+<<<<<<< HEAD
 		goto bail;
+=======
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oic.ic_clustersize = osb->s_clustersize;
 
 	o2info_set_request_filled(&oic.ic_req);
 
 	if (o2info_to_user(oic, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -195,17 +291,32 @@ int ocfs2_info_handle_maxslots(struct inode *inode,
 			       struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_maxslots(struct inode *inode,
+				      struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_maxslots oim;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oim, req))
+<<<<<<< HEAD
 		goto bail;
+=======
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oim.im_max_slots = osb->max_slots;
 
 	o2info_set_request_filled(&oim.im_req);
 
 	if (o2info_to_user(oim, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -220,17 +331,32 @@ int ocfs2_info_handle_label(struct inode *inode,
 			    struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_label(struct inode *inode,
+				   struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_label oil;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oil, req))
+<<<<<<< HEAD
 		goto bail;
+=======
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(oil.il_label, osb->vol_label, OCFS2_MAX_VOL_LABEL_LEN);
 
 	o2info_set_request_filled(&oil.il_req);
 
 	if (o2info_to_user(oil, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -245,17 +371,32 @@ int ocfs2_info_handle_uuid(struct inode *inode,
 			   struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_uuid(struct inode *inode,
+				  struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_uuid oiu;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oiu, req))
+<<<<<<< HEAD
 		goto bail;
+=======
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(oiu.iu_uuid_str, osb->uuid_str, OCFS2_TEXT_UUID_LEN + 1);
 
 	o2info_set_request_filled(&oiu.iu_req);
 
 	if (o2info_to_user(oiu, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -270,11 +411,25 @@ int ocfs2_info_handle_fs_features(struct inode *inode,
 				  struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_fs_features(struct inode *inode,
+					 struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_fs_features oif;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oif, req))
+<<<<<<< HEAD
 		goto bail;
+=======
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oif.if_compat_features = osb->s_feature_compat;
 	oif.if_incompat_features = osb->s_feature_incompat;
@@ -283,6 +438,7 @@ int ocfs2_info_handle_fs_features(struct inode *inode,
 	o2info_set_request_filled(&oif.if_req);
 
 	if (o2info_to_user(oif, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -297,17 +453,34 @@ int ocfs2_info_handle_journal_size(struct inode *inode,
 				   struct ocfs2_info_request __user *req)
 {
 	int status = -EFAULT;
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_handle_journal_size(struct inode *inode,
+					  struct ocfs2_info_request __user *req)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_journal_size oij;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	if (o2info_from_user(oij, req))
+<<<<<<< HEAD
 		goto bail;
 
 	oij.ij_journal_size = osb->journal->j_inode->i_size;
+=======
+		return -EFAULT;
+
+	oij.ij_journal_size = i_size_read(osb->journal->j_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	o2info_set_request_filled(&oij.ij_req);
 
 	if (o2info_to_user(oij, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -321,6 +494,17 @@ bail:
 int ocfs2_info_scan_inode_alloc(struct ocfs2_super *osb,
 				struct inode *inode_alloc, u64 blkno,
 				struct ocfs2_info_freeinode *fi, u32 slot)
+=======
+		return -EFAULT;
+
+	return 0;
+}
+
+static int ocfs2_info_scan_inode_alloc(struct ocfs2_super *osb,
+				       struct inode *inode_alloc, u64 blkno,
+				       struct ocfs2_info_freeinode *fi,
+				       u32 slot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0, unlock = 0;
 
@@ -328,9 +512,15 @@ int ocfs2_info_scan_inode_alloc(struct ocfs2_super *osb,
 	struct ocfs2_dinode *dinode_alloc = NULL;
 
 	if (inode_alloc)
+<<<<<<< HEAD
 		mutex_lock(&inode_alloc->i_mutex);
 
 	if (o2info_coherent(&fi->ifi_req)) {
+=======
+		inode_lock(inode_alloc);
+
+	if (inode_alloc && o2info_coherent(&fi->ifi_req)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = ocfs2_inode_lock(inode_alloc, &bh, 0);
 		if (status < 0) {
 			mlog_errno(status);
@@ -358,20 +548,33 @@ bail:
 		ocfs2_inode_unlock(inode_alloc, 0);
 
 	if (inode_alloc)
+<<<<<<< HEAD
 		mutex_unlock(&inode_alloc->i_mutex);
+=======
+		inode_unlock(inode_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(bh);
 
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_info_handle_freeinode(struct inode *inode,
 				struct ocfs2_info_request __user *req)
+=======
+static int ocfs2_info_handle_freeinode(struct inode *inode,
+				       struct ocfs2_info_request __user *req)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 i;
 	u64 blkno = -1;
 	char namebuf[40];
+<<<<<<< HEAD
 	int status = -EFAULT, type = INODE_ALLOC_SYSTEM_INODE;
+=======
+	int status, type = INODE_ALLOC_SYSTEM_INODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_info_freeinode *oifi = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct inode *inode_alloc = NULL;
@@ -383,8 +586,15 @@ int ocfs2_info_handle_freeinode(struct inode *inode,
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	if (o2info_from_user(*oifi, req))
 		goto bail;
+=======
+	if (o2info_from_user(*oifi, req)) {
+		status = -EFAULT;
+		goto out_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oifi->ifi_slotnum = osb->max_slots;
 
@@ -412,23 +622,43 @@ int ocfs2_info_handle_freeinode(struct inode *inode,
 		}
 
 		status = ocfs2_info_scan_inode_alloc(osb, inode_alloc, blkno, oifi, i);
+<<<<<<< HEAD
 		if (status < 0)
 			goto bail;
 
 		iput(inode_alloc);
 		inode_alloc = NULL;
+=======
+
+		iput(inode_alloc);
+		inode_alloc = NULL;
+
+		if (status < 0)
+			goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	o2info_set_request_filled(&oifi->ifi_req);
 
+<<<<<<< HEAD
 	if (o2info_to_user(*oifi, req))
 		goto bail;
+=======
+	if (o2info_to_user(*oifi, req)) {
+		status = -EFAULT;
+		goto out_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = 0;
 bail:
 	if (status)
 		o2info_set_request_error(&oifi->ifi_req, req);
+<<<<<<< HEAD
 
+=======
+out_free:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(oifi);
 out_err:
 	return status;
@@ -437,7 +667,11 @@ out_err:
 static void o2ffg_update_histogram(struct ocfs2_info_free_chunk_list *hist,
 				   unsigned int chunksize)
 {
+<<<<<<< HEAD
 	int index;
+=======
+	u32 index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	index = __ilog2_u32(chunksize);
 	if (index >= OCFS2_INFO_MAX_HIST)
@@ -460,19 +694,33 @@ static void o2ffg_update_stats(struct ocfs2_info_freefrag_stats *stats,
 	stats->ffs_free_chunks_real++;
 }
 
+<<<<<<< HEAD
 void ocfs2_info_update_ffg(struct ocfs2_info_freefrag *ffg,
 			   unsigned int chunksize)
+=======
+static void ocfs2_info_update_ffg(struct ocfs2_info_freefrag *ffg,
+				  unsigned int chunksize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	o2ffg_update_histogram(&(ffg->iff_ffs.ffs_fc_hist), chunksize);
 	o2ffg_update_stats(&(ffg->iff_ffs), chunksize);
 }
 
+<<<<<<< HEAD
 int ocfs2_info_freefrag_scan_chain(struct ocfs2_super *osb,
 				   struct inode *gb_inode,
 				   struct ocfs2_dinode *gb_dinode,
 				   struct ocfs2_chain_rec *rec,
 				   struct ocfs2_info_freefrag *ffg,
 				   u32 chunks_in_group)
+=======
+static int ocfs2_info_freefrag_scan_chain(struct ocfs2_super *osb,
+					  struct inode *gb_inode,
+					  struct ocfs2_dinode *gb_dinode,
+					  struct ocfs2_chain_rec *rec,
+					  struct ocfs2_info_freefrag *ffg,
+					  u32 chunks_in_group)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0, used;
 	u64 blkno;
@@ -570,9 +818,15 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_info_freefrag_scan_bitmap(struct ocfs2_super *osb,
 				    struct inode *gb_inode, u64 blkno,
 				    struct ocfs2_info_freefrag *ffg)
+=======
+static int ocfs2_info_freefrag_scan_bitmap(struct ocfs2_super *osb,
+					   struct inode *gb_inode, u64 blkno,
+					   struct ocfs2_info_freefrag *ffg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 chunks_in_group;
 	int status = 0, unlock = 0, i;
@@ -583,7 +837,11 @@ int ocfs2_info_freefrag_scan_bitmap(struct ocfs2_super *osb,
 	struct ocfs2_dinode *gb_dinode = NULL;
 
 	if (gb_inode)
+<<<<<<< HEAD
 		mutex_lock(&gb_inode->i_mutex);
+=======
+		inode_lock(gb_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (o2info_coherent(&ffg->iff_req)) {
 		status = ocfs2_inode_lock(gb_inode, &bh, 0);
@@ -640,22 +898,37 @@ bail:
 		ocfs2_inode_unlock(gb_inode, 0);
 
 	if (gb_inode)
+<<<<<<< HEAD
 		mutex_unlock(&gb_inode->i_mutex);
 
 	if (gb_inode)
 		iput(gb_inode);
 
+=======
+		inode_unlock(gb_inode);
+
+	iput(gb_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_info_handle_freefrag(struct inode *inode,
 			       struct ocfs2_info_request __user *req)
 {
 	u64 blkno = -1;
 	char namebuf[40];
 	int status = -EFAULT, type = GLOBAL_BITMAP_SYSTEM_INODE;
+=======
+static int ocfs2_info_handle_freefrag(struct inode *inode,
+				      struct ocfs2_info_request __user *req)
+{
+	u64 blkno = -1;
+	char namebuf[40];
+	int status, type = GLOBAL_BITMAP_SYSTEM_INODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ocfs2_info_freefrag *oiff;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
@@ -668,8 +941,15 @@ int ocfs2_info_handle_freefrag(struct inode *inode,
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	if (o2info_from_user(*oiff, req))
 		goto bail;
+=======
+	if (o2info_from_user(*oiff, req)) {
+		status = -EFAULT;
+		goto out_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * chunksize from userspace should be power of 2.
 	 */
@@ -706,19 +986,31 @@ int ocfs2_info_handle_freefrag(struct inode *inode,
 
 	o2info_set_request_filled(&oiff->iff_req);
 
+<<<<<<< HEAD
 	if (o2info_to_user(*oiff, req))
 		goto bail;
+=======
+	if (o2info_to_user(*oiff, req)) {
+		status = -EFAULT;
+		goto out_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = 0;
 bail:
 	if (status)
 		o2info_set_request_error(&oiff->iff_req, req);
+<<<<<<< HEAD
 
+=======
+out_free:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(oiff);
 out_err:
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_info_handle_unknown(struct inode *inode,
 			      struct ocfs2_info_request __user *req)
 {
@@ -727,10 +1019,20 @@ int ocfs2_info_handle_unknown(struct inode *inode,
 
 	if (o2info_from_user(oir, req))
 		goto bail;
+=======
+static int ocfs2_info_handle_unknown(struct inode *inode,
+				     struct ocfs2_info_request __user *req)
+{
+	struct ocfs2_info_request oir;
+
+	if (o2info_from_user(oir, req))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	o2info_clear_request_filled(&oir);
 
 	if (o2info_to_user(oir, req))
+<<<<<<< HEAD
 		goto bail;
 
 	status = 0;
@@ -739,6 +1041,11 @@ bail:
 		o2info_set_request_error(&oir, req);
 
 	return status;
+=======
+		return -EFAULT;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -748,8 +1055,13 @@ bail:
  * - distinguish different requests.
  * - validate size of different requests.
  */
+<<<<<<< HEAD
 int ocfs2_info_handle_request(struct inode *inode,
 			      struct ocfs2_info_request __user *req)
+=======
+static int ocfs2_info_handle_request(struct inode *inode,
+				     struct ocfs2_info_request __user *req)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = -EFAULT;
 	struct ocfs2_info_request oir;
@@ -807,8 +1119,13 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
 int ocfs2_get_request_ptr(struct ocfs2_info *info, int idx,
 			  u64 *req_addr, int compat_flag)
+=======
+static int ocfs2_get_request_ptr(struct ocfs2_info *info, int idx,
+				 u64 *req_addr, int compat_flag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = -EFAULT;
 	u64 __user *bp = NULL;
@@ -845,8 +1162,13 @@ bail:
  * a better backward&forward compatibility, since a small piece of
  * request will be less likely to be broken if disk layout get changed.
  */
+<<<<<<< HEAD
 int ocfs2_info_handle(struct inode *inode, struct ocfs2_info *info,
 		      int compat_flag)
+=======
+static noinline_for_stack int
+ocfs2_info_handle(struct inode *inode, struct ocfs2_info *info, int compat_flag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, status = 0;
 	u64 req_addr;
@@ -864,7 +1186,11 @@ int ocfs2_info_handle(struct inode *inode, struct ocfs2_info *info,
 		if (status)
 			break;
 
+<<<<<<< HEAD
 		reqp = (struct ocfs2_info_request *)(unsigned long)req_addr;
+=======
+		reqp = (struct ocfs2_info_request __user *)(unsigned long)req_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!reqp) {
 			status = -EINVAL;
 			goto bail;
@@ -881,6 +1207,7 @@ bail:
 
 long ocfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
 	struct inode *inode = filp->f_path.dentry->d_inode;
 	unsigned int flags;
 	int new_clusters;
@@ -911,30 +1238,67 @@ long ocfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			OCFS2_FL_MODIFIABLE);
 		mnt_drop_write_file(filp);
 		return status;
+=======
+	struct inode *inode = file_inode(filp);
+	void __user *argp = (void __user *)arg;
+	int status;
+
+	switch (cmd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OCFS2_IOC_RESVSP:
 	case OCFS2_IOC_RESVSP64:
 	case OCFS2_IOC_UNRESVSP:
 	case OCFS2_IOC_UNRESVSP64:
+<<<<<<< HEAD
+=======
+	{
+		struct ocfs2_space_resv sr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&sr, (int __user *) arg, sizeof(sr)))
 			return -EFAULT;
 
 		return ocfs2_change_file_space(filp, cmd, &sr);
+<<<<<<< HEAD
 	case OCFS2_IOC_GROUP_EXTEND:
+=======
+	}
+	case OCFS2_IOC_GROUP_EXTEND:
+	{
+		int new_clusters;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!capable(CAP_SYS_RESOURCE))
 			return -EPERM;
 
 		if (get_user(new_clusters, (int __user *)arg))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		return ocfs2_group_extend(inode, new_clusters);
 	case OCFS2_IOC_GROUP_ADD:
 	case OCFS2_IOC_GROUP_ADD64:
+=======
+		status = mnt_want_write_file(filp);
+		if (status)
+			return status;
+		status = ocfs2_group_extend(inode, new_clusters);
+		mnt_drop_write_file(filp);
+		return status;
+	}
+	case OCFS2_IOC_GROUP_ADD:
+	case OCFS2_IOC_GROUP_ADD64:
+	{
+		struct ocfs2_new_group_input input;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!capable(CAP_SYS_RESOURCE))
 			return -EPERM;
 
 		if (copy_from_user(&input, (int __user *) arg, sizeof(input)))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		return ocfs2_group_add(inode, &input);
 	case OCFS2_IOC_REFLINK:
 		if (copy_from_user(&args, (struct reflink_arguments *)arg,
@@ -951,6 +1315,39 @@ long ocfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			return -EFAULT;
 
 		return ocfs2_info_handle(inode, &info, 0);
+=======
+		status = mnt_want_write_file(filp);
+		if (status)
+			return status;
+		status = ocfs2_group_add(inode, &input);
+		mnt_drop_write_file(filp);
+		return status;
+	}
+	case OCFS2_IOC_REFLINK:
+	{
+		struct reflink_arguments args;
+		const char __user *old_path;
+		const char __user *new_path;
+		bool preserve;
+
+		if (copy_from_user(&args, argp, sizeof(args)))
+			return -EFAULT;
+		old_path = (const char __user *)(unsigned long)args.old_path;
+		new_path = (const char __user *)(unsigned long)args.new_path;
+		preserve = (args.preserve != 0);
+
+		return ocfs2_reflink_ioctl(inode, old_path, new_path, preserve);
+	}
+	case OCFS2_IOC_INFO:
+	{
+		struct ocfs2_info info;
+
+		if (copy_from_user(&info, argp, sizeof(struct ocfs2_info)))
+			return -EFAULT;
+
+		return ocfs2_info_handle(inode, &info, 0);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FITRIM:
 	{
 		struct super_block *sb = inode->i_sb;
@@ -960,22 +1357,41 @@ long ocfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
 
+<<<<<<< HEAD
 		if (copy_from_user(&range, (struct fstrim_range *)arg,
 		    sizeof(range)))
 			return -EFAULT;
 
+=======
+		if (!bdev_max_discard_sectors(sb->s_bdev))
+			return -EOPNOTSUPP;
+
+		if (copy_from_user(&range, argp, sizeof(range)))
+			return -EFAULT;
+
+		range.minlen = max_t(u64, bdev_discard_granularity(sb->s_bdev),
+				     range.minlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_trim_fs(sb, &range);
 		if (ret < 0)
 			return ret;
 
+<<<<<<< HEAD
 		if (copy_to_user((struct fstrim_range *)arg, &range,
 		    sizeof(range)))
+=======
+		if (copy_to_user(argp, &range, sizeof(range)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		return 0;
 	}
 	case OCFS2_IOC_MOVE_EXT:
+<<<<<<< HEAD
 		return ocfs2_ioctl_move_extents(filp, (void __user *)arg);
+=======
+		return ocfs2_ioctl_move_extents(filp, argp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
@@ -986,6 +1402,7 @@ long ocfs2_compat_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
 	bool preserve;
 	struct reflink_arguments args;
+<<<<<<< HEAD
 	struct inode *inode = file->f_path.dentry->d_inode;
 	struct ocfs2_info info;
 
@@ -996,6 +1413,13 @@ long ocfs2_compat_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 	case OCFS2_IOC32_SETFLAGS:
 		cmd = OCFS2_IOC_SETFLAGS;
 		break;
+=======
+	struct inode *inode = file_inode(file);
+	struct ocfs2_info info;
+	void __user *argp = (void __user *)arg;
+
+	switch (cmd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OCFS2_IOC_RESVSP:
 	case OCFS2_IOC_RESVSP64:
 	case OCFS2_IOC_UNRESVSP:
@@ -1003,22 +1427,36 @@ long ocfs2_compat_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 	case OCFS2_IOC_GROUP_EXTEND:
 	case OCFS2_IOC_GROUP_ADD:
 	case OCFS2_IOC_GROUP_ADD64:
+<<<<<<< HEAD
 	case FITRIM:
 		break;
 	case OCFS2_IOC_REFLINK:
 		if (copy_from_user(&args, (struct reflink_arguments *)arg,
 				   sizeof(args)))
+=======
+		break;
+	case OCFS2_IOC_REFLINK:
+		if (copy_from_user(&args, argp, sizeof(args)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		preserve = (args.preserve != 0);
 
 		return ocfs2_reflink_ioctl(inode, compat_ptr(args.old_path),
 					   compat_ptr(args.new_path), preserve);
 	case OCFS2_IOC_INFO:
+<<<<<<< HEAD
 		if (copy_from_user(&info, (struct ocfs2_info __user *)arg,
 				   sizeof(struct ocfs2_info)))
 			return -EFAULT;
 
 		return ocfs2_info_handle(inode, &info, 1);
+=======
+		if (copy_from_user(&info, argp, sizeof(struct ocfs2_info)))
+			return -EFAULT;
+
+		return ocfs2_info_handle(inode, &info, 1);
+	case FITRIM:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OCFS2_IOC_MOVE_EXT:
 		break;
 	default:

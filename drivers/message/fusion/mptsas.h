@@ -107,10 +107,18 @@ struct mptsas_hotplug_event {
 struct fw_event_work {
 	struct list_head 	list;
 	struct delayed_work	 work;
+<<<<<<< HEAD
 	MPT_ADAPTER	*ioc;
 	u32			event;
 	u8			retries;
 	u8			__attribute__((aligned(4))) event_data[1];
+=======
+	int			users;
+	MPT_ADAPTER	*ioc;
+	u32			event;
+	u8			retries;
+	char			event_data[] __aligned(4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mptsas_discovery_event {

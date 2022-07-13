@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_NET_USER_H__
@@ -24,7 +30,10 @@ struct net_user_info {
 	int mtu;
 };
 
+<<<<<<< HEAD
 extern void ether_user_init(void *data, void *dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void iter_addresses(void *d, void (*cb)(unsigned char *,
 					       unsigned char *, void *),
 			   void *arg);

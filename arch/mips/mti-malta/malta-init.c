@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * Copyright (C) 1999, 2000, 2004, 2005  MIPS Technologies, Inc.
  *	All rights reserved.
  *	Authors: Carsten Langgaard <carstenl@mips.com>
@@ -18,10 +19,24 @@
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
  * PROM library initialisation code.
+=======
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * PROM library initialisation code.
+ *
+ * Copyright (C) 1999,2000,2004,2005,2012  MIPS Technologies, Inc.
+ * All rights reserved.
+ * Authors: Carsten Langgaard <carstenl@mips.com>
+ *         Maciej W. Rozycki <macro@mips.com>
+ *          Steven J. Hill <sjhill@mips.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
 #include <asm/bootinfo.h>
 #include <asm/gt64120.h>
@@ -49,6 +64,19 @@ int *_prom_argv, *_prom_envp;
 
 int init_debug;
 
+=======
+#include <linux/pci_regs.h>
+#include <linux/serial_core.h>
+
+#include <asm/cacheflush.h>
+#include <asm/smp-ops.h>
+#include <asm/traps.h>
+#include <asm/fw/fw.h>
+#include <asm/mips-cps.h>
+#include <asm/mips-boards/generic.h>
+#include <asm/mips-boards/malta.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mips_revision_corid;
 int mips_revision_sconid;
 
@@ -62,6 +90,7 @@ unsigned long _pcictrl_gt64120;
 /* MIPS System controller register base */
 unsigned long _pcictrl_msc;
 
+<<<<<<< HEAD
 char *prom_getenv(char *envname)
 {
 	/*
@@ -130,6 +159,8 @@ int get_ethernet_addr(char *ethernet_addr)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SERIAL_8250_CONSOLE
 static void __init console_config(void)
 {
@@ -138,6 +169,7 @@ static void __init console_config(void)
 	char parity = '\0', bits = '\0', flow = '\0';
 	char *s;
 
+<<<<<<< HEAD
 	if ((strstr(prom_getcmdline(), "console=")) == NULL) {
 		s = prom_getenv("modetty0");
 		if (s) {
@@ -160,6 +192,44 @@ static void __init console_config(void)
 			flow = 'r';
 		sprintf(console_string, " console=ttyS0,%d%c%c%c", baud, parity, bits, flow);
 		strcat(prom_getcmdline(), console_string);
+=======
+	s = fw_getenv("modetty0");
+	if (s) {
+		while (*s >= '0' && *s <= '9')
+			baud = baud*10 + *s++ - '0';
+		if (*s == ',')
+			s++;
+		if (*s)
+			parity = *s++;
+		if (*s == ',')
+			s++;
+		if (*s)
+			bits = *s++;
+		if (*s == ',')
+			s++;
+		if (*s == 'h')
+			flow = 'r';
+	}
+	if (baud == 0)
+		baud = 38400;
+	if (parity != 'n' && parity != 'o' && parity != 'e')
+		parity = 'n';
+	if (bits != '7' && bits != '8')
+		bits = '8';
+	if (flow == '\0')
+		flow = 'r';
+
+	if ((strstr(fw_getcmdline(), "earlycon=")) == NULL) {
+		sprintf(console_string, "uart8250,io,0x3f8,%d%c%c", baud,
+			parity, bits);
+		setup_earlycon(console_string);
+	}
+
+	if ((strstr(fw_getcmdline(), "console=")) == NULL) {
+		sprintf(console_string, " console=ttyS0,%d%c%c%c", baud,
+			parity, bits, flow);
+		strcat(fw_getcmdline(), console_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("Config serial console:%s\n", console_string);
 	}
 }
@@ -168,23 +238,35 @@ static void __init console_config(void)
 static void __init mips_nmi_setup(void)
 {
 	void *base;
+<<<<<<< HEAD
 	extern char except_vec_nmi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = cpu_has_veic ?
 		(void *)(CAC_BASE + 0xa80) :
 		(void *)(CAC_BASE + 0x380);
+<<<<<<< HEAD
 	memcpy(base, &except_vec_nmi, 0x80);
+=======
+	memcpy(base, except_vec_nmi, 0x80);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_icache_range((unsigned long)base, (unsigned long)base + 0x80);
 }
 
 static void __init mips_ejtag_setup(void)
 {
 	void *base;
+<<<<<<< HEAD
 	extern char except_vec_ejtag_debug;
+=======
+	extern char except_vec_ejtag_debug[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = cpu_has_veic ?
 		(void *)(CAC_BASE + 0xa00) :
 		(void *)(CAC_BASE + 0x300);
+<<<<<<< HEAD
 	memcpy(base, &except_vec_ejtag_debug, 0x80);
 	flush_icache_range((unsigned long)base, (unsigned long)base + 0x80);
 }
@@ -199,6 +281,19 @@ void __init prom_init(void)
 
 	mips_display_message("LINUX");
 
+=======
+	memcpy(base, except_vec_ejtag_debug, 0x80);
+	flush_icache_range((unsigned long)base, (unsigned long)base + 0x80);
+}
+
+phys_addr_t mips_cpc_default_phys_base(void)
+{
+	return CPC_BASE_ADDR;
+}
+
+void __init prom_init(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * early setup of _pcictrl_bonito so that we can determine
 	 * the system controller on a CORE_EMUL board
@@ -306,7 +401,11 @@ void __init prom_init(void)
 	case MIPS_REVISION_SCON_SOCIT:
 	case MIPS_REVISION_SCON_ROCIT:
 		_pcictrl_msc = (unsigned long)ioremap(MIPS_MSC01_PCI_REG_BASE, 0x2000);
+<<<<<<< HEAD
 	mips_pci_controller:
+=======
+mips_pci_controller:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb();
 		MSC_READ(MSC01_PCI_CFG, data);
 		MSC_WRITE(MSC01_PCI_CFG, data & ~MSC01_PCI_CFG_EN_BIT);
@@ -321,9 +420,24 @@ void __init prom_init(void)
 			  MSC01_PCI_SWAP_BYTESWAP << MSC01_PCI_SWAP_MEM_SHF |
 			  MSC01_PCI_SWAP_BYTESWAP << MSC01_PCI_SWAP_BAR0_SHF);
 #endif
+<<<<<<< HEAD
 		/* Fix up target memory mapping.  */
 		MSC_READ(MSC01_PCI_BAR0, mask);
 		MSC_WRITE(MSC01_PCI_P2SCMSKL, mask & MSC01_PCI_BAR0_SIZE_MSK);
+=======
+
+		/*
+		 * Setup the Malta max (2GB) memory for PCI DMA in host bridge
+		 * in transparent addressing mode.
+		 */
+		mask = PHYS_OFFSET | PCI_BASE_ADDRESS_MEM_PREFETCH;
+		MSC_WRITE(MSC01_PCI_BAR0, mask);
+		MSC_WRITE(MSC01_PCI_HEAD4, mask);
+
+		mask &= MSC01_PCI_BAR0_SIZE_MSK;
+		MSC_WRITE(MSC01_PCI_P2SCMSKL, mask);
+		MSC_WRITE(MSC01_PCI_P2SCMAPL, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Don't handle target retries indefinitely.  */
 		if ((data & MSC01_PCI_CFG_MAXRTRY_MSK) ==
@@ -347,18 +461,28 @@ void __init prom_init(void)
 
 	default:
 		/* Unknown system controller */
+<<<<<<< HEAD
 		mips_display_message("SC Error");
 		while (1);   /* We die here... */
+=======
+		while (1);	/* We die here... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	board_nmi_handler_setup = mips_nmi_setup;
 	board_ejtag_handler_setup = mips_ejtag_setup;
 
+<<<<<<< HEAD
 	prom_init_cmdline();
 	prom_meminit();
+=======
+	fw_init_cmdline();
+	fw_meminit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SERIAL_8250_CONSOLE
 	console_config();
 #endif
 	/* Early detection of CMP support */
+<<<<<<< HEAD
 	if (gcmp_probe(GCMP_BASE_ADDR, GCMP_ADDRSPACE_SZ))
 		if (!register_cmp_smp_ops())
 			return;
@@ -369,4 +493,13 @@ void __init prom_init(void)
 #ifdef CONFIG_MIPS_MT_SMTC
 	register_smp_ops(&msmtc_smp_ops);
 #endif
+=======
+	mips_cpc_probe();
+
+	if (!register_cps_smp_ops())
+		return;
+	if (!register_vsmp_smp_ops())
+		return;
+	register_up_smp_ops();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

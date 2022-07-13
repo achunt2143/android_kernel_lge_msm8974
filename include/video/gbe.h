@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/video/gbe.h -- SGI GBE (Graphics Back End)
  *
  * Copyright (C) 1999 Silicon Graphics, Inc. (Jeffrey Newquist)
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License version 2 as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __GBE_H__

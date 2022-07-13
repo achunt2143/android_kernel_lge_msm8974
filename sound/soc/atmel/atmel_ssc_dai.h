@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atmel_ssc_dai.h - ALSA SSC interface for the Atmel  SoC
  *
@@ -11,6 +15,7 @@
  * Frank Mandarino <fmandarino@endrelia.com>
  * Based on pxa2xx Platform drivers by
  * Liam Girdwood <lrg@slimlogic.co.uk>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +30,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATMEL_SSC_DAI_H
@@ -106,17 +113,31 @@ struct atmel_ssc_state {
 struct atmel_ssc_info {
 	char *name;
 	struct ssc_device *ssc;
+<<<<<<< HEAD
 	spinlock_t lock;	/* lock for dir_mask */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short dir_mask;	/* 0=unused, 1=playback, 2=capture */
 	unsigned short initialized;	/* true if SSC has been initialized */
 	unsigned short daifmt;
 	unsigned short cmr_div;
 	unsigned short tcmr_period;
 	unsigned short rcmr_period;
+<<<<<<< HEAD
 	struct atmel_pcm_dma_params *dma_params[2];
 	struct atmel_ssc_state ssc_state;
 };
 
 int atmel_ssc_set_audio(int ssc);
+=======
+	unsigned int forced_divider;
+	struct atmel_pcm_dma_params *dma_params[2];
+	struct atmel_ssc_state ssc_state;
+	unsigned long mck_rate;
+};
+
+int atmel_ssc_set_audio(int ssc_id);
+void atmel_ssc_put_audio(int ssc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _AT91_SSC_DAI_H */

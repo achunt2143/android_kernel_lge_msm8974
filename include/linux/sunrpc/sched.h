@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/sched.h
  *
@@ -13,7 +17,11 @@
 #include <linux/ktime.h>
 #include <linux/sunrpc/types.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/wait.h>
+=======
+#include <linux/wait_bit.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/sunrpc/xdr.h>
 
@@ -22,10 +30,17 @@
  */
 struct rpc_procinfo;
 struct rpc_message {
+<<<<<<< HEAD
 	struct rpc_procinfo *	rpc_proc;	/* Procedure information */
 	void *			rpc_argp;	/* Arguments */
 	void *			rpc_resp;	/* Result */
 	struct rpc_cred *	rpc_cred;	/* Credentials */
+=======
+	const struct rpc_procinfo *rpc_proc;	/* Procedure information */
+	void *			rpc_argp;	/* Arguments */
+	void *			rpc_resp;	/* Result */
+	const struct cred *	rpc_cred;	/* Credentials */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rpc_call_ops;
@@ -34,7 +49,21 @@ struct rpc_wait {
 	struct list_head	list;		/* wait queue links */
 	struct list_head	links;		/* Links to related tasks */
 	struct list_head	timer_list;	/* Timer list */
+<<<<<<< HEAD
 	unsigned long		expires;
+=======
+};
+
+/*
+ * This describes a timeout strategy
+ */
+struct rpc_timeout {
+	unsigned long		to_initval,		/* initial timeout */
+				to_maxval,		/* max timeout */
+				to_increment;		/* if !exponential */
+	unsigned int		to_retries;		/* max # of retries */
+	unsigned char		to_exponential;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -42,6 +71,7 @@ struct rpc_wait {
  */
 struct rpc_task {
 	atomic_t		tk_count;	/* Reference count */
+<<<<<<< HEAD
 	struct list_head	tk_task;	/* global list of tasks */
 	struct rpc_clnt *	tk_client;	/* RPC client */
 	struct rpc_rqst *	tk_rqstp;	/* RPC request */
@@ -50,10 +80,15 @@ struct rpc_task {
 	 * RPC call state
 	 */
 	struct rpc_message	tk_msg;		/* RPC call info */
+=======
+	int			tk_status;	/* result of last operation */
+	struct list_head	tk_task;	/* global list of tasks */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * callback	to be executed after waking up
 	 * action	next procedure for async tasks
+<<<<<<< HEAD
 	 * tk_ops	caller callbacks
 	 */
 	void			(*tk_callback)(struct rpc_task *);
@@ -66,12 +101,22 @@ struct rpc_task {
 	struct workqueue_struct	*tk_workqueue;	/* Normally rpciod, but could
 						 * be any workqueue
 						 */
+=======
+	 */
+	void			(*tk_callback)(struct rpc_task *);
+	void			(*tk_action)(struct rpc_task *);
+
+	unsigned long		tk_timeout;	/* timeout for rpc_sleep() */
+	unsigned long		tk_runstate;	/* Task run status */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rpc_wait_queue 	*tk_waitqueue;	/* RPC wait queue we're on */
 	union {
 		struct work_struct	tk_work;	/* Async task work queue */
 		struct rpc_wait		tk_wait;	/* RPC wait */
 	} u;
 
+<<<<<<< HEAD
 	ktime_t			tk_start;	/* RPC task init timestamp */
 
 	pid_t			tk_owner;	/* Process id for batching tasks */
@@ -80,10 +125,38 @@ struct rpc_task {
 	unsigned short		tk_timeouts;	/* maj timeouts */
 
 #ifdef RPC_DEBUG
+=======
+	/*
+	 * RPC call state
+	 */
+	struct rpc_message	tk_msg;		/* RPC call info */
+	void *			tk_calldata;	/* Caller private data */
+	const struct rpc_call_ops *tk_ops;	/* Caller callbacks */
+
+	struct rpc_clnt *	tk_client;	/* RPC client */
+	struct rpc_xprt *	tk_xprt;	/* Transport */
+	struct rpc_cred *	tk_op_cred;	/* cred being operated on */
+
+	struct rpc_rqst *	tk_rqstp;	/* RPC request */
+
+	struct workqueue_struct	*tk_workqueue;	/* Normally rpciod, but could
+						 * be any workqueue
+						 */
+	ktime_t			tk_start;	/* RPC task init timestamp */
+
+	pid_t			tk_owner;	/* Process id for batching tasks */
+
+	int			tk_rpc_status;	/* Result of last RPC operation */
+	unsigned short		tk_flags;	/* misc flags */
+	unsigned short		tk_timeouts;	/* maj timeouts */
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		tk_pid;		/* debugging aid */
 #endif
 	unsigned char		tk_priority : 2,/* Task priority */
 				tk_garb_retry : 2,
+<<<<<<< HEAD
 				tk_cred_retry : 2,
 				tk_rebind_retry : 2;
 };
@@ -97,6 +170,10 @@ struct rpc_task {
 #define	task_for_first(task, head) \
 	if (!list_empty(head) &&  \
 	    ((task=list_entry((head)->next, struct rpc_task, u.tk_wait.list)),1))
+=======
+				tk_cred_retry : 2;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef void			(*rpc_action)(struct rpc_task *);
 
@@ -110,6 +187,11 @@ struct rpc_call_ops {
 struct rpc_task_setup {
 	struct rpc_task *task;
 	struct rpc_clnt *rpc_client;
+<<<<<<< HEAD
+=======
+	struct rpc_xprt *rpc_xprt;
+	struct rpc_cred *rpc_op_cred;	/* credential being operated on */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct rpc_message *rpc_message;
 	const struct rpc_call_ops *callback_ops;
 	void *callback_data;
@@ -123,14 +205,23 @@ struct rpc_task_setup {
  */
 #define RPC_TASK_ASYNC		0x0001		/* is an async task */
 #define RPC_TASK_SWAPPER	0x0002		/* is swapping in/out */
+<<<<<<< HEAD
 #define RPC_CALL_MAJORSEEN	0x0020		/* major timeout seen */
 #define RPC_TASK_ROOTCREDS	0x0040		/* force root creds */
 #define RPC_TASK_DYNAMIC	0x0080		/* task was kmalloc'ed */
 #define RPC_TASK_KILLED		0x0100		/* task was killed */
+=======
+#define RPC_TASK_MOVEABLE	0x0004		/* nfs4.1+ rpc tasks */
+#define RPC_TASK_NULLCREDS	0x0010		/* Use AUTH_NULL credential */
+#define RPC_CALL_MAJORSEEN	0x0020		/* major timeout seen */
+#define RPC_TASK_DYNAMIC	0x0080		/* task was kmalloc'ed */
+#define	RPC_TASK_NO_ROUND_ROBIN	0x0100		/* send requests on "main" xprt */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RPC_TASK_SOFT		0x0200		/* Use soft timeouts */
 #define RPC_TASK_SOFTCONN	0x0400		/* Fail if can't connect */
 #define RPC_TASK_SENT		0x0800		/* message was sent */
 #define RPC_TASK_TIMEOUT	0x1000		/* fail with ETIMEDOUT on timeout */
+<<<<<<< HEAD
 
 #define RPC_IS_ASYNC(t)		((t)->tk_flags & RPC_TASK_ASYNC)
 #define RPC_IS_SWAPPER(t)	((t)->tk_flags & RPC_TASK_SWAPPER)
@@ -139,10 +230,23 @@ struct rpc_task_setup {
 #define RPC_IS_SOFT(t)		((t)->tk_flags & (RPC_TASK_SOFT|RPC_TASK_TIMEOUT))
 #define RPC_IS_SOFTCONN(t)	((t)->tk_flags & RPC_TASK_SOFTCONN)
 #define RPC_WAS_SENT(t)		((t)->tk_flags & RPC_TASK_SENT)
+=======
+#define RPC_TASK_NOCONNECT	0x2000		/* return ENOTCONN if not connected */
+#define RPC_TASK_NO_RETRANS_TIMEOUT	0x4000		/* wait forever for a reply */
+#define RPC_TASK_CRED_NOREF	0x8000		/* No refcount on the credential */
+
+#define RPC_IS_ASYNC(t)		((t)->tk_flags & RPC_TASK_ASYNC)
+#define RPC_IS_SWAPPER(t)	((t)->tk_flags & RPC_TASK_SWAPPER)
+#define RPC_IS_SOFT(t)		((t)->tk_flags & (RPC_TASK_SOFT|RPC_TASK_TIMEOUT))
+#define RPC_IS_SOFTCONN(t)	((t)->tk_flags & RPC_TASK_SOFTCONN)
+#define RPC_WAS_SENT(t)		((t)->tk_flags & RPC_TASK_SENT)
+#define RPC_IS_MOVEABLE(t)	((t)->tk_flags & RPC_TASK_MOVEABLE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RPC_TASK_RUNNING	0
 #define RPC_TASK_QUEUED		1
 #define RPC_TASK_ACTIVE		2
+<<<<<<< HEAD
 
 #define RPC_IS_RUNNING(t)	test_bit(RPC_TASK_RUNNING, &(t)->tk_runstate)
 #define rpc_set_running(t)	set_bit(RPC_TASK_RUNNING, &(t)->tk_runstate)
@@ -166,6 +270,25 @@ struct rpc_task_setup {
 
 #define RPC_IS_ACTIVATED(t)	test_bit(RPC_TASK_ACTIVE, &(t)->tk_runstate)
 
+=======
+#define RPC_TASK_NEED_XMIT	3
+#define RPC_TASK_NEED_RECV	4
+#define RPC_TASK_MSG_PIN_WAIT	5
+#define RPC_TASK_SIGNALLED	6
+
+#define rpc_test_and_set_running(t) \
+				test_and_set_bit(RPC_TASK_RUNNING, &(t)->tk_runstate)
+#define rpc_clear_running(t)	clear_bit(RPC_TASK_RUNNING, &(t)->tk_runstate)
+
+#define RPC_IS_QUEUED(t)	test_bit(RPC_TASK_QUEUED, &(t)->tk_runstate)
+#define rpc_set_queued(t)	set_bit(RPC_TASK_QUEUED, &(t)->tk_runstate)
+#define rpc_clear_queued(t)	clear_bit(RPC_TASK_QUEUED, &(t)->tk_runstate)
+
+#define RPC_IS_ACTIVATED(t)	test_bit(RPC_TASK_ACTIVE, &(t)->tk_runstate)
+
+#define RPC_SIGNALLED(t)	test_bit(RPC_TASK_SIGNALLED, &(t)->tk_runstate)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Task priorities.
  * Note: if you change these, you must also change
@@ -178,9 +301,15 @@ struct rpc_task_setup {
 #define RPC_NR_PRIORITY		(1 + RPC_PRIORITY_PRIVILEGED - RPC_PRIORITY_LOW)
 
 struct rpc_timer {
+<<<<<<< HEAD
 	struct timer_list timer;
 	struct list_head list;
 	unsigned long expires;
+=======
+	struct list_head list;
+	unsigned long expires;
+	struct delayed_work dwork;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -189,6 +318,7 @@ struct rpc_timer {
 struct rpc_wait_queue {
 	spinlock_t		lock;
 	struct list_head	tasks[RPC_NR_PRIORITY];	/* task queue for each priority level */
+<<<<<<< HEAD
 	pid_t			owner;			/* process id of last task serviced */
 	unsigned char		maxpriority;		/* maximum priority (0 if queue is not a priority queue) */
 	unsigned char		priority;		/* current priority */
@@ -197,6 +327,14 @@ struct rpc_wait_queue {
 	unsigned short		qlen;			/* total # tasks waiting in queue */
 	struct rpc_timer	timer_list;
 #if defined(RPC_DEBUG) || defined(RPC_TRACEPOINTS)
+=======
+	unsigned char		maxpriority;		/* maximum priority (0 if queue is not a priority queue) */
+	unsigned char		priority;		/* current priority */
+	unsigned char		nr;			/* # tasks remaining for cookie */
+	unsigned int		qlen;			/* total # tasks waiting in queue */
+	struct rpc_timer	timer_list;
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *		name;
 #endif
 };
@@ -206,7 +344,10 @@ struct rpc_wait_queue {
  * from a single cookie.  The aim is to improve
  * performance of NFS operations such as read/write.
  */
+<<<<<<< HEAD
 #define RPC_BATCH_COUNT			16
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RPC_IS_PRIORITY(q)		((q)->maxpriority > 0)
 
 /*
@@ -215,17 +356,34 @@ struct rpc_wait_queue {
 struct rpc_task *rpc_new_task(const struct rpc_task_setup *);
 struct rpc_task *rpc_run_task(const struct rpc_task_setup *);
 struct rpc_task *rpc_run_bc_task(struct rpc_rqst *req,
+<<<<<<< HEAD
 				const struct rpc_call_ops *ops);
 void		rpc_put_task(struct rpc_task *);
 void		rpc_put_task_async(struct rpc_task *);
+=======
+		struct rpc_timeout *timeout);
+void		rpc_put_task(struct rpc_task *);
+void		rpc_put_task_async(struct rpc_task *);
+bool		rpc_task_set_rpc_status(struct rpc_task *task, int rpc_status);
+void		rpc_task_try_cancel(struct rpc_task *task, int error);
+void		rpc_signal_task(struct rpc_task *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void		rpc_exit_task(struct rpc_task *);
 void		rpc_exit(struct rpc_task *, int);
 void		rpc_release_calldata(const struct rpc_call_ops *, void *);
 void		rpc_killall_tasks(struct rpc_clnt *);
+<<<<<<< HEAD
+=======
+unsigned long	rpc_cancel_tasks(struct rpc_clnt *clnt, int error,
+				 bool (*fnmatch)(const struct rpc_task *,
+						 const void *),
+				 const void *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void		rpc_execute(struct rpc_task *);
 void		rpc_init_priority_wait_queue(struct rpc_wait_queue *, const char *);
 void		rpc_init_wait_queue(struct rpc_wait_queue *, const char *);
 void		rpc_destroy_wait_queue(struct rpc_wait_queue *);
+<<<<<<< HEAD
 void		rpc_sleep_on(struct rpc_wait_queue *, struct rpc_task *,
 					rpc_action action);
 void		rpc_sleep_on_priority(struct rpc_wait_queue *,
@@ -236,10 +394,38 @@ void		rpc_wake_up_queued_task(struct rpc_wait_queue *,
 					struct rpc_task *);
 void		rpc_wake_up(struct rpc_wait_queue *);
 struct rpc_task *rpc_wake_up_next(struct rpc_wait_queue *);
+=======
+unsigned long	rpc_task_timeout(const struct rpc_task *task);
+void		rpc_sleep_on_timeout(struct rpc_wait_queue *queue,
+					struct rpc_task *task,
+					rpc_action action,
+					unsigned long timeout);
+void		rpc_sleep_on(struct rpc_wait_queue *, struct rpc_task *,
+					rpc_action action);
+void		rpc_sleep_on_priority_timeout(struct rpc_wait_queue *queue,
+					struct rpc_task *task,
+					unsigned long timeout,
+					int priority);
+void		rpc_sleep_on_priority(struct rpc_wait_queue *,
+					struct rpc_task *,
+					int priority);
+void		rpc_wake_up_queued_task(struct rpc_wait_queue *,
+					struct rpc_task *);
+void		rpc_wake_up_queued_task_set_status(struct rpc_wait_queue *,
+						   struct rpc_task *,
+						   int);
+void		rpc_wake_up(struct rpc_wait_queue *);
+struct rpc_task *rpc_wake_up_next(struct rpc_wait_queue *);
+struct rpc_task *rpc_wake_up_first_on_wq(struct workqueue_struct *wq,
+					struct rpc_wait_queue *,
+					bool (*)(struct rpc_task *, void *),
+					void *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rpc_task *rpc_wake_up_first(struct rpc_wait_queue *,
 					bool (*)(struct rpc_task *, void *),
 					void *);
 void		rpc_wake_up_status(struct rpc_wait_queue *, int);
+<<<<<<< HEAD
 int		rpc_queue_empty(struct rpc_wait_queue *);
 void		rpc_delay(struct rpc_task *, unsigned long);
 void *		rpc_malloc(struct rpc_task *, size_t);
@@ -248,12 +434,22 @@ int		rpciod_up(void);
 void		rpciod_down(void);
 int		__rpc_wait_for_completion_task(struct rpc_task *task, int (*)(void *));
 #ifdef RPC_DEBUG
+=======
+void		rpc_delay(struct rpc_task *, unsigned long);
+int		rpc_malloc(struct rpc_task *);
+void		rpc_free(struct rpc_task *);
+int		rpciod_up(void);
+void		rpciod_down(void);
+int		rpc_wait_for_completion_task(struct rpc_task *task);
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct net;
 void		rpc_show_tasks(struct net *);
 #endif
 int		rpc_init_mempool(void);
 void		rpc_destroy_mempool(void);
 extern struct workqueue_struct *rpciod_workqueue;
+<<<<<<< HEAD
 void		rpc_prepare_task(struct rpc_task *task);
 
 static inline int rpc_wait_for_completion_task(struct rpc_task *task)
@@ -272,6 +468,13 @@ static inline int rpc_task_has_priority(struct rpc_task *task, unsigned char pri
 }
 
 #if defined(RPC_DEBUG) || defined (RPC_TRACEPOINTS)
+=======
+extern struct workqueue_struct *xprtiod_workqueue;
+void		rpc_prepare_task(struct rpc_task *task);
+gfp_t		rpc_task_gfp_mask(void);
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG) || IS_ENABLED(CONFIG_TRACEPOINTS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline const char * rpc_qname(const struct rpc_wait_queue *q)
 {
 	return ((q && q->name) ? q->name : "unknown");
@@ -289,4 +492,23 @@ static inline void rpc_assign_waitqueue_name(struct rpc_wait_queue *q,
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_SWAP)
+int rpc_clnt_swap_activate(struct rpc_clnt *clnt);
+void rpc_clnt_swap_deactivate(struct rpc_clnt *clnt);
+#else
+static inline int
+rpc_clnt_swap_activate(struct rpc_clnt *clnt)
+{
+	return -EINVAL;
+}
+
+static inline void
+rpc_clnt_swap_deactivate(struct rpc_clnt *clnt)
+{
+}
+#endif /* CONFIG_SUNRPC_SWAP */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SUNRPC_SCHED_H_ */

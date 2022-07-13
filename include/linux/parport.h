@@ -3,6 +3,7 @@
  * the GNU Free Documentation License, Version 1.1 or any later version
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 
 #ifndef _PARPORT_H_
 #define _PARPORT_H_
@@ -93,6 +94,11 @@ typedef enum {
 
 /* The rest is for the kernel only */
 #ifdef __KERNEL__
+=======
+#ifndef _PARPORT_H_
+#define _PARPORT_H_
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/jiffies.h>
 #include <linux/proc_fs.h>
@@ -100,7 +106,13 @@ typedef enum {
 #include <linux/wait.h>
 #include <linux/irqreturn.h>
 #include <linux/semaphore.h>
+<<<<<<< HEAD
 #include <asm/ptrace.h>
+=======
+#include <linux/device.h>
+#include <asm/ptrace.h>
+#include <uapi/linux/parport.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define this later. */
 struct parport;
@@ -125,10 +137,13 @@ struct amiga_parport_state {
        unsigned char statusdir;/* ciab.ddrb & 7 */
 };
 
+<<<<<<< HEAD
 struct ax88796_parport_state {
 	unsigned char cpr;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ip32_parport_state {
 	unsigned int dcr;
 	unsigned int ecr;
@@ -140,7 +155,10 @@ struct parport_state {
 		/* ARC has no state. */
 		struct ax_parport_state ax;
 		struct amiga_parport_state amiga;
+<<<<<<< HEAD
 		struct ax88796_parport_state ax88796;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Atari has not state. */
 		struct ip32_parport_state ip32;
 		void *misc; 
@@ -231,6 +249,11 @@ struct pardevice {
 	unsigned int flags;
 	struct pardevice *next;
 	struct pardevice *prev;
+<<<<<<< HEAD
+=======
+	struct device dev;
+	bool devmodel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport_state *state;     /* saved status over preemption */
 	wait_queue_head_t wait_q;
 	unsigned long int time;
@@ -242,6 +265,11 @@ struct pardevice {
 	void * sysctl_table;
 };
 
+<<<<<<< HEAD
+=======
+#define to_pardevice(n) container_of(n, struct pardevice, dev)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE1284 information */
 
 /* IEEE1284 phases. These are exposed to userland through ppdev IOCTL
@@ -281,7 +309,11 @@ struct parport {
 				 * This may unfortulately be null if the
 				 * port has a legacy driver.
 				 */
+<<<<<<< HEAD
 
+=======
+	struct device bus_dev;	/* to link with the bus */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport *physport;
 				/* If this is a non-default mux
 				   parport, i.e. we're a clone of a real
@@ -306,6 +338,10 @@ struct parport {
 	struct pardevice *waittail;
 
 	struct list_head list;
+<<<<<<< HEAD
+=======
+	struct timer_list timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int flags;
 
 	void *sysctl_table;
@@ -331,15 +367,35 @@ struct parport {
 	struct parport *slaves[3];
 };
 
+<<<<<<< HEAD
+=======
+#define to_parport_dev(n) container_of(n, struct parport, bus_dev)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_SPIN_TIME 500 /* us */
 
 struct parport_driver {
 	const char *name;
 	void (*attach) (struct parport *);
 	void (*detach) (struct parport *);
+<<<<<<< HEAD
 	struct list_head list;
 };
 
+=======
+	void (*match_port)(struct parport *);
+	int (*probe)(struct pardevice *);
+	struct device_driver driver;
+	bool devmodel;
+	struct list_head list;
+};
+
+#define to_parport_driver(n) container_of(n, struct parport_driver, driver)
+
+int parport_bus_init(void);
+void parport_bus_exit(void);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* parport_register_port registers a new parallel port at the given
    address (if one does not already exist) and returns a pointer to it.
    This entails claiming the I/O region, IRQ and DMA.  NULL is returned
@@ -358,10 +414,68 @@ void parport_announce_port (struct parport *port);
 extern void parport_remove_port(struct parport *port);
 
 /* Register a new high-level driver. */
+<<<<<<< HEAD
 extern int parport_register_driver (struct parport_driver *);
 
 /* Unregister a high-level driver. */
 extern void parport_unregister_driver (struct parport_driver *);
+=======
+
+int __must_check __parport_register_driver(struct parport_driver *,
+					   struct module *,
+					   const char *mod_name);
+/*
+ * parport_register_driver must be a macro so that KBUILD_MODNAME can
+ * be expanded
+ */
+
+/**
+ *	parport_register_driver - register a parallel port device driver
+ *	@driver: structure describing the driver
+ *
+ *	This can be called by a parallel port device driver in order
+ *	to receive notifications about ports being found in the
+ *	system, as well as ports no longer available.
+ *
+ *	If devmodel is true then the new device model is used
+ *	for registration.
+ *
+ *	The @driver structure is allocated by the caller and must not be
+ *	deallocated until after calling parport_unregister_driver().
+ *
+ *	If using the non device model:
+ *	The driver's attach() function may block.  The port that
+ *	attach() is given will be valid for the duration of the
+ *	callback, but if the driver wants to take a copy of the
+ *	pointer it must call parport_get_port() to do so.  Calling
+ *	parport_register_device() on that port will do this for you.
+ *
+ *	The driver's detach() function may block.  The port that
+ *	detach() is given will be valid for the duration of the
+ *	callback, but if the driver wants to take a copy of the
+ *	pointer it must call parport_get_port() to do so.
+ *
+ *
+ *	Returns 0 on success. The non device model will always succeeds.
+ *	but the new device model can fail and will return the error code.
+ **/
+#define parport_register_driver(driver)             \
+	__parport_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
+
+/* Unregister a high-level driver. */
+void parport_unregister_driver(struct parport_driver *);
+
+/**
+ * module_parport_driver() - Helper macro for registering a modular parport driver
+ * @__parport_driver: struct parport_driver to be used
+ *
+ * Helper macro for parport drivers which do not do anything special in module
+ * init and exit. This eliminates a lot of boilerplate. Each module may only
+ * use this macro once, and calling it replaces module_init() and module_exit().
+ */
+#define module_parport_driver(__parport_driver) \
+	module_driver(__parport_driver, parport_register_driver, parport_unregister_driver)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If parport_register_driver doesn't fit your needs, perhaps
  * parport_find_xxx does. */
@@ -374,6 +488,7 @@ extern irqreturn_t parport_irq_handler(int irq, void *dev_id);
 /* Reference counting for ports. */
 extern struct parport *parport_get_port (struct parport *);
 extern void parport_put_port (struct parport *);
+<<<<<<< HEAD
 
 /* parport_register_device declares that a device is connected to a
    port, and tells the kernel all it needs to know.
@@ -386,6 +501,25 @@ struct pardevice *parport_register_device(struct parport *port,
 			  int (*pf)(void *), void (*kf)(void *),
 			  void (*irq_func)(void *), 
 			  int flags, void *handle);
+=======
+void parport_del_port(struct parport *);
+
+struct pardev_cb {
+	int (*preempt)(void *);
+	void (*wakeup)(void *);
+	void *private;
+	void (*irq_func)(void *);
+	unsigned int flags;
+};
+
+/*
+ * parport_register_dev_model declares that a device is connected to a
+ * port, and tells the kernel all it needs to know.
+ */
+struct pardevice *
+parport_register_dev_model(struct parport *port, const char *name,
+			   const struct pardev_cb *par_dev_cb, int cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* parport_unregister unlinks a device from the chain. */
 extern void parport_unregister_device(struct pardevice *dev);
@@ -506,6 +640,10 @@ extern size_t parport_ieee1284_epp_read_addr (struct parport *,
 					      void *, size_t, int);
 
 /* IEEE1284.3 functions */
+<<<<<<< HEAD
+=======
+#define daisy_dev_name "Device ID probe"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int parport_daisy_init (struct parport *port);
 extern void parport_daisy_fini (struct parport *port);
 extern struct pardevice *parport_open (int devnum, const char *name);
@@ -531,7 +669,11 @@ extern int parport_device_proc_register(struct pardevice *device);
 extern int parport_device_proc_unregister(struct pardevice *device);
 
 /* If PC hardware is the only type supported, we can optimise a bit.  */
+<<<<<<< HEAD
 #if !defined(CONFIG_PARPORT_NOT_PC)
+=======
+#if !defined(CONFIG_PARPORT_NOT_PC) && defined(CONFIG_PARPORT_PC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/parport_pc.h>
 #define parport_write_data(p,x)            parport_pc_write_data(p,x)
@@ -564,5 +706,8 @@ extern int parport_device_proc_unregister(struct pardevice *device);
 extern unsigned long parport_default_timeslice;
 extern int parport_default_spintime;
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PARPORT_H_ */

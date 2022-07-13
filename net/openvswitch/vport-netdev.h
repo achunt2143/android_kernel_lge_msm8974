@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2007-2011 Nicira Networks.
  *
@@ -14,17 +15,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2007-2011 Nicira, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef VPORT_NETDEV_H
 #define VPORT_NETDEV_H 1
 
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/rcupdate.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vport.h"
 
 struct vport *ovs_netdev_get_vport(struct net_device *dev);
 
+<<<<<<< HEAD
 struct netdev_vport {
 	struct net_device *dev;
 };
@@ -39,4 +50,13 @@ const char *ovs_netdev_get_name(const struct vport *);
 const char *ovs_netdev_get_config(const struct vport *);
 int ovs_netdev_get_ifindex(const struct vport *);
 
+=======
+struct vport *ovs_netdev_link(struct vport *vport, const char *name);
+void ovs_netdev_detach_dev(struct vport *);
+
+int __init ovs_netdev_init(void);
+void ovs_netdev_exit(void);
+
+void ovs_netdev_tunnel_destroy(struct vport *vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* vport_netdev.h */

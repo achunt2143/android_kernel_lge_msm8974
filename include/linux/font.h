@@ -16,7 +16,12 @@
 struct font_desc {
     int idx;
     const char *name;
+<<<<<<< HEAD
     int width, height;
+=======
+    unsigned int width, height;
+    unsigned int charcount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     const void *data;
     int pref;
 };
@@ -31,6 +36,12 @@ struct font_desc {
 #define SUN12x22_IDX	7
 #define ACORN8x8_IDX	8
 #define	MINI4x6_IDX	9
+<<<<<<< HEAD
+=======
+#define FONT6x10_IDX	10
+#define TER16x32_IDX	11
+#define FONT6x8_IDX	12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct font_desc	font_vga_8x8,
 			font_vga_8x16,
@@ -41,7 +52,14 @@ extern const struct font_desc	font_vga_8x8,
 			font_sun_8x16,
 			font_sun_12x22,
 			font_acorn_8x8,
+<<<<<<< HEAD
 			font_mini_4x6;
+=======
+			font_mini_4x6,
+			font_6x10,
+			font_ter_16x32,
+			font_6x8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Find a font with a specific name */
 
@@ -50,9 +68,30 @@ extern const struct font_desc *find_font(const char *name);
 /* Get the default font for a specific screen size */
 
 extern const struct font_desc *get_default_font(int xres, int yres,
+<<<<<<< HEAD
 						u32 font_w, u32 font_h);
+=======
+						unsigned long *font_w,
+						unsigned long *font_h);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Max. length for the name of a predefined font */
 #define MAX_FONT_NAME	32
 
+<<<<<<< HEAD
+=======
+/* Extra word getters */
+#define REFCOUNT(fd)	(((int *)(fd))[-1])
+#define FNTSIZE(fd)	(((int *)(fd))[-2])
+#define FNTCHARCNT(fd)	(((int *)(fd))[-3])
+#define FNTSUM(fd)	(((int *)(fd))[-4])
+
+#define FONT_EXTRA_WORDS 4
+
+struct font_data {
+	unsigned int extra[FONT_EXTRA_WORDS];
+	const unsigned char data[];
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _VIDEO_FONT_H */

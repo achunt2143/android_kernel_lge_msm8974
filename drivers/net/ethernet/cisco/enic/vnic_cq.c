@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -15,6 +16,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,6 +31,10 @@
 
 #include "vnic_dev.h"
 #include "vnic_cq.h"
+<<<<<<< HEAD
+=======
+#include "enic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void vnic_cq_free(struct vnic_cq *cq)
 {
@@ -35,13 +46,17 @@ void vnic_cq_free(struct vnic_cq *cq)
 int vnic_cq_alloc(struct vnic_dev *vdev, struct vnic_cq *cq, unsigned int index,
 	unsigned int desc_count, unsigned int desc_size)
 {
+<<<<<<< HEAD
 	int err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq->index = index;
 	cq->vdev = vdev;
 
 	cq->ctrl = vnic_dev_get_res(vdev, RES_TYPE_CQ, index);
 	if (!cq->ctrl) {
+<<<<<<< HEAD
 		pr_err("Failed to hook CQ[%d] resource\n", index);
 		return -EINVAL;
 	}
@@ -51,6 +66,13 @@ int vnic_cq_alloc(struct vnic_dev *vdev, struct vnic_cq *cq, unsigned int index,
 		return err;
 
 	return 0;
+=======
+		vdev_err(vdev, "Failed to hook CQ[%d] resource\n", index);
+		return -EINVAL;
+	}
+
+	return vnic_dev_alloc_desc_ring(vdev, &cq->ring, desc_count, desc_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vnic_cq_init(struct vnic_cq *cq, unsigned int flow_control_enable,

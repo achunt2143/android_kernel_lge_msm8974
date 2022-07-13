@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_DWARF2_H
 #define _ASM_X86_DWARF2_H
 
@@ -5,6 +9,7 @@
 #warning "asm/dwarf2.h should be only included in pure assembly files"
 #endif
 
+<<<<<<< HEAD
 /*
  * Macros for dwarf2 CFI unwind table entries.
  * See "as.info" for details on these pseudo ops. Unfortunately
@@ -14,6 +19,8 @@
 
 #ifdef CONFIG_AS_CFI
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFI_STARTPROC		.cfi_startproc
 #define CFI_ENDPROC		.cfi_endproc
 #define CFI_DEF_CFA		.cfi_def_cfa
@@ -29,6 +36,7 @@
 #define CFI_UNDEFINED		.cfi_undefined
 #define CFI_ESCAPE		.cfi_escape
 
+<<<<<<< HEAD
 #ifdef CONFIG_AS_CFI_SIGNAL_FRAME
 #define CFI_SIGNAL_FRAME	.cfi_signal_frame
 #else
@@ -36,10 +44,14 @@
 #endif
 
 #if defined(CONFIG_AS_CFI_SECTIONS) && defined(__ASSEMBLY__)
+=======
+#ifndef BUILD_VDSO
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Emit CFI data in .debug_frame sections, not .eh_frame sections.
 	 * The latter we currently just discard since we don't do DWARF
 	 * unwinding at runtime.  So only the offline DWARF information is
+<<<<<<< HEAD
 	 * useful to anyone.  Note we should not use this directive if this
 	 * file is used in the vDSO assembly, or if vmlinux.lds.S gets
 	 * changed so it doesn't discard .eh_frame.
@@ -143,4 +155,18 @@
 #endif /*!CONFIG_X86_64*/
 #endif /*__ASSEMBLY__*/
 
+=======
+	 * useful to anyone.  Note we should not use this directive if we
+	 * ever decide to enable DWARF unwinding at runtime.
+	 */
+	.cfi_sections .debug_frame
+#else
+	 /*
+	  * For the vDSO, emit both runtime unwind information and debug
+	  * symbols for the .dbg file.
+	  */
+	.cfi_sections .eh_frame, .debug_frame
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_DWARF2_H */

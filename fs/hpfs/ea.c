@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/ea.c
  *
@@ -23,15 +27,25 @@ void hpfs_ea_ext_remove(struct super_block *s, secno a, int ano, unsigned len)
 			return;
 		}
 		if (hpfs_ea_read(s, a, ano, pos, 4, ex)) return;
+<<<<<<< HEAD
 		if (ea->indirect) {
 			if (ea_valuelen(ea) != 8) {
 				hpfs_error(s, "ea->indirect set while ea->valuelen!=8, %s %08x, pos %08x",
+=======
+		if (ea_indirect(ea)) {
+			if (ea_valuelen(ea) != 8) {
+				hpfs_error(s, "ea_indirect(ea) set while ea->valuelen!=8, %s %08x, pos %08x",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ano ? "anode" : "sectors", a, pos);
 				return;
 			}
 			if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 9, ex+4))
 				return;
+<<<<<<< HEAD
 			hpfs_ea_remove(s, ea_sec(ea), ea->anode, ea_len(ea));
+=======
+			hpfs_ea_remove(s, ea_sec(ea), ea_in_anode(ea), ea_len(ea));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pos += ea->namelen + ea_valuelen(ea) + 5;
 	}
@@ -51,7 +65,11 @@ static char *get_indirect_ea(struct super_block *s, int ano, secno a, int size)
 {
 	char *ret;
 	if (!(ret = kmalloc(size + 1, GFP_NOFS))) {
+<<<<<<< HEAD
 		printk("HPFS: out of memory for EA\n");
+=======
+		pr_err("out of memory for EA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	if (hpfs_ea_read(s, a, ano, 0, size, ret)) {
@@ -81,7 +99,11 @@ int hpfs_read_ea(struct super_block *s, struct fnode *fnode, char *key,
 	struct extended_attribute *ea_end = fnode_end_ea(fnode);
 	for (ea = fnode_ea(fnode); ea < ea_end; ea = next_ea(ea))
 		if (!strcmp(ea->name, key)) {
+<<<<<<< HEAD
 			if (ea->indirect)
+=======
+			if (ea_indirect(ea))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto indirect;
 			if (ea_valuelen(ea) >= size)
 				return -EINVAL;
@@ -91,7 +113,11 @@ int hpfs_read_ea(struct super_block *s, struct fnode *fnode, char *key,
 		}
 	a = le32_to_cpu(fnode->ea_secno);
 	len = le32_to_cpu(fnode->ea_size_l);
+<<<<<<< HEAD
 	ano = fnode->ea_anode;
+=======
+	ano = fnode_in_anode(fnode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos = 0;
 	while (pos < len) {
 		ea = (struct extended_attribute *)ex;
@@ -101,10 +127,17 @@ int hpfs_read_ea(struct super_block *s, struct fnode *fnode, char *key,
 			return -EIO;
 		}
 		if (hpfs_ea_read(s, a, ano, pos, 4, ex)) return -EIO;
+<<<<<<< HEAD
 		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea->indirect ? 8 : 0), ex + 4))
 			return -EIO;
 		if (!strcmp(ea->name, key)) {
 			if (ea->indirect)
+=======
+		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea_indirect(ea) ? 8 : 0), ex + 4))
+			return -EIO;
+		if (!strcmp(ea->name, key)) {
+			if (ea_indirect(ea))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto indirect;
 			if (ea_valuelen(ea) >= size)
 				return -EINVAL;
@@ -119,7 +152,11 @@ int hpfs_read_ea(struct super_block *s, struct fnode *fnode, char *key,
 indirect:
 	if (ea_len(ea) >= size)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (hpfs_ea_read(s, ea_sec(ea), ea->anode, 0, ea_len(ea), buf))
+=======
+	if (hpfs_ea_read(s, ea_sec(ea), ea_in_anode(ea), 0, ea_len(ea), buf))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	buf[ea_len(ea)] = 0;
 	return 0;
@@ -136,10 +173,17 @@ char *hpfs_get_ea(struct super_block *s, struct fnode *fnode, char *key, int *si
 	struct extended_attribute *ea_end = fnode_end_ea(fnode);
 	for (ea = fnode_ea(fnode); ea < ea_end; ea = next_ea(ea))
 		if (!strcmp(ea->name, key)) {
+<<<<<<< HEAD
 			if (ea->indirect)
 				return get_indirect_ea(s, ea->anode, ea_sec(ea), *size = ea_len(ea));
 			if (!(ret = kmalloc((*size = ea_valuelen(ea)) + 1, GFP_NOFS))) {
 				printk("HPFS: out of memory for EA\n");
+=======
+			if (ea_indirect(ea))
+				return get_indirect_ea(s, ea_in_anode(ea), ea_sec(ea), *size = ea_len(ea));
+			if (!(ret = kmalloc((*size = ea_valuelen(ea)) + 1, GFP_NOFS))) {
+				pr_err("out of memory for EA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return NULL;
 			}
 			memcpy(ret, ea_data(ea), ea_valuelen(ea));
@@ -148,7 +192,11 @@ char *hpfs_get_ea(struct super_block *s, struct fnode *fnode, char *key, int *si
 		}
 	a = le32_to_cpu(fnode->ea_secno);
 	len = le32_to_cpu(fnode->ea_size_l);
+<<<<<<< HEAD
 	ano = fnode->ea_anode;
+=======
+	ano = fnode_in_anode(fnode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos = 0;
 	while (pos < len) {
 		char ex[4 + 255 + 1 + 8];
@@ -159,6 +207,7 @@ char *hpfs_get_ea(struct super_block *s, struct fnode *fnode, char *key, int *si
 			return NULL;
 		}
 		if (hpfs_ea_read(s, a, ano, pos, 4, ex)) return NULL;
+<<<<<<< HEAD
 		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea->indirect ? 8 : 0), ex + 4))
 			return NULL;
 		if (!strcmp(ea->name, key)) {
@@ -166,6 +215,15 @@ char *hpfs_get_ea(struct super_block *s, struct fnode *fnode, char *key, int *si
 				return get_indirect_ea(s, ea->anode, ea_sec(ea), *size = ea_len(ea));
 			if (!(ret = kmalloc((*size = ea_valuelen(ea)) + 1, GFP_NOFS))) {
 				printk("HPFS: out of memory for EA\n");
+=======
+		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea_indirect(ea) ? 8 : 0), ex + 4))
+			return NULL;
+		if (!strcmp(ea->name, key)) {
+			if (ea_indirect(ea))
+				return get_indirect_ea(s, ea_in_anode(ea), ea_sec(ea), *size = ea_len(ea));
+			if (!(ret = kmalloc((*size = ea_valuelen(ea)) + 1, GFP_NOFS))) {
+				pr_err("out of memory for EA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return NULL;
 			}
 			if (hpfs_ea_read(s, a, ano, pos + 4 + ea->namelen + 1, ea_valuelen(ea), ret)) {
@@ -199,9 +257,15 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 	struct extended_attribute *ea_end = fnode_end_ea(fnode);
 	for (ea = fnode_ea(fnode); ea < ea_end; ea = next_ea(ea))
 		if (!strcmp(ea->name, key)) {
+<<<<<<< HEAD
 			if (ea->indirect) {
 				if (ea_len(ea) == size)
 					set_indirect_ea(s, ea->anode, ea_sec(ea), data, size);
+=======
+			if (ea_indirect(ea)) {
+				if (ea_len(ea) == size)
+					set_indirect_ea(s, ea_in_anode(ea), ea_sec(ea), data, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (ea_valuelen(ea) == size) {
 				memcpy(ea_data(ea), data, size);
 			}
@@ -209,7 +273,11 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 		}
 	a = le32_to_cpu(fnode->ea_secno);
 	len = le32_to_cpu(fnode->ea_size_l);
+<<<<<<< HEAD
 	ano = fnode->ea_anode;
+=======
+	ano = fnode_in_anode(fnode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos = 0;
 	while (pos < len) {
 		char ex[4 + 255 + 1 + 8];
@@ -220,12 +288,21 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 			return;
 		}
 		if (hpfs_ea_read(s, a, ano, pos, 4, ex)) return;
+<<<<<<< HEAD
 		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea->indirect ? 8 : 0), ex + 4))
 			return;
 		if (!strcmp(ea->name, key)) {
 			if (ea->indirect) {
 				if (ea_len(ea) == size)
 					set_indirect_ea(s, ea->anode, ea_sec(ea), data, size);
+=======
+		if (hpfs_ea_read(s, a, ano, pos + 4, ea->namelen + 1 + (ea_indirect(ea) ? 8 : 0), ex + 4))
+			return;
+		if (!strcmp(ea->name, key)) {
+			if (ea_indirect(ea)) {
+				if (ea_len(ea) == size)
+					set_indirect_ea(s, ea_in_anode(ea), ea_sec(ea), data, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else {
 				if (ea_valuelen(ea) == size)
@@ -246,7 +323,11 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 	if (le16_to_cpu(fnode->ea_offs) < 0xc4 || le16_to_cpu(fnode->ea_offs) + le16_to_cpu(fnode->acl_size_s) + le16_to_cpu(fnode->ea_size_s) > 0x200) {
 		hpfs_error(s, "fnode %08lx: ea_offs == %03x, ea_size_s == %03x",
 			(unsigned long)inode->i_ino,
+<<<<<<< HEAD
 			le32_to_cpu(fnode->ea_offs), le16_to_cpu(fnode->ea_size_s));
+=======
+			le16_to_cpu(fnode->ea_offs), le16_to_cpu(fnode->ea_size_s));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if ((le16_to_cpu(fnode->ea_size_s) || !le32_to_cpu(fnode->ea_size_l)) &&
@@ -276,7 +357,11 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 		fnode->ea_size_l = cpu_to_le32(le16_to_cpu(fnode->ea_size_s));
 		fnode->ea_size_s = cpu_to_le16(0);
 		fnode->ea_secno = cpu_to_le32(n);
+<<<<<<< HEAD
 		fnode->ea_anode = cpu_to_le32(0);
+=======
+		fnode->flags &= ~FNODE_anode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_buffer_dirty(bh);
 		brelse(bh);
 	}
@@ -288,9 +373,15 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 			secno q = hpfs_alloc_sector(s, fno, 1, 0);
 			if (!q) goto bail;
 			fnode->ea_secno = cpu_to_le32(q);
+<<<<<<< HEAD
 			fnode->ea_anode = 0;
 			len++;
 		} else if (!fnode->ea_anode) {
+=======
+			fnode->flags &= ~FNODE_anode;
+			len++;
+		} else if (!fnode_in_anode(fnode)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hpfs_alloc_if_possible(s, le32_to_cpu(fnode->ea_secno) + len)) {
 				len++;
 			} else {
@@ -310,7 +401,11 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 				anode->u.external[0].length = cpu_to_le32(len);
 				mark_buffer_dirty(bh);
 				brelse(bh);
+<<<<<<< HEAD
 				fnode->ea_anode = 1;
+=======
+				fnode->flags |= FNODE_anode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fnode->ea_secno = cpu_to_le32(a_s);*/
 				secno new_sec;
 				int i;
@@ -338,7 +433,11 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 				len = (pos + 511) >> 9;
 			}
 		}
+<<<<<<< HEAD
 		if (fnode->ea_anode) {
+=======
+		if (fnode_in_anode(fnode)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hpfs_add_sector_to_btree(s, le32_to_cpu(fnode->ea_secno),
 						     0, len) != -1) {
 				len++;
@@ -351,16 +450,26 @@ void hpfs_set_ea(struct inode *inode, struct fnode *fnode, const char *key,
 	h[1] = strlen(key);
 	h[2] = size & 0xff;
 	h[3] = size >> 8;
+<<<<<<< HEAD
 	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode->ea_anode, le32_to_cpu(fnode->ea_size_l), 4, h)) goto bail;
 	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode->ea_anode, le32_to_cpu(fnode->ea_size_l) + 4, h[1] + 1, key)) goto bail;
 	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode->ea_anode, le32_to_cpu(fnode->ea_size_l) + 5 + h[1], size, data)) goto bail;
+=======
+	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode_in_anode(fnode), le32_to_cpu(fnode->ea_size_l), 4, h)) goto bail;
+	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode_in_anode(fnode), le32_to_cpu(fnode->ea_size_l) + 4, h[1] + 1, key)) goto bail;
+	if (hpfs_ea_write(s, le32_to_cpu(fnode->ea_secno), fnode_in_anode(fnode), le32_to_cpu(fnode->ea_size_l) + 5 + h[1], size, data)) goto bail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fnode->ea_size_l = cpu_to_le32(pos);
 	ret:
 	hpfs_i(inode)->i_ea_size += 5 + strlen(key) + size;
 	return;
 	bail:
 	if (le32_to_cpu(fnode->ea_secno))
+<<<<<<< HEAD
 		if (fnode->ea_anode) hpfs_truncate_btree(s, le32_to_cpu(fnode->ea_secno), 1, (le32_to_cpu(fnode->ea_size_l) + 511) >> 9);
+=======
+		if (fnode_in_anode(fnode)) hpfs_truncate_btree(s, le32_to_cpu(fnode->ea_secno), 1, (le32_to_cpu(fnode->ea_size_l) + 511) >> 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else hpfs_free_sectors(s, le32_to_cpu(fnode->ea_secno) + ((le32_to_cpu(fnode->ea_size_l) + 511) >> 9), len - ((le32_to_cpu(fnode->ea_size_l) + 511) >> 9));
 	else fnode->ea_secno = fnode->ea_size_l = cpu_to_le32(0);
 }

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  * drivers/pci/slot.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2006 Matthew Wilcox <matthew@wil.cx>
  * Copyright (C) 2006-2009 Hewlett-Packard Development Company, L.P.
  *	Alex Chiang <achiang@hp.com>
@@ -39,6 +44,7 @@ static const struct sysfs_ops pci_slot_sysfs_ops = {
 static ssize_t address_read_file(struct pci_slot *slot, char *buf)
 {
 	if (slot->number == 0xff)
+<<<<<<< HEAD
 		return sprintf(buf, "%04x:%02x\n",
 				pci_domain_nr(slot->bus),
 				slot->bus->number);
@@ -86,6 +92,21 @@ static ssize_t bus_speed_read(enum pci_bus_speed speed, char *buf)
 		speed_string = "Unknown";
 
 	return sprintf(buf, "%s\n", speed_string);
+=======
+		return sysfs_emit(buf, "%04x:%02x\n",
+				  pci_domain_nr(slot->bus),
+				  slot->bus->number);
+
+	return sysfs_emit(buf, "%04x:%02x:%02x\n",
+			  pci_domain_nr(slot->bus),
+			  slot->bus->number,
+			  slot->number);
+}
+
+static ssize_t bus_speed_read(enum pci_bus_speed speed, char *buf)
+{
+	return sysfs_emit(buf, "%s\n", pci_speed_string(speed));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t max_speed_read_file(struct pci_slot *slot, char *buf)
@@ -106,9 +127,17 @@ static void pci_slot_release(struct kobject *kobj)
 	dev_dbg(&slot->bus->dev, "dev %02x, released physical slot %s\n",
 		slot->number, pci_slot_name(slot));
 
+<<<<<<< HEAD
 	list_for_each_entry(dev, &slot->bus->devices, bus_list)
 		if (PCI_SLOT(dev->devfn) == slot->number)
 			dev->slot = NULL;
+=======
+	down_read(&pci_bus_sem);
+	list_for_each_entry(dev, &slot->bus->devices, bus_list)
+		if (PCI_SLOT(dev->devfn) == slot->number)
+			dev->slot = NULL;
+	up_read(&pci_bus_sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_del(&slot->list);
 
@@ -116,11 +145,19 @@ static void pci_slot_release(struct kobject *kobj)
 }
 
 static struct pci_slot_attribute pci_slot_attr_address =
+<<<<<<< HEAD
 	__ATTR(address, (S_IFREG | S_IRUGO), address_read_file, NULL);
 static struct pci_slot_attribute pci_slot_attr_max_speed =
 	__ATTR(max_bus_speed, (S_IFREG | S_IRUGO), max_speed_read_file, NULL);
 static struct pci_slot_attribute pci_slot_attr_cur_speed =
 	__ATTR(cur_bus_speed, (S_IFREG | S_IRUGO), cur_speed_read_file, NULL);
+=======
+	__ATTR(address, S_IRUGO, address_read_file, NULL);
+static struct pci_slot_attribute pci_slot_attr_max_speed =
+	__ATTR(max_bus_speed, S_IRUGO, max_speed_read_file, NULL);
+static struct pci_slot_attribute pci_slot_attr_cur_speed =
+	__ATTR(cur_bus_speed, S_IRUGO, cur_speed_read_file, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pci_slot_default_attrs[] = {
 	&pci_slot_attr_address.attr,
@@ -128,11 +165,20 @@ static struct attribute *pci_slot_default_attrs[] = {
 	&pci_slot_attr_cur_speed.attr,
 	NULL,
 };
+<<<<<<< HEAD
 
 static struct kobj_type pci_slot_ktype = {
 	.sysfs_ops = &pci_slot_sysfs_ops,
 	.release = &pci_slot_release,
 	.default_attrs = pci_slot_default_attrs,
+=======
+ATTRIBUTE_GROUPS(pci_slot_default);
+
+static const struct kobj_type pci_slot_ktype = {
+	.sysfs_ops = &pci_slot_sysfs_ops,
+	.release = &pci_slot_release,
+	.default_groups = pci_slot_default_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static char *make_slot_name(const char *name)
@@ -191,12 +237,31 @@ static int rename_slot(struct pci_slot *slot, const char *name)
 	return result;
 }
 
+<<<<<<< HEAD
 static struct pci_slot *get_slot(struct pci_bus *parent, int slot_nr)
 {
 	struct pci_slot *slot;
 	/*
 	 * We already hold pci_bus_sem so don't worry
 	 */
+=======
+void pci_dev_assign_slot(struct pci_dev *dev)
+{
+	struct pci_slot *slot;
+
+	mutex_lock(&pci_slot_mutex);
+	list_for_each_entry(slot, &dev->bus->slots, list)
+		if (PCI_SLOT(dev->devfn) == slot->number)
+			dev->slot = slot;
+	mutex_unlock(&pci_slot_mutex);
+}
+
+static struct pci_slot *get_slot(struct pci_bus *parent, int slot_nr)
+{
+	struct pci_slot *slot;
+
+	/* We already hold pci_slot_mutex */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(slot, &parent->slots, list)
 		if (slot->number == slot_nr) {
 			kobject_get(&slot->kobj);
@@ -253,7 +318,11 @@ struct pci_slot *pci_create_slot(struct pci_bus *parent, int slot_nr,
 	int err = 0;
 	char *slot_name = NULL;
 
+<<<<<<< HEAD
 	down_write(&pci_bus_sem);
+=======
+	mutex_lock(&pci_slot_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (slot_nr == -1)
 		goto placeholder;
@@ -290,6 +359,7 @@ placeholder:
 	slot_name = make_slot_name(name);
 	if (!slot_name) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto err;
 	}
 
@@ -304,22 +374,50 @@ placeholder:
 	list_for_each_entry(dev, &parent->devices, bus_list)
 		if (PCI_SLOT(dev->devfn) == slot_nr)
 			dev->slot = slot;
+=======
+		kfree(slot);
+		goto err;
+	}
+
+	INIT_LIST_HEAD(&slot->list);
+	list_add(&slot->list, &parent->slots);
+
+	err = kobject_init_and_add(&slot->kobj, &pci_slot_ktype, NULL,
+				   "%s", slot_name);
+	if (err) {
+		kobject_put(&slot->kobj);
+		goto err;
+	}
+
+	down_read(&pci_bus_sem);
+	list_for_each_entry(dev, &parent->devices, bus_list)
+		if (PCI_SLOT(dev->devfn) == slot_nr)
+			dev->slot = slot;
+	up_read(&pci_bus_sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&parent->dev, "dev %02x, created physical slot %s\n",
 		slot_nr, pci_slot_name(slot));
 
 out:
 	kfree(slot_name);
+<<<<<<< HEAD
 	up_write(&pci_bus_sem);
 	return slot;
 err:
 	kfree(slot);
+=======
+	mutex_unlock(&pci_slot_mutex);
+	return slot;
+err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slot = ERR_PTR(err);
 	goto out;
 }
 EXPORT_SYMBOL_GPL(pci_create_slot);
 
 /**
+<<<<<<< HEAD
  * pci_renumber_slot - update %struct pci_slot -> number
  * @slot: &struct pci_slot to update
  * @slot_nr: new number for slot
@@ -346,6 +444,8 @@ out:
 EXPORT_SYMBOL_GPL(pci_renumber_slot);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pci_destroy_slot - decrement refcount for physical PCI slot
  * @slot: struct pci_slot to decrement
  *
@@ -356,18 +456,30 @@ EXPORT_SYMBOL_GPL(pci_renumber_slot);
 void pci_destroy_slot(struct pci_slot *slot)
 {
 	dev_dbg(&slot->bus->dev, "dev %02x, dec refcount to %d\n",
+<<<<<<< HEAD
 		slot->number, atomic_read(&slot->kobj.kref.refcount) - 1);
 
 	down_write(&pci_bus_sem);
 	kobject_put(&slot->kobj);
 	up_write(&pci_bus_sem);
+=======
+		slot->number, kref_read(&slot->kobj.kref) - 1);
+
+	mutex_lock(&pci_slot_mutex);
+	kobject_put(&slot->kobj);
+	mutex_unlock(&pci_slot_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pci_destroy_slot);
 
 #if defined(CONFIG_HOTPLUG_PCI) || defined(CONFIG_HOTPLUG_PCI_MODULE)
 #include <linux/pci_hotplug.h>
 /**
+<<<<<<< HEAD
  * pci_hp_create_link - create symbolic link to the hotplug driver module.
+=======
+ * pci_hp_create_module_link - create symbolic link to hotplug driver module
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pci_slot: struct pci_slot
  *
  * Helper function for pci_hotplug_core.c to create symbolic link to
@@ -377,6 +489,7 @@ void pci_hp_create_module_link(struct pci_slot *pci_slot)
 {
 	struct hotplug_slot *slot = pci_slot->hotplug;
 	struct kobject *kobj = NULL;
+<<<<<<< HEAD
 	int no_warn;
 
 	if (!slot || !slot->ops)
@@ -385,12 +498,30 @@ void pci_hp_create_module_link(struct pci_slot *pci_slot)
 	if (!kobj)
 		return;
 	no_warn = sysfs_create_link(&pci_slot->kobj, kobj, "module");
+=======
+	int ret;
+
+	if (!slot || !slot->ops)
+		return;
+	kobj = kset_find_obj(module_kset, slot->mod_name);
+	if (!kobj)
+		return;
+	ret = sysfs_create_link(&pci_slot->kobj, kobj, "module");
+	if (ret)
+		dev_err(&pci_slot->bus->dev, "Error creating sysfs link (%d)\n",
+			ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobject_put(kobj);
 }
 EXPORT_SYMBOL_GPL(pci_hp_create_module_link);
 
 /**
+<<<<<<< HEAD
  * pci_hp_remove_link - remove symbolic link to the hotplug driver module.
+=======
+ * pci_hp_remove_module_link - remove symbolic link to the hotplug driver
+ * 	module.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pci_slot: struct pci_slot
  *
  * Helper function for pci_hotplug_core.c to remove symbolic link to
@@ -411,7 +542,11 @@ static int pci_slot_init(void)
 	pci_slots_kset = kset_create_and_add("slots", NULL,
 						&pci_bus_kset->kobj);
 	if (!pci_slots_kset) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PCI: Slot initialization failure\n");
+=======
+		pr_err("PCI: Slot initialization failure\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	return 0;

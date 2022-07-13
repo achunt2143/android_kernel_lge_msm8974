@@ -9,9 +9,16 @@
 #include <linux/page-flags.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include "agp.h"
 
 #define AMD_MMBASE	0x14
+=======
+#include <asm/set_memory.h>
+#include "agp.h"
+
+#define AMD_MMBASE_BAR	1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AMD_APSIZE	0xac
 #define AMD_MODECNTL	0xb0
 #define AMD_MODECNTL2	0xb2
@@ -20,7 +27,11 @@
 #define AMD_TLBFLUSH	0x0c	/* In mmio region (32-bit register) */
 #define AMD_CACHEENTRY	0x10	/* In mmio region (32-bit register) */
 
+<<<<<<< HEAD
 static struct pci_device_id agp_amdk7_pci_table[];
+=======
+static const struct pci_device_id agp_amdk7_pci_table[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct amd_page_map {
 	unsigned long *real;
@@ -84,7 +95,12 @@ static int amd_create_gatt_pages(int nr_tables)
 	int retval = 0;
 	int i;
 
+<<<<<<< HEAD
 	tables = kzalloc((nr_tables + 1) * sizeof(struct amd_page_map *),GFP_KERNEL);
+=======
+	tables = kcalloc(nr_tables + 1, sizeof(struct amd_page_map *),
+			 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tables == NULL)
 		return -ENOMEM;
 
@@ -126,7 +142,10 @@ static int amd_create_gatt_table(struct agp_bridge_data *bridge)
 	unsigned long __iomem *cur_gatt;
 	unsigned long addr;
 	int retval;
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	value = A_SIZE_LVL2(agp_bridge->current_size);
@@ -149,8 +168,12 @@ static int amd_create_gatt_table(struct agp_bridge_data *bridge)
 	 * used to program the agp master not the cpu
 	 */
 
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	addr = pci_bus_address(agp_bridge->dev, AGP_APERTURE_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	agp_bridge->gart_bus_addr = addr;
 
 	/* Calculate the agp offset */
@@ -207,6 +230,10 @@ static int amd_irongate_fetch_size(void)
 static int amd_irongate_configure(void)
 {
 	struct aper_size_info_lvl2 *current_size;
+<<<<<<< HEAD
+=======
+	phys_addr_t reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 temp;
 	u16 enable_reg;
 
@@ -214,9 +241,14 @@ static int amd_irongate_configure(void)
 
 	if (!amd_irongate_private.registers) {
 		/* Get the memory mapped registers */
+<<<<<<< HEAD
 		pci_read_config_dword(agp_bridge->dev, AMD_MMBASE, &temp);
 		temp = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 		amd_irongate_private.registers = (volatile u8 __iomem *) ioremap(temp, 4096);
+=======
+		reg = pci_resource_start(agp_bridge->dev, AMD_MMBASE_BAR);
+		amd_irongate_private.registers = (volatile u8 __iomem *) ioremap(reg, 4096);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!amd_irongate_private.registers)
 			return -ENOMEM;
 	}
@@ -388,7 +420,11 @@ static const struct agp_bridge_driver amd_irongate_driver = {
 	.agp_type_to_mask_type  = agp_generic_type_to_mask_type,
 };
 
+<<<<<<< HEAD
 static struct agp_device_ids amd_agp_device_ids[] __devinitdata =
+=======
+static struct agp_device_ids amd_agp_device_ids[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.device_id	= PCI_DEVICE_ID_AMD_FE_GATE_7006,
@@ -405,8 +441,13 @@ static struct agp_device_ids amd_agp_device_ids[] __devinitdata =
 	{ }, /* dummy final entry, always present */
 };
 
+<<<<<<< HEAD
 static int __devinit agp_amdk7_probe(struct pci_dev *pdev,
 				     const struct pci_device_id *ent)
+=======
+static int agp_amdk7_probe(struct pci_dev *pdev,
+			   const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge;
 	u8 cap_ptr;
@@ -425,7 +466,11 @@ static int __devinit agp_amdk7_probe(struct pci_dev *pdev,
 		return -ENOMEM;
 
 	bridge->driver = &amd_irongate_driver;
+<<<<<<< HEAD
 	bridge->dev_private_data = &amd_irongate_private,
+=======
+	bridge->dev_private_data = &amd_irongate_private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bridge->dev = pdev;
 	bridge->capndx = cap_ptr;
 
@@ -480,7 +525,11 @@ static int __devinit agp_amdk7_probe(struct pci_dev *pdev,
 	return agp_add_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static void __devexit agp_amdk7_remove(struct pci_dev *pdev)
+=======
+static void agp_amdk7_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -488,6 +537,7 @@ static void __devexit agp_amdk7_remove(struct pci_dev *pdev)
 	agp_put_bridge(bridge);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int agp_amdk7_suspend(struct pci_dev *pdev, pm_message_t state)
@@ -510,6 +560,15 @@ static int agp_amdk7_resume(struct pci_dev *pdev)
 
 /* must be the same order as name table above */
 static struct pci_device_id agp_amdk7_pci_table[] = {
+=======
+static int agp_amdk7_resume(struct device *dev)
+{
+	return amd_irongate_driver.configure();
+}
+
+/* must be the same order as name table above */
+static const struct pci_device_id agp_amdk7_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,
@@ -539,15 +598,24 @@ static struct pci_device_id agp_amdk7_pci_table[] = {
 
 MODULE_DEVICE_TABLE(pci, agp_amdk7_pci_table);
 
+<<<<<<< HEAD
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(agp_amdk7_pm_ops, NULL, agp_amdk7_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver agp_amdk7_pci_driver = {
 	.name		= "agpgart-amdk7",
 	.id_table	= agp_amdk7_pci_table,
 	.probe		= agp_amdk7_probe,
 	.remove		= agp_amdk7_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= agp_amdk7_suspend,
 	.resume		= agp_amdk7_resume,
 #endif
+=======
+	.driver.pm	= &agp_amdk7_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init agp_amdk7_init(void)

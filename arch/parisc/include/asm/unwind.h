@@ -1,8 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _UNWIND_H_
 #define _UNWIND_H_
 
 #include <linux/list.h>
 
+<<<<<<< HEAD
+=======
+/* Max number of levels to backtrace */
+#define MAX_UNWIND_ENTRIES	30
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* From ABI specifications */
 struct unwind_table_entry {
 	unsigned int region_start;
@@ -69,8 +79,15 @@ unwind_table_remove(struct unwind_table *table);
 
 void unwind_frame_init(struct unwind_frame_info *info, struct task_struct *t, 
 		       struct pt_regs *regs);
+<<<<<<< HEAD
 void unwind_frame_init_from_blocked_task(struct unwind_frame_info *info, struct task_struct *t);
 void unwind_frame_init_running(struct unwind_frame_info *info, struct pt_regs *regs);
+=======
+void unwind_frame_init_from_blocked_task(struct unwind_frame_info *info,
+			struct task_struct *t);
+void unwind_frame_init_task(struct unwind_frame_info *info,
+			struct task_struct *task, struct pt_regs *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int unwind_once(struct unwind_frame_info *info);
 int unwind_to_user(struct unwind_frame_info *info);
 

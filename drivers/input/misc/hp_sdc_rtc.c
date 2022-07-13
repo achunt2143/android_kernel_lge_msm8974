@@ -41,6 +41,10 @@
 #include <linux/time.h>
 #include <linux/miscdevice.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/seq_file.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/rtc.h>
 #include <linux/mutex.h>
@@ -52,11 +56,15 @@ MODULE_LICENSE("Dual BSD/GPL");
 
 #define RTC_VERSION "1.10d"
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(hp_sdc_rtc_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long epoch = 2000;
 
 static struct semaphore i8042tregs;
 
+<<<<<<< HEAD
 static hp_sdc_irqhook hp_sdc_rtc_isr;
 
 static struct fasync_struct *hp_sdc_rtc_async_queue;
@@ -77,6 +85,8 @@ static int hp_sdc_rtc_fasync (int fd, struct file *filp, int on);
 static int hp_sdc_rtc_read_proc(char *page, char **start, off_t off,
 				int count, int *eof, void *data);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hp_sdc_rtc_isr (int irq, void *dev_id, 
 			    uint8_t status, uint8_t data) 
 {
@@ -109,7 +119,13 @@ static int hp_sdc_rtc_do_read_bbrtc (struct rtc_time *rtctm)
 	
 	if (hp_sdc_enqueue_transaction(&t)) return -1;
 	
+<<<<<<< HEAD
 	down_interruptible(&tsem);  /* Put ourselves to sleep for results. */
+=======
+	/* Put ourselves to sleep for results. */
+	if (WARN_ON(down_interruptible(&tsem)))
+		return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Check for nonpresence of BBRTC */
 	if (!((tseq[83] | tseq[90] | tseq[69] | tseq[76] |
@@ -176,11 +192,27 @@ static int64_t hp_sdc_rtc_read_i8042timer (uint8_t loadcmd, int numreg)
 	t.seq =			tseq;
 	t.act.semaphore =	&i8042tregs;
 
+<<<<<<< HEAD
 	down_interruptible(&i8042tregs);  /* Sleep if output regs in use. */
 
 	if (hp_sdc_enqueue_transaction(&t)) return -1;
 	
 	down_interruptible(&i8042tregs);  /* Sleep until results come back. */
+=======
+	/* Sleep if output regs in use. */
+	if (WARN_ON(down_interruptible(&i8042tregs)))
+		return -1;
+
+	if (hp_sdc_enqueue_transaction(&t)) {
+		up(&i8042tregs);
+		return -1;
+	}
+	
+	/* Sleep until results come back. */
+	if (WARN_ON(down_interruptible(&i8042tregs)))
+		return -1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up(&i8042tregs);
 
 	return (tseq[5] | 
@@ -190,7 +222,11 @@ static int64_t hp_sdc_rtc_read_i8042timer (uint8_t loadcmd, int numreg)
 
 
 /* Read the i8042 real-time clock */
+<<<<<<< HEAD
 static inline int hp_sdc_rtc_read_rt(struct timeval *res) {
+=======
+static inline int hp_sdc_rtc_read_rt(struct timespec64 *res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int64_t raw;
 	uint32_t tenms; 
 	unsigned int days;
@@ -201,15 +237,24 @@ static inline int hp_sdc_rtc_read_rt(struct timeval *res) {
 	tenms = (uint32_t)raw & 0xffffff;
 	days  = (unsigned int)(raw >> 24) & 0xffff;
 
+<<<<<<< HEAD
 	res->tv_usec = (suseconds_t)(tenms % 100) * 10000;
 	res->tv_sec =  (time_t)(tenms / 100) + days * 86400;
+=======
+	res->tv_nsec = (long)(tenms % 100) * 10000 * 1000;
+	res->tv_sec =  (tenms / 100) + (time64_t)days * 86400;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
 /* Read the i8042 fast handshake timer */
+<<<<<<< HEAD
 static inline int hp_sdc_rtc_read_fhs(struct timeval *res) {
+=======
+static inline int hp_sdc_rtc_read_fhs(struct timespec64 *res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int64_t raw;
 	unsigned int tenms;
 
@@ -218,15 +263,24 @@ static inline int hp_sdc_rtc_read_fhs(struct timeval *res) {
 
 	tenms = (unsigned int)raw & 0xffff;
 
+<<<<<<< HEAD
 	res->tv_usec = (suseconds_t)(tenms % 100) * 10000;
 	res->tv_sec  = (time_t)(tenms / 100);
+=======
+	res->tv_nsec = (long)(tenms % 100) * 10000 * 1000;
+	res->tv_sec  = (time64_t)(tenms / 100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
 /* Read the i8042 match timer (a.k.a. alarm) */
+<<<<<<< HEAD
 static inline int hp_sdc_rtc_read_mt(struct timeval *res) {
+=======
+static inline int hp_sdc_rtc_read_mt(struct timespec64 *res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int64_t raw;	
 	uint32_t tenms; 
 
@@ -235,15 +289,24 @@ static inline int hp_sdc_rtc_read_mt(struct timeval *res) {
 
 	tenms = (uint32_t)raw & 0xffffff;
 
+<<<<<<< HEAD
 	res->tv_usec = (suseconds_t)(tenms % 100) * 10000;
 	res->tv_sec  = (time_t)(tenms / 100);
+=======
+	res->tv_nsec = (long)(tenms % 100) * 10000 * 1000;
+	res->tv_sec  = (time64_t)(tenms / 100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
 /* Read the i8042 delay timer */
+<<<<<<< HEAD
 static inline int hp_sdc_rtc_read_dt(struct timeval *res) {
+=======
+static inline int hp_sdc_rtc_read_dt(struct timespec64 *res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int64_t raw;
 	uint32_t tenms;
 
@@ -252,15 +315,24 @@ static inline int hp_sdc_rtc_read_dt(struct timeval *res) {
 
 	tenms = (uint32_t)raw & 0xffffff;
 
+<<<<<<< HEAD
 	res->tv_usec = (suseconds_t)(tenms % 100) * 10000;
 	res->tv_sec  = (time_t)(tenms / 100);
+=======
+	res->tv_nsec = (long)(tenms % 100) * 10000 * 1000;
+	res->tv_sec  = (time64_t)(tenms / 100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
 /* Read the i8042 cycle timer (a.k.a. periodic) */
+<<<<<<< HEAD
 static inline int hp_sdc_rtc_read_ct(struct timeval *res) {
+=======
+static inline int hp_sdc_rtc_read_ct(struct timespec64 *res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int64_t raw;
 	uint32_t tenms;
 
@@ -269,12 +341,18 @@ static inline int hp_sdc_rtc_read_ct(struct timeval *res) {
 
 	tenms = (uint32_t)raw & 0xffffff;
 
+<<<<<<< HEAD
 	res->tv_usec = (suseconds_t)(tenms % 100) * 10000;
 	res->tv_sec  = (time_t)(tenms / 100);
+=======
+	res->tv_nsec = (long)(tenms % 100) * 10000 * 1000;
+	res->tv_sec  = (time64_t)(tenms / 100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /* Set the i8042 real-time clock */
 static int hp_sdc_rtc_set_rt (struct timeval *setto)
@@ -478,6 +556,63 @@ static int hp_sdc_rtc_proc_output (char *buf)
 	}
 
         p += sprintf(p,
+=======
+static int __maybe_unused hp_sdc_rtc_proc_show(struct seq_file *m, void *v)
+{
+#define YN(bit) ("no")
+#define NY(bit) ("yes")
+        struct rtc_time tm;
+	struct timespec64 tv;
+
+	memset(&tm, 0, sizeof(struct rtc_time));
+
+	if (hp_sdc_rtc_read_bbrtc(&tm)) {
+		seq_puts(m, "BBRTC\t\t: READ FAILED!\n");
+	} else {
+		seq_printf(m,
+			     "rtc_time\t: %ptRt\n"
+			     "rtc_date\t: %ptRd\n"
+			     "rtc_epoch\t: %04lu\n",
+			     &tm, &tm, epoch);
+	}
+
+	if (hp_sdc_rtc_read_rt(&tv)) {
+		seq_puts(m, "i8042 rtc\t: READ FAILED!\n");
+	} else {
+		seq_printf(m, "i8042 rtc\t: %lld.%02ld seconds\n",
+			     (s64)tv.tv_sec, (long)tv.tv_nsec/1000000L);
+	}
+
+	if (hp_sdc_rtc_read_fhs(&tv)) {
+		seq_puts(m, "handshake\t: READ FAILED!\n");
+	} else {
+		seq_printf(m, "handshake\t: %lld.%02ld seconds\n",
+			     (s64)tv.tv_sec, (long)tv.tv_nsec/1000000L);
+	}
+
+	if (hp_sdc_rtc_read_mt(&tv)) {
+		seq_puts(m, "alarm\t\t: READ FAILED!\n");
+	} else {
+		seq_printf(m, "alarm\t\t: %lld.%02ld seconds\n",
+			     (s64)tv.tv_sec, (long)tv.tv_nsec/1000000L);
+	}
+
+	if (hp_sdc_rtc_read_dt(&tv)) {
+		seq_puts(m, "delay\t\t: READ FAILED!\n");
+	} else {
+		seq_printf(m, "delay\t\t: %lld.%02ld seconds\n",
+			     (s64)tv.tv_sec, (long)tv.tv_nsec/1000000L);
+	}
+
+	if (hp_sdc_rtc_read_ct(&tv)) {
+		seq_puts(m, "periodic\t: READ FAILED!\n");
+	} else {
+		seq_printf(m, "periodic\t: %lld.%02ld seconds\n",
+			     (s64)tv.tv_sec, (long)tv.tv_nsec/1000000L);
+	}
+
+        seq_printf(m,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                      "DST_enable\t: %s\n"
                      "BCD\t\t: %s\n"
                      "24hr\t\t: %s\n"
@@ -497,11 +632,16 @@ static int hp_sdc_rtc_proc_output (char *buf)
                      1UL,
                      1 ? "okay" : "dead");
 
+<<<<<<< HEAD
         return  p - buf;
+=======
+        return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef YN
 #undef NY
 }
 
+<<<<<<< HEAD
 static int hp_sdc_rtc_read_proc(char *page, char **start, off_t off,
                          int count, int *eof, void *data)
 {
@@ -690,6 +830,8 @@ static struct miscdevice hp_sdc_rtc_dev = {
         .fops =		&hp_sdc_rtc_fops
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init hp_sdc_rtc_init(void)
 {
 	int ret;
@@ -703,11 +845,16 @@ static int __init hp_sdc_rtc_init(void)
 
 	if ((ret = hp_sdc_request_timer_irq(&hp_sdc_rtc_isr)))
 		return ret;
+<<<<<<< HEAD
 	if (misc_register(&hp_sdc_rtc_dev) != 0)
 		printk(KERN_INFO "Could not register misc. dev for i8042 rtc\n");
 
         create_proc_read_entry ("driver/rtc", 0, NULL,
 				hp_sdc_rtc_read_proc, NULL);
+=======
+
+        proc_create_single("driver/rtc", 0, NULL, hp_sdc_rtc_proc_show);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "HP i8042 SDC + MSM-58321 RTC support loaded "
 			 "(RTC v " RTC_VERSION ")\n");
@@ -718,7 +865,10 @@ static int __init hp_sdc_rtc_init(void)
 static void __exit hp_sdc_rtc_exit(void)
 {
 	remove_proc_entry ("driver/rtc", NULL);
+<<<<<<< HEAD
         misc_deregister(&hp_sdc_rtc_dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp_sdc_release_timer_irq(hp_sdc_rtc_isr);
         printk(KERN_INFO "HP i8042 SDC + MSM-58321 RTC support unloaded\n");
 }

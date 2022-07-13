@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
  *
  * File: power.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose: Handles 802.11 power management  functions
  *
  * Author: Lyndon Chen
@@ -29,6 +36,7 @@
 #ifndef __POWER_H__
 #define __POWER_H__
 
+<<<<<<< HEAD
 
 /*---------------------  Export Definitions -------------------------*/
 #define     C_PWBT                   1000      // micro sec. power up before TBTT
@@ -57,5 +65,12 @@ void PSvEnablePowerSaving(void *hDeviceContext, WORD wListenInterval);
 void PSvSendPSPOLL(void *hDeviceContext);
 BOOL PSbSendNullPacket(void *hDeviceContext);
 BOOL PSbIsNextTBTTWakeUp(void *hDeviceContext);
+=======
+#define C_PWBT	1000 /* micro sec. power up before TBTT */
+
+int vnt_disable_power_saving(struct vnt_private *priv);
+void vnt_enable_power_saving(struct vnt_private *priv, u16 listen_interval);
+int vnt_next_tbtt_wakeup(struct vnt_private *priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __POWER_H__ */

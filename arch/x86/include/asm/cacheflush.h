@@ -1,10 +1,20 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_CACHEFLUSH_H
 #define _ASM_X86_CACHEFLUSH_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_CACHEFLUSH_H
+#define _ASM_X86_CACHEFLUSH_H
+
+#include <linux/mm.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Caches aren't brain-dead on the intel. */
 #include <asm-generic/cacheflush.h>
 #include <asm/special_insns.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_PAT
 /*
  * X86 PAT uses page flags WC and Uncached together to keep track of
@@ -163,4 +173,8 @@ static inline int rodata_test(void)
 }
 #endif
 
+=======
+void clflush_cache_range(void *addr, unsigned int size);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_CACHEFLUSH_H */

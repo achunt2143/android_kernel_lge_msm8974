@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-sa1100/include/mach/uncompress.h
  *
@@ -8,6 +12,11 @@
 
 #include "hardware.h"
 
+<<<<<<< HEAD
+=======
+#define IOMEM(x)	(x)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The following code assumes the serial port has already been
  * initialized by the bootloader.  We search for the first enabled
@@ -17,7 +26,11 @@
 
 #define UART(x)		(*(volatile unsigned long *)(serial_port + (x)))
 
+<<<<<<< HEAD
 static void putc(int c)
+=======
+static inline void putc(int c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long serial_port;
 
@@ -47,4 +60,7 @@ static inline void flush(void)
  * Nothing to do for these
  */
 #define arch_decomp_setup()
+<<<<<<< HEAD
 #define arch_decomp_wdog()
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

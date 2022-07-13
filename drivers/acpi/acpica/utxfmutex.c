@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utxfmutex - external AML mutex access functions
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -58,8 +65,13 @@ acpi_ut_get_mutex_object(acpi_handle handle,
  *
  * FUNCTION:    acpi_ut_get_mutex_object
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
  *              Pathname            - Mutex pathname (optional)
+=======
+ * PARAMETERS:  handle              - Mutex or prefix handle (optional)
+ *              pathname            - Mutex pathname (optional)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_obj             - Where the mutex object is returned
  *
  * RETURN:      Status
@@ -89,9 +101,15 @@ acpi_ut_get_mutex_object(acpi_handle handle,
 
 	mutex_node = handle;
 	if (pathname != NULL) {
+<<<<<<< HEAD
 		status = acpi_get_handle(handle, pathname,
 					 ACPI_CAST_PTR(acpi_handle,
 						       &mutex_node));
+=======
+		status =
+		    acpi_get_handle(handle, pathname,
+				    ACPI_CAST_PTR(acpi_handle, &mutex_node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return (status);
 		}
@@ -118,9 +136,15 @@ acpi_ut_get_mutex_object(acpi_handle handle,
  *
  * FUNCTION:    acpi_acquire_mutex
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
  *              Pathname            - Mutex pathname (optional)
  *              Timeout             - Max time to wait for the lock (millisec)
+=======
+ * PARAMETERS:  handle              - Mutex or prefix handle (optional)
+ *              pathname            - Mutex pathname (optional)
+ *              timeout             - Max time to wait for the lock (millisec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -151,12 +175,22 @@ acpi_acquire_mutex(acpi_handle handle, acpi_string pathname, u16 timeout)
 	return (status);
 }
 
+<<<<<<< HEAD
+=======
+ACPI_EXPORT_SYMBOL(acpi_acquire_mutex)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_release_mutex
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Mutex or prefix handle (optional)
  *              Pathname            - Mutex pathname (optional)
+=======
+ * PARAMETERS:  handle              - Mutex or prefix handle (optional)
+ *              pathname            - Mutex pathname (optional)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -167,7 +201,10 @@ acpi_acquire_mutex(acpi_handle handle, acpi_string pathname, u16 timeout)
  *              not both.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status acpi_release_mutex(acpi_handle handle, acpi_string pathname)
 {
 	acpi_status status;
@@ -185,3 +222,8 @@ acpi_status acpi_release_mutex(acpi_handle handle, acpi_string pathname)
 	acpi_os_release_mutex(mutex_obj->mutex.os_mutex);
 	return (AE_OK);
 }
+<<<<<<< HEAD
+=======
+
+ACPI_EXPORT_SYMBOL(acpi_release_mutex)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

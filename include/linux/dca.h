@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
  *
@@ -17,6 +18,11 @@
  *
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef DCA_H
 #define DCA_H
@@ -34,7 +40,11 @@ void dca_unregister_notify(struct notifier_block *nb);
 
 struct dca_provider {
 	struct list_head	node;
+<<<<<<< HEAD
 	struct dca_ops		*ops;
+=======
+	const struct dca_ops	*ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device 		*cd;
 	int			 id;
 };
@@ -53,7 +63,12 @@ struct dca_ops {
 	int	(*dev_managed)      (struct dca_provider *, struct device *);
 };
 
+<<<<<<< HEAD
 struct dca_provider *alloc_dca_provider(struct dca_ops *ops, int priv_size);
+=======
+struct dca_provider *alloc_dca_provider(const struct dca_ops *ops,
+					int priv_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_dca_provider(struct dca_provider *dca);
 int register_dca_provider(struct dca_provider *dca, struct device *dev);
 void unregister_dca_provider(struct dca_provider *dca, struct device *dev);

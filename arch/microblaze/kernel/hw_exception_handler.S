@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Exception handling for Microblaze
  *
@@ -30,10 +34,13 @@
  *
  * Original code
  * Copyright (C) 2004 Xilinx, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -71,10 +78,18 @@
 #include <asm/entry.h>
 #include <asm/current.h>
 #include <linux/linkage.h>
+<<<<<<< HEAD
 
 #include <asm/mmu.h>
 #include <asm/pgtable.h>
 #include <asm/signal.h>
+=======
+#include <linux/pgtable.h>
+
+#include <asm/mmu.h>
+#include <asm/signal.h>
+#include <asm/registers.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm-offsets.h>
 
 #undef DEBUG
@@ -82,7 +97,10 @@
 /* Helpful Macros */
 #define NUM_TO_REG(num)		r ## num
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define RESTORE_STATE			\
 		lwi	r5, r1, 0;		\
 		mts	rmsr, r5;		\
@@ -94,7 +112,10 @@
 		lwi	r11, r1, PT_R11;	\
 		lwi	r31, r1, PT_R31;	\
 		lwi	r1, r1, PT_R1;
+<<<<<<< HEAD
 #endif /* CONFIG_MMU */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LWREG_NOP			\
 	bri	ex_handler_unhandled;	\
@@ -104,10 +125,13 @@
 	bri	ex_handler_unhandled;	\
 	nop;
 
+<<<<<<< HEAD
 /* FIXME this is weird - for noMMU kernel is not possible to use brid
  * instruction which can shorten executed time
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* r3 is the source */
 #define R3_TO_LWREG_V(regnum)				\
 	swi	r3, r1, 4 * regnum;				\
@@ -128,7 +152,10 @@
 	or	r3, r0, NUM_TO_REG (regnum);		\
 	bri	ex_sw_tail;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define R3_TO_LWREG_VM_V(regnum)		\
 		brid	ex_lw_end_vm;			\
 		swi	r3, r7, 4 * regnum;
@@ -146,15 +173,25 @@
 		or	r3, r0, NUM_TO_REG (regnum);
 
 	/* Shift right instruction depending on available configuration */
+<<<<<<< HEAD
 	#if CONFIG_XILINX_MICROBLAZE0_USE_BARREL > 0
 	#define BSRLI(rD, rA, imm)	\
 		bsrli rD, rA, imm
 	#else
 	#define BSRLI(rD, rA, imm) BSRLI ## imm (rD, rA)
+=======
+	#if CONFIG_XILINX_MICROBLAZE0_USE_BARREL == 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Only the used shift constants defined here - add more if needed */
 	#define BSRLI2(rD, rA)				\
 		srl rD, rA;		/* << 1 */	\
 		srl rD, rD;		/* << 2 */
+<<<<<<< HEAD
+=======
+	#define BSRLI4(rD, rA)		\
+		BSRLI2(rD, rA);		\
+		BSRLI2(rD, rD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define BSRLI10(rD, rA)				\
 		srl rD, rA;		/* << 1 */	\
 		srl rD, rD;		/* << 2 */	\
@@ -169,8 +206,38 @@
 	#define BSRLI20(rD, rA)		\
 		BSRLI10(rD, rA);	\
 		BSRLI10(rD, rD)
+<<<<<<< HEAD
 	#endif
 #endif /* CONFIG_MMU */
+=======
+
+	.macro	bsrli, rD, rA, IMM
+	.if (\IMM) == 2
+		BSRLI2(\rD, \rA)
+	.elseif (\IMM) == 10
+		BSRLI10(\rD, \rA)
+	.elseif (\IMM) == 12
+		BSRLI2(\rD, \rA)
+		BSRLI10(\rD, \rD)
+	.elseif (\IMM) == 14
+		BSRLI4(\rD, \rA)
+		BSRLI10(\rD, \rD)
+	.elseif (\IMM) == 20
+		BSRLI20(\rD, \rA)
+	.elseif (\IMM) == 24
+		BSRLI4(\rD, \rA)
+		BSRLI20(\rD, \rD)
+	.elseif (\IMM) == 28
+		BSRLI4(\rD, \rA)
+		BSRLI4(\rD, \rD)
+		BSRLI20(\rD, \rD)
+	.else
+	.error "BSRLI shift macros \IMM"
+	.endif
+	.endm
+	#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .extern other_exception_handler /* Defined in exception.c */
 
@@ -192,8 +259,13 @@
  *      -                            W   S   REG   EXC
  *
  *
+<<<<<<< HEAD
  * STACK FRAME STRUCTURE (for NO_MMU)
  * ---------------------------------
+=======
+ * STACK FRAME STRUCTURE (for CONFIG_MMU=n)
+ * ----------------------------------------
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *      +-------------+         + 0
  *      |     MSR     |
@@ -228,7 +300,10 @@
  */
 
 /* wrappers to restore state before coming to entry.S */
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .section .data
 .align 4
 pt_pool_space:
@@ -293,31 +368,46 @@ _MB_HW_ExceptionVectorTable:
 	.long	TOPHYS(ex_handler_unhandled)
 	.long	TOPHYS(ex_handler_unhandled)
 	.long	TOPHYS(ex_handler_unhandled)
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .global _hw_exception_handler
 .section .text
 .align 4
 .ent _hw_exception_handler
 _hw_exception_handler:
+<<<<<<< HEAD
 #ifndef CONFIG_MMU
 	addik	r1, r1, -(EX_HANDLER_STACK_SIZ); /* Create stack frame */
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swi	r1, r0, TOPHYS(pt_pool_space + PT_R1); /* GET_SP */
 	/* Save date to kernel memory. Here is the problem
 	 * when you came from user space */
 	ori	r1, r0, TOPHYS(pt_pool_space);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swi	r3, r1, PT_R3
 	swi	r4, r1, PT_R4
 	swi	r5, r1, PT_R5
 	swi	r6, r1, PT_R6
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 	swi	r11, r1, PT_R11
 	swi	r31, r1, PT_R31
 	lwi	r31, r0, TOPHYS(PER_CPU(CURRENT_SAVE)) /* get saved current */
 #endif
+=======
+	swi	r11, r1, PT_R11
+	swi	r31, r1, PT_R31
+	lwi	r31, r0, TOPHYS(PER_CPU(CURRENT_SAVE)) /* get saved current */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mfs	r5, rmsr;
 	nop
@@ -327,6 +417,7 @@ _hw_exception_handler:
 	mfs	r3, rear;
 	nop
 
+<<<<<<< HEAD
 #ifndef CONFIG_MMU
 	andi	r5, r4, 0x1000;		/* Check ESR[DS] */
 	beqi	r5, not_in_delay_slot;	/* Branch if ESR[DS] not set */
@@ -339,6 +430,10 @@ not_in_delay_slot:
 	andi	r5, r4, 0x1F;		/* Extract ESR[EXC] */
 
 #ifdef CONFIG_MMU
+=======
+	andi	r5, r4, 0x1F;		/* Extract ESR[EXC] */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Calculate exception vector offset = r5 << 2 */
 	addk	r6, r5, r5; /* << 1 */
 	addk	r6, r6, r6; /* << 2 */
@@ -360,6 +455,7 @@ not_in_delay_slot:
 full_exception_trapw:
 	RESTORE_STATE
 	bri	full_exception_trap
+<<<<<<< HEAD
 #else
 	/* Exceptions enabled here. This will allow nested exceptions */
 	mfs	r6, rmsr;
@@ -427,6 +523,8 @@ handle_other_ex: /* Handle Other exceptions here */
 
 	bri	ex_handler_done; /* Complete exception handling */
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 0x01 - Unaligned data access exception
  * This occurs when a word access is not aligned on a word boundary,
@@ -440,7 +538,10 @@ handle_unaligned_ex:
 	 *  R4 = ESR
 	 *  R3 = EAR
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andi	r6, r4, 0x1000			/* Check ESR[DS] */
 	beqi	r6, _no_delayslot		/* Branch if ESR[DS] not set */
 	mfs	r17, rbtr;	/* ESR[DS] set - return address in BTR */
@@ -449,7 +550,11 @@ _no_delayslot:
 	/* jump to high level unaligned handler */
 	RESTORE_STATE;
 	bri	unaligned_data_trap
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andi	r6, r4, 0x3E0; /* Mask and extract the register operand */
 	srl	r6, r6; /* r6 >> 5 */
 	srl	r6, r6;
@@ -535,6 +640,7 @@ ex_shw:
 ex_sw_end: /* Exception handling of store word, ends. */
 
 ex_handler_done:
+<<<<<<< HEAD
 #ifndef CONFIG_MMU
 	lwi	r5, r1, 0 /* RMSR */
 	mts	rmsr, r5
@@ -554,6 +660,12 @@ ex_handler_done:
 #endif
 
 #ifdef CONFIG_MMU
+=======
+	RESTORE_STATE;
+	rted	r17, 0
+	nop
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Exception vector entry code. This code runs with address translation
 	 * turned off (i.e. using physical addresses). */
 
@@ -581,7 +693,11 @@ ex_handler_done:
 		 * tried to access a kernel or read-protected page - always
 		 * a SEGV). All other faults here must be stores, so no
 		 * need to check ESR_S as well. */
+<<<<<<< HEAD
 		andi	r4, r4, 0x800		/* ESR_Z - zone protection */
+=======
+		andi	r4, r4, ESR_DIZ		/* ESR_Z - zone protection */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnei	r4, ex2
 
 		ori	r4, r0, swapper_pg_dir
@@ -595,13 +711,18 @@ ex_handler_done:
 		 * tried to access a kernel or read-protected page - always
 		 * a SEGV). All other faults here must be stores, so no
 		 * need to check ESR_S as well. */
+<<<<<<< HEAD
 		andi	r4, r4, 0x800		/* ESR_Z */
+=======
+		andi	r4, r4, ESR_DIZ		/* ESR_Z */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnei	r4, ex2
 		/* get current task address */
 		addi	r4 ,CURRENT_TASK, TOPHYS(0);
 		lwi	r4, r4, TASK_THREAD+PGDIR
 	ex4:
 		tophys(r4,r4)
+<<<<<<< HEAD
 		BSRLI(r5,r3,20)		/* Create L1 (pgdir/pmd) address */
 		andi	r5, r5, 0xffc
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
@@ -614,6 +735,20 @@ ex_handler_done:
 		BSRLI(r6,r3,10)			/* Compute PTE address */
 		andi	r6, r6, 0xffc
 		andi	r5, r5, 0xfffff003
+=======
+		/* Create L1 (pgdir/pmd) address */
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+		andi	r5, r5, PAGE_SIZE - 4
+/* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
+		or	r4, r4, r5
+		lwi	r4, r4, 0		/* Get L1 entry */
+		andi	r5, r4, PAGE_MASK /* Extract L2 (pte) base address */
+		beqi	r5, ex2			/* Bail if no table */
+
+		tophys(r5,r5)
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+		andi	r6, r6, PAGE_SIZE - 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
 
@@ -632,7 +767,13 @@ ex_handler_done:
 		 * Many of these bits are software only. Bits we don't set
 		 * here we (properly should) assume have the appropriate value.
 		 */
+<<<<<<< HEAD
 		andni	r4, r4, 0x0ce2		/* Make sure 20, 21 are zero */
+=======
+/* Ignore memory coherent, just LSB on ZSEL is used + EX/WR */
+		andi	r4, r4, PAGE_MASK | TLB_EX | TLB_WR | \
+						TLB_ZSEL(1) | TLB_ATTR_MASK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ori	r4, r4, _PAGE_HWEXEC	/* make it executable */
 
 		/* find the TLB index that caused the fault. It has to be here*/
@@ -701,6 +842,7 @@ ex_handler_done:
 		lwi	r4, r4, TASK_THREAD+PGDIR
 	ex6:
 		tophys(r4,r4)
+<<<<<<< HEAD
 		BSRLI(r5,r3,20)		/* Create L1 (pgdir/pmd) address */
 		andi	r5, r5, 0xffc
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
@@ -713,6 +855,20 @@ ex_handler_done:
 		BSRLI(r6,r3,10)			/* Compute PTE address */
 		andi	r6, r6, 0xffc
 		andi	r5, r5, 0xfffff003
+=======
+		/* Create L1 (pgdir/pmd) address */
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+		andi	r5, r5, PAGE_SIZE - 4
+/* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
+		or	r4, r4, r5
+		lwi	r4, r4, 0		/* Get L1 entry */
+		andi	r5, r4, PAGE_MASK /* Extract L2 (pte) base address */
+		beqi	r5, ex7			/* Bail if no table */
+
+		tophys(r5,r5)
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+		andi	r6, r6, PAGE_SIZE - 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
 
@@ -731,7 +887,12 @@ ex_handler_done:
 		 * here we (properly should) assume have the appropriate value.
 		 */
 		brid	finish_tlb_load
+<<<<<<< HEAD
 		andni	r4, r4, 0x0ce2		/* Make sure 20, 21 are zero */
+=======
+		andi	r4, r4, PAGE_MASK | TLB_EX | TLB_WR | \
+						TLB_ZSEL(1) | TLB_ATTR_MASK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ex7:
 		/* The bailout. Restore registers to pre-exception conditions
 		 * and call the heavyweights to help us out.
@@ -771,6 +932,7 @@ ex_handler_done:
 		lwi	r4, r4, TASK_THREAD+PGDIR
 	ex9:
 		tophys(r4,r4)
+<<<<<<< HEAD
 		BSRLI(r5,r3,20)		/* Create L1 (pgdir/pmd) address */
 		andi	r5, r5, 0xffc
 /* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
@@ -783,6 +945,20 @@ ex_handler_done:
 		BSRLI(r6,r3,10)			/* Compute PTE address */
 		andi	r6, r6, 0xffc
 		andi	r5, r5, 0xfffff003
+=======
+		/* Create L1 (pgdir/pmd) address */
+		bsrli	r5, r3, PGDIR_SHIFT - 2
+		andi	r5, r5, PAGE_SIZE - 4
+/* Assume pgdir aligned on 4K boundary, no need for "andi r4,r4,0xfffff003" */
+		or	r4, r4, r5
+		lwi	r4, r4, 0		/* Get L1 entry */
+		andi	r5, r4, PAGE_MASK /* Extract L2 (pte) base address */
+		beqi	r5, ex10		/* Bail if no table */
+
+		tophys(r5,r5)
+		bsrli	r6, r3, PTE_SHIFT /* Compute PTE address */
+		andi	r6, r6, PAGE_SIZE - 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		or	r5, r5, r6
 		lwi	r4, r5, 0		/* Get Linux PTE */
 
@@ -801,7 +977,12 @@ ex_handler_done:
 		 * here we (properly should) assume have the appropriate value.
 		 */
 		brid	finish_tlb_load
+<<<<<<< HEAD
 		andni	r4, r4, 0x0ce2		/* Make sure 20, 21 are zero */
+=======
+		andi	r4, r4, PAGE_MASK | TLB_EX | TLB_WR | \
+						TLB_ZSEL(1) | TLB_ATTR_MASK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ex10:
 		/* The bailout. Restore registers to pre-exception conditions
 		 * and call the heavyweights to help us out.
@@ -854,8 +1035,13 @@ ex_handler_done:
 		 * set of bits. These are size, valid, E, U0, and ensure
 		 * bits 20 and 21 are zero.
 		 */
+<<<<<<< HEAD
 		andi	r3, r3, 0xfffff000
 		ori	r3, r3, 0x0c0
+=======
+		andi	r3, r3, PAGE_MASK
+		ori	r3, r3, TLB_VALID | TLB_PAGESZ(PAGESZ_4K)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mts	rtlbhi,	r3		/* Load TLB HI */
 		nop
 
@@ -893,10 +1079,15 @@ ex_handler_done:
 		rtsd	r15,8
 		nop
 
+<<<<<<< HEAD
 #endif
 .end _hw_exception_handler
 
 #ifdef CONFIG_MMU
+=======
+.end _hw_exception_handler
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Unaligned data access exception last on a 4k page for MMU.
  * When this is called, we are in virtual mode with exceptions enabled
  * and registers 1-13,15,17,18 saved.
@@ -911,7 +1102,11 @@ ex_handler_done:
 .ent _unaligned_data_exception
 _unaligned_data_exception:
 	andi	r8, r3, 0x3E0;	/* Mask and extract the register operand */
+<<<<<<< HEAD
 	BSRLI(r8,r8,2);		/* r8 >> 2 = register operand * 8 */
+=======
+	bsrli   r8, r8, 2;		/* r8 >> 2 = register operand * 8 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andi	r6, r3, 0x400;	/* Extract ESR[S] */
 	bneid	r6, ex_sw_vm;
 	andi	r6, r3, 0x800;	/* Extract ESR[W] - delay slot */
@@ -1011,7 +1206,10 @@ ex_unaligned_fixup:
 	.word	store6,ex_unaligned_fixup;
 .previous;
 .end _unaligned_data_exception
+<<<<<<< HEAD
 #endif /* CONFIG_MMU */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .global ex_handler_unhandled
 ex_handler_unhandled:
@@ -1060,11 +1258,15 @@ lw_r27:		R3_TO_LWREG	(27);
 lw_r28:		R3_TO_LWREG	(28);
 lw_r29:		R3_TO_LWREG	(29);
 lw_r30:		R3_TO_LWREG	(30);
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 lw_r31: 	R3_TO_LWREG_V	(31);
 #else
 lw_r31:		R3_TO_LWREG	(31);
 #endif
+=======
+lw_r31: 	R3_TO_LWREG_V	(31);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sw_table:
 sw_r0:		SWREG_TO_R3	(0);
@@ -1098,6 +1300,7 @@ sw_r27:		SWREG_TO_R3	(27);
 sw_r28:		SWREG_TO_R3	(28);
 sw_r29:		SWREG_TO_R3	(29);
 sw_r30:		SWREG_TO_R3	(30);
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 sw_r31:		SWREG_TO_R3_V	(31);
 #else
@@ -1105,6 +1308,10 @@ sw_r31:		SWREG_TO_R3	(31);
 #endif
 
 #ifdef CONFIG_MMU
+=======
+sw_r31:		SWREG_TO_R3_V	(31);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lw_table_vm:
 lw_r0_vm:	R3_TO_LWREG_VM		(0);
 lw_r1_vm:	R3_TO_LWREG_VM_V	(1);
@@ -1172,7 +1379,10 @@ sw_r28_vm:	SWREG_TO_R3_VM_V	(28);
 sw_r29_vm:	SWREG_TO_R3_VM_V	(29);
 sw_r30_vm:	SWREG_TO_R3_VM_V	(30);
 sw_r31_vm:	SWREG_TO_R3_VM_V	(31);
+<<<<<<< HEAD
 #endif /* CONFIG_MMU */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Temporary data structures used in the handler */
 .section .data

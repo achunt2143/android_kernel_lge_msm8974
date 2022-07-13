@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC8360E RDK Device Tree Source
  *
@@ -5,11 +9,14 @@
  * Copyright 2007-2008 MontaVista Software, Inc.
  *
  * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -332,25 +339,37 @@
 				reg = <0x2120 0x18>;
 
 				phy1: ethernet-phy@1 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					compatible = "national,DP83848VV";
 					reg = <1>;
 				};
 
 				phy2: ethernet-phy@2 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					compatible = "broadcom,BCM5481UA2KMLG";
 					reg = <2>;
 				};
 
 				phy3: ethernet-phy@3 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					compatible = "national,DP83848VV";
 					reg = <3>;
 				};
 
 				phy4: ethernet-phy@4 {
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					compatible = "broadcom,BCM5481UA2KMLG";
 					reg = <4>;
 				};
@@ -420,7 +439,11 @@
 			gpios = <&qe_pio_e 18 0>;
 
 			flash {
+<<<<<<< HEAD
 				compatible = "stm,nand512-a";
+=======
+				compatible = "st,nand512-a";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			};
 		};
 

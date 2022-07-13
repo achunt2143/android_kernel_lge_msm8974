@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/plat-omap/sram-fn.S
  *
  * Functions that need to be run in internal SRAM
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,6 +19,16 @@
 
 #include <mach/hardware.h>
 
+=======
+ */
+
+#include <linux/linkage.h>
+#include <linux/soc/ti/omap1-io.h>
+
+#include <asm/assembler.h>
+
+#include "hardware.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 
 	.text

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * consolidates trace point definitions
  *
@@ -31,7 +35,43 @@
 #include <trace/events/napi.h>
 #include <trace/events/sock.h>
 #include <trace/events/udp.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/tcp.h>
+#include <trace/events/fib.h>
+#include <trace/events/qdisc.h>
+#if IS_ENABLED(CONFIG_BRIDGE)
+#include <trace/events/bridge.h>
+EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_add);
+EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_external_learn_add);
+EXPORT_TRACEPOINT_SYMBOL_GPL(fdb_delete);
+EXPORT_TRACEPOINT_SYMBOL_GPL(br_fdb_update);
+EXPORT_TRACEPOINT_SYMBOL_GPL(br_mdb_full);
+#endif
+
+#if IS_ENABLED(CONFIG_PAGE_POOL)
+#include <trace/events/page_pool.h>
+#endif
+
+#include <trace/events/neigh.h>
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_update);
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_update_done);
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_timer_handler);
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_event_send_done);
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_event_send_dead);
+EXPORT_TRACEPOINT_SYMBOL_GPL(neigh_cleanup_and_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_TRACEPOINT_SYMBOL_GPL(kfree_skb);
 
 EXPORT_TRACEPOINT_SYMBOL_GPL(napi_poll);
+<<<<<<< HEAD
+=======
+
+EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_send_reset);
+EXPORT_TRACEPOINT_SYMBOL_GPL(tcp_bad_csum);
+
+EXPORT_TRACEPOINT_SYMBOL_GPL(udp_fail_queue_rcv_skb);
+
+EXPORT_TRACEPOINT_SYMBOL_GPL(sk_data_ready);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

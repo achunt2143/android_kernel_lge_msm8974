@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,12 +16,19 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2002
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _H_JFS_UNICODE
 #define _H_JFS_UNICODE
 
 #include <linux/slab.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include "jfs_types.h"
 
 typedef struct {
@@ -31,6 +39,11 @@ typedef struct {
 
 extern signed char UniUpperTable[512];
 extern UNICASERANGE UniUpperRange[];
+=======
+#include "../nls/nls_ucs2_data.h"
+#include "jfs_types.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int get_UCSname(struct component_name *, struct dentry *);
 extern int jfs_strfromUCS_le(char *, const __le16 *, int, struct nls_table *);
 
@@ -120,12 +133,21 @@ static inline wchar_t *UniStrncpy_from_le(wchar_t * ucs1, const __le16 * ucs2,
  */
 static inline wchar_t UniToupper(wchar_t uc)
 {
+<<<<<<< HEAD
 	UNICASERANGE *rp;
 
 	if (uc < sizeof(UniUpperTable)) {	/* Latin characters */
 		return uc + UniUpperTable[uc];	/* Use base tables */
 	} else {
 		rp = UniUpperRange;	/* Use range tables */
+=======
+	const struct UniCaseRange *rp;
+
+	if (uc < sizeof(NlsUniUpperTable)) {	/* Latin characters */
+		return uc + NlsUniUpperTable[uc];	/* Use base tables */
+	} else {
+		rp = NlsUniUpperRange;	/* Use range tables */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (rp->start) {
 			if (uc < rp->start)	/* Before start of range */
 				return uc;	/* Uppercase = input */

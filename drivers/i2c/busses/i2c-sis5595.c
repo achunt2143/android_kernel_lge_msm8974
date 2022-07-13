@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 1998, 1999  Frodo Looijaard <frodol@dds.nl> and
     Philip Edelbrock <phil@netroedge.com>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -15,6 +20,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /* Note: we assume there can only be one SIS5595 with one SMBus interface */
@@ -123,7 +130,11 @@ static int blacklist[] = {
 /* If force_addr is set to anything different from 0, we forcibly enable
    the device at the given address. */
 static u16 force_addr;
+<<<<<<< HEAD
 module_param(force_addr, ushort, 0);
+=======
+module_param_hw(force_addr, ushort, ioport, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(force_addr, "Initialize the base address of the i2c controller");
 
 static struct pci_driver sis5595_driver;
@@ -142,7 +153,11 @@ static void sis5595_write(u8 reg, u8 data)
 	outb(data, sis5595_base + SMB_DAT);
 }
 
+<<<<<<< HEAD
 static int __devinit sis5595_setup(struct pci_dev *SIS5595_dev)
+=======
+static int sis5595_setup(struct pci_dev *SIS5595_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 a;
 	u8 val;
@@ -187,11 +202,19 @@ static int __devinit sis5595_setup(struct pci_dev *SIS5595_dev)
 
 	if (force_addr) {
 		dev_info(&SIS5595_dev->dev, "forcing ISA address 0x%04X\n", sis5595_base);
+<<<<<<< HEAD
 		if (pci_write_config_word(SIS5595_dev, ACPI_BASE, sis5595_base)
 		    != PCIBIOS_SUCCESSFUL)
 			goto error;
 		if (pci_read_config_word(SIS5595_dev, ACPI_BASE, &a)
 		    != PCIBIOS_SUCCESSFUL)
+=======
+		retval = pci_write_config_word(SIS5595_dev, ACPI_BASE, sis5595_base);
+		if (retval != PCIBIOS_SUCCESSFUL)
+			goto error;
+		retval = pci_read_config_word(SIS5595_dev, ACPI_BASE, &a);
+		if (retval != PCIBIOS_SUCCESSFUL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		if ((a & ~(SIS5595_EXTENT - 1)) != sis5595_base) {
 			/* doesn't work for some chips! */
@@ -200,6 +223,7 @@ static int __devinit sis5595_setup(struct pci_dev *SIS5595_dev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (pci_read_config_byte(SIS5595_dev, SIS5595_ENABLE_REG, &val)
 	    != PCIBIOS_SUCCESSFUL)
 		goto error;
@@ -210,6 +234,18 @@ static int __devinit sis5595_setup(struct pci_dev *SIS5595_dev)
 			goto error;
 		if (pci_read_config_byte(SIS5595_dev, SIS5595_ENABLE_REG, &val)
 		    != PCIBIOS_SUCCESSFUL)
+=======
+	retval = pci_read_config_byte(SIS5595_dev, SIS5595_ENABLE_REG, &val);
+	if (retval != PCIBIOS_SUCCESSFUL)
+		goto error;
+	if ((val & 0x80) == 0) {
+		dev_info(&SIS5595_dev->dev, "enabling ACPI\n");
+		retval = pci_write_config_byte(SIS5595_dev, SIS5595_ENABLE_REG, val | 0x80);
+		if (retval != PCIBIOS_SUCCESSFUL)
+			goto error;
+		retval = pci_read_config_byte(SIS5595_dev, SIS5595_ENABLE_REG, &val);
+		if (retval != PCIBIOS_SUCCESSFUL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		if ((val & 0x80) == 0) {
 			/* doesn't work for some chips? */
@@ -365,18 +401,30 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 static struct i2c_adapter sis5595_adapter = {
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 	.class          = I2C_CLASS_HWMON | I2C_CLASS_SPD,
 	.algo		= &smbus_algorithm,
 };
 
 static DEFINE_PCI_DEVICE_TABLE(sis5595_ids) = {
+=======
+	.class          = I2C_CLASS_HWMON,
+	.algo		= &smbus_algorithm,
+};
+
+static const struct pci_device_id sis5595_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_503) }, 
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE (pci, sis5595_ids);
 
+<<<<<<< HEAD
 static int __devinit sis5595_probe(struct pci_dev *dev, const struct pci_device_id *id)
+=======
+static int sis5595_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 

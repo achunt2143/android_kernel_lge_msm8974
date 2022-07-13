@@ -1,7 +1,11 @@
 /*
  * Nvidia AGPGART routines.
  * Based upon a 2.4 agpgart diff by the folks from NVIDIA, and hacked up
+<<<<<<< HEAD
  * to work in 2.5 by Dave Jones <davej@redhat.com>
+=======
+ * to work in 2.5 by Dave Jones.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -106,6 +110,10 @@ static int nvidia_configure(void)
 {
 	int i, rc, num_dirs;
 	u32 apbase, aplimit;
+<<<<<<< HEAD
+=======
+	phys_addr_t apbase_phys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aper_size_info_8 *current_size;
 	u32 temp;
 
@@ -115,9 +123,14 @@ static int nvidia_configure(void)
 	pci_write_config_byte(agp_bridge->dev, NVIDIA_0_APSIZE,
 		current_size->size_value);
 
+<<<<<<< HEAD
     /* address to map to */
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &apbase);
 	apbase &= PCI_BASE_ADDRESS_MEM_MASK;
+=======
+	/* address to map to */
+	apbase = pci_bus_address(agp_bridge->dev, AGP_APERTURE_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	agp_bridge->gart_bus_addr = apbase;
 	aplimit = apbase + (current_size->size * 1024 * 1024) - 1;
 	pci_write_config_dword(nvidia_private.dev_2, NVIDIA_2_APBASE, apbase);
@@ -153,8 +166,14 @@ static int nvidia_configure(void)
 	pci_write_config_dword(agp_bridge->dev, NVIDIA_0_APSIZE, temp | 0x100);
 
 	/* map aperture */
+<<<<<<< HEAD
 	nvidia_private.aperture =
 		(volatile u32 __iomem *) ioremap(apbase, 33 * PAGE_SIZE);
+=======
+	apbase_phys = pci_resource_start(agp_bridge->dev, AGP_APERTURE_BAR);
+	nvidia_private.aperture =
+		(volatile u32 __iomem *) ioremap(apbase_phys, 33 * PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nvidia_private.aperture)
 		return -ENOMEM;
@@ -260,7 +279,12 @@ static int nvidia_remove_memory(struct agp_memory *mem, off_t pg_start, int type
 static void nvidia_tlbflush(struct agp_memory *mem)
 {
 	unsigned long end;
+<<<<<<< HEAD
 	u32 wbc_reg, temp;
+=======
+	u32 wbc_reg;
+	u32 __maybe_unused temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* flush chipset */
@@ -332,18 +356,37 @@ static const struct agp_bridge_driver nvidia_driver = {
 	.agp_type_to_mask_type  = agp_generic_type_to_mask_type,
 };
 
+<<<<<<< HEAD
 static int __devinit agp_nvidia_probe(struct pci_dev *pdev,
 				      const struct pci_device_id *ent)
+=======
+static int agp_nvidia_probe(struct pci_dev *pdev,
+			    const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge;
 	u8 cap_ptr;
 
 	nvidia_private.dev_1 =
+<<<<<<< HEAD
 		pci_get_bus_and_slot((unsigned int)pdev->bus->number, PCI_DEVFN(0, 1));
 	nvidia_private.dev_2 =
 		pci_get_bus_and_slot((unsigned int)pdev->bus->number, PCI_DEVFN(0, 2));
 	nvidia_private.dev_3 =
 		pci_get_bus_and_slot((unsigned int)pdev->bus->number, PCI_DEVFN(30, 0));
+=======
+		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
+					    (unsigned int)pdev->bus->number,
+					    PCI_DEVFN(0, 1));
+	nvidia_private.dev_2 =
+		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
+					    (unsigned int)pdev->bus->number,
+					    PCI_DEVFN(0, 2));
+	nvidia_private.dev_3 =
+		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
+					    (unsigned int)pdev->bus->number,
+					    PCI_DEVFN(30, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nvidia_private.dev_1 || !nvidia_private.dev_2 || !nvidia_private.dev_3) {
 		printk(KERN_INFO PFX "Detected an NVIDIA nForce/nForce2 "
@@ -375,7 +418,11 @@ static int __devinit agp_nvidia_probe(struct pci_dev *pdev,
 		return -ENOMEM;
 
 	bridge->driver = &nvidia_driver;
+<<<<<<< HEAD
 	bridge->dev_private_data = &nvidia_private,
+=======
+	bridge->dev_private_data = &nvidia_private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bridge->dev = pdev;
 	bridge->capndx = cap_ptr;
 
@@ -388,7 +435,11 @@ static int __devinit agp_nvidia_probe(struct pci_dev *pdev,
 	return agp_add_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static void __devexit agp_nvidia_remove(struct pci_dev *pdev)
+=======
+static void agp_nvidia_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -396,6 +447,7 @@ static void __devexit agp_nvidia_remove(struct pci_dev *pdev)
 	agp_put_bridge(bridge);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int agp_nvidia_suspend(struct pci_dev *pdev, pm_message_t state)
 {
@@ -411,15 +463,24 @@ static int agp_nvidia_resume(struct pci_dev *pdev)
 	pci_set_power_state (pdev, 0);
 	pci_restore_state(pdev);
 
+=======
+static int agp_nvidia_resume(struct device *dev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reconfigure AGP hardware again */
 	nvidia_configure();
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 
 static struct pci_device_id agp_nvidia_pci_table[] = {
+=======
+
+static const struct pci_device_id agp_nvidia_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,
@@ -441,15 +502,24 @@ static struct pci_device_id agp_nvidia_pci_table[] = {
 
 MODULE_DEVICE_TABLE(pci, agp_nvidia_pci_table);
 
+<<<<<<< HEAD
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(agp_nvidia_pm_ops, NULL, agp_nvidia_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver agp_nvidia_pci_driver = {
 	.name		= "agpgart-nvidia",
 	.id_table	= agp_nvidia_pci_table,
 	.probe		= agp_nvidia_probe,
 	.remove		= agp_nvidia_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= agp_nvidia_suspend,
 	.resume		= agp_nvidia_resume,
 #endif
+=======
+	.driver.pm	= &agp_nvidia_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init agp_nvidia_init(void)

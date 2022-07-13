@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cache.h:  Cache specific code for the Sparc.  These include flushing
  *           and direct tag/data line access.
  *
@@ -20,6 +24,7 @@
 
 #define SMP_CACHE_BYTES (1 << SMP_CACHE_BYTES_SHIFT)
 
+<<<<<<< HEAD
 #define __read_mostly __attribute__((__section__(".data..read_mostly")))
 
 #ifdef CONFIG_SPARC32
@@ -135,5 +140,8 @@ static inline void flush_ei_user(unsigned int addr)
 			     "memory");
 }
 #endif /* CONFIG_SPARC32 */
+=======
+#define __read_mostly __section(".data..read_mostly")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_SPARC_CACHE_H) */

@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/csumpartial.S
  *
  *  Copyright (C) 1995-1998 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -40,9 +47,15 @@ td3	.req	lr
 		/* we must have at least one byte. */
 		tst	buf, #1			@ odd address?
 		movne	sum, sum, ror #8
+<<<<<<< HEAD
 		ldrneb	td0, [buf], #1
 		subne	len, len, #1
 		adcnes	sum, sum, td0, put_byte_1
+=======
+		ldrbne	td0, [buf], #1
+		subne	len, len, #1
+		adcsne	sum, sum, td0, put_byte_1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Lless4:		tst	len, #6
 		beq	.Lless8_byte
@@ -68,8 +81,13 @@ td3	.req	lr
 		bne	.Lless8_wordlp
 
 .Lless8_byte:	tst	len, #1			@ odd number of bytes
+<<<<<<< HEAD
 		ldrneb	td0, [buf], #1		@ include last byte
 		adcnes	sum, sum, td0, put_byte_0	@ update checksum
+=======
+		ldrbne	td0, [buf], #1		@ include last byte
+		adcsne	sum, sum, td0, put_byte_0	@ update checksum
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Ldone:		adc	r0, sum, #0		@ collect up the last carry
 		ldr	td0, [sp], #4
@@ -78,6 +96,7 @@ td3	.req	lr
 		ldr	pc, [sp], #4		@ return
 
 .Lnot_aligned:	tst	buf, #1			@ odd address
+<<<<<<< HEAD
 		ldrneb	td0, [buf], #1		@ make even
 		subne	len, len, #1
 		adcnes	sum, sum, td0, put_byte_1	@ update checksum
@@ -89,6 +108,19 @@ td3	.req	lr
 #else
 		ldrneb	td0, [buf], #1
 		ldrneb	ip, [buf], #1
+=======
+		ldrbne	td0, [buf], #1		@ make even
+		subne	len, len, #1
+		adcsne	sum, sum, td0, put_byte_1	@ update checksum
+
+		tst	buf, #2			@ 32-bit aligned?
+#if __LINUX_ARM_ARCH__ >= 4
+		ldrhne	td0, [buf], #2		@ make 32-bit aligned
+		subne	len, len, #2
+#else
+		ldrbne	td0, [buf], #1
+		ldrbne	ip, [buf], #1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		subne	len, len, #2
 #ifndef __ARMEB__
 		orrne	td0, td0, ip, lsl #8
@@ -96,8 +128,13 @@ td3	.req	lr
 		orrne	td0, ip, td0, lsl #8
 #endif
 #endif
+<<<<<<< HEAD
 		adcnes	sum, sum, td0		@ update checksum
 		mov	pc, lr
+=======
+		adcsne	sum, sum, td0		@ update checksum
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(csum_partial)
 		stmfd	sp!, {buf, lr}

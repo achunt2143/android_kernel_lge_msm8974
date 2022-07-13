@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 1999-2002 Merlin Hughes <merlin@merlin.org>
 
@@ -6,6 +10,7 @@
     Copyright (c) 1998, 1999  Frodo Looijaard <frodol@dds.nl> and
     Philip Edelbrock <phil@netroedge.com>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -41,7 +48,10 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <linux/io.h>
 
@@ -298,7 +308,11 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 struct i2c_adapter amd756_smbus = {
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 	.class          = I2C_CLASS_HWMON | I2C_CLASS_SPD,
+=======
+	.class          = I2C_CLASS_HWMON,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.algo		= &smbus_algorithm,
 };
 
@@ -308,7 +322,11 @@ static const char* chipname[] = {
 	"nVidia nForce", "AMD8111",
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(amd756_ids) = {
+=======
+static const struct pci_device_id amd756_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_740B),
 	  .driver_data = AMD756 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7413),
@@ -324,8 +342,12 @@ static DEFINE_PCI_DEVICE_TABLE(amd756_ids) = {
 
 MODULE_DEVICE_TABLE (pci, amd756_ids);
 
+<<<<<<< HEAD
 static int __devinit amd756_probe(struct pci_dev *pdev,
 				  const struct pci_device_id *id)
+=======
+static int amd756_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nforce = (id->driver_data == NFORCE);
 	int error;
@@ -384,11 +406,16 @@ static int __devinit amd756_probe(struct pci_dev *pdev,
 		 amd756_ioport);
 
 	error = i2c_add_adapter(&amd756_smbus);
+<<<<<<< HEAD
 	if (error) {
 		dev_err(&pdev->dev,
 			"Adapter registration failed, module not inserted\n");
 		goto out_err;
 	}
+=======
+	if (error)
+		goto out_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -397,7 +424,11 @@ static int __devinit amd756_probe(struct pci_dev *pdev,
 	return error;
 }
 
+<<<<<<< HEAD
 static void __devexit amd756_remove(struct pci_dev *dev)
+=======
+static void amd756_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&amd756_smbus);
 	release_region(amd756_ioport, SMB_IOSIZE);
@@ -407,6 +438,7 @@ static struct pci_driver amd756_driver = {
 	.name		= "amd756_smbus",
 	.id_table	= amd756_ids,
 	.probe		= amd756_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(amd756_remove),
 };
 
@@ -419,12 +451,21 @@ static void __exit amd756_exit(void)
 {
 	pci_unregister_driver(&amd756_driver);
 }
+=======
+	.remove		= amd756_remove,
+};
+
+module_pci_driver(amd756_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Merlin Hughes <merlin@merlin.org>");
 MODULE_DESCRIPTION("AMD756/766/768/8111 and nVidia nForce SMBus driver");
 MODULE_LICENSE("GPL");
 
 EXPORT_SYMBOL(amd756_smbus);
+<<<<<<< HEAD
 
 module_init(amd756_init)
 module_exit(amd756_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

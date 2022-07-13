@@ -70,8 +70,11 @@ int main(int argc, char *argv[])
 
 	/* struct task_struct */
 	DEFINE(TS_THREAD_INFO, offsetof(struct task_struct, stack));
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 	DEFINE(TASK_STATE, offsetof(struct task_struct, state));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE(TASK_FLAGS, offsetof(struct task_struct, flags));
 	DEFINE(TASK_PTRACE, offsetof(struct task_struct, ptrace));
 	DEFINE(TASK_BLOCKED, offsetof(struct task_struct, blocked));
@@ -84,12 +87,18 @@ int main(int argc, char *argv[])
 
 	DEFINE(PGDIR, offsetof(struct thread_struct, pgdir));
 	BLANK();
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* struct thread_info */
 	DEFINE(TI_TASK, offsetof(struct thread_info, task));
 	DEFINE(TI_FLAGS, offsetof(struct thread_info, flags));
+<<<<<<< HEAD
 	DEFINE(TI_ADDR_LIMIT, offsetof(struct thread_info, addr_limit));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE(TI_CPU_CONTEXT, offsetof(struct thread_info, cpu_context));
 	DEFINE(TI_PREEMPT_COUNT, offsetof(struct thread_info, preempt_count));
 	BLANK();
@@ -124,5 +133,15 @@ int main(int argc, char *argv[])
 	DEFINE(CC_FSR, offsetof(struct cpu_context, fsr));
 	BLANK();
 
+<<<<<<< HEAD
+=======
+	/* struct cpuinfo */
+	DEFINE(CI_DCS, offsetof(struct cpuinfo, dcache_size));
+	DEFINE(CI_DCL, offsetof(struct cpuinfo, dcache_line_length));
+	DEFINE(CI_ICS, offsetof(struct cpuinfo, icache_size));
+	DEFINE(CI_ICL, offsetof(struct cpuinfo, icache_line_length));
+	BLANK();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

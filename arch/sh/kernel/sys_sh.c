@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/kernel/sys_sh.c
  *
@@ -23,7 +27,11 @@
 #include <linux/fs.h>
 #include <linux/ipc.h>
 #include <asm/syscalls.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unistd.h>
 #include <asm/cacheflush.h>
 #include <asm/cachectl.h>
@@ -34,7 +42,11 @@ asmlinkage int old_mmap(unsigned long addr, unsigned long len,
 {
 	if (off & ~PAGE_MASK)
 		return -EINVAL;
+<<<<<<< HEAD
 	return sys_mmap_pgoff(addr, len, prot, flags, fd, off>>PAGE_SHIFT);
+=======
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off>>PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
@@ -50,7 +62,11 @@ asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
 
 	pgoff >>= PAGE_SHIFT - 12;
 
+<<<<<<< HEAD
 	return sys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
+=======
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* sys_cacheflush -- flush (part of) the processor cache.  */
@@ -68,10 +84,17 @@ asmlinkage int sys_cacheflush(unsigned long addr, unsigned long len, int op)
 	if (addr + len < addr)
 		return -EFAULT;
 
+<<<<<<< HEAD
 	down_read(&current->mm->mmap_sem);
 	vma = find_vma (current->mm, addr);
 	if (vma == NULL || addr < vma->vm_start || addr + len > vma->vm_end) {
 		up_read(&current->mm->mmap_sem);
+=======
+	mmap_read_lock(current->mm);
+	vma = find_vma (current->mm, addr);
+	if (vma == NULL || addr < vma->vm_start || addr + len > vma->vm_end) {
+		mmap_read_unlock(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	}
 
@@ -90,6 +113,10 @@ asmlinkage int sys_cacheflush(unsigned long addr, unsigned long len, int op)
 	if (op & CACHEFLUSH_I)
 		flush_icache_range(addr, addr+len);
 
+<<<<<<< HEAD
 	up_read(&current->mm->mmap_sem);
+=======
+	mmap_read_unlock(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

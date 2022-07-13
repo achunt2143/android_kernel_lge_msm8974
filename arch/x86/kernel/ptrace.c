@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* By Ross Biro 1/23/92 */
 /*
  * Pentium III FXSR, SSE support
@@ -6,13 +10,20 @@
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/ptrace.h>
+<<<<<<< HEAD
 #include <linux/regset.h>
 #include <linux/tracehook.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/user.h>
 #include <linux/elf.h>
 #include <linux/security.h>
@@ -21,6 +32,7 @@
 #include <linux/signal.h>
 #include <linux/perf_event.h>
 #include <linux/hw_breakpoint.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #include <asm/uaccess.h>
@@ -28,6 +40,18 @@
 #include <asm/processor.h>
 #include <asm/i387.h>
 #include <asm/fpu-internal.h>
+=======
+#include <linux/rcupdate.h>
+#include <linux/export.h>
+#include <linux/context_tracking.h>
+#include <linux/nospec.h>
+
+#include <linux/uaccess.h>
+#include <asm/processor.h>
+#include <asm/fpu/signal.h>
+#include <asm/fpu/regset.h>
+#include <asm/fpu/xstate.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/debugreg.h>
 #include <asm/ldt.h>
 #include <asm/desc.h>
@@ -35,6 +59,7 @@
 #include <asm/proto.h>
 #include <asm/hw_breakpoint.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
 
 #include "tls.h"
 
@@ -51,6 +76,44 @@ enum x86_regset {
 	REGSET_IOPERM32,
 };
 
+=======
+#include <asm/syscall.h>
+#include <asm/fsgsbase.h>
+#include <asm/io_bitmap.h>
+
+#include "tls.h"
+
+enum x86_regset_32 {
+	REGSET32_GENERAL,
+	REGSET32_FP,
+	REGSET32_XFP,
+	REGSET32_XSTATE,
+	REGSET32_TLS,
+	REGSET32_IOPERM,
+};
+
+enum x86_regset_64 {
+	REGSET64_GENERAL,
+	REGSET64_FP,
+	REGSET64_IOPERM,
+	REGSET64_XSTATE,
+	REGSET64_SSP,
+};
+
+#define REGSET_GENERAL \
+({ \
+	BUILD_BUG_ON((int)REGSET32_GENERAL != (int)REGSET64_GENERAL); \
+	REGSET32_GENERAL; \
+})
+
+#define REGSET_FP \
+({ \
+	BUILD_BUG_ON((int)REGSET32_FP != (int)REGSET64_FP); \
+	REGSET32_FP; \
+})
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pt_regs_offset {
 	const char *name;
 	int offset;
@@ -124,6 +187,7 @@ const char *regs_query_register_name(unsigned int offset)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static const int arg_offs_table[] = {
 #ifdef CONFIG_X86_32
 	[0] = offsetof(struct pt_regs, ax),
@@ -139,6 +203,8 @@ static const int arg_offs_table[] = {
 #endif
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * does not yet catch signals sent when the child dies.
  * in exit.c or in signal.c.
@@ -166,6 +232,7 @@ static inline bool invalid_selector(u16 value)
 
 #define FLAG_MASK		FLAG_MASK_32
 
+<<<<<<< HEAD
 /*
  * X86_32 CPUs don't save ss and esp if the CPU is already in kernel mode
  * when it traps.  The previous stack will be directly underneath the saved
@@ -195,6 +262,8 @@ unsigned long kernel_stack_pointer(struct pt_regs *regs)
 }
 EXPORT_SYMBOL_GPL(kernel_stack_pointer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long *pt_regs_access(struct pt_regs *regs, unsigned long regno)
 {
 	BUILD_BUG_ON(offsetof(struct pt_regs, bx) != 0);
@@ -211,9 +280,15 @@ static u16 get_segment_reg(struct task_struct *task, unsigned long offset)
 		retval = *pt_regs_access(task_pt_regs(task), offset);
 	else {
 		if (task == current)
+<<<<<<< HEAD
 			retval = get_user_gs(task_pt_regs(task));
 		else
 			retval = task_user_gs(task);
+=======
+			savesegment(gs, retval);
+		else
+			retval = task->thread.gs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return retval;
 }
@@ -221,6 +296,12 @@ static u16 get_segment_reg(struct task_struct *task, unsigned long offset)
 static int set_segment_reg(struct task_struct *task,
 			   unsigned long offset, u16 value)
 {
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(task == current))
+		return -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The value argument was already truncated to 16 bits.
 	 */
@@ -241,16 +322,24 @@ static int set_segment_reg(struct task_struct *task,
 	case offsetof(struct user_regs_struct, ss):
 		if (unlikely(value == 0))
 			return -EIO;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		*pt_regs_access(task_pt_regs(task), offset) = value;
 		break;
 
 	case offsetof(struct user_regs_struct, gs):
+<<<<<<< HEAD
 		if (task == current)
 			set_user_gs(task_pt_regs(task), value);
 		else
 			task_user_gs(task) = value;
+=======
+		task->thread.gs = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -310,12 +399,19 @@ static u16 get_segment_reg(struct task_struct *task, unsigned long offset)
 static int set_segment_reg(struct task_struct *task,
 			   unsigned long offset, u16 value)
 {
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(task == current))
+		return -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The value argument was already truncated to 16 bits.
 	 */
 	if (invalid_selector(value))
 		return -EIO;
 
+<<<<<<< HEAD
 	switch (offset) {
 	case offsetof(struct user_regs_struct,fs):
 		/*
@@ -354,6 +450,26 @@ static int set_segment_reg(struct task_struct *task,
 		task->thread.es = value;
 		if (task == current)
 			loadsegment(es, task->thread.es);
+=======
+	/*
+	 * Writes to FS and GS will change the stored selector.  Whether
+	 * this changes the segment base as well depends on whether
+	 * FSGSBASE is enabled.
+	 */
+
+	switch (offset) {
+	case offsetof(struct user_regs_struct,fs):
+		task->thread.fsindex = value;
+		break;
+	case offsetof(struct user_regs_struct,gs):
+		task->thread.gsindex = value;
+		break;
+	case offsetof(struct user_regs_struct,ds):
+		task->thread.ds = value;
+		break;
+	case offsetof(struct user_regs_struct,es):
+		task->thread.es = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 		/*
@@ -362,18 +478,26 @@ static int set_segment_reg(struct task_struct *task,
 	case offsetof(struct user_regs_struct,cs):
 		if (unlikely(value == 0))
 			return -EIO;
+<<<<<<< HEAD
 #ifdef CONFIG_IA32_EMULATION
 		if (test_tsk_thread_flag(task, TIF_IA32))
 			task_pt_regs(task)->cs = value;
 #endif
+=======
+		task_pt_regs(task)->cs = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case offsetof(struct user_regs_struct,ss):
 		if (unlikely(value == 0))
 			return -EIO;
+<<<<<<< HEAD
 #ifdef CONFIG_IA32_EMULATION
 		if (test_tsk_thread_flag(task, TIF_IA32))
 			task_pt_regs(task)->ss = value;
 #endif
+=======
+		task_pt_regs(task)->ss = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -431,6 +555,7 @@ static int putreg(struct task_struct *child,
 
 #ifdef CONFIG_X86_64
 	case offsetof(struct user_regs_struct,fs_base):
+<<<<<<< HEAD
 		if (value >= TASK_SIZE_OF(child))
 			return -EIO;
 		/*
@@ -449,6 +574,16 @@ static int putreg(struct task_struct *child,
 			return -EIO;
 		if (child->thread.gs != value)
 			return do_arch_prctl(child, ARCH_SET_GS, value);
+=======
+		if (value >= TASK_SIZE_MAX)
+			return -EIO;
+		x86_fsbase_write_task(child, value);
+		return 0;
+	case offsetof(struct user_regs_struct,gs_base):
+		if (value >= TASK_SIZE_MAX)
+			return -EIO;
+		x86_gsbase_write_task(child, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 #endif
 	}
@@ -472,6 +607,7 @@ static unsigned long getreg(struct task_struct *task, unsigned long offset)
 		return get_flags(task);
 
 #ifdef CONFIG_X86_64
+<<<<<<< HEAD
 	case offsetof(struct user_regs_struct, fs_base): {
 		/*
 		 * do_arch_prctl may have used a GDT slot instead of
@@ -500,6 +636,12 @@ static unsigned long getreg(struct task_struct *task, unsigned long offset)
 			return 0;
 		return get_desc_base(&task->thread.tls_array[GS_TLS]);
 	}
+=======
+	case offsetof(struct user_regs_struct, fs_base):
+		return x86_fsbase_read_task(task);
+	case offsetof(struct user_regs_struct, gs_base):
+		return x86_gsbase_read_task(task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 
@@ -508,6 +650,7 @@ static unsigned long getreg(struct task_struct *task, unsigned long offset)
 
 static int genregs_get(struct task_struct *target,
 		       const struct user_regset *regset,
+<<<<<<< HEAD
 		       unsigned int pos, unsigned int count,
 		       void *kbuf, void __user *ubuf)
 {
@@ -528,6 +671,14 @@ static int genregs_get(struct task_struct *target,
 		}
 	}
 
+=======
+		       struct membuf to)
+{
+	int reg;
+
+	for (reg = 0; to.left; reg++)
+		membuf_store(&to, getreg(target, reg * sizeof(unsigned long)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -575,7 +726,11 @@ static void ptrace_triggered(struct perf_event *bp,
 			break;
 	}
 
+<<<<<<< HEAD
 	thread->debugreg6 |= (DR_TRAP0 << i);
+=======
+	thread->virtual_dr6 |= (DR_TRAP0 << i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -599,6 +754,7 @@ static unsigned long ptrace_get_dr7(struct perf_event *bp[])
 	return dr7;
 }
 
+<<<<<<< HEAD
 static int
 ptrace_modify_breakpoint(struct perf_event *bp, int len, int type,
 			 struct task_struct *tsk, int disabled)
@@ -624,6 +780,51 @@ ptrace_modify_breakpoint(struct perf_event *bp, int len, int type,
 	attr.bp_type = gen_type;
 	attr.disabled = disabled;
 
+=======
+static int ptrace_fill_bp_fields(struct perf_event_attr *attr,
+					int len, int type, bool disabled)
+{
+	int err, bp_len, bp_type;
+
+	err = arch_bp_generic_fields(len, type, &bp_len, &bp_type);
+	if (!err) {
+		attr->bp_len = bp_len;
+		attr->bp_type = bp_type;
+		attr->disabled = disabled;
+	}
+
+	return err;
+}
+
+static struct perf_event *
+ptrace_register_breakpoint(struct task_struct *tsk, int len, int type,
+				unsigned long addr, bool disabled)
+{
+	struct perf_event_attr attr;
+	int err;
+
+	ptrace_breakpoint_init(&attr);
+	attr.bp_addr = addr;
+
+	err = ptrace_fill_bp_fields(&attr, len, type, disabled);
+	if (err)
+		return ERR_PTR(err);
+
+	return register_user_hw_breakpoint(&attr, ptrace_triggered,
+						 NULL, tsk);
+}
+
+static int ptrace_modify_breakpoint(struct perf_event *bp, int len, int type,
+					int disabled)
+{
+	struct perf_event_attr attr = bp->attr;
+	int err;
+
+	err = ptrace_fill_bp_fields(&attr, len, type, disabled);
+	if (err)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return modify_user_hw_breakpoint(bp, &attr);
 }
 
@@ -632,6 +833,7 @@ ptrace_modify_breakpoint(struct perf_event *bp, int len, int type,
  */
 static int ptrace_write_dr7(struct task_struct *tsk, unsigned long data)
 {
+<<<<<<< HEAD
 	struct thread_struct *thread = &(tsk->thread);
 	unsigned long old_dr7;
 	int i, orig_ret = 0, rc = 0;
@@ -693,6 +895,52 @@ restore:
 	ptrace_put_breakpoints(tsk);
 
 	return ((orig_ret < 0) ? orig_ret : rc);
+=======
+	struct thread_struct *thread = &tsk->thread;
+	unsigned long old_dr7;
+	bool second_pass = false;
+	int i, rc, ret = 0;
+
+	data &= ~DR_CONTROL_RESERVED;
+	old_dr7 = ptrace_get_dr7(thread->ptrace_bps);
+
+restore:
+	rc = 0;
+	for (i = 0; i < HBP_NUM; i++) {
+		unsigned len, type;
+		bool disabled = !decode_dr7(data, i, &len, &type);
+		struct perf_event *bp = thread->ptrace_bps[i];
+
+		if (!bp) {
+			if (disabled)
+				continue;
+
+			bp = ptrace_register_breakpoint(tsk,
+					len, type, 0, disabled);
+			if (IS_ERR(bp)) {
+				rc = PTR_ERR(bp);
+				break;
+			}
+
+			thread->ptrace_bps[i] = bp;
+			continue;
+		}
+
+		rc = ptrace_modify_breakpoint(bp, len, type, disabled);
+		if (rc)
+			break;
+	}
+
+	/* Restore if the first pass failed, second_pass shouldn't fail. */
+	if (rc && !WARN_ON(second_pass)) {
+		ret = rc;
+		data = old_dr7;
+		second_pass = true;
+		goto restore;
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -700,6 +948,7 @@ restore:
  */
 static unsigned long ptrace_get_debugreg(struct task_struct *tsk, int n)
 {
+<<<<<<< HEAD
 	struct thread_struct *thread = &(tsk->thread);
 	unsigned long val = 0;
 
@@ -719,6 +968,20 @@ static unsigned long ptrace_get_debugreg(struct task_struct *tsk, int n)
 	} else if (n == 6) {
 		val = thread->debugreg6;
 	 } else if (n == 7) {
+=======
+	struct thread_struct *thread = &tsk->thread;
+	unsigned long val = 0;
+
+	if (n < HBP_NUM) {
+		int index = array_index_nospec(n, HBP_NUM);
+		struct perf_event *bp = thread->ptrace_bps[index];
+
+		if (bp)
+			val = bp->hw.info.address;
+	} else if (n == 6) {
+		val = thread->virtual_dr6 ^ DR6_RESERVED; /* Flip back to arch polarity */
+	} else if (n == 7) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = thread->ptrace_dr7;
 	}
 	return val;
@@ -727,6 +990,7 @@ static unsigned long ptrace_get_debugreg(struct task_struct *tsk, int n)
 static int ptrace_set_breakpoint_addr(struct task_struct *tsk, int nr,
 				      unsigned long addr)
 {
+<<<<<<< HEAD
 	struct perf_event *bp;
 	struct thread_struct *t = &tsk->thread;
 	struct perf_event_attr attr;
@@ -750,6 +1014,16 @@ static int ptrace_set_breakpoint_addr(struct task_struct *tsk, int nr,
 						 NULL, tsk);
 
 		/*
+=======
+	struct thread_struct *t = &tsk->thread;
+	struct perf_event *bp = t->ptrace_bps[nr];
+	int err = 0;
+
+	if (!bp) {
+		/*
+		 * Put stub len and type to create an inactive but correct bp.
+		 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * CHECKME: the previous code returned -EIO if the addr wasn't
 		 * a valid task virtual addr. The new one will return -EINVAL in
 		 *  this case.
@@ -758,6 +1032,7 @@ static int ptrace_set_breakpoint_addr(struct task_struct *tsk, int nr,
 		 * writing for the user. And anyway this is the previous
 		 * behaviour.
 		 */
+<<<<<<< HEAD
 		if (IS_ERR(bp)) {
 			err = PTR_ERR(bp);
 			goto put;
@@ -768,12 +1043,27 @@ static int ptrace_set_breakpoint_addr(struct task_struct *tsk, int nr,
 		bp = t->ptrace_bps[nr];
 
 		attr = bp->attr;
+=======
+		bp = ptrace_register_breakpoint(tsk,
+				X86_BREAKPOINT_LEN_1, X86_BREAKPOINT_WRITE,
+				addr, true);
+		if (IS_ERR(bp))
+			err = PTR_ERR(bp);
+		else
+			t->ptrace_bps[nr] = bp;
+	} else {
+		struct perf_event_attr attr = bp->attr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		attr.bp_addr = addr;
 		err = modify_user_hw_breakpoint(bp, &attr);
 	}
 
+<<<<<<< HEAD
 put:
 	ptrace_put_breakpoints(tsk);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -783,6 +1073,7 @@ put:
 static int ptrace_set_debugreg(struct task_struct *tsk, int n,
 			       unsigned long val)
 {
+<<<<<<< HEAD
 	struct thread_struct *thread = &(tsk->thread);
 	int rc = 0;
 
@@ -801,12 +1092,27 @@ static int ptrace_set_debugreg(struct task_struct *tsk, int n,
 	}
 	/* All that's left is DR7 */
 	if (n == 7) {
+=======
+	struct thread_struct *thread = &tsk->thread;
+	/* There are no DR4 or DR5 registers */
+	int rc = -EIO;
+
+	if (n < HBP_NUM) {
+		rc = ptrace_set_breakpoint_addr(tsk, n, val);
+	} else if (n == 6) {
+		thread->virtual_dr6 = val ^ DR6_RESERVED; /* Flip to positive polarity */
+		rc = 0;
+	} else if (n == 7) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = ptrace_write_dr7(tsk, val);
 		if (!rc)
 			thread->ptrace_dr7 = val;
 	}
+<<<<<<< HEAD
 
 ret_path:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -817,11 +1123,18 @@ ret_path:
 static int ioperm_active(struct task_struct *target,
 			 const struct user_regset *regset)
 {
+<<<<<<< HEAD
 	return target->thread.io_bitmap_max / regset->size;
+=======
+	struct io_bitmap *iobm = target->thread.io_bitmap;
+
+	return iobm ? DIV_ROUND_UP(iobm->max, regset->size) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ioperm_get(struct task_struct *target,
 		      const struct user_regset *regset,
+<<<<<<< HEAD
 		      unsigned int pos, unsigned int count,
 		      void *kbuf, void __user *ubuf)
 {
@@ -831,6 +1144,16 @@ static int ioperm_get(struct task_struct *target,
 	return user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				   target->thread.io_bitmap_ptr,
 				   0, IO_BITMAP_BYTES);
+=======
+		      struct membuf to)
+{
+	struct io_bitmap *iobm = target->thread.io_bitmap;
+
+	if (!iobm)
+		return -ENXIO;
+
+	return membuf_write(&to, iobm->bitmap, IO_BITMAP_BYTES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -841,14 +1164,23 @@ static int ioperm_get(struct task_struct *target,
 void ptrace_disable(struct task_struct *child)
 {
 	user_disable_single_step(child);
+<<<<<<< HEAD
 #ifdef TIF_SYSCALL_EMU
 	clear_tsk_thread_flag(child, TIF_SYSCALL_EMU);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
 static const struct user_regset_view user_x86_32_view; /* Initialized below. */
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+static const struct user_regset_view user_x86_64_view; /* Initialized below. */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 long arch_ptrace(struct task_struct *child, long request,
 		 unsigned long addr, unsigned long data)
@@ -856,6 +1188,17 @@ long arch_ptrace(struct task_struct *child, long request,
 	int ret;
 	unsigned long __user *datap = (unsigned long __user *)data;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+	/* This is native 64-bit ptrace() */
+	const struct user_regset_view *regset_view = &user_x86_64_view;
+#else
+	/* This is native 32-bit ptrace() */
+	const struct user_regset_view *regset_view = &user_x86_32_view;
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (request) {
 	/* read the word at location addr in the USER area. */
 	case PTRACE_PEEKUSR: {
@@ -894,28 +1237,44 @@ long arch_ptrace(struct task_struct *child, long request,
 
 	case PTRACE_GETREGS:	/* Get all gp regs from the child. */
 		return copy_regset_to_user(child,
+<<<<<<< HEAD
 					   task_user_regset_view(current),
+=======
+					   regset_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   REGSET_GENERAL,
 					   0, sizeof(struct user_regs_struct),
 					   datap);
 
 	case PTRACE_SETREGS:	/* Set all gp regs in the child. */
 		return copy_regset_from_user(child,
+<<<<<<< HEAD
 					     task_user_regset_view(current),
+=======
+					     regset_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     REGSET_GENERAL,
 					     0, sizeof(struct user_regs_struct),
 					     datap);
 
 	case PTRACE_GETFPREGS:	/* Get the child FPU state. */
 		return copy_regset_to_user(child,
+<<<<<<< HEAD
 					   task_user_regset_view(current),
+=======
+					   regset_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   REGSET_FP,
 					   0, sizeof(struct user_i387_struct),
 					   datap);
 
 	case PTRACE_SETFPREGS:	/* Set the child FPU state. */
 		return copy_regset_from_user(child,
+<<<<<<< HEAD
 					     task_user_regset_view(current),
+=======
+					     regset_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     REGSET_FP,
 					     0, sizeof(struct user_i387_struct),
 					     datap);
@@ -923,13 +1282,21 @@ long arch_ptrace(struct task_struct *child, long request,
 #ifdef CONFIG_X86_32
 	case PTRACE_GETFPXREGS:	/* Get the child extended FPU state. */
 		return copy_regset_to_user(child, &user_x86_32_view,
+<<<<<<< HEAD
 					   REGSET_XFP,
+=======
+					   REGSET32_XFP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   0, sizeof(struct user_fxsr_struct),
 					   datap) ? -EIO : 0;
 
 	case PTRACE_SETFPXREGS:	/* Set the child extended FPU state. */
 		return copy_regset_from_user(child, &user_x86_32_view,
+<<<<<<< HEAD
 					     REGSET_XFP,
+=======
+					     REGSET32_XFP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     0, sizeof(struct user_fxsr_struct),
 					     datap) ? -EIO : 0;
 #endif
@@ -955,7 +1322,11 @@ long arch_ptrace(struct task_struct *child, long request,
 		   Works just like arch_prctl, except that the arguments
 		   are reversed. */
 	case PTRACE_ARCH_PRCTL:
+<<<<<<< HEAD
 		ret = do_arch_prctl(child, data, addr);
+=======
+		ret = do_arch_prctl_64(child, data, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 
@@ -988,14 +1359,47 @@ long arch_ptrace(struct task_struct *child, long request,
 static int putreg32(struct task_struct *child, unsigned regno, u32 value)
 {
 	struct pt_regs *regs = task_pt_regs(child);
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (regno) {
 
 	SEG32(cs);
 	SEG32(ds);
 	SEG32(es);
+<<<<<<< HEAD
 	SEG32(fs);
 	SEG32(gs);
+=======
+
+	/*
+	 * A 32-bit ptracer on a 64-bit kernel expects that writing
+	 * FS or GS will also update the base.  This is needed for
+	 * operations like PTRACE_SETREGS to fully restore a saved
+	 * CPU state.
+	 */
+
+	case offsetof(struct user32, regs.fs):
+		ret = set_segment_reg(child,
+				      offsetof(struct user_regs_struct, fs),
+				      value);
+		if (ret == 0)
+			child->thread.fsbase =
+				x86_fsgsbase_read_task(child, value);
+		return ret;
+
+	case offsetof(struct user32, regs.gs):
+		ret = set_segment_reg(child,
+				      offsetof(struct user_regs_struct, gs),
+				      value);
+		if (ret == 0)
+			child->thread.gsbase =
+				x86_fsgsbase_read_task(child, value);
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SEG32(ss);
 
 	R32(ebx, bx);
@@ -1010,6 +1414,7 @@ static int putreg32(struct task_struct *child, unsigned regno, u32 value)
 
 	case offsetof(struct user32, regs.orig_eax):
 		/*
+<<<<<<< HEAD
 		 * A 32-bit debugger setting orig_eax means to restore
 		 * the state of the task restarting a 32-bit syscall.
 		 * Make sure we interpret the -ERESTART* codes correctly
@@ -1019,6 +1424,20 @@ static int putreg32(struct task_struct *child, unsigned regno, u32 value)
 		regs->orig_ax = value;
 		if (syscall_get_nr(child, regs) >= 0)
 			task_thread_info(child)->status |= TS_COMPAT;
+=======
+		 * Warning: bizarre corner case fixup here.  A 32-bit
+		 * debugger setting orig_eax to -1 wants to disable
+		 * syscall restart.  Make sure that the syscall
+		 * restart code sign-extends orig_ax.  Also make sure
+		 * we interpret the -ERESTART* codes correctly if
+		 * loaded into regs->ax in case the task is not
+		 * actually still sitting at the exit from a 32-bit
+		 * syscall with TS_COMPAT still set.
+		 */
+		regs->orig_ax = value;
+		if (syscall_get_nr(child, regs) != -1)
+			child->thread_info.status |= TS_I386_REGS_POKED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case offsetof(struct user32, regs.eflags):
@@ -1108,6 +1527,7 @@ static int getreg32(struct task_struct *child, unsigned regno, u32 *val)
 
 static int genregs32_get(struct task_struct *target,
 			 const struct user_regset *regset,
+<<<<<<< HEAD
 			 unsigned int pos, unsigned int count,
 			 void *kbuf, void __user *ubuf)
 {
@@ -1130,6 +1550,17 @@ static int genregs32_get(struct task_struct *target,
 		}
 	}
 
+=======
+			 struct membuf to)
+{
+	int reg;
+
+	for (reg = 0; to.left; reg++) {
+		u32 val;
+		getreg32(target, reg * 4, &val);
+		membuf_store(&to, val);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1161,6 +1592,76 @@ static int genregs32_set(struct task_struct *target,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static long ia32_arch_ptrace(struct task_struct *child, compat_long_t request,
+			     compat_ulong_t caddr, compat_ulong_t cdata)
+{
+	unsigned long addr = caddr;
+	unsigned long data = cdata;
+	void __user *datap = compat_ptr(data);
+	int ret;
+	__u32 val;
+
+	switch (request) {
+	case PTRACE_PEEKUSR:
+		ret = getreg32(child, addr, &val);
+		if (ret == 0)
+			ret = put_user(val, (__u32 __user *)datap);
+		break;
+
+	case PTRACE_POKEUSR:
+		ret = putreg32(child, addr, data);
+		break;
+
+	case PTRACE_GETREGS:	/* Get all gp regs from the child. */
+		return copy_regset_to_user(child, &user_x86_32_view,
+					   REGSET_GENERAL,
+					   0, sizeof(struct user_regs_struct32),
+					   datap);
+
+	case PTRACE_SETREGS:	/* Set all gp regs in the child. */
+		return copy_regset_from_user(child, &user_x86_32_view,
+					     REGSET_GENERAL, 0,
+					     sizeof(struct user_regs_struct32),
+					     datap);
+
+	case PTRACE_GETFPREGS:	/* Get the child FPU state. */
+		return copy_regset_to_user(child, &user_x86_32_view,
+					   REGSET_FP, 0,
+					   sizeof(struct user_i387_ia32_struct),
+					   datap);
+
+	case PTRACE_SETFPREGS:	/* Set the child FPU state. */
+		return copy_regset_from_user(
+			child, &user_x86_32_view, REGSET_FP,
+			0, sizeof(struct user_i387_ia32_struct), datap);
+
+	case PTRACE_GETFPXREGS:	/* Get the child extended FPU state. */
+		return copy_regset_to_user(child, &user_x86_32_view,
+					   REGSET32_XFP, 0,
+					   sizeof(struct user32_fxsr_struct),
+					   datap);
+
+	case PTRACE_SETFPXREGS:	/* Set the child extended FPU state. */
+		return copy_regset_from_user(child, &user_x86_32_view,
+					     REGSET32_XFP, 0,
+					     sizeof(struct user32_fxsr_struct),
+					     datap);
+
+	case PTRACE_GET_THREAD_AREA:
+	case PTRACE_SET_THREAD_AREA:
+		return arch_ptrace(child, request, addr, data);
+
+	default:
+		return compat_ptrace_request(child, request, addr, data);
+	}
+
+	return ret;
+}
+#endif /* CONFIG_IA32_EMULATION */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_X32_ABI
 static long x32_arch_ptrace(struct task_struct *child,
 			    compat_long_t request, compat_ulong_t caddr,
@@ -1215,28 +1716,44 @@ static long x32_arch_ptrace(struct task_struct *child,
 
 	case PTRACE_GETREGS:	/* Get all gp regs from the child. */
 		return copy_regset_to_user(child,
+<<<<<<< HEAD
 					   task_user_regset_view(current),
+=======
+					   &user_x86_64_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   REGSET_GENERAL,
 					   0, sizeof(struct user_regs_struct),
 					   datap);
 
 	case PTRACE_SETREGS:	/* Set all gp regs in the child. */
 		return copy_regset_from_user(child,
+<<<<<<< HEAD
 					     task_user_regset_view(current),
+=======
+					     &user_x86_64_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     REGSET_GENERAL,
 					     0, sizeof(struct user_regs_struct),
 					     datap);
 
 	case PTRACE_GETFPREGS:	/* Get the child FPU state. */
 		return copy_regset_to_user(child,
+<<<<<<< HEAD
 					   task_user_regset_view(current),
+=======
+					   &user_x86_64_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   REGSET_FP,
 					   0, sizeof(struct user_i387_struct),
 					   datap);
 
 	case PTRACE_SETFPREGS:	/* Set the child FPU state. */
 		return copy_regset_from_user(child,
+<<<<<<< HEAD
 					     task_user_regset_view(current),
+=======
+					     &user_x86_64_view,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     REGSET_FP,
 					     0, sizeof(struct user_i387_struct),
 					     datap);
@@ -1249,6 +1766,7 @@ static long x32_arch_ptrace(struct task_struct *child,
 }
 #endif
 
+<<<<<<< HEAD
 long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 			compat_ulong_t caddr, compat_ulong_t cdata)
 {
@@ -1349,6 +1867,71 @@ static struct user_regset x86_64_regsets[] __read_mostly = {
 		.size = sizeof(long), .align = sizeof(long),
 		.active = ioperm_active, .get = ioperm_get
 	},
+=======
+#ifdef CONFIG_COMPAT
+long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
+			compat_ulong_t caddr, compat_ulong_t cdata)
+{
+#ifdef CONFIG_X86_X32_ABI
+	if (!in_ia32_syscall())
+		return x32_arch_ptrace(child, request, caddr, cdata);
+#endif
+#ifdef CONFIG_IA32_EMULATION
+	return ia32_arch_ptrace(child, request, caddr, cdata);
+#else
+	return 0;
+#endif
+}
+#endif	/* CONFIG_COMPAT */
+
+#ifdef CONFIG_X86_64
+
+static struct user_regset x86_64_regsets[] __ro_after_init = {
+	[REGSET64_GENERAL] = {
+		.core_note_type	= NT_PRSTATUS,
+		.n		= sizeof(struct user_regs_struct) / sizeof(long),
+		.size		= sizeof(long),
+		.align		= sizeof(long),
+		.regset_get	= genregs_get,
+		.set		= genregs_set
+	},
+	[REGSET64_FP] = {
+		.core_note_type	= NT_PRFPREG,
+		.n		= sizeof(struct fxregs_state) / sizeof(long),
+		.size		= sizeof(long),
+		.align		= sizeof(long),
+		.active		= regset_xregset_fpregs_active,
+		.regset_get	= xfpregs_get,
+		.set		= xfpregs_set
+	},
+	[REGSET64_XSTATE] = {
+		.core_note_type	= NT_X86_XSTATE,
+		.size		= sizeof(u64),
+		.align		= sizeof(u64),
+		.active		= xstateregs_active,
+		.regset_get	= xstateregs_get,
+		.set		= xstateregs_set
+	},
+	[REGSET64_IOPERM] = {
+		.core_note_type	= NT_386_IOPERM,
+		.n		= IO_BITMAP_LONGS,
+		.size		= sizeof(long),
+		.align		= sizeof(long),
+		.active		= ioperm_active,
+		.regset_get	= ioperm_get
+	},
+#ifdef CONFIG_X86_USER_SHADOW_STACK
+	[REGSET64_SSP] = {
+		.core_note_type	= NT_X86_SHSTK,
+		.n		= 1,
+		.size		= sizeof(u64),
+		.align		= sizeof(u64),
+		.active		= ssp_active,
+		.regset_get	= ssp_get,
+		.set		= ssp_set
+	},
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct user_regset_view user_x86_64_view = {
@@ -1362,6 +1945,7 @@ static const struct user_regset_view user_x86_64_view = {
 #define genregs32_get		genregs_get
 #define genregs32_set		genregs_set
 
+<<<<<<< HEAD
 #define user_i387_ia32_struct	user_i387_struct
 #define user32_fxsr_struct	user_fxsr_struct
 
@@ -1406,6 +1990,63 @@ static struct user_regset x86_32_regsets[] __read_mostly = {
 		.n = IO_BITMAP_BYTES / sizeof(u32),
 		.size = sizeof(u32), .align = sizeof(u32),
 		.active = ioperm_active, .get = ioperm_get
+=======
+#endif	/* CONFIG_X86_64 */
+
+#if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
+static struct user_regset x86_32_regsets[] __ro_after_init = {
+	[REGSET32_GENERAL] = {
+		.core_note_type	= NT_PRSTATUS,
+		.n		= sizeof(struct user_regs_struct32) / sizeof(u32),
+		.size		= sizeof(u32),
+		.align		= sizeof(u32),
+		.regset_get	= genregs32_get,
+		.set		= genregs32_set
+	},
+	[REGSET32_FP] = {
+		.core_note_type	= NT_PRFPREG,
+		.n		= sizeof(struct user_i387_ia32_struct) / sizeof(u32),
+		.size		= sizeof(u32),
+		.align		= sizeof(u32),
+		.active		= regset_fpregs_active,
+		.regset_get	= fpregs_get,
+		.set		= fpregs_set
+	},
+	[REGSET32_XFP] = {
+		.core_note_type	= NT_PRXFPREG,
+		.n		= sizeof(struct fxregs_state) / sizeof(u32),
+		.size		= sizeof(u32),
+		.align		= sizeof(u32),
+		.active		= regset_xregset_fpregs_active,
+		.regset_get	= xfpregs_get,
+		.set		= xfpregs_set
+	},
+	[REGSET32_XSTATE] = {
+		.core_note_type	= NT_X86_XSTATE,
+		.size		= sizeof(u64),
+		.align		= sizeof(u64),
+		.active		= xstateregs_active,
+		.regset_get	= xstateregs_get,
+		.set		= xstateregs_set
+	},
+	[REGSET32_TLS] = {
+		.core_note_type	= NT_386_TLS,
+		.n		= GDT_ENTRY_TLS_ENTRIES,
+		.bias		= GDT_ENTRY_TLS_MIN,
+		.size		= sizeof(struct user_desc),
+		.align		= sizeof(struct user_desc),
+		.active		= regset_tls_active,
+		.regset_get	= regset_tls_get,
+		.set		= regset_tls_set
+	},
+	[REGSET32_IOPERM] = {
+		.core_note_type	= NT_386_IOPERM,
+		.n		= IO_BITMAP_BYTES / sizeof(u32),
+		.size		= sizeof(u32),
+		.align		= sizeof(u32),
+		.active		= ioperm_active,
+		.regset_get	= ioperm_get
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1421,6 +2062,7 @@ static const struct user_regset_view user_x86_32_view = {
  */
 u64 xstate_fx_sw_bytes[USER_XSTATE_FX_SW_WORDS];
 
+<<<<<<< HEAD
 void update_regset_xstate_info(unsigned int size, u64 xstate_mask)
 {
 #ifdef CONFIG_X86_64
@@ -1428,14 +2070,49 @@ void update_regset_xstate_info(unsigned int size, u64 xstate_mask)
 #endif
 #if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
 	x86_32_regsets[REGSET_XSTATE].n = size / sizeof(u64);
+=======
+void __init update_regset_xstate_info(unsigned int size, u64 xstate_mask)
+{
+#ifdef CONFIG_X86_64
+	x86_64_regsets[REGSET64_XSTATE].n = size / sizeof(u64);
+#endif
+#if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
+	x86_32_regsets[REGSET32_XSTATE].n = size / sizeof(u64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	xstate_fx_sw_bytes[USER_XSTATE_XCR0_WORD] = xstate_mask;
 }
 
+<<<<<<< HEAD
 const struct user_regset_view *task_user_regset_view(struct task_struct *task)
 {
 #ifdef CONFIG_IA32_EMULATION
 	if (test_tsk_thread_flag(task, TIF_IA32))
+=======
+/*
+ * This is used by the core dump code to decide which regset to dump.  The
+ * core dump code writes out the resulting .e_machine and the corresponding
+ * regsets.  This is suboptimal if the task is messing around with its CS.L
+ * field, but at worst the core dump will end up missing some information.
+ *
+ * Unfortunately, it is also used by the broken PTRACE_GETREGSET and
+ * PTRACE_SETREGSET APIs.  These APIs look at the .regsets field but have
+ * no way to make sure that the e_machine they use matches the caller's
+ * expectations.  The result is that the data format returned by
+ * PTRACE_GETREGSET depends on the returned CS field (and even the offset
+ * of the returned CS field depends on its value!) and the data format
+ * accepted by PTRACE_SETREGSET is determined by the old CS value.  The
+ * upshot is that it is basically impossible to use these APIs correctly.
+ *
+ * The best way to fix it in the long run would probably be to add new
+ * improved ptrace() APIs to read and write registers reliably, possibly by
+ * allowing userspace to select the ELF e_machine variant that they expect.
+ */
+const struct user_regset_view *task_user_regset_view(struct task_struct *task)
+{
+#ifdef CONFIG_IA32_EMULATION
+	if (!user_64bit_mode(task_pt_regs(task)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
 		return &user_x86_32_view;
@@ -1445,6 +2122,7 @@ const struct user_regset_view *task_user_regset_view(struct task_struct *task)
 #endif
 }
 
+<<<<<<< HEAD
 static void fill_sigtrap_info(struct task_struct *tsk,
 				struct pt_regs *regs,
 				int error_code, int si_code,
@@ -1551,4 +2229,21 @@ void syscall_trace_leave(struct pt_regs *regs)
 			!test_thread_flag(TIF_SYSCALL_EMU);
 	if (step || test_thread_flag(TIF_SYSCALL_TRACE))
 		tracehook_report_syscall_exit(regs, step);
+=======
+void send_sigtrap(struct pt_regs *regs, int error_code, int si_code)
+{
+	struct task_struct *tsk = current;
+
+	tsk->thread.trap_nr = X86_TRAP_DB;
+	tsk->thread.error_code = error_code;
+
+	/* Send us the fake SIGTRAP */
+	force_sig_fault(SIGTRAP, si_code,
+			user_mode(regs) ? (void __user *)regs->ip : NULL);
+}
+
+void user_single_step_report(struct pt_regs *regs)
+{
+	send_sigtrap(regs, 0, TRAP_BRKPT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

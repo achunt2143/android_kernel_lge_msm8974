@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2011 IBM Corporation.
  *
@@ -6,13 +7,22 @@
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright 2011 IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+#include <linux/irqdomain.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpu.h>
 #include <linux/of.h>
 
@@ -113,10 +123,17 @@ static unsigned int icp_hv_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
+<<<<<<< HEAD
 		return NO_IRQ;
 
 	irq = irq_radix_revmap_lookup(xics_host, vec);
 	if (likely(irq != NO_IRQ)) {
+=======
+		return 0;
+
+	irq = irq_find_mapping(xics_host, vec);
+	if (likely(irq)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -127,7 +144,11 @@ static unsigned int icp_hv_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_hv_set_xirr(xirr);
 
+<<<<<<< HEAD
 	return NO_IRQ;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void icp_hv_set_cpu_priority(unsigned char cppr)
@@ -139,7 +160,11 @@ static void icp_hv_set_cpu_priority(unsigned char cppr)
 
 #ifdef CONFIG_SMP
 
+<<<<<<< HEAD
 static void icp_hv_cause_ipi(int cpu, unsigned long data)
+=======
+static void icp_hv_cause_ipi(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	icp_hv_set_qirr(cpu, IPI_PRIORITY);
 }
@@ -167,7 +192,11 @@ static const struct icp_ops icp_hv_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 int icp_hv_init(void)
+=======
+int __init icp_hv_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 
@@ -180,6 +209,10 @@ int icp_hv_init(void)
 
 	icp_ops = &icp_hv_ops;
 
+<<<<<<< HEAD
+=======
+	of_node_put(np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

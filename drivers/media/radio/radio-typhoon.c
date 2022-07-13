@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Typhoon Radio Card driver for radio support
  * (c) 1999 Dr. Henrik Seidel <Henrik.Seidel@gmx.de>
  *
@@ -25,7 +29,11 @@
  * The frequency change is necessary since the card never seems to be
  * completely silent.
  *
+<<<<<<< HEAD
  * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@infradead.org>
+=======
+ * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>	/* Modules                        */

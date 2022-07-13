@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL.
@@ -9,13 +10,30 @@
 #include <linux/string.h>
 #include "net_kern.h"
 #include "net_user.h"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/if_arp.h>
+#include <linux/init.h>
+#include <linux/netdevice.h>
+#include <linux/string.h>
+#include <net_kern.h>
+#include <net_user.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "slirp.h"
 
 struct slirp_init {
 	struct arg_list_dummy_wrapper argw;  /* XXX should be simpler... */
 };
 
+<<<<<<< HEAD
 void slirp_init(struct net_device *dev, void *data)
+=======
+static void slirp_init(struct net_device *dev, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_net_private *private;
 	struct slirp_data *spri;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Types and definitions for AF_INET6 
  *	Linux INET6 implementation 
@@ -11,6 +15,7 @@
  *
  *	Advanced Sockets API for IPv6
  *	<draft-stevens-advanced-api-00.txt>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -37,12 +42,22 @@ struct in6_addr {
 #define s6_addr16		in6_u.u6_addr16
 #define s6_addr32		in6_u.u6_addr32
 };
+=======
+ */
+#ifndef _LINUX_IN6_H
+#define _LINUX_IN6_H
+
+#include <uapi/linux/in6.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IPv6 Wildcard Address (::) and Loopback Address (::1) defined in RFC2553
  * NOTE: Be aware the IN6ADDR_* constants and in6addr_* externals are defined
  * in network byte order, not in host byte order as are the IPv4 equivalents
  */
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct in6_addr in6addr_any;
 #define IN6ADDR_ANY_INIT { { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } } }
 extern const struct in6_addr in6addr_loopback;
@@ -53,6 +68,7 @@ extern const struct in6_addr in6addr_linklocal_allnodes;
 extern const struct in6_addr in6addr_linklocal_allrouters;
 #define IN6ADDR_LINKLOCAL_ALLROUTERS_INIT \
 		{ { { 0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }
+<<<<<<< HEAD
 #endif
 
 struct sockaddr_in6 {
@@ -288,4 +304,15 @@ struct in6_flowlabel_req {
  * MRT6_PIM			208
  * (reserved)			209
  */
+=======
+extern const struct in6_addr in6addr_interfacelocal_allnodes;
+#define IN6ADDR_INTERFACELOCAL_ALLNODES_INIT \
+		{ { { 0xff,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }
+extern const struct in6_addr in6addr_interfacelocal_allrouters;
+#define IN6ADDR_INTERFACELOCAL_ALLROUTERS_INIT \
+		{ { { 0xff,1,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }
+extern const struct in6_addr in6addr_sitelocal_allrouters;
+#define IN6ADDR_SITELOCAL_ALLROUTERS_INIT \
+		{ { { 0xff,5,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

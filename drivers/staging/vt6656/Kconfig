@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config VT6656
 	tristate "VIA Technologies VT6656 support"
 	depends on USB && WLAN && m
@@ -7,3 +8,12 @@ config VT6656
 	---help---
 	This is a vendor-written driver for VIA VT6656.
 
+=======
+# SPDX-License-Identifier: GPL-2.0
+config VT6656
+	tristate "VIA Technologies VT6656 support"
+	depends on MAC80211 && USB && WLAN && m
+	select FW_LOADER
+	help
+	  This is a vendor-written driver for VIA VT6656.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for Gallant SC-6000 soundcard. This card is also known as
  *  Audio Excel DSP 16 or Zoltrix AV302.
@@ -9,6 +13,7 @@
  *
  *  I don't have documentation for this card. I used the driver
  *  for OSS/Free included in the kernel source as reference.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -42,9 +49,12 @@
 MODULE_AUTHOR("Krzysztof Helt");
 MODULE_DESCRIPTION("Gallant SC-6000");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Gallant, SC-6000},"
 			"{AudioExcel, Audio Excel DSP 16},"
 			"{Zoltrix, AV302}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -64,6 +74,7 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for sc-6000 based soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable sc-6000 based soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for sc-6000 driver.");
 module_param_array(mss_port, long, NULL, 0444);
@@ -75,6 +86,19 @@ MODULE_PARM_DESC(irq, "IRQ # for sc-6000 driver.");
 module_param_array(mpu_irq, int, NULL, 0444);
 MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for sc-6000 driver.");
 module_param_array(dma, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for sc-6000 driver.");
+module_param_hw_array(mss_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mss_port, "MSS Port # for sc-6000 driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for sc-6000 driver.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for sc-6000 driver.");
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for sc-6000 driver.");
+module_param_hw_array(dma, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma, "DMA # for sc-6000 driver.");
 module_param_array(joystick, bool, NULL, 0444);
 MODULE_PARM_DESC(joystick, "Enable gameport.");
@@ -121,7 +145,11 @@ MODULE_PARM_DESC(joystick, "Enable gameport.");
 /*
  * sc6000_irq_to_softcfg - Decode irq number into cfg code.
  */
+<<<<<<< HEAD
 static __devinit unsigned char sc6000_irq_to_softcfg(int irq)
+=======
+static unsigned char sc6000_irq_to_softcfg(int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val = 0;
 
@@ -150,7 +178,11 @@ static __devinit unsigned char sc6000_irq_to_softcfg(int irq)
 /*
  * sc6000_dma_to_softcfg - Decode dma number into cfg code.
  */
+<<<<<<< HEAD
 static __devinit unsigned char sc6000_dma_to_softcfg(int dma)
+=======
+static unsigned char sc6000_dma_to_softcfg(int dma)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val = 0;
 
@@ -173,7 +205,11 @@ static __devinit unsigned char sc6000_dma_to_softcfg(int dma)
 /*
  * sc6000_mpu_irq_to_softcfg - Decode MPU-401 irq number into cfg code.
  */
+<<<<<<< HEAD
 static __devinit unsigned char sc6000_mpu_irq_to_softcfg(int mpu_irq)
+=======
+static unsigned char sc6000_mpu_irq_to_softcfg(int mpu_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val = 0;
 
@@ -242,8 +278,13 @@ static int sc6000_write(char __iomem *vport, int cmd)
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int __devinit sc6000_dsp_get_answer(char __iomem *vport, int command,
 					   char *data, int data_len)
+=======
+static int sc6000_dsp_get_answer(char __iomem *vport, int command,
+				 char *data, int data_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = 0;
 
@@ -269,7 +310,11 @@ static int __devinit sc6000_dsp_get_answer(char __iomem *vport, int command,
 	return len ? len : -EIO;
 }
 
+<<<<<<< HEAD
 static int __devinit sc6000_dsp_reset(char __iomem *vport)
+=======
+static int sc6000_dsp_reset(char __iomem *vport)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iowrite8(1, vport + DSP_RESET);
 	udelay(10);
@@ -281,7 +326,11 @@ static int __devinit sc6000_dsp_reset(char __iomem *vport)
 }
 
 /* detection and initialization */
+<<<<<<< HEAD
 static int __devinit sc6000_hw_cfg_write(char __iomem *vport, const int *cfg)
+=======
+static int sc6000_hw_cfg_write(char __iomem *vport, const int *cfg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sc6000_write(vport, COMMAND_6C) < 0) {
 		snd_printk(KERN_WARNING "CMD 0x%x: failed!\n", COMMAND_6C);
@@ -345,8 +394,13 @@ static int sc6000_setup_board(char __iomem *vport, int config)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit sc6000_init_mss(char __iomem *vport, int config,
 				     char __iomem *vmss_port, int mss_config)
+=======
+static int sc6000_init_mss(char __iomem *vport, int config,
+			   char __iomem *vmss_port, int mss_config)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sc6000_write(vport, DSP_INIT_MSS)) {
 		snd_printk(KERN_ERR "sc6000_init_mss [0x%x]: failed!\n",
@@ -364,9 +418,15 @@ static int __devinit sc6000_init_mss(char __iomem *vport, int config,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit sc6000_hw_cfg_encode(char __iomem *vport, int *cfg,
 					   long xport, long xmpu,
 					   long xmss_port, int joystick)
+=======
+static void sc6000_hw_cfg_encode(char __iomem *vport, int *cfg,
+				 long xport, long xmpu,
+				 long xmss_port, int joystick)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cfg[0] = 0;
 	cfg[1] = 0;
@@ -386,8 +446,13 @@ static void __devinit sc6000_hw_cfg_encode(char __iomem *vport, int *cfg,
 	snd_printd("hw cfg %x, %x\n", cfg[0], cfg[1]);
 }
 
+<<<<<<< HEAD
 static int __devinit sc6000_init_board(char __iomem *vport,
 					char __iomem *vmss_port, int dev)
+=======
+static int sc6000_init_board(char __iomem *vport,
+			     char __iomem *vmss_port, int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char answer[15];
 	char version[2];
@@ -467,7 +532,11 @@ static int __devinit sc6000_init_board(char __iomem *vport,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sc6000_mixer(struct snd_wss *chip)
+=======
+static int snd_sc6000_mixer(struct snd_wss *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = chip->card;
 	struct snd_ctl_elem_id id1, id2;
@@ -502,7 +571,11 @@ static int __devinit snd_sc6000_mixer(struct snd_wss *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sc6000_match(struct device *devptr, unsigned int dev)
+=======
+static int snd_sc6000_match(struct device *devptr, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev])
 		return 0;
@@ -545,16 +618,32 @@ static int __devinit snd_sc6000_match(struct device *devptr, unsigned int dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 {
 	static int possible_irqs[] = { 5, 7, 9, 10, 11, -1 };
 	static int possible_dmas[] = { 1, 3, 0, -1 };
+=======
+static void snd_sc6000_free(struct snd_card *card)
+{
+	char __iomem *vport = (char __force __iomem *)card->private_data;
+
+	if (vport)
+		sc6000_setup_board(vport, 0);
+}
+
+static int __snd_sc6000_probe(struct device *devptr, unsigned int dev)
+{
+	static const int possible_irqs[] = { 5, 7, 9, 10, 11, -1 };
+	static const int possible_dmas[] = { 1, 3, 0, -1 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int xirq = irq[dev];
 	int xdma = dma[dev];
 	struct snd_card *card;
 	struct snd_wss *chip;
 	struct snd_opl3 *opl3;
+<<<<<<< HEAD
 	char __iomem **vport;
 	char __iomem *vmss_port;
 
@@ -565,12 +654,26 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 		return err;
 
 	vport = card->private_data;
+=======
+	char __iomem *vport;
+	char __iomem *vmss_port;
+
+	err = snd_devm_card_new(devptr, index[dev], id[dev], THIS_MODULE,
+				0, &card);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xirq == SNDRV_AUTO_IRQ) {
 		xirq = snd_legacy_find_free_irq(possible_irqs);
 		if (xirq < 0) {
 			snd_printk(KERN_ERR PFX "unable to find a free IRQ\n");
+<<<<<<< HEAD
 			err = -EBUSY;
 			goto err_exit;
+=======
+			return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -578,6 +681,7 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 		xdma = snd_legacy_find_free_dma(possible_dmas);
 		if (xdma < 0) {
 			snd_printk(KERN_ERR PFX "unable to find a free DMA\n");
+<<<<<<< HEAD
 			err = -EBUSY;
 			goto err_exit;
 		}
@@ -603,26 +707,63 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 			   "SC-6000 port I/O port region is already in use.\n");
 		err = -EBUSY;
 		goto err_unmap1;
+=======
+			return -EBUSY;
+		}
+	}
+
+	if (!devm_request_region(devptr, port[dev], 0x10, DRV_NAME)) {
+		snd_printk(KERN_ERR PFX
+			   "I/O port region is already in use.\n");
+		return -EBUSY;
+	}
+	vport = devm_ioport_map(devptr, port[dev], 0x10);
+	if (!vport) {
+		snd_printk(KERN_ERR PFX
+			   "I/O port cannot be iomapped.\n");
+		return -EBUSY;
+	}
+	card->private_data = (void __force *)vport;
+
+	/* to make it marked as used */
+	if (!devm_request_region(devptr, mss_port[dev], 4, DRV_NAME)) {
+		snd_printk(KERN_ERR PFX
+			   "SC-6000 port I/O port region is already in use.\n");
+		return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	vmss_port = devm_ioport_map(devptr, mss_port[dev], 4);
 	if (!vmss_port) {
 		snd_printk(KERN_ERR PFX
+<<<<<<< HEAD
 			   "MSS port I/O cannot be iomaped.\n");
 		err = -EBUSY;
 		goto err_unmap2;
+=======
+			   "MSS port I/O cannot be iomapped.\n");
+		return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snd_printd("Initializing BASE[0x%lx] IRQ[%d] DMA[%d] MIRQ[%d]\n",
 		   port[dev], xirq, xdma,
 		   mpu_irq[dev] == SNDRV_AUTO_IRQ ? 0 : mpu_irq[dev]);
 
+<<<<<<< HEAD
 	err = sc6000_init_board(*vport, vmss_port, dev);
 	if (err < 0)
 		goto err_unmap2;
+=======
+	err = sc6000_init_board(vport, vmss_port, dev);
+	if (err < 0)
+		return err;
+	card->private_free = snd_sc6000_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_wss_create(card, mss_port[dev] + 4,  -1, xirq, xdma, -1,
 			     WSS_HW_DETECT, 0, &chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto err_unmap2;
 
 	err = snd_wss_pcm(chip, 0, NULL);
@@ -630,16 +771,33 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 		snd_printk(KERN_ERR PFX
 			   "error creating new WSS PCM device\n");
 		goto err_unmap2;
+=======
+		return err;
+
+	err = snd_wss_pcm(chip, 0);
+	if (err < 0) {
+		snd_printk(KERN_ERR PFX
+			   "error creating new WSS PCM device\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = snd_wss_mixer(chip);
 	if (err < 0) {
 		snd_printk(KERN_ERR PFX "error creating new WSS mixer\n");
+<<<<<<< HEAD
 		goto err_unmap2;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = snd_sc6000_mixer(chip);
 	if (err < 0) {
 		snd_printk(KERN_ERR PFX "the mixer rewrite failed\n");
+<<<<<<< HEAD
 		goto err_unmap2;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (snd_opl3_create(card,
 			    0x388, 0x388 + 2,
@@ -649,7 +807,11 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	} else {
 		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
 		if (err < 0)
+<<<<<<< HEAD
 			goto err_unmap2;
+=======
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mpu_port[dev] != SNDRV_AUTO_PORT) {
@@ -668,6 +830,7 @@ static int __devinit snd_sc6000_probe(struct device *devptr, unsigned int dev)
 	sprintf(card->longname, "Gallant SC-6000 at 0x%lx, irq %d, dma %d",
 		mss_port[dev], xirq, xdma);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, devptr);
 
 	err = snd_card_register(card);
@@ -701,12 +864,28 @@ static int __devexit snd_sc6000_remove(struct device *devptr, unsigned int dev)
 	dev_set_drvdata(devptr, NULL);
 	snd_card_free(card);
 	return 0;
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	dev_set_drvdata(devptr, card);
+	return 0;
+}
+
+static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
+{
+	return snd_card_free_on_error(devptr, __snd_sc6000_probe(devptr, dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver snd_sc6000_driver = {
 	.match		= snd_sc6000_match,
 	.probe		= snd_sc6000_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_sc6000_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DRV_NAME,
@@ -714,6 +893,7 @@ static struct isa_driver snd_sc6000_driver = {
 };
 
 
+<<<<<<< HEAD
 static int __init alsa_card_sc6000_init(void)
 {
 	return isa_register_driver(&snd_sc6000_driver, SNDRV_CARDS);
@@ -726,3 +906,6 @@ static void __exit alsa_card_sc6000_exit(void)
 
 module_init(alsa_card_sc6000_init)
 module_exit(alsa_card_sc6000_exit)
+=======
+module_isa_driver(snd_sc6000_driver, SNDRV_CARDS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

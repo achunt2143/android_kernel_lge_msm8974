@@ -138,7 +138,10 @@ struct agp_bridge_data {
 	unsigned long gart_bus_addr;
 	unsigned long gatt_bus_addr;
 	u32 mode;
+<<<<<<< HEAD
 	enum chipset_type type;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *key_list;
 	atomic_t current_memory_agp;
 	atomic_t agp_in_use;
@@ -185,10 +188,13 @@ void agp_put_bridge(struct agp_bridge_data *bridge);
 int agp_add_bridge(struct agp_bridge_data *bridge);
 void agp_remove_bridge(struct agp_bridge_data *bridge);
 
+<<<<<<< HEAD
 /* Frontend routines. */
 int agp_frontend_initialize(void);
 void agp_frontend_cleanup(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generic routines. */
 void agp_generic_enable(struct agp_bridge_data *bridge, u32 mode);
 int agp_generic_create_gatt_table(struct agp_bridge_data *bridge);
@@ -219,7 +225,14 @@ struct agp_bridge_data *agp_generic_find_bridge(struct pci_dev *pdev);
 /* generic functions for user-populated AGP memory types */
 struct agp_memory *agp_generic_alloc_user(size_t page_count, int type);
 void agp_alloc_page_array(size_t size, struct agp_memory *mem);
+<<<<<<< HEAD
 void agp_free_page_array(struct agp_memory *mem);
+=======
+static inline void agp_free_page_array(struct agp_memory *mem)
+{
+	kvfree(mem->pages);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* generic routines for agp>=3 */
@@ -228,6 +241,15 @@ void agp3_generic_tlbflush(struct agp_memory *mem);
 int agp3_generic_configure(void);
 void agp3_generic_cleanup(void);
 
+<<<<<<< HEAD
+=======
+/* GATT allocation. Returns/accepts GATT kernel virtual address. */
+#define alloc_gatt_pages(order)		\
+	((char *)__get_free_pages(GFP_KERNEL, (order)))
+#define free_gatt_pages(table, order)	\
+	free_pages((unsigned long)(table), (order))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* aperture sizes have been standardised since v3 */
 #define AGP_GENERIC_SIZES_ENTRIES 11
 extern const struct aper_size_info_16 agp3_generic_sizes[];
@@ -239,6 +261,10 @@ long compat_agp_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 
 /* Chipset independent registers (from AGP Spec) */
 #define AGP_APBASE	0x10
+<<<<<<< HEAD
+=======
+#define AGP_APERTURE_BAR	0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AGPSTAT		0x4
 #define AGPCMD		0x8

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tsunami_flash.c
  *
@@ -82,11 +86,20 @@ static void __exit  cleanup_tsunami_flash(void)
 	tsunami_flash_mtd = 0;
 }
 
+<<<<<<< HEAD
 
 static int __init init_tsunami_flash(void)
 {
 	static const char *rom_probe_types[] = { "cfi_probe", "jedec_probe", "map_rom", NULL };
 	char **type;
+=======
+static const char * const rom_probe_types[] = {
+	"cfi_probe", "jedec_probe", "map_rom", NULL };
+
+static int __init init_tsunami_flash(void)
+{
+	const char * const *type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tsunami_tig_writeb(FLASH_ENABLE_BYTE, FLASH_ENABLE_PORT);
 

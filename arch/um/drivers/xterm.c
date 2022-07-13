@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
@@ -11,13 +17,22 @@
 #include <string.h>
 #include <termios.h>
 #include "chan_user.h"
+<<<<<<< HEAD
 #include "os.h"
 #include "um_malloc.h"
+=======
+#include <os.h>
+#include <um_malloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "xterm.h"
 
 struct xterm_chan {
 	int pid;
 	int helper_pid;
+<<<<<<< HEAD
+=======
+	int chan_fd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *title;
 	int device;
 	int raw;
@@ -33,6 +48,10 @@ static void *xterm_init(char *str, int device, const struct chan_opts *opts)
 		return NULL;
 	*data = ((struct xterm_chan) { .pid 		= -1,
 				       .helper_pid 	= -1,
+<<<<<<< HEAD
+=======
+				       .chan_fd		= -1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       .device 		= device,
 				       .title 		= opts->xterm_title,
 				       .raw  		= opts->raw } );
@@ -40,7 +59,11 @@ static void *xterm_init(char *str, int device, const struct chan_opts *opts)
 }
 
 /* Only changed by xterm_setup, which is a setup */
+<<<<<<< HEAD
 static char *terminal_emulator = "xterm";
+=======
+static char *terminal_emulator = CONFIG_XTERM_CHAN_DEFAULT_EMULATOR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char *title_switch = "-T";
 static char *exec_switch = "-e";
 
@@ -77,8 +100,14 @@ __uml_setup("xterm=", xterm_setup,
 "    respectively.  The title switch must have the form '<switch> title',\n"
 "    not '<switch>=title'.  Similarly, the exec switch must have the form\n"
 "    '<switch> command arg1 arg2 ...'.\n"
+<<<<<<< HEAD
 "    The default values are 'xterm=xterm,-T,-e'.  Values for gnome-terminal\n"
 "    are 'xterm=gnome-terminal,-t,-x'.\n\n"
+=======
+"    The default values are 'xterm=" CONFIG_XTERM_CHAN_DEFAULT_EMULATOR
+     ",-T,-e'.\n"
+"    Values for gnome-terminal are 'xterm=gnome-terminal,-t,-x'.\n\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 static int xterm_open(int input, int output, int primary, void *d,
@@ -149,6 +178,10 @@ static int xterm_open(int input, int output, int primary, void *d,
 		goto out_kill;
 	}
 
+<<<<<<< HEAD
+=======
+	data->chan_fd = fd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = xterm_fd(fd, &data->helper_pid);
 	if (new < 0) {
 		err = new;
@@ -206,6 +239,11 @@ static void xterm_close(int fd, void *d)
 		os_kill_process(data->helper_pid, 0);
 	data->helper_pid = -1;
 
+<<<<<<< HEAD
+=======
+	if (data->chan_fd != -1)
+		os_close_file(data->chan_fd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	os_close_file(fd);
 }
 

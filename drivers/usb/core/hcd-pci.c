@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * (C) Copyright David Brownell 2000-2002
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * (C) Copyright David Brownell 2000-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -28,8 +34,11 @@
 #ifdef CONFIG_PPC_PMAC
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #include "usb.h"
@@ -37,6 +46,7 @@
 
 /* PCI-based HCs are common, but plenty of non-PCI HCs are used too */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 
 /* Coordinate handoffs between EHCI and companion controllers
@@ -44,25 +54,54 @@
  */
 
 static DEFINE_MUTEX(companions_mutex);
+=======
+/*
+ * Coordinate handoffs between EHCI and companion controllers
+ * during EHCI probing and system resume.
+ */
+
+static DECLARE_RWSEM(companions_rwsem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CL_UHCI		PCI_CLASS_SERIAL_USB_UHCI
 #define CL_OHCI		PCI_CLASS_SERIAL_USB_OHCI
 #define CL_EHCI		PCI_CLASS_SERIAL_USB_EHCI
 
+<<<<<<< HEAD
 enum companion_action {
 	SET_HS_COMPANION, CLEAR_HS_COMPANION, WAIT_FOR_COMPANIONS
 };
 
 static void companion_common(struct pci_dev *pdev, struct usb_hcd *hcd,
 		enum companion_action action)
+=======
+static inline int is_ohci_or_uhci(struct pci_dev *pdev)
+{
+	return pdev->class == CL_OHCI || pdev->class == CL_UHCI;
+}
+
+typedef void (*companion_fn)(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd);
+
+/* Iterate over PCI devices in the same slot as pdev and call fn for each */
+static void for_each_companion(struct pci_dev *pdev, struct usb_hcd *hcd,
+		companion_fn fn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev		*companion;
 	struct usb_hcd		*companion_hcd;
 	unsigned int		slot = PCI_SLOT(pdev->devfn);
 
+<<<<<<< HEAD
 	/* Iterate through other PCI functions in the same slot.
 	 * If pdev is OHCI or UHCI then we are looking for EHCI, and
 	 * vice versa.
+=======
+	/*
+	 * Iterate through other PCI functions in the same slot.
+	 * If the function's drvdata isn't set then it isn't bound to
+	 * a USB host controller driver, so skip it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	companion = NULL;
 	for_each_pci_dev(companion) {
@@ -70,6 +109,7 @@ static void companion_common(struct pci_dev *pdev, struct usb_hcd *hcd,
 				PCI_SLOT(companion->devfn) != slot)
 			continue;
 
+<<<<<<< HEAD
 		companion_hcd = pci_get_drvdata(companion);
 		if (!companion_hcd || !companion_hcd->self.root_hub)
 			continue;
@@ -150,6 +190,96 @@ static inline void clear_hs_companion(struct pci_dev *d, struct usb_hcd *h) {}
 static inline void wait_for_companions(struct pci_dev *d, struct usb_hcd *h) {}
 
 #endif /* !CONFIG_PM_SLEEP */
+=======
+		/*
+		 * Companion device should be either UHCI,OHCI or EHCI host
+		 * controller, otherwise skip.
+		 */
+		if (companion->class != CL_UHCI && companion->class != CL_OHCI &&
+				companion->class != CL_EHCI)
+			continue;
+
+		companion_hcd = pci_get_drvdata(companion);
+		if (!companion_hcd || !companion_hcd->self.root_hub)
+			continue;
+		fn(pdev, hcd, companion, companion_hcd);
+	}
+}
+
+/*
+ * We're about to add an EHCI controller, which will unceremoniously grab
+ * all the port connections away from its companions.  To prevent annoying
+ * error messages, lock the companion's root hub and gracefully unconfigure
+ * it beforehand.  Leave it locked until the EHCI controller is all set.
+ */
+static void ehci_pre_add(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd)
+{
+	struct usb_device *udev;
+
+	if (is_ohci_or_uhci(companion)) {
+		udev = companion_hcd->self.root_hub;
+		usb_lock_device(udev);
+		usb_set_configuration(udev, 0);
+	}
+}
+
+/*
+ * Adding the EHCI controller has either succeeded or failed.  Set the
+ * companion pointer accordingly, and in either case, reconfigure and
+ * unlock the root hub.
+ */
+static void ehci_post_add(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd)
+{
+	struct usb_device *udev;
+
+	if (is_ohci_or_uhci(companion)) {
+		if (dev_get_drvdata(&pdev->dev)) {	/* Succeeded */
+			dev_dbg(&pdev->dev, "HS companion for %s\n",
+					dev_name(&companion->dev));
+			companion_hcd->self.hs_companion = &hcd->self;
+		}
+		udev = companion_hcd->self.root_hub;
+		usb_set_configuration(udev, 1);
+		usb_unlock_device(udev);
+	}
+}
+
+/*
+ * We just added a non-EHCI controller.  Find the EHCI controller to
+ * which it is a companion, and store a pointer to the bus structure.
+ */
+static void non_ehci_add(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd)
+{
+	if (is_ohci_or_uhci(pdev) && companion->class == CL_EHCI) {
+		dev_dbg(&pdev->dev, "FS/LS companion for %s\n",
+				dev_name(&companion->dev));
+		hcd->self.hs_companion = &companion_hcd->self;
+	}
+}
+
+/* We are removing an EHCI controller.  Clear the companions' pointers. */
+static void ehci_remove(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd)
+{
+	if (is_ohci_or_uhci(companion))
+		companion_hcd->self.hs_companion = NULL;
+}
+
+#ifdef	CONFIG_PM
+
+/* An EHCI controller must wait for its companions before resuming. */
+static void ehci_wait_for_companions(struct pci_dev *pdev, struct usb_hcd *hcd,
+		struct pci_dev *companion, struct usb_hcd *companion_hcd)
+{
+	if (is_ohci_or_uhci(companion))
+		device_pm_wait_for_dev(&pdev->dev, &companion->dev);
+}
+
+#endif	/* CONFIG_PM */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------------------------*/
 
@@ -159,18 +289,32 @@ static inline void wait_for_companions(struct pci_dev *d, struct usb_hcd *h) {}
 /**
  * usb_hcd_pci_probe - initialize PCI-based HCDs
  * @dev: USB Host Controller being probed
+<<<<<<< HEAD
  * @id: pci hotplug id connecting controller to HCD framework
  * Context: !in_interrupt()
+=======
+ * @driver: USB HC driver handle
+ *
+ * Context: task context, might sleep
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocates basic PCI resources for this USB host controller, and
  * then invokes the start() method for the HCD associated with it
  * through the hotplug entry's driver_data.
  *
  * Store this function in the HCD's struct pci_driver as probe().
+<<<<<<< HEAD
  */
 int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
 	struct hc_driver	*driver;
+=======
+ *
+ * Return: 0 if successful.
+ */
+int usb_hcd_pci_probe(struct pci_dev *dev, const struct hc_driver *driver)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_hcd		*hcd;
 	int			retval;
 	int			hcd_irq = 0;
@@ -178,41 +322,66 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (usb_disabled())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (!id)
 		return -EINVAL;
 	driver = (struct hc_driver *)id->driver_data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!driver)
 		return -EINVAL;
 
 	if (pci_enable_device(dev) < 0)
 		return -ENODEV;
+<<<<<<< HEAD
 	dev->current_state = PCI_D0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The xHCI driver has its own irq management
 	 * make sure irq setup is not touched for xhci in generic hcd code
 	 */
+<<<<<<< HEAD
 	if ((driver->flags & HCD_MASK) != HCD_USB3) {
 		if (!dev->irq) {
+=======
+	if ((driver->flags & HCD_MASK) < HCD_USB3) {
+		retval = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY | PCI_IRQ_MSI);
+		if (retval < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&dev->dev,
 			"Found HC with no IRQ. Check BIOS/PCI %s setup!\n",
 				pci_name(dev));
 			retval = -ENODEV;
 			goto disable_pci;
 		}
+<<<<<<< HEAD
 		hcd_irq = dev->irq;
+=======
+		hcd_irq = pci_irq_vector(dev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd = usb_create_hcd(driver, &dev->dev, pci_name(dev));
 	if (!hcd) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		goto disable_pci;
 	}
 
+=======
+		goto free_irq_vectors;
+	}
+
+	hcd->amd_resume_bug = usb_hcd_amd_resume_bug(dev, driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (driver->flags & HCD_MEMORY) {
 		/* EHCI, OHCI */
 		hcd->rsrc_start = pci_resource_start(dev, 0);
 		hcd->rsrc_len = pci_resource_len(dev, 0);
+<<<<<<< HEAD
 		if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len,
 				driver->description)) {
 			dev_dbg(&dev->dev, "controller already in use\n");
@@ -224,19 +393,38 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 			dev_dbg(&dev->dev, "error mapping memory\n");
 			retval = -EFAULT;
 			goto release_mem_region;
+=======
+		if (!devm_request_mem_region(&dev->dev, hcd->rsrc_start,
+				hcd->rsrc_len, driver->description)) {
+			dev_dbg(&dev->dev, "controller already in use\n");
+			retval = -EBUSY;
+			goto put_hcd;
+		}
+		hcd->regs = devm_ioremap(&dev->dev, hcd->rsrc_start,
+				hcd->rsrc_len);
+		if (hcd->regs == NULL) {
+			dev_dbg(&dev->dev, "error mapping memory\n");
+			retval = -EFAULT;
+			goto put_hcd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	} else {
 		/* UHCI */
 		int	region;
 
+<<<<<<< HEAD
 		for (region = 0; region < PCI_ROM_RESOURCE; region++) {
+=======
+		for (region = 0; region < PCI_STD_NUM_BARS; region++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(pci_resource_flags(dev, region) &
 					IORESOURCE_IO))
 				continue;
 
 			hcd->rsrc_start = pci_resource_start(dev, region);
 			hcd->rsrc_len = pci_resource_len(dev, region);
+<<<<<<< HEAD
 			if (request_region(hcd->rsrc_start, hcd->rsrc_len,
 					driver->description))
 				break;
@@ -245,20 +433,58 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 			dev_dbg(&dev->dev, "no i/o regions available\n");
 			retval = -EBUSY;
 			goto clear_companion;
+=======
+			if (devm_request_region(&dev->dev, hcd->rsrc_start,
+					hcd->rsrc_len, driver->description))
+				break;
+		}
+		if (region == PCI_STD_NUM_BARS) {
+			dev_dbg(&dev->dev, "no i/o regions available\n");
+			retval = -EBUSY;
+			goto put_hcd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	pci_set_master(dev);
 
+<<<<<<< HEAD
 	retval = usb_add_hcd(hcd, hcd_irq, IRQF_SHARED);
 	if (retval != 0)
 		goto unmap_registers;
 	set_hs_companion(dev, hcd);
+=======
+	/* Note: dev_set_drvdata must be called while holding the rwsem */
+	if (dev->class == CL_EHCI) {
+		down_write(&companions_rwsem);
+		dev_set_drvdata(&dev->dev, hcd);
+		for_each_companion(dev, hcd, ehci_pre_add);
+		retval = usb_add_hcd(hcd, hcd_irq, IRQF_SHARED);
+		if (retval != 0)
+			dev_set_drvdata(&dev->dev, NULL);
+		for_each_companion(dev, hcd, ehci_post_add);
+		up_write(&companions_rwsem);
+	} else {
+		down_read(&companions_rwsem);
+		dev_set_drvdata(&dev->dev, hcd);
+		retval = usb_add_hcd(hcd, hcd_irq, IRQF_SHARED);
+		if (retval != 0)
+			dev_set_drvdata(&dev->dev, NULL);
+		else
+			for_each_companion(dev, hcd, non_ehci_add);
+		up_read(&companions_rwsem);
+	}
+
+	if (retval != 0)
+		goto put_hcd;
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_dev_run_wake(dev))
 		pm_runtime_put_noidle(&dev->dev);
 	return retval;
 
+<<<<<<< HEAD
 unmap_registers:
 	if (driver->flags & HCD_MEMORY) {
 		iounmap(hcd->regs);
@@ -269,6 +495,13 @@ release_mem_region:
 clear_companion:
 	clear_hs_companion(dev, hcd);
 	usb_put_hcd(hcd);
+=======
+put_hcd:
+	usb_put_hcd(hcd);
+free_irq_vectors:
+	if ((driver->flags & HCD_MASK) < HCD_USB3)
+		pci_free_irq_vectors(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 disable_pci:
 	pci_disable_device(dev);
 	dev_err(&dev->dev, "init %s fail, %d\n", pci_name(dev), retval);
@@ -283,7 +516,12 @@ EXPORT_SYMBOL_GPL(usb_hcd_pci_probe);
 /**
  * usb_hcd_pci_remove - shutdown processing for PCI-based HCDs
  * @dev: USB Host Controller being removed
+<<<<<<< HEAD
  * Context: !in_interrupt()
+=======
+ *
+ * Context: task context, might sleep
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Reverses the effect of usb_hcd_pci_probe(), first invoking
  * the HCD's stop() method.  It is always called from a thread
@@ -294,11 +532,20 @@ EXPORT_SYMBOL_GPL(usb_hcd_pci_probe);
 void usb_hcd_pci_remove(struct pci_dev *dev)
 {
 	struct usb_hcd		*hcd;
+<<<<<<< HEAD
+=======
+	int			hcd_driver_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hcd = pci_get_drvdata(dev);
 	if (!hcd)
 		return;
 
+<<<<<<< HEAD
+=======
+	hcd_driver_flags = hcd->driver->flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_dev_run_wake(dev))
 		pm_runtime_get_noresume(&dev->dev);
 
@@ -310,6 +557,7 @@ void usb_hcd_pci_remove(struct pci_dev *dev)
 	usb_hcd_irq(0, hcd);
 	local_irq_enable();
 
+<<<<<<< HEAD
 	usb_remove_hcd(hcd);
 	if (hcd->driver->flags & HCD_MEMORY) {
 		iounmap(hcd->regs);
@@ -319,6 +567,26 @@ void usb_hcd_pci_remove(struct pci_dev *dev)
 	}
 	clear_hs_companion(dev, hcd);
 	usb_put_hcd(hcd);
+=======
+	/* Note: dev_set_drvdata must be called while holding the rwsem */
+	if (dev->class == CL_EHCI) {
+		down_write(&companions_rwsem);
+		for_each_companion(dev, hcd, ehci_remove);
+		usb_remove_hcd(hcd);
+		dev_set_drvdata(&dev->dev, NULL);
+		up_write(&companions_rwsem);
+	} else {
+		/* Not EHCI; just clear the companion pointer */
+		down_read(&companions_rwsem);
+		hcd->self.hs_companion = NULL;
+		usb_remove_hcd(hcd);
+		dev_set_drvdata(&dev->dev, NULL);
+		up_read(&companions_rwsem);
+	}
+	usb_put_hcd(hcd);
+	if ((hcd_driver_flags & HCD_MASK) < HCD_USB3)
+		pci_free_irq_vectors(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(dev);
 }
 EXPORT_SYMBOL_GPL(usb_hcd_pci_remove);
@@ -338,6 +606,11 @@ void usb_hcd_pci_shutdown(struct pci_dev *dev)
 	if (test_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags) &&
 			hcd->driver->shutdown) {
 		hcd->driver->shutdown(hcd);
+<<<<<<< HEAD
+=======
+		if (usb_hcd_is_primary_hcd(hcd) && hcd->irq > 0)
+			free_irq(hcd->irq, hcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_disable_device(dev);
 	}
 }
@@ -368,8 +641,12 @@ static inline void powermac_set_asic(struct pci_dev *pci_dev, int enable)
 
 static int check_root_hub_suspended(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev		*pci_dev = to_pci_dev(dev);
 	struct usb_hcd		*hcd = pci_get_drvdata(pci_dev);
+=======
+	struct usb_hcd		*hcd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (HCD_RH_RUNNING(hcd)) {
 		dev_warn(dev, "Root hub is not suspended\n");
@@ -385,6 +662,7 @@ static int check_root_hub_suspended(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
 static int suspend_common(struct device *dev, bool do_wakeup)
 {
@@ -392,6 +670,17 @@ static int suspend_common(struct device *dev, bool do_wakeup)
 	struct usb_hcd		*hcd = pci_get_drvdata(pci_dev);
 	int			retval;
 
+=======
+static int suspend_common(struct device *dev, pm_message_t msg)
+{
+	struct pci_dev		*pci_dev = to_pci_dev(dev);
+	struct usb_hcd		*hcd = pci_get_drvdata(pci_dev);
+	bool			do_wakeup;
+	int			retval;
+
+	do_wakeup = PMSG_IS_AUTO(msg) ? true : device_may_wakeup(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Root hub suspend should have stopped all downstream traffic,
 	 * and all bus master traffic.  And done so for both the interface
 	 * and the stub usb_device (which we check here).  But maybe it
@@ -411,14 +700,22 @@ static int suspend_common(struct device *dev, bool do_wakeup)
 				HCD_WAKEUP_PENDING(hcd->shared_hcd))
 			return -EBUSY;
 		retval = hcd->driver->pci_suspend(hcd, do_wakeup);
+<<<<<<< HEAD
 		suspend_report_result(hcd->driver->pci_suspend, retval);
+=======
+		suspend_report_result(dev, hcd->driver->pci_suspend, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check again in case wakeup raced with pci_suspend */
 		if ((retval == 0 && do_wakeup && HCD_WAKEUP_PENDING(hcd)) ||
 				(retval == 0 && do_wakeup && hcd->shared_hcd &&
 				 HCD_WAKEUP_PENDING(hcd->shared_hcd))) {
 			if (hcd->driver->pci_resume)
+<<<<<<< HEAD
 				hcd->driver->pci_resume(hcd, false);
+=======
+				hcd->driver->pci_resume(hcd, msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = -EBUSY;
 		}
 		if (retval)
@@ -430,7 +727,11 @@ static int suspend_common(struct device *dev, bool do_wakeup)
 	 * synchronized here.
 	 */
 	if (!hcd->msix_enabled)
+<<<<<<< HEAD
 		synchronize_irq(pci_dev->irq);
+=======
+		synchronize_irq(pci_irq_vector(pci_dev, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Downstream ports from this root hub should already be quiesced, so
 	 * there will be no DMA activity.  Now we can shut down the upstream
@@ -441,7 +742,11 @@ static int suspend_common(struct device *dev, bool do_wakeup)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int resume_common(struct device *dev, int event)
+=======
+static int resume_common(struct device *dev, pm_message_t msg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev		*pci_dev = to_pci_dev(dev);
 	struct usb_hcd		*hcd = pci_get_drvdata(pci_dev);
@@ -463,6 +768,7 @@ static int resume_common(struct device *dev, int event)
 	pci_set_master(pci_dev);
 
 	if (hcd->driver->pci_resume && !HCD_DEAD(hcd)) {
+<<<<<<< HEAD
 		if (event != PM_EVENT_AUTO_RESUME)
 			wait_for_companions(pci_dev, hcd);
 
@@ -472,18 +778,40 @@ static int resume_common(struct device *dev, int event)
 			dev_err(dev, "PCI post-resume error %d!\n", retval);
 			if (hcd->shared_hcd)
 				usb_hc_died(hcd->shared_hcd);
+=======
+
+		/*
+		 * Only EHCI controllers have to wait for their companions.
+		 * No locking is needed because PCI controller drivers do not
+		 * get unbound during system resume.
+		 */
+		if (pci_dev->class == CL_EHCI && msg.event != PM_EVENT_AUTO_RESUME)
+			for_each_companion(pci_dev, hcd,
+					ehci_wait_for_companions);
+
+		retval = hcd->driver->pci_resume(hcd, msg);
+		if (retval) {
+			dev_err(dev, "PCI post-resume error %d!\n", retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usb_hc_died(hcd);
 		}
 	}
 	return retval;
 }
+<<<<<<< HEAD
 #endif	/* SLEEP || RUNTIME */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef	CONFIG_PM_SLEEP
 
 static int hcd_pci_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	return suspend_common(dev, device_may_wakeup(dev));
+=======
+	return suspend_common(dev, PMSG_SUSPEND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hcd_pci_suspend_noirq(struct device *dev)
@@ -517,7 +845,11 @@ static int hcd_pci_suspend_noirq(struct device *dev)
 		dev_dbg(dev, "--> PCI %s\n",
 				pci_power_name(pci_dev->current_state));
 	} else {
+<<<<<<< HEAD
 		suspend_report_result(pci_prepare_to_sleep, retval);
+=======
+		suspend_report_result(dev, pci_prepare_to_sleep, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return retval;
 	}
 
@@ -525,6 +857,7 @@ static int hcd_pci_suspend_noirq(struct device *dev)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int hcd_pci_resume_noirq(struct device *dev)
 {
 	struct pci_dev		*pci_dev = to_pci_dev(dev);
@@ -533,36 +866,71 @@ static int hcd_pci_resume_noirq(struct device *dev)
 
 	/* Go back to D0 and disable remote wakeup */
 	pci_back_from_sleep(pci_dev);
+=======
+static int hcd_pci_poweroff_late(struct device *dev)
+{
+	struct pci_dev		*pci_dev = to_pci_dev(dev);
+	struct usb_hcd		*hcd = pci_get_drvdata(pci_dev);
+
+	if (hcd->driver->pci_poweroff_late && !HCD_DEAD(hcd))
+		return hcd->driver->pci_poweroff_late(hcd, device_may_wakeup(dev));
+
+	return 0;
+}
+
+static int hcd_pci_resume_noirq(struct device *dev)
+{
+	powermac_set_asic(to_pci_dev(dev), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int hcd_pci_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	return resume_common(dev, PM_EVENT_RESUME);
+=======
+	return resume_common(dev, PMSG_RESUME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hcd_pci_restore(struct device *dev)
 {
+<<<<<<< HEAD
 	return resume_common(dev, PM_EVENT_RESTORE);
+=======
+	return resume_common(dev, PMSG_RESTORE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
 
 #define hcd_pci_suspend		NULL
 #define hcd_pci_suspend_noirq	NULL
+<<<<<<< HEAD
+=======
+#define hcd_pci_poweroff_late	NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hcd_pci_resume_noirq	NULL
 #define hcd_pci_resume		NULL
 #define hcd_pci_restore		NULL
 
 #endif	/* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM_RUNTIME
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hcd_pci_runtime_suspend(struct device *dev)
 {
 	int	retval;
 
+<<<<<<< HEAD
 	retval = suspend_common(dev, true);
+=======
+	retval = suspend_common(dev, PMSG_AUTO_SUSPEND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval == 0)
 		powermac_set_asic(to_pci_dev(dev), 0);
 	dev_dbg(dev, "hcd_pci_runtime_suspend: %d\n", retval);
@@ -574,11 +942,16 @@ static int hcd_pci_runtime_resume(struct device *dev)
 	int	retval;
 
 	powermac_set_asic(to_pci_dev(dev), 1);
+<<<<<<< HEAD
 	retval = resume_common(dev, PM_EVENT_AUTO_RESUME);
+=======
+	retval = resume_common(dev, PMSG_AUTO_RESUME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(dev, "hcd_pci_runtime_resume: %d\n", retval);
 	return retval;
 }
 
+<<<<<<< HEAD
 #else
 
 #define hcd_pci_runtime_suspend	NULL
@@ -586,16 +959,27 @@ static int hcd_pci_runtime_resume(struct device *dev)
 
 #endif	/* CONFIG_PM_RUNTIME */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct dev_pm_ops usb_hcd_pci_pm_ops = {
 	.suspend	= hcd_pci_suspend,
 	.suspend_noirq	= hcd_pci_suspend_noirq,
 	.resume_noirq	= hcd_pci_resume_noirq,
 	.resume		= hcd_pci_resume,
+<<<<<<< HEAD
 	.freeze		= check_root_hub_suspended,
 	.freeze_noirq	= check_root_hub_suspended,
 	.thaw_noirq	= NULL,
 	.thaw		= NULL,
 	.poweroff	= hcd_pci_suspend,
+=======
+	.freeze		= hcd_pci_suspend,
+	.freeze_noirq	= check_root_hub_suspended,
+	.thaw_noirq	= NULL,
+	.thaw		= hcd_pci_resume,
+	.poweroff	= hcd_pci_suspend,
+	.poweroff_late	= hcd_pci_poweroff_late,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.poweroff_noirq	= hcd_pci_suspend_noirq,
 	.restore_noirq	= hcd_pci_resume_noirq,
 	.restore	= hcd_pci_restore,

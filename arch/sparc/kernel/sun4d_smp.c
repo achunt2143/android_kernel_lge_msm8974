@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Sparc SS1000/SC2000 SMP support.
  *
  * Copyright (C) 1998 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
@@ -6,6 +10,7 @@
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
  */
 
+<<<<<<< HEAD
 #include <linux/interrupt.h>
 #include <linux/profile.h>
 #include <linux/delay.h>
@@ -16,6 +21,22 @@
 #include <asm/tlbflush.h>
 #include <asm/switch_to.h>
 #include <asm/cacheflush.h>
+=======
+#include <linux/clockchips.h>
+#include <linux/interrupt.h>
+#include <linux/profile.h>
+#include <linux/delay.h>
+#include <linux/sched/mm.h>
+#include <linux/cpu.h>
+
+#include <asm/cacheflush.h>
+#include <asm/switch_to.h>
+#include <asm/tlbflush.h>
+#include <asm/timer.h>
+#include <asm/oplib.h>
+#include <asm/sbi.h>
+#include <asm/mmu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "kernel.h"
 #include "irq.h"
@@ -34,7 +55,10 @@ static inline unsigned long sun4d_swap(volatile unsigned long *ptr, unsigned lon
 }
 
 static void smp4d_ipi_init(void);
+<<<<<<< HEAD
 static void smp_setup_percpu_timer(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned char cpu_leds[32];
 
@@ -47,10 +71,16 @@ static inline void show_leds(int cpuid)
 			      "i" (ASI_M_CTL));
 }
 
+<<<<<<< HEAD
 void __cpuinit smp4d_callin(void)
 {
 	int cpuid = hard_smp4d_processor_id();
 	unsigned long flags;
+=======
+void sun4d_cpu_pre_starting(void *arg)
+{
+	int cpuid = hard_smp_processor_id();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Show we are alive */
 	cpu_leds[cpuid] = 0x6;
@@ -58,6 +88,7 @@ void __cpuinit smp4d_callin(void)
 
 	/* Enable level15 interrupt, disable level14 interrupt for now */
 	cc_set_imsk((cc_get_imsk() & ~0x8000) | 0x4000);
+<<<<<<< HEAD
 
 	local_flush_cache_all();
 	local_flush_tlb_all();
@@ -65,10 +96,23 @@ void __cpuinit smp4d_callin(void)
 	notify_cpu_starting(cpuid);
 	/*
 	 * Unblock the master CPU _only_ when the scheduler state
+=======
+}
+
+void sun4d_cpu_pre_online(void *arg)
+{
+	unsigned long flags;
+	int cpuid;
+
+	cpuid = hard_smp_processor_id();
+
+	/* Unblock the master CPU _only_ when the scheduler state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * of all secondary CPUs will be up-to-date, so after
 	 * the SMP initialization the master will be just allowed
 	 * to call the scheduler code.
 	 */
+<<<<<<< HEAD
 	/* Get our local ticker going. */
 	smp_setup_percpu_timer();
 
@@ -81,6 +125,11 @@ void __cpuinit smp4d_callin(void)
 	sun4d_swap((unsigned long *)&cpu_callin_map[cpuid], 1);
 	local_flush_cache_all();
 	local_flush_tlb_all();
+=======
+	sun4d_swap((unsigned long *)&cpu_callin_map[cpuid], 1);
+	local_ops->cache_all();
+	local_ops->tlb_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((unsigned long)current_set[cpuid] < PAGE_OFFSET)
 		barrier();
@@ -97,6 +146,7 @@ void __cpuinit smp4d_callin(void)
 	show_leds(cpuid);
 
 	/* Attach to the address space of init_task. */
+<<<<<<< HEAD
 	atomic_inc(&init_mm.mm_count);
 	current->active_mm = &init_mm;
 
@@ -104,6 +154,13 @@ void __cpuinit smp4d_callin(void)
 	local_flush_tlb_all();
 
 	local_irq_enable();	/* We don't allow PIL 14 yet */
+=======
+	mmgrab(&init_mm);
+	current->active_mm = &init_mm;
+
+	local_ops->cache_all();
+	local_ops->tlb_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (!cpumask_test_cpu(cpuid, &smp_commenced_mask))
 		barrier();
@@ -111,8 +168,11 @@ void __cpuinit smp4d_callin(void)
 	spin_lock_irqsave(&sun4d_imsk_lock, flags);
 	cc_set_imsk(cc_get_imsk() & ~0x4000); /* Allow PIL 14 as well */
 	spin_unlock_irqrestore(&sun4d_imsk_lock, flags);
+<<<<<<< HEAD
 	set_cpu_online(cpuid, true);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -123,6 +183,7 @@ void __init smp4d_boot_cpus(void)
 	smp4d_ipi_init();
 	if (boot_cpu_id)
 		current_set[0] = NULL;
+<<<<<<< HEAD
 	smp_setup_percpu_timer();
 	local_flush_cache_all();
 }
@@ -131,14 +192,26 @@ int __cpuinit smp4d_boot_one_cpu(int i)
 {
 	unsigned long *entry = &sun4d_cpu_startup;
 	struct task_struct *p;
+=======
+	local_ops->cache_all();
+}
+
+int smp4d_boot_one_cpu(int i, struct task_struct *idle)
+{
+	unsigned long *entry = &sun4d_cpu_startup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int timeout;
 	int cpu_node;
 
 	cpu_find_by_instance(i, &cpu_node, NULL);
+<<<<<<< HEAD
 	/* Cook up an idler for this guy. */
 	p = fork_idle(i);
 	current_set[i] = task_thread_info(p);
 
+=======
+	current_set[i] = task_thread_info(idle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialize the contexts table
 	 * Since the call to prom_startcpu() trashes the structure,
@@ -150,7 +223,11 @@ int __cpuinit smp4d_boot_one_cpu(int i)
 
 	/* whirrr, whirrr, whirrrrrrrrr... */
 	printk(KERN_INFO "Starting CPU %d at %p\n", i, entry);
+<<<<<<< HEAD
 	local_flush_cache_all();
+=======
+	local_ops->cache_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prom_startcpu(cpu_node,
 		      &smp_penguin_ctable, 0, (char *)entry);
 
@@ -168,7 +245,11 @@ int __cpuinit smp4d_boot_one_cpu(int i)
 		return -ENODEV;
 
 	}
+<<<<<<< HEAD
 	local_flush_cache_all();
+=======
+	local_ops->cache_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -185,7 +266,11 @@ void __init smp4d_smp_done(void)
 		prev = &cpu_data(i).next;
 	}
 	*prev = first;
+<<<<<<< HEAD
 	local_flush_cache_all();
+=======
+	local_ops->cache_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ok, they are spinning and ready to go. */
 	smp_processors_ready = 1;
@@ -217,7 +302,11 @@ static void __init smp4d_ipi_init(void)
 
 void sun4d_ipi_interrupt(void)
 {
+<<<<<<< HEAD
 	struct sun4d_ipi_work *work = &__get_cpu_var(sun4d_ipi_work);
+=======
+	struct sun4d_ipi_work *work = this_cpu_ptr(&sun4d_ipi_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (work->single) {
 		work->single = 0;
@@ -233,7 +322,24 @@ void sun4d_ipi_interrupt(void)
 	}
 }
 
+<<<<<<< HEAD
 static void smp4d_ipi_single(int cpu)
+=======
+/* +-------+-------------+-----------+------------------------------------+
+ * | bcast |  devid      |   sid     |              levels mask           |
+ * +-------+-------------+-----------+------------------------------------+
+ *  31      30         23 22       15 14                                 0
+ */
+#define IGEN_MESSAGE(bcast, devid, sid, levels) \
+	(((bcast) << 31) | ((devid) << 23) | ((sid) << 15) | (levels))
+
+static void sun4d_send_ipi(int cpu, int level)
+{
+	cc_set_igen(IGEN_MESSAGE(0, cpu << 3, 6 + ((level >> 1) & 7), 1 << (level - 1)));
+}
+
+static void sun4d_ipi_single(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sun4d_ipi_work *work = &per_cpu(sun4d_ipi_work, cpu);
 
@@ -244,7 +350,11 @@ static void smp4d_ipi_single(int cpu)
 	sun4d_send_ipi(cpu, SUN4D_IPI_IRQ);
 }
 
+<<<<<<< HEAD
 static void smp4d_ipi_mask_one(int cpu)
+=======
+static void sun4d_ipi_mask_one(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sun4d_ipi_work *work = &per_cpu(sun4d_ipi_work, cpu);
 
@@ -255,7 +365,11 @@ static void smp4d_ipi_mask_one(int cpu)
 	sun4d_send_ipi(cpu, SUN4D_IPI_IRQ);
 }
 
+<<<<<<< HEAD
 static void smp4d_ipi_resched(int cpu)
+=======
+static void sun4d_ipi_resched(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sun4d_ipi_work *work = &per_cpu(sun4d_ipi_work, cpu);
 
@@ -267,7 +381,11 @@ static void smp4d_ipi_resched(int cpu)
 }
 
 static struct smp_funcall {
+<<<<<<< HEAD
 	smpfunc_t func;
+=======
+	void *func;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long arg1;
 	unsigned long arg2;
 	unsigned long arg3;
@@ -280,7 +398,11 @@ static struct smp_funcall {
 static DEFINE_SPINLOCK(cross_call_lock);
 
 /* Cross calls must be serialized, at least currently. */
+<<<<<<< HEAD
 static void smp4d_cross_call(smpfunc_t func, cpumask_t mask, unsigned long arg1,
+=======
+static void sun4d_cross_call(void *func, cpumask_t mask, unsigned long arg1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned long arg2, unsigned long arg3,
 			     unsigned long arg4)
 {
@@ -295,7 +417,11 @@ static void smp4d_cross_call(smpfunc_t func, cpumask_t mask, unsigned long arg1,
 			 * If you make changes here, make sure
 			 * gcc generates proper code...
 			 */
+<<<<<<< HEAD
 			register smpfunc_t f asm("i0") = func;
+=======
+			register void *f asm("i0") = func;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			register unsigned long a1 asm("i1") = arg1;
 			register unsigned long a2 asm("i2") = arg2;
 			register unsigned long a3 asm("i3") = arg3;
@@ -352,18 +478,33 @@ static void smp4d_cross_call(smpfunc_t func, cpumask_t mask, unsigned long arg1,
 /* Running cross calls. */
 void smp4d_cross_call_irq(void)
 {
+<<<<<<< HEAD
 	int i = hard_smp4d_processor_id();
 
 	ccall_info.processors_in[i] = 1;
 	ccall_info.func(ccall_info.arg1, ccall_info.arg2, ccall_info.arg3,
 			ccall_info.arg4, ccall_info.arg5);
+=======
+	void (*func)(unsigned long, unsigned long, unsigned long, unsigned long,
+		     unsigned long) = ccall_info.func;
+	int i = hard_smp_processor_id();
+
+	ccall_info.processors_in[i] = 1;
+	func(ccall_info.arg1, ccall_info.arg2, ccall_info.arg3, ccall_info.arg4,
+	     ccall_info.arg5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccall_info.processors_out[i] = 1;
 }
 
 void smp4d_percpu_timer_interrupt(struct pt_regs *regs)
 {
 	struct pt_regs *old_regs;
+<<<<<<< HEAD
 	int cpu = hard_smp4d_processor_id();
+=======
+	int cpu = hard_smp_processor_id();
+	struct clock_event_device *ce;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static int cpu_tick[NR_CPUS];
 	static char led_mask[] = { 0xe, 0xd, 0xb, 0x7, 0xb, 0xd };
 
@@ -379,6 +520,7 @@ void smp4d_percpu_timer_interrupt(struct pt_regs *regs)
 		show_leds(cpu);
 	}
 
+<<<<<<< HEAD
 	profile_tick(CPU_PROFILING);
 
 	if (!--prof_counter(cpu)) {
@@ -418,6 +560,23 @@ void __init smp4d_blackbox_current(unsigned *addr)
 	addr[2] = 0x81282002 | rd | (rd >> 11);	/* sll reg, 2, reg */
 	addr[4] = 0x01000000;			/* nop */
 }
+=======
+	ce = &per_cpu(sparc32_clockevent, cpu);
+
+	irq_enter();
+	ce->event_handler(ce);
+	irq_exit();
+
+	set_irq_regs(old_regs);
+}
+
+static const struct sparc32_ipi_ops sun4d_ipi_ops = {
+	.cross_call = sun4d_cross_call,
+	.resched    = sun4d_ipi_resched,
+	.single     = sun4d_ipi_single,
+	.mask_one   = sun4d_ipi_mask_one,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init sun4d_init_smp(void)
 {
@@ -426,6 +585,7 @@ void __init sun4d_init_smp(void)
 	/* Patch ipi15 trap table */
 	t_nmi[1] = t_nmi[1] + (linux_trap_ipi15_sun4d - linux_trap_ipi15_sun4m);
 
+<<<<<<< HEAD
 	/* And set btfixup... */
 	BTFIXUPSET_BLACKBOX(hard_smp_processor_id, smp4d_blackbox_id);
 	BTFIXUPSET_BLACKBOX(load_current, smp4d_blackbox_current);
@@ -434,6 +594,9 @@ void __init sun4d_init_smp(void)
 	BTFIXUPSET_CALL(smp_ipi_resched, smp4d_ipi_resched, BTFIXUPCALL_NORM);
 	BTFIXUPSET_CALL(smp_ipi_single, smp4d_ipi_single, BTFIXUPCALL_NORM);
 	BTFIXUPSET_CALL(smp_ipi_mask_one, smp4d_ipi_mask_one, BTFIXUPCALL_NORM);
+=======
+	sparc32_ipi_ops = &sun4d_ipi_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < NR_CPUS; i++) {
 		ccall_info.processors_in[i] = 1;

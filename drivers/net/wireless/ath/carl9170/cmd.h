@@ -114,7 +114,11 @@ __regwrite_out :							\
 
 #define carl9170_regwrite_result()					\
 	__err;								\
+<<<<<<< HEAD
 } while (0);
+=======
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define carl9170_async_regwrite_get_buf()				\
@@ -126,7 +130,11 @@ do {									\
 		__err = -ENOMEM;					\
 		goto __async_regwrite_out;				\
 	}								\
+<<<<<<< HEAD
 } while (0);
+=======
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define carl9170_async_regwrite_begin(carl)				\
 do {									\
@@ -169,6 +177,10 @@ __async_regwrite_out:							\
 
 #define carl9170_async_regwrite_result()				\
 	__err;								\
+<<<<<<< HEAD
 } while (0);
+=======
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __CMD_H */

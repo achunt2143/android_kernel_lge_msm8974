@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 config SND_AOA_SOUNDBUS
 	tristate "Apple Soundbus support"
 	select SND_PCM
 	---help---
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config SND_AOA_SOUNDBUS
+	tristate "Apple Soundbus support"
+	select SND_PCM
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This option enables the generic driver for the soundbus
 	support on Apple machines.
 	
@@ -10,5 +18,9 @@ config SND_AOA_SOUNDBUS
 config SND_AOA_SOUNDBUS_I2S
 	tristate "I2S bus support"
 	depends on SND_AOA_SOUNDBUS && PCI
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This option enables support for Apple I2S busses.

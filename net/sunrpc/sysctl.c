@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/sysctl.c
  *
@@ -14,7 +18,11 @@
 #include <linux/sysctl.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sunrpc/types.h>
 #include <linux/sunrpc/sched.h>
 #include <linux/sunrpc/stats.h>
@@ -37,6 +45,7 @@ EXPORT_SYMBOL_GPL(nfsd_debug);
 unsigned int	nlm_debug;
 EXPORT_SYMBOL_GPL(nlm_debug);
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
 
 static struct ctl_table_header *sunrpc_table_header;
@@ -65,10 +74,22 @@ static int proc_do_xprt(ctl_table *table, int write,
 	size_t len;
 
 	if ((*ppos && !write) || !*lenp) {
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+
+static int proc_do_xprt(struct ctl_table *table, int write,
+			void *buffer, size_t *lenp, loff_t *ppos)
+{
+	char tmpbuf[256];
+	ssize_t len;
+
+	if (write || *ppos) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*lenp = 0;
 		return 0;
 	}
 	len = svc_print_xprts(tmpbuf, sizeof(tmpbuf));
+<<<<<<< HEAD
 	return simple_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
 }
 
@@ -78,6 +99,24 @@ proc_dodebug(ctl_table *table, int write,
 {
 	char		tmpbuf[20], c, *s;
 	char __user *p;
+=======
+	len = memory_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
+
+	if (len < 0) {
+		*lenp = 0;
+		return -EINVAL;
+	}
+	*lenp = len;
+	return 0;
+}
+
+static int
+proc_dodebug(struct ctl_table *table, int write, void *buffer, size_t *lenp,
+	     loff_t *ppos)
+{
+	char		tmpbuf[20], *s = NULL;
+	char *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	value;
 	size_t		left, len;
 
@@ -89,16 +128,25 @@ proc_dodebug(ctl_table *table, int write,
 	left = *lenp;
 
 	if (write) {
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_READ, buffer, left))
 			return -EFAULT;
 		p = buffer;
 		while (left && __get_user(c, p) >= 0 && isspace(c))
 			left--, p++;
+=======
+		p = buffer;
+		while (left && isspace(*p)) {
+			left--;
+			p++;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!left)
 			goto done;
 
 		if (left > sizeof(tmpbuf) - 1)
 			return -EINVAL;
+<<<<<<< HEAD
 		if (copy_from_user(tmpbuf, p, left))
 			return -EFAULT;
 		tmpbuf[left] = '\0';
@@ -109,11 +157,28 @@ proc_dodebug(ctl_table *table, int write,
 			return -EINVAL;
 		while (left && isspace(*s))
 			left--, s++;
+=======
+		memcpy(tmpbuf, p, left);
+		tmpbuf[left] = '\0';
+
+		value = simple_strtol(tmpbuf, &s, 0);
+		if (s) {
+			left -= (s - tmpbuf);
+			if (left && !isspace(*s))
+				return -EINVAL;
+			while (left && isspace(*s)) {
+				left--;
+				s++;
+			}
+		} else
+			left = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(unsigned int *) table->data = value;
 		/* Display the RPC tasks on writing to rpc_debug */
 		if (strcmp(table->procname, "rpc_debug") == 0)
 			rpc_show_tasks(&init_net);
 	} else {
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_WRITE, buffer, left))
 			return -EFAULT;
 		len = sprintf(tmpbuf, "%d", *(unsigned int *) table->data);
@@ -124,6 +189,14 @@ proc_dodebug(ctl_table *table, int write,
 		if ((left -= len) > 0) {
 			if (put_user('\n', (char __user *)buffer + len))
 				return -EFAULT;
+=======
+		len = sprintf(tmpbuf, "0x%04x", *(unsigned int *) table->data);
+		if (len > left)
+			len = left;
+		memcpy(buffer, tmpbuf, len);
+		if ((left -= len) > 0) {
+			*((char *)buffer + len) = '\n';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			left--;
 		}
 	}
@@ -134,8 +207,14 @@ done:
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static ctl_table debug_table[] = {
+=======
+static struct ctl_table_header *sunrpc_table_header;
+
+static struct ctl_table debug_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "rpc_debug",
 		.data		= &rpc_debug,
@@ -173,6 +252,7 @@ static ctl_table debug_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static ctl_table sunrpc_table[] = {
 	{
 		.procname	= "sunrpc",
@@ -182,4 +262,21 @@ static ctl_table sunrpc_table[] = {
 	{ }
 };
 
+=======
+void
+rpc_register_sysctl(void)
+{
+	if (!sunrpc_table_header)
+		sunrpc_table_header = register_sysctl("sunrpc", debug_table);
+}
+
+void
+rpc_unregister_sysctl(void)
+{
+	if (sunrpc_table_header) {
+		unregister_sysctl_table(sunrpc_table_header);
+		sunrpc_table_header = NULL;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

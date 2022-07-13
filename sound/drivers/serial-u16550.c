@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   serial.c
  *   Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
@@ -7,6 +11,7 @@
  *
  *   This code is based on the code from ALSA 0.5.9, but heavily rewritten.
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +26,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sat Mar 31 17:27:57 PST 2001 tim.mann@compaq.com 
  *      Added support for the Midiator MS-124T and for the MS-124W in
  *      Single Addressed (S/A) or Multiple Burst (M/B) mode, with
@@ -37,6 +44,10 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/rawmidi.h>
 #include <sound/initval.h>
@@ -44,11 +55,16 @@
 #include <linux/serial_reg.h>
 #include <linux/jiffies.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
 MODULE_DESCRIPTION("MIDI serial u16550");
 MODULE_LICENSE("GPL");
 MODULE_SUPPORTED_DEVICE("{{ALSA, MIDI serial u16550}}");
+=======
+MODULE_DESCRIPTION("MIDI serial u16550");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SNDRV_SERIAL_SOUNDCANVAS 0 /* Roland Soundcanvas; F5 NN selects part */
 #define SNDRV_SERIAL_MS124T 1      /* Midiator MS-124T */
@@ -56,7 +72,11 @@ MODULE_SUPPORTED_DEVICE("{{ALSA, MIDI serial u16550}}");
 #define SNDRV_SERIAL_MS124W_MB 3   /* Midiator MS-124W in M/B mode */
 #define SNDRV_SERIAL_GENERIC 4     /* Generic Interface */
 #define SNDRV_SERIAL_MAX_ADAPTOR SNDRV_SERIAL_GENERIC
+<<<<<<< HEAD
 static char *adaptor_names[] = {
+=======
+static const char * const adaptor_names[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Soundcanvas",
         "MS-124T",
 	"MS-124W S/A",
@@ -85,9 +105,15 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for Serial MIDI.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable UART16550A chip.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for UART16550A chip.");
 module_param_array(irq, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for UART16550A chip.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "IRQ # for UART16550A chip.");
 module_param_array(speed, int, NULL, 0444);
 MODULE_PARM_DESC(speed, "Speed in bauds.");
@@ -130,7 +156,10 @@ struct snd_uart16550 {
 	int irq;
 
 	unsigned long base;
+<<<<<<< HEAD
 	struct resource *res_base;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int speed;
 	unsigned int speed_base;
@@ -174,9 +203,14 @@ static inline void snd_uart16550_add_timer(struct snd_uart16550 *uart)
 {
 	if (!uart->timer_running) {
 		/* timer 38600bps * 10bit * 16byte */
+<<<<<<< HEAD
 		uart->buffer_timer.expires = jiffies + (HZ+255)/256;
 		uart->timer_running = 1;
 		add_timer(&uart->buffer_timer);
+=======
+		mod_timer(&uart->buffer_timer, jiffies + (HZ + 255) / 256);
+		uart->timer_running = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -311,12 +345,20 @@ static irqreturn_t snd_uart16550_interrupt(int irq, void *dev_id)
 }
 
 /* When the polling mode, this function calls snd_uart16550_io_loop. */
+<<<<<<< HEAD
 static void snd_uart16550_buffer_timer(unsigned long data)
+=======
+static void snd_uart16550_buffer_timer(struct timer_list *t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct snd_uart16550 *uart;
 
+<<<<<<< HEAD
 	uart = (struct snd_uart16550 *)data;
+=======
+	uart = from_timer(uart, t, buffer_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&uart->open_lock, flags);
 	snd_uart16550_del_timer(uart);
 	snd_uart16550_io_loop(uart);
@@ -328,7 +370,11 @@ static void snd_uart16550_buffer_timer(unsigned long data)
  *  return 0 if found
  *  return negative error if not found
  */
+<<<<<<< HEAD
 static int __devinit snd_uart16550_detect(struct snd_uart16550 *uart)
+=======
+static int snd_uart16550_detect(struct snd_uart16550 *uart)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long io_base = uart->base;
 	int ok;
@@ -339,8 +385,12 @@ static int __devinit snd_uart16550_detect(struct snd_uart16550 *uart)
 		return -ENODEV;	/* Not configured */
 	}
 
+<<<<<<< HEAD
 	uart->res_base = request_region(io_base, 8, "Serial MIDI");
 	if (uart->res_base == NULL) {
+=======
+	if (!devm_request_region(uart->card->dev, io_base, 8, "Serial MIDI")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "u16550: can't grab port 0x%lx\n", io_base);
 		return -EBUSY;
 	}
@@ -754,20 +804,29 @@ static void snd_uart16550_output_trigger(struct snd_rawmidi_substream *substream
 		snd_uart16550_output_write(substream);
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_uart16550_output =
+=======
+static const struct snd_rawmidi_ops snd_uart16550_output =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_uart16550_output_open,
 	.close =	snd_uart16550_output_close,
 	.trigger =	snd_uart16550_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_uart16550_input =
+=======
+static const struct snd_rawmidi_ops snd_uart16550_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_uart16550_input_open,
 	.close =	snd_uart16550_input_close,
 	.trigger =	snd_uart16550_input_trigger,
 };
 
+<<<<<<< HEAD
 static int snd_uart16550_free(struct snd_uart16550 *uart)
 {
 	if (uart->irq >= 0)
@@ -795,11 +854,27 @@ static int __devinit snd_uart16550_create(struct snd_card *card,
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_uart16550_dev_free,
 	};
+=======
+static int snd_uart16550_create(struct snd_card *card,
+				unsigned long iobase,
+				int irq,
+				unsigned int speed,
+				unsigned int base,
+				int adaptor,
+				int droponfull,
+				struct snd_uart16550 **ruart)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_uart16550 *uart;
 	int err;
 
 
+<<<<<<< HEAD
 	if ((uart = kzalloc(sizeof(*uart), GFP_KERNEL)) == NULL)
+=======
+	uart = devm_kzalloc(card->dev, sizeof(*uart), GFP_KERNEL);
+	if (!uart)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	uart->adaptor = adaptor;
 	uart->card = card;
@@ -808,15 +883,26 @@ static int __devinit snd_uart16550_create(struct snd_card *card,
 	uart->base = iobase;
 	uart->drop_on_full = droponfull;
 
+<<<<<<< HEAD
 	if ((err = snd_uart16550_detect(uart)) <= 0) {
 		printk(KERN_ERR "no UART detected at 0x%lx\n", iobase);
 		snd_uart16550_free(uart);
+=======
+	err = snd_uart16550_detect(uart);
+	if (err <= 0) {
+		printk(KERN_ERR "no UART detected at 0x%lx\n", iobase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	if (irq >= 0 && irq != SNDRV_AUTO_IRQ) {
+<<<<<<< HEAD
 		if (request_irq(irq, snd_uart16550_interrupt,
 				0, "Serial MIDI", uart)) {
+=======
+		if (devm_request_irq(card->dev, irq, snd_uart16550_interrupt,
+				     0, "Serial MIDI", uart)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_WARNING
 				   "irq %d busy. Using Polling.\n", irq);
 		} else {
@@ -830,6 +916,7 @@ static int __devinit snd_uart16550_create(struct snd_card *card,
 	uart->prev_in = 0;
 	uart->rstatus = 0;
 	memset(uart->prev_status, 0x80, sizeof(unsigned char) * SNDRV_SERIAL_MAX_OUTS);
+<<<<<<< HEAD
 	init_timer(&uart->buffer_timer);
 	uart->buffer_timer.function = snd_uart16550_buffer_timer;
 	uart->buffer_timer.data = (unsigned long)uart;
@@ -841,6 +928,11 @@ static int __devinit snd_uart16550_create(struct snd_card *card,
 		return err;
 	}
 
+=======
+	timer_setup(&uart->buffer_timer, snd_uart16550_buffer_timer, 0);
+	uart->timer_running = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (uart->adaptor) {
 	case SNDRV_SERIAL_MS124W_SA:
 	case SNDRV_SERIAL_MS124W_MB:
@@ -863,7 +955,11 @@ static int __devinit snd_uart16550_create(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit snd_uart16550_substreams(struct snd_rawmidi_str *stream)
+=======
+static void snd_uart16550_substreams(struct snd_rawmidi_str *stream)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi_substream *substream;
 
@@ -872,9 +968,15 @@ static void __devinit snd_uart16550_substreams(struct snd_rawmidi_str *stream)
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit snd_uart16550_rmidi(struct snd_uart16550 *uart, int device,
 				      int outs, int ins,
 				      struct snd_rawmidi **rmidi)
+=======
+static int snd_uart16550_rmidi(struct snd_uart16550 *uart, int device,
+			       int outs, int ins,
+			       struct snd_rawmidi **rmidi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rrawmidi;
 	int err;
@@ -899,7 +1001,11 @@ static int __devinit snd_uart16550_rmidi(struct snd_uart16550 *uart, int device,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_serial_probe(struct platform_device *devptr)
+=======
+static int snd_serial_probe(struct platform_device *devptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_uart16550 *uart;
@@ -942,13 +1048,19 @@ static int __devinit snd_serial_probe(struct platform_device *devptr)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	err  = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err  = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+				 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	strcpy(card->driver, "Serial");
 	strcpy(card->shortname, "Serial MIDI (UART16550A)");
 
+<<<<<<< HEAD
 	if ((err = snd_uart16550_create(card,
 					port[dev],
 					irq[dev],
@@ -962,6 +1074,17 @@ static int __devinit snd_serial_probe(struct platform_device *devptr)
 	err = snd_uart16550_rmidi(uart, 0, outs[dev], ins[dev], &uart->rmidi);
 	if (err < 0)
 		goto _err;
+=======
+	err = snd_uart16550_create(card, port[dev], irq[dev], speed[dev],
+				   base[dev], adaptor[dev], droponfull[dev],
+				   &uart);
+	if (err < 0)
+		return err;
+
+	err = snd_uart16550_rmidi(uart, 0, outs[dev], ins[dev], &uart->rmidi);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(card->longname, "%s [%s] at %#lx, irq %d",
 		card->shortname,
@@ -969,6 +1092,7 @@ static int __devinit snd_serial_probe(struct platform_device *devptr)
 		uart->base,
 		uart->irq);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &devptr->dev);
 
 	if ((err = snd_card_register(card)) < 0)
@@ -987,15 +1111,28 @@ static int __devexit snd_serial_remove(struct platform_device *devptr)
 	snd_card_free(platform_get_drvdata(devptr));
 	platform_set_drvdata(devptr, NULL);
 	return 0;
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	platform_set_drvdata(devptr, card);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SND_SERIAL_DRIVER	"snd_serial_u16550"
 
 static struct platform_driver snd_serial_driver = {
 	.probe		= snd_serial_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p( snd_serial_remove),
 	.driver		= {
 		.name	= SND_SERIAL_DRIVER
+=======
+	.driver		= {
+		.name	= SND_SERIAL_DRIVER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1012,7 +1149,12 @@ static int __init alsa_card_serial_init(void)
 {
 	int i, cards, err;
 
+<<<<<<< HEAD
 	if ((err = platform_driver_register(&snd_serial_driver)) < 0)
+=======
+	err = platform_driver_register(&snd_serial_driver);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	cards = 0;

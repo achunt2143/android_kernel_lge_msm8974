@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SH_7619_SOLUTION_ENGINE)	+= board-se7619.o
 
 obj-$(CONFIG_SH_SOLUTION_ENGINE)	+= 770x/

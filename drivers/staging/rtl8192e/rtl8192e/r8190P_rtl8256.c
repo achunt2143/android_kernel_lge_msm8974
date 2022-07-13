@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -17,17 +18,31 @@
  * wlanfae <wlanfae@realtek.com>
 ******************************************************************************/
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rtl_core.h"
 #include "r8192E_phyreg.h"
 #include "r8192E_phy.h"
 #include "r8190P_rtl8256.h"
 
+<<<<<<< HEAD
 void PHY_SetRF8256Bandwidth(struct net_device *dev,
 			    enum ht_channel_width Bandwidth)
+=======
+void rtl92e_set_bandwidth(struct net_device *dev,
+			  enum ht_channel_width bandwidth)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8	eRFPath;
 	struct r8192_priv *priv = rtllib_priv(dev);
 
+<<<<<<< HEAD
 	for (eRFPath = 0; eRFPath < priv->NumTotalRFPath; eRFPath++) {
 		if (!rtl8192_phy_CheckIsLegalRFPath(dev, eRFPath))
 				continue;
@@ -93,6 +108,41 @@ bool PHY_RF8256_Config(struct net_device *dev)
 }
 
 bool phy_RF8256_Config_ParaFile(struct net_device *dev)
+=======
+	if (priv->card_8192_version != VERSION_8190_BD &&
+	    priv->card_8192_version != VERSION_8190_BE) {
+		netdev_warn(dev, "%s(): Unknown HW version.\n", __func__);
+		return;
+	}
+
+	for (eRFPath = 0; eRFPath < priv->num_total_rf_path; eRFPath++) {
+		switch (bandwidth) {
+		case HT_CHANNEL_WIDTH_20:
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x0b, bMask12Bits, 0x100);
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x2c, bMask12Bits, 0x3d7);
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x0e, bMask12Bits, 0x021);
+			break;
+		case HT_CHANNEL_WIDTH_20_40:
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x0b, bMask12Bits, 0x300);
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x2c, bMask12Bits, 0x3ff);
+			rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath,
+					  0x0e, bMask12Bits, 0x0e1);
+			break;
+		default:
+			netdev_err(dev, "%s(): Unknown bandwidth: %#X\n",
+				   __func__, bandwidth);
+			break;
+		}
+	}
+}
+
+bool rtl92e_config_rf(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	u4RegValue = 0;
 	u8	eRFPath;
@@ -105,6 +155,7 @@ bool phy_RF8256_Config_ParaFile(struct net_device *dev)
 	u8	ConstRetryTimes = 5, RetryTimes = 5;
 	u8 ret = 0;
 
+<<<<<<< HEAD
 	for (eRFPath = (enum rf90_radio_path)RF90_PATH_A;
 	     eRFPath < priv->NumTotalRFPath; eRFPath++) {
 		if (!rtl8192_phy_CheckIsLegalRFPath(dev, eRFPath))
@@ -144,10 +195,48 @@ bool phy_RF8256_Config_ParaFile(struct net_device *dev)
 			RT_TRACE(COMP_ERR, "PHY_RF8256_Config():Check "
 				 "Radio[%d] Fail!!\n", eRFPath);
 			goto phy_RF8256_Config_ParaFile_Fail;
+=======
+	priv->num_total_rf_path = RTL819X_TOTAL_RF_PATH;
+
+	for (eRFPath = (enum rf90_radio_path)RF90_PATH_A;
+	     eRFPath < priv->num_total_rf_path; eRFPath++) {
+		pPhyReg = &priv->phy_reg_def[eRFPath];
+
+		switch (eRFPath) {
+		case RF90_PATH_A:
+			u4RegValue = rtl92e_get_bb_reg(dev, pPhyReg->rfintfs,
+						       bRFSI_RFENV);
+			break;
+		case RF90_PATH_B:
+			u4RegValue = rtl92e_get_bb_reg(dev, pPhyReg->rfintfs,
+						       bRFSI_RFENV << 16);
+			break;
+		}
+
+		rtl92e_set_bb_reg(dev, pPhyReg->rfintfe, bRFSI_RFENV << 16, 0x1);
+
+		rtl92e_set_bb_reg(dev, pPhyReg->rfintfo, bRFSI_RFENV, 0x1);
+
+		rtl92e_set_bb_reg(dev, pPhyReg->rfHSSIPara2,
+				  b3WireAddressLength, 0x0);
+		rtl92e_set_bb_reg(dev, pPhyReg->rfHSSIPara2,
+				  b3WireDataLength, 0x0);
+
+		rtl92e_set_rf_reg(dev, (enum rf90_radio_path)eRFPath, 0x0,
+				  bMask12Bits, 0xbf);
+
+		rtStatus = rtl92e_check_bb_and_rf(dev, HW90_BLOCK_RF,
+						  (enum rf90_radio_path)eRFPath);
+		if (!rtStatus) {
+			netdev_err(dev, "%s(): Failed to check RF Path %d.\n",
+				   __func__, eRFPath);
+			goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		RetryTimes = ConstRetryTimes;
 		RF3_Final_Value = 0;
+<<<<<<< HEAD
 		switch (eRFPath) {
 		case RF90_PATH_A:
 			while (RF3_Final_Value != RegValueToBeCheck &&
@@ -208,10 +297,22 @@ bool phy_RF8256_Config_ParaFile(struct net_device *dev)
 				RetryTimes--;
 			}
 			break;
+=======
+		while (RF3_Final_Value != RegValueToBeCheck &&
+		       RetryTimes != 0) {
+			ret = rtl92e_config_rf_path(dev,
+						(enum rf90_radio_path)eRFPath);
+			RF3_Final_Value = rtl92e_get_rf_reg(dev,
+						(enum rf90_radio_path)eRFPath,
+						RegOffSetToBeCheck,
+						bMask12Bits);
+			RetryTimes--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		switch (eRFPath) {
 		case RF90_PATH_A:
+<<<<<<< HEAD
 		case RF90_PATH_C:
 			rtl8192_setBBreg(dev, pPhyReg->rfintfs, bRFSI_RFENV,
 					 u4RegValue);
@@ -220,10 +321,19 @@ bool phy_RF8256_Config_ParaFile(struct net_device *dev)
 		case RF90_PATH_D:
 			rtl8192_setBBreg(dev, pPhyReg->rfintfs, bRFSI_RFENV<<16,
 					 u4RegValue);
+=======
+			rtl92e_set_bb_reg(dev, pPhyReg->rfintfs, bRFSI_RFENV,
+					  u4RegValue);
+			break;
+		case RF90_PATH_B:
+			rtl92e_set_bb_reg(dev, pPhyReg->rfintfs,
+					  bRFSI_RFENV << 16, u4RegValue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		if (ret) {
+<<<<<<< HEAD
 			RT_TRACE(COMP_ERR, "phy_RF8256_Config_ParaFile():"
 				 "Radio[%d] Fail!!", eRFPath);
 			goto phy_RF8256_Config_ParaFile_Fail;
@@ -240,11 +350,27 @@ phy_RF8256_Config_ParaFile_Fail:
 }
 
 void PHY_SetRF8256CCKTxPower(struct net_device *dev, u8	powerlevel)
+=======
+			netdev_err(dev,
+				   "%s(): Failed to initialize RF Path %d.\n",
+				   __func__, eRFPath);
+			goto fail;
+		}
+	}
+	return true;
+
+fail:
+	return false;
+}
+
+void rtl92e_set_cck_tx_power(struct net_device *dev, u8 powerlevel)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32	TxAGC = 0;
 	struct r8192_priv *priv = rtllib_priv(dev);
 
 	TxAGC = powerlevel;
+<<<<<<< HEAD
 	if (priv->bDynamicTxLowPower == true) {
 		if (priv->CustomerID == RT_CID_819x_Netcore)
 			TxAGC = 0x22;
@@ -258,6 +384,20 @@ void PHY_SetRF8256CCKTxPower(struct net_device *dev, u8	powerlevel)
 
 
 void PHY_SetRF8256OFDMTxPower(struct net_device *dev, u8 powerlevel)
+=======
+	if (priv->dynamic_tx_low_pwr) {
+		if (priv->customer_id == RT_CID_819X_NETCORE)
+			TxAGC = 0x22;
+		else
+			TxAGC += priv->cck_pwr_enl;
+	}
+	if (TxAGC > 0x24)
+		TxAGC = 0x24;
+	rtl92e_set_bb_reg(dev, rTxAGC_CCK_Mcs32, bTxAGCRateCCK, TxAGC);
+}
+
+void rtl92e_set_ofdm_tx_power(struct net_device *dev, u8 powerlevel)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 	u32 writeVal, powerBase0, powerBase1, writeVal_tmp;
@@ -265,7 +405,11 @@ void PHY_SetRF8256OFDMTxPower(struct net_device *dev, u8 powerlevel)
 	u16 RegOffset[6] = {0xe00, 0xe04, 0xe10, 0xe14, 0xe18, 0xe1c};
 	u8 byte0, byte1, byte2, byte3;
 
+<<<<<<< HEAD
 	powerBase0 = powerlevel + priv->LegacyHTTxPowerDiff;
+=======
+	powerBase0 = powerlevel + priv->legacy_ht_tx_pwr_diff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	powerBase0 = (powerBase0 << 24) | (powerBase0 << 16) |
 		     (powerBase0 << 8) | powerBase0;
 	powerBase1 = powerlevel;
@@ -273,12 +417,21 @@ void PHY_SetRF8256OFDMTxPower(struct net_device *dev, u8 powerlevel)
 		     (powerBase1 << 8) | powerBase1;
 
 	for (index = 0; index < 6; index++) {
+<<<<<<< HEAD
 		writeVal = (u32)(priv->MCSTxPowerLevelOriginalOffset[index] +
 			   ((index < 2) ? powerBase0 : powerBase1));
 		byte0 = (u8)(writeVal & 0x7f);
 		byte1 = (u8)((writeVal & 0x7f00)>>8);
 		byte2 = (u8)((writeVal & 0x7f0000)>>16);
 		byte3 = (u8)((writeVal & 0x7f000000)>>24);
+=======
+		writeVal = (u32)(priv->mcs_tx_pwr_level_org_offset[index] +
+			   ((index < 2) ? powerBase0 : powerBase1));
+		byte0 = writeVal & 0x7f;
+		byte1 = (writeVal & 0x7f00) >> 8;
+		byte2 = (writeVal & 0x7f0000) >> 16;
+		byte3 = (writeVal & 0x7f000000) >> 24;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (byte0 > 0x24)
 			byte0 = 0x24;
 		if (byte1 > 0x24)
@@ -291,16 +444,28 @@ void PHY_SetRF8256OFDMTxPower(struct net_device *dev, u8 powerlevel)
 		if (index == 3) {
 			writeVal_tmp = (byte3 << 24) | (byte2 << 16) |
 				       (byte1 << 8) | byte0;
+<<<<<<< HEAD
 			priv->Pwr_Track = writeVal_tmp;
 		}
 
 		if (priv->bDynamicTxHighPower == true)
+=======
+			priv->pwr_track = writeVal_tmp;
+		}
+
+		if (priv->dynamic_tx_high_pwr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			writeVal = 0x03030303;
 		else
 			writeVal = (byte3 << 24) | (byte2 << 16) |
 				   (byte1 << 8) | byte0;
+<<<<<<< HEAD
 		rtl8192_setBBreg(dev, RegOffset[index], 0x7f7f7f7f, writeVal);
 	}
 
 	return;
+=======
+		rtl92e_set_bb_reg(dev, RegOffset[index], 0x7f7f7f7f, writeVal);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

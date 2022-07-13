@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2005-7 The University of Waikato, Hamilton, New Zealand.
  *  Copyright (c) 2007   The University of Aberdeen, Scotland, UK
@@ -5,7 +9,11 @@
  *  An implementation of the DCCP protocol
  *
  *  This code has been developed by the University of Waikato WAND
+<<<<<<< HEAD
  *  research group. For further information please see http://www.wand.net.nz/
+=======
+ *  research group. For further information please see https://www.wand.net.nz/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  or e-mail Ian McDonald - ian.mcdonald@jandi.co.nz
  *
  *  This code also uses code from Lulea University, rereleased as GPL by its
@@ -17,6 +25,7 @@
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>.
  *
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +40,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _DCCP_CCID3_H_
 #define _DCCP_CCID3_H_
@@ -106,6 +117,10 @@ struct ccid3_hc_tx_sock {
 	u8				tx_last_win_count;
 	ktime_t				tx_t_last_win_count;
 	struct timer_list		tx_no_feedback_timer;
+<<<<<<< HEAD
+=======
+	struct sock			*sk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktime_t				tx_t_ld;
 	ktime_t				tx_t_nom;
 	struct tfrc_tx_hist_entry	*tx_hist;

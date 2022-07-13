@@ -9,12 +9,22 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_clk.h>
+#include <linux/clocksource.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/seq_file.h>
 #include <linux/cpu.h>
 #include <linux/initrd.h>
 #include <linux/console.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_fdt.h>
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/setup.h>
 #include <asm/sections.h>
@@ -24,14 +34,21 @@
 #include <linux/param.h>
 #include <linux/pci.h>
 #include <linux/cache.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <asm/cacheflush.h>
 #include <asm/entry.h>
 #include <asm/cpuinfo.h>
 
+<<<<<<< HEAD
 #include <asm/prom.h>
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU(unsigned int, KSP);	/* Saved kernel stack pointer */
 DEFINE_PER_CPU(unsigned int, KM);	/* Kernel/user mode */
@@ -39,12 +56,27 @@ DEFINE_PER_CPU(unsigned int, ENTRY_SP);	/* Saved SP on kernel entry */
 DEFINE_PER_CPU(unsigned int, R11_SAVE);	/* Temp variable for entry */
 DEFINE_PER_CPU(unsigned int, CURRENT_SAVE);	/* Saved current pointer */
 
+<<<<<<< HEAD
 unsigned int boot_cpuid;
 char cmd_line[COMMAND_LINE_SIZE];
 
 void __init setup_arch(char **cmdline_p)
 {
 	*cmdline_p = cmd_line;
+=======
+/*
+ * Placed cmd_line to .data section because can be initialized from
+ * ASM code. Default position is BSS section which is cleared
+ * in machine_early_init().
+ */
+char cmd_line[COMMAND_LINE_SIZE] __section(".data");
+
+void __init setup_arch(char **cmdline_p)
+{
+	*cmdline_p = boot_command_line;
+
+	setup_memory();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	console_verbose();
 
@@ -54,6 +86,7 @@ void __init setup_arch(char **cmdline_p)
 
 	microblaze_cache_init();
 
+<<<<<<< HEAD
 	setup_memory();
 
 #ifdef CONFIG_EARLY_PRINTK
@@ -74,6 +107,9 @@ void __init setup_arch(char **cmdline_p)
 	conswitchp = &dummy_con;
 #endif
 #endif
+=======
+	xilinx_pci_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MTD_UCLINUX
@@ -121,7 +157,11 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 
 	/* Move ROMFS out of BSS before clearing it */
 	if (romfs_size > 0) {
+<<<<<<< HEAD
 		memmove(&_ebss, (int *)romfs_base, romfs_size);
+=======
+		memmove(&__bss_stop, (int *)romfs_base, romfs_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		klimit += romfs_size;
 	}
 #endif
@@ -130,6 +170,7 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 	memset(__bss_start, 0, __bss_stop-__bss_start);
 	memset(_ssbss, 0, _esbss-_ssbss);
 
+<<<<<<< HEAD
 	/* Copy command line passed from bootloader */
 #ifndef CONFIG_CMDLINE_BOOL
 	if (cmdline && cmdline[0] != '\0')
@@ -144,6 +185,10 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 #ifdef CONFIG_EARLY_PRINTK
 	setup_early_printk(NULL);
 #endif
+=======
+/* initialize device tree for usage in early_printk */
+	early_init_devtree(_fdt_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup kernel_tlb after BSS cleaning
 	 * Maybe worth to move to asm code */
@@ -151,6 +196,7 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 	/* printk("TLB1 0x%08x, TLB0 0x%08x, tlb 0x%x\n", tlb0,
 							tlb1, kernel_tlb); */
 
+<<<<<<< HEAD
 	printk("Ramdisk addr 0x%08x, ", ram);
 	if (fdt)
 		printk("FDT at 0x%08x\n", fdt);
@@ -178,6 +224,36 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 	if (!msr)
 		printk("!!!Your kernel not setup MSR instruction but "
 				"CPU have it %x\n", msr);
+=======
+	pr_info("Ramdisk addr 0x%08x, ", ram);
+	if (fdt)
+		pr_info("FDT at 0x%08x\n", fdt);
+	else
+		pr_info("Compiled-in FDT at %p\n", _fdt_start);
+
+#ifdef CONFIG_MTD_UCLINUX
+	pr_info("Found romfs @ 0x%08x (0x%08x)\n",
+			romfs_base, romfs_size);
+	pr_info("#### klimit %p ####\n", old_klimit);
+	BUG_ON(romfs_size < 0); /* What else can we do? */
+
+	pr_info("Moved 0x%08x bytes from 0x%08x to 0x%08x\n",
+			romfs_size, romfs_base, (unsigned)&__bss_stop);
+
+	pr_info("New klimit: 0x%08x\n", (unsigned)klimit);
+#endif
+
+#if CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR
+	if (msr) {
+		pr_info("!!!Your kernel has setup MSR instruction but ");
+		pr_cont("CPU don't have it %x\n", msr);
+	}
+#else
+	if (!msr) {
+		pr_info("!!!Your kernel not setup MSR instruction but ");
+		pr_cont("CPU have it %x\n", msr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Do not copy reset vectors. offset = 0x2 means skip the first
@@ -195,12 +271,23 @@ void __init machine_early_init(const char *cmdline, unsigned int ram,
 	per_cpu(CURRENT_SAVE, 0) = (unsigned long)current;
 }
 
+<<<<<<< HEAD
+=======
+void __init time_init(void)
+{
+	of_clk_init(NULL);
+	setup_cpuinfo_clk();
+	timer_probe();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 struct dentry *of_debugfs_root;
 
 static int microblaze_debugfs_init(void)
 {
 	of_debugfs_root = debugfs_create_dir("microblaze", NULL);
+<<<<<<< HEAD
 
 	return of_debugfs_root == NULL;
 }
@@ -249,3 +336,16 @@ static int __init setup_bus_notifier(void)
 }
 
 arch_initcall(setup_bus_notifier);
+=======
+	return 0;
+}
+arch_initcall(microblaze_debugfs_init);
+
+static int __init debugfs_tlb(void)
+{
+	debugfs_create_u32("tlb_skip", S_IRUGO, of_debugfs_root, &tlb_skip);
+	return 0;
+}
+device_initcall(debugfs_tlb);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

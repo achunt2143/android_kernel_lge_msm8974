@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ISA Plug & Play support
  *  Copyright (c) by Jaroslav Kysela <perex@suse.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  ISA Plug & Play support
+ *  Copyright (c) by Jaroslav Kysela <perex@suse.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LINUX_ISAPNP_H
@@ -56,10 +63,13 @@
 #define ISAPNP_DEVICE_ID(_va, _vb, _vc, _function) \
 		{ .vendor = ISAPNP_VENDOR(_va, _vb, _vc), .function = ISAPNP_FUNCTION(_function) }
 
+<<<<<<< HEAD
 /* export used IDs outside module */
 #define ISAPNP_CARD_TABLE(name) \
 		MODULE_GENERIC_TABLE(isapnp_card, name)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct isapnp_card_id {
 	unsigned long driver_data;	/* data private to the driver */
 	unsigned short card_vendor, card_device;
@@ -94,9 +104,12 @@ static inline int isapnp_proc_done(void) { return 0; }
 #endif
 
 /* compat */
+<<<<<<< HEAD
 struct pnp_card *pnp_find_card(unsigned short vendor,
 			       unsigned short device,
 			       struct pnp_card *from);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pnp_dev *pnp_find_dev(struct pnp_card *card,
 			     unsigned short vendor,
 			     unsigned short function,
@@ -111,9 +124,12 @@ static inline int isapnp_cfg_end(void) { return -ENODEV; }
 static inline unsigned char isapnp_read_byte(unsigned char idx) { return 0xff; }
 static inline void isapnp_write_byte(unsigned char idx, unsigned char val) { ; }
 
+<<<<<<< HEAD
 static inline struct pnp_card *pnp_find_card(unsigned short vendor,
 					     unsigned short device,
 					     struct pnp_card *from) { return NULL; }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct pnp_dev *pnp_find_dev(struct pnp_card *card,
 					   unsigned short vendor,
 					   unsigned short function,

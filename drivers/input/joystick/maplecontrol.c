@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SEGA Dreamcast controller driver
  *	Based on drivers/usb/iforce.c
@@ -61,7 +65,11 @@ static void dc_pad_callback(struct mapleq *mq)
 
 static int dc_pad_open(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct dc_pad *pad = dev->dev.platform_data;
+=======
+	struct dc_pad *pad = dev_get_platdata(&dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	maple_getcond_callback(pad->mdev, dc_pad_callback, HZ/20,
 		MAPLE_FUNC_CONTROLLER);
@@ -71,14 +79,22 @@ static int dc_pad_open(struct input_dev *dev)
 
 static void dc_pad_close(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct dc_pad *pad = dev->dev.platform_data;
+=======
+	struct dc_pad *pad = dev_get_platdata(&dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	maple_getcond_callback(pad->mdev, dc_pad_callback, 0,
 		MAPLE_FUNC_CONTROLLER);
 }
 
 /* allow the controller to be used */
+<<<<<<< HEAD
 static int __devinit probe_maple_controller(struct device *dev)
+=======
+static int probe_maple_controller(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const short btn_bit[32] = {
 		BTN_C, BTN_B, BTN_A, BTN_START, -1, -1, -1, -1,
@@ -139,7 +155,10 @@ static int __devinit probe_maple_controller(struct device *dev)
 	idev->dev.parent = &mdev->dev;
 	idev->name = mdev->product_name;
 	idev->id.bustype = BUS_HOST;
+<<<<<<< HEAD
 	input_set_drvdata(idev, pad);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = input_register_device(idev);
 	if (error)
@@ -157,7 +176,11 @@ fail:
 	return error;
 }
 
+<<<<<<< HEAD
 static int __devexit remove_maple_controller(struct device *dev)
+=======
+static int remove_maple_controller(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct maple_device *mdev = to_maple_dev(dev);
 	struct dc_pad *pad = maple_get_drvdata(mdev);
@@ -175,7 +198,11 @@ static struct maple_driver dc_pad_driver = {
 	.drv = {
 		.name	= "Dreamcast_controller",
 		.probe	= probe_maple_controller,
+<<<<<<< HEAD
 		.remove	= __devexit_p(remove_maple_controller),
+=======
+		.remove	= remove_maple_controller,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

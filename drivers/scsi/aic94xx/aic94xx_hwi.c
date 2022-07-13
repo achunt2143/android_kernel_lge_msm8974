@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver hardware interface.
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
@@ -46,7 +53,11 @@ static int asd_get_user_sas_addr(struct asd_ha_struct *asd_ha)
 	if (asd_ha->hw_prof.sas_addr[0])
 		return 0;
 
+<<<<<<< HEAD
 	return sas_request_addr(asd_ha->sas_ha.core.shost,
+=======
+	return sas_request_addr(asd_ha->sas_ha.shost,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				asd_ha->hw_prof.sas_addr);
 }
 
@@ -74,7 +85,11 @@ static void asd_init_phy_identify(struct asd_phy *phy)
 
 	memset(phy->identify_frame, 0, sizeof(*phy->identify_frame));
 
+<<<<<<< HEAD
 	phy->identify_frame->dev_type = SAS_END_DEV;
+=======
+	phy->identify_frame->dev_type = SAS_END_DEVICE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (phy->sas_phy.role & PHY_ROLE_INITIATOR)
 		phy->identify_frame->initiator_bits = phy->sas_phy.iproto;
 	if (phy->sas_phy.role & PHY_ROLE_TARGET)
@@ -90,10 +105,15 @@ static int asd_init_phy(struct asd_phy *phy)
 	struct asd_sas_phy *sas_phy = &phy->sas_phy;
 
 	sas_phy->enabled = 1;
+<<<<<<< HEAD
 	sas_phy->class = SAS;
 	sas_phy->iproto = SAS_PROTOCOL_ALL;
 	sas_phy->tproto = 0;
 	sas_phy->type = PHY_TYPE_PHYSICAL;
+=======
+	sas_phy->iproto = SAS_PROTOCOL_ALL;
+	sas_phy->tproto = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_phy->role = PHY_ROLE_INITIATOR;
 	sas_phy->oob_mode = OOB_NOT_CONNECTED;
 	sas_phy->linkrate = SAS_LINK_RATE_UNKNOWN;
@@ -220,16 +240,30 @@ static int asd_init_scbs(struct asd_ha_struct *asd_ha)
 
 	/* allocate the index array and bitmap */
 	asd_ha->seq.tc_index_bitmap_bits = asd_ha->hw_prof.max_scbs;
+<<<<<<< HEAD
 	asd_ha->seq.tc_index_array = kzalloc(asd_ha->seq.tc_index_bitmap_bits*
 					     sizeof(void *), GFP_KERNEL);
+=======
+	asd_ha->seq.tc_index_array = kcalloc(asd_ha->seq.tc_index_bitmap_bits,
+					     sizeof(void *),
+					     GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!asd_ha->seq.tc_index_array)
 		return -ENOMEM;
 
 	bitmap_bytes = (asd_ha->seq.tc_index_bitmap_bits+7)/8;
 	bitmap_bytes = BITS_TO_LONGS(bitmap_bytes*8)*sizeof(unsigned long);
 	asd_ha->seq.tc_index_bitmap = kzalloc(bitmap_bytes, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!asd_ha->seq.tc_index_bitmap)
 		return -ENOMEM;
+=======
+	if (!asd_ha->seq.tc_index_bitmap) {
+		kfree(asd_ha->seq.tc_index_array);
+		asd_ha->seq.tc_index_array = NULL;
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&seq->tc_index_lock);
 
@@ -288,7 +322,12 @@ static int asd_alloc_edbs(struct asd_ha_struct *asd_ha, gfp_t gfp_flags)
 	struct asd_seq_data *seq = &asd_ha->seq;
 	int i;
 
+<<<<<<< HEAD
 	seq->edb_arr = kmalloc(seq->num_edbs*sizeof(*seq->edb_arr), gfp_flags);
+=======
+	seq->edb_arr = kmalloc_array(seq->num_edbs, sizeof(*seq->edb_arr),
+				     gfp_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!seq->edb_arr)
 		return -ENOMEM;
 
@@ -320,8 +359,13 @@ static int asd_alloc_escbs(struct asd_ha_struct *asd_ha,
 	struct asd_ascb *escb;
 	int i, escbs;
 
+<<<<<<< HEAD
 	seq->escb_arr = kmalloc(seq->num_escbs*sizeof(*seq->escb_arr),
 				gfp_flags);
+=======
+	seq->escb_arr = kmalloc_array(seq->num_escbs, sizeof(*seq->escb_arr),
+				      gfp_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!seq->escb_arr)
 		return -ENOMEM;
 
@@ -477,7 +521,11 @@ static int asd_init_chip(struct asd_ha_struct *asd_ha)
 
 	err = asd_start_seqs(asd_ha);
 	if (err) {
+<<<<<<< HEAD
 		asd_printk("coudln't start seqs for %s\n",
+=======
+		asd_printk("couldn't start seqs for %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   pci_name(asd_ha->pcidev));
 		goto out;
 	}
@@ -588,7 +636,11 @@ static int asd_extend_cmdctx(struct asd_ha_struct *asd_ha)
 
 /**
  * asd_init_ctxmem -- initialize context memory
+<<<<<<< HEAD
  * asd_ha: pointer to host adapter structure
+=======
+ * @asd_ha: pointer to host adapter structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function sets the maximum number of SCBs and
  * DDBs which can be used by the sequencer.  This is normally
@@ -632,7 +684,11 @@ int asd_init_hw(struct asd_ha_struct *asd_ha)
 			   pci_name(asd_ha->pcidev));
 		return err;
 	}
+<<<<<<< HEAD
 	pci_write_config_dword(asd_ha->pcidev, PCIC_HSTPCIX_CNTRL,
+=======
+	err = pci_write_config_dword(asd_ha->pcidev, PCIC_HSTPCIX_CNTRL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					v | SC_TMR_DIS);
 	if (err) {
 		asd_printk("couldn't disable split completion timer of %s\n",
@@ -718,11 +774,16 @@ Out:
  */
 static void asd_chip_reset(struct asd_ha_struct *asd_ha)
 {
+<<<<<<< HEAD
 	struct sas_ha_struct *sas_ha = &asd_ha->sas_ha;
 
 	ASD_DPRINTK("chip reset for %s\n", pci_name(asd_ha->pcidev));
 	asd_chip_hardrst(asd_ha);
 	sas_ha->notify_ha_event(sas_ha, HAE_RESET);
+=======
+	ASD_DPRINTK("chip reset for %s\n", pci_name(asd_ha->pcidev));
+	asd_chip_hardrst(asd_ha);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------- Done List Routines ---------- */
@@ -919,7 +980,11 @@ static void asd_dch_sas_isr(struct asd_ha_struct *asd_ha)
 }
 
 /**
+<<<<<<< HEAD
  * ads_rbi_exsi_isr -- process external system interface interrupt (INITERR)
+=======
+ * asd_rbi_exsi_isr -- process external system interface interrupt (INITERR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @asd_ha: pointer to host adapter structure
  */
 static void asd_rbi_exsi_isr(struct asd_ha_struct *asd_ha)
@@ -1055,14 +1120,21 @@ static struct asd_ascb *asd_ascb_alloc(struct asd_ha_struct *asd_ha,
 
 	if (ascb) {
 		ascb->dma_scb.size = sizeof(struct scb);
+<<<<<<< HEAD
 		ascb->dma_scb.vaddr = dma_pool_alloc(asd_ha->scb_pool,
+=======
+		ascb->dma_scb.vaddr = dma_pool_zalloc(asd_ha->scb_pool,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     gfp_flags,
 						    &ascb->dma_scb.dma_handle);
 		if (!ascb->dma_scb.vaddr) {
 			kmem_cache_free(asd_ascb_cache, ascb);
 			return NULL;
 		}
+<<<<<<< HEAD
 		memset(ascb->dma_scb.vaddr, 0, sizeof(struct scb));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asd_init_ascb(asd_ha, ascb);
 
 		spin_lock_irqsave(&seq->tc_index_lock, flags);
@@ -1161,9 +1233,14 @@ static void asd_swap_head_scb(struct asd_ha_struct *asd_ha,
 }
 
 /**
+<<<<<<< HEAD
  * asd_start_timers -- (add and) start timers of SCBs
  * @list: pointer to struct list_head of the scbs
  * @to: timeout in jiffies
+=======
+ * asd_start_scb_timers -- (add and) start timers of SCBs
+ * @list: pointer to struct list_head of the scbs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If an SCB in the @list has no timer function, assign the default
  * one,  then start the timer of the SCB.  This function is
@@ -1175,7 +1252,10 @@ static void asd_start_scb_timers(struct list_head *list)
 	struct asd_ascb *ascb;
 	list_for_each_entry(ascb, list, list) {
 		if (!ascb->uldd_timer) {
+<<<<<<< HEAD
 			ascb->timer.data = (unsigned long) ascb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ascb->timer.function = asd_ascb_timedout;
 			ascb->timer.expires = jiffies + AIC94XX_SCB_TIMEOUT;
 			add_timer(&ascb->timer);
@@ -1200,8 +1280,12 @@ static void asd_start_scb_timers(struct list_head *list)
  * Case A: we can send the whole batch at once.  Increment "pending"
  * in the beginning of this function, when it is checked, in order to
  * eliminate races when this function is called by multiple processes.
+<<<<<<< HEAD
  * Case B: should never happen if the managing layer considers
  * lldd_queue_size.
+=======
+ * Case B: should never happen.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int asd_post_ascb_list(struct asd_ha_struct *asd_ha, struct asd_ascb *ascb,
 		       int num)

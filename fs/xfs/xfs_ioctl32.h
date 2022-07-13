@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2004-2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2004-2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_IOCTL32_H__
 #define __XFS_IOCTL32_H__
@@ -29,14 +36,21 @@
  */
 
 /* stock kernel-level ioctls we support */
+<<<<<<< HEAD
 #define XFS_IOC_GETXFLAGS_32	FS_IOC32_GETFLAGS
 #define XFS_IOC_SETXFLAGS_32	FS_IOC32_SETFLAGS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XFS_IOC_GETVERSION_32	FS_IOC32_GETVERSION
 
 /*
  * On intel, even if sizes match, alignment and/or padding may differ.
  */
+<<<<<<< HEAD
 #if defined(CONFIG_IA64) || defined(CONFIG_X86_64)
+=======
+#if defined(CONFIG_X86_64)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BROKEN_X86_ALIGNMENT
 #define __compat_packed __attribute__((packed))
 #else
@@ -44,11 +58,19 @@
 #endif
 
 typedef struct compat_xfs_bstime {
+<<<<<<< HEAD
 	compat_time_t	tv_sec;		/* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
 } compat_xfs_bstime_t;
 
 typedef struct compat_xfs_bstat {
+=======
+	old_time32_t	tv_sec;		/* seconds		*/
+	__s32		tv_nsec;	/* and nanoseconds	*/
+} compat_xfs_bstime_t;
+
+struct compat_xfs_bstat {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u64		bs_ino;		/* inode number			*/
 	__u16		bs_mode;	/* type and mode		*/
 	__u16		bs_nlink;	/* number of links		*/
@@ -67,6 +89,7 @@ typedef struct compat_xfs_bstat {
 	__u32		bs_gen;		/* generation count		*/
 	__u16		bs_projid_lo;	/* lower part of project id	*/
 #define	bs_projid	bs_projid_lo	/* (previously just bs_projid)	*/
+<<<<<<< HEAD
 	__u16		bs_projid_hi;	/* high part of project id	*/
 	unsigned char	bs_pad[12];	/* pad space, unused		*/
 	__u32		bs_dmevmask;	/* DMIG event mask		*/
@@ -75,11 +98,26 @@ typedef struct compat_xfs_bstat {
 } __compat_packed compat_xfs_bstat_t;
 
 typedef struct compat_xfs_fsop_bulkreq {
+=======
+	__u16		bs_forkoff;	/* inode fork offset in bytes	*/
+	__u16		bs_projid_hi;	/* high part of project id	*/
+	unsigned char	bs_pad[10];	/* pad space, unused		*/
+	__u32		bs_dmevmask;	/* DMIG event mask		*/
+	__u16		bs_dmstate;	/* DMIG state info		*/
+	__u16		bs_aextents;	/* attribute number of extents	*/
+} __compat_packed;
+
+struct compat_xfs_fsop_bulkreq {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat_uptr_t	lastip;		/* last inode # pointer		*/
 	__s32		icount;		/* count of entries in buffer	*/
 	compat_uptr_t	ubuffer;	/* user buffer for inode desc.	*/
 	compat_uptr_t	ocount;		/* output count pointer		*/
+<<<<<<< HEAD
 } compat_xfs_fsop_bulkreq_t;
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XFS_IOC_FSBULKSTAT_32 \
 	_IOWR('X', 101, struct compat_xfs_fsop_bulkreq)
@@ -110,6 +148,7 @@ typedef struct compat_xfs_fsop_handlereq {
 	_IOWR('X', 108, struct compat_xfs_fsop_handlereq)
 
 /* The bstat field in the swapext struct needs translation */
+<<<<<<< HEAD
 typedef struct compat_xfs_swapext {
 	__int64_t		sx_version;	/* version */
 	__int64_t		sx_fdtarget;	/* fd of target file */
@@ -119,6 +158,17 @@ typedef struct compat_xfs_swapext {
 	char			sx_pad[16];	/* pad space, unused */
 	compat_xfs_bstat_t	sx_stat;	/* stat of target b4 copy */
 } __compat_packed compat_xfs_swapext_t;
+=======
+struct compat_xfs_swapext {
+	int64_t			sx_version;	/* version */
+	int64_t			sx_fdtarget;	/* fd of target file */
+	int64_t			sx_fdtmp;	/* fd of tmp file */
+	xfs_off_t		sx_offset;	/* offset into file */
+	xfs_off_t		sx_length;	/* leng from offset */
+	char			sx_pad[16];	/* pad space, unused */
+	struct compat_xfs_bstat	sx_stat;	/* stat of target b4 copy */
+} __compat_packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XFS_IOC_SWAPEXT_32	_IOWR('X', 109, struct compat_xfs_swapext)
 
@@ -154,6 +204,7 @@ typedef struct compat_xfs_fsop_attrmulti_handlereq {
 #define XFS_IOC_ATTRMULTI_BY_HANDLE_32 \
 	_IOW('X', 123, struct compat_xfs_fsop_attrmulti_handlereq)
 
+<<<<<<< HEAD
 typedef struct compat_xfs_fsop_setdm_handlereq {
 	struct compat_xfs_fsop_handlereq hreq;	/* handle information   */
 	/* ptr to struct fsdmidata */
@@ -186,6 +237,9 @@ typedef struct compat_xfs_flock64 {
 #define XFS_IOC_UNRESVSP64_32	_IOW('X', 43, struct compat_xfs_flock64)
 #define XFS_IOC_ZERO_RANGE_32	_IOW('X', 57, struct compat_xfs_flock64)
 
+=======
+#ifdef BROKEN_X86_ALIGNMENT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct compat_xfs_fsop_geom_v1 {
 	__u32		blocksize;	/* filesystem (data) block size */
 	__u32		rtextsize;	/* realtime extent size		*/
@@ -212,11 +266,19 @@ typedef struct compat_xfs_fsop_geom_v1 {
 #define XFS_IOC_FSGEOMETRY_V1_32  \
 	_IOR('X', 100, struct compat_xfs_fsop_geom_v1)
 
+<<<<<<< HEAD
 typedef struct compat_xfs_inogrp {
 	__u64		xi_startino;	/* starting inode number	*/
 	__s32		xi_alloccount;	/* # bits set in allocmask	*/
 	__u64		xi_allocmask;	/* mask of allocated inodes	*/
 } __attribute__((packed)) compat_xfs_inogrp_t;
+=======
+struct compat_xfs_inogrp {
+	__u64		xi_startino;	/* starting inode number	*/
+	__s32		xi_alloccount;	/* # bits set in allocmask	*/
+	__u64		xi_allocmask;	/* mask of allocated inodes	*/
+} __attribute__((packed));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These growfs input structures have padding on the end, so must translate */
 typedef struct compat_xfs_growfs_data {

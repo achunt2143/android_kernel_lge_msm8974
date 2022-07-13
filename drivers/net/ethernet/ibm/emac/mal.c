@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/mal.c
  *
@@ -17,24 +21,37 @@
  *
  *      Armin Kuster <akuster@mvista.com>
  *      Copyright 2002 MontaVista Softare Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "core.h"
 #include <asm/dcr-regs.h>
 
 static int mal_count;
 
+<<<<<<< HEAD
 int __devinit mal_register_commac(struct mal_instance	*mal,
 				  struct mal_commac	*commac)
+=======
+int mal_register_commac(struct mal_instance *mal, struct mal_commac *commac)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -264,7 +281,13 @@ static inline void mal_schedule_poll(struct mal_instance *mal)
 {
 	if (likely(napi_schedule_prep(&mal->napi))) {
 		MAL_DBG2(mal, "schedule_poll" NL);
+<<<<<<< HEAD
 		mal_disable_eob_irq(mal);
+=======
+		spin_lock(&mal->lock);
+		mal_disable_eob_irq(mal);
+		spin_unlock(&mal->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__napi_schedule(&mal->napi);
 	} else
 		MAL_DBG2(mal, "already in poll" NL);
@@ -400,7 +423,11 @@ static int mal_poll(struct napi_struct *napi, int budget)
 	unsigned long flags;
 
 	MAL_DBG2(mal, "poll(%d)" NL, budget);
+<<<<<<< HEAD
  again:
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Process TX skbs */
 	list_for_each(l, &mal->poll_list) {
 		struct mal_commac *mc =
@@ -419,6 +446,7 @@ static int mal_poll(struct napi_struct *napi, int budget)
 		int n;
 		if (unlikely(test_bit(MAL_COMMAC_POLL_DISABLED, &mc->flags)))
 			continue;
+<<<<<<< HEAD
 		n = mc->ops->poll_rx(mc->dev, budget);
 		if (n) {
 			received += n;
@@ -433,6 +461,22 @@ static int mal_poll(struct napi_struct *napi, int budget)
 	__napi_complete(napi);
 	mal_enable_eob_irq(mal);
 	spin_unlock_irqrestore(&mal->lock, flags);
+=======
+		n = mc->ops->poll_rx(mc->dev, budget - received);
+		if (n) {
+			received += n;
+			if (received >= budget)
+				return budget;
+		}
+	}
+
+	if (napi_complete_done(napi, received)) {
+		/* We need to disable IRQs to protect from RXDE IRQ here */
+		spin_lock_irqsave(&mal->lock, flags);
+		mal_enable_eob_irq(mal);
+		spin_unlock_irqrestore(&mal->lock, flags);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for "rotting" packet(s) */
 	list_for_each(l, &mal->poll_list) {
@@ -443,6 +487,7 @@ static int mal_poll(struct napi_struct *napi, int budget)
 		if (unlikely(mc->ops->peek_rx(mc->dev) ||
 			     test_bit(MAL_COMMAC_RX_STOPPED, &mc->flags))) {
 			MAL_DBG2(mal, "rotting packet" NL);
+<<<<<<< HEAD
 			if (napi_reschedule(napi))
 				mal_disable_eob_irq(mal);
 			else
@@ -452,6 +497,14 @@ static int mal_poll(struct napi_struct *napi, int budget)
 				goto again;
 			else
 				goto more_work;
+=======
+			if (!napi_schedule(napi))
+				goto more_work;
+
+			spin_lock_irqsave(&mal->lock, flags);
+			mal_disable_eob_irq(mal);
+			spin_unlock_irqrestore(&mal->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		mc->ops->poll_tx(mc->dev);
 	}
@@ -517,7 +570,11 @@ void *mal_dump_regs(struct mal_instance *mal, void *buf)
 	return regs + 1;
 }
 
+<<<<<<< HEAD
 static int __devinit mal_probe(struct platform_device *ofdev)
+=======
+static int mal_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mal_instance *mal;
 	int err = 0, i, bd_size;
@@ -529,12 +586,18 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 	irq_handler_t hdlr_serr, hdlr_txde, hdlr_rxde;
 
 	mal = kzalloc(sizeof(struct mal_instance), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mal) {
 		printk(KERN_ERR
 		       "mal%d: out of memory allocating MAL structure!\n",
 		       index);
 		return -ENOMEM;
 	}
+=======
+	if (!mal)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mal->index = index;
 	mal->ofdev = ofdev;
 	mal->version = of_device_is_compatible(ofdev->dev.of_node, "ibm,mcmal2") ? 2 : 1;
@@ -582,8 +645,13 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 		mal->features |= (MAL_FTR_CLEAR_ICINTSTAT |
 				MAL_FTR_COMMON_ERR_INT);
 #else
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Support for 405EZ not enabled!\n",
 				ofdev->dev.of_node->full_name);
+=======
+		printk(KERN_ERR "%pOF: Support for 405EZ not enabled!\n",
+				ofdev->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto fail;
 #endif
@@ -600,9 +668,14 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 		mal->rxde_irq = irq_of_parse_and_map(ofdev->dev.of_node, 4);
 	}
 
+<<<<<<< HEAD
 	if (mal->txeob_irq == NO_IRQ || mal->rxeob_irq == NO_IRQ ||
 	    mal->serr_irq == NO_IRQ || mal->txde_irq == NO_IRQ ||
 	    mal->rxde_irq == NO_IRQ) {
+=======
+	if (!mal->txeob_irq || !mal->rxeob_irq || !mal->serr_irq ||
+	    !mal->txde_irq  || !mal->rxde_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR
 		       "mal%d: failed to map interrupts !\n", index);
 		err = -ENODEV;
@@ -615,8 +688,13 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 
 	init_dummy_netdev(&mal->dummy_dev);
 
+<<<<<<< HEAD
 	netif_napi_add(&mal->dummy_dev, &mal->napi, mal_poll,
 		       CONFIG_IBM_EMAC_POLL_WEIGHT);
+=======
+	netif_napi_add_weight(&mal->dummy_dev, &mal->napi, mal_poll,
+			      CONFIG_IBM_EMAC_POLL_WEIGHT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load power-on reset defaults */
 	mal_reset(mal);
@@ -641,6 +719,7 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 	bd_size = sizeof(struct mal_descriptor) *
 		(NUM_TX_BUFF * mal->num_tx_chans +
 		 NUM_RX_BUFF * mal->num_rx_chans);
+<<<<<<< HEAD
 	mal->bd_virt =
 		dma_alloc_coherent(&ofdev->dev, bd_size, &mal->bd_dma,
 				   GFP_KERNEL);
@@ -652,6 +731,14 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 		goto fail_unmap;
 	}
 	memset(mal->bd_virt, 0, bd_size);
+=======
+	mal->bd_virt = dma_alloc_coherent(&ofdev->dev, bd_size, &mal->bd_dma,
+					  GFP_KERNEL);
+	if (mal->bd_virt == NULL) {
+		err = -ENOMEM;
+		goto fail_unmap;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < mal->num_tx_chans; ++i)
 		set_mal_dcrn(mal, MAL_TXCTPR(i), mal->bd_dma +
@@ -690,24 +777,37 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 		goto fail6;
 
 	/* Enable all MAL SERR interrupt sources */
+<<<<<<< HEAD
 	if (mal->version == 2)
 		set_mal_dcrn(mal, MAL_IER, MAL2_IER_EVENTS);
 	else
 		set_mal_dcrn(mal, MAL_IER, MAL1_IER_EVENTS);
+=======
+	set_mal_dcrn(mal, MAL_IER, MAL_IER_EVENTS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable EOB interrupt */
 	mal_enable_eob_irq(mal);
 
 	printk(KERN_INFO
+<<<<<<< HEAD
 	       "MAL v%d %s, %d TX channels, %d RX channels\n",
 	       mal->version, ofdev->dev.of_node->full_name,
+=======
+	       "MAL v%d %pOF, %d TX channels, %d RX channels\n",
+	       mal->version, ofdev->dev.of_node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       mal->num_tx_chans, mal->num_rx_chans);
 
 	/* Advertise this instance to the rest of the world */
 	wmb();
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, mal);
 
 	mal_dbg_register(mal);
+=======
+	platform_set_drvdata(ofdev, mal);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -729,15 +829,22 @@ static int __devinit mal_probe(struct platform_device *ofdev)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit mal_remove(struct platform_device *ofdev)
 {
 	struct mal_instance *mal = dev_get_drvdata(&ofdev->dev);
+=======
+static void mal_remove(struct platform_device *ofdev)
+{
+	struct mal_instance *mal = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MAL_DBG(mal, "remove" NL);
 
 	/* Synchronize with scheduled polling */
 	napi_disable(&mal->napi);
 
+<<<<<<< HEAD
 	if (!list_empty(&mal->list)) {
 		/* This is *very* bad */
 		printk(KERN_EMERG
@@ -747,6 +854,13 @@ static int __devexit mal_remove(struct platform_device *ofdev)
 	}
 
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+	if (!list_empty(&mal->list))
+		/* This is *very* bad */
+		WARN(1, KERN_EMERG
+		       "mal%d: commac list is not empty on remove!\n",
+		       mal->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	free_irq(mal->serr_irq, mal);
 	free_irq(mal->txde_irq, mal);
@@ -756,19 +870,28 @@ static int __devexit mal_remove(struct platform_device *ofdev)
 
 	mal_reset(mal);
 
+<<<<<<< HEAD
 	mal_dbg_unregister(mal);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_free_coherent(&ofdev->dev,
 			  sizeof(struct mal_descriptor) *
 			  (NUM_TX_BUFF * mal->num_tx_chans +
 			   NUM_RX_BUFF * mal->num_rx_chans), mal->bd_virt,
 			  mal->bd_dma);
 	kfree(mal);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static struct of_device_id mal_platform_match[] =
+=======
+}
+
+static const struct of_device_id mal_platform_match[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.compatible	= "ibm,mcmal",
@@ -791,11 +914,18 @@ static struct of_device_id mal_platform_match[] =
 static struct platform_driver mal_of_driver = {
 	.driver = {
 		.name = "mcmal",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = mal_platform_match,
 	},
 	.probe = mal_probe,
 	.remove = mal_remove,
+=======
+		.of_match_table = mal_platform_match,
+	},
+	.probe = mal_probe,
+	.remove_new = mal_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init mal_init(void)

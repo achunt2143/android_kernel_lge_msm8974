@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * uninorth.h: definitions for using the "UniNorth" host bridge chip
  *             from Apple. This chip is used on "Core99" machines
@@ -132,7 +136,11 @@
 
 /* This one _might_ return the CPU number of the CPU reading it;
  * the bootROM decides whether to boot or to sleep/spinloop depending
+<<<<<<< HEAD
  * on this register beeing 0 or not
+=======
+ * on this register being 0 or not
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define UNI_N_CPU_NUMBER		0x0050
 

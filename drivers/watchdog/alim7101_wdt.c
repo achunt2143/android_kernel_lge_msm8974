@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	ALi M7101 PMU Computer Watchdog Timer driver
  *
@@ -70,8 +74,13 @@ module_param(use_gpio, int, 0);
 MODULE_PARM_DESC(use_gpio,
 		"Use the gpio watchdog (required by old cobalt boards).");
 
+<<<<<<< HEAD
 static void wdt_timer_ping(unsigned long);
 static DEFINE_TIMER(timer, wdt_timer_ping, 0, 1);
+=======
+static void wdt_timer_ping(struct timer_list *);
+static DEFINE_TIMER(timer, wdt_timer_ping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long next_heartbeat;
 static unsigned long wdt_is_open;
 static char wdt_expect_close;
@@ -87,7 +96,11 @@ MODULE_PARM_DESC(nowayout,
  *	Whack the dog
  */
 
+<<<<<<< HEAD
 static void wdt_timer_ping(unsigned long data)
+=======
+static void wdt_timer_ping(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If we got a heartbeat pulse within the WDT_US_INTERVAL
 	 * we agree to ping the WDT
@@ -214,7 +227,11 @@ static int fop_open(struct inode *inode, struct file *file)
 		return -EBUSY;
 	/* Good, fire up the show */
 	wdt_startup();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fop_close(struct inode *inode, struct file *file)
@@ -277,8 +294,13 @@ static long fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return -EINVAL;
 		timeout = new_timeout;
 		wdt_keepalive();
+<<<<<<< HEAD
 		/* Fall through */
 	}
+=======
+	}
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, p);
 	default:
@@ -293,6 +315,10 @@ static const struct file_operations wdt_fops = {
 	.open		=	fop_open,
 	.release	=	fop_close,
 	.unlocked_ioctl	=	fop_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= 	compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice wdt_miscdev = {
@@ -301,6 +327,31 @@ static struct miscdevice wdt_miscdev = {
 	.fops	=	&wdt_fops,
 };
 
+<<<<<<< HEAD
+=======
+static int wdt_restart_handle(struct notifier_block *this, unsigned long mode,
+			      void *cmd)
+{
+	/*
+	 * Cobalt devices have no way of rebooting themselves other
+	 * than getting the watchdog to pull reset, so we restart the
+	 * watchdog on reboot with no heartbeat.
+	 */
+	wdt_change(WDT_ENABLE);
+
+	/* loop until the watchdog fires */
+	while (true)
+		;
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block wdt_restart_handler = {
+	.notifier_call = wdt_restart_handle,
+	.priority = 128,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Notifier for system down
  */
@@ -311,6 +362,7 @@ static int wdt_notify_sys(struct notifier_block *this,
 	if (code == SYS_DOWN || code == SYS_HALT)
 		wdt_turnoff();
 
+<<<<<<< HEAD
 	if (code == SYS_RESTART) {
 		/*
 		 * Cobalt devices have no way of rebooting themselves other
@@ -320,6 +372,8 @@ static int wdt_notify_sys(struct notifier_block *this,
 		wdt_change(WDT_ENABLE);
 		pr_info("Watchdog timer is now enabled with no heartbeat - should reboot in ~1 second\n");
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NOTIFY_DONE;
 }
 
@@ -338,6 +392,10 @@ static void __exit alim7101_wdt_unload(void)
 	/* Deregister */
 	misc_deregister(&wdt_miscdev);
 	unregister_reboot_notifier(&wdt_notifier);
+<<<<<<< HEAD
+=======
+	unregister_restart_handler(&wdt_restart_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_dev_put(alim7101_pmu);
 }
 
@@ -390,11 +448,24 @@ static int __init alim7101_wdt_init(void)
 		goto err_out;
 	}
 
+<<<<<<< HEAD
+=======
+	rc = register_restart_handler(&wdt_restart_handler);
+	if (rc) {
+		pr_err("cannot register restart handler (err=%d)\n", rc);
+		goto err_out_reboot;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = misc_register(&wdt_miscdev);
 	if (rc) {
 		pr_err("cannot register miscdev on minor=%d (err=%d)\n",
 		       wdt_miscdev.minor, rc);
+<<<<<<< HEAD
 		goto err_out_reboot;
+=======
+		goto err_out_restart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (nowayout)
@@ -404,6 +475,11 @@ static int __init alim7101_wdt_init(void)
 		timeout, nowayout);
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_out_restart:
+	unregister_restart_handler(&wdt_restart_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_reboot:
 	unregister_reboot_notifier(&wdt_notifier);
 err_out:
@@ -414,7 +490,11 @@ err_out:
 module_init(alim7101_wdt_init);
 module_exit(alim7101_wdt_unload);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(alim7101_pci_tbl) __used = {
+=======
+static const struct pci_device_id alim7101_pci_tbl[] __used = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M1533) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M7101) },
 	{ }
@@ -425,4 +505,7 @@ MODULE_DEVICE_TABLE(pci, alim7101_pci_tbl);
 MODULE_AUTHOR("Steve Hill");
 MODULE_DESCRIPTION("ALi M7101 PMU Computer Watchdog Timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

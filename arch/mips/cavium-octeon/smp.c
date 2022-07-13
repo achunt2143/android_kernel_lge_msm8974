@@ -6,17 +6,32 @@
  * Copyright (C) 2004-2008, 2009, 2010 Cavium Networks
  */
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/sched/hotplug.h>
+#include <linux/sched/task_stack.h>
+#include <linux/init.h>
+#include <linux/export.h>
+#include <linux/kexec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mmu_context.h>
 #include <asm/time.h>
 #include <asm/setup.h>
+<<<<<<< HEAD
+=======
+#include <asm/smp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/octeon/octeon.h>
 
@@ -25,12 +40,19 @@
 volatile unsigned long octeon_processor_boot = 0xff;
 volatile unsigned long octeon_processor_sp;
 volatile unsigned long octeon_processor_gp;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RELOCATABLE
+volatile unsigned long octeon_processor_relocated_kernel_entry;
+#endif /* CONFIG_RELOCATABLE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HOTPLUG_CPU
 uint64_t octeon_bootloader_entry_addr;
 EXPORT_SYMBOL(octeon_bootloader_entry_addr);
 #endif
 
+<<<<<<< HEAD
 static irqreturn_t mailbox_interrupt(int irq, void *dev_id)
 {
 	const int coreid = cvmx_get_core_num();
@@ -56,6 +78,65 @@ static irqreturn_t mailbox_interrupt(int irq, void *dev_id)
 /**
  * Cause the function described by call_data to be executed on the passed
  * cpu.  When the function has finished, increment the finished field of
+=======
+extern void kernel_entry(unsigned long arg1, ...);
+
+static void octeon_icache_flush(void)
+{
+	asm volatile ("synci 0($0)\n");
+}
+
+static void (*octeon_message_functions[8])(void) = {
+	scheduler_ipi,
+	generic_smp_call_function_interrupt,
+	octeon_icache_flush,
+};
+
+static irqreturn_t mailbox_interrupt(int irq, void *dev_id)
+{
+	u64 mbox_clrx = CVMX_CIU_MBOX_CLRX(cvmx_get_core_num());
+	u64 action;
+	int i;
+
+	/*
+	 * Make sure the function array initialization remains
+	 * correct.
+	 */
+	BUILD_BUG_ON(SMP_RESCHEDULE_YOURSELF != (1 << 0));
+	BUILD_BUG_ON(SMP_CALL_FUNCTION       != (1 << 1));
+	BUILD_BUG_ON(SMP_ICACHE_FLUSH        != (1 << 2));
+
+	/*
+	 * Load the mailbox register to figure out what we're supposed
+	 * to do.
+	 */
+	action = cvmx_read_csr(mbox_clrx);
+
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		action &= 0xff;
+	else
+		action &= 0xffff;
+
+	/* Clear the mailbox to clear the interrupt */
+	cvmx_write_csr(mbox_clrx, action);
+
+	for (i = 0; i < ARRAY_SIZE(octeon_message_functions) && action;) {
+		if (action & 1) {
+			void (*fn)(void) = octeon_message_functions[i];
+
+			if (fn)
+				fn();
+		}
+		action >>= 1;
+		i++;
+	}
+	return IRQ_HANDLED;
+}
+
+/*
+ * Cause the function described by call_data to be executed on the passed
+ * cpu.	 When the function has finished, increment the finished field of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * call_data.
  */
 void octeon_send_ipi_single(int cpu, unsigned int action)
@@ -73,11 +154,19 @@ static inline void octeon_send_ipi_mask(const struct cpumask *mask,
 {
 	unsigned int i;
 
+<<<<<<< HEAD
 	for_each_cpu_mask(i, *mask)
 		octeon_send_ipi_single(i, action);
 }
 
 /**
+=======
+	for_each_cpu(i, mask)
+		octeon_send_ipi_single(i, action);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Detect available CPUs, populate cpu_possible_mask
  */
 static void octeon_smp_hotplug_setup(void)
@@ -85,21 +174,43 @@ static void octeon_smp_hotplug_setup(void)
 #ifdef CONFIG_HOTPLUG_CPU
 	struct linux_app_boot_info *labi;
 
+<<<<<<< HEAD
 	labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
 	if (labi->labi_signature != LABI_SIGNATURE)
 		panic("The bootloader version on this board is incorrect.");
+=======
+	if (!setup_max_cpus)
+		return;
+
+	labi = (struct linux_app_boot_info *)PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER);
+	if (labi->labi_signature != LABI_SIGNATURE) {
+		pr_info("The bootloader on this board does not support HOTPLUG_CPU.");
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	octeon_bootloader_entry_addr = labi->InitTLBStart_addr;
 #endif
 }
 
+<<<<<<< HEAD
 static void octeon_smp_setup(void)
+=======
+static void __init octeon_smp_setup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int coreid = cvmx_get_core_num();
 	int cpus;
 	int id;
+<<<<<<< HEAD
 	int core_mask = octeon_get_boot_coremask();
 #ifdef CONFIG_HOTPLUG_CPU
+=======
+	struct cvmx_sysinfo *sysinfo = cvmx_sysinfo_get();
+
+#ifdef CONFIG_HOTPLUG_CPU
+	int core_mask = octeon_get_boot_coremask();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num_cores = cvmx_octeon_num_cores();
 #endif
 
@@ -115,7 +226,11 @@ static void octeon_smp_setup(void)
 	/* The present CPUs get the lowest CPU numbers. */
 	cpus = 1;
 	for (id = 0; id < NR_CPUS; id++) {
+<<<<<<< HEAD
 		if ((id != coreid) && (core_mask & (1 << id))) {
+=======
+		if ((id != coreid) && cvmx_coremask_is_core_set(&sysinfo->core_mask, id)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_cpu_possible(cpus, true);
 			set_cpu_present(cpus, true);
 			__cpu_number_map[id] = cpus;
@@ -126,11 +241,20 @@ static void octeon_smp_setup(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 	/*
+<<<<<<< HEAD
 	 * The possible CPUs are all those present on the chip.  We
 	 * will assign CPU numbers for possible cores as well.  Cores
 	 * are always consecutively numberd from 0.
 	 */
 	for (id = 0; id < num_cores && id < NR_CPUS; id++) {
+=======
+	 * The possible CPUs are all those present on the chip.	 We
+	 * will assign CPU numbers for possible cores as well.	Cores
+	 * are always consecutively numberd from 0.
+	 */
+	for (id = 0; setup_max_cpus && octeon_bootloader_entry_addr &&
+		     id < num_cores && id < NR_CPUS; id++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(core_mask & (1 << id))) {
 			set_cpu_possible(cpus, true);
 			__cpu_number_map[id] = cpus;
@@ -143,11 +267,31 @@ static void octeon_smp_setup(void)
 	octeon_smp_hotplug_setup();
 }
 
+<<<<<<< HEAD
 /**
  * Firmware CPU startup hook
  *
  */
 static void octeon_boot_secondary(int cpu, struct task_struct *idle)
+=======
+
+#ifdef CONFIG_RELOCATABLE
+int plat_post_relocation(long offset)
+{
+	unsigned long entry = (unsigned long)kernel_entry;
+
+	/* Send secondaries into relocated kernel */
+	octeon_processor_relocated_kernel_entry = entry + offset;
+
+	return 0;
+}
+#endif /* CONFIG_RELOCATABLE */
+
+/*
+ * Firmware CPU startup hook
+ */
+static int octeon_boot_secondary(int cpu, struct task_struct *idle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int count;
 
@@ -165,6 +309,7 @@ static void octeon_boot_secondary(int cpu, struct task_struct *idle)
 		udelay(1);
 		count--;
 	}
+<<<<<<< HEAD
 	if (count == 0)
 		pr_err("Secondary boot timeout\n");
 }
@@ -174,6 +319,21 @@ static void octeon_boot_secondary(int cpu, struct task_struct *idle)
  * board code to clean up state, if needed
  */
 static void __cpuinit octeon_init_secondary(void)
+=======
+	if (count == 0) {
+		pr_err("Secondary boot timeout\n");
+		return -ETIMEDOUT;
+	}
+
+	return 0;
+}
+
+/*
+ * After we've done initial boot, this function is called to allow the
+ * board code to clean up state, if needed
+ */
+static void octeon_init_secondary(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int sr;
 
@@ -185,6 +345,7 @@ static void __cpuinit octeon_init_secondary(void)
 	octeon_init_cvmcount();
 
 	octeon_irq_setup_secondary();
+<<<<<<< HEAD
 	raw_local_irq_enable();
 }
 
@@ -202,6 +363,15 @@ void octeon_prepare_cpus(unsigned int max_cpus)
 	if (labi->labi_signature != LABI_SIGNATURE)
 		panic("The bootloader version on this board is incorrect.");
 #endif
+=======
+}
+
+/*
+ * Callout to firmware before smp_init
+ */
+static void __init octeon_prepare_cpus(unsigned int max_cpus)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Only the low order mailbox bits are used for IPIs, leave
 	 * the other bits alone.
@@ -214,12 +384,17 @@ void octeon_prepare_cpus(unsigned int max_cpus)
 	}
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Last chance for the board code to finish SMP initialization before
  * the CPU is "online".
  */
 static void octeon_smp_finish(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_CAVIUM_GDB
 	unsigned long tmp;
 	/* Pulse MCD0 signal on Ctrl-C to stop all the cores. Also set the MCD0
@@ -229,10 +404,13 @@ static void octeon_smp_finish(void)
 		      "ori   %0, %0, 0x9100\n" "dmtc0 %0, $22\n" : "=r" (tmp));
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	octeon_user_io_init();
 
 	/* to generate the first CPU timer interrupt */
 	write_c0_compare(read_c0_count() + mips_hpt_frequency / HZ);
+<<<<<<< HEAD
 }
 
 /**
@@ -248,21 +426,29 @@ static void octeon_cpus_done(void)
 	asm volatile ("dmfc0 %0, $22\n"
 		      "ori   %0, %0, 0x9100\n" "dmtc0 %0, $22\n" : "=r" (tmp));
 #endif
+=======
+	local_irq_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_HOTPLUG_CPU
 
 /* State of each CPU. */
+<<<<<<< HEAD
 DEFINE_PER_CPU(int, cpu_state);
 
 extern void fixup_irqs(void);
 
 static DEFINE_SPINLOCK(smp_reserve_lock);
+=======
+static DEFINE_PER_CPU(int, cpu_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int octeon_cpu_disable(void)
 {
 	unsigned int cpu = smp_processor_id();
 
+<<<<<<< HEAD
 	if (cpu == 0)
 		return -EBUSY;
 
@@ -279,6 +465,18 @@ static int octeon_cpu_disable(void)
 
 	spin_unlock(&smp_reserve_lock);
 
+=======
+	if (!octeon_bootloader_entry_addr)
+		return -ENOTSUPP;
+
+	set_cpu_online(cpu, false);
+	calculate_cpu_foreign_map();
+	octeon_fixup_irqs();
+
+	__flush_cache_all();
+	local_flush_tlb_all();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -325,6 +523,10 @@ void play_dead(void)
 	int cpu = cpu_number_map(cvmx_get_core_num());
 
 	idle_task_exit();
+<<<<<<< HEAD
+=======
+	cpuhp_ap_report_dead();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	octeon_processor_boot = 0xff;
 	per_cpu(cpu_state, cpu) = CPU_DEAD;
 
@@ -334,11 +536,17 @@ void play_dead(void)
 		;
 }
 
+<<<<<<< HEAD
 extern void kernel_entry(unsigned long arg1, ...);
 
 static void start_after_reset(void)
 {
 	kernel_entry(0, 0, 0);  /* set a2 = 0 for secondary core */
+=======
+static void start_after_reset(void)
+{
+	kernel_entry(0, 0, 0);	/* set a2 = 0 for secondary core */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int octeon_update_boot_vector(unsigned int cpu)
@@ -365,7 +573,11 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	}
 
 	if (!(avail_coremask & (1 << coreid))) {
+<<<<<<< HEAD
 		/* core not available, assume, that catched by simple-executive */
+=======
+		/* core not available, assume, that caught by simple-executive */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvmx_write_csr(CVMX_CIU_PP_RST, 1 << coreid);
 		cvmx_write_csr(CVMX_CIU_PP_RST, 0);
 	}
@@ -381,6 +593,7 @@ static int octeon_update_boot_vector(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __cpuinit octeon_cpu_callback(struct notifier_block *nfb,
 	unsigned long action, void *hcpu)
 {
@@ -410,11 +623,27 @@ late_initcall(register_cavium_notifier);
 #endif  /* CONFIG_HOTPLUG_CPU */
 
 struct plat_smp_ops octeon_smp_ops = {
+=======
+static int register_cavium_notifier(void)
+{
+	return cpuhp_setup_state_nocalls(CPUHP_MIPS_SOC_PREPARE,
+					 "mips/cavium:prepare",
+					 octeon_update_boot_vector, NULL);
+}
+late_initcall(register_cavium_notifier);
+
+#endif	/* CONFIG_HOTPLUG_CPU */
+
+static const struct plat_smp_ops octeon_smp_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_ipi_single	= octeon_send_ipi_single,
 	.send_ipi_mask		= octeon_send_ipi_mask,
 	.init_secondary		= octeon_init_secondary,
 	.smp_finish		= octeon_smp_finish,
+<<<<<<< HEAD
 	.cpus_done		= octeon_cpus_done,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.boot_secondary		= octeon_boot_secondary,
 	.smp_setup		= octeon_smp_setup,
 	.prepare_cpus		= octeon_prepare_cpus,
@@ -422,4 +651,103 @@ struct plat_smp_ops octeon_smp_ops = {
 	.cpu_disable		= octeon_cpu_disable,
 	.cpu_die		= octeon_cpu_die,
 #endif
+<<<<<<< HEAD
 };
+=======
+#ifdef CONFIG_KEXEC_CORE
+	.kexec_nonboot_cpu	= kexec_nonboot_cpu_jump,
+#endif
+};
+
+static irqreturn_t octeon_78xx_reched_interrupt(int irq, void *dev_id)
+{
+	scheduler_ipi();
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t octeon_78xx_call_function_interrupt(int irq, void *dev_id)
+{
+	generic_smp_call_function_interrupt();
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t octeon_78xx_icache_flush_interrupt(int irq, void *dev_id)
+{
+	octeon_icache_flush();
+	return IRQ_HANDLED;
+}
+
+/*
+ * Callout to firmware before smp_init
+ */
+static void octeon_78xx_prepare_cpus(unsigned int max_cpus)
+{
+	if (request_irq(OCTEON_IRQ_MBOX0 + 0,
+			octeon_78xx_reched_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "Scheduler",
+			octeon_78xx_reched_interrupt)) {
+		panic("Cannot request_irq for SchedulerIPI");
+	}
+	if (request_irq(OCTEON_IRQ_MBOX0 + 1,
+			octeon_78xx_call_function_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "SMP-Call",
+			octeon_78xx_call_function_interrupt)) {
+		panic("Cannot request_irq for SMP-Call");
+	}
+	if (request_irq(OCTEON_IRQ_MBOX0 + 2,
+			octeon_78xx_icache_flush_interrupt,
+			IRQF_PERCPU | IRQF_NO_THREAD, "ICache-Flush",
+			octeon_78xx_icache_flush_interrupt)) {
+		panic("Cannot request_irq for ICache-Flush");
+	}
+}
+
+static void octeon_78xx_send_ipi_single(int cpu, unsigned int action)
+{
+	int i;
+
+	for (i = 0; i < 8; i++) {
+		if (action & 1)
+			octeon_ciu3_mbox_send(cpu, i);
+		action >>= 1;
+	}
+}
+
+static void octeon_78xx_send_ipi_mask(const struct cpumask *mask,
+				      unsigned int action)
+{
+	unsigned int cpu;
+
+	for_each_cpu(cpu, mask)
+		octeon_78xx_send_ipi_single(cpu, action);
+}
+
+static const struct plat_smp_ops octeon_78xx_smp_ops = {
+	.send_ipi_single	= octeon_78xx_send_ipi_single,
+	.send_ipi_mask		= octeon_78xx_send_ipi_mask,
+	.init_secondary		= octeon_init_secondary,
+	.smp_finish		= octeon_smp_finish,
+	.boot_secondary		= octeon_boot_secondary,
+	.smp_setup		= octeon_smp_setup,
+	.prepare_cpus		= octeon_78xx_prepare_cpus,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_disable		= octeon_cpu_disable,
+	.cpu_die		= octeon_cpu_die,
+#endif
+#ifdef CONFIG_KEXEC_CORE
+	.kexec_nonboot_cpu	= kexec_nonboot_cpu_jump,
+#endif
+};
+
+void __init octeon_setup_smp(void)
+{
+	const struct plat_smp_ops *ops;
+
+	if (octeon_has_feature(OCTEON_FEATURE_CIU3))
+		ops = &octeon_78xx_smp_ops;
+	else
+		ops = &octeon_smp_ops;
+
+	register_smp_ops(ops);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

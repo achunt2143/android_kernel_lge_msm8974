@@ -1,21 +1,34 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/sound/arm/pxa2xx-pcm.c -- ALSA PCM interface for the Intel PXA2xx chip
  *
  * Author:	Nicolas Pitre
  * Created:	Nov 30, 2004
  * Copyright:	(C) 2004 MontaVista Software, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/soc.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
 
 #include "../../arm/pxa2xx-pcm.h"
 
@@ -129,16 +142,41 @@ static int __devexit pxa2xx_soc_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_platform(&pdev->dev);
 	return 0;
+=======
+#include <sound/dmaengine_pcm.h>
+
+static const struct snd_soc_component_driver pxa2xx_soc_platform = {
+	.pcm_construct	= pxa2xx_soc_pcm_new,
+	.open		= pxa2xx_soc_pcm_open,
+	.close		= pxa2xx_soc_pcm_close,
+	.hw_params	= pxa2xx_soc_pcm_hw_params,
+	.prepare	= pxa2xx_soc_pcm_prepare,
+	.trigger	= pxa2xx_soc_pcm_trigger,
+	.pointer	= pxa2xx_soc_pcm_pointer,
+};
+
+static int pxa2xx_soc_platform_probe(struct platform_device *pdev)
+{
+	return devm_snd_soc_register_component(&pdev->dev, &pxa2xx_soc_platform,
+					       NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pxa_pcm_driver = {
 	.driver = {
+<<<<<<< HEAD
 			.name = "pxa-pcm-audio",
 			.owner = THIS_MODULE,
 	},
 
 	.probe = pxa2xx_soc_platform_probe,
 	.remove = __devexit_p(pxa2xx_soc_platform_remove),
+=======
+		.name = "pxa-pcm-audio",
+	},
+
+	.probe = pxa2xx_soc_platform_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pxa_pcm_driver);
@@ -146,3 +184,7 @@ module_platform_driver(pxa_pcm_driver);
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel PXA2xx PCM DMA module");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-pcm-audio");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

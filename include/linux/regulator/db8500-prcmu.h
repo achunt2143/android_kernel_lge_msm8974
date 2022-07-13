@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License Terms: GNU General Public License v2
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
  *
  * Interface to power domain regulators on DB8500
@@ -36,10 +43,13 @@ enum db8500_regulator_id {
 	DB8500_NUM_REGULATORS
 };
 
+<<<<<<< HEAD
 /*
  * Exported interface for CPUIdle only. This function is called with all
  * interrupts turned off.
  */
 int power_state_active_is_enabled(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for RME Digi9652 audio interfaces 
  *
  *	Copyright (c) 1999 IEM - Winfried Ritsch
  *      Copyright (c) 1999-2001  Paul Davis
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -25,6 +32,11 @@
 #include <linux/interrupt.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+#include <linux/nospec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -34,7 +46,10 @@
 #include <sound/initval.h>
 
 #include <asm/current.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -52,8 +67,11 @@ MODULE_PARM_DESC(precise_ptr, "Enable precise pointer (doesn't work reliably).")
 MODULE_AUTHOR("Paul Davis <pbd@op.net>, Winfried Ritsch");
 MODULE_DESCRIPTION("RME Digi9652/Digi9636");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{RME,Hammerfall},"
 		"{RME,Hammerfall-Light}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The Hammerfall has two sets of 24 ADAT + 2 S/PDIF channels, one for
    capture, one for playback. Both the ADAT and S/PDIF channels appear
@@ -223,6 +241,12 @@ struct snd_rme9652 {
 	unsigned char ds_channels;
 	unsigned char ss_channels;	/* different for hammerfall/hammerfall-light */
 
+<<<<<<< HEAD
+=======
+	/* DMA buffers; those are copied instances from the original snd_dma_buf
+	 * objects (which are managed via devres) for the address alignments
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_dma_buffer playback_dma_buf;
 	struct snd_dma_buffer capture_dma_buf;
 
@@ -242,7 +266,11 @@ struct snd_rme9652 {
 	int last_spdif_sample_rate;	/* so that we can catch externally ... */
 	int last_adat_sample_rate;	/* ... induced rate changes            */
 
+<<<<<<< HEAD
         char *channel_map;
+=======
+	const signed char *channel_map;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_card *card;
 	struct snd_pcm *pcm;
@@ -259,12 +287,20 @@ struct snd_rme9652 {
    where the data for that channel can be read/written from/to.
 */
 
+<<<<<<< HEAD
 static char channel_map_9652_ss[26] = {
+=======
+static const signed char channel_map_9652_ss[26] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 	18, 19, 20, 21, 22, 23, 24, 25
 };
 
+<<<<<<< HEAD
 static char channel_map_9636_ss[26] = {
+=======
+static const signed char channel_map_9636_ss[26] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
 	/* channels 16 and 17 are S/PDIF */
 	24, 25,
@@ -272,7 +308,11 @@ static char channel_map_9636_ss[26] = {
 	-1, -1, -1, -1, -1, -1, -1, -1
 };
 
+<<<<<<< HEAD
 static char channel_map_9652_ds[26] = {
+=======
+static const signed char channel_map_9652_ds[26] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT channels are remapped */
 	1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23,
 	/* channels 12 and 13 are S/PDIF */
@@ -281,7 +321,11 @@ static char channel_map_9652_ds[26] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
+<<<<<<< HEAD
 static char channel_map_9636_ds[26] = {
+=======
+static const signed char channel_map_9636_ds[26] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ADAT channels are remapped */
 	1, 3, 5, 7, 9, 11, 13, 15,
 	/* channels 8 and 9 are S/PDIF */
@@ -290,6 +334,7 @@ static char channel_map_9636_ds[26] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
+<<<<<<< HEAD
 static int snd_hammerfall_get_buffer(struct pci_dev *pci, struct snd_dma_buffer *dmab, size_t size)
 {
 	dmab->dev.type = SNDRV_DMA_TYPE_DEV;
@@ -314,6 +359,15 @@ static void snd_hammerfall_free_buffer(struct snd_dma_buffer *dmab, struct pci_d
 
 
 static DEFINE_PCI_DEVICE_TABLE(snd_rme9652_ids) = {
+=======
+static struct snd_dma_buffer *
+snd_hammerfall_get_buffer(struct pci_dev *pci, size_t size)
+{
+	return snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV, size);
+}
+
+static const struct pci_device_id snd_rme9652_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor	   = 0x10ee,
 		.device	   = 0x3fc4,
@@ -400,7 +454,13 @@ static snd_pcm_uframes_t rme9652_hw_pointer(struct snd_rme9652 *rme9652)
 	if (offset < period_size) {
 		if (offset > rme9652->max_jitter) {
 			if (frag)
+<<<<<<< HEAD
 				printk(KERN_ERR "Unexpected hw_pointer position (bufid == 0): status: %x offset: %d\n", status, offset);
+=======
+				dev_err(rme9652->card->dev,
+					"Unexpected hw_pointer position (bufid == 0): status: %x offset: %d\n",
+					status, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (!frag)
 			return 0;
 		offset -= rme9652->max_jitter;
@@ -409,7 +469,13 @@ static snd_pcm_uframes_t rme9652_hw_pointer(struct snd_rme9652 *rme9652)
 	} else {
 		if (offset > period_size + rme9652->max_jitter) {
 			if (!frag)
+<<<<<<< HEAD
 				printk(KERN_ERR "Unexpected hw_pointer position (bufid == 1): status: %x offset: %d\n", status, offset);
+=======
+				dev_err(rme9652->card->dev,
+					"Unexpected hw_pointer position (bufid == 1): status: %x offset: %d\n",
+					status, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (frag)
 			return period_size;
 		offset -= rme9652->max_jitter;
@@ -455,9 +521,15 @@ static int rme9652_set_interrupt_interval(struct snd_rme9652 *s,
 
 	spin_lock_irq(&s->lock);
 
+<<<<<<< HEAD
 	if ((restart = s->running)) {
 		rme9652_stop(s);
 	}
+=======
+	restart = s->running;
+	if (restart)
+		rme9652_stop(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	frames >>= 7;
 	n = 0;
@@ -540,16 +612,27 @@ static int rme9652_set_rate(struct snd_rme9652 *rme9652, int rate)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rme9652->control_register &= ~(RME9652_freq | RME9652_DS);
 	rme9652->control_register |= rate;
 	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
 
+<<<<<<< HEAD
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rate & RME9652_DS) {
 		if (rme9652->ss_channels == RME9652_NCHANNELS) {
@@ -752,6 +835,7 @@ static inline int rme9652_spdif_sample_rate(struct snd_rme9652 *s)
 	switch (rme9652_decode_spdif_rate(rate_bits)) {
 	case 0x7:
 		return 32000;
+<<<<<<< HEAD
 		break;
 
 	case 0x6:
@@ -779,6 +863,29 @@ static inline int rme9652_spdif_sample_rate(struct snd_rme9652 *s)
 			   s->card_name, rate_bits);
 		return 0;
 		break;
+=======
+
+	case 0x6:
+		return 44100;
+
+	case 0x5:
+		return 48000;
+
+	case 0x4:
+		return 88200;
+
+	case 0x3:
+		return 96000;
+
+	case 0x0:
+		return 64000;
+
+	default:
+		dev_err(s->card->dev,
+			"%s: unknown S/PDIF input rate (bits = 0x%x)\n",
+			   s->card_name, rate_bits);
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -906,6 +1013,7 @@ static int rme9652_set_adat1_input(struct snd_rme9652 *rme9652, int internal)
 
 	/* XXX do we actually need to stop the card when we do this ? */
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
@@ -915,12 +1023,23 @@ static int rme9652_set_adat1_input(struct snd_rme9652 *rme9652, int internal)
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+
+	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
+
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int snd_rme9652_info_adat1_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[2] = {"ADAT1", "Internal"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -930,6 +1049,11 @@ static int snd_rme9652_info_adat1_in(struct snd_kcontrol *kcontrol, struct snd_c
 		uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[2] = {"ADAT1", "Internal"};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_get_adat1_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -977,6 +1101,7 @@ static int rme9652_set_spdif_input(struct snd_rme9652 *rme9652, int in)
 	rme9652->control_register &= ~RME9652_inp;
 	rme9652->control_register |= rme9652_encode_spdif_in(in);
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
@@ -986,12 +1111,23 @@ static int rme9652_set_spdif_input(struct snd_rme9652 *rme9652, int in)
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+
+	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
+
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int snd_rme9652_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {"ADAT1", "Coaxial", "Internal"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1001,6 +1137,11 @@ static int snd_rme9652_info_spdif_in(struct snd_kcontrol *kcontrol, struct snd_c
 		uinfo->value.enumerated.item = 2;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {"ADAT1", "Coaxial", "Internal"};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_get_spdif_in(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1050,6 +1191,7 @@ static int rme9652_set_spdif_output(struct snd_rme9652 *rme9652, int out)
 		rme9652->control_register &= ~RME9652_opt_out;
 	}
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
@@ -1059,6 +1201,16 @@ static int rme9652_set_spdif_output(struct snd_rme9652 *rme9652, int out)
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+
+	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
+
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1126,6 +1278,7 @@ static int rme9652_set_sync_mode(struct snd_rme9652 *rme9652, int mode)
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
@@ -1135,12 +1288,23 @@ static int rme9652_set_sync_mode(struct snd_rme9652 *rme9652, int mode)
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+
+	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
+
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int snd_rme9652_info_sync_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[3] = {"AutoSync", "Master", "Word Clock"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1150,6 +1314,13 @@ static int snd_rme9652_info_sync_mode(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = 2;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"AutoSync", "Master", "Word Clock"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_get_sync_mode(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1217,6 +1388,7 @@ static int rme9652_set_sync_pref(struct snd_rme9652 *rme9652, int pref)
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
 	}
@@ -1226,12 +1398,23 @@ static int rme9652_set_sync_pref(struct snd_rme9652 *rme9652, int pref)
 	if (restart) {
 		rme9652_start(rme9652);
 	}
+=======
+	restart = rme9652->running;
+	if (restart)
+		rme9652_stop(rme9652);
+
+	rme9652_write(rme9652, RME9652_control_register, rme9652->control_register);
+
+	if (restart)
+		rme9652_start(rme9652);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int snd_rme9652_info_sync_pref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {"IEC958 In", "ADAT1 In", "ADAT2 In", "ADAT3 In"};
 	struct snd_rme9652 *rme9652 = snd_kcontrol_chip(kcontrol);
 
@@ -1242,6 +1425,16 @@ static int snd_rme9652_info_sync_pref(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"IEC958 In", "ADAT1 In", "ADAT2 In", "ADAT3 In"
+	};
+	struct snd_rme9652 *rme9652 = snd_kcontrol_chip(kcontrol);
+
+	return snd_ctl_enum_info(uinfo, 1,
+				 rme9652->ss_channels == RME9652_NCHANNELS ? 4 : 3,
+				 texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_get_sync_pref(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1393,6 +1586,7 @@ static int snd_rme9652_get_spdif_rate(struct snd_kcontrol *kcontrol, struct snd_
 
 static int snd_rme9652_info_adat_sync(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {"No Lock", "Lock", "No Lock Sync", "Lock Sync"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1402,6 +1596,13 @@ static int snd_rme9652_info_adat_sync(struct snd_kcontrol *kcontrol, struct snd_
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"No Lock", "Lock", "No Lock Sync", "Lock Sync"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 4, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_get_adat_sync(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1495,7 +1696,11 @@ static int snd_rme9652_get_tc_value(void *private_data,
 
 #endif				/* ALSA_HAS_STANDARD_WAY_OF_RETURNING_TIMECODE */
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_rme9652_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_rme9652_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -1550,10 +1755,17 @@ RME9652_TC_VALID("Timecode Valid", 0),
 RME9652_PASSTHRU("Passthru", 0)
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_rme9652_adat3_check =
 RME9652_ADAT_SYNC("ADAT3 Sync Check", 0, 2);
 
 static struct snd_kcontrol_new snd_rme9652_adat1_input =
+=======
+static const struct snd_kcontrol_new snd_rme9652_adat3_check =
+RME9652_ADAT_SYNC("ADAT3 Sync Check", 0, 2);
+
+static const struct snd_kcontrol_new snd_rme9652_adat1_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 RME9652_ADAT1_IN("ADAT1 Input Source", 0);
 
 static int snd_rme9652_create_controls(struct snd_card *card, struct snd_rme9652 *rme9652)
@@ -1563,12 +1775,19 @@ static int snd_rme9652_create_controls(struct snd_card *card, struct snd_rme9652
 	struct snd_kcontrol *kctl;
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_rme9652_controls); idx++) {
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_rme9652_controls[idx], rme9652))) < 0)
+=======
+		kctl = snd_ctl_new1(&snd_rme9652_controls[idx], rme9652);
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		if (idx == 1)	/* IEC958 (S/PDIF) Stream */
 			rme9652->spdif_ctl = kctl;
 	}
 
+<<<<<<< HEAD
 	if (rme9652->ss_channels == RME9652_NCHANNELS)
 		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_rme9652_adat3_check, rme9652))) < 0)
 			return err;
@@ -1576,6 +1795,21 @@ static int snd_rme9652_create_controls(struct snd_card *card, struct snd_rme9652
 	if (rme9652->hw_rev >= 15)
 		if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_rme9652_adat1_input, rme9652))) < 0)
 			return err;
+=======
+	if (rme9652->ss_channels == RME9652_NCHANNELS) {
+		kctl = snd_ctl_new1(&snd_rme9652_adat3_check, rme9652);
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+			return err;
+	}
+
+	if (rme9652->hw_rev >= 15) {
+		kctl = snd_ctl_new1(&snd_rme9652_adat1_input, rme9652);
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+			return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1757,6 +1991,7 @@ snd_rme9652_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buff
 	snd_iprintf(buffer, "\n");
 }
 
+<<<<<<< HEAD
 static void __devinit snd_rme9652_proc_init(struct snd_rme9652 *rme9652)
 {
 	struct snd_info_entry *entry;
@@ -1812,6 +2047,50 @@ static int __devinit snd_rme9652_initialize_memory(struct snd_rme9652 *rme9652)
 
 	rme9652->capture_buffer = rme9652->capture_dma_buf.area + (cb_bus - rme9652->capture_dma_buf.addr);
 	rme9652->playback_buffer = rme9652->playback_dma_buf.area + (pb_bus - rme9652->playback_dma_buf.addr);
+=======
+static void snd_rme9652_proc_init(struct snd_rme9652 *rme9652)
+{
+	snd_card_ro_proc_new(rme9652->card, "rme9652", rme9652,
+			     snd_rme9652_proc_read);
+}
+
+static void snd_rme9652_card_free(struct snd_card *card)
+{
+	struct snd_rme9652 *rme9652 = (struct snd_rme9652 *) card->private_data;
+
+	if (rme9652->irq >= 0)
+		rme9652_stop(rme9652);
+}
+
+static int snd_rme9652_initialize_memory(struct snd_rme9652 *rme9652)
+{
+	struct snd_dma_buffer *capture_dma, *playback_dma;
+
+	capture_dma = snd_hammerfall_get_buffer(rme9652->pci, RME9652_DMA_AREA_BYTES);
+	playback_dma = snd_hammerfall_get_buffer(rme9652->pci, RME9652_DMA_AREA_BYTES);
+	if (!capture_dma || !playback_dma) {
+		dev_err(rme9652->card->dev,
+			"%s: no buffers available\n", rme9652->card_name);
+		return -ENOMEM;
+	}
+
+	/* copy to the own data for alignment */
+	rme9652->capture_dma_buf = *capture_dma;
+	rme9652->playback_dma_buf = *playback_dma;
+
+	/* Align to bus-space 64K boundary */
+	rme9652->capture_dma_buf.addr = ALIGN(capture_dma->addr, 0x10000ul);
+	rme9652->playback_dma_buf.addr = ALIGN(playback_dma->addr, 0x10000ul);
+
+	/* Tell the card where it is */
+	rme9652_write(rme9652, RME9652_rec_buffer, rme9652->capture_dma_buf.addr);
+	rme9652_write(rme9652, RME9652_play_buffer, rme9652->playback_dma_buf.addr);
+
+	rme9652->capture_dma_buf.area += rme9652->capture_dma_buf.addr - capture_dma->addr;
+	rme9652->playback_dma_buf.area += rme9652->playback_dma_buf.addr - playback_dma->addr;
+	rme9652->capture_buffer = rme9652->capture_dma_buf.area;
+	rme9652->playback_buffer = rme9652->playback_dma_buf.area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1883,7 +2162,11 @@ static snd_pcm_uframes_t snd_rme9652_hw_pointer(struct snd_pcm_substream *substr
 	return rme9652_hw_pointer(rme9652);
 }
 
+<<<<<<< HEAD
 static char *rme9652_channel_buffer_location(struct snd_rme9652 *rme9652,
+=======
+static signed char *rme9652_channel_buffer_location(struct snd_rme9652 *rme9652,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     int stream,
 					     int channel)
 
@@ -1893,9 +2176,15 @@ static char *rme9652_channel_buffer_location(struct snd_rme9652 *rme9652,
 	if (snd_BUG_ON(channel < 0 || channel >= RME9652_NCHANNELS))
 		return NULL;
         
+<<<<<<< HEAD
 	if ((mapped_channel = rme9652->channel_map[channel]) < 0) {
 		return NULL;
 	}
+=======
+	mapped_channel = rme9652->channel_map[channel];
+	if (mapped_channel < 0)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (stream == SNDRV_PCM_STREAM_CAPTURE) {
 		return rme9652->capture_buffer +
@@ -1906,6 +2195,7 @@ static char *rme9652_channel_buffer_location(struct snd_rme9652 *rme9652,
 	}
 }
 
+<<<<<<< HEAD
 static int snd_rme9652_playback_copy(struct snd_pcm_substream *substream, int channel,
 				     snd_pcm_uframes_t pos, void __user *src, snd_pcm_uframes_t count)
 {
@@ -1913,6 +2203,16 @@ static int snd_rme9652_playback_copy(struct snd_pcm_substream *substream, int ch
 	char *channel_buf;
 
 	if (snd_BUG_ON(pos + count > RME9652_CHANNEL_BUFFER_BYTES / 4))
+=======
+static int snd_rme9652_playback_copy(struct snd_pcm_substream *substream,
+				     int channel, unsigned long pos,
+				     struct iov_iter *src, unsigned long count)
+{
+	struct snd_rme9652 *rme9652 = snd_pcm_substream_chip(substream);
+	signed char *channel_buf;
+
+	if (snd_BUG_ON(pos + count > RME9652_CHANNEL_BUFFER_BYTES))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	channel_buf = rme9652_channel_buffer_location (rme9652,
@@ -1920,6 +2220,7 @@ static int snd_rme9652_playback_copy(struct snd_pcm_substream *substream, int ch
 						       channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
+<<<<<<< HEAD
 	if (copy_from_user(channel_buf + pos * 4, src, count * 4))
 		return -EFAULT;
 	return count;
@@ -1932,6 +2233,21 @@ static int snd_rme9652_capture_copy(struct snd_pcm_substream *substream, int cha
 	char *channel_buf;
 
 	if (snd_BUG_ON(pos + count > RME9652_CHANNEL_BUFFER_BYTES / 4))
+=======
+	if (copy_from_iter(channel_buf + pos, count, src) != count)
+		return -EFAULT;
+	return 0;
+}
+
+static int snd_rme9652_capture_copy(struct snd_pcm_substream *substream,
+				    int channel, unsigned long pos,
+				    struct iov_iter *dst, unsigned long count)
+{
+	struct snd_rme9652 *rme9652 = snd_pcm_substream_chip(substream);
+	signed char *channel_buf;
+
+	if (snd_BUG_ON(pos + count > RME9652_CHANNEL_BUFFER_BYTES))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	channel_buf = rme9652_channel_buffer_location (rme9652,
@@ -1939,6 +2255,7 @@ static int snd_rme9652_capture_copy(struct snd_pcm_substream *substream, int cha
 						       channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
+<<<<<<< HEAD
 	if (copy_to_user(dst, channel_buf + pos * 4, count * 4))
 		return -EFAULT;
 	return count;
@@ -1949,14 +2266,32 @@ static int snd_rme9652_hw_silence(struct snd_pcm_substream *substream, int chann
 {
 	struct snd_rme9652 *rme9652 = snd_pcm_substream_chip(substream);
 	char *channel_buf;
+=======
+	if (copy_to_iter(channel_buf + pos, count, dst) != count)
+		return -EFAULT;
+	return 0;
+}
+
+static int snd_rme9652_hw_silence(struct snd_pcm_substream *substream,
+				  int channel, unsigned long pos,
+				  unsigned long count)
+{
+	struct snd_rme9652 *rme9652 = snd_pcm_substream_chip(substream);
+	signed char *channel_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	channel_buf = rme9652_channel_buffer_location (rme9652,
 						       substream->pstr->stream,
 						       channel);
 	if (snd_BUG_ON(!channel_buf))
 		return -EIO;
+<<<<<<< HEAD
 	memset(channel_buf + pos * 4, 0, count * 4);
 	return count;
+=======
+	memset(channel_buf + pos, 0, count);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_rme9652_reset(struct snd_pcm_substream *substream)
@@ -2037,12 +2372,22 @@ static int snd_rme9652_hw_params(struct snd_pcm_substream *substream,
 	/* how to make sure that the rate matches an externally-set one ?
 	 */
 
+<<<<<<< HEAD
 	if ((err = rme9652_set_rate(rme9652, params_rate(params))) < 0) {
+=======
+	err = rme9652_set_rate(rme9652, params_rate(params));
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_snd_pcm_hw_param_setempty(params, SNDRV_PCM_HW_PARAM_RATE);
 		return err;
 	}
 
+<<<<<<< HEAD
 	if ((err = rme9652_set_interrupt_interval(rme9652, params_period_size(params))) < 0) {
+=======
+	err = rme9652_set_interrupt_interval(rme9652, params_period_size(params));
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_snd_pcm_hw_param_setempty(params, SNDRV_PCM_HW_PARAM_PERIOD_SIZE);
 		return err;
 	}
@@ -2059,9 +2404,16 @@ static int snd_rme9652_channel_info(struct snd_pcm_substream *substream,
 	if (snd_BUG_ON(info->channel >= RME9652_NCHANNELS))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if ((chn = rme9652->channel_map[info->channel]) < 0) {
 		return -EINVAL;
 	}
+=======
+	chn = rme9652->channel_map[array_index_nospec(info->channel,
+						      RME9652_NCHANNELS)];
+	if (chn < 0)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->offset = chn * RME9652_CHANNEL_BUFFER_BYTES;
 	info->first = 0;
@@ -2160,16 +2512,26 @@ static int snd_rme9652_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_rme9652 *rme9652 = snd_pcm_substream_chip(substream);
 	unsigned long flags;
+<<<<<<< HEAD
 	int result = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&rme9652->lock, flags);
 	if (!rme9652->running)
 		rme9652_reset_hw_pointer(rme9652);
 	spin_unlock_irqrestore(&rme9652->lock, flags);
+<<<<<<< HEAD
 	return result;
 }
 
 static struct snd_pcm_hardware snd_rme9652_playback_subinfo =
+=======
+	return 0;
+}
+
+static const struct snd_pcm_hardware snd_rme9652_playback_subinfo =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -2193,7 +2555,11 @@ static struct snd_pcm_hardware snd_rme9652_playback_subinfo =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_rme9652_capture_subinfo =
+=======
+static const struct snd_pcm_hardware snd_rme9652_capture_subinfo =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -2216,9 +2582,15 @@ static struct snd_pcm_hardware snd_rme9652_capture_subinfo =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static unsigned int period_sizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_period_sizes = {
+=======
+static const unsigned int period_sizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_period_sizes = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(period_sizes),
 	.list = period_sizes,
 	.mask = 0
@@ -2291,8 +2663,12 @@ static int snd_rme9652_playback_open(struct snd_pcm_substream *substream)
 	snd_pcm_set_sync(substream);
 
         runtime->hw = snd_rme9652_playback_subinfo;
+<<<<<<< HEAD
 	runtime->dma_area = rme9652->playback_buffer;
 	runtime->dma_bytes = RME9652_DMA_AREA_BYTES;
+=======
+	snd_pcm_set_runtime_buffer(substream, &rme9652->playback_dma_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rme9652->capture_substream == NULL) {
 		rme9652_stop(rme9652);
@@ -2351,8 +2727,12 @@ static int snd_rme9652_capture_open(struct snd_pcm_substream *substream)
 	snd_pcm_set_sync(substream);
 
 	runtime->hw = snd_rme9652_capture_subinfo;
+<<<<<<< HEAD
 	runtime->dma_area = rme9652->capture_buffer;
 	runtime->dma_bytes = RME9652_DMA_AREA_BYTES;
+=======
+	snd_pcm_set_runtime_buffer(substream, &rme9652->capture_dma_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rme9652->playback_substream == NULL) {
 		rme9652_stop(rme9652);
@@ -2391,7 +2771,11 @@ static int snd_rme9652_capture_release(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_rme9652_playback_ops = {
+=======
+static const struct snd_pcm_ops snd_rme9652_playback_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_rme9652_playback_open,
 	.close =	snd_rme9652_playback_release,
 	.ioctl =	snd_rme9652_ioctl,
@@ -2400,10 +2784,17 @@ static struct snd_pcm_ops snd_rme9652_playback_ops = {
 	.trigger =	snd_rme9652_trigger,
 	.pointer =	snd_rme9652_hw_pointer,
 	.copy =		snd_rme9652_playback_copy,
+<<<<<<< HEAD
 	.silence =	snd_rme9652_hw_silence,
 };
 
 static struct snd_pcm_ops snd_rme9652_capture_ops = {
+=======
+	.fill_silence =	snd_rme9652_hw_silence,
+};
+
+static const struct snd_pcm_ops snd_rme9652_capture_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_rme9652_capture_open,
 	.close =	snd_rme9652_capture_release,
 	.ioctl =	snd_rme9652_ioctl,
@@ -2414,17 +2805,28 @@ static struct snd_pcm_ops snd_rme9652_capture_ops = {
 	.copy =		snd_rme9652_capture_copy,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_rme9652_create_pcm(struct snd_card *card,
 					 struct snd_rme9652 *rme9652)
+=======
+static int snd_rme9652_create_pcm(struct snd_card *card,
+				  struct snd_rme9652 *rme9652)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(card,
 			       rme9652->card_name,
 			       0, 1, 1, &pcm)) < 0) {
 		return err;
 	}
+=======
+	err = snd_pcm_new(card, rme9652->card_name, 0, 1, 1, &pcm);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rme9652->pcm = pcm;
 	pcm->private_data = rme9652;
@@ -2438,9 +2840,15 @@ static int __devinit snd_rme9652_create_pcm(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_rme9652_create(struct snd_card *card,
 				     struct snd_rme9652 *rme9652,
 				     int precise_ptr)
+=======
+static int snd_rme9652_create(struct snd_card *card,
+			      struct snd_rme9652 *rme9652,
+			      int precise_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pci = rme9652->pci;
 	int err;
@@ -2464,11 +2872,17 @@ static int __devinit snd_rme9652_create(struct snd_card *card,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if ((err = pci_enable_device(pci)) < 0)
+=======
+	err = pcim_enable_device(pci);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	spin_lock_init(&rme9652->lock);
 
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, "rme9652")) < 0)
 		return err;
 	rme9652->port = pci_resource_start(pci, 0);
@@ -2484,6 +2898,26 @@ static int __devinit snd_rme9652_create(struct snd_card *card,
 		return -EBUSY;
 	}
 	rme9652->irq = pci->irq;
+=======
+	err = pci_request_regions(pci, "rme9652");
+	if (err < 0)
+		return err;
+	rme9652->port = pci_resource_start(pci, 0);
+	rme9652->iobase = devm_ioremap(&pci->dev, rme9652->port, RME9652_IO_EXTENT);
+	if (rme9652->iobase == NULL) {
+		dev_err(card->dev, "unable to remap region 0x%lx-0x%lx\n",
+			rme9652->port, rme9652->port + RME9652_IO_EXTENT - 1);
+		return -EBUSY;
+	}
+	
+	if (devm_request_irq(&pci->dev, pci->irq, snd_rme9652_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, rme9652)) {
+		dev_err(card->dev, "unable to request IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	rme9652->irq = pci->irq;
+	card->sync_irq = rme9652->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rme9652->precise_ptr = precise_ptr;
 
 	/* Determine the h/w rev level of the card. This seems like
@@ -2540,6 +2974,7 @@ static int __devinit snd_rme9652_create(struct snd_card *card,
 
 	pci_set_master(rme9652->pci);
 
+<<<<<<< HEAD
 	if ((err = snd_rme9652_initialize_memory(rme9652)) < 0) {
 		return err;
 	}
@@ -2551,6 +2986,19 @@ static int __devinit snd_rme9652_create(struct snd_card *card,
 	if ((err = snd_rme9652_create_controls(card, rme9652)) < 0) {
 		return err;
 	}
+=======
+	err = snd_rme9652_initialize_memory(rme9652);
+	if (err < 0)
+		return err;
+
+	err = snd_rme9652_create_pcm(card, rme9652);
+	if (err < 0)
+		return err;
+
+	err = snd_rme9652_create_controls(card, rme9652);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_rme9652_proc_init(rme9652);
 
@@ -2570,6 +3018,7 @@ static int __devinit snd_rme9652_create(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void snd_rme9652_card_free(struct snd_card *card)
 {
 	struct snd_rme9652 *rme9652 = (struct snd_rme9652 *) card->private_data;
@@ -2580,6 +3029,10 @@ static void snd_rme9652_card_free(struct snd_card *card)
 
 static int __devinit snd_rme9652_probe(struct pci_dev *pci,
 				       const struct pci_device_id *pci_id)
+=======
+static int snd_rme9652_probe(struct pci_dev *pci,
+			     const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_rme9652 *rme9652;
@@ -2593,8 +3046,13 @@ static int __devinit snd_rme9652_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_rme9652), &card);
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_rme9652), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err < 0)
 		return err;
@@ -2603,17 +3061,24 @@ static int __devinit snd_rme9652_probe(struct pci_dev *pci,
 	card->private_free = snd_rme9652_card_free;
 	rme9652->dev = dev;
 	rme9652->pci = pci;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	if ((err = snd_rme9652_create(card, rme9652, precise_ptr[dev])) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_rme9652_create(card, rme9652, precise_ptr[dev]);
+	if (err)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->shortname, rme9652->card_name);
 
 	sprintf(card->longname, "%s at 0x%lx, irq %d",
 		card->shortname, rme9652->port, rme9652->irq);
+<<<<<<< HEAD
 
 	
 	if ((err = snd_card_register(card)) < 0) {
@@ -2650,3 +3115,24 @@ static void __exit alsa_card_hammerfall_exit(void)
 
 module_init(alsa_card_hammerfall_init)
 module_exit(alsa_card_hammerfall_exit)
+=======
+	err = snd_card_register(card);
+	if (err)
+		goto error;
+	pci_set_drvdata(pci, card);
+	dev++;
+	return 0;
+
+ error:
+	snd_card_free(card);
+	return err;
+}
+
+static struct pci_driver rme9652_driver = {
+	.name	  = KBUILD_MODNAME,
+	.id_table = snd_rme9652_ids,
+	.probe	  = snd_rme9652_probe,
+};
+
+module_pci_driver(rme9652_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

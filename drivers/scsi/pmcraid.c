@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pmcraid.c -- driver for PMC Sierra MaxRAID controller adapters
  *
@@ -5,6 +9,7 @@
  *             PMC-Sierra Inc
  *
  * Copyright (C) 2008, 2009 PMC Sierra Inc
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
  * USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -45,6 +52,10 @@
 #include <asm/processor.h>
 #include <linux/libata.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
@@ -75,8 +86,15 @@ static atomic_t pmcraid_adapter_count = ATOMIC_INIT(0);
  * pmcraid_minor - minor number(s) to use
  */
 static unsigned int pmcraid_major;
+<<<<<<< HEAD
 static struct class *pmcraid_class;
 DECLARE_BITMAP(pmcraid_minor, PMCRAID_MAX_ADAPTERS);
+=======
+static const struct class pmcraid_class = {
+	.name = PMCRAID_DEVFILE,
+};
+static DECLARE_BITMAP(pmcraid_minor, PMCRAID_MAX_ADAPTERS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Module parameters
@@ -125,7 +143,11 @@ static struct pmcraid_chip_details pmcraid_chip_cfg[] = {
 /*
  * PCI device ids supported by pmcraid driver
  */
+<<<<<<< HEAD
 static struct pci_device_id pmcraid_pci_table[] __devinitdata = {
+=======
+static struct pci_device_id pmcraid_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_PMC, PCI_DEVICE_ID_PMC_MAXRAID),
 	  0, 0, (kernel_ulong_t)&pmcraid_chip_cfg[0]
 	},
@@ -174,7 +196,11 @@ static int pmcraid_slave_alloc(struct scsi_device *scsi_dev)
 			if (fw_version <= PMCRAID_FW_VERSION_1)
 				target = temp->cfg_entry.unique_flags1;
 			else
+<<<<<<< HEAD
 				target = temp->cfg_entry.array_id & 0xFF;
+=======
+				target = le16_to_cpu(temp->cfg_entry.array_id) & 0xFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (target > PMCRAID_MAX_VSET_TARGETS)
 				continue;
@@ -237,7 +263,11 @@ static int pmcraid_slave_configure(struct scsi_device *scsi_dev)
 		     scsi_dev->host->unique_id,
 		     scsi_dev->channel,
 		     scsi_dev->id,
+<<<<<<< HEAD
 		     scsi_dev->lun);
+=======
+		     (u8)scsi_dev->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (RES_IS_GSCSI(res->cfg_entry)) {
 		scsi_dev->allow_restart = 1;
@@ -249,6 +279,7 @@ static int pmcraid_slave_configure(struct scsi_device *scsi_dev)
 				      PMCRAID_VSET_MAX_SECTORS);
 	}
 
+<<<<<<< HEAD
 	if (scsi_dev->tagged_supported &&
 	    (RES_IS_GSCSI(res->cfg_entry) || RES_IS_VSET(res->cfg_entry))) {
 		scsi_activate_tcq(scsi_dev, scsi_dev->queue_depth);
@@ -258,6 +289,13 @@ static int pmcraid_slave_configure(struct scsi_device *scsi_dev)
 		scsi_adjust_queue_depth(scsi_dev, 0,
 					scsi_dev->host->cmd_per_lun);
 	}
+=======
+	/*
+	 * We never want to report TCQ support for these types of devices.
+	 */
+	if (!RES_IS_GSCSI(res->cfg_entry) && !RES_IS_VSET(res->cfg_entry))
+		scsi_dev->tagged_supported = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -289,11 +327,15 @@ static void pmcraid_slave_destroy(struct scsi_device *scsi_dev)
  * pmcraid_change_queue_depth - Change the device's queue depth
  * @scsi_dev: scsi device struct
  * @depth: depth to set
+<<<<<<< HEAD
  * @reason: calling context
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value
  *	actual depth set
  */
+<<<<<<< HEAD
 static int pmcraid_change_queue_depth(struct scsi_device *scsi_dev, int depth,
 				      int reason)
 {
@@ -338,6 +380,16 @@ static int pmcraid_change_queue_type(struct scsi_device *scsi_dev, int tag)
 
 
 /**
+=======
+static int pmcraid_change_queue_depth(struct scsi_device *scsi_dev, int depth)
+{
+	if (depth > PMCRAID_MAX_CMD_PER_LUN)
+		depth = PMCRAID_MAX_CMD_PER_LUN;
+	return scsi_change_queue_depth(scsi_dev, depth);
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_init_cmdblk - initializes a command block
  *
  * @cmd: pointer to struct pmcraid_cmd to be initialized
@@ -346,7 +398,11 @@ static int pmcraid_change_queue_type(struct scsi_device *scsi_dev, int tag)
  * Return Value
  *	 None
  */
+<<<<<<< HEAD
 void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
+=======
+static void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_ioarcb *ioarcb = &(cmd->ioa_cb->ioarcb);
 	dma_addr_t dma_addr = cmd->ioa_cb_bus_addr;
@@ -370,7 +426,11 @@ void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
 		ioarcb->request_flags0 = 0;
 		ioarcb->request_flags1 = 0;
 		ioarcb->cmd_timeout = 0;
+<<<<<<< HEAD
 		ioarcb->ioarcb_bus_addr &= (~0x1FULL);
+=======
+		ioarcb->ioarcb_bus_addr &= cpu_to_le64(~0x1FULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioarcb->ioadl_bus_addr = 0;
 		ioarcb->ioadl_length = 0;
 		ioarcb->data_transfer_length = 0;
@@ -385,10 +445,17 @@ void pmcraid_init_cmdblk(struct pmcraid_cmd *cmd, int index)
 	cmd->scsi_cmd = NULL;
 	cmd->release = 0;
 	cmd->completion_req = 0;
+<<<<<<< HEAD
 	cmd->sense_buffer = 0;
 	cmd->sense_buffer_dma = 0;
 	cmd->dma_handle = 0;
 	init_timer(&cmd->timer);
+=======
+	cmd->sense_buffer = NULL;
+	cmd->sense_buffer_dma = 0;
+	cmd->dma_handle = 0;
+	timer_setup(&cmd->timer, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -441,7 +508,11 @@ static struct pmcraid_cmd *pmcraid_get_free_cmd(
  * Return Value:
  *	nothing
  */
+<<<<<<< HEAD
 void pmcraid_return_cmd(struct pmcraid_cmd *cmd)
+=======
+static void pmcraid_return_cmd(struct pmcraid_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	unsigned long lock_flags;
@@ -498,15 +569,23 @@ static void pmcraid_disable_interrupts(
  * pmcraid_enable_interrupts - Enables specified interrupts
  *
  * @pinstance: pointer to per adapter instance structure
+<<<<<<< HEAD
  * @intr: interrupts to enable
+=======
+ * @intrs: interrupts to enable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return Value
  *	 None
  */
 static void pmcraid_enable_interrupts(
 	struct pmcraid_instance *pinstance,
+<<<<<<< HEAD
 	u32 intrs
 )
+=======
+	u32 intrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 gmask = ioread32(pinstance->int_regs.global_interrupt_mask_reg);
 	u32 nmask = gmask & (~GLOBAL_INTERRUPT_MASK);
@@ -588,6 +667,7 @@ static void pmcraid_reset_type(struct pmcraid_instance *pinstance)
 		pinstance->ioa_unit_check = 1;
 }
 
+<<<<<<< HEAD
 /**
  * pmcraid_bist_done - completion function for PCI BIST
  * @cmd: pointer to reset command
@@ -599,6 +679,18 @@ static void pmcraid_ioa_reset(struct pmcraid_cmd *);
 
 static void pmcraid_bist_done(struct pmcraid_cmd *cmd)
 {
+=======
+static void pmcraid_ioa_reset(struct pmcraid_cmd *);
+/**
+ * pmcraid_bist_done - completion function for PCI BIST
+ * @t: pointer to reset command
+ * Return Value
+ *	none
+ */
+static void pmcraid_bist_done(struct timer_list *t)
+{
+	struct pmcraid_cmd *cmd = from_timer(cmd, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	unsigned long lock_flags;
 	int rc;
@@ -612,9 +704,12 @@ static void pmcraid_bist_done(struct pmcraid_cmd *cmd)
 		pmcraid_info("BIST not complete, waiting another 2 secs\n");
 		cmd->timer.expires = jiffies + cmd->time_left;
 		cmd->time_left = 0;
+<<<<<<< HEAD
 		cmd->timer.data = (unsigned long)cmd;
 		cmd->timer.function =
 			(void (*)(unsigned long))pmcraid_bist_done;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&cmd->timer);
 	} else {
 		cmd->time_left = 0;
@@ -645,20 +740,35 @@ static void pmcraid_start_bist(struct pmcraid_cmd *cmd)
 		      doorbells, intrs);
 
 	cmd->time_left = msecs_to_jiffies(PMCRAID_BIST_TIMEOUT);
+<<<<<<< HEAD
 	cmd->timer.data = (unsigned long)cmd;
 	cmd->timer.expires = jiffies + msecs_to_jiffies(PMCRAID_BIST_TIMEOUT);
 	cmd->timer.function = (void (*)(unsigned long))pmcraid_bist_done;
+=======
+	cmd->timer.expires = jiffies + msecs_to_jiffies(PMCRAID_BIST_TIMEOUT);
+	cmd->timer.function = pmcraid_bist_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&cmd->timer);
 }
 
 /**
  * pmcraid_reset_alert_done - completion routine for reset_alert
+<<<<<<< HEAD
  * @cmd: pointer to command block used in reset sequence
  * Return value
  *  None
  */
 static void pmcraid_reset_alert_done(struct pmcraid_cmd *cmd)
 {
+=======
+ * @t: pointer to command block used in reset sequence
+ * Return value
+ *  None
+ */
+static void pmcraid_reset_alert_done(struct timer_list *t)
+{
+	struct pmcraid_cmd *cmd = from_timer(cmd, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	u32 status = ioread32(pinstance->ioa_status);
 	unsigned long lock_flags;
@@ -677,24 +787,39 @@ static void pmcraid_reset_alert_done(struct pmcraid_cmd *cmd)
 		pmcraid_info("critical op is not yet reset waiting again\n");
 		/* restart timer if some more time is available to wait */
 		cmd->time_left -= PMCRAID_CHECK_FOR_RESET_TIMEOUT;
+<<<<<<< HEAD
 		cmd->timer.data = (unsigned long)cmd;
 		cmd->timer.expires = jiffies + PMCRAID_CHECK_FOR_RESET_TIMEOUT;
 		cmd->timer.function =
 			(void (*)(unsigned long))pmcraid_reset_alert_done;
+=======
+		cmd->timer.expires = jiffies + PMCRAID_CHECK_FOR_RESET_TIMEOUT;
+		cmd->timer.function = pmcraid_reset_alert_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&cmd->timer);
 	}
 }
 
+<<<<<<< HEAD
 /**
  * pmcraid_reset_alert - alerts IOA for a possible reset
  * @cmd : command block to be used for reset sequence.
+=======
+static void pmcraid_notify_ioastate(struct pmcraid_instance *, u32);
+/**
+ * pmcraid_reset_alert - alerts IOA for a possible reset
+ * @cmd: command block to be used for reset sequence.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return Value
  *	returns 0 if pci config-space is accessible and RESET_DOORBELL is
  *	successfully written to IOA. Returns non-zero in case pci_config_space
  *	is not accessible
  */
+<<<<<<< HEAD
 static void pmcraid_notify_ioastate(struct pmcraid_instance *, u32);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pmcraid_reset_alert(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
@@ -716,10 +841,15 @@ static void pmcraid_reset_alert(struct pmcraid_cmd *cmd)
 		 * bit to be reset.
 		 */
 		cmd->time_left = PMCRAID_RESET_TIMEOUT;
+<<<<<<< HEAD
 		cmd->timer.data = (unsigned long)cmd;
 		cmd->timer.expires = jiffies + PMCRAID_CHECK_FOR_RESET_TIMEOUT;
 		cmd->timer.function =
 			(void (*)(unsigned long))pmcraid_reset_alert_done;
+=======
+		cmd->timer.expires = jiffies + PMCRAID_CHECK_FOR_RESET_TIMEOUT;
+		cmd->timer.function = pmcraid_reset_alert_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&cmd->timer);
 
 		iowrite32(DOORBELL_IOA_RESET_ALERT,
@@ -737,15 +867,25 @@ static void pmcraid_reset_alert(struct pmcraid_cmd *cmd)
 /**
  * pmcraid_timeout_handler -  Timeout handler for internally generated ops
  *
+<<<<<<< HEAD
  * @cmd : pointer to command structure, that got timedout
+=======
+ * @t: pointer to command structure, that got timedout
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function blocks host requests and initiates an adapter reset.
  *
  * Return value:
  *   None
  */
+<<<<<<< HEAD
 static void pmcraid_timeout_handler(struct pmcraid_cmd *cmd)
 {
+=======
+static void pmcraid_timeout_handler(struct timer_list *t)
+{
+	struct pmcraid_cmd *cmd = from_timer(cmd, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	unsigned long lock_flags;
 
@@ -891,6 +1031,7 @@ static void pmcraid_erp_done(struct pmcraid_cmd *cmd)
 			    cmd->ioa_cb->ioarcb.cdb[0], ioasc);
 	}
 
+<<<<<<< HEAD
 	/* if we had allocated sense buffers for request sense, copy the sense
 	 * release the buffers
 	 */
@@ -901,17 +1042,30 @@ static void pmcraid_erp_done(struct pmcraid_cmd *cmd)
 		pci_free_consistent(pinstance->pdev,
 				    SCSI_SENSE_BUFFERSIZE,
 				    cmd->sense_buffer, cmd->sense_buffer_dma);
+=======
+	if (cmd->sense_buffer) {
+		dma_unmap_single(&pinstance->pdev->dev, cmd->sense_buffer_dma,
+				 SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd->sense_buffer = NULL;
 		cmd->sense_buffer_dma = 0;
 	}
 
 	scsi_dma_unmap(scsi_cmd);
 	pmcraid_return_cmd(cmd);
+<<<<<<< HEAD
 	scsi_cmd->scsi_done(scsi_cmd);
 }
 
 /**
  * pmcraid_fire_command - sends an IOA command to adapter
+=======
+	scsi_done(scsi_cmd);
+}
+
+/**
+ * _pmcraid_fire_command - sends an IOA command to adapter
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function adds the given block into pending command list
  * and returns without waiting
@@ -938,8 +1092,12 @@ static void _pmcraid_fire_command(struct pmcraid_cmd *cmd)
 
 	/* driver writes lower 32-bit value of IOARCB address only */
 	mb();
+<<<<<<< HEAD
 	iowrite32(le32_to_cpu(cmd->ioa_cb->ioarcb.ioarcb_bus_addr),
 		  pinstance->ioarrin);
+=======
+	iowrite32(le64_to_cpu(cmd->ioa_cb->ioarcb.ioarcb_bus_addr), pinstance->ioarrin);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -960,7 +1118,11 @@ static void pmcraid_send_cmd(
 	struct pmcraid_cmd *cmd,
 	void (*cmd_done) (struct pmcraid_cmd *),
 	unsigned long timeout,
+<<<<<<< HEAD
 	void (*timeout_func) (struct pmcraid_cmd *)
+=======
+	void (*timeout_func) (struct timer_list *)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )
 {
 	/* initialize done function */
@@ -968,9 +1130,14 @@ static void pmcraid_send_cmd(
 
 	if (timeout_func) {
 		/* setup timeout handler */
+<<<<<<< HEAD
 		cmd->timer.data = (unsigned long)cmd;
 		cmd->timer.expires = jiffies + timeout;
 		cmd->timer.function = (void (*)(unsigned long))timeout_func;
+=======
+		cmd->timer.expires = jiffies + timeout;
+		cmd->timer.function = timeout_func;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&cmd->timer);
 	}
 
@@ -1030,6 +1197,10 @@ static void pmcraid_ioa_shutdown(struct pmcraid_cmd *cmd)
 			 pmcraid_timeout_handler);
 }
 
+<<<<<<< HEAD
+=======
+static void pmcraid_querycfg(struct pmcraid_cmd *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmcraid_get_fwversion_done - completion function for get_fwversion
  *
@@ -1038,8 +1209,11 @@ static void pmcraid_ioa_shutdown(struct pmcraid_cmd *cmd)
  * Return Value
  *	none
  */
+<<<<<<< HEAD
 static void pmcraid_querycfg(struct pmcraid_cmd *);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pmcraid_get_fwversion_done(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
@@ -1072,7 +1246,11 @@ static void pmcraid_get_fwversion_done(struct pmcraid_cmd *cmd)
 static void pmcraid_get_fwversion(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
+<<<<<<< HEAD
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
+=======
+	struct pmcraid_ioadl_desc *ioadl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	u16 data_size = sizeof(struct pmcraid_inquiry_data);
 
@@ -1091,7 +1269,11 @@ static void pmcraid_get_fwversion(struct pmcraid_cmd *cmd)
 					offsetof(struct pmcraid_ioarcb,
 						add_data.u.ioadl[0]));
 	ioarcb->ioadl_length = cpu_to_le32(sizeof(struct pmcraid_ioadl_desc));
+<<<<<<< HEAD
 	ioarcb->ioarcb_bus_addr &= ~(0x1FULL);
+=======
+	ioarcb->ioarcb_bus_addr &= cpu_to_le64(~(0x1FULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioarcb->request_flags0 |= NO_LINK_DESCS;
 	ioarcb->data_transfer_length = cpu_to_le32(data_size);
@@ -1117,7 +1299,11 @@ static void pmcraid_identify_hrrq(struct pmcraid_cmd *cmd)
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
 	int index = cmd->hrrq_index;
 	__be64 hrrq_addr = cpu_to_be64(pinstance->hrrq_start_bus_addr[index]);
+<<<<<<< HEAD
 	u32 hrrq_size = cpu_to_be32(sizeof(u32) * PMCRAID_MAX_CMD);
+=======
+	__be32 hrrq_size = cpu_to_be32(sizeof(u32) * PMCRAID_MAX_CMD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*done_function)(struct pmcraid_cmd *);
 
 	pmcraid_reinit_cmdblk(cmd);
@@ -1242,7 +1428,11 @@ static struct pmcraid_cmd *pmcraid_init_hcam
 
 	ioadl[0].flags |= IOADL_FLAGS_READ_LAST;
 	ioadl[0].data_len = cpu_to_le32(rcb_size);
+<<<<<<< HEAD
 	ioadl[0].address = cpu_to_le32(dma);
+=======
+	ioadl[0].address = cpu_to_le64(dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->cmd_done = cmd_done;
 	return cmd;
@@ -1277,7 +1467,17 @@ static void pmcraid_prepare_cancel_cmd(
 )
 {
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
+<<<<<<< HEAD
 	__be64 ioarcb_addr = cmd_to_cancel->ioa_cb->ioarcb.ioarcb_bus_addr;
+=======
+	__be64 ioarcb_addr;
+
+	/* IOARCB address of the command to be cancelled is given in
+	 * cdb[2]..cdb[9] is Big-Endian format. Note that length bits in
+	 * IOARCB address are not masked.
+	 */
+	ioarcb_addr = cpu_to_be64(le64_to_cpu(cmd_to_cancel->ioa_cb->ioarcb.ioarcb_bus_addr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the resource handle to where the command to be aborted has been
 	 * sent.
@@ -1287,11 +1487,14 @@ static void pmcraid_prepare_cancel_cmd(
 	memset(ioarcb->cdb, 0, PMCRAID_MAX_CDB_LEN);
 	ioarcb->cdb[0] = PMCRAID_ABORT_CMD;
 
+<<<<<<< HEAD
 	/* IOARCB address of the command to be cancelled is given in
 	 * cdb[2]..cdb[9] is Big-Endian format. Note that length bits in
 	 * IOARCB address are not masked.
 	 */
 	ioarcb_addr = cpu_to_be64(ioarcb_addr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&(ioarcb->cdb[2]), &ioarcb_addr, sizeof(ioarcb_addr));
 }
 
@@ -1404,11 +1607,25 @@ enum {
 };
 #define PMCRAID_AEN_CMD_MAX (__PMCRAID_AEN_CMD_MAX - 1)
 
+<<<<<<< HEAD
 static struct genl_family pmcraid_event_family = {
 	.id = GENL_ID_GENERATE,
 	.name = "pmcraid",
 	.version = 1,
 	.maxattr = PMCRAID_AEN_ATTR_MAX
+=======
+static struct genl_multicast_group pmcraid_mcgrps[] = {
+	{ .name = "events", /* not really used - see ID discussion below */ },
+};
+
+static struct genl_family pmcraid_event_family __ro_after_init = {
+	.module = THIS_MODULE,
+	.name = "pmcraid",
+	.version = 1,
+	.maxattr = PMCRAID_AEN_ATTR_MAX,
+	.mcgrps = pmcraid_mcgrps,
+	.n_mcgrps = ARRAY_SIZE(pmcraid_mcgrps),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1418,7 +1635,11 @@ static struct genl_family pmcraid_event_family = {
  *	0 if the pmcraid_event_family is successfully registered
  *	with netlink generic, non-zero otherwise
  */
+<<<<<<< HEAD
 static int pmcraid_netlink_init(void)
+=======
+static int __init pmcraid_netlink_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 
@@ -1444,10 +1665,16 @@ static void pmcraid_netlink_release(void)
 	genl_unregister_family(&pmcraid_event_family);
 }
 
+<<<<<<< HEAD
 /**
  * pmcraid_notify_aen - sends event msg to user space application
  * @pinstance: pointer to adapter instance structure
  * @type: HCAM type
+=======
+/*
+ * pmcraid_notify_aen - sends event msg to user space application
+ * @pinstance: pointer to adapter instance structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  *	0 if success, error value in case of any failure.
@@ -1455,8 +1682,12 @@ static void pmcraid_netlink_release(void)
 static int pmcraid_notify_aen(
 	struct pmcraid_instance *pinstance,
 	struct pmcraid_aen_msg  *aen_msg,
+<<<<<<< HEAD
 	u32    data_size
 )
+=======
+	u32    data_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	void *msg_header;
@@ -1502,6 +1733,7 @@ static int pmcraid_notify_aen(
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* send genetlink multicast message to notify appplications */
 	result = genlmsg_end(skb, msg_header);
 
@@ -1513,6 +1745,13 @@ static int pmcraid_notify_aen(
 
 	result =
 		genlmsg_multicast(skb, 0, pmcraid_event_family.id, GFP_ATOMIC);
+=======
+	/* send genetlink multicast message to notify applications */
+	genlmsg_end(skb, msg_header);
+
+	result = genlmsg_multicast(&pmcraid_event_family, skb,
+				   0, 0, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If there are no listeners, genlmsg_multicast may return non-zero
 	 * value.
@@ -1533,7 +1772,11 @@ static int pmcraid_notify_ccn(struct pmcraid_instance *pinstance)
 {
 	return pmcraid_notify_aen(pinstance,
 				pinstance->ccn.msg,
+<<<<<<< HEAD
 				pinstance->ccn.hcam->data_len +
+=======
+				le32_to_cpu(pinstance->ccn.hcam->data_len) +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(struct pmcraid_hcam_hdr));
 }
 
@@ -1548,7 +1791,11 @@ static int pmcraid_notify_ldn(struct pmcraid_instance *pinstance)
 {
 	return pmcraid_notify_aen(pinstance,
 				pinstance->ldn.msg,
+<<<<<<< HEAD
 				pinstance->ldn.hcam->data_len +
+=======
+				le32_to_cpu(pinstance->ldn.hcam->data_len) +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(struct pmcraid_hcam_hdr));
 }
 
@@ -1596,10 +1843,17 @@ static void pmcraid_handle_config_change(struct pmcraid_instance *pinstance)
 
 	pmcraid_info("CCN(%x): %x timestamp: %llx type: %x lost: %x flags: %x \
 		 res: %x:%x:%x:%x\n",
+<<<<<<< HEAD
 		 pinstance->ccn.hcam->ilid,
 		 pinstance->ccn.hcam->op_code,
 		((pinstance->ccn.hcam->timestamp1) |
 		((pinstance->ccn.hcam->timestamp2 & 0xffffffffLL) << 32)),
+=======
+		 le32_to_cpu(pinstance->ccn.hcam->ilid),
+		 pinstance->ccn.hcam->op_code,
+		(le32_to_cpu(pinstance->ccn.hcam->timestamp1) |
+		((le32_to_cpu(pinstance->ccn.hcam->timestamp2) & 0xffffffffLL) << 32)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 pinstance->ccn.hcam->notification_type,
 		 pinstance->ccn.hcam->notification_lost,
 		 pinstance->ccn.hcam->flags,
@@ -1610,7 +1864,11 @@ static void pmcraid_handle_config_change(struct pmcraid_instance *pinstance)
 		 RES_IS_VSET(*cfg_entry) ?
 			(fw_version <= PMCRAID_FW_VERSION_1 ?
 				cfg_entry->unique_flags1 :
+<<<<<<< HEAD
 					cfg_entry->array_id & 0xFF) :
+=======
+				le16_to_cpu(cfg_entry->array_id) & 0xFF) :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			RES_TARGET(cfg_entry->resource_address),
 		 RES_LUN(cfg_entry->resource_address));
 
@@ -1635,12 +1893,16 @@ static void pmcraid_handle_config_change(struct pmcraid_instance *pinstance)
 	if (pinstance->ccn.hcam->notification_type ==
 	    NOTIFICATION_TYPE_ENTRY_CHANGED &&
 	    cfg_entry->resource_type == RES_TYPE_VSET) {
+<<<<<<< HEAD
 
 		if (fw_version <= PMCRAID_FW_VERSION_1)
 			hidden_entry = (cfg_entry->unique_flags1 & 0x80) != 0;
 		else
 			hidden_entry = (cfg_entry->unique_flags1 & 0x80) != 0;
 
+=======
+		hidden_entry = (cfg_entry->unique_flags1 & 0x80) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!pmcraid_expose_resource(fw_version, cfg_entry)) {
 		goto out_notify_apps;
 	}
@@ -1698,7 +1960,11 @@ static void pmcraid_handle_config_change(struct pmcraid_instance *pinstance)
 			if (fw_version <= PMCRAID_FW_VERSION_1)
 				res->cfg_entry.unique_flags1 &= 0x7F;
 			else
+<<<<<<< HEAD
 				res->cfg_entry.array_id &= 0xFF;
+=======
+				res->cfg_entry.array_id &= cpu_to_le16(0xFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res->change_detected = RES_CHANGE_DEL;
 			res->cfg_entry.resource_handle =
 				PMCRAID_INVALID_RES_HANDLE;
@@ -1745,7 +2011,11 @@ static struct pmcraid_ioasc_error *pmcraid_get_error_info(u32 ioasc)
  * @ioasc: ioasc code
  * @cmd: pointer to command that resulted in 'ioasc'
  */
+<<<<<<< HEAD
 void pmcraid_ioasc_logger(u32 ioasc, struct pmcraid_cmd *cmd)
+=======
+static void pmcraid_ioasc_logger(u32 ioasc, struct pmcraid_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_ioasc_error *error_info = pmcraid_get_error_info(ioasc);
 
@@ -1756,8 +2026,13 @@ void pmcraid_ioasc_logger(u32 ioasc, struct pmcraid_cmd *cmd)
 	/* log the error string */
 	pmcraid_err("cmd [%x] for resource %x failed with %x(%s)\n",
 		cmd->ioa_cb->ioarcb.cdb[0],
+<<<<<<< HEAD
 		cmd->ioa_cb->ioarcb.resource_handle,
 		le32_to_cpu(ioasc), error_info->error_string);
+=======
+		le32_to_cpu(cmd->ioa_cb->ioarcb.resource_handle),
+		ioasc, error_info->error_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1844,6 +2119,11 @@ static void pmcraid_process_ccn(struct pmcraid_cmd *cmd)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void pmcraid_initiate_reset(struct pmcraid_instance *);
+static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmcraid_process_ldn - op done function for an LDN
  * @cmd: pointer to command block
@@ -1851,9 +2131,12 @@ static void pmcraid_process_ccn(struct pmcraid_cmd *cmd)
  * Return value
  *   none
  */
+<<<<<<< HEAD
 static void pmcraid_initiate_reset(struct pmcraid_instance *);
 static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pmcraid_process_ldn(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
@@ -1951,14 +2234,22 @@ static void pmcraid_unregister_hcams(struct pmcraid_cmd *cmd)
 	pmcraid_cancel_ldn(cmd);
 }
 
+<<<<<<< HEAD
+=======
+static void pmcraid_reinit_buffers(struct pmcraid_instance *);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmcraid_reset_enable_ioa - re-enable IOA after a hard reset
  * @pinstance: pointer to adapter instance structure
  * Return Value
  *  1 if TRANSITION_TO_OPERATIONAL is active, otherwise 0
  */
+<<<<<<< HEAD
 static void pmcraid_reinit_buffers(struct pmcraid_instance *);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pmcraid_reset_enable_ioa(struct pmcraid_instance *pinstance)
 {
 	u32 intrs;
@@ -2000,10 +2291,16 @@ static void pmcraid_soft_reset(struct pmcraid_cmd *cmd)
 	 * would re-initiate a reset
 	 */
 	cmd->cmd_done = pmcraid_ioa_reset;
+<<<<<<< HEAD
 	cmd->timer.data = (unsigned long)cmd;
 	cmd->timer.expires = jiffies +
 			     msecs_to_jiffies(PMCRAID_TRANSOP_TIMEOUT);
 	cmd->timer.function = (void (*)(unsigned long))pmcraid_timeout_handler;
+=======
+	cmd->timer.expires = jiffies +
+			     msecs_to_jiffies(PMCRAID_TRANSOP_TIMEOUT);
+	cmd->timer.function = pmcraid_timeout_handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!timer_pending(&cmd->timer))
 		add_timer(&cmd->timer);
@@ -2074,7 +2371,11 @@ static void pmcraid_fail_outstanding_cmds(struct pmcraid_instance *pinstance)
 		cmd->ioa_cb->ioasa.ioasc =
 			cpu_to_le32(PMCRAID_IOASC_IOA_WAS_RESET);
 		cmd->ioa_cb->ioasa.ilid =
+<<<<<<< HEAD
 			cpu_to_be32(PMCRAID_DRIVER_ILID);
+=======
+			cpu_to_le32(PMCRAID_DRIVER_ILID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* In case the command timer is still running */
 		del_timer(&cmd->timer);
@@ -2098,7 +2399,11 @@ static void pmcraid_fail_outstanding_cmds(struct pmcraid_instance *pinstance)
 				     le32_to_cpu(resp) >> 2,
 				     cmd->ioa_cb->ioarcb.cdb[0],
 				     scsi_cmd->result);
+<<<<<<< HEAD
 			scsi_cmd->scsi_done(scsi_cmd);
+=======
+			scsi_done(scsi_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (cmd->cmd_done == pmcraid_internal_done ||
 			   cmd->cmd_done == pmcraid_erp_done) {
 			cmd->cmd_done(cmd);
@@ -2413,6 +2718,7 @@ static int pmcraid_reset_reload(
 		spin_lock_irqsave(pinstance->host->host_lock, lock_flags);
 
 		if (pinstance->ioa_state == IOA_STATE_DEAD) {
+<<<<<<< HEAD
 			spin_unlock_irqrestore(pinstance->host->host_lock,
 					       lock_flags);
 			pmcraid_info("reset_reload: IOA is dead\n");
@@ -2453,6 +2759,45 @@ static int pmcraid_reset_reload(
 			reset = 0;
 	}
 
+=======
+			pmcraid_info("reset_reload: IOA is dead\n");
+			goto out_unlock;
+		}
+
+		if (pinstance->ioa_state == target_state) {
+			reset = 0;
+			goto out_unlock;
+		}
+	}
+
+	pmcraid_info("reset_reload: proceeding with reset\n");
+	scsi_block_requests(pinstance->host);
+	reset_cmd = pmcraid_get_free_cmd(pinstance);
+	if (reset_cmd == NULL) {
+		pmcraid_err("no free cmnd for reset_reload\n");
+		goto out_unlock;
+	}
+
+	if (shutdown_type == SHUTDOWN_NORMAL)
+		pinstance->ioa_bringdown = 1;
+
+	pinstance->ioa_shutdown_type = shutdown_type;
+	pinstance->reset_cmd = reset_cmd;
+	pinstance->force_ioa_reset = reset;
+	pmcraid_info("reset_reload: initiating reset\n");
+	pmcraid_ioa_reset(reset_cmd);
+	spin_unlock_irqrestore(pinstance->host->host_lock, lock_flags);
+	pmcraid_info("reset_reload: waiting for reset to complete\n");
+	wait_event(pinstance->reset_wait_q,
+		   !pinstance->ioa_reset_in_progress);
+
+	pmcraid_info("reset_reload: reset is complete !!\n");
+	scsi_unblock_requests(pinstance->host);
+	return pinstance->ioa_state != target_state;
+
+out_unlock:
+	spin_unlock_irqrestore(pinstance->host->host_lock, lock_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return reset;
 }
 
@@ -2499,6 +2844,7 @@ static void pmcraid_request_sense(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
+<<<<<<< HEAD
 
 	/* allocate DMAable memory for sense buffers */
 	cmd->sense_buffer = pci_alloc_consistent(cmd->drv_inst->pdev,
@@ -2506,6 +2852,14 @@ static void pmcraid_request_sense(struct pmcraid_cmd *cmd)
 						 &cmd->sense_buffer_dma);
 
 	if (cmd->sense_buffer == NULL) {
+=======
+	struct device *dev = &cmd->drv_inst->pdev->dev;
+
+	cmd->sense_buffer = cmd->scsi_cmd->sense_buffer;
+	cmd->sense_buffer_dma = dma_map_single(dev, cmd->sense_buffer,
+			SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
+	if (dma_mapping_error(dev, cmd->sense_buffer_dma)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmcraid_err
 			("couldn't allocate sense buffer for request sense\n");
 		pmcraid_erp_done(cmd);
@@ -2546,17 +2900,28 @@ static void pmcraid_request_sense(struct pmcraid_cmd *cmd)
 /**
  * pmcraid_cancel_all - cancel all outstanding IOARCBs as part of error recovery
  * @cmd: command that failed
+<<<<<<< HEAD
  * @sense: true if request_sense is required after cancel all
  *
  * This function sends a cancel all to a device to clear the queue.
  */
 static void pmcraid_cancel_all(struct pmcraid_cmd *cmd, u32 sense)
+=======
+ * @need_sense: true if request_sense is required after cancel all
+ *
+ * This function sends a cancel all to a device to clear the queue.
+ */
+static void pmcraid_cancel_all(struct pmcraid_cmd *cmd, bool need_sense)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_cmnd *scsi_cmd = cmd->scsi_cmd;
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
 	struct pmcraid_resource_entry *res = scsi_cmd->device->hostdata;
+<<<<<<< HEAD
 	void (*cmd_done) (struct pmcraid_cmd *) = sense ? pmcraid_erp_done
 							: pmcraid_request_sense;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(ioarcb->cdb, 0, PMCRAID_MAX_CDB_LEN);
 	ioarcb->request_flags0 = SYNC_OVERRIDE;
@@ -2569,12 +2934,21 @@ static void pmcraid_cancel_all(struct pmcraid_cmd *cmd, u32 sense)
 	ioarcb->ioadl_bus_addr = 0;
 	ioarcb->ioadl_length = 0;
 	ioarcb->data_transfer_length = 0;
+<<<<<<< HEAD
 	ioarcb->ioarcb_bus_addr &= (~0x1FULL);
+=======
+	ioarcb->ioarcb_bus_addr &= cpu_to_le64((~0x1FULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* writing to IOARRIN must be protected by host_lock, as mid-layer
 	 * schedule queuecommand while we are doing this
 	 */
+<<<<<<< HEAD
 	pmcraid_send_cmd(cmd, cmd_done,
+=======
+	pmcraid_send_cmd(cmd, need_sense ?
+			 pmcraid_erp_done : pmcraid_request_sense,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 PMCRAID_REQUEST_SENSE_TIMEOUT,
 			 pmcraid_timeout_handler);
 }
@@ -2667,7 +3041,11 @@ static int pmcraid_error_handler(struct pmcraid_cmd *cmd)
 	struct pmcraid_ioasa *ioasa = &cmd->ioa_cb->ioasa;
 	u32 ioasc = le32_to_cpu(ioasa->ioasc);
 	u32 masked_ioasc = ioasc & PMCRAID_IOASC_SENSE_MASK;
+<<<<<<< HEAD
 	u32 sense_copied = 0;
+=======
+	bool sense_copied = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!res) {
 		pmcraid_info("resource pointer is NULL\n");
@@ -2732,14 +3110,23 @@ static int pmcraid_error_handler(struct pmcraid_cmd *cmd)
 		 * mid-layer
 		 */
 		if (ioasa->auto_sense_length != 0) {
+<<<<<<< HEAD
 			short sense_len = ioasa->auto_sense_length;
 			int data_size = min_t(u16, le16_to_cpu(sense_len),
+=======
+			short sense_len = le16_to_cpu(ioasa->auto_sense_length);
+			int data_size = min_t(u16, sense_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      SCSI_SENSE_BUFFERSIZE);
 
 			memcpy(scsi_cmd->sense_buffer,
 			       ioasa->sense_data,
 			       data_size);
+<<<<<<< HEAD
 			sense_copied = 1;
+=======
+			sense_copied = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (RES_IS_GSCSI(res->cfg_entry))
@@ -2765,7 +3152,12 @@ static int pmcraid_error_handler(struct pmcraid_cmd *cmd)
 /**
  * pmcraid_reset_device - device reset handler functions
  *
+<<<<<<< HEAD
  * @scsi_cmd: scsi command struct
+=======
+ * @scsi_dev: scsi device struct
+ * @timeout: command timeout
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @modifier: reset modifier indicating the reset sequence to be performed
  *
  * This function issues a device reset to the affected device.
@@ -2776,10 +3168,16 @@ static int pmcraid_error_handler(struct pmcraid_cmd *cmd)
  *	SUCCESS / FAILED
  */
 static int pmcraid_reset_device(
+<<<<<<< HEAD
 	struct scsi_cmnd *scsi_cmd,
 	unsigned long timeout,
 	u8 modifier
 )
+=======
+	struct scsi_device *scsi_dev,
+	unsigned long timeout,
+	u8 modifier)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_cmd *cmd;
 	struct pmcraid_instance *pinstance;
@@ -2789,11 +3187,19 @@ static int pmcraid_reset_device(
 	u32 ioasc;
 
 	pinstance =
+<<<<<<< HEAD
 		(struct pmcraid_instance *)scsi_cmd->device->host->hostdata;
 	res = scsi_cmd->device->hostdata;
 
 	if (!res) {
 		sdev_printk(KERN_ERR, scsi_cmd->device,
+=======
+		(struct pmcraid_instance *)scsi_dev->host->hostdata;
+	res = scsi_dev->hostdata;
+
+	if (!res) {
+		sdev_printk(KERN_ERR, scsi_dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "reset_device: NULL resource pointer\n");
 		return FAILED;
 	}
@@ -2900,7 +3306,11 @@ static int _pmcraid_io_done(struct pmcraid_cmd *cmd, int reslen, int ioasc)
 
 	if (rc == 0) {
 		scsi_dma_unmap(scsi_cmd);
+<<<<<<< HEAD
 		scsi_cmd->scsi_done(scsi_cmd);
+=======
+		scsi_done(scsi_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -2939,10 +3349,15 @@ static struct pmcraid_cmd *pmcraid_abort_cmd(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_cmd *cancel_cmd;
 	struct pmcraid_instance *pinstance;
+<<<<<<< HEAD
 	struct pmcraid_resource_entry *res;
 
 	pinstance = (struct pmcraid_instance *)cmd->drv_inst;
 	res = cmd->scsi_cmd->device->hostdata;
+=======
+
+	pinstance = (struct pmcraid_instance *)cmd->drv_inst;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cancel_cmd = pmcraid_get_free_cmd(pinstance);
 
@@ -2955,7 +3370,11 @@ static struct pmcraid_cmd *pmcraid_abort_cmd(struct pmcraid_cmd *cmd)
 
 	pmcraid_info("aborting command CDB[0]= %x with index = %d\n",
 		cmd->ioa_cb->ioarcb.cdb[0],
+<<<<<<< HEAD
 		cmd->ioa_cb->ioarcb.response_handle >> 2);
+=======
+		le32_to_cpu(cmd->ioa_cb->ioarcb.response_handle) >> 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_completion(&cancel_cmd->wait_for_completion);
 	cancel_cmd->completion_req = 1;
@@ -3089,7 +3508,11 @@ static int pmcraid_eh_abort_handler(struct scsi_cmnd *scsi_cmd)
 }
 
 /**
+<<<<<<< HEAD
  * pmcraid_eh_xxxx_reset_handler - bus/target/device reset handler callbacks
+=======
+ * pmcraid_eh_device_reset_handler - bus/target/device reset handler callbacks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @scmd: pointer to scsi_cmd that was sent to the resource to be reset.
  *
@@ -3106,27 +3529,90 @@ static int pmcraid_eh_device_reset_handler(struct scsi_cmnd *scmd)
 {
 	scmd_printk(KERN_INFO, scmd,
 		    "resetting device due to an I/O command timeout.\n");
+<<<<<<< HEAD
 	return pmcraid_reset_device(scmd,
+=======
+	return pmcraid_reset_device(scmd->device,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    PMCRAID_INTERNAL_TIMEOUT,
 				    RESET_DEVICE_LUN);
 }
 
 static int pmcraid_eh_bus_reset_handler(struct scsi_cmnd *scmd)
 {
+<<<<<<< HEAD
 	scmd_printk(KERN_INFO, scmd,
 		    "Doing bus reset due to an I/O command timeout.\n");
 	return pmcraid_reset_device(scmd,
+=======
+	struct Scsi_Host *host = scmd->device->host;
+	struct pmcraid_instance *pinstance =
+		(struct pmcraid_instance *)host->hostdata;
+	struct pmcraid_resource_entry *res = NULL;
+	struct pmcraid_resource_entry *temp;
+	struct scsi_device *sdev = NULL;
+	unsigned long lock_flags;
+
+	/*
+	 * The reset device code insists on us passing down
+	 * a device, so grab the first device on the bus.
+	 */
+	spin_lock_irqsave(&pinstance->resource_lock, lock_flags);
+	list_for_each_entry(temp, &pinstance->used_res_q, queue) {
+		if (scmd->device->channel == PMCRAID_VSET_BUS_ID &&
+		    RES_IS_VSET(temp->cfg_entry)) {
+			res = temp;
+			break;
+		} else if (scmd->device->channel == PMCRAID_PHYS_BUS_ID &&
+			   RES_IS_GSCSI(temp->cfg_entry)) {
+			res = temp;
+			break;
+		}
+	}
+	if (res)
+		sdev = res->scsi_dev;
+	spin_unlock_irqrestore(&pinstance->resource_lock, lock_flags);
+	if (!sdev)
+		return FAILED;
+
+	sdev_printk(KERN_INFO, sdev,
+		    "Doing bus reset due to an I/O command timeout.\n");
+	return pmcraid_reset_device(sdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    PMCRAID_RESET_BUS_TIMEOUT,
 				    RESET_DEVICE_BUS);
 }
 
 static int pmcraid_eh_target_reset_handler(struct scsi_cmnd *scmd)
 {
+<<<<<<< HEAD
 	scmd_printk(KERN_INFO, scmd,
 		    "Doing target reset due to an I/O command timeout.\n");
 	return pmcraid_reset_device(scmd,
 				    PMCRAID_INTERNAL_TIMEOUT,
 				    RESET_DEVICE_TARGET);
+=======
+	struct Scsi_Host *shost = scmd->device->host;
+	struct scsi_device *scsi_dev = NULL, *tmp;
+	int ret;
+
+	shost_for_each_device(tmp, shost) {
+		if ((tmp->channel == scmd->device->channel) &&
+		    (tmp->id == scmd->device->id)) {
+			scsi_dev = tmp;
+			break;
+		}
+	}
+	if (!scsi_dev)
+		return FAILED;
+	sdev_printk(KERN_INFO, scsi_dev,
+		    "Doing target reset due to an I/O command timeout.\n");
+	ret = pmcraid_reset_device(scsi_dev,
+				   PMCRAID_INTERNAL_TIMEOUT,
+				   RESET_DEVICE_TARGET);
+	scsi_device_put(scsi_dev);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3164,6 +3650,7 @@ static int pmcraid_eh_host_reset_handler(struct scsi_cmnd *scmd)
 }
 
 /**
+<<<<<<< HEAD
  * pmcraid_task_attributes - Translate SPI Q-Tags to task attributes
  * @scsi_cmd:   scsi command struct
  *
@@ -3194,6 +3681,8 @@ static u8 pmcraid_task_attributes(struct scsi_cmnd *scsi_cmd)
 
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_init_ioadls - initializes IOADL related fields in IOARCB
  * @cmd: pmcraid command struct
  * @sgcount: count of scatter-gather elements
@@ -3202,7 +3691,11 @@ static u8 pmcraid_task_attributes(struct scsi_cmnd *scsi_cmd)
  *   returns pointer pmcraid_ioadl_desc, initialized to point to internal
  *   or external IOADLs
  */
+<<<<<<< HEAD
 struct pmcraid_ioadl_desc *
+=======
+static struct pmcraid_ioadl_desc *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pmcraid_init_ioadls(struct pmcraid_cmd *cmd, int sgcount)
 {
 	struct pmcraid_ioadl_desc *ioadl;
@@ -3210,9 +3703,14 @@ pmcraid_init_ioadls(struct pmcraid_cmd *cmd, int sgcount)
 	int ioadl_count = 0;
 
 	if (ioarcb->add_cmd_param_length)
+<<<<<<< HEAD
 		ioadl_count = DIV_ROUND_UP(ioarcb->add_cmd_param_length, 16);
 	ioarcb->ioadl_length =
 		sizeof(struct pmcraid_ioadl_desc) * sgcount;
+=======
+		ioadl_count = DIV_ROUND_UP(le16_to_cpu(ioarcb->add_cmd_param_length), 16);
+	ioarcb->ioadl_length = cpu_to_le32(sizeof(struct pmcraid_ioadl_desc) * sgcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((sgcount + ioadl_count) > (ARRAY_SIZE(ioarcb->add_data.u.ioadl))) {
 		/* external ioadls start at offset 0x80 from control_block
@@ -3220,7 +3718,11 @@ pmcraid_init_ioadls(struct pmcraid_cmd *cmd, int sgcount)
 		 * It is necessary to indicate to firmware that driver is
 		 * using ioadls to be treated as external to IOARCB.
 		 */
+<<<<<<< HEAD
 		ioarcb->ioarcb_bus_addr &= ~(0x1FULL);
+=======
+		ioarcb->ioarcb_bus_addr &= cpu_to_le64(~(0x1FULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioarcb->ioadl_bus_addr =
 			cpu_to_le64((cmd->ioa_cb_bus_addr) +
 				offsetof(struct pmcraid_ioarcb,
@@ -3234,7 +3736,11 @@ pmcraid_init_ioadls(struct pmcraid_cmd *cmd, int sgcount)
 
 		ioadl = &ioarcb->add_data.u.ioadl[ioadl_count];
 		ioarcb->ioarcb_bus_addr |=
+<<<<<<< HEAD
 				DIV_ROUND_CLOSEST(sgcount + ioadl_count, 8);
+=======
+			cpu_to_le64(DIV_ROUND_CLOSEST(sgcount + ioadl_count, 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ioadl;
@@ -3261,7 +3767,11 @@ static int pmcraid_build_ioadl(
 
 	struct scsi_cmnd *scsi_cmd = cmd->scsi_cmd;
 	struct pmcraid_ioarcb *ioarcb = &(cmd->ioa_cb->ioarcb);
+<<<<<<< HEAD
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
+=======
+	struct pmcraid_ioadl_desc *ioadl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 length = scsi_bufflen(scsi_cmd);
 
@@ -3301,6 +3811,7 @@ static int pmcraid_build_ioadl(
 }
 
 /**
+<<<<<<< HEAD
  * pmcraid_free_sglist - Frees an allocated SG buffer list
  * @sglist: scatter/gather list pointer
  *
@@ -3463,6 +3974,10 @@ static int pmcraid_copy_sglist(
  * pmcraid_queuecommand - Queue a mid-layer request
  * @scsi_cmd: scsi command struct
  * @done: done function
+=======
+ * pmcraid_queuecommand_lck - Queue a mid-layer request
+ * @scsi_cmd: scsi command struct
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function queues a request generated by the mid-layer. Midlayer calls
  * this routine within host->lock. Some of the functions called by queuecommand
@@ -3473,10 +3988,14 @@ static int pmcraid_copy_sglist(
  *	  SCSI_MLQUEUE_DEVICE_BUSY if device is busy
  *	  SCSI_MLQUEUE_HOST_BUSY if host is busy
  */
+<<<<<<< HEAD
 static int pmcraid_queuecommand_lck(
 	struct scsi_cmnd *scsi_cmd,
 	void (*done) (struct scsi_cmnd *)
 )
+=======
+static int pmcraid_queuecommand_lck(struct scsi_cmnd *scsi_cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_instance *pinstance;
 	struct pmcraid_resource_entry *res;
@@ -3488,7 +4007,10 @@ static int pmcraid_queuecommand_lck(
 	pinstance =
 		(struct pmcraid_instance *)scsi_cmd->device->host->hostdata;
 	fw_version = be16_to_cpu(pinstance->inq_data->fw_version);
+<<<<<<< HEAD
 	scsi_cmd->scsi_done = done;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = scsi_cmd->device->hostdata;
 	scsi_cmd->result = (DID_OK << 16);
 
@@ -3498,7 +4020,11 @@ static int pmcraid_queuecommand_lck(
 	if (pinstance->ioa_state == IOA_STATE_DEAD) {
 		pmcraid_info("IOA is dead, but queuecommand is scheduled\n");
 		scsi_cmd->result = (DID_NO_CONNECT << 16);
+<<<<<<< HEAD
 		scsi_cmd->scsi_done(scsi_cmd);
+=======
+		scsi_done(scsi_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -3511,7 +4037,11 @@ static int pmcraid_queuecommand_lck(
 	 */
 	if (scsi_cmd->cmnd[0] == SYNCHRONIZE_CACHE) {
 		pmcraid_info("SYNC_CACHE(0x35), completing in driver itself\n");
+<<<<<<< HEAD
 		scsi_cmd->scsi_done(scsi_cmd);
+=======
+		scsi_done(scsi_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -3548,7 +4078,13 @@ static int pmcraid_queuecommand_lck(
 		}
 
 		ioarcb->request_flags0 |= NO_LINK_DESCS;
+<<<<<<< HEAD
 		ioarcb->request_flags1 |= pmcraid_task_attributes(scsi_cmd);
+=======
+
+		if (scsi_cmd->flags & SCMD_TAGGED)
+			ioarcb->request_flags1 |= TASK_TAG_SIMPLE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (RES_IS_GSCSI(res->cfg_entry))
 			ioarcb->request_flags1 |= DELAY_AFTER_RESET;
@@ -3564,7 +4100,11 @@ static int pmcraid_queuecommand_lck(
 		     RES_IS_VSET(res->cfg_entry) ?
 			(fw_version <= PMCRAID_FW_VERSION_1 ?
 				res->cfg_entry.unique_flags1 :
+<<<<<<< HEAD
 					res->cfg_entry.array_id & 0xFF) :
+=======
+				le16_to_cpu(res->cfg_entry.array_id) & 0xFF) :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			RES_TARGET(res->cfg_entry.resource_address),
 		     RES_LUN(res->cfg_entry.resource_address));
 
@@ -3581,7 +4121,11 @@ static int pmcraid_queuecommand_lck(
 
 static DEF_SCSI_QCMD(pmcraid_queuecommand)
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_open -char node "open" entry, allowed only users with admin access
  */
 static int pmcraid_chr_open(struct inode *inode, struct file *filep)
@@ -3598,6 +4142,7 @@ static int pmcraid_chr_open(struct inode *inode, struct file *filep)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * pmcraid_release - char node "release" entry point
  */
@@ -3612,6 +4157,9 @@ static int pmcraid_chr_release(struct inode *inode, struct file *filep)
 }
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_fasync - Async notifier registration from applications
  *
  * This function adds the calling process to a driver global queue. When an
@@ -3630,6 +4178,7 @@ static int pmcraid_chr_fasync(int fd, struct file *filep, int mode)
 	return rc;
 }
 
+<<<<<<< HEAD
 
 /**
  * pmcraid_build_passthrough_ioadls - builds SG elements for passthrough
@@ -4000,6 +4549,8 @@ out_free_buffer:
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmcraid_ioctl_driver - ioctl handler for commands handled by driver itself
  *
@@ -4020,11 +4571,14 @@ static long pmcraid_ioctl_driver(
 {
 	int rc = -ENOSYS;
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, user_buffer, _IOC_SIZE(cmd))) {
 		pmcraid_err("ioctl_driver: access fault in request buffer\n");
 		return -EFAULT;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case PMCRAID_IOCTL_RESET_ADAPTER:
 		pmcraid_reset_bringup(pinstance);
@@ -4056,8 +4610,12 @@ static int pmcraid_check_ioctl_buffer(
 	struct pmcraid_ioctl_header *hdr
 )
 {
+<<<<<<< HEAD
 	int rc = 0;
 	int access = VERIFY_READ;
+=======
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(hdr, arg, sizeof(struct pmcraid_ioctl_header))) {
 		pmcraid_err("couldn't copy ioctl header from user buffer\n");
@@ -4073,6 +4631,7 @@ static int pmcraid_check_ioctl_buffer(
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* check for appropriate buffer access */
 	if ((_IOC_DIR(cmd) & _IOC_READ) == _IOC_READ)
 		access = VERIFY_WRITE;
@@ -4090,6 +4649,12 @@ static int pmcraid_check_ioctl_buffer(
 }
 
 /**
+=======
+	return 0;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  pmcraid_ioctl - char node ioctl entry point
  */
 static long pmcraid_chr_ioctl(
@@ -4100,6 +4665,10 @@ static long pmcraid_chr_ioctl(
 {
 	struct pmcraid_instance *pinstance = NULL;
 	struct pmcraid_ioctl_header *hdr = NULL;
+<<<<<<< HEAD
+=======
+	void __user *argp = (void __user *)arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = -ENOTTY;
 
 	hdr = kmalloc(sizeof(struct pmcraid_ioctl_header), GFP_KERNEL);
@@ -4109,7 +4678,11 @@ static long pmcraid_chr_ioctl(
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	retval = pmcraid_check_ioctl_buffer(cmd, (void *)arg, hdr);
+=======
+	retval = pmcraid_check_ioctl_buffer(cmd, argp, hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (retval) {
 		pmcraid_info("chr_ioctl: header check failed\n");
@@ -4127,6 +4700,7 @@ static long pmcraid_chr_ioctl(
 
 	switch (_IOC_TYPE(cmd)) {
 
+<<<<<<< HEAD
 	case PMCRAID_PASSTHROUGH_IOCTL:
 		/* If ioctl code is to download microcode, we need to block
 		 * mid-layer requests.
@@ -4149,6 +4723,12 @@ static long pmcraid_chr_ioctl(
 					      cmd,
 					      hdr->buffer_length,
 					      (void __user *)arg);
+=======
+	case PMCRAID_DRIVER_IOCTL:
+		arg += sizeof(struct pmcraid_ioctl_header);
+		retval = pmcraid_ioctl_driver(pinstance, cmd,
+					      hdr->buffer_length, argp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -4161,18 +4741,28 @@ static long pmcraid_chr_ioctl(
 	return retval;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File operations structure for management interface
  */
 static const struct file_operations pmcraid_fops = {
 	.owner = THIS_MODULE,
 	.open = pmcraid_chr_open,
+<<<<<<< HEAD
 	.release = pmcraid_chr_release,
 	.fasync = pmcraid_chr_fasync,
 	.unlocked_ioctl = pmcraid_chr_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = pmcraid_chr_ioctl,
 #endif
+=======
+	.fasync = pmcraid_chr_fasync,
+	.unlocked_ioctl = pmcraid_chr_ioctl,
+	.compat_ioctl = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek = noop_llseek,
 };
 
@@ -4182,6 +4772,10 @@ static const struct file_operations pmcraid_fops = {
 /**
  * pmcraid_show_log_level - Display adapter's error logging level
  * @dev: class device struct
+<<<<<<< HEAD
+=======
+ * @attr: unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: buffer
  *
  * Return value:
@@ -4201,6 +4795,10 @@ static ssize_t pmcraid_show_log_level(
 /**
  * pmcraid_store_log_level - Change the adapter's error logging level
  * @dev: class device struct
+<<<<<<< HEAD
+=======
+ * @attr: unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: buffer
  * @count: not used
  *
@@ -4216,9 +4814,15 @@ static ssize_t pmcraid_store_log_level(
 {
 	struct Scsi_Host *shost;
 	struct pmcraid_instance *pinstance;
+<<<<<<< HEAD
 	unsigned long val;
 
 	if (strict_strtoul(buf, 10, &val))
+=======
+	u8 val;
+
+	if (kstrtou8(buf, 10, &val))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	/* log-level should be from 0 to 2 */
 	if (val > 2)
@@ -4243,6 +4847,10 @@ static struct device_attribute pmcraid_log_level_attr = {
 /**
  * pmcraid_show_drv_version - Display driver version
  * @dev: class device struct
+<<<<<<< HEAD
+=======
+ * @attr: unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: buffer
  *
  * Return value:
@@ -4267,8 +4875,14 @@ static struct device_attribute pmcraid_driver_version_attr = {
 };
 
 /**
+<<<<<<< HEAD
  * pmcraid_show_io_adapter_id - Display driver assigned adapter id
  * @dev: class device struct
+=======
+ * pmcraid_show_adapter_id - Display driver assigned adapter id
+ * @dev: class device struct
+ * @attr: unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf: buffer
  *
  * Return value:
@@ -4283,8 +4897,12 @@ static ssize_t pmcraid_show_adapter_id(
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct pmcraid_instance *pinstance =
 		(struct pmcraid_instance *)shost->hostdata;
+<<<<<<< HEAD
 	u32 adapter_id = (pinstance->pdev->bus->number << 8) |
 		pinstance->pdev->devfn;
+=======
+	u32 adapter_id = pci_dev_id(pinstance->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 aen_group = pmcraid_event_family.id;
 
 	return snprintf(buf, PAGE_SIZE,
@@ -4295,11 +4913,16 @@ static ssize_t pmcraid_show_adapter_id(
 static struct device_attribute pmcraid_adapter_id_attr = {
 	.attr = {
 		 .name = "adapter_id",
+<<<<<<< HEAD
 		 .mode = S_IRUGO | S_IWUSR,
+=======
+		 .mode = S_IRUGO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 },
 	.show = pmcraid_show_adapter_id,
 };
 
+<<<<<<< HEAD
 static struct device_attribute *pmcraid_host_attrs[] = {
 	&pmcraid_log_level_attr,
 	&pmcraid_driver_version_attr,
@@ -4310,6 +4933,19 @@ static struct device_attribute *pmcraid_host_attrs[] = {
 
 /* host template structure for pmcraid driver */
 static struct scsi_host_template pmcraid_host_template = {
+=======
+static struct attribute *pmcraid_host_attrs[] = {
+	&pmcraid_log_level_attr.attr,
+	&pmcraid_driver_version_attr.attr,
+	&pmcraid_adapter_id_attr.attr,
+	NULL,
+};
+
+ATTRIBUTE_GROUPS(pmcraid_host);
+
+/* host template structure for pmcraid driver */
+static const struct scsi_host_template pmcraid_host_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 	.name = PMCRAID_DRIVER_NAME,
 	.queuecommand = pmcraid_queuecommand,
@@ -4323,15 +4959,25 @@ static struct scsi_host_template pmcraid_host_template = {
 	.slave_configure = pmcraid_slave_configure,
 	.slave_destroy = pmcraid_slave_destroy,
 	.change_queue_depth = pmcraid_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type  = pmcraid_change_queue_type,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.can_queue = PMCRAID_MAX_IO_CMD,
 	.this_id = -1,
 	.sg_tablesize = PMCRAID_MAX_IOADLS,
 	.max_sectors = PMCRAID_IOA_MAX_SECTORS,
+<<<<<<< HEAD
 	.cmd_per_lun = PMCRAID_MAX_CMD_PER_LUN,
 	.use_clustering = ENABLE_CLUSTERING,
 	.shost_attrs = pmcraid_host_attrs,
 	.proc_name = PMCRAID_DRIVER_NAME
+=======
+	.no_write_same = 1,
+	.cmd_per_lun = PMCRAID_MAX_CMD_PER_LUN,
+	.shost_groups = pmcraid_host_groups,
+	.proc_name = PMCRAID_DRIVER_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -4550,7 +5196,11 @@ static void pmcraid_worker_function(struct work_struct *workp)
 				if (fw_version <= PMCRAID_FW_VERSION_1)
 					target = res->cfg_entry.unique_flags1;
 				else
+<<<<<<< HEAD
 					target = res->cfg_entry.array_id & 0xFF;
+=======
+					target = le16_to_cpu(res->cfg_entry.array_id) & 0xFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lun = PMCRAID_VSET_LUN_ID;
 			} else {
 				bus = PMCRAID_PHYS_BUS_ID;
@@ -4589,7 +5239,11 @@ static void pmcraid_tasklet_function(unsigned long instance)
 	unsigned long host_lock_flags;
 	spinlock_t *lockp; /* hrrq buffer lock */
 	int id;
+<<<<<<< HEAD
 	__le32 resp;
+=======
+	u32 resp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hrrq_vector = (struct pmcraid_isr_param *)instance;
 	pinstance = hrrq_vector->drv_inst;
@@ -4667,6 +5321,7 @@ static void pmcraid_tasklet_function(unsigned long instance)
 static
 void pmcraid_unregister_interrupt_handler(struct pmcraid_instance *pinstance)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < pinstance->num_hrrq; i++)
@@ -4677,6 +5332,16 @@ void pmcraid_unregister_interrupt_handler(struct pmcraid_instance *pinstance)
 		pci_disable_msix(pinstance->pdev);
 		pinstance->interrupt_mode = 0;
 	}
+=======
+	struct pci_dev *pdev = pinstance->pdev;
+	int i;
+
+	for (i = 0; i < pinstance->num_hrrq; i++)
+		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+
+	pinstance->interrupt_mode = 0;
+	pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4689,6 +5354,7 @@ void pmcraid_unregister_interrupt_handler(struct pmcraid_instance *pinstance)
 static int
 pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
 {
+<<<<<<< HEAD
 	int rc;
 	struct pci_dev *pdev = pinstance->pdev;
 
@@ -4733,10 +5399,47 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
 		}
 
 		pinstance->num_hrrq = num_hrrq;
+=======
+	struct pci_dev *pdev = pinstance->pdev;
+	unsigned int irq_flag = PCI_IRQ_LEGACY, flag;
+	int num_hrrq, rc, i;
+	irq_handler_t isr;
+
+	if (pmcraid_enable_msix)
+		irq_flag |= PCI_IRQ_MSIX;
+
+	num_hrrq = pci_alloc_irq_vectors(pdev, 1, PMCRAID_NUM_MSIX_VECTORS,
+			irq_flag);
+	if (num_hrrq < 0)
+		return num_hrrq;
+
+	if (pdev->msix_enabled) {
+		flag = 0;
+		isr = pmcraid_isr_msix;
+	} else {
+		flag = IRQF_SHARED;
+		isr = pmcraid_isr;
+	}
+
+	for (i = 0; i < num_hrrq; i++) {
+		struct pmcraid_isr_param *vec = &pinstance->hrrq_vector[i];
+
+		vec->hrrq_id = i;
+		vec->drv_inst = pinstance;
+		rc = request_irq(pci_irq_vector(pdev, i), isr, flag,
+				PMCRAID_DRIVER_NAME, vec);
+		if (rc)
+			goto out_unwind;
+	}
+
+	pinstance->num_hrrq = num_hrrq;
+	if (pdev->msix_enabled) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pinstance->interrupt_mode = 1;
 		iowrite32(DOORBELL_INTR_MODE_MSIX,
 			  pinstance->int_regs.host_ioa_interrupt_reg);
 		ioread32(pinstance->int_regs.host_ioa_interrupt_reg);
+<<<<<<< HEAD
 		goto pmcraid_isr_out;
 	}
 
@@ -4753,6 +5456,16 @@ pmcraid_isr_legacy:
 	rc = request_irq(pdev->irq, pmcraid_isr, IRQF_SHARED,
 			 PMCRAID_DRIVER_NAME, &pinstance->hrrq_vector[0]);
 pmcraid_isr_out:
+=======
+	}
+
+	return 0;
+
+out_unwind:
+	while (--i >= 0)
+		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+	pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -4799,27 +5512,43 @@ pmcraid_release_control_blocks(
 		return;
 
 	for (i = 0; i < max_index; i++) {
+<<<<<<< HEAD
 		pci_pool_free(pinstance->control_pool,
+=======
+		dma_pool_free(pinstance->control_pool,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      pinstance->cmd_list[i]->ioa_cb,
 			      pinstance->cmd_list[i]->ioa_cb_bus_addr);
 		pinstance->cmd_list[i]->ioa_cb = NULL;
 		pinstance->cmd_list[i]->ioa_cb_bus_addr = 0;
 	}
+<<<<<<< HEAD
 	pci_pool_destroy(pinstance->control_pool);
+=======
+	dma_pool_destroy(pinstance->control_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pinstance->control_pool = NULL;
 }
 
 /**
  * pmcraid_allocate_cmd_blocks - allocate memory for cmd block structures
+<<<<<<< HEAD
  * @pinstance - pointer to per adapter instance structure
+=======
+ * @pinstance: pointer to per adapter instance structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocates memory for command blocks using kernel slab allocator.
  *
  * Return Value
  *	0 in case of success; -ENOMEM in case of failure
  */
+<<<<<<< HEAD
 static int __devinit
 pmcraid_allocate_cmd_blocks(struct pmcraid_instance *pinstance)
+=======
+static int pmcraid_allocate_cmd_blocks(struct pmcraid_instance *pinstance)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -4855,8 +5584,12 @@ pmcraid_allocate_cmd_blocks(struct pmcraid_instance *pinstance)
  * Return Value
  *  0 in case it can allocate all control blocks, otherwise -ENOMEM
  */
+<<<<<<< HEAD
 static int __devinit
 pmcraid_allocate_control_blocks(struct pmcraid_instance *pinstance)
+=======
+static int pmcraid_allocate_control_blocks(struct pmcraid_instance *pinstance)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -4864,8 +5597,13 @@ pmcraid_allocate_control_blocks(struct pmcraid_instance *pinstance)
 		pinstance->host->unique_id);
 
 	pinstance->control_pool =
+<<<<<<< HEAD
 		pci_pool_create(pinstance->ctl_pool_name,
 				pinstance->pdev,
+=======
+		dma_pool_create(pinstance->ctl_pool_name,
+				&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(struct pmcraid_control_block),
 				PMCRAID_IOARCB_ALIGNMENT, 0);
 
@@ -4874,7 +5612,11 @@ pmcraid_allocate_control_blocks(struct pmcraid_instance *pinstance)
 
 	for (i = 0; i < PMCRAID_MAX_CMD; i++) {
 		pinstance->cmd_list[i]->ioa_cb =
+<<<<<<< HEAD
 			pci_pool_alloc(
+=======
+			dma_pool_zalloc(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pinstance->control_pool,
 				GFP_KERNEL,
 				&(pinstance->cmd_list[i]->ioa_cb_bus_addr));
@@ -4883,8 +5625,11 @@ pmcraid_allocate_control_blocks(struct pmcraid_instance *pinstance)
 			pmcraid_release_control_blocks(pinstance, i);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		memset(pinstance->cmd_list[i]->ioa_cb, 0,
 			sizeof(struct pmcraid_control_block));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -4901,9 +5646,15 @@ static void
 pmcraid_release_host_rrqs(struct pmcraid_instance *pinstance, int maxindex)
 {
 	int i;
+<<<<<<< HEAD
 	for (i = 0; i < maxindex; i++) {
 
 		pci_free_consistent(pinstance->pdev,
+=======
+
+	for (i = 0; i < maxindex; i++) {
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    HRRQ_ENTRY_SIZE * PMCRAID_MAX_CMD,
 				    pinstance->hrrq_start[i],
 				    pinstance->hrrq_start_bus_addr[i]);
@@ -4922,8 +5673,12 @@ pmcraid_release_host_rrqs(struct pmcraid_instance *pinstance, int maxindex)
  * Return value
  *	0 hrrq buffers are allocated, -ENOMEM otherwise.
  */
+<<<<<<< HEAD
 static int __devinit
 pmcraid_allocate_host_rrqs(struct pmcraid_instance *pinstance)
+=======
+static int pmcraid_allocate_host_rrqs(struct pmcraid_instance *pinstance)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, buffer_size;
 
@@ -4931,19 +5686,29 @@ pmcraid_allocate_host_rrqs(struct pmcraid_instance *pinstance)
 
 	for (i = 0; i < pinstance->num_hrrq; i++) {
 		pinstance->hrrq_start[i] =
+<<<<<<< HEAD
 			pci_alloc_consistent(
 					pinstance->pdev,
 					buffer_size,
 					&(pinstance->hrrq_start_bus_addr[i]));
 
 		if (pinstance->hrrq_start[i] == 0) {
+=======
+			dma_alloc_coherent(&pinstance->pdev->dev, buffer_size,
+					   &pinstance->hrrq_start_bus_addr[i],
+					   GFP_KERNEL);
+		if (!pinstance->hrrq_start[i]) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmcraid_err("pci_alloc failed for hrrq vector : %d\n",
 				    i);
 			pmcraid_release_host_rrqs(pinstance, i);
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		memset(pinstance->hrrq_start[i], 0, buffer_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pinstance->hrrq_curr[i] = pinstance->hrrq_start[i];
 		pinstance->hrrq_end[i] =
 			pinstance->hrrq_start[i] + PMCRAID_MAX_CMD - 1;
@@ -4964,7 +5729,11 @@ pmcraid_allocate_host_rrqs(struct pmcraid_instance *pinstance)
 static void pmcraid_release_hcams(struct pmcraid_instance *pinstance)
 {
 	if (pinstance->ccn.msg != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pinstance->pdev,
+=======
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    PMCRAID_AEN_HDR_SIZE +
 				    sizeof(struct pmcraid_hcam_ccn_ext),
 				    pinstance->ccn.msg,
@@ -4976,7 +5745,11 @@ static void pmcraid_release_hcams(struct pmcraid_instance *pinstance)
 	}
 
 	if (pinstance->ldn.msg != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pinstance->pdev,
+=======
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    PMCRAID_AEN_HDR_SIZE +
 				    sizeof(struct pmcraid_hcam_ldn),
 				    pinstance->ldn.msg,
@@ -4997,6 +5770,7 @@ static void pmcraid_release_hcams(struct pmcraid_instance *pinstance)
  */
 static int pmcraid_allocate_hcams(struct pmcraid_instance *pinstance)
 {
+<<<<<<< HEAD
 	pinstance->ccn.msg = pci_alloc_consistent(
 					pinstance->pdev,
 					PMCRAID_AEN_HDR_SIZE +
@@ -5008,6 +5782,17 @@ static int pmcraid_allocate_hcams(struct pmcraid_instance *pinstance)
 					PMCRAID_AEN_HDR_SIZE +
 					sizeof(struct pmcraid_hcam_ldn),
 					&(pinstance->ldn.baddr));
+=======
+	pinstance->ccn.msg = dma_alloc_coherent(&pinstance->pdev->dev,
+					PMCRAID_AEN_HDR_SIZE +
+					sizeof(struct pmcraid_hcam_ccn_ext),
+					&pinstance->ccn.baddr, GFP_KERNEL);
+
+	pinstance->ldn.msg = dma_alloc_coherent(&pinstance->pdev->dev,
+					PMCRAID_AEN_HDR_SIZE +
+					sizeof(struct pmcraid_hcam_ldn),
+					&pinstance->ldn.baddr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pinstance->ldn.msg == NULL || pinstance->ccn.msg == NULL) {
 		pmcraid_release_hcams(pinstance);
@@ -5035,7 +5820,11 @@ static void pmcraid_release_config_buffers(struct pmcraid_instance *pinstance)
 {
 	if (pinstance->cfg_table != NULL &&
 	    pinstance->cfg_table_bus_addr != 0) {
+<<<<<<< HEAD
 		pci_free_consistent(pinstance->pdev,
+=======
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(struct pmcraid_config_table),
 				    pinstance->cfg_table,
 				    pinstance->cfg_table_bus_addr);
@@ -5062,14 +5851,24 @@ static void pmcraid_release_config_buffers(struct pmcraid_instance *pinstance)
  * Return Value
  *	0 for successful allocation, -ENOMEM for any failure
  */
+<<<<<<< HEAD
 static int __devinit
 pmcraid_allocate_config_buffers(struct pmcraid_instance *pinstance)
+=======
+static int pmcraid_allocate_config_buffers(struct pmcraid_instance *pinstance)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	pinstance->res_entries =
+<<<<<<< HEAD
 			kzalloc(sizeof(struct pmcraid_resource_entry) *
 				PMCRAID_MAX_RESOURCES, GFP_KERNEL);
+=======
+			kcalloc(PMCRAID_MAX_RESOURCES,
+				sizeof(struct pmcraid_resource_entry),
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (NULL == pinstance->res_entries) {
 		pmcraid_err("failed to allocate memory for resource table\n");
@@ -5080,10 +5879,17 @@ pmcraid_allocate_config_buffers(struct pmcraid_instance *pinstance)
 		list_add_tail(&pinstance->res_entries[i].queue,
 			      &pinstance->free_res_q);
 
+<<<<<<< HEAD
 	pinstance->cfg_table =
 		pci_alloc_consistent(pinstance->pdev,
 				     sizeof(struct pmcraid_config_table),
 				     &pinstance->cfg_table_bus_addr);
+=======
+	pinstance->cfg_table = dma_alloc_coherent(&pinstance->pdev->dev,
+				     sizeof(struct pmcraid_config_table),
+				     &pinstance->cfg_table_bus_addr,
+				     GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (NULL == pinstance->cfg_table) {
 		pmcraid_err("couldn't alloc DMA memory for config table\n");
@@ -5148,7 +5954,11 @@ static void pmcraid_release_buffers(struct pmcraid_instance *pinstance)
 	pmcraid_release_host_rrqs(pinstance, pinstance->num_hrrq);
 
 	if (pinstance->inq_data != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pinstance->pdev,
+=======
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(struct pmcraid_inquiry_data),
 				    pinstance->inq_data,
 				    pinstance->inq_data_baddr);
@@ -5158,7 +5968,11 @@ static void pmcraid_release_buffers(struct pmcraid_instance *pinstance)
 	}
 
 	if (pinstance->timestamp_data != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pinstance->pdev,
+=======
+		dma_free_coherent(&pinstance->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(struct pmcraid_timestamp_data),
 				    pinstance->timestamp_data,
 				    pinstance->timestamp_data_baddr);
@@ -5175,13 +5989,22 @@ static void pmcraid_release_buffers(struct pmcraid_instance *pinstance)
  * This routine pre-allocates memory based on the type of block as below:
  * cmdblocks(PMCRAID_MAX_CMD): kernel memory using kernel's slab_allocator,
  * IOARCBs(PMCRAID_MAX_CMD)  : DMAable memory, using pci pool allocator
+<<<<<<< HEAD
  * config-table entries      : DMAable memory using pci_alloc_consistent
  * HostRRQs                  : DMAable memory, using pci_alloc_consistent
+=======
+ * config-table entries      : DMAable memory using dma_alloc_coherent
+ * HostRRQs                  : DMAable memory, using dma_alloc_coherent
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return Value
  *	 0 in case all of the blocks are allocated, -ENOMEM otherwise.
  */
+<<<<<<< HEAD
 static int __devinit pmcraid_init_buffers(struct pmcraid_instance *pinstance)
+=======
+static int pmcraid_init_buffers(struct pmcraid_instance *pinstance)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -5213,11 +6036,17 @@ static int __devinit pmcraid_init_buffers(struct pmcraid_instance *pinstance)
 	}
 
 	/* allocate DMAable memory for page D0 INQUIRY buffer */
+<<<<<<< HEAD
 	pinstance->inq_data = pci_alloc_consistent(
 					pinstance->pdev,
 					sizeof(struct pmcraid_inquiry_data),
 					&pinstance->inq_data_baddr);
 
+=======
+	pinstance->inq_data = dma_alloc_coherent(&pinstance->pdev->dev,
+					sizeof(struct pmcraid_inquiry_data),
+					&pinstance->inq_data_baddr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pinstance->inq_data == NULL) {
 		pmcraid_err("couldn't allocate DMA memory for INQUIRY\n");
 		pmcraid_release_buffers(pinstance);
@@ -5225,11 +6054,18 @@ static int __devinit pmcraid_init_buffers(struct pmcraid_instance *pinstance)
 	}
 
 	/* allocate DMAable memory for set timestamp data buffer */
+<<<<<<< HEAD
 	pinstance->timestamp_data = pci_alloc_consistent(
 					pinstance->pdev,
 					sizeof(struct pmcraid_timestamp_data),
 					&pinstance->timestamp_data_baddr);
 
+=======
+	pinstance->timestamp_data = dma_alloc_coherent(&pinstance->pdev->dev,
+					sizeof(struct pmcraid_timestamp_data),
+					&pinstance->timestamp_data_baddr,
+					GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pinstance->timestamp_data == NULL) {
 		pmcraid_err("couldn't allocate DMA memory for \
 				set time_stamp \n");
@@ -5281,11 +6117,16 @@ static void pmcraid_reinit_buffers(struct pmcraid_instance *pinstance)
  * Return Value
  *	 0 on success, non-zero in case of any failure
  */
+<<<<<<< HEAD
 static int __devinit pmcraid_init_instance(
 	struct pci_dev *pdev,
 	struct Scsi_Host *host,
 	void __iomem *mapped_pci_addr
 )
+=======
+static int pmcraid_init_instance(struct pci_dev *pdev, struct Scsi_Host *host,
+				 void __iomem *mapped_pci_addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_instance *pinstance =
 		(struct pmcraid_instance *)host->hostdata;
@@ -5325,7 +6166,11 @@ static int __devinit pmcraid_init_instance(
 			mapped_pci_addr + chip_cfg->ioa_host_mask_clr;
 		pint_regs->global_interrupt_mask_reg =
 			mapped_pci_addr + chip_cfg->global_intr_mask;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pinstance->ioa_reset_attempts = 0;
 	init_waitqueue_head(&pinstance->reset_wait_q);
@@ -5372,19 +6217,31 @@ static void pmcraid_shutdown(struct pci_dev *pdev)
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_get_minor - returns unused minor number from minor number bitmap
  */
 static unsigned short pmcraid_get_minor(void)
 {
 	int minor;
 
+<<<<<<< HEAD
 	minor = find_first_zero_bit(pmcraid_minor, sizeof(pmcraid_minor));
+=======
+	minor = find_first_zero_bit(pmcraid_minor, PMCRAID_MAX_ADAPTERS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__set_bit(minor, pmcraid_minor);
 	return minor;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pmcraid_release_minor - releases given minor back to minor number bitmap
  */
 static void pmcraid_release_minor(unsigned short minor)
@@ -5414,7 +6271,11 @@ static int pmcraid_setup_chrdev(struct pmcraid_instance *pinstance)
 	if (error)
 		pmcraid_release_minor(minor);
 	else
+<<<<<<< HEAD
 		device_create(pmcraid_class, NULL, MKDEV(pmcraid_major, minor),
+=======
+		device_create(&pmcraid_class, NULL, MKDEV(pmcraid_major, minor),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      NULL, "%s%u", PMCRAID_DEVFILE, minor);
 	return error;
 }
@@ -5430,7 +6291,11 @@ static int pmcraid_setup_chrdev(struct pmcraid_instance *pinstance)
 static void pmcraid_release_chrdev(struct pmcraid_instance *pinstance)
 {
 	pmcraid_release_minor(MINOR(pinstance->cdev.dev));
+<<<<<<< HEAD
 	device_destroy(pmcraid_class,
+=======
+	device_destroy(&pmcraid_class,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       MKDEV(pmcraid_major, MINOR(pinstance->cdev.dev)));
 	cdev_del(&pinstance->cdev);
 }
@@ -5442,7 +6307,11 @@ static void pmcraid_release_chrdev(struct pmcraid_instance *pinstance)
  * Return value
  *	  none
  */
+<<<<<<< HEAD
 static void __devexit pmcraid_remove(struct pci_dev *pdev)
+=======
+static void pmcraid_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_instance *pinstance = pci_get_drvdata(pdev);
 
@@ -5459,7 +6328,11 @@ static void __devexit pmcraid_remove(struct pci_dev *pdev)
 	pmcraid_shutdown(pdev);
 
 	pmcraid_disable_interrupts(pinstance, ~0);
+<<<<<<< HEAD
 	flush_work_sync(&pinstance->worker_q);
+=======
+	flush_work(&pinstance->worker_q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmcraid_kill_tasklets(pinstance);
 	pmcraid_unregister_interrupt_handler(pinstance);
@@ -5472,6 +6345,7 @@ static void __devexit pmcraid_remove(struct pci_dev *pdev)
 	return;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 /**
  * pmcraid_suspend - driver suspend entry point for power management
@@ -5482,22 +6356,38 @@ static void __devexit pmcraid_remove(struct pci_dev *pdev)
  */
 static int pmcraid_suspend(struct pci_dev *pdev, pm_message_t state)
 {
+=======
+/**
+ * pmcraid_suspend - driver suspend entry point for power management
+ * @dev:   Device structure
+ *
+ * Return Value - 0 always
+ */
+static int __maybe_unused pmcraid_suspend(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pmcraid_instance *pinstance = pci_get_drvdata(pdev);
 
 	pmcraid_shutdown(pdev);
 	pmcraid_disable_interrupts(pinstance, ~0);
 	pmcraid_kill_tasklets(pinstance);
+<<<<<<< HEAD
 	pci_set_drvdata(pinstance->pdev, pinstance);
 	pmcraid_unregister_interrupt_handler(pinstance);
 	pci_save_state(pdev);
 	pci_disable_device(pdev);
 	pci_set_power_state(pdev, pci_choose_state(pdev, state));
+=======
+	pmcraid_unregister_interrupt_handler(pinstance);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
  * pmcraid_resume - driver resume entry point PCI power management
+<<<<<<< HEAD
  * @pdev: PCI device structure
  *
  * Return Value - 0 in case of success. Error code in case of any failure
@@ -5527,6 +6417,25 @@ static int pmcraid_resume(struct pci_dev *pdev)
 
 	if (rc == 0)
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+ * @dev: Device structure
+ *
+ * Return Value - 0 in case of success. Error code in case of any failure
+ */
+static int __maybe_unused pmcraid_resume(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct pmcraid_instance *pinstance = pci_get_drvdata(pdev);
+	struct Scsi_Host *host = pinstance->host;
+	int rc = 0;
+
+	if (sizeof(dma_addr_t) == 4 ||
+	    dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+
+	if (rc == 0)
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc != 0) {
 		dev_err(&pdev->dev, "resume: Failed to set PCI DMA mask\n");
@@ -5572,11 +6481,15 @@ release_host:
 	scsi_host_put(host);
 
 disable_device:
+<<<<<<< HEAD
 	pci_disable_device(pdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
+<<<<<<< HEAD
 #else
 
 #define pmcraid_suspend NULL
@@ -5584,6 +6497,8 @@ disable_device:
 
 #endif /* CONFIG_PM */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pmcraid_complete_ioa_reset - Called by either timer or tasklet during
  *				completion of the ioa reset
@@ -5655,6 +6570,7 @@ static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd)
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
 	__be32 time_stamp_len = cpu_to_be32(PMCRAID_TIMESTAMP_LEN);
+<<<<<<< HEAD
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
 
 	struct timeval tv;
@@ -5662,6 +6578,12 @@ static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd)
 
 	do_gettimeofday(&tv);
 	timestamp = tv.tv_sec * 1000;
+=======
+	struct pmcraid_ioadl_desc *ioadl;
+	u64 timestamp;
+
+	timestamp = ktime_get_real_seconds() * 1000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pinstance->timestamp_data->timestamp[0] = (__u8)(timestamp);
 	pinstance->timestamp_data->timestamp[1] = (__u8)((timestamp) >> 8);
@@ -5681,7 +6603,11 @@ static void pmcraid_set_timestamp(struct pmcraid_cmd *cmd)
 					offsetof(struct pmcraid_ioarcb,
 						add_data.u.ioadl[0]));
 	ioarcb->ioadl_length = cpu_to_le32(sizeof(struct pmcraid_ioadl_desc));
+<<<<<<< HEAD
 	ioarcb->ioarcb_bus_addr &= ~(0x1FULL);
+=======
+	ioarcb->ioarcb_bus_addr &= cpu_to_le64(~(0x1FULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioarcb->request_flags0 |= NO_LINK_DESCS;
 	ioarcb->request_flags0 |= TRANSFER_DIR_WRITE;
@@ -5740,7 +6666,11 @@ static void pmcraid_init_res_table(struct pmcraid_cmd *cmd)
 	list_for_each_entry_safe(res, temp, &pinstance->used_res_q, queue)
 		list_move_tail(&res->queue, &old_res);
 
+<<<<<<< HEAD
 	for (i = 0; i < pinstance->cfg_table->num_entries; i++) {
+=======
+	for (i = 0; i < le16_to_cpu(pinstance->cfg_table->num_entries); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (be16_to_cpu(pinstance->inq_data->fw_version) <=
 						PMCRAID_FW_VERSION_1)
 			cfgte = &pinstance->cfg_table->entries[i];
@@ -5795,7 +6725,11 @@ static void pmcraid_init_res_table(struct pmcraid_cmd *cmd)
 				 res->cfg_entry.resource_type,
 				 (fw_version <= PMCRAID_FW_VERSION_1 ?
 					res->cfg_entry.unique_flags1 :
+<<<<<<< HEAD
 						res->cfg_entry.array_id & 0xFF),
+=======
+					le16_to_cpu(res->cfg_entry.array_id) & 0xFF),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 le32_to_cpu(res->cfg_entry.resource_address));
 		}
 	}
@@ -5831,9 +6765,15 @@ static void pmcraid_init_res_table(struct pmcraid_cmd *cmd)
 static void pmcraid_querycfg(struct pmcraid_cmd *cmd)
 {
 	struct pmcraid_ioarcb *ioarcb = &cmd->ioa_cb->ioarcb;
+<<<<<<< HEAD
 	struct pmcraid_ioadl_desc *ioadl = ioarcb->add_data.u.ioadl;
 	struct pmcraid_instance *pinstance = cmd->drv_inst;
 	int cfg_table_size = cpu_to_be32(sizeof(struct pmcraid_config_table));
+=======
+	struct pmcraid_ioadl_desc *ioadl;
+	struct pmcraid_instance *pinstance = cmd->drv_inst;
+	__be32 cfg_table_size = cpu_to_be32(sizeof(struct pmcraid_config_table));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (be16_to_cpu(pinstance->inq_data->fw_version) <=
 					PMCRAID_FW_VERSION_1)
@@ -5858,7 +6798,11 @@ static void pmcraid_querycfg(struct pmcraid_cmd *cmd)
 					offsetof(struct pmcraid_ioarcb,
 						add_data.u.ioadl[0]));
 	ioarcb->ioadl_length = cpu_to_le32(sizeof(struct pmcraid_ioadl_desc));
+<<<<<<< HEAD
 	ioarcb->ioarcb_bus_addr &= ~(0x1FULL);
+=======
+	ioarcb->ioarcb_bus_addr &= cpu_to_le64(~0x1FULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioarcb->request_flags0 |= NO_LINK_DESCS;
 	ioarcb->data_transfer_length =
@@ -5883,10 +6827,15 @@ static void pmcraid_querycfg(struct pmcraid_cmd *cmd)
  *	returns 0 if the device is claimed and successfully configured.
  *	returns non-zero error code in case of any failure
  */
+<<<<<<< HEAD
 static int __devinit pmcraid_probe(
 	struct pci_dev *pdev,
 	const struct pci_device_id *dev_id
 )
+=======
+static int pmcraid_probe(struct pci_dev *pdev,
+			 const struct pci_device_id *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmcraid_instance *pinstance;
 	struct Scsi_Host *host;
@@ -5935,6 +6884,7 @@ static int __devinit pmcraid_probe(
 	/* Firmware requires the system bus address of IOARCB to be within
 	 * 32-bit addressable range though it has 64-bit IOARRIN register.
 	 * However, firmware supports 64-bit streaming DMA buffers, whereas
+<<<<<<< HEAD
 	 * coherent buffers are to be 32-bit. Since pci_alloc_consistent always
 	 * returns memory within 4GB (if not, change this logic), coherent
 	 * buffers are within firmware acceptable address ranges.
@@ -5948,6 +6898,21 @@ static int __devinit pmcraid_probe(
 	 */
 	if (rc == 0)
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	 * coherent buffers are to be 32-bit. Since dma_alloc_coherent always
+	 * returns memory within 4GB (if not, change this logic), coherent
+	 * buffers are within firmware acceptable address ranges.
+	 */
+	if (sizeof(dma_addr_t) == 4 ||
+	    dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)))
+		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+
+	/* firmware expects 32-bit DMA addresses for IOARRIN register; set 32
+	 * bit mask for dma_alloc_coherent to return addresses within 4GB
+	 */
+	if (rc == 0)
+		rc = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rc != 0) {
 		dev_err(&pdev->dev, "Failed to set PCI DMA mask\n");
@@ -6072,21 +7037,35 @@ out_release_regions:
 
 out_disable_device:
 	atomic_dec(&pmcraid_adapter_count);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pdev);
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 /*
  * PCI driver structure of pcmraid driver
+=======
+static SIMPLE_DEV_PM_OPS(pmcraid_pm_ops, pmcraid_suspend, pmcraid_resume);
+
+/*
+ * PCI driver structure of pmcraid driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct pci_driver pmcraid_driver = {
 	.name = PMCRAID_DRIVER_NAME,
 	.id_table = pmcraid_pci_table,
 	.probe = pmcraid_probe,
 	.remove = pmcraid_remove,
+<<<<<<< HEAD
 	.suspend = pmcraid_suspend,
 	.resume = pmcraid_resume,
+=======
+	.driver.pm = &pmcraid_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = pmcraid_shutdown
 };
 
@@ -6111,19 +7090,34 @@ static int __init pmcraid_init(void)
 	}
 
 	pmcraid_major = MAJOR(dev);
+<<<<<<< HEAD
 	pmcraid_class = class_create(THIS_MODULE, PMCRAID_DEVFILE);
 
 	if (IS_ERR(pmcraid_class)) {
 		error = PTR_ERR(pmcraid_class);
 		pmcraid_err("failed to register with with sysfs, error = %x\n",
+=======
+
+	error = class_register(&pmcraid_class);
+
+	if (error) {
+		pmcraid_err("failed to register with sysfs, error = %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    error);
 		goto out_unreg_chrdev;
 	}
 
 	error = pmcraid_netlink_init();
 
+<<<<<<< HEAD
 	if (error)
 		goto out_unreg_chrdev;
+=======
+	if (error) {
+		class_unregister(&pmcraid_class);
+		goto out_unreg_chrdev;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = pci_register_driver(&pmcraid_driver);
 
@@ -6132,7 +7126,11 @@ static int __init pmcraid_init(void)
 
 	pmcraid_err("failed to register pmcraid driver, error = %x\n",
 		     error);
+<<<<<<< HEAD
 	class_destroy(pmcraid_class);
+=======
+	class_unregister(&pmcraid_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmcraid_netlink_release();
 
 out_unreg_chrdev:
@@ -6151,7 +7149,11 @@ static void __exit pmcraid_exit(void)
 	unregister_chrdev_region(MKDEV(pmcraid_major, 0),
 				 PMCRAID_MAX_ADAPTERS);
 	pci_unregister_driver(&pmcraid_driver);
+<<<<<<< HEAD
 	class_destroy(pmcraid_class);
+=======
+	class_unregister(&pmcraid_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(pmcraid_init);

@@ -8,7 +8,11 @@ Required properties:
 
 Example:
 
+<<<<<<< HEAD
 mcu@0a {
+=======
+mcu@a {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#gpio-cells = <2>;
 	compatible = "fsl,mc9s08qg8-mpc8349emitx",
 		     "fsl,mcu-mpc8349emitx";

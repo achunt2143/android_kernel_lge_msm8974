@@ -136,7 +136,11 @@ struct gru_dump_context_header {
 	pid_t		pid;
 	unsigned long	vaddr;
 	int		cch_locked;
+<<<<<<< HEAD
 	unsigned long	data[0];
+=======
+	unsigned long	data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

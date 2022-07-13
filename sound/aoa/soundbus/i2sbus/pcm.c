@@ -1,12 +1,22 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2sbus driver -- pcm routines
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  *
  * GPL v2, can be found in COPYING.
  */
 
 #include <asm/io.h>
+=======
+ */
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -179,7 +189,11 @@ static int i2sbus_pcm_open(struct i2sbus_dev *i2sdev, int in)
 	 */
 	if (other->active) {
 		/* FIXME: is this guaranteed by the alsa api? */
+<<<<<<< HEAD
 		hw->formats &= (1ULL << i2sdev->format);
+=======
+		hw->formats &= pcm_format_to_bits(i2sdev->format);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* see above, restrict rates to the one we already have */
 		hw->rate_min = i2sdev->rate;
 		hw->rate_max = i2sdev->rate;
@@ -255,12 +269,19 @@ static void i2sbus_wait_for_stop(struct i2sbus_dev *i2sdev,
 				 struct pcm_info *pi)
 {
 	unsigned long flags;
+<<<<<<< HEAD
 	struct completion done;
+=======
+	DECLARE_COMPLETION_ONSTACK(done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long timeout;
 
 	spin_lock_irqsave(&i2sdev->low_lock, flags);
 	if (pi->dbdma_ring.stopping) {
+<<<<<<< HEAD
 		init_completion(&done);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pi->stop_completion = &done;
 		spin_unlock_irqrestore(&i2sdev->low_lock, flags);
 		timeout = wait_for_completion_timeout(&done, HZ);
@@ -295,12 +316,15 @@ void i2sbus_wait_for_stop_both(struct i2sbus_dev *i2sdev)
 }
 #endif
 
+<<<<<<< HEAD
 static int i2sbus_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params)
 {
 	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int i2sbus_hw_free(struct snd_pcm_substream *substream, int in)
 {
 	struct i2sbus_dev *i2sdev = snd_pcm_substream_chip(substream);
@@ -309,7 +333,10 @@ static inline int i2sbus_hw_free(struct snd_pcm_substream *substream, int in)
 	get_pcm_info(i2sdev, in, &pi, NULL);
 	if (pi->dbdma_ring.stopping)
 		i2sbus_wait_for_stop(i2sdev, pi);
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -778,11 +805,17 @@ static snd_pcm_uframes_t i2sbus_playback_pointer(struct snd_pcm_substream
 	return i2sbus_pcm_pointer(i2sdev, 0);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops i2sbus_playback_ops = {
 	.open =		i2sbus_playback_open,
 	.close =	i2sbus_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	i2sbus_hw_params,
+=======
+static const struct snd_pcm_ops i2sbus_playback_ops = {
+	.open =		i2sbus_playback_open,
+	.close =	i2sbus_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	i2sbus_playback_hw_free,
 	.prepare =	i2sbus_playback_prepare,
 	.trigger =	i2sbus_playback_trigger,
@@ -848,11 +881,17 @@ static snd_pcm_uframes_t i2sbus_record_pointer(struct snd_pcm_substream
 	return i2sbus_pcm_pointer(i2sdev, 1);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops i2sbus_record_ops = {
 	.open =		i2sbus_record_open,
 	.close =	i2sbus_record_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	i2sbus_hw_params,
+=======
+static const struct snd_pcm_ops i2sbus_record_ops = {
+	.open =		i2sbus_record_open,
+	.close =	i2sbus_record_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	i2sbus_record_hw_free,
 	.prepare =	i2sbus_record_prepare,
 	.trigger =	i2sbus_record_trigger,
@@ -931,10 +970,15 @@ i2sbus_attach_codec(struct soundbus_dev *dev, struct snd_card *card,
 	}
 
 	cii = kzalloc(sizeof(struct codec_info_item), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!cii) {
 		printk(KERN_DEBUG "i2sbus: failed to allocate cii\n");
 		return -ENOMEM;
 	}
+=======
+	if (!cii)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* use the private data to point to the codec info */
 	cii->sdev = soundbus_dev_get(dev);
@@ -968,7 +1012,10 @@ i2sbus_attach_codec(struct soundbus_dev *dev, struct snd_card *card,
 			printk(KERN_DEBUG "i2sbus: failed to create pcm\n");
 			goto out_put_ci_module;
 		}
+<<<<<<< HEAD
 		dev->pcm->dev = &dev->ofdev.dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* ALSA yet again sucks.
@@ -988,6 +1035,11 @@ i2sbus_attach_codec(struct soundbus_dev *dev, struct snd_card *card,
 			goto out_put_ci_module;
 		snd_pcm_set_ops(dev->pcm, SNDRV_PCM_STREAM_PLAYBACK,
 				&i2sbus_playback_ops);
+<<<<<<< HEAD
+=======
+		dev->pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].dev->parent =
+			&dev->ofdev.dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2sdev->out.created = 1;
 	}
 
@@ -1003,6 +1055,11 @@ i2sbus_attach_codec(struct soundbus_dev *dev, struct snd_card *card,
 			goto out_put_ci_module;
 		snd_pcm_set_ops(dev->pcm, SNDRV_PCM_STREAM_CAPTURE,
 				&i2sbus_record_ops);
+<<<<<<< HEAD
+=======
+		dev->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].dev->parent =
+			&dev->ofdev.dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2sdev->in.created = 1;
 	}
 
@@ -1024,9 +1081,15 @@ i2sbus_attach_codec(struct soundbus_dev *dev, struct snd_card *card,
 	dev->pcm->private_free = i2sbus_private_free;
 
 	/* well, we really should support scatter/gather DMA */
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(
 		dev->pcm, SNDRV_DMA_TYPE_DEV,
 		snd_dma_pci_data(macio_get_pci_dev(i2sdev->macio)),
+=======
+	snd_pcm_set_managed_buffer_all(
+		dev->pcm, SNDRV_DMA_TYPE_DEV,
+		&macio_get_pci_dev(i2sdev->macio)->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		64 * 1024, 64 * 1024);
 
 	return 0;

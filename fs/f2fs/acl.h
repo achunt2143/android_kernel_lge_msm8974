@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/f2fs/acl.h
  *
@@ -7,10 +11,13 @@
  * Portions of this code from linux/fs/ext2/acl.h
  *
  * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __F2FS_ACL_H__
 #define __F2FS_ACL_H__
@@ -36,6 +43,7 @@ struct f2fs_acl_header {
 
 #ifdef CONFIG_F2FS_FS_POSIX_ACL
 
+<<<<<<< HEAD
 extern struct posix_acl *f2fs_get_acl(struct inode *, int);
 extern int f2fs_acl_chmod(struct inode *);
 extern int f2fs_init_acl(struct inode *, struct inode *, struct page *,
@@ -50,6 +58,17 @@ static inline int f2fs_acl_chmod(struct inode *inode)
 	return 0;
 }
 
+=======
+extern struct posix_acl *f2fs_get_acl(struct inode *, int, bool);
+extern int f2fs_set_acl(struct mnt_idmap *, struct dentry *,
+			struct posix_acl *, int);
+extern int f2fs_init_acl(struct inode *, struct inode *, struct page *,
+							struct page *);
+#else
+#define f2fs_get_acl	NULL
+#define f2fs_set_acl	NULL
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int f2fs_init_acl(struct inode *inode, struct inode *dir,
 				struct page *ipage, struct page *dpage)
 {

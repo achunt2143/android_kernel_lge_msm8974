@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
  *
  *  Licensed under the terms of the GNU GPL License version 2.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ToDo: Needs to be done more properly for AMD/Intel specifics
  */
 
@@ -16,6 +23,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+<<<<<<< HEAD
 #include <helpers/helpers.h>
 #include <helpers/sysfs.h>
 
@@ -109,3 +117,9 @@ void cpu_topology_release(struct cpupower_topology cpu_top)
 {
 	free(cpu_top.core_info);
 }
+=======
+#include <cpuidle.h>
+
+/* CPU topology/hierarchy parsing ******************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

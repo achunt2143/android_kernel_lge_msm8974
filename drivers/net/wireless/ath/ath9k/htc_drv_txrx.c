@@ -21,10 +21,17 @@
 /******/
 
 static const int subtype_txq_to_hwq[] = {
+<<<<<<< HEAD
 	[WME_AC_BE] = ATH_TXQ_AC_BE,
 	[WME_AC_BK] = ATH_TXQ_AC_BK,
 	[WME_AC_VI] = ATH_TXQ_AC_VI,
 	[WME_AC_VO] = ATH_TXQ_AC_VO,
+=======
+	[IEEE80211_AC_BE] = ATH_TXQ_AC_BE,
+	[IEEE80211_AC_BK] = ATH_TXQ_AC_BK,
+	[IEEE80211_AC_VI] = ATH_TXQ_AC_VI,
+	[IEEE80211_AC_VO] = ATH_TXQ_AC_VO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ATH9K_HTC_INIT_TXQ(subtype) do {			\
@@ -41,6 +48,7 @@ int get_hw_qnum(u16 queue, int *hwq_map)
 {
 	switch (queue) {
 	case 0:
+<<<<<<< HEAD
 		return hwq_map[WME_AC_VO];
 	case 1:
 		return hwq_map[WME_AC_VI];
@@ -50,6 +58,17 @@ int get_hw_qnum(u16 queue, int *hwq_map)
 		return hwq_map[WME_AC_BK];
 	default:
 		return hwq_map[WME_AC_BE];
+=======
+		return hwq_map[IEEE80211_AC_VO];
+	case 1:
+		return hwq_map[IEEE80211_AC_VI];
+	case 2:
+		return hwq_map[IEEE80211_AC_BE];
+	case 3:
+		return hwq_map[IEEE80211_AC_BK];
+	default:
+		return hwq_map[IEEE80211_AC_BE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -106,6 +125,7 @@ static inline enum htc_endpoint_id get_htc_epid(struct ath9k_htc_priv *priv,
 
 	switch (qnum) {
 	case 0:
+<<<<<<< HEAD
 		TX_QSTAT_INC(WME_AC_VO);
 		epid = priv->data_vo_ep;
 		break;
@@ -115,11 +135,26 @@ static inline enum htc_endpoint_id get_htc_epid(struct ath9k_htc_priv *priv,
 		break;
 	case 2:
 		TX_QSTAT_INC(WME_AC_BE);
+=======
+		TX_QSTAT_INC(priv, IEEE80211_AC_VO);
+		epid = priv->data_vo_ep;
+		break;
+	case 1:
+		TX_QSTAT_INC(priv, IEEE80211_AC_VI);
+		epid = priv->data_vi_ep;
+		break;
+	case 2:
+		TX_QSTAT_INC(priv, IEEE80211_AC_BE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		epid = priv->data_be_ep;
 		break;
 	case 3:
 	default:
+<<<<<<< HEAD
 		TX_QSTAT_INC(WME_AC_BK);
+=======
+		TX_QSTAT_INC(priv, IEEE80211_AC_BK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		epid = priv->data_bk_ep;
 		break;
 	}
@@ -297,7 +332,16 @@ static void ath9k_htc_tx_data(struct ath9k_htc_priv *priv,
 		tx_hdr.data_type = ATH9K_HTC_NORMAL;
 	}
 
+<<<<<<< HEAD
 	if (ieee80211_is_data_qos(hdr->frame_control)) {
+=======
+	/* Transmit all frames that should not be reordered relative
+	 * to each other using the same priority. For other QoS data
+	 * frames extract the priority from the header.
+	 */
+	if (!(tx_info->control.flags & IEEE80211_TX_CTRL_DONT_REORDER) &&
+	    ieee80211_is_data_qos(hdr->frame_control)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc = ieee80211_get_qos_ctl(hdr);
 		tx_hdr.tidno = qc[0] & IEEE80211_QOS_CTL_TID_MASK;
 	}
@@ -323,7 +367,11 @@ static void ath9k_htc_tx_data(struct ath9k_htc_priv *priv,
 	memcpy(tx_fhdr, (u8 *) &tx_hdr, sizeof(tx_hdr));
 
 	if (is_cab) {
+<<<<<<< HEAD
 		CAB_STAT_INC;
+=======
+		CAB_STAT_INC(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_ctl->epid = priv->cab_ep;
 		return;
 	}
@@ -333,12 +381,19 @@ static void ath9k_htc_tx_data(struct ath9k_htc_priv *priv,
 }
 
 int ath9k_htc_tx_start(struct ath9k_htc_priv *priv,
+<<<<<<< HEAD
+=======
+		       struct ieee80211_sta *sta,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct sk_buff *skb,
 		       u8 slot, bool is_cab)
 {
 	struct ieee80211_hdr *hdr;
 	struct ieee80211_tx_info *tx_info = IEEE80211_SKB_CB(skb);
+<<<<<<< HEAD
 	struct ieee80211_sta *sta = tx_info->control.sta;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_vif *vif = tx_info->control.vif;
 	struct ath9k_htc_sta *ista;
 	struct ath9k_htc_vif *avp = NULL;
@@ -471,8 +526,16 @@ static void ath9k_htc_tx_process(struct ath9k_htc_priv *priv,
 	if (!txok || !vif || !txs)
 		goto send_mac80211;
 
+<<<<<<< HEAD
 	if (txs->ts_flags & ATH9K_HTC_TXSTAT_ACK)
 		tx_info->flags |= IEEE80211_TX_STAT_ACK;
+=======
+	if (txs->ts_flags & ATH9K_HTC_TXSTAT_ACK) {
+		tx_info->flags |= IEEE80211_TX_STAT_ACK;
+		if (tx_info->flags & IEEE80211_TX_CTL_AMPDU)
+			tx_info->flags |= IEEE80211_TX_STAT_AMPDU;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (txs->ts_flags & ATH9K_HTC_TXSTAT_FILT)
 		tx_info->flags |= IEEE80211_TX_STAT_TX_FILTERED;
@@ -491,7 +554,11 @@ static void ath9k_htc_tx_process(struct ath9k_htc_priv *priv,
 		if (txs->ts_flags & ATH9K_HTC_TXSTAT_SGI)
 			rate->flags |= IEEE80211_TX_RC_SHORT_GI;
 	} else {
+<<<<<<< HEAD
 		if (cur_conf->channel->band == IEEE80211_BAND_5GHZ)
+=======
+		if (cur_conf->chandef.chan->band == NL80211_BAND_5GHZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rate->idx += 4; /* No CCK rates */
 	}
 
@@ -515,7 +582,11 @@ send_mac80211:
 	}
 
 	/* Send status to mac80211 */
+<<<<<<< HEAD
 	ieee80211_tx_status(priv->hw, skb);
+=======
+	ieee80211_tx_status_skb(priv->hw, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ath9k_htc_tx_drainq(struct ath9k_htc_priv *priv,
@@ -567,6 +638,7 @@ void ath9k_htc_tx_drain(struct ath9k_htc_priv *priv)
 	spin_unlock_bh(&priv->tx.tx_lock);
 }
 
+<<<<<<< HEAD
 void ath9k_tx_failed_tasklet(unsigned long data)
 {
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *)data;
@@ -577,6 +649,18 @@ void ath9k_tx_failed_tasklet(unsigned long data)
 		return;
 	}
 	spin_unlock_bh(&priv->tx.tx_lock);
+=======
+void ath9k_tx_failed_tasklet(struct tasklet_struct *t)
+{
+	struct ath9k_htc_priv *priv = from_tasklet(priv, t, tx_failed_tasklet);
+
+	spin_lock(&priv->tx.tx_lock);
+	if (priv->tx.flags & ATH9K_HTC_OP_TX_DRAIN) {
+		spin_unlock(&priv->tx.tx_lock);
+		return;
+	}
+	spin_unlock(&priv->tx.tx_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_htc_tx_drainq(priv, &priv->tx.tx_failed);
 }
@@ -638,15 +722,26 @@ static struct sk_buff* ath9k_htc_tx_get_packet(struct ath9k_htc_priv *priv,
 
 void ath9k_htc_txstatus(struct ath9k_htc_priv *priv, void *wmi_event)
 {
+<<<<<<< HEAD
 	struct wmi_event_txstatus *txs = (struct wmi_event_txstatus *)wmi_event;
+=======
+	struct wmi_event_txstatus *txs = wmi_event;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct __wmi_event_txstatus *__txs;
 	struct sk_buff *skb;
 	struct ath9k_htc_tx_event *tx_pend;
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < txs->cnt; i++) {
 		WARN_ON(txs->cnt > HTC_MAX_TX_STATUS);
 
+=======
+	if (WARN_ON_ONCE(txs->cnt > HTC_MAX_TX_STATUS))
+		return;
+
+	for (i = 0; i < txs->cnt; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__txs = &txs->txstatus[i];
 
 		skb = ath9k_htc_tx_get_packet(priv, __txs);
@@ -681,7 +776,11 @@ void ath9k_htc_txstatus(struct ath9k_htc_priv *priv, void *wmi_event)
 void ath9k_htc_txep(void *drv_priv, struct sk_buff *skb,
 		    enum htc_endpoint_id ep_id, bool txok)
 {
+<<<<<<< HEAD
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) drv_priv;
+=======
+	struct ath9k_htc_priv *priv = drv_priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_htc_tx_ctl *tx_ctl;
 	struct sk_buff_head *epid_queue;
 
@@ -749,9 +848,15 @@ static void ath9k_htc_tx_cleanup_queue(struct ath9k_htc_priv *priv,
 	}
 }
 
+<<<<<<< HEAD
 void ath9k_htc_tx_cleanup_timer(unsigned long data)
 {
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) data;
+=======
+void ath9k_htc_tx_cleanup_timer(struct timer_list *t)
+{
+	struct ath9k_htc_priv *priv = from_timer(priv, t, tx.cleanup_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 	struct ath9k_htc_tx_event *event, *tmp;
 	struct sk_buff *skb;
@@ -805,6 +910,10 @@ int ath9k_tx_init(struct ath9k_htc_priv *priv)
 	skb_queue_head_init(&priv->tx.data_vi_queue);
 	skb_queue_head_init(&priv->tx.data_vo_queue);
 	skb_queue_head_init(&priv->tx.tx_failed);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -869,6 +978,7 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (priv->rxfilter & FIF_PROBE_REQ)
 		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
 
+<<<<<<< HEAD
 	/*
 	 * Set promiscuous mode when FIF_PROMISC_IN_BSS is enabled for station
 	 * mode interface or when in monitor mode. AP mode does not need this
@@ -877,6 +987,9 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (((ah->opmode != NL80211_IFTYPE_AP) &&
 	     (priv->rxfilter & FIF_PROMISC_IN_BSS)) ||
 	    ah->is_monitoring)
+=======
+	if (ah->is_monitoring)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfilt |= ATH9K_RX_FILTER_PROM;
 
 	if (priv->rxfilter & FIF_CONTROL)
@@ -897,7 +1010,12 @@ u32 ath9k_htc_calcrxfilter(struct ath9k_htc_priv *priv)
 	if (priv->rxfilter & FIF_PSPOLL)
 		rfilt |= ATH9K_RX_FILTER_PSPOLL;
 
+<<<<<<< HEAD
 	if (priv->nvifs > 1)
+=======
+	if (priv->nvifs > 1 ||
+	    priv->rxfilter & (FIF_OTHER_BSS | FIF_MCAST_ACTION))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
 
 	return rfilt;
@@ -924,6 +1042,7 @@ static void ath9k_htc_opmode_init(struct ath9k_htc_priv *priv)
 
 void ath9k_host_rx_init(struct ath9k_htc_priv *priv)
 {
+<<<<<<< HEAD
 	ath9k_hw_rxena(priv->ah);
 	ath9k_htc_opmode_init(priv);
 	ath9k_hw_startpcureceive(priv->ah, (priv->op_flags & OP_SCANNING));
@@ -964,6 +1083,46 @@ static void ath9k_process_rate(struct ieee80211_hw *hw,
 		}
 	}
 
+=======
+	struct ath_common *common = ath9k_hw_common(priv->ah);
+	ath9k_hw_rxena(priv->ah);
+	ath9k_htc_opmode_init(priv);
+	ath9k_hw_startpcureceive(priv->ah, test_bit(ATH_OP_SCANNING, &common->op_flags));
+}
+
+static inline void convert_htc_flag(struct ath_rx_status *rx_stats,
+				   struct ath_htc_rx_status *rxstatus)
+{
+	rx_stats->enc_flags = 0;
+	rx_stats->bw = RATE_INFO_BW_20;
+	if (rxstatus->rs_flags & ATH9K_RX_2040)
+		rx_stats->bw = RATE_INFO_BW_40;
+	if (rxstatus->rs_flags & ATH9K_RX_GI)
+		rx_stats->enc_flags |= RX_ENC_FLAG_SHORT_GI;
+}
+
+static void rx_status_htc_to_ath(struct ath_rx_status *rx_stats,
+				 struct ath_htc_rx_status *rxstatus)
+{
+	rx_stats->rs_datalen	= be16_to_cpu(rxstatus->rs_datalen);
+	rx_stats->rs_status	= rxstatus->rs_status;
+	rx_stats->rs_phyerr	= rxstatus->rs_phyerr;
+	rx_stats->rs_rssi	= rxstatus->rs_rssi;
+	rx_stats->rs_keyix	= rxstatus->rs_keyix;
+	rx_stats->rs_rate	= rxstatus->rs_rate;
+	rx_stats->rs_antenna	= rxstatus->rs_antenna;
+	rx_stats->rs_more	= rxstatus->rs_more;
+
+	memcpy(rx_stats->rs_rssi_ctl, rxstatus->rs_rssi_ctl,
+		sizeof(rx_stats->rs_rssi_ctl));
+	memcpy(rx_stats->rs_rssi_ext, rxstatus->rs_rssi_ext,
+		sizeof(rx_stats->rs_rssi_ext));
+
+	rx_stats->rs_isaggr	= rxstatus->rs_isaggr;
+	rx_stats->rs_moreaggr	= rxstatus->rs_moreaggr;
+	rx_stats->rs_num_delims	= rxstatus->rs_num_delims;
+	convert_htc_flag(rx_stats, rxstatus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
@@ -975,10 +1134,19 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 	struct ieee80211_hw *hw = priv->hw;
 	struct sk_buff *skb = rxbuf->skb;
 	struct ath_common *common = ath9k_hw_common(priv->ah);
+<<<<<<< HEAD
 	struct ath_htc_rx_status *rxstatus;
 	int hdrlen, padpos, padsize;
 	int last_rssi = ATH_RSSI_DUMMY_MARKER;
 	__le16 fc;
+=======
+	struct ath_hw *ah = common->ah;
+	struct ath_htc_rx_status *rxstatus;
+	struct ath_rx_status rx_stats;
+	bool decrypt_error = false;
+	u16 rs_datalen;
+	bool is_phyerr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->len < HTC_RX_FRAME_HEADER_SIZE) {
 		ath_err(common, "Corrupted RX frame, dropping (len: %d)\n",
@@ -988,6 +1156,7 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 
 	rxstatus = (struct ath_htc_rx_status *)skb->data;
 
+<<<<<<< HEAD
 	if (be16_to_cpu(rxstatus->rs_datalen) -
 	    (skb->len - HTC_RX_FRAME_HEADER_SIZE) != 0) {
 		ath_err(common,
@@ -1100,6 +1269,86 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 
 	return true;
 
+=======
+	rs_datalen = be16_to_cpu(rxstatus->rs_datalen);
+	if (unlikely(rs_datalen -
+	    (skb->len - HTC_RX_FRAME_HEADER_SIZE) != 0)) {
+		ath_err(common,
+			"Corrupted RX data len, dropping (dlen: %d, skblen: %d)\n",
+			rs_datalen, skb->len);
+		goto rx_next;
+	}
+
+	is_phyerr = rxstatus->rs_status & ATH9K_RXERR_PHY;
+	/*
+	 * Discard zero-length packets and packets smaller than an ACK
+	 * which are not PHY_ERROR (short radar pulses have a length of 3)
+	 */
+	if (unlikely(!rs_datalen || (rs_datalen < 10 && !is_phyerr))) {
+		ath_dbg(common, ANY,
+			"Short RX data len, dropping (dlen: %d)\n",
+			rs_datalen);
+		goto rx_next;
+	}
+
+	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
+	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
+		ath_dbg(common, ANY,
+			"Invalid keyix, dropping (keyix: %d)\n",
+			rxstatus->rs_keyix);
+		goto rx_next;
+	}
+
+	/* Get the RX status information */
+
+	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
+
+	/* Copy everything from ath_htc_rx_status (HTC_RX_FRAME_HEADER).
+	 * After this, we can drop this part of skb. */
+	rx_status_htc_to_ath(&rx_stats, rxstatus);
+	ath9k_htc_err_stat_rx(priv, &rx_stats);
+	rx_status->mactime = be64_to_cpu(rxstatus->rs_tstamp);
+	skb_pull(skb, HTC_RX_FRAME_HEADER_SIZE);
+
+	/*
+	 * everything but the rate is checked here, the rate check is done
+	 * separately to avoid doing two lookups for a rate for each frame.
+	 */
+	hdr = (struct ieee80211_hdr *)skb->data;
+
+	/*
+	 * Process PHY errors and return so that the packet
+	 * can be dropped.
+	 */
+	if (unlikely(is_phyerr)) {
+		/* TODO: Not using DFS processing now. */
+		if (ath_cmn_process_fft(&priv->spec_priv, hdr,
+				    &rx_stats, rx_status->mactime)) {
+			/* TODO: Code to collect spectral scan statistics */
+		}
+		goto rx_next;
+	}
+
+	if (!ath9k_cmn_rx_accept(common, hdr, rx_status, &rx_stats,
+			&decrypt_error, priv->rxfilter))
+		goto rx_next;
+
+	ath9k_cmn_rx_skb_postprocess(common, skb, &rx_stats,
+				     rx_status, decrypt_error);
+
+	if (ath9k_cmn_process_rate(common, hw, &rx_stats, rx_status))
+		goto rx_next;
+
+	rx_stats.is_mybeacon = ath_is_mybeacon(common, hdr);
+	ath9k_cmn_process_rssi(common, hw, &rx_stats, rx_status);
+
+	rx_status->band = ah->curchan->chan->band;
+	rx_status->freq = ah->curchan->chan->center_freq;
+	rx_status->antenna = rx_stats.rs_antenna;
+	rx_status->flag |= RX_FLAG_MACTIME_END;
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 rx_next:
 	return false;
 }
@@ -1107,9 +1356,15 @@ rx_next:
 /*
  * FIXME: Handle FLUSH later on.
  */
+<<<<<<< HEAD
 void ath9k_rx_tasklet(unsigned long data)
 {
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *)data;
+=======
+void ath9k_rx_tasklet(struct tasklet_struct *t)
+{
+	struct ath9k_htc_priv *priv = from_tasklet(priv, t, rx_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
 	struct ieee80211_rx_status rx_status;
 	struct sk_buff *skb;
@@ -1164,29 +1419,54 @@ requeue:
 void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
 		    enum htc_endpoint_id ep_id)
 {
+<<<<<<< HEAD
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *)drv_priv;
 	struct ath_hw *ah = priv->ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
 
 	spin_lock(&priv->rx.rxbuflock);
+=======
+	struct ath9k_htc_priv *priv = drv_priv;
+	struct ath_hw *ah = priv->ah;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
+	unsigned long flags;
+
+	/* Check if ath9k_rx_init() completed. */
+	if (!data_race(priv->rx.initialized))
+		goto err;
+
+	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
 		if (!tmp_buf->in_process) {
 			rxbuf = tmp_buf;
 			break;
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock(&priv->rx.rxbuflock);
+=======
+	spin_unlock_irqrestore(&priv->rx.rxbuflock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rxbuf == NULL) {
 		ath_dbg(common, ANY, "No free RX buffer\n");
 		goto err;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&priv->rx.rxbuflock);
 	rxbuf->skb = skb;
 	rxbuf->in_process = true;
 	spin_unlock(&priv->rx.rxbuflock);
+=======
+	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+	rxbuf->skb = skb;
+	rxbuf->in_process = true;
+	spin_unlock_irqrestore(&priv->rx.rxbuflock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tasklet_schedule(&priv->rx_tasklet);
 	return;
@@ -1210,15 +1490,19 @@ void ath9k_rx_cleanup(struct ath9k_htc_priv *priv)
 
 int ath9k_rx_init(struct ath9k_htc_priv *priv)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = priv->ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_rxbuf *rxbuf;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = 0;
 
 	INIT_LIST_HEAD(&priv->rx.rxbuf);
 	spin_lock_init(&priv->rx.rxbuflock);
 
 	for (i = 0; i < ATH9K_HTC_RXBUF; i++) {
+<<<<<<< HEAD
 		rxbuf = kzalloc(sizeof(struct ath9k_htc_rxbuf), GFP_KERNEL);
 		if (rxbuf == NULL) {
 			ath_err(common, "Unable to allocate RX buffers\n");
@@ -1227,6 +1511,20 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
 	}
 
+=======
+		struct ath9k_htc_rxbuf *rxbuf =
+			kzalloc(sizeof(struct ath9k_htc_rxbuf), GFP_KERNEL);
+		if (rxbuf == NULL)
+			goto err;
+
+		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
+	}
+
+	/* Allow ath9k_htc_rxep() to operate. */
+	smp_wmb();
+	priv->rx.initialized = true;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err:

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _SERIO_H
 #define _SERIO_H
 
@@ -14,6 +15,15 @@
 #define SPIOCSTYPE	_IOW('q', 0x01, unsigned long)
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 1999-2002 Vojtech Pavlik
+ */
+#ifndef _SERIO_H
+#define _SERIO_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/interrupt.h>
@@ -22,18 +32,33 @@
 #include <linux/mutex.h>
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
+=======
+#include <uapi/linux/serio.h>
+
+extern const struct bus_type serio_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct serio {
 	void *port_data;
 
 	char name[32];
 	char phys[32];
+<<<<<<< HEAD
+=======
+	char firmware_id[128];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bool manual_bind;
 
 	struct serio_device_id id;
 
+<<<<<<< HEAD
 	spinlock_t lock;		/* protects critical sections from port's interrupt handler */
+=======
+	/* Protects critical sections from port's interrupt handler */
+	spinlock_t lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int (*write)(struct serio *, unsigned char);
 	int (*open)(struct serio *);
@@ -42,16 +67,41 @@ struct serio {
 	void (*stop)(struct serio *);
 
 	struct serio *parent;
+<<<<<<< HEAD
 	struct list_head child_node;	/* Entry in parent->children list */
 	struct list_head children;
 	unsigned int depth;		/* level of nesting in serio hierarchy */
 
 	struct serio_driver *drv;	/* accessed from interrupt, must be protected by serio->lock and serio->sem */
 	struct mutex drv_mutex;		/* protects serio->drv so attributes can pin driver */
+=======
+	/* Entry in parent->children list */
+	struct list_head child_node;
+	struct list_head children;
+	/* Level of nesting in serio hierarchy */
+	unsigned int depth;
+
+	/*
+	 * serio->drv is accessed from interrupt handlers; when modifying
+	 * caller should acquire serio->drv_mutex and serio->lock.
+	 */
+	struct serio_driver *drv;
+	/* Protects serio->drv so attributes can pin current driver */
+	struct mutex drv_mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct device dev;
 
 	struct list_head node;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * For use by PS/2 layer when several ports share hardware and
+	 * may get indigestion when exposed to concurrent access (i8042).
+	 */
+	struct mutex *ps2_cmd_mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_serio_port(d)	container_of(d, struct serio, dev)
 
@@ -65,6 +115,10 @@ struct serio_driver {
 	irqreturn_t (*interrupt)(struct serio *, unsigned char, unsigned int);
 	int  (*connect)(struct serio *, struct serio_driver *drv);
 	int  (*reconnect)(struct serio *);
+<<<<<<< HEAD
+=======
+	int  (*fast_reconnect)(struct serio *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*disconnect)(struct serio *);
 	void (*cleanup)(struct serio *);
 
@@ -96,6 +150,22 @@ int __must_check __serio_register_driver(struct serio_driver *drv,
 
 void serio_unregister_driver(struct serio_driver *drv);
 
+<<<<<<< HEAD
+=======
+/**
+ * module_serio_driver() - Helper macro for registering a serio driver
+ * @__serio_driver: serio_driver struct
+ *
+ * Helper macro for serio drivers which do not do anything special in
+ * module init/exit. This eliminates a lot of boilerplate. Each module
+ * may only use this macro once, and calling it replaces module_init()
+ * and module_exit().
+ */
+#define module_serio_driver(__serio_driver) \
+	module_driver(__serio_driver, serio_register_driver, \
+		       serio_unregister_driver)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int serio_write(struct serio *serio, unsigned char data)
 {
 	if (serio->write)
@@ -139,6 +209,7 @@ static inline void serio_continue_rx(struct serio *serio)
 }
 
 #endif
+<<<<<<< HEAD
 
 /*
  * bit masks for use in "interrupt" flags (3rd argument)
@@ -204,3 +275,5 @@ static inline void serio_continue_rx(struct serio *serio)
 #define SERIO_TSC40	0x3d
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

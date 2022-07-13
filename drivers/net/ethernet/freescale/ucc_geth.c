@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2009 Freescale Semicondutor, Inc. All rights reserved.
  *
@@ -6,12 +10,19 @@
  *
  * Description:
  * QE UCC Gigabit Ethernet Driver
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  */
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -27,6 +38,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/mii.h>
 #include <linux/phy.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
 #include <linux/of_mdio.h>
 #include <linux/of_net.h>
@@ -43,6 +55,27 @@
 
 #include "ucc_geth.h"
 #include "fsl_pq_mdio.h"
+=======
+#include <linux/phy_fixed.h>
+#include <linux/workqueue.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/of_mdio.h>
+#include <linux/of_net.h>
+#include <linux/platform_device.h>
+
+#include <linux/uaccess.h>
+#include <asm/irq.h>
+#include <asm/io.h>
+#include <soc/fsl/qe/immap_qe.h>
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/ucc.h>
+#include <soc/fsl/qe/ucc_fast.h>
+#include <asm/machdep.h>
+
+#include "ucc_geth.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 
@@ -51,12 +84,15 @@
 
 #define ugeth_dbg(format, arg...)            \
         ugeth_printk(KERN_DEBUG , format , ## arg)
+<<<<<<< HEAD
 #define ugeth_err(format, arg...)            \
         ugeth_printk(KERN_ERR , format , ## arg)
 #define ugeth_info(format, arg...)           \
         ugeth_printk(KERN_INFO , format , ## arg)
 #define ugeth_warn(format, arg...)           \
         ugeth_printk(KERN_WARNING , format , ## arg)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef UGETH_VERBOSE_DEBUG
 #define ugeth_vdbg ugeth_dbg
@@ -75,9 +111,38 @@ static struct {
 module_param_named(debug, debug.msg_enable, int, 0);
 MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 0xffff=all)");
 
+<<<<<<< HEAD
 static struct ucc_geth_info ugeth_primary_info = {
 	.uf_info = {
 		    .bd_mem_part = MEM_PART_SYSTEM,
+=======
+static int ucc_geth_thread_count(enum ucc_geth_num_of_threads idx)
+{
+	static const u8 count[] = {
+		[UCC_GETH_NUM_OF_THREADS_1] = 1,
+		[UCC_GETH_NUM_OF_THREADS_2] = 2,
+		[UCC_GETH_NUM_OF_THREADS_4] = 4,
+		[UCC_GETH_NUM_OF_THREADS_6] = 6,
+		[UCC_GETH_NUM_OF_THREADS_8] = 8,
+	};
+	if (idx >= ARRAY_SIZE(count))
+		return 0;
+	return count[idx];
+}
+
+static inline int ucc_geth_tx_queues(const struct ucc_geth_info *info)
+{
+	return 1;
+}
+
+static inline int ucc_geth_rx_queues(const struct ucc_geth_info *info)
+{
+	return 1;
+}
+
+static const struct ucc_geth_info ugeth_primary_info = {
+	.uf_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    .rtsm = UCC_FAST_SEND_IDLES_BETWEEN_FRAMES,
 		    .max_rx_buf_length = 1536,
 		    /* adjusted at startup if max-speed 1000 */
@@ -95,8 +160,11 @@ static struct ucc_geth_info ugeth_primary_info = {
 		    .tcrc = UCC_FAST_16_BIT_CRC,
 		    .synl = UCC_FAST_SYNC_LEN_NOT_USED,
 		    },
+<<<<<<< HEAD
 	.numQueuesTx = 1,
 	.numQueuesRx = 1,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.extendedFilteringChainPointer = ((uint32_t) NULL),
 	.typeorlen = 3072 /*1536 */ ,
 	.nonBackToBackIfgPart1 = 0x40,
@@ -162,8 +230,11 @@ static struct ucc_geth_info ugeth_primary_info = {
 	.riscRx = QE_RISC_ALLOCATION_RISC1_AND_RISC2,
 };
 
+<<<<<<< HEAD
 static struct ucc_geth_info ugeth_info[8];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 static void mem_disp(u8 *addr, int size)
 {
@@ -185,7 +256,11 @@ static void mem_disp(u8 *addr, int size)
 	for (; (u32) i < (u32) addr + size4Aling; i += 4)
 		printk("%08x ", *((u32 *) (i)));
 	for (; (u32) i < (u32) addr + size; i++)
+<<<<<<< HEAD
 		printk("%02x", *((u8 *) (i)));
+=======
+		printk("%02x", *((i)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (notAlign == 1)
 		printk("\r\n");
 }
@@ -210,6 +285,7 @@ static struct list_head *dequeue(struct list_head *lh)
 static struct sk_buff *get_new_skb(struct ucc_geth_private *ugeth,
 		u8 __iomem *bd)
 {
+<<<<<<< HEAD
 	struct sk_buff *skb = NULL;
 
 	skb = __skb_dequeue(&ugeth->rx_recycle);
@@ -218,6 +294,14 @@ static struct sk_buff *get_new_skb(struct ucc_geth_private *ugeth,
 				      ugeth->ug_info->uf_info.max_rx_buf_length +
 				      UCC_GETH_RX_DATA_BUF_ALIGNMENT);
 	if (skb == NULL)
+=======
+	struct sk_buff *skb;
+
+	skb = netdev_alloc_skb(ugeth->ndev,
+			       ugeth->ug_info->uf_info.max_rx_buf_length +
+			       UCC_GETH_RX_DATA_BUF_ALIGNMENT);
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	/* We need the data buffer to be aligned properly.  We will reserve
@@ -284,7 +368,11 @@ static int fill_init_enet_entries(struct ucc_geth_private *ugeth,
 	for (i = 0; i < num_entries; i++) {
 		if ((snum = qe_get_snum()) < 0) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err("fill_init_enet_entries: Can not get SNUM.");
+=======
+				pr_err("Can not get SNUM\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return snum;
 		}
 		if ((i == 0) && skip_page_for_first_entry)
@@ -295,7 +383,11 @@ static int fill_init_enet_entries(struct ucc_geth_private *ugeth,
 			    qe_muram_alloc(thread_size, thread_alignment);
 			if (IS_ERR_VALUE(init_enet_offset)) {
 				if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 					ugeth_err("fill_init_enet_entries: Can not allocate DPRAM memory.");
+=======
+					pr_err("Can not allocate DPRAM memory\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				qe_put_snum((u8) snum);
 				return -ENOMEM;
 			}
@@ -368,10 +460,16 @@ static int dump_init_enet_entries(struct ucc_geth_private *ugeth,
 				init_enet_offset =
 				    (in_be32(p_start) &
 				     ENET_INIT_PARAM_PTR_MASK);
+<<<<<<< HEAD
 				ugeth_info("Init enet entry %d:", i);
 				ugeth_info("Base address: 0x%08x",
 					   (u32)
 					   qe_muram_addr(init_enet_offset));
+=======
+				pr_info("Init enet entry %d:\n", i);
+				pr_info("Base address: 0x%08x\n",
+					(u32)qe_muram_addr(init_enet_offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mem_disp(qe_muram_addr(init_enet_offset),
 					 thread_size);
 			}
@@ -399,8 +497,13 @@ static int hw_clear_addr_in_paddr(struct ucc_geth_private *ugeth, u8 paddr_num)
 {
 	struct ucc_geth_82xx_address_filtering_pram __iomem *p_82xx_addr_filt;
 
+<<<<<<< HEAD
 	if (!(paddr_num < NUM_OF_PADDRS)) {
 		ugeth_warn("%s: Illagel paddr_num.", __func__);
+=======
+	if (paddr_num >= NUM_OF_PADDRS) {
+		pr_warn("%s: Invalid paddr_num: %u\n", __func__, paddr_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -440,11 +543,14 @@ static void hw_add_addr_in_hash(struct ucc_geth_private *ugeth,
 		     QE_CR_PROTOCOL_ETHERNET, 0);
 }
 
+<<<<<<< HEAD
 static inline int compare_addr(u8 **addr1, u8 **addr2)
 {
 	return memcmp(addr1, addr2, ETH_ALEN);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 static void get_statistics(struct ucc_geth_private *ugeth,
 			   struct ucc_geth_tx_firmware_statistics *
@@ -571,21 +677,37 @@ static void dump_bds(struct ucc_geth_private *ugeth)
 	int i;
 	int length;
 
+<<<<<<< HEAD
 	for (i = 0; i < ugeth->ug_info->numQueuesTx; i++) {
+=======
+	for (i = 0; i < ucc_geth_tx_queues(ugeth->ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ugeth->p_tx_bd_ring[i]) {
 			length =
 			    (ugeth->ug_info->bdRingLenTx[i] *
 			     sizeof(struct qe_bd));
+<<<<<<< HEAD
 			ugeth_info("TX BDs[%d]", i);
 			mem_disp(ugeth->p_tx_bd_ring[i], length);
 		}
 	}
 	for (i = 0; i < ugeth->ug_info->numQueuesRx; i++) {
+=======
+			pr_info("TX BDs[%d]\n", i);
+			mem_disp(ugeth->p_tx_bd_ring[i], length);
+		}
+	}
+	for (i = 0; i < ucc_geth_rx_queues(ugeth->ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ugeth->p_rx_bd_ring[i]) {
 			length =
 			    (ugeth->ug_info->bdRingLenRx[i] *
 			     sizeof(struct qe_bd));
+<<<<<<< HEAD
 			ugeth_info("RX BDs[%d]", i);
+=======
+			pr_info("RX BDs[%d]\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_disp(ugeth->p_rx_bd_ring[i], length);
 		}
 	}
@@ -595,6 +717,7 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 {
 	int i;
 
+<<<<<<< HEAD
 	ugeth_info("UCC%d Geth registers:", ugeth->ug_info->uf_info.ucc_num + 1);
 	ugeth_info("Base address: 0x%08x", (u32) ugeth->ug_regs);
 
@@ -713,11 +836,112 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 			ugeth_info("Thread data TX[%d]:", i);
 			ugeth_info("Base address: 0x%08x",
 				   (u32) & ugeth->p_thread_data_tx[i]);
+=======
+	pr_info("UCC%d Geth registers:\n", ugeth->ug_info->uf_info.ucc_num + 1);
+	pr_info("Base address: 0x%08x\n", (u32)ugeth->ug_regs);
+
+	pr_info("maccfg1    : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->maccfg1,
+		in_be32(&ugeth->ug_regs->maccfg1));
+	pr_info("maccfg2    : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->maccfg2,
+		in_be32(&ugeth->ug_regs->maccfg2));
+	pr_info("ipgifg     : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->ipgifg,
+		in_be32(&ugeth->ug_regs->ipgifg));
+	pr_info("hafdup     : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->hafdup,
+		in_be32(&ugeth->ug_regs->hafdup));
+	pr_info("ifctl      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->ifctl,
+		in_be32(&ugeth->ug_regs->ifctl));
+	pr_info("ifstat     : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->ifstat,
+		in_be32(&ugeth->ug_regs->ifstat));
+	pr_info("macstnaddr1: addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->macstnaddr1,
+		in_be32(&ugeth->ug_regs->macstnaddr1));
+	pr_info("macstnaddr2: addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->macstnaddr2,
+		in_be32(&ugeth->ug_regs->macstnaddr2));
+	pr_info("uempr      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->uempr,
+		in_be32(&ugeth->ug_regs->uempr));
+	pr_info("utbipar    : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->utbipar,
+		in_be32(&ugeth->ug_regs->utbipar));
+	pr_info("uescr      : addr - 0x%08x, val - 0x%04x\n",
+		(u32)&ugeth->ug_regs->uescr,
+		in_be16(&ugeth->ug_regs->uescr));
+	pr_info("tx64       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->tx64,
+		in_be32(&ugeth->ug_regs->tx64));
+	pr_info("tx127      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->tx127,
+		in_be32(&ugeth->ug_regs->tx127));
+	pr_info("tx255      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->tx255,
+		in_be32(&ugeth->ug_regs->tx255));
+	pr_info("rx64       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rx64,
+		in_be32(&ugeth->ug_regs->rx64));
+	pr_info("rx127      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rx127,
+		in_be32(&ugeth->ug_regs->rx127));
+	pr_info("rx255      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rx255,
+		in_be32(&ugeth->ug_regs->rx255));
+	pr_info("txok       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->txok,
+		in_be32(&ugeth->ug_regs->txok));
+	pr_info("txcf       : addr - 0x%08x, val - 0x%04x\n",
+		(u32)&ugeth->ug_regs->txcf,
+		in_be16(&ugeth->ug_regs->txcf));
+	pr_info("tmca       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->tmca,
+		in_be32(&ugeth->ug_regs->tmca));
+	pr_info("tbca       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->tbca,
+		in_be32(&ugeth->ug_regs->tbca));
+	pr_info("rxfok      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rxfok,
+		in_be32(&ugeth->ug_regs->rxfok));
+	pr_info("rxbok      : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rxbok,
+		in_be32(&ugeth->ug_regs->rxbok));
+	pr_info("rbyt       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rbyt,
+		in_be32(&ugeth->ug_regs->rbyt));
+	pr_info("rmca       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rmca,
+		in_be32(&ugeth->ug_regs->rmca));
+	pr_info("rbca       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->rbca,
+		in_be32(&ugeth->ug_regs->rbca));
+	pr_info("scar       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->scar,
+		in_be32(&ugeth->ug_regs->scar));
+	pr_info("scam       : addr - 0x%08x, val - 0x%08x\n",
+		(u32)&ugeth->ug_regs->scam,
+		in_be32(&ugeth->ug_regs->scam));
+
+	if (ugeth->p_thread_data_tx) {
+		int count = ucc_geth_thread_count(ugeth->ug_info->numThreadsTx);
+
+		pr_info("Thread data TXs:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_thread_data_tx);
+		for (i = 0; i < count; i++) {
+			pr_info("Thread data TX[%d]:\n", i);
+			pr_info("Base address: 0x%08x\n",
+				(u32)&ugeth->p_thread_data_tx[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_disp((u8 *) & ugeth->p_thread_data_tx[i],
 				 sizeof(struct ucc_geth_thread_data_tx));
 		}
 	}
 	if (ugeth->p_thread_data_rx) {
+<<<<<<< HEAD
 		int numThreadsRxNumerical;
 		switch (ugeth->ug_info->numThreadsRx) {
 		case UCC_GETH_NUM_OF_THREADS_1:
@@ -747,18 +971,36 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 			ugeth_info("Thread data RX[%d]:", i);
 			ugeth_info("Base address: 0x%08x",
 				   (u32) & ugeth->p_thread_data_rx[i]);
+=======
+		int count = ucc_geth_thread_count(ugeth->ug_info->numThreadsRx);
+
+		pr_info("Thread data RX:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_thread_data_rx);
+		for (i = 0; i < count; i++) {
+			pr_info("Thread data RX[%d]:\n", i);
+			pr_info("Base address: 0x%08x\n",
+				(u32)&ugeth->p_thread_data_rx[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_disp((u8 *) & ugeth->p_thread_data_rx[i],
 				 sizeof(struct ucc_geth_thread_data_rx));
 		}
 	}
 	if (ugeth->p_exf_glbl_param) {
+<<<<<<< HEAD
 		ugeth_info("EXF global param:");
 		ugeth_info("Base address: 0x%08x",
 			   (u32) ugeth->p_exf_glbl_param);
+=======
+		pr_info("EXF global param:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_exf_glbl_param);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_disp((u8 *) ugeth->p_exf_glbl_param,
 			 sizeof(*ugeth->p_exf_glbl_param));
 	}
 	if (ugeth->p_tx_glbl_pram) {
+<<<<<<< HEAD
 		ugeth_info("TX global param:");
 		ugeth_info("Base address: 0x%08x", (u32) ugeth->p_tx_glbl_pram);
 		ugeth_info("temoder      : addr - 0x%08x, val - 0x%04x",
@@ -925,31 +1167,214 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 			ugeth_info("SQQD[%d]:", i);
 			ugeth_info("Base address: 0x%08x",
 				   (u32) & ugeth->p_send_q_mem_reg->sqqd[i]);
+=======
+		pr_info("TX global param:\n");
+		pr_info("Base address: 0x%08x\n", (u32)ugeth->p_tx_glbl_pram);
+		pr_info("temoder      : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_tx_glbl_pram->temoder,
+			in_be16(&ugeth->p_tx_glbl_pram->temoder));
+	       pr_info("sqptr        : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->sqptr,
+			in_be32(&ugeth->p_tx_glbl_pram->sqptr));
+		pr_info("schedulerbasepointer: addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->schedulerbasepointer,
+			in_be32(&ugeth->p_tx_glbl_pram->schedulerbasepointer));
+		pr_info("txrmonbaseptr: addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->txrmonbaseptr,
+			in_be32(&ugeth->p_tx_glbl_pram->txrmonbaseptr));
+		pr_info("tstate       : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->tstate,
+			in_be32(&ugeth->p_tx_glbl_pram->tstate));
+		pr_info("iphoffset[0] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[0],
+			ugeth->p_tx_glbl_pram->iphoffset[0]);
+		pr_info("iphoffset[1] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[1],
+			ugeth->p_tx_glbl_pram->iphoffset[1]);
+		pr_info("iphoffset[2] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[2],
+			ugeth->p_tx_glbl_pram->iphoffset[2]);
+		pr_info("iphoffset[3] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[3],
+			ugeth->p_tx_glbl_pram->iphoffset[3]);
+		pr_info("iphoffset[4] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[4],
+			ugeth->p_tx_glbl_pram->iphoffset[4]);
+		pr_info("iphoffset[5] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[5],
+			ugeth->p_tx_glbl_pram->iphoffset[5]);
+		pr_info("iphoffset[6] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[6],
+			ugeth->p_tx_glbl_pram->iphoffset[6]);
+		pr_info("iphoffset[7] : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_tx_glbl_pram->iphoffset[7],
+			ugeth->p_tx_glbl_pram->iphoffset[7]);
+		pr_info("vtagtable[0] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[0],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[0]));
+		pr_info("vtagtable[1] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[1],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[1]));
+		pr_info("vtagtable[2] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[2],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[2]));
+		pr_info("vtagtable[3] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[3],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[3]));
+		pr_info("vtagtable[4] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[4],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[4]));
+		pr_info("vtagtable[5] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[5],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[5]));
+		pr_info("vtagtable[6] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[6],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[6]));
+		pr_info("vtagtable[7] : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->vtagtable[7],
+			in_be32(&ugeth->p_tx_glbl_pram->vtagtable[7]));
+		pr_info("tqptr        : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_tx_glbl_pram->tqptr,
+			in_be32(&ugeth->p_tx_glbl_pram->tqptr));
+	}
+	if (ugeth->p_rx_glbl_pram) {
+		pr_info("RX global param:\n");
+		pr_info("Base address: 0x%08x\n", (u32)ugeth->p_rx_glbl_pram);
+		pr_info("remoder         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->remoder,
+			in_be32(&ugeth->p_rx_glbl_pram->remoder));
+		pr_info("rqptr           : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->rqptr,
+			in_be32(&ugeth->p_rx_glbl_pram->rqptr));
+		pr_info("typeorlen       : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->typeorlen,
+			in_be16(&ugeth->p_rx_glbl_pram->typeorlen));
+		pr_info("rxgstpack       : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_rx_glbl_pram->rxgstpack,
+			ugeth->p_rx_glbl_pram->rxgstpack);
+		pr_info("rxrmonbaseptr   : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->rxrmonbaseptr,
+			in_be32(&ugeth->p_rx_glbl_pram->rxrmonbaseptr));
+		pr_info("intcoalescingptr: addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->intcoalescingptr,
+			in_be32(&ugeth->p_rx_glbl_pram->intcoalescingptr));
+		pr_info("rstate          : addr - 0x%08x, val - 0x%02x\n",
+			(u32)&ugeth->p_rx_glbl_pram->rstate,
+			ugeth->p_rx_glbl_pram->rstate);
+		pr_info("mrblr           : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->mrblr,
+			in_be16(&ugeth->p_rx_glbl_pram->mrblr));
+		pr_info("rbdqptr         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->rbdqptr,
+			in_be32(&ugeth->p_rx_glbl_pram->rbdqptr));
+		pr_info("mflr            : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->mflr,
+			in_be16(&ugeth->p_rx_glbl_pram->mflr));
+		pr_info("minflr          : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->minflr,
+			in_be16(&ugeth->p_rx_glbl_pram->minflr));
+		pr_info("maxd1           : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->maxd1,
+			in_be16(&ugeth->p_rx_glbl_pram->maxd1));
+		pr_info("maxd2           : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->maxd2,
+			in_be16(&ugeth->p_rx_glbl_pram->maxd2));
+		pr_info("ecamptr         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->ecamptr,
+			in_be32(&ugeth->p_rx_glbl_pram->ecamptr));
+		pr_info("l2qt            : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l2qt,
+			in_be32(&ugeth->p_rx_glbl_pram->l2qt));
+		pr_info("l3qt[0]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[0],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[0]));
+		pr_info("l3qt[1]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[1],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[1]));
+		pr_info("l3qt[2]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[2],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[2]));
+		pr_info("l3qt[3]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[3],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[3]));
+		pr_info("l3qt[4]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[4],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[4]));
+		pr_info("l3qt[5]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[5],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[5]));
+		pr_info("l3qt[6]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[6],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[6]));
+		pr_info("l3qt[7]         : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->l3qt[7],
+			in_be32(&ugeth->p_rx_glbl_pram->l3qt[7]));
+		pr_info("vlantype        : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->vlantype,
+			in_be16(&ugeth->p_rx_glbl_pram->vlantype));
+		pr_info("vlantci         : addr - 0x%08x, val - 0x%04x\n",
+			(u32)&ugeth->p_rx_glbl_pram->vlantci,
+			in_be16(&ugeth->p_rx_glbl_pram->vlantci));
+		for (i = 0; i < 64; i++)
+			pr_info("addressfiltering[%d]: addr - 0x%08x, val - 0x%02x\n",
+				i,
+				(u32)&ugeth->p_rx_glbl_pram->addressfiltering[i],
+				ugeth->p_rx_glbl_pram->addressfiltering[i]);
+		pr_info("exfGlobalParam  : addr - 0x%08x, val - 0x%08x\n",
+			(u32)&ugeth->p_rx_glbl_pram->exfGlobalParam,
+			in_be32(&ugeth->p_rx_glbl_pram->exfGlobalParam));
+	}
+	if (ugeth->p_send_q_mem_reg) {
+		pr_info("Send Q memory registers:\n");
+		pr_info("Base address: 0x%08x\n", (u32)ugeth->p_send_q_mem_reg);
+		for (i = 0; i < ucc_geth_tx_queues(ugeth->ug_info); i++) {
+			pr_info("SQQD[%d]:\n", i);
+			pr_info("Base address: 0x%08x\n",
+				(u32)&ugeth->p_send_q_mem_reg->sqqd[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_disp((u8 *) & ugeth->p_send_q_mem_reg->sqqd[i],
 				 sizeof(struct ucc_geth_send_queue_qd));
 		}
 	}
 	if (ugeth->p_scheduler) {
+<<<<<<< HEAD
 		ugeth_info("Scheduler:");
 		ugeth_info("Base address: 0x%08x", (u32) ugeth->p_scheduler);
+=======
+		pr_info("Scheduler:\n");
+		pr_info("Base address: 0x%08x\n", (u32)ugeth->p_scheduler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_disp((u8 *) ugeth->p_scheduler,
 			 sizeof(*ugeth->p_scheduler));
 	}
 	if (ugeth->p_tx_fw_statistics_pram) {
+<<<<<<< HEAD
 		ugeth_info("TX FW statistics pram:");
 		ugeth_info("Base address: 0x%08x",
 			   (u32) ugeth->p_tx_fw_statistics_pram);
+=======
+		pr_info("TX FW statistics pram:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_tx_fw_statistics_pram);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_disp((u8 *) ugeth->p_tx_fw_statistics_pram,
 			 sizeof(*ugeth->p_tx_fw_statistics_pram));
 	}
 	if (ugeth->p_rx_fw_statistics_pram) {
+<<<<<<< HEAD
 		ugeth_info("RX FW statistics pram:");
 		ugeth_info("Base address: 0x%08x",
 			   (u32) ugeth->p_rx_fw_statistics_pram);
+=======
+		pr_info("RX FW statistics pram:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_rx_fw_statistics_pram);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_disp((u8 *) ugeth->p_rx_fw_statistics_pram,
 			 sizeof(*ugeth->p_rx_fw_statistics_pram));
 	}
 	if (ugeth->p_rx_irq_coalescing_tbl) {
+<<<<<<< HEAD
 		ugeth_info("RX IRQ coalescing tables:");
 		ugeth_info("Base address: 0x%08x",
 			   (u32) ugeth->p_rx_irq_coalescing_tbl);
@@ -1004,6 +1429,55 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 				   qe_muram_addr(in_be32
 						 (&ugeth->p_rx_bd_qs_tbl[i].
 						  bdbaseptr)));
+=======
+		pr_info("RX IRQ coalescing tables:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32)ugeth->p_rx_irq_coalescing_tbl);
+		for (i = 0; i < ucc_geth_rx_queues(ugeth->ug_info); i++) {
+			pr_info("RX IRQ coalescing table entry[%d]:\n", i);
+			pr_info("Base address: 0x%08x\n",
+				(u32)&ugeth->p_rx_irq_coalescing_tbl->
+				coalescingentry[i]);
+			pr_info("interruptcoalescingmaxvalue: addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_irq_coalescing_tbl->
+				coalescingentry[i].interruptcoalescingmaxvalue,
+				in_be32(&ugeth->p_rx_irq_coalescing_tbl->
+					coalescingentry[i].
+					interruptcoalescingmaxvalue));
+			pr_info("interruptcoalescingcounter : addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_irq_coalescing_tbl->
+				coalescingentry[i].interruptcoalescingcounter,
+				in_be32(&ugeth->p_rx_irq_coalescing_tbl->
+					coalescingentry[i].
+					interruptcoalescingcounter));
+		}
+	}
+	if (ugeth->p_rx_bd_qs_tbl) {
+		pr_info("RX BD QS tables:\n");
+		pr_info("Base address: 0x%08x\n", (u32)ugeth->p_rx_bd_qs_tbl);
+		for (i = 0; i < ucc_geth_rx_queues(ugeth->ug_info); i++) {
+			pr_info("RX BD QS table[%d]:\n", i);
+			pr_info("Base address: 0x%08x\n",
+				(u32)&ugeth->p_rx_bd_qs_tbl[i]);
+			pr_info("bdbaseptr        : addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_bd_qs_tbl[i].bdbaseptr,
+				in_be32(&ugeth->p_rx_bd_qs_tbl[i].bdbaseptr));
+			pr_info("bdptr            : addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_bd_qs_tbl[i].bdptr,
+				in_be32(&ugeth->p_rx_bd_qs_tbl[i].bdptr));
+			pr_info("externalbdbaseptr: addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
+				in_be32(&ugeth->p_rx_bd_qs_tbl[i].
+					externalbdbaseptr));
+			pr_info("externalbdptr    : addr - 0x%08x, val - 0x%08x\n",
+				(u32)&ugeth->p_rx_bd_qs_tbl[i].externalbdptr,
+				in_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdptr));
+			pr_info("ucode RX Prefetched BDs:\n");
+			pr_info("Base address: 0x%08x\n",
+				(u32)qe_muram_addr(in_be32
+						   (&ugeth->p_rx_bd_qs_tbl[i].
+						    bdbaseptr)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mem_disp((u8 *)
 				 qe_muram_addr(in_be32
 					       (&ugeth->p_rx_bd_qs_tbl[i].
@@ -1013,9 +1487,15 @@ static void dump_regs(struct ucc_geth_private *ugeth)
 	}
 	if (ugeth->p_init_enet_param_shadow) {
 		int size;
+<<<<<<< HEAD
 		ugeth_info("Init enet param shadow:");
 		ugeth_info("Base address: 0x%08x",
 			   (u32) ugeth->p_init_enet_param_shadow);
+=======
+		pr_info("Init enet param shadow:\n");
+		pr_info("Base address: 0x%08x\n",
+			(u32) ugeth->p_init_enet_param_shadow);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mem_disp((u8 *) ugeth->p_init_enet_param_shadow,
 			 sizeof(*ugeth->p_init_enet_param_shadow));
 
@@ -1371,7 +1851,11 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
 		switch (ugeth->max_speed) {
 		case SPEED_10:
 			upsmr |= UCC_GETH_UPSMR_R10M;
+<<<<<<< HEAD
 			/* FALLTHROUGH */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SPEED_100:
 			if (ugeth->phy_interface != PHY_INTERFACE_MODE_RTBI)
 				upsmr |= UCC_GETH_UPSMR_RMM;
@@ -1381,7 +1865,11 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
 	    (ugeth->phy_interface == PHY_INTERFACE_MODE_RTBI)) {
 		upsmr |= UCC_GETH_UPSMR_TBIM;
 	}
+<<<<<<< HEAD
 	if ((ugeth->phy_interface == PHY_INTERFACE_MODE_SGMII))
+=======
+	if (ugeth->phy_interface == PHY_INTERFACE_MODE_SGMII)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		upsmr |= UCC_GETH_UPSMR_SGMM;
 
 	out_be32(&uf_regs->upsmr, upsmr);
@@ -1395,16 +1883,29 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
 		struct phy_device *tbiphy;
 
 		if (!ug_info->tbi_node)
+<<<<<<< HEAD
 			ugeth_warn("TBI mode requires that the device "
 				"tree specify a tbi-handle\n");
 
 		tbiphy = of_phy_find_device(ug_info->tbi_node);
 		if (!tbiphy)
 			ugeth_warn("Could not get TBI device\n");
+=======
+			pr_warn("TBI mode requires that the device tree specify a tbi-handle\n");
+
+		tbiphy = of_phy_find_device(ug_info->tbi_node);
+		if (!tbiphy)
+			pr_warn("Could not get TBI device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		value = phy_read(tbiphy, ENET_TBI_MII_CR);
 		value &= ~0x1000;	/* Turn off autonegotiation */
 		phy_write(tbiphy, ENET_TBI_MII_CR, value);
+<<<<<<< HEAD
+=======
+
+		put_device(&tbiphy->mdio.dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	init_check_frame_length_mode(ug_info->lengthCheckRx, &ug_regs->maccfg2);
@@ -1412,8 +1913,12 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
 	ret_val = init_preamble_length(ug_info->prel, &ug_regs->maccfg2);
 	if (ret_val != 0) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Preamble length must be between 3 and 7 inclusive.",
 			     __func__);
+=======
+			pr_err("Preamble length must be between 3 and 7 inclusive\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 	}
 
@@ -1523,7 +2028,11 @@ static int ugeth_enable(struct ucc_geth_private *ugeth, enum comm_dir mode)
 	/* check if the UCC number is in range. */
 	if (ugeth->ug_info->uf_info.ucc_num >= UCC_MAX_NUM) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: ucc_num out of range.", __func__);
+=======
+			pr_err("ucc_num out of range\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1552,7 +2061,11 @@ static int ugeth_disable(struct ucc_geth_private *ugeth, enum comm_dir mode)
 	/* check if the UCC number is in range. */
 	if (ugeth->ug_info->uf_info.ucc_num >= UCC_MAX_NUM) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: ucc_num out of range.", __func__);
+=======
+			pr_err("ucc_num out of range\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1571,11 +2084,16 @@ static int ugeth_disable(struct ucc_geth_private *ugeth, enum comm_dir mode)
 
 static void ugeth_quiesce(struct ucc_geth_private *ugeth)
 {
+<<<<<<< HEAD
 	/* Prevent any further xmits, plus detach the device. */
 	netif_device_detach(ugeth->ndev);
 
 	/* Wait for any current xmits to finish. */
 	netif_tx_disable(ugeth->ndev);
+=======
+	/* Prevent any further xmits */
+	netif_tx_stop_all_queues(ugeth->ndev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable the interrupt to avoid NAPI rescheduling. */
 	disable_irq(ugeth->ug_info->uf_info.irq);
@@ -1588,7 +2106,14 @@ static void ugeth_activate(struct ucc_geth_private *ugeth)
 {
 	napi_enable(&ugeth->napi);
 	enable_irq(ugeth->ug_info->uf_info.irq);
+<<<<<<< HEAD
 	netif_device_attach(ugeth->ndev);
+=======
+
+	/* allow to xmit again  */
+	netif_tx_wake_all_queues(ugeth->ndev);
+	__netdev_watchdog_up(ugeth->ndev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Called every time the controller might need to be made
@@ -1651,7 +2176,11 @@ static void adjust_link(struct net_device *dev)
 				break;
 			default:
 				if (netif_msg_link(ugeth))
+<<<<<<< HEAD
 					ugeth_warn(
+=======
+					pr_warn(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"%s: Ack!  Speed (%d) is not 10/100/1000!",
 						dev->name, phydev->speed);
 				break;
@@ -1724,8 +2253,15 @@ static void uec_configure_serdes(struct net_device *dev)
 	 * everything for us?  Resetting it takes the link down and requires
 	 * several seconds for it to come back.
 	 */
+<<<<<<< HEAD
 	if (phy_read(tbiphy, ENET_TBI_MII_SR) & TBISR_LSTATUS)
 		return;
+=======
+	if (phy_read(tbiphy, ENET_TBI_MII_SR) & TBISR_LSTATUS) {
+		put_device(&tbiphy->mdio.dev);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Single clk mode, mii mode off(for serdes communication) */
 	phy_write(tbiphy, ENET_TBI_MII_ANA, TBIANA_SETTINGS);
@@ -1733,6 +2269,11 @@ static void uec_configure_serdes(struct net_device *dev)
 	phy_write(tbiphy, ENET_TBI_MII_TBICON, TBICON_CLK_SELECT);
 
 	phy_write(tbiphy, ENET_TBI_MII_CR, TBICR_SETTINGS);
+<<<<<<< HEAD
+=======
+
+	put_device(&tbiphy->mdio.dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Configure the PHY for dev.
@@ -1750,9 +2291,12 @@ static int init_phy(struct net_device *dev)
 
 	phydev = of_phy_connect(dev, ug_info->phy_node, &adjust_link, 0,
 				priv->phy_interface);
+<<<<<<< HEAD
 	if (!phydev)
 		phydev = of_phy_connect_fixed_link(dev, &adjust_link,
 						   priv->phy_interface);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!phydev) {
 		dev_err(&dev->dev, "Could not attach to PHY\n");
 		return -ENODEV;
@@ -1761,6 +2305,7 @@ static int init_phy(struct net_device *dev)
 	if (priv->phy_interface == PHY_INTERFACE_MODE_SGMII)
 		uec_configure_serdes(dev);
 
+<<<<<<< HEAD
 	phydev->supported &= (SUPPORTED_MII |
 			      SUPPORTED_Autoneg |
 			      ADVERTISED_10baseT_Half |
@@ -1772,6 +2317,9 @@ static int init_phy(struct net_device *dev)
 		phydev->supported |= ADVERTISED_1000baseT_Full;
 
 	phydev->advertising = phydev->supported;
+=======
+	phy_set_max_speed(phydev, priv->max_speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->phydev = phydev;
 
@@ -1867,7 +2415,11 @@ static void ucc_geth_free_rx(struct ucc_geth_private *ugeth)
 	ug_info = ugeth->ug_info;
 	uf_info = &ug_info->uf_info;
 
+<<<<<<< HEAD
 	for (i = 0; i < ugeth->ug_info->numQueuesRx; i++) {
+=======
+	for (i = 0; i < ucc_geth_rx_queues(ugeth->ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ugeth->p_rx_bd_ring[i]) {
 			/* Return existing data buffers in ring */
 			bd = ugeth->p_rx_bd_ring[i];
@@ -1888,12 +2440,16 @@ static void ucc_geth_free_rx(struct ucc_geth_private *ugeth)
 
 			kfree(ugeth->rx_skbuff[i]);
 
+<<<<<<< HEAD
 			if (ugeth->ug_info->uf_info.bd_mem_part ==
 			    MEM_PART_SYSTEM)
 				kfree((void *)ugeth->rx_bd_ring_offset[i]);
 			else if (ugeth->ug_info->uf_info.bd_mem_part ==
 				 MEM_PART_MURAM)
 				qe_muram_free(ugeth->rx_bd_ring_offset[i]);
+=======
+			kfree(ugeth->p_rx_bd_ring[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ugeth->p_rx_bd_ring[i] = NULL;
 		}
 	}
@@ -1907,10 +2463,19 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
 	u16 i, j;
 	u8 __iomem *bd;
 
+<<<<<<< HEAD
 	ug_info = ugeth->ug_info;
 	uf_info = &ug_info->uf_info;
 
 	for (i = 0; i < ugeth->ug_info->numQueuesTx; i++) {
+=======
+	netdev_reset_queue(ugeth->ndev);
+
+	ug_info = ugeth->ug_info;
+	uf_info = &ug_info->uf_info;
+
+	for (i = 0; i < ucc_geth_tx_queues(ugeth->ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bd = ugeth->p_tx_bd_ring[i];
 		if (!bd)
 			continue;
@@ -1928,6 +2493,7 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
 
 		kfree(ugeth->tx_skbuff[i]);
 
+<<<<<<< HEAD
 		if (ugeth->p_tx_bd_ring[i]) {
 			if (ugeth->ug_info->uf_info.bd_mem_part ==
 			    MEM_PART_SYSTEM)
@@ -1937,6 +2503,10 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
 				qe_muram_free(ugeth->tx_bd_ring_offset[i]);
 			ugeth->p_tx_bd_ring[i] = NULL;
 		}
+=======
+		kfree(ugeth->p_tx_bd_ring[i]);
+		ugeth->p_tx_bd_ring[i] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 }
@@ -1951,6 +2521,7 @@ static void ucc_geth_memclean(struct ucc_geth_private *ugeth)
 		ugeth->uccf = NULL;
 	}
 
+<<<<<<< HEAD
 	if (ugeth->p_thread_data_tx) {
 		qe_muram_free(ugeth->thread_dat_tx_offset);
 		ugeth->p_thread_data_tx = NULL;
@@ -1995,6 +2566,41 @@ static void ucc_geth_memclean(struct ucc_geth_private *ugeth)
 		qe_muram_free(ugeth->rx_bd_qs_tbl_offset);
 		ugeth->p_rx_bd_qs_tbl = NULL;
 	}
+=======
+	qe_muram_free_addr(ugeth->p_thread_data_tx);
+	ugeth->p_thread_data_tx = NULL;
+
+	qe_muram_free_addr(ugeth->p_thread_data_rx);
+	ugeth->p_thread_data_rx = NULL;
+
+	qe_muram_free_addr(ugeth->p_exf_glbl_param);
+	ugeth->p_exf_glbl_param = NULL;
+
+	qe_muram_free_addr(ugeth->p_rx_glbl_pram);
+	ugeth->p_rx_glbl_pram = NULL;
+
+	qe_muram_free_addr(ugeth->p_tx_glbl_pram);
+	ugeth->p_tx_glbl_pram = NULL;
+
+	qe_muram_free_addr(ugeth->p_send_q_mem_reg);
+	ugeth->p_send_q_mem_reg = NULL;
+
+	qe_muram_free_addr(ugeth->p_scheduler);
+	ugeth->p_scheduler = NULL;
+
+	qe_muram_free_addr(ugeth->p_tx_fw_statistics_pram);
+	ugeth->p_tx_fw_statistics_pram = NULL;
+
+	qe_muram_free_addr(ugeth->p_rx_fw_statistics_pram);
+	ugeth->p_rx_fw_statistics_pram = NULL;
+
+	qe_muram_free_addr(ugeth->p_rx_irq_coalescing_tbl);
+	ugeth->p_rx_irq_coalescing_tbl = NULL;
+
+	qe_muram_free_addr(ugeth->p_rx_bd_qs_tbl);
+	ugeth->p_rx_bd_qs_tbl = NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ugeth->p_init_enet_param_shadow) {
 		return_init_enet_entries(ugeth,
 					 &(ugeth->p_init_enet_param_shadow->
@@ -2021,8 +2627,11 @@ static void ucc_geth_memclean(struct ucc_geth_private *ugeth)
 		iounmap(ugeth->ug_regs);
 		ugeth->ug_regs = NULL;
 	}
+<<<<<<< HEAD
 
 	skb_queue_purge(&ugeth->rx_recycle);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ucc_geth_set_multi(struct net_device *dev)
@@ -2105,6 +2714,7 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
 	ug_info = ugeth->ug_info;
 	uf_info = &ug_info->uf_info;
 
+<<<<<<< HEAD
 	if (!((uf_info->bd_mem_part == MEM_PART_SYSTEM) ||
 	      (uf_info->bd_mem_part == MEM_PART_MURAM))) {
 		if (netif_msg_probe(ugeth))
@@ -2115,24 +2725,39 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
 
 	/* Rx BD lengths */
 	for (i = 0; i < ug_info->numQueuesRx; i++) {
+=======
+	/* Rx BD lengths */
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((ug_info->bdRingLenRx[i] < UCC_GETH_RX_BD_RING_SIZE_MIN) ||
 		    (ug_info->bdRingLenRx[i] %
 		     UCC_GETH_RX_BD_RING_SIZE_ALIGNMENT)) {
 			if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 				ugeth_err
 				    ("%s: Rx BD ring length must be multiple of 4, no smaller than 8.",
 					__func__);
+=======
+				pr_err("Rx BD ring length must be multiple of 4, no smaller than 8\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
 	/* Tx BD lengths */
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesTx; i++) {
 		if (ug_info->bdRingLenTx[i] < UCC_GETH_TX_BD_RING_SIZE_MIN) {
 			if (netif_msg_probe(ugeth))
 				ugeth_err
 				    ("%s: Tx BD ring length must be no smaller than 2.",
 				     __func__);
+=======
+	for (i = 0; i < ucc_geth_tx_queues(ug_info); i++) {
+		if (ug_info->bdRingLenTx[i] < UCC_GETH_TX_BD_RING_SIZE_MIN) {
+			if (netif_msg_probe(ugeth))
+				pr_err("Tx BD ring length must be no smaller than 2\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -2141,54 +2766,86 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
 	if ((uf_info->max_rx_buf_length == 0) ||
 	    (uf_info->max_rx_buf_length % UCC_GETH_MRBLR_ALIGNMENT)) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: max_rx_buf_length must be non-zero multiple of 128.",
 			     __func__);
+=======
+			pr_err("max_rx_buf_length must be non-zero multiple of 128\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* num Tx queues */
+<<<<<<< HEAD
 	if (ug_info->numQueuesTx > NUM_TX_QUEUES) {
 		if (netif_msg_probe(ugeth))
 			ugeth_err("%s: number of tx queues too large.", __func__);
+=======
+	if (ucc_geth_tx_queues(ug_info) > NUM_TX_QUEUES) {
+		if (netif_msg_probe(ugeth))
+			pr_err("number of tx queues too large\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* num Rx queues */
+<<<<<<< HEAD
 	if (ug_info->numQueuesRx > NUM_RX_QUEUES) {
 		if (netif_msg_probe(ugeth))
 			ugeth_err("%s: number of rx queues too large.", __func__);
+=======
+	if (ucc_geth_rx_queues(ug_info) > NUM_RX_QUEUES) {
+		if (netif_msg_probe(ugeth))
+			pr_err("number of rx queues too large\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* l2qt */
 	for (i = 0; i < UCC_GETH_VLAN_PRIORITY_MAX; i++) {
+<<<<<<< HEAD
 		if (ug_info->l2qt[i] >= ug_info->numQueuesRx) {
 			if (netif_msg_probe(ugeth))
 				ugeth_err
 				    ("%s: VLAN priority table entry must not be"
 					" larger than number of Rx queues.",
 				     __func__);
+=======
+		if (ug_info->l2qt[i] >= ucc_geth_rx_queues(ug_info)) {
+			if (netif_msg_probe(ugeth))
+				pr_err("VLAN priority table entry must not be larger than number of Rx queues\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
 	/* l3qt */
 	for (i = 0; i < UCC_GETH_IP_PRIORITY_MAX; i++) {
+<<<<<<< HEAD
 		if (ug_info->l3qt[i] >= ug_info->numQueuesRx) {
 			if (netif_msg_probe(ugeth))
 				ugeth_err
 				    ("%s: IP priority table entry must not be"
 					" larger than number of Rx queues.",
 				     __func__);
+=======
+		if (ug_info->l3qt[i] >= ucc_geth_rx_queues(ug_info)) {
+			if (netif_msg_probe(ugeth))
+				pr_err("IP priority table entry must not be larger than number of Rx queues\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
 	if (ug_info->cam && !ug_info->ecamptr) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: If cam mode is chosen, must supply cam ptr.",
 				  __func__);
+=======
+			pr_err("If cam mode is chosen, must supply cam ptr\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2196,23 +2853,38 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
 	     UCC_GETH_NUM_OF_STATION_ADDRESSES_1) &&
 	    ug_info->rxExtendedFiltering) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Number of station addresses greater than 1 "
 				  "not allowed in extended parsing mode.",
 				  __func__);
+=======
+			pr_err("Number of station addresses greater than 1 not allowed in extended parsing mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Generate uccm_mask for receive */
 	uf_info->uccm_mask = ug_info->eventRegMask & UCCE_OTHER;/* Errors */
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesRx; i++)
 		uf_info->uccm_mask |= (UCC_GETH_UCCE_RXF0 << i);
 
 	for (i = 0; i < ug_info->numQueuesTx; i++)
+=======
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++)
+		uf_info->uccm_mask |= (UCC_GETH_UCCE_RXF0 << i);
+
+	for (i = 0; i < ucc_geth_tx_queues(ug_info); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uf_info->uccm_mask |= (UCC_GETH_UCCE_TXB0 << i);
 	/* Initialize the general fast UCC block. */
 	if (ucc_fast_init(uf_info, &ugeth->uccf)) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Failed to init uccf.", __func__);
+=======
+			pr_err("Failed to init uccf\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2227,12 +2899,19 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
 	ugeth->ug_regs = ioremap(uf_info->regs, sizeof(*ugeth->ug_regs));
 	if (!ugeth->ug_regs) {
 		if (netif_msg_probe(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Failed to ioremap regs.", __func__);
 		return -ENOMEM;
 	}
 
 	skb_queue_head_init(&ugeth->rx_recycle);
 
+=======
+			pr_err("Failed to ioremap regs\n");
+		return -ENOMEM;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2248,6 +2927,7 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
 	uf_info = &ug_info->uf_info;
 
 	/* Allocate Tx bds */
+<<<<<<< HEAD
 	for (j = 0; j < ug_info->numQueuesTx; j++) {
 		/* Allocate in multiple of
 		   UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT,
@@ -2308,6 +2988,41 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
 		for (i = 0; i < ugeth->ug_info->bdRingLenTx[j]; i++)
 			ugeth->tx_skbuff[j][i] = NULL;
 
+=======
+	for (j = 0; j < ucc_geth_tx_queues(ug_info); j++) {
+		u32 align = max(UCC_GETH_TX_BD_RING_ALIGNMENT,
+				UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT);
+		u32 alloc;
+
+		length = ug_info->bdRingLenTx[j] * sizeof(struct qe_bd);
+		alloc = round_up(length, align);
+		alloc = roundup_pow_of_two(alloc);
+
+		ugeth->p_tx_bd_ring[j] = kmalloc(alloc, GFP_KERNEL);
+
+		if (!ugeth->p_tx_bd_ring[j]) {
+			if (netif_msg_ifup(ugeth))
+				pr_err("Can not allocate memory for Tx bd rings\n");
+			return -ENOMEM;
+		}
+		/* Zero unused end of bd ring, according to spec */
+		memset(ugeth->p_tx_bd_ring[j] + length, 0, alloc - length);
+	}
+
+	/* Init Tx bds */
+	for (j = 0; j < ucc_geth_tx_queues(ug_info); j++) {
+		/* Setup the skbuff rings */
+		ugeth->tx_skbuff[j] =
+			kcalloc(ugeth->ug_info->bdRingLenTx[j],
+				sizeof(struct sk_buff *), GFP_KERNEL);
+
+		if (ugeth->tx_skbuff[j] == NULL) {
+			if (netif_msg_ifup(ugeth))
+				pr_err("Could not allocate tx_skbuff\n");
+			return -ENOMEM;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ugeth->skb_curtx[j] = ugeth->skb_dirtytx[j] = 0;
 		bd = ugeth->confBd[j] = ugeth->txBd[j] = ugeth->p_tx_bd_ring[j];
 		for (i = 0; i < ug_info->bdRingLenTx[j]; i++) {
@@ -2337,6 +3052,7 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
 	uf_info = &ug_info->uf_info;
 
 	/* Allocate Rx bds */
+<<<<<<< HEAD
 	for (j = 0; j < ug_info->numQueuesRx; j++) {
 		length = ug_info->bdRingLenRx[j] * sizeof(struct qe_bd);
 		if (uf_info->bd_mem_part == MEM_PART_SYSTEM) {
@@ -2363,11 +3079,26 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
 				ugeth_err
 				    ("%s: Can not allocate memory for Rx bd rings.",
 				     __func__);
+=======
+	for (j = 0; j < ucc_geth_rx_queues(ug_info); j++) {
+		u32 align = UCC_GETH_RX_BD_RING_ALIGNMENT;
+		u32 alloc;
+
+		length = ug_info->bdRingLenRx[j] * sizeof(struct qe_bd);
+		alloc = round_up(length, align);
+		alloc = roundup_pow_of_two(alloc);
+
+		ugeth->p_rx_bd_ring[j] = kmalloc(alloc, GFP_KERNEL);
+		if (!ugeth->p_rx_bd_ring[j]) {
+			if (netif_msg_ifup(ugeth))
+				pr_err("Can not allocate memory for Rx bd rings\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 	}
 
 	/* Init Rx bds */
+<<<<<<< HEAD
 	for (j = 0; j < ug_info->numQueuesRx; j++) {
 		/* Setup the skbuff rings */
 		ugeth->rx_skbuff[j] = kmalloc(sizeof(struct sk_buff *) *
@@ -2384,6 +3115,20 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
 		for (i = 0; i < ugeth->ug_info->bdRingLenRx[j]; i++)
 			ugeth->rx_skbuff[j][i] = NULL;
 
+=======
+	for (j = 0; j < ucc_geth_rx_queues(ug_info); j++) {
+		/* Setup the skbuff rings */
+		ugeth->rx_skbuff[j] =
+			kcalloc(ugeth->ug_info->bdRingLenRx[j],
+				sizeof(struct sk_buff *), GFP_KERNEL);
+
+		if (ugeth->rx_skbuff[j] == NULL) {
+			if (netif_msg_ifup(ugeth))
+				pr_err("Could not allocate rx_skbuff\n");
+			return -ENOMEM;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ugeth->skb_currx[j] = 0;
 		bd = ugeth->rxBd[j] = ugeth->p_rx_bd_ring[j];
 		for (i = 0; i < ug_info->bdRingLenRx[j]; i++) {
@@ -2415,10 +3160,17 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	u32 init_enet_pram_offset, cecr_subblock, command;
 	u32 ifstat, i, j, size, l2qt, l3qt;
 	u16 temoder = UCC_GETH_TEMODER_INIT;
+<<<<<<< HEAD
 	u16 test;
 	u8 function_code = 0;
 	u8 __iomem *endOfRing;
 	u8 numThreadsRxNumerical, numThreadsTxNumerical;
+=======
+	u8 function_code = 0;
+	u8 __iomem *endOfRing;
+	u8 numThreadsRxNumerical, numThreadsTxNumerical;
+	s32 rx_glbl_pram_offset, tx_glbl_pram_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ugeth_vdbg("%s: IN", __func__);
 	uccf = ugeth->uccf;
@@ -2427,6 +3179,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	uf_regs = uccf->uf_regs;
 	ug_regs = ugeth->ug_regs;
 
+<<<<<<< HEAD
 	switch (ug_info->numThreadsRx) {
 	case UCC_GETH_NUM_OF_THREADS_1:
 		numThreadsRxNumerical = 1;
@@ -2473,6 +3226,20 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				       	__func__);
 		return -EINVAL;
 		break;
+=======
+	numThreadsRxNumerical = ucc_geth_thread_count(ug_info->numThreadsRx);
+	if (!numThreadsRxNumerical) {
+		if (netif_msg_ifup(ugeth))
+			pr_err("Bad number of Rx threads value\n");
+		return -EINVAL;
+	}
+
+	numThreadsTxNumerical = ucc_geth_thread_count(ug_info->numThreadsTx);
+	if (!numThreadsTxNumerical) {
+		if (netif_msg_ifup(ugeth))
+			pr_err("Bad number of Tx threads value\n");
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Calculate rx_extended_features */
@@ -2519,8 +3286,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 					      &ug_regs->ipgifg);
 	if (ret_val != 0) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: IPGIFG initialization parameter too large.",
 				  __func__);
+=======
+			pr_err("IPGIFG initialization parameter too large\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 	}
 
@@ -2536,8 +3307,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 					  &ug_regs->hafdup);
 	if (ret_val != 0) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Half Duplex initialization parameter too large.",
 			  __func__);
+=======
+			pr_err("Half Duplex initialization parameter too large\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 	}
 
@@ -2569,6 +3344,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	 */
 	/* Tx global PRAM */
 	/* Allocate global tx parameter RAM page */
+<<<<<<< HEAD
 	ugeth->tx_glbl_pram_offset =
 	    qe_muram_alloc(sizeof(struct ucc_geth_tx_global_pram),
 			   UCC_GETH_TX_GLOBAL_PRAM_ALIGNMENT);
@@ -2585,6 +3361,17 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	/* Zero out p_tx_glbl_pram */
 	memset_io((void __iomem *)ugeth->p_tx_glbl_pram, 0, sizeof(struct ucc_geth_tx_global_pram));
 
+=======
+	tx_glbl_pram_offset =
+	    qe_muram_alloc(sizeof(struct ucc_geth_tx_global_pram),
+			   UCC_GETH_TX_GLOBAL_PRAM_ALIGNMENT);
+	if (tx_glbl_pram_offset < 0) {
+		if (netif_msg_ifup(ugeth))
+			pr_err("Can not allocate DPRAM memory for p_tx_glbl_pram\n");
+		return -ENOMEM;
+	}
+	ugeth->p_tx_glbl_pram = qe_muram_addr(tx_glbl_pram_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fill global PRAM */
 
 	/* TQPTR */
@@ -2596,9 +3383,13 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 			   UCC_GETH_THREAD_DATA_ALIGNMENT);
 	if (IS_ERR_VALUE(ugeth->thread_dat_tx_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for p_thread_data_tx.",
 			     __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_thread_data_tx\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2620,14 +3411,22 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	/* SQPTR */
 	/* Size varies with number of Tx queues */
 	ugeth->send_q_mem_reg_offset =
+<<<<<<< HEAD
 	    qe_muram_alloc(ug_info->numQueuesTx *
+=======
+	    qe_muram_alloc(ucc_geth_tx_queues(ug_info) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   sizeof(struct ucc_geth_send_queue_qd),
 			   UCC_GETH_SEND_QUEUE_QUEUE_DESCRIPTOR_ALIGNMENT);
 	if (IS_ERR_VALUE(ugeth->send_q_mem_reg_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for p_send_q_mem_reg.",
 			     __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_send_q_mem_reg\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2638,6 +3437,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 
 	/* Setup the table */
 	/* Assume BD rings are already established */
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesTx; i++) {
 		endOfRing =
 		    ugeth->p_tx_bd_ring[i] + (ug_info->bdRingLenTx[i] -
@@ -2657,20 +3457,39 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				 last_bd_completed_address,
 				 (u32) immrbar_virt_to_phys(endOfRing));
 		}
+=======
+	for (i = 0; i < ucc_geth_tx_queues(ug_info); i++) {
+		endOfRing =
+		    ugeth->p_tx_bd_ring[i] + (ug_info->bdRingLenTx[i] -
+					      1) * sizeof(struct qe_bd);
+		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
+			 (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
+		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
+			 last_bd_completed_address,
+			 (u32) virt_to_phys(endOfRing));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* schedulerbasepointer */
 
+<<<<<<< HEAD
 	if (ug_info->numQueuesTx > 1) {
+=======
+	if (ucc_geth_tx_queues(ug_info) > 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* scheduler exists only if more than 1 tx queue */
 		ugeth->scheduler_offset =
 		    qe_muram_alloc(sizeof(struct ucc_geth_scheduler),
 				   UCC_GETH_SCHEDULER_ALIGNMENT);
 		if (IS_ERR_VALUE(ugeth->scheduler_offset)) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err
 				 ("%s: Can not allocate DPRAM memory for p_scheduler.",
 				     __func__);
+=======
+				pr_err("Can not allocate DPRAM memory for p_scheduler\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 
@@ -2679,8 +3498,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 							   scheduler_offset);
 		out_be32(&ugeth->p_tx_glbl_pram->schedulerbasepointer,
 			 ugeth->scheduler_offset);
+<<<<<<< HEAD
 		/* Zero out p_scheduler */
 		memset_io((void __iomem *)ugeth->p_scheduler, 0, sizeof(struct ucc_geth_scheduler));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Set values in scheduler */
 		out_be32(&ugeth->p_scheduler->mblinterval,
@@ -2717,23 +3539,31 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				   UCC_GETH_TX_STATISTICS_ALIGNMENT);
 		if (IS_ERR_VALUE(ugeth->tx_fw_statistics_pram_offset)) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err
 				    ("%s: Can not allocate DPRAM memory for"
 					" p_tx_fw_statistics_pram.",
 				       	__func__);
+=======
+				pr_err("Can not allocate DPRAM memory for p_tx_fw_statistics_pram\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		ugeth->p_tx_fw_statistics_pram =
 		    (struct ucc_geth_tx_firmware_statistics_pram __iomem *)
 		    qe_muram_addr(ugeth->tx_fw_statistics_pram_offset);
+<<<<<<< HEAD
 		/* Zero out p_tx_fw_statistics_pram */
 		memset_io((void __iomem *)ugeth->p_tx_fw_statistics_pram,
 		       0, sizeof(struct ucc_geth_tx_firmware_statistics_pram));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* temoder */
 	/* Already has speed set */
 
+<<<<<<< HEAD
 	if (ug_info->numQueuesTx > 1)
 		temoder |= TEMODER_SCHEDULER_ENABLE;
 	if (ug_info->ipCheckSumGenerate)
@@ -2743,6 +3573,15 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 
 	test = in_be16(&ugeth->p_tx_glbl_pram->temoder);
 
+=======
+	if (ucc_geth_tx_queues(ug_info) > 1)
+		temoder |= TEMODER_SCHEDULER_ENABLE;
+	if (ug_info->ipCheckSumGenerate)
+		temoder |= TEMODER_IP_CHECKSUM_GENERATE;
+	temoder |= ((ucc_geth_tx_queues(ug_info) - 1) << TEMODER_NUM_OF_QUEUES_SHIFT);
+	out_be16(&ugeth->p_tx_glbl_pram->temoder, temoder);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Function code register value to be used later */
 	function_code = UCC_BMR_BO_BE | UCC_BMR_GBL;
 	/* Required for QE */
@@ -2752,6 +3591,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 
 	/* Rx global PRAM */
 	/* Allocate global rx parameter RAM page */
+<<<<<<< HEAD
 	ugeth->rx_glbl_pram_offset =
 	    qe_muram_alloc(sizeof(struct ucc_geth_rx_global_pram),
 			   UCC_GETH_RX_GLOBAL_PRAM_ALIGNMENT);
@@ -2768,6 +3608,17 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	/* Zero out p_rx_glbl_pram */
 	memset_io((void __iomem *)ugeth->p_rx_glbl_pram, 0, sizeof(struct ucc_geth_rx_global_pram));
 
+=======
+	rx_glbl_pram_offset =
+	    qe_muram_alloc(sizeof(struct ucc_geth_rx_global_pram),
+			   UCC_GETH_RX_GLOBAL_PRAM_ALIGNMENT);
+	if (rx_glbl_pram_offset < 0) {
+		if (netif_msg_ifup(ugeth))
+			pr_err("Can not allocate DPRAM memory for p_rx_glbl_pram\n");
+		return -ENOMEM;
+	}
+	ugeth->p_rx_glbl_pram = qe_muram_addr(rx_glbl_pram_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fill global PRAM */
 
 	/* RQPTR */
@@ -2778,9 +3629,13 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 			   UCC_GETH_THREAD_DATA_ALIGNMENT);
 	if (IS_ERR_VALUE(ugeth->thread_dat_rx_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for p_thread_data_rx.",
 			     __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_thread_data_rx\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2801,31 +3656,46 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				   UCC_GETH_RX_STATISTICS_ALIGNMENT);
 		if (IS_ERR_VALUE(ugeth->rx_fw_statistics_pram_offset)) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err
 					("%s: Can not allocate DPRAM memory for"
 					" p_rx_fw_statistics_pram.", __func__);
+=======
+				pr_err("Can not allocate DPRAM memory for p_rx_fw_statistics_pram\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		ugeth->p_rx_fw_statistics_pram =
 		    (struct ucc_geth_rx_firmware_statistics_pram __iomem *)
 		    qe_muram_addr(ugeth->rx_fw_statistics_pram_offset);
+<<<<<<< HEAD
 		/* Zero out p_rx_fw_statistics_pram */
 		memset_io((void __iomem *)ugeth->p_rx_fw_statistics_pram, 0,
 		       sizeof(struct ucc_geth_rx_firmware_statistics_pram));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* intCoalescingPtr */
 
 	/* Size varies with number of Rx queues */
 	ugeth->rx_irq_coalescing_tbl_offset =
+<<<<<<< HEAD
 	    qe_muram_alloc(ug_info->numQueuesRx *
+=======
+	    qe_muram_alloc(ucc_geth_rx_queues(ug_info) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   sizeof(struct ucc_geth_rx_interrupt_coalescing_entry)
 			   + 4, UCC_GETH_RX_INTERRUPT_COALESCING_ALIGNMENT);
 	if (IS_ERR_VALUE(ugeth->rx_irq_coalescing_tbl_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for"
 				" p_rx_irq_coalescing_tbl.", __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_rx_irq_coalescing_tbl\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2836,7 +3706,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 		 ugeth->rx_irq_coalescing_tbl_offset);
 
 	/* Fill interrupt coalescing table */
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesRx; i++) {
+=======
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		out_be32(&ugeth->p_rx_irq_coalescing_tbl->coalescingentry[i].
 			 interruptcoalescingmaxvalue,
 			 ug_info->interruptcoalescingmaxvalue[i]);
@@ -2885,15 +3759,23 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	/* RBDQPTR */
 	/* Size varies with number of Rx queues */
 	ugeth->rx_bd_qs_tbl_offset =
+<<<<<<< HEAD
 	    qe_muram_alloc(ug_info->numQueuesRx *
+=======
+	    qe_muram_alloc(ucc_geth_rx_queues(ug_info) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   (sizeof(struct ucc_geth_rx_bd_queues_entry) +
 			    sizeof(struct ucc_geth_rx_prefetched_bds)),
 			   UCC_GETH_RX_BD_QUEUES_ALIGNMENT);
 	if (IS_ERR_VALUE(ugeth->rx_bd_qs_tbl_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for p_rx_bd_qs_tbl.",
 			     __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_rx_bd_qs_tbl\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2901,6 +3783,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	    (struct ucc_geth_rx_bd_queues_entry __iomem *) qe_muram_addr(ugeth->
 				    rx_bd_qs_tbl_offset);
 	out_be32(&ugeth->p_rx_glbl_pram->rbdqptr, ugeth->rx_bd_qs_tbl_offset);
+<<<<<<< HEAD
 	/* Zero out p_rx_bd_qs_tbl */
 	memset_io((void __iomem *)ugeth->p_rx_bd_qs_tbl,
 	       0,
@@ -2919,6 +3802,14 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				 (u32) immrbar_virt_to_phys(ugeth->
 							    p_rx_bd_ring[i]));
 		}
+=======
+
+	/* Setup the table */
+	/* Assume BD rings are already established */
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++) {
+		out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
+			 (u32) virt_to_phys(ugeth->p_rx_bd_ring[i]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* rest of fields handled by QE */
 	}
 
@@ -2939,7 +3830,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	    ug_info->
 	    vlanOperationNonTagged << REMODER_VLAN_OPERATION_NON_TAGGED_SHIFT;
 	remoder |= ug_info->rxQoSMode << REMODER_RX_QOS_MODE_SHIFT;
+<<<<<<< HEAD
 	remoder |= ((ug_info->numQueuesRx - 1) << REMODER_NUM_OF_QUEUES_SHIFT);
+=======
+	remoder |= ((ucc_geth_rx_queues(ug_info) - 1) << REMODER_NUM_OF_QUEUES_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ug_info->ipCheckSumCheck)
 		remoder |= REMODER_IP_CHECKSUM_CHECK;
 	if (ug_info->ipAddressAlignment)
@@ -2968,8 +3863,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	if (ug_info->rxExtendedFiltering) {
 		if (!ug_info->extendedFilteringChainPointer) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err("%s: Null Extended Filtering Chain Pointer.",
 					  __func__);
+=======
+				pr_err("Null Extended Filtering Chain Pointer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -2980,9 +3879,13 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 		UCC_GETH_RX_EXTENDED_FILTERING_GLOBAL_PARAMETERS_ALIGNMENT);
 		if (IS_ERR_VALUE(ugeth->exf_glbl_param_offset)) {
 			if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err
 					("%s: Can not allocate DPRAM memory for"
 					" p_exf_glbl_param.", __func__);
+=======
+				pr_err("Can not allocate DPRAM memory for p_exf_glbl_param\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 
@@ -3025,6 +3928,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	 * allocated resources can be released when the channel is freed.
 	 */
 	if (!(ugeth->p_init_enet_param_shadow =
+<<<<<<< HEAD
 	      kmalloc(sizeof(struct ucc_geth_init_pram), GFP_KERNEL))) {
 		if (netif_msg_ifup(ugeth))
 			ugeth_err
@@ -3035,6 +3939,13 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	/* Zero out *p_init_enet_param_shadow */
 	memset((char *)ugeth->p_init_enet_param_shadow,
 	       0, sizeof(struct ucc_geth_init_pram));
+=======
+	      kzalloc(sizeof(struct ucc_geth_init_pram), GFP_KERNEL))) {
+		if (netif_msg_ifup(ugeth))
+			pr_err("Can not allocate memory for p_UccInitEnetParamShadows\n");
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill shadow InitEnet command parameter structure */
 
@@ -3054,7 +3965,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	    ((u32) ug_info->numThreadsTx) << ENET_INIT_PARAM_TGF_SHIFT;
 
 	ugeth->p_init_enet_param_shadow->rgftgfrxglobal |=
+<<<<<<< HEAD
 	    ugeth->rx_glbl_pram_offset | ug_info->riscRx;
+=======
+	    rx_glbl_pram_offset | ug_info->riscRx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ug_info->largestexternallookupkeysize !=
 	     QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_NONE) &&
 	    (ug_info->largestexternallookupkeysize !=
@@ -3062,8 +3977,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	    (ug_info->largestexternallookupkeysize !=
 	     QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_16_BYTES)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Invalid largest External Lookup Key Size.",
 				  __func__);
+=======
+			pr_err("Invalid largest External Lookup Key Size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	ugeth->p_init_enet_param_shadow->largestexternallookupkeysize =
@@ -3072,11 +3991,19 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	if (ug_info->rxExtendedFiltering) {
 		size += THREAD_RX_PRAM_ADDITIONAL_FOR_EXTENDED_FILTERING;
 		if (ug_info->largestexternallookupkeysize ==
+<<<<<<< HEAD
 		    QE_FLTR_TABLE_LOOKUP_KEY_SIZE_8_BYTES)
 			size +=
 			    THREAD_RX_PRAM_ADDITIONAL_FOR_EXTENDED_FILTERING_8;
 		if (ug_info->largestexternallookupkeysize ==
 		    QE_FLTR_TABLE_LOOKUP_KEY_SIZE_16_BYTES)
+=======
+		    QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_8_BYTES)
+			size +=
+			    THREAD_RX_PRAM_ADDITIONAL_FOR_EXTENDED_FILTERING_8;
+		if (ug_info->largestexternallookupkeysize ==
+		    QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_16_BYTES)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			size +=
 			    THREAD_RX_PRAM_ADDITIONAL_FOR_EXTENDED_FILTERING_16;
 	}
@@ -3088,13 +4015,21 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 		, size, UCC_GETH_THREAD_RX_PRAM_ALIGNMENT,
 		ug_info->riscRx, 1)) != 0) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 				ugeth_err("%s: Can not fill p_init_enet_param_shadow.",
 					__func__);
+=======
+			pr_err("Can not fill p_init_enet_param_shadow\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 	}
 
 	ugeth->p_init_enet_param_shadow->txglobal =
+<<<<<<< HEAD
 	    ugeth->tx_glbl_pram_offset | ug_info->riscTx;
+=======
+	    tx_glbl_pram_offset | ug_info->riscTx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ret_val =
 	     fill_init_enet_entries(ugeth,
 				    &(ugeth->p_init_enet_param_shadow->
@@ -3103,17 +4038,28 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 				    UCC_GETH_THREAD_TX_PRAM_ALIGNMENT,
 				    ug_info->riscTx, 0)) != 0) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err("%s: Can not fill p_init_enet_param_shadow.",
 				  __func__);
+=======
+			pr_err("Can not fill p_init_enet_param_shadow\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret_val;
 	}
 
 	/* Load Rx bds with buffers */
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesRx; i++) {
 		if ((ret_val = rx_bd_buffer_set(ugeth, (u8) i)) != 0) {
 			if (netif_msg_ifup(ugeth))
 				ugeth_err("%s: Can not fill Rx bds with buffers.",
 					  __func__);
+=======
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++) {
+		if ((ret_val = rx_bd_buffer_set(ugeth, (u8) i)) != 0) {
+			if (netif_msg_ifup(ugeth))
+				pr_err("Can not fill Rx bds with buffers\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret_val;
 		}
 	}
@@ -3122,9 +4068,13 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 	init_enet_pram_offset = qe_muram_alloc(sizeof(struct ucc_geth_init_pram), 4);
 	if (IS_ERR_VALUE(init_enet_pram_offset)) {
 		if (netif_msg_ifup(ugeth))
+<<<<<<< HEAD
 			ugeth_err
 			    ("%s: Can not allocate DPRAM memory for p_init_enet_pram.",
 			     __func__);
+=======
+			pr_err("Can not allocate DPRAM memory for p_init_enet_pram\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	p_init_enet_pram =
@@ -3168,7 +4118,12 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
 
 /* This is called by the kernel when a frame is ready for transmission. */
 /* It is pointed to by the dev->hard_start_xmit function pointer */
+<<<<<<< HEAD
 static int ucc_geth_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+ucc_geth_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(dev);
 #ifdef CONFIG_UGETH_TX_ON_DEMAND
@@ -3181,6 +4136,10 @@ static int ucc_geth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	ugeth_vdbg("%s: IN", __func__);
 
+<<<<<<< HEAD
+=======
+	netdev_sent_queue(dev, skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&ugeth->lock, flags);
 
 	dev->stats.tx_bytes += skb->len;
@@ -3273,6 +4232,7 @@ static int ucc_geth_rx(struct ucc_geth_private *ugeth, u8 rxQ, int rx_work_limit
 		    (!(bd_status & (R_F | R_L))) ||
 		    (bd_status & R_ERRORS_FATAL)) {
 			if (netif_msg_rx_err(ugeth))
+<<<<<<< HEAD
 				ugeth_err("%s, %d: ERROR!!! skb - 0x%08x",
 					   __func__, __LINE__, (u32) skb);
 			if (skb) {
@@ -3281,6 +4241,11 @@ static int ucc_geth_rx(struct ucc_geth_private *ugeth, u8 rxQ, int rx_work_limit
 				skb_reset_tail_pointer(skb);
 				__skb_queue_head(&ugeth->rx_recycle, skb);
 			}
+=======
+				pr_err("%d: ERROR!!! skb - 0x%08x\n",
+				       __LINE__, (u32)skb);
+			dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ugeth->rx_skbuff[rxQ][ugeth->skb_currx[rxQ]] = NULL;
 			dev->stats.rx_dropped++;
@@ -3302,7 +4267,11 @@ static int ucc_geth_rx(struct ucc_geth_private *ugeth, u8 rxQ, int rx_work_limit
 		skb = get_new_skb(ugeth, bd);
 		if (!skb) {
 			if (netif_msg_rx_err(ugeth))
+<<<<<<< HEAD
 				ugeth_warn("%s: No Rx Data Buffer", __func__);
+=======
+				pr_warn("No Rx Data Buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_dropped++;
 			break;
 		}
@@ -3330,6 +4299,11 @@ static int ucc_geth_tx(struct net_device *dev, u8 txQ)
 {
 	/* Start from the next BD that should be filled */
 	struct ucc_geth_private *ugeth = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	unsigned int bytes_sent = 0;
+	int howmany = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 __iomem *bd;		/* BD pointer */
 	u32 bd_status;
 
@@ -3347,6 +4321,7 @@ static int ucc_geth_tx(struct net_device *dev, u8 txQ)
 		skb = ugeth->tx_skbuff[txQ][ugeth->skb_dirtytx[txQ]];
 		if (!skb)
 			break;
+<<<<<<< HEAD
 
 		dev->stats.tx_packets++;
 
@@ -3357,6 +4332,13 @@ static int ucc_geth_tx(struct net_device *dev, u8 txQ)
 			__skb_queue_head(&ugeth->rx_recycle, skb);
 		else
 			dev_kfree_skb(skb);
+=======
+		howmany++;
+		bytes_sent += skb->len;
+		dev->stats.tx_packets++;
+
+		dev_consume_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ugeth->tx_skbuff[txQ][ugeth->skb_dirtytx[txQ]] = NULL;
 		ugeth->skb_dirtytx[txQ] =
@@ -3375,6 +4357,10 @@ static int ucc_geth_tx(struct net_device *dev, u8 txQ)
 		bd_status = in_be32((u32 __iomem *)bd);
 	}
 	ugeth->confBd[txQ] = bd;
+<<<<<<< HEAD
+=======
+	netdev_completed_queue(dev, howmany, bytes_sent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3388,16 +4374,28 @@ static int ucc_geth_poll(struct napi_struct *napi, int budget)
 
 	/* Tx event processing */
 	spin_lock(&ugeth->lock);
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesTx; i++)
+=======
+	for (i = 0; i < ucc_geth_tx_queues(ug_info); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ucc_geth_tx(ugeth->ndev, i);
 	spin_unlock(&ugeth->lock);
 
 	howmany = 0;
+<<<<<<< HEAD
 	for (i = 0; i < ug_info->numQueuesRx; i++)
 		howmany += ucc_geth_rx(ugeth, i, budget - howmany);
 
 	if (howmany < budget) {
 		napi_complete(napi);
+=======
+	for (i = 0; i < ucc_geth_rx_queues(ug_info); i++)
+		howmany += ucc_geth_rx(ugeth, i, budget - howmany);
+
+	if (howmany < budget) {
+		napi_complete_done(napi, howmany);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		setbits32(ugeth->uccf->p_uccm, UCCE_RX_EVENTS | UCCE_TX_EVENTS);
 	}
 
@@ -3469,7 +4467,11 @@ static int ucc_geth_set_mac_addr(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
+=======
+	eth_hw_addr_set(dev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If device is not running, we will set mac addr register
@@ -3499,25 +4501,37 @@ static int ucc_geth_init_mac(struct ucc_geth_private *ugeth)
 
 	err = ucc_struct_init(ugeth);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot configure internal struct, "
 				  "aborting.", dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot configure internal struct, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	err = ucc_geth_startup(ugeth);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot configure net device, aborting.",
 				  dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot configure net device, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	err = adjust_enet_interface(ugeth);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot configure net device, aborting.",
 				  dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot configure net device, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -3534,8 +4548,12 @@ static int ucc_geth_init_mac(struct ucc_geth_private *ugeth)
 
 	err = ugeth_enable(ugeth, COMM_DIR_RX_AND_TX);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot enable net device, aborting.", dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot enable net device, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -3556,40 +4574,61 @@ static int ucc_geth_open(struct net_device *dev)
 
 	/* Test station address */
 	if (dev->dev_addr[0] & ENET_GROUP_ADDR) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Multicast address used for station "
 				  "address - is this what you wanted?",
 				  __func__);
+=======
+		netif_err(ugeth, ifup, dev,
+			  "Multicast address used for station address - is this what you wanted?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	err = init_phy(dev);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot initialize PHY, aborting.",
 				  dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot initialize PHY, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	err = ucc_geth_init_mac(ugeth);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot initialize MAC, aborting.",
 				  dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot initialize MAC, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	err = request_irq(ugeth->ug_info->uf_info.irq, ucc_geth_irq_handler,
 			  0, "UCC Geth", dev);
 	if (err) {
+<<<<<<< HEAD
 		if (netif_msg_ifup(ugeth))
 			ugeth_err("%s: Cannot get IRQ for net device, aborting.",
 				  dev->name);
+=======
+		netif_err(ugeth, ifup, dev, "Cannot get IRQ for net device, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	phy_start(ugeth->phydev);
 	napi_enable(&ugeth->napi);
+<<<<<<< HEAD
+=======
+	netdev_reset_queue(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(dev);
 
 	device_set_wakeup_capable(&dev->dev,
@@ -3620,6 +4659,10 @@ static int ucc_geth_close(struct net_device *dev)
 	free_irq(ugeth->ug_info->uf_info.irq, ugeth->ndev);
 
 	netif_stop_queue(dev);
+<<<<<<< HEAD
+=======
+	netdev_reset_queue(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3659,7 +4702,11 @@ static void ucc_geth_timeout_work(struct work_struct *work)
  * ucc_geth_timeout gets called when a packet has not been
  * transmitted after a set amount of time.
  */
+<<<<<<< HEAD
 static void ucc_geth_timeout(struct net_device *dev)
+=======
+static void ucc_geth_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ucc_geth_private *ugeth = netdev_priv(dev);
 
@@ -3671,7 +4718,11 @@ static void ucc_geth_timeout(struct net_device *dev)
 
 static int ucc_geth_suspend(struct platform_device *ofdev, pm_message_t state)
 {
+<<<<<<< HEAD
 	struct net_device *ndev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct net_device *ndev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ucc_geth_private *ugeth = netdev_priv(ndev);
 
 	if (!netif_running(ndev))
@@ -3699,7 +4750,11 @@ static int ucc_geth_suspend(struct platform_device *ofdev, pm_message_t state)
 
 static int ucc_geth_resume(struct platform_device *ofdev)
 {
+<<<<<<< HEAD
 	struct net_device *ndev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct net_device *ndev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ucc_geth_private *ugeth = netdev_priv(ndev);
 	int err;
 
@@ -3722,8 +4777,12 @@ static int ucc_geth_resume(struct platform_device *ofdev)
 
 		err = ucc_geth_init_mac(ugeth);
 		if (err) {
+<<<<<<< HEAD
 			ugeth_err("%s: Cannot initialize MAC, aborting.",
 				  ndev->name);
+=======
+			netdev_err(ndev, "Cannot initialize MAC, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
@@ -3790,16 +4849,57 @@ static const struct net_device_ops ucc_geth_netdev_ops = {
 	.ndo_stop		= ucc_geth_close,
 	.ndo_start_xmit		= ucc_geth_start_xmit,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_set_mac_address	= ucc_geth_set_mac_addr,
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_set_rx_mode	= ucc_geth_set_multi,
 	.ndo_tx_timeout		= ucc_geth_timeout,
 	.ndo_do_ioctl		= ucc_geth_ioctl,
+=======
+	.ndo_change_carrier     = fixed_phy_change_carrier,
+	.ndo_set_mac_address	= ucc_geth_set_mac_addr,
+	.ndo_set_rx_mode	= ucc_geth_set_multi,
+	.ndo_tx_timeout		= ucc_geth_timeout,
+	.ndo_eth_ioctl		= ucc_geth_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= ucc_netpoll,
 #endif
 };
 
+<<<<<<< HEAD
+=======
+static int ucc_geth_parse_clock(struct device_node *np, const char *which,
+				enum qe_clock *out)
+{
+	const char *sprop;
+	char buf[24];
+
+	snprintf(buf, sizeof(buf), "%s-clock-name", which);
+	sprop = of_get_property(np, buf, NULL);
+	if (sprop) {
+		*out = qe_clock_source(sprop);
+	} else {
+		u32 val;
+
+		snprintf(buf, sizeof(buf), "%s-clock", which);
+		if (of_property_read_u32(np, buf, &val)) {
+			/* If both *-clock-name and *-clock are missing,
+			 * we want to tell people to use *-clock-name.
+			 */
+			pr_err("missing %s-clock-name property\n", buf);
+			return -EINVAL;
+		}
+		*out = val;
+	}
+	if (*out < QE_CLK_NONE || *out > QE_CLK24) {
+		pr_err("invalid %s property\n", buf);
+		return -EINVAL;
+	}
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ucc_geth_probe(struct platform_device* ofdev)
 {
 	struct device *device = &ofdev->dev;
@@ -3810,8 +4910,11 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	struct resource res;
 	int err, ucc_num, max_speed = 0;
 	const unsigned int *prop;
+<<<<<<< HEAD
 	const char *sprop;
 	const void *mac_addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_interface_t phy_interface;
 	static const int enet_to_speed[] = {
 		SPEED_10, SPEED_10, SPEED_10,
@@ -3840,6 +4943,7 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	if ((ucc_num < 0) || (ucc_num > 7))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ug_info = &ugeth_info[ucc_num];
 	if (ug_info == NULL) {
 		if (netif_msg_probe(&debug))
@@ -3903,11 +5007,42 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	err = of_address_to_resource(np, 0, &res);
 	if (err)
 		return -EINVAL;
+=======
+	ug_info = kmemdup(&ugeth_primary_info, sizeof(*ug_info), GFP_KERNEL);
+	if (ug_info == NULL)
+		return -ENOMEM;
+
+	ug_info->uf_info.ucc_num = ucc_num;
+
+	err = ucc_geth_parse_clock(np, "rx", &ug_info->uf_info.rx_clock);
+	if (err)
+		goto err_free_info;
+	err = ucc_geth_parse_clock(np, "tx", &ug_info->uf_info.tx_clock);
+	if (err)
+		goto err_free_info;
+
+	err = of_address_to_resource(np, 0, &res);
+	if (err)
+		goto err_free_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ug_info->uf_info.regs = res.start;
 	ug_info->uf_info.irq = irq_of_parse_and_map(np, 0);
 
 	ug_info->phy_node = of_parse_phandle(np, "phy-handle", 0);
+<<<<<<< HEAD
+=======
+	if (!ug_info->phy_node && of_phy_is_fixed_link(np)) {
+		/*
+		 * In the case of a fixed PHY, the DT node associated
+		 * to the PHY is the Ethernet MAC DT node.
+		 */
+		err = of_phy_register_fixed_link(np);
+		if (err)
+			goto err_free_info;
+		ug_info->phy_node = of_node_get(np);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find the TBI PHY node.  If it's not there, we don't support SGMII */
 	ug_info->tbi_node = of_parse_phandle(np, "tbi-handle", 0);
@@ -3967,15 +5102,28 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	}
 
 	if (netif_msg_probe(&debug))
+<<<<<<< HEAD
 		printk(KERN_INFO "ucc_geth: UCC%1d at 0x%8x (irq = %d)\n",
 			ug_info->uf_info.ucc_num + 1, ug_info->uf_info.regs,
+=======
+		pr_info("UCC%1d at 0x%8llx (irq = %d)\n",
+			ug_info->uf_info.ucc_num + 1,
+			(u64)ug_info->uf_info.regs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ug_info->uf_info.irq);
 
 	/* Create an ethernet device instance */
 	dev = alloc_etherdev(sizeof(*ugeth));
 
+<<<<<<< HEAD
 	if (dev == NULL)
 		return -ENOMEM;
+=======
+	if (dev == NULL) {
+		err = -ENOMEM;
+		goto err_deregister_fixed_link;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ugeth = netdev_priv(dev);
 	spin_lock_init(&ugeth->lock);
@@ -3996,13 +5144,20 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	dev->netdev_ops = &ucc_geth_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 	INIT_WORK(&ugeth->timeout_work, ucc_geth_timeout_work);
+<<<<<<< HEAD
 	netif_napi_add(dev, &ugeth->napi, ucc_geth_poll, 64);
 	dev->mtu = 1500;
+=======
+	netif_napi_add(dev, &ugeth->napi, ucc_geth_poll);
+	dev->mtu = 1500;
+	dev->max_mtu = 1518;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ugeth->msg_enable = netif_msg_init(debug.msg_enable, UGETH_MSG_DEFAULT);
 	ugeth->phy_interface = phy_interface;
 	ugeth->max_speed = max_speed;
 
+<<<<<<< HEAD
 	err = register_netdev(dev);
 	if (err) {
 		if (netif_msg_probe(ugeth))
@@ -4015,6 +5170,20 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	mac_addr = of_get_mac_address(np);
 	if (mac_addr)
 		memcpy(dev->dev_addr, mac_addr, 6);
+=======
+	/* Carrier starts down, phylib will bring it up */
+	netif_carrier_off(dev);
+
+	err = register_netdev(dev);
+	if (err) {
+		if (netif_msg_probe(ugeth))
+			pr_err("%s: Cannot register net device, aborting\n",
+			       dev->name);
+		goto err_free_netdev;
+	}
+
+	of_get_ethdev_address(np, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ugeth->ug_info = ug_info;
 	ugeth->dev = device;
@@ -4022,6 +5191,7 @@ static int ucc_geth_probe(struct platform_device* ofdev)
 	ugeth->node = np;
 
 	return 0;
+<<<<<<< HEAD
 }
 
 static int ucc_geth_remove(struct platform_device* ofdev)
@@ -4039,6 +5209,39 @@ static int ucc_geth_remove(struct platform_device* ofdev)
 }
 
 static struct of_device_id ucc_geth_match[] = {
+=======
+
+err_free_netdev:
+	free_netdev(dev);
+err_deregister_fixed_link:
+	if (of_phy_is_fixed_link(np))
+		of_phy_deregister_fixed_link(np);
+	of_node_put(ug_info->tbi_node);
+	of_node_put(ug_info->phy_node);
+err_free_info:
+	kfree(ug_info);
+
+	return err;
+}
+
+static void ucc_geth_remove(struct platform_device* ofdev)
+{
+	struct net_device *dev = platform_get_drvdata(ofdev);
+	struct ucc_geth_private *ugeth = netdev_priv(dev);
+	struct device_node *np = ofdev->dev.of_node;
+
+	unregister_netdev(dev);
+	ucc_geth_memclean(ugeth);
+	if (of_phy_is_fixed_link(np))
+		of_phy_deregister_fixed_link(np);
+	of_node_put(ugeth->ug_info->tbi_node);
+	of_node_put(ugeth->ug_info->phy_node);
+	kfree(ugeth->ug_info);
+	free_netdev(dev);
+}
+
+static const struct of_device_id ucc_geth_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type = "network",
 		.compatible = "ucc_geth",
@@ -4051,17 +5254,25 @@ MODULE_DEVICE_TABLE(of, ucc_geth_match);
 static struct platform_driver ucc_geth_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = ucc_geth_match,
 	},
 	.probe		= ucc_geth_probe,
 	.remove		= ucc_geth_remove,
+=======
+		.of_match_table = ucc_geth_match,
+	},
+	.probe		= ucc_geth_probe,
+	.remove_new	= ucc_geth_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ucc_geth_suspend,
 	.resume		= ucc_geth_resume,
 };
 
 static int __init ucc_geth_init(void)
 {
+<<<<<<< HEAD
 	int i, ret;
 
 	if (netif_msg_drv(&debug))
@@ -4073,6 +5284,12 @@ static int __init ucc_geth_init(void)
 	ret = platform_driver_register(&ucc_geth_driver);
 
 	return ret;
+=======
+	if (netif_msg_drv(&debug))
+		pr_info(DRV_DESC "\n");
+
+	return platform_driver_register(&ucc_geth_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ucc_geth_exit(void)
@@ -4085,5 +5302,8 @@ module_exit(ucc_geth_exit);
 
 MODULE_AUTHOR("Freescale Semiconductor, Inc");
 MODULE_DESCRIPTION(DRV_DESC);
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

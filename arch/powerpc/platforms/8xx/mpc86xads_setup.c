@@ -15,6 +15,11 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 
 #include <asm/io.h>
@@ -22,11 +27,18 @@
 #include <asm/time.h>
 #include <asm/8xx_immap.h>
 #include <asm/cpm1.h>
+<<<<<<< HEAD
 #include <asm/fs_pd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 
 #include "mpc86xads.h"
 #include "mpc8xx.h"
+<<<<<<< HEAD
+=======
+#include "pic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpm_pin {
 	int port, pin, flags;
@@ -114,6 +126,7 @@ static void __init mpc86xads_setup_arch(void)
 	iounmap(bcsr_io);
 }
 
+<<<<<<< HEAD
 static int __init mpc86xads_probe(void)
 {
 	unsigned long root = of_get_flat_dt_root();
@@ -121,6 +134,9 @@ static int __init mpc86xads_probe(void)
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },
@@ -137,9 +153,15 @@ machine_device_initcall(mpc86x_ads, declare_of_platform_devices);
 
 define_machine(mpc86x_ads) {
 	.name			= "MPC86x ADS",
+<<<<<<< HEAD
 	.probe			= mpc86xads_probe,
 	.setup_arch		= mpc86xads_setup_arch,
 	.init_IRQ		= mpc8xx_pics_init,
+=======
+	.compatible		= "fsl,mpc866ads",
+	.setup_arch		= mpc86xads_setup_arch,
+	.init_IRQ		= mpc8xx_pic_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_irq		= mpc8xx_get_irq,
 	.restart		= mpc8xx_restart,
 	.calibrate_decr		= mpc8xx_calibrate_decr,

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2007-2011, Intel Corporation.
  * All Rights Reserved.
  * Copyright (c) 2008, Tungsten Graphics Inc.  Cedar Park, TX., USA.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -87,5 +92,11 @@ struct drm_psb_gem_mmap {
 #define 	PSB_MODE_OPERATION_MODE_VALID	0x01
 #define DRM_GMA_GET_PIPE_FROM_CRTC_ID	0x08	/* CRTC to physical pipe# */
 
+=======
+ **************************************************************************/
+
+#ifndef _GMA_DRM_H_
+#define _GMA_DRM_H_
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

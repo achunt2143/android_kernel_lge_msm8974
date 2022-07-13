@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/affs/symlink.c
  *
@@ -10,6 +14,7 @@
 
 #include "affs.h"
 
+<<<<<<< HEAD
 static int affs_symlink_readpage(struct file *file, struct page *page)
 {
 	struct buffer_head *bh;
@@ -17,13 +22,26 @@ static int affs_symlink_readpage(struct file *file, struct page *page)
 	char *link = kmap(page);
 	struct slink_front *lf;
 	int err;
+=======
+static int affs_symlink_read_folio(struct file *file, struct folio *folio)
+{
+	struct buffer_head *bh;
+	struct inode *inode = folio->mapping->host;
+	char *link = folio_address(folio);
+	struct slink_front *lf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			 i, j;
 	char			 c;
 	char			 lc;
 
+<<<<<<< HEAD
 	pr_debug("AFFS: follow_link(ino=%lu)\n",inode->i_ino);
 
 	err = -EIO;
+=======
+	pr_debug("get_link(ino=%lu)\n", inode->i_ino);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh = affs_bread(inode->i_sb, inode->i_ino);
 	if (!bh)
 		goto fail;
@@ -58,6 +76,7 @@ static int affs_symlink_readpage(struct file *file, struct page *page)
 	}
 	link[i] = '\0';
 	affs_brelse(bh);
+<<<<<<< HEAD
 	SetPageUptodate(page);
 	kunmap(page);
 	unlock_page(page);
@@ -77,5 +96,21 @@ const struct inode_operations affs_symlink_inode_operations = {
 	.readlink	= generic_readlink,
 	.follow_link	= page_follow_link_light,
 	.put_link	= page_put_link,
+=======
+	folio_mark_uptodate(folio);
+	folio_unlock(folio);
+	return 0;
+fail:
+	folio_unlock(folio);
+	return -EIO;
+}
+
+const struct address_space_operations affs_symlink_aops = {
+	.read_folio	= affs_symlink_read_folio,
+};
+
+const struct inode_operations affs_symlink_inode_operations = {
+	.get_link	= page_get_link,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr	= affs_notify_change,
 };

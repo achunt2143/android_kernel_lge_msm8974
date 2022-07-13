@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * siu.h - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
  *
@@ -18,6 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// siu.h - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
+//
+// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+// Copyright (C) 2006 Carlos Munoz <carlos@kenati.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef SIU_H
 #define SIU_H
@@ -110,7 +119,11 @@ struct siu_info {
 };
 
 struct siu_stream {
+<<<<<<< HEAD
 	struct tasklet_struct		tasklet;
+=======
+	struct work_struct		work;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_substream	*substream;
 	snd_pcm_format_t		format;
 	size_t				buf_bytes;
@@ -183,7 +196,11 @@ static inline u32 siu_read32(u32 __iomem *addr)
 #define SIU_BRGBSEL	(0x108 / sizeof(u32))
 #define SIU_BRRB	(0x10c / sizeof(u32))
 
+<<<<<<< HEAD
 extern struct snd_soc_platform_driver siu_platform;
+=======
+extern const struct snd_soc_component_driver siu_component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct siu_info *siu_i2s_data;
 
 int siu_init_port(int port, struct siu_port **port_info, struct snd_card *card);

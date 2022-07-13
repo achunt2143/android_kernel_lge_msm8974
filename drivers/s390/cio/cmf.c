@@ -1,14 +1,23 @@
+<<<<<<< HEAD
 /*
  * linux/drivers/s390/cio/cmf.c
  *
  * Linux on zSeries Channel Measurement Facility support
  *
  * Copyright 2000,2006 IBM Corporation
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Linux on zSeries Channel Measurement Facility support
+ *
+ * Copyright IBM Corp. 2000, 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Authors: Arnd Bergmann <arndb@de.ibm.com>
  *	    Cornelia Huck <cornelia.huck@de.ibm.com>
  *
  * original idea from Natarajan Krishnaswami <nkrishna@us.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +32,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "cio"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/device.h>
 #include <linux/init.h>
@@ -36,6 +48,16 @@
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
 #include <linux/timex.h>	/* get_clock() */
+=======
+#include <linux/memblock.h>
+#include <linux/device.h>
+#include <linux/init.h>
+#include <linux/list.h>
+#include <linux/export.h>
+#include <linux/moduleparam.h>
+#include <linux/slab.h>
+#include <linux/timex.h>	/* get_tod_clock() */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ccwdev.h>
 #include <asm/cio.h>
@@ -60,8 +82,14 @@
 
 /* indices for READCMB */
 enum cmb_index {
+<<<<<<< HEAD
  /* basic and exended format: */
 	cmb_ssch_rsch_count,
+=======
+	avg_utilization = -1,
+ /* basic and exended format: */
+	cmb_ssch_rsch_count = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmb_sample_count,
 	cmb_device_connect_time,
 	cmb_function_pending_time,
@@ -115,7 +143,10 @@ module_param(format, bint, 0444);
  * @readall:	read a measurement block in a common format
  * @reset:	clear the data in the associated measurement block and
  *		reset its time stamp
+<<<<<<< HEAD
  * @align:	align an allocated block so that the hardware can use it
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct cmb_operations {
 	int  (*alloc)  (struct ccw_device *);
@@ -124,7 +155,10 @@ struct cmb_operations {
 	u64  (*read)   (struct ccw_device *, int);
 	int  (*readall)(struct ccw_device *, struct cmbdata *);
 	void (*reset)  (struct ccw_device *);
+<<<<<<< HEAD
 	void *(*align) (void *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* private: */
 	struct attribute_group *attr_group;
 };
@@ -168,6 +202,12 @@ static inline u64 time_to_avg_nsec(u32 value, u32 count)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#define CMF_OFF 0
+#define CMF_ON	2
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Activate or deactivate the channel monitor. When area is NULL,
  * the monitor is deactivated. The channel monitor needs to
@@ -176,6 +216,7 @@ static inline u64 time_to_avg_nsec(u32 value, u32 count)
  */
 static inline void cmf_activate(void *area, unsigned int onoff)
 {
+<<<<<<< HEAD
 	register void * __gpr2 asm("2");
 	register long __gpr1 asm("1");
 
@@ -183,14 +224,30 @@ static inline void cmf_activate(void *area, unsigned int onoff)
 	__gpr1 = onoff ? 2 : 0;
 	/* activate channel measurement */
 	asm("schm" : : "d" (__gpr2), "d" (__gpr1) );
+=======
+	/* activate channel measurement */
+	asm volatile(
+		"	lgr	1,%[r1]\n"
+		"	lgr	2,%[mbo]\n"
+		"	schm\n"
+		:
+		: [r1] "d" ((unsigned long)onoff),
+		  [mbo] "d" (virt_to_phys(area))
+		: "1", "2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_schib(struct ccw_device *cdev, u32 mme, int mbfc,
 		     unsigned long address)
 {
+<<<<<<< HEAD
 	struct subchannel *sch;
 
 	sch = to_subchannel(cdev->dev.parent);
+=======
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sch->config.mme = mme;
 	sch->config.mbfc = mbfc;
@@ -200,7 +257,19 @@ static int set_schib(struct ccw_device *cdev, u32 mme, int mbfc,
 	else
 		sch->config.mbi = address;
 
+<<<<<<< HEAD
 	return cio_commit_config(sch);
+=======
+	ret = cio_commit_config(sch);
+	if (!mme && ret == -ENODEV) {
+		/*
+		 * The task was to disable measurement block updates but
+		 * the subchannel is already gone. Report success.
+		 */
+		ret = 0;
+	}
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct set_schib_struct {
@@ -209,6 +278,7 @@ struct set_schib_struct {
 	unsigned long address;
 	wait_queue_head_t wait;
 	int ret;
+<<<<<<< HEAD
 	struct kref kref;
 };
 
@@ -274,6 +344,54 @@ static int set_schib_wait(struct ccw_device *cdev, u32 mme,
 	ret = set_data->ret;
 out_put:
 	kref_put(&set_data->kref, cmf_set_schib_release);
+=======
+};
+
+#define CMF_PENDING 1
+#define SET_SCHIB_TIMEOUT (10 * HZ)
+
+static int set_schib_wait(struct ccw_device *cdev, u32 mme,
+			  int mbfc, unsigned long address)
+{
+	struct set_schib_struct set_data;
+	int ret = -ENODEV;
+
+	spin_lock_irq(cdev->ccwlock);
+	if (!cdev->private->cmb)
+		goto out;
+
+	ret = set_schib(cdev, mme, mbfc, address);
+	if (ret != -EBUSY)
+		goto out;
+
+	/* if the device is not online, don't even try again */
+	if (cdev->private->state != DEV_STATE_ONLINE)
+		goto out;
+
+	init_waitqueue_head(&set_data.wait);
+	set_data.mme = mme;
+	set_data.mbfc = mbfc;
+	set_data.address = address;
+	set_data.ret = CMF_PENDING;
+
+	cdev->private->state = DEV_STATE_CMFCHANGE;
+	cdev->private->cmb_wait = &set_data;
+	spin_unlock_irq(cdev->ccwlock);
+
+	ret = wait_event_interruptible_timeout(set_data.wait,
+					       set_data.ret != CMF_PENDING,
+					       SET_SCHIB_TIMEOUT);
+	spin_lock_irq(cdev->ccwlock);
+	if (ret <= 0) {
+		if (set_data.ret == CMF_PENDING) {
+			set_data.ret = (ret == 0) ? -ETIME : ret;
+			if (cdev->private->state == DEV_STATE_CMFCHANGE)
+				cdev->private->state = DEV_STATE_ONLINE;
+		}
+	}
+	cdev->private->cmb_wait = NULL;
+	ret = set_data.ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock_irq(cdev->ccwlock);
 	return ret;
@@ -281,6 +399,7 @@ out:
 
 void retry_set_schib(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	struct set_schib_struct *set_data;
 
 	set_data = cdev->private->cmb_wait;
@@ -293,16 +412,32 @@ void retry_set_schib(struct ccw_device *cdev)
 				  set_data->address);
 	wake_up(&set_data->wait);
 	kref_put(&set_data->kref, cmf_set_schib_release);
+=======
+	struct set_schib_struct *set_data = cdev->private->cmb_wait;
+
+	if (!set_data)
+		return;
+
+	set_data->ret = set_schib(cdev, set_data->mme, set_data->mbfc,
+				  set_data->address);
+	wake_up(&set_data->wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cmf_copy_block(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	struct subchannel *sch;
 	void *reference_buf;
 	void *hw_block;
 	struct cmb_data *cmb_data;
 
 	sch = to_subchannel(cdev->dev.parent);
+=======
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	struct cmb_data *cmb_data;
+	void *hw_block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cio_update_schib(sch))
 		return -ENODEV;
@@ -316,6 +451,7 @@ static int cmf_copy_block(struct ccw_device *cdev)
 			return -EBUSY;
 	}
 	cmb_data = cdev->private->cmb;
+<<<<<<< HEAD
 	hw_block = cmbops->align(cmb_data->hw_block);
 	if (!memcmp(cmb_data->last_block, hw_block, cmb_data->size))
 		/* No need to copy. */
@@ -330,12 +466,18 @@ static int cmf_copy_block(struct ccw_device *cdev)
 	} while (memcmp(cmb_data->last_block, reference_buf, cmb_data->size));
 	cmb_data->last_update = get_clock();
 	kfree(reference_buf);
+=======
+	hw_block = cmb_data->hw_block;
+	memcpy(cmb_data->last_block, hw_block, cmb_data->size);
+	cmb_data->last_update = get_tod_clock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 struct copy_block_struct {
 	wait_queue_head_t wait;
 	int ret;
+<<<<<<< HEAD
 	struct kref kref;
 };
 
@@ -397,11 +539,53 @@ out_put:
 	kref_put(&copy_block->kref, cmf_copy_block_release);
 out:
 	spin_unlock_irqrestore(cdev->ccwlock, flags);
+=======
+};
+
+static int cmf_cmb_copy_wait(struct ccw_device *cdev)
+{
+	struct copy_block_struct copy_block;
+	int ret = -ENODEV;
+
+	spin_lock_irq(cdev->ccwlock);
+	if (!cdev->private->cmb)
+		goto out;
+
+	ret = cmf_copy_block(cdev);
+	if (ret != -EBUSY)
+		goto out;
+
+	if (cdev->private->state != DEV_STATE_ONLINE)
+		goto out;
+
+	init_waitqueue_head(&copy_block.wait);
+	copy_block.ret = CMF_PENDING;
+
+	cdev->private->state = DEV_STATE_CMFUPDATE;
+	cdev->private->cmb_wait = &copy_block;
+	spin_unlock_irq(cdev->ccwlock);
+
+	ret = wait_event_interruptible(copy_block.wait,
+				       copy_block.ret != CMF_PENDING);
+	spin_lock_irq(cdev->ccwlock);
+	if (ret) {
+		if (copy_block.ret == CMF_PENDING) {
+			copy_block.ret = -ERESTARTSYS;
+			if (cdev->private->state == DEV_STATE_CMFUPDATE)
+				cdev->private->state = DEV_STATE_ONLINE;
+		}
+	}
+	cdev->private->cmb_wait = NULL;
+	ret = copy_block.ret;
+out:
+	spin_unlock_irq(cdev->ccwlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 void cmf_retry_copy_block(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	struct copy_block_struct *copy_block;
 
 	copy_block = cdev->private->cmb_wait;
@@ -413,6 +597,15 @@ void cmf_retry_copy_block(struct ccw_device *cdev)
 	copy_block->ret = cmf_copy_block(cdev);
 	wake_up(&copy_block->wait);
 	kref_put(&copy_block->kref, cmf_copy_block_release);
+=======
+	struct copy_block_struct *copy_block = cdev->private->cmb_wait;
+
+	if (!copy_block)
+		return;
+
+	copy_block->ret = cmf_copy_block(cdev);
+	wake_up(&copy_block->wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cmf_generic_reset(struct ccw_device *cdev)
@@ -427,10 +620,17 @@ static void cmf_generic_reset(struct ccw_device *cdev)
 		 * Need to reset hw block as well to make the hardware start
 		 * from 0 again.
 		 */
+<<<<<<< HEAD
 		memset(cmbops->align(cmb_data->hw_block), 0, cmb_data->size);
 		cmb_data->last_update = 0;
 	}
 	cdev->private->cmb_start_time = get_clock();
+=======
+		memset(cmb_data->hw_block, 0, cmb_data->size);
+		cmb_data->last_update = 0;
+	}
+	cdev->private->cmb_start_time = get_tod_clock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(cdev->ccwlock);
 }
 
@@ -569,8 +769,12 @@ static int alloc_cmb(struct ccw_device *cdev)
 		WARN_ON(!list_empty(&cmb_area.list));
 
 		spin_unlock(&cmb_area.lock);
+<<<<<<< HEAD
 		mem = (void*)__get_free_pages(GFP_KERNEL | GFP_DMA,
 				 get_order(size));
+=======
+		mem = (void *)__get_free_pages(GFP_KERNEL, get_order(size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&cmb_area.lock);
 
 		if (cmb_area.mem) {
@@ -584,7 +788,11 @@ static int alloc_cmb(struct ccw_device *cdev)
 			/* everything ok */
 			memset(mem, 0, size);
 			cmb_area.mem = mem;
+<<<<<<< HEAD
 			cmf_activate(cmb_area.mem, 1);
+=======
+			cmf_activate(cmb_area.mem, CMF_ON);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -608,12 +816,15 @@ static void free_cmb(struct ccw_device *cdev)
 	spin_lock_irq(cdev->ccwlock);
 
 	priv = cdev->private;
+<<<<<<< HEAD
 
 	if (list_empty(&priv->cmb_list)) {
 		/* already freed */
 		goto out;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmb_data = priv->cmb;
 	priv->cmb = NULL;
 	if (cmb_data)
@@ -624,11 +835,18 @@ static void free_cmb(struct ccw_device *cdev)
 	if (list_empty(&cmb_area.list)) {
 		ssize_t size;
 		size = sizeof(struct cmb) * cmb_area.num_channels;
+<<<<<<< HEAD
 		cmf_activate(NULL, 0);
 		free_pages((unsigned long)cmb_area.mem, get_order(size));
 		cmb_area.mem = NULL;
 	}
 out:
+=======
+		cmf_activate(NULL, CMF_OFF);
+		free_pages((unsigned long)cmb_area.mem, get_order(size));
+		cmb_area.mem = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(cdev->ccwlock);
 	spin_unlock(&cmb_area.lock);
 }
@@ -651,6 +869,7 @@ static int set_cmb(struct ccw_device *cdev, u32 mme)
 	return set_schib_wait(cdev, mme, 0, offset);
 }
 
+<<<<<<< HEAD
 static u64 read_cmb(struct ccw_device *cdev, int index)
 {
 	struct cmb *cmb;
@@ -670,6 +889,46 @@ static u64 read_cmb(struct ccw_device *cdev, int index)
 	cmb = ((struct cmb_data *)cdev->private->cmb)->last_block;
 
 	switch (index) {
+=======
+/* calculate utilization in 0.1 percent units */
+static u64 __cmb_utilization(u64 device_connect_time, u64 function_pending_time,
+			     u64 device_disconnect_time, u64 start_time)
+{
+	u64 utilization, elapsed_time;
+
+	utilization = time_to_nsec(device_connect_time +
+				   function_pending_time +
+				   device_disconnect_time);
+
+	elapsed_time = get_tod_clock() - start_time;
+	elapsed_time = tod_to_ns(elapsed_time);
+	elapsed_time /= 1000;
+
+	return elapsed_time ? (utilization / elapsed_time) : 0;
+}
+
+static u64 read_cmb(struct ccw_device *cdev, int index)
+{
+	struct cmb_data *cmb_data;
+	unsigned long flags;
+	struct cmb *cmb;
+	u64 ret = 0;
+	u32 val;
+
+	spin_lock_irqsave(cdev->ccwlock, flags);
+	cmb_data = cdev->private->cmb;
+	if (!cmb_data)
+		goto out;
+
+	cmb = cmb_data->hw_block;
+	switch (index) {
+	case avg_utilization:
+		ret = __cmb_utilization(cmb->device_connect_time,
+					cmb->function_pending_time,
+					cmb->device_disconnect_time,
+					cdev->private->cmb_start_time);
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case cmb_ssch_rsch_count:
 		ret = cmb->ssch_rsch_count;
 		goto out;
@@ -692,7 +951,10 @@ static u64 read_cmb(struct ccw_device *cdev, int index)
 		val = cmb->device_active_only_time;
 		break;
 	default:
+<<<<<<< HEAD
 		ret = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	ret = time_to_avg_nsec(val, cmb->sample_count);
@@ -730,8 +992,12 @@ static int readall_cmb(struct ccw_device *cdev, struct cmbdata *data)
 	/* we only know values before device_busy_time */
 	data->size = offsetof(struct cmbdata, device_busy_time);
 
+<<<<<<< HEAD
 	/* convert to nanoseconds */
 	data->elapsed_time = (time * 1000) >> 12;
+=======
+	data->elapsed_time = tod_to_ns(time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy data to new structure */
 	data->ssch_rsch_count = cmb->ssch_rsch_count;
@@ -757,9 +1023,21 @@ static void reset_cmb(struct ccw_device *cdev)
 	cmf_generic_reset(cdev);
 }
 
+<<<<<<< HEAD
 static void * align_cmb(void *area)
 {
 	return area;
+=======
+static int cmf_enabled(struct ccw_device *cdev)
+{
+	int enabled;
+
+	spin_lock_irq(cdev->ccwlock);
+	enabled = !!cdev->private->cmb;
+	spin_unlock_irq(cdev->ccwlock);
+
+	return enabled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct attribute_group cmf_attr_group;
@@ -771,7 +1049,10 @@ static struct cmb_operations cmbops_basic = {
 	.read	= read_cmb,
 	.readall    = readall_cmb,
 	.reset	    = reset_cmb,
+<<<<<<< HEAD
 	.align	    = align_cmb,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr_group = &cmf_attr_group,
 };
 
@@ -806,6 +1087,7 @@ struct cmbe {
 	u32 device_busy_time;
 	u32 initial_command_response_time;
 	u32 reserved[7];
+<<<<<<< HEAD
 };
 
 /*
@@ -859,11 +1141,63 @@ static int alloc_cmbe(struct ccw_device *cdev)
 	spin_unlock(&cmb_area.lock);
 
 	return 0;
+=======
+} __packed __aligned(64);
+
+static struct kmem_cache *cmbe_cache;
+
+static int alloc_cmbe(struct ccw_device *cdev)
+{
+	struct cmb_data *cmb_data;
+	struct cmbe *cmbe;
+	int ret = -ENOMEM;
+
+	cmbe = kmem_cache_zalloc(cmbe_cache, GFP_KERNEL);
+	if (!cmbe)
+		return ret;
+
+	cmb_data = kzalloc(sizeof(*cmb_data), GFP_KERNEL);
+	if (!cmb_data)
+		goto out_free;
+
+	cmb_data->last_block = kzalloc(sizeof(struct cmbe), GFP_KERNEL);
+	if (!cmb_data->last_block)
+		goto out_free;
+
+	cmb_data->size = sizeof(*cmbe);
+	cmb_data->hw_block = cmbe;
+
+	spin_lock(&cmb_area.lock);
+	spin_lock_irq(cdev->ccwlock);
+	if (cdev->private->cmb)
+		goto out_unlock;
+
+	cdev->private->cmb = cmb_data;
+
+	/* activate global measurement if this is the first channel */
+	if (list_empty(&cmb_area.list))
+		cmf_activate(NULL, CMF_ON);
+	list_add_tail(&cdev->private->cmb_list, &cmb_area.list);
+
+	spin_unlock_irq(cdev->ccwlock);
+	spin_unlock(&cmb_area.lock);
+	return 0;
+
+out_unlock:
+	spin_unlock_irq(cdev->ccwlock);
+	spin_unlock(&cmb_area.lock);
+	ret = -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	if (cmb_data)
 		kfree(cmb_data->last_block);
 	kfree(cmb_data);
+<<<<<<< HEAD
 	kfree(cmbe);
+=======
+	kmem_cache_free(cmbe_cache, cmbe);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -871,6 +1205,7 @@ static void free_cmbe(struct ccw_device *cdev)
 {
 	struct cmb_data *cmb_data;
 
+<<<<<<< HEAD
 	spin_lock_irq(cdev->ccwlock);
 	cmb_data = cdev->private->cmb;
 	cdev->private->cmb = NULL;
@@ -884,6 +1219,23 @@ static void free_cmbe(struct ccw_device *cdev)
 	list_del_init(&cdev->private->cmb_list);
 	if (list_empty(&cmb_area.list))
 		cmf_activate(NULL, 0);
+=======
+	spin_lock(&cmb_area.lock);
+	spin_lock_irq(cdev->ccwlock);
+	cmb_data = cdev->private->cmb;
+	cdev->private->cmb = NULL;
+	if (cmb_data) {
+		kfree(cmb_data->last_block);
+		kmem_cache_free(cmbe_cache, cmb_data->hw_block);
+	}
+	kfree(cmb_data);
+
+	/* deactivate global measurement if this is the last channel */
+	list_del_init(&cdev->private->cmb_list);
+	if (list_empty(&cmb_area.list))
+		cmf_activate(NULL, CMF_OFF);
+	spin_unlock_irq(cdev->ccwlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&cmb_area.lock);
 }
 
@@ -899,12 +1251,17 @@ static int set_cmbe(struct ccw_device *cdev, u32 mme)
 		return -EINVAL;
 	}
 	cmb_data = cdev->private->cmb;
+<<<<<<< HEAD
 	mba = mme ? (unsigned long) cmbe_align(cmb_data->hw_block) : 0;
+=======
+	mba = mme ? (unsigned long) cmb_data->hw_block : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(cdev->ccwlock, flags);
 
 	return set_schib_wait(cdev, mme, 1, mba);
 }
 
+<<<<<<< HEAD
 
 static u64 read_cmbe(struct ccw_device *cdev, int index)
 {
@@ -927,6 +1284,29 @@ static u64 read_cmbe(struct ccw_device *cdev, int index)
 	cmb = cmb_data->last_block;
 
 	switch (index) {
+=======
+static u64 read_cmbe(struct ccw_device *cdev, int index)
+{
+	struct cmb_data *cmb_data;
+	unsigned long flags;
+	struct cmbe *cmb;
+	u64 ret = 0;
+	u32 val;
+
+	spin_lock_irqsave(cdev->ccwlock, flags);
+	cmb_data = cdev->private->cmb;
+	if (!cmb_data)
+		goto out;
+
+	cmb = cmb_data->hw_block;
+	switch (index) {
+	case avg_utilization:
+		ret = __cmb_utilization(cmb->device_connect_time,
+					cmb->function_pending_time,
+					cmb->device_disconnect_time,
+					cdev->private->cmb_start_time);
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case cmb_ssch_rsch_count:
 		ret = cmb->ssch_rsch_count;
 		goto out;
@@ -955,7 +1335,10 @@ static u64 read_cmbe(struct ccw_device *cdev, int index)
 		val = cmb->initial_command_response_time;
 		break;
 	default:
+<<<<<<< HEAD
 		ret = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	ret = time_to_avg_nsec(val, cmb->sample_count);
@@ -992,8 +1375,12 @@ static int readall_cmbe(struct ccw_device *cdev, struct cmbdata *data)
 	/* we only know values before device_busy_time */
 	data->size = offsetof(struct cmbdata, device_busy_time);
 
+<<<<<<< HEAD
 	/* conver to nanoseconds */
 	data->elapsed_time = (time * 1000) >> 12;
+=======
+	data->elapsed_time = tod_to_ns(time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmb = cmb_data->last_block;
 	/* copy data to new structure */
@@ -1024,11 +1411,14 @@ static void reset_cmbe(struct ccw_device *cdev)
 	cmf_generic_reset(cdev);
 }
 
+<<<<<<< HEAD
 static void * align_cmbe(void *area)
 {
 	return cmbe_align(area);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute_group cmf_attr_group_ext;
 
 static struct cmb_operations cmbops_extended = {
@@ -1038,7 +1428,10 @@ static struct cmb_operations cmbops_extended = {
 	.read	    = read_cmbe,
 	.readall    = readall_cmbe,
 	.reset	    = reset_cmbe,
+<<<<<<< HEAD
 	.align	    = align_cmbe,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr_group = &cmf_attr_group_ext,
 };
 
@@ -1052,6 +1445,7 @@ static ssize_t cmb_show_avg_sample_interval(struct device *dev,
 					    struct device_attribute *attr,
 					    char *buf)
 {
+<<<<<<< HEAD
 	struct ccw_device *cdev;
 	long interval;
 	unsigned long count;
@@ -1065,6 +1459,17 @@ static ssize_t cmb_show_avg_sample_interval(struct device *dev,
 		interval = cmb_data->last_update -
 			cdev->private->cmb_start_time;
 		interval = (interval * 1000) >> 12;
+=======
+	struct ccw_device *cdev = to_ccwdev(dev);
+	unsigned long count;
+	long interval;
+
+	count = cmf_read(cdev, cmb_sample_count);
+	spin_lock_irq(cdev->ccwlock);
+	if (count) {
+		interval = get_tod_clock() - cdev->private->cmb_start_time;
+		interval = tod_to_ns(interval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		interval /= count;
 	} else
 		interval = -1;
@@ -1076,6 +1481,7 @@ static ssize_t cmb_show_avg_utilization(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
 {
+<<<<<<< HEAD
 	struct cmbdata data;
 	u64 utilization;
 	unsigned long t, u;
@@ -1103,6 +1509,11 @@ static ssize_t cmb_show_avg_utilization(struct device *dev,
 	u = (unsigned long) utilization / t;
 
 	return sprintf(buf, "%02ld.%01ld%%\n", u/ 10, u - (u/ 10) * 10);
+=======
+	unsigned long u = cmf_read(to_ccwdev(dev), avg_utilization);
+
+	return sprintf(buf, "%02lu.%01lu%%\n", u / 10, u % 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define cmf_attr(name) \
@@ -1173,13 +1584,20 @@ static ssize_t cmb_enable_show(struct device *dev,
 			       struct device_attribute *attr,
 			       char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", to_ccwdev(dev)->private->cmb ? 1 : 0);
+=======
+	struct ccw_device *cdev = to_ccwdev(dev);
+
+	return sprintf(buf, "%d\n", cmf_enabled(cdev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t cmb_enable_store(struct device *dev,
 				struct device_attribute *attr, const char *buf,
 				size_t c)
 {
+<<<<<<< HEAD
 	struct ccw_device *cdev;
 	int ret;
 	unsigned long val;
@@ -1190,6 +1608,16 @@ static ssize_t cmb_enable_store(struct device *dev,
 
 	cdev = to_ccwdev(dev);
 
+=======
+	struct ccw_device *cdev = to_ccwdev(dev);
+	unsigned long val;
+	int ret;
+
+	ret = kstrtoul(buf, 16, &val);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (val) {
 	case 0:
 		ret = disable_cmf(cdev);
@@ -1197,6 +1625,7 @@ static ssize_t cmb_enable_store(struct device *dev,
 	case 1:
 		ret = enable_cmf(cdev);
 		break;
+<<<<<<< HEAD
 	}
 
 	return c;
@@ -1208,18 +1637,35 @@ int ccw_set_cmf(struct ccw_device *cdev, int enable)
 {
 	return cmbops->set(cdev, enable ? 2 : 0);
 }
+=======
+	default:
+		ret = -EINVAL;
+	}
+
+	return ret ? ret : c;
+}
+DEVICE_ATTR_RW(cmb_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * enable_cmf() - switch on the channel measurement for a specific device
  *  @cdev:	The ccw device to be enabled
  *
+<<<<<<< HEAD
  *  Returns %0 for success or a negative error value.
  *
+=======
+ *  Enable channel measurements for @cdev. If this is called on a device
+ *  for which channel measurement is already enabled a reset of the
+ *  measurement data is triggered.
+ *  Returns: %0 for success or a negative error value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Context:
  *    non-atomic
  */
 int enable_cmf(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = cmbops->alloc(cdev);
@@ -1236,6 +1682,59 @@ int enable_cmf(struct ccw_device *cdev)
 		return 0;
 	cmbops->set(cdev, 0);  //FIXME: this can fail
 	cmbops->free(cdev);
+=======
+	int ret = 0;
+
+	device_lock(&cdev->dev);
+	if (cmf_enabled(cdev)) {
+		cmbops->reset(cdev);
+		goto out_unlock;
+	}
+	get_device(&cdev->dev);
+	ret = cmbops->alloc(cdev);
+	if (ret)
+		goto out;
+	cmbops->reset(cdev);
+	ret = sysfs_create_group(&cdev->dev.kobj, cmbops->attr_group);
+	if (ret) {
+		cmbops->free(cdev);
+		goto out;
+	}
+	ret = cmbops->set(cdev, 2);
+	if (ret) {
+		sysfs_remove_group(&cdev->dev.kobj, cmbops->attr_group);
+		cmbops->free(cdev);
+	}
+out:
+	if (ret)
+		put_device(&cdev->dev);
+out_unlock:
+	device_unlock(&cdev->dev);
+	return ret;
+}
+
+/**
+ * __disable_cmf() - switch off the channel measurement for a specific device
+ *  @cdev:	The ccw device to be disabled
+ *
+ *  Returns: %0 for success or a negative error value.
+ *
+ *  Context:
+ *    non-atomic, device_lock() held.
+ */
+int __disable_cmf(struct ccw_device *cdev)
+{
+	int ret;
+
+	ret = cmbops->set(cdev, 0);
+	if (ret)
+		return ret;
+
+	sysfs_remove_group(&cdev->dev.kobj, cmbops->attr_group);
+	cmbops->free(cdev);
+	put_device(&cdev->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1243,7 +1742,11 @@ int enable_cmf(struct ccw_device *cdev)
  * disable_cmf() - switch off the channel measurement for a specific device
  *  @cdev:	The ccw device to be disabled
  *
+<<<<<<< HEAD
  *  Returns %0 for success or a negative error value.
+=======
+ *  Returns: %0 for success or a negative error value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Context:
  *    non-atomic
@@ -1252,11 +1755,18 @@ int disable_cmf(struct ccw_device *cdev)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = cmbops->set(cdev, 0);
 	if (ret)
 		return ret;
 	cmbops->free(cdev);
 	sysfs_remove_group(&cdev->dev.kobj, cmbops->attr_group);
+=======
+	device_lock(&cdev->dev);
+	ret = __disable_cmf(cdev);
+	device_unlock(&cdev->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1265,7 +1775,11 @@ int disable_cmf(struct ccw_device *cdev)
  * @cdev:	the channel to be read
  * @index:	the index of the value to be read
  *
+<<<<<<< HEAD
  * Returns the value read or %0 if the value cannot be read.
+=======
+ * Returns: The value read or %0 if the value cannot be read.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Context:
  *    any
@@ -1280,7 +1794,11 @@ u64 cmf_read(struct ccw_device *cdev, int index)
  * @cdev:	the channel to be read
  * @data:	a pointer to a data block that will be filled
  *
+<<<<<<< HEAD
  * Returns %0 on success, a negative error value otherwise.
+=======
+ * Returns: %0 on success, a negative error value otherwise.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Context:
  *    any
@@ -1297,10 +1815,39 @@ int cmf_reenable(struct ccw_device *cdev)
 	return cmbops->set(cdev, 2);
 }
 
+<<<<<<< HEAD
 static int __init init_cmf(void)
 {
 	char *format_string;
 	char *detect_string = "parameter";
+=======
+/**
+ * cmf_reactivate() - reactivate measurement block updates
+ *
+ * Use this during resume from hibernate.
+ */
+void cmf_reactivate(void)
+{
+	spin_lock(&cmb_area.lock);
+	if (!list_empty(&cmb_area.list))
+		cmf_activate(cmb_area.mem, CMF_ON);
+	spin_unlock(&cmb_area.lock);
+}
+
+static int __init init_cmbe(void)
+{
+	cmbe_cache = kmem_cache_create("cmbe_cache", sizeof(struct cmbe),
+				       __alignof__(struct cmbe), 0, NULL);
+
+	return cmbe_cache ? 0 : -ENOMEM;
+}
+
+static int __init init_cmf(void)
+{
+	char *format_string;
+	char *detect_string;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the user did not give a parameter, see if we are running on a
@@ -1326,14 +1873,25 @@ static int __init init_cmf(void)
 	case CMF_EXTENDED:
 		format_string = "extended";
 		cmbops = &cmbops_extended;
+<<<<<<< HEAD
 		break;
 	default:
 		return 1;
+=======
+
+		ret = init_cmbe();
+		if (ret)
+			return ret;
+		break;
+	default:
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pr_info("Channel measurement facility initialized using format "
 		"%s (mode %s)\n", format_string, detect_string);
 	return 0;
 }
+<<<<<<< HEAD
 
 module_init(init_cmf);
 
@@ -1342,6 +1900,9 @@ MODULE_AUTHOR("Arnd Bergmann <arndb@de.ibm.com>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("channel measurement facility base driver\n"
 		   "Copyright 2003 IBM Corporation\n");
+=======
+device_initcall(init_cmf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL_GPL(enable_cmf);
 EXPORT_SYMBOL_GPL(disable_cmf);

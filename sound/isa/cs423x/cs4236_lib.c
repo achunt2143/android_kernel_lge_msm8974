@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of CS4235/4236B/4237B/4238B/4239 chips
@@ -7,6 +11,7 @@
  *
  *  Bugs:
  *     -----
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -53,7 +60,11 @@
  *     D7: consumer serial port enable (CS4237B,CS4238B)
  *     D6: channels status block reset (CS4237B,CS4238B)
  *     D5: user bit in sub-frame of digital audio data (CS4237B,CS4238B)
+<<<<<<< HEAD
  *     D4: validity bit bit in sub-frame of digital audio data (CS4237B,CS4238B)
+=======
+ *     D4: validity bit in sub-frame of digital audio data (CS4237B,CS4238B)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 
  *  C5  lower channel status (digital serial data description) (CS4237B,CS4238B)
  *     D7-D6: first two bits of category code
@@ -79,7 +90,11 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -94,7 +109,11 @@
  *
  */
 
+<<<<<<< HEAD
 static unsigned char snd_cs4236_ext_map[18] = {
+=======
+static const unsigned char snd_cs4236_ext_map[18] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* CS4236_LEFT_LINE */		0xff,
 	/* CS4236_RIGHT_LINE */		0xff,
 	/* CS4236_LEFT_MIC */		0xdf,
@@ -138,7 +157,11 @@ static unsigned char snd_cs4236_ctrl_in(struct snd_wss *chip, unsigned char reg)
 
 #define CLOCKS 8
 
+<<<<<<< HEAD
 static struct snd_ratnum clocks[CLOCKS] = {
+=======
+static const struct snd_ratnum clocks[CLOCKS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .num = 16934400, .den_min = 353, .den_max = 353, .den_step = 1 },
 	{ .num = 16934400, .den_min = 529, .den_max = 529, .den_step = 1 },
 	{ .num = 16934400, .den_min = 617, .den_max = 617, .den_step = 1 },
@@ -149,7 +172,11 @@ static struct snd_ratnum clocks[CLOCKS] = {
 	{ .num = 16934400/16, .den_min = 21, .den_max = 192, .den_step = 1 }
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks = {
+=======
+static const struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = CLOCKS,
 	.rats = clocks,
 };
@@ -312,7 +339,10 @@ int snd_cs4236_create(struct snd_card *card,
 	if (cport < 0x100 || cport == SNDRV_AUTO_PORT) {
 		snd_printk(KERN_ERR "please, specify control port "
 			   "for CS4236+ chips\n");
+<<<<<<< HEAD
 		snd_device_free(card, chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	ver1 = snd_cs4236_ctrl_in(chip, 1);
@@ -322,7 +352,10 @@ int snd_cs4236_create(struct snd_card *card,
 	if (ver1 != ver2) {
 		snd_printk(KERN_ERR "CS4236+ chip detected, but "
 			   "control port 0x%lx is not valid\n", cport);
+<<<<<<< HEAD
 		snd_device_free(card, chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	snd_cs4236_ctrl_out(chip, 0, 0x00);
@@ -376,6 +409,7 @@ int snd_cs4236_create(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 int snd_cs4236_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm)
 {
 	struct snd_pcm *pcm;
@@ -387,6 +421,16 @@ int snd_cs4236_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm)
 	pcm->info_flags &= ~SNDRV_PCM_INFO_JOINT_DUPLEX;
 	if (rpcm)
 		*rpcm = pcm;
+=======
+int snd_cs4236_pcm(struct snd_wss *chip, int device)
+{
+	int err;
+	
+	err = snd_wss_pcm(chip, device);
+	if (err < 0)
+		return err;
+	chip->pcm->info_flags &= ~SNDRV_PCM_INFO_JOINT_DUPLEX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -775,7 +819,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_4bit, -4500, 300, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_2bit, -1800, 600, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_rec_gain, 0, 150, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4236_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4236_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 CS4236_DOUBLE("Master Digital Playback Switch", 0,
 		CS4236_LEFT_MASTER, CS4236_RIGHT_MASTER, 7, 7, 1, 1),
@@ -870,7 +918,11 @@ CS4236_DOUBLE1_TLV("Loopback Digital Playback Volume", 0,
 static const DECLARE_TLV_DB_SCALE(db_scale_5bit_6db_max, -5600, 200, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_2bit_16db_max, -2400, 800, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4235_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4235_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 WSS_DOUBLE("Master Playback Switch", 0,
 		CS4235_LEFT_MASTER, CS4235_RIGHT_MASTER, 7, 7, 1, 1),
@@ -1003,7 +1055,11 @@ static int snd_cs4236_put_iec958_switch(struct snd_kcontrol *kcontrol, struct sn
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4236_iec958_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4236_iec958_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CS4236_IEC958_ENABLE("IEC958 Output Enable", 0),
 CS4236_SINGLEC("IEC958 Output Validity", 0, 4, 4, 1, 0),
 CS4236_SINGLEC("IEC958 Output User", 0, 4, 5, 1, 0),
@@ -1012,12 +1068,20 @@ CS4236_SINGLEC("IEC958 Output Channel Status Low", 0, 5, 1, 127, 0),
 CS4236_SINGLEC("IEC958 Output Channel Status High", 0, 6, 0, 255, 0)
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4236_3d_controls_cs4235[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4236_3d_controls_cs4235[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CS4236_SINGLEC("3D Control - Switch", 0, 3, 4, 1, 0),
 CS4236_SINGLEC("3D Control - Space", 0, 2, 4, 15, 1)
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4236_3d_controls_cs4237[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4236_3d_controls_cs4237[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CS4236_SINGLEC("3D Control - Switch", 0, 3, 7, 1, 0),
 CS4236_SINGLEC("3D Control - Space", 0, 2, 4, 15, 1),
 CS4236_SINGLEC("3D Control - Center", 0, 2, 0, 15, 1),
@@ -1025,7 +1089,11 @@ CS4236_SINGLEC("3D Control - Mono", 0, 3, 6, 1, 0),
 CS4236_SINGLEC("3D Control - IEC958", 0, 3, 5, 1, 0)
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs4236_3d_controls_cs4238[] = {
+=======
+static const struct snd_kcontrol_new snd_cs4236_3d_controls_cs4238[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CS4236_SINGLEC("3D Control - Switch", 0, 3, 4, 1, 0),
 CS4236_SINGLEC("3D Control - Space", 0, 2, 4, 15, 1),
 CS4236_SINGLEC("3D Control - Volume", 0, 2, 0, 15, 1),
@@ -1037,7 +1105,11 @@ int snd_cs4236_mixer(struct snd_wss *chip)
 	struct snd_card *card;
 	unsigned int idx, count;
 	int err;
+<<<<<<< HEAD
 	struct snd_kcontrol_new *kcontrol;
+=======
+	const struct snd_kcontrol_new *kcontrol;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(!chip || !chip->card))
 		return -EINVAL;
@@ -1047,12 +1119,22 @@ int snd_cs4236_mixer(struct snd_wss *chip)
 	if (chip->hardware == WSS_HW_CS4235 ||
 	    chip->hardware == WSS_HW_CS4239) {
 		for (idx = 0; idx < ARRAY_SIZE(snd_cs4235_controls); idx++) {
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4235_controls[idx], chip))) < 0)
+=======
+			err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4235_controls[idx], chip));
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	} else {
 		for (idx = 0; idx < ARRAY_SIZE(snd_cs4236_controls); idx++) {
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4236_controls[idx], chip))) < 0)
+=======
+			err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4236_controls[idx], chip));
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
@@ -1075,13 +1157,23 @@ int snd_cs4236_mixer(struct snd_wss *chip)
 		kcontrol = NULL;
 	}
 	for (idx = 0; idx < count; idx++, kcontrol++) {
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(kcontrol, chip))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(kcontrol, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	if (chip->hardware == WSS_HW_CS4237B ||
 	    chip->hardware == WSS_HW_CS4238B) {
 		for (idx = 0; idx < ARRAY_SIZE(snd_cs4236_iec958_controls); idx++) {
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4236_iec958_controls[idx], chip))) < 0)
+=======
+			err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4236_iec958_controls[idx], chip));
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}

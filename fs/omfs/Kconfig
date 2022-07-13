@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 config OMFS_FS
 	tristate "SonicBlue Optimized MPEG File System support"
 	depends on BLOCK
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config OMFS_FS
+	tristate "SonicBlue Optimized MPEG File System support"
+	depends on BLOCK
+	select BUFFER_HEAD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRC_ITU_T
 	help
 	  This is the proprietary file system used by the Rio Karma music

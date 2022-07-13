@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_pdc202xx_old.c 	- Promise PDC202xx PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -15,7 +19,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -38,8 +45,11 @@ static int pdc2026x_cable_detect(struct ata_port *ap)
 static void pdc202xx_exec_command(struct ata_port *ap,
 				  const struct ata_taskfile *tf)
 {
+<<<<<<< HEAD
 	DPRINTK("ata%u: cmd 0x%X\n", ap->print_id, tf->command);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite8(tf->command, ap->ioaddr.command_addr);
 	ndelay(400);
 }
@@ -80,7 +90,11 @@ static void pdc202xx_configure_piomode(struct ata_port *ap, struct ata_device *a
 {
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	int port = 0x60 + 8 * ap->port_no + 4 * adev->devno;
+<<<<<<< HEAD
 	static u16 pio_timing[5] = {
+=======
+	static const u16 pio_timing[5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0x0913, 0x050C , 0x0308, 0x0206, 0x0104
 	};
 	u8 r_ap, r_bp;
@@ -115,7 +129,11 @@ static void pdc202xx_set_piomode(struct ata_port *ap, struct ata_device *adev)
 }
 
 /**
+<<<<<<< HEAD
  *	pdc202xx_configure_dmamode	-	set DMA mode in chip
+=======
+ *	pdc202xx_set_dmamode	-	set DMA mode in chip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@ap: ATA interface
  *	@adev: ATA device
  *
@@ -214,7 +232,11 @@ static void pdc2026x_bmdma_start(struct ata_queued_cmd *qc)
 }
 
 /**
+<<<<<<< HEAD
  *	pdc2026x_bmdma_end		-	DMA engine stop
+=======
+ *	pdc2026x_bmdma_stop		-	DMA engine stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: ATA command
  *
  *	After a DMA completes we need to put the clock back to 33MHz for
@@ -291,7 +313,11 @@ static int pdc2026x_check_atapi_dma(struct ata_queued_cmd *qc)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template pdc202xx_sht = {
+=======
+static const struct scsi_host_template pdc202xx_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -378,12 +404,17 @@ static struct pci_driver pdc202xx_pci_driver = {
 	.id_table	= pdc202xx,
 	.probe 		= pdc202xx_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init pdc202xx_init(void)
 {
 	return pci_register_driver(&pdc202xx_pci_driver);
@@ -393,12 +424,18 @@ static void __exit pdc202xx_exit(void)
 {
 	pci_unregister_driver(&pdc202xx_pci_driver);
 }
+=======
+module_pci_driver(pdc202xx_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Promise 2024x and 20262-20267");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, pdc202xx);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(pdc202xx_init);
 module_exit(pdc202xx_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

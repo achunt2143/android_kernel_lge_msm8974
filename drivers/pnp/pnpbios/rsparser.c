@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rsparser.c - parses and encodes pnpbios resource data streams
  */
@@ -453,8 +457,13 @@ static unsigned char *pnpbios_parse_compatible_ids(unsigned char *p,
 		switch (tag) {
 
 		case LARGE_TAG_ANSISTR:
+<<<<<<< HEAD
 			strncpy(dev->name, p + 3,
 				len >= PNP_NAME_LEN ? PNP_NAME_LEN - 2 : len);
+=======
+			memcpy(dev->name, p + 3,
+			       len >= PNP_NAME_LEN ? PNP_NAME_LEN - 2 : len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->name[len >=
 				  PNP_NAME_LEN ? PNP_NAME_LEN - 1 : len] = '\0';
 			break;

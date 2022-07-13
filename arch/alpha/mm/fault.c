@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/mm/fault.c
  *
  *  Copyright (C) 1995  Linus Torvalds
  */
 
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <asm/io.h>
@@ -22,9 +30,15 @@
 #include <linux/mman.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/extable.h>
+#include <linux/uaccess.h>
+#include <linux/perf_event.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
 
@@ -78,7 +92,11 @@ __load_new_mm_context(struct mm_struct *next_mm)
 /* Macro for exception fixup code to access integer registers.  */
 #define dpf_reg(r)							\
 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+<<<<<<< HEAD
 				 (r) <= 18 ? (r)+8 : (r)-10])
+=======
+				 (r) <= 18 ? (r)+10 : (r)-10])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 asmlinkage void
 do_page_fault(unsigned long address, unsigned long mmcsr,
@@ -87,8 +105,14 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 	struct vm_area_struct * vma;
 	struct mm_struct *mm = current->mm;
 	const struct exception_table_entry *fixup;
+<<<<<<< HEAD
 	int fault, si_code = SEGV_MAPERR;
 	siginfo_t info;
+=======
+	int si_code = SEGV_MAPERR;
+	vm_fault_t fault;
+	unsigned int flags = FAULT_FLAG_DEFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* As of EV6, a load into $31/$f31 is a prefetch, and never faults
 	   (or is suppressed by the PALcode).  Support that for older CPUs
@@ -106,13 +130,18 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 
 	/* If we're in an interrupt context, or have no user context,
 	   we must not take the fault.  */
+<<<<<<< HEAD
 	if (!mm || in_atomic())
+=======
+	if (!mm || faulthandler_disabled())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_context;
 
 #ifdef CONFIG_ALPHA_LARGE_VMALLOC
 	if (address >= TASK_SIZE)
 		goto vmalloc_fault;
 #endif
+<<<<<<< HEAD
 
 	down_read(&mm->mmap_sem);
 	vma = find_vma(mm, address);
@@ -128,6 +157,18 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 	/* Ok, we have a good vm_area for this memory access, so
 	   we can handle it.  */
  good_area:
+=======
+	if (user_mode(regs))
+		flags |= FAULT_FLAG_USER;
+	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+retry:
+	vma = lock_mm_and_find_vma(mm, address, regs);
+	if (!vma)
+		goto bad_area_nosemaphore;
+
+	/* Ok, we have a good vm_area for this memory access, so
+	   we can handle it.  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	si_code = SEGV_ACCERR;
 	if (cause < 0) {
 		if (!(vma->vm_flags & VM_EXEC))
@@ -139,13 +180,32 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 	} else {
 		if (!(vma->vm_flags & VM_WRITE))
 			goto bad_area;
+<<<<<<< HEAD
+=======
+		flags |= FAULT_FLAG_WRITE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If for any reason at all we couldn't handle the fault,
 	   make sure we exit gracefully rather than endlessly redo
 	   the fault.  */
+<<<<<<< HEAD
 	fault = handle_mm_fault(mm, vma, address, cause > 0 ? FAULT_FLAG_WRITE : 0);
 	up_read(&mm->mmap_sem);
+=======
+	fault = handle_mm_fault(vma, address, flags, regs);
+
+	if (fault_signal_pending(fault, regs)) {
+		if (!user_mode(regs))
+			goto no_context;
+		return;
+	}
+
+	/* The fault is fully completed (including releasing mmap lock) */
+	if (fault & VM_FAULT_COMPLETED)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
 			goto out_of_memory;
@@ -155,17 +215,40 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 			goto do_sigbus;
 		BUG();
 	}
+<<<<<<< HEAD
 	if (fault & VM_FAULT_MAJOR)
 		current->maj_flt++;
 	else
 		current->min_flt++;
+=======
+
+	if (fault & VM_FAULT_RETRY) {
+		flags |= FAULT_FLAG_TRIED;
+
+		/* No need to mmap_read_unlock(mm) as we would
+		 * have already released it in __lock_page_or_retry
+		 * in mm/filemap.c.
+		 */
+
+		goto retry;
+	}
+
+	mmap_read_unlock(mm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 	/* Something tried to access memory that isn't in our memory map.
 	   Fix it, but check if it's kernel or user first.  */
  bad_area:
+<<<<<<< HEAD
 	up_read(&mm->mmap_sem);
 
+=======
+	mmap_read_unlock(mm);
+
+ bad_area_nosemaphore:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (user_mode(regs))
 		goto do_sigsegv;
 
@@ -183,17 +266,26 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 	printk(KERN_ALERT "Unable to handle kernel paging request at "
 	       "virtual address %016lx\n", address);
 	die_if_kernel("Oops", regs, cause, (unsigned long*)regs - 16);
+<<<<<<< HEAD
 	do_exit(SIGKILL);
+=======
+	make_task_dead(SIGKILL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We ran out of memory, or some other thing happened to us that
 	   made us unable to handle the page fault gracefully.  */
  out_of_memory:
+<<<<<<< HEAD
+=======
+	mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!user_mode(regs))
 		goto no_context;
 	pagefault_out_of_memory();
 	return;
 
  do_sigbus:
+<<<<<<< HEAD
 	/* Send a sigbus, regardless of whether we were in kernel
 	   or user mode.  */
 	info.si_signo = SIGBUS;
@@ -201,16 +293,26 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
 	info.si_code = BUS_ADRERR;
 	info.si_addr = (void __user *) address;
 	force_sig_info(SIGBUS, &info, current);
+=======
+	mmap_read_unlock(mm);
+	/* Send a sigbus, regardless of whether we were in kernel
+	   or user mode.  */
+	force_sig_fault(SIGBUS, BUS_ADRERR, (void __user *) address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!user_mode(regs))
 		goto no_context;
 	return;
 
  do_sigsegv:
+<<<<<<< HEAD
 	info.si_signo = SIGSEGV;
 	info.si_errno = 0;
 	info.si_code = si_code;
 	info.si_addr = (void __user *) address;
 	force_sig_info(SIGSEGV, &info, current);
+=======
+	force_sig_fault(SIGSEGV, si_code, (void __user *) address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 #ifdef CONFIG_ALPHA_LARGE_VMALLOC

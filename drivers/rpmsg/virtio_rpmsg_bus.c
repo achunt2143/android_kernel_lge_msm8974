@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Virtio-based remote processor messaging bus
  *
@@ -6,6 +10,7 @@
  *
  * Ohad Ben-Cohen <ohad@wizery.com>
  * Brian Swetland <swetland@google.com>
+<<<<<<< HEAD
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -15,10 +20,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/virtio.h>
@@ -33,6 +41,26 @@
 #include <linux/wait.h>
 #include <linux/rpmsg.h>
 #include <linux/mutex.h>
+=======
+#include <linux/dma-mapping.h>
+#include <linux/idr.h>
+#include <linux/jiffies.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/mutex.h>
+#include <linux/rpmsg.h>
+#include <linux/rpmsg/byteorder.h>
+#include <linux/rpmsg/ns.h>
+#include <linux/scatterlist.h>
+#include <linux/slab.h>
+#include <linux/sched.h>
+#include <linux/virtio.h>
+#include <linux/virtio_ids.h>
+#include <linux/virtio_config.h>
+#include <linux/wait.h>
+
+#include "rpmsg_internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct virtproc_info - virtual remote processor state
@@ -41,6 +69,11 @@
  * @svq:	tx virtqueue
  * @rbufs:	kernel address of rx buffers
  * @sbufs:	kernel address of tx buffers
+<<<<<<< HEAD
+=======
+ * @num_bufs:	total number of buffers for rx and tx
+ * @buf_size:   size of one rx or tx buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @last_sbuf:	index of last tx buffer used
  * @bufs_dma:	dma base addr of the buffers
  * @tx_lock:	protects svq, sbufs and sleepers, to allow concurrent senders.
@@ -50,7 +83,10 @@
  * @endpoints_lock: lock of the endpoints set
  * @sendq:	wait queue of sending contexts waiting for a tx buffers
  * @sleepers:	number of senders that are waiting for a tx buffer
+<<<<<<< HEAD
  * @ns_ept:	the bus's name service endpoint
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure stores the rpmsg state of a given virtio remote processor
  * device (there might be several virtio proc devices for each physical
@@ -60,6 +96,11 @@ struct virtproc_info {
 	struct virtio_device *vdev;
 	struct virtqueue *rvq, *svq;
 	void *rbufs, *sbufs;
+<<<<<<< HEAD
+=======
+	unsigned int num_bufs;
+	unsigned int buf_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int last_sbuf;
 	dma_addr_t bufs_dma;
 	struct mutex tx_lock;
@@ -67,6 +108,7 @@ struct virtproc_info {
 	struct mutex endpoints_lock;
 	wait_queue_head_t sendq;
 	atomic_t sleepers;
+<<<<<<< HEAD
 	struct rpmsg_endpoint *ns_ept;
 };
 
@@ -88,11 +130,64 @@ struct rpmsg_channel_info {
 /*
  * We're allocating 512 buffers of 512 bytes for communications, and then
  * using the first 256 buffers for RX, and the last 256 buffers for TX.
+=======
+};
+
+/* The feature bitmap for virtio rpmsg */
+#define VIRTIO_RPMSG_F_NS	0 /* RP supports name service notifications */
+
+/**
+ * struct rpmsg_hdr - common header for all rpmsg messages
+ * @src: source address
+ * @dst: destination address
+ * @reserved: reserved for future use
+ * @len: length of payload (in bytes)
+ * @flags: message flags
+ * @data: @len bytes of message payload data
+ *
+ * Every message sent(/received) on the rpmsg bus begins with this header.
+ */
+struct rpmsg_hdr {
+	__rpmsg32 src;
+	__rpmsg32 dst;
+	__rpmsg32 reserved;
+	__rpmsg16 len;
+	__rpmsg16 flags;
+	u8 data[];
+} __packed;
+
+
+/**
+ * struct virtio_rpmsg_channel - rpmsg channel descriptor
+ * @rpdev: the rpmsg channel device
+ * @vrp: the virtio remote processor device this channel belongs to
+ *
+ * This structure stores the channel that links the rpmsg device to the virtio
+ * remote processor device.
+ */
+struct virtio_rpmsg_channel {
+	struct rpmsg_device rpdev;
+
+	struct virtproc_info *vrp;
+};
+
+#define to_virtio_rpmsg_channel(_rpdev) \
+	container_of(_rpdev, struct virtio_rpmsg_channel, rpdev)
+
+/*
+ * We're allocating buffers of 512 bytes each for communications. The
+ * number of buffers will be computed from the number of buffers supported
+ * by the vring, upto a maximum of 512 buffers (256 in each direction).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Each buffer will have 16 bytes for the msg header and 496 bytes for
  * the payload.
  *
+<<<<<<< HEAD
  * This will require a total space of 256KB for the buffers.
+=======
+ * This will utilize a maximum total space of 256KB for the buffers.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We might also want to add support for user-provided buffers in time.
  * This will allow bigger buffer size flexibility, and can also be used
@@ -102,9 +197,14 @@ struct rpmsg_channel_info {
  * can change this without changing anything in the firmware of the remote
  * processor.
  */
+<<<<<<< HEAD
 #define RPMSG_NUM_BUFS		(512)
 #define RPMSG_BUF_SIZE		(512)
 #define RPMSG_TOTAL_BUF_SPACE	(RPMSG_NUM_BUFS * RPMSG_BUF_SIZE)
+=======
+#define MAX_RPMSG_NUM_BUFS	(512)
+#define MAX_RPMSG_BUF_SIZE	(512)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Local addresses are dynamically allocated on-demand.
@@ -113,6 +213,7 @@ struct rpmsg_channel_info {
  */
 #define RPMSG_RESERVED_ADDRESSES	(1024)
 
+<<<<<<< HEAD
 /* Address 53 is reserved for advertising remote services */
 #define RPMSG_NS_ADDR			(53)
 
@@ -186,6 +287,54 @@ static int rpmsg_uevent(struct device *dev, struct kobj_uevent_env *env)
 
 	return add_uevent_var(env, "MODALIAS=" RPMSG_DEVICE_MODALIAS_FMT,
 					rpdev->id.name);
+=======
+static void virtio_rpmsg_destroy_ept(struct rpmsg_endpoint *ept);
+static int virtio_rpmsg_send(struct rpmsg_endpoint *ept, void *data, int len);
+static int virtio_rpmsg_sendto(struct rpmsg_endpoint *ept, void *data, int len,
+			       u32 dst);
+static int virtio_rpmsg_send_offchannel(struct rpmsg_endpoint *ept, u32 src,
+					u32 dst, void *data, int len);
+static int virtio_rpmsg_trysend(struct rpmsg_endpoint *ept, void *data, int len);
+static int virtio_rpmsg_trysendto(struct rpmsg_endpoint *ept, void *data,
+				  int len, u32 dst);
+static int virtio_rpmsg_trysend_offchannel(struct rpmsg_endpoint *ept, u32 src,
+					   u32 dst, void *data, int len);
+static ssize_t virtio_rpmsg_get_mtu(struct rpmsg_endpoint *ept);
+static struct rpmsg_device *__rpmsg_create_channel(struct virtproc_info *vrp,
+						   struct rpmsg_channel_info *chinfo);
+
+static const struct rpmsg_endpoint_ops virtio_endpoint_ops = {
+	.destroy_ept = virtio_rpmsg_destroy_ept,
+	.send = virtio_rpmsg_send,
+	.sendto = virtio_rpmsg_sendto,
+	.send_offchannel = virtio_rpmsg_send_offchannel,
+	.trysend = virtio_rpmsg_trysend,
+	.trysendto = virtio_rpmsg_trysendto,
+	.trysend_offchannel = virtio_rpmsg_trysend_offchannel,
+	.get_mtu = virtio_rpmsg_get_mtu,
+};
+
+/**
+ * rpmsg_sg_init - initialize scatterlist according to cpu address location
+ * @sg: scatterlist to fill
+ * @cpu_addr: virtual address of the buffer
+ * @len: buffer length
+ *
+ * An internal function filling scatterlist according to virtual address
+ * location (in vmalloc or in kernel).
+ */
+static void
+rpmsg_sg_init(struct scatterlist *sg, void *cpu_addr, unsigned int len)
+{
+	if (is_vmalloc_addr(cpu_addr)) {
+		sg_init_table(sg, 1);
+		sg_set_page(sg, vmalloc_to_page(cpu_addr), len,
+			    offset_in_page(cpu_addr));
+	} else {
+		WARN_ON(!virt_addr_valid(cpu_addr));
+		sg_init_one(sg, cpu_addr, len);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -210,6 +359,7 @@ static void __ept_release(struct kref *kref)
 
 /* for more info, see below documentation of rpmsg_create_ept() */
 static struct rpmsg_endpoint *__rpmsg_create_ept(struct virtproc_info *vrp,
+<<<<<<< HEAD
 		struct rpmsg_channel *rpdev, rpmsg_rx_cb_t cb,
 		void *priv, u32 addr)
 {
@@ -225,6 +375,19 @@ static struct rpmsg_endpoint *__rpmsg_create_ept(struct virtproc_info *vrp,
 		dev_err(dev, "failed to kzalloc a new ept\n");
 		return NULL;
 	}
+=======
+						 struct rpmsg_device *rpdev,
+						 rpmsg_rx_cb_t cb,
+						 void *priv, u32 addr)
+{
+	int id_min, id_max, id;
+	struct rpmsg_endpoint *ept;
+	struct device *dev = rpdev ? &rpdev->dev : &vrp->vdev->dev;
+
+	ept = kzalloc(sizeof(*ept), GFP_KERNEL);
+	if (!ept)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kref_init(&ept->refcount);
 	mutex_init(&ept->cb_lock);
@@ -232,13 +395,27 @@ static struct rpmsg_endpoint *__rpmsg_create_ept(struct virtproc_info *vrp,
 	ept->rpdev = rpdev;
 	ept->cb = cb;
 	ept->priv = priv;
+<<<<<<< HEAD
 
 	/* do we need to allocate a local address ? */
 	request = addr == RPMSG_ADDR_ANY ? RPMSG_RESERVED_ADDRESSES : addr;
+=======
+	ept->ops = &virtio_endpoint_ops;
+
+	/* do we need to allocate a local address ? */
+	if (addr == RPMSG_ADDR_ANY) {
+		id_min = RPMSG_RESERVED_ADDRESSES;
+		id_max = 0;
+	} else {
+		id_min = addr;
+		id_max = addr + 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&vrp->endpoints_lock);
 
 	/* bind the endpoint to an rpmsg address (and allocate one if needed) */
+<<<<<<< HEAD
 	err = idr_get_new_above(&vrp->endpoints, ept, request, &tmpaddr);
 	if (err) {
 		dev_err(dev, "idr_get_new_above failed: %d\n", err);
@@ -252,19 +429,31 @@ static struct rpmsg_endpoint *__rpmsg_create_ept(struct virtproc_info *vrp,
 	}
 
 	ept->addr = tmpaddr;
+=======
+	id = idr_alloc(&vrp->endpoints, ept, id_min, id_max, GFP_KERNEL);
+	if (id < 0) {
+		dev_err(dev, "idr_alloc failed: %d\n", id);
+		goto free_ept;
+	}
+	ept->addr = id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&vrp->endpoints_lock);
 
 	return ept;
 
+<<<<<<< HEAD
 rem_idr:
 	idr_remove(&vrp->endpoints, request);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_ept:
 	mutex_unlock(&vrp->endpoints_lock);
 	kref_put(&ept->refcount, __ept_release);
 	return NULL;
 }
 
+<<<<<<< HEAD
 /**
  * rpmsg_create_ept() - create a new rpmsg_endpoint
  * @rpdev: rpmsg channel device
@@ -311,6 +500,35 @@ struct rpmsg_endpoint *rpmsg_create_ept(struct rpmsg_channel *rpdev,
 	return __rpmsg_create_ept(rpdev->vrp, rpdev, cb, priv, addr);
 }
 EXPORT_SYMBOL(rpmsg_create_ept);
+=======
+static struct rpmsg_device *virtio_rpmsg_create_channel(struct rpmsg_device *rpdev,
+							struct rpmsg_channel_info *chinfo)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+	struct virtproc_info *vrp = vch->vrp;
+
+	return __rpmsg_create_channel(vrp, chinfo);
+}
+
+static int virtio_rpmsg_release_channel(struct rpmsg_device *rpdev,
+					struct rpmsg_channel_info *chinfo)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+	struct virtproc_info *vrp = vch->vrp;
+
+	return rpmsg_unregister_device(&vrp->vdev->dev, chinfo);
+}
+
+static struct rpmsg_endpoint *virtio_rpmsg_create_ept(struct rpmsg_device *rpdev,
+						      rpmsg_rx_cb_t cb,
+						      void *priv,
+						      struct rpmsg_channel_info chinfo)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+
+	return __rpmsg_create_ept(vch->vrp, rpdev, cb, priv, chinfo.src);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __rpmsg_destroy_ept() - destroy an existing rpmsg endpoint
@@ -338,6 +556,7 @@ __rpmsg_destroy_ept(struct virtproc_info *vrp, struct rpmsg_endpoint *ept)
 	kref_put(&ept->refcount, __ept_release);
 }
 
+<<<<<<< HEAD
 /**
  * rpmsg_destroy_ept() - destroy an existing rpmsg endpoint
  * @ept: endpoing to destroy
@@ -394,10 +613,37 @@ static int rpmsg_dev_probe(struct device *dev)
 		nsm.flags = RPMSG_NS_CREATE;
 
 		err = rpmsg_sendto(rpdev, &nsm, sizeof(nsm), RPMSG_NS_ADDR);
+=======
+static void virtio_rpmsg_destroy_ept(struct rpmsg_endpoint *ept)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(ept->rpdev);
+
+	__rpmsg_destroy_ept(vch->vrp, ept);
+}
+
+static int virtio_rpmsg_announce_create(struct rpmsg_device *rpdev)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+	struct virtproc_info *vrp = vch->vrp;
+	struct device *dev = &rpdev->dev;
+	int err = 0;
+
+	/* need to tell remote processor's name service about this channel ? */
+	if (rpdev->announce && rpdev->ept &&
+	    virtio_has_feature(vrp->vdev, VIRTIO_RPMSG_F_NS)) {
+		struct rpmsg_ns_msg nsm;
+
+		strscpy_pad(nsm.name, rpdev->id.name, sizeof(nsm.name));
+		nsm.addr = cpu_to_rpmsg32(rpdev, rpdev->ept->addr);
+		nsm.flags = cpu_to_rpmsg32(rpdev, RPMSG_NS_CREATE);
+
+		err = rpmsg_sendto(rpdev->ept, &nsm, sizeof(nsm), RPMSG_NS_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			dev_err(dev, "failed to announce service %d\n", err);
 	}
 
+<<<<<<< HEAD
 out:
 	return err;
 }
@@ -419,10 +665,33 @@ static int rpmsg_dev_remove(struct device *dev)
 		nsm.flags = RPMSG_NS_DESTROY;
 
 		err = rpmsg_sendto(rpdev, &nsm, sizeof(nsm), RPMSG_NS_ADDR);
+=======
+	return err;
+}
+
+static int virtio_rpmsg_announce_destroy(struct rpmsg_device *rpdev)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+	struct virtproc_info *vrp = vch->vrp;
+	struct device *dev = &rpdev->dev;
+	int err = 0;
+
+	/* tell remote processor's name service we're removing this channel */
+	if (rpdev->announce && rpdev->ept &&
+	    virtio_has_feature(vrp->vdev, VIRTIO_RPMSG_F_NS)) {
+		struct rpmsg_ns_msg nsm;
+
+		strscpy_pad(nsm.name, rpdev->id.name, sizeof(nsm.name));
+		nsm.addr = cpu_to_rpmsg32(rpdev, rpdev->ept->addr);
+		nsm.flags = cpu_to_rpmsg32(rpdev, RPMSG_NS_DESTROY);
+
+		err = rpmsg_sendto(rpdev->ept, &nsm, sizeof(nsm), RPMSG_NS_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			dev_err(dev, "failed to announce service %d\n", err);
 	}
 
+<<<<<<< HEAD
 	rpdrv->remove(rpdev);
 
 	rpmsg_destroy_ept(rpdev->ept);
@@ -492,6 +761,26 @@ static int rpmsg_channel_match(struct device *dev, void *data)
 
 	/* found a match ! */
 	return 1;
+=======
+	return err;
+}
+
+static const struct rpmsg_device_ops virtio_rpmsg_ops = {
+	.create_channel = virtio_rpmsg_create_channel,
+	.release_channel = virtio_rpmsg_release_channel,
+	.create_ept = virtio_rpmsg_create_ept,
+	.announce_create = virtio_rpmsg_announce_create,
+	.announce_destroy = virtio_rpmsg_announce_destroy,
+};
+
+static void virtio_rpmsg_release_device(struct device *dev)
+{
+	struct rpmsg_device *rpdev = to_rpmsg_device(dev);
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+
+	kfree(rpdev->driver_override);
+	kfree(vch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -499,15 +788,27 @@ static int rpmsg_channel_match(struct device *dev, void *data)
  * this function will be used to create both static and dynamic
  * channels.
  */
+<<<<<<< HEAD
 static struct rpmsg_channel *rpmsg_create_channel(struct virtproc_info *vrp,
 				struct rpmsg_channel_info *chinfo)
 {
 	struct rpmsg_channel *rpdev;
+=======
+static struct rpmsg_device *__rpmsg_create_channel(struct virtproc_info *vrp,
+						   struct rpmsg_channel_info *chinfo)
+{
+	struct virtio_rpmsg_channel *vch;
+	struct rpmsg_device *rpdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *tmp, *dev = &vrp->vdev->dev;
 	int ret;
 
 	/* make sure a similar channel doesn't already exist */
+<<<<<<< HEAD
 	tmp = device_find_child(dev, chinfo, rpmsg_channel_match);
+=======
+	tmp = rpmsg_find_device(dev, chinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp) {
 		/* decrement the matched device's refcount back */
 		put_device(tmp);
@@ -516,6 +817,7 @@ static struct rpmsg_channel *rpmsg_create_channel(struct virtproc_info *vrp,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	rpdev = kzalloc(sizeof(struct rpmsg_channel), GFP_KERNEL);
 	if (!rpdev) {
 		pr_err("kzalloc failed\n");
@@ -525,11 +827,27 @@ static struct rpmsg_channel *rpmsg_create_channel(struct virtproc_info *vrp,
 	rpdev->vrp = vrp;
 	rpdev->src = chinfo->src;
 	rpdev->dst = chinfo->dst;
+=======
+	vch = kzalloc(sizeof(*vch), GFP_KERNEL);
+	if (!vch)
+		return NULL;
+
+	/* Link the channel to our vrp */
+	vch->vrp = vrp;
+
+	/* Assign public information to the rpmsg_device */
+	rpdev = &vch->rpdev;
+	rpdev->src = chinfo->src;
+	rpdev->dst = chinfo->dst;
+	rpdev->ops = &virtio_rpmsg_ops;
+	rpdev->little_endian = virtio_is_little_endian(vrp->vdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * rpmsg server channels has predefined local address (for now),
 	 * and their existence needs to be announced remotely
 	 */
+<<<<<<< HEAD
 	rpdev->announce = rpdev->src != RPMSG_ADDR_ANY ? true : false;
 
 	strncpy(rpdev->id.name, chinfo->name, RPMSG_NAME_SIZE);
@@ -547,10 +865,22 @@ static struct rpmsg_channel *rpmsg_create_channel(struct virtproc_info *vrp,
 		put_device(&rpdev->dev);
 		return NULL;
 	}
+=======
+	rpdev->announce = rpdev->src != RPMSG_ADDR_ANY;
+
+	strscpy(rpdev->id.name, chinfo->name, sizeof(rpdev->id.name));
+
+	rpdev->dev.parent = &vrp->vdev->dev;
+	rpdev->dev.release = virtio_rpmsg_release_device;
+	ret = rpmsg_register_device(rpdev);
+	if (ret)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rpdev;
 }
 
+<<<<<<< HEAD
 /*
  * find an existing channel using its name + address properties,
  * and destroy it
@@ -572,6 +902,8 @@ static int rpmsg_destroy_channel(struct virtproc_info *vrp,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* super simple buffer "allocator" that is just enough for now */
 static void *get_a_tx_buf(struct virtproc_info *vrp)
 {
@@ -585,8 +917,13 @@ static void *get_a_tx_buf(struct virtproc_info *vrp)
 	 * either pick the next unused tx buffer
 	 * (half of our buffers are used for sending messages)
 	 */
+<<<<<<< HEAD
 	if (vrp->last_sbuf < RPMSG_NUM_BUFS / 2)
 		ret = vrp->sbufs + RPMSG_BUF_SIZE * vrp->last_sbuf++;
+=======
+	if (vrp->last_sbuf < vrp->num_bufs / 2)
+		ret = vrp->sbufs + vrp->buf_size * vrp->last_sbuf++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* or recycle a used one */
 	else
 		ret = virtqueue_get_buf(vrp->svq, &len);
@@ -684,12 +1021,23 @@ static void rpmsg_downref_sleepers(struct virtproc_info *vrp)
  * should use the appropriate rpmsg_{try}send{to, _offchannel} API
  * (see include/linux/rpmsg.h).
  *
+<<<<<<< HEAD
  * Returns 0 on success and an appropriate error value on failure.
  */
 int rpmsg_send_offchannel_raw(struct rpmsg_channel *rpdev, u32 src, u32 dst,
 					void *data, int len, bool wait)
 {
 	struct virtproc_info *vrp = rpdev->vrp;
+=======
+ * Return: 0 on success and an appropriate error value on failure.
+ */
+static int rpmsg_send_offchannel_raw(struct rpmsg_device *rpdev,
+				     u32 src, u32 dst,
+				     void *data, int len, bool wait)
+{
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+	struct virtproc_info *vrp = vch->vrp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev = &rpdev->dev;
 	struct scatterlist sg;
 	struct rpmsg_hdr *msg;
@@ -710,7 +1058,11 @@ int rpmsg_send_offchannel_raw(struct rpmsg_channel *rpdev, u32 src, u32 dst,
 	 * messaging), or to improve the buffer allocator, to support
 	 * variable-length buffer sizes.
 	 */
+<<<<<<< HEAD
 	if (len > RPMSG_BUF_SIZE - sizeof(struct rpmsg_hdr)) {
+=======
+	if (len > vrp->buf_size - sizeof(struct rpmsg_hdr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "message is too big (%d)\n", len);
 		return -EMSGSIZE;
 	}
@@ -745,43 +1097,73 @@ int rpmsg_send_offchannel_raw(struct rpmsg_channel *rpdev, u32 src, u32 dst,
 		}
 	}
 
+<<<<<<< HEAD
 	msg->len = len;
 	msg->flags = 0;
 	msg->src = src;
 	msg->dst = dst;
+=======
+	msg->len = cpu_to_rpmsg16(rpdev, len);
+	msg->flags = 0;
+	msg->src = cpu_to_rpmsg32(rpdev, src);
+	msg->dst = cpu_to_rpmsg32(rpdev, dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg->reserved = 0;
 	memcpy(msg->data, data, len);
 
 	dev_dbg(dev, "TX From 0x%x, To 0x%x, Len %d, Flags %d, Reserved %d\n",
+<<<<<<< HEAD
 					msg->src, msg->dst, msg->len,
 					msg->flags, msg->reserved);
 	print_hex_dump(KERN_DEBUG, "rpmsg_virtio TX: ", DUMP_PREFIX_NONE, 16, 1,
 					msg, sizeof(*msg) + msg->len, true);
 
 	sg_init_one(&sg, msg, sizeof(*msg) + len);
+=======
+		src, dst, len, msg->flags, msg->reserved);
+#if defined(CONFIG_DYNAMIC_DEBUG)
+	dynamic_hex_dump("rpmsg_virtio TX: ", DUMP_PREFIX_NONE, 16, 1,
+			 msg, sizeof(*msg) + len, true);
+#endif
+
+	rpmsg_sg_init(&sg, msg, sizeof(*msg) + len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&vrp->tx_lock);
 
 	/* add message to the remote processor's virtqueue */
+<<<<<<< HEAD
 	err = virtqueue_add_buf(vrp->svq, &sg, 1, 0, msg, GFP_KERNEL);
 	if (err < 0) {
+=======
+	err = virtqueue_add_outbuf(vrp->svq, &sg, 1, msg, GFP_KERNEL);
+	if (err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * need to reclaim the buffer here, otherwise it's lost
 		 * (memory won't leak, but rpmsg won't use it again for TX).
 		 * this will wait for a buffer management overhaul.
 		 */
+<<<<<<< HEAD
 		dev_err(dev, "virtqueue_add_buf failed: %d\n", err);
+=======
+		dev_err(dev, "virtqueue_add_outbuf failed: %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* tell the remote processor it has a pending message to read */
 	virtqueue_kick(vrp->svq);
+<<<<<<< HEAD
 
 	err = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mutex_unlock(&vrp->tx_lock);
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(rpmsg_send_offchannel_raw);
 
 /* called when an rx buffer is used, and it's time to digest a message */
@@ -806,21 +1188,111 @@ static void rpmsg_recv_done(struct virtqueue *rvq)
 					msg->flags, msg->reserved);
 	print_hex_dump(KERN_DEBUG, "rpmsg_virtio RX: ", DUMP_PREFIX_NONE, 16, 1,
 					msg, sizeof(*msg) + msg->len, true);
+=======
+
+static int virtio_rpmsg_send(struct rpmsg_endpoint *ept, void *data, int len)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+	u32 src = ept->addr, dst = rpdev->dst;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, true);
+}
+
+static int virtio_rpmsg_sendto(struct rpmsg_endpoint *ept, void *data, int len,
+			       u32 dst)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+	u32 src = ept->addr;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, true);
+}
+
+static int virtio_rpmsg_send_offchannel(struct rpmsg_endpoint *ept, u32 src,
+					u32 dst, void *data, int len)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, true);
+}
+
+static int virtio_rpmsg_trysend(struct rpmsg_endpoint *ept, void *data, int len)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+	u32 src = ept->addr, dst = rpdev->dst;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, false);
+}
+
+static int virtio_rpmsg_trysendto(struct rpmsg_endpoint *ept, void *data,
+				  int len, u32 dst)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+	u32 src = ept->addr;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, false);
+}
+
+static int virtio_rpmsg_trysend_offchannel(struct rpmsg_endpoint *ept, u32 src,
+					   u32 dst, void *data, int len)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+
+	return rpmsg_send_offchannel_raw(rpdev, src, dst, data, len, false);
+}
+
+static ssize_t virtio_rpmsg_get_mtu(struct rpmsg_endpoint *ept)
+{
+	struct rpmsg_device *rpdev = ept->rpdev;
+	struct virtio_rpmsg_channel *vch = to_virtio_rpmsg_channel(rpdev);
+
+	return vch->vrp->buf_size - sizeof(struct rpmsg_hdr);
+}
+
+static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
+			     struct rpmsg_hdr *msg, unsigned int len)
+{
+	struct rpmsg_endpoint *ept;
+	struct scatterlist sg;
+	bool little_endian = virtio_is_little_endian(vrp->vdev);
+	unsigned int msg_len = __rpmsg16_to_cpu(little_endian, msg->len);
+	int err;
+
+	dev_dbg(dev, "From: 0x%x, To: 0x%x, Len: %d, Flags: %d, Reserved: %d\n",
+		__rpmsg32_to_cpu(little_endian, msg->src),
+		__rpmsg32_to_cpu(little_endian, msg->dst), msg_len,
+		__rpmsg16_to_cpu(little_endian, msg->flags),
+		__rpmsg32_to_cpu(little_endian, msg->reserved));
+#if defined(CONFIG_DYNAMIC_DEBUG)
+	dynamic_hex_dump("rpmsg_virtio RX: ", DUMP_PREFIX_NONE, 16, 1,
+			 msg, sizeof(*msg) + msg_len, true);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We currently use fixed-sized buffers, so trivially sanitize
 	 * the reported payload length.
 	 */
+<<<<<<< HEAD
 	if (len > RPMSG_BUF_SIZE ||
 		msg->len > (len - sizeof(struct rpmsg_hdr))) {
 		dev_warn(dev, "inbound msg too big: (%d, %d)\n", len, msg->len);
 		return;
+=======
+	if (len > vrp->buf_size ||
+	    msg_len > (len - sizeof(struct rpmsg_hdr))) {
+		dev_warn(dev, "inbound msg too big: (%d, %d)\n", len, msg_len);
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* use the dst addr to fetch the callback of the appropriate user */
 	mutex_lock(&vrp->endpoints_lock);
 
+<<<<<<< HEAD
 	ept = idr_find(&vrp->endpoints, msg->dst);
+=======
+	ept = idr_find(&vrp->endpoints, __rpmsg32_to_cpu(little_endian, msg->dst));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* let's make sure no one deallocates ept while we use it */
 	if (ept)
@@ -833,14 +1305,20 @@ static void rpmsg_recv_done(struct virtqueue *rvq)
 		mutex_lock(&ept->cb_lock);
 
 		if (ept->cb)
+<<<<<<< HEAD
 			ept->cb(ept->rpdev, msg->data, msg->len, ept->priv,
 				msg->src);
+=======
+			ept->cb(ept->rpdev, msg->data, msg_len, ept->priv,
+				__rpmsg32_to_cpu(little_endian, msg->src));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_unlock(&ept->cb_lock);
 
 		/* farewell, ept, we don't need you anymore */
 		kref_put(&ept->refcount, __ept_release);
 	} else
+<<<<<<< HEAD
 		dev_warn(dev, "msg received with no recepient\n");
 
 	/* publish the real size of the buffer */
@@ -855,6 +1333,53 @@ static void rpmsg_recv_done(struct virtqueue *rvq)
 
 	/* tell the remote processor we added another available rx buffer */
 	virtqueue_kick(vrp->rvq);
+=======
+		dev_warn_ratelimited(dev, "msg received with no recipient\n");
+
+	/* publish the real size of the buffer */
+	rpmsg_sg_init(&sg, msg, vrp->buf_size);
+
+	/* add the buffer back to the remote processor's virtqueue */
+	err = virtqueue_add_inbuf(vrp->rvq, &sg, 1, msg, GFP_KERNEL);
+	if (err < 0) {
+		dev_err(dev, "failed to add a virtqueue buffer: %d\n", err);
+		return err;
+	}
+
+	return 0;
+}
+
+/* called when an rx buffer is used, and it's time to digest a message */
+static void rpmsg_recv_done(struct virtqueue *rvq)
+{
+	struct virtproc_info *vrp = rvq->vdev->priv;
+	struct device *dev = &rvq->vdev->dev;
+	struct rpmsg_hdr *msg;
+	unsigned int len, msgs_received = 0;
+	int err;
+
+	msg = virtqueue_get_buf(rvq, &len);
+	if (!msg) {
+		dev_err(dev, "uhm, incoming signal, but no used buffer ?\n");
+		return;
+	}
+
+	while (msg) {
+		err = rpmsg_recv_single(vrp, dev, msg, len);
+		if (err)
+			break;
+
+		msgs_received++;
+
+		msg = virtqueue_get_buf(rvq, &len);
+	}
+
+	dev_dbg(dev, "Received %u messages\n", msgs_received);
+
+	/* tell the remote processor we added another available rx buffer */
+	if (msgs_received)
+		virtqueue_kick(vrp->rvq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -874,6 +1399,7 @@ static void rpmsg_xmit_done(struct virtqueue *svq)
 	wake_up_interruptible(&vrp->sendq);
 }
 
+<<<<<<< HEAD
 /* invoked when a name service announcement arrives */
 static void rpmsg_ns_cb(struct rpmsg_channel *rpdev, void *data, int len,
 							void *priv, u32 src)
@@ -925,16 +1451,71 @@ static void rpmsg_ns_cb(struct rpmsg_channel *rpdev, void *data, int len,
 		if (!newch)
 			dev_err(dev, "rpmsg_create_channel failed\n");
 	}
+=======
+/*
+ * Called to expose to user a /dev/rpmsg_ctrlX interface allowing to
+ * create endpoint-to-endpoint communication without associated RPMsg channel.
+ * The endpoints are rattached to the ctrldev RPMsg device.
+ */
+static struct rpmsg_device *rpmsg_virtio_add_ctrl_dev(struct virtio_device *vdev)
+{
+	struct virtproc_info *vrp = vdev->priv;
+	struct virtio_rpmsg_channel *vch;
+	struct rpmsg_device *rpdev_ctrl;
+	int err = 0;
+
+	vch = kzalloc(sizeof(*vch), GFP_KERNEL);
+	if (!vch)
+		return ERR_PTR(-ENOMEM);
+
+	/* Link the channel to the vrp */
+	vch->vrp = vrp;
+
+	/* Assign public information to the rpmsg_device */
+	rpdev_ctrl = &vch->rpdev;
+	rpdev_ctrl->ops = &virtio_rpmsg_ops;
+
+	rpdev_ctrl->dev.parent = &vrp->vdev->dev;
+	rpdev_ctrl->dev.release = virtio_rpmsg_release_device;
+	rpdev_ctrl->little_endian = virtio_is_little_endian(vrp->vdev);
+
+	err = rpmsg_ctrldev_register_device(rpdev_ctrl);
+	if (err) {
+		/* vch will be free in virtio_rpmsg_release_device() */
+		return ERR_PTR(err);
+	}
+
+	return rpdev_ctrl;
+}
+
+static void rpmsg_virtio_del_ctrl_dev(struct rpmsg_device *rpdev_ctrl)
+{
+	if (!rpdev_ctrl)
+		return;
+	device_unregister(&rpdev_ctrl->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rpmsg_probe(struct virtio_device *vdev)
 {
 	vq_callback_t *vq_cbs[] = { rpmsg_recv_done, rpmsg_xmit_done };
+<<<<<<< HEAD
 	const char *names[] = { "input", "output" };
 	struct virtqueue *vqs[2];
 	struct virtproc_info *vrp;
 	void *bufs_va;
 	int err = 0, i;
+=======
+	static const char * const names[] = { "input", "output" };
+	struct virtqueue *vqs[2];
+	struct virtproc_info *vrp;
+	struct virtio_rpmsg_channel *vch = NULL;
+	struct rpmsg_device *rpdev_ns, *rpdev_ctrl;
+	void *bufs_va;
+	int err = 0, i;
+	size_t total_buf_space;
+	bool notify;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vrp = kzalloc(sizeof(*vrp), GFP_KERNEL);
 	if (!vrp)
@@ -948,13 +1529,18 @@ static int rpmsg_probe(struct virtio_device *vdev)
 	init_waitqueue_head(&vrp->sendq);
 
 	/* We expect two virtqueues, rx and tx (and in this order) */
+<<<<<<< HEAD
 	err = vdev->config->find_vqs(vdev, 2, vqs, vq_cbs, names);
+=======
+	err = virtio_find_vqs(vdev, 2, vqs, vq_cbs, names, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto free_vrp;
 
 	vrp->rvq = vqs[0];
 	vrp->svq = vqs[1];
 
+<<<<<<< HEAD
 	/* allocate coherent memory for the buffers */
 	bufs_va = dma_alloc_coherent(vdev->dev.parent, RPMSG_TOTAL_BUF_SPACE,
 				&vrp->bufs_dma, GFP_KERNEL);
@@ -963,11 +1549,39 @@ static int rpmsg_probe(struct virtio_device *vdev)
 
 	dev_dbg(&vdev->dev, "buffers: va %p, dma 0x%llx\n", bufs_va,
 					(unsigned long long)vrp->bufs_dma);
+=======
+	/* we expect symmetric tx/rx vrings */
+	WARN_ON(virtqueue_get_vring_size(vrp->rvq) !=
+		virtqueue_get_vring_size(vrp->svq));
+
+	/* we need less buffers if vrings are small */
+	if (virtqueue_get_vring_size(vrp->rvq) < MAX_RPMSG_NUM_BUFS / 2)
+		vrp->num_bufs = virtqueue_get_vring_size(vrp->rvq) * 2;
+	else
+		vrp->num_bufs = MAX_RPMSG_NUM_BUFS;
+
+	vrp->buf_size = MAX_RPMSG_BUF_SIZE;
+
+	total_buf_space = vrp->num_bufs * vrp->buf_size;
+
+	/* allocate coherent memory for the buffers */
+	bufs_va = dma_alloc_coherent(vdev->dev.parent,
+				     total_buf_space, &vrp->bufs_dma,
+				     GFP_KERNEL);
+	if (!bufs_va) {
+		err = -ENOMEM;
+		goto vqs_del;
+	}
+
+	dev_dbg(&vdev->dev, "buffers: va %pK, dma %pad\n",
+		bufs_va, &vrp->bufs_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* half of the buffers is dedicated for RX */
 	vrp->rbufs = bufs_va;
 
 	/* and half is dedicated for TX */
+<<<<<<< HEAD
 	vrp->sbufs = bufs_va + RPMSG_TOTAL_BUF_SPACE / 2;
 
 	/* set up the receive buffers */
@@ -980,6 +1594,20 @@ static int rpmsg_probe(struct virtio_device *vdev)
 		err = virtqueue_add_buf(vrp->rvq, &sg, 0, 1, cpu_addr,
 								GFP_KERNEL);
 		WARN_ON(err < 0); /* sanity check; this can't really happen */
+=======
+	vrp->sbufs = bufs_va + total_buf_space / 2;
+
+	/* set up the receive buffers */
+	for (i = 0; i < vrp->num_bufs / 2; i++) {
+		struct scatterlist sg;
+		void *cpu_addr = vrp->rbufs + i * vrp->buf_size;
+
+		rpmsg_sg_init(&sg, cpu_addr, vrp->buf_size);
+
+		err = virtqueue_add_inbuf(vrp->rvq, &sg, 1, cpu_addr,
+					  GFP_KERNEL);
+		WARN_ON(err); /* sanity check; this can't really happen */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* suppress "tx-complete" interrupts */
@@ -987,6 +1615,7 @@ static int rpmsg_probe(struct virtio_device *vdev)
 
 	vdev->priv = vrp;
 
+<<<<<<< HEAD
 	/* if supported by the remote processor, enable the name service */
 	if (virtio_has_feature(vdev, VIRTIO_RPMSG_F_NS)) {
 		/* a dedicated endpoint handles the name service msgs */
@@ -1001,14 +1630,71 @@ static int rpmsg_probe(struct virtio_device *vdev)
 
 	/* tell the remote processor it can start sending messages */
 	virtqueue_kick(vrp->rvq);
+=======
+	rpdev_ctrl = rpmsg_virtio_add_ctrl_dev(vdev);
+	if (IS_ERR(rpdev_ctrl)) {
+		err = PTR_ERR(rpdev_ctrl);
+		goto free_coherent;
+	}
+
+	/* if supported by the remote processor, enable the name service */
+	if (virtio_has_feature(vdev, VIRTIO_RPMSG_F_NS)) {
+		vch = kzalloc(sizeof(*vch), GFP_KERNEL);
+		if (!vch) {
+			err = -ENOMEM;
+			goto free_ctrldev;
+		}
+
+		/* Link the channel to our vrp */
+		vch->vrp = vrp;
+
+		/* Assign public information to the rpmsg_device */
+		rpdev_ns = &vch->rpdev;
+		rpdev_ns->ops = &virtio_rpmsg_ops;
+		rpdev_ns->little_endian = virtio_is_little_endian(vrp->vdev);
+
+		rpdev_ns->dev.parent = &vrp->vdev->dev;
+		rpdev_ns->dev.release = virtio_rpmsg_release_device;
+
+		err = rpmsg_ns_register_device(rpdev_ns);
+		if (err)
+			/* vch will be free in virtio_rpmsg_release_device() */
+			goto free_ctrldev;
+	}
+
+	/*
+	 * Prepare to kick but don't notify yet - we can't do this before
+	 * device is ready.
+	 */
+	notify = virtqueue_kick_prepare(vrp->rvq);
+
+	/* From this point on, we can notify and get callbacks. */
+	virtio_device_ready(vdev);
+
+	/* tell the remote processor it can start sending messages */
+	/*
+	 * this might be concurrent with callbacks, but we are only
+	 * doing notify, not a full kick here, so that's ok.
+	 */
+	if (notify)
+		virtqueue_notify(vrp->rvq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&vdev->dev, "rpmsg host is online\n");
 
 	return 0;
 
+<<<<<<< HEAD
 free_coherent:
 	dma_free_coherent(vdev->dev.parent, RPMSG_TOTAL_BUF_SPACE, bufs_va,
 					vrp->bufs_dma);
+=======
+free_ctrldev:
+	rpmsg_virtio_del_ctrl_dev(rpdev_ctrl);
+free_coherent:
+	dma_free_coherent(vdev->dev.parent, total_buf_space,
+			  bufs_va, vrp->bufs_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 vqs_del:
 	vdev->config->del_vqs(vrp->vdev);
 free_vrp:
@@ -1023,27 +1709,45 @@ static int rpmsg_remove_device(struct device *dev, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit rpmsg_remove(struct virtio_device *vdev)
 {
 	struct virtproc_info *vrp = vdev->priv;
 	int ret;
 
 	vdev->config->reset(vdev);
+=======
+static void rpmsg_remove(struct virtio_device *vdev)
+{
+	struct virtproc_info *vrp = vdev->priv;
+	size_t total_buf_space = vrp->num_bufs * vrp->buf_size;
+	int ret;
+
+	virtio_reset_device(vdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = device_for_each_child(&vdev->dev, NULL, rpmsg_remove_device);
 	if (ret)
 		dev_warn(&vdev->dev, "can't remove rpmsg device: %d\n", ret);
 
+<<<<<<< HEAD
 	if (vrp->ns_ept)
 		__rpmsg_destroy_ept(vrp, vrp->ns_ept);
 
 	idr_remove_all(&vrp->endpoints);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idr_destroy(&vrp->endpoints);
 
 	vdev->config->del_vqs(vrp->vdev);
 
+<<<<<<< HEAD
 	dma_free_coherent(vdev->dev.parent, RPMSG_TOTAL_BUF_SPACE,
 					vrp->rbufs, vrp->bufs_dma);
+=======
+	dma_free_coherent(vdev->dev.parent, total_buf_space,
+			  vrp->rbufs, vrp->bufs_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(vrp);
 }
@@ -1064,13 +1768,18 @@ static struct virtio_driver virtio_ipc_driver = {
 	.driver.owner	= THIS_MODULE,
 	.id_table	= id_table,
 	.probe		= rpmsg_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(rpmsg_remove),
+=======
+	.remove		= rpmsg_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init rpmsg_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = bus_register(&rpmsg_bus);
 	if (ret) {
 		pr_err("failed to register rpmsg bus: %d\n", ret);
@@ -1082,6 +1791,11 @@ static int __init rpmsg_init(void)
 		pr_err("failed to register virtio driver: %d\n", ret);
 		bus_unregister(&rpmsg_bus);
 	}
+=======
+	ret = register_virtio_driver(&virtio_ipc_driver);
+	if (ret)
+		pr_err("failed to register virtio driver: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1090,7 +1804,10 @@ subsys_initcall(rpmsg_init);
 static void __exit rpmsg_fini(void)
 {
 	unregister_virtio_driver(&virtio_ipc_driver);
+<<<<<<< HEAD
 	bus_unregister(&rpmsg_bus);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(rpmsg_fini);
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2005-2006 Fen Systems Ltd.
@@ -6,6 +7,13 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, incorporated herein by reference.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/****************************************************************************
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2005-2006 Fen Systems Ltd.
+ * Copyright 2006-2013 Solarflare Communications Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef EFX_IO_H
@@ -20,6 +28,7 @@
  *
  **************************************************************************
  *
+<<<<<<< HEAD
  * Notes on locking strategy:
  *
  * Most CSRs are 128-bit (oword) and therefore cannot be read or
@@ -47,20 +56,57 @@
  * - The semantics of writing to these registers are such that
  *   replacing the low 96 bits with zero does not affect functionality.
  * - If the host writes to the last dword address of such a register
+=======
+ * The EF10 architecture exposes very few registers to the host and
+ * most of them are only 32 bits wide.  The only exceptions are the MC
+ * doorbell register pair, which has its own latching, and
+ * TX_DESC_UPD.
+ *
+ * The TX_DESC_UPD DMA descriptor pointer is 128-bits but is a special
+ * case in the BIU to avoid the need for locking in the host:
+ *
+ * - It is write-only.
+ * - The semantics of writing to this register is such that
+ *   replacing the low 96 bits with zero does not affect functionality.
+ * - If the host writes to the last dword address of the register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   (i.e. the high 32 bits) the underlying register will always be
  *   written.  If the collector and the current write together do not
  *   provide values for all 128 bits of the register, the low 96 bits
  *   will be written as zero.
+<<<<<<< HEAD
  * - If the host writes to the address of any other part of such a
  *   register while the collector already holds values for some other
  *   register, the write is discarded and the collector maintains its
  *   current state.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if BITS_PER_LONG == 64
 #define EFX_USE_QWORD_IO 1
 #endif
 
+<<<<<<< HEAD
+=======
+/* Hardware issue requires that only 64-bit naturally aligned writes
+ * are seen by hardware. Its not strictly necessary to restrict to
+ * x86_64 arch, but done for safety since unusual write combining behaviour
+ * can break PIO.
+ */
+#ifdef CONFIG_X86_64
+/* PIO is a win only if write-combining is possible */
+#ifdef ioremap_wc
+#define EFX_USE_PIO 1
+#endif
+#endif
+
+static inline u32 efx_reg(struct efx_nic *efx, unsigned int reg)
+{
+	return efx->reg_base + reg;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef EFX_USE_QWORD_IO
 static inline void _efx_writeq(struct efx_nic *efx, __le64 value,
 				  unsigned int reg)
@@ -84,7 +130,11 @@ static inline __le32 _efx_readd(struct efx_nic *efx, unsigned int reg)
 }
 
 /* Write a normal 128-bit CSR, locking as appropriate. */
+<<<<<<< HEAD
 static inline void efx_writeo(struct efx_nic *efx, efx_oword_t *value,
+=======
+static inline void efx_writeo(struct efx_nic *efx, const efx_oword_t *value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      unsigned int reg)
 {
 	unsigned long flags __attribute__ ((unused));
@@ -103,6 +153,7 @@ static inline void efx_writeo(struct efx_nic *efx, efx_oword_t *value,
 	_efx_writed(efx, value->u32[2], reg + 8);
 	_efx_writed(efx, value->u32[3], reg + 12);
 #endif
+<<<<<<< HEAD
 	mmiowb();
 	spin_unlock_irqrestore(&efx->biu_lock, flags);
 }
@@ -126,11 +177,17 @@ static inline void efx_sram_writeq(struct efx_nic *efx, void __iomem *membase,
 	__raw_writel((__force u32)value->u32[1], membase + addr + 4);
 #endif
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&efx->biu_lock, flags);
 }
 
 /* Write a 32-bit CSR or the last dword of a special 128-bit CSR */
+<<<<<<< HEAD
 static inline void efx_writed(struct efx_nic *efx, efx_dword_t *value,
+=======
+static inline void efx_writed(struct efx_nic *efx, const efx_dword_t *value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      unsigned int reg)
 {
 	netif_vdbg(efx, hw, efx->net_dev,
@@ -159,6 +216,7 @@ static inline void efx_reado(struct efx_nic *efx, efx_oword_t *value,
 		   EFX_OWORD_VAL(*value));
 }
 
+<<<<<<< HEAD
 /* Read 64-bit SRAM through the supplied mapping, locking as appropriate. */
 static inline void efx_sram_readq(struct efx_nic *efx, void __iomem *membase,
 				  efx_qword_t *value, unsigned int index)
@@ -180,6 +238,8 @@ static inline void efx_sram_readq(struct efx_nic *efx, void __iomem *membase,
 		   addr, EFX_QWORD_VAL(*value));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Read a 32-bit CSR or SRAM */
 static inline void efx_readd(struct efx_nic *efx, efx_dword_t *value,
 				unsigned int reg)
@@ -191,8 +251,14 @@ static inline void efx_readd(struct efx_nic *efx, efx_dword_t *value,
 }
 
 /* Write a 128-bit CSR forming part of a table */
+<<<<<<< HEAD
 static inline void efx_writeo_table(struct efx_nic *efx, efx_oword_t *value,
 				      unsigned int reg, unsigned int index)
+=======
+static inline void
+efx_writeo_table(struct efx_nic *efx, const efx_oword_t *value,
+		 unsigned int reg, unsigned int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	efx_writeo(efx, value, reg + index * sizeof(efx_oword_t));
 }
@@ -204,6 +270,7 @@ static inline void efx_reado_table(struct efx_nic *efx, efx_oword_t *value,
 	efx_reado(efx, value, reg + index * sizeof(efx_oword_t));
 }
 
+<<<<<<< HEAD
 /* Write a 32-bit CSR forming part of a table, or 32-bit SRAM */
 static inline void efx_writed_table(struct efx_nic *efx, efx_dword_t *value,
 				       unsigned int reg, unsigned int index)
@@ -225,11 +292,30 @@ static inline void efx_readd_table(struct efx_nic *efx, efx_dword_t *value,
 #define EFX_PAGED_REG(page, reg) \
 	((page) * EFX_PAGE_BLOCK_SIZE + (reg))
 
+=======
+/* default VI stride (step between per-VI registers) is 8K on EF10 and
+ * 64K on EF100
+ */
+#define EFX_DEFAULT_VI_STRIDE		0x2000
+#define EF100_DEFAULT_VI_STRIDE		0x10000
+
+/* Calculate offset to page-mapped register */
+static inline unsigned int efx_paged_reg(struct efx_nic *efx, unsigned int page,
+					 unsigned int reg)
+{
+	return page * efx->vi_stride + reg;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Write the whole of RX_DESC_UPD or TX_DESC_UPD */
 static inline void _efx_writeo_page(struct efx_nic *efx, efx_oword_t *value,
 				    unsigned int reg, unsigned int page)
 {
+<<<<<<< HEAD
 	reg = EFX_PAGED_REG(page, reg);
+=======
+	reg = efx_paged_reg(efx, page, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_vdbg(efx, hw, efx->net_dev,
 		   "writing register %x with " EFX_OWORD_FMT "\n", reg,
@@ -251,6 +337,7 @@ static inline void _efx_writeo_page(struct efx_nic *efx, efx_oword_t *value,
 			 BUILD_BUG_ON_ZERO((reg) != 0x830 && (reg) != 0xa10), \
 			 page)
 
+<<<<<<< HEAD
 /* Write a page-mapped 32-bit CSR (EVQ_RPTR or the high bits of
  * RX_DESC_UPD or TX_DESC_UPD)
  */
@@ -258,12 +345,33 @@ static inline void _efx_writed_page(struct efx_nic *efx, efx_dword_t *value,
 				    unsigned int reg, unsigned int page)
 {
 	efx_writed(efx, value, EFX_PAGED_REG(page, reg));
+=======
+/* Write a page-mapped 32-bit CSR (EVQ_RPTR, EVQ_TMR (EF10), or the
+ * high bits of RX_DESC_UPD or TX_DESC_UPD)
+ */
+static inline void
+_efx_writed_page(struct efx_nic *efx, const efx_dword_t *value,
+		 unsigned int reg, unsigned int page)
+{
+	efx_writed(efx, value, efx_paged_reg(efx, page, reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #define efx_writed_page(efx, value, reg, page)				\
 	_efx_writed_page(efx, value,					\
 			 reg +						\
+<<<<<<< HEAD
 			 BUILD_BUG_ON_ZERO((reg) != 0x400 && (reg) != 0x83c \
 					   && (reg) != 0xa1c),		\
+=======
+			 BUILD_BUG_ON_ZERO((reg) != 0x180 &&		\
+					   (reg) != 0x200 &&		\
+					   (reg) != 0x400 &&		\
+					   (reg) != 0x420 &&		\
+					   (reg) != 0x830 &&		\
+					   (reg) != 0x83c &&		\
+					   (reg) != 0xa18 &&		\
+					   (reg) != 0xa1c),		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 page)
 
 /* Write TIMER_COMMAND.  This is a page-mapped 32-bit CSR, but a bug
@@ -271,7 +379,11 @@ static inline void _efx_writed_page(struct efx_nic *efx, efx_dword_t *value,
  * collector register.
  */
 static inline void _efx_writed_page_locked(struct efx_nic *efx,
+<<<<<<< HEAD
 					   efx_dword_t *value,
+=======
+					   const efx_dword_t *value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   unsigned int reg,
 					   unsigned int page)
 {
@@ -279,10 +391,17 @@ static inline void _efx_writed_page_locked(struct efx_nic *efx,
 
 	if (page == 0) {
 		spin_lock_irqsave(&efx->biu_lock, flags);
+<<<<<<< HEAD
 		efx_writed(efx, value, EFX_PAGED_REG(page, reg));
 		spin_unlock_irqrestore(&efx->biu_lock, flags);
 	} else {
 		efx_writed(efx, value, EFX_PAGED_REG(page, reg));
+=======
+		efx_writed(efx, value, efx_paged_reg(efx, page, reg));
+		spin_unlock_irqrestore(&efx->biu_lock, flags);
+	} else {
+		efx_writed(efx, value, efx_paged_reg(efx, page, reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #define efx_writed_page_locked(efx, value, reg, page)			\

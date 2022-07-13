@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_POWERPC_TLBFLUSH_H
 #define _ASM_POWERPC_TLBFLUSH_H
 
@@ -174,4 +175,16 @@ extern void __flush_hash_table_range(struct mm_struct *mm, unsigned long start,
 #endif
 
 #endif /*__KERNEL__ */
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_POWERPC_TLBFLUSH_H
+#define _ASM_POWERPC_TLBFLUSH_H
+
+#ifdef CONFIG_PPC_BOOK3S
+#include <asm/book3s/tlbflush.h>
+#else
+#include <asm/nohash/tlbflush.h>
+#endif /* !CONFIG_PPC_BOOK3S */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_POWERPC_TLBFLUSH_H */

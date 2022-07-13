@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfs/btree.h
  *
@@ -12,6 +16,16 @@ typedef int (*btree_keycmp)(const btree_key *, const btree_key *);
 
 #define NODE_HASH_SIZE  256
 
+<<<<<<< HEAD
+=======
+/* B-tree mutex nested subclasses */
+enum hfs_btree_mutex_classes {
+	CATALOG_BTREE_MUTEX,
+	EXTENTS_BTREE_MUTEX,
+	ATTR_BTREE_MUTEX,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A HFS BTree held in memory */
 struct hfs_btree {
 	struct super_block *sb;
@@ -59,7 +73,11 @@ struct hfs_bnode {
 	wait_queue_head_t lock_wq;
 	atomic_t refcnt;
 	unsigned int page_offset;
+<<<<<<< HEAD
 	struct page *page[0];
+=======
+	struct page *page[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HFS_BNODE_ERROR		0
@@ -81,6 +99,10 @@ struct hfs_find_data {
 extern struct hfs_btree *hfs_btree_open(struct super_block *, u32, btree_keycmp);
 extern void hfs_btree_close(struct hfs_btree *);
 extern void hfs_btree_write(struct hfs_btree *);
+<<<<<<< HEAD
+=======
+extern int hfs_bmap_reserve(struct hfs_btree *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct hfs_bnode * hfs_bmap_alloc(struct hfs_btree *);
 extern void hfs_bmap_free(struct hfs_bnode *node);
 
@@ -153,11 +175,14 @@ struct hfs_btree_header_rec {
 	u32 reserved3[16];
 } __packed;
 
+<<<<<<< HEAD
 #define HFS_NODE_INDEX	0x00	/* An internal (index) node */
 #define HFS_NODE_HEADER	0x01	/* The tree header node (node 0) */
 #define HFS_NODE_MAP		0x02	/* Holds part of the bitmap of used nodes */
 #define HFS_NODE_LEAF		0xFF	/* A leaf (ndNHeight==1) node */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BTREE_ATTR_BADCLOSE	0x00000001	/* b-tree not closed properly. not
 						   used by hfsplus. */
 #define HFS_TREE_BIGKEYS	0x00000002	/* key length is u16 instead of u8.

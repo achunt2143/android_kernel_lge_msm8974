@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SL811HS register declarations and HCD data structures
  *
@@ -122,7 +126,10 @@ struct sl811 {
 	void __iomem		*addr_reg;
 	void __iomem		*data_reg;
 	struct sl811_platform_data	*board;
+<<<<<<< HEAD
 	struct proc_dir_entry	*pde;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long		stat_insrmv;
 	unsigned long		stat_wake;
@@ -242,6 +249,7 @@ sl811_read_buf(struct sl811 *sl811, int addr, void *buf, size_t count)
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #ifdef DEBUG
 #define DBG(stuff...)		printk(KERN_DEBUG "sl811: " stuff)
 #else
@@ -264,3 +272,10 @@ sl811_read_buf(struct sl811 *sl811, int addr, void *buf, size_t count)
 #define WARNING(stuff...)	printk(KERN_WARNING "sl811: " stuff)
 #define INFO(stuff...)		printk(KERN_INFO "sl811: " stuff)
 
+=======
+#ifdef PACKET_TRACE
+#    define PACKET		pr_debug("sl811: "stuff)
+#else
+#    define PACKET(stuff...)	do{}while(0)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

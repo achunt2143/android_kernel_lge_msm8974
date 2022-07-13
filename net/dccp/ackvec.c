@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/ackvec.c
  *
  *  An implementation of Ack Vectors for the DCCP protocol
  *  Copyright (c) 2007 University of Aberdeen, Scotland, UK
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@ghostprotocols.net>
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or modify it
  *      under the terms of the GNU General Public License as published by the
  *      Free Software Foundation; version 2 of the License;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "dccp.h"
 #include <linux/kernel.h>
@@ -218,7 +225,11 @@ static void dccp_ackvec_add_new(struct dccp_ackvec *av, u32 num_packets,
 		 * different underlying data structure.
 		 */
 		for (num_packets = num_cells = 1; lost_packets; ++num_cells) {
+<<<<<<< HEAD
 			u8 len = min(lost_packets, (u32)DCCPAV_MAX_RUNLEN);
+=======
+			u8 len = min_t(u32, lost_packets, DCCPAV_MAX_RUNLEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			av->av_buf_head = __ackvec_idx_sub(av->av_buf_head, 1);
 			av->av_buf[av->av_buf_head] = DCCPAV_NOT_RECEIVED | len;
@@ -228,7 +239,11 @@ static void dccp_ackvec_add_new(struct dccp_ackvec *av, u32 num_packets,
 	}
 
 	if (num_cells + dccp_ackvec_buflen(av) >= DCCPAV_MAX_ACKVEC_LEN) {
+<<<<<<< HEAD
 		DCCP_CRIT("Ack Vector buffer overflow: dropping old entries\n");
+=======
+		DCCP_CRIT("Ack Vector buffer overflow: dropping old entries");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		av->av_overflow = true;
 	}
 
@@ -245,6 +260,11 @@ static void dccp_ackvec_add_new(struct dccp_ackvec *av, u32 num_packets,
 
 /**
  * dccp_ackvec_input  -  Register incoming packet in the buffer
+<<<<<<< HEAD
+=======
+ * @av: Ack Vector to register packet to
+ * @skb: Packet to register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void dccp_ackvec_input(struct dccp_ackvec *av, struct sk_buff *skb)
 {
@@ -276,8 +296,16 @@ void dccp_ackvec_input(struct dccp_ackvec *av, struct sk_buff *skb)
 
 /**
  * dccp_ackvec_clear_state  -  Perform house-keeping / garbage-collection
+<<<<<<< HEAD
  * This routine is called when the peer acknowledges the receipt of Ack Vectors
  * up to and including @ackno. While based on on section A.3 of RFC 4340, here
+=======
+ * @av: Ack Vector record to clean
+ * @ackno: last Ack Vector which has been acknowledged
+ *
+ * This routine is called when the peer acknowledges the receipt of Ack Vectors
+ * up to and including @ackno. While based on section A.3 of RFC 4340, here
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * are additional precautions to prevent corrupted buffer state. In particular,
  * we use tail_ackno to identify outdated records; it always marks the earliest
  * packet of group (2) in 11.4.2.
@@ -374,6 +402,7 @@ EXPORT_SYMBOL_GPL(dccp_ackvec_parsed_cleanup);
 
 int __init dccp_ackvec_init(void)
 {
+<<<<<<< HEAD
 	dccp_ackvec_slab = kmem_cache_create("dccp_ackvec",
 					     sizeof(struct dccp_ackvec), 0,
 					     SLAB_HWCACHE_ALIGN, NULL);
@@ -383,6 +412,13 @@ int __init dccp_ackvec_init(void)
 	dccp_ackvec_record_slab = kmem_cache_create("dccp_ackvec_record",
 					     sizeof(struct dccp_ackvec_record),
 					     0, SLAB_HWCACHE_ALIGN, NULL);
+=======
+	dccp_ackvec_slab = KMEM_CACHE(dccp_ackvec, SLAB_HWCACHE_ALIGN);
+	if (dccp_ackvec_slab == NULL)
+		goto out_err;
+
+	dccp_ackvec_record_slab = KMEM_CACHE(dccp_ackvec_record, SLAB_HWCACHE_ALIGN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dccp_ackvec_record_slab == NULL)
 		goto out_destroy_slab;
 
@@ -398,6 +434,7 @@ out_err:
 
 void dccp_ackvec_exit(void)
 {
+<<<<<<< HEAD
 	if (dccp_ackvec_slab != NULL) {
 		kmem_cache_destroy(dccp_ackvec_slab);
 		dccp_ackvec_slab = NULL;
@@ -406,4 +443,10 @@ void dccp_ackvec_exit(void)
 		kmem_cache_destroy(dccp_ackvec_record_slab);
 		dccp_ackvec_record_slab = NULL;
 	}
+=======
+	kmem_cache_destroy(dccp_ackvec_slab);
+	dccp_ackvec_slab = NULL;
+	kmem_cache_destroy(dccp_ackvec_record_slab);
+	dccp_ackvec_record_slab = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

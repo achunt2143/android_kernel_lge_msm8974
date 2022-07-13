@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/se/7780/setup.c
  *
  * Copyright (C) 2006,2007  Nobuhiro Iwamatsu
  *
  * Hitachi UL SolutionEngine 7780 Support.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -110,6 +117,9 @@ static void __init se7780_setup(char **cmdline_p)
 static struct sh_machine_vector mv_se7780 __initmv = {
 	.mv_name                = "Solution Engine 7780" ,
 	.mv_setup               = se7780_setup ,
+<<<<<<< HEAD
 	.mv_nr_irqs		= 111 ,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_se7780_IRQ,
 };

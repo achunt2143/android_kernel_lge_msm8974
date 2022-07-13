@@ -26,6 +26,11 @@
  *   Yaozu (Eddie) Dong <Eddie.dong@intel.com>
  *   Port from Qemu.
  */
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/bitops.h>
@@ -35,7 +40,11 @@
 #include "trace.h"
 
 #define pr_pic_unimpl(fmt, ...)	\
+<<<<<<< HEAD
 	pr_err_ratelimited("kvm: pic: " fmt, ## __VA_ARGS__)
+=======
+	pr_err_ratelimited("pic: " fmt, ## __VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pic_irq_request(struct kvm *kvm, int level);
 
@@ -49,8 +58,13 @@ static void pic_unlock(struct kvm_pic *s)
 	__releases(&s->lock)
 {
 	bool wakeup = s->wakeup_needed;
+<<<<<<< HEAD
 	struct kvm_vcpu *vcpu, *found = NULL;
 	int i;
+=======
+	struct kvm_vcpu *vcpu;
+	unsigned long i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s->wakeup_needed = false;
 
@@ -59,6 +73,7 @@ static void pic_unlock(struct kvm_pic *s)
 	if (wakeup) {
 		kvm_for_each_vcpu(i, vcpu, s->kvm) {
 			if (kvm_apic_accept_pic_intr(vcpu)) {
+<<<<<<< HEAD
 				found = vcpu;
 				break;
 			}
@@ -69,6 +84,13 @@ static void pic_unlock(struct kvm_pic *s)
 
 		kvm_make_request(KVM_REQ_EVENT, found);
 		kvm_vcpu_kick(found);
+=======
+				kvm_make_request(KVM_REQ_EVENT, vcpu);
+				kvm_vcpu_kick(vcpu);
+				return;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -188,6 +210,7 @@ void kvm_pic_update_irq(struct kvm_pic *s)
 	pic_unlock(s);
 }
 
+<<<<<<< HEAD
 int kvm_pic_set_irq(void *opaque, int irq, int level)
 {
 	struct kvm_pic *s = opaque;
@@ -200,11 +223,39 @@ int kvm_pic_set_irq(void *opaque, int irq, int level)
 		trace_kvm_pic_set_irq(irq >> 3, irq & 7, s->pics[irq >> 3].elcr,
 				      s->pics[irq >> 3].imr, ret == 0);
 	}
+=======
+int kvm_pic_set_irq(struct kvm_pic *s, int irq, int irq_source_id, int level)
+{
+	int ret, irq_level;
+
+	BUG_ON(irq < 0 || irq >= PIC_NUM_PINS);
+
+	pic_lock(s);
+	irq_level = __kvm_irq_line_state(&s->irq_states[irq],
+					 irq_source_id, level);
+	ret = pic_set_irq1(&s->pics[irq >> 3], irq & 7, irq_level);
+	pic_update_irq(s);
+	trace_kvm_pic_set_irq(irq >> 3, irq & 7, s->pics[irq >> 3].elcr,
+			      s->pics[irq >> 3].imr, ret == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pic_unlock(s);
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+void kvm_pic_clear_all(struct kvm_pic *s, int irq_source_id)
+{
+	int i;
+
+	pic_lock(s);
+	for (i = 0; i < PIC_NUM_PINS; i++)
+		__clear_bit(irq_source_id, &s->irq_states[i]);
+	pic_unlock(s);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * acknowledge interrupt 'irq'
  */
@@ -228,7 +279,13 @@ static inline void pic_intack(struct kvm_kpic_state *s, int irq)
 int kvm_pic_read_irq(struct kvm *kvm)
 {
 	int irq, irq2, intno;
+<<<<<<< HEAD
 	struct kvm_pic *s = pic_irqchip(kvm);
+=======
+	struct kvm_pic *s = kvm->arch.vpic;
+
+	s->output = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pic_lock(s);
 	irq = pic_get_irq(&s->pics[0]);
@@ -244,7 +301,10 @@ int kvm_pic_read_irq(struct kvm *kvm)
 				 */
 				irq2 = 7;
 			intno = s->pics[1].irq_base + irq2;
+<<<<<<< HEAD
 			irq = irq2 + 8;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			intno = s->pics[0].irq_base + irq;
 	} else {
@@ -260,6 +320,7 @@ int kvm_pic_read_irq(struct kvm *kvm)
 	return intno;
 }
 
+<<<<<<< HEAD
 void kvm_pic_reset(struct kvm_kpic_state *s)
 {
 	int irq, i;
@@ -281,6 +342,27 @@ void kvm_pic_reset(struct kvm_kpic_state *s)
 	s->rotate_on_auto_eoi = 0;
 	s->special_fully_nested_mode = 0;
 	s->init4 = 0;
+=======
+static void kvm_pic_reset(struct kvm_kpic_state *s)
+{
+	int irq;
+	unsigned long i;
+	struct kvm_vcpu *vcpu;
+	u8 edge_irr = s->irr & ~s->elcr;
+	bool found = false;
+
+	s->last_irr = 0;
+	s->irr &= s->elcr;
+	s->imr = 0;
+	s->priority_add = 0;
+	s->special_mask = 0;
+	s->read_reg_select = 0;
+	if (!s->init4) {
+		s->special_fully_nested_mode = 0;
+		s->auto_eoi = 0;
+	}
+	s->init_state = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kvm_for_each_vcpu(i, vcpu, s->pics_state->kvm)
 		if (kvm_apic_accept_pic_intr(vcpu)) {
@@ -293,7 +375,11 @@ void kvm_pic_reset(struct kvm_kpic_state *s)
 		return;
 
 	for (irq = 0; irq < PIC_NUM_PINS/2; irq++)
+<<<<<<< HEAD
 		if (irr & (1 << irq) || isr & (1 << irq))
+=======
+		if (edge_irr & (1 << irq))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pic_clear_isr(s, irq);
 }
 
@@ -306,6 +392,7 @@ static void pic_ioport_write(void *opaque, u32 addr, u32 val)
 	if (addr == 0) {
 		if (val & 0x10) {
 			s->init4 = val & 1;
+<<<<<<< HEAD
 			s->last_irr = 0;
 			s->irr &= s->elcr;
 			s->imr = 0;
@@ -317,11 +404,18 @@ static void pic_ioport_write(void *opaque, u32 addr, u32 val)
 				s->auto_eoi = 0;
 			}
 			s->init_state = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (val & 0x02)
 				pr_pic_unimpl("single mode not supported");
 			if (val & 0x08)
 				pr_pic_unimpl(
+<<<<<<< HEAD
 					"level sensitive irq not supported");
+=======
+						"level sensitive irq not supported");
+			kvm_pic_reset(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (val & 0x08) {
 			if (val & 0x04)
 				s->poll = 1;
@@ -414,7 +508,14 @@ static u32 pic_poll_read(struct kvm_kpic_state *s, u32 addr1)
 		pic_clear_isr(s, ret);
 		if (addr1 >> 7 || ret != 2)
 			pic_update_irq(s->pics_state);
+<<<<<<< HEAD
 	} else {
+=======
+		/* Bit 7 is 1, means there's an interrupt */
+		ret |= 0x80;
+	} else {
+		/* Bit 7 is 0, means there's no interrupt */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0x07;
 		pic_update_irq(s->pics_state);
 	}
@@ -422,6 +523,7 @@ static u32 pic_poll_read(struct kvm_kpic_state *s, u32 addr1)
 	return ret;
 }
 
+<<<<<<< HEAD
 static u32 pic_ioport_read(void *opaque, u32 addr1)
 {
 	struct kvm_kpic_state *s = opaque;
@@ -435,6 +537,18 @@ static u32 pic_ioport_read(void *opaque, u32 addr1)
 		s->poll = 0;
 	} else
 		if (addr == 0)
+=======
+static u32 pic_ioport_read(void *opaque, u32 addr)
+{
+	struct kvm_kpic_state *s = opaque;
+	int ret;
+
+	if (s->poll) {
+		ret = pic_poll_read(s, addr);
+		s->poll = 0;
+	} else
+		if ((addr & 1) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (s->read_reg_select)
 				ret = s->isr;
 			else
@@ -444,18 +558,27 @@ static u32 pic_ioport_read(void *opaque, u32 addr1)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void elcr_ioport_write(void *opaque, u32 addr, u32 val)
+=======
+static void elcr_ioport_write(void *opaque, u32 val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm_kpic_state *s = opaque;
 	s->elcr = val & s->elcr_mask;
 }
 
+<<<<<<< HEAD
 static u32 elcr_ioport_read(void *opaque, u32 addr1)
+=======
+static u32 elcr_ioport_read(void *opaque)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm_kpic_state *s = opaque;
 	return s->elcr;
 }
 
+<<<<<<< HEAD
 static int picdev_in_range(gpa_t addr)
 {
 	switch (addr) {
@@ -471,17 +594,23 @@ static int picdev_in_range(gpa_t addr)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int picdev_write(struct kvm_pic *s,
 			 gpa_t addr, int len, const void *val)
 {
 	unsigned char data = *(unsigned char *)val;
+<<<<<<< HEAD
 	if (!picdev_in_range(addr))
 		return -EOPNOTSUPP;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len != 1) {
 		pr_pic_unimpl("non byte write\n");
 		return 0;
 	}
+<<<<<<< HEAD
 	pic_lock(s);
 	switch (addr) {
 	case 0x20:
@@ -496,12 +625,37 @@ static int picdev_write(struct kvm_pic *s,
 		break;
 	}
 	pic_unlock(s);
+=======
+	switch (addr) {
+	case 0x20:
+	case 0x21:
+		pic_lock(s);
+		pic_ioport_write(&s->pics[0], addr, data);
+		pic_unlock(s);
+		break;
+	case 0xa0:
+	case 0xa1:
+		pic_lock(s);
+		pic_ioport_write(&s->pics[1], addr, data);
+		pic_unlock(s);
+		break;
+	case 0x4d0:
+	case 0x4d1:
+		pic_lock(s);
+		elcr_ioport_write(&s->pics[addr & 1], data);
+		pic_unlock(s);
+		break;
+	default:
+		return -EOPNOTSUPP;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int picdev_read(struct kvm_pic *s,
 		       gpa_t addr, int len, void *val)
 {
+<<<<<<< HEAD
 	unsigned char data = 0;
 	if (!picdev_in_range(addr))
 		return -EOPNOTSUPP;
@@ -511,11 +665,21 @@ static int picdev_read(struct kvm_pic *s,
 		return 0;
 	}
 	pic_lock(s);
+=======
+	unsigned char *data = (unsigned char *)val;
+
+	if (len != 1) {
+		memset(val, 0, len);
+		pr_pic_unimpl("non byte read\n");
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (addr) {
 	case 0x20:
 	case 0x21:
 	case 0xa0:
 	case 0xa1:
+<<<<<<< HEAD
 		data = pic_ioport_read(&s->pics[addr >> 7], addr);
 		break;
 	case 0x4d0:
@@ -529,33 +693,65 @@ static int picdev_read(struct kvm_pic *s,
 }
 
 static int picdev_master_write(struct kvm_io_device *dev,
+=======
+		pic_lock(s);
+		*data = pic_ioport_read(&s->pics[addr >> 7], addr);
+		pic_unlock(s);
+		break;
+	case 0x4d0:
+	case 0x4d1:
+		pic_lock(s);
+		*data = elcr_ioport_read(&s->pics[addr & 1]);
+		pic_unlock(s);
+		break;
+	default:
+		return -EOPNOTSUPP;
+	}
+	return 0;
+}
+
+static int picdev_master_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       gpa_t addr, int len, const void *val)
 {
 	return picdev_write(container_of(dev, struct kvm_pic, dev_master),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_master_read(struct kvm_io_device *dev,
+=======
+static int picdev_master_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_master),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_slave_write(struct kvm_io_device *dev,
+=======
+static int picdev_slave_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      gpa_t addr, int len, const void *val)
 {
 	return picdev_write(container_of(dev, struct kvm_pic, dev_slave),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_slave_read(struct kvm_io_device *dev,
+=======
+static int picdev_slave_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_slave),
 			    addr, len, val);
 }
 
+<<<<<<< HEAD
 static int picdev_eclr_write(struct kvm_io_device *dev,
 			     gpa_t addr, int len, const void *val)
 {
@@ -567,6 +763,19 @@ static int picdev_eclr_read(struct kvm_io_device *dev,
 			    gpa_t addr, int len, void *val)
 {
 	return picdev_read(container_of(dev, struct kvm_pic, dev_eclr),
+=======
+static int picdev_elcr_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+			     gpa_t addr, int len, const void *val)
+{
+	return picdev_write(container_of(dev, struct kvm_pic, dev_elcr),
+			    addr, len, val);
+}
+
+static int picdev_elcr_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
+			    gpa_t addr, int len, void *val)
+{
+	return picdev_read(container_of(dev, struct kvm_pic, dev_elcr),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    addr, len, val);
 }
 
@@ -575,7 +784,11 @@ static int picdev_eclr_read(struct kvm_io_device *dev,
  */
 static void pic_irq_request(struct kvm *kvm, int level)
 {
+<<<<<<< HEAD
 	struct kvm_pic *s = pic_irqchip(kvm);
+=======
+	struct kvm_pic *s = kvm->arch.vpic;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!s->output)
 		s->wakeup_needed = true;
@@ -592,19 +805,34 @@ static const struct kvm_io_device_ops picdev_slave_ops = {
 	.write    = picdev_slave_write,
 };
 
+<<<<<<< HEAD
 static const struct kvm_io_device_ops picdev_eclr_ops = {
 	.read     = picdev_eclr_read,
 	.write    = picdev_eclr_write,
 };
 
 struct kvm_pic *kvm_create_pic(struct kvm *kvm)
+=======
+static const struct kvm_io_device_ops picdev_elcr_ops = {
+	.read     = picdev_elcr_read,
+	.write    = picdev_elcr_write,
+};
+
+int kvm_pic_init(struct kvm *kvm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm_pic *s;
 	int ret;
 
+<<<<<<< HEAD
 	s = kzalloc(sizeof(struct kvm_pic), GFP_KERNEL);
 	if (!s)
 		return NULL;
+=======
+	s = kzalloc(sizeof(struct kvm_pic), GFP_KERNEL_ACCOUNT);
+	if (!s)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&s->lock);
 	s->kvm = kvm;
 	s->pics[0].elcr_mask = 0xf8;
@@ -617,7 +845,11 @@ struct kvm_pic *kvm_create_pic(struct kvm *kvm)
 	 */
 	kvm_iodevice_init(&s->dev_master, &picdev_master_ops);
 	kvm_iodevice_init(&s->dev_slave, &picdev_slave_ops);
+<<<<<<< HEAD
 	kvm_iodevice_init(&s->dev_eclr, &picdev_eclr_ops);
+=======
+	kvm_iodevice_init(&s->dev_elcr, &picdev_elcr_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&kvm->slots_lock);
 	ret = kvm_io_bus_register_dev(kvm, KVM_PIO_BUS, 0x20, 2,
 				      &s->dev_master);
@@ -628,13 +860,23 @@ struct kvm_pic *kvm_create_pic(struct kvm *kvm)
 	if (ret < 0)
 		goto fail_unreg_2;
 
+<<<<<<< HEAD
 	ret = kvm_io_bus_register_dev(kvm, KVM_PIO_BUS, 0x4d0, 2, &s->dev_eclr);
+=======
+	ret = kvm_io_bus_register_dev(kvm, KVM_PIO_BUS, 0x4d0, 2, &s->dev_elcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto fail_unreg_1;
 
 	mutex_unlock(&kvm->slots_lock);
 
+<<<<<<< HEAD
 	return s;
+=======
+	kvm->arch.vpic = s;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 fail_unreg_1:
 	kvm_io_bus_unregister_dev(kvm, KVM_PIO_BUS, &s->dev_slave);
@@ -647,6 +889,7 @@ fail_unlock:
 
 	kfree(s);
 
+<<<<<<< HEAD
 	return NULL;
 }
 
@@ -661,4 +904,24 @@ void kvm_destroy_pic(struct kvm *kvm)
 		kvm->arch.vpic = NULL;
 		kfree(vpic);
 	}
+=======
+	return ret;
+}
+
+void kvm_pic_destroy(struct kvm *kvm)
+{
+	struct kvm_pic *vpic = kvm->arch.vpic;
+
+	if (!vpic)
+		return;
+
+	mutex_lock(&kvm->slots_lock);
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_master);
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_slave);
+	kvm_io_bus_unregister_dev(vpic->kvm, KVM_PIO_BUS, &vpic->dev_elcr);
+	mutex_unlock(&kvm->slots_lock);
+
+	kvm->arch.vpic = NULL;
+	kfree(vpic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

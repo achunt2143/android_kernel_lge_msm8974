@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/parisc/kernel/time.c
  *
@@ -12,7 +16,14 @@
  */
 #include <linux/errno.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/rtc.h>
+#include <linux/sched.h>
+#include <linux/sched/clock.h>
+#include <linux/sched_clock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/param.h>
 #include <linux/string.h>
@@ -26,7 +37,11 @@
 #include <linux/platform_device.h>
 #include <linux/ftrace.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/page.h>
@@ -36,7 +51,13 @@
 
 #include <linux/timex.h>
 
+<<<<<<< HEAD
 static unsigned long clocktick __read_mostly;	/* timer cycles per tick */
+=======
+int time_keeper_id __read_mostly;	/* CPU used for timekeeping. */
+
+static unsigned long clocktick __ro_after_init;	/* timer cycles per tick */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We keep time on PA-RISC Linux by using the Interval Timer which is
@@ -57,16 +78,23 @@ static unsigned long clocktick __read_mostly;	/* timer cycles per tick */
  */
 irqreturn_t __irq_entry timer_interrupt(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	unsigned long now, now2;
 	unsigned long next_tick;
 	unsigned long cycles_elapsed, ticks_elapsed = 1;
 	unsigned long cycles_remainder;
+=======
+	unsigned long now;
+	unsigned long next_tick;
+	unsigned long ticks_elapsed = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cpu = smp_processor_id();
 	struct cpuinfo_parisc *cpuinfo = &per_cpu(cpu_data, cpu);
 
 	/* gcc can optimize for "read-only" case with a local clocktick */
 	unsigned long cpt = clocktick;
 
+<<<<<<< HEAD
 	profile_tick(CPU_PROFILING);
 
 	/* Initialize next_tick to the expected tick time. */
@@ -113,11 +141,39 @@ irqreturn_t __irq_entry timer_interrupt(int irq, void *dev_id)
 	 * itimer would not fire until CR16 wrapped - e.g 4 seconds
 	 * later on a 1Ghz processor. We'll account for the missed
 	 * tick on the next timer interrupt.
+=======
+	/* Initialize next_tick to the old expected tick time. */
+	next_tick = cpuinfo->it_value;
+
+	/* Calculate how many ticks have elapsed. */
+	now = mfctl(16);
+	do {
+		++ticks_elapsed;
+		next_tick += cpt;
+	} while (next_tick - now > cpt);
+
+	/* Store (in CR16 cycles) up to when we are accounting right now. */
+	cpuinfo->it_value = next_tick;
+
+	/* Go do system house keeping. */
+	if (IS_ENABLED(CONFIG_SMP) && (cpu != time_keeper_id))
+		ticks_elapsed = 0;
+	legacy_timer_tick(ticks_elapsed);
+
+	/* Skip clockticks on purpose if we know we would miss those.
+	 * The new CR16 must be "later" than current CR16 otherwise
+	 * itimer would not fire until CR16 wrapped - e.g 4 seconds
+	 * later on a 1Ghz processor. We'll account for the missed
+	 * ticks on the next timer interrupt.
+	 * We want IT to fire modulo clocktick even if we miss/skip some.
+	 * But those interrupts don't in fact get delivered that regularly.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * "next_tick - now" will always give the difference regardless
 	 * if one or the other wrapped. If "now" is "bigger" we'll end up
 	 * with a very large unsigned number.
 	 */
+<<<<<<< HEAD
 	now2 = mfctl(16);
 	if (next_tick - now2 > cpt)
 		mtctl(next_tick+cpt, 16);
@@ -165,6 +221,21 @@ irqreturn_t __irq_entry timer_interrupt(int irq, void *dev_id)
 
 	if (cpu == 0)
 		xtime_update(ticks_elapsed);
+=======
+	now = mfctl(16);
+	while (next_tick - now > cpt)
+		next_tick += cpt;
+
+	/* Program the IT when to deliver the next interrupt.
+	 * Only bottom 32-bits of next_tick are writable in CR16!
+	 * Timer interrupt will be delivered at least a few hundred cycles
+	 * after the IT fires, so if we are too close (<= 8000 cycles) to the
+	 * next cycle, simply skip it.
+	 */
+	if (next_tick - now <= 8000)
+		next_tick += cpt;
+	mtctl(next_tick, 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -189,7 +260,11 @@ EXPORT_SYMBOL(profile_pc);
 
 /* clock source code */
 
+<<<<<<< HEAD
 static cycle_t read_cr16(struct clocksource *cs)
+=======
+static u64 notrace read_cr16(struct clocksource *cs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return get_cycles();
 }
@@ -202,6 +277,7 @@ static struct clocksource clocksource_cr16 = {
 	.flags			= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 int update_cr16_clocksource(void)
 {
@@ -222,6 +298,9 @@ int update_cr16_clocksource(void)
 #endif /*CONFIG_SMP*/
 
 void __init start_cpu_itimer(void)
+=======
+void start_cpu_itimer(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = smp_processor_id();
 	unsigned long next_tick = mfctl(16) + clocktick;
@@ -231,13 +310,51 @@ void __init start_cpu_itimer(void)
 	per_cpu(cpu_data, cpu).it_value = next_tick;
 }
 
+<<<<<<< HEAD
 static struct platform_device rtc_generic_dev = {
 	.name = "rtc-generic",
 	.id = -1,
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_GENERIC)
+static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+{
+	struct pdc_tod tod_data;
+
+	memset(tm, 0, sizeof(*tm));
+	if (pdc_tod_read(&tod_data) < 0)
+		return -EOPNOTSUPP;
+
+	/* we treat tod_sec as unsigned, so this can work until year 2106 */
+	rtc_time64_to_tm(tod_data.tod_sec, tm);
+	return 0;
+}
+
+static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+{
+	time64_t secs = rtc_tm_to_time64(tm);
+	int ret;
+
+	/* hppa has Y2K38 problem: pdc_tod_set() takes an u32 value! */
+	ret = pdc_tod_set(secs, 0);
+	if (ret != 0) {
+		pr_warn("pdc_tod_set(%lld) returned error %d\n", secs, ret);
+		if (ret == PDC_INVALID_ARG)
+			return -EINVAL;
+		return -EOPNOTSUPP;
+	}
+
+	return 0;
+}
+
+static const struct rtc_class_ops rtc_generic_ops = {
+	.read_time = rtc_generic_get_time,
+	.set_time = rtc_generic_set_time,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init rtc_init(void)
 {
+<<<<<<< HEAD
 	if (platform_device_register(&rtc_generic_dev) < 0)
 		printk(KERN_ERR "unable to register rtc device...\n");
 
@@ -247,6 +364,20 @@ static int __init rtc_init(void)
 module_init(rtc_init);
 
 void read_persistent_clock(struct timespec *ts)
+=======
+	struct platform_device *pdev;
+
+	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+					     &rtc_generic_ops,
+					     sizeof(rtc_generic_ops));
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+device_initcall(rtc_init);
+#endif
+
+void read_persistent_clock64(struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static struct pdc_tod tod_data;
 	if (pdc_tod_read(&tod_data) == 0) {
@@ -259,6 +390,7 @@ void read_persistent_clock(struct timespec *ts)
 	}
 }
 
+<<<<<<< HEAD
 void __init time_init(void)
 {
 	unsigned long current_cr16_khz;
@@ -271,3 +403,48 @@ void __init time_init(void)
 	current_cr16_khz = PAGE0->mem_10msec/10;  /* kHz */
 	clocksource_register_khz(&clocksource_cr16, current_cr16_khz);
 }
+=======
+
+static u64 notrace read_cr16_sched_clock(void)
+{
+	return get_cycles();
+}
+
+
+/*
+ * timer interrupt and sched_clock() initialization
+ */
+
+void __init time_init(void)
+{
+	unsigned long cr16_hz;
+
+	clocktick = (100 * PAGE0->mem_10msec) / HZ;
+	start_cpu_itimer();	/* get CPU 0 started */
+
+	cr16_hz = 100 * PAGE0->mem_10msec;  /* Hz */
+
+	/* register as sched_clock source */
+	sched_clock_register(read_cr16_sched_clock, BITS_PER_LONG, cr16_hz);
+}
+
+static int __init init_cr16_clocksource(void)
+{
+	/*
+	 * The cr16 interval timers are not synchronized across CPUs.
+	 */
+	if (num_online_cpus() > 1 && !running_on_qemu) {
+		clocksource_cr16.name = "cr16_unstable";
+		clocksource_cr16.flags = CLOCK_SOURCE_UNSTABLE;
+		clocksource_cr16.rating = 0;
+	}
+
+	/* register at clocksource framework */
+	clocksource_register_hz(&clocksource_cr16,
+		100 * PAGE0->mem_10msec);
+
+	return 0;
+}
+
+device_initcall(init_cr16_clocksource);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -12,6 +12,7 @@
 #include <linux/linkage.h>
 #include <asm/page.h>
 
+<<<<<<< HEAD
 /*
  * int __strncpy_user(char *to, char *from, int len);
  *
@@ -103,6 +104,8 @@ __strnlen_user:
 	.section	__ex_table,"a"
 	.word	1b,4b
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Loop unrolling for __copy_tofrom_user */
 #define COPY(offset)	\
 1:	lwi	r4 , r6, 0x0000 + offset;	\
@@ -189,7 +192,11 @@ w2:	sw	r4, r5, r3
 	.text
 
 .align 4 /* Alignment is important to keep icache happy */
+<<<<<<< HEAD
 page:	/* Create room on stack and save registers for storign values */
+=======
+page:	/* Create room on stack and save registers for storing values */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik   r1, r1, -40
 	swi	r5, r1, 0
 	swi	r6, r1, 4

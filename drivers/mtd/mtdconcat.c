@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MTD device concatenation layer
  *
@@ -5,6 +9,7 @@
  * Copyright © 2002-2010 David Woodhouse <dwmw2@infradead.org>
  *
  * NAND support by Christian Gan <cgan@iders.ca>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -117,6 +124,50 @@ concat_read(struct mtd_info *mtd, loff_t from, size_t len,
 }
 
 static int
+<<<<<<< HEAD
+=======
+concat_panic_write(struct mtd_info *mtd, loff_t to, size_t len,
+	     size_t * retlen, const u_char * buf)
+{
+	struct mtd_concat *concat = CONCAT(mtd);
+	int err = -EINVAL;
+	int i;
+	for (i = 0; i < concat->num_subdev; i++) {
+		struct mtd_info *subdev = concat->subdev[i];
+		size_t size, retsize;
+
+		if (to >= subdev->size) {
+			to -= subdev->size;
+			continue;
+		}
+		if (to + len > subdev->size)
+			size = subdev->size - to;
+		else
+			size = len;
+
+		err = mtd_panic_write(subdev, to, size, &retsize, buf);
+		if (err == -EOPNOTSUPP) {
+			printk(KERN_ERR "mtdconcat: Cannot write from panic without panic_write\n");
+			return err;
+		}
+		if (err)
+			break;
+
+		*retlen += retsize;
+		len -= size;
+		if (len == 0)
+			break;
+
+		err = -EINVAL;
+		buf += size;
+		to = 0;
+	}
+	return err;
+}
+
+
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 concat_write(struct mtd_info *mtd, loff_t to, size_t len,
 	     size_t * retlen, const u_char * buf)
 {
@@ -311,7 +362,12 @@ concat_write_oob(struct mtd_info *mtd, loff_t to, struct mtd_oob_ops *ops)
 			devops.len = subdev->size - to;
 
 		err = mtd_write_oob(subdev, to, &devops);
+<<<<<<< HEAD
 		ops->retlen += devops.oobretlen;
+=======
+		ops->retlen += devops.retlen;
+		ops->oobretlen += devops.oobretlen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -332,6 +388,7 @@ concat_write_oob(struct mtd_info *mtd, loff_t to, struct mtd_oob_ops *ops)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void concat_erase_callback(struct erase_info *instr)
 {
 	wake_up((wait_queue_head_t *) instr->priv);
@@ -371,6 +428,8 @@ static int concat_dev_erase(struct mtd_info *mtd, struct erase_info *erase)
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 {
 	struct mtd_concat *concat = CONCAT(mtd);
@@ -465,7 +524,11 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 			erase->len = length;
 
 		length -= erase->len;
+<<<<<<< HEAD
 		if ((err = concat_dev_erase(subdev, erase))) {
+=======
+		if ((err = mtd_erase(subdev, erase))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* sanity check: should never happen since
 			 * block alignment has been checked above */
 			BUG_ON(err == -EINVAL);
@@ -484,6 +547,7 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 		erase->addr = 0;
 		offset += subdev->size;
 	}
+<<<<<<< HEAD
 	instr->state = erase->state;
 	kfree(erase);
 	if (err)
@@ -495,6 +559,15 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 }
 
 static int concat_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+=======
+	kfree(erase);
+
+	return err;
+}
+
+static int concat_xxlock(struct mtd_info *mtd, loff_t ofs, uint64_t len,
+			 bool is_lock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mtd_concat *concat = CONCAT(mtd);
 	int i, err = -EINVAL;
@@ -513,7 +586,14 @@ static int concat_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 		else
 			size = len;
 
+<<<<<<< HEAD
 		err = mtd_lock(subdev, ofs, size);
+=======
+		if (is_lock)
+			err = mtd_lock(subdev, ofs, size);
+		else
+			err = mtd_unlock(subdev, ofs, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 
@@ -528,6 +608,7 @@ static int concat_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	return err;
 }
 
+<<<<<<< HEAD
 static int concat_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 {
 	struct mtd_concat *concat = CONCAT(mtd);
@@ -557,6 +638,35 @@ static int concat_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 
 		err = -EINVAL;
 		ofs = 0;
+=======
+static int concat_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+{
+	return concat_xxlock(mtd, ofs, len, true);
+}
+
+static int concat_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+{
+	return concat_xxlock(mtd, ofs, len, false);
+}
+
+static int concat_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+{
+	struct mtd_concat *concat = CONCAT(mtd);
+	int i, err = -EINVAL;
+
+	for (i = 0; i < concat->num_subdev; i++) {
+		struct mtd_info *subdev = concat->subdev[i];
+
+		if (ofs >= subdev->size) {
+			ofs -= subdev->size;
+			continue;
+		}
+
+		if (ofs + len > subdev->size)
+			break;
+
+		return mtd_is_locked(subdev, ofs, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -643,6 +753,7 @@ static int concat_block_markbad(struct mtd_info *mtd, loff_t ofs)
 }
 
 /*
+<<<<<<< HEAD
  * try to support NOMMU mmaps on concatenated devices
  * - we don't support subdev spanning as we can't guarantee it'll work
  */
@@ -669,6 +780,8 @@ static unsigned long concat_get_unmapped_area(struct mtd_info *mtd,
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function constructs a virtual MTD device by concatenating
  * num_devs MTD devices. A pointer to the new device object is
  * stored to *new_dev upon success. This function does _not_
@@ -681,6 +794,10 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 	int i;
 	size_t size;
 	struct mtd_concat *concat;
+<<<<<<< HEAD
+=======
+	struct mtd_info *subdev_master = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t max_erasesize, curr_erasesize;
 	int num_erase_region;
 	int max_writebufsize = 0;
@@ -719,6 +836,7 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 	concat->mtd.subpage_sft = subdev[0]->subpage_sft;
 	concat->mtd.oobsize = subdev[0]->oobsize;
 	concat->mtd.oobavail = subdev[0]->oobavail;
+<<<<<<< HEAD
 	if (subdev[0]->_writev)
 		concat->mtd._writev = concat_writev;
 	if (subdev[0]->_read_oob)
@@ -734,6 +852,29 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 
 	concat->mtd.backing_dev_info = subdev[0]->backing_dev_info;
 
+=======
+
+	subdev_master = mtd_get_master(subdev[0]);
+	if (subdev_master->_writev)
+		concat->mtd._writev = concat_writev;
+	if (subdev_master->_read_oob)
+		concat->mtd._read_oob = concat_read_oob;
+	if (subdev_master->_write_oob)
+		concat->mtd._write_oob = concat_write_oob;
+	if (subdev_master->_block_isbad)
+		concat->mtd._block_isbad = concat_block_isbad;
+	if (subdev_master->_block_markbad)
+		concat->mtd._block_markbad = concat_block_markbad;
+	if (subdev_master->_panic_write)
+		concat->mtd._panic_write = concat_panic_write;
+	if (subdev_master->_read)
+		concat->mtd._read = concat_read;
+	if (subdev_master->_write)
+		concat->mtd._write = concat_write;
+
+	concat->mtd.ecc_stats.badblocks = subdev[0]->ecc_stats.badblocks;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	concat->subdev[0] = subdev[0];
 
 	for (i = 1; i < num_devs; i++) {
@@ -761,6 +902,7 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 				    subdev[i]->flags & MTD_WRITEABLE;
 		}
 
+<<<<<<< HEAD
 		/* only permit direct mapping if the BDIs are all the same
 		 * - copy-mapping is still permitted
 		 */
@@ -769,14 +911,29 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 			concat->mtd.backing_dev_info =
 				&default_backing_dev_info;
 
+=======
+		subdev_master = mtd_get_master(subdev[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		concat->mtd.size += subdev[i]->size;
 		concat->mtd.ecc_stats.badblocks +=
 			subdev[i]->ecc_stats.badblocks;
 		if (concat->mtd.writesize   !=  subdev[i]->writesize ||
 		    concat->mtd.subpage_sft != subdev[i]->subpage_sft ||
 		    concat->mtd.oobsize    !=  subdev[i]->oobsize ||
+<<<<<<< HEAD
 		    !concat->mtd._read_oob  != !subdev[i]->_read_oob ||
 		    !concat->mtd._write_oob != !subdev[i]->_write_oob) {
+=======
+		    !concat->mtd._read_oob  != !subdev_master->_read_oob ||
+		    !concat->mtd._write_oob != !subdev_master->_write_oob) {
+			/*
+			 * Check against subdev[i] for data members, because
+			 * subdev's attributes may be different from master
+			 * mtd device. Check against subdev's master mtd
+			 * device for callbacks, because the existence of
+			 * subdev's callbacks is decided by master mtd device.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(concat);
 			printk("Incompatible OOB or ECC data on \"%s\"\n",
 			       subdev[i]->name);
@@ -786,12 +943,17 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 
 	}
 
+<<<<<<< HEAD
 	concat->mtd.ecclayout = subdev[0]->ecclayout;
+=======
+	mtd_set_ooblayout(&concat->mtd, subdev[0]->ooblayout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	concat->num_subdev = num_devs;
 	concat->mtd.name = name;
 
 	concat->mtd._erase = concat_erase;
+<<<<<<< HEAD
 	concat->mtd._read = concat_read;
 	concat->mtd._write = concat_write;
 	concat->mtd._sync = concat_sync;
@@ -800,6 +962,14 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 	concat->mtd._suspend = concat_suspend;
 	concat->mtd._resume = concat_resume;
 	concat->mtd._get_unmapped_area = concat_get_unmapped_area;
+=======
+	concat->mtd._sync = concat_sync;
+	concat->mtd._lock = concat_lock;
+	concat->mtd._unlock = concat_unlock;
+	concat->mtd._is_locked = concat_is_locked;
+	concat->mtd._suspend = concat_suspend;
+	concat->mtd._resume = concat_resume;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Combine the erase block size info of the subdevices:
@@ -858,8 +1028,14 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 		concat->mtd.erasesize = max_erasesize;
 		concat->mtd.numeraseregions = num_erase_region;
 		concat->mtd.eraseregions = erase_region_p =
+<<<<<<< HEAD
 		    kmalloc(num_erase_region *
 			    sizeof (struct mtd_erase_region_info), GFP_KERNEL);
+=======
+		    kmalloc_array(num_erase_region,
+				  sizeof(struct mtd_erase_region_info),
+				  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!erase_region_p) {
 			kfree(concat);
 			printk
@@ -870,7 +1046,11 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 
 		/*
 		 * walk the map of the new device once more and fill in
+<<<<<<< HEAD
 		 * in erase region info:
+=======
+		 * erase region info:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		curr_erasesize = subdev[0]->erasesize;
 		begin = position = 0;
@@ -931,10 +1111,14 @@ struct mtd_info *mtd_concat_create(struct mtd_info *subdev[],	/* subdevices to c
 	return &concat->mtd;
 }
 
+<<<<<<< HEAD
 /*
  * This function destroys an MTD object obtained from concat_mtd_devs()
  */
 
+=======
+/* Cleans the context obtained from mtd_concat_create() */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mtd_concat_destroy(struct mtd_info *mtd)
 {
 	struct mtd_concat *concat = CONCAT(mtd);

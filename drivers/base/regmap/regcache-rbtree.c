@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Register cache access API - rbtree caching support
  *
@@ -15,6 +16,21 @@
 #include <linux/debugfs.h>
 #include <linux/rbtree.h>
 #include <linux/seq_file.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Register cache access API - rbtree caching support
+//
+// Copyright 2011 Wolfson Microelectronics plc
+//
+// Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
+
+#include <linux/debugfs.h>
+#include <linux/device.h>
+#include <linux/rbtree.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internal.h"
 
@@ -23,6 +39,7 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 static int regcache_rbtree_exit(struct regmap *map);
 
 struct regcache_rbtree_node {
+<<<<<<< HEAD
 	/* the actual rbtree node holding this block */
 	struct rb_node node;
 	/* base register handled by this block */
@@ -32,6 +49,19 @@ struct regcache_rbtree_node {
 	/* number of registers available in the block */
 	unsigned int blklen;
 } __attribute__ ((packed));
+=======
+	/* block of adjacent registers */
+	void *block;
+	/* Which registers are present */
+	unsigned long *cache_present;
+	/* base register handled by this block */
+	unsigned int base_reg;
+	/* number of registers available in the block */
+	unsigned int blklen;
+	/* the actual rbtree node holding this block */
+	struct rb_node node;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regcache_rbtree_ctx {
 	struct rb_root root;
@@ -39,10 +69,15 @@ struct regcache_rbtree_ctx {
 };
 
 static inline void regcache_rbtree_get_base_top_reg(
+<<<<<<< HEAD
+=======
+	struct regmap *map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regcache_rbtree_node *rbnode,
 	unsigned int *base, unsigned int *top)
 {
 	*base = rbnode->base_reg;
+<<<<<<< HEAD
 	*top = rbnode->base_reg + rbnode->blklen - 1;
 }
 
@@ -62,6 +97,27 @@ static void regcache_rbtree_set_register(struct regcache_rbtree_node *rbnode,
 
 static struct regcache_rbtree_node *regcache_rbtree_lookup(struct regmap *map,
 	unsigned int reg)
+=======
+	*top = rbnode->base_reg + ((rbnode->blklen - 1) * map->reg_stride);
+}
+
+static unsigned int regcache_rbtree_get_register(struct regmap *map,
+	struct regcache_rbtree_node *rbnode, unsigned int idx)
+{
+	return regcache_get_val(map, rbnode->block, idx);
+}
+
+static void regcache_rbtree_set_register(struct regmap *map,
+					 struct regcache_rbtree_node *rbnode,
+					 unsigned int idx, unsigned int val)
+{
+	set_bit(idx, rbnode->cache_present);
+	regcache_set_val(map, rbnode->block, idx, val);
+}
+
+static struct regcache_rbtree_node *regcache_rbtree_lookup(struct regmap *map,
+							   unsigned int reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct regcache_rbtree_ctx *rbtree_ctx = map->cache;
 	struct rb_node *node;
@@ -70,15 +126,26 @@ static struct regcache_rbtree_node *regcache_rbtree_lookup(struct regmap *map,
 
 	rbnode = rbtree_ctx->cached_rbnode;
 	if (rbnode) {
+<<<<<<< HEAD
 		regcache_rbtree_get_base_top_reg(rbnode, &base_reg, &top_reg);
+=======
+		regcache_rbtree_get_base_top_reg(map, rbnode, &base_reg,
+						 &top_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (reg >= base_reg && reg <= top_reg)
 			return rbnode;
 	}
 
 	node = rbtree_ctx->root.rb_node;
 	while (node) {
+<<<<<<< HEAD
 		rbnode = container_of(node, struct regcache_rbtree_node, node);
 		regcache_rbtree_get_base_top_reg(rbnode, &base_reg, &top_reg);
+=======
+		rbnode = rb_entry(node, struct regcache_rbtree_node, node);
+		regcache_rbtree_get_base_top_reg(map, rbnode, &base_reg,
+						 &top_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (reg >= base_reg && reg <= top_reg) {
 			rbtree_ctx->cached_rbnode = rbnode;
 			return rbnode;
@@ -92,7 +159,11 @@ static struct regcache_rbtree_node *regcache_rbtree_lookup(struct regmap *map,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int regcache_rbtree_insert(struct rb_root *root,
+=======
+static int regcache_rbtree_insert(struct regmap *map, struct rb_root *root,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct regcache_rbtree_node *rbnode)
 {
 	struct rb_node **new, *parent;
@@ -103,10 +174,16 @@ static int regcache_rbtree_insert(struct rb_root *root,
 	parent = NULL;
 	new = &root->rb_node;
 	while (*new) {
+<<<<<<< HEAD
 		rbnode_tmp = container_of(*new, struct regcache_rbtree_node,
 					  node);
 		/* base and top registers of the current rbnode */
 		regcache_rbtree_get_base_top_reg(rbnode_tmp, &base_reg_tmp,
+=======
+		rbnode_tmp = rb_entry(*new, struct regcache_rbtree_node, node);
+		/* base and top registers of the current rbnode */
+		regcache_rbtree_get_base_top_reg(map, rbnode_tmp, &base_reg_tmp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 &top_reg_tmp);
 		/* base register of the rbnode to be added */
 		base_reg = rbnode->base_reg;
@@ -136,6 +213,7 @@ static int rbtree_show(struct seq_file *s, void *ignored)
 	struct regcache_rbtree_node *n;
 	struct rb_node *node;
 	unsigned int base, top;
+<<<<<<< HEAD
 	int nodes = 0;
 	int registers = 0;
 	int average;
@@ -151,6 +229,30 @@ static int rbtree_show(struct seq_file *s, void *ignored)
 
 		nodes++;
 		registers += top - base + 1;
+=======
+	size_t mem_size;
+	int nodes = 0;
+	int registers = 0;
+	int this_registers, average;
+
+	map->lock(map->lock_arg);
+
+	mem_size = sizeof(*rbtree_ctx);
+
+	for (node = rb_first(&rbtree_ctx->root); node != NULL;
+	     node = rb_next(node)) {
+		n = rb_entry(node, struct regcache_rbtree_node, node);
+		mem_size += sizeof(*n);
+		mem_size += (n->blklen * map->cache_word_size);
+		mem_size += BITS_TO_LONGS(n->blklen) * sizeof(long);
+
+		regcache_rbtree_get_base_top_reg(map, n, &base, &top);
+		this_registers = ((top - base) / map->reg_stride) + 1;
+		seq_printf(s, "%x-%x (%d)\n", base, top, this_registers);
+
+		nodes++;
+		registers += this_registers;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (nodes)
@@ -158,14 +260,22 @@ static int rbtree_show(struct seq_file *s, void *ignored)
 	else
 		average = 0;
 
+<<<<<<< HEAD
 	seq_printf(s, "%d nodes, %d registers, average %d registers\n",
 		   nodes, registers, average);
 
 	mutex_unlock(&map->lock);
+=======
+	seq_printf(s, "%d nodes, %d registers, average %d registers, used %zu bytes\n",
+		   nodes, registers, average, mem_size);
+
+	map->unlock(map->lock_arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rbtree_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, rbtree_show, inode->i_private);
@@ -177,15 +287,21 @@ static const struct file_operations rbtree_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(rbtree);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void rbtree_debugfs_init(struct regmap *map)
 {
 	debugfs_create_file("rbtree", 0400, map->debugfs, map, &rbtree_fops);
 }
+<<<<<<< HEAD
 #else
 static void rbtree_debugfs_init(struct regmap *map)
 {
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int regcache_rbtree_init(struct regmap *map)
@@ -210,8 +326,11 @@ static int regcache_rbtree_init(struct regmap *map)
 			goto err;
 	}
 
+<<<<<<< HEAD
 	rbtree_debugfs_init(map);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err:
@@ -236,6 +355,10 @@ static int regcache_rbtree_exit(struct regmap *map)
 		rbtree_node = rb_entry(next, struct regcache_rbtree_node, node);
 		next = rb_next(&rbtree_node->node);
 		rb_erase(&rbtree_node->node, &rbtree_ctx->root);
+<<<<<<< HEAD
+=======
+		kfree(rbtree_node->cache_present);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(rbtree_node->block);
 		kfree(rbtree_node);
 	}
@@ -255,9 +378,16 @@ static int regcache_rbtree_read(struct regmap *map,
 
 	rbnode = regcache_rbtree_lookup(map, reg);
 	if (rbnode) {
+<<<<<<< HEAD
 		reg_tmp = reg - rbnode->base_reg;
 		*value = regcache_rbtree_get_register(rbnode, reg_tmp,
 						      map->cache_word_size);
+=======
+		reg_tmp = (reg - rbnode->base_reg) / map->reg_stride;
+		if (!test_bit(reg_tmp, rbnode->cache_present))
+			return -ENOENT;
+		*value = regcache_rbtree_get_register(map, rbnode, reg_tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		return -ENOENT;
 	}
@@ -266,6 +396,7 @@ static int regcache_rbtree_read(struct regmap *map,
 }
 
 
+<<<<<<< HEAD
 static int regcache_rbtree_insert_to_block(struct regcache_rbtree_node *rbnode,
 					   unsigned int pos, unsigned int reg,
 					   unsigned int value, unsigned int word_size)
@@ -292,12 +423,121 @@ static int regcache_rbtree_insert_to_block(struct regcache_rbtree_node *rbnode,
 	return 0;
 }
 
+=======
+static int regcache_rbtree_insert_to_block(struct regmap *map,
+					   struct regcache_rbtree_node *rbnode,
+					   unsigned int base_reg,
+					   unsigned int top_reg,
+					   unsigned int reg,
+					   unsigned int value)
+{
+	unsigned int blklen;
+	unsigned int pos, offset;
+	unsigned long *present;
+	u8 *blk;
+
+	blklen = (top_reg - base_reg) / map->reg_stride + 1;
+	pos = (reg - base_reg) / map->reg_stride;
+	offset = (rbnode->base_reg - base_reg) / map->reg_stride;
+
+	blk = krealloc(rbnode->block,
+		       blklen * map->cache_word_size,
+		       map->alloc_flags);
+	if (!blk)
+		return -ENOMEM;
+
+	rbnode->block = blk;
+
+	if (BITS_TO_LONGS(blklen) > BITS_TO_LONGS(rbnode->blklen)) {
+		present = krealloc(rbnode->cache_present,
+				   BITS_TO_LONGS(blklen) * sizeof(*present),
+				   map->alloc_flags);
+		if (!present)
+			return -ENOMEM;
+
+		memset(present + BITS_TO_LONGS(rbnode->blklen), 0,
+		       (BITS_TO_LONGS(blklen) - BITS_TO_LONGS(rbnode->blklen))
+		       * sizeof(*present));
+	} else {
+		present = rbnode->cache_present;
+	}
+
+	/* insert the register value in the correct place in the rbnode block */
+	if (pos == 0) {
+		memmove(blk + offset * map->cache_word_size,
+			blk, rbnode->blklen * map->cache_word_size);
+		bitmap_shift_left(present, present, offset, blklen);
+	}
+
+	/* update the rbnode block, its size and the base register */
+	rbnode->blklen = blklen;
+	rbnode->base_reg = base_reg;
+	rbnode->cache_present = present;
+
+	regcache_rbtree_set_register(map, rbnode, pos, value);
+	return 0;
+}
+
+static struct regcache_rbtree_node *
+regcache_rbtree_node_alloc(struct regmap *map, unsigned int reg)
+{
+	struct regcache_rbtree_node *rbnode;
+	const struct regmap_range *range;
+	int i;
+
+	rbnode = kzalloc(sizeof(*rbnode), map->alloc_flags);
+	if (!rbnode)
+		return NULL;
+
+	/* If there is a read table then use it to guess at an allocation */
+	if (map->rd_table) {
+		for (i = 0; i < map->rd_table->n_yes_ranges; i++) {
+			if (regmap_reg_in_range(reg,
+						&map->rd_table->yes_ranges[i]))
+				break;
+		}
+
+		if (i != map->rd_table->n_yes_ranges) {
+			range = &map->rd_table->yes_ranges[i];
+			rbnode->blklen = (range->range_max - range->range_min) /
+				map->reg_stride	+ 1;
+			rbnode->base_reg = range->range_min;
+		}
+	}
+
+	if (!rbnode->blklen) {
+		rbnode->blklen = 1;
+		rbnode->base_reg = reg;
+	}
+
+	rbnode->block = kmalloc_array(rbnode->blklen, map->cache_word_size,
+				      map->alloc_flags);
+	if (!rbnode->block)
+		goto err_free;
+
+	rbnode->cache_present = kcalloc(BITS_TO_LONGS(rbnode->blklen),
+					sizeof(*rbnode->cache_present),
+					map->alloc_flags);
+	if (!rbnode->cache_present)
+		goto err_free_block;
+
+	return rbnode;
+
+err_free_block:
+	kfree(rbnode->block);
+err_free:
+	kfree(rbnode);
+	return NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 				 unsigned int value)
 {
 	struct regcache_rbtree_ctx *rbtree_ctx;
 	struct regcache_rbtree_node *rbnode, *rbnode_tmp;
 	struct rb_node *node;
+<<<<<<< HEAD
 	unsigned int val;
 	unsigned int reg_tmp;
 	unsigned int pos;
@@ -305,11 +545,19 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 	int ret;
 
 	rbtree_ctx = map->cache;
+=======
+	unsigned int reg_tmp;
+	int ret;
+
+	rbtree_ctx = map->cache;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if we can't locate it in the cached rbnode we'll have
 	 * to traverse the rbtree looking for it.
 	 */
 	rbnode = regcache_rbtree_lookup(map, reg);
 	if (rbnode) {
+<<<<<<< HEAD
 		reg_tmp = reg - rbnode->base_reg;
 		val = regcache_rbtree_get_register(rbnode, reg_tmp,
 						   map->cache_word_size);
@@ -358,6 +606,83 @@ static int regcache_rbtree_write(struct regmap *map, unsigned int reg,
 		}
 		regcache_rbtree_set_register(rbnode, 0, value, map->cache_word_size);
 		regcache_rbtree_insert(&rbtree_ctx->root, rbnode);
+=======
+		reg_tmp = (reg - rbnode->base_reg) / map->reg_stride;
+		regcache_rbtree_set_register(map, rbnode, reg_tmp, value);
+	} else {
+		unsigned int base_reg, top_reg;
+		unsigned int new_base_reg, new_top_reg;
+		unsigned int min, max;
+		unsigned int max_dist;
+		unsigned int dist, best_dist = UINT_MAX;
+
+		max_dist = map->reg_stride * sizeof(*rbnode_tmp) /
+			map->cache_word_size;
+		if (reg < max_dist)
+			min = 0;
+		else
+			min = reg - max_dist;
+		max = reg + max_dist;
+
+		/* look for an adjacent register to the one we are about to add */
+		node = rbtree_ctx->root.rb_node;
+		while (node) {
+			rbnode_tmp = rb_entry(node, struct regcache_rbtree_node,
+					      node);
+
+			regcache_rbtree_get_base_top_reg(map, rbnode_tmp,
+				&base_reg, &top_reg);
+
+			if (base_reg <= max && top_reg >= min) {
+				if (reg < base_reg)
+					dist = base_reg - reg;
+				else if (reg > top_reg)
+					dist = reg - top_reg;
+				else
+					dist = 0;
+				if (dist < best_dist) {
+					rbnode = rbnode_tmp;
+					best_dist = dist;
+					new_base_reg = min(reg, base_reg);
+					new_top_reg = max(reg, top_reg);
+				}
+			}
+
+			/*
+			 * Keep looking, we want to choose the closest block,
+			 * otherwise we might end up creating overlapping
+			 * blocks, which breaks the rbtree.
+			 */
+			if (reg < base_reg)
+				node = node->rb_left;
+			else if (reg > top_reg)
+				node = node->rb_right;
+			else
+				break;
+		}
+
+		if (rbnode) {
+			ret = regcache_rbtree_insert_to_block(map, rbnode,
+							      new_base_reg,
+							      new_top_reg, reg,
+							      value);
+			if (ret)
+				return ret;
+			rbtree_ctx->cached_rbnode = rbnode;
+			return 0;
+		}
+
+		/* We did not manage to find a place to insert it in
+		 * an existing block so create a new rbnode.
+		 */
+		rbnode = regcache_rbtree_node_alloc(map, reg);
+		if (!rbnode)
+			return -ENOMEM;
+		regcache_rbtree_set_register(map, rbnode,
+					     (reg - rbnode->base_reg) / map->reg_stride,
+					     value);
+		regcache_rbtree_insert(map, &rbtree_ctx->root, rbnode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rbtree_ctx->cached_rbnode = rbnode;
 	}
 
@@ -370,15 +695,24 @@ static int regcache_rbtree_sync(struct regmap *map, unsigned int min,
 	struct regcache_rbtree_ctx *rbtree_ctx;
 	struct rb_node *node;
 	struct regcache_rbtree_node *rbnode;
+<<<<<<< HEAD
 	unsigned int regtmp;
 	unsigned int val;
 	int ret;
 	int i, base, end;
+=======
+	unsigned int base_reg, top_reg;
+	unsigned int start, end;
+	int ret;
+
+	map->async = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rbtree_ctx = map->cache;
 	for (node = rb_first(&rbtree_ctx->root); node; node = rb_next(node)) {
 		rbnode = rb_entry(node, struct regcache_rbtree_node, node);
 
+<<<<<<< HEAD
 		if (rbnode->base_reg < min)
 			continue;
 		if (rbnode->base_reg > max)
@@ -414,6 +748,68 @@ static int regcache_rbtree_sync(struct regmap *map, unsigned int min,
 			dev_dbg(map->dev, "Synced register %#x, value %#x\n",
 				regtmp, val);
 		}
+=======
+		regcache_rbtree_get_base_top_reg(map, rbnode, &base_reg,
+			&top_reg);
+		if (base_reg > max)
+			break;
+		if (top_reg < min)
+			continue;
+
+		if (min > base_reg)
+			start = (min - base_reg) / map->reg_stride;
+		else
+			start = 0;
+
+		if (max < top_reg)
+			end = (max - base_reg) / map->reg_stride + 1;
+		else
+			end = rbnode->blklen;
+
+		ret = regcache_sync_block(map, rbnode->block,
+					  rbnode->cache_present,
+					  rbnode->base_reg, start, end);
+		if (ret != 0)
+			return ret;
+	}
+
+	map->async = false;
+
+	return regmap_async_complete(map);
+}
+
+static int regcache_rbtree_drop(struct regmap *map, unsigned int min,
+				unsigned int max)
+{
+	struct regcache_rbtree_ctx *rbtree_ctx;
+	struct regcache_rbtree_node *rbnode;
+	struct rb_node *node;
+	unsigned int base_reg, top_reg;
+	unsigned int start, end;
+
+	rbtree_ctx = map->cache;
+	for (node = rb_first(&rbtree_ctx->root); node; node = rb_next(node)) {
+		rbnode = rb_entry(node, struct regcache_rbtree_node, node);
+
+		regcache_rbtree_get_base_top_reg(map, rbnode, &base_reg,
+			&top_reg);
+		if (base_reg > max)
+			break;
+		if (top_reg < min)
+			continue;
+
+		if (min > base_reg)
+			start = (min - base_reg) / map->reg_stride;
+		else
+			start = 0;
+
+		if (max < top_reg)
+			end = (max - base_reg) / map->reg_stride + 1;
+		else
+			end = rbnode->blklen;
+
+		bitmap_clear(rbnode->cache_present, start, end - start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -424,7 +820,17 @@ struct regcache_ops regcache_rbtree_ops = {
 	.name = "rbtree",
 	.init = regcache_rbtree_init,
 	.exit = regcache_rbtree_exit,
+<<<<<<< HEAD
 	.read = regcache_rbtree_read,
 	.write = regcache_rbtree_write,
 	.sync = regcache_rbtree_sync
+=======
+#ifdef CONFIG_DEBUG_FS
+	.debugfs_init = rbtree_debugfs_init,
+#endif
+	.read = regcache_rbtree_read,
+	.write = regcache_rbtree_write,
+	.sync = regcache_rbtree_sync,
+	.drop = regcache_rbtree_drop,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

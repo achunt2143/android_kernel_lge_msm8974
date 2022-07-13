@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_I8259_H
 #define _ASM_X86_I8259_H
 
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned int cached_irq_mask;
 
@@ -17,6 +25,11 @@ extern unsigned int cached_irq_mask;
 #define PIC_MASTER_OCW3		PIC_MASTER_ISR
 #define PIC_SLAVE_CMD		0xa0
 #define PIC_SLAVE_IMR		0xa1
+<<<<<<< HEAD
+=======
+#define PIC_ELCR1		0x4d0
+#define PIC_ELCR2		0x4d1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* i8259A PIC related value */
 #define PIC_CASCADE_IR		2
@@ -60,11 +73,33 @@ struct legacy_pic {
 	void (*mask_all)(void);
 	void (*restore_mask)(void);
 	void (*init)(int auto_eoi);
+<<<<<<< HEAD
+=======
+	int (*probe)(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*irq_pending)(unsigned int irq);
 	void (*make_irq)(unsigned int irq);
 };
 
+<<<<<<< HEAD
 extern struct legacy_pic *legacy_pic;
 extern struct legacy_pic null_legacy_pic;
 
+=======
+void legacy_pic_pcat_compat(void);
+
+extern struct legacy_pic *legacy_pic;
+extern struct legacy_pic null_legacy_pic;
+
+static inline bool has_legacy_pic(void)
+{
+	return legacy_pic != &null_legacy_pic;
+}
+
+static inline int nr_legacy_irqs(void)
+{
+	return legacy_pic->nr_legacy_irqs;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_I8259_H */

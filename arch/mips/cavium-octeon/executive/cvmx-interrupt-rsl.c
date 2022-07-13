@@ -84,12 +84,21 @@ void __cvmx_interrupt_gmxx_enable(int interface)
 
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX)) {
 		if (mode.s.en) {
+<<<<<<< HEAD
 			switch (mode.cn56xx.mode) {
 			case 1:	/* XAUI */
 				num_ports = 1;
 				break;
 			case 2:	/* SGMII */
 			case 3:	/* PICMG */
+=======
+			switch (mode.cn52xx.mode) {
+			case 1: /* XAUI */
+				num_ports = 1;
+				break;
+			case 2: /* SGMII */
+			case 3: /* PICMG */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				num_ports = 4;
 				break;
 			default:	/* Disabled */
@@ -130,7 +139,11 @@ void __cvmx_interrupt_gmxx_enable(int interface)
 	if (num_ports) {
 		if (OCTEON_IS_MODEL(OCTEON_CN38XX)
 		    || OCTEON_IS_MODEL(OCTEON_CN58XX))
+<<<<<<< HEAD
 			gmx_tx_int_en.s.ncb_nxa = 1;
+=======
+			gmx_tx_int_en.cn38xx.ncb_nxa = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gmx_tx_int_en.s.pko_nxa = 1;
 	}
 	gmx_tx_int_en.s.undflw = (1 << num_ports) - 1;

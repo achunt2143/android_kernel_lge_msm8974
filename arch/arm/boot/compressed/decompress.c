@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _LINUX_STRING_H_
 
 #include <linux/compiler.h>	/* for inline */
@@ -5,16 +9,23 @@
 #include <linux/stddef.h>	/* for NULL */
 #include <linux/linkage.h>
 #include <asm/string.h>
+<<<<<<< HEAD
 
 extern unsigned long free_mem_ptr;
 extern unsigned long free_mem_end_ptr;
 extern void error(char *);
+=======
+#include "misc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STATIC static
 #define STATIC_RW_DATA	/* non-static please */
 
+<<<<<<< HEAD
 #define ARCH_HAS_DECOMP_WDOG
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Diagnostic functions */
 #ifdef DEBUG
 #  define Assert(cond,msg) {if(!(cond)) error(msg);}
@@ -32,6 +43,16 @@ extern void error(char *);
 #  define Tracecv(c,x)
 #endif
 
+<<<<<<< HEAD
+=======
+/* Not needed, but used in some headers pulled in by decompressors */
+extern char * strstr(const char * s1, const char *s2);
+extern size_t strlen(const char *s);
+extern int strcmp(const char *cs, const char *ct);
+extern int memcmp(const void *cs, const void *ct, size_t count);
+extern char * strchrnul(const char *, int);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KERNEL_GZIP
 #include "../../../../lib/decompress_inflate.c"
 #endif
@@ -45,7 +66,14 @@ extern void error(char *);
 #endif
 
 #ifdef CONFIG_KERNEL_XZ
+<<<<<<< HEAD
 #define memmove memmove
+=======
+/* Prevent KASAN override of string helpers in decompressor */
+#undef memmove
+#define memmove memmove
+#undef memcpy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define memcpy memcpy
 #include "../../../../lib/decompress_unxz.c"
 #endif
@@ -56,5 +84,9 @@ extern void error(char *);
 
 int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x))
 {
+<<<<<<< HEAD
 	return decompress(input, len, NULL, NULL, output, NULL, error);
+=======
+	return __decompress(input, len, NULL, NULL, output, 0, NULL, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

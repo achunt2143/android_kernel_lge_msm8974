@@ -1,6 +1,11 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
  * All rights reserved.
+=======
+ * Copyright (c) 2012 - 2018 Intel Corporation.  All rights reserved.
+ * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -41,8 +46,18 @@
 #include <linux/interrupt.h>
 #include <linux/kref.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
 #include <rdma/ib_pack.h>
 #include <rdma/ib_user_verbs.h>
+=======
+#include <linux/kthread.h>
+#include <linux/completion.h>
+#include <rdma/ib_pack.h>
+#include <rdma/ib_user_verbs.h>
+#include <rdma/ib_hdrs.h>
+#include <rdma/rdmavt_qp.h>
+#include <rdma/rdmavt_cq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qib_ctxtdata;
 struct qib_pportdata;
@@ -51,9 +66,13 @@ struct qib_verbs_txreq;
 
 #define QIB_MAX_RDMA_ATOMIC     16
 #define QIB_GUIDS_PER_PORT	5
+<<<<<<< HEAD
 
 #define QPN_MAX                 (1 << 24)
 #define QPNMAP_ENTRIES          (QPN_MAX / PAGE_SIZE / BITS_PER_BYTE)
+=======
+#define QIB_PSN_SHIFT		8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Increment this value if any changes that break userspace ABI
@@ -61,6 +80,7 @@ struct qib_verbs_txreq;
  */
 #define QIB_UVERBS_ABI_VERSION       2
 
+<<<<<<< HEAD
 /*
  * Define an ib_cq_notify value that is not valid so we know when CQ
  * notifications are armed.
@@ -88,6 +108,8 @@ struct qib_verbs_txreq;
 #define QIB_PROCESS_OR_FLUSH_SEND \
 	(QIB_PROCESS_SEND_OK | QIB_FLUSH_SEND)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IB Performance Manager status values */
 #define IB_PMA_SAMPLE_STATUS_DONE       0x00
 #define IB_PMA_SAMPLE_STATUS_STARTED    0x01
@@ -102,6 +124,7 @@ struct qib_verbs_txreq;
 
 #define QIB_VENDOR_IPG		cpu_to_be16(0xFFA0)
 
+<<<<<<< HEAD
 #define IB_BTH_REQ_ACK		(1 << 31)
 #define IB_BTH_SOLICITED	(1 << 23)
 #define IB_BTH_MIG_REQ		(1 << 22)
@@ -118,6 +141,8 @@ struct qib_verbs_txreq;
 #define IB_GRH_FLOW_SHIFT	0
 #define IB_GRH_NEXT_HDR		0x1B
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IB_DEFAULT_GID_PREFIX	cpu_to_be64(0xfe80000000000000ULL)
 
 /* Values for set/get portinfo VLCap OperationalVLs */
@@ -144,6 +169,7 @@ static inline int qib_num_vls(int vls)
 	}
 }
 
+<<<<<<< HEAD
 struct ib_reth {
 	__be64 vaddr;
 	__be32 rkey;
@@ -632,11 +658,35 @@ struct qib_lkey_table {
 	struct qib_mregion **table;
 };
 
+=======
+struct qib_pio_header {
+	__le32 pbc[2];
+	struct ib_header hdr;
+} __packed;
+
+/*
+ * qib specific data structure that will be hidden from rvt after the queue pair
+ * is made common.
+ */
+struct qib_qp_priv {
+	struct ib_header *s_hdr;        /* next packet header to send */
+	struct list_head iowait;        /* link for wait PIO buf */
+	atomic_t s_dma_busy;
+	struct qib_verbs_txreq *s_tx;
+	struct work_struct s_work;
+	wait_queue_head_t wait_dma;
+	struct rvt_qp *owner;
+};
+
+#define QIB_PSN_CREDIT  16
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qib_opcode_stats {
 	u64 n_packets;          /* number of packets */
 	u64 n_bytes;            /* total number of bytes */
 };
 
+<<<<<<< HEAD
 struct qib_ibport {
 	struct qib_qp *qp0;
 	struct qib_qp *qp1;
@@ -653,10 +703,31 @@ struct qib_ibport {
 	__be64 mkey;
 	__be64 guids[QIB_GUIDS_PER_PORT	- 1];	/* writable GUIDs */
 	u64 tid;		/* TID for traps */
+=======
+struct qib_opcode_stats_perctx {
+	struct qib_opcode_stats stats[128];
+};
+
+struct qib_pma_counters {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 n_unicast_xmit;     /* total unicast packets sent */
 	u64 n_unicast_rcv;      /* total unicast packets received */
 	u64 n_multicast_xmit;   /* total multicast packets sent */
 	u64 n_multicast_rcv;    /* total multicast packets received */
+<<<<<<< HEAD
+=======
+};
+
+struct qib_ibport {
+	struct rvt_ibport rvp;
+	struct rvt_ah *smi_ah;
+	__be64 guids[QIB_GUIDS_PER_PORT	- 1];	/* writable GUIDs */
+	struct qib_pma_counters __percpu *pmastats;
+	u64 z_unicast_xmit;     /* starting count for PMA */
+	u64 z_unicast_rcv;      /* starting count for PMA */
+	u64 z_multicast_xmit;   /* starting count for PMA */
+	u64 z_multicast_rcv;    /* starting count for PMA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 z_symbol_error_counter;             /* starting count for PMA */
 	u64 z_link_error_recovery_counter;      /* starting count for PMA */
 	u64 z_link_downed_counter;              /* starting count for PMA */
@@ -670,6 +741,7 @@ struct qib_ibport {
 	u32 z_local_link_integrity_errors;      /* starting count for PMA */
 	u32 z_excessive_buffer_overrun_errors;  /* starting count for PMA */
 	u32 z_vl15_dropped;                     /* starting count for PMA */
+<<<<<<< HEAD
 	u32 n_rc_resends;
 	u32 n_rc_acks;
 	u32 n_rc_qacks;
@@ -716,12 +788,21 @@ struct qib_ibdev {
 	/* QP numbers are shared by all IB ports */
 	struct qib_qpn_table qpn_table;
 	struct qib_lkey_table lk_table;
+=======
+	u8 sl_to_vl[16];
+};
+
+struct qib_ibdev {
+	struct rvt_dev_info rdi;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head piowait;       /* list for wait PIO buf */
 	struct list_head dmawait;	/* list for wait DMA */
 	struct list_head txwait;        /* list for wait qib_verbs_txreq */
 	struct list_head memwait;       /* list for wait kernel memory */
 	struct list_head txreq_free;
 	struct timer_list mem_timer;
+<<<<<<< HEAD
 	struct qib_qp **qp_table;
 	struct qib_pio_header *pio_hdrs;
 	dma_addr_t pio_hdrs_phys;
@@ -730,10 +811,15 @@ struct qib_ibdev {
 	u32 qp_table_size; /* size of the hash table */
 	u32 qp_rnd; /* random bytes for hash */
 	spinlock_t qpt_lock;
+=======
+	struct qib_pio_header *pio_hdrs;
+	dma_addr_t pio_hdrs_phys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 n_piowait;
 	u32 n_txwait;
 
+<<<<<<< HEAD
 	u32 n_pds_allocated;    /* number of PDs allocated for device */
 	spinlock_t n_pds_lock;
 	u32 n_ahs_allocated;    /* number of AHs allocated for device */
@@ -746,6 +832,12 @@ struct qib_ibdev {
 	spinlock_t n_srqs_lock;
 	u32 n_mcast_grps_allocated; /* number of mcast groups allocated */
 	spinlock_t n_mcast_grps_lock;
+=======
+#ifdef CONFIG_DEBUG_FS
+	/* per HCA debugfs */
+	struct dentry *qib_ibdev_dbg;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qib_verbs_counters {
@@ -764,6 +856,7 @@ struct qib_verbs_counters {
 	u32 vl15_dropped;
 };
 
+<<<<<<< HEAD
 static inline struct qib_mr *to_imr(struct ib_mr *ibmr)
 {
 	return container_of(ibmr, struct qib_mr, ibmr);
@@ -797,12 +890,21 @@ static inline struct qib_qp *to_iqp(struct ib_qp *ibqp)
 static inline struct qib_ibdev *to_idev(struct ib_device *ibdev)
 {
 	return container_of(ibdev, struct qib_ibdev, ibdev);
+=======
+static inline struct qib_ibdev *to_idev(struct ib_device *ibdev)
+{
+	struct rvt_dev_info *rdi;
+
+	rdi = container_of(ibdev, struct rvt_dev_info, ibdev);
+	return container_of(rdi, struct qib_ibdev, rdi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Send if not busy or waiting for I/O and either
  * a RC response is pending or we can process send work requests.
  */
+<<<<<<< HEAD
 static inline int qib_send_ok(struct qib_qp *qp)
 {
 	return !(qp->s_flags & (QIB_S_BUSY | QIB_S_ANY_WAIT_IO)) &&
@@ -820,6 +922,17 @@ static inline void qib_schedule_send(struct qib_qp *qp)
 	if (qib_send_ok(qp))
 		queue_work(ib_wq, &qp->s_work);
 }
+=======
+static inline int qib_send_ok(struct rvt_qp *qp)
+{
+	return !(qp->s_flags & (RVT_S_BUSY | RVT_S_ANY_WAIT_IO)) &&
+		(qp->s_hdrwords || (qp->s_flags & RVT_S_RESP_PENDING) ||
+		 !(qp->s_flags & RVT_S_ANY_WAIT_SEND));
+}
+
+bool _qib_schedule_send(struct rvt_qp *qp);
+bool qib_schedule_send(struct rvt_qp *qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int qib_pkey_ok(u16 pkey1, u16 pkey2)
 {
@@ -833,6 +946,7 @@ static inline int qib_pkey_ok(u16 pkey1, u16 pkey2)
 	return p1 && p1 == p2 && ((__s16)pkey1 < 0 || (__s16)pkey2 < 0);
 }
 
+<<<<<<< HEAD
 void qib_bad_pqkey(struct qib_ibport *ibp, __be16 trap_num, u32 key, u32 sl,
 		   u32 qp1, u32 qp2, __be16 lid1, __be16 lid2);
 void qib_cap_mask_chg(struct qib_ibport *ibp);
@@ -843,6 +957,19 @@ int qib_process_mad(struct ib_device *ibdev, int mad_flags, u8 port_num,
 		    struct ib_mad *in_mad, struct ib_mad *out_mad);
 int qib_create_agents(struct qib_ibdev *dev);
 void qib_free_agents(struct qib_ibdev *dev);
+=======
+void qib_bad_pkey(struct qib_ibport *ibp, u32 key, u32 sl,
+		  u32 qp1, u32 qp2, __be16 lid1, __be16 lid2);
+void qib_cap_mask_chg(struct rvt_dev_info *rdi, u32 port_num);
+void qib_sys_guid_chg(struct qib_ibport *ibp);
+void qib_node_desc_chg(struct qib_ibport *ibp);
+int qib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
+		    const struct ib_wc *in_wc, const struct ib_grh *in_grh,
+		    const struct ib_mad *in, struct ib_mad *out,
+		    size_t *out_mad_size, u16 *out_mad_pkey_index);
+void qib_notify_create_mad_agent(struct rvt_dev_info *rdi, int port_idx);
+void qib_notify_free_mad_agent(struct rvt_dev_info *rdi, int port_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Compare the lower 24 bits of the two values.
@@ -853,8 +980,11 @@ static inline int qib_cmp24(u32 a, u32 b)
 	return (((int) a) - ((int) b)) << 8;
 }
 
+<<<<<<< HEAD
 struct qib_mcast *qib_mcast_find(struct qib_ibport *ibp, union ib_gid *mgid);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qib_snapshot_counters(struct qib_pportdata *ppd, u64 *swords,
 			  u64 *rwords, u64 *spkts, u64 *rpkts,
 			  u64 *xmit_wait);
@@ -862,6 +992,7 @@ int qib_snapshot_counters(struct qib_pportdata *ppd, u64 *swords,
 int qib_get_counters(struct qib_pportdata *ppd,
 		     struct qib_verbs_counters *cntrs);
 
+<<<<<<< HEAD
 int qib_multicast_attach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);
 
 int qib_multicast_detach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);
@@ -893,6 +1024,23 @@ void qib_init_qpn_table(struct qib_devdata *dd, struct qib_qpn_table *qpt);
 void qib_free_qpn_table(struct qib_qpn_table *qpt);
 
 void qib_get_credit(struct qib_qp *qp, u32 aeth);
+=======
+/*
+ * Functions provided by qib driver for rdmavt to use
+ */
+unsigned qib_free_all_qps(struct rvt_dev_info *rdi);
+void *qib_qp_priv_alloc(struct rvt_dev_info *rdi, struct rvt_qp *qp);
+void qib_qp_priv_free(struct rvt_dev_info *rdi, struct rvt_qp *qp);
+void qib_notify_qp_reset(struct rvt_qp *qp);
+int qib_alloc_qpn(struct rvt_dev_info *rdi, struct rvt_qpn_table *qpt,
+		  enum ib_qp_type type, u32 port);
+void qib_restart_rc(struct rvt_qp *qp, u32 psn, int wait);
+#ifdef CONFIG_DEBUG_FS
+
+void qib_qp_iter_print(struct seq_file *s, struct rvt_qp_iter *iter);
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned qib_pkt_delay(u32 plen, u8 snd_mult, u8 rcv_mult);
 
@@ -900,6 +1048,7 @@ void qib_verbs_sdma_desc_avail(struct qib_pportdata *ppd, unsigned avail);
 
 void qib_put_txreq(struct qib_verbs_txreq *tx);
 
+<<<<<<< HEAD
 int qib_verbs_send(struct qib_qp *qp, struct qib_ib_header *hdr,
 		   u32 hdrwords, struct qib_sge_state *ss, u32 len);
 
@@ -1033,6 +1182,57 @@ int qib_make_rc_req(struct qib_qp *qp);
 int qib_make_uc_req(struct qib_qp *qp);
 
 int qib_make_ud_req(struct qib_qp *qp);
+=======
+int qib_verbs_send(struct rvt_qp *qp, struct ib_header *hdr,
+		   u32 hdrwords, struct rvt_sge_state *ss, u32 len);
+
+void qib_uc_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
+		int has_grh, void *data, u32 tlen, struct rvt_qp *qp);
+
+void qib_rc_rcv(struct qib_ctxtdata *rcd, struct ib_header *hdr,
+		int has_grh, void *data, u32 tlen, struct rvt_qp *qp);
+
+int qib_check_ah(struct ib_device *ibdev, struct rdma_ah_attr *ah_attr);
+
+int qib_check_send_wqe(struct rvt_qp *qp, struct rvt_swqe *wqe,
+		       bool *call_send);
+
+struct ib_ah *qib_create_qp0_ah(struct qib_ibport *ibp, u16 dlid);
+
+void qib_rc_rnr_retry(unsigned long arg);
+
+void qib_rc_send_complete(struct rvt_qp *qp, struct ib_header *hdr);
+
+int qib_post_ud_send(struct rvt_qp *qp, const struct ib_send_wr *wr);
+
+void qib_ud_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
+		int has_grh, void *data, u32 tlen, struct rvt_qp *qp);
+
+void mr_rcu_callback(struct rcu_head *list);
+
+void qib_migrate_qp(struct rvt_qp *qp);
+
+int qib_ruc_check_hdr(struct qib_ibport *ibp, struct ib_header *hdr,
+		      int has_grh, struct rvt_qp *qp, u32 bth0);
+
+u32 qib_make_grh(struct qib_ibport *ibp, struct ib_grh *hdr,
+		 const struct ib_global_route *grh, u32 hwords, u32 nwords);
+
+void qib_make_ruc_header(struct rvt_qp *qp, struct ib_other_headers *ohdr,
+			 u32 bth0, u32 bth2);
+
+void _qib_do_send(struct work_struct *work);
+
+void qib_do_send(struct rvt_qp *qp);
+
+void qib_send_rc_ack(struct rvt_qp *qp);
+
+int qib_make_rc_req(struct rvt_qp *qp, unsigned long *flags);
+
+int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags);
+
+int qib_make_ud_req(struct rvt_qp *qp, unsigned long *flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int qib_register_ib_device(struct qib_devdata *);
 
@@ -1066,11 +1266,19 @@ extern const enum ib_wc_opcode ib_qib_wc_opcode[];
 #define IB_PHYSPORTSTATE_CFG_ENH 0x10
 #define IB_PHYSPORTSTATE_CFG_WAIT_ENH 0x13
 
+<<<<<<< HEAD
 extern const int ib_qib_state_ops[];
 
 extern __be64 ib_qib_sys_image_guid;    /* in network order */
 
 extern unsigned int ib_qib_lkey_table_size;
+=======
+extern const int ib_rvt_state_ops[];
+
+extern __be64 ib_qib_sys_image_guid;    /* in network order */
+
+extern unsigned int ib_rvt_lkey_table_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned int ib_qib_max_cqes;
 
@@ -1094,6 +1302,10 @@ extern unsigned int ib_qib_max_srq_wrs;
 
 extern const u32 ib_qib_rnr_table[];
 
+<<<<<<< HEAD
 extern struct ib_dma_mapping_ops qib_dma_mapping_ops;
+=======
+extern const struct rvt_operation_params qib_post_parms[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif                          /* QIB_VERBS_H */

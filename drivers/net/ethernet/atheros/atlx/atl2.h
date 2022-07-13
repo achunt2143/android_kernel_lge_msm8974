@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* atl2.h -- atl2 driver definitions
  *
  * Copyright(c) 2007 Atheros Corporation. All rights reserved.
@@ -6,6 +10,7 @@
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATL2_H_
@@ -42,7 +49,11 @@
 #include "atlx.h"
 
 #ifdef ETHTOOL_OPS_COMPAT
+<<<<<<< HEAD
 extern int ethtool_ioctl(struct ifreq *ifr);
+=======
+int ethtool_ioctl(struct ifreq *ifr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define PCI_COMMAND_REGISTER	PCI_COMMAND
@@ -228,12 +239,18 @@ static void atl2_force_ps(struct atl2_hw *hw);
 #define AUTONEG_ADVERTISE_SPEED_DEFAULT	0x000F	/* Everything */
 
 /* The size (in bytes) of a ethernet packet */
+<<<<<<< HEAD
 #define ENET_HEADER_SIZE		14
 #define MAXIMUM_ETHERNET_FRAME_SIZE	1518	/* with FCS */
 #define MINIMUM_ETHERNET_FRAME_SIZE	64	/* with FCS */
 #define ETHERNET_FCS_SIZE		4
 #define MAX_JUMBO_FRAME_SIZE		0x2000
 #define VLAN_SIZE                                               4
+=======
+#define MAXIMUM_ETHERNET_FRAME_SIZE	1518	/* with FCS */
+#define MINIMUM_ETHERNET_FRAME_SIZE	64	/* with FCS */
+#define MAX_JUMBO_FRAME_SIZE		0x2000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct tx_pkt_header {
 	unsigned pkt_size:11;
@@ -263,7 +280,11 @@ struct tx_pkt_status {
 	unsigned multi_col:1;
 	unsigned late_col:1;
 	unsigned abort_col:1;
+<<<<<<< HEAD
 	unsigned underun:1;	/* current packet is aborted
+=======
+	unsigned underrun:1;	/* current packet is aborted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * due to txram underrun */
 	unsigned:3;		/* reserved */
 	unsigned update:1;	/* always 1'b1 in tx_status_buf */

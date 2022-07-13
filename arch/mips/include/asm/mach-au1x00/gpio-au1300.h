@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * gpio-au1300.h -- GPIO control for Au1300 GPIC and compatibles.
  *
@@ -97,11 +101,14 @@ static inline int au1300_gpio_is_valid(unsigned int gpio)
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int au1300_gpio_cansleep(unsigned int gpio)
 {
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* hardware remembers gpio 0-63 levels on powerup */
 static inline int au1300_gpio_getinitlvl(unsigned int gpio)
 {
@@ -119,6 +126,7 @@ static inline int au1300_gpio_getinitlvl(unsigned int gpio)
 	return (v >> gpio) & 1;
 }
 
+<<<<<<< HEAD
 /**********************************************************************/
 
 /* Linux gpio framework integration.
@@ -256,4 +264,6 @@ static inline int gpio_export_link(struct device *dev, const char *name,
 
 #endif	/* CONFIG GPIOLIB */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _GPIO_AU1300_H_ */

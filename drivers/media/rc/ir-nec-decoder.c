@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ir-nec-decoder.c - handle NEC IR Pulse/Space protocol
  *
  * Copyright (C) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
@@ -11,13 +12,23 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+// ir-nec-decoder.c - handle NEC IR Pulse/Space protocol
+//
+// Copyright (C) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
 #define NEC_NBITS		32
+<<<<<<< HEAD
 #define NEC_UNIT		562500  /* ns */
+=======
+#define NEC_UNIT		563  /* us */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NEC_HEADER_PULSE	(16 * NEC_UNIT)
 #define NECX_HEADER_PULSE	(8  * NEC_UNIT) /* Less common NEC variant */
 #define NEC_HEADER_SPACE	(8  * NEC_UNIT)
@@ -41,7 +52,11 @@ enum nec_state {
 /**
  * ir_nec_decode() - Decode one NEC pulse or space
  * @dev:	the struct rc_dev descriptor of the device
+<<<<<<< HEAD
  * @duration:	the struct ir_raw_event descriptor of the pulse/space
+=======
+ * @ev:		the struct ir_raw_event descriptor of the pulse/space
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function returns -EINVAL if the pulse violates the state machine
  */
@@ -49,6 +64,7 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct nec_dec *data = &dev->raw->nec;
 	u32 scancode;
+<<<<<<< HEAD
 	u8 address, not_address, command, not_command;
 	bool send_32bits = false;
 
@@ -57,12 +73,24 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 
 	if (!is_timing_event(ev)) {
 		if (ev.reset)
+=======
+	enum rc_proto rc_proto;
+	u8 address, not_address, command, not_command;
+
+	if (!is_timing_event(ev)) {
+		if (ev.overflow)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->state = STATE_INACTIVE;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	IR_dprintk(2, "NEC decode started at state %d (%uus %s)\n",
 		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
+=======
+	dev_dbg(&dev->dev, "NEC decode started at state %d (%uus %s)\n",
+		data->state, ev.duration, TO_STR(ev.pulse));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (data->state) {
 
@@ -70,7 +98,11 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		if (!ev.pulse)
 			break;
 
+<<<<<<< HEAD
 		if (eq_margin(ev.duration, NEC_HEADER_PULSE, NEC_UNIT / 2)) {
+=======
+		if (eq_margin(ev.duration, NEC_HEADER_PULSE, NEC_UNIT * 2)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->is_nec_x = false;
 			data->necx_repeat = false;
 		} else if (eq_margin(ev.duration, NECX_HEADER_PULSE, NEC_UNIT / 2))
@@ -86,6 +118,7 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		if (ev.pulse)
 			break;
 
+<<<<<<< HEAD
 		if (eq_margin(ev.duration, NEC_HEADER_SPACE, NEC_UNIT / 2)) {
 			data->state = STATE_BIT_PULSE;
 			return 0;
@@ -97,6 +130,13 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 				IR_dprintk(1, "Repeat last key\n");
 				data->state = STATE_TRAILER_PULSE;
 			}
+=======
+		if (eq_margin(ev.duration, NEC_HEADER_SPACE, NEC_UNIT)) {
+			data->state = STATE_BIT_PULSE;
+			return 0;
+		} else if (eq_margin(ev.duration, NEC_REPEAT_SPACE, NEC_UNIT / 2)) {
+			data->state = STATE_TRAILER_PULSE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
@@ -117,6 +157,7 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			break;
 
 		if (data->necx_repeat && data->count == NECX_REPEAT_BITS &&
+<<<<<<< HEAD
 			geq_margin(ev.duration,
 			NEC_TRAILER_SPACE, NEC_UNIT / 2)) {
 				IR_dprintk(1, "Repeat last key\n");
@@ -124,6 +165,13 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 				data->state = STATE_INACTIVE;
 				return 0;
 
+=======
+		    geq_margin(ev.duration, NEC_TRAILER_SPACE, NEC_UNIT / 2)) {
+			dev_dbg(&dev->dev, "Repeat last key\n");
+			rc_repeat(dev);
+			data->state = STATE_INACTIVE;
+			return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (data->count > NECX_REPEAT_BITS)
 			data->necx_repeat = false;
 
@@ -149,10 +197,13 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			break;
 
 		data->state = STATE_TRAILER_SPACE;
+<<<<<<< HEAD
 
 		if (data->is_nec_x)
 			goto rc_data;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	case STATE_TRAILER_SPACE:
@@ -161,6 +212,7 @@ static int ir_nec_decode(struct rc_dev *dev, struct ir_raw_event ev)
 
 		if (!geq_margin(ev.duration, NEC_TRAILER_SPACE, NEC_UNIT / 2))
 			break;
+<<<<<<< HEAD
 rc_data:
 		address     = bitrev8((data->bits >> 24) & 0xff);
 		not_address = bitrev8((data->bits >> 16) & 0xff);
@@ -194,19 +246,136 @@ rc_data:
 			data->necx_repeat = true;
 
 		rc_keydown(dev, scancode, 0);
+=======
+
+		if (data->count == NEC_NBITS) {
+			address     = bitrev8((data->bits >> 24) & 0xff);
+			not_address = bitrev8((data->bits >> 16) & 0xff);
+			command	    = bitrev8((data->bits >>  8) & 0xff);
+			not_command = bitrev8((data->bits >>  0) & 0xff);
+
+			scancode = ir_nec_bytes_to_scancode(address,
+							    not_address,
+							    command,
+							    not_command,
+							    &rc_proto);
+
+			if (data->is_nec_x)
+				data->necx_repeat = true;
+
+			rc_keydown(dev, rc_proto, scancode, 0);
+		} else {
+			rc_repeat(dev);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->state = STATE_INACTIVE;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	IR_dprintk(1, "NEC decode failed at count %d state %d (%uus %s)\n",
 		   data->count, data->state, TO_US(ev.duration), TO_STR(ev.pulse));
+=======
+	dev_dbg(&dev->dev, "NEC decode failed at count %d state %d (%uus %s)\n",
+		data->count, data->state, ev.duration, TO_STR(ev.pulse));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->state = STATE_INACTIVE;
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct ir_raw_handler nec_handler = {
 	.protocols	= RC_TYPE_NEC,
 	.decode		= ir_nec_decode,
+=======
+/**
+ * ir_nec_scancode_to_raw() - encode an NEC scancode ready for modulation.
+ * @protocol:	specific protocol to use
+ * @scancode:	a single NEC scancode.
+ */
+static u32 ir_nec_scancode_to_raw(enum rc_proto protocol, u32 scancode)
+{
+	unsigned int addr, addr_inv, data, data_inv;
+
+	data = scancode & 0xff;
+
+	if (protocol == RC_PROTO_NEC32) {
+		/* 32-bit NEC (used by Apple and TiVo remotes) */
+		/* scan encoding: aaAAddDD */
+		addr_inv   = (scancode >> 24) & 0xff;
+		addr       = (scancode >> 16) & 0xff;
+		data_inv   = (scancode >>  8) & 0xff;
+	} else if (protocol == RC_PROTO_NECX) {
+		/* Extended NEC */
+		/* scan encoding AAaaDD */
+		addr       = (scancode >> 16) & 0xff;
+		addr_inv   = (scancode >>  8) & 0xff;
+		data_inv   = data ^ 0xff;
+	} else {
+		/* Normal NEC */
+		/* scan encoding: AADD */
+		addr       = (scancode >>  8) & 0xff;
+		addr_inv   = addr ^ 0xff;
+		data_inv   = data ^ 0xff;
+	}
+
+	/* raw encoding: ddDDaaAA */
+	return data_inv << 24 |
+	       data     << 16 |
+	       addr_inv <<  8 |
+	       addr;
+}
+
+static const struct ir_raw_timings_pd ir_nec_timings = {
+	.header_pulse	= NEC_HEADER_PULSE,
+	.header_space	= NEC_HEADER_SPACE,
+	.bit_pulse	= NEC_BIT_PULSE,
+	.bit_space[0]	= NEC_BIT_0_SPACE,
+	.bit_space[1]	= NEC_BIT_1_SPACE,
+	.trailer_pulse	= NEC_TRAILER_PULSE,
+	.trailer_space	= NEC_TRAILER_SPACE,
+	.msb_first	= 0,
+};
+
+/**
+ * ir_nec_encode() - Encode a scancode as a stream of raw events
+ *
+ * @protocol:	protocol to encode
+ * @scancode:	scancode to encode
+ * @events:	array of raw ir events to write into
+ * @max:	maximum size of @events
+ *
+ * Returns:	The number of events written.
+ *		-ENOBUFS if there isn't enough space in the array to fit the
+ *		encoding. In this case all @max events will have been written.
+ */
+static int ir_nec_encode(enum rc_proto protocol, u32 scancode,
+			 struct ir_raw_event *events, unsigned int max)
+{
+	struct ir_raw_event *e = events;
+	int ret;
+	u32 raw;
+
+	/* Convert a NEC scancode to raw NEC data */
+	raw = ir_nec_scancode_to_raw(protocol, scancode);
+
+	/* Modulate the raw data using a pulse distance modulation */
+	ret = ir_raw_gen_pd(&e, max, &ir_nec_timings, NEC_NBITS, raw);
+	if (ret < 0)
+		return ret;
+
+	return e - events;
+}
+
+static struct ir_raw_handler nec_handler = {
+	.protocols	= RC_PROTO_BIT_NEC | RC_PROTO_BIT_NECX |
+							RC_PROTO_BIT_NEC32,
+	.decode		= ir_nec_decode,
+	.encode		= ir_nec_encode,
+	.carrier	= 38000,
+	.min_timeout	= NEC_TRAILER_SPACE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ir_nec_decode_init(void)
@@ -225,7 +394,12 @@ static void __exit ir_nec_decode_exit(void)
 module_init(ir_nec_decode_init);
 module_exit(ir_nec_decode_exit);
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_LICENSE("GPL v2");
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com)");
 MODULE_DESCRIPTION("NEC IR protocol decoder");

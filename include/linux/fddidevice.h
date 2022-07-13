@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the BSD Socket
@@ -13,11 +17,14 @@
  *			Ross Biro
  *			Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
  *			Alan Cox, <gw4pts@gw4pts.ampr.org>
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_FDDIDEVICE_H
 #define _LINUX_FDDIDEVICE_H
@@ -25,10 +32,15 @@
 #include <linux/if_fddi.h>
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 extern __be16	fddi_type_trans(struct sk_buff *skb,
 				struct net_device *dev);
 extern int fddi_change_mtu(struct net_device *dev, int new_mtu);
 extern struct net_device *alloc_fddidev(int sizeof_priv);
+=======
+__be16 fddi_type_trans(struct sk_buff *skb, struct net_device *dev);
+struct net_device *alloc_fddidev(int sizeof_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif	/* _LINUX_FDDIDEVICE_H */

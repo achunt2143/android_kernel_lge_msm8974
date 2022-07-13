@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmast.c
  *
  * AST and BAST functionality for local and remote nodes
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -38,15 +46,25 @@
 #include <linux/spinlock.h>
 
 
+<<<<<<< HEAD
 #include "cluster/heartbeat.h"
 #include "cluster/nodemanager.h"
 #include "cluster/tcp.h"
+=======
+#include "../cluster/heartbeat.h"
+#include "../cluster/nodemanager.h"
+#include "../cluster/tcp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
 
 #define MLOG_MASK_PREFIX ML_DLM
+<<<<<<< HEAD
 #include "cluster/masklog.h"
+=======
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dlm_update_lvb(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 			   struct dlm_lock *lock);
@@ -180,6 +198,7 @@ void __dlm_queue_bast(struct dlm_ctxt *dlm, struct dlm_lock *lock)
 	spin_unlock(&lock->spinlock);
 }
 
+<<<<<<< HEAD
 void dlm_queue_bast(struct dlm_ctxt *dlm, struct dlm_lock *lock)
 {
 	BUG_ON(!dlm);
@@ -190,6 +209,8 @@ void dlm_queue_bast(struct dlm_ctxt *dlm, struct dlm_lock *lock)
 	spin_unlock(&dlm->ast_lock);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dlm_update_lvb(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 			   struct dlm_lock *lock)
 {
@@ -224,14 +245,20 @@ void dlm_do_local_ast(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 		      struct dlm_lock *lock)
 {
 	dlm_astlockfunc_t *fn;
+<<<<<<< HEAD
 	struct dlm_lockstatus *lksb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "%s: res %.*s, lock %u:%llu, Local AST\n", dlm->name,
 	     res->lockname.len, res->lockname.name,
 	     dlm_get_lock_cookie_node(be64_to_cpu(lock->ml.cookie)),
 	     dlm_get_lock_cookie_seq(be64_to_cpu(lock->ml.cookie)));
 
+<<<<<<< HEAD
 	lksb = lock->lksb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fn = lock->ast;
 	BUG_ON(lock->ml.node != dlm->node_num);
 
@@ -292,8 +319,13 @@ int dlm_proxy_ast_handler(struct o2net_msg *msg, u32 len, void *data,
 	struct dlm_lock *lock = NULL;
 	struct dlm_proxy_ast *past = (struct dlm_proxy_ast *) msg->buf;
 	char *name;
+<<<<<<< HEAD
 	struct list_head *iter, *head=NULL;
 	u64 cookie;
+=======
+	struct list_head *head = NULL;
+	__be64 cookie;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 flags;
 	u8 node;
 
@@ -373,8 +405,12 @@ int dlm_proxy_ast_handler(struct o2net_msg *msg, u32 len, void *data,
 	/* try convert queue for both ast/bast */
 	head = &res->converting;
 	lock = NULL;
+<<<<<<< HEAD
 	list_for_each(iter, head) {
 		lock = list_entry (iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, head, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lock->ml.cookie == cookie)
 			goto do_ast;
 	}
@@ -385,10 +421,20 @@ int dlm_proxy_ast_handler(struct o2net_msg *msg, u32 len, void *data,
 	else
 		head = &res->granted;
 
+<<<<<<< HEAD
 	list_for_each(iter, head) {
 		lock = list_entry (iter, struct dlm_lock, list);
 		if (lock->ml.cookie == cookie)
 			goto do_ast;
+=======
+	list_for_each_entry(lock, head, list) {
+		/* if lock is found but unlock is pending ignore the bast */
+		if (lock->ml.cookie == cookie) {
+			if (lock->unlock_pending)
+				break;
+			goto do_ast;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mlog(0, "Got %sast for unknown lock! cookie=%u:%llu, name=%.*s, "

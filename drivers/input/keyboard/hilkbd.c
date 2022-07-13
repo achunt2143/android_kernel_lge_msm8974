@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/hil/hilkbd.c
  *
  *  Copyright (C) 1998 Philip Blundell <philb@gnu.org>
+<<<<<<< HEAD
  *  Copyright (C) 1999 Matthew Wilcox <willy@bofh.ai>
+=======
+ *  Copyright (C) 1999 Matthew Wilcox <willy@infradead.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (C) 1999-2007 Helge Deller <deller@gmx.de>
  *
  *  Very basic HP Human Interface Loop (HIL) driver.
  *  This driver handles the keyboard on HP300 (m68k) and on some
  *  HP700 (parisc) series machines.
+<<<<<<< HEAD
  *
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License version 2.  See the file COPYING in the main directory of this
  * archive for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci_ids.h>
@@ -57,8 +68,13 @@ MODULE_LICENSE("GPL v2");
  #define HIL_DATA		0x1
  #define HIL_CMD		0x3
  #define HIL_IRQ		2
+<<<<<<< HEAD
  #define hil_readb(p)		readb(p)
  #define hil_writeb(v,p)	writeb((v),(p))
+=======
+ #define hil_readb(p)		readb((const volatile void __iomem *)(p))
+ #define hil_writeb(v, p)	writeb((v), (volatile void __iomem *)(p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 #error "HIL is not supported on this platform"
@@ -200,7 +216,11 @@ static void hil_do(unsigned char cmd, unsigned char *data, unsigned int len)
 
 
 /* initialize HIL */
+<<<<<<< HEAD
 static int __devinit hil_keyb_init(void)
+=======
+static int hil_keyb_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char c;
 	unsigned int i, kbid;
@@ -286,7 +306,11 @@ err1:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit hil_keyb_exit(void)
+=======
+static void hil_keyb_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (HIL_IRQ)
 		free_irq(HIL_IRQ, hil_dev.dev_id);
@@ -299,7 +323,11 @@ static void __devexit hil_keyb_exit(void)
 }
 
 #if defined(CONFIG_PARISC)
+<<<<<<< HEAD
 static int __devinit hil_probe_chip(struct parisc_device *dev)
+=======
+static int __init hil_probe_chip(struct parisc_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Only allow one HIL keyboard */
 	if (hil_dev.dev)
@@ -320,6 +348,7 @@ static int __devinit hil_probe_chip(struct parisc_device *dev)
 	return hil_keyb_init();
 }
 
+<<<<<<< HEAD
 static int __devexit hil_remove_chip(struct parisc_device *dev)
 {
 	hil_keyb_exit();
@@ -328,6 +357,14 @@ static int __devexit hil_remove_chip(struct parisc_device *dev)
 }
 
 static struct parisc_device_id hil_tbl[] = {
+=======
+static void __exit hil_remove_chip(struct parisc_device *dev)
+{
+	hil_keyb_exit();
+}
+
+static const struct parisc_device_id hil_tbl[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00073 },
 	{ 0, }
 };
@@ -337,11 +374,19 @@ static struct parisc_device_id hil_tbl[] = {
 MODULE_DEVICE_TABLE(parisc, hil_tbl);
 #endif
 
+<<<<<<< HEAD
 static struct parisc_driver hil_driver = {
 	.name		= "hil",
 	.id_table	= hil_tbl,
 	.probe		= hil_probe_chip,
 	.remove		= __devexit_p(hil_remove_chip),
+=======
+static struct parisc_driver hil_driver __refdata = {
+	.name		= "hil",
+	.id_table	= hil_tbl,
+	.probe		= hil_probe_chip,
+	.remove		= __exit_p(hil_remove_chip),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init hil_init(void)

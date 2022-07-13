@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *  Copyright (c) 2002 Russell King
@@ -7,6 +11,7 @@
  * Acorn RiscPC PS/2 keyboard controller driver for Linux/ARM
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +35,10 @@
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 #include <linux/err.h>
 #include <linux/platform_device.h>
@@ -114,19 +123,32 @@ static void rpckbd_close(struct serio *port)
  * Allocate and initialize serio structure for subsequent registration
  * with serio core.
  */
+<<<<<<< HEAD
 static int __devinit rpckbd_probe(struct platform_device *dev)
+=======
+static int rpckbd_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpckbd_data *rpckbd;
 	struct serio *serio;
 	int tx_irq, rx_irq;
 
 	rx_irq = platform_get_irq(dev, 0);
+<<<<<<< HEAD
 	if (rx_irq <= 0)
 		return rx_irq < 0 ? rx_irq : -ENXIO;
 
 	tx_irq = platform_get_irq(dev, 1);
 	if (tx_irq <= 0)
 		return tx_irq < 0 ? tx_irq : -ENXIO;
+=======
+	if (rx_irq < 0)
+		return rx_irq;
+
+	tx_irq = platform_get_irq(dev, 1);
+	if (tx_irq < 0)
+		return tx_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	rpckbd = kzalloc(sizeof(*rpckbd), GFP_KERNEL);
@@ -145,31 +167,49 @@ static int __devinit rpckbd_probe(struct platform_device *dev)
 	serio->close		= rpckbd_close;
 	serio->dev.parent	= &dev->dev;
 	serio->port_data	= rpckbd;
+<<<<<<< HEAD
 	strlcpy(serio->name, "RiscPC PS/2 kbd port", sizeof(serio->name));
 	strlcpy(serio->phys, "rpckbd/serio0", sizeof(serio->phys));
+=======
+	strscpy(serio->name, "RiscPC PS/2 kbd port", sizeof(serio->name));
+	strscpy(serio->phys, "rpckbd/serio0", sizeof(serio->phys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(dev, serio);
 	serio_register_port(serio);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit rpckbd_remove(struct platform_device *dev)
+=======
+static void rpckbd_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio = platform_get_drvdata(dev);
 	struct rpckbd_data *rpckbd = serio->port_data;
 
 	serio_unregister_port(serio);
 	kfree(rpckbd);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver rpckbd_driver = {
 	.probe		= rpckbd_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(rpckbd_remove),
 	.driver		= {
 		.name	= "kart",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= rpckbd_remove,
+	.driver		= {
+		.name	= "kart",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(rpckbd_driver);

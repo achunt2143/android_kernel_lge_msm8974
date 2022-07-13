@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: cache.h,v 1.6 2004/03/11 18:08:05 lethal Exp $
  *
  * include/asm-sh/cache.h
@@ -7,14 +11,27 @@
  */
 #ifndef __ASM_SH_CACHE_H
 #define __ASM_SH_CACHE_H
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/init.h>
 #include <cpu/cache.h>
 
 #define L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
 
+<<<<<<< HEAD
 #define __read_mostly __attribute__((__section__(".data..read_mostly")))
+=======
+/*
+ * Some drivers need to perform DMA into kmalloc'ed buffers
+ * and so we have to increase the kmalloc minalign for this.
+ */
+#define ARCH_DMA_MINALIGN	L1_CACHE_BYTES
+
+#define __read_mostly __section(".data..read_mostly")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 struct cache_info {
@@ -43,5 +60,8 @@ struct cache_info {
 	unsigned long flags;
 };
 #endif /* __ASSEMBLY__ */
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_CACHE_H */

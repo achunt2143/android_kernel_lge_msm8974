@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,6 +13,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  
 /*
@@ -30,7 +35,11 @@
 #define VORTEX_PCM_TYPE(x) (x->name[40])
 
 /* hardware definition */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_vortex_playback_hw_adb = {
+=======
+static const struct snd_pcm_hardware snd_vortex_playback_hw_adb = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =
 	    (SNDRV_PCM_INFO_MMAP | /* SNDRV_PCM_INFO_RESUME | */
 	     SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_INTERLEAVED |
@@ -51,7 +60,11 @@ static struct snd_pcm_hardware snd_vortex_playback_hw_adb = {
 };
 
 #ifndef CHIP_AU8820
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_vortex_playback_hw_a3d = {
+=======
+static const struct snd_pcm_hardware snd_vortex_playback_hw_a3d = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =
 	    (SNDRV_PCM_INFO_MMAP | /* SNDRV_PCM_INFO_RESUME | */
 	     SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_INTERLEAVED |
@@ -71,7 +84,11 @@ static struct snd_pcm_hardware snd_vortex_playback_hw_a3d = {
 	.periods_max = 64,
 };
 #endif
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_vortex_playback_hw_spdif = {
+=======
+static const struct snd_pcm_hardware snd_vortex_playback_hw_spdif = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =
 	    (SNDRV_PCM_INFO_MMAP | /* SNDRV_PCM_INFO_RESUME | */
 	     SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_INTERLEAVED |
@@ -94,7 +111,11 @@ static struct snd_pcm_hardware snd_vortex_playback_hw_spdif = {
 };
 
 #ifndef CHIP_AU8810
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_vortex_playback_hw_wt = {
+=======
+static const struct snd_pcm_hardware snd_vortex_playback_hw_wt = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_INTERLEAVED |
 		 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_MMAP_VALID),
@@ -112,11 +133,19 @@ static struct snd_pcm_hardware snd_vortex_playback_hw_wt = {
 };
 #endif
 #ifdef CHIP_AU8830
+<<<<<<< HEAD
 static unsigned int au8830_channels[3] = {
 	1, 2, 4,
 };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_au8830_channels = {
+=======
+static const unsigned int au8830_channels[3] = {
+	1, 2, 4,
+};
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_au8830_channels = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(au8830_channels),
 	.list = au8830_channels,
 	.mask = 0,
@@ -142,6 +171,7 @@ static int snd_vortex_pcm_open(struct snd_pcm_substream *substream)
 	int err;
 	
 	/* Force equal size periods */
+<<<<<<< HEAD
 	if ((err =
 	     snd_pcm_hw_constraint_integer(runtime,
 					   SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
@@ -150,6 +180,16 @@ static int snd_vortex_pcm_open(struct snd_pcm_substream *substream)
 	if ((err =
 	     snd_pcm_hw_constraint_pow2(runtime, 0,
 					SNDRV_PCM_HW_PARAM_PERIOD_BYTES)) < 0)
+=======
+	err = snd_pcm_hw_constraint_integer(runtime,
+					    SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+		return err;
+	/* Avoid PAGE_SIZE boundary to fall inside of a period. */
+	err = snd_pcm_hw_constraint_pow2(runtime, 0,
+					 SNDRV_PCM_HW_PARAM_PERIOD_BYTES);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	snd_pcm_hw_constraint_step(runtime, 0,
@@ -221,6 +261,7 @@ snd_vortex_pcm_hw_params(struct snd_pcm_substream *substream,
 {
 	vortex_t *chip = snd_pcm_substream_chip(substream);
 	stream_t *stream = (stream_t *) (substream->runtime->private_data);
+<<<<<<< HEAD
 	int err;
 
 	// Alloc buffer memory.
@@ -232,6 +273,11 @@ snd_vortex_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 	/*
 	   printk(KERN_INFO "Vortex: periods %d, period_bytes %d, channels = %d\n", params_periods(hw_params),
+=======
+
+	/*
+	   pr_info( "Vortex: periods %d, period_bytes %d, channels = %d\n", params_periods(hw_params),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   params_period_bytes(hw_params), params_channels(hw_params));
 	 */
 	spin_lock_irq(&chip->lock);
@@ -316,7 +362,11 @@ static int snd_vortex_pcm_hw_free(struct snd_pcm_substream *substream)
 	substream->runtime->private_data = NULL;
 	spin_unlock_irq(&chip->lock);
 
+<<<<<<< HEAD
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* prepare callback */
@@ -332,7 +382,11 @@ static int snd_vortex_pcm_prepare(struct snd_pcm_substream *substream)
 		dir = 1;
 	else
 		dir = 0;
+<<<<<<< HEAD
 	fmt = vortex_alsafmt_aspfmt(runtime->format);
+=======
+	fmt = vortex_alsafmt_aspfmt(runtime->format, chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&chip->lock);
 	if (VORTEX_PCM_TYPE(substream->pcm) != VORTEX_PCM_WT) {
 		vortex_adbdma_setmode(chip, dma, 1, dir, fmt,
@@ -371,7 +425,11 @@ static int snd_vortex_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		}
 #ifndef CHIP_AU8810
 		else {
+<<<<<<< HEAD
 			printk(KERN_INFO "vortex: wt start %d\n", dma);
+=======
+			dev_info(chip->card->dev, "wt start %d\n", dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vortex_wtdma_startfifo(chip, dma);
 		}
 #endif
@@ -384,7 +442,11 @@ static int snd_vortex_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 			vortex_adbdma_stopfifo(chip, dma);
 #ifndef CHIP_AU8810
 		else {
+<<<<<<< HEAD
 			printk(KERN_INFO "vortex: wt stop %d\n", dma);
+=======
+			dev_info(chip->card->dev, "wt stop %d\n", dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vortex_wtdma_stopfifo(chip, dma);
 		}
 #endif
@@ -432,6 +494,7 @@ static snd_pcm_uframes_t snd_vortex_pcm_pointer(struct snd_pcm_substream *substr
 #endif
 	//printk(KERN_INFO "vortex: pointer = 0x%x\n", current_ptr);
 	spin_unlock(&chip->lock);
+<<<<<<< HEAD
 	return (bytes_to_frames(substream->runtime, current_ptr));
 }
 
@@ -440,26 +503,49 @@ static struct snd_pcm_ops snd_vortex_playback_ops = {
 	.open = snd_vortex_pcm_open,
 	.close = snd_vortex_pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
+=======
+	current_ptr = bytes_to_frames(substream->runtime, current_ptr);
+	if (current_ptr >= substream->runtime->buffer_size)
+		current_ptr = 0;
+	return current_ptr;
+}
+
+/* operators */
+static const struct snd_pcm_ops snd_vortex_playback_ops = {
+	.open = snd_vortex_pcm_open,
+	.close = snd_vortex_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = snd_vortex_pcm_hw_params,
 	.hw_free = snd_vortex_pcm_hw_free,
 	.prepare = snd_vortex_pcm_prepare,
 	.trigger = snd_vortex_pcm_trigger,
 	.pointer = snd_vortex_pcm_pointer,
+<<<<<<< HEAD
 	.page = snd_pcm_sgbuf_ops_page,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
 *  definitions of capture are omitted here...
 */
 
+<<<<<<< HEAD
 static char *vortex_pcm_prettyname[VORTEX_PCM_LAST] = {
+=======
+static const char * const vortex_pcm_prettyname[VORTEX_PCM_LAST] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CARD_NAME " ADB",
 	CARD_NAME " SPDIF",
 	CARD_NAME " A3D",
 	CARD_NAME " WT",
 	CARD_NAME " I2S",
 };
+<<<<<<< HEAD
 static char *vortex_pcm_name[VORTEX_PCM_LAST] = {
+=======
+static const char * const vortex_pcm_name[VORTEX_PCM_LAST] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"adb",
 	"spdif",
 	"a3d",
@@ -516,7 +602,11 @@ static int snd_vortex_spdif_put(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 }
 
 /* spdif controls */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_vortex_mixer_spdif[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_vortex_mixer_spdif[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 		.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -585,7 +675,11 @@ static int snd_vortex_pcm_vol_put(struct snd_kcontrol *kcontrol,
 				case 4:
 					mixin = p->mixin[i];
 					break;
+<<<<<<< HEAD
 				};
+=======
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				vol = p->vol[i];
 				vortex_mix_setinputvolumebyte(vortex,
 					vortex->mixplayb[i], mixin, vol);
@@ -598,7 +692,11 @@ static int snd_vortex_pcm_vol_put(struct snd_kcontrol *kcontrol,
 
 static const DECLARE_TLV_DB_MINMAX(vortex_pcm_vol_db_scale, -9600, 2400);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_vortex_pcm_vol __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_vortex_pcm_vol = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 	.name = "PCM Playback Volume",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE |
@@ -611,7 +709,11 @@ static struct snd_kcontrol_new snd_vortex_pcm_vol __devinitdata = {
 };
 
 /* create a pcm device */
+<<<<<<< HEAD
 static int __devinit snd_vortex_new_pcm(vortex_t *chip, int idx, int nr)
+=======
+static int snd_vortex_new_pcm(vortex_t *chip, int idx, int nr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	struct snd_kcontrol *kctl;
@@ -646,16 +748,49 @@ static int __devinit snd_vortex_new_pcm(vortex_t *chip, int idx, int nr)
 	
 	/* pre-allocation of Scatter-Gather buffers */
 	
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 					      snd_dma_pci_data(chip->pci_dev),
 					      0x10000, 0x10000);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
+				       &chip->pci_dev->dev, 0x10000, 0x10000);
+
+	switch (VORTEX_PCM_TYPE(pcm)) {
+	case VORTEX_PCM_ADB:
+		err = snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK,
+					     snd_pcm_std_chmaps,
+					     VORTEX_IS_QUAD(chip) ? 4 : 2,
+					     0, NULL);
+		if (err < 0)
+			return err;
+		err = snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_CAPTURE,
+					     snd_pcm_std_chmaps, 2, 0, NULL);
+		if (err < 0)
+			return err;
+		break;
+#ifdef CHIP_AU8830
+	case VORTEX_PCM_A3D:
+		err = snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK,
+					     snd_pcm_std_chmaps, 1, 0, NULL);
+		if (err < 0)
+			return err;
+		break;
+#endif
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (VORTEX_PCM_TYPE(pcm) == VORTEX_PCM_SPDIF) {
 		for (i = 0; i < ARRAY_SIZE(snd_vortex_mixer_spdif); i++) {
 			kctl = snd_ctl_new1(&snd_vortex_mixer_spdif[i], chip);
 			if (!kctl)
 				return -ENOMEM;
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(chip->card, kctl)) < 0)
+=======
+			err = snd_ctl_add(chip->card, kctl);
+			if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}

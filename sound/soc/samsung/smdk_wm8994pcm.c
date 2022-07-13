@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  sound/soc/samsung/smdk_wm8994pcm.c
  *
@@ -9,13 +10,23 @@
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// Copyright (c) 2011 Samsung Electronics Co., Ltd
+//		http://www.samsung.com
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <sound/soc.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 
 #include "../codecs/wm8994.h"
+<<<<<<< HEAD
 #include "dma.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pcm.h"
 
 /*
@@ -50,9 +61,15 @@
 static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *params)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+=======
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct snd_soc_dai *codec_dai = snd_soc_rtd_to_codec(rtd, 0);
+	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mclk_freq;
 	int rfs, ret;
 
@@ -68,6 +85,7 @@ static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	mclk_freq = params_rate(params) * rfs;
 
+<<<<<<< HEAD
 	/* Set the codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_DSP_B
 				| SND_SOC_DAIFMT_IB_NF
@@ -82,6 +100,8 @@ static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL1,
 					mclk_freq, SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -106,19 +126,38 @@ static int smdk_wm8994_pcm_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_ops smdk_wm8994_pcm_ops = {
 	.hw_params = smdk_wm8994_pcm_hw_params,
 };
 
+=======
+static const struct snd_soc_ops smdk_wm8994_pcm_ops = {
+	.hw_params = smdk_wm8994_pcm_hw_params,
+};
+
+SND_SOC_DAILINK_DEFS(paif_pcm,
+	DAILINK_COMP_ARRAY(COMP_CPU("samsung-pcm.0")),
+	DAILINK_COMP_ARRAY(COMP_CODEC("wm8994-codec", "wm8994-aif1")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("samsung-pcm.0")));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_link smdk_dai[] = {
 	{
 		.name = "WM8994 PAIF PCM",
 		.stream_name = "Primary PCM",
+<<<<<<< HEAD
 		.cpu_dai_name = "samsung-pcm.0",
 		.codec_dai_name = "wm8994-aif1",
 		.platform_name = "samsung-audio",
 		.codec_name = "wm8994-codec",
 		.ops = &smdk_wm8994_pcm_ops,
+=======
+		.dai_fmt = SND_SOC_DAIFMT_DSP_B | SND_SOC_DAIFMT_IB_NF |
+			   SND_SOC_DAIFMT_CBS_CFS,
+		.ops = &smdk_wm8994_pcm_ops,
+		SND_SOC_DAILINK_REG(paif_pcm),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -129,11 +168,16 @@ static struct snd_soc_card smdk_pcm = {
 	.num_links = 1,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_smdk_probe(struct platform_device *pdev)
+=======
+static int snd_smdk_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
 	smdk_pcm.dev = &pdev->dev;
+<<<<<<< HEAD
 	ret = snd_soc_register_card(&smdk_pcm);
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card failed %d\n", ret);
@@ -148,15 +192,28 @@ static int __devexit snd_smdk_remove(struct platform_device *pdev)
 	snd_soc_unregister_card(&smdk_pcm);
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+	ret = devm_snd_soc_register_card(&pdev->dev, &smdk_pcm);
+	if (ret)
+		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card failed\n");
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver snd_smdk_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = "samsung-smdk-pcm",
 	},
 	.probe = snd_smdk_probe,
 	.remove = __devexit_p(snd_smdk_remove),
+=======
+		.name = "samsung-smdk-pcm",
+	},
+	.probe = snd_smdk_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(snd_smdk_driver);

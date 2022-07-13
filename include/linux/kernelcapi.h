@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * $Id: kernelcapi.h,v 1.8.6.2 2001/02/07 11:31:31 kai Exp $
  * 
@@ -6,6 +10,7 @@
  * (c) Copyright 1997 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  */
+<<<<<<< HEAD
 
 #ifndef __KERNELCAPI_H__
 #define __KERNELCAPI_H__
@@ -45,10 +50,16 @@ typedef struct kcapi_carddef {
 
 #ifdef __KERNEL__
 
+=======
+#ifndef __KERNELCAPI_H__
+#define __KERNELCAPI_H__
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/skbuff.h>
 #include <linux/workqueue.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 
 struct capi20_appl {
 	u16 applid;
@@ -82,6 +93,9 @@ int capi20_manufacturer(unsigned int cmd, void __user *data);
 
 int register_capictr_notifier(struct notifier_block *nb);
 int unregister_capictr_notifier(struct notifier_block *nb);
+=======
+#include <uapi/linux/kernelcapi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CAPI_NOERROR                      0x0000
 
@@ -109,6 +123,7 @@ int unregister_capictr_notifier(struct notifier_block *nb);
 #define CAPI_MSGCTRLERNOTSUPPORTEXTEQUIP  0x110a
 #define CAPI_MSGCTRLERONLYSUPPORTEXTEQUIP 0x110b
 
+<<<<<<< HEAD
 typedef enum {
         CapiMessageNotSupportedInCurrentState = 0x2001,
         CapiIllContrPlciNcci                  = 0x2002,
@@ -152,4 +167,6 @@ typedef enum {
 
 #endif				/* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __KERNELCAPI_H__ */

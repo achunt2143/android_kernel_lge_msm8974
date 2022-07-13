@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linker script for Hexagon kernel
  *
@@ -20,10 +21,24 @@
 
 #define LOAD_OFFSET PAGE_OFFSET
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linker script for Hexagon kernel
+ *
+ * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/asm-offsets.h>	/*  Most of the kernel defines are here  */
 #include <asm/mem-layout.h>	/*  except for page_offset  */
 #include <asm/cache.h>		/*  and now we're pulling cache line size  */
+<<<<<<< HEAD
+=======
+#include <asm/thread_info.h>	/*  and we need THREAD_SIZE too */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT_ARCH(hexagon)
 ENTRY(stext)
 
@@ -36,6 +51,7 @@ See asm-generic/sections.h for seemingly required labels.
 
 #define PAGE_SIZE _PAGE_SIZE
 
+<<<<<<< HEAD
 /*  This LOAD_OFFSET is temporary for debugging on the simulator; it may change
     for hypervisor pseudo-physical memory.  */
 
@@ -43,6 +59,11 @@ See asm-generic/sections.h for seemingly required labels.
 SECTIONS
 {
 	. = PAGE_OFFSET + LOAD_ADDRESS;
+=======
+SECTIONS
+{
+	. = PAGE_OFFSET;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__init_begin = .;
 	HEAD_TEXT_SECTION
@@ -52,9 +73,17 @@ SECTIONS
 
         . = ALIGN(_PAGE_SIZE);
 	_stext = .;
+<<<<<<< HEAD
 	.text : AT(ADDR(.text) - LOAD_OFFSET) {
 		_text = .;
 		TEXT_TEXT
+=======
+	.text : AT(ADDR(.text)) {
+		_text = .;
+		TEXT_TEXT
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCHED_TEXT
 		LOCK_TEXT
 		KPROBES_TEXT
@@ -65,17 +94,26 @@ SECTIONS
 	INIT_DATA_SECTION(PAGE_SIZE)
 
 	_sdata = .;
+<<<<<<< HEAD
 		RW_DATA_SECTION(32,PAGE_SIZE,PAGE_SIZE)
 		RO_DATA_SECTION(PAGE_SIZE)
 	_edata = .;
 
 	EXCEPTION_TABLE(16)
 	NOTES
+=======
+		RW_DATA(32,PAGE_SIZE,_THREAD_SIZE)
+		RO_DATA(PAGE_SIZE)
+	_edata = .;
+
+	EXCEPTION_TABLE(16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BSS_SECTION(_PAGE_SIZE, _PAGE_SIZE, _PAGE_SIZE)
 
 	_end = .;
 
+<<<<<<< HEAD
 	/DISCARD/ : {
 		EXIT_TEXT
 		EXIT_DATA
@@ -85,4 +123,12 @@ SECTIONS
 	STABS_DEBUG
 	DWARF_DEBUG
 
+=======
+	STABS_DEBUG
+	DWARF_DEBUG
+	ELF_DETAILS
+	.hexagon.attributes 0 : { *(.hexagon.attributes) }
+
+	DISCARDS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

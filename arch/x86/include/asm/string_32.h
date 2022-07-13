@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_STRING_32_H
 #define _ASM_X86_STRING_32_H
 
@@ -142,6 +146,7 @@ static __always_inline void *__constant_memcpy(void *to, const void *from,
 }
 
 #define __HAVE_ARCH_MEMCPY
+<<<<<<< HEAD
 
 #ifdef CONFIG_X86_USE_3DNOW
 
@@ -195,11 +200,27 @@ static inline void *__memcpy3d(void *to, const void *from, size_t len)
 #endif
 
 #endif
+=======
+extern void *memcpy(void *, const void *, size_t);
+
+#ifndef CONFIG_FORTIFY_SOURCE
+
+#define memcpy(t, f, n) __builtin_memcpy(t, f, n)
+
+#endif /* !CONFIG_FORTIFY_SOURCE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_MEMMOVE
 void *memmove(void *dest, const void *src, size_t n);
 
+<<<<<<< HEAD
 #define memcmp __builtin_memcmp
+=======
+extern int memcmp(const void *, const void *, size_t);
+#ifndef CONFIG_FORTIFY_SOURCE
+#define memcmp __builtin_memcmp
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_MEMCHR
 extern void *memchr(const void *cs, int c, size_t count);
@@ -218,6 +239,7 @@ static inline void *__memset_generic(void *s, char c, size_t count)
 /* we might want to write optimized versions of these later */
 #define __constant_count_memset(s, c, count) __memset_generic((s), (c), (count))
 
+<<<<<<< HEAD
 /*
  * memset(x, 0, y) is a reasonably common thing to do, so we want to fill
  * things 32 bits at a time even when we don't know the size of the
@@ -241,6 +263,8 @@ void *__constant_c_memset(void *s, unsigned long c, size_t count)
 	return s;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Added by Gertjan van Wingerde to make minix and sysv module work */
 #define __HAVE_ARCH_STRNLEN
 extern size_t strnlen(const char *s, size_t count);
@@ -249,6 +273,7 @@ extern size_t strnlen(const char *s, size_t count);
 #define __HAVE_ARCH_STRSTR
 extern char *strstr(const char *cs, const char *ct);
 
+<<<<<<< HEAD
 /*
  * This looks horribly ugly, but the compiler can optimize it totally,
  * as we by now know that both pattern and count is constant..
@@ -315,12 +340,15 @@ void *__constant_c_and_count_memset(void *s, unsigned long pattern,
 	 ? __constant_c_and_count_memset((s), (c), (count))	\
 	 : __constant_c_memset((s), (c), (count)))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __memset(s, c, count)				\
 	(__builtin_constant_p(count)			\
 	 ? __constant_count_memset((s), (c), (count))	\
 	 : __memset_generic((s), (c), (count)))
 
 #define __HAVE_ARCH_MEMSET
+<<<<<<< HEAD
 #if (__GNUC__ >= 4)
 #define memset(s, c, count) __builtin_memset(s, c, count)
 #else
@@ -330,6 +358,36 @@ void *__constant_c_and_count_memset(void *s, unsigned long pattern,
 				 (count))				\
 	 : __memset((s), (c), (count)))
 #endif
+=======
+extern void *memset(void *, int, size_t);
+#ifndef CONFIG_FORTIFY_SOURCE
+#define memset(s, c, count) __builtin_memset(s, c, count)
+#endif /* !CONFIG_FORTIFY_SOURCE */
+
+#define __HAVE_ARCH_MEMSET16
+static inline void *memset16(uint16_t *s, uint16_t v, size_t n)
+{
+	int d0, d1;
+	asm volatile("rep\n\t"
+		     "stosw"
+		     : "=&c" (d0), "=&D" (d1)
+		     : "a" (v), "1" (s), "0" (n)
+		     : "memory");
+	return s;
+}
+
+#define __HAVE_ARCH_MEMSET32
+static inline void *memset32(uint32_t *s, uint32_t v, size_t n)
+{
+	int d0, d1;
+	asm volatile("rep\n\t"
+		     "stosl"
+		     : "=&c" (d0), "=&D" (d1)
+		     : "a" (v), "1" (s), "0" (n)
+		     : "memory");
+	return s;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * find the first occurrence of byte 'c', or 1 past the area if none

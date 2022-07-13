@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-lpc32xx/suspend.S
  *
  * Original authors: Dmitry Chigirev, Vitaly Wool <source@mvista.com>
  * Modified by Kevin Wells <kevin.wells@nxp.com>
  *
+<<<<<<< HEAD
  * 2005 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
@@ -13,6 +18,13 @@
 #include <asm/assembler.h>
 #include <mach/platform.h>
 #include <mach/hardware.h>
+=======
+ * 2005 (c) MontaVista Software, Inc.
+ */
+#include <linux/linkage.h>
+#include <asm/assembler.h>
+#include "lpc32xx.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Using named register defines makes the code easier to follow */
 #define WORK1_REG			r0

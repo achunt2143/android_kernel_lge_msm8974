@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_KGDB_H
 #define _ASM_X86_KGDB_H
 
@@ -6,6 +10,11 @@
  * Copyright (C) 2008 Wind River Systems, Inc.
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/ptrace.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BUFMAX defines the maximum number of characters in inbound/outbound
  * buffers at least NUMREGBYTES*2 are needed for register packets

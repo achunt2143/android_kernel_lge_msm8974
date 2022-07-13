@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8996.c - WM8996 audio codec interface
  *
@@ -8,6 +9,14 @@
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * wm8996.c - WM8996 audio codec interface
+ *
+ * Copyright 2011-2 Wolfson Microelectronics PLC.
+ * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -17,7 +26,12 @@
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/gcd.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -52,9 +66,15 @@ static const char *wm8996_supply_names[WM8996_NUM_SUPPLIES] = {
 struct wm8996_priv {
 	struct device *dev;
 	struct regmap *regmap;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 
 	int ldo1ena;
+=======
+	struct snd_soc_component *component;
+
+	struct gpio_desc *ldo_ena;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int sysclk;
 	int sysclk_src;
@@ -117,7 +137,11 @@ WM8996_REGULATOR_EVENT(0)
 WM8996_REGULATOR_EVENT(1)
 WM8996_REGULATOR_EVENT(2)
 
+<<<<<<< HEAD
 static struct reg_default wm8996_reg[] = {
+=======
+static const struct reg_default wm8996_reg[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ WM8996_POWER_MANAGEMENT_1, 0x0 },
 	{ WM8996_POWER_MANAGEMENT_2, 0x0 },
 	{ WM8996_POWER_MANAGEMENT_3, 0x0 },
@@ -296,6 +320,7 @@ static struct reg_default wm8996_reg[] = {
 	{ WM8996_RIGHT_PDM_SPEAKER, 0x1 },
 	{ WM8996_PDM_SPEAKER_MUTE_SEQUENCE, 0x69 },
 	{ WM8996_PDM_SPEAKER_VOLUME, 0x66 },
+<<<<<<< HEAD
 	{ WM8996_WRITE_SEQUENCER_0, 0x1 },
 	{ WM8996_WRITE_SEQUENCER_1, 0x1 },
 	{ WM8996_WRITE_SEQUENCER_3, 0x6 },
@@ -474,6 +499,8 @@ static struct reg_default wm8996_reg[] = {
 	{ WM8996_WRITE_SEQUENCER_402, 0xf },
 	{ WM8996_WRITE_SEQUENCER_404, 0x1 },
 	{ WM8996_WRITE_SEQUENCER_407, 0x100 },
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const DECLARE_TLV_DB_SCALE(inpga_tlv, 0, 100, 0);
@@ -489,23 +516,37 @@ static const char *sidetone_hpf_text[] = {
 	"2.9kHz", "1.5kHz", "735Hz", "403Hz", "196Hz", "98Hz", "49Hz"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum sidetone_hpf =
 	SOC_ENUM_SINGLE(WM8996_SIDETONE, 7, 7, sidetone_hpf_text);
+=======
+static SOC_ENUM_SINGLE_DECL(sidetone_hpf,
+			    WM8996_SIDETONE, 7, sidetone_hpf_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *hpf_mode_text[] = {
 	"HiFi", "Custom", "Voice"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dsp1tx_hpf_mode =
 	SOC_ENUM_SINGLE(WM8996_DSP1_TX_FILTERS, 3, 3, hpf_mode_text);
 
 static const struct soc_enum dsp2tx_hpf_mode =
 	SOC_ENUM_SINGLE(WM8996_DSP2_TX_FILTERS, 3, 3, hpf_mode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dsp1tx_hpf_mode,
+			    WM8996_DSP1_TX_FILTERS, 3, hpf_mode_text);
+
+static SOC_ENUM_SINGLE_DECL(dsp2tx_hpf_mode,
+			    WM8996_DSP2_TX_FILTERS, 3, hpf_mode_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *hpf_cutoff_text[] = {
 	"50Hz", "75Hz", "100Hz", "150Hz", "200Hz", "300Hz", "400Hz"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dsp1tx_hpf_cutoff =
 	SOC_ENUM_SINGLE(WM8996_DSP1_TX_FILTERS, 0, 7, hpf_cutoff_text);
 
@@ -515,6 +556,17 @@ static const struct soc_enum dsp2tx_hpf_cutoff =
 static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+static SOC_ENUM_SINGLE_DECL(dsp1tx_hpf_cutoff,
+			    WM8996_DSP1_TX_FILTERS, 0, hpf_cutoff_text);
+
+static SOC_ENUM_SINGLE_DECL(dsp2tx_hpf_cutoff,
+			    WM8996_DSP2_TX_FILTERS, 0, hpf_cutoff_text);
+
+static void wm8996_set_retune_mobile(struct snd_soc_component *component, int block)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8996_pdata *pdata = &wm8996->pdata;
 	int base, best, best_val, save, i, cfg, iface;
 
@@ -524,7 +576,11 @@ static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 	switch (block) {
 	case 0:
 		base = WM8996_DSP1_RX_EQ_GAINS_1;
+<<<<<<< HEAD
 		if (snd_soc_read(codec, WM8996_POWER_MANAGEMENT_8) &
+=======
+		if (snd_soc_component_read(component, WM8996_POWER_MANAGEMENT_8) &
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    WM8996_DSP1RX_SRC)
 			iface = 1;
 		else
@@ -532,7 +588,11 @@ static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 		break;
 	case 1:
 		base = WM8996_DSP1_RX_EQ_GAINS_2;
+<<<<<<< HEAD
 		if (snd_soc_read(codec, WM8996_POWER_MANAGEMENT_8) &
+=======
+		if (snd_soc_component_read(component, WM8996_POWER_MANAGEMENT_8) &
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    WM8996_DSP2RX_SRC)
 			iface = 1;
 		else
@@ -558,7 +618,11 @@ static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 		}
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "ReTune Mobile %d %s/%dHz for %dHz sample rate\n",
+=======
+	dev_dbg(component->dev, "ReTune Mobile %d %s/%dHz for %dHz sample rate\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		block,
 		pdata->retune_mobile_cfgs[best].name,
 		pdata->retune_mobile_cfgs[best].rate,
@@ -567,6 +631,7 @@ static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 	/* The EQ will be disabled while reconfiguring it, remember the
 	 * current configuration. 
 	 */
+<<<<<<< HEAD
 	save = snd_soc_read(codec, base);
 	save &= WM8996_DSP1RX_EQ_ENA;
 
@@ -575,6 +640,16 @@ static void wm8996_set_retune_mobile(struct snd_soc_codec *codec, int block)
 				    pdata->retune_mobile_cfgs[best].regs[i]);
 
 	snd_soc_update_bits(codec, base, WM8996_DSP1RX_EQ_ENA, save);
+=======
+	save = snd_soc_component_read(component, base);
+	save &= WM8996_DSP1RX_EQ_ENA;
+
+	for (i = 0; i < ARRAY_SIZE(pdata->retune_mobile_cfgs[best].regs); i++)
+		snd_soc_component_update_bits(component, base + i, 0xffff,
+				    pdata->retune_mobile_cfgs[best].regs[i]);
+
+	snd_soc_component_update_bits(component, base, WM8996_DSP1RX_EQ_ENA, save);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Icky as hell but saves code duplication */
@@ -590,11 +665,19 @@ static int wm8996_get_retune_mobile_block(const char *name)
 static int wm8996_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
 	struct wm8996_pdata *pdata = &wm8996->pdata;
 	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
 	int value = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	struct wm8996_pdata *pdata = &wm8996->pdata;
+	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
+	int value = ucontrol->value.enumerated.item[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (block < 0)
 		return block;
@@ -604,7 +687,11 @@ static int wm8996_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 
 	wm8996->retune_mobile_cfg[block] = value;
 
+<<<<<<< HEAD
 	wm8996_set_retune_mobile(codec, block);
+=======
+	wm8996_set_retune_mobile(component, block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -612,10 +699,19 @@ static int wm8996_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 static int wm8996_get_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 					 struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
 	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
 
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
+
+	if (block < 0)
+		return block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.enumerated.item[0] = wm8996->retune_mobile_cfg[block];
 
 	return 0;
@@ -750,6 +846,7 @@ SOC_SINGLE_TLV("DSP2 EQ B5 Volume", WM8996_DSP2_RX_EQ_GAINS_2, 6, 31, 0,
 	       eq_tlv),
 };
 
+<<<<<<< HEAD
 static void wm8996_bg_enable(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
@@ -757,11 +854,21 @@ static void wm8996_bg_enable(struct snd_soc_codec *codec)
 	wm8996->bg_ena++;
 	if (wm8996->bg_ena == 1) {
 		snd_soc_update_bits(codec, WM8996_POWER_MANAGEMENT_1,
+=======
+static void wm8996_bg_enable(struct snd_soc_component *component)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+
+	wm8996->bg_ena++;
+	if (wm8996->bg_ena == 1) {
+		snd_soc_component_update_bits(component, WM8996_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_BG_ENA, WM8996_BG_ENA);
 		msleep(2);
 	}
 }
 
+<<<<<<< HEAD
 static void wm8996_bg_disable(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
@@ -769,17 +876,31 @@ static void wm8996_bg_disable(struct snd_soc_codec *codec)
 	wm8996->bg_ena--;
 	if (!wm8996->bg_ena)
 		snd_soc_update_bits(codec, WM8996_POWER_MANAGEMENT_1,
+=======
+static void wm8996_bg_disable(struct snd_soc_component *component)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+
+	wm8996->bg_ena--;
+	if (!wm8996->bg_ena)
+		snd_soc_component_update_bits(component, WM8996_POWER_MANAGEMENT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_BG_ENA, 0);
 }
 
 static int bg_event(struct snd_soc_dapm_widget *w,
 		    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
+<<<<<<< HEAD
 		wm8996_bg_enable(codec);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
@@ -787,6 +908,15 @@ static int bg_event(struct snd_soc_dapm_widget *w,
 		break;
 	default:
 		BUG();
+=======
+		wm8996_bg_enable(component);
+		break;
+	case SND_SOC_DAPM_POST_PMD:
+		wm8996_bg_disable(component);
+		break;
+	default:
+		WARN(1, "Invalid event %d\n", event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 	}
 
@@ -796,15 +926,22 @@ static int bg_event(struct snd_soc_dapm_widget *w,
 static int cp_event(struct snd_soc_dapm_widget *w,
 		    struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		msleep(5);
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
 		ret = -EINVAL;
+=======
+		WARN(1, "Invalid event %d\n", event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -813,7 +950,12 @@ static int cp_event(struct snd_soc_dapm_widget *w,
 static int rmv_short_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(w->codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Record which outputs we enabled */
 	switch (event) {
@@ -824,13 +966,18 @@ static int rmv_short_event(struct snd_soc_dapm_widget *w,
 		wm8996->hpout_pending |= w->shift;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid event %d\n", event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void wait_for_dc_servo(struct snd_soc_codec *codec, u16 mask)
 {
 	struct i2c_client *i2c = to_i2c_client(codec->dev);
@@ -839,6 +986,16 @@ static void wait_for_dc_servo(struct snd_soc_codec *codec, u16 mask)
 	unsigned long timeout = 200;
 
 	snd_soc_write(codec, WM8996_DC_SERVO_2, mask);
+=======
+static void wait_for_dc_servo(struct snd_soc_component *component, u16 mask)
+{
+	struct i2c_client *i2c = to_i2c_client(component->dev);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	int ret;
+	unsigned long timeout = 200;
+
+	snd_soc_component_write(component, WM8996_DC_SERVO_2, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Use the interrupt if possible */
 	do {
@@ -846,13 +1003,18 @@ static void wait_for_dc_servo(struct snd_soc_codec *codec, u16 mask)
 			timeout = wait_for_completion_timeout(&wm8996->dcs_done,
 							      msecs_to_jiffies(200));
 			if (timeout == 0)
+<<<<<<< HEAD
 				dev_err(codec->dev, "DC servo timed out\n");
+=======
+				dev_err(component->dev, "DC servo timed out\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else {
 			msleep(1);
 			timeout--;
 		}
 
+<<<<<<< HEAD
 		ret = snd_soc_read(codec, WM8996_DC_SERVO_2);
 		dev_dbg(codec->dev, "DC servo state: %x\n", ret);
 	} while (timeout && ret & mask);
@@ -869,22 +1031,50 @@ static void wm8996_seq_notifier(struct snd_soc_dapm_context *dapm,
 	struct snd_soc_codec *codec = container_of(dapm,
 						   struct snd_soc_codec, dapm);
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+		ret = snd_soc_component_read(component, WM8996_DC_SERVO_2);
+		dev_dbg(component->dev, "DC servo state: %x\n", ret);
+	} while (timeout && ret & mask);
+
+	if (timeout == 0)
+		dev_err(component->dev, "DC servo timed out for %x\n", mask);
+	else
+		dev_dbg(component->dev, "DC servo complete for %x\n", mask);
+}
+
+static void wm8996_seq_notifier(struct snd_soc_component *component,
+				enum snd_soc_dapm_type event, int subseq)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 val, mask;
 
 	/* Complete any pending DC servo starts */
 	if (wm8996->dcs_pending) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Starting DC servo for %x\n",
 			wm8996->dcs_pending);
 
 		/* Trigger a startup sequence */
 		wait_for_dc_servo(codec, wm8996->dcs_pending
+=======
+		dev_dbg(component->dev, "Starting DC servo for %x\n",
+			wm8996->dcs_pending);
+
+		/* Trigger a startup sequence */
+		wait_for_dc_servo(component, wm8996->dcs_pending
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				         << WM8996_DCS_TRIG_STARTUP_0_SHIFT);
 
 		wm8996->dcs_pending = 0;
 	}
 
 	if (wm8996->hpout_pending != wm8996->hpout_ena) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Applying RMV_SHORTs %x->%x\n",
+=======
+		dev_dbg(component->dev, "Applying RMV_SHORTs %x->%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8996->hpout_ena, wm8996->hpout_pending);
 
 		val = 0;
@@ -907,7 +1097,11 @@ static void wm8996_seq_notifier(struct snd_soc_dapm_context *dapm,
 				WM8996_HPOUT1R_DLY;
 		}
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8996_ANALOGUE_HP_1, mask, val);
+=======
+		snd_soc_component_update_bits(component, WM8996_ANALOGUE_HP_1, mask, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		val = 0;
 		mask = 0;
@@ -929,7 +1123,11 @@ static void wm8996_seq_notifier(struct snd_soc_dapm_context *dapm,
 				WM8996_HPOUT2R_DLY;
 		}
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8996_ANALOGUE_HP_2, mask, val);
+=======
+		snd_soc_component_update_bits(component, WM8996_ANALOGUE_HP_2, mask, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		wm8996->hpout_ena = wm8996->hpout_pending;
 	}
@@ -938,14 +1136,23 @@ static void wm8996_seq_notifier(struct snd_soc_dapm_context *dapm,
 static int dcs_start(struct snd_soc_dapm_widget *w,
 		     struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(w->codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		wm8996->dcs_pending |= 1 << w->shift;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid event %d\n", event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -956,14 +1163,24 @@ static const char *sidetone_text[] = {
 	"IN1", "IN2",
 };
 
+<<<<<<< HEAD
 static const struct soc_enum left_sidetone_enum =
 	SOC_ENUM_SINGLE(WM8996_SIDETONE, 0, 2, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(left_sidetone_enum,
+			    WM8996_SIDETONE, 0, sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new left_sidetone =
 	SOC_DAPM_ENUM("Left Sidetone", left_sidetone_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum right_sidetone_enum =
 	SOC_ENUM_SINGLE(WM8996_SIDETONE, 1, 2, sidetone_text);
+=======
+static SOC_ENUM_SINGLE_DECL(right_sidetone_enum,
+			    WM8996_SIDETONE, 1, sidetone_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new right_sidetone =
 	SOC_DAPM_ENUM("Right Sidetone", right_sidetone_enum);
@@ -972,14 +1189,24 @@ static const char *spk_text[] = {
 	"DAC1L", "DAC1R", "DAC2L", "DAC2R"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum spkl_enum =
 	SOC_ENUM_SINGLE(WM8996_LEFT_PDM_SPEAKER, 0, 4, spk_text);
+=======
+static SOC_ENUM_SINGLE_DECL(spkl_enum,
+			    WM8996_LEFT_PDM_SPEAKER, 0, spk_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new spkl_mux =
 	SOC_DAPM_ENUM("SPKL", spkl_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum spkr_enum =
 	SOC_ENUM_SINGLE(WM8996_RIGHT_PDM_SPEAKER, 0, 4, spk_text);
+=======
+static SOC_ENUM_SINGLE_DECL(spkr_enum,
+			    WM8996_RIGHT_PDM_SPEAKER, 0, spk_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new spkr_mux =
 	SOC_DAPM_ENUM("SPKR", spkr_enum);
@@ -988,8 +1215,13 @@ static const char *dsp1rx_text[] = {
 	"AIF1", "AIF2"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dsp1rx_enum =
 	SOC_ENUM_SINGLE(WM8996_POWER_MANAGEMENT_8, 0, 2, dsp1rx_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dsp1rx_enum,
+			    WM8996_POWER_MANAGEMENT_8, 0, dsp1rx_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new dsp1rx =
 	SOC_DAPM_ENUM("DSP1RX", dsp1rx_enum);
@@ -998,8 +1230,13 @@ static const char *dsp2rx_text[] = {
 	 "AIF2", "AIF1"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum dsp2rx_enum =
 	SOC_ENUM_SINGLE(WM8996_POWER_MANAGEMENT_8, 4, 2, dsp2rx_text);
+=======
+static SOC_ENUM_SINGLE_DECL(dsp2rx_enum,
+			    WM8996_POWER_MANAGEMENT_8, 4, dsp2rx_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new dsp2rx =
 	SOC_DAPM_ENUM("DSP2RX", dsp2rx_enum);
@@ -1008,8 +1245,13 @@ static const char *aif2tx_text[] = {
 	"DSP2", "DSP1", "AIF1"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum aif2tx_enum =
 	SOC_ENUM_SINGLE(WM8996_POWER_MANAGEMENT_8, 6, 3, aif2tx_text);
+=======
+static SOC_ENUM_SINGLE_DECL(aif2tx_enum,
+			    WM8996_POWER_MANAGEMENT_8, 6, aif2tx_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new aif2tx =
 	SOC_DAPM_ENUM("AIF2TX", aif2tx_enum);
@@ -1018,14 +1260,24 @@ static const char *inmux_text[] = {
 	"ADC", "DMIC1", "DMIC2"
 };
 
+<<<<<<< HEAD
 static const struct soc_enum in1_enum =
 	SOC_ENUM_SINGLE(WM8996_POWER_MANAGEMENT_7, 0, 3, inmux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(in1_enum,
+			    WM8996_POWER_MANAGEMENT_7, 0, inmux_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new in1_mux =
 	SOC_DAPM_ENUM("IN1 Mux", in1_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum in2_enum =
 	SOC_ENUM_SINGLE(WM8996_POWER_MANAGEMENT_7, 4, 3, inmux_text);
+=======
+static SOC_ENUM_SINGLE_DECL(in2_enum,
+			    WM8996_POWER_MANAGEMENT_7, 4, inmux_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new in2_mux =
 	SOC_DAPM_ENUM("IN2 Mux", in2_enum);
@@ -1109,7 +1361,11 @@ SND_SOC_DAPM_INPUT("IN2RP"),
 SND_SOC_DAPM_INPUT("DMIC1DAT"),
 SND_SOC_DAPM_INPUT("DMIC2DAT"),
 
+<<<<<<< HEAD
 SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20),
+=======
+SND_SOC_DAPM_REGULATOR_SUPPLY("CPVDD", 20, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SND_SOC_DAPM_SUPPLY_S("SYSCLK", 1, WM8996_AIF_CLOCKING_1, 0, 0, NULL, 0),
 SND_SOC_DAPM_SUPPLY_S("SYSDSPCLK", 2, WM8996_CLOCKING_1, 1, 0, NULL, 0),
 SND_SOC_DAPM_SUPPLY_S("AIFCLK", 2, WM8996_CLOCKING_1, 2, 0, NULL, 0),
@@ -1676,9 +1932,15 @@ static bool wm8996_readable_register(struct device *dev, unsigned int reg)
 	case WM8996_RIGHT_PDM_SPEAKER:
 	case WM8996_PDM_SPEAKER_MUTE_SEQUENCE:
 	case WM8996_PDM_SPEAKER_VOLUME:
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1700,6 +1962,7 @@ static bool wm8996_volatile_register(struct device *dev, unsigned int reg)
 	case WM8996_MIC_DETECT_3:
 	case WM8996_HEADPHONE_DETECT_1:
 	case WM8996_HEADPHONE_DETECT_2:
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
@@ -1715,6 +1978,11 @@ static int wm8996_reset(struct wm8996_priv *wm8996)
 	} else {
 		return regmap_write(wm8996->regmap, WM8996_SOFTWARE_RESET,
 				    0x8915);
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1722,9 +1990,15 @@ static const int bclk_divs[] = {
 	1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96
 };
 
+<<<<<<< HEAD
 static void wm8996_update_bclk(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+static void wm8996_update_bclk(struct snd_soc_component *component)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int aif, best, cur_val, bclk_rate, bclk_reg, i;
 
 	/* Don't bother if we're in a low frequency idle mode that
@@ -1754,22 +2028,37 @@ static void wm8996_update_bclk(struct snd_soc_codec *codec)
 			best = i;
 		}
 		bclk_rate = wm8996->sysclk / bclk_divs[best];
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Using BCLK_DIV %d for actual BCLK %dHz\n",
 			bclk_divs[best], bclk_rate);
 
 		snd_soc_update_bits(codec, bclk_reg,
+=======
+		dev_dbg(component->dev, "Using BCLK_DIV %d for actual BCLK %dHz\n",
+			bclk_divs[best], bclk_rate);
+
+		snd_soc_component_update_bits(component, bclk_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_AIF1_BCLK_DIV_MASK, best);
 	}
 }
 
+<<<<<<< HEAD
 static int wm8996_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+static int wm8996_set_bias_level(struct snd_soc_component *component,
+				 enum snd_soc_bias_level level)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
 	case SND_SOC_BIAS_PREPARE:
 		break;
 
@@ -1779,11 +2068,29 @@ static int wm8996_set_bias_level(struct snd_soc_codec *codec,
 						    wm8996->supplies);
 			if (ret != 0) {
 				dev_err(codec->dev,
+=======
+		break;
+	case SND_SOC_BIAS_PREPARE:
+		/* Put the MICBIASes into regulating mode */
+		snd_soc_component_update_bits(component, WM8996_MICBIAS_1,
+				    WM8996_MICB1_MODE, 0);
+		snd_soc_component_update_bits(component, WM8996_MICBIAS_2,
+				    WM8996_MICB2_MODE, 0);
+		break;
+
+	case SND_SOC_BIAS_STANDBY:
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			ret = regulator_bulk_enable(ARRAY_SIZE(wm8996->supplies),
+						    wm8996->supplies);
+			if (ret != 0) {
+				dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to enable supplies: %d\n",
 					ret);
 				return ret;
 			}
 
+<<<<<<< HEAD
 			if (wm8996->pdata.ldo_ena >= 0) {
 				gpio_set_value_cansleep(wm8996->pdata.ldo_ena,
 							1);
@@ -1799,19 +2106,51 @@ static int wm8996_set_bias_level(struct snd_soc_codec *codec,
 		regcache_cache_only(codec->control_data, true);
 		if (wm8996->pdata.ldo_ena >= 0)
 			gpio_set_value_cansleep(wm8996->pdata.ldo_ena, 0);
+=======
+			if (wm8996->ldo_ena) {
+				gpiod_set_value_cansleep(wm8996->ldo_ena,
+							 1);
+				msleep(5);
+			}
+
+			regcache_cache_only(wm8996->regmap, false);
+			regcache_sync(wm8996->regmap);
+		}
+
+		/* Bypass the MICBIASes for lowest power */
+		snd_soc_component_update_bits(component, WM8996_MICBIAS_1,
+				    WM8996_MICB1_MODE, WM8996_MICB1_MODE);
+		snd_soc_component_update_bits(component, WM8996_MICBIAS_2,
+				    WM8996_MICB2_MODE, WM8996_MICB2_MODE);
+		break;
+
+	case SND_SOC_BIAS_OFF:
+		regcache_cache_only(wm8996->regmap, true);
+		if (wm8996->ldo_ena) {
+			gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
+			regcache_cache_only(wm8996->regmap, true);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies),
 				       wm8996->supplies);
 		break;
 	}
 
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
+=======
+	struct snd_soc_component *component = dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int aifctrl = 0;
 	int bclk = 0;
 	int lrclk_tx = 0;
@@ -1832,7 +2171,11 @@ static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		lrclk_rx_reg = WM8996_AIF2_RX_LRCLK_2;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid dai id %d\n", dai->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1888,6 +2231,7 @@ static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, aifctrl_reg, WM8996_AIF1_FMT_MASK, aifctrl);
 	snd_soc_update_bits(codec, bclk_reg,
 			    WM8996_AIF1_BCLK_INV | WM8996_AIF1_BCLK_MSTR,
@@ -1897,6 +2241,17 @@ static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 			    WM8996_AIF1TX_LRCLK_MSTR,
 			    lrclk_tx);
 	snd_soc_update_bits(codec, lrclk_rx_reg,
+=======
+	snd_soc_component_update_bits(component, aifctrl_reg, WM8996_AIF1_FMT_MASK, aifctrl);
+	snd_soc_component_update_bits(component, bclk_reg,
+			    WM8996_AIF1_BCLK_INV | WM8996_AIF1_BCLK_MSTR,
+			    bclk);
+	snd_soc_component_update_bits(component, lrclk_tx_reg,
+			    WM8996_AIF1TX_LRCLK_INV |
+			    WM8996_AIF1TX_LRCLK_MSTR,
+			    lrclk_tx);
+	snd_soc_component_update_bits(component, lrclk_rx_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_AIF1RX_LRCLK_INV |
 			    WM8996_AIF1RX_LRCLK_MSTR,
 			    lrclk_rx);
@@ -1912,8 +2267,13 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bits, i, bclk_rate, best;
 	int aifdata = 0;
 	int lrclk = 0;
@@ -1923,7 +2283,11 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	switch (dai->id) {
 	case 0:
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
+<<<<<<< HEAD
 		    (snd_soc_read(codec, WM8996_GPIO_1)) & WM8996_GP1_FN_MASK) {
+=======
+		    (snd_soc_component_read(component, WM8996_GPIO_1)) & WM8996_GP1_FN_MASK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aifdata_reg = WM8996_AIF1RX_DATA_CONFIGURATION;
 			lrclk_reg = WM8996_AIF1_RX_LRCLK_1;
 		} else {
@@ -1934,7 +2298,11 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 		break;
 	case 1:
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
+<<<<<<< HEAD
 		    (snd_soc_read(codec, WM8996_GPIO_2)) & WM8996_GP2_FN_MASK) {
+=======
+		    (snd_soc_component_read(component, WM8996_GPIO_2)) & WM8996_GP2_FN_MASK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aifdata_reg = WM8996_AIF2RX_DATA_CONFIGURATION;
 			lrclk_reg = WM8996_AIF2_RX_LRCLK_1;
 		} else {
@@ -1944,13 +2312,21 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 		dsp_shift = WM8996_DSP2_DIV_SHIFT;
 		break;
 	default:
+<<<<<<< HEAD
 		BUG();
+=======
+		WARN(1, "Invalid dai id %d\n", dai->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	bclk_rate = snd_soc_params_to_bclk(params);
 	if (bclk_rate < 0) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unsupported BCLK rate: %d\n", bclk_rate);
+=======
+		dev_err(component->dev, "Unsupported BCLK rate: %d\n", bclk_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return bclk_rate;
 	}
 
@@ -1958,7 +2334,11 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	wm8996->rx_rate[dai->id] = params_rate(params);
 
 	/* Needs looking at for TDM */
+<<<<<<< HEAD
 	bits = snd_pcm_format_width(params_format(params));
+=======
+	bits = params_width(params);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bits < 0)
 		return bits;
 	aifdata |= (bits << WM8996_AIF1TX_WL_SHIFT) | bits;
@@ -1971,12 +2351,17 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	}
 	dsp |= i << dsp_shift;
 
+<<<<<<< HEAD
 	wm8996_update_bclk(codec);
+=======
+	wm8996_update_bclk(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lrclk = bclk_rate / params_rate(params);
 	dev_dbg(dai->dev, "Using LRCLK rate %d for actual LRCLK %dHz\n",
 		lrclk, bclk_rate / lrclk);
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, aifdata_reg,
 			    WM8996_AIF1TX_WL_MASK |
 			    WM8996_AIF1TX_SLOT_LEN_MASK,
@@ -1984,6 +2369,15 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_update_bits(codec, lrclk_reg, WM8996_AIF1RX_RATE_MASK,
 			    lrclk);
 	snd_soc_update_bits(codec, WM8996_AIF_CLOCKING_2,
+=======
+	snd_soc_component_update_bits(component, aifdata_reg,
+			    WM8996_AIF1TX_WL_MASK |
+			    WM8996_AIF1TX_SLOT_LEN_MASK,
+			    aifdata);
+	snd_soc_component_update_bits(component, lrclk_reg, WM8996_AIF1RX_RATE_MASK,
+			    lrclk);
+	snd_soc_component_update_bits(component, WM8996_AIF_CLOCKING_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_DSP1_DIV_MASK << dsp_shift, dsp);
 
 	return 0;
@@ -1992,8 +2386,13 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 		int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int lfclk = 0;
 	int ratediv = 0;
 	int sync = WM8996_REG_SYNC;
@@ -2004,8 +2403,13 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 		return 0;
 
 	/* Disable SYSCLK while we reconfigure */
+<<<<<<< HEAD
 	old = snd_soc_read(codec, WM8996_AIF_CLOCKING_1) & WM8996_SYSCLK_ENA;
 	snd_soc_update_bits(codec, WM8996_AIF_CLOCKING_1,
+=======
+	old = snd_soc_component_read(component, WM8996_AIF_CLOCKING_1) & WM8996_SYSCLK_ENA;
+	snd_soc_component_update_bits(component, WM8996_AIF_CLOCKING_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_SYSCLK_ENA, 0);
 
 	switch (clk_id) {
@@ -2022,23 +2426,38 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 		src = 2;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unsupported clock source %d\n", clk_id);
+=======
+		dev_err(component->dev, "Unsupported clock source %d\n", clk_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	switch (wm8996->sysclk) {
 	case 5644800:
 	case 6144000:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8996_AIF_RATE,
+=======
+		snd_soc_component_update_bits(component, WM8996_AIF_RATE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_SYSCLK_RATE, 0);
 		break;
 	case 22579200:
 	case 24576000:
 		ratediv = WM8996_SYSCLK_DIV;
 		wm8996->sysclk /= 2;
+<<<<<<< HEAD
 	case 11289600:
 	case 12288000:
 		snd_soc_update_bits(codec, WM8996_AIF_RATE,
+=======
+		fallthrough;
+	case 11289600:
+	case 12288000:
+		snd_soc_component_update_bits(component, WM8996_AIF_RATE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_SYSCLK_RATE, WM8996_SYSCLK_RATE);
 		break;
 	case 32000:
@@ -2047,11 +2466,16 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 		sync = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_warn(codec->dev, "Unsupported clock rate %dHz\n",
+=======
+		dev_warn(component->dev, "Unsupported clock rate %dHz\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 wm8996->sysclk);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	wm8996_update_bclk(codec);
 
 	snd_soc_update_bits(codec, WM8996_AIF_CLOCKING_1,
@@ -2061,6 +2485,17 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 	snd_soc_update_bits(codec, WM8996_CONTROL_INTERFACE_1,
 			    WM8996_REG_SYNC, sync);
 	snd_soc_update_bits(codec, WM8996_AIF_CLOCKING_1,
+=======
+	wm8996_update_bclk(component);
+
+	snd_soc_component_update_bits(component, WM8996_AIF_CLOCKING_1,
+			    WM8996_SYSCLK_SRC_MASK | WM8996_SYSCLK_DIV_MASK,
+			    src << WM8996_SYSCLK_SRC_SHIFT | ratediv);
+	snd_soc_component_update_bits(component, WM8996_CLOCKING_1, WM8996_LFCLK_ENA, lfclk);
+	snd_soc_component_update_bits(component, WM8996_CONTROL_INTERFACE_1,
+			    WM8996_REG_SYNC, sync);
+	snd_soc_component_update_bits(component, WM8996_AIF_CLOCKING_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_SYSCLK_ENA, old);
 
 	wm8996->sysclk_src = clk_id;
@@ -2179,6 +2614,7 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 			  unsigned int Fref, unsigned int Fout)
 {
@@ -2186,6 +2622,15 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	struct i2c_client *i2c = to_i2c_client(codec->dev);
 	struct _fll_div fll_div;
 	unsigned long timeout;
+=======
+static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int source,
+			  unsigned int Fref, unsigned int Fout)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	struct i2c_client *i2c = to_i2c_client(component->dev);
+	struct _fll_div fll_div;
+	unsigned long timeout, time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, reg, retry;
 
 	/* Any change? */
@@ -2194,15 +2639,26 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 		return 0;
 
 	if (Fout == 0) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "FLL disabled\n");
+=======
+		dev_dbg(component->dev, "FLL disabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		wm8996->fll_fref = 0;
 		wm8996->fll_fout = 0;
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8996_FLL_CONTROL_1,
 				    WM8996_FLL_ENA, 0);
 
 		wm8996_bg_disable(codec);
+=======
+		snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_1,
+				    WM8996_FLL_ENA, 0);
+
+		wm8996_bg_disable(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 0;
 	}
@@ -2225,14 +2681,22 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 		reg = 3;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unknown FLL source %d\n", ret);
+=======
+		dev_err(component->dev, "Unknown FLL source %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	reg |= fll_div.fll_refclk_div << WM8996_FLL_REFCLK_DIV_SHIFT;
 	reg |= fll_div.fll_ref_freq << WM8996_FLL_REF_FREQ_SHIFT;
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8996_FLL_CONTROL_5,
+=======
+	snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_FLL_REFCLK_DIV_MASK | WM8996_FLL_REF_FREQ |
 			    WM8996_FLL_REFCLK_SRC_MASK, reg);
 
@@ -2241,38 +2705,67 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 		reg |= WM8996_FLL_EFS_ENA | (3 << WM8996_FLL_LFSR_SEL_SHIFT);
 	else
 		reg |= 1 << WM8996_FLL_LFSR_SEL_SHIFT;
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8996_FLL_EFS_2, reg);
 
 	snd_soc_update_bits(codec, WM8996_FLL_CONTROL_2,
+=======
+	snd_soc_component_write(component, WM8996_FLL_EFS_2, reg);
+
+	snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_FLL_OUTDIV_MASK |
 			    WM8996_FLL_FRATIO_MASK,
 			    (fll_div.fll_outdiv << WM8996_FLL_OUTDIV_SHIFT) |
 			    (fll_div.fll_fratio));
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8996_FLL_CONTROL_3, fll_div.theta);
 
 	snd_soc_update_bits(codec, WM8996_FLL_CONTROL_4,
+=======
+	snd_soc_component_write(component, WM8996_FLL_CONTROL_3, fll_div.theta);
+
+	snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_FLL_N_MASK | WM8996_FLL_LOOP_GAIN_MASK,
 			    (fll_div.n << WM8996_FLL_N_SHIFT) |
 			    fll_div.fll_loop_gain);
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8996_FLL_EFS_1, fll_div.lambda);
 
 	/* Enable the bandgap if it's not already enabled */
 	ret = snd_soc_read(codec, WM8996_FLL_CONTROL_1);
 	if (!(ret & WM8996_FLL_ENA))
 		wm8996_bg_enable(codec);
+=======
+	snd_soc_component_write(component, WM8996_FLL_EFS_1, fll_div.lambda);
+
+	/* Enable the bandgap if it's not already enabled */
+	ret = snd_soc_component_read(component, WM8996_FLL_CONTROL_1);
+	if (!(ret & WM8996_FLL_ENA))
+		wm8996_bg_enable(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear any pending completions (eg, from failed startups) */
 	try_wait_for_completion(&wm8996->fll_lock);
 
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8996_FLL_CONTROL_1,
+=======
+	snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_FLL_ENA, WM8996_FLL_ENA);
 
 	/* The FLL supports live reconfiguration - kick that in case we were
 	 * already enabled.
 	 */
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8996_FLL_CONTROL_6, WM8996_FLL_SWITCH_CLK);
+=======
+	snd_soc_component_write(component, WM8996_FLL_CONTROL_6, WM8996_FLL_SWITCH_CLK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for the FLL to lock, using the interrupt if possible */
 	if (Fref > 1000000)
@@ -2286,6 +2779,7 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	if (i2c->irq)
 		timeout *= 10;
 	else
+<<<<<<< HEAD
 		timeout /= 2;
 
 	for (retry = 0; retry < 10; retry++) {
@@ -2297,15 +2791,38 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 		}
 
 		ret = snd_soc_read(codec, WM8996_INTERRUPT_RAW_STATUS_2);
+=======
+		/* ensure timeout of atleast 1 jiffies */
+		timeout = (timeout/2) ? : 1;
+
+	for (retry = 0; retry < 10; retry++) {
+		time_left = wait_for_completion_timeout(&wm8996->fll_lock,
+							timeout);
+		if (time_left != 0) {
+			WARN_ON(!i2c->irq);
+			ret = 1;
+			break;
+		}
+
+		ret = snd_soc_component_read(component, WM8996_INTERRUPT_RAW_STATUS_2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret & WM8996_FLL_LOCK_STS)
 			break;
 	}
 	if (retry == 10) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Timed out waiting for FLL\n");
 		ret = -ETIMEDOUT;
 	}
 
 	dev_dbg(codec->dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
+=======
+		dev_err(component->dev, "Timed out waiting for FLL\n");
+		ret = -ETIMEDOUT;
+	}
+
+	dev_dbg(component->dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8996->fll_fref = Fref;
 	wm8996->fll_fout = Fout;
@@ -2315,6 +2832,7 @@ static int wm8996_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 }
 
 #ifdef CONFIG_GPIOLIB
+<<<<<<< HEAD
 static inline struct wm8996_priv *gpio_to_wm8996(struct gpio_chip *chip)
 {
 	return container_of(chip, struct wm8996_priv, gpio_chip);
@@ -2323,6 +2841,11 @@ static inline struct wm8996_priv *gpio_to_wm8996(struct gpio_chip *chip)
 static void wm8996_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
 	struct wm8996_priv *wm8996 = gpio_to_wm8996(chip);
+=======
+static void wm8996_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+{
+	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regmap_update_bits(wm8996->regmap, WM8996_GPIO_1 + offset,
 			   WM8996_GP1_LVL, !!value << WM8996_GP1_LVL_SHIFT);
@@ -2331,7 +2854,11 @@ static void wm8996_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 static int wm8996_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct wm8996_priv *wm8996 = gpio_to_wm8996(chip);
+=======
+	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val;
 
 	val = (1 << WM8996_GP1_FN_SHIFT) | (!!value << WM8996_GP1_LVL_SHIFT);
@@ -2343,7 +2870,11 @@ static int wm8996_gpio_direction_out(struct gpio_chip *chip,
 
 static int wm8996_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm8996_priv *wm8996 = gpio_to_wm8996(chip);
+=======
+	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reg;
 	int ret;
 
@@ -2356,7 +2887,11 @@ static int wm8996_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 static int wm8996_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct wm8996_priv *wm8996 = gpio_to_wm8996(chip);
+=======
+	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return regmap_update_bits(wm8996->regmap, WM8996_GPIO_1 + offset,
 				  WM8996_GP1_FN_MASK | WM8996_GP1_DIR,
@@ -2364,7 +2899,11 @@ static int wm8996_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 				  (1 << WM8996_GP1_DIR_SHIFT));
 }
 
+<<<<<<< HEAD
 static struct gpio_chip wm8996_template_chip = {
+=======
+static const struct gpio_chip wm8996_template_chip = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label			= "wm8996",
 	.owner			= THIS_MODULE,
 	.direction_output	= wm8996_gpio_direction_out,
@@ -2372,6 +2911,11 @@ static struct gpio_chip wm8996_template_chip = {
 	.direction_input	= wm8996_gpio_direction_in,
 	.get			= wm8996_gpio_get,
 	.can_sleep		= 1,
+<<<<<<< HEAD
+=======
+	.ngpio			= 5,
+	.base			= -1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void wm8996_init_gpio(struct wm8996_priv *wm8996)
@@ -2379,6 +2923,7 @@ static void wm8996_init_gpio(struct wm8996_priv *wm8996)
 	int ret;
 
 	wm8996->gpio_chip = wm8996_template_chip;
+<<<<<<< HEAD
 	wm8996->gpio_chip.ngpio = 5;
 	wm8996->gpio_chip.dev = wm8996->dev;
 
@@ -2388,17 +2933,26 @@ static void wm8996_init_gpio(struct wm8996_priv *wm8996)
 		wm8996->gpio_chip.base = -1;
 
 	ret = gpiochip_add(&wm8996->gpio_chip);
+=======
+	wm8996->gpio_chip.parent = wm8996->dev;
+
+	ret = gpiochip_add_data(&wm8996->gpio_chip, wm8996);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		dev_err(wm8996->dev, "Failed to add GPIOs: %d\n", ret);
 }
 
 static void wm8996_free_gpio(struct wm8996_priv *wm8996)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = gpiochip_remove(&wm8996->gpio_chip);
 	if (ret != 0)
 		dev_err(wm8996->dev, "Failed to remove GPIOs: %d\n", ret);
+=======
+	gpiochip_remove(&wm8996->gpio_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static void wm8996_init_gpio(struct wm8996_priv *wm8996)
@@ -2412,6 +2966,12 @@ static void wm8996_free_gpio(struct wm8996_priv *wm8996)
 
 /**
  * wm8996_detect - Enable default WM8996 jack detection
+<<<<<<< HEAD
+=======
+ * @component: ASoC component
+ * @jack: jack pointer
+ * @polarity_cb: polarity callback
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The WM8996 has advanced accessory detection support for headsets.
  * This function provides a default implementation which integrates
@@ -2421,10 +2981,18 @@ static void wm8996_free_gpio(struct wm8996_priv *wm8996)
  * will also detect inverted microphone ground connections and update
  * the polarity of the connections.
  */
+<<<<<<< HEAD
 int wm8996_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
 		  wm8996_polarity_fn polarity_cb)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+int wm8996_detect(struct snd_soc_component *component, struct snd_soc_jack *jack,
+		  wm8996_polarity_fn polarity_cb)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8996->jack = jack;
 	wm8996->detecting = true;
@@ -2432,6 +3000,7 @@ int wm8996_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
 	wm8996->jack_flips = 0;
 
 	if (wm8996->polarity_cb)
+<<<<<<< HEAD
 		wm8996->polarity_cb(codec, 0);
 
 	/* Clear discarge to avoid noise during detection */
@@ -2443,29 +3012,65 @@ int wm8996_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
 	/* LDO2 powers the microphones, SYSCLK clocks detection */
 	snd_soc_dapm_force_enable_pin(&codec->dapm, "LDO2");
 	snd_soc_dapm_force_enable_pin(&codec->dapm, "SYSCLK");
+=======
+		wm8996->polarity_cb(component, 0);
+
+	/* Clear discarge to avoid noise during detection */
+	snd_soc_component_update_bits(component, WM8996_MICBIAS_1,
+			    WM8996_MICB1_DISCH, 0);
+	snd_soc_component_update_bits(component, WM8996_MICBIAS_2,
+			    WM8996_MICB2_DISCH, 0);
+
+	/* LDO2 powers the microphones, SYSCLK clocks detection */
+	snd_soc_dapm_mutex_lock(dapm);
+
+	snd_soc_dapm_force_enable_pin_unlocked(dapm, "LDO2");
+	snd_soc_dapm_force_enable_pin_unlocked(dapm, "SYSCLK");
+
+	snd_soc_dapm_mutex_unlock(dapm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We start off just enabling microphone detection - even a
 	 * plain headphone will trigger detection.
 	 */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8996_MIC_DETECT_1,
 			    WM8996_MICD_ENA, WM8996_MICD_ENA);
 
 	/* Slowest detection rate, gives debounce for initial detection */
 	snd_soc_update_bits(codec, WM8996_MIC_DETECT_1,
+=======
+	snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1,
+			    WM8996_MICD_ENA, WM8996_MICD_ENA);
+
+	/* Slowest detection rate, gives debounce for initial detection */
+	snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_MICD_RATE_MASK,
 			    WM8996_MICD_RATE_MASK);
 
 	/* Enable interrupts and we're off */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8996_INTERRUPT_STATUS_2_MASK,
+=======
+	snd_soc_component_update_bits(component, WM8996_INTERRUPT_STATUS_2_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_IM_MICD_EINT | WM8996_HP_DONE_EINT, 0);
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(wm8996_detect);
 
+<<<<<<< HEAD
 static void wm8996_hpdet_irq(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+static void wm8996_hpdet_irq(struct snd_soc_component *component)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, reg, report;
 
 	/* Assume headphone in error conditions; we need to report
@@ -2473,20 +3078,34 @@ static void wm8996_hpdet_irq(struct snd_soc_codec *codec)
 	 */
 	report = SND_JACK_HEADPHONE;
 
+<<<<<<< HEAD
 	reg = snd_soc_read(codec, WM8996_HEADPHONE_DETECT_2);
 	if (reg < 0) {
 		dev_err(codec->dev, "Failed to read HPDET status\n");
+=======
+	reg = snd_soc_component_read(component, WM8996_HEADPHONE_DETECT_2);
+	if (reg < 0) {
+		dev_err(component->dev, "Failed to read HPDET status\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (!(reg & WM8996_HP_DONE)) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Got HPDET IRQ but HPDET is busy\n");
+=======
+		dev_err(component->dev, "Got HPDET IRQ but HPDET is busy\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	val = reg & WM8996_HP_LVL_MASK;
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "HPDET measured %d ohms\n", val);
+=======
+	dev_dbg(component->dev, "HPDET measured %d ohms\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we've got high enough impedence then report as line,
 	 * otherwise assume headphone.
@@ -2506,13 +3125,20 @@ out:
 	wm8996->detecting = false;
 
 	/* If the output isn't running re-clamp it */
+<<<<<<< HEAD
 	if (!(snd_soc_read(codec, WM8996_POWER_MANAGEMENT_1) &
 	      (WM8996_HPOUT1L_ENA | WM8996_HPOUT1R_RMV_SHORT)))
 		snd_soc_update_bits(codec, WM8996_ANALOGUE_HP_1,
+=======
+	if (!(snd_soc_component_read(component, WM8996_POWER_MANAGEMENT_1) &
+	      (WM8996_HPOUT1L_ENA | WM8996_HPOUT1R_RMV_SHORT)))
+		snd_soc_component_update_bits(component, WM8996_ANALOGUE_HP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_HPOUT1L_RMV_SHORT |
 				    WM8996_HPOUT1R_RMV_SHORT, 0);
 
 	/* Go back to looking at the microphone */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8996_ACCESSORY_DETECT_MODE_1,
 			    WM8996_JD_MODE_MASK, 0);
 	snd_soc_update_bits(codec, WM8996_MIC_DETECT_1, WM8996_MICD_ENA,
@@ -2526,12 +3152,30 @@ static void wm8996_hpdet_start(struct snd_soc_codec *codec)
 {
 	/* Unclamp the output, we can't measure while we're shorting it */
 	snd_soc_update_bits(codec, WM8996_ANALOGUE_HP_1,
+=======
+	snd_soc_component_update_bits(component, WM8996_ACCESSORY_DETECT_MODE_1,
+			    WM8996_JD_MODE_MASK, 0);
+	snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1, WM8996_MICD_ENA,
+			    WM8996_MICD_ENA);
+
+	snd_soc_dapm_disable_pin(dapm, "Bandgap");
+	snd_soc_dapm_sync(dapm);
+}
+
+static void wm8996_hpdet_start(struct snd_soc_component *component)
+{
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+
+	/* Unclamp the output, we can't measure while we're shorting it */
+	snd_soc_component_update_bits(component, WM8996_ANALOGUE_HP_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_HPOUT1L_RMV_SHORT |
 			    WM8996_HPOUT1R_RMV_SHORT,
 			    WM8996_HPOUT1L_RMV_SHORT |
 			    WM8996_HPOUT1R_RMV_SHORT);
 
 	/* We need bandgap for HPDET */
+<<<<<<< HEAD
 	snd_soc_dapm_force_enable_pin(&codec->dapm, "Bandgap");
 	snd_soc_dapm_sync(&codec->dapm);
 
@@ -2552,12 +3196,35 @@ static void wm8996_report_headphone(struct snd_soc_codec *codec)
 
 	/* Increase the detection rate a bit for responsiveness. */
 	snd_soc_update_bits(codec, WM8996_MIC_DETECT_1,
+=======
+	snd_soc_dapm_force_enable_pin(dapm, "Bandgap");
+	snd_soc_dapm_sync(dapm);
+
+	/* Go into headphone detect left mode */
+	snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1, WM8996_MICD_ENA, 0);
+	snd_soc_component_update_bits(component, WM8996_ACCESSORY_DETECT_MODE_1,
+			    WM8996_JD_MODE_MASK, 1);
+
+	/* Trigger a measurement */
+	snd_soc_component_update_bits(component, WM8996_HEADPHONE_DETECT_1,
+			    WM8996_HP_POLL, WM8996_HP_POLL);
+}
+
+static void wm8996_report_headphone(struct snd_soc_component *component)
+{
+	dev_dbg(component->dev, "Headphone detected\n");
+	wm8996_hpdet_start(component);
+
+	/* Increase the detection rate a bit for responsiveness. */
+	snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8996_MICD_RATE_MASK |
 			    WM8996_MICD_BIAS_STARTTIME_MASK,
 			    7 << WM8996_MICD_RATE_SHIFT |
 			    7 << WM8996_MICD_BIAS_STARTTIME_SHIFT);
 }
 
+<<<<<<< HEAD
 static void wm8996_micd(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
@@ -2569,12 +3236,29 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 
 	if (!(val & WM8996_MICD_VALID)) {
 		dev_warn(codec->dev, "Microphone detection state invalid\n");
+=======
+static void wm8996_micd(struct snd_soc_component *component)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	int val, reg;
+
+	val = snd_soc_component_read(component, WM8996_MIC_DETECT_3);
+
+	dev_dbg(component->dev, "Microphone event: %x\n", val);
+
+	if (!(val & WM8996_MICD_VALID)) {
+		dev_warn(component->dev, "Microphone detection state invalid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* No accessory, reset everything and report removal */
 	if (!(val & WM8996_MICD_STS)) {
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "Jack removal detected\n");
+=======
+		dev_dbg(component->dev, "Jack removal detected\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8996->jack_mic = false;
 		wm8996->detecting = true;
 		wm8996->jack_flips = 0;
@@ -2582,7 +3266,11 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 				    SND_JACK_LINEOUT | SND_JACK_HEADSET |
 				    SND_JACK_BTN_0);
 
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8996_MIC_DETECT_1,
+=======
+		snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_MICD_RATE_MASK |
 				    WM8996_MICD_BIAS_STARTTIME_MASK,
 				    WM8996_MICD_RATE_MASK |
@@ -2596,6 +3284,7 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 	 */
 	if (val & 0x400) {
 		if (wm8996->detecting) {
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "Microphone detected\n");
 			wm8996->jack_mic = true;
 			wm8996_hpdet_start(codec);
@@ -2603,12 +3292,25 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 			/* Increase poll rate to give better responsiveness
 			 * for buttons */
 			snd_soc_update_bits(codec, WM8996_MIC_DETECT_1,
+=======
+			dev_dbg(component->dev, "Microphone detected\n");
+			wm8996->jack_mic = true;
+			wm8996_hpdet_start(component);
+
+			/* Increase poll rate to give better responsiveness
+			 * for buttons */
+			snd_soc_component_update_bits(component, WM8996_MIC_DETECT_1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8996_MICD_RATE_MASK |
 					    WM8996_MICD_BIAS_STARTTIME_MASK,
 					    5 << WM8996_MICD_RATE_SHIFT |
 					    7 << WM8996_MICD_BIAS_STARTTIME_SHIFT);
 		} else {
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "Mic button up\n");
+=======
+			dev_dbg(component->dev, "Mic button up\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_soc_jack_report(wm8996->jack, 0, SND_JACK_BTN_0);
 		}
 
@@ -2625,6 +3327,7 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 		wm8996->jack_flips++;
 
 		if (wm8996->jack_flips > 1) {
+<<<<<<< HEAD
 			wm8996_report_headphone(codec);
 			return;
 		}
@@ -2633,14 +3336,31 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 		reg ^= WM8996_HPOUT1FB_SRC | WM8996_MICD_SRC |
 			WM8996_MICD_BIAS_SRC;
 		snd_soc_update_bits(codec, WM8996_ACCESSORY_DETECT_MODE_2,
+=======
+			wm8996_report_headphone(component);
+			return;
+		}
+
+		reg = snd_soc_component_read(component, WM8996_ACCESSORY_DETECT_MODE_2);
+		reg ^= WM8996_HPOUT1FB_SRC | WM8996_MICD_SRC |
+			WM8996_MICD_BIAS_SRC;
+		snd_soc_component_update_bits(component, WM8996_ACCESSORY_DETECT_MODE_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8996_HPOUT1FB_SRC | WM8996_MICD_SRC |
 				    WM8996_MICD_BIAS_SRC, reg);
 
 		if (wm8996->polarity_cb)
+<<<<<<< HEAD
 			wm8996->polarity_cb(codec,
 					    (reg & WM8996_MICD_SRC) != 0);
 
 		dev_dbg(codec->dev, "Set microphone polarity to %d\n",
+=======
+			wm8996->polarity_cb(component,
+					    (reg & WM8996_MICD_SRC) != 0);
+
+		dev_dbg(component->dev, "Set microphone polarity to %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(reg & WM8996_MICD_SRC) != 0);
 
 		return;
@@ -2651,17 +3371,26 @@ static void wm8996_micd(struct snd_soc_codec *codec)
 	 */
 	if (val & 0x3fc) {
 		if (wm8996->jack_mic) {
+<<<<<<< HEAD
 			dev_dbg(codec->dev, "Mic button detected\n");
 			snd_soc_jack_report(wm8996->jack, SND_JACK_BTN_0,
 					    SND_JACK_BTN_0);
 		} else if (wm8996->detecting) {
 			wm8996_report_headphone(codec);
+=======
+			dev_dbg(component->dev, "Mic button detected\n");
+			snd_soc_jack_report(wm8996->jack, SND_JACK_BTN_0,
+					    SND_JACK_BTN_0);
+		} else if (wm8996->detecting) {
+			wm8996_report_headphone(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
 static irqreturn_t wm8996_irq(int irq, void *data)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = data;
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
 	int irq_val;
@@ -2673,30 +3402,64 @@ static irqreturn_t wm8996_irq(int irq, void *data)
 		return IRQ_NONE;
 	}
 	irq_val &= ~snd_soc_read(codec, WM8996_INTERRUPT_STATUS_2_MASK);
+=======
+	struct snd_soc_component *component = data;
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	int irq_val;
+
+	irq_val = snd_soc_component_read(component, WM8996_INTERRUPT_STATUS_2);
+	if (irq_val < 0) {
+		dev_err(component->dev, "Failed to read IRQ status: %d\n",
+			irq_val);
+		return IRQ_NONE;
+	}
+	irq_val &= ~snd_soc_component_read(component, WM8996_INTERRUPT_STATUS_2_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!irq_val)
 		return IRQ_NONE;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8996_INTERRUPT_STATUS_2, irq_val);
 
 	if (irq_val & (WM8996_DCS_DONE_01_EINT | WM8996_DCS_DONE_23_EINT)) {
 		dev_dbg(codec->dev, "DC servo IRQ\n");
+=======
+	snd_soc_component_write(component, WM8996_INTERRUPT_STATUS_2, irq_val);
+
+	if (irq_val & (WM8996_DCS_DONE_01_EINT | WM8996_DCS_DONE_23_EINT)) {
+		dev_dbg(component->dev, "DC servo IRQ\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&wm8996->dcs_done);
 	}
 
 	if (irq_val & WM8996_FIFOS_ERR_EINT)
+<<<<<<< HEAD
 		dev_err(codec->dev, "Digital core FIFO error\n");
 
 	if (irq_val & WM8996_FLL_LOCK_EINT) {
 		dev_dbg(codec->dev, "FLL locked\n");
+=======
+		dev_err(component->dev, "Digital core FIFO error\n");
+
+	if (irq_val & WM8996_FLL_LOCK_EINT) {
+		dev_dbg(component->dev, "FLL locked\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&wm8996->fll_lock);
 	}
 
 	if (irq_val & WM8996_MICD_EINT)
+<<<<<<< HEAD
 		wm8996_micd(codec);
 
 	if (irq_val & WM8996_HP_DONE_EINT)
 		wm8996_hpdet_irq(codec);
+=======
+		wm8996_micd(component);
+
+	if (irq_val & WM8996_HP_DONE_EINT)
+		wm8996_hpdet_irq(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -2715,9 +3478,15 @@ static irqreturn_t wm8996_edge_irq(int irq, void *data)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void wm8996_retune_mobile_pdata(struct snd_soc_codec *codec)
 {
 	struct wm8996_priv *wm8996 = snd_soc_codec_get_drvdata(codec);
+=======
+static void wm8996_retune_mobile_pdata(struct snd_soc_component *component)
+{
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8996_pdata *pdata = &wm8996->pdata;
 
 	struct snd_kcontrol_new controls[] = {
@@ -2766,6 +3535,7 @@ static void wm8996_retune_mobile_pdata(struct snd_soc_codec *codec)
 		wm8996->retune_mobile_texts = t;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Allocated %d unique ReTune Mobile names\n",
 		wm8996->num_retune_mobile_texts);
 
@@ -2775,6 +3545,17 @@ static void wm8996_retune_mobile_pdata(struct snd_soc_codec *codec)
 	ret = snd_soc_add_codec_controls(codec, controls, ARRAY_SIZE(controls));
 	if (ret != 0)
 		dev_err(codec->dev,
+=======
+	dev_dbg(component->dev, "Allocated %d unique ReTune Mobile names\n",
+		wm8996->num_retune_mobile_texts);
+
+	wm8996->retune_mobile_enum.items = wm8996->num_retune_mobile_texts;
+	wm8996->retune_mobile_enum.texts = wm8996->retune_mobile_texts;
+
+	ret = snd_soc_add_component_controls(component, controls, ARRAY_SIZE(controls));
+	if (ret != 0)
+		dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Failed to add ReTune Mobile controls: %d\n", ret);
 }
 
@@ -2787,6 +3568,7 @@ static const struct regmap_config wm8996_regmap = {
 	.num_reg_defaults = ARRAY_SIZE(wm8996_reg),
 	.volatile_reg = wm8996_volatile_register,
 	.readable_reg = wm8996_readable_register,
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
 };
 
@@ -2798,10 +3580,24 @@ static int wm8996_probe(struct snd_soc_codec *codec)
 	int i, irq_flags;
 
 	wm8996->codec = codec;
+=======
+	.cache_type = REGCACHE_MAPLE,
+};
+
+static int wm8996_probe(struct snd_soc_component *component)
+{
+	int ret;
+	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
+	struct i2c_client *i2c = to_i2c_client(component->dev);
+	int irq_flags;
+
+	wm8996->component = component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_completion(&wm8996->dcs_done);
 	init_completion(&wm8996->fll_lock);
 
+<<<<<<< HEAD
 	codec->control_data = wm8996->regmap;
 
 	ret = snd_soc_codec_set_cache_io(codec, 16, 16, SND_SOC_REGMAP);
@@ -2983,6 +3779,14 @@ static int wm8996_probe(struct snd_soc_codec *codec)
 				    WM8996_AIF2TX_LRCLK_MODE,
 				    WM8996_AIF2TX_LRCLK_MODE);
 
+=======
+	if (wm8996->pdata.num_retune_mobile_cfgs)
+		wm8996_retune_mobile_pdata(component);
+	else
+		snd_soc_add_component_controls(component, wm8996_eq_controls,
+				     ARRAY_SIZE(wm8996_eq_controls));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i2c->irq) {
 		if (wm8996->pdata.irq_flags)
 			irq_flags = wm8996->pdata.irq_flags;
@@ -2994,6 +3798,7 @@ static int wm8996_probe(struct snd_soc_codec *codec)
 		if (irq_flags & (IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING))
 			ret = request_threaded_irq(i2c->irq, NULL,
 						   wm8996_edge_irq,
+<<<<<<< HEAD
 						   irq_flags, "wm8996", codec);
 		else
 			ret = request_threaded_irq(i2c->irq, NULL, wm8996_irq,
@@ -3006,6 +3811,20 @@ static int wm8996_probe(struct snd_soc_codec *codec)
 
 			/* Enable error reporting and DC servo status */
 			snd_soc_update_bits(codec,
+=======
+						   irq_flags, "wm8996", component);
+		else
+			ret = request_threaded_irq(i2c->irq, NULL, wm8996_irq,
+						   irq_flags, "wm8996", component);
+
+		if (ret == 0) {
+			/* Unmask the interrupt */
+			snd_soc_component_update_bits(component, WM8996_INTERRUPT_CONTROL,
+					    WM8996_IM_IRQ, 0);
+
+			/* Enable error reporting and DC servo status */
+			snd_soc_component_update_bits(component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8996_INTERRUPT_STATUS_2_MASK,
 					    WM8996_IM_DCS_DONE_23_EINT |
 					    WM8996_IM_DCS_DONE_01_EINT |
@@ -3013,12 +3832,19 @@ static int wm8996_probe(struct snd_soc_codec *codec)
 					    WM8996_IM_FIFOS_ERR_EINT,
 					    0);
 		} else {
+<<<<<<< HEAD
 			dev_err(codec->dev, "Failed to request IRQ: %d\n",
 				ret);
+=======
+			dev_err(component->dev, "Failed to request IRQ: %d\n",
+				ret);
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	return ret;
@@ -3057,6 +3883,35 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8996 = {
 	.dapm_routes = wm8996_dapm_routes,
 	.num_dapm_routes = ARRAY_SIZE(wm8996_dapm_routes),
 	.set_pll = wm8996_set_fll,
+=======
+}
+
+static void wm8996_remove(struct snd_soc_component *component)
+{
+	struct i2c_client *i2c = to_i2c_client(component->dev);
+
+	snd_soc_component_update_bits(component, WM8996_INTERRUPT_CONTROL,
+			    WM8996_IM_IRQ, WM8996_IM_IRQ);
+
+	if (i2c->irq)
+		free_irq(i2c->irq, component);
+}
+
+static const struct snd_soc_component_driver soc_component_dev_wm8996 = {
+	.probe			= wm8996_probe,
+	.remove			= wm8996_remove,
+	.set_bias_level		= wm8996_set_bias_level,
+	.seq_notifier		= wm8996_seq_notifier,
+	.controls		= wm8996_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8996_snd_controls),
+	.dapm_widgets		= wm8996_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8996_dapm_widgets),
+	.dapm_routes		= wm8996_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(wm8996_dapm_routes),
+	.set_pll		= wm8996_set_fll,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define WM8996_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
@@ -3115,8 +3970,12 @@ static struct snd_soc_dai_driver wm8996_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
+=======
+static int wm8996_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8996_priv *wm8996;
 	int ret, i;
@@ -3134,6 +3993,7 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 		memcpy(&wm8996->pdata, dev_get_platdata(&i2c->dev),
 		       sizeof(wm8996->pdata));
 
+<<<<<<< HEAD
 	if (wm8996->pdata.ldo_ena > 0) {
 		ret = gpio_request_one(wm8996->pdata.ldo_ena,
 				       GPIOF_OUT_INIT_LOW, "WM8996 ENA");
@@ -3143,6 +4003,17 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 			goto err;
 		}
 	}
+=======
+	wm8996->ldo_ena = devm_gpiod_get_optional(&i2c->dev, "wlf,ldo1ena",
+						  GPIOD_OUT_LOW);
+	if (IS_ERR(wm8996->ldo_ena)) {
+		ret = PTR_ERR(wm8996->ldo_ena);
+		dev_err(&i2c->dev, "Failed to request LDO ENA GPIO: %d\n",
+			ret);
+		goto err;
+	}
+	gpiod_set_consumer_name(wm8996->ldo_ena, "WM8996 ENA");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(wm8996->supplies); i++)
 		wm8996->supplies[i].supply = wm8996_supply_names[i];
@@ -3154,6 +4025,25 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 		goto err_gpio;
 	}
 
+<<<<<<< HEAD
+=======
+	wm8996->disable_nb[0].notifier_call = wm8996_regulator_event_0;
+	wm8996->disable_nb[1].notifier_call = wm8996_regulator_event_1;
+	wm8996->disable_nb[2].notifier_call = wm8996_regulator_event_2;
+
+	/* This should really be moved into the regulator core */
+	for (i = 0; i < ARRAY_SIZE(wm8996->supplies); i++) {
+		ret = devm_regulator_register_notifier(
+						wm8996->supplies[i].consumer,
+						&wm8996->disable_nb[i]);
+		if (ret != 0) {
+			dev_err(&i2c->dev,
+				"Failed to register regulator notifier: %d\n",
+				ret);
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm8996->supplies),
 				    wm8996->supplies);
 	if (ret != 0) {
@@ -3161,12 +4051,21 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 		goto err_gpio;
 	}
 
+<<<<<<< HEAD
 	if (wm8996->pdata.ldo_ena > 0) {
 		gpio_set_value_cansleep(wm8996->pdata.ldo_ena, 1);
 		msleep(5);
 	}
 
 	wm8996->regmap = regmap_init_i2c(i2c, &wm8996_regmap);
+=======
+	if (wm8996->ldo_ena) {
+		gpiod_set_value_cansleep(wm8996->ldo_ena, 1);
+		msleep(5);
+	}
+
+	wm8996->regmap = devm_regmap_init_i2c(i2c, &wm8996_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm8996->regmap)) {
 		ret = PTR_ERR(wm8996->regmap);
 		dev_err(&i2c->dev, "regmap_init() failed: %d\n", ret);
@@ -3194,6 +4093,7 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 	dev_info(&i2c->dev, "revision %c\n",
 		 (reg & WM8996_CHIP_REV_MASK) + 'A');
 
+<<<<<<< HEAD
 	regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies), wm8996->supplies);
 
 	ret = wm8996_reset(wm8996);
@@ -3206,6 +4106,205 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 
 	ret = snd_soc_register_codec(&i2c->dev,
 				     &soc_codec_dev_wm8996, wm8996_dai,
+=======
+	if (wm8996->ldo_ena) {
+		gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
+		regcache_cache_only(wm8996->regmap, true);
+	} else {
+		ret = regmap_write(wm8996->regmap, WM8996_SOFTWARE_RESET,
+				   0x8915);
+		if (ret != 0) {
+			dev_err(&i2c->dev, "Failed to issue reset: %d\n", ret);
+			goto err_regmap;
+		}
+	}
+
+	regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies), wm8996->supplies);
+
+	/* Apply platform data settings */
+	regmap_update_bits(wm8996->regmap, WM8996_LINE_INPUT_CONTROL,
+			   WM8996_INL_MODE_MASK | WM8996_INR_MODE_MASK,
+			   wm8996->pdata.inl_mode << WM8996_INL_MODE_SHIFT |
+			   wm8996->pdata.inr_mode);
+
+	for (i = 0; i < ARRAY_SIZE(wm8996->pdata.gpio_default); i++) {
+		if (!wm8996->pdata.gpio_default[i])
+			continue;
+
+		regmap_write(wm8996->regmap, WM8996_GPIO_1 + i,
+			     wm8996->pdata.gpio_default[i] & 0xffff);
+	}
+
+	if (wm8996->pdata.spkmute_seq)
+		regmap_update_bits(wm8996->regmap,
+				   WM8996_PDM_SPEAKER_MUTE_SEQUENCE,
+				   WM8996_SPK_MUTE_ENDIAN |
+				   WM8996_SPK_MUTE_SEQ1_MASK,
+				   wm8996->pdata.spkmute_seq);
+
+	regmap_update_bits(wm8996->regmap, WM8996_ACCESSORY_DETECT_MODE_2,
+			   WM8996_MICD_BIAS_SRC | WM8996_HPOUT1FB_SRC |
+			   WM8996_MICD_SRC, wm8996->pdata.micdet_def);
+
+	/* Latch volume update bits */
+	regmap_update_bits(wm8996->regmap, WM8996_LEFT_LINE_INPUT_VOLUME,
+			   WM8996_IN1_VU, WM8996_IN1_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_RIGHT_LINE_INPUT_VOLUME,
+			   WM8996_IN1_VU, WM8996_IN1_VU);
+
+	regmap_update_bits(wm8996->regmap, WM8996_DAC1_LEFT_VOLUME,
+			   WM8996_DAC1_VU, WM8996_DAC1_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DAC1_RIGHT_VOLUME,
+			   WM8996_DAC1_VU, WM8996_DAC1_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DAC2_LEFT_VOLUME,
+			   WM8996_DAC2_VU, WM8996_DAC2_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DAC2_RIGHT_VOLUME,
+			   WM8996_DAC2_VU, WM8996_DAC2_VU);
+
+	regmap_update_bits(wm8996->regmap, WM8996_OUTPUT1_LEFT_VOLUME,
+			   WM8996_DAC1_VU, WM8996_DAC1_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_OUTPUT1_RIGHT_VOLUME,
+			   WM8996_DAC1_VU, WM8996_DAC1_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_OUTPUT2_LEFT_VOLUME,
+			   WM8996_DAC2_VU, WM8996_DAC2_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_OUTPUT2_RIGHT_VOLUME,
+			   WM8996_DAC2_VU, WM8996_DAC2_VU);
+
+	regmap_update_bits(wm8996->regmap, WM8996_DSP1_TX_LEFT_VOLUME,
+			   WM8996_DSP1TX_VU, WM8996_DSP1TX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP1_TX_RIGHT_VOLUME,
+			   WM8996_DSP1TX_VU, WM8996_DSP1TX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP2_TX_LEFT_VOLUME,
+			   WM8996_DSP2TX_VU, WM8996_DSP2TX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP2_TX_RIGHT_VOLUME,
+			   WM8996_DSP2TX_VU, WM8996_DSP2TX_VU);
+
+	regmap_update_bits(wm8996->regmap, WM8996_DSP1_RX_LEFT_VOLUME,
+			   WM8996_DSP1RX_VU, WM8996_DSP1RX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP1_RX_RIGHT_VOLUME,
+			   WM8996_DSP1RX_VU, WM8996_DSP1RX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP2_RX_LEFT_VOLUME,
+			   WM8996_DSP2RX_VU, WM8996_DSP2RX_VU);
+	regmap_update_bits(wm8996->regmap, WM8996_DSP2_RX_RIGHT_VOLUME,
+			   WM8996_DSP2RX_VU, WM8996_DSP2RX_VU);
+
+	/* No support currently for the underclocked TDM modes and
+	 * pick a default TDM layout with each channel pair working with
+	 * slots 0 and 1. */
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_0_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN0_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN0_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_1_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN1_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN1_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN1_SLOTS_SHIFT | 1);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_2_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN2_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN2_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN2_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_3_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN3_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN3_SLOTS_SHIFT | 1);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_4_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN4_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN4_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1RX_CHANNEL_5_CONFIGURATION,
+			   WM8996_AIF1RX_CHAN5_SLOTS_MASK |
+			   WM8996_AIF1RX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1RX_CHAN5_SLOTS_SHIFT | 1);
+
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF2RX_CHANNEL_0_CONFIGURATION,
+			   WM8996_AIF2RX_CHAN0_SLOTS_MASK |
+			   WM8996_AIF2RX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF2RX_CHAN0_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF2RX_CHANNEL_1_CONFIGURATION,
+			   WM8996_AIF2RX_CHAN1_SLOTS_MASK |
+			   WM8996_AIF2RX_CHAN1_START_SLOT_MASK,
+			   1 << WM8996_AIF2RX_CHAN1_SLOTS_SHIFT | 1);
+
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_0_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN0_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN0_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_1_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN1_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN1_SLOTS_SHIFT | 1);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_2_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN2_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN2_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_3_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN3_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN3_SLOTS_SHIFT | 1);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_4_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN4_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN4_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_5_CONFIGURATION,
+			   WM8996_AIF1TX_CHAN5_SLOTS_MASK |
+			   WM8996_AIF1TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN5_SLOTS_SHIFT | 1);
+
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF2TX_CHANNEL_0_CONFIGURATION,
+			   WM8996_AIF2TX_CHAN0_SLOTS_MASK |
+			   WM8996_AIF2TX_CHAN0_START_SLOT_MASK,
+			   1 << WM8996_AIF2TX_CHAN0_SLOTS_SHIFT | 0);
+	regmap_update_bits(wm8996->regmap,
+			   WM8996_AIF1TX_CHANNEL_1_CONFIGURATION,
+			   WM8996_AIF2TX_CHAN1_SLOTS_MASK |
+			   WM8996_AIF2TX_CHAN1_START_SLOT_MASK,
+			   1 << WM8996_AIF1TX_CHAN1_SLOTS_SHIFT | 1);
+
+	/* If the TX LRCLK pins are not in LRCLK mode configure the
+	 * AIFs to source their clocks from the RX LRCLKs.
+	 */
+	ret = regmap_read(wm8996->regmap, WM8996_GPIO_1, &reg);
+	if (ret != 0) {
+		dev_err(&i2c->dev, "Failed to read GPIO1: %d\n", ret);
+		goto err_regmap;
+	}
+
+	if (reg & WM8996_GP1_FN_MASK)
+		regmap_update_bits(wm8996->regmap, WM8996_AIF1_TX_LRCLK_2,
+				   WM8996_AIF1TX_LRCLK_MODE,
+				   WM8996_AIF1TX_LRCLK_MODE);
+
+	ret = regmap_read(wm8996->regmap, WM8996_GPIO_2, &reg);
+	if (ret != 0) {
+		dev_err(&i2c->dev, "Failed to read GPIO2: %d\n", ret);
+		goto err_regmap;
+	}
+
+	if (reg & WM8996_GP2_FN_MASK)
+		regmap_update_bits(wm8996->regmap, WM8996_AIF2_TX_LRCLK_2,
+				   WM8996_AIF2TX_LRCLK_MODE,
+				   WM8996_AIF2TX_LRCLK_MODE);
+
+	wm8996_init_gpio(wm8996);
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+				     &soc_component_dev_wm8996, wm8996_dai,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ARRAY_SIZE(wm8996_dai));
 	if (ret < 0)
 		goto err_gpiolib;
@@ -3215,6 +4314,7 @@ static __devinit int wm8996_i2c_probe(struct i2c_client *i2c,
 err_gpiolib:
 	wm8996_free_gpio(wm8996);
 err_regmap:
+<<<<<<< HEAD
 	regmap_exit(wm8996->regmap);
 err_enable:
 	if (wm8996->pdata.ldo_ena > 0)
@@ -3223,11 +4323,19 @@ err_enable:
 err_gpio:
 	if (wm8996->pdata.ldo_ena > 0)
 		gpio_free(wm8996->pdata.ldo_ena);
+=======
+err_enable:
+	if (wm8996->ldo_ena)
+		gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
+	regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies), wm8996->supplies);
+err_gpio:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int wm8996_i2c_remove(struct i2c_client *client)
 {
 	struct wm8996_priv *wm8996 = i2c_get_clientdata(client);
@@ -3240,6 +4348,15 @@ static __devexit int wm8996_i2c_remove(struct i2c_client *client)
 		gpio_free(wm8996->pdata.ldo_ena);
 	}
 	return 0;
+=======
+static void wm8996_i2c_remove(struct i2c_client *client)
+{
+	struct wm8996_priv *wm8996 = i2c_get_clientdata(client);
+
+	wm8996_free_gpio(wm8996);
+	if (wm8996->ldo_ena)
+		gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm8996_i2c_id[] = {
@@ -3251,10 +4368,16 @@ MODULE_DEVICE_TABLE(i2c, wm8996_i2c_id);
 static struct i2c_driver wm8996_i2c_driver = {
 	.driver = {
 		.name = "wm8996",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe =    wm8996_i2c_probe,
 	.remove =   __devexit_p(wm8996_i2c_remove),
+=======
+	},
+	.probe =    wm8996_i2c_probe,
+	.remove =   wm8996_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8996_i2c_id,
 };
 

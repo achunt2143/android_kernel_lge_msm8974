@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LEDs driver for PCEngines WRAP
  *
  * Copyright (C) 2006 Kristian Kielhofner <kris@krisk.org>
  *
  * Based on leds-net48xx.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -15,7 +22,11 @@
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/scx200_gpio.h>
 #include <linux/module.h>
 
@@ -76,6 +87,7 @@ static int wrap_led_probe(struct platform_device *pdev)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = led_classdev_register(&pdev->dev, &wrap_power_led);
 	if (ret < 0)
 		return ret;
@@ -104,14 +116,30 @@ static int wrap_led_remove(struct platform_device *pdev)
 	led_classdev_unregister(&wrap_error_led);
 	led_classdev_unregister(&wrap_extra_led);
 	return 0;
+=======
+	ret = devm_led_classdev_register(&pdev->dev, &wrap_power_led);
+	if (ret < 0)
+		return ret;
+
+	ret = devm_led_classdev_register(&pdev->dev, &wrap_error_led);
+	if (ret < 0)
+		return ret;
+
+	return  devm_led_classdev_register(&pdev->dev, &wrap_extra_led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wrap_led_driver = {
 	.probe		= wrap_led_probe,
+<<<<<<< HEAD
 	.remove		= wrap_led_remove,
 	.driver		= {
 		.name		= DRVNAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver		= {
+		.name		= DRVNAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

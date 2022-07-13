@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext2/acl.c
  *
  * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
  */
 
+<<<<<<< HEAD
 #include <linux/capability.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
@@ -53,16 +60,35 @@ ext2_acl_from_disk(const void *value, size_t size)
 			case ACL_OTHER:
 				value = (char *)value +
 					sizeof(ext2_acl_entry_short);
+<<<<<<< HEAD
 				acl->a_entries[n].e_id = ACL_UNDEFINED_ID;
 				break;
 
 			case ACL_USER:
+=======
+				break;
+
+			case ACL_USER:
+				value = (char *)value + sizeof(ext2_acl_entry);
+				if ((char *)value > end)
+					goto fail;
+				acl->a_entries[n].e_uid =
+					make_kuid(&init_user_ns,
+						  le32_to_cpu(entry->e_id));
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ACL_GROUP:
 				value = (char *)value + sizeof(ext2_acl_entry);
 				if ((char *)value > end)
 					goto fail;
+<<<<<<< HEAD
 				acl->a_entries[n].e_id =
 					le32_to_cpu(entry->e_id);
+=======
+				acl->a_entries[n].e_gid =
+					make_kgid(&init_user_ns,
+						  le32_to_cpu(entry->e_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			default:
@@ -96,6 +122,7 @@ ext2_acl_to_disk(const struct posix_acl *acl, size_t *size)
 	ext_acl->a_version = cpu_to_le32(EXT2_ACL_VERSION);
 	e = (char *)ext_acl + sizeof(ext2_acl_header);
 	for (n=0; n < acl->a_count; n++) {
+<<<<<<< HEAD
 		ext2_acl_entry *entry = (ext2_acl_entry *)e;
 		entry->e_tag  = cpu_to_le16(acl->a_entries[n].e_tag);
 		entry->e_perm = cpu_to_le16(acl->a_entries[n].e_perm);
@@ -104,6 +131,21 @@ ext2_acl_to_disk(const struct posix_acl *acl, size_t *size)
 			case ACL_GROUP:
 				entry->e_id =
 					cpu_to_le32(acl->a_entries[n].e_id);
+=======
+		const struct posix_acl_entry *acl_e = &acl->a_entries[n];
+		ext2_acl_entry *entry = (ext2_acl_entry *)e;
+		entry->e_tag  = cpu_to_le16(acl_e->e_tag);
+		entry->e_perm = cpu_to_le16(acl_e->e_perm);
+		switch(acl_e->e_tag) {
+			case ACL_USER:
+				entry->e_id = cpu_to_le32(
+					from_kuid(&init_user_ns, acl_e->e_uid));
+				e += sizeof(ext2_acl_entry);
+				break;
+			case ACL_GROUP:
+				entry->e_id = cpu_to_le32(
+					from_kgid(&init_user_ns, acl_e->e_gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				e += sizeof(ext2_acl_entry);
 				break;
 
@@ -129,19 +171,28 @@ fail:
  * inode->i_mutex: don't care
  */
 struct posix_acl *
+<<<<<<< HEAD
 ext2_get_acl(struct inode *inode, int type)
+=======
+ext2_get_acl(struct inode *inode, int type, bool rcu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int name_index;
 	char *value = NULL;
 	struct posix_acl *acl;
 	int retval;
 
+<<<<<<< HEAD
 	if (!test_opt(inode->i_sb, POSIX_ACL))
 		return NULL;
 
 	acl = get_cached_acl(inode, type);
 	if (acl != ACL_NOT_CACHED)
 		return acl;
+=======
+	if (rcu)
+		return ERR_PTR(-ECHILD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
@@ -168,6 +219,7 @@ ext2_get_acl(struct inode *inode, int type)
 		acl = ERR_PTR(retval);
 	kfree(value);
 
+<<<<<<< HEAD
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
 
@@ -179,12 +231,20 @@ ext2_get_acl(struct inode *inode, int type)
  */
 static int
 ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
+=======
+	return acl;
+}
+
+static int
+__ext2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int name_index;
 	void *value = NULL;
 	size_t size = 0;
 	int error;
 
+<<<<<<< HEAD
 	if (S_ISLNK(inode->i_mode))
 		return -EOPNOTSUPP;
 	if (!test_opt(inode->i_sb, POSIX_ACL))
@@ -200,6 +260,11 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 				inode->i_ctime = CURRENT_TIME_SEC;
 				mark_inode_dirty(inode);
 			}
+=======
+	switch(type) {
+		case ACL_TYPE_ACCESS:
+			name_index = EXT2_XATTR_INDEX_POSIX_ACL_ACCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACL_TYPE_DEFAULT:
@@ -226,6 +291,37 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * inode->i_mutex: down
+ */
+int
+ext2_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
+	     struct posix_acl *acl, int type)
+{
+	int error;
+	int update_mode = 0;
+	struct inode *inode = d_inode(dentry);
+	umode_t mode = inode->i_mode;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		error = posix_acl_update_mode(&nop_mnt_idmap, inode, &mode,
+					      &acl);
+		if (error)
+			return error;
+		update_mode = 1;
+	}
+	error = __ext2_set_acl(inode, acl, type);
+	if (!error && update_mode) {
+		inode->i_mode = mode;
+		inode_set_ctime_current(inode);
+		mark_inode_dirty(inode);
+	}
+	return error;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize the ACLs of a new inode. Called from ext2_new_inode.
  *
  * dir->i_mutex: down
@@ -234,6 +330,7 @@ ext2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 int
 ext2_init_acl(struct inode *inode, struct inode *dir)
 {
+<<<<<<< HEAD
 	struct posix_acl *acl = NULL;
 	int error = 0;
 
@@ -400,3 +497,27 @@ const struct xattr_handler ext2_xattr_acl_default_handler = {
 	.get	= ext2_xattr_get_acl,
 	.set	= ext2_xattr_set_acl,
 };
+=======
+	struct posix_acl *default_acl, *acl;
+	int error;
+
+	error = posix_acl_create(dir, &inode->i_mode, &default_acl, &acl);
+	if (error)
+		return error;
+
+	if (default_acl) {
+		error = __ext2_set_acl(inode, default_acl, ACL_TYPE_DEFAULT);
+		posix_acl_release(default_acl);
+	} else {
+		inode->i_default_acl = NULL;
+	}
+	if (acl) {
+		if (!error)
+			error = __ext2_set_acl(inode, acl, ACL_TYPE_ACCESS);
+		posix_acl_release(acl);
+	} else {
+		inode->i_acl = NULL;
+	}
+	return error;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

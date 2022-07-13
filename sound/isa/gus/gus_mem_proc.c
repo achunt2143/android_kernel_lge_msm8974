@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  GUS's memory access via proc filesystem
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+ *  GUS's memory access via proc filesystem
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -52,7 +59,11 @@ static void snd_gf1_mem_proc_free(struct snd_info_entry *entry)
 	kfree(priv);
 }
 
+<<<<<<< HEAD
 static struct snd_info_entry_ops snd_gf1_mem_proc_ops = {
+=======
+static const struct snd_info_entry_ops snd_gf1_mem_proc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read = snd_gf1_mem_proc_dump,
 };
 

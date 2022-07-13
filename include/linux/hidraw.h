@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _HIDRAW_H
 #define _HIDRAW_H
 
@@ -47,6 +48,17 @@ struct hidraw_devinfo {
 
 /* kernel-only API declarations */
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *  Copyright (c) 2007 Jiri Kosina
+ */
+#ifndef _HIDRAW_H
+#define _HIDRAW_H
+
+#include <uapi/linux/hidraw.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hidraw {
 	unsigned int minor;
@@ -55,6 +67,10 @@ struct hidraw {
 	wait_queue_head_t wait;
 	struct hid_device *hid;
 	struct device *dev;
+<<<<<<< HEAD
+=======
+	spinlock_t list_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;
 };
 
@@ -88,5 +104,8 @@ static inline void hidraw_disconnect(struct hid_device *hid) { }
 #endif
 
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

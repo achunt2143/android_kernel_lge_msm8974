@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NFSv3 protocol definitions
  */
 #ifndef _LINUX_NFS3_H
 #define _LINUX_NFS3_H
 
+<<<<<<< HEAD
 #define NFS3_PORT		2049
 #define NFS3_MAXDATA		32768
 #define NFS3_MAXPATHLEN		PATH_MAX
@@ -95,9 +100,16 @@ struct nfs3_fh {
  
 
 #if defined(__KERNEL__)
+=======
+#include <uapi/linux/nfs3.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Number of 32bit words in post_op_attr */
 #define NFS3_POST_OP_ATTR_WORDS		22
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_NFS3_H */

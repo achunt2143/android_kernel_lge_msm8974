@@ -292,6 +292,7 @@ static int        nsp_cs_config (struct pcmcia_device *link);
 /* Linux SCSI subsystem specific functions */
 static struct Scsi_Host *nsp_detect     (struct scsi_host_template *sht);
 static const  char      *nsp_info       (struct Scsi_Host *shpnt);
+<<<<<<< HEAD
 static        int        nsp_proc_info  (
 	                                 struct Scsi_Host *host,
 					 char   *buffer,
@@ -299,6 +300,10 @@ static        int        nsp_proc_info  (
 					 off_t   offset,
 					 int     length,
 					 int     inout);
+=======
+static        int        nsp_show_info  (struct seq_file *m,
+	                                 struct Scsi_Host *host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nsp_queuecommand(struct Scsi_Host *h, struct scsi_cmnd *SCpnt);
 
 /* Error handler */
@@ -309,8 +314,13 @@ static int nsp_eh_host_reset   (struct scsi_cmnd *SCpnt);
 static int nsp_bus_reset       (nsp_hw_data *data);
 
 /* */
+<<<<<<< HEAD
 static int  nsphw_init           (nsp_hw_data *data);
 static int  nsphw_start_selection(struct scsi_cmnd *SCpnt);
+=======
+static void nsphw_init           (nsp_hw_data *data);
+static bool nsphw_start_selection(struct scsi_cmnd *SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nsp_start_timer      (struct scsi_cmnd *SCpnt, int time);
 static int  nsp_fifo_count       (struct scsi_cmnd *SCpnt);
 static void nsp_pio_read         (struct scsi_cmnd *SCpnt);
@@ -325,16 +335,23 @@ static int  nsp_expect_signal    (struct scsi_cmnd *SCpnt,
 				  unsigned char  mask);
 static int  nsp_xfer             (struct scsi_cmnd *SCpnt, int phase);
 static int  nsp_dataphase_bypass (struct scsi_cmnd *SCpnt);
+<<<<<<< HEAD
 static int  nsp_reselected       (struct scsi_cmnd *SCpnt);
+=======
+static void nsp_reselected       (struct scsi_cmnd *SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct Scsi_Host *nsp_detect(struct scsi_host_template *sht);
 
 /* Interrupt handler */
 //static irqreturn_t nspintr(int irq, void *dev_id);
 
+<<<<<<< HEAD
 /* Module entry point*/
 static int  __init nsp_cs_init(void);
 static void __exit nsp_cs_exit(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Debug */
 #ifdef NSP_DEBUG
 static void show_command (struct scsi_cmnd *SCpnt);
@@ -379,6 +396,7 @@ enum _burst_mode {
 	BURST_MEM32 = 2,
 };
 
+<<<<<<< HEAD
 /**************************************************************************
  * SCSI messaage
  */
@@ -392,6 +410,10 @@ enum _burst_mode {
 
 /* scatter-gather table */
 #  define BUFFER_ADDR ((char *)((sg_virt(SCpnt->SCp.buffer))))
+=======
+/* scatter-gather table */
+#define BUFFER_ADDR(SCpnt) ((char *)(sg_virt(nsp_priv(SCpnt)->buffer)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif  /*__nsp_cs__*/
 /* end */

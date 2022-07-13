@@ -57,7 +57,11 @@
 
 #define SCIC_SDS_MPC_RECONFIGURATION_TIMEOUT    (10)
 #define SCIC_SDS_APC_RECONFIGURATION_TIMEOUT    (10)
+<<<<<<< HEAD
 #define SCIC_SDS_APC_WAIT_LINK_UP_NOTIFICATION  (250)
+=======
+#define SCIC_SDS_APC_WAIT_LINK_UP_NOTIFICATION  (1000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum SCIC_SDS_APC_ACTIVITY {
 	SCIC_SDS_APC_SKIP_PHY,
@@ -73,7 +77,11 @@ enum SCIC_SDS_APC_ACTIVITY {
  * ****************************************************************************** */
 
 /**
+<<<<<<< HEAD
  *
+=======
+ * sci_sas_address_compare()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @address_one: A SAS Address to be compared.
  * @address_two: A SAS Address to be compared.
  *
@@ -102,9 +110,15 @@ static s32 sci_sas_address_compare(
 }
 
 /**
+<<<<<<< HEAD
  *
  * @controller: The controller object used for the port search.
  * @phy: The phy object to match.
+=======
+ * sci_port_configuration_agent_find_port()
+ * @ihost: The controller object used for the port search.
+ * @iphy: The phy object to match.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will find a matching port for the phy.  This means that the
  * port and phy both have the same broadcast sas address and same received sas
@@ -145,9 +159,15 @@ static struct isci_port *sci_port_configuration_agent_find_port(
 }
 
 /**
+<<<<<<< HEAD
  *
  * @controller: This is the controller object that contains the port agent
  * @port_agent: This is the port configruation agent for the controller.
+=======
+ * sci_port_configuration_agent_validate_ports()
+ * @ihost: This is the controller object that contains the port agent
+ * @port_agent: This is the port configuration agent for the controller.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will validate the port configuration is correct for the SCU
  * hardware.  The SCU hardware allows for port configurations as follows. LP0
@@ -291,7 +311,11 @@ sci_mpc_agent_validate_phy_configuration(struct isci_host *ihost,
 		 * Note: We have not moved the current phy_index so we will actually
 		 *       compare the startting phy with itself.
 		 *       This is expected and required to add the phy to the port. */
+<<<<<<< HEAD
 		while (phy_index < SCI_MAX_PHYS) {
+=======
+		for (; phy_index < SCI_MAX_PHYS; phy_index++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((phy_mask & (1 << phy_index)) == 0)
 				continue;
 			sci_phy_get_sas_address(&ihost->phys[phy_index],
@@ -313,16 +337,26 @@ sci_mpc_agent_validate_phy_configuration(struct isci_host *ihost,
 			assigned_phy_mask |= (1 << phy_index);
 		}
 
+<<<<<<< HEAD
 		phy_index++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sci_port_configuration_agent_validate_ports(ihost, port_agent);
 }
 
+<<<<<<< HEAD
 static void mpc_agent_timeout(unsigned long data)
 {
 	u8 index;
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void mpc_agent_timeout(struct timer_list *t)
+{
+	u8 index;
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sci_port_configuration_agent *port_agent;
 	struct isci_host *ihost;
 	unsigned long flags;
@@ -374,15 +408,27 @@ static void sci_mpc_agent_link_up(struct isci_host *ihost,
 }
 
 /**
+<<<<<<< HEAD
  *
  * @controller: This is the controller object that receives the link down
  *    notification.
  * @port: This is the port object associated with the phy.  If the is no
+=======
+ * sci_mpc_agent_link_down()
+ * @ihost: This is the controller object that receives the link down
+ *    notification.
+ * @port_agent: This is the port configuration agent for the controller.
+ * @iport: This is the port object associated with the phy.  If the is no
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    associated port this is an NULL.  The port is an invalid
  *    handle only if the phy was never port of this port.  This happens when
  *    the phy is not broadcasting the same SAS address as the other phys in the
  *    assigned port.
+<<<<<<< HEAD
  * @phy: This is the phy object which has gone link down.
+=======
+ * @iphy: This is the phy object which has gone link down.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function handles the manual port configuration link down notifications.
  * Since all ports and phys are associated at initialization time we just turn
@@ -472,6 +518,7 @@ sci_apc_agent_validate_phy_configuration(struct isci_host *ihost,
  * down event or a link up event where we can not yet tell to which a phy
  * belongs.
  */
+<<<<<<< HEAD
 static void sci_apc_agent_start_timer(
 	struct sci_port_configuration_agent *port_agent,
 	u32 timeout)
@@ -479,6 +526,11 @@ static void sci_apc_agent_start_timer(
 	if (port_agent->timer_pending)
 		sci_del_timer(&port_agent->timer);
 
+=======
+static void sci_apc_agent_start_timer(struct sci_port_configuration_agent *port_agent,
+				      u32 timeout)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port_agent->timer_pending = true;
 	sci_mod_timer(&port_agent->timer, timeout);
 }
@@ -595,11 +647,20 @@ static void sci_apc_agent_configure_ports(struct isci_host *ihost,
 
 /**
  * sci_apc_agent_link_up - handle apc link up events
+<<<<<<< HEAD
  * @scic: This is the controller object that receives the link up
  *    notification.
  * @sci_port: This is the port object associated with the phy.  If the is no
  *    associated port this is an NULL.
  * @sci_phy: This is the phy object which has gone link up.
+=======
+ * @ihost: This is the controller object that receives the link up
+ *    notification.
+ * @port_agent: This is the port configuration agent for the controller.
+ * @iport: This is the port object associated with the phy.  If the is no
+ *    associated port this is an NULL.
+ * @iphy: This is the phy object which has gone link up.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method handles the automatic port configuration for link up
  * notifications. Is it possible to get a link down notification from a phy
@@ -625,9 +686,16 @@ static void sci_apc_agent_link_up(struct isci_host *ihost,
 }
 
 /**
+<<<<<<< HEAD
  *
  * @controller: This is the controller object that receives the link down
  *    notification.
+=======
+ * sci_apc_agent_link_down()
+ * @ihost: This is the controller object that receives the link down
+ *    notification.
+ * @port_agent: This is the port configuration agent for the controller.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @iport: This is the port object associated with the phy.  If the is no
  *    associated port this is an NULL.
  * @iphy: This is the phy object which has gone link down.
@@ -658,10 +726,17 @@ static void sci_apc_agent_link_down(
 }
 
 /* configure the phys into ports when the timer fires */
+<<<<<<< HEAD
 static void apc_agent_timeout(unsigned long data)
 {
 	u32 index;
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void apc_agent_timeout(struct timer_list *t)
+{
+	u32 index;
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sci_port_configuration_agent *port_agent;
 	struct isci_host *ihost;
 	unsigned long flags;
@@ -690,6 +765,12 @@ static void apc_agent_timeout(unsigned long data)
 						   &ihost->phys[index], false);
 	}
 
+<<<<<<< HEAD
+=======
+	if (is_controller_start_complete(ihost))
+		sci_controller_transition_to_ready(ihost, SCI_SUCCESS);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	spin_unlock_irqrestore(&ihost->scic_lock, flags);
 }
@@ -699,9 +780,13 @@ done:
  * Public port configuration agent routines
  * ****************************************************************************** */
 
+<<<<<<< HEAD
 /**
  *
  *
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This method will construct the port configuration agent for operation. This
  * call is universal for both manual port configuration and automatic port
  * configuration modes.
@@ -725,6 +810,14 @@ void sci_port_configuration_agent_construct(
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool is_port_config_apc(struct isci_host *ihost)
+{
+	return ihost->port_agent.link_up_handler == sci_apc_agent_link_up;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum sci_status sci_port_configuration_agent_initialize(
 	struct isci_host *ihost,
 	struct sci_port_configuration_agent *port_agent)

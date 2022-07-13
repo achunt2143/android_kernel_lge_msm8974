@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_mikasa.c
  *
@@ -22,7 +26,10 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_apecs.h>
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
@@ -145,10 +152,17 @@ mikasa_init_irq(void)
  * comes in on.  This makes interrupt processing much easier.
  */
 
+<<<<<<< HEAD
 static int __init
 mikasa_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[8][5] __initdata = {
+=======
+static int
+mikasa_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[8][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{16+12, 16+12, 16+12, 16+12, 16+12},	/* IdSel 17,  SCSI */
 		{   -1,    -1,    -1,    -1,    -1},	/* IdSel 18,  PCEB */

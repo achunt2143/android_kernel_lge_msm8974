@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm831x-core.c  --  Device access for Wolfson WM831x PMICs
  *
  * Copyright 2009 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -14,11 +19,22 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bcd.h>
 #include <linux/delay.h>
 #include <linux/mfd/core.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/wm831x/core.h>
 #include <linux/mfd/wm831x/pdata.h>
@@ -31,7 +47,11 @@
 /* Current settings - values are 2*2^(reg_val/4) microamps.  These are
  * exported since they are used by multiple drivers.
  */
+<<<<<<< HEAD
 int wm831x_isinkv_values[WM831X_ISINK_MAX_ISEL + 1] = {
+=======
+const unsigned int wm831x_isinkv_values[WM831X_ISINK_MAX_ISEL + 1] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	2,
 	2,
 	3,
@@ -111,11 +131,20 @@ static int wm831x_reg_locked(struct wm831x *wm831x, unsigned short reg)
 }
 
 /**
+<<<<<<< HEAD
  * wm831x_reg_unlock: Unlock user keyed registers
+=======
+ * wm831x_reg_lock: Unlock user keyed registers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The WM831x has a user key preventing writes to particularly
  * critical registers.  This function locks those registers,
  * allowing writes to them.
+<<<<<<< HEAD
+=======
+ *
+ * @wm831x: pointer to local driver data structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void wm831x_reg_lock(struct wm831x *wm831x)
 {
@@ -142,6 +171,11 @@ EXPORT_SYMBOL_GPL(wm831x_reg_lock);
  * The WM831x has a user key preventing writes to particularly
  * critical registers.  This function locks those registers,
  * preventing spurious writes.
+<<<<<<< HEAD
+=======
+ *
+ * @wm831x: pointer to local driver data structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int wm831x_reg_unlock(struct wm831x *wm831x)
 {
@@ -614,6 +648,7 @@ int wm831x_set_bits(struct wm831x *wm831x, unsigned short reg,
 }
 EXPORT_SYMBOL_GPL(wm831x_set_bits);
 
+<<<<<<< HEAD
 static struct resource wm831x_dcdc1_resources[] = {
 	{
 		.start = WM831X_DC1_CONTROL_1,
@@ -698,6 +733,57 @@ static struct resource wm8320_dcdc4_buck_resources[] = {
 };
 
 static struct resource wm831x_gpio_resources[] = {
+=======
+static const struct resource wm831x_dcdc1_resources[] = {
+	{
+		.start = WM831X_DC1_CONTROL_1,
+		.end   = WM831X_DC1_DVS_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_DC1, "UV"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_HC_DC1, "HC"),
+};
+
+
+static const struct resource wm831x_dcdc2_resources[] = {
+	{
+		.start = WM831X_DC2_CONTROL_1,
+		.end   = WM831X_DC2_DVS_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_DC2, "UV"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_HC_DC2, "HC"),
+};
+
+static const struct resource wm831x_dcdc3_resources[] = {
+	{
+		.start = WM831X_DC3_CONTROL_1,
+		.end   = WM831X_DC3_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_DC3, "UV"),
+};
+
+static const struct resource wm831x_dcdc4_resources[] = {
+	{
+		.start = WM831X_DC4_CONTROL,
+		.end   = WM831X_DC4_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_DC4, "UV"),
+};
+
+static const struct resource wm8320_dcdc4_buck_resources[] = {
+	{
+		.start = WM831X_DC4_CONTROL,
+		.end   = WM832X_DC4_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_DC4, "UV"),
+};
+
+static const struct resource wm831x_gpio_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start = WM831X_IRQ_GPIO_1,
 		.end   = WM831X_IRQ_GPIO_16,
@@ -705,6 +791,7 @@ static struct resource wm831x_gpio_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct resource wm831x_isink1_resources[] = {
 	{
 		.start = WM831X_CURRENT_SINK_1,
@@ -1012,6 +1099,174 @@ static struct resource wm831x_wdt_resources[] = {
 };
 
 static struct mfd_cell wm8310_devs[] = {
+=======
+static const struct resource wm831x_isink1_resources[] = {
+	{
+		.start = WM831X_CURRENT_SINK_1,
+		.end   = WM831X_CURRENT_SINK_1,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ(WM831X_IRQ_CS1),
+};
+
+static const struct resource wm831x_isink2_resources[] = {
+	{
+		.start = WM831X_CURRENT_SINK_2,
+		.end   = WM831X_CURRENT_SINK_2,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ(WM831X_IRQ_CS2),
+};
+
+static const struct resource wm831x_ldo1_resources[] = {
+	{
+		.start = WM831X_LDO1_CONTROL,
+		.end   = WM831X_LDO1_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO1, "UV"),
+};
+
+static const struct resource wm831x_ldo2_resources[] = {
+	{
+		.start = WM831X_LDO2_CONTROL,
+		.end   = WM831X_LDO2_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO2, "UV"),
+};
+
+static const struct resource wm831x_ldo3_resources[] = {
+	{
+		.start = WM831X_LDO3_CONTROL,
+		.end   = WM831X_LDO3_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO3, "UV"),
+};
+
+static const struct resource wm831x_ldo4_resources[] = {
+	{
+		.start = WM831X_LDO4_CONTROL,
+		.end   = WM831X_LDO4_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO4, "UV"),
+};
+
+static const struct resource wm831x_ldo5_resources[] = {
+	{
+		.start = WM831X_LDO5_CONTROL,
+		.end   = WM831X_LDO5_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO5, "UV"),
+};
+
+static const struct resource wm831x_ldo6_resources[] = {
+	{
+		.start = WM831X_LDO6_CONTROL,
+		.end   = WM831X_LDO6_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO6, "UV"),
+};
+
+static const struct resource wm831x_ldo7_resources[] = {
+	{
+		.start = WM831X_LDO7_CONTROL,
+		.end   = WM831X_LDO7_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO7, "UV"),
+};
+
+static const struct resource wm831x_ldo8_resources[] = {
+	{
+		.start = WM831X_LDO8_CONTROL,
+		.end   = WM831X_LDO8_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO8, "UV"),
+};
+
+static const struct resource wm831x_ldo9_resources[] = {
+	{
+		.start = WM831X_LDO9_CONTROL,
+		.end   = WM831X_LDO9_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO9, "UV"),
+};
+
+static const struct resource wm831x_ldo10_resources[] = {
+	{
+		.start = WM831X_LDO10_CONTROL,
+		.end   = WM831X_LDO10_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_UV_LDO10, "UV"),
+};
+
+static const struct resource wm831x_ldo11_resources[] = {
+	{
+		.start = WM831X_LDO11_ON_CONTROL,
+		.end   = WM831X_LDO11_SLEEP_CONTROL,
+		.flags = IORESOURCE_REG,
+	},
+};
+
+static const struct resource wm831x_on_resources[] = {
+	DEFINE_RES_IRQ(WM831X_IRQ_ON),
+};
+
+
+static const struct resource wm831x_power_resources[] = {
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_PPM_SYSLO, "SYSLO"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_PPM_PWR_SRC, "PWR SRC"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_PPM_USB_CURR, "USB CURR"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_BATT_HOT, "BATT HOT"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_BATT_COLD, "BATT COLD"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_BATT_FAIL, "BATT FAIL"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_OV, "OV"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_END, "END"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_TO, "TO"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_MODE, "MODE"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_CHG_START, "START"),
+};
+
+static const struct resource wm831x_rtc_resources[] = {
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_RTC_PER, "PER"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_RTC_ALM, "ALM"),
+};
+
+static const struct resource wm831x_status1_resources[] = {
+	{
+		.start = WM831X_STATUS_LED_1,
+		.end   = WM831X_STATUS_LED_1,
+		.flags = IORESOURCE_REG,
+	},
+};
+
+static const struct resource wm831x_status2_resources[] = {
+	{
+		.start = WM831X_STATUS_LED_2,
+		.end   = WM831X_STATUS_LED_2,
+		.flags = IORESOURCE_REG,
+	},
+};
+
+static const struct resource wm831x_touch_resources[] = {
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_TCHPD, "TCHPD"),
+	DEFINE_RES_IRQ_NAMED(WM831X_IRQ_TCHDATA, "TCHDATA"),
+};
+
+static const struct resource wm831x_wdt_resources[] = {
+	DEFINE_RES_IRQ(WM831X_IRQ_WDOG_TO),
+};
+
+static const struct mfd_cell wm8310_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-backup",
 	},
@@ -1165,7 +1420,11 @@ static struct mfd_cell wm8310_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell wm8311_devs[] = {
+=======
+static const struct mfd_cell wm8311_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-backup",
 	},
@@ -1295,7 +1554,11 @@ static struct mfd_cell wm8311_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell wm8312_devs[] = {
+=======
+static const struct mfd_cell wm8312_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-backup",
 	},
@@ -1449,7 +1712,11 @@ static struct mfd_cell wm8312_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell wm8320_devs[] = {
+=======
+static const struct mfd_cell wm8320_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-backup",
 	},
@@ -1578,7 +1845,11 @@ static struct mfd_cell wm8320_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell touch_devs[] = {
+=======
+static const struct mfd_cell touch_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-touch",
 		.num_resources = ARRAY_SIZE(wm831x_touch_resources),
@@ -1586,7 +1857,11 @@ static struct mfd_cell touch_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell rtc_devs[] = {
+=======
+static const struct mfd_cell rtc_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-rtc",
 		.num_resources = ARRAY_SIZE(wm831x_rtc_resources),
@@ -1594,7 +1869,11 @@ static struct mfd_cell rtc_devs[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell backlight_devs[] = {
+=======
+static const struct mfd_cell backlight_devs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm831x-backlight",
 	},
@@ -1604,7 +1883,11 @@ struct regmap_config wm831x_regmap_config = {
 	.reg_bits = 16,
 	.val_bits = 16,
 
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_MAPLE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.max_register = WM831X_DBE_CHECK_DATA,
 	.readable_reg = wm831x_reg_readable,
@@ -1613,12 +1896,33 @@ struct regmap_config wm831x_regmap_config = {
 };
 EXPORT_SYMBOL_GPL(wm831x_regmap_config);
 
+<<<<<<< HEAD
 /*
  * Instantiate the generic non-control parts of the device.
  */
 int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 {
 	struct wm831x_pdata *pdata = wm831x->dev->platform_data;
+=======
+const struct of_device_id wm831x_of_match[] = {
+	{ .compatible = "wlf,wm8310", .data = (void *)WM8310 },
+	{ .compatible = "wlf,wm8311", .data = (void *)WM8311 },
+	{ .compatible = "wlf,wm8312", .data = (void *)WM8312 },
+	{ .compatible = "wlf,wm8320", .data = (void *)WM8320 },
+	{ .compatible = "wlf,wm8321", .data = (void *)WM8321 },
+	{ .compatible = "wlf,wm8325", .data = (void *)WM8325 },
+	{ .compatible = "wlf,wm8326", .data = (void *)WM8326 },
+	{ },
+};
+EXPORT_SYMBOL_GPL(wm831x_of_match);
+
+/*
+ * Instantiate the generic non-control parts of the device.
+ */
+int wm831x_device_init(struct wm831x *wm831x, int irq)
+{
+	struct wm831x_pdata *pdata = &wm831x->pdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rev, wm831x_num;
 	enum wm831x_parent parent;
 	int ret, i;
@@ -1626,6 +1930,10 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	mutex_init(&wm831x->io_lock);
 	mutex_init(&wm831x->key_lock);
 	dev_set_drvdata(wm831x->dev, wm831x);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wm831x->soft_shutdown = pdata->soft_shutdown;
 
 	ret = wm831x_reg_read(wm831x, WM831X_PARENT_ID);
@@ -1661,7 +1969,11 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	 */
 	if (ret == 0) {
 		dev_info(wm831x->dev, "Device is an engineering sample\n");
+<<<<<<< HEAD
 		ret = id;
+=======
+		ret = wm831x->type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (ret) {
@@ -1734,9 +2046,15 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	/* This will need revisiting in future but is OK for all
 	 * current parts.
 	 */
+<<<<<<< HEAD
 	if (parent != id)
 		dev_warn(wm831x->dev, "Device was registered as a WM%lx\n",
 			 id);
+=======
+	if (parent != wm831x->type)
+		dev_warn(wm831x->dev, "Device was registered as a WM%x\n",
+			 wm831x->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bootstrap the user key */
 	ret = wm831x_reg_read(wm831x, WM831X_SECURITY_KEY);
@@ -1751,7 +2069,11 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	}
 	wm831x->locked = 1;
 
+<<<<<<< HEAD
 	if (pdata && pdata->pre_init) {
+=======
+	if (pdata->pre_init) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = pdata->pre_init(wm831x);
 		if (ret != 0) {
 			dev_err(wm831x->dev, "pre_init() failed: %d\n", ret);
@@ -1759,6 +2081,7 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 		}
 	}
 
+<<<<<<< HEAD
 	if (pdata) {
 		for (i = 0; i < ARRAY_SIZE(pdata->gpio_defaults); i++) {
 			if (!pdata->gpio_defaults[i])
@@ -1772,6 +2095,19 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 
 	/* Multiply by 10 as we have many subdevices of the same type */
 	if (pdata && pdata->wm831x_num)
+=======
+	for (i = 0; i < ARRAY_SIZE(pdata->gpio_defaults); i++) {
+		if (!pdata->gpio_defaults[i])
+			continue;
+
+		wm831x_reg_write(wm831x,
+				 WM831X_GPIO1_CONTROL + i,
+				 pdata->gpio_defaults[i] & 0xffff);
+	}
+
+	/* Multiply by 10 as we have many subdevices of the same type */
+	if (pdata->wm831x_num)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm831x_num = pdata->wm831x_num * 10;
 	else
 		wm831x_num = -1;
@@ -1787,27 +2123,47 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	case WM8310:
 		ret = mfd_add_devices(wm831x->dev, wm831x_num,
 				      wm8310_devs, ARRAY_SIZE(wm8310_devs),
+<<<<<<< HEAD
 				      NULL, wm831x->irq_base);
+=======
+				      NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case WM8311:
 		ret = mfd_add_devices(wm831x->dev, wm831x_num,
 				      wm8311_devs, ARRAY_SIZE(wm8311_devs),
+<<<<<<< HEAD
 				      NULL, wm831x->irq_base);
 		if (!pdata || !pdata->disable_touch)
 			mfd_add_devices(wm831x->dev, wm831x_num,
 					touch_devs, ARRAY_SIZE(touch_devs),
 					NULL, wm831x->irq_base);
+=======
+				      NULL, 0, NULL);
+		if (!pdata->disable_touch)
+			mfd_add_devices(wm831x->dev, wm831x_num,
+					touch_devs, ARRAY_SIZE(touch_devs),
+					NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case WM8312:
 		ret = mfd_add_devices(wm831x->dev, wm831x_num,
 				      wm8312_devs, ARRAY_SIZE(wm8312_devs),
+<<<<<<< HEAD
 				      NULL, wm831x->irq_base);
 		if (!pdata || !pdata->disable_touch)
 			mfd_add_devices(wm831x->dev, wm831x_num,
 					touch_devs, ARRAY_SIZE(touch_devs),
 					NULL, wm831x->irq_base);
+=======
+				      NULL, 0, NULL);
+		if (!pdata->disable_touch)
+			mfd_add_devices(wm831x->dev, wm831x_num,
+					touch_devs, ARRAY_SIZE(touch_devs),
+					NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case WM8320:
@@ -1816,7 +2172,11 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	case WM8326:
 		ret = mfd_add_devices(wm831x->dev, wm831x_num,
 				      wm8320_devs, ARRAY_SIZE(wm8320_devs),
+<<<<<<< HEAD
 				      NULL, wm831x->irq_base);
+=======
+				      NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -1841,7 +2201,11 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 	if (ret & WM831X_XTAL_ENA) {
 		ret = mfd_add_devices(wm831x->dev, wm831x_num,
 				      rtc_devs, ARRAY_SIZE(rtc_devs),
+<<<<<<< HEAD
 				      NULL, wm831x->irq_base);
+=======
+				      NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0) {
 			dev_err(wm831x->dev, "Failed to add RTC: %d\n", ret);
 			goto err_irq;
@@ -1850,11 +2214,19 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 		dev_info(wm831x->dev, "32.768kHz clock disabled, no RTC\n");
 	}
 
+<<<<<<< HEAD
 	if (pdata && pdata->backlight) {
 		/* Treat errors as non-critical */
 		ret = mfd_add_devices(wm831x->dev, wm831x_num, backlight_devs,
 				      ARRAY_SIZE(backlight_devs), NULL,
 				      wm831x->irq_base);
+=======
+	if (pdata->backlight) {
+		/* Treat errors as non-critical */
+		ret = mfd_add_devices(wm831x->dev, wm831x_num, backlight_devs,
+				      ARRAY_SIZE(backlight_devs), NULL,
+				      0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			dev_err(wm831x->dev, "Failed to add backlight: %d\n",
 				ret);
@@ -1862,7 +2234,11 @@ int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq)
 
 	wm831x_otp_init(wm831x);
 
+<<<<<<< HEAD
 	if (pdata && pdata->post_init) {
+=======
+	if (pdata->post_init) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = pdata->post_init(wm831x);
 		if (ret != 0) {
 			dev_err(wm831x->dev, "post_init() failed: %d\n", ret);
@@ -1879,6 +2255,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 void wm831x_device_exit(struct wm831x *wm831x)
 {
 	wm831x_otp_exit(wm831x);
@@ -1888,6 +2265,8 @@ void wm831x_device_exit(struct wm831x *wm831x)
 	wm831x_irq_exit(wm831x);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int wm831x_device_suspend(struct wm831x *wm831x)
 {
 	int reg, mask;
@@ -1932,7 +2311,10 @@ void wm831x_device_shutdown(struct wm831x *wm831x)
 	}
 }
 EXPORT_SYMBOL_GPL(wm831x_device_shutdown);
+<<<<<<< HEAD
 
 MODULE_DESCRIPTION("Core support for the WM831X AudioPlus PMIC");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mark Brown");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

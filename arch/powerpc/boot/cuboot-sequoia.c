@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Old U-boot compatibility for Sequoia
  *
@@ -9,10 +13,13 @@
  *
  * Based on Bamboo code by Josh Boyer <jwboyer@linux.vnet.ibm.com>
  * Copyright IBM Corporation, 2007
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2 of the License
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdarg.h>

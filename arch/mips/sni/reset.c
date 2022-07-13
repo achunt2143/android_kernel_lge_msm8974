@@ -1,8 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/mips/sni/process.c
  *
  *  Reset a SNI machine.
  */
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/reboot.h>
 #include <asm/sni.h>
@@ -24,7 +33,11 @@ static inline void kb_wait(void)
 /* XXX This ends up at the ARC firmware prompt ...  */
 void sni_machine_restart(char *command)
 {
+<<<<<<< HEAD
 	int i, j;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This does a normal via the keyboard controller like a PC.
 	   We can do that easier ...  */
@@ -32,9 +45,15 @@ void sni_machine_restart(char *command)
 	for (;;) {
 		for (i = 0; i < 100; i++) {
 			kb_wait();
+<<<<<<< HEAD
 			for (j = 0; j < 100000 ; j++)
 				/* nothing */;
 			outb_p(0xfe, 0x64);	 /* pulse reset low */
+=======
+			udelay(50);
+			outb_p(0xfe, 0x64);	 /* pulse reset low */
+			udelay(50);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }

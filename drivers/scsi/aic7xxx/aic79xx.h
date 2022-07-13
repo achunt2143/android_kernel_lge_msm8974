@@ -115,7 +115,11 @@ struct scb_platform_data;
 #endif
 
 #define AHD_BUILD_COL_IDX(target, lun)				\
+<<<<<<< HEAD
 	(((lun) << 4) | target)
+=======
+	((((u8)lun) << 4) | target)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AHD_GET_SCB_COL_IDX(ahd, scb)				\
 	((SCB_GET_LUN(scb) << 4) | SCB_GET_TARGET(ahd, scb))
@@ -211,7 +215,11 @@ typedef enum {
  */
 typedef enum {
 	AHD_FENONE		= 0x00000,
+<<<<<<< HEAD
 	AHD_WIDE  		= 0x00001,/* Wide Channel */
+=======
+	AHD_WIDE		= 0x00001,/* Wide Channel */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AHD_AIC79XXB_SLOWCRC    = 0x00002,/* SLOWCRC bit should be set */
 	AHD_MULTI_FUNC		= 0x00100,/* Multi-Function/Channel Device */
 	AHD_TARGETMODE		= 0x01000,/* Has tested target mode support */
@@ -433,7 +441,11 @@ union initiator_data {
  * Target mode version of the shared data SCB segment.
  */
 struct target_data {
+<<<<<<< HEAD
 	uint32_t spare[2];	
+=======
+	uint32_t spare[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t  scsi_status;		/* SCSI status to give to initiator */
 	uint8_t  target_phases;		/* Bitmap of phases to execute */
 	uint8_t  data_phase;		/* Data-In or Data-Out */
@@ -607,6 +619,7 @@ struct scb {
 	ahd_io_ctx_t		  io_ctx;
 	struct ahd_softc	 *ahd_softc;
 	scb_flag		  flags;
+<<<<<<< HEAD
 #ifndef __linux__
 	bus_dmamap_t		  dmamap;
 #endif
@@ -614,6 +627,12 @@ struct scb {
 	struct map_node	 	 *hscb_map;
 	struct map_node	 	 *sg_map;
 	struct map_node	 	 *sense_map;
+=======
+	struct scb_platform_data *platform_data;
+	struct map_node		 *hscb_map;
+	struct map_node		 *sg_map;
+	struct map_node		 *sense_map;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			 *sg_list;
 	uint8_t			 *sense_data;
 	dma_addr_t		  sg_list_busaddr;
@@ -624,7 +643,11 @@ struct scb {
 };
 
 TAILQ_HEAD(scb_tailq, scb);
+<<<<<<< HEAD
 LIST_HEAD(scb_list, scb);
+=======
+BSD_LIST_HEAD(scb_list, scb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct scb_data {
 	/*
@@ -677,7 +700,11 @@ struct scb_data {
 struct target_cmd {
 	uint8_t scsiid;		/* Our ID and the initiator's ID */
 	uint8_t identify;	/* Identify message */
+<<<<<<< HEAD
 	uint8_t bytes[22];	/* 
+=======
+	uint8_t bytes[22];	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * Bytes contains any additional message
 				 * bytes terminated by 0xFF.  The remainder
 				 * is the cdb to execute.
@@ -715,7 +742,11 @@ struct ahd_tmode_event {
  * structure here so we can store arrays of them, etc. in OS neutral
  * data structures.
  */
+<<<<<<< HEAD
 #ifdef AHD_TARGET_MODE 
+=======
+#ifdef AHD_TARGET_MODE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ahd_tmode_lstate {
 	struct cam_path *path;
 	struct ccb_hdr_slist accept_tios;
@@ -810,11 +841,19 @@ struct ahd_tmode_tstate {
 /***************************** Lookup Tables **********************************/
 /*
  * Phase -> name and message out response
+<<<<<<< HEAD
  * to parity errors in each phase table. 
  */
 struct ahd_phase_table_entry {
         uint8_t phase;
         uint8_t mesg_out; /* Message response to parity errors */
+=======
+ * to parity errors in each phase table.
+ */
+struct ahd_phase_table_entry {
+	uint8_t phase;
+	uint8_t mesg_out; /* Message response to parity errors */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *phasemsg;
 };
 
@@ -847,7 +886,11 @@ struct seeprom_config {
 #define		    CFBS_ENABLED	0x04
 #define		    CFBS_DISABLED_SCAN	0x08
 #define		CFENABLEDV	0x0010	/* Perform Domain Validation */
+<<<<<<< HEAD
 #define		CFCTRL_A	0x0020	/* BIOS displays Ctrl-A message */	
+=======
+#define		CFCTRL_A	0x0020	/* BIOS displays Ctrl-A message */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		CFSPARITY	0x0040	/* SCSI parity */
 #define		CFEXTEND	0x0080	/* extended translation enabled */
 #define		CFBOOTCD	0x0100  /* Support Bootable CD-ROM */
@@ -861,7 +904,11 @@ struct seeprom_config {
 /*
  * Host Adapter Control Bits
  */
+<<<<<<< HEAD
 	uint16_t adapter_control;	/* word 17 */	
+=======
+	uint16_t adapter_control;	/* word 17 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		CFAUTOTERM	0x0001	/* Perform Auto termination */
 #define		CFSTERM		0x0002	/* SCSI low byte termination */
 #define		CFWSTERM	0x0004	/* SCSI high byte termination */
@@ -870,7 +917,11 @@ struct seeprom_config {
 #define		CFSEHIGHTERM	0x0020	/* Ultra2 secondary high term */
 #define		CFSTPWLEVEL	0x0040	/* Termination level control */
 #define		CFBIOSAUTOTERM	0x0080	/* Perform Auto termination */
+<<<<<<< HEAD
 #define		CFTERM_MENU	0x0100	/* BIOS displays termination menu */	
+=======
+#define		CFTERM_MENU	0x0100	/* BIOS displays termination menu */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		CFCLUSTERENB	0x8000	/* Cluster Enable */
 
 /*
@@ -884,7 +935,11 @@ struct seeprom_config {
 /*
  * Maximum targets
  */
+<<<<<<< HEAD
 	uint16_t max_targets;		/* word 19 */	
+=======
+	uint16_t max_targets;		/* word 19 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define		CFMAXTARG	0x00ff	/* maximum targets */
 #define		CFBOOTLUN	0x0f00	/* Lun to boot from */
 #define		CFBOOTID	0xf000	/* Target to boot from */
@@ -911,7 +966,11 @@ struct vpd_config {
 	uint8_t  length;
 	uint8_t  revision;
 	uint8_t  device_flags;
+<<<<<<< HEAD
 	uint8_t  termnation_menus[2];
+=======
+	uint8_t  termination_menus[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t  fifo_threshold;
 	uint8_t  end_tag;
 	uint8_t  vpd_checksum;
@@ -944,7 +1003,11 @@ struct vpd_config {
 #define		FLX_ROMSTAT_EE_2MBx8	0x2
 #define		FLX_ROMSTAT_EE_4MBx8	0x3
 #define		FLX_ROMSTAT_EE_16MBx8	0x4
+<<<<<<< HEAD
 #define 		CURSENSE_ENB	0x1
+=======
+#define			CURSENSE_ENB	0x1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	FLXADDR_FLEXSTAT		0x2
 #define		FLX_FSTAT_BUSY		0x1
 #define FLXADDR_CURRENT_STAT		0x4
@@ -1046,8 +1109,11 @@ typedef enum {
 
 typedef uint8_t ahd_mode_state;
 
+<<<<<<< HEAD
 typedef void ahd_callback_t (void *);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ahd_completion
 {
 	uint16_t	tag;
@@ -1056,11 +1122,16 @@ struct ahd_completion
 };
 
 struct ahd_softc {
+<<<<<<< HEAD
 	bus_space_tag_t           tags[2];
 	bus_space_handle_t        bshs[2];
 #ifndef __linux__
 	bus_dma_tag_t		  buffer_dmat;   /* dmat for buffer I/O */
 #endif
+=======
+	bus_space_tag_t		  tags[2];
+	bus_space_handle_t	  bshs[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scb_data		  scb_data;
 
 	struct hardware_scb	 *next_queued_hscb;
@@ -1069,7 +1140,11 @@ struct ahd_softc {
 	/*
 	 * SCBs that have been sent to the controller
 	 */
+<<<<<<< HEAD
 	LIST_HEAD(, scb)	  pending_scbs;
+=======
+	BSD_LIST_HEAD(, scb)	  pending_scbs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Current register window mode information.
@@ -1122,8 +1197,12 @@ struct ahd_softc {
 	/*
 	 * Timer handles for timer driven callbacks.
 	 */
+<<<<<<< HEAD
 	ahd_timer_t		  reset_timer;
 	ahd_timer_t		  stat_timer;
+=======
+	struct timer_list	stat_timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Statistics.
@@ -1184,7 +1263,11 @@ struct ahd_softc {
 	uint8_t			  tqinfifonext;
 
 	/*
+<<<<<<< HEAD
 	 * Cached verson of the hs_mailbox so we can avoid
+=======
+	 * Cached version of the hs_mailbox so we can avoid
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * pausing the sequencer during mailbox updates.
 	 */
 	uint8_t			  hs_mailbox;
@@ -1252,7 +1335,11 @@ struct ahd_softc {
 	u_int			  int_coalescing_threshold;
 	u_int			  int_coalescing_stop_threshold;
 
+<<<<<<< HEAD
 	uint16_t	 	  user_discenable;/* Disconnection allowed  */
+=======
+	uint16_t		  user_discenable;/* Disconnection allowed  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t		  user_tagenable;/* Tagged Queuing allowed */
 };
 
@@ -1339,10 +1426,15 @@ const struct	ahd_pci_identity *ahd_find_pci_device(ahd_dev_softc_t);
 int			  ahd_pci_config(struct ahd_softc *,
 					 const struct ahd_pci_identity *);
 int	ahd_pci_test_register_access(struct ahd_softc *);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 void	ahd_pci_suspend(struct ahd_softc *);
 void	ahd_pci_resume(struct ahd_softc *);
 #endif
+=======
+void __maybe_unused	ahd_pci_suspend(struct ahd_softc *);
+void __maybe_unused	ahd_pci_resume(struct ahd_softc *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************** SCB and SCB queue management **********************/
 void		ahd_qinfifo_requeue_tail(struct ahd_softc *ahd,
@@ -1353,10 +1445,15 @@ struct ahd_softc	*ahd_alloc(void *platform_arg, char *name);
 int			 ahd_softc_init(struct ahd_softc *);
 void			 ahd_controller_info(struct ahd_softc *ahd, char *buf);
 int			 ahd_init(struct ahd_softc *ahd);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 int			 ahd_suspend(struct ahd_softc *ahd);
 void			 ahd_resume(struct ahd_softc *ahd);
 #endif
+=======
+int __maybe_unused	 ahd_suspend(struct ahd_softc *ahd);
+void __maybe_unused	 ahd_resume(struct ahd_softc *ahd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int			 ahd_default_config(struct ahd_softc *ahd);
 int			 ahd_parse_vpddata(struct ahd_softc *ahd,
 					   struct vpd_config *vpd);

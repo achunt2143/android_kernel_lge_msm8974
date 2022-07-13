@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/i8253.h>
 #include <linux/interrupt.h>
@@ -8,6 +12,7 @@
 
 #include <asm/sni.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm-generic/rtc.h>
 
 #define SNI_CLOCK_TICK_RATE     3686400
@@ -52,6 +57,40 @@ static struct clock_event_device a20r_clockevent_device = {
 	.rating		= 300,
 	.irq		= SNI_A20R_IRQ_TIMER,
 	.set_mode	= a20r_set_mode,
+=======
+
+#define SNI_CLOCK_TICK_RATE	3686400
+#define SNI_COUNTER2_DIV	64
+#define SNI_COUNTER0_DIV	((SNI_CLOCK_TICK_RATE / SNI_COUNTER2_DIV) / HZ)
+
+static int a20r_set_periodic(struct clock_event_device *evt)
+{
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 12) = 0x34;
+	wmb();
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 0) = SNI_COUNTER0_DIV & 0xff;
+	wmb();
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 0) = SNI_COUNTER0_DIV >> 8;
+	wmb();
+
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 12) = 0xb4;
+	wmb();
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 8) = SNI_COUNTER2_DIV & 0xff;
+	wmb();
+	*(volatile u8 *)(A20R_PT_CLOCK_BASE + 8) = SNI_COUNTER2_DIV >> 8;
+	wmb();
+	return 0;
+}
+
+static struct clock_event_device a20r_clockevent_device = {
+	.name			= "a20r-timer",
+	.features		= CLOCK_EVT_FEAT_PERIODIC,
+
+	/* .mult, .shift, .max_delta_ns and .min_delta_ns left uninitialized */
+
+	.rating			= 300,
+	.irq			= SNI_A20R_IRQ_TIMER,
+	.set_state_periodic	= a20r_set_periodic,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t a20r_interrupt(int irq, void *dev_id)
@@ -66,12 +105,15 @@ static irqreturn_t a20r_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct irqaction a20r_irqaction = {
 	.handler	= a20r_interrupt,
 	.flags		= IRQF_PERCPU | IRQF_TIMER,
 	.name		= "a20r-timer",
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * a20r platform uses 2 counters to divide the input frequency.
  * Counter 2 output is connected to Counter 0 & 1 input.
@@ -79,6 +121,7 @@ static struct irqaction a20r_irqaction = {
 static void __init sni_a20r_timer_setup(void)
 {
 	struct clock_event_device *cd = &a20r_clockevent_device;
+<<<<<<< HEAD
 	struct irqaction *action = &a20r_irqaction;
 	unsigned int cpu = smp_processor_id();
 
@@ -91,6 +134,20 @@ static void __init sni_a20r_timer_setup(void)
 #define SNI_8254_TICK_RATE        1193182UL
 
 #define SNI_8254_TCSAMP_COUNTER   ((SNI_8254_TICK_RATE / HZ) + 255)
+=======
+	unsigned int cpu = smp_processor_id();
+
+	cd->cpumask		= cpumask_of(cpu);
+	clockevents_register_device(cd);
+	if (request_irq(SNI_A20R_IRQ_TIMER, a20r_interrupt,
+			IRQF_PERCPU | IRQF_TIMER, "a20r-timer", cd))
+		pr_err("Failed to register a20r-timer interrupt\n");
+}
+
+#define SNI_8254_TICK_RATE	  1193182UL
+
+#define SNI_8254_TCSAMP_COUNTER	  ((SNI_8254_TICK_RATE / HZ) + 255)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __init unsigned long dosample(void)
 {
@@ -182,9 +239,12 @@ void __init plat_time_init(void)
 	}
 	setup_pit_timer();
 }
+<<<<<<< HEAD
 
 void read_persistent_clock(struct timespec *ts)
 {
 	ts->tv_sec = -1;
 	ts->tv_nsec = 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

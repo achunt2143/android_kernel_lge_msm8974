@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Automatic Configuration of IP -- use DHCP, BOOTP, RARP, or
  *  user-supplied information to configure own IP address and routes.
@@ -27,6 +31,12 @@
  *
  *  Multiple Nameservers in /proc/net/pnp
  *              --  Josef Siemes <jsiemes@web.de>, Aug 2002
+<<<<<<< HEAD
+=======
+ *
+ *  NTP servers in /proc/net/ipconfig/ntp_servers
+ *              --  Chris Novakovic <chris@chrisn.me.uk>, April 2018
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -61,6 +71,7 @@
 #include <net/ipconfig.h>
 #include <net/route.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <net/checksum.h>
 #include <asm/processor.h>
@@ -74,6 +85,12 @@
 #define DBG(x) do { } while(0)
 #endif
 
+=======
+#include <linux/uaccess.h>
+#include <net/checksum.h>
+#include <asm/processor.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_IP_PNP_DHCP)
 #define IPCONFIG_DHCP
 #endif
@@ -89,22 +106,38 @@
 
 /* Define the friendly delay before and after opening net devices */
 #define CONF_POST_OPEN		10	/* After opening: 10 msecs */
+<<<<<<< HEAD
 #define CONF_CARRIER_TIMEOUT	120000	/* Wait for carrier timeout */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define the timeout for waiting for a DHCP/BOOTP/RARP reply */
 #define CONF_OPEN_RETRIES 	2	/* (Re)open devices twice */
 #define CONF_SEND_RETRIES 	6	/* Send six requests per open */
+<<<<<<< HEAD
 #define CONF_INTER_TIMEOUT	(HZ/2)	/* Inter-device timeout: 1/2 second */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CONF_BASE_TIMEOUT	(HZ*2)	/* Initial timeout: 2 seconds */
 #define CONF_TIMEOUT_RANDOM	(HZ)	/* Maximum amount of randomization */
 #define CONF_TIMEOUT_MULT	*7/4	/* Rate of timeout growth */
 #define CONF_TIMEOUT_MAX	(HZ*30)	/* Maximum allowed timeout */
 #define CONF_NAMESERVERS_MAX   3       /* Maximum number of nameservers
 					   - '3' from resolv.h */
+<<<<<<< HEAD
+=======
+#define CONF_NTP_SERVERS_MAX   3	/* Maximum number of NTP servers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NONE cpu_to_be32(INADDR_NONE)
 #define ANY cpu_to_be32(INADDR_ANY)
 
+<<<<<<< HEAD
+=======
+/* Wait for carrier timeout default in seconds */
+static unsigned int carrier_timeout = 120;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Public IP configuration
  */
@@ -115,7 +148,11 @@
  */
 int ic_set_manually __initdata = 0;		/* IPconfig parameters set manually */
 
+<<<<<<< HEAD
 static int ic_enable __initdata = 0;		/* IP config enabled? */
+=======
+static int ic_enable __initdata;		/* IP config enabled? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Protocol choice */
 int ic_proto_enabled __initdata = 0
@@ -130,17 +167,29 @@ int ic_proto_enabled __initdata = 0
 #endif
 			;
 
+<<<<<<< HEAD
 static int ic_host_name_set __initdata = 0;	/* Host name set by us? */
+=======
+static int ic_host_name_set __initdata;	/* Host name set by us? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __be32 ic_myaddr = NONE;		/* My IP address */
 static __be32 ic_netmask = NONE;	/* Netmask for local subnet */
 __be32 ic_gateway = NONE;	/* Gateway IP address */
 
+<<<<<<< HEAD
+=======
+#ifdef IPCONFIG_DYNAMIC
+static __be32 ic_addrservaddr = NONE;	/* IP Address of the IP addresses'server */
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __be32 ic_servaddr = NONE;	/* Boot server IP address */
 
 __be32 root_server_addr = NONE;	/* Address of NFS server */
 u8 root_server_path[256] = { 0, };	/* Path to mount as root */
 
+<<<<<<< HEAD
 __be32 ic_dev_xid;		/* Device under configuration */
 
 /* vendor class identifier */
@@ -150,6 +199,24 @@ static char vendor_class_identifier[253] __initdata;
 
 static int ic_proto_used;			/* Protocol used, if any */
 static __be32 ic_nameservers[CONF_NAMESERVERS_MAX]; /* DNS Server IP addresses */
+=======
+/* vendor class identifier */
+static char vendor_class_identifier[253] __initdata;
+
+#if defined(CONFIG_IP_PNP_DHCP)
+static char dhcp_client_identifier[253] __initdata;
+#endif
+
+/* Persistent data: */
+
+#ifdef IPCONFIG_DYNAMIC
+static int ic_proto_used;			/* Protocol used, if any */
+#else
+#define ic_proto_used 0
+#endif
+static __be32 ic_nameservers[CONF_NAMESERVERS_MAX]; /* DNS Server IP addresses */
+static __be32 ic_ntp_servers[CONF_NTP_SERVERS_MAX]; /* NTP server IP addresses */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 ic_domain[64];		/* DNS (not NIS) domain name */
 
 /*
@@ -160,6 +227,7 @@ static u8 ic_domain[64];		/* DNS (not NIS) domain name */
 static char user_dev_name[IFNAMSIZ] __initdata = { 0, };
 
 /* Protocols supported by available interfaces */
+<<<<<<< HEAD
 static int ic_proto_have_if __initdata = 0;
 
 /* MTU for boot device */
@@ -171,6 +239,19 @@ static volatile int ic_got_reply __initdata = 0;    /* Proto(s) that replied */
 #endif
 #ifdef IPCONFIG_DHCP
 static int ic_dhcp_msgtype __initdata = 0;	/* DHCP msg type received */
+=======
+static int ic_proto_have_if __initdata;
+
+/* MTU for boot device */
+static int ic_dev_mtu __initdata;
+
+#ifdef IPCONFIG_DYNAMIC
+static DEFINE_SPINLOCK(ic_recv_lock);
+static volatile int ic_got_reply __initdata;    /* Proto(s) that replied */
+#endif
+#ifdef IPCONFIG_DHCP
+static int ic_dhcp_msgtype __initdata;	/* DHCP msg type received */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -186,8 +267,13 @@ struct ic_device {
 	__be32 xid;
 };
 
+<<<<<<< HEAD
 static struct ic_device *ic_first_dev __initdata = NULL;/* List of open device */
 static struct net_device *ic_dev __initdata = NULL;	/* Selected device */
+=======
+static struct ic_device *ic_first_dev __initdata;	/* List of open device */
+static struct ic_device *ic_dev __initdata;		/* Selected device */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool __init ic_is_init_dev(struct net_device *dev)
 {
@@ -204,7 +290,11 @@ static int __init ic_open_devs(void)
 	struct ic_device *d, **last;
 	struct net_device *dev;
 	unsigned short oflags;
+<<<<<<< HEAD
 	unsigned long start;
+=======
+	unsigned long start, next_msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	last = &ic_first_dev;
 	rtnl_lock();
@@ -213,7 +303,11 @@ static int __init ic_open_devs(void)
 	for_each_netdev(&init_net, dev) {
 		if (!(dev->flags & IFF_LOOPBACK))
 			continue;
+<<<<<<< HEAD
 		if (dev_change_flags(dev, dev->flags | IFF_UP) < 0)
+=======
+		if (dev_change_flags(dev, dev->flags | IFF_UP, NULL) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err("IP-Config: Failed to open %s\n", dev->name);
 	}
 
@@ -223,7 +317,11 @@ static int __init ic_open_devs(void)
 			if (dev->mtu >= 364)
 				able |= IC_BOOTP;
 			else
+<<<<<<< HEAD
 				pr_warn("DHCP/BOOTP: Ignoring device %s, MTU %d too small",
+=======
+				pr_warn("DHCP/BOOTP: Ignoring device %s, MTU %d too small\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dev->name, dev->mtu);
 			if (!(dev->flags & IFF_NOARP))
 				able |= IC_RARP;
@@ -231,7 +329,11 @@ static int __init ic_open_devs(void)
 			if (ic_proto_enabled && !able)
 				continue;
 			oflags = dev->flags;
+<<<<<<< HEAD
 			if (dev_change_flags(dev, oflags | IFF_UP) < 0) {
+=======
+			if (dev_change_flags(dev, oflags | IFF_UP, NULL) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_err("IP-Config: Failed to open %s\n",
 				       dev->name);
 				continue;
@@ -250,10 +352,22 @@ static int __init ic_open_devs(void)
 			else
 				d->xid = 0;
 			ic_proto_have_if |= able;
+<<<<<<< HEAD
 			DBG(("IP-Config: %s UP (able=%d, xid=%08x)\n",
 				dev->name, able, d->xid));
 		}
 	}
+=======
+			pr_debug("IP-Config: %s UP (able=%d, xid=%08x)\n",
+				 dev->name, able, d->xid);
+		}
+	}
+	/* Devices with a complex topology like SFP ethernet interfaces needs
+	 * the rtnl_lock at init. The carrier wait-loop must therefore run
+	 * without holding it.
+	 */
+	rtnl_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* no point in waiting if we could not bring up at least one device */
 	if (!ic_first_dev)
@@ -261,6 +375,7 @@ static int __init ic_open_devs(void)
 
 	/* wait for a carrier on at least one device */
 	start = jiffies;
+<<<<<<< HEAD
 	while (jiffies - start < msecs_to_jiffies(CONF_CARRIER_TIMEOUT)) {
 		for_each_netdev(&init_net, dev)
 			if (ic_is_init_dev(dev) && netif_carrier_ok(dev))
@@ -270,6 +385,32 @@ static int __init ic_open_devs(void)
 	}
 have_carrier:
 	rtnl_unlock();
+=======
+	next_msg = start + msecs_to_jiffies(20000);
+	while (time_before(jiffies, start +
+			   msecs_to_jiffies(carrier_timeout * 1000))) {
+		int wait, elapsed;
+
+		rtnl_lock();
+		for_each_netdev(&init_net, dev)
+			if (ic_is_init_dev(dev) && netif_carrier_ok(dev)) {
+				rtnl_unlock();
+				goto have_carrier;
+			}
+		rtnl_unlock();
+
+		msleep(1);
+
+		if (time_before(jiffies, next_msg))
+			continue;
+
+		elapsed = jiffies_to_msecs(jiffies - start);
+		wait = (carrier_timeout * 1000 - elapsed + 500) / 1000;
+		pr_info("Waiting up to %d more seconds for network.\n", wait);
+		next_msg = jiffies + msecs_to_jiffies(20000);
+	}
+have_carrier:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*last = NULL;
 
@@ -284,19 +425,49 @@ have_carrier:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init ic_close_devs(void)
 {
+=======
+/* Close all network interfaces except the one we've autoconfigured, and its
+ * lowers, in case it's a stacked virtual interface.
+ */
+static void __init ic_close_devs(void)
+{
+	struct net_device *selected_dev = ic_dev ? ic_dev->dev : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ic_device *d, *next;
 	struct net_device *dev;
 
 	rtnl_lock();
 	next = ic_first_dev;
 	while ((d = next)) {
+<<<<<<< HEAD
 		next = d->next;
 		dev = d->dev;
 		if (dev != ic_dev) {
 			DBG(("IP-Config: Downing %s\n", dev->name));
 			dev_change_flags(dev, d->flags);
+=======
+		bool bring_down = (d != ic_dev);
+		struct net_device *lower;
+		struct list_head *iter;
+
+		next = d->next;
+		dev = d->dev;
+
+		if (selected_dev) {
+			netdev_for_each_lower_dev(selected_dev, lower, iter) {
+				if (dev == lower) {
+					bring_down = false;
+					break;
+				}
+			}
+		}
+		if (bring_down) {
+			pr_debug("IP-Config: Downing %s\n", dev->name);
+			dev_change_flags(dev, d->flags, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		kfree(d);
 	}
@@ -315,6 +486,7 @@ set_sockaddr(struct sockaddr_in *sin, __be32 addr, __be16 port)
 	sin->sin_port = port;
 }
 
+<<<<<<< HEAD
 static int __init ic_devinet_ioctl(unsigned int cmd, struct ifreq *arg)
 {
 	int res;
@@ -348,6 +520,8 @@ static int __init ic_route_ioctl(unsigned int cmd, struct rtentry *arg)
 	return res;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Set up interface addresses and routes.
  */
@@ -359,21 +533,35 @@ static int __init ic_setup_if(void)
 	int err;
 
 	memset(&ir, 0, sizeof(ir));
+<<<<<<< HEAD
 	strcpy(ir.ifr_ifrn.ifrn_name, ic_dev->name);
 	set_sockaddr(sin, ic_myaddr, 0);
 	if ((err = ic_devinet_ioctl(SIOCSIFADDR, &ir)) < 0) {
+=======
+	strcpy(ir.ifr_ifrn.ifrn_name, ic_dev->dev->name);
+	set_sockaddr(sin, ic_myaddr, 0);
+	if ((err = devinet_ioctl(&init_net, SIOCSIFADDR, &ir)) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("IP-Config: Unable to set interface address (%d)\n",
 		       err);
 		return -1;
 	}
 	set_sockaddr(sin, ic_netmask, 0);
+<<<<<<< HEAD
 	if ((err = ic_devinet_ioctl(SIOCSIFNETMASK, &ir)) < 0) {
+=======
+	if ((err = devinet_ioctl(&init_net, SIOCSIFNETMASK, &ir)) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("IP-Config: Unable to set interface netmask (%d)\n",
 		       err);
 		return -1;
 	}
 	set_sockaddr(sin, ic_myaddr | ~ic_netmask, 0);
+<<<<<<< HEAD
 	if ((err = ic_devinet_ioctl(SIOCSIFBRDADDR, &ir)) < 0) {
+=======
+	if ((err = devinet_ioctl(&init_net, SIOCSIFBRDADDR, &ir)) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("IP-Config: Unable to set interface broadcast address (%d)\n",
 		       err);
 		return -1;
@@ -383,11 +571,19 @@ static int __init ic_setup_if(void)
 	 * out, we'll try to muddle along.
 	 */
 	if (ic_dev_mtu != 0) {
+<<<<<<< HEAD
 		strcpy(ir.ifr_name, ic_dev->name);
 		ir.ifr_mtu = ic_dev_mtu;
 		if ((err = ic_dev_ioctl(SIOCSIFMTU, &ir)) < 0)
 			pr_err("IP-Config: Unable to set interface mtu to %d (%d)\n",
 			       ic_dev_mtu, err);
+=======
+		rtnl_lock();
+		if ((err = dev_set_mtu(ic_dev->dev, ic_dev_mtu)) < 0)
+			pr_err("IP-Config: Unable to set interface mtu to %d (%d)\n",
+			       ic_dev_mtu, err);
+		rtnl_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -409,7 +605,11 @@ static int __init ic_setup_routes(void)
 		set_sockaddr((struct sockaddr_in *) &rm.rt_genmask, 0, 0);
 		set_sockaddr((struct sockaddr_in *) &rm.rt_gateway, ic_gateway, 0);
 		rm.rt_flags = RTF_UP | RTF_GATEWAY;
+<<<<<<< HEAD
 		if ((err = ic_route_ioctl(SIOCADDRT, &rm)) < 0) {
+=======
+		if ((err = ip_rt_ioctl(&init_net, SIOCADDRT, &rm)) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err("IP-Config: Cannot add default route (%d)\n",
 			       err);
 			return -1;
@@ -443,12 +643,22 @@ static int __init ic_defaults(void)
 			ic_netmask = htonl(IN_CLASSB_NET);
 		else if (IN_CLASSC(ntohl(ic_myaddr)))
 			ic_netmask = htonl(IN_CLASSC_NET);
+<<<<<<< HEAD
+=======
+		else if (IN_CLASSE(ntohl(ic_myaddr)))
+			ic_netmask = htonl(IN_CLASSE_NET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			pr_err("IP-Config: Unable to guess netmask for address %pI4\n",
 			       &ic_myaddr);
 			return -1;
 		}
+<<<<<<< HEAD
 		printk("IP-Config: Guessing netmask %pI4\n", &ic_netmask);
+=======
+		pr_notice("IP-Config: Guessing netmask %pI4\n",
+			  &ic_netmask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -486,13 +696,22 @@ ic_rarp_recv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt
 	struct arphdr *rarp;
 	unsigned char *rarp_ptr;
 	__be32 sip, tip;
+<<<<<<< HEAD
 	unsigned char *sha, *tha;		/* s for "source", t for "target" */
+=======
+	unsigned char *tha;		/* t for "target" */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ic_device *d;
 
 	if (!net_eq(dev_net(dev), &init_net))
 		goto drop;
 
+<<<<<<< HEAD
 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL)
+=======
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_RX_DROP;
 
 	if (!pskb_may_pull(skb, sizeof(struct arphdr)))
@@ -537,7 +756,10 @@ ic_rarp_recv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt
 		goto drop_unlock;	/* should never happen */
 
 	/* Extract variable-width fields */
+<<<<<<< HEAD
 	sha = rarp_ptr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rarp_ptr += dev->addr_len;
 	memcpy(&sip, rarp_ptr, 4);
 	rarp_ptr += 4;
@@ -554,10 +776,18 @@ ic_rarp_recv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt
 		goto drop_unlock;
 
 	/* We have a winner! */
+<<<<<<< HEAD
 	ic_dev = dev;
 	if (ic_myaddr == NONE)
 		ic_myaddr = tip;
 	ic_servaddr = sip;
+=======
+	ic_dev = d;
+	if (ic_myaddr == NONE)
+		ic_myaddr = tip;
+	ic_servaddr = sip;
+	ic_addrservaddr = sip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ic_got_reply = IC_RARP;
 
 drop_unlock:
@@ -583,6 +813,29 @@ static void __init ic_rarp_send_if(struct ic_device *d)
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ *  Predefine Nameservers
+ */
+static inline void __init ic_nameservers_predef(void)
+{
+	int i;
+
+	for (i = 0; i < CONF_NAMESERVERS_MAX; i++)
+		ic_nameservers[i] = NONE;
+}
+
+/* Predefine NTP servers */
+static inline void __init ic_ntp_servers_predef(void)
+{
+	int i;
+
+	for (i = 0; i < CONF_NTP_SERVERS_MAX; i++)
+		ic_ntp_servers[i] = NONE;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	DHCP/BOOTP support.
  */
 
@@ -629,6 +882,11 @@ static struct packet_type bootp_packet_type __initdata = {
 	.func =	ic_bootp_recv,
 };
 
+<<<<<<< HEAD
+=======
+/* DHCPACK can overwrite DNS if fallback was set upon first BOOTP reply */
+static int ic_nameservers_fallback __initdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Initialize DHCP/BOOTP extension fields in the request.
@@ -639,16 +897,24 @@ static const u8 ic_bootp_cookie[4] = { 99, 130, 83, 99 };
 #ifdef IPCONFIG_DHCP
 
 static void __init
+<<<<<<< HEAD
 ic_dhcp_init_options(u8 *options)
+=======
+ic_dhcp_init_options(u8 *options, struct ic_device *d)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 mt = ((ic_servaddr == NONE)
 		 ? DHCPDISCOVER : DHCPREQUEST);
 	u8 *e = options;
 	int len;
 
+<<<<<<< HEAD
 #ifdef IPCONFIG_DEBUG
 	printk("DHCP: Sending message type %d\n", mt);
 #endif
+=======
+	pr_debug("DHCP: Sending message type %d (%s)\n", mt, d->dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(e, ic_bootp_cookie, 4);	/* RFC1048 Magic Cookie */
 	e += 4;
@@ -680,6 +946,10 @@ ic_dhcp_init_options(u8 *options)
 			17,	/* Boot path */
 			26,	/* MTU */
 			40,	/* NIS domain name */
+<<<<<<< HEAD
+=======
+			42,	/* NTP servers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		};
 
 		*e++ = 55;	/* Parameter request list */
@@ -703,6 +973,19 @@ ic_dhcp_init_options(u8 *options)
 			memcpy(e, vendor_class_identifier, len);
 			e += len;
 		}
+<<<<<<< HEAD
+=======
+		len = strlen(dhcp_client_identifier + 1);
+		/* the minimum length of identifier is 2, include 1 byte type,
+		 * and can not be larger than the length of options
+		 */
+		if (len >= 1 && len < 312 - (e - options) - 1) {
+			*e++ = 61;
+			*e++ = len + 1;
+			memcpy(e, dhcp_client_identifier, len + 1);
+			e += len + 1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	*e++ = 255;	/* End of the list */
@@ -720,9 +1003,17 @@ static void __init ic_bootp_init_ext(u8 *e)
 	*e++ = 3;		/* Default gateway request */
 	*e++ = 4;
 	e += 4;
+<<<<<<< HEAD
 	*e++ = 5;		/* Name server request */
 	*e++ = 8;
 	e += 8;
+=======
+#if CONF_NAMESERVERS_MAX > 0
+	*e++ = 6;		/* (DNS) name server request */
+	*e++ = 4 * CONF_NAMESERVERS_MAX;
+	e += 4 * CONF_NAMESERVERS_MAX;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*e++ = 12;		/* Host name request */
 	*e++ = 32;
 	e += 32;
@@ -747,10 +1038,20 @@ static void __init ic_bootp_init_ext(u8 *e)
  */
 static inline void __init ic_bootp_init(void)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < CONF_NAMESERVERS_MAX; i++)
 		ic_nameservers[i] = NONE;
+=======
+	/* Re-initialise all name servers and NTP servers to NONE, in case any
+	 * were set via the "ip=" or "nfsaddrs=" kernel command line parameters:
+	 * any IP addresses specified there will already have been decoded but
+	 * are no longer needed
+	 */
+	ic_nameservers_predef();
+	ic_ntp_servers_predef();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_add_pack(&bootp_packet_type);
 }
@@ -783,8 +1084,12 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 	if (!skb)
 		return;
 	skb_reserve(skb, hlen);
+<<<<<<< HEAD
 	b = (struct bootp_pkt *) skb_put(skb, sizeof(struct bootp_pkt));
 	memset(b, 0, sizeof(struct bootp_pkt));
+=======
+	b = skb_put_zero(skb, sizeof(struct bootp_pkt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Construct IP header */
 	skb_reset_network_header(skb);
@@ -808,12 +1113,20 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 	b->op = BOOTP_REQUEST;
 	if (dev->type < 256) /* check for false types */
 		b->htype = dev->type;
+<<<<<<< HEAD
 	else if (dev->type == ARPHRD_IEEE802_TR) /* fix for token ring */
 		b->htype = ARPHRD_IEEE802;
 	else if (dev->type == ARPHRD_FDDI)
 		b->htype = ARPHRD_ETHER;
 	else {
 		printk("Unknown ARP type 0x%04x for device %s\n", dev->type, dev->name);
+=======
+	else if (dev->type == ARPHRD_FDDI)
+		b->htype = ARPHRD_ETHER;
+	else {
+		pr_warn("Unknown ARP type 0x%04x for device %s\n", dev->type,
+			dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		b->htype = dev->type; /* can cause undefined behavior */
 	}
 
@@ -826,7 +1139,11 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 	/* add DHCP options or BOOTP extensions */
 #ifdef IPCONFIG_DHCP
 	if (ic_proto_enabled & IC_USE_DHCP)
+<<<<<<< HEAD
 		ic_dhcp_init_options(b->exten);
+=======
+		ic_dhcp_init_options(b->exten, d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 #endif
 		ic_bootp_init_ext(b->exten);
@@ -847,7 +1164,11 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 
 
 /*
+<<<<<<< HEAD
  *  Copy BOOTP-supplied string if not already set.
+=======
+ *  Copy BOOTP-supplied string
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init ic_bootp_string(char *dest, char *src, int len, int max)
 {
@@ -870,6 +1191,7 @@ static void __init ic_do_bootp_ext(u8 *ext)
 	int i;
 	__be16 mtu;
 
+<<<<<<< HEAD
 #ifdef IPCONFIG_DEBUG
 	u8 *c;
 
@@ -878,6 +1200,14 @@ static void __init ic_do_bootp_ext(u8 *ext)
 		printk(" %02x", *c);
 	printk("\n");
 #endif
+=======
+	u8 *c;
+
+	pr_debug("DHCP/BOOTP: Got extension %d:", *ext);
+	for (c=ext+2; c<ext+2+ext[1]; c++)
+		pr_debug(" %02x", *c);
+	pr_debug("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (*ext++) {
 	case 1:		/* Subnet mask */
@@ -893,17 +1223,34 @@ static void __init ic_do_bootp_ext(u8 *ext)
 		if (servers > CONF_NAMESERVERS_MAX)
 			servers = CONF_NAMESERVERS_MAX;
 		for (i = 0; i < servers; i++) {
+<<<<<<< HEAD
 			if (ic_nameservers[i] == NONE)
+=======
+			if (ic_nameservers[i] == NONE ||
+			    ic_nameservers_fallback)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				memcpy(&ic_nameservers[i], ext+1+4*i, 4);
 		}
 		break;
 	case 12:	/* Host name */
+<<<<<<< HEAD
 		ic_bootp_string(utsname()->nodename, ext+1, *ext,
 				__NEW_UTS_LEN);
 		ic_host_name_set = 1;
 		break;
 	case 15:	/* Domain name (DNS) */
 		ic_bootp_string(ic_domain, ext+1, *ext, sizeof(ic_domain));
+=======
+		if (!ic_host_name_set) {
+			ic_bootp_string(utsname()->nodename, ext+1, *ext,
+					__NEW_UTS_LEN);
+			ic_host_name_set = 1;
+		}
+		break;
+	case 15:	/* Domain name (DNS) */
+		if (!ic_domain[0])
+			ic_bootp_string(ic_domain, ext+1, *ext, sizeof(ic_domain));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 17:	/* Root path */
 		if (!root_server_path[0])
@@ -918,6 +1265,18 @@ static void __init ic_do_bootp_ext(u8 *ext)
 		ic_bootp_string(utsname()->domainname, ext+1, *ext,
 				__NEW_UTS_LEN);
 		break;
+<<<<<<< HEAD
+=======
+	case 42:	/* NTP servers */
+		servers = *ext / 4;
+		if (servers > CONF_NTP_SERVERS_MAX)
+			servers = CONF_NTP_SERVERS_MAX;
+		for (i = 0; i < servers; i++) {
+			if (ic_ntp_servers[i] == NONE)
+				memcpy(&ic_ntp_servers[i], ext+1+4*i, 4);
+		}
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -939,7 +1298,12 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 	if (skb->pkt_type == PACKET_OTHERHOST)
 		goto drop;
 
+<<<<<<< HEAD
 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL)
+=======
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_RX_DROP;
 
 	if (!pskb_may_pull(skb,
@@ -955,8 +1319,12 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 
 	/* Fragments are not supported */
 	if (ip_is_fragment(h)) {
+<<<<<<< HEAD
 		if (net_ratelimit())
 			pr_err("DHCP/BOOTP: Ignoring fragmented reply\n");
+=======
+		net_err_ratelimited("DHCP/BOOTP: Ignoring fragmented reply\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop;
 	}
 
@@ -1004,6 +1372,7 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 	/* Is it a reply to our BOOTP request? */
 	if (b->op != BOOTP_REPLY ||
 	    b->xid != d->xid) {
+<<<<<<< HEAD
 		if (net_ratelimit())
 			pr_err("DHCP/BOOTP: Reply not for us, op[%x] xid[%x]\n",
 			       b->op, b->xid);
@@ -1014,6 +1383,10 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 	if (b->xid != ic_dev_xid) {
 		if (net_ratelimit())
 			pr_err("DHCP/BOOTP: Ignoring delayed packet\n");
+=======
+		net_err_ratelimited("DHCP/BOOTP: Reply not for us on %s, op[%x] xid[%x]\n",
+				    d->dev->name, b->op, b->xid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop_unlock;
 	}
 
@@ -1048,9 +1421,13 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 				}
 			}
 
+<<<<<<< HEAD
 #ifdef IPCONFIG_DEBUG
 			printk("DHCP: Got message type %d\n", mt);
 #endif
+=======
+			pr_debug("DHCP: Got message type %d (%s)\n", mt, d->dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			switch (mt) {
 			case DHCPOFFER:
@@ -1063,10 +1440,15 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 				/* Let's accept that offer. */
 				ic_myaddr = b->your_ip;
 				ic_servaddr = server_id;
+<<<<<<< HEAD
 #ifdef IPCONFIG_DEBUG
 				printk("DHCP: Offered address %pI4 by server %pI4\n",
 				       &ic_myaddr, &ic_servaddr);
 #endif
+=======
+				pr_debug("DHCP: Offered address %pI4 by server %pI4\n",
+					 &ic_myaddr, &b->iph.saddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* The DHCP indicated server address takes
 				 * precedence over the bootp header one if
 				 * they are different.
@@ -1107,6 +1489,7 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 	}
 
 	/* We have a winner! */
+<<<<<<< HEAD
 	ic_dev = dev;
 	ic_myaddr = b->your_ip;
 	ic_servaddr = b->server_ip;
@@ -1114,6 +1497,18 @@ static int __init ic_bootp_recv(struct sk_buff *skb, struct net_device *dev, str
 		ic_gateway = b->relay_ip;
 	if (ic_nameservers[0] == NONE)
 		ic_nameservers[0] = ic_servaddr;
+=======
+	ic_dev = d;
+	ic_myaddr = b->your_ip;
+	ic_servaddr = b->server_ip;
+	ic_addrservaddr = b->iph.saddr;
+	if (ic_gateway == NONE && b->relay_ip)
+		ic_gateway = b->relay_ip;
+	if (ic_nameservers[0] == NONE) {
+		ic_nameservers[0] = ic_servaddr;
+		ic_nameservers_fallback = 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ic_got_reply = IC_BOOTP;
 
 drop_unlock:
@@ -1198,11 +1593,16 @@ static int __init ic_dynamic(void)
 	d = ic_first_dev;
 	retries = CONF_SEND_RETRIES;
 	get_random_bytes(&timeout, sizeof(timeout));
+<<<<<<< HEAD
 	timeout = CONF_BASE_TIMEOUT + (timeout % (unsigned) CONF_TIMEOUT_RANDOM);
 	for (;;) {
 		/* Track the device we are configuring */
 		ic_dev_xid = d->xid;
 
+=======
+	timeout = CONF_BASE_TIMEOUT + (timeout % (unsigned int) CONF_TIMEOUT_RANDOM);
+	for (;;) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef IPCONFIG_BOOTP
 		if (do_bootp && (d->able & IC_BOOTP))
 			ic_bootp_send_if(d, jiffies - start_jiffies);
@@ -1212,15 +1612,28 @@ static int __init ic_dynamic(void)
 			ic_rarp_send_if(d);
 #endif
 
+<<<<<<< HEAD
 		jiff = jiffies + (d->next ? CONF_INTER_TIMEOUT : timeout);
 		while (time_before(jiffies, jiff) && !ic_got_reply)
 			schedule_timeout_uninterruptible(1);
+=======
+		if (!d->next) {
+			jiff = jiffies + timeout;
+			while (time_before(jiffies, jiff) && !ic_got_reply)
+				schedule_timeout_uninterruptible(1);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef IPCONFIG_DHCP
 		/* DHCP isn't done until we get a DHCPACK. */
 		if ((ic_got_reply & IC_BOOTP) &&
 		    (ic_proto_enabled & IC_USE_DHCP) &&
 		    ic_dhcp_msgtype != DHCPACK) {
 			ic_got_reply = 0;
+<<<<<<< HEAD
+=======
+			/* continue on device that got the reply */
+			d = ic_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_cont(",");
 			continue;
 		}
@@ -1262,11 +1675,18 @@ static int __init ic_dynamic(void)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	printk("IP-Config: Got %s answer from %pI4, ",
 		((ic_got_reply & IC_RARP) ? "RARP"
 		 : (ic_proto_enabled & IC_USE_DHCP) ? "DHCP" : "BOOTP"),
 	       &ic_servaddr);
 	pr_cont("my address is %pI4\n", &ic_myaddr);
+=======
+	pr_info("IP-Config: Got %s answer from %pI4, my address is %pI4\n",
+		((ic_got_reply & IC_RARP) ? "RARP"
+		: (ic_proto_enabled & IC_USE_DHCP) ? "DHCP" : "BOOTP"),
+		&ic_addrservaddr, &ic_myaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1274,7 +1694,14 @@ static int __init ic_dynamic(void)
 #endif /* IPCONFIG_DYNAMIC */
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 
+=======
+/* proc_dir_entry for /proc/net/ipconfig */
+static struct proc_dir_entry *ipconfig_dir;
+
+/* Name servers: */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pnp_seq_show(struct seq_file *seq, void *v)
 {
 	int i;
@@ -1300,6 +1727,7 @@ static int pnp_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pnp_seq_open(struct inode *indoe, struct file *file)
 {
 	return single_open(file, pnp_seq_show, NULL);
@@ -1312,6 +1740,52 @@ static const struct file_operations pnp_seq_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+/* Create the /proc/net/ipconfig directory */
+static int __init ipconfig_proc_net_init(void)
+{
+	ipconfig_dir = proc_net_mkdir(&init_net, "ipconfig", init_net.proc_net);
+	if (!ipconfig_dir)
+		return -ENOMEM;
+
+	return 0;
+}
+
+/* Create a new file under /proc/net/ipconfig */
+static int ipconfig_proc_net_create(const char *name,
+				    const struct proc_ops *proc_ops)
+{
+	char *pname;
+	struct proc_dir_entry *p;
+
+	if (!ipconfig_dir)
+		return -ENOMEM;
+
+	pname = kasprintf(GFP_KERNEL, "%s%s", "ipconfig/", name);
+	if (!pname)
+		return -ENOMEM;
+
+	p = proc_create(pname, 0444, init_net.proc_net, proc_ops);
+	kfree(pname);
+	if (!p)
+		return -ENOMEM;
+
+	return 0;
+}
+
+/* Write NTP server IP addresses to /proc/net/ipconfig/ntp_servers */
+static int ntp_servers_show(struct seq_file *seq, void *v)
+{
+	int i;
+
+	for (i = 0; i < CONF_NTP_SERVERS_MAX; i++) {
+		if (ic_ntp_servers[i] != NONE)
+			seq_printf(seq, "%pI4\n", &ic_ntp_servers[i]);
+	}
+	return 0;
+}
+DEFINE_PROC_SHOW_ATTRIBUTE(ntp_servers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */
 
 /*
@@ -1353,11 +1827,21 @@ __be32 __init root_nfs_parse_addr(char *name)
 static int __init wait_for_devices(void)
 {
 	int i;
+<<<<<<< HEAD
+=======
+	bool try_init_devs = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < DEVICE_WAIT_MAX; i++) {
 		struct net_device *dev;
 		int found = 0;
 
+<<<<<<< HEAD
+=======
+		/* make sure deferred device probes are finished */
+		wait_for_device_probe();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtnl_lock();
 		for_each_netdev(&init_net, dev) {
 			if (ic_is_init_dev(dev)) {
@@ -1368,6 +1852,14 @@ static int __init wait_for_devices(void)
 		rtnl_unlock();
 		if (found)
 			return 0;
+<<<<<<< HEAD
+=======
+		if (try_init_devs &&
+		    (ROOT_DEV == Root_NFS || ROOT_DEV == Root_CIFS)) {
+			try_init_devs = false;
+			wait_for_init_devices_probe();
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ssleep(1);
 	}
 	return -ENODEV;
@@ -1384,15 +1876,38 @@ static int __init ip_auto_config(void)
 	int retries = CONF_OPEN_RETRIES;
 #endif
 	int err;
+<<<<<<< HEAD
 
 #ifdef CONFIG_PROC_FS
 	proc_net_fops_create(&init_net, "pnp", S_IRUGO, &pnp_seq_fops);
+=======
+	unsigned int i, count;
+
+	/* Initialise all name servers and NTP servers to NONE (but only if the
+	 * "ip=" or "nfsaddrs=" kernel command line parameters weren't decoded,
+	 * otherwise we'll overwrite the IP addresses specified there)
+	 */
+	if (ic_set_manually == 0) {
+		ic_nameservers_predef();
+		ic_ntp_servers_predef();
+	}
+
+#ifdef CONFIG_PROC_FS
+	proc_create_single("pnp", 0444, init_net.proc_net, pnp_seq_show);
+
+	if (ipconfig_proc_net_init() == 0)
+		ipconfig_proc_net_create("ntp_servers", &ntp_servers_proc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */
 
 	if (!ic_enable)
 		return 0;
 
+<<<<<<< HEAD
 	DBG(("IP-Config: Entered.\n"));
+=======
+	pr_debug("IP-Config: Entered.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef IPCONFIG_DYNAMIC
  try_try_again:
 #endif
@@ -1416,10 +1931,17 @@ static int __init ip_auto_config(void)
 	 * missing values.
 	 */
 	if (ic_myaddr == NONE ||
+<<<<<<< HEAD
 #ifdef CONFIG_ROOT_NFS
 	    (root_server_addr == NONE &&
 	     ic_servaddr == NONE &&
 	     ROOT_DEV == Root_NFS) ||
+=======
+#if defined(CONFIG_ROOT_NFS) || defined(CONFIG_CIFS_ROOT)
+	    (root_server_addr == NONE &&
+	     ic_servaddr == NONE &&
+	     (ROOT_DEV == Root_NFS || ROOT_DEV == Root_CIFS)) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	    ic_first_dev->next) {
 #ifdef IPCONFIG_DYNAMIC
@@ -1446,6 +1968,15 @@ static int __init ip_auto_config(void)
 				goto try_try_again;
 			}
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CIFS_ROOT
+			if (ROOT_DEV == Root_CIFS) {
+				pr_err("IP-Config: Retrying forever (CIFS root)...\n");
+				goto try_try_again;
+			}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (--retries) {
 				pr_err("IP-Config: Reopening network devices...\n");
@@ -1463,7 +1994,11 @@ static int __init ip_auto_config(void)
 #endif /* IPCONFIG_DYNAMIC */
 	} else {
 		/* Device selected manually or only one device -> use it */
+<<<<<<< HEAD
 		ic_dev = ic_first_dev->dev;
+=======
+		ic_dev = ic_first_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	addr = root_nfs_parse_addr(root_server_path);
@@ -1477,6 +2012,7 @@ static int __init ip_auto_config(void)
 		return -1;
 
 	/*
+<<<<<<< HEAD
 	 * Close all network devices except the device we've
 	 * autoconfigured and set up routes.
 	 */
@@ -1485,6 +2021,8 @@ static int __init ip_auto_config(void)
 		return -1;
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Record which protocol was actually used.
 	 */
 #ifdef IPCONFIG_DYNAMIC
@@ -1496,18 +2034,72 @@ static int __init ip_auto_config(void)
 	 * Clue in the operator.
 	 */
 	pr_info("IP-Config: Complete:\n");
+<<<<<<< HEAD
 	pr_info("     device=%s, addr=%pI4, mask=%pI4, gw=%pI4\n",
 		ic_dev->name, &ic_myaddr, &ic_netmask, &ic_gateway);
+=======
+
+	pr_info("     device=%s, hwaddr=%*phC, ipaddr=%pI4, mask=%pI4, gw=%pI4\n",
+		ic_dev->dev->name, ic_dev->dev->addr_len, ic_dev->dev->dev_addr,
+		&ic_myaddr, &ic_netmask, &ic_gateway);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("     host=%s, domain=%s, nis-domain=%s\n",
 		utsname()->nodename, ic_domain, utsname()->domainname);
 	pr_info("     bootserver=%pI4, rootserver=%pI4, rootpath=%s",
 		&ic_servaddr, &root_server_addr, root_server_path);
 	if (ic_dev_mtu)
 		pr_cont(", mtu=%d", ic_dev_mtu);
+<<<<<<< HEAD
 	pr_cont("\n");
 #endif /* !SILENT */
 
 	return 0;
+=======
+	/* Name servers (if any): */
+	for (i = 0, count = 0; i < CONF_NAMESERVERS_MAX; i++) {
+		if (ic_nameservers[i] != NONE) {
+			if (i == 0)
+				pr_info("     nameserver%u=%pI4",
+					i, &ic_nameservers[i]);
+			else
+				pr_cont(", nameserver%u=%pI4",
+					i, &ic_nameservers[i]);
+
+			count++;
+		}
+		if ((i + 1 == CONF_NAMESERVERS_MAX) && count > 0)
+			pr_cont("\n");
+	}
+	/* NTP servers (if any): */
+	for (i = 0, count = 0; i < CONF_NTP_SERVERS_MAX; i++) {
+		if (ic_ntp_servers[i] != NONE) {
+			if (i == 0)
+				pr_info("     ntpserver%u=%pI4",
+					i, &ic_ntp_servers[i]);
+			else
+				pr_cont(", ntpserver%u=%pI4",
+					i, &ic_ntp_servers[i]);
+
+			count++;
+		}
+		if ((i + 1 == CONF_NTP_SERVERS_MAX) && count > 0)
+			pr_cont("\n");
+	}
+#endif /* !SILENT */
+
+	/*
+	 * Close all network devices except the device we've
+	 * autoconfigured and set up routes.
+	 */
+	if (ic_setup_if() < 0 || ic_setup_routes() < 0)
+		err = -1;
+	else
+		err = 0;
+
+	ic_close_devs();
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 late_initcall(ip_auto_config);
@@ -1515,7 +2107,11 @@ late_initcall(ip_auto_config);
 
 /*
  *  Decode any IP configuration options in the "ip=" or "nfsaddrs=" kernel
+<<<<<<< HEAD
  *  command line parameter.  See Documentation/filesystems/nfs/nfsroot.txt.
+=======
+ *  command line parameter.  See Documentation/admin-guide/nfs/nfsroot.rst.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init ic_proto_name(char *name)
 {
@@ -1526,8 +2122,29 @@ static int __init ic_proto_name(char *name)
 		return 0;
 	}
 #ifdef CONFIG_IP_PNP_DHCP
+<<<<<<< HEAD
 	else if (!strcmp(name, "dhcp")) {
 		ic_proto_enabled &= ~IC_RARP;
+=======
+	else if (!strncmp(name, "dhcp", 4)) {
+		char *client_id;
+
+		ic_proto_enabled &= ~IC_RARP;
+		client_id = strstr(name, "dhcp,");
+		if (client_id) {
+			char *v;
+
+			client_id = client_id + 5;
+			v = strchr(client_id, ',');
+			if (!v)
+				return 1;
+			*v = 0;
+			if (kstrtou8(client_id, 0, dhcp_client_identifier))
+				pr_debug("DHCP: Invalid client identifier type\n");
+			strncpy(dhcp_client_identifier + 1, v + 1, 251);
+			*v = ',';
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 #endif
@@ -1575,13 +2192,24 @@ static int __init ip_auto_config_setup(char *addrs)
 		return 1;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Initialise all name servers and NTP servers to NONE */
+	ic_nameservers_predef();
+	ic_ntp_servers_predef();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Parse string for static IP assignment.  */
 	ip = addrs;
 	while (ip && *ip) {
 		if ((cp = strchr(ip, ':')))
 			*cp++ = '\0';
 		if (strlen(ip) > 0) {
+<<<<<<< HEAD
 			DBG(("IP-Config: Parameter #%d: `%s'\n", num, ip));
+=======
+			pr_debug("IP-Config: Parameter #%d: `%s'\n", num, ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (num) {
 			case 0:
 				if ((ic_myaddr = in_aton(ip)) == ANY)
@@ -1602,15 +2230,26 @@ static int __init ip_auto_config_setup(char *addrs)
 			case 4:
 				if ((dp = strchr(ip, '.'))) {
 					*dp++ = '\0';
+<<<<<<< HEAD
 					strlcpy(utsname()->domainname, dp,
 						sizeof(utsname()->domainname));
 				}
 				strlcpy(utsname()->nodename, ip,
+=======
+					strscpy(utsname()->domainname, dp,
+						sizeof(utsname()->domainname));
+				}
+				strscpy(utsname()->nodename, ip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sizeof(utsname()->nodename));
 				ic_host_name_set = 1;
 				break;
 			case 5:
+<<<<<<< HEAD
 				strlcpy(user_dev_name, ip, sizeof(user_dev_name));
+=======
+				strscpy(user_dev_name, ip, sizeof(user_dev_name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case 6:
 				if (ic_proto_name(ip) == 0 &&
@@ -1618,6 +2257,30 @@ static int __init ip_auto_config_setup(char *addrs)
 					ic_enable = 0;
 				}
 				break;
+<<<<<<< HEAD
+=======
+			case 7:
+				if (CONF_NAMESERVERS_MAX >= 1) {
+					ic_nameservers[0] = in_aton(ip);
+					if (ic_nameservers[0] == ANY)
+						ic_nameservers[0] = NONE;
+				}
+				break;
+			case 8:
+				if (CONF_NAMESERVERS_MAX >= 2) {
+					ic_nameservers[1] = in_aton(ip);
+					if (ic_nameservers[1] == ANY)
+						ic_nameservers[1] = NONE;
+				}
+				break;
+			case 9:
+				if (CONF_NTP_SERVERS_MAX >= 1) {
+					ic_ntp_servers[0] = in_aton(ip);
+					if (ic_ntp_servers[0] == ANY)
+						ic_ntp_servers[0] = NONE;
+				}
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		ip = cp;
@@ -1626,11 +2289,16 @@ static int __init ip_auto_config_setup(char *addrs)
 
 	return 1;
 }
+<<<<<<< HEAD
+=======
+__setup("ip=", ip_auto_config_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init nfsaddrs_config_setup(char *addrs)
 {
 	return ip_auto_config_setup(addrs);
 }
+<<<<<<< HEAD
 
 static int __init vendor_class_identifier_setup(char *addrs)
 {
@@ -1645,3 +2313,32 @@ static int __init vendor_class_identifier_setup(char *addrs)
 __setup("ip=", ip_auto_config_setup);
 __setup("nfsaddrs=", nfsaddrs_config_setup);
 __setup("dhcpclass=", vendor_class_identifier_setup);
+=======
+__setup("nfsaddrs=", nfsaddrs_config_setup);
+
+static int __init vendor_class_identifier_setup(char *addrs)
+{
+	if (strscpy(vendor_class_identifier, addrs,
+		    sizeof(vendor_class_identifier))
+	    >= sizeof(vendor_class_identifier))
+		pr_warn("DHCP: vendorclass too long, truncated to \"%s\"\n",
+			vendor_class_identifier);
+	return 1;
+}
+__setup("dhcpclass=", vendor_class_identifier_setup);
+
+static int __init set_carrier_timeout(char *str)
+{
+	ssize_t ret;
+
+	if (!str)
+		return 0;
+
+	ret = kstrtouint(str, 0, &carrier_timeout);
+	if (ret)
+		return 0;
+
+	return 1;
+}
+__setup("carrier_timeout=", set_carrier_timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

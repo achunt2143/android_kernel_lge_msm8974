@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of the ROHM BH1770GLC / OSRAM SFH7770 sensor driver.
  * Chip is combined proximity and ambient light sensor.
@@ -5,6 +9,7 @@
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
  *
  * Contact: Samu Onkalo <samu.p.onkalo@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +25,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,7 +34,11 @@
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/i2c/bh1770glc.h>
+=======
+#include <linux/platform_data/bh1770glc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/pm_runtime.h>
 #include <linux/workqueue.h>
@@ -180,9 +191,12 @@ static const char reg_vleds[] = "Vleds";
 static const s16 prox_rates_hz[] = {100, 50, 33, 25, 14, 10, 5, 2};
 static const s16 prox_rates_ms[] = {10, 20, 30, 40, 70, 100, 200, 500};
 
+<<<<<<< HEAD
 /* Supported IR-led currents in mA */
 static const u8 prox_curr_ma[] = {5, 10, 20, 50, 100, 150, 200};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Supported stand alone rates in ms from chip data sheet
  * {100, 200, 500, 1000, 2000};
@@ -651,8 +665,14 @@ static ssize_t bh1770_power_state_store(struct device *dev,
 	unsigned long value;
 	ssize_t ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->mutex);
 	if (value) {
@@ -726,9 +746,17 @@ static ssize_t bh1770_prox_enable_store(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->mutex);
 	/* Assume no proximity. Sensor will tell real state soon */
@@ -824,9 +852,17 @@ static ssize_t bh1770_set_prox_rate_above(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->mutex);
 	chip->prox_rate_threshold = bh1770_prox_rate_validate(value);
@@ -840,9 +876,17 @@ static ssize_t bh1770_set_prox_rate_below(struct device *dev,
 {
 	struct bh1770_chip *chip =  dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->mutex);
 	chip->prox_rate = bh1770_prox_rate_validate(value);
@@ -865,8 +909,15 @@ static ssize_t bh1770_set_prox_thres(struct device *dev,
 	unsigned long value;
 	int ret;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (value > BH1770_PROX_RANGE)
 		return -EINVAL;
 
@@ -893,9 +944,17 @@ static ssize_t bh1770_prox_persistence_store(struct device *dev,
 {
 	struct bh1770_chip *chip = dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (value > BH1770_PROX_MAX_PERSISTENCE)
 		return -EINVAL;
@@ -918,9 +977,17 @@ static ssize_t bh1770_prox_abs_thres_store(struct device *dev,
 {
 	struct bh1770_chip *chip = dev_get_drvdata(dev);
 	unsigned long value;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (value > BH1770_PROX_RANGE)
 		return -EINVAL;
@@ -963,9 +1030,17 @@ static ssize_t bh1770_lux_calib_store(struct device *dev,
 	unsigned long value;
 	u32 old_calib;
 	u32 new_corr;
+<<<<<<< HEAD
 
 	if (strict_strtoul(buf, 0, &value))
 		return -EINVAL;
+=======
+	int ret;
+
+	ret = kstrtoul(buf, 0, &value);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->mutex);
 	old_calib = chip->lux_calib;
@@ -1012,8 +1087,14 @@ static ssize_t bh1770_set_lux_rate(struct device *dev,
 	unsigned long rate_hz;
 	int ret, i;
 
+<<<<<<< HEAD
 	if (strict_strtoul(buf, 0, &rate_hz))
 		return -EINVAL;
+=======
+	ret = kstrtoul(buf, 0, &rate_hz);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(lux_rates_hz) - 1; i++)
 		if (rate_hz >= lux_rates_hz[i])
@@ -1047,11 +1128,20 @@ static ssize_t bh1770_get_lux_thresh_below(struct device *dev,
 static ssize_t bh1770_set_lux_thresh(struct bh1770_chip *chip, u16 *target,
 				const char *buf)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	unsigned long thresh;
 
 	if (strict_strtoul(buf, 0, &thresh))
 		return -EINVAL;
+=======
+	unsigned long thresh;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &thresh);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (thresh > BH1770_LUX_RANGE)
 		return -EINVAL;
@@ -1158,17 +1248,29 @@ static struct attribute *sysfs_attrs[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct attribute_group bh1770_attribute_group = {
 	.attrs = sysfs_attrs
 };
 
 static int __devinit bh1770_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
+=======
+static const struct attribute_group bh1770_attribute_group = {
+	.attrs = sysfs_attrs
+};
+
+static int bh1770_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bh1770_chip *chip;
 	int err;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof *chip, GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&client->dev, sizeof *chip, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chip)
 		return -ENOMEM;
 
@@ -1181,8 +1283,12 @@ static int __devinit bh1770_probe(struct i2c_client *client,
 
 	if (client->dev.platform_data == NULL) {
 		dev_err(&client->dev, "platform data is mandatory\n");
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto fail1;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	chip->pdata		= client->dev.platform_data;
@@ -1207,24 +1313,40 @@ static int __devinit bh1770_probe(struct i2c_client *client,
 	chip->regs[0].supply = reg_vcc;
 	chip->regs[1].supply = reg_vleds;
 
+<<<<<<< HEAD
 	err = regulator_bulk_get(&client->dev,
 				 ARRAY_SIZE(chip->regs), chip->regs);
 	if (err < 0) {
 		dev_err(&client->dev, "Cannot get regulators\n");
 		goto fail1;
+=======
+	err = devm_regulator_bulk_get(&client->dev,
+				      ARRAY_SIZE(chip->regs), chip->regs);
+	if (err < 0) {
+		dev_err(&client->dev, "Cannot get regulators\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = regulator_bulk_enable(ARRAY_SIZE(chip->regs),
 				chip->regs);
 	if (err < 0) {
 		dev_err(&client->dev, "Cannot enable regulators\n");
+<<<<<<< HEAD
 		goto fail2;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	usleep_range(BH1770_STARTUP_DELAY, BH1770_STARTUP_DELAY * 2);
 	err = bh1770_detect(chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto fail0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Start chip */
 	bh1770_chip_on(chip);
@@ -1235,14 +1357,22 @@ static int __devinit bh1770_probe(struct i2c_client *client,
 	if (chip->lux_corr == 0) {
 		dev_err(&client->dev, "Improper correction values\n");
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto fail0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (chip->pdata->setup_resources) {
 		err = chip->pdata->setup_resources();
 		if (err) {
 			err = -EINVAL;
+<<<<<<< HEAD
 			goto fail3;
+=======
+			goto fail0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1250,7 +1380,11 @@ static int __devinit bh1770_probe(struct i2c_client *client,
 				&bh1770_attribute_group);
 	if (err < 0) {
 		dev_err(&chip->client->dev, "Sysfs registration failed\n");
+<<<<<<< HEAD
 		goto fail4;
+=======
+		goto fail1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1266,6 +1400,7 @@ static int __devinit bh1770_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev, "could not get IRQ %d\n",
 			client->irq);
+<<<<<<< HEAD
 		goto fail5;
 	}
 	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
@@ -1286,6 +1421,24 @@ fail1:
 }
 
 static int __devexit bh1770_remove(struct i2c_client *client)
+=======
+		goto fail2;
+	}
+	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
+	return err;
+fail2:
+	sysfs_remove_group(&chip->client->dev.kobj,
+			&bh1770_attribute_group);
+fail1:
+	if (chip->pdata->release_resources)
+		chip->pdata->release_resources();
+fail0:
+	regulator_bulk_disable(ARRAY_SIZE(chip->regs), chip->regs);
+	return err;
+}
+
+static void bh1770_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
@@ -1304,6 +1457,7 @@ static int __devexit bh1770_remove(struct i2c_client *client)
 
 	pm_runtime_disable(&client->dev);
 	pm_runtime_set_suspended(&client->dev);
+<<<<<<< HEAD
 
 	regulator_bulk_free(ARRAY_SIZE(chip->regs), chip->regs);
 	kfree(chip);
@@ -1314,6 +1468,14 @@ static int __devexit bh1770_remove(struct i2c_client *client)
 static int bh1770_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int bh1770_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1323,7 +1485,11 @@ static int bh1770_suspend(struct device *dev)
 
 static int bh1770_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 	int ret = 0;
 
@@ -1346,6 +1512,7 @@ static int bh1770_resume(struct device *dev)
 	}
 	return ret;
 }
+<<<<<<< HEAD
 
 #else
 #define bh1770_suspend	NULL
@@ -1357,6 +1524,14 @@ static int bh1770_resume(struct device *dev)
 static int bh1770_runtime_suspend(struct device *dev)
 {
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+#endif
+
+#ifdef CONFIG_PM
+static int bh1770_runtime_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_off(chip);
@@ -1366,7 +1541,11 @@ static int bh1770_runtime_suspend(struct device *dev)
 
 static int bh1770_runtime_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = container_of(dev, struct i2c_client, dev);
+=======
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bh1770_chip *chip = i2c_get_clientdata(client);
 
 	bh1770_chip_on(chip);
@@ -1389,6 +1568,7 @@ static const struct dev_pm_ops bh1770_pm_ops = {
 };
 
 static struct i2c_driver bh1770_driver = {
+<<<<<<< HEAD
 	.driver	 = {
 		.name	= "bh1770glc",
 		.owner	= THIS_MODULE,
@@ -1396,6 +1576,14 @@ static struct i2c_driver bh1770_driver = {
 	},
 	.probe	  = bh1770_probe,
 	.remove	  = __devexit_p(bh1770_remove),
+=======
+	.driver	  = {
+		.name	= "bh1770glc",
+		.pm	= &bh1770_pm_ops,
+	},
+	.probe    = bh1770_probe,
+	.remove	  = bh1770_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = bh1770_id,
 };
 

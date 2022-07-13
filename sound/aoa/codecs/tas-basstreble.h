@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is only included exactly once!
  *
@@ -12,7 +16,11 @@
 #define TAS3004_TREBLE_ZERO	36
 #define TAS3004_BASS_ZERO	36
 
+<<<<<<< HEAD
 static u8 tas3004_treble_table[] = {
+=======
+static const u8 tas3004_treble_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	150, /* -18 dB */
 	149,
 	148,
@@ -98,7 +106,11 @@ static inline u8 tas3004_treble(int idx)
  * I have also ignored completely differences of
  * +/- 1
  */
+<<<<<<< HEAD
 static s8 tas3004_bass_diff_to_treble[] = {
+=======
+static const s8 tas3004_bass_diff_to_treble[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	2, /* 7 dB, offset 50 */
 	2,
 	2,

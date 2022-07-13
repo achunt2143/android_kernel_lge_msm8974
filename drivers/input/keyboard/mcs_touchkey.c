@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Touchkey driver for MELFAS MCS5000/5080 controller
  *
  * Copyright (C) 2010 Samsung Electronics Co.Ltd
  * Author: HeungJun Kim <riverful.kim@samsung.com>
  * Author: Joonyoung Shim <jy0922.shim@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -15,10 +20,20 @@
 #include <linux/init.h>
 #include <linux/i2c.h>
 #include <linux/i2c/mcs.h>
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/i2c.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/irq.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/mcs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 
 /* MCS5000 Touchkey */
@@ -97,9 +112,22 @@ static irqreturn_t mcs_touchkey_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
+=======
+static void mcs_touchkey_poweroff(void *data)
+{
+	struct mcs_touchkey_data *touchkey = data;
+
+	touchkey->poweron(false);
+}
+
+static int mcs_touchkey_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct mcs_platform_data *pdata;
 	struct mcs_touchkey_data *data;
 	struct input_dev *input_dev;
@@ -108,12 +136,17 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 	int error;
 	int i;
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata) {
 		dev_err(&client->dev, "no platform data defined\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct mcs_touchkey_data) +
 			sizeof(data->keycodes[0]) * (pdata->key_maxval + 1),
 			GFP_KERNEL);
@@ -122,6 +155,18 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 		dev_err(&client->dev, "Failed to allocate memory\n");
 		error = -ENOMEM;
 		goto err_free_mem;
+=======
+	data = devm_kzalloc(&client->dev,
+			    struct_size(data, keycodes, pdata->key_maxval + 1),
+			    GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev) {
+		dev_err(&client->dev, "Failed to allocate input device\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	data->client = client;
@@ -142,6 +187,7 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 
 	fw_ver = i2c_smbus_read_byte_data(client, fw_reg);
 	if (fw_ver < 0) {
+<<<<<<< HEAD
 		error = fw_ver;
 		dev_err(&client->dev, "i2c read error[%d]\n", error);
 		goto err_free_mem;
@@ -151,6 +197,15 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 	input_dev->name = "MELPAS MCS Touchkey";
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
+=======
+		dev_err(&client->dev, "i2c read error[%d]\n", fw_ver);
+		return fw_ver;
+	}
+	dev_info(&client->dev, "Firmware version: %d\n", fw_ver);
+
+	input_dev->name = "MELFAS MCS Touchkey";
+	input_dev->id.bustype = BUS_I2C;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->evbit[0] = BIT_MASK(EV_KEY);
 	if (!pdata->no_autorepeat)
 		input_dev->evbit[0] |= BIT_MASK(EV_REP);
@@ -175,6 +230,7 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 	if (pdata->poweron) {
 		data->poweron = pdata->poweron;
 		data->poweron(true);
+<<<<<<< HEAD
 	}
 
 	error = request_threaded_irq(client->irq, NULL, mcs_touchkey_interrupt,
@@ -182,10 +238,27 @@ static int __devinit mcs_touchkey_probe(struct i2c_client *client,
 	if (error) {
 		dev_err(&client->dev, "Failed to register interrupt\n");
 		goto err_free_mem;
+=======
+
+		error = devm_add_action_or_reset(&client->dev,
+						 mcs_touchkey_poweroff, data);
+		if (error)
+			return error;
+	}
+
+	error = devm_request_threaded_irq(&client->dev, client->irq,
+					  NULL, mcs_touchkey_interrupt,
+					  IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+					  client->dev.driver->name, data);
+	if (error) {
+		dev_err(&client->dev, "Failed to register interrupt\n");
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input_dev);
 	if (error)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	i2c_set_clientdata(client, data);
@@ -210,6 +283,12 @@ static int __devexit mcs_touchkey_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+		return error;
+
+	i2c_set_clientdata(client, data);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mcs_touchkey_shutdown(struct i2c_client *client)
@@ -220,7 +299,10 @@ static void mcs_touchkey_shutdown(struct i2c_client *client)
 		data->poweron(false);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mcs_touchkey_suspend(struct device *dev)
 {
 	struct mcs_touchkey_data *data = dev_get_drvdata(dev);
@@ -250,10 +332,16 @@ static int mcs_touchkey_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(mcs_touchkey_pm_ops,
 			 mcs_touchkey_suspend, mcs_touchkey_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(mcs_touchkey_pm_ops,
+				mcs_touchkey_suspend, mcs_touchkey_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id mcs_touchkey_id[] = {
 	{ "mcs5000_touchkey", MCS5000_TOUCHKEY },
@@ -265,11 +353,17 @@ MODULE_DEVICE_TABLE(i2c, mcs_touchkey_id);
 static struct i2c_driver mcs_touchkey_driver = {
 	.driver = {
 		.name	= "mcs_touchkey",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &mcs_touchkey_pm_ops,
 	},
 	.probe		= mcs_touchkey_probe,
 	.remove		= __devexit_p(mcs_touchkey_remove),
+=======
+		.pm	= pm_sleep_ptr(&mcs_touchkey_pm_ops),
+	},
+	.probe		= mcs_touchkey_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown       = mcs_touchkey_shutdown,
 	.id_table	= mcs_touchkey_id,
 };

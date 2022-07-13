@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RDC321x GPIO driver
  *
  * Copyright (C) 2008, Volker Weiss <dev@tintuc.de>
  * Copyright (C) 2007-2010 Florian Fainelli <florian@openwrt.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -25,7 +32,11 @@
 #include <linux/spinlock.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/rdc321x.h>
 #include <linux/slab.h>
 
@@ -47,7 +58,11 @@ static int rdc_gpio_get_value(struct gpio_chip *chip, unsigned gpio)
 	u32 value = 0;
 	int reg;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = gpio < 32 ? gpch->reg1_data_base : gpch->reg2_data_base;
 
 	spin_lock(&gpch->lock);
@@ -65,7 +80,11 @@ static void rdc_gpio_set_value_impl(struct gpio_chip *chip,
 	struct rdc321x_gpio *gpch;
 	int reg = (gpio < 32) ? 0 : 1;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (value)
 		gpch->data_reg[reg] |= 1 << (gpio & 0x1f);
@@ -83,7 +102,11 @@ static void rdc_gpio_set_value(struct gpio_chip *chip,
 {
 	struct rdc321x_gpio *gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&gpch->lock);
 	rdc_gpio_set_value_impl(chip, gpio, value);
 	spin_unlock(&gpch->lock);
@@ -96,7 +119,11 @@ static int rdc_gpio_config(struct gpio_chip *chip,
 	int err;
 	u32 reg;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rdc321x_gpio, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&gpch->lock);
 	err = pci_read_config_dword(gpch->sb_pdev, gpio < 32 ?
@@ -128,30 +155,49 @@ static int rdc_gpio_direction_input(struct gpio_chip *chip, unsigned gpio)
 /*
  * Cache the initial value of both GPIO data registers
  */
+<<<<<<< HEAD
 static int __devinit rdc321x_gpio_probe(struct platform_device *pdev)
+=======
+static int rdc321x_gpio_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct resource *r;
 	struct rdc321x_gpio *rdc321x_gpio_dev;
 	struct rdc321x_gpio_pdata *pdata;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data supplied\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	rdc321x_gpio_dev = kzalloc(sizeof(struct rdc321x_gpio), GFP_KERNEL);
 	if (!rdc321x_gpio_dev) {
 		dev_err(&pdev->dev, "failed to allocate private data\n");
 		return -ENOMEM;
 	}
+=======
+	rdc321x_gpio_dev = devm_kzalloc(&pdev->dev, sizeof(struct rdc321x_gpio),
+					GFP_KERNEL);
+	if (!rdc321x_gpio_dev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = platform_get_resource_byname(pdev, IORESOURCE_IO, "gpio-reg1");
 	if (!r) {
 		dev_err(&pdev->dev, "failed to get gpio-reg1 resource\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto out_free;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_init(&rdc321x_gpio_dev->lock);
@@ -162,14 +208,22 @@ static int __devinit rdc321x_gpio_probe(struct platform_device *pdev)
 	r = platform_get_resource_byname(pdev, IORESOURCE_IO, "gpio-reg2");
 	if (!r) {
 		dev_err(&pdev->dev, "failed to get gpio-reg2 resource\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto out_free;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rdc321x_gpio_dev->reg2_ctrl_base = r->start;
 	rdc321x_gpio_dev->reg2_data_base = r->start + 0x4;
 
 	rdc321x_gpio_dev->chip.label = "rdc321x-gpio";
+<<<<<<< HEAD
+=======
+	rdc321x_gpio_dev->chip.owner = THIS_MODULE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdc321x_gpio_dev->chip.direction_input = rdc_gpio_direction_input;
 	rdc321x_gpio_dev->chip.direction_output = rdc_gpio_config;
 	rdc321x_gpio_dev->chip.get = rdc_gpio_get_value;
@@ -186,12 +240,17 @@ static int __devinit rdc321x_gpio_probe(struct platform_device *pdev)
 					rdc321x_gpio_dev->reg1_data_base,
 					&rdc321x_gpio_dev->data_reg[0]);
 	if (err)
+<<<<<<< HEAD
 		goto out_drvdata;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_read_config_dword(rdc321x_gpio_dev->sb_pdev,
 					rdc321x_gpio_dev->reg2_data_base,
 					&rdc321x_gpio_dev->data_reg[1]);
 	if (err)
+<<<<<<< HEAD
 		goto out_drvdata;
 
 	dev_info(&pdev->dev, "registering %d GPIOs\n",
@@ -218,13 +277,25 @@ static int __devexit rdc321x_gpio_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return ret;
+=======
+		return err;
+
+	dev_info(&pdev->dev, "registering %d GPIOs\n",
+					rdc321x_gpio_dev->chip.ngpio);
+	return devm_gpiochip_add_data(&pdev->dev, &rdc321x_gpio_dev->chip,
+				      rdc321x_gpio_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver rdc321x_gpio_driver = {
 	.driver.name	= "rdc321x-gpio",
+<<<<<<< HEAD
 	.driver.owner	= THIS_MODULE,
 	.probe		= rdc321x_gpio_probe,
 	.remove		= __devexit_p(rdc321x_gpio_remove),
+=======
+	.probe		= rdc321x_gpio_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(rdc321x_gpio_driver);

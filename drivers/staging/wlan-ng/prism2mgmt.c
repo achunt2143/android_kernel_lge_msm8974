@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* src/prism2/driver/prism2mgmt.c
 *
 * Management request handler functions.
@@ -56,6 +57,46 @@
 *
 * --------------------------------------------------------------------
 */
+=======
+// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
+/*
+ *
+ * Management request handler functions.
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * The functions in this file handle management requests sent from
+ * user mode.
+ *
+ * Most of these functions have two separate blocks of code that are
+ * conditional on whether this is a station or an AP.  This is used
+ * to separate out the STA and AP responses to these management primitives.
+ * It's a choice (good, bad, indifferent?) to have the code in the same
+ * place so it's clear that the same primitive is implemented in both
+ * cases but has different behavior.
+ *
+ * --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/if_arp.h>
 #include <linux/module.h>
@@ -84,6 +125,7 @@
 #include "prism2mgmt.h"
 
 /* Converts 802.11 format rate specifications to prism2 */
+<<<<<<< HEAD
 #define p80211rate_to_p2bit(n)	((((n)&~BIT(7)) == 2) ? BIT(0) :  \
 				 (((n)&~BIT(7)) == 4) ? BIT(1) : \
 				 (((n)&~BIT(7)) == 11) ? BIT(2) : \
@@ -117,20 +159,76 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 {
 	int result = 0;
 	hfa384x_t *hw = wlandev->priv;
+=======
+static inline u16 p80211rate_to_p2bit(u32 rate)
+{
+	switch (rate & ~BIT(7)) {
+	case 2:
+		return BIT(0);
+	case 4:
+		return BIT(1);
+	case 11:
+		return BIT(2);
+	case 22:
+		return BIT(3);
+	default:
+		return 0;
+	}
+}
+
+/*----------------------------------------------------------------
+ * prism2mgmt_scan
+ *
+ * Initiate a scan for BSSs.
+ *
+ * This function corresponds to MLME-scan.request and part of
+ * MLME-scan.confirm.  As far as I can tell in the standard, there
+ * are no restrictions on when a scan.request may be issued.  We have
+ * to handle in whatever state the driver/MAC happen to be.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *	interrupt
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
+{
+	int result = 0;
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p80211msg_dot11req_scan *msg = msgp;
 	u16 roamingmode, word;
 	int i, timeout;
 	int istmpenable = 0;
 
+<<<<<<< HEAD
 	hfa384x_HostScanRequest_data_t scanreq;
+=======
+	struct hfa384x_host_scan_request_data scanreq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* gatekeeper check */
 	if (HFA384x_FIRMWARE_VERSION(hw->ident_sta_fw.major,
 				     hw->ident_sta_fw.minor,
 				     hw->ident_sta_fw.variant) <
 	    HFA384x_FIRMWARE_VERSION(1, 3, 2)) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "HostScan not supported with current firmware (<1.3.2).\n");
+=======
+		netdev_err(wlandev->netdev,
+			   "HostScan not supported with current firmware (<1.3.2).\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = 1;
 		msg->resultcode.data = P80211ENUM_resultcode_not_supported;
 		goto exit;
@@ -143,8 +241,13 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 					  HFA384x_RID_CNFROAMINGMODE,
 					  &roamingmode);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "getconfig(ROAMMODE) failed. result=%d\n",
 		       result);
+=======
+		netdev_err(wlandev->netdev,
+			   "getconfig(ROAMMODE) failed. result=%d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		goto exit;
@@ -155,8 +258,14 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 					  HFA384x_RID_CNFROAMINGMODE,
 					  HFA384x_ROAMMODE_HOSTSCAN_HOSTROAM);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "setconfig(ROAMINGMODE) failed. result=%d\n",
 		       result);
+=======
+		netdev_err(wlandev->netdev,
+			   "setconfig(ROAMINGMODE) failed. result=%d\n",
+			   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		goto exit;
@@ -168,7 +277,11 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 				     hw->ident_sta_fw.variant) >
 	    HFA384x_FIRMWARE_VERSION(1, 5, 0)) {
 		if (msg->scantype.data != P80211ENUM_scantype_active)
+<<<<<<< HEAD
 			word = cpu_to_le16(msg->maxchanneltime.data);
+=======
+			word = msg->maxchanneltime.data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			word = 0;
 
@@ -176,25 +289,42 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 		    hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFPASSIVESCANCTRL,
 					     word);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "Passive scan not supported with "
 			       "current firmware.  (<1.5.1)\n");
+=======
+			netdev_warn(wlandev->netdev,
+				    "Passive scan not supported with current firmware.  (<1.5.1)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* set up the txrate to be 2MBPS. Should be fastest basicrate... */
 	word = HFA384x_RATEBIT_2;
+<<<<<<< HEAD
 	scanreq.txRate = cpu_to_le16(word);
+=======
+	scanreq.tx_rate = cpu_to_le16(word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up the channel list */
 	word = 0;
 	for (i = 0; i < msg->channellist.data.len; i++) {
 		u8 channel = msg->channellist.data.data[i];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (channel > 14)
 			continue;
 		/* channel 1 is BIT 0 ... channel 14 is BIT 13 */
 		word |= (1 << (channel - 1));
 	}
+<<<<<<< HEAD
 	scanreq.channelList = cpu_to_le16(word);
+=======
+	scanreq.channel_list = cpu_to_le16(word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up the ssid, if present. */
 	scanreq.ssid.len = cpu_to_le16(msg->ssid.data.len);
@@ -203,13 +333,19 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 	/* Enable the MAC port if it's not already enabled  */
 	result = hfa384x_drvr_getconfig16(hw, HFA384x_RID_PORTSTATUS, &word);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "getconfig(PORTSTATUS) failed. "
 		       "result=%d\n", result);
+=======
+		netdev_err(wlandev->netdev,
+			   "getconfig(PORTSTATUS) failed. result=%d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		goto exit;
 	}
 	if (word == HFA384x_PORTSTATUS_DISABLED) {
+<<<<<<< HEAD
 		u16 wordbuf[17];
 
 		result = hfa384x_drvr_setconfig16(hw,
@@ -219,6 +355,17 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 			printk(KERN_ERR
 			       "setconfig(ROAMINGMODE) failed. result=%d\n",
 			       result);
+=======
+		__le16 wordbuf[17];
+
+		result = hfa384x_drvr_setconfig16(hw,
+						  HFA384x_RID_CNFROAMINGMODE,
+						  HFA384x_ROAMMODE_HOSTSCAN_HOSTROAM);
+		if (result) {
+			netdev_err(wlandev->netdev,
+				   "setconfig(ROAMINGMODE) failed. result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
@@ -232,7 +379,11 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 						wordbuf,
 						HFA384x_RID_CNFOWNSSID_LEN);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR "Failed to set OwnSSID.\n");
+=======
+			netdev_err(wlandev->netdev, "Failed to set OwnSSID.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
@@ -241,7 +392,12 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 						wordbuf,
 						HFA384x_RID_CNFDESIREDSSID_LEN);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR "Failed to set DesiredSSID.\n");
+=======
+			netdev_err(wlandev->netdev,
+				   "Failed to set DesiredSSID.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
@@ -251,25 +407,44 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 						  HFA384x_RID_CNFPORTTYPE,
 						  HFA384x_PORTTYPE_IBSS);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR "Failed to set CNFPORTTYPE.\n");
+=======
+			netdev_err(wlandev->netdev,
+				   "Failed to set CNFPORTTYPE.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
 		}
 		/* ibss options */
 		result = hfa384x_drvr_setconfig16(hw,
+<<<<<<< HEAD
 					HFA384x_RID_CREATEIBSS,
 					HFA384x_CREATEIBSS_JOINCREATEIBSS);
 		if (result) {
 			printk(KERN_ERR "Failed to set CREATEIBSS.\n");
+=======
+						  HFA384x_RID_CREATEIBSS,
+						  HFA384x_CREATEIBSS_JOINCREATEIBSS);
+		if (result) {
+			netdev_err(wlandev->netdev,
+				   "Failed to set CREATEIBSS.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
 		}
 		result = hfa384x_drvr_enable(hw, 0);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR "drvr_enable(0) failed. "
 			       "result=%d\n", result);
+=======
+			netdev_err(wlandev->netdev,
+				   "drvr_enable(0) failed. result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
@@ -286,10 +461,18 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 
 	result = hfa384x_drvr_setconfig(hw,
 					HFA384x_RID_HOSTSCAN, &scanreq,
+<<<<<<< HEAD
 					sizeof(hfa384x_HostScanRequest_data_t));
 	if (result) {
 		printk(KERN_ERR "setconfig(SCANREQUEST) failed. result=%d\n",
 		       result);
+=======
+					sizeof(scanreq));
+	if (result) {
+		netdev_err(wlandev->netdev,
+			   "setconfig(SCANREQUEST) failed. result=%d\n",
+			   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		goto exit;
@@ -310,8 +493,14 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 	if (istmpenable) {
 		result = hfa384x_drvr_disable(hw, 0);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR "drvr_disable(0) failed. "
 			       "result=%d\n", result);
+=======
+			netdev_err(wlandev->netdev,
+				   "drvr_disable(0) failed. result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
@@ -322,8 +511,13 @@ int prism2mgmt_scan(wlandevice_t *wlandev, void *msgp)
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFROAMINGMODE,
 					  roamingmode);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "setconfig(ROAMMODE) failed. result=%d\n",
 		       result);
+=======
+		netdev_err(wlandev->netdev,
+			   "setconfig(ROAMMODE) failed. result=%d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		goto exit;
@@ -339,6 +533,7 @@ exit:
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_scan_results
 *
 * Retrieve the BSS description for one of the BSSs identified in
@@ -368,30 +563,81 @@ int prism2mgmt_scan_results(wlandevice_t *wlandev, void *msgp)
 	int count;
 
 	req = (struct p80211msg_dot11req_scan_results *) msgp;
+=======
+ * prism2mgmt_scan_results
+ *
+ * Retrieve the BSS description for one of the BSSs identified in
+ * a scan.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *	interrupt
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_scan_results(struct wlandevice *wlandev, void *msgp)
+{
+	int result = 0;
+	struct p80211msg_dot11req_scan_results *req;
+	struct hfa384x *hw = wlandev->priv;
+	struct hfa384x_hscan_result_sub *item = NULL;
+
+	int count;
+
+	req = msgp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 
 	if (!hw->scanresults) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "dot11req_scan_results can only be used after a successful dot11req_scan.\n");
+=======
+		netdev_err(wlandev->netdev,
+			   "dot11req_scan_results can only be used after a successful dot11req_scan.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = 2;
 		req->resultcode.data = P80211ENUM_resultcode_invalid_parameters;
 		goto exit;
 	}
 
 	count = (hw->scanresults->framelen - 3) / 32;
+<<<<<<< HEAD
 	if (count > 32)
 		count = 32;
 
 	if (req->bssindex.data >= count) {
 		pr_debug("requested index (%d) out of range (%d)\n",
 			 req->bssindex.data, count);
+=======
+	if (count > HFA384x_SCANRESULT_MAX)
+		count = HFA384x_SCANRESULT_MAX;
+
+	if (req->bssindex.data >= count) {
+		netdev_dbg(wlandev->netdev,
+			   "requested index (%d) out of range (%d)\n",
+			   req->bssindex.data, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = 2;
 		req->resultcode.data = P80211ENUM_resultcode_invalid_parameters;
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	item = &(hw->scanresults->info.hscanresult.result[req->bssindex.data]);
+=======
+	item = &hw->scanresults->info.hscanresult.result[req->bssindex.data];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* signal and noise */
 	req->signal.status = P80211ENUM_msgitem_status_data_ok;
 	req->noise.status = P80211ENUM_msgitem_status_data_ok;
@@ -414,6 +660,7 @@ int prism2mgmt_scan_results(wlandevice_t *wlandev, void *msgp)
 		if (item->supprates[count] == 0)
 			break;
 
+<<<<<<< HEAD
 #define REQBASICRATE(N) \
 	if ((count >= N) && DOT11_RATE5_ISBASIC_GET(item->supprates[(N)-1])) { \
 		req->basicrate ## N .data = item->supprates[(N)-1]; \
@@ -446,6 +693,25 @@ int prism2mgmt_scan_results(wlandevice_t *wlandev, void *msgp)
 	REQSUPPRATE(7);
 	REQSUPPRATE(8);
 
+=======
+	for (int i = 0; i < 8; i++) {
+		if (count > i &&
+		    DOT11_RATE5_ISBASIC_GET(item->supprates[i])) {
+			req->basicrate[i].data = item->supprates[i];
+			req->basicrate[i].status =
+				P80211ENUM_msgitem_status_data_ok;
+		}
+	}
+
+	for (int i = 0; i < 8; i++) {
+		if (count > i) {
+			req->supprate[i].data = item->supprates[i];
+			req->supprate[i].status =
+				P80211ENUM_msgitem_status_data_ok;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* beacon period */
 	req->beaconperiod.status = P80211ENUM_msgitem_status_data_ok;
 	req->beaconperiod.data = le16_to_cpu(item->bcnint);
@@ -494,6 +760,7 @@ exit:
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_start
 *
 * Start a BSS.  Any station can do this for IBSS, only AP for ESS.
@@ -521,6 +788,36 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 	p80211pstrd_t *pstr;
 	u8 bytebuf[80];
 	hfa384x_bytestr_t *p2bytestr = (hfa384x_bytestr_t *) bytebuf;
+=======
+ * prism2mgmt_start
+ *
+ * Start a BSS.  Any station can do this for IBSS, only AP for ESS.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *	interrupt
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
+{
+	int result = 0;
+	struct hfa384x *hw = wlandev->priv;
+	struct p80211msg_dot11req_start *msg = msgp;
+
+	struct p80211pstrd *pstr;
+	u8 bytebuf[80];
+	struct hfa384x_bytestr *p2bytestr = (struct hfa384x_bytestr *)bytebuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 word;
 
 	wlandev->macmode = WLAN_MACMODE_NONE;
@@ -545,19 +842,31 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 	/*** STATION ***/
 	/* Set the REQUIRED config items */
 	/* SSID */
+<<<<<<< HEAD
 	pstr = (p80211pstrd_t *) &(msg->ssid.data);
+=======
+	pstr = (struct p80211pstrd *)&msg->ssid.data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prism2mgmt_pstr2bytestr(p2bytestr, pstr);
 	result = hfa384x_drvr_setconfig(hw, HFA384x_RID_CNFOWNSSID,
 					bytebuf, HFA384x_RID_CNFOWNSSID_LEN);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set CnfOwnSSID\n");
+=======
+		netdev_err(wlandev->netdev, "Failed to set CnfOwnSSID\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 	result = hfa384x_drvr_setconfig(hw, HFA384x_RID_CNFDESIREDSSID,
 					bytebuf,
 					HFA384x_RID_CNFDESIREDSSID_LEN);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set CnfDesiredSSID\n");
+=======
+		netdev_err(wlandev->netdev, "Failed to set CnfDesiredSSID\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -567,9 +876,16 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 
 	/* beacon period */
 	word = msg->beaconperiod.data;
+<<<<<<< HEAD
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFAPBCNint, word);
 	if (result) {
 		printk(KERN_ERR "Failed to set beacon period=%d.\n", word);
+=======
+	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFAPBCNINT, word);
+	if (result) {
+		netdev_err(wlandev->netdev,
+			   "Failed to set beacon period=%d.\n", word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -577,7 +893,12 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 	word = msg->dschannel.data;
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFOWNCHANNEL, word);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set channel=%d.\n", word);
+=======
+		netdev_err(wlandev->netdev,
+			   "Failed to set channel=%d.\n", word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 	/* Basic rates */
@@ -605,7 +926,12 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFBASICRATES, word);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set basicrates=%d.\n", word);
+=======
+		netdev_err(wlandev->netdev,
+			   "Failed to set basicrates=%d.\n", word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -634,13 +960,23 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFSUPPRATES, word);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set supprates=%d.\n", word);
+=======
+		netdev_err(wlandev->netdev,
+			   "Failed to set supprates=%d.\n", word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_TXRATECNTL, word);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Failed to set txrates=%d.\n", word);
+=======
+		netdev_err(wlandev->netdev, "Failed to set txrates=%d.\n",
+			   word);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -654,7 +990,12 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 	/* Enable the Port */
 	result = hfa384x_drvr_enable(hw, 0);
 	if (result) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Enable macport failed, result=%d.\n", result);
+=======
+		netdev_err(wlandev->netdev,
+			   "Enable macport failed, result=%d.\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -662,6 +1003,7 @@ int prism2mgmt_start(wlandevice_t *wlandev, void *msgp)
 
 	goto done;
 failed:
+<<<<<<< HEAD
 	pr_debug("Failed to set a config option, result=%d\n", result);
 	msg->resultcode.data = P80211ENUM_resultcode_invalid_parameters;
 
@@ -692,6 +1034,38 @@ done:
 int prism2mgmt_readpda(wlandevice_t *wlandev, void *msgp)
 {
 	hfa384x_t *hw = wlandev->priv;
+=======
+	netdev_dbg(wlandev->netdev,
+		   "Failed to set a config option, result=%d\n", result);
+	msg->resultcode.data = P80211ENUM_resultcode_invalid_parameters;
+
+done:
+	return 0;
+}
+
+/*----------------------------------------------------------------
+ * prism2mgmt_readpda
+ *
+ * Collect the PDA data and put it in the message.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_readpda(struct wlandevice *wlandev, void *msgp)
+{
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p80211msg_p2req_readpda *msg = msgp;
 	int result;
 
@@ -699,8 +1073,13 @@ int prism2mgmt_readpda(wlandevice_t *wlandev, void *msgp)
 	 * state.
 	 */
 	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "PDA may only be read " "in the fwload state.\n");
+=======
+		netdev_err(wlandev->netdev,
+			   "PDA may only be read in the fwload state.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -712,9 +1091,15 @@ int prism2mgmt_readpda(wlandevice_t *wlandev, void *msgp)
 					      msg->pda.data,
 					      HFA384x_PDA_LEN_MAX);
 		if (result) {
+<<<<<<< HEAD
 			printk(KERN_ERR
 			       "hfa384x_drvr_readpda() failed, "
 			       "result=%d\n", result);
+=======
+			netdev_err(wlandev->netdev,
+				   "hfa384x_drvr_readpda() failed, result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
@@ -731,6 +1116,7 @@ int prism2mgmt_readpda(wlandevice_t *wlandev, void *msgp)
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_ramdl_state
 *
 * Establishes the beginning/end of a card RAM download session.
@@ -764,6 +1150,41 @@ int prism2mgmt_ramdl_state(wlandevice_t *wlandev, void *msgp)
 		printk(KERN_ERR
 		       "ramdl_state(): may only be called "
 		       "in the fwload state.\n");
+=======
+ * prism2mgmt_ramdl_state
+ *
+ * Establishes the beginning/end of a card RAM download session.
+ *
+ * It is expected that the ramdl_write() function will be called
+ * one or more times between the 'enable' and 'disable' calls to
+ * this function.
+ *
+ * Note: This function should not be called when a mac comm port
+ *       is active.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_ramdl_state(struct wlandevice *wlandev, void *msgp)
+{
+	struct hfa384x *hw = wlandev->priv;
+	struct p80211msg_p2req_ramdl_state *msg = msgp;
+
+	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
+		netdev_err(wlandev->netdev,
+			   "ramdl_state(): may only be called in the fwload state.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -792,6 +1213,7 @@ int prism2mgmt_ramdl_state(wlandevice_t *wlandev, void *msgp)
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_ramdl_write
 *
 * Writes a buffer to the card RAM using the download state.  This
@@ -814,15 +1236,45 @@ int prism2mgmt_ramdl_state(wlandevice_t *wlandev, void *msgp)
 int prism2mgmt_ramdl_write(wlandevice_t *wlandev, void *msgp)
 {
 	hfa384x_t *hw = wlandev->priv;
+=======
+ * prism2mgmt_ramdl_write
+ *
+ * Writes a buffer to the card RAM using the download state.  This
+ * is for writing code to card RAM.  To just read or write raw data
+ * use the aux functions.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_ramdl_write(struct wlandevice *wlandev, void *msgp)
+{
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p80211msg_p2req_ramdl_write *msg = msgp;
 	u32 addr;
 	u32 len;
 	u8 *buf;
 
 	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "ramdl_write(): may only be called "
 		       "in the fwload state.\n");
+=======
+		netdev_err(wlandev->netdev,
+			   "ramdl_write(): may only be called in the fwload state.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -849,6 +1301,7 @@ int prism2mgmt_ramdl_write(wlandevice_t *wlandev, void *msgp)
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_flashdl_state
 *
 * Establishes the beginning/end of a card Flash download session.
@@ -883,6 +1336,42 @@ int prism2mgmt_flashdl_state(wlandevice_t *wlandev, void *msgp)
 		printk(KERN_ERR
 		       "flashdl_state(): may only be called "
 		       "in the fwload state.\n");
+=======
+ * prism2mgmt_flashdl_state
+ *
+ * Establishes the beginning/end of a card Flash download session.
+ *
+ * It is expected that the flashdl_write() function will be called
+ * one or more times between the 'enable' and 'disable' calls to
+ * this function.
+ *
+ * Note: This function should not be called when a mac comm port
+ *       is active.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_flashdl_state(struct wlandevice *wlandev, void *msgp)
+{
+	int result = 0;
+	struct hfa384x *hw = wlandev->priv;
+	struct p80211msg_p2req_flashdl_state *msg = msgp;
+
+	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
+		netdev_err(wlandev->netdev,
+			   "flashdl_state(): may only be called in the fwload state.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -915,14 +1404,21 @@ int prism2mgmt_flashdl_state(wlandevice_t *wlandev, void *msgp)
 		wlandev->msdstate = WLAN_MSD_HWPRESENT;
 		result = prism2sta_ifstate(wlandev, P80211ENUM_ifstate_fwload);
 		if (result != P80211ENUM_resultcode_success) {
+<<<<<<< HEAD
 			printk(KERN_ERR "prism2sta_ifstate(fwload) failed,"
 			       "P80211ENUM_resultcode=%d\n", result);
+=======
+			netdev_err(wlandev->netdev,
+				   "prism2sta_ifstate(fwload) failed, P80211ENUM_resultcode=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_implementation_failure;
 			result = -1;
 		}
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -947,15 +1443,47 @@ int prism2mgmt_flashdl_state(wlandevice_t *wlandev, void *msgp)
 int prism2mgmt_flashdl_write(wlandevice_t *wlandev, void *msgp)
 {
 	hfa384x_t *hw = wlandev->priv;
+=======
+	return result;
+}
+
+/*----------------------------------------------------------------
+ * prism2mgmt_flashdl_write
+ *
+ *
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_flashdl_write(struct wlandevice *wlandev, void *msgp)
+{
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p80211msg_p2req_flashdl_write *msg = msgp;
 	u32 addr;
 	u32 len;
 	u8 *buf;
 
 	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "flashdl_write(): may only be called "
 		       "in the fwload state.\n");
+=======
+		netdev_err(wlandev->netdev,
+			   "flashdl_write(): may only be called in the fwload state.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg->resultcode.data =
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -987,6 +1515,7 @@ int prism2mgmt_flashdl_write(wlandevice_t *wlandev, void *msgp)
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_autojoin
 *
 * Associate with an ESS.
@@ -1008,13 +1537,43 @@ int prism2mgmt_flashdl_write(wlandevice_t *wlandev, void *msgp)
 int prism2mgmt_autojoin(wlandevice_t *wlandev, void *msgp)
 {
 	hfa384x_t *hw = wlandev->priv;
+=======
+ * prism2mgmt_autojoin
+ *
+ * Associate with an ESS.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *	interrupt
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_autojoin(struct wlandevice *wlandev, void *msgp)
+{
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 	u16 reg;
 	u16 port_type;
 	struct p80211msg_lnxreq_autojoin *msg = msgp;
+<<<<<<< HEAD
 	p80211pstrd_t *pstr;
 	u8 bytebuf[256];
 	hfa384x_bytestr_t *p2bytestr = (hfa384x_bytestr_t *) bytebuf;
+=======
+	struct p80211pstrd *pstr;
+	u8 bytebuf[256];
+	struct hfa384x_bytestr *p2bytestr = (struct hfa384x_bytestr *)bytebuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wlandev->macmode = WLAN_MACMODE_NONE;
 
@@ -1038,7 +1597,11 @@ int prism2mgmt_autojoin(wlandevice_t *wlandev, void *msgp)
 
 	/* Set the ssid */
 	memset(bytebuf, 0, 256);
+<<<<<<< HEAD
 	pstr = (p80211pstrd_t *) &(msg->ssid.data);
+=======
+	pstr = (struct p80211pstrd *)&msg->ssid.data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prism2mgmt_pstr2bytestr(p2bytestr, pstr);
 	result = hfa384x_drvr_setconfig(hw, HFA384x_RID_CNFDESIREDSSID,
 					bytebuf,
@@ -1058,6 +1621,7 @@ int prism2mgmt_autojoin(wlandevice_t *wlandev, void *msgp)
 }
 
 /*----------------------------------------------------------------
+<<<<<<< HEAD
 * prism2mgmt_wlansniff
 *
 * Start or stop sniffing.
@@ -1077,11 +1641,37 @@ int prism2mgmt_autojoin(wlandevice_t *wlandev, void *msgp)
 *	interrupt
 ----------------------------------------------------------------*/
 int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
+=======
+ * prism2mgmt_wlansniff
+ *
+ * Start or stop sniffing.
+ *
+ * Arguments:
+ *	wlandev		wlan device structure
+ *	msgp		ptr to msg buffer
+ *
+ * Returns:
+ *	0	success and done
+ *	<0	success, but we're waiting for something to finish.
+ *	>0	an error occurred while handling the message.
+ * Side effects:
+ *
+ * Call context:
+ *	process thread  (usually)
+ *	interrupt
+ *----------------------------------------------------------------
+ */
+int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	struct p80211msg_lnxreq_wlansniff *msg = msgp;
 
+<<<<<<< HEAD
 	hfa384x_t *hw = wlandev->priv;
+=======
+	struct hfa384x *hw = wlandev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 word;
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
@@ -1091,21 +1681,37 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		if (wlandev->netdev->type == ARPHRD_ETHER) {
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_invalid_parameters;
+<<<<<<< HEAD
 			result = 0;
 			goto exit;
+=======
+			return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Disable monitor mode */
 		result = hfa384x_cmd_monitor(hw, HFA384x_MONITOR_DISABLE);
 		if (result) {
+<<<<<<< HEAD
 			pr_debug("failed to disable monitor mode, result=%d\n",
 				 result);
+=======
+			netdev_dbg(wlandev->netdev,
+				   "failed to disable monitor mode, result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed;
 		}
 		/* Disable port 0 */
 		result = hfa384x_drvr_disable(hw, 0);
 		if (result) {
+<<<<<<< HEAD
 			pr_debug
 			("failed to disable port 0 after sniffing, result=%d\n",
+=======
+			netdev_dbg
+			(wlandev->netdev,
+			     "failed to disable port 0 after sniffing, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     result);
 			goto failed;
 		}
@@ -1117,8 +1723,14 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 						  HFA384x_RID_CNFWEPFLAGS,
 						  hw->presniff_wepflags);
 		if (result) {
+<<<<<<< HEAD
 			pr_debug
 			    ("failed to restore wepflags=0x%04x, result=%d\n",
+=======
+			netdev_dbg
+			    (wlandev->netdev,
+			     "failed to restore wepflags=0x%04x, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     hw->presniff_wepflags, result);
 			goto failed;
 		}
@@ -1127,11 +1739,20 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		if (hw->presniff_port_type != 0) {
 			word = hw->presniff_port_type;
 			result = hfa384x_drvr_setconfig16(hw,
+<<<<<<< HEAD
 						  HFA384x_RID_CNFPORTTYPE,
 						  word);
 			if (result) {
 				pr_debug
 				    ("failed to restore porttype, result=%d\n",
+=======
+							  HFA384x_RID_CNFPORTTYPE,
+							  word);
+			if (result) {
+				netdev_dbg
+				    (wlandev->netdev,
+				     "failed to restore porttype, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     result);
 				goto failed;
 			}
@@ -1139,13 +1760,20 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 			/* Enable the port */
 			result = hfa384x_drvr_enable(hw, 0);
 			if (result) {
+<<<<<<< HEAD
 				pr_debug
 				("failed to enable port to presniff setting, result=%d\n",
 				     result);
+=======
+				netdev_dbg(wlandev->netdev,
+					   "failed to enable port to presniff setting, result=%d\n",
+					   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto failed;
 			}
 		} else {
 			result = hfa384x_drvr_disable(hw, 0);
+<<<<<<< HEAD
 
 		}
 
@@ -1154,45 +1782,82 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		result = 0;
 		goto exit;
 		break;
+=======
+		}
+
+		netdev_info(wlandev->netdev, "monitor mode disabled\n");
+		msg->resultcode.data = P80211ENUM_resultcode_success;
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case P80211ENUM_truth_true:
 		/* Disable the port (if enabled), only check Port 0 */
 		if (hw->port_enabled[0]) {
 			if (wlandev->netdev->type == ARPHRD_ETHER) {
 				/* Save macport 0 state */
 				result = hfa384x_drvr_getconfig16(hw,
+<<<<<<< HEAD
 						  HFA384x_RID_CNFPORTTYPE,
 						  &(hw->presniff_port_type));
 				if (result) {
 					pr_debug
 					("failed to read porttype, result=%d\n",
+=======
+								  HFA384x_RID_CNFPORTTYPE,
+								  &hw->presniff_port_type);
+				if (result) {
+					netdev_dbg
+					(wlandev->netdev,
+					     "failed to read porttype, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     result);
 					goto failed;
 				}
 				/* Save the wepflags state */
 				result = hfa384x_drvr_getconfig16(hw,
+<<<<<<< HEAD
 						  HFA384x_RID_CNFWEPFLAGS,
 						  &(hw->presniff_wepflags));
 				if (result) {
 					pr_debug
 					("failed to read wepflags, result=%d\n",
+=======
+								  HFA384x_RID_CNFWEPFLAGS,
+								  &hw->presniff_wepflags);
+				if (result) {
+					netdev_dbg
+					(wlandev->netdev,
+					     "failed to read wepflags, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     result);
 					goto failed;
 				}
 				hfa384x_drvr_stop(hw);
 				result = hfa384x_drvr_start(hw);
 				if (result) {
+<<<<<<< HEAD
 					pr_debug
 					    ("failed to restart the card for sniffing, result=%d\n",
 					     result);
+=======
+					netdev_dbg(wlandev->netdev,
+						   "failed to restart the card for sniffing, result=%d\n",
+						   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto failed;
 				}
 			} else {
 				/* Disable the port */
 				result = hfa384x_drvr_disable(hw, 0);
 				if (result) {
+<<<<<<< HEAD
 					pr_debug
 					    ("failed to enable port for sniffing, result=%d\n",
 					     result);
+=======
+					netdev_dbg(wlandev->netdev,
+						   "failed to enable port for sniffing, result=%d\n",
+						   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto failed;
 				}
 			}
@@ -1208,8 +1873,14 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		hw->sniff_channel = word;
 
 		if (result) {
+<<<<<<< HEAD
 			pr_debug("failed to set channel %d, result=%d\n",
 				 word, result);
+=======
+			netdev_dbg(wlandev->netdev,
+				   "failed to set channel %d, result=%d\n",
+				   word, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed;
 		}
 
@@ -1218,23 +1889,38 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 			/* Set the port type to pIbss */
 			word = HFA384x_PORTTYPE_PSUEDOIBSS;
 			result = hfa384x_drvr_setconfig16(hw,
+<<<<<<< HEAD
 						  HFA384x_RID_CNFPORTTYPE,
 						  word);
 			if (result) {
 				pr_debug
 				    ("failed to set porttype %d, result=%d\n",
+=======
+							  HFA384x_RID_CNFPORTTYPE,
+							  word);
+			if (result) {
+				netdev_dbg
+				    (wlandev->netdev,
+				     "failed to set porttype %d, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     word, result);
 				goto failed;
 			}
 			if ((msg->keepwepflags.status ==
+<<<<<<< HEAD
 			     P80211ENUM_msgitem_status_data_ok)
 			    && (msg->keepwepflags.data !=
 				P80211ENUM_truth_true)) {
+=======
+			     P80211ENUM_msgitem_status_data_ok) &&
+			    (msg->keepwepflags.data != P80211ENUM_truth_true)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Set the wepflags for no decryption */
 				word = HFA384x_WEPFLAGS_DISABLE_TXCRYPT |
 				    HFA384x_WEPFLAGS_DISABLE_RXCRYPT;
 				result =
 				    hfa384x_drvr_setconfig16(hw,
+<<<<<<< HEAD
 						     HFA384x_RID_CNFWEPFLAGS,
 						     word);
 			}
@@ -1242,14 +1928,30 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 			if (result) {
 				pr_debug
 				  ("failed to set wepflags=0x%04x, result=%d\n",
+=======
+							     HFA384x_RID_CNFWEPFLAGS,
+							     word);
+			}
+
+			if (result) {
+				netdev_dbg
+				  (wlandev->netdev,
+				   "failed to set wepflags=0x%04x, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   word, result);
 				goto failed;
 			}
 		}
 
 		/* Do we want to strip the FCS in monitor mode? */
+<<<<<<< HEAD
 		if ((msg->stripfcs.status == P80211ENUM_msgitem_status_data_ok)
 		    && (msg->stripfcs.data == P80211ENUM_truth_true)) {
+=======
+		if ((msg->stripfcs.status ==
+		     P80211ENUM_msgitem_status_data_ok) &&
+		    (msg->stripfcs.data == P80211ENUM_truth_true)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hw->sniff_fcs = 0;
 		} else {
 			hw->sniff_fcs = 1;
@@ -1266,25 +1968,42 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		/* Enable the port */
 		result = hfa384x_drvr_enable(hw, 0);
 		if (result) {
+<<<<<<< HEAD
 			pr_debug
 			    ("failed to enable port for sniffing, result=%d\n",
+=======
+			netdev_dbg
+			    (wlandev->netdev,
+			     "failed to enable port for sniffing, result=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     result);
 			goto failed;
 		}
 		/* Enable monitor mode */
 		result = hfa384x_cmd_monitor(hw, HFA384x_MONITOR_ENABLE);
 		if (result) {
+<<<<<<< HEAD
 			pr_debug("failed to enable monitor mode, result=%d\n",
 				 result);
+=======
+			netdev_dbg(wlandev->netdev,
+				   "failed to enable monitor mode, result=%d\n",
+				   result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed;
 		}
 
 		if (wlandev->netdev->type == ARPHRD_ETHER)
+<<<<<<< HEAD
 			printk(KERN_INFO "monitor mode enabled\n");
+=======
+			netdev_info(wlandev->netdev, "monitor mode enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Set the driver state */
 		/* Do we want the prism2 header? */
 		if ((msg->prismheader.status ==
+<<<<<<< HEAD
 		     P80211ENUM_msgitem_status_data_ok)
 		    && (msg->prismheader.data == P80211ENUM_truth_true)) {
 			hw->sniffhdr = 0;
@@ -1293,6 +2012,15 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		    if ((msg->wlanheader.status ==
 			 P80211ENUM_msgitem_status_data_ok)
 			&& (msg->wlanheader.data == P80211ENUM_truth_true)) {
+=======
+		     P80211ENUM_msgitem_status_data_ok) &&
+		    (msg->prismheader.data == P80211ENUM_truth_true)) {
+			hw->sniffhdr = 0;
+			wlandev->netdev->type = ARPHRD_IEEE80211_PRISM;
+		} else if ((msg->wlanheader.status ==
+			    P80211ENUM_msgitem_status_data_ok) &&
+			   (msg->wlanheader.data == P80211ENUM_truth_true)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hw->sniffhdr = 1;
 			wlandev->netdev->type = ARPHRD_IEEE80211_PRISM;
 		} else {
@@ -1300,6 +2028,7 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		}
 
 		msg->resultcode.data = P80211ENUM_resultcode_success;
+<<<<<<< HEAD
 		result = 0;
 		goto exit;
 		break;
@@ -1308,11 +2037,21 @@ int prism2mgmt_wlansniff(wlandevice_t *wlandev, void *msgp)
 		result = 0;
 		goto exit;
 		break;
+=======
+		return 0;
+	default:
+		msg->resultcode.data = P80211ENUM_resultcode_invalid_parameters;
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 failed:
 	msg->resultcode.data = P80211ENUM_resultcode_refused;
+<<<<<<< HEAD
 	result = 0;
 exit:
 	return result;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

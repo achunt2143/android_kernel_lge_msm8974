@@ -31,13 +31,20 @@
  * network ports from the rest of the cvmx-helper files.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/bug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-bootinfo.h>
 
 #include <asm/octeon/cvmx-config.h>
 
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-mdio.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-util.h>
 #include <asm/octeon/cvmx-helper-board.h>
@@ -45,6 +52,7 @@
 #include <asm/octeon/cvmx-gmxx-defs.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
 
+<<<<<<< HEAD
 /**
  * cvmx_override_board_link_get(int ipd_port) is a function
  * pointer. It is meant to allow customization of the process of
@@ -57,6 +65,9 @@ cvmx_helper_link_info_t(*cvmx_override_board_link_get) (int ipd_port) =
     NULL;
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return the MII PHY address associated with the given IPD
  * port. A result of -1 means there isn't a MII capable PHY
  * connected to this port. On chips supporting multiple MII
@@ -181,6 +192,20 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 			return ipd_port - 16 + 4;
 		else
 			return -1;
+<<<<<<< HEAD
+=======
+	case CVMX_BOARD_TYPE_UBNT_E100:
+		if (ipd_port >= 0 && ipd_port <= 2)
+			return 7 - ipd_port;
+		else
+			return -1;
+	case CVMX_BOARD_TYPE_KONTRON_S1901:
+		if (ipd_port == CVMX_HELPER_BOARD_MGMT_IPD_PORT)
+			return 1;
+		else
+			return -1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Some unknown board. Somebody forgot to update this function... */
@@ -190,7 +215,11 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
 	return -1;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is the board specific method of determining an
  * ethernet ports link speed. Most Octeon boards have Marvell PHYs
  * and are handled by the fall through case. This function must be
@@ -203,6 +232,7 @@ int cvmx_helper_board_get_mii_address(int ipd_port)
  * enumeration from the bootloader.
  *
  * @ipd_port: IPD input port associated with the port we want to get link
+<<<<<<< HEAD
  *                 status for.
  *
  * Returns The ports link status. If the link isn't fully resolved, this must
@@ -217,21 +247,39 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 	/* Give the user a chance to override the processing of this function */
 	if (cvmx_override_board_link_get)
 		return cvmx_override_board_link_get(ipd_port);
+=======
+ *		   status for.
+ *
+ * Returns The ports link status. If the link isn't fully resolved, this must
+ *	   return zero.
+ */
+union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port)
+{
+	union cvmx_helper_link_info result;
+
+	WARN_ONCE(!octeon_is_simulation(),
+	     "Using deprecated link status - please update your DT");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unless we fix it later, all links are defaulted to down */
 	result.u64 = 0;
 
+<<<<<<< HEAD
 	/*
 	 * This switch statement should handle all ports that either don't use
 	 * Marvell PHYS, or don't support in-band status.
 	 */
 	switch (cvmx_sysinfo_get()->board_type) {
 	case CVMX_BOARD_TYPE_SIM:
+=======
+	if (octeon_is_simulation()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The simulator gives you a simulated 1Gbps full duplex link */
 		result.s.link_up = 1;
 		result.s.full_duplex = 1;
 		result.s.speed = 1000;
 		return result;
+<<<<<<< HEAD
 	case CVMX_BOARD_TYPE_EBH3100:
 	case CVMX_BOARD_TYPE_CN3010_EVB_HS5:
 	case CVMX_BOARD_TYPE_CN3005_EVB_HS5:
@@ -373,6 +421,11 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 			}
 		}
 	} else if (OCTEON_IS_MODEL(OCTEON_CN3XXX)
+=======
+	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CN3XXX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   || OCTEON_IS_MODEL(OCTEON_CN58XX)
 		   || OCTEON_IS_MODEL(OCTEON_CN50XX)) {
 		/*
@@ -391,6 +444,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 		result.s.link_up = inband_status.s.status;
 		result.s.full_duplex = inband_status.s.duplex;
 		switch (inband_status.s.speed) {
+<<<<<<< HEAD
 		case 0:	/* 10 Mbps */
 			result.s.speed = 10;
 			break;
@@ -401,6 +455,18 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 			result.s.speed = 1000;
 			break;
 		case 3:	/* Illegal */
+=======
+		case 0: /* 10 Mbps */
+			result.s.speed = 10;
+			break;
+		case 1: /* 100 Mbps */
+			result.s.speed = 100;
+			break;
+		case 2: /* 1 Gbps */
+			result.s.speed = 1000;
+			break;
+		case 3: /* Illegal */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result.u64 = 0;
 			break;
 		}
@@ -421,6 +487,7 @@ cvmx_helper_link_info_t __cvmx_helper_board_link_get(int ipd_port)
 	return result;
 }
 
+<<<<<<< HEAD
 /**
  * This function as a board specific method of changing the PHY
  * speed, duplex, and auto-negotiation. This programs the PHY and
@@ -592,6 +659,9 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
 }
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is called by cvmx_helper_interface_probe() after it
  * determines the number of ports Octeon can support on a specific
  * interface. This function is the per board location to override
@@ -599,18 +669,31 @@ int cvmx_helper_board_link_set_phy(int phy_addr,
  * support and should return the number of actual ports on the
  * board.
  *
+<<<<<<< HEAD
  * This function must be modifed for every new Octeon board.
  * Internally it uses switch statements based on the cvmx_sysinfo
  * data to determine board types and revisions. It relys on the
+=======
+ * This function must be modified for every new Octeon board.
+ * Internally it uses switch statements based on the cvmx_sysinfo
+ * data to determine board types and revisions. It relies on the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fact that every Octeon board receives a unique board type
  * enumeration from the bootloader.
  *
  * @interface: Interface to probe
  * @supported_ports:
+<<<<<<< HEAD
  *                  Number of ports Octeon supports.
  *
  * Returns Number of ports the actual board supports. Many times this will
  *         simple be "support_ports".
+=======
+ *		    Number of ports Octeon supports.
+ *
+ * Returns Number of ports the actual board supports. Many times this will
+ *	   simple be "support_ports".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __cvmx_helper_board_interface_probe(int interface, int supported_ports)
 {
@@ -637,6 +720,7 @@ int __cvmx_helper_board_interface_probe(int interface, int supported_ports)
 	return supported_ports;
 }
 
+<<<<<<< HEAD
 /**
  * Enable packet input/output from the hardware. This function is
  * called after by cvmx_helper_packet_hardware_enable() to
@@ -708,4 +792,31 @@ int __cvmx_helper_board_hardware_enable(int interface)
 		}
 	}
 	return 0;
+=======
+/*
+ * Get the clock type used for the USB block based on board type.
+ * Used by the USB code for auto configuration of clock type.
+ *
+ * Return USB clock type enumeration
+ */
+enum cvmx_helper_board_usb_clock_types __cvmx_helper_board_usb_get_clock_type(void)
+{
+	switch (cvmx_sysinfo_get()->board_type) {
+	case CVMX_BOARD_TYPE_BBGW_REF:
+	case CVMX_BOARD_TYPE_LANAI2_A:
+	case CVMX_BOARD_TYPE_LANAI2_U:
+	case CVMX_BOARD_TYPE_LANAI2_G:
+	case CVMX_BOARD_TYPE_NIC10E_66:
+	case CVMX_BOARD_TYPE_UBNT_E100:
+		return USB_CLOCK_TYPE_CRYSTAL_12;
+	case CVMX_BOARD_TYPE_NIC10E:
+		return USB_CLOCK_TYPE_REF_12;
+	default:
+		break;
+	}
+	/* Most boards except NIC10e use a 12MHz crystal */
+	if (OCTEON_IS_OCTEON2())
+		return USB_CLOCK_TYPE_CRYSTAL_12;
+	return USB_CLOCK_TYPE_REF_48;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

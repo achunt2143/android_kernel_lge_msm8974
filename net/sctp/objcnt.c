@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  *
@@ -7,6 +11,7 @@
  * object allocations/deallocations for types instrumented for this
  * via the proc fs.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -36,6 +41,14 @@
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+ *
+ * Written or modified by:
+ *    Jon Grimm             <jgrimm@us.ibm.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -58,14 +71,21 @@ SCTP_DBG_OBJCNT(bind_addr);
 SCTP_DBG_OBJCNT(bind_bucket);
 SCTP_DBG_OBJCNT(chunk);
 SCTP_DBG_OBJCNT(addr);
+<<<<<<< HEAD
 SCTP_DBG_OBJCNT(ssnmap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SCTP_DBG_OBJCNT(datamsg);
 SCTP_DBG_OBJCNT(keys);
 
 /* An array to make it easy to pretty print the debug information
  * to the proc fs.
  */
+<<<<<<< HEAD
 static sctp_dbg_objcnt_entry_t sctp_dbg_objcnt[] = {
+=======
+static struct sctp_dbg_objcnt_entry sctp_dbg_objcnt[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_DBG_OBJCNT_ENTRY(sock),
 	SCTP_DBG_OBJCNT_ENTRY(ep),
 	SCTP_DBG_OBJCNT_ENTRY(assoc),
@@ -74,7 +94,10 @@ static sctp_dbg_objcnt_entry_t sctp_dbg_objcnt[] = {
 	SCTP_DBG_OBJCNT_ENTRY(bind_addr),
 	SCTP_DBG_OBJCNT_ENTRY(bind_bucket),
 	SCTP_DBG_OBJCNT_ENTRY(addr),
+<<<<<<< HEAD
 	SCTP_DBG_OBJCNT_ENTRY(ssnmap),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_DBG_OBJCNT_ENTRY(datamsg),
 	SCTP_DBG_OBJCNT_ENTRY(keys),
 };
@@ -104,7 +127,11 @@ static void sctp_objcnt_seq_stop(struct seq_file *seq, void *v)
 {
 }
 
+<<<<<<< HEAD
 static void * sctp_objcnt_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+=======
+static void *sctp_objcnt_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	++*pos;
 	return (*pos >= ARRAY_SIZE(sctp_dbg_objcnt)) ? NULL : (void *)pos;
@@ -117,6 +144,7 @@ static const struct seq_operations sctp_objcnt_seq_ops = {
 	.show  = sctp_objcnt_seq_show,
 };
 
+<<<<<<< HEAD
 static int sctp_objcnt_seq_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &sctp_objcnt_seq_ops);
@@ -147,3 +175,15 @@ void sctp_dbg_objcnt_exit(void)
 }
 
 
+=======
+/* Initialize the objcount in the proc filesystem.  */
+void sctp_dbg_objcnt_init(struct net *net)
+{
+	struct proc_dir_entry *ent;
+
+	ent = proc_create_seq("sctp_dbg_objcnt", 0,
+			  net->sctp.proc_net_sctp, &sctp_objcnt_seq_ops);
+	if (!ent)
+		pr_warn("sctp_dbg_objcnt: Unable to create /proc entry.\n");
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

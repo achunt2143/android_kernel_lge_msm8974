@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
@@ -5,6 +9,7 @@
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -43,6 +48,10 @@
  */
 
 #include <linux/export.h>
+=======
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -52,6 +61,7 @@ ACPI_MODULE_NAME("nsxfobj")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_get_id
  *
  * PARAMETERS:  Handle          - Handle of object whose id is desired
@@ -99,14 +109,27 @@ ACPI_EXPORT_SYMBOL(acpi_get_id)
  * FUNCTION:    acpi_get_type
  *
  * PARAMETERS:  Handle          - Handle of object whose type is desired
+=======
+ * FUNCTION:    acpi_get_type
+ *
+ * PARAMETERS:  handle          - Handle of object whose type is desired
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_type        - Where the type will be placed
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: This routine returns the type associatd with a particular handle
  *
  ******************************************************************************/
 acpi_status acpi_get_type(acpi_handle handle, acpi_object_type * ret_type)
+=======
+ * DESCRIPTION: This routine returns the type associated with a particular
+ *              handle
+ *
+ ******************************************************************************/
+acpi_status acpi_get_type(acpi_handle handle, acpi_object_type *ret_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
@@ -117,10 +140,15 @@ acpi_status acpi_get_type(acpi_handle handle, acpi_object_type * ret_type)
 		return (AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Special case for the predefined Root Node
 	 * (return type ANY)
 	 */
+=======
+	/* Special case for the predefined Root Node (return type ANY) */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (handle == ACPI_ROOT_OBJECT) {
 		*ret_type = ACPI_TYPE_ANY;
 		return (AE_OK);
@@ -151,7 +179,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_type)
  *
  * FUNCTION:    acpi_get_parent
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle          - Handle of object whose parent is desired
+=======
+ * PARAMETERS:  handle          - Handle of object whose parent is desired
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_handle      - Where the parent handle will be placed
  *
  * RETURN:      Status
@@ -160,7 +192,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_type)
  *              Handle.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_get_parent(acpi_handle handle, acpi_handle * ret_handle)
+=======
+acpi_status acpi_get_parent(acpi_handle handle, acpi_handle *ret_handle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_namespace_node *node;
 	struct acpi_namespace_node *parent_node;
@@ -200,7 +236,11 @@ acpi_status acpi_get_parent(acpi_handle handle, acpi_handle * ret_handle)
 		status = AE_NULL_ENTRY;
 	}
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return (status);
@@ -212,23 +252,37 @@ ACPI_EXPORT_SYMBOL(acpi_get_parent)
  *
  * FUNCTION:    acpi_get_next_object
  *
+<<<<<<< HEAD
  * PARAMETERS:  Type            - Type of object to be searched for
  *              Parent          - Parent object whose children we are getting
+=======
+ * PARAMETERS:  type            - Type of object to be searched for
+ *              parent          - Parent object whose children we are getting
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              last_child      - Previous child that was found.
  *                                The NEXT child will be returned
  *              ret_handle      - Where handle to the next object is placed
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: Return the next peer object within the namespace.  If Handle is
  *              valid, Scope is ignored.  Otherwise, the first object within
+=======
+ * DESCRIPTION: Return the next peer object within the namespace. If Handle is
+ *              valid, Scope is ignored. Otherwise, the first object within
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              Scope is returned.
  *
  ******************************************************************************/
 acpi_status
 acpi_get_next_object(acpi_object_type type,
 		     acpi_handle parent,
+<<<<<<< HEAD
 		     acpi_handle child, acpi_handle * ret_handle)
+=======
+		     acpi_handle child, acpi_handle *ret_handle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	struct acpi_namespace_node *node;
@@ -280,7 +334,11 @@ acpi_get_next_object(acpi_object_type type,
 		*ret_handle = ACPI_CAST_PTR(acpi_handle, node);
 	}
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return (status);

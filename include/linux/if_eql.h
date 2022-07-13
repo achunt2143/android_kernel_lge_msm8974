@@ -15,6 +15,7 @@
  *    McLean VA 22101
  *    Phone: 1-703-847-0040 ext 103
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_IF_EQL_H
 #define _LINUX_IF_EQL_H
@@ -37,10 +38,24 @@
 
 #include <linux/timer.h>
 #include <linux/spinlock.h>
+=======
+#ifndef _LINUX_IF_EQL_H
+#define _LINUX_IF_EQL_H
+
+
+#include <linux/timer.h>
+#include <linux/spinlock.h>
+#include <net/net_trackers.h>
+#include <uapi/linux/if_eql.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct slave {
 	struct list_head	list;
 	struct net_device	*dev;
+<<<<<<< HEAD
+=======
+	netdevice_tracker	dev_tracker;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long			priority;
 	long			priority_bps;
 	long			priority_Bps;
@@ -61,6 +76,7 @@ typedef struct equalizer {
 	struct timer_list	timer;
 } equalizer_t;  
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 typedef struct master_config {
@@ -80,4 +96,6 @@ typedef struct slaving_request {
 } slaving_request_t;
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_EQL_H */

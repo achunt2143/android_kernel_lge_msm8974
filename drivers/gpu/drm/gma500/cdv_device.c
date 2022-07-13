@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2011, Intel Corporation.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -26,6 +31,21 @@
 #include "psb_intel_reg.h"
 #include "intel_bios.h"
 #include "cdv_device.h"
+=======
+ **************************************************************************/
+
+#include <linux/delay.h>
+
+#include <drm/drm.h>
+#include <drm/drm_crtc_helper.h>
+
+#include "cdv_device.h"
+#include "gma_device.h"
+#include "intel_bios.h"
+#include "psb_drv.h"
+#include "psb_intel_reg.h"
+#include "psb_reg.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VGA_SR_INDEX		0x3c4
 #define VGA_SR_DATA		0x3c5
@@ -48,12 +68,20 @@ static void cdv_disable_vga(struct drm_device *dev)
 
 static int cdv_output_init(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+
+	drm_mode_create_scaling_mode_property(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdv_disable_vga(dev);
 
 	cdv_intel_crt_init(dev, &dev_priv->mode_dev);
 	cdv_intel_lvds_init(dev, &dev_priv->mode_dev);
 
+<<<<<<< HEAD
 	/* These bits indicate HDMI not SDVO on CDV, but we don't yet support
 	   the HDMI interface */
 	if (REG_READ(SDVOB) & SDVO_DETECTED)
@@ -174,6 +202,97 @@ static int cdv_backlight_init(struct drm_device *dev)
 
 #endif
 
+=======
+	/* These bits indicate HDMI not SDVO on CDV */
+	if (REG_READ(SDVOB) & SDVO_DETECTED) {
+		cdv_hdmi_init(dev, &dev_priv->mode_dev, SDVOB);
+		if (REG_READ(DP_B) & DP_DETECTED)
+			cdv_intel_dp_init(dev, &dev_priv->mode_dev, DP_B);
+	}
+
+	if (REG_READ(SDVOC) & SDVO_DETECTED) {
+		cdv_hdmi_init(dev, &dev_priv->mode_dev, SDVOC);
+		if (REG_READ(DP_C) & DP_DETECTED)
+			cdv_intel_dp_init(dev, &dev_priv->mode_dev, DP_C);
+	}
+	return 0;
+}
+
+/*
+ *	Cedartrail Backlght Interfaces
+ */
+
+static int cdv_backlight_combination_mode(struct drm_device *dev)
+{
+	return REG_READ(BLC_PWM_CTL2) & PWM_LEGACY_MODE;
+}
+
+static u32 cdv_get_max_backlight(struct drm_device *dev)
+{
+	u32 max = REG_READ(BLC_PWM_CTL);
+
+	if (max == 0) {
+		DRM_DEBUG_KMS("LVDS Panel PWM value is 0!\n");
+		/* i915 does this, I believe which means that we should not
+		 * smash PWM control as firmware will take control of it. */
+		return 1;
+	}
+
+	max >>= 16;
+	if (cdv_backlight_combination_mode(dev))
+		max *= 0xff;
+	return max;
+}
+
+static int cdv_get_brightness(struct drm_device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	u32 val = REG_READ(BLC_PWM_CTL) & BACKLIGHT_DUTY_CYCLE_MASK;
+
+	if (cdv_backlight_combination_mode(dev)) {
+		u8 lbpc;
+
+		val &= ~1;
+		pci_read_config_byte(pdev, 0xF4, &lbpc);
+		val *= lbpc;
+	}
+	return (val * 100)/cdv_get_max_backlight(dev);
+}
+
+static void cdv_set_brightness(struct drm_device *dev, int level)
+{
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	u32 blc_pwm_ctl;
+
+	level *= cdv_get_max_backlight(dev);
+	level /= 100;
+
+	if (cdv_backlight_combination_mode(dev)) {
+		u32 max = cdv_get_max_backlight(dev);
+		u8 lbpc;
+
+		lbpc = level * 0xfe / max + 1;
+		level /= lbpc;
+
+		pci_write_config_byte(pdev, 0xF4, lbpc);
+	}
+
+	blc_pwm_ctl = REG_READ(BLC_PWM_CTL) & ~BACKLIGHT_DUTY_CYCLE_MASK;
+	REG_WRITE(BLC_PWM_CTL, (blc_pwm_ctl |
+				(level << BACKLIGHT_DUTY_CYCLE_SHIFT)));
+}
+
+static int cdv_backlight_init(struct drm_device *dev)
+{
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+
+	dev_priv->backlight_level = cdv_get_brightness(dev);
+	cdv_set_brightness(dev, dev_priv->backlight_level);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Provide the Cedarview specific chip logic and low level methods
  *	for power management
@@ -182,21 +301,37 @@ static int cdv_backlight_init(struct drm_device *dev)
  *	for this and the MID devices.
  */
 
+<<<<<<< HEAD
 static inline u32 CDV_MSG_READ32(uint port, uint offset)
 {
 	int mcr = (0x10<<24) | (port << 16) | (offset << 8);
 	uint32_t ret_val = 0;
 	struct pci_dev *pci_root = pci_get_bus_and_slot(0, 0);
+=======
+static inline u32 CDV_MSG_READ32(int domain, uint port, uint offset)
+{
+	int mcr = (0x10<<24) | (port << 16) | (offset << 8);
+	uint32_t ret_val = 0;
+	struct pci_dev *pci_root = pci_get_domain_bus_and_slot(domain, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_dword(pci_root, 0xD0, mcr);
 	pci_read_config_dword(pci_root, 0xD4, &ret_val);
 	pci_dev_put(pci_root);
 	return ret_val;
 }
 
+<<<<<<< HEAD
 static inline void CDV_MSG_WRITE32(uint port, uint offset, u32 value)
 {
 	int mcr = (0x11<<24) | (port << 16) | (offset << 8) | 0xF0;
 	struct pci_dev *pci_root = pci_get_bus_and_slot(0, 0);
+=======
+static inline void CDV_MSG_WRITE32(int domain, uint port, uint offset,
+				   u32 value)
+{
+	int mcr = (0x11<<24) | (port << 16) | (offset << 8) | 0xF0;
+	struct pci_dev *pci_root = pci_get_domain_bus_and_slot(domain, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_dword(pci_root, 0xD4, value);
 	pci_write_config_dword(pci_root, 0xD0, mcr);
 	pci_dev_put(pci_root);
@@ -211,6 +346,7 @@ static inline void CDV_MSG_WRITE32(uint port, uint offset, u32 value)
 
 static void cdv_init_pm(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	u32 pwr_cnt;
 	int i;
@@ -218,6 +354,17 @@ static void cdv_init_pm(struct drm_device *dev)
 	dev_priv->apm_base = CDV_MSG_READ32(PSB_PUNIT_PORT,
 							PSB_APMBA) & 0xFFFF;
 	dev_priv->ospm_base = CDV_MSG_READ32(PSB_PUNIT_PORT,
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	u32 pwr_cnt;
+	int domain = pci_domain_nr(pdev->bus);
+	int i;
+
+	dev_priv->apm_base = CDV_MSG_READ32(domain, PSB_PUNIT_PORT,
+							PSB_APMBA) & 0xFFFF;
+	dev_priv->ospm_base = CDV_MSG_READ32(domain, PSB_PUNIT_PORT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							PSB_OSPMBA) & 0xFFFF;
 
 	/* Power status */
@@ -238,6 +385,24 @@ static void cdv_init_pm(struct drm_device *dev)
 	dev_err(dev->dev, "GPU: power management timed out.\n");
 }
 
+<<<<<<< HEAD
+=======
+static void cdv_errata(struct drm_device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+
+	/* Disable bonus launch.
+	 *	CPU and GPU competes for memory and display misses updates and
+	 *	flickers. Worst with dual core, dual displays.
+	 *
+	 *	Fixes were done to Win 7 gfx driver to disable a feature called
+	 *	Bonus Launch to work around the issue, by degrading
+	 *	performance.
+	 */
+	 CDV_MSG_WRITE32(pci_domain_nr(pdev->bus), 3, 0x30, 0x08027108);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	cdv_save_display_registers	-	save registers lost on suspend
  *	@dev: our DRM device
@@ -247,6 +412,7 @@ static void cdv_init_pm(struct drm_device *dev)
  */
 static int cdv_save_display_registers(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct psb_save_area *regs = &dev_priv->regs;
 	struct drm_connector *connector;
@@ -254,6 +420,17 @@ static int cdv_save_display_registers(struct drm_device *dev)
 	dev_info(dev->dev, "Saving GPU registers.\n");
 
 	pci_read_config_byte(dev->pdev, 0xF4, &regs->cdv.saveLBB);
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	struct psb_save_area *regs = &dev_priv->regs;
+	struct drm_connector_list_iter conn_iter;
+	struct drm_connector *connector;
+
+	dev_dbg(dev->dev, "Saving GPU registers.\n");
+
+	pci_read_config_byte(pdev, 0xF4, &regs->cdv.saveLBB);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs->cdv.saveDSPCLK_GATE_D = REG_READ(DSPCLK_GATE_D);
 	regs->cdv.saveRAMCLK_GATE_D = REG_READ(RAMCLK_GATE_D);
@@ -285,8 +462,15 @@ static int cdv_save_display_registers(struct drm_device *dev)
 	regs->cdv.saveIER = REG_READ(PSB_INT_ENABLE_R);
 	regs->cdv.saveIMR = REG_READ(PSB_INT_MASK_R);
 
+<<<<<<< HEAD
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head)
 		connector->funcs->dpms(connector, DRM_MODE_DPMS_OFF);
+=======
+	drm_connector_list_iter_begin(dev, &conn_iter);
+	drm_for_each_connector_iter(connector, &conn_iter)
+		connector->funcs->dpms(connector, DRM_MODE_DPMS_OFF);
+	drm_connector_list_iter_end(&conn_iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -301,12 +485,23 @@ static int cdv_save_display_registers(struct drm_device *dev)
  */
 static int cdv_restore_display_registers(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct psb_save_area *regs = &dev_priv->regs;
 	struct drm_connector *connector;
 	u32 temp;
 
 	pci_write_config_byte(dev->pdev, 0xF4, regs->cdv.saveLBB);
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	struct psb_save_area *regs = &dev_priv->regs;
+	struct drm_connector_list_iter conn_iter;
+	struct drm_connector *connector;
+	u32 temp;
+
+	pci_write_config_byte(pdev, 0xF4, regs->cdv.saveLBB);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_WRITE(DSPCLK_GATE_D, regs->cdv.saveDSPCLK_GATE_D);
 	REG_WRITE(RAMCLK_GATE_D, regs->cdv.saveRAMCLK_GATE_D);
@@ -355,12 +550,23 @@ static int cdv_restore_display_registers(struct drm_device *dev)
 	REG_WRITE(PSB_INT_MASK_R, regs->cdv.saveIMR);
 
 	/* Fix arbitration bug */
+<<<<<<< HEAD
 	CDV_MSG_WRITE32(3, 0x30, 0x08027108);
 
 	drm_mode_config_reset(dev);
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head)
 		connector->funcs->dpms(connector, DRM_MODE_DPMS_ON);
+=======
+	cdv_errata(dev);
+
+	drm_mode_config_reset(dev);
+
+	drm_connector_list_iter_begin(dev, &conn_iter);
+	drm_for_each_connector_iter(connector, &conn_iter)
+		connector->funcs->dpms(connector, DRM_MODE_DPMS_ON);
+	drm_connector_list_iter_end(&conn_iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Resume the modeset for every activated CRTC */
 	drm_helper_resume_force_mode(dev);
@@ -369,7 +575,11 @@ static int cdv_restore_display_registers(struct drm_device *dev)
 
 static int cdv_power_down(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pwr_cnt, pwr_mask, pwr_sts;
 	int tries = 5;
 
@@ -391,7 +601,11 @@ static int cdv_power_down(struct drm_device *dev)
 
 static int cdv_power_up(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pwr_cnt, pwr_mask, pwr_sts;
 	int tries = 5;
 
@@ -411,6 +625,7 @@ static int cdv_power_up(struct drm_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* FIXME ? - shared with Poulsbo */
 static void cdv_get_core_freq(struct drm_device *dev)
 {
@@ -454,6 +669,166 @@ static int cdv_chip_setup(struct drm_device *dev)
 	psb_intel_init_bios(dev);
 	REG_WRITE(PORT_HOTPLUG_EN, 0);
 	REG_WRITE(PORT_HOTPLUG_STAT, REG_READ(PORT_HOTPLUG_STAT));
+=======
+static void cdv_hotplug_work_func(struct work_struct *work)
+{
+        struct drm_psb_private *dev_priv = container_of(work, struct drm_psb_private,
+							hotplug_work);
+	struct drm_device *dev = &dev_priv->dev;
+
+        /* Just fire off a uevent and let userspace tell us what to do */
+        drm_helper_hpd_irq_event(dev);
+}
+
+/* The core driver has received a hotplug IRQ. We are in IRQ context
+   so extract the needed information and kick off queued processing */
+
+static int cdv_hotplug_event(struct drm_device *dev)
+{
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	schedule_work(&dev_priv->hotplug_work);
+	REG_WRITE(PORT_HOTPLUG_STAT, REG_READ(PORT_HOTPLUG_STAT));
+	return 1;
+}
+
+static void cdv_hotplug_enable(struct drm_device *dev, bool on)
+{
+	if (on) {
+		u32 hotplug = REG_READ(PORT_HOTPLUG_EN);
+		hotplug |= HDMIB_HOTPLUG_INT_EN | HDMIC_HOTPLUG_INT_EN |
+			   HDMID_HOTPLUG_INT_EN | CRT_HOTPLUG_INT_EN;
+		REG_WRITE(PORT_HOTPLUG_EN, hotplug);
+	}  else {
+		REG_WRITE(PORT_HOTPLUG_EN, 0);
+		REG_WRITE(PORT_HOTPLUG_STAT, REG_READ(PORT_HOTPLUG_STAT));
+	}
+}
+
+static const char *force_audio_names[] = {
+	"off",
+	"auto",
+	"on",
+};
+
+void cdv_intel_attach_force_audio_property(struct drm_connector *connector)
+{
+	struct drm_device *dev = connector->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct drm_property *prop;
+	int i;
+
+	prop = dev_priv->force_audio_property;
+	if (prop == NULL) {
+		prop = drm_property_create(dev, DRM_MODE_PROP_ENUM,
+					   "audio",
+					   ARRAY_SIZE(force_audio_names));
+		if (prop == NULL)
+			return;
+
+		for (i = 0; i < ARRAY_SIZE(force_audio_names); i++)
+			drm_property_add_enum(prop, i-1, force_audio_names[i]);
+
+		dev_priv->force_audio_property = prop;
+	}
+	drm_object_attach_property(&connector->base, prop, 0);
+}
+
+
+static const char *broadcast_rgb_names[] = {
+	"Full",
+	"Limited 16:235",
+};
+
+void cdv_intel_attach_broadcast_rgb_property(struct drm_connector *connector)
+{
+	struct drm_device *dev = connector->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct drm_property *prop;
+	int i;
+
+	prop = dev_priv->broadcast_rgb_property;
+	if (prop == NULL) {
+		prop = drm_property_create(dev, DRM_MODE_PROP_ENUM,
+					   "Broadcast RGB",
+					   ARRAY_SIZE(broadcast_rgb_names));
+		if (prop == NULL)
+			return;
+
+		for (i = 0; i < ARRAY_SIZE(broadcast_rgb_names); i++)
+			drm_property_add_enum(prop, i, broadcast_rgb_names[i]);
+
+		dev_priv->broadcast_rgb_property = prop;
+	}
+
+	drm_object_attach_property(&connector->base, prop, 0);
+}
+
+/* Cedarview */
+static const struct psb_offset cdv_regmap[2] = {
+	{
+		.fp0 = FPA0,
+		.fp1 = FPA1,
+		.cntr = DSPACNTR,
+		.conf = PIPEACONF,
+		.src = PIPEASRC,
+		.dpll = DPLL_A,
+		.dpll_md = DPLL_A_MD,
+		.htotal = HTOTAL_A,
+		.hblank = HBLANK_A,
+		.hsync = HSYNC_A,
+		.vtotal = VTOTAL_A,
+		.vblank = VBLANK_A,
+		.vsync = VSYNC_A,
+		.stride = DSPASTRIDE,
+		.size = DSPASIZE,
+		.pos = DSPAPOS,
+		.base = DSPABASE,
+		.surf = DSPASURF,
+		.addr = DSPABASE,
+		.status = PIPEASTAT,
+		.linoff = DSPALINOFF,
+		.tileoff = DSPATILEOFF,
+		.palette = PALETTE_A,
+	},
+	{
+		.fp0 = FPB0,
+		.fp1 = FPB1,
+		.cntr = DSPBCNTR,
+		.conf = PIPEBCONF,
+		.src = PIPEBSRC,
+		.dpll = DPLL_B,
+		.dpll_md = DPLL_B_MD,
+		.htotal = HTOTAL_B,
+		.hblank = HBLANK_B,
+		.hsync = HSYNC_B,
+		.vtotal = VTOTAL_B,
+		.vblank = VBLANK_B,
+		.vsync = VSYNC_B,
+		.stride = DSPBSTRIDE,
+		.size = DSPBSIZE,
+		.pos = DSPBPOS,
+		.base = DSPBBASE,
+		.surf = DSPBSURF,
+		.addr = DSPBBASE,
+		.status = PIPEBSTAT,
+		.linoff = DSPBLINOFF,
+		.tileoff = DSPBTILEOFF,
+		.palette = PALETTE_B,
+	}
+};
+
+static int cdv_chip_setup(struct drm_device *dev)
+{
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	INIT_WORK(&dev_priv->hotplug_work, cdv_hotplug_work_func);
+
+	dev_priv->use_msi = true;
+	dev_priv->regmap = cdv_regmap;
+	gma_get_core_freq(dev);
+	psb_intel_opregion_init(dev);
+	psb_intel_init_bios(dev);
+	cdv_hotplug_enable(dev, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -461,6 +836,7 @@ static int cdv_chip_setup(struct drm_device *dev)
 
 const struct psb_ops cdv_chip_ops = {
 	.name = "GMA3600/3650",
+<<<<<<< HEAD
 	.accel_2d = 0,
 	.pipes = 2,
 	.crtcs = 2,
@@ -475,10 +851,42 @@ const struct psb_ops cdv_chip_ops = {
 #ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
 	.backlight_init = cdv_backlight_init,
 #endif
+=======
+	.pipes = 2,
+	.crtcs = 2,
+	.hdmi_mask = (1 << 0) | (1 << 1),
+	.lvds_mask = (1 << 1),
+	.sdvo_mask = (1 << 0),
+	.cursor_needs_phys = 0,
+	.sgx_offset = MRST_SGX_OFFSET,
+	.chip_setup = cdv_chip_setup,
+	.errata = cdv_errata,
+
+	.crtc_helper = &cdv_intel_helper_funcs,
+	.clock_funcs = &cdv_clock_funcs,
+
+	.output_init = cdv_output_init,
+	.hotplug = cdv_hotplug_event,
+	.hotplug_enable = cdv_hotplug_enable,
+
+	.backlight_init = cdv_backlight_init,
+	.backlight_get = cdv_get_brightness,
+	.backlight_set = cdv_set_brightness,
+	.backlight_name = "psb-bl",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.init_pm = cdv_init_pm,
 	.save_regs = cdv_save_display_registers,
 	.restore_regs = cdv_restore_display_registers,
+<<<<<<< HEAD
 	.power_down = cdv_power_down,
 	.power_up = cdv_power_up,
+=======
+	.save_crtc = gma_crtc_save,
+	.restore_crtc = gma_crtc_restore,
+	.power_down = cdv_power_down,
+	.power_up = cdv_power_up,
+	.update_wm = cdv_update_wm,
+	.disable_sr = cdv_disable_sr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

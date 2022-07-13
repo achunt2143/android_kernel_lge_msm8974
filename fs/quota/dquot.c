@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implementation of the diskquota system for the LINUX operating system. QUOTA
  * is implemented using the BSD system call interface as the means of
@@ -8,7 +12,11 @@
  * on the Melbourne quota system as used on BSD derived systems. The internal
  * implementation is based on one of the several variants of the LINUX
  * inode-subsystem with added complexity of the diskquota system.
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author:	Marco van Wieringen <mvw@planets.elm.net>
  *
  * Fixes:   Dmitry Gorodchanin <pgmdsg@ibi.com>, 11 Feb 96
@@ -50,7 +58,11 @@
  *		Added journalled quota support, fix lock inversion problems
  *		Jan Kara, <jack@suse.cz>, 2003,2004
  *
+<<<<<<< HEAD
  * (C) Copyright 1994 - 1997 Marco van Wieringen 
+=======
+ * (C) Copyright 1994 - 1997 Marco van Wieringen
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -72,10 +84,15 @@
 #include <linux/proc_fs.h>
 #include <linux/security.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/cred.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kmod.h>
 #include <linux/namei.h>
 #include <linux/capability.h>
 #include <linux/quotaops.h>
+<<<<<<< HEAD
 #include "../internal.h" /* ugh */
 
 #include <asm/uaccess.h>
@@ -91,11 +108,34 @@
  * about latest values take it as well.
  *
  * The spinlock ordering is hence: dq_data_lock > dq_list_lock > i_lock,
+=======
+#include <linux/blkdev.h>
+#include <linux/sched/mm.h>
+#include "../internal.h" /* ugh */
+
+#include <linux/uaccess.h>
+
+/*
+ * There are five quota SMP locks:
+ * * dq_list_lock protects all lists with quotas and quota formats.
+ * * dquot->dq_dqb_lock protects data from dq_dqb
+ * * inode->i_lock protects inode->i_blocks, i_bytes and also guards
+ *   consistency of dquot->dq_dqb with inode->i_blocks, i_bytes so that
+ *   dquot_transfer() can stabilize amount it transfers
+ * * dq_data_lock protects mem_dqinfo structures and modifications of dquot
+ *   pointers in the inode
+ * * dq_state_lock protects modifications of quota state (on quotaon and
+ *   quotaoff) and readers who care about latest values take it as well.
+ *
+ * The spinlock ordering is hence:
+ *   dq_data_lock > dq_list_lock > i_lock > dquot->dq_dqb_lock,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   dq_list_lock > dq_state_lock
  *
  * Note that some things (eg. sb pointer, type, id) doesn't change during
  * the life of the dquot structure and so needn't to be protected by a lock
  *
+<<<<<<< HEAD
  * Any operation working on dquots via inode pointers must hold dqptr_sem.  If
  * operation is just reading pointers from inode (or not using them at all) the
  * read lock is enough. If pointers are altered function must hold write lock.
@@ -125,12 +165,41 @@
  * filesystems usually want to do some IO on dquot from ->mark_dirty which is
  * called with dqptr_sem held.
  * i_mutex on quota files is special (it's below dqio_mutex)
+=======
+ * Operation accessing dquots via inode pointers are protected by dquot_srcu.
+ * Operation of reading pointer needs srcu_read_lock(&dquot_srcu), and
+ * synchronize_srcu(&dquot_srcu) is called after clearing pointers from
+ * inode and before dropping dquot references to avoid use of dquots after
+ * they are freed. dq_data_lock is used to serialize the pointer setting and
+ * clearing operations.
+ * Special care needs to be taken about S_NOQUOTA inode flag (marking that
+ * inode is a quota file). Functions adding pointers from inode to dquots have
+ * to check this flag under dq_data_lock and then (if S_NOQUOTA is not set) they
+ * have to do all pointer modifications before dropping dq_data_lock. This makes
+ * sure they cannot race with quotaon which first sets S_NOQUOTA flag and
+ * then drops all pointers to dquots from an inode.
+ *
+ * Each dquot has its dq_lock mutex.  Dquot is locked when it is being read to
+ * memory (or space for it is being allocated) on the first dqget(), when it is
+ * being written out, and when it is being released on the last dqput(). The
+ * allocation and release operations are serialized by the dq_lock and by
+ * checking the use count in dquot_release().
+ *
+ * Lock ordering (including related VFS locks) is the following:
+ *   s_umount > i_mutex > journal_lock > dquot->dq_lock > dqio_sem
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static __cacheline_aligned_in_smp DEFINE_SPINLOCK(dq_list_lock);
 static __cacheline_aligned_in_smp DEFINE_SPINLOCK(dq_state_lock);
 __cacheline_aligned_in_smp DEFINE_SPINLOCK(dq_data_lock);
 EXPORT_SYMBOL(dq_data_lock);
+<<<<<<< HEAD
+=======
+DEFINE_STATIC_SRCU(dquot_srcu);
+
+static DECLARE_WAIT_QUEUE_HEAD(dquot_ref_wq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __quota_error(struct super_block *sb, const char *func,
 		   const char *fmt, ...)
@@ -197,7 +266,11 @@ static struct quota_format_type *find_quota_format(int id)
 		int qm;
 
 		spin_unlock(&dq_list_lock);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (qm = 0; module_names[qm].qm_fmt_id &&
 			     module_names[qm].qm_fmt_id != id; qm++)
 			;
@@ -223,18 +296,45 @@ static void put_quota_format(struct quota_format_type *fmt)
 
 /*
  * Dquot List Management:
+<<<<<<< HEAD
  * The quota code uses three lists for dquot management: the inuse_list,
  * free_dquots, and dquot_hash[] array. A single dquot structure may be
  * on all three lists, depending on its current state.
+=======
+ * The quota code uses five lists for dquot management: the inuse_list,
+ * releasing_dquots, free_dquots, dqi_dirty_list, and dquot_hash[] array.
+ * A single dquot structure may be on some of those lists, depending on
+ * its current state.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * All dquots are placed to the end of inuse_list when first created, and this
  * list is used for invalidate operation, which must look at every dquot.
  *
+<<<<<<< HEAD
  * Unused dquots (dq_count == 0) are added to the free_dquots list when freed,
  * and this list is searched whenever we need an available dquot.  Dquots are
  * removed from the list as soon as they are used again, and
  * dqstats.free_dquots gives the number of dquots on the list. When
  * dquot is invalidated it's completely released from memory.
+=======
+ * When the last reference of a dquot is dropped, the dquot is added to
+ * releasing_dquots. We'll then queue work item which will call
+ * synchronize_srcu() and after that perform the final cleanup of all the
+ * dquots on the list. Each cleaned up dquot is moved to free_dquots list.
+ * Both releasing_dquots and free_dquots use the dq_free list_head in the dquot
+ * struct.
+ *
+ * Unused and cleaned up dquots are in the free_dquots list and this list is
+ * searched whenever we need an available dquot. Dquots are removed from the
+ * list as soon as they are used again and dqstats.free_dquots gives the number
+ * of dquots on the list. When dquot is invalidated it's completely released
+ * from memory.
+ *
+ * Dirty dquots are added to the dqi_dirty_list of quota_info when mark
+ * dirtied, and this list is searched when writing dirty dquots back to
+ * quota file. Note that some filesystems do dirty dquot tracking on their
+ * own (e.g. in a journal) and thus don't use dqi_dirty_list.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Dquots with a specific identity (device, type and id) are placed on
  * one of the dquot_hash[] hash chains. The provides an efficient search
@@ -243,6 +343,10 @@ static void put_quota_format(struct quota_format_type *fmt)
 
 static LIST_HEAD(inuse_list);
 static LIST_HEAD(free_dquots);
+<<<<<<< HEAD
+=======
+static LIST_HEAD(releasing_dquots);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int dq_hash_bits, dq_hash_mask;
 static struct hlist_head *dquot_hash;
 
@@ -250,11 +354,25 @@ struct dqstats dqstats;
 EXPORT_SYMBOL(dqstats);
 
 static qsize_t inode_get_rsv_space(struct inode *inode);
+<<<<<<< HEAD
 static void __dquot_initialize(struct inode *inode, int type);
 
 static inline unsigned int
 hashfn(const struct super_block *sb, unsigned int id, int type)
 {
+=======
+static qsize_t __inode_get_rsv_space(struct inode *inode);
+static int __dquot_initialize(struct inode *inode, int type);
+
+static void quota_release_workfn(struct work_struct *work);
+static DECLARE_DELAYED_WORK(quota_release_work, quota_release_workfn);
+
+static inline unsigned int
+hashfn(const struct super_block *sb, struct kqid qid)
+{
+	unsigned int id = from_kqid(&init_user_ns, qid);
+	int type = qid.type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long tmp;
 
 	tmp = (((unsigned long)sb>>L1_CACHE_SHIFT) ^ id) * (MAXQUOTAS - type);
@@ -267,7 +385,11 @@ hashfn(const struct super_block *sb, unsigned int id, int type)
 static inline void insert_dquot_hash(struct dquot *dquot)
 {
 	struct hlist_head *head;
+<<<<<<< HEAD
 	head = dquot_hash + hashfn(dquot->dq_sb, dquot->dq_id, dquot->dq_type);
+=======
+	head = dquot_hash + hashfn(dquot->dq_sb, dquot->dq_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hlist_add_head(&dquot->dq_hash, head);
 }
 
@@ -277,6 +399,7 @@ static inline void remove_dquot_hash(struct dquot *dquot)
 }
 
 static struct dquot *find_dquot(unsigned int hashent, struct super_block *sb,
+<<<<<<< HEAD
 				unsigned int id, int type)
 {
 	struct hlist_node *node;
@@ -288,6 +411,16 @@ static struct dquot *find_dquot(unsigned int hashent, struct super_block *sb,
 		    dquot->dq_type == type)
 			return dquot;
 	}
+=======
+				struct kqid qid)
+{
+	struct dquot *dquot;
+
+	hlist_for_each_entry(dquot, dquot_hash+hashent, dq_hash)
+		if (dquot->dq_sb == sb && qid_eq(dquot->dq_id, qid))
+			return dquot;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -298,12 +431,28 @@ static inline void put_dquot_last(struct dquot *dquot)
 	dqstats_inc(DQST_FREE_DQUOTS);
 }
 
+<<<<<<< HEAD
+=======
+static inline void put_releasing_dquots(struct dquot *dquot)
+{
+	list_add_tail(&dquot->dq_free, &releasing_dquots);
+	set_bit(DQ_RELEASING_B, &dquot->dq_flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void remove_free_dquot(struct dquot *dquot)
 {
 	if (list_empty(&dquot->dq_free))
 		return;
 	list_del_init(&dquot->dq_free);
+<<<<<<< HEAD
 	dqstats_dec(DQST_FREE_DQUOTS);
+=======
+	if (!test_bit(DQ_RELEASING_B, &dquot->dq_flags))
+		dqstats_dec(DQST_FREE_DQUOTS);
+	else
+		clear_bit(DQ_RELEASING_B, &dquot->dq_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void put_inuse(struct dquot *dquot)
@@ -329,6 +478,14 @@ static void wait_on_dquot(struct dquot *dquot)
 	mutex_unlock(&dquot->dq_lock);
 }
 
+<<<<<<< HEAD
+=======
+static inline int dquot_active(struct dquot *dquot)
+{
+	return test_bit(DQ_ACTIVE_B, &dquot->dq_flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int dquot_dirty(struct dquot *dquot)
 {
 	return test_bit(DQ_MOD_B, &dquot->dq_flags);
@@ -344,14 +501,29 @@ int dquot_mark_dquot_dirty(struct dquot *dquot)
 {
 	int ret = 1;
 
+<<<<<<< HEAD
 	/* If quota is dirty already, we don't have to acquire dq_list_lock */
 	if (test_bit(DQ_MOD_B, &dquot->dq_flags))
+=======
+	if (!dquot_active(dquot))
+		return 0;
+
+	if (sb_dqopt(dquot->dq_sb)->flags & DQUOT_NOLIST_DIRTY)
+		return test_and_set_bit(DQ_MOD_B, &dquot->dq_flags);
+
+	/* If quota is dirty already, we don't have to acquire dq_list_lock */
+	if (dquot_dirty(dquot))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	spin_lock(&dq_list_lock);
 	if (!test_and_set_bit(DQ_MOD_B, &dquot->dq_flags)) {
 		list_add(&dquot->dq_dirty, &sb_dqopt(dquot->dq_sb)->
+<<<<<<< HEAD
 				info[dquot->dq_type].dqi_dirty_list);
+=======
+				info[dquot->dq_id.type].dqi_dirty_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 	}
 	spin_unlock(&dq_list_lock);
@@ -360,6 +532,7 @@ int dquot_mark_dquot_dirty(struct dquot *dquot)
 EXPORT_SYMBOL(dquot_mark_dquot_dirty);
 
 /* Dirtify all the dquots - this can block when journalling */
+<<<<<<< HEAD
 static inline int mark_all_dquot_dirty(struct dquot * const *dquot)
 {
 	int ret, err, cnt;
@@ -369,6 +542,19 @@ static inline int mark_all_dquot_dirty(struct dquot * const *dquot)
 		if (dquot[cnt])
 			/* Even in case of error we have to continue */
 			ret = mark_dquot_dirty(dquot[cnt]);
+=======
+static inline int mark_all_dquot_dirty(struct dquot __rcu * const *dquots)
+{
+	int ret, err, cnt;
+	struct dquot *dquot;
+
+	ret = err = 0;
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (dquot)
+			/* Even in case of error we have to continue */
+			ret = mark_dquot_dirty(dquot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err)
 			err = ret;
 	}
@@ -383,18 +569,39 @@ static inline void dqput_all(struct dquot **dquot)
 		dqput(dquot[cnt]);
 }
 
+<<<<<<< HEAD
 /* This function needs dq_list_lock */
 static inline int clear_dquot_dirty(struct dquot *dquot)
 {
 	if (!test_and_clear_bit(DQ_MOD_B, &dquot->dq_flags))
 		return 0;
 	list_del_init(&dquot->dq_dirty);
+=======
+static inline int clear_dquot_dirty(struct dquot *dquot)
+{
+	if (sb_dqopt(dquot->dq_sb)->flags & DQUOT_NOLIST_DIRTY)
+		return test_and_clear_bit(DQ_MOD_B, &dquot->dq_flags);
+
+	spin_lock(&dq_list_lock);
+	if (!test_and_clear_bit(DQ_MOD_B, &dquot->dq_flags)) {
+		spin_unlock(&dq_list_lock);
+		return 0;
+	}
+	list_del_init(&dquot->dq_dirty);
+	spin_unlock(&dq_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
 void mark_info_dirty(struct super_block *sb, int type)
 {
+<<<<<<< HEAD
 	set_bit(DQF_INFO_DIRTY_B, &sb_dqopt(sb)->info[type].dqi_flags);
+=======
+	spin_lock(&dq_data_lock);
+	sb_dqopt(sb)->info[type].dqi_flags |= DQF_INFO_DIRTY;
+	spin_unlock(&dq_data_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mark_info_dirty);
 
@@ -405,6 +612,7 @@ EXPORT_SYMBOL(mark_info_dirty);
 int dquot_acquire(struct dquot *dquot)
 {
 	int ret = 0, ret2 = 0;
+<<<<<<< HEAD
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dquot->dq_lock);
@@ -421,6 +629,28 @@ int dquot_acquire(struct dquot *dquot)
 		if (info_dirty(&dqopt->info[dquot->dq_type])) {
 			ret2 = dqopt->ops[dquot->dq_type]->write_file_info(
 						dquot->dq_sb, dquot->dq_type);
+=======
+	unsigned int memalloc;
+	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+
+	mutex_lock(&dquot->dq_lock);
+	memalloc = memalloc_nofs_save();
+	if (!test_bit(DQ_READ_B, &dquot->dq_flags)) {
+		ret = dqopt->ops[dquot->dq_id.type]->read_dqblk(dquot);
+		if (ret < 0)
+			goto out_iolock;
+	}
+	/* Make sure flags update is visible after dquot has been filled */
+	smp_mb__before_atomic();
+	set_bit(DQ_READ_B, &dquot->dq_flags);
+	/* Instantiate dquot if needed */
+	if (!dquot_active(dquot) && !dquot->dq_off) {
+		ret = dqopt->ops[dquot->dq_id.type]->commit_dqblk(dquot);
+		/* Write the info if needed */
+		if (info_dirty(&dqopt->info[dquot->dq_id.type])) {
+			ret2 = dqopt->ops[dquot->dq_id.type]->write_file_info(
+					dquot->dq_sb, dquot->dq_id.type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ret < 0)
 			goto out_iolock;
@@ -429,9 +659,20 @@ int dquot_acquire(struct dquot *dquot)
 			goto out_iolock;
 		}
 	}
+<<<<<<< HEAD
 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
 out_iolock:
 	mutex_unlock(&dqopt->dqio_mutex);
+=======
+	/*
+	 * Make sure flags update is visible after on-disk struct has been
+	 * allocated. Paired with smp_rmb() in dqget().
+	 */
+	smp_mb__before_atomic();
+	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
+out_iolock:
+	memalloc_nofs_restore(memalloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dquot->dq_lock);
 	return ret;
 }
@@ -443,6 +684,7 @@ EXPORT_SYMBOL(dquot_acquire);
 int dquot_commit(struct dquot *dquot)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dqopt->dqio_mutex);
@@ -460,6 +702,24 @@ int dquot_commit(struct dquot *dquot)
 		ret = -EIO;
 out_sem:
 	mutex_unlock(&dqopt->dqio_mutex);
+=======
+	unsigned int memalloc;
+	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+
+	mutex_lock(&dquot->dq_lock);
+	memalloc = memalloc_nofs_save();
+	if (!clear_dquot_dirty(dquot))
+		goto out_lock;
+	/* Inactive dquot can be only if there was error during read/init
+	 * => we have better not writing it */
+	if (dquot_active(dquot))
+		ret = dqopt->ops[dquot->dq_id.type]->commit_dqblk(dquot);
+	else
+		ret = -EIO;
+out_lock:
+	memalloc_nofs_restore(memalloc);
+	mutex_unlock(&dquot->dq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(dquot_commit);
@@ -470,6 +730,7 @@ EXPORT_SYMBOL(dquot_commit);
 int dquot_release(struct dquot *dquot)
 {
 	int ret = 0, ret2 = 0;
+<<<<<<< HEAD
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	mutex_lock(&dquot->dq_lock);
@@ -483,13 +744,34 @@ int dquot_release(struct dquot *dquot)
 		if (info_dirty(&dqopt->info[dquot->dq_type])) {
 			ret2 = dqopt->ops[dquot->dq_type]->write_file_info(
 						dquot->dq_sb, dquot->dq_type);
+=======
+	unsigned int memalloc;
+	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+
+	mutex_lock(&dquot->dq_lock);
+	memalloc = memalloc_nofs_save();
+	/* Check whether we are not racing with some other dqget() */
+	if (dquot_is_busy(dquot))
+		goto out_dqlock;
+	if (dqopt->ops[dquot->dq_id.type]->release_dqblk) {
+		ret = dqopt->ops[dquot->dq_id.type]->release_dqblk(dquot);
+		/* Write the info */
+		if (info_dirty(&dqopt->info[dquot->dq_id.type])) {
+			ret2 = dqopt->ops[dquot->dq_id.type]->write_file_info(
+						dquot->dq_sb, dquot->dq_id.type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ret >= 0)
 			ret = ret2;
 	}
 	clear_bit(DQ_ACTIVE_B, &dquot->dq_flags);
+<<<<<<< HEAD
 	mutex_unlock(&dqopt->dqio_mutex);
 out_dqlock:
+=======
+out_dqlock:
+	memalloc_nofs_restore(memalloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dquot->dq_lock);
 	return ret;
 }
@@ -517,10 +799,16 @@ static void invalidate_dquots(struct super_block *sb, int type)
 	struct dquot *dquot, *tmp;
 
 restart:
+<<<<<<< HEAD
+=======
+	flush_delayed_work(&quota_release_work);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&dq_list_lock);
 	list_for_each_entry_safe(dquot, tmp, &inuse_list, dq_inuse) {
 		if (dquot->dq_sb != sb)
 			continue;
+<<<<<<< HEAD
 		if (dquot->dq_type != type)
 			continue;
 		/* Wait for dquot users */
@@ -532,15 +820,30 @@ restart:
 					TASK_UNINTERRUPTIBLE);
 			spin_unlock(&dq_list_lock);
 			/* Once dqput() wakes us up, we know it's time to free
+=======
+		if (dquot->dq_id.type != type)
+			continue;
+		/* Wait for dquot users */
+		if (atomic_read(&dquot->dq_count)) {
+			atomic_inc(&dquot->dq_count);
+			spin_unlock(&dq_list_lock);
+			/*
+			 * Once dqput() wakes us up, we know it's time to free
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the dquot.
 			 * IMPORTANT: we rely on the fact that there is always
 			 * at most one process waiting for dquot to free.
 			 * Otherwise dq_count would be > 1 and we would never
 			 * wake up.
 			 */
+<<<<<<< HEAD
 			if (atomic_read(&dquot->dq_count) > 1)
 				schedule();
 			finish_wait(&dquot->dq_wait_unused, &wait);
+=======
+			wait_event(dquot_ref_wq,
+				   atomic_read(&dquot->dq_count) == 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dqput(dquot);
 			/* At this moment dquot() need not exist (it could be
 			 * reclaimed by prune_dqcache(). Hence we must
@@ -548,6 +851,18 @@ restart:
 			goto restart;
 		}
 		/*
+<<<<<<< HEAD
+=======
+		 * The last user already dropped its reference but dquot didn't
+		 * get fully cleaned up yet. Restart the scan which flushes the
+		 * work cleaning up released dquots.
+		 */
+		if (test_bit(DQ_RELEASING_B, &dquot->dq_flags)) {
+			spin_unlock(&dq_list_lock);
+			goto restart;
+		}
+		/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Quota now has no users and it has been written on last
 		 * dqput()
 		 */
@@ -567,17 +882,28 @@ int dquot_scan_active(struct super_block *sb,
 	struct dquot *dquot, *old_dquot = NULL;
 	int ret = 0;
 
+<<<<<<< HEAD
 	mutex_lock(&sb_dqopt(sb)->dqonoff_mutex);
 	spin_lock(&dq_list_lock);
 	list_for_each_entry(dquot, &inuse_list, dq_inuse) {
 		if (!test_bit(DQ_ACTIVE_B, &dquot->dq_flags))
+=======
+	WARN_ON_ONCE(!rwsem_is_locked(&sb->s_umount));
+
+	spin_lock(&dq_list_lock);
+	list_for_each_entry(dquot, &inuse_list, dq_inuse) {
+		if (!dquot_active(dquot))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (dquot->dq_sb != sb)
 			continue;
 		/* Now we have active dquot so we can just increase use count */
 		atomic_inc(&dquot->dq_count);
 		spin_unlock(&dq_list_lock);
+<<<<<<< HEAD
 		dqstats_inc(DQST_LOOKUPS);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dqput(old_dquot);
 		old_dquot = dquot;
 		/*
@@ -586,7 +912,11 @@ int dquot_scan_active(struct super_block *sb,
 		 * outstanding call and recheck the DQ_ACTIVE_B after that.
 		 */
 		wait_on_dquot(dquot);
+<<<<<<< HEAD
 		if (test_bit(DQ_ACTIVE_B, &dquot->dq_flags)) {
+=======
+		if (dquot_active(dquot)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = fn(dquot, priv);
 			if (ret < 0)
 				goto out;
@@ -598,11 +928,15 @@ int dquot_scan_active(struct super_block *sb,
 	spin_unlock(&dq_list_lock);
 out:
 	dqput(old_dquot);
+<<<<<<< HEAD
 	mutex_unlock(&sb_dqopt(sb)->dqonoff_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(dquot_scan_active);
 
+<<<<<<< HEAD
 int dquot_quota_sync(struct super_block *sb, int type, int wait)
 {
 	struct list_head *dirty;
@@ -611,12 +945,38 @@ int dquot_quota_sync(struct super_block *sb, int type, int wait)
 	int cnt;
 
 	mutex_lock(&dqopt->dqonoff_mutex);
+=======
+static inline int dquot_write_dquot(struct dquot *dquot)
+{
+	int ret = dquot->dq_sb->dq_op->write_dquot(dquot);
+	if (ret < 0) {
+		quota_error(dquot->dq_sb, "Can't write quota structure "
+			    "(error %d). Quota may get out of sync!", ret);
+		/* Clear dirty bit anyway to avoid infinite loop. */
+		clear_dquot_dirty(dquot);
+	}
+	return ret;
+}
+
+/* Write all dquot structures to quota files */
+int dquot_writeback_dquots(struct super_block *sb, int type)
+{
+	struct list_head dirty;
+	struct dquot *dquot;
+	struct quota_info *dqopt = sb_dqopt(sb);
+	int cnt;
+	int err, ret = 0;
+
+	WARN_ON_ONCE(!rwsem_is_locked(&sb->s_umount));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		if (type != -1 && cnt != type)
 			continue;
 		if (!sb_has_quota_active(sb, cnt))
 			continue;
 		spin_lock(&dq_list_lock);
+<<<<<<< HEAD
 		dirty = &dqopt->info[cnt].dqi_dirty_list;
 		while (!list_empty(dirty)) {
 			dquot = list_first_entry(dirty, struct dquot,
@@ -633,6 +993,31 @@ int dquot_quota_sync(struct super_block *sb, int type, int wait)
 			spin_unlock(&dq_list_lock);
 			dqstats_inc(DQST_LOOKUPS);
 			sb->dq_op->write_dquot(dquot);
+=======
+		/* Move list away to avoid livelock. */
+		list_replace_init(&dqopt->info[cnt].dqi_dirty_list, &dirty);
+		while (!list_empty(&dirty)) {
+			dquot = list_first_entry(&dirty, struct dquot,
+						 dq_dirty);
+
+			WARN_ON(!dquot_active(dquot));
+			/* If the dquot is releasing we should not touch it */
+			if (test_bit(DQ_RELEASING_B, &dquot->dq_flags)) {
+				spin_unlock(&dq_list_lock);
+				flush_delayed_work(&quota_release_work);
+				spin_lock(&dq_list_lock);
+				continue;
+			}
+
+			/* Now we have active dquot from which someone is
+ 			 * holding reference so we can safely just increase
+			 * use count */
+			dqgrab(dquot);
+			spin_unlock(&dq_list_lock);
+			err = dquot_write_dquot(dquot);
+			if (err && !ret)
+				ret = err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dqput(dquot);
 			spin_lock(&dq_list_lock);
 		}
@@ -644,39 +1029,80 @@ int dquot_quota_sync(struct super_block *sb, int type, int wait)
 		    && info_dirty(&dqopt->info[cnt]))
 			sb->dq_op->write_info(sb, cnt);
 	dqstats_inc(DQST_SYNCS);
+<<<<<<< HEAD
 	mutex_unlock(&dqopt->dqonoff_mutex);
 
 	if (!wait || (sb_dqopt(sb)->flags & DQUOT_QUOTA_SYS_FILE))
+=======
+
+	return ret;
+}
+EXPORT_SYMBOL(dquot_writeback_dquots);
+
+/* Write all dquot structures to disk and make them visible from userspace */
+int dquot_quota_sync(struct super_block *sb, int type)
+{
+	struct quota_info *dqopt = sb_dqopt(sb);
+	int cnt;
+	int ret;
+
+	ret = dquot_writeback_dquots(sb, type);
+	if (ret)
+		return ret;
+	if (dqopt->flags & DQUOT_QUOTA_SYS_FILE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* This is not very clever (and fast) but currently I don't know about
 	 * any other simple way of getting quota data to disk and we must get
 	 * them there for userspace to be visible... */
+<<<<<<< HEAD
 	if (sb->s_op->sync_fs)
 		sb->s_op->sync_fs(sb, 1);
 	sync_blockdev(sb->s_bdev);
+=======
+	if (sb->s_op->sync_fs) {
+		ret = sb->s_op->sync_fs(sb, 1);
+		if (ret)
+			return ret;
+	}
+	ret = sync_blockdev(sb->s_bdev);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now when everything is written we can discard the pagecache so
 	 * that userspace sees the changes.
 	 */
+<<<<<<< HEAD
 	mutex_lock(&sb_dqopt(sb)->dqonoff_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		if (type != -1 && cnt != type)
 			continue;
 		if (!sb_has_quota_active(sb, cnt))
 			continue;
+<<<<<<< HEAD
 		mutex_lock_nested(&sb_dqopt(sb)->files[cnt]->i_mutex,
 				  I_MUTEX_QUOTA);
 		truncate_inode_pages(&sb_dqopt(sb)->files[cnt]->i_data, 0);
 		mutex_unlock(&sb_dqopt(sb)->files[cnt]->i_mutex);
 	}
 	mutex_unlock(&sb_dqopt(sb)->dqonoff_mutex);
+=======
+		inode_lock(dqopt->files[cnt]);
+		truncate_inode_pages(&dqopt->files[cnt]->i_data, 0);
+		inode_unlock(dqopt->files[cnt]);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(dquot_quota_sync);
 
+<<<<<<< HEAD
 /* Free unused dquots from cache */
 static void prune_dqcache(int count)
 {
@@ -686,10 +1112,22 @@ static void prune_dqcache(int count)
 	head = free_dquots.prev;
 	while (head != &free_dquots && count) {
 		dquot = list_entry(head, struct dquot, dq_free);
+=======
+static unsigned long
+dqcache_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
+{
+	struct dquot *dquot;
+	unsigned long freed = 0;
+
+	spin_lock(&dq_list_lock);
+	while (!list_empty(&free_dquots) && sc->nr_to_scan) {
+		dquot = list_first_entry(&free_dquots, struct dquot, dq_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		remove_dquot_hash(dquot);
 		remove_free_dquot(dquot);
 		remove_inuse(dquot);
 		do_destroy_dquot(dquot);
+<<<<<<< HEAD
 		count--;
 		head = free_dquots.prev;
 	}
@@ -727,22 +1165,95 @@ void dqput(struct dquot *dquot)
 {
 	int ret;
 
+=======
+		sc->nr_to_scan--;
+		freed++;
+	}
+	spin_unlock(&dq_list_lock);
+	return freed;
+}
+
+static unsigned long
+dqcache_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
+{
+	return vfs_pressure_ratio(
+	percpu_counter_read_positive(&dqstats.counter[DQST_FREE_DQUOTS]));
+}
+
+/*
+ * Safely release dquot and put reference to dquot.
+ */
+static void quota_release_workfn(struct work_struct *work)
+{
+	struct dquot *dquot;
+	struct list_head rls_head;
+
+	spin_lock(&dq_list_lock);
+	/* Exchange the list head to avoid livelock. */
+	list_replace_init(&releasing_dquots, &rls_head);
+	spin_unlock(&dq_list_lock);
+	synchronize_srcu(&dquot_srcu);
+
+restart:
+	spin_lock(&dq_list_lock);
+	while (!list_empty(&rls_head)) {
+		dquot = list_first_entry(&rls_head, struct dquot, dq_free);
+		WARN_ON_ONCE(atomic_read(&dquot->dq_count));
+		/*
+		 * Note that DQ_RELEASING_B protects us from racing with
+		 * invalidate_dquots() calls so we are safe to work with the
+		 * dquot even after we drop dq_list_lock.
+		 */
+		if (dquot_dirty(dquot)) {
+			spin_unlock(&dq_list_lock);
+			/* Commit dquot before releasing */
+			dquot_write_dquot(dquot);
+			goto restart;
+		}
+		if (dquot_active(dquot)) {
+			spin_unlock(&dq_list_lock);
+			dquot->dq_sb->dq_op->release_dquot(dquot);
+			goto restart;
+		}
+		/* Dquot is inactive and clean, now move it to free list */
+		remove_free_dquot(dquot);
+		put_dquot_last(dquot);
+	}
+	spin_unlock(&dq_list_lock);
+}
+
+/*
+ * Put reference to dquot
+ */
+void dqput(struct dquot *dquot)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dquot)
 		return;
 #ifdef CONFIG_QUOTA_DEBUG
 	if (!atomic_read(&dquot->dq_count)) {
 		quota_error(dquot->dq_sb, "trying to free free dquot of %s %d",
+<<<<<<< HEAD
 			    quotatypes[dquot->dq_type], dquot->dq_id);
+=======
+			    quotatypes[dquot->dq_id.type],
+			    from_kqid(&init_user_ns, dquot->dq_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG();
 	}
 #endif
 	dqstats_inc(DQST_DROPS);
+<<<<<<< HEAD
 we_slept:
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&dq_list_lock);
 	if (atomic_read(&dquot->dq_count) > 1) {
 		/* We have more than one user... nothing to do */
 		atomic_dec(&dquot->dq_count);
 		/* Releasing dquot during quotaoff phase? */
+<<<<<<< HEAD
 		if (!sb_has_quota_active(dquot->dq_sb, dquot->dq_type) &&
 		    atomic_read(&dquot->dq_count) == 1)
 			wake_up(&dquot->dq_wait_unused);
@@ -782,6 +1293,21 @@ we_slept:
 #endif
 	put_dquot_last(dquot);
 	spin_unlock(&dq_list_lock);
+=======
+		if (!sb_has_quota_active(dquot->dq_sb, dquot->dq_id.type) &&
+		    atomic_read(&dquot->dq_count) == 1)
+			wake_up(&dquot_ref_wq);
+		spin_unlock(&dq_list_lock);
+		return;
+	}
+
+	/* Need to release dquot? */
+	WARN_ON_ONCE(!list_empty(&dquot->dq_free));
+	put_releasing_dquots(dquot);
+	atomic_dec(&dquot->dq_count);
+	spin_unlock(&dq_list_lock);
+	queue_delayed_work(system_unbound_wq, &quota_release_work, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dqput);
 
@@ -804,10 +1330,17 @@ static struct dquot *get_empty_dquot(struct super_block *sb, int type)
 	INIT_LIST_HEAD(&dquot->dq_inuse);
 	INIT_HLIST_NODE(&dquot->dq_hash);
 	INIT_LIST_HEAD(&dquot->dq_dirty);
+<<<<<<< HEAD
 	init_waitqueue_head(&dquot->dq_wait_unused);
 	dquot->dq_sb = sb;
 	dquot->dq_type = type;
 	atomic_set(&dquot->dq_count, 1);
+=======
+	dquot->dq_sb = sb;
+	dquot->dq_id = make_kqid_invalid(type);
+	atomic_set(&dquot->dq_count, 1);
+	spin_lock_init(&dquot->dq_dqb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dquot;
 }
@@ -820,6 +1353,7 @@ static struct dquot *get_empty_dquot(struct super_block *sb, int type)
  *   a) checking for quota flags under dq_list_lock and
  *   b) getting a reference to dquot before we release dq_list_lock
  */
+<<<<<<< HEAD
 struct dquot *dqget(struct super_block *sb, unsigned int id, int type)
 {
 	unsigned int hashent = hashfn(sb, id, type);
@@ -833,22 +1367,53 @@ we_slept:
 	if (!sb_has_quota_active(sb, type)) {
 		spin_unlock(&dq_state_lock);
 		spin_unlock(&dq_list_lock);
+=======
+struct dquot *dqget(struct super_block *sb, struct kqid qid)
+{
+	unsigned int hashent = hashfn(sb, qid);
+	struct dquot *dquot, *empty = NULL;
+
+	if (!qid_has_mapping(sb->s_user_ns, qid))
+		return ERR_PTR(-EINVAL);
+
+        if (!sb_has_quota_active(sb, qid.type))
+		return ERR_PTR(-ESRCH);
+we_slept:
+	spin_lock(&dq_list_lock);
+	spin_lock(&dq_state_lock);
+	if (!sb_has_quota_active(sb, qid.type)) {
+		spin_unlock(&dq_state_lock);
+		spin_unlock(&dq_list_lock);
+		dquot = ERR_PTR(-ESRCH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	spin_unlock(&dq_state_lock);
 
+<<<<<<< HEAD
 	dquot = find_dquot(hashent, sb, id, type);
 	if (!dquot) {
 		if (!empty) {
 			spin_unlock(&dq_list_lock);
 			empty = get_empty_dquot(sb, type);
+=======
+	dquot = find_dquot(hashent, sb, qid);
+	if (!dquot) {
+		if (!empty) {
+			spin_unlock(&dq_list_lock);
+			empty = get_empty_dquot(sb, qid.type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!empty)
 				schedule();	/* Try to wait for a moment... */
 			goto we_slept;
 		}
 		dquot = empty;
 		empty = NULL;
+<<<<<<< HEAD
 		dquot->dq_id = id;
+=======
+		dquot->dq_id = qid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* all dquots go on the inuse_list */
 		put_inuse(dquot);
 		/* hash it first so it can be found */
@@ -864,6 +1429,7 @@ we_slept:
 		dqstats_inc(DQST_LOOKUPS);
 	}
 	/* Wait for dq_lock - after this we know that either dquot_release() is
+<<<<<<< HEAD
 	 * already finished or it will be canceled due to dq_count > 1 test */
 	wait_on_dquot(dquot);
 	/* Read the dquot / allocate space in quota file */
@@ -876,6 +1442,28 @@ we_slept:
 #ifdef CONFIG_QUOTA_DEBUG
 	BUG_ON(!dquot->dq_sb);	/* Has somebody invalidated entry under us? */
 #endif
+=======
+	 * already finished or it will be canceled due to dq_count > 0 test */
+	wait_on_dquot(dquot);
+	/* Read the dquot / allocate space in quota file */
+	if (!dquot_active(dquot)) {
+		int err;
+
+		err = sb->dq_op->acquire_dquot(dquot);
+		if (err < 0) {
+			dqput(dquot);
+			dquot = ERR_PTR(err);
+			goto out;
+		}
+	}
+	/*
+	 * Make sure following reads see filled structure - paired with
+	 * smp_mb__before_atomic() in dquot_acquire().
+	 */
+	smp_rmb();
+	/* Has somebody invalidated entry under us? */
+	WARN_ON_ONCE(hlist_unhashed(&dquot->dq_hash));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (empty)
 		do_destroy_dquot(empty);
@@ -884,29 +1472,60 @@ out:
 }
 EXPORT_SYMBOL(dqget);
 
+<<<<<<< HEAD
 static int dqinit_needed(struct inode *inode, int type)
 {
+=======
+static inline struct dquot __rcu **i_dquot(struct inode *inode)
+{
+	return inode->i_sb->s_op->get_dquots(inode);
+}
+
+static int dqinit_needed(struct inode *inode, int type)
+{
+	struct dquot __rcu * const *dquots;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cnt;
 
 	if (IS_NOQUOTA(inode))
 		return 0;
+<<<<<<< HEAD
 	if (type != -1)
 		return !inode->i_dquot[type];
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
 		if (!inode->i_dquot[cnt])
+=======
+
+	dquots = i_dquot(inode);
+	if (type != -1)
+		return !dquots[type];
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
+		if (!dquots[cnt])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 	return 0;
 }
 
+<<<<<<< HEAD
 /* This routine is guarded by dqonoff_mutex mutex */
 static void add_dquot_ref(struct super_block *sb, int type)
+=======
+/* This routine is guarded by s_umount semaphore */
+static int add_dquot_ref(struct super_block *sb, int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode, *old_inode = NULL;
 #ifdef CONFIG_QUOTA_DEBUG
 	int reserved = 0;
 #endif
+<<<<<<< HEAD
 
 	spin_lock(&inode_sb_list_lock);
+=======
+	int err = 0;
+
+	spin_lock(&sb->s_inode_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
 		spin_lock(&inode->i_lock);
 		if ((inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW)) ||
@@ -915,20 +1534,37 @@ static void add_dquot_ref(struct super_block *sb, int type)
 			spin_unlock(&inode->i_lock);
 			continue;
 		}
+<<<<<<< HEAD
+=======
+		__iget(inode);
+		spin_unlock(&inode->i_lock);
+		spin_unlock(&sb->s_inode_list_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_QUOTA_DEBUG
 		if (unlikely(inode_get_rsv_space(inode) > 0))
 			reserved = 1;
 #endif
+<<<<<<< HEAD
 		__iget(inode);
 		spin_unlock(&inode->i_lock);
 		spin_unlock(&inode_sb_list_lock);
 
 		iput(old_inode);
 		__dquot_initialize(inode, type);
+=======
+		iput(old_inode);
+		err = __dquot_initialize(inode, type);
+		if (err) {
+			iput(inode);
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We hold a reference to 'inode' so it couldn't have been
 		 * removed from s_inodes list while we dropped the
+<<<<<<< HEAD
 		 * inode_sb_list_lock We cannot iput the inode now as we can be
 		 * holding the last reference and we cannot iput it under
 		 * inode_sb_list_lock. So we keep the reference and iput it
@@ -940,6 +1576,20 @@ static void add_dquot_ref(struct super_block *sb, int type)
 	spin_unlock(&inode_sb_list_lock);
 	iput(old_inode);
 
+=======
+		 * s_inode_list_lock. We cannot iput the inode now as we can be
+		 * holding the last reference and we cannot iput it under
+		 * s_inode_list_lock. So we keep the reference and iput it
+		 * later.
+		 */
+		old_inode = inode;
+		cond_resched();
+		spin_lock(&sb->s_inode_list_lock);
+	}
+	spin_unlock(&sb->s_inode_list_lock);
+	iput(old_inode);
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_QUOTA_DEBUG
 	if (reserved) {
 		quota_error(sb, "Writes happened before quota was turned on "
@@ -947,6 +1597,7 @@ static void add_dquot_ref(struct super_block *sb, int type)
 			"Please run quotacheck(8)");
 	}
 #endif
+<<<<<<< HEAD
 }
 
 /*
@@ -1019,11 +1670,25 @@ static void remove_dquot_ref(struct super_block *sb, int type,
 	int reserved = 0;
 
 	spin_lock(&inode_sb_list_lock);
+=======
+	return err;
+}
+
+static void remove_dquot_ref(struct super_block *sb, int type)
+{
+	struct inode *inode;
+#ifdef CONFIG_QUOTA_DEBUG
+	int reserved = 0;
+#endif
+
+	spin_lock(&sb->s_inode_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
 		/*
 		 *  We have to scan also I_NEW inodes because they can already
 		 *  have quota pointer initialized. Luckily, we need to touch
 		 *  only quota pointers and these have separate locking
+<<<<<<< HEAD
 		 *  (dqptr_sem).
 		 */
 		if (!IS_NOQUOTA(inode)) {
@@ -1033,6 +1698,28 @@ static void remove_dquot_ref(struct super_block *sb, int type,
 		}
 	}
 	spin_unlock(&inode_sb_list_lock);
+=======
+		 *  (dq_data_lock).
+		 */
+		spin_lock(&dq_data_lock);
+		if (!IS_NOQUOTA(inode)) {
+			struct dquot __rcu **dquots = i_dquot(inode);
+			struct dquot *dquot = srcu_dereference_check(
+				dquots[type], &dquot_srcu,
+				lockdep_is_held(&dq_data_lock));
+
+#ifdef CONFIG_QUOTA_DEBUG
+			if (unlikely(inode_get_rsv_space(inode) > 0))
+				reserved = 1;
+#endif
+			rcu_assign_pointer(dquots[type], NULL);
+			if (dquot)
+				dqput(dquot);
+		}
+		spin_unlock(&dq_data_lock);
+	}
+	spin_unlock(&sb->s_inode_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_QUOTA_DEBUG
 	if (reserved) {
 		printk(KERN_WARNING "VFS (%s): Writes happened after quota"
@@ -1045,6 +1732,7 @@ static void remove_dquot_ref(struct super_block *sb, int type,
 /* Gather all references from inodes and drop them */
 static void drop_dquot_ref(struct super_block *sb, int type)
 {
+<<<<<<< HEAD
 	LIST_HEAD(tofree_head);
 
 	if (sb->dq_op) {
@@ -1081,6 +1769,10 @@ static void dquot_claim_reserved_space(struct dquot *dquot, qsize_t number)
 	}
 	dquot->dq_dqb.dqb_curspace += number;
 	dquot->dq_dqb.dqb_rsvspace -= number;
+=======
+	if (sb->dq_op)
+		remove_dquot_ref(sb, type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline
@@ -1092,6 +1784,13 @@ void dquot_free_reserved_space(struct dquot *dquot, qsize_t number)
 		WARN_ON_ONCE(1);
 		dquot->dq_dqb.dqb_rsvspace = 0;
 	}
+<<<<<<< HEAD
+=======
+	if (dquot->dq_dqb.dqb_curspace + dquot->dq_dqb.dqb_rsvspace <=
+	    dquot->dq_dqb.dqb_bsoftlimit)
+		dquot->dq_dqb.dqb_btime = (time64_t) 0;
+	clear_bit(DQ_BLKS_B, &dquot->dq_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dquot_decr_inodes(struct dquot *dquot, qsize_t number)
@@ -1102,7 +1801,11 @@ static void dquot_decr_inodes(struct dquot *dquot, qsize_t number)
 	else
 		dquot->dq_dqb.dqb_curinodes = 0;
 	if (dquot->dq_dqb.dqb_curinodes <= dquot->dq_dqb.dqb_isoftlimit)
+<<<<<<< HEAD
 		dquot->dq_dqb.dqb_itime = (time_t) 0;
+=======
+		dquot->dq_dqb.dqb_itime = (time64_t) 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(DQ_INODES_B, &dquot->dq_flags);
 }
 
@@ -1113,15 +1816,25 @@ static void dquot_decr_space(struct dquot *dquot, qsize_t number)
 		dquot->dq_dqb.dqb_curspace -= number;
 	else
 		dquot->dq_dqb.dqb_curspace = 0;
+<<<<<<< HEAD
 	if (dquot->dq_dqb.dqb_curspace <= dquot->dq_dqb.dqb_bsoftlimit)
 		dquot->dq_dqb.dqb_btime = (time_t) 0;
+=======
+	if (dquot->dq_dqb.dqb_curspace + dquot->dq_dqb.dqb_rsvspace <=
+	    dquot->dq_dqb.dqb_bsoftlimit)
+		dquot->dq_dqb.dqb_btime = (time64_t) 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(DQ_BLKS_B, &dquot->dq_flags);
 }
 
 struct dquot_warn {
 	struct super_block *w_sb;
+<<<<<<< HEAD
 	qid_t w_dq_id;
 	short w_dq_type;
+=======
+	struct kqid w_dq_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short w_type;
 };
 
@@ -1145,11 +1858,21 @@ static int need_print_warning(struct dquot_warn *warn)
 	if (!flag_print_warnings)
 		return 0;
 
+<<<<<<< HEAD
 	switch (warn->w_dq_type) {
 		case USRQUOTA:
 			return current_fsuid() == warn->w_dq_id;
 		case GRPQUOTA:
 			return in_group_p(warn->w_dq_id);
+=======
+	switch (warn->w_dq_id.type) {
+		case USRQUOTA:
+			return uid_eq(current_fsuid(), warn->w_dq_id.uid);
+		case GRPQUOTA:
+			return in_group_p(warn->w_dq_id.gid);
+		case PRJQUOTA:
+			return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1175,7 +1898,11 @@ static void print_warning(struct dquot_warn *warn)
 		tty_write_message(tty, ": warning, ");
 	else
 		tty_write_message(tty, ": write failed, ");
+<<<<<<< HEAD
 	tty_write_message(tty, quotatypes[warn->w_dq_type]);
+=======
+	tty_write_message(tty, quotatypes[warn->w_dq_id.type]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (warntype) {
 		case QUOTA_NL_IHARDWARN:
 			msg = " file limit reached.\r\n";
@@ -1209,7 +1936,10 @@ static void prepare_warning(struct dquot_warn *warn, struct dquot *dquot,
 	warn->w_type = warntype;
 	warn->w_sb = dquot->dq_sb;
 	warn->w_dq_id = dquot->dq_id;
+<<<<<<< HEAD
 	warn->w_dq_type = dquot->dq_type;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1227,13 +1957,18 @@ static void flush_warnings(struct dquot_warn *warn)
 #ifdef CONFIG_PRINT_QUOTA_WARNING
 		print_warning(&warn[i]);
 #endif
+<<<<<<< HEAD
 		quota_send_warning(warn[i].w_dq_type, warn[i].w_dq_id,
+=======
+		quota_send_warning(warn[i].w_dq_id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   warn[i].w_sb->s_dev, warn[i].w_type);
 	}
 }
 
 static int ignore_hardlimit(struct dquot *dquot)
 {
+<<<<<<< HEAD
 	struct mem_dqinfo *info = &sb_dqopt(dquot->dq_sb)->info[dquot->dq_type];
 
 	return capable(CAP_SYS_RESOURCE) &&
@@ -1250,27 +1985,61 @@ static int check_idq(struct dquot *dquot, qsize_t inodes,
 	if (!sb_has_quota_limits_enabled(dquot->dq_sb, dquot->dq_type) ||
 	    test_bit(DQ_FAKE_B, &dquot->dq_flags))
 		return 0;
+=======
+	struct mem_dqinfo *info = &sb_dqopt(dquot->dq_sb)->info[dquot->dq_id.type];
+
+	return capable(CAP_SYS_RESOURCE) &&
+	       (info->dqi_format->qf_fmt_id != QFMT_VFS_OLD ||
+		!(info->dqi_flags & DQF_ROOT_SQUASH));
+}
+
+static int dquot_add_inodes(struct dquot *dquot, qsize_t inodes,
+			    struct dquot_warn *warn)
+{
+	qsize_t newinodes;
+	int ret = 0;
+
+	spin_lock(&dquot->dq_dqb_lock);
+	newinodes = dquot->dq_dqb.dqb_curinodes + inodes;
+	if (!sb_has_quota_limits_enabled(dquot->dq_sb, dquot->dq_id.type) ||
+	    test_bit(DQ_FAKE_B, &dquot->dq_flags))
+		goto add;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dquot->dq_dqb.dqb_ihardlimit &&
 	    newinodes > dquot->dq_dqb.dqb_ihardlimit &&
             !ignore_hardlimit(dquot)) {
 		prepare_warning(warn, dquot, QUOTA_NL_IHARDWARN);
+<<<<<<< HEAD
 		return -EDQUOT;
+=======
+		ret = -EDQUOT;
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dquot->dq_dqb.dqb_isoftlimit &&
 	    newinodes > dquot->dq_dqb.dqb_isoftlimit &&
 	    dquot->dq_dqb.dqb_itime &&
+<<<<<<< HEAD
 	    get_seconds() >= dquot->dq_dqb.dqb_itime &&
             !ignore_hardlimit(dquot)) {
 		prepare_warning(warn, dquot, QUOTA_NL_ISOFTLONGWARN);
 		return -EDQUOT;
+=======
+	    ktime_get_real_seconds() >= dquot->dq_dqb.dqb_itime &&
+            !ignore_hardlimit(dquot)) {
+		prepare_warning(warn, dquot, QUOTA_NL_ISOFTLONGWARN);
+		ret = -EDQUOT;
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dquot->dq_dqb.dqb_isoftlimit &&
 	    newinodes > dquot->dq_dqb.dqb_isoftlimit &&
 	    dquot->dq_dqb.dqb_itime == 0) {
 		prepare_warning(warn, dquot, QUOTA_NL_ISOFTWARN);
+<<<<<<< HEAD
 		dquot->dq_dqb.dqb_itime = get_seconds() +
 		    sb_dqopt(dquot->dq_sb)->info[dquot->dq_type].dqi_igrace;
 	}
@@ -1291,42 +2060,115 @@ static int check_bdq(struct dquot *dquot, qsize_t space, int prealloc,
 
 	tspace = dquot->dq_dqb.dqb_curspace + dquot->dq_dqb.dqb_rsvspace
 		+ space;
+=======
+		dquot->dq_dqb.dqb_itime = ktime_get_real_seconds() +
+		    sb_dqopt(dquot->dq_sb)->info[dquot->dq_id.type].dqi_igrace;
+	}
+add:
+	dquot->dq_dqb.dqb_curinodes = newinodes;
+
+out:
+	spin_unlock(&dquot->dq_dqb_lock);
+	return ret;
+}
+
+static int dquot_add_space(struct dquot *dquot, qsize_t space,
+			   qsize_t rsv_space, unsigned int flags,
+			   struct dquot_warn *warn)
+{
+	qsize_t tspace;
+	struct super_block *sb = dquot->dq_sb;
+	int ret = 0;
+
+	spin_lock(&dquot->dq_dqb_lock);
+	if (!sb_has_quota_limits_enabled(sb, dquot->dq_id.type) ||
+	    test_bit(DQ_FAKE_B, &dquot->dq_flags))
+		goto finish;
+
+	tspace = dquot->dq_dqb.dqb_curspace + dquot->dq_dqb.dqb_rsvspace
+		+ space + rsv_space;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dquot->dq_dqb.dqb_bhardlimit &&
 	    tspace > dquot->dq_dqb.dqb_bhardlimit &&
             !ignore_hardlimit(dquot)) {
+<<<<<<< HEAD
 		if (!prealloc)
 			prepare_warning(warn, dquot, QUOTA_NL_BHARDWARN);
 		return -EDQUOT;
+=======
+		if (flags & DQUOT_SPACE_WARN)
+			prepare_warning(warn, dquot, QUOTA_NL_BHARDWARN);
+		ret = -EDQUOT;
+		goto finish;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dquot->dq_dqb.dqb_bsoftlimit &&
 	    tspace > dquot->dq_dqb.dqb_bsoftlimit &&
 	    dquot->dq_dqb.dqb_btime &&
+<<<<<<< HEAD
 	    get_seconds() >= dquot->dq_dqb.dqb_btime &&
             !ignore_hardlimit(dquot)) {
 		if (!prealloc)
 			prepare_warning(warn, dquot, QUOTA_NL_BSOFTLONGWARN);
 		return -EDQUOT;
+=======
+	    ktime_get_real_seconds() >= dquot->dq_dqb.dqb_btime &&
+            !ignore_hardlimit(dquot)) {
+		if (flags & DQUOT_SPACE_WARN)
+			prepare_warning(warn, dquot, QUOTA_NL_BSOFTLONGWARN);
+		ret = -EDQUOT;
+		goto finish;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dquot->dq_dqb.dqb_bsoftlimit &&
 	    tspace > dquot->dq_dqb.dqb_bsoftlimit &&
 	    dquot->dq_dqb.dqb_btime == 0) {
+<<<<<<< HEAD
 		if (!prealloc) {
 			prepare_warning(warn, dquot, QUOTA_NL_BSOFTWARN);
 			dquot->dq_dqb.dqb_btime = get_seconds() +
 			    sb_dqopt(sb)->info[dquot->dq_type].dqi_bgrace;
 		}
 		else
+=======
+		if (flags & DQUOT_SPACE_WARN) {
+			prepare_warning(warn, dquot, QUOTA_NL_BSOFTWARN);
+			dquot->dq_dqb.dqb_btime = ktime_get_real_seconds() +
+			    sb_dqopt(sb)->info[dquot->dq_id.type].dqi_bgrace;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * We don't allow preallocation to exceed softlimit so exceeding will
 			 * be always printed
 			 */
+<<<<<<< HEAD
 			return -EDQUOT;
 	}
 
 	return 0;
+=======
+			ret = -EDQUOT;
+			goto finish;
+		}
+	}
+finish:
+	/*
+	 * We have to be careful and go through warning generation & grace time
+	 * setting even if DQUOT_SPACE_NOFAIL is set. That's why we check it
+	 * only here...
+	 */
+	if (flags & DQUOT_SPACE_NOFAIL)
+		ret = 0;
+	if (!ret) {
+		dquot->dq_dqb.dqb_rsvspace += rsv_space;
+		dquot->dq_dqb.dqb_curspace += space;
+	}
+	spin_unlock(&dquot->dq_dqb_lock);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int info_idq_free(struct dquot *dquot, qsize_t inodes)
@@ -1335,7 +2177,11 @@ static int info_idq_free(struct dquot *dquot, qsize_t inodes)
 
 	if (test_bit(DQ_FAKE_B, &dquot->dq_flags) ||
 	    dquot->dq_dqb.dqb_curinodes <= dquot->dq_dqb.dqb_isoftlimit ||
+<<<<<<< HEAD
 	    !sb_has_quota_limits_enabled(dquot->dq_sb, dquot->dq_type))
+=======
+	    !sb_has_quota_limits_enabled(dquot->dq_sb, dquot->dq_id.type))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QUOTA_NL_NOWARN;
 
 	newinodes = dquot->dq_dqb.dqb_curinodes - inodes;
@@ -1349,6 +2195,7 @@ static int info_idq_free(struct dquot *dquot, qsize_t inodes)
 
 static int info_bdq_free(struct dquot *dquot, qsize_t space)
 {
+<<<<<<< HEAD
 	if (test_bit(DQ_FAKE_B, &dquot->dq_flags) ||
 	    dquot->dq_dqb.dqb_curspace <= dquot->dq_dqb.dqb_bsoftlimit)
 		return QUOTA_NL_NOWARN;
@@ -1357,11 +2204,29 @@ static int info_bdq_free(struct dquot *dquot, qsize_t space)
 		return QUOTA_NL_BSOFTBELOW;
 	if (dquot->dq_dqb.dqb_curspace >= dquot->dq_dqb.dqb_bhardlimit &&
 	    dquot->dq_dqb.dqb_curspace - space < dquot->dq_dqb.dqb_bhardlimit)
+=======
+	qsize_t tspace;
+
+	tspace = dquot->dq_dqb.dqb_curspace + dquot->dq_dqb.dqb_rsvspace;
+
+	if (test_bit(DQ_FAKE_B, &dquot->dq_flags) ||
+	    tspace <= dquot->dq_dqb.dqb_bsoftlimit)
+		return QUOTA_NL_NOWARN;
+
+	if (tspace - space <= dquot->dq_dqb.dqb_bsoftlimit)
+		return QUOTA_NL_BSOFTBELOW;
+	if (tspace >= dquot->dq_dqb.dqb_bhardlimit &&
+	    tspace - space < dquot->dq_dqb.dqb_bhardlimit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return QUOTA_NL_BHARDBELOW;
 	return QUOTA_NL_NOWARN;
 }
 
+<<<<<<< HEAD
 static int dquot_active(const struct inode *inode)
+=======
+static int inode_quota_active(const struct inode *inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = inode->i_sb;
 
@@ -1373,6 +2238,7 @@ static int dquot_active(const struct inode *inode)
 /*
  * Initialize quota pointers in inode
  *
+<<<<<<< HEAD
  * We do things in a bit complicated way but by that we avoid calling
  * dqget() and thus filesystem callbacks under dqptr_sem.
  *
@@ -1411,6 +2277,80 @@ static void __dquot_initialize(struct inode *inode, int type)
 	down_write(&sb_dqopt(sb)->dqptr_sem);
 	if (IS_NOQUOTA(inode))
 		goto out_err;
+=======
+ * It is better to call this function outside of any transaction as it
+ * might need a lot of space in journal for dquot structure allocation.
+ */
+static int __dquot_initialize(struct inode *inode, int type)
+{
+	int cnt, init_needed = 0;
+	struct dquot __rcu **dquots;
+	struct dquot *got[MAXQUOTAS] = {};
+	struct super_block *sb = inode->i_sb;
+	qsize_t rsv;
+	int ret = 0;
+
+	if (!inode_quota_active(inode))
+		return 0;
+
+	dquots = i_dquot(inode);
+
+	/* First get references to structures we might need. */
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		struct kqid qid;
+		kprojid_t projid;
+		int rc;
+		struct dquot *dquot;
+
+		if (type != -1 && cnt != type)
+			continue;
+		/*
+		 * The i_dquot should have been initialized in most cases,
+		 * we check it without locking here to avoid unnecessary
+		 * dqget()/dqput() calls.
+		 */
+		if (dquots[cnt])
+			continue;
+
+		if (!sb_has_quota_active(sb, cnt))
+			continue;
+
+		init_needed = 1;
+
+		switch (cnt) {
+		case USRQUOTA:
+			qid = make_kqid_uid(inode->i_uid);
+			break;
+		case GRPQUOTA:
+			qid = make_kqid_gid(inode->i_gid);
+			break;
+		case PRJQUOTA:
+			rc = inode->i_sb->dq_op->get_projid(inode, &projid);
+			if (rc)
+				continue;
+			qid = make_kqid_projid(projid);
+			break;
+		}
+		dquot = dqget(sb, qid);
+		if (IS_ERR(dquot)) {
+			/* We raced with somebody turning quotas off... */
+			if (PTR_ERR(dquot) != -ESRCH) {
+				ret = PTR_ERR(dquot);
+				goto out_put;
+			}
+			dquot = NULL;
+		}
+		got[cnt] = dquot;
+	}
+
+	/* All required i_dquot has been initialized */
+	if (!init_needed)
+		return 0;
+
+	spin_lock(&dq_data_lock);
+	if (IS_NOQUOTA(inode))
+		goto out_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		if (type != -1 && cnt != type)
 			continue;
@@ -1420,14 +2360,20 @@ static void __dquot_initialize(struct inode *inode, int type)
 		/* We could race with quotaon or dqget() could have failed */
 		if (!got[cnt])
 			continue;
+<<<<<<< HEAD
 		if (!inode->i_dquot[cnt]) {
 			inode->i_dquot[cnt] = got[cnt];
+=======
+		if (!dquots[cnt]) {
+			rcu_assign_pointer(dquots[cnt], got[cnt]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			got[cnt] = NULL;
 			/*
 			 * Make quota reservation system happy if someone
 			 * did a write before quota was turned on
 			 */
 			rsv = inode_get_rsv_space(inode);
+<<<<<<< HEAD
 			if (unlikely(rsv))
 				dquot_resv_space(inode->i_dquot[cnt], rsv);
 		}
@@ -1446,10 +2392,66 @@ EXPORT_SYMBOL(dquot_initialize);
 
 /*
  * 	Release all quotas referenced by inode
+=======
+			if (unlikely(rsv)) {
+				struct dquot *dquot = srcu_dereference_check(
+					dquots[cnt], &dquot_srcu,
+					lockdep_is_held(&dq_data_lock));
+
+				spin_lock(&inode->i_lock);
+				/* Get reservation again under proper lock */
+				rsv = __inode_get_rsv_space(inode);
+				spin_lock(&dquot->dq_dqb_lock);
+				dquot->dq_dqb.dqb_rsvspace += rsv;
+				spin_unlock(&dquot->dq_dqb_lock);
+				spin_unlock(&inode->i_lock);
+			}
+		}
+	}
+out_lock:
+	spin_unlock(&dq_data_lock);
+out_put:
+	/* Drop unused references */
+	dqput_all(got);
+
+	return ret;
+}
+
+int dquot_initialize(struct inode *inode)
+{
+	return __dquot_initialize(inode, -1);
+}
+EXPORT_SYMBOL(dquot_initialize);
+
+bool dquot_initialize_needed(struct inode *inode)
+{
+	struct dquot __rcu **dquots;
+	int i;
+
+	if (!inode_quota_active(inode))
+		return false;
+
+	dquots = i_dquot(inode);
+	for (i = 0; i < MAXQUOTAS; i++)
+		if (!dquots[i] && sb_has_quota_active(inode->i_sb, i))
+			return true;
+	return false;
+}
+EXPORT_SYMBOL(dquot_initialize_needed);
+
+/*
+ * Release all quotas referenced by inode.
+ *
+ * This function only be called on inode free or converting
+ * a file to quota file, no other users for the i_dquot in
+ * both cases, so we needn't call synchronize_srcu() after
+ * clearing i_dquot.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __dquot_drop(struct inode *inode)
 {
 	int cnt;
+<<<<<<< HEAD
 	struct dquot *put[MAXQUOTAS];
 
 	down_write(&sb_dqopt(inode->i_sb)->dqptr_sem);
@@ -1458,11 +2460,27 @@ static void __dquot_drop(struct inode *inode)
 		inode->i_dquot[cnt] = NULL;
 	}
 	up_write(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+	struct dquot __rcu **dquots = i_dquot(inode);
+	struct dquot *put[MAXQUOTAS];
+
+	spin_lock(&dq_data_lock);
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		put[cnt] = srcu_dereference_check(dquots[cnt], &dquot_srcu,
+					lockdep_is_held(&dq_data_lock));
+		rcu_assign_pointer(dquots[cnt], NULL);
+	}
+	spin_unlock(&dq_data_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dqput_all(put);
 }
 
 void dquot_drop(struct inode *inode)
 {
+<<<<<<< HEAD
+=======
+	struct dquot __rcu * const *dquots;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cnt;
 
 	if (IS_NOQUOTA(inode))
@@ -1475,8 +2493,14 @@ void dquot_drop(struct inode *inode)
 	 * must assure that nobody can come after the DQUOT_DROP and
 	 * add quota pointers back anyway.
 	 */
+<<<<<<< HEAD
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		if (inode->i_dquot[cnt])
+=======
+	dquots = i_dquot(inode);
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		if (dquots[cnt])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
@@ -1497,6 +2521,7 @@ static qsize_t *inode_reserved_space(struct inode * inode)
 	return inode->i_sb->dq_op->get_reserved_space(inode);
 }
 
+<<<<<<< HEAD
 void inode_add_rsv_space(struct inode *inode, qsize_t number)
 {
 	spin_lock(&inode->i_lock);
@@ -1521,6 +2546,14 @@ void inode_sub_rsv_space(struct inode *inode, qsize_t number)
 	spin_unlock(&inode->i_lock);
 }
 EXPORT_SYMBOL(inode_sub_rsv_space);
+=======
+static qsize_t __inode_get_rsv_space(struct inode *inode)
+{
+	if (!inode->i_sb->dq_op->get_reserved_space)
+		return 0;
+	return *inode_reserved_space(inode);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static qsize_t inode_get_rsv_space(struct inode *inode)
 {
@@ -1529,11 +2562,16 @@ static qsize_t inode_get_rsv_space(struct inode *inode)
 	if (!inode->i_sb->dq_op->get_reserved_space)
 		return 0;
 	spin_lock(&inode->i_lock);
+<<<<<<< HEAD
 	ret = *inode_reserved_space(inode);
+=======
+	ret = __inode_get_rsv_space(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&inode->i_lock);
 	return ret;
 }
 
+<<<<<<< HEAD
 static void inode_incr_space(struct inode *inode, qsize_t number,
 				int reserve)
 {
@@ -1551,6 +2589,8 @@ static void inode_decr_space(struct inode *inode, qsize_t number, int reserve)
 		inode_sub_bytes(inode, number);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This functions updates i_blocks+i_bytes fields and quota information
  * (together with appropriate checks).
@@ -1566,6 +2606,7 @@ static void inode_decr_space(struct inode *inode, qsize_t number, int reserve)
  */
 int __dquot_alloc_space(struct inode *inode, qsize_t number, int flags)
 {
+<<<<<<< HEAD
 	int cnt, ret = 0;
 	struct dquot_warn warn[MAXQUOTAS];
 	struct dquot **dquots = inode->i_dquot;
@@ -1605,12 +2646,72 @@ int __dquot_alloc_space(struct inode *inode, qsize_t number, int flags)
 	}
 	inode_incr_space(inode, number, reserve);
 	spin_unlock(&dq_data_lock);
+=======
+	int cnt, ret = 0, index;
+	struct dquot_warn warn[MAXQUOTAS];
+	int reserve = flags & DQUOT_SPACE_RESERVE;
+	struct dquot __rcu **dquots;
+	struct dquot *dquot;
+
+	if (!inode_quota_active(inode)) {
+		if (reserve) {
+			spin_lock(&inode->i_lock);
+			*inode_reserved_space(inode) += number;
+			spin_unlock(&inode->i_lock);
+		} else {
+			inode_add_bytes(inode, number);
+		}
+		goto out;
+	}
+
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
+		warn[cnt].w_type = QUOTA_NL_NOWARN;
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (!dquot)
+			continue;
+		if (reserve) {
+			ret = dquot_add_space(dquot, 0, number, flags, &warn[cnt]);
+		} else {
+			ret = dquot_add_space(dquot, number, 0, flags, &warn[cnt]);
+		}
+		if (ret) {
+			/* Back out changes we already did */
+			for (cnt--; cnt >= 0; cnt--) {
+				dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+				if (!dquot)
+					continue;
+				spin_lock(&dquot->dq_dqb_lock);
+				if (reserve)
+					dquot_free_reserved_space(dquot, number);
+				else
+					dquot_decr_space(dquot, number);
+				spin_unlock(&dquot->dq_dqb_lock);
+			}
+			spin_unlock(&inode->i_lock);
+			goto out_flush_warn;
+		}
+	}
+	if (reserve)
+		*inode_reserved_space(inode) += number;
+	else
+		__inode_add_bytes(inode, number);
+	spin_unlock(&inode->i_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reserve)
 		goto out_flush_warn;
 	mark_all_dquot_dirty(dquots);
 out_flush_warn:
+<<<<<<< HEAD
 	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+	srcu_read_unlock(&dquot_srcu, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn);
 out:
 	return ret;
@@ -1620,6 +2721,7 @@ EXPORT_SYMBOL(__dquot_alloc_space);
 /*
  * This operation can block, but only after everything is updated
  */
+<<<<<<< HEAD
 int dquot_alloc_inode(const struct inode *inode)
 {
 	int cnt, ret = 0;
@@ -1653,6 +2755,47 @@ warn_put_all:
 	if (ret == 0)
 		mark_all_dquot_dirty(dquots);
 	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+int dquot_alloc_inode(struct inode *inode)
+{
+	int cnt, ret = 0, index;
+	struct dquot_warn warn[MAXQUOTAS];
+	struct dquot __rcu * const *dquots;
+	struct dquot *dquot;
+
+	if (!inode_quota_active(inode))
+		return 0;
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
+		warn[cnt].w_type = QUOTA_NL_NOWARN;
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (!dquot)
+			continue;
+		ret = dquot_add_inodes(dquot, 1, &warn[cnt]);
+		if (ret) {
+			for (cnt--; cnt >= 0; cnt--) {
+				dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+				if (!dquot)
+					continue;
+				/* Back out changes we already did */
+				spin_lock(&dquot->dq_dqb_lock);
+				dquot_decr_inodes(dquot, 1);
+				spin_unlock(&dquot->dq_dqb_lock);
+			}
+			goto warn_put_all;
+		}
+	}
+
+warn_put_all:
+	spin_unlock(&inode->i_lock);
+	if (ret == 0)
+		mark_all_dquot_dirty(dquots);
+	srcu_read_unlock(&dquot_srcu, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn);
 	return ret;
 }
@@ -1661,6 +2804,7 @@ EXPORT_SYMBOL(dquot_alloc_inode);
 /*
  * Convert in-memory reserved quotas to real consumed quotas
  */
+<<<<<<< HEAD
 int dquot_claim_space_nodirty(struct inode *inode, qsize_t number)
 {
 	int cnt;
@@ -1684,16 +2828,100 @@ int dquot_claim_space_nodirty(struct inode *inode, qsize_t number)
 	mark_all_dquot_dirty(inode->i_dquot);
 	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
 	return 0;
+=======
+void dquot_claim_space_nodirty(struct inode *inode, qsize_t number)
+{
+	struct dquot __rcu **dquots;
+	struct dquot *dquot;
+	int cnt, index;
+
+	if (!inode_quota_active(inode)) {
+		spin_lock(&inode->i_lock);
+		*inode_reserved_space(inode) -= number;
+		__inode_add_bytes(inode, number);
+		spin_unlock(&inode->i_lock);
+		return;
+	}
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+	/* Claim reserved quotas to allocated quotas */
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (dquot) {
+			spin_lock(&dquot->dq_dqb_lock);
+			if (WARN_ON_ONCE(dquot->dq_dqb.dqb_rsvspace < number))
+				number = dquot->dq_dqb.dqb_rsvspace;
+			dquot->dq_dqb.dqb_curspace += number;
+			dquot->dq_dqb.dqb_rsvspace -= number;
+			spin_unlock(&dquot->dq_dqb_lock);
+		}
+	}
+	/* Update inode bytes */
+	*inode_reserved_space(inode) -= number;
+	__inode_add_bytes(inode, number);
+	spin_unlock(&inode->i_lock);
+	mark_all_dquot_dirty(dquots);
+	srcu_read_unlock(&dquot_srcu, index);
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dquot_claim_space_nodirty);
 
 /*
+<<<<<<< HEAD
+=======
+ * Convert allocated space back to in-memory reserved quotas
+ */
+void dquot_reclaim_space_nodirty(struct inode *inode, qsize_t number)
+{
+	struct dquot __rcu **dquots;
+	struct dquot *dquot;
+	int cnt, index;
+
+	if (!inode_quota_active(inode)) {
+		spin_lock(&inode->i_lock);
+		*inode_reserved_space(inode) += number;
+		__inode_sub_bytes(inode, number);
+		spin_unlock(&inode->i_lock);
+		return;
+	}
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+	/* Claim reserved quotas to allocated quotas */
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (dquot) {
+			spin_lock(&dquot->dq_dqb_lock);
+			if (WARN_ON_ONCE(dquot->dq_dqb.dqb_curspace < number))
+				number = dquot->dq_dqb.dqb_curspace;
+			dquot->dq_dqb.dqb_rsvspace += number;
+			dquot->dq_dqb.dqb_curspace -= number;
+			spin_unlock(&dquot->dq_dqb_lock);
+		}
+	}
+	/* Update inode bytes */
+	*inode_reserved_space(inode) += number;
+	__inode_sub_bytes(inode, number);
+	spin_unlock(&inode->i_lock);
+	mark_all_dquot_dirty(dquots);
+	srcu_read_unlock(&dquot_srcu, index);
+	return;
+}
+EXPORT_SYMBOL(dquot_reclaim_space_nodirty);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This operation can block, but only after everything is updated
  */
 void __dquot_free_space(struct inode *inode, qsize_t number, int flags)
 {
 	unsigned int cnt;
 	struct dquot_warn warn[MAXQUOTAS];
+<<<<<<< HEAD
 	struct dquot **dquots = inode->i_dquot;
 	int reserve = flags & DQUOT_SPACE_RESERVE;
 
@@ -1706,10 +2934,31 @@ void __dquot_free_space(struct inode *inode, qsize_t number, int flags)
 
 	down_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
 	spin_lock(&dq_data_lock);
+=======
+	struct dquot __rcu **dquots;
+	struct dquot *dquot;
+	int reserve = flags & DQUOT_SPACE_RESERVE, index;
+
+	if (!inode_quota_active(inode)) {
+		if (reserve) {
+			spin_lock(&inode->i_lock);
+			*inode_reserved_space(inode) -= number;
+			spin_unlock(&inode->i_lock);
+		} else {
+			inode_sub_bytes(inode, number);
+		}
+		return;
+	}
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		int wtype;
 
 		warn[cnt].w_type = QUOTA_NL_NOWARN;
+<<<<<<< HEAD
 		if (!dquots[cnt])
 			continue;
 		wtype = info_bdq_free(dquots[cnt], number);
@@ -1722,12 +2971,36 @@ void __dquot_free_space(struct inode *inode, qsize_t number, int flags)
 	}
 	inode_decr_space(inode, number, reserve);
 	spin_unlock(&dq_data_lock);
+=======
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (!dquot)
+			continue;
+		spin_lock(&dquot->dq_dqb_lock);
+		wtype = info_bdq_free(dquot, number);
+		if (wtype != QUOTA_NL_NOWARN)
+			prepare_warning(&warn[cnt], dquot, wtype);
+		if (reserve)
+			dquot_free_reserved_space(dquot, number);
+		else
+			dquot_decr_space(dquot, number);
+		spin_unlock(&dquot->dq_dqb_lock);
+	}
+	if (reserve)
+		*inode_reserved_space(inode) -= number;
+	else
+		__inode_sub_bytes(inode, number);
+	spin_unlock(&inode->i_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reserve)
 		goto out_unlock;
 	mark_all_dquot_dirty(dquots);
 out_unlock:
+<<<<<<< HEAD
 	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+	srcu_read_unlock(&dquot_srcu, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn);
 }
 EXPORT_SYMBOL(__dquot_free_space);
@@ -1735,6 +3008,7 @@ EXPORT_SYMBOL(__dquot_free_space);
 /*
  * This operation can block, but only after everything is updated
  */
+<<<<<<< HEAD
 void dquot_free_inode(const struct inode *inode)
 {
 	unsigned int cnt;
@@ -1762,6 +3036,38 @@ void dquot_free_inode(const struct inode *inode)
 	spin_unlock(&dq_data_lock);
 	mark_all_dquot_dirty(dquots);
 	up_read(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+void dquot_free_inode(struct inode *inode)
+{
+	unsigned int cnt;
+	struct dquot_warn warn[MAXQUOTAS];
+	struct dquot __rcu * const *dquots;
+	struct dquot *dquot;
+	int index;
+
+	if (!inode_quota_active(inode))
+		return;
+
+	dquots = i_dquot(inode);
+	index = srcu_read_lock(&dquot_srcu);
+	spin_lock(&inode->i_lock);
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		int wtype;
+		warn[cnt].w_type = QUOTA_NL_NOWARN;
+		dquot = srcu_dereference(dquots[cnt], &dquot_srcu);
+		if (!dquot)
+			continue;
+		spin_lock(&dquot->dq_dqb_lock);
+		wtype = info_idq_free(dquot, 1);
+		if (wtype != QUOTA_NL_NOWARN)
+			prepare_warning(&warn[cnt], dquot, wtype);
+		dquot_decr_inodes(dquot, 1);
+		spin_unlock(&dquot->dq_dqb_lock);
+	}
+	spin_unlock(&inode->i_lock);
+	mark_all_dquot_dirty(dquots);
+	srcu_read_unlock(&dquot_srcu, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn);
 }
 EXPORT_SYMBOL(dquot_free_inode);
@@ -1775,6 +3081,7 @@ EXPORT_SYMBOL(dquot_free_inode);
  * This operation can block, but only after everything is updated
  * A transaction must be started when entering this function.
  *
+<<<<<<< HEAD
  */
 int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 {
@@ -1782,21 +3089,47 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 	qsize_t rsv_space = 0;
 	struct dquot *transfer_from[MAXQUOTAS] = {};
 	int cnt, ret = 0;
+=======
+ * We are holding reference on transfer_from & transfer_to, no need to
+ * protect them by srcu_read_lock().
+ */
+int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
+{
+	qsize_t cur_space;
+	qsize_t rsv_space = 0;
+	qsize_t inode_usage = 1;
+	struct dquot __rcu **dquots;
+	struct dquot *transfer_from[MAXQUOTAS] = {};
+	int cnt, index, ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char is_valid[MAXQUOTAS] = {};
 	struct dquot_warn warn_to[MAXQUOTAS];
 	struct dquot_warn warn_from_inodes[MAXQUOTAS];
 	struct dquot_warn warn_from_space[MAXQUOTAS];
 
+<<<<<<< HEAD
 	/* First test before acquiring mutex - solves deadlocks when we
          * re-enter the quota code and are already holding the mutex */
 	if (IS_NOQUOTA(inode))
 		return 0;
+=======
+	if (IS_NOQUOTA(inode))
+		return 0;
+
+	if (inode->i_sb->dq_op->get_inode_usage) {
+		ret = inode->i_sb->dq_op->get_inode_usage(inode, &inode_usage);
+		if (ret)
+			return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize the arrays */
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		warn_to[cnt].w_type = QUOTA_NL_NOWARN;
 		warn_from_inodes[cnt].w_type = QUOTA_NL_NOWARN;
 		warn_from_space[cnt].w_type = QUOTA_NL_NOWARN;
 	}
+<<<<<<< HEAD
 	down_write(&sb_dqopt(inode->i_sb)->dqptr_sem);
 	if (IS_NOQUOTA(inode)) {	/* File without quota accounting? */
 		up_write(&sb_dqopt(inode->i_sb)->dqptr_sem);
@@ -1807,6 +3140,23 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 	rsv_space = inode_get_rsv_space(inode);
 	space = cur_space + rsv_space;
 	/* Build the transfer_from list and check the limits */
+=======
+
+	spin_lock(&dq_data_lock);
+	spin_lock(&inode->i_lock);
+	if (IS_NOQUOTA(inode)) {	/* File without quota accounting? */
+		spin_unlock(&inode->i_lock);
+		spin_unlock(&dq_data_lock);
+		return 0;
+	}
+	cur_space = __inode_get_bytes(inode);
+	rsv_space = __inode_get_rsv_space(inode);
+	dquots = i_dquot(inode);
+	/*
+	 * Build the transfer_from list, check limits, and update usage in
+	 * the target structures.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		/*
 		 * Skip changes for same uid or gid or for turned off quota-type.
@@ -1817,6 +3167,7 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 		if (!sb_has_quota_active(inode->i_sb, cnt))
 			continue;
 		is_valid[cnt] = 1;
+<<<<<<< HEAD
 		transfer_from[cnt] = inode->i_dquot[cnt];
 		ret = check_idq(transfer_to[cnt], 1, &warn_to[cnt]);
 		if (ret)
@@ -1829,12 +3180,32 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 	/*
 	 * Finally perform the needed transfer from transfer_from to transfer_to
 	 */
+=======
+		transfer_from[cnt] = srcu_dereference_check(dquots[cnt],
+				&dquot_srcu, lockdep_is_held(&dq_data_lock));
+		ret = dquot_add_inodes(transfer_to[cnt], inode_usage,
+				       &warn_to[cnt]);
+		if (ret)
+			goto over_quota;
+		ret = dquot_add_space(transfer_to[cnt], cur_space, rsv_space,
+				      DQUOT_SPACE_WARN, &warn_to[cnt]);
+		if (ret) {
+			spin_lock(&transfer_to[cnt]->dq_dqb_lock);
+			dquot_decr_inodes(transfer_to[cnt], inode_usage);
+			spin_unlock(&transfer_to[cnt]->dq_dqb_lock);
+			goto over_quota;
+		}
+	}
+
+	/* Decrease usage for source structures and update quota pointers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		if (!is_valid[cnt])
 			continue;
 		/* Due to IO error we might not have transfer_from[] structure */
 		if (transfer_from[cnt]) {
 			int wtype;
+<<<<<<< HEAD
 			wtype = info_idq_free(transfer_from[cnt], 1);
 			if (wtype != QUOTA_NL_NOWARN)
 				prepare_warning(&warn_from_inodes[cnt],
@@ -1860,6 +3231,40 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 
 	mark_all_dquot_dirty(transfer_from);
 	mark_all_dquot_dirty(transfer_to);
+=======
+
+			spin_lock(&transfer_from[cnt]->dq_dqb_lock);
+			wtype = info_idq_free(transfer_from[cnt], inode_usage);
+			if (wtype != QUOTA_NL_NOWARN)
+				prepare_warning(&warn_from_inodes[cnt],
+						transfer_from[cnt], wtype);
+			wtype = info_bdq_free(transfer_from[cnt],
+					      cur_space + rsv_space);
+			if (wtype != QUOTA_NL_NOWARN)
+				prepare_warning(&warn_from_space[cnt],
+						transfer_from[cnt], wtype);
+			dquot_decr_inodes(transfer_from[cnt], inode_usage);
+			dquot_decr_space(transfer_from[cnt], cur_space);
+			dquot_free_reserved_space(transfer_from[cnt],
+						  rsv_space);
+			spin_unlock(&transfer_from[cnt]->dq_dqb_lock);
+		}
+		rcu_assign_pointer(dquots[cnt], transfer_to[cnt]);
+	}
+	spin_unlock(&inode->i_lock);
+	spin_unlock(&dq_data_lock);
+
+	/*
+	 * These arrays are local and we hold dquot references so we don't need
+	 * the srcu protection but still take dquot_srcu to avoid warning in
+	 * mark_all_dquot_dirty().
+	 */
+	index = srcu_read_lock(&dquot_srcu);
+	mark_all_dquot_dirty((struct dquot __rcu **)transfer_from);
+	mark_all_dquot_dirty((struct dquot __rcu **)transfer_to);
+	srcu_read_unlock(&dquot_srcu, index);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn_to);
 	flush_warnings(warn_from_inodes);
 	flush_warnings(warn_from_space);
@@ -1869,8 +3274,23 @@ int __dquot_transfer(struct inode *inode, struct dquot **transfer_to)
 			transfer_to[cnt] = transfer_from[cnt];
 	return 0;
 over_quota:
+<<<<<<< HEAD
 	spin_unlock(&dq_data_lock);
 	up_write(&sb_dqopt(inode->i_sb)->dqptr_sem);
+=======
+	/* Back out changes we already did */
+	for (cnt--; cnt >= 0; cnt--) {
+		if (!is_valid[cnt])
+			continue;
+		spin_lock(&transfer_to[cnt]->dq_dqb_lock);
+		dquot_decr_inodes(transfer_to[cnt], inode_usage);
+		dquot_decr_space(transfer_to[cnt], cur_space);
+		dquot_free_reserved_space(transfer_to[cnt], rsv_space);
+		spin_unlock(&transfer_to[cnt]->dq_dqb_lock);
+	}
+	spin_unlock(&inode->i_lock);
+	spin_unlock(&dq_data_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_warnings(warn_to);
 	return ret;
 }
@@ -1879,6 +3299,7 @@ EXPORT_SYMBOL(__dquot_transfer);
 /* Wrapper for transferring ownership of an inode for uid/gid only
  * Called from FSXXX_setattr()
  */
+<<<<<<< HEAD
 int dquot_transfer(struct inode *inode, struct iattr *iattr)
 {
 	struct dquot *transfer_to[MAXQUOTAS] = {};
@@ -1894,6 +3315,49 @@ int dquot_transfer(struct inode *inode, struct iattr *iattr)
 		transfer_to[GRPQUOTA] = dqget(sb, iattr->ia_gid, GRPQUOTA);
 
 	ret = __dquot_transfer(inode, transfer_to);
+=======
+int dquot_transfer(struct mnt_idmap *idmap, struct inode *inode,
+		   struct iattr *iattr)
+{
+	struct dquot *transfer_to[MAXQUOTAS] = {};
+	struct dquot *dquot;
+	struct super_block *sb = inode->i_sb;
+	int ret;
+
+	if (!inode_quota_active(inode))
+		return 0;
+
+	if (i_uid_needs_update(idmap, iattr, inode)) {
+		kuid_t kuid = from_vfsuid(idmap, i_user_ns(inode),
+					  iattr->ia_vfsuid);
+
+		dquot = dqget(sb, make_kqid_uid(kuid));
+		if (IS_ERR(dquot)) {
+			if (PTR_ERR(dquot) != -ESRCH) {
+				ret = PTR_ERR(dquot);
+				goto out_put;
+			}
+			dquot = NULL;
+		}
+		transfer_to[USRQUOTA] = dquot;
+	}
+	if (i_gid_needs_update(idmap, iattr, inode)) {
+		kgid_t kgid = from_vfsgid(idmap, i_user_ns(inode),
+					  iattr->ia_vfsgid);
+
+		dquot = dqget(sb, make_kqid_gid(kgid));
+		if (IS_ERR(dquot)) {
+			if (PTR_ERR(dquot) != -ESRCH) {
+				ret = PTR_ERR(dquot);
+				goto out_put;
+			}
+			dquot = NULL;
+		}
+		transfer_to[GRPQUOTA] = dquot;
+	}
+	ret = __dquot_transfer(inode, transfer_to);
+out_put:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dqput_all(transfer_to);
 	return ret;
 }
@@ -1904,6 +3368,7 @@ EXPORT_SYMBOL(dquot_transfer);
  */
 int dquot_commit_info(struct super_block *sb, int type)
 {
+<<<<<<< HEAD
 	int ret;
 	struct quota_info *dqopt = sb_dqopt(sb);
 
@@ -1914,6 +3379,26 @@ int dquot_commit_info(struct super_block *sb, int type)
 }
 EXPORT_SYMBOL(dquot_commit_info);
 
+=======
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	return dqopt->ops[type]->write_file_info(sb, type);
+}
+EXPORT_SYMBOL(dquot_commit_info);
+
+int dquot_get_next_id(struct super_block *sb, struct kqid *qid)
+{
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	if (!sb_has_quota_active(sb, qid->type))
+		return -ESRCH;
+	if (!dqopt->ops[qid->type]->get_next_id)
+		return -ENOSYS;
+	return dqopt->ops[qid->type]->get_next_id(sb, qid);
+}
+EXPORT_SYMBOL(dquot_get_next_id);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions of diskquota operations.
  */
@@ -1925,6 +3410,10 @@ const struct dquot_operations dquot_operations = {
 	.write_info	= dquot_commit_info,
 	.alloc_dquot	= dquot_alloc,
 	.destroy_dquot	= dquot_destroy,
+<<<<<<< HEAD
+=======
+	.get_next_id	= dquot_get_next_id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(dquot_operations);
 
@@ -1937,19 +3426,51 @@ int dquot_file_open(struct inode *inode, struct file *file)
 
 	error = generic_file_open(inode, file);
 	if (!error && (file->f_mode & FMODE_WRITE))
+<<<<<<< HEAD
 		dquot_initialize(inode);
+=======
+		error = dquot_initialize(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL(dquot_file_open);
 
+<<<<<<< HEAD
+=======
+static void vfs_cleanup_quota_inode(struct super_block *sb, int type)
+{
+	struct quota_info *dqopt = sb_dqopt(sb);
+	struct inode *inode = dqopt->files[type];
+
+	if (!inode)
+		return;
+	if (!(dqopt->flags & DQUOT_QUOTA_SYS_FILE)) {
+		inode_lock(inode);
+		inode->i_flags &= ~S_NOQUOTA;
+		inode_unlock(inode);
+	}
+	dqopt->files[type] = NULL;
+	iput(inode);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Turn quota off on a device. type == -1 ==> quotaoff for all types (umount)
  */
 int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 {
+<<<<<<< HEAD
 	int cnt, ret = 0;
 	struct quota_info *dqopt = sb_dqopt(sb);
 	struct inode *toputinode[MAXQUOTAS];
+=======
+	int cnt;
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	/* s_umount should be held in exclusive mode */
+	if (WARN_ON_ONCE(down_read_trylock(&sb->s_umount)))
+		up_read(&sb->s_umount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cannot turn off usage accounting without turning off limits, or
 	 * suspend quotas and simultaneously turn quotas off. */
@@ -1958,20 +3479,30 @@ int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 	    DQUOT_USAGE_ENABLED)))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* We need to serialize quota_off() for device */
 	mutex_lock(&dqopt->dqonoff_mutex);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Skip everything if there's nothing to do. We have to do this because
 	 * sometimes we are called when fill_super() failed and calling
 	 * sync_fs() in such cases does no good.
 	 */
+<<<<<<< HEAD
 	if (!sb_any_quota_loaded(sb)) {
 		mutex_unlock(&dqopt->dqonoff_mutex);
 		return 0;
 	}
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
 		toputinode[cnt] = NULL;
+=======
+	if (!sb_any_quota_loaded(sb))
+		return 0;
+
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (type != -1 && cnt != type)
 			continue;
 		if (!sb_has_quota_loaded(sb, cnt))
@@ -1991,8 +3522,12 @@ int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 				dqopt->flags &=	~dquot_state_flag(
 							DQUOT_SUSPENDED, cnt);
 				spin_unlock(&dq_state_lock);
+<<<<<<< HEAD
 				iput(dqopt->files[cnt]);
 				dqopt->files[cnt] = NULL;
+=======
+				vfs_cleanup_quota_inode(sb, cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			spin_unlock(&dq_state_lock);
@@ -2014,16 +3549,22 @@ int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 		if (dqopt->ops[cnt]->free_file_info)
 			dqopt->ops[cnt]->free_file_info(sb, cnt);
 		put_quota_format(dqopt->info[cnt].dqi_format);
+<<<<<<< HEAD
 
 		toputinode[cnt] = dqopt->files[cnt];
 		if (!sb_has_quota_loaded(sb, cnt))
 			dqopt->files[cnt] = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dqopt->info[cnt].dqi_flags = 0;
 		dqopt->info[cnt].dqi_igrace = 0;
 		dqopt->info[cnt].dqi_bgrace = 0;
 		dqopt->ops[cnt] = NULL;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&dqopt->dqonoff_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Skip syncing and setting flags if quota files are hidden */
 	if (dqopt->flags & DQUOT_QUOTA_SYS_FILE)
@@ -2040,6 +3581,7 @@ int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 	 * must also discard the blockdev buffers so that we see the
 	 * changes done by userspace on the next quotaon() */
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
+<<<<<<< HEAD
 		if (toputinode[cnt]) {
 			mutex_lock(&dqopt->dqonoff_mutex);
 			/* If quota was reenabled in the meantime, we have
@@ -2055,10 +3597,17 @@ int dquot_disable(struct super_block *sb, int type, unsigned int flags)
 				mark_inode_dirty_sync(toputinode[cnt]);
 			}
 			mutex_unlock(&dqopt->dqonoff_mutex);
+=======
+		if (!sb_has_quota_loaded(sb, cnt) && dqopt->files[cnt]) {
+			inode_lock(dqopt->files[cnt]);
+			truncate_inode_pages(&dqopt->files[cnt]->i_data, 0);
+			inode_unlock(dqopt->files[cnt]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	if (sb->s_bdev)
 		invalidate_bdev(sb->s_bdev);
 put_inodes:
+<<<<<<< HEAD
 	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
 		if (toputinode[cnt]) {
 			/* On remount RO, we keep the inode pointer so that we
@@ -2074,6 +3623,16 @@ put_inodes:
 				ret = -EBUSY;
 		}
 	return ret;
+=======
+	/* We are done when suspending quotas */
+	if (flags & DQUOT_SUSPENDED)
+		return 0;
+
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++)
+		if (!sb_has_quota_loaded(sb, cnt))
+			vfs_cleanup_quota_inode(sb, cnt);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dquot_disable);
 
@@ -2088,6 +3647,7 @@ EXPORT_SYMBOL(dquot_quota_off);
  *	Turn quotas on on a device
  */
 
+<<<<<<< HEAD
 /*
  * Helper function to turn quotas on when we already have the inode of
  * quota file and no quota information is loaded.
@@ -2112,6 +3672,77 @@ static int vfs_load_quota_inode(struct inode *inode, int type, int format_id,
 		goto out_fmt;
 	}
 	if (!sb->s_op->quota_write || !sb->s_op->quota_read) {
+=======
+static int vfs_setup_quota_inode(struct inode *inode, int type)
+{
+	struct super_block *sb = inode->i_sb;
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	if (is_bad_inode(inode))
+		return -EUCLEAN;
+	if (!S_ISREG(inode->i_mode))
+		return -EACCES;
+	if (IS_RDONLY(inode))
+		return -EROFS;
+	if (sb_has_quota_loaded(sb, type))
+		return -EBUSY;
+
+	/*
+	 * Quota files should never be encrypted.  They should be thought of as
+	 * filesystem metadata, not user data.  New-style internal quota files
+	 * cannot be encrypted by users anyway, but old-style external quota
+	 * files could potentially be incorrectly created in an encrypted
+	 * directory, hence this explicit check.  Some reasons why encrypted
+	 * quota files don't work include: (1) some filesystems that support
+	 * encryption don't handle it in their quota_read and quota_write, and
+	 * (2) cleaning up encrypted quota files at unmount would need special
+	 * consideration, as quota files are cleaned up later than user files.
+	 */
+	if (IS_ENCRYPTED(inode))
+		return -EINVAL;
+
+	dqopt->files[type] = igrab(inode);
+	if (!dqopt->files[type])
+		return -EIO;
+	if (!(dqopt->flags & DQUOT_QUOTA_SYS_FILE)) {
+		/* We don't want quota and atime on quota files (deadlocks
+		 * possible) Also nobody should write to the file - we use
+		 * special IO operations which ignore the immutable bit. */
+		inode_lock(inode);
+		inode->i_flags |= S_NOQUOTA;
+		inode_unlock(inode);
+		/*
+		 * When S_NOQUOTA is set, remove dquot references as no more
+		 * references can be added
+		 */
+		__dquot_drop(inode);
+	}
+	return 0;
+}
+
+int dquot_load_quota_sb(struct super_block *sb, int type, int format_id,
+	unsigned int flags)
+{
+	struct quota_format_type *fmt = find_quota_format(format_id);
+	struct quota_info *dqopt = sb_dqopt(sb);
+	int error;
+
+	lockdep_assert_held_write(&sb->s_umount);
+
+	/* Just unsuspend quotas? */
+	if (WARN_ON_ONCE(flags & DQUOT_SUSPENDED))
+		return -EINVAL;
+
+	if (!fmt)
+		return -ESRCH;
+	if (!sb->dq_op || !sb->s_qcop ||
+	    (type == PRJQUOTA && sb->dq_op->get_projid == NULL)) {
+		error = -EINVAL;
+		goto out_fmt;
+	}
+	/* Filesystems outside of init_user_ns not yet supported */
+	if (sb->s_user_ns != &init_user_ns) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -EINVAL;
 		goto out_fmt;
 	}
@@ -2120,6 +3751,13 @@ static int vfs_load_quota_inode(struct inode *inode, int type, int format_id,
 		error = -EINVAL;
 		goto out_fmt;
 	}
+<<<<<<< HEAD
+=======
+	if (sb_has_quota_loaded(sb, type)) {
+		error = -EBUSY;
+		goto out_fmt;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(dqopt->flags & DQUOT_QUOTA_SYS_FILE)) {
 		/* As we bypass the pagecache we must now flush all the
@@ -2131,6 +3769,7 @@ static int vfs_load_quota_inode(struct inode *inode, int type, int format_id,
 		sync_filesystem(sb);
 		invalidate_bdev(sb->s_bdev);
 	}
+<<<<<<< HEAD
 	mutex_lock(&dqopt->dqonoff_mutex);
 	if (sb_has_quota_loaded(sb, type)) {
 		error = -EBUSY;
@@ -2160,11 +3799,18 @@ static int vfs_load_quota_inode(struct inode *inode, int type, int format_id,
 	error = -EINVAL;
 	if (!fmt->qf_ops->check_quota_file(sb, type))
 		goto out_file_init;
+=======
+
+	error = -EINVAL;
+	if (!fmt->qf_ops->check_quota_file(sb, type))
+		goto out_fmt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dqopt->ops[type] = fmt->qf_ops;
 	dqopt->info[type].dqi_format = fmt;
 	dqopt->info[type].dqi_fmt_id = format_id;
 	INIT_LIST_HEAD(&dqopt->info[type].dqi_dirty_list);
+<<<<<<< HEAD
 	mutex_lock(&dqopt->dqio_mutex);
 	error = dqopt->ops[type]->read_file_info(sb, type);
 	if (error < 0) {
@@ -2174,10 +3820,21 @@ static int vfs_load_quota_inode(struct inode *inode, int type, int format_id,
 	if (dqopt->flags & DQUOT_QUOTA_SYS_FILE)
 		dqopt->info[type].dqi_flags |= DQF_SYS_FILE;
 	mutex_unlock(&dqopt->dqio_mutex);
+=======
+	error = dqopt->ops[type]->read_file_info(sb, type);
+	if (error < 0)
+		goto out_fmt;
+	if (dqopt->flags & DQUOT_QUOTA_SYS_FILE) {
+		spin_lock(&dq_data_lock);
+		dqopt->info[type].dqi_flags |= DQF_SYS_FILE;
+		spin_unlock(&dq_data_lock);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&dq_state_lock);
 	dqopt->flags |= dquot_state_flag(flags, type);
 	spin_unlock(&dq_state_lock);
 
+<<<<<<< HEAD
 	add_dquot_ref(sb, type);
 	mutex_unlock(&dqopt->dqonoff_mutex);
 
@@ -2201,11 +3858,45 @@ out_fmt:
 
 	return error; 
 }
+=======
+	error = add_dquot_ref(sb, type);
+	if (error)
+		dquot_disable(sb, type,
+			      DQUOT_USAGE_ENABLED | DQUOT_LIMITS_ENABLED);
+
+	return error;
+out_fmt:
+	put_quota_format(fmt);
+
+	return error;
+}
+EXPORT_SYMBOL(dquot_load_quota_sb);
+
+/*
+ * More powerful function for turning on quotas on given quota inode allowing
+ * setting of individual quota flags
+ */
+int dquot_load_quota_inode(struct inode *inode, int type, int format_id,
+	unsigned int flags)
+{
+	int err;
+
+	err = vfs_setup_quota_inode(inode, type);
+	if (err < 0)
+		return err;
+	err = dquot_load_quota_sb(inode->i_sb, type, format_id, flags);
+	if (err < 0)
+		vfs_cleanup_quota_inode(inode->i_sb, type);
+	return err;
+}
+EXPORT_SYMBOL(dquot_load_quota_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Reenable quotas on remount RW */
 int dquot_resume(struct super_block *sb, int type)
 {
 	struct quota_info *dqopt = sb_dqopt(sb);
+<<<<<<< HEAD
 	struct inode *inode;
 	int ret = 0, cnt;
 	unsigned int flags;
@@ -2221,18 +3912,42 @@ int dquot_resume(struct super_block *sb, int type)
 		}
 		inode = dqopt->files[cnt];
 		dqopt->files[cnt] = NULL;
+=======
+	int ret = 0, cnt;
+	unsigned int flags;
+
+	/* s_umount should be held in exclusive mode */
+	if (WARN_ON_ONCE(down_read_trylock(&sb->s_umount)))
+		up_read(&sb->s_umount);
+
+	for (cnt = 0; cnt < MAXQUOTAS; cnt++) {
+		if (type != -1 && cnt != type)
+			continue;
+		if (!sb_has_quota_suspended(sb, cnt))
+			continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&dq_state_lock);
 		flags = dqopt->flags & dquot_state_flag(DQUOT_USAGE_ENABLED |
 							DQUOT_LIMITS_ENABLED,
 							cnt);
 		dqopt->flags &= ~dquot_state_flag(DQUOT_STATE_FLAGS, cnt);
 		spin_unlock(&dq_state_lock);
+<<<<<<< HEAD
 		mutex_unlock(&dqopt->dqonoff_mutex);
 
 		flags = dquot_generic_flag(flags, cnt);
 		ret = vfs_load_quota_inode(inode, cnt,
 				dqopt->info[cnt].dqi_fmt_id, flags);
 		iput(inode);
+=======
+
+		flags = dquot_generic_flag(flags, cnt);
+		ret = dquot_load_quota_sb(sb, cnt, dqopt->info[cnt].dqi_fmt_id,
+					  flags);
+		if (ret < 0)
+			vfs_cleanup_quota_inode(sb, cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -2240,7 +3955,11 @@ int dquot_resume(struct super_block *sb, int type)
 EXPORT_SYMBOL(dquot_resume);
 
 int dquot_quota_on(struct super_block *sb, int type, int format_id,
+<<<<<<< HEAD
 		   struct path *path)
+=======
+		   const struct path *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = security_quota_on(path->dentry);
 	if (error)
@@ -2249,7 +3968,11 @@ int dquot_quota_on(struct super_block *sb, int type, int format_id,
 	if (path->dentry->d_sb != sb)
 		error = -EXDEV;
 	else
+<<<<<<< HEAD
 		error = vfs_load_quota_inode(path->dentry->d_inode, type,
+=======
+		error = dquot_load_quota_inode(d_inode(path->dentry), type,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     format_id, DQUOT_USAGE_ENABLED |
 					     DQUOT_LIMITS_ENABLED);
 	return error;
@@ -2257,6 +3980,7 @@ int dquot_quota_on(struct super_block *sb, int type, int format_id,
 EXPORT_SYMBOL(dquot_quota_on);
 
 /*
+<<<<<<< HEAD
  * More powerful function for turning on quotas allowing setting
  * of individual quota flags
  */
@@ -2304,6 +4028,8 @@ load_quota:
 EXPORT_SYMBOL(dquot_enable);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is used when filesystem needs to initialize quotas
  * during mount time.
  */
@@ -2313,6 +4039,7 @@ int dquot_quota_on_mount(struct super_block *sb, char *qf_name,
 	struct dentry *dentry;
 	int error;
 
+<<<<<<< HEAD
 	mutex_lock(&sb->s_root->d_inode->i_mutex);
 	dentry = lookup_one_len(qf_name, sb->s_root, strlen(qf_name));
 	mutex_unlock(&sb->s_root->d_inode->i_mutex);
@@ -2330,11 +4057,23 @@ int dquot_quota_on_mount(struct super_block *sb, char *qf_name,
 				DQUOT_USAGE_ENABLED | DQUOT_LIMITS_ENABLED);
 
 out:
+=======
+	dentry = lookup_positive_unlocked(qf_name, sb->s_root, strlen(qf_name));
+	if (IS_ERR(dentry))
+		return PTR_ERR(dentry);
+
+	error = security_quota_on(dentry);
+	if (!error)
+		error = dquot_load_quota_inode(d_inode(dentry), type, format_id,
+				DQUOT_USAGE_ENABLED | DQUOT_LIMITS_ENABLED);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dput(dentry);
 	return error;
 }
 EXPORT_SYMBOL(dquot_quota_on_mount);
 
+<<<<<<< HEAD
 static inline qsize_t qbtos(qsize_t blocks)
 {
 	return blocks << QIF_DQBLKSIZE_BITS;
@@ -2347,10 +4086,101 @@ static inline qsize_t stoqb(qsize_t space)
 
 /* Generic routine for getting common part of quota structure */
 static void do_get_dqblk(struct dquot *dquot, struct fs_disk_quota *di)
+=======
+static int dquot_quota_enable(struct super_block *sb, unsigned int flags)
+{
+	int ret;
+	int type;
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	if (!(dqopt->flags & DQUOT_QUOTA_SYS_FILE))
+		return -ENOSYS;
+	/* Accounting cannot be turned on while fs is mounted */
+	flags &= ~(FS_QUOTA_UDQ_ACCT | FS_QUOTA_GDQ_ACCT | FS_QUOTA_PDQ_ACCT);
+	if (!flags)
+		return -EINVAL;
+	for (type = 0; type < MAXQUOTAS; type++) {
+		if (!(flags & qtype_enforce_flag(type)))
+			continue;
+		/* Can't enforce without accounting */
+		if (!sb_has_quota_usage_enabled(sb, type)) {
+			ret = -EINVAL;
+			goto out_err;
+		}
+		if (sb_has_quota_limits_enabled(sb, type)) {
+			ret = -EBUSY;
+			goto out_err;
+		}
+		spin_lock(&dq_state_lock);
+		dqopt->flags |= dquot_state_flag(DQUOT_LIMITS_ENABLED, type);
+		spin_unlock(&dq_state_lock);
+	}
+	return 0;
+out_err:
+	/* Backout enforcement enablement we already did */
+	for (type--; type >= 0; type--)  {
+		if (flags & qtype_enforce_flag(type))
+			dquot_disable(sb, type, DQUOT_LIMITS_ENABLED);
+	}
+	/* Error code translation for better compatibility with XFS */
+	if (ret == -EBUSY)
+		ret = -EEXIST;
+	return ret;
+}
+
+static int dquot_quota_disable(struct super_block *sb, unsigned int flags)
+{
+	int ret;
+	int type;
+	struct quota_info *dqopt = sb_dqopt(sb);
+
+	if (!(dqopt->flags & DQUOT_QUOTA_SYS_FILE))
+		return -ENOSYS;
+	/*
+	 * We don't support turning off accounting via quotactl. In principle
+	 * quota infrastructure can do this but filesystems don't expect
+	 * userspace to be able to do it.
+	 */
+	if (flags &
+		  (FS_QUOTA_UDQ_ACCT | FS_QUOTA_GDQ_ACCT | FS_QUOTA_PDQ_ACCT))
+		return -EOPNOTSUPP;
+
+	/* Filter out limits not enabled */
+	for (type = 0; type < MAXQUOTAS; type++)
+		if (!sb_has_quota_limits_enabled(sb, type))
+			flags &= ~qtype_enforce_flag(type);
+	/* Nothing left? */
+	if (!flags)
+		return -EEXIST;
+	for (type = 0; type < MAXQUOTAS; type++) {
+		if (flags & qtype_enforce_flag(type)) {
+			ret = dquot_disable(sb, type, DQUOT_LIMITS_ENABLED);
+			if (ret < 0)
+				goto out_err;
+		}
+	}
+	return 0;
+out_err:
+	/* Backout enforcement disabling we already did */
+	for (type--; type >= 0; type--)  {
+		if (flags & qtype_enforce_flag(type)) {
+			spin_lock(&dq_state_lock);
+			dqopt->flags |=
+				dquot_state_flag(DQUOT_LIMITS_ENABLED, type);
+			spin_unlock(&dq_state_lock);
+		}
+	}
+	return ret;
+}
+
+/* Generic routine for getting common part of quota structure */
+static void do_get_dqblk(struct dquot *dquot, struct qc_dqblk *di)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mem_dqblk *dm = &dquot->dq_dqb;
 
 	memset(di, 0, sizeof(*di));
+<<<<<<< HEAD
 	di->d_version = FS_DQUOT_VERSION;
 	di->d_flags = dquot->dq_type == USRQUOTA ?
 			FS_USER_QUOTA : FS_GROUP_QUOTA;
@@ -2376,6 +4206,28 @@ int dquot_get_dqblk(struct super_block *sb, int type, qid_t id,
 	dquot = dqget(sb, id, type);
 	if (!dquot)
 		return -ESRCH;
+=======
+	spin_lock(&dquot->dq_dqb_lock);
+	di->d_spc_hardlimit = dm->dqb_bhardlimit;
+	di->d_spc_softlimit = dm->dqb_bsoftlimit;
+	di->d_ino_hardlimit = dm->dqb_ihardlimit;
+	di->d_ino_softlimit = dm->dqb_isoftlimit;
+	di->d_space = dm->dqb_curspace + dm->dqb_rsvspace;
+	di->d_ino_count = dm->dqb_curinodes;
+	di->d_spc_timer = dm->dqb_btime;
+	di->d_ino_timer = dm->dqb_itime;
+	spin_unlock(&dquot->dq_dqb_lock);
+}
+
+int dquot_get_dqblk(struct super_block *sb, struct kqid qid,
+		    struct qc_dqblk *di)
+{
+	struct dquot *dquot;
+
+	dquot = dqget(sb, qid);
+	if (IS_ERR(dquot))
+		return PTR_ERR(dquot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_get_dqblk(dquot, di);
 	dqput(dquot);
 
@@ -2383,6 +4235,7 @@ int dquot_get_dqblk(struct super_block *sb, int type, qid_t id,
 }
 EXPORT_SYMBOL(dquot_get_dqblk);
 
+<<<<<<< HEAD
 #define VFS_FS_DQ_MASK \
 	(FS_DQ_BCOUNT | FS_DQ_BSOFT | FS_DQ_BHARD | \
 	 FS_DQ_ICOUNT | FS_DQ_ISOFT | FS_DQ_IHARD | \
@@ -2411,48 +4264,131 @@ static int do_set_dqblk(struct dquot *dquot, struct fs_disk_quota *di)
 	spin_lock(&dq_data_lock);
 	if (di->d_fieldmask & FS_DQ_BCOUNT) {
 		dm->dqb_curspace = di->d_bcount - dm->dqb_rsvspace;
+=======
+int dquot_get_next_dqblk(struct super_block *sb, struct kqid *qid,
+			 struct qc_dqblk *di)
+{
+	struct dquot *dquot;
+	int err;
+
+	if (!sb->dq_op->get_next_id)
+		return -ENOSYS;
+	err = sb->dq_op->get_next_id(sb, qid);
+	if (err < 0)
+		return err;
+	dquot = dqget(sb, *qid);
+	if (IS_ERR(dquot))
+		return PTR_ERR(dquot);
+	do_get_dqblk(dquot, di);
+	dqput(dquot);
+
+	return 0;
+}
+EXPORT_SYMBOL(dquot_get_next_dqblk);
+
+#define VFS_QC_MASK \
+	(QC_SPACE | QC_SPC_SOFT | QC_SPC_HARD | \
+	 QC_INO_COUNT | QC_INO_SOFT | QC_INO_HARD | \
+	 QC_SPC_TIMER | QC_INO_TIMER)
+
+/* Generic routine for setting common part of quota structure */
+static int do_set_dqblk(struct dquot *dquot, struct qc_dqblk *di)
+{
+	struct mem_dqblk *dm = &dquot->dq_dqb;
+	int check_blim = 0, check_ilim = 0;
+	struct mem_dqinfo *dqi = &sb_dqopt(dquot->dq_sb)->info[dquot->dq_id.type];
+
+	if (di->d_fieldmask & ~VFS_QC_MASK)
+		return -EINVAL;
+
+	if (((di->d_fieldmask & QC_SPC_SOFT) &&
+	     di->d_spc_softlimit > dqi->dqi_max_spc_limit) ||
+	    ((di->d_fieldmask & QC_SPC_HARD) &&
+	     di->d_spc_hardlimit > dqi->dqi_max_spc_limit) ||
+	    ((di->d_fieldmask & QC_INO_SOFT) &&
+	     (di->d_ino_softlimit > dqi->dqi_max_ino_limit)) ||
+	    ((di->d_fieldmask & QC_INO_HARD) &&
+	     (di->d_ino_hardlimit > dqi->dqi_max_ino_limit)))
+		return -ERANGE;
+
+	spin_lock(&dquot->dq_dqb_lock);
+	if (di->d_fieldmask & QC_SPACE) {
+		dm->dqb_curspace = di->d_space - dm->dqb_rsvspace;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_blim = 1;
 		set_bit(DQ_LASTSET_B + QIF_SPACE_B, &dquot->dq_flags);
 	}
 
+<<<<<<< HEAD
 	if (di->d_fieldmask & FS_DQ_BSOFT)
 		dm->dqb_bsoftlimit = qbtos(di->d_blk_softlimit);
 	if (di->d_fieldmask & FS_DQ_BHARD)
 		dm->dqb_bhardlimit = qbtos(di->d_blk_hardlimit);
 	if (di->d_fieldmask & (FS_DQ_BSOFT | FS_DQ_BHARD)) {
+=======
+	if (di->d_fieldmask & QC_SPC_SOFT)
+		dm->dqb_bsoftlimit = di->d_spc_softlimit;
+	if (di->d_fieldmask & QC_SPC_HARD)
+		dm->dqb_bhardlimit = di->d_spc_hardlimit;
+	if (di->d_fieldmask & (QC_SPC_SOFT | QC_SPC_HARD)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_blim = 1;
 		set_bit(DQ_LASTSET_B + QIF_BLIMITS_B, &dquot->dq_flags);
 	}
 
+<<<<<<< HEAD
 	if (di->d_fieldmask & FS_DQ_ICOUNT) {
 		dm->dqb_curinodes = di->d_icount;
+=======
+	if (di->d_fieldmask & QC_INO_COUNT) {
+		dm->dqb_curinodes = di->d_ino_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_ilim = 1;
 		set_bit(DQ_LASTSET_B + QIF_INODES_B, &dquot->dq_flags);
 	}
 
+<<<<<<< HEAD
 	if (di->d_fieldmask & FS_DQ_ISOFT)
 		dm->dqb_isoftlimit = di->d_ino_softlimit;
 	if (di->d_fieldmask & FS_DQ_IHARD)
 		dm->dqb_ihardlimit = di->d_ino_hardlimit;
 	if (di->d_fieldmask & (FS_DQ_ISOFT | FS_DQ_IHARD)) {
+=======
+	if (di->d_fieldmask & QC_INO_SOFT)
+		dm->dqb_isoftlimit = di->d_ino_softlimit;
+	if (di->d_fieldmask & QC_INO_HARD)
+		dm->dqb_ihardlimit = di->d_ino_hardlimit;
+	if (di->d_fieldmask & (QC_INO_SOFT | QC_INO_HARD)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_ilim = 1;
 		set_bit(DQ_LASTSET_B + QIF_ILIMITS_B, &dquot->dq_flags);
 	}
 
+<<<<<<< HEAD
 	if (di->d_fieldmask & FS_DQ_BTIMER) {
 		dm->dqb_btime = di->d_btimer;
+=======
+	if (di->d_fieldmask & QC_SPC_TIMER) {
+		dm->dqb_btime = di->d_spc_timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_blim = 1;
 		set_bit(DQ_LASTSET_B + QIF_BTIME_B, &dquot->dq_flags);
 	}
 
+<<<<<<< HEAD
 	if (di->d_fieldmask & FS_DQ_ITIMER) {
 		dm->dqb_itime = di->d_itimer;
+=======
+	if (di->d_fieldmask & QC_INO_TIMER) {
+		dm->dqb_itime = di->d_ino_timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_ilim = 1;
 		set_bit(DQ_LASTSET_B + QIF_ITIME_B, &dquot->dq_flags);
 	}
 
 	if (check_blim) {
 		if (!dm->dqb_bsoftlimit ||
+<<<<<<< HEAD
 		    dm->dqb_curspace < dm->dqb_bsoftlimit) {
 			dm->dqb_btime = 0;
 			clear_bit(DQ_BLKS_B, &dquot->dq_flags);
@@ -2468,27 +4404,59 @@ static int do_set_dqblk(struct dquot *dquot, struct fs_disk_quota *di)
 		} else if (!(di->d_fieldmask & FS_DQ_ITIMER))
 			/* Set grace only if user hasn't provided his own... */
 			dm->dqb_itime = get_seconds() + dqi->dqi_igrace;
+=======
+		    dm->dqb_curspace + dm->dqb_rsvspace <= dm->dqb_bsoftlimit) {
+			dm->dqb_btime = 0;
+			clear_bit(DQ_BLKS_B, &dquot->dq_flags);
+		} else if (!(di->d_fieldmask & QC_SPC_TIMER))
+			/* Set grace only if user hasn't provided his own... */
+			dm->dqb_btime = ktime_get_real_seconds() + dqi->dqi_bgrace;
+	}
+	if (check_ilim) {
+		if (!dm->dqb_isoftlimit ||
+		    dm->dqb_curinodes <= dm->dqb_isoftlimit) {
+			dm->dqb_itime = 0;
+			clear_bit(DQ_INODES_B, &dquot->dq_flags);
+		} else if (!(di->d_fieldmask & QC_INO_TIMER))
+			/* Set grace only if user hasn't provided his own... */
+			dm->dqb_itime = ktime_get_real_seconds() + dqi->dqi_igrace;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (dm->dqb_bhardlimit || dm->dqb_bsoftlimit || dm->dqb_ihardlimit ||
 	    dm->dqb_isoftlimit)
 		clear_bit(DQ_FAKE_B, &dquot->dq_flags);
 	else
 		set_bit(DQ_FAKE_B, &dquot->dq_flags);
+<<<<<<< HEAD
 	spin_unlock(&dq_data_lock);
+=======
+	spin_unlock(&dquot->dq_dqb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_dquot_dirty(dquot);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int dquot_set_dqblk(struct super_block *sb, int type, qid_t id,
 		  struct fs_disk_quota *di)
+=======
+int dquot_set_dqblk(struct super_block *sb, struct kqid qid,
+		  struct qc_dqblk *di)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dquot *dquot;
 	int rc;
 
+<<<<<<< HEAD
 	dquot = dqget(sb, id, type);
 	if (!dquot) {
 		rc = -ESRCH;
+=======
+	dquot = dqget(sb, qid);
+	if (IS_ERR(dquot)) {
+		rc = PTR_ERR(dquot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = do_set_dqblk(dquot, di);
@@ -2499,6 +4467,7 @@ out:
 EXPORT_SYMBOL(dquot_set_dqblk);
 
 /* Generic routine for getting common part of quota file information */
+<<<<<<< HEAD
 int dquot_get_dqinfo(struct super_block *sb, int type, struct if_dqinfo *ii)
 {
 	struct mem_dqinfo *mi;
@@ -2577,55 +4546,186 @@ static ctl_table fs_dqstats_table[] = {
 		.procname	= "lookups",
 		.data		= &dqstats.stat[DQST_LOOKUPS],
 		.maxlen		= sizeof(int),
+=======
+int dquot_get_state(struct super_block *sb, struct qc_state *state)
+{
+	struct mem_dqinfo *mi;
+	struct qc_type_state *tstate;
+	struct quota_info *dqopt = sb_dqopt(sb);
+	int type;
+
+	memset(state, 0, sizeof(*state));
+	for (type = 0; type < MAXQUOTAS; type++) {
+		if (!sb_has_quota_active(sb, type))
+			continue;
+		tstate = state->s_state + type;
+		mi = sb_dqopt(sb)->info + type;
+		tstate->flags = QCI_ACCT_ENABLED;
+		spin_lock(&dq_data_lock);
+		if (mi->dqi_flags & DQF_SYS_FILE)
+			tstate->flags |= QCI_SYSFILE;
+		if (mi->dqi_flags & DQF_ROOT_SQUASH)
+			tstate->flags |= QCI_ROOT_SQUASH;
+		if (sb_has_quota_limits_enabled(sb, type))
+			tstate->flags |= QCI_LIMITS_ENFORCED;
+		tstate->spc_timelimit = mi->dqi_bgrace;
+		tstate->ino_timelimit = mi->dqi_igrace;
+		if (dqopt->files[type]) {
+			tstate->ino = dqopt->files[type]->i_ino;
+			tstate->blocks = dqopt->files[type]->i_blocks;
+		}
+		tstate->nextents = 1;	/* We don't know... */
+		spin_unlock(&dq_data_lock);
+	}
+	return 0;
+}
+EXPORT_SYMBOL(dquot_get_state);
+
+/* Generic routine for setting common part of quota file information */
+int dquot_set_dqinfo(struct super_block *sb, int type, struct qc_info *ii)
+{
+	struct mem_dqinfo *mi;
+
+	if ((ii->i_fieldmask & QC_WARNS_MASK) ||
+	    (ii->i_fieldmask & QC_RT_SPC_TIMER))
+		return -EINVAL;
+	if (!sb_has_quota_active(sb, type))
+		return -ESRCH;
+	mi = sb_dqopt(sb)->info + type;
+	if (ii->i_fieldmask & QC_FLAGS) {
+		if ((ii->i_flags & QCI_ROOT_SQUASH &&
+		     mi->dqi_format->qf_fmt_id != QFMT_VFS_OLD))
+			return -EINVAL;
+	}
+	spin_lock(&dq_data_lock);
+	if (ii->i_fieldmask & QC_SPC_TIMER)
+		mi->dqi_bgrace = ii->i_spc_timelimit;
+	if (ii->i_fieldmask & QC_INO_TIMER)
+		mi->dqi_igrace = ii->i_ino_timelimit;
+	if (ii->i_fieldmask & QC_FLAGS) {
+		if (ii->i_flags & QCI_ROOT_SQUASH)
+			mi->dqi_flags |= DQF_ROOT_SQUASH;
+		else
+			mi->dqi_flags &= ~DQF_ROOT_SQUASH;
+	}
+	spin_unlock(&dq_data_lock);
+	mark_info_dirty(sb, type);
+	/* Force write to disk */
+	return sb->dq_op->write_info(sb, type);
+}
+EXPORT_SYMBOL(dquot_set_dqinfo);
+
+const struct quotactl_ops dquot_quotactl_sysfile_ops = {
+	.quota_enable	= dquot_quota_enable,
+	.quota_disable	= dquot_quota_disable,
+	.quota_sync	= dquot_quota_sync,
+	.get_state	= dquot_get_state,
+	.set_info	= dquot_set_dqinfo,
+	.get_dqblk	= dquot_get_dqblk,
+	.get_nextdqblk	= dquot_get_next_dqblk,
+	.set_dqblk	= dquot_set_dqblk
+};
+EXPORT_SYMBOL(dquot_quotactl_sysfile_ops);
+
+static int do_proc_dqstats(struct ctl_table *table, int write,
+		     void *buffer, size_t *lenp, loff_t *ppos)
+{
+	unsigned int type = (unsigned long *)table->data - dqstats.stat;
+	s64 value = percpu_counter_sum(&dqstats.counter[type]);
+
+	/* Filter negative values for non-monotonic counters */
+	if (value < 0 && (type == DQST_ALLOC_DQUOTS ||
+			  type == DQST_FREE_DQUOTS))
+		value = 0;
+
+	/* Update global table */
+	dqstats.stat[type] = value;
+	return proc_doulongvec_minmax(table, write, buffer, lenp, ppos);
+}
+
+static struct ctl_table fs_dqstats_table[] = {
+	{
+		.procname	= "lookups",
+		.data		= &dqstats.stat[DQST_LOOKUPS],
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "drops",
 		.data		= &dqstats.stat[DQST_DROPS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "reads",
 		.data		= &dqstats.stat[DQST_READS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "writes",
 		.data		= &dqstats.stat[DQST_WRITES],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "cache_hits",
 		.data		= &dqstats.stat[DQST_CACHE_HITS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "allocated_dquots",
 		.data		= &dqstats.stat[DQST_ALLOC_DQUOTS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "free_dquots",
 		.data		= &dqstats.stat[DQST_FREE_DQUOTS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
 	{
 		.procname	= "syncs",
 		.data		= &dqstats.stat[DQST_SYNCS],
+<<<<<<< HEAD
 		.maxlen		= sizeof(int),
+=======
+		.maxlen		= sizeof(unsigned long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode		= 0444,
 		.proc_handler	= do_proc_dqstats,
 	},
@@ -2638,6 +4738,7 @@ static ctl_table fs_dqstats_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif
+<<<<<<< HEAD
 	{ },
 };
 
@@ -2657,47 +4758,74 @@ static ctl_table sys_table[] = {
 		.child		= fs_table,
 	},
 	{ },
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init dquot_init(void)
 {
 	int i, ret;
 	unsigned long nr_hash, order;
+<<<<<<< HEAD
 
 	printk(KERN_NOTICE "VFS: Disk quotas %s\n", __DQUOT_VERSION__);
 
 	register_sysctl_table(sys_table);
+=======
+	struct shrinker *dqcache_shrinker;
+
+	printk(KERN_NOTICE "VFS: Disk quotas %s\n", __DQUOT_VERSION__);
+
+	register_sysctl_init("fs/quota", fs_dqstats_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dquot_cachep = kmem_cache_create("dquot",
 			sizeof(struct dquot), sizeof(unsigned long) * 4,
 			(SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 				SLAB_MEM_SPREAD|SLAB_PANIC),
 			NULL);
 
 	order = 0;
 	dquot_hash = (struct hlist_head *)__get_free_pages(GFP_ATOMIC, order);
+=======
+				SLAB_PANIC),
+			NULL);
+
+	order = 0;
+	dquot_hash = (struct hlist_head *)__get_free_pages(GFP_KERNEL, order);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dquot_hash)
 		panic("Cannot create dquot hash table");
 
 	for (i = 0; i < _DQST_DQSTAT_LAST; i++) {
+<<<<<<< HEAD
 		ret = percpu_counter_init(&dqstats.counter[i], 0);
+=======
+		ret = percpu_counter_init(&dqstats.counter[i], 0, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			panic("Cannot create dquot stat counters");
 	}
 
 	/* Find power-of-two hlist_heads which can fit into allocation */
 	nr_hash = (1UL << order) * PAGE_SIZE / sizeof(struct hlist_head);
+<<<<<<< HEAD
 	dq_hash_bits = 0;
 	do {
 		dq_hash_bits++;
 	} while (nr_hash >> dq_hash_bits);
 	dq_hash_bits--;
+=======
+	dq_hash_bits = ilog2(nr_hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_hash = 1UL << dq_hash_bits;
 	dq_hash_mask = nr_hash - 1;
 	for (i = 0; i < nr_hash; i++)
 		INIT_HLIST_HEAD(dquot_hash + i);
 
+<<<<<<< HEAD
 	printk("Dquot-cache hash table entries: %ld (order %ld, %ld bytes)\n",
 			nr_hash, order, (PAGE_SIZE << order));
 
@@ -2706,3 +4834,20 @@ static int __init dquot_init(void)
 	return 0;
 }
 module_init(dquot_init);
+=======
+	pr_info("VFS: Dquot-cache hash table entries: %ld (order %ld,"
+		" %ld bytes)\n", nr_hash, order, (PAGE_SIZE << order));
+
+	dqcache_shrinker = shrinker_alloc(0, "dquota-cache");
+	if (!dqcache_shrinker)
+		panic("Cannot allocate dquot shrinker");
+
+	dqcache_shrinker->count_objects = dqcache_shrink_count;
+	dqcache_shrinker->scan_objects = dqcache_shrink_scan;
+
+	shrinker_register(dqcache_shrinker);
+
+	return 0;
+}
+fs_initcall(dquot_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

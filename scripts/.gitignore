@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Generated files
 #
@@ -9,3 +10,18 @@ unifdef
 ihex2fw
 recordmcount
 docproc
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+/asn1_compiler
+/generate_rust_target
+/insert-sys-cert
+/kallsyms
+/module.lds
+/recordmcount
+/rustdoc_test_builder
+/rustdoc_test_gen
+/sign-file
+/sorttable
+/target.json
+/unifdef
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

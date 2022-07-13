@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_CMPXCHG_32_H
 #define _ASM_X86_CMPXCHG_32_H
 
 /*
+<<<<<<< HEAD
  * Note: if you use set64_bit(), __cmpxchg64(), or their variants, you
  *       you need to test for the feature in boot_cpu_data.
  */
@@ -45,6 +50,22 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
 #define cmpxchg64_local(ptr, o, n)					\
 	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
 					       (unsigned long long)(n)))
+=======
+ * Note: if you use set64_bit(), __cmpxchg64(), or their variants,
+ *       you need to test for the feature in boot_cpu_data.
+ */
+
+#ifdef CONFIG_X86_CMPXCHG64
+#define arch_cmpxchg64(ptr, o, n)					\
+	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
+					 (unsigned long long)(n)))
+#define arch_cmpxchg64_local(ptr, o, n)					\
+	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
+					       (unsigned long long)(n)))
+#define arch_try_cmpxchg64(ptr, po, n)					\
+	__try_cmpxchg64((ptr), (unsigned long long *)(po), \
+			(unsigned long long)(n))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static inline u64 __cmpxchg64(volatile u64 *ptr, u64 old, u64 new)
@@ -73,6 +94,7 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
 	return prev;
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_X86_CMPXCHG
 /*
  * Building a kernel capable running on 80386. It may be necessary to
@@ -125,6 +147,25 @@ static inline unsigned long cmpxchg_386(volatile void *ptr, unsigned long old,
 	__ret;								\
 })
 #endif
+=======
+static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
+{
+	bool success;
+	u64 old = *pold;
+	asm volatile(LOCK_PREFIX "cmpxchg8b %[ptr]"
+		     CC_SET(z)
+		     : CC_OUT(z) (success),
+		       [ptr] "+m" (*ptr),
+		       "+A" (old)
+		     : "b" ((u32)new),
+		       "c" ((u32)(new >> 32))
+		     : "memory");
+
+	if (unlikely(!success))
+		*pold = old;
+	return success;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_X86_CMPXCHG64
 /*
@@ -132,7 +173,11 @@ static inline unsigned long cmpxchg_386(volatile void *ptr, unsigned long old,
  * to simulate the cmpxchg8b on the 80386 and 80486 CPU.
  */
 
+<<<<<<< HEAD
 #define cmpxchg64(ptr, o, n)					\
+=======
+#define arch_cmpxchg64(ptr, o, n)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({								\
 	__typeof__(*(ptr)) __ret;				\
 	__typeof__(*(ptr)) __old = (o);				\
@@ -149,7 +194,11 @@ static inline unsigned long cmpxchg_386(volatile void *ptr, unsigned long old,
 	__ret; })
 
 
+<<<<<<< HEAD
 #define cmpxchg64_local(ptr, o, n)				\
+=======
+#define arch_cmpxchg64_local(ptr, o, n)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({								\
 	__typeof__(*(ptr)) __ret;				\
 	__typeof__(*(ptr)) __old = (o);				\
@@ -166,6 +215,10 @@ static inline unsigned long cmpxchg_386(volatile void *ptr, unsigned long old,
 
 #endif
 
+<<<<<<< HEAD
 #define system_has_cmpxchg_double() cpu_has_cx8
+=======
+#define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_CMPXCHG_32_H */

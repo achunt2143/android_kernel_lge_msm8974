@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dz.c: Serial port driver for DECstations equipped
  *       with the DZ chipset.
@@ -28,10 +32,13 @@
 
 #undef DEBUG_DZ
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_DZ_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bitops.h>
 #include <linux/compiler.h>
 #include <linux/console.h>
@@ -50,8 +57,13 @@
 #include <linux/tty_flip.h>
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
 #include <asm/bootinfo.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+#include <asm/bootinfo.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/dec/interrupts.h>
 #include <asm/dec/kn01.h>
@@ -118,7 +130,11 @@ static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
  * rs_stop () and rs_start ()
  *
  * These routines are called before setting or resetting
+<<<<<<< HEAD
  * tty->stopped. They enable or disable transmitter interrupts,
+=======
+ * tty->flow.stopped. They enable or disable transmitter interrupts,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * as necessary.
  * ------------------------------------------------------------
  */
@@ -151,11 +167,14 @@ static void dz_stop_rx(struct uart_port *uport)
 	dz_out(dport, DZ_LPR, dport->cflag);
 }
 
+<<<<<<< HEAD
 static void dz_enable_ms(struct uart_port *uport)
 {
 	/* nothing to do */
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ------------------------------------------------------------
  *
@@ -187,17 +206,27 @@ static inline void dz_receive_chars(struct dz_mux *mux)
 {
 	struct uart_port *uport;
 	struct dz_port *dport = &mux->dport[0];
+<<<<<<< HEAD
 	struct tty_struct *tty = NULL;
 	struct uart_icount *icount;
 	int lines_rx[DZ_NB_PORT] = { [0 ... DZ_NB_PORT - 1] = 0 };
 	unsigned char ch, flag;
 	u16 status;
+=======
+	struct uart_icount *icount;
+	int lines_rx[DZ_NB_PORT] = { [0 ... DZ_NB_PORT - 1] = 0 };
+	u16 status;
+	u8 ch, flag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	while ((status = dz_in(dport, DZ_RBUF)) & DZ_DVAL) {
 		dport = &mux->dport[LINE(status)];
 		uport = &dport->port;
+<<<<<<< HEAD
 		tty = uport->state->port.tty;	/* point to the proper dev */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ch = UCHAR(status);		/* grab the char */
 		flag = TTY_NORMAL;
@@ -249,7 +278,11 @@ static inline void dz_receive_chars(struct dz_mux *mux)
 	}
 	for (i = 0; i < DZ_NB_PORT; i++)
 		if (lines_rx[i])
+<<<<<<< HEAD
 			tty_flip_buffer_push(mux->dport[i].port.state->port.tty);
+=======
+			tty_flip_buffer_push(&mux->dport[i].port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -278,9 +311,15 @@ static inline void dz_transmit_chars(struct dz_mux *mux)
 	}
 	/* If nothing to do or stopped or hardware stopped. */
 	if (uart_circ_empty(xmit) || uart_tx_stopped(&dport->port)) {
+<<<<<<< HEAD
 		spin_lock(&dport->port.lock);
 		dz_stop_tx(&dport->port);
 		spin_unlock(&dport->port.lock);
+=======
+		uart_port_lock(&dport->port);
+		dz_stop_tx(&dport->port);
+		uart_port_unlock(&dport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -289,18 +328,29 @@ static inline void dz_transmit_chars(struct dz_mux *mux)
 	 * so we go one char at a time) :-<
 	 */
 	tmp = xmit->buf[xmit->tail];
+<<<<<<< HEAD
 	xmit->tail = (xmit->tail + 1) & (DZ_XMIT_SIZE - 1);
 	dz_out(dport, DZ_TDR, tmp);
 	dport->port.icount.tx++;
+=======
+	dz_out(dport, DZ_TDR, tmp);
+	uart_xmit_advance(&dport->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uart_circ_chars_pending(xmit) < DZ_WAKEUP_CHARS)
 		uart_write_wakeup(&dport->port);
 
 	/* Are we are done. */
 	if (uart_circ_empty(xmit)) {
+<<<<<<< HEAD
 		spin_lock(&dport->port.lock);
 		dz_stop_tx(&dport->port);
 		spin_unlock(&dport->port.lock);
+=======
+		uart_port_lock(&dport->port);
+		dz_stop_tx(&dport->port);
+		uart_port_unlock(&dport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -426,14 +476,22 @@ static int dz_startup(struct uart_port *uport)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dport->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&dport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable interrupts.  */
 	tmp = dz_in(dport, DZ_CSR);
 	tmp |= DZ_RIE | DZ_TIE;
 	dz_out(dport, DZ_CSR, tmp);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&dport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&dport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -454,9 +512,15 @@ static void dz_shutdown(struct uart_port *uport)
 	int irq_guard;
 	u16 tmp;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dport->port.lock, flags);
 	dz_stop_tx(&dport->port);
 	spin_unlock_irqrestore(&dport->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&dport->port, &flags);
+	dz_stop_tx(&dport->port);
+	uart_port_unlock_irqrestore(&dport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq_guard = atomic_add_return(-1, &mux->irq_guard);
 	if (!irq_guard) {
@@ -502,14 +566,22 @@ static void dz_break_ctl(struct uart_port *uport, int break_state)
 	unsigned long flags;
 	unsigned short tmp, mask = 1 << dport->port.line;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&uport->lock, flags);
+=======
+	uart_port_lock_irqsave(uport, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = dz_in(dport, DZ_TCR);
 	if (break_state)
 		tmp |= mask;
 	else
 		tmp &= ~mask;
 	dz_out(dport, DZ_TCR, tmp);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&uport->lock, flags);
+=======
+	uart_port_unlock_irqrestore(uport, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dz_encode_baud_rate(unsigned int baud)
@@ -569,7 +641,11 @@ static void dz_reset(struct dz_port *dport)
 }
 
 static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
+<<<<<<< HEAD
 			   struct ktermios *old_termios)
+=======
+			   const struct ktermios *old_termios)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dz_port *dport = to_dport(uport);
 	unsigned long flags;
@@ -602,9 +678,18 @@ static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
 
 	baud = uart_get_baud_rate(uport, termios, old_termios, 50, 9600);
 	bflag = dz_encode_baud_rate(baud);
+<<<<<<< HEAD
 	if (bflag < 0)	{			/* Try to keep unchanged.  */
 		baud = uart_get_baud_rate(uport, old_termios, NULL, 50, 9600);
 		bflag = dz_encode_baud_rate(baud);
+=======
+	if (bflag < 0)	{
+		if (old_termios) {
+			/* Keep unchanged. */
+			baud = tty_termios_baud_rate(old_termios);
+			bflag = dz_encode_baud_rate(baud);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bflag < 0)	{		/* Resort to 9600.  */
 			baud = 9600;
 			bflag = DZ_B9600;
@@ -616,7 +701,11 @@ static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
 	if (termios->c_cflag & CREAD)
 		cflag |= DZ_RXENAB;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dport->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&dport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_update_timeout(uport, termios->c_cflag, baud);
 
@@ -627,7 +716,11 @@ static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
 	dport->port.read_status_mask = DZ_OERR;
 	if (termios->c_iflag & INPCK)
 		dport->port.read_status_mask |= DZ_FERR | DZ_PERR;
+<<<<<<< HEAD
 	if (termios->c_iflag & (BRKINT | PARMRK))
+=======
+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dport->port.read_status_mask |= DZ_BREAK;
 
 	/* characters to ignore */
@@ -639,7 +732,11 @@ static void dz_set_termios(struct uart_port *uport, struct ktermios *termios,
 	if (termios->c_iflag & IGNBRK)
 		dport->port.ignore_status_mask |= DZ_BREAK;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&dport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&dport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -653,12 +750,20 @@ static void dz_pm(struct uart_port *uport, unsigned int state,
 	struct dz_port *dport = to_dport(uport);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dport->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&dport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (state < 3)
 		dz_start_tx(&dport->port);
 	else
 		dz_stop_tx(&dport->port);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&dport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&dport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -683,7 +788,11 @@ static void dz_release_port(struct uart_port *uport)
 static int dz_map_port(struct uart_port *uport)
 {
 	if (!uport->membase)
+<<<<<<< HEAD
 		uport->membase = ioremap_nocache(uport->mapbase,
+=======
+		uport->membase = ioremap(uport->mapbase,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 dec_kn_slot_size);
 	if (!uport->membase) {
 		printk(KERN_ERR "dz: Cannot map MMIO\n");
@@ -746,14 +855,21 @@ static int dz_verify_port(struct uart_port *uport, struct serial_struct *ser)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct uart_ops dz_ops = {
+=======
+static const struct uart_ops dz_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= dz_tx_empty,
 	.get_mctrl	= dz_get_mctrl,
 	.set_mctrl	= dz_set_mctrl,
 	.stop_tx	= dz_stop_tx,
 	.start_tx	= dz_start_tx,
 	.stop_rx	= dz_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= dz_enable_ms,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= dz_break_ctl,
 	.startup	= dz_startup,
 	.shutdown	= dz_shutdown,
@@ -794,6 +910,10 @@ static void __init dz_init_ports(void)
 		uport->ops	= &dz_ops;
 		uport->line	= line;
 		uport->mapbase	= base;
+<<<<<<< HEAD
+=======
+		uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_DZ_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -812,14 +932,22 @@ static void __init dz_init_ports(void)
  * restored.  Welcome to the world of PDP-11!
  * -------------------------------------------------------------------
  */
+<<<<<<< HEAD
 static void dz_console_putchar(struct uart_port *uport, int ch)
+=======
+static void dz_console_putchar(struct uart_port *uport, unsigned char ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dz_port *dport = to_dport(uport);
 	unsigned long flags;
 	unsigned short csr, tcr, trdy, mask;
 	int loops = 10000;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dport->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&dport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	csr = dz_in(dport, DZ_CSR);
 	dz_out(dport, DZ_CSR, csr & ~DZ_TIE);
 	tcr = dz_in(dport, DZ_TCR);
@@ -827,7 +955,11 @@ static void dz_console_putchar(struct uart_port *uport, int ch)
 	mask = tcr;
 	dz_out(dport, DZ_TCR, mask);
 	iob();
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&dport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&dport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		trdy = dz_in(dport, DZ_CSR);

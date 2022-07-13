@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale MPC5200 Audio DMA driver
  */
@@ -81,4 +85,10 @@ to_psc_dma_stream(struct snd_pcm_substream *substream, struct psc_dma *psc_dma)
 	return &psc_dma->playback;
 }
 
+<<<<<<< HEAD
+=======
+int mpc5200_audio_dma_create(struct platform_device *op);
+int mpc5200_audio_dma_destroy(struct platform_device *op);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_SOC_FSL_MPC5200_DMA_H__ */

@@ -29,6 +29,7 @@ extern void gru_wait_abort_proc(void *cb);
  * Architecture dependent functions
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_IA64)
 #include <linux/compiler.h>
 #include <asm/intrinsics.h>
@@ -40,6 +41,9 @@ extern void gru_wait_abort_proc(void *cb);
 			*((volatile unsigned long *)(p)) = v; /* force st.rel */	\
 		} while (0)
 #elif defined(CONFIG_X86_64)
+=======
+#if defined(CONFIG_X86_64)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 #define __flush_cache(p)		clflush(p)
 #define gru_ordered_store_ulong(p, v)					\

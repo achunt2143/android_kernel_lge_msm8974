@@ -1,17 +1,27 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dave DNET Ethernet Controller driver
  *
  * Copyright (C) 2008 Dave S.r.l. <www.dave.eu>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _DNET_H
 #define _DNET_H
 
 #define DRV_NAME		"dnet"
+<<<<<<< HEAD
 #define DRV_VERSION		"0.9.1"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PFX				DRV_NAME ": "
 
 /* Register access macros */
@@ -216,7 +226,10 @@ struct dnet {
 
 	/* PHY stuff */
 	struct mii_bus			*mii_bus;
+<<<<<<< HEAD
 	struct phy_device		*phy_dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int			link;
 	unsigned int			speed;
 	unsigned int			duplex;

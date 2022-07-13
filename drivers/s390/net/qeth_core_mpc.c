@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/net/qeth_core_mpc.c
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Copyright IBM Corp. 2007
  *    Author(s): Frank Pavlic <fpavlic@de.ibm.com>,
  *		 Thomas Spatzier <tspat@de.ibm.com>,
@@ -11,7 +16,11 @@
 #include <asm/cio.h>
 #include "qeth_core_mpc.h"
 
+<<<<<<< HEAD
 unsigned char IDX_ACTIVATE_READ[] = {
+=======
+const unsigned char IDX_ACTIVATE_READ[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
 	0x19, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
@@ -19,7 +28,11 @@ unsigned char IDX_ACTIVATE_READ[] = {
 	0x00, 0x00
 };
 
+<<<<<<< HEAD
 unsigned char IDX_ACTIVATE_WRITE[] = {
+=======
+const unsigned char IDX_ACTIVATE_WRITE[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0x00, 0x80, 0x00,  0x00, 0x00, 0x00, 0x00,
 	0x15, 0x01, 0x01, 0x80,  0x00, 0x00, 0x00, 0x00,
 	0xff, 0xff, 0x00, 0x00,  0x00, 0x00, 0xc8, 0xc1,
@@ -27,7 +40,11 @@ unsigned char IDX_ACTIVATE_WRITE[] = {
 	0x00, 0x00
 };
 
+<<<<<<< HEAD
 unsigned char CM_ENABLE[] = {
+=======
+const unsigned char CM_ENABLE[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x01,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x63,
 	0x10, 0x00, 0x00, 0x01,
@@ -46,7 +63,11 @@ unsigned char CM_ENABLE[] = {
 	0xff, 0xff, 0xff
 };
 
+<<<<<<< HEAD
 unsigned char CM_SETUP[] = {
+=======
+const unsigned char CM_SETUP[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x02,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x64,
 	0x10, 0x00, 0x00, 0x01,
@@ -66,7 +87,11 @@ unsigned char CM_SETUP[] = {
 	0x04, 0x06, 0xc8, 0x00
 };
 
+<<<<<<< HEAD
 unsigned char ULP_ENABLE[] = {
+=======
+const unsigned char ULP_ENABLE[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x03,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6b,
 	0x10, 0x00, 0x00, 0x01,
@@ -86,7 +111,11 @@ unsigned char ULP_ENABLE[] = {
 	0xf1, 0x00, 0x00
 };
 
+<<<<<<< HEAD
 unsigned char ULP_SETUP[] = {
+=======
+const unsigned char ULP_SETUP[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x04,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x6c,
 	0x10, 0x00, 0x00, 0x01,
@@ -108,7 +137,11 @@ unsigned char ULP_SETUP[] = {
 	0x00, 0x00, 0x00, 0x00
 };
 
+<<<<<<< HEAD
 unsigned char DM_ACT[] = {
+=======
+const unsigned char DM_ACT[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x00, 0xe0, 0x00, 0x00,  0x00, 0x00, 0x00, 0x05,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x55,
 	0x10, 0x00, 0x00, 0x01,
@@ -124,6 +157,7 @@ unsigned char DM_ACT[] = {
 	0x05, 0x40, 0x01, 0x01,  0x00
 };
 
+<<<<<<< HEAD
 unsigned char IPA_PDU_HEADER[] = {
 	0x00, 0xe0, 0x00, 0x00,  0x77, 0x77, 0x77, 0x77,
 	0x00, 0x00, 0x00, 0x14,  0x00, 0x00,
@@ -164,18 +198,54 @@ struct ipa_rc_msg {
 };
 
 static struct ipa_rc_msg qeth_ipa_rc_msg[] = {
+=======
+const unsigned char IPA_PDU_HEADER[] = {
+	0x00, 0xe0, 0x00, 0x00,  0x77, 0x77, 0x77, 0x77,
+	0x00, 0x00, 0x00, 0x14,  0x00, 0x00, 0x00, 0x00,
+	0x10, 0x00, 0x00, 0x01,  0x00, 0x00, 0x00, 0x00,
+	0xc1, 0x03, 0x00, 0x01,  0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00,  0x00, 0x24, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x05,  0x77, 0x77, 0x77, 0x77,
+	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
+	0x01, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x40,
+};
+
+struct ipa_rc_msg {
+	enum qeth_ipa_return_codes rc;
+	const char *msg;
+};
+
+static const struct ipa_rc_msg qeth_ipa_rc_msg[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_RC_SUCCESS,		"success"},
 	{IPA_RC_NOTSUPP,		"Command not supported"},
 	{IPA_RC_IP_TABLE_FULL,		"Add Addr IP Table Full - ipv6"},
 	{IPA_RC_UNKNOWN_ERROR,		"IPA command failed - reason unknown"},
 	{IPA_RC_UNSUPPORTED_COMMAND,	"Command not supported"},
+<<<<<<< HEAD
 	{IPA_RC_DUP_IPV6_REMOTE, "ipv6 address already registered remote"},
+=======
+	{IPA_RC_VNICC_OOSEQ,		"Command issued out of sequence"},
+	{IPA_RC_INVALID_FORMAT,		"invalid format or length"},
+	{IPA_RC_DUP_IPV6_REMOTE, "ipv6 address already registered remote"},
+	{IPA_RC_SBP_IQD_NOT_CONFIGURED,	"Not configured for bridgeport"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_RC_DUP_IPV6_HOME,		"ipv6 address already registered"},
 	{IPA_RC_UNREGISTERED_ADDR,	"Address not registered"},
 	{IPA_RC_NO_ID_AVAILABLE,	"No identifiers available"},
 	{IPA_RC_ID_NOT_FOUND,		"Identifier not found"},
+<<<<<<< HEAD
 	{IPA_RC_INVALID_IP_VERSION,	"IP version incorrect"},
 	{IPA_RC_LAN_FRAME_MISMATCH,	"LAN and frame mismatch"},
+=======
+	{IPA_RC_SBP_IQD_ANO_DEV_PRIMARY, "Primary bridgeport exists already"},
+	{IPA_RC_SBP_IQD_CURRENT_SECOND,	"Bridgeport is currently secondary"},
+	{IPA_RC_SBP_IQD_LIMIT_SECOND, "Limit of secondary bridgeports reached"},
+	{IPA_RC_INVALID_IP_VERSION,	"IP version incorrect"},
+	{IPA_RC_SBP_IQD_CURRENT_PRIMARY, "Bridgeport is currently primary"},
+	{IPA_RC_LAN_FRAME_MISMATCH,	"LAN and frame mismatch"},
+	{IPA_RC_SBP_IQD_NO_QDIO_QUEUES,	"QDIO queues not established"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_RC_L2_UNSUPPORTED_CMD,	"Unsupported layer 2 command"},
 	{IPA_RC_L2_DUP_MAC,		"Duplicate MAC address"},
 	{IPA_RC_L2_ADDR_TABLE_FULL,	"Layer2 address table full"},
@@ -187,6 +257,18 @@ static struct ipa_rc_msg qeth_ipa_rc_msg[] = {
 	{IPA_RC_L2_INVALID_VLAN_ID,	"L2 invalid vlan id"},
 	{IPA_RC_L2_DUP_VLAN_ID,		"L2 duplicate vlan id"},
 	{IPA_RC_L2_VLAN_ID_NOT_FOUND,	"L2 vlan id not found"},
+<<<<<<< HEAD
+=======
+	{IPA_RC_VNICC_VNICBP,		"VNIC is BridgePort"},
+	{IPA_RC_SBP_OSA_NOT_CONFIGURED,	"Not configured for bridgeport"},
+	{IPA_RC_SBP_OSA_OS_MISMATCH,	"OS mismatch"},
+	{IPA_RC_SBP_OSA_ANO_DEV_PRIMARY, "Primary bridgeport exists already"},
+	{IPA_RC_SBP_OSA_CURRENT_SECOND,	"Bridgeport is currently secondary"},
+	{IPA_RC_SBP_OSA_LIMIT_SECOND, "Limit of secondary bridgeports reached"},
+	{IPA_RC_SBP_OSA_NOT_AUTHD_BY_ZMAN, "Not authorized by zManager"},
+	{IPA_RC_SBP_OSA_CURRENT_PRIMARY, "Bridgeport is currently primary"},
+	{IPA_RC_SBP_OSA_NO_QDIO_QUEUES,	"QDIO queues not established"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_RC_DATA_MISMATCH,		"Data field mismatch (v4/v6 mixed)"},
 	{IPA_RC_INVALID_MTU_SIZE,	"Invalid MTU size"},
 	{IPA_RC_INVALID_LANTYPE,	"Invalid LAN type"},
@@ -206,6 +288,7 @@ static struct ipa_rc_msg qeth_ipa_rc_msg[] = {
 	{IPA_RC_INVALID_SETRTG_INDICATOR, "Invalid SETRTG indicator"},
 	{IPA_RC_MC_ADDR_ALREADY_DEFINED, "Multicast address already defined"},
 	{IPA_RC_LAN_OFFLINE,		"STRTLAN_LAN_DISABLED - LAN offline"},
+<<<<<<< HEAD
 	{IPA_RC_INVALID_IP_VERSION2,	"Invalid IP version"},
 	{IPA_RC_ENOMEM,			"Memory problem"},
 	{IPA_RC_FFFF,			"Unknown Error"}
@@ -220,16 +303,38 @@ char *qeth_get_ipa_msg(enum qeth_ipa_return_codes rc)
 			sizeof(struct ipa_rc_msg) - 1].rc = rc;
 	while (qeth_ipa_rc_msg[x].rc != rc)
 		x++;
+=======
+	{IPA_RC_VEPA_TO_VEB_TRANSITION,	"Adj. switch disabled port mode RR"},
+	{IPA_RC_INVALID_IP_VERSION2,	"Invalid IP version"},
+	/* default for qeth_get_ipa_msg(): */
+	{IPA_RC_FFFF,			"Unknown Error"}
+};
+
+const char *qeth_get_ipa_msg(enum qeth_ipa_return_codes rc)
+{
+	int x;
+
+	for (x = 0; x < ARRAY_SIZE(qeth_ipa_rc_msg) - 1; x++)
+		if (qeth_ipa_rc_msg[x].rc == rc)
+			return qeth_ipa_rc_msg[x].msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qeth_ipa_rc_msg[x].msg;
 }
 
 
 struct ipa_cmd_names {
 	enum qeth_ipa_cmds cmd;
+<<<<<<< HEAD
 	char *name;
 };
 
 static struct ipa_cmd_names qeth_ipa_cmd_names[] = {
+=======
+	const char *name;
+};
+
+static const struct ipa_cmd_names qeth_ipa_cmd_names[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_CMD_STARTLAN,	"startlan"},
 	{IPA_CMD_STOPLAN,	"stoplan"},
 	{IPA_CMD_SETVMAC,	"setvmac"},
@@ -238,9 +343,14 @@ static struct ipa_cmd_names qeth_ipa_cmd_names[] = {
 	{IPA_CMD_DELGMAC,	"delgmac"},
 	{IPA_CMD_SETVLAN,	"setvlan"},
 	{IPA_CMD_DELVLAN,	"delvlan"},
+<<<<<<< HEAD
 	{IPA_CMD_SETCCID,	"setccid"},
 	{IPA_CMD_DELCCID,	"delccid"},
 	{IPA_CMD_MODCCID,	"modccid"},
+=======
+	{IPA_CMD_VNICC,		"vnic_characteristics"},
+	{IPA_CMD_SETBRIDGEPORT_OSA,	"set_bridge_port(osa)"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_CMD_SETIP,		"setip"},
 	{IPA_CMD_QIPASSIST,	"qipassist"},
 	{IPA_CMD_SETASSPARMS,	"setassparms"},
@@ -250,10 +360,15 @@ static struct ipa_cmd_names qeth_ipa_cmd_names[] = {
 	{IPA_CMD_DELIP,		"delip"},
 	{IPA_CMD_SETADAPTERPARMS, "setadapterparms"},
 	{IPA_CMD_SET_DIAG_ASS,	"set_diag_ass"},
+<<<<<<< HEAD
+=======
+	{IPA_CMD_SETBRIDGEPORT_IQD,	"set_bridge_port(hs)"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{IPA_CMD_CREATE_ADDR,	"create_addr"},
 	{IPA_CMD_DESTROY_ADDR,	"destroy_addr"},
 	{IPA_CMD_REGISTER_LOCAL_ADDR,	"register_local_addr"},
 	{IPA_CMD_UNREGISTER_LOCAL_ADDR,	"unregister_local_addr"},
+<<<<<<< HEAD
 	{IPA_CMD_UNKNOWN,	"unknown"},
 };
 
@@ -265,5 +380,18 @@ char *qeth_get_ipa_cmd_name(enum qeth_ipa_cmds cmd)
 			sizeof(struct ipa_cmd_names)-1].cmd = cmd;
 	while (qeth_ipa_cmd_names[x].cmd != cmd)
 		x++;
+=======
+	{IPA_CMD_ADDRESS_CHANGE_NOTIF, "address_change_notification"},
+	{IPA_CMD_UNKNOWN,	"unknown"},
+};
+
+const char *qeth_get_ipa_cmd_name(enum qeth_ipa_cmds cmd)
+{
+	int x;
+
+	for (x = 0; x < ARRAY_SIZE(qeth_ipa_cmd_names) - 1; x++)
+		if (qeth_ipa_cmd_names[x].cmd == cmd)
+			return qeth_ipa_cmd_names[x].name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qeth_ipa_cmd_names[x].name;
 }

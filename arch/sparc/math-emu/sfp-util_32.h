@@ -1,23 +1,41 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
 
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) 				\
+<<<<<<< HEAD
   __asm__ ("addcc %r4,%5,%1\n\t"						\
 	   "addx %r2,%3,%0\n"						\
 	   : "=r" ((USItype)(sh)),					\
 	     "=&r" ((USItype)(sl))					\
+=======
+  __asm__ ("addcc %r4,%5,%1\n\t"					\
+	   "addx %r2,%3,%0\n"						\
+	   : "=r" (sh),							\
+	     "=&r" (sl)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "%rJ" ((USItype)(ah)),					\
 	     "rI" ((USItype)(bh)),					\
 	     "%rJ" ((USItype)(al)),					\
 	     "rI" ((USItype)(bl))					\
 	   : "cc")
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) 				\
+<<<<<<< HEAD
   __asm__ ("subcc %r4,%5,%1\n\t"						\
 	   "subx %r2,%3,%0\n"						\
 	   : "=r" ((USItype)(sh)),					\
 	     "=&r" ((USItype)(sl))					\
+=======
+  __asm__ ("subcc %r4,%5,%1\n\t"					\
+	   "subx %r2,%3,%0\n"						\
+	   : "=r" (sh),							\
+	     "=&r" (sl)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "rJ" ((USItype)(ah)),					\
 	     "rI" ((USItype)(bh)),					\
 	     "rJ" ((USItype)(al)),					\
@@ -65,8 +83,13 @@
 	"mulscc	%%g1,0,%%g1\n\t" 					\
 	"add	%%g1,%%g2,%0\n\t" 					\
 	"rd	%%y,%1\n"						\
+<<<<<<< HEAD
 	   : "=r" ((USItype)(w1)),					\
 	     "=r" ((USItype)(w0))					\
+=======
+	   : "=r" (w1),							\
+	     "=r" (w0)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "%rI" ((USItype)(u)),					\
 	     "r" ((USItype)(v))						\
 	   : "%g1", "%g2", "cc")
@@ -98,8 +121,13 @@
 	   "sub	%1,%2,%1\n\t"						\
 	   "3:	xnor	%0,0,%0\n\t"					\
 	   "! End of inline udiv_qrnnd\n"				\
+<<<<<<< HEAD
 	   : "=&r" ((USItype)(q)),					\
 	     "=&r" ((USItype)(r))					\
+=======
+	   : "=&r" (q),							\
+	     "=&r" (r)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "r" ((USItype)(d)),					\
 	     "1" ((USItype)(n1)),					\
 	     "0" ((USItype)(n0)) : "%g1", "cc")

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel probes (kprobes) for SuperH
  *
  * Copyright (C) 2007 Chris Smith <chris.smith@st.com>
  * Copyright (C) 2006 Lineo Solutions, Inc.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -10,12 +15,21 @@
  */
 #include <linux/kprobes.h>
 #include <linux/module.h>
+=======
+ */
+#include <linux/kprobes.h>
+#include <linux/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/preempt.h>
 #include <linux/kdebug.h>
 #include <linux/slab.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU(struct kprobe *, current_kprobe) = NULL;
 DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
@@ -102,7 +116,11 @@ int __kprobes kprobe_handle_illslot(unsigned long pc)
 
 void __kprobes arch_remove_kprobe(struct kprobe *p)
 {
+<<<<<<< HEAD
 	struct kprobe *saved = &__get_cpu_var(saved_next_opcode);
+=======
+	struct kprobe *saved = this_cpu_ptr(&saved_next_opcode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (saved->addr) {
 		arch_disarm_kprobe(p);
@@ -111,7 +129,11 @@ void __kprobes arch_remove_kprobe(struct kprobe *p)
 		saved->addr = NULL;
 		saved->opcode = 0;
 
+<<<<<<< HEAD
 		saved = &__get_cpu_var(saved_next_opcode2);
+=======
+		saved = this_cpu_ptr(&saved_next_opcode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (saved->addr) {
 			arch_disarm_kprobe(saved);
 
@@ -129,14 +151,22 @@ static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
 
 static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
+=======
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kcb->kprobe_status = kcb->prev_kprobe.status;
 }
 
 static void __kprobes set_current_kprobe(struct kprobe *p, struct pt_regs *regs,
 					 struct kprobe_ctlblk *kcb)
 {
+<<<<<<< HEAD
 	__get_cpu_var(current_kprobe) = p;
+=======
+	__this_cpu_write(current_kprobe, p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -146,15 +176,24 @@ static void __kprobes set_current_kprobe(struct kprobe *p, struct pt_regs *regs,
  */
 static void __kprobes prepare_singlestep(struct kprobe *p, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	__get_cpu_var(saved_current_opcode).addr = (kprobe_opcode_t *)regs->pc;
+=======
+	__this_cpu_write(saved_current_opcode.addr, (kprobe_opcode_t *)regs->pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p != NULL) {
 		struct kprobe *op1, *op2;
 
 		arch_disarm_kprobe(p);
 
+<<<<<<< HEAD
 		op1 = &__get_cpu_var(saved_next_opcode);
 		op2 = &__get_cpu_var(saved_next_opcode2);
+=======
+		op1 = this_cpu_ptr(&saved_next_opcode);
+		op2 = this_cpu_ptr(&saved_next_opcode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (OPCODE_JSR(p->opcode) || OPCODE_JMP(p->opcode)) {
 			unsigned int reg_nr = ((p->opcode >> 8) & 0x000F);
@@ -207,9 +246,16 @@ void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
 				      struct pt_regs *regs)
 {
 	ri->ret_addr = (kprobe_opcode_t *) regs->pr;
+<<<<<<< HEAD
 
 	/* Replace the return addr with trampoline addr */
 	regs->pr = (unsigned long)kretprobe_trampoline;
+=======
+	ri->fp = NULL;
+
+	/* Replace the return addr with trampoline addr */
+	regs->pr = (unsigned long)__kretprobe_trampoline;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __kprobes kprobe_handler(struct pt_regs *regs)
@@ -248,11 +294,14 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 			prepare_singlestep(p, regs);
 			kcb->kprobe_status = KPROBE_REENTER;
 			return 1;
+<<<<<<< HEAD
 		} else {
 			p = __get_cpu_var(current_kprobe);
 			if (p->break_handler && p->break_handler(p, regs)) {
 				goto ss_probe;
 			}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto no_kprobe;
 	}
@@ -277,11 +326,21 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 	set_current_kprobe(p, regs, kcb);
 	kcb->kprobe_status = KPROBE_HIT_ACTIVE;
 
+<<<<<<< HEAD
 	if (p->pre_handler && p->pre_handler(p, regs))
 		/* handler has already set things up, so skip ss setup */
 		return 1;
 
 ss_probe:
+=======
+	if (p->pre_handler && p->pre_handler(p, regs)) {
+		/* handler has already set things up, so skip ss setup */
+		reset_current_kprobe();
+		preempt_enable_no_resched();
+		return 1;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prepare_singlestep(p, regs);
 	kcb->kprobe_status = KPROBE_HIT_SS;
 	return 1;
@@ -298,12 +357,18 @@ no_kprobe:
  */
 static void __used kretprobe_trampoline_holder(void)
 {
+<<<<<<< HEAD
 	asm volatile (".globl kretprobe_trampoline\n"
 		      "kretprobe_trampoline:\n\t"
+=======
+	asm volatile (".globl __kretprobe_trampoline\n"
+		      "__kretprobe_trampoline:\n\t"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      "nop\n");
 }
 
 /*
+<<<<<<< HEAD
  * Called when we hit the probe point at kretprobe_trampoline
  */
 int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
@@ -366,6 +431,15 @@ int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
 	}
 
 	return orig_ret_address;
+=======
+ * Called when we hit the probe point at __kretprobe_trampoline
+ */
+int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
+{
+	regs->pc = __kretprobe_trampoline_handler(regs, NULL);
+
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __kprobes post_kprobe_handler(struct pt_regs *regs)
@@ -383,19 +457,32 @@ static int __kprobes post_kprobe_handler(struct pt_regs *regs)
 		cur->post_handler(cur, regs, 0);
 	}
 
+<<<<<<< HEAD
 	p = &__get_cpu_var(saved_next_opcode);
+=======
+	p = this_cpu_ptr(&saved_next_opcode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p->addr) {
 		arch_disarm_kprobe(p);
 		p->addr = NULL;
 		p->opcode = 0;
 
+<<<<<<< HEAD
 		addr = __get_cpu_var(saved_current_opcode).addr;
 		__get_cpu_var(saved_current_opcode).addr = NULL;
+=======
+		addr = __this_cpu_read(saved_current_opcode.addr);
+		__this_cpu_write(saved_current_opcode.addr, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		p = get_kprobe(addr);
 		arch_arm_kprobe(p);
 
+<<<<<<< HEAD
 		p = &__get_cpu_var(saved_next_opcode2);
+=======
+		p = this_cpu_ptr(&saved_next_opcode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p->addr) {
 			arch_disarm_kprobe(p);
 			p->addr = NULL;
@@ -443,6 +530,7 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_HIT_ACTIVE:
 	case KPROBE_HIT_SSDONE:
 		/*
+<<<<<<< HEAD
 		 * We increment the nmissed count for accounting,
 		 * we can also use npre/npostfault count for accounting
 		 * these specific fault cases.
@@ -460,6 +548,8 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 			return 1;
 
 		/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * In case the user-specified fault handler returned
 		 * zero, try to fix up.
 		 */
@@ -493,7 +583,12 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 
 	addr = (kprobe_opcode_t *) (args->regs->pc);
+<<<<<<< HEAD
 	if (val == DIE_TRAP) {
+=======
+	if (val == DIE_TRAP &&
+	    args->trapnr == (BREAKPOINT_INSTRUCTION & 0xff)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!kprobe_running()) {
 			if (kprobe_handler(args->regs)) {
 				ret = NOTIFY_STOP;
@@ -508,6 +603,7 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 				if (post_kprobe_handler(args->regs))
 					ret = NOTIFY_STOP;
 			} else {
+<<<<<<< HEAD
 				if (kprobe_handler(args->regs)) {
 					ret = NOTIFY_STOP;
 				} else {
@@ -516,6 +612,10 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 					    p->break_handler(p, args->regs))
 						ret = NOTIFY_STOP;
 				}
+=======
+				if (kprobe_handler(args->regs))
+					ret = NOTIFY_STOP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -523,6 +623,7 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 	return ret;
 }
 
+<<<<<<< HEAD
 int __kprobes setjmp_pre_handler(struct kprobe *p, struct pt_regs *regs)
 {
 	struct jprobe *jp = container_of(p, struct jprobe, kp);
@@ -576,6 +677,10 @@ int __kprobes longjmp_break_handler(struct kprobe *p, struct pt_regs *regs)
 
 static struct kprobe trampoline_p = {
 	.addr = (kprobe_opcode_t *)&kretprobe_trampoline,
+=======
+static struct kprobe trampoline_p = {
+	.addr = (kprobe_opcode_t *)&__kretprobe_trampoline,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_handler = trampoline_probe_handler
 };
 

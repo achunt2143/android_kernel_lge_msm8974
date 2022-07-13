@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/sunrpc/xprtsock.h
  *
@@ -7,8 +11,11 @@
 #ifndef _LINUX_SUNRPC_XPRTSOCK_H
 #define _LINUX_SUNRPC_XPRTSOCK_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int		init_socket_xprt(void);
 void		cleanup_socket_xprt(void);
 
@@ -17,6 +24,86 @@ void		cleanup_socket_xprt(void);
 #define RPC_DEF_MIN_RESVPORT	(665U)
 #define RPC_DEF_MAX_RESVPORT	(1023U)
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+struct sock_xprt {
+	struct rpc_xprt		xprt;
+
+	/*
+	 * Network layer
+	 */
+	struct socket *		sock;
+	struct sock *		inet;
+	struct file *		file;
+
+	/*
+	 * State of TCP reply receive
+	 */
+	struct {
+		struct {
+			__be32	fraghdr,
+				xid,
+				calldir;
+		} __attribute__((packed));
+
+		u32		offset,
+				len;
+
+		unsigned long	copied;
+	} recv;
+
+	/*
+	 * State of TCP transmit queue
+	 */
+	struct {
+		u32		offset;
+	} xmit;
+
+	/*
+	 * Connection of transports
+	 */
+	unsigned long		sock_state;
+	struct delayed_work	connect_worker;
+	struct work_struct	error_worker;
+	struct work_struct	recv_worker;
+	struct mutex		recv_mutex;
+	struct completion	handshake_done;
+	struct sockaddr_storage	srcaddr;
+	unsigned short		srcport;
+	int			xprt_err;
+	struct rpc_clnt		*clnt;
+
+	/*
+	 * UDP socket buffer size parameters
+	 */
+	size_t			rcvsize,
+				sndsize;
+
+	struct rpc_timeout	tcp_timeout;
+
+	/*
+	 * Saved socket callback addresses
+	 */
+	void			(*old_data_ready)(struct sock *);
+	void			(*old_state_change)(struct sock *);
+	void			(*old_write_space)(struct sock *);
+	void			(*old_error_report)(struct sock *);
+};
+
+/*
+ * TCP RPC flags
+ */
+#define XPRT_SOCK_CONNECTING	1U
+#define XPRT_SOCK_DATA_READY	(2)
+#define XPRT_SOCK_UPD_TIMEOUT	(3)
+#define XPRT_SOCK_WAKE_ERROR	(4)
+#define XPRT_SOCK_WAKE_WRITE	(5)
+#define XPRT_SOCK_WAKE_PENDING	(6)
+#define XPRT_SOCK_WAKE_DISCONNECT	(7)
+#define XPRT_SOCK_CONNECT_SENT	(8)
+#define XPRT_SOCK_NOSPACE	(9)
+#define XPRT_SOCK_IGNORE_RECV	(10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_SUNRPC_XPRTSOCK_H */

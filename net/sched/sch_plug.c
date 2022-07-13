@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * sch_plug.c Queue traffic until an explicit release command
  *
@@ -6,6 +7,12 @@
  *             as published by the Free Software Foundation; either version
  *             2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * sch_plug.c Queue traffic until an explicit release command
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * There are two ways to use this qdisc:
  * 1. A simple "instantaneous" plug/unplug operation, by issuing an alternating
  *    sequence of TCQ_PLUG_BUFFER & TCQ_PLUG_RELEASE_INDEFINITE commands.
@@ -64,6 +71,11 @@ struct plug_sched_data {
 	 */
 	bool unplug_indefinite;
 
+<<<<<<< HEAD
+=======
+	bool throttled;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Queue Limit in bytes */
 	u32 limit;
 
@@ -86,7 +98,12 @@ struct plug_sched_data {
 	u32 pkts_to_release;
 };
 
+<<<<<<< HEAD
 static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch)
+=======
+static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+			struct sk_buff **to_free)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 
@@ -96,14 +113,22 @@ static int plug_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return qdisc_enqueue_tail(skb, sch);
 	}
 
+<<<<<<< HEAD
 	return qdisc_reshape_fail(skb, sch);
+=======
+	return qdisc_drop(skb, sch, to_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sk_buff *plug_dequeue(struct Qdisc *sch)
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 
+<<<<<<< HEAD
 	if (qdisc_is_throttled(sch))
+=======
+	if (q->throttled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (!q->unplug_indefinite) {
@@ -111,7 +136,11 @@ static struct sk_buff *plug_dequeue(struct Qdisc *sch)
 			/* No more packets to dequeue. Block the queue
 			 * and wait for the next release command.
 			 */
+<<<<<<< HEAD
 			qdisc_throttled(sch);
+=======
+			q->throttled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 		q->pkts_to_release--;
@@ -120,7 +149,12 @@ static struct sk_buff *plug_dequeue(struct Qdisc *sch)
 	return qdisc_dequeue_head(sch);
 }
 
+<<<<<<< HEAD
 static int plug_init(struct Qdisc *sch, struct nlattr *opt)
+=======
+static int plug_init(struct Qdisc *sch, struct nlattr *opt,
+		     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 
@@ -130,12 +164,17 @@ static int plug_init(struct Qdisc *sch, struct nlattr *opt)
 	q->unplug_indefinite = false;
 
 	if (opt == NULL) {
+<<<<<<< HEAD
 		/* We will set a default limit of 100 pkts (~150kB)
 		 * in case tx_queue_len is not available. The
 		 * default value is completely arbitrary.
 		 */
 		u32 pkt_limit = qdisc_dev(sch)->tx_queue_len ? : 100;
 		q->limit = pkt_limit * psched_mtu(qdisc_dev(sch));
+=======
+		q->limit = qdisc_dev(sch)->tx_queue_len
+		           * psched_mtu(qdisc_dev(sch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct tc_plug_qopt *ctl = nla_data(opt);
 
@@ -145,7 +184,11 @@ static int plug_init(struct Qdisc *sch, struct nlattr *opt)
 		q->limit = ctl->limit;
 	}
 
+<<<<<<< HEAD
 	qdisc_throttled(sch);
+=======
+	q->throttled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -159,14 +202,22 @@ static int plug_init(struct Qdisc *sch, struct nlattr *opt)
  *   command is received (just act as a pass-thru queue).
  * TCQ_PLUG_LIMIT: Increase/decrease queue size
  */
+<<<<<<< HEAD
 static int plug_change(struct Qdisc *sch, struct nlattr *opt)
+=======
+static int plug_change(struct Qdisc *sch, struct nlattr *opt,
+		       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct plug_sched_data *q = qdisc_priv(sch);
 	struct tc_plug_qopt *msg;
 
+<<<<<<< HEAD
 	if (opt == NULL)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg = nla_data(opt);
 	if (nla_len(opt) < sizeof(*msg))
 		return -EINVAL;
@@ -177,7 +228,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		q->pkts_last_epoch = q->pkts_current_epoch;
 		q->pkts_current_epoch = 0;
 		if (q->unplug_indefinite)
+<<<<<<< HEAD
 			qdisc_throttled(sch);
+=======
+			q->throttled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->unplug_indefinite = false;
 		break;
 	case TCQ_PLUG_RELEASE_ONE:
@@ -186,7 +241,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		 */
 		q->pkts_to_release += q->pkts_last_epoch;
 		q->pkts_last_epoch = 0;
+<<<<<<< HEAD
 		qdisc_unthrottled(sch);
+=======
+		q->throttled = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_schedule_queue(sch->dev_queue);
 		break;
 	case TCQ_PLUG_RELEASE_INDEFINITE:
@@ -194,7 +253,11 @@ static int plug_change(struct Qdisc *sch, struct nlattr *opt)
 		q->pkts_to_release = 0;
 		q->pkts_last_epoch = 0;
 		q->pkts_current_epoch = 0;
+<<<<<<< HEAD
 		qdisc_unthrottled(sch);
+=======
+		q->throttled = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_schedule_queue(sch->dev_queue);
 		break;
 	case TCQ_PLUG_LIMIT:
@@ -213,11 +276,21 @@ static struct Qdisc_ops plug_qdisc_ops __read_mostly = {
 	.priv_size   =       sizeof(struct plug_sched_data),
 	.enqueue     =       plug_enqueue,
 	.dequeue     =       plug_dequeue,
+<<<<<<< HEAD
 	.peek        =       qdisc_peek_head,
 	.init        =       plug_init,
 	.change      =       plug_change,
 	.owner       =       THIS_MODULE,
 };
+=======
+	.peek        =       qdisc_peek_dequeued,
+	.init        =       plug_init,
+	.change      =       plug_change,
+	.reset       =	     qdisc_reset_queue,
+	.owner       =       THIS_MODULE,
+};
+MODULE_ALIAS_NET_SCH("plug");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init plug_module_init(void)
 {
@@ -231,3 +304,7 @@ static void __exit plug_module_exit(void)
 module_init(plug_module_init)
 module_exit(plug_module_exit)
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Qdisc to plug and unplug traffic via netlink control");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NETJet mISDN driver
  *
  * Author       Karsten Keil <keil@isdn4linux.de>
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -29,7 +36,11 @@
 #include "ipac.h"
 #include "iohelper.h"
 #include "netjet.h"
+<<<<<<< HEAD
 #include <linux/isdn/hdlc.h>
+=======
+#include "isdnhdlc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NETJET_REV	"2.0"
 
@@ -111,7 +122,11 @@ _set_debug(struct tiger_hw *card)
 }
 
 static int
+<<<<<<< HEAD
 set_debug(const char *val, struct kernel_param *kp)
+=======
+set_debug(const char *val, const struct kernel_param *kp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct tiger_hw *card;
@@ -310,8 +325,13 @@ inittiger(struct tiger_hw *card)
 {
 	int i;
 
+<<<<<<< HEAD
 	card->dma_p = pci_alloc_consistent(card->pdev, NJ_DMA_SIZE,
 					   &card->dma);
+=======
+	card->dma_p = dma_alloc_coherent(&card->pdev->dev, NJ_DMA_SIZE,
+					 &card->dma, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!card->dma_p) {
 		pr_info("%s: No DMA memory\n", card->name);
 		return -ENOMEM;
@@ -386,6 +406,7 @@ read_dma(struct tiger_ch *bc, u32 idx, int cnt)
 			bc->bch.nr, idx);
 	}
 	bc->lastrx = idx;
+<<<<<<< HEAD
 	if (!bc->bch.rx_skb) {
 		bc->bch.rx_skb = mI_alloc_skb(bc->bch.maxlen, GFP_ATOMIC);
 		if (!bc->bch.rx_skb) {
@@ -404,6 +425,22 @@ read_dma(struct tiger_ch *bc, u32 idx, int cnt)
 		}
 		p = skb_put(bc->bch.rx_skb, cnt);
 	} else
+=======
+	if (test_bit(FLG_RX_OFF, &bc->bch.Flags)) {
+		bc->bch.dropcnt += cnt;
+		return;
+	}
+	stat = bchannel_get_rxbuf(&bc->bch, cnt);
+	/* only transparent use the count here, HDLC overun is detected later */
+	if (stat == -ENOMEM) {
+		pr_warn("%s.B%d: No memory for %d bytes\n",
+			card->name, bc->bch.nr, cnt);
+		return;
+	}
+	if (test_bit(FLG_TRANSPARENT, &bc->bch.Flags))
+		p = skb_put(bc->bch.rx_skb, cnt);
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p = bc->hrbuf;
 
 	for (i = 0; i < cnt; i++) {
@@ -414,6 +451,7 @@ read_dma(struct tiger_ch *bc, u32 idx, int cnt)
 			idx = 0;
 		p[i] = val & 0xff;
 	}
+<<<<<<< HEAD
 	pn = bc->hrbuf;
 next_frame:
 	if (test_bit(FLG_HDLC, &bc->bch.Flags)) {
@@ -456,6 +494,47 @@ next_frame:
 		}
 		if (cnt > 0)
 			goto next_frame;
+=======
+
+	if (test_bit(FLG_TRANSPARENT, &bc->bch.Flags)) {
+		recv_Bchannel(&bc->bch, 0, false);
+		return;
+	}
+
+	pn = bc->hrbuf;
+	while (cnt > 0) {
+		stat = isdnhdlc_decode(&bc->hrecv, pn, cnt, &i,
+				       bc->bch.rx_skb->data, bc->bch.maxlen);
+		if (stat > 0) { /* valid frame received */
+			p = skb_put(bc->bch.rx_skb, stat);
+			if (debug & DEBUG_HW_BFIFO) {
+				snprintf(card->log, LOG_SIZE,
+					 "B%1d-recv %s %d ", bc->bch.nr,
+					 card->name, stat);
+				print_hex_dump_bytes(card->log,
+						     DUMP_PREFIX_OFFSET, p,
+						     stat);
+			}
+			recv_Bchannel(&bc->bch, 0, false);
+			stat = bchannel_get_rxbuf(&bc->bch, bc->bch.maxlen);
+			if (stat < 0) {
+				pr_warn("%s.B%d: No memory for %d bytes\n",
+					card->name, bc->bch.nr, cnt);
+				return;
+			}
+		} else if (stat == -HDLC_CRC_ERROR) {
+			pr_info("%s: B%1d receive frame CRC error\n",
+				card->name, bc->bch.nr);
+		} else if (stat == -HDLC_FRAMING_ERROR) {
+			pr_info("%s: B%1d receive framing error\n",
+				card->name, bc->bch.nr);
+		} else if (stat == -HDLC_LENGTH_ERROR) {
+			pr_info("%s: B%1d receive frame too long (> %d)\n",
+				card->name, bc->bch.nr, bc->bch.maxlen);
+		}
+		pn += i;
+		cnt -= i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -544,12 +623,18 @@ static void
 fill_dma(struct tiger_ch *bc)
 {
 	struct tiger_hw *card = bc->bch.hw;
+<<<<<<< HEAD
 	int count, i;
 	u32 m, v;
+=======
+	int count, i, fillempty = 0;
+	u32 m, v, n = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  *p;
 
 	if (bc->free == 0)
 		return;
+<<<<<<< HEAD
 	count = bc->bch.tx_skb->len - bc->bch.tx_idx;
 	if (count <= 0)
 		return;
@@ -560,6 +645,27 @@ fill_dma(struct tiger_ch *bc)
 		resync(bc, card);
 	p = bc->bch.tx_skb->data + bc->bch.tx_idx;
 	if (test_bit(FLG_HDLC, &bc->bch.Flags)) {
+=======
+	if (!bc->bch.tx_skb) {
+		if (!test_bit(FLG_TX_EMPTY, &bc->bch.Flags))
+			return;
+		fillempty = 1;
+		count = card->send.size >> 1;
+		p = bc->bch.fill;
+	} else {
+		count = bc->bch.tx_skb->len - bc->bch.tx_idx;
+		if (count <= 0)
+			return;
+		pr_debug("%s: %s B%1d %d/%d/%d/%d state %x idx %d/%d\n",
+			 card->name, __func__, bc->bch.nr, count, bc->free,
+			 bc->bch.tx_idx, bc->bch.tx_skb->len, bc->txstate,
+			 bc->idx, card->send.idx);
+		p = bc->bch.tx_skb->data + bc->bch.tx_idx;
+	}
+	if (bc->txstate & (TX_IDLE | TX_INIT | TX_UNDERRUN))
+		resync(bc, card);
+	if (test_bit(FLG_HDLC, &bc->bch.Flags) && !fillempty) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = isdnhdlc_encode(&bc->hsend, p, count, &i,
 					bc->hsbuf, bc->free);
 		pr_debug("%s: B%1d hdlc encoded %d in %d\n", card->name,
@@ -570,6 +676,7 @@ fill_dma(struct tiger_ch *bc)
 	} else {
 		if (count > bc->free)
 			count = bc->free;
+<<<<<<< HEAD
 		bc->bch.tx_idx += count;
 		bc->free -= count;
 	}
@@ -581,6 +688,35 @@ fill_dma(struct tiger_ch *bc)
 		v &= m;
 		v |= (bc->bch.nr & 1) ? (u32)(p[i]) : ((u32)(p[i])) << 8;
 		card->send.start[bc->idx++] = v;
+=======
+		if (!fillempty)
+			bc->bch.tx_idx += count;
+		bc->free -= count;
+	}
+	m = (bc->bch.nr & 1) ? 0xffffff00 : 0xffff00ff;
+	if (fillempty) {
+		n = p[0];
+		if (!(bc->bch.nr & 1))
+			n <<= 8;
+		for (i = 0; i < count; i++) {
+			if (bc->idx >= card->send.size)
+				bc->idx = 0;
+			v = card->send.start[bc->idx];
+			v &= m;
+			v |= n;
+			card->send.start[bc->idx++] = v;
+		}
+	} else {
+		for (i = 0; i < count; i++) {
+			if (bc->idx >= card->send.size)
+				bc->idx = 0;
+			v = card->send.start[bc->idx];
+			v &= m;
+			n = p[i];
+			v |= (bc->bch.nr & 1) ? n : n << 8;
+			card->send.start[bc->idx++] = v;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (debug & DEBUG_HW_BFIFO) {
 		snprintf(card->log, LOG_SIZE, "B%1d-send %s %d ",
@@ -595,6 +731,7 @@ fill_dma(struct tiger_ch *bc)
 static int
 bc_next_frame(struct tiger_ch *bc)
 {
+<<<<<<< HEAD
 	if (bc->bch.tx_skb && bc->bch.tx_idx < bc->bch.tx_skb->len)
 		fill_dma(bc);
 	else {
@@ -610,6 +747,27 @@ bc_next_frame(struct tiger_ch *bc)
 			return 0;
 	}
 	return 1;
+=======
+	int ret = 1;
+
+	if (bc->bch.tx_skb && bc->bch.tx_idx < bc->bch.tx_skb->len) {
+		fill_dma(bc);
+	} else {
+		dev_kfree_skb(bc->bch.tx_skb);
+		if (get_next_bframe(&bc->bch)) {
+			fill_dma(bc);
+			test_and_clear_bit(FLG_TX_EMPTY, &bc->bch.Flags);
+		} else if (test_bit(FLG_TX_EMPTY, &bc->bch.Flags)) {
+			fill_dma(bc);
+		} else if (test_bit(FLG_FILLEMPTY, &bc->bch.Flags)) {
+			test_and_set_bit(FLG_TX_EMPTY, &bc->bch.Flags);
+			ret = 0;
+		} else {
+			ret = 0;
+		}
+	}
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -732,14 +890,19 @@ nj_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 	struct tiger_ch *bc = container_of(bch, struct tiger_ch, bch);
 	struct tiger_hw *card = bch->hw;
 	struct mISDNhead *hh = mISDN_HEAD_P(skb);
+<<<<<<< HEAD
 	u32 id;
 	u_long flags;
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hh->prim) {
 	case PH_DATA_REQ:
 		spin_lock_irqsave(&card->lock, flags);
 		ret = bchannel_senddata(bch, skb);
 		if (ret > 0) { /* direct TX */
+<<<<<<< HEAD
 			id = hh->id; /* skb can be freed */
 			fill_dma(bc);
 			ret = 0;
@@ -748,6 +911,12 @@ nj_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 				queue_ch_frame(ch, PH_DATA_CNF, id, NULL);
 		} else
 			spin_unlock_irqrestore(&card->lock, flags);
+=======
+			fill_dma(bc);
+			ret = 0;
+		}
+		spin_unlock_irqrestore(&card->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	case PH_ACTIVATE_REQ:
 		spin_lock_irqsave(&card->lock, flags);
@@ -778,6 +947,7 @@ nj_l2l1B(struct mISDNchannel *ch, struct sk_buff *skb)
 static int
 channel_bctrl(struct tiger_ch *bc, struct mISDN_ctrl_req *cq)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	struct tiger_hw *card  = bc->bch.hw;
 
@@ -793,6 +963,9 @@ channel_bctrl(struct tiger_ch *bc, struct mISDN_ctrl_req *cq)
 		break;
 	}
 	return ret;
+=======
+	return mISDN_ctrl_bchannel(&bc->bch, cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -808,6 +981,7 @@ nj_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	switch (cmd) {
 	case CLOSE_CHANNEL:
 		test_and_clear_bit(FLG_OPEN, &bch->Flags);
+<<<<<<< HEAD
 		if (test_bit(FLG_ACTIVE, &bch->Flags)) {
 			spin_lock_irqsave(&card->lock, flags);
 			mISDN_freebchannel(bch);
@@ -816,6 +990,13 @@ nj_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 			mode_tiger(bc, ISDN_P_NONE);
 			spin_unlock_irqrestore(&card->lock, flags);
 		}
+=======
+		cancel_work_sync(&bch->workq);
+		spin_lock_irqsave(&card->lock, flags);
+		mISDN_clear_bchannel(bch);
+		mode_tiger(bc, ISDN_P_NONE);
+		spin_unlock_irqrestore(&card->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->protocol = ISDN_P_NONE;
 		ch->peer = NULL;
 		module_put(THIS_MODULE);
@@ -837,7 +1018,11 @@ channel_ctrl(struct tiger_hw *card, struct mISDN_ctrl_req *cq)
 
 	switch (cq->op) {
 	case MISDN_CTRL_GETOP:
+<<<<<<< HEAD
 		cq->op = MISDN_CTRL_LOOP;
+=======
+		cq->op = MISDN_CTRL_LOOP | MISDN_CTRL_L1_TIMER3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MISDN_CTRL_LOOP:
 		/* cq->channel: 0 disable, 1 B1 loop 2 B2 loop, 3 both */
@@ -847,6 +1032,12 @@ channel_ctrl(struct tiger_hw *card, struct mISDN_ctrl_req *cq)
 		}
 		ret = card->isac.ctrl(&card->isac, HW_TESTLOOP, cq->channel);
 		break;
+<<<<<<< HEAD
+=======
+	case MISDN_CTRL_L1_TIMER3:
+		ret = card->isac.ctrl(&card->isac, HW_TIMER3_VALUE, cq->p1);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_info("%s: %s unknown Op %x\n", card->name, __func__, cq->op);
 		ret = -EINVAL;
@@ -959,14 +1150,23 @@ nj_release(struct tiger_hw *card)
 		nj_disable_hwirq(card);
 		mode_tiger(&card->bc[0], ISDN_P_NONE);
 		mode_tiger(&card->bc[1], ISDN_P_NONE);
+<<<<<<< HEAD
 		card->isac.release(&card->isac);
 		spin_unlock_irqrestore(&card->lock, flags);
+=======
+		spin_unlock_irqrestore(&card->lock, flags);
+		card->isac.release(&card->isac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_region(card->base, card->base_s);
 		card->base_s = 0;
 	}
 	if (card->irq > 0)
 		free_irq(card->irq, card);
+<<<<<<< HEAD
 	if (card->isac.dch.dev.dev.class)
+=======
+	if (device_is_registered(&card->isac.dch.dev.dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mISDN_unregister_device(&card->isac.dch.dev);
 
 	for (i = 0; i < 2; i++) {
@@ -975,12 +1175,20 @@ nj_release(struct tiger_hw *card)
 		kfree(card->bc[i].hrbuf);
 	}
 	if (card->dma_p)
+<<<<<<< HEAD
 		pci_free_consistent(card->pdev, NJ_DMA_SIZE,
 				    card->dma_p, card->dma);
 	write_lock_irqsave(&card_lock, flags);
 	list_del(&card->list);
 	write_unlock_irqrestore(&card_lock, flags);
 	pci_clear_master(card->pdev);
+=======
+		dma_free_coherent(&card->pdev->dev, NJ_DMA_SIZE, card->dma_p,
+				  card->dma);
+	write_lock_irqsave(&card_lock, flags);
+	list_del(&card->list);
+	write_unlock_irqrestore(&card_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(card->pdev);
 	pci_set_drvdata(card->pdev, NULL);
 	kfree(card);
@@ -1004,7 +1212,11 @@ nj_setup(struct tiger_hw *card)
 }
 
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 setup_instance(struct tiger_hw *card)
 {
 	int i, err;
@@ -1027,7 +1239,12 @@ setup_instance(struct tiger_hw *card)
 	for (i = 0; i < 2; i++) {
 		card->bc[i].bch.nr = i + 1;
 		set_channelmap(i + 1, card->isac.dch.dev.channelmap);
+<<<<<<< HEAD
 		mISDN_initbchannel(&card->bc[i].bch, MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(&card->bc[i].bch, MAX_DATA_MEM,
+				   NJ_DMA_RXSIZE >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->bc[i].bch.hw = card;
 		card->bc[i].bch.ch.send = nj_l2l1B;
 		card->bc[i].bch.ch.ctrl = nj_bctrl;
@@ -1054,7 +1271,11 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int err = -ENOMEM;
@@ -1079,7 +1300,11 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	card = kzalloc(sizeof(struct tiger_hw), GFP_ATOMIC);
+=======
+	card = kzalloc(sizeof(struct tiger_hw), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!card) {
 		pr_info("No kmem for Netjet\n");
 		return err;
@@ -1109,7 +1334,10 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		card->typ = NETJET_S_TJ300;
 
 	card->base = pci_resource_start(pdev, 0);
+<<<<<<< HEAD
 	card->irq = pdev->irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, card);
 	err = setup_instance(card);
 	if (err)
@@ -1119,7 +1347,11 @@ nj_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 }
 
 
+<<<<<<< HEAD
 static void __devexit nj_remove(struct pci_dev *pdev)
+=======
+static void nj_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tiger_hw *card = pci_get_drvdata(pdev);
 
@@ -1132,7 +1364,11 @@ static void __devexit nj_remove(struct pci_dev *pdev)
 /* We cannot select cards with PCI_SUB... IDs, since here are cards with
  * SUB IDs set to PCI_ANY_ID, so we need to match all and reject
  * known other cards which not work with this driver - see probe function */
+<<<<<<< HEAD
 static struct pci_device_id nj_pci_ids[] __devinitdata = {
+=======
+static const struct pci_device_id nj_pci_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_TIGERJET, PCI_DEVICE_ID_TIGERJET_300,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
 	{ }
@@ -1142,7 +1378,11 @@ MODULE_DEVICE_TABLE(pci, nj_pci_ids);
 static struct pci_driver nj_driver = {
 	.name = "netjet",
 	.probe = nj_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(nj_remove),
+=======
+	.remove = nj_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = nj_pci_ids,
 };
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctsrc.h
  *
  * @Brief
@@ -13,7 +20,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 13 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTSRC_H
@@ -23,6 +33,10 @@
 #include "ctimap.h"
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <sound/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SRC_STATE_OFF	0x0
 #define SRC_STATE_INIT	0x4
@@ -47,7 +61,11 @@ struct src_rsc_ops;
 struct src {
 	struct rsc rsc; /* Basic resource info */
 	struct src *intlv; /* Pointer to next interleaved SRC in a series */
+<<<<<<< HEAD
 	struct src_rsc_ops *ops; /* SRC specific operations */
+=======
+	const struct src_rsc_ops *ops; /* SRC specific operations */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Number of contiguous srcs for interleaved usage */
 	unsigned char multi;
 	unsigned char mode; /* Working mode of this SRC resource */
@@ -85,6 +103,10 @@ struct src_desc {
 /* Define src manager object */
 struct src_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t mgr_lock;
 
 	 /* request src resource */
@@ -108,7 +130,11 @@ struct srcimp {
 	struct imapper *imappers;
 	unsigned int mapped; /* A bit-map indicating which conj rsc is mapped */
 	struct srcimp_mgr *mgr;
+<<<<<<< HEAD
 	struct srcimp_rsc_ops *ops;
+=======
+	const struct srcimp_rsc_ops *ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct srcimp_rsc_ops {
@@ -123,6 +149,10 @@ struct srcimp_desc {
 
 struct srcimp_mgr {
 	struct rsc_mgr mgr;	/* Basic resource manager info */
+<<<<<<< HEAD
+=======
+	struct snd_card *card;	/* pointer to this card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t mgr_lock;
 	spinlock_t imap_lock;
 	struct list_head imappers;
@@ -140,10 +170,18 @@ struct srcimp_mgr {
 };
 
 /* Constructor and destructor of SRC resource manager */
+<<<<<<< HEAD
 int src_mgr_create(void *hw, struct src_mgr **rsrc_mgr);
 int src_mgr_destroy(struct src_mgr *src_mgr);
 /* Constructor and destructor of SRCIMP resource manager */
 int srcimp_mgr_create(void *hw, struct srcimp_mgr **rsrc_mgr);
 int srcimp_mgr_destroy(struct srcimp_mgr *srcimp_mgr);
+=======
+int src_mgr_create(struct hw *hw, void **ptr);
+int src_mgr_destroy(void *ptr);
+/* Constructor and destructor of SRCIMP resource manager */
+int srcimp_mgr_create(struct hw *hw, void **ptr);
+int srcimp_mgr_destroy(void *ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CTSRC_H */

@@ -35,6 +35,11 @@
  *                              Turned xenfs into a loadable module.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/uio.h>
@@ -53,15 +58,25 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #include "xenbus_comms.h"
+=======
+#include <linux/workqueue.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <xen/xenbus.h>
 #include <xen/xen.h>
 #include <asm/xen/hypervisor.h>
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+#include "xenbus.h"
+
+unsigned int xb_dev_generation_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * An element of a list of outstanding transactions, for which we're
@@ -70,6 +85,10 @@ MODULE_LICENSE("GPL");
 struct xenbus_transaction_holder {
 	struct list_head list;
 	struct xenbus_transaction handle;
+<<<<<<< HEAD
+=======
+	unsigned int generation_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -79,7 +98,11 @@ struct read_buffer {
 	struct list_head list;
 	unsigned int cons;
 	unsigned int len;
+<<<<<<< HEAD
 	char msg[];
+=======
+	char msg[] __counted_by(len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct xenbus_file_priv {
@@ -113,6 +136,12 @@ struct xenbus_file_priv {
 	struct list_head read_buffers;
 	wait_queue_head_t read_waitq;
 
+<<<<<<< HEAD
+=======
+	struct kref kref;
+
+	struct work_struct wq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Read out any raw xenbus messages queued up. */
@@ -122,7 +151,11 @@ static ssize_t xenbus_file_read(struct file *filp,
 {
 	struct xenbus_file_priv *u = filp->private_data;
 	struct read_buffer *rb;
+<<<<<<< HEAD
 	unsigned i;
+=======
+	ssize_t i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	mutex_lock(&u->reply_mutex);
@@ -142,7 +175,11 @@ again:
 	rb = list_entry(u->read_buffers.next, struct read_buffer, list);
 	i = 0;
 	while (i < len) {
+<<<<<<< HEAD
 		unsigned sz = min((unsigned)len - i, rb->len - rb->cons);
+=======
+		size_t sz = min_t(size_t, len - i, rb->len - rb->cons);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = copy_to_user(ubuf + i, &rb->msg[rb->cons], sz);
 
@@ -186,8 +223,15 @@ static int queue_reply(struct list_head *queue, const void *data, size_t len)
 
 	if (len == 0)
 		return 0;
+<<<<<<< HEAD
 
 	rb = kmalloc(sizeof(*rb) + len, GFP_KERNEL);
+=======
+	if (len > XENSTORE_PAYLOAD_MAX)
+		return -EINVAL;
+
+	rb = kmalloc(struct_size(rb, msg, len), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rb == NULL)
 		return -ENOMEM;
 
@@ -256,6 +300,7 @@ out_fail:
 }
 
 static void watch_fired(struct xenbus_watch *watch,
+<<<<<<< HEAD
 			const char **vec,
 			unsigned int len)
 {
@@ -263,11 +308,21 @@ static void watch_fired(struct xenbus_watch *watch,
 	struct xsd_sockmsg hdr;
 	const char *path, *token;
 	int path_len, tok_len, body_len, data_len = 0;
+=======
+			const char *path,
+			const char *token)
+{
+	struct watch_adapter *adap;
+	struct xsd_sockmsg hdr;
+	const char *token_caller;
+	int path_len, tok_len, body_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	LIST_HEAD(staging_q);
 
 	adap = container_of(watch, struct watch_adapter, watch);
 
+<<<<<<< HEAD
 	path = vec[XS_WATCH_PATH];
 	token = adap->token;
 
@@ -276,6 +331,13 @@ static void watch_fired(struct xenbus_watch *watch,
 	if (len > 2)
 		data_len = vec[len] - vec[2] + 1;
 	body_len = path_len + tok_len + data_len;
+=======
+	token_caller = adap->token;
+
+	path_len = strlen(path) + 1;
+	tok_len = strlen(token_caller) + 1;
+	body_len = path_len + tok_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr.type = XS_WATCH_EVENT;
 	hdr.len = body_len;
@@ -286,9 +348,13 @@ static void watch_fired(struct xenbus_watch *watch,
 	if (!ret)
 		ret = queue_reply(&staging_q, path, path_len);
 	if (!ret)
+<<<<<<< HEAD
 		ret = queue_reply(&staging_q, token, tok_len);
 	if (!ret && len > 2)
 		ret = queue_reply(&staging_q, vec[2], data_len);
+=======
+		ret = queue_reply(&staging_q, token_caller, tok_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret) {
 		/* success: pass reply list onto watcher */
@@ -300,6 +366,7 @@ static void watch_fired(struct xenbus_watch *watch,
 	mutex_unlock(&adap->dev_data->reply_mutex);
 }
 
+<<<<<<< HEAD
 static int xenbus_write_transaction(unsigned msg_type,
 				    struct xenbus_file_priv *u)
 {
@@ -341,6 +408,102 @@ static int xenbus_write_transaction(unsigned msg_type,
 	rc = queue_reply(&staging_q, &u->u.msg, sizeof(u->u.msg));
 	if (!rc)
 		rc = queue_reply(&staging_q, reply, u->u.msg.len);
+=======
+static void xenbus_worker(struct work_struct *wq)
+{
+	struct xenbus_file_priv *u;
+	struct xenbus_transaction_holder *trans, *tmp;
+	struct watch_adapter *watch, *tmp_watch;
+	struct read_buffer *rb, *tmp_rb;
+
+	u = container_of(wq, struct xenbus_file_priv, wq);
+
+	/*
+	 * No need for locking here because there are no other users,
+	 * by definition.
+	 */
+
+	list_for_each_entry_safe(trans, tmp, &u->transactions, list) {
+		xenbus_transaction_end(trans->handle, 1);
+		list_del(&trans->list);
+		kfree(trans);
+	}
+
+	list_for_each_entry_safe(watch, tmp_watch, &u->watches, list) {
+		unregister_xenbus_watch(&watch->watch);
+		list_del(&watch->list);
+		free_watch_adapter(watch);
+	}
+
+	list_for_each_entry_safe(rb, tmp_rb, &u->read_buffers, list) {
+		list_del(&rb->list);
+		kfree(rb);
+	}
+	kfree(u);
+}
+
+static void xenbus_file_free(struct kref *kref)
+{
+	struct xenbus_file_priv *u;
+
+	/*
+	 * We might be called in xenbus_thread().
+	 * Use workqueue to avoid deadlock.
+	 */
+	u = container_of(kref, struct xenbus_file_priv, kref);
+	schedule_work(&u->wq);
+}
+
+static struct xenbus_transaction_holder *xenbus_get_transaction(
+	struct xenbus_file_priv *u, uint32_t tx_id)
+{
+	struct xenbus_transaction_holder *trans;
+
+	list_for_each_entry(trans, &u->transactions, list)
+		if (trans->handle.id == tx_id)
+			return trans;
+
+	return NULL;
+}
+
+void xenbus_dev_queue_reply(struct xb_req_data *req)
+{
+	struct xenbus_file_priv *u = req->par;
+	struct xenbus_transaction_holder *trans = NULL;
+	int rc;
+	LIST_HEAD(staging_q);
+
+	xs_request_exit(req);
+
+	mutex_lock(&u->msgbuffer_mutex);
+
+	if (req->type == XS_TRANSACTION_START) {
+		trans = xenbus_get_transaction(u, 0);
+		if (WARN_ON(!trans))
+			goto out;
+		if (req->msg.type == XS_ERROR) {
+			list_del(&trans->list);
+			kfree(trans);
+		} else {
+			rc = kstrtou32(req->body, 10, &trans->handle.id);
+			if (WARN_ON(rc))
+				goto out;
+		}
+	} else if (req->type == XS_TRANSACTION_END) {
+		trans = xenbus_get_transaction(u, req->msg.tx_id);
+		if (WARN_ON(!trans))
+			goto out;
+		list_del(&trans->list);
+		kfree(trans);
+	}
+
+	mutex_unlock(&u->msgbuffer_mutex);
+
+	mutex_lock(&u->reply_mutex);
+	rc = queue_reply(&staging_q, &req->msg, sizeof(req->msg));
+	if (!rc)
+		rc = queue_reply(&staging_q, req->body, req->msg.len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rc) {
 		list_splice_tail(&staging_q, &u->read_buffers);
 		wake_up(&u->read_waitq);
@@ -349,7 +512,93 @@ static int xenbus_write_transaction(unsigned msg_type,
 	}
 	mutex_unlock(&u->reply_mutex);
 
+<<<<<<< HEAD
 	kfree(reply);
+=======
+	kfree(req->body);
+	kfree(req);
+
+	kref_put(&u->kref, xenbus_file_free);
+
+	return;
+
+ out:
+	mutex_unlock(&u->msgbuffer_mutex);
+}
+
+static int xenbus_command_reply(struct xenbus_file_priv *u,
+				unsigned int msg_type, const char *reply)
+{
+	struct {
+		struct xsd_sockmsg hdr;
+		char body[16];
+	} msg;
+	int rc;
+
+	msg.hdr = u->u.msg;
+	msg.hdr.type = msg_type;
+	msg.hdr.len = strlen(reply) + 1;
+	if (msg.hdr.len > sizeof(msg.body))
+		return -E2BIG;
+	memcpy(&msg.body, reply, msg.hdr.len);
+
+	mutex_lock(&u->reply_mutex);
+	rc = queue_reply(&u->read_buffers, &msg, sizeof(msg.hdr) + msg.hdr.len);
+	wake_up(&u->read_waitq);
+	mutex_unlock(&u->reply_mutex);
+
+	if (!rc)
+		kref_put(&u->kref, xenbus_file_free);
+
+	return rc;
+}
+
+static int xenbus_write_transaction(unsigned msg_type,
+				    struct xenbus_file_priv *u)
+{
+	int rc;
+	struct xenbus_transaction_holder *trans = NULL;
+	struct {
+		struct xsd_sockmsg hdr;
+		char body[];
+	} *msg = (void *)u->u.buffer;
+
+	if (msg_type == XS_TRANSACTION_START) {
+		trans = kzalloc(sizeof(*trans), GFP_KERNEL);
+		if (!trans) {
+			rc = -ENOMEM;
+			goto out;
+		}
+		trans->generation_id = xb_dev_generation_id;
+		list_add(&trans->list, &u->transactions);
+	} else if (msg->hdr.tx_id != 0 &&
+		   !xenbus_get_transaction(u, msg->hdr.tx_id))
+		return xenbus_command_reply(u, XS_ERROR, "ENOENT");
+	else if (msg_type == XS_TRANSACTION_END &&
+		 !(msg->hdr.len == 2 &&
+		   (!strcmp(msg->body, "T") || !strcmp(msg->body, "F"))))
+		return xenbus_command_reply(u, XS_ERROR, "EINVAL");
+	else if (msg_type == XS_TRANSACTION_END) {
+		trans = xenbus_get_transaction(u, msg->hdr.tx_id);
+		if (trans && trans->generation_id != xb_dev_generation_id) {
+			list_del(&trans->list);
+			kfree(trans);
+			if (!strcmp(msg->body, "T"))
+				return xenbus_command_reply(u, XS_ERROR,
+							    "EAGAIN");
+			else
+				return xenbus_command_reply(u,
+							    XS_TRANSACTION_END,
+							    "OK");
+		}
+	}
+
+	rc = xenbus_dev_request_and_reply(&msg->hdr, u);
+	if (rc && trans) {
+		list_del(&trans->list);
+		kfree(trans);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return rc;
@@ -357,20 +606,34 @@ out:
 
 static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 {
+<<<<<<< HEAD
 	struct watch_adapter *watch, *tmp_watch;
 	char *path, *token;
 	int err, rc;
 	LIST_HEAD(staging_q);
+=======
+	struct watch_adapter *watch;
+	char *path, *token;
+	int err, rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = u->u.buffer + sizeof(u->u.msg);
 	token = memchr(path, 0, u->u.msg.len);
 	if (token == NULL) {
+<<<<<<< HEAD
 		rc = -EILSEQ;
+=======
+		rc = xenbus_command_reply(u, XS_ERROR, "EINVAL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	token++;
 	if (memchr(token, 0, u->u.msg.len - (token - path)) == NULL) {
+<<<<<<< HEAD
 		rc = -EILSEQ;
+=======
+		rc = xenbus_command_reply(u, XS_ERROR, "EINVAL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -392,7 +655,11 @@ static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 		}
 		list_add(&watch->list, &u->watches);
 	} else {
+<<<<<<< HEAD
 		list_for_each_entry_safe(watch, tmp_watch, &u->watches, list) {
+=======
+		list_for_each_entry(watch, &u->watches, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!strcmp(watch->token, token) &&
 			    !strcmp(watch->watch.node, path)) {
 				unregister_xenbus_watch(&watch->watch);
@@ -404,6 +671,7 @@ static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 	}
 
 	/* Success.  Synthesize a reply to say all is OK. */
+<<<<<<< HEAD
 	{
 		struct {
 			struct xsd_sockmsg hdr;
@@ -421,6 +689,9 @@ static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
 		wake_up(&u->read_waitq);
 		mutex_unlock(&u->reply_mutex);
 	}
+=======
+	rc = xenbus_command_reply(u, msg_type, "OK");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return rc;
@@ -434,7 +705,10 @@ static ssize_t xenbus_file_write(struct file *filp,
 	uint32_t msg_type;
 	int rc = len;
 	int ret;
+<<<<<<< HEAD
 	LIST_HEAD(staging_q);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We're expecting usermode to be writing properly formed
@@ -458,7 +732,11 @@ static ssize_t xenbus_file_write(struct file *filp,
 		goto out;
 
 	/* Can't write a xenbus message larger we can buffer */
+<<<<<<< HEAD
 	if ((len + u->len) > sizeof(u->u.buffer)) {
+=======
+	if (len > sizeof(u->u.buffer) - u->len) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* On error, dump existing buffer */
 		u->len = 0;
 		rc = -EINVAL;
@@ -497,6 +775,11 @@ static ssize_t xenbus_file_write(struct file *filp,
 	 * OK, now we have a complete message.  Do something with it.
 	 */
 
+<<<<<<< HEAD
+=======
+	kref_get(&u->kref);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg_type = u->u.msg.type;
 
 	switch (msg_type) {
@@ -511,8 +794,15 @@ static ssize_t xenbus_file_write(struct file *filp,
 		ret = xenbus_write_transaction(msg_type, u);
 		break;
 	}
+<<<<<<< HEAD
 	if (ret != 0)
 		rc = ret;
+=======
+	if (ret != 0) {
+		rc = ret;
+		kref_put(&u->kref, xenbus_file_free);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Buffered message consumed */
 	u->len = 0;
@@ -529,16 +819,29 @@ static int xenbus_file_open(struct inode *inode, struct file *filp)
 	if (xen_store_evtchn == 0)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	nonseekable_open(inode, filp);
+=======
+	stream_open(inode, filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u = kzalloc(sizeof(*u), GFP_KERNEL);
 	if (u == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	kref_init(&u->kref);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&u->transactions);
 	INIT_LIST_HEAD(&u->watches);
 	INIT_LIST_HEAD(&u->read_buffers);
 	init_waitqueue_head(&u->read_waitq);
+<<<<<<< HEAD
+=======
+	INIT_WORK(&u->wq, xenbus_worker);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&u->reply_mutex);
 	mutex_init(&u->msgbuffer_mutex);
@@ -551,6 +854,7 @@ static int xenbus_file_open(struct inode *inode, struct file *filp)
 static int xenbus_file_release(struct inode *inode, struct file *filp)
 {
 	struct xenbus_file_priv *u = filp->private_data;
+<<<<<<< HEAD
 	struct xenbus_transaction_holder *trans, *tmp;
 	struct watch_adapter *watch, *tmp_watch;
 	struct read_buffer *rb, *tmp_rb;
@@ -577,17 +881,29 @@ static int xenbus_file_release(struct inode *inode, struct file *filp)
 		kfree(rb);
 	}
 	kfree(u);
+=======
+
+	kref_put(&u->kref, xenbus_file_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int xenbus_file_poll(struct file *file, poll_table *wait)
+=======
+static __poll_t xenbus_file_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xenbus_file_priv *u = file->private_data;
 
 	poll_wait(file, &u->read_waitq, wait);
 	if (!list_empty(&u->read_buffers))
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM;
+=======
+		return EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -616,6 +932,7 @@ static int __init xenbus_init(void)
 
 	err = misc_register(&xenbus_dev);
 	if (err)
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not register xenbus frontend device\n");
 	return err;
 }
@@ -627,3 +944,9 @@ static void __exit xenbus_exit(void)
 
 module_init(xenbus_init);
 module_exit(xenbus_exit);
+=======
+		pr_err("Could not register xenbus frontend device\n");
+	return err;
+}
+device_initcall(xenbus_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Generic binary BCH encoding/decoding library
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Generic binary BCH encoding/decoding library
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright © 2011 Parrot S.A.
  *
  * Author: Ivan Djelic <ivan.djelic@parrot.com>
@@ -45,6 +52,10 @@
  * @cache:      log-based polynomial representation buffer
  * @elp:        error locator polynomial
  * @poly_2t:    temporary polynomials of degree 2t
+<<<<<<< HEAD
+=======
+ * @swap_bits:  swap bits within data and syndrome bytes
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct bch_control {
 	unsigned int    m;
@@ -63,6 +74,7 @@ struct bch_control {
 	int            *cache;
 	struct gf_poly *elp;
 	struct gf_poly *poly_2t[4];
+<<<<<<< HEAD
 };
 
 struct bch_control *init_bch(int m, int t, unsigned int prim_poly);
@@ -73,6 +85,20 @@ void encode_bch(struct bch_control *bch, const uint8_t *data,
 		unsigned int len, uint8_t *ecc);
 
 int decode_bch(struct bch_control *bch, const uint8_t *data, unsigned int len,
+=======
+	bool		swap_bits;
+};
+
+struct bch_control *bch_init(int m, int t, unsigned int prim_poly,
+			     bool swap_bits);
+
+void bch_free(struct bch_control *bch);
+
+void bch_encode(struct bch_control *bch, const uint8_t *data,
+		unsigned int len, uint8_t *ecc);
+
+int bch_decode(struct bch_control *bch, const uint8_t *data, unsigned int len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       const uint8_t *recv_ecc, const uint8_t *calc_ecc,
 	       const unsigned int *syn, unsigned int *errloc);
 

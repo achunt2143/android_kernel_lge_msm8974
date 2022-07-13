@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: pep.h
  *
  * Phonet Pipe End Point sockets definitions
  *
  * Copyright (C) 2008 Nokia Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +23,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef NET_PHONET_PEP_H
 #define NET_PHONET_PEP_H
 
+<<<<<<< HEAD
+=======
+#include <linux/skbuff.h>
+#include <net/phonet/phonet.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pep_sock {
 	struct pn_sock		pn_sk;
 
@@ -63,10 +76,18 @@ struct pnpipehdr {
 		u8		state_after_reset;	/* reset request */
 		u8		error_code;		/* any response */
 		u8		pep_type;		/* status indication */
+<<<<<<< HEAD
 		u8		data[1];
 	};
 };
 #define other_pep_type		data[1]
+=======
+		u8		data0;			/* anything else */
+	};
+	u8			data[];
+};
+#define other_pep_type		data[0]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct pnpipehdr *pnp_hdr(struct sk_buff *skb)
 {

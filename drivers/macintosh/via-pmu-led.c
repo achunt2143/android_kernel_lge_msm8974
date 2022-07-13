@@ -25,7 +25,11 @@
 #include <linux/leds.h>
 #include <linux/adb.h>
 #include <linux/pmu.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static spinlock_t pmu_blink_lock;
 static struct adb_request pmu_blink_req;
@@ -73,8 +77,13 @@ static void pmu_led_set(struct led_classdev *led_cdev,
 
 static struct led_classdev pmu_led = {
 	.name = "pmu-led::front",
+<<<<<<< HEAD
 #ifdef CONFIG_ADB_PMU_LED_IDE
 	.default_trigger = "ide-disk",
+=======
+#ifdef CONFIG_ADB_PMU_LED_DISK
+	.default_trigger = "disk-activity",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.brightness_set = pmu_led_set,
 };

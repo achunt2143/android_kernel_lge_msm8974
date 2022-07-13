@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_STRING_H
 #define __ASM_SH_STRING_H
 
 #ifdef __KERNEL__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_STRING_H
+#define __ASM_SH_STRING_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 Niibe Yutaka
  * But consider these trivial functions to be public domain.
@@ -27,6 +34,7 @@ static inline char *strcpy(char *__dest, const char *__src)
 	return __xdest;
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRNCPY
 static inline char *strncpy(char *__dest, const char *__src, size_t __n)
 {
@@ -53,6 +61,8 @@ static inline char *strncpy(char *__dest, const char *__src, size_t __n)
 	return __xdest;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HAVE_ARCH_STRCMP
 static inline int strcmp(const char *__cs, const char *__ct)
 {
@@ -126,6 +136,9 @@ extern void *memchr(const void *__s, int __c, size_t __n);
 #define __HAVE_ARCH_STRLEN
 extern size_t strlen(const char *);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_STRING_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ufs/super.c
  *
@@ -65,14 +69,23 @@
  * Evgeniy Dushistov <dushistov@mail.ru>, 2007
  */
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/exportfs.h>
 #include <linux/module.h>
 #include <linux/bitops.h>
 
+<<<<<<< HEAD
 #include <stdarg.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/stdarg.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -81,6 +94,10 @@
 #include <linux/stat.h>
 #include <linux/string.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/parser.h>
 #include <linux/buffer_head.h>
@@ -88,12 +105,17 @@
 #include <linux/log2.h>
 #include <linux/mount.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/iversion.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ufs_fs.h"
 #include "ufs.h"
 #include "swab.h"
 #include "util.h"
 
+<<<<<<< HEAD
 void lock_ufs(struct super_block *sb)
 {
 #if defined(CONFIG_SMP) || defined (CONFIG_PREEMPT)
@@ -114,12 +136,18 @@ void unlock_ufs(struct super_block *sb)
 #endif
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct inode *ufs_nfs_get_inode(struct super_block *sb, u64 ino, u32 generation)
 {
 	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
 	struct inode *inode;
 
+<<<<<<< HEAD
 	if (ino < UFS_ROOTINO || ino > uspi->s_ncg * uspi->s_ipg)
+=======
+	if (ino < UFS_ROOTINO || ino > (u64)uspi->s_ncg * uspi->s_ipg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ESTALE);
 
 	inode = ufs_iget(sb, ino);
@@ -146,6 +174,7 @@ static struct dentry *ufs_fh_to_parent(struct super_block *sb, struct fid *fid,
 
 static struct dentry *ufs_get_parent(struct dentry *child)
 {
+<<<<<<< HEAD
 	struct qstr dot_dot = QSTR_INIT("..", 2);
 	ino_t ino;
 
@@ -156,6 +185,18 @@ static struct dentry *ufs_get_parent(struct dentry *child)
 }
 
 static const struct export_operations ufs_export_ops = {
+=======
+	ino_t ino;
+
+	ino = ufs_inode_by_name(d_inode(child), &dotdot_name);
+	if (!ino)
+		return ERR_PTR(-ENOENT);
+	return d_obtain_alias(ufs_iget(child->d_sb, ino));
+}
+
+static const struct export_operations ufs_export_ops = {
+	.encode_fh = generic_encode_ino32_fh,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fh_to_dentry	= ufs_fh_to_dentry,
 	.fh_to_parent	= ufs_fh_to_parent,
 	.get_parent	= ufs_get_parent,
@@ -172,6 +213,7 @@ static void ufs_print_super_stuff(struct super_block *sb,
 {
 	u32 magic = fs32_to_cpu(sb, usb3->fs_magic);
 
+<<<<<<< HEAD
 	printk("ufs_print_super_stuff\n");
 	printk("  magic:     0x%x\n", magic);
 	if (fs32_to_cpu(sb, usb3->fs_magic) == UFS2_MAGIC) {
@@ -239,6 +281,75 @@ static void ufs_print_super_stuff(struct super_block *sb,
 		       fs32_to_cpu(sb, usb1->fs_cstotal.cs_nffree));
 	}
 	printk("\n");
+=======
+	pr_debug("ufs_print_super_stuff\n");
+	pr_debug("  magic:     0x%x\n", magic);
+	if (fs32_to_cpu(sb, usb3->fs_magic) == UFS2_MAGIC) {
+		pr_debug("  fs_size:   %llu\n", (unsigned long long)
+			 fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_size));
+		pr_debug("  fs_dsize:  %llu\n", (unsigned long long)
+			 fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_dsize));
+		pr_debug("  bsize:         %u\n",
+			 fs32_to_cpu(sb, usb1->fs_bsize));
+		pr_debug("  fsize:         %u\n",
+			 fs32_to_cpu(sb, usb1->fs_fsize));
+		pr_debug("  fs_volname:  %s\n", usb2->fs_un.fs_u2.fs_volname);
+		pr_debug("  fs_sblockloc: %llu\n", (unsigned long long)
+			 fs64_to_cpu(sb, usb2->fs_un.fs_u2.fs_sblockloc));
+		pr_debug("  cs_ndir(No of dirs):  %llu\n", (unsigned long long)
+			 fs64_to_cpu(sb, usb2->fs_un.fs_u2.cs_ndir));
+		pr_debug("  cs_nbfree(No of free blocks):  %llu\n",
+			 (unsigned long long)
+			 fs64_to_cpu(sb, usb2->fs_un.fs_u2.cs_nbfree));
+		pr_info("  cs_nifree(Num of free inodes): %llu\n",
+			(unsigned long long)
+			fs64_to_cpu(sb, usb3->fs_un1.fs_u2.cs_nifree));
+		pr_info("  cs_nffree(Num of free frags): %llu\n",
+			(unsigned long long)
+			fs64_to_cpu(sb, usb3->fs_un1.fs_u2.cs_nffree));
+		pr_info("  fs_maxsymlinklen: %u\n",
+			fs32_to_cpu(sb, usb3->fs_un2.fs_44.fs_maxsymlinklen));
+	} else {
+		pr_debug(" sblkno:      %u\n", fs32_to_cpu(sb, usb1->fs_sblkno));
+		pr_debug(" cblkno:      %u\n", fs32_to_cpu(sb, usb1->fs_cblkno));
+		pr_debug(" iblkno:      %u\n", fs32_to_cpu(sb, usb1->fs_iblkno));
+		pr_debug(" dblkno:      %u\n", fs32_to_cpu(sb, usb1->fs_dblkno));
+		pr_debug(" cgoffset:    %u\n",
+			 fs32_to_cpu(sb, usb1->fs_cgoffset));
+		pr_debug(" ~cgmask:     0x%x\n",
+			 ~fs32_to_cpu(sb, usb1->fs_cgmask));
+		pr_debug(" size:        %u\n", fs32_to_cpu(sb, usb1->fs_size));
+		pr_debug(" dsize:       %u\n", fs32_to_cpu(sb, usb1->fs_dsize));
+		pr_debug(" ncg:         %u\n", fs32_to_cpu(sb, usb1->fs_ncg));
+		pr_debug(" bsize:       %u\n", fs32_to_cpu(sb, usb1->fs_bsize));
+		pr_debug(" fsize:       %u\n", fs32_to_cpu(sb, usb1->fs_fsize));
+		pr_debug(" frag:        %u\n", fs32_to_cpu(sb, usb1->fs_frag));
+		pr_debug(" fragshift:   %u\n",
+			 fs32_to_cpu(sb, usb1->fs_fragshift));
+		pr_debug(" ~fmask:      %u\n", ~fs32_to_cpu(sb, usb1->fs_fmask));
+		pr_debug(" fshift:      %u\n", fs32_to_cpu(sb, usb1->fs_fshift));
+		pr_debug(" sbsize:      %u\n", fs32_to_cpu(sb, usb1->fs_sbsize));
+		pr_debug(" spc:         %u\n", fs32_to_cpu(sb, usb1->fs_spc));
+		pr_debug(" cpg:         %u\n", fs32_to_cpu(sb, usb1->fs_cpg));
+		pr_debug(" ipg:         %u\n", fs32_to_cpu(sb, usb1->fs_ipg));
+		pr_debug(" fpg:         %u\n", fs32_to_cpu(sb, usb1->fs_fpg));
+		pr_debug(" csaddr:      %u\n", fs32_to_cpu(sb, usb1->fs_csaddr));
+		pr_debug(" cssize:      %u\n", fs32_to_cpu(sb, usb1->fs_cssize));
+		pr_debug(" cgsize:      %u\n", fs32_to_cpu(sb, usb1->fs_cgsize));
+		pr_debug(" fstodb:      %u\n",
+			 fs32_to_cpu(sb, usb1->fs_fsbtodb));
+		pr_debug(" nrpos:       %u\n", fs32_to_cpu(sb, usb3->fs_nrpos));
+		pr_debug(" ndir         %u\n",
+			 fs32_to_cpu(sb, usb1->fs_cstotal.cs_ndir));
+		pr_debug(" nifree       %u\n",
+			 fs32_to_cpu(sb, usb1->fs_cstotal.cs_nifree));
+		pr_debug(" nbfree       %u\n",
+			 fs32_to_cpu(sb, usb1->fs_cstotal.cs_nbfree));
+		pr_debug(" nffree       %u\n",
+			 fs32_to_cpu(sb, usb1->fs_cstotal.cs_nffree));
+	}
+	pr_debug("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -247,6 +358,7 @@ static void ufs_print_super_stuff(struct super_block *sb,
 static void ufs_print_cylinder_stuff(struct super_block *sb,
 				     struct ufs_cylinder_group *cg)
 {
+<<<<<<< HEAD
 	printk("\nufs_print_cylinder_stuff\n");
 	printk("size of ucg: %zu\n", sizeof(struct ufs_cylinder_group));
 	printk("  magic:        %x\n", fs32_to_cpu(sb, cg->cg_magic));
@@ -263,10 +375,29 @@ static void ufs_print_cylinder_stuff(struct super_block *sb,
 	printk("  frotor:       %u\n", fs32_to_cpu(sb, cg->cg_frotor));
 	printk("  irotor:       %u\n", fs32_to_cpu(sb, cg->cg_irotor));
 	printk("  frsum:        %u, %u, %u, %u, %u, %u, %u, %u\n",
+=======
+	pr_debug("\nufs_print_cylinder_stuff\n");
+	pr_debug("size of ucg: %zu\n", sizeof(struct ufs_cylinder_group));
+	pr_debug("  magic:        %x\n", fs32_to_cpu(sb, cg->cg_magic));
+	pr_debug("  time:         %u\n", fs32_to_cpu(sb, cg->cg_time));
+	pr_debug("  cgx:          %u\n", fs32_to_cpu(sb, cg->cg_cgx));
+	pr_debug("  ncyl:         %u\n", fs16_to_cpu(sb, cg->cg_ncyl));
+	pr_debug("  niblk:        %u\n", fs16_to_cpu(sb, cg->cg_niblk));
+	pr_debug("  ndblk:        %u\n", fs32_to_cpu(sb, cg->cg_ndblk));
+	pr_debug("  cs_ndir:      %u\n", fs32_to_cpu(sb, cg->cg_cs.cs_ndir));
+	pr_debug("  cs_nbfree:    %u\n", fs32_to_cpu(sb, cg->cg_cs.cs_nbfree));
+	pr_debug("  cs_nifree:    %u\n", fs32_to_cpu(sb, cg->cg_cs.cs_nifree));
+	pr_debug("  cs_nffree:    %u\n", fs32_to_cpu(sb, cg->cg_cs.cs_nffree));
+	pr_debug("  rotor:        %u\n", fs32_to_cpu(sb, cg->cg_rotor));
+	pr_debug("  frotor:       %u\n", fs32_to_cpu(sb, cg->cg_frotor));
+	pr_debug("  irotor:       %u\n", fs32_to_cpu(sb, cg->cg_irotor));
+	pr_debug("  frsum:        %u, %u, %u, %u, %u, %u, %u, %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    fs32_to_cpu(sb, cg->cg_frsum[0]), fs32_to_cpu(sb, cg->cg_frsum[1]),
 	    fs32_to_cpu(sb, cg->cg_frsum[2]), fs32_to_cpu(sb, cg->cg_frsum[3]),
 	    fs32_to_cpu(sb, cg->cg_frsum[4]), fs32_to_cpu(sb, cg->cg_frsum[5]),
 	    fs32_to_cpu(sb, cg->cg_frsum[6]), fs32_to_cpu(sb, cg->cg_frsum[7]));
+<<<<<<< HEAD
 	printk("  btotoff:      %u\n", fs32_to_cpu(sb, cg->cg_btotoff));
 	printk("  boff:         %u\n", fs32_to_cpu(sb, cg->cg_boff));
 	printk("  iuseoff:      %u\n", fs32_to_cpu(sb, cg->cg_iusedoff));
@@ -279,6 +410,20 @@ static void ufs_print_cylinder_stuff(struct super_block *sb,
 	printk("  nclusterblks  %u\n",
 	       fs32_to_cpu(sb, cg->cg_u.cg_44.cg_nclusterblks));
 	printk("\n");
+=======
+	pr_debug("  btotoff:      %u\n", fs32_to_cpu(sb, cg->cg_btotoff));
+	pr_debug("  boff:         %u\n", fs32_to_cpu(sb, cg->cg_boff));
+	pr_debug("  iuseoff:      %u\n", fs32_to_cpu(sb, cg->cg_iusedoff));
+	pr_debug("  freeoff:      %u\n", fs32_to_cpu(sb, cg->cg_freeoff));
+	pr_debug("  nextfreeoff:  %u\n", fs32_to_cpu(sb, cg->cg_nextfreeoff));
+	pr_debug("  clustersumoff %u\n",
+		 fs32_to_cpu(sb, cg->cg_u.cg_44.cg_clustersumoff));
+	pr_debug("  clusteroff    %u\n",
+		 fs32_to_cpu(sb, cg->cg_u.cg_44.cg_clusteroff));
+	pr_debug("  nclusterblks  %u\n",
+		 fs32_to_cpu(sb, cg->cg_u.cg_44.cg_nclusterblks));
+	pr_debug("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #  define ufs_print_super_stuff(sb, usb1, usb2, usb3) /**/
@@ -287,18 +432,26 @@ static void ufs_print_cylinder_stuff(struct super_block *sb,
 
 static const struct super_operations ufs_super_ops;
 
+<<<<<<< HEAD
 static char error_buf[1024];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ufs_error (struct super_block * sb, const char * function,
 	const char * fmt, ...)
 {
 	struct ufs_sb_private_info * uspi;
 	struct ufs_super_block_first * usb1;
+<<<<<<< HEAD
+=======
+	struct va_format vaf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_list args;
 
 	uspi = UFS_SB(sb)->s_uspi;
 	usb1 = ubh_get_usb_first(uspi);
 	
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY)) {
 		usb1->fs_clean = UFS_FSBAD;
 		ubh_mark_buffer_dirty(USPI_UBH(uspi));
@@ -312,13 +465,35 @@ void ufs_error (struct super_block * sb, const char * function,
 	case UFS_MOUNT_ONERROR_PANIC:
 		panic ("UFS-fs panic (device %s): %s: %s\n", 
 			sb->s_id, function, error_buf);
+=======
+	if (!sb_rdonly(sb)) {
+		usb1->fs_clean = UFS_FSBAD;
+		ubh_mark_buffer_dirty(USPI_UBH(uspi));
+		ufs_mark_sb_dirty(sb);
+		sb->s_flags |= SB_RDONLY;
+	}
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	switch (UFS_SB(sb)->s_mount_opt & UFS_MOUNT_ONERROR) {
+	case UFS_MOUNT_ONERROR_PANIC:
+		panic("panic (device %s): %s: %pV\n",
+		      sb->s_id, function, &vaf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case UFS_MOUNT_ONERROR_LOCK:
 	case UFS_MOUNT_ONERROR_UMOUNT:
 	case UFS_MOUNT_ONERROR_REPAIR:
+<<<<<<< HEAD
 		printk (KERN_CRIT "UFS-fs error (device %s): %s: %s\n",
 			sb->s_id, function, error_buf);
 	}		
+=======
+		pr_crit("error (device %s): %s: %pV\n",
+			sb->s_id, function, &vaf);
+	}
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ufs_panic (struct super_block * sb, const char * function,
@@ -326,11 +501,16 @@ void ufs_panic (struct super_block * sb, const char * function,
 {
 	struct ufs_sb_private_info * uspi;
 	struct ufs_super_block_first * usb1;
+<<<<<<< HEAD
+=======
+	struct va_format vaf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_list args;
 	
 	uspi = UFS_SB(sb)->s_uspi;
 	usb1 = ubh_get_usb_first(uspi);
 	
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY)) {
 		usb1->fs_clean = UFS_FSBAD;
 		ubh_mark_buffer_dirty(USPI_UBH(uspi));
@@ -342,11 +522,26 @@ void ufs_panic (struct super_block * sb, const char * function,
 	sb->s_flags |= MS_RDONLY;
 	printk (KERN_CRIT "UFS-fs panic (device %s): %s: %s\n",
 		sb->s_id, function, error_buf);
+=======
+	if (!sb_rdonly(sb)) {
+		usb1->fs_clean = UFS_FSBAD;
+		ubh_mark_buffer_dirty(USPI_UBH(uspi));
+		ufs_mark_sb_dirty(sb);
+	}
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	sb->s_flags |= SB_RDONLY;
+	pr_crit("panic (device %s): %s: %pV\n",
+		sb->s_id, function, &vaf);
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ufs_warning (struct super_block * sb, const char * function,
 	const char * fmt, ...)
 {
+<<<<<<< HEAD
 	va_list args;
 
 	va_start (args, fmt);
@@ -354,6 +549,17 @@ void ufs_warning (struct super_block * sb, const char * function,
 	va_end (args);
 	printk (KERN_WARNING "UFS-fs warning (device %s): %s: %s\n",
 		sb->s_id, function, error_buf);
+=======
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_warn("(device %s): %s: %pV\n",
+		sb->s_id, function, &vaf);
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum {
@@ -464,14 +670,22 @@ static int ufs_parse_options (char * options, unsigned * mount_options)
 			ufs_set_opt (*mount_options, ONERROR_UMOUNT);
 			break;
 		case Opt_onerror_repair:
+<<<<<<< HEAD
 			printk("UFS-fs: Unable to do repair on error, "
 				"will lock lock instead\n");
+=======
+			pr_err("Unable to do repair on error, will lock lock instead\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ufs_clear_opt (*mount_options, ONERROR);
 			ufs_set_opt (*mount_options, ONERROR_REPAIR);
 			break;
 		default:
+<<<<<<< HEAD
 			printk("UFS-fs: Invalid option: \"%s\" "
 					"or missing value\n", p);
+=======
+			pr_err("Invalid option: \"%s\" or missing value\n", p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
@@ -498,7 +712,11 @@ static void ufs_setup_cstotal(struct super_block *sb)
 	usb3 = ubh_get_usb_third(uspi);
 
 	if ((mtype == UFS_MOUNT_UFSTYPE_44BSD &&
+<<<<<<< HEAD
 	     (usb1->fs_flags & UFS_FLAGS_UPDATED)) ||
+=======
+	     (usb2->fs_un.fs_u2.fs_maxbsize == usb1->fs_bsize)) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    mtype == UFS_MOUNT_UFSTYPE_UFS2) {
 		/*we have statistic in different place, then usual*/
 		uspi->cs_total.cs_ndir = fs64_to_cpu(sb, usb2->fs_un.fs_u2.cs_ndir);
@@ -524,11 +742,17 @@ static int ufs_read_cylinder_structures(struct super_block *sb)
 	struct ufs_buffer_head * ubh;
 	unsigned char * base, * space;
 	unsigned size, blks, i;
+<<<<<<< HEAD
 	struct ufs_super_block_third *usb3;
 
 	UFSD("ENTER\n");
 
 	usb3 = ubh_get_usb_third(uspi);
+=======
+
+	UFSD("ENTER\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Read cs structures from (usually) first data block
 	 * on the device. 
@@ -560,7 +784,13 @@ static int ufs_read_cylinder_structures(struct super_block *sb)
 	 * Read cylinder group (we read only first fragment from block
 	 * at this time) and prepare internal data structures for cg caching.
 	 */
+<<<<<<< HEAD
 	if (!(sbi->s_ucg = kmalloc (sizeof(struct buffer_head *) * uspi->s_ncg, GFP_NOFS)))
+=======
+	sbi->s_ucg = kmalloc_array(uspi->s_ncg, sizeof(struct buffer_head *),
+				   GFP_NOFS);
+	if (!sbi->s_ucg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	for (i = 0; i < uspi->s_ncg; i++) 
 		sbi->s_ucg[i] = NULL;
@@ -616,9 +846,13 @@ static void ufs_put_cstotal(struct super_block *sb)
 	usb2 = ubh_get_usb_second(uspi);
 	usb3 = ubh_get_usb_third(uspi);
 
+<<<<<<< HEAD
 	if ((mtype == UFS_MOUNT_UFSTYPE_44BSD &&
 	     (usb1->fs_flags & UFS_FLAGS_UPDATED)) ||
 	    mtype == UFS_MOUNT_UFSTYPE_UFS2) {
+=======
+	if (mtype == UFS_MOUNT_UFSTYPE_UFS2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*we have statistic in different place, then usual*/
 		usb2->fs_un.fs_u2.cs_ndir =
 			cpu_to_fs64(sb, uspi->cs_total.cs_ndir);
@@ -628,6 +862,7 @@ static void ufs_put_cstotal(struct super_block *sb)
 			cpu_to_fs64(sb, uspi->cs_total.cs_nifree);
 		usb3->fs_un1.fs_u2.cs_nffree =
 			cpu_to_fs64(sb, uspi->cs_total.cs_nffree);
+<<<<<<< HEAD
 	} else {
 		usb1->fs_cstotal.cs_ndir =
 			cpu_to_fs32(sb, uspi->cs_total.cs_ndir);
@@ -638,6 +873,28 @@ static void ufs_put_cstotal(struct super_block *sb)
 		usb1->fs_cstotal.cs_nffree =
 			cpu_to_fs32(sb, uspi->cs_total.cs_nffree);
 	}
+=======
+		goto out;
+	}
+
+	if (mtype == UFS_MOUNT_UFSTYPE_44BSD &&
+	     (usb2->fs_un.fs_u2.fs_maxbsize == usb1->fs_bsize)) {
+		/* store stats in both old and new places */
+		usb2->fs_un.fs_u2.cs_ndir =
+			cpu_to_fs64(sb, uspi->cs_total.cs_ndir);
+		usb2->fs_un.fs_u2.cs_nbfree =
+			cpu_to_fs64(sb, uspi->cs_total.cs_nbfree);
+		usb3->fs_un1.fs_u2.cs_nifree =
+			cpu_to_fs64(sb, uspi->cs_total.cs_nifree);
+		usb3->fs_un1.fs_u2.cs_nffree =
+			cpu_to_fs64(sb, uspi->cs_total.cs_nffree);
+	}
+	usb1->fs_cstotal.cs_ndir = cpu_to_fs32(sb, uspi->cs_total.cs_ndir);
+	usb1->fs_cstotal.cs_nbfree = cpu_to_fs32(sb, uspi->cs_total.cs_nbfree);
+	usb1->fs_cstotal.cs_nifree = cpu_to_fs32(sb, uspi->cs_total.cs_nifree);
+	usb1->fs_cstotal.cs_nffree = cpu_to_fs32(sb, uspi->cs_total.cs_nffree);
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubh_mark_buffer_dirty(USPI_UBH(uspi));
 	ufs_print_super_stuff(sb, usb1, usb2, usb3);
 	UFSD("EXIT\n");
@@ -691,6 +948,101 @@ static void ufs_put_super_internal(struct super_block *sb)
 	UFSD("EXIT\n");
 }
 
+<<<<<<< HEAD
+=======
+static int ufs_sync_fs(struct super_block *sb, int wait)
+{
+	struct ufs_sb_private_info * uspi;
+	struct ufs_super_block_first * usb1;
+	struct ufs_super_block_third * usb3;
+	unsigned flags;
+
+	mutex_lock(&UFS_SB(sb)->s_lock);
+
+	UFSD("ENTER\n");
+
+	flags = UFS_SB(sb)->s_flags;
+	uspi = UFS_SB(sb)->s_uspi;
+	usb1 = ubh_get_usb_first(uspi);
+	usb3 = ubh_get_usb_third(uspi);
+
+	usb1->fs_time = ufs_get_seconds(sb);
+	if ((flags & UFS_ST_MASK) == UFS_ST_SUN  ||
+	    (flags & UFS_ST_MASK) == UFS_ST_SUNOS ||
+	    (flags & UFS_ST_MASK) == UFS_ST_SUNx86)
+		ufs_set_fs_state(sb, usb1, usb3,
+				UFS_FSOK - fs32_to_cpu(sb, usb1->fs_time));
+	ufs_put_cstotal(sb);
+
+	UFSD("EXIT\n");
+	mutex_unlock(&UFS_SB(sb)->s_lock);
+
+	return 0;
+}
+
+static void delayed_sync_fs(struct work_struct *work)
+{
+	struct ufs_sb_info *sbi;
+
+	sbi = container_of(work, struct ufs_sb_info, sync_work.work);
+
+	spin_lock(&sbi->work_lock);
+	sbi->work_queued = 0;
+	spin_unlock(&sbi->work_lock);
+
+	ufs_sync_fs(sbi->sb, 1);
+}
+
+void ufs_mark_sb_dirty(struct super_block *sb)
+{
+	struct ufs_sb_info *sbi = UFS_SB(sb);
+	unsigned long delay;
+
+	spin_lock(&sbi->work_lock);
+	if (!sbi->work_queued) {
+		delay = msecs_to_jiffies(dirty_writeback_interval * 10);
+		queue_delayed_work(system_long_wq, &sbi->sync_work, delay);
+		sbi->work_queued = 1;
+	}
+	spin_unlock(&sbi->work_lock);
+}
+
+static void ufs_put_super(struct super_block *sb)
+{
+	struct ufs_sb_info * sbi = UFS_SB(sb);
+
+	UFSD("ENTER\n");
+
+	if (!sb_rdonly(sb))
+		ufs_put_super_internal(sb);
+	cancel_delayed_work_sync(&sbi->sync_work);
+
+	ubh_brelse_uspi (sbi->s_uspi);
+	kfree (sbi->s_uspi);
+	kfree (sbi);
+	sb->s_fs_info = NULL;
+	UFSD("EXIT\n");
+	return;
+}
+
+static u64 ufs_max_bytes(struct super_block *sb)
+{
+	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
+	int bits = uspi->s_apbshift;
+	u64 res;
+
+	if (bits > 21)
+		res = ~0ULL;
+	else
+		res = UFS_NDADDR + (1LL << bits) + (1LL << (2*bits)) +
+			(1LL << (3*bits));
+
+	if (res >= (MAX_LFS_FILESIZE >> uspi->s_bshift))
+		return MAX_LFS_FILESIZE;
+	return res << uspi->s_bshift;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct ufs_sb_info * sbi;
@@ -711,11 +1063,22 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 	flags = 0;
 	
 	UFSD("ENTER\n");
+<<<<<<< HEAD
+=======
+
+#ifndef CONFIG_UFS_FS_WRITE
+	if (!sb_rdonly(sb)) {
+		pr_err("ufs was compiled with read-only support, can't be mounted as read-write\n");
+		return -EROFS;
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	sbi = kzalloc(sizeof(struct ufs_sb_info), GFP_KERNEL);
 	if (!sbi)
 		goto failed_nomem;
 	sb->s_fs_info = sbi;
+<<<<<<< HEAD
 
 	UFSD("flag %u\n", (int)(sb->s_flags & MS_RDONLY));
 	
@@ -727,6 +1090,15 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 	}
 #endif
 	mutex_init(&sbi->mutex);
+=======
+	sbi->sb = sb;
+
+	UFSD("flag %u\n", (int)(sb_rdonly(sb)));
+	
+	mutex_init(&sbi->s_lock);
+	spin_lock_init(&sbi->work_lock);
+	INIT_DELAYED_WORK(&sbi->sync_work, delayed_sync_fs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set default mount options
 	 * Parse mount options
@@ -734,12 +1106,20 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->s_mount_opt = 0;
 	ufs_set_opt (sbi->s_mount_opt, ONERROR_LOCK);
 	if (!ufs_parse_options ((char *) data, &sbi->s_mount_opt)) {
+<<<<<<< HEAD
 		printk("wrong mount options\n");
+=======
+		pr_err("wrong mount options\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 	if (!(sbi->s_mount_opt & UFS_MOUNT_UFSTYPE)) {
 		if (!silent)
+<<<<<<< HEAD
 			printk("You didn't specify the type of your ufs filesystem\n\n"
+=======
+			pr_err("You didn't specify the type of your ufs filesystem\n\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"mount -t ufs -o ufstype="
 			"sun|sunx86|44bsd|ufs2|5xbsd|old|hp|nextstep|nextstep-cd|openstep ...\n\n"
 			">>>WARNING<<< Wrong ufstype may corrupt your filesystem, "
@@ -754,9 +1134,18 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 	uspi->s_dirblksize = UFS_SECTOR_SIZE;
 	super_block_offset=UFS_SBLOCK;
 
+<<<<<<< HEAD
 	/* Keep 2Gig file limit. Some UFS variants need to override 
 	   this but as I don't know which I'll let those in the know loosen
 	   the rules */
+=======
+	sb->s_maxbytes = MAX_LFS_FILESIZE;
+
+	sb->s_time_gran = NSEC_PER_SEC;
+	sb->s_time_min = S32_MIN;
+	sb->s_time_max = S32_MAX;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (sbi->s_mount_opt & UFS_MOUNT_UFSTYPE) {
 	case UFS_MOUNT_UFSTYPE_44BSD:
 		UFSD("ufstype=44bsd\n");
@@ -775,6 +1164,12 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_fshift = 9;
 		uspi->s_sbsize = super_block_size = 1536;
 		uspi->s_sbbase =  0;
+<<<<<<< HEAD
+=======
+		sb->s_time_gran = 1;
+		sb->s_time_min = S64_MIN;
+		sb->s_time_max = S64_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags |= UFS_TYPE_UFS2 | UFS_DE_44BSD | UFS_UID_44BSD | UFS_ST_44BSD | UFS_CG_44BSD;
 		break;
 		
@@ -790,7 +1185,11 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		break;
 
 	case UFS_MOUNT_UFSTYPE_SUNOS:
+<<<<<<< HEAD
 		UFSD(("ufstype=sunos\n"))
+=======
+		UFSD("ufstype=sunos\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uspi->s_fsize = block_size = 1024;
 		uspi->s_fmask = ~(1024 - 1);
 		uspi->s_fshift = 10;
@@ -820,10 +1219,17 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_sbsize = super_block_size = 2048;
 		uspi->s_sbbase = 0;
 		flags |= UFS_DE_OLD | UFS_UID_OLD | UFS_ST_OLD | UFS_CG_OLD;
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
 			if (!silent)
 				printk(KERN_INFO "ufstype=old is supported read-only\n");
 			sb->s_flags |= MS_RDONLY;
+=======
+		if (!sb_rdonly(sb)) {
+			if (!silent)
+				pr_info("ufstype=old is supported read-only\n");
+			sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	
@@ -836,10 +1242,17 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_sbbase = 0;
 		uspi->s_dirblksize = 1024;
 		flags |= UFS_DE_OLD | UFS_UID_OLD | UFS_ST_OLD | UFS_CG_OLD;
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
 			if (!silent)
 				printk(KERN_INFO "ufstype=nextstep is supported read-only\n");
 			sb->s_flags |= MS_RDONLY;
+=======
+		if (!sb_rdonly(sb)) {
+			if (!silent)
+				pr_info("ufstype=nextstep is supported read-only\n");
+			sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	
@@ -852,10 +1265,17 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_sbbase = 0;
 		uspi->s_dirblksize = 1024;
 		flags |= UFS_DE_OLD | UFS_UID_OLD | UFS_ST_OLD | UFS_CG_OLD;
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
 			if (!silent)
 				printk(KERN_INFO "ufstype=nextstep-cd is supported read-only\n");
 			sb->s_flags |= MS_RDONLY;
+=======
+		if (!sb_rdonly(sb)) {
+			if (!silent)
+				pr_info("ufstype=nextstep-cd is supported read-only\n");
+			sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	
@@ -868,10 +1288,17 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_sbbase = 0;
 		uspi->s_dirblksize = 1024;
 		flags |= UFS_DE_44BSD | UFS_UID_44BSD | UFS_ST_44BSD | UFS_CG_44BSD;
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
 			if (!silent)
 				printk(KERN_INFO "ufstype=openstep is supported read-only\n");
 			sb->s_flags |= MS_RDONLY;
+=======
+		if (!sb_rdonly(sb)) {
+			if (!silent)
+				pr_info("ufstype=openstep is supported read-only\n");
+			sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	
@@ -883,21 +1310,36 @@ static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 		uspi->s_sbsize = super_block_size = 2048;
 		uspi->s_sbbase = 0;
 		flags |= UFS_DE_OLD | UFS_UID_OLD | UFS_ST_OLD | UFS_CG_OLD;
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
 			if (!silent)
 				printk(KERN_INFO "ufstype=hp is supported read-only\n");
 			sb->s_flags |= MS_RDONLY;
+=======
+		if (!sb_rdonly(sb)) {
+			if (!silent)
+				pr_info("ufstype=hp is supported read-only\n");
+			sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  		}
  		break;
 	default:
 		if (!silent)
+<<<<<<< HEAD
 			printk("unknown ufstype\n");
+=======
+			pr_err("unknown ufstype\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 	
 again:	
 	if (!sb_set_blocksize(sb, block_size)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "UFS: failed to set blocksize\n");
+=======
+		pr_err("failed to set blocksize\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -922,6 +1364,16 @@ again:
 		flags |=  UFS_ST_SUN;
 	}
 
+<<<<<<< HEAD
+=======
+	if ((flags & UFS_ST_MASK) == UFS_ST_44BSD &&
+	    uspi->s_postblformat == UFS_42POSTBLFMT) {
+		if (!silent)
+			pr_err("this is not a 44bsd filesystem");
+		goto failed;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check ufs magic number
 	 */
@@ -956,7 +1408,11 @@ again:
 		goto again;
 	}
 	if (!silent)
+<<<<<<< HEAD
 		printk("ufs_read_super: bad magic number\n");
+=======
+		pr_err("%s(): bad magic number\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto failed;
 
 magic_found:
@@ -970,6 +1426,7 @@ magic_found:
 	uspi->s_fshift = fs32_to_cpu(sb, usb1->fs_fshift);
 
 	if (!is_power_of_2(uspi->s_fsize)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ufs_read_super: fragment size %u is not a power of 2\n",
 			uspi->s_fsize);
 			goto failed;
@@ -997,6 +1454,35 @@ magic_found:
 	if (uspi->s_bsize / uspi->s_fsize > 8) {
 		printk(KERN_ERR "ufs_read_super: too many fragments per block (%u)\n",
 			uspi->s_bsize / uspi->s_fsize);
+=======
+		pr_err("%s(): fragment size %u is not a power of 2\n",
+		       __func__, uspi->s_fsize);
+		goto failed;
+	}
+	if (uspi->s_fsize < 512) {
+		pr_err("%s(): fragment size %u is too small\n",
+		       __func__, uspi->s_fsize);
+		goto failed;
+	}
+	if (uspi->s_fsize > 4096) {
+		pr_err("%s(): fragment size %u is too large\n",
+		       __func__, uspi->s_fsize);
+		goto failed;
+	}
+	if (!is_power_of_2(uspi->s_bsize)) {
+		pr_err("%s(): block size %u is not a power of 2\n",
+		       __func__, uspi->s_bsize);
+		goto failed;
+	}
+	if (uspi->s_bsize < 4096) {
+		pr_err("%s(): block size %u is too small\n",
+		       __func__, uspi->s_bsize);
+		goto failed;
+	}
+	if (uspi->s_bsize / uspi->s_fsize > 8) {
+		pr_err("%s(): too many fragments per block (%u)\n",
+		       __func__, uspi->s_bsize / uspi->s_fsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 	if (uspi->s_fsize != block_size || uspi->s_sbsize != super_block_size) {
@@ -1035,6 +1521,7 @@ magic_found:
 			UFSD("fs is DEC OSF/1\n");
 			break;
 		case UFS_FSACTIVE:
+<<<<<<< HEAD
 			printk("ufs_read_super: fs is active\n");
 			sb->s_flags |= MS_RDONLY;
 			break;
@@ -1050,6 +1537,24 @@ magic_found:
 	} else {
 		printk("ufs_read_super: fs needs fsck\n");
 		sb->s_flags |= MS_RDONLY;
+=======
+			pr_err("%s(): fs is active\n", __func__);
+			sb->s_flags |= SB_RDONLY;
+			break;
+		case UFS_FSBAD:
+			pr_err("%s(): fs is bad\n", __func__);
+			sb->s_flags |= SB_RDONLY;
+			break;
+		default:
+			pr_err("%s(): can't grok fs_clean 0x%x\n",
+			       __func__, usb1->fs_clean);
+			sb->s_flags |= SB_RDONLY;
+			break;
+		}
+	} else {
+		pr_err("%s(): fs needs fsck\n", __func__);
+		sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1068,8 +1573,13 @@ magic_found:
 	uspi->s_cgmask = fs32_to_cpu(sb, usb1->fs_cgmask);
 
 	if ((flags & UFS_TYPE_MASK) == UFS_TYPE_UFS2) {
+<<<<<<< HEAD
 		uspi->s_u2_size  = fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_size);
 		uspi->s_u2_dsize = fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_dsize);
+=======
+		uspi->s_size  = fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_size);
+		uspi->s_dsize = fs64_to_cpu(sb, usb3->fs_un1.fs_u2.fs_dsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		uspi->s_size  =  fs32_to_cpu(sb, usb1->fs_size);
 		uspi->s_dsize =  fs32_to_cpu(sb, usb1->fs_dsize);
@@ -1118,6 +1628,21 @@ magic_found:
 	uspi->s_postbloff = fs32_to_cpu(sb, usb3->fs_postbloff);
 	uspi->s_rotbloff = fs32_to_cpu(sb, usb3->fs_rotbloff);
 
+<<<<<<< HEAD
+=======
+	uspi->s_root_blocks = mul_u64_u32_div(uspi->s_dsize,
+					      uspi->s_minfree, 100);
+	if (uspi->s_minfree <= 5) {
+		uspi->s_time_to_space = ~0ULL;
+		uspi->s_space_to_time = 0;
+		usb1->fs_optim = cpu_to_fs32(sb, UFS_OPTSPACE);
+	} else {
+		uspi->s_time_to_space = (uspi->s_root_blocks / 2) + 1;
+		uspi->s_space_to_time = mul_u64_u32_div(uspi->s_dsize,
+					      uspi->s_minfree - 2, 100) - 1;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Compute another frequently used values
 	 */
@@ -1153,6 +1678,10 @@ magic_found:
 			    "fast symlink size (%u)\n", uspi->s_maxsymlinklen);
 		uspi->s_maxsymlinklen = maxsymlen;
 	}
+<<<<<<< HEAD
+=======
+	sb->s_maxbytes = ufs_max_bytes(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_max_links = UFS_LINK_MAX;
 
 	inode = ufs_iget(sb, UFS_ROOTINO);
@@ -1170,7 +1699,11 @@ magic_found:
 	/*
 	 * Read cylinder group structures
 	 */
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY))
+=======
+	if (!sb_rdonly(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ufs_read_cylinder_structures(sb))
 			goto failed;
 
@@ -1191,6 +1724,7 @@ failed_nomem:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static int ufs_sync_fs(struct super_block *sb, int wait)
 {
 	struct ufs_sb_private_info * uspi;
@@ -1253,6 +1787,8 @@ static void ufs_put_super(struct super_block *sb)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 {
 	struct ufs_sb_private_info * uspi;
@@ -1261,8 +1797,13 @@ static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 	unsigned new_mount_opt, ufstype;
 	unsigned flags;
 
+<<<<<<< HEAD
 	lock_ufs(sb);
 	lock_super(sb);
+=======
+	sync_filesystem(sb);
+	mutex_lock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uspi = UFS_SB(sb)->s_uspi;
 	flags = UFS_SB(sb)->s_flags;
 	usb1 = ubh_get_usb_first(uspi);
@@ -1276,13 +1817,18 @@ static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 	new_mount_opt = 0;
 	ufs_set_opt (new_mount_opt, ONERROR_LOCK);
 	if (!ufs_parse_options (data, &new_mount_opt)) {
+<<<<<<< HEAD
 		unlock_super(sb);
 		unlock_ufs(sb);
+=======
+		mutex_unlock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (!(new_mount_opt & UFS_MOUNT_UFSTYPE)) {
 		new_mount_opt |= ufstype;
 	} else if ((new_mount_opt & UFS_MOUNT_UFSTYPE) != ufstype) {
+<<<<<<< HEAD
 		printk("ufstype can't be changed during remount\n");
 		unlock_super(sb);
 		unlock_ufs(sb);
@@ -1293,32 +1839,57 @@ static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 		UFS_SB(sb)->s_mount_opt = new_mount_opt;
 		unlock_super(sb);
 		unlock_ufs(sb);
+=======
+		pr_err("ufstype can't be changed during remount\n");
+		mutex_unlock(&UFS_SB(sb)->s_lock);
+		return -EINVAL;
+	}
+
+	if ((bool)(*mount_flags & SB_RDONLY) == sb_rdonly(sb)) {
+		UFS_SB(sb)->s_mount_opt = new_mount_opt;
+		mutex_unlock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	
 	/*
 	 * fs was mouted as rw, remounting ro
 	 */
+<<<<<<< HEAD
 	if (*mount_flags & MS_RDONLY) {
 		ufs_put_super_internal(sb);
 		usb1->fs_time = cpu_to_fs32(sb, get_seconds());
+=======
+	if (*mount_flags & SB_RDONLY) {
+		ufs_put_super_internal(sb);
+		usb1->fs_time = ufs_get_seconds(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((flags & UFS_ST_MASK) == UFS_ST_SUN
 		  || (flags & UFS_ST_MASK) == UFS_ST_SUNOS
 		  || (flags & UFS_ST_MASK) == UFS_ST_SUNx86) 
 			ufs_set_fs_state(sb, usb1, usb3,
 				UFS_FSOK - fs32_to_cpu(sb, usb1->fs_time));
 		ubh_mark_buffer_dirty (USPI_UBH(uspi));
+<<<<<<< HEAD
 		sb->s_dirt = 0;
 		sb->s_flags |= MS_RDONLY;
+=======
+		sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 	/*
 	 * fs was mounted as ro, remounting rw
 	 */
 #ifndef CONFIG_UFS_FS_WRITE
+<<<<<<< HEAD
 		printk("ufs was compiled with read-only support, "
 		"can't be mounted as read-write\n");
 		unlock_super(sb);
 		unlock_ufs(sb);
+=======
+		pr_err("ufs was compiled with read-only support, can't be mounted as read-write\n");
+		mutex_unlock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 #else
 		if (ufstype != UFS_MOUNT_UFSTYPE_SUN && 
@@ -1326,6 +1897,7 @@ static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 		    ufstype != UFS_MOUNT_UFSTYPE_44BSD &&
 		    ufstype != UFS_MOUNT_UFSTYPE_SUNx86 &&
 		    ufstype != UFS_MOUNT_UFSTYPE_UFS2) {
+<<<<<<< HEAD
 			printk("this ufstype is read-only supported\n");
 			unlock_super(sb);
 			unlock_ufs(sb);
@@ -1343,6 +1915,22 @@ static int ufs_remount (struct super_block *sb, int *mount_flags, char *data)
 	UFS_SB(sb)->s_mount_opt = new_mount_opt;
 	unlock_super(sb);
 	unlock_ufs(sb);
+=======
+			pr_err("this ufstype is read-only supported\n");
+			mutex_unlock(&UFS_SB(sb)->s_lock);
+			return -EINVAL;
+		}
+		if (!ufs_read_cylinder_structures(sb)) {
+			pr_err("failed during remounting\n");
+			mutex_unlock(&UFS_SB(sb)->s_lock);
+			return -EPERM;
+		}
+		sb->s_flags &= ~SB_RDONLY;
+#endif
+	}
+	UFS_SB(sb)->s_mount_opt = new_mount_opt;
+	mutex_unlock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1371,6 +1959,7 @@ static int ufs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	struct super_block *sb = dentry->d_sb;
 	struct ufs_sb_private_info *uspi= UFS_SB(sb)->s_uspi;
 	unsigned  flags = UFS_SB(sb)->s_flags;
+<<<<<<< HEAD
 	struct ufs_super_block_first *usb1;
 	struct ufs_super_block_second *usb2;
 	struct ufs_super_block_third *usb3;
@@ -1401,6 +1990,28 @@ static int ufs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_fsid.val[1] = (u32)(id >> 32);
 
 	unlock_ufs(sb);
+=======
+	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
+
+	mutex_lock(&UFS_SB(sb)->s_lock);
+	
+	if ((flags & UFS_TYPE_MASK) == UFS_TYPE_UFS2)
+		buf->f_type = UFS2_MAGIC;
+	else
+		buf->f_type = UFS_MAGIC;
+
+	buf->f_blocks = uspi->s_dsize;
+	buf->f_bfree = ufs_freefrags(uspi);
+	buf->f_ffree = uspi->cs_total.cs_nifree;
+	buf->f_bsize = sb->s_blocksize;
+	buf->f_bavail = (buf->f_bfree > uspi->s_root_blocks)
+		? (buf->f_bfree - uspi->s_root_blocks) : 0;
+	buf->f_files = uspi->s_ncg * uspi->s_ipg;
+	buf->f_namelen = UFS_MAXNAMLEN;
+	buf->f_fsid = u64_to_fsid(id);
+
+	mutex_unlock(&UFS_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1410,6 +2021,7 @@ static struct kmem_cache * ufs_inode_cachep;
 static struct inode *ufs_alloc_inode(struct super_block *sb)
 {
 	struct ufs_inode_info *ei;
+<<<<<<< HEAD
 	ei = (struct ufs_inode_info *)kmem_cache_alloc(ufs_inode_cachep, GFP_NOFS);
 	if (!ei)
 		return NULL;
@@ -1428,6 +2040,24 @@ static void ufs_destroy_inode(struct inode *inode)
 	call_rcu(&inode->i_rcu, ufs_i_callback);
 }
 
+=======
+
+	ei = alloc_inode_sb(sb, ufs_inode_cachep, GFP_NOFS);
+	if (!ei)
+		return NULL;
+
+	inode_set_iversion(&ei->vfs_inode, 1);
+	seqlock_init(&ei->meta_lock);
+	mutex_init(&ei->truncate_mutex);
+	return &ei->vfs_inode;
+}
+
+static void ufs_free_in_core_inode(struct inode *inode)
+{
+	kmem_cache_free(ufs_inode_cachep, UFS_I(inode));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct ufs_inode_info *ei = (struct ufs_inode_info *) foo;
@@ -1435,6 +2065,7 @@ static void init_once(void *foo)
 	inode_init_once(&ei->vfs_inode);
 }
 
+<<<<<<< HEAD
 static int init_inodecache(void)
 {
 	ufs_inode_cachep = kmem_cache_create("ufs_inode_cache",
@@ -1442,6 +2073,17 @@ static int init_inodecache(void)
 					     0, (SLAB_RECLAIM_ACCOUNT|
 						SLAB_MEM_SPREAD),
 					     init_once);
+=======
+static int __init init_inodecache(void)
+{
+	ufs_inode_cachep = kmem_cache_create_usercopy("ufs_inode_cache",
+				sizeof(struct ufs_inode_info), 0,
+				(SLAB_RECLAIM_ACCOUNT | SLAB_ACCOUNT),
+				offsetof(struct ufs_inode_info, i_u1.i_symlink),
+				sizeof_field(struct ufs_inode_info,
+					i_u1.i_symlink),
+				init_once);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ufs_inode_cachep == NULL)
 		return -ENOMEM;
 	return 0;
@@ -1459,11 +2101,18 @@ static void destroy_inodecache(void)
 
 static const struct super_operations ufs_super_ops = {
 	.alloc_inode	= ufs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= ufs_destroy_inode,
 	.write_inode	= ufs_write_inode,
 	.evict_inode	= ufs_evict_inode,
 	.put_super	= ufs_put_super,
 	.write_super	= ufs_write_super,
+=======
+	.free_inode	= ufs_free_in_core_inode,
+	.write_inode	= ufs_write_inode,
+	.evict_inode	= ufs_evict_inode,
+	.put_super	= ufs_put_super,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sync_fs	= ufs_sync_fs,
 	.statfs		= ufs_statfs,
 	.remount_fs	= ufs_remount,

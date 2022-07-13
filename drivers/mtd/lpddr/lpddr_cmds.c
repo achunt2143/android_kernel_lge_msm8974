@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LPDDR flash memory device operations. This module provides read, write,
  * erase, lock/unlock support for LPDDR flash memories
@@ -5,6 +9,7 @@
  * (C) 2008 Vasiliy Leonenko <vasiliy.leonenko@gmail.com>
  * Many thanks to Roman Borisov for initial enabling
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO:
  * Implement VPP management
  * Implement XIP support
@@ -55,10 +62,15 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 	int i, j;
 
 	mtd = kzalloc(sizeof(*mtd), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!mtd) {
 		printk(KERN_ERR "Failed to allocate memory for MTD device\n");
 		return NULL;
 	}
+=======
+	if (!mtd)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtd->priv = map;
 	mtd->type = MTD_NORFLASH;
 
@@ -76,6 +88,7 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 		mtd->_point = lpddr_point;
 		mtd->_unpoint = lpddr_unpoint;
 	}
+<<<<<<< HEAD
 	mtd->size = 1 << lpddr->qinfo->DevSizeShift;
 	mtd->erasesize = 1 << lpddr->qinfo->UniformBlockSizeShift;
 	mtd->writesize = 1 << lpddr->qinfo->BufSizeShift;
@@ -84,6 +97,15 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 						GFP_KERNEL);
 	if (!shared) {
 		kfree(lpddr);
+=======
+	mtd->size = 1ULL << lpddr->qinfo->DevSizeShift;
+	mtd->erasesize = 1 << lpddr->qinfo->UniformBlockSizeShift;
+	mtd->writesize = 1 << lpddr->qinfo->BufSizeShift;
+
+	shared = kmalloc_array(lpddr->numchips, sizeof(struct flchip_shared),
+						GFP_KERNEL);
+	if (!shared) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(mtd);
 		return NULL;
 	}
@@ -110,6 +132,37 @@ struct mtd_info *lpddr_cmdset(struct map_info *map)
 }
 EXPORT_SYMBOL(lpddr_cmdset);
 
+<<<<<<< HEAD
+=======
+static void print_drs_error(unsigned int dsr)
+{
+	int prog_status = (dsr & DSR_RPS) >> 8;
+
+	if (!(dsr & DSR_AVAILABLE))
+		pr_notice("DSR.15: (0) Device not Available\n");
+	if ((prog_status & 0x03) == 0x03)
+		pr_notice("DSR.9,8: (11) Attempt to program invalid half with 41h command\n");
+	else if (prog_status & 0x02)
+		pr_notice("DSR.9,8: (10) Object Mode Program attempt in region with Control Mode data\n");
+	else if (prog_status &  0x01)
+		pr_notice("DSR.9,8: (01) Program attempt in region with Object Mode data\n");
+	if (!(dsr & DSR_READY_STATUS))
+		pr_notice("DSR.7: (0) Device is Busy\n");
+	if (dsr & DSR_ESS)
+		pr_notice("DSR.6: (1) Erase Suspended\n");
+	if (dsr & DSR_ERASE_STATUS)
+		pr_notice("DSR.5: (1) Erase/Blank check error\n");
+	if (dsr & DSR_PROGRAM_STATUS)
+		pr_notice("DSR.4: (1) Program Error\n");
+	if (dsr & DSR_VPPS)
+		pr_notice("DSR.3: (1) Vpp low detect, operation aborted\n");
+	if (dsr & DSR_PSS)
+		pr_notice("DSR.2: (1) Program suspended\n");
+	if (dsr & DSR_DPS)
+		pr_notice("DSR.1: (1) Aborted Erase/Program attempt on locked block\n");
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wait_for_ready(struct map_info *map, struct flchip *chip,
 		unsigned int chip_op_time)
 {
@@ -320,7 +373,11 @@ static int chip_ready(struct map_info *map, struct flchip *chip, int mode)
 		/* Only if there's no operation suspended... */
 		if (mode == FL_READY && chip->oldstate == FL_READY)
 			return 0;
+<<<<<<< HEAD
 
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 sleep:
 		set_current_state(TASK_UNINTERRUPTIBLE);
@@ -388,13 +445,21 @@ static void put_chip(struct map_info *map, struct flchip *chip)
 	wake_up(&chip->wq);
 }
 
+<<<<<<< HEAD
 int do_write_buffer(struct map_info *map, struct flchip *chip,
+=======
+static int do_write_buffer(struct map_info *map, struct flchip *chip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long adr, const struct kvec **pvec,
 			unsigned long *pvec_seek, int len)
 {
 	struct lpddr_private *lpddr = map->fldrv_priv;
 	map_word datum;
+<<<<<<< HEAD
 	int ret, wbufsize, word_gap, words;
+=======
+	int ret, wbufsize, word_gap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct kvec *vec;
 	unsigned long vec_seek;
 	unsigned long prog_buf_ofs;
@@ -409,10 +474,14 @@ int do_write_buffer(struct map_info *map, struct flchip *chip,
 	}
 	/* Figure out the number of words to write */
 	word_gap = (-adr & (map_bankwidth(map)-1));
+<<<<<<< HEAD
 	words = (len - word_gap + map_bankwidth(map) - 1) / map_bankwidth(map);
 	if (!word_gap) {
 		words--;
 	} else {
+=======
+	if (word_gap) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		word_gap = map_bankwidth(map) - word_gap;
 		adr -= word_gap;
 		datum = map_word_ff(map);
@@ -469,7 +538,11 @@ int do_write_buffer(struct map_info *map, struct flchip *chip,
 	return ret;
 }
 
+<<<<<<< HEAD
 int do_erase_oneblock(struct mtd_info *mtd, loff_t adr)
+=======
+static int do_erase_oneblock(struct mtd_info *mtd, loff_t adr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct map_info *map = mtd->priv;
 	struct lpddr_private *lpddr = map->fldrv_priv;
@@ -695,15 +768,22 @@ static int lpddr_erase(struct mtd_info *mtd, struct erase_info *instr)
 		ofs += size;
 		len -= size;
 	}
+<<<<<<< HEAD
 	instr->state = MTD_ERASE_DONE;
 	mtd_erase_callback(instr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 #define DO_XXLOCK_LOCK		1
 #define DO_XXLOCK_UNLOCK	2
+<<<<<<< HEAD
 int do_xxlock(struct mtd_info *mtd, loff_t adr, uint32_t len, int thunk)
+=======
+static int do_xxlock(struct mtd_info *mtd, loff_t adr, uint32_t len, int thunk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct map_info *map = mtd->priv;
@@ -748,6 +828,7 @@ static int lpddr_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	return do_xxlock(mtd, ofs, len, DO_XXLOCK_UNLOCK);
 }
 
+<<<<<<< HEAD
 int word_program(struct map_info *map, loff_t adr, uint32_t curval)
 {
     int ret;
@@ -776,6 +857,8 @@ out:	put_chip(map, chip);
 	return ret;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Alexey Korolev <akorolev@infradead.org>");
 MODULE_DESCRIPTION("MTD driver for LPDDR flash chips");

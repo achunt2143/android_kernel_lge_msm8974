@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
@@ -41,6 +42,35 @@ static int __init read_initrd(void)
 		return 0;
 
 	if (load_initrd(initrd, area, size) == -1)
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/init.h>
+#include <linux/memblock.h>
+#include <linux/initrd.h>
+#include <asm/types.h>
+#include <init.h>
+#include <os.h>
+
+#include "um_arch.h"
+
+/* Changed by uml_initrd_setup, which is a setup */
+static char *initrd __initdata = NULL;
+
+int __init read_initrd(void)
+{
+	unsigned long long size;
+	void *area;
+
+	if (!initrd)
+		return 0;
+
+	area = uml_load_file(initrd, &size);
+	if (!area)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	initrd_start = (unsigned long) area;
@@ -48,8 +78,11 @@ static int __init read_initrd(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 __uml_postsetup(read_initrd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init uml_initrd_setup(char *line, int *add)
 {
 	initrd = line;
@@ -61,6 +94,7 @@ __uml_setup("initrd=", uml_initrd_setup,
 "    This is used to boot UML from an initrd image.  The argument is the\n"
 "    name of the file containing the image.\n\n"
 );
+<<<<<<< HEAD
 
 static int load_initrd(char *filename, void *buf, int size)
 {
@@ -83,3 +117,5 @@ static int load_initrd(char *filename, void *buf, int size)
 	os_close_file(fd);
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

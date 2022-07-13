@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_EMUX_LEGACY_H
 #define __SOUND_EMUX_LEGACY_H
 
@@ -5,6 +9,7 @@
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Definitions of OSS compatible headers for Emu8000 device informations
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +28,11 @@
  */
 
 #include "seq_oss_legacy.h"
+=======
+ */
+
+#include <sound/seq_oss_legacy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * awe hardware controls

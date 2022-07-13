@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Portions copyright (C) 2003 Russell King, PXA MMCI Driver
  * Portions copyright (C) 2004-2005 Pierre Ossman, W83L51xD SD/MMC driver
  *
  * Copyright 2008 Embedded Alley Solutions, Inc.
  * Copyright 2009-2011 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +23,26 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma/mxs-dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -35,6 +50,7 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sdio.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/regulator/consumer.h>
 #include <linux/module.h>
@@ -127,6 +143,16 @@
 
 #define BF_SSP(value, field)	(((value) << BP_SSP_##field) & BM_SSP_##field)
 
+=======
+#include <linux/mmc/slot-gpio.h>
+#include <linux/regulator/consumer.h>
+#include <linux/module.h>
+#include <linux/stmp_device.h>
+#include <linux/spi/mxs-spi.h>
+
+#define DRIVER_NAME	"mxs-mmc"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MXS_MMC_IRQ_BITS	(BM_SSP_CTRL1_SDIO_IRQ		| \
 				 BM_SSP_CTRL1_RESP_ERR_IRQ	| \
 				 BM_SSP_CTRL1_RESP_TIMEOUT_IRQ	| \
@@ -136,14 +162,24 @@
 				 BM_SSP_CTRL1_RECV_TIMEOUT_IRQ  | \
 				 BM_SSP_CTRL1_FIFO_OVERRUN_IRQ)
 
+<<<<<<< HEAD
 #define SSP_PIO_NUM	3
 
 struct mxs_mmc_host {
+=======
+/* card detect polling timeout */
+#define MXS_MMC_DETECT_TIMEOUT			(HZ/2)
+
+struct mxs_mmc_host {
+	struct mxs_ssp			ssp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_host			*mmc;
 	struct mmc_request		*mrq;
 	struct mmc_command		*cmd;
 	struct mmc_data			*data;
 
+<<<<<<< HEAD
 	void __iomem			*base;
 	int				irq;
 	struct resource			*res;
@@ -191,6 +227,46 @@ static void mxs_mmc_reset(struct mxs_mmc_host *host)
 	u32 ctrl0, ctrl1;
 
 	mxs_reset_block(host->base);
+=======
+	unsigned char			bus_width;
+	spinlock_t			lock;
+	int				sdio_irq_en;
+	bool				broken_cd;
+};
+
+static int mxs_mmc_get_cd(struct mmc_host *mmc)
+{
+	struct mxs_mmc_host *host = mmc_priv(mmc);
+	struct mxs_ssp *ssp = &host->ssp;
+	int present, ret;
+
+	if (host->broken_cd)
+		return -ENOSYS;
+
+	ret = mmc_gpio_get_cd(mmc);
+	if (ret >= 0)
+		return ret;
+
+	present = mmc->caps & MMC_CAP_NEEDS_POLL ||
+		!(readl(ssp->base + HW_SSP_STATUS(ssp)) &
+			BM_SSP_STATUS_CARD_DETECT);
+
+	if (mmc->caps2 & MMC_CAP2_CD_ACTIVE_HIGH)
+		present = !present;
+
+	return present;
+}
+
+static int mxs_mmc_reset(struct mxs_mmc_host *host)
+{
+	struct mxs_ssp *ssp = &host->ssp;
+	u32 ctrl0, ctrl1;
+	int ret;
+
+	ret = stmp_reset_block(ssp->base);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl0 = BM_SSP_CTRL0_IGNORE_CRC;
 	ctrl1 = BF_SSP(0x3, CTRL1_SSP_MODE) |
@@ -206,15 +282,25 @@ static void mxs_mmc_reset(struct mxs_mmc_host *host)
 	writel(BF_SSP(0xffff, TIMING_TIMEOUT) |
 	       BF_SSP(2, TIMING_CLOCK_DIVIDE) |
 	       BF_SSP(0, TIMING_CLOCK_RATE),
+<<<<<<< HEAD
 	       host->base + HW_SSP_TIMING);
+=======
+	       ssp->base + HW_SSP_TIMING(ssp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->sdio_irq_en) {
 		ctrl0 |= BM_SSP_CTRL0_SDIO_IRQ_CHECK;
 		ctrl1 |= BM_SSP_CTRL1_SDIO_IRQ_EN;
 	}
 
+<<<<<<< HEAD
 	writel(ctrl0, host->base + HW_SSP_CTRL0);
 	writel(ctrl1, host->base + HW_SSP_CTRL1);
+=======
+	writel(ctrl0, ssp->base + HW_SSP_CTRL0);
+	writel(ctrl1, ssp->base + HW_SSP_CTRL1(ssp));
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_mmc_start_cmd(struct mxs_mmc_host *host,
@@ -225,6 +311,7 @@ static void mxs_mmc_request_done(struct mxs_mmc_host *host)
 	struct mmc_command *cmd = host->cmd;
 	struct mmc_data *data = host->data;
 	struct mmc_request *mrq = host->mrq;
+<<<<<<< HEAD
 
 	if (mmc_resp_type(cmd) & MMC_RSP_PRESENT) {
 		if (mmc_resp_type(cmd) & MMC_RSP_136) {
@@ -240,6 +327,28 @@ static void mxs_mmc_request_done(struct mxs_mmc_host *host)
 	if (data) {
 		dma_unmap_sg(mmc_dev(host->mmc), data->sg,
 			     data->sg_len, host->dma_dir);
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+
+	if (mmc_resp_type(cmd) & MMC_RSP_PRESENT) {
+		if (mmc_resp_type(cmd) & MMC_RSP_136) {
+			cmd->resp[3] = readl(ssp->base + HW_SSP_SDRESP0(ssp));
+			cmd->resp[2] = readl(ssp->base + HW_SSP_SDRESP1(ssp));
+			cmd->resp[1] = readl(ssp->base + HW_SSP_SDRESP2(ssp));
+			cmd->resp[0] = readl(ssp->base + HW_SSP_SDRESP3(ssp));
+		} else {
+			cmd->resp[0] = readl(ssp->base + HW_SSP_SDRESP0(ssp));
+		}
+	}
+
+	if (cmd == mrq->sbc) {
+		/* Finished CMD23, now send actual command. */
+		mxs_mmc_start_cmd(host, mrq->cmd);
+		return;
+	} else if (data) {
+		dma_unmap_sg(mmc_dev(host->mmc), data->sg,
+			     data->sg_len, ssp->dma_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If there was an error on any block, we mark all
 		 * data blocks as being in error.
@@ -250,7 +359,11 @@ static void mxs_mmc_request_done(struct mxs_mmc_host *host)
 			data->bytes_xfered = 0;
 
 		host->data = NULL;
+<<<<<<< HEAD
 		if (mrq->stop) {
+=======
+		if (data->stop && (data->error || !mrq->sbc)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mxs_mmc_start_cmd(host, mrq->stop);
 			return;
 		}
@@ -272,13 +385,23 @@ static irqreturn_t mxs_mmc_irq_handler(int irq, void *dev_id)
 	struct mxs_mmc_host *host = dev_id;
 	struct mmc_command *cmd = host->cmd;
 	struct mmc_data *data = host->data;
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 stat;
 
 	spin_lock(&host->lock);
 
+<<<<<<< HEAD
 	stat = readl(host->base + HW_SSP_CTRL1);
 	writel(stat & MXS_MMC_IRQ_BITS,
 	       host->base + HW_SSP_CTRL1 + MXS_CLR_ADDR);
+=======
+	stat = readl(ssp->base + HW_SSP_CTRL1(ssp));
+	writel(stat & MXS_MMC_IRQ_BITS,
+	       ssp->base + HW_SSP_CTRL1(ssp) + STMP_OFFSET_REG_CLR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&host->lock);
 
@@ -307,6 +430,10 @@ static irqreturn_t mxs_mmc_irq_handler(int irq, void *dev_id)
 static struct dma_async_tx_descriptor *mxs_mmc_prep_dma(
 	struct mxs_mmc_host *host, unsigned long flags)
 {
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_async_tx_descriptor *desc;
 	struct mmc_data *data = host->data;
 	struct scatterlist * sgl;
@@ -315,24 +442,41 @@ static struct dma_async_tx_descriptor *mxs_mmc_prep_dma(
 	if (data) {
 		/* data */
 		dma_map_sg(mmc_dev(host->mmc), data->sg,
+<<<<<<< HEAD
 			   data->sg_len, host->dma_dir);
+=======
+			   data->sg_len, ssp->dma_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sgl = data->sg;
 		sg_len = data->sg_len;
 	} else {
 		/* pio */
+<<<<<<< HEAD
 		sgl = (struct scatterlist *) host->ssp_pio_words;
 		sg_len = SSP_PIO_NUM;
 	}
 
 	desc = dmaengine_prep_slave_sg(host->dmach,
 				sgl, sg_len, host->slave_dirn, flags);
+=======
+		sgl = (struct scatterlist *) ssp->ssp_pio_words;
+		sg_len = SSP_PIO_NUM;
+	}
+
+	desc = dmaengine_prep_slave_sg(ssp->dmach,
+				sgl, sg_len, ssp->slave_dirn, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (desc) {
 		desc->callback = mxs_mmc_dma_irq_callback;
 		desc->callback_param = host;
 	} else {
 		if (data)
 			dma_unmap_sg(mmc_dev(host->mmc), data->sg,
+<<<<<<< HEAD
 				     data->sg_len, host->dma_dir);
+=======
+				     data->sg_len, ssp->dma_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return desc;
@@ -340,6 +484,10 @@ static struct dma_async_tx_descriptor *mxs_mmc_prep_dma(
 
 static void mxs_mmc_bc(struct mxs_mmc_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_command *cmd = host->cmd;
 	struct dma_async_tx_descriptor *desc;
 	u32 ctrl0, cmd0, cmd1;
@@ -353,17 +501,30 @@ static void mxs_mmc_bc(struct mxs_mmc_host *host)
 		cmd0 |= BM_SSP_CMD0_CONT_CLKING_EN | BM_SSP_CMD0_SLOW_CLKING_EN;
 	}
 
+<<<<<<< HEAD
 	host->ssp_pio_words[0] = ctrl0;
 	host->ssp_pio_words[1] = cmd0;
 	host->ssp_pio_words[2] = cmd1;
 	host->dma_dir = DMA_NONE;
 	host->slave_dirn = DMA_TRANS_NONE;
 	desc = mxs_mmc_prep_dma(host, DMA_CTRL_ACK);
+=======
+	ssp->ssp_pio_words[0] = ctrl0;
+	ssp->ssp_pio_words[1] = cmd0;
+	ssp->ssp_pio_words[2] = cmd1;
+	ssp->dma_dir = DMA_NONE;
+	ssp->slave_dirn = DMA_TRANS_NONE;
+	desc = mxs_mmc_prep_dma(host, MXS_DMA_CTRL_WAIT4END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!desc)
 		goto out;
 
 	dmaengine_submit(desc);
+<<<<<<< HEAD
 	dma_async_issue_pending(host->dmach);
+=======
+	dma_async_issue_pending(ssp->dmach);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 out:
@@ -373,6 +534,10 @@ out:
 
 static void mxs_mmc_ac(struct mxs_mmc_host *host)
 {
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_command *cmd = host->cmd;
 	struct dma_async_tx_descriptor *desc;
 	u32 ignore_crc, get_resp, long_resp;
@@ -389,22 +554,41 @@ static void mxs_mmc_ac(struct mxs_mmc_host *host)
 	cmd0 = BF_SSP(cmd->opcode, CMD0_CMD);
 	cmd1 = cmd->arg;
 
+<<<<<<< HEAD
+=======
+	if (cmd->opcode == MMC_STOP_TRANSMISSION)
+		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (host->sdio_irq_en) {
 		ctrl0 |= BM_SSP_CTRL0_SDIO_IRQ_CHECK;
 		cmd0 |= BM_SSP_CMD0_CONT_CLKING_EN | BM_SSP_CMD0_SLOW_CLKING_EN;
 	}
 
+<<<<<<< HEAD
 	host->ssp_pio_words[0] = ctrl0;
 	host->ssp_pio_words[1] = cmd0;
 	host->ssp_pio_words[2] = cmd1;
 	host->dma_dir = DMA_NONE;
 	host->slave_dirn = DMA_TRANS_NONE;
 	desc = mxs_mmc_prep_dma(host, DMA_CTRL_ACK);
+=======
+	ssp->ssp_pio_words[0] = ctrl0;
+	ssp->ssp_pio_words[1] = cmd0;
+	ssp->ssp_pio_words[2] = cmd1;
+	ssp->dma_dir = DMA_NONE;
+	ssp->slave_dirn = DMA_TRANS_NONE;
+	desc = mxs_mmc_prep_dma(host, MXS_DMA_CTRL_WAIT4END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!desc)
 		goto out;
 
 	dmaengine_submit(desc);
+<<<<<<< HEAD
 	dma_async_issue_pending(host->dmach);
+=======
+	dma_async_issue_pending(ssp->dmach);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 out:
@@ -435,13 +619,22 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 	struct dma_async_tx_descriptor *desc;
 	struct scatterlist *sgl = data->sg, *sg;
 	unsigned int sg_len = data->sg_len;
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned short dma_data_dir, timeout;
 	enum dma_transfer_direction slave_dirn;
 	unsigned int data_size = 0, log2_blksz;
 	unsigned int blocks = data->blocks;
 
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ignore_crc, get_resp, long_resp, read;
 	u32 ctrl0, cmd0, cmd1, val;
 
@@ -484,11 +677,16 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 		blocks = 1;
 
 	/* xfer count, block size and count need to be set differently */
+<<<<<<< HEAD
 	if (ssp_is_old()) {
+=======
+	if (ssp_is_old(ssp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl0 |= BF_SSP(data_size, CTRL0_XFER_COUNT);
 		cmd0 |= BF_SSP(log2_blksz, CMD0_BLOCK_SIZE) |
 			BF_SSP(blocks - 1, CMD0_BLOCK_COUNT);
 	} else {
+<<<<<<< HEAD
 		writel(data_size, host->base + HW_SSP_XFER_SIZE);
 		writel(BF_SSP(log2_blksz, BLOCK_SIZE_BLOCK_SIZE) |
 		       BF_SSP(blocks - 1, BLOCK_SIZE_BLOCK_COUNT),
@@ -497,6 +695,15 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 
 	if ((cmd->opcode == MMC_STOP_TRANSMISSION) ||
 	    (cmd->opcode == SD_IO_RW_EXTENDED))
+=======
+		writel(data_size, ssp->base + HW_SSP_XFER_SIZE);
+		writel(BF_SSP(log2_blksz, BLOCK_SIZE_BLOCK_SIZE) |
+		       BF_SSP(blocks - 1, BLOCK_SIZE_BLOCK_COUNT),
+		       ssp->base + HW_SSP_BLOCK_SIZE);
+	}
+
+	if (cmd->opcode == SD_IO_RW_EXTENDED)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
 
 	cmd1 = cmd->arg;
@@ -507,6 +714,7 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 	}
 
 	/* set the timeout count */
+<<<<<<< HEAD
 	timeout = mxs_ns_to_ssp_ticks(host->clk_rate, data->timeout_ns);
 	val = readl(host->base + HW_SSP_TIMING);
 	val &= ~(BM_SSP_TIMING_TIMEOUT);
@@ -519,6 +727,20 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 	host->ssp_pio_words[2] = cmd1;
 	host->dma_dir = DMA_NONE;
 	host->slave_dirn = DMA_TRANS_NONE;
+=======
+	timeout = mxs_ns_to_ssp_ticks(ssp->clk_rate, data->timeout_ns);
+	val = readl(ssp->base + HW_SSP_TIMING(ssp));
+	val &= ~(BM_SSP_TIMING_TIMEOUT);
+	val |= BF_SSP(timeout, TIMING_TIMEOUT);
+	writel(val, ssp->base + HW_SSP_TIMING(ssp));
+
+	/* pio */
+	ssp->ssp_pio_words[0] = ctrl0;
+	ssp->ssp_pio_words[1] = cmd0;
+	ssp->ssp_pio_words[2] = cmd1;
+	ssp->dma_dir = DMA_NONE;
+	ssp->slave_dirn = DMA_TRANS_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = mxs_mmc_prep_dma(host, 0);
 	if (!desc)
 		goto out;
@@ -526,14 +748,24 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 	/* append data sg */
 	WARN_ON(host->data != NULL);
 	host->data = data;
+<<<<<<< HEAD
 	host->dma_dir = dma_data_dir;
 	host->slave_dirn = slave_dirn;
 	desc = mxs_mmc_prep_dma(host, DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+=======
+	ssp->dma_dir = dma_data_dir;
+	ssp->slave_dirn = slave_dirn;
+	desc = mxs_mmc_prep_dma(host, DMA_PREP_INTERRUPT | MXS_DMA_CTRL_WAIT4END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!desc)
 		goto out;
 
 	dmaengine_submit(desc);
+<<<<<<< HEAD
 	dma_async_issue_pending(host->dmach);
+=======
+	dma_async_issue_pending(ssp->dmach);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 out:
 	dev_warn(mmc_dev(host->mmc),
@@ -571,6 +803,7 @@ static void mxs_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	WARN_ON(host->mrq != NULL);
 	host->mrq = mrq;
+<<<<<<< HEAD
 	mxs_mmc_start_cmd(host, mrq->cmd);
 }
 
@@ -608,6 +841,13 @@ static void mxs_mmc_set_clk_rate(struct mxs_mmc_host *host, unsigned int rate)
 	dev_dbg(mmc_dev(host->mmc),
 		"%s: clock_divide %d, clock_rate %d, ssp_clk %d, rate_actual %d, rate_requested %d\n",
 		__func__, clock_divide, clock_rate, ssp_clk, ssp_sck, rate);
+=======
+
+	if (mrq->sbc)
+		mxs_mmc_start_cmd(host, mrq->sbc);
+	else
+		mxs_mmc_start_cmd(host, mrq->cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
@@ -622,12 +862,20 @@ static void mxs_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		host->bus_width = 0;
 
 	if (ios->clock)
+<<<<<<< HEAD
 		mxs_mmc_set_clk_rate(host, ios->clock);
+=======
+		mxs_ssp_set_clk_rate(&host->ssp, ios->clock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mxs_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 {
 	struct mxs_mmc_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
@@ -636,6 +884,7 @@ static void mxs_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 
 	if (enable) {
 		writel(BM_SSP_CTRL0_SDIO_IRQ_CHECK,
+<<<<<<< HEAD
 		       host->base + HW_SSP_CTRL0 + MXS_SET_ADDR);
 		writel(BM_SSP_CTRL1_SDIO_IRQ_EN,
 		       host->base + HW_SSP_CTRL1 + MXS_SET_ADDR);
@@ -644,23 +893,43 @@ static void mxs_mmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
 		       host->base + HW_SSP_CTRL0 + MXS_CLR_ADDR);
 		writel(BM_SSP_CTRL1_SDIO_IRQ_EN,
 		       host->base + HW_SSP_CTRL1 + MXS_CLR_ADDR);
+=======
+		       ssp->base + HW_SSP_CTRL0 + STMP_OFFSET_REG_SET);
+		writel(BM_SSP_CTRL1_SDIO_IRQ_EN,
+		       ssp->base + HW_SSP_CTRL1(ssp) + STMP_OFFSET_REG_SET);
+	} else {
+		writel(BM_SSP_CTRL0_SDIO_IRQ_CHECK,
+		       ssp->base + HW_SSP_CTRL0 + STMP_OFFSET_REG_CLR);
+		writel(BM_SSP_CTRL1_SDIO_IRQ_EN,
+		       ssp->base + HW_SSP_CTRL1(ssp) + STMP_OFFSET_REG_CLR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&host->lock, flags);
 
+<<<<<<< HEAD
 	if (enable && readl(host->base + HW_SSP_STATUS) & BM_SSP_STATUS_SDIO_IRQ)
+=======
+	if (enable && readl(ssp->base + HW_SSP_STATUS(ssp)) &
+			BM_SSP_STATUS_SDIO_IRQ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmc_signal_sdio_irq(host->mmc);
 
 }
 
 static const struct mmc_host_ops mxs_mmc_ops = {
 	.request = mxs_mmc_request,
+<<<<<<< HEAD
 	.get_ro = mxs_mmc_get_ro,
+=======
+	.get_ro = mmc_gpio_get_ro,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_cd = mxs_mmc_get_cd,
 	.set_ios = mxs_mmc_set_ios,
 	.enable_sdio_irq = mxs_mmc_enable_sdio_irq,
 };
 
+<<<<<<< HEAD
 static bool mxs_mmc_dma_filter(struct dma_chan *chan, void *param)
 {
 	struct mxs_mmc_host *host = param;
@@ -674,10 +943,23 @@ static bool mxs_mmc_dma_filter(struct dma_chan *chan, void *param)
 	chan->private = &host->dma_data;
 
 	return true;
+=======
+static const struct of_device_id mxs_mmc_dt_ids[] = {
+	{ .compatible = "fsl,imx23-mmc", .data = (void *) IMX23_SSP, },
+	{ .compatible = "fsl,imx28-mmc", .data = (void *) IMX28_SSP, },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, mxs_mmc_dt_ids);
+
+static void mxs_mmc_regulator_disable(void *regulator)
+{
+	regulator_disable(regulator);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mxs_mmc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct mxs_mmc_host *host;
 	struct mmc_host *mmc;
 	struct resource *iores, *dmares, *r;
@@ -736,11 +1018,79 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 		dev_err(mmc_dev(host->mmc),
 			"%s: failed to request dma\n", __func__);
 		goto out_clk_put;
+=======
+	struct device_node *np = pdev->dev.of_node;
+	struct mxs_mmc_host *host;
+	struct mmc_host *mmc;
+	int ret = 0, irq_err;
+	struct regulator *reg_vmmc;
+	struct mxs_ssp *ssp;
+
+	irq_err = platform_get_irq(pdev, 0);
+	if (irq_err < 0)
+		return irq_err;
+
+	mmc = mmc_alloc_host(sizeof(struct mxs_mmc_host), &pdev->dev);
+	if (!mmc)
+		return -ENOMEM;
+
+	host = mmc_priv(mmc);
+	ssp = &host->ssp;
+	ssp->dev = &pdev->dev;
+	ssp->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(ssp->base)) {
+		ret = PTR_ERR(ssp->base);
+		goto out_mmc_free;
+	}
+
+	ssp->devid = (enum mxs_ssp_id)of_device_get_match_data(&pdev->dev);
+
+	host->mmc = mmc;
+	host->sdio_irq_en = 0;
+
+	reg_vmmc = devm_regulator_get(&pdev->dev, "vmmc");
+	if (!IS_ERR(reg_vmmc)) {
+		ret = regulator_enable(reg_vmmc);
+		if (ret) {
+			dev_err(&pdev->dev,
+				"Failed to enable vmmc regulator: %d\n", ret);
+			goto out_mmc_free;
+		}
+
+		ret = devm_add_action_or_reset(&pdev->dev, mxs_mmc_regulator_disable,
+					       reg_vmmc);
+		if (ret)
+			goto out_mmc_free;
+	}
+
+	ssp->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(ssp->clk)) {
+		ret = PTR_ERR(ssp->clk);
+		goto out_mmc_free;
+	}
+	ret = clk_prepare_enable(ssp->clk);
+	if (ret)
+		goto out_mmc_free;
+
+	ret = mxs_mmc_reset(host);
+	if (ret) {
+		dev_err(&pdev->dev, "Failed to reset mmc: %d\n", ret);
+		goto out_clk_disable;
+	}
+
+	ssp->dmach = dma_request_chan(&pdev->dev, "rx-tx");
+	if (IS_ERR(ssp->dmach)) {
+		dev_err(mmc_dev(host->mmc),
+			"%s: failed to request dma\n", __func__);
+		ret = PTR_ERR(ssp->dmach);
+		goto out_clk_disable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set mmc core parameters */
 	mmc->ops = &mxs_mmc_ops;
 	mmc->caps = MMC_CAP_SD_HIGHSPEED | MMC_CAP_MMC_HIGHSPEED |
+<<<<<<< HEAD
 		    MMC_CAP_SDIO_IRQ | MMC_CAP_NEEDS_POLL;
 
 	pdata =	mmc_dev(host->mmc)->platform_data;
@@ -753,10 +1103,24 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 
 	mmc->f_min = 400000;
 	mmc->f_max = 288000000;
+=======
+		    MMC_CAP_SDIO_IRQ | MMC_CAP_NEEDS_POLL | MMC_CAP_CMD23;
+
+	host->broken_cd = of_property_read_bool(np, "broken-cd");
+
+	mmc->f_min = 400000;
+	mmc->f_max = 288000000;
+
+	ret = mmc_of_parse(mmc);
+	if (ret)
+		goto out_free_dma;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
 	mmc->max_segs = 52;
 	mmc->max_blk_size = 1 << 0xf;
+<<<<<<< HEAD
 	mmc->max_blk_count = (ssp_is_old()) ? 0xff : 0xffffff;
 	mmc->max_req_size = (ssp_is_old()) ? 0xffff : 0xffffffff;
 	mmc->max_seg_size = dma_get_max_seg_size(host->dmach->device->dev);
@@ -772,11 +1136,30 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 	ret = mmc_add_host(mmc);
 	if (ret)
 		goto out_free_irq;
+=======
+	mmc->max_blk_count = (ssp_is_old(ssp)) ? 0xff : 0xffffff;
+	mmc->max_req_size = (ssp_is_old(ssp)) ? 0xffff : 0xffffffff;
+	mmc->max_seg_size = dma_get_max_seg_size(ssp->dmach->device->dev);
+
+	platform_set_drvdata(pdev, mmc);
+
+	spin_lock_init(&host->lock);
+
+	ret = devm_request_irq(&pdev->dev, irq_err, mxs_mmc_irq_handler, 0,
+			       dev_name(&pdev->dev), host);
+	if (ret)
+		goto out_free_dma;
+
+	ret = mmc_add_host(mmc);
+	if (ret)
+		goto out_free_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(mmc_dev(host->mmc), "initialized\n");
 
 	return 0;
 
+<<<<<<< HEAD
 out_free_irq:
 	free_irq(host->irq, host);
 out_free_dma:
@@ -822,10 +1205,39 @@ static int mxs_mmc_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM
+=======
+out_free_dma:
+	dma_release_channel(ssp->dmach);
+out_clk_disable:
+	clk_disable_unprepare(ssp->clk);
+out_mmc_free:
+	mmc_free_host(mmc);
+	return ret;
+}
+
+static void mxs_mmc_remove(struct platform_device *pdev)
+{
+	struct mmc_host *mmc = platform_get_drvdata(pdev);
+	struct mxs_mmc_host *host = mmc_priv(mmc);
+	struct mxs_ssp *ssp = &host->ssp;
+
+	mmc_remove_host(mmc);
+
+	if (ssp->dmach)
+		dma_release_channel(ssp->dmach);
+
+	clk_disable_unprepare(ssp->clk);
+
+	mmc_free_host(mmc);
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mxs_mmc_suspend(struct device *dev)
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
 	struct mxs_mmc_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
 	int ret = 0;
 
 	ret = mmc_suspend_host(mmc);
@@ -833,12 +1245,19 @@ static int mxs_mmc_suspend(struct device *dev)
 	clk_disable_unprepare(host->clk);
 
 	return ret;
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+
+	clk_disable_unprepare(ssp->clk);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mxs_mmc_resume(struct device *dev)
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
 	struct mxs_mmc_host *host = mmc_priv(mmc);
+<<<<<<< HEAD
 	int ret = 0;
 
 	clk_prepare_enable(host->clk);
@@ -863,6 +1282,24 @@ static struct platform_driver mxs_mmc_driver = {
 #ifdef CONFIG_PM
 		.pm	= &mxs_mmc_pm_ops,
 #endif
+=======
+	struct mxs_ssp *ssp = &host->ssp;
+
+	return clk_prepare_enable(ssp->clk);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(mxs_mmc_pm_ops, mxs_mmc_suspend, mxs_mmc_resume);
+
+static struct platform_driver mxs_mmc_driver = {
+	.probe		= mxs_mmc_probe,
+	.remove_new	= mxs_mmc_remove,
+	.driver		= {
+		.name	= DRIVER_NAME,
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.pm	= &mxs_mmc_pm_ops,
+		.of_match_table = mxs_mmc_dt_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -871,3 +1308,7 @@ module_platform_driver(mxs_mmc_driver);
 MODULE_DESCRIPTION("FREESCALE MXS MMC peripheral");
 MODULE_AUTHOR("Freescale Semiconductor");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:" DRIVER_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

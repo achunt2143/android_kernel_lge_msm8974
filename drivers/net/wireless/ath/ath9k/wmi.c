@@ -61,6 +61,11 @@ static const char *wmi_cmd_to_name(enum wmi_cmd_id wmi_cmd)
 		return "WMI_REG_READ_CMDID";
 	case WMI_REG_WRITE_CMDID:
 		return "WMI_REG_WRITE_CMDID";
+<<<<<<< HEAD
+=======
+	case WMI_REG_RMW_CMDID:
+		return "WMI_REG_RMW_CMDID";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WMI_RC_STATE_CHANGE_CMDID:
 		return "WMI_RC_STATE_CHANGE_CMDID";
 	case WMI_RC_RATE_UPDATE_CMDID:
@@ -101,22 +106,40 @@ struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv)
 	spin_lock_init(&wmi->event_lock);
 	mutex_init(&wmi->op_mutex);
 	mutex_init(&wmi->multi_write_mutex);
+<<<<<<< HEAD
 	init_completion(&wmi->cmd_wait);
 	INIT_LIST_HEAD(&wmi->pending_tx_events);
 	tasklet_init(&wmi->wmi_event_tasklet, ath9k_wmi_event_tasklet,
 		     (unsigned long)wmi);
+=======
+	mutex_init(&wmi->multi_rmw_mutex);
+	init_completion(&wmi->cmd_wait);
+	INIT_LIST_HEAD(&wmi->pending_tx_events);
+	tasklet_setup(&wmi->wmi_event_tasklet, ath9k_wmi_event_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return wmi;
 }
 
+<<<<<<< HEAD
 void ath9k_deinit_wmi(struct ath9k_htc_priv *priv)
+=======
+void ath9k_stop_wmi(struct ath9k_htc_priv *priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wmi *wmi = priv->wmi;
 
 	mutex_lock(&wmi->op_mutex);
 	wmi->stopped = true;
 	mutex_unlock(&wmi->op_mutex);
+<<<<<<< HEAD
 
+=======
+}
+
+void ath9k_destroy_wmi(struct ath9k_htc_priv *priv)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv->wmi);
 }
 
@@ -130,9 +153,15 @@ void ath9k_wmi_event_drain(struct ath9k_htc_priv *priv)
 	spin_unlock_irqrestore(&priv->wmi->wmi_lock, flags);
 }
 
+<<<<<<< HEAD
 void ath9k_wmi_event_tasklet(unsigned long data)
 {
 	struct wmi *wmi = (struct wmi *)data;
+=======
+void ath9k_wmi_event_tasklet(struct tasklet_struct *t)
+{
+	struct wmi *wmi = from_tasklet(wmi, t, wmi_event_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_htc_priv *priv = wmi->drv_priv;
 	struct wmi_cmd_hdr *hdr;
 	void *wmi_event;
@@ -150,13 +179,26 @@ void ath9k_wmi_event_tasklet(unsigned long data)
 		}
 		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
 
+<<<<<<< HEAD
+=======
+		/* Check if ath9k_htc_probe_device() completed. */
+		if (!data_race(priv->initialized)) {
+			kfree_skb(skb);
+			continue;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdr = (struct wmi_cmd_hdr *) skb->data;
 		cmd_id = be16_to_cpu(hdr->command_id);
 		wmi_event = skb_pull(skb, sizeof(struct wmi_cmd_hdr));
 
 		switch (cmd_id) {
 		case WMI_SWBA_EVENTID:
+<<<<<<< HEAD
 			swba = (struct wmi_event_swba *) wmi_event;
+=======
+			swba = wmi_event;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ath9k_htc_swba(priv, swba);
 			break;
 		case WMI_FATAL_EVENTID:
@@ -204,25 +246,45 @@ static void ath9k_wmi_rsp_callback(struct wmi *wmi, struct sk_buff *skb)
 static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
 			      enum htc_endpoint_id epid)
 {
+<<<<<<< HEAD
 	struct wmi *wmi = (struct wmi *) priv;
 	struct wmi_cmd_hdr *hdr;
+=======
+	struct wmi *wmi = priv;
+	struct wmi_cmd_hdr *hdr;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cmd_id;
 
 	if (unlikely(wmi->stopped))
 		goto free_skb;
 
+<<<<<<< HEAD
+=======
+	/* Validate the obtained SKB. */
+	if (unlikely(skb->len < sizeof(struct wmi_cmd_hdr)))
+		goto free_skb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr = (struct wmi_cmd_hdr *) skb->data;
 	cmd_id = be16_to_cpu(hdr->command_id);
 
 	if (cmd_id & 0x1000) {
+<<<<<<< HEAD
 		spin_lock(&wmi->wmi_lock);
 		__skb_queue_tail(&wmi->wmi_event_queue, skb);
 		spin_unlock(&wmi->wmi_lock);
+=======
+		spin_lock_irqsave(&wmi->wmi_lock, flags);
+		__skb_queue_tail(&wmi->wmi_event_queue, skb);
+		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tasklet_schedule(&wmi->wmi_event_tasklet);
 		return;
 	}
 
 	/* Check if there has been a timeout. */
+<<<<<<< HEAD
 	spin_lock(&wmi->wmi_lock);
 	if (cmd_id != wmi->last_cmd_id) {
 		spin_unlock(&wmi->wmi_lock);
@@ -232,6 +294,17 @@ static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
 
 	/* WMI command response */
 	ath9k_wmi_rsp_callback(wmi, skb);
+=======
+	spin_lock_irqsave(&wmi->wmi_lock, flags);
+	if (be16_to_cpu(hdr->seq_no) != wmi->last_seq_id) {
+		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+		goto free_skb;
+	}
+
+	/* WMI command response */
+	ath9k_wmi_rsp_callback(wmi, skb);
+	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 free_skb:
 	kfree_skb(skb);
@@ -269,6 +342,7 @@ int ath9k_wmi_connect(struct htc_target *htc, struct wmi *wmi,
 
 static int ath9k_wmi_cmd_issue(struct wmi *wmi,
 			       struct sk_buff *skb,
+<<<<<<< HEAD
 			       enum wmi_cmd_id cmd, u16 len)
 {
 	struct wmi_cmd_hdr *hdr;
@@ -277,6 +351,27 @@ static int ath9k_wmi_cmd_issue(struct wmi *wmi,
 	hdr->command_id = cpu_to_be16(cmd);
 	hdr->seq_no = cpu_to_be16(++wmi->tx_seq_id);
 
+=======
+			       enum wmi_cmd_id cmd, u16 len,
+			       u8 *rsp_buf, u32 rsp_len)
+{
+	struct wmi_cmd_hdr *hdr;
+	unsigned long flags;
+
+	hdr = skb_push(skb, sizeof(struct wmi_cmd_hdr));
+	hdr->command_id = cpu_to_be16(cmd);
+	hdr->seq_no = cpu_to_be16(++wmi->tx_seq_id);
+
+	spin_lock_irqsave(&wmi->wmi_lock, flags);
+
+	/* record the rsp buffer and length */
+	wmi->cmd_rsp_buf = rsp_buf;
+	wmi->cmd_rsp_len = rsp_len;
+
+	wmi->last_seq_id = wmi->tx_seq_id;
+	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return htc_send_epid(wmi->htc, skb, wmi->ctrl_epid);
 }
 
@@ -289,10 +384,16 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 	struct ath_common *common = ath9k_hw_common(ah);
 	u16 headroom = sizeof(struct htc_frame_hdr) +
 		       sizeof(struct wmi_cmd_hdr);
+<<<<<<< HEAD
 	struct sk_buff *skb;
 	u8 *data;
 	int time_left, ret = 0;
 	unsigned long flags;
+=======
+	unsigned long time_left, flags;
+	struct sk_buff *skb;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ah->ah_flags & AH_UNPLUGGED)
 		return 0;
@@ -304,8 +405,12 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 	skb_reserve(skb, headroom);
 
 	if (cmd_len != 0 && cmd_buf != NULL) {
+<<<<<<< HEAD
 		data = (u8 *) skb_put(skb, cmd_len);
 		memcpy(data, cmd_buf, cmd_len);
+=======
+		skb_put_data(skb, cmd_buf, cmd_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_lock(&wmi->op_mutex);
@@ -316,6 +421,7 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* record the rsp buffer and length */
 	wmi->cmd_rsp_buf = rsp_buf;
 	wmi->cmd_rsp_len = rsp_len;
@@ -325,6 +431,9 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
 
 	ret = ath9k_wmi_cmd_issue(wmi, skb, cmd_id, cmd_len);
+=======
+	ret = ath9k_wmi_cmd_issue(wmi, skb, cmd_id, cmd_len, rsp_buf, rsp_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -332,6 +441,12 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 	if (!time_left) {
 		ath_dbg(common, WMI, "Timeout waiting for WMI command: %s\n",
 			wmi_cmd_to_name(cmd_id));
+<<<<<<< HEAD
+=======
+		spin_lock_irqsave(&wmi->wmi_lock, flags);
+		wmi->last_seq_id = 0;
+		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&wmi->op_mutex);
 		return -ETIMEDOUT;
 	}

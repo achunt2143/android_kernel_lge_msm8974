@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -9,6 +13,7 @@
  *
  * This module provides the abstraction for an SCTP association.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -32,6 +37,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -43,9 +53,12 @@
  *    Daisy Chang	    <daisyc@us.ibm.com>
  *    Ryan Layer	    <rmlayer@us.ibm.com>
  *    Kevin Gao             <kevin.gao@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -62,10 +75,15 @@
 #include <net/sctp/sm.h>
 
 /* Forward declarations for internal functions. */
+<<<<<<< HEAD
+=======
+static void sctp_select_active_and_retran_path(struct sctp_association *asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sctp_assoc_bh_rcv(struct work_struct *work);
 static void sctp_assoc_free_asconf_acks(struct sctp_association *asoc);
 static void sctp_assoc_free_asconf_queue(struct sctp_association *asoc);
 
+<<<<<<< HEAD
 /* Keep track of the new idr low so that we don't re-use association id
  * numbers too fast.  It is protected by they idr spin lock is in the
  * range of 1 - INT_MAX.
@@ -86,30 +104,56 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	int i;
 	sctp_paramhdr_t *p;
 	int err;
+=======
+/* 1st Level Abstractions. */
+
+/* Initialize a new association from provided memory. */
+static struct sctp_association *sctp_association_init(
+					struct sctp_association *asoc,
+					const struct sctp_endpoint *ep,
+					const struct sock *sk,
+					enum sctp_scope scope, gfp_t gfp)
+{
+	struct sctp_sock *sp;
+	struct sctp_paramhdr *p;
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Retrieve the SCTP per socket area.  */
 	sp = sctp_sk((struct sock *)sk);
 
 	/* Discarding const is appropriate here.  */
 	asoc->ep = (struct sctp_endpoint *)ep;
+<<<<<<< HEAD
 	sctp_endpoint_hold(asoc->ep);
 
 	/* Hold the sock.  */
 	asoc->base.sk = (struct sock *)sk;
+=======
+	asoc->base.sk = (struct sock *)sk;
+	asoc->base.net = sock_net(sk);
+
+	sctp_endpoint_hold(asoc->ep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_hold(asoc->base.sk);
 
 	/* Initialize the common base substructure.  */
 	asoc->base.type = SCTP_EP_TYPE_ASSOCIATION;
 
 	/* Initialize the object handling fields.  */
+<<<<<<< HEAD
 	atomic_set(&asoc->base.refcnt, 1);
 	asoc->base.dead = 0;
 	asoc->base.malloced = 0;
+=======
+	refcount_set(&asoc->base.refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the bind addr area.  */
 	sctp_bind_addr_init(&asoc->base.bind_addr, ep->base.bind_addr.port);
 
 	asoc->state = SCTP_STATE_CLOSED;
+<<<<<<< HEAD
 
 	/* Set these values from the socket values, a conversion between
 	 * millsecons to seconds/microseconds must also be done.
@@ -118,28 +162,52 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->cookie_life.tv_usec = (sp->assocparams.sasoc_cookie_life % 1000)
 					* 1000;
 	asoc->frag_point = 0;
+=======
+	asoc->cookie_life = ms_to_ktime(sp->assocparams.sasoc_cookie_life);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asoc->user_frag = sp->user_frag;
 
 	/* Set the association max_retrans and RTO values from the
 	 * socket values.
 	 */
 	asoc->max_retrans = sp->assocparams.sasoc_asocmaxrxt;
+<<<<<<< HEAD
+=======
+	asoc->pf_retrans  = sp->pf_retrans;
+	asoc->ps_retrans  = sp->ps_retrans;
+	asoc->pf_expose   = sp->pf_expose;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asoc->rto_initial = msecs_to_jiffies(sp->rtoinfo.srto_initial);
 	asoc->rto_max = msecs_to_jiffies(sp->rtoinfo.srto_max);
 	asoc->rto_min = msecs_to_jiffies(sp->rtoinfo.srto_min);
 
+<<<<<<< HEAD
 	asoc->overall_error_count = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize the association's heartbeat interval based on the
 	 * sock configured value.
 	 */
 	asoc->hbinterval = msecs_to_jiffies(sp->hbinterval);
+<<<<<<< HEAD
+=======
+	asoc->probe_interval = msecs_to_jiffies(sp->probe_interval);
+
+	asoc->encap_port = sp->encap_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize path max retrans value. */
 	asoc->pathmaxrxt = sp->pathmaxrxt;
 
+<<<<<<< HEAD
 	/* Initialize default path MTU. */
 	asoc->pathmtu = sp->pathmtu;
+=======
+	asoc->flowlabel = sp->flowlabel;
+	asoc->dscp = sp->dscp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set association default SACK delay */
 	asoc->sackdelay = msecs_to_jiffies(sp->sackdelay);
@@ -150,11 +218,16 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	 */
 	asoc->param_flags = sp->param_flags;
 
+<<<<<<< HEAD
 	/* Initialize the maximum mumber of new data packets that can be sent
+=======
+	/* Initialize the maximum number of new data packets that can be sent
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in a burst.
 	 */
 	asoc->max_burst = sp->max_burst;
 
+<<<<<<< HEAD
 	/* initialize association timers */
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_NONE] = 0;
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_COOKIE] = asoc->rto_initial;
@@ -162,6 +235,14 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_T2_SHUTDOWN] = asoc->rto_initial;
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_T3_RTX] = 0;
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_T4_RTO] = 0;
+=======
+	asoc->subscribe = sp->subscribe;
+
+	/* initialize association timers */
+	asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_COOKIE] = asoc->rto_initial;
+	asoc->timeouts[SCTP_EVENT_TIMEOUT_T1_INIT] = asoc->rto_initial;
+	asoc->timeouts[SCTP_EVENT_TIMEOUT_T2_SHUTDOWN] = asoc->rto_initial;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sctpimpguide Section 2.12.2
 	 * If the 'T5-shutdown-guard' timer is used, it SHOULD be set to the
@@ -170,6 +251,7 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_T5_SHUTDOWN_GUARD]
 		= 5 * asoc->rto_max;
 
+<<<<<<< HEAD
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_HEARTBEAT] = 0;
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_SACK] = asoc->sackdelay;
 	asoc->timeouts[SCTP_EVENT_TIMEOUT_AUTOCLOSE] =
@@ -179,6 +261,14 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	for (i = SCTP_EVENT_TIMEOUT_NONE; i < SCTP_NUM_TIMEOUT_TYPES; ++i)
 		setup_timer(&asoc->timers[i], sctp_timer_events[i],
 				(unsigned long)asoc);
+=======
+	asoc->timeouts[SCTP_EVENT_TIMEOUT_SACK] = asoc->sackdelay;
+	asoc->timeouts[SCTP_EVENT_TIMEOUT_AUTOCLOSE] = sp->autoclose * HZ;
+
+	/* Initializes the timers */
+	for (i = SCTP_EVENT_TIMEOUT_NONE; i < SCTP_NUM_TIMEOUT_TYPES; ++i)
+		timer_setup(&asoc->timers[i], sctp_timer_events[i], 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Pull default initialization values from the sock options.
 	 * Note: This assumes that the values have already been
@@ -191,11 +281,14 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->max_init_timeo =
 		 msecs_to_jiffies(sp->initmsg.sinit_max_init_timeo);
 
+<<<<<<< HEAD
 	/* Allocate storage for the ssnmap after the inbound and outbound
 	 * streams have been negotiated during Init.
 	 */
 	asoc->ssnmap = NULL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the local window size for receive.
 	 * This is also the rcvbuf space per association.
 	 * RFC 6 - A SCTP receiver MUST be able to receive a minimum of
@@ -208,6 +301,7 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 
 	asoc->a_rwnd = asoc->rwnd;
 
+<<<<<<< HEAD
 	asoc->rwnd_over = 0;
 	asoc->rwnd_press = 0;
 
@@ -217,16 +311,24 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	/* Set the sndbuf size for transmit.  */
 	asoc->sndbuf_used = 0;
 
+=======
+	/* Use my own max window until I learn something better.  */
+	asoc->peer.rwnd = SCTP_DEFAULT_MAXWINDOW;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize the receive memory counter */
 	atomic_set(&asoc->rmem_alloc, 0);
 
 	init_waitqueue_head(&asoc->wait);
 
 	asoc->c.my_vtag = sctp_generate_tag(ep);
+<<<<<<< HEAD
 	asoc->peer.i.init_tag = 0;     /* INIT needs a vtag of 0. */
 	asoc->c.peer_vtag = 0;
 	asoc->c.my_ttag   = 0;
 	asoc->c.peer_ttag = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asoc->c.my_port = ep->base.bind_addr.port;
 
 	asoc->c.initial_tsn = sctp_generate_tsn(ep);
@@ -237,7 +339,10 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->adv_peer_ack_point = asoc->ctsn_ack_point;
 	asoc->highest_sacked = asoc->ctsn_ack_point;
 	asoc->last_cwr_tsn = asoc->ctsn_ack_point;
+<<<<<<< HEAD
 	asoc->unack_data = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ADDIP Section 4.1 Asconf Chunk Procedures
 	 *
@@ -250,13 +355,20 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	 * association to the same value as the initial TSN.
 	 */
 	asoc->addip_serial = asoc->c.initial_tsn;
+<<<<<<< HEAD
+=======
+	asoc->strreset_outseq = asoc->c.initial_tsn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&asoc->addip_chunk_list);
 	INIT_LIST_HEAD(&asoc->asconf_ack_list);
 
 	/* Make an empty list of remote transport addresses.  */
 	INIT_LIST_HEAD(&asoc->peer.transport_addr_list);
+<<<<<<< HEAD
 	asoc->peer.transport_count = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RFC 2960 5.1 Normal Establishment of an Association
 	 *
@@ -270,6 +382,7 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	 * already received one packet.]
 	 */
 	asoc->peer.sack_needed = 1;
+<<<<<<< HEAD
 	asoc->peer.sack_cnt = 0;
 
 	/* Assume that the peer will tell us if he recognizes ASCONF
@@ -283,6 +396,9 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->asconf_addr_del_pending = NULL;
 	asoc->src_out_of_asoc_ok = 0;
 	asoc->new_transport = NULL;
+=======
+	asoc->peer.sack_generation = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create an input queue.  */
 	sctp_inq_init(&asoc->base.inqueue);
@@ -291,6 +407,7 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	/* Create an output queue.  */
 	sctp_outq_init(asoc, &asoc->outqueue);
 
+<<<<<<< HEAD
 	if (!sctp_ulpq_init(&asoc->ulpq, asoc))
 		goto fail_init;
 
@@ -299,6 +416,16 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->need_ecne = 0;
 
 	asoc->assoc_id = 0;
+=======
+	sctp_ulpq_init(&asoc->ulpq, asoc);
+
+	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams, 0, gfp))
+		goto stream_free;
+
+	/* Initialize default path MTU. */
+	asoc->pathmtu = sp->pathmtu;
+	sctp_assoc_update_frag_point(asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Assume that peer would support both address types unless we are
 	 * told otherwise.
@@ -308,8 +435,11 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 		asoc->peer.ipv6_address = 1;
 	INIT_LIST_HEAD(&asoc->asocs);
 
+<<<<<<< HEAD
 	asoc->autoclose = sp->autoclose;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asoc->default_stream = sp->default_stream;
 	asoc->default_ppid = sp->default_ppid;
 	asoc->default_flags = sp->default_flags;
@@ -319,6 +449,7 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 
 	/* AUTH related initializations */
 	INIT_LIST_HEAD(&asoc->endpoint_shared_keys);
+<<<<<<< HEAD
 	err = sctp_auth_asoc_copy_shkeys(ep, asoc, gfp);
 	if (err)
 		goto fail_init;
@@ -327,6 +458,14 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 	asoc->asoc_shared_key = NULL;
 
 	asoc->default_hmac_id = 0;
+=======
+	if (sctp_auth_asoc_copy_shkeys(ep, asoc, gfp))
+		goto stream_free;
+
+	asoc->active_key_id = ep->active_key_id;
+	asoc->strreset_enable = ep->strreset_enable;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save the hmacs and chunks list into this association */
 	if (ep->auth_hmacs_list)
 		memcpy(asoc->c.auth_hmacs, ep->auth_hmacs_list,
@@ -336,21 +475,35 @@ static struct sctp_association *sctp_association_init(struct sctp_association *a
 			ntohs(ep->auth_chunk_list->param_hdr.length));
 
 	/* Get the AUTH random number for this association */
+<<<<<<< HEAD
 	p = (sctp_paramhdr_t *)asoc->c.auth_random;
 	p->type = SCTP_PARAM_RANDOM;
 	p->length = htons(sizeof(sctp_paramhdr_t) + SCTP_AUTH_RANDOM_LENGTH);
+=======
+	p = (struct sctp_paramhdr *)asoc->c.auth_random;
+	p->type = SCTP_PARAM_RANDOM;
+	p->length = htons(sizeof(*p) + SCTP_AUTH_RANDOM_LENGTH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	get_random_bytes(p+1, SCTP_AUTH_RANDOM_LENGTH);
 
 	return asoc;
 
+<<<<<<< HEAD
 fail_init:
 	sctp_endpoint_put(asoc->ep);
 	sock_put(asoc->base.sk);
+=======
+stream_free:
+	sctp_stream_free(&asoc->stream);
+	sock_put(asoc->base.sk);
+	sctp_endpoint_put(asoc->ep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 /* Allocate and initialize a new association */
 struct sctp_association *sctp_association_new(const struct sctp_endpoint *ep,
+<<<<<<< HEAD
 					 const struct sock *sk,
 					 sctp_scope_t scope,
 					 gfp_t gfp)
@@ -358,15 +511,29 @@ struct sctp_association *sctp_association_new(const struct sctp_endpoint *ep,
 	struct sctp_association *asoc;
 
 	asoc = t_new(struct sctp_association, gfp);
+=======
+					      const struct sock *sk,
+					      enum sctp_scope scope, gfp_t gfp)
+{
+	struct sctp_association *asoc;
+
+	asoc = kzalloc(sizeof(*asoc), gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!asoc)
 		goto fail;
 
 	if (!sctp_association_init(asoc, ep, sk, scope, gfp))
 		goto fail_init;
 
+<<<<<<< HEAD
 	asoc->base.malloced = 1;
 	SCTP_DBG_OBJCNT_INC(assoc);
 	SCTP_DEBUG_PRINTK("Created asoc %p\n", asoc);
+=======
+	SCTP_DBG_OBJCNT_INC(assoc);
+
+	pr_debug("Created asoc %p\n", asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return asoc;
 
@@ -396,13 +563,21 @@ void sctp_association_free(struct sctp_association *asoc)
 		 * socket.
 		 */
 		if (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))
+<<<<<<< HEAD
 			sk->sk_ack_backlog--;
+=======
+			sk_acceptq_removed(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Mark as dead, so other users can know this structure is
 	 * going away.
 	 */
+<<<<<<< HEAD
 	asoc->base.dead = 1;
+=======
+	asoc->base.dead = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Dispose of any data lying around in the outqueue. */
 	sctp_outq_free(&asoc->outqueue);
@@ -415,8 +590,16 @@ void sctp_association_free(struct sctp_association *asoc)
 
 	sctp_tsnmap_free(&asoc->peer.tsn_map);
 
+<<<<<<< HEAD
 	/* Free ssnmap storage. */
 	sctp_ssnmap_free(asoc->ssnmap);
+=======
+	/* Free stream information. */
+	sctp_stream_free(&asoc->stream);
+
+	if (asoc->strreset_chunk)
+		sctp_chunk_free(asoc->strreset_chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clean up the bound address list. */
 	sctp_bind_addr_free(&asoc->base.bind_addr);
@@ -427,8 +610,12 @@ void sctp_association_free(struct sctp_association *asoc)
 	 * on our state.
 	 */
 	for (i = SCTP_EVENT_TIMEOUT_NONE; i < SCTP_NUM_TIMEOUT_TYPES; ++i) {
+<<<<<<< HEAD
 		if (timer_pending(&asoc->timers[i]) &&
 		    del_timer(&asoc->timers[i]))
+=======
+		if (del_timer(&asoc->timers[i]))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_association_put(asoc);
 	}
 
@@ -441,7 +628,12 @@ void sctp_association_free(struct sctp_association *asoc)
 	/* Release the transport structures. */
 	list_for_each_safe(pos, temp, &asoc->peer.transport_addr_list) {
 		transport = list_entry(pos, struct sctp_transport, transports);
+<<<<<<< HEAD
 		list_del(pos);
+=======
+		list_del_rcu(pos);
+		sctp_unhash_transport(transport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sctp_transport_free(transport);
 	}
 
@@ -450,8 +642,12 @@ void sctp_association_free(struct sctp_association *asoc)
 	sctp_asconf_queue_teardown(asoc);
 
 	/* Free pending address space being deleted */
+<<<<<<< HEAD
 	if (asoc->asconf_addr_del_pending != NULL)
 		kfree(asoc->asconf_addr_del_pending);
+=======
+	kfree(asoc->asconf_addr_del_pending);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* AUTH - Free the endpoint shared keys */
 	sctp_auth_destroy_keys(&asoc->endpoint_shared_keys);
@@ -465,7 +661,14 @@ void sctp_association_free(struct sctp_association *asoc)
 /* Cleanup and free up an association. */
 static void sctp_association_destroy(struct sctp_association *asoc)
 {
+<<<<<<< HEAD
 	SCTP_ASSERT(asoc->base.dead, "Assoc is not dead", return);
+=======
+	if (unlikely(!asoc->base.dead)) {
+		WARN(1, "Attempt to destroy undead association %p!\n", asoc);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sctp_endpoint_put(asoc->ep);
 	sock_put(asoc->base.sk);
@@ -478,10 +681,15 @@ static void sctp_association_destroy(struct sctp_association *asoc)
 
 	WARN_ON(atomic_read(&asoc->rmem_alloc));
 
+<<<<<<< HEAD
 	if (asoc->base.malloced) {
 		kfree(asoc);
 		SCTP_DBG_OBJCNT_DEC(assoc);
 	}
+=======
+	kfree_rcu(asoc, rcu);
+	SCTP_DBG_OBJCNT_DEC(assoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Change the primary destination address for the peer. */
@@ -498,6 +706,11 @@ void sctp_assoc_set_primary(struct sctp_association *asoc,
 		changeover = 1 ;
 
 	asoc->peer.primary_path = transport;
+<<<<<<< HEAD
+=======
+	sctp_ulpevent_notify_peer_addr_change(transport,
+					      SCTP_ADDR_MADE_PRIM, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set a default msg_name for events. */
 	memcpy(&asoc->peer.primary_addr, &transport->ipaddr,
@@ -545,6 +758,7 @@ void sctp_assoc_set_primary(struct sctp_association *asoc,
 void sctp_assoc_rm_peer(struct sctp_association *asoc,
 			struct sctp_transport *peer)
 {
+<<<<<<< HEAD
 	struct list_head	*pos;
 	struct sctp_transport	*transport;
 
@@ -553,6 +767,14 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 				 asoc,
 				 (&peer->ipaddr),
 				 ntohs(peer->ipaddr.v4.sin_port));
+=======
+	struct sctp_transport *transport;
+	struct list_head *pos;
+	struct sctp_chunk *ch;
+
+	pr_debug("%s: association:%p addr:%pISpc\n",
+		 __func__, asoc, &peer->ipaddr.sa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we are to remove the current retran_path, update it
 	 * to the next peer before removing this peer from the list.
@@ -561,7 +783,13 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 		sctp_assoc_update_retran_path(asoc);
 
 	/* Remove this peer from the list. */
+<<<<<<< HEAD
 	list_del(&peer->transports);
+=======
+	list_del_rcu(&peer->transports);
+	/* Remove this peer from the transport hashtable */
+	sctp_unhash_transport(peer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the first transport of asoc. */
 	pos = asoc->peer.transport_addr_list.next;
@@ -577,6 +805,15 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 	if (asoc->peer.last_data_from == peer)
 		asoc->peer.last_data_from = transport;
 
+<<<<<<< HEAD
+=======
+	if (asoc->strreset_chunk &&
+	    asoc->strreset_chunk->transport == peer) {
+		asoc->strreset_chunk->transport = transport;
+		sctp_transport_reset_reconf_timer(transport);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If we remove the transport an INIT was last sent to, set it to
 	 * NULL. Combined with the update of the retran path above, this
 	 * will cause the next INIT to be sent to the next available
@@ -605,7 +842,10 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 	 */
 	if (!list_empty(&peer->transmitted)) {
 		struct sctp_transport *active = asoc->peer.active_path;
+<<<<<<< HEAD
 		struct sctp_chunk *ch;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Reset the transport of each chunk on this list */
 		list_for_each_entry(ch, &peer->transmitted,
@@ -619,7 +859,11 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 
 		/* Start a T3 timer here in case it wasn't running so
 		 * that these migrated packets have a chance to get
+<<<<<<< HEAD
 		 * retrnasmitted.
+=======
+		 * retransmitted.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (!timer_pending(&active->T3_rtx_timer))
 			if (!mod_timer(&active->T3_rtx_timer,
@@ -627,8 +871,18 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
 				sctp_transport_hold(active);
 	}
 
+<<<<<<< HEAD
 	asoc->peer.transport_count--;
 
+=======
+	list_for_each_entry(ch, &asoc->outqueue.out_chunk_list, list)
+		if (ch->transport == peer)
+			ch->transport = NULL;
+
+	asoc->peer.transport_count--;
+
+	sctp_ulpevent_notify_peer_addr_change(peer, SCTP_ADDR_REMOVED, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sctp_transport_free(peer);
 }
 
@@ -647,12 +901,17 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 	/* AF_INET and AF_INET6 share common port field. */
 	port = ntohs(addr->v4.sin_port);
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK_IPADDR("sctp_assoc_add_peer:association %p addr: ",
 				 " port: %d state:%d\n",
 				 asoc,
 				 addr,
 				 port,
 				 peer_state);
+=======
+	pr_debug("%s: association:%p addr:%pISpc state:%d\n", __func__,
+		 asoc, &addr->sa, peer_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the port if it has not been set yet.  */
 	if (0 == asoc->peer.port)
@@ -671,7 +930,11 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 		return peer;
 	}
 
+<<<<<<< HEAD
 	peer = sctp_transport_new(addr, gfp);
+=======
+	peer = sctp_transport_new(asoc->base.net, addr, gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!peer)
 		return NULL;
 
@@ -681,21 +944,51 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 	 * association configured value.
 	 */
 	peer->hbinterval = asoc->hbinterval;
+<<<<<<< HEAD
+=======
+	peer->probe_interval = asoc->probe_interval;
+
+	peer->encap_port = asoc->encap_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the path max_retrans.  */
 	peer->pathmaxrxt = asoc->pathmaxrxt;
 
+<<<<<<< HEAD
+=======
+	/* And the partial failure retrans threshold */
+	peer->pf_retrans = asoc->pf_retrans;
+	/* And the primary path switchover retrans threshold */
+	peer->ps_retrans = asoc->ps_retrans;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize the peer's SACK delay timeout based on the
 	 * association configured value.
 	 */
 	peer->sackdelay = asoc->sackdelay;
 	peer->sackfreq = asoc->sackfreq;
 
+<<<<<<< HEAD
+=======
+	if (addr->sa.sa_family == AF_INET6) {
+		__be32 info = addr->v6.sin6_flowinfo;
+
+		if (info) {
+			peer->flowlabel = ntohl(info & IPV6_FLOWLABEL_MASK);
+			peer->flowlabel |= SCTP_FLOWLABEL_SET_MASK;
+		} else {
+			peer->flowlabel = asoc->flowlabel;
+		}
+	}
+	peer->dscp = asoc->dscp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable/disable heartbeat, SACK delay, and path MTU discovery
 	 * based on association setting.
 	 */
 	peer->param_flags = asoc->param_flags;
 
+<<<<<<< HEAD
 	sctp_transport_route(peer, NULL, sp);
 
 	/* Initialize the pmtu of the transport. */
@@ -705,12 +998,17 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 		else
 			peer->pathmtu = SCTP_DEFAULT_MAXSEGMENT;
 	}
+=======
+	/* Initialize the pmtu of the transport. */
+	sctp_transport_route(peer, NULL, sp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If this is the first transport addr on this association,
 	 * initialize the association PMTU to the peer's PMTU.
 	 * If not and the current association PMTU is higher than the new
 	 * peer's PMTU, reset the association PMTU to the new peer's PMTU.
 	 */
+<<<<<<< HEAD
 	if (asoc->pathmtu)
 		asoc->pathmtu = min_t(int, peer->pathmtu, asoc->pathmtu);
 	else
@@ -722,6 +1020,14 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 
 	asoc->frag_point = sctp_frag_point(asoc, asoc->pathmtu);
 
+=======
+	sctp_assoc_set_pmtu(asoc, asoc->pathmtu ?
+				  min_t(int, peer->pathmtu, asoc->pathmtu) :
+				  peer->pathmtu);
+
+	peer->pmtu_pending = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The asoc->peer.port might not be meaningful yet, but
 	 * initialize the packet structure anyway.
 	 */
@@ -752,14 +1058,35 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
 
 	/* Set the transport's RTO.initial value */
 	peer->rto = asoc->rto_initial;
+<<<<<<< HEAD
+=======
+	sctp_max_rto(asoc, peer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the peer's active state. */
 	peer->state = peer_state;
 
+<<<<<<< HEAD
 	/* Attach the remote transport to our asoc.  */
 	list_add_tail(&peer->transports, &asoc->peer.transport_addr_list);
 	asoc->peer.transport_count++;
 
+=======
+	/* Add this peer into the transport hashtable */
+	if (sctp_hash_transport(peer)) {
+		sctp_transport_free(peer);
+		return NULL;
+	}
+
+	sctp_transport_pl_reset(peer);
+
+	/* Attach the remote transport to our asoc.  */
+	list_add_tail_rcu(&peer->transports, &asoc->peer.transport_addr_list);
+	asoc->peer.transport_count++;
+
+	sctp_ulpevent_notify_peer_addr_change(peer, SCTP_ADDR_ADDED, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If we do not yet have a primary path, set one.  */
 	if (!asoc->peer.primary_path) {
 		sctp_assoc_set_primary(asoc, peer);
@@ -831,6 +1158,7 @@ void sctp_assoc_del_nonprimary_peers(struct sctp_association *asoc,
  */
 void sctp_assoc_control_transport(struct sctp_association *asoc,
 				  struct sctp_transport *transport,
+<<<<<<< HEAD
 				  sctp_transport_cmd_t command,
 				  sctp_sn_error_t error)
 {
@@ -840,6 +1168,13 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 	struct sctp_ulpevent *event;
 	struct sockaddr_storage addr;
 	int spc_state = 0;
+=======
+				  enum sctp_transport_cmd command,
+				  sctp_sn_error_t error)
+{
+	int spc_state = SCTP_ADDR_AVAILABLE;
+	bool ulp_notify = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Record the transition on the transport.  */
 	switch (command) {
@@ -848,12 +1183,24 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 		 * to heartbeat success, report the SCTP_ADDR_CONFIRMED
 		 * state to the user, otherwise report SCTP_ADDR_AVAILABLE.
 		 */
+<<<<<<< HEAD
 		if (SCTP_UNCONFIRMED == transport->state &&
 		    SCTP_HEARTBEAT_SUCCESS == error)
 			spc_state = SCTP_ADDR_CONFIRMED;
 		else
 			spc_state = SCTP_ADDR_AVAILABLE;
 		transport->state = SCTP_ACTIVE;
+=======
+		if (transport->state == SCTP_PF &&
+		    asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
+			ulp_notify = false;
+		else if (transport->state == SCTP_UNCONFIRMED &&
+			 error == SCTP_HEARTBEAT_SUCCESS)
+			spc_state = SCTP_ADDR_CONFIRMED;
+
+		transport->state = SCTP_ACTIVE;
+		sctp_transport_pl_reset(transport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCTP_TRANSPORT_DOWN:
@@ -861,6 +1208,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 		 * to inactive state.  Also, release the cached route since
 		 * there may be a better route next time.
 		 */
+<<<<<<< HEAD
 		if (transport->state != SCTP_UNCONFIRMED)
 			transport->state = SCTP_INACTIVE;
 		else {
@@ -869,12 +1217,31 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 		}
 
 		spc_state = SCTP_ADDR_UNREACHABLE;
+=======
+		if (transport->state != SCTP_UNCONFIRMED) {
+			transport->state = SCTP_INACTIVE;
+			sctp_transport_pl_reset(transport);
+			spc_state = SCTP_ADDR_UNREACHABLE;
+		} else {
+			sctp_transport_dst_release(transport);
+			ulp_notify = false;
+		}
+		break;
+
+	case SCTP_TRANSPORT_PF:
+		transport->state = SCTP_PF;
+		if (asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
+			ulp_notify = false;
+		else
+			spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		return;
 	}
 
+<<<<<<< HEAD
 	/* Generate and send a SCTP_PEER_ADDR_CHANGE notification to the
 	 * user.
 	 */
@@ -937,12 +1304,27 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 	/* Set the active and retran transports.  */
 	asoc->peer.active_path = first;
 	asoc->peer.retran_path = second;
+=======
+	/* Generate and send a SCTP_PEER_ADDR_CHANGE notification
+	 * to the user.
+	 */
+	if (ulp_notify)
+		sctp_ulpevent_notify_peer_addr_change(transport,
+						      spc_state, error);
+
+	/* Select new active and retran paths. */
+	sctp_select_active_and_retran_path(asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Hold a reference to an association. */
 void sctp_association_hold(struct sctp_association *asoc)
 {
+<<<<<<< HEAD
 	atomic_inc(&asoc->base.refcnt);
+=======
+	refcount_inc(&asoc->base.refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Release a reference to an association and cleanup
@@ -950,7 +1332,11 @@ void sctp_association_hold(struct sctp_association *asoc)
  */
 void sctp_association_put(struct sctp_association *asoc)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&asoc->base.refcnt))
+=======
+	if (refcount_dec_and_test(&asoc->base.refcnt))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sctp_association_destroy(asoc);
 }
 
@@ -992,17 +1378,26 @@ int sctp_cmp_addr_exact(const union sctp_addr *ss1,
  */
 struct sctp_chunk *sctp_get_ecne_prepend(struct sctp_association *asoc)
 {
+<<<<<<< HEAD
 	struct sctp_chunk *chunk;
+=======
+	if (!asoc->need_ecne)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send ECNE if needed.
 	 * Not being able to allocate a chunk here is not deadly.
 	 */
+<<<<<<< HEAD
 	if (asoc->need_ecne)
 		chunk = sctp_make_ecne(asoc, asoc->last_ecne_tsn);
 	else
 		chunk = NULL;
 
 	return chunk;
+=======
+	return sctp_make_ecne(asoc, asoc->last_ecne_tsn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1063,6 +1458,7 @@ out:
 	return match;
 }
 
+<<<<<<< HEAD
 /* Is this the association we are looking for? */
 struct sctp_transport *sctp_assoc_is_match(struct sctp_association *asoc,
 					   const union sctp_addr *laddr,
@@ -1086,18 +1482,31 @@ out:
 	return transport;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Do delayed input processing.  This is scheduled by sctp_rcv(). */
 static void sctp_assoc_bh_rcv(struct work_struct *work)
 {
 	struct sctp_association *asoc =
 		container_of(work, struct sctp_association,
 			     base.inqueue.immediate);
+<<<<<<< HEAD
 	struct sctp_endpoint *ep;
 	struct sctp_chunk *chunk;
 	struct sctp_inq *inqueue;
 	int state;
 	sctp_subtype_t subtype;
 	int error = 0;
+=======
+	struct net *net = asoc->base.net;
+	union sctp_subtype subtype;
+	struct sctp_endpoint *ep;
+	struct sctp_chunk *chunk;
+	struct sctp_inq *inqueue;
+	int first_time = 1;	/* is this the first time through the loop */
+	int error = 0;
+	int state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The association should be held so we should be safe. */
 	ep = asoc->ep;
@@ -1108,6 +1517,33 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
 		state = asoc->state;
 		subtype = SCTP_ST_CHUNK(chunk->chunk_hdr->type);
 
+<<<<<<< HEAD
+=======
+		/* If the first chunk in the packet is AUTH, do special
+		 * processing specified in Section 6.3 of SCTP-AUTH spec
+		 */
+		if (first_time && subtype.chunk == SCTP_CID_AUTH) {
+			struct sctp_chunkhdr *next_hdr;
+
+			next_hdr = sctp_inq_peek(inqueue);
+			if (!next_hdr)
+				goto normal;
+
+			/* If the next chunk is COOKIE-ECHO, skip the AUTH
+			 * chunk while saving a pointer to it so we can do
+			 * Authentication later (during cookie-echo
+			 * processing).
+			 */
+			if (next_hdr->type == SCTP_CID_COOKIE_ECHO) {
+				chunk->auth_chunk = skb_clone(chunk->skb,
+							      GFP_ATOMIC);
+				chunk->auth = 1;
+				continue;
+			}
+		}
+
+normal:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* SCTP-AUTH, Section 6.3:
 		 *    The receiver has a list of chunk types which it expects
 		 *    to be received only after an AUTH-chunk.  This list has
@@ -1123,6 +1559,7 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
 		 */
 		if (sctp_chunk_is_data(chunk))
 			asoc->peer.last_data_from = chunk->transport;
+<<<<<<< HEAD
 		else
 			SCTP_INC_STATS(SCTP_MIB_INCTRLCHUNKS);
 
@@ -1131,6 +1568,20 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
 
 		/* Run through the state machine. */
 		error = sctp_do_sm(SCTP_EVENT_T_CHUNK, subtype,
+=======
+		else {
+			SCTP_INC_STATS(net, SCTP_MIB_INCTRLCHUNKS);
+			asoc->stats.ictrlchunks++;
+			if (chunk->chunk_hdr->type == SCTP_CID_SACK)
+				asoc->stats.isacks++;
+		}
+
+		if (chunk->transport)
+			chunk->transport->last_time_heard = ktime_get();
+
+		/* Run through the state machine. */
+		error = sctp_do_sm(net, SCTP_EVENT_T_CHUNK, subtype,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   state, ep, asoc, chunk, GFP_ATOMIC);
 
 		/* Check to see if the association is freed in response to
@@ -1142,6 +1593,12 @@ static void sctp_assoc_bh_rcv(struct work_struct *work)
 		/* If there is an error on chunk, discard this packet. */
 		if (error && chunk)
 			chunk->pdiscard = 1;
+<<<<<<< HEAD
+=======
+
+		if (first_time)
+			first_time = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sctp_association_put(asoc);
 }
@@ -1159,7 +1616,11 @@ void sctp_assoc_migrate(struct sctp_association *assoc, struct sock *newsk)
 
 	/* Decrement the backlog value for a TCP-style socket. */
 	if (sctp_style(oldsk, TCP))
+<<<<<<< HEAD
 		oldsk->sk_ack_backlog--;
+=======
+		sk_acceptq_removed(oldsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release references to the old endpoint and the sock.  */
 	sctp_endpoint_put(assoc->ep);
@@ -1178,8 +1639,13 @@ void sctp_assoc_migrate(struct sctp_association *assoc, struct sock *newsk)
 }
 
 /* Update an association (possibly from unexpected COOKIE-ECHO processing).  */
+<<<<<<< HEAD
 void sctp_assoc_update(struct sctp_association *asoc,
 		       struct sctp_association *new)
+=======
+int sctp_assoc_update(struct sctp_association *asoc,
+		      struct sctp_association *new)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_transport *trans;
 	struct list_head *pos, *temp;
@@ -1190,8 +1656,15 @@ void sctp_assoc_update(struct sctp_association *asoc,
 	asoc->peer.sack_needed = new->peer.sack_needed;
 	asoc->peer.auth_capable = new->peer.auth_capable;
 	asoc->peer.i = new->peer.i;
+<<<<<<< HEAD
 	sctp_tsnmap_init(&asoc->peer.tsn_map, SCTP_TSN_MAP_INITIAL,
 			 asoc->peer.i.initial_tsn, GFP_ATOMIC);
+=======
+
+	if (!sctp_tsnmap_init(&asoc->peer.tsn_map, SCTP_TSN_MAP_INITIAL,
+			      asoc->peer.i.initial_tsn, GFP_ATOMIC))
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove any peer addresses not present in the new association. */
 	list_for_each_safe(pos, temp, &asoc->peer.transport_addr_list) {
@@ -1218,7 +1691,11 @@ void sctp_assoc_update(struct sctp_association *asoc,
 		/* Reinitialize SSN for both local streams
 		 * and peer's streams.
 		 */
+<<<<<<< HEAD
 		sctp_ssnmap_clear(asoc->ssnmap);
+=======
+		sctp_stream_clear(&asoc->stream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Flush the ULP reassembly and ordered queue.
 		 * Any data there will now be stale and will
@@ -1235,6 +1712,7 @@ void sctp_assoc_update(struct sctp_association *asoc,
 	} else {
 		/* Add any peer addresses from the new association. */
 		list_for_each_entry(trans, &new->peer.transport_addr_list,
+<<<<<<< HEAD
 				transports) {
 			if (!sctp_assoc_lookup_paddr(asoc, &trans->ipaddr))
 				sctp_assoc_add_peer(asoc, &trans->ipaddr,
@@ -1258,6 +1736,25 @@ void sctp_assoc_update(struct sctp_association *asoc,
 	}
 
 	/* SCTP-AUTH: Save the peer parameters from the new assocaitions
+=======
+				    transports)
+			if (!sctp_assoc_add_peer(asoc, &trans->ipaddr,
+						 GFP_ATOMIC, trans->state))
+				return -ENOMEM;
+
+		asoc->ctsn_ack_point = asoc->next_tsn - 1;
+		asoc->adv_peer_ack_point = asoc->ctsn_ack_point;
+
+		if (sctp_state(asoc, COOKIE_WAIT))
+			sctp_stream_update(&asoc->stream, &new->stream);
+
+		/* get a new assoc id if we don't have one yet. */
+		if (sctp_assoc_set_id(asoc, GFP_ATOMIC))
+			return -ENOMEM;
+	}
+
+	/* SCTP-AUTH: Save the peer parameters from the new associations
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and also move the association shared keys over
 	 */
 	kfree(asoc->peer.peer_random);
@@ -1272,6 +1769,7 @@ void sctp_assoc_update(struct sctp_association *asoc,
 	asoc->peer.peer_hmacs = new->peer.peer_hmacs;
 	new->peer.peer_hmacs = NULL;
 
+<<<<<<< HEAD
 	sctp_auth_asoc_init_active_key(asoc, GFP_ATOMIC);
 }
 
@@ -1342,20 +1840,249 @@ void sctp_assoc_update_retran_path(struct sctp_association *asoc)
 /* Choose the transport for sending retransmit packet.  */
 struct sctp_transport *sctp_assoc_choose_alter_transport(
 	struct sctp_association *asoc, struct sctp_transport *last_sent_to)
+=======
+	return sctp_auth_asoc_init_active_key(asoc, GFP_ATOMIC);
+}
+
+/* Update the retran path for sending a retransmitted packet.
+ * See also RFC4960, 6.4. Multi-Homed SCTP Endpoints:
+ *
+ *   When there is outbound data to send and the primary path
+ *   becomes inactive (e.g., due to failures), or where the
+ *   SCTP user explicitly requests to send data to an
+ *   inactive destination transport address, before reporting
+ *   an error to its ULP, the SCTP endpoint should try to send
+ *   the data to an alternate active destination transport
+ *   address if one exists.
+ *
+ *   When retransmitting data that timed out, if the endpoint
+ *   is multihomed, it should consider each source-destination
+ *   address pair in its retransmission selection policy.
+ *   When retransmitting timed-out data, the endpoint should
+ *   attempt to pick the most divergent source-destination
+ *   pair from the original source-destination pair to which
+ *   the packet was transmitted.
+ *
+ *   Note: Rules for picking the most divergent source-destination
+ *   pair are an implementation decision and are not specified
+ *   within this document.
+ *
+ * Our basic strategy is to round-robin transports in priorities
+ * according to sctp_trans_score() e.g., if no such
+ * transport with state SCTP_ACTIVE exists, round-robin through
+ * SCTP_UNKNOWN, etc. You get the picture.
+ */
+static u8 sctp_trans_score(const struct sctp_transport *trans)
+{
+	switch (trans->state) {
+	case SCTP_ACTIVE:
+		return 3;	/* best case */
+	case SCTP_UNKNOWN:
+		return 2;
+	case SCTP_PF:
+		return 1;
+	default: /* case SCTP_INACTIVE */
+		return 0;	/* worst case */
+	}
+}
+
+static struct sctp_transport *sctp_trans_elect_tie(struct sctp_transport *trans1,
+						   struct sctp_transport *trans2)
+{
+	if (trans1->error_count > trans2->error_count) {
+		return trans2;
+	} else if (trans1->error_count == trans2->error_count &&
+		   ktime_after(trans2->last_time_heard,
+			       trans1->last_time_heard)) {
+		return trans2;
+	} else {
+		return trans1;
+	}
+}
+
+static struct sctp_transport *sctp_trans_elect_best(struct sctp_transport *curr,
+						    struct sctp_transport *best)
+{
+	u8 score_curr, score_best;
+
+	if (best == NULL || curr == best)
+		return curr;
+
+	score_curr = sctp_trans_score(curr);
+	score_best = sctp_trans_score(best);
+
+	/* First, try a score-based selection if both transport states
+	 * differ. If we're in a tie, lets try to make a more clever
+	 * decision here based on error counts and last time heard.
+	 */
+	if (score_curr > score_best)
+		return curr;
+	else if (score_curr == score_best)
+		return sctp_trans_elect_tie(best, curr);
+	else
+		return best;
+}
+
+void sctp_assoc_update_retran_path(struct sctp_association *asoc)
+{
+	struct sctp_transport *trans = asoc->peer.retran_path;
+	struct sctp_transport *trans_next = NULL;
+
+	/* We're done as we only have the one and only path. */
+	if (asoc->peer.transport_count == 1)
+		return;
+	/* If active_path and retran_path are the same and active,
+	 * then this is the only active path. Use it.
+	 */
+	if (asoc->peer.active_path == asoc->peer.retran_path &&
+	    asoc->peer.active_path->state == SCTP_ACTIVE)
+		return;
+
+	/* Iterate from retran_path's successor back to retran_path. */
+	for (trans = list_next_entry(trans, transports); 1;
+	     trans = list_next_entry(trans, transports)) {
+		/* Manually skip the head element. */
+		if (&trans->transports == &asoc->peer.transport_addr_list)
+			continue;
+		if (trans->state == SCTP_UNCONFIRMED)
+			continue;
+		trans_next = sctp_trans_elect_best(trans, trans_next);
+		/* Active is good enough for immediate return. */
+		if (trans_next->state == SCTP_ACTIVE)
+			break;
+		/* We've reached the end, time to update path. */
+		if (trans == asoc->peer.retran_path)
+			break;
+	}
+
+	asoc->peer.retran_path = trans_next;
+
+	pr_debug("%s: association:%p updated new path to addr:%pISpc\n",
+		 __func__, asoc, &asoc->peer.retran_path->ipaddr.sa);
+}
+
+static void sctp_select_active_and_retran_path(struct sctp_association *asoc)
+{
+	struct sctp_transport *trans, *trans_pri = NULL, *trans_sec = NULL;
+	struct sctp_transport *trans_pf = NULL;
+
+	/* Look for the two most recently used active transports. */
+	list_for_each_entry(trans, &asoc->peer.transport_addr_list,
+			    transports) {
+		/* Skip uninteresting transports. */
+		if (trans->state == SCTP_INACTIVE ||
+		    trans->state == SCTP_UNCONFIRMED)
+			continue;
+		/* Keep track of the best PF transport from our
+		 * list in case we don't find an active one.
+		 */
+		if (trans->state == SCTP_PF) {
+			trans_pf = sctp_trans_elect_best(trans, trans_pf);
+			continue;
+		}
+		/* For active transports, pick the most recent ones. */
+		if (trans_pri == NULL ||
+		    ktime_after(trans->last_time_heard,
+				trans_pri->last_time_heard)) {
+			trans_sec = trans_pri;
+			trans_pri = trans;
+		} else if (trans_sec == NULL ||
+			   ktime_after(trans->last_time_heard,
+				       trans_sec->last_time_heard)) {
+			trans_sec = trans;
+		}
+	}
+
+	/* RFC 2960 6.4 Multi-Homed SCTP Endpoints
+	 *
+	 * By default, an endpoint should always transmit to the primary
+	 * path, unless the SCTP user explicitly specifies the
+	 * destination transport address (and possibly source transport
+	 * address) to use. [If the primary is active but not most recent,
+	 * bump the most recently used transport.]
+	 */
+	if ((asoc->peer.primary_path->state == SCTP_ACTIVE ||
+	     asoc->peer.primary_path->state == SCTP_UNKNOWN) &&
+	     asoc->peer.primary_path != trans_pri) {
+		trans_sec = trans_pri;
+		trans_pri = asoc->peer.primary_path;
+	}
+
+	/* We did not find anything useful for a possible retransmission
+	 * path; either primary path that we found is the same as
+	 * the current one, or we didn't generally find an active one.
+	 */
+	if (trans_sec == NULL)
+		trans_sec = trans_pri;
+
+	/* If we failed to find a usable transport, just camp on the
+	 * active or pick a PF iff it's the better choice.
+	 */
+	if (trans_pri == NULL) {
+		trans_pri = sctp_trans_elect_best(asoc->peer.active_path, trans_pf);
+		trans_sec = trans_pri;
+	}
+
+	/* Set the active and retran transports. */
+	asoc->peer.active_path = trans_pri;
+	asoc->peer.retran_path = trans_sec;
+}
+
+struct sctp_transport *
+sctp_assoc_choose_alter_transport(struct sctp_association *asoc,
+				  struct sctp_transport *last_sent_to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If this is the first time packet is sent, use the active path,
 	 * else use the retran path. If the last packet was sent over the
 	 * retran path, update the retran path and use it.
 	 */
+<<<<<<< HEAD
 	if (!last_sent_to)
 		return asoc->peer.active_path;
 	else {
 		if (last_sent_to == asoc->peer.retran_path)
 			sctp_assoc_update_retran_path(asoc);
+=======
+	if (last_sent_to == NULL) {
+		return asoc->peer.active_path;
+	} else {
+		if (last_sent_to == asoc->peer.retran_path)
+			sctp_assoc_update_retran_path(asoc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return asoc->peer.retran_path;
 	}
 }
 
+<<<<<<< HEAD
+=======
+void sctp_assoc_update_frag_point(struct sctp_association *asoc)
+{
+	int frag = sctp_mtu_payload(sctp_sk(asoc->base.sk), asoc->pathmtu,
+				    sctp_datachk_len(&asoc->stream));
+
+	if (asoc->user_frag)
+		frag = min_t(int, frag, asoc->user_frag);
+
+	frag = min_t(int, frag, SCTP_MAX_CHUNK_LEN -
+				sctp_datachk_len(&asoc->stream));
+
+	asoc->frag_point = SCTP_TRUNC4(frag);
+}
+
+void sctp_assoc_set_pmtu(struct sctp_association *asoc, __u32 pmtu)
+{
+	if (asoc->pathmtu != pmtu) {
+		asoc->pathmtu = pmtu;
+		sctp_assoc_update_frag_point(asoc);
+	}
+
+	pr_debug("%s: asoc:%p, pmtu:%d, frag_point:%d\n", __func__, asoc,
+		 asoc->pathmtu, asoc->frag_point);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Update the association's pmtu and frag_point by going through all the
  * transports. This routine is called when a transport's PMTU has changed.
  */
@@ -1368,16 +2095,24 @@ void sctp_assoc_sync_pmtu(struct sctp_association *asoc)
 		return;
 
 	/* Get the lowest pmtu of all the transports. */
+<<<<<<< HEAD
 	list_for_each_entry(t, &asoc->peer.transport_addr_list,
 				transports) {
 		if (t->pmtu_pending && t->dst) {
 			sctp_transport_update_pmtu(t, dst_mtu(t->dst));
+=======
+	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports) {
+		if (t->pmtu_pending && t->dst) {
+			sctp_transport_update_pmtu(t,
+						   atomic_read(&t->mtu_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t->pmtu_pending = 0;
 		}
 		if (!pmtu || (t->pathmtu < pmtu))
 			pmtu = t->pathmtu;
 	}
 
+<<<<<<< HEAD
 	if (pmtu) {
 		asoc->pathmtu = pmtu;
 		asoc->frag_point = sctp_frag_point(asoc, pmtu);
@@ -1390,6 +2125,16 @@ void sctp_assoc_sync_pmtu(struct sctp_association *asoc)
 /* Should we send a SACK to update our peer? */
 static inline int sctp_peer_needs_update(struct sctp_association *asoc)
 {
+=======
+	sctp_assoc_set_pmtu(asoc, pmtu);
+}
+
+/* Should we send a SACK to update our peer? */
+static inline bool sctp_peer_needs_update(struct sctp_association *asoc)
+{
+	struct net *net = asoc->base.net;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (asoc->state) {
 	case SCTP_STATE_ESTABLISHED:
 	case SCTP_STATE_SHUTDOWN_PENDING:
@@ -1397,18 +2142,32 @@ static inline int sctp_peer_needs_update(struct sctp_association *asoc)
 	case SCTP_STATE_SHUTDOWN_SENT:
 		if ((asoc->rwnd > asoc->a_rwnd) &&
 		    ((asoc->rwnd - asoc->a_rwnd) >= max_t(__u32,
+<<<<<<< HEAD
 			   (asoc->base.sk->sk_rcvbuf >> sctp_rwnd_upd_shift),
 			   asoc->pathmtu)))
 			return 1;
+=======
+			   (asoc->base.sk->sk_rcvbuf >> net->sctp.rwnd_upd_shift),
+			   asoc->pathmtu)))
+			return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
 /* Increase asoc's rwnd by len and send any window update SACK if needed. */
 void sctp_assoc_rwnd_increase(struct sctp_association *asoc, unsigned len)
+=======
+	return false;
+}
+
+/* Increase asoc's rwnd by len and send any window update SACK if needed. */
+void sctp_assoc_rwnd_increase(struct sctp_association *asoc, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_chunk *sack;
 	struct timer_list *timer;
@@ -1429,15 +2188,25 @@ void sctp_assoc_rwnd_increase(struct sctp_association *asoc, unsigned len)
 	 * threshold.  The idea is to recover slowly, but up
 	 * to the initial advertised window.
 	 */
+<<<<<<< HEAD
 	if (asoc->rwnd_press && asoc->rwnd >= asoc->rwnd_press) {
+=======
+	if (asoc->rwnd_press) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int change = min(asoc->pathmtu, asoc->rwnd_press);
 		asoc->rwnd += change;
 		asoc->rwnd_press -= change;
 	}
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("%s: asoc %p rwnd increased by %d to (%u, %u) "
 			  "- %u\n", __func__, asoc, len, asoc->rwnd,
 			  asoc->rwnd_over, asoc->a_rwnd);
+=======
+	pr_debug("%s: asoc:%p rwnd increased by %d to (%u, %u) - %u\n",
+		 __func__, asoc, len, asoc->rwnd, asoc->rwnd_over,
+		 asoc->a_rwnd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send a window update SACK if the rwnd has increased by at least the
 	 * minimum of the association's PMTU and half of the receive buffer.
@@ -1446,32 +2215,59 @@ void sctp_assoc_rwnd_increase(struct sctp_association *asoc, unsigned len)
 	 */
 	if (sctp_peer_needs_update(asoc)) {
 		asoc->a_rwnd = asoc->rwnd;
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK("%s: Sending window update SACK- asoc: %p "
 				  "rwnd: %u a_rwnd: %u\n", __func__,
 				  asoc, asoc->rwnd, asoc->a_rwnd);
+=======
+
+		pr_debug("%s: sending window update SACK- asoc:%p rwnd:%u "
+			 "a_rwnd:%u\n", __func__, asoc, asoc->rwnd,
+			 asoc->a_rwnd);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sack = sctp_make_sack(asoc);
 		if (!sack)
 			return;
 
 		asoc->peer.sack_needed = 0;
 
+<<<<<<< HEAD
 		sctp_outq_tail(&asoc->outqueue, sack);
 
 		/* Stop the SACK timer.  */
 		timer = &asoc->timers[SCTP_EVENT_TIMEOUT_SACK];
 		if (timer_pending(timer) && del_timer(timer))
+=======
+		sctp_outq_tail(&asoc->outqueue, sack, GFP_ATOMIC);
+
+		/* Stop the SACK timer.  */
+		timer = &asoc->timers[SCTP_EVENT_TIMEOUT_SACK];
+		if (del_timer(timer))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_association_put(asoc);
 	}
 }
 
 /* Decrease asoc's rwnd by len. */
+<<<<<<< HEAD
 void sctp_assoc_rwnd_decrease(struct sctp_association *asoc, unsigned len)
+=======
+void sctp_assoc_rwnd_decrease(struct sctp_association *asoc, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rx_count;
 	int over = 0;
 
+<<<<<<< HEAD
 	SCTP_ASSERT(asoc->rwnd, "rwnd zero", return);
 	SCTP_ASSERT(!asoc->rwnd_over, "rwnd_over not zero", return);
+=======
+	if (unlikely(!asoc->rwnd || asoc->rwnd_over))
+		pr_debug("%s: association:%p has asoc->rwnd:%u, "
+			 "asoc->rwnd_over:%u!\n", __func__, asoc,
+			 asoc->rwnd, asoc->rwnd_over);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (asoc->ep->rcvbuf_policy)
 		rx_count = atomic_read(&asoc->rmem_alloc);
@@ -1480,7 +2276,11 @@ void sctp_assoc_rwnd_decrease(struct sctp_association *asoc, unsigned len)
 
 	/* If we've reached or overflowed our receive buffer, announce
 	 * a 0 rwnd if rwnd would still be positive.  Store the
+<<<<<<< HEAD
 	 * the pottential pressure overflow so that the window can be restored
+=======
+	 * potential pressure overflow so that the window can be restored
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * back to original value.
 	 */
 	if (rx_count >= asoc->base.sk->sk_rcvbuf)
@@ -1493,32 +2293,59 @@ void sctp_assoc_rwnd_decrease(struct sctp_association *asoc, unsigned len)
 			asoc->rwnd = 0;
 		}
 	} else {
+<<<<<<< HEAD
 		asoc->rwnd_over = len - asoc->rwnd;
 		asoc->rwnd = 0;
 	}
 	SCTP_DEBUG_PRINTK("%s: asoc %p rwnd decreased by %d to (%u, %u, %u)\n",
 			  __func__, asoc, len, asoc->rwnd,
 			  asoc->rwnd_over, asoc->rwnd_press);
+=======
+		asoc->rwnd_over += len - asoc->rwnd;
+		asoc->rwnd = 0;
+	}
+
+	pr_debug("%s: asoc:%p rwnd decreased by %d to (%u, %u, %u)\n",
+		 __func__, asoc, len, asoc->rwnd, asoc->rwnd_over,
+		 asoc->rwnd_press);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Build the bind address list for the association based on info from the
  * local endpoint and the remote peer.
  */
 int sctp_assoc_set_bind_addr_from_ep(struct sctp_association *asoc,
+<<<<<<< HEAD
 				     sctp_scope_t scope, gfp_t gfp)
 {
+=======
+				     enum sctp_scope scope, gfp_t gfp)
+{
+	struct sock *sk = asoc->base.sk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int flags;
 
 	/* Use scoping rules to determine the subset of addresses from
 	 * the endpoint.
 	 */
+<<<<<<< HEAD
 	flags = (PF_INET6 == asoc->base.sk->sk_family) ? SCTP_ADDR6_ALLOWED : 0;
+=======
+	flags = (PF_INET6 == sk->sk_family) ? SCTP_ADDR6_ALLOWED : 0;
+	if (!inet_v6_ipv6only(sk))
+		flags |= SCTP_ADDR4_ALLOWED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asoc->peer.ipv4_address)
 		flags |= SCTP_ADDR4_PEERSUPP;
 	if (asoc->peer.ipv6_address)
 		flags |= SCTP_ADDR6_PEERSUPP;
 
+<<<<<<< HEAD
 	return sctp_bind_addr_copy(&asoc->base.bind_addr,
+=======
+	return sctp_bind_addr_copy(asoc->base.net,
+				   &asoc->base.bind_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   &asoc->ep->base.bind_addr,
 				   scope, gfp, flags);
 }
@@ -1528,9 +2355,16 @@ int sctp_assoc_set_bind_addr_from_cookie(struct sctp_association *asoc,
 					 struct sctp_cookie *cookie,
 					 gfp_t gfp)
 {
+<<<<<<< HEAD
 	int var_size2 = ntohs(cookie->peer_init->chunk_hdr.length);
 	int var_size3 = cookie->raw_addr_list_len;
 	__u8 *raw = (__u8 *)cookie->peer_init + var_size2;
+=======
+	struct sctp_init_chunk *peer_init = (struct sctp_init_chunk *)(cookie + 1);
+	int var_size2 = ntohs(peer_init->chunk_hdr.length);
+	int var_size3 = cookie->raw_addr_list_len;
+	__u8 *raw = (__u8 *)peer_init + var_size2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sctp_raw_to_bind_addrs(&asoc->base.bind_addr, raw, var_size3,
 				      asoc->ep->base.bind_addr.port, gfp);
@@ -1553,6 +2387,7 @@ int sctp_assoc_lookup_laddr(struct sctp_association *asoc,
 /* Set an association id for a given association */
 int sctp_assoc_set_id(struct sctp_association *asoc, gfp_t gfp)
 {
+<<<<<<< HEAD
 	int assoc_id;
 	int error = 0;
 
@@ -1579,6 +2414,31 @@ retry:
 
 	asoc->assoc_id = (sctp_assoc_t) assoc_id;
 	return error;
+=======
+	bool preload = gfpflags_allow_blocking(gfp);
+	int ret;
+
+	/* If the id is already assigned, keep it. */
+	if (asoc->assoc_id)
+		return 0;
+
+	if (preload)
+		idr_preload(gfp);
+	spin_lock_bh(&sctp_assocs_id_lock);
+	/* 0, 1, 2 are used as SCTP_FUTURE_ASSOC, SCTP_CURRENT_ASSOC and
+	 * SCTP_ALL_ASSOC, so an available id must be > SCTP_ALL_ASSOC.
+	 */
+	ret = idr_alloc_cyclic(&sctp_assocs_id, asoc, SCTP_ALL_ASSOC + 1, 0,
+			       GFP_NOWAIT);
+	spin_unlock_bh(&sctp_assocs_id_lock);
+	if (preload)
+		idr_preload_end();
+	if (ret < 0)
+		return ret;
+
+	asoc->assoc_id = (sctp_assoc_t)ret;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Free the ASCONF queue */

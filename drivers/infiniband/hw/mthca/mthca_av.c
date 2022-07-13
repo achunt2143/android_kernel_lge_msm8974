@@ -91,7 +91,11 @@ static enum ib_rate tavor_rate_to_ib(u8 mthca_rate, u8 port_rate)
 	}
 }
 
+<<<<<<< HEAD
 enum ib_rate mthca_rate_to_ib(struct mthca_dev *dev, u8 mthca_rate, u8 port)
+=======
+enum ib_rate mthca_rate_to_ib(struct mthca_dev *dev, u8 mthca_rate, u32 port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (mthca_is_memfree(dev)) {
 		/* Handle old Arbel FW */
@@ -115,7 +119,11 @@ static u8 ib_rate_to_memfree(u8 req_rate, u8 cur_rate)
 	switch ((cur_rate - 1) / req_rate) {
 	case 0:	 return MTHCA_RATE_MEMFREE_FULL;
 	case 1:	 return MTHCA_RATE_MEMFREE_HALF;
+<<<<<<< HEAD
 	case 2:	 /* fall through */
+=======
+	case 2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3:	 return MTHCA_RATE_MEMFREE_QUARTER;
 	default: return MTHCA_RATE_MEMFREE_EIGHTH;
 	}
@@ -131,7 +139,11 @@ static u8 ib_rate_to_tavor(u8 static_rate)
 	}
 }
 
+<<<<<<< HEAD
 u8 mthca_get_rate(struct mthca_dev *dev, int static_rate, u8 port)
+=======
+u8 mthca_get_rate(struct mthca_dev *dev, int static_rate, u32 port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 rate;
 
@@ -152,7 +164,11 @@ u8 mthca_get_rate(struct mthca_dev *dev, int static_rate, u8 port)
 
 int mthca_create_ah(struct mthca_dev *dev,
 		    struct mthca_pd *pd,
+<<<<<<< HEAD
 		    struct ib_ah_attr *ah_attr,
+=======
+		    struct rdma_ah_attr *ah_attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    struct mthca_ah *ah)
 {
 	u32 index = -1;
@@ -186,8 +202,13 @@ int mthca_create_ah(struct mthca_dev *dev,
 
 on_hca_fail:
 	if (ah->type == MTHCA_AH_PCI_POOL) {
+<<<<<<< HEAD
 		ah->av = pci_pool_alloc(dev->av_table.pool,
 					GFP_ATOMIC, &ah->avdma);
+=======
+		ah->av = dma_pool_zalloc(dev->av_table.pool,
+					 GFP_ATOMIC, &ah->avdma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ah->av)
 			return -ENOMEM;
 
@@ -196,6 +217,7 @@ on_hca_fail:
 
 	ah->key = pd->ntmr.ibmr.lkey;
 
+<<<<<<< HEAD
 	memset(av, 0, MTHCA_AV_SIZE);
 
 	av->port_pd = cpu_to_be32(pd->pd_num | (ah_attr->port_num << 24));
@@ -213,6 +235,28 @@ on_hca_fail:
 			cpu_to_be32((ah_attr->grh.traffic_class << 20) |
 				    ah_attr->grh.flow_label);
 		memcpy(av->dgid, ah_attr->grh.dgid.raw, 16);
+=======
+	av->port_pd = cpu_to_be32(pd->pd_num |
+				  (rdma_ah_get_port_num(ah_attr) << 24));
+	av->g_slid  = rdma_ah_get_path_bits(ah_attr);
+	av->dlid    = cpu_to_be16(rdma_ah_get_dlid(ah_attr));
+	av->msg_sr  = (3 << 4) | /* 2K message */
+		mthca_get_rate(dev, rdma_ah_get_static_rate(ah_attr),
+			       rdma_ah_get_port_num(ah_attr));
+	av->sl_tclass_flowlabel = cpu_to_be32(rdma_ah_get_sl(ah_attr) << 28);
+	if (rdma_ah_get_ah_flags(ah_attr) & IB_AH_GRH) {
+		const struct ib_global_route *grh = rdma_ah_read_grh(ah_attr);
+
+		av->g_slid |= 0x80;
+		av->gid_index = (rdma_ah_get_port_num(ah_attr) - 1) *
+				  dev->limits.gid_table_len +
+				  grh->sgid_index;
+		av->hop_limit = grh->hop_limit;
+		av->sl_tclass_flowlabel |=
+			cpu_to_be32((grh->traffic_class << 20) |
+				    grh->flow_label);
+		memcpy(av->dgid, grh->dgid.raw, 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Arbel workaround -- low byte of GID must be 2 */
 		av->dgid[3] = cpu_to_be32(2);
@@ -247,7 +291,11 @@ int mthca_destroy_ah(struct mthca_dev *dev, struct mthca_ah *ah)
 		break;
 
 	case MTHCA_AH_PCI_POOL:
+<<<<<<< HEAD
 		pci_pool_free(dev->av_table.pool, ah->av, ah->avdma);
+=======
+		dma_pool_free(dev->av_table.pool, ah->av, ah->avdma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MTHCA_AH_KMALLOC:
@@ -278,10 +326,14 @@ int mthca_read_ah(struct mthca_dev *dev, struct mthca_ah *ah,
 		header->grh.flow_label    =
 			ah->av->sl_tclass_flowlabel & cpu_to_be32(0xfffff);
 		header->grh.hop_limit     = ah->av->hop_limit;
+<<<<<<< HEAD
 		ib_get_cached_gid(&dev->ib_dev,
 				  be32_to_cpu(ah->av->port_pd) >> 24,
 				  ah->av->gid_index % dev->limits.gid_table_len,
 				  &header->grh.source_gid);
+=======
+		header->grh.source_gid = ah->ibah.sgid_attr->gid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(header->grh.destination_gid.raw,
 		       ah->av->dgid, 16);
 	}
@@ -289,16 +341,25 @@ int mthca_read_ah(struct mthca_dev *dev, struct mthca_ah *ah,
 	return 0;
 }
 
+<<<<<<< HEAD
 int mthca_ah_query(struct ib_ah *ibah, struct ib_ah_attr *attr)
 {
 	struct mthca_ah *ah   = to_mah(ibah);
 	struct mthca_dev *dev = to_mdev(ibah->device);
+=======
+int mthca_ah_query(struct ib_ah *ibah, struct rdma_ah_attr *attr)
+{
+	struct mthca_ah *ah   = to_mah(ibah);
+	struct mthca_dev *dev = to_mdev(ibah->device);
+	u32 port_num = be32_to_cpu(ah->av->port_pd) >> 24;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only implement for MAD and memfree ah for now. */
 	if (ah->type == MTHCA_AH_ON_HCA)
 		return -ENOSYS;
 
 	memset(attr, 0, sizeof *attr);
+<<<<<<< HEAD
 	attr->dlid          = be16_to_cpu(ah->av->dlid);
 	attr->sl            = be32_to_cpu(ah->av->sl_tclass_flowlabel) >> 28;
 	attr->port_num      = be32_to_cpu(ah->av->port_pd) >> 24;
@@ -316,6 +377,26 @@ int mthca_ah_query(struct ib_ah *ibah, struct ib_ah_attr *attr)
 		attr->grh.sgid_index = ah->av->gid_index &
 				       (dev->limits.gid_table_len - 1);
 		memcpy(attr->grh.dgid.raw, ah->av->dgid, 16);
+=======
+	attr->type = ibah->type;
+	rdma_ah_set_dlid(attr, be16_to_cpu(ah->av->dlid));
+	rdma_ah_set_sl(attr, be32_to_cpu(ah->av->sl_tclass_flowlabel) >> 28);
+	rdma_ah_set_port_num(attr, port_num);
+	rdma_ah_set_static_rate(attr,
+				mthca_rate_to_ib(dev, ah->av->msg_sr & 0x7,
+						 port_num));
+	rdma_ah_set_path_bits(attr, ah->av->g_slid & 0x7F);
+	if (mthca_ah_grh_present(ah)) {
+		u32 tc_fl = be32_to_cpu(ah->av->sl_tclass_flowlabel);
+
+		rdma_ah_set_grh(attr, NULL,
+				tc_fl & 0xfffff,
+				ah->av->gid_index &
+				(dev->limits.gid_table_len - 1),
+				ah->av->hop_limit,
+				(tc_fl >> 20) & 0xff);
+		rdma_ah_set_dgid_raw(attr, ah->av->dgid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -335,7 +416,11 @@ int mthca_init_av_table(struct mthca_dev *dev)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	dev->av_table.pool = pci_pool_create("mthca_av", dev->pdev,
+=======
+	dev->av_table.pool = dma_pool_create("mthca_av", &dev->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     MTHCA_AV_SIZE,
 					     MTHCA_AV_SIZE, 0);
 	if (!dev->av_table.pool)
@@ -355,7 +440,11 @@ int mthca_init_av_table(struct mthca_dev *dev)
 	return 0;
 
  out_free_pool:
+<<<<<<< HEAD
 	pci_pool_destroy(dev->av_table.pool);
+=======
+	dma_pool_destroy(dev->av_table.pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out_free_alloc:
 	mthca_alloc_cleanup(&dev->av_table.alloc);
@@ -369,6 +458,10 @@ void mthca_cleanup_av_table(struct mthca_dev *dev)
 
 	if (dev->av_table.av_map)
 		iounmap(dev->av_table.av_map);
+<<<<<<< HEAD
 	pci_pool_destroy(dev->av_table.pool);
+=======
+	dma_pool_destroy(dev->av_table.pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mthca_alloc_cleanup(&dev->av_table.alloc);
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SS1000/SC2000 interrupt handling.
  *
@@ -6,6 +10,10 @@
  */
 
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 
 #include <asm/timer.h>
@@ -15,6 +23,10 @@
 #include <asm/sbi.h>
 #include <asm/cacheflush.h>
 #include <asm/setup.h>
+<<<<<<< HEAD
+=======
+#include <asm/oplib.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "kernel.h"
 #include "irq.h"
@@ -141,7 +153,11 @@ static void sun4d_sbus_handler_irq(int sbusl)
 	}
 }
 
+<<<<<<< HEAD
 void sun4d_handler_irq(int pil, struct pt_regs *regs)
+=======
+void sun4d_handler_irq(unsigned int pil, struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pt_regs *old_regs;
 	/* SBUS IRQ level (1 - 7) */
@@ -186,7 +202,11 @@ void sun4d_handler_irq(int pil, struct pt_regs *regs)
 
 static void sun4d_mask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4d_handler_data *handler_data = data->handler_data;
+=======
+	struct sun4d_handler_data *handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int real_irq;
 #ifdef CONFIG_SMP
 	int cpuid = handler_data->cpuid;
@@ -204,7 +224,11 @@ static void sun4d_mask_irq(struct irq_data *data)
 
 static void sun4d_unmask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct sun4d_handler_data *handler_data = data->handler_data;
+=======
+	struct sun4d_handler_data *handler_data = irq_data_get_irq_handler_data(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int real_irq;
 #ifdef CONFIG_SMP
 	int cpuid = handler_data->cpuid;
@@ -234,7 +258,11 @@ static void sun4d_shutdown_irq(struct irq_data *data)
 	irq_unlink(data->irq);
 }
 
+<<<<<<< HEAD
 struct irq_chip sun4d_irq = {
+=======
+static struct irq_chip sun4d_irq = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "sun4d",
 	.irq_startup	= sun4d_startup_irq,
 	.irq_shutdown	= sun4d_shutdown_irq,
@@ -243,6 +271,7 @@ struct irq_chip sun4d_irq = {
 };
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static void sun4d_set_cpu_int(int cpu, int level)
 {
 	sun4d_send_ipi(cpu, level);
@@ -256,6 +285,8 @@ static void sun4d_set_udt(int cpu)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Setup IRQ distribution scheme. */
 void __init sun4d_distribute_irqs(void)
 {
@@ -282,7 +313,12 @@ static void sun4d_clear_clock_irq(void)
 
 static void sun4d_load_profile_irq(int cpu, unsigned int limit)
 {
+<<<<<<< HEAD
 	bw_set_prof_limit(cpu, limit);
+=======
+	unsigned int value = limit ? timer_value(limit) : 0;
+	bw_set_prof_limit(cpu, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init sun4d_load_profile_irqs(void)
@@ -295,9 +331,15 @@ static void __init sun4d_load_profile_irqs(void)
 	}
 }
 
+<<<<<<< HEAD
 unsigned int _sun4d_build_device_irq(unsigned int real_irq,
                                      unsigned int pil,
                                      unsigned int board)
+=======
+static unsigned int _sun4d_build_device_irq(unsigned int real_irq,
+                                            unsigned int pil,
+                                            unsigned int board)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sun4d_handler_data *handler_data;
 	unsigned int irq;
@@ -330,8 +372,13 @@ err_out:
 
 
 
+<<<<<<< HEAD
 unsigned int sun4d_build_device_irq(struct platform_device *op,
                                     unsigned int real_irq)
+=======
+static unsigned int sun4d_build_device_irq(struct platform_device *op,
+                                           unsigned int real_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	struct device_node *board_parent, *bus = dp->parent;
@@ -344,12 +391,20 @@ unsigned int sun4d_build_device_irq(struct platform_device *op,
 
 	irq = real_irq;
 	while (bus) {
+<<<<<<< HEAD
 		if (!strcmp(bus->name, "sbi")) {
+=======
+		if (of_node_name_eq(bus, "sbi")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bus_connection = "io-unit";
 			break;
 		}
 
+<<<<<<< HEAD
 		if (!strcmp(bus->name, "bootbus")) {
+=======
+		if (of_node_name_eq(bus, "bootbus")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bus_connection = "cpu-unit";
 			break;
 		}
@@ -369,16 +424,27 @@ unsigned int sun4d_build_device_irq(struct platform_device *op,
 	 * If Bus nodes parent is not io-unit/cpu-unit or the io-unit/cpu-unit
 	 * lacks a "board#" property, something is very wrong.
 	 */
+<<<<<<< HEAD
 	if (!bus->parent || strcmp(bus->parent->name, bus_connection)) {
 		printk(KERN_ERR "%s: Error, parent is not %s.\n",
 			bus->full_name, bus_connection);
+=======
+	if (!of_node_name_eq(bus->parent, bus_connection)) {
+		printk(KERN_ERR "%pOF: Error, parent is not %s.\n",
+			bus, bus_connection);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 	}
 	board_parent = bus->parent;
 	board = of_getintprop_default(board_parent, "board#", -1);
 	if (board == -1) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Error, lacks board# property.\n",
 			board_parent->full_name);
+=======
+		printk(KERN_ERR "%pOF: Error, lacks board# property.\n",
+			board_parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out;
 	}
 
@@ -393,7 +459,12 @@ err_out:
 	return irq;
 }
 
+<<<<<<< HEAD
 unsigned int sun4d_build_timer_irq(unsigned int board, unsigned int real_irq)
+=======
+static unsigned int sun4d_build_timer_irq(unsigned int board,
+                                          unsigned int real_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return _sun4d_build_device_irq(real_irq, real_irq, board);
 }
@@ -418,12 +489,20 @@ static void __init sun4d_fixup_trap_table(void)
 	trap_table->inst_two = lvl14_save[1];
 	trap_table->inst_three = lvl14_save[2];
 	trap_table->inst_four = lvl14_save[3];
+<<<<<<< HEAD
 	local_flush_cache_all();
+=======
+	local_ops->cache_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 #endif
 }
 
+<<<<<<< HEAD
 static void __init sun4d_init_timers(irq_handler_t counter_fn)
+=======
+static void __init sun4d_init_timers(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp;
 	struct resource res;
@@ -466,12 +545,28 @@ static void __init sun4d_init_timers(irq_handler_t counter_fn)
 		prom_halt();
 	}
 
+<<<<<<< HEAD
 	sbus_writel((((1000000/HZ) + 1) << 10), &sun4d_timers->l10_timer_limit);
+=======
+#ifdef CONFIG_SMP
+	sparc_config.cs_period = SBUS_CLOCK_RATE * 2;  /* 2 seconds */
+#else
+	sparc_config.cs_period = SBUS_CLOCK_RATE / HZ; /* 1/HZ sec  */
+	sparc_config.features |= FEAT_L10_CLOCKEVENT;
+#endif
+	sparc_config.features |= FEAT_L10_CLOCKSOURCE;
+	sbus_writel(timer_value(sparc_config.cs_period),
+		    &sun4d_timers->l10_timer_limit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	master_l10_counter = &sun4d_timers->l10_cur_count;
 
 	irq = sun4d_build_timer_irq(board, SUN4D_TIMER_IRQ);
+<<<<<<< HEAD
 	err = request_irq(irq, counter_fn, IRQF_TIMER, "timer", NULL);
+=======
+	err = request_irq(irq, timer_interrupt, IRQF_TIMER, "timer", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		prom_printf("sun4d_init_timers: request_irq() failed with %d\n",
 		             err);
@@ -509,6 +604,7 @@ void __init sun4d_init_IRQ(void)
 {
 	local_irq_disable();
 
+<<<<<<< HEAD
 	BTFIXUPSET_CALL(clear_clock_irq, sun4d_clear_clock_irq, BTFIXUPCALL_NORM);
 	BTFIXUPSET_CALL(load_profile_irq, sun4d_load_profile_irq, BTFIXUPCALL_NORM);
 
@@ -520,5 +616,13 @@ void __init sun4d_init_IRQ(void)
 	BTFIXUPSET_CALL(clear_cpu_int, sun4d_clear_ipi, BTFIXUPCALL_NOP);
 	BTFIXUPSET_CALL(set_irq_udt, sun4d_set_udt, BTFIXUPCALL_NOP);
 #endif
+=======
+	sparc_config.init_timers      = sun4d_init_timers;
+	sparc_config.build_device_irq = sun4d_build_device_irq;
+	sparc_config.clock_rate       = SBUS_CLOCK_RATE;
+	sparc_config.clear_clock_irq  = sun4d_clear_clock_irq;
+	sparc_config.load_profile_irq = sun4d_load_profile_irq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Cannot enable interrupts until OBP ticker is disabled. */
 }

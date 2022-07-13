@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Incremental bus scan, based on bus topology
  *
  * Copyright (C) 2004-2006 Kristian Hoegsberg <krh@bitplanet.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
@@ -67,9 +74,17 @@ static u32 *count_ports(u32 *sid, int *total_port_count, int *child_port_count)
 		switch (port_type) {
 		case SELFID_PORT_CHILD:
 			(*child_port_count)++;
+<<<<<<< HEAD
 		case SELFID_PORT_PARENT:
 		case SELFID_PORT_NCONN:
 			(*total_port_count)++;
+=======
+			fallthrough;
+		case SELFID_PORT_PARENT:
+		case SELFID_PORT_NCONN:
+			(*total_port_count)++;
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SELFID_PORT_NONE:
 			break;
 		}
@@ -112,8 +127,12 @@ static struct fw_node *fw_node_create(u32 sid, int port_count, int color)
 {
 	struct fw_node *node;
 
+<<<<<<< HEAD
 	node = kzalloc(sizeof(*node) + port_count * sizeof(node->ports[0]),
 		       GFP_ATOMIC);
+=======
+	node = kzalloc(struct_size(node, ports, port_count), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (node == NULL)
 		return NULL;
 
@@ -124,7 +143,11 @@ static struct fw_node *fw_node_create(u32 sid, int port_count, int color)
 	node->initiated_reset = SELF_ID_PHY_INITIATOR(sid);
 	node->port_count = port_count;
 
+<<<<<<< HEAD
 	atomic_set(&node->ref_count, 1);
+=======
+	refcount_set(&node->ref_count, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&node->link);
 
 	return node;
@@ -387,16 +410,25 @@ static void report_found_node(struct fw_card *card,
 	card->bm_retries = 0;
 }
 
+<<<<<<< HEAD
 void fw_destroy_nodes(struct fw_card *card)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&card->lock, flags);
+=======
+/* Must be called with card->lock held */
+void fw_destroy_nodes(struct fw_card *card)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->color++;
 	if (card->local_node != NULL)
 		for_each_fw_node(card, card->local_node, report_lost_node);
 	card->local_node = NULL;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&card->lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
@@ -522,6 +554,11 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
 	struct fw_node *local_node;
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	spin_lock_irqsave(&card->lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the selfID buffer is not the immediate successor of the
 	 * previously processed one, we cannot reliably compare the
@@ -533,8 +570,11 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
 		card->bm_retries = 0;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&card->lock, flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
 	card->node_id = node_id;
 	/*

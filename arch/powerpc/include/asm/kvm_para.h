@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,11 +12,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2008
  *
  * Authors: Hollis Blanchard <hollisb@us.ibm.com>
  */
+<<<<<<< HEAD
 
 #ifndef __POWERPC_KVM_PARA_H__
 #define __POWERPC_KVM_PARA_H__
@@ -193,6 +199,20 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
 }
 
 
+=======
+#ifndef __POWERPC_KVM_PARA_H__
+#define __POWERPC_KVM_PARA_H__
+
+#include <asm/kvm_guest.h>
+
+#include <uapi/asm/kvm_para.h>
+
+static inline int kvm_para_available(void)
+{
+	return IS_ENABLED(CONFIG_KVM_GUEST) && is_kvm_guest();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int kvm_arch_para_features(void)
 {
 	unsigned long r;
@@ -200,12 +220,28 @@ static inline unsigned int kvm_arch_para_features(void)
 	if (!kvm_para_available())
 		return 0;
 
+<<<<<<< HEAD
 	if(kvm_hypercall0_1(KVM_HC_FEATURES, &r))
+=======
+	if(epapr_hypercall0_1(KVM_HCALL_TOKEN(KVM_HC_FEATURES), &r))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return r;
 }
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+static inline unsigned int kvm_arch_para_hints(void)
+{
+	return 0;
+}
+
+static inline bool kvm_check_and_clear_guest_paused(void)
+{
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __POWERPC_KVM_PARA_H__ */

@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple iSight audio driver
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  * Licensed under the terms of the GNU General Public License, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/byteorder.h>
@@ -77,7 +84,11 @@ struct audio_payload {
 
 MODULE_DESCRIPTION("iSight audio driver");
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL v2");
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct fw_iso_packet audio_packet = {
 	.payload_length = sizeof(struct audio_payload),
@@ -96,7 +107,11 @@ static void isight_update_pointers(struct isight *isight, unsigned int count)
 	ptr += count;
 	if (ptr >= runtime->buffer_size)
 		ptr -= runtime->buffer_size;
+<<<<<<< HEAD
 	ACCESS_ONCE(isight->buffer_pointer) = ptr;
+=======
+	WRITE_ONCE(isight->buffer_pointer, ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	isight->period_counter += count;
 	if (isight->period_counter >= runtime->period_size) {
@@ -111,7 +126,11 @@ static void isight_samples(struct isight *isight,
 	struct snd_pcm_runtime *runtime;
 	unsigned int count1;
 
+<<<<<<< HEAD
 	if (!ACCESS_ONCE(isight->pcm_running))
+=======
+	if (!READ_ONCE(isight->pcm_running))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	runtime = isight->pcm->runtime;
@@ -131,6 +150,7 @@ static void isight_samples(struct isight *isight,
 
 static void isight_pcm_abort(struct isight *isight)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (ACCESS_ONCE(isight->pcm_active)) {
@@ -139,6 +159,10 @@ static void isight_pcm_abort(struct isight *isight)
 			snd_pcm_stop(isight->pcm, SNDRV_PCM_STATE_XRUN);
 		snd_pcm_stream_unlock_irqrestore(isight->pcm, flags);
 	}
+=======
+	if (READ_ONCE(isight->pcm_active))
+		snd_pcm_stop_xrun(isight->pcm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void isight_dropped_samples(struct isight *isight, unsigned int total)
@@ -147,7 +171,11 @@ static void isight_dropped_samples(struct isight *isight, unsigned int total)
 	u32 dropped;
 	unsigned int count1;
 
+<<<<<<< HEAD
 	if (!ACCESS_ONCE(isight->pcm_running))
+=======
+	if (!READ_ONCE(isight->pcm_running))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	runtime = isight->pcm->runtime;
@@ -217,7 +245,11 @@ static void isight_packet(struct fw_iso_context *context, u32 cycle,
 
 static int isight_connect(struct isight *isight)
 {
+<<<<<<< HEAD
 	int ch, err, rcode, errors = 0;
+=======
+	int ch, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 value;
 
 retry_after_bus_reset:
@@ -230,6 +262,7 @@ retry_after_bus_reset:
 	}
 
 	value = cpu_to_be32(ch | (isight->device->max_speed << SPEED_SHIFT));
+<<<<<<< HEAD
 	for (;;) {
 		rcode = fw_run_transaction(
 				isight->device->card,
@@ -251,6 +284,21 @@ retry_after_bus_reset:
 		msleep(5);
 	}
 
+=======
+	err = snd_fw_transaction(isight->unit, TCODE_WRITE_QUADLET_REQUEST,
+				 isight->audio_base + REG_ISO_TX_CONFIG,
+				 &value, 4, FW_FIXED_GENERATION |
+				 isight->resources.generation);
+	if (err == -EAGAIN) {
+		fw_iso_resources_free(&isight->resources);
+		goto retry_after_bus_reset;
+	} else if (err < 0) {
+		goto err_resources;
+	}
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_resources:
 	fw_iso_resources_free(&isight->resources);
 error:
@@ -300,6 +348,7 @@ static int isight_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *hw_params)
 {
 	struct isight *isight = substream->private_data;
+<<<<<<< HEAD
 	int err;
 
 	err = snd_pcm_lib_alloc_vmalloc_buffer(substream,
@@ -308,6 +357,10 @@ static int isight_hw_params(struct snd_pcm_substream *substream,
 		return err;
 
 	ACCESS_ONCE(isight->pcm_active) = true;
+=======
+
+	WRITE_ONCE(isight->pcm_active, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -315,17 +368,30 @@ static int isight_hw_params(struct snd_pcm_substream *substream,
 static int reg_read(struct isight *isight, int offset, __be32 *value)
 {
 	return snd_fw_transaction(isight->unit, TCODE_READ_QUADLET_REQUEST,
+<<<<<<< HEAD
 				  isight->audio_base + offset, value, 4);
+=======
+				  isight->audio_base + offset, value, 4, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int reg_write(struct isight *isight, int offset, __be32 value)
 {
 	return snd_fw_transaction(isight->unit, TCODE_WRITE_QUADLET_REQUEST,
+<<<<<<< HEAD
 				  isight->audio_base + offset, &value, 4);
+=======
+				  isight->audio_base + offset, &value, 4, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void isight_stop_streaming(struct isight *isight)
 {
+<<<<<<< HEAD
+=======
+	__be32 value;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!isight->context)
 		return;
 
@@ -333,20 +399,35 @@ static void isight_stop_streaming(struct isight *isight)
 	fw_iso_context_destroy(isight->context);
 	isight->context = NULL;
 	fw_iso_resources_free(&isight->resources);
+<<<<<<< HEAD
 	reg_write(isight, REG_AUDIO_ENABLE, 0);
+=======
+	value = 0;
+	snd_fw_transaction(isight->unit, TCODE_WRITE_QUADLET_REQUEST,
+			   isight->audio_base + REG_AUDIO_ENABLE,
+			   &value, 4, FW_QUIET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int isight_hw_free(struct snd_pcm_substream *substream)
 {
 	struct isight *isight = substream->private_data;
 
+<<<<<<< HEAD
 	ACCESS_ONCE(isight->pcm_active) = false;
+=======
+	WRITE_ONCE(isight->pcm_active, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&isight->mutex);
 	isight_stop_streaming(isight);
 	mutex_unlock(&isight->mutex);
 
+<<<<<<< HEAD
 	return snd_pcm_lib_free_vmalloc_buffer(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int isight_start_streaming(struct isight *isight)
@@ -433,10 +514,17 @@ static int isight_trigger(struct snd_pcm_substream *substream, int cmd)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		ACCESS_ONCE(isight->pcm_running) = true;
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		ACCESS_ONCE(isight->pcm_running) = false;
+=======
+		WRITE_ONCE(isight->pcm_running, true);
+		break;
+	case SNDRV_PCM_TRIGGER_STOP:
+		WRITE_ONCE(isight->pcm_running, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -448,22 +536,35 @@ static snd_pcm_uframes_t isight_pointer(struct snd_pcm_substream *substream)
 {
 	struct isight *isight = substream->private_data;
 
+<<<<<<< HEAD
 	return ACCESS_ONCE(isight->buffer_pointer);
+=======
+	return READ_ONCE(isight->buffer_pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int isight_create_pcm(struct isight *isight)
 {
+<<<<<<< HEAD
 	static struct snd_pcm_ops ops = {
 		.open      = isight_open,
 		.close     = isight_close,
 		.ioctl     = snd_pcm_lib_ioctl,
+=======
+	static const struct snd_pcm_ops ops = {
+		.open      = isight_open,
+		.close     = isight_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hw_params = isight_hw_params,
 		.hw_free   = isight_hw_free,
 		.prepare   = isight_prepare,
 		.trigger   = isight_trigger,
 		.pointer   = isight_pointer,
+<<<<<<< HEAD
 		.page      = snd_pcm_lib_get_vmalloc_page,
 		.mmap      = snd_pcm_lib_mmap_vmalloc,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct snd_pcm *pcm;
 	int err;
@@ -475,6 +576,10 @@ static int isight_create_pcm(struct isight *isight)
 	strcpy(pcm->name, "iSight");
 	isight->pcm = pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream;
 	isight->pcm->ops = &ops;
+<<<<<<< HEAD
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -578,18 +683,33 @@ static int isight_create_mixer(struct isight *isight)
 		return err;
 	isight->gain_max = be32_to_cpu(value);
 
+<<<<<<< HEAD
 	isight->gain_tlv[0] = SNDRV_CTL_TLVT_DB_MINMAX;
 	isight->gain_tlv[1] = 2 * sizeof(unsigned int);
+=======
+	isight->gain_tlv[SNDRV_CTL_TLVO_TYPE] = SNDRV_CTL_TLVT_DB_MINMAX;
+	isight->gain_tlv[SNDRV_CTL_TLVO_LEN] = 2 * sizeof(unsigned int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = reg_read(isight, REG_GAIN_DB_START, &value);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	isight->gain_tlv[2] = (s32)be32_to_cpu(value) * 100;
+=======
+	isight->gain_tlv[SNDRV_CTL_TLVO_DB_MINMAX_MIN] =
+						(s32)be32_to_cpu(value) * 100;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = reg_read(isight, REG_GAIN_DB_END, &value);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	isight->gain_tlv[3] = (s32)be32_to_cpu(value) * 100;
+=======
+	isight->gain_tlv[SNDRV_CTL_TLVO_DB_MINMAX_MAX] =
+						(s32)be32_to_cpu(value) * 100;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctl = snd_ctl_new1(&gain_control, isight);
 	if (ctl)
@@ -610,8 +730,11 @@ static void isight_card_free(struct snd_card *card)
 	struct isight *isight = card->private_data;
 
 	fw_iso_resources_destroy(&isight->resources);
+<<<<<<< HEAD
 	fw_unit_put(isight->unit);
 	mutex_destroy(&isight->mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u64 get_unit_base(struct fw_unit *unit)
@@ -626,18 +749,31 @@ static u64 get_unit_base(struct fw_unit *unit)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int isight_probe(struct device *unit_dev)
 {
 	struct fw_unit *unit = fw_unit(unit_dev);
+=======
+static int isight_probe(struct fw_unit *unit,
+			const struct ieee1394_device_id *id)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_device *fw_dev = fw_parent_device(unit);
 	struct snd_card *card;
 	struct isight *isight;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(-1, NULL, THIS_MODULE, sizeof(*isight), &card);
 	if (err < 0)
 		return err;
 	snd_card_set_dev(card, unit_dev);
+=======
+	err = snd_card_new(&unit->device, -1, NULL, THIS_MODULE,
+			   sizeof(*isight), &card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	isight = card->private_data;
 	isight->card = card;
@@ -648,7 +784,11 @@ static int isight_probe(struct device *unit_dev)
 	if (!isight->audio_base) {
 		dev_err(&unit->device, "audio unit base not found\n");
 		err = -ENXIO;
+<<<<<<< HEAD
 		goto err_unit;
+=======
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	fw_iso_resources_init(&isight->resources, unit);
 
@@ -674,6 +814,7 @@ static int isight_probe(struct device *unit_dev)
 	if (err < 0)
 		goto error;
 
+<<<<<<< HEAD
 	dev_set_drvdata(unit_dev, isight);
 
 	return 0;
@@ -703,6 +844,20 @@ static int isight_remove(struct device *dev)
 	return 0;
 }
 
+=======
+	dev_set_drvdata(&unit->device, isight);
+
+	return 0;
+error:
+	snd_card_free(card);
+
+	mutex_destroy(&isight->mutex);
+	fw_unit_put(isight->unit);
+
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void isight_bus_reset(struct fw_unit *unit)
 {
 	struct isight *isight = dev_get_drvdata(&unit->device);
@@ -716,6 +871,28 @@ static void isight_bus_reset(struct fw_unit *unit)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void isight_remove(struct fw_unit *unit)
+{
+	struct isight *isight = dev_get_drvdata(&unit->device);
+
+	isight_pcm_abort(isight);
+
+	snd_card_disconnect(isight->card);
+
+	mutex_lock(&isight->mutex);
+	isight_stop_streaming(isight);
+	mutex_unlock(&isight->mutex);
+
+	// Block till all of ALSA character devices are released.
+	snd_card_free(isight->card);
+
+	mutex_destroy(&isight->mutex);
+	fw_unit_put(isight->unit);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ieee1394_device_id isight_id_table[] = {
 	{
 		.match_flags  = IEEE1394_MATCH_SPECIFIER_ID |
@@ -732,10 +909,17 @@ static struct fw_driver isight_driver = {
 		.owner	= THIS_MODULE,
 		.name	= KBUILD_MODNAME,
 		.bus	= &fw_bus_type,
+<<<<<<< HEAD
 		.probe	= isight_probe,
 		.remove	= isight_remove,
 	},
 	.update   = isight_bus_reset,
+=======
+	},
+	.probe    = isight_probe,
+	.update   = isight_bus_reset,
+	.remove   = isight_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = isight_id_table,
 };
 

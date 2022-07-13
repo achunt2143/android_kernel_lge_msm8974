@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 
 typedef unsigned int instr;
@@ -91,7 +95,11 @@ stacktrace(void)
 {
 	instr * ret_pc;
 	instr * prologue = (instr *)stacktrace;
+<<<<<<< HEAD
 	register unsigned char * sp __asm__ ("$30");
+=======
+	unsigned char *sp = (unsigned char *)current_stack_pointer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("\tstack trace:\n");
 	do {

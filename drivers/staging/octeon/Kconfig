@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 config OCTEON_ETHERNET
 	tristate "Cavium Networks Octeon Ethernet support"
 	depends on CPU_CAVIUM_OCTEON && NETDEVICES
+=======
+# SPDX-License-Identifier: GPL-2.0
+config OCTEON_ETHERNET
+	tristate "Cavium Networks Octeon Ethernet support"
+	depends on CAVIUM_OCTEON_SOC || COMPILE_TEST
+	depends on NETDEVICES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select PHYLIB
 	select MDIO_OCTEON
 	help

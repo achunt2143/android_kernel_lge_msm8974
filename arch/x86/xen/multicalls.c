@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Xen hypercall batching.
  *
@@ -54,7 +58,11 @@ DEFINE_PER_CPU(unsigned long, xen_mc_irq_flags);
 
 void xen_mc_flush(void)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct multicall_entry *mc;
 	int ret = 0;
 	unsigned long flags;
@@ -68,6 +76,14 @@ void xen_mc_flush(void)
 
 	trace_xen_mc_flush(b->mcidx, b->argidx, b->cbidx);
 
+<<<<<<< HEAD
+=======
+#if MC_DEBUG
+	memcpy(b->debug, b->entries,
+	       b->mcidx * sizeof(struct multicall_entry));
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (b->mcidx) {
 	case 0:
 		/* no-op */
@@ -79,23 +95,33 @@ void xen_mc_flush(void)
 		   and just do the call directly. */
 		mc = &b->entries[0];
 
+<<<<<<< HEAD
 		mc->result = privcmd_call(mc->op,
 					  mc->args[0], mc->args[1], mc->args[2], 
 					  mc->args[3], mc->args[4]);
+=======
+		mc->result = xen_single_call(mc->op, mc->args[0], mc->args[1],
+					     mc->args[2], mc->args[3],
+					     mc->args[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = mc->result < 0;
 		break;
 
 	default:
+<<<<<<< HEAD
 #if MC_DEBUG
 		memcpy(b->debug, b->entries,
 		       b->mcidx * sizeof(struct multicall_entry));
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (HYPERVISOR_multicall(b->entries, b->mcidx) != 0)
 			BUG();
 		for (i = 0; i < b->mcidx; i++)
 			if (b->entries[i].result < 0)
 				ret++;
+<<<<<<< HEAD
 
 #if MC_DEBUG
 		if (ret) {
@@ -105,13 +131,37 @@ void xen_mc_flush(void)
 			for (i = 0; i < b->mcidx; i++) {
 				printk(KERN_DEBUG "  call %2d/%d: op=%lu arg=[%lx] result=%ld\t%pF\n",
 				       i+1, b->mcidx,
+=======
+	}
+
+	if (WARN_ON(ret)) {
+		pr_err("%d of %d multicall(s) failed: cpu %d\n",
+		       ret, b->mcidx, smp_processor_id());
+		for (i = 0; i < b->mcidx; i++) {
+			if (b->entries[i].result < 0) {
+#if MC_DEBUG
+				pr_err("  call %2d: op=%lu arg=[%lx] result=%ld\t%pS\n",
+				       i + 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       b->debug[i].op,
 				       b->debug[i].args[0],
 				       b->entries[i].result,
 				       b->caller[i]);
+<<<<<<< HEAD
 			}
 		}
 #endif
+=======
+#else
+				pr_err("  call %2d: op=%lu arg=[%lx] result=%ld\n",
+				       i + 1,
+				       b->entries[i].op,
+				       b->entries[i].args[0],
+				       b->entries[i].result);
+#endif
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	b->mcidx = 0;
@@ -125,13 +175,20 @@ void xen_mc_flush(void)
 	b->cbidx = 0;
 
 	local_irq_restore(flags);
+<<<<<<< HEAD
 
 	WARN_ON(ret);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct multicall_space __xen_mc_entry(size_t args)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct multicall_space ret;
 	unsigned argidx = roundup(b->argidx, sizeof(u64));
 
@@ -162,7 +219,11 @@ struct multicall_space __xen_mc_entry(size_t args)
 
 struct multicall_space xen_mc_extend_args(unsigned long op, size_t size)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct multicall_space ret = { NULL, NULL };
 
 	BUG_ON(preemptible());
@@ -192,7 +253,11 @@ out:
 
 void xen_mc_callback(void (*fn)(void *), void *data)
 {
+<<<<<<< HEAD
 	struct mc_buffer *b = &__get_cpu_var(mc_buffer);
+=======
+	struct mc_buffer *b = this_cpu_ptr(&mc_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct callback *cb;
 
 	if (b->cbidx == MC_BATCH) {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
  *                   Takashi Iwai <tiwai@suse.de>
@@ -28,6 +29,18 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
+ *                   Takashi Iwai <tiwai@suse.de>
+ *                   Lee Revell <rlrevell@joe-job.com>
+ *                   James Courtier-Dutton <James@superbug.co.uk>
+ *                   Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+ *                   Creative Labs, Inc.
+ *
+ *  Routines for control of EMU10K1 chips / mixer routines
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -43,6 +56,27 @@
 
 static const DECLARE_TLV_DB_SCALE(snd_audigy_db_scale2, -10350, 50, 1); /* WM8775 gain scale */
 
+<<<<<<< HEAD
+=======
+
+static int add_ctls(struct snd_emu10k1 *emu, const struct snd_kcontrol_new *tpl,
+		    const char * const *ctls, unsigned nctls)
+{
+	struct snd_kcontrol_new kctl = *tpl;
+	int err;
+
+	for (unsigned i = 0; i < nctls; i++) {
+		kctl.name = ctls[i];
+		kctl.private_value = i;
+		err = snd_ctl_add(emu->card, snd_ctl_new1(&kctl, emu));
+		if (err < 0)
+			return err;
+	}
+	return 0;
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_emu10k1_spdif_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_IEC958;
@@ -55,17 +89,26 @@ static int snd_emu10k1_spdif_get(struct snd_kcontrol *kcontrol,
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int idx = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Limit: emu->spdif_bits */
 	if (idx >= 3)
 		return -EINVAL;
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.iec958.status[0] = (emu->spdif_bits[idx] >> 0) & 0xff;
 	ucontrol->value.iec958.status[1] = (emu->spdif_bits[idx] >> 8) & 0xff;
 	ucontrol->value.iec958.status[2] = (emu->spdif_bits[idx] >> 16) & 0xff;
 	ucontrol->value.iec958.status[3] = (emu->spdif_bits[idx] >> 24) & 0xff;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -79,6 +122,7 @@ static int snd_emu10k1_spdif_get_mask(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Items labels in enum mixer controls assigning source data to
  * each destination
@@ -193,10 +237,28 @@ static char *emu1616_src_texts[] = {
 	"DSP 31",
 };
 
+=======
+#define PAIR_PS(base, one, two, sfx) base " " one sfx, base " " two sfx
+#define LR_PS(base, sfx) PAIR_PS(base, "Left", "Right", sfx)
+
+#define ADAT_PS(pfx, sfx) \
+	pfx "ADAT 0" sfx, pfx "ADAT 1" sfx, pfx "ADAT 2" sfx, pfx "ADAT 3" sfx, \
+	pfx "ADAT 4" sfx, pfx "ADAT 5" sfx, pfx "ADAT 6" sfx, pfx "ADAT 7" sfx
+
+#define PAIR_REGS(base, one, two) \
+	base ## one ## 1, \
+	base ## two ## 1
+
+#define LR_REGS(base) PAIR_REGS(base, _LEFT, _RIGHT)
+
+#define ADAT_REGS(base) \
+	base+0, base+1, base+2, base+3, base+4, base+5, base+6, base+7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * List of data sources available for each destination
  */
+<<<<<<< HEAD
 static unsigned int emu1010_src_regs[] = {
 	EMU_SRC_SILENCE,/* 0 */
 	EMU_SRC_DOCK_MIC_A1, /* 1 */
@@ -305,11 +367,166 @@ static unsigned int emu1616_src_regs[] = {
 	EMU_SRC_ALICE_EMU32B+0xe,
 	EMU_SRC_ALICE_EMU32B+0xf,
 };
+=======
+
+#define DSP_TEXTS \
+	"DSP 0", "DSP 1", "DSP 2", "DSP 3", "DSP 4", "DSP 5", "DSP 6", "DSP 7", \
+	"DSP 8", "DSP 9", "DSP 10", "DSP 11", "DSP 12", "DSP 13", "DSP 14", "DSP 15", \
+	"DSP 16", "DSP 17", "DSP 18", "DSP 19", "DSP 20", "DSP 21", "DSP 22", "DSP 23", \
+	"DSP 24", "DSP 25", "DSP 26", "DSP 27", "DSP 28", "DSP 29", "DSP 30", "DSP 31"
+
+#define PAIR_TEXTS(base, one, two) PAIR_PS(base, one, two, "")
+#define LR_TEXTS(base) LR_PS(base, "")
+#define ADAT_TEXTS(pfx) ADAT_PS(pfx, "")
+
+#define EMU32_SRC_REGS \
+	EMU_SRC_ALICE_EMU32A, \
+	EMU_SRC_ALICE_EMU32A+1, \
+	EMU_SRC_ALICE_EMU32A+2, \
+	EMU_SRC_ALICE_EMU32A+3, \
+	EMU_SRC_ALICE_EMU32A+4, \
+	EMU_SRC_ALICE_EMU32A+5, \
+	EMU_SRC_ALICE_EMU32A+6, \
+	EMU_SRC_ALICE_EMU32A+7, \
+	EMU_SRC_ALICE_EMU32A+8, \
+	EMU_SRC_ALICE_EMU32A+9, \
+	EMU_SRC_ALICE_EMU32A+0xa, \
+	EMU_SRC_ALICE_EMU32A+0xb, \
+	EMU_SRC_ALICE_EMU32A+0xc, \
+	EMU_SRC_ALICE_EMU32A+0xd, \
+	EMU_SRC_ALICE_EMU32A+0xe, \
+	EMU_SRC_ALICE_EMU32A+0xf, \
+	EMU_SRC_ALICE_EMU32B, \
+	EMU_SRC_ALICE_EMU32B+1, \
+	EMU_SRC_ALICE_EMU32B+2, \
+	EMU_SRC_ALICE_EMU32B+3, \
+	EMU_SRC_ALICE_EMU32B+4, \
+	EMU_SRC_ALICE_EMU32B+5, \
+	EMU_SRC_ALICE_EMU32B+6, \
+	EMU_SRC_ALICE_EMU32B+7, \
+	EMU_SRC_ALICE_EMU32B+8, \
+	EMU_SRC_ALICE_EMU32B+9, \
+	EMU_SRC_ALICE_EMU32B+0xa, \
+	EMU_SRC_ALICE_EMU32B+0xb, \
+	EMU_SRC_ALICE_EMU32B+0xc, \
+	EMU_SRC_ALICE_EMU32B+0xd, \
+	EMU_SRC_ALICE_EMU32B+0xe, \
+	EMU_SRC_ALICE_EMU32B+0xf
+
+/* 1010 rev1 */
+
+#define EMU1010_COMMON_TEXTS \
+	"Silence", \
+	PAIR_TEXTS("Dock Mic", "A", "B"), \
+	LR_TEXTS("Dock ADC1"), \
+	LR_TEXTS("Dock ADC2"), \
+	LR_TEXTS("Dock ADC3"), \
+	LR_TEXTS("0202 ADC"), \
+	LR_TEXTS("1010 SPDIF"), \
+	ADAT_TEXTS("1010 ")
+
+static const char * const emu1010_src_texts[] = {
+	EMU1010_COMMON_TEXTS,
+	DSP_TEXTS,
+};
+
+static const unsigned short emu1010_src_regs[] = {
+	EMU_SRC_SILENCE,
+	PAIR_REGS(EMU_SRC_DOCK_MIC, _A, _B),
+	LR_REGS(EMU_SRC_DOCK_ADC1),
+	LR_REGS(EMU_SRC_DOCK_ADC2),
+	LR_REGS(EMU_SRC_DOCK_ADC3),
+	LR_REGS(EMU_SRC_HAMOA_ADC),
+	LR_REGS(EMU_SRC_HANA_SPDIF),
+	ADAT_REGS(EMU_SRC_HANA_ADAT),
+	EMU32_SRC_REGS,
+};
+static_assert(ARRAY_SIZE(emu1010_src_regs) == ARRAY_SIZE(emu1010_src_texts));
+
+/* 1010 rev2 */
+
+#define EMU1010b_COMMON_TEXTS \
+	"Silence", \
+	PAIR_TEXTS("Dock Mic", "A", "B"), \
+	LR_TEXTS("Dock ADC1"), \
+	LR_TEXTS("Dock ADC2"), \
+	LR_TEXTS("0202 ADC"), \
+	LR_TEXTS("Dock SPDIF"), \
+	LR_TEXTS("1010 SPDIF"), \
+	ADAT_TEXTS("Dock "), \
+	ADAT_TEXTS("1010 ")
+
+static const char * const emu1010b_src_texts[] = {
+	EMU1010b_COMMON_TEXTS,
+	DSP_TEXTS,
+};
+
+static const unsigned short emu1010b_src_regs[] = {
+	EMU_SRC_SILENCE,
+	PAIR_REGS(EMU_SRC_DOCK_MIC, _A, _B),
+	LR_REGS(EMU_SRC_DOCK_ADC1),
+	LR_REGS(EMU_SRC_DOCK_ADC2),
+	LR_REGS(EMU_SRC_HAMOA_ADC),
+	LR_REGS(EMU_SRC_MDOCK_SPDIF),
+	LR_REGS(EMU_SRC_HANA_SPDIF),
+	ADAT_REGS(EMU_SRC_MDOCK_ADAT),
+	ADAT_REGS(EMU_SRC_HANA_ADAT),
+	EMU32_SRC_REGS,
+};
+static_assert(ARRAY_SIZE(emu1010b_src_regs) == ARRAY_SIZE(emu1010b_src_texts));
+
+/* 1616(m) cardbus */
+
+#define EMU1616_COMMON_TEXTS \
+	"Silence", \
+	PAIR_TEXTS("Mic", "A", "B"), \
+	LR_TEXTS("ADC1"), \
+	LR_TEXTS("ADC2"), \
+	LR_TEXTS("SPDIF"), \
+	ADAT_TEXTS("")
+
+static const char * const emu1616_src_texts[] = {
+	EMU1616_COMMON_TEXTS,
+	DSP_TEXTS,
+};
+
+static const unsigned short emu1616_src_regs[] = {
+	EMU_SRC_SILENCE,
+	PAIR_REGS(EMU_SRC_DOCK_MIC, _A, _B),
+	LR_REGS(EMU_SRC_DOCK_ADC1),
+	LR_REGS(EMU_SRC_DOCK_ADC2),
+	LR_REGS(EMU_SRC_MDOCK_SPDIF),
+	ADAT_REGS(EMU_SRC_MDOCK_ADAT),
+	EMU32_SRC_REGS,
+};
+static_assert(ARRAY_SIZE(emu1616_src_regs) == ARRAY_SIZE(emu1616_src_texts));
+
+/* 0404 rev1 & rev2 */
+
+#define EMU0404_COMMON_TEXTS \
+	"Silence", \
+	LR_TEXTS("ADC"), \
+	LR_TEXTS("SPDIF")
+
+static const char * const emu0404_src_texts[] = {
+	EMU0404_COMMON_TEXTS,
+	DSP_TEXTS,
+};
+
+static const unsigned short emu0404_src_regs[] = {
+	EMU_SRC_SILENCE,
+	LR_REGS(EMU_SRC_HAMOA_ADC),
+	LR_REGS(EMU_SRC_HANA_SPDIF),
+	EMU32_SRC_REGS,
+};
+static_assert(ARRAY_SIZE(emu0404_src_regs) == ARRAY_SIZE(emu0404_src_texts));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Data destinations - physical EMU outputs.
  * Each destination has an enum mixer control to choose a data source
  */
+<<<<<<< HEAD
 static unsigned int emu1010_output_dst[] = {
 	EMU_DST_DOCK_DAC1_LEFT1, /* 0 */
 	EMU_DST_DOCK_DAC1_RIGHT1, /* 1 */
@@ -365,6 +582,180 @@ static unsigned int emu1616_output_dst[] = {
  * Each destination has an enum mixer control to choose a data source
  */
 static unsigned int emu1010_input_dst[] = {
+=======
+
+#define LR_CTLS(base) LR_PS(base, " Playback Enum")
+#define ADAT_CTLS(pfx) ADAT_PS(pfx, " Playback Enum")
+
+/* 1010 rev1 */
+
+static const char * const emu1010_output_texts[] = {
+	LR_CTLS("Dock DAC1"),
+	LR_CTLS("Dock DAC2"),
+	LR_CTLS("Dock DAC3"),
+	LR_CTLS("Dock DAC4"),
+	LR_CTLS("Dock Phones"),
+	LR_CTLS("Dock SPDIF"),
+	LR_CTLS("0202 DAC"),
+	LR_CTLS("1010 SPDIF"),
+	ADAT_CTLS("1010 "),
+};
+static_assert(ARRAY_SIZE(emu1010_output_texts) <= NUM_OUTPUT_DESTS);
+
+static const unsigned short emu1010_output_dst[] = {
+	LR_REGS(EMU_DST_DOCK_DAC1),
+	LR_REGS(EMU_DST_DOCK_DAC2),
+	LR_REGS(EMU_DST_DOCK_DAC3),
+	LR_REGS(EMU_DST_DOCK_DAC4),
+	LR_REGS(EMU_DST_DOCK_PHONES),
+	LR_REGS(EMU_DST_DOCK_SPDIF),
+	LR_REGS(EMU_DST_HAMOA_DAC),
+	LR_REGS(EMU_DST_HANA_SPDIF),
+	ADAT_REGS(EMU_DST_HANA_ADAT),
+};
+static_assert(ARRAY_SIZE(emu1010_output_dst) == ARRAY_SIZE(emu1010_output_texts));
+
+static const unsigned short emu1010_output_dflt[] = {
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5,
+	EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1, EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5, EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
+};
+static_assert(ARRAY_SIZE(emu1010_output_dflt) == ARRAY_SIZE(emu1010_output_dst));
+
+/* 1010 rev2 */
+
+static const char * const snd_emu1010b_output_texts[] = {
+	LR_CTLS("Dock DAC1"),
+	LR_CTLS("Dock DAC2"),
+	LR_CTLS("Dock DAC3"),
+	LR_CTLS("Dock SPDIF"),
+	ADAT_CTLS("Dock "),
+	LR_CTLS("0202 DAC"),
+	LR_CTLS("1010 SPDIF"),
+	ADAT_CTLS("1010 "),
+};
+static_assert(ARRAY_SIZE(snd_emu1010b_output_texts) <= NUM_OUTPUT_DESTS);
+
+static const unsigned short emu1010b_output_dst[] = {
+	LR_REGS(EMU_DST_DOCK_DAC1),
+	LR_REGS(EMU_DST_DOCK_DAC2),
+	LR_REGS(EMU_DST_DOCK_DAC3),
+	LR_REGS(EMU_DST_MDOCK_SPDIF),
+	ADAT_REGS(EMU_DST_MDOCK_ADAT),
+	LR_REGS(EMU_DST_HAMOA_DAC),
+	LR_REGS(EMU_DST_HANA_SPDIF),
+	ADAT_REGS(EMU_DST_HANA_ADAT),
+};
+static_assert(ARRAY_SIZE(emu1010b_output_dst) == ARRAY_SIZE(snd_emu1010b_output_texts));
+
+static const unsigned short emu1010b_output_dflt[] = {
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1, EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5, EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1, EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5, EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
+};
+
+/* 1616(m) cardbus */
+
+static const char * const snd_emu1616_output_texts[] = {
+	LR_CTLS("Dock DAC1"),
+	LR_CTLS("Dock DAC2"),
+	LR_CTLS("Dock DAC3"),
+	LR_CTLS("Dock SPDIF"),
+	ADAT_CTLS("Dock "),
+	LR_CTLS("Mana DAC"),
+};
+static_assert(ARRAY_SIZE(snd_emu1616_output_texts) <= NUM_OUTPUT_DESTS);
+
+static const unsigned short emu1616_output_dst[] = {
+	LR_REGS(EMU_DST_DOCK_DAC1),
+	LR_REGS(EMU_DST_DOCK_DAC2),
+	LR_REGS(EMU_DST_DOCK_DAC3),
+	LR_REGS(EMU_DST_MDOCK_SPDIF),
+	ADAT_REGS(EMU_DST_MDOCK_ADAT),
+	EMU_DST_MANA_DAC_LEFT, EMU_DST_MANA_DAC_RIGHT,
+};
+static_assert(ARRAY_SIZE(emu1616_output_dst) == ARRAY_SIZE(snd_emu1616_output_texts));
+
+static const unsigned short emu1616_output_dflt[] = {
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1, EMU_SRC_ALICE_EMU32A+2, EMU_SRC_ALICE_EMU32A+3,
+	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5, EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+};
+static_assert(ARRAY_SIZE(emu1616_output_dflt) == ARRAY_SIZE(emu1616_output_dst));
+
+/* 0404 rev1 & rev2 */
+
+static const char * const snd_emu0404_output_texts[] = {
+	LR_CTLS("DAC"),
+	LR_CTLS("SPDIF"),
+};
+static_assert(ARRAY_SIZE(snd_emu0404_output_texts) <= NUM_OUTPUT_DESTS);
+
+static const unsigned short emu0404_output_dst[] = {
+	LR_REGS(EMU_DST_HAMOA_DAC),
+	LR_REGS(EMU_DST_HANA_SPDIF),
+};
+static_assert(ARRAY_SIZE(emu0404_output_dst) == ARRAY_SIZE(snd_emu0404_output_texts));
+
+static const unsigned short emu0404_output_dflt[] = {
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+	EMU_SRC_ALICE_EMU32A+0, EMU_SRC_ALICE_EMU32A+1,
+};
+static_assert(ARRAY_SIZE(emu0404_output_dflt) == ARRAY_SIZE(emu0404_output_dst));
+
+/*
+ * Data destinations - FPGA outputs going to Alice2 (Audigy) for
+ *   capture (EMU32 + I2S links)
+ * Each destination has an enum mixer control to choose a data source
+ */
+
+static const char * const emu1010_input_texts[] = {
+	"DSP 0 Capture Enum",
+	"DSP 1 Capture Enum",
+	"DSP 2 Capture Enum",
+	"DSP 3 Capture Enum",
+	"DSP 4 Capture Enum",
+	"DSP 5 Capture Enum",
+	"DSP 6 Capture Enum",
+	"DSP 7 Capture Enum",
+	"DSP 8 Capture Enum",
+	"DSP 9 Capture Enum",
+	"DSP A Capture Enum",
+	"DSP B Capture Enum",
+	"DSP C Capture Enum",
+	"DSP D Capture Enum",
+	"DSP E Capture Enum",
+	"DSP F Capture Enum",
+	/* These exist only on rev1 EMU1010 cards. */
+	"DSP 10 Capture Enum",
+	"DSP 11 Capture Enum",
+	"DSP 12 Capture Enum",
+	"DSP 13 Capture Enum",
+	"DSP 14 Capture Enum",
+	"DSP 15 Capture Enum",
+};
+static_assert(ARRAY_SIZE(emu1010_input_texts) <= NUM_INPUT_DESTS);
+
+static const unsigned short emu1010_input_dst[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EMU_DST_ALICE2_EMU32_0,
 	EMU_DST_ALICE2_EMU32_1,
 	EMU_DST_ALICE2_EMU32_2,
@@ -381,6 +772,10 @@ static unsigned int emu1010_input_dst[] = {
 	EMU_DST_ALICE2_EMU32_D,
 	EMU_DST_ALICE2_EMU32_E,
 	EMU_DST_ALICE2_EMU32_F,
+<<<<<<< HEAD
+=======
+	/* These exist only on rev1 EMU1010 cards. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EMU_DST_ALICE_I2S0_LEFT,
 	EMU_DST_ALICE_I2S0_RIGHT,
 	EMU_DST_ALICE_I2S1_LEFT,
@@ -388,11 +783,188 @@ static unsigned int emu1010_input_dst[] = {
 	EMU_DST_ALICE_I2S2_LEFT,
 	EMU_DST_ALICE_I2S2_RIGHT,
 };
+<<<<<<< HEAD
+=======
+static_assert(ARRAY_SIZE(emu1010_input_dst) == ARRAY_SIZE(emu1010_input_texts));
+
+static const unsigned short emu1010_input_dflt[] = {
+	EMU_SRC_DOCK_MIC_A1,
+	EMU_SRC_DOCK_MIC_B1,
+	EMU_SRC_HAMOA_ADC_LEFT1,
+	EMU_SRC_HAMOA_ADC_RIGHT1,
+	EMU_SRC_DOCK_ADC1_LEFT1,
+	EMU_SRC_DOCK_ADC1_RIGHT1,
+	EMU_SRC_DOCK_ADC2_LEFT1,
+	EMU_SRC_DOCK_ADC2_RIGHT1,
+	/* Pavel Hofman - setting defaults for all capture channels.
+	 * Defaults only, users will set their own values anyways, let's
+	 * just copy/paste. */
+	EMU_SRC_DOCK_MIC_A1,
+	EMU_SRC_DOCK_MIC_B1,
+	EMU_SRC_HAMOA_ADC_LEFT1,
+	EMU_SRC_HAMOA_ADC_RIGHT1,
+	EMU_SRC_DOCK_ADC1_LEFT1,
+	EMU_SRC_DOCK_ADC1_RIGHT1,
+	EMU_SRC_DOCK_ADC2_LEFT1,
+	EMU_SRC_DOCK_ADC2_RIGHT1,
+
+	EMU_SRC_DOCK_ADC1_LEFT1,
+	EMU_SRC_DOCK_ADC1_RIGHT1,
+	EMU_SRC_DOCK_ADC2_LEFT1,
+	EMU_SRC_DOCK_ADC2_RIGHT1,
+	EMU_SRC_DOCK_ADC3_LEFT1,
+	EMU_SRC_DOCK_ADC3_RIGHT1,
+};
+static_assert(ARRAY_SIZE(emu1010_input_dflt) == ARRAY_SIZE(emu1010_input_dst));
+
+static const unsigned short emu0404_input_dflt[] = {
+	EMU_SRC_HAMOA_ADC_LEFT1,
+	EMU_SRC_HAMOA_ADC_RIGHT1,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_HANA_SPDIF_LEFT1,
+	EMU_SRC_HANA_SPDIF_RIGHT1,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+	EMU_SRC_SILENCE,
+};
+
+struct snd_emu1010_routing_info {
+	const char * const *src_texts;
+	const char * const *out_texts;
+	const unsigned short *src_regs;
+	const unsigned short *out_regs;
+	const unsigned short *in_regs;
+	const unsigned short *out_dflts;
+	const unsigned short *in_dflts;
+	unsigned n_srcs;
+	unsigned n_outs;
+	unsigned n_ins;
+};
+
+static const struct snd_emu1010_routing_info emu1010_routing_info[] = {
+	{
+		/* rev1 1010 */
+		.src_regs = emu1010_src_regs,
+		.src_texts = emu1010_src_texts,
+		.n_srcs = ARRAY_SIZE(emu1010_src_texts),
+
+		.out_dflts = emu1010_output_dflt,
+		.out_regs = emu1010_output_dst,
+		.out_texts = emu1010_output_texts,
+		.n_outs = ARRAY_SIZE(emu1010_output_dst),
+
+		.in_dflts = emu1010_input_dflt,
+		.in_regs = emu1010_input_dst,
+		.n_ins = ARRAY_SIZE(emu1010_input_dst),
+	},
+	{
+		/* rev2 1010 */
+		.src_regs = emu1010b_src_regs,
+		.src_texts = emu1010b_src_texts,
+		.n_srcs = ARRAY_SIZE(emu1010b_src_texts),
+
+		.out_dflts = emu1010b_output_dflt,
+		.out_regs = emu1010b_output_dst,
+		.out_texts = snd_emu1010b_output_texts,
+		.n_outs = ARRAY_SIZE(emu1010b_output_dst),
+
+		.in_dflts = emu1010_input_dflt,
+		.in_regs = emu1010_input_dst,
+		.n_ins = ARRAY_SIZE(emu1010_input_dst) - 6,
+	},
+	{
+		/* 1616(m) cardbus */
+		.src_regs = emu1616_src_regs,
+		.src_texts = emu1616_src_texts,
+		.n_srcs = ARRAY_SIZE(emu1616_src_texts),
+
+		.out_dflts = emu1616_output_dflt,
+		.out_regs = emu1616_output_dst,
+		.out_texts = snd_emu1616_output_texts,
+		.n_outs = ARRAY_SIZE(emu1616_output_dst),
+
+		.in_dflts = emu1010_input_dflt,
+		.in_regs = emu1010_input_dst,
+		.n_ins = ARRAY_SIZE(emu1010_input_dst) - 6,
+	},
+	{
+		/* 0404 */
+		.src_regs = emu0404_src_regs,
+		.src_texts = emu0404_src_texts,
+		.n_srcs = ARRAY_SIZE(emu0404_src_texts),
+
+		.out_dflts = emu0404_output_dflt,
+		.out_regs = emu0404_output_dst,
+		.out_texts = snd_emu0404_output_texts,
+		.n_outs = ARRAY_SIZE(emu0404_output_dflt),
+
+		.in_dflts = emu0404_input_dflt,
+		.in_regs = emu1010_input_dst,
+		.n_ins = ARRAY_SIZE(emu1010_input_dst) - 6,
+	},
+};
+
+static unsigned emu1010_idx(struct snd_emu10k1 *emu)
+{
+	return emu->card_capabilities->emu_model - 1;
+}
+
+static void snd_emu1010_output_source_apply(struct snd_emu10k1 *emu,
+					    int channel, int src)
+{
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+
+	snd_emu1010_fpga_link_dst_src_write(emu,
+		emu_ri->out_regs[channel], emu_ri->src_regs[src]);
+}
+
+static void snd_emu1010_input_source_apply(struct snd_emu10k1 *emu,
+					   int channel, int src)
+{
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+
+	snd_emu1010_fpga_link_dst_src_write(emu,
+		emu_ri->in_regs[channel], emu_ri->src_regs[src]);
+}
+
+static void snd_emu1010_apply_sources(struct snd_emu10k1 *emu)
+{
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+
+	for (unsigned i = 0; i < emu_ri->n_outs; i++)
+		snd_emu1010_output_source_apply(
+			emu, i, emu->emu1010.output_source[i]);
+	for (unsigned i = 0; i < emu_ri->n_ins; i++)
+		snd_emu1010_input_source_apply(
+			emu, i, emu->emu1010.input_source[i]);
+}
+
+static u8 emu1010_map_source(const struct snd_emu1010_routing_info *emu_ri,
+			     unsigned val)
+{
+	for (unsigned i = 0; i < emu_ri->n_srcs; i++)
+		if (val == emu_ri->src_regs[i])
+			return i;
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_emu1010_input_output_source_info(struct snd_kcontrol *kcontrol,
 						struct snd_ctl_elem_info *uinfo)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	char **items;
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -410,12 +982,19 @@ static int snd_emu1010_input_output_source_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       items[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+
+	return snd_ctl_enum_info(uinfo, 1, emu_ri->n_srcs, emu_ri->src_texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_emu1010_output_source_get(struct snd_kcontrol *kcontrol,
                                  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int channel;
 
 	channel = (kcontrol->private_value) & 0xff;
@@ -423,6 +1002,13 @@ static int snd_emu1010_output_source_get(struct snd_kcontrol *kcontrol,
 	if (channel >= 24 ||
 	    (emu->card_capabilities->emu_model == EMU_MODEL_EMU1616 &&
 	     channel >= 18))
+=======
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+	unsigned channel = kcontrol->private_value;
+
+	if (channel >= emu_ri->n_outs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	ucontrol->value.enumerated.item[0] = emu->emu1010.output_source[channel];
 	return 0;
@@ -432,6 +1018,7 @@ static int snd_emu1010_output_source_put(struct snd_kcontrol *kcontrol,
                                  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int val;
 	unsigned int channel;
 
@@ -458,15 +1045,53 @@ static int snd_emu1010_output_source_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+=======
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+	unsigned val = ucontrol->value.enumerated.item[0];
+	unsigned channel = kcontrol->private_value;
+	int change;
+
+	if (val >= emu_ri->n_srcs)
+		return -EINVAL;
+	if (channel >= emu_ri->n_outs)
+		return -EINVAL;
+	change = (emu->emu1010.output_source[channel] != val);
+	if (change) {
+		emu->emu1010.output_source[channel] = val;
+		snd_emu1010_fpga_lock(emu);
+		snd_emu1010_output_source_apply(emu, channel, val);
+		snd_emu1010_fpga_unlock(emu);
+	}
+	return change;
+}
+
+static const struct snd_kcontrol_new emu1010_output_source_ctl = {
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.info = snd_emu1010_input_output_source_info,
+	.get = snd_emu1010_output_source_get,
+	.put = snd_emu1010_output_source_put
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_emu1010_input_source_get(struct snd_kcontrol *kcontrol,
                                  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int channel;
 
 	channel = (kcontrol->private_value) & 0xff;
 	/* Limit: emu1010_input_dst, emu->emu1010.input_source */
 	if (channel >= 22)
+=======
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+	unsigned channel = kcontrol->private_value;
+
+	if (channel >= emu_ri->n_ins)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	ucontrol->value.enumerated.item[0] = emu->emu1010.input_source[channel];
 	return 0;
@@ -476,6 +1101,7 @@ static int snd_emu1010_input_source_put(struct snd_kcontrol *kcontrol,
                                  struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int val;
 	unsigned int channel;
 
@@ -598,12 +1224,77 @@ static struct snd_kcontrol_new snd_emu1010_input_enum_ctls[] __devinitdata = {
 
 
 
+=======
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+	unsigned val = ucontrol->value.enumerated.item[0];
+	unsigned channel = kcontrol->private_value;
+	int change;
+
+	if (val >= emu_ri->n_srcs)
+		return -EINVAL;
+	if (channel >= emu_ri->n_ins)
+		return -EINVAL;
+	change = (emu->emu1010.input_source[channel] != val);
+	if (change) {
+		emu->emu1010.input_source[channel] = val;
+		snd_emu1010_fpga_lock(emu);
+		snd_emu1010_input_source_apply(emu, channel, val);
+		snd_emu1010_fpga_unlock(emu);
+	}
+	return change;
+}
+
+static const struct snd_kcontrol_new emu1010_input_source_ctl = {
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.info = snd_emu1010_input_output_source_info,
+	.get = snd_emu1010_input_source_get,
+	.put = snd_emu1010_input_source_put
+};
+
+static int add_emu1010_source_mixers(struct snd_emu10k1 *emu)
+{
+	const struct snd_emu1010_routing_info *emu_ri =
+		&emu1010_routing_info[emu1010_idx(emu)];
+	int err;
+
+	err = add_ctls(emu, &emu1010_output_source_ctl,
+		       emu_ri->out_texts, emu_ri->n_outs);
+	if (err < 0)
+		return err;
+	err = add_ctls(emu, &emu1010_input_source_ctl,
+		       emu1010_input_texts, emu_ri->n_ins);
+	return err;
+}
+
+
+static const char * const snd_emu1010_adc_pads[] = {
+	"ADC1 14dB PAD 0202 Capture Switch",
+	"ADC1 14dB PAD Audio Dock Capture Switch",
+	"ADC2 14dB PAD Audio Dock Capture Switch",
+	"ADC3 14dB PAD Audio Dock Capture Switch",
+};
+
+static const unsigned short snd_emu1010_adc_pad_regs[] = {
+	EMU_HANA_0202_ADC_PAD1,
+	EMU_HANA_DOCK_ADC_PAD1,
+	EMU_HANA_DOCK_ADC_PAD2,
+	EMU_HANA_DOCK_ADC_PAD3,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define snd_emu1010_adc_pads_info	snd_ctl_boolean_mono_info
 
 static int snd_emu1010_adc_pads_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int mask = kcontrol->private_value & 0xff;
+=======
+	unsigned int mask = snd_emu1010_adc_pad_regs[kcontrol->private_value];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.integer.value[0] = (emu->emu1010.adc_pads & mask) ? 1 : 0;
 	return 0;
 }
@@ -611,14 +1302,22 @@ static int snd_emu1010_adc_pads_get(struct snd_kcontrol *kcontrol, struct snd_ct
 static int snd_emu1010_adc_pads_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int mask = kcontrol->private_value & 0xff;
 	unsigned int val, cache;
+=======
+	unsigned int mask = snd_emu1010_adc_pad_regs[kcontrol->private_value];
+	unsigned int val, cache;
+	int change;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = ucontrol->value.integer.value[0];
 	cache = emu->emu1010.adc_pads;
 	if (val == 1) 
 		cache = cache | mask;
 	else
 		cache = cache & ~mask;
+<<<<<<< HEAD
 	if (cache != emu->emu1010.adc_pads) {
 		snd_emu1010_fpga_write(emu, EMU_HANA_ADC_PADS, cache );
 	        emu->emu1010.adc_pads = cache;
@@ -644,6 +1343,40 @@ static struct snd_kcontrol_new snd_emu1010_adc_pads[] __devinitdata = {
 	EMU1010_ADC_PADS("ADC2 14dB PAD Audio Dock Capture Switch", EMU_HANA_DOCK_ADC_PAD2),
 	EMU1010_ADC_PADS("ADC3 14dB PAD Audio Dock Capture Switch", EMU_HANA_DOCK_ADC_PAD3),
 	EMU1010_ADC_PADS("ADC1 14dB PAD 0202 Capture Switch", EMU_HANA_0202_ADC_PAD1),
+=======
+	change = (cache != emu->emu1010.adc_pads);
+	if (change) {
+		snd_emu1010_fpga_write_lock(emu, EMU_HANA_ADC_PADS, cache );
+	        emu->emu1010.adc_pads = cache;
+	}
+
+	return change;
+}
+
+static const struct snd_kcontrol_new emu1010_adc_pads_ctl = {
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.info = snd_emu1010_adc_pads_info,
+	.get = snd_emu1010_adc_pads_get,
+	.put = snd_emu1010_adc_pads_put
+};
+
+
+static const char * const snd_emu1010_dac_pads[] = {
+	"DAC1 0202 14dB PAD Playback Switch",
+	"DAC1 Audio Dock 14dB PAD Playback Switch",
+	"DAC2 Audio Dock 14dB PAD Playback Switch",
+	"DAC3 Audio Dock 14dB PAD Playback Switch",
+	"DAC4 Audio Dock 14dB PAD Playback Switch",
+};
+
+static const unsigned short snd_emu1010_dac_regs[] = {
+	EMU_HANA_0202_DAC_PAD1,
+	EMU_HANA_DOCK_DAC_PAD1,
+	EMU_HANA_DOCK_DAC_PAD2,
+	EMU_HANA_DOCK_DAC_PAD3,
+	EMU_HANA_DOCK_DAC_PAD4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define snd_emu1010_dac_pads_info	snd_ctl_boolean_mono_info
@@ -651,7 +1384,12 @@ static struct snd_kcontrol_new snd_emu1010_adc_pads[] __devinitdata = {
 static int snd_emu1010_dac_pads_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int mask = kcontrol->private_value & 0xff;
+=======
+	unsigned int mask = snd_emu1010_dac_regs[kcontrol->private_value];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.integer.value[0] = (emu->emu1010.dac_pads & mask) ? 1 : 0;
 	return 0;
 }
@@ -659,14 +1397,22 @@ static int snd_emu1010_dac_pads_get(struct snd_kcontrol *kcontrol, struct snd_ct
 static int snd_emu1010_dac_pads_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	unsigned int mask = kcontrol->private_value & 0xff;
 	unsigned int val, cache;
+=======
+	unsigned int mask = snd_emu1010_dac_regs[kcontrol->private_value];
+	unsigned int val, cache;
+	int change;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = ucontrol->value.integer.value[0];
 	cache = emu->emu1010.dac_pads;
 	if (val == 1) 
 		cache = cache | mask;
 	else
 		cache = cache & ~mask;
+<<<<<<< HEAD
 	if (cache != emu->emu1010.dac_pads) {
 		snd_emu1010_fpga_write(emu, EMU_HANA_DAC_PADS, cache );
 	        emu->emu1010.dac_pads = cache;
@@ -715,10 +1461,143 @@ static int snd_emu1010_internal_clock_info(struct snd_kcontrol *kcontrol,
 }
 
 static int snd_emu1010_internal_clock_get(struct snd_kcontrol *kcontrol,
+=======
+	change = (cache != emu->emu1010.dac_pads);
+	if (change) {
+		snd_emu1010_fpga_write_lock(emu, EMU_HANA_DAC_PADS, cache );
+	        emu->emu1010.dac_pads = cache;
+	}
+
+	return change;
+}
+
+static const struct snd_kcontrol_new emu1010_dac_pads_ctl = {
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.info = snd_emu1010_dac_pads_info,
+	.get = snd_emu1010_dac_pads_get,
+	.put = snd_emu1010_dac_pads_put
+};
+
+
+struct snd_emu1010_pads_info {
+	const char * const *adc_ctls, * const *dac_ctls;
+	unsigned n_adc_ctls, n_dac_ctls;
+};
+
+static const struct snd_emu1010_pads_info emu1010_pads_info[] = {
+	{
+		/* rev1 1010 */
+		.adc_ctls = snd_emu1010_adc_pads,
+		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads),
+		.dac_ctls = snd_emu1010_dac_pads,
+		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads),
+	},
+	{
+		/* rev2 1010 */
+		.adc_ctls = snd_emu1010_adc_pads,
+		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads) - 1,
+		.dac_ctls = snd_emu1010_dac_pads,
+		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads) - 1,
+	},
+	{
+		/* 1616(m) cardbus */
+		.adc_ctls = snd_emu1010_adc_pads + 1,
+		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads) - 2,
+		.dac_ctls = snd_emu1010_dac_pads + 1,
+		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads) - 2,
+	},
+	{
+		/* 0404 */
+		.adc_ctls = NULL,
+		.n_adc_ctls = 0,
+		.dac_ctls = NULL,
+		.n_dac_ctls = 0,
+	},
+};
+
+static const char * const emu1010_clock_texts[] = {
+	"44100", "48000", "SPDIF", "ADAT", "Dock", "BNC"
+};
+
+static const u8 emu1010_clock_vals[] = {
+	EMU_HANA_WCLOCK_INT_44_1K,
+	EMU_HANA_WCLOCK_INT_48K,
+	EMU_HANA_WCLOCK_HANA_SPDIF_IN,
+	EMU_HANA_WCLOCK_HANA_ADAT_IN,
+	EMU_HANA_WCLOCK_2ND_HANA,
+	EMU_HANA_WCLOCK_SYNC_BNC,
+};
+
+static const char * const emu0404_clock_texts[] = {
+	"44100", "48000", "SPDIF", "BNC"
+};
+
+static const u8 emu0404_clock_vals[] = {
+	EMU_HANA_WCLOCK_INT_44_1K,
+	EMU_HANA_WCLOCK_INT_48K,
+	EMU_HANA_WCLOCK_HANA_SPDIF_IN,
+	EMU_HANA_WCLOCK_SYNC_BNC,
+};
+
+struct snd_emu1010_clock_info {
+	const char * const *texts;
+	const u8 *vals;
+	unsigned num;
+};
+
+static const struct snd_emu1010_clock_info emu1010_clock_info[] = {
+	{
+		// rev1 1010
+		.texts = emu1010_clock_texts,
+		.vals = emu1010_clock_vals,
+		.num = ARRAY_SIZE(emu1010_clock_vals),
+	},
+	{
+		// rev2 1010
+		.texts = emu1010_clock_texts,
+		.vals = emu1010_clock_vals,
+		.num = ARRAY_SIZE(emu1010_clock_vals) - 1,
+	},
+	{
+		// 1616(m) CardBus
+		.texts = emu1010_clock_texts,
+		// TODO: determine what is actually available.
+		// Pedantically, *every* source comes from the 2nd FPGA, as the
+		// card itself has no own (digital) audio ports. The user manual
+		// claims that ADAT and S/PDIF clock sources are separate, which
+		// can mean two things: either E-MU mapped the dock's sources to
+		// the primary ones, or they determine the meaning of the "Dock"
+		// source depending on how the ports are actually configured
+		// (which the 2nd FPGA must be doing anyway).
+		.vals = emu1010_clock_vals,
+		.num = ARRAY_SIZE(emu1010_clock_vals),
+	},
+	{
+		// 0404
+		.texts = emu0404_clock_texts,
+		.vals = emu0404_clock_vals,
+		.num = ARRAY_SIZE(emu0404_clock_vals),
+	},
+};
+
+static int snd_emu1010_clock_source_info(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_info *uinfo)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+	const struct snd_emu1010_clock_info *emu_ci =
+		&emu1010_clock_info[emu1010_idx(emu)];
+		
+	return snd_ctl_enum_info(uinfo, 1, emu_ci->num, emu_ci->texts);
+}
+
+static int snd_emu1010_clock_source_get(struct snd_kcontrol *kcontrol,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	ucontrol->value.enumerated.item[0] = emu->emu1010.internal_clock;
 	return 0;
 }
@@ -727,10 +1606,23 @@ static int snd_emu1010_internal_clock_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+=======
+	ucontrol->value.enumerated.item[0] = emu->emu1010.clock_source;
+	return 0;
+}
+
+static int snd_emu1010_clock_source_put(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+	const struct snd_emu1010_clock_info *emu_ci =
+		&emu1010_clock_info[emu1010_idx(emu)];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 	int change = 0;
 
 	val = ucontrol->value.enumerated.item[0] ;
+<<<<<<< HEAD
 	/* Limit: uinfo->value.enumerated.items = 4; */
 	if (val >= 4)
 		return -EINVAL;
@@ -824,12 +1716,196 @@ static struct snd_kcontrol_new snd_emu1010_internal_clock =
 	.info =         snd_emu1010_internal_clock_info,
 	.get =          snd_emu1010_internal_clock_get,
 	.put =          snd_emu1010_internal_clock_put
+=======
+	if (val >= emu_ci->num)
+		return -EINVAL;
+	snd_emu1010_fpga_lock(emu);
+	spin_lock_irq(&emu->reg_lock);
+	change = (emu->emu1010.clock_source != val);
+	if (change) {
+		emu->emu1010.clock_source = val;
+		emu->emu1010.wclock = emu_ci->vals[val];
+		snd_emu1010_update_clock(emu);
+
+		snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_MUTE);
+		snd_emu1010_fpga_write(emu, EMU_HANA_WCLOCK, emu->emu1010.wclock);
+		spin_unlock_irq(&emu->reg_lock);
+
+		msleep(10);  // Allow DLL to settle
+		snd_emu1010_fpga_write(emu, EMU_HANA_UNMUTE, EMU_UNMUTE);
+	} else {
+		spin_unlock_irq(&emu->reg_lock);
+	}
+	snd_emu1010_fpga_unlock(emu);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu1010_clock_source =
+{
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name = "Clock Source",
+	.count = 1,
+	.info = snd_emu1010_clock_source_info,
+	.get = snd_emu1010_clock_source_get,
+	.put = snd_emu1010_clock_source_put
+};
+
+static int snd_emu1010_clock_fallback_info(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_info *uinfo)
+{
+	static const char * const texts[2] = {
+		"44100", "48000"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+}
+
+static int snd_emu1010_clock_fallback_get(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+
+	ucontrol->value.enumerated.item[0] = emu->emu1010.clock_fallback;
+	return 0;
+}
+
+static int snd_emu1010_clock_fallback_put(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+	unsigned int val = ucontrol->value.enumerated.item[0];
+	int change;
+
+	if (val >= 2)
+		return -EINVAL;
+	change = (emu->emu1010.clock_fallback != val);
+	if (change) {
+		emu->emu1010.clock_fallback = val;
+		snd_emu1010_fpga_write_lock(emu, EMU_HANA_DEFCLOCK, 1 - val);
+	}
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu1010_clock_fallback =
+{
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name = "Clock Fallback",
+	.count = 1,
+	.info = snd_emu1010_clock_fallback_info,
+	.get = snd_emu1010_clock_fallback_get,
+	.put = snd_emu1010_clock_fallback_put
+};
+
+static int snd_emu1010_optical_out_info(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_info *uinfo)
+{
+	static const char * const texts[2] = {
+		"SPDIF", "ADAT"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+}
+
+static int snd_emu1010_optical_out_get(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+
+	ucontrol->value.enumerated.item[0] = emu->emu1010.optical_out;
+	return 0;
+}
+
+static int snd_emu1010_optical_out_put(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+	unsigned int val;
+	u32 tmp;
+	int change = 0;
+
+	val = ucontrol->value.enumerated.item[0];
+	/* Limit: uinfo->value.enumerated.items = 2; */
+	if (val >= 2)
+		return -EINVAL;
+	change = (emu->emu1010.optical_out != val);
+	if (change) {
+		emu->emu1010.optical_out = val;
+		tmp = (emu->emu1010.optical_in ? EMU_HANA_OPTICAL_IN_ADAT : EMU_HANA_OPTICAL_IN_SPDIF) |
+			(emu->emu1010.optical_out ? EMU_HANA_OPTICAL_OUT_ADAT : EMU_HANA_OPTICAL_OUT_SPDIF);
+		snd_emu1010_fpga_write_lock(emu, EMU_HANA_OPTICAL_TYPE, tmp);
+	}
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu1010_optical_out = {
+	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.iface =        SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name =         "Optical Output Mode",
+	.count =	1,
+	.info =         snd_emu1010_optical_out_info,
+	.get =          snd_emu1010_optical_out_get,
+	.put =          snd_emu1010_optical_out_put
+};
+
+static int snd_emu1010_optical_in_info(struct snd_kcontrol *kcontrol,
+					  struct snd_ctl_elem_info *uinfo)
+{
+	static const char * const texts[2] = {
+		"SPDIF", "ADAT"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+}
+
+static int snd_emu1010_optical_in_get(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+
+	ucontrol->value.enumerated.item[0] = emu->emu1010.optical_in;
+	return 0;
+}
+
+static int snd_emu1010_optical_in_put(struct snd_kcontrol *kcontrol,
+					struct snd_ctl_elem_value *ucontrol)
+{
+	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
+	unsigned int val;
+	u32 tmp;
+	int change = 0;
+
+	val = ucontrol->value.enumerated.item[0];
+	/* Limit: uinfo->value.enumerated.items = 2; */
+	if (val >= 2)
+		return -EINVAL;
+	change = (emu->emu1010.optical_in != val);
+	if (change) {
+		emu->emu1010.optical_in = val;
+		tmp = (emu->emu1010.optical_in ? EMU_HANA_OPTICAL_IN_ADAT : EMU_HANA_OPTICAL_IN_SPDIF) |
+			(emu->emu1010.optical_out ? EMU_HANA_OPTICAL_OUT_ADAT : EMU_HANA_OPTICAL_OUT_SPDIF);
+		snd_emu1010_fpga_write_lock(emu, EMU_HANA_OPTICAL_TYPE, tmp);
+	}
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu1010_optical_in = {
+	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE,
+	.iface =        SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name =         "Optical Input Mode",
+	.count =	1,
+	.info =         snd_emu1010_optical_in_info,
+	.get =          snd_emu1010_optical_in_get,
+	.put =          snd_emu1010_optical_in_put
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int snd_audigy_i2c_capture_source_info(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
 #if 0
+<<<<<<< HEAD
 	static char *texts[4] = {
 		"Unknown1", "Unknown2", "Mic", "Line"
 	};
@@ -845,6 +1921,17 @@ static int snd_audigy_i2c_capture_source_info(struct snd_kcontrol *kcontrol,
                 uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[4] = {
+		"Unknown1", "Unknown2", "Mic", "Line"
+	};
+#endif
+	static const char * const texts[2] = {
+		"Mic", "Line"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_audigy_i2c_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -862,9 +1949,14 @@ static int snd_audigy_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int source_id;
 	unsigned int ngain, ogain;
+<<<<<<< HEAD
 	u32 gpio;
 	int change = 0;
 	unsigned long flags;
+=======
+	u16 gpio;
+	int change = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 source;
 	/* If the capture source has changed,
 	 * update the capture volume from the cached value
@@ -878,6 +1970,7 @@ static int snd_audigy_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
 	change = (emu->i2c_capture_source != source_id);
 	if (change) {
 		snd_emu10k1_i2c_write(emu, ADC_MUX, 0); /* Mute input */
+<<<<<<< HEAD
 		spin_lock_irqsave(&emu->emu_lock, flags);
 		gpio = inl(emu->port + A_IOCFG);
 		if (source_id==0)
@@ -885,6 +1978,15 @@ static int snd_audigy_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
 		else
 			outl(gpio & ~0x4, emu->port + A_IOCFG);
 		spin_unlock_irqrestore(&emu->emu_lock, flags);
+=======
+		spin_lock_irq(&emu->emu_lock);
+		gpio = inw(emu->port + A_IOCFG);
+		if (source_id==0)
+			outw(gpio | 0x4, emu->port + A_IOCFG);
+		else
+			outw(gpio & ~0x4, emu->port + A_IOCFG);
+		spin_unlock_irq(&emu->emu_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ngain = emu->i2c_capture_volume[source_id][0]; /* Left */
 		ogain = emu->i2c_capture_volume[emu->i2c_capture_source][0]; /* Left */
@@ -902,7 +2004,11 @@ static int snd_audigy_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
         return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_audigy_i2c_capture_source =
+=======
+static const struct snd_kcontrol_new snd_audigy_i2c_capture_source =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 		.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name =		"Capture Source",
@@ -943,7 +2049,11 @@ static int snd_audigy_i2c_volume_put(struct snd_kcontrol *kcontrol,
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int ogain;
+<<<<<<< HEAD
 	unsigned int ngain;
+=======
+	unsigned int ngain0, ngain1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int source_id;
 	int change = 0;
 
@@ -952,6 +2062,7 @@ static int snd_audigy_i2c_volume_put(struct snd_kcontrol *kcontrol,
         /*        capture_source: uinfo->value.enumerated.items = 2 */
 	if (source_id >= 2)
 		return -EINVAL;
+<<<<<<< HEAD
 	ogain = emu->i2c_capture_volume[source_id][0]; /* Left */
 	ngain = ucontrol->value.integer.value[0];
 	if (ngain > 0xff)
@@ -970,12 +2081,33 @@ static int snd_audigy_i2c_volume_put(struct snd_kcontrol *kcontrol,
 		if (emu->i2c_capture_source == source_id)
 			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCR, ((ngain) & 0xff));
 		emu->i2c_capture_volume[source_id][1] = ngain;
+=======
+	ngain0 = ucontrol->value.integer.value[0];
+	ngain1 = ucontrol->value.integer.value[1];
+	if (ngain0 > 0xff)
+		return -EINVAL;
+	if (ngain1 > 0xff)
+		return -EINVAL;
+	ogain = emu->i2c_capture_volume[source_id][0]; /* Left */
+	if (ogain != ngain0) {
+		if (emu->i2c_capture_source == source_id)
+			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCL, ngain0);
+		emu->i2c_capture_volume[source_id][0] = ngain0;
+		change = 1;
+	}
+	ogain = emu->i2c_capture_volume[source_id][1]; /* Right */
+	if (ogain != ngain1) {
+		if (emu->i2c_capture_source == source_id)
+			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCR, ngain1);
+		emu->i2c_capture_volume[source_id][1] = ngain1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		change = 1;
 	}
 
 	return change;
 }
 
+<<<<<<< HEAD
 #define I2C_VOLUME(xname,chid) \
 {								\
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname,	\
@@ -992,11 +2124,27 @@ static int snd_audigy_i2c_volume_put(struct snd_kcontrol *kcontrol,
 static struct snd_kcontrol_new snd_audigy_i2c_volume_ctls[] __devinitdata = {
 	I2C_VOLUME("Mic Capture Volume", 0),
 	I2C_VOLUME("Line Capture Volume", 0)
+=======
+static const struct snd_kcontrol_new i2c_volume_ctl = {
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE |
+	          SNDRV_CTL_ELEM_ACCESS_TLV_READ,
+	.info = snd_audigy_i2c_volume_info,
+	.get = snd_audigy_i2c_volume_get,
+	.put = snd_audigy_i2c_volume_put,
+	.tlv = { .p = snd_audigy_db_scale2 }
+};
+
+static const char * const snd_audigy_i2c_volume_ctls[] = {
+	"Mic Capture Volume",
+	"Line Capture Volume",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #if 0
 static int snd_audigy_spdif_output_rate_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[] = {"44100", "48000", "96000"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1006,6 +2154,11 @@ static int snd_audigy_spdif_output_rate_info(struct snd_kcontrol *kcontrol, stru
 		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[] = {"44100", "48000", "96000"};
+
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_audigy_spdif_output_rate_get(struct snd_kcontrol *kcontrol,
@@ -1013,10 +2166,14 @@ static int snd_audigy_spdif_output_rate_get(struct snd_kcontrol *kcontrol,
 {
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int tmp;
+<<<<<<< HEAD
 	unsigned long flags;
 	
 
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = snd_emu10k1_ptr_read(emu, A_SPDIF_SAMPLERATE, 0);
 	switch (tmp & A_SPDIF_RATE_MASK) {
 	case A_SPDIF_44100:
@@ -1031,7 +2188,10 @@ static int snd_audigy_spdif_output_rate_get(struct snd_kcontrol *kcontrol,
 	default:
 		ucontrol->value.enumerated.item[0] = 1;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1041,7 +2201,10 @@ static int snd_audigy_spdif_output_rate_put(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	int change;
 	unsigned int reg, val, tmp;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch(ucontrol->value.enumerated.item[0]) {
 	case 0:
@@ -1059,6 +2222,7 @@ static int snd_audigy_spdif_output_rate_put(struct snd_kcontrol *kcontrol,
 	}
 
 	
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	reg = snd_emu10k1_ptr_read(emu, A_SPDIF_SAMPLERATE, 0);
 	tmp = reg & ~A_SPDIF_RATE_MASK;
@@ -1070,6 +2234,20 @@ static int snd_audigy_spdif_output_rate_put(struct snd_kcontrol *kcontrol,
 }
 
 static struct snd_kcontrol_new snd_audigy_spdif_output_rate =
+=======
+	spin_lock_irq(&emu->reg_lock);
+	reg = snd_emu10k1_ptr_read(emu, A_SPDIF_SAMPLERATE, 0);
+	tmp = reg & ~A_SPDIF_RATE_MASK;
+	tmp |= val;
+	change = (tmp != reg);
+	if (change)
+		snd_emu10k1_ptr_write(emu, A_SPDIF_SAMPLERATE, 0, tmp);
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_audigy_spdif_output_rate =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -1088,7 +2266,10 @@ static int snd_emu10k1_spdif_put(struct snd_kcontrol *kcontrol,
 	unsigned int idx = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 	int change;
 	unsigned int val;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Limit: emu->spdif_bits */
 	if (idx >= 3)
@@ -1097,17 +2278,27 @@ static int snd_emu10k1_spdif_put(struct snd_kcontrol *kcontrol,
 	      (ucontrol->value.iec958.status[1] << 8) |
 	      (ucontrol->value.iec958.status[2] << 16) |
 	      (ucontrol->value.iec958.status[3] << 24);
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	change = val != emu->spdif_bits[idx];
 	if (change) {
 		snd_emu10k1_ptr_write(emu, SPCS0 + idx, 0, val);
 		emu->spdif_bits[idx] = val;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_spdif_mask_control =
+=======
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_spdif_mask_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1117,7 +2308,11 @@ static struct snd_kcontrol_new snd_emu10k1_spdif_mask_control =
 	.get =          snd_emu10k1_spdif_get_mask
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_emu10k1_spdif_control =
+=======
+static const struct snd_kcontrol_new snd_emu10k1_spdif_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =         SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -1131,10 +2326,17 @@ static struct snd_kcontrol_new snd_emu10k1_spdif_control =
 static void update_emu10k1_fxrt(struct snd_emu10k1 *emu, int voice, unsigned char *route)
 {
 	if (emu->audigy) {
+<<<<<<< HEAD
 		snd_emu10k1_ptr_write(emu, A_FXRT1, voice,
 				      snd_emu10k1_compose_audigy_fxrt1(route));
 		snd_emu10k1_ptr_write(emu, A_FXRT2, voice,
 				      snd_emu10k1_compose_audigy_fxrt2(route));
+=======
+		snd_emu10k1_ptr_write_multiple(emu, voice,
+			A_FXRT1, snd_emu10k1_compose_audigy_fxrt1(route),
+			A_FXRT2, snd_emu10k1_compose_audigy_fxrt2(route),
+			REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		snd_emu10k1_ptr_write(emu, FXRT, voice,
 				      snd_emu10k1_compose_send_routing(route));
@@ -1148,11 +2350,16 @@ static void update_emu10k1_send_volume(struct snd_emu10k1 *emu, int voice, unsig
 	snd_emu10k1_ptr_write(emu, PSST_FXSENDAMOUNT_C, voice, volume[2]);
 	snd_emu10k1_ptr_write(emu, DSL_FXSENDAMOUNT_D, voice, volume[3]);
 	if (emu->audigy) {
+<<<<<<< HEAD
 		unsigned int val = ((unsigned int)volume[4] << 24) |
 			((unsigned int)volume[5] << 16) |
 			((unsigned int)volume[6] << 8) |
 			(unsigned int)volume[7];
 		snd_emu10k1_ptr_write(emu, A_SENDAMOUNTS, voice, val);
+=======
+		snd_emu10k1_ptr_write(emu, A_SENDAMOUNTS, voice,
+				      snd_emu10k1_compose_audigy_sendamounts(volume));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1171,7 +2378,10 @@ static int snd_emu10k1_send_routing_info(struct snd_kcontrol *kcontrol, struct s
 static int snd_emu10k1_send_routing_get(struct snd_kcontrol *kcontrol,
                                         struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
@@ -1179,19 +2389,28 @@ static int snd_emu10k1_send_routing_get(struct snd_kcontrol *kcontrol,
 	int num_efx = emu->audigy ? 8 : 4;
 	int mask = emu->audigy ? 0x3f : 0x0f;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (voice = 0; voice < 3; voice++)
 		for (idx = 0; idx < num_efx; idx++)
 			ucontrol->value.integer.value[(voice * num_efx) + idx] = 
 				mix->send_routing[voice][idx] & mask;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_send_routing_put(struct snd_kcontrol *kcontrol,
                                         struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
@@ -1199,7 +2418,11 @@ static int snd_emu10k1_send_routing_put(struct snd_kcontrol *kcontrol,
 	int num_efx = emu->audigy ? 8 : 4;
 	int mask = emu->audigy ? 0x3f : 0x0f;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+	spin_lock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (voice = 0; voice < 3; voice++)
 		for (idx = 0; idx < num_efx; idx++) {
 			val = ucontrol->value.integer.value[(voice * num_efx) + idx] & mask;
@@ -1208,6 +2431,7 @@ static int snd_emu10k1_send_routing_put(struct snd_kcontrol *kcontrol,
 				change = 1;
 			}
 		}	
+<<<<<<< HEAD
 	if (change && mix->epcm) {
 		if (mix->epcm->voices[0] && mix->epcm->voices[1]) {
 			update_emu10k1_fxrt(emu, mix->epcm->voices[0]->number,
@@ -1215,15 +2439,32 @@ static int snd_emu10k1_send_routing_put(struct snd_kcontrol *kcontrol,
 			update_emu10k1_fxrt(emu, mix->epcm->voices[1]->number,
 					    &mix->send_routing[2][0]);
 		} else if (mix->epcm->voices[0]) {
+=======
+	if (change && mix->epcm && mix->epcm->voices[0]) {
+		if (!mix->epcm->voices[0]->last) {
+			update_emu10k1_fxrt(emu, mix->epcm->voices[0]->number,
+					    &mix->send_routing[1][0]);
+			update_emu10k1_fxrt(emu, mix->epcm->voices[0]->number + 1,
+					    &mix->send_routing[2][0]);
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			update_emu10k1_fxrt(emu, mix->epcm->voices[0]->number,
 					    &mix->send_routing[0][0]);
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_send_routing_control =
+=======
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_send_routing_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1247,31 +2488,46 @@ static int snd_emu10k1_send_volume_info(struct snd_kcontrol *kcontrol, struct sn
 static int snd_emu10k1_send_volume_get(struct snd_kcontrol *kcontrol,
                                        struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
 	int idx;
 	int num_efx = emu->audigy ? 8 : 4;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	for (idx = 0; idx < 3*num_efx; idx++)
 		ucontrol->value.integer.value[idx] = mix->send_volume[idx/num_efx][idx%num_efx];
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+	for (idx = 0; idx < 3*num_efx; idx++)
+		ucontrol->value.integer.value[idx] = mix->send_volume[idx/num_efx][idx%num_efx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_send_volume_put(struct snd_kcontrol *kcontrol,
                                        struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
 	int change = 0, idx, val;
 	int num_efx = emu->audigy ? 8 : 4;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+	spin_lock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < 3*num_efx; idx++) {
 		val = ucontrol->value.integer.value[idx] & 255;
 		if (mix->send_volume[idx/num_efx][idx%num_efx] != val) {
@@ -1279,6 +2535,7 @@ static int snd_emu10k1_send_volume_put(struct snd_kcontrol *kcontrol,
 			change = 1;
 		}
 	}
+<<<<<<< HEAD
 	if (change && mix->epcm) {
 		if (mix->epcm->voices[0] && mix->epcm->voices[1]) {
 			update_emu10k1_send_volume(emu, mix->epcm->voices[0]->number,
@@ -1286,15 +2543,32 @@ static int snd_emu10k1_send_volume_put(struct snd_kcontrol *kcontrol,
 			update_emu10k1_send_volume(emu, mix->epcm->voices[1]->number,
 						   &mix->send_volume[2][0]);
 		} else if (mix->epcm->voices[0]) {
+=======
+	if (change && mix->epcm && mix->epcm->voices[0]) {
+		if (!mix->epcm->voices[0]->last) {
+			update_emu10k1_send_volume(emu, mix->epcm->voices[0]->number,
+						   &mix->send_volume[1][0]);
+			update_emu10k1_send_volume(emu, mix->epcm->voices[0]->number + 1,
+						   &mix->send_volume[2][0]);
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			update_emu10k1_send_volume(emu, mix->epcm->voices[0]->number,
 						   &mix->send_volume[0][0]);
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_send_volume_control =
+=======
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_send_volume_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1310,7 +2584,11 @@ static int snd_emu10k1_attn_info(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 3;
 	uinfo->value.integer.min = 0;
+<<<<<<< HEAD
 	uinfo->value.integer.max = 0xffff;
+=======
+	uinfo->value.integer.max = 0x1fffd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1320,6 +2598,7 @@ static int snd_emu10k1_attn_get(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
+<<<<<<< HEAD
 	unsigned long flags;
 	int idx;
 
@@ -1327,26 +2606,43 @@ static int snd_emu10k1_attn_get(struct snd_kcontrol *kcontrol,
 	for (idx = 0; idx < 3; idx++)
 		ucontrol->value.integer.value[idx] = mix->attn[idx];
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+	int idx;
+
+	for (idx = 0; idx < 3; idx++)
+		ucontrol->value.integer.value[idx] = mix->attn[idx] * 0xffffU / 0x8000U;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_attn_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
 	int change = 0, idx, val;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	for (idx = 0; idx < 3; idx++) {
 		val = ucontrol->value.integer.value[idx] & 0xffff;
+=======
+	spin_lock_irq(&emu->reg_lock);
+	for (idx = 0; idx < 3; idx++) {
+		unsigned uval = ucontrol->value.integer.value[idx] & 0x1ffff;
+		val = uval * 0x8000U / 0xffffU;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mix->attn[idx] != val) {
 			mix->attn[idx] = val;
 			change = 1;
 		}
 	}
+<<<<<<< HEAD
 	if (change && mix->epcm) {
 		if (mix->epcm->voices[0] && mix->epcm->voices[1]) {
 			snd_emu10k1_ptr_write(emu, VTFT_VOLUMETARGET, mix->epcm->voices[0]->number, mix->attn[1]);
@@ -1360,6 +2656,21 @@ static int snd_emu10k1_attn_put(struct snd_kcontrol *kcontrol,
 }
 
 static struct snd_kcontrol_new snd_emu10k1_attn_control =
+=======
+	if (change && mix->epcm && mix->epcm->voices[0]) {
+		if (!mix->epcm->voices[0]->last) {
+			snd_emu10k1_ptr_write(emu, VTFT_VOLUMETARGET, mix->epcm->voices[0]->number, mix->attn[1]);
+			snd_emu10k1_ptr_write(emu, VTFT_VOLUMETARGET, mix->epcm->voices[0]->number + 1, mix->attn[2]);
+		} else {
+			snd_emu10k1_ptr_write(emu, VTFT_VOLUMETARGET, mix->epcm->voices[0]->number, mix->attn[0]);
+		}
+	}
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_attn_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1385,7 +2696,10 @@ static int snd_emu10k1_efx_send_routing_info(struct snd_kcontrol *kcontrol, stru
 static int snd_emu10k1_efx_send_routing_get(struct snd_kcontrol *kcontrol,
                                         struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->efx_pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
@@ -1393,18 +2707,27 @@ static int snd_emu10k1_efx_send_routing_get(struct snd_kcontrol *kcontrol,
 	int num_efx = emu->audigy ? 8 : 4;
 	int mask = emu->audigy ? 0x3f : 0x0f;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	for (idx = 0; idx < num_efx; idx++)
 		ucontrol->value.integer.value[idx] = 
 			mix->send_routing[0][idx] & mask;
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+	for (idx = 0; idx < num_efx; idx++)
+		ucontrol->value.integer.value[idx] = 
+			mix->send_routing[0][idx] & mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_efx_send_routing_put(struct snd_kcontrol *kcontrol,
                                         struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	int ch = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 	struct snd_emu10k1_pcm_mixer *mix = &emu->efx_pcm_mixer[ch];
@@ -1412,7 +2735,11 @@ static int snd_emu10k1_efx_send_routing_put(struct snd_kcontrol *kcontrol,
 	int num_efx = emu->audigy ? 8 : 4;
 	int mask = emu->audigy ? 0x3f : 0x0f;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+	spin_lock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < num_efx; idx++) {
 		val = ucontrol->value.integer.value[idx] & mask;
 		if (mix->send_routing[0][idx] != val) {
@@ -1427,11 +2754,19 @@ static int snd_emu10k1_efx_send_routing_put(struct snd_kcontrol *kcontrol,
 					&mix->send_routing[0][0]);
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_efx_send_routing_control =
+=======
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_efx_send_routing_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1455,31 +2790,46 @@ static int snd_emu10k1_efx_send_volume_info(struct snd_kcontrol *kcontrol, struc
 static int snd_emu10k1_efx_send_volume_get(struct snd_kcontrol *kcontrol,
                                        struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->efx_pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
 	int idx;
 	int num_efx = emu->audigy ? 8 : 4;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	for (idx = 0; idx < num_efx; idx++)
 		ucontrol->value.integer.value[idx] = mix->send_volume[0][idx];
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+	for (idx = 0; idx < num_efx; idx++)
+		ucontrol->value.integer.value[idx] = mix->send_volume[0][idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_efx_send_volume_put(struct snd_kcontrol *kcontrol,
                                        struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	int ch = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 	struct snd_emu10k1_pcm_mixer *mix = &emu->efx_pcm_mixer[ch];
 	int change = 0, idx, val;
 	int num_efx = emu->audigy ? 8 : 4;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
+=======
+	spin_lock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < num_efx; idx++) {
 		val = ucontrol->value.integer.value[idx] & 255;
 		if (mix->send_volume[0][idx] != val) {
@@ -1493,12 +2843,20 @@ static int snd_emu10k1_efx_send_volume_put(struct snd_kcontrol *kcontrol,
 						   &mix->send_volume[0][0]);
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+	spin_unlock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return change;
 }
 
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_emu10k1_efx_send_volume_control =
+=======
+static const struct snd_kcontrol_new snd_emu10k1_efx_send_volume_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1514,7 +2872,11 @@ static int snd_emu10k1_efx_attn_info(struct snd_kcontrol *kcontrol, struct snd_c
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 1;
 	uinfo->value.integer.min = 0;
+<<<<<<< HEAD
 	uinfo->value.integer.max = 0xffff;
+=======
+	uinfo->value.integer.max = 0x1fffd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1524,25 +2886,41 @@ static int snd_emu10k1_efx_attn_get(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	struct snd_emu10k1_pcm_mixer *mix =
 		&emu->efx_pcm_mixer[snd_ctl_get_ioffidx(kcontrol, &ucontrol->id)];
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	ucontrol->value.integer.value[0] = mix->attn[0];
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+
+	ucontrol->value.integer.value[0] = mix->attn[0] * 0xffffU / 0x8000U;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_emu10k1_efx_attn_put(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	int ch = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 	struct snd_emu10k1_pcm_mixer *mix = &emu->efx_pcm_mixer[ch];
 	int change = 0, val;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	val = ucontrol->value.integer.value[0] & 0xffff;
+=======
+	unsigned uval;
+
+	spin_lock_irq(&emu->reg_lock);
+	uval = ucontrol->value.integer.value[0] & 0x1ffff;
+	val = uval * 0x8000U / 0xffffU;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mix->attn[0] != val) {
 		mix->attn[0] = val;
 		change = 1;
@@ -1552,11 +2930,19 @@ static int snd_emu10k1_efx_attn_put(struct snd_kcontrol *kcontrol,
 			snd_emu10k1_ptr_write(emu, VTFT_VOLUMETARGET, mix->epcm->voices[ch]->number, mix->attn[0]);
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_efx_attn_control =
+=======
+	spin_unlock_irq(&emu->reg_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_efx_attn_control =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1575,7 +2961,11 @@ static int snd_emu10k1_shared_spdif_get(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 
 	if (emu->audigy)
+<<<<<<< HEAD
 		ucontrol->value.integer.value[0] = inl(emu->port + A_IOCFG) & A_IOCFG_GPOUT0 ? 1 : 0;
+=======
+		ucontrol->value.integer.value[0] = inw(emu->port + A_IOCFG) & A_IOCFG_GPOUT0 ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ucontrol->value.integer.value[0] = inl(emu->port + HCFG) & HCFG_GPOUT0 ? 1 : 0;
 	if (emu->card_capabilities->invert_shared_spdif)
@@ -1588,7 +2978,10 @@ static int snd_emu10k1_shared_spdif_get(struct snd_kcontrol *kcontrol,
 static int snd_emu10k1_shared_spdif_put(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int reg, val, sw;
 	int change = 0;
@@ -1596,17 +2989,29 @@ static int snd_emu10k1_shared_spdif_put(struct snd_kcontrol *kcontrol,
 	sw = ucontrol->value.integer.value[0];
 	if (emu->card_capabilities->invert_shared_spdif)
 		sw = !sw;
+<<<<<<< HEAD
 	spin_lock_irqsave(&emu->reg_lock, flags);
 	if ( emu->card_capabilities->i2c_adc) {
 		/* Do nothing for Audigy 2 ZS Notebook */
 	} else if (emu->audigy) {
 		reg = inl(emu->port + A_IOCFG);
+=======
+	spin_lock_irq(&emu->emu_lock);
+	if ( emu->card_capabilities->i2c_adc) {
+		/* Do nothing for Audigy 2 ZS Notebook */
+	} else if (emu->audigy) {
+		reg = inw(emu->port + A_IOCFG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = sw ? A_IOCFG_GPOUT0 : 0;
 		change = (reg & A_IOCFG_GPOUT0) != val;
 		if (change) {
 			reg &= ~A_IOCFG_GPOUT0;
 			reg |= val;
+<<<<<<< HEAD
 			outl(reg | val, emu->port + A_IOCFG);
+=======
+			outw(reg | val, emu->port + A_IOCFG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	reg = inl(emu->port + HCFG);
@@ -1617,11 +3022,19 @@ static int snd_emu10k1_shared_spdif_put(struct snd_kcontrol *kcontrol,
 		reg |= val;
 		outl(reg | val, emu->port + HCFG);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
 	return change;
 }
 
 static struct snd_kcontrol_new snd_emu10k1_shared_spdif __devinitdata =
+=======
+	spin_unlock_irq(&emu->emu_lock);
+	return change;
+}
+
+static const struct snd_kcontrol_new snd_emu10k1_shared_spdif =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"SB Live Analog/Digital Output Jack",
@@ -1630,7 +3043,11 @@ static struct snd_kcontrol_new snd_emu10k1_shared_spdif __devinitdata =
 	.put =		snd_emu10k1_shared_spdif_put
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_audigy_shared_spdif __devinitdata =
+=======
+static const struct snd_kcontrol_new snd_audigy_shared_spdif =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Audigy Analog/Digital Output Jack",
@@ -1668,10 +3085,17 @@ static int snd_audigy_capture_boost_put(struct snd_kcontrol *kcontrol,
 	return snd_ac97_update(emu->ac97, AC97_REC_GAIN, val);
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_audigy_capture_boost __devinitdata =
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Analog Capture Boost",
+=======
+static const struct snd_kcontrol_new snd_audigy_capture_boost =
+{
+	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name =		"Mic Extra Boost",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =		snd_audigy_capture_boost_info,
 	.get =		snd_audigy_capture_boost_get,
 	.put =		snd_audigy_capture_boost_put
@@ -1697,6 +3121,7 @@ static int remove_ctl(struct snd_card *card, const char *name)
 	return snd_ctl_remove_id(card, &id);
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
 {
 	struct snd_ctl_elem_id sid;
@@ -1711,11 +3136,19 @@ static int rename_ctl(struct snd_card *card, const char *src, const char *dst)
 	struct snd_kcontrol *kctl = ctl_find(card, src);
 	if (kctl) {
 		strcpy(kctl->id.name, dst);
+=======
+static int rename_ctl(struct snd_card *card, const char *src, const char *dst)
+{
+	struct snd_kcontrol *kctl = snd_ctl_find_id_mixer(card, src);
+	if (kctl) {
+		snd_ctl_rename(card, kctl, dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return -ENOENT;
 }
 
+<<<<<<< HEAD
 int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 				int pcm_device, int multi_device)
 {
@@ -1724,6 +3157,16 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 	struct snd_card *card = emu->card;
 	char **c;
 	static char *emu10k1_remove_ctls[] = {
+=======
+int snd_emu10k1_mixer(struct snd_emu10k1 *emu,
+		      int pcm_device, int multi_device)
+{
+	int err;
+	struct snd_kcontrol *kctl;
+	struct snd_card *card = emu->card;
+	const char * const *c;
+	static const char * const emu10k1_remove_ctls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* no AC97 mono, surround, center/lfe */
 		"Master Mono Playback Switch",
 		"Master Mono Playback Volume",
@@ -1737,20 +3180,31 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"LFE Playback Volume",
 		NULL
 	};
+<<<<<<< HEAD
 	static char *emu10k1_rename_ctls[] = {
+=======
+	static const char * const emu10k1_rename_ctls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Surround Digital Playback Volume", "Surround Playback Volume",
 		"Center Digital Playback Volume", "Center Playback Volume",
 		"LFE Digital Playback Volume", "LFE Playback Volume",
 		NULL
 	};
+<<<<<<< HEAD
 	static char *audigy_remove_ctls[] = {
+=======
+	static const char * const audigy_remove_ctls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Master/PCM controls on ac97 of Audigy has no effect */
 		/* On the Audigy2 the AC97 playback is piped into
 		 * the Philips ADC for 24bit capture */
 		"PCM Playback Switch",
 		"PCM Playback Volume",
+<<<<<<< HEAD
 		"Master Mono Playback Switch",
 		"Master Mono Playback Volume",
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Master Playback Switch",
 		"Master Playback Volume",
 		"PCM Out Path & Mute",
@@ -1760,21 +3214,44 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"Capture Switch",
 		"Capture Volume",
 		"Mic Select",
+<<<<<<< HEAD
+=======
+		"Headphone Playback Switch",
+		"Headphone Playback Volume",
+		"3D Control - Center",
+		"3D Control - Depth",
+		"3D Control - Switch",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Video Playback Switch",
 		"Video Playback Volume",
 		"Mic Playback Switch",
 		"Mic Playback Volume",
+<<<<<<< HEAD
 		NULL
 	};
 	static char *audigy_rename_ctls[] = {
+=======
+		"External Amplifier",
+		NULL
+	};
+	static const char * const audigy_rename_ctls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* use conventional names */
 		"Wave Playback Volume", "PCM Playback Volume",
 		/* "Wave Capture Volume", "PCM Capture Volume", */
 		"Wave Master Playback Volume", "Master Playback Volume",
 		"AMic Playback Volume", "Mic Playback Volume",
+<<<<<<< HEAD
 		NULL
 	};
 	static char *audigy_rename_ctls_i2c_adc[] = {
+=======
+		"Master Mono Playback Switch", "Phone Output Playback Switch",
+		"Master Mono Playback Volume", "Phone Output Playback Volume",
+		NULL
+	};
+	static const char * const audigy_rename_ctls_i2c_adc[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		//"Analog Mix Capture Volume","OLD Analog Mix Capture Volume",
 		"Line Capture Volume", "Analog Mix Capture Volume",
 		"Wave Playback Volume", "OLD PCM Playback Volume",
@@ -1783,7 +3260,11 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"CD Capture Volume", "IEC958 Optical Capture Volume",
 		NULL
 	};
+<<<<<<< HEAD
 	static char *audigy_remove_ctls_i2c_adc[] = {
+=======
+	static const char * const audigy_remove_ctls_i2c_adc[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* On the Audigy2 ZS Notebook
 		 * Capture via WM8775  */
 		"Mic Capture Volume",
@@ -1792,13 +3273,20 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"IEC958 Optical Capture Volume",
 		NULL
 	};
+<<<<<<< HEAD
 	static char *audigy_remove_ctls_1361t_adc[] = {
+=======
+	static const char * const audigy_remove_ctls_1361t_adc[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* On the Audigy2 the AC97 playback is piped into
 		 * the Philips ADC for 24bit capture */
 		"PCM Playback Switch",
 		"PCM Playback Volume",
+<<<<<<< HEAD
 		"Master Mono Playback Switch",
 		"Master Mono Playback Volume",
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Capture Source",
 		"Capture Switch",
 		"Capture Volume",
@@ -1812,7 +3300,11 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"Line2 Capture Volume",
 		NULL
 	};
+<<<<<<< HEAD
 	static char *audigy_rename_ctls_1361t_adc[] = {
+=======
+	static const char * const audigy_rename_ctls_1361t_adc[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Master Playback Switch", "Master Capture Switch",
 		"Master Playback Volume", "Master Capture Volume",
 		"Wave Master Playback Volume", "Master Playback Volume",
@@ -1830,19 +3322,33 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		"Aux Playback Volume", "Aux Capture Volume",
 		"Video Playback Switch", "Video Capture Switch",
 		"Video Playback Volume", "Video Capture Volume",
+<<<<<<< HEAD
 
+=======
+		"Master Mono Playback Switch", "Phone Output Playback Switch",
+		"Master Mono Playback Volume", "Phone Output Playback Volume",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		NULL
 	};
 
 	if (emu->card_capabilities->ac97_chip) {
 		struct snd_ac97_bus *pbus;
 		struct snd_ac97_template ac97;
+<<<<<<< HEAD
 		static struct snd_ac97_bus_ops ops = {
+=======
+		static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.write = snd_emu10k1_ac97_write,
 			.read = snd_emu10k1_ac97_read,
 		};
 
+<<<<<<< HEAD
 		if ((err = snd_ac97_bus(emu->card, 0, &ops, NULL, &pbus)) < 0)
+=======
+		err = snd_ac97_bus(emu->card, 0, &ops, NULL, &pbus);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		pbus->no_vra = 1; /* we don't need VRA */
 		
@@ -1850,11 +3356,22 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		ac97.private_data = emu;
 		ac97.private_free = snd_emu10k1_mixer_free_ac97;
 		ac97.scaps = AC97_SCAP_NO_SPDIF;
+<<<<<<< HEAD
 		if ((err = snd_ac97_mixer(pbus, &ac97, &emu->ac97)) < 0) {
 			if (emu->card_capabilities->ac97_chip == 1)
 				return err;
 			snd_printd(KERN_INFO "emu10k1: AC97 is optional on this board\n");
 			snd_printd(KERN_INFO"          Proceeding without ac97 mixers...\n");
+=======
+		err = snd_ac97_mixer(pbus, &ac97, &emu->ac97);
+		if (err < 0) {
+			if (emu->card_capabilities->ac97_chip == 1)
+				return err;
+			dev_info(emu->card->dev,
+				 "AC97 is optional on this board\n");
+			dev_info(emu->card->dev,
+				 "Proceeding without ac97 mixers...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_device_free(emu->card, pbus);
 			goto no_ac97; /* FIXME: get rid of ugly gotos.. */
 		}
@@ -1863,6 +3380,12 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 			snd_ac97_write_cache(emu->ac97, AC97_MASTER, 0x0000);
 			/* set capture source to mic */
 			snd_ac97_write_cache(emu->ac97, AC97_REC_SEL, 0x0000);
+<<<<<<< HEAD
+=======
+			/* set mono output (TAD) to mic */
+			snd_ac97_update_bits(emu->ac97, AC97_GENERAL_PURPOSE,
+				0x0200, 0x0200);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (emu->card_capabilities->adc_1361t)
 				c = audigy_remove_ctls_1361t_adc;
 			else 
@@ -1924,6 +3447,7 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		rename_ctl(card, "Analog Mix Capture Volume", "Line2 Capture Volume");
 		rename_ctl(card, "Aux2 Capture Volume", "Line3 Capture Volume");
 		rename_ctl(card, "Mic Capture Volume", "Unknown1 Capture Volume");
+<<<<<<< HEAD
 		remove_ctl(card, "Headphone Playback Switch");
 		remove_ctl(card, "Headphone Playback Volume");
 		remove_ctl(card, "3D Control - Center");
@@ -2019,12 +3543,79 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		if (!emu->audigy)
 			kctl->id.device = emu->pcm_efx->device;
 		if ((err = snd_ctl_add(card, kctl)))
+=======
+	}
+	kctl = emu->ctl_send_routing = snd_ctl_new1(&snd_emu10k1_send_routing_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = pcm_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	kctl = emu->ctl_send_volume = snd_ctl_new1(&snd_emu10k1_send_volume_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = pcm_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	kctl = emu->ctl_attn = snd_ctl_new1(&snd_emu10k1_attn_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = pcm_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+
+	kctl = emu->ctl_efx_send_routing = snd_ctl_new1(&snd_emu10k1_efx_send_routing_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = multi_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	
+	kctl = emu->ctl_efx_send_volume = snd_ctl_new1(&snd_emu10k1_efx_send_volume_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = multi_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+	
+	kctl = emu->ctl_efx_attn = snd_ctl_new1(&snd_emu10k1_efx_attn_control, emu);
+	if (!kctl)
+		return -ENOMEM;
+	kctl->id.device = multi_device;
+	err = snd_ctl_add(card, kctl);
+	if (err)
+		return err;
+
+	if (!emu->card_capabilities->ecard && !emu->card_capabilities->emu_model) {
+		/* sb live! and audigy */
+		kctl = snd_ctl_new1(&snd_emu10k1_spdif_mask_control, emu);
+		if (!kctl)
+			return -ENOMEM;
+		if (!emu->audigy)
+			kctl->id.device = emu->pcm_efx->device;
+		err = snd_ctl_add(card, kctl);
+		if (err)
+			return err;
+		kctl = snd_ctl_new1(&snd_emu10k1_spdif_control, emu);
+		if (!kctl)
+			return -ENOMEM;
+		if (!emu->audigy)
+			kctl->id.device = emu->pcm_efx->device;
+		err = snd_ctl_add(card, kctl);
+		if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	if (emu->card_capabilities->emu_model) {
 		;  /* Disable the snd_audigy_spdif_shared_spdif */
 	} else if (emu->audigy) {
+<<<<<<< HEAD
 		if ((kctl = snd_ctl_new1(&snd_audigy_shared_spdif, emu)) == NULL)
 			return -ENOMEM;
 		if ((err = snd_ctl_add(card, kctl)))
@@ -2033,10 +3624,25 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		if ((kctl = snd_ctl_new1(&snd_audigy_spdif_output_rate, emu)) == NULL)
 			return -ENOMEM;
 		if ((err = snd_ctl_add(card, kctl)))
+=======
+		kctl = snd_ctl_new1(&snd_audigy_shared_spdif, emu);
+		if (!kctl)
+			return -ENOMEM;
+		err = snd_ctl_add(card, kctl);
+		if (err)
+			return err;
+#if 0
+		kctl = snd_ctl_new1(&snd_audigy_spdif_output_rate, emu);
+		if (!kctl)
+			return -ENOMEM;
+		err = snd_ctl_add(card, kctl);
+		if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 #endif
 	} else if (! emu->card_capabilities->ecard) {
 		/* sb live! */
+<<<<<<< HEAD
 		if ((kctl = snd_ctl_new1(&snd_emu10k1_shared_spdif, emu)) == NULL)
 			return -ENOMEM;
 		if ((err = snd_ctl_add(card, kctl)))
@@ -2114,22 +3720,94 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		}
 		err = snd_ctl_add(card,
 			snd_ctl_new1(&snd_emu1010_internal_clock, emu));
+=======
+		kctl = snd_ctl_new1(&snd_emu10k1_shared_spdif, emu);
+		if (!kctl)
+			return -ENOMEM;
+		err = snd_ctl_add(card, kctl);
+		if (err)
+			return err;
+	}
+	if (emu->card_capabilities->ca0151_chip) { /* P16V */
+		err = snd_p16v_mixer(emu);
+		if (err)
+			return err;
+	}
+
+	if (emu->card_capabilities->emu_model) {
+		unsigned i, emu_idx = emu1010_idx(emu);
+		const struct snd_emu1010_routing_info *emu_ri =
+			&emu1010_routing_info[emu_idx];
+		const struct snd_emu1010_pads_info *emu_pi = &emu1010_pads_info[emu_idx];
+
+		for (i = 0; i < emu_ri->n_ins; i++)
+			emu->emu1010.input_source[i] =
+				emu1010_map_source(emu_ri, emu_ri->in_dflts[i]);
+		for (i = 0; i < emu_ri->n_outs; i++)
+			emu->emu1010.output_source[i] =
+				emu1010_map_source(emu_ri, emu_ri->out_dflts[i]);
+		snd_emu1010_fpga_lock(emu);
+		snd_emu1010_apply_sources(emu);
+		snd_emu1010_fpga_unlock(emu);
+
+		kctl = emu->ctl_clock_source = snd_ctl_new1(&snd_emu1010_clock_source, emu);
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+			return err;
+		err = snd_ctl_add(card,
+			snd_ctl_new1(&snd_emu1010_clock_fallback, emu));
+		if (err < 0)
+			return err;
+
+		err = add_ctls(emu, &emu1010_adc_pads_ctl,
+			       emu_pi->adc_ctls, emu_pi->n_adc_ctls);
+		if (err < 0)
+			return err;
+		err = add_ctls(emu, &emu1010_dac_pads_ctl,
+			       emu_pi->dac_ctls, emu_pi->n_dac_ctls);
+		if (err < 0)
+			return err;
+
+		if (!emu->card_capabilities->no_adat) {
+			err = snd_ctl_add(card,
+				snd_ctl_new1(&snd_emu1010_optical_out, emu));
+			if (err < 0)
+				return err;
+			err = snd_ctl_add(card,
+				snd_ctl_new1(&snd_emu1010_optical_in, emu));
+			if (err < 0)
+				return err;
+		}
+
+		err = add_emu1010_source_mixers(emu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
 
 	if ( emu->card_capabilities->i2c_adc) {
+<<<<<<< HEAD
 		int i;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_audigy_i2c_capture_source, emu));
 		if (err < 0)
 			return err;
 
+<<<<<<< HEAD
 		for (i = 0; i < ARRAY_SIZE(snd_audigy_i2c_volume_ctls); i++) {
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_audigy_i2c_volume_ctls[i], emu));
 			if (err < 0)
 				return err;
 		}
+=======
+		err = add_ctls(emu, &i2c_volume_ctl,
+			       snd_audigy_i2c_volume_ctls,
+			       ARRAY_SIZE(snd_audigy_i2c_volume_ctls));
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 		
 	if (emu->card_capabilities->ac97_chip && emu->audigy) {

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -36,7 +43,12 @@ struct ht_priv {
 	unsigned int	tx_amsdu_enable;/*for enable Tx A-MSDU */
 	unsigned int	tx_amdsu_maxlen; /* 1: 8k, 0:4k ; default:8k, for tx */
 	unsigned int	rx_ampdu_maxlen; /* for rx reordering ctrl win_sz,
+<<<<<<< HEAD
 					  *  updated when join_callback. */
+=======
+					  * updated when join_callback.
+					  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_ht_cap ht_cap;
 };
 

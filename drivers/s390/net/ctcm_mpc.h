@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  * drivers/s390/net/ctcm_mpc.h
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright IBM Corp. 2007
  * Authors:	Peter Tiedemann (ptiedem@de.ibm.com)
  *
@@ -229,7 +234,10 @@ static inline void ctcmpc_dump32(char *buf, int len)
 		ctcmpc_dumpit(buf, 32);
 }
 
+<<<<<<< HEAD
 int ctcmpc_open(struct net_device *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ctcm_ccw_check_rc(struct channel *, int, char *);
 void mpc_group_ready(unsigned long adev);
 void mpc_channel_action(struct channel *ch, int direction, int action);

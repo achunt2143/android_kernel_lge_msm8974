@@ -1,23 +1,41 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_SPINLOCK_H
 #define _ASM_X86_SPINLOCK_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_SPINLOCK_H
+#define _ASM_X86_SPINLOCK_H
+
+#include <linux/jump_label.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <linux/compiler.h>
 #include <asm/paravirt.h>
+<<<<<<< HEAD
+=======
+#include <asm/bitops.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
  *
  * Simple spin lock operations.  There are two variants, one clears IRQ's
  * on the local processor, one does not.
  *
+<<<<<<< HEAD
  * These are fair FIFO ticket locks, which are currently limited to 256
  * CPUs.
+=======
+ * These are fair FIFO ticket locks, which support up to 2^16 CPUs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * (the type definitions are in asm/spinlock_types.h)
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_32
 # define LOCK_PTR_REG "a"
 # define REG_PTR_MODE "k"
@@ -139,6 +157,12 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 	while (arch_spin_is_locked(lock))
 		cpu_relax();
 }
+=======
+/* How long a lock should spin before we consider blocking */
+#define SPIN_THRESHOLD	(1 << 15)
+
+#include <asm/qspinlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Read-write spinlocks, allowing multiple readers
@@ -150,6 +174,7 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
  * irq-safe write-lock, but readers can get non-irqsafe
  * read-locks.
  *
+<<<<<<< HEAD
  * On x86, we implement read-write locks as a 32-bit counter
  * with the high bit (sign) being the "contended" bit.
  */
@@ -239,5 +264,12 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
 /* The {read|write|spin}_lock() on x86 are full memory barriers. */
 static inline void smp_mb__after_lock(void) { }
 #define ARCH_HAS_SMP_MB_AFTER_LOCK
+=======
+ * On x86, we implement read-write locks using the generic qrwlock with
+ * x86 specific optimization.
+ */
+
+#include <asm/qrwlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_SPINLOCK_H */

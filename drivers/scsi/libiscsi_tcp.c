@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iSCSI over TCP/IP Data-Path lib
  *
@@ -7,6 +11,7 @@
  * Copyright (C) 2006 Red Hat, Inc.  All rights reserved.
  * maintained by open-iscsi@googlegroups.com
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *
  * See the file COPYING included with this distribution for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Credits:
  *	Christoph Hellwig
  *	FUJITA Tomonori
@@ -26,13 +33,20 @@
  *	Zhenyu Wang
  */
 
+<<<<<<< HEAD
+=======
+#include <crypto/hash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/inet.h>
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kfifo.h>
 #include <linux/scatterlist.h>
@@ -43,6 +57,10 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_transport_iscsi.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/iscsi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "iscsi_tcp.h"
 
@@ -65,6 +83,12 @@ MODULE_PARM_DESC(debug_libiscsi_tcp, "Turn on debugging for libiscsi_tcp "
 			iscsi_conn_printk(KERN_INFO, _conn,	\
 					     "%s " dbg_fmt,	\
 					     __func__, ##arg);	\
+<<<<<<< HEAD
+=======
+		iscsi_dbg_trace(trace_iscsi_dbg_tcp,		\
+				&(_conn)->cls_conn->dev,	\
+				"%s " dbg_fmt, __func__, ##arg);\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0);
 
 static int iscsi_tcp_hdr_recv_done(struct iscsi_tcp_conn *tcp_conn,
@@ -125,12 +149,26 @@ static void iscsi_tcp_segment_map(struct iscsi_segment *segment, int recv)
 	BUG_ON(sg->length == 0);
 
 	/*
+<<<<<<< HEAD
 	 * If the page count is greater than one it is ok to send
 	 * to the network layer's zero copy send path. If not we
 	 * have to go the slow sendmsg path. We always map for the
 	 * recv path.
 	 */
 	if (page_count(sg_page(sg)) >= 1 && !recv)
+=======
+	 * We always map for the recv path.
+	 *
+	 * If the page count is greater than one it is ok to send
+	 * to the network layer's zero copy send path. If not we
+	 * have to go the slow sendmsg path.
+	 *
+	 * Same goes for slab pages: skb_can_coalesce() allows
+	 * coalescing neighboring slab objects into a single frag which
+	 * triggers one of hardened usercopy checks.
+	 */
+	if (!recv && sendpage_ok(sg_page(sg)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (recv) {
@@ -214,7 +252,12 @@ int iscsi_tcp_segment_done(struct iscsi_tcp_conn *tcp_conn,
 		} else
 			sg_init_one(&sg, segment->data + segment->copied,
 				    copied);
+<<<<<<< HEAD
 		crypto_hash_update(segment->hash, &sg, copied);
+=======
+		ahash_request_set_crypt(segment->hash, &sg, NULL, copied);
+		crypto_ahash_update(segment->hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	segment->copied += copied;
@@ -260,7 +303,13 @@ int iscsi_tcp_segment_done(struct iscsi_tcp_conn *tcp_conn,
 	 * is completely handled in hdr done function.
 	 */
 	if (segment->hash) {
+<<<<<<< HEAD
 		crypto_hash_final(segment->hash, segment->digest);
+=======
+		ahash_request_set_crypt(segment->hash, NULL,
+					segment->digest, 0);
+		crypto_ahash_final(segment->hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsi_tcp_segment_splice_digest(segment,
 				 recv ? segment->recv_digest : segment->digest);
 		return 0;
@@ -310,13 +359,23 @@ iscsi_tcp_segment_recv(struct iscsi_tcp_conn *tcp_conn,
 }
 
 inline void
+<<<<<<< HEAD
 iscsi_tcp_dgst_header(struct hash_desc *hash, const void *hdr, size_t hdrlen,
 		      unsigned char digest[ISCSI_DIGEST_SIZE])
+=======
+iscsi_tcp_dgst_header(struct ahash_request *hash, const void *hdr,
+		      size_t hdrlen, unsigned char digest[ISCSI_DIGEST_SIZE])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist sg;
 
 	sg_init_one(&sg, hdr, hdrlen);
+<<<<<<< HEAD
 	crypto_hash_digest(hash, &sg, hdrlen, digest);
+=======
+	ahash_request_set_crypt(hash, &sg, digest, hdrlen);
+	crypto_ahash_digest(hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(iscsi_tcp_dgst_header);
 
@@ -341,7 +400,11 @@ iscsi_tcp_dgst_verify(struct iscsi_tcp_conn *tcp_conn,
  */
 static inline void
 __iscsi_segment_init(struct iscsi_segment *segment, size_t size,
+<<<<<<< HEAD
 		     iscsi_segment_done_fn_t *done, struct hash_desc *hash)
+=======
+		     iscsi_segment_done_fn_t *done, struct ahash_request *hash)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(segment, 0, sizeof(*segment));
 	segment->total_size = size;
@@ -349,14 +412,22 @@ __iscsi_segment_init(struct iscsi_segment *segment, size_t size,
 
 	if (hash) {
 		segment->hash = hash;
+<<<<<<< HEAD
 		crypto_hash_init(hash);
+=======
+		crypto_ahash_init(hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 inline void
 iscsi_segment_init_linear(struct iscsi_segment *segment, void *data,
 			  size_t size, iscsi_segment_done_fn_t *done,
+<<<<<<< HEAD
 			  struct hash_desc *hash)
+=======
+			  struct ahash_request *hash)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__iscsi_segment_init(segment, size, done, hash);
 	segment->data = data;
@@ -368,7 +439,12 @@ inline int
 iscsi_segment_seek_sg(struct iscsi_segment *segment,
 		      struct scatterlist *sg_list, unsigned int sg_count,
 		      unsigned int offset, size_t size,
+<<<<<<< HEAD
 		      iscsi_segment_done_fn_t *done, struct hash_desc *hash)
+=======
+		      iscsi_segment_done_fn_t *done,
+		      struct ahash_request *hash)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist *sg;
 	unsigned int i;
@@ -431,7 +507,11 @@ static void
 iscsi_tcp_data_recv_prep(struct iscsi_tcp_conn *tcp_conn)
 {
 	struct iscsi_conn *conn = tcp_conn->iscsi_conn;
+<<<<<<< HEAD
 	struct hash_desc *rx_hash = NULL;
+=======
+	struct ahash_request *rx_hash = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (conn->datadgst_en &&
 	    !(conn->session->tt->caps & CAP_DIGEST_OFFLOAD))
@@ -446,7 +526,11 @@ iscsi_tcp_data_recv_prep(struct iscsi_tcp_conn *tcp_conn)
  * iscsi_tcp_cleanup_task - free tcp_task resources
  * @task: iscsi task
  *
+<<<<<<< HEAD
  * must be called with session lock
+=======
+ * must be called with session back_lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void iscsi_tcp_cleanup_task(struct iscsi_task *task)
 {
@@ -457,6 +541,10 @@ void iscsi_tcp_cleanup_task(struct iscsi_task *task)
 	if (!task->sc)
 		return;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&tcp_task->queue2pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* flush task's r2t queues */
 	while (kfifo_out(&tcp_task->r2tqueue, (void*)&r2t, sizeof(void*))) {
 		kfifo_in(&tcp_task->r2tpool.queue, (void*)&r2t,
@@ -470,6 +558,10 @@ void iscsi_tcp_cleanup_task(struct iscsi_task *task)
 			    sizeof(void*));
 		tcp_task->r2t = NULL;
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&tcp_task->queue2pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(iscsi_tcp_cleanup_task);
 
@@ -484,7 +576,11 @@ static int iscsi_tcp_data_in(struct iscsi_conn *conn, struct iscsi_task *task)
 	struct iscsi_tcp_task *tcp_task = task->dd_data;
 	struct iscsi_data_rsp *rhdr = (struct iscsi_data_rsp *)tcp_conn->in.hdr;
 	int datasn = be32_to_cpu(rhdr->datasn);
+<<<<<<< HEAD
 	unsigned total_in_length = scsi_in(task->sc)->length;
+=======
+	unsigned total_in_length = task->sc->sdb.length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * lib iscsi will update this in the completion handling if there
@@ -519,6 +615,7 @@ static int iscsi_tcp_data_in(struct iscsi_conn *conn, struct iscsi_task *task)
 /**
  * iscsi_tcp_r2t_rsp - iSCSI R2T Response processing
  * @conn: iscsi connection
+<<<<<<< HEAD
  * @task: scsi command task
  */
 static int iscsi_tcp_r2t_rsp(struct iscsi_conn *conn, struct iscsi_task *task)
@@ -531,10 +628,59 @@ static int iscsi_tcp_r2t_rsp(struct iscsi_conn *conn, struct iscsi_task *task)
 	int r2tsn = be32_to_cpu(rhdr->r2tsn);
 	int rc;
 
+=======
+ * @hdr: PDU header
+ */
+static int iscsi_tcp_r2t_rsp(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
+{
+	struct iscsi_session *session = conn->session;
+	struct iscsi_tcp_task *tcp_task;
+	struct iscsi_tcp_conn *tcp_conn;
+	struct iscsi_r2t_rsp *rhdr;
+	struct iscsi_r2t_info *r2t;
+	struct iscsi_task *task;
+	u32 data_length;
+	u32 data_offset;
+	int r2tsn;
+	int rc;
+
+	spin_lock(&session->back_lock);
+	task = iscsi_itt_to_ctask(conn, hdr->itt);
+	if (!task) {
+		spin_unlock(&session->back_lock);
+		return ISCSI_ERR_BAD_ITT;
+	} else if (task->sc->sc_data_direction != DMA_TO_DEVICE) {
+		spin_unlock(&session->back_lock);
+		return ISCSI_ERR_PROTO;
+	}
+	/*
+	 * A bad target might complete the cmd before we have handled R2Ts
+	 * so get a ref to the task that will be dropped in the xmit path.
+	 */
+	if (task->state != ISCSI_TASK_RUNNING) {
+		spin_unlock(&session->back_lock);
+		/* Let the path that got the early rsp complete it */
+		return 0;
+	}
+	task->last_xfer = jiffies;
+	if (!iscsi_get_task(task)) {
+		spin_unlock(&session->back_lock);
+		/* Let the path that got the early rsp complete it */
+		return 0;
+	}
+
+	tcp_conn = conn->dd_data;
+	rhdr = (struct iscsi_r2t_rsp *)tcp_conn->in.hdr;
+	/* fill-in new R2T associated with the task */
+	iscsi_update_cmdsn(session, (struct iscsi_nopin *)rhdr);
+	spin_unlock(&session->back_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tcp_conn->in.datalen) {
 		iscsi_conn_printk(KERN_ERR, conn,
 				  "invalid R2t with datalen %d\n",
 				  tcp_conn->in.datalen);
+<<<<<<< HEAD
 		return ISCSI_ERR_DATALEN;
 	}
 
@@ -587,6 +733,66 @@ static int iscsi_tcp_r2t_rsp(struct iscsi_conn *conn, struct iscsi_task *task)
 			    sizeof(void*));
 		return ISCSI_ERR_DATALEN;
 	}
+=======
+		rc = ISCSI_ERR_DATALEN;
+		goto put_task;
+	}
+
+	tcp_task = task->dd_data;
+	r2tsn = be32_to_cpu(rhdr->r2tsn);
+	if (tcp_task->exp_datasn != r2tsn){
+		ISCSI_DBG_TCP(conn, "task->exp_datasn(%d) != rhdr->r2tsn(%d)\n",
+			      tcp_task->exp_datasn, r2tsn);
+		rc = ISCSI_ERR_R2TSN;
+		goto put_task;
+	}
+
+	if (session->state != ISCSI_STATE_LOGGED_IN) {
+		iscsi_conn_printk(KERN_INFO, conn,
+				  "dropping R2T itt %d in recovery.\n",
+				  task->itt);
+		rc = 0;
+		goto put_task;
+	}
+
+	data_length = be32_to_cpu(rhdr->data_length);
+	if (data_length == 0) {
+		iscsi_conn_printk(KERN_ERR, conn,
+				  "invalid R2T with zero data len\n");
+		rc = ISCSI_ERR_DATALEN;
+		goto put_task;
+	}
+
+	if (data_length > session->max_burst)
+		ISCSI_DBG_TCP(conn, "invalid R2T with data len %u and max "
+			      "burst %u. Attempting to execute request.\n",
+			      data_length, session->max_burst);
+
+	data_offset = be32_to_cpu(rhdr->data_offset);
+	if (data_offset + data_length > task->sc->sdb.length) {
+		iscsi_conn_printk(KERN_ERR, conn,
+				  "invalid R2T with data len %u at offset %u "
+				  "and total length %d\n", data_length,
+				  data_offset, task->sc->sdb.length);
+		rc = ISCSI_ERR_DATALEN;
+		goto put_task;
+	}
+
+	spin_lock(&tcp_task->pool2queue);
+	rc = kfifo_out(&tcp_task->r2tpool.queue, (void *)&r2t, sizeof(void *));
+	if (!rc) {
+		iscsi_conn_printk(KERN_ERR, conn, "Could not allocate R2T. "
+				  "Target has sent more R2Ts than it "
+				  "negotiated for or driver has leaked.\n");
+		spin_unlock(&tcp_task->pool2queue);
+		rc = ISCSI_ERR_PROTO;
+		goto put_task;
+	}
+
+	r2t->exp_statsn = rhdr->statsn;
+	r2t->data_length = data_length;
+	r2t->data_offset = data_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r2t->ttt = rhdr->ttt; /* no flip */
 	r2t->datasn = 0;
@@ -595,9 +801,20 @@ static int iscsi_tcp_r2t_rsp(struct iscsi_conn *conn, struct iscsi_task *task)
 	tcp_task->exp_datasn = r2tsn + 1;
 	kfifo_in(&tcp_task->r2tqueue, (void*)&r2t, sizeof(void*));
 	conn->r2t_pdus_cnt++;
+<<<<<<< HEAD
 
 	iscsi_requeue_task(task);
 	return 0;
+=======
+	spin_unlock(&tcp_task->pool2queue);
+
+	iscsi_requeue_task(task);
+	return 0;
+
+put_task:
+	iscsi_put_task(task);
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -667,24 +884,40 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 
 	switch(opcode) {
 	case ISCSI_OP_SCSI_DATA_IN:
+<<<<<<< HEAD
 		spin_lock(&conn->session->lock);
+=======
+		spin_lock(&conn->session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		task = iscsi_itt_to_ctask(conn, hdr->itt);
 		if (!task)
 			rc = ISCSI_ERR_BAD_ITT;
 		else
 			rc = iscsi_tcp_data_in(conn, task);
 		if (rc) {
+<<<<<<< HEAD
 			spin_unlock(&conn->session->lock);
+=======
+			spin_unlock(&conn->session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		if (tcp_conn->in.datalen) {
 			struct iscsi_tcp_task *tcp_task = task->dd_data;
+<<<<<<< HEAD
 			struct hash_desc *rx_hash = NULL;
 			struct scsi_data_buffer *sdb = scsi_in(task->sc);
 
 			/*
 			 * Setup copy of Data-In into the Scsi_Cmnd
+=======
+			struct ahash_request *rx_hash = NULL;
+			struct scsi_data_buffer *sdb = &task->sc->sdb;
+
+			/*
+			 * Setup copy of Data-In into the struct scsi_cmnd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * Scatterlist case:
 			 * We set up the iscsi_segment to point to the next
 			 * scatterlist entry to copy to. As we go along,
@@ -707,11 +940,19 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 						   tcp_conn->in.datalen,
 						   iscsi_tcp_process_data_in,
 						   rx_hash);
+<<<<<<< HEAD
 			spin_unlock(&conn->session->lock);
 			return rc;
 		}
 		rc = __iscsi_complete_pdu(conn, hdr, NULL, 0);
 		spin_unlock(&conn->session->lock);
+=======
+			spin_unlock(&conn->session->back_lock);
+			return rc;
+		}
+		rc = __iscsi_complete_pdu(conn, hdr, NULL, 0);
+		spin_unlock(&conn->session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_OP_SCSI_CMD_RSP:
 		if (tcp_conn->in.datalen) {
@@ -721,6 +962,7 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 		rc = iscsi_complete_pdu(conn, hdr, NULL, 0);
 		break;
 	case ISCSI_OP_R2T:
+<<<<<<< HEAD
 		spin_lock(&conn->session->lock);
 		task = iscsi_itt_to_ctask(conn, hdr->itt);
 		if (!task)
@@ -733,6 +975,13 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 		} else
 			rc = ISCSI_ERR_PROTO;
 		spin_unlock(&conn->session->lock);
+=======
+		if (ahslen) {
+			rc = ISCSI_ERR_AHSLEN;
+			break;
+		}
+		rc = iscsi_tcp_r2t_rsp(conn, hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ISCSI_OP_LOGIN_RSP:
 	case ISCSI_OP_TEXT_RSP:
@@ -761,7 +1010,11 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 			iscsi_tcp_data_recv_prep(tcp_conn);
 			return 0;
 		}
+<<<<<<< HEAD
 	/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISCSI_OP_LOGOUT_RSP:
 	case ISCSI_OP_NOOP_IN:
 	case ISCSI_OP_SCSI_TMFUNC_RSP:
@@ -785,6 +1038,11 @@ iscsi_tcp_hdr_dissect(struct iscsi_conn *conn, struct iscsi_hdr *hdr)
 
 /**
  * iscsi_tcp_hdr_recv_done - process PDU header
+<<<<<<< HEAD
+=======
+ * @tcp_conn: iSCSI TCP connection
+ * @segment: the buffer segment being processed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the callback invoked when the PDU header has
  * been received. If the header is followed by additional
@@ -863,9 +1121,16 @@ EXPORT_SYMBOL_GPL(iscsi_tcp_recv_segment_is_hdr);
  * @conn: iscsi connection
  * @skb: network buffer with header and/or data segment
  * @offset: offset in skb
+<<<<<<< HEAD
  * @offload: bool indicating if transfer was offloaded
  *
  * Will return status of transfer in status. And will return
+=======
+ * @offloaded: bool indicating if transfer was offloaded
+ * @status: iscsi TCP status result
+ *
+ * Will return status of transfer in @status. And will return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * number of bytes copied.
  */
 int iscsi_tcp_recv_skb(struct iscsi_conn *conn, struct sk_buff *skb,
@@ -885,7 +1150,11 @@ int iscsi_tcp_recv_skb(struct iscsi_conn *conn, struct sk_buff *skb,
 	 */
 	conn->last_recv = jiffies;
 
+<<<<<<< HEAD
 	if (unlikely(conn->suspend_rx)) {
+=======
+	if (unlikely(test_bit(ISCSI_CONN_FLAG_SUSPEND_RX, &conn->flags))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ISCSI_DBG_TCP(conn, "Rx suspended!\n");
 		*status = ISCSI_TCP_SUSPENDED;
 		return 0;
@@ -906,7 +1175,10 @@ int iscsi_tcp_recv_skb(struct iscsi_conn *conn, struct sk_buff *skb,
 			ISCSI_DBG_TCP(conn, "no more data avail. Consumed %d\n",
 				      consumed);
 			*status = ISCSI_TCP_SKB_DONE;
+<<<<<<< HEAD
 			skb_abort_seq_read(&seq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto skb_done;
 		}
 		BUG_ON(segment->copied >= segment->size);
@@ -943,9 +1215,13 @@ EXPORT_SYMBOL_GPL(iscsi_tcp_recv_skb);
 
 /**
  * iscsi_tcp_task_init - Initialize iSCSI SCSI_READ or SCSI_WRITE commands
+<<<<<<< HEAD
  * @conn: iscsi connection
  * @task: scsi command task
  * @sc: scsi command
+=======
+ * @task: scsi command task
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int iscsi_tcp_task_init(struct iscsi_task *task)
 {
@@ -981,14 +1257,21 @@ EXPORT_SYMBOL_GPL(iscsi_tcp_task_init);
 
 static struct iscsi_r2t_info *iscsi_tcp_get_curr_r2t(struct iscsi_task *task)
 {
+<<<<<<< HEAD
 	struct iscsi_session *session = task->conn->session;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_tcp_task *tcp_task = task->dd_data;
 	struct iscsi_r2t_info *r2t = NULL;
 
 	if (iscsi_task_has_unsol_data(task))
 		r2t = &task->unsol_r2t;
 	else {
+<<<<<<< HEAD
 		spin_lock_bh(&session->lock);
+=======
+		spin_lock_bh(&tcp_task->queue2pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tcp_task->r2t) {
 			r2t = tcp_task->r2t;
 			/* Continue with this R2T? */
@@ -1010,7 +1293,11 @@ static struct iscsi_r2t_info *iscsi_tcp_get_curr_r2t(struct iscsi_task *task)
 			else
 				r2t = tcp_task->r2t;
 		}
+<<<<<<< HEAD
 		spin_unlock_bh(&session->lock);
+=======
+		spin_unlock_bh(&tcp_task->queue2pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return r2t;
@@ -1140,6 +1427,11 @@ int iscsi_tcp_r2tpool_alloc(struct iscsi_session *session)
 			iscsi_pool_free(&tcp_task->r2tpool);
 			goto r2t_alloc_fail;
 		}
+<<<<<<< HEAD
+=======
+		spin_lock_init(&tcp_task->pool2queue);
+		spin_lock_init(&tcp_task->queue2pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;

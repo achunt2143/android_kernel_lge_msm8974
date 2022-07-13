@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/scsi/arm/arxescsi.c
  *
@@ -34,8 +38,17 @@
 #include <asm/io.h>
 #include <asm/ecard.h>
 
+<<<<<<< HEAD
 #include "../scsi.h"
 #include <scsi/scsi_host.h>
+=======
+#include <scsi/scsi.h>
+#include <scsi/scsi_cmnd.h>
+#include <scsi/scsi_device.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_host.h>
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fas216.h"
 
 struct arxescsi_info {
@@ -220,6 +233,7 @@ static const char *arxescsi_info(struct Scsi_Host *host)
 	return string;
 }
 
+<<<<<<< HEAD
 /*
  * Function: int arxescsi_proc_info(char *buffer, char **start, off_t offset,
  *					 int length, int host_no, int inout)
@@ -261,6 +275,23 @@ arxescsi_proc_info(struct Scsi_Host *host, char *buffer, char **start, off_t off
 
 static struct scsi_host_template arxescsi_template = {
 	.proc_info			= arxescsi_proc_info,
+=======
+static int
+arxescsi_show_info(struct seq_file *m, struct Scsi_Host *host)
+{
+	struct arxescsi_info *info;
+	info = (struct arxescsi_info *)host->hostdata;
+
+	seq_printf(m, "ARXE 16-bit SCSI driver v%s\n", VERSION);
+	fas216_print_host(&info->info, m);
+	fas216_print_stats(&info->info, m);
+	fas216_print_devices(&info->info, m);
+	return 0;
+}
+
+static const struct scsi_host_template arxescsi_template = {
+	.show_info			= arxescsi_show_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name				= "ARXE SCSI card",
 	.info				= arxescsi_info,
 	.queuecommand			= fas216_noqueue_command,
@@ -268,6 +299,7 @@ static struct scsi_host_template arxescsi_template = {
 	.eh_bus_reset_handler		= fas216_eh_bus_reset,
 	.eh_device_reset_handler	= fas216_eh_device_reset,
 	.eh_abort_handler		= fas216_eh_abort,
+<<<<<<< HEAD
 	.can_queue			= 0,
 	.this_id			= 7,
 	.sg_tablesize			= SG_ALL,
@@ -278,6 +310,17 @@ static struct scsi_host_template arxescsi_template = {
 
 static int __devinit
 arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
+=======
+	.cmd_size			= sizeof(struct fas216_cmd_priv),
+	.can_queue			= 0,
+	.this_id			= 7,
+	.sg_tablesize			= SG_ALL,
+	.dma_boundary			= PAGE_SIZE - 1,
+	.proc_name			= "arxescsi",
+};
+
+static int arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host;
 	struct arxescsi_info *info;
@@ -340,7 +383,11 @@ arxescsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit arxescsi_remove(struct expansion_card *ec)
+=======
+static void arxescsi_remove(struct expansion_card *ec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = ecard_get_drvdata(ec);
 
@@ -359,7 +406,11 @@ static const struct ecard_id arxescsi_cids[] = {
 
 static struct ecard_driver arxescsi_driver = {
 	.probe		= arxescsi_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(arxescsi_remove),
+=======
+	.remove		= arxescsi_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= arxescsi_cids,
 	.drv = {
 		.name		= "arxescsi",

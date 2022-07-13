@@ -1,21 +1,31 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  *
  *	io_edgeport.h	Edgeport Linux Interface definitions
  *
  *	Copyright (C) 2000 Inside Out Networks, Inc.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ************************************************************************/
 
 #if !defined(_IO_EDGEPORT_H_)
 #define	_IO_EDGEPORT_H_
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_RS232_PORTS		8	/* Max # of RS-232 ports per device */
 
 /* typedefs that the insideout headers need */
@@ -26,6 +36,7 @@
 	#define HIGH8(a)	((unsigned char)((a & 0xff00) >> 8))
 #endif
 
+<<<<<<< HEAD
 #ifndef __KERNEL__
 #define __KERNEL__
 #endif
@@ -77,6 +88,10 @@ struct procWrite {
 	} u;
 };
 
+=======
+#include "io_usbvend.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Product information read from the Edgeport
  */
@@ -113,6 +128,7 @@ struct edgeport_product_info {
 	struct edge_compatibility_bits Epic;
 };
 
+<<<<<<< HEAD
 /*
  *	Edgeport Stringblock String locations
  */
@@ -131,4 +147,6 @@ struct string_block {
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

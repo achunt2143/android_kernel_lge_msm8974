@@ -1,9 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Serial port routines for use during early boot reporting. This code is
+ * included from both the compressed kernel and the regular kernel.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "boot.h"
 
 #define DEFAULT_SERIAL_PORT 0x3f8 /* ttyS0 */
 
+<<<<<<< HEAD
 #define XMTRDY          0x20
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DLAB		0x80
 
 #define TXR             0       /*  Transmit register (WRITE) */
@@ -47,7 +58,11 @@ static void parse_earlyprintk(void)
 	int pos = 0;
 	int port = 0;
 
+<<<<<<< HEAD
 	if (cmdline_find_option("earlyprintk", arg, sizeof arg) > 0) {
+=======
+	if (cmdline_find_option("earlyprintk", arg, sizeof(arg)) > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *e;
 
 		if (!strncmp(arg, "serial", 6)) {
@@ -74,8 +89,13 @@ static void parse_earlyprintk(void)
 			static const int bases[] = { 0x3f8, 0x2f8 };
 			int idx = 0;
 
+<<<<<<< HEAD
 			if (!strncmp(arg + pos, "ttyS", 4))
 				pos += 4;
+=======
+			/* += strlen("ttyS"); */
+			pos += 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (arg[pos++] == '1')
 				idx = 1;
@@ -121,7 +141,11 @@ static void parse_console_uart8250(void)
 	 * console=uart8250,io,0x3f8,115200n8
 	 * need to make sure it is last one console !
 	 */
+<<<<<<< HEAD
 	if (cmdline_find_option("console", optstr, sizeof optstr) <= 0)
+=======
+	if (cmdline_find_option("console", optstr, sizeof(optstr)) <= 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	options = optstr;

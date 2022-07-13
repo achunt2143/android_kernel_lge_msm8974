@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Low-level ALSA driver for the ENSONIQ SoundScape
  *   Copyright (c) by Chris Rankin
  *
  *   This driver was written in part using information obtained from
  *   the OSS/Free SoundScape driver, written by Hannu Savolainen.
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,10 +24,16 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/isa.h>
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -62,6 +73,7 @@ MODULE_PARM_DESC(index, "Index number for SoundScape soundcard");
 module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "Description for SoundScape card");
 
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for SoundScape driver.");
 
@@ -78,6 +90,24 @@ module_param_array(dma, int, NULL, 0444);
 MODULE_PARM_DESC(dma, "DMA # for SoundScape driver.");
 
 module_param_array(dma2, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for SoundScape driver.");
+
+module_param_hw_array(wss_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(wss_port, "WSS Port # for SoundScape driver.");
+
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for SoundScape driver.");
+
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU401 IRQ # for SoundScape driver.");
+
+module_param_hw_array(dma, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma, "DMA # for SoundScape driver.");
+
+module_param_hw_array(dma2, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "DMA2 # for SoundScape driver.");
 
 module_param_array(joystick, bool, NULL, 0444);
@@ -87,7 +117,11 @@ MODULE_PARM_DESC(joystick, "Enable gameport.");
 static int isa_registered;
 static int pnp_registered;
 
+<<<<<<< HEAD
 static struct pnp_card_device_id sscape_pnpids[] = {
+=======
+static const struct pnp_card_device_id sscape_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .id = "ENS3081", .devs = { { "ENS0000" } } }, /* Soundscape PnP */
 	{ .id = "ENS4081", .devs = { { "ENS1011" } } },	/* VIVO90 */
 	{ .id = "" }	/* end */
@@ -166,12 +200,21 @@ static inline struct soundscape *get_card_soundscape(struct snd_card *c)
  * I think this means that the memory has to map to
  * contiguous pages of physical memory.
  */
+<<<<<<< HEAD
 static struct snd_dma_buffer *get_dmabuf(struct snd_dma_buffer *buf,
+=======
+static struct snd_dma_buffer *get_dmabuf(struct soundscape *s,
+					 struct snd_dma_buffer *buf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned long size)
 {
 	if (buf) {
 		if (snd_dma_alloc_pages_fallback(SNDRV_DMA_TYPE_DEV,
+<<<<<<< HEAD
 						 snd_dma_isa_data(),
+=======
+						 s->chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 size, buf) < 0) {
 			snd_printk(KERN_ERR "sscape: Failed to allocate "
 					    "%lu bytes for DMA\n",
@@ -320,7 +363,11 @@ static inline int verify_mpu401(const struct snd_mpu401 *mpu)
 }
 
 /*
+<<<<<<< HEAD
  * This is apparently the standard way to initailise an MPU-401
+=======
+ * This is apparently the standard way to initialise an MPU-401
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void initialise_mpu401(const struct snd_mpu401 *mpu)
 {
@@ -340,6 +387,7 @@ static void activate_ad1845_unsafe(unsigned io_base)
 }
 
 /*
+<<<<<<< HEAD
  * Do the necessary ALSA-level cleanup to deallocate our driver ...
  */
 static void soundscape_free(struct snd_card *c)
@@ -352,6 +400,9 @@ static void soundscape_free(struct snd_card *c)
 
 /*
  * Tell the SoundScape to begin a DMA tranfer using the given channel.
+=======
+ * Tell the SoundScape to begin a DMA transfer using the given channel.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All locking issues are left to the caller.
  */
 static void sscape_start_dma_unsafe(unsigned io_base, enum GA_REG reg)
@@ -442,7 +493,11 @@ static int upload_dma_data(struct soundscape *s, const unsigned char *data,
 	int ret;
 	unsigned char val;
 
+<<<<<<< HEAD
 	if (!get_dmabuf(&dma, PAGE_ALIGN(32 * 1024)))
+=======
+	if (!get_dmabuf(s, &dma, PAGE_ALIGN(32 * 1024)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	spin_lock_irqsave(&s->lock, flags);
@@ -580,7 +635,11 @@ static int sscape_upload_microcode(struct snd_card *card, int version)
 	char name[14];
 	int err;
 
+<<<<<<< HEAD
 	snprintf(name, sizeof(name), "sndscape.co%d", version);
+=======
+	scnprintf(name, sizeof(name), "sndscape.co%d", version);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_firmware(&init_fw, name, card->dev);
 	if (err < 0) {
@@ -590,7 +649,11 @@ static int sscape_upload_microcode(struct snd_card *card, int version)
 	}
 	err = upload_dma_data(sscape, init_fw->data, init_fw->size);
 	if (err == 0)
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "sscape: MIDI firmware loaded %d KBs\n",
+=======
+		snd_printk(KERN_INFO "sscape: MIDI firmware loaded %zu KBs\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				init_fw->size >> 10);
 
 	release_firmware(init_fw);
@@ -670,7 +733,11 @@ __skip_change:
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new midi_mixer_ctl = {
+=======
+static const struct snd_kcontrol_new midi_mixer_ctl = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "MIDI",
 	.info = sscape_midi_info,
@@ -683,7 +750,11 @@ static struct snd_kcontrol_new midi_mixer_ctl = {
  * These IRQs are encoded as bit patterns so that they can be
  * written to the control registers.
  */
+<<<<<<< HEAD
 static unsigned __devinit get_irq_config(int sscape_type, int irq)
+=======
+static unsigned get_irq_config(int sscape_type, int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const int valid_irq[] = { 9, 5, 7, 10 };
 	static const int old_irq[] = { 9, 7, 5, 15 };
@@ -706,7 +777,11 @@ static unsigned __devinit get_irq_config(int sscape_type, int irq)
  * Perform certain arcane port-checks to see whether there
  * is a SoundScape board lurking behind the given ports.
  */
+<<<<<<< HEAD
 static int __devinit detect_sscape(struct soundscape *s, long wss_io)
+=======
+static int detect_sscape(struct soundscape *s, long wss_io)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned d;
@@ -815,10 +890,17 @@ static int mpu401_open(struct snd_mpu401 *mpu)
 }
 
 /*
+<<<<<<< HEAD
  * Initialse an MPU-401 subdevice for MIDI support on the SoundScape.
  */
 static int __devinit create_mpu401(struct snd_card *card, int devnum,
 				   unsigned long port, int irq)
+=======
+ * Initialise an MPU-401 subdevice for MIDI support on the SoundScape.
+ */
+static int create_mpu401(struct snd_card *card, int devnum,
+			 unsigned long port, int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct soundscape *sscape = get_card_soundscape(card);
 	struct snd_rawmidi *rawmidi;
@@ -845,8 +927,13 @@ static int __devinit create_mpu401(struct snd_card *card, int devnum,
  * try to support at least some of the extra bits by overriding
  * some of the CS4231 callback.
  */
+<<<<<<< HEAD
 static int __devinit create_ad1845(struct snd_card *card, unsigned port,
 				   int irq, int dma1, int dma2)
+=======
+static int create_ad1845(struct snd_card *card, unsigned port,
+			 int irq, int dma1, int dma2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register struct soundscape *sscape = get_card_soundscape(card);
 	struct snd_wss *chip;
@@ -877,7 +964,10 @@ static int __devinit create_ad1845(struct snd_card *card, unsigned port,
 			     codec_type, WSS_HWSHARE_DMA1, &chip);
 	if (!err) {
 		unsigned long flags;
+<<<<<<< HEAD
 		struct snd_pcm *pcm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sscape->type != SSCAPE_VIVO) {
 			/*
@@ -893,7 +983,11 @@ static int __devinit create_ad1845(struct snd_card *card, unsigned port,
 
 		}
 
+<<<<<<< HEAD
 		err = snd_wss_pcm(chip, 0, &pcm);
+=======
+		err = snd_wss_pcm(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0) {
 			snd_printk(KERN_ERR "sscape: No PCM device "
 					    "for AD1845 chip\n");
@@ -907,7 +1001,11 @@ static int __devinit create_ad1845(struct snd_card *card, unsigned port,
 			goto _error;
 		}
 		if (chip->hardware != WSS_HW_AD1848) {
+<<<<<<< HEAD
 			err = snd_wss_timer(chip, 0, NULL);
+=======
+			err = snd_wss_timer(chip, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0) {
 				snd_printk(KERN_ERR "sscape: No timer device "
 						    "for AD1845 chip\n");
@@ -937,7 +1035,11 @@ _error:
  * Create an ALSA soundcard entry for the SoundScape, using
  * the given list of port, IRQ and DMA resources.
  */
+<<<<<<< HEAD
 static int __devinit create_sscape(int dev, struct snd_card *card)
+=======
+static int create_sscape(int dev, struct snd_card *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct soundscape *sscape = get_card_soundscape(card);
 	unsigned dma_cfg;
@@ -954,7 +1056,11 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 	 * Grab IO ports that we will need to probe so that we
 	 * can detect and control this hardware ...
 	 */
+<<<<<<< HEAD
 	io_res = request_region(port[dev], 8, "SoundScape");
+=======
+	io_res = devm_request_region(card->dev, port[dev], 8, "SoundScape");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!io_res) {
 		snd_printk(KERN_ERR
 			   "sscape: can't grab port 0x%lx\n", port[dev]);
@@ -962,22 +1068,38 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 	}
 	wss_res = NULL;
 	if (sscape->type == SSCAPE_VIVO) {
+<<<<<<< HEAD
 		wss_res = request_region(wss_port[dev], 4, "SoundScape");
 		if (!wss_res) {
 			snd_printk(KERN_ERR "sscape: can't grab port 0x%lx\n",
 					    wss_port[dev]);
 			err = -EBUSY;
 			goto _release_region;
+=======
+		wss_res = devm_request_region(card->dev, wss_port[dev], 4,
+					      "SoundScape");
+		if (!wss_res) {
+			snd_printk(KERN_ERR "sscape: can't grab port 0x%lx\n",
+					    wss_port[dev]);
+			return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/*
 	 * Grab one DMA channel ...
 	 */
+<<<<<<< HEAD
 	err = request_dma(dma[dev], "SoundScape");
 	if (err < 0) {
 		snd_printk(KERN_ERR "sscape: can't grab DMA %d\n", dma[dev]);
 		goto _release_region;
+=======
+	err = snd_devm_request_dma(card->dev, dma[dev], "SoundScape");
+	if (err < 0) {
+		snd_printk(KERN_ERR "sscape: can't grab DMA %d\n", dma[dev]);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_init(&sscape->lock);
@@ -988,8 +1110,12 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 	if (!detect_sscape(sscape, wss_port[dev])) {
 		printk(KERN_ERR "sscape: hardware not detected at 0x%x\n",
 			sscape->io_base);
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto _release_dma;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (sscape->type) {
@@ -1019,15 +1145,23 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 	irq_cfg = get_irq_config(sscape->type, irq[dev]);
 	if (irq_cfg == INVALID_IRQ) {
 		snd_printk(KERN_ERR "sscape: Invalid IRQ %d\n", irq[dev]);
+<<<<<<< HEAD
 		err = -ENXIO;
 		goto _release_dma;
+=======
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mpu_irq_cfg = get_irq_config(sscape->type, mpu_irq[dev]);
 	if (mpu_irq_cfg == INVALID_IRQ) {
 		snd_printk(KERN_ERR "sscape: Invalid IRQ %d\n", mpu_irq[dev]);
+<<<<<<< HEAD
 		err = -ENXIO;
 		goto _release_dma;
+=======
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1073,7 +1207,11 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 		snd_printk(KERN_ERR
 				"sscape: No AD1845 device at 0x%lx, IRQ %d\n",
 				wss_port[dev], irq[dev]);
+<<<<<<< HEAD
 		goto _release_dma;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	strcpy(card->driver, "SoundScape");
 	strcpy(card->shortname, name);
@@ -1095,7 +1233,11 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 				snd_printk(KERN_ERR "sscape: Failed to create "
 						"MPU-401 device at 0x%lx\n",
 						port[dev]);
+<<<<<<< HEAD
 				goto _release_dma;
+=======
+				return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/*
@@ -1122,6 +1264,7 @@ static int __devinit create_sscape(int dev, struct snd_card *card)
 		}
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Now that we have successfully created this sound card,
 	 * it is safe to store the pointer.
@@ -1144,6 +1287,13 @@ _release_region:
 
 
 static int __devinit snd_sscape_match(struct device *pdev, unsigned int i)
+=======
+	return 0;
+}
+
+
+static int snd_sscape_match(struct device *pdev, unsigned int i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Make sure we were given ALL of the other parameters.
@@ -1163,14 +1313,23 @@ static int __devinit snd_sscape_match(struct device *pdev, unsigned int i)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sscape_probe(struct device *pdev, unsigned int dev)
+=======
+static int snd_sscape_probe(struct device *pdev, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct soundscape *sscape;
 	int ret;
 
+<<<<<<< HEAD
 	ret = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct soundscape), &card);
+=======
+	ret = snd_devm_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct soundscape), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -1178,15 +1337,23 @@ static int __devinit snd_sscape_probe(struct device *pdev, unsigned int dev)
 	sscape->type = SSCAPE;
 
 	dma[dev] &= 0x03;
+<<<<<<< HEAD
 	snd_card_set_dev(card, pdev);
 
 	ret = create_sscape(dev, card);
 	if (ret < 0)
 		goto _release_card;
+=======
+
+	ret = create_sscape(dev, card);
+	if (ret < 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snd_card_register(card);
 	if (ret < 0) {
 		snd_printk(KERN_ERR "sscape: Failed to register sound card\n");
+<<<<<<< HEAD
 		goto _release_card;
 	}
 	dev_set_drvdata(pdev, card);
@@ -1202,6 +1369,12 @@ static int __devexit snd_sscape_remove(struct device *devptr, unsigned int dev)
 	snd_card_free(dev_get_drvdata(devptr));
 	dev_set_drvdata(devptr, NULL);
 	return 0;
+=======
+		return ret;
+	}
+	dev_set_drvdata(pdev, card);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define DEV_NAME "sscape"
@@ -1209,7 +1382,10 @@ static int __devexit snd_sscape_remove(struct device *devptr, unsigned int dev)
 static struct isa_driver snd_sscape_driver = {
 	.match		= snd_sscape_match,
 	.probe		= snd_sscape_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_sscape_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
@@ -1217,7 +1393,11 @@ static struct isa_driver snd_sscape_driver = {
 };
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static inline int __devinit get_next_autoindex(int i)
+=======
+static inline int get_next_autoindex(int i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (i < SNDRV_CARDS && port[i] != SNDRV_AUTO_PORT)
 		++i;
@@ -1225,8 +1405,13 @@ static inline int __devinit get_next_autoindex(int i)
 }
 
 
+<<<<<<< HEAD
 static int __devinit sscape_pnp_detect(struct pnp_card_link *pcard,
 				       const struct pnp_card_device_id *pid)
+=======
+static int sscape_pnp_detect(struct pnp_card_link *pcard,
+			     const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int idx = 0;
 	struct pnp_dev *dev;
@@ -1260,8 +1445,14 @@ static int __devinit sscape_pnp_detect(struct pnp_card_link *pcard,
 	 * Create a new ALSA sound card entry, in anticipation
 	 * of detecting our hardware ...
 	 */
+<<<<<<< HEAD
 	ret = snd_card_create(index[idx], id[idx], THIS_MODULE,
 			      sizeof(struct soundscape), &card);
+=======
+	ret = snd_devm_card_new(&pcard->card->dev,
+				index[idx], id[idx], THIS_MODULE,
+				sizeof(struct soundscape), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -1289,21 +1480,33 @@ static int __devinit sscape_pnp_detect(struct pnp_card_link *pcard,
 		wss_port[idx] = pnp_port_start(dev, 1);
 		dma2[idx] = pnp_dma(dev, 1);
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pcard->card->dev);
 
 	ret = create_sscape(idx, card);
 	if (ret < 0)
 		goto _release_card;
+=======
+
+	ret = create_sscape(idx, card);
+	if (ret < 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snd_card_register(card);
 	if (ret < 0) {
 		snd_printk(KERN_ERR "sscape: Failed to register sound card\n");
+<<<<<<< HEAD
 		goto _release_card;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pnp_set_card_drvdata(pcard, card);
 	++idx;
 	return 0;
+<<<<<<< HEAD
 
 _release_card:
 	snd_card_free(card);
@@ -1314,6 +1517,8 @@ static void __devexit sscape_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pnp_card_driver sscape_pnpc_driver = {
@@ -1321,7 +1526,10 @@ static struct pnp_card_driver sscape_pnpc_driver = {
 	.name = "sscape",
 	.id_table = sscape_pnpids,
 	.probe = sscape_pnp_detect,
+<<<<<<< HEAD
 	.remove = __devexit_p(sscape_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* CONFIG_PNP */

@@ -1,15 +1,22 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/mfd/wm831x/core.h -- Core interface for WM831x
  *
  * Copyright 2009 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MFD_WM831X_CORE_H__
@@ -17,8 +24,17 @@
 
 #include <linux/completion.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/list.h>
 #include <linux/regmap.h>
+=======
+#include <linux/irqdomain.h>
+#include <linux/list.h>
+#include <linux/regmap.h>
+#include <linux/mfd/wm831x/auxadc.h>
+#include <linux/mfd/wm831x/pdata.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register values.
@@ -338,6 +354,10 @@
 #define WM831X_FLL_CLK_SRC_WIDTH                     2  /* FLL_CLK_SRC - [1:0] */
 
 struct regulator_dev;
+<<<<<<< HEAD
+=======
+struct irq_domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM831X_NUM_IRQ_REGS 5
 #define WM831X_NUM_GPIO_REGS 16
@@ -353,7 +373,10 @@ enum wm831x_parent {
 };
 
 struct wm831x;
+<<<<<<< HEAD
 enum wm831x_auxadc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef int (*wm831x_auxadc_read_fn)(struct wm831x *wm831x,
 				     enum wm831x_auxadc input);
@@ -365,9 +388,18 @@ struct wm831x {
 
 	struct regmap *regmap;
 
+<<<<<<< HEAD
 	int irq;  /* Our chip IRQ */
 	struct mutex irq_lock;
 	int irq_base;
+=======
+	struct wm831x_pdata pdata;
+	enum wm831x_parent type;
+
+	int irq;  /* Our chip IRQ */
+	struct mutex irq_lock;
+	struct irq_domain *irq_domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq_masks_cur[WM831X_NUM_IRQ_REGS];   /* Currently active value */
 	int irq_masks_cache[WM831X_NUM_IRQ_REGS]; /* Cached hardware value */
 
@@ -382,7 +414,12 @@ struct wm831x {
 
 	/* Used by the interrupt controller code to post writes */
 	int gpio_update[WM831X_NUM_GPIO_REGS];
+<<<<<<< HEAD
 	bool gpio_level[WM831X_NUM_GPIO_REGS];
+=======
+	bool gpio_level_high[WM831X_NUM_GPIO_REGS];
+	bool gpio_level_low[WM831X_NUM_GPIO_REGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex auxadc_lock;
 	struct list_head auxadc_pending;
@@ -409,14 +446,30 @@ int wm831x_set_bits(struct wm831x *wm831x, unsigned short reg,
 int wm831x_bulk_read(struct wm831x *wm831x, unsigned short reg,
 		     int count, u16 *buf);
 
+<<<<<<< HEAD
 int wm831x_device_init(struct wm831x *wm831x, unsigned long id, int irq);
 void wm831x_device_exit(struct wm831x *wm831x);
+=======
+int wm831x_device_init(struct wm831x *wm831x, int irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int wm831x_device_suspend(struct wm831x *wm831x);
 void wm831x_device_shutdown(struct wm831x *wm831x);
 int wm831x_irq_init(struct wm831x *wm831x, int irq);
 void wm831x_irq_exit(struct wm831x *wm831x);
 void wm831x_auxadc_init(struct wm831x *wm831x);
 
+<<<<<<< HEAD
 extern struct regmap_config wm831x_regmap_config;
 
+=======
+static inline int wm831x_irq(struct wm831x *wm831x, int irq)
+{
+	return irq_create_mapping(wm831x->irq_domain, irq);
+}
+
+extern struct regmap_config wm831x_regmap_config;
+
+extern const struct of_device_id wm831x_of_match[];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

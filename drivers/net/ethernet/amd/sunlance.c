@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: sunlance.c,v 1.112 2002/01/15 06:48:55 davem Exp $
  * lance.c: Linux/Sparc/Lance driver
  *
@@ -80,7 +84,10 @@ static char lancestr[] = "LANCE";
 #include <linux/in.h>
 #include <linux/string.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 #include <linux/errno.h>
 #include <linux/socket.h> /* Used for the temporal inet entries and routing */
@@ -92,12 +99,21 @@ static char lancestr[] = "LANCE";
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/gfp.h>
 
 #include <asm/io.h>
 #include <asm/dma.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/gfp.h>
+#include <linux/pgtable.h>
+
+#include <asm/io.h>
+#include <asm/dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>	/* Used by the checksum routines */
 #include <asm/idprom.h>
 #include <asm/prom.h>
@@ -105,6 +121,7 @@ static char lancestr[] = "LANCE";
 #include <asm/irq.h>
 
 #define DRV_NAME	"sunlance"
+<<<<<<< HEAD
 #define DRV_VERSION	"2.02"
 #define DRV_RELDATE	"8/24/03"
 #define DRV_AUTHOR	"Miguel de Icaza (miguel@nuclecu.unam.mx)"
@@ -113,6 +130,11 @@ static char version[] =
 	DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE " " DRV_AUTHOR "\n";
 
 MODULE_VERSION(DRV_VERSION);
+=======
+#define DRV_RELDATE	"8/24/03"
+#define DRV_AUTHOR	"Miguel de Icaza (miguel@nuclecu.unam.mx)"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION("Sun Lance ethernet driver");
 MODULE_LICENSE("GPL");
@@ -535,9 +557,13 @@ static void lance_rx_dvma(struct net_device *dev)
 			len = (rd->mblength & 0xfff) - 4;
 			skb = netdev_alloc_skb(dev, len + 2);
 
+<<<<<<< HEAD
 			if (skb == NULL) {
 				printk(KERN_INFO "%s: Memory squeeze, deferring packet.\n",
 				       dev->name);
+=======
+			if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 				rd->mblength = 0;
 				rd->rmd1_bits = LE_R1_OWN;
@@ -707,9 +733,13 @@ static void lance_rx_pio(struct net_device *dev)
 			len = (sbus_readw(&rd->mblength) & 0xfff) - 4;
 			skb = netdev_alloc_skb(dev, len + 2);
 
+<<<<<<< HEAD
 			if (skb == NULL) {
 				printk(KERN_INFO "%s: Memory squeeze, deferring packet.\n",
 				       dev->name);
+=======
+			if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 				sbus_writew(0, &rd->mblength);
 				sbus_writeb(LE_R1_OWN, &rd->rmd1_bits);
@@ -1002,7 +1032,11 @@ static int lance_reset(struct net_device *dev)
 	}
 	lp->init_ring(dev);
 	load_csrs(lp);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = init_restart_lance(lp);
 	return status;
 }
@@ -1101,7 +1135,11 @@ static void lance_piozero(void __iomem *dest, int len)
 		sbus_writeb(0, piobuf);
 }
 
+<<<<<<< HEAD
 static void lance_tx_timeout(struct net_device *dev)
+=======
+static void lance_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 
@@ -1111,7 +1149,11 @@ static void lance_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 	int entry, skblen, len;
@@ -1253,9 +1295,16 @@ static void lance_set_multicast(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static void lance_set_multicast_retry(unsigned long _opaque)
 {
 	struct net_device *dev = (struct net_device *) _opaque;
+=======
+static void lance_set_multicast_retry(struct timer_list *t)
+{
+	struct lance_private *lp = from_timer(lp, t, multicast_timer);
+	struct net_device *dev = lp->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lance_set_multicast(dev);
 }
@@ -1284,8 +1333,12 @@ static void lance_free_hwresources(struct lance_private *lp)
 /* Ethtool support... */
 static void sparc_lance_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, "sunlance");
 	strcpy(info->version, "2.02");
+=======
+	strscpy(info->driver, "sunlance", sizeof(info->driver));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops sparc_lance_ethtool_ops = {
@@ -1299,11 +1352,15 @@ static const struct net_device_ops sparc_lance_ops = {
 	.ndo_start_xmit		= lance_start_xmit,
 	.ndo_set_rx_mode	= lance_set_multicast,
 	.ndo_tx_timeout		= lance_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
+<<<<<<< HEAD
 static int __devinit sparc_lance_probe_one(struct platform_device *op,
 					   struct platform_device *ledma,
 					   struct platform_device *lebuffer)
@@ -1313,6 +1370,15 @@ static int __devinit sparc_lance_probe_one(struct platform_device *op,
 	struct lance_private *lp;
 	struct net_device *dev;
 	int    i;
+=======
+static int sparc_lance_probe_one(struct platform_device *op,
+				 struct platform_device *ledma,
+				 struct platform_device *lebuffer)
+{
+	struct device_node *dp = op->dev.of_node;
+	struct lance_private *lp;
+	struct net_device *dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = alloc_etherdev(sizeof(struct lance_private) + 8);
 	if (!dev)
@@ -1320,17 +1386,24 @@ static int __devinit sparc_lance_probe_one(struct platform_device *op,
 
 	lp = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (sparc_lance_debug && version_printed++ == 0)
 		printk (KERN_INFO "%s", version);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&lp->lock);
 
 	/* Copy the IDPROM ethernet address to the device structure, later we
 	 * will copy the address in the device structure to the lance
 	 * initialization block.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = idprom->id_ethaddr[i];
+=======
+	eth_hw_addr_set(dev, idprom->id_ethaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the IO region */
 	lp->lregs = of_ioremap(&op->resource[0], 0,
@@ -1377,10 +1450,16 @@ static int __devinit sparc_lance_probe_one(struct platform_device *op,
 			dma_alloc_coherent(&op->dev,
 					   sizeof(struct lance_init_block),
 					   &lp->init_block_dvma, GFP_ATOMIC);
+<<<<<<< HEAD
 		if (!lp->init_block_mem) {
 			printk(KERN_ERR "SunLance: Cannot allocate consistent DMA memory.\n");
 			goto fail;
 		}
+=======
+		if (!lp->init_block_mem)
+			goto fail;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->pio_buffer = 0;
 		lp->init_ring = lance_init_ring_dvma;
 		lp->rx = lance_rx_dvma;
@@ -1425,7 +1504,11 @@ static int __devinit sparc_lance_probe_one(struct platform_device *op,
 
 			prop = of_get_property(nd, "tpe-link-test?", NULL);
 			if (!prop)
+<<<<<<< HEAD
 				goto no_link_test;
+=======
+				goto node_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (strcmp(prop, "true")) {
 				printk(KERN_NOTICE "SunLance: warning: overriding option "
@@ -1434,6 +1517,11 @@ static int __devinit sparc_lance_probe_one(struct platform_device *op,
 				       "to ecd@skynet.be\n");
 				auxio_set_lte(AUXIO_LTE_ON);
 			}
+<<<<<<< HEAD
+=======
+node_put:
+			of_node_put(nd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 no_link_test:
 			lp->auto_select = 1;
 			lp->tpe = 0;
@@ -1466,16 +1554,24 @@ no_link_test:
 	 * can occur from interrupts (ex. IPv6).  So we
 	 * use a timer to try again later when necessary. -DaveM
 	 */
+<<<<<<< HEAD
 	init_timer(&lp->multicast_timer);
 	lp->multicast_timer.data = (unsigned long) dev;
 	lp->multicast_timer.function = lance_set_multicast_retry;
+=======
+	timer_setup(&lp->multicast_timer, lance_set_multicast_retry, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (register_netdev(dev)) {
 		printk(KERN_ERR "SunLance: Cannot register device.\n");
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, lp);
+=======
+	platform_set_drvdata(op, lp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "%s: LANCE %pM\n",
 	       dev->name, dev->dev_addr);
@@ -1488,15 +1584,25 @@ fail:
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static int __devinit sunlance_sbus_probe(struct platform_device *op)
+=======
+static int sunlance_sbus_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *parent = to_platform_device(op->dev.parent);
 	struct device_node *parent_dp = parent->dev.of_node;
 	int err;
 
+<<<<<<< HEAD
 	if (!strcmp(parent_dp->name, "ledma")) {
 		err = sparc_lance_probe_one(op, parent, NULL);
 	} else if (!strcmp(parent_dp->name, "lebuffer")) {
+=======
+	if (of_node_name_eq(parent_dp, "ledma")) {
+		err = sparc_lance_probe_one(op, parent, NULL);
+	} else if (of_node_name_eq(parent_dp, "lebuffer")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = sparc_lance_probe_one(op, NULL, parent);
 	} else
 		err = sparc_lance_probe_one(op, NULL, NULL);
@@ -1504,9 +1610,15 @@ static int __devinit sunlance_sbus_probe(struct platform_device *op)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit sunlance_sbus_remove(struct platform_device *op)
 {
 	struct lance_private *lp = dev_get_drvdata(&op->dev);
+=======
+static void sunlance_sbus_remove(struct platform_device *op)
+{
+	struct lance_private *lp = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *net_dev = lp->dev;
 
 	unregister_netdev(net_dev);
@@ -1514,10 +1626,13 @@ static int __devexit sunlance_sbus_remove(struct platform_device *op)
 	lance_free_hwresources(lp);
 
 	free_netdev(net_dev);
+<<<<<<< HEAD
 
 	dev_set_drvdata(&op->dev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id sunlance_sbus_match[] = {
@@ -1532,11 +1647,18 @@ MODULE_DEVICE_TABLE(of, sunlance_sbus_match);
 static struct platform_driver sunlance_sbus_driver = {
 	.driver = {
 		.name = "sunlance",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = sunlance_sbus_match,
 	},
 	.probe		= sunlance_sbus_probe,
 	.remove		= __devexit_p(sunlance_sbus_remove),
+=======
+		.of_match_table = sunlance_sbus_match,
+	},
+	.probe		= sunlance_sbus_probe,
+	.remove_new	= sunlance_sbus_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sunlance_sbus_driver);

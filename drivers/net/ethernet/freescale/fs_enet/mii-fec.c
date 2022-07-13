@@ -21,7 +21,10 @@
 #include <linux/ioport.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -31,11 +34,22 @@
 #include <linux/ethtool.h>
 #include <linux/bitops.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 
 #include <asm/pgtable.h>
 #include <asm/irq.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/property.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_mdio.h>
+#include <linux/pgtable.h>
+
+#include <asm/irq.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpc5xxx.h>
 
 #include "fs_enet.h"
@@ -95,6 +109,7 @@ static int fs_enet_fec_mii_write(struct mii_bus *bus, int phy_id, int location, 
 
 }
 
+<<<<<<< HEAD
 static int fs_enet_fec_mii_reset(struct mii_bus *bus)
 {
 	/* nothing here - for now */
@@ -115,6 +130,17 @@ static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
 	if (!match)
 		return -EINVAL;
 	get_bus_freq = match->data;
+=======
+static int fs_enet_mdio_probe(struct platform_device *ofdev)
+{
+	struct resource res;
+	struct mii_bus *new_bus;
+	struct fec_info *fec;
+	int (*get_bus_freq)(struct device *);
+	int ret = -ENOMEM, clock, speed;
+
+	get_bus_freq = device_get_match_data(&ofdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_bus = mdiobus_alloc();
 	if (!new_bus)
@@ -128,12 +154,16 @@ static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
 	new_bus->name = "FEC MII Bus";
 	new_bus->read = &fs_enet_fec_mii_read;
 	new_bus->write = &fs_enet_fec_mii_write;
+<<<<<<< HEAD
 	new_bus->reset = &fs_enet_fec_mii_reset;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = of_address_to_resource(ofdev->dev.of_node, 0, &res);
 	if (ret)
 		goto out_res;
 
+<<<<<<< HEAD
 	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%x", res.start);
 
 	fec->fecp = ioremap(res.start, resource_size(&res));
@@ -142,6 +172,18 @@ static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
 
 	if (get_bus_freq) {
 		clock = get_bus_freq(ofdev->dev.of_node);
+=======
+	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%pap", &res.start);
+
+	fec->fecp = ioremap(res.start, resource_size(&res));
+	if (!fec->fecp) {
+		ret = -ENOMEM;
+		goto out_fec;
+	}
+
+	if (get_bus_freq) {
+		clock = get_bus_freq(&ofdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!clock) {
 			/* Use maximum divider if clock is unknown */
 			dev_warn(&ofdev->dev, "could not determine IPS clock\n");
@@ -171,6 +213,7 @@ static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
 	clrsetbits_be32(&fec->fecp->fec_mii_speed, 0x7E, fec->mii_speed);
 
 	new_bus->phy_mask = ~0;
+<<<<<<< HEAD
 	new_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!new_bus->irq)
 		goto out_unmap_regs;
@@ -187,6 +230,18 @@ static int __devinit fs_enet_mdio_probe(struct platform_device *ofdev)
 out_free_irqs:
 	dev_set_drvdata(&ofdev->dev, NULL);
 	kfree(new_bus->irq);
+=======
+
+	new_bus->parent = &ofdev->dev;
+	platform_set_drvdata(ofdev, new_bus);
+
+	ret = of_mdiobus_register(new_bus, ofdev->dev.of_node);
+	if (ret)
+		goto out_unmap_regs;
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unmap_regs:
 	iounmap(fec->fecp);
 out_res:
@@ -198,6 +253,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int fs_enet_mdio_remove(struct platform_device *ofdev)
 {
 	struct mii_bus *bus = dev_get_drvdata(&ofdev->dev);
@@ -214,6 +270,20 @@ static int fs_enet_mdio_remove(struct platform_device *ofdev)
 }
 
 static struct of_device_id fs_enet_mdio_fec_match[] = {
+=======
+static void fs_enet_mdio_remove(struct platform_device *ofdev)
+{
+	struct mii_bus *bus = platform_get_drvdata(ofdev);
+	struct fec_info *fec = bus->priv;
+
+	mdiobus_unregister(bus);
+	iounmap(fec->fecp);
+	kfree(fec);
+	mdiobus_free(bus);
+}
+
+static const struct of_device_id fs_enet_mdio_fec_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.compatible = "fsl,pq1-fec-mdio",
 	},
@@ -230,6 +300,7 @@ MODULE_DEVICE_TABLE(of, fs_enet_mdio_fec_match);
 static struct platform_driver fs_enet_fec_mdio_driver = {
 	.driver = {
 		.name = "fsl-fec-mdio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = fs_enet_mdio_fec_match,
 	},
@@ -238,3 +309,13 @@ static struct platform_driver fs_enet_fec_mdio_driver = {
 };
 
 module_platform_driver(fs_enet_fec_mdio_driver);
+=======
+		.of_match_table = fs_enet_mdio_fec_match,
+	},
+	.probe = fs_enet_mdio_probe,
+	.remove_new = fs_enet_mdio_remove,
+};
+
+module_platform_driver(fs_enet_fec_mdio_driver);
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

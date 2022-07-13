@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -45,6 +56,10 @@ struct bfa_modules_s {
 	struct bfa_diag_s	diag_mod;	/*  diagnostics module	*/
 	struct bfa_phy_s	phy;		/*  phy module		*/
 	struct bfa_dconf_mod_s	dconf_mod;	/*  DCONF common module	*/
+<<<<<<< HEAD
+=======
+	struct bfa_fru_s	fru;		/*  fru module		*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -59,6 +74,7 @@ enum {
 	BFA_TRC_HAL_IOCFC_CB	= 5,
 };
 
+<<<<<<< HEAD
 /*
  * Macro to define a new BFA module
  */
@@ -107,6 +123,10 @@ struct bfa_module_s {
 };
 
 
+=======
+#define BFA_CACHELINE_SZ	(256)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_s {
 	void			*bfad;		/*  BFA driver instance    */
 	struct bfa_plog_s	*plog;		/*  portlog buffer	    */
@@ -121,6 +141,7 @@ struct bfa_s {
 	bfa_boolean_t		fcs;		/*  FCS is attached to BFA */
 	struct bfa_msix_s	msix;
 	int			bfa_aen_seq;
+<<<<<<< HEAD
 };
 
 extern bfa_boolean_t bfa_auto_recover;
@@ -133,5 +154,57 @@ extern struct bfa_module_s hal_mod_uf;
 extern struct bfa_module_s hal_mod_rport;
 extern struct bfa_module_s hal_mod_fcp;
 extern struct bfa_module_s hal_mod_dconf;
+=======
+	bfa_boolean_t		intr_enabled;	/*  Status of interrupts */
+};
+
+extern bfa_boolean_t bfa_auto_recover;
+
+void bfa_dconf_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *);
+void bfa_dconf_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		  struct bfa_s *);
+void bfa_dconf_iocdisable(struct bfa_s *);
+void bfa_fcp_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_fcp_iocdisable(struct bfa_s *bfa);
+void bfa_fcp_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_fcpim_iocdisable(struct bfa_fcp_mod_s *);
+void bfa_fcport_start(struct bfa_s *);
+void bfa_fcport_iocdisable(struct bfa_s *);
+void bfa_fcport_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		   struct bfa_s *);
+void bfa_fcport_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_fcxp_iocdisable(struct bfa_s *);
+void bfa_fcxp_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_fcxp_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_fcdiag_iocdisable(struct bfa_s *);
+void bfa_fcdiag_attach(struct bfa_s *bfa, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_ioim_lm_init(struct bfa_s *);
+void bfa_lps_iocdisable(struct bfa_s *bfa);
+void bfa_lps_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_lps_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+	struct bfa_pcidev_s *);
+void bfa_rport_iocdisable(struct bfa_s *bfa);
+void bfa_rport_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_rport_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_sgpg_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_sgpg_attach(struct bfa_s *, void *bfad, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_uf_iocdisable(struct bfa_s *);
+void bfa_uf_meminfo(struct bfa_iocfc_cfg_s *, struct bfa_meminfo_s *,
+		struct bfa_s *);
+void bfa_uf_attach(struct bfa_s *, void *, struct bfa_iocfc_cfg_s *,
+		struct bfa_pcidev_s *);
+void bfa_uf_start(struct bfa_s *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __BFA_MODULES_H__ */

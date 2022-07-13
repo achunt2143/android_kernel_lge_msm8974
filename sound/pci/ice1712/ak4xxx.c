@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble ICE1712 (Envy24)
  *
  *   AK4524 / AK4528 / AK4529 / AK4355 / AK4381 interface
  *
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,11 @@
  */      
 
 #include <asm/io.h>
+=======
+ */      
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -179,6 +189,7 @@ int snd_ice1712_akm4xxx_build_controls(struct snd_ice1712 *ice)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init alsa_ice1712_akm4xxx_module_init(void)
 {
 	return 0;
@@ -191,6 +202,8 @@ static void __exit alsa_ice1712_akm4xxx_module_exit(void)
 module_init(alsa_ice1712_akm4xxx_module_init)
 module_exit(alsa_ice1712_akm4xxx_module_exit)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_ice1712_akm4xxx_init);
 EXPORT_SYMBOL(snd_ice1712_akm4xxx_free);
 EXPORT_SYMBOL(snd_ice1712_akm4xxx_build_controls);

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * thmc50.c - Part of lm_sensors, Linux kernel modules for hardware
  *	      monitoring
  * Copyright (C) 2007 Krzysztof Helt <krzysztof.h1@wp.pl>
  * Based on 2.4 driver by Frodo Looijaard <frodol@dds.nl> and
  * Philip Edelbrock <phil@netroedge.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -28,6 +35,10 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 
@@ -40,8 +51,13 @@ enum chips { thmc50, adm1022 };
 static unsigned short adm1022_temp3[16];
 static unsigned int adm1022_temp3_num;
 module_param_array(adm1022_temp3, ushort, &adm1022_temp3_num, 0);
+<<<<<<< HEAD
 MODULE_PARM_DESC(adm1022_temp3, "List of adapter,address pairs "
 			"to enable 3rd temperature (ADM1022 only)");
+=======
+MODULE_PARM_DESC(adm1022_temp3,
+		 "List of adapter,address pairs to enable 3rd temperature (ADM1022 only)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Many THMC50 constants specified below */
 
@@ -67,13 +83,22 @@ static const u8 THMC50_REG_TEMP_DEFAULT[] = { 0x17, 0x18, 0x18 };
 
 /* Each client has this additional data */
 struct thmc50_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	enum chips type;
 	unsigned long last_updated;	/* In jiffies */
 	char has_temp3;		/* !=0 if it is ADM1022 in temp3 mode */
+<<<<<<< HEAD
 	char valid;		/* !=0 if following fields are valid */
+=======
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register values */
 	s8 temp_input[3];
@@ -84,6 +109,7 @@ struct thmc50_data {
 	u8 alarms;
 };
 
+<<<<<<< HEAD
 static int thmc50_detect(struct i2c_client *client,
 			 struct i2c_board_info *info);
 static int thmc50_probe(struct i2c_client *client,
@@ -112,18 +138,72 @@ static struct i2c_driver thmc50_driver = {
 };
 
 static ssize_t show_analog_out(struct device *dev,
+=======
+static struct thmc50_data *thmc50_update_device(struct device *dev)
+{
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int timeout = HZ / 5 + (data->type == thmc50 ? HZ : 0);
+
+	mutex_lock(&data->update_lock);
+
+	if (time_after(jiffies, data->last_updated + timeout)
+	    || !data->valid) {
+
+		int temps = data->has_temp3 ? 3 : 2;
+		int i;
+		int prog = i2c_smbus_read_byte_data(client, THMC50_REG_CONF);
+
+		prog &= THMC50_REG_CONF_PROGRAMMED;
+
+		for (i = 0; i < temps; i++) {
+			data->temp_input[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP[i]);
+			data->temp_max[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP_MAX[i]);
+			data->temp_min[i] = i2c_smbus_read_byte_data(client,
+						THMC50_REG_TEMP_MIN[i]);
+			data->temp_critical[i] =
+				i2c_smbus_read_byte_data(client,
+					prog ? THMC50_REG_TEMP_CRITICAL[i]
+					     : THMC50_REG_TEMP_DEFAULT[i]);
+		}
+		data->analog_out =
+		    i2c_smbus_read_byte_data(client, THMC50_REG_ANALOG_OUT);
+		data->alarms =
+		    i2c_smbus_read_byte_data(client, THMC50_REG_INTR);
+		data->last_updated = jiffies;
+		data->valid = true;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+
+static ssize_t analog_out_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr, char *buf)
 {
 	struct thmc50_data *data = thmc50_update_device(dev);
 	return sprintf(buf, "%d\n", data->analog_out);
 }
 
+<<<<<<< HEAD
 static ssize_t set_analog_out(struct device *dev,
 			      struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t analog_out_store(struct device *dev,
+				struct device_attribute *attr,
+				const char *buf, size_t count)
+{
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int config;
 	unsigned long tmp;
 	int err;
@@ -133,7 +213,11 @@ static ssize_t set_analog_out(struct device *dev,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->analog_out = SENSORS_LIMIT(tmp, 0, 255);
+=======
+	data->analog_out = clamp_val(tmp, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_smbus_write_byte_data(client, THMC50_REG_ANALOG_OUT,
 				  data->analog_out);
 
@@ -149,14 +233,23 @@ static ssize_t set_analog_out(struct device *dev,
 }
 
 /* There is only one PWM mode = DC */
+<<<<<<< HEAD
 static ssize_t show_pwm_mode(struct device *dev, struct device_attribute *attr,
 			     char *buf)
+=======
+static ssize_t pwm_mode_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "0\n");
 }
 
 /* Temperatures */
+<<<<<<< HEAD
 static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t temp_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -164,20 +257,35 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", data->temp_input[nr] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_min(struct device *dev, struct device_attribute *attr,
 			     char *buf)
+=======
+static ssize_t temp_min_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct thmc50_data *data = thmc50_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_min[nr] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_min_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	int nr = to_sensor_dev_attr(attr)->index;
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -186,27 +294,46 @@ static ssize_t set_temp_min(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_min[nr] = SENSORS_LIMIT(val / 1000, -128, 127);
+=======
+	data->temp_min[nr] = clamp_val(val / 1000, -128, 127);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_smbus_write_byte_data(client, THMC50_REG_TEMP_MIN[nr],
 				  data->temp_min[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_max(struct device *dev, struct device_attribute *attr,
 			     char *buf)
+=======
+static ssize_t temp_max_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct thmc50_data *data = thmc50_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_max[nr] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct i2c_client *client = to_i2c_client(dev);
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_max_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	int nr = to_sensor_dev_attr(attr)->index;
+	struct thmc50_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -215,23 +342,36 @@ static ssize_t set_temp_max(struct device *dev, struct device_attribute *attr,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp_max[nr] = SENSORS_LIMIT(val / 1000, -128, 127);
+=======
+	data->temp_max[nr] = clamp_val(val / 1000, -128, 127);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_smbus_write_byte_data(client, THMC50_REG_TEMP_MAX[nr],
 				  data->temp_max[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_critical(struct device *dev,
 				  struct device_attribute *attr,
 				  char *buf)
+=======
+static ssize_t temp_critical_show(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct thmc50_data *data = thmc50_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_critical[nr] * 1000);
 }
 
+<<<<<<< HEAD
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	int index = to_sensor_dev_attr(attr)->index;
@@ -240,6 +380,7 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", (data->alarms >> index) & 1);
 }
 
+<<<<<<< HEAD
 #define temp_reg(offset)						\
 static SENSOR_DEVICE_ATTR(temp##offset##_input, S_IRUGO, show_temp,	\
 			NULL, offset - 1);				\
@@ -263,6 +404,29 @@ static SENSOR_DEVICE_ATTR(temp3_fault, S_IRUGO, show_alarm, NULL, 2);
 static SENSOR_DEVICE_ATTR(pwm1, S_IRUGO | S_IWUSR, show_analog_out,
 			  set_analog_out, 0);
 static SENSOR_DEVICE_ATTR(pwm1_mode, S_IRUGO, show_pwm_mode, NULL, 0);
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_min, temp_min, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_max, 0);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit, temp_critical, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_min, temp_min, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
+static SENSOR_DEVICE_ATTR_RO(temp2_crit, temp_critical, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_min, temp_min, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_max, 2);
+static SENSOR_DEVICE_ATTR_RO(temp3_crit, temp_critical, 2);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_alarm, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(temp3_alarm, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp2_fault, alarm, 7);
+static SENSOR_DEVICE_ATTR_RO(temp3_fault, alarm, 2);
+
+static SENSOR_DEVICE_ATTR_RW(pwm1, analog_out, 0);
+static SENSOR_DEVICE_ATTR_RO(pwm1_mode, pwm_mode, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *thmc50_attributes[] = {
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
@@ -311,8 +475,12 @@ static int thmc50_detect(struct i2c_client *client,
 	const char *type_name;
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA)) {
+<<<<<<< HEAD
 		pr_debug("thmc50: detect failed, "
 			 "smbus byte data not supported!\n");
+=======
+		pr_debug("thmc50: detect failed, smbus byte data not supported!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -350,11 +518,16 @@ static int thmc50_detect(struct i2c_client *client,
 	pr_debug("thmc50: Detected %s (version %x, revision %x)\n",
 		 type_name, (revision >> 4) - 0xc, revision & 0xf);
 
+<<<<<<< HEAD
 	strlcpy(info->type, type_name, I2C_NAME_SIZE);
+=======
+	strscpy(info->type, type_name, I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int thmc50_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
@@ -423,6 +596,11 @@ static int thmc50_remove(struct i2c_client *client)
 static void thmc50_init_client(struct i2c_client *client)
 {
 	struct thmc50_data *data = i2c_get_clientdata(client);
+=======
+static void thmc50_init_client(struct thmc50_data *data)
+{
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int config;
 
 	data->analog_out = i2c_smbus_read_byte_data(client,
@@ -440,6 +618,7 @@ static void thmc50_init_client(struct i2c_client *client)
 	i2c_smbus_write_byte_data(client, THMC50_REG_CONF, config);
 }
 
+<<<<<<< HEAD
 static struct thmc50_data *thmc50_update_device(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -482,6 +661,57 @@ static struct thmc50_data *thmc50_update_device(struct device *dev)
 	return data;
 }
 
+=======
+static const struct i2c_device_id thmc50_id[];
+
+static int thmc50_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct thmc50_data *data;
+	struct device *hwmon_dev;
+	int idx = 0;
+
+	data = devm_kzalloc(dev, sizeof(struct thmc50_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+	data->type = i2c_match_id(thmc50_id, client)->driver_data;
+	mutex_init(&data->update_lock);
+
+	thmc50_init_client(data);
+
+	/* sysfs hooks */
+	data->groups[idx++] = &thmc50_group;
+
+	/* Register additional ADM1022 sysfs hooks */
+	if (data->has_temp3)
+		data->groups[idx++] = &temp3_group;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id thmc50_id[] = {
+	{ "adm1022", adm1022 },
+	{ "thmc50", thmc50 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, thmc50_id);
+
+static struct i2c_driver thmc50_driver = {
+	.class = I2C_CLASS_HWMON,
+	.driver = {
+		.name = "thmc50",
+	},
+	.probe = thmc50_probe,
+	.id_table = thmc50_id,
+	.detect = thmc50_detect,
+	.address_list = normal_i2c,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_i2c_driver(thmc50_driver);
 
 MODULE_AUTHOR("Krzysztof Helt <krzysztof.h1@wp.pl>");

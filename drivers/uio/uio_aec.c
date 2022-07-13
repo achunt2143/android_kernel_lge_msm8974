@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * uio_aec.c -- simple driver for Adrienne Electronics Corp time code PCI device
  *
  * Copyright (C) 2008 Brandon Philips <brandon@ifup.org>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify it
  *   under the terms of the GNU General Public License version 2 as published
@@ -15,6 +20,8 @@
  *   You should have received a copy of the GNU General Public License along
  *   with this program; if not, write to the Free Software Foundation, Inc., 59
  *   Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -78,17 +85,29 @@ static void print_board_data(struct pci_dev *pdev, struct uio_info *i)
 		ioread8(i->priv + 0x07));
 }
 
+<<<<<<< HEAD
 static int __devinit probe(struct pci_dev *pdev, const struct pci_device_id *id)
+=======
+static int probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uio_info *info;
 	int ret;
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(struct uio_info), GFP_KERNEL);
+=======
+	info = devm_kzalloc(&pdev->dev, sizeof(struct uio_info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
 	if (pci_enable_device(pdev))
+<<<<<<< HEAD
 		goto out_free;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_request_regions(pdev, "aectc"))
 		goto out_disable;
@@ -129,8 +148,11 @@ out_release:
 	pci_release_regions(pdev);
 out_disable:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 out_free:
 	kfree(info);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -147,10 +169,14 @@ static void remove(struct pci_dev *pdev)
 	uio_unregister_device(info);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 	iounmap(info->priv);
 
 	kfree(info);
+=======
+	pci_iounmap(pdev, info->priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver pci_driver = {
@@ -160,6 +186,7 @@ static struct pci_driver pci_driver = {
 	.remove = remove,
 };
 
+<<<<<<< HEAD
 static int __init aectc_init(void)
 {
 	return pci_register_driver(&pci_driver);
@@ -174,3 +201,7 @@ MODULE_LICENSE("GPL");
 
 module_init(aectc_init);
 module_exit(aectc_exit);
+=======
+module_pci_driver(pci_driver);
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

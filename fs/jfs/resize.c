@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines  Corp., 2000-2004
  *
@@ -14,11 +15,20 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines  Corp., 2000-2004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
 #include <linux/quotaops.h>
+<<<<<<< HEAD
+=======
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "jfs_incore.h"
 #include "jfs_filsys.h"
 #include "jfs_metapage.h"
@@ -98,8 +108,12 @@ int jfs_extendfs(struct super_block *sb, s64 newLVSize, int newLogSize)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	VolumeSize = sb->s_bdev->bd_inode->i_size >> sb->s_blocksize_bits;
 
+=======
+	VolumeSize = sb_bdev_nr_blocks(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (VolumeSize) {
 		if (newLVSize > VolumeSize) {
 			printk(KERN_WARNING "jfs_extendfs: invalid size\n");
@@ -211,7 +225,11 @@ int jfs_extendfs(struct super_block *sb, s64 newLVSize, int newLogSize)
 	txQuiesce(sb);
 
 	/* Reset size of direct inode */
+<<<<<<< HEAD
 	sbi->direct_inode->i_size =  sb->s_bdev->bd_inode->i_size;
+=======
+	sbi->direct_inode->i_size = bdev_nr_bytes(sb->s_bdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sbi->mntflag & JFS_INLINELOG) {
 		/*
@@ -379,8 +397,19 @@ int jfs_extendfs(struct super_block *sb, s64 newLVSize, int newLogSize)
 	 * cached in meta-data cache, and not written out
 	 * by txCommit();
 	 */
+<<<<<<< HEAD
 	filemap_fdatawait(ipbmap->i_mapping);
 	filemap_write_and_wait(ipbmap->i_mapping);
+=======
+	rc = filemap_fdatawait(ipbmap->i_mapping);
+	if (rc)
+		goto error_out;
+
+	rc = filemap_write_and_wait(ipbmap->i_mapping);
+	if (rc)
+		goto error_out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	diWriteSpecial(ipbmap, 0);
 
 	newPage = nPages;	/* first new page number */
@@ -530,7 +559,11 @@ int jfs_extendfs(struct super_block *sb, s64 newLVSize, int newLogSize)
 	goto resume;
 
       error_out:
+<<<<<<< HEAD
 	jfs_error(sb, "jfs_extendfs");
+=======
+	jfs_error(sb, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
       resume:
 	/*

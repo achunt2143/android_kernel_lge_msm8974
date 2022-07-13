@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
  *              KERNEL SERVICES THAT USE THE GRU
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -29,6 +36,10 @@
 #include <linux/miscdevice.h>
 #include <linux/proc_fs.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/sync_core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 #include <linux/delay.h>
 #include <linux/export.h>
@@ -48,7 +59,11 @@
  * kernel/user requirements.
  *
  * Blade percpu resources reserved for kernel use. These resources are
+<<<<<<< HEAD
  * reserved whenever the the kernel context for the blade is loaded. Note
+=======
+ * reserved whenever the kernel context for the blade is loaded. Note
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that the kernel context is not guaranteed to be always available. It is
  * loaded on demand & can be stolen by a user if the user demand exceeds the
  * kernel demand. The kernel can always reload the kernel context but
@@ -160,7 +175,16 @@ static void gru_load_kernel_context(struct gru_blade_state *bs, int blade_id)
 	down_write(&bs->bs_kgts_sema);
 
 	if (!bs->bs_kgts) {
+<<<<<<< HEAD
 		bs->bs_kgts = gru_alloc_gts(NULL, 0, 0, 0, 0, 0);
+=======
+		do {
+			bs->bs_kgts = gru_alloc_gts(NULL, 0, 0, 0, 0, 0);
+			if (!IS_ERR(bs->bs_kgts))
+				break;
+			msleep(1);
+		} while (true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bs->bs_kgts->ts_user_blade_id = blade_id;
 	}
 	kgts = bs->bs_kgts;
@@ -429,10 +453,17 @@ int gru_get_cb_exception_detail(void *cb,
 	return 0;
 }
 
+<<<<<<< HEAD
 char *gru_get_cb_exception_detail_str(int ret, void *cb,
 				      char *buf, int size)
 {
 	struct gru_control_block_status *gen = (void *)cb;
+=======
+static char *gru_get_cb_exception_detail_str(int ret, void *cb,
+					     char *buf, int size)
+{
+	struct gru_control_block_status *gen = cb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct control_block_extended_exc_detail excdet;
 
 	if (ret > 0 && gen->istatus == CBS_EXCEPTION) {
@@ -459,7 +490,11 @@ static int gru_wait_idle_or_exception(struct gru_control_block_status *gen)
 
 static int gru_retry_exception(void *cb)
 {
+<<<<<<< HEAD
 	struct gru_control_block_status *gen = (void *)cb;
+=======
+	struct gru_control_block_status *gen = cb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct control_block_extended_exc_detail excdet;
 	int retry = EXCEPTION_RETRY_LIMIT;
 
@@ -482,7 +517,11 @@ static int gru_retry_exception(void *cb)
 
 int gru_check_status_proc(void *cb)
 {
+<<<<<<< HEAD
 	struct gru_control_block_status *gen = (void *)cb;
+=======
+	struct gru_control_block_status *gen = cb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = gen->istatus;
@@ -495,7 +534,11 @@ int gru_check_status_proc(void *cb)
 
 int gru_wait_proc(void *cb)
 {
+<<<<<<< HEAD
 	struct gru_control_block_status *gen = (void *)cb;
+=======
+	struct gru_control_block_status *gen = cb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = gru_wait_idle_or_exception(gen);
@@ -505,7 +548,11 @@ int gru_wait_proc(void *cb)
 	return ret;
 }
 
+<<<<<<< HEAD
 void gru_abort(int ret, void *cb, char *str)
+=======
+static void gru_abort(int ret, void *cb, char *str)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char buf[GRU_EXC_STR_SIZE];
 
@@ -629,7 +676,11 @@ static int send_noop_message(void *cb, struct gru_message_queue_desc *mqd,
 			break;
 		case CBSS_PAGE_OVERFLOW:
 			STAT(mesq_noop_page_overflow);
+<<<<<<< HEAD
 			/* fallthru */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			BUG();
 		}
@@ -713,8 +764,13 @@ cberr:
 static int send_message_put_nacked(void *cb, struct gru_message_queue_desc *mqd,
 			void *mesg, int lines)
 {
+<<<<<<< HEAD
 	unsigned long m, *val = mesg, gpa, save;
 	int ret;
+=======
+	unsigned long m;
+	int ret, loops = 200;	/* experimentally determined */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	m = mqd->mq_gpa + (gru_get_amo_value_head(cb) << 6);
 	if (lines == 2) {
@@ -730,6 +786,7 @@ static int send_message_put_nacked(void *cb, struct gru_message_queue_desc *mqd,
 		return MQE_OK;
 
 	/*
+<<<<<<< HEAD
 	 * Send a cross-partition interrupt to the SSI that contains the target
 	 * message queue. Normally, the interrupt is automatically delivered by
 	 * hardware but some error conditions require explicit delivery.
@@ -746,6 +803,30 @@ static int send_message_put_nacked(void *cb, struct gru_message_queue_desc *mqd,
 	if (ret != CBS_IDLE)
 		return MQE_UNEXPECTED_CB_ERR;
 	return MQE_OK;
+=======
+	 * Send a noop message in order to deliver a cross-partition interrupt
+	 * to the SSI that contains the target message queue. Normally, the
+	 * interrupt is automatically delivered by hardware following mesq
+	 * operations, but some error conditions require explicit delivery.
+	 * The noop message will trigger delivery. Otherwise partition failures
+	 * could cause unrecovered errors.
+	 */
+	do {
+		ret = send_noop_message(cb, mqd, mesg);
+	} while ((ret == MQIE_AGAIN || ret == MQE_CONGESTION) && (loops-- > 0));
+
+	if (ret == MQIE_AGAIN || ret == MQE_CONGESTION) {
+		/*
+		 * Don't indicate to the app to resend the message, as it's
+		 * already been successfully sent.  We simply send an OK
+		 * (rather than fail the send with MQE_UNEXPECTED_CB_ERR),
+		 * assuming that the other side is receiving enough
+		 * interrupts to get this message processed anyway.
+		 */
+		ret = MQE_OK;
+	}
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -781,7 +862,11 @@ static int send_message_failure(void *cb, struct gru_message_queue_desc *mqd,
 		break;
 	case CBSS_PAGE_OVERFLOW:
 		STAT(mesq_page_overflow);
+<<<<<<< HEAD
 		/* fallthru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
@@ -997,7 +1082,10 @@ static int quicktest1(unsigned long arg)
 {
 	struct gru_message_queue_desc mqd;
 	void *p, *mq;
+<<<<<<< HEAD
 	unsigned long *dw;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret = -EIO;
 	char mes[GRU_CACHE_LINE_BYTES], *m;
 
@@ -1007,7 +1095,10 @@ static int quicktest1(unsigned long arg)
 		return -ENOMEM;
 	mq = ALIGNUP(p, 1024);
 	memset(mes, 0xee, sizeof(mes));
+<<<<<<< HEAD
 	dw = mq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gru_create_message_queue(&mqd, mq, 8 * GRU_CACHE_LINE_BYTES, 0, 0, 0);
 	for (i = 0; i < 6; i++) {
@@ -1019,7 +1110,11 @@ static int quicktest1(unsigned long arg)
 			break;
 	}
 	if (ret != MQE_QUEUE_FULL || i != 4) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "GRU:%d quicktest1: unexpect status %d, i %d\n",
+=======
+		printk(KERN_DEBUG "GRU:%d quicktest1: unexpected status %d, i %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       smp_processor_id(), ret, i);
 		goto done;
 	}

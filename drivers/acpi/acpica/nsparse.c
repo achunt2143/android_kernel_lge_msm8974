@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,18 +46,144 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsparse")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    ns_execute_table
+ *
+ * PARAMETERS:  table_desc      - An ACPI table descriptor for table to parse
+ *              start_node      - Where to enter the table into the namespace
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load ACPI/AML table by executing the entire table as a single
+ *              large control method.
+ *
+ * NOTE: The point of this is to execute any module-level code in-place
+ * as the table is parsed. Some AML code depends on this behavior.
+ *
+ * It is a run-time option at this time, but will eventually become
+ * the default.
+ *
+ * Note: This causes the table to only have a single-pass parse.
+ * However, this is compatible with other ACPI implementations.
+ *
+ ******************************************************************************/
+acpi_status
+acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
+{
+	acpi_status status;
+	struct acpi_table_header *table;
+	acpi_owner_id owner_id;
+	struct acpi_evaluate_info *info = NULL;
+	u32 aml_length;
+	u8 *aml_start;
+	union acpi_operand_object *method_obj = NULL;
+
+	ACPI_FUNCTION_TRACE(ns_execute_table);
+
+	status = acpi_get_table_by_index(table_index, &table);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Table must consist of at least a complete header */
+
+	if (table->length < sizeof(struct acpi_table_header)) {
+		return_ACPI_STATUS(AE_BAD_HEADER);
+	}
+
+	aml_start = (u8 *)table + sizeof(struct acpi_table_header);
+	aml_length = table->length - sizeof(struct acpi_table_header);
+
+	status = acpi_tb_get_owner_id(table_index, &owner_id);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Create, initialize, and link a new temporary method object */
+
+	method_obj = acpi_ut_create_internal_object(ACPI_TYPE_METHOD);
+	if (!method_obj) {
+		return_ACPI_STATUS(AE_NO_MEMORY);
+	}
+
+	/* Allocate the evaluation information block */
+
+	info = ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_evaluate_info));
+	if (!info) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	ACPI_DEBUG_PRINT_RAW((ACPI_DB_PARSE,
+			      "%s: Create table pseudo-method for [%4.4s] @%p, method %p\n",
+			      ACPI_GET_FUNCTION_NAME, table->signature, table,
+			      method_obj));
+
+	method_obj->method.aml_start = aml_start;
+	method_obj->method.aml_length = aml_length;
+	method_obj->method.owner_id = owner_id;
+	method_obj->method.info_flags |= ACPI_METHOD_MODULE_LEVEL;
+
+	info->pass_number = ACPI_IMODE_EXECUTE;
+	info->node = start_node;
+	info->obj_desc = method_obj;
+	info->node_flags = info->node->flags;
+	info->full_pathname = acpi_ns_get_normalized_pathname(info->node, TRUE);
+	if (!info->full_pathname) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	/* Optional object evaluation log */
+
+	ACPI_DEBUG_PRINT_RAW((ACPI_DB_EVALUATION,
+			      "%-26s:  (Definition Block level)\n",
+			      "Module-level evaluation"));
+
+	status = acpi_ps_execute_table(info);
+
+	/* Optional object evaluation log */
+
+	ACPI_DEBUG_PRINT_RAW((ACPI_DB_EVALUATION,
+			      "%-26s:  (Definition Block level)\n",
+			      "Module-level complete"));
+
+cleanup:
+	if (info) {
+		ACPI_FREE(info->full_pathname);
+		info->full_pathname = NULL;
+	}
+	ACPI_FREE(info);
+	acpi_ut_remove_reference(method_obj);
+	return_ACPI_STATUS(status);
+}
+
+/*******************************************************************************
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    ns_one_complete_parse
  *
  * PARAMETERS:  pass_number             - 1 or 2
@@ -63,6 +194,10 @@ ACPI_MODULE_NAME("nsparse")
  * DESCRIPTION: Perform one complete parse of an ACPI/AML table.
  *
  ******************************************************************************/
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_ns_one_complete_parse(u32 pass_number,
 			   u32 table_index,
@@ -70,7 +205,11 @@ acpi_ns_one_complete_parse(u32 pass_number,
 {
 	union acpi_parse_object *parse_root;
 	acpi_status status;
+<<<<<<< HEAD
        u32 aml_length;
+=======
+	u32 aml_length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *aml_start;
 	struct acpi_walk_state *walk_state;
 	struct acpi_table_header *table;
@@ -78,6 +217,23 @@ acpi_ns_one_complete_parse(u32 pass_number,
 
 	ACPI_FUNCTION_TRACE(ns_one_complete_parse);
 
+<<<<<<< HEAD
+=======
+	status = acpi_get_table_by_index(table_index, &table);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Table must consist of at least a complete header */
+
+	if (table->length < sizeof(struct acpi_table_header)) {
+		return_ACPI_STATUS(AE_BAD_HEADER);
+	}
+
+	aml_start = (u8 *)table + sizeof(struct acpi_table_header);
+	aml_length = table->length - sizeof(struct acpi_table_header);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_tb_get_owner_id(table_index, &owner_id);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
@@ -85,7 +241,11 @@ acpi_ns_one_complete_parse(u32 pass_number,
 
 	/* Create and init a Root Node */
 
+<<<<<<< HEAD
 	parse_root = acpi_ps_create_scope_op();
+=======
+	parse_root = acpi_ps_create_scope_op(aml_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!parse_root) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -98,6 +258,7 @@ acpi_ns_one_complete_parse(u32 pass_number,
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
+<<<<<<< HEAD
 	status = acpi_get_table_by_index(table_index, &table);
 	if (ACPI_FAILURE(status)) {
 		acpi_ds_delete_walk_state(walk_state);
@@ -117,11 +278,26 @@ acpi_ns_one_complete_parse(u32 pass_number,
 					       (u8) pass_number);
 	}
 
+=======
+	status = acpi_ds_init_aml_walk(walk_state, parse_root, NULL,
+				       aml_start, aml_length, NULL,
+				       (u8)pass_number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		acpi_ds_delete_walk_state(walk_state);
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Found OSDT table, enable the namespace override feature */
+
+	if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_OSDT) &&
+	    pass_number == ACPI_IMODE_LOAD_PASS1) {
+		walk_state->namespace_override = TRUE;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* start_node is the default location to load the table */
 
 	if (start_node && start_node != acpi_gbl_root_node) {
@@ -136,11 +312,21 @@ acpi_ns_one_complete_parse(u32 pass_number,
 
 	/* Parse the AML */
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE, "*PARSE* pass %u parse\n",
 			  pass_number));
 	status = acpi_ps_parse_aml(walk_state);
 
       cleanup:
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+			  "*PARSE* pass %u parse\n", pass_number));
+	acpi_ex_enter_interpreter();
+	status = acpi_ps_parse_aml(walk_state);
+	acpi_ex_exit_interpreter();
+
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ps_delete_parse_tree(parse_root);
 	return_ACPI_STATUS(status);
 }
@@ -166,6 +352,7 @@ acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node)
 	ACPI_FUNCTION_TRACE(ns_parse_table);
 
 	/*
+<<<<<<< HEAD
 	 * AML Parse, pass 1
 	 *
 	 * In this pass, we load most of the namespace.  Control methods
@@ -197,6 +384,20 @@ acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
+=======
+	 * Executes the AML table as one large control method.
+	 * The point of this is to execute any module-level code in-place
+	 * as the table is parsed. Some AML code depends on this behavior.
+	 *
+	 * Note: This causes the table to only have a single-pass parse.
+	 * However, this is compatible with other ACPI implementations.
+	 */
+	ACPI_DEBUG_PRINT_RAW((ACPI_DB_PARSE,
+			      "%s: **** Start table execution pass\n",
+			      ACPI_GET_FUNCTION_NAME));
+
+	status = acpi_ns_execute_table(table_index, start_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(status);
 }

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device Tree for Klondike (APM8018X) board.
  *
  * Copyright (c) 2010, Applied Micro Circuits Corporation
  * Author: Tanmay Inamdar <tinamdar@apm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,6 +24,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -222,6 +229,10 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = "/plb/opb/serial@50001000";
+=======
+		stdout-path = "/plb/opb/serial@50001000";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RFC 3720 (iSCSI) protocol data types
  *
  * Copyright (C) 2005 Dmitry Yusupov
  * Copyright (C) 2005 Alex Aizman
  * maintained by open-iscsi@googlegroups.com
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -16,6 +21,8 @@
  * General Public License for more details.
  *
  * See the file COPYING included with this distribution for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ISCSI_PROTO_H
@@ -63,7 +70,11 @@ static inline int iscsi_sna_gte(u32 n1, u32 n2)
 }
 
 /*
+<<<<<<< HEAD
  * useful common(control and data pathes) macro
+=======
+ * useful common(control and data paths) macro
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ntoh24(p) (((p)[0] << 16) | ((p)[1] << 8) | ((p)[2]))
 #define hton24(p, v) { \
@@ -74,7 +85,11 @@ static inline int iscsi_sna_gte(u32 n1, u32 n2)
 #define zero_data(p) {p[0]=0;p[1]=0;p[2]=0;}
 
 /* initiator tags; opaque for target */
+<<<<<<< HEAD
 typedef uint32_t __bitwise__ itt_t;
+=======
+typedef uint32_t __bitwise itt_t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* below makes sense only for initiator that created this tag */
 #define build_itt(itt, age) ((__force itt_t)\
 	((itt) | ((age) << ISCSI_AGE_SHIFT)))
@@ -661,6 +676,11 @@ struct iscsi_reject {
 
 #define ISCSI_DEF_TIME2WAIT			2
 
+<<<<<<< HEAD
+=======
+#define ISCSI_NAME_LEN				224
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************* RFC 3720 End *****************************/
 
 #endif /* ISCSI_PROTO_H */

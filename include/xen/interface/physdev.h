@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -17,6 +18,9 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+=======
+/* SPDX-License-Identifier: MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __XEN_PUBLIC_PHYSDEV_H__
 #define __XEN_PUBLIC_PHYSDEV_H__
@@ -56,7 +60,11 @@ struct physdev_eoi {
 #define PHYSDEVOP_pirq_eoi_gmfn_v2       28
 struct physdev_pirq_eoi_gmfn {
     /* IN */
+<<<<<<< HEAD
     unsigned long gmfn;
+=======
+    xen_ulong_t gmfn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -131,6 +139,10 @@ struct physdev_irq {
 #define MAP_PIRQ_TYPE_GSI		0x1
 #define MAP_PIRQ_TYPE_UNKNOWN		0x2
 #define MAP_PIRQ_TYPE_MSI_SEG		0x3
+<<<<<<< HEAD
+=======
+#define MAP_PIRQ_TYPE_MULTI_MSI		0x4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PHYSDEVOP_map_pirq		13
 struct physdev_map_pirq {
@@ -141,11 +153,24 @@ struct physdev_map_pirq {
     int index;
     /* IN or OUT */
     int pirq;
+<<<<<<< HEAD
     /* IN - high 16 bits hold segment for MAP_PIRQ_TYPE_MSI_SEG */
     int bus;
     /* IN */
     int devfn;
     /* IN */
+=======
+    /* IN - high 16 bits hold segment for ..._MSI_SEG and ..._MULTI_MSI */
+    int bus;
+    /* IN */
+    int devfn;
+    /* IN
+     * - For MSI-X contains entry number.
+     * - For MSI with ..._MULTI_MSI contains number of vectors.
+     * OUT (..._MULTI_MSI only)
+     * - Number of vectors allocated.
+     */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int entry_nr;
     /* IN */
     uint64_t table_base;
@@ -231,6 +256,20 @@ struct physdev_get_free_pirq {
 #define XEN_PCI_DEV_VIRTFN             0x2
 #define XEN_PCI_DEV_PXM                0x4
 
+<<<<<<< HEAD
+=======
+#define XEN_PCI_MMCFG_RESERVED         0x1
+
+#define PHYSDEVOP_pci_mmcfg_reserved    24
+struct physdev_pci_mmcfg_reserved {
+    uint64_t address;
+    uint16_t segment;
+    uint8_t start_bus;
+    uint8_t end_bus;
+    uint32_t flags;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PHYSDEVOP_pci_device_add        25
 struct physdev_pci_device_add {
     /* IN */
@@ -251,6 +290,15 @@ struct physdev_pci_device_add {
 
 #define PHYSDEVOP_pci_device_remove     26
 #define PHYSDEVOP_restore_msi_ext       27
+<<<<<<< HEAD
+=======
+/*
+ * Dom0 should use these two to announce MMIO resources assigned to
+ * MSI-X capable devices won't (prepare) or may (release) change.
+ */
+#define PHYSDEVOP_prepare_msix          30
+#define PHYSDEVOP_release_msix          31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct physdev_pci_device {
     /* IN */
     uint16_t seg;
@@ -258,6 +306,25 @@ struct physdev_pci_device {
     uint8_t devfn;
 };
 
+<<<<<<< HEAD
+=======
+#define PHYSDEVOP_DBGP_RESET_PREPARE    1
+#define PHYSDEVOP_DBGP_RESET_DONE       2
+
+#define PHYSDEVOP_DBGP_BUS_UNKNOWN      0
+#define PHYSDEVOP_DBGP_BUS_PCI          1
+
+#define PHYSDEVOP_dbgp_op               29
+struct physdev_dbgp_op {
+    /* IN */
+    uint8_t op;
+    uint8_t bus;
+    union {
+        struct physdev_pci_device pci;
+    } u;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Notify that some PIRQ-bound event channels have been unmasked.
  * ** This command is obsolete since interface version 0x00030202 and is **

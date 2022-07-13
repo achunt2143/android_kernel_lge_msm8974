@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VX soundcards
  *
  * DSP firmware management
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -29,8 +36,11 @@
 #include <sound/hwdep.h>
 #include <sound/vx_core.h>
 
+<<<<<<< HEAD
 #ifdef SND_VX_FW_LOADER
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("vx/bx_1_vxp.b56");
 MODULE_FIRMWARE("vx/bx_1_vp4.b56");
 MODULE_FIRMWARE("vx/x1_1_vx2.xlx");
@@ -47,7 +57,11 @@ MODULE_FIRMWARE("vx/l_1_vp4.d56");
 
 int snd_vx_setup_firmware(struct vx_core *chip)
 {
+<<<<<<< HEAD
 	static char *fw_files[VX_TYPE_NUMS][4] = {
+=======
+	static const char * const fw_files[VX_TYPE_NUMS][4] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[VX_TYPE_BOARD] = {
 			NULL, "x1_1_vx2.xlx", "bd56002.boot", "l_1_vx2.d56",
 		},
@@ -93,6 +107,7 @@ int snd_vx_setup_firmware(struct vx_core *chip)
 
 	/* ok, we reached to the last one */
 	/* create the devices if not built yet */
+<<<<<<< HEAD
 	if ((err = snd_vx_pcm_new(chip)) < 0)
 		return err;
 
@@ -102,6 +117,21 @@ int snd_vx_setup_firmware(struct vx_core *chip)
 	if (chip->ops->add_controls)
 		if ((err = chip->ops->add_controls(chip)) < 0)
 			return err;
+=======
+	err = snd_vx_pcm_new(chip);
+	if (err < 0)
+		return err;
+
+	err = snd_vx_mixer_new(chip);
+	if (err < 0)
+		return err;
+
+	if (chip->ops->add_controls) {
+		err = chip->ops->add_controls(chip);
+		if (err < 0)
+			return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->chip_status |= VX_STAT_DEVICE_INIT;
 	chip->chip_status |= VX_STAT_CHIP_INIT;
@@ -119,6 +149,7 @@ void snd_vx_free_firmware(struct vx_core *chip)
 #endif
 }
 
+<<<<<<< HEAD
 #else /* old style firmware loading */
 
 static int vx_hwdep_dsp_status(struct snd_hwdep *hw,
@@ -256,5 +287,7 @@ void snd_vx_free_firmware(struct vx_core *chip)
 
 #endif /* SND_VX_FW_LOADER */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_vx_setup_firmware);
 EXPORT_SYMBOL(snd_vx_free_firmware);

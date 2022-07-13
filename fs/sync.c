@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * High-level sync()-related operations
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -21,6 +29,7 @@
 			SYNC_FILE_RANGE_WAIT_AFTER)
 
 /*
+<<<<<<< HEAD
  * Do the filesystem syncing work. For simple filesystems
  * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
  * submit IO for these buffers via __sync_blockdev(). This also speeds up the
@@ -50,13 +59,19 @@ static int __sync_filesystem(struct super_block *sb, int wait)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Write out and wait upon all dirty data associated with this
  * superblock.  Filesystem data as well as the underlying block
  * device.  Takes the superblock lock.
  */
 int sync_filesystem(struct super_block *sb)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to be protected against the filesystem going from
@@ -67,6 +82,7 @@ int sync_filesystem(struct super_block *sb)
 	/*
 	 * No point in syncing out anything if the filesystem is read-only.
 	 */
+<<<<<<< HEAD
 	if (sb->s_flags & MS_RDONLY)
 		return 0;
 
@@ -102,17 +118,104 @@ SYSCALL_DEFINE0(sync)
 	sync_filesystems(1);
 	if (unlikely(laptop_mode))
 		laptop_sync_completion();
+=======
+	if (sb_rdonly(sb))
+		return 0;
+
+	/*
+	 * Do the filesystem syncing work.  For simple filesystems
+	 * writeback_inodes_sb(sb) just dirties buffers with inodes so we have
+	 * to submit I/O for these buffers via sync_blockdev().  This also
+	 * speeds up the wait == 1 case since in that case write_inode()
+	 * methods call sync_dirty_buffer() and thus effectively write one block
+	 * at a time.
+	 */
+	writeback_inodes_sb(sb, WB_REASON_SYNC);
+	if (sb->s_op->sync_fs) {
+		ret = sb->s_op->sync_fs(sb, 0);
+		if (ret)
+			return ret;
+	}
+	ret = sync_blockdev_nowait(sb->s_bdev);
+	if (ret)
+		return ret;
+
+	sync_inodes_sb(sb);
+	if (sb->s_op->sync_fs) {
+		ret = sb->s_op->sync_fs(sb, 1);
+		if (ret)
+			return ret;
+	}
+	return sync_blockdev(sb->s_bdev);
+}
+EXPORT_SYMBOL(sync_filesystem);
+
+static void sync_inodes_one_sb(struct super_block *sb, void *arg)
+{
+	if (!sb_rdonly(sb))
+		sync_inodes_sb(sb);
+}
+
+static void sync_fs_one_sb(struct super_block *sb, void *arg)
+{
+	if (!sb_rdonly(sb) && !(sb->s_iflags & SB_I_SKIP_SYNC) &&
+	    sb->s_op->sync_fs)
+		sb->s_op->sync_fs(sb, *(int *)arg);
+}
+
+/*
+ * Sync everything. We start by waking flusher threads so that most of
+ * writeback runs on all devices in parallel. Then we sync all inodes reliably
+ * which effectively also waits for all flusher threads to finish doing
+ * writeback. At this point all data is on disk so metadata should be stable
+ * and we tell filesystems to sync their metadata via ->sync_fs() calls.
+ * Finally, we writeout all block devices because some filesystems (e.g. ext2)
+ * just write metadata (such as inodes or bitmaps) to block device page cache
+ * and do not sync it on their own in ->sync_fs().
+ */
+void ksys_sync(void)
+{
+	int nowait = 0, wait = 1;
+
+	wakeup_flusher_threads(WB_REASON_SYNC);
+	iterate_supers(sync_inodes_one_sb, NULL);
+	iterate_supers(sync_fs_one_sb, &nowait);
+	iterate_supers(sync_fs_one_sb, &wait);
+	sync_bdevs(false);
+	sync_bdevs(true);
+	if (unlikely(laptop_mode))
+		laptop_sync_completion();
+}
+
+SYSCALL_DEFINE0(sync)
+{
+	ksys_sync();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void do_sync_work(struct work_struct *work)
 {
+<<<<<<< HEAD
+=======
+	int nowait = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Sync twice to reduce the possibility we skipped some inodes / pages
 	 * because they were temporarily locked
 	 */
+<<<<<<< HEAD
 	sync_filesystems(0);
 	sync_filesystems(0);
+=======
+	iterate_supers(sync_inodes_one_sb, &nowait);
+	iterate_supers(sync_fs_one_sb, &nowait);
+	sync_bdevs(false);
+	iterate_supers(sync_inodes_one_sb, &nowait);
+	iterate_supers(sync_fs_one_sb, &nowait);
+	sync_bdevs(false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("Emergency Sync complete\n");
 	kfree(work);
 }
@@ -133,6 +236,7 @@ void emergency_sync(void)
  */
 SYSCALL_DEFINE1(syncfs, int, fd)
 {
+<<<<<<< HEAD
 	struct file *file;
 	struct super_block *sb;
 	int ret;
@@ -142,13 +246,29 @@ SYSCALL_DEFINE1(syncfs, int, fd)
 	if (!file)
 		return -EBADF;
 	sb = file->f_dentry->d_sb;
+=======
+	struct fd f = fdget(fd);
+	struct super_block *sb;
+	int ret, ret2;
+
+	if (!f.file)
+		return -EBADF;
+	sb = f.file->f_path.dentry->d_sb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&sb->s_umount);
 	ret = sync_filesystem(sb);
 	up_read(&sb->s_umount);
 
+<<<<<<< HEAD
 	fput_light(file, fput_needed);
 	return ret;
+=======
+	ret2 = errseq_check_and_advance(&sb->s_wb_err, &f.file->f_sb_err);
+
+	fdput(f);
+	return ret ? ret : ret2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -164,8 +284,17 @@ SYSCALL_DEFINE1(syncfs, int, fd)
  */
 int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 {
+<<<<<<< HEAD
 	if (!file->f_op || !file->f_op->fsync)
 		return -EINVAL;
+=======
+	struct inode *inode = file->f_mapping->host;
+
+	if (!file->f_op->fsync)
+		return -EINVAL;
+	if (!datasync && (inode->i_state & I_DIRTY_TIME))
+		mark_inode_dirty_sync(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return file->f_op->fsync(file, start, end, datasync);
 }
 EXPORT_SYMBOL(vfs_fsync_range);
@@ -186,6 +315,7 @@ EXPORT_SYMBOL(vfs_fsync);
 
 static int do_fsync(unsigned int fd, int datasync)
 {
+<<<<<<< HEAD
 	struct file *file;
 	int ret = -EBADF;
 
@@ -193,6 +323,14 @@ static int do_fsync(unsigned int fd, int datasync)
 	if (file) {
 		ret = vfs_fsync(file, datasync);
 		fput(file);
+=======
+	struct fd f = fdget(fd);
+	int ret = -EBADF;
+
+	if (f.file) {
+		ret = vfs_fsync(f.file, datasync);
+		fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -207,6 +345,7 @@ SYSCALL_DEFINE1(fdatasync, unsigned int, fd)
 	return do_fsync(fd, 1);
 }
 
+<<<<<<< HEAD
 /**
  * generic_write_sync - perform syncing after a write if file / inode is sync
  * @file:	file to which the write happened
@@ -279,6 +418,14 @@ SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 	struct address_space *mapping;
 	loff_t endbyte;			/* inclusive */
 	int fput_needed;
+=======
+int sync_file_range(struct file *file, loff_t offset, loff_t nbytes,
+		    unsigned int flags)
+{
+	int ret;
+	struct address_space *mapping;
+	loff_t endbyte;			/* inclusive */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t i_mode;
 
 	ret = -EINVAL;
@@ -295,7 +442,11 @@ SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 		goto out;
 
 	if (sizeof(pgoff_t) == 4) {
+<<<<<<< HEAD
 		if (offset >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (offset >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The range starts outside a 32 bit machine's
 			 * pagecache addressing capabilities.  Let it "succeed"
@@ -303,7 +454,11 @@ SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 			ret = 0;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (endbyte >= (0x100000000ULL << PAGE_CACHE_SHIFT)) {
+=======
+		if (endbyte >= (0x100000000ULL << PAGE_SHIFT)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Out to EOF
 			 */
@@ -316,6 +471,7 @@ SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 	else
 		endbyte--;		/* inclusive */
 
+<<<<<<< HEAD
 	ret = -EBADF;
 	file = fget_light(fd, &fput_needed);
 	if (!file)
@@ -362,10 +518,125 @@ asmlinkage long SyS_sync_file_range(long fd, loff_t offset, loff_t nbytes,
 				    (unsigned int) flags);
 }
 SYSCALL_ALIAS(sys_sync_file_range, SyS_sync_file_range);
+=======
+	i_mode = file_inode(file)->i_mode;
+	ret = -ESPIPE;
+	if (!S_ISREG(i_mode) && !S_ISBLK(i_mode) && !S_ISDIR(i_mode) &&
+			!S_ISLNK(i_mode))
+		goto out;
+
+	mapping = file->f_mapping;
+	ret = 0;
+	if (flags & SYNC_FILE_RANGE_WAIT_BEFORE) {
+		ret = file_fdatawait_range(file, offset, endbyte);
+		if (ret < 0)
+			goto out;
+	}
+
+	if (flags & SYNC_FILE_RANGE_WRITE) {
+		int sync_mode = WB_SYNC_NONE;
+
+		if ((flags & SYNC_FILE_RANGE_WRITE_AND_WAIT) ==
+			     SYNC_FILE_RANGE_WRITE_AND_WAIT)
+			sync_mode = WB_SYNC_ALL;
+
+		ret = __filemap_fdatawrite_range(mapping, offset, endbyte,
+						 sync_mode);
+		if (ret < 0)
+			goto out;
+	}
+
+	if (flags & SYNC_FILE_RANGE_WAIT_AFTER)
+		ret = file_fdatawait_range(file, offset, endbyte);
+
+out:
+	return ret;
+}
+
+/*
+ * ksys_sync_file_range() permits finely controlled syncing over a segment of
+ * a file in the range offset .. (offset+nbytes-1) inclusive.  If nbytes is
+ * zero then ksys_sync_file_range() will operate from offset out to EOF.
+ *
+ * The flag bits are:
+ *
+ * SYNC_FILE_RANGE_WAIT_BEFORE: wait upon writeout of all pages in the range
+ * before performing the write.
+ *
+ * SYNC_FILE_RANGE_WRITE: initiate writeout of all those dirty pages in the
+ * range which are not presently under writeback. Note that this may block for
+ * significant periods due to exhaustion of disk request structures.
+ *
+ * SYNC_FILE_RANGE_WAIT_AFTER: wait upon writeout of all pages in the range
+ * after performing the write.
+ *
+ * Useful combinations of the flag bits are:
+ *
+ * SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE: ensures that all pages
+ * in the range which were dirty on entry to ksys_sync_file_range() are placed
+ * under writeout.  This is a start-write-for-data-integrity operation.
+ *
+ * SYNC_FILE_RANGE_WRITE: start writeout of all dirty pages in the range which
+ * are not presently under writeout.  This is an asynchronous flush-to-disk
+ * operation.  Not suitable for data integrity operations.
+ *
+ * SYNC_FILE_RANGE_WAIT_BEFORE (or SYNC_FILE_RANGE_WAIT_AFTER): wait for
+ * completion of writeout of all pages in the range.  This will be used after an
+ * earlier SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE operation to wait
+ * for that operation to complete and to return the result.
+ *
+ * SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE|SYNC_FILE_RANGE_WAIT_AFTER
+ * (a.k.a. SYNC_FILE_RANGE_WRITE_AND_WAIT):
+ * a traditional sync() operation.  This is a write-for-data-integrity operation
+ * which will ensure that all pages in the range which were dirty on entry to
+ * ksys_sync_file_range() are written to disk.  It should be noted that disk
+ * caches are not flushed by this call, so there are no guarantees here that the
+ * data will be available on disk after a crash.
+ *
+ *
+ * SYNC_FILE_RANGE_WAIT_BEFORE and SYNC_FILE_RANGE_WAIT_AFTER will detect any
+ * I/O errors or ENOSPC conditions and will return those to the caller, after
+ * clearing the EIO and ENOSPC flags in the address_space.
+ *
+ * It should be noted that none of these operations write out the file's
+ * metadata.  So unless the application is strictly performing overwrites of
+ * already-instantiated disk blocks, there are no guarantees here that the data
+ * will be available after a crash.
+ */
+int ksys_sync_file_range(int fd, loff_t offset, loff_t nbytes,
+			 unsigned int flags)
+{
+	int ret;
+	struct fd f;
+
+	ret = -EBADF;
+	f = fdget(fd);
+	if (f.file)
+		ret = sync_file_range(f.file, offset, nbytes, flags);
+
+	fdput(f);
+	return ret;
+}
+
+SYSCALL_DEFINE4(sync_file_range, int, fd, loff_t, offset, loff_t, nbytes,
+				unsigned int, flags)
+{
+	return ksys_sync_file_range(fd, offset, nbytes, flags);
+}
+
+#if defined(CONFIG_COMPAT) && defined(__ARCH_WANT_COMPAT_SYNC_FILE_RANGE)
+COMPAT_SYSCALL_DEFINE6(sync_file_range, int, fd, compat_arg_u64_dual(offset),
+		       compat_arg_u64_dual(nbytes), unsigned int, flags)
+{
+	return ksys_sync_file_range(fd, compat_arg_u64_glue(offset),
+				    compat_arg_u64_glue(nbytes), flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* It would be nice if people remember that not all the world's an i386
    when they introduce new system calls */
+<<<<<<< HEAD
 SYSCALL_DEFINE(sync_file_range2)(int fd, unsigned int flags,
 				 loff_t offset, loff_t nbytes)
 {
@@ -380,3 +651,10 @@ asmlinkage long SyS_sync_file_range2(long fd, long flags,
 }
 SYSCALL_ALIAS(sys_sync_file_range2, SyS_sync_file_range2);
 #endif
+=======
+SYSCALL_DEFINE4(sync_file_range2, int, fd, unsigned int, flags,
+				 loff_t, offset, loff_t, nbytes)
+{
+	return ksys_sync_file_range(fd, offset, nbytes, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

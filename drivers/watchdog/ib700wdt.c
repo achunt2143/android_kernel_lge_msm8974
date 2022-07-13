@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IB700 Single Board Computer WDT driver
  *
@@ -14,11 +18,14 @@
  *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -218,7 +225,11 @@ static long ibwdt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (ibwdt_set_heartbeat(new_margin))
 			return -EINVAL;
 		ibwdt_ping();
+<<<<<<< HEAD
 		/* Fall */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, p);
@@ -238,7 +249,11 @@ static int ibwdt_open(struct inode *inode, struct file *file)
 
 	/* Activate */
 	ibwdt_ping();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ibwdt_close(struct inode *inode, struct file *file)
@@ -263,6 +278,10 @@ static const struct file_operations ibwdt_fops = {
 	.llseek		= no_llseek,
 	.write		= ibwdt_write,
 	.unlocked_ioctl	= ibwdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= ibwdt_open,
 	.release	= ibwdt_close,
 };
@@ -277,7 +296,11 @@ static struct miscdevice ibwdt_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int __devinit ibwdt_probe(struct platform_device *dev)
+=======
+static int __init ibwdt_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 
@@ -319,14 +342,21 @@ out_nostopreg:
 	return res;
 }
 
+<<<<<<< HEAD
 static int __devexit ibwdt_remove(struct platform_device *dev)
+=======
+static void ibwdt_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	misc_deregister(&ibwdt_miscdev);
 	release_region(WDT_START, 1);
 #if WDT_START != WDT_STOP
 	release_region(WDT_STOP, 1);
 #endif
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ibwdt_shutdown(struct platform_device *dev)
@@ -336,11 +366,17 @@ static void ibwdt_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver ibwdt_driver = {
+<<<<<<< HEAD
 	.probe		= ibwdt_probe,
 	.remove		= __devexit_p(ibwdt_remove),
 	.shutdown	= ibwdt_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= ibwdt_remove,
+	.shutdown	= ibwdt_shutdown,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= DRV_NAME,
 	},
 };
@@ -351,6 +387,7 @@ static int __init ibwdt_init(void)
 
 	pr_info("WDT driver for IB700 single board computer initialising\n");
 
+<<<<<<< HEAD
 	err = platform_driver_register(&ibwdt_driver);
 	if (err)
 		return err;
@@ -366,6 +403,21 @@ static int __init ibwdt_init(void)
 
 unreg_platform_driver:
 	platform_driver_unregister(&ibwdt_driver);
+=======
+	ibwdt_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(ibwdt_platform_device))
+		return PTR_ERR(ibwdt_platform_device);
+
+	err = platform_driver_probe(&ibwdt_driver, ibwdt_probe);
+	if (err)
+		goto unreg_platform_device;
+
+	return 0;
+
+unreg_platform_device:
+	platform_device_unregister(ibwdt_platform_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -382,6 +434,9 @@ module_exit(ibwdt_exit);
 MODULE_AUTHOR("Charles Howes <chowes@vsol.net>");
 MODULE_DESCRIPTION("IB700 SBC watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* end of ib700wdt.c */

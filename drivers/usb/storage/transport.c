@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Current development and maintenance by:
  *   (c) 1999-2002 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -24,6 +30,7 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
+<<<<<<< HEAD
  *
  * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
  * information about this driver.
@@ -41,6 +48,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -109,7 +118,12 @@
  * called more than once or from being called during usb_submit_urb().
  */
 
+<<<<<<< HEAD
 /* This is the completion handler which will wake us up when an URB
+=======
+/*
+ * This is the completion handler which will wake us up when an URB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * completes.
  */
 static void usb_stor_blocking_completion(struct urb *urb)
@@ -119,7 +133,12 @@ static void usb_stor_blocking_completion(struct urb *urb)
 	complete(urb_done_ptr);
 }
 
+<<<<<<< HEAD
 /* This is the common part of the URB message submission code
+=======
+/*
+ * This is the common part of the URB message submission code
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * All URBs from the usb-storage driver involved in handling a queued scsi
  * command _must_ pass through this function (or something like it) for the
@@ -142,10 +161,19 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
 	us->current_urb->context = &urb_done;
 	us->current_urb->transfer_flags = 0;
 
+<<<<<<< HEAD
 	/* we assume that if transfer_buffer isn't us->iobuf then it
 	 * hasn't been mapped for DMA.  Yes, this is clunky, but it's
 	 * easier than always having the caller tell us whether the
 	 * transfer buffer has already been mapped. */
+=======
+	/*
+	 * we assume that if transfer_buffer isn't us->iobuf then it
+	 * hasn't been mapped for DMA.  Yes, this is clunky, but it's
+	 * easier than always having the caller tell us whether the
+	 * transfer buffer has already been mapped.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (us->current_urb->transfer_buffer == us->iobuf)
 		us->current_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 	us->current_urb->transfer_dma = us->iobuf_dma;
@@ -157,8 +185,15 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
 		return status;
 	}
 
+<<<<<<< HEAD
 	/* since the URB has been submitted successfully, it's now okay
 	 * to cancel it */
+=======
+	/*
+	 * since the URB has been submitted successfully, it's now okay
+	 * to cancel it
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
 
 	/* did an abort occur during the submission? */
@@ -166,7 +201,11 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
 
 		/* cancel the URB, if it hasn't been cancelled already */
 		if (test_and_clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags)) {
+<<<<<<< HEAD
 			US_DEBUGP("-- cancelling URB\n");
+=======
+			usb_stor_dbg(us, "-- cancelling URB\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usb_unlink_urb(us->current_urb);
 		}
 	}
@@ -178,8 +217,13 @@ static int usb_stor_msg_common(struct us_data *us, int timeout)
 	clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags);
 
 	if (timeleft <= 0) {
+<<<<<<< HEAD
 		US_DEBUGP("%s -- cancelling URB\n",
 			  timeleft == 0 ? "Timeout" : "Signal");
+=======
+		usb_stor_dbg(us, "%s -- cancelling URB\n",
+			     timeleft == 0 ? "Timeout" : "Signal");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_kill_urb(us->current_urb);
 	}
 
@@ -197,9 +241,14 @@ int usb_stor_control_msg(struct us_data *us, unsigned int pipe,
 {
 	int status;
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: rq=%02x rqtype=%02x value=%04x index=%02x len=%u\n",
 			__func__, request, requesttype,
 			value, index, size);
+=======
+	usb_stor_dbg(us, "rq=%02x rqtype=%02x value=%04x index=%02x len=%u\n",
+		     request, requesttype, value, index, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill in the devrequest structure */
 	us->cr->bRequestType = requesttype;
@@ -221,7 +270,12 @@ int usb_stor_control_msg(struct us_data *us, unsigned int pipe,
 }
 EXPORT_SYMBOL_GPL(usb_stor_control_msg);
 
+<<<<<<< HEAD
 /* This is a version of usb_clear_halt() that allows early termination and
+=======
+/*
+ * This is a version of usb_clear_halt() that allows early termination and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * doesn't read the status from the device -- this is because some devices
  * crash their internal firmware when the status is requested after a halt.
  *
@@ -249,7 +303,11 @@ int usb_stor_clear_halt(struct us_data *us, unsigned int pipe)
 	if (result >= 0)
 		usb_reset_endpoint(us->pusb_dev, endp);
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: result = %d\n", __func__, result);
+=======
+	usb_stor_dbg(us, "result = %d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 EXPORT_SYMBOL_GPL(usb_stor_clear_halt);
@@ -265,58 +323,105 @@ EXPORT_SYMBOL_GPL(usb_stor_clear_halt);
 static int interpret_urb_result(struct us_data *us, unsigned int pipe,
 		unsigned int length, int result, unsigned int partial)
 {
+<<<<<<< HEAD
 	US_DEBUGP("Status code %d; transferred %u/%u\n",
 			result, partial, length);
+=======
+	usb_stor_dbg(us, "Status code %d; transferred %u/%u\n",
+		     result, partial, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (result) {
 
 	/* no error code; did we send all the data? */
 	case 0:
 		if (partial != length) {
+<<<<<<< HEAD
 			US_DEBUGP("-- short transfer\n");
 			return USB_STOR_XFER_SHORT;
 		}
 
 		US_DEBUGP("-- transfer complete\n");
+=======
+			usb_stor_dbg(us, "-- short transfer\n");
+			return USB_STOR_XFER_SHORT;
+		}
+
+		usb_stor_dbg(us, "-- transfer complete\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_GOOD;
 
 	/* stalled */
 	case -EPIPE:
+<<<<<<< HEAD
 		/* for control endpoints, (used by CB[I]) a stall indicates
 		 * a failed command */
 		if (usb_pipecontrol(pipe)) {
 			US_DEBUGP("-- stall on control pipe\n");
+=======
+		/*
+		 * for control endpoints, (used by CB[I]) a stall indicates
+		 * a failed command
+		 */
+		if (usb_pipecontrol(pipe)) {
+			usb_stor_dbg(us, "-- stall on control pipe\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return USB_STOR_XFER_STALLED;
 		}
 
 		/* for other sorts of endpoint, clear the stall */
+<<<<<<< HEAD
 		US_DEBUGP("clearing endpoint halt for pipe 0x%x\n", pipe);
+=======
+		usb_stor_dbg(us, "clearing endpoint halt for pipe 0x%x\n",
+			     pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (usb_stor_clear_halt(us, pipe) < 0)
 			return USB_STOR_XFER_ERROR;
 		return USB_STOR_XFER_STALLED;
 
 	/* babble - the device tried to send more than we wanted to read */
 	case -EOVERFLOW:
+<<<<<<< HEAD
 		US_DEBUGP("-- babble\n");
+=======
+		usb_stor_dbg(us, "-- babble\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_LONG;
 
 	/* the transfer was cancelled by abort, disconnect, or timeout */
 	case -ECONNRESET:
+<<<<<<< HEAD
 		US_DEBUGP("-- transfer cancelled\n");
+=======
+		usb_stor_dbg(us, "-- transfer cancelled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_ERROR;
 
 	/* short scatter-gather read transfer */
 	case -EREMOTEIO:
+<<<<<<< HEAD
 		US_DEBUGP("-- short read transfer\n");
+=======
+		usb_stor_dbg(us, "-- short read transfer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_SHORT;
 
 	/* abort or disconnect in progress */
 	case -EIO:
+<<<<<<< HEAD
 		US_DEBUGP("-- abort or disconnect in progress\n");
+=======
+		usb_stor_dbg(us, "-- abort or disconnect in progress\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_ERROR;
 
 	/* the catch-all error case */
 	default:
+<<<<<<< HEAD
 		US_DEBUGP("-- unknown error\n");
+=======
+		usb_stor_dbg(us, "-- unknown error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_XFER_ERROR;
 	}
 }
@@ -331,9 +436,14 @@ int usb_stor_ctrl_transfer(struct us_data *us, unsigned int pipe,
 {
 	int result;
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: rq=%02x rqtype=%02x value=%04x index=%02x len=%u\n",
 			__func__, request, requesttype,
 			value, index, size);
+=======
+	usb_stor_dbg(us, "rq=%02x rqtype=%02x value=%04x index=%02x len=%u\n",
+		     request, requesttype, value, index, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill in the devrequest structure */
 	us->cr->bRequestType = requesttype;
@@ -367,10 +477,17 @@ static int usb_stor_intr_transfer(struct us_data *us, void *buf,
 	unsigned int pipe = us->recv_intr_pipe;
 	unsigned int maxp;
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: xfer %u bytes\n", __func__, length);
 
 	/* calculate the max packet size */
 	maxp = usb_maxpacket(us->pusb_dev, pipe, usb_pipeout(pipe));
+=======
+	usb_stor_dbg(us, "xfer %u bytes\n", length);
+
+	/* calculate the max packet size */
+	maxp = usb_maxpacket(us->pusb_dev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (maxp > length)
 		maxp = length;
 
@@ -394,7 +511,11 @@ int usb_stor_bulk_transfer_buf(struct us_data *us, unsigned int pipe,
 {
 	int result;
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: xfer %u bytes\n", __func__, length);
+=======
+	usb_stor_dbg(us, "xfer %u bytes\n", length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill and submit the URB */
 	usb_fill_bulk_urb(us->current_urb, us->pusb_dev, pipe, buf, length,
@@ -423,6 +544,7 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 
 	/* don't submit s-g requests during abort processing */
 	if (test_bit(US_FLIDX_ABORTING, &us->dflags))
+<<<<<<< HEAD
 		return USB_STOR_XFER_ERROR;
 
 	/* initialize the scatter-gather request block */
@@ -437,6 +559,23 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 
 	/* since the block has been initialized successfully, it's now
 	 * okay to cancel it */
+=======
+		goto usb_stor_xfer_error;
+
+	/* initialize the scatter-gather request block */
+	usb_stor_dbg(us, "xfer %u bytes, %d entries\n", length, num_sg);
+	result = usb_sg_init(&us->current_sg, us->pusb_dev, pipe, 0,
+			sg, num_sg, length, GFP_NOIO);
+	if (result) {
+		usb_stor_dbg(us, "usb_sg_init returned %d\n", result);
+		goto usb_stor_xfer_error;
+	}
+
+	/*
+	 * since the block has been initialized successfully, it's now
+	 * okay to cancel it
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(US_FLIDX_SG_ACTIVE, &us->dflags);
 
 	/* did an abort occur during the submission? */
@@ -444,7 +583,11 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 
 		/* cancel the request, if it hasn't been cancelled already */
 		if (test_and_clear_bit(US_FLIDX_SG_ACTIVE, &us->dflags)) {
+<<<<<<< HEAD
 			US_DEBUGP("-- cancelling sg request\n");
+=======
+			usb_stor_dbg(us, "-- cancelling sg request\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usb_sg_cancel(&us->current_sg);
 		}
 	}
@@ -458,6 +601,14 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 		*act_len = us->current_sg.bytes;
 	return interpret_urb_result(us, pipe, length, result,
 			us->current_sg.bytes);
+<<<<<<< HEAD
+=======
+
+usb_stor_xfer_error:
+	if (act_len)
+		*act_len = 0;
+	return USB_STOR_XFER_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -517,7 +668,12 @@ EXPORT_SYMBOL_GPL(usb_stor_bulk_transfer_sg);
  * Transport routines
  ***********************************************************************/
 
+<<<<<<< HEAD
 /* There are so many devices that report the capacity incorrectly,
+=======
+/*
+ * There are so many devices that report the capacity incorrectly,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this routine was written to counteract some of the resulting
  * problems.
  */
@@ -535,7 +691,12 @@ static void last_sector_hacks(struct us_data *us, struct scsi_cmnd *srb)
 		[12]	= 0x14			/* Record Not Found */
 	};
 
+<<<<<<< HEAD
 	/* If last-sector problems can't occur, whether because the
+=======
+	/*
+	 * If last-sector problems can't occur, whether because the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * capacity was already decremented or because the device is
 	 * known to report the correct capacity, then we don't need
 	 * to do anything.
@@ -550,7 +711,11 @@ static void last_sector_hacks(struct us_data *us, struct scsi_cmnd *srb)
 	/* Did this command access the last sector? */
 	sector = (srb->cmnd[2] << 24) | (srb->cmnd[3] << 16) |
 			(srb->cmnd[4] << 8) | (srb->cmnd[5]);
+<<<<<<< HEAD
 	disk = srb->request->rq_disk;
+=======
+	disk = scsi_cmd_to_rq(srb)->q->disk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!disk)
 		goto done;
 	sdkp = scsi_disk(disk);
@@ -561,13 +726,23 @@ static void last_sector_hacks(struct us_data *us, struct scsi_cmnd *srb)
 
 	if (srb->result == SAM_STAT_GOOD && scsi_get_resid(srb) == 0) {
 
+<<<<<<< HEAD
 		/* The command succeeded.  We know this device doesn't
+=======
+		/*
+		 * The command succeeded.  We know this device doesn't
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * have the last-sector bug, so stop checking it.
 		 */
 		us->use_last_sector_hacks = 0;
 
 	} else {
+<<<<<<< HEAD
 		/* The command failed.  Allow up to 3 retries in case this
+=======
+		/*
+		 * The command failed.  Allow up to 3 retries in case this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * is some normal sort of failure.  After that, assume the
 		 * capacity is wrong and we're trying to access the sector
 		 * beyond the end.  Replace the result code and sense data
@@ -583,7 +758,12 @@ static void last_sector_hacks(struct us_data *us, struct scsi_cmnd *srb)
 	}
 
  done:
+<<<<<<< HEAD
 	/* Don't reset the retry counter for TEST UNIT READY commands,
+=======
+	/*
+	 * Don't reset the retry counter for TEST UNIT READY commands,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * because they get issued after device resets which might be
 	 * caused by a failed last-sector access.
 	 */
@@ -591,7 +771,12 @@ static void last_sector_hacks(struct us_data *us, struct scsi_cmnd *srb)
 		us->last_sector_retries = 0;
 }
 
+<<<<<<< HEAD
 /* Invoke the transport and basic error-handling/recovery methods
+=======
+/*
+ * Invoke the transport and basic error-handling/recovery methods
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is used by the protocol layers to actually send the message to
  * the device and receive the response.
@@ -605,18 +790,31 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	scsi_set_resid(srb, 0);
 	result = us->transport(srb, us);
 
+<<<<<<< HEAD
 	/* if the command gets aborted by the higher layers, we need to
 	 * short-circuit all other processing
 	 */
 	if (test_bit(US_FLIDX_TIMED_OUT, &us->dflags)) {
 		US_DEBUGP("-- command was aborted\n");
+=======
+	/*
+	 * if the command gets aborted by the higher layers, we need to
+	 * short-circuit all other processing
+	 */
+	if (test_bit(US_FLIDX_TIMED_OUT, &us->dflags)) {
+		usb_stor_dbg(us, "-- command was aborted\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->result = DID_ABORT << 16;
 		goto Handle_Errors;
 	}
 
 	/* if there is a transport error, reset and don't auto-sense */
 	if (result == USB_STOR_TRANSPORT_ERROR) {
+<<<<<<< HEAD
 		US_DEBUGP("-- transport indicates error, resetting\n");
+=======
+		usb_stor_dbg(us, "-- transport indicates error, resetting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->result = DID_ERROR << 16;
 		goto Handle_Errors;
 	}
@@ -630,7 +828,12 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	srb->result = SAM_STAT_GOOD;
 
+<<<<<<< HEAD
 	/* Determine if we need to auto-sense
+=======
+	/*
+	 * Determine if we need to auto-sense
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * I normally don't use a flag like this, but it's almost impossible
 	 * to understand what's going on here if I don't.
@@ -645,7 +848,18 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	 */
 	if ((us->protocol == USB_PR_CB || us->protocol == USB_PR_DPCM_USB) &&
 			srb->sc_data_direction != DMA_FROM_DEVICE) {
+<<<<<<< HEAD
 		US_DEBUGP("-- CB transport device requiring auto-sense\n");
+=======
+		usb_stor_dbg(us, "-- CB transport device requiring auto-sense\n");
+		need_auto_sense = 1;
+	}
+
+	/* Some devices (Kindle) require another command after SYNC CACHE */
+	if ((us->fflags & US_FL_SENSE_AFTER_SYNC) &&
+			srb->cmnd[0] == SYNCHRONIZE_CACHE) {
+		usb_stor_dbg(us, "-- sense after SYNC CACHE\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		need_auto_sense = 1;
 	}
 
@@ -655,7 +869,11 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	 * "failure" and an "error" in the transport mechanism.
 	 */
 	if (result == USB_STOR_TRANSPORT_FAILED) {
+<<<<<<< HEAD
 		US_DEBUGP("-- transport indicates command failure\n");
+=======
+		usb_stor_dbg(us, "-- transport indicates command failure\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		need_auto_sense = 1;
 	}
 
@@ -670,7 +888,11 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	    !(us->fflags & US_FL_SANE_SENSE) &&
 	    !(us->fflags & US_FL_BAD_SENSE) &&
 	    !(srb->cmnd[2] & 0x20))) {
+<<<<<<< HEAD
 		US_DEBUGP("-- SAT supported, increasing auto-sense\n");
+=======
+		usb_stor_dbg(us, "-- SAT supported, increasing auto-sense\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		us->fflags |= US_FL_SANE_SENSE;
 	}
 
@@ -684,7 +906,11 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 	      (srb->cmnd[0] == MODE_SENSE) ||
 	      (srb->cmnd[0] == LOG_SENSE) ||
 	      (srb->cmnd[0] == MODE_SENSE_10))) {
+<<<<<<< HEAD
 		US_DEBUGP("-- unexpectedly short transfer\n");
+=======
+		usb_stor_dbg(us, "-- unexpectedly short transfer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Now, if we need to do the auto-sense, let's do it */
@@ -700,7 +926,11 @@ void usb_stor_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 		if (us->fflags & US_FL_SANE_SENSE)
 			sense_size = ~0;
 Retry_Sense:
+<<<<<<< HEAD
 		US_DEBUGP("Issuing auto-REQUEST_SENSE\n");
+=======
+		usb_stor_dbg(us, "Issuing auto-REQUEST_SENSE\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		scsi_eh_prep_cmnd(srb, &ses, NULL, 0, sense_size);
 
@@ -719,7 +949,11 @@ Retry_Sense:
 		scsi_eh_restore_cmnd(srb, &ses);
 
 		if (test_bit(US_FLIDX_TIMED_OUT, &us->dflags)) {
+<<<<<<< HEAD
 			US_DEBUGP("-- auto-sense aborted\n");
+=======
+			usb_stor_dbg(us, "-- auto-sense aborted\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			srb->result = DID_ABORT << 16;
 
 			/* If SANE_SENSE caused this problem, disable it */
@@ -730,14 +964,23 @@ Retry_Sense:
 			goto Handle_Errors;
 		}
 
+<<<<<<< HEAD
 		/* Some devices claim to support larger sense but fail when
+=======
+		/*
+		 * Some devices claim to support larger sense but fail when
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * trying to request it. When a transport failure happens
 		 * using US_FS_SANE_SENSE, we always retry with a standard
 		 * (small) sense request. This fixes some USB GSM modems
 		 */
 		if (temp_result == USB_STOR_TRANSPORT_FAILED &&
 				sense_size != US_SENSE_SIZE) {
+<<<<<<< HEAD
 			US_DEBUGP("-- auto-sense failure, retry small sense\n");
+=======
+			usb_stor_dbg(us, "-- auto-sense failure, retry small sense\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sense_size = US_SENSE_SIZE;
 			us->fflags &= ~US_FL_SANE_SENSE;
 			us->fflags |= US_FL_BAD_SENSE;
@@ -746,9 +989,16 @@ Retry_Sense:
 
 		/* Other failures */
 		if (temp_result != USB_STOR_TRANSPORT_GOOD) {
+<<<<<<< HEAD
 			US_DEBUGP("-- auto-sense failure\n");
 
 			/* we skip the reset if this happens to be a
+=======
+			usb_stor_dbg(us, "-- auto-sense failure\n");
+
+			/*
+			 * we skip the reset if this happens to be a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * multi-target device, since failure of an
 			 * auto-sense is perfectly valid
 			 */
@@ -758,7 +1008,12 @@ Retry_Sense:
 			return;
 		}
 
+<<<<<<< HEAD
 		/* If the sense data returned is larger than 18-bytes then we
+=======
+		/*
+		 * If the sense data returned is larger than 18-bytes then we
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * assume this device supports requesting more in the future.
 		 * The response code must be 70h through 73h inclusive.
 		 */
@@ -766,6 +1021,7 @@ Retry_Sense:
 		    !(us->fflags & US_FL_SANE_SENSE) &&
 		    !(us->fflags & US_FL_BAD_SENSE) &&
 		    (srb->sense_buffer[0] & 0x7C) == 0x70) {
+<<<<<<< HEAD
 			US_DEBUGP("-- SANE_SENSE support enabled\n");
 			us->fflags |= US_FL_SANE_SENSE;
 
@@ -775,18 +1031,40 @@ Retry_Sense:
 			US_DEBUGP("-- Sense data truncated to %i from %i\n",
 			          US_SENSE_SIZE,
 			          srb->sense_buffer[7] + 8);
+=======
+			usb_stor_dbg(us, "-- SANE_SENSE support enabled\n");
+			us->fflags |= US_FL_SANE_SENSE;
+
+			/*
+			 * Indicate to the user that we truncated their sense
+			 * because we didn't know it supported larger sense.
+			 */
+			usb_stor_dbg(us, "-- Sense data truncated to %i from %i\n",
+				     US_SENSE_SIZE,
+				     srb->sense_buffer[7] + 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			srb->sense_buffer[7] = (US_SENSE_SIZE - 8);
 		}
 
 		scsi_normalize_sense(srb->sense_buffer, SCSI_SENSE_BUFFERSIZE,
 				     &sshdr);
 
+<<<<<<< HEAD
 		US_DEBUGP("-- Result from auto-sense is %d\n", temp_result);
 		US_DEBUGP("-- code: 0x%x, key: 0x%x, ASC: 0x%x, ASCQ: 0x%x\n",
 			  sshdr.response_code, sshdr.sense_key,
 			  sshdr.asc, sshdr.ascq);
 #ifdef CONFIG_USB_STORAGE_DEBUG
 		usb_stor_show_sense(sshdr.sense_key, sshdr.asc, sshdr.ascq);
+=======
+		usb_stor_dbg(us, "-- Result from auto-sense is %d\n",
+			     temp_result);
+		usb_stor_dbg(us, "-- code: 0x%x, key: 0x%x, ASC: 0x%x, ASCQ: 0x%x\n",
+			     sshdr.response_code, sshdr.sense_key,
+			     sshdr.asc, sshdr.ascq);
+#ifdef CONFIG_USB_STORAGE_DEBUG
+		usb_stor_show_sense(us, sshdr.sense_key, sshdr.asc, sshdr.ascq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 		/* set the result so the higher layers expect this data */
@@ -796,25 +1074,57 @@ Retry_Sense:
 					    SCSI_SENSE_BUFFERSIZE, 4);
 		fm_ili = (scdd ? scdd[3] : srb->sense_buffer[2]) & 0xA0;
 
+<<<<<<< HEAD
 		/* We often get empty sense data.  This could indicate that
+=======
+		/*
+		 * We often get empty sense data.  This could indicate that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * everything worked or that there was an unspecified
 		 * problem.  We have to decide which.
 		 */
 		if (sshdr.sense_key == 0 && sshdr.asc == 0 && sshdr.ascq == 0 &&
 		    fm_ili == 0) {
+<<<<<<< HEAD
 			/* If things are really okay, then let's show that.
+=======
+			/*
+			 * If things are really okay, then let's show that.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * Zero out the sense buffer so the higher layers
 			 * won't realize we did an unsolicited auto-sense.
 			 */
 			if (result == USB_STOR_TRANSPORT_GOOD) {
 				srb->result = SAM_STAT_GOOD;
 				srb->sense_buffer[0] = 0x0;
+<<<<<<< HEAD
 
 			/* If there was a problem, report an unspecified
 			 * hardware error to prevent the higher layers from
 			 * entering an infinite retry loop.
 			 */
 			} else {
+=======
+			}
+
+			/*
+			 * ATA-passthru commands use sense data to report
+			 * the command completion status, and often devices
+			 * return Check Condition status when nothing is
+			 * wrong.
+			 */
+			else if (srb->cmnd[0] == ATA_16 ||
+					srb->cmnd[0] == ATA_12) {
+				/* leave the data alone */
+			}
+
+			/*
+			 * If there was a problem, report an unspecified
+			 * hardware error to prevent the higher layers from
+			 * entering an infinite retry loop.
+			 */
+			else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				srb->result = DID_ERROR << 16;
 				if ((sshdr.response_code & 0x72) == 0x72)
 					srb->sense_buffer[1] = HARDWARE_ERROR;
@@ -861,6 +1171,7 @@ Retry_Sense:
 	last_sector_hacks(us, srb);
 	return;
 
+<<<<<<< HEAD
 	/* Error and abort processing: try to resynchronize with the device
 	 * by issuing a port reset.  If that fails, try a class-specific
 	 * device reset. */
@@ -868,13 +1179,33 @@ Retry_Sense:
 
 	/* Set the RESETTING bit, and clear the ABORTING bit so that
 	 * the reset may proceed. */
+=======
+	/*
+	 * Error and abort processing: try to resynchronize with the device
+	 * by issuing a port reset.  If that fails, try a class-specific
+	 * device reset.
+	 */
+  Handle_Errors:
+
+	/*
+	 * Set the RESETTING bit, and clear the ABORTING bit so that
+	 * the reset may proceed.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_lock(us_to_host(us));
 	set_bit(US_FLIDX_RESETTING, &us->dflags);
 	clear_bit(US_FLIDX_ABORTING, &us->dflags);
 	scsi_unlock(us_to_host(us));
 
+<<<<<<< HEAD
 	/* We must release the device lock because the pre_reset routine
 	 * will want to acquire it. */
+=======
+	/*
+	 * We must release the device lock because the pre_reset routine
+	 * will want to acquire it.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&us->dev_mutex);
 	result = usb_stor_port_reset(us);
 	mutex_lock(&us->dev_mutex);
@@ -892,6 +1223,7 @@ Retry_Sense:
 /* Stop the current URB transfer */
 void usb_stor_stop_transport(struct us_data *us)
 {
+<<<<<<< HEAD
 	US_DEBUGP("%s called\n", __func__);
 
 	/* If the state machine is blocked waiting for an URB,
@@ -900,12 +1232,26 @@ void usb_stor_stop_transport(struct us_data *us)
 	 * it won't be cancelled more than once. */
 	if (test_and_clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags)) {
 		US_DEBUGP("-- cancelling URB\n");
+=======
+	/*
+	 * If the state machine is blocked waiting for an URB,
+	 * let's wake it up.  The test_and_clear_bit() call
+	 * guarantees that if a URB has just been submitted,
+	 * it won't be cancelled more than once.
+	 */
+	if (test_and_clear_bit(US_FLIDX_URB_ACTIVE, &us->dflags)) {
+		usb_stor_dbg(us, "-- cancelling URB\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unlink_urb(us->current_urb);
 	}
 
 	/* If we are waiting for a scatter-gather operation, cancel it. */
 	if (test_and_clear_bit(US_FLIDX_SG_ACTIVE, &us->dflags)) {
+<<<<<<< HEAD
 		US_DEBUGP("-- cancelling sg request\n");
+=======
+		usb_stor_dbg(us, "-- cancelling sg request\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_sg_cancel(&us->current_sg);
 	}
 }
@@ -922,6 +1268,7 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	/* COMMAND STAGE */
 	/* let's send the command via the control pipe */
+<<<<<<< HEAD
 	result = usb_stor_ctrl_transfer(us, us->send_ctrl_pipe,
 				      US_CBI_ADSC, 
 				      USB_TYPE_CLASS | USB_RECIP_INTERFACE, 0, 
@@ -929,6 +1276,21 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	/* check the return code for the command */
 	US_DEBUGP("Call to usb_stor_ctrl_transfer() returned %d\n", result);
+=======
+	/*
+	 * Command is sometime (f.e. after scsi_eh_prep_cmnd) on the stack.
+	 * Stack may be vmallocated.  So no DMA for us.  Make a copy.
+	 */
+	memcpy(us->iobuf, srb->cmnd, srb->cmd_len);
+	result = usb_stor_ctrl_transfer(us, us->send_ctrl_pipe,
+				      US_CBI_ADSC, 
+				      USB_TYPE_CLASS | USB_RECIP_INTERFACE, 0, 
+				      us->ifnum, us->iobuf, srb->cmd_len);
+
+	/* check the return code for the command */
+	usb_stor_dbg(us, "Call to usb_stor_ctrl_transfer() returned %d\n",
+		     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if we stalled the command, it means command failed */
 	if (result == USB_STOR_XFER_STALLED) {
@@ -946,7 +1308,11 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 		pipe = srb->sc_data_direction == DMA_FROM_DEVICE ? 
 				us->recv_bulk_pipe : us->send_bulk_pipe;
 		result = usb_stor_bulk_srb(us, pipe, srb);
+<<<<<<< HEAD
 		US_DEBUGP("CBI data stage result is 0x%x\n", result);
+=======
+		usb_stor_dbg(us, "CBI data stage result is 0x%x\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if we stalled the data transfer it means command failed */
 		if (result == USB_STOR_XFER_STALLED)
@@ -957,19 +1323,34 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	/* STATUS STAGE */
 
+<<<<<<< HEAD
 	/* NOTE: CB does not have a status stage.  Silly, I know.  So
+=======
+	/*
+	 * NOTE: CB does not have a status stage.  Silly, I know.  So
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we have to catch this at a higher level.
 	 */
 	if (us->protocol != USB_PR_CBI)
 		return USB_STOR_TRANSPORT_GOOD;
 
 	result = usb_stor_intr_transfer(us, us->iobuf, 2);
+<<<<<<< HEAD
 	US_DEBUGP("Got interrupt data (0x%x, 0x%x)\n", 
 			us->iobuf[0], us->iobuf[1]);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	/* UFI gives us ASC and ASCQ, like a request sense
+=======
+	usb_stor_dbg(us, "Got interrupt data (0x%x, 0x%x)\n",
+		     us->iobuf[0], us->iobuf[1]);
+	if (result != USB_STOR_XFER_GOOD)
+		return USB_STOR_TRANSPORT_ERROR;
+
+	/*
+	 * UFI gives us ASC and ASCQ, like a request sense
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * REQUEST_SENSE and INQUIRY don't affect the sense data on UFI
 	 * devices, so we ignore the information for those commands.  Note
@@ -985,15 +1366,25 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 		return USB_STOR_TRANSPORT_GOOD;
 	}
 
+<<<<<<< HEAD
 	/* If not UFI, we interpret the data as a result code 
+=======
+	/*
+	 * If not UFI, we interpret the data as a result code 
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * The first byte should always be a 0x0.
 	 *
 	 * Some bogus devices don't follow that rule.  They stuff the ASC
 	 * into the first byte -- so if it's non-zero, call it a failure.
 	 */
 	if (us->iobuf[0]) {
+<<<<<<< HEAD
 		US_DEBUGP("CBI IRQ data showed reserved bType 0x%x\n",
 				us->iobuf[0]);
+=======
+		usb_stor_dbg(us, "CBI IRQ data showed reserved bType 0x%x\n",
+			     us->iobuf[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto Failed;
 
 	}
@@ -1007,7 +1398,12 @@ int usb_stor_CB_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 	return USB_STOR_TRANSPORT_ERROR;
 
+<<<<<<< HEAD
 	/* the CBI spec requires that the bulk pipe must be cleared
+=======
+	/*
+	 * the CBI spec requires that the bulk pipe must be cleared
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * following any data-in/out command failure (section 2.4.3.1.3)
 	 */
   Failed:
@@ -1034,12 +1430,32 @@ int usb_stor_Bulk_max_lun(struct us_data *us)
 				 USB_RECIP_INTERFACE,
 				 0, us->ifnum, us->iobuf, 1, 10*HZ);
 
+<<<<<<< HEAD
 	US_DEBUGP("GetMaxLUN command result is %d, data is %d\n", 
 		  result, us->iobuf[0]);
 
 	/* if we have a successful request, return the result */
 	if (result > 0)
 		return us->iobuf[0];
+=======
+	usb_stor_dbg(us, "GetMaxLUN command result is %d, data is %d\n",
+		     result, us->iobuf[0]);
+
+	/*
+	 * If we have a successful request, return the result if valid. The
+	 * CBW LUN field is 4 bits wide, so the value reported by the device
+	 * should fit into that.
+	 */
+	if (result > 0) {
+		if (us->iobuf[0] < 16) {
+			return us->iobuf[0];
+		} else {
+			dev_info(&us->pusb_intf->dev,
+				 "Max LUN %d is not valid, using 0 instead",
+				 us->iobuf[0]);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some devices don't like GetMaxLUN.  They may STALL the control
@@ -1084,6 +1500,7 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 	memcpy(bcb->CDB, srb->cmnd, bcb->Length);
 
 	/* send it to out endpoint */
+<<<<<<< HEAD
 	US_DEBUGP("Bulk Command S 0x%x T 0x%x L %d F %d Trg %d LUN %d CL %d\n",
 			le32_to_cpu(bcb->Signature), bcb->Tag,
 			le32_to_cpu(bcb->DataTransferLength), bcb->Flags,
@@ -1092,22 +1509,43 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 	result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
 				bcb, cbwlen, NULL);
 	US_DEBUGP("Bulk command transfer result=%d\n", result);
+=======
+	usb_stor_dbg(us, "Bulk Command S 0x%x T 0x%x L %d F %d Trg %d LUN %d CL %d\n",
+		     le32_to_cpu(bcb->Signature), bcb->Tag,
+		     le32_to_cpu(bcb->DataTransferLength), bcb->Flags,
+		     (bcb->Lun >> 4), (bcb->Lun & 0x0F),
+		     bcb->Length);
+	result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
+				bcb, cbwlen, NULL);
+	usb_stor_dbg(us, "Bulk command transfer result=%d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
 	/* DATA STAGE */
 	/* send/receive data payload, if there is any */
 
+<<<<<<< HEAD
 	/* Some USB-IDE converter chips need a 100us delay between the
 	 * command phase and the data phase.  Some devices need a little
 	 * more than that, probably because of clock rate inaccuracies. */
 	if (unlikely(us->fflags & US_FL_GO_SLOW))
 		udelay(125);
+=======
+	/*
+	 * Some USB-IDE converter chips need a 100us delay between the
+	 * command phase and the data phase.  Some devices need a little
+	 * more than that, probably because of clock rate inaccuracies.
+	 */
+	if (unlikely(us->fflags & US_FL_GO_SLOW))
+		usleep_range(125, 150);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (transfer_length) {
 		unsigned int pipe = srb->sc_data_direction == DMA_FROM_DEVICE ? 
 				us->recv_bulk_pipe : us->send_bulk_pipe;
 		result = usb_stor_bulk_srb(us, pipe, srb);
+<<<<<<< HEAD
 		US_DEBUGP("Bulk data transfer result 0x%x\n", result);
 		if (result == USB_STOR_XFER_ERROR)
 			return USB_STOR_TRANSPORT_ERROR;
@@ -1115,6 +1553,16 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 		/* If the device tried to send back more data than the
 		 * amount requested, the spec requires us to transfer
 		 * the CSW anyway.  Since there's no point retrying the
+=======
+		usb_stor_dbg(us, "Bulk data transfer result 0x%x\n", result);
+		if (result == USB_STOR_XFER_ERROR)
+			return USB_STOR_TRANSPORT_ERROR;
+
+		/*
+		 * If the device tried to send back more data than the
+		 * amount requested, the spec requires us to transfer
+		 * the CSW anyway.  Since there's no point retrying
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the command, we'll return fake sense data indicating
 		 * Illegal Request, Invalid Field in CDB.
 		 */
@@ -1140,28 +1588,50 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 						US_BULK_CS_WRAP_LEN &&
 					bcs->Signature ==
 						cpu_to_le32(US_BULK_CS_SIGN)) {
+<<<<<<< HEAD
 				US_DEBUGP("Device skipped data phase\n");
+=======
+				usb_stor_dbg(us, "Device skipped data phase\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				scsi_set_resid(srb, transfer_length);
 				goto skipped_data_phase;
 			}
 		}
 	}
 
+<<<<<<< HEAD
 	/* See flow chart on pg 15 of the Bulk Only Transport spec for
+=======
+	/*
+	 * See flow chart on pg 15 of the Bulk Only Transport spec for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * an explanation of how this code works.
 	 */
 
 	/* get CSW for device status */
+<<<<<<< HEAD
 	US_DEBUGP("Attempting to get CSW...\n");
 	result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 				bcs, US_BULK_CS_WRAP_LEN, &cswlen);
 
 	/* Some broken devices add unnecessary zero-length packets to the
+=======
+	usb_stor_dbg(us, "Attempting to get CSW...\n");
+	result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
+				bcs, US_BULK_CS_WRAP_LEN, &cswlen);
+
+	/*
+	 * Some broken devices add unnecessary zero-length packets to the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * end of their data transfers.  Such packets show up as 0-length
 	 * CSWs.  If we encounter such a thing, try to read the CSW again.
 	 */
 	if (result == USB_STOR_XFER_SHORT && cswlen == 0) {
+<<<<<<< HEAD
 		US_DEBUGP("Received 0-length CSW; retrying...\n");
+=======
+		usb_stor_dbg(us, "Received 0-length CSW; retrying...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 				bcs, US_BULK_CS_WRAP_LEN, &cswlen);
 	}
@@ -1170,19 +1640,28 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 	if (result == USB_STOR_XFER_STALLED) {
 
 		/* get the status again */
+<<<<<<< HEAD
 		US_DEBUGP("Attempting to get CSW (2nd try)...\n");
+=======
+		usb_stor_dbg(us, "Attempting to get CSW (2nd try)...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 				bcs, US_BULK_CS_WRAP_LEN, NULL);
 	}
 
 	/* if we still have a failure at this point, we're in trouble */
+<<<<<<< HEAD
 	US_DEBUGP("Bulk status result = %d\n", result);
+=======
+	usb_stor_dbg(us, "Bulk status result = %d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
  skipped_data_phase:
 	/* check bulk status */
 	residue = le32_to_cpu(bcs->Residue);
+<<<<<<< HEAD
 	US_DEBUGP("Bulk Status S 0x%x T 0x%x R %u Stat 0x%x\n",
 			le32_to_cpu(bcs->Signature), bcs->Tag, 
 			residue, bcs->Status);
@@ -1193,12 +1672,26 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	/* Some broken devices report odd signatures, so we do not check them
+=======
+	usb_stor_dbg(us, "Bulk Status S 0x%x T 0x%x R %u Stat 0x%x\n",
+		     le32_to_cpu(bcs->Signature), bcs->Tag,
+		     residue, bcs->Status);
+	if (!(bcs->Tag == us->tag || (us->fflags & US_FL_BULK_IGNORE_TAG)) ||
+		bcs->Status > US_BULK_STAT_PHASE) {
+		usb_stor_dbg(us, "Bulk logical error\n");
+		return USB_STOR_TRANSPORT_ERROR;
+	}
+
+	/*
+	 * Some broken devices report odd signatures, so we do not check them
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * for validity against the spec. We store the first one we see,
 	 * and check subsequent transfers for validity against this signature.
 	 */
 	if (!us->bcs_signature) {
 		us->bcs_signature = bcs->Signature;
 		if (us->bcs_signature != cpu_to_le32(US_BULK_CS_SIGN))
+<<<<<<< HEAD
 			US_DEBUGP("Learnt BCS signature 0x%08X\n",
 					le32_to_cpu(us->bcs_signature));
 	} else if (bcs->Signature != us->bcs_signature) {
@@ -1213,6 +1706,25 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 	if (residue && !(us->fflags & US_FL_IGNORE_RESIDUE)) {
 
 		/* Heuristically detect devices that generate bogus residues
+=======
+			usb_stor_dbg(us, "Learnt BCS signature 0x%08X\n",
+				     le32_to_cpu(us->bcs_signature));
+	} else if (bcs->Signature != us->bcs_signature) {
+		usb_stor_dbg(us, "Signature mismatch: got %08X, expecting %08X\n",
+			     le32_to_cpu(bcs->Signature),
+			     le32_to_cpu(us->bcs_signature));
+		return USB_STOR_TRANSPORT_ERROR;
+	}
+
+	/*
+	 * try to compute the actual residue, based on how much data
+	 * was really transferred and what the device tells us
+	 */
+	if (residue && !(us->fflags & US_FL_IGNORE_RESIDUE)) {
+
+		/*
+		 * Heuristically detect devices that generate bogus residues
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * by seeing what happens with INQUIRY and READ CAPACITY
 		 * commands.
 		 */
@@ -1226,8 +1738,12 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 		} else {
 			residue = min(residue, transfer_length);
+<<<<<<< HEAD
 			scsi_set_resid(srb, max(scsi_get_resid(srb),
 			                                       (int) residue));
+=======
+			scsi_set_resid(srb, max(scsi_get_resid(srb), residue));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1250,7 +1766,12 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
 			return USB_STOR_TRANSPORT_FAILED;
 
 		case US_BULK_STAT_PHASE:
+<<<<<<< HEAD
 			/* phase error -- note that a transport reset will be
+=======
+			/*
+			 * phase error -- note that a transport reset will be
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * invoked by the invoke_transport() function
 			 */
 			return USB_STOR_TRANSPORT_ERROR;
@@ -1265,7 +1786,12 @@ EXPORT_SYMBOL_GPL(usb_stor_Bulk_transport);
  * Reset routines
  ***********************************************************************/
 
+<<<<<<< HEAD
 /* This is the common part of the device reset code.
+=======
+/*
+ * This is the common part of the device reset code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * It's handy that every transport mechanism uses the control endpoint for
  * resets.
@@ -1281,7 +1807,11 @@ static int usb_stor_reset_common(struct us_data *us,
 	int result2;
 
 	if (test_bit(US_FLIDX_DISCONNECTING, &us->dflags)) {
+<<<<<<< HEAD
 		US_DEBUGP("No reset during disconnect\n");
+=======
+		usb_stor_dbg(us, "No reset during disconnect\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1289,16 +1819,28 @@ static int usb_stor_reset_common(struct us_data *us,
 			request, requesttype, value, index, data, size,
 			5*HZ);
 	if (result < 0) {
+<<<<<<< HEAD
 		US_DEBUGP("Soft reset failed: %d\n", result);
 		return result;
 	}
 
 	/* Give the device some time to recover from the reset,
 	 * but don't delay disconnect processing. */
+=======
+		usb_stor_dbg(us, "Soft reset failed: %d\n", result);
+		return result;
+	}
+
+	/*
+	 * Give the device some time to recover from the reset,
+	 * but don't delay disconnect processing.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_event_interruptible_timeout(us->delay_wait,
 			test_bit(US_FLIDX_DISCONNECTING, &us->dflags),
 			HZ*6);
 	if (test_bit(US_FLIDX_DISCONNECTING, &us->dflags)) {
+<<<<<<< HEAD
 		US_DEBUGP("Reset interrupted by disconnect\n");
 		return -EIO;
 	}
@@ -1307,12 +1849,23 @@ static int usb_stor_reset_common(struct us_data *us,
 	result = usb_stor_clear_halt(us, us->recv_bulk_pipe);
 
 	US_DEBUGP("Soft reset: clearing bulk-out endpoint halt\n");
+=======
+		usb_stor_dbg(us, "Reset interrupted by disconnect\n");
+		return -EIO;
+	}
+
+	usb_stor_dbg(us, "Soft reset: clearing bulk-in endpoint halt\n");
+	result = usb_stor_clear_halt(us, us->recv_bulk_pipe);
+
+	usb_stor_dbg(us, "Soft reset: clearing bulk-out endpoint halt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result2 = usb_stor_clear_halt(us, us->send_bulk_pipe);
 
 	/* return a result code based on the result of the clear-halts */
 	if (result >= 0)
 		result = result2;
 	if (result < 0)
+<<<<<<< HEAD
 		US_DEBUGP("Soft reset failed\n");
 	else
 		US_DEBUGP("Soft reset done\n");
@@ -1321,12 +1874,24 @@ static int usb_stor_reset_common(struct us_data *us,
 
 /* This issues a CB[I] Reset to the device in question
  */
+=======
+		usb_stor_dbg(us, "Soft reset failed\n");
+	else
+		usb_stor_dbg(us, "Soft reset done\n");
+	return result;
+}
+
+/* This issues a CB[I] Reset to the device in question */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CB_RESET_CMD_SIZE	12
 
 int usb_stor_CB_reset(struct us_data *us)
 {
+<<<<<<< HEAD
 	US_DEBUGP("%s called\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(us->iobuf, 0xFF, CB_RESET_CMD_SIZE);
 	us->iobuf[0] = SEND_DIAGNOSTIC;
 	us->iobuf[1] = 4;
@@ -1336,20 +1901,33 @@ int usb_stor_CB_reset(struct us_data *us)
 }
 EXPORT_SYMBOL_GPL(usb_stor_CB_reset);
 
+<<<<<<< HEAD
 /* This issues a Bulk-only Reset to the device in question, including
+=======
+/*
+ * This issues a Bulk-only Reset to the device in question, including
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * clearing the subsequent endpoint halts that may occur.
  */
 int usb_stor_Bulk_reset(struct us_data *us)
 {
+<<<<<<< HEAD
 	US_DEBUGP("%s called\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return usb_stor_reset_common(us, US_BULK_RESET_REQUEST, 
 				 USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 				 0, us->ifnum, NULL, 0);
 }
 EXPORT_SYMBOL_GPL(usb_stor_Bulk_reset);
 
+<<<<<<< HEAD
 /* Issue a USB port reset to the device.  The caller must not hold
+=======
+/*
+ * Issue a USB port reset to the device.  The caller must not hold
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * us->dev_mutex.
  */
 int usb_stor_port_reset(struct us_data *us)
@@ -1357,21 +1935,38 @@ int usb_stor_port_reset(struct us_data *us)
 	int result;
 
 	/*for these devices we must use the class specific method */
+<<<<<<< HEAD
 	if (us->pusb_dev->quirks & USB_QUIRK_RESET_MORPHS)
+=======
+	if (us->pusb_dev->quirks & USB_QUIRK_RESET)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	result = usb_lock_device_for_reset(us->pusb_dev, us->pusb_intf);
 	if (result < 0)
+<<<<<<< HEAD
 		US_DEBUGP("unable to lock device for reset: %d\n", result);
+=======
+		usb_stor_dbg(us, "unable to lock device for reset: %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		/* Were we disconnected while waiting for the lock? */
 		if (test_bit(US_FLIDX_DISCONNECTING, &us->dflags)) {
 			result = -EIO;
+<<<<<<< HEAD
 			US_DEBUGP("No reset during disconnect\n");
 		} else {
 			result = usb_reset_device(us->pusb_dev);
 			US_DEBUGP("usb_reset_device returns %d\n",
 					result);
+=======
+			usb_stor_dbg(us, "No reset during disconnect\n");
+		} else {
+			result = usb_reset_device(us->pusb_dev);
+			usb_stor_dbg(us, "usb_reset_device returns %d\n",
+				     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		usb_unlock_device(us->pusb_dev);
 	}

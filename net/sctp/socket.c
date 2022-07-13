@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -15,6 +19,7 @@
  * functions--this file is the functions which populate the struct proto
  * for SCTP which is the BOTTOM of the sockets interface.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -38,6 +43,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -52,37 +62,61 @@
  *    Ryan Layer	    <rmlayer@us.ibm.com>
  *    Anup Pemmaiah         <pemmaiah@cc.usu.edu>
  *    Kevin Gao             <kevin.gao@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <crypto/hash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/wait.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ip.h>
 #include <linux/capability.h>
 #include <linux/fcntl.h>
 #include <linux/poll.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
 #include <linux/slab.h>
 #include <linux/compat.h>
+=======
+#include <linux/slab.h>
+#include <linux/file.h>
+#include <linux/compat.h>
+#include <linux/rhashtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip.h>
 #include <net/icmp.h>
 #include <net/route.h>
 #include <net/ipv6.h>
 #include <net/inet_common.h>
+<<<<<<< HEAD
+=======
+#include <net/busy_poll.h>
+#include <trace/events/sock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/socket.h> /* for sa_family_t */
 #include <linux/export.h>
 #include <net/sock.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
+<<<<<<< HEAD
 
 /* WARNING:  Please do not remove the SCTP_STATIC attribute to
  * any of the functions below as they are used to export functions
@@ -98,6 +132,21 @@ static int sctp_wait_for_packet(struct sock * sk, int *err, long *timeo_p);
 static int sctp_wait_for_connect(struct sctp_association *, long *timeo_p);
 static int sctp_wait_for_accept(struct sock *sk, long timeo);
 static void sctp_wait_for_close(struct sock *sk, long timeo);
+=======
+#include <net/sctp/stream_sched.h>
+#include <net/rps.h>
+
+/* Forward declarations for internal helper functions. */
+static bool sctp_writeable(const struct sock *sk);
+static void sctp_wfree(struct sk_buff *skb);
+static int sctp_wait_for_sndbuf(struct sctp_association *asoc, long *timeo_p,
+				size_t msg_len);
+static int sctp_wait_for_packet(struct sock *sk, int *err, long *timeo_p);
+static int sctp_wait_for_connect(struct sctp_association *, long *timeo_p);
+static int sctp_wait_for_accept(struct sock *sk, long timeo);
+static void sctp_wait_for_close(struct sock *sk, long timeo);
+static void sctp_destruct_sock(struct sock *sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
 					union sctp_addr *addr, int len);
 static int sctp_bindx_add(struct sock *, struct sockaddr *, int);
@@ -108,6 +157,7 @@ static int sctp_send_asconf(struct sctp_association *asoc,
 			    struct sctp_chunk *chunk);
 static int sctp_do_bind(struct sock *, union sctp_addr *, int);
 static int sctp_autobind(struct sock *sk);
+<<<<<<< HEAD
 static void sctp_sock_migrate(struct sock *, struct sock *,
 			      struct sctp_association *, sctp_socket_type_t);
 static char *sctp_hmac_alg = SCTP_COOKIE_HMAC_ALG;
@@ -119,17 +169,31 @@ extern int sysctl_sctp_wmem[3];
 
 static int sctp_memory_pressure;
 static atomic_long_t sctp_memory_allocated;
+=======
+static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+			     struct sctp_association *assoc,
+			     enum sctp_socket_type type);
+
+static unsigned long sctp_memory_pressure;
+static atomic_long_t sctp_memory_allocated;
+static DEFINE_PER_CPU(int, sctp_memory_per_cpu_fw_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct percpu_counter sctp_sockets_allocated;
 
 static void sctp_enter_memory_pressure(struct sock *sk)
 {
+<<<<<<< HEAD
 	sctp_memory_pressure = 1;
+=======
+	WRITE_ONCE(sctp_memory_pressure, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* Get the sndbuf space available at the time on the association.  */
 static inline int sctp_wspace(struct sctp_association *asoc)
 {
+<<<<<<< HEAD
 	int amt;
 
 	if (asoc->ep->sndbuf_policy)
@@ -149,6 +213,12 @@ static inline int sctp_wspace(struct sctp_association *asoc)
 		amt = asoc->base.sk->sk_sndbuf - amt;
 	}
 	return amt;
+=======
+	struct sock *sk = asoc->base.sk;
+
+	return asoc->ep->sndbuf_policy ? sk->sk_sndbuf - asoc->sndbuf_used
+				       : sk_stream_wspace(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Increment the used sndbuf space count of the corresponding association by
@@ -168,10 +238,17 @@ static inline void sctp_set_owner_w(struct sctp_chunk *chunk)
 	/* The sndbuf space is tracked per association.  */
 	sctp_association_hold(asoc);
 
+<<<<<<< HEAD
+=======
+	if (chunk->shkey)
+		sctp_auth_shkey_hold(chunk->shkey);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_set_owner_w(chunk->skb, sk);
 
 	chunk->skb->destructor = sctp_wfree;
 	/* Save the chunk pointer in skb for sctp_wfree to use later.  */
+<<<<<<< HEAD
 	*((struct sctp_chunk **)(chunk->skb->cb)) = chunk;
 
 	asoc->sndbuf_used += SCTP_DATA_SNDSIZE(chunk) +
@@ -183,6 +260,77 @@ static inline void sctp_set_owner_w(struct sctp_chunk *chunk)
 	sk_mem_charge(sk, chunk->skb->truesize);
 }
 
+=======
+	skb_shinfo(chunk->skb)->destructor_arg = chunk;
+
+	refcount_add(sizeof(struct sctp_chunk), &sk->sk_wmem_alloc);
+	asoc->sndbuf_used += chunk->skb->truesize + sizeof(struct sctp_chunk);
+	sk_wmem_queued_add(sk, chunk->skb->truesize + sizeof(struct sctp_chunk));
+	sk_mem_charge(sk, chunk->skb->truesize);
+}
+
+static void sctp_clear_owner_w(struct sctp_chunk *chunk)
+{
+	skb_orphan(chunk->skb);
+}
+
+#define traverse_and_process()	\
+do {				\
+	msg = chunk->msg;	\
+	if (msg == prev_msg)	\
+		continue;	\
+	list_for_each_entry(c, &msg->chunks, frag_list) {	\
+		if ((clear && asoc->base.sk == c->skb->sk) ||	\
+		    (!clear && asoc->base.sk != c->skb->sk))	\
+			cb(c);	\
+	}			\
+	prev_msg = msg;		\
+} while (0)
+
+static void sctp_for_each_tx_datachunk(struct sctp_association *asoc,
+				       bool clear,
+				       void (*cb)(struct sctp_chunk *))
+
+{
+	struct sctp_datamsg *msg, *prev_msg = NULL;
+	struct sctp_outq *q = &asoc->outqueue;
+	struct sctp_chunk *chunk, *c;
+	struct sctp_transport *t;
+
+	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
+		list_for_each_entry(chunk, &t->transmitted, transmitted_list)
+			traverse_and_process();
+
+	list_for_each_entry(chunk, &q->retransmit, transmitted_list)
+		traverse_and_process();
+
+	list_for_each_entry(chunk, &q->sacked, transmitted_list)
+		traverse_and_process();
+
+	list_for_each_entry(chunk, &q->abandoned, transmitted_list)
+		traverse_and_process();
+
+	list_for_each_entry(chunk, &q->out_chunk_list, list)
+		traverse_and_process();
+}
+
+static void sctp_for_each_rx_skb(struct sctp_association *asoc, struct sock *sk,
+				 void (*cb)(struct sk_buff *, struct sock *))
+
+{
+	struct sk_buff *skb, *tmp;
+
+	sctp_skb_for_each(skb, &asoc->ulpq.lobby, tmp)
+		cb(skb, sk);
+
+	sctp_skb_for_each(skb, &asoc->ulpq.reasm, tmp)
+		cb(skb, sk);
+
+	sctp_skb_for_each(skb, &asoc->ulpq.reasm_uo, tmp)
+		cb(skb, sk);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Verify that this is a valid address. */
 static inline int sctp_verify_addr(struct sock *sk, union sctp_addr *addr,
 				   int len)
@@ -217,7 +365,11 @@ struct sctp_association *sctp_id2assoc(struct sock *sk, sctp_assoc_t id)
 		 * could be a TCP-style listening socket or a socket which
 		 * hasn't yet called connect() to establish an association.
 		 */
+<<<<<<< HEAD
 		if (!sctp_sstate(sk, ESTABLISHED))
+=======
+		if (!sctp_sstate(sk, ESTABLISHED) && !sctp_sstate(sk, CLOSING))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 
 		/* Get the first and the only association from the list. */
@@ -228,16 +380,27 @@ struct sctp_association *sctp_id2assoc(struct sock *sk, sctp_assoc_t id)
 	}
 
 	/* Otherwise this is a UDP-style socket. */
+<<<<<<< HEAD
 	if (!id || (id == (sctp_assoc_t)-1))
+=======
+	if (id <= SCTP_ALL_ASSOC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	spin_lock_bh(&sctp_assocs_id_lock);
 	asoc = (struct sctp_association *)idr_find(&sctp_assocs_id, (int)id);
+<<<<<<< HEAD
 	spin_unlock_bh(&sctp_assocs_id_lock);
 
 	if (!asoc || (asoc->base.sk != sk) || asoc->base.dead)
 		return NULL;
 
+=======
+	if (asoc && (asoc->base.sk != sk || asoc->base.dead))
+		asoc = NULL;
+	spin_unlock_bh(&sctp_assocs_id_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return asoc;
 }
 
@@ -250,8 +413,17 @@ static struct sctp_transport *sctp_addr_id2transport(struct sock *sk,
 					      sctp_assoc_t id)
 {
 	struct sctp_association *addr_asoc = NULL, *id_asoc = NULL;
+<<<<<<< HEAD
 	struct sctp_transport *transport;
 	union sctp_addr *laddr = (union sctp_addr *)addr;
+=======
+	struct sctp_af *af = sctp_get_af_specific(addr->ss_family);
+	union sctp_addr *laddr = (union sctp_addr *)addr;
+	struct sctp_transport *transport;
+
+	if (!af || sctp_verify_addr(sk, laddr, af->sockaddr_len))
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr_asoc = sctp_endpoint_lookup_assoc(sctp_sk(sk)->ep,
 					       laddr,
@@ -264,7 +436,11 @@ static struct sctp_transport *sctp_addr_id2transport(struct sock *sk,
 	if (id_asoc && (id_asoc != addr_asoc))
 		return NULL;
 
+<<<<<<< HEAD
 	sctp_get_pf_specific(sk->sk_family)->addr_v4map(sctp_sk(sk),
+=======
+	sctp_get_pf_specific(sk->sk_family)->addr_to_user(sctp_sk(sk),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						(union sctp_addr *)addr);
 
 	return transport;
@@ -280,6 +456,7 @@ static struct sctp_transport *sctp_addr_id2transport(struct sock *sk,
  *             sockaddr_in6 [RFC 2553]),
  *   addr_len - the size of the address structure.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_bind(struct sock *sk, struct sockaddr *addr, int addr_len)
 {
 	int retval = 0;
@@ -288,6 +465,16 @@ SCTP_STATIC int sctp_bind(struct sock *sk, struct sockaddr *addr, int addr_len)
 
 	SCTP_DEBUG_PRINTK("sctp_bind(sk: %p, addr: %p, addr_len: %d)\n",
 			  sk, addr, addr_len);
+=======
+static int sctp_bind(struct sock *sk, struct sockaddr *addr, int addr_len)
+{
+	int retval = 0;
+
+	lock_sock(sk);
+
+	pr_debug("%s: sk:%p, addr:%p, addr_len:%d\n", __func__, sk,
+		 addr, addr_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disallow binding twice. */
 	if (!sctp_sk(sk)->ep->base.bind_addr.port)
@@ -296,12 +483,20 @@ SCTP_STATIC int sctp_bind(struct sock *sk, struct sockaddr *addr, int addr_len)
 	else
 		retval = -EINVAL;
 
+<<<<<<< HEAD
 	sctp_release_sock(sk);
+=======
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static long sctp_get_port_local(struct sock *, union sctp_addr *);
+=======
+static int sctp_get_port_local(struct sock *, union sctp_addr *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Verify this is a valid sockaddr. */
 static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
@@ -313,6 +508,7 @@ static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
 	if (len < sizeof (struct sockaddr))
 		return NULL;
 
+<<<<<<< HEAD
 	/* V4 mapped address are really of AF_INET family */
 	if (addr->sa.sa_family == AF_INET6 &&
 	    ipv6_addr_v4mapped(&addr->v6.sin6_addr)) {
@@ -321,6 +517,17 @@ static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
 	} else {
 		/* Does this PF support this AF? */
 		if (!opt->pf->af_supported(addr->sa.sa_family, opt))
+=======
+	if (!opt->pf->af_supported(addr->sa.sa_family, opt))
+		return NULL;
+
+	if (addr->sa.sa_family == AF_INET6) {
+		if (len < SIN6_LEN_RFC2133)
+			return NULL;
+		/* V4 mapped address are really of AF_INET family */
+		if (ipv6_addr_v4mapped(&addr->v6.sin6_addr) &&
+		    !opt->pf->af_supported(AF_INET, opt))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 	}
 
@@ -333,9 +540,28 @@ static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
 	return af;
 }
 
+<<<<<<< HEAD
 /* Bind a local address either to an endpoint or to an association.  */
 SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 {
+=======
+static void sctp_auto_asconf_init(struct sctp_sock *sp)
+{
+	struct net *net = sock_net(&sp->inet.sk);
+
+	if (net->sctp.default_auto_asconf) {
+		spin_lock_bh(&net->sctp.addr_wq_lock);
+		list_add_tail(&sp->auto_asconf_list, &net->sctp.auto_asconf_splist);
+		spin_unlock_bh(&net->sctp.addr_wq_lock);
+		sp->do_auto_asconf = 1;
+	}
+}
+
+/* Bind a local address either to an endpoint or to an association.  */
+static int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
+{
+	struct net *net = sock_net(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sctp_endpoint *ep = sp->ep;
 	struct sctp_bind_addr *bp = &ep->base.bind_addr;
@@ -346,19 +572,29 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 	/* Common sockaddr verification. */
 	af = sctp_sockaddr_af(sp, addr, len);
 	if (!af) {
+<<<<<<< HEAD
 		SCTP_DEBUG_PRINTK("sctp_do_bind(sk: %p, newaddr: %p, len: %d) EINVAL\n",
 				  sk, addr, len);
+=======
+		pr_debug("%s: sk:%p, newaddr:%p, len:%d EINVAL\n",
+			 __func__, sk, addr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	snum = ntohs(addr->v4.sin_port);
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK_IPADDR("sctp_do_bind(sk: %p, new addr: ",
 				 ", port: %d, new port: %d, len: %d)\n",
 				 sk,
 				 addr,
 				 bp->port, snum,
 				 len);
+=======
+	pr_debug("%s: sk:%p, new addr:%pISc, port:%d, new port:%d, len:%d\n",
+		 __func__, sk, &addr->sa, bp->port, snum, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PF specific bind() address verification. */
 	if (!sp->pf->bind_verify(sp, addr))
@@ -372,14 +608,24 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 		if (!snum)
 			snum = bp->port;
 		else if (snum != bp->port) {
+<<<<<<< HEAD
 			SCTP_DEBUG_PRINTK("sctp_do_bind:"
 				  " New port %d does not match existing port "
 				  "%d.\n", snum, bp->port);
+=======
+			pr_debug("%s: new port %d doesn't match existing port "
+				 "%d\n", __func__, snum, bp->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
+<<<<<<< HEAD
 	if (snum && snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
+=======
+	if (snum && inet_port_requires_bind_service(net, snum) &&
+	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 
 	/* See if the address matches any of the addresses we may have
@@ -393,6 +639,7 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 	 * detection.
 	 */
 	addr->v4.sin_port = htons(snum);
+<<<<<<< HEAD
 	if ((ret = sctp_get_port_local(sk, addr))) {
 		return -EADDRINUSE;
 	}
@@ -400,10 +647,21 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 	/* Refresh ephemeral port.  */
 	if (!bp->port)
 		bp->port = inet_sk(sk)->inet_num;
+=======
+	if (sctp_get_port_local(sk, addr))
+		return -EADDRINUSE;
+
+	/* Refresh ephemeral port.  */
+	if (!bp->port) {
+		bp->port = inet_sk(sk)->inet_num;
+		sctp_auto_asconf_init(sp);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add the address to the bind address list.
 	 * Use GFP_ATOMIC since BHs will be disabled.
 	 */
+<<<<<<< HEAD
 	ret = sctp_add_bind_addr(bp, addr, SCTP_ADDR_SRC, GFP_ATOMIC);
 
 	/* Copy back into socket for getsockname() use. */
@@ -411,6 +669,18 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 		inet_sk(sk)->inet_sport = htons(inet_sk(sk)->inet_num);
 		af->to_sk_saddr(addr, sk);
 	}
+=======
+	ret = sctp_add_bind_addr(bp, addr, af->sockaddr_len,
+				 SCTP_ADDR_SRC, GFP_ATOMIC);
+
+	if (ret) {
+		sctp_put_port(sk);
+		return ret;
+	}
+	/* Copy back into socket for getsockname() use. */
+	inet_sk(sk)->inet_sport = htons(inet_sk(sk)->inet_num);
+	sp->pf->to_sk_saddr(addr, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -428,7 +698,11 @@ SCTP_STATIC int sctp_do_bind(struct sock *sk, union sctp_addr *addr, int len)
 static int sctp_send_asconf(struct sctp_association *asoc,
 			    struct sctp_chunk *chunk)
 {
+<<<<<<< HEAD
 	int		retval = 0;
+=======
+	int retval = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If there is an outstanding ASCONF chunk, queue it for later
 	 * transmission.
@@ -440,7 +714,11 @@ static int sctp_send_asconf(struct sctp_association *asoc,
 
 	/* Hold the chunk until an ASCONF_ACK is received. */
 	sctp_chunk_hold(chunk);
+<<<<<<< HEAD
 	retval = sctp_primitive_ASCONF(asoc, chunk);
+=======
+	retval = sctp_primitive_ASCONF(asoc->base.net, asoc, chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		sctp_chunk_free(chunk);
 	else
@@ -470,8 +748,13 @@ static int sctp_bindx_add(struct sock *sk, struct sockaddr *addrs, int addrcnt)
 	struct sockaddr *sa_addr;
 	struct sctp_af *af;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_bindx_add (sk: %p, addrs: %p, addrcnt: %d)\n",
 			  sk, addrs, addrcnt);
+=======
+	pr_debug("%s: sk:%p, addrs:%p, addrcnt:%d\n", __func__, sk,
+		 addrs, addrcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr_buf = addrs;
 	for (cnt = 0; cnt < addrcnt; cnt++) {
@@ -530,6 +813,7 @@ static int sctp_send_asconf_add_ip(struct sock		*sk,
 	int 				i;
 	int 				retval = 0;
 
+<<<<<<< HEAD
 	if (!sctp_addip_enable)
 		return retval;
 
@@ -541,6 +825,18 @@ static int sctp_send_asconf_add_ip(struct sock		*sk,
 
 	list_for_each_entry(asoc, &ep->asocs, asocs) {
 
+=======
+	sp = sctp_sk(sk);
+	ep = sp->ep;
+
+	if (!ep->asconf_enable)
+		return retval;
+
+	pr_debug("%s: sk:%p, addrs:%p, addrcnt:%d\n",
+		 __func__, sk, addrs, addrcnt);
+
+	list_for_each_entry(asoc, &ep->asocs, asocs) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!asoc->peer.asconf_capable)
 			continue;
 
@@ -594,6 +890,10 @@ static int sctp_send_asconf_add_ip(struct sock		*sk,
 			af = sctp_get_af_specific(addr->v4.sin_family);
 			memcpy(&saveaddr, addr, af->sockaddr_len);
 			retval = sctp_add_bind_addr(bp, &saveaddr,
+<<<<<<< HEAD
+=======
+						    sizeof(saveaddr),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    SCTP_ADDR_NEW, GFP_ATOMIC);
 			addr_buf += af->sockaddr_len;
 		}
@@ -602,15 +902,26 @@ static int sctp_send_asconf_add_ip(struct sock		*sk,
 
 			list_for_each_entry(trans,
 			    &asoc->peer.transport_addr_list, transports) {
+<<<<<<< HEAD
 				/* Clear the source and route cache */
 				dst_release(trans->dst);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				trans->cwnd = min(4*asoc->pathmtu, max_t(__u32,
 				    2*asoc->pathmtu, 4380));
 				trans->ssthresh = asoc->peer.i.a_rwnd;
 				trans->rto = asoc->rto_initial;
+<<<<<<< HEAD
 				trans->rtt = trans->srtt = trans->rttvar = 0;
 				sctp_transport_route(trans, NULL,
 				    sctp_sk(asoc->base.sk));
+=======
+				sctp_max_rto(asoc, trans);
+				trans->rtt = trans->srtt = trans->rttvar = 0;
+				/* Clear the source and route cache */
+				sctp_transport_route(trans, NULL,
+						     sctp_sk(asoc->base.sk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		retval = sctp_send_asconf(asoc, chunk);
@@ -646,8 +957,13 @@ static int sctp_bindx_rem(struct sock *sk, struct sockaddr *addrs, int addrcnt)
 	union sctp_addr *sa_addr;
 	struct sctp_af *af;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_bindx_rem (sk: %p, addrs: %p, addrcnt: %d)\n",
 			  sk, addrs, addrcnt);
+=======
+	pr_debug("%s: sk:%p, addrs:%p, addrcnt:%d\n",
+		 __func__, sk, addrs, addrcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr_buf = addrs;
 	for (cnt = 0; cnt < addrcnt; cnt++) {
@@ -733,6 +1049,7 @@ static int sctp_send_asconf_del_ip(struct sock		*sk,
 	int			stored = 0;
 
 	chunk = NULL;
+<<<<<<< HEAD
 	if (!sctp_addip_enable)
 		return retval;
 
@@ -741,6 +1058,16 @@ static int sctp_send_asconf_del_ip(struct sock		*sk,
 
 	SCTP_DEBUG_PRINTK("%s: (sk: %p, addrs: %p, addrcnt: %d)\n",
 			  __func__, sk, addrs, addrcnt);
+=======
+	sp = sctp_sk(sk);
+	ep = sp->ep;
+
+	if (!ep->asconf_enable)
+		return retval;
+
+	pr_debug("%s: sk:%p, addrs:%p, addrcnt:%d\n",
+		 __func__, sk, addrs, addrcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(asoc, &ep->asocs, asocs) {
 
@@ -807,9 +1134,17 @@ static int sctp_send_asconf_del_ip(struct sock		*sk,
 				sin6 = (struct sockaddr_in6 *)addrs;
 				asoc->asconf_addr_del_pending->v6.sin6_addr = sin6->sin6_addr;
 			}
+<<<<<<< HEAD
 			SCTP_DEBUG_PRINTK_IPADDR("send_asconf_del_ip: keep the last address asoc: %p ",
 			    " at %p\n", asoc, asoc->asconf_addr_del_pending,
 			    asoc->asconf_addr_del_pending);
+=======
+
+			pr_debug("%s: keep the last address asoc:%p %pISc at %p\n",
+				 __func__, asoc, &asoc->asconf_addr_del_pending->sa,
+				 asoc->asconf_addr_del_pending);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			asoc->src_out_of_asoc_ok = 1;
 			stored = 1;
 			goto skip_mkasconf;
@@ -850,7 +1185,10 @@ skip_mkasconf:
 		 */
 		list_for_each_entry(transport, &asoc->peer.transport_addr_list,
 					transports) {
+<<<<<<< HEAD
 			dst_release(transport->dst);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_transport_route(transport, NULL,
 					     sctp_sk(asoc->base.sk));
 		}
@@ -944,6 +1282,7 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
  * This is used for tunneling the sctp_bindx() request through sctp_setsockopt()
  * from userspace.
  *
+<<<<<<< HEAD
  * We don't use copy_from_user() for optimization: we first do the
  * sanity checks (buffer size -fast- and access check-healthy
  * pointer); if all of those succeed, then we can alloc the memory
@@ -951,35 +1290,56 @@ int sctp_asconf_mgmt(struct sctp_sock *sp, struct sctp_sockaddr_entry *addrw)
  * the copying without checking the user space area
  * (__copy_from_user()).
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On exit there is no need to do sockfd_put(), sys_setsockopt() does
  * it.
  *
  * sk        The sk of the socket
+<<<<<<< HEAD
  * addrs     The pointer to the addresses in user land
+=======
+ * addrs     The pointer to the addresses
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * addrssize Size of the addrs buffer
  * op        Operation to perform (add or remove, see the flags of
  *           sctp_bindx)
  *
  * Returns 0 if ok, <0 errno code on error.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_setsockopt_bindx(struct sock* sk,
 				      struct sockaddr __user *addrs,
 				      int addrs_size, int op)
 {
 	struct sockaddr *kaddrs;
+=======
+static int sctp_setsockopt_bindx(struct sock *sk, struct sockaddr *addrs,
+				 int addrs_size, int op)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int addrcnt = 0;
 	int walk_size = 0;
 	struct sockaddr *sa_addr;
+<<<<<<< HEAD
 	void *addr_buf;
 	struct sctp_af *af;
 
 	SCTP_DEBUG_PRINTK("sctp_setsocktopt_bindx: sk %p addrs %p"
 			  " addrs_size %d opt %d\n", sk, addrs, addrs_size, op);
+=======
+	void *addr_buf = addrs;
+	struct sctp_af *af;
+
+	pr_debug("%s: sk:%p addrs:%p addrs_size:%d opt:%d\n",
+		 __func__, sk, addr_buf, addrs_size, op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(addrs_size <= 0))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* Check the user passed a healthy pointer.  */
 	if (unlikely(!access_ok(VERIFY_READ, addrs, addrs_size)))
 		return -EFAULT;
@@ -1001,6 +1361,12 @@ SCTP_STATIC int sctp_setsockopt_bindx(struct sock* sk,
 			kfree(kaddrs);
 			return -EINVAL;
 		}
+=======
+	/* Walk through the addrs buffer and count the number of addresses. */
+	while (walk_size < addrs_size) {
+		if (walk_size + sizeof(sa_family_t) > addrs_size)
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sa_addr = addr_buf;
 		af = sctp_get_af_specific(sa_addr->sa_family);
@@ -1008,10 +1374,15 @@ SCTP_STATIC int sctp_setsockopt_bindx(struct sock* sk,
 		/* If the address family is not supported or if this address
 		 * causes the address buffer to overflow return EINVAL.
 		 */
+<<<<<<< HEAD
 		if (!af || (walk_size + af->sockaddr_len) > addrs_size) {
 			kfree(kaddrs);
 			return -EINVAL;
 		}
+=======
+		if (!af || (walk_size + af->sockaddr_len) > addrs_size)
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addrcnt++;
 		addr_buf += af->sockaddr_len;
 		walk_size += af->sockaddr_len;
@@ -1020,6 +1391,7 @@ SCTP_STATIC int sctp_setsockopt_bindx(struct sock* sk,
 	/* Do the work. */
 	switch (op) {
 	case SCTP_BINDX_ADD_ADDR:
+<<<<<<< HEAD
 		err = sctp_bindx_add(sk, kaddrs, addrcnt);
 		if (err)
 			goto out;
@@ -1044,11 +1416,139 @@ out:
 	return err;
 }
 
+=======
+		/* Allow security module to validate bindx addresses. */
+		err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_BINDX_ADD,
+						 addrs, addrs_size);
+		if (err)
+			return err;
+		err = sctp_bindx_add(sk, addrs, addrcnt);
+		if (err)
+			return err;
+		return sctp_send_asconf_add_ip(sk, addrs, addrcnt);
+	case SCTP_BINDX_REM_ADDR:
+		err = sctp_bindx_rem(sk, addrs, addrcnt);
+		if (err)
+			return err;
+		return sctp_send_asconf_del_ip(sk, addrs, addrcnt);
+
+	default:
+		return -EINVAL;
+	}
+}
+
+static int sctp_bind_add(struct sock *sk, struct sockaddr *addrs,
+		int addrlen)
+{
+	int err;
+
+	lock_sock(sk);
+	err = sctp_setsockopt_bindx(sk, addrs, addrlen, SCTP_BINDX_ADD_ADDR);
+	release_sock(sk);
+	return err;
+}
+
+static int sctp_connect_new_asoc(struct sctp_endpoint *ep,
+				 const union sctp_addr *daddr,
+				 const struct sctp_initmsg *init,
+				 struct sctp_transport **tp)
+{
+	struct sctp_association *asoc;
+	struct sock *sk = ep->base.sk;
+	struct net *net = sock_net(sk);
+	enum sctp_scope scope;
+	int err;
+
+	if (sctp_endpoint_is_peeled_off(ep, daddr))
+		return -EADDRNOTAVAIL;
+
+	if (!ep->base.bind_addr.port) {
+		if (sctp_autobind(sk))
+			return -EAGAIN;
+	} else {
+		if (inet_port_requires_bind_service(net, ep->base.bind_addr.port) &&
+		    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
+			return -EACCES;
+	}
+
+	scope = sctp_scope(daddr);
+	asoc = sctp_association_new(ep, sk, scope, GFP_KERNEL);
+	if (!asoc)
+		return -ENOMEM;
+
+	err = sctp_assoc_set_bind_addr_from_ep(asoc, scope, GFP_KERNEL);
+	if (err < 0)
+		goto free;
+
+	*tp = sctp_assoc_add_peer(asoc, daddr, GFP_KERNEL, SCTP_UNKNOWN);
+	if (!*tp) {
+		err = -ENOMEM;
+		goto free;
+	}
+
+	if (!init)
+		return 0;
+
+	if (init->sinit_num_ostreams) {
+		__u16 outcnt = init->sinit_num_ostreams;
+
+		asoc->c.sinit_num_ostreams = outcnt;
+		/* outcnt has been changed, need to re-init stream */
+		err = sctp_stream_init(&asoc->stream, outcnt, 0, GFP_KERNEL);
+		if (err)
+			goto free;
+	}
+
+	if (init->sinit_max_instreams)
+		asoc->c.sinit_max_instreams = init->sinit_max_instreams;
+
+	if (init->sinit_max_attempts)
+		asoc->max_init_attempts = init->sinit_max_attempts;
+
+	if (init->sinit_max_init_timeo)
+		asoc->max_init_timeo =
+			msecs_to_jiffies(init->sinit_max_init_timeo);
+
+	return 0;
+free:
+	sctp_association_free(asoc);
+	return err;
+}
+
+static int sctp_connect_add_peer(struct sctp_association *asoc,
+				 union sctp_addr *daddr, int addr_len)
+{
+	struct sctp_endpoint *ep = asoc->ep;
+	struct sctp_association *old;
+	struct sctp_transport *t;
+	int err;
+
+	err = sctp_verify_addr(ep->base.sk, daddr, addr_len);
+	if (err)
+		return err;
+
+	old = sctp_endpoint_lookup_assoc(ep, daddr, &t);
+	if (old && old != asoc)
+		return old->state >= SCTP_STATE_ESTABLISHED ? -EISCONN
+							    : -EALREADY;
+
+	if (sctp_endpoint_is_peeled_off(ep, daddr))
+		return -EADDRNOTAVAIL;
+
+	t = sctp_assoc_add_peer(asoc, daddr, GFP_KERNEL, SCTP_UNKNOWN);
+	if (!t)
+		return -ENOMEM;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* __sctp_connect(struct sock* sk, struct sockaddr *kaddrs, int addrs_size)
  *
  * Common routine for handling connect() and sctp_connectx().
  * Connect will come in with just a single address.
  */
+<<<<<<< HEAD
 static int __sctp_connect(struct sock* sk,
 			  struct sockaddr *kaddrs,
 			  int addrs_size,
@@ -1192,6 +1692,64 @@ static int __sctp_connect(struct sock* sk,
 
 		addrcnt++;
 		addr_buf += af->sockaddr_len;
+=======
+static int __sctp_connect(struct sock *sk, struct sockaddr *kaddrs,
+			  int addrs_size, int flags, sctp_assoc_t *assoc_id)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_endpoint *ep = sp->ep;
+	struct sctp_transport *transport;
+	struct sctp_association *asoc;
+	void *addr_buf = kaddrs;
+	union sctp_addr *daddr;
+	struct sctp_af *af;
+	int walk_size, err;
+	long timeo;
+
+	if (sctp_sstate(sk, ESTABLISHED) || sctp_sstate(sk, CLOSING) ||
+	    (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING)))
+		return -EISCONN;
+
+	daddr = addr_buf;
+	af = sctp_get_af_specific(daddr->sa.sa_family);
+	if (!af || af->sockaddr_len > addrs_size)
+		return -EINVAL;
+
+	err = sctp_verify_addr(sk, daddr, af->sockaddr_len);
+	if (err)
+		return err;
+
+	asoc = sctp_endpoint_lookup_assoc(ep, daddr, &transport);
+	if (asoc)
+		return asoc->state >= SCTP_STATE_ESTABLISHED ? -EISCONN
+							     : -EALREADY;
+
+	err = sctp_connect_new_asoc(ep, daddr, NULL, &transport);
+	if (err)
+		return err;
+	asoc = transport->asoc;
+
+	addr_buf += af->sockaddr_len;
+	walk_size = af->sockaddr_len;
+	while (walk_size < addrs_size) {
+		err = -EINVAL;
+		if (walk_size + sizeof(sa_family_t) > addrs_size)
+			goto out_free;
+
+		daddr = addr_buf;
+		af = sctp_get_af_specific(daddr->sa.sa_family);
+		if (!af || af->sockaddr_len + walk_size > addrs_size)
+			goto out_free;
+
+		if (asoc->peer.port != ntohs(daddr->v4.sin_port))
+			goto out_free;
+
+		err = sctp_connect_add_peer(asoc, daddr, af->sockaddr_len);
+		if (err)
+			goto out_free;
+
+		addr_buf  += af->sockaddr_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		walk_size += af->sockaddr_len;
 	}
 
@@ -1204,6 +1762,7 @@ static int __sctp_connect(struct sock* sk,
 			goto out_free;
 	}
 
+<<<<<<< HEAD
 	err = sctp_primitive_ASSOCIATE(asoc, NULL);
 	if (err < 0) {
 		goto out_free;
@@ -1243,6 +1802,27 @@ out_free:
 		sctp_unhash_established(asoc);
 		sctp_association_free(asoc);
 	}
+=======
+	err = sctp_primitive_ASSOCIATE(sock_net(sk), asoc, NULL);
+	if (err < 0)
+		goto out_free;
+
+	/* Initialize sk's dport and daddr for getpeername() */
+	inet_sk(sk)->inet_dport = htons(asoc->peer.port);
+	sp->pf->to_sk_daddr(daddr, sk);
+	sk->sk_err = 0;
+
+	if (assoc_id)
+		*assoc_id = asoc->assoc_id;
+
+	timeo = sock_sndtimeo(sk, flags & O_NONBLOCK);
+	return sctp_wait_for_connect(asoc, &timeo);
+
+out_free:
+	pr_debug("%s: took out_free path with asoc:%p kaddrs:%p err:%d\n",
+		 __func__, asoc, kaddrs, err);
+	sctp_association_free(asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1292,6 +1872,7 @@ out_free:
  * land and invoking either sctp_connectx(). This is used for tunneling
  * the sctp_connectx() request through sctp_setsockopt() from userspace.
  *
+<<<<<<< HEAD
  * We don't use copy_from_user() for optimization: we first do the
  * sanity checks (buffer size -fast- and access check-healthy
  * pointer); if all of those succeed, then we can alloc the memory
@@ -1299,15 +1880,22 @@ out_free:
  * the copying without checking the user space area
  * (__copy_from_user()).
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On exit there is no need to do sockfd_put(), sys_setsockopt() does
  * it.
  *
  * sk        The sk of the socket
+<<<<<<< HEAD
  * addrs     The pointer to the addresses in user land
+=======
+ * addrs     The pointer to the addresses
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * addrssize Size of the addrs buffer
  *
  * Returns >=0 if ok, <0 errno code on error.
  */
+<<<<<<< HEAD
 SCTP_STATIC int __sctp_setsockopt_connectx(struct sock* sk,
 				      struct sockaddr __user *addrs,
 				      int addrs_size,
@@ -1340,17 +1928,53 @@ SCTP_STATIC int __sctp_setsockopt_connectx(struct sock* sk,
 	kfree(kaddrs);
 
 	return err;
+=======
+static int __sctp_setsockopt_connectx(struct sock *sk, struct sockaddr *kaddrs,
+				      int addrs_size, sctp_assoc_t *assoc_id)
+{
+	int err = 0, flags = 0;
+
+	pr_debug("%s: sk:%p addrs:%p addrs_size:%d\n",
+		 __func__, sk, kaddrs, addrs_size);
+
+	/* make sure the 1st addr's sa_family is accessible later */
+	if (unlikely(addrs_size < sizeof(sa_family_t)))
+		return -EINVAL;
+
+	/* Allow security module to validate connectx addresses. */
+	err = security_sctp_bind_connect(sk, SCTP_SOCKOPT_CONNECTX,
+					 (struct sockaddr *)kaddrs,
+					  addrs_size);
+	if (err)
+		return err;
+
+	/* in-kernel sockets don't generally have a file allocated to them
+	 * if all they do is call sock_create_kern().
+	 */
+	if (sk->sk_socket->file)
+		flags = sk->sk_socket->file->f_flags;
+
+	return __sctp_connect(sk, kaddrs, addrs_size, flags, assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This is an older interface.  It's kept for backward compatibility
  * to the option that doesn't provide association id.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_setsockopt_connectx_old(struct sock* sk,
 				      struct sockaddr __user *addrs,
 				      int addrs_size)
 {
 	return __sctp_setsockopt_connectx(sk, addrs, addrs_size, NULL);
+=======
+static int sctp_setsockopt_connectx_old(struct sock *sk,
+					struct sockaddr *kaddrs,
+					int addrs_size)
+{
+	return __sctp_setsockopt_connectx(sk, kaddrs, addrs_size, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1359,14 +1983,24 @@ SCTP_STATIC int sctp_setsockopt_connectx_old(struct sock* sk,
  * indication to the call.  Error is always negative and association id is
  * always positive.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_setsockopt_connectx(struct sock* sk,
 				      struct sockaddr __user *addrs,
 				      int addrs_size)
+=======
+static int sctp_setsockopt_connectx(struct sock *sk,
+				    struct sockaddr *kaddrs,
+				    int addrs_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sctp_assoc_t assoc_id = 0;
 	int err = 0;
 
+<<<<<<< HEAD
 	err = __sctp_setsockopt_connectx(sk, addrs, addrs_size, &assoc_id);
+=======
+	err = __sctp_setsockopt_connectx(sk, kaddrs, addrs_size, &assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		return err;
@@ -1390,6 +2024,7 @@ struct compat_sctp_getaddrs_old {
 };
 #endif
 
+<<<<<<< HEAD
 SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
 					char __user *optval,
 					int __user *optlen)
@@ -1400,6 +2035,19 @@ SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
 
 #ifdef CONFIG_COMPAT
 	if (is_compat_task()) {
+=======
+static int sctp_getsockopt_connectx3(struct sock *sk, int len,
+				     char __user *optval,
+				     int __user *optlen)
+{
+	struct sctp_getaddrs_old param;
+	sctp_assoc_t assoc_id = 0;
+	struct sockaddr *kaddrs;
+	int err = 0;
+
+#ifdef CONFIG_COMPAT
+	if (in_compat_syscall()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct compat_sctp_getaddrs_old param32;
 
 		if (len < sizeof(param32))
@@ -1419,9 +2067,18 @@ SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
 			return -EFAULT;
 	}
 
+<<<<<<< HEAD
 	err = __sctp_setsockopt_connectx(sk, (struct sockaddr __user *)
 					 param.addrs, param.addr_num,
 					 &assoc_id);
+=======
+	kaddrs = memdup_user(param.addrs, param.addr_num);
+	if (IS_ERR(kaddrs))
+		return PTR_ERR(kaddrs);
+
+	err = __sctp_setsockopt_connectx(sk, kaddrs, param.addr_num, &assoc_id);
+	kfree(kaddrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err == 0 || err == -EINPROGRESS) {
 		if (copy_to_user(optval, &assoc_id, sizeof(assoc_id)))
 			return -EFAULT;
@@ -1482,18 +2139,32 @@ SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
  * shutdown phase does not finish during this period, close() will
  * return but the graceful shutdown phase continues in the system.
  */
+<<<<<<< HEAD
 SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 {
+=======
+static void sctp_close(struct sock *sk, long timeout)
+{
+	struct net *net = sock_net(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_endpoint *ep;
 	struct sctp_association *asoc;
 	struct list_head *pos, *temp;
 	unsigned int data_was_unread;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_close(sk: 0x%p, timeout:%ld)\n", sk, timeout);
 
 	sctp_lock_sock(sk);
 	sk->sk_shutdown = SHUTDOWN_MASK;
 	sk->sk_state = SCTP_SS_CLOSING;
+=======
+	pr_debug("%s: sk:%p, timeout:%ld\n", __func__, sk, timeout);
+
+	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+	sk->sk_shutdown = SHUTDOWN_MASK;
+	inet_sk_set_state(sk, SCTP_SS_CLOSING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep = sctp_sk(sk)->ep;
 
@@ -1512,7 +2183,10 @@ SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 			 * ABORT or SHUTDOWN based on the linger options.
 			 */
 			if (sctp_state(asoc, CLOSED)) {
+<<<<<<< HEAD
 				sctp_unhash_established(asoc);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sctp_association_free(asoc);
 				continue;
 			}
@@ -1520,14 +2194,24 @@ SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 
 		if (data_was_unread || !skb_queue_empty(&asoc->ulpq.lobby) ||
 		    !skb_queue_empty(&asoc->ulpq.reasm) ||
+<<<<<<< HEAD
+=======
+		    !skb_queue_empty(&asoc->ulpq.reasm_uo) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (sock_flag(sk, SOCK_LINGER) && !sk->sk_lingertime)) {
 			struct sctp_chunk *chunk;
 
 			chunk = sctp_make_abort_user(asoc, NULL, 0);
+<<<<<<< HEAD
 			if (chunk)
 				sctp_primitive_ABORT(asoc, chunk);
 		} else
 			sctp_primitive_SHUTDOWN(asoc, NULL);
+=======
+			sctp_primitive_ABORT(net, asoc, chunk);
+		} else
+			sctp_primitive_SHUTDOWN(net, asoc, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* On a TCP-style socket, block for at most linger_time if set. */
@@ -1535,15 +2219,24 @@ SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 		sctp_wait_for_close(sk, timeout);
 
 	/* This will run the backlog queue.  */
+<<<<<<< HEAD
 	sctp_release_sock(sk);
+=======
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Supposedly, no process has access to the socket, but
 	 * the net layers still may.
 	 * Also, sctp_destroy_sock() needs to be called with addr_wq_lock
 	 * held and that should be grabbed before socket lock.
 	 */
+<<<<<<< HEAD
 	spin_lock_bh(&sctp_globals.addr_wq_lock);
 	sctp_bh_lock_sock(sk);
+=======
+	spin_lock_bh(&net->sctp.addr_wq_lock);
+	bh_lock_sock_nested(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hold the sock, since sk_common_release() will put sock_put()
 	 * and we have just a little more cleanup.
@@ -1551,8 +2244,13 @@ SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 	sock_hold(sk);
 	sk_common_release(sk);
 
+<<<<<<< HEAD
 	sctp_bh_unlock_sock(sk);
 	spin_unlock_bh(&sctp_globals.addr_wq_lock);
+=======
+	bh_unlock_sock(sk);
+	spin_unlock_bh(&net->sctp.addr_wq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_put(sk);
 
@@ -1592,6 +2290,7 @@ static int sctp_error(struct sock *sk, int flags, int err)
  */
 /* BUG:  We do not implement the equivalent of sk_stream_wait_memory(). */
 
+<<<<<<< HEAD
 SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *, sctp_cmsgs_t *);
 
 SCTP_STATIC int sctp_sendmsg(struct kiocb *iocb, struct sock *sk,
@@ -1999,6 +2698,454 @@ do_interrupted:
 		err = msg_len;
 	goto out;
 #endif /* 0 */
+=======
+static int sctp_msghdr_parse(const struct msghdr *msg,
+			     struct sctp_cmsgs *cmsgs);
+
+static int sctp_sendmsg_parse(struct sock *sk, struct sctp_cmsgs *cmsgs,
+			      struct sctp_sndrcvinfo *srinfo,
+			      const struct msghdr *msg, size_t msg_len)
+{
+	__u16 sflags;
+	int err;
+
+	if (sctp_sstate(sk, LISTENING) && sctp_style(sk, TCP))
+		return -EPIPE;
+
+	if (msg_len > sk->sk_sndbuf)
+		return -EMSGSIZE;
+
+	memset(cmsgs, 0, sizeof(*cmsgs));
+	err = sctp_msghdr_parse(msg, cmsgs);
+	if (err) {
+		pr_debug("%s: msghdr parse err:%x\n", __func__, err);
+		return err;
+	}
+
+	memset(srinfo, 0, sizeof(*srinfo));
+	if (cmsgs->srinfo) {
+		srinfo->sinfo_stream = cmsgs->srinfo->sinfo_stream;
+		srinfo->sinfo_flags = cmsgs->srinfo->sinfo_flags;
+		srinfo->sinfo_ppid = cmsgs->srinfo->sinfo_ppid;
+		srinfo->sinfo_context = cmsgs->srinfo->sinfo_context;
+		srinfo->sinfo_assoc_id = cmsgs->srinfo->sinfo_assoc_id;
+		srinfo->sinfo_timetolive = cmsgs->srinfo->sinfo_timetolive;
+	}
+
+	if (cmsgs->sinfo) {
+		srinfo->sinfo_stream = cmsgs->sinfo->snd_sid;
+		srinfo->sinfo_flags = cmsgs->sinfo->snd_flags;
+		srinfo->sinfo_ppid = cmsgs->sinfo->snd_ppid;
+		srinfo->sinfo_context = cmsgs->sinfo->snd_context;
+		srinfo->sinfo_assoc_id = cmsgs->sinfo->snd_assoc_id;
+	}
+
+	if (cmsgs->prinfo) {
+		srinfo->sinfo_timetolive = cmsgs->prinfo->pr_value;
+		SCTP_PR_SET_POLICY(srinfo->sinfo_flags,
+				   cmsgs->prinfo->pr_policy);
+	}
+
+	sflags = srinfo->sinfo_flags;
+	if (!sflags && msg_len)
+		return 0;
+
+	if (sctp_style(sk, TCP) && (sflags & (SCTP_EOF | SCTP_ABORT)))
+		return -EINVAL;
+
+	if (((sflags & SCTP_EOF) && msg_len > 0) ||
+	    (!(sflags & (SCTP_EOF | SCTP_ABORT)) && msg_len == 0))
+		return -EINVAL;
+
+	if ((sflags & SCTP_ADDR_OVER) && !msg->msg_name)
+		return -EINVAL;
+
+	return 0;
+}
+
+static int sctp_sendmsg_new_asoc(struct sock *sk, __u16 sflags,
+				 struct sctp_cmsgs *cmsgs,
+				 union sctp_addr *daddr,
+				 struct sctp_transport **tp)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	struct cmsghdr *cmsg;
+	__be32 flowinfo = 0;
+	struct sctp_af *af;
+	int err;
+
+	*tp = NULL;
+
+	if (sflags & (SCTP_EOF | SCTP_ABORT))
+		return -EINVAL;
+
+	if (sctp_style(sk, TCP) && (sctp_sstate(sk, ESTABLISHED) ||
+				    sctp_sstate(sk, CLOSING)))
+		return -EADDRNOTAVAIL;
+
+	/* Label connection socket for first association 1-to-many
+	 * style for client sequence socket()->sendmsg(). This
+	 * needs to be done before sctp_assoc_add_peer() as that will
+	 * set up the initial packet that needs to account for any
+	 * security ip options (CIPSO/CALIPSO) added to the packet.
+	 */
+	af = sctp_get_af_specific(daddr->sa.sa_family);
+	if (!af)
+		return -EINVAL;
+	err = security_sctp_bind_connect(sk, SCTP_SENDMSG_CONNECT,
+					 (struct sockaddr *)daddr,
+					 af->sockaddr_len);
+	if (err < 0)
+		return err;
+
+	err = sctp_connect_new_asoc(ep, daddr, cmsgs->init, tp);
+	if (err)
+		return err;
+	asoc = (*tp)->asoc;
+
+	if (!cmsgs->addrs_msg)
+		return 0;
+
+	if (daddr->sa.sa_family == AF_INET6)
+		flowinfo = daddr->v6.sin6_flowinfo;
+
+	/* sendv addr list parse */
+	for_each_cmsghdr(cmsg, cmsgs->addrs_msg) {
+		union sctp_addr _daddr;
+		int dlen;
+
+		if (cmsg->cmsg_level != IPPROTO_SCTP ||
+		    (cmsg->cmsg_type != SCTP_DSTADDRV4 &&
+		     cmsg->cmsg_type != SCTP_DSTADDRV6))
+			continue;
+
+		daddr = &_daddr;
+		memset(daddr, 0, sizeof(*daddr));
+		dlen = cmsg->cmsg_len - sizeof(struct cmsghdr);
+		if (cmsg->cmsg_type == SCTP_DSTADDRV4) {
+			if (dlen < sizeof(struct in_addr)) {
+				err = -EINVAL;
+				goto free;
+			}
+
+			dlen = sizeof(struct in_addr);
+			daddr->v4.sin_family = AF_INET;
+			daddr->v4.sin_port = htons(asoc->peer.port);
+			memcpy(&daddr->v4.sin_addr, CMSG_DATA(cmsg), dlen);
+		} else {
+			if (dlen < sizeof(struct in6_addr)) {
+				err = -EINVAL;
+				goto free;
+			}
+
+			dlen = sizeof(struct in6_addr);
+			daddr->v6.sin6_flowinfo = flowinfo;
+			daddr->v6.sin6_family = AF_INET6;
+			daddr->v6.sin6_port = htons(asoc->peer.port);
+			memcpy(&daddr->v6.sin6_addr, CMSG_DATA(cmsg), dlen);
+		}
+
+		err = sctp_connect_add_peer(asoc, daddr, sizeof(*daddr));
+		if (err)
+			goto free;
+	}
+
+	return 0;
+
+free:
+	sctp_association_free(asoc);
+	return err;
+}
+
+static int sctp_sendmsg_check_sflags(struct sctp_association *asoc,
+				     __u16 sflags, struct msghdr *msg,
+				     size_t msg_len)
+{
+	struct sock *sk = asoc->base.sk;
+	struct net *net = sock_net(sk);
+
+	if (sctp_state(asoc, CLOSED) && sctp_style(sk, TCP))
+		return -EPIPE;
+
+	if ((sflags & SCTP_SENDALL) && sctp_style(sk, UDP) &&
+	    !sctp_state(asoc, ESTABLISHED))
+		return 0;
+
+	if (sflags & SCTP_EOF) {
+		pr_debug("%s: shutting down association:%p\n", __func__, asoc);
+		sctp_primitive_SHUTDOWN(net, asoc, NULL);
+
+		return 0;
+	}
+
+	if (sflags & SCTP_ABORT) {
+		struct sctp_chunk *chunk;
+
+		chunk = sctp_make_abort_user(asoc, msg, msg_len);
+		if (!chunk)
+			return -ENOMEM;
+
+		pr_debug("%s: aborting association:%p\n", __func__, asoc);
+		sctp_primitive_ABORT(net, asoc, chunk);
+		iov_iter_revert(&msg->msg_iter, msg_len);
+
+		return 0;
+	}
+
+	return 1;
+}
+
+static int sctp_sendmsg_to_asoc(struct sctp_association *asoc,
+				struct msghdr *msg, size_t msg_len,
+				struct sctp_transport *transport,
+				struct sctp_sndrcvinfo *sinfo)
+{
+	struct sock *sk = asoc->base.sk;
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct net *net = sock_net(sk);
+	struct sctp_datamsg *datamsg;
+	bool wait_connect = false;
+	struct sctp_chunk *chunk;
+	long timeo;
+	int err;
+
+	if (sinfo->sinfo_stream >= asoc->stream.outcnt) {
+		err = -EINVAL;
+		goto err;
+	}
+
+	if (unlikely(!SCTP_SO(&asoc->stream, sinfo->sinfo_stream)->ext)) {
+		err = sctp_stream_init_ext(&asoc->stream, sinfo->sinfo_stream);
+		if (err)
+			goto err;
+	}
+
+	if (sp->disable_fragments && msg_len > asoc->frag_point) {
+		err = -EMSGSIZE;
+		goto err;
+	}
+
+	if (asoc->pmtu_pending) {
+		if (sp->param_flags & SPP_PMTUD_ENABLE)
+			sctp_assoc_sync_pmtu(asoc);
+		asoc->pmtu_pending = 0;
+	}
+
+	if (sctp_wspace(asoc) < (int)msg_len)
+		sctp_prsctp_prune(asoc, sinfo, msg_len - sctp_wspace(asoc));
+
+	if (sctp_wspace(asoc) <= 0 || !sk_wmem_schedule(sk, msg_len)) {
+		timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+		err = sctp_wait_for_sndbuf(asoc, &timeo, msg_len);
+		if (err)
+			goto err;
+		if (unlikely(sinfo->sinfo_stream >= asoc->stream.outcnt)) {
+			err = -EINVAL;
+			goto err;
+		}
+	}
+
+	if (sctp_state(asoc, CLOSED)) {
+		err = sctp_primitive_ASSOCIATE(net, asoc, NULL);
+		if (err)
+			goto err;
+
+		if (asoc->ep->intl_enable) {
+			timeo = sock_sndtimeo(sk, 0);
+			err = sctp_wait_for_connect(asoc, &timeo);
+			if (err) {
+				err = -ESRCH;
+				goto err;
+			}
+		} else {
+			wait_connect = true;
+		}
+
+		pr_debug("%s: we associated primitively\n", __func__);
+	}
+
+	datamsg = sctp_datamsg_from_user(asoc, sinfo, &msg->msg_iter);
+	if (IS_ERR(datamsg)) {
+		err = PTR_ERR(datamsg);
+		goto err;
+	}
+
+	asoc->force_delay = !!(msg->msg_flags & MSG_MORE);
+
+	list_for_each_entry(chunk, &datamsg->chunks, frag_list) {
+		sctp_chunk_hold(chunk);
+		sctp_set_owner_w(chunk);
+		chunk->transport = transport;
+	}
+
+	err = sctp_primitive_SEND(net, asoc, datamsg);
+	if (err) {
+		sctp_datamsg_free(datamsg);
+		goto err;
+	}
+
+	pr_debug("%s: we sent primitively\n", __func__);
+
+	sctp_datamsg_put(datamsg);
+
+	if (unlikely(wait_connect)) {
+		timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+		sctp_wait_for_connect(asoc, &timeo);
+	}
+
+	err = msg_len;
+
+err:
+	return err;
+}
+
+static union sctp_addr *sctp_sendmsg_get_daddr(struct sock *sk,
+					       const struct msghdr *msg,
+					       struct sctp_cmsgs *cmsgs)
+{
+	union sctp_addr *daddr = NULL;
+	int err;
+
+	if (!sctp_style(sk, UDP_HIGH_BANDWIDTH) && msg->msg_name) {
+		int len = msg->msg_namelen;
+
+		if (len > sizeof(*daddr))
+			len = sizeof(*daddr);
+
+		daddr = (union sctp_addr *)msg->msg_name;
+
+		err = sctp_verify_addr(sk, daddr, len);
+		if (err)
+			return ERR_PTR(err);
+	}
+
+	return daddr;
+}
+
+static void sctp_sendmsg_update_sinfo(struct sctp_association *asoc,
+				      struct sctp_sndrcvinfo *sinfo,
+				      struct sctp_cmsgs *cmsgs)
+{
+	if (!cmsgs->srinfo && !cmsgs->sinfo) {
+		sinfo->sinfo_stream = asoc->default_stream;
+		sinfo->sinfo_ppid = asoc->default_ppid;
+		sinfo->sinfo_context = asoc->default_context;
+		sinfo->sinfo_assoc_id = sctp_assoc2id(asoc);
+
+		if (!cmsgs->prinfo)
+			sinfo->sinfo_flags = asoc->default_flags;
+	}
+
+	if (!cmsgs->srinfo && !cmsgs->prinfo)
+		sinfo->sinfo_timetolive = asoc->default_timetolive;
+
+	if (cmsgs->authinfo) {
+		/* Reuse sinfo_tsn to indicate that authinfo was set and
+		 * sinfo_ssn to save the keyid on tx path.
+		 */
+		sinfo->sinfo_tsn = 1;
+		sinfo->sinfo_ssn = cmsgs->authinfo->auth_keynumber;
+	}
+}
+
+static int sctp_sendmsg(struct sock *sk, struct msghdr *msg, size_t msg_len)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_transport *transport = NULL;
+	struct sctp_sndrcvinfo _sinfo, *sinfo;
+	struct sctp_association *asoc, *tmp;
+	struct sctp_cmsgs cmsgs;
+	union sctp_addr *daddr;
+	bool new = false;
+	__u16 sflags;
+	int err;
+
+	/* Parse and get snd_info */
+	err = sctp_sendmsg_parse(sk, &cmsgs, &_sinfo, msg, msg_len);
+	if (err)
+		goto out;
+
+	sinfo  = &_sinfo;
+	sflags = sinfo->sinfo_flags;
+
+	/* Get daddr from msg */
+	daddr = sctp_sendmsg_get_daddr(sk, msg, &cmsgs);
+	if (IS_ERR(daddr)) {
+		err = PTR_ERR(daddr);
+		goto out;
+	}
+
+	lock_sock(sk);
+
+	/* SCTP_SENDALL process */
+	if ((sflags & SCTP_SENDALL) && sctp_style(sk, UDP)) {
+		list_for_each_entry_safe(asoc, tmp, &ep->asocs, asocs) {
+			err = sctp_sendmsg_check_sflags(asoc, sflags, msg,
+							msg_len);
+			if (err == 0)
+				continue;
+			if (err < 0)
+				goto out_unlock;
+
+			sctp_sendmsg_update_sinfo(asoc, sinfo, &cmsgs);
+
+			err = sctp_sendmsg_to_asoc(asoc, msg, msg_len,
+						   NULL, sinfo);
+			if (err < 0)
+				goto out_unlock;
+
+			iov_iter_revert(&msg->msg_iter, err);
+		}
+
+		goto out_unlock;
+	}
+
+	/* Get and check or create asoc */
+	if (daddr) {
+		asoc = sctp_endpoint_lookup_assoc(ep, daddr, &transport);
+		if (asoc) {
+			err = sctp_sendmsg_check_sflags(asoc, sflags, msg,
+							msg_len);
+			if (err <= 0)
+				goto out_unlock;
+		} else {
+			err = sctp_sendmsg_new_asoc(sk, sflags, &cmsgs, daddr,
+						    &transport);
+			if (err)
+				goto out_unlock;
+
+			asoc = transport->asoc;
+			new = true;
+		}
+
+		if (!sctp_style(sk, TCP) && !(sflags & SCTP_ADDR_OVER))
+			transport = NULL;
+	} else {
+		asoc = sctp_id2assoc(sk, sinfo->sinfo_assoc_id);
+		if (!asoc) {
+			err = -EPIPE;
+			goto out_unlock;
+		}
+
+		err = sctp_sendmsg_check_sflags(asoc, sflags, msg, msg_len);
+		if (err <= 0)
+			goto out_unlock;
+	}
+
+	/* Update snd_info with the asoc */
+	sctp_sendmsg_update_sinfo(asoc, sinfo, &cmsgs);
+
+	/* Send msg to the asoc */
+	err = sctp_sendmsg_to_asoc(asoc, msg, msg_len, transport, sinfo);
+	if (err < 0 && err != -ESRCH && new)
+		sctp_association_free(asoc);
+
+out_unlock:
+	release_sock(sk);
+out:
+	return sctp_error(sk, msg->msg_flags, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This is an extended version of skb_pull() that removes the data from the
@@ -2050,6 +3197,7 @@ static int sctp_skb_pull(struct sk_buff *skb, int len)
  *  flags   - flags sent or received with the user message, see Section
  *            5 for complete description of the flags.
  */
+<<<<<<< HEAD
 static struct sk_buff *sctp_skb_recv_datagram(struct sock *, int, int, int *);
 
 SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
@@ -2059,10 +3207,19 @@ SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
 	struct sctp_ulpevent *event = NULL;
 	struct sctp_sock *sp = sctp_sk(sk);
 	struct sk_buff *skb;
+=======
+static int sctp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+			int flags, int *addr_len)
+{
+	struct sctp_ulpevent *event = NULL;
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sk_buff *skb, *head_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int copied;
 	int err = 0;
 	int skb_len;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_recvmsg(%s: %p, %s: %p, %s: %zd, %s: %d, %s: "
 			  "0x%x, %s: %p)\n", "sk", sk, "msghdr", msg,
 			  "len", len, "knoblauch", noblock,
@@ -2071,11 +3228,31 @@ SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
 	sctp_lock_sock(sk);
 
 	if (sctp_style(sk, TCP) && !sctp_sstate(sk, ESTABLISHED)) {
+=======
+	pr_debug("%s: sk:%p, msghdr:%p, len:%zd, flags:0x%x, addr_len:%p)\n",
+		 __func__, sk, msg, len, flags, addr_len);
+
+	if (unlikely(flags & MSG_ERRQUEUE))
+		return inet_recv_error(sk, msg, len, addr_len);
+
+	if (sk_can_busy_loop(sk) &&
+	    skb_queue_empty_lockless(&sk->sk_receive_queue))
+		sk_busy_loop(sk, flags & MSG_DONTWAIT);
+
+	lock_sock(sk);
+
+	if (sctp_style(sk, TCP) && !sctp_sstate(sk, ESTABLISHED) &&
+	    !sctp_sstate(sk, CLOSING) && !sctp_sstate(sk, CLOSED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOTCONN;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	skb = sctp_skb_recv_datagram(sk, flags, noblock, &err);
+=======
+	skb = sctp_skb_recv_datagram(sk, flags, &err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		goto out;
 
@@ -2088,18 +3265,31 @@ SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
 	if (copied > len)
 		copied = len;
 
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	event = sctp_skb2event(skb);
 
 	if (err)
 		goto out_free;
 
+<<<<<<< HEAD
 	sock_recv_ts_and_drops(msg, sk, skb);
+=======
+	if (event->chunk && event->chunk->head_skb)
+		head_skb = event->chunk->head_skb;
+	else
+		head_skb = skb;
+	sock_recv_cmsgs(msg, sk, head_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sctp_ulpevent_is_notification(event)) {
 		msg->msg_flags |= MSG_NOTIFICATION;
 		sp->pf->event_msgname(event, msg->msg_name, addr_len);
 	} else {
+<<<<<<< HEAD
 		sp->pf->skb_msgname(skb, msg->msg_name, addr_len);
 	}
 
@@ -2111,6 +3301,20 @@ SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
 	if (sk->sk_protinfo.af_inet.cmsg_flags)
 		ip_cmsg_recv(msg, skb);
 #endif
+=======
+		sp->pf->skb_msgname(head_skb, msg->msg_name, addr_len);
+	}
+
+	/* Check if we allow SCTP_NXTINFO. */
+	if (sp->recvnxtinfo)
+		sctp_ulpevent_read_nxtinfo(event, msg, sk);
+	/* Check if we allow SCTP_RCVINFO. */
+	if (sp->recvrcvinfo)
+		sctp_ulpevent_read_rcvinfo(event, msg);
+	/* Check if we allow SCTP_SNDRCVINFO. */
+	if (sctp_ulpevent_type_enabled(sp->subscribe, SCTP_DATA_IO_EVENT))
+		sctp_ulpevent_read_sndrcvinfo(event, msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = copied;
 
@@ -2152,7 +3356,11 @@ out_free:
 		sctp_ulpevent_free(event);
 	}
 out:
+<<<<<<< HEAD
 	sctp_release_sock(sk);
+=======
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -2163,6 +3371,7 @@ out:
  * exceeds the current PMTU size, the message will NOT be sent and
  * instead a error will be indicated to the user.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_disable_fragments(struct sock *sk,
 					     char __user *optval,
 					     unsigned int optlen)
@@ -2207,6 +3416,49 @@ static int sctp_setsockopt_events(struct sock *sk, char __user *optval,
 				return -ENOMEM;
 
 			sctp_ulpq_tail_event(&asoc->ulpq, event);
+=======
+static int sctp_setsockopt_disable_fragments(struct sock *sk, int *val,
+					     unsigned int optlen)
+{
+	if (optlen < sizeof(int))
+		return -EINVAL;
+	sctp_sk(sk)->disable_fragments = (*val == 0) ? 0 : 1;
+	return 0;
+}
+
+static int sctp_setsockopt_events(struct sock *sk, __u8 *sn_type,
+				  unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	int i;
+
+	if (optlen > sizeof(struct sctp_event_subscribe))
+		return -EINVAL;
+
+	for (i = 0; i < optlen; i++)
+		sctp_ulpevent_type_set(&sp->subscribe, SCTP_SN_TYPE_BASE + i,
+				       sn_type[i]);
+
+	list_for_each_entry(asoc, &sp->ep->asocs, asocs)
+		asoc->subscribe = sctp_sk(sk)->subscribe;
+
+	/* At the time when a user app subscribes to SCTP_SENDER_DRY_EVENT,
+	 * if there is no data to be sent or retransmit, the stack will
+	 * immediately send up this notification.
+	 */
+	if (sctp_ulpevent_type_enabled(sp->subscribe, SCTP_SENDER_DRY_EVENT)) {
+		struct sctp_ulpevent *event;
+
+		asoc = sctp_id2assoc(sk, 0);
+		if (asoc && sctp_outq_is_empty(&asoc->outqueue)) {
+			event = sctp_ulpevent_make_sender_dry_event(asoc,
+					GFP_USER | __GFP_NOWARN);
+			if (!event)
+				return -ENOMEM;
+
+			asoc->stream.si->enqueue_event(&asoc->ulpq, event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2224,18 +3476,33 @@ static int sctp_setsockopt_events(struct sock *sk, char __user *optval,
  * integer defining the number of seconds of idle time before an
  * association is closed.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_autoclose(struct sock *sk, char __user *optval,
 				     unsigned int optlen)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
+=======
+static int sctp_setsockopt_autoclose(struct sock *sk, u32 *optval,
+				     unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct net *net = sock_net(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Applicable to UDP-style socket only */
 	if (sctp_style(sk, TCP))
 		return -EOPNOTSUPP;
 	if (optlen != sizeof(int))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (copy_from_user(&sp->autoclose, optval, optlen))
 		return -EFAULT;
+=======
+
+	sp->autoclose = *optval;
+	if (sp->autoclose > net->sctp.max_autoclose)
+		sp->autoclose = net->sctp.max_autoclose;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2257,6 +3524,11 @@ static int sctp_setsockopt_autoclose(struct sock *sk, char __user *optval,
  *     uint32_t                spp_pathmtu;
  *     uint32_t                spp_sackdelay;
  *     uint32_t                spp_flags;
+<<<<<<< HEAD
+=======
+ *     uint32_t                spp_ipv6_flowlabel;
+ *     uint8_t                 spp_dscp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * };
  *
  *   spp_assoc_id    - (one-to-many style socket) This is filled in the
@@ -2336,6 +3608,48 @@ static int sctp_setsockopt_autoclose(struct sock *sk, char __user *optval,
  *                     also that this field is mutually exclusive to
  *                     SPP_SACKDELAY_ENABLE, setting both will have undefined
  *                     results.
+<<<<<<< HEAD
+=======
+ *
+ *                     SPP_IPV6_FLOWLABEL:  Setting this flag enables the
+ *                     setting of the IPV6 flow label value.  The value is
+ *                     contained in the spp_ipv6_flowlabel field.
+ *                     Upon retrieval, this flag will be set to indicate that
+ *                     the spp_ipv6_flowlabel field has a valid value returned.
+ *                     If a specific destination address is set (in the
+ *                     spp_address field), then the value returned is that of
+ *                     the address.  If just an association is specified (and
+ *                     no address), then the association's default flow label
+ *                     is returned.  If neither an association nor a destination
+ *                     is specified, then the socket's default flow label is
+ *                     returned.  For non-IPv6 sockets, this flag will be left
+ *                     cleared.
+ *
+ *                     SPP_DSCP:  Setting this flag enables the setting of the
+ *                     Differentiated Services Code Point (DSCP) value
+ *                     associated with either the association or a specific
+ *                     address.  The value is obtained in the spp_dscp field.
+ *                     Upon retrieval, this flag will be set to indicate that
+ *                     the spp_dscp field has a valid value returned.  If a
+ *                     specific destination address is set when called (in the
+ *                     spp_address field), then that specific destination
+ *                     address's DSCP value is returned.  If just an association
+ *                     is specified, then the association's default DSCP is
+ *                     returned.  If neither an association nor a destination is
+ *                     specified, then the socket's default DSCP is returned.
+ *
+ *   spp_ipv6_flowlabel
+ *                   - This field is used in conjunction with the
+ *                     SPP_IPV6_FLOWLABEL flag and contains the IPv6 flow label.
+ *                     The 20 least significant bits are used for the flow
+ *                     label.  This setting has precedence over any IPv6-layer
+ *                     setting.
+ *
+ *   spp_dscp        - This field is used in conjunction with the SPP_DSCP flag
+ *                     and contains the DSCP.  The 6 most significant bits are
+ *                     used for the DSCP.  This setting has precedence over any
+ *                     IPv4- or IPv6- layer setting.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 				       struct sctp_transport   *trans,
@@ -2348,7 +3662,12 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 	int error;
 
 	if (params->spp_flags & SPP_HB_DEMAND && trans) {
+<<<<<<< HEAD
 		error = sctp_primitive_REQUESTHEARTBEAT (trans->asoc, trans);
+=======
+		error = sctp_primitive_REQUESTHEARTBEAT(trans->asoc->base.net,
+							trans->asoc, trans);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			return error;
 	}
@@ -2371,6 +3690,10 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 			if (trans) {
 				trans->hbinterval =
 				    msecs_to_jiffies(params->spp_hbinterval);
+<<<<<<< HEAD
+=======
+				sctp_transport_reset_hb_timer(trans);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (asoc) {
 				asoc->hbinterval =
 				    msecs_to_jiffies(params->spp_hbinterval);
@@ -2403,8 +3726,12 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 			trans->pathmtu = params->spp_pathmtu;
 			sctp_assoc_sync_pmtu(asoc);
 		} else if (asoc) {
+<<<<<<< HEAD
 			asoc->pathmtu = params->spp_pathmtu;
 			sctp_frag_point(asoc, params->spp_pathmtu);
+=======
+			sctp_assoc_set_pmtu(asoc, params->spp_pathmtu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			sp->pathmtu = params->spp_pathmtu;
 		}
@@ -2420,6 +3747,10 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 				sctp_transport_pmtu(trans, sctp_opt2sk(sp));
 				sctp_assoc_sync_pmtu(asoc);
 			}
+<<<<<<< HEAD
+=======
+			sctp_transport_pl_reset(trans);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (asoc) {
 			asoc->param_flags =
 				(asoc->param_flags & ~SPP_PMTUD) | pmtud_change;
@@ -2474,20 +3805,79 @@ static int sctp_apply_peer_addr_params(struct sctp_paddrparams *params,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (params->spp_flags & SPP_IPV6_FLOWLABEL) {
+		if (trans) {
+			if (trans->ipaddr.sa.sa_family == AF_INET6) {
+				trans->flowlabel = params->spp_ipv6_flowlabel &
+						   SCTP_FLOWLABEL_VAL_MASK;
+				trans->flowlabel |= SCTP_FLOWLABEL_SET_MASK;
+			}
+		} else if (asoc) {
+			struct sctp_transport *t;
+
+			list_for_each_entry(t, &asoc->peer.transport_addr_list,
+					    transports) {
+				if (t->ipaddr.sa.sa_family != AF_INET6)
+					continue;
+				t->flowlabel = params->spp_ipv6_flowlabel &
+					       SCTP_FLOWLABEL_VAL_MASK;
+				t->flowlabel |= SCTP_FLOWLABEL_SET_MASK;
+			}
+			asoc->flowlabel = params->spp_ipv6_flowlabel &
+					  SCTP_FLOWLABEL_VAL_MASK;
+			asoc->flowlabel |= SCTP_FLOWLABEL_SET_MASK;
+		} else if (sctp_opt2sk(sp)->sk_family == AF_INET6) {
+			sp->flowlabel = params->spp_ipv6_flowlabel &
+					SCTP_FLOWLABEL_VAL_MASK;
+			sp->flowlabel |= SCTP_FLOWLABEL_SET_MASK;
+		}
+	}
+
+	if (params->spp_flags & SPP_DSCP) {
+		if (trans) {
+			trans->dscp = params->spp_dscp & SCTP_DSCP_VAL_MASK;
+			trans->dscp |= SCTP_DSCP_SET_MASK;
+		} else if (asoc) {
+			struct sctp_transport *t;
+
+			list_for_each_entry(t, &asoc->peer.transport_addr_list,
+					    transports) {
+				t->dscp = params->spp_dscp &
+					  SCTP_DSCP_VAL_MASK;
+				t->dscp |= SCTP_DSCP_SET_MASK;
+			}
+			asoc->dscp = params->spp_dscp & SCTP_DSCP_VAL_MASK;
+			asoc->dscp |= SCTP_DSCP_SET_MASK;
+		} else {
+			sp->dscp = params->spp_dscp & SCTP_DSCP_VAL_MASK;
+			sp->dscp |= SCTP_DSCP_SET_MASK;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int sctp_setsockopt_peer_addr_params(struct sock *sk,
+<<<<<<< HEAD
 					    char __user *optval,
 					    unsigned int optlen)
 {
 	struct sctp_paddrparams  params;
+=======
+					    struct sctp_paddrparams *params,
+					    unsigned int optlen)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_transport   *trans = NULL;
 	struct sctp_association *asoc = NULL;
 	struct sctp_sock        *sp = sctp_sk(sk);
 	int error;
 	int hb_change, pmtud_change, sackdelay_change;
 
+<<<<<<< HEAD
 	if (optlen != sizeof(struct sctp_paddrparams))
 		return - EINVAL;
 
@@ -2498,41 +3888,85 @@ static int sctp_setsockopt_peer_addr_params(struct sock *sk,
 	hb_change        = params.spp_flags & SPP_HB;
 	pmtud_change     = params.spp_flags & SPP_PMTUD;
 	sackdelay_change = params.spp_flags & SPP_SACKDELAY;
+=======
+	if (optlen == ALIGN(offsetof(struct sctp_paddrparams,
+					    spp_ipv6_flowlabel), 4)) {
+		if (params->spp_flags & (SPP_DSCP | SPP_IPV6_FLOWLABEL))
+			return -EINVAL;
+	} else if (optlen != sizeof(*params)) {
+		return -EINVAL;
+	}
+
+	/* Validate flags and value parameters. */
+	hb_change        = params->spp_flags & SPP_HB;
+	pmtud_change     = params->spp_flags & SPP_PMTUD;
+	sackdelay_change = params->spp_flags & SPP_SACKDELAY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hb_change        == SPP_HB ||
 	    pmtud_change     == SPP_PMTUD ||
 	    sackdelay_change == SPP_SACKDELAY ||
+<<<<<<< HEAD
 	    params.spp_sackdelay > 500 ||
 	    (params.spp_pathmtu &&
 	     params.spp_pathmtu < SCTP_DEFAULT_MINSEGMENT))
+=======
+	    params->spp_sackdelay > 500 ||
+	    (params->spp_pathmtu &&
+	     params->spp_pathmtu < SCTP_DEFAULT_MINSEGMENT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* If an address other than INADDR_ANY is specified, and
 	 * no transport is found, then the request is invalid.
 	 */
+<<<<<<< HEAD
 	if (!sctp_is_any(sk, ( union sctp_addr *)&params.spp_address)) {
 		trans = sctp_addr_id2transport(sk, &params.spp_address,
 					       params.spp_assoc_id);
+=======
+	if (!sctp_is_any(sk, (union sctp_addr *)&params->spp_address)) {
+		trans = sctp_addr_id2transport(sk, &params->spp_address,
+					       params->spp_assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!trans)
 			return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Get association, if assoc_id != 0 and the socket is a one
 	 * to many style socket, and an association was not found, then
 	 * the id was invalid.
 	 */
 	asoc = sctp_id2assoc(sk, params.spp_assoc_id);
 	if (!asoc && params.spp_assoc_id && sctp_style(sk, UDP))
+=======
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params->spp_assoc_id);
+	if (!asoc && params->spp_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Heartbeat demand can only be sent on a transport or
 	 * association, but not a socket.
 	 */
+<<<<<<< HEAD
 	if (params.spp_flags & SPP_HB_DEMAND && !trans && !asoc)
 		return -EINVAL;
 
 	/* Process parameters. */
 	error = sctp_apply_peer_addr_params(&params, trans, asoc, sp,
+=======
+	if (params->spp_flags & SPP_HB_DEMAND && !trans && !asoc)
+		return -EINVAL;
+
+	/* Process parameters. */
+	error = sctp_apply_peer_addr_params(params, trans, asoc, sp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    hb_change, pmtud_change,
 					    sackdelay_change);
 
@@ -2545,7 +3979,11 @@ static int sctp_setsockopt_peer_addr_params(struct sock *sk,
 	if (!trans && asoc) {
 		list_for_each_entry(trans, &asoc->peer.transport_addr_list,
 				transports) {
+<<<<<<< HEAD
 			sctp_apply_peer_addr_params(&params, trans, asoc, sp,
+=======
+			sctp_apply_peer_addr_params(params, trans, asoc, sp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    hb_change, pmtud_change,
 						    sackdelay_change);
 		}
@@ -2554,6 +3992,56 @@ static int sctp_setsockopt_peer_addr_params(struct sock *sk,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline __u32 sctp_spp_sackdelay_enable(__u32 param_flags)
+{
+	return (param_flags & ~SPP_SACKDELAY) | SPP_SACKDELAY_ENABLE;
+}
+
+static inline __u32 sctp_spp_sackdelay_disable(__u32 param_flags)
+{
+	return (param_flags & ~SPP_SACKDELAY) | SPP_SACKDELAY_DISABLE;
+}
+
+static void sctp_apply_asoc_delayed_ack(struct sctp_sack_info *params,
+					struct sctp_association *asoc)
+{
+	struct sctp_transport *trans;
+
+	if (params->sack_delay) {
+		asoc->sackdelay = msecs_to_jiffies(params->sack_delay);
+		asoc->param_flags =
+			sctp_spp_sackdelay_enable(asoc->param_flags);
+	}
+	if (params->sack_freq == 1) {
+		asoc->param_flags =
+			sctp_spp_sackdelay_disable(asoc->param_flags);
+	} else if (params->sack_freq > 1) {
+		asoc->sackfreq = params->sack_freq;
+		asoc->param_flags =
+			sctp_spp_sackdelay_enable(asoc->param_flags);
+	}
+
+	list_for_each_entry(trans, &asoc->peer.transport_addr_list,
+			    transports) {
+		if (params->sack_delay) {
+			trans->sackdelay = msecs_to_jiffies(params->sack_delay);
+			trans->param_flags =
+				sctp_spp_sackdelay_enable(trans->param_flags);
+		}
+		if (params->sack_freq == 1) {
+			trans->param_flags =
+				sctp_spp_sackdelay_disable(trans->param_flags);
+		} else if (params->sack_freq > 1) {
+			trans->sackfreq = params->sack_freq;
+			trans->param_flags =
+				sctp_spp_sackdelay_enable(trans->param_flags);
+		}
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 7.1.23.  Get or set delayed ack timer (SCTP_DELAYED_SACK)
  *
@@ -2589,6 +4077,7 @@ static int sctp_setsockopt_peer_addr_params(struct sock *sk,
  *    timer to expire.  The default value for this is 2, setting this
  *    value to 1 will disable the delayed sack algorithm.
  */
+<<<<<<< HEAD
 
 static int sctp_setsockopt_delayed_ack(struct sock *sk,
 				       char __user *optval, unsigned int optlen)
@@ -2695,6 +4184,88 @@ static int sctp_setsockopt_delayed_ack(struct sock *sk,
 	return 0;
 }
 
+=======
+static int __sctp_setsockopt_delayed_ack(struct sock *sk,
+					 struct sctp_sack_info *params)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+
+	/* Validate value parameter. */
+	if (params->sack_delay > 500)
+		return -EINVAL;
+
+	/* Get association, if sack_assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params->sack_assoc_id);
+	if (!asoc && params->sack_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		sctp_apply_asoc_delayed_ack(params, asoc);
+
+		return 0;
+	}
+
+	if (sctp_style(sk, TCP))
+		params->sack_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (params->sack_assoc_id == SCTP_FUTURE_ASSOC ||
+	    params->sack_assoc_id == SCTP_ALL_ASSOC) {
+		if (params->sack_delay) {
+			sp->sackdelay = params->sack_delay;
+			sp->param_flags =
+				sctp_spp_sackdelay_enable(sp->param_flags);
+		}
+		if (params->sack_freq == 1) {
+			sp->param_flags =
+				sctp_spp_sackdelay_disable(sp->param_flags);
+		} else if (params->sack_freq > 1) {
+			sp->sackfreq = params->sack_freq;
+			sp->param_flags =
+				sctp_spp_sackdelay_enable(sp->param_flags);
+		}
+	}
+
+	if (params->sack_assoc_id == SCTP_CURRENT_ASSOC ||
+	    params->sack_assoc_id == SCTP_ALL_ASSOC)
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs)
+			sctp_apply_asoc_delayed_ack(params, asoc);
+
+	return 0;
+}
+
+static int sctp_setsockopt_delayed_ack(struct sock *sk,
+				       struct sctp_sack_info *params,
+				       unsigned int optlen)
+{
+	if (optlen == sizeof(struct sctp_assoc_value)) {
+		struct sctp_assoc_value *v = (struct sctp_assoc_value *)params;
+		struct sctp_sack_info p;
+
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of struct sctp_assoc_value in delayed_ack socket option.\n"
+				    "Use struct sctp_sack_info instead\n",
+				    current->comm, task_pid_nr(current));
+
+		p.sack_assoc_id = v->assoc_id;
+		p.sack_delay = v->assoc_value;
+		p.sack_freq = v->assoc_value ? 0 : 1;
+		return __sctp_setsockopt_delayed_ack(sk, &p);
+	}
+
+	if (optlen != sizeof(struct sctp_sack_info))
+		return -EINVAL;
+	if (params->sack_delay == 0 && params->sack_freq == 0)
+		return 0;
+	return __sctp_setsockopt_delayed_ack(sk, params);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 7.1.3 Initialization Parameters (SCTP_INITMSG)
  *
  * Applications can specify protocol parameters for the default association
@@ -2706,13 +4277,20 @@ static int sctp_setsockopt_delayed_ack(struct sock *sk,
  * by the change).  With TCP-style sockets, this option is inherited by
  * sockets derived from a listener socket.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_initmsg(struct sock *sk, char __user *optval, unsigned int optlen)
 {
 	struct sctp_initmsg sinit;
+=======
+static int sctp_setsockopt_initmsg(struct sock *sk, struct sctp_initmsg *sinit,
+				   unsigned int optlen)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_sock *sp = sctp_sk(sk);
 
 	if (optlen != sizeof(struct sctp_initmsg))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (copy_from_user(&sinit, optval, optlen))
 		return -EFAULT;
 
@@ -2724,6 +4302,17 @@ static int sctp_setsockopt_initmsg(struct sock *sk, char __user *optval, unsigne
 		sp->initmsg.sinit_max_attempts = sinit.sinit_max_attempts;
 	if (sinit.sinit_max_init_timeo)
 		sp->initmsg.sinit_max_init_timeo = sinit.sinit_max_init_timeo;
+=======
+
+	if (sinit->sinit_num_ostreams)
+		sp->initmsg.sinit_num_ostreams = sinit->sinit_num_ostreams;
+	if (sinit->sinit_max_instreams)
+		sp->initmsg.sinit_max_instreams = sinit->sinit_max_instreams;
+	if (sinit->sinit_max_attempts)
+		sp->initmsg.sinit_max_attempts = sinit->sinit_max_attempts;
+	if (sinit->sinit_max_init_timeo)
+		sp->initmsg.sinit_max_init_timeo = sinit->sinit_max_init_timeo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2743,6 +4332,7 @@ static int sctp_setsockopt_initmsg(struct sock *sk, char __user *optval, unsigne
  *   to this call if the caller is using the UDP model.
  */
 static int sctp_setsockopt_default_send_param(struct sock *sk,
+<<<<<<< HEAD
 					      char __user *optval,
 					      unsigned int optlen)
 {
@@ -2771,6 +4361,112 @@ static int sctp_setsockopt_default_send_param(struct sock *sk,
 		sp->default_ppid = info.sinfo_ppid;
 		sp->default_context = info.sinfo_context;
 		sp->default_timetolive = info.sinfo_timetolive;
+=======
+					      struct sctp_sndrcvinfo *info,
+					      unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+
+	if (optlen != sizeof(*info))
+		return -EINVAL;
+	if (info->sinfo_flags &
+	    ~(SCTP_UNORDERED | SCTP_ADDR_OVER |
+	      SCTP_ABORT | SCTP_EOF))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, info->sinfo_assoc_id);
+	if (!asoc && info->sinfo_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		asoc->default_stream = info->sinfo_stream;
+		asoc->default_flags = info->sinfo_flags;
+		asoc->default_ppid = info->sinfo_ppid;
+		asoc->default_context = info->sinfo_context;
+		asoc->default_timetolive = info->sinfo_timetolive;
+
+		return 0;
+	}
+
+	if (sctp_style(sk, TCP))
+		info->sinfo_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (info->sinfo_assoc_id == SCTP_FUTURE_ASSOC ||
+	    info->sinfo_assoc_id == SCTP_ALL_ASSOC) {
+		sp->default_stream = info->sinfo_stream;
+		sp->default_flags = info->sinfo_flags;
+		sp->default_ppid = info->sinfo_ppid;
+		sp->default_context = info->sinfo_context;
+		sp->default_timetolive = info->sinfo_timetolive;
+	}
+
+	if (info->sinfo_assoc_id == SCTP_CURRENT_ASSOC ||
+	    info->sinfo_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs) {
+			asoc->default_stream = info->sinfo_stream;
+			asoc->default_flags = info->sinfo_flags;
+			asoc->default_ppid = info->sinfo_ppid;
+			asoc->default_context = info->sinfo_context;
+			asoc->default_timetolive = info->sinfo_timetolive;
+		}
+	}
+
+	return 0;
+}
+
+/* RFC6458, Section 8.1.31. Set/get Default Send Parameters
+ * (SCTP_DEFAULT_SNDINFO)
+ */
+static int sctp_setsockopt_default_sndinfo(struct sock *sk,
+					   struct sctp_sndinfo *info,
+					   unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+
+	if (optlen != sizeof(*info))
+		return -EINVAL;
+	if (info->snd_flags &
+	    ~(SCTP_UNORDERED | SCTP_ADDR_OVER |
+	      SCTP_ABORT | SCTP_EOF))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, info->snd_assoc_id);
+	if (!asoc && info->snd_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		asoc->default_stream = info->snd_sid;
+		asoc->default_flags = info->snd_flags;
+		asoc->default_ppid = info->snd_ppid;
+		asoc->default_context = info->snd_context;
+
+		return 0;
+	}
+
+	if (sctp_style(sk, TCP))
+		info->snd_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (info->snd_assoc_id == SCTP_FUTURE_ASSOC ||
+	    info->snd_assoc_id == SCTP_ALL_ASSOC) {
+		sp->default_stream = info->snd_sid;
+		sp->default_flags = info->snd_flags;
+		sp->default_ppid = info->snd_ppid;
+		sp->default_context = info->snd_context;
+	}
+
+	if (info->snd_assoc_id == SCTP_CURRENT_ASSOC ||
+	    info->snd_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs) {
+			asoc->default_stream = info->snd_sid;
+			asoc->default_flags = info->snd_flags;
+			asoc->default_ppid = info->snd_ppid;
+			asoc->default_context = info->snd_context;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -2782,19 +4478,43 @@ static int sctp_setsockopt_default_send_param(struct sock *sk,
  * the association primary.  The enclosed address must be one of the
  * association peer's addresses.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_primary_addr(struct sock *sk, char __user *optval,
 					unsigned int optlen)
 {
 	struct sctp_prim prim;
 	struct sctp_transport *trans;
+=======
+static int sctp_setsockopt_primary_addr(struct sock *sk, struct sctp_prim *prim,
+					unsigned int optlen)
+{
+	struct sctp_transport *trans;
+	struct sctp_af *af;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (optlen != sizeof(struct sctp_prim))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (copy_from_user(&prim, optval, sizeof(struct sctp_prim)))
 		return -EFAULT;
 
 	trans = sctp_addr_id2transport(sk, &prim.ssp_addr, prim.ssp_assoc_id);
+=======
+	/* Allow security module to validate address but need address len. */
+	af = sctp_get_af_specific(prim->ssp_addr.ss_family);
+	if (!af)
+		return -EINVAL;
+
+	err = security_sctp_bind_connect(sk, SCTP_PRIMARY_ADDR,
+					 (struct sockaddr *)&prim->ssp_addr,
+					 af->sockaddr_len);
+	if (err)
+		return err;
+
+	trans = sctp_addr_id2transport(sk, &prim->ssp_addr, prim->ssp_assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!trans)
 		return -EINVAL;
 
@@ -2811,6 +4531,7 @@ static int sctp_setsockopt_primary_addr(struct sock *sk, char __user *optval,
  * introduced, at the cost of more packets in the network.  Expects an
  *  integer boolean flag.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_nodelay(struct sock *sk, char __user *optval,
 				   unsigned int optlen)
 {
@@ -2822,6 +4543,14 @@ static int sctp_setsockopt_nodelay(struct sock *sk, char __user *optval,
 		return -EFAULT;
 
 	sctp_sk(sk)->nodelay = (val == 0) ? 0 : 1;
+=======
+static int sctp_setsockopt_nodelay(struct sock *sk, int *val,
+				   unsigned int optlen)
+{
+	if (optlen < sizeof(int))
+		return -EINVAL;
+	sctp_sk(sk)->nodelay = (*val == 0) ? 0 : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2837,14 +4566,25 @@ static int sctp_setsockopt_nodelay(struct sock *sk, char __user *optval,
  * be changed.
  *
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigned int optlen)
 {
 	struct sctp_rtoinfo rtoinfo;
 	struct sctp_association *asoc;
+=======
+static int sctp_setsockopt_rtoinfo(struct sock *sk,
+				   struct sctp_rtoinfo *rtoinfo,
+				   unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	unsigned long rto_min, rto_max;
+	struct sctp_sock *sp = sctp_sk(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (optlen != sizeof (struct sctp_rtoinfo))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (copy_from_user(&rtoinfo, optval, optlen))
 		return -EFAULT;
 
@@ -2862,10 +4602,42 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
 			asoc->rto_max = msecs_to_jiffies(rtoinfo.srto_max);
 		if (rtoinfo.srto_min != 0)
 			asoc->rto_min = msecs_to_jiffies(rtoinfo.srto_min);
+=======
+	asoc = sctp_id2assoc(sk, rtoinfo->srto_assoc_id);
+
+	/* Set the values to the specific association */
+	if (!asoc && rtoinfo->srto_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	rto_max = rtoinfo->srto_max;
+	rto_min = rtoinfo->srto_min;
+
+	if (rto_max)
+		rto_max = asoc ? msecs_to_jiffies(rto_max) : rto_max;
+	else
+		rto_max = asoc ? asoc->rto_max : sp->rtoinfo.srto_max;
+
+	if (rto_min)
+		rto_min = asoc ? msecs_to_jiffies(rto_min) : rto_min;
+	else
+		rto_min = asoc ? asoc->rto_min : sp->rtoinfo.srto_min;
+
+	if (rto_min > rto_max)
+		return -EINVAL;
+
+	if (asoc) {
+		if (rtoinfo->srto_initial != 0)
+			asoc->rto_initial =
+				msecs_to_jiffies(rtoinfo->srto_initial);
+		asoc->rto_max = rto_max;
+		asoc->rto_min = rto_min;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* If there is no association or the association-id = 0
 		 * set the values to the endpoint.
 		 */
+<<<<<<< HEAD
 		struct sctp_sock *sp = sctp_sk(sk);
 
 		if (rtoinfo.srto_initial != 0)
@@ -2874,6 +4646,12 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
 			sp->rtoinfo.srto_max = rtoinfo.srto_max;
 		if (rtoinfo.srto_min != 0)
 			sp->rtoinfo.srto_min = rtoinfo.srto_min;
+=======
+		if (rtoinfo->srto_initial != 0)
+			sp->rtoinfo.srto_initial = rtoinfo->srto_initial;
+		sp->rtoinfo.srto_max = rto_max;
+		sp->rtoinfo.srto_min = rto_min;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -2890,25 +4668,45 @@ static int sctp_setsockopt_rtoinfo(struct sock *sk, char __user *optval, unsigne
  * See [SCTP] for more information.
  *
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsigned int optlen)
 {
 
 	struct sctp_assocparams assocparams;
+=======
+static int sctp_setsockopt_associnfo(struct sock *sk,
+				     struct sctp_assocparams *assocparams,
+				     unsigned int optlen)
+{
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_association *asoc;
 
 	if (optlen != sizeof(struct sctp_assocparams))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (copy_from_user(&assocparams, optval, optlen))
 		return -EFAULT;
 
 	asoc = sctp_id2assoc(sk, assocparams.sasoc_assoc_id);
 
 	if (!asoc && assocparams.sasoc_assoc_id && sctp_style(sk, UDP))
+=======
+
+	asoc = sctp_id2assoc(sk, assocparams->sasoc_assoc_id);
+
+	if (!asoc && assocparams->sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Set the values to the specific association */
 	if (asoc) {
+<<<<<<< HEAD
 		if (assocparams.sasoc_asocmaxrxt != 0) {
+=======
+		if (assocparams->sasoc_asocmaxrxt != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__u32 path_sum = 0;
 			int   paths = 0;
 			struct sctp_transport *peer_addr;
@@ -2925,6 +4723,7 @@ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsig
 			 * then one path.
 			 */
 			if (paths > 1 &&
+<<<<<<< HEAD
 			    assocparams.sasoc_asocmaxrxt > path_sum)
 				return -EINVAL;
 
@@ -2938,16 +4737,36 @@ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsig
 					(assocparams.sasoc_cookie_life % 1000)
 					* 1000;
 		}
+=======
+			    assocparams->sasoc_asocmaxrxt > path_sum)
+				return -EINVAL;
+
+			asoc->max_retrans = assocparams->sasoc_asocmaxrxt;
+		}
+
+		if (assocparams->sasoc_cookie_life != 0)
+			asoc->cookie_life =
+				ms_to_ktime(assocparams->sasoc_cookie_life);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Set the values to the endpoint */
 		struct sctp_sock *sp = sctp_sk(sk);
 
+<<<<<<< HEAD
 		if (assocparams.sasoc_asocmaxrxt != 0)
 			sp->assocparams.sasoc_asocmaxrxt =
 						assocparams.sasoc_asocmaxrxt;
 		if (assocparams.sasoc_cookie_life != 0)
 			sp->assocparams.sasoc_cookie_life =
 						assocparams.sasoc_cookie_life;
+=======
+		if (assocparams->sasoc_asocmaxrxt != 0)
+			sp->assocparams.sasoc_asocmaxrxt =
+						assocparams->sasoc_asocmaxrxt;
+		if (assocparams->sasoc_cookie_life != 0)
+			sp->assocparams.sasoc_cookie_life =
+						assocparams->sasoc_cookie_life;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2962,16 +4781,26 @@ static int sctp_setsockopt_associnfo(struct sock *sk, char __user *optval, unsig
  * addresses and a user will receive both PF_INET6 and PF_INET type
  * addresses on the socket.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_mappedv4(struct sock *sk, char __user *optval, unsigned int optlen)
 {
 	int val;
+=======
+static int sctp_setsockopt_mappedv4(struct sock *sk, int *val,
+				    unsigned int optlen)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_sock *sp = sctp_sk(sk);
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (get_user(val, (int __user *)optval))
 		return -EFAULT;
 	if (val)
+=======
+	if (*val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sp->v4mapped = 1;
 	else
 		sp->v4mapped = 0;
@@ -3006,6 +4835,7 @@ static int sctp_setsockopt_mappedv4(struct sock *sk, char __user *optval, unsign
  *    changed (effecting future associations only).
  * assoc_value:  This parameter specifies the maximum size in bytes.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_maxseg(struct sock *sk, char __user *optval, unsigned int optlen)
 {
 	struct sctp_assoc_value params;
@@ -3042,6 +4872,52 @@ static int sctp_setsockopt_maxseg(struct sock *sk, char __user *optval, unsigned
 		}
 		asoc->user_frag = val;
 		asoc->frag_point = sctp_frag_point(asoc, asoc->pathmtu);
+=======
+static int sctp_setsockopt_maxseg(struct sock *sk,
+				  struct sctp_assoc_value *params,
+				  unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	sctp_assoc_t assoc_id;
+	int val;
+
+	if (optlen == sizeof(int)) {
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of int in maxseg socket option.\n"
+				    "Use struct sctp_assoc_value instead\n",
+				    current->comm, task_pid_nr(current));
+		assoc_id = SCTP_FUTURE_ASSOC;
+		val = *(int *)params;
+	} else if (optlen == sizeof(struct sctp_assoc_value)) {
+		assoc_id = params->assoc_id;
+		val = params->assoc_value;
+	} else {
+		return -EINVAL;
+	}
+
+	asoc = sctp_id2assoc(sk, assoc_id);
+	if (!asoc && assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (val) {
+		int min_len, max_len;
+		__u16 datasize = asoc ? sctp_datachk_len(&asoc->stream) :
+				 sizeof(struct sctp_data_chunk);
+
+		min_len = sctp_min_frag_point(sp, datasize);
+		max_len = SCTP_MAX_CHUNK_LEN - datasize;
+
+		if (val < min_len || val > max_len)
+			return -EINVAL;
+	}
+
+	if (asoc) {
+		asoc->user_frag = val;
+		sctp_assoc_update_frag_point(asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		sp->user_frag = val;
 	}
@@ -3058,28 +4934,44 @@ static int sctp_setsockopt_maxseg(struct sock *sk, char __user *optval, unsigned
  *   locally bound addresses. The following structure is used to make a
  *   set primary request:
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_peer_primary_addr(struct sock *sk, char __user *optval,
+=======
+static int sctp_setsockopt_peer_primary_addr(struct sock *sk,
+					     struct sctp_setpeerprim *prim,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     unsigned int optlen)
 {
 	struct sctp_sock	*sp;
 	struct sctp_association	*asoc = NULL;
+<<<<<<< HEAD
 	struct sctp_setpeerprim	prim;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_chunk	*chunk;
 	struct sctp_af		*af;
 	int 			err;
 
 	sp = sctp_sk(sk);
 
+<<<<<<< HEAD
 	if (!sctp_addip_enable)
+=======
+	if (!sp->ep->asconf_enable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	if (optlen != sizeof(struct sctp_setpeerprim))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (copy_from_user(&prim, optval, optlen))
 		return -EFAULT;
 
 	asoc = sctp_id2assoc(sk, prim.sspp_assoc_id);
+=======
+	asoc = sctp_id2assoc(sk, prim->sspp_assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!asoc)
 		return -EINVAL;
 
@@ -3092,6 +4984,7 @@ static int sctp_setsockopt_peer_primary_addr(struct sock *sk, char __user *optva
 	if (!sctp_state(asoc, ESTABLISHED))
 		return -ENOTCONN;
 
+<<<<<<< HEAD
 	af = sctp_get_af_specific(prim.sspp_addr.ss_family);
 	if (!af)
 		return -EINVAL;
@@ -3105,16 +4998,43 @@ static int sctp_setsockopt_peer_primary_addr(struct sock *sk, char __user *optva
 	/* Create an ASCONF chunk with SET_PRIMARY parameter	*/
 	chunk = sctp_make_asconf_set_prim(asoc,
 					  (union sctp_addr *)&prim.sspp_addr);
+=======
+	af = sctp_get_af_specific(prim->sspp_addr.ss_family);
+	if (!af)
+		return -EINVAL;
+
+	if (!af->addr_valid((union sctp_addr *)&prim->sspp_addr, sp, NULL))
+		return -EADDRNOTAVAIL;
+
+	if (!sctp_assoc_lookup_laddr(asoc, (union sctp_addr *)&prim->sspp_addr))
+		return -EADDRNOTAVAIL;
+
+	/* Allow security module to validate address. */
+	err = security_sctp_bind_connect(sk, SCTP_SET_PEER_PRIMARY_ADDR,
+					 (struct sockaddr *)&prim->sspp_addr,
+					 af->sockaddr_len);
+	if (err)
+		return err;
+
+	/* Create an ASCONF chunk with SET_PRIMARY parameter	*/
+	chunk = sctp_make_asconf_set_prim(asoc,
+					  (union sctp_addr *)&prim->sspp_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chunk)
 		return -ENOMEM;
 
 	err = sctp_send_asconf(asoc, chunk);
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("We set peer primary addr primitively.\n");
+=======
+	pr_debug("%s: we set peer primary addr primitively\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int sctp_setsockopt_adaptation_layer(struct sock *sk, char __user *optval,
 					    unsigned int optlen)
 {
@@ -3126,6 +5046,16 @@ static int sctp_setsockopt_adaptation_layer(struct sock *sk, char __user *optval
 		return -EFAULT;
 
 	sctp_sk(sk)->adaptation_ind = adaptation.ssb_adaptation_ind;
+=======
+static int sctp_setsockopt_adaptation_layer(struct sock *sk,
+					    struct sctp_setadaptation *adapt,
+					    unsigned int optlen)
+{
+	if (optlen != sizeof(struct sctp_setadaptation))
+		return -EINVAL;
+
+	sctp_sk(sk)->adaptation_ind = adapt->ssb_adaptation_ind;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3144,15 +5074,24 @@ static int sctp_setsockopt_adaptation_layer(struct sock *sk, char __user *optval
  * received messages from the peer and does not effect the value that is
  * saved with outbound messages.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_context(struct sock *sk, char __user *optval,
 				   unsigned int optlen)
 {
 	struct sctp_assoc_value params;
 	struct sctp_sock *sp;
+=======
+static int sctp_setsockopt_context(struct sock *sk,
+				   struct sctp_assoc_value *params,
+				   unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_association *asoc;
 
 	if (optlen != sizeof(struct sctp_assoc_value))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (copy_from_user(&params, optval, optlen))
 		return -EFAULT;
 
@@ -3167,6 +5106,32 @@ static int sctp_setsockopt_context(struct sock *sk, char __user *optval,
 		sp->default_rcv_context = params.assoc_value;
 	}
 
+=======
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		asoc->default_rcv_context = params->assoc_value;
+
+		return 0;
+	}
+
+	if (sctp_style(sk, TCP))
+		params->assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (params->assoc_id == SCTP_FUTURE_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC)
+		sp->default_rcv_context = params->assoc_value;
+
+	if (params->assoc_id == SCTP_CURRENT_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC)
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs)
+			asoc->default_rcv_context = params->assoc_value;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3194,6 +5159,7 @@ static int sctp_setsockopt_context(struct sock *sk, char __user *optval,
  * application using the one to many model may become confused and act
  * incorrectly.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_fragment_interleave(struct sock *sk,
 					       char __user *optval,
 					       unsigned int optlen)
@@ -3206,6 +5172,18 @@ static int sctp_setsockopt_fragment_interleave(struct sock *sk,
 		return -EFAULT;
 
 	sctp_sk(sk)->frag_interleave = (val == 0) ? 0 : 1;
+=======
+static int sctp_setsockopt_fragment_interleave(struct sock *sk, int *val,
+					       unsigned int optlen)
+{
+	if (optlen != sizeof(int))
+		return -EINVAL;
+
+	sctp_sk(sk)->frag_interleave = !!*val;
+
+	if (!sctp_sk(sk)->frag_interleave)
+		sctp_sk(sk)->ep->intl_enable = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3227,6 +5205,7 @@ static int sctp_setsockopt_fragment_interleave(struct sock *sk,
  * call as long as the user provided buffer is large enough to hold the
  * message.
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_partial_delivery_point(struct sock *sk,
 						  char __user *optval,
 						  unsigned int optlen)
@@ -3237,14 +5216,28 @@ static int sctp_setsockopt_partial_delivery_point(struct sock *sk,
 		return -EINVAL;
 	if (get_user(val, (int __user *)optval))
 		return -EFAULT;
+=======
+static int sctp_setsockopt_partial_delivery_point(struct sock *sk, u32 *val,
+						  unsigned int optlen)
+{
+	if (optlen != sizeof(u32))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Note: We double the receive buffer from what the user sets
 	 * it to be, also initial rwnd is based on rcvbuf/2.
 	 */
+<<<<<<< HEAD
 	if (val > (sk->sk_rcvbuf >> 1))
 		return -EINVAL;
 
 	sctp_sk(sk)->pd_point = val;
+=======
+	if (*val > (sk->sk_rcvbuf >> 1))
+		return -EINVAL;
+
+	sctp_sk(sk)->pd_point = *val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0; /* is this the right error code? */
 }
@@ -3261,6 +5254,7 @@ static int sctp_setsockopt_partial_delivery_point(struct sock *sk,
  * future associations inheriting the socket value.
  */
 static int sctp_setsockopt_maxburst(struct sock *sk,
+<<<<<<< HEAD
 				    char __user *optval,
 				    unsigned int optlen)
 {
@@ -3292,6 +5286,49 @@ static int sctp_setsockopt_maxburst(struct sock *sk,
 		asoc->max_burst = val;
 	} else
 		sp->max_burst = val;
+=======
+				    struct sctp_assoc_value *params,
+				    unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	sctp_assoc_t assoc_id;
+	u32 assoc_value;
+
+	if (optlen == sizeof(int)) {
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of int in max_burst socket option deprecated.\n"
+				    "Use struct sctp_assoc_value instead\n",
+				    current->comm, task_pid_nr(current));
+		assoc_id = SCTP_FUTURE_ASSOC;
+		assoc_value = *((int *)params);
+	} else if (optlen == sizeof(struct sctp_assoc_value)) {
+		assoc_id = params->assoc_id;
+		assoc_value = params->assoc_value;
+	} else
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, assoc_id);
+	if (!asoc && assoc_id > SCTP_ALL_ASSOC && sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		asoc->max_burst = assoc_value;
+
+		return 0;
+	}
+
+	if (sctp_style(sk, TCP))
+		assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (assoc_id == SCTP_FUTURE_ASSOC || assoc_id == SCTP_ALL_ASSOC)
+		sp->max_burst = assoc_value;
+
+	if (assoc_id == SCTP_CURRENT_ASSOC || assoc_id == SCTP_ALL_ASSOC)
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs)
+			asoc->max_burst = assoc_value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3304,20 +5341,34 @@ static int sctp_setsockopt_maxburst(struct sock *sk,
  * will only effect future associations on the socket.
  */
 static int sctp_setsockopt_auth_chunk(struct sock *sk,
+<<<<<<< HEAD
 				      char __user *optval,
 				      unsigned int optlen)
 {
 	struct sctp_authchunk val;
 
 	if (!sctp_auth_enable)
+=======
+				      struct sctp_authchunk *val,
+				      unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+
+	if (!ep->auth_enable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 
 	if (optlen != sizeof(struct sctp_authchunk))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (copy_from_user(&val, optval, optlen))
 		return -EFAULT;
 
 	switch (val.sauth_chunk) {
+=======
+
+	switch (val->sauth_chunk) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCTP_CID_INIT:
 	case SCTP_CID_INIT_ACK:
 	case SCTP_CID_SHUTDOWN_COMPLETE:
@@ -3326,7 +5377,11 @@ static int sctp_setsockopt_auth_chunk(struct sock *sk,
 	}
 
 	/* add this chunk id to the endpoint */
+<<<<<<< HEAD
 	return sctp_auth_ep_add_chunkid(sctp_sk(sk)->ep, val.sauth_chunk);
+=======
+	return sctp_auth_ep_add_chunkid(ep, val->sauth_chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3336,6 +5391,7 @@ static int sctp_setsockopt_auth_chunk(struct sock *sk,
  * endpoint requires the peer to use.
  */
 static int sctp_setsockopt_hmac_ident(struct sock *sk,
+<<<<<<< HEAD
 				      char __user *optval,
 				      unsigned int optlen)
 {
@@ -3344,10 +5400,20 @@ static int sctp_setsockopt_hmac_ident(struct sock *sk,
 	int err;
 
 	if (!sctp_auth_enable)
+=======
+				      struct sctp_hmacalgo *hmacs,
+				      unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	u32 idents;
+
+	if (!ep->auth_enable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 
 	if (optlen < sizeof(struct sctp_hmacalgo))
 		return -EINVAL;
+<<<<<<< HEAD
 
 	hmacs= memdup_user(optval, optlen);
 	if (IS_ERR(hmacs))
@@ -3364,6 +5430,17 @@ static int sctp_setsockopt_hmac_ident(struct sock *sk,
 out:
 	kfree(hmacs);
 	return err;
+=======
+	optlen = min_t(unsigned int, optlen, sizeof(struct sctp_hmacalgo) +
+					     SCTP_AUTH_NUM_HMACS * sizeof(u16));
+
+	idents = hmacs->shmac_num_idents;
+	if (idents == 0 || idents > SCTP_AUTH_NUM_HMACS ||
+	    (idents * sizeof(u16)) > (optlen - sizeof(struct sctp_hmacalgo)))
+		return -EINVAL;
+
+	return sctp_auth_ep_set_hmacs(ep, hmacs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3373,6 +5450,7 @@ out:
  * association shared key.
  */
 static int sctp_setsockopt_auth_key(struct sock *sk,
+<<<<<<< HEAD
 				    char __user *optval,
 				    unsigned int optlen)
 {
@@ -3404,6 +5482,59 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
 	ret = sctp_auth_set_key(sctp_sk(sk)->ep, asoc, authkey);
 out:
 	kzfree(authkey);
+=======
+				    struct sctp_authkey *authkey,
+				    unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	int ret = -EINVAL;
+
+	if (optlen <= sizeof(struct sctp_authkey))
+		return -EINVAL;
+	/* authkey->sca_keylength is u16, so optlen can't be bigger than
+	 * this.
+	 */
+	optlen = min_t(unsigned int, optlen, USHRT_MAX + sizeof(*authkey));
+
+	if (authkey->sca_keylength > optlen - sizeof(*authkey))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, authkey->sca_assoc_id);
+	if (!asoc && authkey->sca_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	if (asoc) {
+		ret = sctp_auth_set_key(ep, asoc, authkey);
+		goto out;
+	}
+
+	if (sctp_style(sk, TCP))
+		authkey->sca_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (authkey->sca_assoc_id == SCTP_FUTURE_ASSOC ||
+	    authkey->sca_assoc_id == SCTP_ALL_ASSOC) {
+		ret = sctp_auth_set_key(ep, asoc, authkey);
+		if (ret)
+			goto out;
+	}
+
+	ret = 0;
+
+	if (authkey->sca_assoc_id == SCTP_CURRENT_ASSOC ||
+	    authkey->sca_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &ep->asocs, asocs) {
+			int res = sctp_auth_set_key(ep, asoc, authkey);
+
+			if (res && !ret)
+				ret = res;
+		}
+	}
+
+out:
+	memzero_explicit(authkey, optlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -3414,6 +5545,7 @@ out:
  * the association shared key.
  */
 static int sctp_setsockopt_active_key(struct sock *sk,
+<<<<<<< HEAD
 				      char __user *optval,
 				      unsigned int optlen)
 {
@@ -3434,6 +5566,48 @@ static int sctp_setsockopt_active_key(struct sock *sk,
 
 	return sctp_auth_set_active_key(sctp_sk(sk)->ep, asoc,
 					val.scact_keynumber);
+=======
+				      struct sctp_authkeyid *val,
+				      unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	int ret = 0;
+
+	if (optlen != sizeof(struct sctp_authkeyid))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, val->scact_assoc_id);
+	if (!asoc && val->scact_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc)
+		return sctp_auth_set_active_key(ep, asoc, val->scact_keynumber);
+
+	if (sctp_style(sk, TCP))
+		val->scact_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (val->scact_assoc_id == SCTP_FUTURE_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		ret = sctp_auth_set_active_key(ep, asoc, val->scact_keynumber);
+		if (ret)
+			return ret;
+	}
+
+	if (val->scact_assoc_id == SCTP_CURRENT_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &ep->asocs, asocs) {
+			int res = sctp_auth_set_active_key(ep, asoc,
+							   val->scact_keynumber);
+
+			if (res && !ret)
+				ret = res;
+		}
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3442,6 +5616,7 @@ static int sctp_setsockopt_active_key(struct sock *sk,
  * This set option will delete a shared secret key from use.
  */
 static int sctp_setsockopt_del_key(struct sock *sk,
+<<<<<<< HEAD
 				   char __user *optval,
 				   unsigned int optlen)
 {
@@ -3463,6 +5638,96 @@ static int sctp_setsockopt_del_key(struct sock *sk,
 	return sctp_auth_del_key_id(sctp_sk(sk)->ep, asoc,
 				    val.scact_keynumber);
 
+=======
+				   struct sctp_authkeyid *val,
+				   unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	int ret = 0;
+
+	if (optlen != sizeof(struct sctp_authkeyid))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, val->scact_assoc_id);
+	if (!asoc && val->scact_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc)
+		return sctp_auth_del_key_id(ep, asoc, val->scact_keynumber);
+
+	if (sctp_style(sk, TCP))
+		val->scact_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (val->scact_assoc_id == SCTP_FUTURE_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		ret = sctp_auth_del_key_id(ep, asoc, val->scact_keynumber);
+		if (ret)
+			return ret;
+	}
+
+	if (val->scact_assoc_id == SCTP_CURRENT_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &ep->asocs, asocs) {
+			int res = sctp_auth_del_key_id(ep, asoc,
+						       val->scact_keynumber);
+
+			if (res && !ret)
+				ret = res;
+		}
+	}
+
+	return ret;
+}
+
+/*
+ * 8.3.4  Deactivate a Shared Key (SCTP_AUTH_DEACTIVATE_KEY)
+ *
+ * This set option will deactivate a shared secret key.
+ */
+static int sctp_setsockopt_deactivate_key(struct sock *sk,
+					  struct sctp_authkeyid *val,
+					  unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	int ret = 0;
+
+	if (optlen != sizeof(struct sctp_authkeyid))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, val->scact_assoc_id);
+	if (!asoc && val->scact_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc)
+		return sctp_auth_deact_key_id(ep, asoc, val->scact_keynumber);
+
+	if (sctp_style(sk, TCP))
+		val->scact_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (val->scact_assoc_id == SCTP_FUTURE_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		ret = sctp_auth_deact_key_id(ep, asoc, val->scact_keynumber);
+		if (ret)
+			return ret;
+	}
+
+	if (val->scact_assoc_id == SCTP_CURRENT_ASSOC ||
+	    val->scact_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &ep->asocs, asocs) {
+			int res = sctp_auth_deact_key_id(ep, asoc,
+							 val->scact_keynumber);
+
+			if (res && !ret)
+				ret = res;
+		}
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3479,14 +5744,21 @@ static int sctp_setsockopt_del_key(struct sock *sk,
  * Note. In this implementation, socket operation overrides default parameter
  * being set by sysctl as well as FreeBSD implementation
  */
+<<<<<<< HEAD
 static int sctp_setsockopt_auto_asconf(struct sock *sk, char __user *optval,
 					unsigned int optlen)
 {
 	int val;
+=======
+static int sctp_setsockopt_auto_asconf(struct sock *sk, int *val,
+					unsigned int optlen)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_sock *sp = sctp_sk(sk);
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (get_user(val, (int __user *)optval))
 		return -EFAULT;
 	if (!sctp_is_ep_boundall(sk) && val)
@@ -3507,6 +5779,707 @@ static int sctp_setsockopt_auto_asconf(struct sock *sk, char __user *optval,
 	return 0;
 }
 
+=======
+	if (!sctp_is_ep_boundall(sk) && *val)
+		return -EINVAL;
+	if ((*val && sp->do_auto_asconf) || (!*val && !sp->do_auto_asconf))
+		return 0;
+
+	spin_lock_bh(&sock_net(sk)->sctp.addr_wq_lock);
+	if (*val == 0 && sp->do_auto_asconf) {
+		list_del(&sp->auto_asconf_list);
+		sp->do_auto_asconf = 0;
+	} else if (*val && !sp->do_auto_asconf) {
+		list_add_tail(&sp->auto_asconf_list,
+		    &sock_net(sk)->sctp.auto_asconf_splist);
+		sp->do_auto_asconf = 1;
+	}
+	spin_unlock_bh(&sock_net(sk)->sctp.addr_wq_lock);
+	return 0;
+}
+
+/*
+ * SCTP_PEER_ADDR_THLDS
+ *
+ * This option allows us to alter the partially failed threshold for one or all
+ * transports in an association.  See Section 6.1 of:
+ * http://www.ietf.org/id/draft-nishida-tsvwg-sctp-failover-05.txt
+ */
+static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
+					    struct sctp_paddrthlds_v2 *val,
+					    unsigned int optlen, bool v2)
+{
+	struct sctp_transport *trans;
+	struct sctp_association *asoc;
+	int len;
+
+	len = v2 ? sizeof(*val) : sizeof(struct sctp_paddrthlds);
+	if (optlen < len)
+		return -EINVAL;
+
+	if (v2 && val->spt_pathpfthld > val->spt_pathcpthld)
+		return -EINVAL;
+
+	if (!sctp_is_any(sk, (const union sctp_addr *)&val->spt_address)) {
+		trans = sctp_addr_id2transport(sk, &val->spt_address,
+					       val->spt_assoc_id);
+		if (!trans)
+			return -ENOENT;
+
+		if (val->spt_pathmaxrxt)
+			trans->pathmaxrxt = val->spt_pathmaxrxt;
+		if (v2)
+			trans->ps_retrans = val->spt_pathcpthld;
+		trans->pf_retrans = val->spt_pathpfthld;
+
+		return 0;
+	}
+
+	asoc = sctp_id2assoc(sk, val->spt_assoc_id);
+	if (!asoc && val->spt_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		list_for_each_entry(trans, &asoc->peer.transport_addr_list,
+				    transports) {
+			if (val->spt_pathmaxrxt)
+				trans->pathmaxrxt = val->spt_pathmaxrxt;
+			if (v2)
+				trans->ps_retrans = val->spt_pathcpthld;
+			trans->pf_retrans = val->spt_pathpfthld;
+		}
+
+		if (val->spt_pathmaxrxt)
+			asoc->pathmaxrxt = val->spt_pathmaxrxt;
+		if (v2)
+			asoc->ps_retrans = val->spt_pathcpthld;
+		asoc->pf_retrans = val->spt_pathpfthld;
+	} else {
+		struct sctp_sock *sp = sctp_sk(sk);
+
+		if (val->spt_pathmaxrxt)
+			sp->pathmaxrxt = val->spt_pathmaxrxt;
+		if (v2)
+			sp->ps_retrans = val->spt_pathcpthld;
+		sp->pf_retrans = val->spt_pathpfthld;
+	}
+
+	return 0;
+}
+
+static int sctp_setsockopt_recvrcvinfo(struct sock *sk, int *val,
+				       unsigned int optlen)
+{
+	if (optlen < sizeof(int))
+		return -EINVAL;
+
+	sctp_sk(sk)->recvrcvinfo = (*val == 0) ? 0 : 1;
+
+	return 0;
+}
+
+static int sctp_setsockopt_recvnxtinfo(struct sock *sk, int *val,
+				       unsigned int optlen)
+{
+	if (optlen < sizeof(int))
+		return -EINVAL;
+
+	sctp_sk(sk)->recvnxtinfo = (*val == 0) ? 0 : 1;
+
+	return 0;
+}
+
+static int sctp_setsockopt_pr_supported(struct sock *sk,
+					struct sctp_assoc_value *params,
+					unsigned int optlen)
+{
+	struct sctp_association *asoc;
+
+	if (optlen != sizeof(*params))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	sctp_sk(sk)->ep->prsctp_enable = !!params->assoc_value;
+
+	return 0;
+}
+
+static int sctp_setsockopt_default_prinfo(struct sock *sk,
+					  struct sctp_default_prinfo *info,
+					  unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*info))
+		goto out;
+
+	if (info->pr_policy & ~SCTP_PR_SCTP_MASK)
+		goto out;
+
+	if (info->pr_policy == SCTP_PR_SCTP_NONE)
+		info->pr_value = 0;
+
+	asoc = sctp_id2assoc(sk, info->pr_assoc_id);
+	if (!asoc && info->pr_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	retval = 0;
+
+	if (asoc) {
+		SCTP_PR_SET_POLICY(asoc->default_flags, info->pr_policy);
+		asoc->default_timetolive = info->pr_value;
+		goto out;
+	}
+
+	if (sctp_style(sk, TCP))
+		info->pr_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (info->pr_assoc_id == SCTP_FUTURE_ASSOC ||
+	    info->pr_assoc_id == SCTP_ALL_ASSOC) {
+		SCTP_PR_SET_POLICY(sp->default_flags, info->pr_policy);
+		sp->default_timetolive = info->pr_value;
+	}
+
+	if (info->pr_assoc_id == SCTP_CURRENT_ASSOC ||
+	    info->pr_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs) {
+			SCTP_PR_SET_POLICY(asoc->default_flags,
+					   info->pr_policy);
+			asoc->default_timetolive = info->pr_value;
+		}
+	}
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_reconfig_supported(struct sock *sk,
+					      struct sctp_assoc_value *params,
+					      unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	sctp_sk(sk)->ep->reconf_enable = !!params->assoc_value;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_enable_strreset(struct sock *sk,
+					   struct sctp_assoc_value *params,
+					   unsigned int optlen)
+{
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	if (params->assoc_value & (~SCTP_ENABLE_STRRESET_MASK))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	retval = 0;
+
+	if (asoc) {
+		asoc->strreset_enable = params->assoc_value;
+		goto out;
+	}
+
+	if (sctp_style(sk, TCP))
+		params->assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (params->assoc_id == SCTP_FUTURE_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC)
+		ep->strreset_enable = params->assoc_value;
+
+	if (params->assoc_id == SCTP_CURRENT_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC)
+		list_for_each_entry(asoc, &ep->asocs, asocs)
+			asoc->strreset_enable = params->assoc_value;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_reset_streams(struct sock *sk,
+					 struct sctp_reset_streams *params,
+					 unsigned int optlen)
+{
+	struct sctp_association *asoc;
+
+	if (optlen < sizeof(*params))
+		return -EINVAL;
+	/* srs_number_streams is u16, so optlen can't be bigger than this. */
+	optlen = min_t(unsigned int, optlen, USHRT_MAX +
+					     sizeof(__u16) * sizeof(*params));
+
+	if (params->srs_number_streams * sizeof(__u16) >
+	    optlen - sizeof(*params))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, params->srs_assoc_id);
+	if (!asoc)
+		return -EINVAL;
+
+	return sctp_send_reset_streams(asoc, params);
+}
+
+static int sctp_setsockopt_reset_assoc(struct sock *sk, sctp_assoc_t *associd,
+				       unsigned int optlen)
+{
+	struct sctp_association *asoc;
+
+	if (optlen != sizeof(*associd))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, *associd);
+	if (!asoc)
+		return -EINVAL;
+
+	return sctp_send_reset_assoc(asoc);
+}
+
+static int sctp_setsockopt_add_streams(struct sock *sk,
+				       struct sctp_add_streams *params,
+				       unsigned int optlen)
+{
+	struct sctp_association *asoc;
+
+	if (optlen != sizeof(*params))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, params->sas_assoc_id);
+	if (!asoc)
+		return -EINVAL;
+
+	return sctp_send_add_streams(asoc, params);
+}
+
+static int sctp_setsockopt_scheduler(struct sock *sk,
+				     struct sctp_assoc_value *params,
+				     unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	int retval = 0;
+
+	if (optlen < sizeof(*params))
+		return -EINVAL;
+
+	if (params->assoc_value > SCTP_SS_MAX)
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc)
+		return sctp_sched_set_sched(asoc, params->assoc_value);
+
+	if (sctp_style(sk, TCP))
+		params->assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (params->assoc_id == SCTP_FUTURE_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC)
+		sp->default_ss = params->assoc_value;
+
+	if (params->assoc_id == SCTP_CURRENT_ASSOC ||
+	    params->assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs) {
+			int ret = sctp_sched_set_sched(asoc,
+						       params->assoc_value);
+
+			if (ret && !retval)
+				retval = ret;
+		}
+	}
+
+	return retval;
+}
+
+static int sctp_setsockopt_scheduler_value(struct sock *sk,
+					   struct sctp_stream_value *params,
+					   unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen < sizeof(*params))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_CURRENT_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	if (asoc) {
+		retval = sctp_sched_set_value(asoc, params->stream_id,
+					      params->stream_value, GFP_KERNEL);
+		goto out;
+	}
+
+	retval = 0;
+
+	list_for_each_entry(asoc, &sctp_sk(sk)->ep->asocs, asocs) {
+		int ret = sctp_sched_set_value(asoc, params->stream_id,
+					       params->stream_value,
+					       GFP_KERNEL);
+		if (ret && !retval) /* try to return the 1st error. */
+			retval = ret;
+	}
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_interleaving_supported(struct sock *sk,
+						  struct sctp_assoc_value *p,
+						  unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+
+	if (optlen < sizeof(*p))
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, p->assoc_id);
+	if (!asoc && p->assoc_id != SCTP_FUTURE_ASSOC && sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (!sock_net(sk)->sctp.intl_enable || !sp->frag_interleave) {
+		return -EPERM;
+	}
+
+	sp->ep->intl_enable = !!p->assoc_value;
+	return 0;
+}
+
+static int sctp_setsockopt_reuse_port(struct sock *sk, int *val,
+				      unsigned int optlen)
+{
+	if (!sctp_style(sk, TCP))
+		return -EOPNOTSUPP;
+
+	if (sctp_sk(sk)->ep->base.bind_addr.port)
+		return -EFAULT;
+
+	if (optlen < sizeof(int))
+		return -EINVAL;
+
+	sctp_sk(sk)->reuse = !!*val;
+
+	return 0;
+}
+
+static int sctp_assoc_ulpevent_type_set(struct sctp_event *param,
+					struct sctp_association *asoc)
+{
+	struct sctp_ulpevent *event;
+
+	sctp_ulpevent_type_set(&asoc->subscribe, param->se_type, param->se_on);
+
+	if (param->se_type == SCTP_SENDER_DRY_EVENT && param->se_on) {
+		if (sctp_outq_is_empty(&asoc->outqueue)) {
+			event = sctp_ulpevent_make_sender_dry_event(asoc,
+					GFP_USER | __GFP_NOWARN);
+			if (!event)
+				return -ENOMEM;
+
+			asoc->stream.si->enqueue_event(&asoc->ulpq, event);
+		}
+	}
+
+	return 0;
+}
+
+static int sctp_setsockopt_event(struct sock *sk, struct sctp_event *param,
+				 unsigned int optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	int retval = 0;
+
+	if (optlen < sizeof(*param))
+		return -EINVAL;
+
+	if (param->se_type < SCTP_SN_TYPE_BASE ||
+	    param->se_type > SCTP_SN_TYPE_MAX)
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, param->se_assoc_id);
+	if (!asoc && param->se_assoc_id > SCTP_ALL_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc)
+		return sctp_assoc_ulpevent_type_set(param, asoc);
+
+	if (sctp_style(sk, TCP))
+		param->se_assoc_id = SCTP_FUTURE_ASSOC;
+
+	if (param->se_assoc_id == SCTP_FUTURE_ASSOC ||
+	    param->se_assoc_id == SCTP_ALL_ASSOC)
+		sctp_ulpevent_type_set(&sp->subscribe,
+				       param->se_type, param->se_on);
+
+	if (param->se_assoc_id == SCTP_CURRENT_ASSOC ||
+	    param->se_assoc_id == SCTP_ALL_ASSOC) {
+		list_for_each_entry(asoc, &sp->ep->asocs, asocs) {
+			int ret = sctp_assoc_ulpevent_type_set(param, asoc);
+
+			if (ret && !retval)
+				retval = ret;
+		}
+	}
+
+	return retval;
+}
+
+static int sctp_setsockopt_asconf_supported(struct sock *sk,
+					    struct sctp_assoc_value *params,
+					    unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_endpoint *ep;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	ep = sctp_sk(sk)->ep;
+	ep->asconf_enable = !!params->assoc_value;
+
+	if (ep->asconf_enable && ep->auth_enable) {
+		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF);
+		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF_ACK);
+	}
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_auth_supported(struct sock *sk,
+					  struct sctp_assoc_value *params,
+					  unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_endpoint *ep;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	ep = sctp_sk(sk)->ep;
+	if (params->assoc_value) {
+		retval = sctp_auth_init(ep, GFP_KERNEL);
+		if (retval)
+			goto out;
+		if (ep->asconf_enable) {
+			sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF);
+			sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF_ACK);
+		}
+	}
+
+	ep->auth_enable = !!params->assoc_value;
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_ecn_supported(struct sock *sk,
+					 struct sctp_assoc_value *params,
+					 unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	sctp_sk(sk)->ep->ecn_enable = !!params->assoc_value;
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_pf_expose(struct sock *sk,
+				     struct sctp_assoc_value *params,
+				     unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	int retval = -EINVAL;
+
+	if (optlen != sizeof(*params))
+		goto out;
+
+	if (params->assoc_value > SCTP_PF_EXPOSE_MAX)
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params->assoc_id);
+	if (!asoc && params->assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		goto out;
+
+	if (asoc)
+		asoc->pf_expose = params->assoc_value;
+	else
+		sctp_sk(sk)->pf_expose = params->assoc_value;
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_setsockopt_encap_port(struct sock *sk,
+				      struct sctp_udpencaps *encap,
+				      unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_transport *t;
+	__be16 encap_port;
+
+	if (optlen != sizeof(*encap))
+		return -EINVAL;
+
+	/* If an address other than INADDR_ANY is specified, and
+	 * no transport is found, then the request is invalid.
+	 */
+	encap_port = (__force __be16)encap->sue_port;
+	if (!sctp_is_any(sk, (union sctp_addr *)&encap->sue_address)) {
+		t = sctp_addr_id2transport(sk, &encap->sue_address,
+					   encap->sue_assoc_id);
+		if (!t)
+			return -EINVAL;
+
+		t->encap_port = encap_port;
+		return 0;
+	}
+
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, encap->sue_assoc_id);
+	if (!asoc && encap->sue_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	/* If changes are for association, also apply encap_port to
+	 * each transport.
+	 */
+	if (asoc) {
+		list_for_each_entry(t, &asoc->peer.transport_addr_list,
+				    transports)
+			t->encap_port = encap_port;
+
+		asoc->encap_port = encap_port;
+		return 0;
+	}
+
+	sctp_sk(sk)->encap_port = encap_port;
+	return 0;
+}
+
+static int sctp_setsockopt_probe_interval(struct sock *sk,
+					  struct sctp_probeinterval *params,
+					  unsigned int optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_transport *t;
+	__u32 probe_interval;
+
+	if (optlen != sizeof(*params))
+		return -EINVAL;
+
+	probe_interval = params->spi_interval;
+	if (probe_interval && probe_interval < SCTP_PROBE_TIMER_MIN)
+		return -EINVAL;
+
+	/* If an address other than INADDR_ANY is specified, and
+	 * no transport is found, then the request is invalid.
+	 */
+	if (!sctp_is_any(sk, (union sctp_addr *)&params->spi_address)) {
+		t = sctp_addr_id2transport(sk, &params->spi_address,
+					   params->spi_assoc_id);
+		if (!t)
+			return -EINVAL;
+
+		t->probe_interval = msecs_to_jiffies(probe_interval);
+		sctp_transport_pl_reset(t);
+		return 0;
+	}
+
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params->spi_assoc_id);
+	if (!asoc && params->spi_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	/* If changes are for association, also apply probe_interval to
+	 * each transport.
+	 */
+	if (asoc) {
+		list_for_each_entry(t, &asoc->peer.transport_addr_list, transports) {
+			t->probe_interval = msecs_to_jiffies(probe_interval);
+			sctp_transport_pl_reset(t);
+		}
+
+		asoc->probe_interval = msecs_to_jiffies(probe_interval);
+		return 0;
+	}
+
+	sctp_sk(sk)->probe_interval = probe_interval;
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* API 6.2 setsockopt(), getsockopt()
  *
@@ -3527,6 +6500,7 @@ static int sctp_setsockopt_auto_asconf(struct sock *sk, char __user *optval,
  *   optval  - the buffer to store the value of the option.
  *   optlen  - the size of the buffer.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_setsockopt(struct sock *sk, int level, int optname,
 				char __user *optval, unsigned int optlen)
 {
@@ -3534,6 +6508,15 @@ SCTP_STATIC int sctp_setsockopt(struct sock *sk, int level, int optname,
 
 	SCTP_DEBUG_PRINTK("sctp_setsockopt(sk: %p... optname: %d)\n",
 			  sk, optname);
+=======
+static int sctp_setsockopt(struct sock *sk, int level, int optname,
+			   sockptr_t optval, unsigned int optlen)
+{
+	void *kopt = NULL;
+	int retval = 0;
+
+	pr_debug("%s: sk:%p, optname:%d\n", __func__, sk, optname);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* I can hardly begin to describe how wrong this is.  This is
 	 * so broken as to be worse than useless.  The API draft
@@ -3543,34 +6526,67 @@ SCTP_STATIC int sctp_setsockopt(struct sock *sk, int level, int optname,
 	 */
 	if (level != SOL_SCTP) {
 		struct sctp_af *af = sctp_sk(sk)->pf->af;
+<<<<<<< HEAD
 		retval = af->setsockopt(sk, level, optname, optval, optlen);
 		goto out_nounlock;
 	}
 
 	sctp_lock_sock(sk);
+=======
+
+		return af->setsockopt(sk, level, optname, optval, optlen);
+	}
+
+	if (optlen > 0) {
+		/* Trim it to the biggest size sctp sockopt may need if necessary */
+		optlen = min_t(unsigned int, optlen,
+			       PAGE_ALIGN(USHRT_MAX +
+					  sizeof(__u16) * sizeof(struct sctp_reset_streams)));
+		kopt = memdup_sockptr(optval, optlen);
+		if (IS_ERR(kopt))
+			return PTR_ERR(kopt);
+	}
+
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (optname) {
 	case SCTP_SOCKOPT_BINDX_ADD:
 		/* 'optlen' is the size of the addresses buffer. */
+<<<<<<< HEAD
 		retval = sctp_setsockopt_bindx(sk, (struct sockaddr __user *)optval,
 					       optlen, SCTP_BINDX_ADD_ADDR);
+=======
+		retval = sctp_setsockopt_bindx(sk, kopt, optlen,
+					       SCTP_BINDX_ADD_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCTP_SOCKOPT_BINDX_REM:
 		/* 'optlen' is the size of the addresses buffer. */
+<<<<<<< HEAD
 		retval = sctp_setsockopt_bindx(sk, (struct sockaddr __user *)optval,
 					       optlen, SCTP_BINDX_REM_ADDR);
+=======
+		retval = sctp_setsockopt_bindx(sk, kopt, optlen,
+					       SCTP_BINDX_REM_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCTP_SOCKOPT_CONNECTX_OLD:
 		/* 'optlen' is the size of the addresses buffer. */
+<<<<<<< HEAD
 		retval = sctp_setsockopt_connectx_old(sk,
 					    (struct sockaddr __user *)optval,
 					    optlen);
+=======
+		retval = sctp_setsockopt_connectx_old(sk, kopt, optlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCTP_SOCKOPT_CONNECTX:
 		/* 'optlen' is the size of the addresses buffer. */
+<<<<<<< HEAD
 		retval = sctp_setsockopt_connectx(sk,
 					    (struct sockaddr __user *)optval,
 					    optlen);
@@ -3656,15 +6672,179 @@ SCTP_STATIC int sctp_setsockopt(struct sock *sk, int level, int optname,
 		break;
 	case SCTP_AUTO_ASCONF:
 		retval = sctp_setsockopt_auto_asconf(sk, optval, optlen);
+=======
+		retval = sctp_setsockopt_connectx(sk, kopt, optlen);
+		break;
+
+	case SCTP_DISABLE_FRAGMENTS:
+		retval = sctp_setsockopt_disable_fragments(sk, kopt, optlen);
+		break;
+
+	case SCTP_EVENTS:
+		retval = sctp_setsockopt_events(sk, kopt, optlen);
+		break;
+
+	case SCTP_AUTOCLOSE:
+		retval = sctp_setsockopt_autoclose(sk, kopt, optlen);
+		break;
+
+	case SCTP_PEER_ADDR_PARAMS:
+		retval = sctp_setsockopt_peer_addr_params(sk, kopt, optlen);
+		break;
+
+	case SCTP_DELAYED_SACK:
+		retval = sctp_setsockopt_delayed_ack(sk, kopt, optlen);
+		break;
+	case SCTP_PARTIAL_DELIVERY_POINT:
+		retval = sctp_setsockopt_partial_delivery_point(sk, kopt, optlen);
+		break;
+
+	case SCTP_INITMSG:
+		retval = sctp_setsockopt_initmsg(sk, kopt, optlen);
+		break;
+	case SCTP_DEFAULT_SEND_PARAM:
+		retval = sctp_setsockopt_default_send_param(sk, kopt, optlen);
+		break;
+	case SCTP_DEFAULT_SNDINFO:
+		retval = sctp_setsockopt_default_sndinfo(sk, kopt, optlen);
+		break;
+	case SCTP_PRIMARY_ADDR:
+		retval = sctp_setsockopt_primary_addr(sk, kopt, optlen);
+		break;
+	case SCTP_SET_PEER_PRIMARY_ADDR:
+		retval = sctp_setsockopt_peer_primary_addr(sk, kopt, optlen);
+		break;
+	case SCTP_NODELAY:
+		retval = sctp_setsockopt_nodelay(sk, kopt, optlen);
+		break;
+	case SCTP_RTOINFO:
+		retval = sctp_setsockopt_rtoinfo(sk, kopt, optlen);
+		break;
+	case SCTP_ASSOCINFO:
+		retval = sctp_setsockopt_associnfo(sk, kopt, optlen);
+		break;
+	case SCTP_I_WANT_MAPPED_V4_ADDR:
+		retval = sctp_setsockopt_mappedv4(sk, kopt, optlen);
+		break;
+	case SCTP_MAXSEG:
+		retval = sctp_setsockopt_maxseg(sk, kopt, optlen);
+		break;
+	case SCTP_ADAPTATION_LAYER:
+		retval = sctp_setsockopt_adaptation_layer(sk, kopt, optlen);
+		break;
+	case SCTP_CONTEXT:
+		retval = sctp_setsockopt_context(sk, kopt, optlen);
+		break;
+	case SCTP_FRAGMENT_INTERLEAVE:
+		retval = sctp_setsockopt_fragment_interleave(sk, kopt, optlen);
+		break;
+	case SCTP_MAX_BURST:
+		retval = sctp_setsockopt_maxburst(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_CHUNK:
+		retval = sctp_setsockopt_auth_chunk(sk, kopt, optlen);
+		break;
+	case SCTP_HMAC_IDENT:
+		retval = sctp_setsockopt_hmac_ident(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_KEY:
+		retval = sctp_setsockopt_auth_key(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_ACTIVE_KEY:
+		retval = sctp_setsockopt_active_key(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_DELETE_KEY:
+		retval = sctp_setsockopt_del_key(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_DEACTIVATE_KEY:
+		retval = sctp_setsockopt_deactivate_key(sk, kopt, optlen);
+		break;
+	case SCTP_AUTO_ASCONF:
+		retval = sctp_setsockopt_auto_asconf(sk, kopt, optlen);
+		break;
+	case SCTP_PEER_ADDR_THLDS:
+		retval = sctp_setsockopt_paddr_thresholds(sk, kopt, optlen,
+							  false);
+		break;
+	case SCTP_PEER_ADDR_THLDS_V2:
+		retval = sctp_setsockopt_paddr_thresholds(sk, kopt, optlen,
+							  true);
+		break;
+	case SCTP_RECVRCVINFO:
+		retval = sctp_setsockopt_recvrcvinfo(sk, kopt, optlen);
+		break;
+	case SCTP_RECVNXTINFO:
+		retval = sctp_setsockopt_recvnxtinfo(sk, kopt, optlen);
+		break;
+	case SCTP_PR_SUPPORTED:
+		retval = sctp_setsockopt_pr_supported(sk, kopt, optlen);
+		break;
+	case SCTP_DEFAULT_PRINFO:
+		retval = sctp_setsockopt_default_prinfo(sk, kopt, optlen);
+		break;
+	case SCTP_RECONFIG_SUPPORTED:
+		retval = sctp_setsockopt_reconfig_supported(sk, kopt, optlen);
+		break;
+	case SCTP_ENABLE_STREAM_RESET:
+		retval = sctp_setsockopt_enable_strreset(sk, kopt, optlen);
+		break;
+	case SCTP_RESET_STREAMS:
+		retval = sctp_setsockopt_reset_streams(sk, kopt, optlen);
+		break;
+	case SCTP_RESET_ASSOC:
+		retval = sctp_setsockopt_reset_assoc(sk, kopt, optlen);
+		break;
+	case SCTP_ADD_STREAMS:
+		retval = sctp_setsockopt_add_streams(sk, kopt, optlen);
+		break;
+	case SCTP_STREAM_SCHEDULER:
+		retval = sctp_setsockopt_scheduler(sk, kopt, optlen);
+		break;
+	case SCTP_STREAM_SCHEDULER_VALUE:
+		retval = sctp_setsockopt_scheduler_value(sk, kopt, optlen);
+		break;
+	case SCTP_INTERLEAVING_SUPPORTED:
+		retval = sctp_setsockopt_interleaving_supported(sk, kopt,
+								optlen);
+		break;
+	case SCTP_REUSE_PORT:
+		retval = sctp_setsockopt_reuse_port(sk, kopt, optlen);
+		break;
+	case SCTP_EVENT:
+		retval = sctp_setsockopt_event(sk, kopt, optlen);
+		break;
+	case SCTP_ASCONF_SUPPORTED:
+		retval = sctp_setsockopt_asconf_supported(sk, kopt, optlen);
+		break;
+	case SCTP_AUTH_SUPPORTED:
+		retval = sctp_setsockopt_auth_supported(sk, kopt, optlen);
+		break;
+	case SCTP_ECN_SUPPORTED:
+		retval = sctp_setsockopt_ecn_supported(sk, kopt, optlen);
+		break;
+	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
+		retval = sctp_setsockopt_pf_expose(sk, kopt, optlen);
+		break;
+	case SCTP_REMOTE_UDP_ENCAPS_PORT:
+		retval = sctp_setsockopt_encap_port(sk, kopt, optlen);
+		break;
+	case SCTP_PLPMTUD_PROBE_INTERVAL:
+		retval = sctp_setsockopt_probe_interval(sk, kopt, optlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		retval = -ENOPROTOOPT;
 		break;
 	}
 
+<<<<<<< HEAD
 	sctp_release_sock(sk);
 
 out_nounlock:
+=======
+	release_sock(sk);
+	kfree(kopt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -3684,6 +6864,7 @@ out_nounlock:
  *
  * len: the size of the address.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_connect(struct sock *sk, struct sockaddr *addr,
 			     int addr_len)
 {
@@ -3712,6 +6893,41 @@ SCTP_STATIC int sctp_connect(struct sock *sk, struct sockaddr *addr,
 
 /* FIXME: Write comments. */
 SCTP_STATIC int sctp_disconnect(struct sock *sk, int flags)
+=======
+static int sctp_connect(struct sock *sk, struct sockaddr *addr,
+			int addr_len, int flags)
+{
+	struct sctp_af *af;
+	int err = -EINVAL;
+
+	lock_sock(sk);
+	pr_debug("%s: sk:%p, sockaddr:%p, addr_len:%d\n", __func__, sk,
+		 addr, addr_len);
+
+	/* Validate addr_len before calling common connect/connectx routine. */
+	af = sctp_get_af_specific(addr->sa_family);
+	if (af && addr_len >= af->sockaddr_len)
+		err = __sctp_connect(sk, addr, af->sockaddr_len, flags, NULL);
+
+	release_sock(sk);
+	return err;
+}
+
+int sctp_inet_connect(struct socket *sock, struct sockaddr *uaddr,
+		      int addr_len, int flags)
+{
+	if (addr_len < sizeof(uaddr->sa_family))
+		return -EINVAL;
+
+	if (uaddr->sa_family == AF_UNSPEC)
+		return -EOPNOTSUPP;
+
+	return sctp_connect(sock->sk, uaddr, addr_len, flags);
+}
+
+/* FIXME: Write comments. */
+static int sctp_disconnect(struct sock *sk, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP; /* STUB */
 }
@@ -3723,7 +6939,11 @@ SCTP_STATIC int sctp_disconnect(struct sock *sk, int flags)
  * descriptor will be returned from accept() to represent the newly
  * formed association.
  */
+<<<<<<< HEAD
 SCTP_STATIC struct sock *sctp_accept(struct sock *sk, int flags, int *err)
+=======
+static struct sock *sctp_accept(struct sock *sk, int flags, int *err, bool kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_sock *sp;
 	struct sctp_endpoint *ep;
@@ -3732,7 +6952,11 @@ SCTP_STATIC struct sock *sctp_accept(struct sock *sk, int flags, int *err)
 	long timeo;
 	int error = 0;
 
+<<<<<<< HEAD
 	sctp_lock_sock(sk);
+=======
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp = sctp_sk(sk);
 	ep = sp->ep;
@@ -3758,7 +6982,11 @@ SCTP_STATIC struct sock *sctp_accept(struct sock *sk, int flags, int *err)
 	 */
 	asoc = list_entry(ep->asocs.next, struct sctp_association, asocs);
 
+<<<<<<< HEAD
 	newsk = sp->pf->create_accept_sk(sk, asoc);
+=======
+	newsk = sp->pf->create_accept_sk(sk, asoc, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!newsk) {
 		error = -ENOMEM;
 		goto out;
@@ -3767,20 +6995,39 @@ SCTP_STATIC struct sock *sctp_accept(struct sock *sk, int flags, int *err)
 	/* Populate the fields of the newsk from the oldsk and migrate the
 	 * asoc to the newsk.
 	 */
+<<<<<<< HEAD
 	sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
 
 out:
 	sctp_release_sock(sk);
+=======
+	error = sctp_sock_migrate(sk, newsk, asoc, SCTP_SOCKET_TCP);
+	if (error) {
+		sk_common_release(newsk);
+		newsk = NULL;
+	}
+
+out:
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*err = error;
 	return newsk;
 }
 
 /* The SCTP ioctl handler. */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 {
 	int rc = -ENOTCONN;
 
 	sctp_lock_sock(sk);
+=======
+static int sctp_ioctl(struct sock *sk, int cmd, int *karg)
+{
+	int rc = -ENOTCONN;
+
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * SEQPACKET-style sockets in LISTENING state are valid, for
@@ -3792,7 +7039,11 @@ SCTP_STATIC int sctp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 	switch (cmd) {
 	case SIOCINQ: {
 		struct sk_buff *skb;
+<<<<<<< HEAD
 		unsigned int amount = 0;
+=======
+		*karg = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb = skb_peek(&sk->sk_receive_queue);
 		if (skb != NULL) {
@@ -3800,9 +7051,15 @@ SCTP_STATIC int sctp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			 * We will only return the amount of this packet since
 			 * that is all that will be read.
 			 */
+<<<<<<< HEAD
 			amount = skb->len;
 		}
 		rc = put_user(amount, (int __user *)arg);
+=======
+			*karg = skb->len;
+		}
+		rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
@@ -3810,7 +7067,11 @@ SCTP_STATIC int sctp_ioctl(struct sock *sk, int cmd, unsigned long arg)
 		break;
 	}
 out:
+<<<<<<< HEAD
 	sctp_release_sock(sk);
+=======
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -3818,12 +7079,21 @@ out:
  * initialized the SCTP-specific portion of the sock.
  * The sock structure should already be zero-filled memory.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_init_sock(struct sock *sk)
 {
 	struct sctp_endpoint *ep;
 	struct sctp_sock *sp;
 
 	SCTP_DEBUG_PRINTK("sctp_init_sock(sk: %p)\n", sk);
+=======
+static int sctp_init_sock(struct sock *sk)
+{
+	struct net *net = sock_net(sk);
+	struct sctp_sock *sp;
+
+	pr_debug("%s: sk:%p\n", __func__, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp = sctp_sk(sk);
 
@@ -3839,6 +7109,11 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 		return -ESOCKTNOSUPPORT;
 	}
 
+<<<<<<< HEAD
+=======
+	sk->sk_gso_type = SKB_GSO_SCTP;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize default send parameters. These parameters can be
 	 * modified with the SCTP_DEFAULT_SEND_PARAM socket option.
 	 */
@@ -3849,7 +7124,13 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 	sp->default_timetolive = 0;
 
 	sp->default_rcv_context = 0;
+<<<<<<< HEAD
 	sp->max_burst = sctp_max_burst;
+=======
+	sp->max_burst = net->sctp.max_burst;
+
+	sp->sctp_hmac_alg = net->sctp.sctp_hmac_alg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize default setup parameters. These parameters
 	 * can be modified with the SCTP_INITMSG socket option or
@@ -3857,41 +7138,80 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 	 */
 	sp->initmsg.sinit_num_ostreams   = sctp_max_outstreams;
 	sp->initmsg.sinit_max_instreams  = sctp_max_instreams;
+<<<<<<< HEAD
 	sp->initmsg.sinit_max_attempts   = sctp_max_retrans_init;
 	sp->initmsg.sinit_max_init_timeo = sctp_rto_max;
+=======
+	sp->initmsg.sinit_max_attempts   = net->sctp.max_retrans_init;
+	sp->initmsg.sinit_max_init_timeo = net->sctp.rto_max;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize default RTO related parameters.  These parameters can
 	 * be modified for with the SCTP_RTOINFO socket option.
 	 */
+<<<<<<< HEAD
 	sp->rtoinfo.srto_initial = sctp_rto_initial;
 	sp->rtoinfo.srto_max     = sctp_rto_max;
 	sp->rtoinfo.srto_min     = sctp_rto_min;
+=======
+	sp->rtoinfo.srto_initial = net->sctp.rto_initial;
+	sp->rtoinfo.srto_max     = net->sctp.rto_max;
+	sp->rtoinfo.srto_min     = net->sctp.rto_min;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize default association related parameters. These parameters
 	 * can be modified with the SCTP_ASSOCINFO socket option.
 	 */
+<<<<<<< HEAD
 	sp->assocparams.sasoc_asocmaxrxt = sctp_max_retrans_association;
 	sp->assocparams.sasoc_number_peer_destinations = 0;
 	sp->assocparams.sasoc_peer_rwnd = 0;
 	sp->assocparams.sasoc_local_rwnd = 0;
 	sp->assocparams.sasoc_cookie_life = sctp_valid_cookie_life;
+=======
+	sp->assocparams.sasoc_asocmaxrxt = net->sctp.max_retrans_association;
+	sp->assocparams.sasoc_number_peer_destinations = 0;
+	sp->assocparams.sasoc_peer_rwnd = 0;
+	sp->assocparams.sasoc_local_rwnd = 0;
+	sp->assocparams.sasoc_cookie_life = net->sctp.valid_cookie_life;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize default event subscriptions. By default, all the
 	 * options are off.
 	 */
+<<<<<<< HEAD
 	memset(&sp->subscribe, 0, sizeof(struct sctp_event_subscribe));
+=======
+	sp->subscribe = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default Peer Address Parameters.  These defaults can
 	 * be modified via SCTP_PEER_ADDR_PARAMS
 	 */
+<<<<<<< HEAD
 	sp->hbinterval  = sctp_hb_interval;
 	sp->pathmaxrxt  = sctp_max_retrans_path;
 	sp->pathmtu     = 0; // allow default discovery
 	sp->sackdelay   = sctp_sack_timeout;
+=======
+	sp->hbinterval  = net->sctp.hb_interval;
+	sp->udp_port    = htons(net->sctp.udp_port);
+	sp->encap_port  = htons(net->sctp.encap_port);
+	sp->pathmaxrxt  = net->sctp.max_retrans_path;
+	sp->pf_retrans  = net->sctp.pf_retrans;
+	sp->ps_retrans  = net->sctp.ps_retrans;
+	sp->pf_expose   = net->sctp.pf_expose;
+	sp->pathmtu     = 0; /* allow default discovery */
+	sp->sackdelay   = net->sctp.sack_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp->sackfreq	= 2;
 	sp->param_flags = SPP_HB_ENABLE |
 			  SPP_PMTUD_ENABLE |
 			  SPP_SACKDELAY_ENABLE;
+<<<<<<< HEAD
+=======
+	sp->default_ss = SCTP_SS_DEFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If enabled no SCTP message fragmentation will be performed.
 	 * Configure through SCTP_DISABLE_FRAGMENTS socket option.
@@ -3901,6 +7221,12 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 	/* Enable Nagle algorithm by default.  */
 	sp->nodelay           = 0;
 
+<<<<<<< HEAD
+=======
+	sp->recvrcvinfo = 0;
+	sp->recvnxtinfo = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable by default. */
 	sp->v4mapped          = 1;
 
@@ -3922,11 +7248,16 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 	atomic_set(&sp->pd_mode, 0);
 	skb_queue_head_init(&sp->pd_lobby);
 	sp->frag_interleave = 0;
+<<<<<<< HEAD
+=======
+	sp->probe_interval = net->sctp.probe_interval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create a per socket endpoint structure.  Even if we
 	 * change the data structure relationships, this may still
 	 * be useful for storing pre-connect address information.
 	 */
+<<<<<<< HEAD
 	ep = sctp_endpoint_new(sk, GFP_KERNEL);
 	if (!ep)
 		return -ENOMEM;
@@ -3954,11 +7285,26 @@ SCTP_STATIC int sctp_init_sock(struct sock *sk)
 	}
 
 	local_bh_enable();
+=======
+	sp->ep = sctp_endpoint_new(sk, GFP_KERNEL);
+	if (!sp->ep)
+		return -ENOMEM;
+
+	sp->hmac = NULL;
+
+	sk->sk_destruct = sctp_destruct_sock;
+
+	SCTP_DBG_OBJCNT_INC(sock);
+
+	sk_sockets_allocated_inc(sk);
+	sock_prot_inuse_add(net, sk->sk_prot, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* Cleanup any SCTP per socket resources. Must be called with
+<<<<<<< HEAD
  * sctp_globals.addr_wq_lock held if sp->do_auto_asconf is true
  */
 SCTP_STATIC void sctp_destroy_sock(struct sock *sk)
@@ -3966,6 +7312,15 @@ SCTP_STATIC void sctp_destroy_sock(struct sock *sk)
 	struct sctp_sock *sp;
 
 	SCTP_DEBUG_PRINTK("sctp_destroy_sock(sk: %p)\n", sk);
+=======
+ * sock_net(sk)->sctp.addr_wq_lock held if sp->do_auto_asconf is true
+ */
+static void sctp_destroy_sock(struct sock *sk)
+{
+	struct sctp_sock *sp;
+
+	pr_debug("%s: sk:%p\n", __func__, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release our hold on the endpoint. */
 	sp = sctp_sk(sk);
@@ -3980,10 +7335,30 @@ SCTP_STATIC void sctp_destroy_sock(struct sock *sk)
 		list_del(&sp->auto_asconf_list);
 	}
 	sctp_endpoint_free(sp->ep);
+<<<<<<< HEAD
 	local_bh_disable();
 	percpu_counter_dec(&sctp_sockets_allocated);
 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
 	local_bh_enable();
+=======
+	sk_sockets_allocated_dec(sk);
+	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+}
+
+/* Triggered when there are no references on the socket anymore */
+static void sctp_destruct_common(struct sock *sk)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+
+	/* Free up the HMAC transform. */
+	crypto_free_shash(sp->hmac);
+}
+
+static void sctp_destruct_sock(struct sock *sk)
+{
+	sctp_destruct_common(sk);
+	inet_sock_destruct(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* API 4.1.7 shutdown() - TCP Style Syntax
@@ -4002,14 +7377,22 @@ SCTP_STATIC void sctp_destroy_sock(struct sock *sk)
  *                     Disables further send  and  receive  operations
  *                     and initiates the SCTP shutdown sequence.
  */
+<<<<<<< HEAD
 SCTP_STATIC void sctp_shutdown(struct sock *sk, int how)
 {
 	struct sctp_endpoint *ep;
 	struct sctp_association *asoc;
+=======
+static void sctp_shutdown(struct sock *sk, int how)
+{
+	struct net *net = sock_net(sk);
+	struct sctp_endpoint *ep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sctp_style(sk, TCP))
 		return;
 
+<<<<<<< HEAD
 	if (how & SEND_SHUTDOWN) {
 		ep = sctp_sk(sk)->ep;
 		if (!list_empty(&ep->asocs)) {
@@ -4020,6 +7403,256 @@ SCTP_STATIC void sctp_shutdown(struct sock *sk, int how)
 	}
 }
 
+=======
+	ep = sctp_sk(sk)->ep;
+	if (how & SEND_SHUTDOWN && !list_empty(&ep->asocs)) {
+		struct sctp_association *asoc;
+
+		inet_sk_set_state(sk, SCTP_SS_CLOSING);
+		asoc = list_entry(ep->asocs.next,
+				  struct sctp_association, asocs);
+		sctp_primitive_SHUTDOWN(net, asoc, NULL);
+	}
+}
+
+int sctp_get_sctp_info(struct sock *sk, struct sctp_association *asoc,
+		       struct sctp_info *info)
+{
+	struct sctp_transport *prim;
+	struct list_head *pos;
+	int mask;
+
+	memset(info, 0, sizeof(*info));
+	if (!asoc) {
+		struct sctp_sock *sp = sctp_sk(sk);
+
+		info->sctpi_s_autoclose = sp->autoclose;
+		info->sctpi_s_adaptation_ind = sp->adaptation_ind;
+		info->sctpi_s_pd_point = sp->pd_point;
+		info->sctpi_s_nodelay = sp->nodelay;
+		info->sctpi_s_disable_fragments = sp->disable_fragments;
+		info->sctpi_s_v4mapped = sp->v4mapped;
+		info->sctpi_s_frag_interleave = sp->frag_interleave;
+		info->sctpi_s_type = sp->type;
+
+		return 0;
+	}
+
+	info->sctpi_tag = asoc->c.my_vtag;
+	info->sctpi_state = asoc->state;
+	info->sctpi_rwnd = asoc->a_rwnd;
+	info->sctpi_unackdata = asoc->unack_data;
+	info->sctpi_penddata = sctp_tsnmap_pending(&asoc->peer.tsn_map);
+	info->sctpi_instrms = asoc->stream.incnt;
+	info->sctpi_outstrms = asoc->stream.outcnt;
+	list_for_each(pos, &asoc->base.inqueue.in_chunk_list)
+		info->sctpi_inqueue++;
+	list_for_each(pos, &asoc->outqueue.out_chunk_list)
+		info->sctpi_outqueue++;
+	info->sctpi_overall_error = asoc->overall_error_count;
+	info->sctpi_max_burst = asoc->max_burst;
+	info->sctpi_maxseg = asoc->frag_point;
+	info->sctpi_peer_rwnd = asoc->peer.rwnd;
+	info->sctpi_peer_tag = asoc->c.peer_vtag;
+
+	mask = asoc->peer.intl_capable << 1;
+	mask = (mask | asoc->peer.ecn_capable) << 1;
+	mask = (mask | asoc->peer.ipv4_address) << 1;
+	mask = (mask | asoc->peer.ipv6_address) << 1;
+	mask = (mask | asoc->peer.reconf_capable) << 1;
+	mask = (mask | asoc->peer.asconf_capable) << 1;
+	mask = (mask | asoc->peer.prsctp_capable) << 1;
+	mask = (mask | asoc->peer.auth_capable);
+	info->sctpi_peer_capable = mask;
+	mask = asoc->peer.sack_needed << 1;
+	mask = (mask | asoc->peer.sack_generation) << 1;
+	mask = (mask | asoc->peer.zero_window_announced);
+	info->sctpi_peer_sack = mask;
+
+	info->sctpi_isacks = asoc->stats.isacks;
+	info->sctpi_osacks = asoc->stats.osacks;
+	info->sctpi_opackets = asoc->stats.opackets;
+	info->sctpi_ipackets = asoc->stats.ipackets;
+	info->sctpi_rtxchunks = asoc->stats.rtxchunks;
+	info->sctpi_outofseqtsns = asoc->stats.outofseqtsns;
+	info->sctpi_idupchunks = asoc->stats.idupchunks;
+	info->sctpi_gapcnt = asoc->stats.gapcnt;
+	info->sctpi_ouodchunks = asoc->stats.ouodchunks;
+	info->sctpi_iuodchunks = asoc->stats.iuodchunks;
+	info->sctpi_oodchunks = asoc->stats.oodchunks;
+	info->sctpi_iodchunks = asoc->stats.iodchunks;
+	info->sctpi_octrlchunks = asoc->stats.octrlchunks;
+	info->sctpi_ictrlchunks = asoc->stats.ictrlchunks;
+
+	prim = asoc->peer.primary_path;
+	memcpy(&info->sctpi_p_address, &prim->ipaddr, sizeof(prim->ipaddr));
+	info->sctpi_p_state = prim->state;
+	info->sctpi_p_cwnd = prim->cwnd;
+	info->sctpi_p_srtt = prim->srtt;
+	info->sctpi_p_rto = jiffies_to_msecs(prim->rto);
+	info->sctpi_p_hbinterval = prim->hbinterval;
+	info->sctpi_p_pathmaxrxt = prim->pathmaxrxt;
+	info->sctpi_p_sackdelay = jiffies_to_msecs(prim->sackdelay);
+	info->sctpi_p_ssthresh = prim->ssthresh;
+	info->sctpi_p_partial_bytes_acked = prim->partial_bytes_acked;
+	info->sctpi_p_flight_size = prim->flight_size;
+	info->sctpi_p_error = prim->error_count;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(sctp_get_sctp_info);
+
+/* use callback to avoid exporting the core structure */
+void sctp_transport_walk_start(struct rhashtable_iter *iter) __acquires(RCU)
+{
+	rhltable_walk_enter(&sctp_transport_hashtable, iter);
+
+	rhashtable_walk_start(iter);
+}
+
+void sctp_transport_walk_stop(struct rhashtable_iter *iter) __releases(RCU)
+{
+	rhashtable_walk_stop(iter);
+	rhashtable_walk_exit(iter);
+}
+
+struct sctp_transport *sctp_transport_get_next(struct net *net,
+					       struct rhashtable_iter *iter)
+{
+	struct sctp_transport *t;
+
+	t = rhashtable_walk_next(iter);
+	for (; t; t = rhashtable_walk_next(iter)) {
+		if (IS_ERR(t)) {
+			if (PTR_ERR(t) == -EAGAIN)
+				continue;
+			break;
+		}
+
+		if (!sctp_transport_hold(t))
+			continue;
+
+		if (net_eq(t->asoc->base.net, net) &&
+		    t->asoc->peer.primary_path == t)
+			break;
+
+		sctp_transport_put(t);
+	}
+
+	return t;
+}
+
+struct sctp_transport *sctp_transport_get_idx(struct net *net,
+					      struct rhashtable_iter *iter,
+					      int pos)
+{
+	struct sctp_transport *t;
+
+	if (!pos)
+		return SEQ_START_TOKEN;
+
+	while ((t = sctp_transport_get_next(net, iter)) && !IS_ERR(t)) {
+		if (!--pos)
+			break;
+		sctp_transport_put(t);
+	}
+
+	return t;
+}
+
+int sctp_for_each_endpoint(int (*cb)(struct sctp_endpoint *, void *),
+			   void *p) {
+	int err = 0;
+	int hash = 0;
+	struct sctp_endpoint *ep;
+	struct sctp_hashbucket *head;
+
+	for (head = sctp_ep_hashtable; hash < sctp_ep_hashsize;
+	     hash++, head++) {
+		read_lock_bh(&head->lock);
+		sctp_for_each_hentry(ep, &head->chain) {
+			err = cb(ep, p);
+			if (err)
+				break;
+		}
+		read_unlock_bh(&head->lock);
+	}
+
+	return err;
+}
+EXPORT_SYMBOL_GPL(sctp_for_each_endpoint);
+
+int sctp_transport_lookup_process(sctp_callback_t cb, struct net *net,
+				  const union sctp_addr *laddr,
+				  const union sctp_addr *paddr, void *p, int dif)
+{
+	struct sctp_transport *transport;
+	struct sctp_endpoint *ep;
+	int err = -ENOENT;
+
+	rcu_read_lock();
+	transport = sctp_addrs_lookup_transport(net, laddr, paddr, dif, dif);
+	if (!transport) {
+		rcu_read_unlock();
+		return err;
+	}
+	ep = transport->asoc->ep;
+	if (!sctp_endpoint_hold(ep)) { /* asoc can be peeled off */
+		sctp_transport_put(transport);
+		rcu_read_unlock();
+		return err;
+	}
+	rcu_read_unlock();
+
+	err = cb(ep, transport, p);
+	sctp_endpoint_put(ep);
+	sctp_transport_put(transport);
+	return err;
+}
+EXPORT_SYMBOL_GPL(sctp_transport_lookup_process);
+
+int sctp_transport_traverse_process(sctp_callback_t cb, sctp_callback_t cb_done,
+				    struct net *net, int *pos, void *p)
+{
+	struct rhashtable_iter hti;
+	struct sctp_transport *tsp;
+	struct sctp_endpoint *ep;
+	int ret;
+
+again:
+	ret = 0;
+	sctp_transport_walk_start(&hti);
+
+	tsp = sctp_transport_get_idx(net, &hti, *pos + 1);
+	for (; !IS_ERR_OR_NULL(tsp); tsp = sctp_transport_get_next(net, &hti)) {
+		ep = tsp->asoc->ep;
+		if (sctp_endpoint_hold(ep)) { /* asoc can be peeled off */
+			ret = cb(ep, tsp, p);
+			if (ret)
+				break;
+			sctp_endpoint_put(ep);
+		}
+		(*pos)++;
+		sctp_transport_put(tsp);
+	}
+	sctp_transport_walk_stop(&hti);
+
+	if (ret) {
+		if (cb_done && !cb_done(ep, tsp, p)) {
+			(*pos)++;
+			sctp_endpoint_put(ep);
+			sctp_transport_put(tsp);
+			goto again;
+		}
+		sctp_endpoint_put(ep);
+		sctp_transport_put(tsp);
+	}
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(sctp_transport_traverse_process);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 7.2.1 Association Status (SCTP_STATUS)
 
  * Applications can retrieve current status information about an
@@ -4058,19 +7691,32 @@ static int sctp_getsockopt_sctp_status(struct sock *sk, int len,
 	transport = asoc->peer.primary_path;
 
 	status.sstat_assoc_id = sctp_assoc2id(asoc);
+<<<<<<< HEAD
 	status.sstat_state = asoc->state;
+=======
+	status.sstat_state = sctp_assoc_to_state(asoc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status.sstat_rwnd =  asoc->peer.rwnd;
 	status.sstat_unackdata = asoc->unack_data;
 
 	status.sstat_penddata = sctp_tsnmap_pending(&asoc->peer.tsn_map);
+<<<<<<< HEAD
 	status.sstat_instrms = asoc->c.sinit_max_instreams;
 	status.sstat_outstrms = asoc->c.sinit_num_ostreams;
+=======
+	status.sstat_instrms = asoc->stream.incnt;
+	status.sstat_outstrms = asoc->stream.outcnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status.sstat_fragmentation_point = asoc->frag_point;
 	status.sstat_primary.spinfo_assoc_id = sctp_assoc2id(transport->asoc);
 	memcpy(&status.sstat_primary.spinfo_address, &transport->ipaddr,
 			transport->af_specific->sockaddr_len);
 	/* Map ipv4 address into v4-mapped-on-v6 address.  */
+<<<<<<< HEAD
 	sctp_get_pf_specific(sk->sk_family)->addr_v4map(sctp_sk(sk),
+=======
+	sctp_get_pf_specific(sk->sk_family)->addr_to_user(sctp_sk(sk),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(union sctp_addr *)&status.sstat_primary.spinfo_address);
 	status.sstat_primary.spinfo_state = transport->state;
 	status.sstat_primary.spinfo_cwnd = transport->cwnd;
@@ -4086,9 +7732,15 @@ static int sctp_getsockopt_sctp_status(struct sock *sk, int len,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_getsockopt_sctp_status(%d): %d %d %d\n",
 			  len, status.sstat_state, status.sstat_rwnd,
 			  status.sstat_assoc_id);
+=======
+	pr_debug("%s: len:%d, state:%d, rwnd:%d, assoc_id:%d\n",
+		 __func__, len, status.sstat_state, status.sstat_rwnd,
+		 status.sstat_assoc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_to_user(optval, &status, len)) {
 		retval = -EFAULT;
@@ -4128,8 +7780,21 @@ static int sctp_getsockopt_peer_addr_info(struct sock *sk, int len,
 
 	transport = sctp_addr_id2transport(sk, &pinfo.spinfo_address,
 					   pinfo.spinfo_assoc_id);
+<<<<<<< HEAD
 	if (!transport)
 		return -EINVAL;
+=======
+	if (!transport) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	if (transport->state == SCTP_PF &&
+	    transport->asoc->pf_expose == SCTP_PF_EXPOSE_DISABLE) {
+		retval = -EACCES;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pinfo.spinfo_assoc_id = sctp_assoc2id(transport->asoc);
 	pinfo.spinfo_state = transport->state;
@@ -4187,14 +7852,33 @@ static int sctp_getsockopt_disable_fragments(struct sock *sk, int len,
 static int sctp_getsockopt_events(struct sock *sk, int len, char __user *optval,
 				  int __user *optlen)
 {
+<<<<<<< HEAD
 	if (len <= 0)
+=======
+	struct sctp_event_subscribe subscribe;
+	__u8 *sn_type = (__u8 *)&subscribe;
+	int i;
+
+	if (len == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (len > sizeof(struct sctp_event_subscribe))
 		len = sizeof(struct sctp_event_subscribe);
 	if (put_user(len, optlen))
 		return -EFAULT;
+<<<<<<< HEAD
 	if (copy_to_user(optval, &sctp_sk(sk)->subscribe, len))
 		return -EFAULT;
+=======
+
+	for (i = 0; i < len; i++)
+		sn_type[i] = sctp_ulpevent_type_enabled(sctp_sk(sk)->subscribe,
+							SCTP_SN_TYPE_BASE + i);
+
+	if (copy_to_user(optval, &subscribe, len))
+		return -EFAULT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4219,7 +7903,11 @@ static int sctp_getsockopt_autoclose(struct sock *sk, int len, char __user *optv
 	len = sizeof(int);
 	if (put_user(len, optlen))
 		return -EFAULT;
+<<<<<<< HEAD
 	if (copy_to_user(optval, &sctp_sk(sk)->autoclose, sizeof(int)))
+=======
+	if (put_user(sctp_sk(sk)->autoclose, (int __user *)optval))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 }
@@ -4228,8 +7916,13 @@ static int sctp_getsockopt_autoclose(struct sock *sk, int len, char __user *optv
 int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
 {
 	struct sctp_association *asoc = sctp_id2assoc(sk, id);
+<<<<<<< HEAD
 	struct socket *sock;
 	struct sctp_af *af;
+=======
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct socket *sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	/* Do not peel off from one netns to another one. */
@@ -4239,24 +7932,30 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
 	if (!asoc)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* If there is a thread waiting on more sndbuf space for
 	 * sending on this asoc, it cannot be peeled.
 	 */
 	if (waitqueue_active(&asoc->wait))
 		return -EBUSY;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* An association cannot be branched off from an already peeled-off
 	 * socket, nor is this supported for tcp style sockets.
 	 */
 	if (!sctp_style(sk, UDP))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* If there is a thread waiting on more sndbuf space for
 	 * sending on this asoc, it cannot be peeled.
 	 */
 	if (waitqueue_active(&asoc->wait))
 		return -EBUSY;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create a new socket.  */
 	err = sock_create(sk->sk_family, SOCK_SEQPACKET, IPPROTO_SCTP, &sock);
 	if (err < 0)
@@ -4265,15 +7964,32 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
 	sctp_copy_sock(sock->sk, sk, asoc);
 
 	/* Make peeled-off sockets more like 1-1 accepted sockets.
+<<<<<<< HEAD
 	 * Set the daddr and initialize id to something more random
 	 */
 	af = sctp_get_af_specific(asoc->peer.primary_addr.sa.sa_family);
 	af->to_sk_daddr(&asoc->peer.primary_addr, sk);
+=======
+	 * Set the daddr and initialize id to something more random and also
+	 * copy over any ip options.
+	 */
+	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
+	sp->pf->copy_ip_options(sk, sock->sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Populate the fields of the newsk from the oldsk and migrate the
 	 * asoc to the newsk.
 	 */
+<<<<<<< HEAD
 	sctp_sock_migrate(sk, sock->sk, asoc, SCTP_SOCKET_UDP_HIGH_BANDWIDTH);
+=======
+	err = sctp_sock_migrate(sk, sock->sk, asoc,
+				SCTP_SOCKET_UDP_HIGH_BANDWIDTH);
+	if (err) {
+		sock_release(sock);
+		sock = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*sockp = sock;
 
@@ -4281,10 +7997,53 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
 }
 EXPORT_SYMBOL(sctp_do_peeloff);
 
+<<<<<<< HEAD
 static int sctp_getsockopt_peeloff(struct sock *sk, int len, char __user *optval, int __user *optlen)
 {
 	sctp_peeloff_arg_t peeloff;
 	struct socket *newsock;
+=======
+static int sctp_getsockopt_peeloff_common(struct sock *sk, sctp_peeloff_arg_t *peeloff,
+					  struct file **newfile, unsigned flags)
+{
+	struct socket *newsock;
+	int retval;
+
+	retval = sctp_do_peeloff(sk, peeloff->associd, &newsock);
+	if (retval < 0)
+		goto out;
+
+	/* Map the socket to an unused fd that can be returned to the user.  */
+	retval = get_unused_fd_flags(flags & SOCK_CLOEXEC);
+	if (retval < 0) {
+		sock_release(newsock);
+		goto out;
+	}
+
+	*newfile = sock_alloc_file(newsock, 0, NULL);
+	if (IS_ERR(*newfile)) {
+		put_unused_fd(retval);
+		retval = PTR_ERR(*newfile);
+		*newfile = NULL;
+		return retval;
+	}
+
+	pr_debug("%s: sk:%p, newsk:%p, sd:%d\n", __func__, sk, newsock->sk,
+		 retval);
+
+	peeloff->sd = retval;
+
+	if (flags & SOCK_NONBLOCK)
+		(*newfile)->f_flags |= O_NONBLOCK;
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_peeloff(struct sock *sk, int len, char __user *optval, int __user *optlen)
+{
+	sctp_peeloff_arg_t peeloff;
+	struct file *newfile = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = 0;
 
 	if (len < sizeof(sctp_peeloff_arg_t))
@@ -4293,6 +8052,7 @@ static int sctp_getsockopt_peeloff(struct sock *sk, int len, char __user *optval
 	if (copy_from_user(&peeloff, optval, len))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	retval = sctp_do_peeloff(sk, peeloff.associd, &newsock);
 	if (retval < 0)
 		goto out;
@@ -4314,6 +8074,60 @@ static int sctp_getsockopt_peeloff(struct sock *sk, int len, char __user *optval
 	if (copy_to_user(optval, &peeloff, len))
 		retval = -EFAULT;
 
+=======
+	retval = sctp_getsockopt_peeloff_common(sk, &peeloff, &newfile, 0);
+	if (retval < 0)
+		goto out;
+
+	/* Return the fd mapped to the new socket.  */
+	if (put_user(len, optlen)) {
+		fput(newfile);
+		put_unused_fd(retval);
+		return -EFAULT;
+	}
+
+	if (copy_to_user(optval, &peeloff, len)) {
+		fput(newfile);
+		put_unused_fd(retval);
+		return -EFAULT;
+	}
+	fd_install(retval, newfile);
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_peeloff_flags(struct sock *sk, int len,
+					 char __user *optval, int __user *optlen)
+{
+	sctp_peeloff_flags_arg_t peeloff;
+	struct file *newfile = NULL;
+	int retval = 0;
+
+	if (len < sizeof(sctp_peeloff_flags_arg_t))
+		return -EINVAL;
+	len = sizeof(sctp_peeloff_flags_arg_t);
+	if (copy_from_user(&peeloff, optval, len))
+		return -EFAULT;
+
+	retval = sctp_getsockopt_peeloff_common(sk, &peeloff.p_arg,
+						&newfile, peeloff.flags);
+	if (retval < 0)
+		goto out;
+
+	/* Return the fd mapped to the new socket.  */
+	if (put_user(len, optlen)) {
+		fput(newfile);
+		put_unused_fd(retval);
+		return -EFAULT;
+	}
+
+	if (copy_to_user(optval, &peeloff, len)) {
+		fput(newfile);
+		put_unused_fd(retval);
+		return -EFAULT;
+	}
+	fd_install(retval, newfile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return retval;
 }
@@ -4410,6 +8224,48 @@ out:
  *                     also that this field is mutually exclusive to
  *                     SPP_SACKDELAY_ENABLE, setting both will have undefined
  *                     results.
+<<<<<<< HEAD
+=======
+ *
+ *                     SPP_IPV6_FLOWLABEL:  Setting this flag enables the
+ *                     setting of the IPV6 flow label value.  The value is
+ *                     contained in the spp_ipv6_flowlabel field.
+ *                     Upon retrieval, this flag will be set to indicate that
+ *                     the spp_ipv6_flowlabel field has a valid value returned.
+ *                     If a specific destination address is set (in the
+ *                     spp_address field), then the value returned is that of
+ *                     the address.  If just an association is specified (and
+ *                     no address), then the association's default flow label
+ *                     is returned.  If neither an association nor a destination
+ *                     is specified, then the socket's default flow label is
+ *                     returned.  For non-IPv6 sockets, this flag will be left
+ *                     cleared.
+ *
+ *                     SPP_DSCP:  Setting this flag enables the setting of the
+ *                     Differentiated Services Code Point (DSCP) value
+ *                     associated with either the association or a specific
+ *                     address.  The value is obtained in the spp_dscp field.
+ *                     Upon retrieval, this flag will be set to indicate that
+ *                     the spp_dscp field has a valid value returned.  If a
+ *                     specific destination address is set when called (in the
+ *                     spp_address field), then that specific destination
+ *                     address's DSCP value is returned.  If just an association
+ *                     is specified, then the association's default DSCP is
+ *                     returned.  If neither an association nor a destination is
+ *                     specified, then the socket's default DSCP is returned.
+ *
+ *   spp_ipv6_flowlabel
+ *                   - This field is used in conjunction with the
+ *                     SPP_IPV6_FLOWLABEL flag and contains the IPv6 flow label.
+ *                     The 20 least significant bits are used for the flow
+ *                     label.  This setting has precedence over any IPv6-layer
+ *                     setting.
+ *
+ *   spp_dscp        - This field is used in conjunction with the SPP_DSCP flag
+ *                     and contains the DSCP.  The 6 most significant bits are
+ *                     used for the DSCP.  This setting has precedence over any
+ *                     IPv4- or IPv6- layer setting.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 					    char __user *optval, int __user *optlen)
@@ -4419,24 +8275,45 @@ static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 	struct sctp_association *asoc = NULL;
 	struct sctp_sock        *sp = sctp_sk(sk);
 
+<<<<<<< HEAD
 	if (len < sizeof(struct sctp_paddrparams))
 		return -EINVAL;
 	len = sizeof(struct sctp_paddrparams);
+=======
+	if (len >= sizeof(params))
+		len = sizeof(params);
+	else if (len >= ALIGN(offsetof(struct sctp_paddrparams,
+				       spp_ipv6_flowlabel), 4))
+		len = ALIGN(offsetof(struct sctp_paddrparams,
+				     spp_ipv6_flowlabel), 4);
+	else
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_from_user(&params, optval, len))
 		return -EFAULT;
 
 	/* If an address other than INADDR_ANY is specified, and
 	 * no transport is found, then the request is invalid.
 	 */
+<<<<<<< HEAD
 	if (!sctp_is_any(sk, ( union sctp_addr *)&params.spp_address)) {
 		trans = sctp_addr_id2transport(sk, &params.spp_address,
 					       params.spp_assoc_id);
 		if (!trans) {
 			SCTP_DEBUG_PRINTK("Failed no transport\n");
+=======
+	if (!sctp_is_any(sk, (union sctp_addr *)&params.spp_address)) {
+		trans = sctp_addr_id2transport(sk, &params.spp_address,
+					       params.spp_assoc_id);
+		if (!trans) {
+			pr_debug("%s: failed no transport\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
+<<<<<<< HEAD
 	/* Get association, if assoc_id != 0 and the socket is a one
 	 * to many style socket, and an association was not found, then
 	 * the id was invalid.
@@ -4444,6 +8321,16 @@ static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 	asoc = sctp_id2assoc(sk, params.spp_assoc_id);
 	if (!asoc && params.spp_assoc_id && sctp_style(sk, UDP)) {
 		SCTP_DEBUG_PRINTK("Failed no association\n");
+=======
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params.spp_assoc_id);
+	if (!asoc && params.spp_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		pr_debug("%s: failed no association\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -4456,6 +8343,18 @@ static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 
 		/*draft-11 doesn't say what to return in spp_flags*/
 		params.spp_flags      = trans->param_flags;
+<<<<<<< HEAD
+=======
+		if (trans->flowlabel & SCTP_FLOWLABEL_SET_MASK) {
+			params.spp_ipv6_flowlabel = trans->flowlabel &
+						    SCTP_FLOWLABEL_VAL_MASK;
+			params.spp_flags |= SPP_IPV6_FLOWLABEL;
+		}
+		if (trans->dscp & SCTP_DSCP_SET_MASK) {
+			params.spp_dscp	= trans->dscp & SCTP_DSCP_VAL_MASK;
+			params.spp_flags |= SPP_DSCP;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (asoc) {
 		/* Fetch association values. */
 		params.spp_hbinterval = jiffies_to_msecs(asoc->hbinterval);
@@ -4465,6 +8364,18 @@ static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 
 		/*draft-11 doesn't say what to return in spp_flags*/
 		params.spp_flags      = asoc->param_flags;
+<<<<<<< HEAD
+=======
+		if (asoc->flowlabel & SCTP_FLOWLABEL_SET_MASK) {
+			params.spp_ipv6_flowlabel = asoc->flowlabel &
+						    SCTP_FLOWLABEL_VAL_MASK;
+			params.spp_flags |= SPP_IPV6_FLOWLABEL;
+		}
+		if (asoc->dscp & SCTP_DSCP_SET_MASK) {
+			params.spp_dscp	= asoc->dscp & SCTP_DSCP_VAL_MASK;
+			params.spp_flags |= SPP_DSCP;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Fetch socket values. */
 		params.spp_hbinterval = sp->hbinterval;
@@ -4474,6 +8385,18 @@ static int sctp_getsockopt_peer_addr_params(struct sock *sk, int len,
 
 		/*draft-11 doesn't say what to return in spp_flags*/
 		params.spp_flags      = sp->param_flags;
+<<<<<<< HEAD
+=======
+		if (sp->flowlabel & SCTP_FLOWLABEL_SET_MASK) {
+			params.spp_ipv6_flowlabel = sp->flowlabel &
+						    SCTP_FLOWLABEL_VAL_MASK;
+			params.spp_flags |= SPP_IPV6_FLOWLABEL;
+		}
+		if (sp->dscp & SCTP_DSCP_SET_MASK) {
+			params.spp_dscp	= sp->dscp & SCTP_DSCP_VAL_MASK;
+			params.spp_flags |= SPP_DSCP;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (copy_to_user(optval, &params, len))
@@ -4534,6 +8457,7 @@ static int sctp_getsockopt_delayed_ack(struct sock *sk, int len,
 		if (copy_from_user(&params, optval, len))
 			return -EFAULT;
 	} else if (len == sizeof(struct sctp_assoc_value)) {
+<<<<<<< HEAD
 		pr_warn("Use of struct sctp_assoc_value in delayed_ack socket option deprecated\n");
 		pr_warn("Use struct sctp_sack_info instead\n");
 		if (copy_from_user(&params, optval, len))
@@ -4547,13 +8471,36 @@ static int sctp_getsockopt_delayed_ack(struct sock *sk, int len,
 	 */
 	asoc = sctp_id2assoc(sk, params.sack_assoc_id);
 	if (!asoc && params.sack_assoc_id && sctp_style(sk, UDP))
+=======
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of struct sctp_assoc_value in delayed_ack socket option.\n"
+				    "Use struct sctp_sack_info instead\n",
+				    current->comm, task_pid_nr(current));
+		if (copy_from_user(&params, optval, len))
+			return -EFAULT;
+	} else
+		return -EINVAL;
+
+	/* Get association, if sack_assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params.sack_assoc_id);
+	if (!asoc && params.sack_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (asoc) {
 		/* Fetch association values. */
 		if (asoc->param_flags & SPP_SACKDELAY_ENABLE) {
+<<<<<<< HEAD
 			params.sack_delay = jiffies_to_msecs(
 				asoc->sackdelay);
+=======
+			params.sack_delay = jiffies_to_msecs(asoc->sackdelay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			params.sack_freq = asoc->sackfreq;
 
 		} else {
@@ -4629,14 +8576,24 @@ static int sctp_getsockopt_peer_addrs(struct sock *sk, int len,
 	if (!asoc)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	to = optval + offsetof(struct sctp_getaddrs,addrs);
 	space_left = len - offsetof(struct sctp_getaddrs,addrs);
+=======
+	to = optval + offsetof(struct sctp_getaddrs, addrs);
+	space_left = len - offsetof(struct sctp_getaddrs, addrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(from, &asoc->peer.transport_addr_list,
 				transports) {
 		memcpy(&temp, &from->ipaddr, sizeof(temp));
+<<<<<<< HEAD
 		sctp_get_pf_specific(sk->sk_family)->addr_v4map(sp, &temp);
 		addrlen = sctp_get_af_specific(temp.sa.sa_family)->sockaddr_len;
+=======
+		addrlen = sctp_get_pf_specific(sk->sk_family)
+			      ->addr_to_user(sp, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (space_left < addrlen)
 			return -ENOMEM;
 		if (copy_to_user(to, &temp, addrlen))
@@ -4662,9 +8619,16 @@ static int sctp_copy_laddrs(struct sock *sk, __u16 port, void *to,
 	union sctp_addr temp;
 	int cnt = 0;
 	int addrlen;
+<<<<<<< HEAD
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(addr, &sctp_local_addr_list, list) {
+=======
+	struct net *net = sock_net(sk);
+
+	rcu_read_lock();
+	list_for_each_entry_rcu(addr, &net->sctp.local_addr_list, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!addr->valid)
 			continue;
 
@@ -4679,9 +8643,15 @@ static int sctp_copy_laddrs(struct sock *sk, __u16 port, void *to,
 		if (!temp.v4.sin_port)
 			temp.v4.sin_port = htons(port);
 
+<<<<<<< HEAD
 		sctp_get_pf_specific(sk->sk_family)->addr_v4map(sctp_sk(sk),
 								&temp);
 		addrlen = sctp_get_af_specific(temp.sa.sa_family)->sockaddr_len;
+=======
+		addrlen = sctp_get_pf_specific(sk->sk_family)
+			      ->addr_to_user(sctp_sk(sk), &temp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (space_left < addrlen) {
 			cnt =  -ENOMEM;
 			break;
@@ -4689,7 +8659,11 @@ static int sctp_copy_laddrs(struct sock *sk, __u16 port, void *to,
 		memcpy(to, &temp, addrlen);
 
 		to += addrlen;
+<<<<<<< HEAD
 		cnt ++;
+=======
+		cnt++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		space_left -= addrlen;
 		*bytes_copied += addrlen;
 	}
@@ -4738,10 +8712,17 @@ static int sctp_getsockopt_local_addrs(struct sock *sk, int len,
 		bp = &asoc->base.bind_addr;
 	}
 
+<<<<<<< HEAD
 	to = optval + offsetof(struct sctp_getaddrs,addrs);
 	space_left = len - offsetof(struct sctp_getaddrs,addrs);
 
 	addrs = kmalloc(space_left, GFP_KERNEL);
+=======
+	to = optval + offsetof(struct sctp_getaddrs, addrs);
+	space_left = len - offsetof(struct sctp_getaddrs, addrs);
+
+	addrs = kmalloc(space_left, GFP_USER | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!addrs)
 		return -ENOMEM;
 
@@ -4769,8 +8750,13 @@ static int sctp_getsockopt_local_addrs(struct sock *sk, int len,
 	 */
 	list_for_each_entry(addr, &bp->address_list, list) {
 		memcpy(&temp, &addr->a, sizeof(temp));
+<<<<<<< HEAD
 		sctp_get_pf_specific(sk->sk_family)->addr_v4map(sp, &temp);
 		addrlen = sctp_get_af_specific(temp.sa.sa_family)->sockaddr_len;
+=======
+		addrlen = sctp_get_pf_specific(sk->sk_family)
+			      ->addr_to_user(sp, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (space_left < addrlen) {
 			err =  -ENOMEM; /*fixme: right error?*/
 			goto out;
@@ -4778,7 +8764,11 @@ static int sctp_getsockopt_local_addrs(struct sock *sk, int len,
 		memcpy(buf, &temp, addrlen);
 		buf += addrlen;
 		bytes_copied += addrlen;
+<<<<<<< HEAD
 		cnt ++;
+=======
+		cnt++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		space_left -= addrlen;
 	}
 
@@ -4791,6 +8781,12 @@ copy_getaddrs:
 		err = -EFAULT;
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	/* XXX: We should have accounted for sizeof(struct sctp_getaddrs) too,
+	 * but we can't change it anymore.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (put_user(bytes_copied, optlen))
 		err = -EFAULT;
 out:
@@ -4829,7 +8825,11 @@ static int sctp_getsockopt_primary_addr(struct sock *sk, int len,
 	memcpy(&prim.ssp_addr, &asoc->peer.primary_path->ipaddr,
 		asoc->peer.primary_path->af_specific->sockaddr_len);
 
+<<<<<<< HEAD
 	sctp_get_pf_specific(sk->sk_family)->addr_v4map(sp,
+=======
+	sctp_get_pf_specific(sk->sk_family)->addr_to_user(sp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(union sctp_addr *)&prim.ssp_addr);
 
 	if (put_user(len, optlen))
@@ -4889,6 +8889,7 @@ static int sctp_getsockopt_default_send_param(struct sock *sk,
 					int len, char __user *optval,
 					int __user *optlen)
 {
+<<<<<<< HEAD
 	struct sctp_sndrcvinfo info;
 	struct sctp_association *asoc;
 	struct sctp_sock *sp = sctp_sk(sk);
@@ -4897,12 +8898,27 @@ static int sctp_getsockopt_default_send_param(struct sock *sk,
 		return -EINVAL;
 
 	len = sizeof(struct sctp_sndrcvinfo);
+=======
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	struct sctp_sndrcvinfo info;
+
+	if (len < sizeof(info))
+		return -EINVAL;
+
+	len = sizeof(info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&info, optval, len))
 		return -EFAULT;
 
 	asoc = sctp_id2assoc(sk, info.sinfo_assoc_id);
+<<<<<<< HEAD
 	if (!asoc && info.sinfo_assoc_id && sctp_style(sk, UDP))
+=======
+	if (!asoc && info.sinfo_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (asoc) {
@@ -4927,6 +8943,53 @@ static int sctp_getsockopt_default_send_param(struct sock *sk,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* RFC6458, Section 8.1.31. Set/get Default Send Parameters
+ * (SCTP_DEFAULT_SNDINFO)
+ */
+static int sctp_getsockopt_default_sndinfo(struct sock *sk, int len,
+					   char __user *optval,
+					   int __user *optlen)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_association *asoc;
+	struct sctp_sndinfo info;
+
+	if (len < sizeof(info))
+		return -EINVAL;
+
+	len = sizeof(info);
+
+	if (copy_from_user(&info, optval, len))
+		return -EFAULT;
+
+	asoc = sctp_id2assoc(sk, info.snd_assoc_id);
+	if (!asoc && info.snd_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		info.snd_sid = asoc->default_stream;
+		info.snd_flags = asoc->default_flags;
+		info.snd_ppid = asoc->default_ppid;
+		info.snd_context = asoc->default_context;
+	} else {
+		info.snd_sid = sp->default_stream;
+		info.snd_flags = sp->default_flags;
+		info.snd_ppid = sp->default_ppid;
+		info.snd_context = sp->default_context;
+	}
+
+	if (put_user(len, optlen))
+		return -EFAULT;
+	if (copy_to_user(optval, &info, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * 7.1.5 SCTP_NODELAY
@@ -4982,7 +9045,12 @@ static int sctp_getsockopt_rtoinfo(struct sock *sk, int len,
 
 	asoc = sctp_id2assoc(sk, rtoinfo.srto_assoc_id);
 
+<<<<<<< HEAD
 	if (!asoc && rtoinfo.srto_assoc_id && sctp_style(sk, UDP))
+=======
+	if (!asoc && rtoinfo.srto_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Values corresponding to the specific association. */
@@ -5039,7 +9107,12 @@ static int sctp_getsockopt_associnfo(struct sock *sk, int len,
 
 	asoc = sctp_id2assoc(sk, assocparams.sasoc_assoc_id);
 
+<<<<<<< HEAD
 	if (!asoc && assocparams.sasoc_assoc_id && sctp_style(sk, UDP))
+=======
+	if (!asoc && assocparams.sasoc_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Values correspoinding to the specific association */
@@ -5047,6 +9120,7 @@ static int sctp_getsockopt_associnfo(struct sock *sk, int len,
 		assocparams.sasoc_asocmaxrxt = asoc->max_retrans;
 		assocparams.sasoc_peer_rwnd = asoc->peer.rwnd;
 		assocparams.sasoc_local_rwnd = asoc->a_rwnd;
+<<<<<<< HEAD
 		assocparams.sasoc_cookie_life = (asoc->cookie_life.tv_sec
 						* 1000) +
 						(asoc->cookie_life.tv_usec
@@ -5054,6 +9128,12 @@ static int sctp_getsockopt_associnfo(struct sock *sk, int len,
 
 		list_for_each(pos, &asoc->peer.transport_addr_list) {
 			cnt ++;
+=======
+		assocparams.sasoc_cookie_life = ktime_to_ms(asoc->cookie_life);
+
+		list_for_each(pos, &asoc->peer.transport_addr_list) {
+			cnt++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		assocparams.sasoc_number_peer_destinations = cnt;
@@ -5117,7 +9197,10 @@ static int sctp_getsockopt_context(struct sock *sk, int len,
 				   char __user *optval, int __user *optlen)
 {
 	struct sctp_assoc_value params;
+<<<<<<< HEAD
 	struct sctp_sock *sp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_association *asoc;
 
 	if (len < sizeof(struct sctp_assoc_value))
@@ -5128,6 +9211,7 @@ static int sctp_getsockopt_context(struct sock *sk, int len,
 	if (copy_from_user(&params, optval, len))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	sp = sctp_sk(sk);
 
 	if (params.assoc_id != 0) {
@@ -5138,6 +9222,15 @@ static int sctp_getsockopt_context(struct sock *sk, int len,
 	} else {
 		params.assoc_value = sp->default_rcv_context;
 	}
+=======
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	params.assoc_value = asoc ? asoc->default_rcv_context
+				  : sctp_sk(sk)->default_rcv_context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (put_user(len, optlen))
 		return -EFAULT;
@@ -5181,18 +9274,35 @@ static int sctp_getsockopt_maxseg(struct sock *sk, int len,
 	struct sctp_association *asoc;
 
 	if (len == sizeof(int)) {
+<<<<<<< HEAD
 		pr_warn("Use of int in maxseg socket option deprecated\n");
 		pr_warn("Use struct sctp_assoc_value instead\n");
 		params.assoc_id = 0;
 	} else if (len >= sizeof(struct sctp_assoc_value)) {
 		len = sizeof(struct sctp_assoc_value);
 		if (copy_from_user(&params, optval, sizeof(params)))
+=======
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of int in maxseg socket option.\n"
+				    "Use struct sctp_assoc_value instead\n",
+				    current->comm, task_pid_nr(current));
+		params.assoc_id = SCTP_FUTURE_ASSOC;
+	} else if (len >= sizeof(struct sctp_assoc_value)) {
+		len = sizeof(struct sctp_assoc_value);
+		if (copy_from_user(&params, optval, len))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	} else
 		return -EINVAL;
 
 	asoc = sctp_id2assoc(sk, params.assoc_id);
+<<<<<<< HEAD
 	if (!asoc && params.assoc_id && sctp_style(sk, UDP))
+=======
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (asoc)
@@ -5269,6 +9379,7 @@ static int sctp_getsockopt_maxburst(struct sock *sk, int len,
 				    int __user *optlen)
 {
 	struct sctp_assoc_value params;
+<<<<<<< HEAD
 	struct sctp_sock *sp;
 	struct sctp_association *asoc;
 
@@ -5276,6 +9387,17 @@ static int sctp_getsockopt_maxburst(struct sock *sk, int len,
 		pr_warn("Use of int in max_burst socket option deprecated\n");
 		pr_warn("Use struct sctp_assoc_value instead\n");
 		params.assoc_id = 0;
+=======
+	struct sctp_association *asoc;
+
+	if (len == sizeof(int)) {
+		pr_warn_ratelimited(DEPRECATED
+				    "%s (pid %d) "
+				    "Use of int in max_burst socket option.\n"
+				    "Use struct sctp_assoc_value instead\n",
+				    current->comm, task_pid_nr(current));
+		params.assoc_id = SCTP_FUTURE_ASSOC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (len >= sizeof(struct sctp_assoc_value)) {
 		len = sizeof(struct sctp_assoc_value);
 		if (copy_from_user(&params, optval, len))
@@ -5283,6 +9405,7 @@ static int sctp_getsockopt_maxburst(struct sock *sk, int len,
 	} else
 		return -EINVAL;
 
+<<<<<<< HEAD
 	sp = sctp_sk(sk);
 
 	if (params.assoc_id != 0) {
@@ -5292,6 +9415,14 @@ static int sctp_getsockopt_maxburst(struct sock *sk, int len,
 		params.assoc_value = asoc->max_burst;
 	} else
 		params.assoc_value = sp->max_burst;
+=======
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	params.assoc_value = asoc ? asoc->max_burst : sctp_sk(sk)->max_burst;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len == sizeof(int)) {
 		if (copy_to_user(optval, &params.assoc_value, len))
@@ -5308,16 +9439,31 @@ static int sctp_getsockopt_maxburst(struct sock *sk, int len,
 static int sctp_getsockopt_hmac_ident(struct sock *sk, int len,
 				    char __user *optval, int __user *optlen)
 {
+<<<<<<< HEAD
+=======
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_hmacalgo  __user *p = (void __user *)optval;
 	struct sctp_hmac_algo_param *hmacs;
 	__u16 data_len = 0;
 	u32 num_idents;
+<<<<<<< HEAD
 
 	if (!sctp_auth_enable)
 		return -EACCES;
 
 	hmacs = sctp_sk(sk)->ep->auth_hmacs_list;
 	data_len = ntohs(hmacs->param_hdr.length) - sizeof(sctp_paramhdr_t);
+=======
+	int i;
+
+	if (!ep->auth_enable)
+		return -EACCES;
+
+	hmacs = ep->auth_hmacs_list;
+	data_len = ntohs(hmacs->param_hdr.length) -
+		   sizeof(struct sctp_paramhdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len < sizeof(struct sctp_hmacalgo) + data_len)
 		return -EINVAL;
@@ -5329,14 +9475,24 @@ static int sctp_getsockopt_hmac_ident(struct sock *sk, int len,
 		return -EFAULT;
 	if (put_user(num_idents, &p->shmac_num_idents))
 		return -EFAULT;
+<<<<<<< HEAD
 	if (copy_to_user(p->shmac_idents, hmacs->hmac_ids, data_len))
 		return -EFAULT;
+=======
+	for (i = 0; i < num_idents; i++) {
+		__u16 hmacid = ntohs(hmacs->hmac_ids[i]);
+
+		if (copy_to_user(&p->shmac_idents[i], &hmacid, sizeof(__u16)))
+			return -EFAULT;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int sctp_getsockopt_active_key(struct sock *sk, int len,
 				    char __user *optval, int __user *optlen)
 {
+<<<<<<< HEAD
 	struct sctp_authkeyid val;
 	struct sctp_association *asoc;
 
@@ -5346,18 +9502,42 @@ static int sctp_getsockopt_active_key(struct sock *sk, int len,
 	if (len < sizeof(struct sctp_authkeyid))
 		return -EINVAL;
 	if (copy_from_user(&val, optval, sizeof(struct sctp_authkeyid)))
+=======
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+	struct sctp_authkeyid val;
+	struct sctp_association *asoc;
+
+	if (len < sizeof(struct sctp_authkeyid))
+		return -EINVAL;
+
+	len = sizeof(struct sctp_authkeyid);
+	if (copy_from_user(&val, optval, len))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	asoc = sctp_id2assoc(sk, val.scact_assoc_id);
 	if (!asoc && val.scact_assoc_id && sctp_style(sk, UDP))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (asoc)
 		val.scact_keynumber = asoc->active_key_id;
 	else
 		val.scact_keynumber = sctp_sk(sk)->ep->active_key_id;
 
 	len = sizeof(struct sctp_authkeyid);
+=======
+	if (asoc) {
+		if (!asoc->peer.auth_capable)
+			return -EACCES;
+		val.scact_keynumber = asoc->active_key_id;
+	} else {
+		if (!ep->auth_enable)
+			return -EACCES;
+		val.scact_keynumber = ep->active_key_id;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (put_user(len, optlen))
 		return -EFAULT;
 	if (copy_to_user(optval, &val, len))
@@ -5376,6 +9556,7 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
 	u32    num_chunks = 0;
 	char __user *to;
 
+<<<<<<< HEAD
 	if (!sctp_auth_enable)
 		return -EACCES;
 
@@ -5383,6 +9564,12 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
 		return -EINVAL;
 
 	if (copy_from_user(&val, optval, sizeof(struct sctp_authchunks)))
+=======
+	if (len < sizeof(struct sctp_authchunks))
+		return -EINVAL;
+
+	if (copy_from_user(&val, optval, sizeof(val)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	to = p->gauth_chunks;
@@ -5390,12 +9577,22 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
 	if (!asoc)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (!asoc->peer.auth_capable)
+		return -EACCES;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ch = asoc->peer.peer_chunks;
 	if (!ch)
 		goto num;
 
 	/* See if the user provided enough room for all the data */
+<<<<<<< HEAD
 	num_chunks = ntohs(ch->param_hdr.length) - sizeof(sctp_paramhdr_t);
+=======
+	num_chunks = ntohs(ch->param_hdr.length) - sizeof(struct sctp_paramhdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < num_chunks)
 		return -EINVAL;
 
@@ -5403,7 +9600,12 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
 		return -EFAULT;
 num:
 	len = sizeof(struct sctp_authchunks) + num_chunks;
+<<<<<<< HEAD
 	if (put_user(len, optlen)) return -EFAULT;
+=======
+	if (put_user(len, optlen))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (put_user(num_chunks, &p->gauth_number_of_chunks))
 		return -EFAULT;
 	return 0;
@@ -5412,6 +9614,10 @@ num:
 static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
 				    char __user *optval, int __user *optlen)
 {
+<<<<<<< HEAD
+=======
+	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_authchunks __user *p = (void __user *)optval;
 	struct sctp_authchunks val;
 	struct sctp_association *asoc;
@@ -5419,6 +9625,7 @@ static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
 	u32    num_chunks = 0;
 	char __user *to;
 
+<<<<<<< HEAD
 	if (!sctp_auth_enable)
 		return -EACCES;
 
@@ -5426,10 +9633,17 @@ static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
 		return -EINVAL;
 
 	if (copy_from_user(&val, optval, sizeof(struct sctp_authchunks)))
+=======
+	if (len < sizeof(struct sctp_authchunks))
+		return -EINVAL;
+
+	if (copy_from_user(&val, optval, sizeof(val)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	to = p->gauth_chunks;
 	asoc = sctp_id2assoc(sk, val.gauth_assoc_id);
+<<<<<<< HEAD
 	if (!asoc && val.gauth_assoc_id && sctp_style(sk, UDP))
 		return -EINVAL;
 
@@ -5442,6 +9656,25 @@ static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
 		goto num;
 
 	num_chunks = ntohs(ch->param_hdr.length) - sizeof(sctp_paramhdr_t);
+=======
+	if (!asoc && val.gauth_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		if (!asoc->peer.auth_capable)
+			return -EACCES;
+		ch = (struct sctp_chunks_param *)asoc->c.auth_chunks;
+	} else {
+		if (!ep->auth_enable)
+			return -EACCES;
+		ch = ep->auth_chunk_list;
+	}
+	if (!ch)
+		goto num;
+
+	num_chunks = ntohs(ch->param_hdr.length) - sizeof(struct sctp_paramhdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < sizeof(struct sctp_authchunks) + num_chunks)
 		return -EINVAL;
 
@@ -5541,7 +9774,11 @@ static int sctp_getsockopt_assoc_ids(struct sock *sk, int len,
 
 	len = sizeof(struct sctp_assoc_ids) + sizeof(sctp_assoc_t) * num;
 
+<<<<<<< HEAD
 	ids = kmalloc(len, GFP_KERNEL);
+=======
+	ids = kmalloc(len, GFP_USER | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!ids))
 		return -ENOMEM;
 
@@ -5560,14 +9797,923 @@ static int sctp_getsockopt_assoc_ids(struct sock *sk, int len,
 	return 0;
 }
 
+<<<<<<< HEAD
 SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 				char __user *optval, int __user *optlen)
+=======
+/*
+ * SCTP_PEER_ADDR_THLDS
+ *
+ * This option allows us to fetch the partially failed threshold for one or all
+ * transports in an association.  See Section 6.1 of:
+ * http://www.ietf.org/id/draft-nishida-tsvwg-sctp-failover-05.txt
+ */
+static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
+					    char __user *optval, int len,
+					    int __user *optlen, bool v2)
+{
+	struct sctp_paddrthlds_v2 val;
+	struct sctp_transport *trans;
+	struct sctp_association *asoc;
+	int min;
+
+	min = v2 ? sizeof(val) : sizeof(struct sctp_paddrthlds);
+	if (len < min)
+		return -EINVAL;
+	len = min;
+	if (copy_from_user(&val, optval, len))
+		return -EFAULT;
+
+	if (!sctp_is_any(sk, (const union sctp_addr *)&val.spt_address)) {
+		trans = sctp_addr_id2transport(sk, &val.spt_address,
+					       val.spt_assoc_id);
+		if (!trans)
+			return -ENOENT;
+
+		val.spt_pathmaxrxt = trans->pathmaxrxt;
+		val.spt_pathpfthld = trans->pf_retrans;
+		val.spt_pathcpthld = trans->ps_retrans;
+
+		goto out;
+	}
+
+	asoc = sctp_id2assoc(sk, val.spt_assoc_id);
+	if (!asoc && val.spt_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	if (asoc) {
+		val.spt_pathpfthld = asoc->pf_retrans;
+		val.spt_pathmaxrxt = asoc->pathmaxrxt;
+		val.spt_pathcpthld = asoc->ps_retrans;
+	} else {
+		struct sctp_sock *sp = sctp_sk(sk);
+
+		val.spt_pathpfthld = sp->pf_retrans;
+		val.spt_pathmaxrxt = sp->pathmaxrxt;
+		val.spt_pathcpthld = sp->ps_retrans;
+	}
+
+out:
+	if (put_user(len, optlen) || copy_to_user(optval, &val, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+/*
+ * SCTP_GET_ASSOC_STATS
+ *
+ * This option retrieves local per endpoint statistics. It is modeled
+ * after OpenSolaris' implementation
+ */
+static int sctp_getsockopt_assoc_stats(struct sock *sk, int len,
+				       char __user *optval,
+				       int __user *optlen)
+{
+	struct sctp_assoc_stats sas;
+	struct sctp_association *asoc = NULL;
+
+	/* User must provide at least the assoc id */
+	if (len < sizeof(sctp_assoc_t))
+		return -EINVAL;
+
+	/* Allow the struct to grow and fill in as much as possible */
+	len = min_t(size_t, len, sizeof(sas));
+
+	if (copy_from_user(&sas, optval, len))
+		return -EFAULT;
+
+	asoc = sctp_id2assoc(sk, sas.sas_assoc_id);
+	if (!asoc)
+		return -EINVAL;
+
+	sas.sas_rtxchunks = asoc->stats.rtxchunks;
+	sas.sas_gapcnt = asoc->stats.gapcnt;
+	sas.sas_outofseqtsns = asoc->stats.outofseqtsns;
+	sas.sas_osacks = asoc->stats.osacks;
+	sas.sas_isacks = asoc->stats.isacks;
+	sas.sas_octrlchunks = asoc->stats.octrlchunks;
+	sas.sas_ictrlchunks = asoc->stats.ictrlchunks;
+	sas.sas_oodchunks = asoc->stats.oodchunks;
+	sas.sas_iodchunks = asoc->stats.iodchunks;
+	sas.sas_ouodchunks = asoc->stats.ouodchunks;
+	sas.sas_iuodchunks = asoc->stats.iuodchunks;
+	sas.sas_idupchunks = asoc->stats.idupchunks;
+	sas.sas_opackets = asoc->stats.opackets;
+	sas.sas_ipackets = asoc->stats.ipackets;
+
+	/* New high max rto observed, will return 0 if not a single
+	 * RTO update took place. obs_rto_ipaddr will be bogus
+	 * in such a case
+	 */
+	sas.sas_maxrto = asoc->stats.max_obs_rto;
+	memcpy(&sas.sas_obs_rto_ipaddr, &asoc->stats.obs_rto_ipaddr,
+		sizeof(struct sockaddr_storage));
+
+	/* Mark beginning of a new observation period */
+	asoc->stats.max_obs_rto = asoc->rto_min;
+
+	if (put_user(len, optlen))
+		return -EFAULT;
+
+	pr_debug("%s: len:%d, assoc_id:%d\n", __func__, len, sas.sas_assoc_id);
+
+	if (copy_to_user(optval, &sas, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_recvrcvinfo(struct sock *sk,	int len,
+				       char __user *optval,
+				       int __user *optlen)
+{
+	int val = 0;
+
+	if (len < sizeof(int))
+		return -EINVAL;
+
+	len = sizeof(int);
+	if (sctp_sk(sk)->recvrcvinfo)
+		val = 1;
+	if (put_user(len, optlen))
+		return -EFAULT;
+	if (copy_to_user(optval, &val, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_recvnxtinfo(struct sock *sk,	int len,
+				       char __user *optval,
+				       int __user *optlen)
+{
+	int val = 0;
+
+	if (len < sizeof(int))
+		return -EINVAL;
+
+	len = sizeof(int);
+	if (sctp_sk(sk)->recvnxtinfo)
+		val = 1;
+	if (put_user(len, optlen))
+		return -EFAULT;
+	if (copy_to_user(optval, &val, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_pr_supported(struct sock *sk, int len,
+					char __user *optval,
+					int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.prsctp_capable
+				  : sctp_sk(sk)->ep->prsctp_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_default_prinfo(struct sock *sk, int len,
+					  char __user *optval,
+					  int __user *optlen)
+{
+	struct sctp_default_prinfo info;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(info)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(info);
+	if (copy_from_user(&info, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, info.pr_assoc_id);
+	if (!asoc && info.pr_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	if (asoc) {
+		info.pr_policy = SCTP_PR_POLICY(asoc->default_flags);
+		info.pr_value = asoc->default_timetolive;
+	} else {
+		struct sctp_sock *sp = sctp_sk(sk);
+
+		info.pr_policy = SCTP_PR_POLICY(sp->default_flags);
+		info.pr_value = sp->default_timetolive;
+	}
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &info, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_pr_assocstatus(struct sock *sk, int len,
+					  char __user *optval,
+					  int __user *optlen)
+{
+	struct sctp_prstatus params;
+	struct sctp_association *asoc;
+	int policy;
+	int retval = -EINVAL;
+
+	if (len < sizeof(params))
+		goto out;
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	policy = params.sprstat_policy;
+	if (!policy || (policy & ~(SCTP_PR_SCTP_MASK | SCTP_PR_SCTP_ALL)) ||
+	    ((policy & SCTP_PR_SCTP_ALL) && (policy & SCTP_PR_SCTP_MASK)))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.sprstat_assoc_id);
+	if (!asoc)
+		goto out;
+
+	if (policy == SCTP_PR_SCTP_ALL) {
+		params.sprstat_abandoned_unsent = 0;
+		params.sprstat_abandoned_sent = 0;
+		for (policy = 0; policy <= SCTP_PR_INDEX(MAX); policy++) {
+			params.sprstat_abandoned_unsent +=
+				asoc->abandoned_unsent[policy];
+			params.sprstat_abandoned_sent +=
+				asoc->abandoned_sent[policy];
+		}
+	} else {
+		params.sprstat_abandoned_unsent =
+			asoc->abandoned_unsent[__SCTP_PR_INDEX(policy)];
+		params.sprstat_abandoned_sent =
+			asoc->abandoned_sent[__SCTP_PR_INDEX(policy)];
+	}
+
+	if (put_user(len, optlen)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	if (copy_to_user(optval, &params, len)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_pr_streamstatus(struct sock *sk, int len,
+					   char __user *optval,
+					   int __user *optlen)
+{
+	struct sctp_stream_out_ext *streamoute;
+	struct sctp_association *asoc;
+	struct sctp_prstatus params;
+	int retval = -EINVAL;
+	int policy;
+
+	if (len < sizeof(params))
+		goto out;
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	policy = params.sprstat_policy;
+	if (!policy || (policy & ~(SCTP_PR_SCTP_MASK | SCTP_PR_SCTP_ALL)) ||
+	    ((policy & SCTP_PR_SCTP_ALL) && (policy & SCTP_PR_SCTP_MASK)))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.sprstat_assoc_id);
+	if (!asoc || params.sprstat_sid >= asoc->stream.outcnt)
+		goto out;
+
+	streamoute = SCTP_SO(&asoc->stream, params.sprstat_sid)->ext;
+	if (!streamoute) {
+		/* Not allocated yet, means all stats are 0 */
+		params.sprstat_abandoned_unsent = 0;
+		params.sprstat_abandoned_sent = 0;
+		retval = 0;
+		goto out;
+	}
+
+	if (policy == SCTP_PR_SCTP_ALL) {
+		params.sprstat_abandoned_unsent = 0;
+		params.sprstat_abandoned_sent = 0;
+		for (policy = 0; policy <= SCTP_PR_INDEX(MAX); policy++) {
+			params.sprstat_abandoned_unsent +=
+				streamoute->abandoned_unsent[policy];
+			params.sprstat_abandoned_sent +=
+				streamoute->abandoned_sent[policy];
+		}
+	} else {
+		params.sprstat_abandoned_unsent =
+			streamoute->abandoned_unsent[__SCTP_PR_INDEX(policy)];
+		params.sprstat_abandoned_sent =
+			streamoute->abandoned_sent[__SCTP_PR_INDEX(policy)];
+	}
+
+	if (put_user(len, optlen) || copy_to_user(optval, &params, len)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_reconfig_supported(struct sock *sk, int len,
+					      char __user *optval,
+					      int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.reconf_capable
+				  : sctp_sk(sk)->ep->reconf_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_enable_strreset(struct sock *sk, int len,
+					   char __user *optval,
+					   int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->strreset_enable
+				  : sctp_sk(sk)->ep->strreset_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_scheduler(struct sock *sk, int len,
+				     char __user *optval,
+				     int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? sctp_sched_get_sched(asoc)
+				  : sctp_sk(sk)->default_ss;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_scheduler_value(struct sock *sk, int len,
+					   char __user *optval,
+					   int __user *optlen)
+{
+	struct sctp_stream_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	retval = sctp_sched_get_value(asoc, params.stream_id,
+				      &params.stream_value);
+	if (retval)
+		goto out;
+
+	if (put_user(len, optlen)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+	if (copy_to_user(optval, &params, len)) {
+		retval = -EFAULT;
+		goto out;
+	}
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_interleaving_supported(struct sock *sk, int len,
+						  char __user *optval,
+						  int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.intl_capable
+				  : sctp_sk(sk)->ep->intl_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_reuse_port(struct sock *sk, int len,
+				      char __user *optval,
+				      int __user *optlen)
+{
+	int val;
+
+	if (len < sizeof(int))
+		return -EINVAL;
+
+	len = sizeof(int);
+	val = sctp_sk(sk)->reuse;
+	if (put_user(len, optlen))
+		return -EFAULT;
+
+	if (copy_to_user(optval, &val, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_event(struct sock *sk, int len, char __user *optval,
+				 int __user *optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_event param;
+	__u16 subscribe;
+
+	if (len < sizeof(param))
+		return -EINVAL;
+
+	len = sizeof(param);
+	if (copy_from_user(&param, optval, len))
+		return -EFAULT;
+
+	if (param.se_type < SCTP_SN_TYPE_BASE ||
+	    param.se_type > SCTP_SN_TYPE_MAX)
+		return -EINVAL;
+
+	asoc = sctp_id2assoc(sk, param.se_assoc_id);
+	if (!asoc && param.se_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP))
+		return -EINVAL;
+
+	subscribe = asoc ? asoc->subscribe : sctp_sk(sk)->subscribe;
+	param.se_on = sctp_ulpevent_type_enabled(subscribe, param.se_type);
+
+	if (put_user(len, optlen))
+		return -EFAULT;
+
+	if (copy_to_user(optval, &param, len))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_asconf_supported(struct sock *sk, int len,
+					    char __user *optval,
+					    int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.asconf_capable
+				  : sctp_sk(sk)->ep->asconf_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_auth_supported(struct sock *sk, int len,
+					  char __user *optval,
+					  int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.auth_capable
+				  : sctp_sk(sk)->ep->auth_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_ecn_supported(struct sock *sk, int len,
+					 char __user *optval,
+					 int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->peer.ecn_capable
+				  : sctp_sk(sk)->ep->ecn_enable;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_pf_expose(struct sock *sk, int len,
+				     char __user *optval,
+				     int __user *optlen)
+{
+	struct sctp_assoc_value params;
+	struct sctp_association *asoc;
+	int retval = -EFAULT;
+
+	if (len < sizeof(params)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		goto out;
+
+	asoc = sctp_id2assoc(sk, params.assoc_id);
+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		retval = -EINVAL;
+		goto out;
+	}
+
+	params.assoc_value = asoc ? asoc->pf_expose
+				  : sctp_sk(sk)->pf_expose;
+
+	if (put_user(len, optlen))
+		goto out;
+
+	if (copy_to_user(optval, &params, len))
+		goto out;
+
+	retval = 0;
+
+out:
+	return retval;
+}
+
+static int sctp_getsockopt_encap_port(struct sock *sk, int len,
+				      char __user *optval, int __user *optlen)
+{
+	struct sctp_association *asoc;
+	struct sctp_udpencaps encap;
+	struct sctp_transport *t;
+	__be16 encap_port;
+
+	if (len < sizeof(encap))
+		return -EINVAL;
+
+	len = sizeof(encap);
+	if (copy_from_user(&encap, optval, len))
+		return -EFAULT;
+
+	/* If an address other than INADDR_ANY is specified, and
+	 * no transport is found, then the request is invalid.
+	 */
+	if (!sctp_is_any(sk, (union sctp_addr *)&encap.sue_address)) {
+		t = sctp_addr_id2transport(sk, &encap.sue_address,
+					   encap.sue_assoc_id);
+		if (!t) {
+			pr_debug("%s: failed no transport\n", __func__);
+			return -EINVAL;
+		}
+
+		encap_port = t->encap_port;
+		goto out;
+	}
+
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, encap.sue_assoc_id);
+	if (!asoc && encap.sue_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		pr_debug("%s: failed no association\n", __func__);
+		return -EINVAL;
+	}
+
+	if (asoc) {
+		encap_port = asoc->encap_port;
+		goto out;
+	}
+
+	encap_port = sctp_sk(sk)->encap_port;
+
+out:
+	encap.sue_port = (__force uint16_t)encap_port;
+	if (copy_to_user(optval, &encap, len))
+		return -EFAULT;
+
+	if (put_user(len, optlen))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt_probe_interval(struct sock *sk, int len,
+					  char __user *optval,
+					  int __user *optlen)
+{
+	struct sctp_probeinterval params;
+	struct sctp_association *asoc;
+	struct sctp_transport *t;
+	__u32 probe_interval;
+
+	if (len < sizeof(params))
+		return -EINVAL;
+
+	len = sizeof(params);
+	if (copy_from_user(&params, optval, len))
+		return -EFAULT;
+
+	/* If an address other than INADDR_ANY is specified, and
+	 * no transport is found, then the request is invalid.
+	 */
+	if (!sctp_is_any(sk, (union sctp_addr *)&params.spi_address)) {
+		t = sctp_addr_id2transport(sk, &params.spi_address,
+					   params.spi_assoc_id);
+		if (!t) {
+			pr_debug("%s: failed no transport\n", __func__);
+			return -EINVAL;
+		}
+
+		probe_interval = jiffies_to_msecs(t->probe_interval);
+		goto out;
+	}
+
+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
+	 * socket is a one to many style socket, and an association
+	 * was not found, then the id was invalid.
+	 */
+	asoc = sctp_id2assoc(sk, params.spi_assoc_id);
+	if (!asoc && params.spi_assoc_id != SCTP_FUTURE_ASSOC &&
+	    sctp_style(sk, UDP)) {
+		pr_debug("%s: failed no association\n", __func__);
+		return -EINVAL;
+	}
+
+	if (asoc) {
+		probe_interval = jiffies_to_msecs(asoc->probe_interval);
+		goto out;
+	}
+
+	probe_interval = sctp_sk(sk)->probe_interval;
+
+out:
+	params.spi_interval = probe_interval;
+	if (copy_to_user(optval, &params, len))
+		return -EFAULT;
+
+	if (put_user(len, optlen))
+		return -EFAULT;
+
+	return 0;
+}
+
+static int sctp_getsockopt(struct sock *sk, int level, int optname,
+			   char __user *optval, int __user *optlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval = 0;
 	int len;
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_getsockopt(sk: %p... optname: %d)\n",
 			  sk, optname);
+=======
+	pr_debug("%s: sk:%p, optname:%d\n", __func__, sk, optname);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* I can hardly begin to describe how wrong this is.  This is
 	 * so broken as to be worse than useless.  The API draft
@@ -5585,7 +10731,14 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 	if (get_user(len, optlen))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	sctp_lock_sock(sk);
+=======
+	if (len < 0)
+		return -EINVAL;
+
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (optname) {
 	case SCTP_STATUS:
@@ -5604,6 +10757,12 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 	case SCTP_SOCKOPT_PEELOFF:
 		retval = sctp_getsockopt_peeloff(sk, len, optval, optlen);
 		break;
+<<<<<<< HEAD
+=======
+	case SCTP_SOCKOPT_PEELOFF_FLAGS:
+		retval = sctp_getsockopt_peeloff_flags(sk, len, optval, optlen);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCTP_PEER_ADDR_PARAMS:
 		retval = sctp_getsockopt_peer_addr_params(sk, len, optval,
 							  optlen);
@@ -5630,6 +10789,13 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 		retval = sctp_getsockopt_default_send_param(sk, len,
 							    optval, optlen);
 		break;
+<<<<<<< HEAD
+=======
+	case SCTP_DEFAULT_SNDINFO:
+		retval = sctp_getsockopt_default_sndinfo(sk, len,
+							 optval, optlen);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCTP_PRIMARY_ADDR:
 		retval = sctp_getsockopt_primary_addr(sk, len, optval, optlen);
 		break;
@@ -5673,6 +10839,10 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 	case SCTP_AUTH_KEY:
 	case SCTP_AUTH_CHUNK:
 	case SCTP_AUTH_DELETE_KEY:
+<<<<<<< HEAD
+=======
+	case SCTP_AUTH_DEACTIVATE_KEY:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EOPNOTSUPP;
 		break;
 	case SCTP_HMAC_IDENT:
@@ -5698,11 +10868,93 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 	case SCTP_AUTO_ASCONF:
 		retval = sctp_getsockopt_auto_asconf(sk, len, optval, optlen);
 		break;
+<<<<<<< HEAD
+=======
+	case SCTP_PEER_ADDR_THLDS:
+		retval = sctp_getsockopt_paddr_thresholds(sk, optval, len,
+							  optlen, false);
+		break;
+	case SCTP_PEER_ADDR_THLDS_V2:
+		retval = sctp_getsockopt_paddr_thresholds(sk, optval, len,
+							  optlen, true);
+		break;
+	case SCTP_GET_ASSOC_STATS:
+		retval = sctp_getsockopt_assoc_stats(sk, len, optval, optlen);
+		break;
+	case SCTP_RECVRCVINFO:
+		retval = sctp_getsockopt_recvrcvinfo(sk, len, optval, optlen);
+		break;
+	case SCTP_RECVNXTINFO:
+		retval = sctp_getsockopt_recvnxtinfo(sk, len, optval, optlen);
+		break;
+	case SCTP_PR_SUPPORTED:
+		retval = sctp_getsockopt_pr_supported(sk, len, optval, optlen);
+		break;
+	case SCTP_DEFAULT_PRINFO:
+		retval = sctp_getsockopt_default_prinfo(sk, len, optval,
+							optlen);
+		break;
+	case SCTP_PR_ASSOC_STATUS:
+		retval = sctp_getsockopt_pr_assocstatus(sk, len, optval,
+							optlen);
+		break;
+	case SCTP_PR_STREAM_STATUS:
+		retval = sctp_getsockopt_pr_streamstatus(sk, len, optval,
+							 optlen);
+		break;
+	case SCTP_RECONFIG_SUPPORTED:
+		retval = sctp_getsockopt_reconfig_supported(sk, len, optval,
+							    optlen);
+		break;
+	case SCTP_ENABLE_STREAM_RESET:
+		retval = sctp_getsockopt_enable_strreset(sk, len, optval,
+							 optlen);
+		break;
+	case SCTP_STREAM_SCHEDULER:
+		retval = sctp_getsockopt_scheduler(sk, len, optval,
+						   optlen);
+		break;
+	case SCTP_STREAM_SCHEDULER_VALUE:
+		retval = sctp_getsockopt_scheduler_value(sk, len, optval,
+							 optlen);
+		break;
+	case SCTP_INTERLEAVING_SUPPORTED:
+		retval = sctp_getsockopt_interleaving_supported(sk, len, optval,
+								optlen);
+		break;
+	case SCTP_REUSE_PORT:
+		retval = sctp_getsockopt_reuse_port(sk, len, optval, optlen);
+		break;
+	case SCTP_EVENT:
+		retval = sctp_getsockopt_event(sk, len, optval, optlen);
+		break;
+	case SCTP_ASCONF_SUPPORTED:
+		retval = sctp_getsockopt_asconf_supported(sk, len, optval,
+							  optlen);
+		break;
+	case SCTP_AUTH_SUPPORTED:
+		retval = sctp_getsockopt_auth_supported(sk, len, optval,
+							optlen);
+		break;
+	case SCTP_ECN_SUPPORTED:
+		retval = sctp_getsockopt_ecn_supported(sk, len, optval, optlen);
+		break;
+	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
+		retval = sctp_getsockopt_pf_expose(sk, len, optval, optlen);
+		break;
+	case SCTP_REMOTE_UDP_ENCAPS_PORT:
+		retval = sctp_getsockopt_encap_port(sk, len, optval, optlen);
+		break;
+	case SCTP_PLPMTUD_PROBE_INTERVAL:
+		retval = sctp_getsockopt_probe_interval(sk, len, optval, optlen);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		retval = -ENOPROTOOPT;
 		break;
 	}
 
+<<<<<<< HEAD
 	sctp_release_sock(sk);
 	return retval;
 }
@@ -5710,6 +10962,32 @@ SCTP_STATIC int sctp_getsockopt(struct sock *sk, int level, int optname,
 static void sctp_hash(struct sock *sk)
 {
 	/* STUB */
+=======
+	release_sock(sk);
+	return retval;
+}
+
+static bool sctp_bpf_bypass_getsockopt(int level, int optname)
+{
+	if (level == SOL_SCTP) {
+		switch (optname) {
+		case SCTP_SOCKOPT_PEELOFF:
+		case SCTP_SOCKOPT_PEELOFF_FLAGS:
+		case SCTP_SOCKOPT_CONNECTX3:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	return false;
+}
+
+static int sctp_hash(struct sock *sk)
+{
+	/* STUB */
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sctp_unhash(struct sock *sk)
@@ -5730,6 +11008,7 @@ static void sctp_unhash(struct sock *sk)
  * a fastreuse flag (FIXME: NPI ipg).
  */
 static struct sctp_bind_bucket *sctp_bucket_create(
+<<<<<<< HEAD
 	struct sctp_bind_hashbucket *head, unsigned short snum);
 
 static long sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
@@ -5737,27 +11016,50 @@ static long sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
 	struct sctp_bind_hashbucket *head; /* hash list */
 	struct sctp_bind_bucket *pp; /* hash list port iterator */
 	struct hlist_node *node;
+=======
+	struct sctp_bind_hashbucket *head, struct net *, unsigned short snum);
+
+static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	bool reuse = (sk->sk_reuse || sp->reuse);
+	struct sctp_bind_hashbucket *head; /* hash list */
+	struct net *net = sock_net(sk);
+	kuid_t uid = sock_i_uid(sk);
+	struct sctp_bind_bucket *pp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short snum;
 	int ret;
 
 	snum = ntohs(addr->v4.sin_port);
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("sctp_get_port() begins, snum=%d\n", snum);
 	sctp_local_bh_disable();
+=======
+	pr_debug("%s: begins, snum:%d\n", __func__, snum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snum == 0) {
 		/* Search for an available port. */
 		int low, high, remaining, index;
 		unsigned int rover;
 
+<<<<<<< HEAD
 		inet_get_local_port_range(&low, &high);
 		remaining = (high - low) + 1;
 		rover = net_random() % remaining + low;
+=======
+		inet_sk_get_local_port_range(sk, &low, &high);
+		remaining = (high - low) + 1;
+		rover = get_random_u32_below(remaining) + low;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		do {
 			rover++;
 			if ((rover < low) || (rover > high))
 				rover = low;
+<<<<<<< HEAD
 			if (inet_is_reserved_local_port(rover))
 				continue;
 			index = sctp_phashfn(rover);
@@ -5769,12 +11071,31 @@ static long sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
 			break;
 		next:
 			sctp_spin_unlock(&head->lock);
+=======
+			if (inet_is_local_reserved_port(net, rover))
+				continue;
+			index = sctp_phashfn(net, rover);
+			head = &sctp_port_hashtable[index];
+			spin_lock_bh(&head->lock);
+			sctp_for_each_hentry(pp, &head->chain)
+				if ((pp->port == rover) &&
+				    net_eq(net, pp->net))
+					goto next;
+			break;
+		next:
+			spin_unlock_bh(&head->lock);
+			cond_resched();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (--remaining > 0);
 
 		/* Exhausted local port range during search? */
 		ret = 1;
 		if (remaining <= 0)
+<<<<<<< HEAD
 			goto fail;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* OK, here is the one we will use.  HEAD (the port
 		 * hash table list entry) is non-NULL and we hold it's
@@ -5788,10 +11109,17 @@ static long sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
 		 * to the port number (snum) - we detect that with the
 		 * port iterator, pp being NULL.
 		 */
+<<<<<<< HEAD
 		head = &sctp_port_hashtable[sctp_phashfn(snum)];
 		sctp_spin_lock(&head->lock);
 		sctp_for_each_hentry(pp, node, &head->chain) {
 			if (pp->port == snum)
+=======
+		head = &sctp_port_hashtable[sctp_phashfn(net, snum)];
+		spin_lock_bh(&head->lock);
+		sctp_for_each_hentry(pp, &head->chain) {
+			if ((pp->port == snum) && net_eq(pp->net, net))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto pp_found;
 		}
 	}
@@ -5804,12 +11132,23 @@ pp_found:
 		 * used by other socket (pp->owner not empty); that other
 		 * socket is going to be sk2.
 		 */
+<<<<<<< HEAD
 		int reuse = sk->sk_reuse;
 		struct sock *sk2;
 
 		SCTP_DEBUG_PRINTK("sctp_get_port() found a possible match\n");
 		if (pp->fastreuse && sk->sk_reuse &&
 			sk->sk_state != SCTP_SS_LISTENING)
+=======
+		struct sock *sk2;
+
+		pr_debug("%s: found a possible match\n", __func__);
+
+		if ((pp->fastreuse && reuse &&
+		     sk->sk_state != SCTP_SS_LISTENING) ||
+		    (pp->fastreuseport && sk->sk_reuseport &&
+		     uid_eq(pp->fastuid, uid)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto success;
 
 		/* Run through the list of sockets bound to the port
@@ -5822,6 +11161,7 @@ pp_found:
 		 * that this port/socket (sk) combination are already
 		 * in an endpoint.
 		 */
+<<<<<<< HEAD
 		sk_for_each_bound(sk2, node, &pp->owner) {
 			struct sctp_endpoint *ep2;
 			ep2 = sctp_sk(sk2)->ep;
@@ -5838,11 +11178,39 @@ pp_found:
 			}
 		}
 		SCTP_DEBUG_PRINTK("sctp_get_port(): Found a match\n");
+=======
+		sk_for_each_bound(sk2, &pp->owner) {
+			int bound_dev_if2 = READ_ONCE(sk2->sk_bound_dev_if);
+			struct sctp_sock *sp2 = sctp_sk(sk2);
+			struct sctp_endpoint *ep2 = sp2->ep;
+
+			if (sk == sk2 ||
+			    (reuse && (sk2->sk_reuse || sp2->reuse) &&
+			     sk2->sk_state != SCTP_SS_LISTENING) ||
+			    (sk->sk_reuseport && sk2->sk_reuseport &&
+			     uid_eq(uid, sock_i_uid(sk2))))
+				continue;
+
+			if ((!sk->sk_bound_dev_if || !bound_dev_if2 ||
+			     sk->sk_bound_dev_if == bound_dev_if2) &&
+			    sctp_bind_addr_conflict(&ep2->base.bind_addr,
+						    addr, sp2, sp)) {
+				ret = 1;
+				goto fail_unlock;
+			}
+		}
+
+		pr_debug("%s: found a match\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 pp_not_found:
 	/* If there was a hash table miss, create a new port.  */
 	ret = 1;
+<<<<<<< HEAD
 	if (!pp && !(pp = sctp_bucket_create(head, snum)))
+=======
+	if (!pp && !(pp = sctp_bucket_create(head, net, snum)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_unlock;
 
 	/* In either case (hit or miss), make sure fastreuse is 1 only
@@ -5850,6 +11218,7 @@ pp_not_found:
 	 * SO_REUSEADDR on this socket -sk-).
 	 */
 	if (hlist_empty(&pp->owner)) {
+<<<<<<< HEAD
 		if (sk->sk_reuse && sk->sk_state != SCTP_SS_LISTENING)
 			pp->fastreuse = 1;
 		else
@@ -5857,24 +11226,57 @@ pp_not_found:
 	} else if (pp->fastreuse &&
 		(!sk->sk_reuse || sk->sk_state == SCTP_SS_LISTENING))
 		pp->fastreuse = 0;
+=======
+		if (reuse && sk->sk_state != SCTP_SS_LISTENING)
+			pp->fastreuse = 1;
+		else
+			pp->fastreuse = 0;
+
+		if (sk->sk_reuseport) {
+			pp->fastreuseport = 1;
+			pp->fastuid = uid;
+		} else {
+			pp->fastreuseport = 0;
+		}
+	} else {
+		if (pp->fastreuse &&
+		    (!reuse || sk->sk_state == SCTP_SS_LISTENING))
+			pp->fastreuse = 0;
+
+		if (pp->fastreuseport &&
+		    (!sk->sk_reuseport || !uid_eq(pp->fastuid, uid)))
+			pp->fastreuseport = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We are set, so fill up all the data in the hash table
 	 * entry, tie the socket list information with the rest of the
 	 * sockets FIXME: Blurry, NPI (ipg).
 	 */
 success:
+<<<<<<< HEAD
 	if (!sctp_sk(sk)->bind_hash) {
 		inet_sk(sk)->inet_num = snum;
 		sk_add_bind_node(sk, &pp->owner);
 		sctp_sk(sk)->bind_hash = pp;
+=======
+	if (!sp->bind_hash) {
+		inet_sk(sk)->inet_num = snum;
+		sk_add_bind_node(sk, &pp->owner);
+		sp->bind_hash = pp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ret = 0;
 
 fail_unlock:
+<<<<<<< HEAD
 	sctp_spin_unlock(&head->lock);
 
 fail:
 	sctp_local_bh_enable();
+=======
+	spin_unlock_bh(&head->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5883,7 +11285,10 @@ fail:
  */
 static int sctp_get_port(struct sock *sk, unsigned short snum)
 {
+<<<<<<< HEAD
 	long ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union sctp_addr addr;
 	struct sctp_af *af = sctp_sk(sk)->pf->af;
 
@@ -5892,14 +11297,19 @@ static int sctp_get_port(struct sock *sk, unsigned short snum)
 	addr.v4.sin_port = htons(snum);
 
 	/* Note: sk->sk_num gets filled in if ephemeral port request. */
+<<<<<<< HEAD
 	ret = sctp_get_port_local(sk, &addr);
 
 	return ret ? 1 : 0;
+=======
+	return sctp_get_port_local(sk, &addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *  Move a socket to LISTENING state.
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_listen_start(struct sock *sk, int backlog)
 {
 	struct sctp_sock *sp = sctp_sk(sk);
@@ -5914,6 +11324,22 @@ SCTP_STATIC int sctp_listen_start(struct sock *sk, int backlog)
 				pr_info("failed to load transform for %s: %ld\n",
 					sctp_hmac_alg, PTR_ERR(tfm));
 			}
+=======
+static int sctp_listen_start(struct sock *sk, int backlog)
+{
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_endpoint *ep = sp->ep;
+	struct crypto_shash *tfm = NULL;
+	char alg[32];
+
+	/* Allocate HMAC for generating cookie. */
+	if (!sp->hmac && sp->sctp_hmac_alg) {
+		sprintf(alg, "hmac(%s)", sp->sctp_hmac_alg);
+		tfm = crypto_alloc_shash(alg, 0, 0);
+		if (IS_ERR(tfm)) {
+			net_info_ratelimited("failed to load transform for %s: %ld\n",
+					     sp->sctp_hmac_alg, PTR_ERR(tfm));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOSYS;
 		}
 		sctp_sk(sk)->hmac = tfm;
@@ -5930,20 +11356,33 @@ SCTP_STATIC int sctp_listen_start(struct sock *sk, int backlog)
 	 * sockets.
 	 *
 	 */
+<<<<<<< HEAD
 	sk->sk_state = SCTP_SS_LISTENING;
+=======
+	inet_sk_set_state(sk, SCTP_SS_LISTENING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ep->base.bind_addr.port) {
 		if (sctp_autobind(sk))
 			return -EAGAIN;
 	} else {
 		if (sctp_get_port(sk, inet_sk(sk)->inet_num)) {
+<<<<<<< HEAD
 			sk->sk_state = SCTP_SS_CLOSED;
+=======
+			inet_sk_set_state(sk, SCTP_SS_CLOSED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EADDRINUSE;
 		}
 	}
 
+<<<<<<< HEAD
 	sk->sk_max_ack_backlog = backlog;
 	sctp_hash_endpoint(ep);
 	return 0;
+=======
+	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+	return sctp_hash_endpoint(ep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5969,7 +11408,11 @@ int sctp_inet_listen(struct socket *sock, int backlog)
 	if (unlikely(backlog < 0))
 		return err;
 
+<<<<<<< HEAD
 	sctp_lock_sock(sk);
+=======
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Peeled-off sockets are not allowed to listen().  */
 	if (sctp_style(sk, UDP_HIGH_BANDWIDTH))
@@ -5978,6 +11421,12 @@ int sctp_inet_listen(struct socket *sock, int backlog)
 	if (sock->state != SS_UNCONNECTED)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	if (!sctp_sstate(sk, LISTENING) && !sctp_sstate(sk, CLOSED))
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If backlog is zero, disable listening. */
 	if (!backlog) {
 		if (sctp_sstate(sk, CLOSED))
@@ -5986,14 +11435,22 @@ int sctp_inet_listen(struct socket *sock, int backlog)
 		err = 0;
 		sctp_unhash_endpoint(ep);
 		sk->sk_state = SCTP_SS_CLOSED;
+<<<<<<< HEAD
 		if (sk->sk_reuse)
+=======
+		if (sk->sk_reuse || sctp_sk(sk)->reuse)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_sk(sk)->bind_hash->fastreuse = 1;
 		goto out;
 	}
 
 	/* If we are already listening, just update the backlog */
 	if (sctp_sstate(sk, LISTENING))
+<<<<<<< HEAD
 		sk->sk_max_ack_backlog = backlog;
+=======
+		WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		err = sctp_listen_start(sk, backlog);
 		if (err)
@@ -6002,7 +11459,11 @@ int sctp_inet_listen(struct socket *sock, int backlog)
 
 	err = 0;
 out:
+<<<<<<< HEAD
 	sctp_release_sock(sk);
+=======
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -6019,6 +11480,7 @@ out:
  * here, again, by modeling the current TCP/UDP code.  We don't have
  * a good way to test with it yet.
  */
+<<<<<<< HEAD
 unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
 {
 	struct sock *sk = sock->sk;
@@ -6027,16 +11489,33 @@ unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
 
 	poll_wait(file, sk_sleep(sk), wait);
 
+=======
+__poll_t sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
+{
+	struct sock *sk = sock->sk;
+	struct sctp_sock *sp = sctp_sk(sk);
+	__poll_t mask;
+
+	poll_wait(file, sk_sleep(sk), wait);
+
+	sock_rps_record_flow(sk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* A TCP-style listening socket becomes readable when the accept queue
 	 * is not empty.
 	 */
 	if (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))
 		return (!list_empty(&sp->ep->asocs)) ?
+<<<<<<< HEAD
 			(POLLIN | POLLRDNORM) : 0;
+=======
+			(EPOLLIN | EPOLLRDNORM) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mask = 0;
 
 	/* Is there any exceptional events?  */
+<<<<<<< HEAD
 	if (sk->sk_err || !skb_queue_empty(&sk->sk_error_queue))
 		mask |= POLLERR;
 	if (sk->sk_shutdown & RCV_SHUTDOWN)
@@ -6047,6 +11526,19 @@ unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
 	/* Is it readable?  Reconsider this code with TCP-style support.  */
 	if (!skb_queue_empty(&sk->sk_receive_queue))
 		mask |= POLLIN | POLLRDNORM;
+=======
+	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
+		mask |= EPOLLERR |
+			(sock_flag(sk, SOCK_SELECT_ERR_QUEUE) ? EPOLLPRI : 0);
+	if (sk->sk_shutdown & RCV_SHUTDOWN)
+		mask |= EPOLLRDHUP | EPOLLIN | EPOLLRDNORM;
+	if (sk->sk_shutdown == SHUTDOWN_MASK)
+		mask |= EPOLLHUP;
+
+	/* Is it readable?  Reconsider this code with TCP-style support.  */
+	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
+		mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The association is either gone or not ready.  */
 	if (!sctp_style(sk, UDP) && sctp_sstate(sk, CLOSED))
@@ -6054,9 +11546,15 @@ unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
 
 	/* Is it writable?  */
 	if (sctp_writeable(sk)) {
+<<<<<<< HEAD
 		mask |= POLLOUT | POLLWRNORM;
 	} else {
 		set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
+=======
+		mask |= EPOLLOUT | EPOLLWRNORM;
+	} else {
+		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Since the socket is not locked, the buffer
 		 * might be made available after the writeable check and
@@ -6066,7 +11564,11 @@ unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
 		 * in the following code to cover it as well.
 		 */
 		if (sctp_writeable(sk))
+<<<<<<< HEAD
 			mask |= POLLOUT | POLLWRNORM;
+=======
+			mask |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return mask;
 }
@@ -6076,7 +11578,11 @@ unsigned int sctp_poll(struct file *file, struct socket *sock, poll_table *wait)
  ********************************************************************/
 
 static struct sctp_bind_bucket *sctp_bucket_create(
+<<<<<<< HEAD
 	struct sctp_bind_hashbucket *head, unsigned short snum)
+=======
+	struct sctp_bind_hashbucket *head, struct net *net, unsigned short snum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_bind_bucket *pp;
 
@@ -6086,6 +11592,10 @@ static struct sctp_bind_bucket *sctp_bucket_create(
 		pp->port = snum;
 		pp->fastreuse = 0;
 		INIT_HLIST_HEAD(&pp->owner);
+<<<<<<< HEAD
+=======
+		pp->net = net;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hlist_add_head(&pp->node, &head->chain);
 	}
 	return pp;
@@ -6105,23 +11615,41 @@ static void sctp_bucket_destroy(struct sctp_bind_bucket *pp)
 static inline void __sctp_put_port(struct sock *sk)
 {
 	struct sctp_bind_hashbucket *head =
+<<<<<<< HEAD
 		&sctp_port_hashtable[sctp_phashfn(inet_sk(sk)->inet_num)];
 	struct sctp_bind_bucket *pp;
 
 	sctp_spin_lock(&head->lock);
+=======
+		&sctp_port_hashtable[sctp_phashfn(sock_net(sk),
+						  inet_sk(sk)->inet_num)];
+	struct sctp_bind_bucket *pp;
+
+	spin_lock(&head->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp = sctp_sk(sk)->bind_hash;
 	__sk_del_bind_node(sk);
 	sctp_sk(sk)->bind_hash = NULL;
 	inet_sk(sk)->inet_num = 0;
 	sctp_bucket_destroy(pp);
+<<<<<<< HEAD
 	sctp_spin_unlock(&head->lock);
+=======
+	spin_unlock(&head->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sctp_put_port(struct sock *sk)
 {
+<<<<<<< HEAD
 	sctp_local_bh_disable();
 	__sctp_put_port(sk);
 	sctp_local_bh_enable();
+=======
+	local_bh_disable();
+	__sctp_put_port(sk);
+	local_bh_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6184,6 +11712,7 @@ static int sctp_autobind(struct sock *sk)
  * msg_control
  * points here
  */
+<<<<<<< HEAD
 SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 				  sctp_cmsgs_t *cmsgs)
 {
@@ -6193,6 +11722,14 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 	for (cmsg = CMSG_FIRSTHDR(msg);
 	     cmsg != NULL;
 	     cmsg = CMSG_NXTHDR(my_msg, cmsg)) {
+=======
+static int sctp_msghdr_parse(const struct msghdr *msg, struct sctp_cmsgs *cmsgs)
+{
+	struct msghdr *my_msg = (struct msghdr *)msg;
+	struct cmsghdr *cmsg;
+
+	for_each_cmsghdr(cmsg, my_msg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!CMSG_OK(my_msg, cmsg))
 			return -EINVAL;
 
@@ -6204,7 +11741,11 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 		switch (cmsg->cmsg_type) {
 		case SCTP_INIT:
 			/* SCTP Socket API Extension
+<<<<<<< HEAD
 			 * 5.2.1 SCTP Initiation Structure (SCTP_INIT)
+=======
+			 * 5.3.1 SCTP Initiation Structure (SCTP_INIT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *
 			 * This cmsghdr structure provides information for
 			 * initializing new SCTP associations with sendmsg().
@@ -6216,15 +11757,26 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 			 * ------------  ------------   ----------------------
 			 * IPPROTO_SCTP  SCTP_INIT      struct sctp_initmsg
 			 */
+<<<<<<< HEAD
 			if (cmsg->cmsg_len !=
 			    CMSG_LEN(sizeof(struct sctp_initmsg)))
 				return -EINVAL;
 			cmsgs->init = (struct sctp_initmsg *)CMSG_DATA(cmsg);
+=======
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(struct sctp_initmsg)))
+				return -EINVAL;
+
+			cmsgs->init = CMSG_DATA(cmsg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case SCTP_SNDRCV:
 			/* SCTP Socket API Extension
+<<<<<<< HEAD
 			 * 5.2.2 SCTP Header Information Structure(SCTP_SNDRCV)
+=======
+			 * 5.3.2 SCTP Header Information Structure(SCTP_SNDRCV)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *
 			 * This cmsghdr structure specifies SCTP options for
 			 * sendmsg() and describes SCTP header information
@@ -6234,6 +11786,7 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 			 * ------------  ------------   ----------------------
 			 * IPPROTO_SCTP  SCTP_SNDRCV    struct sctp_sndrcvinfo
 			 */
+<<<<<<< HEAD
 			if (cmsg->cmsg_len !=
 			    CMSG_LEN(sizeof(struct sctp_sndrcvinfo)))
 				return -EINVAL;
@@ -6248,10 +11801,101 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
 				return -EINVAL;
 			break;
 
+=======
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(struct sctp_sndrcvinfo)))
+				return -EINVAL;
+
+			cmsgs->srinfo = CMSG_DATA(cmsg);
+
+			if (cmsgs->srinfo->sinfo_flags &
+			    ~(SCTP_UNORDERED | SCTP_ADDR_OVER |
+			      SCTP_SACK_IMMEDIATELY | SCTP_SENDALL |
+			      SCTP_PR_SCTP_MASK | SCTP_ABORT | SCTP_EOF))
+				return -EINVAL;
+			break;
+
+		case SCTP_SNDINFO:
+			/* SCTP Socket API Extension
+			 * 5.3.4 SCTP Send Information Structure (SCTP_SNDINFO)
+			 *
+			 * This cmsghdr structure specifies SCTP options for
+			 * sendmsg(). This structure and SCTP_RCVINFO replaces
+			 * SCTP_SNDRCV which has been deprecated.
+			 *
+			 * cmsg_level    cmsg_type      cmsg_data[]
+			 * ------------  ------------   ---------------------
+			 * IPPROTO_SCTP  SCTP_SNDINFO    struct sctp_sndinfo
+			 */
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(struct sctp_sndinfo)))
+				return -EINVAL;
+
+			cmsgs->sinfo = CMSG_DATA(cmsg);
+
+			if (cmsgs->sinfo->snd_flags &
+			    ~(SCTP_UNORDERED | SCTP_ADDR_OVER |
+			      SCTP_SACK_IMMEDIATELY | SCTP_SENDALL |
+			      SCTP_PR_SCTP_MASK | SCTP_ABORT | SCTP_EOF))
+				return -EINVAL;
+			break;
+		case SCTP_PRINFO:
+			/* SCTP Socket API Extension
+			 * 5.3.7 SCTP PR-SCTP Information Structure (SCTP_PRINFO)
+			 *
+			 * This cmsghdr structure specifies SCTP options for sendmsg().
+			 *
+			 * cmsg_level    cmsg_type      cmsg_data[]
+			 * ------------  ------------   ---------------------
+			 * IPPROTO_SCTP  SCTP_PRINFO    struct sctp_prinfo
+			 */
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(struct sctp_prinfo)))
+				return -EINVAL;
+
+			cmsgs->prinfo = CMSG_DATA(cmsg);
+			if (cmsgs->prinfo->pr_policy & ~SCTP_PR_SCTP_MASK)
+				return -EINVAL;
+
+			if (cmsgs->prinfo->pr_policy == SCTP_PR_SCTP_NONE)
+				cmsgs->prinfo->pr_value = 0;
+			break;
+		case SCTP_AUTHINFO:
+			/* SCTP Socket API Extension
+			 * 5.3.8 SCTP AUTH Information Structure (SCTP_AUTHINFO)
+			 *
+			 * This cmsghdr structure specifies SCTP options for sendmsg().
+			 *
+			 * cmsg_level    cmsg_type      cmsg_data[]
+			 * ------------  ------------   ---------------------
+			 * IPPROTO_SCTP  SCTP_AUTHINFO  struct sctp_authinfo
+			 */
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(struct sctp_authinfo)))
+				return -EINVAL;
+
+			cmsgs->authinfo = CMSG_DATA(cmsg);
+			break;
+		case SCTP_DSTADDRV4:
+		case SCTP_DSTADDRV6:
+			/* SCTP Socket API Extension
+			 * 5.3.9/10 SCTP Destination IPv4/6 Address Structure (SCTP_DSTADDRV4/6)
+			 *
+			 * This cmsghdr structure specifies SCTP options for sendmsg().
+			 *
+			 * cmsg_level    cmsg_type         cmsg_data[]
+			 * ------------  ------------   ---------------------
+			 * IPPROTO_SCTP  SCTP_DSTADDRV4 struct in_addr
+			 * ------------  ------------   ---------------------
+			 * IPPROTO_SCTP  SCTP_DSTADDRV6 struct in6_addr
+			 */
+			cmsgs->addrs_msg = my_msg;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -6260,7 +11904,11 @@ SCTP_STATIC int sctp_msghdr_parse(const struct msghdr *msg,
  * Note: This function is the same function as in core/datagram.c
  * with a few modifications to make lksctp work.
  */
+<<<<<<< HEAD
 static int sctp_wait_for_packet(struct sock * sk, int *err, long *timeo_p)
+=======
+static int sctp_wait_for_packet(struct sock *sk, int *err, long *timeo_p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	DEFINE_WAIT(wait);
@@ -6297,9 +11945,15 @@ static int sctp_wait_for_packet(struct sock * sk, int *err, long *timeo_p)
 	 * does not fit in the user's buffer, but this seems to be the
 	 * only way to honor MSG_DONTWAIT realistically.
 	 */
+<<<<<<< HEAD
 	sctp_release_sock(sk);
 	*timeo_p = schedule_timeout(*timeo_p);
 	sctp_lock_sock(sk);
+=======
+	release_sock(sk);
+	*timeo_p = schedule_timeout(*timeo_p);
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ready:
 	finish_wait(sk_sleep(sk), &wait);
@@ -6318,17 +11972,28 @@ out:
  * Note: This is pretty much the same routine as in core/datagram.c
  * with a few changes to make lksctp work.
  */
+<<<<<<< HEAD
 static struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags,
 					      int noblock, int *err)
+=======
+struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags, int *err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct sk_buff *skb;
 	long timeo;
 
+<<<<<<< HEAD
 	timeo = sock_rcvtimeo(sk, noblock);
 
 	SCTP_DEBUG_PRINTK("Timeout: timeo: %ld, MAX: %ld.\n",
 			  timeo, MAX_SCHEDULE_TIMEOUT);
+=======
+	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+
+	pr_debug("%s: timeo:%ld, max:%ld\n", __func__, timeo,
+		 MAX_SCHEDULE_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		/* Again only user level code calls this function,
@@ -6339,6 +12004,7 @@ static struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags,
 		 *  However, this function was correct in any case. 8)
 		 */
 		if (flags & MSG_PEEK) {
+<<<<<<< HEAD
 			spin_lock_bh(&sk->sk_receive_queue.lock);
 			skb = skb_peek(&sk->sk_receive_queue);
 			if (skb)
@@ -6346,6 +12012,13 @@ static struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags,
 			spin_unlock_bh(&sk->sk_receive_queue.lock);
 		} else {
 			skb = skb_dequeue(&sk->sk_receive_queue);
+=======
+			skb = skb_peek(&sk->sk_receive_queue);
+			if (skb)
+				refcount_inc(&skb->users);
+		} else {
+			skb = __skb_dequeue(&sk->sk_receive_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (skb)
@@ -6359,6 +12032,10 @@ static struct sk_buff *sctp_skb_recv_datagram(struct sock *sk, int flags,
 		if (sk->sk_shutdown & RCV_SHUTDOWN)
 			break;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* User doesn't want to wait.  */
 		error = -EAGAIN;
 		if (!timeo)
@@ -6376,6 +12053,7 @@ no_packet:
 static void __sctp_write_space(struct sctp_association *asoc)
 {
 	struct sock *sk = asoc->base.sk;
+<<<<<<< HEAD
 	struct socket *sock = sk->sk_socket;
 
 	if ((sctp_wspace(asoc) > 0) && sock) {
@@ -6387,15 +12065,38 @@ static void __sctp_write_space(struct sctp_association *asoc)
 
 			if (wq && waitqueue_active(wq))
 				wake_up_interruptible(wq);
+=======
+
+	if (sctp_wspace(asoc) <= 0)
+		return;
+
+	if (waitqueue_active(&asoc->wait))
+		wake_up_interruptible(&asoc->wait);
+
+	if (sctp_writeable(sk)) {
+		struct socket_wq *wq;
+
+		rcu_read_lock();
+		wq = rcu_dereference(sk->sk_wq);
+		if (wq) {
+			if (waitqueue_active(&wq->wait))
+				wake_up_interruptible(&wq->wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Note that we try to include the Async I/O support
 			 * here by modeling from the current TCP/UDP code.
 			 * We have not tested with it yet.
 			 */
 			if (!(sk->sk_shutdown & SEND_SHUTDOWN))
+<<<<<<< HEAD
 				sock_wake_async(sock,
 						SOCK_WAKE_SPACE, POLL_OUT);
 		}
+=======
+				sock_wake_async(wq, SOCK_WAKE_SPACE, POLL_OUT);
+		}
+		rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -6445,6 +12146,7 @@ static void sctp_wake_up_waiters(struct sock *sk,
  */
 static void sctp_wfree(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct sctp_association *asoc;
 	struct sctp_chunk *chunk;
 	struct sock *sk;
@@ -6464,6 +12166,37 @@ static void sctp_wfree(struct sk_buff *skb)
 	 */
 	sk->sk_wmem_queued   -= skb->truesize;
 	sk_mem_uncharge(sk, skb->truesize);
+=======
+	struct sctp_chunk *chunk = skb_shinfo(skb)->destructor_arg;
+	struct sctp_association *asoc = chunk->asoc;
+	struct sock *sk = asoc->base.sk;
+
+	sk_mem_uncharge(sk, skb->truesize);
+	sk_wmem_queued_add(sk, -(skb->truesize + sizeof(struct sctp_chunk)));
+	asoc->sndbuf_used -= skb->truesize + sizeof(struct sctp_chunk);
+	WARN_ON(refcount_sub_and_test(sizeof(struct sctp_chunk),
+				      &sk->sk_wmem_alloc));
+
+	if (chunk->shkey) {
+		struct sctp_shared_key *shkey = chunk->shkey;
+
+		/* refcnt == 2 and !list_empty mean after this release, it's
+		 * not being used anywhere, and it's time to notify userland
+		 * that this shkey can be freed if it's been deactivated.
+		 */
+		if (shkey->deactivated && !list_empty(&shkey->key_list) &&
+		    refcount_read(&shkey->refcnt) == 2) {
+			struct sctp_ulpevent *ev;
+
+			ev = sctp_ulpevent_make_authkey(asoc, shkey->key_id,
+							SCTP_AUTH_FREE_KEY,
+							GFP_KERNEL);
+			if (ev)
+				asoc->stream.si->enqueue_event(&asoc->ulpq, ev);
+		}
+		sctp_auth_shkey_release(chunk->shkey);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_wfree(skb);
 	sctp_wake_up_waiters(sk, asoc);
@@ -6495,12 +12228,21 @@ static int sctp_wait_for_sndbuf(struct sctp_association *asoc, long *timeo_p,
 				size_t msg_len)
 {
 	struct sock *sk = asoc->base.sk;
+<<<<<<< HEAD
 	int err = 0;
 	long current_timeo = *timeo_p;
 	DEFINE_WAIT(wait);
 
 	SCTP_DEBUG_PRINTK("wait_for_sndbuf: asoc=%p, timeo=%ld, msg_len=%zu\n",
 			  asoc, (long)(*timeo_p), msg_len);
+=======
+	long current_timeo = *timeo_p;
+	DEFINE_WAIT(wait);
+	int err = 0;
+
+	pr_debug("%s: asoc:%p, timeo:%ld, msg_len:%zu\n", __func__, asoc,
+		 *timeo_p, msg_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Increment the association's refcnt.  */
 	sctp_association_hold(asoc);
@@ -6509,6 +12251,7 @@ static int sctp_wait_for_sndbuf(struct sctp_association *asoc, long *timeo_p,
 	for (;;) {
 		prepare_to_wait_exclusive(&asoc->wait, &wait,
 					  TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		if (!*timeo_p)
 			goto do_nonblock;
 		if (sk->sk_err || asoc->state >= SCTP_STATE_SHUTDOWN_PENDING ||
@@ -6517,14 +12260,34 @@ static int sctp_wait_for_sndbuf(struct sctp_association *asoc, long *timeo_p,
 		if (signal_pending(current))
 			goto do_interrupted;
 		if (msg_len <= sctp_wspace(asoc))
+=======
+		if (asoc->base.dead)
+			goto do_dead;
+		if (!*timeo_p)
+			goto do_nonblock;
+		if (sk->sk_err || asoc->state >= SCTP_STATE_SHUTDOWN_PENDING)
+			goto do_error;
+		if (signal_pending(current))
+			goto do_interrupted;
+		if ((int)msg_len <= sctp_wspace(asoc) &&
+		    sk_wmem_schedule(sk, msg_len))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* Let another process have a go.  Since we are going
 		 * to sleep anyway.
 		 */
+<<<<<<< HEAD
 		sctp_release_sock(sk);
 		current_timeo = schedule_timeout(current_timeo);
 		sctp_lock_sock(sk);
+=======
+		release_sock(sk);
+		current_timeo = schedule_timeout(current_timeo);
+		lock_sock(sk);
+		if (sk != asoc->base.sk)
+			goto do_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*timeo_p = current_timeo;
 	}
@@ -6537,6 +12300,13 @@ out:
 
 	return err;
 
+<<<<<<< HEAD
+=======
+do_dead:
+	err = -ESRCH;
+	goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do_error:
 	err = -EPIPE;
 	goto out;
@@ -6550,6 +12320,7 @@ do_nonblock:
 	goto out;
 }
 
+<<<<<<< HEAD
 void sctp_data_ready(struct sock *sk, int len)
 {
 	struct socket_wq *wq;
@@ -6559,6 +12330,19 @@ void sctp_data_ready(struct sock *sk, int len)
 	if (wq_has_sleeper(wq))
 		wake_up_interruptible_sync_poll(&wq->wait, POLLIN |
 						POLLRDNORM | POLLRDBAND);
+=======
+void sctp_data_ready(struct sock *sk)
+{
+	struct socket_wq *wq;
+
+	trace_sk_data_ready(sk);
+
+	rcu_read_lock();
+	wq = rcu_dereference(sk->sk_wq);
+	if (skwq_has_sleeper(wq))
+		wake_up_interruptible_sync_poll(&wq->wait, EPOLLIN |
+						EPOLLRDNORM | EPOLLRDBAND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk_wake_async(sk, SOCK_WAKE_WAITD, POLL_IN);
 	rcu_read_unlock();
 }
@@ -6585,6 +12369,7 @@ void sctp_write_space(struct sock *sk)
  * UDP-style sockets or TCP-style sockets, this code should work.
  *  - Daisy
  */
+<<<<<<< HEAD
 static int sctp_writeable(struct sock *sk)
 {
 	int amt = 0;
@@ -6593,6 +12378,11 @@ static int sctp_writeable(struct sock *sk)
 	if (amt < 0)
 		amt = 0;
 	return amt;
+=======
+static bool sctp_writeable(const struct sock *sk)
+{
+	return READ_ONCE(sk->sk_sndbuf) > READ_ONCE(sk->sk_wmem_queued);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Wait for an association to go into ESTABLISHED state. If timeout is 0,
@@ -6605,8 +12395,12 @@ static int sctp_wait_for_connect(struct sctp_association *asoc, long *timeo_p)
 	long current_timeo = *timeo_p;
 	DEFINE_WAIT(wait);
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("%s: asoc=%p, timeo=%ld\n", __func__, asoc,
 			  (long)(*timeo_p));
+=======
+	pr_debug("%s: asoc:%p, timeo:%ld\n", __func__, asoc, *timeo_p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Increment the association's refcnt.  */
 	sctp_association_hold(asoc);
@@ -6630,9 +12424,15 @@ static int sctp_wait_for_connect(struct sctp_association *asoc, long *timeo_p)
 		/* Let another process have a go.  Since we are going
 		 * to sleep anyway.
 		 */
+<<<<<<< HEAD
 		sctp_release_sock(sk);
 		current_timeo = schedule_timeout(current_timeo);
 		sctp_lock_sock(sk);
+=======
+		release_sock(sk);
+		current_timeo = schedule_timeout(current_timeo);
+		lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*timeo_p = current_timeo;
 	}
@@ -6675,9 +12475,15 @@ static int sctp_wait_for_accept(struct sock *sk, long timeo)
 					  TASK_INTERRUPTIBLE);
 
 		if (list_empty(&ep->asocs)) {
+<<<<<<< HEAD
 			sctp_release_sock(sk);
 			timeo = schedule_timeout(timeo);
 			sctp_lock_sock(sk);
+=======
+			release_sock(sk);
+			timeo = schedule_timeout(timeo);
+			lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = -EINVAL;
@@ -6710,9 +12516,15 @@ static void sctp_wait_for_close(struct sock *sk, long timeout)
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 		if (list_empty(&sctp_sk(sk)->ep->asocs))
 			break;
+<<<<<<< HEAD
 		sctp_release_sock(sk);
 		timeout = schedule_timeout(timeout);
 		sctp_lock_sock(sk);
+=======
+		release_sock(sk);
+		timeout = schedule_timeout(timeout);
+		lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (!signal_pending(current) && timeout);
 
 	finish_wait(sk_sleep(sk), &wait);
@@ -6738,15 +12550,30 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
 {
 	struct inet_sock *inet = inet_sk(sk);
 	struct inet_sock *newinet;
+<<<<<<< HEAD
+=======
+	struct sctp_sock *sp = sctp_sk(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	newsk->sk_type = sk->sk_type;
 	newsk->sk_bound_dev_if = sk->sk_bound_dev_if;
 	newsk->sk_flags = sk->sk_flags;
+<<<<<<< HEAD
 	newsk->sk_no_check = sk->sk_no_check;
 	newsk->sk_reuse = sk->sk_reuse;
 
 	newsk->sk_shutdown = sk->sk_shutdown;
 	newsk->sk_destruct = inet_sock_destruct;
+=======
+	newsk->sk_tsflags = sk->sk_tsflags;
+	newsk->sk_no_check_tx = sk->sk_no_check_tx;
+	newsk->sk_no_check_rx = sk->sk_no_check_rx;
+	newsk->sk_reuse = sk->sk_reuse;
+	sctp_sk(newsk)->reuse = sp->reuse;
+
+	newsk->sk_shutdown = sk->sk_shutdown;
+	newsk->sk_destruct = sk->sk_destruct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newsk->sk_family = sk->sk_family;
 	newsk->sk_protocol = IPPROTO_SCTP;
 	newsk->sk_backlog_rcv = sk->sk_prot->backlog_rcv;
@@ -6755,6 +12582,10 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
 	newsk->sk_lingertime = sk->sk_lingertime;
 	newsk->sk_rcvtimeo = sk->sk_rcvtimeo;
 	newsk->sk_sndtimeo = sk->sk_sndtimeo;
+<<<<<<< HEAD
+=======
+	newsk->sk_rxhash = sk->sk_rxhash;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	newinet = inet_sk(newsk);
 
@@ -6766,6 +12597,7 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
 	newinet->inet_rcv_saddr = inet->inet_rcv_saddr;
 	newinet->inet_dport = htons(asoc->peer.port);
 	newinet->pmtudisc = inet->pmtudisc;
+<<<<<<< HEAD
 	newinet->inet_id = asoc->next_tsn ^ jiffies;
 
 	newinet->uc_ttl = inet->uc_ttl;
@@ -6773,11 +12605,29 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
 	newinet->mc_ttl = 1;
 	newinet->mc_index = 0;
 	newinet->mc_list = NULL;
+=======
+	atomic_set(&newinet->inet_id, get_random_u16());
+
+	newinet->uc_ttl = inet->uc_ttl;
+	inet_set_bit(MC_LOOP, newsk);
+	newinet->mc_ttl = 1;
+	newinet->mc_index = 0;
+	newinet->mc_list = NULL;
+
+	if (newsk->sk_flags & SK_FLAGS_TIMESTAMP)
+		net_enable_timestamp();
+
+	/* Set newsk security attributes from original sk and connection
+	 * security attribute from asoc.
+	 */
+	security_sctp_sk_clone(asoc, sk, newsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void sctp_copy_descendant(struct sock *sk_to,
 					const struct sock *sk_from)
 {
+<<<<<<< HEAD
 	int ancestor_size = sizeof(struct inet_sock) +
 			    sizeof(struct sctp_sock) -
 			    offsetof(struct sctp_sock, auto_asconf_list);
@@ -6785,15 +12635,27 @@ static inline void sctp_copy_descendant(struct sock *sk_to,
 	if (sk_from->sk_family == PF_INET6)
 		ancestor_size += sizeof(struct ipv6_pinfo);
 
+=======
+	size_t ancestor_size = sizeof(struct inet_sock);
+
+	ancestor_size += sk_from->sk_prot->obj_size;
+	ancestor_size -= offsetof(struct sctp_sock, pd_lobby);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
 }
 
 /* Populate the fields of the newsk from the oldsk and migrate the assoc
  * and its messages to the newsk.
  */
+<<<<<<< HEAD
 static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 			      struct sctp_association *assoc,
 			      sctp_socket_type_t type)
+=======
+static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+			     struct sctp_association *assoc,
+			     enum sctp_socket_type type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_sock *oldsp = sctp_sk(oldsk);
 	struct sctp_sock *newsp = sctp_sk(newsk);
@@ -6802,6 +12664,10 @@ static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 	struct sk_buff *skb, *tmp;
 	struct sctp_ulpevent *event;
 	struct sctp_bind_hashbucket *head;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Migrate socket buffer sizes and all the socket level options to the
 	 * new socket.
@@ -6818,21 +12684,50 @@ static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 	newsp->hmac = NULL;
 
 	/* Hook this new socket in to the bind_hash list. */
+<<<<<<< HEAD
 	head = &sctp_port_hashtable[sctp_phashfn(inet_sk(oldsk)->inet_num)];
 	sctp_local_bh_disable();
 	sctp_spin_lock(&head->lock);
+=======
+	head = &sctp_port_hashtable[sctp_phashfn(sock_net(oldsk),
+						 inet_sk(oldsk)->inet_num)];
+	spin_lock_bh(&head->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp = sctp_sk(oldsk)->bind_hash;
 	sk_add_bind_node(newsk, &pp->owner);
 	sctp_sk(newsk)->bind_hash = pp;
 	inet_sk(newsk)->inet_num = inet_sk(oldsk)->inet_num;
+<<<<<<< HEAD
 	sctp_spin_unlock(&head->lock);
 	sctp_local_bh_enable();
+=======
+	spin_unlock_bh(&head->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy the bind_addr list from the original endpoint to the new
 	 * endpoint so that we can handle restarts properly
 	 */
+<<<<<<< HEAD
 	sctp_bind_addr_dup(&newsp->ep->base.bind_addr,
 				&oldsp->ep->base.bind_addr, GFP_KERNEL);
+=======
+	err = sctp_bind_addr_dup(&newsp->ep->base.bind_addr,
+				 &oldsp->ep->base.bind_addr, GFP_KERNEL);
+	if (err)
+		return err;
+
+	/* New ep's auth_hmacs should be set if old ep's is set, in case
+	 * that net->sctp.auth_enable has been changed to 0 by users and
+	 * new ep's auth_hmacs couldn't be set in sctp_endpoint_init().
+	 */
+	if (oldsp->ep->auth_hmacs) {
+		err = sctp_auth_init_hmacs(newsp->ep, GFP_KERNEL);
+		if (err)
+			return err;
+	}
+
+	sctp_auto_asconf_init(newsp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Move any messages in the old socket's receive queue that are for the
 	 * peeled off association to the new socket's receive queue.
@@ -6852,7 +12747,10 @@ static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 	 * 2) Peeling off partial delivery; keep pd_lobby in new pd_lobby.
 	 * 3) Peeling off non-partial delivery; move pd_lobby to receive_queue.
 	 */
+<<<<<<< HEAD
 	skb_queue_head_init(&newsp->pd_lobby);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&sctp_sk(newsk)->pd_mode, assoc->ulpq.pd_mode);
 
 	if (atomic_read(&sctp_sk(oldsk)->pd_mode)) {
@@ -6884,11 +12782,15 @@ static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 
 	}
 
+<<<<<<< HEAD
 	sctp_skb_for_each(skb, &assoc->ulpq.reasm, tmp)
 		sctp_skb_set_owner_r_frag(skb, newsk);
 
 	sctp_skb_for_each(skb, &assoc->ulpq.lobby, tmp)
 		sctp_skb_set_owner_r_frag(skb, newsk);
+=======
+	sctp_for_each_rx_skb(assoc, newsk, sctp_skb_set_owner_r_frag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the type of socket to indicate that it is peeled off from the
 	 * original UDP-style socket or created with the accept() call on a
@@ -6906,16 +12808,35 @@ static void sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
 	 * paths won't try to lock it and then oldsk.
 	 */
 	lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
+<<<<<<< HEAD
 	sctp_assoc_migrate(assoc, newsk);
+=======
+	sctp_for_each_tx_datachunk(assoc, true, sctp_clear_owner_w);
+	sctp_assoc_migrate(assoc, newsk);
+	sctp_for_each_tx_datachunk(assoc, false, sctp_set_owner_w);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the association on the newsk is already closed before accept()
 	 * is called, set RCV_SHUTDOWN flag.
 	 */
+<<<<<<< HEAD
 	if (sctp_state(assoc, CLOSED) && sctp_style(newsk, TCP))
 		newsk->sk_shutdown |= RCV_SHUTDOWN;
 
 	newsk->sk_state = SCTP_SS_ESTABLISHED;
 	sctp_release_sock(newsk);
+=======
+	if (sctp_state(assoc, CLOSED) && sctp_style(newsk, TCP)) {
+		inet_sk_set_state(newsk, SCTP_SS_CLOSED);
+		newsk->sk_shutdown |= RCV_SHUTDOWN;
+	} else {
+		inet_sk_set_state(newsk, SCTP_SS_ESTABLISHED);
+	}
+
+	release_sock(newsk);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -6924,7 +12845,10 @@ struct proto sctp_prot = {
 	.name        =	"SCTP",
 	.owner       =	THIS_MODULE,
 	.close       =	sctp_close,
+<<<<<<< HEAD
 	.connect     =	sctp_connect,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.disconnect  =	sctp_disconnect,
 	.accept      =	sctp_accept,
 	.ioctl       =	sctp_ioctl,
@@ -6933,6 +12857,7 @@ struct proto sctp_prot = {
 	.shutdown    =	sctp_shutdown,
 	.setsockopt  =	sctp_setsockopt,
 	.getsockopt  =	sctp_getsockopt,
+<<<<<<< HEAD
 	.sendmsg     =	sctp_sendmsg,
 	.recvmsg     =	sctp_recvmsg,
 	.bind        =	sctp_bind,
@@ -6941,30 +12866,80 @@ struct proto sctp_prot = {
 	.unhash      =	sctp_unhash,
 	.get_port    =	sctp_get_port,
 	.obj_size    =  sizeof(struct sctp_sock),
+=======
+	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
+	.sendmsg     =	sctp_sendmsg,
+	.recvmsg     =	sctp_recvmsg,
+	.bind        =	sctp_bind,
+	.bind_add    =  sctp_bind_add,
+	.backlog_rcv =	sctp_backlog_rcv,
+	.hash        =	sctp_hash,
+	.unhash      =	sctp_unhash,
+	.no_autobind =	true,
+	.obj_size    =  sizeof(struct sctp_sock),
+	.useroffset  =  offsetof(struct sctp_sock, subscribe),
+	.usersize    =  offsetof(struct sctp_sock, initmsg) -
+				offsetof(struct sctp_sock, subscribe) +
+				sizeof_field(struct sctp_sock, initmsg),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysctl_mem  =  sysctl_sctp_mem,
 	.sysctl_rmem =  sysctl_sctp_rmem,
 	.sysctl_wmem =  sysctl_sctp_wmem,
 	.memory_pressure = &sctp_memory_pressure,
 	.enter_memory_pressure = sctp_enter_memory_pressure,
+<<<<<<< HEAD
 	.memory_allocated = &sctp_memory_allocated,
+=======
+
+	.memory_allocated = &sctp_memory_allocated,
+	.per_cpu_fw_alloc = &sctp_memory_per_cpu_fw_alloc,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sockets_allocated = &sctp_sockets_allocated,
 };
 
 #if IS_ENABLED(CONFIG_IPV6)
 
+<<<<<<< HEAD
+=======
+static void sctp_v6_destruct_sock(struct sock *sk)
+{
+	sctp_destruct_common(sk);
+	inet6_sock_destruct(sk);
+}
+
+static int sctp_v6_init_sock(struct sock *sk)
+{
+	int ret = sctp_init_sock(sk);
+
+	if (!ret)
+		sk->sk_destruct = sctp_v6_destruct_sock;
+
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct proto sctpv6_prot = {
 	.name		= "SCTPv6",
 	.owner		= THIS_MODULE,
 	.close		= sctp_close,
+<<<<<<< HEAD
 	.connect	= sctp_connect,
 	.disconnect	= sctp_disconnect,
 	.accept		= sctp_accept,
 	.ioctl		= sctp_ioctl,
 	.init		= sctp_init_sock,
+=======
+	.disconnect	= sctp_disconnect,
+	.accept		= sctp_accept,
+	.ioctl		= sctp_ioctl,
+	.init		= sctp_v6_init_sock,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy	= sctp_destroy_sock,
 	.shutdown	= sctp_shutdown,
 	.setsockopt	= sctp_setsockopt,
 	.getsockopt	= sctp_getsockopt,
+<<<<<<< HEAD
 	.sendmsg	= sctp_sendmsg,
 	.recvmsg	= sctp_recvmsg,
 	.bind		= sctp_bind,
@@ -6973,12 +12948,36 @@ struct proto sctpv6_prot = {
 	.unhash		= sctp_unhash,
 	.get_port	= sctp_get_port,
 	.obj_size	= sizeof(struct sctp6_sock),
+=======
+	.bpf_bypass_getsockopt	= sctp_bpf_bypass_getsockopt,
+	.sendmsg	= sctp_sendmsg,
+	.recvmsg	= sctp_recvmsg,
+	.bind		= sctp_bind,
+	.bind_add	= sctp_bind_add,
+	.backlog_rcv	= sctp_backlog_rcv,
+	.hash		= sctp_hash,
+	.unhash		= sctp_unhash,
+	.no_autobind	= true,
+	.obj_size	= sizeof(struct sctp6_sock),
+	.ipv6_pinfo_offset = offsetof(struct sctp6_sock, inet6),
+	.useroffset	= offsetof(struct sctp6_sock, sctp.subscribe),
+	.usersize	= offsetof(struct sctp6_sock, sctp.initmsg) -
+				offsetof(struct sctp6_sock, sctp.subscribe) +
+				sizeof_field(struct sctp6_sock, sctp.initmsg),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysctl_mem	= sysctl_sctp_mem,
 	.sysctl_rmem	= sysctl_sctp_rmem,
 	.sysctl_wmem	= sysctl_sctp_wmem,
 	.memory_pressure = &sctp_memory_pressure,
 	.enter_memory_pressure = sctp_enter_memory_pressure,
+<<<<<<< HEAD
 	.memory_allocated = &sctp_memory_allocated,
+=======
+
+	.memory_allocated = &sctp_memory_allocated,
+	.per_cpu_fw_alloc = &sctp_memory_per_cpu_fw_alloc,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sockets_allocated = &sctp_sockets_allocated,
 };
 #endif /* IS_ENABLED(CONFIG_IPV6) */

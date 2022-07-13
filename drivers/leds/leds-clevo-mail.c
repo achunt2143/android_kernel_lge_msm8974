@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 
@@ -18,7 +23,11 @@ MODULE_AUTHOR("Márton Németh <nm127@freemail.hu>");
 MODULE_DESCRIPTION("Clevo mail LED driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 static bool __initdata nodetect;
+=======
+static bool nodetect;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(nodetect, nodetect, bool, 0);
 MODULE_PARM_DESC(nodetect, "Skip DMI hardware detection");
 
@@ -26,12 +35,20 @@ static struct platform_device *pdev;
 
 static int __init clevo_mail_led_dmi_callback(const struct dmi_system_id *id)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO KBUILD_MODNAME ": '%s' found\n", id->ident);
+=======
+	pr_info("'%s' found\n", id->ident);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
 /*
+<<<<<<< HEAD
  * struct mail_led_whitelist - List of known good models
+=======
+ * struct clevo_mail_led_dmi_table - List of known good models
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Contains the known good models this driver is compatible with.
  * When adding a new model try to be as strict as possible. This
@@ -39,7 +56,11 @@ static int __init clevo_mail_led_dmi_callback(const struct dmi_system_id *id)
  * detected as working, but in reality it is not) as low as
  * possible.
  */
+<<<<<<< HEAD
 static struct dmi_system_id __initdata mail_led_whitelist[] = {
+=======
+static const struct dmi_system_id clevo_mail_led_dmi_table[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.callback = clevo_mail_led_dmi_callback,
 		.ident = "Clevo D410J",
@@ -59,11 +80,18 @@ static struct dmi_system_id __initdata mail_led_whitelist[] = {
 	},
 	{
 		.callback = clevo_mail_led_dmi_callback,
+<<<<<<< HEAD
 		.ident = "Positivo Mobile",
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "CLEVO Co. "),
 			DMI_MATCH(DMI_BOARD_NAME, "M5X0V "),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Positivo Mobile"),
+=======
+		.ident = "Clevo M5x0V",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "CLEVO Co. "),
+			DMI_MATCH(DMI_BOARD_NAME, "M5X0V "),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DMI_MATCH(DMI_PRODUCT_VERSION, "VT6198")
 		}
 	},
@@ -89,6 +117,10 @@ static struct dmi_system_id __initdata mail_led_whitelist[] = {
 	},
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(dmi, clevo_mail_led_dmi_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void clevo_mail_led_set(struct led_classdev *led_cdev,
 				enum led_brightness value)
@@ -135,8 +167,12 @@ static int clevo_mail_led_blink(struct led_classdev *led_cdev,
 		status = 0;
 
 	} else {
+<<<<<<< HEAD
 		printk(KERN_DEBUG KBUILD_MODNAME
 		       ": clevo_mail_led_blink(..., %lu, %lu),"
+=======
+		pr_debug("clevo_mail_led_blink(..., %lu, %lu),"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       " returning -EINVAL (unsupported)\n",
 		       *delay_on, *delay_off);
 	}
@@ -153,11 +189,16 @@ static struct led_classdev clevo_mail_led = {
 	.flags			= LED_CORE_SUSPENDRESUME,
 };
 
+<<<<<<< HEAD
 static int __devinit clevo_mail_led_probe(struct platform_device *pdev)
+=======
+static int __init clevo_mail_led_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return led_classdev_register(&pdev->dev, &clevo_mail_led);
 }
 
+<<<<<<< HEAD
 static int clevo_mail_led_remove(struct platform_device *pdev)
 {
 	led_classdev_unregister(&clevo_mail_led);
@@ -170,6 +211,17 @@ static struct platform_driver clevo_mail_led_driver = {
 	.driver		= {
 		.name		= KBUILD_MODNAME,
 		.owner		= THIS_MODULE,
+=======
+static void clevo_mail_led_remove(struct platform_device *pdev)
+{
+	led_classdev_unregister(&clevo_mail_led);
+}
+
+static struct platform_driver clevo_mail_led_driver = {
+	.remove_new	= clevo_mail_led_remove,
+	.driver		= {
+		.name		= KBUILD_MODNAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -180,10 +232,17 @@ static int __init clevo_mail_led_init(void)
 
 	/* Check with the help of DMI if we are running on supported hardware */
 	if (!nodetect) {
+<<<<<<< HEAD
 		count = dmi_check_system(mail_led_whitelist);
 	} else {
 		count = 1;
 		printk(KERN_ERR KBUILD_MODNAME ": Skipping DMI detection. "
+=======
+		count = dmi_check_system(clevo_mail_led_dmi_table);
+	} else {
+		count = 1;
+		pr_err("Skipping DMI detection. "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "If the driver works on your hardware please "
 		       "report model and the output of dmidecode in tracker "
 		       "at http://sourceforge.net/projects/clevo-mailled/\n");
@@ -197,8 +256,12 @@ static int __init clevo_mail_led_init(void)
 		error = platform_driver_probe(&clevo_mail_led_driver,
 					      clevo_mail_led_probe);
 		if (error) {
+<<<<<<< HEAD
 			printk(KERN_ERR KBUILD_MODNAME
 			       ": Can't probe platform driver\n");
+=======
+			pr_err("Can't probe platform driver\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			platform_device_unregister(pdev);
 		}
 	} else

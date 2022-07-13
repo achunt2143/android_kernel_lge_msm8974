@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2007-2009 PetaLogix
  * Copyright (C) 2006 Atmark Techno, Inc.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_IO_H
@@ -15,11 +22,15 @@
 #include <asm/page.h>
 #include <linux/types.h>
 #include <linux/mm.h>          /* Get struct page {...} */
+<<<<<<< HEAD
 #include <asm-generic/iomap.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_PCI
 #define _IO_BASE	0
 #define _ISA_MEM_BASE	0
+<<<<<<< HEAD
 #define PCI_DRAM_OFFSET	0
 #else
 #define _IO_BASE	isa_io_base
@@ -220,6 +231,27 @@ static inline void __iomem *__ioremap(phys_addr_t address, unsigned long size,
 /*
  * Big Endian
  */
+=======
+#else
+#define _IO_BASE	isa_io_base
+#define _ISA_MEM_BASE	isa_mem_base
+struct pci_dev;
+extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+#define pci_iounmap pci_iounmap
+
+extern unsigned long isa_io_base;
+extern resource_size_t isa_mem_base;
+#endif
+
+#define PCI_IOBASE	((void __iomem *)_IO_BASE)
+#define IO_SPACE_LIMIT (0xFFFFFFFF)
+
+extern void iounmap(volatile void __iomem *addr);
+
+extern void __iomem *ioremap(phys_addr_t address, unsigned long size);
+
+/* Big Endian */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define out_be32(a, v) __raw_writel((v), (void __iomem __force *)(a))
 #define out_be16(a, v) __raw_writew((v), (a))
 
@@ -229,10 +261,14 @@ static inline void __iomem *__ioremap(phys_addr_t address, unsigned long size,
 #define writel_be(v, a)	out_be32((__force unsigned *)a, v)
 #define readl_be(a)	in_be32((__force unsigned *)a)
 
+<<<<<<< HEAD
 /*
  * Little endian
  */
 
+=======
+/* Little endian */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define out_le32(a, v) __raw_writel(__cpu_to_le32(v), (a))
 #define out_le16(a, v) __raw_writew(__cpu_to_le16(v), (a))
 
@@ -243,9 +279,13 @@ static inline void __iomem *__ioremap(phys_addr_t address, unsigned long size,
 #define out_8(a, v) __raw_writeb((v), (a))
 #define in_8(a) __raw_readb(a)
 
+<<<<<<< HEAD
 #define mmiowb()
 
 #define ioport_map(port, nr)	((void __iomem *)(port))
 #define ioport_unmap(addr)
+=======
+#include <asm-generic/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_MICROBLAZE_IO_H */

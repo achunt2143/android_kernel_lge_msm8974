@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* USB OTG (On The Go) defines */
 /*
  *
@@ -9,6 +13,7 @@
 #ifndef __LINUX_USB_OTG_H
 #define __LINUX_USB_OTG_H
 
+<<<<<<< HEAD
 #include <linux/notifier.h>
 
 /* OTG defines lots of enumeration states before device reset */
@@ -80,14 +85,29 @@ struct usb_phy_io_ops {
 	int (*read)(struct usb_phy *x, u32 reg);
 	int (*write)(struct usb_phy *x, u32 val, u32 reg);
 };
+=======
+#include <linux/phy/phy.h>
+#include <linux/usb/phy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct usb_otg {
 	u8			default_a;
 
+<<<<<<< HEAD
 	struct usb_phy		*phy;
 	struct usb_bus		*host;
 	struct usb_gadget	*gadget;
 
+=======
+	struct phy		*phy;
+	/* old usb_phy interface */
+	struct usb_phy		*usb_phy;
+	struct usb_bus		*host;
+	struct usb_gadget	*gadget;
+
+	enum usb_otg_state	state;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* bind/unbind the host controller */
 	int	(*set_host)(struct usb_otg *otg, struct usb_bus *host);
 
@@ -104,6 +124,7 @@ struct usb_otg {
 	/* start or continue HNP role switch */
 	int	(*start_hnp)(struct usb_otg *otg);
 
+<<<<<<< HEAD
 	/* send events to user space */
 	int	(*send_event)(struct usb_otg *otg,
 			enum usb_otg_event event);
@@ -229,6 +250,26 @@ static inline const char *otg_state_string(enum usb_otg_state state)
 	return NULL;
 }
 #endif
+=======
+};
+
+/**
+ * struct usb_otg_caps - describes the otg capabilities of the device
+ * @otg_rev: The OTG revision number the device is compliant with, it's
+ *		in binary-coded decimal (i.e. 2.0 is 0200H).
+ * @hnp_support: Indicates if the device supports HNP.
+ * @srp_support: Indicates if the device supports SRP.
+ * @adp_support: Indicates if the device supports ADP.
+ */
+struct usb_otg_caps {
+	u16 otg_rev;
+	bool hnp_support;
+	bool srp_support;
+	bool adp_support;
+};
+
+extern const char *usb_otg_state_string(enum usb_otg_state state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Context: can sleep */
 static inline int
@@ -273,6 +314,7 @@ otg_set_peripheral(struct usb_otg *otg, struct usb_gadget *periph)
 }
 
 static inline int
+<<<<<<< HEAD
 usb_phy_set_power(struct usb_phy *x, unsigned mA)
 {
 	if (x && x->set_power)
@@ -300,6 +342,8 @@ usb_phy_set_autosuspend(struct usb_phy *x, int enable_autosuspend)
 }
 
 static inline int
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 otg_start_srp(struct usb_otg *otg)
 {
 	if (otg && otg->start_srp)
@@ -308,6 +352,7 @@ otg_start_srp(struct usb_otg *otg)
 	return -ENOTSUPP;
 }
 
+<<<<<<< HEAD
 /* notifiers */
 static inline int
 usb_register_notifier(struct usb_phy *x, struct notifier_block *nb)
@@ -324,4 +369,26 @@ usb_unregister_notifier(struct usb_phy *x, struct notifier_block *nb)
 /* for OTG controller drivers (and maybe other stuff) */
 extern int usb_bus_start_enum(struct usb_bus *bus, unsigned port_num);
 
+=======
+/* for OTG controller drivers (and maybe other stuff) */
+extern int usb_bus_start_enum(struct usb_bus *bus, unsigned port_num);
+
+enum usb_dr_mode {
+	USB_DR_MODE_UNKNOWN,
+	USB_DR_MODE_HOST,
+	USB_DR_MODE_PERIPHERAL,
+	USB_DR_MODE_OTG,
+};
+
+/**
+ * usb_get_dr_mode - Get dual role mode for given device
+ * @dev: Pointer to the given device
+ *
+ * The function gets phy interface string from property 'dr_mode',
+ * and returns the corresponding enum usb_dr_mode
+ */
+extern enum usb_dr_mode usb_get_dr_mode(struct device *dev);
+extern enum usb_dr_mode usb_get_role_switch_default_mode(struct device *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_USB_OTG_H */

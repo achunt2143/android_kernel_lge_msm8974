@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-memchr.S
  *
@@ -27,7 +31,11 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  * Try not to change the actual algorithm if possible for consistency.
  */
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .set noreorder
         .set noat
 
@@ -189,3 +197,7 @@ $not_found:
 	ret			# L0 :
 
         .end memchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(memchr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

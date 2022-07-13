@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for ESS Solo-1 (ES1938, ES1946, ES1969) soundcard
  *  Copyright (c) by Jaromir Koutek <miri@punknet.cz>,
@@ -10,6 +14,7 @@
  *
  *  TODO:
  *    Rewrite better spinlocks
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +31,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -55,6 +62,10 @@
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
@@ -63,6 +74,7 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
 MODULE_AUTHOR("Jaromir Koutek <miri@punknet.cz>");
@@ -74,6 +86,13 @@ MODULE_SUPPORTED_DEVICE("{{ESS,ES1938},"
 		"{TerraTec,128i PCI}}");
 
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+MODULE_AUTHOR("Jaromir Koutek <miri@punknet.cz>");
+MODULE_DESCRIPTION("ESS Solo-1");
+MODULE_LICENSE("GPL");
+
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK 1
 #endif
 
@@ -236,14 +255,22 @@ struct es1938 {
 #ifdef SUPPORT_JOYSTICK
 	struct gameport *gameport;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	unsigned char saved_regs[SAVED_REG_SIZE];
 #endif
+=======
+	unsigned char saved_regs[SAVED_REG_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_es1938_ids) = {
+=======
+static const struct pci_device_id snd_es1938_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(ESS, 0x1969), 0, },   /* Solo-1 */
 	{ 0, }
 };
@@ -254,7 +281,10 @@ MODULE_DEVICE_TABLE(pci, snd_es1938_ids);
 #define WRITE_LOOP_TIMEOUT	0x10000
 #define GET_LOOP_TIMEOUT	0x01000
 
+<<<<<<< HEAD
 #undef REG_DEBUG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -----------------------------------------------------------------
  * Write to a mixer register
  * -----------------------------------------------------------------*/
@@ -265,9 +295,13 @@ static void snd_es1938_mixer_write(struct es1938 *chip, unsigned char reg, unsig
 	outb(reg, SLSB_REG(chip, MIXERADDR));
 	outb(val, SLSB_REG(chip, MIXERDATA));
 	spin_unlock_irqrestore(&chip->mixer_lock, flags);
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 	snd_printk(KERN_DEBUG "Mixer reg %02x set to %02x\n", reg, val);
 #endif
+=======
+	dev_dbg(chip->card->dev, "Mixer reg %02x set to %02x\n", reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* -----------------------------------------------------------------
@@ -281,9 +315,13 @@ static int snd_es1938_mixer_read(struct es1938 *chip, unsigned char reg)
 	outb(reg, SLSB_REG(chip, MIXERADDR));
 	data = inb(SLSB_REG(chip, MIXERDATA));
 	spin_unlock_irqrestore(&chip->mixer_lock, flags);
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 	snd_printk(KERN_DEBUG "Mixer reg %02x now is %02x\n", reg, data);
 #endif
+=======
+	dev_dbg(chip->card->dev, "Mixer reg %02x now is %02x\n", reg, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return data;
 }
 
@@ -302,10 +340,16 @@ static int snd_es1938_mixer_bits(struct es1938 *chip, unsigned char reg,
 	if (val != oval) {
 		new = (old & ~mask) | (val & mask);
 		outb(new, SLSB_REG(chip, MIXERDATA));
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 		snd_printk(KERN_DEBUG "Mixer reg %02x was %02x, set to %02x\n",
 			   reg, old, new);
 #endif
+=======
+		dev_dbg(chip->card->dev,
+			"Mixer reg %02x was %02x, set to %02x\n",
+			   reg, old, new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&chip->mixer_lock, flags);
 	return oval;
@@ -319,12 +363,22 @@ static void snd_es1938_write_cmd(struct es1938 *chip, unsigned char cmd)
 	int i;
 	unsigned char v;
 	for (i = 0; i < WRITE_LOOP_TIMEOUT; i++) {
+<<<<<<< HEAD
 		if (!(v = inb(SLSB_REG(chip, READSTATUS)) & 0x80)) {
+=======
+		v = inb(SLSB_REG(chip, READSTATUS));
+		if (!(v & 0x80)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(cmd, SLSB_REG(chip, WRITEDATA));
 			return;
 		}
 	}
+<<<<<<< HEAD
 	printk(KERN_ERR "snd_es1938_write_cmd timeout (0x02%x/0x02%x)\n", cmd, v);
+=======
+	dev_err(chip->card->dev,
+		"snd_es1938_write_cmd timeout (0x02%x/0x02%x)\n", cmd, v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* -----------------------------------------------------------------
@@ -334,10 +388,19 @@ static int snd_es1938_get_byte(struct es1938 *chip)
 {
 	int i;
 	unsigned char v;
+<<<<<<< HEAD
 	for (i = GET_LOOP_TIMEOUT; i; i--)
 		if ((v = inb(SLSB_REG(chip, STATUS))) & 0x80)
 			return inb(SLSB_REG(chip, READDATA));
 	snd_printk(KERN_ERR "get_byte timeout: status 0x02%x\n", v);
+=======
+	for (i = GET_LOOP_TIMEOUT; i; i--) {
+		v = inb(SLSB_REG(chip, STATUS));
+		if (v & 0x80)
+			return inb(SLSB_REG(chip, READDATA));
+	}
+	dev_err(chip->card->dev, "get_byte timeout: status 0x02%x\n", v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -351,9 +414,13 @@ static void snd_es1938_write(struct es1938 *chip, unsigned char reg, unsigned ch
 	snd_es1938_write_cmd(chip, reg);
 	snd_es1938_write_cmd(chip, val);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 	snd_printk(KERN_DEBUG "Reg %02x set to %02x\n", reg, val);
 #endif
+=======
+	dev_dbg(chip->card->dev, "Reg %02x set to %02x\n", reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* -----------------------------------------------------------------
@@ -368,9 +435,13 @@ static unsigned char snd_es1938_read(struct es1938 *chip, unsigned char reg)
 	snd_es1938_write_cmd(chip, reg);
 	val = snd_es1938_get_byte(chip);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 	snd_printk(KERN_DEBUG "Reg %02x now is %02x\n", reg, val);
 #endif
+=======
+	dev_dbg(chip->card->dev, "Reg %02x now is %02x\n", reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 
@@ -391,10 +462,15 @@ static int snd_es1938_bits(struct es1938 *chip, unsigned char reg, unsigned char
 		snd_es1938_write_cmd(chip, reg);
 		new = (old & ~mask) | (val & mask);
 		snd_es1938_write_cmd(chip, new);
+<<<<<<< HEAD
 #ifdef REG_DEBUG
 		snd_printk(KERN_DEBUG "Reg %02x was %02x, set to %02x\n",
 			   reg, old, new);
 #endif
+=======
+		dev_dbg(chip->card->dev, "Reg %02x was %02x, set to %02x\n",
+			   reg, old, new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 	return oval;
@@ -416,7 +492,11 @@ static void snd_es1938_reset(struct es1938 *chip)
 				goto __next;
 		}
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "ESS Solo-1 reset failed\n");
+=======
+	dev_err(chip->card->dev, "ESS Solo-1 reset failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
      __next:
 	snd_es1938_write_cmd(chip, ESS_CMD_ENABLEEXT);
@@ -448,7 +528,11 @@ static void snd_es1938_reset_fifo(struct es1938 *chip)
 	outb(0, SLSB_REG(chip, RESET));
 }
 
+<<<<<<< HEAD
 static struct snd_ratnum clocks[2] = {
+=======
+static const struct snd_ratnum clocks[2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.num = 793800,
 		.den_min = 1,
@@ -463,7 +547,11 @@ static struct snd_ratnum clocks[2] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks = {
+=======
+static const struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = 2,
 	.rats = clocks,
 };
@@ -851,6 +939,7 @@ static snd_pcm_uframes_t snd_es1938_playback_pointer(struct snd_pcm_substream *s
 }
 
 static int snd_es1938_capture_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 				   int channel,
 				   snd_pcm_uframes_t pos,
 				   void __user *dst,
@@ -869,11 +958,29 @@ static int snd_es1938_capture_copy(struct snd_pcm_substream *substream,
 		if (copy_to_user(dst, runtime->dma_area + pos + 1, count - 1))
 			return -EFAULT;
 		if (put_user(runtime->dma_area[0], ((unsigned char __user *)dst) + count - 1))
+=======
+				   int channel, unsigned long pos,
+				   struct iov_iter *dst, unsigned long count)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct es1938 *chip = snd_pcm_substream_chip(substream);
+
+	if (snd_BUG_ON(pos + count > chip->dma1_size))
+		return -EINVAL;
+	if (pos + count < chip->dma1_size) {
+		if (copy_to_iter(runtime->dma_area + pos + 1, count, dst) != count)
+			return -EFAULT;
+	} else {
+		if (copy_to_iter(runtime->dma_area + pos + 1, count - 1, dst) != count - 1)
+			return -EFAULT;
+		if (copy_to_iter(runtime->dma_area, 1, dst) != 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * buffer management
  */
@@ -897,6 +1004,12 @@ static int snd_es1938_pcm_hw_free(struct snd_pcm_substream *substream)
  * Audio1 Capture (ADC)
  * ----------------------------------------------------------------------*/
 static struct snd_pcm_hardware snd_es1938_capture =
+=======
+/* ----------------------------------------------------------------------
+ * Audio1 Capture (ADC)
+ * ----------------------------------------------------------------------*/
+static const struct snd_pcm_hardware snd_es1938_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_INTERLEAVED |
 				SNDRV_PCM_INFO_BLOCK_TRANSFER),
@@ -918,7 +1031,11 @@ static struct snd_pcm_hardware snd_es1938_capture =
 /* -----------------------------------------------------------------------
  * Audio2 Playback (DAC)
  * -----------------------------------------------------------------------*/
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_es1938_playback =
+=======
+static const struct snd_pcm_hardware snd_es1938_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1004,35 +1121,56 @@ static int snd_es1938_playback_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1938_playback_ops = {
 	.open =		snd_es1938_playback_open,
 	.close =	snd_es1938_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_es1938_pcm_hw_params,
 	.hw_free =	snd_es1938_pcm_hw_free,
+=======
+static const struct snd_pcm_ops snd_es1938_playback_ops = {
+	.open =		snd_es1938_playback_open,
+	.close =	snd_es1938_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_es1938_playback_prepare,
 	.trigger =	snd_es1938_playback_trigger,
 	.pointer =	snd_es1938_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1938_capture_ops = {
 	.open =		snd_es1938_capture_open,
 	.close =	snd_es1938_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_es1938_pcm_hw_params,
 	.hw_free =	snd_es1938_pcm_hw_free,
+=======
+static const struct snd_pcm_ops snd_es1938_capture_ops = {
+	.open =		snd_es1938_capture_open,
+	.close =	snd_es1938_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_es1938_capture_prepare,
 	.trigger =	snd_es1938_capture_trigger,
 	.pointer =	snd_es1938_capture_pointer,
 	.copy =		snd_es1938_capture_copy,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_es1938_new_pcm(struct es1938 *chip, int device)
+=======
+static int snd_es1938_new_pcm(struct es1938 *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(chip->card, "es-1938-1946", device, 2, 1, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "es-1938-1946", device, 2, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_es1938_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_es1938_capture_ops);
@@ -1041,8 +1179,13 @@ static int __devinit snd_es1938_new_pcm(struct es1938 *chip, int device)
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "ESS Solo-1");
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci), 64*1024, 64*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &chip->pci->dev, 64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->pcm = pcm;
 	return 0;
@@ -1056,11 +1199,16 @@ static int __devinit snd_es1938_new_pcm(struct es1938 *chip, int device)
 static int snd_es1938_info_mux(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[8] = {
+=======
+	static const char * const texts[8] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Mic", "Mic Master", "CD", "AOUT",
 		"Mic1", "Mix", "Line", "Master"
 	};
 
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 1;
 	uinfo->value.enumerated.items = 8;
@@ -1068,6 +1216,9 @@ static int snd_es1938_info_mux(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = 7;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, 8, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_es1938_get_mux(struct snd_kcontrol *kcontrol,
@@ -1321,6 +1472,7 @@ static int snd_es1938_put_double(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static unsigned int db_scale_master[] = {
 	TLV_DB_RANGE_HEAD(2),
 	0, 54, TLV_DB_SCALE_ITEM(-3600, 50, 1),
@@ -1354,6 +1506,36 @@ static unsigned int db_scale_line[] = {
 static const DECLARE_TLV_DB_SCALE(db_scale_capture, 0, 150, 0);
 
 static struct snd_kcontrol_new snd_es1938_controls[] = {
+=======
+static const DECLARE_TLV_DB_RANGE(db_scale_master,
+	0, 54, TLV_DB_SCALE_ITEM(-3600, 50, 1),
+	54, 63, TLV_DB_SCALE_ITEM(-900, 100, 0),
+);
+
+static const DECLARE_TLV_DB_RANGE(db_scale_audio1,
+	0, 8, TLV_DB_SCALE_ITEM(-3300, 300, 1),
+	8, 15, TLV_DB_SCALE_ITEM(-900, 150, 0),
+);
+
+static const DECLARE_TLV_DB_RANGE(db_scale_audio2,
+	0, 8, TLV_DB_SCALE_ITEM(-3450, 300, 1),
+	8, 15, TLV_DB_SCALE_ITEM(-1050, 150, 0),
+);
+
+static const DECLARE_TLV_DB_RANGE(db_scale_mic,
+	0, 8, TLV_DB_SCALE_ITEM(-2400, 300, 1),
+	8, 15, TLV_DB_SCALE_ITEM(0, 150, 0),
+);
+
+static const DECLARE_TLV_DB_RANGE(db_scale_line,
+	0, 8, TLV_DB_SCALE_ITEM(-3150, 300, 1),
+	8, 15, TLV_DB_SCALE_ITEM(-750, 150, 0),
+);
+
+static const DECLARE_TLV_DB_SCALE(db_scale_capture, 0, 150, 0);
+
+static const struct snd_kcontrol_new snd_es1938_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ES1938_DOUBLE_TLV("Master Playback Volume", 0, 0x60, 0x62, 0, 0, 63, 0,
 		  db_scale_master),
 ES1938_DOUBLE("Master Playback Switch", 0, 0x60, 0x62, 6, 6, 1, 1),
@@ -1461,12 +1643,19 @@ static void snd_es1938_chip_init(struct es1938 *chip)
 	outb(0, SLDM_REG(chip, DMACLEAR));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PM support
  */
 
+<<<<<<< HEAD
 static unsigned char saved_regs[SAVED_REG_SIZE+1] = {
+=======
+static const unsigned char saved_regs[SAVED_REG_SIZE+1] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x14, 0x1a, 0x1c, 0x3a, 0x3c, 0x3e, 0x36, 0x38,
 	0x50, 0x52, 0x60, 0x61, 0x62, 0x63, 0x64, 0x68,
 	0x69, 0x6a, 0x6b, 0x6d, 0x6e, 0x6f, 0x7c, 0x7d,
@@ -1474,6 +1663,7 @@ static unsigned char saved_regs[SAVED_REG_SIZE+1] = {
 };
 
 
+<<<<<<< HEAD
 static int es1938_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
@@ -1482,6 +1672,16 @@ static int es1938_suspend(struct pci_dev *pci, pm_message_t state)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	snd_pcm_suspend_all(chip->pcm);
+=======
+static int es1938_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct es1938 *chip = card->private_data;
+	const unsigned char *s;
+	unsigned char *d;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save mixer-related registers */
 	for (s = saved_regs, d = chip->saved_regs; *s; s++, d++)
@@ -1491,6 +1691,7 @@ static int es1938_suspend(struct pci_dev *pci, pm_message_t state)
 	if (chip->irq >= 0) {
 		free_irq(chip->irq, chip);
 		chip->irq = -1;
+<<<<<<< HEAD
 	}
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -1517,10 +1718,33 @@ static int es1938_resume(struct pci_dev *pci)
 			IRQF_SHARED, KBUILD_MODNAME, chip)) {
 		printk(KERN_ERR "es1938: unable to grab IRQ %d, "
 		       "disabling device\n", pci->irq);
+=======
+		card->sync_irq = -1;
+	}
+	return 0;
+}
+
+static int es1938_resume(struct device *dev)
+{
+	struct pci_dev *pci = to_pci_dev(dev);
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct es1938 *chip = card->private_data;
+	const unsigned char *s;
+	unsigned char *d;
+
+	if (request_irq(pci->irq, snd_es1938_interrupt,
+			IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(dev, "unable to grab IRQ %d, disabling device\n",
+			pci->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_card_disconnect(card);
 		return -EIO;
 	}
 	chip->irq = pci->irq;
+<<<<<<< HEAD
+=======
+	card->sync_irq = chip->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_es1938_chip_init(chip);
 
 	/* restore mixer-related registers */
@@ -1534,16 +1758,29 @@ static int es1938_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 #ifdef SUPPORT_JOYSTICK
 static int __devinit snd_es1938_create_gameport(struct es1938 *chip)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(es1938_pm, es1938_suspend, es1938_resume);
+
+#ifdef SUPPORT_JOYSTICK
+static int snd_es1938_create_gameport(struct es1938 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "es1938: cannot allocate memory for gameport\n");
+=======
+		dev_err(chip->card->dev,
+			"cannot allocate memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1569,8 +1806,15 @@ static inline int snd_es1938_create_gameport(struct es1938 *chip) { return -ENOS
 static inline void snd_es1938_free_gameport(struct es1938 *chip) { }
 #endif /* SUPPORT_JOYSTICK */
 
+<<<<<<< HEAD
 static int snd_es1938_free(struct es1938 *chip)
 {
+=======
+static void snd_es1938_free(struct snd_card *card)
+{
+	struct es1938 *chip = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable irqs */
 	outb(0x00, SLIO_REG(chip, IRQCONTROL));
 	if (chip->rmidi)
@@ -1580,6 +1824,7 @@ static int snd_es1938_free(struct es1938 *chip)
 
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
+<<<<<<< HEAD
 	pci_release_regions(chip->pci);
 	pci_disable_device(chip->pci);
 	kfree(chip);
@@ -1620,21 +1865,49 @@ static int __devinit snd_es1938_create(struct snd_card *card,
 		pci_disable_device(pci);
 		return -ENOMEM;
 	}
+=======
+}
+
+static int snd_es1938_create(struct snd_card *card,
+			     struct pci_dev *pci)
+{
+	struct es1938 *chip = card->private_data;
+	int err;
+
+	/* enable PCI device */
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+        /* check, if we can restrict PCI DMA transfers to 24 bits */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) {
+		dev_err(card->dev,
+			"architecture does not support 24bit PCI busmaster DMA\n");
+                return -ENXIO;
+        }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	spin_lock_init(&chip->mixer_lock);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, "ESS Solo-1")) < 0) {
 		kfree(chip);
 		pci_disable_device(pci);
 		return err;
 	}
+=======
+	err = pci_request_regions(pci, "ESS Solo-1");
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->io_port = pci_resource_start(pci, 0);
 	chip->sb_port = pci_resource_start(pci, 1);
 	chip->vc_port = pci_resource_start(pci, 2);
 	chip->mpu_port = pci_resource_start(pci, 3);
 	chip->game_port = pci_resource_start(pci, 4);
+<<<<<<< HEAD
 	if (request_irq(pci->irq, snd_es1938_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
@@ -1646,10 +1919,25 @@ static int __devinit snd_es1938_create(struct snd_card *card,
 	snd_printk(KERN_DEBUG "create: io: 0x%lx, sb: 0x%lx, vc: 0x%lx, mpu: 0x%lx, game: 0x%lx\n",
 		   chip->io_port, chip->sb_port, chip->vc_port, chip->mpu_port, chip->game_port);
 #endif
+=======
+	/* still use non-managed irq handler as it's re-acquired at PM resume */
+	if (request_irq(pci->irq, snd_es1938_interrupt, IRQF_SHARED,
+			KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_es1938_free;
+	dev_dbg(card->dev,
+		"create: io: 0x%lx, sb: 0x%lx, vc: 0x%lx, mpu: 0x%lx, game: 0x%lx\n",
+		   chip->io_port, chip->sb_port, chip->vc_port, chip->mpu_port, chip->game_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->ddma_port = chip->vc_port + 0x00;		/* fix from Thomas Sailer */
 
 	snd_es1938_chip_init(chip);
+<<<<<<< HEAD
 
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
 		snd_es1938_free(chip);
@@ -1659,6 +1947,8 @@ static int __devinit snd_es1938_create(struct snd_card *card,
 	snd_card_set_dev(card, &pci->dev);
 
 	*rchip = chip;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1668,17 +1958,28 @@ static int __devinit snd_es1938_create(struct snd_card *card,
 static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 {
 	struct es1938 *chip = dev_id;
+<<<<<<< HEAD
 	unsigned char status, audiostatus;
+=======
+	unsigned char status;
+	__always_unused unsigned char audiostatus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int handled = 0;
 
 	status = inb(SLIO_REG(chip, IRQCONTROL));
 #if 0
+<<<<<<< HEAD
 	printk(KERN_DEBUG "Es1938debug - interrupt status: =0x%x\n", status);
+=======
+	dev_dbg(chip->card->dev,
+		"Es1938debug - interrupt status: =0x%x\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	
 	/* AUDIO 1 */
 	if (status & 0x10) {
 #if 0
+<<<<<<< HEAD
                 printk(KERN_DEBUG
 		       "Es1938debug - AUDIO channel 1 interrupt\n");
 		printk(KERN_DEBUG
@@ -1688,6 +1989,17 @@ static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 		       "Es1938debug - AUDIO channel 1 DMAC DMA base: %u\n",
 		       inl(SLDM_REG(chip, DMAADDR)));
 		printk(KERN_DEBUG
+=======
+		dev_dbg(chip->card->dev,
+		       "Es1938debug - AUDIO channel 1 interrupt\n");
+		dev_dbg(chip->card->dev,
+		       "Es1938debug - AUDIO channel 1 DMAC DMA count: %u\n",
+		       inw(SLDM_REG(chip, DMACOUNT)));
+		dev_dbg(chip->card->dev,
+		       "Es1938debug - AUDIO channel 1 DMAC DMA base: %u\n",
+		       inl(SLDM_REG(chip, DMAADDR)));
+		dev_dbg(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "Es1938debug - AUDIO channel 1 DMAC DMA status: 0x%x\n",
 		       inl(SLDM_REG(chip, DMASTATUS)));
 #endif
@@ -1703,12 +2015,21 @@ static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 	/* AUDIO 2 */
 	if (status & 0x20) {
 #if 0
+<<<<<<< HEAD
                 printk(KERN_DEBUG
 		       "Es1938debug - AUDIO channel 2 interrupt\n");
 		printk(KERN_DEBUG
 		       "Es1938debug - AUDIO channel 2 DMAC DMA count: %u\n",
 		       inw(SLIO_REG(chip, AUDIO2DMACOUNT)));
 		printk(KERN_DEBUG
+=======
+		dev_dbg(chip->card->dev,
+		       "Es1938debug - AUDIO channel 2 interrupt\n");
+		dev_dbg(chip->card->dev,
+		       "Es1938debug - AUDIO channel 2 DMAC DMA count: %u\n",
+		       inw(SLIO_REG(chip, AUDIO2DMACOUNT)));
+		dev_dbg(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "Es1938debug - AUDIO channel 2 DMAC DMA base: %u\n",
 		       inl(SLIO_REG(chip, AUDIO2DMAADDR)));
 
@@ -1752,7 +2073,11 @@ static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 
 #define ES1938_DMA_SIZE 64
 
+<<<<<<< HEAD
 static int __devinit snd_es1938_mixer(struct es1938 *chip)
+=======
+static int snd_es1938_mixer(struct es1938 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	unsigned int idx;
@@ -1783,15 +2108,25 @@ static int __devinit snd_es1938_mixer(struct es1938 *chip)
 				kctl->private_free = snd_es1938_hwv_free;
 				break;
 			}
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, kctl)) < 0)
+=======
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;
 }
        
 
+<<<<<<< HEAD
 static int __devinit snd_es1938_probe(struct pci_dev *pci,
 				      const struct pci_device_id *pci_id)
+=======
+static int __snd_es1938_probe(struct pci_dev *pci,
+			      const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -1806,6 +2141,7 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
@@ -1821,6 +2157,22 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 		return err;
 	}
 	card->private_data = chip;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+
+	for (idx = 0; idx < 5; idx++)
+		if (pci_resource_start(pci, idx) == 0 ||
+		    !(pci_resource_flags(pci, idx) & IORESOURCE_IO))
+			return -ENODEV;
+
+	err = snd_es1938_create(card, pci);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "ES1938");
 	strcpy(card->shortname, "ESS ES1938 (Solo-1)");
@@ -1829,6 +2181,7 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 		chip->revision,
 		chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_es1938_new_pcm(chip, 0)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -1837,10 +2190,19 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_es1938_new_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_es1938_mixer(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_opl3_create(card,
 			    SLSB_REG(chip, FMLOWADDR),
 			    SLSB_REG(chip, FMHIGHADDR),
 			    OPL3_HW_OPL3, 1, &opl3) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "es1938: OPL3 not detected at 0x%lx\n",
 			   SLSB_REG(chip, FMLOWADDR));
 	} else {
@@ -1852,12 +2214,27 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 	                snd_card_free(card);
 	                return err;
 		}
+=======
+		dev_err(card->dev, "OPL3 not detected at 0x%lx\n",
+			   SLSB_REG(chip, FMLOWADDR));
+	} else {
+		err = snd_opl3_timer_new(opl3, 0, 1);
+		if (err < 0)
+	                return err;
+		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+		if (err < 0)
+	                return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (snd_mpu401_uart_new(card, 0, MPU401_HW_MPU401,
 				chip->mpu_port,
 				MPU401_INFO_INTEGRATED | MPU401_INFO_IRQ_HOOK,
 				-1, &chip->rmidi) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "es1938: unable to initialize MPU-401\n");
+=======
+		dev_err(card->dev, "unable to initialize MPU-401\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		// this line is vital for MIDI interrupt handling on ess-solo1
 		// andreas@flying-snail.de
@@ -1866,16 +2243,23 @@ static int __devinit snd_es1938_probe(struct pci_dev *pci,
 
 	snd_es1938_create_gameport(chip);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_es1938_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -1905,3 +2289,21 @@ static void __exit alsa_card_es1938_exit(void)
 
 module_init(alsa_card_es1938_init)
 module_exit(alsa_card_es1938_exit)
+=======
+static int snd_es1938_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_es1938_probe(pci, pci_id));
+}
+
+static struct pci_driver es1938_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_es1938_ids,
+	.probe = snd_es1938_probe,
+	.driver = {
+		.pm = &es1938_pm,
+	},
+};
+
+module_pci_driver(es1938_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -122,7 +122,11 @@ static void carl9170_led_set_brightness(struct led_classdev *led,
 }
 
 static int carl9170_led_register_led(struct ar9170 *ar, int i, char *name,
+<<<<<<< HEAD
 				     char *trigger)
+=======
+				     const char *trigger)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 

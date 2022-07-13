@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interrupt driver for RICOH583 power management chip.
  *
@@ -6,6 +10,7 @@
  *
  * based on code
  *      Copyright (C) 2011 RICOH COMPANY,LTD
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -24,6 +29,12 @@
 #include <linux/irq.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
+=======
+ */
+#include <linux/device.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/rc5t583.h>
 
 enum int_type {
@@ -241,21 +252,32 @@ static void rc5t583_irq_sync_unlock(struct irq_data *irq_data)
 
 	mutex_unlock(&rc5t583->irq_lock);
 }
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rc5t583_irq_set_wake(struct irq_data *irq_data, unsigned int on)
 {
 	struct rc5t583 *rc5t583 = irq_data_get_irq_chip_data(irq_data);
 	return irq_set_irq_wake(rc5t583->chip_irq, on);
 }
+<<<<<<< HEAD
 #else
 #define rc5t583_irq_set_wake NULL
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t rc5t583_irq(int irq, void *data)
 {
 	struct rc5t583 *rc5t583 = data;
 	uint8_t int_sts[RC5T583_MAX_INTERRUPT_MASK_REGS];
+<<<<<<< HEAD
 	uint8_t master_int;
+=======
+	uint8_t master_int = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int ret;
 	unsigned int rtc_int_sts = 0;
@@ -330,7 +352,11 @@ static struct irq_chip rc5t583_irq_chip = {
 	.irq_bus_lock = rc5t583_irq_lock,
 	.irq_bus_sync_unlock = rc5t583_irq_sync_unlock,
 	.irq_set_type = rc5t583_irq_set_type,
+<<<<<<< HEAD
 	.irq_set_wake = rc5t583_irq_set_wake,
+=======
+	.irq_set_wake = pm_sleep_ptr(rc5t583_irq_set_wake),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
@@ -345,7 +371,11 @@ int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
 	mutex_init(&rc5t583->irq_lock);
 
 	/* Initailize all int register to 0 */
+<<<<<<< HEAD
 	for (i = 0; i < RC5T583_MAX_INTERRUPT_MASK_REGS; i++)  {
+=======
+	for (i = 0; i < RC5T583_MAX_INTERRUPT_EN_REGS; i++)  {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = rc5t583_write(rc5t583->dev, irq_en_add[i],
 				rc5t583->irq_en_reg[i]);
 		if (ret < 0)
@@ -387,6 +417,7 @@ int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
 		irq_set_chip_and_handler(__irq, &rc5t583_irq_chip,
 					 handle_simple_irq);
 		irq_set_nested_thread(__irq, 1);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		set_irq_flags(__irq, IRQF_VALID);
 #endif
@@ -394,11 +425,19 @@ int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
 
 	ret = request_threaded_irq(irq, NULL, rc5t583_irq, IRQF_ONESHOT,
 				"rc5t583", rc5t583);
+=======
+		irq_clear_status_flags(__irq, IRQ_NOREQUEST);
+	}
+
+	ret = devm_request_threaded_irq(rc5t583->dev, irq, NULL, rc5t583_irq,
+					IRQF_ONESHOT, "rc5t583", rc5t583);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		dev_err(rc5t583->dev,
 			"Error in registering interrupt error: %d\n", ret);
 	return ret;
 }
+<<<<<<< HEAD
 
 int rc5t583_irq_exit(struct rc5t583 *rc5t583)
 {
@@ -406,3 +445,5 @@ int rc5t583_irq_exit(struct rc5t583 *rc5t583)
 		free_irq(rc5t583->chip_irq, rc5t583);
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

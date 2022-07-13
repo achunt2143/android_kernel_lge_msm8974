@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_KONEPLUS_H
 #define __HID_ROCCAT_KONEPLUS_H
 
@@ -6,14 +10,18 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct koneplus_talk {
 	uint8_t command; /* KONEPLUS_COMMAND_TALK */
 	uint8_t size; /* always 0x10 */
@@ -44,6 +52,25 @@ enum koneplus_control_values {
 	KONEPLUS_CONTROL_REQUEST_STATUS_OVERLOAD = 0,
 	KONEPLUS_CONTROL_REQUEST_STATUS_OK = 1,
 	KONEPLUS_CONTROL_REQUEST_STATUS_WAIT = 3,
+=======
+enum {
+	KONEPLUS_SIZE_ACTUAL_PROFILE = 0x03,
+	KONEPLUS_SIZE_CONTROL = 0x03,
+	KONEPLUS_SIZE_FIRMWARE_WRITE = 0x0402,
+	KONEPLUS_SIZE_INFO = 0x06,
+	KONEPLUS_SIZE_MACRO = 0x0822,
+	KONEPLUS_SIZE_PROFILE_SETTINGS = 0x2b,
+	KONEPLUS_SIZE_PROFILE_BUTTONS = 0x4d,
+	KONEPLUS_SIZE_SENSOR = 0x06,
+	KONEPLUS_SIZE_TALK = 0x10,
+	KONEPLUS_SIZE_TCU = 0x04,
+	KONEPLUS_SIZE_TCU_IMAGE = 0x0404,
+};
+
+enum koneplus_control_requests {
+	KONEPLUS_CONTROL_REQUEST_PROFILE_SETTINGS = 0x80,
+	KONEPLUS_CONTROL_REQUEST_PROFILE_BUTTONS = 0x90,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct koneplus_actual_profile {
@@ -52,6 +79,7 @@ struct koneplus_actual_profile {
 	uint8_t actual_profile; /* Range 0-4! */
 } __attribute__ ((__packed__));
 
+<<<<<<< HEAD
 struct koneplus_profile_settings {
 	uint8_t command; /* KONEPLUS_COMMAND_PROFILE_SETTINGS */
 	uint8_t size; /* always 43 */
@@ -91,6 +119,8 @@ struct koneplus_macro {
 	uint16_t checksum;
 } __attribute__ ((__packed__));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct koneplus_info {
 	uint8_t command; /* KONEPLUS_COMMAND_INFO */
 	uint8_t size; /* always 6 */
@@ -98,6 +128,7 @@ struct koneplus_info {
 	uint8_t unknown[3];
 } __attribute__ ((__packed__));
 
+<<<<<<< HEAD
 struct koneplus_e {
 	uint8_t command; /* KONEPLUS_COMMAND_E */
 	uint8_t size; /* always 3 */
@@ -139,11 +170,20 @@ struct koneplus_tcu_image {
 enum koneplus_commands {
 	KONEPLUS_COMMAND_CONTROL = 0x4,
 	KONEPLUS_COMMAND_ACTUAL_PROFILE = 0x5,
+=======
+enum koneplus_commands {
+	KONEPLUS_COMMAND_ACTUAL_PROFILE = 0x5,
+	KONEPLUS_COMMAND_CONTROL = 0x4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KONEPLUS_COMMAND_PROFILE_SETTINGS = 0x6,
 	KONEPLUS_COMMAND_PROFILE_BUTTONS = 0x7,
 	KONEPLUS_COMMAND_MACRO = 0x8,
 	KONEPLUS_COMMAND_INFO = 0x9,
 	KONEPLUS_COMMAND_TCU = 0xc,
+<<<<<<< HEAD
+=======
+	KONEPLUS_COMMAND_TCU_IMAGE = 0xc,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KONEPLUS_COMMAND_E = 0xe,
 	KONEPLUS_COMMAND_SENSOR = 0xf,
 	KONEPLUS_COMMAND_TALK = 0x10,
@@ -209,10 +249,13 @@ struct koneplus_device {
 	int chrdev_minor;
 
 	struct mutex koneplus_lock;
+<<<<<<< HEAD
 
 	struct koneplus_info info;
 	struct koneplus_profile_settings profile_settings[5];
 	struct koneplus_profile_buttons profile_buttons[5];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

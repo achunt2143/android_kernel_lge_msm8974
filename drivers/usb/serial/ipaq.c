@@ -1,18 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB Compaq iPAQ driver
  *
  *	Copyright (C) 2001 - 2002
  *	    Ganesh Varadarajan <ganesh@veritas.com>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -25,6 +35,7 @@
 
 #define KP_RETRIES	100
 
+<<<<<<< HEAD
 /*
  * Version Information
  */
@@ -35,18 +46,31 @@
 
 static __u16 product, vendor;
 static bool debug;
+=======
+#define DRIVER_AUTHOR "Ganesh Varadarajan <ganesh@veritas.com>"
+#define DRIVER_DESC "USB PocketPC PDA driver"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int connect_retries = KP_RETRIES;
 static int initial_wait;
 
 /* Function prototypes for an ipaq */
 static int  ipaq_open(struct tty_struct *tty,
 			struct usb_serial_port *port);
+<<<<<<< HEAD
 static int  ipaq_calc_num_ports(struct usb_serial *serial);
 static int  ipaq_startup(struct usb_serial *serial);
 
 static struct usb_device_id ipaq_id_table [] = {
 	/* The first entry is a placeholder for the insmod-specified device */
 	{ USB_DEVICE(0x049F, 0x0003) },
+=======
+static int ipaq_calc_num_ports(struct usb_serial *serial,
+					struct usb_serial_endpoints *epds);
+static int  ipaq_startup(struct usb_serial *serial);
+
+static const struct usb_device_id ipaq_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x0104, 0x00BE) }, /* Socket USB Sync */
 	{ USB_DEVICE(0x03F0, 0x1016) }, /* HP USB Sync */
 	{ USB_DEVICE(0x03F0, 0x1116) }, /* HP USB Sync 1611 */
@@ -505,6 +529,7 @@ static struct usb_device_id ipaq_id_table [] = {
 
 MODULE_DEVICE_TABLE(usb, ipaq_id_table);
 
+<<<<<<< HEAD
 static struct usb_driver ipaq_driver = {
 	.name =		"ipaq",
 	.probe =	usb_serial_probe,
@@ -512,6 +537,8 @@ static struct usb_driver ipaq_driver = {
 	.id_table =	ipaq_id_table,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* All of the device info needed for the Compaq iPAQ */
 static struct usb_serial_driver ipaq_device = {
@@ -539,8 +566,11 @@ static int ipaq_open(struct tty_struct *tty,
 	int			result = 0;
 	int			retries = connect_retries;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(1000*initial_wait);
 
 	/*
@@ -569,6 +599,7 @@ static int ipaq_open(struct tty_struct *tty,
 	return usb_serial_generic_open(tty, port);
 }
 
+<<<<<<< HEAD
 static int ipaq_calc_num_ports(struct usb_serial *serial)
 {
 	/*
@@ -607,6 +638,40 @@ static int ipaq_startup(struct usb_serial *serial)
 			serial->num_bulk_out < serial->num_ports)
 		return -ENODEV;
 
+=======
+static int ipaq_calc_num_ports(struct usb_serial *serial,
+					struct usb_serial_endpoints *epds)
+{
+	/*
+	 * Some of the devices in ipaq_id_table[] are composite, and we
+	 * shouldn't bind to all the interfaces. This test will rule out
+	 * some obviously invalid possibilities.
+	 */
+	if (epds->num_bulk_in == 0 || epds->num_bulk_out == 0)
+		return -ENODEV;
+
+	/*
+	 * A few devices have four endpoints, seemingly Yakuma devices, and
+	 * we need the second pair.
+	 */
+	if (epds->num_bulk_in > 1 && epds->num_bulk_out > 1) {
+		epds->bulk_in[0] = epds->bulk_in[1];
+		epds->bulk_out[0] = epds->bulk_out[1];
+	}
+
+	/*
+	 * Other devices have 3 endpoints, but we only use the first bulk in
+	 * and out endpoints.
+	 */
+	epds->num_bulk_in = 1;
+	epds->num_bulk_out = 1;
+
+	return 1;
+}
+
+static int ipaq_startup(struct usb_serial *serial)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (serial->dev->actconfig->desc.bConfigurationValue != 1) {
 		/*
 		 * FIXME: HP iPaq rx3715, possibly others, have 1 config that
@@ -618,6 +683,7 @@ static int ipaq_startup(struct usb_serial *serial)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	dbg("%s - iPAQ module configured for %d ports",
 		__FUNCTION__, serial->num_ports);
 
@@ -648,11 +714,18 @@ static void __exit ipaq_exit(void)
 
 module_init(ipaq_init);
 module_exit(ipaq_exit);
+=======
+	return usb_reset_configuration(serial->dev);
+}
+
+module_usb_serial_driver(serial_drivers, ipaq_id_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
 
@@ -667,5 +740,12 @@ MODULE_PARM_DESC(connect_retries,
 		"Maximum number of connect retries (one second each)");
 
 module_param(initial_wait, int, S_IRUGO|S_IWUSR);
+=======
+module_param(connect_retries, int, 0644);
+MODULE_PARM_DESC(connect_retries,
+		"Maximum number of connect retries (one second each)");
+
+module_param(initial_wait, int, 0644);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(initial_wait,
 		"Time to wait before attempting a connection (in seconds)");

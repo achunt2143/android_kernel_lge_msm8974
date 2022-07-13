@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config VGA_ARB
 	bool "VGA Arbitration" if EXPERT
 	default y
@@ -17,13 +18,26 @@ config VGA_ARB_MAX_GPUS
 	  Reserves space in the kernel to maintain resource locking for
 	  multiple GPUS.  The overhead for each GPU is very small.
 
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config VGA_SWITCHEROO
 	bool "Laptop Hybrid Graphics - GPU switching support"
 	depends on X86
 	depends on ACPI
+<<<<<<< HEAD
 	help
 	  Many laptops released in 2008/9/10 have two GPUs with a multiplexer
 	  to switch between them. This adds support for dynamic switching when
           X isn't running and delayed switching until the next logoff. This
+=======
+	depends on PCI
+	depends on (FRAMEBUFFER_CONSOLE=n || FB=y)
+	select VGA_ARB
+	help
+	  Many laptops released in 2008/9/10 have two GPUs with a multiplexer
+	  to switch between them. This adds support for dynamic switching when
+	  X isn't running and delayed switching until the next logoff. This
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  feature is called hybrid graphics, ATI PowerXpress, and Nvidia
 	  HybridPower.

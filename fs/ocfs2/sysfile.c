@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sysfile.c
  *
  * Initialize, read, write, etc. system files.
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -69,10 +77,18 @@ static struct inode **get_local_system_inode(struct ocfs2_super *osb,
 	spin_unlock(&osb->osb_lock);
 
 	if (unlikely(!local_system_inodes)) {
+<<<<<<< HEAD
 		local_system_inodes = kzalloc(sizeof(struct inode *) *
 					      NUM_LOCAL_SYSTEM_INODES *
 					      osb->max_slots,
 					      GFP_NOFS);
+=======
+		local_system_inodes =
+			kzalloc(array3_size(sizeof(struct inode *),
+					    NUM_LOCAL_SYSTEM_INODES,
+					    osb->max_slots),
+				GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!local_system_inodes) {
 			mlog_errno(-ENOMEM);
 			/*
@@ -91,8 +107,12 @@ static struct inode **get_local_system_inode(struct ocfs2_super *osb,
 		} else
 			osb->local_system_inodes = local_system_inodes;
 		spin_unlock(&osb->osb_lock);
+<<<<<<< HEAD
 		if (unlikely(free))
 			kfree(free);
+=======
+		kfree(free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	index = (slot * NUM_LOCAL_SYSTEM_INODES) +
@@ -114,9 +134,17 @@ struct inode *ocfs2_get_system_file_inode(struct ocfs2_super *osb,
 	} else
 		arr = get_local_system_inode(osb, type, slot);
 
+<<<<<<< HEAD
 	if (arr && ((inode = *arr) != NULL)) {
 		/* get a ref in addition to the array ref */
 		inode = igrab(inode);
+=======
+	mutex_lock(&osb->system_file_mutex);
+	if (arr && ((inode = *arr) != NULL)) {
+		/* get a ref in addition to the array ref */
+		inode = igrab(inode);
+		mutex_unlock(&osb->system_file_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!inode);
 
 		return inode;
@@ -130,6 +158,10 @@ struct inode *ocfs2_get_system_file_inode(struct ocfs2_super *osb,
 		*arr = igrab(inode);
 		BUG_ON(!*arr);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&osb->system_file_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 }
 

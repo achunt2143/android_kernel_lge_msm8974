@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * local apic based NMI watchdog for various CPUs.
  *
  * This file also handles reservation of performance counters for coordination
+<<<<<<< HEAD
  * with other users (like oprofile).
+=======
+ * with other users.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note that these events normally don't tick when the CPU idles. This means
  * the frequency varies with CPU load.
@@ -12,7 +20,11 @@
  */
 
 #include <linux/percpu.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/bitops.h>
 #include <linux/smp.h>
@@ -45,6 +57,10 @@ static inline unsigned int nmi_perfctr_msr_to_bit(unsigned int msr)
 {
 	/* returns the bit offset of the performance counter register */
 	switch (boot_cpu_data.x86_vendor) {
+<<<<<<< HEAD
+=======
+	case X86_VENDOR_HYGON:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case X86_VENDOR_AMD:
 		if (msr >= MSR_F15H_PERF_CTR)
 			return (msr - MSR_F15H_PERF_CTR) >> 1;
@@ -56,9 +72,21 @@ static inline unsigned int nmi_perfctr_msr_to_bit(unsigned int msr)
 		switch (boot_cpu_data.x86) {
 		case 6:
 			return msr - MSR_P6_PERFCTR0;
+<<<<<<< HEAD
 		case 15:
 			return msr - MSR_P4_BPU_PERFCTR0;
 		}
+=======
+		case 11:
+			return msr - MSR_KNC_PERFCTR0;
+		case 15:
+			return msr - MSR_P4_BPU_PERFCTR0;
+		}
+		break;
+	case X86_VENDOR_ZHAOXIN:
+	case X86_VENDOR_CENTAUR:
+		return msr - MSR_ARCH_PERFMON_PERFCTR0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -71,6 +99,10 @@ static inline unsigned int nmi_evntsel_msr_to_bit(unsigned int msr)
 {
 	/* returns the bit offset of the event selection register */
 	switch (boot_cpu_data.x86_vendor) {
+<<<<<<< HEAD
+=======
+	case X86_VENDOR_HYGON:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case X86_VENDOR_AMD:
 		if (msr >= MSR_F15H_PERF_CTL)
 			return (msr - MSR_F15H_PERF_CTL) >> 1;
@@ -82,14 +114,27 @@ static inline unsigned int nmi_evntsel_msr_to_bit(unsigned int msr)
 		switch (boot_cpu_data.x86) {
 		case 6:
 			return msr - MSR_P6_EVNTSEL0;
+<<<<<<< HEAD
 		case 15:
 			return msr - MSR_P4_BSU_ESCR0;
 		}
+=======
+		case 11:
+			return msr - MSR_KNC_EVNTSEL0;
+		case 15:
+			return msr - MSR_P4_BSU_ESCR0;
+		}
+		break;
+	case X86_VENDOR_ZHAOXIN:
+	case X86_VENDOR_CENTAUR:
+		return msr - MSR_ARCH_PERFMON_EVENTSEL0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 
 }
 
+<<<<<<< HEAD
 /* checks for a bit availability (hack for oprofile) */
 int avail_to_resrv_perfctr_nmi_bit(unsigned int counter)
 {
@@ -99,6 +144,8 @@ int avail_to_resrv_perfctr_nmi_bit(unsigned int counter)
 }
 EXPORT_SYMBOL(avail_to_resrv_perfctr_nmi_bit);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int reserve_perfctr_nmi(unsigned int msr)
 {
 	unsigned int counter;

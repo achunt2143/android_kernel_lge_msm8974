@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Richard Weinberger <richrd@nod.at>
  * Mostly copied from arch/x86/lib/delay.c
@@ -8,6 +9,15 @@
  */
 
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2011 Richard Weinberger <richrd@nod.at>
+ * Mostly copied from arch/x86/lib/delay.c
+ */
+
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <asm/param.h>

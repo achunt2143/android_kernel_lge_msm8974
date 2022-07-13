@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_radisys.c - Intel PATA/SATA controllers
  *
@@ -15,7 +19,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -172,8 +179,13 @@ static unsigned int radisys_qc_issue(struct ata_queued_cmd *qc)
 
 	if (adev != ap->private_data) {
 		/* UDMA timing is not shared */
+<<<<<<< HEAD
 		if (adev->dma_mode < XFER_UDMA_0) {
 			if (adev->dma_mode)
+=======
+		if (adev->dma_mode < XFER_UDMA_0 || !ata_dma_enabled(adev)) {
+			if (ata_dma_enabled(adev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				radisys_set_dmamode(ap, adev);
 			else if (adev->pio_mode)
 				radisys_set_piomode(ap, adev);
@@ -183,7 +195,11 @@ static unsigned int radisys_qc_issue(struct ata_queued_cmd *qc)
 }
 
 
+<<<<<<< HEAD
 static struct scsi_host_template radisys_sht = {
+=======
+static const struct scsi_host_template radisys_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -238,12 +254,17 @@ static struct pci_driver radisys_pci_driver = {
 	.id_table		= radisys_pci_tbl,
 	.probe			= radisys_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init radisys_init(void)
 {
 	return pci_register_driver(&radisys_pci_driver);
@@ -256,10 +277,16 @@ static void __exit radisys_exit(void)
 
 module_init(radisys_init);
 module_exit(radisys_exit);
+=======
+module_pci_driver(radisys_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for Radisys R82600 controllers");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, radisys_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

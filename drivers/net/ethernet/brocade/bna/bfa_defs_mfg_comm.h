@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,12 +15,24 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __BFA_DEFS_MFG_COMM_H__
 #define __BFA_DEFS_MFG_COMM_H__
 
 #include "bfa_defs.h"
 
+<<<<<<< HEAD
 /**
  * Manufacturing block version
  */
@@ -39,14 +52,31 @@
 /**
  * Manufacturing block header length
  */
+=======
+/* Manufacturing block version */
+#define BFA_MFG_VERSION				3
+#define BFA_MFG_VERSION_UNINIT			0xFF
+
+/* Manufacturing block encrypted version */
+#define BFA_MFG_ENC_VER				2
+
+/* Manufacturing block version 1 length */
+#define BFA_MFG_VER1_LEN			128
+
+/* Manufacturing block header length */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_MFG_HDR_LEN				4
 
 #define BFA_MFG_SERIALNUM_SIZE			11
 #define STRSZ(_n)				(((_n) + 4) & ~3)
 
+<<<<<<< HEAD
 /**
  * Manufacturing card type
  */
+=======
+/* Manufacturing card type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	BFA_MFG_TYPE_CB_MAX  = 825,      /*!< Crossbow card type max	*/
 	BFA_MFG_TYPE_FC8P2   = 825,      /*!< 8G 2port FC card		*/
@@ -68,11 +98,15 @@ enum {
 	BFA_MFG_TYPE_INVALID = 0,	 /*!< Invalid card type		*/
 };
 
+<<<<<<< HEAD
 #pragma pack(1)
 
 /**
  * Check if Mezz card
  */
+=======
+/* Check if Mezz card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define bfa_mfg_is_mezz(type) (( \
 	(type) == BFA_MFG_TYPE_JAYHAWK || \
 	(type) == BFA_MFG_TYPE_WANCHESE || \
@@ -88,7 +122,11 @@ enum {
 	CB_GPIO_FC4P2   = (4),		/*!< 4G 2port FC card		*/
 	CB_GPIO_FC4P1   = (5),		/*!< 4G 1port FC card		*/
 	CB_GPIO_DFLY    = (6),		/*!< 8G 2port FC mezzanine card	*/
+<<<<<<< HEAD
 	CB_GPIO_PROTO   = (1 << 7)	/*!< 8G 2port FC prototypes	*/
+=======
+	CB_GPIO_PROTO   = BIT(7)	/*!< 8G 2port FC prototypes	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define bfa_mfg_adapter_prop_init_gpio(gpio, card_type, prop)	\
@@ -97,7 +135,11 @@ do {								\
 		(prop) |= BFI_ADAPTER_PROTO;			\
 		(gpio) &= ~CB_GPIO_PROTO;			\
 	}							\
+<<<<<<< HEAD
 	switch ((gpio)) {					\
+=======
+	switch (gpio) {						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CB_GPIO_TTV:					\
 		(prop) |= BFI_ADAPTER_TTV;			\
 	case CB_GPIO_DFLY:					\
@@ -127,9 +169,13 @@ do {								\
 	}							\
 } while (0)
 
+<<<<<<< HEAD
 /**
  * VPD data length
  */
+=======
+/* VPD data length */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_MFG_VPD_LEN			512
 #define BFA_MFG_VPD_LEN_INVALID		0
 
@@ -137,9 +183,13 @@ do {								\
 #define BFA_MFG_VPD_PCI_VER_MASK	0x07	/*!< version mask 3 bits */
 #define BFA_MFG_VPD_PCI_VDR_MASK	0xf8	/*!< vendor mask 5 bits */
 
+<<<<<<< HEAD
 /**
  * VPD vendor tag
  */
+=======
+/* VPD vendor tag */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	BFA_MFG_VPD_UNKNOWN	= 0,     /*!< vendor unknown		*/
 	BFA_MFG_VPD_IBM		= 1,     /*!< vendor IBM		*/
@@ -151,8 +201,12 @@ enum {
 	BFA_MFG_VPD_PCI_BRCD	= 0xf8,  /*!< PCI VPD Brocade		*/
 };
 
+<<<<<<< HEAD
 /**
  * @brief BFA adapter flash vpd data definition.
+=======
+/* BFA adapter flash vpd data definition.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * All numerical fields are in big-endian format.
  */
@@ -164,8 +218,12 @@ struct bfa_mfg_vpd {
 	u8	len;		/*!< vpd data length excluding header */
 	u8	rsv;
 	u8		data[BFA_MFG_VPD_LEN];	/*!< vpd data */
+<<<<<<< HEAD
 };
 
 #pragma pack()
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __BFA_DEFS_MFG_H__ */

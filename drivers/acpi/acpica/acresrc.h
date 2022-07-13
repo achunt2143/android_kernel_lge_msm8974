@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACRESRC_H__
 #define __ACRESRC_H__
 
@@ -80,6 +91,10 @@ typedef enum {
 	ACPI_RSC_1BITFLAG,
 	ACPI_RSC_2BITFLAG,
 	ACPI_RSC_3BITFLAG,
+<<<<<<< HEAD
+=======
+	ACPI_RSC_6BITFLAG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_RSC_ADDRESS,
 	ACPI_RSC_BITMASK,
 	ACPI_RSC_BITMASK16,
@@ -124,7 +139,11 @@ typedef enum {
 typedef const struct acpi_rsdump_info {
 	u8 opcode;
 	u8 offset;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char **pointer;
 
 } acpi_rsdump_info;
@@ -136,6 +155,10 @@ typedef enum {
 	ACPI_RSD_1BITFLAG,
 	ACPI_RSD_2BITFLAG,
 	ACPI_RSD_3BITFLAG,
+<<<<<<< HEAD
+=======
+	ACPI_RSD_6BITFLAG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_RSD_ADDRESS,
 	ACPI_RSD_DWORDLIST,
 	ACPI_RSD_LITERAL,
@@ -148,7 +171,14 @@ typedef enum {
 	ACPI_RSD_UINT16,
 	ACPI_RSD_UINT32,
 	ACPI_RSD_UINT64,
+<<<<<<< HEAD
 	ACPI_RSD_WORDLIST
+=======
+	ACPI_RSD_WORDLIST,
+	ACPI_RSD_LABEL,
+	ACPI_RSD_SOURCE_LABEL,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ACPI_RSDUMP_OPCODES;
 
 /* restore default alignment */
@@ -184,7 +214,11 @@ acpi_rs_create_resource_list(union acpi_operand_object *aml_buffer,
 			     struct acpi_buffer *output_buffer);
 
 acpi_status
+<<<<<<< HEAD
 acpi_rs_create_aml_resources(struct acpi_resource *linked_list_buffer,
+=======
+acpi_rs_create_aml_resources(struct acpi_buffer *resource_list,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct acpi_buffer *output_buffer);
 
 acpi_status
@@ -209,7 +243,11 @@ acpi_rs_get_prs_method_data(struct acpi_namespace_node *node,
 
 acpi_status
 acpi_rs_get_method_data(acpi_handle handle,
+<<<<<<< HEAD
 			char *path, struct acpi_buffer *ret_buffer);
+=======
+			const char *path, struct acpi_buffer *ret_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_rs_set_srs_method_data(struct acpi_namespace_node *node,
@@ -223,6 +261,7 @@ acpi_rs_get_aei_method_data(struct acpi_namespace_node *node,
  * rscalc
  */
 acpi_status
+<<<<<<< HEAD
 acpi_rs_get_list_length(u8 * aml_buffer,
 			u32 aml_buffer_length, acpi_size * size_needed);
 
@@ -233,6 +272,18 @@ acpi_rs_get_aml_length(struct acpi_resource *linked_list_buffer,
 acpi_status
 acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
 				     acpi_size * buffer_size_needed);
+=======
+acpi_rs_get_list_length(u8 *aml_buffer,
+			u32 aml_buffer_length, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_aml_length(struct acpi_resource *resource_list,
+		       acpi_size resource_list_size, acpi_size *size_needed);
+
+acpi_status
+acpi_rs_get_pci_routing_table_length(union acpi_operand_object *package_object,
+				     acpi_size *buffer_size_needed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_rs_convert_aml_to_resources(u8 * aml,
@@ -299,11 +350,21 @@ acpi_rs_set_resource_length(acpi_rsdesc_size total_length,
 			    union aml_resource *aml);
 
 /*
+<<<<<<< HEAD
  * rsdump
  */
 void acpi_rs_dump_resource_list(struct acpi_resource *resource);
 
 void acpi_rs_dump_irq_list(u8 * route_table);
+=======
+ * rsdump - Debugger support
+ */
+#ifdef ACPI_DEBUGGER
+void acpi_rs_dump_resource_list(struct acpi_resource *resource);
+
+void acpi_rs_dump_irq_list(u8 *route_table);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Resource conversion tables
@@ -324,9 +385,22 @@ extern struct acpi_rsconvert_info acpi_rs_convert_address64[];
 extern struct acpi_rsconvert_info acpi_rs_convert_ext_address64[];
 extern struct acpi_rsconvert_info acpi_rs_convert_gpio[];
 extern struct acpi_rsconvert_info acpi_rs_convert_fixed_dma[];
+<<<<<<< HEAD
 extern struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[];
 extern struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[];
 extern struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[];
+=======
+extern struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[];
+extern struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[];
+extern struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[];
+extern struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[];
+extern struct acpi_rsconvert_info acpi_rs_convert_pin_function[];
+extern struct acpi_rsconvert_info acpi_rs_convert_pin_config[];
+extern struct acpi_rsconvert_info acpi_rs_convert_pin_group[];
+extern struct acpi_rsconvert_info acpi_rs_convert_pin_group_function[];
+extern struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[];
+extern struct acpi_rsconvert_info acpi_rs_convert_clock_input[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These resources require separate get/set tables */
 
@@ -347,18 +421,33 @@ extern struct acpi_rsdump_info *acpi_gbl_dump_resource_dispatch[];
 extern struct acpi_rsdump_info *acpi_gbl_dump_serial_bus_dispatch[];
 
 /*
+<<<<<<< HEAD
  * rsdump
  */
 extern struct acpi_rsdump_info acpi_rs_dump_irq[];
+=======
+ * rsdumpinfo
+ */
+extern struct acpi_rsdump_info acpi_rs_dump_irq[];
+extern struct acpi_rsdump_info acpi_rs_dump_prt[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct acpi_rsdump_info acpi_rs_dump_dma[];
 extern struct acpi_rsdump_info acpi_rs_dump_start_dpf[];
 extern struct acpi_rsdump_info acpi_rs_dump_end_dpf[];
 extern struct acpi_rsdump_info acpi_rs_dump_io[];
+<<<<<<< HEAD
+=======
+extern struct acpi_rsdump_info acpi_rs_dump_io_flags[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct acpi_rsdump_info acpi_rs_dump_fixed_io[];
 extern struct acpi_rsdump_info acpi_rs_dump_vendor[];
 extern struct acpi_rsdump_info acpi_rs_dump_end_tag[];
 extern struct acpi_rsdump_info acpi_rs_dump_memory24[];
 extern struct acpi_rsdump_info acpi_rs_dump_memory32[];
+<<<<<<< HEAD
+=======
+extern struct acpi_rsdump_info acpi_rs_dump_memory_flags[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct acpi_rsdump_info acpi_rs_dump_fixed_memory32[];
 extern struct acpi_rsdump_info acpi_rs_dump_address16[];
 extern struct acpi_rsdump_info acpi_rs_dump_address32[];
@@ -367,11 +456,27 @@ extern struct acpi_rsdump_info acpi_rs_dump_ext_address64[];
 extern struct acpi_rsdump_info acpi_rs_dump_ext_irq[];
 extern struct acpi_rsdump_info acpi_rs_dump_generic_reg[];
 extern struct acpi_rsdump_info acpi_rs_dump_gpio[];
+<<<<<<< HEAD
 extern struct acpi_rsdump_info acpi_rs_dump_fixed_dma[];
 extern struct acpi_rsdump_info acpi_rs_dump_common_serial_bus[];
 extern struct acpi_rsdump_info acpi_rs_dump_i2c_serial_bus[];
 extern struct acpi_rsdump_info acpi_rs_dump_spi_serial_bus[];
 extern struct acpi_rsdump_info acpi_rs_dump_uart_serial_bus[];
+=======
+extern struct acpi_rsdump_info acpi_rs_dump_pin_function[];
+extern struct acpi_rsdump_info acpi_rs_dump_fixed_dma[];
+extern struct acpi_rsdump_info acpi_rs_dump_common_serial_bus[];
+extern struct acpi_rsdump_info acpi_rs_dump_csi2_serial_bus[];
+extern struct acpi_rsdump_info acpi_rs_dump_i2c_serial_bus[];
+extern struct acpi_rsdump_info acpi_rs_dump_spi_serial_bus[];
+extern struct acpi_rsdump_info acpi_rs_dump_uart_serial_bus[];
+extern struct acpi_rsdump_info acpi_rs_dump_general_flags[];
+extern struct acpi_rsdump_info acpi_rs_dump_pin_config[];
+extern struct acpi_rsdump_info acpi_rs_dump_pin_group[];
+extern struct acpi_rsdump_info acpi_rs_dump_pin_group_function[];
+extern struct acpi_rsdump_info acpi_rs_dump_pin_group_config[];
+extern struct acpi_rsdump_info acpi_rs_dump_clock_input[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif				/* __ACRESRC_H__ */

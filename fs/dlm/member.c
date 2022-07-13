@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2011 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -17,11 +24,20 @@
 #include "recover.h"
 #include "rcom.h"
 #include "config.h"
+<<<<<<< HEAD
 #include "lowcomms.h"
 
 int dlm_slots_version(struct dlm_header *h)
 {
 	if ((h->h_version & 0x0000FFFF) < DLM_HEADER_SLOTS)
+=======
+#include "midcomms.h"
+#include "lowcomms.h"
+
+int dlm_slots_version(const struct dlm_header *h)
+{
+	if ((le32_to_cpu(h->h_version) & 0x0000FFFF) < DLM_HEADER_SLOTS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return 1;
 }
@@ -60,18 +76,27 @@ void dlm_slots_copy_out(struct dlm_ls *ls, struct dlm_rcom *rc)
 
 #define SLOT_DEBUG_LINE 128
 
+<<<<<<< HEAD
 static void log_debug_slots(struct dlm_ls *ls, uint32_t gen, int num_slots,
 			    struct rcom_slot *ro0, struct dlm_slot *array,
 			    int array_size)
+=======
+static void log_slots(struct dlm_ls *ls, uint32_t gen, int num_slots,
+		      struct rcom_slot *ro0, struct dlm_slot *array,
+		      int array_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char line[SLOT_DEBUG_LINE];
 	int len = SLOT_DEBUG_LINE - 1;
 	int pos = 0;
 	int ret, i;
 
+<<<<<<< HEAD
 	if (!dlm_config.ci_log_debug)
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(line, 0, sizeof(line));
 
 	if (array) {
@@ -95,7 +120,11 @@ static void log_debug_slots(struct dlm_ls *ls, uint32_t gen, int num_slots,
 		}
 	}
 
+<<<<<<< HEAD
 	log_debug(ls, "generation %u slots %d%s", gen, num_slots, line);
+=======
+	log_rinfo(ls, "generation %u slots %d%s", gen, num_slots, line);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dlm_slots_copy_in(struct dlm_ls *ls)
@@ -124,6 +153,7 @@ int dlm_slots_copy_in(struct dlm_ls *ls)
 
 	ro0 = (struct rcom_slot *)(rc->rc_buf + sizeof(struct rcom_config));
 
+<<<<<<< HEAD
 	for (i = 0, ro = ro0; i < num_slots; i++, ro++) {
 		ro->ro_nodeid = le32_to_cpu(ro->ro_nodeid);
 		ro->ro_slot = le16_to_cpu(ro->ro_slot);
@@ -136,6 +166,15 @@ int dlm_slots_copy_in(struct dlm_ls *ls)
 			if (ro->ro_nodeid != memb->nodeid)
 				continue;
 			memb->slot = ro->ro_slot;
+=======
+	log_slots(ls, gen, num_slots, ro0, NULL, 0);
+
+	list_for_each_entry(memb, &ls->ls_nodes, list) {
+		for (i = 0, ro = ro0; i < num_slots; i++, ro++) {
+			if (le32_to_cpu(ro->ro_nodeid) != memb->nodeid)
+				continue;
+			memb->slot = le16_to_cpu(ro->ro_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memb->slot_prev = memb->slot;
 			break;
 		}
@@ -220,8 +259,12 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 	}
 
 	array_size = max + need;
+<<<<<<< HEAD
 
 	array = kzalloc(array_size * sizeof(struct dlm_slot), GFP_NOFS);
+=======
+	array = kcalloc(array_size, sizeof(*array), GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!array)
 		return -ENOMEM;
 
@@ -274,9 +317,15 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 
 	gen++;
 
+<<<<<<< HEAD
 	log_debug_slots(ls, gen, num, NULL, array, array_size);
 
 	max_slots = (dlm_config.ci_buffer_size - sizeof(struct dlm_rcom) -
+=======
+	log_slots(ls, gen, num, NULL, array, array_size);
+
+	max_slots = (DLM_MAX_APP_BUFSIZE - sizeof(struct dlm_rcom) -
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     sizeof(struct rcom_config)) / sizeof(struct rcom_slot);
 
 	if (num > max_slots) {
@@ -317,24 +366,57 @@ static void add_ordered_member(struct dlm_ls *ls, struct dlm_member *new)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int add_remote_member(int nodeid)
+{
+	int error;
+
+	if (nodeid == dlm_our_nodeid())
+		return 0;
+
+	error = dlm_lowcomms_connect_node(nodeid);
+	if (error < 0)
+		return error;
+
+	dlm_midcomms_add_member(nodeid);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dlm_add_member(struct dlm_ls *ls, struct dlm_config_node *node)
 {
 	struct dlm_member *memb;
 	int error;
 
+<<<<<<< HEAD
 	memb = kzalloc(sizeof(struct dlm_member), GFP_NOFS);
 	if (!memb)
 		return -ENOMEM;
 
 	error = dlm_lowcomms_connect_node(node->nodeid);
+=======
+	memb = kzalloc(sizeof(*memb), GFP_NOFS);
+	if (!memb)
+		return -ENOMEM;
+
+	memb->nodeid = node->nodeid;
+	memb->weight = node->weight;
+	memb->comm_seq = node->comm_seq;
+
+	error = add_remote_member(node->nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0) {
 		kfree(memb);
 		return error;
 	}
 
+<<<<<<< HEAD
 	memb->nodeid = node->nodeid;
 	memb->weight = node->weight;
 	memb->comm_seq = node->comm_seq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_ordered_member(ls, memb);
 	ls->ls_num_nodes++;
 	return 0;
@@ -365,26 +447,54 @@ int dlm_is_removed(struct dlm_ls *ls, int nodeid)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void clear_memb_list(struct list_head *head)
+=======
+static void clear_memb_list(struct list_head *head,
+			    void (*after_del)(int nodeid))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_member *memb;
 
 	while (!list_empty(head)) {
 		memb = list_entry(head->next, struct dlm_member, list);
 		list_del(&memb->list);
+<<<<<<< HEAD
+=======
+		if (after_del)
+			after_del(memb->nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(memb);
 	}
 }
 
+<<<<<<< HEAD
 void dlm_clear_members(struct dlm_ls *ls)
 {
 	clear_memb_list(&ls->ls_nodes);
+=======
+static void remove_remote_member(int nodeid)
+{
+	if (nodeid == dlm_our_nodeid())
+		return;
+
+	dlm_midcomms_remove_member(nodeid);
+}
+
+void dlm_clear_members(struct dlm_ls *ls)
+{
+	clear_memb_list(&ls->ls_nodes, remove_remote_member);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls->ls_num_nodes = 0;
 }
 
 void dlm_clear_members_gone(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	clear_memb_list(&ls->ls_nodes_gone);
+=======
+	clear_memb_list(&ls->ls_nodes_gone, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void make_member_array(struct dlm_ls *ls)
@@ -408,8 +518,12 @@ static void make_member_array(struct dlm_ls *ls)
 	}
 
 	ls->ls_total_weight = total;
+<<<<<<< HEAD
 
 	array = kmalloc(sizeof(int) * total, GFP_NOFS);
+=======
+	array = kmalloc_array(total, sizeof(*array), GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!array)
 		return;
 
@@ -433,21 +547,37 @@ static void make_member_array(struct dlm_ls *ls)
 
 /* send a status request to all members just to establish comms connections */
 
+<<<<<<< HEAD
 static int ping_members(struct dlm_ls *ls)
+=======
+static int ping_members(struct dlm_ls *ls, uint64_t seq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dlm_member *memb;
 	int error = 0;
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
+<<<<<<< HEAD
 		error = dlm_recovery_stopped(ls);
 		if (error)
 			break;
 		error = dlm_rcom_status(ls, memb->nodeid, 0);
+=======
+		if (dlm_recovery_stopped(ls)) {
+			error = -EINTR;
+			break;
+		}
+		error = dlm_rcom_status(ls, memb->nodeid, 0, seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			break;
 	}
 	if (error)
+<<<<<<< HEAD
 		log_debug(ls, "ping_members aborted %d last nodeid %d",
+=======
+		log_rinfo(ls, "ping_members aborted %d last nodeid %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  error, ls->ls_recover_nodeid);
 	return error;
 }
@@ -495,8 +625,12 @@ void dlm_lsop_recover_done(struct dlm_ls *ls)
 		return;
 
 	num = ls->ls_num_nodes;
+<<<<<<< HEAD
 
 	slots = kzalloc(num * sizeof(struct dlm_slot), GFP_KERNEL);
+=======
+	slots = kcalloc(num, sizeof(*slots), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!slots)
 		return;
 
@@ -536,10 +670,21 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 	int i, error, neg = 0, low = -1;
 
 	/* previously removed members that we've not finished removing need to
+<<<<<<< HEAD
 	   count as a negative change so the "neg" recovery steps will happen */
 
 	list_for_each_entry(memb, &ls->ls_nodes_gone, list) {
 		log_debug(ls, "prev removed member %d", memb->nodeid);
+=======
+	 * count as a negative change so the "neg" recovery steps will happen
+	 *
+	 * This functionality must report all member changes to lsops or
+	 * midcomms layer and must never return before.
+	 */
+
+	list_for_each_entry(memb, &ls->ls_nodes_gone, list) {
+		log_rinfo(ls, "prev removed member %d", memb->nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		neg++;
 	}
 
@@ -551,15 +696,26 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 			continue;
 
 		if (!node) {
+<<<<<<< HEAD
 			log_debug(ls, "remove member %d", memb->nodeid);
 		} else {
 			/* removed and re-added */
 			log_debug(ls, "remove member %d comm_seq %u %u",
+=======
+			log_rinfo(ls, "remove member %d", memb->nodeid);
+		} else {
+			/* removed and re-added */
+			log_rinfo(ls, "remove member %d comm_seq %u %u",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  memb->nodeid, memb->comm_seq, node->comm_seq);
 		}
 
 		neg++;
 		list_move(&memb->list, &ls->ls_nodes_gone);
+<<<<<<< HEAD
+=======
+		remove_remote_member(memb->nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ls->ls_num_nodes--;
 		dlm_lsop_recover_slot(ls, memb);
 	}
@@ -570,8 +726,16 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 		node = &rv->nodes[i];
 		if (dlm_is_member(ls, node->nodeid))
 			continue;
+<<<<<<< HEAD
 		dlm_add_member(ls, node);
 		log_debug(ls, "add member %d", node->nodeid);
+=======
+		error = dlm_add_member(ls, node);
+		if (error)
+			return error;
+
+		log_rinfo(ls, "add member %d", node->nodeid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
@@ -583,6 +747,7 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 	make_member_array(ls);
 	*neg_out = neg;
 
+<<<<<<< HEAD
 	error = ping_members(ls);
 	if (!error || error == -EPROTO) {
 		/* new_lockspace() may be waiting to know if the config
@@ -592,6 +757,10 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 	}
 
 	log_debug(ls, "dlm_recover_members %d nodes", ls->ls_num_nodes);
+=======
+	error = ping_members(ls, rv->seq);
+	log_rinfo(ls, "dlm_recover_members %d nodes", ls->ls_num_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -616,13 +785,21 @@ int dlm_ls_stop(struct dlm_ls *ls)
 	down_write(&ls->ls_recv_active);
 
 	/*
+<<<<<<< HEAD
 	 * Abort any recovery that's in progress (see RECOVERY_STOP,
+=======
+	 * Abort any recovery that's in progress (see RECOVER_STOP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * dlm_recovery_stopped()) and tell any other threads running in the
 	 * dlm to quit any processing (see RUNNING, dlm_locking_stopped()).
 	 */
 
 	spin_lock(&ls->ls_recover_lock);
+<<<<<<< HEAD
 	set_bit(LSFL_RECOVERY_STOP, &ls->ls_flags);
+=======
+	set_bit(LSFL_RECOVER_STOP, &ls->ls_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = test_and_clear_bit(LSFL_RUNNING, &ls->ls_flags);
 	ls->ls_recover_seq++;
 	spin_unlock(&ls->ls_recover_lock);
@@ -642,12 +819,25 @@ int dlm_ls_stop(struct dlm_ls *ls)
 	 *    when recovery is complete.
 	 */
 
+<<<<<<< HEAD
 	if (new)
 		down_write(&ls->ls_in_recovery);
 
 	/*
 	 * The recoverd suspend/resume makes sure that dlm_recoverd (if
 	 * running) has noticed RECOVERY_STOP above and quit processing the
+=======
+	if (new) {
+		set_bit(LSFL_RECOVER_DOWN, &ls->ls_flags);
+		wake_up_process(ls->ls_recoverd_task);
+		wait_event(ls->ls_recover_lock_wait,
+			   test_bit(LSFL_RECOVER_LOCK, &ls->ls_flags));
+	}
+
+	/*
+	 * The recoverd suspend/resume makes sure that dlm_recoverd (if
+	 * running) has noticed RECOVER_STOP above and quit processing the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * previous recovery.
 	 */
 
@@ -666,23 +856,48 @@ int dlm_ls_stop(struct dlm_ls *ls)
 	if (!ls->ls_recover_begin)
 		ls->ls_recover_begin = jiffies;
 
+<<<<<<< HEAD
 	dlm_lsop_recover_prep(ls);
+=======
+	/* call recover_prep ops only once and not multiple times
+	 * for each possible dlm_ls_stop() when recovery is already
+	 * stopped.
+	 *
+	 * If we successful was able to clear LSFL_RUNNING bit and
+	 * it was set we know it is the first dlm_ls_stop() call.
+	 */
+	if (new)
+		dlm_lsop_recover_prep(ls);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int dlm_ls_start(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	struct dlm_recover *rv = NULL, *rv_old;
 	struct dlm_config_node *nodes;
 	int error, count;
 
 	rv = kzalloc(sizeof(struct dlm_recover), GFP_NOFS);
+=======
+	struct dlm_recover *rv, *rv_old;
+	struct dlm_config_node *nodes = NULL;
+	int error, count;
+
+	rv = kzalloc(sizeof(*rv), GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rv)
 		return -ENOMEM;
 
 	error = dlm_config_nodes(ls->ls_name, &nodes, &count);
 	if (error < 0)
+<<<<<<< HEAD
 		goto fail;
+=======
+		goto fail_rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&ls->ls_recover_lock);
 
@@ -709,12 +924,23 @@ int dlm_ls_start(struct dlm_ls *ls)
 		kfree(rv_old);
 	}
 
+<<<<<<< HEAD
 	dlm_recoverd_kick(ls);
 	return 0;
 
  fail:
 	kfree(rv);
 	kfree(nodes);
+=======
+	set_bit(LSFL_RECOVER_WORK, &ls->ls_flags);
+	wake_up_process(ls->ls_recoverd_task);
+	return 0;
+
+ fail:
+	kfree(nodes);
+ fail_rv:
+	kfree(rv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 

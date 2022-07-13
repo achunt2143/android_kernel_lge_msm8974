@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2009 Intel Corporation. All rights reserved.
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright(c) 2009 Intel Corporation. All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -41,6 +48,7 @@ extern unsigned int fc_debug_logging;
 
 #define FC_LIBFC_DBG(fmt, args...)					\
 	FC_CHECK_LOGGING(FC_LIBFC_LOGGING,				\
+<<<<<<< HEAD
 			 printk(KERN_INFO "libfc: " fmt, ##args))
 
 #define FC_LPORT_DBG(lport, fmt, args...)				\
@@ -60,6 +68,27 @@ extern unsigned int fc_debug_logging;
 			 printk(KERN_INFO "host%u: rport %6.6x: " fmt,	\
 				(lport)->host->host_no,			\
 				(port_id), ##args))
+=======
+			 pr_info("libfc: " fmt, ##args))
+
+#define FC_LPORT_DBG(lport, fmt, args...)				\
+	FC_CHECK_LOGGING(FC_LPORT_LOGGING,				\
+			 pr_info("host%u: lport %6.6x: " fmt,		\
+				 (lport)->host->host_no,		\
+				 (lport)->port_id, ##args))
+
+#define FC_DISC_DBG(disc, fmt, args...)					\
+	FC_CHECK_LOGGING(FC_DISC_LOGGING,				\
+			 pr_info("host%u: disc: " fmt,			\
+				 fc_disc_lport(disc)->host->host_no,	\
+				 ##args))
+
+#define FC_RPORT_ID_DBG(lport, port_id, fmt, args...)			\
+	FC_CHECK_LOGGING(FC_RPORT_LOGGING,				\
+			 pr_info("host%u: rport %6.6x: " fmt,		\
+				 (lport)->host->host_no,		\
+				 (port_id), ##args))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FC_RPORT_DBG(rdata, fmt, args...)				\
 	FC_RPORT_ID_DBG((rdata)->local_port, (rdata)->ids.port_id, fmt, ##args)
@@ -70,13 +99,21 @@ extern unsigned int fc_debug_logging;
 		if ((pkt)->seq_ptr) {					\
 			struct fc_exch *_ep = NULL;			\
 			_ep = fc_seq_exch((pkt)->seq_ptr);		\
+<<<<<<< HEAD
 			printk(KERN_INFO "host%u: fcp: %6.6x: "		\
+=======
+			pr_info("host%u: fcp: %6.6x: "			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"xid %04x-%04x: " fmt,			\
 				(pkt)->lp->host->host_no,		\
 				(pkt)->rport->port_id,			\
 				(_ep)->oxid, (_ep)->rxid, ##args);	\
 		} else {						\
+<<<<<<< HEAD
 			printk(KERN_INFO "host%u: fcp: %6.6x: " fmt,	\
+=======
+			pr_info("host%u: fcp: %6.6x: " fmt,		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(pkt)->lp->host->host_no,		\
 				(pkt)->rport->port_id, ##args);		\
 		}							\
@@ -84,6 +121,7 @@ extern unsigned int fc_debug_logging;
 
 #define FC_EXCH_DBG(exch, fmt, args...)					\
 	FC_CHECK_LOGGING(FC_EXCH_LOGGING,				\
+<<<<<<< HEAD
 			 printk(KERN_INFO "host%u: xid %4x: " fmt,	\
 				(exch)->lp->host->host_no,		\
 				exch->xid, ##args))
@@ -92,6 +130,16 @@ extern unsigned int fc_debug_logging;
 	FC_CHECK_LOGGING(FC_SCSI_LOGGING,				\
 			 printk(KERN_INFO "host%u: scsi: " fmt,		\
 				(lport)->host->host_no,	##args))
+=======
+			 pr_info("host%u: xid %4x: " fmt,		\
+				 (exch)->lp->host->host_no,		\
+				 exch->xid, ##args))
+
+#define FC_SCSI_DBG(lport, fmt, args...)				\
+	FC_CHECK_LOGGING(FC_SCSI_LOGGING,				\
+			 pr_info("host%u: scsi: " fmt,			\
+				 (lport)->host->host_no, ##args))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * FC-4 Providers.

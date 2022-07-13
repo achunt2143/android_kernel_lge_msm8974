@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/net/ethernet/ibm/ehea/ehea_phyp.h
  *
@@ -9,6 +13,7 @@
  *       Christoph Raisch <raisch@de.ibm.com>
  *       Jan-Bernd Themann <themann@de.ibm.com>
  *       Thomas Klein <tklein@de.ibm.com>
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +29,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __EHEA_PHYP_H__
@@ -39,6 +46,7 @@
  * hcp_*  - structures, variables and functions releated to Hypervisor Calls
  */
 
+<<<<<<< HEAD
 static inline u32 get_longbusy_msecs(int long_busy_ret_code)
 {
 	switch (long_busy_ret_code) {
@@ -59,6 +67,8 @@ static inline u32 get_longbusy_msecs(int long_busy_ret_code)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of pages which can be registered at once by H_REGISTER_HEA_RPAGES */
 #define EHEA_MAX_RPAGE 512
 

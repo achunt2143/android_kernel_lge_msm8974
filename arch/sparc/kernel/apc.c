@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* apc - Driver implementation for power management functions
  * of Aurora Personality Chip (APC) on SPARCstation-4/5 and
  * derivatives.
@@ -12,14 +16,25 @@
 #include <linux/miscdevice.h>
 #include <linux/pm.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include <asm/io.h>
 #include <asm/oplib.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/auxio.h>
 #include <asm/apc.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/auxio.h>
+#include <asm/apc.h>
+#include <asm/processor.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Debugging
  * 
@@ -31,7 +46,11 @@
 #define APC_DEVNAME "apc"
 
 static u8 __iomem *regs;
+<<<<<<< HEAD
 static int apc_no_idle __devinitdata = 0;
+=======
+static int apc_no_idle = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define apc_readb(offs)		(sbus_readb(regs+offs))
 #define apc_writeb(val, offs) 	(sbus_writeb(val, regs+offs))
@@ -138,7 +157,11 @@ static const struct file_operations apc_fops = {
 
 static struct miscdevice apc_miscdev = { APC_MINOR, APC_DEVNAME, &apc_fops };
 
+<<<<<<< HEAD
 static int __devinit apc_probe(struct platform_device *op)
+=======
+static int apc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -158,7 +181,11 @@ static int __devinit apc_probe(struct platform_device *op)
 
 	/* Assign power management IDLE handler */
 	if (!apc_no_idle)
+<<<<<<< HEAD
 		pm_idle = apc_swift_idle;	
+=======
+		sparc_idle = apc_swift_idle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "%s: power management initialized%s\n", 
 	       APC_DEVNAME, apc_no_idle ? " (CPU idle disabled)" : "");
@@ -166,7 +193,11 @@ static int __devinit apc_probe(struct platform_device *op)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id apc_match[] = {
+=======
+static const struct of_device_id apc_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = APC_OBPNAME,
 	},
@@ -177,7 +208,10 @@ MODULE_DEVICE_TABLE(of, apc_match);
 static struct platform_driver apc_driver = {
 	.driver = {
 		.name = "apc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = apc_match,
 	},
 	.probe		= apc_probe,

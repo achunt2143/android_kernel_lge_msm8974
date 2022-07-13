@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 **  Device driver for the PCI-SCSI NCR538XX controller family.
 **
 **  Copyright (C) 1994  Wolfgang Stanglmeier
 **
+<<<<<<< HEAD
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
 **  You should have received a copy of the GNU General Public License
 **  along with this program; if not, write to the Free Software
 **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
 **
@@ -160,6 +167,14 @@ static int ncr_debug = SCSI_NCR_DEBUG_FLAGS;
 	#define DEBUG_FLAGS	SCSI_NCR_DEBUG_FLAGS
 #endif
 
+<<<<<<< HEAD
+=======
+/*
+ * Locally used status flag
+ */
+#define SAM_STAT_ILLEGAL	0xff
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct list_head *ncr_list_pop(struct list_head *head)
 {
 	if (!list_empty(head)) {
@@ -521,6 +536,7 @@ static m_addr_t __vtobus(m_bush_t bush, void *m)
  *  Deal with DMA mapping/unmapping.
  */
 
+<<<<<<< HEAD
 /* To keep track of the dma mapping (sg/single) that has been set */
 #define __data_mapped	SCp.phase
 #define __data_mapping	SCp.have_data_in
@@ -528,23 +544,43 @@ static m_addr_t __vtobus(m_bush_t bush, void *m)
 static void __unmap_scsi_data(struct device *dev, struct scsi_cmnd *cmd)
 {
 	switch(cmd->__data_mapped) {
+=======
+static void __unmap_scsi_data(struct device *dev, struct scsi_cmnd *cmd)
+{
+	struct ncr_cmd_priv *cmd_priv = scsi_cmd_priv(cmd);
+
+	switch(cmd_priv->data_mapped) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		scsi_dma_unmap(cmd);
 		break;
 	}
+<<<<<<< HEAD
 	cmd->__data_mapped = 0;
+=======
+	cmd_priv->data_mapped = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __map_scsi_sg_data(struct device *dev, struct scsi_cmnd *cmd)
 {
+<<<<<<< HEAD
+=======
+	struct ncr_cmd_priv *cmd_priv = scsi_cmd_priv(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int use_sg;
 
 	use_sg = scsi_dma_map(cmd);
 	if (!use_sg)
 		return 0;
 
+<<<<<<< HEAD
 	cmd->__data_mapped = 2;
 	cmd->__data_mapping = use_sg;
+=======
+	cmd_priv->data_mapped = 2;
+	cmd_priv->data_mapping = use_sg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return use_sg;
 }
@@ -1010,8 +1046,11 @@ typedef u32 tagmap_t;
 **	Other definitions
 */
 
+<<<<<<< HEAD
 #define ScsiResult(host_code, scsi_code) (((host_code) << 16) + ((scsi_code) & 0x7f))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define initverbose (driver_setup.verbose)
 #define bootverbose (np->verbose)
 
@@ -1462,11 +1501,14 @@ struct head {
 #define  xerr_status   phys.xerr_st
 #define  nego_status   phys.nego_st
 
+<<<<<<< HEAD
 #if 0
 #define  sync_status   phys.sync_st
 #define  wide_status   phys.wide_st
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*==========================================================
 **
 **      Declaration of structs:     Data structure block
@@ -1615,7 +1657,11 @@ struct ncb {
 	spinlock_t	smp_lock;	/* Lock for SMP threading       */
 
 	/*----------------------------------------------------------------
+<<<<<<< HEAD
 	**	Chip and controller indentification.
+=======
+	**	Chip and controller identification.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	**----------------------------------------------------------------
 	*/
 	int		unit;		/* Unit number			*/
@@ -1734,7 +1780,11 @@ struct ncb {
 	**	Miscellaneous configuration and status parameters.
 	**----------------------------------------------------------------
 	*/
+<<<<<<< HEAD
 	u_char		disc;		/* Diconnection allowed		*/
+=======
+	u_char		disc;		/* Disconnection allowed	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_char		scsi_mode;	/* Current SCSI BUS mode	*/
 	u_char		order;		/* Tag order to use		*/
 	u_char		verbose;	/* Verbosity for this controller*/
@@ -1953,11 +2003,16 @@ static	void	ncr_start_next_ccb (struct ncb *np, struct lcb * lp, int maxn);
 static	void	ncr_put_start_queue(struct ncb *np, struct ccb *cp);
 
 static void insert_into_waiting_list(struct ncb *np, struct scsi_cmnd *cmd);
+<<<<<<< HEAD
 static struct scsi_cmnd *retrieve_from_waiting_list(int to_remove, struct ncb *np, struct scsi_cmnd *cmd);
 static void process_waiting_list(struct ncb *np, int sts);
 
 #define remove_from_waiting_list(np, cmd) \
 		retrieve_from_waiting_list(1, (np), (cmd))
+=======
+static void process_waiting_list(struct ncb *np, int sts);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define requeue_waiting_list(np) process_waiting_list((np), DID_OK)
 #define reset_waiting_list(np) process_waiting_list((np), DID_RESET)
 
@@ -1989,9 +2044,12 @@ static inline char *ncr_name (struct ncb *np)
 #define	RELOC_SOFTC	0x40000000
 #define	RELOC_LABEL	0x50000000
 #define	RELOC_REGISTER	0x60000000
+<<<<<<< HEAD
 #if 0
 #define	RELOC_KVAR	0x70000000
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	RELOC_LABELH	0x80000000
 #define	RELOC_MASK	0xf0000000
 
@@ -2000,6 +2058,7 @@ static inline char *ncr_name (struct ncb *np)
 #define PADDRH(label)   (RELOC_LABELH | offsetof(struct scripth, label))
 #define	RADDR(label)	(RELOC_REGISTER | REG(label))
 #define	FADDR(label,ofs)(RELOC_REGISTER | ((REG(label))+(ofs)))
+<<<<<<< HEAD
 #if 0
 #define	KVAR(which)	(RELOC_KVAR | (which))
 #endif
@@ -2015,6 +2074,9 @@ static inline char *ncr_name (struct ncb *np)
 static void *script_kvars[] __initdata =
 	{ (void *)&jiffies };
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static	struct script script0 __initdata = {
 /*--------------------------< START >-----------------------*/ {
@@ -2171,11 +2233,14 @@ static	struct script script0 __initdata = {
 	SCR_COPY (1),
 		RADDR (scratcha),
 		NADDR (msgout),
+<<<<<<< HEAD
 #if 0
 	SCR_COPY (1),
 		RADDR (scratcha),
 		NADDR (msgin),
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	**	Anticipate the COMMAND phase.
 	**	This is the normal case for initial selection.
@@ -2215,7 +2280,11 @@ static	struct script script0 __initdata = {
 	**	Possible data corruption during Memory Write and Invalidate.
 	**	This work-around resets the addressing logic prior to the 
 	**	start of the first MOVE of a DATA IN phase.
+<<<<<<< HEAD
 	**	(See Documentation/scsi/ncr53c8xx.txt for more information)
+=======
+	**	(See Documentation/scsi/ncr53c8xx.rst for more information)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*/
 	SCR_JUMPR ^ IFFALSE (IF (SCR_DATA_IN)),
 		20,
@@ -2442,7 +2511,11 @@ static	struct script script0 __initdata = {
 	*/
 	SCR_FROM_REG (SS_REG),
 		0,
+<<<<<<< HEAD
 	SCR_CALL ^ IFFALSE (DATA (S_GOOD)),
+=======
+	SCR_CALL ^ IFFALSE (DATA (SAM_STAT_GOOD)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PADDRH (bad_status),
 
 #ifndef	SCSI_NCR_CCB_DONE_SUPPORT
@@ -2891,7 +2964,11 @@ static	struct scripth scripth0 __initdata = {
 		8,
 	SCR_TO_REG (HS_REG),
 		0,
+<<<<<<< HEAD
 	SCR_LOAD_REG (SS_REG, S_GOOD),
+=======
+	SCR_LOAD_REG (SS_REG, SAM_STAT_GOOD),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0,
 	SCR_JUMP,
 		PADDR (cleanup_ok),
@@ -3353,6 +3430,7 @@ static	struct scripth scripth0 __initdata = {
 		PADDRH (reset),
 }/*-------------------------< BAD_STATUS >-----------------*/,{
 	/*
+<<<<<<< HEAD
 	**	If command resulted in either QUEUE FULL,
 	**	CHECK CONDITION or COMMAND TERMINATED,
 	**	call the C code.
@@ -3362,6 +3440,17 @@ static	struct scripth scripth0 __initdata = {
 	SCR_INT ^ IFTRUE (DATA (S_CHECK_COND)),
 		SIR_BAD_STATUS,
 	SCR_INT ^ IFTRUE (DATA (S_TERMINATED)),
+=======
+	**	If command resulted in either TASK_SET FULL,
+	**	CHECK CONDITION or COMMAND TERMINATED,
+	**	call the C code.
+	*/
+	SCR_INT ^ IFTRUE (DATA (SAM_STAT_TASK_SET_FULL)),
+		SIR_BAD_STATUS,
+	SCR_INT ^ IFTRUE (DATA (SAM_STAT_CHECK_CONDITION)),
+		SIR_BAD_STATUS,
+	SCR_INT ^ IFTRUE (DATA (SAM_STAT_COMMAND_TERMINATED)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SIR_BAD_STATUS,
 	SCR_RETURN,
 		0,
@@ -3652,7 +3741,11 @@ ncr_script_copy_and_bind (struct ncb *np, ncrcmd *src, ncrcmd *dst, int len)
 						new = old;
 						break;
 					}
+<<<<<<< HEAD
 					/* fall through */
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				default:
 					panic("ncr_script_copy_and_bind: weird relocation %x\n", old);
 					break;
@@ -3922,11 +4015,22 @@ static void __init ncr_prepare_setting(struct ncb *np)
 					np->scsi_mode = SMODE_HVD;
 				break;
 			}
+<<<<<<< HEAD
 		case 3:	/* SYMBIOS controllers report HVD through GPIO3 */
 			if (INB(nc_gpreg) & 0x08)
 				break;
 		case 2:	/* Set HVD unconditionally */
 			np->scsi_mode = SMODE_HVD;
+=======
+			fallthrough;
+		case 3:	/* SYMBIOS controllers report HVD through GPIO3 */
+			if (INB(nc_gpreg) & 0x08)
+				break;
+			fallthrough;
+		case 2:	/* Set HVD unconditionally */
+			np->scsi_mode = SMODE_HVD;
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:	/* Trust previous settings for HVD */
 			if (np->sv_stest2 & 0x20)
 				np->scsi_mode = SMODE_HVD;
@@ -4039,7 +4143,11 @@ static inline void ncr_flush_done_cmds(struct scsi_cmnd *lcmd)
 	while (lcmd) {
 		cmd = lcmd;
 		lcmd = (struct scsi_cmnd *) cmd->host_scribble;
+<<<<<<< HEAD
 		cmd->scsi_done(cmd);
+=======
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4170,8 +4278,13 @@ static int ncr_queue_command (struct ncb *np, struct scsi_cmnd *cmd)
 	**
 	**----------------------------------------------------
 	*/
+<<<<<<< HEAD
 	if (np->settle_time && cmd->request->timeout >= HZ) {
 		u_long tlimit = jiffies + cmd->request->timeout - HZ;
+=======
+	if (np->settle_time && scsi_cmd_to_rq(cmd)->timeout >= HZ) {
+		u_long tlimit = jiffies + scsi_cmd_to_rq(cmd)->timeout - HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (time_after(np->settle_time, tlimit))
 			np->settle_time = tlimit;
 	}
@@ -4305,7 +4418,11 @@ static int ncr_queue_command (struct ncb *np, struct scsi_cmnd *cmd)
 			break;
 		cp->phys.header.wgoalp	= cpu_to_scr(goalp);
 		cp->phys.header.wlastp	= cpu_to_scr(lastp);
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DMA_FROM_DEVICE:
 		goalp = NCB_SCRIPT_PHYS (np, data_in2) + 8;
 		if (segments <= MAX_SCATTERL)
@@ -4380,6 +4497,7 @@ static int ncr_queue_command (struct ncb *np, struct scsi_cmnd *cmd)
 	*/
 	cp->actualquirks		= 0;
 	cp->host_status			= cp->nego_status ? HS_NEGOTIATE : HS_BUSY;
+<<<<<<< HEAD
 	cp->scsi_status			= S_ILLEGAL;
 	cp->parity_status		= 0;
 
@@ -4388,6 +4506,12 @@ static int ncr_queue_command (struct ncb *np, struct scsi_cmnd *cmd)
 	cp->sync_status			= tp->sval;
 	cp->wide_status			= tp->wval;
 #endif
+=======
+	cp->scsi_status			= SAM_STAT_ILLEGAL;
+	cp->parity_status		= 0;
+
+	cp->xerr_status			= XE_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*----------------------------------------------------
 	**
@@ -4559,12 +4683,17 @@ static void ncr_start_reset(struct ncb *np)
 **
 **==========================================================
 */
+<<<<<<< HEAD
 static int ncr_reset_bus (struct ncb *np, struct scsi_cmnd *cmd, int sync_reset)
 {
 /*	struct scsi_device        *device    = cmd->device; */
 	struct ccb *cp;
 	int found;
 
+=======
+static int ncr_reset_bus (struct ncb *np)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return immediately if reset is in progress.
  */
@@ -4579,6 +4708,7 @@ static int ncr_reset_bus (struct ncb *np, struct scsi_cmnd *cmd, int sync_reset)
  */
 	ncr_start_reset(np);
 /*
+<<<<<<< HEAD
  * First, look in the wakeup list
  */
 	for (found=0, cp=np->ccb; cp; cp=cp->link_ccb) {
@@ -4597,6 +4727,8 @@ static int ncr_reset_bus (struct ncb *np, struct scsi_cmnd *cmd, int sync_reset)
 	if (!found && retrieve_from_waiting_list(0, np, cmd))
 		found = 1;
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Wake-up all awaiting commands with DID_RESET.
  */
 	reset_waiting_list(np);
@@ -4604,6 +4736,7 @@ static int ncr_reset_bus (struct ncb *np, struct scsi_cmnd *cmd, int sync_reset)
  * Wake-up all pending commands with HS_RESET -> DID_RESET.
  */
 	ncr_wakeup(np, HS_RESET);
+<<<<<<< HEAD
 /*
  * If the involved command was not in a driver queue, and the 
  * scsi driver told us reset is synchronous, and the command is not 
@@ -4614,10 +4747,13 @@ static int ncr_reset_bus (struct ncb *np, struct scsi_cmnd *cmd, int sync_reset)
 		cmd->result = ScsiResult(DID_RESET, 0);
 		ncr_queue_done_cmd(np, cmd);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return SUCCESS;
 }
 
+<<<<<<< HEAD
 #if 0 /* unused and broken.. */
 /*==========================================================
 **
@@ -4701,6 +4837,8 @@ static int ncr_abort_command (struct ncb *np, struct scsi_cmnd *cmd)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ncr_detach(struct ncb *np)
 {
 	struct ccb *cp;
@@ -4711,7 +4849,11 @@ static void ncr_detach(struct ncb *np)
 	char inst_name[16];
 
 	/* Local copy so we don't access np after freeing it! */
+<<<<<<< HEAD
 	strlcpy(inst_name, ncr_name(np), sizeof(inst_name));
+=======
+	strscpy(inst_name, ncr_name(np), sizeof(inst_name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("%s: releasing host resources\n", ncr_name(np));
 
@@ -4904,7 +5046,12 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 	**	Print out any error for debugging purpose.
 	*/
 	if (DEBUG_FLAGS & (DEBUG_RESULT|DEBUG_TINY)) {
+<<<<<<< HEAD
 		if (cp->host_status!=HS_COMPLETE || cp->scsi_status!=S_GOOD) {
+=======
+		if (cp->host_status != HS_COMPLETE ||
+		    cp->scsi_status != SAM_STAT_GOOD) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PRINT_ADDR(cmd, "ERROR: cmd=%x host_status=%x "
 					"scsi_status=%x\n", cmd->cmnd[0],
 					cp->host_status, cp->scsi_status);
@@ -4914,6 +5061,7 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 	/*
 	**	Check the status.
 	*/
+<<<<<<< HEAD
 	if (   (cp->host_status == HS_COMPLETE)
 		&& (cp->scsi_status == S_GOOD ||
 		    cp->scsi_status == S_COND_MET)) {
@@ -4923,6 +5071,18 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 		 *	`Pre-Fetch' or `Search data' success.
 		 */
 		cmd->result = ScsiResult(DID_OK, cp->scsi_status);
+=======
+	cmd->result = 0;
+	if (   (cp->host_status == HS_COMPLETE)
+		&& (cp->scsi_status == SAM_STAT_GOOD ||
+		    cp->scsi_status == SAM_STAT_CONDITION_MET)) {
+		/*
+		 *	All went well (GOOD status).
+		 *	CONDITION MET status is returned on
+		 *	`Pre-Fetch' or `Search data' success.
+		 */
+		set_status_byte(cmd, cp->scsi_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		**	@RESID@
@@ -4953,11 +5113,19 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 			}
 		}
 	} else if ((cp->host_status == HS_COMPLETE)
+<<<<<<< HEAD
 		&& (cp->scsi_status == S_CHECK_COND)) {
 		/*
 		**   Check condition code
 		*/
 		cmd->result = ScsiResult(DID_OK, S_CHECK_COND);
+=======
+		&& (cp->scsi_status == SAM_STAT_CHECK_CONDITION)) {
+		/*
+		**   Check condition code
+		*/
+		set_status_byte(cmd, SAM_STAT_CHECK_CONDITION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		**	Copy back sense data to caller's buffer.
@@ -4974,6 +5142,7 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 			printk (".\n");
 		}
 	} else if ((cp->host_status == HS_COMPLETE)
+<<<<<<< HEAD
 		&& (cp->scsi_status == S_CONFLICT)) {
 		/*
 		**   Reservation Conflict condition code
@@ -4983,11 +5152,26 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 	} else if ((cp->host_status == HS_COMPLETE)
 		&& (cp->scsi_status == S_BUSY ||
 		    cp->scsi_status == S_QUEUE_FULL)) {
+=======
+		&& (cp->scsi_status == SAM_STAT_RESERVATION_CONFLICT)) {
+		/*
+		**   Reservation Conflict condition code
+		*/
+		set_status_byte(cmd, SAM_STAT_RESERVATION_CONFLICT);
+
+	} else if ((cp->host_status == HS_COMPLETE)
+		&& (cp->scsi_status == SAM_STAT_BUSY ||
+		    cp->scsi_status == SAM_STAT_TASK_SET_FULL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		**   Target is busy.
 		*/
+<<<<<<< HEAD
 		cmd->result = ScsiResult(DID_OK, cp->scsi_status);
+=======
+		set_status_byte(cmd, cp->scsi_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if ((cp->host_status == HS_SEL_TIMEOUT)
 		|| (cp->host_status == HS_TIMEOUT)) {
@@ -4995,21 +5179,36 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 		/*
 		**   No response
 		*/
+<<<<<<< HEAD
 		cmd->result = ScsiResult(DID_TIME_OUT, cp->scsi_status);
+=======
+		set_status_byte(cmd, cp->scsi_status);
+		set_host_byte(cmd, DID_TIME_OUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (cp->host_status == HS_RESET) {
 
 		/*
 		**   SCSI bus reset
 		*/
+<<<<<<< HEAD
 		cmd->result = ScsiResult(DID_RESET, cp->scsi_status);
+=======
+		set_status_byte(cmd, cp->scsi_status);
+		set_host_byte(cmd, DID_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (cp->host_status == HS_ABORTED) {
 
 		/*
 		**   Transfer aborted
 		*/
+<<<<<<< HEAD
 		cmd->result = ScsiResult(DID_ABORT, cp->scsi_status);
+=======
+		set_status_byte(cmd, cp->scsi_status);
+		set_host_byte(cmd, DID_ABORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 
@@ -5019,7 +5218,12 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 		PRINT_ADDR(cmd, "COMMAND FAILED (%x %x) @%p.\n",
 			cp->host_status, cp->scsi_status, cp);
 
+<<<<<<< HEAD
 		cmd->result = ScsiResult(DID_ERROR, cp->scsi_status);
+=======
+		set_status_byte(cmd, cp->scsi_status);
+		set_host_byte(cmd, DID_ERROR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -5035,10 +5239,17 @@ void ncr_complete (struct ncb *np, struct ccb *cp)
 
 		if (cp->host_status==HS_COMPLETE) {
 			switch (cp->scsi_status) {
+<<<<<<< HEAD
 			case S_GOOD:
 				printk ("  GOOD");
 				break;
 			case S_CHECK_COND:
+=======
+			case SAM_STAT_GOOD:
+				printk ("  GOOD");
+				break;
+			case SAM_STAT_CHECK_CONDITION:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				printk ("  SENSE:");
 				p = (u_char*) &cmd->sense_buffer;
 				for (i=0; i<14; i++)
@@ -5453,6 +5664,7 @@ static void ncr_getsync(struct ncb *np, u_char sfac, u_char *fakp, u_char *scntl
 	*/
 	fak = (kpc - 1) / div_10M[div] + 1;
 
+<<<<<<< HEAD
 #if 0	/* This optimization does not seem very useful */
 
 	per = (fak * div_10M[div]) / clk;
@@ -5474,6 +5686,8 @@ static void ncr_getsync(struct ncb *np, u_char sfac, u_char *fakp, u_char *scntl
 	}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fak < 4) fak = 4;	/* Should never happen, too bad ... */
 
 	/*
@@ -5511,10 +5725,13 @@ static void ncr_set_sync_wide_status (struct ncb *np, u_char target)
 	for (cp = np->ccb; cp; cp = cp->link_ccb) {
 		if (!cp->cmd) continue;
 		if (scmd_id(cp->cmd) != target) continue;
+<<<<<<< HEAD
 #if 0
 		cp->sync_status = tp->sval;
 		cp->wide_status = tp->wval;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cp->phys.select.sel_scntl3 = tp->wval;
 		cp->phys.select.sel_sxfer  = tp->sval;
 	}
@@ -6573,7 +6790,11 @@ static void ncr_sir_to_redo(struct ncb *np, int num, struct ccb *cp)
 
 	switch(s_status) {
 	default:	/* Just for safety, should never happen */
+<<<<<<< HEAD
 	case S_QUEUE_FULL:
+=======
+	case SAM_STAT_TASK_SET_FULL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		**	Decrease number of tags to the number of 
 		**	disconnected commands.
@@ -6597,15 +6818,24 @@ static void ncr_sir_to_redo(struct ncb *np, int num, struct ccb *cp)
 		*/
 		cp->phys.header.savep = cp->startp;
 		cp->host_status = HS_BUSY;
+<<<<<<< HEAD
 		cp->scsi_status = S_ILLEGAL;
+=======
+		cp->scsi_status = SAM_STAT_ILLEGAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ncr_put_start_queue(np, cp);
 		if (disc_cnt)
 			INB (nc_ctest2);		/* Clear SIGP */
 		OUTL_DSP (NCB_SCRIPT_PHYS (np, reselect));
 		return;
+<<<<<<< HEAD
 	case S_TERMINATED:
 	case S_CHECK_COND:
+=======
+	case SAM_STAT_COMMAND_TERMINATED:
+	case SAM_STAT_CHECK_CONDITION:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		**	If we were requesting sense, give up.
 		*/
@@ -6633,7 +6863,11 @@ static void ncr_sir_to_redo(struct ncb *np, int num, struct ccb *cp)
 		**	patch requested size into sense command
 		*/
 		cp->sensecmd[0]		= 0x03;
+<<<<<<< HEAD
 		cp->sensecmd[1]		= cmd->device->lun << 5;
+=======
+		cp->sensecmd[1]		= (cmd->device->lun & 0x7) << 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cp->sensecmd[4]		= sizeof(cp->sense_buf);
 
 		/*
@@ -6655,7 +6889,11 @@ static void ncr_sir_to_redo(struct ncb *np, int num, struct ccb *cp)
 		cp->phys.header.wlastp	= startp;
 
 		cp->host_status = HS_BUSY;
+<<<<<<< HEAD
 		cp->scsi_status = S_ILLEGAL;
+=======
+		cp->scsi_status = SAM_STAT_ILLEGAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cp->auto_sense	= s_status;
 
 		cp->start.schedule.l_paddr =
@@ -6726,6 +6964,10 @@ void ncr_int_sir (struct ncb *np)
 			OUTL_DSP (scr_to_cpu(tp->lp[0]->jump_ccb[0]));
 			return;
 		}
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIR_RESEL_BAD_TARGET:	/* Will send a TARGET RESET message */
 	case SIR_RESEL_BAD_LUN:		/* Will send a TARGET RESET message */
 	case SIR_RESEL_BAD_I_T_L_Q:	/* Will send an ABORT TAG message   */
@@ -6833,7 +7075,11 @@ void ncr_int_sir (struct ncb *np)
 		*/
 		OUTB (HS_PRT, HS_BUSY);
 
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SIR_NEGO_PROTO:
 		/*-------------------------------------------------------
@@ -7997,10 +8243,14 @@ static int ncr53c8xx_slave_configure(struct scsi_device *device)
 	if (depth_to_use > MAX_TAGS)
 		depth_to_use = MAX_TAGS;
 
+<<<<<<< HEAD
 	scsi_adjust_queue_depth(device,
 				(device->tagged_supported ?
 				 MSG_SIMPLE_TAG : 0),
 				depth_to_use);
+=======
+	scsi_change_queue_depth(device, depth_to_use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	**	Since the queue depth is not tunable under Linux,
@@ -8028,8 +8278,15 @@ static int ncr53c8xx_slave_configure(struct scsi_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ncr53c8xx_queue_command_lck (struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 {
+=======
+static int ncr53c8xx_queue_command_lck(struct scsi_cmnd *cmd)
+{
+     struct ncr_cmd_priv *cmd_priv = scsi_cmd_priv(cmd);
+     void (*done)(struct scsi_cmnd *) = scsi_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      struct ncb *np = ((struct host_data *) cmd->device->host->hostdata)->ncb;
      unsigned long flags;
      int sts;
@@ -8038,15 +8295,25 @@ static int ncr53c8xx_queue_command_lck (struct scsi_cmnd *cmd, void (*done)(stru
 printk("ncr53c8xx_queue_command\n");
 #endif
 
+<<<<<<< HEAD
      cmd->scsi_done     = done;
      cmd->host_scribble = NULL;
      cmd->__data_mapped = 0;
      cmd->__data_mapping = 0;
+=======
+     cmd->host_scribble = NULL;
+     cmd_priv->data_mapped = 0;
+     cmd_priv->data_mapping = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
      spin_lock_irqsave(&np->smp_lock, flags);
 
      if ((sts = ncr_queue_command(np, cmd)) != DID_OK) {
+<<<<<<< HEAD
 	  cmd->result = ScsiResult(sts, 0);
+=======
+	     set_host_byte(cmd, sts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_NCR53C8XX
 printk("ncr53c8xx : command not queued - result=%d\n", sts);
 #endif
@@ -8096,9 +8363,15 @@ irqreturn_t ncr53c8xx_intr(int irq, void *dev_id)
      return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void ncr53c8xx_timeout(unsigned long npref)
 {
 	struct ncb *np = (struct ncb *) npref;
+=======
+static void ncr53c8xx_timeout(struct timer_list *t)
+{
+	struct ncb *np = from_timer(np, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct scsi_cmnd *done_list;
 
@@ -8127,7 +8400,11 @@ static int ncr53c8xx_bus_reset(struct scsi_cmnd *cmd)
 	 */
 
 	spin_lock_irqsave(&np->smp_lock, flags);
+<<<<<<< HEAD
 	sts = ncr_reset_bus(np, cmd, 1);
+=======
+	sts = ncr_reset_bus(np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	done_list     = np->done_list;
 	np->done_list = NULL;
@@ -8138,6 +8415,7 @@ static int ncr53c8xx_bus_reset(struct scsi_cmnd *cmd)
 	return sts;
 }
 
+<<<<<<< HEAD
 #if 0 /* unused and broken */
 static int ncr53c8xx_abort(struct scsi_cmnd *cmd)
 {
@@ -8162,6 +8440,8 @@ out:
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 **	Scsi command waiting list management.
@@ -8194,6 +8474,7 @@ static void insert_into_waiting_list(struct ncb *np, struct scsi_cmnd *cmd)
 	}
 }
 
+<<<<<<< HEAD
 static struct scsi_cmnd *retrieve_from_waiting_list(int to_remove, struct ncb *np, struct scsi_cmnd *cmd)
 {
 	struct scsi_cmnd **pcmd = &np->waiting_list;
@@ -8214,6 +8495,8 @@ static struct scsi_cmnd *retrieve_from_waiting_list(int to_remove, struct ncb *n
 	return NULL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void process_waiting_list(struct ncb *np, int sts)
 {
 	struct scsi_cmnd *waiting_list, *wcmd;
@@ -8237,7 +8520,11 @@ static void process_waiting_list(struct ncb *np, int sts)
 #ifdef DEBUG_WAITING_LIST
 	printk("%s: cmd %lx done forced sts=%d\n", ncr_name(np), (u_long) wcmd, sts);
 #endif
+<<<<<<< HEAD
 			wcmd->result = ScsiResult(sts, 0);
+=======
+			set_host_byte(wcmd, sts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ncr_queue_done_cmd(np, wcmd);
 		}
 	}
@@ -8259,11 +8546,21 @@ static struct device_attribute ncr53c8xx_revision_attr = {
 	.show	= show_ncr53c8xx_revision,
 };
   
+<<<<<<< HEAD
 static struct device_attribute *ncr53c8xx_host_attrs[] = {
 	&ncr53c8xx_revision_attr,
 	NULL
 };
 
+=======
+static struct attribute *ncr53c8xx_host_attrs[] = {
+	&ncr53c8xx_revision_attr.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(ncr53c8xx_host);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*==========================================================
 **
 **	Boot command line.
@@ -8303,10 +8600,19 @@ struct Scsi_Host * __init ncr_attach(struct scsi_host_template *tpnt,
 	u_long flags = 0;
 	int i;
 
+<<<<<<< HEAD
 	if (!tpnt->name)
 		tpnt->name	= SCSI_NCR_DRIVER_NAME;
 	if (!tpnt->shost_attrs)
 		tpnt->shost_attrs = ncr53c8xx_host_attrs;
+=======
+	WARN_ON_ONCE(tpnt->cmd_size < sizeof(struct ncr_cmd_priv));
+
+	if (!tpnt->name)
+		tpnt->name	= SCSI_NCR_DRIVER_NAME;
+	if (!tpnt->shost_groups)
+		tpnt->shost_groups = ncr53c8xx_host_groups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpnt->queuecommand	= ncr53c8xx_queue_command;
 	tpnt->slave_configure	= ncr53c8xx_slave_configure;
@@ -8316,7 +8622,10 @@ struct Scsi_Host * __init ncr_attach(struct scsi_host_template *tpnt,
 	tpnt->this_id		= 7;
 	tpnt->sg_tablesize	= SCSI_NCR_SG_TABLESIZE;
 	tpnt->cmd_per_lun	= SCSI_NCR_CMD_PER_LUN;
+<<<<<<< HEAD
 	tpnt->use_clustering	= ENABLE_CLUSTERING;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (device->differential)
 		driver_setup.diff_support = device->differential;
@@ -8360,9 +8669,13 @@ struct Scsi_Host * __init ncr_attach(struct scsi_host_template *tpnt,
 	if (!np->scripth0)
 		goto attach_error;
 
+<<<<<<< HEAD
 	init_timer(&np->timer);
 	np->timer.data     = (unsigned long) np;
 	np->timer.function = ncr53c8xx_timeout;
+=======
+	timer_setup(&np->timer, ncr53c8xx_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Try to map the controller chip to virtual and physical memory. */
 

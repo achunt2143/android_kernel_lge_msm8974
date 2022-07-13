@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ADLX345/346 Three-Axis Digital Accelerometers (SPI Interface)
  *
  * Enter bugs at http://blackfin.uclinux.org/
  *
  * Copyright (C) 2009 Michael Hennerich, Analog Devices Inc.
+<<<<<<< HEAD
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>	/* BUS_SPI */
@@ -65,7 +72,11 @@ static const struct adxl34x_bus_ops adxl34x_spi_bops = {
 	.read_block	= adxl34x_spi_read_block,
 };
 
+<<<<<<< HEAD
 static int __devinit adxl34x_spi_probe(struct spi_device *spi)
+=======
+static int adxl34x_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adxl34x *ac;
 
@@ -87,6 +98,7 @@ static int __devinit adxl34x_spi_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit adxl34x_spi_remove(struct spi_device *spi)
 {
 	struct adxl34x *ac = dev_get_drvdata(&spi->dev);
@@ -127,6 +139,22 @@ static struct spi_driver adxl34x_driver = {
 	},
 	.probe   = adxl34x_spi_probe,
 	.remove  = __devexit_p(adxl34x_spi_remove),
+=======
+static void adxl34x_spi_remove(struct spi_device *spi)
+{
+	struct adxl34x *ac = spi_get_drvdata(spi);
+
+	adxl34x_remove(ac);
+}
+
+static struct spi_driver adxl34x_driver = {
+	.driver = {
+		.name = "adxl34x",
+		.pm = pm_sleep_ptr(&adxl34x_pm),
+	},
+	.probe   = adxl34x_spi_probe,
+	.remove  = adxl34x_spi_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(adxl34x_driver);

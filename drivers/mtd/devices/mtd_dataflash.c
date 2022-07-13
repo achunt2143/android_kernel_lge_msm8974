@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Atmel AT45xxx DataFlash MTD driver for lightweight SPI framework
  *
  * Largely derived from at91_dataflash.c:
  *  Copyright (C) 2003-2005 SAN People (Pty) Ltd
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,6 +16,10 @@
 */
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+*/
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -18,7 +27,10 @@
 #include <linux/err.h>
 #include <linux/math64.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
@@ -83,6 +95,7 @@
 #define OP_WRITE_SECURITY_REVC	0x9A
 #define OP_WRITE_SECURITY	0x9B	/* revision D */
 
+<<<<<<< HEAD
 
 struct dataflash {
 	uint8_t			command[4];
@@ -90,6 +103,17 @@ struct dataflash {
 
 	unsigned		partitioned:1;
 
+=======
+#define CFI_MFR_ATMEL		0x1F
+
+#define DATAFLASH_SHIFT_EXTID	24
+#define DATAFLASH_SHIFT_ID	40
+
+struct dataflash {
+	u8			command[4];
+	char			name[24];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		page_offset;	/* offset in flash address */
 	unsigned int		page_size;	/* of bytes per page */
 
@@ -105,10 +129,23 @@ static const struct of_device_id dataflash_dt_ids[] = {
 	{ .compatible = "atmel,dataflash", },
 	{ /* sentinel */ }
 };
+<<<<<<< HEAD
 #else
 #define dataflash_dt_ids NULL
 #endif
 
+=======
+MODULE_DEVICE_TABLE(of, dataflash_dt_ids);
+#endif
+
+static const struct spi_device_id dataflash_spi_ids[] = {
+	{ .name = "at45", },
+	{ .name = "dataflash", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(spi, dataflash_spi_ids);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ......................................................................... */
 
 /*
@@ -133,15 +170,23 @@ static int dataflash_waitready(struct spi_device *spi)
 	for (;;) {
 		status = dataflash_status(spi);
 		if (status < 0) {
+<<<<<<< HEAD
 			pr_debug("%s: status %d?\n",
 					dev_name(&spi->dev), status);
+=======
+			dev_dbg(&spi->dev, "status %d?\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = 0;
 		}
 
 		if (status & (1 << 7))	/* RDY/nBSY */
 			return status;
 
+<<<<<<< HEAD
 		msleep(3);
+=======
+		usleep_range(3000, 4000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -154,6 +199,7 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 {
 	struct dataflash	*priv = mtd->priv;
 	struct spi_device	*spi = priv->spi;
+<<<<<<< HEAD
 	struct spi_transfer	x = { .tx_dma = 0, };
 	struct spi_message	msg;
 	unsigned		blocksize = priv->page_size << 3;
@@ -163,6 +209,16 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 	pr_debug("%s: erase addr=0x%llx len 0x%llx\n",
 	      dev_name(&spi->dev), (long long)instr->addr,
 	      (long long)instr->len);
+=======
+	struct spi_transfer	x = { };
+	struct spi_message	msg;
+	unsigned		blocksize = priv->page_size << 3;
+	u8			*command;
+	u32			rem;
+
+	dev_dbg(&spi->dev, "erase addr=0x%llx len 0x%llx\n",
+		(long long)instr->addr, (long long)instr->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	div_u64_rem(instr->len, priv->page_size, &rem);
 	if (rem)
@@ -191,11 +247,19 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 		pageaddr = pageaddr << priv->page_offset;
 
 		command[0] = do_block ? OP_ERASE_BLOCK : OP_ERASE_PAGE;
+<<<<<<< HEAD
 		command[1] = (uint8_t)(pageaddr >> 16);
 		command[2] = (uint8_t)(pageaddr >> 8);
 		command[3] = 0;
 
 		pr_debug("ERASE %s: (%x) %x %x %x [%i]\n",
+=======
+		command[1] = (u8)(pageaddr >> 16);
+		command[2] = (u8)(pageaddr >> 8);
+		command[3] = 0;
+
+		dev_dbg(&spi->dev, "ERASE %s: (%x) %x %x %x [%i]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			do_block ? "block" : "page",
 			command[0], command[1], command[2], command[3],
 			pageaddr);
@@ -204,8 +268,13 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 		(void) dataflash_waitready(spi);
 
 		if (status < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: erase %x, err %d\n",
 				dev_name(&spi->dev), pageaddr, status);
+=======
+			dev_err(&spi->dev, "erase %x, err %d\n",
+				pageaddr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* REVISIT:  can retry instr->retries times; or
 			 * giveup and instr->fail_addr = instr->addr;
 			 */
@@ -222,10 +291,13 @@ static int dataflash_erase(struct mtd_info *mtd, struct erase_info *instr)
 	}
 	mutex_unlock(&priv->lock);
 
+<<<<<<< HEAD
 	/* Inform MTD subsystem that erase is complete */
 	instr->state = MTD_ERASE_DONE;
 	mtd_erase_callback(instr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -240,6 +312,7 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 			       size_t *retlen, u_char *buf)
 {
 	struct dataflash	*priv = mtd->priv;
+<<<<<<< HEAD
 	struct spi_transfer	x[2] = { { .tx_dma = 0, }, };
 	struct spi_message	msg;
 	unsigned int		addr;
@@ -248,6 +321,16 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 	pr_debug("%s: read 0x%x..0x%x\n", dev_name(&priv->spi->dev),
 			(unsigned)from, (unsigned)(from + len));
+=======
+	struct spi_transfer	x[2] = { };
+	struct spi_message	msg;
+	unsigned int		addr;
+	u8			*command;
+	int			status;
+
+	dev_dbg(&priv->spi->dev, "read 0x%x..0x%x\n",
+		  (unsigned int)from, (unsigned int)(from + len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Calculate flash page/byte address */
 	addr = (((unsigned)from / priv->page_size) << priv->page_offset)
@@ -255,7 +338,11 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 	command = priv->command;
 
+<<<<<<< HEAD
 	pr_debug("READ: (%x) %x %x %x\n",
+=======
+	dev_dbg(&priv->spi->dev, "READ: (%x) %x %x %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		command[0], command[1], command[2], command[3]);
 
 	spi_message_init(&msg);
@@ -275,9 +362,15 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 	 * fewer "don't care" bytes.  Both buffers stay unchanged.
 	 */
 	command[0] = OP_READ_CONTINUOUS;
+<<<<<<< HEAD
 	command[1] = (uint8_t)(addr >> 16);
 	command[2] = (uint8_t)(addr >> 8);
 	command[3] = (uint8_t)(addr >> 0);
+=======
+	command[1] = (u8)(addr >> 16);
+	command[2] = (u8)(addr >> 8);
+	command[3] = (u8)(addr >> 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* plus 4 "don't care" bytes */
 
 	status = spi_sync(priv->spi, &msg);
@@ -287,8 +380,12 @@ static int dataflash_read(struct mtd_info *mtd, loff_t from, size_t len,
 		*retlen = msg.actual_length - 8;
 		status = 0;
 	} else
+<<<<<<< HEAD
 		pr_debug("%s: read %x..%x --> %d\n",
 			dev_name(&priv->spi->dev),
+=======
+		dev_dbg(&priv->spi->dev, "read %x..%x --> %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned)from, (unsigned)(from + len),
 			status);
 	return status;
@@ -306,16 +403,27 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 {
 	struct dataflash	*priv = mtd->priv;
 	struct spi_device	*spi = priv->spi;
+<<<<<<< HEAD
 	struct spi_transfer	x[2] = { { .tx_dma = 0, }, };
+=======
+	struct spi_transfer	x[2] = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_message	msg;
 	unsigned int		pageaddr, addr, offset, writelen;
 	size_t			remaining = len;
 	u_char			*writebuf = (u_char *) buf;
 	int			status = -EINVAL;
+<<<<<<< HEAD
 	uint8_t			*command;
 
 	pr_debug("%s: write 0x%x..0x%x\n",
 		dev_name(&spi->dev), (unsigned)to, (unsigned)(to + len));
+=======
+	u8			*command;
+
+	dev_dbg(&spi->dev, "write 0x%x..0x%x\n",
+		(unsigned int)to, (unsigned int)(to + len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_message_init(&msg);
 
@@ -332,7 +440,11 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 
 	mutex_lock(&priv->lock);
 	while (remaining > 0) {
+<<<<<<< HEAD
 		pr_debug("write @ %i:%i len=%i\n",
+=======
+		dev_dbg(&spi->dev, "write @ %i:%i len=%i\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pageaddr, offset, writelen);
 
 		/* REVISIT:
@@ -360,13 +472,22 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 			command[2] = (addr & 0x0000FF00) >> 8;
 			command[3] = 0;
 
+<<<<<<< HEAD
 			pr_debug("TRANSFER: (%x) %x %x %x\n",
+=======
+			dev_dbg(&spi->dev, "TRANSFER: (%x) %x %x %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				command[0], command[1], command[2], command[3]);
 
 			status = spi_sync(spi, &msg);
 			if (status < 0)
+<<<<<<< HEAD
 				pr_debug("%s: xfer %u -> %d\n",
 					dev_name(&spi->dev), addr, status);
+=======
+				dev_dbg(&spi->dev, "xfer %u -> %d\n",
+					addr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			(void) dataflash_waitready(priv->spi);
 		}
@@ -378,7 +499,11 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 		command[2] = (addr & 0x0000FF00) >> 8;
 		command[3] = (addr & 0x000000FF);
 
+<<<<<<< HEAD
 		pr_debug("PROGRAM: (%x) %x %x %x\n",
+=======
+		dev_dbg(&spi->dev, "PROGRAM: (%x) %x %x %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			command[0], command[1], command[2], command[3]);
 
 		x[1].tx_buf = writebuf;
@@ -387,8 +512,13 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 		status = spi_sync(spi, &msg);
 		spi_transfer_del(x + 1);
 		if (status < 0)
+<<<<<<< HEAD
 			pr_debug("%s: pgm %u/%u -> %d\n",
 				dev_name(&spi->dev), addr, writelen, status);
+=======
+			dev_dbg(&spi->dev, "pgm %u/%u -> %d\n",
+				addr, writelen, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		(void) dataflash_waitready(priv->spi);
 
@@ -402,20 +532,34 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 		command[2] = (addr & 0x0000FF00) >> 8;
 		command[3] = 0;
 
+<<<<<<< HEAD
 		pr_debug("COMPARE: (%x) %x %x %x\n",
+=======
+		dev_dbg(&spi->dev, "COMPARE: (%x) %x %x %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			command[0], command[1], command[2], command[3]);
 
 		status = spi_sync(spi, &msg);
 		if (status < 0)
+<<<<<<< HEAD
 			pr_debug("%s: compare %u -> %d\n",
 				dev_name(&spi->dev), addr, status);
+=======
+			dev_dbg(&spi->dev, "compare %u -> %d\n",
+				addr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = dataflash_waitready(priv->spi);
 
 		/* Check result of the compare operation */
 		if (status & (1 << 6)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: compare page %u, err %d\n",
 				dev_name(&spi->dev), pageaddr, status);
+=======
+			dev_err(&spi->dev, "compare page %u, err %d\n",
+				pageaddr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			remaining = 0;
 			status = -EIO;
 			break;
@@ -444,8 +588,13 @@ static int dataflash_write(struct mtd_info *mtd, loff_t to, size_t len,
 
 #ifdef CONFIG_MTD_DATAFLASH_OTP
 
+<<<<<<< HEAD
 static int dataflash_get_otp_info(struct mtd_info *mtd,
 		struct otp_info *info, size_t len)
+=======
+static int dataflash_get_otp_info(struct mtd_info *mtd, size_t len,
+				  size_t *retlen, struct otp_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Report both blocks as identical:  bytes 0..64, locked.
 	 * Unless the user block changed from all-ones, we can't
@@ -454,6 +603,7 @@ static int dataflash_get_otp_info(struct mtd_info *mtd,
 	info->start = 0;
 	info->length = 64;
 	info->locked = 1;
+<<<<<<< HEAD
 	return sizeof(*info);
 }
 
@@ -463,6 +613,18 @@ static ssize_t otp_read(struct spi_device *spi, unsigned base,
 	struct spi_message	m;
 	size_t			l;
 	uint8_t			*scratch;
+=======
+	*retlen = sizeof(*info);
+	return 0;
+}
+
+static ssize_t otp_read(struct spi_device *spi, unsigned base,
+		u8 *buf, loff_t off, size_t len)
+{
+	struct spi_message	m;
+	size_t			l;
+	u8			*scratch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_transfer	t;
 	int			status;
 
@@ -537,15 +699,24 @@ static int dataflash_read_user_otp(struct mtd_info *mtd,
 }
 
 static int dataflash_write_user_otp(struct mtd_info *mtd,
+<<<<<<< HEAD
 		loff_t from, size_t len, size_t *retlen, u_char *buf)
 {
 	struct spi_message	m;
 	const size_t		l = 4 + 64;
 	uint8_t			*scratch;
+=======
+		loff_t from, size_t len, size_t *retlen, const u_char *buf)
+{
+	struct spi_message	m;
+	const size_t		l = 4 + 64;
+	u8			*scratch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_transfer	t;
 	struct dataflash	*priv = mtd->priv;
 	int			status;
 
+<<<<<<< HEAD
 	if (len > 64)
 		return -EINVAL;
 
@@ -554,6 +725,20 @@ static int dataflash_write_user_otp(struct mtd_info *mtd,
 	 */
 	if ((from + len) > 64)
 		return -EINVAL;
+=======
+	if (from >= 64) {
+		/*
+		 * Attempting to write beyond the end of OTP memory,
+		 * no data can be written.
+		 */
+		*retlen = 0;
+		return 0;
+	}
+
+	/* Truncate the write to fit into OTP memory. */
+	if ((from + len) > 64)
+		len = 64 - from;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OUT: OP_WRITE_SECURITY, 3 zeroes, 64 data-or-zero bytes
 	 * IN:  ignore all
@@ -618,6 +803,7 @@ static char *otp_setup(struct mtd_info *device, char revision)
 /*
  * Register DataFlash device with MTD subsystem.
  */
+<<<<<<< HEAD
 static int __devinit
 add_dataflash_otp(struct spi_device *spi, char *name,
 		int nr_pages, int pagesize, int pageoffset, char revision)
@@ -626,6 +812,14 @@ add_dataflash_otp(struct spi_device *spi, char *name,
 	struct mtd_info			*device;
 	struct mtd_part_parser_data	ppdata;
 	struct flash_platform_data	*pdata = spi->dev.platform_data;
+=======
+static int add_dataflash_otp(struct spi_device *spi, char *name, int nr_pages,
+			     int pagesize, int pageoffset, char revision)
+{
+	struct dataflash		*priv;
+	struct mtd_info			*device;
+	struct flash_platform_data	*pdata = dev_get_platdata(&spi->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char				*otp_tag = "";
 	int				err = 0;
 
@@ -640,7 +834,11 @@ add_dataflash_otp(struct spi_device *spi, char *name,
 
 	/* name must be usable with cmdlinepart */
 	sprintf(priv->name, "spi%d.%d-%s",
+<<<<<<< HEAD
 			spi->master->bus_num, spi->chip_select,
+=======
+			spi->controller->bus_num, spi_get_chipselect(spi, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			name);
 
 	device = &priv->mtd;
@@ -648,7 +846,10 @@ add_dataflash_otp(struct spi_device *spi, char *name,
 	device->size = nr_pages * pagesize;
 	device->erasesize = pagesize;
 	device->writesize = pagesize;
+<<<<<<< HEAD
 	device->owner = THIS_MODULE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device->type = MTD_DATAFLASH;
 	device->flags = MTD_WRITEABLE;
 	device->_erase = dataflash_erase;
@@ -657,6 +858,10 @@ add_dataflash_otp(struct spi_device *spi, char *name,
 	device->priv = priv;
 
 	device->dev.parent = &spi->dev;
+<<<<<<< HEAD
+=======
+	mtd_set_of_node(device, spi->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (revision >= 'c')
 		otp_tag = otp_setup(device, revision);
@@ -664,24 +869,38 @@ add_dataflash_otp(struct spi_device *spi, char *name,
 	dev_info(&spi->dev, "%s (%lld KBytes) pagesize %d bytes%s\n",
 			name, (long long)((device->size + 1023) >> 10),
 			pagesize, otp_tag);
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, priv);
 
 	ppdata.of_node = spi->dev.of_node;
 	err = mtd_device_parse_register(device, NULL, &ppdata,
+=======
+	spi_set_drvdata(spi, priv);
+
+	err = mtd_device_register(device,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pdata ? pdata->parts : NULL,
 			pdata ? pdata->nr_parts : 0);
 
 	if (!err)
 		return 0;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv);
 	return err;
 }
 
+<<<<<<< HEAD
 static inline int __devinit
 add_dataflash(struct spi_device *spi, char *name,
 		int nr_pages, int pagesize, int pageoffset)
+=======
+static inline int add_dataflash(struct spi_device *spi, char *name,
+				int nr_pages, int pagesize, int pageoffset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return add_dataflash_otp(spi, name, nr_pages, pagesize,
 			pageoffset, 0);
@@ -693,6 +912,7 @@ struct flash_info {
 	/* JEDEC id has a high byte of zero plus three data bytes:
 	 * the manufacturer id, then a two byte device id.
 	 */
+<<<<<<< HEAD
 	uint32_t	jedec_id;
 
 	/* The size listed here is what works with OP_ERASE_PAGE. */
@@ -701,11 +921,26 @@ struct flash_info {
 	uint16_t	pageoffset;
 
 	uint16_t	flags;
+=======
+	u64		jedec_id;
+
+	/* The size listed here is what works with OP_ERASE_PAGE. */
+	unsigned	nr_pages;
+	u16		pagesize;
+	u16		pageoffset;
+
+	u16		flags;
+#define SUP_EXTID	0x0004		/* supports extended ID data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUP_POW2PS	0x0002		/* supports 2^N byte pages */
 #define IS_POW2PS	0x0001		/* uses 2^N byte pages */
 };
 
+<<<<<<< HEAD
 static struct flash_info __devinitdata dataflash_data [] = {
+=======
+static struct flash_info dataflash_data[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * NOTE:  chips with SUP_POW2PS (rev D and up) need two entries,
@@ -738,6 +973,7 @@ static struct flash_info __devinitdata dataflash_data [] = {
 
 	{ "AT45DB642x",  0x1f2800, 8192, 1056, 11, SUP_POW2PS},
 	{ "at45db642d",  0x1f2800, 8192, 1024, 10, SUP_POW2PS | IS_POW2PS},
+<<<<<<< HEAD
 };
 
 static struct flash_info *__devinit jedec_probe(struct spi_device *spi)
@@ -786,6 +1022,34 @@ static struct flash_info *__devinit jedec_probe(struct spi_device *spi)
 				if (status < 0) {
 					pr_debug("%s: status error %d\n",
 						dev_name(&spi->dev), status);
+=======
+
+	{ "AT45DB641E",  0x1f28000100ULL, 32768, 264, 9, SUP_EXTID | SUP_POW2PS},
+	{ "at45db641e",  0x1f28000100ULL, 32768, 256, 8, SUP_EXTID | SUP_POW2PS | IS_POW2PS},
+};
+
+static struct flash_info *jedec_lookup(struct spi_device *spi,
+				       u64 jedec, bool use_extid)
+{
+	struct flash_info *info;
+	int status;
+
+	for (info = dataflash_data;
+	     info < dataflash_data + ARRAY_SIZE(dataflash_data);
+	     info++) {
+		if (use_extid && !(info->flags & SUP_EXTID))
+			continue;
+
+		if (info->jedec_id == jedec) {
+			dev_dbg(&spi->dev, "OTP, sector protect%s\n",
+				(info->flags & SUP_POW2PS) ?
+				", binary pagesize" : "");
+			if (info->flags & SUP_POW2PS) {
+				status = dataflash_status(spi);
+				if (status < 0) {
+					dev_dbg(&spi->dev, "status error %d\n",
+						status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return ERR_PTR(status);
 				}
 				if (status & 0x1) {
@@ -800,12 +1064,65 @@ static struct flash_info *__devinit jedec_probe(struct spi_device *spi)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	return ERR_PTR(-ENODEV);
+}
+
+static struct flash_info *jedec_probe(struct spi_device *spi)
+{
+	int ret;
+	u8 code = OP_READ_ID;
+	u64 jedec;
+	u8 id[sizeof(jedec)] = {0};
+	const unsigned int id_size = 5;
+	struct flash_info *info;
+
+	/*
+	 * JEDEC also defines an optional "extended device information"
+	 * string for after vendor-specific data, after the three bytes
+	 * we use here.  Supporting some chips might require using it.
+	 *
+	 * If the vendor ID isn't Atmel's (0x1f), assume this call failed.
+	 * That's not an error; only rev C and newer chips handle it, and
+	 * only Atmel sells these chips.
+	 */
+	ret = spi_write_then_read(spi, &code, 1, id, id_size);
+	if (ret < 0) {
+		dev_dbg(&spi->dev, "error %d reading JEDEC ID\n", ret);
+		return ERR_PTR(ret);
+	}
+
+	if (id[0] != CFI_MFR_ATMEL)
+		return NULL;
+
+	jedec = be64_to_cpup((__be64 *)id);
+
+	/*
+	 * First, try to match device using extended device
+	 * information
+	 */
+	info = jedec_lookup(spi, jedec >> DATAFLASH_SHIFT_EXTID, true);
+	if (!IS_ERR(info))
+		return info;
+	/*
+	 * If that fails, make another pass using regular ID
+	 * information
+	 */
+	info = jedec_lookup(spi, jedec >> DATAFLASH_SHIFT_ID, false);
+	if (!IS_ERR(info))
+		return info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Treat other chips as errors ... we won't know the right page
 	 * size (it might be binary) even when we can tell which density
 	 * class is involved (legacy chip id scheme).
 	 */
+<<<<<<< HEAD
 	dev_warn(&spi->dev, "JEDEC id %06x not handled\n", jedec);
+=======
+	dev_warn(&spi->dev, "JEDEC id %016llx not handled\n", jedec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(-ENODEV);
 }
 
@@ -823,7 +1140,11 @@ static struct flash_info *__devinit jedec_probe(struct spi_device *spi)
  *   AT45DB0642  64Mbit  (8M)    xx111xxx (0x3c)   8192   1056     11
  *   AT45DB1282  128Mbit (16M)   xx0100xx (0x10)  16384   1056     11
  */
+<<<<<<< HEAD
 static int __devinit dataflash_probe(struct spi_device *spi)
+=======
+static int dataflash_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 	struct flash_info	*info;
@@ -849,8 +1170,12 @@ static int __devinit dataflash_probe(struct spi_device *spi)
 	 */
 	status = dataflash_status(spi);
 	if (status <= 0 || status == 0xff) {
+<<<<<<< HEAD
 		pr_debug("%s: status error %d\n",
 				dev_name(&spi->dev), status);
+=======
+		dev_dbg(&spi->dev, "status error %d\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status == 0 || status == 0xff)
 			status = -ENODEV;
 		return status;
@@ -885,18 +1210,27 @@ static int __devinit dataflash_probe(struct spi_device *spi)
 		break;
 	/* obsolete AT45DB1282 not (yet?) supported */
 	default:
+<<<<<<< HEAD
 		pr_debug("%s: unsupported device (%x)\n", dev_name(&spi->dev),
+=======
+		dev_info(&spi->dev, "unsupported device (%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status & 0x3c);
 		status = -ENODEV;
 	}
 
 	if (status < 0)
+<<<<<<< HEAD
 		pr_debug("%s: add_dataflash --> %d\n", dev_name(&spi->dev),
 				status);
+=======
+		dev_dbg(&spi->dev, "add_dataflash --> %d\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
 
+<<<<<<< HEAD
 static int __devexit dataflash_remove(struct spi_device *spi)
 {
 	struct dataflash	*flash = dev_get_drvdata(&spi->dev);
@@ -910,17 +1244,36 @@ static int __devexit dataflash_remove(struct spi_device *spi)
 		kfree(flash);
 	}
 	return status;
+=======
+static void dataflash_remove(struct spi_device *spi)
+{
+	struct dataflash	*flash = spi_get_drvdata(spi);
+
+	dev_dbg(&spi->dev, "remove\n");
+
+	WARN_ON(mtd_device_unregister(&flash->mtd));
+
+	kfree(flash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver dataflash_driver = {
 	.driver = {
 		.name		= "mtd_dataflash",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 		.of_match_table = dataflash_dt_ids,
 	},
 
 	.probe		= dataflash_probe,
 	.remove		= __devexit_p(dataflash_remove),
+=======
+		.of_match_table = of_match_ptr(dataflash_dt_ids),
+	},
+	.probe		= dataflash_probe,
+	.remove		= dataflash_remove,
+	.id_table	= dataflash_spi_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME:  investigate suspend and resume... */
 };

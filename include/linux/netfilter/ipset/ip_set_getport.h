@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _IP_SET_GETPORT_H
 #define _IP_SET_GETPORT_H
 
@@ -5,6 +6,20 @@ extern bool ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
 				__be16 *port, u8 *proto);
 
 #if defined(CONFIG_IP6_NF_IPTABLES) || defined(CONFIG_IP6_NF_IPTABLES_MODULE)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _IP_SET_GETPORT_H
+#define _IP_SET_GETPORT_H
+
+#include <linux/skbuff.h>
+#include <linux/types.h>
+#include <uapi/linux/in.h>
+
+extern bool ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
+				__be16 *port, u8 *proto);
+
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern bool ip_set_get_ip6_port(const struct sk_buff *skb, bool src,
 				__be16 *port, u8 *proto);
 #else
@@ -15,9 +30,12 @@ static inline bool ip_set_get_ip6_port(const struct sk_buff *skb, bool src,
 }
 #endif
 
+<<<<<<< HEAD
 extern bool ip_set_get_ip_port(const struct sk_buff *skb, u8 pf, bool src,
 				__be16 *port);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool ip_set_proto_with_ports(u8 proto)
 {
 	switch (proto) {

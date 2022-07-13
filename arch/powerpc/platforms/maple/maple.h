@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Declarations for maple-specific code.
  *
@@ -5,8 +9,17 @@
  */
 extern int maple_set_rtc_time(struct rtc_time *tm);
 extern void maple_get_rtc_time(struct rtc_time *tm);
+<<<<<<< HEAD
 extern unsigned long maple_get_boot_time(void);
+=======
+extern time64_t maple_get_boot_time(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void maple_calibrate_decr(void);
 extern void maple_pci_init(void);
 extern void maple_pci_irq_fixup(struct pci_dev *dev);
 extern int maple_pci_get_legacy_ide_irq(struct pci_dev *dev, int channel);
+<<<<<<< HEAD
+=======
+
+extern struct pci_controller_ops maple_pci_controller_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

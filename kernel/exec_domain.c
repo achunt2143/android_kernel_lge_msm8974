@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handling of different ABIs (personalities).
  *
@@ -18,6 +22,7 @@
 #include <linux/syscalls.h>
 #include <linux/sysctl.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/fs_struct.h>
 
 
@@ -144,10 +149,13 @@ int __set_personality(unsigned int personality)
 
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PROC_FS
 static int execdomains_proc_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	struct exec_domain	*ep;
 
 	read_lock(&exec_domains_lock);
@@ -174,6 +182,15 @@ static const struct file_operations execdomains_proc_fops = {
 static int __init proc_execdomains_init(void)
 {
 	proc_create("execdomains", 0, NULL, &execdomains_proc_fops);
+=======
+	seq_puts(m, "0-0\tLinux           \t[kernel]\n");
+	return 0;
+}
+
+static int __init proc_execdomains_init(void)
+{
+	proc_create_single("execdomains", 0, NULL, execdomains_proc_show);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 module_init(proc_execdomains_init);
@@ -188,8 +205,11 @@ SYSCALL_DEFINE1(personality, unsigned int, personality)
 
 	return old;
 }
+<<<<<<< HEAD
 
 
 EXPORT_SYMBOL(register_exec_domain);
 EXPORT_SYMBOL(unregister_exec_domain);
 EXPORT_SYMBOL(__set_personality);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

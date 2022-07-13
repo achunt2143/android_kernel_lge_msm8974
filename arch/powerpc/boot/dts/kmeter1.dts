@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Keymile KMETER1 Device Tree Source
  *
  * 2008-2011 DENX Software Engineering GmbH
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -434,27 +441,47 @@
 				compatible = "fsl,ucc-mdio";
 
 				/* Piggy2 (UCC4, MDIO 0x00, RMII) */
+<<<<<<< HEAD
 				phy_piggy2: ethernet-phy@00 {
+=======
+				phy_piggy2: ethernet-phy@0 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x0>;
 				};
 
 				/* Eth-1 (UCC5, MDIO 0x08, RMII) */
+<<<<<<< HEAD
 				phy_eth1: ethernet-phy@08 {
+=======
+				phy_eth1: ethernet-phy@8 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x08>;
 				};
 
 				/* Eth-2 (UCC6, MDIO 0x09, RMII) */
+<<<<<<< HEAD
 				phy_eth2: ethernet-phy@09 {
+=======
+				phy_eth2: ethernet-phy@9 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x09>;
 				};
 
 				/* Eth-3 (UCC7, MDIO 0x0a, RMII) */
+<<<<<<< HEAD
 				phy_eth3: ethernet-phy@0a {
+=======
+				phy_eth3: ethernet-phy@a {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x0a>;
 				};
 
 				/* Eth-4 (UCC8, MDIO 0x0b, RMII) */
+<<<<<<< HEAD
 				phy_eth4: ethernet-phy@0b {
+=======
+				phy_eth4: ethernet-phy@b {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x0b>;
 				};
 

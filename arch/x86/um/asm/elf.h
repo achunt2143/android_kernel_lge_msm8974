@@ -6,7 +6,11 @@
 #define __UM_ELF_X86_H
 
 #include <asm/user.h>
+<<<<<<< HEAD
 #include "skas.h"
+=======
+#include <skas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_32
 
@@ -34,6 +38,7 @@
 #define ELF_ARCH        EM_386
 
 #define ELF_PLAT_INIT(regs, load_addr) do { \
+<<<<<<< HEAD
 	PT_REGS_EBX(regs) = 0; \
 	PT_REGS_ECX(regs) = 0; \
 	PT_REGS_EDX(regs) = 0; \
@@ -41,11 +46,21 @@
 	PT_REGS_EDI(regs) = 0; \
 	PT_REGS_EBP(regs) = 0; \
 	PT_REGS_EAX(regs) = 0; \
+=======
+	PT_REGS_BX(regs) = 0; \
+	PT_REGS_CX(regs) = 0; \
+	PT_REGS_DX(regs) = 0; \
+	PT_REGS_SI(regs) = 0; \
+	PT_REGS_DI(regs) = 0; \
+	PT_REGS_BP(regs) = 0; \
+	PT_REGS_AX(regs) = 0; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 /* Shamelessly stolen from include/asm-i386/elf.h */
 
 #define ELF_CORE_COPY_REGS(pr_reg, regs) do {	\
+<<<<<<< HEAD
 	pr_reg[0] = PT_REGS_EBX(regs);		\
 	pr_reg[1] = PT_REGS_ECX(regs);		\
 	pr_reg[2] = PT_REGS_EDX(regs);		\
@@ -53,6 +68,15 @@
 	pr_reg[4] = PT_REGS_EDI(regs);		\
 	pr_reg[5] = PT_REGS_EBP(regs);		\
 	pr_reg[6] = PT_REGS_EAX(regs);		\
+=======
+	pr_reg[0] = PT_REGS_BX(regs);		\
+	pr_reg[1] = PT_REGS_CX(regs);		\
+	pr_reg[2] = PT_REGS_DX(regs);		\
+	pr_reg[3] = PT_REGS_SI(regs);		\
+	pr_reg[4] = PT_REGS_DI(regs);		\
+	pr_reg[5] = PT_REGS_BP(regs);		\
+	pr_reg[6] = PT_REGS_AX(regs);		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_reg[7] = PT_REGS_DS(regs);		\
 	pr_reg[8] = PT_REGS_ES(regs);		\
 	/* fake once used fs and gs selectors? */	\
@@ -116,8 +140,12 @@ do {								\
 #define R_X86_64_PC16		13	/* 16 bit sign extended pc relative */
 #define R_X86_64_8		14	/* Direct 8 bit sign extended  */
 #define R_X86_64_PC8		15	/* 8 bit sign extended pc relative */
+<<<<<<< HEAD
 
 #define R_X86_64_NUM		16
+=======
+#define R_X86_64_PC64		24	/* Place relative 64-bit signed */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is used to ensure we don't load something for the wrong architecture.
@@ -130,6 +158,7 @@ do {								\
 #define ELF_ARCH        EM_X86_64
 
 #define ELF_PLAT_INIT(regs, load_addr)    do { \
+<<<<<<< HEAD
 	PT_REGS_RBX(regs) = 0; \
 	PT_REGS_RCX(regs) = 0; \
 	PT_REGS_RDX(regs) = 0; \
@@ -137,6 +166,15 @@ do {								\
 	PT_REGS_RDI(regs) = 0; \
 	PT_REGS_RBP(regs) = 0; \
 	PT_REGS_RAX(regs) = 0; \
+=======
+	PT_REGS_BX(regs) = 0; \
+	PT_REGS_CX(regs) = 0; \
+	PT_REGS_DX(regs) = 0; \
+	PT_REGS_SI(regs) = 0; \
+	PT_REGS_DI(regs) = 0; \
+	PT_REGS_BP(regs) = 0; \
+	PT_REGS_AX(regs) = 0; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PT_REGS_R8(regs) = 0; \
 	PT_REGS_R9(regs) = 0; \
 	PT_REGS_R10(regs) = 0; \
@@ -169,8 +207,13 @@ do {								\
 	(pr_reg)[18] = (_regs)->regs.gp[18];			\
 	(pr_reg)[19] = (_regs)->regs.gp[19];			\
 	(pr_reg)[20] = (_regs)->regs.gp[20];			\
+<<<<<<< HEAD
 	(pr_reg)[21] = current->thread.arch.fs;			\
 	(pr_reg)[22] = 0;					\
+=======
+	(pr_reg)[21] = (_regs)->regs.gp[21];			\
+	(pr_reg)[22] = (_regs)->regs.gp[22];			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(pr_reg)[23] = 0;					\
 	(pr_reg)[24] = 0;					\
 	(pr_reg)[25] = 0;					\
@@ -195,11 +238,16 @@ extern unsigned long um_vdso_addr;
 
 typedef unsigned long elf_greg_t;
 
+<<<<<<< HEAD
 #define ELF_NGREG (sizeof (struct user_regs_struct) / sizeof(elf_greg_t))
+=======
+#define ELF_NGREG (sizeof(struct user_regs_struct) / sizeof(elf_greg_t))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 
 typedef struct user_i387_struct elf_fpregset_t;
 
+<<<<<<< HEAD
 #define task_pt_regs(t) (&(t)->thread.regs)
 
 struct task_struct;
@@ -211,11 +259,22 @@ extern int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu);
 #define ELF_EXEC_PAGESIZE 4096
 
 #define ELF_ET_DYN_BASE (2 * TASK_SIZE / 3)
+=======
+struct task_struct;
+
+#define ELF_EXEC_PAGESIZE 4096
+
+#define ELF_ET_DYN_BASE (TASK_SIZE / 3 * 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern long elf_aux_hwcap;
 #define ELF_HWCAP (elf_aux_hwcap)
 
+<<<<<<< HEAD
 #define SET_PERSONALITY(ex) do ; while(0)
 #define __HAVE_ARCH_GATE_AREA 1
+=======
+#define SET_PERSONALITY(ex) do {} while(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

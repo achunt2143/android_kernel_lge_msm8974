@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/mm.h>
 #include <asm/addrspace.h>
@@ -23,7 +33,11 @@
 #define LTQ_PCI_CFG_DEVNUM_SHF 11
 #define LTQ_PCI_CFG_FUNNUM_SHF 8
 
+<<<<<<< HEAD
 #define PCI_ACCESS_READ  0
+=======
+#define PCI_ACCESS_READ	 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_ACCESS_WRITE 1
 
 static int ltq_pci_config_access(unsigned char access_type, struct pci_bus *bus,

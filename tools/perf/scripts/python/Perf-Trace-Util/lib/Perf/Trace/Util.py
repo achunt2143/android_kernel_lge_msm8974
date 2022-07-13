@@ -5,6 +5,10 @@
 # This software may be distributed under the terms of the GNU General
 # Public License ("GPL") version 2 as published by the Free Software
 # Foundation.
+<<<<<<< HEAD
+=======
+from __future__ import print_function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 import errno, os
 
@@ -33,7 +37,11 @@ def nsecs_str(nsecs):
     return str
 
 def add_stats(dict, key, value):
+<<<<<<< HEAD
 	if not dict.has_key(key):
+=======
+	if key not in dict:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dict[key] = (value, value, value, 1)
 	else:
 		min, max, avg, count = dict[key]
@@ -53,10 +61,18 @@ try:
 	import audit
 	machine_to_id = {
 		'x86_64': audit.MACH_86_64,
+<<<<<<< HEAD
+=======
+		'aarch64': audit.MACH_AARCH64,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		'alpha'	: audit.MACH_ALPHA,
 		'ia64'	: audit.MACH_IA64,
 		'ppc'	: audit.MACH_PPC,
 		'ppc64'	: audit.MACH_PPC64,
+<<<<<<< HEAD
+=======
+		'ppc64le' : audit.MACH_PPC64LE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		's390'	: audit.MACH_S390,
 		's390x'	: audit.MACH_S390X,
 		'i386'	: audit.MACH_X86,
@@ -71,7 +87,14 @@ try:
 except:
 	if not audit_package_warned:
 		audit_package_warned = True
+<<<<<<< HEAD
 		print "Install the audit-libs-python package to get syscall names"
+=======
+		print("Install the python-audit package to get syscall names.\n"
+                    "For example:\n  # apt-get install python3-audit (Ubuntu)"
+                    "\n  # yum install python3-audit (Fedora)"
+                    "\n  etc.\n")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 def syscall_name(id):
 	try:

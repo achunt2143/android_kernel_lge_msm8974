@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # NOTE! Don't add files that are generated in specific
 # subdirectories here. Add them in the ".gitignore" file
 # in that subdirectory instead.
 #
+<<<<<<< HEAD
 # NOTE! Please use 'git ls-files -i --exclude-standard'
 # command after changing this file, to see if there are
 # any tracked files which get ignored after the change.
@@ -32,10 +37,63 @@ modules.builtin
 *.lzo
 *.patch
 *.gcno
+=======
+# NOTE! Please use 'git ls-files -i -c --exclude-per-directory=.gitignore'
+# command after changing this file, to see if there are
+# any tracked files which get ignored after the change.
+#
+# Normal rules (sorted alphabetically)
+#
+.*
+*.a
+*.asn1.[ch]
+*.bin
+*.bz2
+*.c.[012]*.*
+*.dt.yaml
+*.dtb
+*.dtbo
+*.dtb.S
+*.dtbo.S
+*.dwo
+*.elf
+*.gcno
+*.gz
+*.i
+*.ko
+*.lex.c
+*.ll
+*.lst
+*.lz4
+*.lzma
+*.lzo
+*.mod
+*.mod.c
+*.o
+*.o.*
+*.patch
+*.rmeta
+*.rpm
+*.rsi
+*.s
+*.so
+*.so.dbg
+*.su
+*.symtypes
+*.symversions
+*.tab.[ch]
+*.tar
+*.xz
+*.zst
+Module.symvers
+dtbs-list
+modules.order
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Top-level generic files
 #
+<<<<<<< HEAD
 /tags
 /TAGS
 /linux
@@ -44,6 +102,26 @@ modules.builtin
 /System.map
 /Module.markers
 /Module.symvers
+=======
+/linux
+/modules-only.symvers
+/vmlinux
+/vmlinux.32
+/vmlinux.map
+/vmlinux.symvers
+/vmlinux-gdb.py
+/vmlinuz
+/System.map
+/Module.markers
+/modules.builtin
+/modules.builtin.modinfo
+/modules.nsdeps
+
+#
+# RPM spec file (make rpm-pkg)
+#
+/rpmbuild/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Debian directory (make deb-pkg)
@@ -51,18 +129,48 @@ modules.builtin
 /debian/
 
 #
+<<<<<<< HEAD
 # git files that we don't want to ignore even it they are dot-files
 #
 !.gitignore
 !.mailmap
+=======
+# Snap directory (make snap-pkg)
+#
+/snap/
+
+#
+# tar directory (make tar*-pkg)
+#
+/tar-install/
+
+#
+# We don't want to ignore the following even if they are dot-files
+#
+!.clang-format
+!.cocciconfig
+!.editorconfig
+!.get_maintainer.ignore
+!.gitattributes
+!.gitignore
+!.kunitconfig
+!.mailmap
+!.rustfmt.toml
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Generated include files
 #
+<<<<<<< HEAD
 include/config
 include/linux/version.h
 include/generated
 arch/*/include/generated
+=======
+/include/config/
+/include/generated/
+/arch/*/include/generated/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # stgit generated dirs
 patches-*
@@ -71,6 +179,13 @@ patches-*
 patches
 series
 
+<<<<<<< HEAD
+=======
+# ctags files
+tags
+TAGS
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # cscope files
 cscope.*
 ncscope.*
@@ -81,6 +196,47 @@ GRTAGS
 GSYMS
 GTAGS
 
+<<<<<<< HEAD
 *.orig
 *~
 \#*#
+=======
+# id-utils files
+ID
+
+*.orig
+*~
+\#*#
+
+#
+# Leavings from module signing
+#
+extra_certificates
+signing_key.pem
+signing_key.priv
+signing_key.x509
+x509.genkey
+
+# Kconfig presets
+/all.config
+/alldef.config
+/allmod.config
+/allno.config
+/allrandom.config
+/allyes.config
+
+# Kconfig savedefconfig output
+/defconfig
+
+# Kdevelop4
+*.kdev4
+
+# Clang's compilation database file
+/compile_commands.json
+
+# Documentation toolchain
+sphinx_*/
+
+# Rust analyzer configuration
+/rust-project.json
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Interface for OSS sequencer emulation
  *
  *  Copyright (C) 2000 Uros Bizjak <uros@kss-loka.si>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -27,6 +34,7 @@ static int snd_opl3_ioctl_seq_oss(struct snd_seq_oss_arg *arg, unsigned int cmd,
 static int snd_opl3_load_patch_seq_oss(struct snd_seq_oss_arg *arg, int format, const char __user *buf, int offs, int count);
 static int snd_opl3_reset_seq_oss(struct snd_seq_oss_arg *arg);
 
+<<<<<<< HEAD
 /* */
 
 static inline mm_segment_t snd_enter_user(void)
@@ -46,6 +54,11 @@ static inline void snd_leave_user(mm_segment_t fs)
 extern struct snd_midi_op opl3_ops;
 
 static struct snd_seq_oss_callback oss_callback = {
+=======
+/* operators */
+
+static const struct snd_seq_oss_callback oss_callback = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner = 	THIS_MODULE,
 	.open =		snd_opl3_open_seq_oss,
 	.close =	snd_opl3_close_seq_oss,
@@ -126,7 +139,11 @@ void snd_opl3_init_seq_oss(struct snd_opl3 *opl3, char *name)
 		return;
 
 	opl3->oss_seq_dev = dev;
+<<<<<<< HEAD
 	strlcpy(dev->name, name, sizeof(dev->name));
+=======
+	strscpy(dev->name, name, sizeof(dev->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arg = SNDRV_SEQ_DEVICE_ARGPTR(dev);
 	arg->type = SYNTH_TYPE_FM;
 	if (opl3->hardware < OPL3_HW_OPL3) {
@@ -165,7 +182,12 @@ static int snd_opl3_open_seq_oss(struct snd_seq_oss_arg *arg, void *closure)
 	if (snd_BUG_ON(!arg))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if ((err = snd_opl3_synth_setup(opl3)) < 0)
+=======
+	err = snd_opl3_synth_setup(opl3);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* fill the argument data */
@@ -173,7 +195,12 @@ static int snd_opl3_open_seq_oss(struct snd_seq_oss_arg *arg, void *closure)
 	arg->addr.client = opl3->oss_chset->client;
 	arg->addr.port = opl3->oss_chset->port;
 
+<<<<<<< HEAD
 	if ((err = snd_opl3_synth_use_inc(opl3)) < 0)
+=======
+	err = snd_opl3_synth_use_inc(opl3);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	opl3->synth_mode = SNDRV_OPL3_MODE_SYNTH;
@@ -247,11 +274,16 @@ static int snd_opl3_load_patch_seq_oss(struct snd_seq_oss_arg *arg, int format,
 static int snd_opl3_ioctl_seq_oss(struct snd_seq_oss_arg *arg, unsigned int cmd,
 				  unsigned long ioarg)
 {
+<<<<<<< HEAD
 	struct snd_opl3 *opl3;
 
 	if (snd_BUG_ON(!arg))
 		return -ENXIO;
 	opl3 = arg->private_data;
+=======
+	if (snd_BUG_ON(!arg))
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 		case SNDCTL_FM_LOAD_INSTR:
 			snd_printk(KERN_ERR "OPL3: "
@@ -275,11 +307,16 @@ static int snd_opl3_ioctl_seq_oss(struct snd_seq_oss_arg *arg, unsigned int cmd,
 /* reset device */
 static int snd_opl3_reset_seq_oss(struct snd_seq_oss_arg *arg)
 {
+<<<<<<< HEAD
 	struct snd_opl3 *opl3;
 
 	if (snd_BUG_ON(!arg))
 		return -ENXIO;
 	opl3 = arg->private_data;
+=======
+	if (snd_BUG_ON(!arg))
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

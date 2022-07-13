@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCMCIA socket code for the MyCable XXS1500 system.
  *
@@ -11,6 +15,10 @@
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 #include <linux/resource.h>
@@ -204,7 +212,11 @@ static struct pccard_operations xxs1500_pcmcia_operations = {
 	.set_mem_map		= au1x00_pcmcia_set_mem_map,
 };
 
+<<<<<<< HEAD
 static int __devinit xxs1500_pcmcia_probe(struct platform_device *pdev)
+=======
+static int xxs1500_pcmcia_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xxs1500_pcmcia_sock *sock;
 	struct resource *r;
@@ -299,7 +311,11 @@ out0:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit xxs1500_pcmcia_remove(struct platform_device *pdev)
+=======
+static void xxs1500_pcmcia_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xxs1500_pcmcia_sock *sock = platform_get_drvdata(pdev);
 
@@ -307,17 +323,26 @@ static int __devexit xxs1500_pcmcia_remove(struct platform_device *pdev)
 	free_irq(gpio_to_irq(GPIO_CDA), sock);
 	iounmap((void *)(sock->virt_io + (u32)mips_io_port_base));
 	kfree(sock);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver xxs1500_pcmcia_socket_driver = {
 	.driver	= {
 		.name	= "xxs1500_pcmcia",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= xxs1500_pcmcia_probe,
 	.remove		= __devexit_p(xxs1500_pcmcia_remove),
+=======
+	},
+	.probe		= xxs1500_pcmcia_probe,
+	.remove_new	= xxs1500_pcmcia_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(xxs1500_pcmcia_socket_driver);

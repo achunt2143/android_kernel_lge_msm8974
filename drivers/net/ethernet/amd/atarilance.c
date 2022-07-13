@@ -42,8 +42,13 @@
 
 */
 
+<<<<<<< HEAD
 static char version[] = "atarilance.c: v1.3 04/04/96 "
 					   "Roman.Hodek@informatik.uni-erlangen.de\n";
+=======
+static const char version[] = "atarilance.c: v1.3 04/04/96 "
+			      "Roman.Hodek@informatik.uni-erlangen.de\n";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -156,7 +161,11 @@ struct lance_memory {
 	struct lance_init_block	init;
 	struct lance_tx_head	tx_head[TX_RING_SIZE];
 	struct lance_rx_head	rx_head[RX_RING_SIZE];
+<<<<<<< HEAD
 	char					packet_area[0];	/* packet data follow after the
+=======
+	char					packet_area[];	/* packet data follow after the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 											 * init block and the ring
 											 * descriptors and are located
 											 * at runtime */
@@ -339,13 +348,22 @@ static unsigned long lance_probe1( struct net_device *dev, struct lance_addr
                                    *init_rec );
 static int lance_open( struct net_device *dev );
 static void lance_init_ring( struct net_device *dev );
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev );
+=======
+static netdev_tx_t lance_start_xmit(struct sk_buff *skb,
+				    struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t lance_interrupt( int irq, void *dev_id );
 static int lance_rx( struct net_device *dev );
 static int lance_close( struct net_device *dev );
 static void set_multicast_list( struct net_device *dev );
 static int lance_set_mac_address( struct net_device *dev, void *addr );
+<<<<<<< HEAD
 static void lance_tx_timeout (struct net_device *dev);
+=======
+static void lance_tx_timeout (struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************* End of Prototypes **************************/
 
@@ -366,7 +384,11 @@ static void *slow_memcpy( void *dst, const void *src, size_t len )
 }
 
 
+<<<<<<< HEAD
 struct net_device * __init atarilance_probe(int unit)
+=======
+static struct net_device * __init atarilance_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	static int found;
@@ -381,10 +403,13 @@ struct net_device * __init atarilance_probe(int unit)
 	dev = alloc_etherdev(sizeof(struct lance_private));
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
+<<<<<<< HEAD
 	if (unit >= 0) {
 		sprintf(dev->name, "eth%d", unit);
 		netdev_boot_setup_check(dev);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for( i = 0; i < N_LANCE_ADDR; ++i ) {
 		if (lance_probe1( dev, &lance_addr_list[i] )) {
@@ -460,7 +485,10 @@ static const struct net_device_ops lance_netdev_ops = {
 	.ndo_set_mac_address	= lance_set_mac_address,
 	.ndo_tx_timeout		= lance_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static unsigned long __init lance_probe1( struct net_device *dev,
@@ -475,6 +503,10 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 	int 					i;
 	static int 				did_version;
 	unsigned short			save1, save2;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PROBE_PRINT(( "Probing for Lance card at mem %#lx io %#lx\n",
 				  (long)memaddr, (long)ioaddr ));
@@ -553,6 +585,7 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 	if (lp->cardtype == PAM_CARD ||
 		memaddr == (unsigned short *)0xffe00000) {
 		/* PAMs card and Riebl on ST use level 5 autovector */
+<<<<<<< HEAD
 		if (request_irq(IRQ_AUTO_5, lance_interrupt, IRQ_TYPE_PRIO,
 		            "PAM,Riebl-ST Ethernet", dev)) {
 			printk( "Lance: request for irq %d failed\n", IRQ_AUTO_5 );
@@ -566,13 +599,31 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 		 * IRQ_MACHSPEC bit would be cut off...)
 		 */
 		unsigned long irq = atari_register_vme_int();
+=======
+		if (request_irq(IRQ_AUTO_5, lance_interrupt, 0,
+				"PAM,Riebl-ST Ethernet", dev)) {
+			printk( "Lance: request for irq %d failed\n", IRQ_AUTO_5 );
+			return 0;
+		}
+		dev->irq = IRQ_AUTO_5;
+	}
+	else {
+		/* For VME-RieblCards, request a free VME int */
+		unsigned int irq = atari_register_vme_int();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!irq) {
 			printk( "Lance: request for VME interrupt failed\n" );
 			return 0;
 		}
+<<<<<<< HEAD
 		if (request_irq(irq, lance_interrupt, IRQ_TYPE_PRIO,
 		            "Riebl-VME Ethernet", dev)) {
 			printk( "Lance: request for irq %ld failed\n", irq );
+=======
+		if (request_irq(irq, lance_interrupt, 0, "Riebl-VME Ethernet",
+				dev)) {
+			printk( "Lance: request for irq %u failed\n", irq );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		dev->irq = irq;
@@ -587,6 +638,7 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 
 	/* Get the ethernet address */
 	switch( lp->cardtype ) {
+<<<<<<< HEAD
 	  case OLD_RIEBL:
 		/* No ethernet address! (Set some default address) */
 		memcpy( dev->dev_addr, OldRieblDefHwaddr, 6 );
@@ -600,6 +652,23 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 			dev->dev_addr[i] =
 				((((unsigned short *)MEM)[i*2] & 0x0f) << 4) |
 				((((unsigned short *)MEM)[i*2+1] & 0x0f));
+=======
+	case OLD_RIEBL:
+		/* No ethernet address! (Set some default address) */
+		eth_hw_addr_set(dev, OldRieblDefHwaddr);
+		break;
+	case NEW_RIEBL:
+		lp->memcpy_f(addr, RIEBL_HWADDR_ADDR, ETH_ALEN);
+		eth_hw_addr_set(dev, addr);
+		break;
+	case PAM_CARD:
+		i = IO->eeprom;
+		for( i = 0; i < 6; ++i )
+			addr[i] =
+				((((unsigned short *)MEM)[i*2] & 0x0f) << 4) |
+				((((unsigned short *)MEM)[i*2+1] & 0x0f));
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = IO->mem;
 		break;
 	}
@@ -709,7 +778,11 @@ static void lance_init_ring( struct net_device *dev )
 		CHECK_OFFSET(offset);
 		MEM->tx_head[i].base = offset;
 		MEM->tx_head[i].flag = TMD1_OWN_HOST;
+<<<<<<< HEAD
  		MEM->tx_head[i].base_hi = 0;
+=======
+		MEM->tx_head[i].base_hi = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		MEM->tx_head[i].length = 0;
 		MEM->tx_head[i].misc = 0;
 		offset += PKT_BUF_SZ;
@@ -730,7 +803,11 @@ static void lance_init_ring( struct net_device *dev )
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
 
 
+<<<<<<< HEAD
 static void lance_tx_timeout (struct net_device *dev)
+=======
+static void lance_tx_timeout (struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 	struct lance_ioreg	 *IO = lp->iobase;
@@ -767,13 +844,22 @@ static void lance_tx_timeout (struct net_device *dev)
 	/* lance_restart, essentially */
 	lance_init_ring(dev);
 	REGA( CSR0 ) = CSR0_INEA | CSR0_INIT | CSR0_STRT;
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 }
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
 
+<<<<<<< HEAD
 static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev )
+=======
+static netdev_tx_t
+lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lance_private *lp = netdev_priv(dev);
 	struct lance_ioreg	 *IO = lp->iobase;
@@ -827,7 +913,11 @@ static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev )
 	lp->memcpy_f( PKTBUF_ADDR(head), (void *)skb->data, skb->len );
 	head->flag = TMD1_OWN_CHIP | TMD1_ENP | TMD1_STP;
 	dev->stats.tx_bytes += skb->len;
+<<<<<<< HEAD
 	dev_kfree_skb( skb );
+=======
+	dev_consume_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->cur_tx++;
 	while( lp->cur_tx >= TX_RING_SIZE && lp->dirty_tx >= TX_RING_SIZE ) {
 		lp->cur_tx -= TX_RING_SIZE;
@@ -857,7 +947,11 @@ static irqreturn_t lance_interrupt( int irq, void *dev_id )
 	int csr0, boguscnt = 10;
 	int handled = 0;
 
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DPRINTK( 1, ( "lance_interrupt(): interrupt for unknown device.\n" ));
 		return IRQ_NONE;
 	}
@@ -998,9 +1092,13 @@ static int lance_rx( struct net_device *dev )
 			}
 			else {
 				skb = netdev_alloc_skb(dev, pkt_len + 2);
+<<<<<<< HEAD
 				if (skb == NULL) {
 					DPRINTK( 1, ( "%s: Memory squeeze, deferring packet.\n",
 								  dev->name ));
+=======
+				if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					for( i = 0; i < RX_RING_SIZE; i++ )
 						if (MEM->rx_head[(entry+i) & RX_RING_MOD_MASK].flag &
 							RMD1_OWN_CHIP)
@@ -1018,6 +1116,7 @@ static int lance_rx( struct net_device *dev )
 					u_char *data = PKTBUF_ADDR(head);
 
 					printk(KERN_DEBUG "%s: RX pkt type 0x%04x from %pM to %pM "
+<<<<<<< HEAD
 						   "data %02x %02x %02x %02x %02x %02x %02x %02x "
 						   "len %d\n",
 						   dev->name, ((u_short *)data)[6],
@@ -1025,6 +1124,11 @@ static int lance_rx( struct net_device *dev )
 						   data[15], data[16], data[17], data[18],
 						   data[19], data[20], data[21], data[22],
 						   pkt_len);
+=======
+						   "data %8ph len %d\n",
+						   dev->name, ((u_short *)data)[6],
+						   &data[6], data, &data[15], pkt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				skb_reserve( skb, 2 );	/* 16 byte align */
@@ -1135,7 +1239,11 @@ static int lance_set_mac_address( struct net_device *dev, void *addr )
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	memcpy( dev->dev_addr, saddr->sa_data, dev->addr_len );
+=======
+	eth_hw_addr_set(dev, saddr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for( i = 0; i < 6; i++ )
 		MEM->init.hwaddr[i] = dev->dev_addr[i^1]; /* <- 16 bit swap! */
 	lp->memcpy_f( RIEBL_HWADDR_ADDR, dev->dev_addr, 6 );
@@ -1145,16 +1253,24 @@ static int lance_set_mac_address( struct net_device *dev, void *addr )
 	return 0;
 }
 
+<<<<<<< HEAD
 
 #ifdef MODULE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct net_device *atarilance_dev;
 
 static int __init atarilance_module_init(void)
 {
+<<<<<<< HEAD
 	atarilance_dev = atarilance_probe(-1);
 	if (IS_ERR(atarilance_dev))
 		return PTR_ERR(atarilance_dev);
 	return 0;
+=======
+	atarilance_dev = atarilance_probe();
+	return PTR_ERR_OR_ZERO(atarilance_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit atarilance_module_exit(void)
@@ -1165,6 +1281,7 @@ static void __exit atarilance_module_exit(void)
 }
 module_init(atarilance_module_init);
 module_exit(atarilance_module_exit);
+<<<<<<< HEAD
 #endif /* MODULE */
 
 
@@ -1174,3 +1291,5 @@ module_exit(atarilance_module_exit);
  *  tab-width: 4
  * End:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -84,6 +84,10 @@ struct tc_dev {
 					   device. */
 	struct device	dev;		/* Generic device interface. */
 	struct resource	resource;	/* Address space of this device. */
+<<<<<<< HEAD
+=======
+	u64		dma_mask;	/* DMA addressable range. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char		vendor[9];
 	char		name[9];
 	char		firmware[9];
@@ -119,7 +123,11 @@ static inline unsigned long tc_get_speed(struct tc_bus *tbus)
 
 #ifdef CONFIG_TC
 
+<<<<<<< HEAD
 extern struct bus_type tc_bus_type;
+=======
+extern const struct bus_type tc_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int tc_register_driver(struct tc_driver *tdrv);
 extern void tc_unregister_driver(struct tc_driver *tdrv);

@@ -1,5 +1,6 @@
 * Freescale 83xx and 512x PCI bridges
 
+<<<<<<< HEAD
 Freescale 83xx and 512x SOCs include the same pci bridge core.
 
 83xx/512x specific notes:
@@ -10,6 +11,17 @@ Freescale 83xx and 512x SOCs include the same pci bridge core.
 Example (MPC8313ERDB)
 	pci0: pci@e0008500 {
 		cell-index = <1>;
+=======
+Freescale 83xx and 512x SOCs include the same PCI bridge core.
+
+83xx/512x specific notes:
+- reg: should contain two address length tuples
+    The first is for the internal PCI bridge registers
+    The second is for the PCI config space access registers
+
+Example (MPC8313ERDB)
+	pci0: pci@e0008500 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
 				/* IDSEL 0x0E -mini PCI */

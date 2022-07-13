@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _I8042_IP22_H
 #define _I8042_IP22_H
 
 #include <asm/sgi/ioc.h>
 #include <asm/sgi/ip22.h>
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Names.
@@ -61,7 +68,11 @@ static inline int i8042_platform_init(void)
 		return -EBUSY;
 #endif
 
+<<<<<<< HEAD
 	i8042_reset = 1;
+=======
+	i8042_reset = I8042_RESET_ALWAYS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

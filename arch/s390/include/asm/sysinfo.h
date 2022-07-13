@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * definition for store system information stsi
  *
@@ -6,6 +7,13 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (version 2 only)
  * as published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * definition for store system information stsi
+ *
+ * Copyright IBM Corp. 2001, 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *    Author(s): Ulrich Weigand <weigand@de.ibm.com>
  *		 Christian Borntraeger <borntraeger@de.ibm.com>
@@ -15,12 +23,26 @@
 #define __ASM_S390_SYSINFO_H
 
 #include <asm/bitsperlong.h>
+<<<<<<< HEAD
 
 struct sysinfo_1_1_1 {
 	unsigned short :16;
 	unsigned char ccr;
 	unsigned char cai;
 	char reserved_0[28];
+=======
+#include <linux/uuid.h>
+
+struct sysinfo_1_1_1 {
+	unsigned char p:1;
+	unsigned char :6;
+	unsigned char t:1;
+	unsigned char :8;
+	unsigned char ccr;
+	unsigned char cai;
+	char reserved_0[20];
+	unsigned long lic;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char manufacturer[16];
 	char type[4];
 	char reserved_1[12];
@@ -30,9 +52,24 @@ struct sysinfo_1_1_1 {
 	char model[16];
 	char model_perm_cap[16];
 	char model_temp_cap[16];
+<<<<<<< HEAD
 	char model_cap_rating[4];
 	char model_perm_cap_rating[4];
 	char model_temp_cap_rating[4];
+=======
+	unsigned int model_cap_rating;
+	unsigned int model_perm_cap_rating;
+	unsigned int model_temp_cap_rating;
+	unsigned char typepct[5];
+	unsigned char reserved_2[3];
+	unsigned int ncr;
+	unsigned int npr;
+	unsigned int ntr;
+	char reserved_3[4];
+	char model_var_cap[16];
+	unsigned int model_var_cap_rating;
+	unsigned int nvr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sysinfo_1_2_1 {
@@ -47,19 +84,38 @@ struct sysinfo_1_2_2 {
 	char format;
 	char reserved_0[1];
 	unsigned short acc_offset;
+<<<<<<< HEAD
 	char reserved_1[24];
 	unsigned int secondary_capability;
+=======
+	unsigned char mt_installed :1;
+	unsigned char :2;
+	unsigned char mt_stid :5;
+	unsigned char :3;
+	unsigned char mt_gtid :5;
+	char reserved_1[18];
+	unsigned int nominal_cap;
+	unsigned int secondary_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int capability;
 	unsigned short cpus_total;
 	unsigned short cpus_configured;
 	unsigned short cpus_standby;
 	unsigned short cpus_reserved;
+<<<<<<< HEAD
 	unsigned short adjustment[0];
+=======
+	unsigned short adjustment[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sysinfo_1_2_2_extension {
 	unsigned int alt_capability;
+<<<<<<< HEAD
 	unsigned short alt_adjustment[0];
+=======
+	unsigned short alt_adjustment[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sysinfo_2_2_1 {
@@ -81,9 +137,28 @@ struct sysinfo_2_2_2 {
 	unsigned short cpus_reserved;
 	char name[8];
 	unsigned int caf;
+<<<<<<< HEAD
 	char reserved_2[16];
 	unsigned short cpus_dedicated;
 	unsigned short cpus_shared;
+=======
+	char reserved_2[8];
+	unsigned char mt_installed :1;
+	unsigned char :2;
+	unsigned char mt_stid :5;
+	unsigned char :3;
+	unsigned char mt_gtid :5;
+	unsigned char :3;
+	unsigned char mt_psmtid :5;
+	char reserved_3[5];
+	unsigned short cpus_dedicated;
+	unsigned short cpus_shared;
+	char reserved_4[3];
+	unsigned char vsne;
+	uuid_t uuid;
+	char reserved_5[160];
+	char ext_name[256];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define LPAR_CHAR_DEDICATED	(1 << 7)
@@ -103,6 +178,7 @@ struct sysinfo_3_2_2 {
 		char name[8];
 		unsigned int caf;
 		char cpi[16];
+<<<<<<< HEAD
 		char reserved_1[24];
 
 	} vm[8];
@@ -123,12 +199,54 @@ struct topology_cpu {
 
 struct topology_container {
 	unsigned char reserved[7];
+=======
+		char reserved_1[3];
+		unsigned char evmne;
+		unsigned int reserved_2;
+		uuid_t uuid;
+	} vm[8];
+	char reserved_3[1504];
+	char ext_names[8][256];
+};
+
+extern int topology_max_mnest;
+
+/*
+ * Returns the maximum nesting level supported by the cpu topology code.
+ * The current maximum level is 4 which is the drawer level.
+ */
+static inline unsigned char topology_mnest_limit(void)
+{
+	return min(topology_max_mnest, 4);
+}
+
+#define TOPOLOGY_NR_MAG		6
+
+struct topology_core {
+	unsigned char nl;
+	unsigned char reserved0[3];
+	unsigned char :5;
+	unsigned char d:1;
+	unsigned char pp:2;
+	unsigned char reserved1;
+	unsigned short origin;
+	unsigned long mask;
+};
+
+struct topology_container {
+	unsigned char nl;
+	unsigned char reserved[6];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char id;
 };
 
 union topology_entry {
 	unsigned char nl;
+<<<<<<< HEAD
 	struct topology_cpu cpu;
+=======
+	struct topology_core cpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct topology_container container;
 };
 
@@ -139,6 +257,7 @@ struct sysinfo_15_1_x {
 	unsigned char reserved1;
 	unsigned char mnest;
 	unsigned char reserved2[4];
+<<<<<<< HEAD
 	union topology_entry tle[0];
 };
 
@@ -157,6 +276,12 @@ static inline int stsi(void *sysinfo, int fc, int sel1, int sel2)
 		: "cc", "memory");
 	return r0;
 }
+=======
+	union topology_entry tle[];
+};
+
+int stsi(void *sysinfo, int fc, int sel1, int sel2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Service level reporting interface.
@@ -169,4 +294,8 @@ struct service_level {
 int register_service_level(struct service_level *);
 int unregister_service_level(struct service_level *);
 
+<<<<<<< HEAD
+=======
+int sthyi_fill(void *dst, u64 *rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_S390_SYSINFO_H */

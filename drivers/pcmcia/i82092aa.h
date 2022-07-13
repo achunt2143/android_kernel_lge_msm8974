@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _INCLUDE_GUARD_i82092aa_H_
 #define _INCLUDE_GUARD_i82092aa_H_
 
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 /* Debuging defines */
 #ifdef NOTRACE
 #define enter(x)   printk("Enter: %s, %s line %i\n",x,__FILE__,__LINE__)
@@ -16,6 +21,8 @@
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* prototypes */
 
 static int  i82092aa_pci_probe(struct pci_dev *dev, const struct pci_device_id *id);

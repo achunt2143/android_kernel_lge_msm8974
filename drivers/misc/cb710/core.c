@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  cb710/core.c
  *
  *  Copyright by Michał Mirosław, 2008-2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +23,10 @@
 #include <linux/gfp.h>
 
 static DEFINE_IDA(cb710_ida);
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(cb710_ida_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void cb710_pci_update_config_reg(struct pci_dev *pdev,
 	int reg, uint32_t mask, uint32_t xor)
@@ -30,7 +40,11 @@ void cb710_pci_update_config_reg(struct pci_dev *pdev,
 EXPORT_SYMBOL_GPL(cb710_pci_update_config_reg);
 
 /* Some magic writes based on Windows driver init code */
+<<<<<<< HEAD
 static int __devinit cb710_pci_configure(struct pci_dev *pdev)
+=======
+static int cb710_pci_configure(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int devfn = PCI_DEVFN(PCI_SLOT(pdev->devfn), 0);
 	struct pci_dev *pdev0;
@@ -96,7 +110,11 @@ static void cb710_release_slot(struct device *dev)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit cb710_register_slot(struct cb710_chip *chip,
+=======
+static int cb710_register_slot(struct cb710_chip *chip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned slot_mask, unsigned io_offset, const char *name)
 {
 	int nr = chip->slots;
@@ -170,6 +188,7 @@ void cb710_set_irq_handler(struct cb710_slot *slot,
 }
 EXPORT_SYMBOL_GPL(cb710_set_irq_handler);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int cb710_suspend(struct pci_dev *pdev, pm_message_t state)
@@ -194,11 +213,27 @@ static int cb710_resume(struct pci_dev *pdev)
 	err = pcim_enable_device(pdev);
 	if (err)
 		return err;
+=======
+static int __maybe_unused cb710_suspend(struct device *dev_d)
+{
+	struct pci_dev *pdev = to_pci_dev(dev_d);
+	struct cb710_chip *chip = pci_get_drvdata(pdev);
+
+	devm_free_irq(&pdev->dev, pdev->irq, chip);
+	return 0;
+}
+
+static int __maybe_unused cb710_resume(struct device *dev_d)
+{
+	struct pci_dev *pdev = to_pci_dev(dev_d);
+	struct cb710_chip *chip = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return devm_request_irq(&pdev->dev, pdev->irq,
 		cb710_irq_handler, IRQF_SHARED, KBUILD_MODNAME, chip);
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 static int __devinit cb710_probe(struct pci_dev *pdev,
@@ -206,6 +241,12 @@ static int __devinit cb710_probe(struct pci_dev *pdev,
 {
 	struct cb710_chip *chip;
 	unsigned long flags;
+=======
+static int cb710_probe(struct pci_dev *pdev,
+	const struct pci_device_id *ent)
+{
+	struct cb710_chip *chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 	int err;
 	int n = 0;
@@ -232,8 +273,13 @@ static int __devinit cb710_probe(struct pci_dev *pdev,
 	if (val & CB710_SLOT_SM)
 		++n;
 
+<<<<<<< HEAD
 	chip = devm_kzalloc(&pdev->dev,
 		sizeof(*chip) + n * sizeof(*chip->slot), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&pdev->dev, struct_size(chip, slot, n),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chip)
 		return -ENOMEM;
 
@@ -256,6 +302,7 @@ static int __devinit cb710_probe(struct pci_dev *pdev,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	do {
 		if (!ida_pre_get(&cb710_ida, GFP_KERNEL))
 			return -ENOMEM;
@@ -268,6 +315,12 @@ static int __devinit cb710_probe(struct pci_dev *pdev,
 			return err;
 	} while (err);
 
+=======
+	err = ida_alloc(&cb710_ida, GFP_KERNEL);
+	if (err < 0)
+		return err;
+	chip->platform_id = err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&pdev->dev, "id %d, IO 0x%p, IRQ %d\n",
 		chip->platform_id, chip->iobase, pdev->irq);
@@ -305,10 +358,16 @@ unreg_mmc:
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit cb710_remove_one(struct pci_dev *pdev)
 {
 	struct cb710_chip *chip = pci_get_drvdata(pdev);
 	unsigned long flags;
+=======
+static void cb710_remove_one(struct pci_dev *pdev)
+{
+	struct cb710_chip *chip = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cb710_unregister_slot(chip, CB710_SLOT_SM);
 	cb710_unregister_slot(chip, CB710_SLOT_MS);
@@ -317,9 +376,13 @@ static void __devexit cb710_remove_one(struct pci_dev *pdev)
 	BUG_ON(atomic_read(&chip->slot_refs_count) != 0);
 #endif
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&cb710_ida_lock, flags);
 	ida_remove(&cb710_ida, chip->platform_id);
 	spin_unlock_irqrestore(&cb710_ida_lock, flags);
+=======
+	ida_free(&cb710_ida, chip->platform_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct pci_device_id cb710_pci_tbl[] = {
@@ -328,15 +391,25 @@ static const struct pci_device_id cb710_pci_tbl[] = {
 	{ 0, }
 };
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(cb710_pm_ops, cb710_suspend, cb710_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver cb710_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = cb710_pci_tbl,
 	.probe = cb710_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(cb710_remove_one),
 #ifdef CONFIG_PM
 	.suspend = cb710_suspend,
 	.resume = cb710_resume,
 #endif
+=======
+	.remove = cb710_remove_one,
+	.driver.pm = &cb710_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init cb710_init_module(void)

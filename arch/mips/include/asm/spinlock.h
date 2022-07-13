@@ -9,6 +9,7 @@
 #ifndef _ASM_SPINLOCK_H
 #define _ASM_SPINLOCK_H
 
+<<<<<<< HEAD
 #include <linux/compiler.h>
 
 #include <asm/barrier.h>
@@ -454,5 +455,25 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 #define arch_spin_relax(lock)	cpu_relax()
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
+=======
+#include <asm/processor.h>
+
+#include <asm-generic/qspinlock_types.h>
+
+#define	queued_spin_unlock queued_spin_unlock
+/**
+ * queued_spin_unlock - release a queued spinlock
+ * @lock : Pointer to queued spinlock structure
+ */
+static inline void queued_spin_unlock(struct qspinlock *lock)
+{
+	/* This could be optimised with ARCH_HAS_MMIOWB */
+	mmiowb();
+	smp_store_release(&lock->locked, 0);
+}
+
+#include <asm/qspinlock.h>
+#include <asm/qrwlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_SPINLOCK_H */

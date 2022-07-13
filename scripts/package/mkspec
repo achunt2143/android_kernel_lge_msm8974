@@ -1,7 +1,12 @@
 #!/bin/sh
 #
+<<<<<<< HEAD
 #	Output a simple RPM spec file that uses no fancy features requiring
 #	RPM v4. This is intended to work with any RPM distro.
+=======
+#	Output a simple RPM spec file.
+#	This version assumes a minimum of RPM 4.13
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 #	The only gothic bit here is redefining install_post to avoid
 #	stripping the symbols from files in the kernel which we want
@@ -9,6 +14,7 @@
 #	Patched for non-x86 by Opencon (L) 2002 <opencon@rio.skydome.net>
 #
 
+<<<<<<< HEAD
 # how we were called determines which rpms we build and how we build them
 if [ "$1" = "prebuilt" ]; then
 	PREBUILT=true
@@ -122,3 +128,24 @@ echo "%files headers"
 echo '%defattr (-, root, root)'
 echo "/usr/include"
 echo ""
+=======
+output=$1
+
+mkdir -p "$(dirname "${output}")"
+
+exec >"${output}"
+
+if grep -q CONFIG_MODULES=y include/config/auto.conf; then
+echo '%define with_devel %{?_without_devel: 0} %{?!_without_devel: 1}'
+else
+echo '%define with_devel 0'
+fi
+
+cat<<EOF
+%define ARCH ${ARCH}
+%define KERNELRELEASE ${KERNELRELEASE}
+%define pkg_release $("${srctree}/init/build-version")
+EOF
+
+cat "${srctree}/scripts/package/kernel.spec"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

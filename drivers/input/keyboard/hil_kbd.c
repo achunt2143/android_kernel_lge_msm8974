@@ -36,7 +36,10 @@
 #include <linux/serio.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/completion.h>
 #include <linux/slab.h>
 #include <linux/pci_ids.h>
@@ -474,7 +477,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -483,7 +490,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -492,7 +503,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	if (error)
 		goto bail1;
 
+<<<<<<< HEAD
 	init_completion(&dev->cmd_done);
+=======
+	reinit_completion(&dev->cmd_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio_write(serio, 0);
 	serio_write(serio, 0);
 	serio_write(serio, HIL_PKT_CMD >> 8);
@@ -513,6 +528,10 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 		    HIL_IDD_NUM_AXES_PER_SET(*idd)) {
 			printk(KERN_INFO PREFIX
 				"combo devices are not supported.\n");
+<<<<<<< HEAD
+=======
+			error = -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail1;
 		}
 
@@ -560,7 +579,11 @@ static int hil_dev_connect(struct serio *serio, struct serio_driver *drv)
 	return error;
 }
 
+<<<<<<< HEAD
 static struct serio_device_id hil_dev_ids[] = {
+=======
+static const struct serio_device_id hil_dev_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type = SERIO_HIL_MLC,
 		.proto = SERIO_HIL,
@@ -583,6 +606,7 @@ static struct serio_driver hil_serio_drv = {
 	.interrupt	= hil_dev_interrupt
 };
 
+<<<<<<< HEAD
 static int __init hil_dev_init(void)
 {
 	return serio_register_driver(&hil_serio_drv);
@@ -595,3 +619,6 @@ static void __exit hil_dev_exit(void)
 
 module_init(hil_dev_init);
 module_exit(hil_dev_exit);
+=======
+module_serio_driver(hil_serio_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

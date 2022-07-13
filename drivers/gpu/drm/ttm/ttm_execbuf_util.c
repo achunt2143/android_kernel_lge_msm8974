@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  *
  * Copyright (c) 2006-2009 VMware, Inc., Palo Alto, CA., USA
@@ -25,6 +29,7 @@
  *
  **************************************************************************/
 
+<<<<<<< HEAD
 #include "ttm/ttm_execbuf_util.h"
 #include "ttm/ttm_bo_driver.h"
 #include "ttm/ttm_placement.h"
@@ -111,6 +116,38 @@ void ttm_eu_backoff_reservation(struct list_head *list)
 	spin_lock(&glob->lru_lock);
 	ttm_eu_backoff_reservation_locked(list);
 	spin_unlock(&glob->lru_lock);
+=======
+#include <drm/ttm/ttm_execbuf_util.h>
+#include <drm/ttm/ttm_bo.h>
+
+static void ttm_eu_backoff_reservation_reverse(struct list_head *list,
+					      struct ttm_validate_buffer *entry)
+{
+	list_for_each_entry_continue_reverse(entry, list, head) {
+		struct ttm_buffer_object *bo = entry->bo;
+
+		dma_resv_unlock(bo->base.resv);
+	}
+}
+
+void ttm_eu_backoff_reservation(struct ww_acquire_ctx *ticket,
+				struct list_head *list)
+{
+	struct ttm_validate_buffer *entry;
+
+	if (list_empty(list))
+		return;
+
+	list_for_each_entry(entry, list, head) {
+		struct ttm_buffer_object *bo = entry->bo;
+
+		ttm_bo_move_to_lru_tail_unlocked(bo);
+		dma_resv_unlock(bo->base.resv);
+	}
+
+	if (ticket)
+		ww_acquire_fini(ticket);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ttm_eu_backoff_reservation);
 
@@ -126,16 +163,26 @@ EXPORT_SYMBOL(ttm_eu_backoff_reservation);
  * buffers in different orders.
  */
 
+<<<<<<< HEAD
 int ttm_eu_reserve_buffers(struct list_head *list)
 {
 	struct ttm_bo_global *glob;
 	struct ttm_validate_buffer *entry;
 	int ret;
 	uint32_t val_seq;
+=======
+int ttm_eu_reserve_buffers(struct ww_acquire_ctx *ticket,
+			   struct list_head *list, bool intr,
+			   struct list_head *dups)
+{
+	struct ttm_validate_buffer *entry;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(list))
 		return 0;
 
+<<<<<<< HEAD
 	list_for_each_entry(entry, list, head) {
 		entry->reserved = false;
 		entry->put_count = 0;
@@ -196,10 +243,66 @@ retry_this_bo:
 	spin_unlock(&glob->lru_lock);
 	ttm_eu_list_ref_sub(list);
 
+=======
+	if (ticket)
+		ww_acquire_init(ticket, &reservation_ww_class);
+
+	list_for_each_entry(entry, list, head) {
+		struct ttm_buffer_object *bo = entry->bo;
+		unsigned int num_fences;
+
+		ret = ttm_bo_reserve(bo, intr, (ticket == NULL), ticket);
+		if (ret == -EALREADY && dups) {
+			struct ttm_validate_buffer *safe = entry;
+			entry = list_prev_entry(entry, head);
+			list_del(&safe->head);
+			list_add(&safe->head, dups);
+			continue;
+		}
+
+		num_fences = max(entry->num_shared, 1u);
+		if (!ret) {
+			ret = dma_resv_reserve_fences(bo->base.resv,
+						      num_fences);
+			if (!ret)
+				continue;
+		}
+
+		/* uh oh, we lost out, drop every reservation and try
+		 * to only reserve this buffer, then start over if
+		 * this succeeds.
+		 */
+		ttm_eu_backoff_reservation_reverse(list, entry);
+
+		if (ret == -EDEADLK) {
+			ret = ttm_bo_reserve_slowpath(bo, intr, ticket);
+		}
+
+		if (!ret)
+			ret = dma_resv_reserve_fences(bo->base.resv,
+						      num_fences);
+
+		if (unlikely(ret != 0)) {
+			if (ticket) {
+				ww_acquire_done(ticket);
+				ww_acquire_fini(ticket);
+			}
+			return ret;
+		}
+
+		/* move this item to the front of the list,
+		 * forces correct iteration of the loop without keeping track
+		 */
+		list_del(&entry->head);
+		list_add(&entry->head, list);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(ttm_eu_reserve_buffers);
 
+<<<<<<< HEAD
 void ttm_eu_fence_buffer_objects(struct list_head *list, void *sync_obj)
 {
 	struct ttm_validate_buffer *entry;
@@ -207,10 +310,18 @@ void ttm_eu_fence_buffer_objects(struct list_head *list, void *sync_obj)
 	struct ttm_bo_global *glob;
 	struct ttm_bo_device *bdev;
 	struct ttm_bo_driver *driver;
+=======
+void ttm_eu_fence_buffer_objects(struct ww_acquire_ctx *ticket,
+				 struct list_head *list,
+				 struct dma_fence *fence)
+{
+	struct ttm_validate_buffer *entry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(list))
 		return;
 
+<<<<<<< HEAD
 	bo = list_first_entry(list, struct ttm_validate_buffer, head)->bo;
 	bdev = bo->bdev;
 	driver = bdev->driver;
@@ -234,5 +345,17 @@ void ttm_eu_fence_buffer_objects(struct list_head *list, void *sync_obj)
 		if (entry->old_sync_obj)
 			driver->sync_obj_unref(&entry->old_sync_obj);
 	}
+=======
+	list_for_each_entry(entry, list, head) {
+		struct ttm_buffer_object *bo = entry->bo;
+
+		dma_resv_add_fence(bo->base.resv, fence, entry->num_shared ?
+				   DMA_RESV_USAGE_READ : DMA_RESV_USAGE_WRITE);
+		ttm_bo_move_to_lru_tail_unlocked(bo);
+		dma_resv_unlock(bo->base.resv);
+	}
+	if (ticket)
+		ww_acquire_fini(ticket);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ttm_eu_fence_buffer_objects);

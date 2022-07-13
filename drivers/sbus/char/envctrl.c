@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* envctrl.c: Temperature and Fan monitoring on Machines providing it.
  *
  * Copyright (C) 1998  Eddie C. Dost  (ecd@skynet.be)
@@ -19,7 +23,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
@@ -28,17 +35,26 @@
 #include <linux/reboot.h>
 #include <linux/slab.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/platform_device.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/envctrl.h>
 #include <asm/io.h>
 
 #define DRIVER_NAME	"envctrl"
 #define PFX		DRIVER_NAME ": "
 
+<<<<<<< HEAD
 #define ENVCTRL_MINOR	162
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCF8584_ADDRESS	0x55
 
 #define CONTROL_PIN	0x80
@@ -353,7 +369,11 @@ static int envctrl_i2c_data_translate(unsigned char data, int translate_type,
 
 	default:
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
@@ -365,8 +385,13 @@ static int envctrl_read_cpu_info(int cpu, struct i2c_child_t *pchild,
 				 char mon_type, unsigned char *bufdata)
 {
 	unsigned char data;
+<<<<<<< HEAD
 	int i;
 	char *tbl, j = -1;
+=======
+	int i, j = -1;
+	char *tbl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find the right monitor type and channel. */
 	for (i = 0; i < PCF8584_MAX_CHANNELS; i++) {
@@ -644,7 +669,11 @@ envctrl_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	default:
 		break;
 
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -687,7 +716,11 @@ envctrl_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	default:
 		return -EINVAL;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -715,9 +748,13 @@ static const struct file_operations envctrl_fops = {
 	.owner =		THIS_MODULE,
 	.read =			envctrl_read,
 	.unlocked_ioctl =	envctrl_ioctl,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_ioctl =		envctrl_ioctl,
 #endif
+=======
+	.compat_ioctl =		compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			envctrl_open,
 	.release =		envctrl_release,
 	.llseek =		noop_llseek,
@@ -907,12 +944,23 @@ static void envctrl_init_i2c_child(struct device_node *dp,
 		int len;
 
 		root_node = of_find_node_by_path("/");
+<<<<<<< HEAD
 		if (!strcmp(root_node->name, "SUNW,UltraSPARC-IIi-cEngine")) {
 			for (len = 0; len < PCF8584_MAX_CHANNELS; ++len) {
 				pchild->mon_type[len] = ENVCTRL_NOMON;
 			}
 			return;
 		}
+=======
+		if (of_node_name_eq(root_node, "SUNW,UltraSPARC-IIi-cEngine")) {
+			for (len = 0; len < PCF8584_MAX_CHANNELS; ++len) {
+				pchild->mon_type[len] = ENVCTRL_NOMON;
+			}
+			of_node_put(root_node);
+			return;
+		}
+		of_node_put(root_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Get the monitor channels. */
@@ -947,7 +995,11 @@ static void envctrl_init_i2c_child(struct device_node *dp,
 
 		default:
 			break;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -971,18 +1023,25 @@ static struct i2c_child_t *envctrl_get_i2c_child(unsigned char mon_type)
 static void envctrl_do_shutdown(void)
 {
 	static int inprog = 0;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inprog != 0)
 		return;
 
 	inprog = 1;
 	printk(KERN_CRIT "kenvctrld: WARNING: Shutting down the system now.\n");
+<<<<<<< HEAD
 	ret = orderly_poweroff(true);
 	if (ret < 0) {
 		printk(KERN_CRIT "kenvctrld: WARNING: system shutdown failed!\n"); 
 		inprog = 0;  /* unlikely to succeed, but we could try again */
 	}
+=======
+	orderly_poweroff(true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct task_struct *kenvctrld_task;
@@ -1028,7 +1087,11 @@ static int kenvctrld(void *__unused)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit envctrl_probe(struct platform_device *op)
+=======
+static int envctrl_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp;
 	int index, err;
@@ -1043,10 +1106,17 @@ static int __devinit envctrl_probe(struct platform_device *op)
 	index = 0;
 	dp = op->dev.of_node->child;
 	while (dp) {
+<<<<<<< HEAD
 		if (!strcmp(dp->name, "gpio")) {
 			i2c_childlist[index].i2ctype = I2C_GPIO;
 			envctrl_init_i2c_child(dp, &(i2c_childlist[index++]));
 		} else if (!strcmp(dp->name, "adc")) {
+=======
+		if (of_node_name_eq(dp, "gpio")) {
+			i2c_childlist[index].i2ctype = I2C_GPIO;
+			envctrl_init_i2c_child(dp, &(i2c_childlist[index++]));
+		} else if (of_node_name_eq(dp, "adc")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i2c_childlist[index].i2ctype = I2C_ADC;
 			envctrl_init_i2c_child(dp, &(i2c_childlist[index++]));
 		}
@@ -1104,7 +1174,11 @@ out_iounmap:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit envctrl_remove(struct platform_device *op)
+=======
+static void envctrl_remove(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index;
 
@@ -1115,8 +1189,11 @@ static int __devexit envctrl_remove(struct platform_device *op)
 
 	for (index = 0; index < ENVCTRL_MAX_CPU * 2; index++)
 		kfree(i2c_childlist[index].tables);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id envctrl_match[] = {
@@ -1131,11 +1208,18 @@ MODULE_DEVICE_TABLE(of, envctrl_match);
 static struct platform_driver envctrl_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = envctrl_match,
 	},
 	.probe		= envctrl_probe,
 	.remove		= __devexit_p(envctrl_remove),
+=======
+		.of_match_table = envctrl_match,
+	},
+	.probe		= envctrl_probe,
+	.remove_new	= envctrl_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(envctrl_driver);

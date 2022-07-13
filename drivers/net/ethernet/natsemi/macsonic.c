@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * macsonic.c
  *
@@ -37,7 +41,10 @@
 #include <linux/fcntl.h>
 #include <linux/gfp.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/in.h>
 #include <linux/string.h>
@@ -51,9 +58,14 @@
 #include <linux/dma-mapping.h>
 #include <linux/bitrev.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/bootinfo.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/hwtest.h>
 #include <asm/dma.h>
@@ -61,8 +73,11 @@
 #include <asm/macints.h>
 #include <asm/mac_via.h>
 
+<<<<<<< HEAD
 static char mac_sonic_string[] = "macsonic";
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sonic.h"
 
 /* These should basically be bus-size and endian independent (since
@@ -73,6 +88,7 @@ static char mac_sonic_string[] = "macsonic";
 #define SONIC_WRITE(reg,val) (nubus_writew(val, dev->base_addr + (reg * 4) \
 	      + lp->reg_offset))
 
+<<<<<<< HEAD
 /* use 0 for production, 1 for verification, >1 for debug */
 #ifdef SONIC_DEBUG
 static unsigned int sonic_debug = SONIC_DEBUG;
@@ -82,6 +98,8 @@ static unsigned int sonic_debug = 1;
 
 static int sonic_version_printed;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For onboard SONIC */
 #define ONBOARD_SONIC_REGISTERS	0x50F0A000
 #define ONBOARD_SONIC_PROM_BASE	0x50f08000
@@ -126,6 +144,7 @@ static inline void bit_reverse_addr(unsigned char addr[6])
 		addr[i] = bitrev8(addr[i]);
 }
 
+<<<<<<< HEAD
 static irqreturn_t macsonic_interrupt(int irq, void *dev_id)
 {
 	irqreturn_t result;
@@ -137,6 +156,8 @@ static irqreturn_t macsonic_interrupt(int irq, void *dev_id)
 	return result;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int macsonic_open(struct net_device* dev)
 {
 	int retval;
@@ -147,12 +168,21 @@ static int macsonic_open(struct net_device* dev)
 				dev->name, dev->irq);
 		goto err;
 	}
+<<<<<<< HEAD
 	/* Under the A/UX interrupt scheme, the onboard SONIC interrupt comes
 	 * in at priority level 3. However, we sometimes get the level 2 inter-
 	 * rupt as well, which must prevent re-entrance of the sonic handler.
 	 */
 	if (dev->irq == IRQ_AUTO_3) {
 		retval = request_irq(IRQ_NUBUS_9, macsonic_interrupt, 0,
+=======
+	/* Under the A/UX interrupt scheme, the onboard SONIC interrupt gets
+	 * moved from level 2 to level 3. Unfortunately we still get some
+	 * level 2 interrupts so register the handler for both.
+	 */
+	if (dev->irq == IRQ_AUTO_3) {
+		retval = request_irq(IRQ_NUBUS_9, sonic_interrupt, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     "sonic", dev);
 		if (retval) {
 			printk(KERN_ERR "%s: unable to get IRQ %d.\n",
@@ -192,6 +222,7 @@ static const struct net_device_ops macsonic_netdev_ops = {
 	.ndo_tx_timeout		= sonic_tx_timeout,
 	.ndo_get_stats		= sonic_get_stats,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
@@ -226,6 +257,18 @@ static int __devinit macsonic_init(struct net_device *dev)
 	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
 	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
 	                     * SONIC_BUS_SCALE(lp->dma_bitmode));
+=======
+	.ndo_set_mac_address	= eth_mac_addr,
+};
+
+static int macsonic_init(struct net_device *dev)
+{
+	struct sonic_local* lp = netdev_priv(dev);
+	int err = sonic_alloc_descriptors(dev);
+
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &macsonic_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
@@ -245,11 +288,19 @@ static int __devinit macsonic_init(struct net_device *dev)
                           memcmp(mac, "\x00\x80\x19", 3) && \
                           memcmp(mac, "\x00\x05\x02", 3))
 
+<<<<<<< HEAD
 static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
+=======
+static void mac_onboard_sonic_ethernet_addr(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sonic_local *lp = netdev_priv(dev);
 	const int prom_addr = ONBOARD_SONIC_PROM_BASE;
 	unsigned short val;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * On NuBus boards we can sometimes look in the ROM resources.
@@ -260,7 +311,12 @@ static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 		int i;
 
 		for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 			dev->dev_addr[i] = SONIC_READ_PROM(i);
+=======
+			addr[i] = SONIC_READ_PROM(i);
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!INVALID_MAC(dev->dev_addr))
 			return;
 
@@ -269,7 +325,12 @@ static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 		 * source has a rather long and detailed historical account of
 		 * why this is so.
 		 */
+<<<<<<< HEAD
 		bit_reverse_addr(dev->dev_addr);
+=======
+		bit_reverse_addr(addr);
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!INVALID_MAC(dev->dev_addr))
 			return;
 
@@ -290,6 +351,7 @@ static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 	SONIC_WRITE(SONIC_CEP, 15);
 
 	val = SONIC_READ(SONIC_CAP2);
+<<<<<<< HEAD
 	dev->dev_addr[5] = val >> 8;
 	dev->dev_addr[4] = val & 0xff;
 	val = SONIC_READ(SONIC_CAP1);
@@ -298,6 +360,17 @@ static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 	val = SONIC_READ(SONIC_CAP0);
 	dev->dev_addr[1] = val >> 8;
 	dev->dev_addr[0] = val & 0xff;
+=======
+	addr[5] = val >> 8;
+	addr[4] = val & 0xff;
+	val = SONIC_READ(SONIC_CAP1);
+	addr[3] = val >> 8;
+	addr[2] = val & 0xff;
+	val = SONIC_READ(SONIC_CAP0);
+	addr[1] = val >> 8;
+	addr[0] = val & 0xff;
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!INVALID_MAC(dev->dev_addr))
 		return;
@@ -309,6 +382,7 @@ static void __devinit mac_onboard_sonic_ethernet_addr(struct net_device *dev)
 	eth_hw_addr_random(dev);
 }
 
+<<<<<<< HEAD
 static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 {
 	struct sonic_local* lp = netdev_priv(dev);
@@ -319,11 +393,19 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 		return -ENODEV;
 
 	printk(KERN_INFO "Checking for internal Macintosh ethernet (SONIC).. ");
+=======
+static int mac_onboard_sonic_probe(struct net_device *dev)
+{
+	struct sonic_local* lp = netdev_priv(dev);
+	int sr;
+	bool commslot = macintosh_config->expansion_type == MAC_EXP_PDS_COMM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bogus probing, on the models which may or may not have
 	   Ethernet (BTW, the Ethernet *is* always at the same
 	   address, and nothing else lives there, at least if Apple's
 	   documentation is to be believed) */
+<<<<<<< HEAD
 	if (macintosh_config->ident == MAC_MODEL_Q630 ||
 	    macintosh_config->ident == MAC_MODEL_P588 ||
 	    macintosh_config->ident == MAC_MODEL_P575 ||
@@ -344,6 +426,18 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 
 	printk("yes\n");
 
+=======
+	if (commslot || macintosh_config->ident == MAC_MODEL_C610) {
+		int card_present;
+
+		card_present = hwreg_present((void*)ONBOARD_SONIC_REGISTERS);
+		if (!card_present) {
+			pr_info("Onboard/comm-slot SONIC not found\n");
+			return -ENODEV;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Danger!  My arms are flailing wildly!  You *must* set lp->reg_offset
 	 * and dev->base_addr before using SONIC_READ() or SONIC_WRITE() */
 	dev->base_addr = ONBOARD_SONIC_REGISTERS;
@@ -352,6 +446,7 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 	else
 		dev->irq = IRQ_NUBUS_9;
 
+<<<<<<< HEAD
 	if (!sonic_version_printed) {
 		printk(KERN_INFO "%s", version);
 		sonic_version_printed = 1;
@@ -359,11 +454,16 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 	printk(KERN_INFO "%s: onboard / comm-slot SONIC at 0x%08lx\n",
 	       dev_name(lp->device), dev->base_addr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The PowerBook's SONIC is 16 bit always. */
 	if (macintosh_config->ident == MAC_MODEL_PB520) {
 		lp->reg_offset = 0;
 		lp->dma_bitmode = SONIC_BITMODE16;
+<<<<<<< HEAD
 		sr = SONIC_READ(SONIC_SR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (commslot) {
 		/* Some of the comm-slot cards are 16 bit.  But some
 		   of them are not.  The 32-bit cards use offset 2 and
@@ -380,12 +480,16 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 		else {
 			lp->dma_bitmode = SONIC_BITMODE16;
 			lp->reg_offset = 0;
+<<<<<<< HEAD
 			sr = SONIC_READ(SONIC_SR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* All onboard cards are at offset 2 with 32 bit DMA. */
 		lp->reg_offset = 2;
 		lp->dma_bitmode = SONIC_BITMODE32;
+<<<<<<< HEAD
 		sr = SONIC_READ(SONIC_SR);
 	}
 	printk(KERN_INFO
@@ -396,6 +500,18 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 	printk(KERN_INFO "%s: DCR: 0x%04x, DCR2: 0x%04x\n", dev_name(lp->device),
 	       SONIC_READ(SONIC_DCR) & 0xffff, SONIC_READ(SONIC_DCR2) & 0xffff);
 #endif
+=======
+	}
+
+	pr_info("Onboard/comm-slot SONIC, revision 0x%04x, %d bit DMA, register offset %d\n",
+		SONIC_READ(SONIC_SR), lp->dma_bitmode ? 32 : 16,
+		lp->reg_offset);
+
+	/* This is sometimes useful to find out how MacOS configured the card */
+	pr_debug("%s: DCR=0x%04x, DCR2=0x%04x\n", __func__,
+		 SONIC_READ(SONIC_DCR) & 0xffff,
+		 SONIC_READ(SONIC_DCR2) & 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Software reset, then initialize control registers. */
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
@@ -416,10 +532,17 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 	/* Now look for the MAC address. */
 	mac_onboard_sonic_ethernet_addr(dev);
 
+<<<<<<< HEAD
+=======
+	pr_info("SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
+		dev->base_addr, dev->dev_addr, dev->irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Shared init code */
 	return macsonic_init(dev);
 }
 
+<<<<<<< HEAD
 static int __devinit mac_nubus_sonic_ethernet_addr(struct net_device *dev,
 						unsigned long prom_addr,
 						int id)
@@ -431,10 +554,26 @@ static int __devinit mac_nubus_sonic_ethernet_addr(struct net_device *dev,
 	/* Some of the addresses are bit-reversed */
 	if (id != MACSONIC_DAYNA)
 		bit_reverse_addr(dev->dev_addr);
+=======
+static int mac_sonic_nubus_ethernet_addr(struct net_device *dev,
+					 unsigned long prom_addr, int id)
+{
+	u8 addr[ETH_ALEN];
+	int i;
+
+	for(i = 0; i < 6; i++)
+		addr[i] = SONIC_READ_PROM(i);
+
+	/* Some of the addresses are bit-reversed */
+	if (id != MACSONIC_DAYNA)
+		bit_reverse_addr(addr);
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit macsonic_ident(struct nubus_dev *ndev)
 {
 	if (ndev->dr_hw == NUBUS_DRHW_ASANTE_LC &&
@@ -444,22 +583,43 @@ static int __devinit macsonic_ident(struct nubus_dev *ndev)
 	    ndev->dr_sw == NUBUS_DRSW_APPLE) {
 		/* There has to be a better way to do this... */
 		if (strstr(ndev->board->name, "DuoDock"))
+=======
+static int macsonic_ident(struct nubus_rsrc *fres)
+{
+	if (fres->dr_hw == NUBUS_DRHW_ASANTE_LC &&
+	    fres->dr_sw == NUBUS_DRSW_SONIC_LC)
+		return MACSONIC_DAYNALINK;
+	if (fres->dr_hw == NUBUS_DRHW_SONIC &&
+	    fres->dr_sw == NUBUS_DRSW_APPLE) {
+		/* There has to be a better way to do this... */
+		if (strstr(fres->board->name, "DuoDock"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return MACSONIC_DUODOCK;
 		else
 			return MACSONIC_APPLE;
 	}
 
+<<<<<<< HEAD
 	if (ndev->dr_hw == NUBUS_DRHW_SMC9194 &&
 	    ndev->dr_sw == NUBUS_DRSW_DAYNA)
 		return MACSONIC_DAYNA;
 
 	if (ndev->dr_hw == NUBUS_DRHW_APPLE_SONIC_LC &&
 	    ndev->dr_sw == 0) { /* huh? */
+=======
+	if (fres->dr_hw == NUBUS_DRHW_SMC9194 &&
+	    fres->dr_sw == NUBUS_DRSW_DAYNA)
+		return MACSONIC_DAYNA;
+
+	if (fres->dr_hw == NUBUS_DRHW_APPLE_SONIC_LC &&
+	    fres->dr_sw == 0) { /* huh? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return MACSONIC_APPLE16;
 	}
 	return -1;
 }
 
+<<<<<<< HEAD
 static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 {
 	static int slots;
@@ -491,37 +651,71 @@ static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 	case MACSONIC_DUODOCK:
 		base_addr = ndev->board->slot_addr + DUODOCK_SONIC_REGISTERS;
 		prom_addr = ndev->board->slot_addr + DUODOCK_SONIC_PROM_BASE;
+=======
+static int mac_sonic_nubus_probe_board(struct nubus_board *board, int id,
+				       struct net_device *dev)
+{
+	struct sonic_local* lp = netdev_priv(dev);
+	unsigned long base_addr, prom_addr;
+	u16 sonic_dcr;
+	int reg_offset, dma_bitmode;
+
+	switch (id) {
+	case MACSONIC_DUODOCK:
+		base_addr = board->slot_addr + DUODOCK_SONIC_REGISTERS;
+		prom_addr = board->slot_addr + DUODOCK_SONIC_PROM_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sonic_dcr = SONIC_DCR_EXBUS | SONIC_DCR_RFT0 | SONIC_DCR_RFT1 |
 		            SONIC_DCR_TFT0;
 		reg_offset = 2;
 		dma_bitmode = SONIC_BITMODE32;
 		break;
 	case MACSONIC_APPLE:
+<<<<<<< HEAD
 		base_addr = ndev->board->slot_addr + APPLE_SONIC_REGISTERS;
 		prom_addr = ndev->board->slot_addr + APPLE_SONIC_PROM_BASE;
+=======
+		base_addr = board->slot_addr + APPLE_SONIC_REGISTERS;
+		prom_addr = board->slot_addr + APPLE_SONIC_PROM_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sonic_dcr = SONIC_DCR_BMS | SONIC_DCR_RFT1 | SONIC_DCR_TFT0;
 		reg_offset = 0;
 		dma_bitmode = SONIC_BITMODE32;
 		break;
 	case MACSONIC_APPLE16:
+<<<<<<< HEAD
 		base_addr = ndev->board->slot_addr + APPLE_SONIC_REGISTERS;
 		prom_addr = ndev->board->slot_addr + APPLE_SONIC_PROM_BASE;
+=======
+		base_addr = board->slot_addr + APPLE_SONIC_REGISTERS;
+		prom_addr = board->slot_addr + APPLE_SONIC_PROM_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sonic_dcr = SONIC_DCR_EXBUS | SONIC_DCR_RFT1 | SONIC_DCR_TFT0 |
 		            SONIC_DCR_PO1 | SONIC_DCR_BMS;
 		reg_offset = 0;
 		dma_bitmode = SONIC_BITMODE16;
 		break;
 	case MACSONIC_DAYNALINK:
+<<<<<<< HEAD
 		base_addr = ndev->board->slot_addr + APPLE_SONIC_REGISTERS;
 		prom_addr = ndev->board->slot_addr + DAYNALINK_PROM_BASE;
+=======
+		base_addr = board->slot_addr + APPLE_SONIC_REGISTERS;
+		prom_addr = board->slot_addr + DAYNALINK_PROM_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sonic_dcr = SONIC_DCR_RFT1 | SONIC_DCR_TFT0 |
 		            SONIC_DCR_PO1 | SONIC_DCR_BMS;
 		reg_offset = 0;
 		dma_bitmode = SONIC_BITMODE16;
 		break;
 	case MACSONIC_DAYNA:
+<<<<<<< HEAD
 		base_addr = ndev->board->slot_addr + DAYNA_SONIC_REGISTERS;
 		prom_addr = ndev->board->slot_addr + DAYNA_SONIC_MAC_ADDR;
+=======
+		base_addr = board->slot_addr + DAYNA_SONIC_REGISTERS;
+		prom_addr = board->slot_addr + DAYNA_SONIC_MAC_ADDR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sonic_dcr = SONIC_DCR_BMS |
 		            SONIC_DCR_RFT1 | SONIC_DCR_TFT0 | SONIC_DCR_PO1;
 		reg_offset = 0;
@@ -537,6 +731,7 @@ static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 	dev->base_addr = base_addr;
 	lp->reg_offset = reg_offset;
 	lp->dma_bitmode = dma_bitmode;
+<<<<<<< HEAD
 	dev->irq = SLOT2IRQ(ndev->board->slot);
 
 	if (!sonic_version_printed) {
@@ -552,6 +747,18 @@ static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 	printk(KERN_INFO "%s: DCR: 0x%04x, DCR2: 0x%04x\n", dev_name(lp->device),
 	       SONIC_READ(SONIC_DCR) & 0xffff, SONIC_READ(SONIC_DCR2) & 0xffff);
 #endif
+=======
+	dev->irq = SLOT2IRQ(board->slot);
+
+	dev_info(&board->dev, "%s, revision 0x%04x, %d bit DMA, register offset %d\n",
+		 board->name, SONIC_READ(SONIC_SR),
+		 lp->dma_bitmode ? 32 : 16, lp->reg_offset);
+
+	/* This is sometimes useful to find out how MacOS configured the card */
+	dev_dbg(&board->dev, "%s: DCR=0x%04x, DCR2=0x%04x\n", __func__,
+		SONIC_READ(SONIC_DCR) & 0xffff,
+		SONIC_READ(SONIC_DCR2) & 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Software reset, then initialize control registers. */
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
@@ -566,14 +773,27 @@ static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 	SONIC_WRITE(SONIC_ISR, 0x7fff);
 
 	/* Now look for the MAC address. */
+<<<<<<< HEAD
 	if (mac_nubus_sonic_ethernet_addr(dev, prom_addr, id) != 0)
 		return -ENODEV;
 
+=======
+	if (mac_sonic_nubus_ethernet_addr(dev, prom_addr, id) != 0)
+		return -ENODEV;
+
+	dev_info(&board->dev, "SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
+		 dev->base_addr, dev->dev_addr, dev->irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Shared init code */
 	return macsonic_init(dev);
 }
 
+<<<<<<< HEAD
 static int __devinit mac_sonic_probe(struct platform_device *pdev)
+=======
+static int mac_sonic_platform_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct sonic_local *lp;
@@ -588,6 +808,7 @@ static int __devinit mac_sonic_probe(struct platform_device *pdev)
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	platform_set_drvdata(pdev, dev);
 
+<<<<<<< HEAD
 	/* This will catch fatal stuff like -ENOMEM as well as success */
 	err = mac_onboard_sonic_probe(dev);
 	if (err == 0)
@@ -606,6 +827,24 @@ found:
 
 	return 0;
 
+=======
+	err = mac_onboard_sonic_probe(dev);
+	if (err)
+		goto out;
+
+	sonic_msg_init(dev);
+
+	err = register_netdev(dev);
+	if (err)
+		goto undo_probe;
+
+	return 0;
+
+undo_probe:
+	dma_free_coherent(lp->device,
+			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	free_netdev(dev);
 
@@ -613,13 +852,20 @@ out:
 }
 
 MODULE_DESCRIPTION("Macintosh SONIC ethernet driver");
+<<<<<<< HEAD
 module_param(sonic_debug, int, 0);
 MODULE_PARM_DESC(sonic_debug, "macsonic debug level (1-4)");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:macsonic");
 
 #include "sonic.c"
 
+<<<<<<< HEAD
 static int __devexit mac_sonic_device_remove (struct platform_device *pdev)
+=======
+static void mac_sonic_platform_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct sonic_local* lp = netdev_priv(dev);
@@ -628,6 +874,7 @@ static int __devexit mac_sonic_device_remove (struct platform_device *pdev)
 	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
 	                  lp->descriptors, lp->descriptors_laddr);
 	free_netdev(dev);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -642,3 +889,111 @@ static struct platform_driver mac_sonic_driver = {
 };
 
 module_platform_driver(mac_sonic_driver);
+=======
+}
+
+static struct platform_driver mac_sonic_platform_driver = {
+	.probe  = mac_sonic_platform_probe,
+	.remove_new = mac_sonic_platform_remove,
+	.driver = {
+		.name = "macsonic",
+	},
+};
+
+static int mac_sonic_nubus_probe(struct nubus_board *board)
+{
+	struct net_device *ndev;
+	struct sonic_local *lp;
+	struct nubus_rsrc *fres;
+	int id = -1;
+	int err;
+
+	/* The platform driver will handle a PDS or Comm Slot card (even if
+	 * it has a pseudoslot declaration ROM).
+	 */
+	if (macintosh_config->expansion_type == MAC_EXP_PDS_COMM)
+		return -ENODEV;
+
+	for_each_board_func_rsrc(board, fres) {
+		if (fres->category != NUBUS_CAT_NETWORK ||
+		    fres->type != NUBUS_TYPE_ETHERNET)
+			continue;
+
+		id = macsonic_ident(fres);
+		if (id != -1)
+			break;
+	}
+	if (!fres)
+		return -ENODEV;
+
+	ndev = alloc_etherdev(sizeof(struct sonic_local));
+	if (!ndev)
+		return -ENOMEM;
+
+	lp = netdev_priv(ndev);
+	lp->device = &board->dev;
+	SET_NETDEV_DEV(ndev, &board->dev);
+
+	err = mac_sonic_nubus_probe_board(board, id, ndev);
+	if (err)
+		goto out;
+
+	sonic_msg_init(ndev);
+
+	err = register_netdev(ndev);
+	if (err)
+		goto undo_probe;
+
+	nubus_set_drvdata(board, ndev);
+
+	return 0;
+
+undo_probe:
+	dma_free_coherent(lp->device,
+			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+out:
+	free_netdev(ndev);
+	return err;
+}
+
+static void mac_sonic_nubus_remove(struct nubus_board *board)
+{
+	struct net_device *ndev = nubus_get_drvdata(board);
+	struct sonic_local *lp = netdev_priv(ndev);
+
+	unregister_netdev(ndev);
+	dma_free_coherent(lp->device,
+			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+	free_netdev(ndev);
+}
+
+static struct nubus_driver mac_sonic_nubus_driver = {
+	.probe  = mac_sonic_nubus_probe,
+	.remove = mac_sonic_nubus_remove,
+	.driver = {
+		.name = "macsonic-nubus",
+		.owner = THIS_MODULE,
+	},
+};
+
+static int perr, nerr;
+
+static int __init mac_sonic_init(void)
+{
+	perr = platform_driver_register(&mac_sonic_platform_driver);
+	nerr = nubus_driver_register(&mac_sonic_nubus_driver);
+	return 0;
+}
+module_init(mac_sonic_init);
+
+static void __exit mac_sonic_exit(void)
+{
+	if (!perr)
+		platform_driver_unregister(&mac_sonic_platform_driver);
+	if (!nerr)
+		nubus_driver_unregister(&mac_sonic_nubus_driver);
+}
+module_exit(mac_sonic_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

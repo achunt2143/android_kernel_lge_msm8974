@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  *    Imagine for use with the Onyx (PCX-U) CPU interface 
  *
  *    Copyright (C) 2001 Randolph Chung <tausq at parisc-linux.org>
  *    Copyright (C) 2001 Hewlett-Packard (Grant Grundler)
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef PERF_IMAGES_H
 #define PERF_IMAGES_H
@@ -25,7 +32,11 @@
 
 #define PCXU_IMAGE_SIZE 584
 
+<<<<<<< HEAD
 static uint32_t onyx_images[][PCXU_IMAGE_SIZE/sizeof(uint32_t)] __read_mostly = {
+=======
+static uint32_t onyx_images[][PCXU_IMAGE_SIZE/sizeof(uint32_t)] __ro_after_init = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CPI:
  *
@@ -2093,7 +2104,11 @@ static uint32_t onyx_images[][PCXU_IMAGE_SIZE/sizeof(uint32_t)] __read_mostly = 
 };
 #define PCXW_IMAGE_SIZE 576
 
+<<<<<<< HEAD
 static uint32_t cuda_images[][PCXW_IMAGE_SIZE/sizeof(uint32_t)] __read_mostly = {
+=======
+static uint32_t cuda_images[][PCXW_IMAGE_SIZE/sizeof(uint32_t)] __ro_after_init = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CPI:     FROM CPI.IDF (Image 0)
  *

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*  paravirtual clock -- common code used by kvm/xen
 
     This program is free software; you can redistribute it and/or modify
@@ -35,12 +36,35 @@ struct pvclock_shadow_time {
 };
 
 static u8 valid_flags __read_mostly = 0;
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*  paravirtual clock -- common code used by kvm/xen
+
+*/
+
+#include <linux/clocksource.h>
+#include <linux/kernel.h>
+#include <linux/percpu.h>
+#include <linux/notifier.h>
+#include <linux/sched.h>
+#include <linux/gfp.h>
+#include <linux/memblock.h>
+#include <linux/nmi.h>
+
+#include <asm/fixmap.h>
+#include <asm/pvclock.h>
+#include <asm/vgtod.h>
+
+static u8 valid_flags __read_mostly = 0;
+static struct pvclock_vsyscall_time_info *pvti_cpu0_va __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pvclock_set_flags(u8 flags)
 {
 	valid_flags = flags;
 }
 
+<<<<<<< HEAD
 static u64 pvclock_get_nsec_offset(struct pvclock_shadow_time *shadow)
 {
 	u64 delta = native_read_tsc() - shadow->tsc_timestamp;
@@ -69,6 +93,8 @@ static unsigned pvclock_get_time_values(struct pvclock_shadow_time *dst,
 	return dst->version;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long pvclock_tsc_khz(struct pvclock_vcpu_time_info *src)
 {
 	u64 pv_tsc_khz = 1000000ULL << 32;
@@ -81,6 +107,17 @@ unsigned long pvclock_tsc_khz(struct pvclock_vcpu_time_info *src)
 	return pv_tsc_khz;
 }
 
+<<<<<<< HEAD
+=======
+void pvclock_touch_watchdogs(void)
+{
+	touch_softlockup_watchdog_sync();
+	clocksource_touch_watchdog();
+	rcu_cpu_stall_reset();
+	reset_hung_task_detector();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static atomic64_t last_value = ATOMIC64_INIT(0);
 
 void pvclock_resume(void)
@@ -88,6 +125,7 @@ void pvclock_resume(void)
 	atomic64_set(&last_value, 0);
 }
 
+<<<<<<< HEAD
 cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 {
 	struct pvclock_shadow_time shadow;
@@ -105,12 +143,52 @@ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 
 	if ((valid_flags & PVCLOCK_TSC_STABLE_BIT) &&
 		(shadow.flags & PVCLOCK_TSC_STABLE_BIT))
+=======
+u8 pvclock_read_flags(struct pvclock_vcpu_time_info *src)
+{
+	unsigned version;
+	u8 flags;
+
+	do {
+		version = pvclock_read_begin(src);
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+
+	return flags & valid_flags;
+}
+
+static __always_inline
+u64 __pvclock_clocksource_read(struct pvclock_vcpu_time_info *src, bool dowd)
+{
+	unsigned version;
+	u64 ret;
+	u64 last;
+	u8 flags;
+
+	do {
+		version = pvclock_read_begin(src);
+		ret = __pvclock_read_cycles(src, rdtsc_ordered());
+		flags = src->flags;
+	} while (pvclock_read_retry(src, version));
+
+	if (dowd && unlikely((flags & PVCLOCK_GUEST_STOPPED) != 0)) {
+		src->flags &= ~PVCLOCK_GUEST_STOPPED;
+		pvclock_touch_watchdogs();
+	}
+
+	if ((valid_flags & PVCLOCK_TSC_STABLE_BIT) &&
+		(flags & PVCLOCK_TSC_STABLE_BIT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	/*
 	 * Assumption here is that last_value, a global accumulator, always goes
 	 * forward. If we are less than that, we should not be much smaller.
+<<<<<<< HEAD
 	 * We assume there is an error marging we're inside, and then the correction
+=======
+	 * We assume there is an error margin we're inside, and then the correction
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * does not sacrifice accuracy.
 	 *
 	 * For reads: global may have changed between test and return,
@@ -121,16 +199,25 @@ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 	 * updating at the same time, and one of them could be slightly behind,
 	 * making the assumption that last_value always go forward fail to hold.
 	 */
+<<<<<<< HEAD
 	last = atomic64_read(&last_value);
 	do {
 		if (ret < last)
 			return last;
 		last = atomic64_cmpxchg(&last_value, last, ret);
 	} while (unlikely(last != ret));
+=======
+	last = raw_atomic64_read(&last_value);
+	do {
+		if (ret <= last)
+			return last;
+	} while (!raw_atomic64_try_cmpxchg(&last_value, &last, ret));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 			    struct pvclock_vcpu_time_info *vcpu_time,
 			    struct timespec *ts)
@@ -138,21 +225,71 @@ void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 	u32 version;
 	u64 delta;
 	struct timespec now;
+=======
+u64 pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
+{
+	return __pvclock_clocksource_read(src, true);
+}
+
+noinstr u64 pvclock_clocksource_read_nowd(struct pvclock_vcpu_time_info *src)
+{
+	return __pvclock_clocksource_read(src, false);
+}
+
+void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
+			    struct pvclock_vcpu_time_info *vcpu_time,
+			    struct timespec64 *ts)
+{
+	u32 version;
+	u64 delta;
+	struct timespec64 now;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get wallclock at system boot */
 	do {
 		version = wall_clock->version;
 		rmb();		/* fetch version before time */
+<<<<<<< HEAD
+=======
+		/*
+		 * Note: wall_clock->sec is a u32 value, so it can
+		 * only store dates between 1970 and 2106. To allow
+		 * times beyond that, we need to create a new hypercall
+		 * interface with an extended pvclock_wall_clock structure
+		 * like ARM has.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		now.tv_sec  = wall_clock->sec;
 		now.tv_nsec = wall_clock->nsec;
 		rmb();		/* fetch time before checking version */
 	} while ((wall_clock->version & 1) || (version != wall_clock->version));
 
 	delta = pvclock_clocksource_read(vcpu_time);	/* time since system boot */
+<<<<<<< HEAD
 	delta += now.tv_sec * (u64)NSEC_PER_SEC + now.tv_nsec;
+=======
+	delta += now.tv_sec * NSEC_PER_SEC + now.tv_nsec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	now.tv_nsec = do_div(delta, NSEC_PER_SEC);
 	now.tv_sec = delta;
 
+<<<<<<< HEAD
 	set_normalized_timespec(ts, now.tv_sec, now.tv_nsec);
 }
+=======
+	set_normalized_timespec64(ts, now.tv_sec, now.tv_nsec);
+}
+
+void pvclock_set_pvti_cpu0_va(struct pvclock_vsyscall_time_info *pvti)
+{
+	WARN_ON(vclock_was_used(VDSO_CLOCKMODE_PVCLOCK));
+	pvti_cpu0_va = pvti;
+}
+
+struct pvclock_vsyscall_time_info *pvclock_get_pvti_cpu0_va(void)
+{
+	return pvti_cpu0_va;
+}
+EXPORT_SYMBOL_GPL(pvclock_get_pvti_cpu0_va);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

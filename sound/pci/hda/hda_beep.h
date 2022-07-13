@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Digital Beep Input Interface for HD-audio codec
  *
@@ -17,21 +18,37 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Digital Beep Input Interface for HD-audio codec
+ *
+ * Author: Matt Ranostay <matt.ranostay@konsulko.com>
+ * Copyright (c) 2008 Embedded Alley Solutions Inc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_HDA_BEEP_H
 #define __SOUND_HDA_BEEP_H
 
+<<<<<<< HEAD
 #include "hda_codec.h"
 
 #define HDA_BEEP_MODE_OFF	0
 #define HDA_BEEP_MODE_ON	1
 #define HDA_BEEP_MODE_SWREG	2
+=======
+#include <sound/hda_codec.h>
+
+#define HDA_BEEP_MODE_OFF	0
+#define HDA_BEEP_MODE_ON	1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* beep information */
 struct hda_beep {
 	struct input_dev *dev;
 	struct hda_codec *codec;
+<<<<<<< HEAD
 	unsigned int mode;
 	char phys[32];
 	int tone;
@@ -43,6 +60,18 @@ struct hda_beep {
 	struct delayed_work unregister_work; /* unregistration work */
 	struct work_struct beep_work; /* scheduled task for beep event */
 	struct mutex mutex;
+=======
+	char phys[32];
+	int tone;
+	hda_nid_t nid;
+	unsigned int registered:1;
+	unsigned int enabled:1;
+	unsigned int linear_tone:1;	/* linear tone for IDT/STAC codec */
+	unsigned int playing:1;
+	unsigned int keep_power_at_enable:1;	/* set by driver */
+	struct work_struct beep_work; /* scheduled task for beep event */
+	void (*power_hook)(struct hda_beep *beep, bool on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SND_HDA_INPUT_BEEP

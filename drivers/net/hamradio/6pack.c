@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 6pack.c	This module implements the 6pack protocol for kernel-based
  *		devices like TTY. It interfaces between a raw TTY and the
@@ -13,7 +17,11 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bitops.h>
 #include <linux/string.h>
 #include <linux/mm.h>
@@ -34,8 +42,12 @@
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/semaphore.h>
+<<<<<<< HEAD
 #include <linux/compat.h>
 #include <linux/atomic.h>
+=======
+#include <linux/refcount.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SIXPACK_VERSION    "Revision: 0.3.0"
 
@@ -68,9 +80,15 @@
 #define SIXP_DAMA_OFF		0
 
 /* default level 2 parameters */
+<<<<<<< HEAD
 #define SIXP_TXDELAY			(HZ/4)	/* in 1 s */
 #define SIXP_PERSIST			50	/* in 256ths */
 #define SIXP_SLOTTIME			(HZ/10)	/* in 1 s */
+=======
+#define SIXP_TXDELAY			25	/* 250 ms */
+#define SIXP_PERSIST			50	/* in 256ths */
+#define SIXP_SLOTTIME			10	/* 100 ms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SIXP_INIT_RESYNC_TIMEOUT	(3*HZ/2) /* in 1 s */
 #define SIXP_RESYNC_TIMEOUT		5*HZ	/* in 1 s */
 
@@ -99,6 +117,10 @@ struct sixpack {
 
 	unsigned int		rx_count;
 	unsigned int		rx_count_cooked;
+<<<<<<< HEAD
+=======
+	spinlock_t		rxlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			mtu;		/* Our mtu (to spot changes!) */
 	int			buffsize;       /* Max buffers sizes */
@@ -120,14 +142,23 @@ struct sixpack {
 
 	struct timer_list	tx_t;
 	struct timer_list	resync_t;
+<<<<<<< HEAD
 	atomic_t		refcnt;
 	struct semaphore	dead_sem;
+=======
+	refcount_t		refcnt;
+	struct completion	dead;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t		lock;
 };
 
 #define AX25_6PACK_HEADER_LEN 0
 
+<<<<<<< HEAD
 static void sixpack_decode(struct sixpack *, unsigned char[], int);
+=======
+static void sixpack_decode(struct sixpack *, const unsigned char[], int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int encode_sixpack(unsigned char *, unsigned char *, int, unsigned char);
 
 /*
@@ -136,9 +167,15 @@ static int encode_sixpack(unsigned char *, unsigned char *, int, unsigned char);
  * Note that in case of DAMA operation, the data is not sent here.
  */
 
+<<<<<<< HEAD
 static void sp_xmit_on_air(unsigned long channel)
 {
 	struct sixpack *sp = (struct sixpack *) channel;
+=======
+static void sp_xmit_on_air(struct timer_list *t)
+{
+	struct sixpack *sp = from_timer(sp, t, tx_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int actual, when = sp->slottime;
 	static unsigned char random;
 
@@ -171,11 +208,14 @@ static void sp_encaps(struct sixpack *sp, unsigned char *icp, int len)
 		goto out_drop;
 	}
 
+<<<<<<< HEAD
 	if (len > sp->mtu) {	/* sp->mtu = AX25_MTU = max. PACLEN = 256 */
 		msg = "oversized transmit packet!";
 		goto out_drop;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p[0] > 5) {
 		msg = "invalid KISS command";
 		goto out_drop;
@@ -229,7 +269,11 @@ static void sp_encaps(struct sixpack *sp, unsigned char *icp, int len)
 		sp->xleft = count;
 		sp->xhead = sp->xbuff;
 		sp->status2 = count;
+<<<<<<< HEAD
 		sp_xmit_on_air((unsigned long)sp);
+=======
+		sp_xmit_on_air(&sp->tx_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
@@ -247,6 +291,12 @@ static netdev_tx_t sp_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct sixpack *sp = netdev_priv(dev);
 
+<<<<<<< HEAD
+=======
+	if (skb->protocol == htons(ETH_P_IP))
+		return ax25_ip_xmit(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&sp->lock);
 	/* We were not busy, so we are now... :-) */
 	netif_stop_queue(dev);
@@ -284,6 +334,7 @@ static int sp_close(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Return the frame type ID */
 static int sp_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type, const void *daddr,
@@ -296,19 +347,26 @@ static int sp_header(struct sk_buff *skb, struct net_device *dev,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sp_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr_ax25 *sa = addr;
 
 	netif_tx_lock_bh(dev);
 	netif_addr_lock(dev);
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, &sa->sax25_call, AX25_ADDR_LEN);
+=======
+	__dev_addr_set(dev, &sa->sax25_call, AX25_ADDR_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_addr_unlock(dev);
 	netif_tx_unlock_bh(dev);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sp_rebuild_header(struct sk_buff *skb)
 {
 #ifdef CONFIG_INET
@@ -323,6 +381,8 @@ static const struct header_ops sp_header_ops = {
 	.rebuild	= sp_rebuild_header,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops sp_netdev_ops = {
 	.ndo_open		= sp_open_dev,
 	.ndo_stop		= sp_close,
@@ -334,10 +394,16 @@ static void sp_setup(struct net_device *dev)
 {
 	/* Finish setting up the DEVICE info. */
 	dev->netdev_ops		= &sp_netdev_ops;
+<<<<<<< HEAD
 	dev->destructor		= free_netdev;
 	dev->mtu		= SIXP_MTU;
 	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
 	dev->header_ops 	= &sp_header_ops;
+=======
+	dev->mtu		= SIXP_MTU;
+	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
+	dev->header_ops 	= &ax25_header_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->addr_len		= AX25_ADDR_LEN;
 	dev->type		= ARPHRD_AX25;
@@ -345,7 +411,11 @@ static void sp_setup(struct net_device *dev)
 
 	/* Only activated in AX.25 mode */
 	memcpy(dev->broadcast, &ax25_bcast, AX25_ADDR_LEN);
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, &ax25_defaddr, AX25_ADDR_LEN);
+=======
+	dev_addr_set(dev, (u8 *)&ax25_defaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->flags		= 0;
 }
@@ -367,10 +437,17 @@ static void sp_bump(struct sixpack *sp, char cmd)
 
 	sp->dev->stats.rx_bytes += count;
 
+<<<<<<< HEAD
 	if ((skb = dev_alloc_skb(count)) == NULL)
 		goto out_mem;
 
 	ptr = skb_put(skb, count);
+=======
+	if ((skb = dev_alloc_skb(count + 1)) == NULL)
+		goto out_mem;
+
+	ptr = skb_put(skb, count + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*ptr++ = cmd;	/* KISS command */
 
 	memcpy(ptr, sp->cooked_buf + 1, count);
@@ -404,7 +481,11 @@ static struct sixpack *sp_get(struct tty_struct *tty)
 	read_lock(&disc_data_lock);
 	sp = tty->disc_data;
 	if (sp)
+<<<<<<< HEAD
 		atomic_inc(&sp->refcnt);
+=======
+		refcount_inc(&sp->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&disc_data_lock);
 
 	return sp;
@@ -412,8 +493,13 @@ static struct sixpack *sp_get(struct tty_struct *tty)
 
 static void sp_put(struct sixpack *sp)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&sp->refcnt))
 		up(&sp->dead_sem);
+=======
+	if (refcount_dec_and_test(&sp->refcnt))
+		complete(&sp->dead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -451,6 +537,7 @@ out:
 
 /*
  * Handle the 'receiver data ready' interrupt.
+<<<<<<< HEAD
  * This function is called by the 'tty_io' module in the kernel when
  * a block of 6pack data has been received, which can now be decapsulated
  * and sent on to some IP layer for further processing.
@@ -460,6 +547,16 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 {
 	struct sixpack *sp;
 	unsigned char buf[512];
+=======
+ * This function is called by the tty module in the kernel when
+ * a block of 6pack data has been received, which can now be decapsulated
+ * and sent on to some IP layer for further processing.
+ */
+static void sixpack_receive_buf(struct tty_struct *tty, const u8 *cp,
+				const u8 *fp, size_t count)
+{
+	struct sixpack *sp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count1;
 
 	if (!count)
@@ -469,10 +566,14 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 	if (!sp)
 		return;
 
+<<<<<<< HEAD
 	memcpy(buf, cp, count < sizeof(buf) ? count : sizeof(buf));
 
 	/* Read the characters out of the buffer */
 
+=======
+	/* Read the characters out of the buffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count1 = count;
 	while (count) {
 		count--;
@@ -482,7 +583,11 @@ static void sixpack_receive_buf(struct tty_struct *tty,
 			continue;
 		}
 	}
+<<<<<<< HEAD
 	sixpack_decode(sp, buf, count1);
+=======
+	sixpack_decode(sp, cp, count1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp_put(sp);
 	tty_unthrottle(tty);
@@ -527,9 +632,15 @@ static inline void tnc_set_sync_state(struct sixpack *sp, int new_tnc_state)
 		__tnc_set_sync_state(sp, new_tnc_state);
 }
 
+<<<<<<< HEAD
 static void resync_tnc(unsigned long channel)
 {
 	struct sixpack *sp = (struct sixpack *) channel;
+=======
+static void resync_tnc(struct timer_list *t)
+{
+	struct sixpack *sp = from_timer(sp, t, resync_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static char resync_cmd = 0xe8;
 
 	/* clear any data that might have been received */
@@ -551,12 +662,16 @@ static void resync_tnc(unsigned long channel)
 
 
 	/* Start resync timer again -- the TNC might be still absent */
+<<<<<<< HEAD
 
 	del_timer(&sp->resync_t);
 	sp->resync_t.data	= (unsigned long) sp;
 	sp->resync_t.function	= resync_tnc;
 	sp->resync_t.expires	= jiffies + SIXP_RESYNC_TIMEOUT;
 	add_timer(&sp->resync_t);
+=======
+	mod_timer(&sp->resync_t, jiffies + SIXP_RESYNC_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int tnc_init(struct sixpack *sp)
@@ -567,11 +682,15 @@ static inline int tnc_init(struct sixpack *sp)
 
 	sp->tty->ops->write(sp->tty, &inbyte, 1);
 
+<<<<<<< HEAD
 	del_timer(&sp->resync_t);
 	sp->resync_t.data = (unsigned long) sp;
 	sp->resync_t.function = resync_tnc;
 	sp->resync_t.expires = jiffies + SIXP_RESYNC_TIMEOUT;
 	add_timer(&sp->resync_t);
+=======
+	mod_timer(&sp->resync_t, jiffies + SIXP_RESYNC_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -596,7 +715,12 @@ static int sixpack_open(struct tty_struct *tty)
 	if (tty->ops->write == NULL)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(struct sixpack), "sp%d", sp_setup);
+=======
+	dev = alloc_netdev(sizeof(struct sixpack), "sp%d", NET_NAME_UNKNOWN,
+			   sp_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev) {
 		err = -ENOMEM;
 		goto out;
@@ -606,8 +730,14 @@ static int sixpack_open(struct tty_struct *tty)
 	sp->dev = dev;
 
 	spin_lock_init(&sp->lock);
+<<<<<<< HEAD
 	atomic_set(&sp->refcnt, 1);
 	sema_init(&sp->dead_sem, 0);
+=======
+	spin_lock_init(&sp->rxlock);
+	refcount_set(&sp->refcnt, 1);
+	init_completion(&sp->dead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* !!! length of the buffers. MTU is IP MTU, not PACLEN!  */
 
@@ -649,11 +779,17 @@ static int sixpack_open(struct tty_struct *tty)
 
 	netif_start_queue(dev);
 
+<<<<<<< HEAD
 	init_timer(&sp->tx_t);
 	sp->tx_t.function = sp_xmit_on_air;
 	sp->tx_t.data = (unsigned long) sp;
 
 	init_timer(&sp->resync_t);
+=======
+	timer_setup(&sp->tx_t, sp_xmit_on_air, 0);
+
+	timer_setup(&sp->resync_t, resync_tnc, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_bh(&sp->lock);
 
@@ -662,7 +798,12 @@ static int sixpack_open(struct tty_struct *tty)
 	tty->receive_room = 65536;
 
 	/* Now we're ready to register. */
+<<<<<<< HEAD
 	if (register_netdev(dev))
+=======
+	err = register_netdev(dev);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 
 	tnc_init(sp);
@@ -673,8 +814,12 @@ out_free:
 	kfree(xbuff);
 	kfree(rbuff);
 
+<<<<<<< HEAD
 	if (dev)
 		free_netdev(dev);
+=======
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
@@ -691,10 +836,17 @@ static void sixpack_close(struct tty_struct *tty)
 {
 	struct sixpack *sp;
 
+<<<<<<< HEAD
 	write_lock_bh(&disc_data_lock);
 	sp = tty->disc_data;
 	tty->disc_data = NULL;
 	write_unlock_bh(&disc_data_lock);
+=======
+	write_lock_irq(&disc_data_lock);
+	sp = tty->disc_data;
+	tty->disc_data = NULL;
+	write_unlock_irq(&disc_data_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sp)
 		return;
 
@@ -702,6 +854,7 @@ static void sixpack_close(struct tty_struct *tty)
 	 * We have now ensured that nobody can start using ap from now on, but
 	 * we have to wait for all existing users to finish.
 	 */
+<<<<<<< HEAD
 	if (!atomic_dec_and_test(&sp->refcnt))
 		down(&sp->dead_sem);
 
@@ -718,6 +871,32 @@ static void sixpack_close(struct tty_struct *tty)
 /* Perform I/O control on an active 6pack channel. */
 static int sixpack_ioctl(struct tty_struct *tty, struct file *file,
 	unsigned int cmd, unsigned long arg)
+=======
+	if (!refcount_dec_and_test(&sp->refcnt))
+		wait_for_completion(&sp->dead);
+
+	/* We must stop the queue to avoid potentially scribbling
+	 * on the free buffers. The sp->dead completion is not sufficient
+	 * to protect us from sp->xbuff access.
+	 */
+	netif_stop_queue(sp->dev);
+
+	unregister_netdev(sp->dev);
+
+	del_timer_sync(&sp->tx_t);
+	del_timer_sync(&sp->resync_t);
+
+	/* Free all 6pack frame buffers after unreg. */
+	kfree(sp->rbuff);
+	kfree(sp->xbuff);
+
+	free_netdev(sp->dev);
+}
+
+/* Perform I/O control on an active 6pack channel. */
+static int sixpack_ioctl(struct tty_struct *tty, unsigned int cmd,
+		unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sixpack *sp = sp_get(tty);
 	struct net_device *dev;
@@ -752,16 +931,25 @@ static int sixpack_ioctl(struct tty_struct *tty, struct file *file,
 		err = 0;
 		break;
 
+<<<<<<< HEAD
 	 case SIOCSIFHWADDR: {
 		char addr[AX25_ADDR_LEN];
 
 		if (copy_from_user(&addr,
 		                   (void __user *) arg, AX25_ADDR_LEN)) {
+=======
+	case SIOCSIFHWADDR: {
+			char addr[AX25_ADDR_LEN];
+
+			if (copy_from_user(&addr,
+					   (void __user *)arg, AX25_ADDR_LEN)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EFAULT;
 				break;
 			}
 
 			netif_tx_lock_bh(dev);
+<<<<<<< HEAD
 			memcpy(dev->dev_addr, &addr, AX25_ADDR_LEN);
 			netif_tx_unlock_bh(dev);
 
@@ -771,6 +959,15 @@ static int sixpack_ioctl(struct tty_struct *tty, struct file *file,
 
 	default:
 		err = tty_mode_ioctl(tty, file, cmd, arg);
+=======
+			__dev_addr_set(dev, &addr, AX25_ADDR_LEN);
+			netif_tx_unlock_bh(dev);
+			err = 0;
+			break;
+		}
+	default:
+		err = tty_mode_ioctl(tty, cmd, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sp_put(sp);
@@ -778,6 +975,7 @@ static int sixpack_ioctl(struct tty_struct *tty, struct file *file,
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 static long sixpack_compat_ioctl(struct tty_struct * tty, struct file * file,
 				unsigned int cmd, unsigned long arg)
@@ -798,22 +996,36 @@ static long sixpack_compat_ioctl(struct tty_struct * tty, struct file * file,
 static struct tty_ldisc_ops sp_ldisc = {
 	.owner		= THIS_MODULE,
 	.magic		= TTY_LDISC_MAGIC,
+=======
+static struct tty_ldisc_ops sp_ldisc = {
+	.owner		= THIS_MODULE,
+	.num		= N_6PACK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "6pack",
 	.open		= sixpack_open,
 	.close		= sixpack_close,
 	.ioctl		= sixpack_ioctl,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= sixpack_compat_ioctl,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.receive_buf	= sixpack_receive_buf,
 	.write_wakeup	= sixpack_write_wakeup,
 };
 
 /* Initialize 6pack control device -- register 6pack line discipline */
 
+<<<<<<< HEAD
 static const char msg_banner[]  __initdata = KERN_INFO \
 	"AX.25: 6pack driver, " SIXPACK_VERSION "\n";
 static const char msg_regfail[] __initdata = KERN_ERR  \
+=======
+static const char msg_banner[]  __initconst = KERN_INFO \
+	"AX.25: 6pack driver, " SIXPACK_VERSION "\n";
+static const char msg_regfail[] __initconst = KERN_ERR  \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"6pack: can't register line discipline (err = %d)\n";
 
 static int __init sixpack_init_driver(void)
@@ -823,12 +1035,18 @@ static int __init sixpack_init_driver(void)
 	printk(msg_banner);
 
 	/* Register the provided line protocol discipline */
+<<<<<<< HEAD
 	if ((status = tty_register_ldisc(N_6PACK, &sp_ldisc)) != 0)
+=======
+	status = tty_register_ldisc(&sp_ldisc);
+	if (status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(msg_regfail, status);
 
 	return status;
 }
 
+<<<<<<< HEAD
 static const char msg_unregfail[] __exitdata = KERN_ERR \
 	"6pack: can't unregister line discipline (err = %d)\n";
 
@@ -838,6 +1056,11 @@ static void __exit sixpack_exit_driver(void)
 
 	if ((ret = tty_unregister_ldisc(N_6PACK)))
 		printk(msg_unregfail, ret);
+=======
+static void __exit sixpack_exit_driver(void)
+{
+	tty_unregister_ldisc(&sp_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* encode an AX.25 packet into 6pack */
@@ -890,6 +1113,15 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	if (sp->rx_count_cooked + 2 >= sizeof(sp->cooked_buf)) {
+		pr_err("6pack: cooked buffer overrun, data loss\n");
+		sp->rx_count = 0;
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = sp->raw_buf;
 	sp->cooked_buf[sp->rx_count_cooked++] =
 		buf[0] | ((buf[1] << 2) & 0xc0);
@@ -904,10 +1136,15 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
 
 static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
 {
+<<<<<<< HEAD
 	unsigned char channel;
 	int actual;
 
 	channel = cmd & SIXP_CHN_MASK;
+=======
+	int actual;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((cmd & SIXP_PRIO_DATA_MASK) != 0) {     /* idle ? */
 
 	/* RX and DCD flags can only be set in the same prio command,
@@ -946,6 +1183,7 @@ static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
         /* if the state byte has been received, the TNC is present,
            so the resync timer can be reset. */
 
+<<<<<<< HEAD
 	if (sp->tnc_state == TNC_IN_SYNC) {
 		del_timer(&sp->resync_t);
 		sp->resync_t.data	= (unsigned long) sp;
@@ -953,6 +1191,10 @@ static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
 		sp->resync_t.expires	= jiffies + SIXP_INIT_RESYNC_TIMEOUT;
 		add_timer(&sp->resync_t);
 	}
+=======
+	if (sp->tnc_state == TNC_IN_SYNC)
+		mod_timer(&sp->resync_t, jiffies + SIXP_INIT_RESYNC_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sp->status1 = cmd & SIXP_PRIO_DATA_MASK;
 }
@@ -961,10 +1203,16 @@ static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
 
 static void decode_std_command(struct sixpack *sp, unsigned char cmd)
 {
+<<<<<<< HEAD
 	unsigned char checksum = 0, rest = 0, channel;
 	short i;
 
 	channel = cmd & SIXP_CHN_MASK;
+=======
+	unsigned char checksum = 0, rest = 0;
+	short i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd & SIXP_CMD_MASK) {     /* normal command */
 	case SIXP_SEOF:
 		if ((sp->rx_count == 0) && (sp->rx_count_cooked == 0)) {
@@ -977,6 +1225,10 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
 			sp->led_state = 0x60;
 			/* fill trailing bytes with zeroes */
 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
+<<<<<<< HEAD
+=======
+			spin_lock_bh(&sp->rxlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rest = sp->rx_count;
 			if (rest != 0)
 				 for (i = rest; i <= 3; i++)
@@ -994,6 +1246,10 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
 				sp_bump(sp, 0);
 			}
 			sp->rx_count_cooked = 0;
+<<<<<<< HEAD
+=======
+			spin_unlock_bh(&sp->rxlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
@@ -1008,7 +1264,11 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
 /* decode a 6pack packet */
 
 static void
+<<<<<<< HEAD
 sixpack_decode(struct sixpack *sp, unsigned char *pre_rbuff, int count)
+=======
+sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char inbyte;
 	int count1;
@@ -1023,8 +1283,16 @@ sixpack_decode(struct sixpack *sp, unsigned char *pre_rbuff, int count)
 			decode_prio_command(sp, inbyte);
 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
 			decode_std_command(sp, inbyte);
+<<<<<<< HEAD
 		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
 			decode_data(sp, inbyte);
+=======
+		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
+			spin_lock_bh(&sp->rxlock);
+			decode_data(sp, inbyte);
+			spin_unlock_bh(&sp->rxlock);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

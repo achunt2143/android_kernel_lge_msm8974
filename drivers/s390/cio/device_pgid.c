@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  *  CCW device PGID and path verification I/O handling.
  *
  *    Copyright IBM Corp. 2002,2009
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  CCW device PGID and path verification I/O handling.
+ *
+ *    Copyright IBM Corp. 2002, 2009
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Cornelia Huck <cornelia.huck@de.ibm.com>
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
  *		 Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
@@ -9,9 +17,17 @@
 
 #include <linux/kernel.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/bitops.h>
+=======
+#include <linux/bitops.h>
+#include <linux/types.h>
+#include <linux/errno.h>
+#include <linux/slab.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ccwdev.h>
 #include <asm/cio.h>
 
@@ -23,6 +39,11 @@
 #define PGID_RETRIES	256
 #define PGID_TIMEOUT	(10 * HZ)
 
+<<<<<<< HEAD
+=======
+static void verify_start(struct ccw_device *cdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Process path verification data and report result.
  */
@@ -53,7 +74,11 @@ out:
 static void nop_build_cp(struct ccw_device *cdev)
 {
 	struct ccw_request *req = &cdev->private->req;
+<<<<<<< HEAD
 	struct ccw1 *cp = cdev->private->iccws;
+=======
+	struct ccw1 *cp = cdev->private->dma_area->iccws;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cp->cmd_code	= CCW_CMD_NOOP;
 	cp->cda		= 0;
@@ -70,8 +95,13 @@ static void nop_do(struct ccw_device *cdev)
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 	struct ccw_request *req = &cdev->private->req;
 
+<<<<<<< HEAD
 	/* Adjust lpm. */
 	req->lpm = lpm_adjust(req->lpm, sch->schib.pmcw.pam & sch->opm);
+=======
+	req->lpm = lpm_adjust(req->lpm, sch->schib.pmcw.pam & sch->opm &
+			      ~cdev->private->path_noirq_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!req->lpm)
 		goto out_nopath;
 	nop_build_cp(cdev);
@@ -102,10 +132,27 @@ static void nop_callback(struct ccw_device *cdev, void *data, int rc)
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 	struct ccw_request *req = &cdev->private->req;
 
+<<<<<<< HEAD
 	if (rc == 0)
 		sch->vpm |= req->lpm;
 	else if (rc != -EACCES)
 		goto err;
+=======
+	switch (rc) {
+	case 0:
+		sch->vpm |= req->lpm;
+		break;
+	case -ETIME:
+		cdev->private->path_noirq_mask |= req->lpm;
+		break;
+	case -EACCES:
+		cdev->private->path_notoper_mask |= req->lpm;
+		break;
+	default:
+		goto err;
+	}
+	/* Continue on the next path. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->lpm >>= 1;
 	nop_do(cdev);
 	return;
@@ -120,6 +167,7 @@ err:
 static void spid_build_cp(struct ccw_device *cdev, u8 fn)
 {
 	struct ccw_request *req = &cdev->private->req;
+<<<<<<< HEAD
 	struct ccw1 *cp = cdev->private->iccws;
 	int i = 8 - ffs(req->lpm);
 	struct pgid *pgid = &cdev->private->pgid[i];
@@ -127,11 +175,65 @@ static void spid_build_cp(struct ccw_device *cdev, u8 fn)
 	pgid->inf.fc	= fn;
 	cp->cmd_code	= CCW_CMD_SET_PGID;
 	cp->cda		= (u32) (addr_t) pgid;
+=======
+	struct ccw1 *cp = cdev->private->dma_area->iccws;
+	int i = pathmask_to_pos(req->lpm);
+	struct pgid *pgid = &cdev->private->dma_area->pgid[i];
+
+	pgid->inf.fc	= fn;
+	cp->cmd_code	= CCW_CMD_SET_PGID;
+	cp->cda		= virt_to_dma32(pgid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->count	= sizeof(*pgid);
 	cp->flags	= CCW_FLAG_SLI;
 	req->cp		= cp;
 }
 
+<<<<<<< HEAD
+=======
+static void pgid_wipeout_callback(struct ccw_device *cdev, void *data, int rc)
+{
+	if (rc) {
+		/* We don't know the path groups' state. Abort. */
+		verify_done(cdev, rc);
+		return;
+	}
+	/*
+	 * Path groups have been reset. Restart path verification but
+	 * leave paths in path_noirq_mask out.
+	 */
+	cdev->private->flags.pgid_unknown = 0;
+	verify_start(cdev);
+}
+
+/*
+ * Reset pathgroups and restart path verification, leave unusable paths out.
+ */
+static void pgid_wipeout_start(struct ccw_device *cdev)
+{
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	struct ccw_dev_id *id = &cdev->private->dev_id;
+	struct ccw_request *req = &cdev->private->req;
+	u8 fn;
+
+	CIO_MSG_EVENT(2, "wipe: device 0.%x.%04x: pvm=%02x nim=%02x\n",
+		      id->ssid, id->devno, cdev->private->pgid_valid_mask,
+		      cdev->private->path_noirq_mask);
+
+	/* Initialize request data. */
+	memset(req, 0, sizeof(*req));
+	req->timeout	= PGID_TIMEOUT;
+	req->maxretries	= PGID_RETRIES;
+	req->lpm	= sch->schib.pmcw.pam;
+	req->callback	= pgid_wipeout_callback;
+	fn = SPID_FUNC_DISBAND;
+	if (cdev->private->flags.mpath)
+		fn |= SPID_FUNC_MULTI_PATH;
+	spid_build_cp(cdev, fn);
+	ccw_request_start(cdev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Perform establish/resign SET PGID on a single path.
  */
@@ -157,11 +259,22 @@ static void spid_do(struct ccw_device *cdev)
 	return;
 
 out_nopath:
+<<<<<<< HEAD
 	verify_done(cdev, sch->vpm ? 0 : -EACCES);
 }
 
 static void verify_start(struct ccw_device *cdev);
 
+=======
+	if (cdev->private->flags.pgid_unknown) {
+		/* At least one SPID could be partially done. */
+		pgid_wipeout_start(cdev);
+		return;
+	}
+	verify_done(cdev, sch->vpm ? 0 : -EACCES);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Process SET PGID request result for a single path.
  */
@@ -174,7 +287,16 @@ static void spid_callback(struct ccw_device *cdev, void *data, int rc)
 	case 0:
 		sch->vpm |= req->lpm & sch->opm;
 		break;
+<<<<<<< HEAD
 	case -EACCES:
+=======
+	case -ETIME:
+		cdev->private->flags.pgid_unknown = 1;
+		cdev->private->path_noirq_mask |= req->lpm;
+		break;
+	case -EACCES:
+		cdev->private->path_notoper_mask |= req->lpm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case -EOPNOTSUPP:
 		if (cdev->private->flags.mpath) {
@@ -236,7 +358,11 @@ static int pgid_cmp(struct pgid *p1, struct pgid *p2)
 static void pgid_analyze(struct ccw_device *cdev, struct pgid **p,
 			 int *mismatch, u8 *reserved, u8 *reset)
 {
+<<<<<<< HEAD
 	struct pgid *pgid = &cdev->private->pgid[0];
+=======
+	struct pgid *pgid = &cdev->private->dma_area->pgid[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pgid *first = NULL;
 	int lpm;
 	int i;
@@ -278,7 +404,11 @@ static u8 pgid_to_donepm(struct ccw_device *cdev)
 		lpm = 0x80 >> i;
 		if ((cdev->private->pgid_valid_mask & lpm) == 0)
 			continue;
+<<<<<<< HEAD
 		pgid = &cdev->private->pgid[i];
+=======
+		pgid = &cdev->private->dma_area->pgid[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sch->opm & lpm) {
 			if (pgid->inf.ps.state1 != SNID_STATE1_GROUPED)
 				continue;
@@ -304,7 +434,12 @@ static void pgid_fill(struct ccw_device *cdev, struct pgid *pgid)
 	int i;
 
 	for (i = 0; i < 8; i++)
+<<<<<<< HEAD
 		memcpy(&cdev->private->pgid[i], pgid, sizeof(struct pgid));
+=======
+		memcpy(&cdev->private->dma_area->pgid[i], pgid,
+		       sizeof(struct pgid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -330,8 +465,14 @@ static void snid_done(struct ccw_device *cdev, int rc)
 	else {
 		donepm = pgid_to_donepm(cdev);
 		sch->vpm = donepm & sch->opm;
+<<<<<<< HEAD
 		cdev->private->pgid_todo_mask &= ~donepm;
 		cdev->private->pgid_reset_mask |= reset;
+=======
+		cdev->private->pgid_reset_mask |= reset;
+		cdev->private->pgid_todo_mask &=
+			~(donepm | cdev->private->path_noirq_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pgid_fill(cdev, pgid);
 	}
 out:
@@ -341,6 +482,13 @@ out:
 		      cdev->private->pgid_todo_mask, mismatch, reserved, reset);
 	switch (rc) {
 	case 0:
+<<<<<<< HEAD
+=======
+		if (cdev->private->flags.pgid_unknown) {
+			pgid_wipeout_start(cdev);
+			return;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Anything left to do? */
 		if (cdev->private->pgid_todo_mask == 0) {
 			verify_done(cdev, sch->vpm == 0 ? -EACCES : 0);
@@ -366,12 +514,21 @@ out:
 static void snid_build_cp(struct ccw_device *cdev)
 {
 	struct ccw_request *req = &cdev->private->req;
+<<<<<<< HEAD
 	struct ccw1 *cp = cdev->private->iccws;
 	int i = 8 - ffs(req->lpm);
 
 	/* Channel program setup. */
 	cp->cmd_code	= CCW_CMD_SENSE_PGID;
 	cp->cda		= (u32) (addr_t) &cdev->private->pgid[i];
+=======
+	struct ccw1 *cp = cdev->private->dma_area->iccws;
+	int i = pathmask_to_pos(req->lpm);
+
+	/* Channel program setup. */
+	cp->cmd_code	= CCW_CMD_SENSE_PGID;
+	cp->cda		= virt_to_dma32(&cdev->private->dma_area->pgid[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp->count	= sizeof(struct pgid);
 	cp->flags	= CCW_FLAG_SLI;
 	req->cp		= cp;
@@ -384,9 +541,16 @@ static void snid_do(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 	struct ccw_request *req = &cdev->private->req;
+<<<<<<< HEAD
 
 	/* Adjust lpm if paths are not set in pam. */
 	req->lpm = lpm_adjust(req->lpm, sch->schib.pmcw.pam);
+=======
+	int ret;
+
+	req->lpm = lpm_adjust(req->lpm, sch->schib.pmcw.pam &
+			      ~cdev->private->path_noirq_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!req->lpm)
 		goto out_nopath;
 	snid_build_cp(cdev);
@@ -394,7 +558,17 @@ static void snid_do(struct ccw_device *cdev)
 	return;
 
 out_nopath:
+<<<<<<< HEAD
 	snid_done(cdev, cdev->private->pgid_valid_mask ? 0 : -EACCES);
+=======
+	if (cdev->private->pgid_valid_mask)
+		ret = 0;
+	else if (cdev->private->path_noirq_mask)
+		ret = -ETIME;
+	else
+		ret = -EACCES;
+	snid_done(cdev, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -404,10 +578,28 @@ static void snid_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	struct ccw_request *req = &cdev->private->req;
 
+<<<<<<< HEAD
 	if (rc == 0)
 		cdev->private->pgid_valid_mask |= req->lpm;
 	else if (rc != -EACCES)
 		goto err;
+=======
+	switch (rc) {
+	case 0:
+		cdev->private->pgid_valid_mask |= req->lpm;
+		break;
+	case -ETIME:
+		cdev->private->flags.pgid_unknown = 1;
+		cdev->private->path_noirq_mask |= req->lpm;
+		break;
+	case -EACCES:
+		cdev->private->path_notoper_mask |= req->lpm;
+		break;
+	default:
+		goto err;
+	}
+	/* Continue on the next path. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->lpm >>= 1;
 	snid_do(cdev);
 	return;
@@ -427,6 +619,17 @@ static void verify_start(struct ccw_device *cdev)
 
 	sch->vpm = 0;
 	sch->lpm = sch->schib.pmcw.pam;
+<<<<<<< HEAD
+=======
+
+	/* Initialize PGID data. */
+	memset(cdev->private->dma_area->pgid, 0,
+	       sizeof(cdev->private->dma_area->pgid));
+	cdev->private->pgid_valid_mask = 0;
+	cdev->private->pgid_todo_mask = sch->schib.pmcw.pam;
+	cdev->private->path_notoper_mask = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize request data. */
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
@@ -459,6 +662,7 @@ static void verify_start(struct ccw_device *cdev)
  */
 void ccw_device_verify_start(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 
 	CIO_TRACE_EVENT(4, "vrfy");
@@ -467,6 +671,10 @@ void ccw_device_verify_start(struct ccw_device *cdev)
 	memset(cdev->private->pgid, 0, sizeof(cdev->private->pgid));
 	cdev->private->pgid_valid_mask = 0;
 	cdev->private->pgid_todo_mask = sch->schib.pmcw.pam;
+=======
+	CIO_TRACE_EVENT(4, "vrfy");
+	CIO_HEX_EVENT(4, &cdev->private->dev_id, sizeof(cdev->private->dev_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialize pathgroup and multipath state with target values.
 	 * They may change in the course of path verification.
@@ -474,6 +682,10 @@ void ccw_device_verify_start(struct ccw_device *cdev)
 	cdev->private->flags.pgroup = cdev->private->options.pgroup;
 	cdev->private->flags.mpath = cdev->private->options.mpath;
 	cdev->private->flags.doverify = 0;
+<<<<<<< HEAD
+=======
+	cdev->private->path_noirq_mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	verify_start(cdev);
 }
 
@@ -529,6 +741,7 @@ void ccw_device_disband_start(struct ccw_device *cdev)
 	ccw_request_start(cdev);
 }
 
+<<<<<<< HEAD
 static void stlck_build_cp(struct ccw_device *cdev, void *buf1, void *buf2)
 {
 	struct ccw_request *req = &cdev->private->req;
@@ -540,6 +753,24 @@ static void stlck_build_cp(struct ccw_device *cdev, void *buf1, void *buf2)
 	cp[0].flags = CCW_FLAG_CC;
 	cp[1].cmd_code = CCW_CMD_RELEASE;
 	cp[1].cda = (u32) (addr_t) buf2;
+=======
+struct stlck_data {
+	struct completion done;
+	int rc;
+};
+
+static void stlck_build_cp(struct ccw_device *cdev, void *buf1, void *buf2)
+{
+	struct ccw_request *req = &cdev->private->req;
+	struct ccw1 *cp = cdev->private->dma_area->iccws;
+
+	cp[0].cmd_code = CCW_CMD_STLCK;
+	cp[0].cda = virt_to_dma32(buf1);
+	cp[0].count = 32;
+	cp[0].flags = CCW_FLAG_CC;
+	cp[1].cmd_code = CCW_CMD_RELEASE;
+	cp[1].cda = virt_to_dma32(buf2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp[1].count = 32;
 	cp[1].flags = 0;
 	req->cp = cp;
@@ -547,7 +778,14 @@ static void stlck_build_cp(struct ccw_device *cdev, void *buf1, void *buf2)
 
 static void stlck_callback(struct ccw_device *cdev, void *data, int rc)
 {
+<<<<<<< HEAD
 	ccw_device_stlck_done(cdev, data, rc);
+=======
+	struct stlck_data *sdata = data;
+
+	sdata->rc = rc;
+	complete(&sdata->done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -558,11 +796,17 @@ static void stlck_callback(struct ccw_device *cdev, void *data, int rc)
  * @buf2: data pointer used in channel program
  *
  * Execute a channel program on @cdev to release an existing PGID reservation.
+<<<<<<< HEAD
  * When finished, call ccw_device_stlck_done with a return code specifying the
  * result.
  */
 void ccw_device_stlck_start(struct ccw_device *cdev, void *data, void *buf1,
 			    void *buf2)
+=======
+ */
+static void ccw_device_stlck_start(struct ccw_device *cdev, void *data,
+				   void *buf1, void *buf2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 	struct ccw_request *req = &cdev->private->req;
@@ -580,3 +824,53 @@ void ccw_device_stlck_start(struct ccw_device *cdev, void *data, void *buf1,
 	ccw_request_start(cdev);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Perform unconditional reserve + release.
+ */
+int ccw_device_stlck(struct ccw_device *cdev)
+{
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	struct stlck_data data;
+	u8 *buffer;
+	int rc;
+
+	/* Check if steal lock operation is valid for this device. */
+	if (cdev->drv) {
+		if (!cdev->private->options.force)
+			return -EINVAL;
+	}
+	buffer = kzalloc(64, GFP_DMA | GFP_KERNEL);
+	if (!buffer)
+		return -ENOMEM;
+	init_completion(&data.done);
+	data.rc = -EIO;
+	spin_lock_irq(&sch->lock);
+	rc = cio_enable_subchannel(sch, (u32)virt_to_phys(sch));
+	if (rc)
+		goto out_unlock;
+	/* Perform operation. */
+	cdev->private->state = DEV_STATE_STEAL_LOCK;
+	ccw_device_stlck_start(cdev, &data, &buffer[0], &buffer[32]);
+	spin_unlock_irq(&sch->lock);
+	/* Wait for operation to finish. */
+	if (wait_for_completion_interruptible(&data.done)) {
+		/* Got a signal. */
+		spin_lock_irq(&sch->lock);
+		ccw_request_cancel(cdev);
+		spin_unlock_irq(&sch->lock);
+		wait_for_completion(&data.done);
+	}
+	rc = data.rc;
+	/* Check results. */
+	spin_lock_irq(&sch->lock);
+	cio_disable_subchannel(sch);
+	cdev->private->state = DEV_STATE_BOXED;
+out_unlock:
+	spin_unlock_irq(&sch->lock);
+	kfree(buffer);
+
+	return rc;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

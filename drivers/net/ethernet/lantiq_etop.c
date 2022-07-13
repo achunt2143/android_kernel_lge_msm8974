@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   This program is free software; you can redistribute it and/or modify it
  *   under the terms of the GNU General Public License version 2 as published
@@ -11,6 +12,10 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   Copyright (C) 2011 John Crispin <blogic@openwrt.org>
  */
@@ -36,6 +41,10 @@
 #include <linux/io.h>
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/property.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/checksum.h>
 
@@ -75,8 +84,13 @@
 /* use 2 static channels for TX/RX */
 #define LTQ_ETOP_TX_CHANNEL	1
 #define LTQ_ETOP_RX_CHANNEL	6
+<<<<<<< HEAD
 #define IS_TX(x)		(x == LTQ_ETOP_TX_CHANNEL)
 #define IS_RX(x)		(x == LTQ_ETOP_RX_CHANNEL)
+=======
+#define IS_TX(x)		((x) == LTQ_ETOP_TX_CHANNEL)
+#define IS_RX(x)		((x) == LTQ_ETOP_RX_CHANNEL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ltq_etop_r32(x)		ltq_r32(ltq_etop_membase + (x))
 #define ltq_etop_w32(x, y)	ltq_w32(x, ltq_etop_membase + (y))
@@ -103,23 +117,43 @@ struct ltq_etop_priv {
 	struct resource *res;
 
 	struct mii_bus *mii_bus;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ltq_etop_chan ch[MAX_DMA_CHAN];
 	int tx_free[MAX_DMA_CHAN >> 1];
 
+<<<<<<< HEAD
+=======
+	int tx_burst_len;
+	int rx_burst_len;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 };
 
 static int
 ltq_etop_alloc_skb(struct ltq_etop_chan *ch)
 {
+<<<<<<< HEAD
 	ch->skb[ch->dma.desc] = netdev_alloc_skb(ch->netdev, MAX_DMA_DATA_LEN);
 	if (!ch->skb[ch->dma.desc])
 		return -ENOMEM;
 	ch->dma.desc_base[ch->dma.desc].addr = dma_map_single(NULL,
 		ch->skb[ch->dma.desc]->data, MAX_DMA_DATA_LEN,
 		DMA_FROM_DEVICE);
+=======
+	struct ltq_etop_priv *priv = netdev_priv(ch->netdev);
+
+	ch->skb[ch->dma.desc] = netdev_alloc_skb(ch->netdev, MAX_DMA_DATA_LEN);
+	if (!ch->skb[ch->dma.desc])
+		return -ENOMEM;
+	ch->dma.desc_base[ch->dma.desc].addr =
+		dma_map_single(&priv->pdev->dev, ch->skb[ch->dma.desc]->data,
+			       MAX_DMA_DATA_LEN, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ch->dma.desc_base[ch->dma.desc].addr =
 		CPHYSADDR(ch->skb[ch->dma.desc]->data);
 	ch->dma.desc_base[ch->dma.desc].ctl =
@@ -141,7 +175,11 @@ ltq_etop_hw_receive(struct ltq_etop_chan *ch)
 	spin_lock_irqsave(&priv->lock, flags);
 	if (ltq_etop_alloc_skb(ch)) {
 		netdev_err(ch->netdev,
+<<<<<<< HEAD
 			"failed to allocate new rx buffer, stopping DMA\n");
+=======
+			   "failed to allocate new rx buffer, stopping DMA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ltq_dma_close(&ch->dma);
 	}
 	ch->dma.desc++;
@@ -149,7 +187,10 @@ ltq_etop_hw_receive(struct ltq_etop_chan *ch)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	skb_put(skb, len);
+<<<<<<< HEAD
 	skb->dev = ch->netdev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->protocol = eth_type_trans(skb, ch->netdev);
 	netif_receive_skb(skb);
 }
@@ -159,6 +200,7 @@ ltq_etop_poll_rx(struct napi_struct *napi, int budget)
 {
 	struct ltq_etop_chan *ch = container_of(napi,
 				struct ltq_etop_chan, napi);
+<<<<<<< HEAD
 	int rx = 0;
 	int complete = 0;
 
@@ -177,6 +219,23 @@ ltq_etop_poll_rx(struct napi_struct *napi, int budget)
 		ltq_dma_ack_irq(&ch->dma);
 	}
 	return rx;
+=======
+	int work_done = 0;
+
+	while (work_done < budget) {
+		struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->dma.desc];
+
+		if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) != LTQ_DMA_C)
+			break;
+		ltq_etop_hw_receive(ch);
+		work_done++;
+	}
+	if (work_done < budget) {
+		napi_complete_done(&ch->napi, work_done);
+		ltq_dma_ack_irq(&ch->dma);
+	}
+	return work_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -195,7 +254,11 @@ ltq_etop_poll_tx(struct napi_struct *napi, int budget)
 		dev_kfree_skb_any(ch->skb[ch->tx_free]);
 		ch->skb[ch->tx_free] = NULL;
 		memset(&ch->dma.desc_base[ch->tx_free], 0,
+<<<<<<< HEAD
 			sizeof(struct ltq_dma_desc));
+=======
+		       sizeof(struct ltq_dma_desc));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->tx_free++;
 		ch->tx_free %= LTQ_DESC_NUM;
 	}
@@ -228,6 +291,10 @@ ltq_etop_free_channel(struct net_device *dev, struct ltq_etop_chan *ch)
 		free_irq(ch->dma.irq, priv);
 	if (IS_RX(ch->idx)) {
 		int desc;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
 			dev_kfree_skb_any(ch->skb[ch->dma.desc]);
 	}
@@ -250,11 +317,16 @@ ltq_etop_hw_init(struct net_device *dev)
 {
 	struct ltq_etop_priv *priv = netdev_priv(dev);
 	int i;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ltq_pmu_enable(PMU_PPE);
 
 	switch (priv->pldata->mii_mode) {
 	case PHY_INTERFACE_MODE_RMII:
+<<<<<<< HEAD
 		ltq_etop_w32_mask(ETOP_MII_MASK,
 			ETOP_MII_REVERSE, LTQ_ETOP_CFG);
 		break;
@@ -262,29 +334,62 @@ ltq_etop_hw_init(struct net_device *dev)
 	case PHY_INTERFACE_MODE_MII:
 		ltq_etop_w32_mask(ETOP_MII_MASK,
 			ETOP_MII_NORMAL, LTQ_ETOP_CFG);
+=======
+		ltq_etop_w32_mask(ETOP_MII_MASK, ETOP_MII_REVERSE,
+				  LTQ_ETOP_CFG);
+		break;
+
+	case PHY_INTERFACE_MODE_MII:
+		ltq_etop_w32_mask(ETOP_MII_MASK, ETOP_MII_NORMAL,
+				  LTQ_ETOP_CFG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		netdev_err(dev, "unknown mii mode %d\n",
+<<<<<<< HEAD
 			priv->pldata->mii_mode);
+=======
+			   priv->pldata->mii_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTSUPP;
 	}
 
 	/* enable crc generation */
 	ltq_etop_w32(PPE32_CGEN, LQ_PPE32_ENET_MAC_CFG);
 
+<<<<<<< HEAD
 	ltq_dma_init_port(DMA_PORT_ETOP);
+=======
+	ltq_dma_init_port(DMA_PORT_ETOP, priv->tx_burst_len, priv->rx_burst_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < MAX_DMA_CHAN; i++) {
 		int irq = LTQ_DMA_CH0_INT + i;
 		struct ltq_etop_chan *ch = &priv->ch[i];
 
+<<<<<<< HEAD
 		ch->idx = ch->dma.nr = i;
 
 		if (IS_TX(i)) {
 			ltq_dma_alloc_tx(&ch->dma);
 			request_irq(irq, ltq_etop_dma_irq, IRQF_DISABLED,
 				"etop_tx", priv);
+=======
+		ch->dma.nr = i;
+		ch->idx = ch->dma.nr;
+		ch->dma.dev = &priv->pdev->dev;
+
+		if (IS_TX(i)) {
+			ltq_dma_alloc_tx(&ch->dma);
+			err = request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
+			if (err) {
+				netdev_err(dev,
+					   "Unable to get Tx DMA IRQ %d\n",
+					   irq);
+				return err;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (IS_RX(i)) {
 			ltq_dma_alloc_rx(&ch->dma);
 			for (ch->dma.desc = 0; ch->dma.desc < LTQ_DESC_NUM;
@@ -292,8 +397,18 @@ ltq_etop_hw_init(struct net_device *dev)
 				if (ltq_etop_alloc_skb(ch))
 					return -ENOMEM;
 			ch->dma.desc = 0;
+<<<<<<< HEAD
 			request_irq(irq, ltq_etop_dma_irq, IRQF_DISABLED,
 				"etop_rx", priv);
+=======
+			err = request_irq(irq, ltq_etop_dma_irq, 0, "etop_rx", priv);
+			if (err) {
+				netdev_err(dev,
+					   "Unable to get Rx DMA IRQ %d\n",
+					   irq);
+				return err;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ch->dma.irq = irq;
 	}
@@ -303,6 +418,7 @@ ltq_etop_hw_init(struct net_device *dev)
 static void
 ltq_etop_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, "Lantiq ETOP");
 	strcpy(info->bus_info, "internal");
 	strcpy(info->version, DRV_VERSION);
@@ -330,13 +446,24 @@ ltq_etop_nway_reset(struct net_device *dev)
 	struct ltq_etop_priv *priv = netdev_priv(dev);
 
 	return phy_start_aneg(priv->phydev);
+=======
+	strscpy(info->driver, "Lantiq ETOP", sizeof(info->driver));
+	strscpy(info->bus_info, "internal", sizeof(info->bus_info));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops ltq_etop_ethtool_ops = {
 	.get_drvinfo = ltq_etop_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = ltq_etop_get_settings,
 	.set_settings = ltq_etop_set_settings,
 	.nway_reset = ltq_etop_nway_reset,
+=======
+	.nway_reset = phy_ethtool_nway_reset,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
@@ -379,6 +506,7 @@ static int
 ltq_etop_mdio_probe(struct net_device *dev)
 {
 	struct ltq_etop_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = NULL;
 	int phy_addr;
 
@@ -388,20 +516,31 @@ ltq_etop_mdio_probe(struct net_device *dev)
 			break;
 		}
 	}
+=======
+	struct phy_device *phydev;
+
+	phydev = phy_find_first(priv->mii_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!phydev) {
 		netdev_err(dev, "no PHY found\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	phydev = phy_connect(dev, dev_name(&phydev->dev), &ltq_etop_mdio_link,
 			0, priv->pldata->mii_mode);
+=======
+	phydev = phy_connect(dev, phydev_name(phydev),
+			     &ltq_etop_mdio_link, priv->pldata->mii_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(phydev)) {
 		netdev_err(dev, "Could not attach to PHY\n");
 		return PTR_ERR(phydev);
 	}
 
+<<<<<<< HEAD
 	phydev->supported &= (SUPPORTED_10baseT_Half
 			      | SUPPORTED_10baseT_Full
 			      | SUPPORTED_100baseT_Half
@@ -415,6 +554,11 @@ ltq_etop_mdio_probe(struct net_device *dev)
 	pr_info("%s: attached PHY [%s] (phy_addr=%s, irq=%d)\n",
 	       dev->name, phydev->drv->name,
 	       dev_name(&phydev->dev), phydev->irq);
+=======
+	phy_set_max_speed(phydev, SPEED_100);
+
+	phy_attached_info(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -423,7 +567,10 @@ static int
 ltq_etop_mdio_init(struct net_device *dev)
 {
 	struct ltq_etop_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	priv->mii_bus = mdiobus_alloc();
@@ -438,6 +585,7 @@ ltq_etop_mdio_init(struct net_device *dev)
 	priv->mii_bus->write = ltq_etop_mdio_wr;
 	priv->mii_bus->name = "ltq_mii";
 	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+<<<<<<< HEAD
 		priv->pdev->name, priv->pdev->id);
 	priv->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!priv->mii_bus->irq) {
@@ -451,6 +599,12 @@ ltq_etop_mdio_init(struct net_device *dev)
 	if (mdiobus_register(priv->mii_bus)) {
 		err = -ENXIO;
 		goto err_out_free_mdio_irq;
+=======
+		 priv->pdev->name, priv->pdev->id);
+	if (mdiobus_register(priv->mii_bus)) {
+		err = -ENXIO;
+		goto err_out_free_mdiobus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ltq_etop_mdio_probe(dev)) {
@@ -461,8 +615,11 @@ ltq_etop_mdio_init(struct net_device *dev)
 
 err_out_unregister_bus:
 	mdiobus_unregister(priv->mii_bus);
+<<<<<<< HEAD
 err_out_free_mdio_irq:
 	kfree(priv->mii_bus->irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_mdiobus:
 	mdiobus_free(priv->mii_bus);
 err_out:
@@ -474,9 +631,14 @@ ltq_etop_mdio_cleanup(struct net_device *dev)
 {
 	struct ltq_etop_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	phy_disconnect(priv->phydev);
 	mdiobus_unregister(priv->mii_bus);
 	kfree(priv->mii_bus->irq);
+=======
+	phy_disconnect(dev->phydev);
+	mdiobus_unregister(priv->mii_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdiobus_free(priv->mii_bus);
 }
 
@@ -492,9 +654,16 @@ ltq_etop_open(struct net_device *dev)
 		if (!IS_TX(i) && (!IS_RX(i)))
 			continue;
 		ltq_dma_open(&ch->dma);
+<<<<<<< HEAD
 		napi_enable(&ch->napi);
 	}
 	phy_start(priv->phydev);
+=======
+		ltq_dma_enable_irq(&ch->dma);
+		napi_enable(&ch->napi);
+	}
+	phy_start(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_tx_start_all_queues(dev);
 	return 0;
 }
@@ -506,7 +675,11 @@ ltq_etop_stop(struct net_device *dev)
 	int i;
 
 	netif_tx_stop_all_queues(dev);
+<<<<<<< HEAD
 	phy_stop(priv->phydev);
+=======
+	phy_stop(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < MAX_DMA_CHAN; i++) {
 		struct ltq_etop_chan *ch = &priv->ch[i];
 
@@ -518,7 +691,11 @@ ltq_etop_stop(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	int queue = skb_get_queue_mapping(skb);
@@ -533,12 +710,16 @@ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
 	len = skb->len < ETH_ZLEN ? ETH_ZLEN : skb->len;
 
 	if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) || ch->skb[ch->dma.desc]) {
+<<<<<<< HEAD
 		dev_kfree_skb_any(skb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_err(dev, "tx ring full\n");
 		netif_tx_stop_queue(txq);
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	/* dma needs to start on a 16 byte aligned address */
 	byte_offset = CPHYSADDR(skb->data) % 16;
 	ch->skb[ch->dma.desc] = skb;
@@ -548,6 +729,18 @@ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
 	spin_lock_irqsave(&priv->lock, flags);
 	desc->addr = ((unsigned int) dma_map_single(NULL, skb->data, len,
 						DMA_TO_DEVICE)) - byte_offset;
+=======
+	/* dma needs to start on a burst length value aligned address */
+	byte_offset = CPHYSADDR(skb->data) % (priv->tx_burst_len * 4);
+	ch->skb[ch->dma.desc] = skb;
+
+	netif_trans_update(dev);
+
+	spin_lock_irqsave(&priv->lock, flags);
+	desc->addr = ((unsigned int)dma_map_single(&priv->pdev->dev, skb->data, len,
+						DMA_TO_DEVICE)) - byte_offset;
+	/* Make sure the address is written before we give it to HW */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 	desc->ctl = LTQ_DMA_OWN | LTQ_DMA_SOP | LTQ_DMA_EOP |
 		LTQ_DMA_TX_OFFSET(byte_offset) | (len & LTQ_DMA_SIZE_MASK);
@@ -564,6 +757,7 @@ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
 static int
 ltq_etop_change_mtu(struct net_device *dev, int new_mtu)
 {
+<<<<<<< HEAD
 	int ret = eth_change_mtu(dev, new_mtu);
 
 	if (!ret) {
@@ -585,6 +779,18 @@ ltq_etop_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 	/* TODO: mii-toll reports "No MII transceiver present!." ?!*/
 	return phy_mii_ioctl(priv->phydev, rq, cmd);
+=======
+	struct ltq_etop_priv *priv = netdev_priv(dev);
+	unsigned long flags;
+
+	dev->mtu = new_mtu;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	ltq_etop_w32((ETOP_PLEN_UNDER << 16) | new_mtu, LTQ_ETOP_IGPLEN);
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -600,7 +806,11 @@ ltq_etop_set_mac_address(struct net_device *dev, void *p)
 		spin_lock_irqsave(&priv->lock, flags);
 		ltq_etop_w32(*((u32 *)dev->dev_addr), LTQ_ETOP_MAC_DA0);
 		ltq_etop_w32(*((u16 *)&dev->dev_addr[4]) << 16,
+<<<<<<< HEAD
 			LTQ_ETOP_MAC_DA1);
+=======
+			     LTQ_ETOP_MAC_DA1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&priv->lock, flags);
 	}
 	return ret;
@@ -621,6 +831,7 @@ ltq_etop_set_multicast_list(struct net_device *dev)
 	spin_unlock_irqrestore(&priv->lock, flags);
 }
 
+<<<<<<< HEAD
 static u16
 ltq_etop_select_queue(struct net_device *dev, struct sk_buff *skb)
 {
@@ -628,6 +839,8 @@ ltq_etop_select_queue(struct net_device *dev, struct sk_buff *skb)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 ltq_etop_init(struct net_device *dev)
 {
@@ -636,7 +849,10 @@ ltq_etop_init(struct net_device *dev)
 	int err;
 	bool random_mac = false;
 
+<<<<<<< HEAD
 	ether_setup(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = 10 * HZ;
 	err = ltq_etop_hw_init(dev);
 	if (err)
@@ -646,7 +862,11 @@ ltq_etop_init(struct net_device *dev)
 	memcpy(&mac, &priv->pldata->mac, sizeof(struct sockaddr));
 	if (!is_valid_ether_addr(mac.sa_data)) {
 		pr_warn("etop: invalid MAC, using random\n");
+<<<<<<< HEAD
 		random_ether_addr(mac.sa_data);
+=======
+		eth_random_addr(mac.sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		random_mac = true;
 	}
 
@@ -656,7 +876,11 @@ ltq_etop_init(struct net_device *dev)
 
 	/* Set addr_assign_type here, ltq_etop_set_mac_address would reset it. */
 	if (random_mac)
+<<<<<<< HEAD
 		dev->addr_assign_type |= NET_ADDR_RANDOM;
+=======
+		dev->addr_assign_type = NET_ADDR_RANDOM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ltq_etop_set_multicast_list(dev);
 	err = ltq_etop_mdio_init(dev);
@@ -673,7 +897,11 @@ err_hw:
 }
 
 static void
+<<<<<<< HEAD
 ltq_etop_tx_timeout(struct net_device *dev)
+=======
+ltq_etop_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -681,7 +909,11 @@ ltq_etop_tx_timeout(struct net_device *dev)
 	err = ltq_etop_hw_init(dev);
 	if (err)
 		goto err_hw;
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 	return;
 
@@ -695,11 +927,19 @@ static const struct net_device_ops ltq_eth_netdev_ops = {
 	.ndo_stop = ltq_etop_stop,
 	.ndo_start_xmit = ltq_etop_tx,
 	.ndo_change_mtu = ltq_etop_change_mtu,
+<<<<<<< HEAD
 	.ndo_do_ioctl = ltq_etop_ioctl,
 	.ndo_set_mac_address = ltq_etop_set_mac_address,
 	.ndo_validate_addr = eth_validate_addr,
 	.ndo_set_rx_mode = ltq_etop_set_multicast_list,
 	.ndo_select_queue = ltq_etop_select_queue,
+=======
+	.ndo_eth_ioctl = phy_do_ioctl,
+	.ndo_set_mac_address = ltq_etop_set_mac_address,
+	.ndo_validate_addr = eth_validate_addr,
+	.ndo_set_rx_mode = ltq_etop_set_multicast_list,
+	.ndo_select_queue = dev_pick_tx_zero,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_init = ltq_etop_init,
 	.ndo_tx_timeout = ltq_etop_tx_timeout,
 };
@@ -721,15 +961,24 @@ ltq_etop_probe(struct platform_device *pdev)
 	}
 
 	res = devm_request_mem_region(&pdev->dev, res->start,
+<<<<<<< HEAD
 		resource_size(res), dev_name(&pdev->dev));
+=======
+				      resource_size(res), dev_name(&pdev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res) {
 		dev_err(&pdev->dev, "failed to request etop resource\n");
 		err = -EBUSY;
 		goto err_out;
 	}
 
+<<<<<<< HEAD
 	ltq_etop_membase = devm_ioremap_nocache(&pdev->dev,
 		res->start, resource_size(res));
+=======
+	ltq_etop_membase = devm_ioremap(&pdev->dev, res->start,
+					resource_size(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ltq_etop_membase) {
 		dev_err(&pdev->dev, "failed to remap etop engine %d\n",
 			pdev->id);
@@ -751,6 +1000,7 @@ ltq_etop_probe(struct platform_device *pdev)
 	priv->pldata = dev_get_platdata(&pdev->dev);
 	priv->netdev = dev;
 	spin_lock_init(&priv->lock);
+<<<<<<< HEAD
 
 	for (i = 0; i < MAX_DMA_CHAN; i++) {
 		if (IS_TX(i))
@@ -759,6 +1009,29 @@ ltq_etop_probe(struct platform_device *pdev)
 		else if (IS_RX(i))
 			netif_napi_add(dev, &priv->ch[i].napi,
 				ltq_etop_poll_rx, 32);
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+
+	err = device_property_read_u32(&pdev->dev, "lantiq,tx-burst-length", &priv->tx_burst_len);
+	if (err < 0) {
+		dev_err(&pdev->dev, "unable to read tx-burst-length property\n");
+		goto err_free;
+	}
+
+	err = device_property_read_u32(&pdev->dev, "lantiq,rx-burst-length", &priv->rx_burst_len);
+	if (err < 0) {
+		dev_err(&pdev->dev, "unable to read rx-burst-length property\n");
+		goto err_free;
+	}
+
+	for (i = 0; i < MAX_DMA_CHAN; i++) {
+		if (IS_TX(i))
+			netif_napi_add_weight(dev, &priv->ch[i].napi,
+					      ltq_etop_poll_tx, 8);
+		else if (IS_RX(i))
+			netif_napi_add_weight(dev, &priv->ch[i].napi,
+					      ltq_etop_poll_rx, 32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->ch[i].netdev = dev;
 	}
 
@@ -770,13 +1043,21 @@ ltq_etop_probe(struct platform_device *pdev)
 	return 0;
 
 err_free:
+<<<<<<< HEAD
 	kfree(dev);
+=======
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit
 ltq_etop_remove(struct platform_device *pdev)
+=======
+static void ltq_etop_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 
@@ -786,6 +1067,7 @@ ltq_etop_remove(struct platform_device *pdev)
 		ltq_etop_mdio_cleanup(dev);
 		unregister_netdev(dev);
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -798,6 +1080,18 @@ static struct platform_driver ltq_mii_driver = {
 };
 
 int __init
+=======
+}
+
+static struct platform_driver ltq_mii_driver = {
+	.remove_new = ltq_etop_remove,
+	.driver = {
+		.name = "ltq_etop",
+	},
+};
+
+static int __init
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 init_ltq_etop(void)
 {
 	int ret = platform_driver_probe(&ltq_mii_driver, ltq_etop_probe);

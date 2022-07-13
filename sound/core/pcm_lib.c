@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Digital Audio (PCM) abstract layer
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Abramo Bagnara <abramo@alsa-project.org>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,12 @@
  */
 
 #include <linux/slab.h>
+=======
+ */
+
+#include <linux/slab.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <linux/math64.h>
 #include <linux/export.h>
@@ -31,7 +42,43 @@
 #include <sound/pcm_params.h>
 #include <sound/timer.h>
 
+<<<<<<< HEAD
 #define STRING_LENGTH_OF_INT 12
+=======
+#include "pcm_local.h"
+
+#ifdef CONFIG_SND_PCM_XRUN_DEBUG
+#define CREATE_TRACE_POINTS
+#include "pcm_trace.h"
+#else
+#define trace_hwptr(substream, pos, in_interrupt)
+#define trace_xrun(substream)
+#define trace_hw_ptr_error(substream, reason)
+#define trace_applptr(substream, prev, curr)
+#endif
+
+static int fill_silence_frames(struct snd_pcm_substream *substream,
+			       snd_pcm_uframes_t off, snd_pcm_uframes_t frames);
+
+
+static inline void update_silence_vars(struct snd_pcm_runtime *runtime,
+				       snd_pcm_uframes_t ptr,
+				       snd_pcm_uframes_t new_ptr)
+{
+	snd_pcm_sframes_t delta;
+
+	delta = new_ptr - ptr;
+	if (delta == 0)
+		return;
+	if (delta < 0)
+		delta += runtime->boundary;
+	if ((snd_pcm_uframes_t)delta < runtime->silence_filled)
+		runtime->silence_filled -= delta;
+	else
+		runtime->silence_filled = 0;
+	runtime->silence_start = new_ptr;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fill ring buffer with silence
@@ -46,6 +93,7 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	snd_pcm_uframes_t frames, ofs, transfer;
+<<<<<<< HEAD
 
 	if (runtime->silence_size < runtime->boundary) {
 		snd_pcm_sframes_t noise_dist, n;
@@ -62,12 +110,30 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 		if (runtime->silence_filled >= runtime->buffer_size)
 			return;
 		noise_dist = snd_pcm_playback_hw_avail(runtime) + runtime->silence_filled;
+=======
+	int err;
+
+	if (runtime->silence_size < runtime->boundary) {
+		snd_pcm_sframes_t noise_dist;
+		snd_pcm_uframes_t appl_ptr = READ_ONCE(runtime->control->appl_ptr);
+		update_silence_vars(runtime, runtime->silence_start, appl_ptr);
+		/* initialization outside pointer updates */
+		if (new_hw_ptr == ULONG_MAX)
+			new_hw_ptr = runtime->status->hw_ptr;
+		/* get hw_avail with the boundary crossing */
+		noise_dist = appl_ptr - new_hw_ptr;
+		if (noise_dist < 0)
+			noise_dist += runtime->boundary;
+		/* total noise distance */
+		noise_dist += runtime->silence_filled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (noise_dist >= (snd_pcm_sframes_t) runtime->silence_threshold)
 			return;
 		frames = runtime->silence_threshold - noise_dist;
 		if (frames > runtime->silence_size)
 			frames = runtime->silence_size;
 	} else {
+<<<<<<< HEAD
 		if (new_hw_ptr == ULONG_MAX) {	/* initialization */
 			snd_pcm_sframes_t avail = snd_pcm_playback_hw_avail(runtime);
 			if (avail > runtime->buffer_size)
@@ -89,12 +155,45 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 				runtime->silence_start = ofs;
 			}
 		}
+=======
+		/*
+		 * This filling mode aims at free-running mode (used for example by dmix),
+		 * which doesn't update the application pointer.
+		 */
+		snd_pcm_uframes_t hw_ptr = runtime->status->hw_ptr;
+		if (new_hw_ptr == ULONG_MAX) {
+			/*
+			 * Initialization, fill the whole unused buffer with silence.
+			 *
+			 * Usually, this is entered while stopped, before data is queued,
+			 * so both pointers are expected to be zero.
+			 */
+			snd_pcm_sframes_t avail = runtime->control->appl_ptr - hw_ptr;
+			if (avail < 0)
+				avail += runtime->boundary;
+			/*
+			 * In free-running mode, appl_ptr will be zero even while running,
+			 * so we end up with a huge number. There is no useful way to
+			 * handle this, so we just clear the whole buffer.
+			 */
+			runtime->silence_filled = avail > runtime->buffer_size ? 0 : avail;
+			runtime->silence_start = hw_ptr;
+		} else {
+			/* Silence the just played area immediately */
+			update_silence_vars(runtime, hw_ptr, new_hw_ptr);
+		}
+		/*
+		 * In this mode, silence_filled actually includes the valid
+		 * sample data from the user.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		frames = runtime->buffer_size - runtime->silence_filled;
 	}
 	if (snd_BUG_ON(frames > runtime->buffer_size))
 		return;
 	if (frames == 0)
 		return;
+<<<<<<< HEAD
 	ofs = runtime->silence_start % runtime->buffer_size;
 	while (frames > 0) {
 		transfer = ofs + frames > runtime->buffer_size ? runtime->buffer_size - ofs : frames;
@@ -129,6 +228,18 @@ void snd_pcm_playback_silence(struct snd_pcm_substream *substream, snd_pcm_ufram
 		frames -= transfer;
 		ofs = 0;
 	}
+=======
+	ofs = (runtime->silence_start + runtime->silence_filled) % runtime->buffer_size;
+	do {
+		transfer = ofs + frames > runtime->buffer_size ? runtime->buffer_size - ofs : frames;
+		err = fill_silence_frames(substream, ofs, transfer);
+		snd_BUG_ON(err < 0);
+		runtime->silence_filled += transfer;
+		frames -= transfer;
+		ofs = 0;
+	} while (frames > 0);
+	snd_pcm_dma_buffer_sync(substream, SNDRV_DMA_SYNC_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SND_DEBUG
@@ -147,10 +258,13 @@ EXPORT_SYMBOL(snd_pcm_debug_name);
 #define XRUN_DEBUG_BASIC	(1<<0)
 #define XRUN_DEBUG_STACK	(1<<1)	/* dump also stack */
 #define XRUN_DEBUG_JIFFIESCHECK	(1<<2)	/* do jiffies check */
+<<<<<<< HEAD
 #define XRUN_DEBUG_PERIODUPDATE	(1<<3)	/* full period update info */
 #define XRUN_DEBUG_HWPTRUPDATE	(1<<4)	/* full hwptr update info */
 #define XRUN_DEBUG_LOG		(1<<5)	/* show last 10 positions on err */
 #define XRUN_DEBUG_LOGONCE	(1<<6)	/* do above only once */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SND_PCM_XRUN_DEBUG
 
@@ -165,22 +279,43 @@ EXPORT_SYMBOL(snd_pcm_debug_name);
 			dump_stack();				\
 	} while (0)
 
+<<<<<<< HEAD
 static void xrun(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
 	if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE)
 		snd_pcm_gettime(runtime, (struct timespec *)&runtime->status->tstamp);
+=======
+/* call with stream lock held */
+void __snd_pcm_xrun(struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+
+	trace_xrun(substream);
+	if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE) {
+		struct timespec64 tstamp;
+
+		snd_pcm_gettime(runtime, &tstamp);
+		runtime->status->tstamp.tv_sec = tstamp.tv_sec;
+		runtime->status->tstamp.tv_nsec = tstamp.tv_nsec;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
 	if (xrun_debug(substream, XRUN_DEBUG_BASIC)) {
 		char name[16];
 		snd_pcm_debug_name(substream, name, sizeof(name));
+<<<<<<< HEAD
 		snd_printd(KERN_DEBUG "XRUN: %s\n", name);
+=======
+		pcm_warn(substream->pcm, "XRUN: %s\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_stack_on_xrun(substream);
 	}
 }
 
 #ifdef CONFIG_SND_PCM_XRUN_DEBUG
+<<<<<<< HEAD
 #define hw_ptr_error(substream, fmt, args...)				\
 	do {								\
 		if (xrun_debug(substream, XRUN_DEBUG_BASIC)) {		\
@@ -188,10 +323,19 @@ static void xrun(struct snd_pcm_substream *substream)
 			if (printk_ratelimit()) {			\
 				snd_printd("PCM: " fmt, ##args);	\
 			}						\
+=======
+#define hw_ptr_error(substream, in_interrupt, reason, fmt, args...)	\
+	do {								\
+		trace_hw_ptr_error(substream, reason);	\
+		if (xrun_debug(substream, XRUN_DEBUG_BASIC)) {		\
+			pr_err_ratelimited("ALSA: PCM: [%c] " reason ": " fmt, \
+					   (in_interrupt) ? 'Q' : 'P', ##args);	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dump_stack_on_xrun(substream);			\
 		}							\
 	} while (0)
 
+<<<<<<< HEAD
 #define XRUN_LOG_CNT	10
 
 struct hwptr_log_entry {
@@ -274,6 +418,11 @@ static void xrun_log_show(struct snd_pcm_substream *substream)
 #define hw_ptr_error(substream, fmt, args...) do { } while (0)
 #define xrun_log(substream, pos, in_interrupt)	do { } while (0)
 #define xrun_log_show(substream)	do { } while (0)
+=======
+#else /* ! CONFIG_SND_PCM_XRUN_DEBUG */
+
+#define hw_ptr_error(substream, fmt, args...) do { } while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -282,6 +431,7 @@ int snd_pcm_update_state(struct snd_pcm_substream *substream,
 {
 	snd_pcm_uframes_t avail;
 
+<<<<<<< HEAD
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		avail = snd_pcm_playback_avail(runtime);
 	else
@@ -289,13 +439,23 @@ int snd_pcm_update_state(struct snd_pcm_substream *substream,
 	if (avail > runtime->avail_max)
 		runtime->avail_max = avail;
 	if (runtime->status->state == SNDRV_PCM_STATE_DRAINING) {
+=======
+	avail = snd_pcm_avail(substream);
+	if (avail > runtime->avail_max)
+		runtime->avail_max = avail;
+	if (runtime->state == SNDRV_PCM_STATE_DRAINING) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (avail >= runtime->buffer_size) {
 			snd_pcm_drain_done(substream);
 			return -EPIPE;
 		}
 	} else {
 		if (avail >= runtime->stop_threshold) {
+<<<<<<< HEAD
 			xrun(substream);
+=======
+			__snd_pcm_xrun(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPIPE;
 		}
 	}
@@ -307,6 +467,59 @@ int snd_pcm_update_state(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void update_audio_tstamp(struct snd_pcm_substream *substream,
+				struct timespec64 *curr_tstamp,
+				struct timespec64 *audio_tstamp)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	u64 audio_frames, audio_nsecs;
+	struct timespec64 driver_tstamp;
+
+	if (runtime->tstamp_mode != SNDRV_PCM_TSTAMP_ENABLE)
+		return;
+
+	if (!(substream->ops->get_time_info) ||
+		(runtime->audio_tstamp_report.actual_type ==
+			SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT)) {
+
+		/*
+		 * provide audio timestamp derived from pointer position
+		 * add delay only if requested
+		 */
+
+		audio_frames = runtime->hw_ptr_wrap + runtime->status->hw_ptr;
+
+		if (runtime->audio_tstamp_config.report_delay) {
+			if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+				audio_frames -=  runtime->delay;
+			else
+				audio_frames +=  runtime->delay;
+		}
+		audio_nsecs = div_u64(audio_frames * 1000000000LL,
+				runtime->rate);
+		*audio_tstamp = ns_to_timespec64(audio_nsecs);
+	}
+
+	if (runtime->status->audio_tstamp.tv_sec != audio_tstamp->tv_sec ||
+	    runtime->status->audio_tstamp.tv_nsec != audio_tstamp->tv_nsec) {
+		runtime->status->audio_tstamp.tv_sec = audio_tstamp->tv_sec;
+		runtime->status->audio_tstamp.tv_nsec = audio_tstamp->tv_nsec;
+		runtime->status->tstamp.tv_sec = curr_tstamp->tv_sec;
+		runtime->status->tstamp.tv_nsec = curr_tstamp->tv_nsec;
+	}
+
+
+	/*
+	 * re-take a driver timestamp to let apps detect if the reference tstamp
+	 * read by low-level hardware was provided with a delay
+	 */
+	snd_pcm_gettime(substream->runtime, &driver_tstamp);
+	runtime->driver_tstamp = driver_tstamp;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 				  unsigned int in_interrupt)
 {
@@ -315,28 +528,74 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	snd_pcm_uframes_t old_hw_ptr, new_hw_ptr, hw_base;
 	snd_pcm_sframes_t hdelta, delta;
 	unsigned long jdelta;
+<<<<<<< HEAD
 
 	old_hw_ptr = runtime->status->hw_ptr;
 	pos = substream->ops->pointer(substream);
 	if (pos == SNDRV_PCM_POS_XRUN) {
 		xrun(substream);
+=======
+	unsigned long curr_jiffies;
+	struct timespec64 curr_tstamp;
+	struct timespec64 audio_tstamp;
+	int crossed_boundary = 0;
+
+	old_hw_ptr = runtime->status->hw_ptr;
+
+	/*
+	 * group pointer, time and jiffies reads to allow for more
+	 * accurate correlations/corrections.
+	 * The values are stored at the end of this routine after
+	 * corrections for hw_ptr position
+	 */
+	pos = substream->ops->pointer(substream);
+	curr_jiffies = jiffies;
+	if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE) {
+		if ((substream->ops->get_time_info) &&
+			(runtime->audio_tstamp_config.type_requested != SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT)) {
+			substream->ops->get_time_info(substream, &curr_tstamp,
+						&audio_tstamp,
+						&runtime->audio_tstamp_config,
+						&runtime->audio_tstamp_report);
+
+			/* re-test in case tstamp type is not supported in hardware and was demoted to DEFAULT */
+			if (runtime->audio_tstamp_report.actual_type == SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT)
+				snd_pcm_gettime(runtime, &curr_tstamp);
+		} else
+			snd_pcm_gettime(runtime, &curr_tstamp);
+	}
+
+	if (pos == SNDRV_PCM_POS_XRUN) {
+		__snd_pcm_xrun(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPIPE;
 	}
 	if (pos >= runtime->buffer_size) {
 		if (printk_ratelimit()) {
 			char name[16];
 			snd_pcm_debug_name(substream, name, sizeof(name));
+<<<<<<< HEAD
 			xrun_log_show(substream);
 			snd_printd(KERN_ERR  "BUG: %s, pos = %ld, "
 				   "buffer size = %ld, period size = %ld\n",
 				   name, pos, runtime->buffer_size,
 				   runtime->period_size);
+=======
+			pcm_err(substream->pcm,
+				"invalid position: %s, pos = %ld, buffer size = %ld, period size = %ld\n",
+				name, pos, runtime->buffer_size,
+				runtime->period_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pos = 0;
 	}
 	pos -= pos % runtime->min_align;
+<<<<<<< HEAD
 	if (xrun_debug(substream, XRUN_DEBUG_LOG))
 		xrun_log(substream, pos, in_interrupt);
+=======
+	trace_hwptr(substream, pos, in_interrupt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw_base = runtime->hw_ptr_base;
 	new_hw_ptr = hw_base + pos;
 	if (in_interrupt) {
@@ -345,11 +604,21 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		delta = runtime->hw_ptr_interrupt + runtime->period_size;
 		if (delta > new_hw_ptr) {
 			/* check for double acknowledged interrupts */
+<<<<<<< HEAD
 			hdelta = jiffies - runtime->hw_ptr_jiffies;
 			if (hdelta > runtime->hw_ptr_buffer_jiffies/2) {
 				hw_base += runtime->buffer_size;
 				if (hw_base >= runtime->boundary)
 					hw_base = 0;
+=======
+			hdelta = curr_jiffies - runtime->hw_ptr_jiffies;
+			if (hdelta > runtime->hw_ptr_buffer_jiffies/2 + 1) {
+				hw_base += runtime->buffer_size;
+				if (hw_base >= runtime->boundary) {
+					hw_base = 0;
+					crossed_boundary++;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				new_hw_ptr = hw_base + pos;
 				goto __delta;
 			}
@@ -359,14 +628,22 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	/* pointer crosses the end of the ring buffer */
 	if (new_hw_ptr < old_hw_ptr) {
 		hw_base += runtime->buffer_size;
+<<<<<<< HEAD
 		if (hw_base >= runtime->boundary)
 			hw_base = 0;
+=======
+		if (hw_base >= runtime->boundary) {
+			hw_base = 0;
+			crossed_boundary++;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_hw_ptr = hw_base + pos;
 	}
       __delta:
 	delta = new_hw_ptr - old_hw_ptr;
 	if (delta < 0)
 		delta += runtime->boundary;
+<<<<<<< HEAD
 	if (xrun_debug(substream, in_interrupt ?
 			XRUN_DEBUG_PERIODUPDATE : XRUN_DEBUG_HWPTRUPDATE)) {
 		char name[16];
@@ -383,6 +660,8 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			   (unsigned long)new_hw_ptr,
 			   (unsigned long)runtime->hw_ptr_base);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (runtime->no_period_wakeup) {
 		snd_pcm_sframes_t xrun_threshold;
@@ -390,7 +669,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		 * Without regular period interrupts, we have to check
 		 * the elapsed time to detect xruns.
 		 */
+<<<<<<< HEAD
 		jdelta = jiffies - runtime->hw_ptr_jiffies;
+=======
+		jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (jdelta < runtime->hw_ptr_buffer_jiffies / 2)
 			goto no_delta_check;
 		hdelta = jdelta - delta * HZ / runtime->rate;
@@ -398,8 +681,15 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		while (hdelta > xrun_threshold) {
 			delta += runtime->buffer_size;
 			hw_base += runtime->buffer_size;
+<<<<<<< HEAD
 			if (hw_base >= runtime->boundary)
 				hw_base = 0;
+=======
+			if (hw_base >= runtime->boundary) {
+				hw_base = 0;
+				crossed_boundary++;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new_hw_ptr = hw_base + pos;
 			hdelta -= runtime->hw_ptr_buffer_jiffies;
 		}
@@ -408,6 +698,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 
 	/* something must be really wrong */
 	if (delta >= runtime->buffer_size + runtime->period_size) {
+<<<<<<< HEAD
 		hw_ptr_error(substream,
 			       "Unexpected hw_pointer value %s"
 			       "(stream=%i, pos=%ld, new_hw_ptr=%ld, "
@@ -415,6 +706,12 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 				     in_interrupt ? "[Q] " : "[P]",
 				     substream->stream, (long)pos,
 				     (long)new_hw_ptr, (long)old_hw_ptr);
+=======
+		hw_ptr_error(substream, in_interrupt, "Unexpected hw_ptr",
+			     "(stream=%i, pos=%ld, new_hw_ptr=%ld, old_hw_ptr=%ld)\n",
+			     substream->stream, (long)pos,
+			     (long)new_hw_ptr, (long)old_hw_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -432,7 +729,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	if (hdelta < runtime->delay)
 		goto no_jiffies_check;
 	hdelta -= runtime->delay;
+<<<<<<< HEAD
 	jdelta = jiffies - runtime->hw_ptr_jiffies;
+=======
+	jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (((hdelta * HZ) / runtime->rate) > jdelta + HZ/100) {
 		delta = jdelta /
 			(((runtime->period_size * HZ) / runtime->rate)
@@ -444,6 +745,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		/* the delta value is small or zero in most cases */
 		while (delta > 0) {
 			new_hw_ptr += runtime->period_size;
+<<<<<<< HEAD
 			if (new_hw_ptr >= runtime->boundary)
 				new_hw_ptr -= runtime->boundary;
 			delta--;
@@ -454,6 +756,17 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			     "(pos=%ld, delta=%ld, period=%ld, "
 			     "jdelta=%lu/%lu/%lu, hw_ptr=%ld/%ld)\n",
 			     in_interrupt ? "[Q] " : "",
+=======
+			if (new_hw_ptr >= runtime->boundary) {
+				new_hw_ptr -= runtime->boundary;
+				crossed_boundary--;
+			}
+			delta--;
+		}
+		/* align hw_base to buffer_size */
+		hw_ptr_error(substream, in_interrupt, "hw_ptr skipping",
+			     "(pos=%ld, delta=%ld, period=%ld, jdelta=%lu/%lu/%lu, hw_ptr=%ld/%ld)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     (long)pos, (long)hdelta,
 			     (long)runtime->period_size, jdelta,
 			     ((hdelta * HZ) / runtime->rate), hw_base,
@@ -465,19 +778,33 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	}
  no_jiffies_check:
 	if (delta > runtime->period_size + runtime->period_size / 2) {
+<<<<<<< HEAD
 		hw_ptr_error(substream,
 			     "Lost interrupts? %s"
 			     "(stream=%i, delta=%ld, new_hw_ptr=%ld, "
 			     "old_hw_ptr=%ld)\n",
 			     in_interrupt ? "[Q] " : "",
+=======
+		hw_ptr_error(substream, in_interrupt,
+			     "Lost interrupts?",
+			     "(stream=%i, delta=%ld, new_hw_ptr=%ld, old_hw_ptr=%ld)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     substream->stream, (long)delta,
 			     (long)new_hw_ptr,
 			     (long)old_hw_ptr);
 	}
 
  no_delta_check:
+<<<<<<< HEAD
 	if (runtime->status->hw_ptr == new_hw_ptr)
 		return 0;
+=======
+	if (runtime->status->hw_ptr == new_hw_ptr) {
+		runtime->hw_ptr_jiffies = curr_jiffies;
+		update_audio_tstamp(substream, &curr_tstamp, &audio_tstamp);
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
 	    runtime->silence_size > 0)
@@ -494,9 +821,19 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	}
 	runtime->hw_ptr_base = hw_base;
 	runtime->status->hw_ptr = new_hw_ptr;
+<<<<<<< HEAD
 	runtime->hw_ptr_jiffies = jiffies;
 	if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE)
 		snd_pcm_gettime(runtime, (struct timespec *)&runtime->status->tstamp);
+=======
+	runtime->hw_ptr_jiffies = curr_jiffies;
+	if (crossed_boundary) {
+		snd_BUG_ON(crossed_boundary != 1);
+		runtime->hw_ptr_wrap += runtime->boundary;
+	}
+
+	update_audio_tstamp(substream, &curr_tstamp, &audio_tstamp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return snd_pcm_update_state(substream, runtime);
 }
@@ -515,7 +852,12 @@ int snd_pcm_update_hw_ptr(struct snd_pcm_substream *substream)
  *
  * Sets the given PCM operators to the pcm instance.
  */
+<<<<<<< HEAD
 void snd_pcm_set_ops(struct snd_pcm *pcm, int direction, struct snd_pcm_ops *ops)
+=======
+void snd_pcm_set_ops(struct snd_pcm *pcm, int direction,
+		     const struct snd_pcm_ops *ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_str *stream = &pcm->streams[direction];
 	struct snd_pcm_substream *substream;
@@ -523,11 +865,18 @@ void snd_pcm_set_ops(struct snd_pcm *pcm, int direction, struct snd_pcm_ops *ops
 	for (substream = stream->substream; substream != NULL; substream = substream->next)
 		substream->ops = ops;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_pcm_set_ops);
 
 /**
  * snd_pcm_sync - set the PCM sync id
+=======
+EXPORT_SYMBOL(snd_pcm_set_ops);
+
+/**
+ * snd_pcm_set_sync - set the PCM sync id
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @substream: the pcm substream
  *
  * Sets the PCM sync identifier for the card.
@@ -541,7 +890,10 @@ void snd_pcm_set_sync(struct snd_pcm_substream *substream)
 	runtime->sync.id32[2] = -1;
 	runtime->sync.id32[3] = -1;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_set_sync);
 
 /*
@@ -592,7 +944,10 @@ static inline unsigned int muldiv32(unsigned int a, unsigned int b,
 {
 	u_int64_t n = (u_int64_t) a * b;
 	if (c == 0) {
+<<<<<<< HEAD
 		snd_BUG_ON(!n);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*r = 0;
 		return UINT_MAX;
 	}
@@ -613,7 +968,12 @@ static inline unsigned int muldiv32(unsigned int a, unsigned int b,
  * The interval is changed to the range satisfying both intervals.
  * The interval status (min, max, integer, etc.) are evaluated.
  *
+<<<<<<< HEAD
  * Returns non-zero if the value is changed, zero if not changed.
+=======
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_interval_refine(struct snd_interval *i, const struct snd_interval *v)
 {
@@ -657,32 +1017,59 @@ int snd_interval_refine(struct snd_interval *i, const struct snd_interval *v)
 	}
 	return changed;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_interval_refine);
 
 static int snd_interval_refine_first(struct snd_interval *i)
 {
+<<<<<<< HEAD
+=======
+	const unsigned int last_max = i->max;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(snd_interval_empty(i)))
 		return -EINVAL;
 	if (snd_interval_single(i))
 		return 0;
 	i->max = i->min;
+<<<<<<< HEAD
 	i->openmax = i->openmin;
 	if (i->openmax)
 		i->max++;
+=======
+	if (i->openmin)
+		i->max++;
+	/* only exclude max value if also excluded before refine */
+	i->openmax = (i->openmax && i->max >= last_max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
 static int snd_interval_refine_last(struct snd_interval *i)
 {
+<<<<<<< HEAD
+=======
+	const unsigned int last_min = i->min;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_BUG_ON(snd_interval_empty(i)))
 		return -EINVAL;
 	if (snd_interval_single(i))
 		return 0;
 	i->min = i->max;
+<<<<<<< HEAD
 	i->openmin = i->openmax;
 	if (i->openmin)
 		i->min--;
+=======
+	if (i->openmax)
+		i->min--;
+	/* only exclude min value if also excluded before refine */
+	i->openmin = (i->openmin && i->min <= last_min);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -812,10 +1199,18 @@ void snd_interval_mulkdiv(const struct snd_interval *a, unsigned int k,
  * @nump: pointer to store the resultant numerator
  * @denp: pointer to store the resultant denominator
  *
+<<<<<<< HEAD
  * Returns non-zero if the value is changed, zero if not changed.
  */
 int snd_interval_ratnum(struct snd_interval *i,
 			unsigned int rats_count, struct snd_ratnum *rats,
+=======
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+ */
+int snd_interval_ratnum(struct snd_interval *i,
+			unsigned int rats_count, const struct snd_ratnum *rats,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int *nump, unsigned int *denp)
 {
 	unsigned int best_num, best_den;
@@ -919,7 +1314,10 @@ int snd_interval_ratnum(struct snd_interval *i,
 	}
 	return err;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_interval_ratnum);
 
 /**
@@ -930,10 +1328,19 @@ EXPORT_SYMBOL(snd_interval_ratnum);
  * @nump: pointer to store the resultant numerator
  * @denp: pointer to store the resultant denominator
  *
+<<<<<<< HEAD
  * Returns non-zero if the value is changed, zero if not changed.
  */
 static int snd_interval_ratden(struct snd_interval *i,
 			       unsigned int rats_count, struct snd_ratden *rats,
+=======
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+ */
+static int snd_interval_ratden(struct snd_interval *i,
+			       unsigned int rats_count,
+			       const struct snd_ratden *rats,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       unsigned int *nump, unsigned int *denp)
 {
 	unsigned int best_num, best_diff, best_den;
@@ -1029,10 +1436,18 @@ static int snd_interval_ratden(struct snd_interval *i,
  * When mask is non-zero, only the elements corresponding to bit 1 are
  * evaluated.
  *
+<<<<<<< HEAD
  * Returns non-zero if the value is changed, zero if not changed.
  */
 int snd_interval_list(struct snd_interval *i, unsigned int count,
 		      unsigned int *list, unsigned int mask)
+=======
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+ */
+int snd_interval_list(struct snd_interval *i, unsigned int count,
+		      const unsigned int *list, unsigned int mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         unsigned int k;
 	struct snd_interval list_range;
@@ -1054,6 +1469,7 @@ int snd_interval_list(struct snd_interval *i, unsigned int count,
         }
 	return snd_interval_refine(i, &list_range);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_interval_list);
 
@@ -1069,6 +1485,78 @@ static int snd_interval_step(struct snd_interval *i, unsigned int min, unsigned 
 	n = (i->max - min) % step;
 	if (n != 0 || i->openmax) {
 		i->max -= n;
+=======
+EXPORT_SYMBOL(snd_interval_list);
+
+/**
+ * snd_interval_ranges - refine the interval value from the list of ranges
+ * @i: the interval value to refine
+ * @count: the number of elements in the list of ranges
+ * @ranges: the ranges list
+ * @mask: the bit-mask to evaluate
+ *
+ * Refines the interval value from the list of ranges.
+ * When mask is non-zero, only the elements corresponding to bit 1 are
+ * evaluated.
+ *
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+ */
+int snd_interval_ranges(struct snd_interval *i, unsigned int count,
+			const struct snd_interval *ranges, unsigned int mask)
+{
+	unsigned int k;
+	struct snd_interval range_union;
+	struct snd_interval range;
+
+	if (!count) {
+		snd_interval_none(i);
+		return -EINVAL;
+	}
+	snd_interval_any(&range_union);
+	range_union.min = UINT_MAX;
+	range_union.max = 0;
+	for (k = 0; k < count; k++) {
+		if (mask && !(mask & (1 << k)))
+			continue;
+		snd_interval_copy(&range, &ranges[k]);
+		if (snd_interval_refine(&range, i) < 0)
+			continue;
+		if (snd_interval_empty(&range))
+			continue;
+
+		if (range.min < range_union.min) {
+			range_union.min = range.min;
+			range_union.openmin = 1;
+		}
+		if (range.min == range_union.min && !range.openmin)
+			range_union.openmin = 0;
+		if (range.max > range_union.max) {
+			range_union.max = range.max;
+			range_union.openmax = 1;
+		}
+		if (range.max == range_union.max && !range.openmax)
+			range_union.openmax = 0;
+	}
+	return snd_interval_refine(i, &range_union);
+}
+EXPORT_SYMBOL(snd_interval_ranges);
+
+static int snd_interval_step(struct snd_interval *i, unsigned int step)
+{
+	unsigned int n;
+	int changed = 0;
+	n = i->min % step;
+	if (n != 0 || i->openmin) {
+		i->min += step - n;
+		i->openmin = 0;
+		changed = 1;
+	}
+	n = i->max % step;
+	if (n != 0 || i->openmax) {
+		i->max -= n;
+		i->openmax = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		changed = 1;
 	}
 	if (snd_interval_checkempty(i)) {
@@ -1089,7 +1577,11 @@ static int snd_interval_step(struct snd_interval *i, unsigned int min, unsigned 
  * @private: the private data pointer passed to function
  * @dep: the dependent variables
  *
+<<<<<<< HEAD
  * Returns zero if successful, or a negative error code on failure.
+=======
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime, unsigned int cond,
 			int var,
@@ -1104,16 +1596,24 @@ int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime, unsigned int cond,
 	if (constrs->rules_num >= constrs->rules_all) {
 		struct snd_pcm_hw_rule *new;
 		unsigned int new_rules = constrs->rules_all + 16;
+<<<<<<< HEAD
 		new = kcalloc(new_rules, sizeof(*c), GFP_KERNEL);
+=======
+		new = krealloc_array(constrs->rules, new_rules,
+				     sizeof(*c), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!new) {
 			va_end(args);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		if (constrs->rules) {
 			memcpy(new, constrs->rules,
 			       constrs->rules_num * sizeof(*c));
 			kfree(constrs->rules);
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		constrs->rules = new;
 		constrs->rules_all = new_rules;
 	}
@@ -1137,7 +1637,10 @@ int snd_pcm_hw_rule_add(struct snd_pcm_runtime *runtime, unsigned int cond,
 	va_end(args);
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_rule_add);
 
 /**
@@ -1147,6 +1650,11 @@ EXPORT_SYMBOL(snd_pcm_hw_rule_add);
  * @mask: the bitmap mask
  *
  * Apply the constraint of the given bitmap mask to a 32-bit mask parameter.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_mask(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 			       u_int32_t mask)
@@ -1167,6 +1675,11 @@ int snd_pcm_hw_constraint_mask(struct snd_pcm_runtime *runtime, snd_pcm_hw_param
  * @mask: the 64bit bitmap mask
  *
  * Apply the constraint of the given bitmap mask to a 64-bit mask parameter.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 				 u_int64_t mask)
@@ -1180,6 +1693,10 @@ int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_par
 		return -EINVAL;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_pcm_hw_constraint_mask64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_pcm_hw_constraint_integer - apply an integer constraint to an interval
@@ -1187,13 +1704,22 @@ int snd_pcm_hw_constraint_mask64(struct snd_pcm_runtime *runtime, snd_pcm_hw_par
  * @var: hw_params variable to apply the integer constraint
  *
  * Apply the constraint of integer to an interval parameter.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_integer(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var)
 {
 	struct snd_pcm_hw_constraints *constrs = &runtime->hw_constraints;
 	return snd_interval_setinteger(constrs_interval(constrs, var));
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_integer);
 
 /**
@@ -1204,6 +1730,12 @@ EXPORT_SYMBOL(snd_pcm_hw_constraint_integer);
  * @max: the maximal value
  * 
  * Apply the min/max range constraint to an interval parameter.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Positive if the value is changed, zero if it's not changed, or a
+ * negative error code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_minmax(struct snd_pcm_runtime *runtime, snd_pcm_hw_param_t var,
 				 unsigned int min, unsigned int max)
@@ -1216,7 +1748,10 @@ int snd_pcm_hw_constraint_minmax(struct snd_pcm_runtime *runtime, snd_pcm_hw_par
 	t.integer = 0;
 	return snd_interval_refine(constrs_interval(constrs, var), &t);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_minmax);
 
 static int snd_pcm_hw_rule_list(struct snd_pcm_hw_params *params,
@@ -1235,10 +1770,16 @@ static int snd_pcm_hw_rule_list(struct snd_pcm_hw_params *params,
  * @l: list
  * 
  * Apply the list of constraints to an interval parameter.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_list(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
 			       snd_pcm_hw_param_t var,
+<<<<<<< HEAD
 			       struct snd_pcm_hw_constraint_list *l)
 {
 	return snd_pcm_hw_rule_add(runtime, cond, var,
@@ -1252,6 +1793,51 @@ static int snd_pcm_hw_rule_ratnums(struct snd_pcm_hw_params *params,
 				   struct snd_pcm_hw_rule *rule)
 {
 	struct snd_pcm_hw_constraint_ratnums *r = rule->private;
+=======
+			       const struct snd_pcm_hw_constraint_list *l)
+{
+	return snd_pcm_hw_rule_add(runtime, cond, var,
+				   snd_pcm_hw_rule_list, (void *)l,
+				   var, -1);
+}
+EXPORT_SYMBOL(snd_pcm_hw_constraint_list);
+
+static int snd_pcm_hw_rule_ranges(struct snd_pcm_hw_params *params,
+				  struct snd_pcm_hw_rule *rule)
+{
+	struct snd_pcm_hw_constraint_ranges *r = rule->private;
+	return snd_interval_ranges(hw_param_interval(params, rule->var),
+				   r->count, r->ranges, r->mask);
+}
+
+
+/**
+ * snd_pcm_hw_constraint_ranges - apply list of range constraints to a parameter
+ * @runtime: PCM runtime instance
+ * @cond: condition bits
+ * @var: hw_params variable to apply the list of range constraints
+ * @r: ranges
+ *
+ * Apply the list of range constraints to an interval parameter.
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+ */
+int snd_pcm_hw_constraint_ranges(struct snd_pcm_runtime *runtime,
+				 unsigned int cond,
+				 snd_pcm_hw_param_t var,
+				 const struct snd_pcm_hw_constraint_ranges *r)
+{
+	return snd_pcm_hw_rule_add(runtime, cond, var,
+				   snd_pcm_hw_rule_ranges, (void *)r,
+				   var, -1);
+}
+EXPORT_SYMBOL(snd_pcm_hw_constraint_ranges);
+
+static int snd_pcm_hw_rule_ratnums(struct snd_pcm_hw_params *params,
+				   struct snd_pcm_hw_rule *rule)
+{
+	const struct snd_pcm_hw_constraint_ratnums *r = rule->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num = 0, den = 0;
 	int err;
 	err = snd_interval_ratnum(hw_param_interval(params, rule->var),
@@ -1269,10 +1855,16 @@ static int snd_pcm_hw_rule_ratnums(struct snd_pcm_hw_params *params,
  * @cond: condition bits
  * @var: hw_params variable to apply the ratnums constraint
  * @r: struct snd_ratnums constriants
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime, 
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
+<<<<<<< HEAD
 				  struct snd_pcm_hw_constraint_ratnums *r)
 {
 	return snd_pcm_hw_rule_add(runtime, cond, var,
@@ -1280,12 +1872,24 @@ int snd_pcm_hw_constraint_ratnums(struct snd_pcm_runtime *runtime,
 				   var, -1);
 }
 
+=======
+				  const struct snd_pcm_hw_constraint_ratnums *r)
+{
+	return snd_pcm_hw_rule_add(runtime, cond, var,
+				   snd_pcm_hw_rule_ratnums, (void *)r,
+				   var, -1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_ratnums);
 
 static int snd_pcm_hw_rule_ratdens(struct snd_pcm_hw_params *params,
 				   struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 	struct snd_pcm_hw_constraint_ratdens *r = rule->private;
+=======
+	const struct snd_pcm_hw_constraint_ratdens *r = rule->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num = 0, den = 0;
 	int err = snd_interval_ratden(hw_param_interval(params, rule->var),
 				  r->nrats, r->rats, &num, &den);
@@ -1302,10 +1906,16 @@ static int snd_pcm_hw_rule_ratdens(struct snd_pcm_hw_params *params,
  * @cond: condition bits
  * @var: hw_params variable to apply the ratdens constraint
  * @r: struct snd_ratdens constriants
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime, 
 				  unsigned int cond,
 				  snd_pcm_hw_param_t var,
+<<<<<<< HEAD
 				  struct snd_pcm_hw_constraint_ratdens *r)
 {
 	return snd_pcm_hw_rule_add(runtime, cond, var,
@@ -1313,6 +1923,14 @@ int snd_pcm_hw_constraint_ratdens(struct snd_pcm_runtime *runtime,
 				   var, -1);
 }
 
+=======
+				  const struct snd_pcm_hw_constraint_ratdens *r)
+{
+	return snd_pcm_hw_rule_add(runtime, cond, var,
+				   snd_pcm_hw_rule_ratdens, (void *)r,
+				   var, -1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_ratdens);
 
 static int snd_pcm_hw_rule_msbits(struct snd_pcm_hw_params *params,
@@ -1321,9 +1939,22 @@ static int snd_pcm_hw_rule_msbits(struct snd_pcm_hw_params *params,
 	unsigned int l = (unsigned long) rule->private;
 	int width = l & 0xffff;
 	unsigned int msbits = l >> 16;
+<<<<<<< HEAD
 	struct snd_interval *i = hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS);
 	if (snd_interval_single(i) && snd_interval_value(i) == width)
 		params->msbits = msbits;
+=======
+	const struct snd_interval *i =
+		hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS);
+
+	if (!snd_interval_single(i))
+		return 0;
+
+	if ((snd_interval_value(i) == width) ||
+	    (width == 0 && snd_interval_value(i) > msbits))
+		params->msbits = min_not_zero(params->msbits, msbits);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1333,6 +1964,16 @@ static int snd_pcm_hw_rule_msbits(struct snd_pcm_hw_params *params,
  * @cond: condition bits
  * @width: sample bits width
  * @msbits: msbits width
+<<<<<<< HEAD
+=======
+ *
+ * This constraint will set the number of most significant bits (msbits) if a
+ * sample format with the specified width has been select. If width is set to 0
+ * the msbits will be set for any sample format with a width larger than the
+ * specified msbits.
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_msbits(struct snd_pcm_runtime *runtime, 
 				 unsigned int cond,
@@ -1345,14 +1986,21 @@ int snd_pcm_hw_constraint_msbits(struct snd_pcm_runtime *runtime,
 				    (void*) l,
 				    SNDRV_PCM_HW_PARAM_SAMPLE_BITS, -1);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_msbits);
 
 static int snd_pcm_hw_rule_step(struct snd_pcm_hw_params *params,
 				struct snd_pcm_hw_rule *rule)
 {
 	unsigned long step = (unsigned long) rule->private;
+<<<<<<< HEAD
 	return snd_interval_step(hw_param_interval(params, rule->var), 0, step);
+=======
+	return snd_interval_step(hw_param_interval(params, rule->var), step);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1361,6 +2009,11 @@ static int snd_pcm_hw_rule_step(struct snd_pcm_hw_params *params,
  * @cond: condition bits
  * @var: hw_params variable to apply the step constraint
  * @step: step size
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_step(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
@@ -1371,12 +2024,19 @@ int snd_pcm_hw_constraint_step(struct snd_pcm_runtime *runtime,
 				   snd_pcm_hw_rule_step, (void *) step,
 				   var, -1);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_step);
 
 static int snd_pcm_hw_rule_pow2(struct snd_pcm_hw_params *params, struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 	static unsigned int pow2_sizes[] = {
+=======
+	static const unsigned int pow2_sizes[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		1<<0, 1<<1, 1<<2, 1<<3, 1<<4, 1<<5, 1<<6, 1<<7,
 		1<<8, 1<<9, 1<<10, 1<<11, 1<<12, 1<<13, 1<<14, 1<<15,
 		1<<16, 1<<17, 1<<18, 1<<19, 1<<20, 1<<21, 1<<22, 1<<23,
@@ -1391,6 +2051,11 @@ static int snd_pcm_hw_rule_pow2(struct snd_pcm_hw_params *params, struct snd_pcm
  * @runtime: PCM runtime instance
  * @cond: condition bits
  * @var: hw_params variable to apply the power-of-2 constraint
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_constraint_pow2(struct snd_pcm_runtime *runtime,
 			       unsigned int cond,
@@ -1400,7 +2065,10 @@ int snd_pcm_hw_constraint_pow2(struct snd_pcm_runtime *runtime,
 				   snd_pcm_hw_rule_pow2, NULL,
 				   var, -1);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_constraint_pow2);
 
 static int snd_pcm_hw_rule_noresample_func(struct snd_pcm_hw_params *params,
@@ -1417,6 +2085,11 @@ static int snd_pcm_hw_rule_noresample_func(struct snd_pcm_hw_params *params,
  * snd_pcm_hw_rule_noresample - add a rule to allow disabling hw resampling
  * @runtime: PCM runtime instance
  * @base_rate: the rate at which the hardware does not resample
+<<<<<<< HEAD
+=======
+ *
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_rule_noresample(struct snd_pcm_runtime *runtime,
 			       unsigned int base_rate)
@@ -1457,7 +2130,10 @@ void _snd_pcm_hw_params_any(struct snd_pcm_hw_params *params)
 		_snd_pcm_hw_param_any(params, k);
 	params->info = ~0U;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(_snd_pcm_hw_params_any);
 
 /**
@@ -1466,8 +2142,13 @@ EXPORT_SYMBOL(_snd_pcm_hw_params_any);
  * @var: parameter to retrieve
  * @dir: pointer to the direction (-1,0,1) or %NULL
  *
+<<<<<<< HEAD
  * Return the value for field @var if it's fixed in configuration space
  * defined by @params. Return -%EINVAL otherwise.
+=======
+ * Return: The value for field @var if it's fixed in configuration space
+ * defined by @params. -%EINVAL otherwise.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_param_value(const struct snd_pcm_hw_params *params,
 			   snd_pcm_hw_param_t var, int *dir)
@@ -1490,7 +2171,10 @@ int snd_pcm_hw_param_value(const struct snd_pcm_hw_params *params,
 	}
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_param_value);
 
 void _snd_pcm_hw_param_setempty(struct snd_pcm_hw_params *params,
@@ -1508,7 +2192,10 @@ void _snd_pcm_hw_param_setempty(struct snd_pcm_hw_params *params,
 		snd_BUG();
 	}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(_snd_pcm_hw_param_setempty);
 
 static int _snd_pcm_hw_param_first(struct snd_pcm_hw_params *params,
@@ -1521,7 +2208,11 @@ static int _snd_pcm_hw_param_first(struct snd_pcm_hw_params *params,
 		changed = snd_interval_refine_first(hw_param_interval(params, var));
 	else
 		return -EINVAL;
+<<<<<<< HEAD
 	if (changed) {
+=======
+	if (changed > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -1538,7 +2229,12 @@ static int _snd_pcm_hw_param_first(struct snd_pcm_hw_params *params,
  *
  * Inside configuration space defined by @params remove from @var all
  * values > minimum. Reduce configuration space accordingly.
+<<<<<<< HEAD
  * Return the minimum.
+=======
+ *
+ * Return: The minimum, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm, 
 			   struct snd_pcm_hw_params *params, 
@@ -1549,12 +2245,19 @@ int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
+<<<<<<< HEAD
 		if (snd_BUG_ON(err < 0))
+=======
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_param_first);
 
 static int _snd_pcm_hw_param_last(struct snd_pcm_hw_params *params,
@@ -1567,7 +2270,11 @@ static int _snd_pcm_hw_param_last(struct snd_pcm_hw_params *params,
 		changed = snd_interval_refine_last(hw_param_interval(params, var));
 	else
 		return -EINVAL;
+<<<<<<< HEAD
 	if (changed) {
+=======
+	if (changed > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params->cmask |= 1 << var;
 		params->rmask |= 1 << var;
 	}
@@ -1584,7 +2291,12 @@ static int _snd_pcm_hw_param_last(struct snd_pcm_hw_params *params,
  *
  * Inside configuration space defined by @params remove from @var all
  * values < maximum. Reduce configuration space accordingly.
+<<<<<<< HEAD
  * Return the maximum.
+=======
+ *
+ * Return: The maximum, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm, 
 			  struct snd_pcm_hw_params *params,
@@ -1595,11 +2307,16 @@ int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
+<<<<<<< HEAD
 		if (snd_BUG_ON(err < 0))
+=======
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_pcm_hw_param_last);
 
@@ -1639,11 +2356,49 @@ int snd_pcm_hw_params_choose(struct snd_pcm_substream *pcm,
 	}
 	return 0;
 }
+=======
+EXPORT_SYMBOL(snd_pcm_hw_param_last);
+
+/**
+ * snd_pcm_hw_params_bits - Get the number of bits per the sample.
+ * @p: hardware parameters
+ *
+ * Return: The number of bits per sample based on the format,
+ * subformat and msbits the specified hw params has.
+ */
+int snd_pcm_hw_params_bits(const struct snd_pcm_hw_params *p)
+{
+	snd_pcm_subformat_t subformat = params_subformat(p);
+	snd_pcm_format_t format = params_format(p);
+
+	switch (format) {
+	case SNDRV_PCM_FORMAT_S32_LE:
+	case SNDRV_PCM_FORMAT_U32_LE:
+	case SNDRV_PCM_FORMAT_S32_BE:
+	case SNDRV_PCM_FORMAT_U32_BE:
+		switch (subformat) {
+		case SNDRV_PCM_SUBFORMAT_MSBITS_20:
+			return 20;
+		case SNDRV_PCM_SUBFORMAT_MSBITS_24:
+			return 24;
+		case SNDRV_PCM_SUBFORMAT_MSBITS_MAX:
+		case SNDRV_PCM_SUBFORMAT_STD:
+		default:
+			break;
+		}
+		fallthrough;
+	default:
+		return snd_pcm_format_width(format);
+	}
+}
+EXPORT_SYMBOL(snd_pcm_hw_params_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_pcm_lib_ioctl_reset(struct snd_pcm_substream *substream,
 				   void *arg)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
+<<<<<<< HEAD
 	unsigned long flags;
 	snd_pcm_stream_lock_irqsave(substream, flags);
 	if (snd_pcm_running(substream) &&
@@ -1652,6 +2407,17 @@ static int snd_pcm_lib_ioctl_reset(struct snd_pcm_substream *substream,
 	else
 		runtime->status->hw_ptr = 0;
 	snd_pcm_stream_unlock_irqrestore(substream, flags);
+=======
+
+	guard(pcm_stream_lock_irqsave)(substream);
+	if (snd_pcm_running(substream) &&
+	    snd_pcm_update_hw_ptr(substream) >= 0)
+		runtime->status->hw_ptr %= runtime->buffer_size;
+	else {
+		runtime->status->hw_ptr = 0;
+		runtime->hw_ptr_wrap = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1672,11 +2438,14 @@ static int snd_pcm_lib_ioctl_channel_info(struct snd_pcm_substream *substream,
 	switch (runtime->access) {
 	case SNDRV_PCM_ACCESS_MMAP_INTERLEAVED:
 	case SNDRV_PCM_ACCESS_RW_INTERLEAVED:
+<<<<<<< HEAD
 		if ((UINT_MAX/width) < info->channel) {
 			snd_printd("%s: integer overflow while multiply\n",
 				   __func__);
 			return -EINVAL;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->first = info->channel * width;
 		info->step = runtime->channels * width;
 		break;
@@ -1684,12 +2453,15 @@ static int snd_pcm_lib_ioctl_channel_info(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_ACCESS_RW_NONINTERLEAVED:
 	{
 		size_t size = runtime->dma_bytes / runtime->channels;
+<<<<<<< HEAD
 
 		if ((size > 0) && ((UINT_MAX/(size * 8)) < info->channel)) {
 			snd_printd("%s: integer overflow while multiply\n",
 				   __func__);
 			return -EINVAL;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->first = info->channel * size * 8;
 		info->step = width;
 		break;
@@ -1715,7 +2487,11 @@ static int snd_pcm_lib_ioctl_fifo_size(struct snd_pcm_substream *substream,
 		channels = params_channels(params);
 		frame_size = snd_pcm_format_size(format, channels);
 		if (frame_size > 0)
+<<<<<<< HEAD
 			params->fifo_size /= (unsigned)frame_size;
+=======
+			params->fifo_size /= frame_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1729,14 +2505,21 @@ static int snd_pcm_lib_ioctl_fifo_size(struct snd_pcm_substream *substream,
  * Processes the generic ioctl commands for PCM.
  * Can be passed as the ioctl callback for PCM ops.
  *
+<<<<<<< HEAD
  * Returns zero if successful, or a negative error code on failure.
+=======
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 		      unsigned int cmd, void *arg)
 {
 	switch (cmd) {
+<<<<<<< HEAD
 	case SNDRV_PCM_IOCTL1_INFO:
 		return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_IOCTL1_RESET:
 		return snd_pcm_lib_ioctl_reset(substream, arg);
 	case SNDRV_PCM_IOCTL1_CHANNEL_INFO:
@@ -1746,6 +2529,7 @@ int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 	}
 	return -ENXIO;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_pcm_lib_ioctl);
 
@@ -1764,19 +2548,57 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime;
 	unsigned long flags;
+=======
+EXPORT_SYMBOL(snd_pcm_lib_ioctl);
+
+/**
+ * snd_pcm_period_elapsed_under_stream_lock() - update the status of runtime for the next period
+ *						under acquired lock of PCM substream.
+ * @substream: the instance of pcm substream.
+ *
+ * This function is called when the batch of audio data frames as the same size as the period of
+ * buffer is already processed in audio data transmission.
+ *
+ * The call of function updates the status of runtime with the latest position of audio data
+ * transmission, checks overrun and underrun over buffer, awaken user processes from waiting for
+ * available audio data frames, sampling audio timestamp, and performs stop or drain the PCM
+ * substream according to configured threshold.
+ *
+ * The function is intended to use for the case that PCM driver operates audio data frames under
+ * acquired lock of PCM substream; e.g. in callback of any operation of &snd_pcm_ops in process
+ * context. In any interrupt context, it's preferrable to use ``snd_pcm_period_elapsed()`` instead
+ * since lock of PCM substream should be acquired in advance.
+ *
+ * Developer should pay enough attention that some callbacks in &snd_pcm_ops are done by the call of
+ * function:
+ *
+ * - .pointer - to retrieve current position of audio data transmission by frame count or XRUN state.
+ * - .trigger - with SNDRV_PCM_TRIGGER_STOP at XRUN or DRAINING state.
+ * - .get_time_info - to retrieve audio time stamp if needed.
+ *
+ * Even if more than one periods have elapsed since the last call, you have to call this only once.
+ */
+void snd_pcm_period_elapsed_under_stream_lock(struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (PCM_RUNTIME_CHECK(substream))
 		return;
 	runtime = substream->runtime;
 
+<<<<<<< HEAD
 	if (runtime->transfer_ack_begin)
 		runtime->transfer_ack_begin(substream);
 
 	snd_pcm_stream_lock_irqsave(substream, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!snd_pcm_running(substream) ||
 	    snd_pcm_update_hw_ptr0(substream, 1) < 0)
 		goto _end;
 
+<<<<<<< HEAD
 	if (substream->timer_running)
 		snd_timer_interrupt(substream->timer, 1);
  _end:
@@ -1786,6 +2608,37 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 	snd_pcm_stream_unlock_irqrestore(substream, flags);
 }
 
+=======
+#ifdef CONFIG_SND_PCM_TIMER
+	if (substream->timer_running)
+		snd_timer_interrupt(substream->timer, 1);
+#endif
+ _end:
+	snd_kill_fasync(runtime->fasync, SIGIO, POLL_IN);
+}
+EXPORT_SYMBOL(snd_pcm_period_elapsed_under_stream_lock);
+
+/**
+ * snd_pcm_period_elapsed() - update the status of runtime for the next period by acquiring lock of
+ *			      PCM substream.
+ * @substream: the instance of PCM substream.
+ *
+ * This function is mostly similar to ``snd_pcm_period_elapsed_under_stream_lock()`` except for
+ * acquiring lock of PCM substream voluntarily.
+ *
+ * It's typically called by any type of IRQ handler when hardware IRQ occurs to notify event that
+ * the batch of audio data frames as the same size as the period of buffer is already processed in
+ * audio data transmission.
+ */
+void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
+{
+	if (snd_BUG_ON(!substream))
+		return;
+
+	guard(pcm_stream_lock_irqsave)(substream);
+	snd_pcm_period_elapsed_under_stream_lock(substream);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_period_elapsed);
 
 /*
@@ -1799,7 +2652,11 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int is_playback = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
+<<<<<<< HEAD
 	wait_queue_t wait;
+=======
+	wait_queue_entry_t wait;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 	snd_pcm_uframes_t avail = 0;
 	long wait_time, tout;
@@ -1811,12 +2668,27 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 	if (runtime->no_period_wakeup)
 		wait_time = MAX_SCHEDULE_TIMEOUT;
 	else {
+<<<<<<< HEAD
 		wait_time = 10;
 		if (runtime->rate) {
 			long t = runtime->period_size * 2 / runtime->rate;
 			wait_time = max(t, wait_time);
 		}
 		wait_time = msecs_to_jiffies(wait_time * 1000);
+=======
+		/* use wait time from substream if available */
+		if (substream->wait_time) {
+			wait_time = substream->wait_time;
+		} else {
+			wait_time = 100;
+
+			if (runtime->rate) {
+				long t = runtime->buffer_size * 1100 / runtime->rate;
+				wait_time = max(t, wait_time);
+			}
+		}
+		wait_time = msecs_to_jiffies(wait_time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (;;) {
@@ -1832,10 +2704,14 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 		 * This check must happen after been added to the waitqueue
 		 * and having current state be INTERRUPTIBLE.
 		 */
+<<<<<<< HEAD
 		if (is_playback)
 			avail = snd_pcm_playback_avail(runtime);
 		else
 			avail = snd_pcm_capture_avail(runtime);
+=======
+		avail = snd_pcm_avail(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (avail >= runtime->twake)
 			break;
 		snd_pcm_stream_unlock_irq(substream);
@@ -1844,7 +2720,11 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 
 		snd_pcm_stream_lock_irq(substream);
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		switch (runtime->status->state) {
+=======
+		switch (runtime->state) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SNDRV_PCM_STATE_SUSPENDED:
 			err = -ESTRPIPE;
 			goto _endloop;
@@ -1866,8 +2746,14 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 			continue;
 		}
 		if (!tout) {
+<<<<<<< HEAD
 			snd_printd("%s write error (DMA or IRQ trouble?)\n",
 				   is_playback ? "playback" : "capture");
+=======
+			pcm_dbg(substream->pcm,
+				"%s timeout (DMA or IRQ trouble?)\n",
+				is_playback ? "playback write" : "capture read");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EIO;
 			break;
 		}
@@ -1879,6 +2765,7 @@ static int wait_for_avail(struct snd_pcm_substream *substream,
 	return err;
 }
 	
+<<<<<<< HEAD
 static int snd_pcm_lib_write_transfer(struct snd_pcm_substream *substream,
 				      unsigned int hwoff,
 				      unsigned long data, unsigned int off,
@@ -2001,6 +2888,162 @@ static snd_pcm_sframes_t snd_pcm_lib_write1(struct snd_pcm_substream *substream,
 		snd_pcm_update_state(substream, runtime);
 	snd_pcm_stream_unlock_irq(substream);
 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
+=======
+typedef int (*pcm_transfer_f)(struct snd_pcm_substream *substream,
+			      int channel, unsigned long hwoff,
+			      struct iov_iter *iter, unsigned long bytes);
+
+typedef int (*pcm_copy_f)(struct snd_pcm_substream *, snd_pcm_uframes_t, void *,
+			  snd_pcm_uframes_t, snd_pcm_uframes_t, pcm_transfer_f,
+			  bool);
+
+/* calculate the target DMA-buffer position to be written/read */
+static void *get_dma_ptr(struct snd_pcm_runtime *runtime,
+			   int channel, unsigned long hwoff)
+{
+	return runtime->dma_area + hwoff +
+		channel * (runtime->dma_bytes / runtime->channels);
+}
+
+/* default copy ops for write; used for both interleaved and non- modes */
+static int default_write_copy(struct snd_pcm_substream *substream,
+			      int channel, unsigned long hwoff,
+			      struct iov_iter *iter, unsigned long bytes)
+{
+	if (copy_from_iter(get_dma_ptr(substream->runtime, channel, hwoff),
+			   bytes, iter) != bytes)
+		return -EFAULT;
+	return 0;
+}
+
+/* fill silence instead of copy data; called as a transfer helper
+ * from __snd_pcm_lib_write() or directly from noninterleaved_copy() when
+ * a NULL buffer is passed
+ */
+static int fill_silence(struct snd_pcm_substream *substream, int channel,
+			unsigned long hwoff, struct iov_iter *iter,
+			unsigned long bytes)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+
+	if (substream->stream != SNDRV_PCM_STREAM_PLAYBACK)
+		return 0;
+	if (substream->ops->fill_silence)
+		return substream->ops->fill_silence(substream, channel,
+						    hwoff, bytes);
+
+	snd_pcm_format_set_silence(runtime->format,
+				   get_dma_ptr(runtime, channel, hwoff),
+				   bytes_to_samples(runtime, bytes));
+	return 0;
+}
+
+/* default copy ops for read; used for both interleaved and non- modes */
+static int default_read_copy(struct snd_pcm_substream *substream,
+			     int channel, unsigned long hwoff,
+			     struct iov_iter *iter, unsigned long bytes)
+{
+	if (copy_to_iter(get_dma_ptr(substream->runtime, channel, hwoff),
+			 bytes, iter) != bytes)
+		return -EFAULT;
+	return 0;
+}
+
+/* call transfer with the filled iov_iter */
+static int do_transfer(struct snd_pcm_substream *substream, int c,
+		       unsigned long hwoff, void *data, unsigned long bytes,
+		       pcm_transfer_f transfer, bool in_kernel)
+{
+	struct iov_iter iter;
+	int err, type;
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+		type = ITER_SOURCE;
+	else
+		type = ITER_DEST;
+
+	if (in_kernel) {
+		struct kvec kvec = { data, bytes };
+
+		iov_iter_kvec(&iter, type, &kvec, 1, bytes);
+		return transfer(substream, c, hwoff, &iter, bytes);
+	}
+
+	err = import_ubuf(type, (__force void __user *)data, bytes, &iter);
+	if (err)
+		return err;
+	return transfer(substream, c, hwoff, &iter, bytes);
+}
+
+/* call transfer function with the converted pointers and sizes;
+ * for interleaved mode, it's one shot for all samples
+ */
+static int interleaved_copy(struct snd_pcm_substream *substream,
+			    snd_pcm_uframes_t hwoff, void *data,
+			    snd_pcm_uframes_t off,
+			    snd_pcm_uframes_t frames,
+			    pcm_transfer_f transfer,
+			    bool in_kernel)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+
+	/* convert to bytes */
+	hwoff = frames_to_bytes(runtime, hwoff);
+	off = frames_to_bytes(runtime, off);
+	frames = frames_to_bytes(runtime, frames);
+
+	return do_transfer(substream, 0, hwoff, data + off, frames, transfer,
+			   in_kernel);
+}
+
+/* call transfer function with the converted pointers and sizes for each
+ * non-interleaved channel; when buffer is NULL, silencing instead of copying
+ */
+static int noninterleaved_copy(struct snd_pcm_substream *substream,
+			       snd_pcm_uframes_t hwoff, void *data,
+			       snd_pcm_uframes_t off,
+			       snd_pcm_uframes_t frames,
+			       pcm_transfer_f transfer,
+			       bool in_kernel)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	int channels = runtime->channels;
+	void **bufs = data;
+	int c, err;
+
+	/* convert to bytes; note that it's not frames_to_bytes() here.
+	 * in non-interleaved mode, we copy for each channel, thus
+	 * each copy is n_samples bytes x channels = whole frames.
+	 */
+	off = samples_to_bytes(runtime, off);
+	frames = samples_to_bytes(runtime, frames);
+	hwoff = samples_to_bytes(runtime, hwoff);
+	for (c = 0; c < channels; ++c, ++bufs) {
+		if (!data || !*bufs)
+			err = fill_silence(substream, c, hwoff, NULL, frames);
+		else
+			err = do_transfer(substream, c, hwoff, *bufs + off,
+					  frames, transfer, in_kernel);
+		if (err < 0)
+			return err;
+	}
+	return 0;
+}
+
+/* fill silence on the given buffer position;
+ * called from snd_pcm_playback_silence()
+ */
+static int fill_silence_frames(struct snd_pcm_substream *substream,
+			       snd_pcm_uframes_t off, snd_pcm_uframes_t frames)
+{
+	if (substream->runtime->access == SNDRV_PCM_ACCESS_RW_INTERLEAVED ||
+	    substream->runtime->access == SNDRV_PCM_ACCESS_MMAP_INTERLEAVED)
+		return interleaved_copy(substream, off, NULL, 0, frames,
+					fill_silence, true);
+	else
+		return noninterleaved_copy(substream, off, NULL, 0, frames,
+					   fill_silence, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* sanity-check for read/write methods */
@@ -2009,6 +3052,7 @@ static int pcm_sanity_check(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime;
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
+<<<<<<< HEAD
 	/* TODO: consider and -EINVAL here */
 	if (substream->hw_no_buffer)
 		snd_printd("%s: warning this PCM is host less\n", __func__);
@@ -2016,10 +3060,17 @@ static int pcm_sanity_check(struct snd_pcm_substream *substream)
 	if (snd_BUG_ON(!substream->ops->copy && !runtime->dma_area))
 		return -EINVAL;
 	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
+=======
+	runtime = substream->runtime;
+	if (snd_BUG_ON(!substream->ops->copy && !runtime->dma_area))
+		return -EINVAL;
+	if (runtime->state == SNDRV_PCM_STATE_OPEN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	return 0;
 }
 
+<<<<<<< HEAD
 snd_pcm_sframes_t snd_pcm_lib_write(struct snd_pcm_substream *substream, const void __user *buf, snd_pcm_uframes_t size)
 {
 	struct snd_pcm_runtime *runtime;
@@ -2127,15 +3178,122 @@ static snd_pcm_sframes_t snd_pcm_lib_read1(struct snd_pcm_substream *substream,
 					   snd_pcm_uframes_t size,
 					   int nonblock,
 					   transfer_f transfer)
+=======
+static int pcm_accessible_state(struct snd_pcm_runtime *runtime)
+{
+	switch (runtime->state) {
+	case SNDRV_PCM_STATE_PREPARED:
+	case SNDRV_PCM_STATE_RUNNING:
+	case SNDRV_PCM_STATE_PAUSED:
+		return 0;
+	case SNDRV_PCM_STATE_XRUN:
+		return -EPIPE;
+	case SNDRV_PCM_STATE_SUSPENDED:
+		return -ESTRPIPE;
+	default:
+		return -EBADFD;
+	}
+}
+
+/* update to the given appl_ptr and call ack callback if needed;
+ * when an error is returned, take back to the original value
+ */
+int pcm_lib_apply_appl_ptr(struct snd_pcm_substream *substream,
+			   snd_pcm_uframes_t appl_ptr)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	snd_pcm_uframes_t old_appl_ptr = runtime->control->appl_ptr;
+	snd_pcm_sframes_t diff;
+	int ret;
+
+	if (old_appl_ptr == appl_ptr)
+		return 0;
+
+	if (appl_ptr >= runtime->boundary)
+		return -EINVAL;
+	/*
+	 * check if a rewind is requested by the application
+	 */
+	if (substream->runtime->info & SNDRV_PCM_INFO_NO_REWINDS) {
+		diff = appl_ptr - old_appl_ptr;
+		if (diff >= 0) {
+			if (diff > runtime->buffer_size)
+				return -EINVAL;
+		} else {
+			if (runtime->boundary + diff > runtime->buffer_size)
+				return -EINVAL;
+		}
+	}
+
+	runtime->control->appl_ptr = appl_ptr;
+	if (substream->ops->ack) {
+		ret = substream->ops->ack(substream);
+		if (ret < 0) {
+			runtime->control->appl_ptr = old_appl_ptr;
+			if (ret == -EPIPE)
+				__snd_pcm_xrun(substream);
+			return ret;
+		}
+	}
+
+	trace_applptr(substream, old_appl_ptr, appl_ptr);
+
+	return 0;
+}
+
+/* the common loop for read/write data */
+snd_pcm_sframes_t __snd_pcm_lib_xfer(struct snd_pcm_substream *substream,
+				     void *data, bool interleaved,
+				     snd_pcm_uframes_t size, bool in_kernel)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	snd_pcm_uframes_t xfer = 0;
 	snd_pcm_uframes_t offset = 0;
+<<<<<<< HEAD
 	int err = 0;
+=======
+	snd_pcm_uframes_t avail;
+	pcm_copy_f writer;
+	pcm_transfer_f transfer;
+	bool nonblock;
+	bool is_playback;
+	int err;
+
+	err = pcm_sanity_check(substream);
+	if (err < 0)
+		return err;
+
+	is_playback = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
+	if (interleaved) {
+		if (runtime->access != SNDRV_PCM_ACCESS_RW_INTERLEAVED &&
+		    runtime->channels > 1)
+			return -EINVAL;
+		writer = interleaved_copy;
+	} else {
+		if (runtime->access != SNDRV_PCM_ACCESS_RW_NONINTERLEAVED)
+			return -EINVAL;
+		writer = noninterleaved_copy;
+	}
+
+	if (!data) {
+		if (is_playback)
+			transfer = fill_silence;
+		else
+			return -EINVAL;
+	} else {
+		if (substream->ops->copy)
+			transfer = substream->ops->copy;
+		else
+			transfer = is_playback ?
+				default_write_copy : default_read_copy;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (size == 0)
 		return 0;
 
+<<<<<<< HEAD
 	snd_pcm_stream_lock_irq(substream);
 	switch (runtime->status->state) {
 	case SNDRV_PCM_STATE_PREPARED:
@@ -2171,6 +3329,39 @@ static snd_pcm_sframes_t snd_pcm_lib_read1(struct snd_pcm_substream *substream,
 		if (!avail) {
 			if (runtime->status->state ==
 			    SNDRV_PCM_STATE_DRAINING) {
+=======
+	nonblock = !!(substream->f_flags & O_NONBLOCK);
+
+	snd_pcm_stream_lock_irq(substream);
+	err = pcm_accessible_state(runtime);
+	if (err < 0)
+		goto _end_unlock;
+
+	runtime->twake = runtime->control->avail_min ? : 1;
+	if (runtime->state == SNDRV_PCM_STATE_RUNNING)
+		snd_pcm_update_hw_ptr(substream);
+
+	/*
+	 * If size < start_threshold, wait indefinitely. Another
+	 * thread may start capture
+	 */
+	if (!is_playback &&
+	    runtime->state == SNDRV_PCM_STATE_PREPARED &&
+	    size >= runtime->start_threshold) {
+		err = snd_pcm_start(substream);
+		if (err < 0)
+			goto _end_unlock;
+	}
+
+	avail = snd_pcm_avail(substream);
+
+	while (size > 0) {
+		snd_pcm_uframes_t frames, appl_ptr, appl_ofs;
+		snd_pcm_uframes_t cont;
+		if (!avail) {
+			if (!is_playback &&
+			    runtime->state == SNDRV_PCM_STATE_DRAINING) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_pcm_stop(substream, SNDRV_PCM_STATE_SETUP);
 				goto _end_unlock;
 			}
@@ -2187,6 +3378,7 @@ static snd_pcm_sframes_t snd_pcm_lib_read1(struct snd_pcm_substream *substream,
 				continue; /* draining */
 		}
 		frames = size > avail ? avail : size;
+<<<<<<< HEAD
 		cont = runtime->buffer_size - runtime->control->appl_ptr % runtime->buffer_size;
 		if (frames > cont)
 			frames = cont;
@@ -2218,10 +3410,56 @@ static snd_pcm_sframes_t snd_pcm_lib_read1(struct snd_pcm_substream *substream,
 		runtime->control->appl_ptr = appl_ptr;
 		if (substream->ops->ack)
 			substream->ops->ack(substream);
+=======
+		appl_ptr = READ_ONCE(runtime->control->appl_ptr);
+		appl_ofs = appl_ptr % runtime->buffer_size;
+		cont = runtime->buffer_size - appl_ofs;
+		if (frames > cont)
+			frames = cont;
+		if (snd_BUG_ON(!frames)) {
+			err = -EINVAL;
+			goto _end_unlock;
+		}
+		if (!atomic_inc_unless_negative(&runtime->buffer_accessing)) {
+			err = -EBUSY;
+			goto _end_unlock;
+		}
+		snd_pcm_stream_unlock_irq(substream);
+		if (!is_playback)
+			snd_pcm_dma_buffer_sync(substream, SNDRV_DMA_SYNC_CPU);
+		err = writer(substream, appl_ofs, data, offset, frames,
+			     transfer, in_kernel);
+		if (is_playback)
+			snd_pcm_dma_buffer_sync(substream, SNDRV_DMA_SYNC_DEVICE);
+		snd_pcm_stream_lock_irq(substream);
+		atomic_dec(&runtime->buffer_accessing);
+		if (err < 0)
+			goto _end_unlock;
+		err = pcm_accessible_state(runtime);
+		if (err < 0)
+			goto _end_unlock;
+		appl_ptr += frames;
+		if (appl_ptr >= runtime->boundary)
+			appl_ptr -= runtime->boundary;
+		err = pcm_lib_apply_appl_ptr(substream, appl_ptr);
+		if (err < 0)
+			goto _end_unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		offset += frames;
 		size -= frames;
 		xfer += frames;
+<<<<<<< HEAD
+=======
+		avail -= frames;
+		if (is_playback &&
+		    runtime->state == SNDRV_PCM_STATE_PREPARED &&
+		    snd_pcm_playback_hw_avail(runtime) >= (snd_pcm_sframes_t)runtime->start_threshold) {
+			err = snd_pcm_start(substream);
+			if (err < 0)
+				goto _end_unlock;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
  _end_unlock:
 	runtime->twake = 0;
@@ -2230,6 +3468,7 @@ static snd_pcm_sframes_t snd_pcm_lib_read1(struct snd_pcm_substream *substream,
 	snd_pcm_stream_unlock_irq(substream);
 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
 }
+<<<<<<< HEAD
 
 snd_pcm_sframes_t snd_pcm_lib_read(struct snd_pcm_substream *substream, void __user *buf, snd_pcm_uframes_t size)
 {
@@ -2307,6 +3546,9 @@ snd_pcm_sframes_t snd_pcm_lib_readv(struct snd_pcm_substream *substream,
 }
 
 EXPORT_SYMBOL(snd_pcm_lib_readv);
+=======
+EXPORT_SYMBOL(__snd_pcm_lib_xfer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * standard channel mapping helpers
@@ -2315,7 +3557,11 @@ EXPORT_SYMBOL(snd_pcm_lib_readv);
 /* default channel maps for multi-channel playbacks, up to 8 channels */
 const struct snd_pcm_chmap_elem snd_pcm_std_chmaps[] = {
 	{ .channels = 1,
+<<<<<<< HEAD
 	  .map = { SNDRV_CHMAP_FC } },
+=======
+	  .map = { SNDRV_CHMAP_MONO } },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .channels = 2,
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
 	{ .channels = 4,
@@ -2337,7 +3583,11 @@ EXPORT_SYMBOL_GPL(snd_pcm_std_chmaps);
 /* alternative channel maps with CLFE <-> surround swapped for 6/8 channels */
 const struct snd_pcm_chmap_elem snd_pcm_alt_chmaps[] = {
 	{ .channels = 1,
+<<<<<<< HEAD
 	  .map = { SNDRV_CHMAP_FC } },
+=======
+	  .map = { SNDRV_CHMAP_MONO } },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .channels = 2,
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
 	{ .channels = 4,
@@ -2369,7 +3619,10 @@ static int pcm_chmap_ctl_info(struct snd_kcontrol *kcontrol,
 	struct snd_pcm_chmap *info = snd_kcontrol_chip(kcontrol);
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+<<<<<<< HEAD
 	uinfo->count = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->count = info->max_channels;
 	uinfo->value.integer.min = 0;
 	uinfo->value.integer.max = SNDRV_CHMAP_LAST;
@@ -2387,13 +3640,21 @@ static int pcm_chmap_ctl_get(struct snd_kcontrol *kcontrol,
 	struct snd_pcm_substream *substream;
 	const struct snd_pcm_chmap_elem *map;
 
+<<<<<<< HEAD
 	if (snd_BUG_ON(!info->chmap))
+=======
+	if (!info->chmap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	substream = snd_pcm_chmap_substream(info, idx);
 	if (!substream)
 		return -ENODEV;
 	memset(ucontrol->value.integer.value, 0,
+<<<<<<< HEAD
 	       sizeof(ucontrol->value.integer.value));
+=======
+	       sizeof(long) * info->max_channels);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!substream->runtime)
 		return 0; /* no channels set */
 	for (map = info->chmap; map->channels; map++) {
@@ -2419,7 +3680,11 @@ static int pcm_chmap_ctl_tlv(struct snd_kcontrol *kcontrol, int op_flag,
 	unsigned int __user *dst;
 	int c, count = 0;
 
+<<<<<<< HEAD
 	if (snd_BUG_ON(!info->chmap))
+=======
+	if (!info->chmap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (size < 8)
 		return -ENOMEM;
@@ -2461,6 +3726,7 @@ static void pcm_chmap_ctl_private_free(struct snd_kcontrol *kcontrol)
 	kfree(info);
 }
 
+<<<<<<< HEAD
 static int pcm_volume_ctl_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
@@ -2478,6 +3744,8 @@ static void pcm_volume_ctl_private_free(struct snd_kcontrol *kcontrol)
 	kfree(info);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_pcm_add_chmap_ctls - create channel-mapping control elements
  * @pcm: the assigned PCM instance
@@ -2488,7 +3756,11 @@ static void pcm_volume_ctl_private_free(struct snd_kcontrol *kcontrol)
  * @info_ret: store struct snd_pcm_chmap instance if non-NULL
  *
  * Create channel-mapping control elements assigned to the given PCM stream(s).
+<<<<<<< HEAD
  * Returns zero if succeed, or a negative error value.
+=======
+ * Return: Zero if successful, or a negative error value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 			   const struct snd_pcm_chmap_elem *chmap,
@@ -2508,6 +3780,11 @@ int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 	};
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON(pcm->streams[stream].chmap_kctl))
+		return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info)
 		return -ENOMEM;
@@ -2537,6 +3814,7 @@ int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_pcm_add_chmap_ctls);
+<<<<<<< HEAD
 
 /**
  * snd_pcm_add_volume_ctls - create volume control elements
@@ -2617,3 +3895,5 @@ int snd_pcm_add_volume_ctls(struct snd_pcm *pcm, int stream,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_pcm_add_volume_ctls);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

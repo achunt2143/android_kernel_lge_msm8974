@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Freescale Local Bus Controller
  *
  * Copyright © 2006-2007, 2010 Freescale Semiconductor
@@ -5,6 +9,7 @@
  * Authors: Nick Spence <nick.spence@freescale.com>,
  *          Scott Wood <scottwood@freescale.com>
  *          Jack Lan <jack.lan@freescale.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_FSL_LBC_H
@@ -95,6 +102,12 @@ struct fsl_lbc_bank {
 #define OR_FCM_TRLX_SHIFT                2
 #define OR_FCM_EHTR             0x00000002
 #define OR_FCM_EHTR_SHIFT                1
+<<<<<<< HEAD
+=======
+
+#define OR_GPCM_AM		0xFFFF8000
+#define OR_GPCM_AM_SHIFT		15
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fsl_lbc_regs {
@@ -285,7 +298,11 @@ struct fsl_lbc_ctrl {
 	/* device info */
 	struct device			*dev;
 	struct fsl_lbc_regs __iomem	*regs;
+<<<<<<< HEAD
 	int				irq;
+=======
+	int				irq[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_queue_head_t		irq_wait;
 	spinlock_t			lock;
 	void				*nand;

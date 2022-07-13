@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SMsC 37B787 Watchdog Timer driver for Linux 2.6.x.x
  *
  *	Based on acquirewdt.c by Alan Cox <alan@lxorguk.ukuu.org.uk>
  *	and some other existing drivers
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The authors do NOT admit liability nor provide warranty for
  *	any of this software. This material is provided "AS-IS" in
  *	the hope that it may be useful for others.
@@ -40,7 +47,11 @@
  *  mknod /dev/watchdog c 10 130
  *
  * For an example userspace keep-alive daemon, see:
+<<<<<<< HEAD
  *   Documentation/watchdog/wdt.txt
+=======
+ *   Documentation/watchdog/wdt.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -366,7 +377,11 @@ static int wb_smsc_wdt_open(struct inode *inode, struct file *file)
 	pr_info("Watchdog enabled. Timeout set to %d %s\n",
 		timeout, (unit == UNIT_SECOND) ? "second(s)" : "minute(s)");
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* close => shut off the timer */
@@ -478,7 +493,11 @@ static long wb_smsc_wdt_ioctl(struct file *file,
 			return -EINVAL;
 		timeout = new_timeout;
 		wb_smsc_wdt_set_timeout(timeout);
+<<<<<<< HEAD
 		/* fall through and return the new timeout... */
+=======
+		fallthrough;	/* and return the new timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		new_timeout = timeout;
 		if (unit == UNIT_MINUTE)
@@ -509,6 +528,10 @@ static const struct file_operations wb_smsc_wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= wb_smsc_wdt_write,
 	.unlocked_ioctl	= wb_smsc_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= wb_smsc_wdt_open,
 	.release	= wb_smsc_wdt_release,
 };
@@ -603,8 +626,11 @@ MODULE_DESCRIPTION("Driver for SMsC 37B787 watchdog component (Version "
 								VERSION ")");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SMSC_SUPPORT_MINUTES
 module_param(unit, int, 0);
 MODULE_PARM_DESC(unit,

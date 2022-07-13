@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
  *
  *  Copyright (C) 2011 Texas Instruments, Inc.
+<<<<<<< HEAD
  *
  *  Written by Ilan Elias <ilane@ti.com>
  *
@@ -19,6 +24,11 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+ *  Copyright (C) 2014 Marvell International Ltd.
+ *
+ *  Written by Ilan Elias <ilane@ti.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -36,10 +46,27 @@
 
 /* Complete data exchange transaction and forward skb to nfc core */
 void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
+<<<<<<< HEAD
 				int err)
 {
 	data_exchange_cb_t cb = ndev->data_exchange_cb;
 	void *cb_context = ndev->data_exchange_cb_context;
+=======
+				__u8 conn_id, int err)
+{
+	const struct nci_conn_info *conn_info;
+	data_exchange_cb_t cb;
+	void *cb_context;
+
+	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
+	if (!conn_info) {
+		kfree_skb(skb);
+		goto exit;
+	}
+
+	cb = conn_info->data_exchange_cb;
+	cb_context = conn_info->data_exchange_cb_context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("len %d, err %d\n", skb ? skb->len : 0, err);
 
@@ -48,9 +75,12 @@ void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
 	clear_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags);
 
 	if (cb) {
+<<<<<<< HEAD
 		ndev->data_exchange_cb = NULL;
 		ndev->data_exchange_cb_context = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* forward skb to nfc core */
 		cb(cb_context, skb, err);
 	} else if (skb) {
@@ -60,6 +90,10 @@ void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
 		kfree_skb(skb);
 	}
 
+<<<<<<< HEAD
+=======
+exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(NCI_DATA_EXCHANGE, &ndev->flags);
 }
 
@@ -73,13 +107,18 @@ static inline void nci_push_data_hdr(struct nci_dev *ndev,
 	struct nci_data_hdr *hdr;
 	int plen = skb->len;
 
+<<<<<<< HEAD
 	hdr = (struct nci_data_hdr *) skb_push(skb, NCI_DATA_HDR_SIZE);
+=======
+	hdr = skb_push(skb, NCI_DATA_HDR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->conn_id = conn_id;
 	hdr->rfu = 0;
 	hdr->plen = plen;
 
 	nci_mt_set((__u8 *)hdr, NCI_MT_DATA_PKT);
 	nci_pbf_set((__u8 *)hdr, pbf);
+<<<<<<< HEAD
 
 	skb->dev = (void *) ndev;
 }
@@ -89,6 +128,28 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 				   struct sk_buff *skb) {
 	int total_len = skb->len;
 	unsigned char *data = skb->data;
+=======
+}
+
+int nci_conn_max_data_pkt_payload_size(struct nci_dev *ndev, __u8 conn_id)
+{
+	const struct nci_conn_info *conn_info;
+
+	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
+	if (!conn_info)
+		return -EPROTO;
+
+	return conn_info->max_pkt_payload_len;
+}
+EXPORT_SYMBOL(nci_conn_max_data_pkt_payload_size);
+
+static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+				   __u8 conn_id,
+				   struct sk_buff *skb) {
+	const struct nci_conn_info *conn_info;
+	int total_len = skb->len;
+	const unsigned char *data = skb->data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct sk_buff_head frags_q;
 	struct sk_buff *skb_frag;
@@ -97,15 +158,32 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 
 	pr_debug("conn_id 0x%x, total_len %d\n", conn_id, total_len);
 
+<<<<<<< HEAD
+=======
+	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
+	if (!conn_info) {
+		rc = -EPROTO;
+		goto exit;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__skb_queue_head_init(&frags_q);
 
 	while (total_len) {
 		frag_len =
+<<<<<<< HEAD
 			min_t(int, total_len, ndev->max_data_pkt_payload_size);
 
 		skb_frag = nci_skb_alloc(ndev,
 					 (NCI_DATA_HDR_SIZE + frag_len),
 					 GFP_KERNEL);
+=======
+			min_t(int, total_len, conn_info->max_pkt_payload_len);
+
+		skb_frag = nci_skb_alloc(ndev,
+					 (NCI_DATA_HDR_SIZE + frag_len),
+					 GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (skb_frag == NULL) {
 			rc = -ENOMEM;
 			goto free_exit;
@@ -113,7 +191,11 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
 		skb_reserve(skb_frag, NCI_DATA_HDR_SIZE);
 
 		/* first, copy the data */
+<<<<<<< HEAD
 		memcpy(skb_put(skb_frag, frag_len), data, frag_len);
+=======
+		skb_put_data(skb_frag, data, frag_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* second, set the header */
 		nci_push_data_hdr(ndev, conn_id, skb_frag,
@@ -153,12 +235,27 @@ exit:
 /* Send NCI data */
 int nci_send_data(struct nci_dev *ndev, __u8 conn_id, struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	const struct nci_conn_info *conn_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	pr_debug("conn_id 0x%x, plen %d\n", conn_id, skb->len);
 
+<<<<<<< HEAD
 	/* check if the packet need to be fragmented */
 	if (skb->len <= ndev->max_data_pkt_payload_size) {
+=======
+	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
+	if (!conn_info) {
+		rc = -EPROTO;
+		goto free_exit;
+	}
+
+	/* check if the packet need to be fragmented */
+	if (skb->len <= conn_info->max_pkt_payload_len) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* no need to fragment packet */
 		nci_push_data_hdr(ndev, conn_id, skb, NCI_PBF_LAST);
 
@@ -172,6 +269,10 @@ int nci_send_data(struct nci_dev *ndev, __u8 conn_id, struct sk_buff *skb)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ndev->cur_conn_id = conn_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	queue_work(ndev->tx_wq, &ndev->tx_work);
 
 	goto exit;
@@ -182,16 +283,32 @@ free_exit:
 exit:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(nci_send_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ----------------- NCI RX Data ----------------- */
 
 static void nci_add_rx_data_frag(struct nci_dev *ndev,
 				 struct sk_buff *skb,
+<<<<<<< HEAD
 				 __u8 pbf)
+=======
+				 __u8 pbf, __u8 conn_id, __u8 status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int reassembly_len;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (status) {
+		err = status;
+		goto exit;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ndev->rx_data_reassembly) {
 		reassembly_len = ndev->rx_data_reassembly->len;
 
@@ -200,10 +317,17 @@ static void nci_add_rx_data_frag(struct nci_dev *ndev,
 			pr_err("error adding room for accumulated rx data\n");
 
 			kfree_skb(skb);
+<<<<<<< HEAD
 			skb = 0;
 
 			kfree_skb(ndev->rx_data_reassembly);
 			ndev->rx_data_reassembly = 0;
+=======
+			skb = NULL;
+
+			kfree_skb(ndev->rx_data_reassembly);
+			ndev->rx_data_reassembly = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			err = -ENOMEM;
 			goto exit;
@@ -216,7 +340,11 @@ static void nci_add_rx_data_frag(struct nci_dev *ndev,
 
 		/* third, free old reassembly */
 		kfree_skb(ndev->rx_data_reassembly);
+<<<<<<< HEAD
 		ndev->rx_data_reassembly = 0;
+=======
+		ndev->rx_data_reassembly = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pbf == NCI_PBF_CONT) {
@@ -226,13 +354,30 @@ static void nci_add_rx_data_frag(struct nci_dev *ndev,
 	}
 
 exit:
+<<<<<<< HEAD
 	nci_data_exchange_complete(ndev, skb, err);
+=======
+	if (ndev->nfc_dev->rf_mode == NFC_RF_TARGET) {
+		/* Data received in Target mode, forward to nfc core */
+		err = nfc_tm_data_received(ndev->nfc_dev, skb);
+		if (err)
+			pr_err("unable to handle received data\n");
+	} else {
+		nci_data_exchange_complete(ndev, skb, conn_id, err);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Rx Data packet */
 void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	__u8 pbf = nci_pbf(skb->data);
+<<<<<<< HEAD
+=======
+	__u8 status = 0;
+	__u8 conn_id = nci_conn_id(skb->data);
+	const struct nci_conn_info *conn_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("len %d\n", skb->len);
 
@@ -241,6 +386,7 @@ void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		 nci_conn_id(skb->data),
 		 nci_plen(skb->data));
 
+<<<<<<< HEAD
 	/* strip the nci data header */
 	skb_pull(skb, NCI_DATA_HDR_SIZE);
 
@@ -251,4 +397,26 @@ void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	}
 
 	nci_add_rx_data_frag(ndev, skb, pbf);
+=======
+	conn_info = nci_get_conn_info_by_conn_id(ndev, nci_conn_id(skb->data));
+	if (!conn_info) {
+		kfree_skb(skb);
+		return;
+	}
+
+	/* strip the nci data header */
+	skb_pull(skb, NCI_DATA_HDR_SIZE);
+
+	if (ndev->target_active_prot == NFC_PROTO_MIFARE ||
+	    ndev->target_active_prot == NFC_PROTO_JEWEL ||
+	    ndev->target_active_prot == NFC_PROTO_FELICA ||
+	    ndev->target_active_prot == NFC_PROTO_ISO15693) {
+		/* frame I/F => remove the status byte */
+		pr_debug("frame I/F => remove the status byte\n");
+		status = skb->data[skb->len - 1];
+		skb_trim(skb, (skb->len - 1));
+	}
+
+	nci_add_rx_data_frag(ndev, skb, pbf, conn_id, nci_to_errno(status));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

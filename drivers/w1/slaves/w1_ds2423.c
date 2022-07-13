@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	w1_ds2423.c
  *
@@ -6,6 +10,7 @@
  * This driver will read and write the value of 4 counters to w1_slave file in
  * sys filesystem.
  * Inspired by the w1_therm and w1_ds2431 drivers.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the therms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -30,9 +37,15 @@
 #include <linux/delay.h>
 #include <linux/crc16.h>
 
+<<<<<<< HEAD
 #include "../w1.h"
 #include "../w1_int.h"
 #include "../w1_family.h"
+=======
+#include <linux/w1.h>
+
+#define W1_COUNTER_DS2423	0x1D
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CRC16_VALID	0xb001
 #define CRC16_INIT	0
@@ -40,6 +53,7 @@
 #define COUNTER_COUNT 4
 #define READ_BYTE_COUNT 42
 
+<<<<<<< HEAD
 static ssize_t w1_counter_read(struct device *device,
 	struct device_attribute *attr, char *buf);
 
@@ -48,6 +62,10 @@ static struct device_attribute w1_counter_attr =
 
 static ssize_t w1_counter_read(struct device *device,
 	struct device_attribute *attr, char *out_buf)
+=======
+static ssize_t w1_slave_show(struct device *device,
+			     struct device_attribute *attr, char *out_buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = dev_to_w1_slave(device);
 	struct w1_master *dev = sl->master;
@@ -66,7 +84,11 @@ static ssize_t w1_counter_read(struct device *device,
 	wrbuf[0]	= 0xA5;
 	wrbuf[1]	= rom_addr & 0xFF;
 	wrbuf[2]	= rom_addr >> 8;
+<<<<<<< HEAD
 	mutex_lock(&dev->mutex);
+=======
+	mutex_lock(&dev->bus_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!w1_reset_select_slave(sl)) {
 		w1_write_block(dev, wrbuf, 3);
 		read_byte_count = 0;
@@ -124,6 +146,7 @@ static ssize_t w1_counter_read(struct device *device,
 	} else {
 		c -= snprintf(out_buf + PAGE_SIZE - c, c, "Connection error");
 	}
+<<<<<<< HEAD
 	mutex_unlock(&dev->mutex);
 	return PAGE_SIZE - c;
 }
@@ -141,12 +164,29 @@ static void w1_f1d_remove_slave(struct w1_slave *sl)
 static struct w1_family_ops w1_f1d_fops = {
 	.add_slave      = w1_f1d_add_slave,
 	.remove_slave   = w1_f1d_remove_slave,
+=======
+	mutex_unlock(&dev->bus_mutex);
+	return PAGE_SIZE - c;
+}
+
+static DEVICE_ATTR_RO(w1_slave);
+
+static struct attribute *w1_f1d_attrs[] = {
+	&dev_attr_w1_slave.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(w1_f1d);
+
+static const struct w1_family_ops w1_f1d_fops = {
+	.groups		= w1_f1d_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct w1_family w1_family_1d = {
 	.fid = W1_COUNTER_DS2423,
 	.fops = &w1_f1d_fops,
 };
+<<<<<<< HEAD
 
 static int __init w1_f1d_init(void)
 {
@@ -164,3 +204,11 @@ module_exit(w1_f1d_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mika Laitio <lamikr@pilppa.org>");
 MODULE_DESCRIPTION("w1 family 1d driver for DS2423, 4 counters and 4kb ram");
+=======
+module_w1_family(w1_family_1d);
+
+MODULE_AUTHOR("Mika Laitio <lamikr@pilppa.org>");
+MODULE_DESCRIPTION("w1 family 1d driver for DS2423, 4 counters and 4kb ram");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("w1-family-" __stringify(W1_COUNTER_DS2423));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

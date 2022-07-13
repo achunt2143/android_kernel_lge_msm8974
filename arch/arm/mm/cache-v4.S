@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/cache-v4.S
  *
  *  Copyright (C) 1997-2002 Russell king
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -9,6 +14,12 @@
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/linkage.h>
+#include <linux/init.h>
+#include <asm/assembler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include "proc-macros.S"
 
@@ -18,7 +29,11 @@
  *	Unconditionally clean and invalidate the entire icache.
  */
 ENTRY(v4_flush_icache_all)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(v4_flush_icache_all)
 
 /*
@@ -40,7 +55,11 @@ ENTRY(v4_flush_kern_cache_all)
 #ifdef CONFIG_CPU_CP15
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ flush ID cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	/* FALLTHROUGH */
 #endif
@@ -58,8 +77,13 @@ ENTRY(v4_flush_kern_cache_all)
 ENTRY(v4_flush_user_cache_range)
 #ifdef CONFIG_CPU_CP15
 	mov	ip, #0
+<<<<<<< HEAD
 	mcreq	p15, 0, ip, c7, c7, 0		@ flush ID cache
 	mov	pc, lr
+=======
+	mcr	p15, 0, ip, c7, c7, 0		@ flush ID cache
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	/* FALLTHROUGH */
 #endif
@@ -88,7 +112,12 @@ ENTRY(v4_coherent_kern_range)
  *	- end	 - virtual end address
  */
 ENTRY(v4_coherent_user_range)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	mov	r0, #0
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -115,7 +144,11 @@ ENTRY(v4_dma_flush_range)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ flush ID cache
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_unmap_area(start, size, dir)
@@ -135,7 +168,11 @@ ENTRY(v4_dma_unmap_area)
  *	- dir	- DMA direction
  */
 ENTRY(v4_dma_map_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(v4_dma_unmap_area)
 ENDPROC(v4_dma_map_area)
 

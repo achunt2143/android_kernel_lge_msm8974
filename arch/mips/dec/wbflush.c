@@ -2,9 +2,15 @@
  * Setup the right wbflush routine for the different DECstations.
  *
  * Created with information from:
+<<<<<<< HEAD
  *      DECstation 3100 Desktop Workstation Functional Specification
  *      DECstation 5000/200 KN02 System Module Functional Specification
  *      mipsel-linux-objdump --disassemble vmunix | grep "wbflush" :-)
+=======
+ *	DECstation 3100 Desktop Workstation Functional Specification
+ *	DECstation 5000/200 KN02 System Module Functional Specification
+ *	mipsel-linux-objdump --disassemble vmunix | grep "wbflush" :-)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -14,6 +20,10 @@
  * Copyright (C) 2002 Maciej W. Rozycki
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 
 #include <asm/bootinfo.h>
@@ -88,7 +98,10 @@ static void wbflush_mips(void)
 {
 	__fast_iob();
 }
+<<<<<<< HEAD
 
 #include <linux/module.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(__wbflush);

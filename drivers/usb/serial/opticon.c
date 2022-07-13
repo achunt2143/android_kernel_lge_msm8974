@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Opticon USB barcode to serial driver
  *
@@ -12,6 +13,19 @@
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Opticon USB barcode to serial driver
+ *
+ * Copyright (C) 2011 - 2012 Johan Hovold <jhovold@gmail.com>
+ * Copyright (C) 2011 Martin Jansen <martin.jansen@opticon.com>
+ * Copyright (C) 2008 - 2009 Greg Kroah-Hartman <gregkh@suse.de>
+ * Copyright (C) 2008 - 2009 Novell Inc.
+ */
+
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
 #include <linux/slab.h>
@@ -32,8 +46,11 @@
  * an examples of 1D barcode types are EAN, UPC, Code39, IATA etc.. */
 #define DRIVER_DESC	"Opticon USB barcode to serial driver (1D)"
 
+<<<<<<< HEAD
 static bool debug;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(0x065a, 0x0009) },
 	{ },
@@ -42,6 +59,7 @@ MODULE_DEVICE_TABLE(usb, id_table);
 
 /* This structure holds all of the individual device information */
 struct opticon_private {
+<<<<<<< HEAD
 	struct usb_device *udev;
 	struct usb_serial *serial;
 	struct usb_serial_port *port;
@@ -153,6 +171,68 @@ exit:
 	} else
 		priv->actually_throttled = true;
 	spin_unlock(&priv->lock);
+=======
+	spinlock_t lock;	/* protects the following flags */
+	bool rts;
+	bool cts;
+	int outstanding_urbs;
+	int outstanding_bytes;
+
+	struct usb_anchor anchor;
+};
+
+
+static void opticon_process_data_packet(struct usb_serial_port *port,
+					const unsigned char *buf, size_t len)
+{
+	tty_insert_flip_string(&port->port, buf, len);
+	tty_flip_buffer_push(&port->port);
+}
+
+static void opticon_process_status_packet(struct usb_serial_port *port,
+					const unsigned char *buf, size_t len)
+{
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	if (buf[0] == 0x00)
+		priv->cts = false;
+	else
+		priv->cts = true;
+	spin_unlock_irqrestore(&priv->lock, flags);
+}
+
+static void opticon_process_read_urb(struct urb *urb)
+{
+	struct usb_serial_port *port = urb->context;
+	const unsigned char *hdr = urb->transfer_buffer;
+	const unsigned char *data = hdr + 2;
+	size_t data_len = urb->actual_length - 2;
+
+	if (urb->actual_length <= 2) {
+		dev_dbg(&port->dev, "malformed packet received: %d bytes\n",
+							urb->actual_length);
+		return;
+	}
+	/*
+	 * Data from the device comes with a 2 byte header:
+	 *
+	 * <0x00><0x00>data...
+	 *      This is real data to be sent to the tty layer
+	 * <0x00><0x01>level
+	 *      This is a CTS level change, the third byte is the CTS
+	 *      value (0 for low, 1 for high).
+	 */
+	if ((hdr[0] == 0x00) && (hdr[1] == 0x00)) {
+		opticon_process_data_packet(port, data, data_len);
+	} else if ((hdr[0] == 0x00) && (hdr[1] == 0x01)) {
+		opticon_process_status_packet(port, data, data_len);
+	} else {
+		dev_dbg(&port->dev, "unknown packet received: %02x %02x\n",
+							hdr[0], hdr[1]);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_control_msg(struct usb_serial_port *port, u8 requesttype,
@@ -172,14 +252,25 @@ static int send_control_msg(struct usb_serial_port *port, u8 requesttype,
 	retval = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 				requesttype,
 				USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
+<<<<<<< HEAD
 				0, 0, buffer, 1, 0);
 	kfree(buffer);
 
 	return retval;
+=======
+				0, 0, buffer, 1, USB_CTRL_SET_TIMEOUT);
+	kfree(buffer);
+
+	if (retval < 0)
+		return retval;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int opticon_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	struct opticon_private *priv = usb_get_serial_data(port->serial);
 	unsigned long flags;
 	int result = 0;
@@ -190,12 +281,20 @@ static int opticon_open(struct tty_struct *tty, struct usb_serial_port *port)
 	priv->throttled = false;
 	priv->actually_throttled = false;
 	priv->port = port;
+=======
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	int res;
+
+	spin_lock_irqsave(&priv->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->rts = false;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	/* Clear RTS line */
 	send_control_msg(port, CONTROL_RTS, 0);
 
+<<<<<<< HEAD
 	/* Setup the read URB and start reading from the device */
 	usb_fill_bulk_urb(priv->bulk_read_urb, priv->udev,
 			  usb_rcvbulkpipe(priv->udev,
@@ -215,21 +314,48 @@ static int opticon_open(struct tty_struct *tty, struct usb_serial_port *port)
 	 * CTS state can be missed. */
 	send_control_msg(port, RESEND_CTS_STATE, 1);
 	return result;
+=======
+	/* clear the halt status of the endpoint */
+	usb_clear_halt(port->serial->dev, port->read_urb->pipe);
+
+	res = usb_serial_generic_open(tty, port);
+	if (res)
+		return res;
+
+	/* Request CTS line state, sometimes during opening the current
+	 * CTS state can be missed. */
+	send_control_msg(port, RESEND_CTS_STATE, 1);
+
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void opticon_close(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	struct opticon_private *priv = usb_get_serial_data(port->serial);
 
 	dbg("%s - port %d", __func__, port->number);
 
 	/* shutdown our urbs */
 	usb_kill_urb(priv->bulk_read_urb);
+=======
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+
+	usb_kill_anchored_urbs(&priv->anchor);
+
+	usb_serial_generic_close(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void opticon_write_control_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	struct opticon_private *priv = urb->context;
+=======
+	struct usb_serial_port *port = urb->context;
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = urb->status;
 	unsigned long flags;
 
@@ -240,6 +366,7 @@ static void opticon_write_control_callback(struct urb *urb)
 	kfree(urb->setup_packet);
 
 	if (status)
+<<<<<<< HEAD
 		dbg("%s - nonzero write bulk status received: %d",
 		    __func__, status);
 
@@ -248,24 +375,46 @@ static void opticon_write_control_callback(struct urb *urb)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	usb_serial_port_softint(priv->port);
+=======
+		dev_dbg(&port->dev,
+			"%s - non-zero urb status received: %d\n",
+			__func__, status);
+
+	spin_lock_irqsave(&priv->lock, flags);
+	--priv->outstanding_urbs;
+	priv->outstanding_bytes -= urb->transfer_buffer_length;
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	usb_serial_port_softint(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 			 const unsigned char *buf, int count)
 {
+<<<<<<< HEAD
 	struct opticon_private *priv = usb_get_serial_data(port->serial);
+=======
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_serial *serial = port->serial;
 	struct urb *urb;
 	unsigned char *buffer;
 	unsigned long flags;
+<<<<<<< HEAD
 	int status;
 	struct usb_ctrlrequest *dr;
 
 	dbg("%s - port %d", __func__, port->number);
+=======
+	struct usb_ctrlrequest *dr;
+	int ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->lock, flags);
 	if (priv->outstanding_urbs > URB_UPPER_LIMIT) {
 		spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 		dbg("%s - write limit hit", __func__);
 		return 0;
 	}
@@ -299,6 +448,30 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 		count = -ENOMEM;
 		goto error_no_dr;
 	}
+=======
+		dev_dbg(&port->dev, "%s - write limit hit\n", __func__);
+		return 0;
+	}
+	priv->outstanding_urbs++;
+	priv->outstanding_bytes += count;
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	buffer = kmemdup(buf, count, GFP_ATOMIC);
+	if (!buffer)
+		goto error_no_buffer;
+
+	urb = usb_alloc_urb(0, GFP_ATOMIC);
+	if (!urb)
+		goto error_no_urb;
+
+	usb_serial_debug_data(&port->dev, __func__, count, buffer);
+
+	/* The connected devices do not have a bulk write endpoint,
+	 * to transmit data to de barcode device the control endpoint is used */
+	dr = kmalloc(sizeof(struct usb_ctrlrequest), GFP_ATOMIC);
+	if (!dr)
+		goto error_no_dr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dr->bRequestType = USB_TYPE_VENDOR | USB_RECIP_INTERFACE | USB_DIR_OUT;
 	dr->bRequest = 0x01;
@@ -309,6 +482,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 	usb_fill_control_urb(urb, serial->dev,
 		usb_sndctrlpipe(serial->dev, 0),
 		(unsigned char *)dr, buffer, count,
+<<<<<<< HEAD
 		opticon_write_control_callback, priv);
 
 	/* send it down the pipe */
@@ -318,6 +492,17 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
 		"%s - usb_submit_urb(write endpoint) failed status = %d\n",
 							__func__, status);
 		count = status;
+=======
+		opticon_write_control_callback, port);
+
+	usb_anchor_urb(urb, &priv->anchor);
+
+	/* send it down the pipe */
+	ret = usb_submit_urb(urb, GFP_ATOMIC);
+	if (ret) {
+		dev_err(&port->dev, "failed to submit write urb: %d\n", ret);
+		usb_unanchor_urb(urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -335,6 +520,7 @@ error_no_urb:
 error_no_buffer:
 	spin_lock_irqsave(&priv->lock, flags);
 	--priv->outstanding_urbs;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&priv->lock, flags);
 	return count;
 }
@@ -347,6 +533,20 @@ static int opticon_write_room(struct tty_struct *tty)
 
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+	priv->outstanding_bytes -= count;
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	return ret;
+}
+
+static unsigned int opticon_write_room(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We really can take almost anything the user throws at us
 	 * but let's pick a nice big number to tell the tty
@@ -355,7 +555,11 @@ static int opticon_write_room(struct tty_struct *tty)
 	spin_lock_irqsave(&priv->lock, flags);
 	if (priv->outstanding_urbs > URB_UPPER_LIMIT * 2 / 3) {
 		spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 		dbg("%s - write limit hit", __func__);
+=======
+		dev_dbg(&port->dev, "%s - write limit hit\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	spin_unlock_irqrestore(&priv->lock, flags);
@@ -363,6 +567,7 @@ static int opticon_write_room(struct tty_struct *tty)
 	return 2048;
 }
 
+<<<<<<< HEAD
 static void opticon_throttle(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -398,11 +603,26 @@ static void opticon_unthrottle(struct tty_struct *tty)
 				"%s - failed submitting read urb, error %d\n",
 							__func__, result);
 	}
+=======
+static unsigned int opticon_chars_in_buffer(struct tty_struct *tty)
+{
+	struct usb_serial_port *port = tty->driver_data;
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	unsigned int count;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	count = priv->outstanding_bytes;
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int opticon_tiocmget(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	struct opticon_private *priv = usb_get_serial_data(port->serial);
 	unsigned long flags;
 	int result = 0;
@@ -411,6 +631,12 @@ static int opticon_tiocmget(struct tty_struct *tty)
 	if (!usb_get_intfdata(port->serial->interface))
 		return -ENODEV;
 
+=======
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	int result = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->lock, flags);
 	if (priv->rts)
 		result |= TIOCM_RTS;
@@ -418,7 +644,11 @@ static int opticon_tiocmget(struct tty_struct *tty)
 		result |= TIOCM_CTS;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+<<<<<<< HEAD
 	dbg("%s - %x", __func__, result);
+=======
+	dev_dbg(&port->dev, "%s - %x\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -426,6 +656,7 @@ static int opticon_tiocmset(struct tty_struct *tty,
 			   unsigned int set, unsigned int clear)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	struct opticon_private *priv = usb_get_serial_data(port->serial);
 	unsigned long flags;
 	bool rts;
@@ -433,6 +664,14 @@ static int opticon_tiocmset(struct tty_struct *tty,
 
 	if (!usb_get_intfdata(port->serial->interface))
 		return -ENODEV;
+=======
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+	unsigned long flags;
+	bool rts;
+	bool changed = false;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We only support RTS so we only handle that */
 	spin_lock_irqsave(&priv->lock, flags);
 
@@ -447,6 +686,7 @@ static int opticon_tiocmset(struct tty_struct *tty,
 	if (!changed)
 		return 0;
 
+<<<<<<< HEAD
 	/* Send the new RTS state to the connected device */
 	return send_control_msg(port, CONTROL_RTS, !rts);
 }
@@ -613,6 +853,38 @@ static struct usb_driver opticon_driver = {
 	.id_table =	id_table,
 };
 
+=======
+	ret = send_control_msg(port, CONTROL_RTS, !rts);
+	if (ret)
+		return usb_translate_errors(ret);
+
+	return 0;
+}
+
+static int opticon_port_probe(struct usb_serial_port *port)
+{
+	struct opticon_private *priv;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	spin_lock_init(&priv->lock);
+	init_usb_anchor(&priv->anchor);
+
+	usb_set_serial_port_data(port, priv);
+
+	return 0;
+}
+
+static void opticon_port_remove(struct usb_serial_port *port)
+{
+	struct opticon_private *priv = usb_get_serial_port_data(port);
+
+	kfree(priv);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver opticon_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -620,11 +892,19 @@ static struct usb_serial_driver opticon_device = {
 	},
 	.id_table =		id_table,
 	.num_ports =		1,
+<<<<<<< HEAD
 	.attach =		opticon_startup,
+=======
+	.num_bulk_in =		1,
+	.bulk_in_size =		256,
+	.port_probe =		opticon_port_probe,
+	.port_remove =		opticon_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			opticon_open,
 	.close =		opticon_close,
 	.write =		opticon_write,
 	.write_room = 		opticon_write_room,
+<<<<<<< HEAD
 	.disconnect =		opticon_disconnect,
 	.release =		opticon_release,
 	.throttle = 		opticon_throttle,
@@ -632,12 +912,21 @@ static struct usb_serial_driver opticon_device = {
 	.ioctl =		opticon_ioctl,
 	.tiocmget =		opticon_tiocmget,
 	.tiocmset =		opticon_tiocmset,
+=======
+	.chars_in_buffer =	opticon_chars_in_buffer,
+	.throttle =		usb_serial_generic_throttle,
+	.unthrottle =		usb_serial_generic_unthrottle,
+	.tiocmget =		opticon_tiocmget,
+	.tiocmset =		opticon_tiocmset,
+	.process_read_urb =	opticon_process_read_urb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
 	&opticon_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(opticon_driver, serial_drivers);
 
 MODULE_DESCRIPTION(DRIVER_DESC);
@@ -645,3 +934,9 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

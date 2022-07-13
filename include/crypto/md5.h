@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _CRYPTO_MD5_H
 #define _CRYPTO_MD5_H
 
@@ -8,6 +12,16 @@
 #define MD5_BLOCK_WORDS		16
 #define MD5_HASH_WORDS		4
 
+<<<<<<< HEAD
+=======
+#define MD5_H0	0x67452301UL
+#define MD5_H1	0xefcdab89UL
+#define MD5_H2	0x98badcfeUL
+#define MD5_H3	0x10325476UL
+
+extern const u8 md5_zero_message_hash[MD5_DIGEST_SIZE];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct md5_state {
 	u32 hash[MD5_HASH_WORDS];
 	u32 block[MD5_BLOCK_WORDS];

@@ -7,6 +7,7 @@
  * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -217,6 +218,19 @@ static void __init pci_fixup_ioc3(struct pci_dev *d)
 	pci_disable_swapping(d);
 }
 
+=======
+
+#include <linux/io.h>
+
+#include <asm/sn/addrs.h>
+#include <asm/sn/types.h>
+#include <asm/sn/klconfig.h>
+#include <asm/sn/agent.h>
+#include <asm/sn/ioc3.h>
+#include <asm/pci/bridge.h>
+
+#ifdef CONFIG_NUMA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pcibus_to_node(struct pci_bus *bus)
 {
 	struct bridge_controller *bc = BRIDGE_CONTROLLER(bus);
@@ -224,6 +238,27 @@ int pcibus_to_node(struct pci_bus *bus)
 	return bc->nasid;
 }
 EXPORT_SYMBOL(pcibus_to_node);
+<<<<<<< HEAD
 
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3,
 	pci_fixup_ioc3);
+=======
+#endif /* CONFIG_NUMA */
+
+static void ip29_fixup_phy(struct pci_dev *dev)
+{
+	int nasid = pcibus_to_node(dev->bus);
+	u32 sid;
+
+	if (nasid != 1)
+		return; /* only needed on second module */
+
+	/* enable ethernet PHY on IP29 systemboard */
+	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
+	if (sid == (PCI_VENDOR_ID_SGI | (IOC3_SUBSYS_IP29_SYSBOARD) << 16))
+		REMOTE_HUB_S(nasid, MD_LED0, 0x09);
+}
+
+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3,
+			ip29_fixup_phy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

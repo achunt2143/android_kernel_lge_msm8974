@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _DCCP_LI_HIST_
 #define _DCCP_LI_HIST_
 /*
@@ -5,11 +9,14 @@
  *  Copyright (c) 2005-7 The University of Waikato, Hamilton, New Zealand.
  *  Copyright (c) 2005-7 Ian McDonald <ian.mcdonald@jandi.co.nz>
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the Free
  *  Software Foundation; either version 2 of the License, or (at your option)
  *  any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/ktime.h>
 #include <linux/list.h>
@@ -65,9 +72,16 @@ static inline u8 tfrc_lh_length(struct tfrc_loss_hist *lh)
 
 struct tfrc_rx_hist;
 
+<<<<<<< HEAD
 extern int  tfrc_lh_interval_add(struct tfrc_loss_hist *, struct tfrc_rx_hist *,
 				 u32 (*first_li)(struct sock *), struct sock *);
 extern u8   tfrc_lh_update_i_mean(struct tfrc_loss_hist *lh, struct sk_buff *);
 extern void tfrc_lh_cleanup(struct tfrc_loss_hist *lh);
+=======
+int tfrc_lh_interval_add(struct tfrc_loss_hist *, struct tfrc_rx_hist *,
+			 u32 (*first_li)(struct sock *), struct sock *);
+u8 tfrc_lh_update_i_mean(struct tfrc_loss_hist *lh, struct sk_buff *);
+void tfrc_lh_cleanup(struct tfrc_loss_hist *lh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _DCCP_LI_HIST_ */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  *
@@ -10,6 +14,7 @@
  * SpaceTec SpaceBall 2003/3003/4000 FLX driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +41,14 @@
 #include <linux/init.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+=======
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/module.h>
+#include <linux/input.h>
+#include <linux/serio.h>
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"SpaceTec SpaceBall 2003/3003/4000 FLX driver"
 
@@ -92,9 +105,21 @@ static void spaceball_process_packet(struct spaceball* spaceball)
 
 		case 'D':					/* Ball data */
 			if (spaceball->idx != 15) return;
+<<<<<<< HEAD
 			for (i = 0; i < 6; i++)
 				input_report_abs(dev, spaceball_axes[i],
 					(__s16)((data[2 * i + 3] << 8) | data[2 * i + 2]));
+=======
+			/*
+			 * Skip first three bytes; read six axes worth of data.
+			 * Axis values are signed 16-bit big-endian.
+			 */
+			data += 3;
+			for (i = 0; i < ARRAY_SIZE(spaceball_axes); i++) {
+				input_report_abs(dev, spaceball_axes[i],
+					(__s16)get_unaligned_be16(&data[i * 2]));
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case 'K':					/* Button data */
@@ -163,6 +188,10 @@ static irqreturn_t spaceball_interrupt(struct serio *serio,
 				break;
 			}
 			spaceball->escape = 0;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'M':
 		case 'Q':
 		case 'S':
@@ -170,6 +199,10 @@ static irqreturn_t spaceball_interrupt(struct serio *serio,
 				spaceball->escape = 0;
 				data &= 0x1f;
 			}
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			if (spaceball->escape)
 				spaceball->escape = 0;
@@ -235,11 +268,19 @@ static int spaceball_connect(struct serio *serio, struct serio_driver *drv)
 			input_dev->keybit[BIT_WORD(BTN_A)] |= BIT_MASK(BTN_A) |
 				BIT_MASK(BTN_B) | BIT_MASK(BTN_C) |
 				BIT_MASK(BTN_MODE);
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			input_dev->keybit[BIT_WORD(BTN_0)] |= BIT_MASK(BTN_2) |
 				BIT_MASK(BTN_3) | BIT_MASK(BTN_4) |
 				BIT_MASK(BTN_5) | BIT_MASK(BTN_6) |
 				BIT_MASK(BTN_7) | BIT_MASK(BTN_8);
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SPACEBALL_3003C:
 			input_dev->keybit[BIT_WORD(BTN_0)] |= BIT_MASK(BTN_1) |
 				BIT_MASK(BTN_8);
@@ -273,7 +314,11 @@ static int spaceball_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id spaceball_serio_ids[] = {
+=======
+static const struct serio_device_id spaceball_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_SPACEBALL,
@@ -296,6 +341,7 @@ static struct serio_driver spaceball_drv = {
 	.disconnect	= spaceball_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -312,3 +358,6 @@ static void __exit spaceball_exit(void)
 
 module_init(spaceball_init);
 module_exit(spaceball_exit);
+=======
+module_serio_driver(spaceball_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2008 LSI Corporation.
  *
@@ -423,8 +427,13 @@ typedef struct _SGE_TRANSACTION32
     U8                      ContextSize;
     U8                      DetailsLength;
     U8                      Flags;
+<<<<<<< HEAD
     U32                     TransactionContext[1];
     U32                     TransactionDetails[1];
+=======
+    U32                     TransactionContext;
+    U32                     TransactionDetails[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } SGE_TRANSACTION32, MPI_POINTER PTR_SGE_TRANSACTION32,
   SGETransaction32_t, MPI_POINTER pSGETransaction32_t;
 

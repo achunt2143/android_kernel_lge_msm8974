@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2010 Google Inc. All Rights Reserved.
  * Author: dlaurie@google.com (Duncan Laurie)
@@ -16,9 +20,15 @@
 #include <linux/string.h>
 #include <linux/spinlock.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/dmapool.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
+=======
+#include <linux/fs.h>
+#include <linux/slab.h>
+#include <linux/panic_notifier.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioctl.h>
 #include <linux/acpi.h>
 #include <linux/io.h>
@@ -28,6 +38,11 @@
 #include <linux/reboot.h>
 #include <linux/efi.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/ucs2_string.h>
+#include <linux/suspend.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GSMI_SHUTDOWN_CLEAN	0	/* Clean Shutdown */
 /* TODO(mikew@google.com): Tie in HARDLOCKUP_DETECTOR with NMIWDT */
@@ -69,8 +84,16 @@
 #define GSMI_CMD_SET_NVRAM_VAR		0x03
 #define GSMI_CMD_SET_EVENT_LOG		0x08
 #define GSMI_CMD_CLEAR_EVENT_LOG	0x09
+<<<<<<< HEAD
 #define GSMI_CMD_CLEAR_CONFIG		0x20
 #define GSMI_CMD_HANDSHAKE_TYPE		0xC1
+=======
+#define GSMI_CMD_LOG_S0IX_SUSPEND	0x0a
+#define GSMI_CMD_LOG_S0IX_RESUME	0x0b
+#define GSMI_CMD_CLEAR_CONFIG		0x20
+#define GSMI_CMD_HANDSHAKE_TYPE		0xC1
+#define GSMI_CMD_RESERVED		0xff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Magic entry type for kernel events */
 #define GSMI_LOG_ENTRY_TYPE_KERNEL     0xDEAD
@@ -79,11 +102,18 @@
 struct gsmi_buf {
 	u8 *start;			/* start of buffer */
 	size_t length;			/* length of buffer */
+<<<<<<< HEAD
 	dma_addr_t handle;		/* dma allocation handle */
 	u32 address;			/* physical address of buffer */
 };
 
 struct gsmi_device {
+=======
+	u32 address;			/* physical address of buffer */
+};
+
+static struct gsmi_device {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device *pdev;	/* platform device */
 	struct gsmi_buf *name_buf;	/* variable name buffer */
 	struct gsmi_buf *data_buf;	/* generic data buffer */
@@ -91,7 +121,11 @@ struct gsmi_device {
 	spinlock_t lock;		/* serialize access to SMIs */
 	u16 smi_cmd;			/* SMI command port */
 	int handshake_type;		/* firmware handler interlock type */
+<<<<<<< HEAD
 	struct dma_pool *dma_pool;	/* DMA buffer pool */
+=======
+	struct kmem_cache *mem_pool;	/* kmem cache for gsmi_buf allocations */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } gsmi_dev;
 
 /* Packed structures for communicating with the firmware */
@@ -121,7 +155,10 @@ struct gsmi_log_entry_type_1 {
 	u32	instance;
 } __packed;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Some platforms don't have explicit SMI handshake
  * and need to wait for SMI to complete.
@@ -132,6 +169,22 @@ module_param(spincount, uint, 0600);
 MODULE_PARM_DESC(spincount,
 	"The number of loop iterations to use when using the spin handshake.");
 
+<<<<<<< HEAD
+=======
+/*
+ * Some older platforms with Apollo Lake chipsets do not support S0ix logging
+ * in their GSMI handlers, and behaved poorly when resuming via power button
+ * press if the logging was attempted. Updated firmware with proper behavior
+ * has long since shipped, removing the need for this opt-in parameter. It
+ * now exists as an opt-out parameter for folks defiantly running old
+ * firmware, or unforeseen circumstances. After the change from opt-in to
+ * opt-out has baked sufficiently, this parameter should probably be removed
+ * entirely.
+ */
+static bool s0ix_logging_enable = true;
+module_param(s0ix_logging_enable, bool, 0600);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct gsmi_buf *gsmi_buf_alloc(void)
 {
 	struct gsmi_buf *smibuf;
@@ -143,8 +196,12 @@ static struct gsmi_buf *gsmi_buf_alloc(void)
 	}
 
 	/* allocate buffer in 32bit address space */
+<<<<<<< HEAD
 	smibuf->start = dma_pool_alloc(gsmi_dev.dma_pool, GFP_KERNEL,
 				       &smibuf->handle);
+=======
+	smibuf->start = kmem_cache_alloc(gsmi_dev.mem_pool, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!smibuf->start) {
 		printk(KERN_ERR "gsmi: failed to allocate name buffer\n");
 		kfree(smibuf);
@@ -162,8 +219,12 @@ static void gsmi_buf_free(struct gsmi_buf *smibuf)
 {
 	if (smibuf) {
 		if (smibuf->start)
+<<<<<<< HEAD
 			dma_pool_free(gsmi_dev.dma_pool, smibuf->start,
 				      smibuf->handle);
+=======
+			kmem_cache_free(gsmi_dev.mem_pool, smibuf->start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(smibuf);
 	}
 }
@@ -288,6 +349,7 @@ static int gsmi_exec(u8 func, u8 sub)
 	return rc;
 }
 
+<<<<<<< HEAD
 /* Return the number of unicode characters in data */
 static size_t
 utf16_strlen(efi_char16_t *data, unsigned long maxlength)
@@ -298,6 +360,11 @@ utf16_strlen(efi_char16_t *data, unsigned long maxlength)
 		length++;
 	return length;
 }
+=======
+#ifdef CONFIG_EFI
+
+static struct efivars efivars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static efi_status_t gsmi_get_variable(efi_char16_t *name,
 				      efi_guid_t *vendor, u32 *attr,
@@ -311,7 +378,11 @@ static efi_status_t gsmi_get_variable(efi_char16_t *name,
 	};
 	efi_status_t ret = EFI_SUCCESS;
 	unsigned long flags;
+<<<<<<< HEAD
 	size_t name_len = utf16_strlen(name, GSMI_BUF_SIZE / 2);
+=======
+	size_t name_len = ucs2_strnlen(name, GSMI_BUF_SIZE / 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if (name_len >= GSMI_BUF_SIZE / 2)
@@ -353,9 +424,16 @@ static efi_status_t gsmi_get_variable(efi_char16_t *name,
 		memcpy(data, gsmi_dev.data_buf->start, *data_size);
 
 		/* All variables are have the following attributes */
+<<<<<<< HEAD
 		*attr = EFI_VARIABLE_NON_VOLATILE |
 			EFI_VARIABLE_BOOTSERVICE_ACCESS |
 			EFI_VARIABLE_RUNTIME_ACCESS;
+=======
+		if (attr)
+			*attr = EFI_VARIABLE_NON_VOLATILE |
+				EFI_VARIABLE_BOOTSERVICE_ACCESS |
+				EFI_VARIABLE_RUNTIME_ACCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
@@ -380,7 +458,11 @@ static efi_status_t gsmi_get_next_variable(unsigned long *name_size,
 		return EFI_BAD_BUFFER_SIZE;
 
 	/* Let's make sure the thing is at least null-terminated */
+<<<<<<< HEAD
 	if (utf16_strlen(name, GSMI_BUF_SIZE / 2) == GSMI_BUF_SIZE / 2)
+=======
+	if (ucs2_strnlen(name, GSMI_BUF_SIZE / 2) == GSMI_BUF_SIZE / 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return EFI_INVALID_PARAMETER;
 
 	spin_lock_irqsave(&gsmi_dev.lock, flags);
@@ -408,7 +490,11 @@ static efi_status_t gsmi_get_next_variable(unsigned long *name_size,
 
 		/* Copy the name back */
 		memcpy(name, gsmi_dev.name_buf->start, GSMI_BUF_SIZE);
+<<<<<<< HEAD
 		*name_size = utf16_strlen(name, GSMI_BUF_SIZE / 2) * 2;
+=======
+		*name_size = ucs2_strnlen(name, GSMI_BUF_SIZE / 2) * 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* copy guid to return buffer */
 		memcpy(vendor, &param.guid, sizeof(param.guid));
@@ -434,7 +520,11 @@ static efi_status_t gsmi_set_variable(efi_char16_t *name,
 			      EFI_VARIABLE_BOOTSERVICE_ACCESS |
 			      EFI_VARIABLE_RUNTIME_ACCESS,
 	};
+<<<<<<< HEAD
 	size_t name_len = utf16_strlen(name, GSMI_BUF_SIZE / 2);
+=======
+	size_t name_len = ucs2_strnlen(name, GSMI_BUF_SIZE / 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	efi_status_t ret = EFI_SUCCESS;
 	int rc;
 	unsigned long flags;
@@ -476,6 +566,11 @@ static const struct efivar_operations efivar_ops = {
 	.get_next_variable = gsmi_get_next_variable,
 };
 
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_EFI */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 			       struct bin_attribute *bin_attr,
 			       char *buf, loff_t pos, size_t count)
@@ -490,11 +585,18 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 	if (count < sizeof(u32))
 		return -EINVAL;
 	param.type = *(u32 *)buf;
+<<<<<<< HEAD
 	count -= sizeof(u32);
 	buf += sizeof(u32);
 
 	/* The remaining buffer is the data payload */
 	if (count > gsmi_dev.data_buf->length)
+=======
+	buf += sizeof(u32);
+
+	/* The remaining buffer is the data payload */
+	if ((count - sizeof(u32)) > gsmi_dev.data_buf->length)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	param.data_len = count - sizeof(u32);
 
@@ -514,7 +616,11 @@ static ssize_t eventlog_write(struct file *filp, struct kobject *kobj,
 
 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
 
+<<<<<<< HEAD
 	return rc;
+=======
+	return (rc == 0) ? count : rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -535,7 +641,11 @@ static ssize_t gsmi_clear_eventlog_store(struct kobject *kobj,
 		u32 data_type;
 	} param;
 
+<<<<<<< HEAD
 	rc = strict_strtoul(buf, 0, &val);
+=======
+	rc = kstrtoul(buf, 0, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -672,6 +782,18 @@ static struct notifier_block gsmi_die_notifier = {
 static int gsmi_panic_callback(struct notifier_block *nb,
 			       unsigned long reason, void *arg)
 {
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Panic callbacks are executed with all other CPUs stopped,
+	 * so we must not attempt to spin waiting for gsmi_dev.lock
+	 * to be released.
+	 */
+	if (spin_is_locked(&gsmi_dev.lock))
+		return NOTIFY_DONE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gsmi_shutdown_reason(GSMI_SHUTDOWN_PANIC);
 	return NOTIFY_DONE;
 }
@@ -719,13 +841,26 @@ static u32 __init hash_oem_table_id(char s[8])
 	return local_hash_64(input, 32);
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id gsmi_dmi_table[] __initdata = {
+=======
+static const struct dmi_system_id gsmi_dmi_table[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Google Board",
 		.matches = {
 			DMI_MATCH(DMI_BOARD_VENDOR, "Google, Inc."),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+		.ident = "Coreboot Firmware",
+		.matches = {
+			DMI_MATCH(DMI_BIOS_VENDOR, "coreboot"),
+		},
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(dmi, gsmi_dmi_table);
@@ -733,6 +868,10 @@ MODULE_DEVICE_TABLE(dmi, gsmi_dmi_table);
 static __init int gsmi_system_valid(void)
 {
 	u32 hash;
+<<<<<<< HEAD
+=======
+	u16 cmd, result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dmi_check_system(gsmi_dmi_table))
 		return -ENODEV;
@@ -767,12 +906,114 @@ static __init int gsmi_system_valid(void)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Test the smihandler with a bogus command. If it leaves the
+	 * calling argument in %ax untouched, there is no handler for
+	 * GSMI commands.
+	 */
+	cmd = GSMI_CALLBACK | GSMI_CMD_RESERVED << 8;
+	asm volatile (
+		"outb %%al, %%dx\n\t"
+		: "=a" (result)
+		: "0" (cmd),
+		  "d" (acpi_gbl_FADT.smi_command)
+		: "memory", "cc"
+		);
+	if (cmd == result) {
+		pr_info("gsmi: no gsmi handler in firmware\n");
+		return -ENODEV;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Found */
 	return 0;
 }
 
 static struct kobject *gsmi_kobj;
+<<<<<<< HEAD
 static struct efivars efivars;
+=======
+
+static const struct platform_device_info gsmi_dev_info = {
+	.name		= "gsmi",
+	.id		= -1,
+	/* SMI callbacks require 32bit addresses */
+	.dma_mask	= DMA_BIT_MASK(32),
+};
+
+#ifdef CONFIG_PM
+static void gsmi_log_s0ix_info(u8 cmd)
+{
+	unsigned long flags;
+
+	/*
+	 * If platform has not enabled S0ix logging, then no action is
+	 * necessary.
+	 */
+	if (!s0ix_logging_enable)
+		return;
+
+	spin_lock_irqsave(&gsmi_dev.lock, flags);
+
+	memset(gsmi_dev.param_buf->start, 0, gsmi_dev.param_buf->length);
+
+	gsmi_exec(GSMI_CALLBACK, cmd);
+
+	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
+}
+
+static int gsmi_log_s0ix_suspend(struct device *dev)
+{
+	/*
+	 * If system is not suspending via firmware using the standard ACPI Sx
+	 * types, then make a GSMI call to log the suspend info.
+	 */
+	if (!pm_suspend_via_firmware())
+		gsmi_log_s0ix_info(GSMI_CMD_LOG_S0IX_SUSPEND);
+
+	/*
+	 * Always return success, since we do not want suspend
+	 * to fail just because of logging failure.
+	 */
+	return 0;
+}
+
+static int gsmi_log_s0ix_resume(struct device *dev)
+{
+	/*
+	 * If system did not resume via firmware, then make a GSMI call to log
+	 * the resume info and wake source.
+	 */
+	if (!pm_resume_via_firmware())
+		gsmi_log_s0ix_info(GSMI_CMD_LOG_S0IX_RESUME);
+
+	/*
+	 * Always return success, since we do not want resume
+	 * to fail just because of logging failure.
+	 */
+	return 0;
+}
+
+static const struct dev_pm_ops gsmi_pm_ops = {
+	.suspend_noirq = gsmi_log_s0ix_suspend,
+	.resume_noirq = gsmi_log_s0ix_resume,
+};
+
+static int gsmi_platform_driver_probe(struct platform_device *dev)
+{
+	return 0;
+}
+
+static struct platform_driver gsmi_driver_info = {
+	.driver = {
+		.name = "gsmi",
+		.pm = &gsmi_pm_ops,
+	},
+	.probe = gsmi_platform_driver_probe,
+};
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __init int gsmi_init(void)
 {
@@ -785,8 +1026,21 @@ static __init int gsmi_init(void)
 
 	gsmi_dev.smi_cmd = acpi_gbl_FADT.smi_command;
 
+<<<<<<< HEAD
 	/* register device */
 	gsmi_dev.pdev = platform_device_register_simple("gsmi", -1, NULL, 0);
+=======
+#ifdef CONFIG_PM
+	ret = platform_driver_register(&gsmi_driver_info);
+	if (unlikely(ret)) {
+		printk(KERN_ERR "gsmi: unable to register platform driver\n");
+		return ret;
+	}
+#endif
+
+	/* register device */
+	gsmi_dev.pdev = platform_device_register_full(&gsmi_dev_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(gsmi_dev.pdev)) {
 		printk(KERN_ERR "gsmi: unable to register platform device\n");
 		return PTR_ERR(gsmi_dev.pdev);
@@ -795,6 +1049,7 @@ static __init int gsmi_init(void)
 	/* SMI access needs to be serialized */
 	spin_lock_init(&gsmi_dev.lock);
 
+<<<<<<< HEAD
 	/* SMI callbacks require 32bit addresses */
 	gsmi_dev.pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 	gsmi_dev.pdev->dev.dma_mask =
@@ -803,6 +1058,23 @@ static __init int gsmi_init(void)
 	gsmi_dev.dma_pool = dma_pool_create("gsmi", &gsmi_dev.pdev->dev,
 					     GSMI_BUF_SIZE, GSMI_BUF_ALIGN, 0);
 	if (!gsmi_dev.dma_pool)
+=======
+	ret = -ENOMEM;
+
+	/*
+	 * SLAB cache is created using SLAB_CACHE_DMA32 to ensure that the
+	 * allocations for gsmi_buf come from the DMA32 memory zone. These
+	 * buffers have nothing to do with DMA. They are required for
+	 * communication with firmware executing in SMI mode which can only
+	 * access the bottom 4GiB of physical memory. Since DMA32 memory zone
+	 * guarantees allocation under the 4GiB boundary, this driver creates
+	 * a SLAB cache with SLAB_CACHE_DMA32 flag.
+	 */
+	gsmi_dev.mem_pool = kmem_cache_create("gsmi", GSMI_BUF_SIZE,
+					      GSMI_BUF_ALIGN,
+					      SLAB_CACHE_DMA32, NULL);
+	if (!gsmi_dev.mem_pool)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 
 	/*
@@ -893,11 +1165,22 @@ static __init int gsmi_init(void)
 		goto out_remove_bin_file;
 	}
 
+<<<<<<< HEAD
 	ret = register_efivars(&efivars, &efivar_ops, gsmi_kobj);
 	if (ret) {
 		printk(KERN_INFO "gsmi: Failed to register efivars\n");
 		goto out_remove_sysfs_files;
 	}
+=======
+#ifdef CONFIG_EFI
+	ret = efivars_register(&efivars, &efivar_ops);
+	if (ret) {
+		printk(KERN_INFO "gsmi: Failed to register efivars\n");
+		sysfs_remove_files(gsmi_kobj, gsmi_attrs);
+		goto out_remove_bin_file;
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	register_reboot_notifier(&gsmi_reboot_notifier);
 	register_die_notifier(&gsmi_die_notifier);
@@ -908,8 +1191,11 @@ static __init int gsmi_init(void)
 
 	return 0;
 
+<<<<<<< HEAD
 out_remove_sysfs_files:
 	sysfs_remove_files(gsmi_kobj, gsmi_attrs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_remove_bin_file:
 	sysfs_remove_bin_file(gsmi_kobj, &eventlog_bin_attr);
 out_err:
@@ -917,10 +1203,19 @@ out_err:
 	gsmi_buf_free(gsmi_dev.param_buf);
 	gsmi_buf_free(gsmi_dev.data_buf);
 	gsmi_buf_free(gsmi_dev.name_buf);
+<<<<<<< HEAD
 	if (gsmi_dev.dma_pool)
 		dma_pool_destroy(gsmi_dev.dma_pool);
 	platform_device_unregister(gsmi_dev.pdev);
 	pr_info("gsmi: failed to load: %d\n", ret);
+=======
+	kmem_cache_destroy(gsmi_dev.mem_pool);
+	platform_device_unregister(gsmi_dev.pdev);
+	pr_info("gsmi: failed to load: %d\n", ret);
+#ifdef CONFIG_PM
+	platform_driver_unregister(&gsmi_driver_info);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -930,7 +1225,13 @@ static void __exit gsmi_exit(void)
 	unregister_die_notifier(&gsmi_die_notifier);
 	atomic_notifier_chain_unregister(&panic_notifier_list,
 					 &gsmi_panic_notifier);
+<<<<<<< HEAD
 	unregister_efivars(&efivars);
+=======
+#ifdef CONFIG_EFI
+	efivars_unregister(&efivars);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sysfs_remove_files(gsmi_kobj, gsmi_attrs);
 	sysfs_remove_bin_file(gsmi_kobj, &eventlog_bin_attr);
@@ -938,8 +1239,16 @@ static void __exit gsmi_exit(void)
 	gsmi_buf_free(gsmi_dev.param_buf);
 	gsmi_buf_free(gsmi_dev.data_buf);
 	gsmi_buf_free(gsmi_dev.name_buf);
+<<<<<<< HEAD
 	dma_pool_destroy(gsmi_dev.dma_pool);
 	platform_device_unregister(gsmi_dev.pdev);
+=======
+	kmem_cache_destroy(gsmi_dev.mem_pool);
+	platform_device_unregister(gsmi_dev.pdev);
+#ifdef CONFIG_PM
+	platform_driver_unregister(&gsmi_driver_info);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(gsmi_init);

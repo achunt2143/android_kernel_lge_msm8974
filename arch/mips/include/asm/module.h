@@ -1,14 +1,27 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_MODULE_H
 #define _ASM_MODULE_H
 
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/elf.h>
+#include <asm/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mod_arch_specific {
 	/* Data Bus Error exception tables */
 	struct list_head dbe_list;
 	const struct exception_table_entry *dbe_start;
 	const struct exception_table_entry *dbe_end;
+<<<<<<< HEAD
+=======
+	struct mips_hi16 *r_mips_hi16_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef uint8_t Elf64_Byte;		/* Type for a 8-bit quantity.  */
@@ -33,32 +46,62 @@ typedef struct {
 } Elf64_Mips_Rela;
 
 #ifdef CONFIG_32BIT
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define Elf_Shdr	Elf32_Shdr
 #define Elf_Sym		Elf32_Sym
 #define Elf_Ehdr	Elf32_Ehdr
 #define Elf_Addr	Elf32_Addr
+<<<<<<< HEAD
+=======
+#define Elf_Rel		Elf32_Rel
+#define Elf_Rela	Elf32_Rela
+#define ELF_R_TYPE(X)	ELF32_R_TYPE(X)
+#define ELF_R_SYM(X)	ELF32_R_SYM(X)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define Elf_Mips_Rel	Elf32_Rel
 #define Elf_Mips_Rela	Elf32_Rela
 
+<<<<<<< HEAD
 #define ELF_MIPS_R_SYM(rel) ELF32_R_SYM(rel.r_info)
 #define ELF_MIPS_R_TYPE(rel) ELF32_R_TYPE(rel.r_info)
+=======
+#define ELF_MIPS_R_SYM(rel) ELF32_R_SYM((rel).r_info)
+#define ELF_MIPS_R_TYPE(rel) ELF32_R_TYPE((rel).r_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define Elf_Shdr	Elf64_Shdr
 #define Elf_Sym		Elf64_Sym
 #define Elf_Ehdr	Elf64_Ehdr
 #define Elf_Addr	Elf64_Addr
+<<<<<<< HEAD
+=======
+#define Elf_Rel		Elf64_Rel
+#define Elf_Rela	Elf64_Rela
+#define ELF_R_TYPE(X)	ELF64_R_TYPE(X)
+#define ELF_R_SYM(X)	ELF64_R_SYM(X)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define Elf_Mips_Rel	Elf64_Mips_Rel
 #define Elf_Mips_Rela	Elf64_Mips_Rela
 
+<<<<<<< HEAD
 #define ELF_MIPS_R_SYM(rel) (rel.r_sym)
 #define ELF_MIPS_R_TYPE(rel) (rel.r_type)
+=======
+#define ELF_MIPS_R_SYM(rel) ((rel).r_sym)
+#define ELF_MIPS_R_TYPE(rel) ((rel).r_type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -74,6 +117,7 @@ search_module_dbetables(unsigned long addr)
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_BMIPS
 #define MODULE_PROC_FAMILY "BMIPS "
 #elif defined CONFIG_CPU_MIPS32_R1
@@ -143,4 +187,6 @@ search_module_dbetables(unsigned long addr)
 #define MODULE_ARCH_VERMAGIC \
 	MODULE_PROC_FAMILY MODULE_KERNEL_TYPE MODULE_KERNEL_SMTC
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_MODULE_H */

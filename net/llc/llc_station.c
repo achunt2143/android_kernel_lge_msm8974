@@ -25,6 +25,7 @@
 #include <net/llc_s_st.h>
 #include <net/llc_pdu.h>
 
+<<<<<<< HEAD
 /**
  * struct llc_station - LLC station component
  *
@@ -183,10 +184,21 @@ static int llc_stat_ev_rx_null_dsap_1_xid_r_xid_r_cnt_eq(struct sk_buff *skb)
 	       LLC_U_PDU_RSP(pdu) == LLC_1_PDU_CMD_XID &&
 	       !pdu->dsap &&				/* NULL DSAP value */
 	       llc_main_station.xid_r_count == 1 ? 0 : 1;
+=======
+static int llc_stat_ev_rx_null_dsap_xid_c(struct sk_buff *skb)
+{
+	struct llc_pdu_un *pdu = llc_pdu_un_hdr(skb);
+
+	return LLC_PDU_IS_CMD(pdu) &&			/* command PDU */
+	       LLC_PDU_TYPE_IS_U(pdu) &&		/* U type PDU */
+	       LLC_U_PDU_CMD(pdu) == LLC_1_PDU_CMD_XID &&
+	       !pdu->dsap;				/* NULL DSAP value */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int llc_stat_ev_rx_null_dsap_test_c(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct llc_station_state_ev *ev = llc_station_ev(skb);
 	struct llc_pdu_un *pdu = llc_pdu_un_hdr(skb);
 
@@ -270,6 +282,14 @@ out:
 free:
 	kfree_skb(skb);
 	goto out;
+=======
+	struct llc_pdu_un *pdu = llc_pdu_un_hdr(skb);
+
+	return LLC_PDU_IS_CMD(pdu) &&			/* command PDU */
+	       LLC_PDU_TYPE_IS_U(pdu) &&		/* U type PDU */
+	       LLC_U_PDU_CMD(pdu) == LLC_1_PDU_CMD_TEST &&
+	       !pdu->dsap;				/* NULL DSAP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int llc_station_ac_send_xid_r(struct sk_buff *skb)
@@ -281,7 +301,10 @@ static int llc_station_ac_send_xid_r(struct sk_buff *skb)
 
 	if (!nskb)
 		goto out;
+<<<<<<< HEAD
 	rc = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	llc_pdu_decode_sa(skb, mac_da);
 	llc_pdu_decode_ssap(skb, &dsap);
 	llc_pdu_header_init(nskb, LLC_PDU_TYPE_U, 0, dsap, LLC_PDU_RSP);
@@ -289,11 +312,19 @@ static int llc_station_ac_send_xid_r(struct sk_buff *skb)
 	rc = llc_mac_hdr_init(nskb, skb->dev->dev_addr, mac_da);
 	if (unlikely(rc))
 		goto free;
+<<<<<<< HEAD
 	llc_station_send_pdu(nskb);
 out:
 	return rc;
 free:
 	kfree_skb(skb);
+=======
+	dev_queue_xmit(nskb);
+out:
+	return rc;
+free:
+	kfree_skb(nskb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -304,13 +335,22 @@ static int llc_station_ac_send_test_r(struct sk_buff *skb)
 	u32 data_size;
 	struct sk_buff *nskb;
 
+<<<<<<< HEAD
+=======
+	if (skb->mac_len < ETH_HLEN)
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The test request command is type U (llc_len = 3) */
 	data_size = ntohs(eth_hdr(skb)->h_proto) - 3;
 	nskb = llc_alloc_frame(NULL, skb->dev, LLC_PDU_TYPE_U, data_size);
 
 	if (!nskb)
 		goto out;
+<<<<<<< HEAD
 	rc = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	llc_pdu_decode_sa(skb, mac_da);
 	llc_pdu_decode_ssap(skb, &dsap);
 	llc_pdu_header_init(nskb, LLC_PDU_TYPE_U, 0, dsap, LLC_PDU_RSP);
@@ -318,6 +358,7 @@ static int llc_station_ac_send_test_r(struct sk_buff *skb)
 	rc = llc_mac_hdr_init(nskb, skb->dev->dev_addr, mac_da);
 	if (unlikely(rc))
 		goto free;
+<<<<<<< HEAD
 	llc_station_send_pdu(nskb);
 out:
 	return rc;
@@ -673,6 +714,17 @@ static void llc_station_ack_tmr_cb(unsigned long timeout_data)
 }
 
 /*
+=======
+	dev_queue_xmit(nskb);
+out:
+	return rc;
+free:
+	kfree_skb(nskb);
+	goto out;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	llc_station_rcv - send received pdu to the station state machine
  *	@skb: received frame.
  *
@@ -680,6 +732,7 @@ static void llc_station_ack_tmr_cb(unsigned long timeout_data)
  */
 static void llc_station_rcv(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct llc_station_state_ev *ev = llc_station_ev(skb);
 
 	ev->type   = LLC_STATION_EV_TYPE_PDU;
@@ -717,6 +770,21 @@ out:
 }
 
 void __exit llc_station_exit(void)
+=======
+	if (llc_stat_ev_rx_null_dsap_xid_c(skb))
+		llc_station_ac_send_xid_r(skb);
+	else if (llc_stat_ev_rx_null_dsap_test_c(skb))
+		llc_station_ac_send_test_r(skb);
+	kfree_skb(skb);
+}
+
+void __init llc_station_init(void)
+{
+	llc_set_station_handler(llc_station_rcv);
+}
+
+void llc_station_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	llc_set_station_handler(NULL);
 }

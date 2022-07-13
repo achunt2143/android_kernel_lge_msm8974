@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Support functions for the
  *                   original/legacy sleep/PM registers.
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -46,6 +51,14 @@
 #include <linux/acpi.h>
 #include "accommon.h"
 #include <linux/module.h>
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#include <acpi/acpi.h>
+#include "accommon.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_HARDWARE
 ACPI_MODULE_NAME("hwsleep")
@@ -56,7 +69,10 @@ ACPI_MODULE_NAME("hwsleep")
  * FUNCTION:    acpi_hw_legacy_sleep
  *
  * PARAMETERS:  sleep_state         - Which sleep state to enter
+<<<<<<< HEAD
  *              Flags               - ACPI_EXECUTE_GTS to run optional method
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -64,7 +80,11 @@ ACPI_MODULE_NAME("hwsleep")
  *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
+=======
+acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_bit_register_info *sleep_type_reg_info;
 	struct acpi_bit_register_info *sleep_enable_reg_info;
@@ -82,12 +102,18 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
 
 	/* Clear wake status */
 
+<<<<<<< HEAD
 	status =
 	    acpi_write_bit_register(ACPI_BITREG_WAKE_STATUS, ACPI_CLEAR_STATUS);
+=======
+	status = acpi_write_bit_register(ACPI_BITREG_WAKE_STATUS,
+					 ACPI_CLEAR_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* Clear all fixed and general purpose status bits */
 
 	status = acpi_hw_clear_acpi_status();
@@ -99,23 +125,39 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
 	 * 1) Disable/Clear all GPEs
 	 * 2) Enable all wakeup GPEs
 	 */
+=======
+	/* Disable all GPEs */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_hw_disable_all_gpes();
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+<<<<<<< HEAD
+	acpi_gbl_system_awake_and_running = FALSE;
+
+=======
+	status = acpi_hw_clear_acpi_status();
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 	acpi_gbl_system_awake_and_running = FALSE;
 
+	 /* Enable all wakeup GPEs */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_hw_enable_all_wakeup_gpes();
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* Optionally execute _GTS (Going To Sleep) */
 
 	if (flags & ACPI_EXECUTE_GTS) {
 		acpi_hw_execute_sleep_method(METHOD_PATHNAME__GTS, sleep_state);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get current value of PM1A control */
 
 	status = acpi_hw_register_read(ACPI_REGISTER_PM1_CONTROL,
@@ -158,6 +200,7 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
 
 	/* Flush caches, as per ACPI specification */
 
+<<<<<<< HEAD
 	ACPI_FLUSH_CPU_CACHE();
 
 	status = acpi_os_prepare_sleep(sleep_state, pm1a_control,
@@ -166,6 +209,20 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
 		return_ACPI_STATUS(AE_OK);
 	if (ACPI_FAILURE(status))
 		return_ACPI_STATUS(status);
+=======
+	if (sleep_state < ACPI_STATE_S4) {
+		ACPI_FLUSH_CPU_CACHE();
+	}
+
+	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
+	if (status == AE_CTRL_TERMINATE) {
+		return_ACPI_STATUS(AE_OK);
+	}
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Write #2: Write both SLP_TYP + SLP_EN */
 
 	status = acpi_hw_write_pm1_control(pm1a_control, pm1b_control);
@@ -185,7 +242,11 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
 		 * to still read the right value. Ideally, this block would go
 		 * away entirely.
 		 */
+<<<<<<< HEAD
 		acpi_os_stall(10000000);
+=======
+		acpi_os_stall(10 * ACPI_USEC_PER_SEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = acpi_hw_register_write(ACPI_REGISTER_PM1_CONTROL,
 						sleep_enable_reg_info->
@@ -214,7 +275,10 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
  * FUNCTION:    acpi_hw_legacy_wake_prep
  *
  * PARAMETERS:  sleep_state         - Which sleep state we just exited
+<<<<<<< HEAD
  *              Flags               - ACPI_EXECUTE_BFS to run optional method
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -224,9 +288,15 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
 {
 	acpi_status status;
+=======
+acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state)
+{
+	acpi_status status = AE_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_bit_register_info *sleep_type_reg_info;
 	struct acpi_bit_register_info *sleep_enable_reg_info;
 	u32 pm1a_control;
@@ -239,10 +309,14 @@ acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
 	 * This is unclear from the ACPI Spec, but it is required
 	 * by some machines.
 	 */
+<<<<<<< HEAD
 	status = acpi_get_sleep_type_data(ACPI_STATE_S0,
 					  &acpi_gbl_sleep_type_a,
 					  &acpi_gbl_sleep_type_b);
 	if (ACPI_SUCCESS(status)) {
+=======
+	if (acpi_gbl_sleep_type_a_s0 != ACPI_SLEEP_TYPE_INVALID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sleep_type_reg_info =
 		    acpi_hw_get_bit_register_info(ACPI_BITREG_SLEEP_TYPE);
 		sleep_enable_reg_info =
@@ -263,9 +337,15 @@ acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
 
 			/* Insert the SLP_TYP bits */
 
+<<<<<<< HEAD
 			pm1a_control |= (acpi_gbl_sleep_type_a <<
 					 sleep_type_reg_info->bit_position);
 			pm1b_control |= (acpi_gbl_sleep_type_b <<
+=======
+			pm1a_control |= (acpi_gbl_sleep_type_a_s0 <<
+					 sleep_type_reg_info->bit_position);
+			pm1b_control |= (acpi_gbl_sleep_type_b_s0 <<
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 sleep_type_reg_info->bit_position);
 
 			/* Write the control registers and ignore any errors */
@@ -275,11 +355,14 @@ acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Optionally execute _BFS (Back From Sleep) */
 
 	if (flags & ACPI_EXECUTE_BFS) {
 		acpi_hw_execute_sleep_method(METHOD_PATHNAME__BFS, sleep_state);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -288,7 +371,10 @@ acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
  * FUNCTION:    acpi_hw_legacy_wake
  *
  * PARAMETERS:  sleep_state         - Which sleep state we just exited
+<<<<<<< HEAD
  *              Flags               - Reserved, set to zero
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -297,7 +383,11 @@ acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_hw_legacy_wake(u8 sleep_state, u8 flags)
+=======
+acpi_status acpi_hw_legacy_wake(u8 sleep_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -313,7 +403,11 @@ acpi_status acpi_hw_legacy_wake(u8 sleep_state, u8 flags)
 	 * might get fired there
 	 *
 	 * Restore the GPEs:
+<<<<<<< HEAD
 	 * 1) Disable/Clear all GPEs
+=======
+	 * 1) Disable all GPEs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 2) Enable all runtime GPEs
 	 */
 	status = acpi_hw_disable_all_gpes();
@@ -337,7 +431,12 @@ acpi_status acpi_hw_legacy_wake(u8 sleep_state, u8 flags)
 	 * and use it to determine whether the system is rebooting or
 	 * resuming. Clear WAK_STS for compatibility.
 	 */
+<<<<<<< HEAD
 	acpi_write_bit_register(ACPI_BITREG_WAKE_STATUS, 1);
+=======
+	(void)acpi_write_bit_register(ACPI_BITREG_WAKE_STATUS,
+				      ACPI_CLEAR_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_gbl_system_awake_and_running = TRUE;
 
 	/* Enable power button */
@@ -352,6 +451,21 @@ acpi_status acpi_hw_legacy_wake(u8 sleep_state, u8 flags)
 				    [ACPI_EVENT_POWER_BUTTON].
 				    status_register_id, ACPI_CLEAR_STATUS);
 
+<<<<<<< HEAD
+=======
+	/* Enable sleep button */
+
+	(void)
+	    acpi_write_bit_register(acpi_gbl_fixed_event_info
+				    [ACPI_EVENT_SLEEP_BUTTON].
+				    enable_register_id, ACPI_ENABLE_EVENT);
+
+	(void)
+	    acpi_write_bit_register(acpi_gbl_fixed_event_info
+				    [ACPI_EVENT_SLEEP_BUTTON].
+				    status_register_id, ACPI_CLEAR_STATUS);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_hw_execute_sleep_method(METHOD_PATHNAME__SST, ACPI_SST_WORKING);
 	return_ACPI_STATUS(status);
 }

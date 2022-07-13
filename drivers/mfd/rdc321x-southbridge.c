@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * RDC321x MFD southbrige driver
  *
@@ -20,6 +21,15 @@
  *
  */
 #include <linux/init.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * RDC321x MFD southbridge driver
+ *
+ * Copyright (C) 2007-2010 Florian Fainelli <florian@openwrt.org>
+ * Copyright (C) 2010 Bernhard Loos <bernhardloos@googlemail.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -29,7 +39,11 @@
 
 static struct rdc321x_wdt_pdata rdc321x_wdt_pdata;
 
+<<<<<<< HEAD
 static struct resource rdc321x_wdt_resource[] = {
+=======
+static const struct resource rdc321x_wdt_resource[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "wdt-reg",
 		.start	= RDC321X_WDT_CTRL,
@@ -39,10 +53,17 @@ static struct resource rdc321x_wdt_resource[] = {
 };
 
 static struct rdc321x_gpio_pdata rdc321x_gpio_pdata = {
+<<<<<<< HEAD
 	.max_gpios	= RDC321X_MAX_GPIO,
 };
 
 static struct resource rdc321x_gpio_resources[] = {
+=======
+	.max_gpios	= RDC321X_NUM_GPIO,
+};
+
+static const struct resource rdc321x_gpio_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "gpio-reg1",
 		.start	= RDC321X_GPIO_CTRL_REG1,
@@ -56,7 +77,11 @@ static struct resource rdc321x_gpio_resources[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct mfd_cell rdc321x_sb_cells[] = {
+=======
+static const struct mfd_cell rdc321x_sb_cells[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "rdc321x-wdt",
 		.resources	= rdc321x_wdt_resource,
@@ -72,7 +97,11 @@ static struct mfd_cell rdc321x_sb_cells[] = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit rdc321x_sb_probe(struct pci_dev *pdev,
+=======
+static int rdc321x_sb_probe(struct pci_dev *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const struct pci_device_id *ent)
 {
 	int err;
@@ -86,6 +115,7 @@ static int __devinit rdc321x_sb_probe(struct pci_dev *pdev,
 	rdc321x_gpio_pdata.sb_pdev = pdev;
 	rdc321x_wdt_pdata.sb_pdev = pdev;
 
+<<<<<<< HEAD
 	return mfd_add_devices(&pdev->dev, -1,
 		rdc321x_sb_cells, ARRAY_SIZE(rdc321x_sb_cells), NULL, 0);
 }
@@ -96,6 +126,15 @@ static void __devexit rdc321x_sb_remove(struct pci_dev *pdev)
 }
 
 static DEFINE_PCI_DEVICE_TABLE(rdc321x_sb_table) = {
+=======
+	return devm_mfd_add_devices(&pdev->dev, -1,
+				    rdc321x_sb_cells,
+				    ARRAY_SIZE(rdc321x_sb_cells),
+				    NULL, 0, NULL);
+}
+
+static const struct pci_device_id rdc321x_sb_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_RDC, PCI_DEVICE_ID_RDC_R6030) },
 	{}
 };
@@ -105,6 +144,7 @@ static struct pci_driver rdc321x_sb_driver = {
 	.name		= "RDC321x Southbridge",
 	.id_table	= rdc321x_sb_table,
 	.probe		= rdc321x_sb_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(rdc321x_sb_remove),
 };
 
@@ -120,6 +160,11 @@ static void __exit rdc321x_sb_exit(void)
 
 module_init(rdc321x_sb_init);
 module_exit(rdc321x_sb_exit);
+=======
+};
+
+module_pci_driver(rdc321x_sb_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Florian Fainelli <florian@openwrt.org>");
 MODULE_LICENSE("GPL");

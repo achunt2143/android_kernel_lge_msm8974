@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
  *
  * Based on sound/soc/imx/imx-pcm-dma-mx2.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,33 +39,53 @@
 #include <sound/initval.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
+=======
+ */
+
+#include <linux/device.h>
+#include <linux/init.h>
+#include <linux/module.h>
+
+#include <sound/core.h>
+#include <sound/pcm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/soc.h>
 #include <sound/dmaengine_pcm.h>
 
 #include "mxs-pcm.h"
 
+<<<<<<< HEAD
 struct mxs_pcm_dma_data {
 	struct mxs_dma_data dma_data;
 	struct mxs_pcm_dma_params *dma_params;
 };
 
 static struct snd_pcm_hardware snd_mxs_hardware = {
+=======
+static const struct snd_pcm_hardware snd_mxs_hardware = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= SNDRV_PCM_INFO_MMAP |
 				  SNDRV_PCM_INFO_MMAP_VALID |
 				  SNDRV_PCM_INFO_PAUSE |
 				  SNDRV_PCM_INFO_RESUME |
+<<<<<<< HEAD
 				  SNDRV_PCM_INFO_INTERLEAVED,
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE |
 				  SNDRV_PCM_FMTBIT_S20_3LE |
 				  SNDRV_PCM_FMTBIT_S24_LE,
 	.channels_min		= 2,
 	.channels_max		= 2,
+=======
+				  SNDRV_PCM_INFO_INTERLEAVED |
+				  SNDRV_PCM_INFO_HALF_DUPLEX,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192,
 	.periods_min		= 1,
 	.periods_max		= 52,
 	.buffer_bytes_max	= 64 * 1024,
 	.fifo_size		= 32,
+<<<<<<< HEAD
 
 };
 
@@ -245,3 +270,20 @@ module_platform_driver(mxs_pcm_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:mxs-pcm-audio");
+=======
+};
+
+static const struct snd_dmaengine_pcm_config mxs_dmaengine_pcm_config = {
+	.pcm_hardware = &snd_mxs_hardware,
+	.prealloc_buffer_size = 64 * 1024,
+};
+
+int mxs_pcm_platform_register(struct device *dev)
+{
+	return devm_snd_dmaengine_pcm_register(dev, &mxs_dmaengine_pcm_config,
+		SND_DMAENGINE_PCM_FLAG_HALF_DUPLEX);
+}
+EXPORT_SYMBOL_GPL(mxs_pcm_platform_register);
+
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

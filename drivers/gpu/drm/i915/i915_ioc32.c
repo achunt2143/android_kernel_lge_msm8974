@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * \file i915_ioc32.c
  *
@@ -6,6 +7,11 @@
  * \author Alan Hourihane <alanh@fairlite.demon.co.uk>
  *
  *
+=======
+/*
+ * 32-bit ioctl compatibility routines for the i915 DRM.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) Paul Mackerras 2005
  * Copyright (C) Alan Hourihane 2005
  * All Rights Reserved.
@@ -28,6 +34,7 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
+<<<<<<< HEAD
  */
 #include <linux/compat.h>
 
@@ -131,16 +138,44 @@ typedef struct drm_i915_getparam32 {
 	int param;
 	u32 value;
 } drm_i915_getparam32_t;
+=======
+ *
+ * Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+ */
+#include <linux/compat.h>
+
+#include <drm/drm_ioctl.h>
+
+#include "i915_drv.h"
+#include "i915_getparam.h"
+#include "i915_ioc32.h"
+
+struct drm_i915_getparam32 {
+	s32 param;
+	/*
+	 * We screwed up the generic ioctl struct here and used a variable-sized
+	 * pointer. Use u32 in the compat struct to match the 32bit pointer
+	 * userspace expects.
+	 */
+	u32 value;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int compat_i915_getparam(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
+<<<<<<< HEAD
 	drm_i915_getparam32_t req32;
 	drm_i915_getparam_t __user *request;
+=======
+	struct drm_i915_getparam32 req32;
+	struct drm_i915_getparam req;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&req32, (void __user *)arg, sizeof(req32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	request = compat_alloc_user_space(sizeof(*request));
 	if (!access_ok(VERIFY_WRITE, request, sizeof(*request))
 	    || __put_user(req32.param, &request->param)
@@ -199,15 +234,45 @@ drm_ioctl_compat_t *i915_compat_ioctls[] = {
  * \return zero on success or negative number on failure.
  */
 long i915_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+=======
+	req.param = req32.param;
+	req.value = compat_ptr(req32.value);
+
+	return drm_ioctl_kernel(file, i915_getparam_ioctl, &req,
+				DRM_RENDER_ALLOW);
+}
+
+static drm_ioctl_compat_t *i915_compat_ioctls[] = {
+	[DRM_I915_GETPARAM] = compat_i915_getparam,
+};
+
+/**
+ * i915_ioc32_compat_ioctl - handle the mistakes of the past
+ * @filp: the file pointer
+ * @cmd: the ioctl command (and encoded flags)
+ * @arg: the ioctl argument (from userspace)
+ *
+ * Called whenever a 32-bit process running under a 64-bit kernel
+ * performs an ioctl on /dev/dri/card<n>.
+ */
+long i915_ioc32_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int nr = DRM_IOCTL_NR(cmd);
 	drm_ioctl_compat_t *fn = NULL;
 	int ret;
 
+<<<<<<< HEAD
 	if (nr < DRM_COMMAND_BASE)
 		return drm_compat_ioctl(filp, cmd, arg);
 
 	if (nr < DRM_COMMAND_BASE + DRM_ARRAY_SIZE(i915_compat_ioctls))
+=======
+	if (nr < DRM_COMMAND_BASE || nr >= DRM_COMMAND_END)
+		return drm_compat_ioctl(filp, cmd, arg);
+
+	if (nr < DRM_COMMAND_BASE + ARRAY_SIZE(i915_compat_ioctls))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fn = i915_compat_ioctls[nr - DRM_COMMAND_BASE];
 
 	if (fn != NULL)

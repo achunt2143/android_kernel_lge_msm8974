@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Kernel module help for sparc64.
  *
  * Copyright (C) 2001 Rusty Russell.
@@ -29,6 +33,7 @@ static void *module_map(unsigned long size)
 	if (PAGE_ALIGN(size) > MODULES_LEN)
 		return NULL;
 	return __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
+<<<<<<< HEAD
 				GFP_KERNEL, PAGE_KERNEL, -1,
 				__builtin_return_address(0));
 }
@@ -37,11 +42,17 @@ static char *dot2underscore(char *name)
 {
 	return name;
 }
+=======
+				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
+				__builtin_return_address(0));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static void *module_map(unsigned long size)
 {
 	return vmalloc(size);
 }
+<<<<<<< HEAD
 
 /* Replace references to .func with _Func */
 static char *dot2underscore(char *name)
@@ -52,12 +63,15 @@ static char *dot2underscore(char *name)
 	}
 	return name;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SPARC64 */
 
 void *module_alloc(unsigned long size)
 {
 	void *ret;
 
+<<<<<<< HEAD
 	/* We handle the zero case fine, unlike vmalloc */
 	if (size == 0)
 		return NULL;
@@ -66,6 +80,10 @@ void *module_alloc(unsigned long size)
 	if (!ret)
 		ret = ERR_PTR(-ENOMEM);
 	else
+=======
+	ret = module_map(size);
+	if (ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(ret, 0, size);
 
 	return ret;
@@ -93,12 +111,17 @@ int module_frob_arch_sections(Elf_Ehdr *hdr,
 
 	for (i = 1; i < sechdrs[symidx].sh_size / sizeof(Elf_Sym); i++) {
 		if (sym[i].st_shndx == SHN_UNDEF) {
+<<<<<<< HEAD
 			if (ELF_ST_TYPE(sym[i].st_info) == STT_REGISTER) {
 				sym[i].st_shndx = SHN_ABS;
 			} else {
 				char *name = strtab + sym[i].st_name;
 				dot2underscore(name);
 			}
+=======
+			if (ELF_ST_TYPE(sym[i].st_info) == STT_REGISTER)
+				sym[i].st_shndx = SHN_ABS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -135,6 +158,13 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 		v = sym->st_value + rel[i].r_addend;
 
 		switch (ELF_R_TYPE(rel[i].r_info) & 0xff) {
+<<<<<<< HEAD
+=======
+		case R_SPARC_DISP32:
+			v -= (Elf_Addr) location;
+			*loc32 = v;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SPARC64
 		case R_SPARC_64:
 			location[0] = v >> 56;
@@ -147,11 +177,14 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			location[7] = v >>  0;
 			break;
 
+<<<<<<< HEAD
 		case R_SPARC_DISP32:
 			v -= (Elf_Addr) location;
 			*loc32 = v;
 			break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_SPARC_WDISP19:
 			v -= (Elf_Addr) location;
 			*loc32 = (*loc32 & ~0x7ffff) |
@@ -233,9 +266,12 @@ int module_finalize(const Elf_Ehdr *hdr,
 		    const Elf_Shdr *sechdrs,
 		    struct module *me)
 {
+<<<<<<< HEAD
 	/* make jump label nops */
 	jump_label_apply_nops(me);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_patch_sections(hdr, sechdrs);
 
 	/* Cheetah's I-cache is fully coherent.  */

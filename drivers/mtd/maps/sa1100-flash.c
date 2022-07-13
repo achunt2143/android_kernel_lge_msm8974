@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flash memory access on SA11x0 based devices
  *
@@ -20,7 +24,11 @@
 #include <linux/mtd/concat.h>
 
 #include <mach/hardware.h>
+<<<<<<< HEAD
 #include <asm/sizes.h>
+=======
+#include <linux/sizes.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach/flash.h>
 
 struct sa_subdev_info {
@@ -33,7 +41,11 @@ struct sa_subdev_info {
 struct sa_info {
 	struct mtd_info		*mtd;
 	int			num_subdev;
+<<<<<<< HEAD
 	struct sa_subdev_info	subdev[0];
+=======
+	struct sa_subdev_info	subdev[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_SPINLOCK(sa1100_vpp_lock);
@@ -80,7 +92,11 @@ static int sa1100_probe_subdev(struct sa_subdev_info *subdev, struct resource *r
 	default:
 		printk(KERN_WARNING "SA1100 flash: unknown base address "
 		       "0x%08lx, assuming CS0\n", phys);
+<<<<<<< HEAD
 
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SA1100_CS0_PHYS:
 		subdev->map.bankwidth = (MSC0 & MSC_RBW) ? 2 : 4;
 		break;
@@ -117,7 +133,10 @@ static int sa1100_probe_subdev(struct sa_subdev_info *subdev, struct resource *r
 		ret = -ENXIO;
 		goto err;
 	}
+<<<<<<< HEAD
 	subdev->mtd->owner = THIS_MODULE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "SA1100 flash: CFI device at 0x%08lx, %uMiB, %d-bit\n",
 		phys, (unsigned)(subdev->mtd->size >> 20),
@@ -149,8 +168,13 @@ static void sa1100_destroy(struct sa_info *info, struct flash_platform_data *pla
 		plat->exit();
 }
 
+<<<<<<< HEAD
 static struct sa_info *__devinit
 sa1100_setup_mtd(struct platform_device *pdev, struct flash_platform_data *plat)
+=======
+static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
+					struct flash_platform_data *plat)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa_info *info;
 	int nr, size, i, ret = 0;
@@ -222,7 +246,18 @@ sa1100_setup_mtd(struct platform_device *pdev, struct flash_platform_data *plat)
 		info->mtd = info->subdev[0].mtd;
 		ret = 0;
 	} else if (info->num_subdev > 1) {
+<<<<<<< HEAD
 		struct mtd_info *cdev[nr];
+=======
+		struct mtd_info **cdev;
+
+		cdev = kmalloc_array(nr, sizeof(*cdev), GFP_KERNEL);
+		if (!cdev) {
+			ret = -ENOMEM;
+			goto err;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We detected multiple devices.  Concatenate them together.
 		 */
@@ -231,9 +266,19 @@ sa1100_setup_mtd(struct platform_device *pdev, struct flash_platform_data *plat)
 
 		info->mtd = mtd_concat_create(cdev, info->num_subdev,
 					      plat->name);
+<<<<<<< HEAD
 		if (info->mtd == NULL)
 			ret = -ENXIO;
 	}
+=======
+		kfree(cdev);
+		if (info->mtd == NULL) {
+			ret = -ENXIO;
+			goto err;
+		}
+	}
+	info->mtd->dev.parent = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret == 0)
 		return info;
@@ -244,11 +289,19 @@ sa1100_setup_mtd(struct platform_device *pdev, struct flash_platform_data *plat)
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 static const char *part_probes[] = { "cmdlinepart", "RedBoot", NULL };
 
 static int __devinit sa1100_mtd_probe(struct platform_device *pdev)
 {
 	struct flash_platform_data *plat = pdev->dev.platform_data;
+=======
+static const char * const part_probes[] = { "cmdlinepart", "RedBoot", NULL };
+
+static int sa1100_mtd_probe(struct platform_device *pdev)
+{
+	struct flash_platform_data *plat = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sa_info *info;
 	int err;
 
@@ -274,6 +327,7 @@ static int __devinit sa1100_mtd_probe(struct platform_device *pdev)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __exit sa1100_mtd_remove(struct platform_device *pdev)
 {
 	struct sa_info *info = platform_get_drvdata(pdev);
@@ -283,14 +337,28 @@ static int __exit sa1100_mtd_remove(struct platform_device *pdev)
 	sa1100_destroy(info, plat);
 
 	return 0;
+=======
+static void sa1100_mtd_remove(struct platform_device *pdev)
+{
+	struct sa_info *info = platform_get_drvdata(pdev);
+	struct flash_platform_data *plat = dev_get_platdata(&pdev->dev);
+
+	sa1100_destroy(info, plat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sa1100_mtd_driver = {
 	.probe		= sa1100_mtd_probe,
+<<<<<<< HEAD
 	.remove		= __exit_p(sa1100_mtd_remove),
 	.driver		= {
 		.name	= "sa1100-mtd",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= sa1100_mtd_remove,
+	.driver		= {
+		.name	= "sa1100-mtd",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

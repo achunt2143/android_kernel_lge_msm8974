@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gfs2
 
@@ -12,8 +16,15 @@
 #include <linux/gfs2_ondisk.h>
 #include <linux/writeback.h>
 #include <linux/ktime.h>
+<<<<<<< HEAD
 #include "incore.h"
 #include "glock.h"
+=======
+#include <linux/iomap.h>
+#include "incore.h"
+#include "glock.h"
+#include "rgrp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define dlm_state_name(nn) { DLM_LOCK_##nn, #nn }
 #define glock_trace_name(x) __print_symbolic(x,		\
@@ -31,6 +42,20 @@
 			    { GFS2_BLKST_DINODE, "dinode" },	\
 			    { GFS2_BLKST_UNLINKED, "unlinked" })
 
+<<<<<<< HEAD
+=======
+#define TRACE_RS_DELETE  0
+#define TRACE_RS_TREEDEL 1
+#define TRACE_RS_INSERT  2
+#define TRACE_RS_CLAIM   3
+
+#define rs_func_name(x) __print_symbolic(x,	\
+					 { 0, "del " },	\
+					 { 1, "tdel" },	\
+					 { 2, "ins " },	\
+					 { 3, "clm " })
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define show_glock_flags(flags) __print_flags(flags, "",	\
 	{(1UL << GLF_LOCK),			"l" },		\
 	{(1UL << GLF_DEMOTE),			"D" },		\
@@ -42,7 +67,10 @@
 	{(1UL << GLF_REPLY_PENDING),		"r" },		\
 	{(1UL << GLF_INITIAL),			"I" },		\
 	{(1UL << GLF_FROZEN),			"F" },		\
+<<<<<<< HEAD
 	{(1UL << GLF_QUEUED),			"q" },		\
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{(1UL << GLF_LRU),			"L" },		\
 	{(1UL << GLF_OBJECT),			"o" },		\
 	{(1UL << GLF_BLOCKING),			"b" })
@@ -92,7 +120,11 @@ TRACE_EVENT(gfs2_glock_state_change,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev		= gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__entry->dev		= gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->glnum		= gl->gl_name.ln_number;
 		__entry->gltype		= gl->gl_name.ln_type;
 		__entry->cur_state	= glock_trace_state(gl->gl_state);
@@ -128,7 +160,11 @@ TRACE_EVENT(gfs2_glock_put,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev		= gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__entry->dev		= gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->gltype		= gl->gl_name.ln_type;
 		__entry->glnum		= gl->gl_name.ln_number;
 		__entry->cur_state	= glock_trace_state(gl->gl_state);
@@ -147,9 +183,15 @@ TRACE_EVENT(gfs2_glock_put,
 /* Callback (local or remote) requesting lock demotion */
 TRACE_EVENT(gfs2_demote_rq,
 
+<<<<<<< HEAD
 	TP_PROTO(const struct gfs2_glock *gl),
 
 	TP_ARGS(gl),
+=======
+	TP_PROTO(const struct gfs2_glock *gl, bool remote),
+
+	TP_ARGS(gl, remote),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(        dev_t,  dev                     )
@@ -158,42 +200,72 @@ TRACE_EVENT(gfs2_demote_rq,
 		__field(	u8,	cur_state		)
 		__field(	u8,	dmt_state		)
 		__field(	unsigned long,	flags		)
+<<<<<<< HEAD
 	),
 
 	TP_fast_assign(
 		__entry->dev		= gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__field(	bool,	remote			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->gltype		= gl->gl_name.ln_type;
 		__entry->glnum		= gl->gl_name.ln_number;
 		__entry->cur_state	= glock_trace_state(gl->gl_state);
 		__entry->dmt_state	= glock_trace_state(gl->gl_demote_state);
 		__entry->flags		= gl->gl_flags  | (gl->gl_object ? (1UL<<GLF_OBJECT) : 0);
+<<<<<<< HEAD
 	),
 
 	TP_printk("%u,%u glock %d:%lld demote %s to %s flags:%s",
+=======
+		__entry->remote		= remote;
+	),
+
+	TP_printk("%u,%u glock %d:%lld demote %s to %s flags:%s %s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->gltype,
 		  (unsigned long long)__entry->glnum,
                   glock_trace_name(__entry->cur_state),
                   glock_trace_name(__entry->dmt_state),
+<<<<<<< HEAD
 		  show_glock_flags(__entry->flags))
+=======
+		  show_glock_flags(__entry->flags),
+		  __entry->remote ? "remote" : "local")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 );
 
 /* Promotion/grant of a glock */
 TRACE_EVENT(gfs2_promote,
 
+<<<<<<< HEAD
 	TP_PROTO(const struct gfs2_holder *gh, int first),
 
 	TP_ARGS(gh, first),
+=======
+	TP_PROTO(const struct gfs2_holder *gh),
+
+	TP_ARGS(gh),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(        dev_t,  dev                     )
 		__field(	u64,	glnum			)
 		__field(	u32,	gltype			)
+<<<<<<< HEAD
 		__field(	int,	first			)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(	u8,	state			)
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev	= gh->gh_gl->gl_sbd->sd_vfs->s_dev;
 		__entry->glnum	= gh->gh_gl->gl_name.ln_number;
 		__entry->gltype	= gh->gh_gl->gl_name.ln_type;
@@ -205,6 +277,17 @@ TRACE_EVENT(gfs2_promote,
 		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->gltype,
 		  (unsigned long long)__entry->glnum,
 		  __entry->first ? "first": "other",
+=======
+		__entry->dev	= gh->gh_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+		__entry->glnum	= gh->gh_gl->gl_name.ln_number;
+		__entry->gltype	= gh->gh_gl->gl_name.ln_type;
+		__entry->state	= glock_trace_state(gh->gh_state);
+	),
+
+	TP_printk("%u,%u glock %u:%llu promote %s",
+		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->gltype,
+		  (unsigned long long)__entry->glnum,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  glock_trace_name(__entry->state))
 );
 
@@ -224,7 +307,11 @@ TRACE_EVENT(gfs2_glock_queue,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev	= gh->gh_gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__entry->dev	= gh->gh_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->glnum	= gh->gh_gl->gl_name.ln_number;
 		__entry->gltype	= gh->gh_gl->gl_name.ln_type;
 		__entry->queue	= queue;
@@ -252,6 +339,7 @@ TRACE_EVENT(gfs2_glock_lock_time,
 		__field(	int,	status		)
 		__field(	char,	flags		)
 		__field(	s64,	tdiff		)
+<<<<<<< HEAD
 		__field(	s64,	srtt		)
 		__field(	s64,	srttvar		)
 		__field(	s64,	srttb		)
@@ -264,6 +352,20 @@ TRACE_EVENT(gfs2_glock_lock_time,
 
 	TP_fast_assign(
 		__entry->dev            = gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__field(	u64,	srtt		)
+		__field(	u64,	srttvar		)
+		__field(	u64,	srttb		)
+		__field(	u64,	srttvarb	)
+		__field(	u64,	sirt		)
+		__field(	u64,	sirtvar		)
+		__field(	u64,	dcount		)
+		__field(	u64,	qcount		)
+	),
+
+	TP_fast_assign(
+		__entry->dev            = gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->glnum          = gl->gl_name.ln_number;
 		__entry->gltype         = gl->gl_name.ln_type;
 		__entry->status		= gl->gl_lksb.sb_status;
@@ -318,7 +420,11 @@ TRACE_EVENT(gfs2_pin,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev		= bd->bd_gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__entry->dev		= bd->bd_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->pin		= pin;
 		__entry->len		= bd->bd_bh->b_size;
 		__entry->block		= bd->bd_bh->b_blocknr;
@@ -336,26 +442,47 @@ TRACE_EVENT(gfs2_pin,
 /* Flushing the log */
 TRACE_EVENT(gfs2_log_flush,
 
+<<<<<<< HEAD
 	TP_PROTO(const struct gfs2_sbd *sdp, int start),
 
 	TP_ARGS(sdp, start),
+=======
+	TP_PROTO(const struct gfs2_sbd *sdp, int start, u32 flags),
+
+	TP_ARGS(sdp, start, flags),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(        dev_t,  dev                     )
 		__field(	int,	start			)
 		__field(	u64,	log_seq			)
+<<<<<<< HEAD
+=======
+		__field(	u32,	flags			)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev            = sdp->sd_vfs->s_dev;
 		__entry->start		= start;
 		__entry->log_seq	= sdp->sd_log_sequence;
+<<<<<<< HEAD
 	),
 
 	TP_printk("%u,%u log flush %s %llu",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->start ? "start" : "end",
 		  (unsigned long long)__entry->log_seq)
+=======
+		__entry->flags		= flags;
+	),
+
+	TP_printk("%u,%u log flush %s %llu %llx",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->start ? "start" : "end",
+		  (unsigned long long)__entry->log_seq,
+		  (unsigned long long)__entry->flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /* Reserving/releasing blocks in the log */
@@ -368,15 +495,27 @@ TRACE_EVENT(gfs2_log_blocks,
 	TP_STRUCT__entry(
 		__field(        dev_t,  dev                     )
 		__field(	int,	blocks			)
+<<<<<<< HEAD
+=======
+		__field(	int,	blks_free		)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= sdp->sd_vfs->s_dev;
 		__entry->blocks		= blocks;
+<<<<<<< HEAD
 	),
 
 	TP_printk("%u,%u log reserve %d", MAJOR(__entry->dev),
 		  MINOR(__entry->dev), __entry->blocks)
+=======
+		__entry->blks_free	= atomic_read(&sdp->sd_log_blks_free);
+	),
+
+	TP_printk("%u,%u log reserve %d %d", MAJOR(__entry->dev),
+		  MINOR(__entry->dev), __entry->blocks, __entry->blks_free)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /* Writing back the AIL */
@@ -434,7 +573,11 @@ TRACE_EVENT(gfs2_bmap,
 	),
 
 	TP_fast_assign(
+<<<<<<< HEAD
 		__entry->dev            = ip->i_gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__entry->dev            = ip->i_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->lblock		= lblock;
 		__entry->pblock		= buffer_mapped(bh) ?  bh->b_blocknr : 0;
 		__entry->inum		= ip->i_no_addr;
@@ -454,6 +597,7 @@ TRACE_EVENT(gfs2_bmap,
 		  __entry->errno)
 );
 
+<<<<<<< HEAD
 /* Keep track of blocks as they are allocated/freed */
 TRACE_EVENT(gfs2_block_alloc,
 
@@ -461,6 +605,84 @@ TRACE_EVENT(gfs2_block_alloc,
 		u8 block_state),
 
 	TP_ARGS(ip, block, len, block_state),
+=======
+TRACE_EVENT(gfs2_iomap_start,
+
+	TP_PROTO(const struct gfs2_inode *ip, loff_t pos, ssize_t length,
+		 u16 flags),
+
+	TP_ARGS(ip, pos, length, flags),
+
+	TP_STRUCT__entry(
+		__field(        dev_t,  dev                     )
+		__field(	u64,	inum			)
+		__field(	loff_t, pos			)
+		__field(	ssize_t, length			)
+		__field(	u16,	flags			)
+	),
+
+	TP_fast_assign(
+		__entry->dev            = ip->i_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+		__entry->inum		= ip->i_no_addr;
+		__entry->pos		= pos;
+		__entry->length		= length;
+		__entry->flags		= flags;
+	),
+
+	TP_printk("%u,%u bmap %llu iomap start %llu/%lu flags:%08x",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long long)__entry->inum,
+		  (unsigned long long)__entry->pos,
+		  (unsigned long)__entry->length, (u16)__entry->flags)
+);
+
+TRACE_EVENT(gfs2_iomap_end,
+
+	TP_PROTO(const struct gfs2_inode *ip, struct iomap *iomap, int ret),
+
+	TP_ARGS(ip, iomap, ret),
+
+	TP_STRUCT__entry(
+		__field(        dev_t,  dev                     )
+		__field(	u64,	inum			)
+		__field(	loff_t, offset			)
+		__field(	ssize_t, length			)
+		__field(	sector_t, pblock		)
+		__field(	u16,	flags			)
+		__field(	u16,	type			)
+		__field(	int,	ret			)
+	),
+
+	TP_fast_assign(
+		__entry->dev            = ip->i_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+		__entry->inum		= ip->i_no_addr;
+		__entry->offset		= iomap->offset;
+		__entry->length		= iomap->length;
+		__entry->pblock		= iomap->addr == IOMAP_NULL_ADDR ? 0 :
+					 (iomap->addr >> ip->i_inode.i_blkbits);
+		__entry->flags		= iomap->flags;
+		__entry->type		= iomap->type;
+		__entry->ret		= ret;
+	),
+
+	TP_printk("%u,%u bmap %llu iomap end %llu/%lu to %llu ty:%d flags:%08x rc:%d",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long long)__entry->inum,
+		  (unsigned long long)__entry->offset,
+		  (unsigned long)__entry->length,
+		  (long long)__entry->pblock,
+		  (u16)__entry->type,
+		  (u16)__entry->flags, __entry->ret)
+);
+
+/* Keep track of blocks as they are allocated/freed */
+TRACE_EVENT(gfs2_block_alloc,
+
+	TP_PROTO(const struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
+		 u64 block, unsigned len, u8 block_state),
+
+	TP_ARGS(ip, rgd, block, len, block_state),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(        dev_t,  dev                     )
@@ -468,22 +690,98 @@ TRACE_EVENT(gfs2_block_alloc,
 		__field(	u64,	inum			)
 		__field(	u32,	len			)
 		__field(	u8,	block_state		)
+<<<<<<< HEAD
 	),
 
 	TP_fast_assign(
 		__entry->dev		= ip->i_gl->gl_sbd->sd_vfs->s_dev;
+=======
+		__field(        u64,	rd_addr			)
+		__field(        u32,	rd_free_clone		)
+		__field(	u32,	rd_requested		)
+		__field(	u32,	rd_reserved		)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= rgd->rd_gl->gl_name.ln_sbd->sd_vfs->s_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->start		= block;
 		__entry->inum		= ip->i_no_addr;
 		__entry->len		= len;
 		__entry->block_state	= block_state;
+<<<<<<< HEAD
 	),
 
 	TP_printk("%u,%u bmap %llu alloc %llu/%lu %s",
+=======
+		__entry->rd_addr	= rgd->rd_addr;
+		__entry->rd_free_clone	= rgd->rd_free_clone;
+		__entry->rd_requested	= rgd->rd_requested;
+		__entry->rd_reserved	= rgd->rd_reserved;
+	),
+
+	TP_printk("%u,%u bmap %llu alloc %llu/%lu %s rg:%llu rf:%u rq:%u rr:%u",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long long)__entry->inum,
 		  (unsigned long long)__entry->start,
 		  (unsigned long)__entry->len,
+<<<<<<< HEAD
 		  block_state_name(__entry->block_state))
+=======
+		  block_state_name(__entry->block_state),
+		  (unsigned long long)__entry->rd_addr,
+		  __entry->rd_free_clone,
+		  __entry->rd_requested,
+		  __entry->rd_reserved)
+);
+
+/* Keep track of multi-block reservations as they are allocated/freed */
+TRACE_EVENT(gfs2_rs,
+
+	TP_PROTO(const struct gfs2_blkreserv *rs, u8 func),
+
+	TP_ARGS(rs, func),
+
+	TP_STRUCT__entry(
+		__field(        dev_t,  dev                     )
+		__field(	u64,	rd_addr			)
+		__field(	u32,	rd_free_clone		)
+		__field(	u32,	rd_requested		)
+		__field(	u32,	rd_reserved		)
+		__field(	u64,	inum			)
+		__field(	u64,	start			)
+		__field(	u32,	requested		)
+		__field(	u32,	reserved		)
+		__field(	u8,	func			)
+	),
+
+	TP_fast_assign(
+		__entry->dev		= rs->rs_rgd->rd_sbd->sd_vfs->s_dev;
+		__entry->rd_addr	= rs->rs_rgd->rd_addr;
+		__entry->rd_free_clone	= rs->rs_rgd->rd_free_clone;
+		__entry->rd_requested	= rs->rs_rgd->rd_requested;
+		__entry->rd_reserved	= rs->rs_rgd->rd_reserved;
+		__entry->inum		= container_of(rs, struct gfs2_inode,
+						       i_res)->i_no_addr;
+		__entry->start		= rs->rs_start;
+		__entry->requested	= rs->rs_requested;
+		__entry->reserved	= rs->rs_reserved;
+		__entry->func		= func;
+	),
+
+	TP_printk("%u,%u bmap %llu resrv %llu rg:%llu rf:%u rq:%u rr:%u %s q:%u r:%u",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  (unsigned long long)__entry->inum,
+		  (unsigned long long)__entry->start,
+		  (unsigned long long)__entry->rd_addr,
+		  __entry->rd_free_clone,
+		  __entry->rd_requested,
+		  __entry->rd_reserved,
+		  rs_func_name(__entry->func),
+		  __entry->requested,
+		  __entry->reserved)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif /* _TRACE_GFS2_H */

@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/init.h>
+#include <linux/debugfs.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "debugfs.h"
 
@@ -9,6 +16,7 @@ static struct dentry *d_xen_debug;
 
 struct dentry * __init xen_init_debugfs(void)
 {
+<<<<<<< HEAD
 	if (!d_xen_debug) {
 		d_xen_debug = debugfs_create_dir("xen", NULL);
 
@@ -123,3 +131,10 @@ struct dentry *xen_debugfs_create_u32_array(const char *name, umode_t mode,
 
 	return debugfs_create_file(name, mode, parent, data, &u32_array_fops);
 }
+=======
+	if (!d_xen_debug)
+		d_xen_debug = debugfs_create_dir("xen", NULL);
+	return d_xen_debug;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

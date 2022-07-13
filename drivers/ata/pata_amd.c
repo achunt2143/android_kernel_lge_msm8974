@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_amd.c 	- AMD PATA for new ATA layer
  *			  (C) 2005-2006 Red Hat Inc
@@ -17,7 +21,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -66,7 +73,11 @@ static void timing_setup(struct ata_port *ap, struct ata_device *adev, int offse
 
 	if (peer) {
 		/* This may be over conservative */
+<<<<<<< HEAD
 		if (peer->dma_mode) {
+=======
+		if (ata_dma_enabled(peer)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ata_timing_compute(peer, peer->dma_mode, &apeer, T, UT);
 			ata_timing_merge(&apeer, &at, &at, ATA_TIMING_8BIT);
 		}
@@ -167,7 +178,10 @@ static int amd_cable_detect(struct ata_port *ap)
 /**
  *	amd_fifo_setup		-	set the PIO FIFO for ATA/ATAPI
  *	@ap: ATA interface
+<<<<<<< HEAD
  *	@adev: ATA device
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Set the PCI fifo for this device according to the devices present
  *	on the bus at this point in time. We need to turn the post write buffer
@@ -265,8 +279,13 @@ static void amd133_set_dmamode(struct ata_port *ap, struct ata_device *adev)
  * cached during driver attach and are consulted to select transfer
  * mode.
  */
+<<<<<<< HEAD
 static unsigned long nv_mode_filter(struct ata_device *dev,
 				    unsigned long xfer_mask)
+=======
+static unsigned int nv_mode_filter(struct ata_device *dev,
+				   unsigned int xfer_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned int udma_mask_map[] =
 		{ ATA_UDMA2, ATA_UDMA1, ATA_UDMA0, 0,
@@ -275,7 +294,11 @@ static unsigned long nv_mode_filter(struct ata_device *dev,
 	char acpi_str[32] = "";
 	u32 saved_udma, udma;
 	const struct ata_acpi_gtm *gtm;
+<<<<<<< HEAD
 	unsigned long bios_limit = 0, acpi_limit = 0, limit;
+=======
+	unsigned int bios_limit = 0, acpi_limit = 0, limit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find out what BIOS configured */
 	udma = saved_udma = (unsigned long)ap->host->private_data;
@@ -311,17 +334,30 @@ static unsigned long nv_mode_filter(struct ata_device *dev,
 	   cable detection result */
 	limit |= ata_pack_xfermask(ATA_PIO4, ATA_MWDMA2, ATA_UDMA2);
 
+<<<<<<< HEAD
 	ata_port_dbg(ap, "nv_mode_filter: 0x%lx&0x%lx->0x%lx, "
 			"BIOS=0x%lx (0x%x) ACPI=0x%lx%s\n",
 			xfer_mask, limit, xfer_mask & limit, bios_limit,
 			saved_udma, acpi_limit, acpi_str);
+=======
+	ata_port_dbg(ap,
+		     "nv_mode_filter: 0x%x&0x%x->0x%x, BIOS=0x%x (0x%x) ACPI=0x%x%s\n",
+		     xfer_mask, limit, xfer_mask & limit, bios_limit,
+		     saved_udma, acpi_limit, acpi_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return xfer_mask & limit;
 }
 
 /**
+<<<<<<< HEAD
  *	nv_probe_init	-	cable detection
  *	@lin: ATA link
+=======
+ *	nv_pre_reset	-	cable detection
+ *	@link: ATA link
+ *	@deadline: deadline jiffies for the operation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Perform cable detection. The BIOS stores this in PCI config
  *	space for us.
@@ -388,7 +424,11 @@ static void nv_host_stop(struct ata_host *host)
 	pci_write_config_dword(to_pci_dev(host->dev), 0x60, udma);
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template amd_sht = {
+=======
+static const struct scsi_host_template amd_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -575,10 +615,17 @@ static int amd_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return ata_pci_bmdma_init_one(pdev, ppi, &amd_sht, hpriv, 0);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int amd_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int amd_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -617,6 +664,10 @@ static const struct pci_device_id amd[] = {
 	{ PCI_VDEVICE(NVIDIA,	PCI_DEVICE_ID_NVIDIA_NFORCE_MCP73_IDE),	8 },
 	{ PCI_VDEVICE(NVIDIA,	PCI_DEVICE_ID_NVIDIA_NFORCE_MCP77_IDE),	8 },
 	{ PCI_VDEVICE(AMD,	PCI_DEVICE_ID_AMD_CS5536_IDE),		9 },
+<<<<<<< HEAD
+=======
+	{ PCI_VDEVICE(AMD,	PCI_DEVICE_ID_AMD_CS5536_DEV_IDE),	9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ },
 };
@@ -626,12 +677,17 @@ static struct pci_driver amd_pci_driver = {
 	.id_table	= amd,
 	.probe 		= amd_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= amd_reinit_one,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init amd_init(void)
 {
 	return pci_register_driver(&amd_pci_driver);
@@ -641,12 +697,18 @@ static void __exit amd_exit(void)
 {
 	pci_unregister_driver(&amd_pci_driver);
 }
+=======
+module_pci_driver(amd_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for AMD and Nvidia PATA IDE");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, amd);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(amd_init);
 module_exit(amd_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

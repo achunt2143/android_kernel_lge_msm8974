@@ -20,7 +20,11 @@ Description:
 
 			This directory has the same layout (and
 			underlying implementation as /sys/firmware/efi/vars.
+<<<<<<< HEAD
 			See Documentation/ABI/*/sysfs-firmware-efi-vars
+=======
+			See `Documentation/ABI/*/sysfs-firmware-efi-vars`
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for more information on how to interact with
 			this structure.
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Zilog serial chips found on SGI workstations and
  * servers.  This driver could actually be made more generic.
@@ -30,17 +34,24 @@
 #include <linux/spinlock.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/sgialib.h>
 #include <asm/sgi/ioc.h>
 #include <asm/sgi/hpc3.h>
 #include <asm/sgi/ip22.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_IP22_ZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 
 #include "ip22zilog.h"
@@ -248,6 +259,7 @@ static void ip22zilog_maybe_update_regs(struct uart_ip22zilog_port *up,
 #define Rx_BRK 0x0100                   /* BREAK event software flag.  */
 #define Rx_SYS 0x0200                   /* SysRq event software flag.  */
 
+<<<<<<< HEAD
 static struct tty_struct *ip22zilog_receive_chars(struct uart_ip22zilog_port *up,
 						  struct zilog_channel *channel)
 {
@@ -259,6 +271,14 @@ static struct tty_struct *ip22zilog_receive_chars(struct uart_ip22zilog_port *up
 	if (up->port.state != NULL &&
 	    up->port.state->port.tty != NULL)
 		tty = up->port.state->port.tty;
+=======
+static bool ip22zilog_receive_chars(struct uart_ip22zilog_port *up,
+						  struct zilog_channel *channel)
+{
+	unsigned int r1;
+	u8 ch, flag;
+	bool push = up->port.state != NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		ch = readb(&channel->control);
@@ -312,10 +332,17 @@ static struct tty_struct *ip22zilog_receive_chars(struct uart_ip22zilog_port *up
 		if (uart_handle_sysrq_char(&up->port, ch))
 			continue;
 
+<<<<<<< HEAD
 		if (tty)
 			uart_insert_char(&up->port, r1, Rx_OVR, ch, flag);
 	}
 	return tty;
+=======
+		if (push)
+			uart_insert_char(&up->port, r1, Rx_OVR, ch, flag);
+	}
+	return push;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ip22zilog_status_handle(struct uart_ip22zilog_port *up,
@@ -417,8 +444,12 @@ static void ip22zilog_transmit_chars(struct uart_ip22zilog_port *up,
 	ZSDELAY();
 	ZS_WSYNC(channel);
 
+<<<<<<< HEAD
 	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 	up->port.icount.tx++;
+=======
+	uart_xmit_advance(&up->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&up->port);
@@ -438,6 +469,7 @@ static irqreturn_t ip22zilog_interrupt(int irq, void *dev_id)
 	while (up) {
 		struct zilog_channel *channel
 			= ZILOG_CHANNEL_FROM_PORT(&up->port);
+<<<<<<< HEAD
 		struct tty_struct *tty;
 		unsigned char r3;
 
@@ -446,45 +478,82 @@ static irqreturn_t ip22zilog_interrupt(int irq, void *dev_id)
 
 		/* Channel A */
 		tty = NULL;
+=======
+		unsigned char r3;
+		bool push = false;
+
+		uart_port_lock(&up->port);
+		r3 = read_zsreg(channel, R3);
+
+		/* Channel A */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & (CHAEXT | CHATxIP | CHARxIP)) {
 			writeb(RES_H_IUS, &channel->control);
 			ZSDELAY();
 			ZS_WSYNC(channel);
 
 			if (r3 & CHARxIP)
+<<<<<<< HEAD
 				tty = ip22zilog_receive_chars(up, channel);
+=======
+				push = ip22zilog_receive_chars(up, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r3 & CHAEXT)
 				ip22zilog_status_handle(up, channel);
 			if (r3 & CHATxIP)
 				ip22zilog_transmit_chars(up, channel);
 		}
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 
 		if (tty)
 			tty_flip_buffer_push(tty);
+=======
+		uart_port_unlock(&up->port);
+
+		if (push)
+			tty_flip_buffer_push(&up->port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Channel B */
 		up = up->next;
 		channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
+<<<<<<< HEAD
 
 		spin_lock(&up->port.lock);
 		tty = NULL;
+=======
+		push = false;
+
+		uart_port_lock(&up->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & (CHBEXT | CHBTxIP | CHBRxIP)) {
 			writeb(RES_H_IUS, &channel->control);
 			ZSDELAY();
 			ZS_WSYNC(channel);
 
 			if (r3 & CHBRxIP)
+<<<<<<< HEAD
 				tty = ip22zilog_receive_chars(up, channel);
+=======
+				push = ip22zilog_receive_chars(up, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r3 & CHBEXT)
 				ip22zilog_status_handle(up, channel);
 			if (r3 & CHBTxIP)
 				ip22zilog_transmit_chars(up, channel);
 		}
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 
 		if (tty)
 			tty_flip_buffer_push(tty);
+=======
+		uart_port_unlock(&up->port);
+
+		if (push)
+			tty_flip_buffer_push(&up->port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		up = up->next;
 	}
@@ -514,11 +583,19 @@ static unsigned int ip22zilog_tx_empty(struct uart_port *port)
 	unsigned char status;
 	unsigned int ret;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
 
 	status = ip22zilog_read_channel_status(port);
 
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+
+	status = ip22zilog_read_channel_status(port);
+
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status & Tx_BUF_EMP)
 		ret = TIOCSER_TEMT;
@@ -550,7 +627,12 @@ static unsigned int ip22zilog_get_mctrl(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits;
 
@@ -574,7 +656,12 @@ static void ip22zilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->flags |= IP22ZILOG_FLAG_TX_STOPPED;
 }
@@ -582,7 +669,12 @@ static void ip22zilog_stop_tx(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void ip22zilog_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char status;
 
@@ -609,12 +701,21 @@ static void ip22zilog_start_tx(struct uart_port *port)
 	} else {
 		struct circ_buf *xmit = &port->state->xmit;
 
+<<<<<<< HEAD
+=======
+		if (uart_circ_empty(xmit))
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writeb(xmit->buf[xmit->tail], &channel->data);
 		ZSDELAY();
 		ZS_WSYNC(channel);
 
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
+=======
+		uart_xmit_advance(port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 			uart_write_wakeup(&up->port);
@@ -640,7 +741,12 @@ static void ip22zilog_stop_rx(struct uart_port *port)
 /* The port lock is held.  */
 static void ip22zilog_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char new_reg;
 
@@ -656,7 +762,12 @@ static void ip22zilog_enable_ms(struct uart_port *port)
 /* The port lock is not held.  */
 static void ip22zilog_break_ctl(struct uart_port *port, int break_state)
 {
+<<<<<<< HEAD
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits, new_reg;
 	unsigned long flags;
@@ -668,7 +779,11 @@ static void ip22zilog_break_ctl(struct uart_port *port, int break_state)
 	else
 		clear_bits |= SND_BRK;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_reg = (up->curregs[R5] | set_bits) & ~clear_bits;
 	if (new_reg != up->curregs[R5]) {
@@ -678,7 +793,11 @@ static void ip22zilog_break_ctl(struct uart_port *port, int break_state)
 		write_zsreg(channel, R5, up->curregs[R5]);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __ip22zilog_reset(struct uart_ip22zilog_port *up)
@@ -739,9 +858,15 @@ static int ip22zilog_startup(struct uart_port *port)
 	if (ZS_IS_CONS(up))
 		return 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
 	__ip22zilog_startup(up);
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+	__ip22zilog_startup(up);
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -779,7 +904,11 @@ static void ip22zilog_shutdown(struct uart_port *port)
 	if (ZS_IS_CONS(up))
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	channel = ZILOG_CHANNEL_FROM_PORT(port);
 
@@ -792,7 +921,11 @@ static void ip22zilog_shutdown(struct uart_port *port)
 	up->curregs[R5] &= ~SND_BRK;
 	ip22zilog_maybe_update_regs(up, channel);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Shared by TTY driver and serial console setup.  The port lock is held
@@ -838,7 +971,11 @@ ip22zilog_convert_to_zs(struct uart_ip22zilog_port *up, unsigned int cflag,
 		up->curregs[5] |= Tx8;
 		up->parity_mask = 0xff;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up->curregs[4] &= ~0x0c;
 	if (cflag & CSTOPB)
 		up->curregs[4] |= SB2;
@@ -856,7 +993,11 @@ ip22zilog_convert_to_zs(struct uart_ip22zilog_port *up, unsigned int cflag,
 	up->port.read_status_mask = Rx_OVR;
 	if (iflag & INPCK)
 		up->port.read_status_mask |= CRC_ERR | PAR_ERR;
+<<<<<<< HEAD
 	if (iflag & (BRKINT | PARMRK))
+=======
+	if (iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up->port.read_status_mask |= BRK_ABRT;
 
 	up->port.ignore_status_mask = 0;
@@ -875,15 +1016,26 @@ ip22zilog_convert_to_zs(struct uart_ip22zilog_port *up, unsigned int cflag,
 /* The port lock is not held.  */
 static void
 ip22zilog_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 		      struct ktermios *old)
 {
 	struct uart_ip22zilog_port *up = (struct uart_ip22zilog_port *) port;
+=======
+		      const struct ktermios *old)
+{
+	struct uart_ip22zilog_port *up =
+		container_of(port, struct uart_ip22zilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int baud, brg;
 
 	baud = uart_get_baud_rate(port, termios, old, 1200, 76800);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brg = BPS_TO_BRG(baud, ZS_CLOCK / ZS_CLOCK_DIVISOR);
 
@@ -897,7 +1049,11 @@ ip22zilog_set_termios(struct uart_port *port, struct ktermios *termios,
 	ip22zilog_maybe_update_regs(up, ZILOG_CHANNEL_FROM_PORT(port));
 	uart_update_timeout(port, termios->c_cflag, baud);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *ip22zilog_type(struct uart_port *port)
@@ -928,7 +1084,11 @@ static int ip22zilog_verify_port(struct uart_port *port, struct serial_struct *s
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct uart_ops ip22zilog_pops = {
+=======
+static const struct uart_ops ip22zilog_pops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	=	ip22zilog_tx_empty,
 	.set_mctrl	=	ip22zilog_set_mctrl,
 	.get_mctrl	=	ip22zilog_get_mctrl,
@@ -991,7 +1151,11 @@ static struct zilog_layout * __init get_zs(int chip)
 #define ZS_PUT_CHAR_MAX_DELAY	2000	/* 10 ms */
 
 #ifdef CONFIG_SERIAL_IP22_ZILOG_CONSOLE
+<<<<<<< HEAD
 static void ip22zilog_put_char(struct uart_port *port, int ch)
+=======
+static void ip22zilog_put_char(struct uart_port *port, unsigned char ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zilog_channel *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	int loops = ZS_PUT_CHAR_MAX_DELAY;
@@ -1019,10 +1183,17 @@ ip22zilog_console_write(struct console *con, const char *s, unsigned int count)
 	struct uart_ip22zilog_port *up = &ip22zilog_port_table[con->index];
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
 	uart_console_write(&up->port, s, count, ip22zilog_put_char);
 	udelay(2);
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+	uart_console_write(&up->port, s, count, ip22zilog_put_char);
+	udelay(2);
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init ip22zilog_console_setup(struct console *con, char *options)
@@ -1037,13 +1208,21 @@ static int __init ip22zilog_console_setup(struct console *con, char *options)
 
 	printk(KERN_INFO "Console: ttyS%d (IP22-Zilog)\n", con->index);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->curregs[R15] |= BRKIE;
 
 	__ip22zilog_startup(up);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
@@ -1077,6 +1256,10 @@ static struct uart_driver ip22zilog_reg = {
 
 static void __init ip22zilog_prepare(void)
 {
+<<<<<<< HEAD
+=======
+	unsigned char sysrq_on = IS_ENABLED(CONFIG_SERIAL_IP22_ZILOG_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_ip22zilog_port *up;
 	struct zilog_layout *rp;
 	int channel, chip;
@@ -1112,6 +1295,10 @@ static void __init ip22zilog_prepare(void)
 		up[(chip * 2) + 0].port.irq = zilog_irq;
 		up[(chip * 2) + 0].port.uartclk = ZS_CLOCK;
 		up[(chip * 2) + 0].port.fifosize = 1;
+<<<<<<< HEAD
+=======
+		up[(chip * 2) + 0].port.has_sysrq = sysrq_on;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up[(chip * 2) + 0].port.ops = &ip22zilog_pops;
 		up[(chip * 2) + 0].port.type = PORT_IP22ZILOG;
 		up[(chip * 2) + 0].port.flags = 0;
@@ -1123,6 +1310,10 @@ static void __init ip22zilog_prepare(void)
 		up[(chip * 2) + 1].port.irq = zilog_irq;
 		up[(chip * 2) + 1].port.uartclk = ZS_CLOCK;
 		up[(chip * 2) + 1].port.fifosize = 1;
+<<<<<<< HEAD
+=======
+		up[(chip * 2) + 1].port.has_sysrq = sysrq_on;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up[(chip * 2) + 1].port.ops = &ip22zilog_pops;
 		up[(chip * 2) + 1].port.type = PORT_IP22ZILOG;
 		up[(chip * 2) + 1].port.line = (chip * 2) + 1;

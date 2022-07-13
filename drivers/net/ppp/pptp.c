@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Point-to-Point Tunneling Protocol for Linux
  *
  *	Authors: Dmitry Kozlov <xeb@mail.ru>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/string.h>
@@ -28,9 +35,14 @@
 #include <linux/file.h>
 #include <linux/in.h>
 #include <linux/ip.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/rcupdate.h>
+=======
+#include <linux/rcupdate.h>
+#include <linux/security.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 
 #include <net/sock.h>
@@ -39,6 +51,10 @@
 #include <net/icmp.h>
 #include <net/route.h>
 #include <net/gre.h>
+<<<<<<< HEAD
+=======
+#include <net/pptp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/uaccess.h>
 
@@ -47,7 +63,11 @@
 #define MAX_CALLID 65535
 
 static DECLARE_BITMAP(callid_bitmap, MAX_CALLID + 1);
+<<<<<<< HEAD
 static struct pppox_sock **callid_sock;
+=======
+static struct pppox_sock __rcu **callid_sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(chan_lock);
 
@@ -55,6 +75,7 @@ static struct proto pptp_sk_proto __read_mostly;
 static const struct ppp_channel_ops pptp_chan_ops;
 static const struct proto_ops pptp_ops;
 
+<<<<<<< HEAD
 #define PPP_LCP_ECHOREQ 0x09
 #define PPP_LCP_ECHOREP 0x0A
 #define SC_RCV_BITS	(SC_RCV_B7_1|SC_RCV_B7_0|SC_RCV_ODDP|SC_RCV_EVNP)
@@ -90,6 +111,8 @@ struct pptp_gre_header {
 	u32 ack;
 } __packed;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pppox_sock *lookup_chan(u16 call_id, __be32 s_addr)
 {
 	struct pppox_sock *sock;
@@ -116,8 +139,13 @@ static int lookup_chan_dst(u16 call_id, __be32 d_addr)
 	int i;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	for (i = find_next_bit(callid_bitmap, MAX_CALLID, 1); i < MAX_CALLID;
 	     i = find_next_bit(callid_bitmap, MAX_CALLID, i + 1)) {
+=======
+	i = 1;
+	for_each_set_bit_from(i, callid_bitmap, MAX_CALLID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sock = rcu_dereference(callid_sock[i]);
 		if (!sock)
 			continue;
@@ -131,24 +159,44 @@ static int lookup_chan_dst(u16 call_id, __be32 d_addr)
 	return i < MAX_CALLID;
 }
 
+<<<<<<< HEAD
 static int add_chan(struct pppox_sock *sock)
+=======
+static int add_chan(struct pppox_sock *sock,
+		    struct pptp_addr *sa)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int call_id;
 
 	spin_lock(&chan_lock);
+<<<<<<< HEAD
 	if (!sock->proto.pptp.src_addr.call_id)	{
+=======
+	if (!sa->call_id)	{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		call_id = find_next_zero_bit(callid_bitmap, MAX_CALLID, call_id + 1);
 		if (call_id == MAX_CALLID) {
 			call_id = find_next_zero_bit(callid_bitmap, MAX_CALLID, 1);
 			if (call_id == MAX_CALLID)
 				goto out_err;
 		}
+<<<<<<< HEAD
 		sock->proto.pptp.src_addr.call_id = call_id;
 	} else if (test_bit(sock->proto.pptp.src_addr.call_id, callid_bitmap))
 		goto out_err;
 
 	set_bit(sock->proto.pptp.src_addr.call_id, callid_bitmap);
 	rcu_assign_pointer(callid_sock[sock->proto.pptp.src_addr.call_id], sock);
+=======
+		sa->call_id = call_id;
+	} else if (test_bit(sa->call_id, callid_bitmap)) {
+		goto out_err;
+	}
+
+	sock->proto.pptp.src_addr = *sa;
+	set_bit(sa->call_id, callid_bitmap);
+	rcu_assign_pointer(callid_sock[sa->call_id], sock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&chan_lock);
 
 	return 0;
@@ -164,13 +212,39 @@ static void del_chan(struct pppox_sock *sock)
 	clear_bit(sock->proto.pptp.src_addr.call_id, callid_bitmap);
 	RCU_INIT_POINTER(callid_sock[sock->proto.pptp.src_addr.call_id], NULL);
 	spin_unlock(&chan_lock);
+<<<<<<< HEAD
 	synchronize_rcu();
+=======
+}
+
+static struct rtable *pptp_route_output(const struct pppox_sock *po,
+					struct flowi4 *fl4)
+{
+	const struct sock *sk = &po->sk;
+	struct net *net;
+
+	net = sock_net(sk);
+	flowi4_init_output(fl4, sk->sk_bound_dev_if, sk->sk_mark, 0,
+			   RT_SCOPE_UNIVERSE, IPPROTO_GRE, 0,
+			   po->proto.pptp.dst_addr.sin_addr.s_addr,
+			   po->proto.pptp.src_addr.sin_addr.s_addr,
+			   0, 0, sock_net_uid(net, sk));
+	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
+
+	return ip_route_output_flow(net, fl4, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct sock *sk = (struct sock *) chan->private;
 	struct pppox_sock *po = pppox_sk(sk);
+=======
+	struct sock *sk = chan->private;
+	struct pppox_sock *po = pppox_sk(sk);
+	struct net *net = sock_net(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pptp_opt *opt = &po->proto.pptp;
 	struct pptp_gre_header *hdr;
 	unsigned int header_len = sizeof(*hdr);
@@ -189,11 +263,15 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	if (sk_pppox(po)->sk_state & PPPOX_DEAD)
 		goto tx_error;
 
+<<<<<<< HEAD
 	rt = ip_route_output_ports(sock_net(sk), &fl4, NULL,
 				   opt->dst_addr.sin_addr.s_addr,
 				   opt->src_addr.sin_addr.s_addr,
 				   0, 0, IPPROTO_GRE,
 				   RT_TOS(0), 0);
+=======
+	rt = pptp_route_output(po, &fl4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rt))
 		goto tx_error;
 
@@ -209,7 +287,11 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 		}
 		if (skb->sk)
 			skb_set_owner_w(new_skb, skb->sk);
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		consume_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = new_skb;
 	}
 
@@ -238,6 +320,7 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	skb_push(skb, header_len);
 	hdr = (struct pptp_gre_header *)(skb->data);
 
+<<<<<<< HEAD
 	hdr->flags       = PPTP_GRE_FLAG_K;
 	hdr->ver         = PPTP_GRE_VER;
 	hdr->protocol    = htons(PPTP_GRE_PROTO);
@@ -248,6 +331,16 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	if (opt->ack_sent != seq_recv)	{
 		/* send ack with this message */
 		hdr->ver |= PPTP_GRE_FLAG_A;
+=======
+	hdr->gre_hd.flags = GRE_KEY | GRE_VERSION_1 | GRE_SEQ;
+	hdr->gre_hd.protocol = GRE_PROTO_PPP;
+	hdr->call_id = htons(opt->dst_addr.call_id);
+
+	hdr->seq = htonl(++opt->seq_sent);
+	if (opt->ack_sent != seq_recv)	{
+		/* send ack with this message */
+		hdr->gre_hd.flags |= GRE_ACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdr->ack  = htonl(seq_recv);
 		opt->ack_sent = seq_recv;
 	}
@@ -278,6 +371,7 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	skb_dst_drop(skb);
 	skb_dst_set(skb, &rt->dst);
 
+<<<<<<< HEAD
 	nf_reset(skb);
 
 	skb->ip_summed = CHECKSUM_NONE;
@@ -285,6 +379,15 @@ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	ip_send_check(iph);
 
 	ip_local_out(skb);
+=======
+	nf_reset_ct(skb);
+
+	skb->ip_summed = CHECKSUM_NONE;
+	ip_select_ident(net, skb, NULL);
+	ip_send_check(iph);
+
+	ip_local_out(net, skb->sk, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 
 tx_error:
@@ -310,7 +413,11 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 	headersize  = sizeof(*header);
 
 	/* test if acknowledgement present */
+<<<<<<< HEAD
 	if (PPTP_GRE_IS_A(header->ver)) {
+=======
+	if (GRE_IS_ACK(header->gre_hd.flags)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__u32 ack;
 
 		if (!pskb_may_pull(skb, headersize))
@@ -318,10 +425,15 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 		header = (struct pptp_gre_header *)(skb->data);
 
 		/* ack in different place if S = 0 */
+<<<<<<< HEAD
 		ack = PPTP_GRE_IS_S(header->flags) ? header->ack : header->seq;
 
 		ack = ntohl(ack);
 
+=======
+		ack = GRE_IS_SEQ(header->gre_hd.flags) ? ntohl(header->ack) :
+							 ntohl(header->seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ack > opt->ack_recv)
 			opt->ack_recv = ack;
 		/* also handle sequence number wrap-around  */
@@ -331,7 +443,11 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 		headersize -= sizeof(header->ack);
 	}
 	/* test if payload present */
+<<<<<<< HEAD
 	if (!PPTP_GRE_IS_S(header->flags))
+=======
+	if (!GRE_IS_SEQ(header->gre_hd.flags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop;
 
 	payload_len = ntohs(header->payload_len);
@@ -360,11 +476,14 @@ allow_packet:
 			skb_pull(skb, 2);
 		}
 
+<<<<<<< HEAD
 		if ((*skb->data) & 1) {
 			/* protocol is compressed */
 			skb_push(skb, 1)[0] = 0;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb->ip_summed = CHECKSUM_NONE;
 		skb_set_network_header(skb, skb->head-skb->data);
 		ppp_input(&po->chan, skb);
@@ -392,6 +511,7 @@ static int pptp_rcv(struct sk_buff *skb)
 
 	header = (struct pptp_gre_header *)skb->data;
 
+<<<<<<< HEAD
 	if (ntohs(header->protocol) != PPTP_GRE_PROTO || /* PPTP-GRE protocol for PPTP */
 		PPTP_GRE_IS_C(header->flags) ||                /* flag C should be clear */
 		PPTP_GRE_IS_R(header->flags) ||                /* flag R should be clear */
@@ -404,6 +524,20 @@ static int pptp_rcv(struct sk_buff *skb)
 	if (po) {
 		skb_dst_drop(skb);
 		nf_reset(skb);
+=======
+	if (header->gre_hd.protocol != GRE_PROTO_PPP || /* PPTP-GRE protocol for PPTP */
+		GRE_IS_CSUM(header->gre_hd.flags) ||    /* flag CSUM should be clear */
+		GRE_IS_ROUTING(header->gre_hd.flags) || /* flag ROUTING should be clear */
+		!GRE_IS_KEY(header->gre_hd.flags) ||    /* flag KEY should be set */
+		(header->gre_hd.flags & GRE_FLAGS))     /* flag Recursion Ctrl should be clear */
+		/* if invalid, discard this packet */
+		goto drop;
+
+	po = lookup_chan(ntohs(header->call_id), iph->saddr);
+	if (po) {
+		skb_dst_drop(skb);
+		nf_reset_ct(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sk_receive_skb(sk_pppox(po), skb, 0);
 	}
 drop:
@@ -417,7 +551,10 @@ static int pptp_bind(struct socket *sock, struct sockaddr *uservaddr,
 	struct sock *sk = sock->sk;
 	struct sockaddr_pppox *sp = (struct sockaddr_pppox *) uservaddr;
 	struct pppox_sock *po = pppox_sk(sk);
+<<<<<<< HEAD
 	struct pptp_opt *opt = &po->proto.pptp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	if (sockaddr_len < sizeof(struct sockaddr_pppox))
@@ -425,10 +562,29 @@ static int pptp_bind(struct socket *sock, struct sockaddr *uservaddr,
 
 	lock_sock(sk);
 
+<<<<<<< HEAD
 	opt->src_addr = sp->sa_addr.pptp;
 	if (add_chan(po))
 		error = -EBUSY;
 
+=======
+	if (sk->sk_state & PPPOX_DEAD) {
+		error = -EALREADY;
+		goto out;
+	}
+
+	if (sk->sk_state & PPPOX_BOUND) {
+		error = -EBUSY;
+		goto out;
+	}
+
+	if (add_chan(po, &sp->sa_addr.pptp))
+		error = -EBUSY;
+	else
+		sk->sk_state |= PPPOX_BOUND;
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 	return error;
 }
@@ -474,11 +630,15 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	po->chan.private = sk;
 	po->chan.ops = &pptp_chan_ops;
 
+<<<<<<< HEAD
 	rt = ip_route_output_ports(sock_net(sk), &fl4, sk,
 				   opt->dst_addr.sin_addr.s_addr,
 				   opt->src_addr.sin_addr.s_addr,
 				   0, 0,
 				   IPPROTO_GRE, RT_CONN_FLAGS(sk), 0);
+=======
+	rt = pptp_route_output(po, &fl4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rt)) {
 		error = -EHOSTUNREACH;
 		goto end;
@@ -488,7 +648,10 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	po->chan.mtu = dst_mtu(&rt->dst);
 	if (!po->chan.mtu)
 		po->chan.mtu = PPP_MRU;
+<<<<<<< HEAD
 	ip_rt_put(rt);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
 
 	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
@@ -499,7 +662,11 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	}
 
 	opt->dst_addr = sp->sa_addr.pptp;
+<<<<<<< HEAD
 	sk->sk_state = PPPOX_CONNECTED;
+=======
+	sk->sk_state |= PPPOX_CONNECTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  end:
 	release_sock(sk);
@@ -507,27 +674,44 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 }
 
 static int pptp_getname(struct socket *sock, struct sockaddr *uaddr,
+<<<<<<< HEAD
 	int *usockaddr_len, int peer)
+=======
+	int peer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = sizeof(struct sockaddr_pppox);
 	struct sockaddr_pppox sp;
 
+<<<<<<< HEAD
 	sp.sa_family	  = AF_PPPOX;
+=======
+	memset(&sp.sa_addr, 0, sizeof(sp.sa_addr));
+
+	sp.sa_family    = AF_PPPOX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp.sa_protocol  = PX_PROTO_PPTP;
 	sp.sa_addr.pptp = pppox_sk(sock->sk)->proto.pptp.src_addr;
 
 	memcpy(uaddr, &sp, len);
 
+<<<<<<< HEAD
 	*usockaddr_len = len;
 
 	return 0;
+=======
+	return len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pptp_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 	struct pppox_sock *po;
+<<<<<<< HEAD
 	struct pptp_opt *opt;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	if (!sk)
@@ -541,8 +725,13 @@ static int pptp_release(struct socket *sock)
 	}
 
 	po = pppox_sk(sk);
+<<<<<<< HEAD
 	opt = &po->proto.pptp;
 	del_chan(po);
+=======
+	del_chan(po);
+	synchronize_rcu();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pppox_unbind_sock(sk);
 	sk->sk_state = PPPOX_DEAD;
@@ -563,16 +752,27 @@ static void pptp_sock_destruct(struct sock *sk)
 		pppox_unbind_sock(sk);
 	}
 	skb_queue_purge(&sk->sk_receive_queue);
+<<<<<<< HEAD
 }
 
 static int pptp_create(struct net *net, struct socket *sock)
+=======
+	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
+}
+
+static int pptp_create(struct net *net, struct socket *sock, int kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = -ENOMEM;
 	struct sock *sk;
 	struct pppox_sock *po;
 	struct pptp_opt *opt;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pptp_sk_proto);
+=======
+	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pptp_sk_proto, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		goto out;
 
@@ -602,7 +802,11 @@ out:
 static int pptp_ppp_ioctl(struct ppp_channel *chan, unsigned int cmd,
 	unsigned long arg)
 {
+<<<<<<< HEAD
 	struct sock *sk = (struct sock *) chan->private;
+=======
+	struct sock *sk = chan->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pppox_sock *po = pppox_sk(sk);
 	struct pptp_opt *opt = &po->proto.pptp;
 	void __user *argp = (void __user *)arg;
@@ -650,15 +854,26 @@ static const struct proto_ops pptp_ops = {
 	.socketpair = sock_no_socketpair,
 	.accept     = sock_no_accept,
 	.getname    = pptp_getname,
+<<<<<<< HEAD
 	.poll       = sock_no_poll,
 	.listen     = sock_no_listen,
 	.shutdown   = sock_no_shutdown,
 	.setsockopt = sock_no_setsockopt,
 	.getsockopt = sock_no_getsockopt,
+=======
+	.listen     = sock_no_listen,
+	.shutdown   = sock_no_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sendmsg    = sock_no_sendmsg,
 	.recvmsg    = sock_no_recvmsg,
 	.mmap       = sock_no_mmap,
 	.ioctl      = pppox_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = pppox_compat_ioctl,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct pppox_proto pppox_pptp_proto = {
@@ -675,7 +890,11 @@ static int __init pptp_init_module(void)
 	int err = 0;
 	pr_info("PPTP driver version " PPTP_DRIVER_VERSION "\n");
 
+<<<<<<< HEAD
 	callid_sock = vzalloc((MAX_CALLID + 1) * sizeof(void *));
+=======
+	callid_sock = vzalloc(array_size(sizeof(void *), (MAX_CALLID + 1)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!callid_sock)
 		return -ENOMEM;
 
@@ -721,5 +940,11 @@ module_init(pptp_init_module);
 module_exit(pptp_exit_module);
 
 MODULE_DESCRIPTION("Point-to-Point Tunneling Protocol");
+<<<<<<< HEAD
 MODULE_AUTHOR("D. Kozlov (xeb@mail.ru)");
 MODULE_LICENSE("GPL");
+=======
+MODULE_AUTHOR("D. Kozlov <xeb@mail.ru>");
+MODULE_LICENSE("GPL");
+MODULE_ALIAS_NET_PF_PROTO(PF_PPPOX, PX_PROTO_PPTP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

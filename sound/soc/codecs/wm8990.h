@@ -1,15 +1,22 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8990.h  --  audio driver for WM8990
  *
  * Copyright 2007 Wolfson Microelectronics PLC.
  * Author: Graeme Gregory
  *         graeme.gregory@wolfsonmicro.com or linux@wolfsonmicro.com
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __WM8990REGISTERDEFS_H__
@@ -78,7 +85,10 @@
 #define WM8990_PLL1                             0x3C
 #define WM8990_PLL2                             0x3D
 #define WM8990_PLL3                             0x3E
+<<<<<<< HEAD
 #define WM8990_INTDRIVBITS			0x3F
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM8990_EXT_ACCESS_ENA			0x75
 #define WM8990_EXT_CTL1				0x7a
@@ -818,6 +828,7 @@
  */
 #define WM8990_PLLK2_MASK                       0x00FF  /* PLLK2 - [7:0] */
 
+<<<<<<< HEAD
 /*
  * R63 (0x3F) - Internal Driver Bits
  */
@@ -826,6 +837,8 @@
 #define WM8990_INMIXR_PWR_BIT			2
 #define WM8990_AINRMUX_PWR_BIT			3
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM8990_MCLK_DIV 0
 #define WM8990_DACCLK_DIV 1
 #define WM8990_ADCCLK_DIV 2

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  * xenbus.h
  *
@@ -38,6 +42,7 @@ enum xenbus_state
 };
 
 #endif /* _XEN_PUBLIC_IO_XENBUS_H */
+<<<<<<< HEAD
 
 /*
  * Local variables:
@@ -48,3 +53,5 @@ enum xenbus_state
  *  tab-width: 8
  * End:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

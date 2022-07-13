@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* atm_tcp.h - Driver-specific declarations of the ATMTCP driver (for use by
 	       driver-specific utilities) */
 
 /* Written 1997-2000 by Werner Almesberger, EPFL LRC/ICA */
 
+<<<<<<< HEAD
 
 #ifndef LINUX_ATM_TCP_H
 #define LINUX_ATM_TCP_H
@@ -58,6 +63,15 @@ struct atmtcp_control {
 
 
 #ifdef __KERNEL__
+=======
+#ifndef LINUX_ATM_TCP_H
+#define LINUX_ATM_TCP_H
+
+#include <uapi/linux/atm_tcp.h>
+
+struct atm_vcc;
+struct module;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct atm_tcp_ops {
 	int (*attach)(struct atm_vcc *vcc,int itf);
@@ -69,5 +83,8 @@ struct atm_tcp_ops {
 extern struct atm_tcp_ops atm_tcp_ops;
 
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tps65023-regulator.c
  *
  * Supports TPS65023 Regulator
  *
+<<<<<<< HEAD
  * Copyright (C) 2009 Texas Instrument Incorporated - http://www.ti.com/
  *
  * This program is free software; you can redistribute it and/or
@@ -13,6 +18,9 @@
  * whether express or implied; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+ * Copyright (C) 2009 Texas Instrument Incorporated - https://www.ti.com/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -23,7 +31,10 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/regmap.h>
 
@@ -70,10 +81,13 @@
 #define TPS65023_REG_CTRL2_DCDC1	BIT(1)
 #define TPS65023_REG_CTRL2_DCDC3	BIT(0)
 
+<<<<<<< HEAD
 /* LDO_CTRL bitfields */
 #define TPS65023_LDO_CTRL_LDOx_SHIFT(ldo_id)	((ldo_id)*4)
 #define TPS65023_LDO_CTRL_LDOx_MASK(ldo_id)	(0xF0 >> ((ldo_id)*4))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of step-down converters available */
 #define TPS65023_NUM_DCDC		3
 /* Number of LDO voltage regulators  available */
@@ -91,6 +105,7 @@
 
 #define TPS65023_MAX_REG_ID		TPS65023_LDO_2
 
+<<<<<<< HEAD
 /* Supported voltage values for regulators */
 static const u16 VCORE_VSEL_table[] = {
 	800, 825, 850, 875,
@@ -112,10 +127,73 @@ static const u16 TPS65020_LDO1_VSEL_table[] = {
 static const u16 TPS65020_LDO2_VSEL_table[] = {
 	1000, 1050, 1100, 1300,
 	1800, 2500, 3000, 3300,
+=======
+#define TPS65023_REGULATOR_DCDC(_num, _t, _em)			\
+	{							\
+		.name		= "VDCDC"#_num,			\
+		.of_match	= of_match_ptr("VDCDC"#_num),	\
+		.regulators_node = of_match_ptr("regulators"),	\
+		.id		= TPS65023_DCDC_##_num,		\
+		.n_voltages     = ARRAY_SIZE(_t),		\
+		.ops		= &tps65023_dcdc_ops,		\
+		.type		= REGULATOR_VOLTAGE,		\
+		.owner		= THIS_MODULE,			\
+		.volt_table	= _t,				\
+		.vsel_reg	= TPS65023_REG_DEF_CORE,	\
+		.vsel_mask	= ARRAY_SIZE(_t) - 1,		\
+		.enable_mask	= _em,				\
+		.enable_reg	= TPS65023_REG_REG_CTRL,	\
+		.apply_reg	= TPS65023_REG_CON_CTRL2,	\
+		.apply_bit	= TPS65023_REG_CTRL2_GO,	\
+	}							\
+
+#define TPS65023_REGULATOR_LDO(_num, _t, _vm)			\
+	{							\
+		.name		= "LDO"#_num,			\
+		.of_match	= of_match_ptr("LDO"#_num),	\
+		.regulators_node = of_match_ptr("regulators"),	\
+		.id		= TPS65023_LDO_##_num,		\
+		.n_voltages     = ARRAY_SIZE(_t),		\
+		.ops		= &tps65023_ldo_ops,		\
+		.type		= REGULATOR_VOLTAGE,		\
+		.owner		= THIS_MODULE,			\
+		.volt_table	= _t,				\
+		.vsel_reg	= TPS65023_REG_LDO_CTRL,	\
+		.vsel_mask	= _vm,				\
+		.enable_mask	= 1 << (_num),			\
+		.enable_reg	= TPS65023_REG_REG_CTRL,	\
+	}							\
+
+/* Supported voltage values for regulators */
+static const unsigned int VCORE_VSEL_table[] = {
+	800000, 825000, 850000, 875000,
+	900000, 925000, 950000, 975000,
+	1000000, 1025000, 1050000, 1075000,
+	1100000, 1125000, 1150000, 1175000,
+	1200000, 1225000, 1250000, 1275000,
+	1300000, 1325000, 1350000, 1375000,
+	1400000, 1425000, 1450000, 1475000,
+	1500000, 1525000, 1550000, 1600000,
+};
+
+static const unsigned int DCDC_FIXED_3300000_VSEL_table[] = {
+	3300000,
+};
+
+static const unsigned int DCDC_FIXED_1800000_VSEL_table[] = {
+	1800000,
+};
+
+/* Supported voltage values for LDO regulators for tps65020 */
+static const unsigned int TPS65020_LDO_VSEL_table[] = {
+	1000000, 1050000, 1100000, 1300000,
+	1800000, 2500000, 3000000, 3300000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Supported voltage values for LDO regulators
  * for tps65021 and tps65023 */
+<<<<<<< HEAD
 static const u16 TPS65023_LDO1_VSEL_table[] = {
 	1000, 1100, 1300, 1800,
 	2200, 2600, 2800, 3150,
@@ -134,20 +212,37 @@ struct tps_info {
 	bool fixed;
 	u8 table_len;
 	const u16 *table;
+=======
+static const unsigned int TPS65023_LDO1_VSEL_table[] = {
+	1000000, 1100000, 1300000, 1800000,
+	2200000, 2600000, 2800000, 3150000,
+};
+
+static const unsigned int TPS65023_LDO2_VSEL_table[] = {
+	1050000, 1200000, 1300000, 1800000,
+	2500000, 2800000, 3000000, 3300000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* PMIC details */
 struct tps_pmic {
+<<<<<<< HEAD
 	struct regulator_desc desc[TPS65023_NUM_REGULATOR];
 	struct i2c_client *client;
 	struct regulator_dev *rdev[TPS65023_NUM_REGULATOR];
 	const struct tps_info *info[TPS65023_NUM_REGULATOR];
 	struct regmap *regmap;
 	u8 core_regulator;
+=======
+	struct regulator_dev *rdev[TPS65023_NUM_REGULATOR];
+	const struct tps_driver_data *driver_data;
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Struct passed as driver data */
 struct tps_driver_data {
+<<<<<<< HEAD
 	const struct tps_info *info;
 	u8 core_regulator;
 };
@@ -365,6 +460,13 @@ static int tps65023_ldo_set_voltage(struct regulator_dev *dev,
 
 static int tps65023_dcdc_list_voltage(struct regulator_dev *dev,
 					unsigned selector)
+=======
+	const struct regulator_desc *desc;
+	u8 core_regulator;
+};
+
+static int tps65023_dcdc_get_voltage_sel(struct regulator_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps_pmic *tps = rdev_get_drvdata(dev);
 	int dcdc = rdev_get_id(dev);
@@ -372,6 +474,7 @@ static int tps65023_dcdc_list_voltage(struct regulator_dev *dev,
 	if (dcdc < TPS65023_DCDC_1 || dcdc > TPS65023_DCDC_3)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (dcdc == tps->core_regulator) {
 		if (selector >= tps->info[dcdc]->table_len)
 			return -EINVAL;
@@ -417,10 +520,54 @@ static struct regulator_ops tps65023_ldo_ops = {
 };
 
 static struct regmap_config tps65023_regmap_config = {
+=======
+	if (dcdc != tps->driver_data->core_regulator)
+		return 0;
+
+	return regulator_get_voltage_sel_regmap(dev);
+}
+
+static int tps65023_dcdc_set_voltage_sel(struct regulator_dev *dev,
+					 unsigned selector)
+{
+	struct tps_pmic *tps = rdev_get_drvdata(dev);
+	int dcdc = rdev_get_id(dev);
+
+	if (dcdc != tps->driver_data->core_regulator)
+		return -EINVAL;
+
+	return regulator_set_voltage_sel_regmap(dev, selector);
+}
+
+/* Operations permitted on VDCDCx */
+static const struct regulator_ops tps65023_dcdc_ops = {
+	.is_enabled = regulator_is_enabled_regmap,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.get_voltage_sel = tps65023_dcdc_get_voltage_sel,
+	.set_voltage_sel = tps65023_dcdc_set_voltage_sel,
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+};
+
+/* Operations permitted on LDOx */
+static const struct regulator_ops tps65023_ldo_ops = {
+	.is_enabled = regulator_is_enabled_regmap,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+};
+
+static const struct regmap_config tps65023_regmap_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 8,
 	.val_bits = 8,
 };
 
+<<<<<<< HEAD
 static int __devinit tps_65023_probe(struct i2c_client *client,
 				     const struct i2c_device_id *id)
 {
@@ -428,10 +575,57 @@ static int __devinit tps_65023_probe(struct i2c_client *client,
 	const struct tps_info *info = drv_data->info;
 	struct regulator_init_data *init_data;
 	struct regulator_dev *rdev;
+=======
+static const struct regulator_desc tps65020_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, DCDC_FIXED_3300000_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_1800000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, VCORE_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65020_LDO_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65020_LDO_VSEL_table, 0x70),
+};
+
+static const struct regulator_desc tps65021_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, DCDC_FIXED_3300000_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_1800000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, VCORE_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65023_LDO1_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65023_LDO2_VSEL_table, 0x70),
+};
+
+static const struct regulator_desc tps65023_regulators[] = {
+	TPS65023_REGULATOR_DCDC(1, VCORE_VSEL_table, 0x20),
+	TPS65023_REGULATOR_DCDC(2, DCDC_FIXED_3300000_VSEL_table, 0x10),
+	TPS65023_REGULATOR_DCDC(3, DCDC_FIXED_1800000_VSEL_table, 0x08),
+	TPS65023_REGULATOR_LDO(1, TPS65023_LDO1_VSEL_table, 0x07),
+	TPS65023_REGULATOR_LDO(2, TPS65023_LDO2_VSEL_table, 0x70),
+};
+
+static struct tps_driver_data tps65020_drv_data = {
+	.desc = tps65020_regulators,
+	.core_regulator = TPS65023_DCDC_3,
+};
+
+static struct tps_driver_data tps65021_drv_data = {
+	.desc = tps65021_regulators,
+	.core_regulator = TPS65023_DCDC_3,
+};
+
+static struct tps_driver_data tps65023_drv_data = {
+	.desc = tps65023_regulators,
+	.core_regulator = TPS65023_DCDC_1,
+};
+
+static int tps_65023_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct regulator_init_data *init_data = dev_get_platdata(&client->dev);
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tps_pmic *tps;
 	int i;
 	int error;
 
+<<<<<<< HEAD
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -448,10 +642,20 @@ static int __devinit tps_65023_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	tps->regmap = regmap_init_i2c(client, &tps65023_regmap_config);
+=======
+	tps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);
+	if (!tps)
+		return -ENOMEM;
+
+	tps->driver_data = (struct tps_driver_data *)id->driver_data;
+
+	tps->regmap = devm_regmap_init_i2c(client, &tps65023_regmap_config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(tps->regmap)) {
 		error = PTR_ERR(tps->regmap);
 		dev_err(&client->dev, "Failed to allocate register map: %d\n",
 			error);
+<<<<<<< HEAD
 		goto fail_alloc;
 	}
 
@@ -483,12 +687,35 @@ static int __devinit tps_65023_probe(struct i2c_client *client,
 
 		/* Save regulator for cleanup */
 		tps->rdev[i] = rdev;
+=======
+		return error;
+	}
+
+	/* common for all regulators */
+	config.dev = &client->dev;
+	config.driver_data = tps;
+	config.regmap = tps->regmap;
+
+	for (i = 0; i < TPS65023_NUM_REGULATOR; i++) {
+		if (init_data)
+			config.init_data = &init_data[i];
+
+		/* Register the regulators */
+		tps->rdev[i] = devm_regulator_register(&client->dev,
+					&tps->driver_data->desc[i], &config);
+		if (IS_ERR(tps->rdev[i])) {
+			dev_err(&client->dev, "failed to register %s\n",
+				id->name);
+			return PTR_ERR(tps->rdev[i]);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, tps);
 
 	/* Enable setting output voltage by I2C */
 	regmap_update_bits(tps->regmap, TPS65023_REG_CON_CTRL2,
+<<<<<<< HEAD
 			TPS65023_REG_CTRL2_CORE_ADJ, TPS65023_REG_CTRL2_CORE_ADJ);
 
 	return 0;
@@ -519,10 +746,14 @@ static int __devexit tps_65023_remove(struct i2c_client *client)
 
 	regmap_exit(tps->regmap);
 	kfree(tps);
+=======
+			   TPS65023_REG_CTRL2_CORE_ADJ, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct tps_info tps65020_regs[] = {
 	{
 		.name = "VDCDC1",
@@ -657,11 +888,35 @@ static const struct i2c_device_id tps_65023_id[] = {
 	{ },
 };
 
+=======
+static const struct of_device_id __maybe_unused tps65023_of_match[] = {
+	{ .compatible = "ti,tps65020", .data = &tps65020_drv_data},
+	{ .compatible = "ti,tps65021", .data = &tps65021_drv_data},
+	{ .compatible = "ti,tps65023", .data = &tps65023_drv_data},
+	{},
+};
+MODULE_DEVICE_TABLE(of, tps65023_of_match);
+
+static const struct i2c_device_id tps_65023_id[] = {
+	{
+		.name = "tps65023",
+		.driver_data = (kernel_ulong_t)&tps65023_drv_data
+	}, {
+		.name = "tps65021",
+		.driver_data = (kernel_ulong_t)&tps65021_drv_data
+	}, {
+		.name = "tps65020",
+		.driver_data = (kernel_ulong_t)&tps65020_drv_data
+	},
+	{ },
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(i2c, tps_65023_id);
 
 static struct i2c_driver tps_65023_i2c_driver = {
 	.driver = {
 		.name = "tps65023",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = tps_65023_probe,
@@ -674,17 +929,29 @@ static struct i2c_driver tps_65023_i2c_driver = {
  *
  * Module init function
  */
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.of_match_table = of_match_ptr(tps65023_of_match),
+	},
+	.probe = tps_65023_probe,
+	.id_table = tps_65023_id,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init tps_65023_init(void)
 {
 	return i2c_add_driver(&tps_65023_i2c_driver);
 }
 subsys_initcall(tps_65023_init);
 
+<<<<<<< HEAD
 /**
  * tps_65023_cleanup
  *
  * Module exit function
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __exit tps_65023_cleanup(void)
 {
 	i2c_del_driver(&tps_65023_i2c_driver);

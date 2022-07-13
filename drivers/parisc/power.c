@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * linux/drivers/parisc/power.c
  * HP PARISC soft power switch support driver
@@ -28,18 +29,35 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * HP PARISC soft power switch driver
+ *
+ * Copyright (c) 2001-2023 Helge Deller <deller@gmx.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  HINT:
  *  Support of the soft power switch button may be enabled or disabled at
  *  runtime through the "/proc/sys/kernel/power" procfs entry.
+<<<<<<< HEAD
  */ 
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/notifier.h>
 #include <linux/reboot.h>
 #include <linux/sched.h>
+=======
+#include <linux/panic_notifier.h>
+#include <linux/reboot.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include <linux/pm.h>
 
@@ -62,12 +80,21 @@
 
 #define MFCPU_X(rDiagReg, t_ch, t_th, code) \
 	(DIAG_CODE(code) + ((rDiagReg)<<21) + ((t_ch)<<16) + ((t_th)<<0) )
+<<<<<<< HEAD
 	
 #define MTCPU(dr, gr)		MFCPU_X(dr, gr,  0, 0x12)       /* move value of gr to dr[dr] */
 #define MFCPU_C(dr, gr)		MFCPU_X(dr, gr,  0, 0x30)	/* for dr0 and dr8 only ! */
 #define MFCPU_T(dr, gr)		MFCPU_X(dr,  0, gr, 0xa0)	/* all dr except dr0 and dr8 */
 	
 #define __getDIAG(dr) ( { 			\
+=======
+
+#define MTCPU(dr, gr)		MFCPU_X(dr, gr,  0, 0x12)       /* move value of gr to dr[dr] */
+#define MFCPU_C(dr, gr)		MFCPU_X(dr, gr,  0, 0x30)	/* for dr0 and dr8 only ! */
+#define MFCPU_T(dr, gr)		MFCPU_X(dr,  0, gr, 0xa0)	/* all dr except dr0 and dr8 */
+
+#define __getDIAG(dr) ( {			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         register unsigned long __res asm("r28");\
 	 __asm__ __volatile__ (			\
 		".word %1" : "=&r" (__res) : "i" (MFCPU_T(dr,28) ) \
@@ -85,7 +112,11 @@ static void process_shutdown(void)
 		printk(KERN_ALERT KTHREAD_NAME ": Shutdown requested...\n");
 
 	shutdown_timer++;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait until the button was pressed for 1 second */
 	if (shutdown_timer == (POWERSWITCH_DOWN_SEC*POWERSWITCH_POLL_PER_SEC)) {
 		static const char msg[] = "Shutting down...";
@@ -95,8 +126,12 @@ static void process_shutdown(void)
 		/* send kill signal */
 		if (kill_cad_pid(SIGINT, 1)) {
 			/* just in case killing init process failed */
+<<<<<<< HEAD
 			if (pm_power_off)
 				pm_power_off();
+=======
+			machine_power_off();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -121,7 +156,10 @@ static int kpowerswd(void *param)
 		unsigned long soft_power_reg = (unsigned long) param;
 
 		schedule_timeout_interruptible(pwrsw_enabled ? HZ : HZ/POWERSWITCH_POLL_PER_SEC);
+<<<<<<< HEAD
 		__set_current_state(TASK_RUNNING);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (unlikely(!pwrsw_enabled))
 			continue;
@@ -137,7 +175,11 @@ static int kpowerswd(void *param)
 			button_not_pressed = (gsc_readl(soft_power_reg) & 0x1);
 		} else {
 			/*
+<<<<<<< HEAD
 			 * On gecko style machines (e.g. 712/xx and 715/xx) 
+=======
+			 * On gecko style machines (e.g. 712/xx and 715/xx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the power switch status is stored in Bit 0 ("the highest bit")
 			 * of CPU diagnose register 25.
 			 * Warning: Some machines never reset the DIAG flag, even if
@@ -163,7 +205,11 @@ static int kpowerswd(void *param)
 
 
 /*
+<<<<<<< HEAD
  * powerfail interruption handler (irq IRQ_FROM_REGION(CPU_IRQ_REGION)+2) 
+=======
+ * powerfail interruption handler (irq IRQ_FROM_REGION(CPU_IRQ_REGION)+2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #if 0
 static void powerfail_interrupt(int code, void *x)
@@ -176,16 +222,32 @@ static void powerfail_interrupt(int code, void *x)
 
 
 
+<<<<<<< HEAD
 /* parisc_panic_event() is called by the panic handler.
  * As soon as a panic occurs, our tasklets above will not be
  * executed any longer. This function then re-enables the 
  * soft-power switch and allows the user to switch off the system
+=======
+/*
+ * parisc_panic_event() is called by the panic handler.
+ *
+ * As soon as a panic occurs, our tasklets above will not
+ * be executed any longer. This function then re-enables
+ * the soft-power switch and allows the user to switch off
+ * the system. We rely in pdc_soft_power_button_panic()
+ * since this version spin_trylocks (instead of regular
+ * spinlock), preventing deadlocks on panic path.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int parisc_panic_event(struct notifier_block *this,
 		unsigned long event, void *ptr)
 {
 	/* re-enable the soft-power switch */
+<<<<<<< HEAD
 	pdc_soft_power_button(0);
+=======
+	pdc_soft_power_button_panic(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NOTIFY_DONE;
 }
 
@@ -194,6 +256,17 @@ static struct notifier_block parisc_panic_block = {
 	.priority	= INT_MAX,
 };
 
+<<<<<<< HEAD
+=======
+/* qemu soft power-off function */
+static int qemu_power_off(struct sys_off_data *data)
+{
+	/* this turns the system off via SeaBIOS */
+	gsc_writel(0, (unsigned long) data->cb_data);
+	pdc_soft_power_button(1);
+	return NOTIFY_DONE;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init power_init(void)
 {
@@ -211,6 +284,7 @@ static int __init power_init(void)
 		ret = pdc_soft_power_button(1);
 	if (ret != PDC_OK)
 		soft_power_reg = -1UL;
+<<<<<<< HEAD
 	
 	switch (soft_power_reg) {
 	case 0:		printk(KERN_INFO DRIVER_NAME ": Gecko-style soft power switch enabled.\n");
@@ -219,11 +293,31 @@ static int __init power_init(void)
 	case -1UL:	printk(KERN_INFO DRIVER_NAME ": Soft power switch support not available.\n");
 			return -ENODEV;
 	
+=======
+
+	switch (soft_power_reg) {
+	case 0:		printk(KERN_INFO DRIVER_NAME ": Gecko-style soft power switch enabled.\n");
+			break;
+
+	case -1UL:	printk(KERN_INFO DRIVER_NAME ": Soft power switch support not available.\n");
+			return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:	printk(KERN_INFO DRIVER_NAME ": Soft power switch at 0x%08lx enabled.\n",
 				soft_power_reg);
 	}
 
+<<<<<<< HEAD
 	power_task = kthread_run(kpowerswd, (void*)soft_power_reg, KTHREAD_NAME);
+=======
+	power_task = NULL;
+	if (running_on_qemu && soft_power_reg)
+		register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
+					qemu_power_off, (void *)soft_power_reg);
+	if (!running_on_qemu || soft_power_reg)
+		power_task = kthread_run(kpowerswd, (void*)soft_power_reg,
+					KTHREAD_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(power_task)) {
 		printk(KERN_ERR DRIVER_NAME ": thread creation failed.  Driver not loaded.\n");
 		pdc_soft_power_button(0);

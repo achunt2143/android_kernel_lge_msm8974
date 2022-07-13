@@ -34,6 +34,11 @@
 #ifndef __ARCH_ARM_MACH_OMAP1_PM_H
 #define __ARCH_ARM_MACH_OMAP1_PM_H
 
+<<<<<<< HEAD
+=======
+#include <linux/soc/ti/omap1-io.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ----------------------------------------------------------------------------
  * Register and offset definitions to be used in PM assembler code
@@ -98,6 +103,7 @@
 #define OMAP1610_IDLECT3		0xfffece24
 #define OMAP1610_IDLE_LOOP_REQUEST	0x0400
 
+<<<<<<< HEAD
 #define OMAP7XX_IDLECT1_SLEEP_VAL	0x16c7
 #define OMAP7XX_IDLECT2_SLEEP_VAL	0x09c7
 #define OMAP7XX_IDLECT3_VAL		0x3f
@@ -111,6 +117,8 @@
 #warning "Power management for this processor not implemented yet"
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLER__
 
 #include <linux/clk.h>
@@ -123,6 +131,7 @@ extern void allow_idle_sleep(void);
 extern void omap1_pm_idle(void);
 extern void omap1_pm_suspend(void);
 
+<<<<<<< HEAD
 extern void omap7xx_cpu_suspend(unsigned long, unsigned long);
 extern void omap1510_cpu_suspend(unsigned long, unsigned long);
 extern void omap1610_cpu_suspend(unsigned long, unsigned long);
@@ -134,6 +143,15 @@ extern unsigned int omap7xx_cpu_suspend_sz;
 extern unsigned int omap1510_cpu_suspend_sz;
 extern unsigned int omap1610_cpu_suspend_sz;
 extern unsigned int omap7xx_idle_loop_suspend_sz;
+=======
+extern void omap1510_cpu_suspend(unsigned long, unsigned long);
+extern void omap1610_cpu_suspend(unsigned long, unsigned long);
+extern void omap1510_idle_loop_suspend(void);
+extern void omap1610_idle_loop_suspend(void);
+
+extern unsigned int omap1510_cpu_suspend_sz;
+extern unsigned int omap1610_cpu_suspend_sz;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int omap1510_idle_loop_suspend_sz;
 extern unsigned int omap1610_idle_loop_suspend_sz;
 
@@ -156,10 +174,13 @@ extern void omap_serial_wake_trigger(int enable);
 #define ULPD_RESTORE(x) omap_writew((ulpd_sleep_save[ULPD_SLEEP_SAVE_##x]), (x))
 #define ULPD_SHOW(x) ulpd_sleep_save[ULPD_SLEEP_SAVE_##x]
 
+<<<<<<< HEAD
 #define MPUI7XX_SAVE(x) mpui7xx_sleep_save[MPUI7XX_SLEEP_SAVE_##x] = omap_readl(x)
 #define MPUI7XX_RESTORE(x) omap_writel((mpui7xx_sleep_save[MPUI7XX_SLEEP_SAVE_##x]), (x))
 #define MPUI7XX_SHOW(x) mpui7xx_sleep_save[MPUI7XX_SLEEP_SAVE_##x]
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPUI1510_SAVE(x) mpui1510_sleep_save[MPUI1510_SLEEP_SAVE_##x] = omap_readl(x)
 #define MPUI1510_RESTORE(x) omap_writel((mpui1510_sleep_save[MPUI1510_SLEEP_SAVE_##x]), (x))
 #define MPUI1510_SHOW(x) mpui1510_sleep_save[MPUI1510_SLEEP_SAVE_##x]
@@ -233,6 +254,7 @@ enum mpui1510_save_state {
 #endif
 };
 
+<<<<<<< HEAD
 enum mpui7xx_save_state {
 	MPUI7XX_SLEEP_SAVE_START = 0,
 	/*
@@ -254,6 +276,8 @@ enum mpui7xx_save_state {
 #endif
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum mpui1610_save_state {
 	MPUI1610_SLEEP_SAVE_START = 0,
 	/*

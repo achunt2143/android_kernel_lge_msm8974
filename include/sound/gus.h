@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_GUS_H
 #define __SOUND_GUS_H
 
 /*
  *  Global structures used for GUS part of ALSA driver
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +33,16 @@
 #include "seq_midi_emul.h"
 #include "seq_device.h"
 #include <asm/io.h>
+=======
+ */
+
+#include <sound/pcm.h>
+#include <sound/rawmidi.h>
+#include <sound/timer.h>
+#include <sound/seq_midi_emul.h>
+#include <sound/seq_device.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IO ports */
 
@@ -591,7 +606,11 @@ int snd_gf1_new_mixer(struct snd_gus_card * gus);
 
 /* gus_pcm.c */
 
+<<<<<<< HEAD
 int snd_gf1_pcm_new(struct snd_gus_card * gus, int pcm_dev, int control_index, struct snd_pcm ** rpcm);
+=======
+int snd_gf1_pcm_new(struct snd_gus_card *gus, int pcm_dev, int control_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SND_DEBUG
 extern void snd_gf1_print_voice_registers(struct snd_gus_card * gus);
@@ -620,7 +639,11 @@ void snd_gus_irq_profile_init(struct snd_gus_card *gus);
 
 /* gus_uart.c */
 
+<<<<<<< HEAD
 int snd_gf1_rawmidi_new(struct snd_gus_card * gus, int device, struct snd_rawmidi **rrawmidi);
+=======
+int snd_gf1_rawmidi_new(struct snd_gus_card *gus, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* gus_dram.c */
 int snd_gus_dram_write(struct snd_gus_card *gus, char __user *ptr,
@@ -628,4 +651,11 @@ int snd_gus_dram_write(struct snd_gus_card *gus, char __user *ptr,
 int snd_gus_dram_read(struct snd_gus_card *gus, char __user *ptr,
 		      unsigned int addr, unsigned int size, int rom);
 
+<<<<<<< HEAD
+=======
+/* gus_timer.c */
+void snd_gf1_timers_init(struct snd_gus_card *gus);
+void snd_gf1_timers_done(struct snd_gus_card *gus);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_GUS_H */

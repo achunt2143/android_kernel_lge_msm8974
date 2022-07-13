@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Analog Devices ADP5589/ADP5585 I/O Expander and QWERTY Keypad Controller
  *
  * Copyright 2010-2011 Analog Devices Inc.
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ADP5589_H
@@ -176,6 +183,7 @@ struct i2c_client; /* forward declaration */
 
 struct adp5589_gpio_platform_data {
 	int	gpio_start;	/* GPIO Chip base # */
+<<<<<<< HEAD
 	int	(*setup)(struct i2c_client *client,
 				int gpio, unsigned ngpio,
 				void *context);
@@ -183,6 +191,8 @@ struct adp5589_gpio_platform_data {
 				int gpio, unsigned ngpio,
 				void *context);
 	void	*context;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

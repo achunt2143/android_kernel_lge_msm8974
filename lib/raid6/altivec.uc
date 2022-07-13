@@ -30,7 +30,11 @@
 #ifdef __KERNEL__
 # include <asm/cputable.h>
 # include <asm/switch_to.h>
+<<<<<<< HEAD
 #endif
+=======
+#endif /* __KERNEL__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the C data type to use.  We use a vector of
@@ -104,6 +108,10 @@ static void raid6_altivec$#_gen_syndrome(int disks, size_t bytes, void **ptrs)
 
 	raid6_altivec$#_gen_syndrome_real(disks, bytes, ptrs);
 
+<<<<<<< HEAD
+=======
+	disable_kernel_altivec();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_enable();
 }
 
@@ -122,6 +130,10 @@ int raid6_have_altivec(void)
 
 const struct raid6_calls raid6_altivec$# = {
 	raid6_altivec$#_gen_syndrome,
+<<<<<<< HEAD
+=======
+	NULL,			/* XOR not yet implemented */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raid6_have_altivec,
 	"altivecx$#",
 	0

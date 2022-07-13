@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  This code maintains a list of active profiling data structures.
  *
@@ -18,6 +22,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include "gcov.h"
 
 static struct gcov_info *gcov_info_head;
@@ -80,6 +85,13 @@ void __gcov_merge_delta(gcov_type *counters, unsigned int n_counters)
 	/* Unused. */
 }
 EXPORT_SYMBOL(__gcov_merge_delta);
+=======
+#include <linux/sched.h>
+#include "gcov.h"
+
+int gcov_events_enabled;
+DEFINE_MUTEX(gcov_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * gcov_enable_events - enable event reporting through gcov_event()
@@ -91,6 +103,7 @@ EXPORT_SYMBOL(__gcov_merge_delta);
  */
 void gcov_enable_events(void)
 {
+<<<<<<< HEAD
 	struct gcov_info *info;
 
 	mutex_lock(&gcov_lock);
@@ -107,17 +120,89 @@ static inline int within(void *addr, void *start, unsigned long size)
 	return ((addr >= start) && (addr < start + size));
 }
 
+=======
+	struct gcov_info *info = NULL;
+
+	mutex_lock(&gcov_lock);
+	gcov_events_enabled = 1;
+
+	/* Perform event callback for previously registered entries. */
+	while ((info = gcov_info_next(info))) {
+		gcov_event(GCOV_ADD, info);
+		cond_resched();
+	}
+
+	mutex_unlock(&gcov_lock);
+}
+
+/**
+ * store_gcov_u32 - store 32 bit number in gcov format to buffer
+ * @buffer: target buffer or NULL
+ * @off: offset into the buffer
+ * @v: value to be stored
+ *
+ * Number format defined by gcc: numbers are recorded in the 32 bit
+ * unsigned binary form of the endianness of the machine generating the
+ * file. Returns the number of bytes stored. If @buffer is %NULL, doesn't
+ * store anything.
+ */
+size_t store_gcov_u32(void *buffer, size_t off, u32 v)
+{
+	u32 *data;
+
+	if (buffer) {
+		data = buffer + off;
+		*data = v;
+	}
+
+	return sizeof(*data);
+}
+
+/**
+ * store_gcov_u64 - store 64 bit number in gcov format to buffer
+ * @buffer: target buffer or NULL
+ * @off: offset into the buffer
+ * @v: value to be stored
+ *
+ * Number format defined by gcc: numbers are recorded in the 32 bit
+ * unsigned binary form of the endianness of the machine generating the
+ * file. 64 bit numbers are stored as two 32 bit numbers, the low part
+ * first. Returns the number of bytes stored. If @buffer is %NULL, doesn't store
+ * anything.
+ */
+size_t store_gcov_u64(void *buffer, size_t off, u64 v)
+{
+	u32 *data;
+
+	if (buffer) {
+		data = buffer + off;
+
+		data[0] = (v & 0xffffffffUL);
+		data[1] = (v >> 32);
+	}
+
+	return sizeof(*data) * 2;
+}
+
+#ifdef CONFIG_MODULES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Update list and generate events when modules are unloaded. */
 static int gcov_module_notifier(struct notifier_block *nb, unsigned long event,
 				void *data)
 {
 	struct module *mod = data;
+<<<<<<< HEAD
 	struct gcov_info *info;
 	struct gcov_info *prev;
+=======
+	struct gcov_info *info = NULL;
+	struct gcov_info *prev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event != MODULE_STATE_GOING)
 		return NOTIFY_OK;
 	mutex_lock(&gcov_lock);
+<<<<<<< HEAD
 	prev = NULL;
 	/* Remove entries located in module from linked list. */
 	for (info = gcov_info_head; info; info = info->next) {
@@ -126,11 +211,22 @@ static int gcov_module_notifier(struct notifier_block *nb, unsigned long event,
 				prev->next = info->next;
 			else
 				gcov_info_head = info->next;
+=======
+
+	/* Remove entries located in module from linked list. */
+	while ((info = gcov_info_next(info))) {
+		if (gcov_info_within_module(info, mod)) {
+			gcov_info_unlink(prev, info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (gcov_events_enabled)
 				gcov_event(GCOV_REMOVE, info);
 		} else
 			prev = info;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&gcov_lock);
 
 	return NOTIFY_OK;

@@ -10,6 +10,7 @@
  * Send feedback to <support@numascale.com>
  *
  */
+<<<<<<< HEAD
 
 #include <linux/errno.h>
 #include <linux/threads.h>
@@ -39,10 +40,37 @@ static unsigned int get_apic_id(unsigned long x)
 
 	rdmsrl(MSR_FAM10H_NODE_ID, value);
 	id = ((x >> 24) & 0xffU) | ((value << 2) & 0x3f00U);
+=======
+#include <linux/types.h>
+#include <linux/init.h>
+#include <linux/pgtable.h>
+
+#include <asm/numachip/numachip.h>
+#include <asm/numachip/numachip_csr.h>
+
+
+#include "local.h"
+
+u8 numachip_system __read_mostly;
+static const struct apic apic_numachip1;
+static const struct apic apic_numachip2;
+static void (*numachip_apic_icr_write)(int apicid, unsigned int val) __read_mostly;
+
+static u32 numachip1_get_apic_id(u32 x)
+{
+	unsigned long value;
+	unsigned int id = (x >> 24) & 0xff;
+
+	if (static_cpu_has(X86_FEATURE_NODEID_MSR)) {
+		rdmsrl(MSR_FAM10H_NODE_ID, value);
+		id |= (value << 2) & 0xff00;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return id;
 }
 
+<<<<<<< HEAD
 static unsigned long set_apic_id(unsigned int id)
 {
 	unsigned long x;
@@ -100,11 +128,38 @@ static int __cpuinit numachip_wakeup_secondary(int phys_apicid, unsigned long st
 	write_lcsr(CSR_G3_EXT_IRQ_GEN, int_gen.v);
 
 	atomic_set(&init_deasserted, 1);
+=======
+static u32 numachip2_get_apic_id(u32 x)
+{
+	u64 mcfg;
+
+	rdmsrl(MSR_FAM10H_MMIO_CONF_BASE, mcfg);
+	return ((mcfg >> (28 - 8)) & 0xfff00) | (x >> 24);
+}
+
+static void numachip1_apic_icr_write(int apicid, unsigned int val)
+{
+	write_lcsr(CSR_G3_EXT_IRQ_GEN, (apicid << 16) | val);
+}
+
+static void numachip2_apic_icr_write(int apicid, unsigned int val)
+{
+	numachip2_write32_lcsr(NUMACHIP2_APIC_ICR, (apicid << 12) | val);
+}
+
+static int numachip_wakeup_secondary(u32 phys_apicid, unsigned long start_rip)
+{
+	numachip_apic_icr_write(phys_apicid, APIC_DM_INIT);
+	numachip_apic_icr_write(phys_apicid, APIC_DM_STARTUP |
+		(start_rip >> 12));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void numachip_send_IPI_one(int cpu, int vector)
 {
+<<<<<<< HEAD
 	union numachip_csr_g3_ext_irq_gen int_gen;
 	int apicid = per_cpu(x86_cpu_to_apicid, cpu);
 
@@ -114,6 +169,29 @@ static void numachip_send_IPI_one(int cpu, int vector)
 	int_gen.s._index = 0;
 
 	write_lcsr(CSR_G3_EXT_IRQ_GEN, int_gen.v);
+=======
+	int local_apicid, apicid = per_cpu(x86_cpu_to_apicid, cpu);
+	unsigned int dmode;
+
+	preempt_disable();
+	local_apicid = __this_cpu_read(x86_cpu_to_apicid);
+
+	/* Send via local APIC where non-local part matches */
+	if (!((apicid ^ local_apicid) >> NUMACHIP_LAPIC_BITS)) {
+		unsigned long flags;
+
+		local_irq_save(flags);
+		__default_send_IPI_dest_field(apicid, vector,
+			APIC_DEST_PHYSICAL);
+		local_irq_restore(flags);
+		preempt_enable();
+		return;
+	}
+	preempt_enable();
+
+	dmode = (vector == NMI_VECTOR) ? APIC_DM_NMI : APIC_DM_FIXED;
+	numachip_apic_icr_write(apicid, dmode | vector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void numachip_send_IPI_mask(const struct cpumask *mask, int vector)
@@ -154,6 +232,7 @@ static void numachip_send_IPI_all(int vector)
 
 static void numachip_send_IPI_self(int vector)
 {
+<<<<<<< HEAD
 	__default_send_IPI_shortcut(APIC_DEST_SELF, vector, APIC_DEST_PHYSICAL);
 }
 
@@ -203,19 +282,48 @@ static void __init map_csrs(void)
 	printk(KERN_INFO "NumaChip: Mapping global CSR space (%016llx - %016llx)\n",
 		NUMACHIP_GCSR_BASE, NUMACHIP_GCSR_BASE + NUMACHIP_GCSR_SIZE - 1);
 	init_extra_mapping_uc(NUMACHIP_GCSR_BASE, NUMACHIP_GCSR_SIZE);
+=======
+	apic_write(APIC_SELF_IPI, vector);
+}
+
+static int __init numachip1_probe(void)
+{
+	return apic == &apic_numachip1;
+}
+
+static int __init numachip2_probe(void)
+{
+	return apic == &apic_numachip2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fixup_cpu_id(struct cpuinfo_x86 *c, int node)
 {
+<<<<<<< HEAD
 
 	if (c->phys_proc_id != node) {
 		c->phys_proc_id = node;
 		per_cpu(cpu_llc_id, smp_processor_id()) = node;
 	}
+=======
+	u64 val;
+	u32 nodes = 1;
+
+	c->topo.llc_id = node;
+
+	/* Account for nodes per socket in multi-core-module processors */
+	if (boot_cpu_has(X86_FEATURE_NODEID_MSR)) {
+		rdmsrl(MSR_FAM10H_NODE_ID, val);
+		nodes = ((val >> 3) & 7) + 1;
+	}
+
+	c->topo.pkg_id = node / nodes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init numachip_system_init(void)
 {
+<<<<<<< HEAD
 	unsigned int val;
 
 	if (!numachip_system)
@@ -227,11 +335,30 @@ static int __init numachip_system_init(void)
 
 	val = read_lcsr(CSR_G0_NODE_IDS);
 	printk(KERN_INFO "NumaChip: Local NodeID = %08x\n", val);
+=======
+	/* Map the LCSR area and set up the apic_icr_write function */
+	switch (numachip_system) {
+	case 1:
+		init_extra_mapping_uc(NUMACHIP_LCSR_BASE, NUMACHIP_LCSR_SIZE);
+		numachip_apic_icr_write = numachip1_apic_icr_write;
+		break;
+	case 2:
+		init_extra_mapping_uc(NUMACHIP2_LCSR_BASE, NUMACHIP2_LCSR_SIZE);
+		numachip_apic_icr_write = numachip2_apic_icr_write;
+		break;
+	default:
+		return 0;
+	}
+
+	x86_cpuinit.fixup_cpu_id = fixup_cpu_id;
+	x86_init.pci.arch_init = pci_numachip_init;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 early_initcall(numachip_system_init);
 
+<<<<<<< HEAD
 static int numachip_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 {
 	if (!strncmp(oem_id, "NUMASC", 6)) {
@@ -280,6 +407,47 @@ static struct apic apic_numachip __refconst = {
 	.cpu_mask_to_apicid		= numachip_cpu_mask_to_apicid,
 	.cpu_mask_to_apicid_and		= numachip_cpu_mask_to_apicid_and,
 
+=======
+static int numachip1_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
+{
+	if ((strncmp(oem_id, "NUMASC", 6) != 0) ||
+	    (strncmp(oem_table_id, "NCONNECT", 8) != 0))
+		return 0;
+
+	numachip_system = 1;
+
+	return 1;
+}
+
+static int numachip2_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
+{
+	if ((strncmp(oem_id, "NUMASC", 6) != 0) ||
+	    (strncmp(oem_table_id, "NCONECT2", 8) != 0))
+		return 0;
+
+	numachip_system = 2;
+
+	return 1;
+}
+
+static const struct apic apic_numachip1 __refconst = {
+	.name				= "NumaConnect system",
+	.probe				= numachip1_probe,
+	.acpi_madt_oem_check		= numachip1_acpi_madt_oem_check,
+
+	.dest_mode_logical		= false,
+
+	.disable_esr			= 0,
+
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= UINT_MAX,
+	.get_apic_id			= numachip1_get_apic_id,
+
+	.calc_dest_apicid		= apic_default_calc_apicid,
+
+	.send_IPI			= numachip_send_IPI_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_IPI_mask			= numachip_send_IPI_mask,
 	.send_IPI_mask_allbutself	= numachip_send_IPI_mask_allbutself,
 	.send_IPI_allbutself		= numachip_send_IPI_allbutself,
@@ -287,6 +455,7 @@ static struct apic apic_numachip __refconst = {
 	.send_IPI_self			= numachip_send_IPI_self,
 
 	.wakeup_secondary_cpu		= numachip_wakeup_secondary,
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 	.wait_for_init_deassert		= NULL,
@@ -302,3 +471,48 @@ static struct apic apic_numachip __refconst = {
 };
 apic_driver(apic_numachip);
 
+=======
+
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+};
+
+apic_driver(apic_numachip1);
+
+static const struct apic apic_numachip2 __refconst = {
+	.name				= "NumaConnect2 system",
+	.probe				= numachip2_probe,
+	.acpi_madt_oem_check		= numachip2_acpi_madt_oem_check,
+
+	.dest_mode_logical		= false,
+
+	.disable_esr			= 0,
+
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= UINT_MAX,
+	.get_apic_id			= numachip2_get_apic_id,
+
+	.calc_dest_apicid		= apic_default_calc_apicid,
+
+	.send_IPI			= numachip_send_IPI_one,
+	.send_IPI_mask			= numachip_send_IPI_mask,
+	.send_IPI_mask_allbutself	= numachip_send_IPI_mask_allbutself,
+	.send_IPI_allbutself		= numachip_send_IPI_allbutself,
+	.send_IPI_all			= numachip_send_IPI_all,
+	.send_IPI_self			= numachip_send_IPI_self,
+
+	.wakeup_secondary_cpu		= numachip_wakeup_secondary,
+
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+};
+
+apic_driver(apic_numachip2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

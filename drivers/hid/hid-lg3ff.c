@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for Logitech Flight System G940
  *
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,14 +23,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
 #include <linux/hid.h>
 
 #include "usbhid/usbhid.h"
+=======
+#include <linux/hid.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hid-lg.h"
 
 /*
@@ -55,10 +67,13 @@
  * I'm sure these are effects that I don't know enough about them
  */
 
+<<<<<<< HEAD
 struct lg3ff_device {
 	struct hid_report *report;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hid_lg3ff_play(struct input_dev *dev, void *data,
 			 struct ff_effect *effect)
 {
@@ -93,7 +108,11 @@ static int hid_lg3ff_play(struct input_dev *dev, void *data,
 		report->field[0]->value[1] = (unsigned char)(-x);
 		report->field[0]->value[31] = (unsigned char)(-y);
 
+<<<<<<< HEAD
 		usbhid_submit_report(hid, report, USB_DIR_OUT);
+=======
+		hid_hw_request(hid, report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -119,7 +138,11 @@ static void hid_lg3ff_set_autocenter(struct input_dev *dev, u16 magnitude)
 	report->field[0]->value[33] = 0x7F;
 	report->field[0]->value[34] = 0x7F;
 
+<<<<<<< HEAD
 	usbhid_submit_report(hid, report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -131,12 +154,27 @@ static const signed short ff3_joystick_ac[] = {
 
 int lg3ff_init(struct hid_device *hid)
 {
+<<<<<<< HEAD
 	struct hid_input *hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	struct input_dev *dev = hidinput->input;
+=======
+	struct hid_input *hidinput;
+	struct input_dev *dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const signed short *ff_bits = ff3_joystick_ac;
 	int error;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "no inputs found\n");
+		return -ENODEV;
+	}
+	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
+	dev = hidinput->input;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check that the report looks ok */
 	if (!hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 35))
 		return -ENODEV;

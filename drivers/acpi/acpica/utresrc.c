@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource management utilities
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,12 +46,15 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utresrc")
+<<<<<<< HEAD
 #if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
 /*
  * Strings used to decode resource descriptors.
@@ -287,6 +295,8 @@ const char *acpi_gbl_pt_decode[] = {
 };
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Base sizes of the raw AML resource descriptors, indexed by resource type.
@@ -327,8 +337,19 @@ const u8 acpi_gbl_resource_aml_sizes[] = {
 	ACPI_AML_SIZE_LARGE(struct aml_resource_address64),
 	ACPI_AML_SIZE_LARGE(struct aml_resource_extended_address64),
 	ACPI_AML_SIZE_LARGE(struct aml_resource_gpio),
+<<<<<<< HEAD
 	0,
 	ACPI_AML_SIZE_LARGE(struct aml_resource_common_serialbus),
+=======
+	ACPI_AML_SIZE_LARGE(struct aml_resource_pin_function),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_common_serialbus),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_pin_config),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_pin_group),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_pin_group_function),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_pin_group_config),
+	ACPI_AML_SIZE_LARGE(struct aml_resource_clock_input),
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const u8 acpi_gbl_resource_aml_serial_bus_sizes[] = {
@@ -336,6 +357,10 @@ const u8 acpi_gbl_resource_aml_serial_bus_sizes[] = {
 	ACPI_AML_SIZE_LARGE(struct aml_resource_i2c_serialbus),
 	ACPI_AML_SIZE_LARGE(struct aml_resource_spi_serialbus),
 	ACPI_AML_SIZE_LARGE(struct aml_resource_uart_serialbus),
+<<<<<<< HEAD
+=======
+	ACPI_AML_SIZE_LARGE(struct aml_resource_csi2_serialbus),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -356,6 +381,7 @@ static const u8 acpi_gbl_resource_types[] = {
 	ACPI_SMALL_VARIABLE_LENGTH,	/* 06 start_dependent_functions */
 	ACPI_FIXED_LENGTH,	/* 07 end_dependent_functions */
 	ACPI_FIXED_LENGTH,	/* 08 IO */
+<<<<<<< HEAD
 	ACPI_FIXED_LENGTH,	/* 09 fixed_iO */
 	ACPI_FIXED_LENGTH,	/* 0_a fixed_dMA */
 	0,
@@ -363,6 +389,15 @@ static const u8 acpi_gbl_resource_types[] = {
 	0,
 	ACPI_VARIABLE_LENGTH,	/* 0_e vendor_short */
 	ACPI_FIXED_LENGTH,	/* 0_f end_tag */
+=======
+	ACPI_FIXED_LENGTH,	/* 09 fixed_IO */
+	ACPI_FIXED_LENGTH,	/* 0A fixed_DMA */
+	0,
+	0,
+	0,
+	ACPI_VARIABLE_LENGTH,	/* 0E vendor_short */
+	ACPI_FIXED_LENGTH,	/* 0F end_tag */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Large descriptors */
 
@@ -375,6 +410,7 @@ static const u8 acpi_gbl_resource_types[] = {
 	ACPI_FIXED_LENGTH,	/* 06 memory32_fixed */
 	ACPI_VARIABLE_LENGTH,	/* 07 Dword* address */
 	ACPI_VARIABLE_LENGTH,	/* 08 Word* address */
+<<<<<<< HEAD
 	ACPI_VARIABLE_LENGTH,	/* 09 extended_iRQ */
 	ACPI_VARIABLE_LENGTH,	/* 0_a Qword* address */
 	ACPI_FIXED_LENGTH,	/* 0_b Extended* address */
@@ -394,15 +430,39 @@ static const u8 acpi_gbl_resource_types[] = {
 #define ACPI_RESOURCE_ERROR(plist)  ACPI_ERROR(plist)
 #endif
 
+=======
+	ACPI_VARIABLE_LENGTH,	/* 09 extended_IRQ */
+	ACPI_VARIABLE_LENGTH,	/* 0A Qword* address */
+	ACPI_FIXED_LENGTH,	/* 0B Extended* address */
+	ACPI_VARIABLE_LENGTH,	/* 0C Gpio* */
+	ACPI_VARIABLE_LENGTH,	/* 0D pin_function */
+	ACPI_VARIABLE_LENGTH,	/* 0E *serial_bus */
+	ACPI_VARIABLE_LENGTH,	/* 0F pin_config */
+	ACPI_VARIABLE_LENGTH,	/* 10 pin_group */
+	ACPI_VARIABLE_LENGTH,	/* 11 pin_group_function */
+	ACPI_VARIABLE_LENGTH,	/* 12 pin_group_config */
+	ACPI_VARIABLE_LENGTH,	/* 13 clock_input */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_walk_aml_resources
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource template
  *              aml_length      - Length of the entire template
  *              user_function   - Called once for each descriptor found. If
  *                                NULL, a pointer to the end_tag is returned
  *              Context         - Passed to user_function
+=======
+ * PARAMETERS:  walk_state          - Current walk info
+ * PARAMETERS:  aml                 - Pointer to the raw AML resource template
+ *              aml_length          - Length of the entire template
+ *              user_function       - Called once for each descriptor found. If
+ *                                    NULL, a pointer to the end_tag is returned
+ *              context             - Passed to user_function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -412,7 +472,12 @@ static const u8 acpi_gbl_resource_types[] = {
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_walk_aml_resources(u8 * aml,
+=======
+acpi_ut_walk_aml_resources(struct acpi_walk_state *walk_state,
+			   u8 *aml,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   acpi_size aml_length,
 			   acpi_walk_aml_callback user_function, void **context)
 {
@@ -441,11 +506,20 @@ acpi_ut_walk_aml_resources(u8 * aml,
 
 		/* Validate the Resource Type and Resource Length */
 
+<<<<<<< HEAD
 		status = acpi_ut_validate_resource(aml, &resource_index);
 		if (ACPI_FAILURE(status)) {
 			/*
 			 * Exit on failure. Cannot continue because the descriptor length
 			 * may be bogus also.
+=======
+		status =
+		    acpi_ut_validate_resource(walk_state, aml, &resource_index);
+		if (ACPI_FAILURE(status)) {
+			/*
+			 * Exit on failure. Cannot continue because the descriptor
+			 * length may be bogus also.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			return_ACPI_STATUS(status);
 		}
@@ -477,6 +551,16 @@ acpi_ut_walk_aml_resources(u8 * aml,
 				return_ACPI_STATUS(AE_AML_NO_RESOURCE_END_TAG);
 			}
 
+<<<<<<< HEAD
+=======
+			/*
+			 * Don't attempt to perform any validation on the 2nd byte.
+			 * Although all known ASL compilers insert a zero for the 2nd
+			 * byte, it can also be a checksum (as per the ACPI spec),
+			 * and this is occasionally seen in the field. July 2017.
+			 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Return the pointer to the end_tag if requested */
 
 			if (!user_function) {
@@ -498,7 +582,12 @@ acpi_ut_walk_aml_resources(u8 * aml,
 
 		/* Insert an end_tag anyway. acpi_rs_get_list_length always leaves room */
 
+<<<<<<< HEAD
 		(void)acpi_ut_validate_resource(end_tag, &resource_index);
+=======
+		(void)acpi_ut_validate_resource(walk_state, end_tag,
+						&resource_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status =
 		    user_function(end_tag, 2, offset, resource_index, context);
 		if (ACPI_FAILURE(status)) {
@@ -513,9 +602,16 @@ acpi_ut_walk_aml_resources(u8 * aml,
  *
  * FUNCTION:    acpi_ut_validate_resource
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
  *              return_index    - Where the resource index is returned. NULL
  *                                if the index is not required.
+=======
+ * PARAMETERS:  walk_state          - Current walk info
+ *              aml                 - Pointer to the raw AML resource descriptor
+ *              return_index        - Where the resource index is returned. NULL
+ *                                    if the index is not required.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status, and optionally the Index into the global resource tables
  *
@@ -525,7 +621,13 @@ acpi_ut_walk_aml_resources(u8 * aml,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
+=======
+acpi_status
+acpi_ut_validate_resource(struct acpi_walk_state *walk_state,
+			  void *aml, u8 *return_index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union aml_resource *aml_resource;
 	u8 resource_type;
@@ -567,8 +669,13 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Check validity of the resource type, via acpi_gbl_resource_types. Zero
 	 * indicates an invalid resource.
+=======
+	 * Check validity of the resource type, via acpi_gbl_resource_types.
+	 * Zero indicates an invalid resource.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!acpi_gbl_resource_types[resource_index]) {
 		goto invalid_resource;
@@ -622,6 +729,7 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
 	aml_resource = ACPI_CAST_PTR(union aml_resource, aml);
 	if (resource_type == ACPI_RESOURCE_NAME_SERIAL_BUS) {
 
+<<<<<<< HEAD
 		/* Validate the bus_type field */
 
 		if ((aml_resource->common_serial_bus.type == 0) ||
@@ -631,6 +739,23 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
 					     "Invalid/unsupported SerialBus resource descriptor: BusType 0x%2.2X",
 					     aml_resource->common_serial_bus.
 					     type));
+=======
+		/* Avoid undefined behavior: member access within misaligned address */
+
+		struct aml_resource_common_serialbus common_serial_bus;
+		memcpy(&common_serial_bus, aml_resource,
+		       sizeof(common_serial_bus));
+
+		/* Validate the bus_type field */
+
+		if ((common_serial_bus.type == 0) ||
+		    (common_serial_bus.type > AML_RESOURCE_MAX_SERIALBUSTYPE)) {
+			if (walk_state) {
+				ACPI_ERROR((AE_INFO,
+					    "Invalid/unsupported SerialBus resource descriptor: BusType 0x%2.2X",
+					    common_serial_bus.type));
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (AE_AML_INVALID_RESOURCE_TYPE);
 		}
 	}
@@ -643,6 +768,7 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
 
 	return (AE_OK);
 
+<<<<<<< HEAD
       invalid_resource:
 
 	ACPI_RESOURCE_ERROR((AE_INFO,
@@ -657,6 +783,26 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
 			     "0x%2.2X, Length 0x%4.4X, MinLength 0x%4.4X",
 			     resource_type, resource_length,
 			     minimum_resource_length));
+=======
+invalid_resource:
+
+	if (walk_state) {
+		ACPI_ERROR((AE_INFO,
+			    "Invalid/unsupported resource descriptor: Type 0x%2.2X",
+			    resource_type));
+	}
+	return (AE_AML_INVALID_RESOURCE_TYPE);
+
+bad_resource_length:
+
+	if (walk_state) {
+		ACPI_ERROR((AE_INFO,
+			    "Invalid resource descriptor length: Type "
+			    "0x%2.2X, Length 0x%4.4X, MinLength 0x%4.4X",
+			    resource_type, resource_length,
+			    minimum_resource_length));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (AE_AML_BAD_RESOURCE_LENGTH);
 }
 
@@ -664,7 +810,11 @@ acpi_status acpi_ut_validate_resource(void *aml, u8 * return_index)
  *
  * FUNCTION:    acpi_ut_get_resource_type
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+=======
+ * PARAMETERS:  aml             - Pointer to the raw AML resource descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      The Resource Type with no extraneous bits (except the
  *              Large/Small descriptor bit -- this is left alone)
@@ -698,7 +848,11 @@ u8 acpi_ut_get_resource_type(void *aml)
  *
  * FUNCTION:    acpi_ut_get_resource_length
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+=======
+ * PARAMETERS:  aml             - Pointer to the raw AML resource descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Byte Length
  *
@@ -738,7 +892,11 @@ u16 acpi_ut_get_resource_length(void *aml)
  *
  * FUNCTION:    acpi_ut_get_resource_header_length
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+=======
+ * PARAMETERS:  aml             - Pointer to the raw AML resource descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Length of the AML header (depends on large/small descriptor)
  *
@@ -763,7 +921,11 @@ u8 acpi_ut_get_resource_header_length(void *aml)
  *
  * FUNCTION:    acpi_ut_get_descriptor_length
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+=======
+ * PARAMETERS:  aml             - Pointer to the raw AML resource descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Byte length
  *
@@ -800,8 +962,12 @@ u32 acpi_ut_get_descriptor_length(void *aml)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_get_resource_end_tag(union acpi_operand_object * obj_desc,
 			     u8 ** end_tag)
+=======
+acpi_ut_get_resource_end_tag(union acpi_operand_object *obj_desc, u8 **end_tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -816,7 +982,11 @@ acpi_ut_get_resource_end_tag(union acpi_operand_object * obj_desc,
 
 	/* Validate the template and get a pointer to the end_tag */
 
+<<<<<<< HEAD
 	status = acpi_ut_walk_aml_resources(obj_desc->buffer.pointer,
+=======
+	status = acpi_ut_walk_aml_resources(NULL, obj_desc->buffer.pointer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    obj_desc->buffer.length, NULL,
 					    (void **)end_tag);
 

@@ -1,7 +1,11 @@
 #ifndef __LINUX_SPINLOCK_TYPES_UP_H
 #define __LINUX_SPINLOCK_TYPES_UP_H
 
+<<<<<<< HEAD
 #ifndef __LINUX_SPINLOCK_TYPES_H
+=======
+#ifndef __LINUX_SPINLOCK_TYPES_RAW_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # error "please don't include this file directly"
 #endif
 

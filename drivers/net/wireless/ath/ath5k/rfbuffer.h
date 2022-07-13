@@ -42,7 +42,11 @@
  * Also check out reg.h and U.S. Patent 6677779 B1 (about buffer
  * registers and control registers):
  *
+<<<<<<< HEAD
  * http://www.google.com/patents?id=qNURAAAAEBAJ
+=======
+ * https://www.google.com/patents?id=qNURAAAAEBAJ
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 

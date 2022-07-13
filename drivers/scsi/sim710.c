@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sim710.c - Copyright (C) 1999 Richard Hirst <richard@sleepie.demon.co.uk>
  *
  *----------------------------------------------------------------------------
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by 
  *  the Free Software Foundation; either version 2 of the License, or
@@ -18,12 +23,20 @@
  *----------------------------------------------------------------------------
  *
  * MCA card detection code by Trent McNair.
+=======
+ *----------------------------------------------------------------------------
+ *
+ * MCA card detection code by Trent McNair. (now deleted)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fixes to not explicitly nul bss data from Xavier Bestel.
  * Some multiboard fixes from Rolf Eike Beer.
  * Auto probing of EISA config space from Trevor Hemsley.
  *
  * Rewritten to use 53c700.c by James.Bottomley@SteelEye.com
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,7 +45,10 @@
 #include <linux/blkdev.h>
 #include <linux/device.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/mca.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/eisa.h>
 #include <linux/interrupt.h>
 #include <scsi/scsi_host.h>
@@ -43,7 +59,11 @@
 #include "53c700.h"
 
 
+<<<<<<< HEAD
 /* Must be enough for both EISA and MCA */
+=======
+/* Must be enough for EISA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_SLOTS 8
 static __u8 __initdata id_array[MAX_SLOTS] = { [0 ... MAX_SLOTS-1] = 7 };
 
@@ -89,15 +109,25 @@ param_setup(char *str)
 __setup("sim710=", param_setup);
 
 static struct scsi_host_template sim710_driver_template = {
+<<<<<<< HEAD
 	.name			= "LSI (Symbios) 710 MCA/EISA",
+=======
+	.name			= "LSI (Symbios) 710 EISA",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name		= "sim710",
 	.this_id		= 7,
 	.module			= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static __devinit int
 sim710_probe_common(struct device *dev, unsigned long base_addr,
 		    int irq, int clock, int differential, int scsi_id)
+=======
+static int sim710_probe_common(struct device *dev, unsigned long base_addr,
+			       int irq, int clock, int differential,
+			       int scsi_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host * host = NULL;
 	struct NCR_700_Host_Parameters *hostdata =
@@ -154,8 +184,12 @@ sim710_probe_common(struct device *dev, unsigned long base_addr,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static __devexit int
 sim710_device_remove(struct device *dev)
+=======
+static int sim710_device_remove(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = dev_get_drvdata(dev);
 	struct NCR_700_Host_Parameters *hostdata =
@@ -169,6 +203,7 @@ sim710_device_remove(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 
 /* CARD ID 01BB and 01BA use the same pos values */
@@ -277,6 +312,8 @@ static struct mca_driver sim710_mca_driver = {
 
 #endif /* CONFIG_MCA */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EISA
 static struct eisa_device_id sim710_eisa_ids[] = {
 	{ "CPQ4410" },
@@ -286,8 +323,12 @@ static struct eisa_device_id sim710_eisa_ids[] = {
 };
 MODULE_DEVICE_TABLE(eisa, sim710_eisa_ids);
 
+<<<<<<< HEAD
 static __init int
 sim710_eisa_probe(struct device *dev)
+=======
+static int sim710_eisa_probe(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct eisa_device *edev = to_eisa_device(dev);
 	unsigned long io_addr = edev->base_addr;
@@ -330,20 +371,28 @@ static struct eisa_driver sim710_eisa_driver = {
 	.driver = {
 		.name		= "sim710",
 		.probe		= sim710_eisa_probe,
+<<<<<<< HEAD
 		.remove		= __devexit_p(sim710_device_remove),
+=======
+		.remove		= sim710_device_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 #endif /* CONFIG_EISA */
 
 static int __init sim710_init(void)
 {
+<<<<<<< HEAD
 	int err = -ENODEV;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MODULE
 	if (sim710)
 		param_setup(sim710);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 	err = mca_register_driver(&sim710_mca_driver);
 #endif
@@ -356,16 +405,29 @@ static int __init sim710_init(void)
 	 * above actually only reports problems with kobject_register,
 	 * so for the moment return success */
 
+=======
+#ifdef CONFIG_EISA
+	/*
+	 * FIXME: We'd really like to return -ENODEV if no devices have actually
+	 * been found.  However eisa_driver_register() only reports problems
+	 * with kobject_register() so simply return success for now.
+	 */
+	eisa_driver_register(&sim710_eisa_driver);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit sim710_exit(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 	if (MCA_bus)
 		mca_unregister_driver(&sim710_mca_driver);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EISA
 	eisa_driver_unregister(&sim710_eisa_driver);
 #endif

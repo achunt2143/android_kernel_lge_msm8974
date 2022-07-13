@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Kionix, Inc.
  * Written by Chris Hudson <chudson@kionix.com>
@@ -15,16 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307, USA
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2011 Kionix, Inc.
+ * Written by Chris Hudson <chudson@kionix.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/sensors.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input/kxtj9.h>
+<<<<<<< HEAD
 #include <linux/input-polldev.h>
 #include <linux/regulator/consumer.h>
 
@@ -35,6 +46,10 @@
 #define ACCEL_INPUT_DEV_NAME	"accelerometer"
 #define DEVICE_NAME		"kxtj9"
 
+=======
+
+#define NAME			"kxtj9"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define G_MAX			8000
 /* OUTPUT REGISTERS */
 #define XOUT_L			0x06
@@ -70,16 +85,20 @@
 #define RES_CTRL_REG1		1
 #define RES_INT_CTRL1		2
 #define RESUME_ENTRIES		3
+<<<<<<< HEAD
 /* POWER SUPPLY VOLTAGE RANGE */
 #define KXTJ9_VDD_MIN_UV	2000000
 #define KXTJ9_VDD_MAX_UV	3300000
 #define KXTJ9_VIO_MIN_UV	1750000
 #define KXTJ9_VIO_MAX_UV	1950000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following table lists the maximum appropriate poll interval for each
  * available output data rate.
  */
+<<<<<<< HEAD
 
 static struct sensors_classdev sensors_cdev = {
 	.name = "kxtj9-accel",
@@ -99,6 +118,8 @@ static struct sensors_classdev sensors_cdev = {
 	.sensors_poll_delay = NULL,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct {
 	unsigned int cutoff;
 	u8 mask;
@@ -116,19 +137,26 @@ struct kxtj9_data {
 	struct i2c_client *client;
 	struct kxtj9_platform_data pdata;
 	struct input_dev *input_dev;
+<<<<<<< HEAD
 #ifdef CONFIG_INPUT_KXTJ9_POLLED_MODE
 	struct input_polled_dev *poll_dev;
 #endif
 	unsigned int last_poll_interval;
 	bool	enable;
+=======
+	unsigned int last_poll_interval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 shift;
 	u8 ctrl_reg1;
 	u8 data_ctrl;
 	u8 int_ctrl;
+<<<<<<< HEAD
 	bool	power_enabled;
 	struct regulator *vdd;
 	struct regulator *vio;
 	struct sensors_classdev cdev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int kxtj9_i2c_read(struct kxtj9_data *tj9, u8 addr, u8 *data, int len)
@@ -165,6 +193,7 @@ static void kxtj9_report_acceleration_data(struct kxtj9_data *tj9)
 	y = le16_to_cpu(acc_data[tj9->pdata.axis_map_y]);
 	z = le16_to_cpu(acc_data[tj9->pdata.axis_map_z]);
 
+<<<<<<< HEAD
 	/* 8 bits output mode support */
 	if (!(tj9->ctrl_reg1 & RES_12BIT)) {
 		x <<= 4;
@@ -172,6 +201,8 @@ static void kxtj9_report_acceleration_data(struct kxtj9_data *tj9)
 		z <<= 4;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	x >>= tj9->shift;
 	y >>= tj9->shift;
 	z >>= tj9->shift;
@@ -247,6 +278,7 @@ static int kxtj9_update_odr(struct kxtj9_data *tj9, unsigned int poll_interval)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int kxtj9_power_on(struct kxtj9_data *data, bool on)
 {
 	int rc = 0;
@@ -371,6 +403,14 @@ static int kxtj9_device_power_on(struct kxtj9_data *tj9)
 err_exit:
 	dev_dbg(&tj9->client->dev, "soft power on complete err=%d.\n", err);
 	return err;
+=======
+static int kxtj9_device_power_on(struct kxtj9_data *tj9)
+{
+	if (tj9->pdata.power_on)
+		return tj9->pdata.power_on();
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kxtj9_device_power_off(struct kxtj9_data *tj9)
@@ -384,11 +424,14 @@ static void kxtj9_device_power_off(struct kxtj9_data *tj9)
 
 	if (tj9->pdata.power_off)
 		tj9->pdata.power_off();
+<<<<<<< HEAD
 	else
 		kxtj9_power_on(tj9, false);
 
 	dev_dbg(&tj9->client->dev, "soft power off complete.\n");
 	return ;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kxtj9_enable(struct kxtj9_data *tj9)
@@ -448,6 +491,7 @@ static void kxtj9_disable(struct kxtj9_data *tj9)
 	kxtj9_device_power_off(tj9);
 }
 
+<<<<<<< HEAD
 
 static void __devinit kxtj9_init_input_device(struct kxtj9_data *tj9,
 					      struct input_dev *input_dev)
@@ -552,6 +596,22 @@ static ssize_t kxtj9_enable_store(struct device *dev,
 static DEVICE_ATTR(enable, S_IRUGO|S_IWUSR|S_IWGRP,
 			kxtj9_enable_show, kxtj9_enable_store);
 
+=======
+static int kxtj9_input_open(struct input_dev *input)
+{
+	struct kxtj9_data *tj9 = input_get_drvdata(input);
+
+	return kxtj9_enable(tj9);
+}
+
+static void kxtj9_input_close(struct input_dev *dev)
+{
+	struct kxtj9_data *tj9 = input_get_drvdata(dev);
+
+	kxtj9_disable(tj9);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * When IRQ mode is selected, we need to provide an interface to allow the user
  * to change the output data rate of the part.  For consistency, we are using
@@ -562,6 +622,7 @@ static DEVICE_ATTR(enable, S_IRUGO|S_IWUSR|S_IWGRP,
  * will be responsible for retrieving data from the input node at the desired
  * interval.
  */
+<<<<<<< HEAD
 static int kxtj9_poll_delay_set(struct sensors_classdev *sensors_cdev,
 					unsigned int delay_msec)
 {
@@ -588,6 +649,11 @@ static int kxtj9_poll_delay_set(struct sensors_classdev *sensors_cdev,
 
 /* Returns currently selected poll interval (in ms) */
 static ssize_t kxtj9_get_poll_delay(struct device *dev,
+=======
+
+/* Returns currently selected poll interval (in ms) */
+static ssize_t kxtj9_get_poll(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct device_attribute *attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -597,12 +663,21 @@ static ssize_t kxtj9_get_poll_delay(struct device *dev,
 }
 
 /* Allow users to select a new poll interval (in ms) */
+<<<<<<< HEAD
 static ssize_t kxtj9_set_poll_delay(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct kxtj9_data *tj9 = i2c_get_clientdata(client);
+=======
+static ssize_t kxtj9_set_poll(struct device *dev, struct device_attribute *attr,
+						const char *buf, size_t count)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct kxtj9_data *tj9 = i2c_get_clientdata(client);
+	struct input_dev *input_dev = tj9->input_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int interval;
 	int error;
 
@@ -610,6 +685,7 @@ static ssize_t kxtj9_set_poll_delay(struct device *dev,
 	if (error < 0)
 		return error;
 
+<<<<<<< HEAD
 	error = kxtj9_poll_delay_set(&tj9->cdev, interval);
 	if (error < 0)
 		return error;
@@ -634,6 +710,53 @@ static void kxtj9_poll(struct input_polled_dev *dev)
 {
 	struct kxtj9_data *tj9 = dev->private;
 	unsigned int poll_interval = dev->poll_interval;
+=======
+	/* Lock the device to prevent races with open/close (and itself) */
+	mutex_lock(&input_dev->mutex);
+
+	disable_irq(client->irq);
+
+	/*
+	 * Set current interval to the greater of the minimum interval or
+	 * the requested interval
+	 */
+	tj9->last_poll_interval = max(interval, tj9->pdata.min_interval);
+
+	kxtj9_update_odr(tj9, tj9->last_poll_interval);
+
+	enable_irq(client->irq);
+	mutex_unlock(&input_dev->mutex);
+
+	return count;
+}
+
+static DEVICE_ATTR(poll, S_IRUGO|S_IWUSR, kxtj9_get_poll, kxtj9_set_poll);
+
+static struct attribute *kxtj9_attrs[] = {
+	&dev_attr_poll.attr,
+	NULL
+};
+
+static umode_t kxtj9_attr_is_visible(struct kobject *kobj,
+				     struct attribute *attr, int n)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	struct i2c_client *client = to_i2c_client(dev);
+
+	return client->irq ? attr->mode : 0;
+}
+
+static struct attribute_group kxtj9_group = {
+	.attrs = kxtj9_attrs,
+	.is_visible = kxtj9_attr_is_visible,
+};
+__ATTRIBUTE_GROUPS(kxtj9);
+
+static void kxtj9_poll(struct input_dev *input)
+{
+	struct kxtj9_data *tj9 = input_get_drvdata(input);
+	unsigned int poll_interval = input_get_poll_interval(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kxtj9_report_acceleration_data(tj9);
 
@@ -643,6 +766,7 @@ static void kxtj9_poll(struct input_polled_dev *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void kxtj9_polled_input_open(struct input_polled_dev *dev)
 {
 	struct kxtj9_data *tj9 = dev->private;
@@ -713,12 +837,31 @@ static int __devinit kxtj9_verify(struct kxtj9_data *tj9)
 {
 	int retval;
 
+=======
+static void kxtj9_platform_exit(void *data)
+{
+	struct kxtj9_data *tj9 = data;
+
+	if (tj9->pdata.exit)
+		tj9->pdata.exit();
+}
+
+static int kxtj9_verify(struct kxtj9_data *tj9)
+{
+	int retval;
+
+	retval = kxtj9_device_power_on(tj9);
+	if (retval < 0)
+		return retval;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = i2c_smbus_read_byte_data(tj9->client, WHO_AM_I);
 	if (retval < 0) {
 		dev_err(&tj9->client->dev, "read err int source\n");
 		goto out;
 	}
 
+<<<<<<< HEAD
 	retval = (retval != 0x05 && retval != 0x07 && retval != 0x08)
 			? -EIO : 0;
 
@@ -819,6 +962,21 @@ static int __devinit kxtj9_probe(struct i2c_client *client,
 				 const struct i2c_device_id *id)
 {
 	struct kxtj9_data *tj9;
+=======
+	retval = (retval != 0x07 && retval != 0x08) ? -EIO : 0;
+
+out:
+	kxtj9_device_power_off(tj9);
+	return retval;
+}
+
+static int kxtj9_probe(struct i2c_client *client)
+{
+	const struct kxtj9_platform_data *pdata =
+			dev_get_platdata(&client->dev);
+	struct kxtj9_data *tj9;
+	struct input_dev *input_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!i2c_check_functionality(client->adapter,
@@ -827,13 +985,23 @@ static int __devinit kxtj9_probe(struct i2c_client *client,
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	tj9 = kzalloc(sizeof(*tj9), GFP_KERNEL);
+=======
+	if (!pdata) {
+		dev_err(&client->dev, "platform data is NULL; exiting\n");
+		return -EINVAL;
+	}
+
+	tj9 = devm_kzalloc(&client->dev, sizeof(*tj9), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tj9) {
 		dev_err(&client->dev,
 			"failed to allocate memory for module data\n");
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (client->dev.of_node) {
 		memset(&tj9->pdata, 0 , sizeof(tj9->pdata));
 		err = kxtj9_parse_dt(&client->dev, &tj9->pdata);
@@ -877,10 +1045,30 @@ static int __devinit kxtj9_probe(struct i2c_client *client,
 	if (err < 0) {
 		dev_err(&client->dev, "device not recognized\n");
 		goto err_power_off;
+=======
+	tj9->client = client;
+	tj9->pdata = *pdata;
+
+	if (pdata->init) {
+		err = pdata->init();
+		if (err < 0)
+			return err;
+	}
+
+	err = devm_add_action_or_reset(&client->dev, kxtj9_platform_exit, tj9);
+	if (err)
+		return err;
+
+	err = kxtj9_verify(tj9);
+	if (err < 0) {
+		dev_err(&client->dev, "device not recognized\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, tj9);
 
+<<<<<<< HEAD
 	tj9->ctrl_reg1 = tj9->pdata.res_ctl | tj9->pdata.g_range;
 	tj9->last_poll_interval = tj9->pdata.init_interval;
 
@@ -894,6 +1082,42 @@ static int __devinit kxtj9_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev, "class device create failed: %d\n", err);
 		goto err_power_off;
+=======
+	tj9->ctrl_reg1 = tj9->pdata.res_12bit | tj9->pdata.g_range;
+	tj9->last_poll_interval = tj9->pdata.init_interval;
+
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev) {
+		dev_err(&client->dev, "input device allocate failed\n");
+		return -ENOMEM;
+	}
+
+	input_set_drvdata(input_dev, tj9);
+	tj9->input_dev = input_dev;
+
+	input_dev->name = "kxtj9_accel";
+	input_dev->id.bustype = BUS_I2C;
+
+	input_dev->open = kxtj9_input_open;
+	input_dev->close = kxtj9_input_close;
+
+	input_set_abs_params(input_dev, ABS_X, -G_MAX, G_MAX, FUZZ, FLAT);
+	input_set_abs_params(input_dev, ABS_Y, -G_MAX, G_MAX, FUZZ, FLAT);
+	input_set_abs_params(input_dev, ABS_Z, -G_MAX, G_MAX, FUZZ, FLAT);
+
+	if (client->irq <= 0) {
+		err = input_setup_polling(input_dev, kxtj9_poll);
+		if (err)
+			return err;
+	}
+
+	err = input_register_device(input_dev);
+	if (err) {
+		dev_err(&client->dev,
+			"unable to register input polled device %s: %d\n",
+			input_dev->name, err);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (client->irq) {
@@ -901,6 +1125,7 @@ static int __devinit kxtj9_probe(struct i2c_client *client,
 		tj9->int_ctrl |= KXTJ9_IEN | KXTJ9_IEA | KXTJ9_IEL;
 		tj9->ctrl_reg1 |= DRDYE;
 
+<<<<<<< HEAD
 		err = kxtj9_setup_input_device(tj9);
 		if (err)
 			goto err_class_sysfs;
@@ -975,6 +1200,22 @@ static int __devexit kxtj9_remove(struct i2c_client *client)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+		err = devm_request_threaded_irq(&client->dev, client->irq,
+						NULL, kxtj9_isr,
+						IRQF_TRIGGER_RISING |
+							IRQF_ONESHOT,
+						"kxtj9-irq", tj9);
+		if (err) {
+			dev_err(&client->dev, "request irq failed: %d\n", err);
+			return err;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kxtj9_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -983,7 +1224,11 @@ static int kxtj9_suspend(struct device *dev)
 
 	mutex_lock(&input_dev->mutex);
 
+<<<<<<< HEAD
 	if (input_dev->users && tj9->enable)
+=======
+	if (input_device_enabled(input_dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kxtj9_disable(tj9);
 
 	mutex_unlock(&input_dev->mutex);
@@ -995,6 +1240,7 @@ static int kxtj9_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct kxtj9_data *tj9 = i2c_get_clientdata(client);
 	struct input_dev *input_dev = tj9->input_dev;
+<<<<<<< HEAD
 	int retval = 0;
 
 	mutex_lock(&input_dev->mutex);
@@ -1020,10 +1266,30 @@ static struct of_device_id kxtj9_match_table[] = {
 };
 
 
+=======
+
+	mutex_lock(&input_dev->mutex);
+
+	if (input_device_enabled(input_dev))
+		kxtj9_enable(tj9);
+
+	mutex_unlock(&input_dev->mutex);
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(kxtj9_pm_ops, kxtj9_suspend, kxtj9_resume);
+
+static const struct i2c_device_id kxtj9_id[] = {
+	{ NAME, 0 },
+	{ },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(i2c, kxtj9_id);
 
 static struct i2c_driver kxtj9_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name	= DEVICE_NAME,
 		.owner	= THIS_MODULE,
 		.of_match_table = kxtj9_match_table,
@@ -1031,6 +1297,13 @@ static struct i2c_driver kxtj9_driver = {
 	},
 	.probe		= kxtj9_probe,
 	.remove		= __devexit_p(kxtj9_remove),
+=======
+		.name		= NAME,
+		.dev_groups	= kxtj9_groups,
+		.pm		= pm_sleep_ptr(&kxtj9_pm_ops),
+	},
+	.probe		= kxtj9_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= kxtj9_id,
 };
 

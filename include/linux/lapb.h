@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These are the public elements of the Linux LAPB module.
  */
@@ -5,6 +9,14 @@
 #ifndef	LAPB_KERNEL_H
 #define	LAPB_KERNEL_H
 
+<<<<<<< HEAD
+=======
+#include <linux/skbuff.h>
+#include <linux/timer.h>
+
+struct net_device;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	LAPB_OK			0
 #define	LAPB_BADTOKEN		1
 #define	LAPB_INVALUE		2

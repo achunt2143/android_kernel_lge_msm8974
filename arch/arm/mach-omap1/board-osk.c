@@ -25,7 +25,13 @@
  * with this program; if not, write  to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/consumer.h>
+#include <linux/gpio/driver.h>
+#include <linux/gpio/machine.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -38,12 +44,20 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
+<<<<<<< HEAD
 #include <linux/i2c/tps65010.h>
+=======
+#include <linux/mfd/tps65010.h>
+#include <linux/platform_data/gpio-omap.h>
+#include <linux/platform_data/omap1_bl.h>
+#include <linux/soc/ti/omap1-io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <plat/flash.h>
 #include <plat/usb.h>
 #include <plat/mux.h>
@@ -53,12 +67,25 @@
 
 #include "common.h"
 
+=======
+#include "tc.h"
+#include "flash.h"
+#include "mux.h"
+#include "hardware.h"
+#include "usb.h"
+#include "common.h"
+
+/* Name of the GPIO chip used by the OMAP for GPIOs 0..15 */
+#define OMAP_GPIO_LABEL		"gpio-0-15"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* At OMAP5912 OSK the Ethernet is directly connected to CS1 */
 #define OMAP_OSK_ETHR_START		0x04800300
 
 /* TPS65010 has four GPIOs.  nPG and LED2 can be treated like GPIOs with
  * alternate pin configurations for hardware-controlled blinking.
  */
+<<<<<<< HEAD
 #define OSK_TPS_GPIO_BASE		(OMAP_MAX_GPIO_LINES + 16 /* MPUIO */)
 #	define OSK_TPS_GPIO_USB_PWR_EN	(OSK_TPS_GPIO_BASE + 0)
 #	define OSK_TPS_GPIO_LED_D3	(OSK_TPS_GPIO_BASE + 1)
@@ -66,6 +93,14 @@
 #	define OSK_TPS_GPIO_DSP_PWR_EN	(OSK_TPS_GPIO_BASE + 3)
 #	define OSK_TPS_GPIO_LED_D9	(OSK_TPS_GPIO_BASE + 4)
 #	define OSK_TPS_GPIO_LED_D2	(OSK_TPS_GPIO_BASE + 5)
+=======
+#define OSK_TPS_GPIO_USB_PWR_EN	0
+#define OSK_TPS_GPIO_LED_D3	1
+#define OSK_TPS_GPIO_LAN_RESET	2
+#define OSK_TPS_GPIO_DSP_PWR_EN	3
+#define OSK_TPS_GPIO_LED_D9	4
+#define OSK_TPS_GPIO_LED_D2	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct mtd_partition osk_partitions[] = {
 	/* bootloader (U-Boot, etc) in first sector */
@@ -147,14 +182,23 @@ static struct resource osk5912_cf_resources[] = {
 	[0] = {
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
+=======
+	[1] = {
+		.flags = IORESOURCE_MEM,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device osk5912_cf_device = {
 	.name		= "omap_cf",
 	.id		= -1,
+<<<<<<< HEAD
 	.dev = {
 		.platform_data	= (void *) 2 /* CS2 */,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_resources	= ARRAY_SIZE(osk5912_cf_resources),
 	.resource	= osk5912_cf_resources,
 };
@@ -165,6 +209,7 @@ static struct platform_device *osk5912_devices[] __initdata = {
 	&osk5912_cf_device,
 };
 
+<<<<<<< HEAD
 static struct gpio_led tps_leds[] = {
 	/* NOTE:  D9 and D2 have hardware blink support.
 	 * Also, D9 requires non-battery power.
@@ -174,6 +219,26 @@ static struct gpio_led tps_leds[] = {
 	{ .gpio = OSK_TPS_GPIO_LED_D2, .name = "d2", },
 	{ .gpio = OSK_TPS_GPIO_LED_D3, .name = "d3", .active_low = 1,
 			.default_trigger = "heartbeat", },
+=======
+static const struct gpio_led tps_leds[] = {
+	/* NOTE:  D9 and D2 have hardware blink support.
+	 * Also, D9 requires non-battery power.
+	 */
+	{ .name = "d9", .default_trigger = "disk-activity", },
+	{ .name = "d2", },
+	{ .name = "d3", .default_trigger = "heartbeat", },
+};
+
+static struct gpiod_lookup_table tps_leds_gpio_table = {
+	.dev_id = "leds-gpio",
+	.table = {
+		/* Use local offsets on TPS65010 */
+		GPIO_LOOKUP_IDX("tps65010", OSK_TPS_GPIO_LED_D9, NULL, 0, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("tps65010", OSK_TPS_GPIO_LED_D2, NULL, 1, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("tps65010", OSK_TPS_GPIO_LED_D3, NULL, 2, GPIO_ACTIVE_LOW),
+		{ }
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct gpio_led_platform_data tps_leds_data = {
@@ -187,6 +252,7 @@ static struct platform_device osk5912_tps_leds = {
 	.dev.platform_data	= &tps_leds_data,
 };
 
+<<<<<<< HEAD
 static int osk_tps_setup(struct i2c_client *client, void *context)
 {
 	/* Set GPIO 1 HIGH to disable VBUS power supply;
@@ -194,17 +260,45 @@ static int osk_tps_setup(struct i2c_client *client, void *context)
 	 */
 	gpio_request(OSK_TPS_GPIO_USB_PWR_EN, "n_vbus_en");
 	gpio_direction_output(OSK_TPS_GPIO_USB_PWR_EN, 1);
+=======
+/* The board just hold these GPIOs hogged from setup to teardown */
+static struct gpio_desc *eth_reset;
+static struct gpio_desc *vdd_dsp;
+
+static int osk_tps_setup(struct i2c_client *client, struct gpio_chip *gc)
+{
+	struct gpio_desc *d;
+	if (!IS_BUILTIN(CONFIG_TPS65010))
+		return -ENOSYS;
+
+	/* Set GPIO 1 HIGH to disable VBUS power supply;
+	 * OHCI driver powers it up/down as needed.
+	 */
+	d = gpiochip_request_own_desc(gc, OSK_TPS_GPIO_USB_PWR_EN, "n_vbus_en",
+				      GPIO_ACTIVE_HIGH, GPIOD_OUT_HIGH);
+	/* Free the GPIO again as the driver will request it */
+	gpiochip_free_own_desc(d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set GPIO 2 high so LED D3 is off by default */
 	tps65010_set_gpio_out_value(GPIO2, HIGH);
 
 	/* Set GPIO 3 low to take ethernet out of reset */
+<<<<<<< HEAD
 	gpio_request(OSK_TPS_GPIO_LAN_RESET, "smc_reset");
 	gpio_direction_output(OSK_TPS_GPIO_LAN_RESET, 0);
 
 	/* GPIO4 is VDD_DSP */
 	gpio_request(OSK_TPS_GPIO_DSP_PWR_EN, "dsp_power");
 	gpio_direction_output(OSK_TPS_GPIO_DSP_PWR_EN, 1);
+=======
+	eth_reset = gpiochip_request_own_desc(gc, OSK_TPS_GPIO_LAN_RESET, "smc_reset",
+					      GPIO_ACTIVE_HIGH, GPIOD_OUT_LOW);
+
+	/* GPIO4 is VDD_DSP */
+	vdd_dsp = gpiochip_request_own_desc(gc, OSK_TPS_GPIO_DSP_PWR_EN, "dsp_power",
+					    GPIO_ACTIVE_HIGH, GPIOD_OUT_HIGH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* REVISIT if DSP support isn't configured, power it off ... */
 
 	/* Let LED1 (D9) blink; leds-gpio may override it */
@@ -222,20 +316,43 @@ static int osk_tps_setup(struct i2c_client *client, void *context)
 
 	/* register these three LEDs */
 	osk5912_tps_leds.dev.parent = &client->dev;
+<<<<<<< HEAD
+=======
+	gpiod_add_lookup_table(&tps_leds_gpio_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&osk5912_tps_leds);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct tps65010_board tps_board = {
 	.base		= OSK_TPS_GPIO_BASE,
 	.outmask	= 0x0f,
 	.setup		= osk_tps_setup,
+=======
+static void osk_tps_teardown(struct i2c_client *client, struct gpio_chip *gc)
+{
+	gpiochip_free_own_desc(eth_reset);
+	gpiochip_free_own_desc(vdd_dsp);
+}
+
+static struct tps65010_board tps_board = {
+	.outmask	= 0x0f,
+	.setup		= osk_tps_setup,
+	.teardown	= osk_tps_teardown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct i2c_board_info __initdata osk_i2c_board_info[] = {
 	{
+<<<<<<< HEAD
 		I2C_BOARD_INFO("tps65010", 0x48),
+=======
+		/* This device will get the name "i2c-tps65010" */
+		I2C_BOARD_INFO("tps65010", 0x48),
+		.dev_name = "tps65010",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.platform_data	= &tps_board,
 
 	},
@@ -251,17 +368,21 @@ static void __init osk_init_smc91x(void)
 {
 	u32 l;
 
+<<<<<<< HEAD
 	if ((gpio_request(0, "smc_irq")) < 0) {
 		printk("Error requesting gpio 0 for smc91x irq\n");
 		return;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check EMIFS wait states to fix errors with SMC_GET_PKT_HDR */
 	l = omap_readl(EMIFS_CCS(1));
 	l |= 0x3;
 	omap_writel(l, EMIFS_CCS(1));
 }
 
+<<<<<<< HEAD
 static void __init osk_init_cf(void)
 {
 	omap_cfg_reg(M7_1610_GPIO62);
@@ -273,12 +394,62 @@ static void __init osk_init_cf(void)
 	irq_set_irq_type(gpio_to_irq(62), IRQ_TYPE_EDGE_FALLING);
 }
 
+=======
+static void __init osk_init_cf(int seg)
+{
+	struct resource *res = &osk5912_cf_resources[1];
+
+	omap_cfg_reg(M7_1610_GPIO62);
+
+	switch (seg) {
+	/* NOTE: CS0 could be configured too ... */
+	case 1:
+		res->start = OMAP_CS1_PHYS;
+		break;
+	case 2:
+		res->start = OMAP_CS2_PHYS;
+		break;
+	case 3:
+		res->start = omap_cs3_phys();
+		break;
+	}
+
+	res->end = res->start + SZ_8K - 1;
+	osk5912_cf_device.dev.platform_data = (void *)(uintptr_t)seg;
+
+	/* NOTE:  better EMIFS setup might support more cards; but the
+	 * TRM only shows how to affect regular flash signals, not their
+	 * CF/PCMCIA variants...
+	 */
+	pr_debug("%s: cs%d, previous ccs %08x acs %08x\n", __func__,
+		seg, omap_readl(EMIFS_CCS(seg)), omap_readl(EMIFS_ACS(seg)));
+	omap_writel(0x0004a1b3, EMIFS_CCS(seg));	/* synch mode 4 etc */
+	omap_writel(0x00000000, EMIFS_ACS(seg));	/* OE hold/setup */
+}
+
+static struct gpiod_lookup_table osk_usb_gpio_table = {
+	.dev_id = "ohci",
+	.table = {
+		/* Power GPIO on the I2C-attached TPS65010 */
+		GPIO_LOOKUP("tps65010", OSK_TPS_GPIO_USB_PWR_EN, "power",
+			    GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP(OMAP_GPIO_LABEL, 9, "overcurrent",
+			    GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct omap_usb_config osk_usb_config __initdata = {
 	/* has usb host connector (A) ... for development it can also
 	 * be used, with a NONSTANDARD gender-bending cable/dongle, as
 	 * a peripheral.
 	 */
+<<<<<<< HEAD
 #ifdef	CONFIG_USB_GADGET_OMAP
+=======
+#if IS_ENABLED(CONFIG_USB_OMAP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.register_dev	= 1,
 	.hmc_mode	= 0,
 #else
@@ -289,6 +460,7 @@ static struct omap_usb_config osk_usb_config __initdata = {
 	.pins[0]	= 2,
 };
 
+<<<<<<< HEAD
 #ifdef	CONFIG_OMAP_OSK_MISTRAL
 static struct omap_lcd_config osk_lcd_config __initdata = {
 	.ctrl_name	= "internal",
@@ -525,6 +697,40 @@ static void __init osk_init(void)
 
 	osk_init_smc91x();
 	osk_init_cf();
+=======
+#define EMIFS_CS3_VAL	(0x88013141)
+
+static struct gpiod_lookup_table osk_irq_gpio_table = {
+	.dev_id = NULL,
+	.table = {
+		/* GPIO used for SMC91x IRQ */
+		GPIO_LOOKUP(OMAP_GPIO_LABEL, 0, "smc_irq",
+			    GPIO_ACTIVE_HIGH),
+		/* GPIO used for CF IRQ */
+		GPIO_LOOKUP("gpio-48-63", 14, "cf_irq",
+			    GPIO_ACTIVE_HIGH),
+		/* GPIO used by the TPS65010 chip */
+		GPIO_LOOKUP("mpuio", 1, "tps65010",
+			    GPIO_ACTIVE_HIGH),
+		/* GPIOs used for serial wakeup IRQs */
+		GPIO_LOOKUP_IDX("gpio-32-47", 5, "wakeup", 0,
+			    GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("gpio-16-31", 2, "wakeup", 1,
+			    GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("gpio-48-63", 1, "wakeup", 2,
+			    GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+
+static void __init osk_init(void)
+{
+	struct gpio_desc *d;
+	u32 l;
+
+	osk_init_smc91x();
+	osk_init_cf(2); /* CS2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Workaround for wrong CS3 (NOR flash) timing
 	 * There are some U-Boot versions out there which configure
@@ -537,16 +743,45 @@ static void __init osk_init(void)
 
 	osk_flash_resource.end = osk_flash_resource.start = omap_cs3_phys();
 	osk_flash_resource.end += SZ_32M - 1;
+<<<<<<< HEAD
 	osk5912_smc91x_resources[1].start = gpio_to_irq(0);
 	osk5912_smc91x_resources[1].end = gpio_to_irq(0);
 	osk5912_cf_resources[0].start = gpio_to_irq(62);
 	osk5912_cf_resources[0].end = gpio_to_irq(62);
+=======
+
+	/*
+	 * Add the GPIOs to be used as IRQs and immediately look them up
+	 * to be passed as an IRQ resource. This is ugly but should work
+	 * until the day we convert to device tree.
+	 */
+	gpiod_add_lookup_table(&osk_irq_gpio_table);
+
+	d = gpiod_get(NULL, "smc_irq", GPIOD_IN);
+	if (IS_ERR(d)) {
+		pr_err("Unable to get SMC IRQ GPIO descriptor\n");
+	} else {
+		irq_set_irq_type(gpiod_to_irq(d), IRQ_TYPE_EDGE_RISING);
+		osk5912_smc91x_resources[1] = DEFINE_RES_IRQ(gpiod_to_irq(d));
+	}
+
+	d = gpiod_get(NULL, "cf_irq", GPIOD_IN);
+	if (IS_ERR(d)) {
+		pr_err("Unable to get CF IRQ GPIO descriptor\n");
+	} else {
+		/* the CF I/O IRQ is really active-low */
+		irq_set_irq_type(gpiod_to_irq(d), IRQ_TYPE_EDGE_FALLING);
+		osk5912_cf_resources[0] = DEFINE_RES_IRQ(gpiod_to_irq(d));
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_add_devices(osk5912_devices, ARRAY_SIZE(osk5912_devices));
 
 	l = omap_readl(USB_TRANSCEIVER_CTRL);
 	l |= (3 << 1);
 	omap_writel(l, USB_TRANSCEIVER_CTRL);
 
+<<<<<<< HEAD
 	omap1_usb_init(&osk_usb_config);
 
 	/* irq for tps65010 chip */
@@ -564,16 +799,41 @@ static void __init osk_init(void)
 	omapfb_set_lcd_config(&osk_lcd_config);
 #endif
 
+=======
+	gpiod_add_lookup_table(&osk_usb_gpio_table);
+	omap1_usb_init(&osk_usb_config);
+
+	omap_serial_init();
+
+	/* irq for tps65010 chip */
+	/* bootloader effectively does:  omap_cfg_reg(U19_1610_MPUIO1); */
+	d = gpiod_get(NULL, "tps65010", GPIOD_IN);
+	if (IS_ERR(d))
+		pr_err("Unable to get TPS65010 IRQ GPIO descriptor\n");
+	else
+		osk_i2c_board_info[0].irq = gpiod_to_irq(d);
+	omap_register_i2c_bus(1, 400, osk_i2c_board_info,
+			      ARRAY_SIZE(osk_i2c_board_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MACHINE_START(OMAP_OSK, "TI-OSK")
 	/* Maintainer: Dirk Behme <dirk.behme@de.bosch.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
 	.map_io		= omap16xx_map_io,
 	.init_early	= omap1_init_early,
 	.reserve	= omap_reserve,
 	.init_irq	= omap1_init_irq,
 	.init_machine	= osk_init,
 	.timer		= &omap1_timer,
+=======
+	.map_io		= omap1_map_io,
+	.init_early	= omap1_init_early,
+	.init_irq	= omap1_init_irq,
+	.init_machine	= osk_init,
+	.init_late	= omap1_init_late,
+	.init_time	= omap1_timer_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= omap1_restart,
 MACHINE_END

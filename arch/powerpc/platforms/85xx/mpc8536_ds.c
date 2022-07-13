@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC8536 DS Board Setup
  *
  * Copyright 2008 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -16,14 +23,21 @@
 #include <linux/delay.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/memblock.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <mm/mmu_decl.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 #include <asm/swiotlb.h>
@@ -33,7 +47,11 @@
 
 #include "mpc85xx.h"
 
+<<<<<<< HEAD
 void __init mpc8536_ds_pic_init(void)
+=======
+static void __init mpc8536_ds_pic_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic = mpic_alloc(NULL, 0, MPIC_BIG_ENDIAN,
 			0, 256, " OpenPIC  ");
@@ -46,6 +64,7 @@ void __init mpc8536_ds_pic_init(void)
  */
 static void __init mpc8536_ds_setup_arch(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	struct device_node *np;
 	struct pci_controller *hose;
@@ -81,10 +100,19 @@ static void __init mpc8536_ds_setup_arch(void)
 		ppc_md.pci_dma_dev_setup = pci_dma_dev_setup_swiotlb;
 	}
 #endif
+=======
+	if (ppc_md.progress)
+		ppc_md.progress("mpc8536_ds_setup_arch()", 0);
+
+	fsl_pci_assign_primary();
+
+	swiotlb_detect_4g();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("MPC8536 DS board from Freescale Semiconductor\n");
 }
 
+<<<<<<< HEAD
 machine_device_initcall(mpc8536_ds, mpc85xx_common_publish_devices);
 
 machine_arch_initcall(mpc8536_ds, swiotlb_setup_bus_notifier);
@@ -102,13 +130,26 @@ static int __init mpc8536_ds_probe(void)
 define_machine(mpc8536_ds) {
 	.name			= "MPC8536 DS",
 	.probe			= mpc8536_ds_probe,
+=======
+machine_arch_initcall(mpc8536_ds, mpc85xx_common_publish_devices);
+
+define_machine(mpc8536_ds) {
+	.name			= "MPC8536 DS",
+	.compatible		= "fsl,mpc8536ds",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= mpc8536_ds_setup_arch,
 	.init_IRQ		= mpc8536_ds_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

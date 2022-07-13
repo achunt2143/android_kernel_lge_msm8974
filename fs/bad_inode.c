@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/bad_inode.c
  *
@@ -14,6 +18,7 @@
 #include <linux/time.h>
 #include <linux/namei.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
 
 
 static loff_t bad_file_llseek(struct file *file, loff_t offset, int origin)
@@ -71,12 +76,16 @@ static int bad_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	return -EIO;
 }
+=======
+#include <linux/fiemap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int bad_file_open(struct inode *inode, struct file *filp)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_file_flush(struct file *file, fl_owner_t id)
 {
 	return -EIO;
@@ -174,6 +183,16 @@ static const struct file_operations bad_file_ops =
 
 static int bad_inode_create (struct inode *dir, struct dentry *dentry,
 		umode_t mode, bool excl)
+=======
+static const struct file_operations bad_file_ops =
+{
+	.open		= bad_file_open,
+};
+
+static int bad_inode_create(struct mnt_idmap *idmap,
+			    struct inode *dir, struct dentry *dentry,
+			    umode_t mode, bool excl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
@@ -195,14 +214,25 @@ static int bad_inode_unlink(struct inode *dir, struct dentry *dentry)
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_symlink (struct inode *dir, struct dentry *dentry,
 		const char *symname)
+=======
+static int bad_inode_symlink(struct mnt_idmap *idmap,
+			     struct inode *dir, struct dentry *dentry,
+			     const char *symname)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_mkdir(struct inode *dir, struct dentry *dentry,
 			umode_t mode)
+=======
+static int bad_inode_mkdir(struct mnt_idmap *idmap, struct inode *dir,
+			   struct dentry *dentry, umode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
@@ -212,14 +242,26 @@ static int bad_inode_rmdir (struct inode *dir, struct dentry *dentry)
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_mknod (struct inode *dir, struct dentry *dentry,
 			umode_t mode, dev_t rdev)
+=======
+static int bad_inode_mknod(struct mnt_idmap *idmap, struct inode *dir,
+			   struct dentry *dentry, umode_t mode, dev_t rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_rename (struct inode *old_dir, struct dentry *old_dentry,
 		struct inode *new_dir, struct dentry *new_dentry)
+=======
+static int bad_inode_rename2(struct mnt_idmap *idmap,
+			     struct inode *old_dir, struct dentry *old_dentry,
+			     struct inode *new_dir, struct dentry *new_dentry,
+			     unsigned int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
@@ -230,17 +272,29 @@ static int bad_inode_readlink(struct dentry *dentry, char __user *buffer,
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_permission(struct inode *inode, int mask)
+=======
+static int bad_inode_permission(struct mnt_idmap *idmap,
+				struct inode *inode, int mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_getattr(struct vfsmount *mnt, struct dentry *dentry,
 			struct kstat *stat)
+=======
+static int bad_inode_getattr(struct mnt_idmap *idmap,
+			     const struct path *path, struct kstat *stat,
+			     u32 request_mask, unsigned int query_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_setattr(struct dentry *direntry, struct iattr *attrs)
 {
 	return -EIO;
@@ -254,6 +308,10 @@ static int bad_inode_setxattr(struct dentry *dentry, const char *name,
 
 static ssize_t bad_inode_getxattr(struct dentry *dentry, const char *name,
 			void *buffer, size_t size)
+=======
+static int bad_inode_setattr(struct mnt_idmap *idmap,
+			     struct dentry *direntry, struct iattr *attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
@@ -264,7 +322,51 @@ static ssize_t bad_inode_listxattr(struct dentry *dentry, char *buffer,
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int bad_inode_removexattr(struct dentry *dentry, const char *name)
+=======
+static const char *bad_inode_get_link(struct dentry *dentry,
+				      struct inode *inode,
+				      struct delayed_call *done)
+{
+	return ERR_PTR(-EIO);
+}
+
+static struct posix_acl *bad_inode_get_acl(struct inode *inode, int type, bool rcu)
+{
+	return ERR_PTR(-EIO);
+}
+
+static int bad_inode_fiemap(struct inode *inode,
+			    struct fiemap_extent_info *fieinfo, u64 start,
+			    u64 len)
+{
+	return -EIO;
+}
+
+static int bad_inode_update_time(struct inode *inode, int flags)
+{
+	return -EIO;
+}
+
+static int bad_inode_atomic_open(struct inode *inode, struct dentry *dentry,
+				 struct file *file, unsigned int open_flag,
+				 umode_t create_mode)
+{
+	return -EIO;
+}
+
+static int bad_inode_tmpfile(struct mnt_idmap *idmap,
+			     struct inode *inode, struct file *file,
+			     umode_t mode)
+{
+	return -EIO;
+}
+
+static int bad_inode_set_acl(struct mnt_idmap *idmap,
+			     struct dentry *dentry, struct posix_acl *acl,
+			     int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
@@ -279,6 +381,7 @@ static const struct inode_operations bad_inode_ops =
 	.mkdir		= bad_inode_mkdir,
 	.rmdir		= bad_inode_rmdir,
 	.mknod		= bad_inode_mknod,
+<<<<<<< HEAD
 	.rename		= bad_inode_rename,
 	.readlink	= bad_inode_readlink,
 	/* follow_link must be no-op, otherwise unmounting this inode
@@ -293,6 +396,21 @@ static const struct inode_operations bad_inode_ops =
 	.listxattr	= bad_inode_listxattr,
 	.removexattr	= bad_inode_removexattr,
 	/* truncate_range returns void */
+=======
+	.rename		= bad_inode_rename2,
+	.readlink	= bad_inode_readlink,
+	.permission	= bad_inode_permission,
+	.getattr	= bad_inode_getattr,
+	.setattr	= bad_inode_setattr,
+	.listxattr	= bad_inode_listxattr,
+	.get_link	= bad_inode_get_link,
+	.get_inode_acl	= bad_inode_get_acl,
+	.fiemap		= bad_inode_fiemap,
+	.update_time	= bad_inode_update_time,
+	.atomic_open	= bad_inode_atomic_open,
+	.tmpfile	= bad_inode_tmpfile,
+	.set_acl	= bad_inode_set_acl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -319,9 +437,15 @@ void make_bad_inode(struct inode *inode)
 	remove_inode_hash(inode);
 
 	inode->i_mode = S_IFREG;
+<<<<<<< HEAD
 	inode->i_atime = inode->i_mtime = inode->i_ctime =
 		current_fs_time(inode->i_sb);
 	inode->i_op = &bad_inode_ops;	
+=======
+	simple_inode_init_ts(inode);
+	inode->i_op = &bad_inode_ops;	
+	inode->i_opflags &= ~IOP_XATTR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_fop = &bad_file_ops;	
 }
 EXPORT_SYMBOL(make_bad_inode);
@@ -339,7 +463,11 @@ EXPORT_SYMBOL(make_bad_inode);
  *	Returns true if the inode in question has been marked as bad.
  */
  
+<<<<<<< HEAD
 int is_bad_inode(struct inode *inode)
+=======
+bool is_bad_inode(struct inode *inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (inode->i_op == &bad_inode_ops);	
 }

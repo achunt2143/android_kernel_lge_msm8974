@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /******************************************************************************
  *
@@ -42,6 +43,17 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+/******************************************************************************
+ *
+ * Module Name: exprep - ACPI AML field prep utilities
+ *
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -78,8 +90,13 @@ acpi_ex_generate_access(u32 field_bit_offset,
  *              any_acc keyword.
  *
  * NOTE: Need to have the region_length in order to check for boundary
+<<<<<<< HEAD
  *       conditions (end-of-region).  However, the region_length is a deferred
  *       operation.  Therefore, to complete this implementation, the generation
+=======
+ *       conditions (end-of-region). However, the region_length is a deferred
+ *       operation. Therefore, to complete this implementation, the generation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *       of this access width must be deferred until the region length has
  *       been evaluated.
  *
@@ -104,8 +121,15 @@ acpi_ex_generate_access(u32 field_bit_offset,
 	/* Round Field start offset and length to "minimal" byte boundaries */
 
 	field_byte_offset = ACPI_DIV_8(ACPI_ROUND_DOWN(field_bit_offset, 8));
+<<<<<<< HEAD
 	field_byte_end_offset = ACPI_DIV_8(ACPI_ROUND_UP(field_bit_length +
 							 field_bit_offset, 8));
+=======
+
+	field_byte_end_offset =
+	    ACPI_DIV_8(ACPI_ROUND_UP(field_bit_length + field_bit_offset, 8));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	field_byte_length = field_byte_end_offset - field_byte_offset;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
@@ -160,7 +184,12 @@ acpi_ex_generate_access(u32 field_bit_offset,
 
 			if (accesses <= 1) {
 				ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
+<<<<<<< HEAD
 						  "Entire field can be accessed with one operation of size %u\n",
+=======
+						  "Entire field can be accessed "
+						  "with one operation of size %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  access_byte_width));
 				return_VALUE(access_byte_width);
 			}
@@ -203,6 +232,10 @@ acpi_ex_generate_access(u32 field_bit_offset,
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 			  "Cannot access field in one operation, using width 8\n"));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_VALUE(8);
 }
 #endif				/* ACPI_UNDER_DEVELOPMENT */
@@ -254,29 +287,53 @@ acpi_ex_decode_field_access(union acpi_operand_object *obj_desc,
 
 	case AML_FIELD_ACCESS_BYTE:
 	case AML_FIELD_ACCESS_BUFFER:	/* ACPI 2.0 (SMBus Buffer) */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		byte_alignment = 1;
 		bit_length = 8;
 		break;
 
 	case AML_FIELD_ACCESS_WORD:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		byte_alignment = 2;
 		bit_length = 16;
 		break;
 
 	case AML_FIELD_ACCESS_DWORD:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		byte_alignment = 4;
 		bit_length = 32;
 		break;
 
 	case AML_FIELD_ACCESS_QWORD:	/* ACPI 2.0 */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		byte_alignment = 8;
 		bit_length = 64;
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* Invalid field access type */
 
 		ACPI_ERROR((AE_INFO, "Unknown field access type 0x%X", access));
+=======
+
+		/* Invalid field access type */
+
+		ACPI_ERROR((AE_INFO, "Unknown field access type 0x%X", access));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_UINT32(0);
 	}
 
@@ -308,7 +365,11 @@ acpi_ex_decode_field_access(union acpi_operand_object *obj_desc,
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the areas of the field object that are common
+<<<<<<< HEAD
  *              to the various types of fields.  Note: This is very "sensitive"
+=======
+ *              to the various types of fields. Note: This is very "sensitive"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              code because we are solving the general case for field
  *              alignment.
  *
@@ -336,13 +397,21 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
 	obj_desc->common_field.bit_length = field_bit_length;
 
 	/*
+<<<<<<< HEAD
 	 * Decode the access type so we can compute offsets.  The access type gives
+=======
+	 * Decode the access type so we can compute offsets. The access type gives
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * two pieces of information - the width of each field access and the
 	 * necessary byte_alignment (address granularity) of the access.
 	 *
 	 * For any_acc, the access_bit_width is the largest width that is both
 	 * necessary and possible in an attempt to access the whole field in one
+<<<<<<< HEAD
 	 * I/O operation.  However, for any_acc, the byte_alignment is always one
+=======
+	 * I/O operation. However, for any_acc, the byte_alignment is always one
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * byte.
 	 *
 	 * For all Buffer Fields, the byte_alignment is always one byte.
@@ -350,8 +419,13 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
 	 * For all other access types (Byte, Word, Dword, Qword), the Bitwidth is
 	 * the same (equivalent) as the byte_alignment.
 	 */
+<<<<<<< HEAD
 	access_bit_width = acpi_ex_decode_field_access(obj_desc, field_flags,
 						       &byte_alignment);
+=======
+	access_bit_width =
+	    acpi_ex_decode_field_access(obj_desc, field_flags, &byte_alignment);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!access_bit_width) {
 		return_ACPI_STATUS(AE_AML_OPERAND_VALUE);
 	}
@@ -363,7 +437,11 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
 
 	/*
 	 * base_byte_offset is the address of the start of the field within the
+<<<<<<< HEAD
 	 * region.  It is the byte address of the first *datum* (field-width data
+=======
+	 * region. It is the byte address of the first *datum* (field-width data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * unit) of the field. (i.e., the first datum that contains at least the
 	 * first *bit* of the field.)
 	 *
@@ -391,12 +469,21 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
  *
  * FUNCTION:    acpi_ex_prep_field_value
  *
+<<<<<<< HEAD
  * PARAMETERS:  Info    - Contains all field creation info
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Construct a union acpi_operand_object of type def_field and
  *              connect it to the parent Node.
+=======
+ * PARAMETERS:  info    - Contains all field creation info
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Construct an object of type union acpi_operand_object with a
+ *              subtype of def_field and connect it to the parent Node.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -480,6 +567,11 @@ acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info)
 			obj_desc->field.resource_length = info->resource_length;
 		}
 
+<<<<<<< HEAD
+=======
+		obj_desc->field.pin_number_index = info->pin_number_index;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Allow full data read from EC address space */
 
 		if ((obj_desc->field.region_obj->region.space_id ==
@@ -496,10 +588,13 @@ acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info)
 				    (u8)access_byte_width;
 			}
 		}
+<<<<<<< HEAD
 		/* An additional reference for the container */
 
 		acpi_ut_add_reference(obj_desc->field.region_obj);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 				  "RegionField: BitOff %X, Off %X, Gran %X, Region %p\n",
 				  obj_desc->field.start_field_bit_offset,
@@ -589,7 +684,12 @@ acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info)
 					  access_byte_width);
 
 		ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
+<<<<<<< HEAD
 				  "IndexField: BitOff %X, Off %X, Value %X, Gran %X, Index %p, Data %p\n",
+=======
+				  "IndexField: BitOff %X, Off %X, Value %X, "
+				  "Gran %X, Index %p, Data %p\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  obj_desc->index_field.start_field_bit_offset,
 				  obj_desc->index_field.base_byte_offset,
 				  obj_desc->index_field.value,
@@ -599,7 +699,13 @@ acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info)
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* No other types should get here */
+=======
+
+		/* No other types should get here */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -607,8 +713,14 @@ acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info)
 	 * Store the constructed descriptor (obj_desc) into the parent Node,
 	 * preserving the current type of that named_obj.
 	 */
+<<<<<<< HEAD
 	status = acpi_ns_attach_object(info->field_node, obj_desc,
 				       acpi_ns_get_type(info->field_node));
+=======
+	status =
+	    acpi_ns_attach_object(info->field_node, obj_desc,
+				  acpi_ns_get_type(info->field_node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_DEBUG_PRINT((ACPI_DB_BFIELD,
 			  "Set NamedObj %p [%4.4s], ObjDesc %p\n",

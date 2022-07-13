@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -192,10 +193,32 @@ enum qos_ie_source {
 
 #define AC_CODING u32
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+#ifndef __INC_QOS_TYPE_H
+#define __INC_QOS_TYPE_H
+
+struct qos_tsinfo {
+	u8		ts_id:4;
+	u8		ucDirection:2;
+};
+
+struct octet_string {
+	u8 *octet;
+	u16 Length;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AC0_BE	0
 #define AC1_BK	1
 #define AC2_VI	2
 #define AC3_VO	3
+<<<<<<< HEAD
 #define AC_MAX	4
 
 
@@ -245,6 +268,8 @@ enum qos_ele_subtype {
 	QOSELE_TYPE_PARAM	= 0x01,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum direction_value {
 	DIR_UP			= 0,
@@ -253,6 +278,7 @@ enum direction_value {
 	DIR_BI_DIR		= 3,
 };
 
+<<<<<<< HEAD
 enum acm_method {
 	eAcmWay0_SwAndHw		= 0,
 	eAcmWay1_HW			= 1,
@@ -411,6 +437,8 @@ struct bss_qos {
 #define IsACValid(ac)		((ac >= 0 && ac <= 7) ? true : false)
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 union aci_aifsn {
 	u8	charData;
 
@@ -422,6 +450,7 @@ union aci_aifsn {
 	} f;
 };
 
+<<<<<<< HEAD
 union ecw {
 	u8	charData;
 	struct {
@@ -441,4 +470,6 @@ union ac_param {
 	} f;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

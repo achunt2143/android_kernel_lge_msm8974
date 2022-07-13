@@ -1,18 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2011 Dmitry Eremin-Solenikov
  *  Copyright (C) 2002 - 2005 Benjamin Herrenschmidt <benh@kernel.crashing.org>
  *  and                       Markus Demleitner <msdemlei@cl.uni-heidelberg.de>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver adds basic cpufreq support for SMU & 970FX based G5 Macs,
  * that is iMac G5 and latest single CPU desktop.
  */
 
 #undef DEBUG
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -59,6 +71,7 @@
 #define CPUFREQ_LOW                   1
 
 static struct cpufreq_frequency_table maple_cpu_freqs[] = {
+<<<<<<< HEAD
 	{CPUFREQ_HIGH,		0},
 	{CPUFREQ_LOW,		0},
 	{0,			CPUFREQ_TABLE_END},
@@ -67,6 +80,11 @@ static struct cpufreq_frequency_table maple_cpu_freqs[] = {
 static struct freq_attr *maple_cpu_freqs_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
+=======
+	{0, CPUFREQ_HIGH,		0},
+	{0, CPUFREQ_LOW,		0},
+	{0, 0,				CPUFREQ_TABLE_END},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Power mode data is an array of the 32 bits PCR values to use for
@@ -74,8 +92,11 @@ static struct freq_attr *maple_cpu_freqs_attr[] = {
  */
 static int maple_pmode_cur;
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(maple_switch_mutex);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 *maple_pmode_data;
 static int maple_pmode_max;
 
@@ -135,6 +156,7 @@ static int maple_scom_query_freq(void)
  * Common interface to the cpufreq core
  */
 
+<<<<<<< HEAD
 static int maple_cpufreq_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy, maple_cpu_freqs);
@@ -167,6 +189,12 @@ static int maple_cpufreq_target(struct cpufreq_policy *policy,
 	mutex_unlock(&maple_switch_mutex);
 
 	return rc;
+=======
+static int maple_cpufreq_target(struct cpufreq_policy *policy,
+	unsigned int index)
+{
+	return maple_scom_switch_freq(index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int maple_cpufreq_get_speed(unsigned int cpu)
@@ -176,6 +204,7 @@ static unsigned int maple_cpufreq_get_speed(unsigned int cpu)
 
 static int maple_cpufreq_cpu_init(struct cpufreq_policy *policy)
 {
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = 12000;
 	policy->cur = maple_cpu_freqs[maple_scom_query_freq()].frequency;
 	/* secondary CPUs are tied to the primary one by the
@@ -198,11 +227,28 @@ static struct cpufreq_driver maple_cpufreq_driver = {
 	.target		= maple_cpufreq_target,
 	.get		= maple_cpufreq_get_speed,
 	.attr		= maple_cpu_freqs_attr,
+=======
+	cpufreq_generic_init(policy, maple_cpu_freqs, 12000);
+	return 0;
+}
+
+static struct cpufreq_driver maple_cpufreq_driver = {
+	.name		= "maple",
+	.flags		= CPUFREQ_CONST_LOOPS,
+	.init		= maple_cpufreq_cpu_init,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= maple_cpufreq_target,
+	.get		= maple_cpufreq_get_speed,
+	.attr		= cpufreq_generic_attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init maple_cpufreq_init(void)
 {
+<<<<<<< HEAD
 	struct device_node *cpus;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *cpunode;
 	unsigned int psize;
 	unsigned long max_freq;
@@ -218,6 +264,7 @@ static int __init maple_cpufreq_init(void)
 	    !of_machine_is_compatible("Momentum,Apache"))
 		return 0;
 
+<<<<<<< HEAD
 	cpus = of_find_node_by_path("/cpus");
 	if (cpus == NULL) {
 		DBG("No /cpus node !\n");
@@ -236,14 +283,25 @@ static int __init maple_cpufreq_init(void)
 	if (cpunode == NULL) {
 		printk(KERN_ERR "cpufreq: Can't find any CPU 0 node\n");
 		goto bail_cpus;
+=======
+	/* Get first CPU node */
+	cpunode = of_cpu_device_node_get(0);
+	if (cpunode == NULL) {
+		pr_err("Can't find any CPU 0 node\n");
+		goto bail_noprops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Check 970FX for now */
 	/* we actually don't care on which CPU to access PVR */
 	pvr_hi = PVR_VER(mfspr(SPRN_PVR));
 	if (pvr_hi != 0x3c && pvr_hi != 0x44) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cpufreq: Unsupported CPU version (%x)\n",
 				pvr_hi);
+=======
+		pr_err("Unsupported CPU version (%x)\n", pvr_hi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail_noprops;
 	}
 
@@ -269,7 +327,11 @@ static int __init maple_cpufreq_init(void)
 	 */
 	valp = of_get_property(cpunode, "clock-frequency", NULL);
 	if (!valp)
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		goto bail_noprops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_freq = (*valp)/1000;
 	maple_cpu_freqs[0].frequency = max_freq;
 	maple_cpu_freqs[1].frequency = max_freq/2;
@@ -282,14 +344,20 @@ static int __init maple_cpufreq_init(void)
 	maple_pmode_cur = -1;
 	maple_scom_switch_freq(maple_scom_query_freq());
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Registering Maple CPU frequency driver\n");
 	printk(KERN_INFO "Low: %d Mhz, High: %d Mhz, Cur: %d MHz\n",
+=======
+	pr_info("Registering Maple CPU frequency driver\n");
+	pr_info("Low: %d Mhz, High: %d Mhz, Cur: %d MHz\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		maple_cpu_freqs[1].frequency/1000,
 		maple_cpu_freqs[0].frequency/1000,
 		maple_cpu_freqs[maple_pmode_cur].frequency/1000);
 
 	rc = cpufreq_register_driver(&maple_cpufreq_driver);
 
+<<<<<<< HEAD
 	of_node_put(cpunode);
 	of_node_put(cpus);
 
@@ -299,6 +367,10 @@ bail_noprops:
 	of_node_put(cpunode);
 bail_cpus:
 	of_node_put(cpus);
+=======
+bail_noprops:
+	of_node_put(cpunode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }

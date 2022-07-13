@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Management Support
  *
@@ -6,11 +10,15 @@
  * protocols such as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
+<<<<<<< HEAD
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +34,8 @@
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NETLABEL_MGMT_H
@@ -59,7 +69,14 @@
  *
  *     NLBL_MGMT_A_CV4DOI
  *
+<<<<<<< HEAD
  *   If using NETLBL_NLTYPE_UNLABELED no other attributes are required.
+=======
+ *   If using NETLBL_NLTYPE_UNLABELED no other attributes are required,
+ *   however the following attribute may optionally be sent:
+ *
+ *     NLBL_MGMT_A_FAMILY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * o REMOVE:
  *   Sent by an application to remove a domain mapping from the NetLabel
@@ -78,6 +95,10 @@
  *   Required attributes:
  *
  *     NLBL_MGMT_A_DOMAIN
+<<<<<<< HEAD
+=======
+ *     NLBL_MGMT_A_FAMILY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   If the IP address selectors are not used the following attribute is
  *   required:
@@ -109,7 +130,14 @@
  *
  *     NLBL_MGMT_A_CV4DOI
  *
+<<<<<<< HEAD
  *   If using NETLBL_NLTYPE_UNLABELED no other attributes are required.
+=======
+ *   If using NETLBL_NLTYPE_UNLABELED no other attributes are required,
+ *   however the following attribute may optionally be sent:
+ *
+ *     NLBL_MGMT_A_FAMILY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * o REMOVEDEF:
  *   Sent by an application to remove the default domain mapping from the
@@ -118,6 +146,7 @@
  * o LISTDEF:
  *   This message can be sent either from an application or by the kernel in
  *   response to an application generated LISTDEF message.  When sent by an
+<<<<<<< HEAD
  *   application there is no payload.  On success the kernel should send a
  *   response using the following format.
  *
@@ -125,6 +154,19 @@
  *   required:
  *
  *     NLBL_MGMT_A_PROTOCOL
+=======
+ *   application there may be an optional payload.
+ *
+ *     NLBL_MGMT_A_FAMILY
+ *
+ *   On success the kernel should send a response using the following format:
+ *
+ *   If the IP address selectors are not used the following attributes are
+ *   required:
+ *
+ *     NLBL_MGMT_A_PROTOCOL
+ *     NLBL_MGMT_A_FAMILY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   If the IP address selectors are used then the following attritbute is
  *   required:
@@ -210,6 +252,15 @@ enum {
 	/* (NLA_NESTED)
 	 * the selector list, there must be at least one
 	 * NLBL_MGMT_A_ADDRSELECTOR attribute */
+<<<<<<< HEAD
+=======
+	NLBL_MGMT_A_FAMILY,
+	/* (NLA_U16)
+	 * The address family */
+	NLBL_MGMT_A_CLPDOI,
+	/* (NLA_U32)
+	 * the CALIPSO DOI value */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__NLBL_MGMT_A_MAX,
 };
 #define NLBL_MGMT_A_MAX (__NLBL_MGMT_A_MAX - 1)

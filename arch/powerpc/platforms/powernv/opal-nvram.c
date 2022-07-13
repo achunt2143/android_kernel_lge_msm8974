@@ -1,21 +1,36 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PowerNV nvram code.
  *
  * Copyright 2011 IBM Corp.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define DEBUG
 
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/of.h>
 
 #include <asm/opal.h>
+<<<<<<< HEAD
+=======
+#include <asm/nvram.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 
 static unsigned int nvram_size;
@@ -42,6 +57,13 @@ static ssize_t opal_nvram_read(char *buf, size_t count, loff_t *index)
 	return count;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * This can be called in the panic path with interrupts off, so use
+ * mdelay in that case.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t opal_nvram_write(char *buf, size_t count, loff_t *index)
 {
 	s64 rc = OPAL_BUSY;
@@ -55,17 +77,53 @@ static ssize_t opal_nvram_write(char *buf, size_t count, loff_t *index)
 
 	while (rc == OPAL_BUSY || rc == OPAL_BUSY_EVENT) {
 		rc = opal_write_nvram(__pa(buf), count, off);
+<<<<<<< HEAD
 		if (rc == OPAL_BUSY_EVENT)
 			opal_poll_events(NULL);
 	}
+=======
+		if (rc == OPAL_BUSY_EVENT) {
+			if (in_interrupt() || irqs_disabled())
+				mdelay(OPAL_BUSY_DELAY_MS);
+			else
+				msleep(OPAL_BUSY_DELAY_MS);
+			opal_poll_events(NULL);
+		} else if (rc == OPAL_BUSY) {
+			if (in_interrupt() || irqs_disabled())
+				mdelay(OPAL_BUSY_DELAY_MS);
+			else
+				msleep(OPAL_BUSY_DELAY_MS);
+		}
+	}
+
+	if (rc)
+		return -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*index += count;
 	return count;
 }
 
+<<<<<<< HEAD
 void __init opal_nvram_init(void)
 {
 	struct device_node *np;
 	const u32 *nbytes_p;
+=======
+static int __init opal_nvram_init_log_partitions(void)
+{
+	/* Scan nvram for partitions */
+	nvram_scan_partitions();
+	nvram_init_oops_partition(0);
+	return 0;
+}
+machine_arch_initcall(powernv, opal_nvram_init_log_partitions);
+
+void __init opal_nvram_init(void)
+{
+	struct device_node *np;
+	const __be32 *nbytes_p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np = of_find_compatible_node(NULL, NULL, "ibm,opal-nvram");
 	if (np == NULL)
@@ -76,9 +134,15 @@ void __init opal_nvram_init(void)
 		of_node_put(np);
 		return;
 	}
+<<<<<<< HEAD
 	nvram_size = *nbytes_p;
 
 	printk(KERN_INFO "OPAL nvram setup, %u bytes\n", nvram_size);
+=======
+	nvram_size = be32_to_cpup(nbytes_p);
+
+	pr_info("OPAL nvram setup, %u bytes\n", nvram_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(np);
 
 	ppc_md.nvram_read = opal_nvram_read;

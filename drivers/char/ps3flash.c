@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PS3 FLASH ROM Storage Driver
  *
  * Copyright (C) 2007 Sony Computer Entertainment Inc.
  * Copyright 2007 Sony Corp.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -98,6 +105,7 @@ static int ps3flash_fetch(struct ps3_storage_device *dev, u64 start_sector)
 static loff_t ps3flash_llseek(struct file *file, loff_t offset, int origin)
 {
 	struct ps3_storage_device *dev = ps3flash_dev;
+<<<<<<< HEAD
 	loff_t res;
 
 	mutex_lock(&file->f_mapping->host->i_mutex);
@@ -124,6 +132,10 @@ static loff_t ps3flash_llseek(struct file *file, loff_t offset, int origin)
 out:
 	mutex_unlock(&file->f_mapping->host->i_mutex);
 	return res;
+=======
+	return generic_file_llseek_size(file, offset, origin, MAX_LFS_FILESIZE,
+			dev->regions[dev->region_idx].size*dev->blk_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t ps3flash_read(char __user *userbuf, void *kernelbuf,
@@ -312,11 +324,19 @@ static int ps3flash_flush(struct file *file, fl_owner_t id)
 
 static int ps3flash_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
+<<<<<<< HEAD
 	struct inode *inode = file->f_path.dentry->d_inode;
 	int err;
 	mutex_lock(&inode->i_mutex);
 	err = ps3flash_writeback(ps3flash_dev);
 	mutex_unlock(&inode->i_mutex);
+=======
+	struct inode *inode = file_inode(file);
+	int err;
+	inode_lock(inode);
+	err = ps3flash_writeback(ps3flash_dev);
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -363,7 +383,11 @@ static struct miscdevice ps3flash_misc = {
 	.fops	= &ps3flash_fops,
 };
 
+<<<<<<< HEAD
 static int __devinit ps3flash_probe(struct ps3_system_bus_device *_dev)
+=======
+static int ps3flash_probe(struct ps3_system_bus_device *_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
 	struct ps3flash_private *priv;
@@ -439,7 +463,11 @@ fail:
 	return error;
 }
 
+<<<<<<< HEAD
 static int ps3flash_remove(struct ps3_system_bus_device *_dev)
+=======
+static void ps3flash_remove(struct ps3_system_bus_device *_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
 
@@ -449,7 +477,10 @@ static int ps3flash_remove(struct ps3_system_bus_device *_dev)
 	kfree(ps3_system_bus_get_drvdata(&dev->sbd));
 	ps3_system_bus_set_drvdata(&dev->sbd, NULL);
 	ps3flash_dev = NULL;
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

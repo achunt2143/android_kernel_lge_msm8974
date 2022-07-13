@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctsrc.c
  *
  * @Brief
@@ -13,7 +20,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 13 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ctsrc.h"
@@ -335,7 +345,11 @@ static int src_default_config_arcrw(struct src *src)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct src_rsc_ops src_rsc_ops = {
+=======
+static const struct src_rsc_ops src_rsc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_state		= src_set_state,
 	.set_bm			= src_set_bm,
 	.set_sf			= src_set_sf,
@@ -431,7 +445,12 @@ get_src_rsc(struct src_mgr *mgr, const struct src_desc *desc, struct src **rsrc)
 
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ctxfi: Can't meet SRC resource request!\n");
+=======
+		dev_err(mgr->card->dev,
+			"Can't meet SRC resource request!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -543,7 +562,11 @@ static int src_mgr_commit_write(struct src_mgr *mgr)
 	return 0;
 }
 
+<<<<<<< HEAD
 int src_mgr_create(void *hw, struct src_mgr **rsrc_mgr)
+=======
+int src_mgr_create(struct hw *hw, void **rsrc_mgr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 	struct src_mgr *src_mgr;
@@ -558,7 +581,11 @@ int src_mgr_create(void *hw, struct src_mgr **rsrc_mgr)
 		goto error1;
 
 	spin_lock_init(&src_mgr->mgr_lock);
+<<<<<<< HEAD
 	conj_mask = ((struct hw *)hw)->src_dirty_conj_mask();
+=======
+	conj_mask = hw->src_dirty_conj_mask();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	src_mgr->get_src = get_src_rsc;
 	src_mgr->put_src = put_src_rsc;
@@ -566,12 +593,22 @@ int src_mgr_create(void *hw, struct src_mgr **rsrc_mgr)
 	src_mgr->src_enable = src_enable;
 	src_mgr->src_disable = src_disable;
 	src_mgr->commit_write = src_mgr_commit_write;
+<<<<<<< HEAD
 
 	/* Disable all SRC resources. */
 	for (i = 0; i < 256; i++)
 		((struct hw *)hw)->src_mgr_dsb_src(src_mgr->mgr.ctrl_blk, i);
 
 	((struct hw *)hw)->src_mgr_commit_write(hw, src_mgr->mgr.ctrl_blk);
+=======
+	src_mgr->card = hw->card;
+
+	/* Disable all SRC resources. */
+	for (i = 0; i < 256; i++)
+		hw->src_mgr_dsb_src(src_mgr->mgr.ctrl_blk, i);
+
+	hw->src_mgr_commit_write(hw, src_mgr->mgr.ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rsrc_mgr = src_mgr;
 
@@ -582,8 +619,14 @@ error1:
 	return err;
 }
 
+<<<<<<< HEAD
 int src_mgr_destroy(struct src_mgr *src_mgr)
 {
+=======
+int src_mgr_destroy(void *ptr)
+{
+	struct src_mgr *src_mgr = ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsc_mgr_uninit(&src_mgr->mgr);
 	kfree(src_mgr);
 
@@ -592,6 +635,7 @@ int src_mgr_destroy(struct src_mgr *src_mgr)
 
 /* SRCIMP resource manager operations */
 
+<<<<<<< HEAD
 static int srcimp_master(struct rsc *rsc)
 {
 	rsc->conj = 0;
@@ -602,6 +646,17 @@ static int srcimp_next_conj(struct rsc *rsc)
 {
 	rsc->conj++;
 	return container_of(rsc, struct srcimp, rsc)->idx[rsc->conj];
+=======
+static void srcimp_master(struct rsc *rsc)
+{
+	rsc->conj = 0;
+	rsc->idx = container_of(rsc, struct srcimp, rsc)->idx[0];
+}
+
+static void srcimp_next_conj(struct rsc *rsc)
+{
+	rsc->conj++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int srcimp_index(const struct rsc *rsc)
@@ -609,7 +664,11 @@ static int srcimp_index(const struct rsc *rsc)
 	return container_of(rsc, struct srcimp, rsc)->idx[rsc->conj];
 }
 
+<<<<<<< HEAD
 static struct rsc_ops srcimp_basic_rsc_ops = {
+=======
+static const struct rsc_ops srcimp_basic_rsc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.master		= srcimp_master,
 	.next_conj	= srcimp_next_conj,
 	.index		= srcimp_index,
@@ -660,7 +719,11 @@ static int srcimp_unmap(struct srcimp *srcimp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct srcimp_rsc_ops srcimp_ops = {
+=======
+static const struct srcimp_rsc_ops srcimp_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.map = srcimp_map,
 	.unmap = srcimp_unmap
 };
@@ -677,7 +740,11 @@ static int srcimp_rsc_init(struct srcimp *srcimp,
 		return err;
 
 	/* Reserve memory for imapper nodes */
+<<<<<<< HEAD
 	srcimp->imappers = kzalloc(sizeof(struct imapper)*desc->msr,
+=======
+	srcimp->imappers = kcalloc(desc->msr, sizeof(struct imapper),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   GFP_KERNEL);
 	if (!srcimp->imappers) {
 		err = -ENOMEM;
@@ -700,10 +767,15 @@ error1:
 
 static int srcimp_rsc_uninit(struct srcimp *srcimp)
 {
+<<<<<<< HEAD
 	if (NULL != srcimp->imappers) {
 		kfree(srcimp->imappers);
 		srcimp->imappers = NULL;
 	}
+=======
+	kfree(srcimp->imappers);
+	srcimp->imappers = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srcimp->ops = NULL;
 	srcimp->mgr = NULL;
 	rsc_uninit(&srcimp->rsc);
@@ -739,7 +811,12 @@ static int get_srcimp_rsc(struct srcimp_mgr *mgr,
 	}
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ctxfi: Can't meet SRCIMP resource request!\n");
+=======
+		dev_err(mgr->card->dev,
+			"Can't meet SRCIMP resource request!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error1;
 	}
 
@@ -825,7 +902,11 @@ static int srcimp_imap_delete(struct srcimp_mgr *mgr, struct imapper *entry)
 	return err;
 }
 
+<<<<<<< HEAD
 int srcimp_mgr_create(void *hw, struct srcimp_mgr **rsrcimp_mgr)
+=======
+int srcimp_mgr_create(struct hw *hw, void **rsrcimp_mgr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct srcimp_mgr *srcimp_mgr;
@@ -857,6 +938,10 @@ int srcimp_mgr_create(void *hw, struct srcimp_mgr **rsrcimp_mgr)
 	srcimp_mgr->put_srcimp = put_srcimp_rsc;
 	srcimp_mgr->imap_add = srcimp_imap_add;
 	srcimp_mgr->imap_delete = srcimp_imap_delete;
+<<<<<<< HEAD
+=======
+	srcimp_mgr->card = hw->card;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rsrcimp_mgr = srcimp_mgr;
 
@@ -869,8 +954,14 @@ error1:
 	return err;
 }
 
+<<<<<<< HEAD
 int srcimp_mgr_destroy(struct srcimp_mgr *srcimp_mgr)
 {
+=======
+int srcimp_mgr_destroy(void *ptr)
+{
+	struct srcimp_mgr *srcimp_mgr = ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/* free src input mapper list */

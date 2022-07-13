@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/pci_iommu.c
  */
@@ -6,11 +10,19 @@
 #include <linux/mm.h>
 #include <linux/pci.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/export.h>
 #include <linux/scatterlist.h>
 #include <linux/log2.h>
 #include <linux/dma-mapping.h>
+=======
+#include <linux/memblock.h>
+#include <linux/export.h>
+#include <linux/scatterlist.h>
+#include <linux/log2.h>
+#include <linux/dma-map-ops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/iommu-helper.h>
 
 #include <asm/io.h>
@@ -70,6 +82,7 @@ iommu_arena_new_node(int nid, struct pci_controller *hose, dma_addr_t base,
 	if (align < mem_size)
 		align = mem_size;
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_DISCONTIGMEM
 
@@ -95,6 +108,16 @@ iommu_arena_new_node(int nid, struct pci_controller *hose, dma_addr_t base,
 	arena->ptes = __alloc_bootmem(mem_size, align, 0);
 
 #endif /* CONFIG_DISCONTIGMEM */
+=======
+	arena = memblock_alloc(sizeof(*arena), SMP_CACHE_BYTES);
+	if (!arena)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      sizeof(*arena));
+	arena->ptes = memblock_alloc(mem_size, align);
+	if (!arena->ptes)
+		panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
+		      __func__, mem_size, align);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&arena->lock);
 	arena->hose = hose;
@@ -128,12 +151,16 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
 	unsigned long boundary_size;
 
 	base = arena->dma_base >> PAGE_SHIFT;
+<<<<<<< HEAD
 	if (dev) {
 		boundary_size = dma_get_seg_boundary(dev) + 1;
 		boundary_size >>= PAGE_SHIFT;
 	} else {
 		boundary_size = 1UL << (32 - PAGE_SHIFT);
 	}
+=======
+	boundary_size = dma_get_seg_boundary_nr_pages(dev, PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Search forward for the first mask-aligned sequence of N free ptes */
 	ptes = arena->ptes;
@@ -148,10 +175,19 @@ again:
 			goto again;
 		}
 
+<<<<<<< HEAD
 		if (ptes[p+i])
 			p = ALIGN(p + i + 1, mask + 1), i = 0;
 		else
 			i = i + 1;
+=======
+		if (ptes[p+i]) {
+			p = ALIGN(p + i + 1, mask + 1);
+			i = 0;
+		} else {
+			i = i + 1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (i < n) {
@@ -236,7 +272,11 @@ static int pci_dac_dma_supported(struct pci_dev *dev, u64 mask)
 		ok = 0;
 
 	/* If both conditions above are met, we are fine. */
+<<<<<<< HEAD
 	DBGA("pci_dac_dma_supported %s from %p\n",
+=======
+	DBGA("pci_dac_dma_supported %s from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     ok ? "yes" : "no", __builtin_return_address(0));
 
 	return ok;
@@ -268,7 +308,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 	    && paddr + size <= __direct_map_size) {
 		ret = paddr + __direct_map_base;
 
+<<<<<<< HEAD
 		DBGA2("pci_map_single: [%p,%zx] -> direct %llx from %p\n",
+=======
+		DBGA2("pci_map_single: [%p,%zx] -> direct %llx from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      cpu_addr, size, ret, __builtin_return_address(0));
 
 		return ret;
@@ -279,7 +323,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 	if (dac_allowed) {
 		ret = paddr + alpha_mv.pci_dac_offset;
 
+<<<<<<< HEAD
 		DBGA2("pci_map_single: [%p,%zx] -> DAC %llx from %p\n",
+=======
+		DBGA2("pci_map_single: [%p,%zx] -> DAC %llx from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      cpu_addr, size, ret, __builtin_return_address(0));
 
 		return ret;
@@ -290,7 +338,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 	   use direct_map above, it now must be considered an error. */
 	if (! alpha_mv.mv_pci_tbi) {
 		printk_once(KERN_WARNING "pci_map_single: no HW sg\n");
+<<<<<<< HEAD
 		return 0;
+=======
+		return DMA_MAPPING_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	arena = hose->sg_pci;
@@ -306,7 +358,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 	if (dma_ofs < 0) {
 		printk(KERN_WARNING "pci_map_single failed: "
 		       "could not allocate dma page tables\n");
+<<<<<<< HEAD
 		return 0;
+=======
+		return DMA_MAPPING_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	paddr &= PAGE_MASK;
@@ -316,7 +372,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 	ret = arena->dma_base + dma_ofs * PAGE_SIZE;
 	ret += (unsigned long)cpu_addr & ~PAGE_MASK;
 
+<<<<<<< HEAD
 	DBGA2("pci_map_single: [%p,%zx] np %ld -> sg %llx from %p\n",
+=======
+	DBGA2("pci_map_single: [%p,%zx] np %ld -> sg %llx from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      cpu_addr, size, npages, ret, __builtin_return_address(0));
 
 	return ret;
@@ -325,7 +385,11 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
 /* Helper for generic DMA-mapping functions. */
 static struct pci_dev *alpha_gendev_to_pci(struct device *dev)
 {
+<<<<<<< HEAD
 	if (dev && dev->bus == &pci_bus_type)
+=======
+	if (dev && dev_is_pci(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return to_pci_dev(dev);
 
 	/* Assume that non-PCI devices asking for DMA are either ISA or EISA,
@@ -349,13 +413,21 @@ static struct pci_dev *alpha_gendev_to_pci(struct device *dev)
 static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
 				     unsigned long offset, size_t size,
 				     enum dma_data_direction dir,
+<<<<<<< HEAD
 				     struct dma_attrs *attrs)
+=======
+				     unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	int dac_allowed;
 
+<<<<<<< HEAD
 	if (dir == PCI_DMA_NONE)
 		BUG();
+=======
+	BUG_ON(dir == DMA_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dac_allowed = pdev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0; 
 	return pci_map_single_1(pdev, (char *)page_address(page) + offset, 
@@ -370,7 +442,11 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
 
 static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 				 size_t size, enum dma_data_direction dir,
+<<<<<<< HEAD
 				 struct dma_attrs *attrs)
+=======
+				 unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
@@ -378,21 +454,33 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 	struct pci_iommu_arena *arena;
 	long dma_ofs, npages;
 
+<<<<<<< HEAD
 	if (dir == PCI_DMA_NONE)
 		BUG();
+=======
+	BUG_ON(dir == DMA_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dma_addr >= __direct_map_base
 	    && dma_addr < __direct_map_base + __direct_map_size) {
 		/* Nothing to do.  */
 
+<<<<<<< HEAD
 		DBGA2("pci_unmap_single: direct [%llx,%zx] from %p\n",
+=======
+		DBGA2("pci_unmap_single: direct [%llx,%zx] from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      dma_addr, size, __builtin_return_address(0));
 
 		return;
 	}
 
 	if (dma_addr > 0xffffffff) {
+<<<<<<< HEAD
 		DBGA2("pci64_unmap_single: DAC [%llx,%zx] from %p\n",
+=======
+		DBGA2("pci64_unmap_single: DAC [%llx,%zx] from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      dma_addr, size, __builtin_return_address(0));
 		return;
 	}
@@ -424,7 +512,11 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 
 	spin_unlock_irqrestore(&arena->lock, flags);
 
+<<<<<<< HEAD
 	DBGA2("pci_unmap_single: sg [%llx,%zx] np %ld from %p\n",
+=======
+	DBGA2("pci_unmap_single: sg [%llx,%zx] np %ld from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      dma_addr, size, npages, __builtin_return_address(0));
 }
 
@@ -435,7 +527,11 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
 
 static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
 				      dma_addr_t *dma_addrp, gfp_t gfp,
+<<<<<<< HEAD
 				      struct dma_attrs *attrs)
+=======
+				      unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	void *cpu_addr;
@@ -444,10 +540,17 @@ static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
 	gfp &= ~GFP_DMA;
 
 try_again:
+<<<<<<< HEAD
 	cpu_addr = (void *)__get_free_pages(gfp, order);
 	if (! cpu_addr) {
 		printk(KERN_INFO "pci_alloc_consistent: "
 		       "get_free_pages failed from %p\n",
+=======
+	cpu_addr = (void *)__get_free_pages(gfp | __GFP_ZERO, order);
+	if (! cpu_addr) {
+		printk(KERN_INFO "pci_alloc_consistent: "
+		       "get_free_pages failed from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__builtin_return_address(0));
 		/* ??? Really atomic allocation?  Otherwise we could play
 		   with vmalloc and sg if we can't find contiguous memory.  */
@@ -456,7 +559,11 @@ try_again:
 	memset(cpu_addr, 0, size);
 
 	*dma_addrp = pci_map_single_1(pdev, cpu_addr, size, 0);
+<<<<<<< HEAD
 	if (*dma_addrp == 0) {
+=======
+	if (*dma_addrp == DMA_MAPPING_ERROR) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_pages((unsigned long)cpu_addr, order);
 		if (alpha_mv.mv_pci_tbi || (gfp & GFP_DMA))
 			return NULL;
@@ -466,7 +573,11 @@ try_again:
 		goto try_again;
 	}
 
+<<<<<<< HEAD
 	DBGA2("pci_alloc_consistent: %zx -> [%p,%llx] from %p\n",
+=======
+	DBGA2("pci_alloc_consistent: %zx -> [%p,%llx] from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      size, cpu_addr, *dma_addrp, __builtin_return_address(0));
 
 	return cpu_addr;
@@ -480,6 +591,7 @@ try_again:
 
 static void alpha_pci_free_coherent(struct device *dev, size_t size,
 				    void *cpu_addr, dma_addr_t dma_addr,
+<<<<<<< HEAD
 				    struct dma_attrs *attrs)
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
@@ -487,6 +599,15 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
 	free_pages((unsigned long)cpu_addr, get_order(size));
 
 	DBGA2("pci_free_consistent: [%llx,%zx] from %p\n",
+=======
+				    unsigned long attrs)
+{
+	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
+	free_pages((unsigned long)cpu_addr, get_order(size));
+
+	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      dma_addr, size, __builtin_return_address(0));
 }
 
@@ -627,7 +748,11 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
 
 		while (sg+1 < end && (int) sg[1].dma_address == -1) {
 			size += sg[1].length;
+<<<<<<< HEAD
 			sg++;
+=======
+			sg = sg_next(sg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		npages = iommu_num_pages(paddr, size, PAGE_SIZE);
@@ -653,7 +778,11 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
 
 static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 			    int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			    struct dma_attrs *attrs)
+=======
+			    unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	struct scatterlist *start, *end, *out;
@@ -662,8 +791,12 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 	dma_addr_t max_dma;
 	int dac_allowed;
 
+<<<<<<< HEAD
 	if (dir == PCI_DMA_NONE)
 		BUG();
+=======
+	BUG_ON(dir == DMA_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dac_allowed = dev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0;
 
@@ -673,7 +806,13 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 		sg->dma_address
 		  = pci_map_single_1(pdev, SG_ENT_VIRT_ADDRESS(sg),
 				     sg->length, dac_allowed);
+<<<<<<< HEAD
 		return sg->dma_address != 0;
+=======
+		if (sg->dma_address == DMA_MAPPING_ERROR)
+			return -EIO;
+		return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	start = sg;
@@ -709,8 +848,15 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 	if (out < end)
 		out->dma_length = 0;
 
+<<<<<<< HEAD
 	if (out - start == 0)
 		printk(KERN_WARNING "pci_map_sg failed: no entries?\n");
+=======
+	if (out - start == 0) {
+		printk(KERN_WARNING "pci_map_sg failed: no entries?\n");
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBGA("pci_map_sg: %ld entries\n", out - start);
 
 	return out - start;
@@ -722,8 +868,13 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 	/* Some allocation failed while mapping the scatterlist
 	   entries.  Unmap them now.  */
 	if (out > start)
+<<<<<<< HEAD
 		pci_unmap_sg(pdev, start, out - start, dir);
 	return 0;
+=======
+		dma_unmap_sg(&pdev->dev, start, out - start, dir);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Unmap a set of streaming mode DMA translations.  Again, cpu read
@@ -732,7 +883,11 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
 
 static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
 			       int nents, enum dma_data_direction dir,
+<<<<<<< HEAD
 			       struct dma_attrs *attrs)
+=======
+			       unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
 	unsigned long flags;
@@ -742,8 +897,12 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
 	dma_addr_t max_dma;
 	dma_addr_t fbeg, fend;
 
+<<<<<<< HEAD
 	if (dir == PCI_DMA_NONE)
 		BUG();
+=======
+	BUG_ON(dir == DMA_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (! alpha_mv.mv_pci_tbi)
 		return;
@@ -938,6 +1097,7 @@ iommu_unbind(struct pci_iommu_arena *arena, long pg_start, long pg_count)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int alpha_pci_mapping_error(struct device *dev, dma_addr_t dma_addr)
 {
 	return dma_addr == 0;
@@ -954,12 +1114,16 @@ static int alpha_pci_set_mask(struct device *dev, u64 mask)
 }
 
 struct dma_map_ops alpha_pci_ops = {
+=======
+const struct dma_map_ops alpha_pci_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.alloc			= alpha_pci_alloc_coherent,
 	.free			= alpha_pci_free_coherent,
 	.map_page		= alpha_pci_map_page,
 	.unmap_page		= alpha_pci_unmap_page,
 	.map_sg			= alpha_pci_map_sg,
 	.unmap_sg		= alpha_pci_unmap_sg,
+<<<<<<< HEAD
 	.mapping_error		= alpha_pci_mapping_error,
 	.dma_supported		= alpha_pci_supported,
 	.set_dma_mask		= alpha_pci_set_mask,
@@ -967,3 +1131,12 @@ struct dma_map_ops alpha_pci_ops = {
 
 struct dma_map_ops *dma_ops = &alpha_pci_ops;
 EXPORT_SYMBOL(dma_ops);
+=======
+	.dma_supported		= alpha_pci_supported,
+	.mmap			= dma_common_mmap,
+	.get_sgtable		= dma_common_get_sgtable,
+	.alloc_pages		= dma_common_alloc_pages,
+	.free_pages		= dma_common_free_pages,
+};
+EXPORT_SYMBOL(alpha_pci_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

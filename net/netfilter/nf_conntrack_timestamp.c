@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * (C) 2010 Pablo Neira Ayuso <pablo@netfilter.org>
  *
@@ -6,6 +7,15 @@
  * published by the Free Software Foundation (or any later at your option).
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * (C) 2010 Pablo Neira Ayuso <pablo@netfilter.org>
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -20,6 +30,7 @@ static bool nf_ct_tstamp __read_mostly;
 module_param_named(tstamp, nf_ct_tstamp, bool, 0644);
 MODULE_PARM_DESC(tstamp, "Enable connection tracking flow timestamping.");
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 static struct ctl_table tstamp_sysctl_table[] = {
 	{
@@ -117,4 +128,9 @@ void nf_conntrack_tstamp_fini(struct net *net)
 	nf_conntrack_tstamp_fini_sysctl(net);
 	if (net_eq(net, &init_net))
 		nf_ct_extend_unregister(&tstamp_extend);
+=======
+void nf_conntrack_tstamp_pernet_init(struct net *net)
+{
+	net->ct.sysctl_tstamp = nf_ct_tstamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

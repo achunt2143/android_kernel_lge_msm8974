@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The ARM LDRD and Thumb LDRSB instructions use bit 20/11 (ARM/Thumb)
  * differently than every other instruction, so it is set to 0 (write)
@@ -13,6 +17,10 @@
 	tst	\psr, #PSR_T_BIT
 	beq	not_thumb
 	ldrh	\tmp, [\pc]			@ Read aborted Thumb instruction
+<<<<<<< HEAD
+=======
+	uaccess_disable ip			@ disable userspace access
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and	\tmp, \tmp, # 0xfe00		@ Mask opcode field
 	cmp	\tmp, # 0x5600			@ Is it ldrsb?
 	orreq	\tmp, \tmp, #1 << 11		@ Set L-bit if yes
@@ -29,6 +37,7 @@ not_thumb:
  *   [7:4] == 1101
  *    [20] == 0
  */
+<<<<<<< HEAD
 	.macro	do_ldrd_abort, tmp, insn
 	tst	\insn, #0x0e100000		@ [27:25,20] == 0
 	bne	not_ldrd
@@ -38,3 +47,11 @@ not_thumb:
 not_ldrd:
 	.endm
 
+=======
+	.macro	teq_ldrd, tmp, insn
+	mov	\tmp, #0x0e100000
+	orr	\tmp, #0x000000f0
+	and	\tmp, \insn, \tmp
+	teq	\tmp, #0x000000d0
+	.endm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

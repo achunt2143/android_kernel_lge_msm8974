@@ -10,7 +10,11 @@ Description:
 		any cache it aliases, if any).
 Users:		kernel memory tuning tools
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/aliases
+=======
+What:		/sys/kernel/slab/<cache>/aliases
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -19,7 +23,11 @@ Description:
 		The aliases file is read-only and specifies how many caches
 		have merged into this cache.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/align
+=======
+What:		/sys/kernel/slab/<cache>/align
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -28,7 +36,11 @@ Description:
 		The align file is read-only and specifies the cache's object
 		alignment in bytes.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/alloc_calls
+=======
+What:		/sys/kernel/slab/<cache>/alloc_calls
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -37,9 +49,15 @@ Description:
 		The alloc_calls file is read-only and lists the kernel code
 		locations from which allocations for this cache were performed.
 		The alloc_calls file only contains information if debugging is
+<<<<<<< HEAD
 		enabled for that cache (see Documentation/vm/slub.txt).
 
 What:		/sys/kernel/slab/cache/alloc_fastpath
+=======
+		enabled for that cache (see Documentation/mm/slub.rst).
+
+What:		/sys/kernel/slab/<cache>/alloc_fastpath
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -50,7 +68,11 @@ Description:
 		current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/alloc_from_partial
+=======
+What:		/sys/kernel/slab/<cache>/alloc_from_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -62,7 +84,11 @@ Description:
 		count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/alloc_refill
+=======
+What:		/sys/kernel/slab/<cache>/alloc_refill
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -73,7 +99,11 @@ Description:
 		remote cpu frees.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/alloc_slab
+=======
+What:		/sys/kernel/slab/<cache>/alloc_slab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -84,7 +114,11 @@ Description:
 		clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/alloc_slowpath
+=======
+What:		/sys/kernel/slab/<cache>/alloc_slowpath
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -96,7 +130,11 @@ Description:
 		clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/cache_dma
+=======
+What:		/sys/kernel/slab/<cache>/cache_dma
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -106,7 +144,11 @@ Description:
 		are from ZONE_DMA.
 		Available when CONFIG_ZONE_DMA is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/cpu_slabs
+=======
+What:		/sys/kernel/slab/<cache>/cpu_slabs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -115,7 +157,11 @@ Description:
 		The cpu_slabs file is read-only and displays how many cpu slabs
 		are active and their NUMA locality.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/cpuslab_flush
+=======
+What:		/sys/kernel/slab/<cache>/cpuslab_flush
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		April 2009
 KernelVersion:	2.6.31
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -128,7 +174,11 @@ Description:
 		current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/ctor
+=======
+What:		/sys/kernel/slab/<cache>/ctor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -138,7 +188,11 @@ Description:
 		constructor function, which is invoked for each object when a
 		new slab is allocated.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/deactivate_empty
+=======
+What:		/sys/kernel/slab/<cache>/deactivate_empty
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -148,7 +202,11 @@ Description:
 		was deactivated.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/deactivate_full
+=======
+What:		/sys/kernel/slab/<cache>/deactivate_full
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -158,7 +216,11 @@ Description:
 		was deactivated.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/deactivate_remote_frees
+=======
+What:		/sys/kernel/slab/<cache>/deactivate_remote_frees
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -169,7 +231,11 @@ Description:
 		remotely.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/deactivate_to_head
+=======
+What:		/sys/kernel/slab/<cache>/deactivate_to_head
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -180,7 +246,11 @@ Description:
 		list.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/deactivate_to_tail
+=======
+What:		/sys/kernel/slab/<cache>/deactivate_to_tail
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -191,7 +261,11 @@ Description:
 		list.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/destroy_by_rcu
+=======
+What:		/sys/kernel/slab/<cache>/destroy_by_rcu
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -200,7 +274,11 @@ Description:
 		The destroy_by_rcu file is read-only and specifies whether
 		slabs (not objects) are freed by rcu.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_add_partial
+=======
+What:		/sys/kernel/slab/<cache>/free_add_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -211,7 +289,11 @@ Description:
 		partial list.  It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_calls
+=======
+What:		/sys/kernel/slab/<cache>/free_calls
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -219,9 +301,15 @@ Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
 Description:
 		The free_calls file is read-only and lists the locations of
 		object frees if slab debugging is enabled (see
+<<<<<<< HEAD
 		Documentation/vm/slub.txt).
 
 What:		/sys/kernel/slab/cache/free_fastpath
+=======
+		Documentation/mm/slub.rst).
+
+What:		/sys/kernel/slab/<cache>/free_fastpath
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -232,7 +320,11 @@ Description:
 		It can be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_frozen
+=======
+What:		/sys/kernel/slab/<cache>/free_frozen
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -243,7 +335,11 @@ Description:
 		clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_remove_partial
+=======
+What:		/sys/kernel/slab/<cache>/free_remove_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -255,7 +351,11 @@ Description:
 		count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_slab
+=======
+What:		/sys/kernel/slab/<cache>/free_slab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -266,7 +366,11 @@ Description:
 		the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/free_slowpath
+=======
+What:		/sys/kernel/slab/<cache>/free_slowpath
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -277,7 +381,11 @@ Description:
 		be written to clear the current count.
 		Available when CONFIG_SLUB_STATS is enabled.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/hwcache_align
+=======
+What:		/sys/kernel/slab/<cache>/hwcache_align
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -286,7 +394,11 @@ Description:
 		The hwcache_align file is read-only and specifies whether
 		objects are aligned on cachelines.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/min_partial
+=======
+What:		/sys/kernel/slab/<cache>/min_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		February 2009
 KernelVersion:	2.6.30
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -297,7 +409,11 @@ Description:
 		allocating new slabs.  Such slabs may be reclaimed by utilizing
 		the shrink file.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/object_size
+=======
+What:		/sys/kernel/slab/<cache>/object_size
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -306,7 +422,11 @@ Description:
 		The object_size file is read-only and specifies the cache's
 		object size.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/objects
+=======
+What:		/sys/kernel/slab/<cache>/objects
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -315,7 +435,11 @@ Description:
 		The objects file is read-only and displays how many objects are
 		active and from which nodes they are from.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/objects_partial
+=======
+What:		/sys/kernel/slab/<cache>/objects_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		April 2008
 KernelVersion:	2.6.26
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -325,7 +449,11 @@ Description:
 		objects are on partial slabs and from which nodes they are
 		from.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/objs_per_slab
+=======
+What:		/sys/kernel/slab/<cache>/objs_per_slab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -333,9 +461,15 @@ Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
 Description:
 		The file objs_per_slab is read-only and specifies how many
 		objects may be allocated from a single slab of the order
+<<<<<<< HEAD
 		specified in /sys/kernel/slab/cache/order.
 
 What:		/sys/kernel/slab/cache/order
+=======
+		specified in /sys/kernel/slab/<cache>/order.
+
+What:		/sys/kernel/slab/<cache>/order
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -346,12 +480,22 @@ Description:
 		number of objects per slab.  If a slab cannot be allocated
 		because of fragmentation, SLUB will retry with the minimum order
 		possible depending on its characteristics.
+<<<<<<< HEAD
 		When debug_guardpage_minorder=N (N > 0) parameter is specified
 		(see Documentation/kernel-parameters.txt), the minimum possible
 		order is used and this sysfs entry can not be used to change
 		the order at run time.
 
 What:		/sys/kernel/slab/cache/order_fallback
+=======
+
+		When debug_guardpage_minorder=N (N > 0) parameter is specified
+		(see Documentation/admin-guide/kernel-parameters.rst), the minimum possible
+		order is used and this sysfs entry can not be used to change
+		the order at run time.
+
+What:		/sys/kernel/slab/<cache>/order_fallback
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		April 2008
 KernelVersion:	2.6.26
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -361,9 +505,16 @@ Description:
 		new slab has not been possible at the cache's order and instead
 		fallen back to its minimum possible order.  It can be written to
 		clear the current count.
+<<<<<<< HEAD
 		Available when CONFIG_SLUB_STATS is enabled.
 
 What:		/sys/kernel/slab/cache/partial
+=======
+
+		Available when CONFIG_SLUB_STATS is enabled.
+
+What:		/sys/kernel/slab/<cache>/partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -372,7 +523,11 @@ Description:
 		The partial file is read-only and displays how long many
 		partial slabs there are and how long each node's list is.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/poison
+=======
+What:		/sys/kernel/slab/<cache>/poison
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -381,7 +536,11 @@ Description:
 		The poison file specifies whether objects should be poisoned
 		when a new slab is allocated.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/reclaim_account
+=======
+What:		/sys/kernel/slab/<cache>/reclaim_account
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -390,7 +549,11 @@ Description:
 		The reclaim_account file specifies whether the cache's objects
 		are reclaimable (and grouped by their mobility).
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/red_zone
+=======
+What:		/sys/kernel/slab/<cache>/red_zone
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -399,7 +562,11 @@ Description:
 		The red_zone file specifies whether the cache's objects are red
 		zoned.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/remote_node_defrag_ratio
+=======
+What:		/sys/kernel/slab/<cache>/remote_node_defrag_ratio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		January 2008
 KernelVersion:	2.6.25
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -410,9 +577,16 @@ Description:
 		slab from a remote node as opposed to allocating a new slab on
 		the local node.  This reduces the amount of wasted memory over
 		the entire system but can be expensive.
+<<<<<<< HEAD
 		Available when CONFIG_NUMA is enabled.
 
 What:		/sys/kernel/slab/cache/sanity_checks
+=======
+
+		Available when CONFIG_NUMA is enabled.
+
+What:		/sys/kernel/slab/<cache>/sanity_checks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -423,18 +597,36 @@ Description:
 		checks.  Caches that enable sanity_checks cannot be merged with
 		caches that do not.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/shrink
+=======
+What:		/sys/kernel/slab/<cache>/shrink
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
 		Christoph Lameter <cl@linux-foundation.org>
 Description:
+<<<<<<< HEAD
 		The shrink file is written when memory should be reclaimed from
 		a cache.  Empty partial slabs are freed and the partial list is
 		sorted so the slabs with the fewest available objects are used
 		first.
 
 What:		/sys/kernel/slab/cache/slab_size
+=======
+		The shrink file is used to reclaim unused slab cache
+		memory from a cache.  Empty per-cpu or partial slabs
+		are freed and the partial list is sorted so the slabs
+		with the fewest available objects are used first.
+		It only accepts a value of "1" on write for shrinking
+		the cache. Other input values are considered invalid.
+		Shrinking slab caches might be expensive and can
+		adversely impact other running applications.  So it
+		should be used with care.
+
+What:		/sys/kernel/slab/<cache>/slab_size
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -443,7 +635,11 @@ Description:
 		The slab_size file is read-only and specifies the object size
 		with metadata (debugging information and alignment) in bytes.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/slabs
+=======
+What:		/sys/kernel/slab/<cache>/slabs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -453,7 +649,11 @@ Description:
 		there are (both cpu and partial) and from which nodes they are
 		from.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/store_user
+=======
+What:		/sys/kernel/slab/<cache>/store_user
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -462,7 +662,11 @@ Description:
 		The store_user file specifies whether the location of
 		allocation or free should be tracked for a cache.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/total_objects
+=======
+What:		/sys/kernel/slab/<cache>/total_objects
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		April 2008
 KernelVersion:	2.6.26
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -471,7 +675,11 @@ Description:
 		The total_objects file is read-only and displays how many total
 		objects a cache has and from which nodes they are from.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/trace
+=======
+What:		/sys/kernel/slab/<cache>/trace
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -480,7 +688,11 @@ Description:
 		The trace file specifies whether object allocations and frees
 		should be traced.
 
+<<<<<<< HEAD
 What:		/sys/kernel/slab/cache/validate
+=======
+What:		/sys/kernel/slab/<cache>/validate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		May 2007
 KernelVersion:	2.6.22
 Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
@@ -488,3 +700,27 @@ Contact:	Pekka Enberg <penberg@cs.helsinki.fi>,
 Description:
 		Writing to the validate file causes SLUB to traverse all of its
 		cache's objects and check the validity of metadata.
+<<<<<<< HEAD
+=======
+
+What:		/sys/kernel/slab/<cache>/usersize
+Date:		Jun 2017
+Contact:	David Windsor <dave@nullcore.net>
+Description:
+		The usersize file is read-only and contains the usercopy
+		region size.
+
+What:		/sys/kernel/slab/<cache>/slabs_cpu_partial
+Date:		Aug 2011
+Contact:	Christoph Lameter <cl@linux.com>
+Description:
+		This read-only file shows the number of partialli allocated
+		frozen slabs.
+
+What:		/sys/kernel/slab/<cache>/cpu_partial
+Date:		Aug 2011
+Contact:	Christoph Lameter <cl@linux.com>
+Description:
+		This read-only file shows the number of per cpu partial
+		pages to keep around.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

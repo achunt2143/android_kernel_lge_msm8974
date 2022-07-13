@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bios-less APM driver for ARM Linux
  *  Jamey Hicks <jamey@crl.dec.com>
@@ -31,6 +35,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 
 /*
  * The apm_bios device is one of the misc char devices.
@@ -38,6 +43,8 @@
  */
 #define APM_MINOR_DEV	134
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * One option can be changed at boot time as follows:
  *	apm=on/off			enable/disable APM
@@ -243,12 +250,20 @@ static ssize_t apm_read(struct file *fp, char __user *buf, size_t count, loff_t 
 	return ret;
 }
 
+<<<<<<< HEAD
 static unsigned int apm_poll(struct file *fp, poll_table * wait)
+=======
+static __poll_t apm_poll(struct file *fp, poll_table * wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct apm_user *as = fp->private_data;
 
 	poll_wait(fp, &apm_waitqueue, wait);
+<<<<<<< HEAD
 	return queue_empty(&as->queue) ? 0 : POLLIN | POLLRDNORM;
+=======
+	return queue_empty(&as->queue) ? 0 : EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -468,6 +483,7 @@ static int proc_apm_show(struct seq_file *m, void *v)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int proc_apm_open(struct inode *inode, struct file *file)
 {
@@ -481,6 +497,8 @@ static const struct file_operations apm_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int kapmd(void *arg)
@@ -531,6 +549,10 @@ static int apm_suspend_notifier(struct notifier_block *nb,
 {
 	struct apm_user *as;
 	int err;
+<<<<<<< HEAD
+=======
+	unsigned long apm_event;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* short-cut emergency suspends */
 	if (atomic_read(&userspace_notification_inhibit))
@@ -538,6 +560,12 @@ static int apm_suspend_notifier(struct notifier_block *nb,
 
 	switch (event) {
 	case PM_SUSPEND_PREPARE:
+<<<<<<< HEAD
+=======
+	case PM_HIBERNATION_PREPARE:
+		apm_event = (event == PM_SUSPEND_PREPARE) ?
+			APM_USER_SUSPEND : APM_USER_HIBERNATION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Queue an event to all "writer" users that we want
 		 * to suspend and need their ack.
@@ -550,7 +578,11 @@ static int apm_suspend_notifier(struct notifier_block *nb,
 			    as->writer && as->suser) {
 				as->suspend_state = SUSPEND_PENDING;
 				atomic_inc(&suspend_acks_pending);
+<<<<<<< HEAD
 				queue_add_event(&as->queue, APM_USER_SUSPEND);
+=======
+				queue_add_event(&as->queue, apm_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -559,7 +591,11 @@ static int apm_suspend_notifier(struct notifier_block *nb,
 		wake_up_interruptible(&apm_waitqueue);
 
 		/*
+<<<<<<< HEAD
 		 * Wait for the the suspend_acks_pending variable to drop to
+=======
+		 * Wait for the suspend_acks_pending variable to drop to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * zero, meaning everybody acked the suspend event (or the
 		 * process was killed.)
 		 *
@@ -601,11 +637,21 @@ static int apm_suspend_notifier(struct notifier_block *nb,
 		return notifier_from_errno(err);
 
 	case PM_POST_SUSPEND:
+<<<<<<< HEAD
+=======
+	case PM_POST_HIBERNATION:
+		apm_event = (event == PM_POST_SUSPEND) ?
+			APM_NORMAL_RESUME : APM_HIBERNATION_RESUME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Anyone on the APM queues will think we're still suspended.
 		 * Send a message so everyone knows we're now awake again.
 		 */
+<<<<<<< HEAD
 		queue_event(APM_NORMAL_RESUME);
+=======
+		queue_event(apm_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Finally, wake up anyone who is sleeping on the suspend.
@@ -657,7 +703,11 @@ static int __init apm_init(void)
 	wake_up_process(kapmd_tsk);
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 	proc_create("apm", 0, NULL, &apm_proc_fops);
+=======
+	proc_create_single("apm", 0, NULL, proc_apm_show);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	ret = misc_register(&apm_device);

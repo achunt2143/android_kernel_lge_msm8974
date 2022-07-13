@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for various devices which are apparently based on the same chipset
  *  from certain vendor which produces chips that contain wrong LogicalMaximum
@@ -5,6 +9,10 @@
  *
  *    Ortek PKB-1700
  *    Ortek WKB-2000
+<<<<<<< HEAD
+=======
+ *    iHome IMAC-A210S
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Skycable wireless presenter
  *
  *  Copyright (c) 2010 Johnathon Harris <jmharris@gmail.com>
@@ -12,10 +20,13 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -28,10 +39,17 @@ static __u8 *ortek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
 	if (*rsize >= 56 && rdesc[54] == 0x25 && rdesc[55] == 0x01) {
+<<<<<<< HEAD
 		hid_info(hdev, "Fixing up logical minimum in report descriptor (Ortek)\n");
 		rdesc[55] = 0x92;
 	} else if (*rsize >= 54 && rdesc[52] == 0x25 && rdesc[53] == 0x01) {
 		hid_info(hdev, "Fixing up logical minimum in report descriptor (Skycable)\n");
+=======
+		hid_info(hdev, "Fixing up logical maximum in report descriptor (Ortek)\n");
+		rdesc[55] = 0x92;
+	} else if (*rsize >= 54 && rdesc[52] == 0x25 && rdesc[53] == 0x01) {
+		hid_info(hdev, "Fixing up logical maximum in report descriptor (Skycable)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdesc[53] = 0x65;
 	}
 	return rdesc;
@@ -40,6 +58,10 @@ static __u8 *ortek_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 static const struct hid_device_id ortek_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_PKB1700) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_WKB2000) },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_IHOME_IMAC_A210S) },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_SKYCABLE, USB_DEVICE_ID_SKYCABLE_WIRELESS_PRESENTER) },
 	{ }
 };
@@ -50,6 +72,7 @@ static struct hid_driver ortek_driver = {
 	.id_table = ortek_devices,
 	.report_fixup = ortek_report_fixup
 };
+<<<<<<< HEAD
 
 static int __init ortek_init(void)
 {
@@ -63,4 +86,8 @@ static void __exit ortek_exit(void)
 
 module_init(ortek_init);
 module_exit(ortek_exit);
+=======
+module_hid_driver(ortek_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

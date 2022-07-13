@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This may not use any stack, nor any variable that is not "NoSave":
  *
@@ -11,10 +15,18 @@
 #include <asm/page_types.h>
 #include <asm/asm-offsets.h>
 #include <asm/processor-flags.h>
+<<<<<<< HEAD
 
 .text
 
 ENTRY(swsusp_arch_suspend)
+=======
+#include <asm/frame.h>
+
+.text
+
+SYM_FUNC_START(swsusp_arch_suspend)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl %esp, saved_context_esp
 	movl %ebx, saved_context_ebx
 	movl %ebp, saved_context_ebp
@@ -23,6 +35,7 @@ ENTRY(swsusp_arch_suspend)
 	pushfl
 	popl saved_context_eflags
 
+<<<<<<< HEAD
 	call swsusp_save
 	ret
 
@@ -30,6 +43,33 @@ ENTRY(restore_image)
 	movl	mmu_cr4_features, %ecx
 	movl	resume_pg_dir, %eax
 	subl	$__PAGE_OFFSET, %eax
+=======
+	/* save cr3 */
+	movl	%cr3, %eax
+	movl	%eax, restore_cr3
+
+	FRAME_BEGIN
+	call swsusp_save
+	FRAME_END
+	RET
+SYM_FUNC_END(swsusp_arch_suspend)
+
+SYM_CODE_START(restore_image)
+	/* prepare to jump to the image kernel */
+	movl	restore_jump_address, %ebx
+	movl	restore_cr3, %ebp
+
+	movl	mmu_cr4_features, %ecx
+
+	/* jump to relocated restore code */
+	movl	relocated_restore_code, %eax
+	jmpl	*%eax
+SYM_CODE_END(restore_image)
+
+/* code below has been relocated to a safe page */
+SYM_CODE_START(core_restore_code)
+	movl	temp_pgt, %eax
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%eax, %cr3
 
 	jecxz	1f	# cr4 Pentium and higher, skip if zero
@@ -48,7 +88,11 @@ copy_loop:
 	movl	pbe_address(%edx), %esi
 	movl	pbe_orig_address(%edx), %edi
 
+<<<<<<< HEAD
 	movl	$1024, %ecx
+=======
+	movl	$(PAGE_SIZE >> 2), %ecx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rep
 	movsl
 
@@ -57,10 +101,21 @@ copy_loop:
 	.p2align 4,,7
 
 done:
+<<<<<<< HEAD
 	/* go back to the original page tables */
 	movl	$swapper_pg_dir, %eax
 	subl	$__PAGE_OFFSET, %eax
 	movl	%eax, %cr3
+=======
+	jmpl	*%ebx
+SYM_CODE_END(core_restore_code)
+
+	/* code below belongs to the image kernel */
+	.align PAGE_SIZE
+SYM_FUNC_START(restore_registers)
+	/* go back to the original page tables */
+	movl	%ebp, %cr3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	mmu_cr4_features, %ecx
 	jecxz	1f	# cr4 Pentium and higher, skip if zero
 	movl	%ecx, %cr4;  # turn PGE back on
@@ -75,6 +130,20 @@ done:
 	pushl saved_context_eflags
 	popfl
 
+<<<<<<< HEAD
 	xorl	%eax, %eax
 
 	ret
+=======
+	/* Saved in save_processor_state. */
+	movl $saved_context, %eax
+	lgdt saved_context_gdt_desc(%eax)
+
+	xorl	%eax, %eax
+
+	/* tell the hibernation core that we've just restored the memory */
+	movl	%eax, in_suspend
+
+	RET
+SYM_FUNC_END(restore_registers)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

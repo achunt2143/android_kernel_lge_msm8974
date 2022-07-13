@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bitext.c: kernel little helper (of bit shuffling variety).
  *
@@ -119,11 +123,15 @@ void bit_map_clear(struct bit_map *t, int offset, int len)
 
 void bit_map_init(struct bit_map *t, unsigned long *map, int size)
 {
+<<<<<<< HEAD
 
 	if ((size & 07) != 0)
 		BUG();
 	memset(map, 0, size>>3);
 
+=======
+	bitmap_zero(map, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(t, 0, sizeof *t);
 	spin_lock_init(&t->lock);
 	t->map = map;

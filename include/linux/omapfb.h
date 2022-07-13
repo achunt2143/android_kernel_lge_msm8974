@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: include/linux/omapfb.h
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2004 Nokia Corporation
  * Author: Imre Deak <imre.deak@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -222,12 +227,31 @@ struct omapfb_display_info {
 
 #include <plat/board.h>
 
+=======
+ */
+#ifndef __LINUX_OMAPFB_H__
+#define __LINUX_OMAPFB_H__
+
+#include <uapi/linux/omapfb.h>
+
+
+struct omap_lcd_config {
+	char panel_name[16];
+	char ctrl_name[16];
+	s16  nreset_gpio;
+	u8   data_lines;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct omapfb_platform_data {
 	struct omap_lcd_config		lcd;
 };
 
 void __init omapfb_set_lcd_config(const struct omap_lcd_config *config);
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __OMAPFB_H */

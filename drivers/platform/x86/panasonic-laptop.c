@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Panasonic HotKey and LCD brightness control driver
  *  (C) 2004 Hiroshi Miura <miura@da-cha.org>
@@ -8,6 +12,7 @@
  *
  *  derived from toshiba_acpi.c, Copyright (C) 2002-2004 John Belmonte
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  publicshed by the Free Software Foundation.
@@ -24,6 +29,27 @@
  *---------------------------------------------------------------------------
  *
  * ChangeLog:
+=======
+ *---------------------------------------------------------------------------
+ *
+ * ChangeLog:
+ *	Aug.18, 2020	Kenneth Chan <kenneth.t.chan@gmail.com>
+ *		-v0.98	add platform devices for firmware brightness registers
+ *			add support for battery charging threshold (eco mode)
+ *			resolve hotkey double trigger
+ *			add write support to mute
+ *			fix sticky_key init bug
+ *			fix naming of platform files for consistency with other
+ *			modules
+ *			split MODULE_AUTHOR() by one author per macro call
+ *			replace ACPI prints with pr_*() macros
+ *		-v0.97	add support for cdpower hardware switch
+ *		-v0.96	merge Lucina's enhancement
+ *			Jan.13, 2009 Martin Lucina <mato@kotelna.sk>
+ *				- add support for optical driver power in
+ *				  Y and W series
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Sep.23, 2008	Harald Welte <laforge@gnumonks.org>
  *		-v0.95	rename driver from drivers/acpi/pcc_acpi.c to
  *			drivers/misc/panasonic-laptop.c
@@ -113,6 +139,7 @@
  *
  *      Jul.17, 2004	Hiroshi Miura <miura@da-cha.org>
  *		- v0.1  start from toshiba_acpi driver written by John Belmonte
+<<<<<<< HEAD
  *
  */
 
@@ -138,6 +165,32 @@
 #define _COMPONENT		ACPI_HOTKEY_COMPONENT
 
 MODULE_AUTHOR("Hiroshi Miura, David Bronaugh and Harald Welte");
+=======
+ */
+
+#include <linux/acpi.h>
+#include <linux/backlight.h>
+#include <linux/ctype.h>
+#include <linux/i8042.h>
+#include <linux/init.h>
+#include <linux/input.h>
+#include <linux/input/sparse-keymap.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/seq_file.h>
+#include <linux/serio.h>
+#include <linux/slab.h>
+#include <linux/types.h>
+#include <linux/uaccess.h>
+#include <acpi/video.h>
+
+MODULE_AUTHOR("Hiroshi Miura <miura@da-cha.org>");
+MODULE_AUTHOR("David Bronaugh <dbronaugh@linuxboxen.org>");
+MODULE_AUTHOR("Harald Welte <laforge@gnumonks.org>");
+MODULE_AUTHOR("Martin Lucina <mato@kotelna.sk>");
+MODULE_AUTHOR("Kenneth Chan <kenneth.t.chan@gmail.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ACPI HotKey driver for Panasonic Let's Note laptops");
 MODULE_LICENSE("GPL");
 
@@ -149,7 +202,14 @@ MODULE_LICENSE("GPL");
 #define METHOD_HKEY_SQTY	"SQTY"
 #define METHOD_HKEY_SINF	"SINF"
 #define METHOD_HKEY_SSET	"SSET"
+<<<<<<< HEAD
 #define HKEY_NOTIFY		 0x80
+=======
+#define METHOD_ECWR		"\\_SB.ECWR"
+#define HKEY_NOTIFY		0x80
+#define ECO_MODE_OFF		0x00
+#define ECO_MODE_ON		0x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_PCC_DRIVER_NAME	"Panasonic Laptop Support"
 #define ACPI_PCC_DEVICE_NAME	"Hotkey"
@@ -158,7 +218,11 @@ MODULE_LICENSE("GPL");
 #define ACPI_PCC_INPUT_PHYS	"panasonic/hkey0"
 
 /* LCD_TYPEs: 0 = Normal, 1 = Semi-transparent
+<<<<<<< HEAD
    ENV_STATEs: Normal temp=0x01, High temp=0x81, N/A=0x00
+=======
+   ECO_MODEs: 0x03 = off, 0x83 = on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_LCD_TYPE,
@@ -170,14 +234,23 @@ enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_DC_CUR_BRIGHT,
 		 SINF_MUTE,
 		 SINF_RESERVED,
+<<<<<<< HEAD
 		 SINF_ENV_STATE,
+=======
+		 SINF_ECO_MODE = 0x0A,
+		 SINF_CUR_BRIGHT = 0x0D,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 SINF_STICKY_KEY = 0x80,
 	};
 /* R1 handles SINF_AC_CUR_BRIGHT as SINF_CUR_BRIGHT, doesn't know AC state */
 
 static int acpi_pcc_hotkey_add(struct acpi_device *device);
+<<<<<<< HEAD
 static int acpi_pcc_hotkey_remove(struct acpi_device *device, int type);
 static int acpi_pcc_hotkey_resume(struct acpi_device *device);
+=======
+static void acpi_pcc_hotkey_remove(struct acpi_device *device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event);
 
 static const struct acpi_device_id pcc_device_ids[] = {
@@ -189,6 +262,14 @@ static const struct acpi_device_id pcc_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, pcc_device_ids);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int acpi_pcc_hotkey_resume(struct device *dev);
+#endif
+static SIMPLE_DEV_PM_OPS(acpi_pcc_hotkey_pm, NULL, acpi_pcc_hotkey_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct acpi_driver acpi_pcc_driver = {
 	.name =		ACPI_PCC_DRIVER_NAME,
 	.class =	ACPI_PCC_CLASS,
@@ -196,9 +277,15 @@ static struct acpi_driver acpi_pcc_driver = {
 	.ops =		{
 				.add =		acpi_pcc_hotkey_add,
 				.remove =	acpi_pcc_hotkey_remove,
+<<<<<<< HEAD
 				.resume =       acpi_pcc_hotkey_resume,
 				.notify =	acpi_pcc_hotkey_notify,
 			},
+=======
+				.notify =	acpi_pcc_hotkey_notify,
+			},
+	.drv.pm =	&acpi_pcc_hotkey_pm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct key_entry panasonic_keymap[] = {
@@ -219,16 +306,66 @@ static const struct key_entry panasonic_keymap[] = {
 struct pcc_acpi {
 	acpi_handle		handle;
 	unsigned long		num_sifr;
+<<<<<<< HEAD
 	int			sticky_mode;
+=======
+	int			sticky_key;
+	int			eco_mode;
+	int			mute;
+	int			ac_brightness;
+	int			dc_brightness;
+	int			current_brightness;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			*sinf;
 	struct acpi_device	*device;
 	struct input_dev	*input_dev;
 	struct backlight_device	*backlight;
+<<<<<<< HEAD
 };
 
 struct pcc_keyinput {
 	struct acpi_hotkey      *hotkey;
 };
+=======
+	struct platform_device	*platform;
+};
+
+/*
+ * On some Panasonic models the volume up / down / mute keys send duplicate
+ * keypress events over the PS/2 kbd interface, filter these out.
+ */
+static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
+				   struct serio *port)
+{
+	static bool extended;
+
+	if (str & I8042_STR_AUXDATA)
+		return false;
+
+	if (data == 0xe0) {
+		extended = true;
+		return true;
+	} else if (extended) {
+		extended = false;
+
+		switch (data & 0x7f) {
+		case 0x20: /* e0 20 / e0 a0, Volume Mute press / release */
+		case 0x2e: /* e0 2e / e0 ae, Volume Down press / release */
+		case 0x30: /* e0 30 / e0 b0, Volume Up press / release */
+			return true;
+		default:
+			/*
+			 * Report the previously filtered e0 before continuing
+			 * with the next non-filtered byte.
+			 */
+			serio_interrupt(port, 0xe0, 0);
+			return false;
+		}
+	}
+
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* method access functions */
 static int acpi_pcc_write_sset(struct pcc_acpi *pcc, int func, int val)
@@ -261,8 +398,12 @@ static inline int acpi_pcc_get_sqty(struct acpi_device *device)
 	if (ACPI_SUCCESS(status))
 		return s;
 	else {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "evaluation error HKEY.SQTY\n"));
+=======
+		pr_err("evaluation error HKEY.SQTY\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 }
@@ -277,21 +418,33 @@ static int acpi_pcc_retrieve_biosdata(struct pcc_acpi *pcc)
 	status = acpi_evaluate_object(pcc->handle, METHOD_HKEY_SINF, NULL,
 				      &buffer);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "evaluation error HKEY.SINF\n"));
+=======
+		pr_err("evaluation error HKEY.SINF\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	hkey = buffer.pointer;
 	if (!hkey || (hkey->type != ACPI_TYPE_PACKAGE)) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR, "Invalid HKEY.SINF\n"));
+=======
+		pr_err("Invalid HKEY.SINF\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ERROR;
 		goto end;
 	}
 
 	if (pcc->num_sifr < hkey->package.count) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				 "SQTY reports bad SINF length\n"));
+=======
+		pr_err("SQTY reports bad SINF length\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ERROR;
 		goto end;
 	}
@@ -301,8 +454,12 @@ static int acpi_pcc_retrieve_biosdata(struct pcc_acpi *pcc)
 		if (likely(element->type == ACPI_TYPE_INTEGER)) {
 			pcc->sinf[i] = element->integer.value;
 		} else
+<<<<<<< HEAD
 			ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 					 "Invalid HKEY.SINF data\n"));
+=======
+			pr_err("Invalid HKEY.SINF data\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcc->sinf[hkey->package.count] = -1;
 
@@ -360,9 +517,107 @@ static const struct backlight_ops pcc_backlight_ops = {
 };
 
 
+<<<<<<< HEAD
 /* sysfs user interface functions */
 
 static ssize_t show_numbatt(struct device *dev, struct device_attribute *attr,
+=======
+/* returns ACPI_SUCCESS if methods to control optical drive are present */
+
+static acpi_status check_optd_present(void)
+{
+	acpi_status status = AE_OK;
+	acpi_handle handle;
+
+	status = acpi_get_handle(NULL, "\\_SB.STAT", &handle);
+	if (ACPI_FAILURE(status))
+		goto out;
+	status = acpi_get_handle(NULL, "\\_SB.FBAY", &handle);
+	if (ACPI_FAILURE(status))
+		goto out;
+	status = acpi_get_handle(NULL, "\\_SB.CDDI", &handle);
+	if (ACPI_FAILURE(status))
+		goto out;
+
+out:
+	return status;
+}
+
+/* get optical driver power state */
+
+static int get_optd_power_state(void)
+{
+	acpi_status status;
+	unsigned long long state;
+	int result;
+
+	status = acpi_evaluate_integer(NULL, "\\_SB.STAT", NULL, &state);
+	if (ACPI_FAILURE(status)) {
+		pr_err("evaluation error _SB.STAT\n");
+		result = -EIO;
+		goto out;
+	}
+	switch (state) {
+	case 0: /* power off */
+		result = 0;
+		break;
+	case 0x0f: /* power on */
+		result = 1;
+		break;
+	default:
+		result = -EIO;
+		break;
+	}
+
+out:
+	return result;
+}
+
+/* set optical drive power state */
+
+static int set_optd_power_state(int new_state)
+{
+	int result;
+	acpi_status status;
+
+	result = get_optd_power_state();
+	if (result < 0)
+		goto out;
+	if (new_state == result)
+		goto out;
+
+	switch (new_state) {
+	case 0: /* power off */
+		/* Call CDDR instead, since they both call the same method
+		 * while CDDI takes 1 arg and we are not quite sure what it is.
+		 */
+		status = acpi_evaluate_object(NULL, "\\_SB.CDDR", NULL, NULL);
+		if (ACPI_FAILURE(status)) {
+			pr_err("evaluation error _SB.CDDR\n");
+			result = -EIO;
+		}
+		break;
+	case 1: /* power on */
+		status = acpi_evaluate_object(NULL, "\\_SB.FBAY", NULL, NULL);
+		if (ACPI_FAILURE(status)) {
+			pr_err("evaluation error _SB.FBAY\n");
+			result = -EIO;
+		}
+		break;
+	default:
+		result = -EINVAL;
+		break;
+	}
+
+out:
+	return result;
+}
+
+
+/* sysfs user interface functions */
+
+static ssize_t numbatt_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -371,10 +626,17 @@ static ssize_t show_numbatt(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_NUM_BATTERIES]);
 }
 
 static ssize_t show_lcdtype(struct device *dev, struct device_attribute *attr,
+=======
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_NUM_BATTERIES]);
+}
+
+static ssize_t lcdtype_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -383,10 +645,17 @@ static ssize_t show_lcdtype(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_LCD_TYPE]);
 }
 
 static ssize_t show_mute(struct device *dev, struct device_attribute *attr,
+=======
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_LCD_TYPE]);
+}
+
+static ssize_t mute_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -395,10 +664,35 @@ static ssize_t show_mute(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_MUTE]);
 }
 
 static ssize_t show_sticky(struct device *dev, struct device_attribute *attr,
+=======
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_MUTE]);
+}
+
+static ssize_t mute_store(struct device *dev, struct device_attribute *attr,
+			  const char *buf, size_t count)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int err, val;
+
+	err = kstrtoint(buf, 0, &val);
+	if (err)
+		return err;
+	if (val == 0 || val == 1) {
+		acpi_pcc_write_sset(pcc, SINF_MUTE, val);
+		pcc->mute = val;
+	}
+
+	return count;
+}
+
+static ssize_t sticky_key_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -407,39 +701,261 @@ static ssize_t show_sticky(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_STICKY_KEY]);
 }
 
 static ssize_t set_sticky(struct device *dev, struct device_attribute *attr,
+=======
+	return sysfs_emit(buf, "%u\n", pcc->sticky_key);
+}
+
+static ssize_t sticky_key_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *buf, size_t count)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
 	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+<<<<<<< HEAD
 	int val;
 
 	if (count && sscanf(buf, "%i", &val) == 1 &&
 	    (val == 0 || val == 1)) {
 		acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, val);
 		pcc->sticky_mode = val;
+=======
+	int err, val;
+
+	err = kstrtoint(buf, 0, &val);
+	if (err)
+		return err;
+	if (val == 0 || val == 1) {
+		acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, val);
+		pcc->sticky_key = val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(numbatt, S_IRUGO, show_numbatt, NULL);
 static DEVICE_ATTR(lcdtype, S_IRUGO, show_lcdtype, NULL);
 static DEVICE_ATTR(mute, S_IRUGO, show_mute, NULL);
 static DEVICE_ATTR(sticky_key, S_IRUGO | S_IWUSR, show_sticky, set_sticky);
+=======
+static ssize_t eco_mode_show(struct device *dev, struct device_attribute *attr,
+				char *buf)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int result;
+
+	if (!acpi_pcc_retrieve_biosdata(pcc))
+		return -EIO;
+
+	switch (pcc->sinf[SINF_ECO_MODE]) {
+	case (ECO_MODE_OFF + 3):
+		result = 0;
+		break;
+	case (ECO_MODE_ON + 3):
+		result = 1;
+		break;
+	default:
+		result = -EIO;
+		break;
+	}
+	return sysfs_emit(buf, "%u\n", result);
+}
+
+static ssize_t eco_mode_store(struct device *dev, struct device_attribute *attr,
+			  const char *buf, size_t count)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int err, state;
+
+	union acpi_object param[2];
+	struct acpi_object_list input;
+	acpi_status status;
+
+	param[0].type = ACPI_TYPE_INTEGER;
+	param[0].integer.value = 0x15;
+	param[1].type = ACPI_TYPE_INTEGER;
+	input.count = 2;
+	input.pointer = param;
+
+	err = kstrtoint(buf, 0, &state);
+	if (err)
+		return err;
+
+	switch (state) {
+	case 0:
+		param[1].integer.value = ECO_MODE_OFF;
+		pcc->sinf[SINF_ECO_MODE] = 0;
+		pcc->eco_mode = 0;
+		break;
+	case 1:
+		param[1].integer.value = ECO_MODE_ON;
+		pcc->sinf[SINF_ECO_MODE] = 1;
+		pcc->eco_mode = 1;
+		break;
+	default:
+		/* nothing to do */
+		return count;
+	}
+
+	status = acpi_evaluate_object(NULL, METHOD_ECWR,
+				       &input, NULL);
+	if (ACPI_FAILURE(status)) {
+		pr_err("%s evaluation failed\n", METHOD_ECWR);
+		return -EINVAL;
+	}
+
+	return count;
+}
+
+static ssize_t ac_brightness_show(struct device *dev, struct device_attribute *attr,
+				  char *buf)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+
+	if (!acpi_pcc_retrieve_biosdata(pcc))
+		return -EIO;
+
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_AC_CUR_BRIGHT]);
+}
+
+static ssize_t ac_brightness_store(struct device *dev, struct device_attribute *attr,
+				   const char *buf, size_t count)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int err, val;
+
+	err = kstrtoint(buf, 0, &val);
+	if (err)
+		return err;
+	if (val >= 0 && val <= 255) {
+		acpi_pcc_write_sset(pcc, SINF_AC_CUR_BRIGHT, val);
+		pcc->ac_brightness = val;
+	}
+
+	return count;
+}
+
+static ssize_t dc_brightness_show(struct device *dev, struct device_attribute *attr,
+				  char *buf)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+
+	if (!acpi_pcc_retrieve_biosdata(pcc))
+		return -EIO;
+
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_DC_CUR_BRIGHT]);
+}
+
+static ssize_t dc_brightness_store(struct device *dev, struct device_attribute *attr,
+				   const char *buf, size_t count)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int err, val;
+
+	err = kstrtoint(buf, 0, &val);
+	if (err)
+		return err;
+	if (val >= 0 && val <= 255) {
+		acpi_pcc_write_sset(pcc, SINF_DC_CUR_BRIGHT, val);
+		pcc->dc_brightness = val;
+	}
+
+	return count;
+}
+
+static ssize_t current_brightness_show(struct device *dev, struct device_attribute *attr,
+				       char *buf)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+
+	if (!acpi_pcc_retrieve_biosdata(pcc))
+		return -EIO;
+
+	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_CUR_BRIGHT]);
+}
+
+static ssize_t current_brightness_store(struct device *dev, struct device_attribute *attr,
+					const char *buf, size_t count)
+{
+	struct acpi_device *acpi = to_acpi_device(dev);
+	struct pcc_acpi *pcc = acpi_driver_data(acpi);
+	int err, val;
+
+	err = kstrtoint(buf, 0, &val);
+	if (err)
+		return err;
+
+	if (val >= 0 && val <= 255) {
+		err = acpi_pcc_write_sset(pcc, SINF_CUR_BRIGHT, val);
+		pcc->current_brightness = val;
+	}
+
+	return count;
+}
+
+static ssize_t cdpower_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+{
+	return sysfs_emit(buf, "%d\n", get_optd_power_state());
+}
+
+static ssize_t cdpower_store(struct device *dev, struct device_attribute *attr,
+			   const char *buf, size_t count)
+{
+	int err, val;
+
+	err = kstrtoint(buf, 10, &val);
+	if (err)
+		return err;
+	set_optd_power_state(val);
+	return count;
+}
+
+static DEVICE_ATTR_RO(numbatt);
+static DEVICE_ATTR_RO(lcdtype);
+static DEVICE_ATTR_RW(mute);
+static DEVICE_ATTR_RW(sticky_key);
+static DEVICE_ATTR_RW(eco_mode);
+static DEVICE_ATTR_RW(ac_brightness);
+static DEVICE_ATTR_RW(dc_brightness);
+static DEVICE_ATTR_RW(current_brightness);
+static DEVICE_ATTR_RW(cdpower);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pcc_sysfs_entries[] = {
 	&dev_attr_numbatt.attr,
 	&dev_attr_lcdtype.attr,
 	&dev_attr_mute.attr,
 	&dev_attr_sticky_key.attr,
+<<<<<<< HEAD
 	NULL,
 };
 
 static struct attribute_group pcc_attr_group = {
+=======
+	&dev_attr_eco_mode.attr,
+	&dev_attr_ac_brightness.attr,
+	&dev_attr_dc_brightness.attr,
+	&dev_attr_current_brightness.attr,
+	&dev_attr_cdpower.attr,
+	NULL,
+};
+
+static const struct attribute_group pcc_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= NULL,		/* put in device directory */
 	.attrs	= pcc_sysfs_entries,
 };
@@ -447,11 +963,16 @@ static struct attribute_group pcc_attr_group = {
 
 /* hotkey input device driver */
 
+<<<<<<< HEAD
+=======
+static int sleep_keydown_seen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 {
 	struct input_dev *hotk_input_dev = pcc->input_dev;
 	int rc;
 	unsigned long long result;
+<<<<<<< HEAD
 
 	rc = acpi_evaluate_integer(pcc->handle, METHOD_HKEY_QUERY,
 				   NULL, &result);
@@ -467,6 +988,39 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 					result & 0xf, result & 0x80, false))
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Unknown hotkey event: %d\n", result));
+=======
+	unsigned int key;
+	unsigned int updown;
+
+	rc = acpi_evaluate_integer(pcc->handle, METHOD_HKEY_QUERY,
+				   NULL, &result);
+	if (ACPI_FAILURE(rc)) {
+		pr_err("error getting hotkey status\n");
+		return;
+	}
+
+	key = result & 0xf;
+	updown = result & 0x80; /* 0x80 == key down; 0x00 = key up */
+
+	/* hack: some firmware sends no key down for sleep / hibernate */
+	if (key == 7 || key == 10) {
+		if (updown)
+			sleep_keydown_seen = 1;
+		if (!sleep_keydown_seen)
+			sparse_keymap_report_event(hotk_input_dev,
+					key, 0x80, false);
+	}
+
+	/*
+	 * Don't report brightness key-presses if they are also reported
+	 * by the ACPI video bus.
+	 */
+	if ((key == 1 || key == 2) && acpi_video_handles_brightness_key_presses())
+		return;
+
+	if (!sparse_keymap_report_event(hotk_input_dev, key, updown, false))
+		pr_err("Unknown hotkey event: 0x%04llx\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event)
@@ -483,17 +1037,69 @@ static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void pcc_optd_notify(acpi_handle handle, u32 event, void *data)
+{
+	if (event != ACPI_NOTIFY_EJECT_REQUEST)
+		return;
+
+	set_optd_power_state(0);
+}
+
+static int pcc_register_optd_notifier(struct pcc_acpi *pcc, char *node)
+{
+	acpi_status status;
+	acpi_handle handle;
+
+	status = acpi_get_handle(NULL, node, &handle);
+
+	if (ACPI_SUCCESS(status)) {
+		status = acpi_install_notify_handler(handle,
+				ACPI_SYSTEM_NOTIFY,
+				pcc_optd_notify, pcc);
+		if (ACPI_FAILURE(status))
+			pr_err("Failed to register notify on %s\n", node);
+	} else
+		return -ENODEV;
+
+	return 0;
+}
+
+static void pcc_unregister_optd_notifier(struct pcc_acpi *pcc, char *node)
+{
+	acpi_status status = AE_OK;
+	acpi_handle handle;
+
+	status = acpi_get_handle(NULL, node, &handle);
+
+	if (ACPI_SUCCESS(status)) {
+		status = acpi_remove_notify_handler(handle,
+				ACPI_SYSTEM_NOTIFY,
+				pcc_optd_notify);
+		if (ACPI_FAILURE(status))
+			pr_err("Error removing optd notify handler %s\n",
+					node);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 {
 	struct input_dev *input_dev;
 	int error;
 
 	input_dev = input_allocate_device();
+<<<<<<< HEAD
 	if (!input_dev) {
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Couldn't allocate input device for hotkey"));
 		return -ENOMEM;
 	}
+=======
+	if (!input_dev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->name = ACPI_PCC_DRIVER_NAME;
 	input_dev->phys = ACPI_PCC_INPUT_PHYS;
@@ -504,28 +1110,41 @@ static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 
 	error = sparse_keymap_setup(input_dev, panasonic_keymap, NULL);
 	if (error) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Unable to setup input device keymap\n"));
+=======
+		pr_err("Unable to setup input device keymap\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_dev;
 	}
 
 	error = input_register_device(input_dev);
 	if (error) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Unable to register input device\n"));
 		goto err_free_keymap;
+=======
+		pr_err("Unable to register input device\n");
+		goto err_free_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pcc->input_dev = input_dev;
 	return 0;
 
+<<<<<<< HEAD
  err_free_keymap:
 	sparse_keymap_free(input_dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_free_dev:
 	input_free_device(input_dev);
 	return error;
 }
 
+<<<<<<< HEAD
 static void acpi_pcc_destroy_input(struct pcc_acpi *pcc)
 {
 	sparse_keymap_free(pcc->input_dev);
@@ -550,6 +1169,32 @@ static int acpi_pcc_hotkey_resume(struct acpi_device *device)
 
 	return acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, pcc->sticky_mode);
 }
+=======
+/* kernel module interface */
+
+#ifdef CONFIG_PM_SLEEP
+static int acpi_pcc_hotkey_resume(struct device *dev)
+{
+	struct pcc_acpi *pcc;
+
+	if (!dev)
+		return -EINVAL;
+
+	pcc = acpi_driver_data(to_acpi_device(dev));
+	if (!pcc)
+		return -EINVAL;
+
+	acpi_pcc_write_sset(pcc, SINF_MUTE, pcc->mute);
+	acpi_pcc_write_sset(pcc, SINF_ECO_MODE, pcc->eco_mode);
+	acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, pcc->sticky_key);
+	acpi_pcc_write_sset(pcc, SINF_AC_CUR_BRIGHT, pcc->ac_brightness);
+	acpi_pcc_write_sset(pcc, SINF_DC_CUR_BRIGHT, pcc->dc_brightness);
+	acpi_pcc_write_sset(pcc, SINF_CUR_BRIGHT, pcc->current_brightness);
+
+	return 0;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int acpi_pcc_hotkey_add(struct acpi_device *device)
 {
@@ -563,18 +1208,30 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 	num_sifr = acpi_pcc_get_sqty(device);
 
 	if (num_sifr < 0 || num_sifr > 255) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR, "num_sifr out of range"));
+=======
+		pr_err("num_sifr out of range");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	pcc = kzalloc(sizeof(struct pcc_acpi), GFP_KERNEL);
 	if (!pcc) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Couldn't allocate mem for pcc"));
 		return -ENOMEM;
 	}
 
 	pcc->sinf = kzalloc(sizeof(u32) * (num_sifr + 1), GFP_KERNEL);
+=======
+		pr_err("Couldn't allocate mem for pcc");
+		return -ENOMEM;
+	}
+
+	pcc->sinf = kcalloc(num_sifr + 1, sizeof(u32), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcc->sinf) {
 		result = -ENOMEM;
 		goto out_hotkey;
@@ -589,12 +1246,17 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 
 	result = acpi_pcc_init_input(pcc);
 	if (result) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				  "Error installing keyinput handler\n"));
+=======
+		pr_err("Error installing keyinput handler\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_sinf;
 	}
 
 	if (!acpi_pcc_retrieve_biosdata(pcc)) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
 				 "Couldn't retrieve BIOS data\n"));
 		result = -EIO;
@@ -616,18 +1278,80 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 
 	/* read the initial sticky key mode from the hardware */
 	pcc->sticky_mode = pcc->sinf[SINF_STICKY_KEY];
+=======
+		result = -EIO;
+		pr_err("Couldn't retrieve BIOS data\n");
+		goto out_input;
+	}
+
+	if (acpi_video_get_backlight_type() == acpi_backlight_vendor) {
+		/* initialize backlight */
+		memset(&props, 0, sizeof(struct backlight_properties));
+		props.type = BACKLIGHT_PLATFORM;
+		props.max_brightness = pcc->sinf[SINF_AC_MAX_BRIGHT];
+
+		pcc->backlight = backlight_device_register("panasonic", NULL, pcc,
+							   &pcc_backlight_ops, &props);
+		if (IS_ERR(pcc->backlight)) {
+			result = PTR_ERR(pcc->backlight);
+			goto out_input;
+		}
+
+		/* read the initial brightness setting from the hardware */
+		pcc->backlight->props.brightness = pcc->sinf[SINF_AC_CUR_BRIGHT];
+	}
+
+	/* Reset initial sticky key mode since the hardware register state is not consistent */
+	acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, 0);
+	pcc->sticky_key = 0;
+
+	pcc->eco_mode = pcc->sinf[SINF_ECO_MODE];
+	pcc->mute = pcc->sinf[SINF_MUTE];
+	pcc->ac_brightness = pcc->sinf[SINF_AC_CUR_BRIGHT];
+	pcc->dc_brightness = pcc->sinf[SINF_DC_CUR_BRIGHT];
+	pcc->current_brightness = pcc->sinf[SINF_CUR_BRIGHT];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* add sysfs attributes */
 	result = sysfs_create_group(&device->dev.kobj, &pcc_attr_group);
 	if (result)
 		goto out_backlight;
 
+<<<<<<< HEAD
 	return 0;
 
 out_backlight:
 	backlight_device_unregister(pcc->backlight);
 out_input:
 	acpi_pcc_destroy_input(pcc);
+=======
+	/* optical drive initialization */
+	if (ACPI_SUCCESS(check_optd_present())) {
+		pcc->platform = platform_device_register_simple("panasonic",
+			PLATFORM_DEVID_NONE, NULL, 0);
+		if (IS_ERR(pcc->platform)) {
+			result = PTR_ERR(pcc->platform);
+			goto out_backlight;
+		}
+		result = device_create_file(&pcc->platform->dev,
+			&dev_attr_cdpower);
+		pcc_register_optd_notifier(pcc, "\\_SB.PCI0.EHCI.ERHB.OPTD");
+		if (result)
+			goto out_platform;
+	} else {
+		pcc->platform = NULL;
+	}
+
+	i8042_install_filter(panasonic_i8042_filter);
+	return 0;
+
+out_platform:
+	platform_device_unregister(pcc->platform);
+out_backlight:
+	backlight_device_unregister(pcc->backlight);
+out_input:
+	input_unregister_device(pcc->input_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_sinf:
 	kfree(pcc->sinf);
 out_hotkey:
@@ -636,6 +1360,7 @@ out_hotkey:
 	return result;
 }
 
+<<<<<<< HEAD
 static int __init acpi_pcc_init(void)
 {
 	int result = 0;
@@ -654,16 +1379,32 @@ static int __init acpi_pcc_init(void)
 }
 
 static int acpi_pcc_hotkey_remove(struct acpi_device *device, int type)
+=======
+static void acpi_pcc_hotkey_remove(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcc_acpi *pcc = acpi_driver_data(device);
 
 	if (!device || !pcc)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return;
+
+	i8042_remove_filter(panasonic_i8042_filter);
+
+	if (pcc->platform) {
+		device_remove_file(&pcc->platform->dev, &dev_attr_cdpower);
+		platform_device_unregister(pcc->platform);
+	}
+	pcc_unregister_optd_notifier(pcc, "\\_SB.PCI0.EHCI.ERHB.OPTD");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sysfs_remove_group(&device->dev.kobj, &pcc_attr_group);
 
 	backlight_device_unregister(pcc->backlight);
 
+<<<<<<< HEAD
 	acpi_pcc_destroy_input(pcc);
 
 	kfree(pcc->sinf);
@@ -679,3 +1420,12 @@ static void __exit acpi_pcc_exit(void)
 
 module_init(acpi_pcc_init);
 module_exit(acpi_pcc_exit);
+=======
+	input_unregister_device(pcc->input_dev);
+
+	kfree(pcc->sinf);
+	kfree(pcc);
+}
+
+module_acpi_driver(acpi_pcc_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

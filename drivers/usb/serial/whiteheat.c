@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB ConnectTech WhiteHEAT driver
  *
@@ -7,18 +11,25 @@
  *	Copyright (C) 1999 - 2001
  *	    Greg Kroah-Hartman (greg@kroah.com)
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
  * See Documentation/usb/usb-serial.txt for more information on using this
+=======
+ * See Documentation/usb/usb-serial.rst for more information on using this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * driver
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -32,6 +43,7 @@
 #include <linux/serial_reg.h>
 #include <linux/serial.h>
 #include <linux/usb/serial.h>
+<<<<<<< HEAD
 #include <linux/firmware.h>
 #include <linux/ihex.h>
 #include "whiteheat.h"			/* WhiteHEAT specific commands */
@@ -46,6 +58,14 @@ static bool debug;
  * Version Information
  */
 #define DRIVER_VERSION "v2.0"
+=======
+#include <linux/usb/ezusb.h>
+#include "whiteheat.h"			/* WhiteHEAT specific commands */
+
+/*
+ * Version Information
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Greg Kroah-Hartman <greg@kroah.com>, Stuart MacDonald <stuartm@connecttech.com>"
 #define DRIVER_DESC "USB ConnectTech WhiteHEAT driver"
 
@@ -78,12 +98,15 @@ static const struct usb_device_id id_table_combined[] = {
 
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
+<<<<<<< HEAD
 static struct usb_driver whiteheat_driver = {
 	.name =		"whiteheat",
 	.probe =	usb_serial_probe,
 	.disconnect =	usb_serial_disconnect,
 	.id_table =	id_table_combined,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* function prototypes for the Connect Tech WhiteHEAT prerenumeration device */
 static int  whiteheat_firmware_download(struct usb_serial *serial,
@@ -91,6 +114,7 @@ static int  whiteheat_firmware_download(struct usb_serial *serial,
 static int  whiteheat_firmware_attach(struct usb_serial *serial);
 
 /* function prototypes for the Connect Tech WhiteHEAT serial converter */
+<<<<<<< HEAD
 static int whiteheat_probe(struct usb_serial *serial,
 				const struct usb_device_id *id);
 static int  whiteheat_attach(struct usb_serial *serial);
@@ -115,6 +139,24 @@ static void whiteheat_throttle(struct tty_struct *tty);
 static void whiteheat_unthrottle(struct tty_struct *tty);
 static void whiteheat_read_callback(struct urb *urb);
 static void whiteheat_write_callback(struct urb *urb);
+=======
+static int  whiteheat_attach(struct usb_serial *serial);
+static void whiteheat_release(struct usb_serial *serial);
+static int  whiteheat_port_probe(struct usb_serial_port *port);
+static void whiteheat_port_remove(struct usb_serial_port *port);
+static int  whiteheat_open(struct tty_struct *tty,
+			struct usb_serial_port *port);
+static void whiteheat_close(struct usb_serial_port *port);
+static void whiteheat_get_serial(struct tty_struct *tty,
+			struct serial_struct *ss);
+static void whiteheat_set_termios(struct tty_struct *tty,
+				  struct usb_serial_port *port,
+				  const struct ktermios *old_termios);
+static int  whiteheat_tiocmget(struct tty_struct *tty);
+static int  whiteheat_tiocmset(struct tty_struct *tty,
+			unsigned int set, unsigned int clear);
+static int whiteheat_break_ctl(struct tty_struct *tty, int break_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_serial_driver whiteheat_fake_device = {
 	.driver = {
@@ -136,6 +178,7 @@ static struct usb_serial_driver whiteheat_device = {
 	.description =		"Connect Tech - WhiteHEAT",
 	.id_table =		id_table_std,
 	.num_ports =		4,
+<<<<<<< HEAD
 	.probe =		whiteheat_probe,
 	.attach =		whiteheat_attach,
 	.release =		whiteheat_release,
@@ -144,15 +187,31 @@ static struct usb_serial_driver whiteheat_device = {
 	.write =		whiteheat_write,
 	.write_room =		whiteheat_write_room,
 	.ioctl =		whiteheat_ioctl,
+=======
+	.num_bulk_in =		5,
+	.num_bulk_out =		5,
+	.attach =		whiteheat_attach,
+	.release =		whiteheat_release,
+	.port_probe =		whiteheat_port_probe,
+	.port_remove =		whiteheat_port_remove,
+	.open =			whiteheat_open,
+	.close =		whiteheat_close,
+	.get_serial =		whiteheat_get_serial,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_termios =		whiteheat_set_termios,
 	.break_ctl =		whiteheat_break_ctl,
 	.tiocmget =		whiteheat_tiocmget,
 	.tiocmset =		whiteheat_tiocmset,
+<<<<<<< HEAD
 	.chars_in_buffer =	whiteheat_chars_in_buffer,
 	.throttle =		whiteheat_throttle,
 	.unthrottle =		whiteheat_unthrottle,
 	.read_bulk_callback =	whiteheat_read_callback,
 	.write_bulk_callback =	whiteheat_write_callback,
+=======
+	.throttle =		usb_serial_generic_throttle,
+	.unthrottle =		usb_serial_generic_unthrottle,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
@@ -169,6 +228,7 @@ struct whiteheat_command_private {
 	__u8			result_buffer[64];
 };
 
+<<<<<<< HEAD
 
 #define THROTTLED		0x01
 #define ACTUALLY_THROTTLED	0x02
@@ -192,6 +252,10 @@ struct whiteheat_private {
 	struct list_head	tx_urbs_free;
 	struct list_head	tx_urbs_submitted;
 	struct mutex		deathwarrant;
+=======
+struct whiteheat_private {
+	__u8			mcr;		/* FIXME: no locking on mcr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -201,12 +265,15 @@ static void stop_command_port(struct usb_serial *serial);
 static void command_port_write_callback(struct urb *urb);
 static void command_port_read_callback(struct urb *urb);
 
+<<<<<<< HEAD
 static int start_port_read(struct usb_serial_port *port);
 static struct whiteheat_urb_wrap *urb_to_wrap(struct urb *urb,
 						struct list_head *head);
 static struct list_head *list_first(struct list_head *head);
 static void rx_data_softint(struct work_struct *work);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int firm_send_command(struct usb_serial_port *port, __u8 command,
 						__u8 *data, __u8 datasize);
 static int firm_open(struct usb_serial_port *port);
@@ -223,7 +290,10 @@ static int firm_report_tx_done(struct usb_serial_port *port);
 #define COMMAND_PORT		4
 #define COMMAND_TIMEOUT		(2*HZ)	/* 2 second timeout for a command */
 #define	COMMAND_TIMEOUT_MS	2000
+<<<<<<< HEAD
 #define CLOSING_DELAY		(30 * HZ)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*****************************************************************************
@@ -246,6 +316,7 @@ static int firm_report_tx_done(struct usb_serial_port *port);
 static int whiteheat_firmware_download(struct usb_serial *serial,
 					const struct usb_device_id *id)
 {
+<<<<<<< HEAD
 	int response, ret = -ENOENT;
 	const struct firmware *loader_fw = NULL, *firmware_fw = NULL;
 	const struct ihex_binrec *record;
@@ -326,6 +397,17 @@ static int whiteheat_firmware_download(struct usb_serial *serial,
 	release_firmware(loader_fw);
 	release_firmware(firmware_fw);
 	return ret;
+=======
+	int response;
+
+	response = ezusb_fx1_ihex_firmware_download(serial->dev, "whiteheat_loader.fw");
+	if (response >= 0) {
+		response = ezusb_fx1_ihex_firmware_download(serial->dev, "whiteheat.fw");
+		if (response >= 0)
+			return 0;
+	}
+	return -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -340,6 +422,7 @@ static int whiteheat_firmware_attach(struct usb_serial *serial)
  * Connect Tech's White Heat serial driver functions
  *****************************************************************************/
 
+<<<<<<< HEAD
 static int whiteheat_probe(struct usb_serial *serial,
 				const struct usb_device_id *id)
 {
@@ -367,24 +450,32 @@ static int whiteheat_probe(struct usb_serial *serial,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int whiteheat_attach(struct usb_serial *serial)
 {
 	struct usb_serial_port *command_port;
 	struct whiteheat_command_private *command_info;
+<<<<<<< HEAD
 	struct usb_serial_port *port;
 	struct whiteheat_private *info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct whiteheat_hw_info *hw_info;
 	int pipe;
 	int ret;
 	int alen;
 	__u8 *command;
 	__u8 *result;
+<<<<<<< HEAD
 	int i;
 	int j;
 	struct urb *urb;
 	int buf_size;
 	struct whiteheat_urb_wrap *wrap;
 	struct list_head *tmp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	command_port = serial->port[COMMAND_PORT];
 
@@ -439,6 +530,7 @@ static int whiteheat_attach(struct usb_serial *serial)
 
 	hw_info = (struct whiteheat_hw_info *)&result[1];
 
+<<<<<<< HEAD
 	dev_info(&serial->dev->dev, "%s: Driver %s: Firmware v%d.%02d\n",
 		 serial->type->description, DRIVER_VERSION,
 		 hw_info->sw_major_rev, hw_info->sw_minor_rev);
@@ -532,6 +624,16 @@ static int whiteheat_attach(struct usb_serial *serial)
 			serial->type->description);
 		goto no_command_private;
 	}
+=======
+	dev_info(&serial->dev->dev, "%s: Firmware v%d.%02d\n",
+		 serial->type->description,
+		 hw_info->sw_major_rev, hw_info->sw_minor_rev);
+
+	command_info = kmalloc(sizeof(struct whiteheat_command_private),
+								GFP_KERNEL);
+	if (!command_info)
+		goto no_command_private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&command_info->mutex);
 	command_info->port_running = 0;
@@ -560,6 +662,7 @@ no_firmware:
 	return -ENODEV;
 
 no_command_private:
+<<<<<<< HEAD
 	for (i = serial->num_ports - 1; i >= 0; i--) {
 		port = serial->port[i];
 		info = usb_get_serial_port_data(port);
@@ -590,6 +693,8 @@ no_rx_urb:
 no_private:
 		;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(result);
 no_result_buffer:
 	kfree(command);
@@ -597,6 +702,7 @@ no_command_buffer:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 
 static void whiteheat_release(struct usb_serial *serial)
 {
@@ -610,10 +716,16 @@ static void whiteheat_release(struct usb_serial *serial)
 	int i;
 
 	dbg("%s", __func__);
+=======
+static void whiteheat_release(struct usb_serial *serial)
+{
+	struct usb_serial_port *command_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* free up our private data for our command port */
 	command_port = serial->port[COMMAND_PORT];
 	kfree(usb_get_serial_port_data(command_port));
+<<<<<<< HEAD
 
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
@@ -636,21 +748,51 @@ static void whiteheat_release(struct usb_serial *serial)
 		}
 		kfree(info);
 	}
+=======
+}
+
+static int whiteheat_port_probe(struct usb_serial_port *port)
+{
+	struct whiteheat_private *info;
+
+	info = kzalloc(sizeof(*info), GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+
+	usb_set_serial_port_data(port, info);
+
+	return 0;
+}
+
+static void whiteheat_port_remove(struct usb_serial_port *port)
+{
+	struct whiteheat_private *info;
+
+	info = usb_get_serial_port_data(port);
+	kfree(info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int whiteheat_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	int		retval = 0;
 
 	dbg("%s - port %d", __func__, port->number);
+=======
+	int retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = start_command_port(port->serial);
 	if (retval)
 		goto exit;
 
+<<<<<<< HEAD
 	if (tty)
 		tty->low_latency = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* send an open port command */
 	retval = firm_open(port);
 	if (retval) {
@@ -672,25 +814,35 @@ static int whiteheat_open(struct tty_struct *tty, struct usb_serial_port *port)
 	usb_clear_halt(port->serial->dev, port->read_urb->pipe);
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
 
+<<<<<<< HEAD
 	/* Start reading from the device */
 	retval = start_port_read(port);
 	if (retval) {
 		dev_err(&port->dev,
 			"%s - failed submitting read urb, error %d\n",
 			__func__, retval);
+=======
+	retval = usb_serial_generic_open(tty, port);
+	if (retval) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		firm_close(port);
 		stop_command_port(port->serial);
 		goto exit;
 	}
+<<<<<<< HEAD
 
 exit:
 	dbg("%s - exit, retval = %d", __func__, retval);
+=======
+exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 
 static void whiteheat_close(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	struct whiteheat_private *info = usb_get_serial_port_data(port);
 	struct whiteheat_urb_wrap *wrap;
 	struct urb *urb;
@@ -812,14 +964,27 @@ static int whiteheat_write_room(struct tty_struct *tty)
 	return (room);
 }
 
+=======
+	firm_report_tx_done(port);
+	firm_close(port);
+
+	usb_serial_generic_close(port);
+
+	stop_command_port(port->serial);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int whiteheat_tiocmget(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct whiteheat_private *info = usb_get_serial_port_data(port);
 	unsigned int modem_signals = 0;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	firm_get_dtr_rts(port);
 	if (info->mcr & UART_MCR_DTR)
 		modem_signals |= TIOCM_DTR;
@@ -835,8 +1000,11 @@ static int whiteheat_tiocmset(struct tty_struct *tty,
 	struct usb_serial_port *port = tty->driver_data;
 	struct whiteheat_private *info = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (set & TIOCM_RTS)
 		info->mcr |= UART_MCR_RTS;
 	if (set & TIOCM_DTR)
@@ -853,6 +1021,7 @@ static int whiteheat_tiocmset(struct tty_struct *tty,
 }
 
 
+<<<<<<< HEAD
 static int whiteheat_ioctl(struct tty_struct *tty,
 					unsigned int cmd, unsigned long arg)
 {
@@ -883,15 +1052,26 @@ static int whiteheat_ioctl(struct tty_struct *tty,
 	}
 
 	return -ENOIOCTLCMD;
+=======
+static void whiteheat_get_serial(struct tty_struct *tty, struct serial_struct *ss)
+{
+	ss->baud_base = 460800;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static void whiteheat_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 	struct usb_serial_port *port, struct ktermios *old_termios)
+=======
+				  struct usb_serial_port *port,
+				  const struct ktermios *old_termios)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	firm_setup_port(tty);
 }
 
+<<<<<<< HEAD
 static void whiteheat_break_ctl(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -950,6 +1130,13 @@ static void whiteheat_unthrottle(struct tty_struct *tty)
 
 	if (actually_throttled)
 		rx_data_softint(&info->rx_work);
+=======
+static int whiteheat_break_ctl(struct tty_struct *tty, int break_state)
+{
+	struct usb_serial_port *port = tty->driver_data;
+
+	return firm_set_break(port, break_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -960,10 +1147,15 @@ static void command_port_write_callback(struct urb *urb)
 {
 	int status = urb->status;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	if (status) {
 		dbg("nonzero urb status: %d", status);
+=======
+	if (status) {
+		dev_dbg(&urb->dev->dev, "nonzero urb status: %d\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 }
@@ -977,11 +1169,17 @@ static void command_port_read_callback(struct urb *urb)
 	unsigned char *data = urb->transfer_buffer;
 	int result;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	command_info = usb_get_serial_port_data(command_port);
 	if (!command_info) {
 		dbg("%s - command_info is NULL, exiting.", __func__);
+=======
+	command_info = usb_get_serial_port_data(command_port);
+	if (!command_info) {
+		dev_dbg(&urb->dev->dev, "%s - command_info is NULL, exiting.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (!urb->actual_length) {
@@ -989,15 +1187,23 @@ static void command_port_read_callback(struct urb *urb)
 		return;
 	}
 	if (status) {
+<<<<<<< HEAD
 		dbg("%s - nonzero urb status: %d", __func__, status);
+=======
+		dev_dbg(&urb->dev->dev, "%s - nonzero urb status: %d\n", __func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status != -ENOENT)
 			command_info->command_finished = WHITEHEAT_CMD_FAILURE;
 		wake_up(&command_info->wait_command);
 		return;
 	}
 
+<<<<<<< HEAD
 	usb_serial_debug_data(debug, &command_port->dev,
 				__func__, urb->actual_length, data);
+=======
+	usb_serial_debug_data(&command_port->dev, __func__, urb->actual_length, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data[0] == WHITEHEAT_CMD_COMPLETE) {
 		command_info->command_finished = WHITEHEAT_CMD_COMPLETE;
@@ -1008,7 +1214,11 @@ static void command_port_read_callback(struct urb *urb)
 	} else if (data[0] == WHITEHEAT_EVENT) {
 		/* These are unsolicited reports from the firmware, hence no
 		   waiting command to wakeup */
+<<<<<<< HEAD
 		dbg("%s - event received", __func__);
+=======
+		dev_dbg(&urb->dev->dev, "%s - event received\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if ((data[0] == WHITEHEAT_GET_DTR_RTS) &&
 		(urb->actual_length - 1 <= sizeof(command_info->result_buffer))) {
 		memcpy(command_info->result_buffer, &data[1],
@@ -1016,16 +1226,25 @@ static void command_port_read_callback(struct urb *urb)
 		command_info->command_finished = WHITEHEAT_CMD_COMPLETE;
 		wake_up(&command_info->wait_command);
 	} else
+<<<<<<< HEAD
 		dbg("%s - bad reply from firmware", __func__);
+=======
+		dev_dbg(&urb->dev->dev, "%s - bad reply from firmware\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Continue trying to always read */
 	result = usb_submit_urb(command_port->read_urb, GFP_ATOMIC);
 	if (result)
+<<<<<<< HEAD
 		dbg("%s - failed resubmitting read urb, error %d",
+=======
+		dev_dbg(&urb->dev->dev, "%s - failed resubmitting read urb, error %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, result);
 }
 
 
+<<<<<<< HEAD
 static void whiteheat_read_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
@@ -1100,6 +1319,8 @@ static void whiteheat_write_callback(struct urb *urb)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  * Connect Tech's White Heat firmware interface
  *****************************************************************************/
@@ -1109,14 +1330,29 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
 	struct usb_serial_port *command_port;
 	struct whiteheat_command_private *command_info;
 	struct whiteheat_private *info;
+<<<<<<< HEAD
+=======
+	struct device *dev = &port->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 *transfer_buffer;
 	int retval = 0;
 	int t;
 
+<<<<<<< HEAD
 	dbg("%s - command %d", __func__, command);
 
 	command_port = port->serial->port[COMMAND_PORT];
 	command_info = usb_get_serial_port_data(command_port);
+=======
+	dev_dbg(dev, "%s - command %d\n", __func__, command);
+
+	command_port = port->serial->port[COMMAND_PORT];
+	command_info = usb_get_serial_port_data(command_port);
+
+	if (command_port->bulk_out_size < datasize + 1)
+		return -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&command_info->mutex);
 	command_info->command_finished = false;
 
@@ -1126,7 +1362,11 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
 	command_port->write_urb->transfer_buffer_length = datasize + 1;
 	retval = usb_submit_urb(command_port->write_urb, GFP_NOIO);
 	if (retval) {
+<<<<<<< HEAD
 		dbg("%s - submit urb failed", __func__);
+=======
+		dev_dbg(dev, "%s - submit urb failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -1137,18 +1377,27 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
 		usb_kill_urb(command_port->write_urb);
 
 	if (command_info->command_finished == false) {
+<<<<<<< HEAD
 		dbg("%s - command timed out.", __func__);
+=======
+		dev_dbg(dev, "%s - command timed out.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ETIMEDOUT;
 		goto exit;
 	}
 
 	if (command_info->command_finished == WHITEHEAT_CMD_FAILURE) {
+<<<<<<< HEAD
 		dbg("%s - command failed.", __func__);
+=======
+		dev_dbg(dev, "%s - command failed.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto exit;
 	}
 
 	if (command_info->command_finished == WHITEHEAT_CMD_COMPLETE) {
+<<<<<<< HEAD
 		dbg("%s - command completed.", __func__);
 		switch (command) {
 		case WHITEHEAT_GET_DTR_RTS:
@@ -1156,6 +1405,14 @@ static int firm_send_command(struct usb_serial_port *port, __u8 command,
 			memcpy(&info->mcr, command_info->result_buffer,
 					sizeof(struct whiteheat_dr_info));
 				break;
+=======
+		dev_dbg(dev, "%s - command completed.\n", __func__);
+		switch (command) {
+		case WHITEHEAT_GET_DTR_RTS:
+			info = usb_get_serial_port_data(port);
+			info->mcr = command_info->result_buffer[0];
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 exit:
@@ -1168,7 +1425,11 @@ static int firm_open(struct usb_serial_port *port)
 {
 	struct whiteheat_simple open_command;
 
+<<<<<<< HEAD
 	open_command.port = port->number - port->serial->minor + 1;
+=======
+	open_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return firm_send_command(port, WHITEHEAT_OPEN,
 		(__u8 *)&open_command, sizeof(open_command));
 }
@@ -1178,7 +1439,11 @@ static int firm_close(struct usb_serial_port *port)
 {
 	struct whiteheat_simple close_command;
 
+<<<<<<< HEAD
 	close_command.port = port->number - port->serial->minor + 1;
+=======
+	close_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return firm_send_command(port, WHITEHEAT_CLOSE,
 			(__u8 *)&close_command, sizeof(close_command));
 }
@@ -1187,6 +1452,7 @@ static int firm_close(struct usb_serial_port *port)
 static void firm_setup_port(struct tty_struct *tty)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	struct whiteheat_port_settings port_settings;
 	unsigned int cflag = tty->termios->c_cflag;
 
@@ -1201,6 +1467,17 @@ static void firm_setup_port(struct tty_struct *tty)
 	case CS8:	port_settings.bits = 8;   break;
 	}
 	dbg("%s - data bits = %d", __func__, port_settings.bits);
+=======
+	struct device *dev = &port->dev;
+	struct whiteheat_port_settings port_settings;
+	unsigned int cflag = tty->termios.c_cflag;
+	speed_t baud;
+
+	port_settings.port = port->port_number + 1;
+
+	port_settings.bits = tty_get_char_size(cflag);
+	dev_dbg(dev, "%s - data bits = %d\n", __func__, port_settings.bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* determine the parity */
 	if (cflag & PARENB)
@@ -1216,14 +1493,22 @@ static void firm_setup_port(struct tty_struct *tty)
 				port_settings.parity = WHITEHEAT_PAR_EVEN;
 	else
 		port_settings.parity = WHITEHEAT_PAR_NONE;
+<<<<<<< HEAD
 	dbg("%s - parity = %c", __func__, port_settings.parity);
+=======
+	dev_dbg(dev, "%s - parity = %c\n", __func__, port_settings.parity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* figure out the stop bits requested */
 	if (cflag & CSTOPB)
 		port_settings.stop = 2;
 	else
 		port_settings.stop = 1;
+<<<<<<< HEAD
 	dbg("%s - stop bits = %d", __func__, port_settings.stop);
+=======
+	dev_dbg(dev, "%s - stop bits = %d\n", __func__, port_settings.stop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* figure out the flow control settings */
 	if (cflag & CRTSCTS)
@@ -1231,7 +1516,11 @@ static void firm_setup_port(struct tty_struct *tty)
 						WHITEHEAT_HFLOW_RTS);
 	else
 		port_settings.hflow = WHITEHEAT_HFLOW_NONE;
+<<<<<<< HEAD
 	dbg("%s - hardware flow control = %s %s %s %s", __func__,
+=======
+	dev_dbg(dev, "%s - hardware flow control = %s %s %s %s\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (port_settings.hflow & WHITEHEAT_HFLOW_CTS) ? "CTS" : "",
 	    (port_settings.hflow & WHITEHEAT_HFLOW_RTS) ? "RTS" : "",
 	    (port_settings.hflow & WHITEHEAT_HFLOW_DSR) ? "DSR" : "",
@@ -1242,6 +1531,7 @@ static void firm_setup_port(struct tty_struct *tty)
 		port_settings.sflow = WHITEHEAT_SFLOW_RXTX;
 	else
 		port_settings.sflow = WHITEHEAT_SFLOW_NONE;
+<<<<<<< HEAD
 	dbg("%s - software flow control = %c", __func__, port_settings.sflow);
 
 	port_settings.xon = START_CHAR(tty);
@@ -1255,6 +1545,22 @@ static void firm_setup_port(struct tty_struct *tty)
 
 	/* fixme: should set validated settings */
 	tty_encode_baud_rate(tty, port_settings.baud, port_settings.baud);
+=======
+	dev_dbg(dev, "%s - software flow control = %c\n", __func__, port_settings.sflow);
+
+	port_settings.xon = START_CHAR(tty);
+	port_settings.xoff = STOP_CHAR(tty);
+	dev_dbg(dev, "%s - XON = %2x, XOFF = %2x\n", __func__, port_settings.xon, port_settings.xoff);
+
+	/* get the baud rate wanted */
+	baud = tty_get_baud_rate(tty);
+	port_settings.baud = cpu_to_le32(baud);
+	dev_dbg(dev, "%s - baud rate = %u\n", __func__, baud);
+
+	/* fixme: should set validated settings */
+	tty_encode_baud_rate(tty, baud, baud);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* handle any settings that aren't specified in the tty structure */
 	port_settings.lloop = 0;
 
@@ -1268,7 +1574,11 @@ static int firm_set_rts(struct usb_serial_port *port, __u8 onoff)
 {
 	struct whiteheat_set_rdb rts_command;
 
+<<<<<<< HEAD
 	rts_command.port = port->number - port->serial->minor + 1;
+=======
+	rts_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rts_command.state = onoff;
 	return firm_send_command(port, WHITEHEAT_SET_RTS,
 			(__u8 *)&rts_command, sizeof(rts_command));
@@ -1279,7 +1589,11 @@ static int firm_set_dtr(struct usb_serial_port *port, __u8 onoff)
 {
 	struct whiteheat_set_rdb dtr_command;
 
+<<<<<<< HEAD
 	dtr_command.port = port->number - port->serial->minor + 1;
+=======
+	dtr_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dtr_command.state = onoff;
 	return firm_send_command(port, WHITEHEAT_SET_DTR,
 			(__u8 *)&dtr_command, sizeof(dtr_command));
@@ -1290,7 +1604,11 @@ static int firm_set_break(struct usb_serial_port *port, __u8 onoff)
 {
 	struct whiteheat_set_rdb break_command;
 
+<<<<<<< HEAD
 	break_command.port = port->number - port->serial->minor + 1;
+=======
+	break_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	break_command.state = onoff;
 	return firm_send_command(port, WHITEHEAT_SET_BREAK,
 			(__u8 *)&break_command, sizeof(break_command));
@@ -1301,7 +1619,11 @@ static int firm_purge(struct usb_serial_port *port, __u8 rxtx)
 {
 	struct whiteheat_purge purge_command;
 
+<<<<<<< HEAD
 	purge_command.port = port->number - port->serial->minor + 1;
+=======
+	purge_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	purge_command.what = rxtx;
 	return firm_send_command(port, WHITEHEAT_PURGE,
 			(__u8 *)&purge_command, sizeof(purge_command));
@@ -1312,7 +1634,11 @@ static int firm_get_dtr_rts(struct usb_serial_port *port)
 {
 	struct whiteheat_simple get_dr_command;
 
+<<<<<<< HEAD
 	get_dr_command.port = port->number - port->serial->minor + 1;
+=======
+	get_dr_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return firm_send_command(port, WHITEHEAT_GET_DTR_RTS,
 			(__u8 *)&get_dr_command, sizeof(get_dr_command));
 }
@@ -1322,7 +1648,11 @@ static int firm_report_tx_done(struct usb_serial_port *port)
 {
 	struct whiteheat_simple close_command;
 
+<<<<<<< HEAD
 	close_command.port = port->number - port->serial->minor + 1;
+=======
+	close_command.port = port->port_number + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return firm_send_command(port, WHITEHEAT_REPORT_TX_DONE,
 			(__u8 *)&close_command, sizeof(close_command));
 }
@@ -1374,6 +1704,7 @@ static void stop_command_port(struct usb_serial *serial)
 	mutex_unlock(&command_info->mutex);
 }
 
+<<<<<<< HEAD
 
 static int start_port_read(struct usb_serial_port *port)
 {
@@ -1492,6 +1823,9 @@ out:
 }
 
 module_usb_serial_driver(whiteheat_driver, serial_drivers);
+=======
+module_usb_serial_driver(serial_drivers, id_table_combined);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
@@ -1499,9 +1833,12 @@ MODULE_LICENSE("GPL");
 
 MODULE_FIRMWARE("whiteheat.fw");
 MODULE_FIRMWARE("whiteheat_loader.fw");
+<<<<<<< HEAD
 
 module_param(urb_pool_size, int, 0);
 MODULE_PARM_DESC(urb_pool_size, "Number of urbs to use for buffering");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

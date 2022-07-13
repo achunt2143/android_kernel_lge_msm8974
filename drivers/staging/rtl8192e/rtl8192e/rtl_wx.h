@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -28,4 +29,18 @@ extern struct iw_handler_def r8192_wx_handlers_def;
 struct iw_statistics *r8192_get_wireless_stats(struct net_device *dev);
 u16 rtl8192_11n_user_show_rates(struct net_device *dev);
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+#ifndef R819x_WX_H
+#define R819x_WX_H
+
+struct iw_handler_def;
+
+extern const struct iw_handler_def r8192_wx_handlers_def;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

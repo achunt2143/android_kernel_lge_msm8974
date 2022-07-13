@@ -1,12 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Amanda extension for IP connection tracking
  *
  * (C) 2002 by Brian J. Murrell <netfilter@interlinx.bc.ca>
  * based on HW's ip_conntrack_irc.c as well as other modules
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+ * (C) 2006 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,11 +35,20 @@
 static unsigned int master_timeout __read_mostly = 300;
 static char *ts_algo = "kmp";
 
+<<<<<<< HEAD
+=======
+#define HELPER_NAME "amanda"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Brian J. Murrell <netfilter@interlinx.bc.ca>");
 MODULE_DESCRIPTION("Amanda connection tracking module");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip_conntrack_amanda");
+<<<<<<< HEAD
 MODULE_ALIAS_NFCT_HELPER("amanda");
+=======
+MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(master_timeout, uint, 0600);
 MODULE_PARM_DESC(master_timeout, "timeout for the master connection");
@@ -53,6 +70,10 @@ enum amanda_strings {
 	SEARCH_DATA,
 	SEARCH_MESG,
 	SEARCH_INDEX,
+<<<<<<< HEAD
+=======
+	SEARCH_STATE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct {
@@ -80,6 +101,13 @@ static struct {
 		.string = "INDEX ",
 		.len	= 6,
 	},
+<<<<<<< HEAD
+=======
+	[SEARCH_STATE] = {
+		.string = "STATE ",
+		.len	= 6,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int amanda_help(struct sk_buff *skb,
@@ -87,7 +115,10 @@ static int amanda_help(struct sk_buff *skb,
 		       struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo)
 {
+<<<<<<< HEAD
 	struct ts_state ts;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_conntrack_expect *exp;
 	struct nf_conntrack_tuple *tuple;
 	unsigned int dataoff, start, stop, off, i;
@@ -108,6 +139,7 @@ static int amanda_help(struct sk_buff *skb,
 	/* No data? */
 	dataoff = protoff + sizeof(struct udphdr);
 	if (dataoff >= skb->len) {
+<<<<<<< HEAD
 		if (net_ratelimit())
 			printk(KERN_ERR "amanda_help: skblen = %u\n", skb->len);
 		return NF_ACCEPT;
@@ -116,20 +148,38 @@ static int amanda_help(struct sk_buff *skb,
 	memset(&ts, 0, sizeof(ts));
 	start = skb_find_text(skb, dataoff, skb->len,
 			      search[SEARCH_CONNECT].ts, &ts);
+=======
+		net_err_ratelimited("amanda_help: skblen = %u\n", skb->len);
+		return NF_ACCEPT;
+	}
+
+	start = skb_find_text(skb, dataoff, skb->len,
+			      search[SEARCH_CONNECT].ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (start == UINT_MAX)
 		goto out;
 	start += dataoff + search[SEARCH_CONNECT].len;
 
+<<<<<<< HEAD
 	memset(&ts, 0, sizeof(ts));
 	stop = skb_find_text(skb, start, skb->len,
 			     search[SEARCH_NEWLINE].ts, &ts);
+=======
+	stop = skb_find_text(skb, start, skb->len,
+			     search[SEARCH_NEWLINE].ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (stop == UINT_MAX)
 		goto out;
 	stop += start;
 
+<<<<<<< HEAD
 	for (i = SEARCH_DATA; i <= SEARCH_INDEX; i++) {
 		memset(&ts, 0, sizeof(ts));
 		off = skb_find_text(skb, start, stop, search[i].ts, &ts);
+=======
+	for (i = SEARCH_DATA; i <= SEARCH_STATE; i++) {
+		off = skb_find_text(skb, start, stop, search[i].ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (off == UINT_MAX)
 			continue;
 		off += start + search[i].len;
@@ -146,6 +196,10 @@ static int amanda_help(struct sk_buff *skb,
 
 		exp = nf_ct_expect_alloc(ct);
 		if (exp == NULL) {
+<<<<<<< HEAD
+=======
+			nf_ct_helper_log(skb, ct, "cannot alloc expectation");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = NF_DROP;
 			goto out;
 		}
@@ -159,8 +213,15 @@ static int amanda_help(struct sk_buff *skb,
 		if (nf_nat_amanda && ct->status & IPS_NAT_MASK)
 			ret = nf_nat_amanda(skb, ctinfo, protoff,
 					    off - dataoff, len, exp);
+<<<<<<< HEAD
 		else if (nf_ct_expect_related(exp) != 0)
 			ret = NF_DROP;
+=======
+		else if (nf_ct_expect_related(exp, 0) != 0) {
+			nf_ct_helper_log(skb, ct, "cannot add expectation");
+			ret = NF_DROP;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nf_ct_expect_put(exp);
 	}
 
@@ -169,19 +230,31 @@ out:
 }
 
 static const struct nf_conntrack_expect_policy amanda_exp_policy = {
+<<<<<<< HEAD
 	.max_expected		= 3,
+=======
+	.max_expected		= 4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.timeout		= 180,
 };
 
 static struct nf_conntrack_helper amanda_helper[2] __read_mostly = {
 	{
+<<<<<<< HEAD
 		.name			= "amanda",
+=======
+		.name			= HELPER_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.me			= THIS_MODULE,
 		.help			= amanda_help,
 		.tuple.src.l3num	= AF_INET,
 		.tuple.src.u.udp.port	= cpu_to_be16(10080),
 		.tuple.dst.protonum	= IPPROTO_UDP,
 		.expect_policy		= &amanda_exp_policy,
+<<<<<<< HEAD
+=======
+		.nat_mod_name		= NF_NAT_HELPER_NAME(HELPER_NAME),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name			= "amanda",
@@ -191,6 +264,10 @@ static struct nf_conntrack_helper amanda_helper[2] __read_mostly = {
 		.tuple.src.u.udp.port	= cpu_to_be16(10080),
 		.tuple.dst.protonum	= IPPROTO_UDP,
 		.expect_policy		= &amanda_exp_policy,
+<<<<<<< HEAD
+=======
+		.nat_mod_name		= NF_NAT_HELPER_NAME(HELPER_NAME),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -198,8 +275,13 @@ static void __exit nf_conntrack_amanda_fini(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	nf_conntrack_helper_unregister(&amanda_helper[0]);
 	nf_conntrack_helper_unregister(&amanda_helper[1]);
+=======
+	nf_conntrack_helpers_unregister(amanda_helper,
+					ARRAY_SIZE(amanda_helper));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(search); i++)
 		textsearch_destroy(search[i].ts);
 }
@@ -208,6 +290,11 @@ static int __init nf_conntrack_amanda_init(void)
 {
 	int ret, i;
 
+<<<<<<< HEAD
+=======
+	NF_CT_HELPER_BUILD_BUG_ON(0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(search); i++) {
 		search[i].ts = textsearch_prepare(ts_algo, search[i].string,
 						  search[i].len,
@@ -217,6 +304,7 @@ static int __init nf_conntrack_amanda_init(void)
 			goto err1;
 		}
 	}
+<<<<<<< HEAD
 	ret = nf_conntrack_helper_register(&amanda_helper[0]);
 	if (ret < 0)
 		goto err1;
@@ -227,6 +315,14 @@ static int __init nf_conntrack_amanda_init(void)
 
 err2:
 	nf_conntrack_helper_unregister(&amanda_helper[0]);
+=======
+	ret = nf_conntrack_helpers_register(amanda_helper,
+					    ARRAY_SIZE(amanda_helper));
+	if (ret < 0)
+		goto err1;
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	while (--i >= 0)
 		textsearch_destroy(search[i].ts);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_ATA_PLATFORM_H
 #define __LINUX_ATA_PLATFORM_H
 
@@ -8,6 +12,7 @@ struct pata_platform_info {
 	 * spacing used by ata_std_ports().
 	 */
 	unsigned int ioport_shift;
+<<<<<<< HEAD
 	/* 
 	 * Indicate platform specific irq types and initial
 	 * IRQ flags when call request_irq()
@@ -23,6 +28,20 @@ extern int __devinit __pata_platform_probe(struct device *dev,
 					   int __pio_mask);
 
 extern int __devexit __pata_platform_remove(struct device *dev);
+=======
+};
+
+struct scsi_host_template;
+
+extern int __pata_platform_probe(struct device *dev,
+				 struct resource *io_res,
+				 struct resource *ctl_res,
+				 struct resource *irq_res,
+				 unsigned int ioport_shift,
+				 int __pio_mask,
+				 const struct scsi_host_template *sht,
+				 bool use16bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Marvell SATA private data

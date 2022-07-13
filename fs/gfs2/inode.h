@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
@@ -5,6 +6,12 @@
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License version 2.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
+ * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __INODE_DOT_H__
@@ -15,6 +22,7 @@
 #include <linux/mm.h>
 #include "util.h"
 
+<<<<<<< HEAD
 extern int gfs2_releasepage(struct page *page, gfp_t gfp_mask);
 extern int gfs2_internal_read(struct gfs2_inode *ip,
 			      struct file_ra_state *ra_state,
@@ -22,6 +30,12 @@ extern int gfs2_internal_read(struct gfs2_inode *ip,
 extern void gfs2_page_add_databufs(struct gfs2_inode *ip, struct page *page,
 				   unsigned int from, unsigned int to);
 extern void gfs2_set_aops(struct inode *inode);
+=======
+bool gfs2_release_folio(struct folio *folio, gfp_t gfp_mask);
+ssize_t gfs2_internal_read(struct gfs2_inode *ip,
+			   char *buf, loff_t *pos, size_t size);
+void gfs2_set_aops(struct inode *inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int gfs2_is_stuffed(const struct gfs2_inode *ip)
 {
@@ -33,6 +47,7 @@ static inline int gfs2_is_jdata(const struct gfs2_inode *ip)
 	return ip->i_diskflags & GFS2_DIF_JDATA;
 }
 
+<<<<<<< HEAD
 static inline int gfs2_is_writeback(const struct gfs2_inode *ip)
 {
 	const struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
@@ -43,6 +58,16 @@ static inline int gfs2_is_ordered(const struct gfs2_inode *ip)
 {
 	const struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	return (sdp->sd_args.ar_data == GFS2_DATA_ORDERED) && !gfs2_is_jdata(ip);
+=======
+static inline bool gfs2_is_ordered(const struct gfs2_sbd *sdp)
+{
+	return sdp->sd_args.ar_data == GFS2_DATA_ORDERED;
+}
+
+static inline bool gfs2_is_writeback(const struct gfs2_sbd *sdp)
+{
+	return sdp->sd_args.ar_data == GFS2_DATA_WRITEBACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int gfs2_is_dir(const struct gfs2_inode *ip)
@@ -52,20 +77,33 @@ static inline int gfs2_is_dir(const struct gfs2_inode *ip)
 
 static inline void gfs2_set_inode_blocks(struct inode *inode, u64 blocks)
 {
+<<<<<<< HEAD
 	inode->i_blocks = blocks <<
 		(GFS2_SB(inode)->sd_sb.sb_bsize_shift - GFS2_BASIC_BLOCK_SHIFT);
+=======
+	inode->i_blocks = blocks << (inode->i_blkbits - 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u64 gfs2_get_inode_blocks(const struct inode *inode)
 {
+<<<<<<< HEAD
 	return inode->i_blocks >>
 		(GFS2_SB(inode)->sd_sb.sb_bsize_shift - GFS2_BASIC_BLOCK_SHIFT);
+=======
+	return inode->i_blocks >> (inode->i_blkbits - 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void gfs2_add_inode_blocks(struct inode *inode, s64 change)
 {
+<<<<<<< HEAD
 	gfs2_assert(GFS2_SB(inode), (change >= 0 || inode->i_blocks > -change));
 	change *= (GFS2_SB(inode)->sd_sb.sb_bsize/GFS2_BASIC_BLOCK);
+=======
+	change <<= inode->i_blkbits - 9;
+	gfs2_assert(GFS2_SB(inode), (change >= 0 || inode->i_blocks >= -change));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks += change;
 }
 
@@ -88,7 +126,11 @@ static inline int gfs2_check_internal_file_size(struct inode *inode,
 	u64 size = i_size_read(inode);
 	if (size < minsize || size > maxsize)
 		goto err;
+<<<<<<< HEAD
 	if (size & ((1 << inode->i_blkbits) - 1))
+=======
+	if (size & (BIT(inode->i_blkbits) - 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	return 0;
 err:
@@ -96,6 +138,7 @@ err:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 extern struct inode *gfs2_inode_lookup(struct super_block *sb, unsigned type, 
 				       u64 no_addr, u64 no_formal_ino,
 				       int non_block);
@@ -121,6 +164,35 @@ extern const struct file_operations gfs2_dir_fops_nolock;
 
 extern void gfs2_set_inode_flags(struct inode *inode);
  
+=======
+struct inode *gfs2_inode_lookup(struct super_block *sb, unsigned type,
+			        u64 no_addr, u64 no_formal_ino,
+			        unsigned int blktype);
+struct inode *gfs2_lookup_by_inum(struct gfs2_sbd *sdp, u64 no_addr,
+				  u64 no_formal_ino,
+				  unsigned int blktype);
+
+int gfs2_inode_refresh(struct gfs2_inode *ip);
+
+struct inode *gfs2_lookupi(struct inode *dir, const struct qstr *name,
+			   int is_root);
+int gfs2_permission(struct mnt_idmap *idmap,
+		    struct inode *inode, int mask);
+struct inode *gfs2_lookup_meta(struct inode *dip, const char *name);
+void gfs2_dinode_out(const struct gfs2_inode *ip, void *buf);
+int gfs2_open_common(struct inode *inode, struct file *file);
+loff_t gfs2_seek_data(struct file *file, loff_t offset);
+loff_t gfs2_seek_hole(struct file *file, loff_t offset);
+
+extern const struct file_operations gfs2_file_fops_nolock;
+extern const struct file_operations gfs2_dir_fops_nolock;
+
+int gfs2_fileattr_get(struct dentry *dentry, struct fileattr *fa);
+int gfs2_fileattr_set(struct mnt_idmap *idmap,
+		      struct dentry *dentry, struct fileattr *fa);
+void gfs2_set_inode_flags(struct inode *inode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_GFS2_FS_LOCKING_DLM
 extern const struct file_operations gfs2_file_fops;
 extern const struct file_operations gfs2_dir_fops;
